@@ -753,7 +753,7 @@ ZmFreeBusyView.prototype._amPmChangeHandler = function (event) {
 	var date = cal.__date;
 	var ampmStr = event._args.newValue;
 	var dur = this._currentAppt.getDuration();
-	var isPM = (ampmStr == LsMsg.pm);
+	var isPM = (ampmStr == AjxMsg.pm);
 	var hours = date.getHours() % 12;
 	
 	date.setHours(hours + (isPM ? 12 : 0));
@@ -1002,7 +1002,7 @@ ZmFreeBusyView.prototype._updateDateTimes = function () {
 	
 	sel = AjxCore.objectWithId(startTimeAmPmCell.firstChild.dwtObj);
 	if (sel) {
-		var amPm = (startDate.getHours() >= 12)? LsMsg.pm: LsMsg.am;
+		var amPm = (startDate.getHours() >= 12)? AjxMsg.pm: AjxMsg.am;
 		sel.setSelectedValue(amPm);
 	}
 
@@ -1029,7 +1029,7 @@ ZmFreeBusyView.prototype._updateDateTimes = function () {
 	
 	sel = AjxCore.objectWithId(endTimeAmPmCell.firstChild.dwtObj);
 	if (sel) {
-		var amPm = (endDate.getHours() >= 12)? LsMsg.pm: LsMsg.am;
+		var amPm = (endDate.getHours() >= 12)? AjxMsg.pm: AjxMsg.am;
 		sel.setSelectedValue(amPm);
 	}
 };

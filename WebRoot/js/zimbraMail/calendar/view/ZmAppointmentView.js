@@ -1173,7 +1173,7 @@ Appt_Date_Time_Range_XFormItem.prototype.items =
 		 // This should only happend when the changes come from a select
 		 if (event._args != null) {
 			 var newValue = event._args.newValue;
-			 if (endHrs < startHrs && (startHrs < 12) && !(newValue == LsMsg.am || newValue == LsMsg.pm)) {
+			 if (endHrs < startHrs && (startHrs < 12) && !(newValue == AjxMsg.am || newValue == AjxMsg.pm)) {
 				 rangeObj.endDate.setHours(endHrs + 12);
 			 }
 		 }
@@ -1224,7 +1224,7 @@ Appt_Date_Range_XFormItem.prototype.items =
 		 var endHrs = rangeObj.endDate.getHours();
 		 if (event._args != null) {
 			 var newValue = event._args.newValue;
-			 if (endHrs < startHrs && (startHrs < 12) && !(newValue == LsMsg.am || newValue == LsMsg.pm)) {
+			 if (endHrs < startHrs && (startHrs < 12) && !(newValue == AjxMsg.am || newValue == AjxMsg.pm)) {
 				 rangeObj.endDate.setHours(endHrs + 12);
 			 }
 		 }

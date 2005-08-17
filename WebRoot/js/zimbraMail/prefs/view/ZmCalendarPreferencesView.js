@@ -61,7 +61,7 @@ ZmCalendarPreferencesView.prototype._createHTML = function () {
     
     html[idx++] = "<tr valign='center'><td align='left'>Week begins on:&nbsp;</td>";
     var beginsOnId = Dwt.getNextId();
-    //LsLog.info("Id for cell = " + beginsOnId);
+    //AjxLog.info("Id for cell = " + beginsOnId);
     html[idx++] = "<td id= " + beginsOnId + ">&nbsp;";
     html[idx++] = "</td></tr>";
     
