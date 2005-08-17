@@ -1,4 +1,4 @@
-<project name="ZimbraConsole" default="war">
+<project name="ZimbraWebClient" default="war">
 
   <property environment="env"/>
 	
