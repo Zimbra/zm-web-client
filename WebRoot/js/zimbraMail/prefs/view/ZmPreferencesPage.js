@@ -301,7 +301,7 @@ function(params) {
 	var appCtrlr = this._appCtxt.getAppController();
 
 	// send the import request w/ the att Id to the server
-	var soapDoc = AjxSoapDoc.create("ImportContactsRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("ImportContactsRequest", "urn:zimbraMail");
 	var method = soapDoc.getMethod();
 	method.setAttribute("ct", "csv"); // always "csv" for now
 	var content = soapDoc.set("content", "");

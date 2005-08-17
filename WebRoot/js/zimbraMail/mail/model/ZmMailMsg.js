@@ -350,7 +350,7 @@ function(getHtml, forceLoad) {
  */
 ZmMailMsg.fetchMsg = 
 function (sender, msgId, getHtml) {
-	var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:liquidMail", null);
+	var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail", null);
 	var msgNode = soapDoc.set("m");
 	msgNode.setAttribute("id", msgId);
 	msgNode.setAttribute("read", "1");
@@ -429,7 +429,7 @@ function(contactList, edited, componentId) {
 
 ZmMailMsg.prototype._sendInviteReply = 
 function (contactList, edited, componentId) {
-	var soapDoc = AjxSoapDoc.create("SendInviteReplyRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("SendInviteReplyRequest", "urn:zimbraMail");
 
 	var id = this._origMsg.id;
 	soapDoc.setMethodAttribute("id", id);
@@ -481,7 +481,7 @@ function(contactList, isDraft) {
 		return this.sendInviteReply(contactList, true, 0);
 	} else {
 		var request = isDraft ? "SaveDraftRequest" : "SendMsgRequest";
-		var soapDoc = AjxSoapDoc.create(request, "urn:liquidMail");
+		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
 		// TODO - return code and put up status message
 		this._createMessageNode(soapDoc, contactList, isDraft);
 		var resp = this._sendMessage(soapDoc, false, isDraft).m[0];
@@ -838,7 +838,7 @@ function(anchorEl, msgId, msgPartId) {
 	if (!controller) return;
 
 	try {
-		var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:liquidMail");
+		var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail");
 		var msgNode = soapDoc.set("m");
 		msgNode.setAttribute("id", msgId);
 		msgNode.setAttribute("part", msgPartId);

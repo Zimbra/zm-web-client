@@ -31,7 +31,7 @@ ZmAttachmentTypeList.prototype.load =
 function() {
 	this._attachments = new Array();
 
-	var soapDoc = AjxSoapDoc.create("BrowseRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("BrowseRequest", "urn:zimbraMail");
 	soapDoc.getMethod().setAttribute("browseBy", "attachments");
 
 	var att = this._appCtxt.getAppController().sendRequest(soapDoc).BrowseResponse.bd;

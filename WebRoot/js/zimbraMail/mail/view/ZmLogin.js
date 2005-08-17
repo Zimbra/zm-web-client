@@ -318,7 +318,7 @@ function(border) {
 
 ZmLogin.submitNoOpRequest = 
 function() {
-    var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:liquidMail");
+    var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
 	LsCsfeCommand.invoke(soapDoc, false, null, null, true);
 };
 

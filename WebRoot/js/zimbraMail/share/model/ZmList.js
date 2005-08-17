@@ -451,7 +451,7 @@ function(items, action, attrs, type) {
 		return actionedItems;
 
 	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
-	var soapDoc = AjxSoapDoc.create(soapCmd, "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create(soapCmd, "urn:zimbraMail");
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("id", idStr);
 	actionNode.setAttribute("op", action);

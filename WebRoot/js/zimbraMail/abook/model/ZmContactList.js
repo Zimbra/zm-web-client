@@ -51,7 +51,7 @@ function(attrs) {
 
 	// only the canonical list gets loaded
 	this.isCanonical = true;
-	var soapDoc = AjxSoapDoc.create("GetContactsRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("GetContactsRequest", "urn:zimbraMail");
 
 	if (attrs) {
 		// load only the given attributes

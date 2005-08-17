@@ -644,7 +644,7 @@ function(msg, preferHtml) {
 		return;
 	
 	if (!msg.isLoaded()) {
-		var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:liquidMail", null);
+		var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail", null);
 		var msgNode = soapDoc.set("m");
 		msgNode.setAttribute("id", msg.id);
 		if (preferHtml)

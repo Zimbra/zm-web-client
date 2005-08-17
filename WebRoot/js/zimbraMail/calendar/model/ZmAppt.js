@@ -1539,30 +1539,30 @@ ZmAppt.prototype.save = function (sender, attachmentId) {
 	switch (this._viewMode) {
 	case ZmAppt.MODE_NEW:
 		var soapDoc = AjxSoapDoc.create("CreateAppointmentRequest",
-									   "urn:liquidMail");
+									   "urn:zimbraMail");
 		break;
 	case ZmAppt.MODE_EDIT_SINGLE_INSTANCE:
 		if (!this.isException()){
 			var soapDoc = AjxSoapDoc.create("CreateAppointmentExceptionRequest",
-										   "urn:liquidMail");
+										   "urn:zimbraMail");
 			this._addInviteAndCompNum(soapDoc);
 			soapDoc.setMethodAttribute("s", this.getOrigStartTime());
 			needsExceptionId = true;
 		} else {
 			var soapDoc = AjxSoapDoc.create("ModifyAppointmentExceptionRequest",
-										   "urn:liquidMail");
+										   "urn:zimbraMail");
 			this._addInviteAndCompNum(soapDoc);
 		}
 		break;
 // 	case ZmAppt.MODE_EDIT_SERIES:
 // 		var soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest",
-// 									   "urn:liquidMail");
+// 									   "urn:zimbraMail");
 // 		this._addInviteAndCompNum(soapDoc);
 // 		soapDoc.setMethodAttribute("thisAndFuture",true);
 // 		break;
 	default:
 		var soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest",
-									   "urn:liquidMail");
+									   "urn:zimbraMail");
 		this._addInviteAndCompNum(soapDoc);
 		break;
 	}
@@ -1611,7 +1611,7 @@ ZmAppt.prototype.cancel = function (sender, mode) {
 		// fall through
 	case ZmAppt.MODE_DELETE_SERIES:
 		var soapDoc = AjxSoapDoc.create("CancelAppointmentRequest",
-									   "urn:liquidMail");
+									   "urn:zimbraMail");
 		this._addInviteAndCompNum(soapDoc);
 		var m = soapDoc.set("m");
 		if (this.isOrganizer()) {
@@ -1623,7 +1623,7 @@ ZmAppt.prototype.cancel = function (sender, mode) {
 		break;
 	case ZmAppt.MODE_DELETE_INSTANCE:
 		var soapDoc = AjxSoapDoc.create("CancelAppointmentExceptionRequest",
-									   "urn:liquidMail");
+									   "urn:zimbraMail");
 		soapDoc.setMethodAttribute("s", this.getOrigStartTime());
 		this._addInviteAndCompNum(soapDoc);
 		var inst = soapDoc.set("inst");

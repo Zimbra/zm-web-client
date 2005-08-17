@@ -20,7 +20,7 @@ ZmDomainTree.prototype.load =
 function() {
 	this._rootDomain = new ZmDomain(".", null, "");
 
-	var soapDoc = AjxSoapDoc.create("BrowseRequest", "urn:liquidMail", null);
+	var soapDoc = AjxSoapDoc.create("BrowseRequest", "urn:zimbraMail", null);
 	soapDoc.getMethod().setAttribute("browseBy", "domains");
 
 	var domains = this._appCtxt.getAppController().sendRequest(soapDoc).BrowseResponse.bd;

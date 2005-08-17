@@ -134,7 +134,7 @@ function(delMsg) {
 	} else if (delMsg.id) {
 		// do a manual delete of the "virtual" conv/msg that was created but 
 		// never added to our internal list model
-		var soapDoc = AjxSoapDoc.create("MsgActionRequest", "urn:liquidMail");
+		var soapDoc = AjxSoapDoc.create("MsgActionRequest", "urn:zimbraMail");
 		var actionNode = soapDoc.set("action");
 		actionNode.setAttribute("id", delMsg.id);
 		actionNode.setAttribute("op", "delete");

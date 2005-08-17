@@ -85,7 +85,7 @@ function(name) {
 ZmTag.prototype.create =
 function(name, color) {
 	color = ZmTag.checkColor(color);
-	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:zimbraMail");
 	var tagNode = soapDoc.set("tag");
 	tagNode.setAttribute("name", name);
 	tagNode.setAttribute("color", color);

@@ -314,7 +314,7 @@ function() {
 ZmFilterRules.getRules = 
 function(force) {
 	if (force || (!ZmFilterRules._rulesInitialized)) {
-		var soapDoc = AjxSoapDoc.create("GetRulesRequest", "urn:liquidMail");
+		var soapDoc = AjxSoapDoc.create("GetRulesRequest", "urn:zimbraMail");
 		var resp = ZmFilterRules._sender.sendRequest(soapDoc).GetRulesResponse;
 		var rulesNode = resp.rules;
 		var children = rulesNode.r;
@@ -369,7 +369,7 @@ function() {
 	if (!ZmFilterRules._dirty)
 		return null;
 	
-	var soapDoc = AjxSoapDoc.create("SaveRulesRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("SaveRulesRequest", "urn:zimbraMail");
 	var topNode = soapDoc.set("rules");
 
 	var rules = ZmFilterRules._rules.getArray();

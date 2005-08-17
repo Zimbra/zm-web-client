@@ -1323,7 +1323,7 @@ LmUserSchedule.prototype.valueOf = function () {
 };
 
 LmUserSchedule.getSchedules = function (start, end, uids) {
-	var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("s", start.getTime());
 	soapDoc.setMethodAttribute("e", end.getTime());
 	var u = null;
@@ -1399,7 +1399,7 @@ LmUserSchedule.prototype.getSchedule = function (start, end, uid, force) {
 			this.blocks = new Array();
 		}
 		// go to the server
-		var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:liquidMail");
+		var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:zimbraMail");
 		soapDoc.setMethodAttribute("s", start.getTime());
 		// TODO: Not sure what the period should be here
 		soapDoc.setMethodAttribute("e", end.getTime());

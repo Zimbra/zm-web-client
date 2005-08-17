@@ -258,7 +258,7 @@ ZmContact.prototype.create =
 function(attr) {
 	DBG.println(AjxDebug.DBG1, "ZmContact.create");
 
-	var soapDoc = AjxSoapDoc.create("CreateContactRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("CreateContactRequest", "urn:zimbraMail");
 	var cn = soapDoc.set("cn");
 	
 	for (var name in attr) {
@@ -301,7 +301,7 @@ function(attr) {
 		return;
 	}
 
-	var soapDoc = AjxSoapDoc.create("ModifyContactRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("ModifyContactRequest", "urn:zimbraMail");
 	soapDoc.getMethod().setAttribute("replace", "0");
 	// change force to 0 and put up dialog if we get a MODIFY_CONFLICT fault?
 	soapDoc.getMethod().setAttribute("force", "1");

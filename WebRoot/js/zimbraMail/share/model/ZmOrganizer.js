@@ -305,7 +305,7 @@ function(obj) {
 ZmOrganizer.prototype._organizerAction =
 function(action, attrs) {
 	var cmd = ZmOrganizer.SOAP_CMD[this.type];
-	var soapDoc = AjxSoapDoc.create(cmd + "Request", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create(cmd + "Request", "urn:zimbraMail");
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("op", action);
 	actionNode.setAttribute("id", this.id);

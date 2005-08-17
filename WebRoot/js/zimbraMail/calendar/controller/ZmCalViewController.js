@@ -826,7 +826,7 @@ function(start,end, fanoutAllDay) {
 	}
 
 	apptList = new ZmApptList(this._shell.getData(ZmAppCtxt.LABEL));
-	var soapDoc = AjxSoapDoc.create("GetApptSummariesRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("GetApptSummariesRequest", "urn:zimbraMail");
 	var method = soapDoc.getMethod();
 	method.setAttribute("s", start);
 	method.setAttribute("e", end);

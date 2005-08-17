@@ -152,7 +152,7 @@ ZmFolder.prototype.create =
 function(name) {
 	if (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_DRAFTS)
 		throw new AjxException("Cannot create subfolder of Spam or Drafts");
-	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 	var folderNode = soapDoc.set("folder");
 	folderNode.setAttribute("name", name);
 	var id = (this.id > 0) ? this.id : ZmFolder.ID_ROOT;

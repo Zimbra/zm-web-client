@@ -48,7 +48,7 @@ function() {
 		soapDoc = AjxSoapDoc.create("SearchGalRequest", "urn:liquidAccount");
 		soapDoc.set("name", this.query);
 	} else {
-		soapDoc = AjxSoapDoc.create("SearchRequest", "urn:liquidMail");
+		soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 		var method = this._getStandardMethod(soapDoc);
 		if (this.types) {
 			var a = this.types.getArray();
@@ -81,7 +81,7 @@ ZmSearch.prototype.forConv =
 function(cid) {
 	if (!this.query || !cid) return;
 
-	var soapDoc = AjxSoapDoc.create("SearchConvRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("SearchConvRequest", "urn:zimbraMail");
 	var method = this._getStandardMethod(soapDoc);
 	method.setAttribute("cid", cid);
 	method.setAttribute("fetch", "1");
