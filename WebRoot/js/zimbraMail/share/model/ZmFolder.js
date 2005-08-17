@@ -9,7 +9,7 @@ ZmFolder.prototype.constructor = ZmFolder;
 // path separator
 ZmFolder.SEP = "/";
 
-// system folders (see Mailbox.java in LiquidArchive for positive integer constants)
+// system folders (see Mailbox.java in ZimbraServer for positive integer constants)
 ZmFolder.ID_SEARCH			= -3;
 ZmFolder.ID_SEP				= -2;
 ZmFolder.ID_USER			= -1;

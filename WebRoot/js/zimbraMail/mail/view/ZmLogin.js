@@ -3,7 +3,7 @@
 /**
  * Login script for the Login.jsp page.
  * This should handle initial authentication. If auth succeeds, it redirects
- * to liquid/mail. If auth fails it displays the appropriate message.
+ * to zimbra/mail. If auth fails it displays the appropriate message.
  *
  * It handles if the session has timed out and the user hits the back button.
  * To do this, it sends a noop request just to see if the server chokes
@@ -179,7 +179,7 @@ function(ev, checkedBrowser) {
 };
 
 ZmLogin.CSFE_SERVER_URI = location.port == "80" ? "/service/soap/" : ":" + location.port + "/service/soap/";
-ZmLogin.LIQUID_APP_URI  = location.port == "80" ? "/liquid/mail" : ":" + location.port + "/liquid/mail";
+ZmLogin.ZIMBRA_APP_URI  = location.port == "80" ? "/zimbra/mail" : ":" + location.port + "/zimbra/mail";
 
 ZmLogin.setServerUri = 
 function() {
@@ -347,10 +347,10 @@ function() {
 		return;
     }
 	
-    var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:liquidAccount");
+    var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAccount");
 	var header = soapDoc.createHeaderElement();
 	var context = soapDoc.set("context", null, header);
-	context.setAttribute("xmlns", "urn:liquid");
+	context.setAttribute("xmlns", "urn:zimbra");
 	soapDoc.set("nosession", null, context);
 	var js = soapDoc.set("format", null, context);
 	js.setAttribute("type", "js");
@@ -431,7 +431,7 @@ ZmLogin.postAuthToServer = function (mailServer, authToken, tokenLifetime, pubCo
 ZmLogin.getMailUrl = 
 function (mailServer) {
 	var ms = mailServer || location.hostname;
-	return (location.protocol + "//" + ms + ZmLogin.LIQUID_APP_URI + window.location.search);
+	return (location.protocol + "//" + ms + ZmLogin.ZIMBRA_APP_URI + window.location.search);
 };
 
 ZmLogin.getAuthUrl = 
@@ -439,5 +439,5 @@ function (mailServer) {
 	var ms = mailServer? mailServer: location.hostname;
 	return (location.protocol + "//" + ms + ((location.port == 80) 
 		? "" 
-		: ":" + location.port) +"/liquid/auth/" + window.location.search);
+		: ":" + location.port) +"/zimbra/auth/" + window.location.search);
 };

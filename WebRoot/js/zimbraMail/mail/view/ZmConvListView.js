@@ -206,7 +206,7 @@ function(conv, preferHtml) {
 
 	// first, get list of all msg id's for this conversation
 	if (conv.msgIds == null) {
-		var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:liquidMail");
+		var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:zimbraMail");
 		var msgNode = soapDoc.set("c");
 		msgNode.setAttribute("id", conv.id);
 		var resp = LsCsfeCommand.invoke(soapDoc).Body.GetConvResponse.c[0];
@@ -217,13 +217,13 @@ function(conv, preferHtml) {
 	}
 	
 	// XXX: optimize? Once these msgs are d/l'ed should they be cached?
-	var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:liquid");
+	var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
 	soapDoc.setMethodAttribute("onerror", "continue");
 	
 	for (var i = 0; i < conv.msgIds.length; i++) {
 		// make a request to get this mail message from the server
 		var msgRequest = soapDoc.set("GetMsgRequest");
-		msgRequest.setAttribute("xmlns", "urn:liquidMail");
+		msgRequest.setAttribute("xmlns", "urn:zimbraMail");
 
 		var doc = soapDoc.getDoc();
 		var msgNode = doc.createElement("m");

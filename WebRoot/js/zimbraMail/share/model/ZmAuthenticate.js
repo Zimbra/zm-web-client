@@ -18,10 +18,10 @@ function() {
 ZmAuthenticate.prototype.execute =
 function(uname, pword) {
 	if (!ZmAuthenticate._isAdmin) {
-		var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:liquidAccount");
+		var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAccount");
 		var header = soapDoc.createHeaderElement();
 		var context = soapDoc.set("context", null, header);
-		context.setAttribute("xmlns", "urn:liquid");
+		context.setAttribute("xmlns", "urn:zimbra");
 		var js = soapDoc.set("format", null, context);
 		js.setAttribute("type", "js");
 
@@ -32,7 +32,7 @@ function(uname, pword) {
 		var resp = LsCsfeCommand.invoke(soapDoc, true).Body.AuthResponse;
 		this._setAuthToken(resp);
 	} else {
-		var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:liquidAdmin", null);
+		var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAdmin", null);
 		soapDoc.set("name", uname);
 		soapDoc.set("password", pword);
 		var resp = LsCsfeCommand.invoke(soapDoc, true).Body.AuthResponse;

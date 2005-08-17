@@ -45,7 +45,7 @@ function() {
 	var isGalSearch = (this.contactSource == ZmSearchToolBar.FOR_GAL_MI);
 	var soapDoc;
 	if (isGalSearch) {
-		soapDoc = AjxSoapDoc.create("SearchGalRequest", "urn:liquidAccount");
+		soapDoc = AjxSoapDoc.create("SearchGalRequest", "urn:zimbraAccount");
 		soapDoc.set("name", this.query);
 	} else {
 		soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");

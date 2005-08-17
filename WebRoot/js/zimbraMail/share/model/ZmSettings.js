@@ -97,7 +97,7 @@ function(list) {
 */ 
 ZmSettings.prototype.loadUserSettings =
 function() {
-    var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:liquidAccount");
+    var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
 	var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
 	var obj = resp.GetInfoResponse;
 	if (obj.name)
@@ -129,7 +129,7 @@ function() {
 */
 ZmSettings.prototype.loadPrefs =
 function() {
-    var soapDoc = AjxSoapDoc.create("GetPrefsRequest", "urn:liquidAccount");
+    var soapDoc = AjxSoapDoc.create("GetPrefsRequest", "urn:zimbraAccount");
     var resp = this._appCtxt.getAppController().sendRequest(soapDoc).firstChild;
 	this.createFromDom(resp);
 }
@@ -143,7 +143,7 @@ ZmSettings.prototype.save =
 function(list) {
     if (!(list && list.length)) return;
     
-    var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:liquidAccount");
+    var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
 	for (var i = 0; i < list.length; i++) {
 		var pref = list[i];
 		if (pref.type != ZmSetting.T_PREF) {

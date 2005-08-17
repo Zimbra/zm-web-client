@@ -114,7 +114,7 @@ function() {
 
 ZmPrefController.prototype._changePassword =
 function(args) {
-	var soapDoc = AjxSoapDoc.create("ChangePasswordRequest", "urn:liquidAccount");
+	var soapDoc = AjxSoapDoc.create("ChangePasswordRequest", "urn:zimbraAccount");
 	soapDoc.set("oldPassword", args[0]);
 	soapDoc.set("password", args[1]);
 	var accountNode = soapDoc.set("account", this._appCtxt.get(ZmSetting.USERNAME));

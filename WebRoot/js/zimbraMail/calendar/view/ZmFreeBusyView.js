@@ -97,14 +97,14 @@ ZmFreeBusyView.prototype._createDummySchedule = function () {
 			   new LmBusyBlock(1115748000000, 1115751600000, "b"), // 11-12
 			   new LmBusyBlock(1115755200000, 1115762400000, "b") // 13-15
 			   ];
-	a.id ="user1@db682461.liquidsys.com"
+	a.id ="user1@db682461.zimbra.com"
 	var b = new LmUserSchedule ();
 	b.blocks =[
 			   new LmBusyBlock(1115740800000, 1115744400000, "b"), // 9-10
 			   new LmBusyBlock(1115748000000, 1115751600000, "b"), // 11-12
 			   new LmBusyBlock(1115755200000, 1115762400000, "b") // 13-15
 			   ];
-	b.id = "user2@db682461.liquidsys.com"
+	b.id = "user2@db682461.zimbra.com"
 
 	var schedule = [a,b];
 	

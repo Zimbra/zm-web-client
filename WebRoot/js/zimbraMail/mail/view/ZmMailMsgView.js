@@ -325,7 +325,7 @@ function(html, idx, body) {
 	if (body.search(/<img/i) != -1){
 		html[idx++] = "<div id='" + this._displayImagesId + "' style='background-color: rgb(230, 230, 230);'>External images are not displayed. <a href='javascript:;'>Display external images</a></div>";
 	}
-	var src = (AjxEnv.isIE && (location.protocol == "https:"))? "src='/liquid/public/blank.html'" : "";
+	var src = (AjxEnv.isIE && (location.protocol == "https:"))? "src='/zimbra/public/blank.html'" : "";
  	html[idx++] = "<iframe scrolling='no' frameborder='0' width='100%' height='100%' id='";
 	html[idx++] = this._iframeId ;
 	html[idx++] = "' ";

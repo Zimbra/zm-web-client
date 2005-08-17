@@ -176,7 +176,7 @@ DIV.vSpace {
 }
 .MainShell {
 	background-color: #B7B7B7;
-	background-image:url(/liquid/skins/steel/images/bg_steel.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_steel.gif);
 }
 
 /* As of 07/22/05 Linux (or rather X) has a nasty issue that causes a huge perf problem with opacity.*/
@@ -207,7 +207,7 @@ DIV.vSpace {
 */
 .ZmSplashScreen, .ZmSplashScreen table {
 	background-color: #B7B7B7;
-	background-image:url(/liquid/skins/steel/images/bg_steel.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_steel.gif);
 }
 
 /*
@@ -348,7 +348,7 @@ DIV.vSpace {
 }
 .ZmNavToolBar {background-color: transparent;}
 .LmInviteToolBar { 
-	background-image:url(/liquid/skins/steel/images/bg_pebble.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
 	padding: 2px; 
 	border-bottom: 1px solid #777777;
 }
@@ -383,26 +383,26 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .DwtButton, .ColorButton, .TBButton-activated, .TBButtonWhite-activated {
-	background-image:url(/liquid/skins/steel/images/bg_button_up.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_up.gif);
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 }
 
 .DwtButton-activated, .ColorButton-activated {
-	background-image:url(/liquid/skins/steel/images/bg_button_down.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_down.gif);
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 }
 
 .DwtButton-triggered, .ColorButton-triggered, .TBButton-triggered, .TBButtonWhite-triggered {
-	background-image:url(/liquid/skins/steel/images/bg_button_down.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_down.gif);
 	border:1px solid;
 	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 }
 
 
 .DwtButton-toggled, .ColorButton-toggled, .TBButton-toggled, .TBButtonWhite-toggled {
-	background-image:url(/liquid/skins/steel/images/bg_button_down.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_down.gif);
 	border:1px solid;
 	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 }
@@ -489,7 +489,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 /* Login Panel */
 .ZmLoginDialog {
 	background-color: #b7b7b7; 
-	background-image:url(/liquid/skins/steel/images/bg_steel.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_steel.gif);
 	overflow:hidden;
 }
 .ZmLoginDialog-Transparent {background-color: transparent;}
@@ -497,7 +497,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	margin-top:10px;
 	margin-bottom:10px;
 	height:110px; 
-	background-image:url("/liquid/img/hiRes/non-web/LoginBanner.gif");
+	background-image:url("/zimbra/img/hiRes/non-web/LoginBanner.gif");
 }
 .ZmLoginDialog-HeaderText, .ZmLoginDialog-SubHeaderText {
 	color: white;
@@ -508,7 +508,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 .ZmLoginDialog-MainPanel {
 	width:460px; 
-	background-image:url(/liquid/skins/steel/images/bg_pebble.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
 }
 .ZmLoginDialog-SubHeaderText { font-size: 12pt; }
 .ZmLoginDialog-Field { width: 290px; }
@@ -562,7 +562,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 */
 
 .DwtMenu, .ActionMenu {
-	background-image:url(/liquid/skins/steel/images/bg_pebble.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
 	border: 2px solid;
 	border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;
 }
@@ -572,12 +572,12 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	border:1px solid #EEEEEE;
 }
 .DwtMenuItem-selected, .DwtMenuItem-IconArea-selected, .DwtMenuItem-CheckedArea-selected {
-	background-image:url(/liquid/skins/steel/images/bg_button_up.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_up.gif);
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 }
 .DwtMenuItem-triggered, .DwtMenuItem-IconArea-triggered, .DwtMenuItem-CheckedArea-triggered {
-	background-image:url(/liquid/skins/steel/images/bg_button_down.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_down.gif);
 	border:1px solid;
 	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 }
@@ -774,7 +774,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .overviewPanelHeader {
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
-	background-image:url(/liquid/skins/steel/images/tree_header_bg.gif);
+	background-image:url(/zimbra/skins/steel/images/tree_header_bg.gif);
 	padding-top:1px;
 	margin-left:2px;
 	margin-bottom:2px;
@@ -1138,7 +1138,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }	
 
 .DwtCalendarButton-activated {
-	background-image:url(/liquid/skins/steel/images/bg_button_small_up.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_small_up.gif);
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 	text-align:center;
@@ -1147,7 +1147,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .DwtCalendarButton-triggered {
-	background-image:url(/liquid/skins/steel/images/bg_button_small_down.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_small_down.gif);
 	border:1px solid;
 	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 	text-align:center;
@@ -1161,13 +1161,13 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .DwtCalendarDay-activated {
-	background-image:url(/liquid/skins/steel/images/bg_button_small_up.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_small_up.gif);
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 }
 
 .DwtCalendarDay-triggered {
-	background-image:url(/liquid/skins/steel/images/bg_button_small_down.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_small_down.gif);
 	border:1px solid;
 	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 }
@@ -1509,10 +1509,10 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 /** The cal/appt images are here temporarily **/ 
 
-.calendar_header_note	 		{	width:10;	height:16;	background-image:url(/liquid/img/hiRes/calendar/calendar_header_note.gif);	}
-.calendar_header_alarm	 		{	width:10;	height:16;	background-image:url(/liquid/img/hiRes/calendar/calendar_header_alarm.gif);	}
-.calendar_header_repeat	 		{	width:10;	height:16;	background-image:url(/liquid/img/hiRes/calendar/calendar_header_repeat.gif);	}
-.menu_light				{	width:8;	height:16;	background-image:url(/liquid/img/hiRes/other/menu_light.gif);	}
+.calendar_header_note	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_note.gif);	}
+.calendar_header_alarm	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_alarm.gif);	}
+.calendar_header_repeat	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_repeat.gif);	}
+.menu_light				{	width:8;	height:16;	background-image:url(/zimbra/img/hiRes/other/menu_light.gif);	}
  
 .allday {
         left:0;
@@ -1554,10 +1554,10 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 		height:16;
 }
 
-.allday_blue_start   { width:11;      height:16;   background-image:url(/liquid/img/hiRes/calendar/allday_begin_blue.gif);     }
-/*.allday_blue_stretch { width:100%;    height:16;   color:blue;  background-image:url(/liquid/img/hiRes/calendar/allday_stretch_blue.gif); }*/
-.allday_blue_stretch { width:100%;    height:16;   color:#2869FF;  background-image:url(/liquid/img/hiRes/calendar/allday_stretch_blue.gif); }
-.allday_blue_end     { width:11;      height:16;   background-image:url(/liquid/img/hiRes/calendar/allday_end_blue.gif); }
+.allday_blue_start   { width:11;      height:16;   background-image:url(/zimbra/img/hiRes/calendar/allday_begin_blue.gif);     }
+/*.allday_blue_stretch { width:100%;    height:16;   color:blue;  background-image:url(/zimbra/img/hiRes/calendar/allday_stretch_blue.gif); }*/
+.allday_blue_stretch { width:100%;    height:16;   color:#2869FF;  background-image:url(/zimbra/img/hiRes/calendar/allday_stretch_blue.gif); }
+.allday_blue_end     { width:11;      height:16;   background-image:url(/zimbra/img/hiRes/calendar/allday_end_blue.gif); }
 
 
 /*
@@ -1745,7 +1745,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	cursor: default;
 	overflow:hidden;
 	height:20px;
-	background-image:url(/liquid/skins/steel/images/bg_button_up.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_up.gif);
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 	min-width:40px;
@@ -1755,7 +1755,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	cursor: default;
 	overflow:hidden;
 	height:20px;
-	background-image:url(/liquid/skins/steel/images/bg_button_down.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_down.gif);
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 	min-width:40px;
@@ -1765,7 +1765,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	cursor: default;
 	overflow:hidden;
 	height:20px;
-	background-image:url(/liquid/skins/steel/images/bg_button_down.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_down.gif);
 	border:1px solid;
 	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 	min-width:40px;
@@ -2056,13 +2056,13 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .xform_button {
-	background-image:url(/liquid/skins/steel/images/bg_button_small_up.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_small_up.gif);
 	border:1px outset #999999;	
 	white-space:nowrap;
 }
 
 .xform_button_default {
-	background-image:url(/liquid/skins/steel/images/bg_button_small_up.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_small_up.gif);
 	border:2px outset #999999;	
 	white-space:nowrap;
 }
@@ -2189,7 +2189,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 .oselect_table,
 .oselect_check_table {
-	background-image:url(/liquid/skins/steel/images/bg_button_small_up.gif);
+	background-image:url(/zimbra/skins/steel/images/bg_button_small_up.gif);
 	border:1px outset #999999;	
 
 	border-collapse:collapse;
@@ -2734,134 +2734,134 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 /* should be dynamically generated */
 
-.dialog_inset_tl			{	background-image:url(/liquid/skins/steel/images/dialog_inset_tl.gif);	 	width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_t				{	background-image:url(/liquid/skins/steel/images/dialog_inset_t.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_tr			{	background-image:url(/liquid/skins/steel/images/dialog_inset_tr.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_l				{	background-image:url(/liquid/skins/steel/images/dialog_inset_l.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_r				{	background-image:url(/liquid/skins/steel/images/dialog_inset_r.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_bl			{	background-image:url(/liquid/skins/steel/images/dialog_inset_bl.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_b				{	background-image:url(/liquid/skins/steel/images/dialog_inset_b.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_br			{	background-image:url(/liquid/skins/steel/images/dialog_inset_br.gif);	 	width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_tl			{	background-image:url(/zimbra/skins/steel/images/dialog_inset_tl.gif);	 	width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_t				{	background-image:url(/zimbra/skins/steel/images/dialog_inset_t.gif); 		width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_tr			{	background-image:url(/zimbra/skins/steel/images/dialog_inset_tr.gif); 		width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_l				{	background-image:url(/zimbra/skins/steel/images/dialog_inset_l.gif); 		width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_r				{	background-image:url(/zimbra/skins/steel/images/dialog_inset_r.gif); 		width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_bl			{	background-image:url(/zimbra/skins/steel/images/dialog_inset_bl.gif); 		width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_b				{	background-image:url(/zimbra/skins/steel/images/dialog_inset_b.gif); 		width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_br			{	background-image:url(/zimbra/skins/steel/images/dialog_inset_br.gif);	 	width:10;	height:10;	overflow:hidden;	}
 
-.dialog_shadow_tr			{	background-image:url(/liquid/skins/steel/images/dialog_shadow_tr.png);	 	width:6;	height:6;	overflow:hidden;	}
-.dialog_shadow_r			{	background-image:url(/liquid/skins/steel/images/dialog_shadow_r.png);	 	width:6;	height:6;	overflow:hidden;	}
-.dialog_shadow_br			{	background-image:url(/liquid/skins/steel/images/dialog_shadow_br.png);	 	width:6;	height:6;	overflow:hidden;	}
-.dialog_shadow_bl			{	background-image:url(/liquid/skins/steel/images/dialog_shadow_bl.png);	 	width:6;	height:6;	overflow:hidden;	}
-.dialog_shadow_b			{	background-image:url(/liquid/skins/steel/images/dialog_shadow_b.png);	 	width:6;	height:6;	overflow:hidden;	}
-
-
-.dialog_outset_tl			{	background-image:url(/liquid/skins/steel/images/dialog_outset_tl.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_t			{	background-image:url(/liquid/skins/steel/images/dialog_outset_t.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_tr			{	background-image:url(/liquid/skins/steel/images/dialog_outset_tr.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_l			{	background-image:url(/liquid/skins/steel/images/dialog_outset_l.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_r			{	background-image:url(/liquid/skins/steel/images/dialog_outset_r.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_bl			{	background-image:url(/liquid/skins/steel/images/dialog_outset_bl.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_b			{	background-image:url(/liquid/skins/steel/images/dialog_outset_b.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_br			{	background-image:url(/liquid/skins/steel/images/dialog_outset_br.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_shadow_tr			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_tr.png);	 	width:6;	height:6;	overflow:hidden;	}
+.dialog_shadow_r			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_r.png);	 	width:6;	height:6;	overflow:hidden;	}
+.dialog_shadow_br			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_br.png);	 	width:6;	height:6;	overflow:hidden;	}
+.dialog_shadow_bl			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_bl.png);	 	width:6;	height:6;	overflow:hidden;	}
+.dialog_shadow_b			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_b.png);	 	width:6;	height:6;	overflow:hidden;	}
 
 
-.h_sash_l					{	background-image:url(/liquid/skins/steel/images/h_sash_l.gif); 				width:4;	height:7;	overflow:hidden;	}
-.h_sash_m					{	background-image:url(/liquid/skins/steel/images/h_sash_m.gif); 				width:20;	height:7;	overflow:hidden;	}
-.h_sash_r					{	background-image:url(/liquid/skins/steel/images/h_sash_r.gif); 				width:4;	height:7;	overflow:hidden;	}
-.h_sash_grip				{	background-image:url(/liquid/skins/steel/images/h_sash_grip.gif); 			width:29;	height:7;	overflow:hidden;	}
+.dialog_outset_tl			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_tl.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_outset_t			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_t.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_outset_tr			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_tr.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_outset_l			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_l.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_outset_r			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_r.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_outset_bl			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_bl.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_outset_b			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_b.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_outset_br			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_br.gif); 		width:4;	height:4;	overflow:hidden;	}
 
 
-.tab_spacer.gif				{	background-image:url(/liquid/skins/steel/images/tab_spacer.gif);	 		width:100%;	height:28;	overflow:hidden;	}
+.h_sash_l					{	background-image:url(/zimbra/skins/steel/images/h_sash_l.gif); 				width:4;	height:7;	overflow:hidden;	}
+.h_sash_m					{	background-image:url(/zimbra/skins/steel/images/h_sash_m.gif); 				width:20;	height:7;	overflow:hidden;	}
+.h_sash_r					{	background-image:url(/zimbra/skins/steel/images/h_sash_r.gif); 				width:4;	height:7;	overflow:hidden;	}
+.h_sash_grip				{	background-image:url(/zimbra/skins/steel/images/h_sash_grip.gif); 			width:29;	height:7;	overflow:hidden;	}
 
-.Imgtab_L					{	background-image:url(/liquid/skins/steel/images/tab_L.gif);	 				width:9;	height:28;	overflow:hidden;	}
-.Imgtab_M					{	background-image:url(/liquid/skins/steel/images/tab_M.gif);	 				width:100%;	height:28;	overflow:hidden;	}
-.Imgtab_R					{	background-image:url(/liquid/skins/steel/images/tab_R.gif);	 				width:9;	height:28;	overflow:hidden;	}
 
-.Imgtab_active_L			{	background-image:url(/liquid/skins/steel/images/tab_active_L.gif);	 		width:9;	height:28;	overflow:hidden;	}
-.Imgtab_active_M			{	background-image:url(/liquid/skins/steel/images/tab_active_M.gif);	 		width:100%;	height:28;	overflow:hidden;	}
-.Imgtab_active_R			{	background-image:url(/liquid/skins/steel/images/tab_active_R.gif);	 		width:9;	height:28;	overflow:hidden;	}
+.tab_spacer.gif				{	background-image:url(/zimbra/skins/steel/images/tab_spacer.gif);	 		width:100%;	height:28;	overflow:hidden;	}
 
-.Imgtab_selected_L			{	background-image:url(/liquid/skins/steel/images/tab_selected_L.gif);	 	width:9;	height:28;	overflow:hidden;	}
-.Imgtab_selected_M			{	background-image:url(/liquid/skins/steel/images/tab_selected_M.gif);	 	width:100%;	height:28;	overflow:hidden;	}
-.Imgtab_selected_R			{	background-image:url(/liquid/skins/steel/images/tab_selected_R.gif);	 	width:9;	height:28;	overflow:hidden;	}
+.Imgtab_L					{	background-image:url(/zimbra/skins/steel/images/tab_L.gif);	 				width:9;	height:28;	overflow:hidden;	}
+.Imgtab_M					{	background-image:url(/zimbra/skins/steel/images/tab_M.gif);	 				width:100%;	height:28;	overflow:hidden;	}
+.Imgtab_R					{	background-image:url(/zimbra/skins/steel/images/tab_R.gif);	 				width:9;	height:28;	overflow:hidden;	}
 
-.Imgtab_disabled_L			{	background-image:url(/liquid/skins/steel/images/tab_disabled_L.gif);	 	width:9;	height:28;	overflow:hidden;	}
-.Imgtab_disabled_M			{	background-image:url(/liquid/skins/steel/images/tab_disabled_M.gif);	 	width:100%;	height:28;	overflow:hidden;	}
-.Imgtab_disabled_R			{	background-image:url(/liquid/skins/steel/images/tab_disabled_R.gif);	 	width:9;	height:28;	overflow:hidden;	}
+.Imgtab_active_L			{	background-image:url(/zimbra/skins/steel/images/tab_active_L.gif);	 		width:9;	height:28;	overflow:hidden;	}
+.Imgtab_active_M			{	background-image:url(/zimbra/skins/steel/images/tab_active_M.gif);	 		width:100%;	height:28;	overflow:hidden;	}
+.Imgtab_active_R			{	background-image:url(/zimbra/skins/steel/images/tab_active_R.gif);	 		width:9;	height:28;	overflow:hidden;	}
+
+.Imgtab_selected_L			{	background-image:url(/zimbra/skins/steel/images/tab_selected_L.gif);	 	width:9;	height:28;	overflow:hidden;	}
+.Imgtab_selected_M			{	background-image:url(/zimbra/skins/steel/images/tab_selected_M.gif);	 	width:100%;	height:28;	overflow:hidden;	}
+.Imgtab_selected_R			{	background-image:url(/zimbra/skins/steel/images/tab_selected_R.gif);	 	width:9;	height:28;	overflow:hidden;	}
+
+.Imgtab_disabled_L			{	background-image:url(/zimbra/skins/steel/images/tab_disabled_L.gif);	 	width:9;	height:28;	overflow:hidden;	}
+.Imgtab_disabled_M			{	background-image:url(/zimbra/skins/steel/images/tab_disabled_M.gif);	 	width:100%;	height:28;	overflow:hidden;	}
+.Imgtab_disabled_R			{	background-image:url(/zimbra/skins/steel/images/tab_disabled_R.gif);	 	width:9;	height:28;	overflow:hidden;	}
 
 
 /* appointment images (will need to be in different colors) */
-.Imgappt_TL									{	background-image:url(/liquid/skins/steel/images/appt_new_TL.png);	 			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_TM									{	background-image:url(/liquid/skins/steel/images/appt_new_TM.png);	 			width:100%;	height:4;	overflow:hidden;	}
-.Imgappt_TR									{	background-image:url(/liquid/skins/steel/images/appt_new_TR.png);	 			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_ML									{	background-image:url(/liquid/skins/steel/images/appt_new_ML.png);	 			width:4;	height:100%;overflow:hidden;	}
-.Imgappt_MR									{	background-image:url(/liquid/skins/steel/images/appt_new_MR.png);	 			width:4;	height:100%;overflow:hidden;	}
-.Imgappt_BL									{	background-image:url(/liquid/skins/steel/images/appt_new_BL.png);	 			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_BM									{	background-image:url(/liquid/skins/steel/images/appt_new_BM.png);	 			width:100%;	height:4;	overflow:hidden;	}
-.Imgappt_BR									{	background-image:url(/liquid/skins/steel/images/appt_new_BR.png);	 			width:4;	height:4;	overflow:hidden;	}
+.Imgappt_TL									{	background-image:url(/zimbra/skins/steel/images/appt_new_TL.png);	 			width:4;	height:4;	overflow:hidden;	}
+.Imgappt_TM									{	background-image:url(/zimbra/skins/steel/images/appt_new_TM.png);	 			width:100%;	height:4;	overflow:hidden;	}
+.Imgappt_TR									{	background-image:url(/zimbra/skins/steel/images/appt_new_TR.png);	 			width:4;	height:4;	overflow:hidden;	}
+.Imgappt_ML									{	background-image:url(/zimbra/skins/steel/images/appt_new_ML.png);	 			width:4;	height:100%;overflow:hidden;	}
+.Imgappt_MR									{	background-image:url(/zimbra/skins/steel/images/appt_new_MR.png);	 			width:4;	height:100%;overflow:hidden;	}
+.Imgappt_BL									{	background-image:url(/zimbra/skins/steel/images/appt_new_BL.png);	 			width:4;	height:4;	overflow:hidden;	}
+.Imgappt_BM									{	background-image:url(/zimbra/skins/steel/images/appt_new_BM.png);	 			width:100%;	height:4;	overflow:hidden;	}
+.Imgappt_BR									{	background-image:url(/zimbra/skins/steel/images/appt_new_BR.png);	 			width:4;	height:4;	overflow:hidden;	}
 				
-.appt-selected .Imgappt_TL					{	background-image:url(/liquid/skins/steel/images/appt_selected_TL.png);		width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_TM					{	background-image:url(/liquid/skins/steel/images/appt_selected_TM.png);		width:100%;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_TR					{	background-image:url(/liquid/skins/steel/images/appt_selected_TR.png);		width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_ML					{	background-image:url(/liquid/skins/steel/images/appt_selected_ML.png);		width:4;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_MR					{	background-image:url(/liquid/skins/steel/images/appt_selected_MR.png);		width:4;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_BL					{	background-image:url(/liquid/skins/steel/images/appt_selected_BL.png);	 	width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_BM					{	background-image:url(/liquid/skins/steel/images/appt_selected_BM.png);	 	width:100%;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_BR					{	background-image:url(/liquid/skins/steel/images/appt_selected_BR.png);	 	width:4;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_TL					{	background-image:url(/zimbra/skins/steel/images/appt_selected_TL.png);		width:4;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_TM					{	background-image:url(/zimbra/skins/steel/images/appt_selected_TM.png);		width:100%;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_TR					{	background-image:url(/zimbra/skins/steel/images/appt_selected_TR.png);		width:4;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_ML					{	background-image:url(/zimbra/skins/steel/images/appt_selected_ML.png);		width:4;	height:100%;overflow:hidden;	}
+.appt-selected .Imgappt_MR					{	background-image:url(/zimbra/skins/steel/images/appt_selected_MR.png);		width:4;	height:100%;overflow:hidden;	}
+.appt-selected .Imgappt_BL					{	background-image:url(/zimbra/skins/steel/images/appt_selected_BL.png);	 	width:4;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_BM					{	background-image:url(/zimbra/skins/steel/images/appt_selected_BM.png);	 	width:100%;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_BR					{	background-image:url(/zimbra/skins/steel/images/appt_selected_BR.png);	 	width:4;	height:4;	overflow:hidden;	}
 
-.Imgappt_new_TL								{	background-image:url(/liquid/skins/steel/images/appt_new_TL.png);			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_new_TM								{	background-image:url(/liquid/skins/steel/images/appt_new_TM.png);			width:100%;	height:4;	overflow:hidden;	}
-.Imgappt_new_TR								{	background-image:url(/liquid/skins/steel/images/appt_new_TR.png);			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_new_ML								{	background-image:url(/liquid/skins/steel/images/appt_new_ML.png);			width:4;	height:100%;overflow:hidden;	}
-.Imgappt_new_MR								{	background-image:url(/liquid/skins/steel/images/appt_new_MR.png);			width:4;	height:100%;overflow:hidden;	}
-.Imgappt_new_BL								{	background-image:url(/liquid/skins/steel/images/appt_new_BL.png);	 		width:4;	height:4;	overflow:hidden;	}
-.Imgappt_new_BM								{	background-image:url(/liquid/skins/steel/images/appt_new_BM.png);	 		width:100%;	height:4;	overflow:hidden;	}
-.Imgappt_new_BR								{	background-image:url(/liquid/skins/steel/images/appt_new_BR.png);	 		width:4;	height:4;	overflow:hidden;	}
+.Imgappt_new_TL								{	background-image:url(/zimbra/skins/steel/images/appt_new_TL.png);			width:4;	height:4;	overflow:hidden;	}
+.Imgappt_new_TM								{	background-image:url(/zimbra/skins/steel/images/appt_new_TM.png);			width:100%;	height:4;	overflow:hidden;	}
+.Imgappt_new_TR								{	background-image:url(/zimbra/skins/steel/images/appt_new_TR.png);			width:4;	height:4;	overflow:hidden;	}
+.Imgappt_new_ML								{	background-image:url(/zimbra/skins/steel/images/appt_new_ML.png);			width:4;	height:100%;overflow:hidden;	}
+.Imgappt_new_MR								{	background-image:url(/zimbra/skins/steel/images/appt_new_MR.png);			width:4;	height:100%;overflow:hidden;	}
+.Imgappt_new_BL								{	background-image:url(/zimbra/skins/steel/images/appt_new_BL.png);	 		width:4;	height:4;	overflow:hidden;	}
+.Imgappt_new_BM								{	background-image:url(/zimbra/skins/steel/images/appt_new_BM.png);	 		width:100%;	height:4;	overflow:hidden;	}
+.Imgappt_new_BR								{	background-image:url(/zimbra/skins/steel/images/appt_new_BR.png);	 		width:4;	height:4;	overflow:hidden;	}
 
-.appt-selected .Imgappt_new_TL				{	background-image:url(/liquid/skins/steel/images/appt_selected_TL.png);		width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_TM				{	background-image:url(/liquid/skins/steel/images/appt_selected_TM.png);		width:100%;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_TR				{	background-image:url(/liquid/skins/steel/images/appt_selected_TR.png);		width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_ML				{	background-image:url(/liquid/skins/steel/images/appt_selected_ML.png);		width:4;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_new_MR				{	background-image:url(/liquid/skins/steel/images/appt_selected_MR.png);		width:4;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_new_BL				{	background-image:url(/liquid/skins/steel/images/appt_selected_BL.png);	 	width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_BM				{	background-image:url(/liquid/skins/steel/images/appt_selected_BM.png);	 	width:100%;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_BR				{	background-image:url(/liquid/skins/steel/images/appt_selected_BR.png);	 	width:4;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_new_TL				{	background-image:url(/zimbra/skins/steel/images/appt_selected_TL.png);		width:4;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_new_TM				{	background-image:url(/zimbra/skins/steel/images/appt_selected_TM.png);		width:100%;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_new_TR				{	background-image:url(/zimbra/skins/steel/images/appt_selected_TR.png);		width:4;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_new_ML				{	background-image:url(/zimbra/skins/steel/images/appt_selected_ML.png);		width:4;	height:100%;overflow:hidden;	}
+.appt-selected .Imgappt_new_MR				{	background-image:url(/zimbra/skins/steel/images/appt_selected_MR.png);		width:4;	height:100%;overflow:hidden;	}
+.appt-selected .Imgappt_new_BL				{	background-image:url(/zimbra/skins/steel/images/appt_selected_BL.png);	 	width:4;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_new_BM				{	background-image:url(/zimbra/skins/steel/images/appt_selected_BM.png);	 	width:100%;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_new_BR				{	background-image:url(/zimbra/skins/steel/images/appt_selected_BR.png);	 	width:4;	height:4;	overflow:hidden;	}
 
-.Imgappt_30_L								{	background-image:url(/liquid/skins/steel/images/appt_30_new_L.png);	 			width:4;	height:25;	overflow:hidden;	}
-.Imgappt_30_M								{	background-image:url(/liquid/skins/steel/images/appt_30_new_M.png);	 			width:100%;	height:25;	overflow:hidden;	}
-.Imgappt_30_R								{	background-image:url(/liquid/skins/steel/images/appt_30_new_R.png);	 			width:4;	height:25;	overflow:hidden;	}
+.Imgappt_30_L								{	background-image:url(/zimbra/skins/steel/images/appt_30_new_L.png);	 			width:4;	height:25;	overflow:hidden;	}
+.Imgappt_30_M								{	background-image:url(/zimbra/skins/steel/images/appt_30_new_M.png);	 			width:100%;	height:25;	overflow:hidden;	}
+.Imgappt_30_R								{	background-image:url(/zimbra/skins/steel/images/appt_30_new_R.png);	 			width:4;	height:25;	overflow:hidden;	}
 
-.appt-selected .Imgappt_30_L				{	background-image:url(/liquid/skins/steel/images/appt_30_selected_L.png);	width:4;	height:25;	overflow:hidden;	}
-.appt-selected .Imgappt_30_M				{	background-image:url(/liquid/skins/steel/images/appt_30_selected_M.png);	width:100%;	height:25;	overflow:hidden;	}
-.appt-selected .Imgappt_30_R				{	background-image:url(/liquid/skins/steel/images/appt_30_selected_R.png);	width:4;	height:25;	overflow:hidden;	}
+.appt-selected .Imgappt_30_L				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_L.png);	width:4;	height:25;	overflow:hidden;	}
+.appt-selected .Imgappt_30_M				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_M.png);	width:100%;	height:25;	overflow:hidden;	}
+.appt-selected .Imgappt_30_R				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_R.png);	width:4;	height:25;	overflow:hidden;	}
 
 
-.Imgappt_30_new_L							{	background-image:url(/liquid/skins/steel/images/appt_30_new_L.png);	 		width:4;	height:25;	overflow:hidden;	}
-.Imgappt_30_new_M							{	background-image:url(/liquid/skins/steel/images/appt_30_new_M.png);	 		width:100%;	height:25;	overflow:hidden;	}
-.Imgappt_30_new_R							{	background-image:url(/liquid/skins/steel/images/appt_30_new_R.png);	 		width:4;	height:25;	overflow:hidden;	}
+.Imgappt_30_new_L							{	background-image:url(/zimbra/skins/steel/images/appt_30_new_L.png);	 		width:4;	height:25;	overflow:hidden;	}
+.Imgappt_30_new_M							{	background-image:url(/zimbra/skins/steel/images/appt_30_new_M.png);	 		width:100%;	height:25;	overflow:hidden;	}
+.Imgappt_30_new_R							{	background-image:url(/zimbra/skins/steel/images/appt_30_new_R.png);	 		width:4;	height:25;	overflow:hidden;	}
 
-.appt-selected .Imgappt_30_new_L				{	background-image:url(/liquid/skins/steel/images/appt_30_selected_L.png);	width:4;	height:25;	overflow:hidden;	}
-.appt-selected .Imgappt_30_new_M				{	background-image:url(/liquid/skins/steel/images/appt_30_selected_M.png);	width:100%;	height:25;	overflow:hidden;	}
-.appt-selected .Imgappt_30_new_R				{	background-image:url(/liquid/skins/steel/images/appt_30_selected_R.png);	width:4;	height:25;	overflow:hidden;	}
+.appt-selected .Imgappt_30_new_L				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_L.png);	width:4;	height:25;	overflow:hidden;	}
+.appt-selected .Imgappt_30_new_M				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_M.png);	width:100%;	height:25;	overflow:hidden;	}
+.appt-selected .Imgappt_30_new_R				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_R.png);	width:4;	height:25;	overflow:hidden;	}
 
-.Imgappt_shadow_BL							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-.Imgappt_shadow_B							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:100%;	height:8;	overflow:hidden;	}
-.Imgappt_shadow_BR							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-.Imgappt_shadow_R							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:100%;overflow:hidden;	}
-.Imgappt_shadow_TR							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
+.Imgappt_shadow_BL							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
+.Imgappt_shadow_B							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:100%;	height:8;	overflow:hidden;	}
+.Imgappt_shadow_BR							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
+.Imgappt_shadow_R							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:100%;overflow:hidden;	}
+.Imgappt_shadow_TR							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
 
-.appt-selected .Imgappt_shadow_BL			{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_BL.png);	width:8;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_shadow_B			{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_B.png);	width:100%;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_shadow_BR			{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_BR.png);	width:8;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_shadow_R			{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_R.png);	width:8;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_shadow_TR			{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_TR.png);	width:8;	height:8;	overflow:hidden;	}
+.appt-selected .Imgappt_shadow_BL			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_BL.png);	width:8;	height:8;	overflow:hidden;	}
+.appt-selected .Imgappt_shadow_B			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_B.png);	width:100%;	height:8;	overflow:hidden;	}
+.appt-selected .Imgappt_shadow_BR			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_BR.png);	width:8;	height:8;	overflow:hidden;	}
+.appt-selected .Imgappt_shadow_R			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_R.png);	width:8;	height:100%;overflow:hidden;	}
+.appt-selected .Imgappt_shadow_TR			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_TR.png);	width:8;	height:8;	overflow:hidden;	}
 
-.Imgappt_new_shadow_BL							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-.Imgappt_new_shadow_B							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:100%;	height:8;	overflow:hidden;	}
-.Imgappt_new_shadow_BR							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-.Imgappt_new_shadow_R							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:100%;overflow:hidden;	}
-.Imgappt_new_shadow_TR							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
+.Imgappt_new_shadow_BL							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
+.Imgappt_new_shadow_B							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:100%;	height:8;	overflow:hidden;	}
+.Imgappt_new_shadow_BR							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
+.Imgappt_new_shadow_R							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:100%;overflow:hidden;	}
+.Imgappt_new_shadow_TR							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
 
-.appt-selected .Imgappt_new_shadow_BL		{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_BL.png);	width:8;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_new_shadow_B		{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_B.png);	width:100%;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_new_shadow_BR		{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_BR.png);	width:8;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_new_shadow_R		{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_R.png);	width:8;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_new_shadow_TR		{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_TR.png);	width:8;	height:8;	overflow:hidden;	}
+.appt-selected .Imgappt_new_shadow_BL		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_BL.png);	width:8;	height:8;	overflow:hidden;	}
+.appt-selected .Imgappt_new_shadow_B		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_B.png);	width:100%;	height:8;	overflow:hidden;	}
+.appt-selected .Imgappt_new_shadow_BR		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_BR.png);	width:8;	height:8;	overflow:hidden;	}
+.appt-selected .Imgappt_new_shadow_R		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_R.png);	width:8;	height:100%;overflow:hidden;	}
+.appt-selected .Imgappt_new_shadow_TR		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_TR.png);	width:8;	height:8;	overflow:hidden;	}
 
 /* end dynamically generated */
 
