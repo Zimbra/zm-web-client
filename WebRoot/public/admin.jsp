@@ -72,7 +72,7 @@
 <% } else { %>
         @import url(<%= contextPath %>/img/loRes/imgs.css);
 <% } %>
-   @import url(<%= contextPath %>/js/zimbraAdmin/config/style/lmadmin.css);
+   @import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css);
      -->
     </style>
 	<script language="JavaScript">
