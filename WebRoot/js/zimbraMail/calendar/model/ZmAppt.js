@@ -1486,7 +1486,7 @@ ZmAppt.prototype._getRecurrenceBlurbForSave = function () {
 				}
 			} else {
 				blurb[idx++] = " on ";
-				blurb[idx++] = AjxDateUtil._months(this.startDate.getMonth());
+				blurb[idx++] = AjxDateUtil._months[this.startDate.getMonth()];
 				blurb[idx++] = " ";
 				blurb[idx++] = this.startDate.getDate();
 			}
