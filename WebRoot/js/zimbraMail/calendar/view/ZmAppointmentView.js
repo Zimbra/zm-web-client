@@ -1099,7 +1099,7 @@ ZmAppointmentView.prototype.getAppointmentForm = function () {
 																							 {ref:".",type:_CASE_, id:"attRFC", relevant:"get('ct') != ZmMimeTable.MSG_RFC822",
 																									 numCols:3, colSizes:["20px","auto", "100px"],
 																									 items:[
-																													{ref:"ct", type:_LS_IMAGE_, 
+																													{ref:"ct", type:_AJX_IMAGE_, 
 																															getDisplayValue:function(value){
 																																	if (value != null) {
 																																			var mimeInfo = ZmMimeTable.getInfo(value);
