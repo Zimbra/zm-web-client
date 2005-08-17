@@ -51,20 +51,20 @@ static final private String AUTH_TOKEN_COOKIE_NAME = "LS_AUTH_TOKEN";
 
 <% } else { %>
 
-	<script type="text/javascript" src="/zimbra/js/LsNet_all.js<%= ext %>?v=<%= vers %>"></script>
-	<script type="text/javascript" src="/zimbra/js/LsMail_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="/zimbra/js/AjxNet_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="/zimbra/js/AjxMail_all.js<%= ext %>?v=<%= vers %>"></script>
 
 <% } %>
 
-<script type="text/javascript" src="/zimbra/js/zimbraMail/LmNewWindow.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="/zimbra/js/zimbraMail/ZmNewWindow.js<%= ext %>?v=<%= vers %>"></script>
 
 <script language="JavaScript">  
 	function launch() {
-		DBG = new LsDebug(LsDebug.NONE, null, false);
-		LmNewWindow.run(document.domain);
+		DBG = new AjxDebug(AjxDebug.NONE, null, false);
+		ZmNewWindow.run(document.domain);
 	}
-	LsCore.addOnloadListener(launch);
-	LsCore.addOnunloadListener(LmNewWindow.unload);
+	AjxCore.addOnloadListener(launch);
+	AjxCore.addOnunloadListener(ZmNewWindow.unload);
 </script>
 
 </head>

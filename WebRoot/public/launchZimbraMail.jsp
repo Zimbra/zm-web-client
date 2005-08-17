@@ -74,21 +74,21 @@ static final private String LOGIN_PAGE = "/zimbra/";
 
 <% } else { %>
 
-	<script type="text/javascript" src="/zimbra/js/LsNet_all.js<%= ext %>?v=<%= vers %>"></script>
-	<script type="text/javascript" src="/zimbra/js/LsMail_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="/zimbra/js/AjxNet_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="/zimbra/js/AjxMail_all.js<%= ext %>?v=<%= vers %>"></script>
 
 <% } %>
 
 <script language="JavaScript">  
 	function launch() {
-   		LsWindowOpener.HELPER_URL = "/zimbra/public/frameOpenerHelper.jsp"
-		DBG = new LsDebug(LsDebug.NONE, null, false);
+   		AjxWindowOpener.HELPER_URL = "/zimbra/public/frameOpenerHelper.jsp"
+		DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		 	// figure out the debug level
 			if (location.search && (location.search.indexOf("debug=") != -1)) {
 			var m = location.search.match(/debug=(\d+)/);
 			if (m.length) {
 				var num = parseInt(m[1]);
-				var level = LsDebug.DBG[num];
+				var level = AjxDebug.DBG[num];
 				if (level)
 					DBG.setDebugLevel(level);
 			}
@@ -104,8 +104,8 @@ static final private String LOGIN_PAGE = "/zimbra/";
 
 		ZmZimbraMail.run(document.domain, app);
 	}
-	LsCore.addOnloadListener(launch);
-	LsCore.addOnunloadListener(ZmZimbraMail.unload);
+	AjxCore.addOnloadListener(launch);
+	AjxCore.addOnunloadListener(ZmZimbraMail.unload);
 </script>
 
 </head>

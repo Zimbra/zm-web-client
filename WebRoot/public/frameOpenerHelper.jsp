@@ -34,20 +34,20 @@ getParam = function (name) {
 
 onloadFunc = function () {
       try {
-		 if (!window.opener.LsWindowOpener) {
+		 if (!window.opener.AjxWindowOpener) {
 			 return;
 		 }
 		 
 		 // Pull the parameter out of the URL.  Advance the index past the
 		 // parameter name and the equal sign
 		 unescapedLoc = unescape(window.location.search);
-		 var id = getParam(window.opener.LsWindowOpener.PARAM_INSTANCE_ID);
-		 var async = getParam(window.opener.LsWindowOpener.PARAM_ASYNC);
+		 var id = getParam(window.opener.AjxWindowOpener.PARAM_INSTANCE_ID);
+		 var async = getParam(window.opener.AjxWindowOpener.PARAM_ASYNC);
 		 // Now notify the dialog the iframe has been loaded
 		 if (!async) {
-			 window.opener.LsWindowOpener.onWindowOpened(id);
+			 window.opener.AjxWindowOpener.onWindowOpened(id);
 		 } else {
-			 window.setTimeout("window.opener.LsWindowOpener.onWindowOpened("+id+")", 1);
+			 window.setTimeout("window.opener.AjxWindowOpener.onWindowOpened("+id+")", 1);
 		 }
 	 } catch (e) {
 		 document.write("Error opening the view");

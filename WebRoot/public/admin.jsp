@@ -80,7 +80,7 @@
     </script>
     
 <script type="text/javascript" src="<fmt:message key="DwtMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
-<script type="text/javascript" src="<fmt:message key="LsMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
+<script type="text/javascript" src="<fmt:message key="AjxMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
 
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
    		<jsp:include page="/public/Zimbra.jsp"/>
@@ -88,14 +88,14 @@
 	    <jsp:include page="/public/ZimbraAdmin.jsp"/>
 <% } else { %>
 
-		<script type="text/javascript" src="<%= contextPath %>/js/LsNet_all.js<%= ext %>?v=<%= vers %>"></script>
-		<script type="text/javascript" src="<%= contextPath %>/js/LsAdmin_all.js<%= ext %>?v=<%= vers %>"></script>
+		<script type="text/javascript" src="<%= contextPath %>/js/AjxNet_all.js<%= ext %>?v=<%= vers %>"></script>
+		<script type="text/javascript" src="<%= contextPath %>/js/AjxAdmin_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>
-<script type="text/javascript" src="<fmt:message key="LaMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
+<script type="text/javascript" src="<fmt:message key="ZaMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
     <script language="JavaScript">   	
    		function launch() {
-   			LsWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
-	    	DBG = new LsDebug(LsDebug.NONE, null, false);
+   			AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
+	    	DBG = new AjxDebug(AjxDebug.NONE, null, false);
 	    	ZaZimbraAdmin.run(document.domain);
 	    }
     </script>

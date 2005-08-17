@@ -285,7 +285,7 @@ Firefox 1.x,
 Internet Explorer 5.5 or later,
 Or Fedora
      </pre>
-     <a href="javascript:LmLogin.handleOnload(null, true);">Click here to continue</a>
+     <a href="javascript:ZmLogin.handleOnload(null, true);">Click here to continue</a>
    </div>
    </div>
     <form style="margin:0px; border:0px; padding:0px" method="post" action="/service/Login.jsp">
@@ -332,15 +332,15 @@ name="username" value="<%= uname %>" style="width:100%; height:22px" />
                     <div class=whiteBorder id="buttonBorder">
                       <div class=DwtDialog>
                         <div id="loginButton" class="DwtButton" style="text-align:center;cursor:default"  
-                        		onclick="javascript:LmLogin.submitAuthRequest(); return false;" 
+                        		onclick="javascript:ZmLogin.submitAuthRequest(); return false;" 
                         		onmouseover="javascript:this.className='DwtButton-activated';" 
                         		onmouseout="javascript:this.className='DwtButton';" 
                         		onmousedown="javascript: this.className='DwtButton-triggered'; return false;" 
                         		onmouseup="javascript: this.className='DwtButton';" 
                         		onmousemove="javascript:return false;" 
                         		onselectstart="javascript: return false;" 
-                        		onfocus="javascript: LmLogin.loginButtonFocus(this.parentNode.parentNode);return false;"
-                        		onblur="javascript: LmLogin.loginButtonBlur(this.parentNode.parentNode);return false;"
+                        		onfocus="javascript: ZmLogin.loginButtonFocus(this.parentNode.parentNode);return false;"
+                        		onblur="javascript: ZmLogin.loginButtonBlur(this.parentNode.parentNode);return false;"
                         	>
                            <div id="logonText" style="margin:3px 0px 3px 0px;" >&nbsp;</div>
                         </div>
@@ -358,27 +358,27 @@ name="username" value="<%= uname %>" style="width:100%; height:22px" />
   	DwtConfigPath = "js/dwt/config";
 </script>
 <jsp:include page="Messages.jsp"/>
-<script type="text/javascript" src="/zimbra/js/LsNet_all.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="/zimbra/js/LmLogin.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="/zimbra/js/AjxNet_all.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="/zimbra/js/ZmLogin.js<%= ext %>?v=<%= vers %>"></script>
 
 
 <script language="javascript">
         var initMode = "<%= initMode %>";
-   	LsWindowOpener.HELPER_URL = "/zimbra/public/frameOpenerHelper.jsp"
-	DBG = new LsDebug(LsDebug.NONE, null, false);
+   	AjxWindowOpener.HELPER_URL = "/zimbra/public/frameOpenerHelper.jsp"
+	DBG = new AjxDebug(AjxDebug.NONE, null, false);
 	if (initMode != "" && (initMode != location.protocol)){
-		LsDebug.deleteWindowCookie();
+		AjxDebug.deleteWindowCookie();
 	}
 	if (location.search && (location.search.indexOf("debug=") != -1)) {
 		var m = location.search.match(/debug=(\d+)/);
 		if (m.length) {
 			var num = parseInt(m[1]);
-			var level = LsDebug.DBG[num];
+			var level = AjxDebug.DBG[num];
 			if (level)
    				DBG.setDebugLevel(level);
    		}
 	}
-	window.onload = LmLogin.handleOnload;
+	window.onload = ZmLogin.handleOnload;
 </script>
 
 

@@ -5,20 +5,20 @@
     <script>
 onloadFunc = function () {
       try {
-		 if (!window.opener.LmPrintView) {
+		 if (!window.opener.ZmPrintView) {
 			 return;
 		 }
 		 
 		 // Pull the parameter out of the URL.  Advance the index past the
 		 // parameter name and the equal sign
 		 var loc = unescape(window.location.search);
-		 var index = loc.indexOf(window.opener.LmPrintView.PARAM_INSTANCE_ID);
+		 var index = loc.indexOf(window.opener.ZmPrintView.PARAM_INSTANCE_ID);
 		 var id = 
 	  	   loc.substring(index + 
-					   window.opener.LmPrintView.PARAM_INSTANCE_ID.length + 1);
+					   window.opener.ZmPrintView.PARAM_INSTANCE_ID.length + 1);
 		 
 		 // Now notify the dialog the iframe has been loaded
-		 window.setTimeout("window.opener.LmPrintView.windowOpened("+id+")", 1);
+		 window.setTimeout("window.opener.ZmPrintView.windowOpened("+id+")", 1);
 	 } catch (e) {
 		 document.write("Error opening the print view");
 	 }

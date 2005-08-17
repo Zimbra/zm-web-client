@@ -26,7 +26,7 @@
    			for (var i = 0; i < 100; i++) {
    				var z = new DwtTreeItem(y, null, null, null, false);
    			}*/
- 	    	DBG = new LsDebug(LsDebug.NONE, null, false);
+ 	    	DBG = new AjxDebug(AjxDebug.NONE, null, false);
  	    	ZmZimbraMail.run(document.domain);
  	    }
    		function shutdown() {

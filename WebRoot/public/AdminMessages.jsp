@@ -14,5 +14,5 @@
    }
 %>
 <script type="text/javascript" src="<fmt:message key="DwtMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
-<script type="text/javascript" src="<fmt:message key="LsMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
-<script type="text/javascript" src="<fmt:message key="LaMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
+<script type="text/javascript" src="<fmt:message key="AjxMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
+<script type="text/javascript" src="<fmt:message key="ZaMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
