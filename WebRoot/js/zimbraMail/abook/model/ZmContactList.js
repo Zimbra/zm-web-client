@@ -26,7 +26,7 @@ ZmContactList.prototype.constructor = ZmContactList;
 // fields used for autocomplete matching
 ZmContactList.AC_FIELDS = new Array();
 ZmContactList.AC_FIELDS.push(ZmContact.F_firstName, ZmContact.F_lastName);
-ZmContactList.AC_FIELDS.push(ZmContact.X_fullName, ZmContact.X_firstLast);
+ZmContactList.AC_FIELDS.push(ZmContact.X_fullName, ZmContact.X_firstZast);
 
 ZmContactList.AC_NAME_FIELDS = [ZmContact.F_firstName, ZmContact.F_lastName];
 
@@ -323,7 +323,7 @@ function(contacts) {
 				var field = ZmContactList.AC_FIELDS[k];
 				if (field == ZmContact.X_fullName)
 					value = contact.getFullName();
-				else if (field == ZmContact.X_firstLast)
+				else if (field == ZmContact.X_firstZast)
 					value = [contact.getAttr(ZmContact.F_firstName), contact.getAttr(ZmContact.F_lastName)].join(" ");
 				else
 					value = contact.getAttr(field);
@@ -352,7 +352,7 @@ function(acContact, str) {
 	}
 	if (matchedField != null) {
 		var name;
-		if (matchedField == ZmContact.X_fullName || matchedField == ZmContact.X_firstLast) {
+		if (matchedField == ZmContact.X_fullName || matchedField == ZmContact.X_firstZast) {
 			// if one of these matched, it will already be highlighted
 			name = savedMatch;
 		} else {

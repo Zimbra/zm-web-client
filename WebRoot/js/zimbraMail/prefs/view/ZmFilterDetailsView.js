@@ -32,14 +32,14 @@ function ZmFilterDetailsView(parent, appCtxt, className) {
 							ZmFilterDetailsView.prototype._mouseDownListener);
 	this.addListener(DwtEvent.ONMOUSEDOWN, ls);
 
-	ZmFilterDetailsView.DEFAULT_CONDITION = new LmCondition('from', null, 'is', null);
-	ZmFilterDetailsView.DEFAULT_ACTION = new LmCondition('keep', null);
+	ZmFilterDetailsView.DEFAULT_CONDITION = new ZmCondition('from', null, 'is', null);
+	ZmFilterDetailsView.DEFAULT_ACTION = new ZmCondition('keep', null);
 
 	// create the msgDialog used for reporting an incomplete rule.
 	this._msgDialog = new DwtMessageDialog(this.shell, null, 
 										   [DwtDialog.YES_BUTTON, 
 											DwtDialog.NO_BUTTON]);
-	this._msgDialog.setMessage(LmMsg.confirmFilterDetailsSave,
+	this._msgDialog.setMessage(ZmMsg.confirmFilterDetailsSave,
 							   null, DwtMessageDialog.WARNING_STYLE);
 	this._msgDialog.registerCallback(DwtDialog.YES_BUTTON, 
 									 this._msgDialogYesCallback, this);
@@ -186,7 +186,7 @@ ZmFilterDetailsView.prototype._renderConditions = function(rule) {
 	// if we have an empty conditions block,
 	// render a dummy condition.
 	if (conditions.length == 0) {
-		conditions = [new LmCondition];
+		conditions = [new ZmCondition];
 	};
 	for (var i=0; i< conditions.length; i++) {
 		row = this._renderRow(this._getConditionsHtml(rule.conditions[i]));
@@ -211,7 +211,7 @@ ZmFilterDetailsView.prototype._renderActions = function(rule) {
 		cell = document.getElementById('tempEllipsisId');
 		cell.id = void 0;
 		var ellipsisButton = new DwtButton(this);
-		ellipsisButton.setText(LmMsg.browse);
+		ellipsisButton.setText(ZmMsg.browse);
 		var ebEl = ellipsisButton.getHtmlElement();
 		ebEl.style.width = "50px";
 		ebEl.parentNode.removeChild(ebEl);
@@ -316,7 +316,7 @@ ZmFilterDetailsView.prototype._getConditionsHtml = function(con) {
 	if (conName != null){
 		if (ZmFilterRules.CONDITIONS[conName].isHeader) {
 			if (ZmFilterRules.CONDITIONS[con.key0] != null ){
-				condition = new LmCondition(con.key0, null, con.comparator, 
+				condition = new ZmCondition(con.key0, null, con.comparator, 
 											con.key1);
 				configCond = ZmFilterRules.CONDITIONS[con.key0];
 			}
@@ -437,7 +437,7 @@ function (configCond, condition) {
 		b._triggeredClassName = b._className + "-" + DwtCssStyle.TRIGGERED;
 		var bWrapper = {id: nextId, obj: b}
 		this._dwtObjects[this.getNextDwtObjectId()] = bWrapper;
-		var buttonText = (value == "")? LmMsg.pickADate: value;
+		var buttonText = (value == "")? ZmMsg.pickADate: value;
 		b.setText(buttonText);
 		b._detailsViewValue = value;
 
@@ -468,7 +468,7 @@ ZmFilterDetailsView._cell1Template =
 
 ZmFilterDetailsView.prototype._getConditionsCell1Html = 
 function (configCond, cond){
-	var condition = cond? cond: new LmCondition();
+	var condition = cond? cond: new ZmCondition();
 	var nextId = Dwt.getNextId();
 	var visibility, value;
 	var htmlStr = null;
@@ -548,7 +548,7 @@ function (configCond, condition){
 
 ZmFilterDetailsView.prototype._addConditionOperatorOptions =
 function (sel, configCond, condition){
-	if (!condition) condition = new LmCondition();
+	if (!condition) condition = new ZmCondition();
 	var relatedComparators = configCond.op;
 	var negativeDisplayValues = configCond.negativeOps;
 	var negDisplayVal, negVal;
@@ -1094,7 +1094,7 @@ ZmFilterDetailsView.prototype._conditionSelListener = function(ev) {
 	var cell4 = rhsCell.nextSibling;
 
 	var newCell1 = lhsCell.cloneNode(false);
-	var dummyCondition = new LmCondition();
+	var dummyCondition = new ZmCondition();
 	var htmlObj = this._getConditionsCell1Html(configCond,dummyCondition);
 	newCell1.innerHTML = htmlObj.html.replace(/<\?td[^>]*>?/g,"");
 	newCell1.id = htmlObj.id;
@@ -1146,7 +1146,7 @@ ZmFilterDetailsView.prototype._actionSelListener = function(ev) {
 
 	var newCell = paramCell.cloneNode(false);
 	var nextId = Dwt.getNextId();
-	html = this._getActionParamHtml(configAction, new LmAction() , nextId);
+	html = this._getActionParamHtml(configAction, new ZmAction() , nextId);
 	newCell.innerHTML = html;
 	newCell.style.width="100%";
 	newCell.id = nextId;

@@ -77,7 +77,7 @@ function() {
 
 ZmConvView.prototype.getTitle =
 function() {
-	return [LmMsg.zimbraTitle, ": ", this._conv.subject].join("");
+	return [ZmMsg.zimbraTitle, ": ", this._conv.subject].join("");
 }
 
 ZmConvView.prototype._resetSize = 
@@ -183,8 +183,8 @@ function() {
 ZmConvView.prototype._setSubject =
 function(subject) {
 	this._subjectDiv.innerHTML = subject != null && subject != ""
-		? AjxStringUtil.htmlEncode(LmMsg.subject + ": " + subject)
-		: AjxStringUtil.htmlEncode(LmMsg.subject + ": " + LmMsg.noSubject);
+		? AjxStringUtil.htmlEncode(ZmMsg.subject + ": " + subject)
+		: AjxStringUtil.htmlEncode(ZmMsg.subject + ": " + ZmMsg.noSubject);
 }
 
 ZmConvView.prototype._setTags =
@@ -208,8 +208,8 @@ function(conv) {
 		
 	var htmlStr = new Array();
 	var idx = 0;
-	htmlStr[idx++] = "<table cellspacing=0 cellpadding=0><tr><td valign='top' class='LabelTd'>";
-	htmlStr[idx++] = LmMsg.tags;
+	htmlStr[idx++] = "<table cellspacing=0 cellpadding=0><tr><td valign='top' class='ZabelTd'>";
+	htmlStr[idx++] = ZmMsg.tags;
 	htmlStr[idx++] = ":</td><td class='TagTd'>";
 	
 	var ta = new Array();	

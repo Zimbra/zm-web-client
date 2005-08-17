@@ -4,19 +4,19 @@ function ZmPicker(parent, id) {
 
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._header = new DwtToolBar(this);
-	this._label = new DwtLabel(this._header, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "LmPickerLabel");
+	this._label = new DwtZabel(this._header, DwtZabel.IMAGE_LEFT | DwtZabel.ALIGN_LEFT, "ZmPickerZabel");
 	this._header.addFiller();
-	this._close = new DwtButton(this._header, DwtLabel.IMAGE_LEFT, "TBButton");
+	this._close = new DwtButton(this._header, DwtZabel.IMAGE_LEFT, "TBButton");
 	this._close.setImage(ZmImg.I_RED_X);
-	this._close.setToolTipContent(LmMsg.close);
-	this._picker = new DwtComposite(this, "LmPickerOverview");
+	this._close.setToolTipContent(ZmMsg.close);
+	this._picker = new DwtComposite(this, "ZmPickerOverview");
 	this._picker.setSize(Dwt.DEFAULT, parent.getH() - this._header.getH());
 	this._picker.setScrollStyle(DwtControl.SCROLL);
 	this._pickerEvent = new ZmEvent(ZmEvent.S_PICKER);
 	this._pickerEvent.set(ZmEvent.E_MODIFY, this);
 	this._setupPicker(this._picker);
 	this.id = id;
-    this.setTitle(LmMsg[ZmPicker.T_MSG_KEY[id]]);
+    this.setTitle(ZmMsg[ZmPicker.T_MSG_KEY[id]]);
     this.setImage(ZmPicker.IMAGE[id]);
 }
 
@@ -133,11 +133,11 @@ ZmPicker.KEY_ID = "_id_";
 ZmPicker.KEY_CTOR = "_ctor_";
 ZmPicker.KEY_PICKER = "_picker_";
 
-function LmPicker_Descriptor(id, label, image, toolTip, ctor) {
+function ZmPicker_Descriptor(id, label, image, toolTip, ctor) {
 	this.id = id;
-	this.label = label || LmMsg[ZmPicker.MSG_KEY[id]];
+	this.label = label || ZmMsg[ZmPicker.MSG_KEY[id]];
 	this.image = image || ZmPicker.IMAGE[id];
-	this.toolTip = toolTip || LmMsg[ZmPicker.TT_MSG_KEY[id]] || this.label;
+	this.toolTip = toolTip || ZmMsg[ZmPicker.TT_MSG_KEY[id]] || this.label;
 	this.ctor = ctor;
 }
 

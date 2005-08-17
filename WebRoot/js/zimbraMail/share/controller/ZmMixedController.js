@@ -71,12 +71,12 @@ function(view) {
 
 ZmMixedController.prototype._getTagMenuMsg = 
 function(num) {
-	return (num == 1) ? LmMsg.tagItem : LmMsg.tagItems;
+	return (num == 1) ? ZmMsg.tagItem : ZmMsg.tagItems;
 }
 
 ZmMixedController.prototype._getMoveDialogTitle = 
 function(num) {
-	return (num == 1) ? LmMsg.moveItem : LmMsg.moveItems;
+	return (num == 1) ? ZmMsg.moveItem : ZmMsg.moveItems;
 }
 
 ZmMixedController.prototype._setViewContents =

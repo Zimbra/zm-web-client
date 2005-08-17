@@ -96,7 +96,7 @@ function(msg, ex, noExecReset)  {
 	var detailStr = "";
 	for (var prop in ex)
 		detailStr = detailStr + prop + " - " + ex[prop] + "\n";				
-	this._msgDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, LmMsg.zimbraTitle);
+	this._msgDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
 	this._msgDialog.popup();
 }
 
@@ -171,7 +171,7 @@ function(ex, method, params, restartOnError, obj) {
 			// remember the last operation attempted ONLY for expired auth token exception
 			this._execFrame = {obj: obj, method: method, params: params, restartOnError: restartOnError};
 			this._loginDialog.registerCallback(this._loginCallback, this);
-			this._loginDialog.setError(LmMsg.sessionExpired);
+			this._loginDialog.setError(ZmMsg.sessionExpired);
 		} else if (ex.code == ZmCsfeException.SVC_AUTH_REQUIRED) {
 			// bug fix #413 - always logoff if we get a auth required
 			ZmZimbraMail.logOff();
@@ -198,38 +198,38 @@ function(code, params) {
 	
 	switch (code) {
 		// network errors
-		case AjxException.NETWORK_ERROR:					msg = LmMsg.errorNetwork; break;
-		case ZmCsfeException.NETWORK_ERROR:				msg = LmMsg.errorNetwork; break;
-		case ZmCsfeException.SOAP_ERROR: 				msg = LmMsg.errorNetwork; break;
-		case ZmCsfeException.CSFE_SVC_ERROR: 			msg = LmMsg.errorService; break;
+		case AjxException.NETWORK_ERROR:					msg = ZmMsg.errorNetwork; break;
+		case ZmCsfeException.NETWORK_ERROR:				msg = ZmMsg.errorNetwork; break;
+		case ZmCsfeException.SOAP_ERROR: 				msg = ZmMsg.errorNetwork; break;
+		case ZmCsfeException.CSFE_SVC_ERROR: 			msg = ZmMsg.errorService; break;
 		
 		// CSFE errors
-		case ZmCsfeException.SVC_FAILURE: 				msg = LmMsg.errorService; break;
-		case ZmCsfeException.SVC_UNKNOWN_DOCUMENT: 		msg = LmMsg.errorUnknownDoc; break;
-		case ZmCsfeException.SVC_PARSE_ERROR: 			msg = LmMsg.errorParse; break;
-		case ZmCsfeException.SVC_PERM_DENIED: 			msg = LmMsg.errorPermission; break;
+		case ZmCsfeException.SVC_FAILURE: 				msg = ZmMsg.errorService; break;
+		case ZmCsfeException.SVC_UNKNOWN_DOCUMENT: 		msg = ZmMsg.errorUnknownDoc; break;
+		case ZmCsfeException.SVC_PARSE_ERROR: 			msg = ZmMsg.errorParse; break;
+		case ZmCsfeException.SVC_PERM_DENIED: 			msg = ZmMsg.errorPermission; break;
 		
 		// account errors
-		case ZmCsfeException.ACCT_NO_SUCH_ACCOUNT: 		msg = LmMsg.errorNoSuchAcct; break;
-		case ZmCsfeException.ACCT_INVALID_PASSWORD: 	msg = LmMsg.errorInvalidPass; break;
-		case ZmCsfeException.ACCT_INVALID_PREF_NAME:	msg = LmMsg.errorInvalidPrefName; break;
-		case ZmCsfeException.ACCT_INVALID_PREF_VALUE: 	msg = LmMsg.errorInvalidPrefValue; break;
-		case ZmCsfeException.ACCT_NO_SUCH_SAVED_SEARCH: msg = LmMsg.errorNoSuchSavedSearch; break;
-		case ZmCsfeException.ACCT_NO_SUCH_TAG:  		msg = LmMsg.errorNoSuchTag; break;
-		case ZmCsfeException.ACCT_PASS_RECENTLY_USED: 	msg = LmMsg.errorPassRecentlyUsed; break;
+		case ZmCsfeException.ACCT_NO_SUCH_ACCOUNT: 		msg = ZmMsg.errorNoSuchAcct; break;
+		case ZmCsfeException.ACCT_INVALID_PASSWORD: 	msg = ZmMsg.errorInvalidPass; break;
+		case ZmCsfeException.ACCT_INVALID_PREF_NAME:	msg = ZmMsg.errorInvalidPrefName; break;
+		case ZmCsfeException.ACCT_INVALID_PREF_VALUE: 	msg = ZmMsg.errorInvalidPrefValue; break;
+		case ZmCsfeException.ACCT_NO_SUCH_SAVED_SEARCH: msg = ZmMsg.errorNoSuchSavedSearch; break;
+		case ZmCsfeException.ACCT_NO_SUCH_TAG:  		msg = ZmMsg.errorNoSuchTag; break;
+		case ZmCsfeException.ACCT_PASS_RECENTLY_USED: 	msg = ZmMsg.errorPassRecentlyUsed; break;
 
 		// mail errors
-		case ZmCsfeException.MAIL_INVALID_NAME: 		msg = AjxStringUtil.resolve(LmMsg.errorInvalidName, params.name); break;
-		case ZmCsfeException.MAIL_NO_SUCH_FOLDER: 		msg = LmMsg.errorNoSuchFolder; break;
-		case ZmCsfeException.MAIL_NO_SUCH_TAG:	 		msg = LmMsg.errorNoSuchTag; break;
-		case ZmCsfeException.MAIL_NO_SUCH_CONV:  		msg = LmMsg.errorNoSuchConv; break;
-		case ZmCsfeException.MAIL_NO_SUCH_MSG: 			msg = LmMsg.errorNoSuchMsg; break;
-		case ZmCsfeException.MAIL_NO_SUCH_PART: 		msg = LmMsg.errorNoSuchPart; break;
-		case ZmCsfeException.MAIL_QUERY_PARSE_ERROR:	msg = LmMsg.errorQueryParse; break;
-		case ZmCsfeException.MAIL_QUOTA_EXCEEDED: 		msg = LmMsg.errorQuotaExceeded; break;
+		case ZmCsfeException.MAIL_INVALID_NAME: 		msg = AjxStringUtil.resolve(ZmMsg.errorInvalidName, params.name); break;
+		case ZmCsfeException.MAIL_NO_SUCH_FOLDER: 		msg = ZmMsg.errorNoSuchFolder; break;
+		case ZmCsfeException.MAIL_NO_SUCH_TAG:	 		msg = ZmMsg.errorNoSuchTag; break;
+		case ZmCsfeException.MAIL_NO_SUCH_CONV:  		msg = ZmMsg.errorNoSuchConv; break;
+		case ZmCsfeException.MAIL_NO_SUCH_MSG: 			msg = ZmMsg.errorNoSuchMsg; break;
+		case ZmCsfeException.MAIL_NO_SUCH_PART: 		msg = ZmMsg.errorNoSuchPart; break;
+		case ZmCsfeException.MAIL_QUERY_PARSE_ERROR:	msg = ZmMsg.errorQueryParse; break;
+		case ZmCsfeException.MAIL_QUOTA_EXCEEDED: 		msg = ZmMsg.errorQuotaExceeded; break;
 
 		// general errors
-		default: 									msg = LmMsg.errorGeneric; break;
+		default: 									msg = ZmMsg.errorGeneric; break;
 	}
 	
 	return msg;
@@ -247,15 +247,15 @@ function(params) {
 		// Schedule this since we want to make sure the app is built up before we actually hide the login dialog
 		this._schedule(this._hideLoginDialog);
 		if (this._execFrame)
-			this._schedule(this._doLastSearch);
+			this._schedule(this._doZastSearch);
 	} catch (ex) {
 		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || 
 			ex.code == ZmCsfeException.SVC_INVALID_REQUEST) 
 		{
-			this._loginDialog.setError(LmMsg.loginError);
+			this._loginDialog.setError(ZmMsg.loginError);
 			return;
 		} else {
-			this.popupMsgDialog(LmMsg.errorGeneric, ex); 
+			this.popupMsgDialog(ZmMsg.errorGeneric, ex); 
 		}
 	}
 }
@@ -274,7 +274,7 @@ function(args) {
 	this._schedule(this._doAuth, {username: args[0], password: args[1], pubComp: args[2]});
 }
 
-ZmController.prototype._doLastSearch = 
+ZmController.prototype._doZastSearch = 
 function() {
 	var obj = this._execFrame.obj ? this._execFrame.obj : this;
 	this._execFrame.method.call(obj, this._execFrame.params);

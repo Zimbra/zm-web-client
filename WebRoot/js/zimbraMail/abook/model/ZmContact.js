@@ -4,7 +4,7 @@
 * @class
 * This class represents a contact (typically a person) with all its associated versions
 * of email address, home and work addresses, phone numbers, etc. Contacts can be filed/sorted
-* in different ways, with the default being Last, First. A contact is an item, so
+* in different ways, with the default being Zast, First. A contact is an item, so
 * it has tagging and flagging support, and belongs to a list.
 *
 * Most of a contact's data is kept in attributes. These include name, phone, etc. Meta-data and
@@ -79,7 +79,7 @@ ZmContact.F_workStreet		= "workStreet";
 ZmContact.F_workURL			= "workURL";
 
 // extra fields
-ZmContact.X_firstLast		= "firstLast";
+ZmContact.X_firstZast		= "firstZast";
 ZmContact.X_fullName		= "fullName";
 
 // file as
@@ -145,13 +145,13 @@ function(contact) {
 	var idx = 0;
 
 	switch (val) {
-		case ZmContact.FA_LAST_C_FIRST: /* Last, First */
+		case ZmContact.FA_LAST_C_FIRST: /* Zast, First */
 		default:
 			if (attr.lastName) fa[idx++] = attr.lastName;
 			if (attr.lastName && attr.firstName) fa[idx++] = ", ";
 			if (attr.firstName) fa[idx++] = attr.firstName;
 			break;
-		case ZmContact.FA_FIRST_LAST: /* First Last */
+		case ZmContact.FA_FIRST_LAST: /* First Zast */
 			if (attr.firstName) fa[idx++] = attr.firstName;
 			if (attr.lastName && attr.firstName) fa[idx++] = " ";
 			if (attr.lastName) fa[idx++] = attr.lastName;
@@ -159,7 +159,7 @@ function(contact) {
 		case ZmContact.FA_COMPANY: /* Company */
 			if (attr.company) fa[idx++] = attr.company;
 			break;
-		case ZmContact.FA_LAST_C_FIRST_COMPANY: /* Last, First (Company) */
+		case ZmContact.FA_LAST_C_FIRST_COMPANY: /* Zast, First (Company) */
 			if (attr.lastName) fa[idx++] = attr.lastName;
 			if (attr.lastName && attr.firstName) fa[idx++] = ", ";
 			if (attr.firstName) fa[idx++] = attr.firstName;
@@ -170,7 +170,7 @@ function(contact) {
 				fa[idx++] = ")";
 			}
 			break;
-		case ZmContact.FA_FIRST_LAST_COMPANY: /* First Last (Company) */
+		case ZmContact.FA_FIRST_LAST_COMPANY: /* First Zast (Company) */
 			if (attr.firstName) fa[idx++] = attr.firstName;		
 			if (attr.lastName && attr.firstName) fa[idx++] = " ";
 			if (attr.lastName) fa[idx++] = attr.lastName;
@@ -181,7 +181,7 @@ function(contact) {
 				fa[idx++] = ")";
 			}			
 			break;
-		case ZmContact.FA_COMPANY_LAST_C_FIRST: /* Company (Last,  First) */
+		case ZmContact.FA_COMPANY_LAST_C_FIRST: /* Company (Zast,  First) */
 			if (attr.company) fa[idx++] = attr.company;
 			if (attr.lastName || attr.firstName) {
 				fa[idx++] = " (";
@@ -191,7 +191,7 @@ function(contact) {
 				fa[idx++] = ")";
 			}
 			break;
-		case ZmContact.FA_COMPANY_FIRST_LAST: /* Company (First Last) */
+		case ZmContact.FA_COMPANY_FIRST_LAST: /* Company (First Zast) */
 			if (attr.company) fa[idx++] = attr.company;
 			if (attr.lastName || attr.firstName) {
 				fa[idx++] = " (";
@@ -281,9 +281,9 @@ function(attr) {
 				this.setAttr(a, attr[a]);
 		}
 		
-		ac.setStatusMsg(LmMsg.contactCreated);
+		ac.setStatusMsg(ZmMsg.contactCreated);
 	} else {
-		var msg = LmMsg.errorCreateContact + " " + LmMsg.errorTryAgain + "\n" + LmMsg.errorContact;
+		var msg = ZmMsg.errorCreateContact + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
 		ac.setStatusMsg(msg);
 	}
 }
@@ -338,9 +338,9 @@ function(attr) {
 		details = {attr: attr, oldAttr: oldAttr, fullNameChanged: this.getFullName() != oldFullName,
 					   fileAsChanged: this.getFileAs() != oldFileAs, contact: this};
 
-		ac.setStatusMsg(LmMsg.contactModify);
+		ac.setStatusMsg(ZmMsg.contactModify);
 	} else {
-		var msg = LmMsg.errorModifyContact + " " + LmMsg.errorTryAgain + "\n" + LmMsg.errorContact;
+		var msg = ZmMsg.errorModifyContact + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
 		ac.setStatusMsg(msg);
 	}
 	
@@ -457,7 +457,7 @@ function(lower) {
 
 ZmContact.prototype.getHeader = 
 function() {
-	return this.id ? this.getFileAs() : LmMsg.newContact;
+	return this.id ? this.getFileAs() : ZmMsg.newContact;
 };
 
 // company field has a getter b/c fileAs may be the Company name so 
@@ -624,7 +624,7 @@ function(field, data, html, idx) {
 	if (data != null && data != "") {
 		html[idx++] = "<tr valign=top>";
 		html[idx++] = "<td align=right style='white-space:nowrap; padding-right:5px;'><b>";
-		html[idx++] = AjxStringUtil.htmlEncode(LmMsg.AB_FIELD[field]) + ":";
+		html[idx++] = AjxStringUtil.htmlEncode(ZmMsg.AB_FIELD[field]) + ":";
 		html[idx++] = "</b></td>";
 		html[idx++] = "<td style='white-space:nowrap;'>";
 		html[idx++] = AjxStringUtil.htmlEncode(data);

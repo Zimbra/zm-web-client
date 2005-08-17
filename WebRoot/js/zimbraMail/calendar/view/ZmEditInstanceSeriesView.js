@@ -33,18 +33,18 @@ ZmEditInstanceSeriesView.prototype.getForm = function (formId) {
  		    {type:_SPACER_, height:15},
 		    {type:_GROUP_, numCols:5, cssStyle:"width:100%",  relevant:"instance.operation != ZmAppt.MODE_DELETE",
 			 items: [
-				{type:_DWT_BUTTON_, label:LmMsg.openInstance, onActivate:"this.getFormController().buttonHit(event)"},
+				{type:_DWT_BUTTON_, label:ZmMsg.openInstance, onActivate:"this.getFormController().buttonHit(event)"},
 				{type:_CELL_SPACER_, width:2},
-			    {type:_DWT_BUTTON_, label:LmMsg.openSeries, onActivate:"this.getFormController().buttonHit(event)"}, 
+			    {type:_DWT_BUTTON_, label:ZmMsg.openSeries, onActivate:"this.getFormController().buttonHit(event)"}, 
 				{type:_CELL_SPACER_, width:2},
-		        {type:_DWT_BUTTON_, label:LmMsg.cancel, onActivate:"this.getFormController().buttonHit(event)"}
+		        {type:_DWT_BUTTON_, label:ZmMsg.cancel, onActivate:"this.getFormController().buttonHit(event)"}
 				]
 			},
 		    {type:_GROUP_, numCols:3, cssStyle:"width:100%", relevant:"instance.operation == ZmAppt.MODE_DELETE",
 			 items: [
-		{type:_DWT_BUTTON_, width:"95px", label:LmMsg.deleteInstance, onActivate:"this.getFormController().buttonHit(event)"},
-			     {type:_DWT_BUTTON_, label:LmMsg.deleteSeries, onActivate:"this.getFormController().buttonHit(event)"}, 
-		         {type:_DWT_BUTTON_, label:LmMsg.cancel, onActivate:"this.getFormController().buttonHit(event)"}
+		{type:_DWT_BUTTON_, width:"95px", label:ZmMsg.deleteInstance, onActivate:"this.getFormController().buttonHit(event)"},
+			     {type:_DWT_BUTTON_, label:ZmMsg.deleteSeries, onActivate:"this.getFormController().buttonHit(event)"}, 
+		         {type:_DWT_BUTTON_, label:ZmMsg.cancel, onActivate:"this.getFormController().buttonHit(event)"}
 				]
 			}
 

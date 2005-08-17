@@ -35,13 +35,13 @@ ZmMailMsg.HDR_DATE		= ZmEmailAddress.LAST_ADDR + 1;
 ZmMailMsg.HDR_SUBJECT	= ZmEmailAddress.LAST_ADDR + 2;
 
 ZmMailMsg.HDR_KEY = new Object();
-ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_FROM] = LmMsg.from;
-ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_TO] = LmMsg.to;
-ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_CC] = LmMsg.cc;
-ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_BCC] = LmMsg.bcc;
-ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_REPLY_TO] = LmMsg.replyTo;
-ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_DATE] = LmMsg.sent;
-ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT] = LmMsg.subject;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_FROM] = ZmMsg.from;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_TO] = ZmMsg.to;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_CC] = ZmMsg.cc;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_BCC] = ZmMsg.bcc;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_REPLY_TO] = ZmMsg.replyTo;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_DATE] = ZmMsg.sent;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT] = ZmMsg.subject;
 
 // Public methods
 
@@ -661,7 +661,7 @@ function(bFindHits, domain, partNameList) {
     			continue;
     		
     		// get a viable label for this attachment
-    		var label = attach.name || attach.filename || (LmMsg.unknown + " <" + type + ">");
+    		var label = attach.name || attach.filename || (ZmMsg.unknown + " <" + type + ">");
     		
     		// start building html
     		var mimeInfo = ZmMimeTable.getInfo(type);
@@ -680,11 +680,11 @@ function(bFindHits, domain, partNameList) {
 
 			// calc. widths of all data involved
     		var icon = mimeInfo ? mimeInfo.image : ZmImg.I_DOCUMENT;
-    		var encLabel = "&nbsp;" + AjxStringUtil.htmlEncode(label) + "&nbsp;";
-    		var labelWidth = Dwt.getHtmlExtent(encLabel).x;
+    		var encZabel = "&nbsp;" + AjxStringUtil.htmlEncode(label) + "&nbsp;";
+    		var labelWidth = Dwt.getHtmlExtent(encZabel).x;
     		// The 5 is for padding for IE
     		labelWidth += sizeText ? Dwt.getHtmlExtent(sizeText).x + 5 : 0;
-    		var iconLabelWidth = icon[1] + labelWidth;
+    		var iconZabelWidth = icon[1] + labelWidth;
 
 			// set link
 		    var link = type == ZmMimeTable.MSG_RFC822
@@ -692,11 +692,11 @@ function(bFindHits, domain, partNameList) {
 		    	: "<a target='att_view_win' class='AttLink' " + hrefRoot + attach.part + "'>";
 
     		htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 style='display:inline; width:";
-    		htmlArr[idx++] = iconLabelWidth;
-    		htmlArr[idx++] = "'><tr><td style='width:" + iconLabelWidth + "'>";
+    		htmlArr[idx++] = iconZabelWidth;
+    		htmlArr[idx++] = "'><tr><td style='width:" + iconZabelWidth + "'>";
 
     		htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 style='display:inline; width:";
-    		htmlArr[idx++] = iconLabelWidth;
+    		htmlArr[idx++] = iconZabelWidth;
     		htmlArr[idx++] = "'><tr><td style='width:" + icon[1] + "'>";
 
 			// position:relative required to make this work in FF    		
@@ -705,9 +705,9 @@ function(bFindHits, domain, partNameList) {
     		
     		// if this attachment is a match for the current search, set class name
     		if (bFindHits && this._isAttInHitList(attach)) {
-	    		htmlArr[idx++] = "<span class='AttName-matched'>" + link + encLabel + sizeText + "</a></span>";
+	    		htmlArr[idx++] = "<span class='AttName-matched'>" + link + encZabel + sizeText + "</a></span>";
 	    	} else {
-				htmlArr[idx++] = link + encLabel +  sizeText +  "</a>";
+				htmlArr[idx++] = link + encZabel +  sizeText +  "</a>";
 		    }
 
     		htmlArr[idx++] = "</td></tr></table></td>";

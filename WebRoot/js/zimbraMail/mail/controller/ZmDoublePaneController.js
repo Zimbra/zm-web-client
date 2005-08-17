@@ -160,12 +160,12 @@ function() {
 
 ZmDoublePaneController.prototype._getTagMenuMsg = 
 function(num) {
-	return (num == 1) ? LmMsg.tagMessage : LmMsg.tagMessages;
+	return (num == 1) ? ZmMsg.tagMessage : ZmMsg.tagMessages;
 }
 
 ZmDoublePaneController.prototype._getMoveDialogTitle = 
 function(num) {
-	return (num == 1) ? LmMsg.moveMessage : LmMsg.moveMessages;
+	return (num == 1) ? ZmMsg.moveMessage : ZmMsg.moveMessages;
 }
 
 ZmDoublePaneController.prototype._setViewContents =
@@ -200,7 +200,7 @@ function(view, menu, checked) {
 	}
 	var id = ZmController.READING_PANE_VIEW;
 	if (menu._menuItems[id] == null) {
-		var mi = menu.createMenuItem(id, ZmImg.I_PANE_DOUBLE, LmMsg.readingPane, null, true, DwtMenuItem.CHECK_STYLE);
+		var mi = menu.createMenuItem(id, ZmImg.I_PANE_DOUBLE, ZmMsg.readingPane, null, true, DwtMenuItem.CHECK_STYLE);
 		mi.setData(ZmOperation.MENUITEM_ID, id);
 		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 		mi.setChecked(checked, true);

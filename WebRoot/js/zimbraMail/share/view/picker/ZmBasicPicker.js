@@ -41,23 +41,23 @@ function(parent) {
 	var html = new Array(20);
 	var i = 0;
 	html[i++] = "<table cellpadding='5' cellspacing='0' border='0'>";
-	html[i++] = this._makeRow(LmMsg.from, fromId);
-	html[i++] = this._makeRow(LmMsg.toCc, toId);
-	html[i++] = this._makeRow(LmMsg.subject, subjectId);
-	html[i++] = this._makeRow(LmMsg.content, contentId);
+	html[i++] = this._makeRow(ZmMsg.from, fromId);
+	html[i++] = this._makeRow(ZmMsg.toCc, toId);
+	html[i++] = this._makeRow(ZmMsg.subject, subjectId);
+	html[i++] = this._makeRow(ZmMsg.content, contentId);
 	
 	if (this._appCtxt.get(ZmSetting.SPAM_ENABLED)) {
 		inSpamId = Dwt.getNextId();
 		checked = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM) ? " checked" : "";
 		html[i++] = "<tr valign='middle'>";
 		html[i++] = "<td align='right'><input type='checkbox'" + checked + " id='" + inSpamId + "' /></td>";
-		html[i++] = "<td align='left' nowrap>" + LmMsg.includeJunk + "</td>";
+		html[i++] = "<td align='left' nowrap>" + ZmMsg.includeJunk + "</td>";
 		html[i++] = "</tr>";
 	}
 	checked = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH) ? " checked" : "";
 	html[i++] = "<tr valign='middle'>";
 	html[i++] = "<td align='right'><input type='checkbox'" + checked + " id='" + inTrashId + "' /></td>";
-	html[i++] = "<td align='left' nowrap>" + LmMsg.includeTrash + "</td>";
+	html[i++] = "<td align='left' nowrap>" + ZmMsg.includeTrash + "</td>";
 	html[i++] = "</tr>";
 	html[i++] = "</table>";
 	picker.getHtmlElement().innerHTML = html.join("");

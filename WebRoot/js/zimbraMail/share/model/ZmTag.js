@@ -26,13 +26,13 @@ ZmTag.DEFAULT_COLOR = ZmTag.C_ORANGE;
 
 // color names
 ZmTag.COLOR_TEXT = new Object();
-ZmTag.COLOR_TEXT[ZmTag.C_ORANGE]	= LmMsg.orange;
-ZmTag.COLOR_TEXT[ZmTag.C_BLUE]		= LmMsg.blue;
-ZmTag.COLOR_TEXT[ZmTag.C_CYAN]		= LmMsg.cyan;
-ZmTag.COLOR_TEXT[ZmTag.C_GREEN]		= LmMsg.green;
-ZmTag.COLOR_TEXT[ZmTag.C_PURPLE]	= LmMsg.purple;
-ZmTag.COLOR_TEXT[ZmTag.C_RED]		= LmMsg.red;
-ZmTag.COLOR_TEXT[ZmTag.C_YELLOW]	= LmMsg.yellow;
+ZmTag.COLOR_TEXT[ZmTag.C_ORANGE]	= ZmMsg.orange;
+ZmTag.COLOR_TEXT[ZmTag.C_BLUE]		= ZmMsg.blue;
+ZmTag.COLOR_TEXT[ZmTag.C_CYAN]		= ZmMsg.cyan;
+ZmTag.COLOR_TEXT[ZmTag.C_GREEN]		= ZmMsg.green;
+ZmTag.COLOR_TEXT[ZmTag.C_PURPLE]	= ZmMsg.purple;
+ZmTag.COLOR_TEXT[ZmTag.C_RED]		= ZmMsg.red;
+ZmTag.COLOR_TEXT[ZmTag.C_YELLOW]	= ZmMsg.yellow;
 
 // color icons
 ZmTag.COLOR_ICON = new Object();
@@ -77,7 +77,7 @@ function(name) {
 	if (msg) return msg;
 
 	if (name.indexOf('\\') == 0)
-		return AjxStringUtil.resolve(LmMsg.errorInvalidName, name);
+		return AjxStringUtil.resolve(ZmMsg.errorInvalidName, name);
 
 	return null;
 }

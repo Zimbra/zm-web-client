@@ -138,7 +138,7 @@ var _First_ = "first";
 var _Second_ = "second";
 var _Third_ = "third";
 var _Fourth_ = "fourth";
-var _Last_ = "last";
+var _Zast_ = "last";
 
 var _Every_ = "Every";
 
@@ -215,7 +215,7 @@ var _REPEAT_END_TYPE_CHOICES_ = [
 var _REPEAT_CUSTOM_ORDINAL_CHOICES_ = [
 	{value:"1", label:_First_},	{value:"2", label:_Second_},	
 	{value:"3", label:_Third_},	{value:"4", label:_Fourth_},
-	{value:"-1", label:_Last_}
+	{value:"-1", label:_Zast_}
 ];
 
 var _REPEAT_CUSTOM_TYPE_CHOICES_ = [
@@ -250,7 +250,7 @@ var _TIME_OF_DAY_CHOICES = [
 	{ label:'11:00 PM', value: '23:00' }, { label:'11:30 PM', value: '23:30' }
  ];
 
-ZmAppointmentView.UPLOAD_FIELD_NAME = "LmAppointmentView_upload_field";
+ZmAppointmentView.UPLOAD_FIELD_NAME = "ZmAppointmentView_upload_field";
 ZmAppointmentView.IFRAME_HEIGHT = 30;
 ZmAppointmentView.MODE_NEW = 1;
 ZmAppointmentView.MODE_EDIT_SERIES = 2;
@@ -319,9 +319,9 @@ ZmAppointmentView.prototype._populateForm = function () {
 			
 			var attLinks = this._appt.getMessage().buildAttachLinks(true, document.domain);
 			if (attLinks.length > 0) {
-				htmlArr[idx++] = "<div><table><tr><td class='LabelColName'>";
-				htmlArr[idx++] = LmMsg.attachments;
-				htmlArr[idx++] = ": </td><td class='LabelColValue'>";
+				htmlArr[idx++] = "<div><table><tr><td class='ZabelColName'>";
+				htmlArr[idx++] = ZmMsg.attachments;
+				htmlArr[idx++] = ": </td><td class='ZabelColValue'>";
 				for (var i = 0; i<attLinks.length; i++){
 					htmlArr[idx++] = attLinks[i].htl;
 				}
@@ -545,7 +545,7 @@ ZmAppointmentView.prototype.addAttachments = function () {
 		html[idx++] = "' id='";
 		html[idx++] = this._uploadFormId = Dwt.getNextId();
 		html[idx++] = "' enctype='multipart/form-data'>";
-		html[idx++] = "<table class='LmAppointmentView_attachTable' id='";
+		html[idx++] = "<table class='ZmAppointmentView_attachTable' id='";
 		html[idx++] = this._attachmentTableId = Dwt.getNextId();
 		html[idx++] = "'><colgroup><col style='width:230px'><col></colgroup>";
 		html[idx++] = "<tr><td><input size=30 type='file' name='";
@@ -683,7 +683,7 @@ ZmAppointmentView.prototype.openSchedule = function () {
 		var uids = [organizer];
 		uids = uids.concat(this._appt.getAttendees().split(ZmAppt.ATTENDEES_SEPARATOR_REGEX));
 		if (uids != null && uids.length != 0 && uids != "") {
-			schedules = LmUserSchedule.getSchedules(start, end, uids);
+			schedules = ZmUserSchedule.getSchedules(start, end, uids);
 		}
 	}
 	if (this._bDialog == null) {
@@ -1047,15 +1047,15 @@ ZmAppointmentView.prototype.getAppointmentForm = function () {
 						 {type:_SEPARATOR_, height:10},
 						 {type:_SPACER_, height:5},
 						 
-						 {ref: _ORGANIZER_,  type:_OUTPUT_ , label:LmMsg.organizer,
+						 {ref: _ORGANIZER_,  type:_OUTPUT_ , label:ZmMsg.organizer,
 								 relevant:"instance.getViewMode() != ZmAppt.MODE_NEW", labelCssStyle:"text-align:left"},
-						 {type:_OUTPUT_, value:LmMsg.attendees, cssClass:"xform_label", cssStyle:"text-align:left"},
-						 {type:_DWT_BUTTON_, onActivate:"this.getFormController().openSchedule()", label:LmMsg.scheduleAttendees,
+						 {type:_OUTPUT_, value:ZmMsg.attendees, cssClass:"xform_label", cssStyle:"text-align:left"},
+						 {type:_DWT_BUTTON_, onActivate:"this.getFormController().openSchedule()", label:ZmMsg.scheduleAttendees,
 								 width:"105px",  cssStyle:"float:right", relevant:"(instance.isOrganizer() == true)", relevantBehavior:_DISABLE_},
 						 {ref:_ATTENDEES_, 	type:_TEXTAREA_, 	colSpan:"*", label:null, height:"50px", cssStyle:"width:100%",
 								 relevant:"(instance.isOrganizer() == true)", relevantBehavior:_DISABLE_},
 						 {type:_SEPARATOR_, height:5},
-						 {type:_OUTPUT_, value:LmMsg.notes, colSpan:"*", cssClass:"xform_label",  cssStyle:"text-align:left"},
+						 {type:_OUTPUT_, value:ZmMsg.notes, colSpan:"*", cssClass:"xform_label",  cssStyle:"text-align:left"},
 						 {ref:_NOTES_, 		type:_TEXTAREA_, 	colSpan:"*", label:null, height:"50px", cssStyle:"width:100%",
 								 relevant: "instance.isOrganizer()", relevantBehavior:_DISABLE_},
 						 {type:_SEPARATOR_, height:10},
@@ -1238,10 +1238,10 @@ ZmAppointmentView.validateWholeNumber = function (value, form, formItem, instanc
 	if (value != null) {
 		var valStr = "" + value;
 		if (valStr.indexOf(".") != -1){
-			throw LmMsg.onlyWholeNumbersError;
+			throw ZmMsg.onlyWholeNumbersError;
 		}
 		if (value <= 0) {
-			throw LmMsg.positiveNumberError;
+			throw ZmMsg.positiveNumberError;
 		} else {
 			return value;
 		}

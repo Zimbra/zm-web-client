@@ -44,12 +44,12 @@ ZmAppChooser.IMAGE[ZmAppChooser.B_OPTIONS]	= "sm_icon_options";
 ZmAppChooser.IMAGE[ZmAppChooser.B_LOGOUT]	= "sm_icon_logout";
 
 ZmAppChooser.TOOLTIP = new Object();
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_EMAIL]		= LmMsg.goToMail;
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_CONTACTS]	= LmMsg.goToContacts;
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_CALENDAR]	= LmMsg.goToCalendar;
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_HELP]		= LmMsg.goToHelp;
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_OPTIONS]	= LmMsg.goToOptions;
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_LOGOUT]		= LmMsg.logOff;
+ZmAppChooser.TOOLTIP[ZmAppChooser.B_EMAIL]		= ZmMsg.goToMail;
+ZmAppChooser.TOOLTIP[ZmAppChooser.B_CONTACTS]	= ZmMsg.goToContacts;
+ZmAppChooser.TOOLTIP[ZmAppChooser.B_CALENDAR]	= ZmMsg.goToCalendar;
+ZmAppChooser.TOOLTIP[ZmAppChooser.B_HELP]		= ZmMsg.goToHelp;
+ZmAppChooser.TOOLTIP[ZmAppChooser.B_OPTIONS]	= ZmMsg.goToOptions;
+ZmAppChooser.TOOLTIP[ZmAppChooser.B_LOGOUT]		= ZmMsg.logOff;
 
 ZmAppChooser.SEP_HEIGHT = 10;
 

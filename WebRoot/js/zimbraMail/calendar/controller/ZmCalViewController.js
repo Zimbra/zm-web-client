@@ -8,7 +8,7 @@
 	directly manipulate this._toolbar elements to point to a single instance of the toolbar. We also
 	directly replace:
 	
-	LmListControl.prototype.initilaizeToolBar
+	ZmListControl.prototype.initilaizeToolBar
 */
 
 function ZmCalViewController(appCtxt, container, calApp) {
@@ -109,24 +109,24 @@ function(viewName) {
 	switch(viewName) {
 		case ZmCalViewMgr.DAY_VIEW: 
 			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, LmMsg.previous + " " + LmMsg.day);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, LmMsg.next + " " + LmMsg.day);
+			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.day);
+			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.day);
 			break;
 		case ZmCalViewMgr.WORK_WEEK_VIEW:
 			this._miniCalendar.setSelectionMode(DwtCalendar.WORK_WEEK);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, LmMsg.previous + " " + LmMsg.workWeek);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, LmMsg.next + " " + LmMsg.workWeek);			
+			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.workWeek);
+			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.workWeek);			
 			break;
 		case ZmCalViewMgr.WEEK_VIEW:
 			this._miniCalendar.setSelectionMode(DwtCalendar.WEEK);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, LmMsg.previous + " " + LmMsg.week);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, LmMsg.next + " " + LmMsg.week);			
+			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.week);
+			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.week);			
 			break;;		
 		case ZmCalViewMgr.MONTH_VIEW:
 			// use day until month does something
 			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);		
-			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, LmMsg.previous + " " + LmMsg.month);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, LmMsg.next + " " + LmMsg.month);
+			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.month);
+			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.month);
 			//this._calendar.setSelectionMode(DwtCalendar.MONTH);
 			break;
 	}
@@ -199,7 +199,7 @@ function(viewName) {
 	var tb = new ZmNavToolBar(this._toolbar[ZmCalViewMgr.DAY_VIEW], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
 	this._setNavToolBar(tb);
 
-	this._setNewButtonProps(viewName, LmMsg.createNewAppt, ZmImg.I_APPT,
+	this._setNewButtonProps(viewName, ZmMsg.createNewAppt, ZmImg.I_APPT,
 							ZmImg.ID_APPT, ZmOperation.NEW_APPT);
 
 }
@@ -215,7 +215,7 @@ function(view) {
 		this._view_menu_listener = new AjxListener(this, this._viewMenuListener);
 		for (var i = 0; i < ZmCalViewController.VIEWS.length; i++) {
 			var id = ZmCalViewController.VIEWS[i];
-			var mi = menu.createMenuItem(id, ZmCalViewController.ICON[id], LmMsg[ZmCalViewController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
+			var mi = menu.createMenuItem(id, ZmCalViewController.ICON[id], ZmMsg[ZmCalViewController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
 			mi.setData(ZmCalViewController._VIEW_NAME, id);
 			mi.addSelectionListener(this._view_menu_listener);
 			this._view_menu_item[id] = mi;
@@ -235,7 +235,7 @@ function(ev) {
 
 ZmCalViewController.prototype._setViewContents =
 function(viewName) {
-	//DBG.println("LmCalListController.prototype._setViewContents");
+	//DBG.println("ZmCalListController.prototype._setViewContents");
 	// Ignore viewName since this will always be ZmController.CAL_VIEW as we are fooling the
 	// ZmListController (see our show method)
 	var viewName = this._viewMgr.getCurrentViewName();
@@ -351,9 +351,9 @@ function(ev) {
 // =======================================================================
 ZmCalViewController.prototype._getAppointmentDialog = function () {
 	if (this._apptView == null) {
-		LmUserSchedule.setCommandSender(this);
+		ZmUserSchedule.setCommandSender(this);
 		this._apptView = new ZmAppointmentView(this._container, null, true);
-		this._apptDialog = new ZmDialog (this._shell, null, null, LmMsg.appointmentNewTitle, null, this._apptView);
+		this._apptDialog = new ZmDialog (this._shell, null, null, ZmMsg.appointmentNewTitle, null, this._apptView);
 		// create listeners for the save and cancel buttons
 		var sLis = new AjxListener(this, this._saveAppointment);
 		var enterLis = new AjxListener(this, this._apptEnterKeyHandler);
@@ -412,7 +412,7 @@ function(params) {
 ZmCalViewController.prototype._deleteAppointment = function (appt) {
 	if (appt == null) return;
 	if (appt.isRecurring()){
-		var m = AjxStringUtil.resolve(LmMsg.showOccurrenceDeleteMessage,[appt.name]);
+		var m = AjxStringUtil.resolve(ZmMsg.showOccurrenceDeleteMessage,[appt.name]);
 		this._getInstanceSeriesDialog(m, ZmAppt.MODE_DELETE);
 		this._showSingleInstanceDialog.popup();
 		this._showSingleInstanceDialog.__appt = appt;
@@ -431,7 +431,7 @@ ZmCalViewController.prototype._continueDelete = function (appt, mode){
 };
 
 ZmCalViewController.prototype._getInstanceSeriesDialog = function (message, mode) {
-	var t = (mode == ZmAppt.MODE_DELETE)? LmMsg.deleteRecurringItem: LmMsg.openRecurringItem;
+	var t = (mode == ZmAppt.MODE_DELETE)? ZmMsg.deleteRecurringItem: ZmMsg.openRecurringItem;
 	if (this._rView == null) {
 		this._recInstance = {message:message, operation:mode, title: t};
 		this._rView = new ZmEditInstanceSeriesView(this._shell, this._recInstance);
@@ -453,12 +453,12 @@ ZmCalViewController.prototype.newAppointment = function (optionalStartDate) {
 	// Create a new appointment
 	optionalStartDate = (optionalStartDate != null)? optionalStartDate: ((this._viewMgr != null)? this._viewMgr.getDate(): null);
 	this._getAppointmentDialog();
-	this._apptDialog.setTitle(LmMsg.appointmentNewTitle);
+	this._apptDialog.setTitle(ZmMsg.appointmentNewTitle);
 	this._popupAppointmentDialog(null, optionalStartDate, ZmAppt.MODE_NEW);
 };
 
 ZmCalViewController.prototype.editRecurringAppointment = function (appt, optionalStartDate) {
-	var m = AjxStringUtil.resolve(LmMsg.showOccurrenceMessage,[appt.name]);
+	var m = AjxStringUtil.resolve(ZmMsg.showOccurrenceMessage,[appt.name]);
 	this._getInstanceSeriesDialog(m, ZmAppt.MODE_EDIT);
 	this._showSingleInstanceDialog.__appt = appt;
 	this._showSingleInstanceDialog.__osd = optionalStartDate;
@@ -511,15 +511,15 @@ ZmCalViewController.prototype._handleSingleInstanceButton = function (event) {
 	delete this._showSingleInstanceDialog.__appt;
 	var optionalStartDate = this._showSingleInstanceDialog.__osd;
 	delete this._showSingleInstanceDialog.__osd;
-	if (text == LmMsg.openSeries){
+	if (text == ZmMsg.openSeries){
 		this.editAppointment(appt, optionalStartDate, ZmAppt.MODE_EDIT_SERIES);
-	} else if (text == LmMsg.openInstance){
+	} else if (text == ZmMsg.openInstance){
 		this.editAppointment(appt, optionalStartDate, ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
-	} else if (text == LmMsg.deleteInstance){
+	} else if (text == ZmMsg.deleteInstance){
 		this._continueDelete(appt, ZmAppt.MODE_DELETE_INSTANCE);
-	} else if (text == LmMsg.deleteSeries) {
+	} else if (text == ZmMsg.deleteSeries) {
 		this._continueDelete(appt, ZmAppt.MODE_DELETE_SERIES);
-	} else if (text == LmMsg.cancel){
+	} else if (text == ZmMsg.cancel){
 		// nothing
 	}
 	this._showSingleInstanceDialog.popdown();
@@ -527,7 +527,7 @@ ZmCalViewController.prototype._handleSingleInstanceButton = function (event) {
 
 ZmCalViewController.prototype.editAppointment = function (appt, optionalStartDate, mode) {
 	this._getAppointmentDialog();
-	this._apptDialog.setTitle(LmMsg.appointmentEditTitle);
+	this._apptDialog.setTitle(ZmMsg.appointmentEditTitle);
 	this._popupAppointmentDialog(appt, optionalStartDate, mode);
 };
 

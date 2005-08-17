@@ -1,7 +1,7 @@
 function ZmSearchToolBar(appCtxt, parent, posStyle) {
 
 	this._appCtxt = appCtxt;
-	ZmToolBar.call(this, parent, "LmAppToolBar");
+	ZmToolBar.call(this, parent, "ZmAppToolBar");
 
 	var fieldId = Dwt.getNextId();
 	var searchColId = Dwt.getNextId();
@@ -17,53 +17,53 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	this._searchField.onkeypress = ZmSearchToolBar._keyPressHdlr;
 	
 	var groupBy = this._appCtxt.getSettings().getGroupMailBy();
-	var tooltip = LmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
-    this._searchButton = this._createButton(ZmSearchToolBar.SEARCH_BUTTON, null, LmMsg.search, null, tooltip, true, "TBButtonWhite");
+	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
+    this._searchButton = this._createButton(ZmSearchToolBar.SEARCH_BUTTON, null, ZmMsg.search, null, tooltip, true, "TBButtonWhite");
     Dwt.getDomObj(doc, searchColId).appendChild(this._searchButton.getHtmlElement());
 
-	this._searchMenuButton = this._createButton(ZmSearchToolBar.SEARCH_MENU_BUTTON, ZmImg.I_MAIL_MSG, null, null, LmMsg.chooseSearchType, true, "TBButtonWhite");
+	this._searchMenuButton = this._createButton(ZmSearchToolBar.SEARCH_MENU_BUTTON, ZmImg.I_MAIL_MSG, null, null, ZmMsg.chooseSearchType, true, "TBButtonWhite");
 	this._searchMenuButton.noMenuBar = true;
     Dwt.getDomObj(doc, searchMenuColId).appendChild(this._searchMenuButton.getHtmlElement());
 	var menuParent = this._searchMenuButton;
     var menu = new DwtMenu(menuParent, null, "ActionMenu");
     menuParent.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 
-    var mi = DwtMenuItem.create(menu, ZmImg.I_SEARCH_MAIL, LmMsg.searchMail, null, true, DwtMenuItem.RADIO_STYLE, 0);
+    var mi = DwtMenuItem.create(menu, ZmImg.I_SEARCH_MAIL, ZmMsg.searchMail, null, true, DwtMenuItem.RADIO_STYLE, 0);
 	mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_MAIL_MI);
 
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-	    mi = DwtMenuItem.create(menu, ZmImg.I_SEARCH_CONTACTS, LmMsg.searchPersonalContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
+	    mi = DwtMenuItem.create(menu, ZmImg.I_SEARCH_CONTACTS, ZmMsg.searchPersonalContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.CONTACT);
 	}
 
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-	    mi = DwtMenuItem.create(menu, ZmImg.I_SEARCH_GAL, LmMsg.searchGALContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
+	    mi = DwtMenuItem.create(menu, ZmImg.I_SEARCH_GAL, ZmMsg.searchGALContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_GAL_MI);
 	}
 /*
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-	    mi = DwtMenuItem.create(menu, ZmImg.I_SEARCH_CALENDAR, LmMsg.searchCalendar, null, true, DwtMenuItem.RADIO_STYLE, 0);
+	    mi = DwtMenuItem.create(menu, ZmImg.I_SEARCH_CALENDAR, ZmMsg.searchCalendar, null, true, DwtMenuItem.RADIO_STYLE, 0);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.APPT);
 	}
 */
 	if (this._appCtxt.get(ZmSetting.NOTES_ENABLED)) {
-	    mi = DwtMenuItem.create(menu, ZmImg.I_NOTE, LmMsg.searchNotes, null, true, DwtMenuItem.RADIO_STYLE, 0);
+	    mi = DwtMenuItem.create(menu, ZmImg.I_NOTE, ZmMsg.searchNotes, null, true, DwtMenuItem.RADIO_STYLE, 0);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.NOTE);
 	}
 
 	if (this._appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED)) {
 		mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
-		mi = DwtMenuItem.create(menu, ZmImg.I_SEARCH_ALL, LmMsg.searchAll, null, true, DwtMenuItem.RADIO_STYLE, 0);
+		mi = DwtMenuItem.create(menu, ZmImg.I_SEARCH_ALL, ZmMsg.searchAll, null, true, DwtMenuItem.RADIO_STYLE, 0);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_ANY_MI);
 	}
 	
 	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
-		this._browseButton = this._createButton(ZmSearchToolBar.BROWSE_BUTTON, null, LmMsg.searchBuilder, null, LmMsg.openSearchBuilder, true, "TBButtonWhite");
+		this._browseButton = this._createButton(ZmSearchToolBar.BROWSE_BUTTON, null, ZmMsg.searchBuilder, null, ZmMsg.openSearchBuilder, true, "TBButtonWhite");
 	    Dwt.getDomObj(doc, browseColId).appendChild(this._browseButton.getHtmlElement());
 	}
 
 	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
-		this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, ZmImg.I_SAVE, null, ZmImg.ID_SAVE, LmMsg.saveCurrentSearch, this._appCtxt.get(ZmSetting.BROWSE_ENABLED), "TBButtonWhite");
+		this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, ZmImg.I_SAVE, null, ZmImg.ID_SAVE, ZmMsg.saveCurrentSearch, this._appCtxt.get(ZmSetting.BROWSE_ENABLED), "TBButtonWhite");
 	    Dwt.getDomObj(doc, saveColId).appendChild(this._saveButton.getHtmlElement());
 	}
 }

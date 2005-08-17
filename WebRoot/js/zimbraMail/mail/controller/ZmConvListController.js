@@ -87,7 +87,7 @@ function(view, arrowStyle) {
 		var b = this._toolbar[view].getButton(buttons[i]);
 		var key = ZmOperation.MSG_KEY_TT[buttons[i]] + "Conv";
 		if (b)
-			b.setToolTipContent(LmMsg[key]);
+			b.setToolTipContent(ZmMsg[key]);
 	}
 }
 
@@ -150,12 +150,12 @@ function(view) {
 
 ZmConvListController.prototype._getTagMenuMsg = 
 function(num) {
-	return (num == 1) ? LmMsg.tagConversation : LmMsg.tagConversations;
+	return (num == 1) ? ZmMsg.tagConversation : ZmMsg.tagConversations;
 }
 
 ZmConvListController.prototype._getMoveDialogTitle = 
 function(num) {
-	return (num == 1) ? LmMsg.moveConversation : LmMsg.moveConversations;
+	return (num == 1) ? ZmMsg.moveConversation : ZmMsg.moveConversations;
 }
 
 ZmConvListController.prototype._setViewContents =
@@ -254,8 +254,8 @@ function(search) {
 ZmConvListController.prototype._resetNavToolBarButtons = 
 function(view) {
 	ZmMailListController.prototype._resetNavToolBarButtons.call(this, view);
-	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, LmMsg.previous + " " + LmMsg.page);
-	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, LmMsg.next + " " + LmMsg.page);
+	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);
+	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
 }
 
 ZmConvListController.prototype._processPrePopView = 

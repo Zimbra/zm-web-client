@@ -70,7 +70,7 @@ function(visible) {
 			this.addPicker(ZmPicker.DEFAULT_PICKER);
 	}
 	var browseButton = this._appCtxt.getSearchController().getSearchToolbar().getButton(ZmSearchToolBar.BROWSE_BUTTON);
-	browseButton.setToolTipContent(visible ? LmMsg.closeSearchBuilder : LmMsg.openSearchBuilder);
+	browseButton.setToolTipContent(visible ? ZmMsg.closeSearchBuilder : ZmMsg.openSearchBuilder);
 }
 
 /*

@@ -322,12 +322,12 @@ function(ev) {
 	if (id == ZmItem.CONTACT || id == ZmSearchToolBar.FOR_GAL_MI)
 		this._contactSource = id;
 
-	var tooltip = LmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
+	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
 	var image = ZmSearchToolBar.ICON_KEY[id];
 	
 	if (id == ZmSearchToolBar.FOR_MAIL_MI) {
 		var groupBy = this._appCtxt.getSettings().getGroupMailBy();
-		tooltip = LmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
+		tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
 	}
 
 	var searchMenuBtn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
@@ -345,6 +345,6 @@ function(ev) {
 
 ZmSearchController.prototype.setGroupMailBy =
 function(id) {
-	var tooltip = LmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
+	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
 	this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_BUTTON).setToolTipContent(tooltip);
 }

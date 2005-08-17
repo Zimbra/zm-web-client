@@ -36,7 +36,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._sessionTimer = new AjxTimedAction();
 	this._sessionTimer.method = ZmZimbraMail.logOff;
 	this._models = new AjxVector();
-	this._needOverviewLayout = false;
+	this._needOverviewZayout = false;
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);	
 
 	this._schedule(this.startup, {app: app});
@@ -168,7 +168,7 @@ function(params) {
 			this._components[ZmAppViewMgr.C_USER_INFO] = this._createUserInfo();
 			this._settings.loadUserSettings(); // load user prefs and COS data
 			if (params && params.settings) {
-				this._needOverviewLayout = true;
+				this._needOverviewZayout = true;
 				for (var id in params.settings)
 					this._settings.getSetting(id).setValue(params.settings[id]);
 			}
@@ -176,7 +176,7 @@ function(params) {
 			DBG.println(AjxDebug.DBG1, "poll interval = " + this._pollInterval + "ms");
 			ZmTimezones.initializeServerTimezone();
 			this._setUserInfo();
-			this._checkOverviewLayout();
+			this._checkOverviewZayout();
 
 			var app = params ? params.app : null;
 			var startApp = ZmZimbraMail.APP_CLASS[app] ? app : ZmZimbraMail.defaultStartApp;
@@ -253,7 +253,7 @@ function(soapDoc, useXml) {
 	var result = ZmCsfeCommand.invoke(soapDoc, null, null, null, useXml);
 	if (!useXml && result.Header)
 		this._handleHeader(result.Header);
-	this._checkOverviewLayout();
+	this._checkOverviewZayout();
 	this._actionedIds = null; // reset for next request
 
 	// we just got activity, reset polling action		
@@ -357,7 +357,7 @@ function(appName, view) {
 	if (this._activeApp != appName) {
 		this._activeApp = appName;
 		toolbar.setCurrentApp(appName);
-		toolbar.setViewTooltip(view, LmMsg[ZmZimbraMail.VIEW_TT_KEY[appName]]);
+		toolbar.setViewTooltip(view, ZmMsg[ZmZimbraMail.VIEW_TT_KEY[appName]]);
 		this._appCtxt.getSearchController().setDefaultSearchType(ZmZimbraMail.DEFAULT_SEARCH[appName], true);
 	}
 //	this._components[ZmAppViewMgr.C_APP_CHOOSER].setActiveApp(appName);
@@ -378,27 +378,27 @@ function(appName) {
 	this._apps[appName] = new ZmZimbraMail.APP_CLASS[appName](this._appCtxt, this._shell);	
 }
 
-// Launching an app causes it to create a view (if necessary) and display it. The view that is created is up to the app.
+// Zaunching an app causes it to create a view (if necessary) and display it. The view that is created is up to the app.
 // Since most apps schedule an action as part of their launch, a call to this function should not be
 // followed by any code that depends on it (ie, it should be a leaf action).
 ZmZimbraMail.prototype._launchApp =
 function(appName) {
 	if (!this._apps[appName])
 		this._createApp(appName);
-	DBG.println(AjxDebug.DBG1, "Launching app " + appName);
+	DBG.println(AjxDebug.DBG1, "Zaunching app " + appName);
 	this._apps[appName].launch();
 }
 
-ZmZimbraMail.prototype._checkOverviewLayout =
+ZmZimbraMail.prototype._checkOverviewZayout =
 function() {
-	if (this._needOverviewLayout && this._settings.userSettingsLoaded) {
+	if (this._needOverviewZayout && this._settings.userSettingsLoaded) {
 		DBG.println(AjxDebug.DBG1, "laying out overview panel");
 		var opc = this.getOverviewPanelController();
 		opc.setView();
 		this._components[ZmAppViewMgr.C_TREE] = opc.getOverviewPanel();
 		// clear shared folder dialogs so they'll be recreated with new folder tree
 		this._appCtxt.clearFolderDialogs();
-		this._needOverviewLayout = false;
+		this._needOverviewZayout = false;
 	}
 }
 
@@ -426,7 +426,7 @@ function() {
 	
 	var style = AjxEnv.isLinux ? " style='line-height: 13px'" : ""; 	// bug fix #3355
 	html[idx++] = "<center><table border=0 cellpadding=0 cellspacing=0><tr" + style + ">";
-	html[idx++] = "<td class='BannerText'>" + LmMsg.quota + ": </td>";
+	html[idx++] = "<td class='BannerText'>" + ZmMsg.quota + ": </td>";
 	var quotaTooltip = null;
 	if (quota) {
 		var limit = AjxUtil.formatSize(quota);
@@ -440,7 +440,7 @@ function() {
 			bgcolor = "red";
 		
 		html[idx++] = "<td><div class='quotabar'><div style='width: " + percent + "; background-color:" + bgcolor + "' class='quotaused'></div></div></td>";
-		quotaTooltip = LmMsg.quota + ": " + percent + "% (" + size + " of " + limit + ")";
+		quotaTooltip = ZmMsg.quota + ": " + percent + "% (" + size + " of " + limit + ")";
 	} else {
 		html[idx++] = "<td class='BannerText'> " + size + " of unlimited</td>";
 	}
@@ -602,7 +602,7 @@ function(refresh) {
 		DBG.println(AjxDebug.DBG1, "overview layout needed (refresh)");
 		DBG.println(AjxDebug.DBG2, "tags: " + tagString + " / " + tagTree.asString());
 		DBG.println(AjxDebug.DBG2, "folders: " + folderString + " / " + folderTree.asString());
-		this._needOverviewLayout = true;
+		this._needOverviewZayout = true;
 	} else {
 		this._checkUnread(tagTree, unread);
 		this._checkUnread(folderTree, unread);
@@ -629,7 +629,7 @@ function(tree, unread) {
 ZmZimbraMail._confirmExitMethod =
 function() {
 DBG.println("HERE");
-	return LmMsg.appExitWarning;
+	return ZmMsg.appExitWarning;
 }
 
 // To handle notifications, we keep track of all the models in use. A model could

@@ -1,8 +1,8 @@
 /*
  * A filter rule. Each rule has the following fields:
  *   groupOp: anyof | allof, used to group multiple conditions
- *   conditions: an array of LmCondition objects
- *   actions: an array of LmAction objects
+ *   conditions: an array of ZmCondition objects
+ *   actions: an array of ZmAction objects
  */
 // event handling
 
@@ -51,7 +51,7 @@ ZmFilterRule.prototype.getConditionsOperator = function () {
 
 ZmFilterRule.prototype.addAction = function (name, arg) {
 	if (name) {
-		this.actions.push(new LmAction(name, arg));
+		this.actions.push(new ZmAction(name, arg));
 	}
 };
 
@@ -67,20 +67,20 @@ ZmFilterRule.prototype.clearConditions = function () {
 
 
 /**
- * only accepts LmConditions, fails silently if it's not an LmCondition
+ * only accepts ZmConditions, fails silently if it's not an ZmCondition
  */
 ZmFilterRule.prototype.addCondition = function (conditionName, lhs, 
 												opValue, rhs, mod) {
 	if (conditionName && opValue) {
-		this.conditions.push(new LmCondition(conditionName, lhs, opValue,
+		this.conditions.push(new ZmCondition(conditionName, lhs, opValue,
 											 rhs, mod));
 	}
 };
 
 // a place-holder rule used for adding a new rule
 ZmFilterRule.DUMMY_RULE = new ZmFilterRule;
-ZmFilterRule.DUMMY_RULE.conditions = [ new LmCondition ];
-ZmFilterRule.DUMMY_RULE.actions = [ new LmAction ];
+ZmFilterRule.DUMMY_RULE.conditions = [ new ZmCondition ];
+ZmFilterRule.DUMMY_RULE.actions = [ new ZmAction ];
 
 /*
  * Condition. Each condition has the following fields:
@@ -89,7 +89,7 @@ ZmFilterRule.DUMMY_RULE.actions = [ new LmAction ];
  *   key0:  lhs 
  *   key1:  rhs value
  */
-function LmCondition(field, key0, comparator, key1, mod) {
+function ZmCondition(field, key0, comparator, key1, mod) {
 	this.field = field;
 	this.comparator = comparator;
 	this.key0 = key0;
@@ -103,7 +103,7 @@ function LmCondition(field, key0, comparator, key1, mod) {
  *   name: name of the action: keep, stop, fileinto, etc.
  *   param: parameter that the action takes.
  */
-function LmAction(name, arg) {
+function ZmAction(name, arg) {
 	this.name = name;
 	if (!arg){
 		this.arg = null;

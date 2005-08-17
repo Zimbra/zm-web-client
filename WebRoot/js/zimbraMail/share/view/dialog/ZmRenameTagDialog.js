@@ -1,6 +1,6 @@
 function ZmRenameTagDialog(parent, msgDialog, className) {
 
-	ZmDialog.call(this, parent, msgDialog, className, LmMsg.renameTag);
+	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.renameTag);
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
@@ -17,7 +17,7 @@ function() {
 ZmRenameTagDialog.prototype.popup =
 function(tag, source, loc) {
 	ZmDialog.prototype.popup.call(this, loc);
-	this.setTitle(LmMsg.renameTag + ': ' + tag.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
+	this.setTitle(ZmMsg.renameTag + ': ' + tag.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
 	this._nameField.value = tag.getName(false);
 	this._tag = tag;
 }
@@ -28,7 +28,7 @@ function() {
 	var html = new Array();
 	var idx = 0;
 	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
-	html[idx++] = "<tr><td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>" + LmMsg.newTagName + ": </td></tr>";
+	html[idx++] = "<tr><td class='Zabel' colspan=2 style='padding: 0px 0px 5px 0px;'>" + ZmMsg.newTagName + ": </td></tr>";
 	html[idx++] = "<tr><td><input type='text' class='Field' id='" + this._nameFieldId + "' /></td></tr>";
 	html[idx++] = "</table>";
 	
@@ -52,7 +52,7 @@ function() {
 	if (!msg) {
 		var t = this._appCtxt.getTagList().getByName(name);
 		if (t && (t.id != this._tag.id))
-			msg = LmMsg.tagNameExists;
+			msg = ZmMsg.tagNameExists;
 	}
 
 	return (msg ? this._showError(msg) : [this._tag, name]);

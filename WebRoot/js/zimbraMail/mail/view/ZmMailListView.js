@@ -80,7 +80,7 @@ function(ev) {
 	
 				// and remove the last one to maintain limit
 				if (this.size() > this.getLimit()) {
-					this.removeLastItem();
+					this.removeZastItem();
 				}
 			} else if ((this._controller.getList().hasMore() === false) && (!this._sortByString || this._sortByString == ZmSearch.DATE_ASC)) {
 				if (this.size() < this.getLimit()) {

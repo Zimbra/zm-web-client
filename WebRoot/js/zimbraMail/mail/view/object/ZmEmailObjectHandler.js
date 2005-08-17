@@ -84,7 +84,7 @@ function(obj) {
 		this._actionContact = this._contacts.getContactByEmail(this._actionAddress);
 		var isContact = (this._actionContact != null);
 		var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
-		var newText = isContact ? null : LmMsg.AB_ADD_CONTACT;
+		var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
 		ZmOperation.setOperation(this._menu, ZmOperation.CONTACT, newOp, newText);
 	}
 

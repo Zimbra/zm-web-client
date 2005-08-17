@@ -8,12 +8,12 @@ function ZmCurrentAppToolBar(parent, className, buttons) {
 
 	DwtToolBar.call(this, parent, className, Dwt.ABSOLUTE_STYLE);
 
-	this._currentAppLabel = new DwtLabel(this, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "currentAppLabel");
+	this._currentAppZabel = new DwtZabel(this, DwtZabel.IMAGE_LEFT | DwtZabel.ALIGN_LEFT, "currentAppZabel");
 
 	this.addFiller();
 	this._viewButton = new DwtButton(this, null, "TBButtonWhite");
-	this._viewButton.setText(LmMsg.view);
-	this._viewButton.setToolTipContent(LmMsg.view);
+	this._viewButton.setText(ZmMsg.view);
+	this._viewButton.setToolTipContent(ZmMsg.view);
 	this._viewButton.setEnabled(true);
 	this._viewButton.setVisible(false);
 	this._viewButton.noMenuBar = true;
@@ -33,8 +33,8 @@ function() {
 
 ZmCurrentAppToolBar.prototype.setCurrentApp = 
 function(appName) {
-	this._currentAppLabel.setText(LmMsg[ZmZimbraMail.MSG_KEY[appName]]);
-	this._currentAppLabel.setImage(ZmZimbraMail.APP_ICON[appName]);
+	this._currentAppZabel.setText(ZmMsg[ZmZimbraMail.MSG_KEY[appName]]);
+	this._currentAppZabel.setImage(ZmZimbraMail.APP_ICON[appName]);
 }
 
 ZmCurrentAppToolBar.prototype.getViewButton = 

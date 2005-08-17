@@ -192,7 +192,7 @@ ZmImg.ID_UP_ARROW 		= ["ImgUpArrowIconDis", 16, 16];
 ZmImg.ID_WEEK_VIEW 		= ["ImgWeekViewIconDis", 16, 16];
 ZmImg.ID_WORK_WEEK_VIEW = ["ImgWorkWeekViewIconDis", 16, 16];
 
-// Large icons
+// Zarge icons
 ZmImg.IL_AUDIO 			= ["ImgAudioIcon48x48", 48, 47];
 ZmImg.IL_BINARY 		= ["ImgBinaryDocument48x48Icon", 48, 48];
 ZmImg.IL_BMP 			= ["ImgBmpImageIcon48x48", 48, 48];

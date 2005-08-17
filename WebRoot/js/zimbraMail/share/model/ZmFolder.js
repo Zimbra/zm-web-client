@@ -27,8 +27,8 @@ ZmFolder.FIRST_USER_ID		= 256;
 
 // folder name overrides
 ZmFolder.NAME = new Object();
-ZmFolder.NAME[ZmFolder.ID_INBOX] = LmMsg.inbox;
-ZmFolder.NAME[ZmFolder.ID_SPAM] = LmMsg.junk;
+ZmFolder.NAME[ZmFolder.ID_INBOX] = ZmMsg.inbox;
+ZmFolder.NAME[ZmFolder.ID_SPAM] = ZmMsg.junk;
 
 // name to use within the query language
 ZmFolder.QUERY_NAME = new Object();
@@ -129,7 +129,7 @@ ZmFolder.checkParent =
 function(name, parent) {
 	// make sure folder with this name doesn't already exist at this level
 	if (parent.hasChild(name) || (parent.id < 0 && ZmFolder.QUERY_ID[name.toLowerCase()]))
-		return LmMsg.folderNameExists;
+		return ZmMsg.folderNameExists;
 
 	// check for top-level folder or saved search
 	var root = null;
@@ -138,7 +138,7 @@ function(name, parent) {
 	else if (parent.id == ZmFolder.ID_SEARCH)
 		root = parent.tree.getById(ZmFolder.ID_USER);
 	if (root && root.hasChild(name))
-		return LmMsg.folderOrSearchNameExists;
+		return ZmMsg.folderOrSearchNameExists;
 	
 	return null;
 }

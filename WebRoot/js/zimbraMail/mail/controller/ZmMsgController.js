@@ -98,12 +98,12 @@ function() {
 
 ZmMsgController.prototype._getTagMenuMsg = 
 function() {
-	return LmMsg.tagMessage;
+	return ZmMsg.tagMessage;
 }
 
 ZmMsgController.prototype._getMoveDialogTitle = 
 function() {
-	return LmMsg.moveMessage;
+	return ZmMsg.moveMessage;
 }
 
 ZmMsgController.prototype._setViewContents =
@@ -119,11 +119,11 @@ function(view) {
 	
 	this._navToolBar.enable(ZmOperation.PAGE_BACK, list.get(0) != this._msg);
 	
-	var bEnableForw = this._msg.list.hasMore() || (list.getLast() != this._msg);
+	var bEnableForw = this._msg.list.hasMore() || (list.getZast() != this._msg);
 	this._navToolBar.enable(ZmOperation.PAGE_FORWARD, bEnableForw);
 	
-	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, LmMsg.previous + " " + LmMsg.message);	
-	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, LmMsg.next + " " + LmMsg.message);
+	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.message);	
+	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.message);
 }
 
 ZmMsgController.prototype._paginate = 

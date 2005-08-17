@@ -4,12 +4,12 @@
  */
 function ZmMailSignaturePref ( mId, labl, showSep){
     var htmlTempl ="<div id=%1><input id=%2 type='radio' %6 name='signature'>No Signature</input><div style='width:%wpx''><input id=%3 type='radio' %7 name='signature' style ='float:left'> <textarea  id=%4 wrap='on' rows='4' cols='60' style='float:right; width:380'>%5</textarea></div></div>";
-    LmMailPref.call(this, mId, labl, htmlTempl, showSep, 
+    ZmMailPref.call(this, mId, labl, htmlTempl, showSep, 
                     this.htmlReplaceCallback,
                     "defaultSig", this.onChangeHandler);
 };
 
-ZmMailSignaturePref.prototype = new LmMailPref;
+ZmMailSignaturePref.prototype = new ZmMailPref;
 ZmMailSignaturePref.prototype.coinstructor = ZmMailSignaturePref;
 
 ZmMailSignaturePref.prototype.htmlReplaceCallback = function (id, value) {
@@ -36,7 +36,7 @@ ZmMailSignaturePref.prototype.htmlReplaceCallback = function (id, value) {
     }
     //html = html.replace("%4", id);
     this.htmlId = id;
-    this.setHtmlType(LmMailPref.HTML_TYPE_TEXT_AREA);
+    this.setHtmlType(ZmMailPref.HTML_TYPE_TEXT_AREA);
     return html;
 };
 
@@ -52,7 +52,7 @@ ZmMailSignaturePref.prototype.installEventListeners = function () {
         var ta =  document.getElementById(this._textAreaId);
         this._installEHandler(ta);
     } else {
-        LmMailPref.prototype.installEventListeners.call(this);
+        ZmMailPref.prototype.installEventListeners.call(this);
     }
 };
 ZmMailSignaturePref.prototype._installEHandler = function ( elem ){
@@ -61,7 +61,7 @@ ZmMailSignaturePref.prototype._installEHandler = function ( elem ){
         elem._targetField = this.targetField;
         elem._fieldName = this.modelId;
         elem._objId = this._internalId;
-        LmMailPref._internalIds[this._internalId] = this;
+        ZmMailPref._internalIds[this._internalId] = this;
     }
     return elem;
 
@@ -83,7 +83,7 @@ ZmMailSignaturePref.prototype.onChangeHandler = function (event) {
 
     targetFieldName = infoTarget._targetField;
     fieldName = infoTarget._fieldName;
-    p = LmMailPref._internalIds[infoTarget._objId];
+    p = ZmMailPref._internalIds[infoTarget._objId];
 
 
     // look myself up
@@ -107,6 +107,6 @@ ZmMailSignaturePref.prototype.onChangeHandler = function (event) {
     e.prefName = fieldName;
     e.newPrefValue = value;
     if ((p != null) && (p != void 0)){
-        p._evtMgr.notifyListeners(LmMailPref.PREF_CHANGE, e);
+        p._evtMgr.notifyListeners(ZmMailPref.PREF_CHANGE, e);
     }
 };

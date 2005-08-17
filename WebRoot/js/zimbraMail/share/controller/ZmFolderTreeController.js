@@ -69,7 +69,7 @@ function() {
 */
 ZmFolderTreeController.prototype.resetOperations = 
 function(parent, id) {
-	var deleteText = LmMsg.del;
+	var deleteText = ZmMsg.del;
 	var folder = this._appCtxt.getFolderTree().getById(id);
 	// user folder or Tags header
 	if (id >= ZmFolder.FIRST_USER_ID || id == ZmFolder.ID_TAGS) {
@@ -81,7 +81,7 @@ function(parent, id) {
 			id == ZmFolder.ID_TRASH || id == ZmFolder.ID_USER)
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		if (id == ZmFolder.ID_SPAM || id == ZmFolder.ID_TRASH) {
-			deleteText = (id == ZmFolder.ID_SPAM) ? LmMsg.emptyJunk : LmMsg.emptyTrash;
+			deleteText = (id == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
 			parent.enable(ZmOperation.DELETE, true);
 		}
 	}
@@ -185,7 +185,7 @@ function(ev) {
 	var moveToDialog = this._appCtxt.getMoveToDialog();
 	this._showDialog(moveToDialog, this._moveCallback, this._pendingActionData);
 	moveToDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, moveToDialog);
-	var title = AjxStringUtil.resolve(LmMsg.moveFolder, this._pendingActionData.name);
+	var title = AjxStringUtil.resolve(ZmMsg.moveFolder, this._pendingActionData.name);
 	moveToDialog.setTitle(title);
 }
 

@@ -47,10 +47,10 @@ function(contact, now, isDndIcon) {
 	// create div to add
 	var div = this.getDocument().createElement("div");
 	if (!isDndIcon) {
-		div._styleClass = "LmContactCard";
+		div._styleClass = "ZmContactCard";
 		div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
 	} else {
-		div._styleClass = "LmContactCard-dnd";
+		div._styleClass = "ZmContactCard-dnd";
 		div.style.position = "absolute";
 	}
 	div.className = div._styleClass;
@@ -123,7 +123,7 @@ function(contact, now, isDndIcon) {
 
 ZmContactCardsView.prototype._getField = 
 function(fname, value) {
-	return "<td valign=top class='LmContactFieldValue'>" + fname + " </td><td valign=top class='LmContactField'>" + value + "</td>";
+	return "<td valign=top class='ZmContactFieldValue'>" + fname + " </td><td valign=top class='ZmContactField'>" + value + "</td>";
 };
 
 // override so that we don't get back ZmListView._fillerString

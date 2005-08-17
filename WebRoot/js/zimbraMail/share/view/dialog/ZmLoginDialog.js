@@ -34,7 +34,7 @@ function ZmLoginDialog(parent, zIndex, className, isAdmin) {
     this.setReloginMode(false);
     
     this._loginButton = new DwtButton(this, null, "DwtButton contrast");
-    this._loginButton.setText(LmMsg.login);
+    this._loginButton.setText(ZmMsg.login);
     this._loginButton.setData("me", this);
     this._loginButton.addSelectionListener(new AjxListener(this, this._loginSelListener));
     Dwt.getDomObj(doc, okCellId).appendChild(this._loginButton.getHtmlElement());
@@ -132,10 +132,10 @@ function(unameId, pwordId, okCellId, errorCellId, reloginModeId) {
 	html[i++] = "<tr><td>";
 	html[i++] = "<table border=0 width=100% class='ZmLoginDialog-MainPanel'>";
 	html[i++] = "<tr><td colspan=3 id='" + errorCellId + "'>&nbsp;</td></tr>";
-	html[i++] = "<tr height=40><td width=100 align=right>" + LmMsg.username + ":</td>";
+	html[i++] = "<tr height=40><td width=100 align=right>" + ZmMsg.username + ":</td>";
 	html[i++] = "<td colspan=2><input type=text tabIndex=1 class='ZmLoginDialog-Field' id='" + unameId + "'></td>";
 	html[i++] = "</tr><tr height=30>";
-	html[i++] = "<td align=right width=100>" + LmMsg.password + ":</td>";
+	html[i++] = "<td align=right width=100>" + ZmMsg.password + ":</td>";
 	html[i++] = "<td colspan=2><input type=password tabIndex=2 class='ZmLoginDialog-Field' id='" + pwordId + "'></td>";
 	html[i++] = "</tr><tr height=40>";
 	html[i++] = "<td></td>";
@@ -162,7 +162,7 @@ function(bReloginMode, app, obj) {
 	this._unameField.disabled = bReloginMode;
 	
 	if (bReloginMode) {
-		this._reloginModeField.innerHTML =  "<a id='" + modeId + "' href='javascript:;'>" + LmMsg.loginAsDiff + "</a>";
+		this._reloginModeField.innerHTML =  "<a id='" + modeId + "' href='javascript:;'>" + ZmMsg.loginAsDiff + "</a>";
 		var anchor = Dwt.getDomObj(this.getDocument(), modeId);
 		anchor.onclick = ZmLoginDialog._loginDiffListener;
 		anchor._app = app;
@@ -173,7 +173,7 @@ function(bReloginMode, app, obj) {
 		var i = 0;
 		html[i++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%>";
 		html[i++] = "<tr><td width=1><input type=checkbox id='" + modeId + "'/></td>";
-		html[i++] = "<td valign=middle>" + LmMsg.publicComputer + "</td></tr></table>";
+		html[i++] = "<td valign=middle>" + ZmMsg.publicComputer + "</td></tr></table>";
 		this._reloginModeField.innerHTML = html.join("");
 
 	    this._pubCompField = Dwt.getDomObj(this.getDocument(), modeId);
@@ -186,13 +186,13 @@ function(selEvt) {
 	this.setCursor("wait");
 	var username = this._unameField.value;
 	if (!(username && username.length)) {
-		this.setError(LmMsg.enterUsername);
+		this.setError(ZmMsg.enterUsername);
 		return;
 	}
 	
 	/* commenting this out due to default domain name support
 	if (!this._isAdmin && !ZmEmailAddress.isValid(username)) {
-		this.setError(LmMsg.badUsername);
+		this.setError(ZmMsg.badUsername);
 		return;
 	}
 	*/

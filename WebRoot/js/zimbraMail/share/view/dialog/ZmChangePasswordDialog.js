@@ -1,6 +1,6 @@
 function ZmChangePasswordDialog(parent, msgDialog, className) {
 
-	DwtDialog.call(this, parent, className, LmMsg.changePassword);
+	DwtDialog.call(this, parent, className, ZmMsg.changePassword);
 
 	this._msgDialog = msgDialog;
 
@@ -40,14 +40,14 @@ function() {
 	var html = new Array();
 	var idx = 0;
     html[idx++] = "<div style='width: 250px'>";
-    html[idx++] = "<div>" + LmMsg.oldPassword + ":</div>";
-    html[idx++] = "<div><input class='LmChangePasswordDialogInput' id=";
+    html[idx++] = "<div>" + ZmMsg.oldPassword + ":</div>";
+    html[idx++] = "<div><input class='ZmChangePasswordDialogInput' id=";
 	html[idx++] = this._oldPasswordId + " type='password'/></div><br>";
-    html[idx++] = "<div>" + LmMsg.newPassword + ":</div>";
-    html[idx++] = "<div><input class='LmChangePasswordDialogInput' id=";
+    html[idx++] = "<div>" + ZmMsg.newPassword + ":</div>";
+    html[idx++] = "<div><input class='ZmChangePasswordDialogInput' id=";
 	html[idx++] = this._newPasswordId + " type='password'/></div><br>";
-    html[idx++] = "<div>" + LmMsg.confirmPassword + ":</div>";
-    html[idx++] = "<div><input class='LmChangePasswordDialogInput' id="; 
+    html[idx++] = "<div>" + ZmMsg.confirmPassword + ":</div>";
+    html[idx++] = "<div><input class='ZmChangePasswordDialogInput' id="; 
 	html[idx++] = this._confirmPasswordId + " type='password'/></div>";
     html[idx++] = "</div>";
 	
@@ -93,32 +93,32 @@ function() {
 	var newPassword = this._newPasswordField.value;
 	var confirmPassword = this._confirmPasswordField.value;
 	if (!oldPassword || !newPassword || !confirmPassword) {
-		this.showMessageDialog(LmMsg.passwordFieldMissing);
+		this.showMessageDialog(ZmMsg.passwordFieldMissing);
 		return null;
 	}
 	
 	if (this._hasWhiteSpace(oldPassword)){
-		this.showMessageDialog(LmMsg.oldPasswordHasWhitespace);
+		this.showMessageDialog(ZmMsg.oldPasswordHasWhitespace);
 		return null;
 	}
 	if (this._hasWhiteSpace(newPassword)){
-		this.showMessageDialog(LmMsg.newPasswordHasWhitespace);
+		this.showMessageDialog(ZmMsg.newPasswordHasWhitespace);
 		return null;
 	}
 	if (this._hasWhiteSpace(confirmPassword)){
-		this.showMessageDialog(LmMsg.confirmPasswordHasWhitespace);
+		this.showMessageDialog(ZmMsg.confirmPasswordHasWhitespace);
 		return null;
 	}
 
 	// check to see that the first and second new passwords match
 	if (newPassword != confirmPassword) {
-		this.showMessageDialog(LmMsg.bothNewPasswordsMustMatch);
+		this.showMessageDialog(ZmMsg.bothNewPasswordsMustMatch);
 		return null;
 	}
 
 	// check that the length is at least 6 characters
 	if (newPassword.length < 6) {
-		this.showMessageDialog(LmMsg.newPasswordTooShort);
+		this.showMessageDialog(ZmMsg.newPasswordTooShort);
 		return null;
 	}
 

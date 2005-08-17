@@ -24,11 +24,11 @@ function ZmFreeBusyView (parent, userSchedules, start, end, appt, className, pos
 	AjxDateUtil.roll(this.endDate, AjxDateUtil.DAY, 1);
 	// this has to come from an appointment
 	this._appt = appt;
-	this._currentAppt = new LmFreeBusyAppointment(appt.getStartDate(), appt.getEndDate(), this);
+	this._currentAppt = new ZmFreeBusyAppointment(appt.getStartDate(), appt.getEndDate(), this);
 	//this._startApptDate = appt.getStartDate();
 	//this._endApptDate = appt.getEndDate();
 	// If this uses the list view, we will have to
-	this._dummyBlock = new LmBusyBlock();
+	this._dummyBlock = new ZmBusyBlock();
 	this._selectionManager = new AjxSelectionManager(this);
 	this._aggregatedSchedule = new Array();
 	this.enable();
@@ -91,18 +91,18 @@ ZmFreeBusyView.hourMap = {
 
 ZmFreeBusyView.prototype._createDummySchedule = function () {
 
-	var a = new LmUserSchedule();
+	var a = new ZmUserSchedule();
 	a.blocks = [
-			   new LmBusyBlock(1115742500000, 1115746200000, "b"), // 9-10:30
-			   new LmBusyBlock(1115748000000, 1115751600000, "b"), // 11-12
-			   new LmBusyBlock(1115755200000, 1115762400000, "b") // 13-15
+			   new ZmBusyBlock(1115742500000, 1115746200000, "b"), // 9-10:30
+			   new ZmBusyBlock(1115748000000, 1115751600000, "b"), // 11-12
+			   new ZmBusyBlock(1115755200000, 1115762400000, "b") // 13-15
 			   ];
 	a.id ="user1@db682461.zimbra.com"
-	var b = new LmUserSchedule ();
+	var b = new ZmUserSchedule ();
 	b.blocks =[
-			   new LmBusyBlock(1115740800000, 1115744400000, "b"), // 9-10
-			   new LmBusyBlock(1115748000000, 1115751600000, "b"), // 11-12
-			   new LmBusyBlock(1115755200000, 1115762400000, "b") // 13-15
+			   new ZmBusyBlock(1115740800000, 1115744400000, "b"), // 9-10
+			   new ZmBusyBlock(1115748000000, 1115751600000, "b"), // 11-12
+			   new ZmBusyBlock(1115755200000, 1115762400000, "b") // 13-15
 			   ];
 	b.id = "user2@db682461.zimbra.com"
 
@@ -145,7 +145,7 @@ ZmFreeBusyView.prototype.render = function () {
 	this._rangeDateId = Dwt.getNextId();
 	this._scheduleContainerId = Dwt.getNextId();
 	buf.append(
-			   "<div class='LmFreeBusyView_headers'><table>",
+			   "<div class='ZmFreeBusyView_headers'><table>",
 			   "<colgroup><col width=100><col width=85 ><col width=50><col width=50><col width=55></colgroup>",
 			   "<tbody><tr>",
 			   "<td>Meeting start time:</td><td id='", this._startDateId, "'></td>",
@@ -159,15 +159,15 @@ ZmFreeBusyView.prototype.render = function () {
 			   "<td id='",this._endTimeAmPmId, "'></td>",
 			   "</tr></table></div>",
 
-			   "<div class='LmFreeBusyView_key'>",
+			   "<div class='ZmFreeBusyView_key'>",
 			   AjxImg.getImageHtml(ZmImg.CAL_FB_KEY),
 			   "</div>",
 
-			   "<div class='LmFreeBusyView_dateString' id='", this._rangeDateId, "'>", 
+			   "<div class='ZmFreeBusyView_dateString' id='", this._rangeDateId, "'>", 
 			   (AjxDateUtil.getTimeStr(this.startDate,"%M %d, %Y")) ,"</div>",
 
-			   //"<tr style='height:", containerHeight, ";'><td colspan=2 class='LmFreeBusyView_scheduleCol' id='", 
-			   "<div class='LmFreeBusyView_scheduleCol' id='",
+			   //"<tr style='height:", containerHeight, ";'><td colspan=2 class='ZmFreeBusyView_scheduleCol' id='", 
+			   "<div class='ZmFreeBusyView_scheduleCol' id='",
 			   this._scheduleContainerId, "'>");
 
 	this._renderSchedules(buf, containerHeight);
@@ -191,10 +191,10 @@ ZmFreeBusyView.prototype.render = function () {
 
 		// create the slider thingy
 		var div = document.createElement('div');
-		div.className = "LmFreeBusyView_slider";
+		div.className = "ZmFreeBusyView_slider";
 		div.id = this._sliderId = ZmFreeBusyView.ID_PREFIX + "_slider";
 		// TODO: add drag handlers
-		div.innerHTML = "<div class='LmFreeBusyView_slider_left'>&nbsp;</div><div class='LmFreeBusyView_slider_right'>&nbsp;</div>";
+		div.innerHTML = "<div class='ZmFreeBusyView_slider_left'>&nbsp;</div><div class='ZmFreeBusyView_slider_right'>&nbsp;</div>";
 		this.highlightAppointment(div);
 		document.getElementById(this._scheduleContainerId).appendChild(div);
 		//DBG.println(AjxStringUtil.htmlEncode(this.getHtmlElement().innerHTML));
@@ -249,8 +249,8 @@ ZmFreeBusyView.prototype._renderSchedules = function ( buf, containerHeight) {
 	var numCells = (hours * 2);
 
 	this._scheduleTableId = Dwt.getNextId();
-	buf.append("<table id='", this._scheduleTableId, "' class='LmFreeBusyView_scheduleCol_table' onmousedown='AjxCore.objectWithId(", this.__internalId,")._handleScheduleMouseDown(event)'><colgroup><col class='adCol2'><col class='adCol3'><col class='endZone'>");
-	var className = (AjxEnv.isIE)? "LmFreeBusyView_scheduleCol_colIE": "LmFreeBusyView_scheduleCol_col";
+	buf.append("<table id='", this._scheduleTableId, "' class='ZmFreeBusyView_scheduleCol_table' onmousedown='AjxCore.objectWithId(", this.__internalId,")._handleScheduleMouseDown(event)'><colgroup><col class='adCol2'><col class='adCol3'><col class='endZone'>");
+	var className = (AjxEnv.isIE)? "ZmFreeBusyView_scheduleCol_colIE": "ZmFreeBusyView_scheduleCol_col";
 	for (i = 0; i < numCells; ++i) {
 
 		buf.append("<col class='",className,"'>");
@@ -426,8 +426,8 @@ ZmFreeBusyView.prototype._getSelectOptions = function (choices) {
 	for (var i = 0; i < choices.length; i++) {
 		var choice = choices[i];
 		var choiceValue = (typeof choice == "string" ? choice : choice.value);
-		var choiceLabel = (typeof choice == "string" ? choice : choice.label);
-		selectOptions[i] = new DwtSelectOptionData(choiceValue, choiceLabel);
+		var choiceZabel = (typeof choice == "string" ? choice : choice.label);
+		selectOptions[i] = new DwtSelectOptionData(choiceValue, choiceZabel);
 	}
 	return selectOptions;
 };
@@ -686,7 +686,7 @@ ZmFreeBusyView.prototype.paginate = function (direction) {
 ZmFreeBusyView.prototype.getSchedulesForDates = function (start, end, uids) {
 	this.startDate.setTime(start.getTime());
 	this.endDate.setTime(end.getTime());
-	this.userSchedules = LmUserSchedule.getSchedules(this.startDate, this.endDate, uids);
+	this.userSchedules = ZmUserSchedule.getSchedules(this.startDate, this.endDate, uids);
 	this.setSchedules(this.userSchedules);
 	
 	// set the display date
@@ -872,7 +872,7 @@ ZmFreeBusyView.prototype.handleAddrChange = function ( event ) {
 			if (tr.id != null) {
 				if (tr.id.indexOf("Empty")!= -1){
 					this._updateEmptyRow(tr.rowIndex + 1);
-					sched = new LmUserSchedule();
+					sched = new ZmUserSchedule();
 					this.userSchedules[this.userSchedules.length] = sched;
 					tr.id = "LMFBA_" + sched.getUniqueId();
 					index = tr.rowIndex;//this.userSchedules.length;
@@ -1299,18 +1299,18 @@ ZmFreeBusyView.prototype.selectionChanged = function () {
 
 
 // ========================================================================
-// LmUserSchedule class
+// ZmUserSchedule class
 // ========================================================================
-function LmUserSchedule () {
+function ZmUserSchedule () {
 	this.blocks = new Array();
-	this._objectId = LmUserSchedule._internalIds++;
+	this._objectId = ZmUserSchedule._internalIds++;
 }
-LmUserSchedule._internalIds = 0;
-LmUserSchedule.prototype.setId = function (id){
+ZmUserSchedule._internalIds = 0;
+ZmUserSchedule.prototype.setId = function (id){
 	this.id = id;
 };
 
-LmUserSchedule.prototype.getUniqueId = function () {
+ZmUserSchedule.prototype.getUniqueId = function () {
 	return this._objectId;
 }
 
@@ -1318,11 +1318,11 @@ LmUserSchedule.prototype.getUniqueId = function () {
  * This is specifically for sorting. Comparisons of
  * these blocks should really only compare the user names.
  */ 
-LmUserSchedule.prototype.valueOf = function () {
+ZmUserSchedule.prototype.valueOf = function () {
 	return (this.id + this._objectId);
 };
 
-LmUserSchedule.getSchedules = function (start, end, uids) {
+ZmUserSchedule.getSchedules = function (start, end, uids) {
 	var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("s", start.getTime());
 	soapDoc.setMethodAttribute("e", end.getTime());
@@ -1338,29 +1338,29 @@ LmUserSchedule.getSchedules = function (start, end, uids) {
 	}
 	soapDoc.setMethodAttribute("uid", u);
 	var resp = null;
-	if (LmUserSchedule.commandSender != null) {
-		resp = LmUserSchedule.commandSender.sendRequest(soapDoc);
+	if (ZmUserSchedule.commandSender != null) {
+		resp = ZmUserSchedule.commandSender.sendRequest(soapDoc);
 	} else {
 		// testing only
 		resp = ZmCsfeCommand.invoke(soapDoc, null, null, null, false);
 		resp = resp.Body;
 	}
 	if (resp != null) {
-		return LmUserSchedule.loadFromDom(resp);
+		return ZmUserSchedule.loadFromDom(resp);
 	} else {
 		var users = uids.split(',');
 		var numUsers = users.length;
 		var userSchedules = new Array(numUsers);
 		for (var i = 0; i < numUsers; ++i) {
-			userSchedules[i] = new LmUserSchedule();
-			userSchedules[i].blocks[i] = new LmBusyBlock(start.getTime(), end.getTime(), "f");
+			userSchedules[i] = new ZmUserSchedule();
+			userSchedules[i].blocks[i] = new ZmBusyBlock(start.getTime(), end.getTime(), "f");
 			userSchedules[i].id = users[i];
 		}
 		return userSchedules;
 	}
 }
 
-LmUserSchedule.loadFromDom = function (freeBusyResponse) {
+ZmUserSchedule.loadFromDom = function (freeBusyResponse) {
 	// parse the GetFreeBusyResponse message.
 	//DBG.println("LoadFromDom: resp=>");
 	//DBG.dumpObj(freeBusyResponse);		
@@ -1368,14 +1368,14 @@ LmUserSchedule.loadFromDom = function (freeBusyResponse) {
 	var len = users.length;
 	var userSchedules = new Array();
 	for (var i = 0; i < len; i++) {
-		var userS = new LmUserSchedule();
-		LmUserSchedule._parseOneScheduleResponse(users[i], userS);
+		var userS = new ZmUserSchedule();
+		ZmUserSchedule._parseOneScheduleResponse(users[i], userS);
 		userSchedules.push(userS);
 	}
 	return userSchedules;
 };
 
-LmUserSchedule._parseOneScheduleResponse = function (users, userSchedObj) {
+ZmUserSchedule._parseOneScheduleResponse = function (users, userSchedObj) {
 	for (key in users) {
 		if (key == 'id'){
 			userSchedObj.id = users[key];
@@ -1386,13 +1386,13 @@ LmUserSchedule._parseOneScheduleResponse = function (users, userSchedObj) {
 			var start = typeArr[j].s;
 			var end = typeArr[j].e;
 			
-			var block = new LmBusyBlock(start, end, key);
+			var block = new ZmBusyBlock(start, end, key);
 			userSchedObj.blocks.push(block);
 		}
 	}
 };
 
-LmUserSchedule.prototype.getSchedule = function (start, end, uid, force) {
+ZmUserSchedule.prototype.getSchedule = function (start, end, uid, force) {
 	if (force || this.blocks.length <= 0){
 		// if we've been forced to refresh, then zero out our blocks
 		if (this.blocks.length > 0 ){
@@ -1405,43 +1405,43 @@ LmUserSchedule.prototype.getSchedule = function (start, end, uid, force) {
 		soapDoc.setMethodAttribute("e", end.getTime());
 		soapDoc.setMethodAttribute("uid", uid);
 		// TODO
-		if (LmUserSchedule.commandSender != null) {
-			var resp = LmUserSchedule.commandSender.sendRequest(soapDoc);
+		if (ZmUserSchedule.commandSender != null) {
+			var resp = ZmUserSchedule.commandSender.sendRequest(soapDoc);
 		} else {
 			// testing only
 			var resp = ZmCsfeCommand.invoke(soapDoc, null, null, null, false).Body;
 		}
 		var user = resp.GetFreeBusyResponse.usr[0];
-		LmUserSchedule._parseOneScheduleResponse(user, this);
+		ZmUserSchedule._parseOneScheduleResponse(user, this);
 	}
 	return this.blocks;
 };
 
-LmUserSchedule.setCommandSender = function (sender) {
-	LmUserSchedule.commandSender = sender;
+ZmUserSchedule.setCommandSender = function (sender) {
+	ZmUserSchedule.commandSender = sender;
 };
 
 // ========================================================================
-// LmBusyBlock class
+// ZmBusyBlock class
 // ========================================================================
 
-function LmBusyBlock (start, end, type) {
+function ZmBusyBlock (start, end, type) {
 	this.startTime = start;
 	this.endTime = end;
 	this.type = type;
 	this.duration = end - start;
 }
 
-LmBusyBlock.prototype.isInRange = function (startTime, endTime) {
+ZmBusyBlock.prototype.isInRange = function (startTime, endTime) {
 	var tst = this.startTime;
 	return (tst >= startTime && tst < endTime);
 };
 
-LmBusyBlock.prototype.getDuration = function () {
+ZmBusyBlock.prototype.getDuration = function () {
 	return this.duration;
 };
 
-LmBusyBlock.prototype.getStartHour = function () {
+ZmBusyBlock.prototype.getStartHour = function () {
 	if (this._startDate == null) {
 		this._startDate = new Date(this.startTime);
 		this._startDate = AjxDateUtil.roundTimeMins(this._startDate, 30);
@@ -1453,7 +1453,7 @@ LmBusyBlock.prototype.getStartHour = function () {
 	return this._startHour;
 };
 
-LmBusyBlock.prototype.isOverlapping = function(otherBlock) {
+ZmBusyBlock.prototype.isOverlapping = function(otherBlock) {
 	var tst = this.startTime;
 	var tet = this.endTime;
 	var ost = otherBlock.startTime;
@@ -1462,17 +1462,17 @@ LmBusyBlock.prototype.isOverlapping = function(otherBlock) {
 	return (tst >= ost && tst < oet) || (tet > ost && tet < oet);
 };
 
-function LmFreeBusyAppointment (startDate, endDate, fbView) {
+function ZmFreeBusyAppointment (startDate, endDate, fbView) {
 	this._startDate = new Date(startDate.getTime());
 	this._endDate = new Date(endDate.getTime());
 }
 
-LmFreeBusyAppointment.prototype.setDates = function (startDate, endDate) {
+ZmFreeBusyAppointment.prototype.setDates = function (startDate, endDate) {
 	this._startDate.setTime(startDate.getTime());
 	this._endDate.setTime(endDate.getTime());
 };
 
-LmFreeBusyAppointment.prototype.isInRange = function(startTime, endTime) {
+ZmFreeBusyAppointment.prototype.isInRange = function(startTime, endTime) {
 	var tst = this.getStartTime();
 	var tet = this.getEndTime();	
 	return (tst > startTime && tet < endTime);
@@ -1481,7 +1481,7 @@ LmFreeBusyAppointment.prototype.isInRange = function(startTime, endTime) {
 /**
  * return true if the start time of this appt is within range
  */
-LmFreeBusyAppointment.prototype.isStartInRange = function(startTime, endTime) {
+ZmFreeBusyAppointment.prototype.isStartInRange = function(startTime, endTime) {
 	var tst = this.getStartTime();
 	return (tst < endTime && tst >= startTime);
 };
@@ -1489,33 +1489,33 @@ LmFreeBusyAppointment.prototype.isStartInRange = function(startTime, endTime) {
 /**
  * return true if the end time of this appt is within range
  */
-LmFreeBusyAppointment.prototype.isEndInRange = function(startTime, endTime) {
+ZmFreeBusyAppointment.prototype.isEndInRange = function(startTime, endTime) {
 	var tet = this.getEndTime();
 	return (tet <= endTime && tet > startTime);
 };
 
-LmFreeBusyAppointment.prototype.beginsBeforeEndsAfter = function (startTime, endTime) {
+ZmFreeBusyAppointment.prototype.beginsBeforeEndsAfter = function (startTime, endTime) {
 	var tst = this.getStartTime();
 	var tet = this.getEndTime();	
 	return (tst < startTime && tet > endTime);
 };
 
-LmFreeBusyAppointment.prototype.getStartDate = function() {
+ZmFreeBusyAppointment.prototype.getStartDate = function() {
 	return this._startDate;
 };
 
-LmFreeBusyAppointment.prototype.getEndDate = function() {
+ZmFreeBusyAppointment.prototype.getEndDate = function() {
 	return this._endDate;
 };
 
-LmFreeBusyAppointment.prototype.getStartTime = function() {
+ZmFreeBusyAppointment.prototype.getStartTime = function() {
 	return this._startDate.getTime();
 };
 
-LmFreeBusyAppointment.prototype.getEndTime = function() {
+ZmFreeBusyAppointment.prototype.getEndTime = function() {
 	return this._endDate.getTime();
 };
 
-LmFreeBusyAppointment.prototype.getDuration = function() {
+ZmFreeBusyAppointment.prototype.getDuration = function() {
 	return this._endDate.getTime() - this._startDate.getTime();
 };

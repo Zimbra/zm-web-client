@@ -19,31 +19,31 @@ function(parent) {
 	tree.addSelectionListener(new AjxListener(this, ZmFlagPicker.prototype._treeListener));
 	
 	var ti = this._flagged = new DwtTreeItem(tree);
-	ti.setText(LmMsg.flagged);
+	ti.setText(ZmMsg.flagged);
 	ti.setImage(ZmImg.I_FLAG_ON);
 	
 	ti = this._unflagged = new DwtTreeItem(tree);
-	ti.setText(LmMsg.unflagged);
+	ti.setText(ZmMsg.unflagged);
 	ti.setImage(ZmImg.I_FLAG_OFF);
 	
 	tree.addSeparator();
 
 	ti = this._read = new DwtTreeItem(tree);
-	ti.setText(LmMsg.read);
+	ti.setText(ZmMsg.read);
 	ti.setImage(ZmImg.I_READ_MSG);
 	
 	ti = this._unread = new DwtTreeItem(tree);
-	ti.setText(LmMsg.unread);
+	ti.setText(ZmMsg.unread);
 	ti.setImage(ZmImg.I_ENVELOPE);	
 
 	tree.addSeparator();
 
 	ti = this._replied = new DwtTreeItem(tree);
-	ti.setText(LmMsg.replied);
+	ti.setText(ZmMsg.replied);
 	ti.setImage(ZmImg.I_REPLY);
 	
 	ti = this._forwarded = new DwtTreeItem(tree);
-	ti.setText(LmMsg.forwarded);
+	ti.setText(ZmMsg.forwarded);
 	ti.setImage(ZmImg.I_FORWARD);	
 }
 

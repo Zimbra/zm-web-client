@@ -1,6 +1,6 @@
 function ZmNewTagDialog(parent, msgDialog, className) {
 
-	ZmDialog.call(this, parent, msgDialog, className, LmMsg.createNewTag);
+	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.createNewTag);
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
@@ -55,7 +55,7 @@ function() {
 	this._nameFieldId = Dwt.getNextId();
 	this._tagColorButtonCellId = Dwt.getNextId();
 	return "<table cellpadding=2 cellspacing=2 border=0>" +
-			"<tr><td class='Label' colspan=2>" + LmMsg.tagName + ": </td></tr>" +
+			"<tr><td class='Zabel' colspan=2>" + ZmMsg.tagName + ": </td></tr>" +
 			"<tr><td><input type=text autocomplete=OFF class='Field' id='" + this._nameFieldId + "' /></td>" +
 		    "<td id='" + this._tagColorButtonCellId + "' /></tr>" +
 			"</table>";
@@ -77,7 +77,7 @@ function() {
 
 	// make sure tag doesn't already exist
 	if (!msg && (this._appCtxt.getTagList().getByName(name)))
-		msg = LmMsg.tagNameExists
+		msg = ZmMsg.tagNameExists
 
 	return (msg ? this._showError(msg) : [name, this._colorButton.getData(ZmOperation.MENUITEM_ID)]);
 }

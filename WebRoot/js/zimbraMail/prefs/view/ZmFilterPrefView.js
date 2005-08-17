@@ -1,6 +1,6 @@
 /**
  * Represents the tab for the filter rules.
- * Internally, it uses a LmFilterListView ( descendant of DwtListView )
+ * Internally, it uses a ZmFilterListView ( descendant of DwtListView )
  * to do the rendering of the summary of rules. To show details, it also
  * uses the ZmFilterDetailsView object, and inserts it as needed in the 
  * summary table.
@@ -46,7 +46,7 @@ function ZmFilterPrefView(parent, appCtxt) {
 				     DwtDialog.CANCEL_BUTTON]);
 
 	this._rendered = false;
-	this._title = [LmMsg.zimbraTitle, LmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]].join(": ");
+	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]].join(": ");
 
 	this._operationButtonIds = [ZmOperation.ADD_FILTER_RULE,
 								ZmOperation.SEP,
@@ -153,7 +153,7 @@ ZmFilterPrefView.prototype._renderSummary = function (){
 	var ruleContainer = document.getElementById(this._ruleContainerId);
 	var buttonContainer = document.getElementById(this._buttonContainerId);
 
-	this._listView = new LmFilterListView(this);
+	this._listView = new ZmFilterListView(this);
 	this._listView.onDoubleClick = this._doubleClickHandler;
 	this._listView.onDoubleClickOwnerObject = this;
 	var selList = new AjxListener(this, this._handleSelectionChange);
@@ -330,9 +330,9 @@ ZmFilterPrefView.prototype._filterRemoveListener = function(evt) {
         this._selectedRules = selectedRules;
 		var msg = null;
 		if (selectedRules.length == 1 ){
-			msg = LmMsg.confirmDeleteRule;
+			msg = ZmMsg.confirmDeleteRule;
 		} else {
-			msg = LmMsg.confirmDeleteRules;
+			msg = ZmMsg.confirmDeleteRules;
 		}
         this._removeConfirmMessageDialog.setMessage(msg, null,
                  DwtMessageDialog.INFO_STYLE);
@@ -449,22 +449,22 @@ ZmFilterPrefView.prototype._getDialogXY = function() {
 /**
  * This class handles the rendering of the summary of filter rules.
  */
-function LmFilterListView(parent, view) {
+function ZmFilterListView(parent, view) {
 	headerList = this._getHeaderList();
 	DwtListView.call(this, parent, null, null, headerList);	
-	if (!LmFilterListView._dummyDiv) {
-		LmFilterListView._dummyDiv = document.createElement('div');
+	if (!ZmFilterListView._dummyDiv) {
+		ZmFilterListView._dummyDiv = document.createElement('div');
 	}
 }
 
-LmFilterListView.prototype = new DwtListView;
-LmFilterListView.prototype.constructor = LmFilterListView;
+ZmFilterListView.prototype = new DwtListView;
+ZmFilterListView.prototype.constructor = ZmFilterListView;
 
-LmFilterListView.prototype.toString = function() {
-	return "LmFilterListView";
+ZmFilterListView.prototype.toString = function() {
+	return "ZmFilterListView";
 };
 
-LmFilterListView.prototype.setSize = function(width, height) {
+ZmFilterListView.prototype.setSize = function(width, height) {
 	DwtListView.prototype.setSize.call(this, width, height);
 };
 
@@ -474,7 +474,7 @@ LmFilterListView.prototype.setSize = function(width, height) {
  * Note: In this case the parent for the table, is a div, and all of
  * our rows are divs. Don't pass in tr elements
  */
-LmFilterListView.prototype.insertBefore = function (newRow, refRow) {
+ZmFilterListView.prototype.insertBefore = function (newRow, refRow) {
 	this._parentEl.insertBefore(newRow, refRow);
 };
 
@@ -482,7 +482,7 @@ LmFilterListView.prototype.insertBefore = function (newRow, refRow) {
  * deletes the given child from the parent div.
  * If no row is specified, it will delete the last row.
  */
-LmFilterListView.prototype.deleteRow = function (row) {
+ZmFilterListView.prototype.deleteRow = function (row) {
 	if (row){
 		this._parentEl.removeChild(row);
 	} else {
@@ -490,11 +490,11 @@ LmFilterListView.prototype.deleteRow = function (row) {
 	}
 };
 
-LmFilterListView.prototype.getElementFromItem = function (item) {
+ZmFilterListView.prototype.getElementFromItem = function (item) {
 	return document.getElementById(this._getItemId(item));
 };
 
-LmFilterListView.prototype.getSelectedItem = function () {
+ZmFilterListView.prototype.getSelectedItem = function () {
 	var selArray = this.getSelection();
 	var selectedItem = null;
 	if (selArray.length == 1) {
@@ -503,7 +503,7 @@ LmFilterListView.prototype.getSelectedItem = function () {
 	return selectedItem;
 };
 
-LmFilterListView._rowHtmlTemplate =
+ZmFilterListView._rowHtmlTemplate =
 '<div style="position:relative; height:25px;">\
    <div style="position:absolute; width:30px; top:3px; left:15px">\
      <input type="checkbox" $3> \
@@ -513,14 +513,14 @@ LmFilterListView._rowHtmlTemplate =
    </div>\
 </div>';
 
-LmFilterListView.prototype._createItemHtml = function(item) {
+ZmFilterListView.prototype._createItemHtml = function(item) {
 	var checked = item.isActive()? "checked": "";
-	var rowHtml = AjxStringUtil.resolve(LmFilterListView._rowHtmlTemplate,
+	var rowHtml = AjxStringUtil.resolve(ZmFilterListView._rowHtmlTemplate,
 									   [this._headerList[0]._width,
 										this._headerList[1]._width,
 										item.getName(), checked]);
-	LmFilterListView._dummyDiv.innerHTML = rowHtml;
-	var itemEl = LmFilterListView._dummyDiv.firstChild;
+	ZmFilterListView._dummyDiv.innerHTML = rowHtml;
+	var itemEl = ZmFilterListView._dummyDiv.firstChild;
 	itemEl._styleClass = "Row";
 	itemEl._selectedStyleClass = itemEl._styleClass +'-' +DwtCssStyle.SELECTED;
 	itemEl.className = itemEl._styleClass;
@@ -528,14 +528,14 @@ LmFilterListView.prototype._createItemHtml = function(item) {
 	var input = itemEl.getElementsByTagName('input')[0];
 	input._itemId = itemEl._itemIndex;
 	if (!AjxEnv.isIE){
-		itemEl.onchange = LmFilterListView._activeStateChange;
+		itemEl.onchange = ZmFilterListView._activeStateChange;
 	} else {
-		input.onclick = LmFilterListView._activeStateChange;
+		input.onclick = ZmFilterListView._activeStateChange;
 	}
 	return itemEl;
 };
 
-LmFilterListView._activeStateChange = function (event, element) {
+ZmFilterListView._activeStateChange = function (event, element) {
 	var ev = DwtUiEvent.getEvent(event);
 	var target = DwtUiEvent.getTarget(ev);
 	var item = AjxCore.objectWithId(target._itemId);
@@ -543,7 +543,7 @@ LmFilterListView._activeStateChange = function (event, element) {
 	ZmFilterRules.markDirty();
 };
 
-LmFilterListView.prototype._setNoResultsHtml = 
+ZmFilterListView.prototype._setNoResultsHtml = 
 function() {
 
 	var htmlArr = new Array(5);
@@ -560,11 +560,11 @@ function() {
 	this._parentEl.appendChild(div);
 };
 
-LmFilterListView.prototype._getItemId = function(item){
+ZmFilterListView.prototype._getItemId = function(item){
 	return "LMFR--" + item.getName() + "--" + item.getUniqueId();
 };
 
-LmFilterListView.prototype._getHeaderList = function() {
+ZmFilterListView.prototype._getHeaderList = function() {
 
 	var headerList = new Array();
 	headerList.push(new DwtListHeaderItem("", "Active", null, 30));
@@ -572,7 +572,7 @@ LmFilterListView.prototype._getHeaderList = function() {
 	return headerList;
 };
 
-LmFilterListView.prototype._itemClicked = function(clickedEl, ev) {
+ZmFilterListView.prototype._itemClicked = function(clickedEl, ev) {
 	// dont allow right clicks since it doesnt make sense here...
 	if (!ev.shiftKey && !ev.ctrlKey && ev.button == DwtMouseEvent.RIGHT) {
 		return;
@@ -583,7 +583,7 @@ LmFilterListView.prototype._itemClicked = function(clickedEl, ev) {
 	}
 };
 
-LmFilterListView.prototype._doubleClickAction = function(mouseEv, el) {
+ZmFilterListView.prototype._doubleClickAction = function(mouseEv, el) {
 	if (this.onDoubleClick) {
 		var item = this.getItemFromElement(el)
 		if (this.onDoubleClickOwnerObject) {

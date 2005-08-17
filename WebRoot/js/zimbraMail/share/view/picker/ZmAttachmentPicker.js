@@ -41,7 +41,7 @@ function(tree, atts) {
 ZmAttachmentPicker.prototype._newRadio =
 function(radioId) {
 	var html = new Array(5);
-	var text = LmMsg[ZmAttachmentPicker.MSG_KEY[radioId]];
+	var text = ZmMsg[ZmAttachmentPicker.MSG_KEY[radioId]];
 	var checked = (radioId == ZmAttachmentPicker.RADIO_CHECKED) ? "checked" : "";
 	var id = this._radioId[radioId];
 	var i = 0;

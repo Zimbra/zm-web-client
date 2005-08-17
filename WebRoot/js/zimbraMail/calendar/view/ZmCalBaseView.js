@@ -15,7 +15,7 @@ function ZmCalBaseView(parent, className, posStyle, view, dropTgt) {
 ZmCalBaseView.prototype = new ZmListView;
 ZmCalBaseView.prototype.constructor = ZmCalBaseView;
 
-ZmCalBaseView.TIME_SELECTION = "LmCalTimeSelection";
+ZmCalBaseView.TIME_SELECTION = "ZmCalTimeSelection";
 
 ZmCalBaseView.prototype._parseId =
 function(id) {
@@ -28,7 +28,7 @@ function(id) {
 
 ZmCalBaseView.prototype.getTitle = 
 function() {
-	return [LmMsg.zimbraTitle, this.getCalTitle()].join(": ");
+	return [ZmMsg.zimbraTitle, this.getCalTitle()].join(": ");
 }
 
 ZmCalBaseView.prototype.needsRefresh = 

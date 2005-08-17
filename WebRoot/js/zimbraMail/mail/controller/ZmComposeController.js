@@ -97,17 +97,17 @@ function(params) {
 				}
 			}
 			if (this.isChildWindow && window.parentController) {
-				window.parentController.setStatusMsg(LmMsg.messageSent);
+				window.parentController.setStatusMsg(ZmMsg.messageSent);
 			} else {
-				this._appCtxt.getAppController().setStatusMsg(LmMsg.messageSent);
+				this._appCtxt.getAppController().setStatusMsg(ZmMsg.messageSent);
 			}
 		} else {
 			// TODO - disable save draft button indicating a draft was saved
 			//        ** new UI will show in toaster section
 			if (this.isChildWindow && window.parentController) {
-				window.parentController.setStatusMsg(LmMsg.draftSaved);
+				window.parentController.setStatusMsg(ZmMsg.draftSaved);
 			} else {
-				this._appCtxt.getAppController().setStatusMsg(LmMsg.draftSaved);
+				this._appCtxt.getAppController().setStatusMsg(ZmMsg.draftSaved);
 			}
 			this._composeView.reEnableDesignMode();
 
@@ -148,7 +148,7 @@ function(delMsg) {
 	}
 }
 
-// Creates the compose view based on the mode we're in. Lazily creates the 
+// Creates the compose view based on the mode we're in. Zazily creates the 
 // compose toolbar, a contact picker, and the compose view itself.
 ZmComposeController.prototype._setView =
 function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
@@ -209,7 +209,7 @@ function() {
 		buttons.push(ZmOperation.DETACH_COMPOSE);
 	}
 
-	var className = this.isChildWindow ? "LmAppToolBar_cw" : "LmAppToolBar";
+	var className = this.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
 	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, className);
 	this._toolbar.addSelectionListener(ZmOperation.SEND, new AjxListener(this, this._sendListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
@@ -222,13 +222,13 @@ function() {
 	
 		var mi = new DwtMenuItem(m, DwtMenuItem.RADIO_STYLE);
 		mi.setImage(ZmImg.I_HTML);
-		mi.setText(LmMsg.htmlDocument);
+		mi.setText(ZmMsg.htmlDocument);
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
 		mi.addSelectionListener(new AjxListener(this, this._formatListener));
 		
 		mi = new DwtMenuItem(m, DwtMenuItem.RADIO_STYLE);
 		mi.setImage(ZmImg.I_DOCUMENT);
-		mi.setText(LmMsg.plainText);
+		mi.setText(ZmMsg.plainText);
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
 		mi.addSelectionListener(new AjxListener(this, this._formatListener));	
 	}
@@ -319,7 +319,7 @@ function(ev) {
 	if (!this._detachOkCancel) {
 		// detach ok/cancel dialog is only necessary if user clicked on the add attachments button	
 		this._detachOkCancel = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
-		this._detachOkCancel.setMessage(LmMsg.detachAnyway, null, DwtMessageDialog.WARNING_STYLE);
+		this._detachOkCancel.setMessage(ZmMsg.detachAnyway, null, DwtMessageDialog.WARNING_STYLE);
 		this._detachOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._detachCallback, this);
 	}
 
@@ -340,7 +340,7 @@ function(ev) {
 		// if formatting from html to text, confirm w/ user!
 		if (!this._textModeOkCancel) {
 			this._textModeOkCancel = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
-			this._textModeOkCancel.setMessage(LmMsg.switchToText, null, DwtMessageDialog.WARNING_STYLE);
+			this._textModeOkCancel.setMessage(ZmMsg.switchToText, null, DwtMessageDialog.WARNING_STYLE);
 			this._textModeOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._textModeOkCallback, this);
 			this._textModeOkCancel.registerCallback(DwtDialog.CANCEL_BUTTON, this._textModeCancelCallback, this);
 		}
@@ -452,13 +452,13 @@ function() {
 	if (!this._popShield) {
 		if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 			this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
-			this._popShield.setMessage(LmMsg.askSaveDraft, null, DwtMessageDialog.WARNING_STYLE);
+			this._popShield.setMessage(ZmMsg.askSaveDraft, null, DwtMessageDialog.WARNING_STYLE);
 			this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 			this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 			this._popShield.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
 		} else {
 			this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
-			this._popShield.setMessage(LmMsg.askLeaveCompose, null, DwtMessageDialog.WARNING_STYLE);
+			this._popShield.setMessage(ZmMsg.askLeaveCompose, null, DwtMessageDialog.WARNING_STYLE);
 			this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 			this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 		}

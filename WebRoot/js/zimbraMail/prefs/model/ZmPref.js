@@ -60,174 +60,174 @@ function (emailStr) {
 ZmPref.SETUP = new Object();
 
 ZmPref.SETUP[ZmSetting.SEARCH_INCLUDES_SPAM] = {
-	displayName:		LmMsg.includeJunkFolder,
+	displayName:		ZmMsg.includeJunkFolder,
 	displayContainer:	"checkbox"};
 
 ZmPref.SETUP[ZmSetting.SEARCH_INCLUDES_TRASH] = {
-	displayName:		LmMsg.includeTrashFolder,
+	displayName:		ZmMsg.includeTrashFolder,
 	displayContainer:	"checkbox",
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.PASSWORD] = {
-	displayName:		LmMsg.changePassword,
+	displayName:		ZmMsg.changePassword,
 	displayContainer:	"x_password",
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.GROUP_MAIL_BY] =	{ 
-	displayName:		LmMsg.groupMailBy,
+	displayName:		ZmMsg.groupMailBy,
 	displayContainer:	"select",
-	displayOptions:		[LmMsg.message, LmMsg.conversation],
+	displayOptions:		[ZmMsg.message, ZmMsg.conversation],
 	options:			[ZmSetting.GROUP_BY_MESSAGE, ZmSetting.GROUP_BY_CONV]};
 
 ZmPref.SETUP[ZmSetting.PAGE_SIZE] = {
-	displayName:		LmMsg.itemsPerPage,
+	displayName:		ZmMsg.itemsPerPage,
 	displayContainer:	"select",
 	displayOptions:		["10", "25", "50", "100"]};
 
 ZmPref.SETUP[ZmSetting.SHOW_FRAGMENTS] = {
-	displayName:		LmMsg.showFragments,
+	displayName:		ZmMsg.showFragments,
 	displayContainer:	"checkbox"};
 
 ZmPref.SETUP[ZmSetting.INITIAL_SEARCH] = {
-	displayName:		LmMsg.initialMailSearch,
+	displayName:		ZmMsg.initialMailSearch,
 	displayContainer:	"input",
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.SAVE_TO_SENT] = {
-	displayName:		LmMsg.saveToSent,
+	displayName:		ZmMsg.saveToSent,
 	displayContainer:	"checkbox"};
 
 ZmPref.SETUP[ZmSetting.REPLY_TO_ADDRESS] = {
-	displayName:		LmMsg.replyToAddress,
+	displayName:		ZmMsg.replyToAddress,
 	displayContainer:	"input",
 	validationFunction: ZmPref.validateEmail,
-	errorMessage:       LmMsg.invalidEmail};
+	errorMessage:       ZmMsg.invalidEmail};
 
 ZmPref.SETUP[ZmSetting.REPLY_INCLUDE_ORIG] = {
-	displayName:		LmMsg.replyInclude,
+	displayName:		ZmMsg.replyInclude,
 	displayContainer:	"select",
-	displayOptions:		[LmMsg.dontInclude, LmMsg.includeAsAttach,
-						 LmMsg.includeInBody, LmMsg.includePrefix, LmMsg.smartInclude],
+	displayOptions:		[ZmMsg.dontInclude, ZmMsg.includeAsAttach,
+						 ZmMsg.includeInBody, ZmMsg.includePrefix, ZmMsg.smartInclude],
 	options:			[ZmSetting.INCLUDE_NONE, ZmSetting.INCLUDE_ATTACH,
 						 ZmSetting.INCLUDE, ZmSetting.INCLUDE_PREFIX, ZmSetting.INCLUDE_SMART]};
 
 ZmPref.SETUP[ZmSetting.FORWARD_INCLUDE_ORIG] = {
-	displayName:		LmMsg.forwardInclude,
+	displayName:		ZmMsg.forwardInclude,
 	displayContainer:	"select",
-	displayOptions:		[LmMsg.includeAsAttach, LmMsg.includeInBody, LmMsg.includePrefix],
+	displayOptions:		[ZmMsg.includeAsAttach, ZmMsg.includeInBody, ZmMsg.includePrefix],
 	options:			[ZmSetting.INCLUDE_ATTACH, ZmSetting.INCLUDE, ZmSetting.INCLUDE_PREFIX]};
 
 ZmPref.SETUP[ZmSetting.REPLY_PREFIX] = {
-	displayName:		LmMsg.prefix,
+	displayName:		ZmMsg.prefix,
 	displayContainer:	"select",
 	displayOptions:		[">", "|"],
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.SIGNATURE_ENABLED] = {
-	displayName:		LmMsg.signatureEnabled,
+	displayName:		ZmMsg.signatureEnabled,
 	displayContainer:	"checkbox"};
 
 ZmPref.SETUP[ZmSetting.SIGNATURE_STYLE] = {
-	displayName:		LmMsg.signatureStyle,
+	displayName:		ZmMsg.signatureStyle,
 	displayContainer:	"checkbox"};
 
 ZmPref.SETUP[ZmSetting.SIGNATURE] = {
-	displayName:		LmMsg.signature,
+	displayName:		ZmMsg.signature,
 	displayContainer:	"textarea",
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.VACATION_MSG_ENABLED] = {
-	displayName:		LmMsg.awayMessageEnabled,
+	displayName:		ZmMsg.awayMessageEnabled,
 	displayContainer:	"checkbox"};
 
 ZmPref.SETUP[ZmSetting.VACATION_MSG] = {
-	displayName:		LmMsg.awayMessage,
+	displayName:		ZmMsg.awayMessage,
 	displayContainer:	"textarea",
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.NOTIF_ENABLED] = {
-	displayName:		LmMsg.mailNotifEnabled,
+	displayName:		ZmMsg.mailNotifEnabled,
 	displayContainer:	"checkbox"};
 
 ZmPref.SETUP[ZmSetting.NOTIF_ADDRESS] = {
-	displayName:		LmMsg.mailNotifAddress,
+	displayName:		ZmMsg.mailNotifAddress,
 	displayContainer:	"input",
 	validationFunction: ZmPref.validateEmail,
-	errorMessage:       LmMsg.invalidEmail,
+	errorMessage:       ZmMsg.invalidEmail,
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.VIEW_AS_HTML] = {
-	displayName:		LmMsg.viewMailAsHtml,
+	displayName:		ZmMsg.viewMailAsHtml,
 	displayContainer:	"checkbox"};
 
 ZmPref.SETUP[ZmSetting.COMPOSE_AS_FORMAT] = {
-	displayName:		LmMsg.composeMailUsing,
+	displayName:		ZmMsg.composeMailUsing,
 	displayContainer:	"select",
-	displayOptions: 	[LmMsg.text, LmMsg.htmlDocument],
+	displayOptions: 	[ZmMsg.text, ZmMsg.htmlDocument],
 	options: 			[ZmSetting.COMPOSE_TEXT, ZmSetting.COMPOSE_HTML]};
 
 ZmPref.SETUP[ZmSetting.COMPOSE_SAME_FORMAT] = {
-	displayName:		LmMsg.replyForwardInSameFormat,
+	displayName:		ZmMsg.replyForwardInSameFormat,
 	displayContainer:	"checkbox"};
 
 ZmPref.SETUP[ZmSetting.DEDUPE_MSG_TO_SELF] = {
-	displayName:		LmMsg.removeDupesToSelf,
+	displayName:		ZmMsg.removeDupesToSelf,
 	displayContainer:	"select",
-	displayOptions:		[LmMsg.dedupeNone, LmMsg.dedupeSecondCopy, LmMsg.dedupeAll],
+	displayOptions:		[ZmMsg.dedupeNone, ZmMsg.dedupeSecondCopy, ZmMsg.dedupeAll],
 	options:			[ZmSetting.DEDUPE_NONE, ZmSetting.DEDUPE_SECOND, ZmSetting.DEDUPE_ALL]};
 
 ZmPref.SETUP[ZmSetting.NEW_WINDOW_COMPOSE] = {
-	displayName:		LmMsg.composeInNewWin,
+	displayName:		ZmMsg.composeInNewWin,
 	displayContainer:	"checkbox",
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.AUTO_ADD_ADDRESS] = {
-	displayName:		LmMsg.autoAddContacts,
+	displayName:		ZmMsg.autoAddContacts,
 	displayContainer:	"checkbox",
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.CONTACTS_VIEW] = {
-	displayName:		LmMsg.viewContacts,
+	displayName:		ZmMsg.viewContacts,
  	displayContainer:	"select",
-	displayOptions:		[LmMsg.detailedCards, LmMsg.contactList],
+	displayOptions:		[ZmMsg.detailedCards, ZmMsg.contactList],
 	options:			[ZmSetting.CV_CARDS, ZmSetting.CV_LIST]};
 
 ZmPref.SETUP[ZmSetting.CONTACTS_PER_PAGE] = {
-	displayName:		LmMsg.contactsPerPage,
+	displayName:		ZmMsg.contactsPerPage,
  	displayContainer:	"select",
 	displayOptions:		["10", "25", "50", "100"],
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.IMPORT] = {
-	displayName:		LmMsg._import,
+	displayName:		ZmMsg._import,
 	displayContainer:	"import",
 	displaySeparator:	false};
 
 ZmPref.SETUP[ZmSetting.EXPORT] = {
-	displayName:		LmMsg._export,
+	displayName:		ZmMsg._export,
 	displayContainer:	"export",
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.SHOW_SEARCH_STRING] = {
-	displayName:		LmMsg.showSearchString,
+	displayName:		ZmMsg.showSearchString,
 	displayContainer:	"checkbox",
 	displaySeparator:	true};
 
 // ZmPref.SETUP[ZmSetting.DEFAULT_CALENDAR_TIMEZONE] = {
-// 	displayName:		LmMsg.defaultCalendarTimezone,
+// 	displayName:		ZmMsg.defaultCalendarTimezone,
 // 	displayContainer:	"select",
 // 	choices:            ZmTimezones.getFullZoneChoices(),
 // 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.CAL_SHOW_TIMEZONE] = {
- 	displayName:		LmMsg.shouldShowTimezone,
+ 	displayName:		ZmMsg.shouldShowTimezone,
  	displayContainer:	"checkbox",
  	displaySeparator:	false};
 
 ZmPref.SETUP[ZmSetting.CALENDAR_INITIAL_VIEW] = {
- 	displayName:		LmMsg.calendarInitialView,
+ 	displayName:		ZmMsg.calendarInitialView,
  	displayContainer:	"select",
-	displayOptions:		[LmMsg.calViewDay, LmMsg.calViewWorkWeek, LmMsg.calViewWeek, LmMsg.calViewMonth],
+	displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth],
 	options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH],
  	displaySeparator:	false};
 

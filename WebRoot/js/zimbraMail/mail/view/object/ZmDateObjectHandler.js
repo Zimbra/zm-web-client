@@ -17,7 +17,7 @@ ZmDateObjectHandler.DOW = {
 
 var $RE_DOM = "(\\d{1,2})(?:st|nd|rd|th)?";
 
-// needs to be kept in sync with LmDateObjectHAndler.MONTH
+// needs to be kept in sync with ZmDateObjectHAndler.MONTH
 var $RE_MONTH = "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
 
 ZmDateObjectHandler.MONTH = { 
@@ -61,12 +61,12 @@ $RE_DOW + $RE_COMMA_OR_SP + RE_MONTH + $RE_SP + $RE_DOM +
 
 ZmDateObjectHandler.registerHandlers =
 function(handlers, appCtxt) {
-	handlers.push(new LmDate1ObjectHandler(appCtxt));
-	handlers.push(new LmDate2ObjectHandler(appCtxt));
-	handlers.push(new LmDate3ObjectHandler(appCtxt));
-	handlers.push(new LmDate4ObjectHandler(appCtxt));
-	handlers.push(new LmDate5ObjectHandler(appCtxt));
-	handlers.push(new LmDate6ObjectHandler(appCtxt));
+	handlers.push(new ZmDate1ObjectHandler(appCtxt));
+	handlers.push(new ZmDate2ObjectHandler(appCtxt));
+	handlers.push(new ZmDate3ObjectHandler(appCtxt));
+	handlers.push(new ZmDate4ObjectHandler(appCtxt));
+	handlers.push(new ZmDate5ObjectHandler(appCtxt));
+	handlers.push(new ZmDate6ObjectHandler(appCtxt));
 }
 
 ZmDateObjectHandler._currentDate = new Date();
@@ -141,19 +141,19 @@ function(obj, span, ev, context) {
 
 // today/yesterday =======================
 
-function LmDate1ObjectHandler(appCtxt) {
+function ZmDate1ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
 }
 
-LmDate1ObjectHandler.prototype = new ZmDateObjectHandler;
-LmDate1ObjectHandler.prototype.constructor = LmDate1ObjectHandler;
+ZmDate1ObjectHandler.prototype = new ZmDateObjectHandler;
+ZmDate1ObjectHandler.prototype.constructor = ZmDate1ObjectHandler;
 
-LmDate1ObjectHandler.REGEX = new RegExp("\\b" + $RE_TODAY_TOMORROW_YESTERDAY + "\\b", "ig"),
+ZmDate1ObjectHandler.REGEX = new RegExp("\\b" + $RE_TODAY_TOMORROW_YESTERDAY + "\\b", "ig"),
 
-LmDate1ObjectHandler.prototype.match =
+ZmDate1ObjectHandler.prototype.match =
 function(line, startIndex) {
-	LmDate1ObjectHandler.REGEX.lastIndex = startIndex;
-	var result = LmDate1ObjectHandler.REGEX.exec(line);
+	ZmDate1ObjectHandler.REGEX.lastIndex = startIndex;
+	var result = ZmDate1ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 	
 	var d = new Date(ZmDateObjectHandler.getCurrentDate());
@@ -169,19 +169,19 @@ function(line, startIndex) {
 
 // {next Tuesday}, {last Monday}, etc
 
-function LmDate2ObjectHandler(appCtxt) {
+function ZmDate2ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
 }
 
-LmDate2ObjectHandler.prototype = new ZmDateObjectHandler;
-LmDate2ObjectHandler.prototype.constructor = LmDate2ObjectHandler;
+ZmDate2ObjectHandler.prototype = new ZmDateObjectHandler;
+ZmDate2ObjectHandler.prototype.constructor = ZmDate2ObjectHandler;
 
-LmDate2ObjectHandler.REGEX = new RegExp("\\b" + $RE_NEXT_LAST + $RE_SP + $RE_DOW + "\\b", "ig"),
+ZmDate2ObjectHandler.REGEX = new RegExp("\\b" + $RE_NEXT_LAST + $RE_SP + $RE_DOW + "\\b", "ig"),
 
-LmDate2ObjectHandler.prototype.match =
+ZmDate2ObjectHandler.prototype.match =
 function(line, startIndex) {
-	LmDate2ObjectHandler.REGEX.lastIndex = startIndex;
-	var result = LmDate2ObjectHandler.REGEX.exec(line);
+	ZmDate2ObjectHandler.REGEX.lastIndex = startIndex;
+	var result = ZmDate2ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
 	var d = new Date(ZmDateObjectHandler.getCurrentDate());
@@ -207,19 +207,19 @@ function(line, startIndex) {
 
 // {25th December}, {6th, June}, {6 June 2004}, {25th December, 2005}
 
-function LmDate3ObjectHandler(appCtxt) {
+function ZmDate3ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
 }
 
-LmDate3ObjectHandler.prototype = new ZmDateObjectHandler;
-LmDate3ObjectHandler.prototype.constructor = LmDate3ObjectHandler;
+ZmDate3ObjectHandler.prototype = new ZmDateObjectHandler;
+ZmDate3ObjectHandler.prototype.constructor = ZmDate3ObjectHandler;
 
-LmDate3ObjectHandler.REGEX = 	new RegExp("\\b" + $RE_DOM + $RE_COMMA_OR_SP + $RE_MONTH + $RE_OP_YEAR42 + "\\b", "ig"),
+ZmDate3ObjectHandler.REGEX = 	new RegExp("\\b" + $RE_DOM + $RE_COMMA_OR_SP + $RE_MONTH + $RE_OP_YEAR42 + "\\b", "ig"),
 
-LmDate3ObjectHandler.prototype.match =
+ZmDate3ObjectHandler.prototype.match =
 function(line, startIndex) {
-	LmDate3ObjectHandler.REGEX.lastIndex = startIndex;
-	var result = LmDate3ObjectHandler.REGEX.exec(line);
+	ZmDate3ObjectHandler.REGEX.lastIndex = startIndex;
+	var result = ZmDate3ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
 	var d = new Date(ZmDateObjectHandler.getCurrentDate());
@@ -240,19 +240,19 @@ function(line, startIndex) {
 
 // {June 6th, 2005}, {June 6}, {May 3rd, 04}, {May 24 10:11:26 2005}, 
 
-function LmDate4ObjectHandler(appCtxt) {
+function ZmDate4ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
 }
 
-LmDate4ObjectHandler.prototype = new ZmDateObjectHandler;
-LmDate4ObjectHandler.prototype.constructor = LmDate4ObjectHandler;
+ZmDate4ObjectHandler.prototype = new ZmDateObjectHandler;
+ZmDate4ObjectHandler.prototype.constructor = ZmDate4ObjectHandler;
 
-LmDate4ObjectHandler.REGEX = new RegExp("\\b" + $RE_MONTH + $RE_SP + $RE_DOM + $RE_OP_TIME + $RE_OP_YEAR42 + "\\b", "ig"),
+ZmDate4ObjectHandler.REGEX = new RegExp("\\b" + $RE_MONTH + $RE_SP + $RE_DOM + $RE_OP_TIME + $RE_OP_YEAR42 + "\\b", "ig"),
 
-LmDate4ObjectHandler.prototype.match =
+ZmDate4ObjectHandler.prototype.match =
 function(line, startIndex) {
-	LmDate4ObjectHandler.REGEX.lastIndex = startIndex;
-	var result = LmDate4ObjectHandler.REGEX.exec(line);
+	ZmDate4ObjectHandler.REGEX.lastIndex = startIndex;
+	var result = ZmDate4ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
 	var d = new Date(ZmDateObjectHandler.getCurrentDate());
@@ -273,19 +273,19 @@ function(line, startIndex) {
 
 //{12/25/2005}, {06/06/05}, {12-25-2005}, {06-06-05}, etc
 
-function LmDate5ObjectHandler(appCtxt) {
+function ZmDate5ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
 }
 
-LmDate5ObjectHandler.prototype = new ZmDateObjectHandler;
-LmDate5ObjectHandler.prototype.constructor = LmDate5ObjectHandler;
+ZmDate5ObjectHandler.prototype = new ZmDateObjectHandler;
+ZmDate5ObjectHandler.prototype.constructor = ZmDate5ObjectHandler;
 
-LmDate5ObjectHandler.REGEX = new RegExp("\\b" + $RE_MM + $RE_DASH_OR_SLASH + $RE_DD + $RE_DASH_OR_SLASH + $RE_YEAR42 + "\\b", "ig"),
+ZmDate5ObjectHandler.REGEX = new RegExp("\\b" + $RE_MM + $RE_DASH_OR_SLASH + $RE_DD + $RE_DASH_OR_SLASH + $RE_YEAR42 + "\\b", "ig"),
 
-LmDate5ObjectHandler.prototype.match =
+ZmDate5ObjectHandler.prototype.match =
 function(line, startIndex) {
-	LmDate5ObjectHandler.REGEX.lastIndex = startIndex;
-	var result = LmDate5ObjectHandler.REGEX.exec(line);
+	ZmDate5ObjectHandler.REGEX.lastIndex = startIndex;
+	var result = ZmDate5ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
 	var d = new Date(ZmDateObjectHandler.getCurrentDate());
@@ -305,19 +305,19 @@ function(line, startIndex) {
 
 // {2005/06/24}, {2005/12/25}, {2005-06-24}
 
-function LmDate6ObjectHandler(appCtxt) {
+function ZmDate6ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
 }
 
-LmDate6ObjectHandler.prototype = new ZmDateObjectHandler;
-LmDate6ObjectHandler.prototype.constructor = LmDate6ObjectHandler;
+ZmDate6ObjectHandler.prototype = new ZmDateObjectHandler;
+ZmDate6ObjectHandler.prototype.constructor = ZmDate6ObjectHandler;
 
-LmDate6ObjectHandler.REGEX = new RegExp("\\b" + $RE_YEAR4 + $RE_DASH_OR_SLASH + $RE_MM + $RE_DASH_OR_SLASH + $RE_DD + "\\b", "ig"),
+ZmDate6ObjectHandler.REGEX = new RegExp("\\b" + $RE_YEAR4 + $RE_DASH_OR_SLASH + $RE_MM + $RE_DASH_OR_SLASH + $RE_DD + "\\b", "ig"),
 
-LmDate6ObjectHandler.prototype.match =
+ZmDate6ObjectHandler.prototype.match =
 function(line, startIndex) {
-	LmDate6ObjectHandler.REGEX.lastIndex = startIndex;
-	var result = LmDate6ObjectHandler.REGEX.exec(line);
+	ZmDate6ObjectHandler.REGEX.lastIndex = startIndex;
+	var result = ZmDate6ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
 	var d = new Date(ZmDateObjectHandler.getCurrentDate());

@@ -51,7 +51,7 @@ function(defaultColumnSort) {
 		var fromColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_FROM]);
 		var fromColSpan = Dwt.getDomObj(this.getDocument(), DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
 		if (fromColSpan)
-			fromColSpan.innerHTML = "&nbsp;" + (isSentFolder || isDraftsFolder ? LmMsg.to : LmMsg.from);
+			fromColSpan.innerHTML = "&nbsp;" + (isSentFolder || isDraftsFolder ? ZmMsg.to : ZmMsg.from);
 
 		// set the received column name based on query string
 		var recdColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]);
@@ -59,11 +59,11 @@ function(defaultColumnSort) {
 		if (recdColSpan) {
 			var html = "&nbsp;";
 			if (isSentFolder) {
-				html += LmMsg.sent;
+				html += ZmMsg.sent;
 			} else if (isDraftsFolder) {
-				html += LmMsg.lastSaved;
+				html += ZmMsg.lastSaved;
 			} else {
-				html += LmMsg.received;
+				html += ZmMsg.received;
 			}
 			recdColSpan.innerHTML = html;
 		}
@@ -188,10 +188,10 @@ function(msg, now, isDndIcon, isMixedView) {
 			} else {
 				htmlArr[idx++] = "<td id='" + this._getFieldId(msg, ZmItem.F_SUBJECT) + "'";
 				htmlArr[idx++] = AjxEnv.isSafari ? " style='width:auto;'>" : " width=100%>";
-				var subj = msg.getSubject() || LmMsg.noSubject;
+				var subj = msg.getSubject() || ZmMsg.noSubject;
 				htmlArr[idx++] = AjxStringUtil.htmlEncode(subj);
 				if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
-					htmlArr[idx++] = "<span class='LmConvListFragment'>";
+					htmlArr[idx++] = "<span class='ZmConvListFragment'>";
 					htmlArr[idx++] = " - ";
 					htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
 					htmlArr[idx++] = "</span>";
@@ -356,25 +356,25 @@ function(parent) {
 
 	var headerList = new Array();
 
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, ZmImg.I_FLAG_ON, ZmMailMsgListView.MLV_COLWIDTH_ICON, null, null, null, LmMsg.flag));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, ZmImg.I_FLAG_ON, ZmMailMsgListView.MLV_COLWIDTH_ICON, null, null, null, ZmMsg.flag));
 
 	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
 	var appCtxt = shell.getData(ZmAppCtxt.LABEL); // this._appCtxt not set until parent constructor is called
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, ZmImg.I_MINI_TAG, ZmMailMsgListView.MLV_COLWIDTH_ICON, null, null, null, LmMsg.tag));
+		headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, ZmImg.I_MINI_TAG, ZmMailMsgListView.MLV_COLWIDTH_ICON, null, null, null, ZmMsg.tag));
 	}
 
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS], null, ZmImg.I_MAIL_STATUS, ZmMailMsgListView.MLV_COLWIDTH_ICON, null, null, null, LmMsg.status));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FROM], LmMsg.from, null, ZmMailMsgListView.MLV_COLWIDTH_FROM, ZmItem.F_FROM, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, ZmImg.I_ATTACHMENT, ZmMailMsgListView.MLV_COLWIDTH_ICON, null, null, null, LmMsg.attachment));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS], null, ZmImg.I_MAIL_STATUS, ZmMailMsgListView.MLV_COLWIDTH_ICON, null, null, null, ZmMsg.status));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FROM], ZmMsg.from, null, ZmMailMsgListView.MLV_COLWIDTH_FROM, ZmItem.F_FROM, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, ZmImg.I_ATTACHMENT, ZmMailMsgListView.MLV_COLWIDTH_ICON, null, null, null, ZmMsg.attachment));
 
 	var sortBy = this._mode == ZmController.CONV_VIEW ? null : ZmItem.F_SUBJECT;
-	var colName = this._mode == ZmController.CONV_VIEW ? LmMsg.fragment : LmMsg.subject;
+	var colName = this._mode == ZmController.CONV_VIEW ? ZmMsg.fragment : ZmMsg.subject;
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], colName, null, null, sortBy));
 
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER], LmMsg.folder, null, ZmMailMsgListView.MLV_COLWIDTH_FOLDER, null, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE], LmMsg.size, null, ZmMailMsgListView.MLV_COLWIDTH_SIZE, null, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], LmMsg.received, null, ZmMailMsgListView.MLV_COLWIDTH_DATE, ZmItem.F_DATE, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER], ZmMsg.folder, null, ZmMailMsgListView.MLV_COLWIDTH_FOLDER, null, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE], ZmMsg.size, null, ZmMailMsgListView.MLV_COLWIDTH_SIZE, null, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.received, null, ZmMailMsgListView.MLV_COLWIDTH_DATE, ZmItem.F_DATE, true));
 
 	return headerList;
 }

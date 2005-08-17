@@ -135,9 +135,9 @@ ZmAppt.prototype.getStatusString = function () {
 };
 
 ZmAppt._statusString = {
-	TE: LmMsg.tentative,
-	CONF: LmMsg.confirmed,
-	CANC: LmMsg.cancelled
+	TE: ZmMsg.tentative,
+	CONF: ZmMsg.confirmed,
+	CANC: ZmMsg.cancelled
 }
 
 ZmAppt.prototype.getParticipationStatus = function () {
@@ -145,11 +145,11 @@ ZmAppt.prototype.getParticipationStatus = function () {
 };
 
 ZmAppt._pstatusString = {
-	NE: "Undecided",	//	LmMsg.needsAction,		// HACK: i18n
-	TE: LmMsg.tentative,
-	AC: LmMsg.accepted,
-	DE: LmMsg.declined,
-	DG: LmMsg.delegated
+	NE: "Undecided",	//	ZmMsg.needsAction,		// HACK: i18n
+	TE: ZmMsg.tentative,
+	AC: ZmMsg.accepted,
+	DE: ZmMsg.declined,
+	DG: ZmMsg.delegated
 }
 
 ZmAppt.prototype.getParticipationStatusString = function () {
@@ -608,13 +608,13 @@ function() {
 		html[idx++] = AjxImg.getImageHtml(ZmImg.I_APPT);
 		html[idx++] = "</td></table></div></td></tr>";
 		//idx = this._addEntryRow("Subject", this.getName(), html, idx);
-		//idx = this._addEntryRow(LmMsg.meetingStatus, this.getStatusString(), html, idx, false);
+		//idx = this._addEntryRow(ZmMsg.meetingStatus, this.getStatusString(), html, idx, false);
 		if (this.hasOtherAttendees()) {
-			idx = this._addEntryRow(LmMsg.status, this.getParticipationStatusString(), html, idx, false);		
+			idx = this._addEntryRow(ZmMsg.status, this.getParticipationStatusString(), html, idx, false);		
 		}
-		idx = this._addEntryRow(LmMsg.when, when, html, idx, false);		
-		idx = this._addEntryRow(LmMsg.location, this.getLocation(), html, idx, false);
-		idx = this._addEntryRow(LmMsg.notes, this.getNotes(), html, idx, true);		
+		idx = this._addEntryRow(ZmMsg.when, when, html, idx, false);		
+		idx = this._addEntryRow(ZmMsg.location, this.getLocation(), html, idx, false);
+		idx = this._addEntryRow(ZmMsg.notes, this.getNotes(), html, idx, true);		
 
 		html[idx++] = "</table>";
 		this._toolTip = html.join("");
@@ -1223,7 +1223,7 @@ ZmAppt.prototype._setSimpleSoapAttributes = function (soapDoc, method,  attachme
 	}
 
 	var org = soapDoc.set("or", null, inv);
-	// TODO: make attendees list, a list of LmEmailAddresses.
+	// TODO: make attendees list, a list of ZmEmailAddresses.
 	// org.setAttribute("d",
 	if (this.organizer == null) this.organizer = this._appCtxt.get(ZmSetting.USERNAME);
 	org.setAttribute("a", this.organizer);

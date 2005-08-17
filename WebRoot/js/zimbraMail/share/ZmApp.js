@@ -75,7 +75,7 @@ function(name, force) {
 // Abstract methods
 
 /**
-* Launches an app, which creates a view and shows it.
+* Zaunches an app, which creates a view and shows it.
 */
 ZmApp.prototype.launch =
 function() {

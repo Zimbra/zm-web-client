@@ -3,9 +3,9 @@ function ZmPickTagDialog(parent, msgDialog, className) {
 	if (arguments.length == 0 ) return;
 
 	var newButton = new DwtDialog_ButtonDescriptor(ZmPickTagDialog.NEW_BUTTON,
-												   LmMsg._new,
+												   ZmMsg._new,
 												   DwtDialog.ALIGN_LEFT);
-	DwtDialog.call(this, parent, className, LmMsg.pickATag, null, [newButton]);
+	DwtDialog.call(this, parent, className, ZmMsg.pickATag, null, [newButton]);
 
 	this.render();
 	this._msgDialog = msgDialog;
@@ -50,8 +50,8 @@ function() {
 	var html = new Array();
 	var idx = 0;
 	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
-	html[idx++] = "<tr><td class='Label' colspan=2>";
-	html[idx++] = LmMsg.targetTag;
+	html[idx++] = "<tr><td class='Zabel' colspan=2>";
+	html[idx++] = ZmMsg.targetTag;
 	html[idx++] = ":</td></tr>";
 	html[idx++] = "<tr><td colspan=2'><div style='background-color:white; height:100px; width:300px; border:1px solid black; overflow:auto' id='";
 	html[idx++] = this._tagTreeCellId;

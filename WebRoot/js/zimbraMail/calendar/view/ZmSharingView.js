@@ -10,7 +10,7 @@ function ZmSharingView (parent, className) {
 	DwtComposite.call(this,parent, className);
 	// FOR TESTING
 	this._apptXModel = new XModel(ZmSharingView.xmodel);
-	var instance = new LmShare();
+	var instance = new ZmShare();
 	instance.setUsers(_DUMMY_USERS_);
 	ZmSharingView._userChoices.setChoices(instance.getUsers());
 	this._xform = new XForm(ZmSharingView.xform, this._apptXModel, instance, this);
@@ -101,18 +101,18 @@ ZmSharingView.xmodel = {
 	]
 };
 
-function LmShare () {
+function ZmShare () {
 	this._users = new AjxVector();
 	this.tempAdd = null;
 	this._selectedUsers = new AjxVector();
 }
 
 
-LmShare.prototype.getSelectedUsers = function (userName) {
+ZmShare.prototype.getSelectedUsers = function (userName) {
 	return this._selectedUsers.getArray();
 };
 
-LmShare.prototype.setSelectedUsers = function (arr) {
+ZmShare.prototype.setSelectedUsers = function (arr) {
 	if (AjxUtil.isString(arr)) arr = arr.split(',');
 	return this._selectedUsers = AjxVector.fromArray(arr);
 };
@@ -120,18 +120,18 @@ LmShare.prototype.setSelectedUsers = function (arr) {
 /**
  * possibly takes a username and a display name?
  */
-LmShare.prototype.getUsers = function (userName) {
+ZmShare.prototype.getUsers = function (userName) {
 	return this._users.getArray();
 };
 
-LmShare.prototype.setUsers = function (arr) {
+ZmShare.prototype.setUsers = function (arr) {
 	this._users = AjxVector.fromArray(arr);
 };
 
-LmShare.prototype.addUser = function (user) {
+ZmShare.prototype.addUser = function (user) {
 	this._users.add(user);
 };
 
-LmShare.prototype.removeUser = function (user) {
+ZmShare.prototype.removeUser = function (user) {
 	this._users.remove(user);
 };

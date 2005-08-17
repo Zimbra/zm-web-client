@@ -4,13 +4,13 @@ function ZmEmoticonObjectHandler(appCtxt) {
 	ZmObjectHandler.call(this, appCtxt, "url", null);
 
 	this._emoticons = [
-	   { smiley: ">:)", image: ZmImg.E_DEVIL, tooltip: LmMsg.devil },
-       { smiley: ":)", image: ZmImg.E_HAPPY, tooltip: LmMsg.happy },
-	   { smiley: "=))", image: ZmImg.E_ROTFL, tooltip: LmMsg.rotfl },
-	   { smiley: "=((", image: ZmImg.E_BROKEN_HEART, tooltip: LmMsg.brokenHeart },
-	   { smiley: ":((", image: ZmImg.E_CRYING, tooltip: LmMsg.crying }, 
-	   { smiley: "<:-P", image: ZmImg.E_PARTY, tooltip: LmMsg.party },
-	   { smiley: ":O)", image: ZmImg.E_CLOWN, tooltip: LmMsg.clown }
+	   { smiley: ">:)", image: ZmImg.E_DEVIL, tooltip: ZmMsg.devil },
+       { smiley: ":)", image: ZmImg.E_HAPPY, tooltip: ZmMsg.happy },
+	   { smiley: "=))", image: ZmImg.E_ROTFL, tooltip: ZmMsg.rotfl },
+	   { smiley: "=((", image: ZmImg.E_BROKEN_HEART, tooltip: ZmMsg.brokenHeart },
+	   { smiley: ":((", image: ZmImg.E_CRYING, tooltip: ZmMsg.crying }, 
+	   { smiley: "<:-P", image: ZmImg.E_PARTY, tooltip: ZmMsg.party },
+	   { smiley: ":O)", image: ZmImg.E_CLOWN, tooltip: ZmMsg.clown }
    ];
 	
 	var regex = new Array(10);

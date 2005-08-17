@@ -71,7 +71,7 @@ function() {
 	this._operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
 	this._inviteToolbar = new ZmButtonToolBar(this,	this._operationButtonIds,
 											  null, DwtControl.STATIC_STYLE, 
-											  "LmInviteToolBar", "DwtButton");
+											  "ZmInviteToolBar", "DwtButton");
 	// get a little space between the buttons.
 	var toolbarHtmlEl = this._inviteToolbar.getHtmlElement();
 	toolbarHtmlEl.firstChild.cellPadding = "3";
@@ -375,16 +375,16 @@ function() {
 
 ZmMailMsgView.prototype.getTitle =
 function() {
-	return [LmMsg.zimbraTitle, ": ", this._msg.subject].join("");
+	return [ZmMsg.zimbraTitle, ": ", this._msg.subject].join("");
 }
 
 // Private / Protected methods
 
 ZmMailMsgView.prototype._addAddressHeaderHtml =
 function(htmlArr, idx, addrs, prefix) {
-	htmlArr[idx++] = "<tr><td class='LabelColName'>";
+	htmlArr[idx++] = "<tr><td class='ZabelColName'>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(prefix);
-	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
+	htmlArr[idx++] = ": </td><td class='ZabelColValue'>";
 	for (var i = 0; i < addrs.size(); i++) {
 		if (i > 0)
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmEmailAddress.SEPARATOR);
@@ -413,8 +413,8 @@ function(msg, container) {
 	htmlArr[idx++] = "<table id='" + this._hdrTableId + "' cellspacing=2 cellpadding=2 border=0 " + w + " >";
 	
 	// Date
-	htmlArr[idx++] = "<tr><td class='LabelColName'>";
-	htmlArr[idx++] = AjxStringUtil.htmlEncode(LmMsg.sent);
+	htmlArr[idx++] = "<tr><td class='ZabelColName'>";
+	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.sent);
 	htmlArr[idx++] = ": </td><td>";
 	htmlArr[idx++] = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
 	htmlArr[idx++] = "</td></tr>";
@@ -426,25 +426,25 @@ function(msg, container) {
 			continue;
 		var addrs = msg.getAddresses(type);
 		if (addrs.size() > 0) {
-			var prefix = LmMsg[ZmEmailAddress.TYPE_STRING[type]];
+			var prefix = ZmMsg[ZmEmailAddress.TYPE_STRING[type]];
 			idx = this._addAddressHeaderHtml(htmlArr, idx, addrs, prefix);
 		}
 	}		
 
 	// Subject
-	var subject = msg.getSubject() || LmMsg.noSubject;
-	htmlArr[idx++] = "<tr><td class='LabelColName'>";
-	htmlArr[idx++] = AjxStringUtil.htmlEncode(LmMsg.subject);
-	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
+	var subject = msg.getSubject() || ZmMsg.noSubject;
+	htmlArr[idx++] = "<tr><td class='ZabelColName'>";
+	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.subject);
+	htmlArr[idx++] = ": </td><td class='ZabelColValue'>";
 	htmlArr[idx++] = this._objectManager ? this._objectManager.findObjects(subject, true) : subject;
 	htmlArr[idx++] = "</td></tr>"
 	
 	// Attachments
 	var attLinks = msg.buildAttachLinks(true, this.getDocument().domain);
 	if (attLinks.length > 0) {
-		htmlArr[idx++] = "<tr><td class='LabelColName'>";
-		htmlArr[idx++] = LmMsg.attachments;
-		htmlArr[idx++] = ": </td><td class='LabelColValue'>";
+		htmlArr[idx++] = "<tr><td class='ZabelColName'>";
+		htmlArr[idx++] = ZmMsg.attachments;
+		htmlArr[idx++] = ": </td><td class='ZabelColValue'>";
 		for (var i = 0; i<attLinks.length; i++)
 			htmlArr[idx++] = attLinks[i].html;
 		htmlArr[idx++] = "</td></tr>";
@@ -516,10 +516,10 @@ function(msg) {
 		tagRow = table.insertRow(-1);
 		tagRow.id = this._tagRowId;
 		var tagCell = tagRow.insertCell(-1);
-		tagCell.className = "LabelColName";
-		tagCell.innerHTML = LmMsg.tags + ": ";
+		tagCell.className = "ZabelColName";
+		tagCell.innerHTML = ZmMsg.tags + ": ";
 		tagCell = tagRow.insertCell(-1);
-		tagCell.className = "LabelColValue";
+		tagCell.className = "ZabelColValue";
 		tagCell.id = this._tagCellId;
 	} else if (hadTags && !hasTags) {
 		table.deleteRow(-1);
@@ -682,7 +682,7 @@ function(msg, preferHtml) {
 		if (len > 0) {
 			html[idx++] = "<tr>";
 			html[idx++] = "<td valign=top style='font-size: 14px'>";
-			html[idx++] = LmMsg[ZmEmailAddress.TYPE_STRING[ZmMailMsg.ADDRS[j]]];
+			html[idx++] = ZmMsg[ZmEmailAddress.TYPE_STRING[ZmMailMsg.ADDRS[j]]];
 			html[idx++] = ": </td><td width=100% style='font-size: 14px'>";
 			for (var i = 0; i < len; i++) {
 				html[idx++] = i > 0 ? AjxStringUtil.htmlEncode(ZmEmailAddress.SEPARATOR) : "";

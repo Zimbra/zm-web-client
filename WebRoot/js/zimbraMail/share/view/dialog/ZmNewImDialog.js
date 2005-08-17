@@ -80,9 +80,9 @@ function(ev) {
 		var imout = Dwt.getDomObj(this.getDocument(), ZmNewImDialog.IMOUT_ID);
 		
 		imout.readOnly = false;
-		imout.value += prefix + msg + LmMsg.CRLF;
+		imout.value += prefix + msg + ZmMsg.CRLF;
 		var rand = Math.round((Math.random()*5));
-		imout.value += this._screenName + ": " + this._replies[rand] + LmMsg.CRLF;
+		imout.value += this._screenName + ": " + this._replies[rand] + ZmMsg.CRLF;
 		imout.scrollIntoView(false);
 		imout.readOnly = true;
 		

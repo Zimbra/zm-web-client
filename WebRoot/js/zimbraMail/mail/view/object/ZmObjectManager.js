@@ -8,7 +8,7 @@ function ZmObjectManager(view, appCtxt) {
 	this._objectIdPrefix = "OBJ_" + this._uuid + "_";		
 	// TODO: make this dynamic, have handlers register a factory method...
 	this._emailHandler = new ZmEmailObjectHandler(appCtxt);
-	// URL should be first, to handle email addresses embedded in URLs
+	// URL should be first, to handle email addresses embedded in URAjx
 	this._objectHandlers = [
 		new ZmURLObjectHandler(appCtxt),	
 		this._emailHandler,

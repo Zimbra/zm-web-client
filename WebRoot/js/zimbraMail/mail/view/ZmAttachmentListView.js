@@ -130,11 +130,11 @@ function(parent) {
 	var headerList = new Array();
 
 	headerList.push(new DwtListHeaderItem("", null, ZmImg.I_ATTACHMENT, 16));
-	headerList.push(new DwtListHeaderItem("", LmMsg._name, null, 145));
-	headerList.push(new DwtListHeaderItem("", LmMsg.from, null, 145));
-	headerList.push(new DwtListHeaderItem("", LmMsg.subject, null, null));
-	headerList.push(new DwtListHeaderItem("", LmMsg.size, null, 76));
-	headerList.push(new DwtListHeaderItem("", LmMsg.date, null, 76));
+	headerList.push(new DwtListHeaderItem("", ZmMsg._name, null, 145));
+	headerList.push(new DwtListHeaderItem("", ZmMsg.from, null, 145));
+	headerList.push(new DwtListHeaderItem("", ZmMsg.subject, null, null));
+	headerList.push(new DwtListHeaderItem("", ZmMsg.size, null, 76));
+	headerList.push(new DwtListHeaderItem("", ZmMsg.date, null, 76));
 
 	return headerList;
 }

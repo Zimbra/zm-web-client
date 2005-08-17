@@ -81,7 +81,7 @@ function(folderTree, folders, showUnread, omit) {
 			var ti = new DwtTreeItem(this._parent, null, null, null, null, className);
 			if (isContainer)
 				ti.enableSelection(false);
-			var text = folder ? folder.getName(showUnread) : LmMsg[ZmFolderTreeView.MSG_KEY[id]];
+			var text = folder ? folder.getName(showUnread) : ZmMsg[ZmFolderTreeView.MSG_KEY[id]];
 			ti.setText(text);
 			if (ZmFolderTreeView.IMAGE[id])
 				ti.setImage(ZmFolderTreeView.IMAGE[id]);
@@ -95,7 +95,7 @@ function(folderTree, folders, showUnread, omit) {
 				this._render(ti, folder, omit);
 			} else {
 				// create a fake placeholder folder for Tags container, with root folder as parent
-				var name = LmMsg[ZmFolderTreeView.MSG_KEY[id]];
+				var name = ZmMsg[ZmFolderTreeView.MSG_KEY[id]];
 				folder = new ZmFolder(id, name, folderTree, folderTree);
 				folderTree.root.children.add(folder);
 				if (id == ZmFolder.ID_TAGS) {

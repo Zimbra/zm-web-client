@@ -1,7 +1,7 @@
 /**
 * Quickly hacked up class to represent a round button that has a background image and a foreground image.
 * Should probably be a subclass of DwtButton, since it copied a bunch of the mouse event handling code from
-* there. But it doesn't quite fit into being a DwtLabel, with the stacked images and all.
+* there. But it doesn't quite fit into being a DwtZabel, with the stacked images and all.
 *
 * The button has an inner image positioned relative to an outer image, so that it's roughly centered.
 *

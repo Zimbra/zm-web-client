@@ -80,7 +80,7 @@ ZmOperation.VIEW					= i++;
 ZmOperation.WEEK_VIEW				= i++;
 ZmOperation.WORK_WEEK_VIEW			= i++;
 
-// Labels
+// Zabels
 // !! PLEASE ADD IN ALPHA ORDER !!
 ZmOperation.MSG_KEY = new Object();
 ZmOperation.MSG_KEY[ZmOperation.ADD_FILTER_RULE]		= "filterAdd";
@@ -268,13 +268,13 @@ ZmOperation.DIS_IMAGE[ZmOperation.WORK_WEEK_VIEW]		= ZmImg.ID_WORK_WEEK_VIEW;
 ZmOperation.KEY_ID = "_opId";
 ZmOperation.KEY_TAG_MENU = "_tagMenu";
 
-function LmOperation_Descriptor(id, label, image, disImage, enabled, toolTip) {
+function ZmOperation_Descriptor(id, label, image, disImage, enabled, toolTip) {
 	this.id = id;
-	this.label = label ? label : LmMsg[ZmOperation.MSG_KEY[id]];
+	this.label = label ? label : ZmMsg[ZmOperation.MSG_KEY[id]];
 	this.image = image ? image : ZmOperation.IMAGE[id];
 	this.disImage = disImage ? disImage : ZmOperation.DIS_IMAGE[id];
 	this.enabled = (enabled !== false);
-	this.toolTip = toolTip ? toolTip : LmMsg[ZmOperation.MSG_KEY_TT[id]];
+	this.toolTip = toolTip ? toolTip : ZmMsg[ZmOperation.MSG_KEY_TT[id]];
 	this.toolTip = toolTip ? toolTip : this.label;
 }
 
@@ -283,8 +283,8 @@ ZmOperation._operationDesc = new Object();
 
 ZmOperation._createOperationDesc =
 function(id) {
-	return new LmOperation_Descriptor(id, LmMsg[ZmOperation.MSG_KEY[id]],
-				ZmOperation.IMAGE[id], ZmOperation.DIS_IMAGE[id], true, LmMsg[ZmOperation.MSG_KEY_TT[id]]);
+	return new ZmOperation_Descriptor(id, ZmMsg[ZmOperation.MSG_KEY[id]],
+				ZmOperation.IMAGE[id], ZmOperation.DIS_IMAGE[id], true, ZmMsg[ZmOperation.MSG_KEY_TT[id]]);
 }
 
 /**
@@ -330,10 +330,10 @@ function(parent, standardOperations, extraOperations) {
 			for (var i = 0; i < extraOperations.length; i++) {
 				var extra = extraOperations[i];
 				var id = extra.id;
-				extra.label = (extra.label == Dwt.DEFAULT) ? LmMsg[ZmOperation.MSG_KEY[id]] : extra.label;
+				extra.label = (extra.label == Dwt.DEFAULT) ? ZmMsg[ZmOperation.MSG_KEY[id]] : extra.label;
 				extra.image = (extra.image == Dwt.DEFAULT) ? ZmOperation.IMAGE[id] : extra.image;
 				extra.disImage = (extra.disImage == Dwt.DEFAULT) ? ZmOperation.DIS_IMAGE[id] : extra.disImage;
-				extra.toolTip = (extra.toolTip == Dwt.DEFAULT) ? LmMsg[ZmOperation.MSG_KEY_TT[id]] : extra.toolTip;
+				extra.toolTip = (extra.toolTip == Dwt.DEFAULT) ? ZmMsg[ZmOperation.MSG_KEY_TT[id]] : extra.toolTip;
 				operationList.push(id);
 				ZmOperation._operationDesc[id] = extra;
 			}
@@ -393,7 +393,7 @@ ZmOperation.setOperation =
 function(parent, oldOp, newOp, text, image, disImage) {
 	var op = parent.getOp(oldOp);
 	if (op) {
-		op.setText(text || LmMsg[ZmOperation.MSG_KEY[newOp]]);
+		op.setText(text || ZmMsg[ZmOperation.MSG_KEY[newOp]]);
 		op.setImage(image || ZmOperation.IMAGE[newOp]);
 		op.setDisabledImage(disImage || ZmOperation.DIS_IMAGE[newOp]);
 	}
@@ -409,16 +409,16 @@ ZmOperation.addNewMenu =
 function(parent) {
 	var appCtxt = parent.shell.getData(ZmAppCtxt.LABEL);
 	var list = new Array();
-	list.push(new LmOperation_Descriptor(ZmOperation.NEW_MESSAGE, LmMsg.message, Dwt.DEFAULT, Dwt.DEFAULT));
-	list.push(new LmOperation_Descriptor(ZmOperation.NEW_CONTACT, LmMsg.contact, Dwt.DEFAULT, Dwt.DEFAULT));
+	list.push(new ZmOperation_Descriptor(ZmOperation.NEW_MESSAGE, ZmMsg.message, Dwt.DEFAULT, Dwt.DEFAULT));
+	list.push(new ZmOperation_Descriptor(ZmOperation.NEW_CONTACT, ZmMsg.contact, Dwt.DEFAULT, Dwt.DEFAULT));
 	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED))
-		list.push(new LmOperation_Descriptor(ZmOperation.NEW_APPT, LmMsg.appointment, Dwt.DEFAULT, Dwt.DEFAULT));
+		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_APPT, ZmMsg.appointment, Dwt.DEFAULT, Dwt.DEFAULT));
 	if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED) || appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		list.push(new LmOperation_Descriptor(ZmOperation.SEP, Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT));
+		list.push(new ZmOperation_Descriptor(ZmOperation.SEP, Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT));
 		if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED))
-			list.push(new LmOperation_Descriptor(ZmOperation.NEW_FOLDER, LmMsg.folder, Dwt.DEFAULT, Dwt.DEFAULT));
+			list.push(new ZmOperation_Descriptor(ZmOperation.NEW_FOLDER, ZmMsg.folder, Dwt.DEFAULT, Dwt.DEFAULT));
 		if (appCtxt.get(ZmSetting.TAGGING_ENABLED))
-			list.push(new LmOperation_Descriptor(ZmOperation.NEW_TAG, LmMsg.tag, Dwt.DEFAULT, Dwt.DEFAULT));
+			list.push(new ZmOperation_Descriptor(ZmOperation.NEW_TAG, ZmMsg.tag, Dwt.DEFAULT, Dwt.DEFAULT));
 	}
 	var menu = new ZmActionMenu(parent, ZmOperation.NONE, list);
 	parent.setMenu(menu);

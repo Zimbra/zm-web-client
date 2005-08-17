@@ -170,12 +170,12 @@ function(view) {
 
 ZmContactListController.prototype._getTagMenuMsg = 
 function(num) {
-	return (num == 1) ? LmMsg.AB_TAG_CONTACT : LmMsg.AB_TAG_CONTACTS;
+	return (num == 1) ? ZmMsg.AB_TAG_CONTACT : ZmMsg.AB_TAG_CONTACTS;
 }
 
 ZmContactListController.prototype._getMoveDialogTitle = 
 function(num) {
-	return (num == 1) ? LmMsg.AB_MOVE_CONTACT : LmMsg.AB_MOVE_CONTACTS;
+	return (num == 1) ? ZmMsg.AB_MOVE_CONTACT : ZmMsg.AB_MOVE_CONTACTS;
 }
 
 ZmContactListController.prototype._initializeToolBar = 
@@ -184,7 +184,7 @@ function(view) {
 
 	ZmListController.prototype._initializeToolBar.call(this, view);
 	this._setupViewMenu(view);
-	this._setNewButtonProps(view, LmMsg.createNewContact, ZmImg.I_CONTACT, ZmImg.ID_CONTACT, ZmOperation.NEW_CONTACT);
+	this._setNewButtonProps(view, ZmMsg.createNewContact, ZmImg.I_CONTACT, ZmImg.ID_CONTACT, ZmOperation.NEW_CONTACT);
 	this._toolbar[view].addFiller();
 	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
 	this._setNavToolBar(tb);
@@ -289,7 +289,7 @@ function(view) {
 		var menu = new ZmPopupMenu(appToolbar.getViewButton());
 		for (var i = 0; i < ZmContactListController.VIEWS.length; i++) {
 			var id = ZmContactListController.VIEWS[i];
-			var mi = menu.createMenuItem(id, ZmContactListController.ICON[id], LmMsg[ZmContactListController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
+			var mi = menu.createMenuItem(id, ZmContactListController.ICON[id], ZmMsg[ZmContactListController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 			if (id == view)
@@ -324,8 +324,8 @@ function(view) {
 	var evenMore = this._list ? (offset + this._listView[view].getLimit()) < this._list.size() : false;
 	this._navToolBar.enable(ZmOperation.PAGE_FORWARD, evenMore);
 	
-	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, LmMsg.previous + " " + LmMsg.page);
-	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, LmMsg.next + " " + LmMsg.page);
+	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);
+	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
 
 	this._showListRange(view);
 }

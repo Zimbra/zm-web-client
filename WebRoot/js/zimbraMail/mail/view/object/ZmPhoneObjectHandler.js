@@ -41,7 +41,7 @@ function(obj) {
 	html[i++] = "<td>";
 	html[i++] = AjxImg.getImageHtml(ZmImg.I_TELEPHONE);
 	html[i++] = "</td>";
-	html[i++] = "<td><b><div style='white-space:nowrap'>" + LmMsg.phoneNumber + ":</div></b></td>";
+	html[i++] = "<td><b><div style='white-space:nowrap'>" + ZmMsg.phoneNumber + ":</div></b></td>";
 	html[i++] = "<td><div style='white-space:nowrap'>" + AjxStringUtil.htmlEncode(obj) + "</div></td></tr></table>";
 	return html.join("");
 }
@@ -59,11 +59,11 @@ function(obj) {
 		this._menu.addSelectionListener(ZmOperation.SEARCH, new AjxListener(this, this._searchListener));
 
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			ZmOperation.setOperation(this._menu, ZmOperation.CONTACT, ZmOperation.NEW_CONTACT, LmMsg.AB_ADD_CONTACT);
+			ZmOperation.setOperation(this._menu, ZmOperation.CONTACT, ZmOperation.NEW_CONTACT, ZmMsg.AB_ADD_CONTACT);
 			this._menu.addSelectionListener(ZmOperation.CONTACT, new AjxListener(this, this._contactListener));
 		}
 
-		ZmOperation.setOperation(this._menu, ZmOperation.CALL, ZmOperation.CALL, LmMsg.call);
+		ZmOperation.setOperation(this._menu, ZmOperation.CALL, ZmOperation.CALL, ZmMsg.call);
 		this._menu.addSelectionListener(ZmOperation.CALL, new AjxListener(this, this._callListener));
 	}
 	this._actionObject = obj;

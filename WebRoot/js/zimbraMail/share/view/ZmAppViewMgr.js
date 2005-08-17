@@ -549,7 +549,7 @@ function(view) {
 	var content = elements[ZmAppViewMgr.C_APP_CONTENT];
 	if (content && content.getTitle) {
 		var title = content.getTitle();
-		Dwt.setTitle(title ? title : LmMsg.zimbraTitle);
+		Dwt.setTitle(title ? title : ZmMsg.zimbraTitle);
 	}
 }
 

@@ -55,7 +55,7 @@ ZmComposeView.FORWARD_ATT_NAME = "forAtt---" + Dwt.getNextId();
 
 // Reply/forward stuff
 ZmComposeView.EMPTY_FORM_RE = /^[\s\|]*$/;
-ZmComposeView.SUBJ_PREFIX_RE = new RegExp("^\\s*(" + LmMsg.re + "|" + LmMsg.fwd + "|" + LmMsg.fw + "):" + "\\s*", "i");
+ZmComposeView.SUBJ_PREFIX_RE = new RegExp("^\\s*(" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
 ZmComposeView.WRAP_LENGTH = 72;
 ZmComposeView.QUOTED_HDRS = [ZmMailMsg.HDR_FROM, ZmMailMsg.HDR_TO, ZmMailMsg.HDR_CC,
 							 ZmMailMsg.HDR_DATE, ZmMailMsg.HDR_SUBJECT];
@@ -240,12 +240,12 @@ ZmComposeView.prototype.getTitle =
 function() {
 	var text;
 	if (this._action == ZmOperation.REPLY)
-		text = LmMsg.reply;
+		text = ZmMsg.reply;
 	else if (this._action == ZmOperation.FORWARD)
-		text = LmMsg.forward;
+		text = ZmMsg.forward;
 	else
-		text = LmMsg.compose;
-	var title = [LmMsg.zimbraTitle, text].join(": ");
+		text = ZmMsg.compose;
+	var title = [ZmMsg.zimbraTitle, text].join(": ");
 	return title;
 };
 
@@ -264,12 +264,12 @@ function(action, msg, subjOverride) {
 	var prefix = "";	
 	switch (action) {
 		case ZmOperation.REPLY:
-		case ZmOperation.REPLY_ALL: 		prefix = LmMsg.re + ": "; break;
-		case ZmOperation.FORWARD: 			prefix = LmMsg.fwd + ": "; break;
-		case ZmOperation.REPLY_ACCEPT:		prefix = LmMsg.subjectAccept + ": "; break;
-		case ZmOperation.REPLY_DECLINE:		prefix = LmMsg.subjectDecline + ": "; break;
-		case ZmOperation.REPLY_TENTATIVE:	prefix = LmMsg.subjectTentative + ": "; break;
-		case ZmOperation.REPLY_NEW_TIME:	prefix = LmMsg.subjectNewTime + ": "; break;
+		case ZmOperation.REPLY_ALL: 		prefix = ZmMsg.re + ": "; break;
+		case ZmOperation.FORWARD: 			prefix = ZmMsg.fwd + ": "; break;
+		case ZmOperation.REPLY_ACCEPT:		prefix = ZmMsg.subjectAccept + ": "; break;
+		case ZmOperation.REPLY_DECLINE:		prefix = ZmMsg.subjectDecline + ": "; break;
+		case ZmOperation.REPLY_TENTATIVE:	prefix = ZmMsg.subjectTentative + ": "; break;
+		case ZmOperation.REPLY_NEW_TIME:	prefix = ZmMsg.subjectNewTime + ": "; break;
 	}
 	this._subjectField.value = prefix + (subj || "");
 }
@@ -321,8 +321,8 @@ function(action, msg, extraBodyText) {
 	} else if (pref == ZmSetting.INCLUDE_ATTACH) {
 		this._msgAttId = this._msg.id;
 	} else {
-		var crlf = this._composeMode == DwtHtmlEditor.HTML ? "<br>" : LmMsg.CRLF;
-		var crlf2 = this._composeMode == DwtHtmlEditor.HTML ? "<br><br>" : LmMsg.CRLF2;
+		var crlf = this._composeMode == DwtHtmlEditor.HTML ? "<br>" : ZmMsg.CRLF;
+		var crlf2 = this._composeMode == DwtHtmlEditor.HTML ? "<br><br>" : ZmMsg.CRLF2;
 		var leadingText = extraBodyText ? extraBodyText + crlf : crlf;
 		var body = null;
 		if (this._composeMode == DwtHtmlEditor.HTML) {
@@ -344,8 +344,8 @@ function(action, msg, extraBodyText) {
 		
 		// bug fix# 3215 - dont allow prefixing for html msgs
 		if (pref == ZmSetting.INCLUDE || this._composeMode == DwtHtmlEditor.HTML) {
-			var msgText = (action == ZmOperation.FORWARD) ? LmMsg.forwardedMessage : LmMsg.origMsg;
-			var text = LmMsg.DASHES + " " + msgText + " " + LmMsg.DASHES + crlf;
+			var msgText = (action == ZmOperation.FORWARD) ? ZmMsg.forwardedMessage : ZmMsg.origMsg;
+			var text = ZmMsg.DASHES + " " + msgText + " " + ZmMsg.DASHES + crlf;
 			for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
 				var hdr = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
 				if (hdr)
@@ -359,7 +359,7 @@ function(action, msg, extraBodyText) {
 				from = this._appCtxt.get(ZmSetting.USERNAME);
 			var preface = "";
 			if (from)
-				preface = LmMsg.DASHES + " " + from.toString() + " " + LmMsg.wrote + ":" + crlf;
+				preface = ZmMsg.DASHES + " " + from.toString() + " " + ZmMsg.wrote + ":" + crlf;
 			var prefix = this._appCtxt.get(ZmSetting.REPLY_PREFIX);
 			if (pref == ZmSetting.INCLUDE_PREFIX) {
 				value += leadingText + preface + AjxStringUtil.wordWrap(body, ZmComposeView.WRAP_LENGTH, prefix + " ");
@@ -468,7 +468,7 @@ function(attId, isDraft) {
 	// Any addresses at all provided? If not, bail.
 	if (!isDraft && !addrs.gotAddress) {
 		this.enableInputs(false);
-    	this._msgDialog.setMessage(LmMsg.noAddresses, null, DwtMessageDialog.CRITICAL_STYLE);
+    	this._msgDialog.setMessage(ZmMsg.noAddresses, null, DwtMessageDialog.CRITICAL_STYLE);
 	    this._msgDialog.popup(this._getDialogXY());
 	    this._msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._okCallback, this);
 		this.enableInputs(true);
@@ -479,7 +479,7 @@ function(attId, isDraft) {
 	var subject = AjxStringUtil.trim(this._subjectField.value);
 	if (!isDraft && subject.length == 0 && !this._noSubjectOkay) {
 		this.enableInputs(false);
-    	this._confirmDialog.setMessage(LmMsg.compSubjectMissing, null, DwtMessageDialog.WARNING_STYLE);
+    	this._confirmDialog.setMessage(ZmMsg.compSubjectMissing, null, DwtMessageDialog.WARNING_STYLE);
 		this._confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this);
 		this._confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this);
 	    this._confirmDialog.popup(this._getDialogXY());
@@ -490,7 +490,7 @@ function(attId, isDraft) {
 	if (!isDraft && addrs[ZmComposeView.BAD].size() && !this._badAddrsOkay) {
 		this.enableInputs(false);
 	    var bad = AjxStringUtil.htmlEncode(addrs[ZmComposeView.BAD].toString(ZmEmailAddress.SEPARATOR));
-	    var msg = AjxStringUtil.resolve(LmMsg.compBadAddresses, bad);
+	    var msg = AjxStringUtil.resolve(ZmMsg.compBadAddresses, bad);
     	this._confirmDialog.setMessage(msg, null, DwtMessageDialog.WARNING_STYLE);
 		this._confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this);
 		this._confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, addrs.badType);
@@ -696,8 +696,8 @@ function() {
 	var html = new Array();
 	var idx = 0;
 	html[idx++] = "<table cellspacing=4 cellpadding=0 border=0><tr>";
-	html[idx++] = "<td><div class='attachText'>" + LmMsg.attachFile + ":</div></td>";
-	html[idx++] = "<td class='nobreak'><input id='" + attInputId + "' type='file' name='" + ZmComposeView.UPLOAD_FIELD_NAME + "' size=40>&nbsp;<a href='javascript:;' id='" + attRemoveId + "'>" + LmMsg.remove + "</a></td>";
+	html[idx++] = "<td><div class='attachText'>" + ZmMsg.attachFile + ":</div></td>";
+	html[idx++] = "<td class='nobreak'><input id='" + attInputId + "' type='file' name='" + ZmComposeView.UPLOAD_FIELD_NAME + "' size=40>&nbsp;<a href='javascript:;' id='" + attRemoveId + "'>" + ZmMsg.remove + "</a></td>";
 	html[idx++] = "</tr></table>";
 	cell.innerHTML = html.join("");
 	
@@ -796,7 +796,7 @@ function(composeMode) {
 		if (this._contactPicker) {
 			this._button[type] = new DwtButton(this, null, "DwtButton contrast");
 			var typeStr = ZmEmailAddress.TYPE_STRING[type];
-			this._button[type].setText(LmMsg[typeStr] + ":");
+			this._button[type].setText(ZmMsg[typeStr] + ":");
 		
 			var buttonTd = Dwt.getDomObj(doc, this._buttonTdId[type]);
 			buttonTd.appendChild(this._button[type].getHtmlElement());
@@ -935,7 +935,7 @@ function() {
 			html[idx++] = "<td valign=top width=60 id='" + this._buttonTdId[type] + "'></td>";
 		} else {
 			var typeStr = ZmEmailAddress.TYPE_STRING[type];
-			var addrStr = LmMsg[typeStr] + ":";
+			var addrStr = ZmMsg[typeStr] + ":";
 			html[idx++] = "<td width=60 align='right' valign='top' id='" + this._buttonTdId[type] + "'>" + addrStr + "</td>";
 		}
 		html[idx++] = "<td><textarea id='" + this._fieldId[type] + "' rows=2 class='addresses'></textarea></td>";
@@ -945,13 +945,13 @@ function() {
 	// create element for adding address fields
 	html[idx++] = "<tr><td><table cellspacing=4 cellpadding=0 border=0 width=100%><tr>";
 	html[idx++] = "<td width=60></td><td class='nobreak'>";
-	html[idx++] = "<a id='" + this._addLinkId[ZmEmailAddress.CC] + "' href='javascript:;'>" + LmMsg.addCc + "</a>";
-	html[idx++] = " | <a id='" + this._addLinkId[ZmEmailAddress.BCC] + "' href='javascript:;'>" + LmMsg.addBcc + "</a></td>";
+	html[idx++] = "<a id='" + this._addLinkId[ZmEmailAddress.CC] + "' href='javascript:;'>" + ZmMsg.addCc + "</a>";
+	html[idx++] = " | <a id='" + this._addLinkId[ZmEmailAddress.BCC] + "' href='javascript:;'>" + ZmMsg.addBcc + "</a></td>";
 	html[idx++] = "</tr></table></td></tr>";
 
 	// create subject field
 	html[idx++] = "<tr><td><table cellspacing=4 cellpadding=0 border=0 width=100%><tr>";
-	html[idx++] = "<td width=60 align='right'>" + LmMsg.subject + ":</td>";
+	html[idx++] = "<td width=60 align='right'>" + ZmMsg.subject + ":</td>";
 	html[idx++] = "<td><input type='text' tabindex=5 id='" + this._subjectFieldId + "' class='subjectField'></td>";
 	html[idx++] = "</tr></table></td></tr>";
 
@@ -1128,7 +1128,7 @@ function(type, show) {
 	var link = Dwt.getDomObj(doc, this._addLinkId[type]);
 	if (link) {
 		link.innerHTML = show 
-			? LmMsg.remove + " " + ZmEmailAddress.TYPE_STRING[type].toUpperCase() 
+			? ZmMsg.remove + " " + ZmEmailAddress.TYPE_STRING[type].toUpperCase() 
 			: "Add " + ZmEmailAddress.TYPE_STRING[type].toUpperCase();
 	}
 	this._resetBodySize();

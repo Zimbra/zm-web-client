@@ -109,7 +109,7 @@ function(view, arrowStyle) {
 	this._setupSpamButton(view);
 
 	// reset new button properties
-	this._setNewButtonProps(view, LmMsg.compose, ZmImg.I_MAIL_MSG, ZmImg.ID_MAIL_MSG, ZmOperation.NEW_MESSAGE);
+	this._setNewButtonProps(view, ZmMsg.compose, ZmImg.I_MAIL_MSG, ZmImg.ID_MAIL_MSG, ZmOperation.NEW_MESSAGE);
 }
 
 ZmMailListController.prototype._initializeActionMenu = 
@@ -266,9 +266,9 @@ function(view) {
 	var deleteButton = this._toolbar[view].getButton(ZmOperation.DELETE);
 	var deleteMenuButton = this._toolbar[view].getButton(ZmOperation.DELETE_MENU);
 	if (deleteButton)
-		deleteButton.setToolTipContent(inTrashFolder ? LmMsg.deletePermanentTooltip : LmMsg.deleteTooltip);
+		deleteButton.setToolTipContent(inTrashFolder ? ZmMsg.deletePermanentTooltip : ZmMsg.deleteTooltip);
 	if (deleteMenuButton)
-		deleteMenuButton.setToolTipContent(inTrashFolder ? LmMsg.deletePermanentTooltip : LmMsg.deleteTooltip);
+		deleteMenuButton.setToolTipContent(inTrashFolder ? ZmMsg.deletePermanentTooltip : ZmMsg.deleteTooltip);
 };
 
 // If we're in the Spam folder, the "Spam" button becomes the "Not Spam" button
@@ -277,8 +277,8 @@ function(view) {
 	var inSpamFolder = (this._getSearchFolderId() == ZmFolder.ID_SPAM);
 	var spamButton = this._toolbar[view].getButton(ZmOperation.SPAM);
 	if (spamButton) {
-		spamButton.setText(inSpamFolder ? LmMsg.notJunk : LmMsg.junk);
-		spamButton.setToolTipContent(inSpamFolder ? LmMsg.notJunkTooltip : LmMsg.junkTooltip);
+		spamButton.setText(inSpamFolder ? ZmMsg.notJunk : ZmMsg.junk);
+		spamButton.setToolTipContent(inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip);
 	}
 }
 
@@ -300,10 +300,10 @@ function(ev) {
 ZmMailListController.prototype._getInviteReplyBody = function (type) {
 	var replyBody = null;
 	switch (type) {
-	case ZmOperation.REPLY_ACCEPT:		replyBody = LmMsg.defaultInviteReplyAcceptMessage; break;
-	case ZmOperation.REPLY_DECLINE:		replyBody = LmMsg.defaultInviteReplyDeclineMessage; break;
-	case ZmOperation.REPLY_TENTATIVE: 	replyBody = LmMsg.defaultInviteReplyTentativeMessage; break;
-	case ZmOperation.REPLY_NEW_TIME: 	replyBody = LmMsg.defaultInviteReplyNewTimeMessage;	break;
+	case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyAcceptMessage; break;
+	case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyDeclineMessage; break;
+	case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyTentativeMessage; break;
+	case ZmOperation.REPLY_NEW_TIME: 	replyBody = ZmMsg.defaultInviteReplyNewTimeMessage;	break;
 	}
 	
 	return replyBody;
@@ -312,10 +312,10 @@ ZmMailListController.prototype._getInviteReplyBody = function (type) {
 ZmMailListController.prototype._getInviteReplySubject = function (type) {
 	var replySubject = null;
 	switch (type) {
-	case ZmOperation.REPLY_ACCEPT:		replySubject = LmMsg.subjectAccept + ": "; break;
-	case ZmOperation.REPLY_DECLINE:		replySubject = LmMsg.subjectDecline + ": "; break;
-	case ZmOperation.REPLY_TENTATIVE:	replySubject = LmMsg.subjectTentative + ": "; break;
-	case ZmOperation.REPLY_NEW_TIME:	replySubject = LmMsg.subjectNewTime + ": "; break;
+	case ZmOperation.REPLY_ACCEPT:		replySubject = ZmMsg.subjectAccept + ": "; break;
+	case ZmOperation.REPLY_DECLINE:		replySubject = ZmMsg.subjectDecline + ": "; break;
+	case ZmOperation.REPLY_TENTATIVE:	replySubject = ZmMsg.subjectTentative + ": "; break;
+	case ZmOperation.REPLY_NEW_TIME:	replySubject = ZmMsg.subjectNewTime + ": "; break;
 	}
 	return replySubject;
 };
@@ -381,7 +381,7 @@ function(view) {
 		appToolbar.setViewMenu(view, menu);
 		for (var i = 0; i < ZmMailListController.GROUP_BY_VIEWS.length; i++) {
 			var id = ZmMailListController.GROUP_BY_VIEWS[i];
-			var mi = menu.createMenuItem(id, ZmMailListController.ICON[id], LmMsg[ZmMailListController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
+			var mi = menu.createMenuItem(id, ZmMailListController.ICON[id], ZmMsg[ZmMailListController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 			if (id == this._defaultView())
@@ -396,7 +396,7 @@ ZmMailListController.prototype._setContactText =
 function(isContact) {
 	ZmListController.prototype._setContactText.call(this, isContact);
 	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
-	var newText = isContact ? null : LmMsg.AB_ADD_CONTACT;
+	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
 	ZmOperation.setOperation(this._participantActionMenu, ZmOperation.CONTACT, newOp, newText);
 }
 
@@ -407,7 +407,7 @@ function(parent) {
 		if (op) {
 			var menu = op.getMenu();
 			var replyOp = menu.getOp(ZmOperation.REPLY);
-			replyOp.setText(LmMsg.replySender);
+			replyOp.setText(ZmMsg.replySender);
 		}
 	}
 }

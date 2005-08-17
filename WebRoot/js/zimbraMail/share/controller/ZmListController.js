@@ -23,7 +23,7 @@ function ZmListController(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmController.call(this, appCtxt, container, app);
 
-	this._toolbar = new Object;		// LmButtonToolbar (one per view)
+	this._toolbar = new Object;		// ZmButtonToolbar (one per view)
 	this._listView = new Object;	// ZmListView (one per view)
 	this._list = null;				// ZmList (the data)
 	this._actionMenu = null; 		// ZmActionMenu
@@ -211,7 +211,7 @@ function(view) {
 
 	var buttons = this._getToolBarOps();
 	if (!buttons) return;
-	this._toolbar[view] = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "LmAppToolBar");
+	this._toolbar[view] = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmAppToolBar");
 	// remove text for Print, Delete, and Move buttons
 	var list = [ZmOperation.PRINT, ZmOperation.DELETE, ZmOperation.MOVE];
 	for (var i = 0; i < list.length; i++) {
@@ -741,8 +741,8 @@ function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
 ZmListController.prototype._setContactText =
 function(isContact) {
 	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
-	var newText = isContact ? null : LmMsg.AB_ADD_CONTACT;
-	ZmOperation.setOperation(this._toolbar[this._currentView], ZmOperation.CONTACT, newOp, LmMsg.AB_ADD_CONTACT);
+	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
+	ZmOperation.setOperation(this._toolbar[this._currentView], ZmOperation.CONTACT, newOp, ZmMsg.AB_ADD_CONTACT);
 	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, newOp, newText);
 }
 

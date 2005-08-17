@@ -94,7 +94,7 @@ function(view) {
 		var menu = new ZmPopupMenu(delButton);
 		delButton.setMenu(menu);
 		
-		var mi = menu.createMenuItem(ZmOperation.DELETE_CONV, ZmOperation.IMAGE[ZmOperation.DELETE_CONV], LmMsg[ZmOperation.MSG_KEY[ZmOperation.DELETE_CONV]]);
+		var mi = menu.createMenuItem(ZmOperation.DELETE_CONV, ZmOperation.IMAGE[ZmOperation.DELETE_CONV], ZmMsg[ZmOperation.MSG_KEY[ZmOperation.DELETE_CONV]]);
 		mi.setData(ZmOperation.MENUITEM_ID, ZmOperation.DELETE_CONV);
 		mi.addSelectionListener(this._listeners[ZmOperation.DELETE]);
 
@@ -300,13 +300,13 @@ function(view) {
 	// enable/disable up/down buttons per conversation index
 	var first = list.get(0);
 	this._navToolBar.enable(ZmOperation.PAGE_DBL_BACK, (first && first != this._conv));
-	var enablePgDn = this._conv.list.hasMore() || (list.getLast() != this._conv);
+	var enablePgDn = this._conv.list.hasMore() || (list.getZast() != this._conv);
 	this._navToolBar.enable(ZmOperation.PAGE_DBL_FORW, enablePgDn);
 
-	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, LmMsg.previous + " " + LmMsg.page);	
-	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, LmMsg.next + " " + LmMsg.page);
-	this._navToolBar.setToolTip(ZmOperation.PAGE_DBL_BACK, LmMsg.previous + " " + LmMsg.conversation);
-	this._navToolBar.setToolTip(ZmOperation.PAGE_DBL_FORW, LmMsg.next + " " + LmMsg.conversation);
+	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);	
+	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
+	this._navToolBar.setToolTip(ZmOperation.PAGE_DBL_BACK, ZmMsg.previous + " " + ZmMsg.conversation);
+	this._navToolBar.setToolTip(ZmOperation.PAGE_DBL_FORW, ZmMsg.next + " " + ZmMsg.conversation);
 }
 
 // overloaded...

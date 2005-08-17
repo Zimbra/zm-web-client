@@ -113,7 +113,7 @@ function(tagList, addRemove) {
 
 	// add static "New Tag" menu item
 	var miNew = new DwtMenuItem(this);
-	miNew.setText(AjxStringUtil.htmlEncode(LmMsg.newTag));
+	miNew.setText(AjxStringUtil.htmlEncode(ZmMsg.newTag));
 	miNew.setImage(ZmImg.I_NEW_TAG);
 	miNew.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_CREATE);
 	miNew.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener));
@@ -121,7 +121,7 @@ function(tagList, addRemove) {
 	// add static "Remove Tag" menu item
 	var miRemove = new DwtMenuItem(this);
 	miRemove.setEnabled(false);
-	miRemove.setText(AjxStringUtil.htmlEncode(LmMsg.removeTag));
+	miRemove.setText(AjxStringUtil.htmlEncode(ZmMsg.removeTag));
 	miRemove.setImage(ZmImg.I_DELETE_TAG);
 
 	if (removeList.length > 0) {
@@ -148,7 +148,7 @@ function(tagList, addRemove) {
 		if (removeList.length > 1) {
 			new DwtMenuItem(removeMenu, DwtMenuItem.SEPARATOR_STYLE);
 			var mi = new DwtMenuItem(removeMenu);
-			mi.setText(LmMsg.allTags);
+			mi.setText(ZmMsg.allTags);
 			mi.setImage(ZmImg.I_MINI_TAG_STACK);
 			mi.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_REMOVE_ALL);
 			mi.setData(Dwt.KEY_OBJECT, removeList);

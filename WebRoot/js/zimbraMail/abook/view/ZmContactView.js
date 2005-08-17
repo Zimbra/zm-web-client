@@ -33,13 +33,13 @@ ZmContactView.otherPhoneInfo = [ZmContact.F_otherPhone, ZmContact.F_otherFax];
 
 ZmContactView._selectFields = { 
 	"fileAs": [ 
-		{ name: LmMsg.AB_FILE_AS[ZmContact.FA_LAST_C_FIRST], 			selected: true  }, 
-		{ name: LmMsg.AB_FILE_AS[ZmContact.FA_FIRST_LAST], 				selected: false },
-		{ name: LmMsg.AB_FILE_AS[ZmContact.FA_COMPANY], 				selected: false },
-		{ name: LmMsg.AB_FILE_AS[ZmContact.FA_LAST_C_FIRST_COMPANY], 	selected: false },
-		{ name: LmMsg.AB_FILE_AS[ZmContact.FA_FIRST_LAST_COMPANY], 		selected: false },
-		{ name: LmMsg.AB_FILE_AS[ZmContact.FA_COMPANY_LAST_C_FIRST], 	selected: false },
-		{ name: LmMsg.AB_FILE_AS[ZmContact.FA_COMPANY_FIRST_LAST], 		selected: false }
+		{ name: ZmMsg.AB_FILE_AS[ZmContact.FA_LAST_C_FIRST], 			selected: true  }, 
+		{ name: ZmMsg.AB_FILE_AS[ZmContact.FA_FIRST_LAST], 				selected: false },
+		{ name: ZmMsg.AB_FILE_AS[ZmContact.FA_COMPANY], 				selected: false },
+		{ name: ZmMsg.AB_FILE_AS[ZmContact.FA_LAST_C_FIRST_COMPANY], 	selected: false },
+		{ name: ZmMsg.AB_FILE_AS[ZmContact.FA_FIRST_LAST_COMPANY], 		selected: false },
+		{ name: ZmMsg.AB_FILE_AS[ZmContact.FA_COMPANY_LAST_C_FIRST], 	selected: false },
+		{ name: ZmMsg.AB_FILE_AS[ZmContact.FA_COMPANY_FIRST_LAST], 		selected: false }
 	]
 };
 
@@ -194,7 +194,7 @@ function(ev) {
 ZmContactView.prototype._addEntryRow =
 function(field, html, idx) {
 	html[idx++] = "<tr>";
-	html[idx++] = "<td style='width:18ex;'>" + AjxStringUtil.htmlEncode(LmMsg.AB_FIELD[field]) + ":" + "</td>";
+	html[idx++] = "<td style='width:18ex;'>" + AjxStringUtil.htmlEncode(ZmMsg.AB_FIELD[field]) + ":" + "</td>";
 	if (!this._isReadOnly) {
 		var id = this._fieldIds[field] = Dwt.getNextId();
 		html[idx++] = "<td><input type='text' size=35 id='" + id + "'></td>";
@@ -208,7 +208,7 @@ function(field, html, idx) {
 ZmContactView.prototype._addStreetRow =
 function(field, html, idx) {
 	html[idx++] = "<tr>";
-	html[idx++] = "<td valign=top style='width:18ex;'>" + AjxStringUtil.htmlEncode(LmMsg.AB_FIELD[field]) + ":" + "</td>";
+	html[idx++] = "<td valign=top style='width:18ex;'>" + AjxStringUtil.htmlEncode(ZmMsg.AB_FIELD[field]) + ":" + "</td>";
 	html[idx++] = "<td align=right>";
 	if (!this._isReadOnly) {
 		var id = this._fieldIds[field] = Dwt.getNextId();
@@ -225,7 +225,7 @@ ZmContactView.prototype._addFileAsRow =
 function(html, idx) {
 	this._fileAsSelectCellId = Dwt.getNextId();
 	html[idx++] = "<tr valign='center'>";
-	html[idx++] = "<td>" + LmMsg.fileAs + ":" + "</td>";
+	html[idx++] = "<td>" + ZmMsg.fileAs + ":" + "</td>";
 	html[idx++] = "<td id='" + this._fileAsSelectCellId + "'></td>";
 	html[idx++] = "</tr>";
 	return idx;
@@ -254,7 +254,7 @@ ZmContactView.prototype._generateHtml =
 function(html, idx, label, colOneInfo, colTwoInfo) {
 	// add label
 	if (label) {
-		html[idx++] = "<tr><td colspan=10 valign=top class='editLabel'>";
+		html[idx++] = "<tr><td colspan=10 valign=top class='editZabel'>";
 		html[idx++] = label + "<hr style='margin:0px' noshade size=1 color='#000000'>";
 		html[idx++] = "</td></tr>";
 	}
@@ -297,7 +297,7 @@ function(html, idx, label, colOneInfo, colTwoInfo) {
 ZmContactView.prototype._createNotesHtml =
 function(html, idx) {
 	// add label
-	html[idx++] = "<tr><td colspan=10 valign=top class='editLabel'>";
+	html[idx++] = "<tr><td colspan=10 valign=top class='editZabel'>";
 	html[idx++] = "Notes<hr style='margin:0px' noshade size=1 color='#000000'>";
 	html[idx++] = "</td></tr>";
 
@@ -381,7 +381,7 @@ ZmContactView.prototype._setTitle =
 function(title) {
 	var div =  Dwt.getDomObj(this.getDocument(), this._fieldIds[ZmContactView.F_contactTitle]);
 	var fileAs = title != null ? title : this._contact.getFileAs();
-	div.innerHTML = fileAs ? fileAs : this._contact.id ? "&nbsp;" : LmMsg.newContact;
+	div.innerHTML = fileAs ? fileAs : this._contact.id ? "&nbsp;" : ZmMsg.newContact;
 }
 
 ZmContactView.prototype._setTags =
@@ -550,13 +550,13 @@ function(contact, abridged, appCtxt) {
 		var fields = [ZmContact.F_jobTitle, ZmContact.F_company, ZmContact.F_workPhone, ZmContact.F_mobilePhone, ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
 
 		html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100%>";
-		html[idx++] = "<tr><td colspan=2 class='LmContactField' style='font-weight: bold; background-color: #DDDDDD'>" + contact.getFileAs() + "</td></tr>";
+		html[idx++] = "<tr><td colspan=2 class='ZmContactField' style='font-weight: bold; background-color: #DDDDDD'>" + contact.getFileAs() + "</td></tr>";
 		html[idx++] = "<tr><td valign=top>Full Name:</td><td style='overflow: hidden'>" + contact.getFullName() + "</td></tr>";
 		
 		for (var i = 0; i < fields.length; i++) {
 			var value = AjxStringUtil.htmlEncode(contact.getAttr(fields[i]));
 			if (value) {
-				html[idx++] = "<tr><td valign=top>" + AjxStringUtil.htmlEncode(LmMsg.AB_FIELD[fields[i]]) + ":</td>";
+				html[idx++] = "<tr><td valign=top>" + AjxStringUtil.htmlEncode(ZmMsg.AB_FIELD[fields[i]]) + ":</td>";
 				html[idx++] = "<td valign=top style='overflow: hidden'>" + AjxStringUtil.htmlEncode(value) + "</td>";
 				html[idx++] = "</tr>";
 			}

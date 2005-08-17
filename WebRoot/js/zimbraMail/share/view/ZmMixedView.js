@@ -24,7 +24,7 @@ function() {
 ZmMixedView.prototype._createItemHtml =
 function(item, now, isDndIcon) {
 	if (item.type == ZmItem.CONTACT) {
-		return LmContactSimpleView.prototype._createContactHtmlForMixed.call(this, item, now, isDndIcon);
+		return ZmContactSimpleView.prototype._createContactHtmlForMixed.call(this, item, now, isDndIcon);
 	} else if (item.type == ZmItem.CONV) {
 		return ZmConvListView.prototype._createItemHtml.call(this, item, now, isDndIcon, true);
 	} else if (item.type == ZmItem.MSG) {
@@ -51,10 +51,10 @@ function(parent) {
 		headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, ZmImg.I_MINI_TAG, ZmMixedView.COLWIDTH_ICON));
 	}
 	
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], LmMsg.from, null, ZmMixedView.COLWIDTH_FROM, null, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], ZmMsg.from, null, ZmMixedView.COLWIDTH_FROM, null, true));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, ZmImg.I_ATTACHMENT, ZmMixedView.COLWIDTH_ICON));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], LmMsg.subject, null, null, null, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], LmMsg.date, null, ZmMixedView.COLWIDTH_DATE));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null, null, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.date, null, ZmMixedView.COLWIDTH_DATE));
 	
 	return headerList;
 };

@@ -2,7 +2,7 @@ function ZmCustomPicker(parent) {
 
 	ZmPicker.call(this, parent);
 
-    this.setTitle(LmMsg.search);
+    this.setTitle(ZmMsg.search);
     this.setImage(ZmImg.I_SEARCH);
 }
 
@@ -23,10 +23,10 @@ function(parent) {
 	var fieldId = Dwt.getNextId();
 	var html = new Array(20);
 	var i = 0;
-	html[i++] = "<p>" + LmMsg.addSearch + "</p>";
+	html[i++] = "<p>" + ZmMsg.addSearch + "</p>";
 	html[i++] = "<center><table cellpadding='2' cellspacing='0' border='0'>";
 	html[i++] = "<tr valign='middle'>";
-	html[i++] = "<td align='right' nowrap>" + LmMsg.search + ":</td>";
+	html[i++] = "<td align='right' nowrap>" + ZmMsg.search + ":</td>";
 	html[i++] = "<td align='left' nowrap><input type='text' nowrap size='" + size + "' id='" + fieldId + "'/></td>";
 	html[i++] = "</tr>";
 	html[i++] = "</table></center>";

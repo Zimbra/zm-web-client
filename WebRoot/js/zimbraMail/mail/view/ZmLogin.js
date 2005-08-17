@@ -10,7 +10,7 @@
  * on the auth token.
  *
  * TODO:
- *  - mke sure all strings are drawn from LmMsg.js
+ *  - mke sure all strings are drawn from ZmMsg.js
 
  *  - parse the query string, look for whether the page is standalone, or
  *    if the app has opened a window to it.
@@ -29,13 +29,13 @@ ZmLogin.setPanelText =
 function() {
 	// fill in the text fields we're using
 	var lb = document.getElementById('logonText');
-	lb.innerHTML = LmMsg.login;
+	lb.innerHTML = ZmMsg.login;
 	var pc = document.getElementById('pcText');
-	pc.innerHTML = LmMsg.publicComputer;
+	pc.innerHTML = ZmMsg.publicComputer;
 	var u = document.getElementById('ut');
-	u.innerHTML = LmMsg.username + ":";
+	u.innerHTML = ZmMsg.username + ":";
 	var p = document.getElementById('pt');
-	p.innerHTML = LmMsg.password + ":";
+	p.innerHTML = ZmMsg.password + ":";
 };
 
 ZmLogin.centerElement = 
@@ -338,12 +338,12 @@ function() {
     
     // check uname and pword first
     if (!ZmLogin.isValidUsername(uname)){
-		ZmLogin.setErrorMessage(LmMsg.badUsername);
+		ZmLogin.setErrorMessage(ZmMsg.badUsername);
 		return;
     }
 
     if (uname == null || pword == null || uname=="" || pword == ""){
-		ZmLogin.setErrorMessage(LmMsg.enterUsername);
+		ZmLogin.setErrorMessage(ZmMsg.enterUsername);
 		return;
     }
 	
@@ -372,17 +372,17 @@ function() {
 		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || 
 			ex.code == ZmCsfeException.NO_SUCH_ACCOUNT) 
 		{
-			ZmLogin.setErrorMessage(LmMsg.loginError, -20);
+			ZmLogin.setErrorMessage(ZmMsg.loginError, -20);
 		} 
 		else if (ex.code == ZmCsfeException.SOAP_ERROR || 
 				 ex.code == ZmCsfeException.NETWORK_ERROR) 
 		{
-			var msg = LmMsg.errorNetwork + "\n\n" + LmMsg.errorTryAgain + " " + LmMsg.errorContact;
+			var msg = ZmMsg.errorNetwork + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
 			ZmLogin.setErrorMessage(msg, -15);
 		} 
 		else 
 		{
-			var msg = LmMsg.errorApplication + "\n\n" + LmMsg.errorTryAgain + " " + LmMsg.errorContact;
+			var msg = ZmMsg.errorApplication + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
 			ZmLogin.setErrorMessage(msg + " (" + ex.code + ")", -15);
 		}
     }

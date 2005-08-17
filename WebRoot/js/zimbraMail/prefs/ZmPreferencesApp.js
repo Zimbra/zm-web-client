@@ -30,7 +30,7 @@ function() {
 
 ZmPreferencesApp.prototype.getFilterController = function() {
 	if (!this._filterController) {
-		this._filterController = new LmFilterController(this._appCtxt, this._container, this);
+		this._filterController = new ZmFilterController(this._appCtxt, this._container, this);
 	}
 	return this._filterController;
 }

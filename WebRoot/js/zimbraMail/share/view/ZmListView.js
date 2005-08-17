@@ -275,23 +275,23 @@ function(ev, div) {
 	if (div._type && div._type == DwtListView.TYPE_HEADER_ITEM) {
 		var id = this._headerList[div._itemIndex]._id;
 		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) == 0) {
-			this.setToolTipContent(LmMsg.flag);
+			this.setToolTipContent(ZmMsg.flag);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) == 0) {
-			this.setToolTipContent(LmMsg.tag);
+			this.setToolTipContent(ZmMsg.tag);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0) {
-			this.setToolTipContent(LmMsg.attachment);
+			this.setToolTipContent(ZmMsg.attachment);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
 			if (this._headerList[div._itemIndex]._sortable)
-				this.setToolTipContent(LmMsg.sortBySubject);
+				this.setToolTipContent(ZmMsg.sortBySubject);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT]) == 0) {
-			this.setToolTipContent(LmMsg.convCountTooltip);
+			this.setToolTipContent(ZmMsg.convCountTooltip);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
 			if (this._headerList[div._itemIndex]._sortable)
-				this.setToolTipContent(LmMsg.sortByReceived);
+				this.setToolTipContent(ZmMsg.sortByReceived);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) == 0) {
-			this.setToolTipContent(LmMsg.messageStatus);
+			this.setToolTipContent(ZmMsg.messageStatus);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) == 0) {
-			this.setToolTipContent(LmMsg.sortByFrom);
+			this.setToolTipContent(ZmMsg.sortByFrom);
 		} else {
 			this.setToolTipContent(null);
 		}
@@ -321,7 +321,7 @@ function(ev, div) {
 				if (folder && folder.parent)
 					this.setToolTipContent(folder.getPath(true));
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE]) {
-				this.setToolTipContent(LmMsg[ZmItem.MSG_KEY[item.type]]);
+				this.setToolTipContent(ZmMsg[ZmItem.MSG_KEY[item.type]]);
 			} else {
 				this.setToolTipContent(null);
 			}
@@ -422,17 +422,17 @@ function(item) {
 	var tooltip = null;
 	// check unread first since it has precedence
 	if (item.isDraft)
-		tooltip = LmMsg.draft;
+		tooltip = ZmMsg.draft;
 	else if (item.isUnread)
-		tooltip = LmMsg.unread;
+		tooltip = ZmMsg.unread;
 	else if (item.isReplied)
-		tooltip = LmMsg.replied;
+		tooltip = ZmMsg.replied;
 	else if (item.isForwarded)
-		tooltip = LmMsg.forwarded;
+		tooltip = ZmMsg.forwarded;
 	else if (item.isSent)
-		tooltip = LmMsg.sent;
+		tooltip = ZmMsg.sent;
 	else
-		tooltip = LmMsg.read;
+		tooltip = ZmMsg.read;
 	
 	this.setToolTipContent(tooltip);
 }
@@ -444,7 +444,7 @@ function(item, div) {
 		var prefix = "";
 		if (item instanceof ZmContact) {
 			date = item.modified;
-			prefix = "<b>" + LmMsg.lastModified + ":</b><br>";
+			prefix = "<b>" + ZmMsg.lastModified + ":</b><br>";
 		} else {
 			date = item.date;
 		}
@@ -567,7 +567,7 @@ function() {
 		this._firstSelIndex = 0;
 	var item = this._list.get(this._firstSelIndex);
 	if (item == null) 
-		item = this._list.getLast();
+		item = this._list.getZast();
 	if (item)
 		this.setSelection(item, false);
 }

@@ -47,11 +47,11 @@ function(parent) {
 	var html = new Array(10);
 	var i = 0;
 	html[i++] = "<table cellpadding='2' cellspacing='0' border='0'>";
-	html[i++] = this._makeRow(LmMsg.P_TIME_LAST_HOUR, lastHourId, LmMsg.P_TIME_LAST_4_HOURS, last4HoursId);
-	html[i++] = this._makeRow(LmMsg.P_TIME_TODAY, todayId, LmMsg.P_TIME_YESTERDAY, yesterdayId);
-	html[i++] = this._makeRow(LmMsg.P_TIME_THIS_WEEK, thisWeekId, LmMsg.P_TIME_LAST_WEEK, lastWeekId);
-	html[i++] = this._makeRow(LmMsg.P_TIME_THIS_MONTH, thisMonthId, LmMsg.P_TIME_LAST_MONTH, lastMonthId);
-	html[i++] = this._makeRow(LmMsg.P_TIME_THIS_YEAR, thisYearId, LmMsg.P_TIME_LAST_YEAR, lastYearId);
+	html[i++] = this._makeRow(ZmMsg.P_TIME_LAST_HOUR, lastHourId, ZmMsg.P_TIME_LAST_4_HOURS, last4HoursId);
+	html[i++] = this._makeRow(ZmMsg.P_TIME_TODAY, todayId, ZmMsg.P_TIME_YESTERDAY, yesterdayId);
+	html[i++] = this._makeRow(ZmMsg.P_TIME_THIS_WEEK, thisWeekId, ZmMsg.P_TIME_LAST_WEEK, lastWeekId);
+	html[i++] = this._makeRow(ZmMsg.P_TIME_THIS_MONTH, thisMonthId, ZmMsg.P_TIME_LAST_MONTH, lastMonthId);
+	html[i++] = this._makeRow(ZmMsg.P_TIME_THIS_YEAR, thisYearId, ZmMsg.P_TIME_LAST_YEAR, lastYearId);
 	html[i++] = "</table>";
 	picker.getHtmlElement().innerHTML = html.join("");
 

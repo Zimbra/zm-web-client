@@ -47,11 +47,11 @@ ZmPrefView.PREFS[ZmPrefView.CALENDAR]	= ZmPref.CALENDAR_PREFS;
 
 // title for the page's tab
 ZmPrefView.TAB_NAME = new Object();
-ZmPrefView.TAB_NAME[ZmPrefView.GENERAL]			= LmMsg.general;
-ZmPrefView.TAB_NAME[ZmPrefView.MAIL]			= LmMsg.mail;
-ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]	= LmMsg.filterRules;
-ZmPrefView.TAB_NAME[ZmPrefView.ADDR_BOOK]		= LmMsg.contacts;
-ZmPrefView.TAB_NAME[ZmPrefView.CALENDAR]		= LmMsg.calendar;
+ZmPrefView.TAB_NAME[ZmPrefView.GENERAL]			= ZmMsg.general;
+ZmPrefView.TAB_NAME[ZmPrefView.MAIL]			= ZmMsg.mail;
+ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]	= ZmMsg.filterRules;
+ZmPrefView.TAB_NAME[ZmPrefView.ADDR_BOOK]		= ZmMsg.contacts;
+ZmPrefView.TAB_NAME[ZmPrefView.CALENDAR]		= ZmMsg.calendar;
 
 ZmPrefView.prototype.toString =
 function () {

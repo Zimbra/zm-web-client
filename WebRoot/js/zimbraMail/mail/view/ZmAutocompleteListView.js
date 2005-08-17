@@ -432,7 +432,7 @@ function(listener) {
 	this._eventMgr.addListener(DwtEvent.SELECTION, listener);
 }
 
-// Layout
+// Zayout
 
 // Creates the list and its member elements based on the matches we have. Each match becomes a 
 // DIV. The first match is automatically selected.

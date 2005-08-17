@@ -63,7 +63,7 @@ function(view) {
 
 ZmContactController.prototype._getTagMenuMsg = 
 function() {
-	return LmMsg.tagContact;
+	return ZmMsg.tagContact;
 }
 
 ZmContactController.prototype._setViewContents =
@@ -107,7 +107,7 @@ function(ev, bIsPopCallback) {
 			}
 		} else {
 			// print error message in toaster
-			this._appCtxt.getAppController().setStatusMsg(LmMsg.emptyContact);
+			this._appCtxt.getAppController().setStatusMsg(ZmMsg.emptyContact);
 		}
 	} catch (ex) {
 		this._handleException(ex, this._saveListener, ev, false);
@@ -130,7 +130,7 @@ function() {
 
 	if (!this._popShield) {
 		this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
-		this._popShield.setMessage(LmMsg.askSaveContact, null, DwtMessageDialog.WARNING_STYLE);
+		this._popShield.setMessage(ZmMsg.askSaveContact, null, DwtMessageDialog.WARNING_STYLE);
 		this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 		this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 		this._popShield.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldCancelCallback, this);

@@ -64,8 +64,8 @@ function(parent) {
     
 	html[idx++] = "<table cellpadding='3' cellspacing='0' border='0' style='width:100%;'>";
 	html[idx++] = "<tr align='center' valign='middle'>";
-	html[idx++] = "<td align='left'><input type='checkbox' checked id='" + fromId + "'/> " + LmMsg.from + "</td>";
-	html[idx++] = "<td align='left'><input type='checkbox' id='" + toId + "'/> " + LmMsg.toCc + "</td>";
+	html[idx++] = "<td align='left'><input type='checkbox' checked id='" + fromId + "'/> " + ZmMsg.from + "</td>";
+	html[idx++] = "<td align='left'><input type='checkbox' id='" + toId + "'/> " + ZmMsg.toCc + "</td>";
 	html[idx++] = "</tr>";
 	html[idx++] = "<tr>";
 	html[idx++] = "<td nowrap align='left' colspan='2'><hr /></td>";

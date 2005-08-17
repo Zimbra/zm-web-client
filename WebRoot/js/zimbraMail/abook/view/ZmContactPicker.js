@@ -12,7 +12,7 @@
 */
 function ZmContactPicker(controller, shell, appCtxt) {
 
-	DwtDialog.call(this, shell, null, LmMsg.selectAddresses);
+	DwtDialog.call(this, shell, null, ZmMsg.selectAddresses);
 	
 	this._controller = controller;
 	this._appCtxt = appCtxt;
@@ -126,7 +126,7 @@ function() {
 	// add search button
 	var searchSpan = Dwt.getDomObj(doc, this._listSearchId);
 	var searchButton = new DwtButton(this);
-	searchButton.setText(LmMsg.search);
+	searchButton.setText(ZmMsg.search);
 	searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
 	searchSpan.appendChild(searchButton.getHtmlElement());
 
@@ -154,8 +154,8 @@ function() {
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var listSelect = document.getElementById(this._listSelectId);
 		this._selectDiv = new DwtSelect(this);
-		this._selectDiv.addOption(LmMsg.contacts, true, ZmContactPicker.SEARCHFOR_CONTACTS);
-		this._selectDiv.addOption(LmMsg.GAL, false, ZmContactPicker.SEARCHFOR_GAL);
+		this._selectDiv.addOption(ZmMsg.contacts, true, ZmContactPicker.SEARCHFOR_CONTACTS);
+		this._selectDiv.addOption(ZmMsg.GAL, false, ZmContactPicker.SEARCHFOR_GAL);
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
 	}
    
@@ -195,7 +195,7 @@ function() {
 	// add placeholder for drop down select widget
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		html[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
-		html[idx++] = "<td class='Label nobreak'>" + LmMsg.showNames + ":&nbsp;</td>";
+		html[idx++] = "<td class='Zabel nobreak'>" + ZmMsg.showNames + ":&nbsp;</td>";
 		html[idx++] = "<td id='" + this._listSelectId + "'></td>";
 		html[idx++] = "</tr></table>";
 	}
@@ -222,7 +222,7 @@ function() {
 
 ZmContactPicker.prototype._createListView = 
 function(listViewId, view, bExtendedHeader) {
-	var listView = new LmContactPickerListView(this, view, bExtendedHeader);
+	var listView = new ZmContactPickerListView(this, view, bExtendedHeader);
 	var listDiv = document.getElementById(listViewId);
  	listDiv.appendChild(listView.getHtmlElement());
 	var size = Dwt.getSize(listDiv);
@@ -238,7 +238,7 @@ function(listViewId, view, bExtendedHeader) {
 ZmContactPicker.prototype._setupButton =
 function(id, name, addrType) {
 	var button = new DwtButton(this);
-	button.setText(LmMsg[name]);
+	button.setText(ZmMsg[name]);
 	button.id = id;
 	button.setHtmlElementId(id);
 	button._activeClassName = button._origClassName + " ZmContactPicker-Active";
@@ -485,7 +485,7 @@ function(ev) {
 * @param controller 
 * @param dropTgt 	
 */
-function LmContactPickerListView(parent, view, bExtHeader) {
+function ZmContactPickerListView(parent, view, bExtHeader) {
 	
 	var headerList = this._getHeaderList(parent, bExtHeader);
 	ZmListView.call(this, parent, null, null, view, ZmItem.CONTACT, headerList);
@@ -493,33 +493,33 @@ function LmContactPickerListView(parent, view, bExtHeader) {
 	this._extHeader = bExtHeader || false;
 }
 
-LmContactPickerListView.prototype = new ZmListView;
-LmContactPickerListView.prototype.constructor = LmContactPickerListView;
+ZmContactPickerListView.prototype = new ZmListView;
+ZmContactPickerListView.prototype.constructor = ZmContactPickerListView;
 
-LmContactPickerListView.prototype.toString = 
+ZmContactPickerListView.prototype.toString = 
 function() {
-	return "LmContactPickerListView";
+	return "ZmContactPickerListView";
 }
 
-LmContactPickerListView.prototype.setSize =
+ZmContactPickerListView.prototype.setSize =
 function(width, height) {
 	ZmListView.prototype.setSize.call(this, width, height);
 	this._sizeChildren(width, height);
 }
 
-LmContactPickerListView.prototype.setBounds =
+ZmContactPickerListView.prototype.setBounds =
 function(x, y, width, height) {
 	ZmListView.prototype.setBounds.call(this, x, y, width, height);
 	this._sizeChildren(width, height);
 }
 
-LmContactPickerListView.prototype._sizeChildren =
+ZmContactPickerListView.prototype._sizeChildren =
 function(width, height) {
 	Dwt.setSize(this._listDiv, Dwt.DEFAULT, this.getHtmlElement().clientHeight - DwtListView.HEADERITEM_HEIGHT);
 	this._listDiv.style.overflow = 'auto';
 }
 
-LmContactPickerListView.prototype._setNoResultsHtml = 
+ZmContactPickerListView.prototype._setNoResultsHtml = 
 function() {
 	// ignore if target list view
 	if (this._initialized && !this._extHeader)
@@ -527,7 +527,7 @@ function() {
 }
 
 // The items are ZmEmailAddress objects
-LmContactPickerListView.prototype._createItemHtml =
+ZmContactPickerListView.prototype._createItemHtml =
 function(item) {
 
 	var doc = this.getDocument();
@@ -555,7 +555,7 @@ function(item) {
 		for (var i = 0; i < this._headerList.length; i++) {
 			var id = this._headerList[i]._id;
 			if (id.indexOf(ZmContactPicker.ID_ICON) == 0) {
-				html[idx++] = "<td width=" + this._headerList[i]._width + ">" + LmMsg[item.getTypeAsString()] + ":</td>";
+				html[idx++] = "<td width=" + this._headerList[i]._width + ">" + ZmMsg[item.getTypeAsString()] + ":</td>";
 			} else if (id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
 				html[idx++] = "<td width=" + this._headerList[i]._width + ">&nbsp;" + item.name + "</td>";
 			} else if (id.indexOf(ZmContactPicker.ID_EMAIL) == 0) {
@@ -572,7 +572,7 @@ function(item) {
 	return div;
 }
 
-LmContactPickerListView.prototype._getHeaderList = 
+ZmContactPickerListView.prototype._getHeaderList = 
 function(parent, bExtHeader) {
 
 	var headerList = new Array();
@@ -581,13 +581,13 @@ function(parent, bExtHeader) {
 		headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_ICON, null, ZmImg.I_CONTACT_PICKER, 20));
 	
 	var sortBy = bExtHeader ? null : ZmItem.F_PARTICIPANT;
-	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_PARTICIPANT, LmMsg._name, null, 100, sortBy));
-	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_EMAIL, LmMsg.email));
+	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_PARTICIPANT, ZmMsg._name, null, 100, sortBy));
+	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_EMAIL, ZmMsg.email));
 	
 	return headerList;
 }
 
-LmContactPickerListView.prototype._itemClicked = 
+ZmContactPickerListView.prototype._itemClicked = 
 function(clickedEl, ev) {
 
 	// dont allow right clicks since it doesnt make sense here...
@@ -598,7 +598,7 @@ function(clickedEl, ev) {
 	}
 }
 
-LmContactPickerListView.prototype._sortColumn = 
+ZmContactPickerListView.prototype._sortColumn = 
 function(columnItem, bSortAsc) {
 	var sortBy = bSortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC;
 	this.parent.search(sortBy);

@@ -8,8 +8,8 @@ function ZmContactSplitView(parent, dropTgt, posStyle) {
 	posStyle = posStyle || Dwt.ABSOLUTE_STYLE;
 	DwtComposite.call(this, parent, "ZmContactSplitView", posStyle);
 
-	this._listPart = new LmContactSimpleView(this, "LmContactSimpleView", dropTgt, posStyle);
-	this._contactPart = new DwtComposite(this, "LmContactInfoView", posStyle);
+	this._listPart = new ZmContactSimpleView(this, "ZmContactSimpleView", dropTgt, posStyle);
+	this._contactPart = new DwtComposite(this, "ZmContactInfoView", posStyle);
 
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
 };
@@ -41,7 +41,7 @@ function(x, y, width, height) {
 
 ZmContactSplitView.prototype.getTitle = 
 function() {
-	return [LmMsg.zimbraTitle, LmMsg.contacts].join(": ");
+	return [ZmMsg.zimbraTitle, ZmMsg.contacts].join(": ");
 };
 
 ZmContactSplitView.prototype.setContact = 
@@ -151,7 +151,7 @@ function(contact, isGal) {
 	// - column 1
 	html[idx++] = "<table border=0>";
 	if (email || email2 || email3) {
-		html[idx++] = "<tr><td valign=top class='contactLabel'>Email</td><td valign=top class='contactOutput'>";
+		html[idx++] = "<tr><td valign=top class='contactZabel'>Email</td><td valign=top class='contactOutput'>";
 		// TODO: make into EmailObjects and call compose view
 		if (email) 		html[idx++] = email + "<br>";
 		if (email2) 	html[idx++] = email2 + "<br>";
@@ -177,7 +177,7 @@ function(contact, isGal) {
 	// - column 1
 	html[idx++] = "<table border=0>";
 	if (workField || workPhone || workPhone2 || workFax || workAsst || workCompany || workCallback || workURL) {
-		html[idx++] = "<tr><td valign=top class='contactLabel'>Work</td>";
+		html[idx++] = "<tr><td valign=top class='contactZabel'>Work</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (workField) 	html[idx++] = workField + "<br>";
 		if (workURL) 	html[idx++] = "<a href='" + workURL + "' target='_blank'>" + workURL + "</a>";
@@ -187,12 +187,12 @@ function(contact, isGal) {
 	html[idx++] = "</td>";
 	// - column 2
 	html[idx++] = "<td valign=top><table border=0>";
-	if (workPhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + workPhone + "</td></tr>";
-	if (workPhone2)		html[idx++] = "<tr><td class='contactLabel'>Phone 2</td><td class='contactOutput'>" + workPhone2 + "</td></tr>";
-	if (workFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + workFax + "</td></tr>";
-	if (workAsst)		html[idx++] = "<tr><td class='contactLabel'>Assistant</td><td class='contactOutput'>" + workAsst + "</td></tr>";
-	if (workCompany)	html[idx++] = "<tr><td class='contactLabel'>Company</td><td class='contactOutput'>" + workCompany + "</td></tr>";
-	if (workCallback)	html[idx++] = "<tr><td class='contactLabel'>Callback</td><td class='contactOutput'>" + workCallback + "</td></tr>";
+	if (workPhone)		html[idx++] = "<tr><td class='contactZabel'>Phone</td><td class='contactOutput'>" + workPhone + "</td></tr>";
+	if (workPhone2)		html[idx++] = "<tr><td class='contactZabel'>Phone 2</td><td class='contactOutput'>" + workPhone2 + "</td></tr>";
+	if (workFax)		html[idx++] = "<tr><td class='contactZabel'>Fax</td><td class='contactOutput'>" + workFax + "</td></tr>";
+	if (workAsst)		html[idx++] = "<tr><td class='contactZabel'>Assistant</td><td class='contactOutput'>" + workAsst + "</td></tr>";
+	if (workCompany)	html[idx++] = "<tr><td class='contactZabel'>Company</td><td class='contactOutput'>" + workCompany + "</td></tr>";
+	if (workCallback)	html[idx++] = "<tr><td class='contactZabel'>Callback</td><td class='contactOutput'>" + workCallback + "</td></tr>";
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr>";
 
@@ -211,7 +211,7 @@ function(contact, isGal) {
 	// - column 1
 	html[idx++] = "<table border=0>";
 	if (homeField || homePhone || homePhone2 || homeFax || mobile || pager || homeURL) {
-		html[idx++] = "<tr><td valign=top class='contactLabel'>Home</td>";
+		html[idx++] = "<tr><td valign=top class='contactZabel'>Home</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (homeField) 	html[idx++] = homeField + "<br>";
 		if (homeURL) 	html[idx++] = "<a href='" + homeURL + "' target='_blank'>" + homeURL + "</a>";
@@ -221,11 +221,11 @@ function(contact, isGal) {
 	html[idx++] = "</td>";
 	// - column 2
 	html[idx++] = "<td valign=top><table border=0>";
-	if (homePhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + homePhone + "</td></tr>";
-	if (homePhone2)		html[idx++] = "<tr><td class='contactLabel'>Phone 2</td><td class='contactOutput'>" + homePhone2 + "</td></tr>";
-	if (homeFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + homeFax + "</td></tr>";
-	if (mobile)			html[idx++] = "<tr><td class='contactLabel'>Mobile</td><td class='contactOutput'>" + mobile + "</td></tr>";
-	if (pager)			html[idx++] = "<tr><td class='contactLabel'>Pager</td><td class='contactOutput'>" + pager + "</td></tr>";
+	if (homePhone)		html[idx++] = "<tr><td class='contactZabel'>Phone</td><td class='contactOutput'>" + homePhone + "</td></tr>";
+	if (homePhone2)		html[idx++] = "<tr><td class='contactZabel'>Phone 2</td><td class='contactOutput'>" + homePhone2 + "</td></tr>";
+	if (homeFax)		html[idx++] = "<tr><td class='contactZabel'>Fax</td><td class='contactOutput'>" + homeFax + "</td></tr>";
+	if (mobile)			html[idx++] = "<tr><td class='contactZabel'>Mobile</td><td class='contactOutput'>" + mobile + "</td></tr>";
+	if (pager)			html[idx++] = "<tr><td class='contactZabel'>Pager</td><td class='contactOutput'>" + pager + "</td></tr>";
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr>";
 
@@ -241,7 +241,7 @@ function(contact, isGal) {
 	// - column 1
 	html[idx++] = "<table border=0>";
 	if (otherField || otherPhone || otherFax || otherURL) {
-		html[idx++] = "<tr><td valign=top class='contactLabel'>Other</td>";
+		html[idx++] = "<tr><td valign=top class='contactZabel'>Other</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (otherField) html[idx++] = otherField + "<br>";
 		if (otherURL) 	html[idx++] = "<a href='" + otherURL + "' target='_blank'>" + otherURL + "</a>";
@@ -251,8 +251,8 @@ function(contact, isGal) {
 	html[idx++] = "</td>";
 	// - column 2
 	html[idx++] = "<td valign=top><table border=0>";
-	if (otherPhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + otherPhone + "</td></tr>";
-	if (otherFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + otherFax + "</td></tr>";
+	if (otherPhone)		html[idx++] = "<tr><td class='contactZabel'>Phone</td><td class='contactOutput'>" + otherPhone + "</td></tr>";
+	if (otherFax)		html[idx++] = "<tr><td class='contactZabel'>Fax</td><td class='contactOutput'>" + otherFax + "</td></tr>";
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr>";
 	
@@ -262,7 +262,7 @@ function(contact, isGal) {
 	html[idx++] = "<tr><td valign=top colspan='10'>";
 	if (notes) {
 		html[idx++] = "<table border=0 width=100%>";
-		html[idx++] = "<tr><td valign=top class='contactLabel'>Notes</td><td class='contactOutput'>" + notes + "</td></tr>";
+		html[idx++] = "<tr><td valign=top class='contactZabel'>Notes</td><td class='contactOutput'>" + notes + "</td></tr>";
 		html[idx++] = "</table>";
 	}
 	html[idx++] = "</td></tr>";
@@ -274,29 +274,29 @@ function(contact, isGal) {
 };
 
 //////////////////////////////////////////////////////////////////////////////
-// LmContactSimpleView
+// ZmContactSimpleView
 // - a simple contact list view (contains only full name)
 //////////////////////////////////////////////////////////////////////////////
-function LmContactSimpleView(parent, className, dropTgt, posStyle) {
+function ZmContactSimpleView(parent, className, dropTgt, posStyle) {
 	ZmContactsBaseView.call(this, parent, className, ZmController.CONTACT_SIMPLE_VIEW, null, dropTgt, posStyle);
 };
 
-LmContactSimpleView.prototype = new ZmContactsBaseView;
-LmContactSimpleView.prototype.constructor = LmContactSimpleView;
+ZmContactSimpleView.prototype = new ZmContactsBaseView;
+ZmContactSimpleView.prototype.constructor = ZmContactSimpleView;
 
-LmContactSimpleView.prototype.toString = 
+ZmContactSimpleView.prototype.toString = 
 function() {
-	return "LmContactSimpleView";
+	return "ZmContactSimpleView";
 };
 
-LmContactSimpleView.prototype.set =
+ZmContactSimpleView.prototype.set =
 function(list, defaultColumnSort) {
 	ZmContactsBaseView.prototype.set.call(this, list, defaultColumnSort);
 	if (!(this._list instanceof AjxVector) || this._list.size() == 0)
 		this.parent.clear();
 };
 
-LmContactSimpleView.prototype._modifyContact =
+ZmContactSimpleView.prototype._modifyContact =
 function(ev) {
 	ZmContactsBaseView.prototype._modifyContact.call(this, ev);
 	
@@ -307,7 +307,7 @@ function(ev) {
 	}
 };
 
-LmContactSimpleView.prototype._layout =
+ZmContactSimpleView.prototype._layout =
 function() {
 	// explicitly remove each child (setting innerHTML causes mem leak)
 	while (this._parentEl.hasChildNodes()) {
@@ -324,7 +324,7 @@ function() {
 	}
 };
 
-LmContactSimpleView.prototype._createItemHtml =
+ZmContactSimpleView.prototype._createItemHtml =
 function(contact, now, isDndIcon) {
 
 	// in canonical view, don't show contacts in the Trash
@@ -369,7 +369,7 @@ function(contact, now, isDndIcon) {
 };
 
 // this is used by mixed view to create the old listview version of contact list
-LmContactSimpleView.prototype._createContactHtmlForMixed =
+ZmContactSimpleView.prototype._createContactHtmlForMixed =
 function(contact, now, isDndIcon) {
 
 	// in canonical view, don't show contacts in the Trash

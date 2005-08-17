@@ -74,13 +74,13 @@ ZmOrganizer.prototype.create = function() {}
 ZmOrganizer.checkName =
 function(name) {
 	if (name.length == 0)
-		return LmMsg.nameEmpty;
+		return ZmMsg.nameEmpty;
 
 	if (name.length > ZmOrganizer.MAX_NAME_LENGTH)
-		return AjxStringUtil.resolve(LmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
+		return AjxStringUtil.resolve(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
 
 	if (!ZmOrganizer.VALID_NAME_RE.test(name))
-		return AjxStringUtil.resolve(LmMsg.errorInvalidName, name);
+		return AjxStringUtil.resolve(ZmMsg.errorInvalidName, name);
 
 	return null;
 }

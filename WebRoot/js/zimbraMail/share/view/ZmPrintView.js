@@ -22,7 +22,7 @@ function(item) {
 		this._html = ZmContactCardsView.getPrintHtml(item);
 	}
 	
-	this._printWindow = AjxWindowOpener.openBlank("LmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
+	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
 };
 
 ZmPrintView.prototype._render = 
@@ -40,7 +40,7 @@ function() {
 		if (window.print)
 			this._printWindow.print();
 	} else {
-		this._appCtxt.getAppController().setStatusMsg(LmMsg.popupBlocker);
+		this._appCtxt.getAppController().setStatusMsg(ZmMsg.popupBlocker);
 	}
 	this._html = null;
 };

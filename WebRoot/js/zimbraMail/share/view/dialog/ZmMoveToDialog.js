@@ -1,7 +1,7 @@
 function ZmMoveToDialog(parent, msgDialog, className, folderTree) {
 
-	var newButton = new DwtDialog_ButtonDescriptor(ZmMoveToDialog.NEW_BUTTON, LmMsg._new, DwtDialog.ALIGN_LEFT);
-	ZmDialog.call(this, parent, msgDialog, className, LmMsg.move, [newButton]);
+	var newButton = new DwtDialog_ButtonDescriptor(ZmMoveToDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
+	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.move, [newButton]);
 
 	this.setContent(this._contentHtml());
 	this._setFolderTree(folderTree, null, this._folderTreeCellId, null, true);
@@ -55,7 +55,7 @@ function() {
 	var html = new Array();
 	var idx = 0;
 	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
-	html[idx++] = "<tr><td class='Label' colspan=2>" + LmMsg.targetFolder + ":</td></tr>";
+	html[idx++] = "<tr><td class='Zabel' colspan=2>" + ZmMsg.targetFolder + ":</td></tr>";
 	html[idx++] = "<tr><td colspan=2 id='" + this._folderTreeCellId + "'/></tr>";
 	html[idx++] = "</table>";
 	
@@ -91,15 +91,15 @@ function(ev) {
 	var msg;
 	var tgtFolder = this._folderTreeView.getSelected();
 	if (!tgtFolder)
-		msg = LmMsg.noTargetFolder;
+		msg = ZmMsg.noTargetFolder;
 
 	// moving a folder, check for valid target
 	if (!msg && this._folder &&	!tgtFolder.mayContain(this._folder))
-	    msg = LmMsg.badTargetFolder;
+	    msg = ZmMsg.badTargetFolder;
 
 	// moving items, check for valid target
 	if (!msg && !this._folder && !tgtFolder.mayContain(this._items))
-		msg = LmMsg.badTargetFolderItems;
+		msg = ZmMsg.badTargetFolderItems;
 
 	if (msg)
 		this._showError(msg);

@@ -112,8 +112,8 @@ function() {
 	} else if (this.tagId) {
 		where = this._appCtxt.getTagList().getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 	}
-	var title = where ? [LmMsg.zimbraTitle, where].join(": ") : 
-						[LmMsg.zimbraTitle, LmMsg.searchResults].join(": ");
+	var title = where ? [ZmMsg.zimbraTitle, where].join(": ") : 
+						[ZmMsg.zimbraTitle, ZmMsg.searchResults].join(": ");
 	return title;
 }
 

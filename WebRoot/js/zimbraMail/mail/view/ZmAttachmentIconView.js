@@ -55,7 +55,7 @@ function(attachment, now) {
 		var mimeInfo = ZmMimeTable.getInfo(ct);
 		fieldId = this._getFieldId(attachment, ZmItem.F_ICON);
 		htmlArr[idx++] = "<td class='Icon'><a href='" + url + "'>";
-		htmlArr[idx++] = AjxImg.getImageHtml(mimeInfo ? mimeInfo.imageLarge : ZmImg.IL_DOCUMENT, ["id='", fieldId, "'"].join(""));
+		htmlArr[idx++] = AjxImg.getImageHtml(mimeInfo ? mimeInfo.imageZarge : ZmImg.IL_DOCUMENT, ["id='", fieldId, "'"].join(""));
 		htmlArr[idx++] = "</a></td>";
 	}
 	htmlArr[idx++] = "<tr><td overflow='hidden'>" + name + "</td></tr>";

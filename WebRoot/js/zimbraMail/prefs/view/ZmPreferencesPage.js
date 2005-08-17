@@ -21,7 +21,7 @@ function ZmPreferencesPage(parent, app, view, passwordDialog) {
 	this._appCtxt = app._appCtxt;
 	this._view = view; // which preferences page we are
 	this._passwordDialog = passwordDialog;
-	this._title = [LmMsg.zimbraTitle, LmMsg.options, ZmPrefView.TAB_NAME[view]].join(": ");
+	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[view]].join(": ");
 
 	this.selects = new Object();
 	this._createHtml();
@@ -127,18 +127,18 @@ function() {
 			}
 			this._createRow(setup.displayName, html.join(""), setup.displaySeparator);
 			if (type == "x_password") {
-				this._addButton(buttonId, LmMsg.change, 50,
+				this._addButton(buttonId, ZmMsg.change, 50,
 								new AjxListener(this, this._changePasswordListener));
 			} else if (type == "import") {
 				this._importDiv = document.getElementById(buttonId);
 				this._addImportWidgets(this._importDiv);
 			} else if (type == "export") {
-				this._addButton(buttonId, LmMsg._export, 65,
+				this._addButton(buttonId, ZmMsg._export, 65,
 								new AjxListener(this, this._exportContactsListener));
 			}
 		}
 	}
-	this._addButton(this._resetId, LmMsg.restoreDefaults, 100,
+	this._addButton(this._resetId, ZmMsg.restoreDefaults, 100,
 					new AjxListener(this, this._resetListener));
 	this._rendered = true;
 };
@@ -159,7 +159,7 @@ function() {
 	
 	html[i++] = "<div class='TitleBar'>";
 	html[i++] = "<table id='" + tableId + "' cellpadding=0 cellspacing=5 class='prefTable'>";
-	html[i++] = "<colgroup><col class='prefLabel'></col><col class='prefContent'></col><col></col></colgroup>";
+	html[i++] = "<colgroup><col class='prefZabel'></col><col class='prefContent'></col><col></col></colgroup>";
 	html[i++] = "</table></div>";
 	html[i++] = "<div id='" + this._resetId + "' class='leftPad'></div>";
 	this.getHtmlElement().innerHTML = html.join("");
@@ -174,7 +174,7 @@ function(label, content, addSep) {
 	tr.id = Dwt.getNextId();
 	tr.valign = "top";
 	var cell1 = tr.insertCell(0);
-//	cell1.className = "prefLabel";
+//	cell1.className = "prefZabel";
 	cell1.innerHTML = AjxStringUtil.htmlEncode(label + ":");
 
 	var cell2 = tr.insertCell(1);
@@ -230,7 +230,7 @@ function(buttonDiv) {
 	buttonDiv.appendChild(iframe);
 	
 	// set up import button
-	this._importBtn = this._addButton(buttonDiv.id, LmMsg._import, 65, new AjxListener(this, this._importContactsListener));
+	this._importBtn = this._addButton(buttonDiv.id, ZmMsg._import, 65, new AjxListener(this, this._importContactsListener));
 
 	var idoc = Dwt.getIframeDoc(iframe);
 	idoc.open();
@@ -284,11 +284,11 @@ function(args) {
 	if (status == 200) {
 		this._importBtn.setEnabled(false);
 		this._importIframe.style.visibility = "hidden";
-		appCtrlr.setStatusMsg(LmMsg.importingContacts);
+		appCtrlr.setStatusMsg(ZmMsg.importingContacts);
 		// we have to schedule the rest since it freezes the UI (and status never gets set)
 		appCtrlr._schedule(ZmPreferencesPage._finishImport, {aid: args[1], prefPage: this});
 	} else {
-		appCtrlr.setStatusMsg(LmMsg.errorImporting + " (" + status + ")");
+		appCtrlr.setStatusMsg(ZmMsg.errorImporting + " (" + status + ")");
 		// always re-render input file widget and its parent IFRAME
 		this._importDiv.innerHTML = "";
 		this._addImportWidgets(this._importDiv);
@@ -309,7 +309,7 @@ function(params) {
 	
 	var resp = appCtrlr.sendRequest(soapDoc).ImportContactsResponse.cn[0];
 	
-	var msg = resp.n + " " + LmMsg.contactsImported;
+	var msg = resp.n + " " + ZmMsg.contactsImported;
 	var msgDlg = this._appCtxt.getMsgDialog();
 	msgDlg.setMessage(msg);
 	msgDlg.popup();
@@ -350,5 +350,5 @@ function(ev) {
 			}
 		}
 	}
-	this._appCtxt.getAppController().setStatusMsg(LmMsg.defaultsRestored);
+	this._appCtxt.getAppController().setStatusMsg(ZmMsg.defaultsRestored);
 }

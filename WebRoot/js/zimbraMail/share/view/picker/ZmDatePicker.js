@@ -23,12 +23,12 @@ function(parent) {
     var i = 0;
     html[i++] = "<table cellpadding='3' cellspacing='0' border='0' style='width:100%;'>";
     html[i++] = "<tr align='center' valign='middle'>";
-    html[i++] = "<td align='right' nowrap>" + LmMsg.date + ":</td>";
+    html[i++] = "<td align='right' nowrap>" + ZmMsg.date + ":</td>";
     html[i++] = "<td align='left' nowrap>";
     html[i++] = "<select name='op' id='" + selectId + "'>";
-    html[i++] = "<option value='after'>" + LmMsg.isAfter + "</option>";
-    html[i++] = "<option selected value='before'>" + LmMsg.isBefore + "</option>";
-    html[i++] = "<option value='date'>" + LmMsg.isOn + "</option>";
+    html[i++] = "<option value='after'>" + ZmMsg.isAfter + "</option>";
+    html[i++] = "<option selected value='before'>" + ZmMsg.isBefore + "</option>";
+    html[i++] = "<option value='date'>" + ZmMsg.isOn + "</option>";
     html[i++] = "</select>";
     html[i++] = "</td>";
     html[i++] = "</tr>";

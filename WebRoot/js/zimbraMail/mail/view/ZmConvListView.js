@@ -64,9 +64,9 @@ function(conv, now, isDndIcon, isMixedView, div) {
 			// Subject
 			htmlArr[idx++] = "<td id='" + this._getFieldId(conv, ZmItem.F_SUBJECT) + "'";
 			htmlArr[idx++] = AjxEnv.isSafari ? " style='width: auto;'>" : ">";
-			htmlArr[idx++] = conv.subject ? AjxStringUtil.htmlEncode(conv.subject, true) : AjxStringUtil.htmlEncode(LmMsg.noSubject);
+			htmlArr[idx++] = conv.subject ? AjxStringUtil.htmlEncode(conv.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
 			if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && conv.fragment) {
-				htmlArr[idx++] = "<span class='LmConvListFragment'>";
+				htmlArr[idx++] = "<span class='ZmConvListFragment'>";
 				htmlArr[idx++] = " - ";
 				htmlArr[idx++] = AjxStringUtil.htmlEncode(conv.fragment, true);
 				htmlArr[idx++] = "</span>";
@@ -163,17 +163,17 @@ function(parent) {
 
 	var headerList = new Array();
 	
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, ZmImg.I_FLAG_ON, ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, LmMsg.flag));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, ZmImg.I_FLAG_ON, ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.flag));
 	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
 	var appCtxt = shell.getData(ZmAppCtxt.LABEL); // this._appCtxt not set until parent constructor is called
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, ZmImg.I_MINI_TAG, ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, LmMsg.tag));
+		headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, ZmImg.I_MINI_TAG, ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.tag));
 	}
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], LmMsg.from, null, ZmConvListView.CLV_COLWIDTH_FROM, null, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, ZmImg.I_ATTACHMENT, ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, LmMsg.attachment));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], LmMsg.subject, null, null, ZmItem.F_SUBJECT));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT], null, ZmImg.I_CONV, 25, null, null, null, LmMsg.count));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], LmMsg.received, null, ZmConvListView.CLV_COLWIDTH_DATE, ZmItem.F_DATE));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], ZmMsg.from, null, ZmConvListView.CLV_COLWIDTH_FROM, null, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, ZmImg.I_ATTACHMENT, ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.attachment));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT], null, ZmImg.I_CONV, 25, null, null, null, ZmMsg.count));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.received, null, ZmConvListView.CLV_COLWIDTH_DATE, ZmItem.F_DATE));
 	
 	return headerList;
 }
@@ -277,7 +277,7 @@ function(conv, fieldId) {
 		}
 	} else {
 		// XXX: possible import bug but we must take into account
-		html[idx++] = LmMsg.noWhere;
+		html[idx++] = ZmMsg.noWhere;
 	}
 	if (AjxEnv.isNav)
 		html[idx++] = ZmListView._fillerString;

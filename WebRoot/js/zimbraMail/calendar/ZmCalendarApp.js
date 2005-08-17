@@ -36,7 +36,7 @@ ZmCalendarApp.prototype.getApptDetailController =
 function () {
 	if (!this._apptDetailController) {
 		this._apptDetailController = 
-		     new LmApptDetailController(this._appCtxt, this._container, this);
+		     new ZmApptDetailController(this._appCtxt, this._container, this);
 	}
 	return this._apptDetailController;
 };

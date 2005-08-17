@@ -68,12 +68,12 @@ function () {
 	if (this._toolbar) return;
 	
 	var buttons = [ZmOperation.SAVE, ZmOperation.CLOSE];
-	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "LmAppToolBar");
+	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmAppToolBar");
 	for (var i = 0; i < buttons.length; i++) {
 		if (buttons[i] > 0 && this._listeners[buttons[i]])
 			this._toolbar.addSelectionListener(buttons[i], this._listeners[buttons[i]]);
 	}
-	this._toolbar.getButton(ZmOperation.SAVE).setToolTipContent(LmMsg.savePrefs);
+	this._toolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
 }
 
 // Saves any options that have been changed.
@@ -92,7 +92,7 @@ function() {
 					ZmFilterRules.saveRules();
 			}
 			if (list.length || rulesToSave)
-				this._appCtxt.getAppController().setStatusMsg(LmMsg.optionsSaved);
+				this._appCtxt.getAppController().setStatusMsg(ZmMsg.optionsSaved);
 			return true;
 		} catch (ex) {
 			// TODO: let the user know that the preferences were not saved
@@ -123,13 +123,13 @@ function(args) {
 		var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
 		this._passwordDialog.popdown();
 		if (resp.ChangePasswordResponse) {
-			this._appCtxt.getAppController().setStatusMsg(LmMsg.passwordChangeSucceeded);
+			this._appCtxt.getAppController().setStatusMsg(ZmMsg.passwordChangeSucceeded);
 		} else {
-			throw new AjxException(LmMsg.passwordChangeFailed + " " + LmMsg.errorContact, ZmCsfeException.CSFE_SVC_ERROR, "changePassword");
+			throw new AjxException(ZmMsg.passwordChangeFailed + " " + ZmMsg.errorContact, ZmCsfeException.CSFE_SVC_ERROR, "changePassword");
 		}
 	} catch (ex) {
 		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED) {
-			this._appCtxt.getAppController().setStatusMsg(LmMsg.oldPasswordIsIncorrect);
+			this._appCtxt.getAppController().setStatusMsg(ZmMsg.oldPasswordIsIncorrect);
 		} else {
 			this._handleException(ex, this._passwordChangeListener, args, false);
 		}
@@ -144,7 +144,7 @@ function() {
 
 	if (!this._popShield) {
 		this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
-		this._popShield.setMessage(LmMsg.confirmExitPreferences, null, DwtMessageDialog.WARNING_STYLE);
+		this._popShield.setMessage(ZmMsg.confirmExitPreferences, null, DwtMessageDialog.WARNING_STYLE);
 		this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 		this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 		this._popShield.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldCancelCallback, this);

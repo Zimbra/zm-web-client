@@ -1,6 +1,6 @@
 function ZmRenameFolderDialog(parent, msgDialog, className, folderTree) {
 
-	ZmDialog.call(this, parent, msgDialog, className, LmMsg.renameFolder);
+	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.renameFolder);
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
@@ -18,7 +18,7 @@ function() {
 ZmRenameFolderDialog.prototype.popup =
 function(folder, source, loc) {
 	ZmDialog.prototype.popup.call(this, loc);
-	var title = (folder.type == ZmOrganizer.SEARCH) ? LmMsg.renameSearch : LmMsg.renameFolder;
+	var title = (folder.type == ZmOrganizer.SEARCH) ? ZmMsg.renameSearch : ZmMsg.renameFolder;
 	this.setTitle(title + ': ' + folder.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
 	this._nameField.value = folder.getName(false);
 	this._folder = folder;
@@ -30,7 +30,7 @@ function() {
 	var html = new Array();
 	var idx = 0;
 	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
-	html[idx++] = "<tr><td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>" + LmMsg.newName + ": </td></tr>";
+	html[idx++] = "<tr><td class='Zabel' colspan=2 style='padding: 0px 0px 5px 0px;'>" + ZmMsg.newName + ": </td></tr>";
 	html[idx++] = "<tr><td><input type='text' class='Field' id='" + this._nameFieldId + "' /></td></tr>";
 	html[idx++] = "</table>";
 	
@@ -55,7 +55,7 @@ function() {
 		var parentFolder = this._folder.parent;
 		var f = parentFolder.getByName(name);
 		if (f && (f.id != this._folder.id))
-			msg = LmMsg.folderNameExists;
+			msg = ZmMsg.folderNameExists;
 	}
 
 	return (msg ? this._showError(msg) : [this._folder, name]);

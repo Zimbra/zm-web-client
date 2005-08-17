@@ -44,7 +44,7 @@ function() {
 		}
 	}
 
-	var name = LmMsg[ZmFolderTreeView.MSG_KEY[ZmFolder.ID_USER]];
+	var name = ZmMsg[ZmFolderTreeView.MSG_KEY[ZmFolder.ID_USER]];
 	this.userRoot = new ZmFolder(ZmFolder.ID_USER, name, this.root, this);
 	this.root.children.add(this.userRoot);
 	for (var i = 0; i < userTop.length; i++) {
@@ -54,7 +54,7 @@ function() {
 		userFolder.parent = this.userRoot;
 	}
 
-	name = LmMsg[ZmFolderTreeView.MSG_KEY[ZmFolder.ID_SEARCH]];
+	name = ZmMsg[ZmFolderTreeView.MSG_KEY[ZmFolder.ID_SEARCH]];
 	this.searchRoot = new ZmSearchFolder(ZmFolder.ID_SEARCH, name, this.root, this);
 	this.root.children.add(this.searchRoot);
 	for (var i = 0; i < searchTop.length; i++) {
