@@ -705,9 +705,19 @@ ZmAppointmentView.prototype.openSchedule = function () {
 
 ZmAppointmentView.prototype._saveFreeBusyTimes = function () {
 	this._fbView.disable();
+	var s = this._appt.getStartDate();
+	var e = this._appt.getEndDate();
+	var a = this._appt.getAttendees();
 	this._fbView.saveAppointmentInfo();
 	this._apptForm.refresh();
-	this._handleStateChange(this._apptForm);
+	var newS = this._appt.getStartDate();
+	var newE = this._appt.getEndDate();
+	var newA = this._appt.getAttendees();
+	if (s.getTime() != newS.getTime() ||
+		e.getTime() != newE.getTime() ||
+		a != newA){
+		this._handleStateChange(this._apptForm);
+	}
 	this._bDialog.popdown();
 	// Doing this pretty much means that marking the view dirty is useless
 	// We are goign to always want to refresh the data.
