@@ -5,14 +5,14 @@
 <html>
 <head>
 
-<link rel="shortcut icon" href="/liquid/img/hiRes/non-web/favicon.gif" type="image/gif" />
+<link rel="shortcut icon" href="/zimbra/img/hiRes/non-web/favicon.gif" type="image/gif" />
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/rss/index.rss" />
   
 <title>Zimbra</title>
 
 <%! 
 static final private String AUTH_TOKEN_COOKIE_NAME = "LS_AUTH_TOKEN";
-static final private String LOGIN_PAGE = "/liquid/";
+static final private String LOGIN_PAGE = "/zimbra/";
 %>
 
 <% 
@@ -51,12 +51,12 @@ static final private String LOGIN_PAGE = "/liquid/";
 <%String loRes = (String) request.getAttribute("loRes");
   if (loRes == null) {
 %>
-        @import url(/liquid/img/hiRes/imgs.css?v=<%= vers %>);
+        @import url(/zimbra/img/hiRes/imgs.css?v=<%= vers %>);
 <% } else { %>
-        @import url(/liquid/img/loRes/imgs.css?v=<%= vers %>);
+        @import url(/zimbra/img/loRes/imgs.css?v=<%= vers %>);
 <% } %>
-        @import url(/liquid/js/liquidMail/config/style/lm.css?v=<%= vers %>);
-        @import url(/liquid/skins/steel/skin.css?v=<%= vers %>);
+        @import url(/zimbra/js/zimbraMail/config/style/lm.css?v=<%= vers %>);
+        @import url(/zimbra/skins/steel/skin.css?v=<%= vers %>);
 -->
 </style>
 
@@ -68,20 +68,20 @@ static final private String LOGIN_PAGE = "/liquid/";
 
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 
-	<jsp:include page="Liquid.jsp"/>
+	<jsp:include page="Zimbra.jsp"/>
 	<jsp:include page="Dwt.jsp"/>
-	<jsp:include page="LiquidMail.jsp"/>
+	<jsp:include page="ZimbraMail.jsp"/>
 
 <% } else { %>
 
-	<script type="text/javascript" src="/liquid/js/LsNet_all.js<%= ext %>?v=<%= vers %>"></script>
-	<script type="text/javascript" src="/liquid/js/LsMail_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="/zimbra/js/LsNet_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="/zimbra/js/LsMail_all.js<%= ext %>?v=<%= vers %>"></script>
 
 <% } %>
 
 <script language="JavaScript">  
 	function launch() {
-   		LsWindowOpener.HELPER_URL = "/liquid/public/frameOpenerHelper.jsp"
+   		LsWindowOpener.HELPER_URL = "/zimbra/public/frameOpenerHelper.jsp"
 		DBG = new LsDebug(LsDebug.NONE, null, false);
 		 	// figure out the debug level
 			if (location.search && (location.search.indexOf("debug=") != -1)) {
@@ -102,10 +102,10 @@ static final private String LOGIN_PAGE = "/liquid/";
 				app = m[1];
 		}
 
-		LmLiquidMail.run(document.domain, app);
+		ZmZimbraMail.run(document.domain, app);
 	}
 	LsCore.addOnloadListener(launch);
-	LsCore.addOnunloadListener(LmLiquidMail.unload);
+	LsCore.addOnunloadListener(ZmZimbraMail.unload);
 </script>
 
 </head>

@@ -46,21 +46,21 @@
 
   <servlet>
     <servlet-name>Forwarder</servlet-name>
-    <servlet-class>com.liquidsys.liquidConsole.servlet.Forward</servlet-class>
+    <servlet-class>com.zimbra.zimbraConsole.servlet.Forward</servlet-class>
   </servlet>
 
   <servlet>
     <servlet-name>SetCookieServlet</servlet-name>
-    <servlet-class>com.liquidsys.liquidConsole.servlet.SetCookieServlet</servlet-class>
+    <servlet-class>com.zimbra.zimbraConsole.servlet.SetCookieServlet</servlet-class>
     <init-param>
        <param-name>mailUrl</param-name>
-       <param-value>/liquid/mail</param-value>
+       <param-value>/zimbra/mail</param-value>
     </init-param>
   </servlet>
 
   <filter>
       <filter-name>Set Header Filter</filter-name>
-      <filter-class>com.liquidsys.liquidConsole.filters.SetHeaderFilter</filter-class>
+      <filter-class>com.zimbra.zimbraConsole.filters.SetHeaderFilter</filter-class>
         <init-param>
           <param-name>debug</param-name>
           <param-value>0</param-value>

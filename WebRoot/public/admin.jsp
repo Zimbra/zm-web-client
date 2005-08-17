@@ -54,7 +54,7 @@
 	}
     String contextPath = (String)request.getContextPath(); 
     if(contextPath == null || contextPath=="/") {
-		response.sendRedirect("/liquidAdmin?mode="+mode+"&version="+vers+"&fileExtension="+ext);    	
+		response.sendRedirect("/zimbraAdmin?mode="+mode+"&version="+vers+"&fileExtension="+ext);    	
     }
 %>
 <fmt:setBundle basename="adminconfig" var="configBundle" scope="session"/>
@@ -72,7 +72,7 @@
 <% } else { %>
         @import url(<%= contextPath %>/img/loRes/imgs.css);
 <% } %>
-   @import url(<%= contextPath %>/js/liquidAdmin/config/style/lmadmin.css);
+   @import url(<%= contextPath %>/js/zimbraAdmin/config/style/lmadmin.css);
      -->
     </style>
 	<script language="JavaScript">
@@ -83,9 +83,9 @@
 <script type="text/javascript" src="<fmt:message key="LsMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
 
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
-   		<jsp:include page="/public/Liquid.jsp"/>
+   		<jsp:include page="/public/Zimbra.jsp"/>
     	<jsp:include page="/public/Dwt.jsp"/>
-	    <jsp:include page="/public/LiquidAdmin.jsp"/>
+	    <jsp:include page="/public/ZimbraAdmin.jsp"/>
 <% } else { %>
 
 		<script type="text/javascript" src="<%= contextPath %>/js/LsNet_all.js<%= ext %>?v=<%= vers %>"></script>
@@ -96,7 +96,7 @@
    		function launch() {
    			LsWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
 	    	DBG = new LsDebug(LsDebug.NONE, null, false);
-	    	LaLiquidAdmin.run(document.domain);
+	    	ZaZimbraAdmin.run(document.domain);
 	    }
     </script>
   </head>

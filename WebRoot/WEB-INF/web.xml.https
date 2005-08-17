@@ -16,12 +16,12 @@
   </context-param>
   
   <welcome-file-list>
-    <welcome-file>public/launchLiquidMail.jsp</welcome-file>
+    <welcome-file>public/launchZimbraMail.jsp</welcome-file>
   </welcome-file-list>
 
   <filter>
       <filter-name>Set Header Filter</filter-name>
-      <filter-class>com.liquidsys.liquidConsole.filters.SetHeaderFilter</filter-class>
+      <filter-class>com.zimbra.zimbraConsole.filters.SetHeaderFilter</filter-class>
         <init-param>
           <param-name>debug</param-name>
           <param-value>0</param-value>

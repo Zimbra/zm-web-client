@@ -1,4 +1,4 @@
-<project name="LiquidConsole" default="war">
+<project name="ZimbraConsole" default="war">
 
   <property environment="env"/>
 	
@@ -7,34 +7,34 @@
   <property name="dist.dir"           location="build/dist"/>
   <property name="dist.tomcat.dir"    location="${dist.dir}/jakarta-tomcat-5.0.28"/>
   <property name="dist.tomcat.webapps.dir" location="${dist.tomcat.dir}/webapps"/>
-  <property name="dist.tarfile"         value="dev-liquid.tar"/>
+  <property name="dist.tarfile"         value="dev-zimbra.tar"/>
 
-  <property name="warfile"            location="${dist.tomcat.webapps.dir}/liquid.war"/>
-  <property name="adminwarfile"      location="${dist.tomcat.webapps.dir}/liquidAdmin.war"/>		
+  <property name="warfile"            location="${dist.tomcat.webapps.dir}/zimbra.war"/>
+  <property name="adminwarfile"      location="${dist.tomcat.webapps.dir}/zimbraAdmin.war"/>		
 	
   <property name="jars.dir"           location="jars"/>
-  <property name="jars.archive.dir"   location="../LiquidArchive/jars"/>
+  <property name="jars.archive.dir"   location="../ZimbraArchive/jars"/>
   <property name="src.dir"            location="src"/>
   <property name="gzipExtension" value=".jgz"/>	
-  <property name="copyrightText" value="Copyright 2005 (C) Liquid Systems, Inc. All Rights Reserved"/>
+  <property name="copyrightText" value="Copyright 2005 (C) Zimbra Systems, Inc. All Rights Reserved"/>
 
-  <condition property="liquidAjax.dir" value="${env.LIQUIDAJAX_DIR}">
-    <isset property="env.LIQUIDAJAX_DIR" />
+  <condition property="zimbraAjax.dir" value="${env.ZIMBRAAJAX_DIR}">
+    <isset property="env.ZIMBRAAJAX_DIR" />
   </condition>	
-  <condition property="liquidAjax.dir" value="../LiquidAjax">
-    <not><isset property="env.LIQUIDAJAX_DIR"/></not>
+  <condition property="zimbraAjax.dir" value="../ZimbraAjax">
+    <not><isset property="env.ZIMBRAAJAX_DIR"/></not>
   </condition>	
 
-  <property name="liquidAjax.src.dir" value="${liquidAjax.dir}/src"/>
-  <property name="liquidAjax.jars.dir" value="${liquidAjax.dir}/jars"/>
-  <property name="liquidAjax.dwtimg.dir" value="${liquidAjax.dir}/WebRoot/js/dwt/config/img"/>
-  <property name='liquidAjax.imagemerge.dir' location='${liquidAjax.src.dir}/com/liquidsys/liquidAjax/imagemerge'/>
+  <property name="zimbraAjax.src.dir" value="${zimbraAjax.dir}/src"/>
+  <property name="zimbraAjax.jars.dir" value="${zimbraAjax.dir}/jars"/>
+  <property name="zimbraAjax.dwtimg.dir" value="${zimbraAjax.dir}/WebRoot/js/dwt/config/img"/>
+  <property name='zimbraAjax.imagemerge.dir' location='${zimbraAjax.src.dir}/com/zimbra/zimbraAjax/imagemerge'/>
 	
   <condition property="deploy.dir" value="${env.DEPLOY_DIR}">
     <isset property="env.DEPLOY_DIR" />
   </condition>	
 
-  <condition property="deploy.dir" value="/opt/liquid/tomcat/webapps">
+  <condition property="deploy.dir" value="/opt/zimbra/tomcat/webapps">
     <not><isset property="env.DEPLOY_DIR"/></not>
   </condition>	
 
@@ -46,10 +46,10 @@
   </condition>
 	
   <property name="deploy.war" value="${warfile}"/>
-  <property name="deploy.user" value="liquid"/>
-  <property name="deploy.password" value="liquid"/>
-  <property name="deploy.path" value="/liquid"/>
-  <property name="deploy.admin.path" value="/liquidAdmin"/>
+  <property name="deploy.user" value="zimbra"/>
+  <property name="deploy.password" value="zimbra"/>
+  <property name="deploy.path" value="/zimbra"/>
+  <property name="deploy.admin.path" value="/zimbraAdmin"/>
   <property name="deploy.admin.war" value="${adminwarfile}"/>
 	
   <property name="tf.warfile" location="${dist.tomcat.webapps.dir}/tradeflow.war"/>	
@@ -62,12 +62,12 @@
 
   <condition property='isProduction' value='true'>
   	<or>
-      <not><isset property='env.LIQUID_BUILD'/></not>
-	  <not><equals arg1='${env.LIQUID_BUILD}' arg2='development'/></not>
+      <not><isset property='env.ZIMBRA_BUILD'/></not>
+	  <not><equals arg1='${env.ZIMBRA_BUILD}' arg2='development'/></not>
   	</or>
   </condition>
   <condition property='isProduction' value='false'>
-  	<equals arg1='${env.LIQUID_BUILD}' arg2='development'/>
+  	<equals arg1='${env.ZIMBRA_BUILD}' arg2='development'/>
   </condition>
   <condition property='isDevelopment' value='true'>
   	<equals arg1='${isProduction}' arg2='false'/>
@@ -89,7 +89,7 @@
     <fileset dir="${jars.archive.dir}">
       <include name="**/*.jar"/>
     </fileset>
-    <fileset dir="${liquidAjax.jars.dir}">
+    <fileset dir="${zimbraAjax.jars.dir}">
       <include name="**/*.jar"/>
     </fileset>
   </path>
@@ -108,7 +108,7 @@
       <classpath refid="class.path"/>
       <include name="**/*.java"/>
     </javac>
-    <javac srcdir="${liquidAjax.src.dir}" destdir="${build.dir}" source="1.4" target="1.4" debug="on">
+    <javac srcdir="${zimbraAjax.src.dir}" destdir="${build.dir}" source="1.4" target="1.4" debug="on">
       <classpath refid="class.path"/>
       <include name="**/*.java"/>
     </javac>
@@ -122,15 +122,15 @@
   </target>
 
   <target name="jam-files" depends="compile">
-    <taskdef name="jammer" classname="com.liquidsys.liquidConsole.build.JammerTask" classpath="${build.dir}"/>
-    <jammer copyright="${copyrightText}" webrootDir="${build.dir}/WebRoot/" pathToWebapp="/liquid" destFile="${build.dir}/WebRoot/js/LsNet_all.js">
-      <filelist dir="${build.dir}/WebRoot/public" files="Liquid-net.jsp"/>
+    <taskdef name="jammer" classname="com.zimbra.zimbraConsole.build.JammerTask" classpath="${build.dir}"/>
+    <jammer copyright="${copyrightText}" webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/AjxNet_all.js">
+      <filelist dir="${build.dir}/WebRoot/public" files="Zimbra-net.jsp"/>
     </jammer>
-    <jammer copyright="${copyrightText}" webrootDir="${build.dir}/WebRoot/" pathToWebapp="/liquid" destFile="${build.dir}/WebRoot/js/LsMail_all.js">
-      <filelist dir="${build.dir}/WebRoot/public" files="Liquid.jsp, Dwt.jsp, LiquidMail.jsp"/>
+    <jammer copyright="${copyrightText}" webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/AjxMail_all.js">
+      <filelist dir="${build.dir}/WebRoot/public" files="Zimbra.jsp, Dwt.jsp, ZimbraMail.jsp"/>
     </jammer>
-    <jammer copyright="${copyrightText}" webrootDir="${build.dir}/WebRoot/" pathToWebApp="/liquid" destFile="${build.dir}/WebRoot/js/LsAdmin_all.js">
-      <filelist dir="${build.dir}/WebRoot/public" files="Liquid.jsp, Dwt.jsp, LiquidAdmin.jsp"/>
+    <jammer copyright="${copyrightText}" webrootDir="${build.dir}/WebRoot/" pathToWebApp="/zimbra" destFile="${build.dir}/WebRoot/js/AjxAdmin_all.js">
+      <filelist dir="${build.dir}/WebRoot/public" files="Zimbra.jsp, Dwt.jsp, ZimbraAdmin.jsp"/>
     </jammer> 
   </target>
 
@@ -158,7 +158,7 @@
 			</path>
 		</pathconvert>
 		<taskdef name='imagemerge' 
-				 classname='com.liquidsys.liquidAjax.imagemerge.ImageMergeTask' 
+				 classname='com.zimbra.zimbraAjax.imagemerge.ImageMergeTask' 
 				 classpath='${imagemerge.cp}'
 		/>
 
@@ -169,35 +169,35 @@
 		<echo message='Copying high resolution images (-horizborders -vertborders -backgrounds)'/>
 		<echo/>
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true'
-					cssfile='${images.cssFile}' csspath='/liquid/img/hiRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbra/img/hiRes/'>
 			<dirset dir='img/hiRes' 
 					includes='*' excludes='horizborders,vertborders,backgrounds'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' 
+			<dirset dir='${zimbraAjax.dwtimg.dir}/hiRes' 
 					includes='*' excludes='horizborders,vertborders,backgrounds'/>
 		</imagemerge>
 		<echo/>
 		<echo message='Copying high resolution horizontal borders'/>
 		<echo/>
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='vertical'
-					cssfile='${images.cssFile}' csspath='/liquid/img/hiRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbra/img/hiRes/'>
 			<dirset dir='img/hiRes' includes='horizborders'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' includes='horizborders'/>
+			<dirset dir='${zimbraAjax.dwtimg.dir}/hiRes' includes='horizborders'/>
 		</imagemerge>
 		<echo/>
 		<echo message='Copying high resolution vertical borders'/>
 		<echo/>
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='horizontal'
-					cssfile='${images.cssFile}' csspath='/liquid/img/hiRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbra/img/hiRes/'>
 			<dirset dir='img/hiRes' includes='vertborders'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' includes='vertborders'/>
+			<dirset dir='${zimbraAjax.dwtimg.dir}/hiRes' includes='vertborders'/>
 		</imagemerge>
 		<echo/>
 		<echo message='Copying high resolution backgrounds'/>
 		<echo/>
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='repeat'
-					cssfile='${images.cssFile}' csspath='/liquid/img/hiRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbra/img/hiRes/'>
 			<dirset dir='img/hiRes' includes='backgrounds'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' includes='backgrounds'/>
+			<dirset dir='${zimbraAjax.dwtimg.dir}/hiRes' includes='backgrounds'/>
 		</imagemerge>
 		
 		<!-- merge loRes images -->
@@ -207,35 +207,35 @@
 		<echo message='Merging low resolution images (-horizborder -vertborders -backgrounds)'/>
 		<echo/>
 		<imagemerge destdir='${images.loRes.destDir}' layout='auto'
-					cssfile='${images.cssFile}' csspath='/liquid/img/loRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
 			<dirset dir='img/loRes' 
 					includes='*' excludes='horizborders,vertborders,backgrounds'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' 
+			<dirset dir='${zimbraAjax.dwtimg.dir}/loRes' 
 					includes='*' excludes='horizborders,vertborders,backgrounds'/>
 		</imagemerge>
 		<echo/>
 		<echo message='Merging low resolution horizontal borders'/>
 		<echo/>
 		<imagemerge destdir='${images.loRes.destDir}' layout='vertical'
-					cssfile='${images.cssFile}' csspath='/liquid/img/loRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
 			<dirset dir='img/loRes' includes='horizborders'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' includes='horizborders'/>
+			<dirset dir='${zimbraAjax.dwtimg.dir}/loRes' includes='horizborders'/>
 		</imagemerge>
 		<echo/>
 		<echo message='Merging low resolution vertical borders'/>
 		<echo/>
 		<imagemerge destdir='${images.loRes.destDir}' layout='horizontal'
-					cssfile='${images.cssFile}' csspath='/liquid/img/loRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
 			<dirset dir='img/loRes' includes='vertborders'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' includes='vertborders'/>
+			<dirset dir='${zimbraAjax.dwtimg.dir}/loRes' includes='vertborders'/>
 		</imagemerge>
 		<echo/>
 		<echo message='Copying low resolution backgrounds'/>
 		<echo/>
 		<imagemerge destdir='${images.loRes.destDir}' copy='true' layout='repeat'
-					cssfile='${images.cssFile}' csspath='/liquid/img/loRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
 			<dirset dir='img/loRes' includes='backgrounds'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' includes='backgrounds'/>
+			<dirset dir='${zimbraAjax.dwtimg.dir}/loRes' includes='backgrounds'/>
 		</imagemerge>
 	</target>
 
@@ -252,7 +252,7 @@
 		<fail unless='sort.source' message='Must specify source directory. For example: ant -Dsort.source=src ...'/>		
 
 		<imagesort source='${sort.source}' target='img/hiRes' delete='true'/><!-- noop='true'/-->
-		<imagesort source='${sort.source}' target='${liquidAjax.dwtimg.dir}/hiRes' delete='true'/><!-- noop='true'/-->
+		<imagesort source='${sort.source}' target='${zimbraAjax.dwtimg.dir}/hiRes' delete='true'/><!-- noop='true'/-->
 		<imagesort source='${sort.source}' target='img/unused' delete='true'/><!-- noop='true'/-->
 	</target>
 
@@ -266,7 +266,7 @@
 			</path>
 		</pathconvert>
 		<taskdef name='imagesort' 
-				 classname='com.liquidsys.liquidAjax.imagesort.ImageSortTask' 
+				 classname='com.zimbra.zimbraAjax.imagesort.ImageSortTask' 
 				 classpath='${sortimages.cp}'
 		/>
 		
@@ -275,29 +275,29 @@
 	<target name='imagesinit' description='checks to see if images need to be processed' unless='images.force'>
 		<dependset>
 			<srcfileset dir='img' includes='**/*'/>
-			<srcfileset dir='${liquidAjax.dwtimg.dir}' includes='**/*'/>
-			<srcfileset dir='${liquidAjax.imagemerge.dir}' includes='**/*.java'/>
+			<srcfileset dir='${zimbraAjax.dwtimg.dir}' includes='**/*'/>
+			<srcfileset dir='${zimbraAjax.imagemerge.dir}' includes='**/*.java'/>
 			<targetfilelist dir='${images.loRes.destDir}' files='${images.cssFile}'/>
 		</dependset>
 		<available property='imagesdone' file='${images.loRes.destDir}/${images.cssFile}'/>
 	</target>
 		
-  <target name="check4liquidajax">
-    <available property="liquidAjax.present" file="${liquidAjax.dir}" type="dir"/>
-    <fail message="This project depends on LiquidAjax being checked out at: ${liquidAjax.dir}" unless="liquidAjax.present"/>
+  <target name="check4zimbraajax">
+    <available property="zimbraAjax.present" file="${zimbraAjax.dir}" type="dir"/>
+    <fail message="This project depends on Ajax being checked out at: ${zimbraAjax.dir}" unless="zimbraAjax.present"/>
   </target>
   
-  <target name="copy-files-to-build-area" depends="check4liquidajax">
+  <target name="copy-files-to-build-area" depends="check4zimbraajax">
     <copy file="WebRoot/WEB-INF/web.xml" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="${isProduction}"/>
-    <copy file="WebRoot/js/liquidMail/mail/view/LmLogin.js" tofile="${build.dir}/WebRoot/js/LmLogin.js" overwrite="${isProduction}"/>
+    <copy file="WebRoot/js/zimbraMail/mail/view/ZmLogin.js" tofile="${build.dir}/WebRoot/js/ZmLogin.js" overwrite="${isProduction}"/>
     <copy todir="${build.dir}/WebRoot/public/" overwrite="${isProduction}" >
       <fileset dir="WebRoot/public" includes="**/*"/>
     </copy>
     <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" >
       <fileset dir="WebRoot/"/>
     </copy>
-    <copy todir="${build.dir}/WebRoot/js/liquidAjax" overwrite="${isProduction}" >
- 	  <fileset dir="${liquidAjax.dir}/WebRoot/js"/>
+    <copy todir="${build.dir}/WebRoot/js/zimbraAjax" overwrite="${isProduction}" >
+ 	  <fileset dir="${zimbraAjax.dir}/WebRoot/js"/>
     </copy>
   	<condition property='replace-copyright-in-js-skip'>
   	  <equals arg1='${isProduction}' arg2='false'/>
@@ -309,7 +309,7 @@
     <replace dir="${build.dir}/WebRoot/js" includes="**/*.js" token="@copyright@" value="${copyrightText}" />
   </target>
 	
-  <target name="copy-imgs-to-tmp-area" depends="check4liquidajax">
+  <target name="copy-imgs-to-tmp-area" depends="check4zimbraajax">
   	<copy todir="${tmp.dir}" overwrite="true">
   	  <fileset dir="img/loRes"/>
   	  <fileset dir="img/hiRes"/>
@@ -329,7 +329,7 @@
   </target>	
   
   <target name="copy-admin-help">	
-    <unzip src="WebRoot/adminhelp/html/LiquidAdminOLH.zip" dest="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp" overwrite="yes">
+    <unzip src="WebRoot/adminhelp/html/ZimbraAdminOLH.zip" dest="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp" overwrite="yes">
       <patternset>
 	<include name="WebHelp/**/*"/>
       </patternset>
@@ -351,17 +351,17 @@
   <!-- 
   This target is meant only to be run after a full deploy has
   been done once. It does not deal with the java code used by the
-  LiquidConsole webapp, so if there are any java changes, another
+  ZimbraConsole webapp, so if there are any java changes, another
   deploy will have to be run.
   -->
   <target name="dev-sync">
-   <copy verbose="true" file="WebRoot/js/liquidMail/mail/view/LmLogin.js" tofile="${deploy.dir}${deploy.path}/js/LmLogin.js"/>
+   <copy verbose="true" file="WebRoot/js/zimbraMail/mail/view/ZmLogin.js" tofile="${deploy.dir}${deploy.path}/js/ZmLogin.js"/>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
-      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="js/liquidMail/mail/view/LmLogin.js"/>
+      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="js/zimbraMail/mail/view/ZmLogin.js"/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.path}/js/liquidAjax">
-      <fileset dir="${liquidAjax.dir}/WebRoot/js" includes="**/*.js" excludes="**/img/"/>
+    <copy verbose="true" todir="${deploy.dir}${deploy.path}/js/zimbraAjax">
+      <fileset dir="${zimbraAjax.dir}/WebRoot/js" includes="**/*.js" excludes="**/img/"/>
     </copy>
     <copy todir="${deploy.dir}${deploy.path}/WEB-INF">  	
       <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
@@ -380,8 +380,8 @@
       <classes dir="${src.dir}" includes="*.properties"/>
       <classes dir="${build.dir}" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-   	  <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**,skins/**" excludes="js/liquidAdmin/**,js/LsAdmin_all.js"/>
-      <fileset dir="${build.dir}/WebRoot" includes="public/**,skins/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/LiquidAdmin.jsp,js/LsAdmin_all.js"/>
+   	  <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**,skins/**" excludes="js/zimbraAdmin/**,js/AjxAdmin_all.js"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/**,skins/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp,js/AjxAdmin_all.js"/>
     </war>
   </target>
 
@@ -394,8 +394,8 @@
       <classes dir="${src.dir}" includes="*.properties"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <!--fileset dir="${build.dir}/WebRoot" includes="help/**/*"/-->
-      <fileset dir="${build.dir}/WebRoot" includes="js/**" excludes="js/liquidMail/**,js/liquidAdmin/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="public/TradeFlow.jsp,public/TradeFlow-Dwt.jsp,public/TradeFlow-Liquid.jsp,public/TradeFlow-Liquid-net.jsp"/>
+      <fileset dir="${build.dir}/WebRoot" includes="js/**" excludes="js/zimbraMail/**,js/zimbraAdmin/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/TradeFlow.jsp,public/TradeFlow-Dwt.jsp,public/TradeFlow-Zimbra.jsp,public/TradeFlow-Zimbra-net.jsp"/>
     </war>
     <unwar src="${warfile}" dest="${deploy.dir}${deploy.path}"></unwar>
   </target>	
@@ -423,7 +423,7 @@
       <fileset dir="${build.dir}/WebRoot" includes="help/**"/>
 
       <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**/*,skins/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="js/LmLogin.js,public/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/LiquidAdmin.jsp"/>
+      <fileset dir="${build.dir}/WebRoot" includes="js/ZmLogin.js,public/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp"/>
     </war>
   </target>
   
@@ -443,7 +443,7 @@
   </target>
   
   <target name="console-deploy" depends="deploy">
-    <echo message="Please use 'deploy' instead of 'console-deploy' and goto '/liquid' instead of '/LiquidConsole'"/>
+    <echo message="Please use 'deploy' instead of 'console-deploy' and goto '/zimbra' instead of '/ZimbraConsole'"/>
   </target>	
   
   <target name="dev-dist" description="build tar file of dev build to unpack over RPM install" depends="war">
@@ -453,18 +453,18 @@
     <tar destfile="${dist.dir}/${dist.tarfile}">
       <tarfileset dir="${dist.dir}"
 	includes="**"
-	mode="640" username="liquid" group="liquid"/>
+	mode="640" username="zimbra" group="zimbra"/>
     </tar>
   </target>
 	
   <!-- admin console targets -->
   <target name="admin-dev-sync">
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}">
-      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="js/liquidMail/**,public/Login.jsp,public/launchLiquidMail.jsp,public/LiquidMail.jsp,public/LiquidMailNewCompose.jsp,public/Messages.jsp"/>
+      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="js/zimbraMail/**,public/Login.jsp,public/launchZimbraMail.jsp,public/ZimbraMail.jsp,public/ZimbraMailNewCompose.jsp,public/Messages.jsp"/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/liquidAjax">
-      <fileset dir="${liquidAjax.dir}/WebRoot/js" includes="**/*.js" excludes="**/img/"/>
+    <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/zimbraAjax">
+      <fileset dir="${zimbraAjax.dir}/WebRoot/js" includes="**/*.js" excludes="**/img/"/>
     </copy>
     <copy todir="${deploy.dir}${deploy.admin.path}/WEB-INF">  	
       <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
@@ -483,8 +483,8 @@
 	     <classes dir="${src.dir}" includes="*.properties"/>
 	     <classes dir="${build.dir}" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
 	     <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-	    <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,skins/**" excludes="js/LsMail_all.js,js/LmLogin.js,js/liquidMail/**"/>
-	    <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Dwt.jsp,public/Liquid.jsp,public/LiquidAdmin.jsp,public/Liquid-net.jsp,public/frameOpenerHelper.jsp,skins/**,**/*${gzipExtension}"/>
+	    <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,skins/**" excludes="js/AjxMail_all.js,js/ZmLogin.js,js/zimbraMail/**"/>
+	    <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Dwt.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/Zimbra-net.jsp,public/frameOpenerHelper.jsp,skins/**,**/*${gzipExtension}"/>
         <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
         <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
         <fileset dir="${build.dir}/WebRoot" includes="migrationwizard/*.exe"/>		  	
@@ -505,7 +505,7 @@
 			</path>
 		</pathconvert>
 		<taskdef name='imagemerge' 
-				 classname='com.liquidsys.liquidAjax.imagemerge.ImageMergeTask' 
+				 classname='com.zimbra.zimbraAjax.imagemerge.ImageMergeTask' 
 				 classpath='${imagemerge.cp}'
 		/>
 
@@ -516,35 +516,35 @@
 		<echo message='Copying high resolution images (-horizborders -vertborders -backgrounds)'/>
 		<echo/>
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true'
-					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/hiRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/hiRes/'>
 			<dirset dir='img/hiRes' 
 					includes='*' excludes='horizborders,vertborders,backgrounds'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' 
+			<dirset dir='${zimbraAjax.dwtimg.dir}/hiRes' 
 					includes='*' excludes='horizborders,vertborders,backgrounds'/>
 		</imagemerge>
 		<echo/>
 		<echo message='Copying high resolution horizontal borders'/>
 		<echo/>
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='vertical'
-					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/hiRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/hiRes/'>
 			<dirset dir='img/hiRes' includes='horizborders'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' includes='horizborders'/>
+			<dirset dir='${zimbraAjax.dwtimg.dir}/hiRes' includes='horizborders'/>
 		</imagemerge>
 		<echo/>
 		<echo message='Copying high resolution vertical borders'/>
 		<echo/>
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='horizontal'
-					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/hiRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/hiRes/'>
 			<dirset dir='img/hiRes' includes='vertborders'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' includes='vertborders'/>
+			<dirset dir='${zimbraAjax.dwtimg.dir}/hiRes' includes='vertborders'/>
 		</imagemerge>
 		<echo/>
 		<echo message='Copying high resolution backgrounds'/>
 		<echo/>
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='repeat'
-					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/hiRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/hiRes/'>
 			<dirset dir='img/hiRes' includes='backgrounds'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' includes='backgrounds'/>
+			<dirset dir='${zimbraAjax.dwtimg.dir}/hiRes' includes='backgrounds'/>
 		</imagemerge>
 		
 		<!-- merge loRes images -->
@@ -554,35 +554,35 @@
 		<echo message='Merging low resolution images (-horizborder -vertborders -backgrounds)'/>
 		<echo/>
 		<imagemerge destdir='${images.loRes.destDir}' layout='auto'
-					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/loRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/loRes/'>
 			<dirset dir='img/loRes' 
 					includes='*' excludes='horizborders,vertborders,backgrounds'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' 
+			<dirset dir='${zimbraAjax.dwtimg.dir}/loRes' 
 					includes='*' excludes='horizborders,vertborders,backgrounds'/>
 		</imagemerge>
 		<echo/>
 		<echo message='Merging low resolution horizontal borders'/>
 		<echo/>
 		<imagemerge destdir='${images.loRes.destDir}' layout='vertical'
-					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/loRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/loRes/'>
 			<dirset dir='img/loRes' includes='horizborders'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' includes='horizborders'/>
+			<dirset dir='${zimbraAjax.dwtimg.dir}/loRes' includes='horizborders'/>
 		</imagemerge>
 		<echo/>
 		<echo message='Merging low resolution vertical borders'/>
 		<echo/>
 		<imagemerge destdir='${images.loRes.destDir}' layout='horizontal'
-					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/loRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/loRes/'>
 			<dirset dir='img/loRes' includes='vertborders'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' includes='vertborders'/>
+			<dirset dir='${zimbraAjax.dwtimg.dir}/loRes' includes='vertborders'/>
 		</imagemerge>
 		<echo/>
 		<echo message='Copying low resolution backgrounds'/>
 		<echo/>
 		<imagemerge destdir='${images.loRes.destDir}' copy='true' layout='repeat'
-					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/loRes/'>
+					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/loRes/'>
 			<dirset dir='img/loRes' includes='backgrounds'/>
-			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' includes='backgrounds'/>
+			<dirset dir='${zimbraAjax.dwtimg.dir}/loRes' includes='backgrounds'/>
 		</imagemerge>
 	</target>
 </project>

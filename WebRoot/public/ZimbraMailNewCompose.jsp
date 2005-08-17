@@ -11,12 +11,12 @@
 <%String loRes = (String) request.getAttribute("loRes");
   if (loRes == null) {
 %>
-        @import url(/liquid/img/hiRes/imgs.css);
+        @import url(/zimbra/img/hiRes/imgs.css);
 <% } else { %>
-        @import url(/liquid/img/loRes/imgs.css);
+        @import url(/zimbra/img/loRes/imgs.css);
 <% } %>
-        @import url(/liquid/js/liquidMail/config/style/lm.css);
-        @import url(/liquid/ui/skin.css);
+        @import url(/zimbra/js/zimbraMail/config/style/zm.css);
+        @import url(/zimbra/ui/skin.css);
 -->
 </style>
 
@@ -45,18 +45,18 @@ static final private String AUTH_TOKEN_COOKIE_NAME = "LS_AUTH_TOKEN";
 
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 
-	<jsp:include page="Liquid.jsp"/>
+	<jsp:include page="Zimbra.jsp"/>
 	<jsp:include page="Dwt.jsp"/>
-	<jsp:include page="LiquidMail.jsp"/>
+	<jsp:include page="ZimbraMail.jsp"/>
 
 <% } else { %>
 
-	<script type="text/javascript" src="/liquid/js/LsNet_all.js<%= ext %>?v=<%= vers %>"></script>
-	<script type="text/javascript" src="/liquid/js/LsMail_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="/zimbra/js/LsNet_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="/zimbra/js/LsMail_all.js<%= ext %>?v=<%= vers %>"></script>
 
 <% } %>
 
-<script type="text/javascript" src="/liquid/js/liquidMail/LmNewWindow.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="/zimbra/js/zimbraMail/LmNewWindow.js<%= ext %>?v=<%= vers %>"></script>
 
 <script language="JavaScript">  
 	function launch() {

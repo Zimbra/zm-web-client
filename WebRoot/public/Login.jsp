@@ -25,7 +25,7 @@
 			        for (int i = 0; i < mAllowedPorts.length; i++) {
 		            if (mAllowedPorts[i] == incoming) {
 				        String qs = request.getQueryString();
-				        String path = "/liquidAdmin";
+				        String path = "/zimbraAdmin";
 				       
 				        if(qs != null)
 				        	path = path + "?" + qs;
@@ -90,7 +90,7 @@
          qs = emptyQs? "?initMode=" + currentProto: qs + "&initMode=" + 
              currentProto;
          httpsLocation = PROTO_HTTPS + "://" + request.getServerName() +
-             httpsPort + "/liquid/" + qs;
+             httpsPort + "/zimbra/" + qs;
          
          response.sendRedirect(httpsLocation);
          return;
@@ -102,7 +102,7 @@
       qs = emptyQs? "?initMode=" + currentProto: qs + "&initMode=" + 
           currentProto;
       response.sendRedirect(PROTO_HTTP + "://" +
-                            request.getServerName() + httpPort + "/liquid" 
+                            request.getServerName() + httpPort + "/zimbra" 
                             + qs);
       return;
    }
@@ -129,7 +129,7 @@
     <title>Zimbra Login</title>
     <style>
       <!--
-        @import url(/liquid/js/liquidMail/config/style/lm.css);
+        @import url(/zimbra/js/zimbraMail/config/style/zm.css);
       -->
 
 body, p, td, div, span,input {
@@ -137,7 +137,7 @@ body, p, td, div, span,input {
 }
 body { 
   background-color: #b7b7b7; 
-  background-image:url(/liquid/skins/steel/images/bg_steel.gif);
+  background-image:url(/zimbra/skins/steel/images/bg_steel.gif);
   overflow:hidden;
 }
 input {width:185px;}
@@ -154,7 +154,7 @@ input {width:185px;}
   height:288px; 
   border: 2px solid; 
   border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;
-  background-image:url(/liquid/skins/steel/images/bg_pebble.gif);
+  background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
 }
 
 .mainPanel table{ table-layout:fixed }
@@ -169,7 +169,7 @@ input {width:185px;}
   margin-bottom:10px;
   width:447px; 
   height:110px; 
-  background-image:url("/liquid/img/hiRes/non-web/LoginBanner.gif");
+  background-image:url("/zimbra/img/hiRes/non-web/LoginBanner.gif");
   
 }
 .logo { 
@@ -227,7 +227,7 @@ input {width:185px;}
   position:relative; 
   width:100%; 
   height:100%;
-  background-image:url(/liquid/skins/steel/images/bg_pebble.gif);
+  background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
 }
 
 .usernameText{  
@@ -275,7 +275,7 @@ input {width:185px;}
  <body style="margin:0px; border:0px; padding:0px;">
     <div id='unsupportedBrowserMessage' style="border:1px solid black;background-color:white;height:300px; width:400px;display:none;position:absolute;font-size:16px">
       <div style="margin:4px;background-color: rgb(37, 87,173);;height:40px;font-size:18px;font-weight:bold;">
-        <div style="position:relative; top:0px; left:100px; width:200px; height:38;background-image:url('/liquid/js/img/hiRes/Banner.jpg')">&nbsp;       </div>
+        <div style="position:relative; top:0px; left:100px; width:200px; height:38;background-image:url('/zimbra/js/img/hiRes/Banner.jpg')">&nbsp;       </div>
      </div>
      <div style="text-align:center">
       <pre>
@@ -299,7 +299,7 @@ Or Fedora
 	    <tr id="errorRow">
               <td>
                 <div class=errorDiv id="errorMessageContainer" >
-                  <img class=errorIcon src="/liquid/img/hiRes/dwt/CriticalIcon32x32.gif">
+                  <img class=errorIcon src="/zimbra/img/hiRes/dwt/CriticalIcon32x32.gif">
                   <div id="errorMessage" class=errorMsg style="top:25px">yo yo</div>
                 </div>
             </td></tr>
@@ -358,13 +358,13 @@ name="username" value="<%= uname %>" style="width:100%; height:22px" />
   	DwtConfigPath = "js/dwt/config";
 </script>
 <jsp:include page="Messages.jsp"/>
-<script type="text/javascript" src="/liquid/js/LsNet_all.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="/liquid/js/LmLogin.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="/zimbra/js/LsNet_all.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="/zimbra/js/LmLogin.js<%= ext %>?v=<%= vers %>"></script>
 
 
 <script language="javascript">
         var initMode = "<%= initMode %>";
-   	LsWindowOpener.HELPER_URL = "/liquid/public/frameOpenerHelper.jsp"
+   	LsWindowOpener.HELPER_URL = "/zimbra/public/frameOpenerHelper.jsp"
 	DBG = new LsDebug(LsDebug.NONE, null, false);
 	if (initMode != "" && (initMode != location.protocol)){
 		LsDebug.deleteWindowCookie();

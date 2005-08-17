@@ -4,20 +4,20 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <title>Liquid Mail</title>
+    <title>Zimbra Mail</title>
     <style type="text/css">
       <!--
-        @import url(/liquid/js/dwt/config/style/dwt.css);
-        @import url(/liquid/js/liquidMail/config/style/lm.css);
+        @import url(/zimbra/js/dwt/config/style/dwt.css);
+        @import url(/zimbra/js/zimbraMail/config/style/zm.css);
       -->
     </style>
 	<script language="JavaScript">
     	DwtConfigPath = "js/dwt/config";
     </script>
     <jsp:include page="Messages.jsp"/>
-    <jsp:include page="Liquid.jsp"/>
+    <jsp:include page="Zimbra.jsp"/>
     <jsp:include page="Dwt.jsp"/>
-    <jsp:include page="LiquidMail.jsp"/>
+    <jsp:include page="ZimbraMail.jsp"/>
     <script language="JavaScript">   	
    		function launch() {
    			/*var x = new DwtShell();
@@ -27,7 +27,7 @@
    				var z = new DwtTreeItem(y, null, null, null, false);
    			}*/
  	    	DBG = new LsDebug(LsDebug.NONE, null, false);
- 	    	LmLiquidMail.run(document.domain);
+ 	    	ZmZimbraMail.run(document.domain);
  	    }
    		function shutdown() {
    			delete DwtComposite._pendingElements;
