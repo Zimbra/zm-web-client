@@ -51,7 +51,7 @@
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAjax/dwt/widgets/DwtColorPicker.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAjax/dwt/widgets/DwtBaseDialog.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAjax/dwt/widgets/DwtDialog.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAjax/dwt/widgets/DwtZabel.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAjax/dwt/widgets/DwtLabel.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAjax/dwt/widgets/DwtListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAjax/dwt/widgets/DwtButton.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAjax/dwt/widgets/DwtMenuItem.js<%= ext %>?v=<%= vers %>"></script>
