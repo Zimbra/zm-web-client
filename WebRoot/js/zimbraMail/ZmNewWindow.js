@@ -46,7 +46,7 @@ function() {
 // Public methods
 
 /**
-* Sets up LiquidMail, and then starts it by calling its constructor. It is assumed that the
+* Sets up ZmNewWindow, and then starts it by calling its constructor. It is assumed that the
 * CSFE is on the same host.
 *
 * @param domain		the host that we're running on

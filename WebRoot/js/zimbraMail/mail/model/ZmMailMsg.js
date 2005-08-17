@@ -865,7 +865,7 @@ function(anchorEl, msgId, msgPartId) {
 		var html = new Array();
 		var idx = 0;
 		html[idx++] = "<html><head>";
-		html[idx++] = "<style type='text/css'><!-- @import url(/liquid/js/liquidMail/config/style/lm.css); --></style></head>";
+		html[idx++] = "<style type='text/css'><!-- @import url(/zimbra/js/zimbraMail/config/style/lm.css); --></style></head>";
 		html[idx++] = "<body style='margin: 0px;' oncontextmenu='return false'>";
 		html[idx++] = "<div style='height: 100%; overflow: auto' class='ZmMailMsgView'>" + tmpMsgView.getHtmlElement().innerHTML + "</div>";
 		html[idx++] = "</body></html>";

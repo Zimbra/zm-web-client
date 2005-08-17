@@ -993,7 +993,7 @@ function() {
 		idoc.open();
 		var html = new Array();
 		var idx = 0;
-		html[idx++] = "<html><head><style type='text/css'><!-- @import url(/liquid/js/liquidMail/config/style/lm.css); --></style></head>";
+		html[idx++] = "<html><head><style type='text/css'><!-- @import url(/zimbra/js/zimbraMail/config/style/lm.css); --></style></head>";
 		html[idx++] = "<body scroll=no bgcolor='#EEEEEE'>";
 		html[idx++] = "<form method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
 		html[idx++] = "<table id='" + this._attachmentTableId + "' cellspacing=0 cellpadding=0 border=0 class='iframeTable'></table>";
