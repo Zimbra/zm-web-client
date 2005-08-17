@@ -43,42 +43,42 @@ ZmMimeTable.VIDEO_WMV			= "video/x-ms-wmv";
 ZmMimeTable._table = new Object();
 
 // only add types which are NOT ignored by the client	
-ZmMimeTable._table[ZmMimeTable.APP]					= {desc: ZmMsg.unknownBinaryType, image: ZmImg.I_BINARY, imageZarge: ZmImg.IL_BINARY};
-ZmMimeTable._table[ZmMimeTable.APP_ADOBE_PDF]		= {desc: ZmMsg.adobePdfDocument, image: ZmImg.I_PDF, imageZarge: ZmImg.IL_PDF};
-ZmMimeTable._table[ZmMimeTable.APP_ADOBE_PS]		= {desc: ZmMsg.adobePsDocument, image: ZmImg.I_DOCUMENT, imageZarge: ZmImg.IL_DOCUMENT};
-ZmMimeTable._table[ZmMimeTable.APP_EXE]				= {desc: ZmMsg.application, image: ZmImg.I_BINARY, imageZarge: ZmImg.IL_BINARY};
-ZmMimeTable._table[ZmMimeTable.APP_MS_DOWNLOAD]		= {desc: ZmMsg.msDownload, image: ZmImg.I_BINARY, imageZarge: ZmImg.IL_BINARY};
-ZmMimeTable._table[ZmMimeTable.APP_MS_EXCEL]		= {desc: ZmMsg.msExcelDocument, image: ZmImg.I_MS_EXCEL, imageZarge: ZmImg.IL_MS_EXCEL};
-ZmMimeTable._table[ZmMimeTable.APP_MS_PPT]			= {desc: ZmMsg.msPPTDocument, image: ZmImg.I_MS_POWERPOINT, imageZarge: ZmImg.IL_MS_POWERPOINT};
-ZmMimeTable._table[ZmMimeTable.APP_MS_PROJECT]		= {desc: ZmMsg.msProjectDocument, image: ZmImg.I_MS_PROJECT, imageZarge: ZmImg.IL_MS_PROJECT};
-ZmMimeTable._table[ZmMimeTable.APP_MS_VISIO]		= {desc: ZmMsg.msVisioDocument, image: ZmImg.I_MS_VISIO, imageZarge: ZmImg.IL_MS_VISIO};
-ZmMimeTable._table[ZmMimeTable.APP_MS_WORD]			= {desc: ZmMsg.msWordDocument, image: ZmImg.I_MS_WORD, imageZarge: ZmImg.IL_MS_WORD};
-ZmMimeTable._table[ZmMimeTable.APP_OCTET_STREAM]	= {desc: ZmMsg.unknownBinaryType, image: ZmImg.I_BINARY, imageZarge: ZmImg.IL_BINARY};
-ZmMimeTable._table[ZmMimeTable.APP_ZIP]				= {desc: ZmMsg.zipFile, image: ZmImg.I_ZIP, imageZarge: ZmImg.IL_ZIP};
-ZmMimeTable._table[ZmMimeTable.APP_ZIP2]			= {desc: ZmMsg.zipFile, image: ZmImg.I_ZIP, imageZarge: ZmImg.IL_ZIP};
-ZmMimeTable._table[ZmMimeTable.AUDIO]				= {desc: ZmMsg.audio, image: ZmImg.I_AUDIO, imageZarge: ZmImg.IL_AUDIO};
-ZmMimeTable._table[ZmMimeTable.AUDIO_WAV]			= {desc: ZmMsg.waveAudio, image: ZmImg.I_AUDIO, imageZarge: ZmImg.IL_AUDIO};
-ZmMimeTable._table[ZmMimeTable.AUDIO_MP3]			= {desc: ZmMsg.mp3Audio, image: ZmImg.I_AUDIO, imageZarge: ZmImg.IL_AUDIO};
-ZmMimeTable._table[ZmMimeTable.VIDEO]				= {desc: ZmMsg.video, image: ZmImg.I_MS_WMV, imageZarge: ZmImg.IL_MS_WMV};
-ZmMimeTable._table[ZmMimeTable.VIDEO_WMV]			= {desc: ZmMsg.msWMV, image: ZmImg.I_MS_WMV, imageZarge: ZmImg.IL_MS_WMV};
-ZmMimeTable._table[ZmMimeTable.IMG]					= {desc: ZmMsg.image, image: ZmImg.I_IMAGE, imageZarge: ZmImg.IL_IMAGE};
-ZmMimeTable._table[ZmMimeTable.IMG_GIF]				= {desc: ZmMsg.gifImage, image: ZmImg.I_GIF, imageZarge: ZmImg.IL_GIF};
-ZmMimeTable._table[ZmMimeTable.IMG_JPEG]			= {desc: ZmMsg.jpegImage, image: ZmImg.I_JPEG, imageZarge: ZmImg.IL_JPEG};
-ZmMimeTable._table[ZmMimeTable.IMG_PNG]				= {desc: ZmMsg.pngImage, image: ZmImg.I_IMAGE, imageZarge: ZmImg.IL_IMAGE};
-ZmMimeTable._table[ZmMimeTable.IMG_TIFF]			= {desc: ZmMsg.tiffImage, image: ZmImg.I_IMAGE, imageZarge: ZmImg.IL_IMAGE};
-ZmMimeTable._table[ZmMimeTable.MSG_RFC822]			= {desc: ZmMsg.mailMessage, image: ZmImg.I_ENVELOPE, imageZarge: ZmImg.IL_ENVELOPE};
-ZmMimeTable._table[ZmMimeTable.TEXT]				= {desc: ZmMsg.textDocuments, image: ZmImg.I_DOCUMENT, imageZarge: ZmImg.IL_DOCUMENT};
-ZmMimeTable._table[ZmMimeTable.TEXT_RTF]			= {desc: ZmMsg.enrichedText, image: ZmImg.I_DOCUMENT, imageZarge: ZmImg.IL_DOCUMENT};
-ZmMimeTable._table[ZmMimeTable.TEXT_HTML]			= {desc: ZmMsg.htmlDocument, image: ZmImg.I_HTML, imageZarge: ZmImg.IL_HTML};
-ZmMimeTable._table[ZmMimeTable.TEXT_JAVA]			= {desc: ZmMsg.javaSource, image: ZmImg.I_DOCUMENT, imageZarge: ZmImg.IL_DOCUMENT};
-ZmMimeTable._table[ZmMimeTable.TEXT_PLAIN]			= {desc: ZmMsg.textFile, image: ZmImg.I_DOCUMENT, imageZarge: ZmImg.IL_DOCUMENT};
-ZmMimeTable._table[ZmMimeTable.TEXT_XML]			= {desc: ZmMsg.xmlDocument, image: ZmImg.I_DOCUMENT, imageZarge: ZmImg.IL_DOCUMENT};
+ZmMimeTable._table[ZmMimeTable.APP]					= {desc: ZmMsg.unknownBinaryType, image: ZmImg.I_BINARY, imageLarge: ZmImg.IL_BINARY};
+ZmMimeTable._table[ZmMimeTable.APP_ADOBE_PDF]		= {desc: ZmMsg.adobePdfDocument, image: ZmImg.I_PDF, imageLarge: ZmImg.IL_PDF};
+ZmMimeTable._table[ZmMimeTable.APP_ADOBE_PS]		= {desc: ZmMsg.adobePsDocument, image: ZmImg.I_DOCUMENT, imageLarge: ZmImg.IL_DOCUMENT};
+ZmMimeTable._table[ZmMimeTable.APP_EXE]				= {desc: ZmMsg.application, image: ZmImg.I_BINARY, imageLarge: ZmImg.IL_BINARY};
+ZmMimeTable._table[ZmMimeTable.APP_MS_DOWNLOAD]		= {desc: ZmMsg.msDownload, image: ZmImg.I_BINARY, imageLarge: ZmImg.IL_BINARY};
+ZmMimeTable._table[ZmMimeTable.APP_MS_EXCEL]		= {desc: ZmMsg.msExcelDocument, image: ZmImg.I_MS_EXCEL, imageLarge: ZmImg.IL_MS_EXCEL};
+ZmMimeTable._table[ZmMimeTable.APP_MS_PPT]			= {desc: ZmMsg.msPPTDocument, image: ZmImg.I_MS_POWERPOINT, imageLarge: ZmImg.IL_MS_POWERPOINT};
+ZmMimeTable._table[ZmMimeTable.APP_MS_PROJECT]		= {desc: ZmMsg.msProjectDocument, image: ZmImg.I_MS_PROJECT, imageLarge: ZmImg.IL_MS_PROJECT};
+ZmMimeTable._table[ZmMimeTable.APP_MS_VISIO]		= {desc: ZmMsg.msVisioDocument, image: ZmImg.I_MS_VISIO, imageLarge: ZmImg.IL_MS_VISIO};
+ZmMimeTable._table[ZmMimeTable.APP_MS_WORD]			= {desc: ZmMsg.msWordDocument, image: ZmImg.I_MS_WORD, imageLarge: ZmImg.IL_MS_WORD};
+ZmMimeTable._table[ZmMimeTable.APP_OCTET_STREAM]	= {desc: ZmMsg.unknownBinaryType, image: ZmImg.I_BINARY, imageLarge: ZmImg.IL_BINARY};
+ZmMimeTable._table[ZmMimeTable.APP_ZIP]				= {desc: ZmMsg.zipFile, image: ZmImg.I_ZIP, imageLarge: ZmImg.IL_ZIP};
+ZmMimeTable._table[ZmMimeTable.APP_ZIP2]			= {desc: ZmMsg.zipFile, image: ZmImg.I_ZIP, imageLarge: ZmImg.IL_ZIP};
+ZmMimeTable._table[ZmMimeTable.AUDIO]				= {desc: ZmMsg.audio, image: ZmImg.I_AUDIO, imageLarge: ZmImg.IL_AUDIO};
+ZmMimeTable._table[ZmMimeTable.AUDIO_WAV]			= {desc: ZmMsg.waveAudio, image: ZmImg.I_AUDIO, imageLarge: ZmImg.IL_AUDIO};
+ZmMimeTable._table[ZmMimeTable.AUDIO_MP3]			= {desc: ZmMsg.mp3Audio, image: ZmImg.I_AUDIO, imageLarge: ZmImg.IL_AUDIO};
+ZmMimeTable._table[ZmMimeTable.VIDEO]				= {desc: ZmMsg.video, image: ZmImg.I_MS_WMV, imageLarge: ZmImg.IL_MS_WMV};
+ZmMimeTable._table[ZmMimeTable.VIDEO_WMV]			= {desc: ZmMsg.msWMV, image: ZmImg.I_MS_WMV, imageLarge: ZmImg.IL_MS_WMV};
+ZmMimeTable._table[ZmMimeTable.IMG]					= {desc: ZmMsg.image, image: ZmImg.I_IMAGE, imageLarge: ZmImg.IL_IMAGE};
+ZmMimeTable._table[ZmMimeTable.IMG_GIF]				= {desc: ZmMsg.gifImage, image: ZmImg.I_GIF, imageLarge: ZmImg.IL_GIF};
+ZmMimeTable._table[ZmMimeTable.IMG_JPEG]			= {desc: ZmMsg.jpegImage, image: ZmImg.I_JPEG, imageLarge: ZmImg.IL_JPEG};
+ZmMimeTable._table[ZmMimeTable.IMG_PNG]				= {desc: ZmMsg.pngImage, image: ZmImg.I_IMAGE, imageLarge: ZmImg.IL_IMAGE};
+ZmMimeTable._table[ZmMimeTable.IMG_TIFF]			= {desc: ZmMsg.tiffImage, image: ZmImg.I_IMAGE, imageLarge: ZmImg.IL_IMAGE};
+ZmMimeTable._table[ZmMimeTable.MSG_RFC822]			= {desc: ZmMsg.mailMessage, image: ZmImg.I_ENVELOPE, imageLarge: ZmImg.IL_ENVELOPE};
+ZmMimeTable._table[ZmMimeTable.TEXT]				= {desc: ZmMsg.textDocuments, image: ZmImg.I_DOCUMENT, imageLarge: ZmImg.IL_DOCUMENT};
+ZmMimeTable._table[ZmMimeTable.TEXT_RTF]			= {desc: ZmMsg.enrichedText, image: ZmImg.I_DOCUMENT, imageLarge: ZmImg.IL_DOCUMENT};
+ZmMimeTable._table[ZmMimeTable.TEXT_HTML]			= {desc: ZmMsg.htmlDocument, image: ZmImg.I_HTML, imageLarge: ZmImg.IL_HTML};
+ZmMimeTable._table[ZmMimeTable.TEXT_JAVA]			= {desc: ZmMsg.javaSource, image: ZmImg.I_DOCUMENT, imageLarge: ZmImg.IL_DOCUMENT};
+ZmMimeTable._table[ZmMimeTable.TEXT_PLAIN]			= {desc: ZmMsg.textFile, image: ZmImg.I_DOCUMENT, imageLarge: ZmImg.IL_DOCUMENT};
+ZmMimeTable._table[ZmMimeTable.TEXT_XML]			= {desc: ZmMsg.xmlDocument, image: ZmImg.I_DOCUMENT, imageLarge: ZmImg.IL_DOCUMENT};
 
 ZmMimeTable.getInfo =
 function(type, createIfUndefined) {
 	var entry = ZmMimeTable._table[type];
 	if (!entry && createIfUndefined) {
-		entry = ZmMimeTable._table[type] = {desc: type, image: ZmImg.I_BINARY, imageZarge: ZmImg.IL_BINARY};
+		entry = ZmMimeTable._table[type] = {desc: type, image: ZmImg.I_BINARY, imageLarge: ZmImg.IL_BINARY};
 	}
 	if (entry) {
 		if (!entry.type)

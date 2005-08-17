@@ -119,7 +119,7 @@ function(view) {
 	
 	this._navToolBar.enable(ZmOperation.PAGE_BACK, list.get(0) != this._msg);
 	
-	var bEnableForw = this._msg.list.hasMore() || (list.getZast() != this._msg);
+	var bEnableForw = this._msg.list.hasMore() || (list.getLast() != this._msg);
 	this._navToolBar.enable(ZmOperation.PAGE_FORWARD, bEnableForw);
 	
 	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.message);	

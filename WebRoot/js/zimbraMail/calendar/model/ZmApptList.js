@@ -118,7 +118,7 @@ function(orig, result, startTime, endTime) {
 				slice._fanoutFirst = (fanoutNum == 0);
 				slice._orig = orig;
 				slice.setEndDate(nextDay);			
-				slice._fanoutZast = (slice.getEndTime() == orig.getEndTime());	
+				slice._fanoutLast = (slice.getEndTime() == orig.getEndTime());	
 				slice._fanoutNum = fanoutNum;
 				slice._uniqStartTime = slice.getStartTime(); // neede to construct uniq id later							
 				result.add(slice);
@@ -131,7 +131,7 @@ function(orig, result, startTime, endTime) {
 		} else {
 			if (appt.isInRange(startTime,endTime)) {
 				appt._fanoutFirst = (fanoutNum == 0);	
-				appt._fanoutZast = (appt.getEndTime() == orig.getEndTime());				
+				appt._fanoutLast = (appt.getEndTime() == orig.getEndTime());				
 				if (!appt._fanoutFirst)
 					appt._orig = orig;
 				appt._fanoutNum = fanoutNum;

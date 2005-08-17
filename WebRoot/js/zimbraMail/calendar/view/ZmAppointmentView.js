@@ -138,7 +138,7 @@ var _First_ = "first";
 var _Second_ = "second";
 var _Third_ = "third";
 var _Fourth_ = "fourth";
-var _Zast_ = "last";
+var _Last_ = "last";
 
 var _Every_ = "Every";
 
@@ -215,7 +215,7 @@ var _REPEAT_END_TYPE_CHOICES_ = [
 var _REPEAT_CUSTOM_ORDINAL_CHOICES_ = [
 	{value:"1", label:_First_},	{value:"2", label:_Second_},	
 	{value:"3", label:_Third_},	{value:"4", label:_Fourth_},
-	{value:"-1", label:_Zast_}
+	{value:"-1", label:_Last_}
 ];
 
 var _REPEAT_CUSTOM_TYPE_CHOICES_ = [

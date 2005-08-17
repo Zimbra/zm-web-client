@@ -567,7 +567,7 @@ function() {
 		this._firstSelIndex = 0;
 	var item = this._list.get(this._firstSelIndex);
 	if (item == null) 
-		item = this._list.getZast();
+		item = this._list.getLast();
 	if (item)
 		this.setSelection(item, false);
 }

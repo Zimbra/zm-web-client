@@ -46,9 +46,9 @@ ZmBrowseView.prototype.removeAllPickers =
 function() {
 	var p = this._pickers;
 	while (p.size() > 0) {
-		var picker = p.getZast();
+		var picker = p.getLast();
 		picker.dispose();
-	    p.removeZast();
+	    p.removeLast();
     }
 }
 

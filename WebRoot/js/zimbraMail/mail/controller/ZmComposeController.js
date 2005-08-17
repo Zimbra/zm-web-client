@@ -148,7 +148,7 @@ function(delMsg) {
 	}
 }
 
-// Creates the compose view based on the mode we're in. Zazily creates the 
+// Creates the compose view based on the mode we're in. Lazily creates the 
 // compose toolbar, a contact picker, and the compose view itself.
 ZmComposeController.prototype._setView =
 function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {

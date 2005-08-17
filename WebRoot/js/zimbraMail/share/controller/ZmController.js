@@ -247,7 +247,7 @@ function(params) {
 		// Schedule this since we want to make sure the app is built up before we actually hide the login dialog
 		this._schedule(this._hideLoginDialog);
 		if (this._execFrame)
-			this._schedule(this._doZastSearch);
+			this._schedule(this._doLastSearch);
 	} catch (ex) {
 		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || 
 			ex.code == ZmCsfeException.SVC_INVALID_REQUEST) 
@@ -274,7 +274,7 @@ function(args) {
 	this._schedule(this._doAuth, {username: args[0], password: args[1], pubComp: args[2]});
 }
 
-ZmController.prototype._doZastSearch = 
+ZmController.prototype._doLastSearch = 
 function() {
 	var obj = this._execFrame.obj ? this._execFrame.obj : this;
 	this._execFrame.method.call(obj, this._execFrame.params);

@@ -2,7 +2,7 @@ function ZmCalMonthView(parent, posStyle, dropTgt) {
 	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, ZmController.CAL_MONTH_VIEW, dropTgt);	
 	this.getHtmlElement().style.overflow = "hidden";
 	//this.setScrollStyle(DwtControl.SCROLL);
-	this._needFirstZayout = true;
+	this._needFirstLayout = true;
 }
 
 ZmCalMonthView.prototype = new ZmCalBaseView;
@@ -184,7 +184,7 @@ function() {
 			}
 		}
 	}
-	if (!this._needFirstZayout)
+	if (!this._needFirstLayout)
 		this._layout();
 }
 
@@ -213,7 +213,7 @@ function() {
 ZmCalMonthView.prototype._createAllDayItemHtml =
 function(appt, apptEnd) {
 	var isStartInView = appt._fanoutFirst;
-	var isEndInView = apptEnd._fanoutZast;
+	var isEndInView = apptEnd._fanoutLast;
 
 	var needTitle = true; 
 
@@ -498,7 +498,7 @@ function() {
 		return;
 	}
 
-	this._needFirstZayout = false;
+	this._needFirstLayout = false;
 		
 	var doc = this.getDocument();
 
@@ -555,7 +555,7 @@ function(date, list) {
 			html[idx++] = AjxStringUtil.htmlEncode(ao.getName());
 			html[idx++] = "</div></div>";
 			html[idx++] = "</td>";
-			if (ao._fanoutZast)
+			if (ao._fanoutLast)
 				html[idx++] = "<td><div class=allday_blue_end></div></td>";
 			html[idx++] ="</tr>";
 			html[idx++] = "</table></td></tr>";

@@ -8,7 +8,7 @@ function ZmCalDayView(parent, posStyle, dropTgt, view, numDays) {
 	//this.getHtmlElement().style.overflow = "hidden";	
 	//this.setScrollStyle(DwtControl.SCROLL);
 	this.setScrollStyle(DwtControl.CLIP);	
-	this._needFirstZayout = true;
+	this._needFirstLayout = true;
 	this._normalClassName = "calendar_grid_body_cell";
 	this._selectedClassName = this._normalClassName+"-selected";
 }
@@ -70,9 +70,9 @@ function() {
 	while (table.rows.length > 1)
 		table.deleteRow(1);
 	
-	this._computeApptZayout();
-	this._computeAllDayApptZayout();
-	if (!this._needFirstZayout)
+	this._computeApptLayout();
+	this._computeAllDayApptLayout();
+	if (!this._needFirstLayout)
 		this._layoutAppts();
 	this._layout();
 	var act = new AjxTimedAction();
@@ -180,9 +180,9 @@ ZmCalDayView.prototype._resetAllDayData =
 function() {
 	this._allDayAppts = {};
 	this._allDayApptsList = [];
-	this._allDayApptsRowZayouts = [];
+	this._allDayApptsRowLayouts = [];
 	// this controls number of initial all day appt rows added
-	this._addAllDayApptRowZayout();
+	this._addAllDayApptRowLayout();
 }
 
 /**
@@ -551,9 +551,9 @@ function(layout, max) {
 /*
  * compute appt layout for appts that aren't all day
  */
-ZmCalDayView.prototype._computeApptZayout =
+ZmCalDayView.prototype._computeApptLayout =
 function() {
-//	DBG.println("_computeApptZayout");
+//	DBG.println("_computeApptLayout");
 	var layouts = this._layouts = new Array();
 	var list = this.getList();
 	if (!list) return;
@@ -570,7 +570,7 @@ function() {
 
 		var st = ao.getStartTime();
 		var et = ao.getEndTime();		
-		var newZayout = { appt: ao, col: 0, maxcol: -1, left: [], right: [] };
+		var newLayout = { appt: ao, col: 0, maxcol: -1, left: [], right: [] };
 		// look for overlapping appts
 		var overlap = [];
 		var overlappingCol = [];
@@ -580,8 +580,8 @@ function() {
 				overlap.push(layout);
 				overlappingCol[layout.col] = true;
 				// while we overlap, update our col
-				while (overlappingCol[newZayout.col]) {
-					newZayout.col++;
+				while (overlappingCol[newLayout.col]) {
+					newLayout.col++;
 				}
 			}
 		}
@@ -589,15 +589,15 @@ function() {
 		// figure out who is left and who is right
 		for (var c in overlap) {
 			var l = overlap[c];
-			if (newZayout.col < l.col) {
-				newZayout.right.push(l);
-				l.left.push(newZayout);
+			if (newLayout.col < l.col) {
+				newLayout.right.push(l);
+				l.left.push(newLayout);
 			} else {
-				newZayout.left.push(l);
-				l.right.push(newZayout);
+				newLayout.left.push(l);
+				l.right.push(newLayout);
 			}
 		}
-		layouts.push(newZayout);
+		layouts.push(newLayout);
 	}
 	
 	// compute maxcols
@@ -616,7 +616,7 @@ function() {
 /*
  * add a new all day appt row layout slot and return it
  */
-ZmCalDayView.prototype._addAllDayApptRowZayout =
+ZmCalDayView.prototype._addAllDayApptRowLayout =
 function() {
 	var data = [];
 	for (var i=0; i < this._numDays; i++) {
@@ -624,7 +624,7 @@ function() {
 		// appt is set to the _allDayAppts data in the first slot only (if appt spans days)
 		data[i] = { free: true, data: null };
 	}
-	this._allDayApptsRowZayouts.push(data);
+	this._allDayApptsRowLayouts.push(data);
 	return data;
 }
 
@@ -645,7 +645,7 @@ function(row, dayIndex, data) {
  */
 ZmCalDayView.prototype._findAllDaySlot = 
 function(dayIndex, data) {
-	var rows = this._allDayApptsRowZayouts;
+	var rows = this._allDayApptsRowLayouts;
 	var row = null;
 	for (var i=0; i < rows.length; i++) {
 		row = rows[i];
@@ -658,7 +658,7 @@ function(dayIndex, data) {
 		if (row != null)	break;
 	}
 	if (row == null)
-		row = this._addAllDayApptRowZayout();
+		row = this._addAllDayApptRowLayout();
 
 	this._fillAllDaySlot(row, dayIndex, data);	
 }
@@ -666,7 +666,7 @@ function(dayIndex, data) {
 /*
  * compute layout info for all day appts
  */
-ZmCalDayView.prototype._computeAllDayApptZayout =
+ZmCalDayView.prototype._computeAllDayApptLayout =
 function() {
 	var adlist = this._allDayApptsList;
 	adlist.sort(ZmAppt.compareByTimeAndDuration);
@@ -682,7 +682,7 @@ function() {
 				DBG.println("day index = "+day.index);
 				DBG.println("colspan = "+data.numDays);
 				DBG.println("includesFirst = "+data.isStartInView);
-				DBG.println("includesZast = "+data.isEndInView);
+				DBG.println("includesLast = "+data.isEndInView);
 				*/
 			}
 		}
@@ -692,7 +692,7 @@ function() {
 
 ZmCalDayView.prototype._layoutAllDayAppts =
 function() {
-	var rows = this._allDayApptsRowZayouts;
+	var rows = this._allDayApptsRowLayouts;
 
 	var table = Dwt.getDomObj(this.getDocument(), this._headerTableId);
 	
@@ -832,7 +832,7 @@ function() {
 		return;
 	}
 
-	this._needFirstZayout = false;
+	this._needFirstLayout = false;
 
 	var doc = this.getDocument();
 	

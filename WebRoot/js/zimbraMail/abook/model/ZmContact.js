@@ -4,7 +4,7 @@
 * @class
 * This class represents a contact (typically a person) with all its associated versions
 * of email address, home and work addresses, phone numbers, etc. Contacts can be filed/sorted
-* in different ways, with the default being Zast, First. A contact is an item, so
+* in different ways, with the default being Last, First. A contact is an item, so
 * it has tagging and flagging support, and belongs to a list.
 *
 * Most of a contact's data is kept in attributes. These include name, phone, etc. Meta-data and
@@ -79,7 +79,7 @@ ZmContact.F_workStreet		= "workStreet";
 ZmContact.F_workURL			= "workURL";
 
 // extra fields
-ZmContact.X_firstZast		= "firstZast";
+ZmContact.X_firstLast		= "firstLast";
 ZmContact.X_fullName		= "fullName";
 
 // file as
@@ -145,13 +145,13 @@ function(contact) {
 	var idx = 0;
 
 	switch (val) {
-		case ZmContact.FA_LAST_C_FIRST: /* Zast, First */
+		case ZmContact.FA_LAST_C_FIRST: /* Last, First */
 		default:
 			if (attr.lastName) fa[idx++] = attr.lastName;
 			if (attr.lastName && attr.firstName) fa[idx++] = ", ";
 			if (attr.firstName) fa[idx++] = attr.firstName;
 			break;
-		case ZmContact.FA_FIRST_LAST: /* First Zast */
+		case ZmContact.FA_FIRST_LAST: /* First Last */
 			if (attr.firstName) fa[idx++] = attr.firstName;
 			if (attr.lastName && attr.firstName) fa[idx++] = " ";
 			if (attr.lastName) fa[idx++] = attr.lastName;
@@ -159,7 +159,7 @@ function(contact) {
 		case ZmContact.FA_COMPANY: /* Company */
 			if (attr.company) fa[idx++] = attr.company;
 			break;
-		case ZmContact.FA_LAST_C_FIRST_COMPANY: /* Zast, First (Company) */
+		case ZmContact.FA_LAST_C_FIRST_COMPANY: /* Last, First (Company) */
 			if (attr.lastName) fa[idx++] = attr.lastName;
 			if (attr.lastName && attr.firstName) fa[idx++] = ", ";
 			if (attr.firstName) fa[idx++] = attr.firstName;
@@ -170,7 +170,7 @@ function(contact) {
 				fa[idx++] = ")";
 			}
 			break;
-		case ZmContact.FA_FIRST_LAST_COMPANY: /* First Zast (Company) */
+		case ZmContact.FA_FIRST_LAST_COMPANY: /* First Last (Company) */
 			if (attr.firstName) fa[idx++] = attr.firstName;		
 			if (attr.lastName && attr.firstName) fa[idx++] = " ";
 			if (attr.lastName) fa[idx++] = attr.lastName;
@@ -181,7 +181,7 @@ function(contact) {
 				fa[idx++] = ")";
 			}			
 			break;
-		case ZmContact.FA_COMPANY_LAST_C_FIRST: /* Company (Zast,  First) */
+		case ZmContact.FA_COMPANY_LAST_C_FIRST: /* Company (Last,  First) */
 			if (attr.company) fa[idx++] = attr.company;
 			if (attr.lastName || attr.firstName) {
 				fa[idx++] = " (";
@@ -191,7 +191,7 @@ function(contact) {
 				fa[idx++] = ")";
 			}
 			break;
-		case ZmContact.FA_COMPANY_FIRST_LAST: /* Company (First Zast) */
+		case ZmContact.FA_COMPANY_FIRST_LAST: /* Company (First Last) */
 			if (attr.company) fa[idx++] = attr.company;
 			if (attr.lastName || attr.firstName) {
 				fa[idx++] = " (";

@@ -17,7 +17,7 @@ function ZmNewWindow(appCtxt, domain) {
 	this._apps = new Object();
 	this._activeApp = null;
 	this._models = new AjxVector();
-	this._needOverviewZayout = false;
+	this._needOverviewLayout = false;
 	this._schedule(this.startup);
 }
 

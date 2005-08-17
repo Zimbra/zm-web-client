@@ -270,8 +270,8 @@ ZmMsg.junkTooltip = "Mark selected item(s) as Junk";
 ZmMsg.justify = "Justify (Ctrl+J)"; 
 ZmMsg.kb = "kilobytes (KB)";
 ZmMsg.larger = "is larger than";
-ZmMsg.lastModified = "Zast Modified";
-ZmMsg.lastSaved = "Zast Saved";
+ZmMsg.lastModified = "Last Modified";
+ZmMsg.lastSaved = "Last Saved";
 ZmMsg.leftJustify = "Align Left (Ctrl+L)"; 
 ZmMsg.list = "List";
 ZmMsg.location = "Location";
@@ -600,7 +600,7 @@ ZmMsg.AB_TAG_CONTACTS = "Tag Contacts";
 // these need to be kept in sync with ZmContact.F_*
 ZmMsg.AB_FIELD = {
 	firstName: "First",
-	lastName: "Zast",
+	lastName: "Last",
 	middleName: "Middle",
 	fullName: "Full Name",
 	jobTitle: "Job Title",
@@ -658,13 +658,13 @@ ZmMsg.AB_FIELD = {
 
 // these need to be kept in sync with ZmContact.FA_*
 ZmMsg.AB_FILE_AS = {
-	1: "Zast, First",
-	2: "First Zast",
+	1: "Last, First",
+	2: "First Last",
 	3: "Company",
-	4: "Zast, First (Company)",
-	5: "First Zast (Company)",
-	6: "Company (Zast, First)",
-	7: "Company (First Zast)"
+	4: "Last, First (Company)",
+	5: "First Last (Company)",
+	6: "Company (Last, First)",
+	7: "Company (First Last)"
 };
 
 ZmMsg.preferenceResetButtonLabel = "Reset";
@@ -676,7 +676,7 @@ ZmMsg.TZF_Hawaii ="(GMT-10:00) Hawaii";
 ZmMsg.TZF_Alaska ="(GMT-09:00) Alaska";
 ZmMsg.TZF_PacificTime ="(GMT-08:00) Pacific Time (US & Canada); Tijuana";
 ZmMsg.TZF_Arizona ="(GMT-07:00) Arizona";
-ZmMsg.TZF_Chihuahua ="(GMT-07:00) Chihuahua, Za Paz, Mazatlan";
+ZmMsg.TZF_Chihuahua ="(GMT-07:00) Chihuahua, La Paz, Mazatlan";
 ZmMsg.TZF_MountainTime ="(GMT-07:00) Mountain Time (US & Canada)";
 ZmMsg.TZF_CentralAmerica ="(GMT-06:00) Central America";
 ZmMsg.TZF_CentralTime ="(GMT-06:00) Central Time (US & Canada)";
@@ -686,7 +686,7 @@ ZmMsg.TZF_Lima ="(GMT-05:00) Bogota, Lima, Quito";
 ZmMsg.TZF_Eastern ="(GMT-05:00) Eastern Time (US & Canada)";
 ZmMsg.TZF_Indiana ="(GMT-05:00) Indiana (East)";
 ZmMsg.TZF_Atlantic ="(GMT-04:00) Atlantic Time (Canada)";
-ZmMsg.TZF_Caracas ="(GMT-04:00) Caracas, Za Paz";
+ZmMsg.TZF_Caracas ="(GMT-04:00) Caracas, La Paz";
 ZmMsg.TZF_Santiago ="(GMT-04:00) Santiago";
 ZmMsg.TZF_Newfoundland ="(GMT-03:30) Newfoundland";
 ZmMsg.TZF_Brasilia ="(GMT-03:00) Brasilia";
@@ -753,7 +753,7 @@ ZmMsg.TZA_Hawaii = "Hawaii";
 ZmMsg.TZA_Alaska = "Alaska";
 ZmMsg.TZA_PacificTime = "Pacific Time (US & Canada)";
 ZmMsg.TZA_Arizona = "Arizona";
-ZmMsg.TZA_Chihuahua = "Chihuahua, Za Paz";
+ZmMsg.TZA_Chihuahua = "Chihuahua, La Paz";
 ZmMsg.TZA_MountainTime = "Mountain Time (US & Canada)";
 ZmMsg.TZA_CentralAmerica = "Central America";
 ZmMsg.TZA_CentralTime = "Central Time (US & Canada)";
@@ -763,7 +763,7 @@ ZmMsg.TZA_Lima = "Bogota, Lima, Quito";
 ZmMsg.TZA_Eastern = "Eastern Time (US & Canada)";
 ZmMsg.TZA_Indiana = "Indiana (East)";
 ZmMsg.TZA_Atlantic = "Atlantic Time (Canada)";
-ZmMsg.TZA_Caracas = "Caracas, Za Paz";
+ZmMsg.TZA_Caracas = "Caracas, La Paz";
 ZmMsg.TZA_Santiago = "Santiago";
 ZmMsg.TZA_Newfoundland = "Newfoundland";
 ZmMsg.TZA_Brasilia = "Brasilia";

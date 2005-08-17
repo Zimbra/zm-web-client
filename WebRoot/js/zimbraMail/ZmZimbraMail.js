@@ -36,7 +36,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._sessionTimer = new AjxTimedAction();
 	this._sessionTimer.method = ZmZimbraMail.logOff;
 	this._models = new AjxVector();
-	this._needOverviewZayout = false;
+	this._needOverviewLayout = false;
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);	
 
 	this._schedule(this.startup, {app: app});
@@ -168,7 +168,7 @@ function(params) {
 			this._components[ZmAppViewMgr.C_USER_INFO] = this._createUserInfo();
 			this._settings.loadUserSettings(); // load user prefs and COS data
 			if (params && params.settings) {
-				this._needOverviewZayout = true;
+				this._needOverviewLayout = true;
 				for (var id in params.settings)
 					this._settings.getSetting(id).setValue(params.settings[id]);
 			}
@@ -176,7 +176,7 @@ function(params) {
 			DBG.println(AjxDebug.DBG1, "poll interval = " + this._pollInterval + "ms");
 			ZmTimezones.initializeServerTimezone();
 			this._setUserInfo();
-			this._checkOverviewZayout();
+			this._checkOverviewLayout();
 
 			var app = params ? params.app : null;
 			var startApp = ZmZimbraMail.APP_CLASS[app] ? app : ZmZimbraMail.defaultStartApp;
@@ -253,7 +253,7 @@ function(soapDoc, useXml) {
 	var result = ZmCsfeCommand.invoke(soapDoc, null, null, null, useXml);
 	if (!useXml && result.Header)
 		this._handleHeader(result.Header);
-	this._checkOverviewZayout();
+	this._checkOverviewLayout();
 	this._actionedIds = null; // reset for next request
 
 	// we just got activity, reset polling action		
@@ -378,27 +378,27 @@ function(appName) {
 	this._apps[appName] = new ZmZimbraMail.APP_CLASS[appName](this._appCtxt, this._shell);	
 }
 
-// Zaunching an app causes it to create a view (if necessary) and display it. The view that is created is up to the app.
+// Launching an app causes it to create a view (if necessary) and display it. The view that is created is up to the app.
 // Since most apps schedule an action as part of their launch, a call to this function should not be
 // followed by any code that depends on it (ie, it should be a leaf action).
 ZmZimbraMail.prototype._launchApp =
 function(appName) {
 	if (!this._apps[appName])
 		this._createApp(appName);
-	DBG.println(AjxDebug.DBG1, "Zaunching app " + appName);
+	DBG.println(AjxDebug.DBG1, "Launching app " + appName);
 	this._apps[appName].launch();
 }
 
-ZmZimbraMail.prototype._checkOverviewZayout =
+ZmZimbraMail.prototype._checkOverviewLayout =
 function() {
-	if (this._needOverviewZayout && this._settings.userSettingsLoaded) {
+	if (this._needOverviewLayout && this._settings.userSettingsLoaded) {
 		DBG.println(AjxDebug.DBG1, "laying out overview panel");
 		var opc = this.getOverviewPanelController();
 		opc.setView();
 		this._components[ZmAppViewMgr.C_TREE] = opc.getOverviewPanel();
 		// clear shared folder dialogs so they'll be recreated with new folder tree
 		this._appCtxt.clearFolderDialogs();
-		this._needOverviewZayout = false;
+		this._needOverviewLayout = false;
 	}
 }
 
@@ -602,7 +602,7 @@ function(refresh) {
 		DBG.println(AjxDebug.DBG1, "overview layout needed (refresh)");
 		DBG.println(AjxDebug.DBG2, "tags: " + tagString + " / " + tagTree.asString());
 		DBG.println(AjxDebug.DBG2, "folders: " + folderString + " / " + folderTree.asString());
-		this._needOverviewZayout = true;
+		this._needOverviewLayout = true;
 	} else {
 		this._checkUnread(tagTree, unread);
 		this._checkUnread(folderTree, unread);
