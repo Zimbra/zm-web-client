@@ -52,6 +52,7 @@ function(resp) {
 			appt.compNum = this._getAttr(apptNode, instNode, "compNum");
 			appt.exception = this._getAttr(apptNode, instNode, "ex");
 			appt.allDayEvent = this._getAttr(apptNode, instNode, "allDay");
+			appt.allDayEvent = (appt.allDayEvent == true)? '1' :'0';
 			if (appt.allDayEvent == null) appt.allDayEvent = '0';
 			appt.otherAttendees = this._getAttr(apptNode, instNode, "otherAtt");
 			appt.alarm = this._getAttr(apptNode, instNode, "alarm");
