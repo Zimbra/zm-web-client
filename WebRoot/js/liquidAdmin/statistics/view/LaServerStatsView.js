@@ -1,0 +1,86 @@
+/**
+* @class LaServerStatsView 
+* @contructor LaServerStatsView
+* @param parent
+* @param app
+* @author Greg Solovyev
+**/
+function LaServerStatsView(parent, app) {
+	this._app = app;
+	DwtTabView.call(this, parent);
+	this._appCtxt = this.shell.getData(LaAppCtxt.LABEL);
+	this._dataPage = new LaServerDataStatsPage(this, app);
+	this._msgsPage = new LaServerMsgsStatsPage(this, app);
+	this._diskPage = new LaServerDiskStatsPage(this, app);		
+	this.addTab(LaMsg.TABT_InData, this._dataPage);		
+	this.addTab(LaMsg.TABT_InMsgs, this._msgsPage);		
+	this.addTab(LaMsg.TABT_Disk, this._diskPage);				
+//	this.setScrollStyle(DwtControl.SCROLL);
+}
+
+LaServerStatsView.prototype = new DwtTabView;
+LaServerStatsView.prototype.constructor = LaServerStatsView;
+
+LaServerStatsView.prototype.toString = 
+function() {
+	return "LaServerStatsView";
+}
+
+/**
+* @method setObject sets the object contained in the view
+* @param entry - LaServer object to display
+**/
+LaServerStatsView.prototype.setObject =
+function(entry) {
+	this._dataPage.setObject(entry);
+	this._msgsPage.setObject(entry);
+	this._diskPage.setObject(entry);
+	var szTitle = LsStringUtil.htmlEncode(LaMsg.NAD_ServerStatistics);
+	if(entry.name) {
+		szTitle = szTitle + entry.name;
+	}
+	this.titleCell.innerHTML = szTitle;
+}
+
+LaServerStatsView.prototype._resetTabSizes = 
+function (width, height) {
+    var tabBarSize = this._tabBar.getSize();
+	var titleCellSize = Dwt.getSize(this.titleCell);
+
+	var tabBarHeight = tabBarSize.y || this._tabBar.getHtmlElement().clientHeight;
+	var titleCellHeight = titleCellSize.y || this.titleCell.clientHeight;
+		
+	var tabWidth = width;
+	var newHeight = (height - tabBarHeight - titleCellHeight);
+	var tabHeight = ( newHeight > 50 ) ? newHeight : 50;
+	
+	if(this._tabs && this._tabs.length) {
+		for(var curTabKey in this._tabs) {
+			if(this._tabs[curTabKey]["view"]) {
+				this._tabs[curTabKey]["view"].resetSize(tabWidth, tabHeight);
+			}	
+		}
+	}		
+}
+
+LaServerStatsView.prototype._createHTML = 
+function() {
+	DwtTabView.prototype._createHTML.call(this);
+	var row1;
+	//var col1;
+	var row2;
+	var col2;
+	row1 = this._table.insertRow(0);
+	row1.align = "center";
+	row1.vAlign = "middle";
+	
+	this.titleCell = row1.insertCell(row1.cells.length);
+	this.titleCell.align = "center";
+	this.titleCell.vAlign = "middle";
+	this.titleCell.noWrap = true;	
+
+	this.titleCell.id = Dwt.getNextId();
+	this.titleCell.align="left";
+	this.titleCell.innerHTML = LsStringUtil.htmlEncode(LaMsg.NAD_ServerStatistics);
+	this.titleCell.className="AdminTitleBar";
+}

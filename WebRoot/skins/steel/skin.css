@@ -1,0 +1,211 @@
+
+
+html					{	height:100%;}
+
+body					{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
+
+#	body, td			{	font-family:Verdana; font-size:12px; }
+.hidden					{	display:none;		}
+
+.spacer						{	background-image:url(/liquid/skins/steel/images/spacer.gif);		}
+.bg_main, .steel			{	background-image:url(/liquid/skins/steel/images/bg_steel.gif);		}
+.bg_medium, pebble			{	background-image:url(/liquid/skins/steel/images/bg_pebble.gif);		}
+
+
+.sm_icon_options			{	background-image:url(/liquid/skins/steel/images/sm_icon_options.gif); 		width:16;	height:16;	}
+.sm_icon_calendar			{	background-image:url(/liquid/skins/steel/images/sm_icon_calendar.gif);	 	width:16;	height:16;	}
+.sm_icon_contact			{	background-image:url(/liquid/skins/steel/images/sm_icon_contacts.gif); 		width:16;	height:16;	}
+.sm_icon_email				{	background-image:url(/liquid/skins/steel/images/sm_icon_email.gif); 		width:16;	height:16;	}
+.sm_icon_help				{	background-image:url(/liquid/skins/steel/images/sm_icon_help.gif); 			width:16;	height:16;	}
+.sm_icon_logout				{	background-image:url(/liquid/skins/steel/images/sm_icon_logout.gif); 		width:16;	height:16;	}
+.logo						{	background-image:url(/liquid/skins/steel/images/zimbra_logo.gif);			width:116;	height:30;	}
+
+
+.h_grippy					{	cursor:w-resize; position:relative;left:7;
+								background-image:url(/liquid/skins/steel/images/grippy_h.png); 				width:27;	height:5;	}
+.v_grippy					{	cursor:w-resize; position:relative;left:7;
+								background-image:url(/liquid/skins/steel/images/grippy_v.png); 				width:5;	height:27;	}
+.app_chiclet 				{	background-image:url(/liquid/skins/steel/images/app_chiclet.gif);			width:40; 	height:33;	margin-bottom:3;}
+.app_chiclet_selected 		{	background-image:url(/liquid/skins/steel/images/app_chiclet_roll.gif);		width:40; 	height:33;	margin-bottom:3;}
+
+.console_outset				{	}
+.console_outset_contents	{	width:100%;height:100%;		}
+.console_outset_table		{	border-collapse:collapse;	width:100%; height:100%;}
+.console_outset_tl			{	background-image:url(/liquid/skins/steel/images/console_outset_tl.gif); 	width:4;	height:4;	overflow:hidden;	}
+.console_outset_t			{	background-image:url(/liquid/skins/steel/images/console_outset_t.gif); 		width:4;	height:4;	overflow:hidden;	}
+.console_outset_tr			{	background-image:url(/liquid/skins/steel/images/console_outset_tr.gif);		width:4;	height:4;	overflow:hidden;	}
+.console_outset_l			{	background-image:url(/liquid/skins/steel/images/console_outset_l.gif); 		width:4;	height:4;	overflow:hidden;	}
+.console_outset_r			{	background-image:url(/liquid/skins/steel/images/console_outset_r.gif); 		width:4;	height:4;	overflow:hidden;	}
+.console_outset_bl			{	background-image:url(/liquid/skins/steel/images/console_outset_bl.gif); 	width:4;	height:4;	overflow:hidden;	}
+.console_outset_b			{	background-image:url(/liquid/skins/steel/images/console_outset_b.gif); 		width:4;	height:4;	overflow:hidden;	}
+.console_outset_br			{	background-image:url(/liquid/skins/steel/images/console_outset_br.gif); 	width:4;	height:4;	overflow:hidden;	}
+
+
+.console_inset				{	}
+.console_inset_table		{	border-collapse:collapse;	width:100%; height:100%;}
+.console_inset_tl			{	background-image:url(/liquid/skins/steel/images/console_inset_tl.gif);	 			width:10;	height:10;	overflow:hidden;	}
+.console_inset_t			{	background-image:url(/liquid/skins/steel/images/console_inset_t.gif); 				width:10;	height:10;	overflow:hidden;	}
+.console_inset_tr			{	background-image:url(/liquid/skins/steel/images/console_inset_tr.gif); 				width:10;	height:10;	overflow:hidden;	}
+.console_inset_l			{	background-image:url(/liquid/skins/steel/images/console_inset_l.gif); 				width:10;	height:10;	overflow:hidden;	}
+.console_inset_contents		{	width:100%;height:100%;		}
+.console_inset_r			{	background-image:url(/liquid/skins/steel/images/console_inset_r.gif); 				width:10;	height:10;	overflow:hidden;	}
+.console_inset_bl			{	background-image:url(/liquid/skins/steel/images/console_inset_bl.gif); 				width:10;	height:10;	overflow:hidden;	}
+.console_inset_b			{	background-image:url(/liquid/skins/steel/images/console_inset_b.gif); 				width:10;	height:10;	overflow:hidden;	}
+.console_inset_br			{	background-image:url(/liquid/skins/steel/images/console_inset_br.gif);			 	width:10;	height:10;	overflow:hidden;	}
+
+.console_title				{	background-image:url(/liquid/skins/steel/images/bg_steel.gif);	}
+.console_title_cell			{	font-weight:bold;	}
+
+.console_outset_corner		{	width:4;		height:4;		}
+.console_inset_corner		{	width:10;		height:10;		}
+.console_horizontal			{	width:100%;						}
+.console_vertical			{					height:100%;	}
+.console_center				{	width:100%;		height:100%;	}
+
+.console_toolbar_corner_l_1	{	width:3;	}
+.console_toolbar_corner_l_2	{	width:4;	}
+.console_toolbar_corner_r_1	{	width:6;	}
+.console_toolbar_corner_r_2	{	width:6;	}
+
+
+.console_inset_current_tr	{	background-image:url(/liquid/skins/steel/images/console_inset_current_tr.gif);	 	width:13;	height:10;	overflow:hidden;	}
+.console_inset_current_r	{	background-image:url(/liquid/skins/steel/images/console_inset_current_r.gif);	 	width:13;	height:10;	overflow:hidden;	}
+.console_inset_current_br	{	background-image:url(/liquid/skins/steel/images/console_inset_current_br.gif);	 	width:13;	height:10;	overflow:hidden;	}
+
+.console_inset_tree_tr		{	background-image:url(/liquid/skins/steel/images/console_inset_tree_tr.gif);	 		width:13;	height:10;	overflow:hidden;	}
+.console_inset_tree_r		{	background-image:url(/liquid/skins/steel/images/console_inset_tree_r.gif);	 		width:13;	height:10;	overflow:hidden;	}
+.console_inset_tree_br		{	background-image:url(/liquid/skins/steel/images/console_inset_tree_br.gif);		 	width:13;	height:10;	overflow:hidden;	}
+
+.console_inset_status_tr	{	background-image:url(/liquid/skins/steel/images/console_inset_status_tr.gif);	 	width:13;	height:10;	overflow:hidden;	}
+.console_inset_status_r		{	background-image:url(/liquid/skins/steel/images/console_inset_status_r.gif);	 	width:13;	height:10;	overflow:hidden;	}
+.console_inset_status_br	{	background-image:url(/liquid/skins/steel/images/console_inset_status_br.gif);	 	width:13;	height:10;	overflow:hidden;	}
+
+.console_inset_app_tl		{	background-image:url(/liquid/skins/steel/images/console_inset_app_tl.gif);	 		width:3;	height:6;	overflow:hidden;	}
+.console_inset_app_t		{	background-image:url(/liquid/skins/steel/images/console_inset_app_t.gif);	 		width:20;	height:6;	overflow:hidden;	}
+.console_inset_app_tr_1		{	background-image:url(/liquid/skins/steel/images/console_inset_app_tr_1.gif);	 	width:6;	height:6;	overflow:hidden;	}
+.console_inset_app_tr_2		{	background-image:url(/liquid/skins/steel/images/console_inset_app_tr_2.gif);	 	width:4;	height:6;	overflow:hidden;	}
+.console_inset_app_l		{	background-image:url(/liquid/skins/steel/images/console_inset_app_l.gif);	 		width:3;	height:100%;overflow:hidden;	}
+.console_inset_app_r		{	background-image:url(/liquid/skins/steel/images/console_inset_app_r.gif);	 		width:4;	height:20;	overflow:hidden;	}
+.console_inset_app_b		{	background-image:url(/liquid/skins/steel/images/console_inset_app_b.gif);	 		width:20;	height:4;	overflow:hidden;	}
+.console_inset_app_bl_1		{	background-image:url(/liquid/skins/steel/images/console_inset_app_bl_1.gif);	 	width:3;	height:6;	overflow:hidden;	}
+.console_inset_app_bl_2		{	background-image:url(/liquid/skins/steel/images/console_inset_app_bl_2.gif);	 	width:3;	height:4;	overflow:hidden;	}
+.console_inset_app_br_1		{	background-image:url(/liquid/skins/steel/images/console_inset_app_br_1.gif);	 	width:4;	height:6;	overflow:hidden;	}
+.console_inset_app_br_2		{	background-image:url(/liquid/skins/steel/images/console_inset_app_br_2.gif);	 	width:4;	height:4;	overflow:hidden;	}
+
+.console_top_toolbar_l_1	{	background-image:url(/liquid/skins/steel/images/console_top_toolbar_l_1.gif); 		width:3;	height:35;	overflow:hidden;	}
+.console_top_toolbar_l_2	{	background-image:url(/liquid/skins/steel/images/console_top_toolbar_l_2.gif); 		width:4;	height:35;	overflow:hidden;	}
+.console_top_toolbar_m		{	background-image:url(/liquid/skins/steel/images/console_top_toolbar_m.gif); 		width:100%;	height:35;	overflow:hidden;	}
+.console_top_toolbar_r_1	{	background-image:url(/liquid/skins/steel/images/console_top_toolbar_r_1.gif); 		width:6;	height:35;	overflow:hidden;	}
+.console_top_toolbar_r_2	{	background-image:url(/liquid/skins/steel/images/console_top_toolbar_r_2.gif); 		width:4;	height:35;	overflow:hidden;	}
+.console_top_toolbar_r		{	background-image:url(/liquid/skins/steel/images/console_top_toolbar_r.gif); 		width:10;	height:35;	overflow:hidden;	}
+
+.console_bottom_toolbar_l_1	{	background-image:url(/liquid/skins/steel/images/console_bottom_toolbar_l_1.gif); 	width:3;	height:35;	overflow:hidden;	}
+.console_bottom_toolbar_l_2	{	background-image:url(/liquid/skins/steel/images/console_bottom_toolbar_l_2.gif); 	width:4;	height:35;	overflow:hidden;	}
+.console_bottom_toolbar_m	{	background-image:url(/liquid/skins/steel/images/console_bottom_toolbar_m.gif); 		width:100%;	height:35;	overflow:hidden;	}
+.console_bottom_toolbar_r_1	{	background-image:url(/liquid/skins/steel/images/console_bottom_toolbar_r_1.gif); 	width:6;	height:35;	overflow:hidden;	}
+.console_bottom_toolbar_r_2	{	background-image:url(/liquid/skins/steel/images/console_bottom_toolbar_r_2.gif);	width:4;	height:35;	overflow:hidden;	}
+
+.console_tree_footer_sep_l	{	background-image:url(/liquid/skins/steel/images/console_tree_footer_sep_l.gif); 	width:10;	height:20;	overflow:hidden;	}
+.console_tree_footer_sep_m	{	background-image:url(/liquid/skins/steel/images/console_tree_footer_sep_m.gif); 	width:20;	height:20;	overflow:hidden;	}
+.console_tree_footer_sep_r	{	background-image:url(/liquid/skins/steel/images/console_tree_footer_sep_r.gif); 	width:13;	height:20;	overflow:hidden;	}
+
+.console_searchb_toolbar_l	{	background-image:url(/liquid/skins/steel/images/console_searchb_toolbar_l.gif); 	width:10;	height:35;	overflow:hidden;	}
+
+
+
+
+/* classes for the skin around the various pieces of the app */
+
+.skin_table							{	border-collapse:collapse;							}
+.skin_table_fullsize				{	border-collapse:collapse; width:100%; height:100%;	}
+
+	
+#skin_table_outer					{	width:100%;	height:100%;							}
+	#skin_col_left					{	width:210;											}
+	#skin_col_main					{	width:auto;											}
+	#skin_col_search_spacer			{	width:50;											}
+	#skin_col_quota					{	width:180;											}
+
+	#skin_tr_outer_top				{														}
+	#skin_tr_outer_main				{	height:100%;										}
+
+		
+#skin_table_left_chrome				{	width:210; 	height:100%;	table-layout:fixed; 	}
+	#skin_col_app_chooser			{	width:40px;											}
+	#skin_col_tree					{	width:170px;										}
+	#skin_tr_tree					{	height:100%;										}
+
+	
+#skin_table_main					{	width:100%; height:100%;						 	}
+	#skin_tr_app_main				{	height:100%;										}
+
+	
+
+	
+#skin_td_top						{														}
+#skin_td_logo						{	text-align:center; vertical-align:middle;			}
+#skin_td_quota						{	text-align:right;									}
+#skin_td_search						{	background-color:white;								}
+#skin_td_search_builder				{	background-color:white;								}
+
+		
+#skin_td_left_chrome				{														}
+#skin_td_right_frame				{	background-color:white;	vertical-align:top;			}
+
+	
+#skin_td_current_app				{	background-color:white;								}
+#skin_td_current_app_end			{	background-color:#EEEEEE;							}
+#skin_td_app_chooser				{														}
+#skin_td_tree						{	background-image:url(/liquid/skins/steel/images/bg_pebble.gif);			}
+#skin_td_status						{	background-color:#EEEEEE;							}
+#skin_td_tree_app_sash				{						 								}
+
+
+
+
+
+/* these are the containers of the pieces that can be hidden and shown */
+#skin_tr_search_builder				{	display:none;										}
+#skin_tr_tree_footer_sep			{	display:none;										}
+#skin_tr_tree_footer				{	display:none;										}
+#skin_tr_top_toolbar				{	Xdisplay:none;										}
+#skin_tr_top_toolbar_shim			{	display:none;										}
+#skin_tr_bottom_toolbar				{	display:none;										}
+#skin_tr_bottom_toolbar_shim		{	Xdisplay:none;										}
+
+
+
+.skin_container						{	position:relative;	overflow:hidden;	width:100%; height:100%;				}
+
+/* named pieces of the skin that the app will work with */
+
+#skin_outer							{	width:100%;height:100%;	
+										display:none;
+										background-image:url(/liquid/skins/steel/images/bg_steel.gif)	}
+
+#skin_container_logo					{					height:32;									}
+#skin_container_quota					{					height:32;									}
+#search_control_inset					{																}
+#skin_container_search					{					height:25;	top:-5;		margin-bottom:-8px;	}
+#skin_container_search_builder			{					height:225;	left:-4; 						}
+#skin_container_search_builder_toolbar	{					height:26;	top:8;							}
+#skin_container_current_app				{					height:24;	top:-4; 	margin-bottom:-8px;	}
+#skin_container_app_chooser				{																}
+#skin_container_tree					{								left:-3;						}
+#skin_container_tree_footer				{					height:135;	left:-3; 						}
+#skin_container_status					{					height:30;									}
+#skin_container_app_top_toolbar			{					height:26;	top:6px;						}
+#skin_container_app_main				{																}
+#skin_container_app_bottom_toolbar		{					height:21;	top:5px;						}
+#skin_container_favorites				{					height:20;									}
+
+#XXXskin_container_tree_app_sash			{	cursor:w-resize; 					}
+
+
+
+
+
+
+
+/** REMOVE ME **/
+.RedCloseIcon			{	background-image:url(/liquid/skins/steel/images/RedCloseIcon.gif); 		width:16;	height:16;	}

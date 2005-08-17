@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+  PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+  "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+  <context-param>
+    <param-name>
+	  javax.servlet.jsp.jstl.fmt.fallbackLocale
+    </param-name>	
+    <param-value>
+      en
+    </param-value>
+  </context-param>
+  
+  <welcome-file-list>
+    <welcome-file>public/launchLiquidMail.jsp</welcome-file>
+  </welcome-file-list>
+
+  <filter>
+      <filter-name>Set Header Filter</filter-name>
+      <filter-class>com.liquidsys.liquidConsole.filters.SetHeaderFilter</filter-class>
+        <init-param>
+          <param-name>debug</param-name>
+          <param-value>0</param-value>
+        </init-param>
+        <init-param>
+          <param-name>jsVersion</param-name>
+          <param-value>@jsVersion@</param-value>
+        </init-param>
+        <init-param>
+          <param-name>extensions</param-name>
+          <param-value>.jgz</param-value>
+        </init-param>
+        <init-param>
+          <param-name>GzipExtension</param-name>
+          <param-value>.jgz</param-value>
+        </init-param>
+        <init-param>
+          <param-name>shouldSupportGzip</param-name>
+          <param-value>true</param-value>
+        </init-param>
+        <!-- Expires should be the number of seconds from now when
+             a given static resource should expire -->
+        <init-param>
+          <param-name>Expires</param-name>
+          <param-value>604800</param-value>
+        </init-param>
+        <!-- This paramater value is filled in by the build depending
+             on whether the build is a dev or prod build. This
+             controls the way the query parameters are interpreted by
+             the filter and the jsp pages -->
+        <init-param>
+          <param-name>ProdMode</param-name>
+          <param-value>@prodMode@</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>Set Header Filter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Protected Context</web-resource-name>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<!-- auth-constraint goes here if you requre authentication -->
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
+
+</web-app>

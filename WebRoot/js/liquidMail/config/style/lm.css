@@ -1,0 +1,2919 @@
+/*
+* Conventions
+*
+* - Classes that start with "Dwt" or "Lm" have a corollary Javascript object.
+* - Use one line if there is only one selector and one declaration. Otherwise, indent each declaration on its own line.
+* - Group selectors to avoid repetition of styles, as appropriate (ie group within a section). That means you may have
+*   to look at more than one definition to figure out all the applicable styles, but it lets you give the styles a 
+*   hierarchy. That way, you're more likely to need to change a style in just one place.
+* - Use shorthand styles when possible (font, margin, padding, etc).
+* - When grouping selectors that correspond to our Javascript objects, show inheritance by using a different line for
+*   each level of inheritance. CSS doesn't care about our object hierarchy, but doing that enhances readability.
+* - Use hex RGB values for colors that don't have names (eg:  #EEEEEE)
+* - Try to stick to hex values of   00, 33, 66, 99, AA, FF so they map cleanly to the web palette, 
+*    eg: #666666 rather than #616161
+* - Modifiers are lower case, whether they're a class (eg .activated) or tacked on (eg -selected).
+*
+* Classes are laid out in the following general order:
+*	- HTML elements
+*	- General app stuff (shell, overlays, banner)
+*	- Widgets that tend toward abstract (minimal subclassing), such as tool tips and sashes
+*	- Heavier use widgets such as buttons and dialogs
+*		- General widget stuff, then specialized subclasses
+*	- List views, with common stuff first
+*	- Other views (lots of them)
+*	- Miscellaneous stuff that multiple apps might use (objects, autocomplete)
+*	- Modifiers
+*a
+* Many of the Dwt widgets don't have corresponding classes here, since they are only subclassed. If you create and
+* display one of those widgets, you'll have to add a class for it.
+*/
+
+/* 
+* HTML elements - use for global declarations
+*/
+
+/* In preparation for variable substitution script
+
+@TRIGGERED-COLOR@=#FFCC00
+@COMPONENT_BACKGROUND=#C6C5D7
+@DEF-FONT@=Tahoma, Arial, Helvetica, sans-serif
+@DEF-FONTSIZE@=11px
+*/
+
+/* Global ELEMENT declarations */
+P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON {
+	font-size: 11px;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+}
+
+BODY {
+	margin: 0px;
+}
+
+FORM {
+	margin: 0;
+	padding: 0;
+}
+
+
+
+
+/* Generic classes -- try to use one of these if you can */
+.LmHead {
+	font-size:18px;
+	font-weight:bold;
+	height:20px;
+}
+
+.LmSubHead {
+	font-size:13px;
+	font-weight:bold;
+	height:18px;
+}
+
+.LmBigger {
+	font-size:13px;
+	height:18px;
+}
+
+.subtleAnchor {
+	color:black;
+	Xtext-decoration:none;
+}
+
+.subtleAnchor:hover {
+	color:blue;
+	text-decoration:underline;
+}
+
+
+/* Horizontal separator */
+.horizSep {
+	border-bottom: 1px solid #666666;
+    margin: 10px 0;
+	width: 100%;
+}
+/* Vertical separator */
+.vertSep {
+	border-left:1px solid #666666;
+	margin-left:1px;
+	padding-right:1px;
+	width:3;
+	height: 16;
+}
+
+/* Vertical space */
+DIV.vSpace {
+	margin: 10px 0;
+}
+
+/* Link to open an attachment */
+.AttLink:link, .AttLink:active, .AttLink:visited, .AttLink:hover {
+	text-decoration: none;
+	cursor:hand;
+}
+.AttLink:link, .AttLink:active, .AttLink:visited {
+	color: black;
+}
+.Row-selected .AttLink:link, .Row-selected .AttLink:active, .Row-selected .AttLink:visited {
+	color: white;
+}
+.AttLink:hover, .Row-selected .AttLink:hover {color: #CC3333;}
+
+/* 
+* Drag N Drop
+*/
+
+.DndIcon {
+	filter:alpha(opacity=70)
+		   progid:DXImageTransform.Microsoft.Shadow(color=black,direction=135,strength=8);
+	-moz-opacity:0.7;
+	opacity:0.7;
+}
+
+.DropNotAllowed {
+	border: 2px solid red;
+	background-color: white;	
+	filter:alpha(opacity=70)
+		   progid:DXImageTransform.Microsoft.Shadow(color=black,direction=135,strength=8);
+	-moz-opacity:0.7;
+	opacity:0.7;	
+}
+.DropAllowed {
+	border: 2px solid green;
+	background-color: white;	
+	filter:alpha(opacity=70)
+		   progid:DXImageTransform.Microsoft.Shadow(color=black,direction=135,strength=8);
+	-moz-opacity:0.7;
+	opacity:0.7;
+}
+
+/* bug fix# 3235 */
+.DropNotAllowed-linux {
+	border: 2px solid red;
+	background-color: white;	
+}
+/* bug fix# 3235 */
+.DropAllowed-linux {
+	border: 2px solid green;
+	background-color: white;	
+}
+
+/* Used by the text in the multi-select Icon */
+.MailMultiSelectText {
+	font-weight: bold;
+	color: white;
+}
+
+/*
+* Top-level (shell) stuff
+*/
+
+.DwtShell, .MainShell {
+    width: "100%";
+    height: "100%";
+}
+.MainShell {
+	background-color: #B7B7B7;
+	background-image:url(/liquid/skins/steel/images/bg_steel.gif);
+}
+
+/* As of 07/22/05 Linux (or rather X) has a nasty issue that causes a huge perf problem with opacity.*/
+.BusyOverlay-linux table, .VeilOverlay-linux table {
+	cursor: "wait";
+	background-color: transparent;
+}
+
+.BusyOverlay table, .VeilOverlay table {
+	filter:alpha(opacity=50);
+	-moz-opacity:0.5;
+	opacity:0.5;
+	cursor: "wait";
+	background-color: transparent;
+}
+
+.VeilOverlay table {
+	cursor: "not-allowed";
+	background-color: white;
+}
+
+.VeilOverlay-linux table {
+	cursor: "not-allowed";
+}
+
+/*
+* Splash Screen
+*/
+.LmSplashScreen, .LmSplashScreen table {
+	background-color: #B7B7B7;
+	background-image:url(/liquid/skins/steel/images/bg_steel.gif);
+}
+
+/*
+* Banner (enlarges, turns green when angry)
+*/
+
+.oldLogo { 
+  height:38px;
+  width:200px;
+}
+
+.LogoContainer {
+	left: 54px;
+	top: 6px;
+}
+
+.BannerBar {height: 30}
+
+.BannerBar .quotabar {
+	width: 100px;
+	border: 1px solid white;
+	background-color: white;
+}
+
+.BannerBar .quotaused {
+	height: 6px;
+	font-size: 6px; /* WEIRD IE QUIRK */
+}
+
+.BannerBar .percent {
+	white-space: nowrap;
+	font-size: 7pt;
+	color: black;
+}
+
+.BannerBar td {padding-right: 5px;}
+
+.BannerBar img {
+	border: none;
+	margin-right: 2px;
+}
+
+.BannerBar .BannerText {
+	color: black;
+	text-align: center;
+}
+
+.BannerBar .BannerTextUser {
+	color: black;
+	text-align: center;
+	font-weight: bold;
+	cursor: default;
+	white-space: nowrap;
+}
+
+/*
+* Tool tips
+*/
+
+.DwtToolTip {	}
+
+/*
+* Sashes
+*/
+
+.DwtSash, .AppSash-horiz, .AppSash-vert { 
+	background-color: #666666;
+}
+.AppSash-horiz { width: 5px; }
+.AppSash-vert { 
+	height: 5px;
+	width: 100%;
+	font-size: 5px; /* WEIRD IE QUIRK */
+}
+
+/*
+* Trees
+*/
+
+.DwtTree, .DwtTreeItem {
+	background-color: transparent;
+	cursor: default;
+}
+
+.DwtTreeItem, .DwtTreeItem-selected, .DwtTreeItem-actioned {
+	padding-left:2px;
+	padding-right:2px;
+	cursor: default;
+}
+
+.DwtTreeItem-selected {
+	background-color: #ADD6D6;
+}
+
+.DwtTreeItem-actioned {
+	background-color: #D6EBEB;
+}
+
+.DwtTreeItem-DragOver {
+	background-color: #339999;
+}
+
+.DwtTreeItem .imageCell, .overviewPanelHeader .imageCell {
+	padding-right:4px;
+	white-space: nowrap;
+}
+
+.DwtTreeItemChildDiv {
+	padding-left:16px;
+}
+
+.DwtTreeItemLevel1ChildDiv {
+	padding-top:2px;
+}
+
+
+/*
+* Tool Bars
+*/
+
+.LmToolBar {
+	background-color: #EEEEEE;
+	width: 100%;
+	Xfilter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+}
+.LmBrowseToolBar {
+	height: 100%;
+	width: 100%;
+}
+.LmAppToolBar {
+	height: 100%;
+	width: 100%;
+}
+/* toolbar in child window */
+.LmAppToolBar_cw {
+	width: 100%;
+	background-color: #EEEEEE;
+}
+.LmNavToolBar {background-color: transparent;}
+.LmInviteToolBar { 
+	background-image:url(/liquid/skins/steel/images/bg_pebble.gif);
+	padding: 2px; 
+	border-bottom: 1px solid #777777;
+}
+
+
+
+
+
+td.DDSepVisible div {background-color:black; width:1px;overflow:hidden;}
+td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
+
+
+
+
+/*
+* Buttons
+*
+* The background color is set by a modifier.
+* TBButton - toolbar button, very light border (so we can show a border on mouseover)
+* States for buttons:
+*	-activated	-- mouseover state
+*	-triggered	-- mousedown state
+*/
+
+
+.TBButton {
+	border: 1px solid #EEEEEE;
+}
+
+.TBButtonWhite {
+	border: 1px solid white;
+}
+
+.DwtButton, .ColorButton, .TBButton-activated, .TBButtonWhite-activated {
+	background-image:url(/liquid/skins/steel/images/bg_button_up.gif);
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+}
+
+.DwtButton-activated, .ColorButton-activated {
+	background-image:url(/liquid/skins/steel/images/bg_button_down.gif);
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+}
+
+.DwtButton-triggered, .ColorButton-triggered, .TBButton-triggered, .TBButtonWhite-triggered {
+	background-image:url(/liquid/skins/steel/images/bg_button_down.gif);
+	border:1px solid;
+	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+}
+
+
+.DwtButton-toggled, .ColorButton-toggled, .TBButton-toggled, .TBButtonWhite-toggled {
+	background-image:url(/liquid/skins/steel/images/bg_button_down.gif);
+	border:1px solid;
+	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+}
+
+
+
+.LmLoginDialog .DwtButton, 		.LmLoginDialog .DwtButton-activated,		.LmLoginDialog .DwtButton-triggered,
+.DwtDialog .DwtButton,			.DwtDialog .DwtButton-activated,			.DwtDialog .DwtButton-triggered,
+.DwtTabViewPage .DwtButton,		.DwtTabViewPage .DwtButton-activated,		.DwtTabViewPage .DwtButton-triggered,
+.LmComposeView .DwtButton,		.LmComposeView .DwtButton-activated,		.LmComposeView .DwtButton-triggered,
+.LmFilterDetailsView .DwtButton	.LmFilterDetailsView .DwtButton-activated	.LmFilterDetailsView .DwtButton-triggered
+{ width: 60px; }
+
+.DwtDialog .ColorButton,		.DwtDialog .ColorButton-activated,			.DwtDialog .ColorButton-triggered,
+.LmAppointmentView .DwtButton,	.LmAppointmentView .DwtButton-activated,	.LmAppointmentView .DwtButton-triggered,
+.LmFreeBusyView .DwtButton,		.LmFreeBusyView .DwtButton-activated,		.LmFreeBusyView .DwtButton-triggered
+{ width: 80px; }
+
+
+.LmEditInstanceSeriesView .DwtButton,	.LmEditInstanceSeriesView .DwtButton-activated, .LmEditInstanceSeriesView .DwtButton-triggered
+{ width: 100px; }
+
+
+.LmEditInstanceSeriesView .DwtButton td{ 
+  text-align:center;
+}
+
+
+
+/*
+* Modifiers
+*
+* Modifiers were found to not work reliably in IE and have been removed.  
+* 
+* Instead of using multiple class names to change styles, we're using hyphens now, eg:
+*		.TBButton.activated
+*  becomes
+*		.TBButton-activated
+*
+*/
+
+.DisabledText { 
+	color: #999999; 
+}
+
+
+
+/*** Overrides for modifiers for specific elements  ***/
+
+
+
+
+
+
+/*
+* Dialogs
+*/
+
+.DwtDialog { background-color: transparent; }
+.DwtDialog .Title {
+	background: #2557AD;
+	color: white;
+	font-size: 10pt;
+	font-weight: bold;
+	padding: 5px 0 3px 10px;
+}
+.DwtDialog .MainPanel {
+	background-color: #C6C5D7;
+	border: 2px solid #2557AD;
+	padding: 10px;
+}
+.DwtDialog textarea { width: 100%; }
+.DwtDialog .Label { font-size: 10pt; }
+.DwtDialog .Field { width: 290px; }
+
+/* Message dialog */
+.DwtMsgDialog { width: 400px; }
+.DwtMsgArea { padding-left: 12px; }
+
+/* DwtColorPicker */
+.DwtColorPicker { border: 1px solid #999999; }
+.DwtColorPicker table td img { border: 1px none black; }
+
+/* Login Panel */
+.LmLoginDialog {
+	background-color: #b7b7b7; 
+	background-image:url(/liquid/skins/steel/images/bg_steel.gif);
+	overflow:hidden;
+}
+.LmLoginDialog-Transparent {background-color: transparent;}
+.LmLoginDialog-HeaderPanel {
+	margin-top:10px;
+	margin-bottom:10px;
+	height:110px; 
+	background-image:url("/liquid/img/hiRes/non-web/LoginBanner.gif");
+}
+.LmLoginDialog-HeaderText, .LmLoginDialog-SubHeaderText {
+	color: white;
+}
+.LmLoginDialog-HeaderText {
+	font-style: bold
+	font-size: 14pt;
+}
+.LmLoginDialog-MainPanel {
+	width:460px; 
+	background-image:url(/liquid/skins/steel/images/bg_pebble.gif);
+}
+.LmLoginDialog-SubHeaderText { font-size: 12pt; }
+.LmLoginDialog-Field { width: 290px; }
+.LmLoginDialog-ErrorText { width: 360px; }
+.LmLoginDialog-ErrorPanel {
+	border: 1px solid #999999;
+	background-color: #FFFFCC;
+	width:415px;
+	height: 55px;
+}
+
+
+/* New tag dialog */
+.TagColorMenu {
+	background-color: white;
+	border: solid #CCCCCC 1px;
+}
+
+/* New folder dialog */
+.FolderTree {
+	background-color: white;
+	width: 400px;
+	height: 200px;
+	border: 1px solid #999999;
+	padding: 5px 0 0 5px;
+}
+.FolderTree td {padding: 0;}
+
+/* Contact picker */
+.LmContactPicker .abPickList {
+	width: 250px;
+	height: 285px;
+	margin: 5 5 0 5;
+}
+
+.LmContactPicker  {
+	border: 1px solid black;
+	background-color: #CCCCCC;
+}
+
+.LmContactPicker-Active {
+	border: 1px solid #000000;
+}
+
+.DwtListView {
+	background-color: white;
+}
+
+/*
+* Menus
+*/
+
+.DwtMenu, .ActionMenu {
+	background-image:url(/liquid/skins/steel/images/bg_pebble.gif);
+	border: 2px solid;
+	border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;
+}
+.DwtMenu {
+}
+.DwtMenuItem {
+	border:1px solid #EEEEEE;
+}
+.DwtMenuItem-selected, .DwtMenuItem-IconArea-selected, .DwtMenuItem-CheckedArea-selected {
+	background-image:url(/liquid/skins/steel/images/bg_button_up.gif);
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+}
+.DwtMenuItem-triggered, .DwtMenuItem-IconArea-triggered, .DwtMenuItem-CheckedArea-triggered {
+	background-image:url(/liquid/skins/steel/images/bg_button_down.gif);
+	border:1px solid;
+	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+}
+
+.DwtMenuItem-IconArea, .DwtMenuItem-CheckedArea {
+	Xbackground-color: #C6C5D7;
+}
+.DwtMenuItem-Separator {
+	background-color: #999999;
+}
+
+
+/*
+* List views
+*/
+
+/* Common styles */
+.DwtListView {
+	width: 100%;
+}
+
+.DwtListView-Rows {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: #FFFFFF;
+}
+
+.DwtListView-Rows td {
+	padding: 2px;
+}
+
+.DwtListView-Sash {
+	width: 1px; 
+	height: 100%;
+	vertical-align: top;
+}
+
+.DwtListView-ColHeader {
+	background-color: #C6C5D7;
+	position: relative;
+	height: 24px;
+}
+
+.DwtListView-Column {
+	padding: 0 0 0 2;
+	border-style: solid;
+	border-width: 0 0 2 0;
+	border-bottom-color: #777777;
+	background-color: #EEEEEE;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.DwtListView-ColumnEmpty {
+	background-color: #555555;
+}
+
+.DwtListView-ColumnSash {
+	width: 2px;
+	background-color: #000000;
+}
+
+.DwtListView .DwtListView-ColumnHover {
+	background-color: #D8D8E0;
+	border-bottom-color: #AAAAAA;
+}
+
+.DwtListView-ColumnActive {
+	background-color: #EEEEEE;
+}
+
+.DwtAddRemove {
+}
+.DwtAddRemoveListView {
+	border: solid #777777 1px;
+}
+.DwtAddRemoveListViewRow {
+	padding-left: .25em;
+}
+
+.DwtAlert {
+	border-style: solid;
+	border-width: 1px;
+	margin: .5em 2em;
+	padding: .25em;
+}
+.DwtAlertBare {
+	margin: 0px;
+	padding: 0px;
+	border-style: none;
+	background-color: transparent;
+}
+.DwtAlertInfo {
+	border-color: #9d9; /* dark green */
+	background-color: #cfc; /* light green */
+} 
+.DwtAlertWarn {
+	border-color: #dd9; /* dark yellow */
+	background-color: #ffc; /* light yellow */
+}
+.DwtAlertCrit {
+	border-color: #d99; /* dark red */
+	background-color: #fcc; /* light red */
+}
+.DwtAlertIcon {
+	margin: 0.25em;
+	margin-right: 0.5em;
+}
+.DwtAlertTitle {
+	font-size: 1.1em;
+	font-weight: bold;
+}
+.DwtAlertContent {
+}
+
+.NoResults {
+	font-size: 10pt;
+	text-align: center;
+}
+
+/* Autocompletion */
+.LmAutocompleteListView {
+	background-color:#EEEEEE;
+	border: 1px outset;
+	padding: 1px;
+	width: auto;
+}
+.LmAutocompleteListView .Row, .LmAutocompleteListView .Row-selected {padding: 1px;}
+.LmAutocompleteListView .Row-selected { 
+	color: :white; 
+}
+
+/* Row display and highlighting */
+.Row, .Row-selected, .Row-matched, .Row-matched-drag, 
+.Row-drag, .Row-selected-drag, .Row-selected-right, .Row-selected-disabled {
+	border-bottom: 1px solid #DDDDDD;
+}
+
+.Row-selected, .Row-selected-drag { 
+	background-color: #ADD6D6;
+	color:black;
+}
+.Row-selected-disabled {
+	background-color: rgb(233,236,216);
+	color: rgb(201, 201, 194);
+}
+.Row-matched, .Row-matched-dnd { background-color: #FFFF99; }
+.Row-selected-right, .Row-drag, .Row-matched-drag { background-color: #EAF5F5; }
+
+.Row-selected table, .Row-selected-drag table, .Row-drag table, 
+.Row-matched-drag table, .Row-selected-right table { 
+	color: black;
+}
+
+.Row table, .Row-selected table, .Row-matched table, .Row-matched-drag table, .Row-dnd table, 
+.Row-selected-drag table, .Row-drag table, .Row-selected-right table {
+	table-layout: fixed;
+}
+
+.Row, .Row-selected, .Row-selected-disabled, .Row-dnd, 
+.Row td, .Row div, .Row-selected td, .Row-matched td, .Row-dnd td, .Row-selected-drag td, 
+.Row-drag td, .Row-matched-drag td, .Row-selected-right td {
+	vertical-align: top;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.Row td.Flag, .Row td.Attach, .Row td.Tag, .Row td.Icon,
+.Row-dnd td.Flag, .Row-dnd td.Attach, .Row-dnd td.Tag, .Row-dnd td.Icon, 
+.Row-selected-drag td.Flag, .Row-selected-drag td.Attach, .Row-selected-drag td.Tag, .Row-selected-drag td.Icon, 
+.Row-matched-drag td.Flag, .Row-matched-drag td.Attach, .Row-matched-drag td.Tag, .Row-matched-drag td.Icon, 
+.Row-drag td.Flag, .Row-drag td.Attach,.Row-drag td.Tag, .Row-drag td.Icon {
+	text-align: center;
+}
+
+/* Flags */
+.Unread { font-weight: bold; }
+.Trash { text-decoration: line-through; }
+	
+/*
+* Other views
+*/
+
+/* Overview Panel */
+.OverviewPanel, .OverviewTreePanel {
+	width: 100%;
+	height: 100%;
+}
+.OverviewTree {width: 100%;}
+.overviewPanelHeader {
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+	background-image:url(/liquid/skins/steel/images/tree_header_bg.gif);
+	padding-top:1px;
+	margin-left:2px;
+	margin-bottom:2px;
+	height:18px;
+	cursor: default;
+}
+
+.overviewPanelHeader-Text, .overviewPanelHeader-actioned,
+.overviewPanelHeader-DragOver {
+	font-weight:bold;
+	height:18px;
+}
+
+/* Search bar */
+.SearchPanel {
+	width: 100%;
+	height: 20;
+}
+
+/* Browse View */
+.LmBrowseView {
+	height: 225px;
+	width: 100%;
+	overflow: hidden;
+}
+.LmBrowseView {background-color:white;}
+.LmPickerOverview {overflow: hidden;}
+.LmPicker {
+	background-color:#EEEEEE;
+	border-right: 1px solid #999999;
+	width: 200px;
+}
+.LmPicker .DwtToolBar {
+	background-color:#CCCCCC;
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+	height:24px;
+}
+
+.LmPicker .DwtToolBar .TBButton {
+	border: 1px solid #CCCCCC;
+}
+
+.LmPickerLabel {
+	Xfilter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+}
+
+/* Conversation */
+.LmConvListFragment { color: gray; font-weight: normal; }
+.Row-Selected .LmConvListFragment { color: #333333; 	font-weight: normal; }
+
+.LmConvView {background-color: #2557AD;}
+.LmConvView .DwtListView-ColHeader {
+	border-width: 1 0 0 0;
+	border-style: solid;
+	border-color: #777777;
+}
+.LmConvView td, LmConvView .Tags .TagTd { overflow: hidden; }
+.LmConvView td { white-space: nowrap; }
+.LmConvView .SubjectBar {
+	background-color: #CCCCCC;
+}
+.LmConvView .Tags {
+	padding-left: 3px;
+	padding-right: 3px;
+	padding-bottom: 3px;
+}
+.LmConvView .Tags .LabelTd {width: 5ex;}
+.LmConvView .Tags .TagTd { white-space: normal; }
+.LmConvView .Tags a { padding-left: 5px; }
+.LmConvView .Subject, .LmConvView .Tags, .LmConvView .Tags table {
+
+}
+.LmConvView .Subject {
+	font-size: 12pt;
+	font-weight: bold;
+	padding: 3px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.LmConvView .Tags a:link, .LmConvView .Tags a:active, .LmConvView .Tags a:visited {
+	text-decoration: none;
+	color: #2557AD;
+}
+.LmConvView .Tags a:hover {
+	text-decoration: none;
+	color: #CC3333;
+}
+.LmConvView .Tags img {border: none;}
+
+/* Mail message */
+.LmMailMsgView {
+	width: 100%;
+	background-color: white;
+}
+
+.LmMailMsgView .LmToolBar { 
+  background-color: #ffffff; 
+  filter:progid:DXImageTransform.Microsoft.Gradient(enabled=false);
+  margin-left :12px;
+  height: auto;
+  width:auto;
+}
+
+.LmMailMsgView .vertSep { 
+  height:20px;
+}
+
+
+.LmMailMsgView .MsgHeader table {
+  table-layout: fixed;
+  width: 100%;
+  background-color: #EEEEEE;
+}
+
+.LmMailMsgView .MsgHeader .LabelColName {
+	overflow:hidden;
+	width: 15ex;
+	white-space: nowrap;
+	font-weight: bold;
+	vertical-align: top;
+	text-align: right;
+}
+
+.LmMailMsgView .MsgHeader .LabelColValue {
+	white-space: normal;
+	vertical-align: top;
+}
+
+.LmMailMsgView .AttName, .LmMailMsgView .AttName-matched {padding-right: 8px;}
+.LmMailMsgView .AttName-matched { background-color: #FFFF99; }
+.LmMailMsgView .MsgBody {padding: 10px; overflow:auto}
+.LmMailMsgView .MsgBody, .LmMailMsgView .MsgBody * {font: 10pt monospace;}
+
+.MsgBody .SignatureText {color: gray;}
+.MsgBody .QuotedText0 {color: purple}
+.MsgBody .QuotedText1 {color: green}
+.MsgBody .QuotedText2 {color: red}
+
+/* Message compose */
+.LmComposeView {
+	background-color: #EEEEEE;
+	width: 100%;
+}
+.LmComposeView .composerTable {
+	table-layout: fixed;
+	width: 100%;
+}
+/* styles below apply to attachments table in iframe */
+.iframeTable {
+	table-layout: fixed;
+}
+.colButtons {width: 62px;}
+.hSpace {width: 5px;}
+
+
+.LmComposeView .addLink {margin: 0 0 0 65px;}
+.LmComposeView .subjectField { width: 100%; }
+.LmComposeView .addresses {height: 50px;}
+.LmComposeView .addresses, .LmComposeView .msgArea {
+	width: 100%;
+	overflow: auto;
+}
+
+.LmComposeView .msgArea {
+	height: 100%;
+	font: 10pt monospace;
+}
+
+.LmComposeView .LmHtmlEditor {
+	padding: 3px;
+}
+
+.LmHtmlEditor .DwtHtmlEditorTextArea {
+	font: 10pt monospace;
+	padding: 1px;
+	width: 100%;
+	overflow: auto;
+	border: 1px solid black;
+}
+
+.LmHtmlEditor .DwtHtmlEditorIFrame {
+	background-color: white;
+	width: 100%;
+	border: 1px solid black;
+}
+
+.attachText {
+	width: 60px;
+	text-align: right;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.nobreak {
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.LmComposeTBButton {
+	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080);
+}
+
+.LmComposeTBButton.toggled {
+	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080);
+	background-color: white;
+}
+
+/* NEW CONTACTS UI STYLES */
+.LmContactSplitView {
+	background-color: white;
+	padding: 4px;
+}
+
+.LmContactSimpleView {
+	background-color: white;
+	border: 1px solid #666666;
+}
+
+.LmContactSimpleView .SimpleContact, 
+.LmContactSimpleView .SimpleContact-right, 
+.LmContactSimpleView .SimpleContact-drag {
+	border-bottom: 1px solid #EEEEEE
+	width: 100%;
+	overflow-x: hidden;
+}
+
+.LmContactSimpleView .SimpleContact-right,
+.LmContactSimpleView .SimpleContact-drag {
+	background-color:#EAF5F5;
+}
+
+.LmContactSimpleView .SimpleContact-drag {
+	color: white;
+}
+
+.LmContactSimpleView .SimpleContactHover {
+	background-color: #EEEEEE
+}
+
+.LmContactInfoView {
+	background-color: white;
+	border: 1px solid rgb(120, 120, 120);
+	overflow: hidden;
+}
+
+.LmContactInfoView .contactHeader, 
+.LmContactView .contactHeader,
+.LmContactCardsView .contactHeader {
+	font-size: 22px;
+	font-weight: bold;
+	background-color: #CCCCCC;
+	color: black;
+	padding: 5px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;	
+}
+
+.LmContactInfoView .companyName {
+	font-size: 18px;
+	padding: 5px;
+}
+
+.LmContactInfoView .contactOutput {
+	font-size: 12px;
+}
+
+.LmContactInfoView .contactLabel {
+	font-size: 12px;
+	color: #999999;
+	white-space: nowrap;
+	width: 1%;
+}
+
+.LmContactView .editLabel {
+	font-weight: bold;
+	font-size: 14px;
+}
+
+.contactEditHeader {
+	font-size:14px;
+	font-weight:bold;
+	padding-top: 15;
+	padding-left: 5px;
+	margin-bottom: 5;
+	border-bottom:1px solid black;
+	overflow: hidden;
+}
+
+.contactEditLabel {
+	text-align:right;
+	padding-left: 5px;
+	padding-right: 5px;
+	overflow: hidden;
+}
+
+.LmContactCard {
+	width: 300px;
+	height: 140px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #B2B2B2 #000000 #000000 #B2B2B2;
+	background-color: #FFFFFF;
+}
+
+.LmContactCard-selected, .LmContactCard-selected-right,
+.LmContactCard-drag, .LmContactCard-selected-drag, 
+.LmContactCard-dnd {
+	width: 300px;
+	height: 140px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	border: 1px solid #ADD6D6;
+	background-color: #FFFFFF;
+}
+
+.LmContactCard-selected .contactHeader, 
+.LmContactCard-dnd .contactHeader, 
+.LmContactCard-selected-dnd .contactHeader{
+	background-color: #ADD6D6;
+}
+
+.LmContactCard-drag .contactHeader,
+.LmContactCard-selected-right .contactHeader,
+.LmContactCard-selected-drag .contactHeader {
+	background-color: #EAF5F5;
+}
+
+.LmContactField {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.LmContactFieldValue {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	color: #999999;
+}
+
+/* Calendar */
+.DwtCalendar {
+	background-color: transparent;
+}
+
+.DwtCalendarTitlebar {
+	background-color: #CCCCCC;
+}
+
+.DwtCalendarButton {
+	border:1px solid #CCCCCC;
+	text-align:center;
+	width:15px;
+	padding:3px;
+}	
+
+.DwtCalendarButton-activated {
+	background-image:url(/liquid/skins/steel/images/bg_button_small_up.gif);
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+	text-align:center;
+	width:15px;
+	padding:3px;
+}
+
+.DwtCalendarButton-triggered {
+	background-image:url(/liquid/skins/steel/images/bg_button_small_down.gif);
+	border:1px solid;
+	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+	text-align:center;
+	width:15px;
+	padding:3px;
+}
+
+
+.DwtCalendarDay {
+	border:1px solid #EEEEEE;
+}
+
+.DwtCalendarDay-activated {
+	background-image:url(/liquid/skins/steel/images/bg_button_small_up.gif);
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+}
+
+.DwtCalendarDay-triggered {
+	background-image:url(/liquid/skins/steel/images/bg_button_small_down.gif);
+	border:1px solid;
+	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+}
+
+
+
+.DwtCalendarTitleCell {
+	width: 100%;
+}
+
+				   
+.DwtCalendarDow {
+	border-bottom: 1px solid #CCCCCC;
+} 
+
+
+
+.DwtCalendarDay-selected {
+	border:1px solid #ADD6D6;
+	background-color: #ADD6D6;
+}
+
+.DwtCalendarDay-activated {
+	background-color: white;
+	border: 1px outset black;
+}
+.DwtCalendarDay-triggered {
+	background-color: #FFCC00;
+	border: 1px inset black;
+}
+
+.DwtCalendarDay-today {
+	border: 1px solid #990000;
+}
+
+.DwtCalendarDay-grey {
+	color: #666666;
+}
+.DwtCalendarDay-hilited {
+	font-weight: bold;
+}
+
+.LmCalView, .LmCalViewOverview {
+	background-color: white;
+	border: 1px solid #C6C5D7;
+}
+
+.LmCalViewContent {
+	background-color:#EEEEEE;
+}
+
+.LmCalViewOverview {width:160px;}
+
+
+
+/* new calendar */
+
+.calendar_view {
+	width:100%;
+	height:100%;	
+	background-color: white;
+}
+
+.calendar_view BODY {
+	margin: 0px;
+}
+
+.calendar_view TD {
+	Xpadding: 0px;
+}
+
+.calendar_view TABLE {
+	border-collapse: collapse;
+	padding: 0px;
+}
+
+.calendar_view_table {
+	width: 100%;
+}
+
+.calendar_grid_table {
+	table-layout:fixed;
+}
+
+.calendar_grid_day_table {
+	width:100%;
+	height:100%;	
+}
+
+.calendar_grid_day_table td {
+	padding:0px;
+}
+
+.calendar_header_time_td {
+	width:40px;
+	height:20px;
+	text-align:center;
+	background-color:#EEEEEE;
+	border-bottom:1px solid #CCCCCC;
+}
+.calendar_header_time_text {
+	width:40px;
+	text-align:center;	
+}
+
+.calendar_header_cells_td {
+	background-color:#EEEEEE;
+/*	border-left:1px solid #CCCCCC; */
+	border-bottom:1px solid #CCCCCC;
+	padding-top:3px;
+	padding-bottom:3px;
+}
+
+.calendar_header_cells_td_today {
+	background-color:#FFFAE5;
+	/*background-color:#FFFAE5;	*/
+	border-left:1px solid #CCCCCC;
+	border-bottom:1px solid #CCCCCC;
+	padding-top:3px;
+	padding-bottom:3px;
+}
+
+.calendar_header_cells_text {
+	white-space: nowrap;
+	height:100%;
+	width:100%;
+	overflow:hidden;
+	text-align:center;
+}
+
+
+.calendar_header_allday_separator {
+	background-color:#CCCCCC;
+	height:3px;
+	border-top:1px solid #002D96;
+	border-bottom:1px solid #002D96;
+}
+
+.calendar_header_allday_td {
+/*	border-left:1px solid #CCCCCC;*/
+	height:18px;
+}
+.calendar_header_allday_td_today {
+/*	border-left:1px solid #CCCCCC;*/
+	height:18px;
+	background-color:#FFFAE5;
+}
+
+.calendar_body {
+	position:relative;
+	overflow:auto;
+}
+
+.calendar_month_body {
+	position:relative;
+	overflow:hidden;
+}
+
+.calendar_time_td {
+	Xwidth:70px;
+}
+
+.calendar_cells_td {
+	Xwidth:120px;
+	border-left:1px solid #CCCCCC;
+	padding:0px;
+}
+.calendar_cells_td_today {
+	Xwidth:120px;
+	border-left:1px solid #CCCCCC;
+	background-color:#FFFAE5;
+	padding:0px;
+}
+
+.calendar_grid_body_time_td {
+	width:40px;
+	height:42px;
+	vertical-align:top;
+	text-align:right;
+	border:none;
+}
+
+.calendar_grid_body_time_text {
+	white-space: nowrap;
+/*	position:relative;*/
+/*	right:3px;*/
+/*	bottom:-6px;*/
+	width:40px;
+}
+
+.calendar_grid_body_hour_td {
+	border-bottom:1px solid #DDDDDD;
+}
+
+.calendar_grid_body_half_hour_td {
+	border-bottom:1px solid #BBBBBB;
+	border-top:1px solid #DDDDDD;
+}
+
+.calendar_grid_body_cell {
+	height:20px;
+}
+
+.calendar_grid_body_cell-selected {
+	height:20px;
+	background-color:#EEEEEE;
+}
+
+.month_calendar_c0,.month_calendar_c1,.month_calendar_c2,.month_calendar_c3,
+.month_calendar_c4,.month_calendar_c5,.month_calendar_c6{ width: 14.7%; }
+
+.calendar_month_table {
+	width:100%;
+	height:100%;
+	border-collapse:collapse;	
+	table-layout:fixed;
+}
+
+.calendar_month_cells_td {
+	height:16%;
+	border:1px solid #CCCCCC;
+	Xborder-left:none;
+	Xborder-bottom:none;
+	vertical-align:top;
+	Xoverflow: hidden;	
+	overflow: hidden;	
+	white-space: nowrap;		
+}
+
+.calendar_month_cells_td-Selected {
+	height:16%;
+	background-color:#ADD6D6;	
+	border:1px solid #CCCCCC;
+	Xborder-left:none;
+	Xborder-bottom:none;
+	vertical-align:top;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.calendar_month_cells_td_today {
+	height:16%;
+	background-color:#FFFAE5;
+	border-left:none;
+	vertical-align:top;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+
+.calendar_month_day_table {
+	width:100%;
+}
+
+.calendar_month_day_label {
+	overflow: hidden;	
+	white-space: nowrap;	
+	padding-top:2px;
+	padding-right:4px;
+	text-align:right;
+	font-size:14px;
+}
+
+.calendar_tooltip_month_day_label {
+	overflow: hidden;	
+	white-space: nowrap;	
+	text-align:center;
+	font-size:14px;
+}
+
+.calendar_month_day_holiday_label {
+	overflow: hidden;	
+	white-space: nowrap;	
+	padding:4px;
+	color:CC0000;
+}
+
+.calendar_month_day_label_off_month {
+	overflow: hidden;	
+	white-space: nowrap;	
+	padding:4px;
+	text-align:right;
+	font-size:14px;
+	color:#AAAAAA;
+}
+
+.calendar_month_day_allday {
+	height:18px;
+}
+
+.calendar_month_day_item_row {
+
+}
+
+.calendar_month_day_item_row-Selected {
+	background-color: #2557AD;
+	color: white;
+}
+
+.calendar_month_day_item_row-Selected .calendar_month_day_item {
+	color: white;
+}
+
+
+.calendar_month_day_item LI {
+	padding-left:4px;
+}
+
+
+.calendar_month_day_item {
+	padding-left:4px;
+	overflow: hidden;	
+	white-space: nowrap;	
+	color:#2869FF;
+	/*color: blue;*/
+}
+
+.calendar_month_day_item-dnd {
+	padding-left:4px;
+	overflow: hidden;	
+	white-space: nowrap;	
+	border: 1px solid;
+}
+
+.calendar_month_header_month {
+	font-size:18px;
+	text-align:center;
+	background-color:#EEEEEE;	
+}
+
+.calendar_month_header_cells_text {
+	font-size:14px;
+	text-align:center;
+	padding-top:3px;
+	padding-bottom:3px;
+	border-bottom:1px solid black;
+	background-color:#EEEEEE;
+}
+
+/** The cal/appt images are here temporarily **/ 
+
+.calendar_header_note	 		{	width:10;	height:16;	background-image:url(/liquid/img/hiRes/calendar/calendar_header_note.gif);	}
+.calendar_header_alarm	 		{	width:10;	height:16;	background-image:url(/liquid/img/hiRes/calendar/calendar_header_alarm.gif);	}
+.calendar_header_repeat	 		{	width:10;	height:16;	background-image:url(/liquid/img/hiRes/calendar/calendar_header_repeat.gif);	}
+.menu_light				{	width:8;	height:16;	background-image:url(/liquid/img/hiRes/other/menu_light.gif);	}
+ 
+.allday {
+        left:0;
+        top:0;
+        width:100%;
+}
+
+.allday td {
+	padding:0px;
+}
+
+ 
+.allday-dnd {
+        left:0;
+        top:0;
+        width:100%;
+}
+ 
+.allday-selected {
+        left:0;
+        top:0;
+        width:100%;
+}
+
+.allday-selected .allday_text {
+	color:black;
+}
+
+.allday_text {
+        overflow:hidden;
+        white-space: nowrap;
+        padding-left:3px;
+        padding-right:3px;
+        padding-top:1px;
+}
+
+/* filler for a blank all day item row in month view */
+.allday_item_filler {
+		height:16;
+}
+
+.allday_blue_start   { width:11;      height:16;   background-image:url(/liquid/img/hiRes/calendar/allday_begin_blue.gif);     }
+/*.allday_blue_stretch { width:100%;    height:16;   color:blue;  background-image:url(/liquid/img/hiRes/calendar/allday_stretch_blue.gif); }*/
+.allday_blue_stretch { width:100%;    height:16;   color:#2869FF;  background-image:url(/liquid/img/hiRes/calendar/allday_stretch_blue.gif); }
+.allday_blue_end     { width:11;      height:16;   background-image:url(/liquid/img/hiRes/calendar/allday_end_blue.gif); }
+
+
+/*
+* Miscellaneous
+*/
+
+/* Objects */
+.Object {
+	color: blue;
+	cursor: pointer;
+}
+.Object a:link, .Object a:active, .Object a:visited, .Object a:hover {
+	color: blue;
+	cursor: pointer;
+}
+.Object a:link, .Object a:active, .Object a:visited {
+	text-decoration: none;
+}
+.Object a:hover {text-decoration: underline;}
+/* unfortunately since IE6 ( 7 is supposed to) doesn't handle multiple classes
+   correctly, I have to add this to make the msg view still work */
+.Object-activated {
+	background-color: #F9DD87;
+	text-decoration:underline;
+	cursor: pointer;
+}
+
+.POObject {color: blue;}
+.POObjectApproved {color: green;}
+.POObjectRejected {color: red;}
+.MsgHeader .Object {
+	color: black;
+	white-space: nowrap;
+}
+
+/* Blank page (view) with some text in it */
+.TextPage {
+	color: black;
+	background-color:#EEEEEE;
+	text-align: center;
+	width: 100%;
+}
+.TextPage span {margin: 10ex 0 0 0}
+
+
+
+
+/* button in the tab bar */
+.DwtTabButton {
+}
+
+.DwtTabButton-active {
+}
+
+.DwtTabButton-inactive {
+}
+
+.inactive {
+	background-color: #C6C5D7;
+}
+
+.DwtTabTable {
+	background-color: #C6C5D7;
+}
+
+.LmFilterPrefView .LmToolBar { 
+  position : relative;
+  height:25px;
+  border-top: 1px solid #A4A8AF;
+  border-bottom: 2px solid #6F757F;
+  border-left: 1px solid #A4A8AF;
+  border-right: 2px solid #6F757F;
+
+}
+
+.LmFilterPrefView .summaryTable { 
+  table-layout:fixed; 
+  width:100%; 
+  height:100%;
+}
+
+.LmFilterPrefView .DwtListView { 
+  width:100%;
+}
+.LmFilterPrefView .filterSummaryContainer { 
+  height :100%;
+  overflow : visible;
+}
+
+.LmFilterDetailsView {  
+  width:760px;
+}
+
+.LmFilterDetailsView .shadedBox  {
+  border-top: 2px solid #999999; 
+  border-bottom:2px solid #EEEEEE; 
+  border-right: 2px solid #EEEEEE;
+  border-left: 2px solid #999999;
+  background-color: #CCCCCC;
+}
+
+.LmFilterDetailsView .shadedBox .pickerButton,
+.LmFilterDetailsView .shadedBox .pickerButton-activated, 
+.LmFilterDetailsView .shadedBox .pickerButton-triggered{ 
+  width: 120px;
+  background-color: white;
+  border: 1px solid #6699CC; 
+}
+
+.LmFilterDetailsView .paddedTableCell { 
+  vertical-align:middle;
+  padding: 0px 0px 0px 2px;
+}
+
+.LmFilterPrefView .DwtListView {
+  border-bottom:1px solid #CCCCCC; 
+  border-left:1px solid #CCCCCC; 
+  border-top:1px solid #666666; 
+  border-right:1px solid #666666
+}
+
+.LmFilterPrefView .DwtListView-Rows {
+  overflow:visible;
+  /* 
+     *  this is very important for the filter rules on IE
+     *  For some reason, having height set to 100% makes all
+     *  the content disappear on IE */
+  height:auto;
+}
+
+/*
+* Print View
+*/
+.LmPrintView-username {
+	font-size: 14pt;
+}
+
+.LmPrintView-company {
+	font-size: 18pt;
+}
+
+/*
+* Preferences
+*/
+
+.LmPrefView {background-color:#EEEEEE; height:100%}
+.LmPrefView .TitleBar {padding-top: 10px;}
+.LmPrefView .DwtTabTable {background-color: #C6C5D7;}
+
+
+.LmPrefView tr {vertical-align: top;}
+
+/* Divider between groups of related preferences */
+.LmPrefView .horizSep {
+	margin-top: 4px;
+	border-bottom: 2px solid #C6C5D7;
+	font-size: 1px;
+}
+
+/* Prefs are laid out in a table */
+.prefTable {
+	table-layout: fixed;
+	width: auto;
+}
+.prefLabel {width: 300px;}
+.prefContent {width: 420px;}
+
+/* make things line up visually */
+.LmPrefView .leftPad {padding-left: 5px;}
+
+/* buttons */
+.LmPreferencesPage .changePasswordButton {width: 50px;}
+.LmPreferencesPage .resetButton {width: 100px;}
+.LmPreferencesPage .exportButton { width: 65px; }
+
+.Row .LmFilterDetailsView td {
+	vertical-align: center;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+
+/* DwtSelect */
+.DwtSelect {  
+	cursor: default;
+	overflow:hidden;
+	height:20px;
+	background-image:url(/liquid/skins/steel/images/bg_button_up.gif);
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+	min-width:40px;
+}
+
+.DwtSelect-activated {  
+	cursor: default;
+	overflow:hidden;
+	height:20px;
+	background-image:url(/liquid/skins/steel/images/bg_button_down.gif);
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+	min-width:40px;
+}
+
+.DwtSelect-triggered {  
+	cursor: default;
+	overflow:hidden;
+	height:20px;
+	background-image:url(/liquid/skins/steel/images/bg_button_down.gif);
+	border:1px solid;
+	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+	min-width:40px;
+}
+
+
+.DwtSelect table,
+.DwtSelect-activated table,
+.DwtSelect-triggered table,
+.DwtSelect-disabled table {
+	border-spacing:none;
+	border-collapse: collapse;
+	width:100%;
+	text-align:center;
+	table-layout:fixed;
+	padding:0px;
+}
+
+.DwtSelect .Text,
+.DwtSelect-activated .Text,
+.DwtSelect-triggered .Text {
+	padding: 2px;
+	text-align:left;
+	padding-left:4px;
+	overflow:hidden;
+}
+
+.DwtSelect-disabled .Text{
+	padding: 2px;
+	text-align:left;
+	padding-left:4px;
+	overflow:hidden;
+	color:#CCCCCC;
+}
+
+
+.DwtSelect.disabled {
+	border:1px solid #CCCCCC;
+}
+
+.dropDownCell { 
+	width: 16px;
+}
+
+
+.DwtSelectMenu table { 
+	width:99%;
+}
+
+.DwtSelectMenu .DwtMenuItem-text {
+	text-align:left;
+	padding-left:4px;
+}
+
+.DwtSelectMenu .DwtMenuItem-leftFill {
+	width:19px;
+}
+
+.DwtSelectMenu .DwtMenuItem-selected {
+	background-color: #ADD6D6;
+	color:black;
+	cursor: default;
+}
+
+.DwtSelectMenu .DwtMenuItem-selected .DwtMenuItem-text{
+	cursor: default;
+}
+
+.DwtSelectMenu .DwtMenuItem {
+	border: 1px solid white;
+	background-color: white;
+	cursor: default;
+}
+
+
+.DwtSelectMenu { 
+	background-color:white;
+	border-top: 1px solid #CCCCCC;
+	border-right: 1px solid black;
+	border-bottom: 1px solid black;
+	border-left: 1px solid #CCCCCC;
+	position : absolute;
+}
+
+
+
+
+//wizard dialog
+.DwtWizardDialogPageDiv {
+	background-color:#EEEEEE;
+	position: static;
+}
+
+.DwtStepLabelActive {
+	font-size: 12pt;
+	font-weight: bold;
+	color: black;	
+	padding-right: 2px;
+	padding-left: 2px;	
+}
+
+.DwtStepLabelInactive {
+	font-size: 14pt;
+	font-weight: normal;
+	color: #999999;	
+	padding-right: 2px;
+	padding-left: 2px;	
+}
+
+
+.DwtTabViewPage {
+	background-color:#EEEEEE;
+}
+.DwtTabViewPage .TitleBar {
+	background-color: #C6C5D7;
+	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+}
+.DwtTabViewPage .Title {
+	font: bold 12pt Arial, Helvetica, sans-serif;
+	padding: 3px;
+}
+
+.DwtTabButtonTL {
+}
+.DwtTabButtonTM {
+}
+.DwtTabButtonTR {
+}
+.DwtTabButtonML {
+	width: 9px;
+}
+.DwtTabButtonMM {
+}
+.DwtTabButtonMR {
+	width: 9px;
+}
+.DwtTabButtonBL {
+}
+.DwtTabButtonBM {
+}
+.DwtTabButtonBR {
+}
+
+.DwtPropertyPage {
+	background-color:#EEEEEE;
+}
+.DwtPropertyPage .TitleBar {
+	background-color: #C6C5D7;
+	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+}
+.DwtPropertyPage .Title {
+	font: bold 12pt Arial, Helvetica, sans-serif;
+	padding: 3px;
+}
+
+.LmChangePasswordDialogInput { 
+  width:250px;
+}
+
+
+.redAsteric {
+	color: rgb(250, 0, 0);
+}
+
+/** appointment detail **/
+
+.LmAppointmentView { 
+  /*position:relative;
+  width:400px;*/
+  overflow:auto;
+  overflow-x:hidden;
+  max-height:470px;
+}
+
+.LmAppointmentView iframe { 
+  margin:none;
+  padding:none;
+  border:none;
+  height:30px;
+  overflow:hidden;
+  width:100%;
+}
+
+.LmAppointmentView_attachTable { 
+  background-color: #F8F7F5;
+  table-layout: fixed;
+  border-spacing: 0px;
+}
+
+.LmAppointmentView_attachTable td{ 
+  padding:2px;
+}
+
+.LmAppointmentView_attachTable input{ 
+  /*width:100%;*/
+}
+
+.LmAppointmentView .xform_error { 
+  color:red;
+}
+
+.LmAppointmentView .xform_container { 
+  padding:1px;
+}
+
+
+.leftAlign { 
+  text-align:left;
+}
+
+.rightAlign { 
+  text-align:right;
+}
+
+.checkboxLabel { 
+  font-weight:bold;
+};
+
+
+
+/*****
+  XForms things
+
+	Please don't change the below, if you think you need to, come talk to Owen
+
+*****/
+
+
+
+/* tables */
+.xform_table {
+	border-collapse:collapse;
+	padding:0;
+}
+.xform_composite_table {
+	border-collapse:collapse;
+	padding:0;
+}
+
+
+/* widgets */
+
+.xform_field,
+.xform_select,
+.xform_select1,
+.xform_textarea,
+.xform_output,
+.xform_button,
+.xform_anchor{
+
+}
+
+.xform_output {
+	padding-left:2px;
+	padding-right:2px;
+}
+
+.xform_select1 {
+
+}
+
+.xform_select {
+  height:100px;
+  width:200px;
+}
+
+.xform_label,
+.xform_label_left {
+  color:#666666;
+  width:80px;
+  padding-left:4px;
+  padding-right:2px;
+  white-space:nowrap;
+  text-align:right;
+}
+
+.xform_label_left {
+  padding-left:0;
+  text-align:left;
+}
+
+
+.xform_separator {
+  width:100%;
+  height:1;
+  border-bottom:1px solid black;
+  font-size:1px;
+}
+
+.xform_button {
+	background-image:url(/liquid/skins/steel/images/bg_button_small_up.gif);
+	border:1px outset #999999;	
+	white-space:nowrap;
+}
+
+.xform_button_default {
+	background-image:url(/liquid/skins/steel/images/bg_button_small_up.gif);
+	border:2px outset #999999;	
+	white-space:nowrap;
+}
+
+
+
+/* "small" button grid */
+
+.xform_button_grid_small {}
+.xform_button_grid_small_table {
+	border-collapse:collapse;
+	padding:0;
+}
+.xform_button_grid_small_table td {
+	padding:0;
+}
+
+.xform_button_grid_small_button {
+	cursor:pointer;
+	width:12px;
+	height:12px;
+	padding:3px;
+	background-color:white;
+	border:1px outset gray;
+	margin:1px;
+	text-align:center;
+}
+.xform_button_grid_small_button_selected {
+	cursor:pointer;
+	width:12px;
+	height:12px;
+	padding:3px;
+	background-color:gray;
+	border:1px inset gray;
+	margin:1px;
+	text-align:center;
+}
+
+
+
+/* "medium" button grid */
+
+.xform_button_grid_medium {}
+.xform_button_grid_medium_table {
+	border-collapse:collapse;
+	padding:2;
+}
+.xform_button_grid_medium_table td {
+	padding:2;
+}
+.xform_button_grid_medium_button {
+	cursor:pointer;
+	white-space:nowrap;
+	overflow:hidden;
+	width:40px;
+	padding:3px;
+	background-color:white;
+	border:1px outset gray;
+	text-align:center;
+}
+.xform_button_grid_medium_button_selected {
+	cursor:pointer;
+	white-space:nowrap;
+	overflow:hidden;
+	width:40px;
+	padding:3px;
+	background-color:gray;
+	border:1px inset gray;
+	text-align:center;
+}
+
+
+/* FOR XFORM _TAB_BAR_ WIDGETS */
+
+
+.xform_button_grid_tab_table {
+	border-collapse:collapse;
+	padding:0;
+}
+.xform_button_grid_tab_table td {
+	padding:0;
+}
+.xform_button_grid_tab {}
+.xform_button_grid_tab_button,
+.xform_button_grid_tab_button_selected {
+	cursor:pointer;
+	white-space: nowrap;
+	padding-top:3px;padding-bottom:3px;
+	padding-left:10px;padding-right:10px;
+	background-color:#CCCCCC;
+	border:1px outset black;
+	text-align:center;
+}
+.xform_button_grid_tab_button  {
+	height:13px;
+}	
+.xform_button_grid_tab_button_selected {
+	background-color:white;
+	border:1px outset black;
+	border-top:1px solid #666666;
+	border-bottom:1px solid white;
+	height:15px;
+}
+
+
+.xform_button_grid_tab_start,
+.xform_button_grid_tab_end{
+	height:15px;
+	padding-top:3px;padding-bottom:3px;
+	padding-left:10px;padding-right:10px;
+	border-bottom:1px solid black;
+}
+
+
+
+/*******
+
+	OSELECT FormItem Widget
+
+*******/
+
+.oselect, .oselect_check {
+	cursor:pointer;
+}
+.oselect_table,
+.oselect_check_table {
+	background-image:url(/liquid/skins/steel/images/bg_button_small_up.gif);
+	border:1px outset #999999;	
+
+	border-collapse:collapse;
+	Xbackground-color:white;
+	border-left:1px solid #CCCCCC;
+	border-top:1px solid #CCCCCC;
+	border-right:1px solid #333333;
+	border-bottom:1px solid #333333;
+	padding:0;
+}
+.oselect_table TD,
+.oselect_check_table TD {
+	padding:0;
+}
+.oselect_display {
+	white-space:nowrap;
+	overflow:hidden;
+	margin-left:4px;
+	margin-right:4px;
+	height:15;
+}
+
+.oselect_display_disabled {
+    background-color: #EEEEEE;
+	color: #CCCCCC;
+	white-space:nowrap;
+	overflow:hidden;
+	margin-left:4px;
+	margin-right:4px;
+}
+
+.oselect_table_disabled {
+	background-color: #EEEEEE;
+	border-collapse:collapse;
+	color: #CCCCCC;
+	border-left:1px solid #EEEEEE;
+	border-top:1px solid #EEEEEE;
+	border-right:1px solid gray;
+	border-bottom:1px solid gray;
+	padding:0;
+}
+
+.oselect_menu {
+	position:absolute;
+	z-index:10000000000;
+	cursor:pointer;
+	border-bottom:1px outset gray;
+	border-right:1px outset gray;
+}
+.oselect_choice_table,
+.oselect_check_choice_table {
+	border-collapse:collapse;
+	border:1px solid black;
+}
+.oselect_choice {
+	background-color:white;
+	color:black;
+	padding-top:4px;
+	padding-bottom:4px;
+	padding-left:10px;
+	padding-right:20px;
+	margin:1px;
+	white-space:nowrap;
+}
+.oselect_choice_selected {
+	color:black;
+	background-color:FFFF66;
+	padding-top:4px;
+	padding-bottom:4px;
+	padding-left:10px;
+	padding-right:20px;
+	margin:1px;
+}
+
+.oselect_check_choice {
+	background-color:white;
+	color:black;
+	padding:4px;
+	white-space:nowrap;
+}
+.oselect_check_choice_selected {
+	color:black;
+	background-color:FFFF66;
+	padding:4px;
+}
+
+
+
+
+
+
+/*******
+
+	FREE/BUSY VIEW
+	
+*******/
+
+.LmFreeBusyView { 
+  top:0;
+  left:0;
+  background-color:rgb(249,248,246);
+  width:845px;
+  overflow:hidden;
+  z-index:10000;
+  height:420px;
+}
+
+.LmFreeBusyView .containerTable { 
+  border-spacing:0px;
+  table-layout:fixed;
+}
+
+.LmFreeBusyView_scheduleCol {  
+  position:absolute;
+  top:110px;
+  left:20px;
+  height:280px;
+  background-color:rgb(249,248,246);
+  /** firefox will support overflow-x, and overflow-y in 1.5 **/
+  overflow:-moz-scrollbars-vertical;
+  overflow-x:auto;
+  overflow-y:auto;
+}
+
+.LmFreeBusyView_scheduleCol_table {
+  width:795px;
+  border-collapse: collapse;
+}
+
+.LmFreeBusyView_scheduleCol_table td { 
+  padding: none;
+}
+
+.LmFreeBusyView .hour{ 
+  width:22px;
+}
+
+.LmFreeBusyView .firstRow , 
+.LmFreeBusyView .hiddenRow { 
+  background-color:rgb(249,248,246);
+}
+.LmFreeBusyView .firstRow td{ 
+  border:none;
+}
+
+.LmFreeBusyView .hiddenRow { 
+  height:0.3px;
+}
+
+.LmFreeBusyView .hiddenRow td{ 
+  border:none;
+}
+
+.LmFreeBusyView .mozWidth { 
+  height:16px;
+  font-size:1px;
+  width:10px;
+}
+
+.LmFreeBusyView .adCol2 { 
+  width:10px;
+}
+.LmFreeBusyView .adCol3 { 
+  width:154px;
+}
+
+.LmFreeBusyView .empty, .LmFreeBusyView .addressCell { 
+  border: 1px solid #CCCCCC;
+}
+
+.LmFreeBusyView .addressCell, 
+.LmFreeBusyView .addressInputCell,
+.LmFreeBusyView .addressInputEmptyCell{ 
+  padding:0;
+  text-align:center;
+  padding: 0px; 
+  border: none;
+  font-weight:normal;
+  font-size:14px;
+  height:18px;  
+  background-color:rgb(249,248,246);
+}
+
+.LmFreeBusyView .addressInputCell,
+.LmFreeBusyView .addressInputEmptyCell {
+  background-color:white;
+  border: 1px solid black;
+}
+
+.LmFreeBusyView .addressInputCell { 
+  width:154px;
+}
+.LmFreeBusyView .addressInputCell div{ 
+  width:154px;
+}
+
+.LmFreeBusyView .addressInputEmptyCell input{ 
+  color: #9A9A9A;
+}
+
+.LmFreeBusyView .addrSelected{  
+  background-color: #3366CC;
+}
+
+.LmFreeBusyView input { 
+  border:0;
+  padding:0;
+  height:100%;
+  width:100%;
+}
+
+.LmFreeBusyView_scheduleCol_col, .LmFreeBusyView_scheduleCol_col_highlighted {  
+  width:11px;
+}
+
+.LmFreeBusyView_scheduleCol_colIE, .LmFreeBusyView_scheduleCol_colIE_highlighted {  
+  width:12px;
+}
+
+.LmFreeBusyView_scheduleCol_col_highlighted{  
+  background-color:#ADD6D6;
+}
+
+.LmFreeBusyView .endZone { 
+  width:20px;
+}
+
+.LmFreeBusyView .hiddenRow td.endZoneCell { 
+  padding:2px;
+}
+.LmFreeBusyView .endZoneContainer { 
+  border-top: 1px solid #9F9F9F;
+  border-left: 1px solid #9F9F9F;  
+  border-bottom: 1px solid #000000;
+  border-right: 1px solid #000000;
+  width:20px;
+}
+
+.LmFreeBusyView .endZoneText { 
+  border-top: 1px solid #F9F8F7;
+  border-left: 1px solid #F9F8F7;
+  border-bottom: 1px solid #9F9F9F;
+  border-right: 1px solid #9F9F9F;
+  background-color: #D4D4D4;
+  cursor: default;
+  text-align: center;
+  font-size:16px;
+}
+
+.LmFreeBusyView_scheduleCol tr { 
+  height:23px;
+}
+
+.LmFreeBusyView_scheduleCol th { 
+  text-align:left;
+  border: 0px;
+  padding: 0px; 
+  font-size:14px;
+  font-weight:normal;
+}
+
+.LmFreeBusyView_scheduleCol .n_a ,
+.LmFreeBusyView_scheduleCol .n_aHighlighted,
+.LmFreeBusyView_scheduleCol .free ,
+.LmFreeBusyView_scheduleCol .freeHighlighted,
+.LmFreeBusyView_scheduleCol .busy,
+.LmFreeBusyView_scheduleCol .busyHighlighted,
+.LmFreeBusyView_scheduleCol .tentative,
+.LmFreeBusyView_scheduleCol .tentativeHighlighted,
+.LmFreeBusyView_scheduleCol .ooo,
+.LmFreeBusyView_scheduleCol .oooHighlighted { 
+  border: 1px solid #CCCCCC;
+}
+
+.LmFreeBusyView_scheduleCol .n_aHighlighted,
+.LmFreeBusyView_scheduleCol .freeHighlighted,
+.LmFreeBusyView_scheduleCol .busyHighlighted,
+.LmFreeBusyView_scheduleCol .tentativeHighlighted,
+.LmFreeBusyView_scheduleCol .oooHighlighted { 
+  border: 1px solid #A7A7A7;
+}
+
+.LmFreeBusyView .ooo,
+.LmFreeBusyView .oooHighlighted { 
+  background-color:#FFCC00;
+}
+
+.LmFreeBusyView .tentative,
+.LmFreeBusyView .tentativeHighlighted { 
+  background-color:#FF3300;
+}
+
+.LmFreeBusyView .busy,
+.LmFreeBusyView .busyHighlighted { 
+  background-color: 990000;
+  border: 1px solid #CCCCCC;
+}
+
+.LmFreeBusyView .free { 
+  background-color:inherit;
+}
+
+.LmFreeBusyView .freeHighlighted { 
+  background-color:#ADD6D6;
+}
+
+.LmFreeBusyView .n_a { 
+  background-color:#FFFAE5;
+}
+
+.LmFreeBusyView .n_aHighlighted { 
+  background-color:#ADD6D6;
+}
+
+.LmFreeBusyView_slider { 
+  position:absolute;
+  top:0;
+  left: 205;
+  border: 1px solid black;
+  z-index: 750;
+  font-size:1px;
+}
+
+.LmFreeBusyView_slider_left { 
+  background-color: #666666;
+  width:2px;
+  float:left;
+  height:100%;
+  /*cursor:e-resize;*/
+  cursor:default;
+  font-size: 1px;
+}
+.LmFreeBusyView_slider_right { 
+  background-color: #666666;
+  width:2px;
+  float:right;
+  height:100%;
+  /*cursor:w-resize;*/
+  cursor: default;
+  font-size: 1px;
+}
+
+.LmFreeBusyView_headers { 
+  position:absolute;
+  top:20px;
+  left:66px;
+}
+.LmFreeBusyView_headers table{ 
+  table-layout:fixed;
+}
+
+.LmFreeBusyView_key {
+  position:absolute;
+  top:7px;
+  left:513px;
+}
+
+.LmFreeBusyView_key  div{
+  text-align:left;
+}
+
+.LmFreeBusyView_key td {
+  padding:2px;
+}
+
+.LmFreeBusyView_key .free,
+.LmFreeBusyView_key .freeHighlighted,
+.LmFreeBusyView_key .busy,
+.LmFreeBusyView_key .tentative,
+.LmFreeBusyView_key .ooo,
+.LmFreeBusyView_key .n_a{
+  width:20px;
+  height:20px;
+  border-top:1px solid #666666;
+  border-left:1px solid #666666;
+  border-bottom:1px solid #CCCCCC;
+  border-right:1px solid #CCCCCC;
+}
+
+.LmFreeBusyView_dateString { 
+  position:absolute;
+  top:90px;
+  left:460px;
+  font-weight:bold;
+  text-align:center;
+  font-size:14px;
+}
+
+/** ** ** ** ** ** ** End LmFreeBusy ** ** **/
+.LmAttachFileDialog { 
+  width:300px;
+}
+
+.LmAttachFileDialog iframe { 
+  margin:none;
+  padding:none;
+  border:none;
+}
+
+.LmAttachFileDialog_table { 
+  table-layout:fixed;
+  padding:0px;
+}
+
+.LmAttachFileDialog_table td{ 
+  padding:2px;
+}
+
+.LmEditInstanceSeriesView { 
+  width:310px;
+}
+
+.LmEditInstanceSeriesView .xform_table{ 
+  width:auto;
+}
+
+.LmEditInstanceSeriesView .title{ 
+  background: #2557AD;
+  color: white;
+  font-size: 10pt;
+  font-weight: bold;
+  padding: 5px 0 3px 10px;
+  cursor: move;
+  text-align: center;
+}
+
+
+/***********************************************************
+* Styles for the new UI
+************************************************************/
+
+.LmContactCardsView, .LmCalViewMgr {
+	background-color: #EEEEEE;
+	height: 100%;
+	width: 100%;
+}
+
+.LmPrefView {width: 100%;}
+
+.LmAppChooser {height: 100%;}
+
+.currentAppLabel .Text {
+	font-size: 13px;
+	font-weight: bold;
+}
+
+.search_input {
+	width:100%;
+	border:1px inset gray;
+	background-color:white;
+}
+
+.LmNavToolBar .DwtText {white-space: nowrap;}
+
+.statusBox {
+	font-weight: bold;
+}
+
+/***********************************************************
+* End of styles for the new UI
+************************************************************/
+
+
+/**** BORDER STUFF ****/
+.card_border_table {
+	border-collapse:collapse;
+	padding:0;
+}
+
+
+.card_contents {
+	position:relative;
+	background-color:pink;
+	/* position up and to the left to center w/in the margins */
+	top:-3; left:-3;
+}
+
+.card_contents_table {
+	Xwidth:100%;
+}
+
+
+.card_spacer_c		{ width:10; 	height:10;		overflow:hidden;	}
+.card_spacer_h		{ width:100%; 	height:10;		overflow:hidden;	}
+.card_spacer_v		{ width:10; 	height:100%;	overflow:hidden;	}
+.card_spacer_m		{ width:100%; 	height:100%;	overflow:hidden;	}
+
+.selected_card_spacer_c		{ width:10; 	height:10;		overflow:hidden;	}
+.selected_card_spacer_h		{ width:100%; 	height:10;		overflow:hidden;	}
+.selected_card_spacer_v		{ width:10; 	height:100%;	overflow:hidden;	}
+.selected_card_spacer_m		{ width:100%; 	height:100%;	overflow:hidden;	}
+
+.balloon_frame 			{	width:200;	height:70;	z-index:1;	}
+.balloon_frame_table 	{	width:100%;	height:100%;	border-collapse:collapse;	padding:0;	}
+.TL_balloon_contents {
+	position:relative;
+	left:-8;
+	top:-2;
+	margin-bottom:-4px;
+	z-index:2;
+}
+
+.balloon_spacer_tc	 	{	width:20;		height:45;}
+.balloon_spacer_c	 	{	width:20;		height:20;}
+.balloon_spacer_h 		{	width:100%;		height:10;}
+.balloon_spacer_v 		{	width:10;		height:100%;}
+.balloon_spacer_m 		{	width:100%;		height:100%;	background-color:#EEEEEE;}
+
+
+
+
+
+.dialog_title				{	background-color:#3d3d3d; cursor:move}
+.dialog_title_text			{	color:white;	width:auto;	 font-weight:bold;	}
+.dialog_title_cell			{	color:white;	width:auto;	 font-weight:bold;	
+								padding-left:2px; padding-right:2px;
+							}
+
+.dialog_table				{	border-collapse:collapse;	width:auto; height:100%;}
+
+.dialog_outset				{	}
+.dialog_outset_contents		{	width:auto;height:100%;		}
+.dialog_outset_table TD		{	padding:0px;	}
+
+.dialog_inset				{	background-color:#F8F7F5	}
+.dialog_inset_contents		{	width:auto;height:100%;		}
+
+.dialog_shadow_c			{ 	width:6; 		height:6;		}
+.dialog_shadow_h			{ 	width:100%; 	height:6;		}
+.dialog_shadow_v			{ 	width:6; 		height:100%;	}
+
+.border_outset_c			{ 	width:4; 		height:4;		}
+.border_inset_c				{ 	width:10; 		height:10;		}
+.border_h					{	width:auto;						}
+.border_v					{					height:100%;	}
+
+.border_shadow_c			{ 	width:6; 		height:6;		}
+.border_shadow_h			{ 	width:auto;		height:6;		}
+.border_shadow_v			{ 	width:6; 		height:100%;	}
+
+
+
+/* should be dynamically generated */
+
+.dialog_inset_tl			{	background-image:url(/liquid/skins/steel/images/dialog_inset_tl.gif);	 	width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_t				{	background-image:url(/liquid/skins/steel/images/dialog_inset_t.gif); 		width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_tr			{	background-image:url(/liquid/skins/steel/images/dialog_inset_tr.gif); 		width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_l				{	background-image:url(/liquid/skins/steel/images/dialog_inset_l.gif); 		width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_r				{	background-image:url(/liquid/skins/steel/images/dialog_inset_r.gif); 		width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_bl			{	background-image:url(/liquid/skins/steel/images/dialog_inset_bl.gif); 		width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_b				{	background-image:url(/liquid/skins/steel/images/dialog_inset_b.gif); 		width:10;	height:10;	overflow:hidden;	}
+.dialog_inset_br			{	background-image:url(/liquid/skins/steel/images/dialog_inset_br.gif);	 	width:10;	height:10;	overflow:hidden;	}
+
+.dialog_shadow_tr			{	background-image:url(/liquid/skins/steel/images/dialog_shadow_tr.png);	 	width:6;	height:6;	overflow:hidden;	}
+.dialog_shadow_r			{	background-image:url(/liquid/skins/steel/images/dialog_shadow_r.png);	 	width:6;	height:6;	overflow:hidden;	}
+.dialog_shadow_br			{	background-image:url(/liquid/skins/steel/images/dialog_shadow_br.png);	 	width:6;	height:6;	overflow:hidden;	}
+.dialog_shadow_bl			{	background-image:url(/liquid/skins/steel/images/dialog_shadow_bl.png);	 	width:6;	height:6;	overflow:hidden;	}
+.dialog_shadow_b			{	background-image:url(/liquid/skins/steel/images/dialog_shadow_b.png);	 	width:6;	height:6;	overflow:hidden;	}
+
+
+.dialog_outset_tl			{	background-image:url(/liquid/skins/steel/images/dialog_outset_tl.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_outset_t			{	background-image:url(/liquid/skins/steel/images/dialog_outset_t.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_outset_tr			{	background-image:url(/liquid/skins/steel/images/dialog_outset_tr.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_outset_l			{	background-image:url(/liquid/skins/steel/images/dialog_outset_l.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_outset_r			{	background-image:url(/liquid/skins/steel/images/dialog_outset_r.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_outset_bl			{	background-image:url(/liquid/skins/steel/images/dialog_outset_bl.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_outset_b			{	background-image:url(/liquid/skins/steel/images/dialog_outset_b.gif); 		width:4;	height:4;	overflow:hidden;	}
+.dialog_outset_br			{	background-image:url(/liquid/skins/steel/images/dialog_outset_br.gif); 		width:4;	height:4;	overflow:hidden;	}
+
+
+.h_sash_l					{	background-image:url(/liquid/skins/steel/images/h_sash_l.gif); 				width:4;	height:7;	overflow:hidden;	}
+.h_sash_m					{	background-image:url(/liquid/skins/steel/images/h_sash_m.gif); 				width:20;	height:7;	overflow:hidden;	}
+.h_sash_r					{	background-image:url(/liquid/skins/steel/images/h_sash_r.gif); 				width:4;	height:7;	overflow:hidden;	}
+.h_sash_grip				{	background-image:url(/liquid/skins/steel/images/h_sash_grip.gif); 			width:29;	height:7;	overflow:hidden;	}
+
+
+.tab_spacer.gif				{	background-image:url(/liquid/skins/steel/images/tab_spacer.gif);	 		width:100%;	height:28;	overflow:hidden;	}
+
+.Imgtab_L					{	background-image:url(/liquid/skins/steel/images/tab_L.gif);	 				width:9;	height:28;	overflow:hidden;	}
+.Imgtab_M					{	background-image:url(/liquid/skins/steel/images/tab_M.gif);	 				width:100%;	height:28;	overflow:hidden;	}
+.Imgtab_R					{	background-image:url(/liquid/skins/steel/images/tab_R.gif);	 				width:9;	height:28;	overflow:hidden;	}
+
+.Imgtab_active_L			{	background-image:url(/liquid/skins/steel/images/tab_active_L.gif);	 		width:9;	height:28;	overflow:hidden;	}
+.Imgtab_active_M			{	background-image:url(/liquid/skins/steel/images/tab_active_M.gif);	 		width:100%;	height:28;	overflow:hidden;	}
+.Imgtab_active_R			{	background-image:url(/liquid/skins/steel/images/tab_active_R.gif);	 		width:9;	height:28;	overflow:hidden;	}
+
+.Imgtab_selected_L			{	background-image:url(/liquid/skins/steel/images/tab_selected_L.gif);	 	width:9;	height:28;	overflow:hidden;	}
+.Imgtab_selected_M			{	background-image:url(/liquid/skins/steel/images/tab_selected_M.gif);	 	width:100%;	height:28;	overflow:hidden;	}
+.Imgtab_selected_R			{	background-image:url(/liquid/skins/steel/images/tab_selected_R.gif);	 	width:9;	height:28;	overflow:hidden;	}
+
+.Imgtab_disabled_L			{	background-image:url(/liquid/skins/steel/images/tab_disabled_L.gif);	 	width:9;	height:28;	overflow:hidden;	}
+.Imgtab_disabled_M			{	background-image:url(/liquid/skins/steel/images/tab_disabled_M.gif);	 	width:100%;	height:28;	overflow:hidden;	}
+.Imgtab_disabled_R			{	background-image:url(/liquid/skins/steel/images/tab_disabled_R.gif);	 	width:9;	height:28;	overflow:hidden;	}
+
+
+/* appointment images (will need to be in different colors) */
+.Imgappt_TL									{	background-image:url(/liquid/skins/steel/images/appt_new_TL.png);	 			width:4;	height:4;	overflow:hidden;	}
+.Imgappt_TM									{	background-image:url(/liquid/skins/steel/images/appt_new_TM.png);	 			width:100%;	height:4;	overflow:hidden;	}
+.Imgappt_TR									{	background-image:url(/liquid/skins/steel/images/appt_new_TR.png);	 			width:4;	height:4;	overflow:hidden;	}
+.Imgappt_ML									{	background-image:url(/liquid/skins/steel/images/appt_new_ML.png);	 			width:4;	height:100%;overflow:hidden;	}
+.Imgappt_MR									{	background-image:url(/liquid/skins/steel/images/appt_new_MR.png);	 			width:4;	height:100%;overflow:hidden;	}
+.Imgappt_BL									{	background-image:url(/liquid/skins/steel/images/appt_new_BL.png);	 			width:4;	height:4;	overflow:hidden;	}
+.Imgappt_BM									{	background-image:url(/liquid/skins/steel/images/appt_new_BM.png);	 			width:100%;	height:4;	overflow:hidden;	}
+.Imgappt_BR									{	background-image:url(/liquid/skins/steel/images/appt_new_BR.png);	 			width:4;	height:4;	overflow:hidden;	}
+				
+.appt-selected .Imgappt_TL					{	background-image:url(/liquid/skins/steel/images/appt_selected_TL.png);		width:4;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_TM					{	background-image:url(/liquid/skins/steel/images/appt_selected_TM.png);		width:100%;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_TR					{	background-image:url(/liquid/skins/steel/images/appt_selected_TR.png);		width:4;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_ML					{	background-image:url(/liquid/skins/steel/images/appt_selected_ML.png);		width:4;	height:100%;overflow:hidden;	}
+.appt-selected .Imgappt_MR					{	background-image:url(/liquid/skins/steel/images/appt_selected_MR.png);		width:4;	height:100%;overflow:hidden;	}
+.appt-selected .Imgappt_BL					{	background-image:url(/liquid/skins/steel/images/appt_selected_BL.png);	 	width:4;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_BM					{	background-image:url(/liquid/skins/steel/images/appt_selected_BM.png);	 	width:100%;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_BR					{	background-image:url(/liquid/skins/steel/images/appt_selected_BR.png);	 	width:4;	height:4;	overflow:hidden;	}
+
+.Imgappt_new_TL								{	background-image:url(/liquid/skins/steel/images/appt_new_TL.png);			width:4;	height:4;	overflow:hidden;	}
+.Imgappt_new_TM								{	background-image:url(/liquid/skins/steel/images/appt_new_TM.png);			width:100%;	height:4;	overflow:hidden;	}
+.Imgappt_new_TR								{	background-image:url(/liquid/skins/steel/images/appt_new_TR.png);			width:4;	height:4;	overflow:hidden;	}
+.Imgappt_new_ML								{	background-image:url(/liquid/skins/steel/images/appt_new_ML.png);			width:4;	height:100%;overflow:hidden;	}
+.Imgappt_new_MR								{	background-image:url(/liquid/skins/steel/images/appt_new_MR.png);			width:4;	height:100%;overflow:hidden;	}
+.Imgappt_new_BL								{	background-image:url(/liquid/skins/steel/images/appt_new_BL.png);	 		width:4;	height:4;	overflow:hidden;	}
+.Imgappt_new_BM								{	background-image:url(/liquid/skins/steel/images/appt_new_BM.png);	 		width:100%;	height:4;	overflow:hidden;	}
+.Imgappt_new_BR								{	background-image:url(/liquid/skins/steel/images/appt_new_BR.png);	 		width:4;	height:4;	overflow:hidden;	}
+
+.appt-selected .Imgappt_new_TL				{	background-image:url(/liquid/skins/steel/images/appt_selected_TL.png);		width:4;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_new_TM				{	background-image:url(/liquid/skins/steel/images/appt_selected_TM.png);		width:100%;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_new_TR				{	background-image:url(/liquid/skins/steel/images/appt_selected_TR.png);		width:4;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_new_ML				{	background-image:url(/liquid/skins/steel/images/appt_selected_ML.png);		width:4;	height:100%;overflow:hidden;	}
+.appt-selected .Imgappt_new_MR				{	background-image:url(/liquid/skins/steel/images/appt_selected_MR.png);		width:4;	height:100%;overflow:hidden;	}
+.appt-selected .Imgappt_new_BL				{	background-image:url(/liquid/skins/steel/images/appt_selected_BL.png);	 	width:4;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_new_BM				{	background-image:url(/liquid/skins/steel/images/appt_selected_BM.png);	 	width:100%;	height:4;	overflow:hidden;	}
+.appt-selected .Imgappt_new_BR				{	background-image:url(/liquid/skins/steel/images/appt_selected_BR.png);	 	width:4;	height:4;	overflow:hidden;	}
+
+.Imgappt_30_L								{	background-image:url(/liquid/skins/steel/images/appt_30_new_L.png);	 			width:4;	height:25;	overflow:hidden;	}
+.Imgappt_30_M								{	background-image:url(/liquid/skins/steel/images/appt_30_new_M.png);	 			width:100%;	height:25;	overflow:hidden;	}
+.Imgappt_30_R								{	background-image:url(/liquid/skins/steel/images/appt_30_new_R.png);	 			width:4;	height:25;	overflow:hidden;	}
+
+.appt-selected .Imgappt_30_L				{	background-image:url(/liquid/skins/steel/images/appt_30_selected_L.png);	width:4;	height:25;	overflow:hidden;	}
+.appt-selected .Imgappt_30_M				{	background-image:url(/liquid/skins/steel/images/appt_30_selected_M.png);	width:100%;	height:25;	overflow:hidden;	}
+.appt-selected .Imgappt_30_R				{	background-image:url(/liquid/skins/steel/images/appt_30_selected_R.png);	width:4;	height:25;	overflow:hidden;	}
+
+
+.Imgappt_30_new_L							{	background-image:url(/liquid/skins/steel/images/appt_30_new_L.png);	 		width:4;	height:25;	overflow:hidden;	}
+.Imgappt_30_new_M							{	background-image:url(/liquid/skins/steel/images/appt_30_new_M.png);	 		width:100%;	height:25;	overflow:hidden;	}
+.Imgappt_30_new_R							{	background-image:url(/liquid/skins/steel/images/appt_30_new_R.png);	 		width:4;	height:25;	overflow:hidden;	}
+
+.appt-selected .Imgappt_30_new_L				{	background-image:url(/liquid/skins/steel/images/appt_30_selected_L.png);	width:4;	height:25;	overflow:hidden;	}
+.appt-selected .Imgappt_30_new_M				{	background-image:url(/liquid/skins/steel/images/appt_30_selected_M.png);	width:100%;	height:25;	overflow:hidden;	}
+.appt-selected .Imgappt_30_new_R				{	background-image:url(/liquid/skins/steel/images/appt_30_selected_R.png);	width:4;	height:25;	overflow:hidden;	}
+
+.Imgappt_shadow_BL							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
+.Imgappt_shadow_B							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:100%;	height:8;	overflow:hidden;	}
+.Imgappt_shadow_BR							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
+.Imgappt_shadow_R							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:100%;overflow:hidden;	}
+.Imgappt_shadow_TR							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
+
+.appt-selected .Imgappt_shadow_BL			{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_BL.png);	width:8;	height:8;	overflow:hidden;	}
+.appt-selected .Imgappt_shadow_B			{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_B.png);	width:100%;	height:8;	overflow:hidden;	}
+.appt-selected .Imgappt_shadow_BR			{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_BR.png);	width:8;	height:8;	overflow:hidden;	}
+.appt-selected .Imgappt_shadow_R			{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_R.png);	width:8;	height:100%;overflow:hidden;	}
+.appt-selected .Imgappt_shadow_TR			{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_TR.png);	width:8;	height:8;	overflow:hidden;	}
+
+.Imgappt_new_shadow_BL							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
+.Imgappt_new_shadow_B							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:100%;	height:8;	overflow:hidden;	}
+.Imgappt_new_shadow_BR							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
+.Imgappt_new_shadow_R							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:100%;overflow:hidden;	}
+.Imgappt_new_shadow_TR							{	background-image:url(/liquid/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
+
+.appt-selected .Imgappt_new_shadow_BL		{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_BL.png);	width:8;	height:8;	overflow:hidden;	}
+.appt-selected .Imgappt_new_shadow_B		{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_B.png);	width:100%;	height:8;	overflow:hidden;	}
+.appt-selected .Imgappt_new_shadow_BR		{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_BR.png);	width:8;	height:8;	overflow:hidden;	}
+.appt-selected .Imgappt_new_shadow_R		{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_R.png);	width:8;	height:100%;overflow:hidden;	}
+.appt-selected .Imgappt_new_shadow_TR		{	background-image:url(/liquid/skins/steel/images/appt_selected_shadow_TR.png);	width:8;	height:8;	overflow:hidden;	}
+
+/* end dynamically generated */
+
+
+.appt							{ 	z-index:10;	width:100;}
+.appt-selected					{ 	z-index:20;	width:100;}
+
+.appt_c							{	width:4;	height:4;		overflow:hidden;	}
+.appt_h							{	width:100%;	height:4;		overflow:hidden;}
+.appt_v							{	width:4;	height:100%;	overflow:hidden;}
+
+.appt_shadow_c					{	width:8;	height:8;		overflow:hidden;}
+.appt_shadow_v					{	width:8;	height:100%;	overflow:hidden; }
+.appt_shadow_h					{	width:100%;	height:8;		overflow:hidden;}
+
+
+
+
+.appt_body						{	height:100%;	overflow:hidden;		}
+.appt_30_body					{	height:100%;	overflow:hidden; 
+									position:relative; 
+									top:4; margin-bottom:-4;	}
+
+.appt_blue_header				{	background-color:#7F99CC;	height:100%;	}
+.appt_30_blue_header			{	background-color:#7F99CC;					}
+.appt_blue_body					{	background-color:#CCD6EB;					}
+
+.appt_new_blue_header,			
+.appt_30_new_blue_header		{	background-color:#1947A3;					}
+.appt_new_blue_body				{	background-color:#7F99CC;	height:100%;	}
+
+
+.appt_new_tag					{	font-weight:bold;	color:#FFCC00;		}
+
+.appt_name						{	padding:2px;										}
+.appt-selected .appt_name 		{	padding:2px;	font-weight:bold;						}
+.appt_new_name					{	padding:2px;	font-weight:bold;	color:white; 		}
+
+.appt_30_name					{	padding:2px;									white-space: nowrap;	}
+.appt-selected .appt_30_name 	{	padding:2px;	font-weight:bold;					white-space: nowrap;	}
+.appt_30_new_name				{	padding:2px;	font-weight:bold;	color:white;	white-space: nowrap;	}
+
+
+.appt_time						{	white-space: nowrap;	padding:2px;						}
+.appt_status-					{	white-space: nowrap;	padding:2px;						}
+.appt_status-NE					{	white-space: nowrap;	padding:2px;	color:white;		}
+.appt_status-TE					{	white-space: nowrap;	padding:2px;	color:FF3300;		}
+.appt_status-AC					{	white-space: nowrap;	padding:2px;	color:999900;		}
+.appt_status-DE					{	white-space: nowrap;	padding:2px;	color:999999;		}
+.appt_status-DG					{	white-space: nowrap;	padding:2px;	color:black;		}
+
+.appt_location					{							padding:2px;						}
+
+
+/**** END BORDER STUFF ****/

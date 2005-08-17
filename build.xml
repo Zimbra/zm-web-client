@@ -1,0 +1,588 @@
+<project name="LiquidConsole" default="war">
+
+  <property environment="env"/>
+	
+  <property name="build.dir"          location="build"/>
+	
+  <property name="dist.dir"           location="build/dist"/>
+  <property name="dist.tomcat.dir"    location="${dist.dir}/jakarta-tomcat-5.0.28"/>
+  <property name="dist.tomcat.webapps.dir" location="${dist.tomcat.dir}/webapps"/>
+  <property name="dist.tarfile"         value="dev-liquid.tar"/>
+
+  <property name="warfile"            location="${dist.tomcat.webapps.dir}/liquid.war"/>
+  <property name="adminwarfile"      location="${dist.tomcat.webapps.dir}/liquidAdmin.war"/>		
+	
+  <property name="jars.dir"           location="jars"/>
+  <property name="jars.archive.dir"   location="../LiquidArchive/jars"/>
+  <property name="src.dir"            location="src"/>
+  <property name="gzipExtension" value=".jgz"/>	
+  <property name="copyrightText" value="Copyright 2005 (C) Liquid Systems, Inc. All Rights Reserved"/>
+
+  <condition property="liquidAjax.dir" value="${env.LIQUIDAJAX_DIR}">
+    <isset property="env.LIQUIDAJAX_DIR" />
+  </condition>	
+  <condition property="liquidAjax.dir" value="../LiquidAjax">
+    <not><isset property="env.LIQUIDAJAX_DIR"/></not>
+  </condition>	
+
+  <property name="liquidAjax.src.dir" value="${liquidAjax.dir}/src"/>
+  <property name="liquidAjax.jars.dir" value="${liquidAjax.dir}/jars"/>
+  <property name="liquidAjax.dwtimg.dir" value="${liquidAjax.dir}/WebRoot/js/dwt/config/img"/>
+  <property name='liquidAjax.imagemerge.dir' location='${liquidAjax.src.dir}/com/liquidsys/liquidAjax/imagemerge'/>
+	
+  <condition property="deploy.dir" value="${env.DEPLOY_DIR}">
+    <isset property="env.DEPLOY_DIR" />
+  </condition>	
+
+  <condition property="deploy.dir" value="/opt/liquid/tomcat/webapps">
+    <not><isset property="env.DEPLOY_DIR"/></not>
+  </condition>	
+
+  <condition property="deploy.url" value="${env.DEPLOY_URL}">
+    <isset property="env.DEPLOY_URL" />
+  </condition>	
+  <condition property="deploy.url" value="http://localhost:7070/manager/">
+    <not><isset property="env.DEPLOY_URL"/></not>
+  </condition>
+	
+  <property name="deploy.war" value="${warfile}"/>
+  <property name="deploy.user" value="liquid"/>
+  <property name="deploy.password" value="liquid"/>
+  <property name="deploy.path" value="/liquid"/>
+  <property name="deploy.admin.path" value="/liquidAdmin"/>
+  <property name="deploy.admin.war" value="${adminwarfile}"/>
+	
+  <property name="tf.warfile" location="${dist.tomcat.webapps.dir}/tradeflow.war"/>	
+  <property name="tf.deploy.war" value="${tf.warfile}"/>
+  <property name="tf.deploy.path" value="/tradeflow"/>
+
+  <property name="images.hiRes.destDir" value="${build.dir}/WebRoot/img/hiRes"/>
+  <property name="images.loRes.destDir" value="${build.dir}/WebRoot/img/loRes"/>
+  <property name="images.cssFile" value="imgs.css"/>
+
+  <condition property='isProduction' value='true'>
+  	<or>
+      <not><isset property='env.LIQUID_BUILD'/></not>
+	  <not><equals arg1='${env.LIQUID_BUILD}' arg2='development'/></not>
+  	</or>
+  </condition>
+  <condition property='isProduction' value='false'>
+  	<equals arg1='${env.LIQUID_BUILD}' arg2='development'/>
+  </condition>
+  <condition property='isDevelopment' value='true'>
+  	<equals arg1='${isProduction}' arg2='false'/>
+  </condition>
+  <condition property='isDevelopment' value='false'>
+  	<equals arg1='${isProduction}' arg2='true'/>
+  </condition>
+	
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="jars/ant-contrib-1.0b1.jar"/>
+    </classpath>
+  </taskdef>
+  
+  <path id="class.path">
+    <fileset dir="${jars.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+    <fileset dir="${jars.archive.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+    <fileset dir="${liquidAjax.jars.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask" classpathref="class.path"/>
+  
+  <target name="build-init">
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${dist.tomcat.webapps.dir}"/>
+    <mkdir dir="${build.dir}/WebRoot/js"/>
+  </target>
+
+  <target name="compile" depends="build-init" description="compile the filter source" >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src.dir}" destdir="${build.dir}" source="1.4" target="1.4" debug="on">
+      <classpath refid="class.path"/>
+      <include name="**/*.java"/>
+    </javac>
+    <javac srcdir="${liquidAjax.src.dir}" destdir="${build.dir}" source="1.4" target="1.4" debug="on">
+      <classpath refid="class.path"/>
+      <include name="**/*.java"/>
+    </javac>
+ </target>
+
+  <target name="clean" depends="build-init" description="Removes any temporary files">
+    <delete dir="${build.dir}"/>
+    <delete>
+      <fileset dir="WebRoot" includes="js/**/*${gzipExtension}, js/*_all.js*"/>
+    </delete>	
+  </target>
+
+  <target name="jam-files" depends="compile">
+    <taskdef name="jammer" classname="com.liquidsys.liquidConsole.build.JammerTask" classpath="${build.dir}"/>
+    <jammer copyright="${copyrightText}" webrootDir="${build.dir}/WebRoot/" pathToWebapp="/liquid" destFile="${build.dir}/WebRoot/js/LsNet_all.js">
+      <filelist dir="${build.dir}/WebRoot/public" files="Liquid-net.jsp"/>
+    </jammer>
+    <jammer copyright="${copyrightText}" webrootDir="${build.dir}/WebRoot/" pathToWebapp="/liquid" destFile="${build.dir}/WebRoot/js/LsMail_all.js">
+      <filelist dir="${build.dir}/WebRoot/public" files="Liquid.jsp, Dwt.jsp, LiquidMail.jsp"/>
+    </jammer>
+    <jammer copyright="${copyrightText}" webrootDir="${build.dir}/WebRoot/" pathToWebApp="/liquid" destFile="${build.dir}/WebRoot/js/LsAdmin_all.js">
+      <filelist dir="${build.dir}/WebRoot/public" files="Liquid.jsp, Dwt.jsp, LiquidAdmin.jsp"/>
+    </jammer> 
+  </target>
+
+  <target name="gzip-one-file">
+    <gzip src="${var}" zipfile="${var}${gzipExtension}"/>
+  </target>
+  
+  <target name="gzip-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, copy-migration-wizard, jam-files">
+    <copy todir="${build.dir}/WebRoot">
+      <fileset dir="${build.dir}/WebRoot" includes="js/**/*.js"/>
+    </copy>
+    <foreach target="gzip-one-file" param="var">
+      <path>	
+	<fileset dir="${build.dir}/WebRoot" includes="js/**/*.js"/>
+      </path>	
+    </foreach>
+  </target>
+
+	<target name='images' depends='imagesinit,compile' unless='imagesdone'>
+		<!-- define imagemerge task -->
+		<pathconvert property='imagemerge.cp' pathsep='${path.separator}'>
+			<path>
+				<pathelement location='${build.dir}'/>
+				<fileset dir='${jars.dir}' includes='**/*.jar'/>
+			</path>
+		</pathconvert>
+		<taskdef name='imagemerge' 
+				 classname='com.liquidsys.liquidAjax.imagemerge.ImageMergeTask' 
+				 classpath='${imagemerge.cp}'
+		/>
+
+		<!-- copy hiRes images -->
+		<mkdir dir="${images.hiRes.destDir}"/>
+		<delete file='${images.hiRes.destDir}/${images.cssFile}'/>
+		<echo/>
+		<echo message='Copying high resolution images (-horizborders -vertborders -backgrounds)'/>
+		<echo/>
+		<imagemerge destdir='${images.hiRes.destDir}' copy='true'
+					cssfile='${images.cssFile}' csspath='/liquid/img/hiRes/'>
+			<dirset dir='img/hiRes' 
+					includes='*' excludes='horizborders,vertborders,backgrounds'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' 
+					includes='*' excludes='horizborders,vertborders,backgrounds'/>
+		</imagemerge>
+		<echo/>
+		<echo message='Copying high resolution horizontal borders'/>
+		<echo/>
+		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='vertical'
+					cssfile='${images.cssFile}' csspath='/liquid/img/hiRes/'>
+			<dirset dir='img/hiRes' includes='horizborders'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' includes='horizborders'/>
+		</imagemerge>
+		<echo/>
+		<echo message='Copying high resolution vertical borders'/>
+		<echo/>
+		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='horizontal'
+					cssfile='${images.cssFile}' csspath='/liquid/img/hiRes/'>
+			<dirset dir='img/hiRes' includes='vertborders'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' includes='vertborders'/>
+		</imagemerge>
+		<echo/>
+		<echo message='Copying high resolution backgrounds'/>
+		<echo/>
+		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='repeat'
+					cssfile='${images.cssFile}' csspath='/liquid/img/hiRes/'>
+			<dirset dir='img/hiRes' includes='backgrounds'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' includes='backgrounds'/>
+		</imagemerge>
+		
+		<!-- merge loRes images -->
+		<mkdir dir="${images.loRes.destDir}"/>
+		<delete file='${images.loRes.destDir}/${images.cssFile}'/>
+		<echo/>
+		<echo message='Merging low resolution images (-horizborder -vertborders -backgrounds)'/>
+		<echo/>
+		<imagemerge destdir='${images.loRes.destDir}' layout='auto'
+					cssfile='${images.cssFile}' csspath='/liquid/img/loRes/'>
+			<dirset dir='img/loRes' 
+					includes='*' excludes='horizborders,vertborders,backgrounds'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' 
+					includes='*' excludes='horizborders,vertborders,backgrounds'/>
+		</imagemerge>
+		<echo/>
+		<echo message='Merging low resolution horizontal borders'/>
+		<echo/>
+		<imagemerge destdir='${images.loRes.destDir}' layout='vertical'
+					cssfile='${images.cssFile}' csspath='/liquid/img/loRes/'>
+			<dirset dir='img/loRes' includes='horizborders'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' includes='horizborders'/>
+		</imagemerge>
+		<echo/>
+		<echo message='Merging low resolution vertical borders'/>
+		<echo/>
+		<imagemerge destdir='${images.loRes.destDir}' layout='horizontal'
+					cssfile='${images.cssFile}' csspath='/liquid/img/loRes/'>
+			<dirset dir='img/loRes' includes='vertborders'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' includes='vertborders'/>
+		</imagemerge>
+		<echo/>
+		<echo message='Copying low resolution backgrounds'/>
+		<echo/>
+		<imagemerge destdir='${images.loRes.destDir}' copy='true' layout='repeat'
+					cssfile='${images.cssFile}' csspath='/liquid/img/loRes/'>
+			<dirset dir='img/loRes' includes='backgrounds'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' includes='backgrounds'/>
+		</imagemerge>
+	</target>
+
+	<target name='sortimages' depends='sortimagesinit'>
+		<!-- check properties -->
+		<fail unless='sort.source' message='Must specify source directory. For example: ant -Dsort.source=src ...'/>		
+		<fail unless='sort.target' message='Must specify target directory. For example: ant -Dsort.target=dest ...'/>		
+		
+		<!-- process directories -->
+		<imagesort source='${sort.source}' target='${sort.target}' delete='true'/><!-- noop='true'/-->
+	</target>
+	
+	<target name='sorticons' depends='sortimagesinit'>
+		<fail unless='sort.source' message='Must specify source directory. For example: ant -Dsort.source=src ...'/>		
+
+		<imagesort source='${sort.source}' target='img/hiRes' delete='true'/><!-- noop='true'/-->
+		<imagesort source='${sort.source}' target='${liquidAjax.dwtimg.dir}/hiRes' delete='true'/><!-- noop='true'/-->
+		<imagesort source='${sort.source}' target='img/unused' delete='true'/><!-- noop='true'/-->
+	</target>
+
+
+	<target name='sortimagesinit' depends='compile'>
+		<!-- define sortimages task -->
+		<pathconvert property='sortimages.cp' pathsep='${path.separator}'>
+			<path>
+				<pathelement location='${build.dir}'/>
+				<fileset dir='${jars.dir}' includes='**/*.jar'/>
+			</path>
+		</pathconvert>
+		<taskdef name='imagesort' 
+				 classname='com.liquidsys.liquidAjax.imagesort.ImageSortTask' 
+				 classpath='${sortimages.cp}'
+		/>
+		
+	</target>
+	
+	<target name='imagesinit' description='checks to see if images need to be processed' unless='images.force'>
+		<dependset>
+			<srcfileset dir='img' includes='**/*'/>
+			<srcfileset dir='${liquidAjax.dwtimg.dir}' includes='**/*'/>
+			<srcfileset dir='${liquidAjax.imagemerge.dir}' includes='**/*.java'/>
+			<targetfilelist dir='${images.loRes.destDir}' files='${images.cssFile}'/>
+		</dependset>
+		<available property='imagesdone' file='${images.loRes.destDir}/${images.cssFile}'/>
+	</target>
+		
+  <target name="check4liquidajax">
+    <available property="liquidAjax.present" file="${liquidAjax.dir}" type="dir"/>
+    <fail message="This project depends on LiquidAjax being checked out at: ${liquidAjax.dir}" unless="liquidAjax.present"/>
+  </target>
+  
+  <target name="copy-files-to-build-area" depends="check4liquidajax">
+    <copy file="WebRoot/WEB-INF/web.xml" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="${isProduction}"/>
+    <copy file="WebRoot/js/liquidMail/mail/view/LmLogin.js" tofile="${build.dir}/WebRoot/js/LmLogin.js" overwrite="${isProduction}"/>
+    <copy todir="${build.dir}/WebRoot/public/" overwrite="${isProduction}" >
+      <fileset dir="WebRoot/public" includes="**/*"/>
+    </copy>
+    <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" >
+      <fileset dir="WebRoot/"/>
+    </copy>
+    <copy todir="${build.dir}/WebRoot/js/liquidAjax" overwrite="${isProduction}" >
+ 	  <fileset dir="${liquidAjax.dir}/WebRoot/js"/>
+    </copy>
+  	<condition property='replace-copyright-in-js-skip'>
+  	  <equals arg1='${isProduction}' arg2='false'/>
+	</condition>
+  	<antcall target='replace-copyright-in-js'/>
+  </target>
+	
+  <target name='replace-copyright-in-js' unless='replace-copyright-in-js-skip'>
+    <replace dir="${build.dir}/WebRoot/js" includes="**/*.js" token="@copyright@" value="${copyrightText}" />
+  </target>
+	
+  <target name="copy-imgs-to-tmp-area" depends="check4liquidajax">
+  	<copy todir="${tmp.dir}" overwrite="true">
+  	  <fileset dir="img/loRes"/>
+  	  <fileset dir="img/hiRes"/>
+  	</copy>
+  </target>
+  
+  <target name="copy-help">	
+    <unzip src="WebRoot/help/WebHelp.zip" dest="${build.dir}/WebRoot/tmp/help" overwrite="yes">
+      <patternset>
+	<include name="WebHelp/**/*"/>
+      </patternset>
+    </unzip>
+    <copy todir="${build.dir}/WebRoot/help/" overwrite="true" >
+      <fileset dir="${build.dir}/WebRoot/tmp/help/WebHelp/" includes="**/*"/>
+    </copy>
+    <delete dir="${build.dir}/WebRoot/tmp/help"/>
+  </target>	
+  
+  <target name="copy-admin-help">	
+    <unzip src="WebRoot/adminhelp/html/LiquidAdminOLH.zip" dest="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp" overwrite="yes">
+      <patternset>
+	<include name="WebHelp/**/*"/>
+      </patternset>
+    </unzip>
+    <copy todir="${build.dir}/WebRoot/adminhelp/html/" overwrite="true" >
+      <fileset dir="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp/" includes="**/*"/>
+    </copy>
+    <copy todir="${build.dir}/WebRoot/adminhelp/pdf/" overwrite="true" >
+      <fileset dir="WebRoot/adminhelp/pdf/" includes="*"/>
+    </copy>  	
+    <delete dir="${build.dir}/WebRoot/tmp/adminhelp/html"/>
+  </target>	
+  <target name="copy-migration-wizard">	
+    <copy todir="${build.dir}/WebRoot/migrationwizard/" overwrite="true" >
+      <fileset dir="WebRoot/migrationwizard/" includes="*.exe"/>
+    </copy>  	
+  </target>		
+
+  <!-- 
+  This target is meant only to be run after a full deploy has
+  been done once. It does not deal with the java code used by the
+  LiquidConsole webapp, so if there are any java changes, another
+  deploy will have to be run.
+  -->
+  <target name="dev-sync">
+   <copy verbose="true" file="WebRoot/js/liquidMail/mail/view/LmLogin.js" tofile="${deploy.dir}${deploy.path}/js/LmLogin.js"/>
+    <copy verbose="true" todir="${deploy.dir}${deploy.path}">
+      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="js/liquidMail/mail/view/LmLogin.js"/>
+      <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
+    </copy>
+    <copy verbose="true" todir="${deploy.dir}${deploy.path}/js/liquidAjax">
+      <fileset dir="${liquidAjax.dir}/WebRoot/js" includes="**/*.js" excludes="**/img/"/>
+    </copy>
+    <copy todir="${deploy.dir}${deploy.path}/WEB-INF">  	
+      <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
+      <fileset dir="WebRoot/WEB-INF" includes="tlds/*"/>		
+    </copy>
+    <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
+    <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+  </target>
+
+ <target name="war" depends="copy-files-to-build-area, jam-files, generate-build-info, images">
+    <property file="${build.dir}/build.properties" />
+    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
+    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+    <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
+      <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
+      <classes dir="${src.dir}" includes="*.properties"/>
+      <classes dir="${build.dir}" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
+      <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
+   	  <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**,skins/**" excludes="js/liquidAdmin/**,js/LsAdmin_all.js"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/**,skins/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/LiquidAdmin.jsp,js/LsAdmin_all.js"/>
+    </war>
+  </target>
+
+  <target name="tradeflow-war" depends="copy-files-to-build-area, jam-files, generate-build-info">
+    <property file="${build.dir}/build.properties" />
+    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
+    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+    <war warfile="${tf.warfile}"  webxml="WebRoot/WEB-INF/web.xml.tradeflow">
+      <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
+      <classes dir="${src.dir}" includes="*.properties"/>
+      <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
+      <!--fileset dir="${build.dir}/WebRoot" includes="help/**/*"/-->
+      <fileset dir="${build.dir}/WebRoot" includes="js/**" excludes="js/liquidMail/**,js/liquidAdmin/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/TradeFlow.jsp,public/TradeFlow-Dwt.jsp,public/TradeFlow-Liquid.jsp,public/TradeFlow-Liquid-net.jsp"/>
+    </war>
+    <unwar src="${warfile}" dest="${deploy.dir}${deploy.path}"></unwar>
+  </target>	
+  
+  <target name="generate-build-info">
+    <propertyfile file="${build.dir}/build.properties" >
+      <entry  key="build.number" type="int" default="1" operation="+" pattern="00000"/>
+      <entry  key="build.date" type="date" value="now" pattern="yyyy-MM-dd HH:mm:ss" />
+      <entry  key="build.simpleDate" type="date" value="now" pattern="yyMMddHHmmss"/>
+      <entry  key="date.format" value="yyyyMMddHHmmss" />
+    </propertyfile>	
+  </target>
+
+  <target name="prod-war" depends="gzip-files, generate-build-info, images">
+    <property file="${build.dir}/build.properties" />
+    <copy file="WebRoot/WEB-INF/web.xml.production" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="true"/>
+    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
+    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+    <war warfile="${warfile}"
+      webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
+      <lib dir="${jars.dir}" includes="*.jar"/>
+      <classes dir="${src.dir}" includes="*.properties"/>
+      <classes dir="${build.dir}" includes="**/*.class"/>
+      <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
+      <fileset dir="${build.dir}/WebRoot" includes="help/**"/>
+
+      <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**/*,skins/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="js/LmLogin.js,public/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/LiquidAdmin.jsp"/>
+    </war>
+  </target>
+  
+  <target name="deploy" depends="war">
+    <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
+      path="${deploy.path}" war="${deploy.war}" update="true"/>
+  </target>
+	
+  <target name="tradeflow-deploy" depends="tradeflow-war">
+    <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
+      path="${tf.deploy.path}" war="${tf.deploy.war}" update="true"/>
+  </target>
+
+  <target name="prod-deploy" depends="prod-war">
+    <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
+      path="${deploy.path}" war="${deploy.war}" update="true"/>
+  </target>
+  
+  <target name="console-deploy" depends="deploy">
+    <echo message="Please use 'deploy' instead of 'console-deploy' and goto '/liquid' instead of '/LiquidConsole'"/>
+  </target>	
+  
+  <target name="dev-dist" description="build tar file of dev build to unpack over RPM install" depends="war">
+    <delete>
+      <fileset dir="${dist.dir}" includes="${dist.tarfile}"/>
+    </delete>
+    <tar destfile="${dist.dir}/${dist.tarfile}">
+      <tarfileset dir="${dist.dir}"
+	includes="**"
+	mode="640" username="liquid" group="liquid"/>
+    </tar>
+  </target>
+	
+  <!-- admin console targets -->
+  <target name="admin-dev-sync">
+    <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}">
+      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="js/liquidMail/**,public/Login.jsp,public/launchLiquidMail.jsp,public/LiquidMail.jsp,public/LiquidMailNewCompose.jsp,public/Messages.jsp"/>
+      <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
+    </copy>
+    <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/liquidAjax">
+      <fileset dir="${liquidAjax.dir}/WebRoot/js" includes="**/*.js" excludes="**/img/"/>
+    </copy>
+    <copy todir="${deploy.dir}${deploy.admin.path}/WEB-INF">  	
+      <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
+      <fileset dir="WebRoot/WEB-INF" includes="tlds/*"/>		
+    </copy>
+    <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
+    <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+  </target>
+
+	<target name="admin-war" depends="copy-admin-help, copy-files-to-build-area, jam-files, generate-build-info, admin-images">
+	  <property file="${build.dir}/build.properties" />
+	  <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
+	  <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+	  <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
+	     <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
+	     <classes dir="${src.dir}" includes="*.properties"/>
+	     <classes dir="${build.dir}" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
+	     <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
+	    <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,skins/**" excludes="js/LsMail_all.js,js/LmLogin.js,js/liquidMail/**"/>
+	    <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Dwt.jsp,public/Liquid.jsp,public/LiquidAdmin.jsp,public/Liquid-net.jsp,public/frameOpenerHelper.jsp,skins/**,**/*${gzipExtension}"/>
+        <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
+        <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
+        <fileset dir="${build.dir}/WebRoot" includes="migrationwizard/*.exe"/>		  	
+	  </war>
+	</target>
+    	
+	<target name="admin-deploy" depends="admin-war">
+	   <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
+	    path="${deploy.admin.path}" war="${deploy.admin.war}" update="true"/>
+	</target>  
+	
+	<target name='admin-images' depends='imagesinit,compile' unless='imagesdone'>
+		<!-- define imagemerge task -->
+		<pathconvert property='imagemerge.cp' pathsep='${path.separator}'>
+			<path>
+				<pathelement location='${build.dir}'/>
+				<fileset dir='${jars.dir}' includes='**/*.jar'/>
+			</path>
+		</pathconvert>
+		<taskdef name='imagemerge' 
+				 classname='com.liquidsys.liquidAjax.imagemerge.ImageMergeTask' 
+				 classpath='${imagemerge.cp}'
+		/>
+
+		<!-- copy hiRes images -->
+		<mkdir dir="${images.hiRes.destDir}"/>
+		<delete file='${images.hiRes.destDir}/${images.cssFile}'/>
+		<echo/>
+		<echo message='Copying high resolution images (-horizborders -vertborders -backgrounds)'/>
+		<echo/>
+		<imagemerge destdir='${images.hiRes.destDir}' copy='true'
+					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/hiRes/'>
+			<dirset dir='img/hiRes' 
+					includes='*' excludes='horizborders,vertborders,backgrounds'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' 
+					includes='*' excludes='horizborders,vertborders,backgrounds'/>
+		</imagemerge>
+		<echo/>
+		<echo message='Copying high resolution horizontal borders'/>
+		<echo/>
+		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='vertical'
+					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/hiRes/'>
+			<dirset dir='img/hiRes' includes='horizborders'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' includes='horizborders'/>
+		</imagemerge>
+		<echo/>
+		<echo message='Copying high resolution vertical borders'/>
+		<echo/>
+		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='horizontal'
+					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/hiRes/'>
+			<dirset dir='img/hiRes' includes='vertborders'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' includes='vertborders'/>
+		</imagemerge>
+		<echo/>
+		<echo message='Copying high resolution backgrounds'/>
+		<echo/>
+		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='repeat'
+					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/hiRes/'>
+			<dirset dir='img/hiRes' includes='backgrounds'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/hiRes' includes='backgrounds'/>
+		</imagemerge>
+		
+		<!-- merge loRes images -->
+		<mkdir dir="${images.loRes.destDir}"/>
+		<delete file='${images.loRes.destDir}/${images.cssFile}'/>
+		<echo/>
+		<echo message='Merging low resolution images (-horizborder -vertborders -backgrounds)'/>
+		<echo/>
+		<imagemerge destdir='${images.loRes.destDir}' layout='auto'
+					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/loRes/'>
+			<dirset dir='img/loRes' 
+					includes='*' excludes='horizborders,vertborders,backgrounds'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' 
+					includes='*' excludes='horizborders,vertborders,backgrounds'/>
+		</imagemerge>
+		<echo/>
+		<echo message='Merging low resolution horizontal borders'/>
+		<echo/>
+		<imagemerge destdir='${images.loRes.destDir}' layout='vertical'
+					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/loRes/'>
+			<dirset dir='img/loRes' includes='horizborders'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' includes='horizborders'/>
+		</imagemerge>
+		<echo/>
+		<echo message='Merging low resolution vertical borders'/>
+		<echo/>
+		<imagemerge destdir='${images.loRes.destDir}' layout='horizontal'
+					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/loRes/'>
+			<dirset dir='img/loRes' includes='vertborders'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' includes='vertborders'/>
+		</imagemerge>
+		<echo/>
+		<echo message='Copying low resolution backgrounds'/>
+		<echo/>
+		<imagemerge destdir='${images.loRes.destDir}' copy='true' layout='repeat'
+					cssfile='${images.cssFile}' csspath='/liquidAdmin/img/loRes/'>
+			<dirset dir='img/loRes' includes='backgrounds'/>
+			<dirset dir='${liquidAjax.dwtimg.dir}/loRes' includes='backgrounds'/>
+		</imagemerge>
+	</target>
+</project>

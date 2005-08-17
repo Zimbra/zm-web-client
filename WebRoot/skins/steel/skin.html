@@ -1,0 +1,358 @@
+<link href="skin.css" 	rel="stylesheet" type="text/css">
+<script language="JavaScript">
+function skin() {}
+
+/* PUBLIC API FOR SHOWING/HIDING PIECES OF THE SKIN */
+
+skin.showSkin = function (state) {
+	skin._showEl("skin_outer", state);
+}
+skin.hideSkin = function () {
+	skin.showSkin(false);
+}
+
+
+skin.showSearchBuilder = function (state) {
+	skin._showEl("skin_tr_search_builder", state);
+	skin._showEl("skin_container_search_builder", state);	//HACK: necessary for IE?
+}
+skin.hideSearchBuilder = function () {
+	this.showSearchBuilder(false);
+}
+
+skin.showTopToolbar = function (state) {
+	skin._showEl("skin_tr_top_toolbar", state);
+	skin._showEl("skin_tr_top_toolbar_shim", (state == false));
+}
+skin.hideTopToolbar = function () {
+	this.showTopToolbar(false);
+}
+
+
+
+skin.showBottomToolbar = function (state) {
+	skin._showEl("skin_tr_bottom_toolbar", state);
+	skin._showEl("skin_tr_bottom_toolbar_shim", (state == false));
+}
+skin.hideBottomToolbar = function () {
+	this.showBottomToolbar(false);
+}
+
+
+skin.showTreeFooter = function (state) {
+	skin._showEl("skin_tr_tree_footer_sep", state);
+	skin._showEl("skin_tr_tree_footer", state);
+}
+skin.hideTreeFooter = function () {
+	this.showTreeFooter(false);
+}
+
+skin.setSize = function(id, width, height) {
+
+}
+
+skin._showEl = function(id, state) {
+	var el = document.getElementById(id);
+	var value;
+	if (!el) return;
+	if (state == false) {
+		value = "none";
+	} else {
+		var tagName = el.tagName;
+		if (tagName == "TD" && document.all == null)		value = "table-cell";
+		else if (tagName == "TR" && document.all == null) 	value = "table-row";
+		else value = "block";
+	}
+	el.style.display = value;
+}
+
+
+</script>
+
+<!-- BEGIN SKIN -->
+<div id=skin_outer class="console_outset">
+	<table class="console_outset_table" cellpadding=0>
+	<tr><td class="console_outset_corner"><div class="console_outset_tl"></div></td>
+		<td class="console_horizontal" style='height:4'><div class="console_outset_t" style='width:100%'></div></td>
+		<td class="console_outset_corner"><div class="console_outset_tr"></div></td>
+	</tr>
+	<tr><td class="console_vertical"><div class="console_outset_l" style='height:100%'></div></td>
+		<td><div class="console_outset_contents">
+
+		<table id="skin_table_outer" class="skin_table" cellpadding=0>
+			<colgroup><col id="skin_col_left"><col id="skin_col_main"><col id="skin_col_search_spacer"><col id="skin_col_quota"></colgroup>
+			
+<!-- BEGIN TOP SECTION -->
+			<tr id="skin_tr_outer_top">
+		<!-- BEGIN LOGO -->
+				<td id="skin_td_logo">
+					<div id="skin_container_logo" class="skin_container">
+LOGO
+					</div>
+				</td>
+<!-- END LOGO -->
+<!-- BEGIN SEARCH CONTROLS -->
+				<td id="skin_td_search">
+					<div class="Xconsole_inset"  >
+						<table class="console_inset_table" cellpadding=0 id="search_control_inset">
+						<tr><td class="console_inset_corner"><div class="console_inset_tl"></div></td>
+							<td class="console_horizontal" ><div class="console_inset_t" style='width:100%'></div></td>
+							<td class="console_inset_corner"><div class="console_inset_tr"></div></td>
+						</tr>
+						<tr><td class="console_vertical"  ><div class="console_inset_l" style='height:100%'></div></td>
+							<td>
+								<div id="skin_container_search" class="skin_container">
+<A HREF='javascript:skin.showSearchBuilder()'>
+SEARCH CONTROLS
+</A>
+								</div>
+							</td>
+							<td><div class="console_inset_r" style='height:100%'></div></td>
+						</tr>
+						<tr><td><div class="console_inset_bl"></div></td>
+							<td><div class="console_inset_b" style='width:100%'></div></td>
+							<td><div class="console_inset_br"></div></td>
+						</tr>
+						</table>
+					</div xid="search_control_inset">
+				</td>
+<!-- END SEARCH CONTROLS -->
+				<td><div></div></td>	<!-- spacer for the quota -->
+				<td id="skin_td_quota">
+					<div id="skin_container_quota" class="skin_container">
+QUOTA
+					</div>
+				</td>
+
+<!-- BEGIN SEARCH BUILDER -->
+			<tr id="skin_tr_search_builder">
+				<td colspan=4 id="skin_td_search_builder">
+					<div class="console_inset">
+						<table class="console_inset_table" cellpadding=0>
+						<tr>
+							<td class="console_toolbar_corner_l" align=right><div class="console_searchb_toolbar_l"></div></td>
+							<td class="console_horizontal"      ><div class="console_top_toolbar_m" style='width:100%;'>
+									<div id="skin_container_search_builder_toolbar" class="skin_container">
+SEARCH BUILDER TOOLBAR
+									</div>
+								
+							</div></td>
+							<td class="console_toolbar_corner_r"><div class="console_top_toolbar_r"></div></td>
+						</tr>
+						<tr><td class="console_vertical"  ><div class="console_inset_l" style='height:100%'></div></td>
+							<td>
+								<div id="skin_container_search_builder"class="skin_container">
+<A HREF='javascript:skin.hideSearchBuilder()'>
+SEARCH BUILDER
+</A>
+								</div>
+							</td>
+							<td><div class="console_inset_r" style='height:100%'></div></td>
+						</tr>
+						<tr>
+							<td class="console_inset_app_b"><div class="console_inset_app_bl_2"></div></td>
+							<td class="console_horizontal" ><div class="console_inset_app_b" style='width:100%'></div></td>
+							<td class="console_inset_app_b" align=right><div class="console_inset_app_bl_2"></div></td>
+						</tr>
+						</table>
+					</div xid="search_control_inset">
+				</td>
+			
+			</tr>
+<!-- END SEARCH BUILDER -->
+
+<!-- END TOP SECTION -->
+<!-- BEGIN MAIN SECTION -->
+			<tr id="skin_tr_outer_main">
+				<td id="skin_td_left_chrome">
+					<table id="skin_table_left_chrome" class="skin_table" cellpadding=0>
+						<colgroup><col id="skin_col_app_chooser">
+								  <col id="skin_col_tree">
+						</colgroup>
+						<tr>
+		<!-- BEGIN CURRENT APP -->
+							<td id="skin_td_current_app" colspan="2">
+								<div id="current_app_inset" class="console_inset">
+									<table class="console_inset_table" cellpadding=0>
+									<tr><td class="console_inset_corner"><div class="console_inset_tl"></div></td>
+										<td class="console_horizontal" ><div class="console_inset_t" style='width:100%'></div></td>
+										<td class="console_inset_corner"><div class="console_inset_current_tr"></div></td>
+									</tr>
+									<tr>
+										<td class="console_vertical"  ><div class="console_inset_l" style='height:100%'></div></td>
+										<td><div class="console_inset_contents">
+											<div id="skin_container_current_app" class="skin_container">
+		CURRENT APP					
+											</div>
+										</div></td>
+										<td><div class="console_inset_current_r" style='height:100%'></div></td>
+									</tr>
+									<tr><td><div class="console_inset_bl"></div></td>
+										<td><div class="console_inset_b" style='width:100%'></div></td>
+										<td><div class="console_inset_current_br"></div></td>
+									</tr>
+									</table>
+								</div id="current_app_inset">
+							</td>
+		<!-- END CURRENT APP -->
+		
+						</tr>
+<!-- BEGIN TREE ROW -->
+						<tr id="skin_tr_tree">
+		<!-- BEGIN APP CHOOSER -->
+							<td id="skin_td_app_chooser">
+								<div id="skin_container_app_chooser" class="skin_container">
+A<BR>P<BR>P<BR><BR>C<BR>H<BR>O<BR>O<BR>S<BR>E<BR>R
+								</div>
+							</td>
+		<!-- END APP CHOOSER -->
+		<!-- BEGIN TREE -->
+							<td id="skin_td_tree">
+								<div class="console_inset" style='height:100%'>
+									<table class="console_inset_table" cellpadding=0>
+									<tr><td class="console_inset_corner"><div class="console_inset_tl"></div></td>
+										<td class="console_horizontal" ><div class="console_inset_t" style='width:100%'></div></td>
+										<td class="console_inset_corner"><div class="console_inset_tree_tr"></div></td>
+									</tr>
+									<tr><td class="console_vertical"  ><div class="console_inset_l" style='height:100%'></div></td>
+										<td colspan=2><div class="console_inset_contents">
+											<div id="skin_container_tree" class="skin_container">
+<A HREF='javascript:skin.showTreeFooter()'>
+	TREE
+</A>
+											</div>
+										
+										</div></td>
+									</tr>
+									<tr id="skin_tr_tree_footer_sep">
+										<td><div class="console_tree_footer_sep_l"></div></td>
+										<td><div class="console_tree_footer_sep_m" style='width:100%'></div></td>
+										<td><div class="console_tree_footer_sep_r"></div></td>
+									</tr>
+									<tr id="skin_tr_tree_footer">
+										<td class="console_vertical"><div class="console_inset_l" style='height:135'>&nbsp;</div></td>
+										<td colspan=2><div class="console_inset_contents">
+											<div id="skin_container_tree_footer" class="skin_container">
+<A HREF='javascript:skin.hideTreeFooter()'>
+			MINI-CALENDAR
+</A>
+										</div>
+										</div></td>
+									</tr>
+									<tr><td><div class="console_inset_bl"></div></td>
+										<td><div class="console_inset_b" style='width:100%'></div></td>
+										<td><div class="console_inset_tree_br"></div></td>
+									</tr>
+									</table>
+								</div class="console_inset">
+							</td>
+		<!-- END TREE -->
+						</tr>
+<!-- BEGIN TREE ROW -->
+		<!-- END STATUS -->
+						<tr><td id="skin_td_status" colspan="2">
+								<div class="console_inset">
+									<table class="console_inset_table" cellpadding=0>
+									<tr><td class="console_inset_corner"><div class="console_inset_tl"></div></td>
+										<td class="console_horizontal" ><div class="console_inset_t" style='width:100%'></div></td>
+										<td class="console_inset_corner"><div class="console_inset_status_tr"></div></td>
+									</tr>
+									<tr>
+										<td class="console_vertical"  ><div class="console_inset_l" style='height:100%'></div></td>
+										<td><div class="console_inset_contents">
+										<div id="skin_container_status" class="skin_container">
+Watch this space for important news!	
+										</div>
+										</div></td>
+										<td class="console_inset_status_r"></td>
+									</tr>
+									<tr><td><div class="console_inset_bl"></div></td>
+										<td><div class="console_inset_b" style='width:100%'></div></td>
+										<td><div class="console_inset_status_br"></div></td>
+									</tr>
+									</table>
+								</div>
+							</td>
+						</tr>
+		<!-- END STATUS -->
+					</table>
+				</td>
+
+
+<!-- BEGIN APP -->
+				<td id="skin_td_right_frame" colspan=3>
+					<table id='skin_table_main' class=skin_table cellpadding=0 Xborder=1>
+					<tr id="skin_tr_top_toolbar">
+						<td class="console_toolbar_corner_l_1"><div class="console_top_toolbar_l_1"></div></td>
+						<td class="console_toolbar_corner_l_2"><div class="console_top_toolbar_l_2"></div></td>
+						<td class="console_horizontal"      ><div class="console_top_toolbar_m" style='width:100%;'>
+								<div id="skin_container_app_top_toolbar" class="skin_container">
+<A HREF='javascript:skin.hideTopToolbar();'>
+	TOP TOOLBAR
+<A>
+								</div>
+							
+						</div></td>
+						<td class="console_toolbar_corner_r_1"><div class="console_top_toolbar_r_1"></div></td>
+						<td class="console_toolbar_corner_r_2"><div class="console_top_toolbar_r_2"></div></td>
+					</tr>
+				<tr id="skin_tr_top_toolbar_shim">
+						<td class="console_toolbar_corner_l_1"><div class="console_inset_app_tl"></div></td>
+						<td class="console_toolbar_corner_l_2"><div class="console_inset_app_t" style='width:4;'></div></td>
+						<td class="console_horizontal"      ><div class="console_inset_app_t" style='width:100%'></div></td>
+						<td class="console_toolbar_corner_r_1"><div class="console_inset_app_tr_1"></div></td>
+						<td class="console_toolbar_corner_r_2"><div class="console_inset_app_tr_2"></div></td>
+					</tr>
+
+					<tr>
+						<td><div class="console_inset_app_l" id="skin_container_tree_app_sash" style='height:100%'></div></td>
+						<td class="console_center" colspan=3>
+							<div id="skin_container_app_main" class="skin_container">
+<A HREF='javascript:skin.showTopToolbar();skin.showBottomToolbar();'>
+	APP
+</A>
+							</div>
+						</td>
+						<td><div class="console_inset_app_r" style='height:100%'></div></td>
+					</tr>
+
+					<tr id="skin_tr_bottom_toolbar_shim">
+						<td><div class="console_inset_app_bl_2"></div></td>
+						<td colspan=3 class="console_horizontal" ><div class="console_inset_app_b" style='width:100%'></div></td>
+						<td><div class="console_inset_app_br_2"></div></td>
+					</tr>
+
+					<tr id="skin_tr_bottom_toolbar">
+						<td class="console_toolbar_corner_l_1"><div class="console_bottom_toolbar_l_1"></div></td>
+						<td class="console_toolbar_corner_l_2"><div class="console_bottom_toolbar_l_2"></div></td>
+						<td class="console_horizontal"      ><div class="console_bottom_toolbar_m" style='width:100%;'>
+								<div id="skin_container_app_bottom_toolbar" class="skin_container">
+<A HREF='javascript:skin.hideBottomToolbar();'>
+	BOTTOM TOOLBAR
+</A>
+								</div>
+							
+						</div></td>
+						<td class="console_toolbar_corner_r_1"><div class="console_bottom_toolbar_r_1"></div></td>
+						<td class="console_toolbar_corner_r_2"><div class="console_bottom_toolbar_r_2"></div></td>
+					</tr>
+
+					</table>
+				</td>
+			</tr>
+
+		</table>
+
+
+<!-- BEGIN OUTSET END -->
+		</div></td>
+		<td><div class="console_outset_r" style='height:100%'></div></td>
+	</tr>
+	<tr><td><div class="console_outset_bl"></div></td>
+		<td><div class="console_outset_b" style='width:100%'></div></td>
+		<td><div class="console_outset_br"></div></td>
+	</tr>
+	</table>
+</div id=skin_outer>
+
+<!-- END SKIN -->
