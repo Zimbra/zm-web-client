@@ -1291,7 +1291,7 @@ ZmAppt.prototype._addRecurrenceRulesToSoap = function (soapDoc, inv) {
 					co.setAttribute('value', this.repeatCustomType);
 				} else if (this.repeatType == "YEA"){
 					var bm = soapDoc.set("bymonth", null, rule);
-					bm.setAttribute("molist", this.repeatYearlyMonthsList);
+					bm.setAttribute("molist", this.repeatYearlyMonthsList + 1);
 					var co = soapDoc.set('x-name', null, rule);
 					co.setAttribute('name', "repeatCustomType");
 					co.setAttribute('value', this.repeatCustomType);
