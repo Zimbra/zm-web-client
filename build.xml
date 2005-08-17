@@ -13,7 +13,7 @@
   <property name="adminwarfile"      location="${dist.tomcat.webapps.dir}/zimbraAdmin.war"/>		
 	
   <property name="jars.dir"           location="jars"/>
-  <property name="jars.archive.dir"   location="../ZimbraArchive/jars"/>
+  <property name="jars.archive.dir"   location="../ZimbraServer/jars"/>
   <property name="src.dir"            location="src"/>
   <property name="gzipExtension" value=".jgz"/>	
   <property name="copyrightText" value="Copyright 2005 (C) Zimbra Systems, Inc. All Rights Reserved"/>
@@ -21,7 +21,7 @@
   <condition property="zimbraAjax.dir" value="${env.ZIMBRAAJAX_DIR}">
     <isset property="env.ZIMBRAAJAX_DIR" />
   </condition>	
-  <condition property="zimbraAjax.dir" value="../ZimbraAjax">
+  <condition property="zimbraAjax.dir" value="../Ajax">
     <not><isset property="env.ZIMBRAAJAX_DIR"/></not>
   </condition>	
 
