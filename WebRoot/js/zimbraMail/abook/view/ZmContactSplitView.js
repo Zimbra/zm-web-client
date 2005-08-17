@@ -67,7 +67,7 @@ function() {
 
 ZmContactSplitView.prototype._sizeChildren = 
 function(width, height) {
-	var padding = 4;		// css padding value (see ZmContactSplitView class in lm.css)
+	var padding = 4;		// css padding value (see ZmContactSplitView class in zm.css)
 	var listWidth = 200;	// fixed width size of list view
 	
 	// calc. height for children of this view

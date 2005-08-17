@@ -539,7 +539,7 @@ ZmAppointmentView.prototype.addAttachments = function () {
 		var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 		html = new Array();
 		var idx = 0;
-		html[idx++] = "<html><head><style type='text/css'><!-- @import url(/zimbra/js/zimbraMail/config/style/lm.css); --></style></head><body scroll=no style='padding:none; border:none'>"
+		html[idx++] = "<html><head><style type='text/css'><!-- @import url(/zimbra/js/zimbraMail/config/style/zm.css); --></style></head><body scroll=no style='padding:none; border:none'>"
 		html[idx++] = "<form style='padding:none; border:none' method='POST' action='";
 		html[idx++] = uri;
 		html[idx++] = "' id='";

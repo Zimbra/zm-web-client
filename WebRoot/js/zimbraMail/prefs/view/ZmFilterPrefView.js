@@ -6,7 +6,7 @@
  * summary table.
  *
  * TODO:
- * - remove styles to lm.css
+ * - remove styles to zm.css
  */
 function ZmFilterPrefView(parent, appCtxt) {
 

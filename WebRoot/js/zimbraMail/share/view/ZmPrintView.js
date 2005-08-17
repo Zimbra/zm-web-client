@@ -52,7 +52,7 @@ function() {
 	var idx = 0;
 	
 	html[idx++] = "<html><head><title>Zimbra: " + username + "</title>";
-	html[idx++] = "<style type='text/css'><!-- @import url(/zimbra/js/zimbraMail/config/style/lm.css); --></style>";
+	html[idx++] = "<style type='text/css'><!-- @import url(/zimbra/js/zimbraMail/config/style/zm.css); --></style>";
 	html[idx++] = "</head><body>";
 	html[idx++] = "<table border=0 width=100%><tr>";
 	html[idx++] = "<td class='ZmPrintView-company'><b>Zimbra</b> Collaboration Suite</td>";
