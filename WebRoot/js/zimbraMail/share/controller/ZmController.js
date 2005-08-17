@@ -104,35 +104,35 @@ ZmController.prototype.getControllerForView =
 function(view) {
 	switch (view) {
 		case ZmController.CONVLIST_VIEW:
-			return this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getConvListController();
+			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController();
 		case ZmController.CONV_VIEW:
-			return this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getConvController();
+			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController();
 		case ZmController.TRAD_VIEW:
-			return this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getTradController();
+			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController();
 		case ZmController.MSG_VIEW:
-			return this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getMsgController();
+			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 		case ZmController.CONTACT_CARDS_VIEW:
 		case ZmController.CONTACT_SIMPLE_VIEW:
-			return this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactListController();
+			return this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
 		case ZmController.CONTACT_VIEW:
-			return this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactController();
+			return this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController();
 		case ZmController.CAL_VIEW:
 		case ZmController.CAL_DAY_VIEW:
 		case ZmController.CAL_WEEK_VIEW:
 		case ZmController.CAL_MONTH_VIEW:
 		case ZmController.CAL_WORK_WEEK_VIEW:
-			return this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();
+			return this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 		case ZmController.ATT_LIST_VIEW:
 		case ZmController.ATT_ICON_VIEW:
-			return this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getAttachmentListController();
+			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getAttachmentListController();
 		case ZmController.COMPOSE_VIEW:
-			return this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getComposeController();
+			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
 		case ZmController.PREF_VIEW:
-			return this._appCtxt.getApp(ZmLiquidMail.PREFERENCES_APP).getPrefController();
+			return this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
 		case ZmController.MIXED_VIEW:
-			return this._appCtxt.getApp(ZmLiquidMail.MIXED_APP).getMixedController();
+			return this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController();
 		case ZmController.APPT_DETAIL_VIEW:
-		    return this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();
+		    return this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 		default: {
 			DBG.println(AjxDebug.DBG1, "*** controller not found for view " + view);
 			return this._appCtxt.getAppController();}
@@ -174,7 +174,7 @@ function(ex, method, params, restartOnError, obj) {
 			this._loginDialog.setError(LmMsg.sessionExpired);
 		} else if (ex.code == LsCsfeException.SVC_AUTH_REQUIRED) {
 			// bug fix #413 - always logoff if we get a auth required
-			ZmLiquidMail.logOff();
+			ZmZimbraMail.logOff();
 			return;
 		} else {
 			this._loginDialog.setError(null);

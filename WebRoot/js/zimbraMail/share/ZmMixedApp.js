@@ -1,5 +1,5 @@
 function ZmMixedApp(appCtxt, container) {
-	ZmApp.call(this, ZmLiquidMail.MIXED_APP, appCtxt, container);
+	ZmApp.call(this, ZmZimbraMail.MIXED_APP, appCtxt, container);
 }
 
 ZmMixedApp.prototype = new ZmApp;

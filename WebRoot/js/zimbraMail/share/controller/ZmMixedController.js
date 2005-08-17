@@ -92,11 +92,11 @@ function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		if (ev.item.type == ZmItem.CONTACT)
-			this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactController().show(ev.item, this._isGalSearch);
+			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(ev.item, this._isGalSearch);
 		else if (ev.item.type == ZmItem.CONV)
-			this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getConvController().show(null, this._searchString, ev.item);
+			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController().show(null, this._searchString, ev.item);
 		else if (ev.item.type == ZmItem.MSG)
-			this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getMsgController().show(ev.item);
+			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController().show(ev.item);
 	}
 }
 

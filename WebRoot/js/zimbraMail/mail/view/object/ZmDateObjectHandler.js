@@ -83,7 +83,7 @@ function(date) {
 
 ZmDateObjectHandler.prototype.getToolTipText =
 function(obj, context) {
-	var cc = this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();
+	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	return cc.getDayToolTipText(context ? context.date : new Date());
 
 }
@@ -110,7 +110,7 @@ function(ev) {
 	var isDayView = (op == ZmOperation.DAY_VIEW);
 	var view = isDayView ? ZmController.CAL_DAY_VIEW : ZmController.CAL_MONTH_VIEW;
 	DBG.println(AjxDebug.DBG3, "handing date off to calendar " + isDayView ? "day" : "month" + " view: " + date);
-	var cc = this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();
+	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	cc.show();
 	cc.setDate(this._actionContext.date);
 }
@@ -119,7 +119,7 @@ function(ev) {
 ZmDateObjectHandler.prototype._dayViewListener =
 function(ev) {
 	var obj = this._actionObject;
-	var cc = this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();
+	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	cc.show(ZmCalViewMgr.DAY_VIEW);
 	cc.setDate(this._actionContext.date);
 }
@@ -127,14 +127,14 @@ function(ev) {
 ZmDateObjectHandler.prototype._newApptListener =
 function(ev) {
 	DBG.println(AjxDebug.DBG1, "new appt listener");
-	var cc = this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();
+	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	var p = new DwtPoint(ev.docX, ev.docY);
 	cc._showAppointmentDetails(null, p, this._actionContext.date);
 }
 
 ZmDateObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
-	var cc = this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();
+	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	cc.show();
 	cc.setDate(context.date);
 }

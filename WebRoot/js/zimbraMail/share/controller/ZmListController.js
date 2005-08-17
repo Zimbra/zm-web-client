@@ -336,12 +336,12 @@ function(ev) {
 		id = this._defaultNewId;
 	if (id == ZmOperation.NEW_MESSAGE) {
 		var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
-		this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getComposeController().doAction(ZmOperation.NEW_MESSAGE, inNewWindow);
+		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController().doAction(ZmOperation.NEW_MESSAGE, inNewWindow);
 	} else if (id == ZmOperation.NEW_CONTACT) {
 		var contact = new ZmContact(this._appCtxt);
-		this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactController().show(contact);
+		this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(contact);
 	} else if (id == ZmOperation.NEW_APPT) {
-		var app = this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP);
+		var app = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
 		var con = app.getCalController();
 		con.newAppointment();
 	} else if (id == ZmOperation.NEW_FOLDER) {
@@ -470,7 +470,7 @@ ZmListController.prototype._participantComposeListener =
 function(ev) {
 	var name = this._actionEv.address.toString() + ZmEmailAddress.SEPARATOR;
 	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
-	var cc = this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getComposeController();
+	var cc = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
 	cc.doAction(ZmOperation.NEW_MESSAGE, inNewWindow, null, name);
 }
 
@@ -490,7 +490,7 @@ function(ev) {
 // If there's a contact for the participant, edit it, otherwise add it.
 ZmListController.prototype._participantContactListener = 
 function(ev) {
-	var cc = this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactController();	
+	var cc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController();	
 	if (this._actionEv.contact) {
 		cc.show(this._actionEv.contact);
 	} else {

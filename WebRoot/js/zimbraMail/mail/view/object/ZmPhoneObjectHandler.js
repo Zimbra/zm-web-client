@@ -82,7 +82,7 @@ function(ev) {
 	// always create new contact (at least until someone complains)
 	var contact = new ZmContact(this._appCtxt);
 	contact.initFromPhone(this._actionObject);
-	this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactController().show(contact);
+	this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(contact);
 }
 
 ZmPhoneObjectHandler.prototype._callListener = 

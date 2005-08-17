@@ -162,7 +162,7 @@ function(ev) {
 		this._actionEv.address = (ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) ?
 			ev.detail : ev.item.getAddress(ZmEmailAddress.FROM);
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			var contacts = this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactList();
+			var contacts = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 			this._actionEv.contact = contacts.getContactByEmail(this._actionEv.address.getAddress());
 			this._setContactText(this._actionEv.contact != null);
 		}
@@ -332,7 +332,7 @@ function(ev) {
 	
 		//var msg = this._getMsg();
 		var msg = new ZmMailMsg(this._appCtxt);
-		var contactList = this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactList();
+		var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 	
 		msg._origMsg = this._getMsg();
 		msg.inviteMode = type;

@@ -704,7 +704,7 @@ function(ev) {
 
 ZmCalViewController.prototype._handleApptRespondAction = function (ev){
 	var appt = this._listView[this._currentView].getSelection()[0];
-	var msgController = this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getMsgController();
+	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 	ev._inviteReplyType = ev.item.getData(ZmOperation.KEY_ID);;
 	ev._inviteComponentId = null;
 	appt.getDetails();

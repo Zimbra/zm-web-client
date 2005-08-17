@@ -14,7 +14,7 @@
 */
 function ZmContact(appCtxt, list) {
 	
-	var contactList = appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactList();
+	var contactList = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 	list = list ? list : contactList;
 	ZmItem.call(this, appCtxt, ZmItem.CONTACT, list);
 

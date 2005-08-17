@@ -33,8 +33,8 @@ function() {
 
 ZmCurrentAppToolBar.prototype.setCurrentApp = 
 function(appName) {
-	this._currentAppLabel.setText(LmMsg[ZmLiquidMail.MSG_KEY[appName]]);
-	this._currentAppLabel.setImage(ZmLiquidMail.APP_ICON[appName]);
+	this._currentAppLabel.setText(LmMsg[ZmZimbraMail.MSG_KEY[appName]]);
+	this._currentAppLabel.setImage(ZmZimbraMail.APP_ICON[appName]);
 }
 
 ZmCurrentAppToolBar.prototype.getViewButton = 

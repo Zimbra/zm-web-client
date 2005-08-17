@@ -10,7 +10,7 @@
 * @param domain			current domain
 * @param app			starting app
 */
-function ZmLiquidMail(appCtxt, domain, app, userShell) {
+function ZmZimbraMail(appCtxt, domain, app, userShell) {
 
 	ZmController.call(this, appCtxt);
 
@@ -34,7 +34,7 @@ function ZmLiquidMail(appCtxt, domain, app, userShell) {
 	
 	this._pollActionId = null;
 	this._sessionTimer = new AjxTimedAction();
-	this._sessionTimer.method = ZmLiquidMail.logOff;
+	this._sessionTimer.method = ZmZimbraMail.logOff;
 	this._models = new AjxVector();
 	this._needOverviewLayout = false;
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);	
@@ -42,67 +42,67 @@ function ZmLiquidMail(appCtxt, domain, app, userShell) {
 	this._schedule(this.startup, {app: app});
 }
 
-ZmLiquidMail.prototype = new ZmController;
-ZmLiquidMail.prototype.constructor = ZmLiquidMail;
+ZmZimbraMail.prototype = new ZmController;
+ZmZimbraMail.prototype.constructor = ZmZimbraMail;
 
-ZmLiquidMail.MAIL_APP			= "mail";
-ZmLiquidMail.CONTACTS_APP		= "contacts";
-ZmLiquidMail.CALENDAR_APP		= "calendar";
-ZmLiquidMail.PREFERENCES_APP	= "options";
-ZmLiquidMail.MIXED_APP			= "mixed";
+ZmZimbraMail.MAIL_APP			= "mail";
+ZmZimbraMail.CONTACTS_APP		= "contacts";
+ZmZimbraMail.CALENDAR_APP		= "calendar";
+ZmZimbraMail.PREFERENCES_APP	= "options";
+ZmZimbraMail.MIXED_APP			= "mixed";
 
-ZmLiquidMail.APP_CLASS = new Object();
-ZmLiquidMail.APP_CLASS[ZmLiquidMail.MAIL_APP]			= ZmMailApp;
-ZmLiquidMail.APP_CLASS[ZmLiquidMail.CONTACTS_APP]		= ZmContactsApp;
-ZmLiquidMail.APP_CLASS[ZmLiquidMail.CALENDAR_APP]		= ZmCalendarApp;
-ZmLiquidMail.APP_CLASS[ZmLiquidMail.PREFERENCES_APP]	= ZmPreferencesApp;
-ZmLiquidMail.APP_CLASS[ZmLiquidMail.MIXED_APP]			= ZmMixedApp;
+ZmZimbraMail.APP_CLASS = new Object();
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.MAIL_APP]			= ZmMailApp;
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.CONTACTS_APP]		= ZmContactsApp;
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.CALENDAR_APP]		= ZmCalendarApp;
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.PREFERENCES_APP]	= ZmPreferencesApp;
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.MIXED_APP]			= ZmMixedApp;
 
-ZmLiquidMail.MSG_KEY = new Object();
-ZmLiquidMail.MSG_KEY[ZmLiquidMail.MAIL_APP]			= "email";
-ZmLiquidMail.MSG_KEY[ZmLiquidMail.CONTACTS_APP]		= "contacts";
-ZmLiquidMail.MSG_KEY[ZmLiquidMail.CALENDAR_APP]		= "calendar";
-ZmLiquidMail.MSG_KEY[ZmLiquidMail.PREFERENCES_APP]	= "options";
-ZmLiquidMail.MSG_KEY[ZmLiquidMail.MIXED_APP]		= "zimbraTitle";
+ZmZimbraMail.MSG_KEY = new Object();
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]			= "email";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.CONTACTS_APP]		= "contacts";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.CALENDAR_APP]		= "calendar";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.PREFERENCES_APP]	= "options";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.MIXED_APP]		= "zimbraTitle";
 
-ZmLiquidMail.APP_ICON = new Object();
-ZmLiquidMail.APP_ICON[ZmLiquidMail.MAIL_APP]		= ZmImg.I_MAIL;
-ZmLiquidMail.APP_ICON[ZmLiquidMail.CONTACTS_APP]	= ZmImg.I_CONTACT;
-ZmLiquidMail.APP_ICON[ZmLiquidMail.CALENDAR_APP]	= ZmImg.I_APPT;
-ZmLiquidMail.APP_ICON[ZmLiquidMail.PREFERENCES_APP]	= ZmImg.I_PREFERENCES;
-ZmLiquidMail.APP_ICON[ZmLiquidMail.MIXED_APP]		= ZmImg.I_MAIL;
+ZmZimbraMail.APP_ICON = new Object();
+ZmZimbraMail.APP_ICON[ZmZimbraMail.MAIL_APP]		= ZmImg.I_MAIL;
+ZmZimbraMail.APP_ICON[ZmZimbraMail.CONTACTS_APP]	= ZmImg.I_CONTACT;
+ZmZimbraMail.APP_ICON[ZmZimbraMail.CALENDAR_APP]	= ZmImg.I_APPT;
+ZmZimbraMail.APP_ICON[ZmZimbraMail.PREFERENCES_APP]	= ZmImg.I_PREFERENCES;
+ZmZimbraMail.APP_ICON[ZmZimbraMail.MIXED_APP]		= ZmImg.I_MAIL;
 
-ZmLiquidMail.APP_BUTTON = new Object();
-ZmLiquidMail.APP_BUTTON[ZmLiquidMail.MAIL_APP]			= ZmAppChooser.B_EMAIL;
-ZmLiquidMail.APP_BUTTON[ZmLiquidMail.CONTACTS_APP]		= ZmAppChooser.B_CONTACTS;
-ZmLiquidMail.APP_BUTTON[ZmLiquidMail.CALENDAR_APP]		= ZmAppChooser.B_CALENDAR;
-ZmLiquidMail.APP_BUTTON[ZmLiquidMail.PREFERENCES_APP]	= ZmAppChooser.B_OPTIONS;
+ZmZimbraMail.APP_BUTTON = new Object();
+ZmZimbraMail.APP_BUTTON[ZmZimbraMail.MAIL_APP]			= ZmAppChooser.B_EMAIL;
+ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CONTACTS_APP]		= ZmAppChooser.B_CONTACTS;
+ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CALENDAR_APP]		= ZmAppChooser.B_CALENDAR;
+ZmZimbraMail.APP_BUTTON[ZmZimbraMail.PREFERENCES_APP]	= ZmAppChooser.B_OPTIONS;
 
-ZmLiquidMail.DEFAULT_SEARCH = new Object();
-ZmLiquidMail.DEFAULT_SEARCH[ZmLiquidMail.MAIL_APP]		= ZmSearchToolBar.FOR_MAIL_MI;
-ZmLiquidMail.DEFAULT_SEARCH[ZmLiquidMail.CONTACTS_APP]	= ZmItem.CONTACT;
-//ZmLiquidMail.DEFAULT_SEARCH[ZmLiquidMail.CALENDAR_APP]	= ZmItem.APPT;
-ZmLiquidMail.DEFAULT_SEARCH[ZmLiquidMail.CALENDAR_APP]	= ZmSearchToolBar.FOR_MAIL_MI;
-ZmLiquidMail.DEFAULT_SEARCH[ZmLiquidMail.MIXED_APP]		= ZmSearchToolBar.FOR_ANY_MI;
+ZmZimbraMail.DEFAULT_SEARCH = new Object();
+ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MAIL_APP]		= ZmSearchToolBar.FOR_MAIL_MI;
+ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CONTACTS_APP]	= ZmItem.CONTACT;
+//ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmItem.APPT;
+ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmSearchToolBar.FOR_MAIL_MI;
+ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MIXED_APP]		= ZmSearchToolBar.FOR_ANY_MI;
 
-ZmLiquidMail.VIEW_TT_KEY = new Object();
-ZmLiquidMail.VIEW_TT_KEY[ZmLiquidMail.MAIL_APP]		= "displayMail";
-ZmLiquidMail.VIEW_TT_KEY[ZmLiquidMail.CONTACTS_APP]	= "displayContacts";
-ZmLiquidMail.VIEW_TT_KEY[ZmLiquidMail.CALENDAR_APP]	= "displayCalendar";
+ZmZimbraMail.VIEW_TT_KEY = new Object();
+ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.MAIL_APP]		= "displayMail";
+ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CONTACTS_APP]	= "displayContacts";
+ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CALENDAR_APP]	= "displayCalendar";
 
-ZmLiquidMail.defaultStartApp = ZmLiquidMail.MAIL_APP;
+ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
 
-ZmLiquidMail.STATUS_LIFE = 5000; // status message duration
+ZmZimbraMail.STATUS_LIFE = 5000; // status message duration
 
-ZmLiquidMail._PREFS_ID	= 1;
-ZmLiquidMail._HELP_ID	= 2;
-ZmLiquidMail._LOGOFF_ID	= 3;
+ZmZimbraMail._PREFS_ID	= 1;
+ZmZimbraMail._HELP_ID	= 2;
+ZmZimbraMail._LOGOFF_ID	= 3;
 
 // Public methods
 
-ZmLiquidMail.prototype.toString = 
+ZmZimbraMail.prototype.toString = 
 function() {
-	return "ZmLiquidMail";
+	return "ZmZimbraMail";
 }
 
 /**
@@ -112,7 +112,7 @@ function() {
 * @param domain		the host that we're running on
 * @param app		starting app
 */
-ZmLiquidMail.run =
+ZmZimbraMail.run =
 function(domain, app, userShellId) {
 
 	// Create the global app context
@@ -123,21 +123,21 @@ function(domain, app, userShellId) {
 	// Create the shell
 	var settings = appCtxt.getSettings();
 	var userShell = window.document.getElementById(settings.get(ZmSetting.SKIN_SHELL_ID));
-	var shell = new DwtShell(null, false, ZmLiquidMail._confirmExitMethod, userShell);
+	var shell = new DwtShell(null, false, ZmZimbraMail._confirmExitMethod, userShell);
     appCtxt.setShell(shell);
     
 	// Create upload manager (for sending attachments)
 	appCtxt.setUploadManager(new AjxPost());
 	
     // Go!
-	new ZmLiquidMail(appCtxt, domain, app, userShell);
+	new ZmZimbraMail(appCtxt, domain, app, userShell);
 }
 
 /**
 * Allows parent window to walk list of open child windows and either nuke them 
 * or "disable" them
 */
-ZmLiquidMail.unload = 
+ZmZimbraMail.unload = 
 function(ev) {
 	var childWinList = window._liquidMail ? window._liquidMail._childWinList : null;
 	if (childWinList) {
@@ -152,7 +152,7 @@ function(ev) {
 	}
 }
 
-ZmLiquidMail.prototype.startup =
+ZmZimbraMail.prototype.startup =
 function(params) {
 	if (!(params && params.bIsRelogin)) {
 
@@ -179,7 +179,7 @@ function(params) {
 			this._checkOverviewLayout();
 
 			var app = params ? params.app : null;
-			var startApp = ZmLiquidMail.APP_CLASS[app] ? app : ZmLiquidMail.defaultStartApp;
+			var startApp = ZmZimbraMail.APP_CLASS[app] ? app : ZmZimbraMail.defaultStartApp;
 			if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED))
 				this._components[ZmAppViewMgr.C_SEARCH] = this.getSearchController().getSearchPanel();
 			var currentAppToolbar = new ZmCurrentAppToolBar(this._shell);
@@ -189,7 +189,7 @@ function(params) {
 			this._components[ZmAppViewMgr.C_STATUS] = this._statusBox = new DwtText(this._shell, "statusBox", Dwt.ABSOLUTE_STYLE);
 			this._statusBox.setScrollStyle(Dwt.CLIP);
 			
-			this._calController = this.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();		
+			this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();		
 
 			// the outer element of the entire skin is hidden until this point
 			// so that the skin won't flash (become briefly visible) during app loading
@@ -219,7 +219,7 @@ function(params) {
 * Performs a 'running restart' of the app by clearing state and calling the startup method.
 * This method is run after a logoff, or a change in what's supported.
 */
-ZmLiquidMail.prototype.restart =
+ZmZimbraMail.prototype.restart =
 function(settings) {
 	// need to decide what to clean up, what to have startup load lazily
 	// could have each app do shutdown()
@@ -247,7 +247,7 @@ function(settings) {
 	this._schedule(this.startup, {bIsRelogin: false, settings: settings});
 }
 
-ZmLiquidMail.prototype.sendRequest = 
+ZmZimbraMail.prototype.sendRequest = 
 function(soapDoc, useXml) {
 	useXml = (useXml == null) ? this._appCtxt.get(ZmSetting.USE_XML) : useXml;
 	var result = LsCsfeCommand.invoke(soapDoc, null, null, null, useXml);
@@ -270,7 +270,7 @@ function(soapDoc, useXml) {
 *
 * @param appName	an app name
 */
-ZmLiquidMail.prototype.getApp =
+ZmZimbraMail.prototype.getApp =
 function(appName) {
 	if (!this._apps[appName])
 		this._createApp(appName);
@@ -280,7 +280,7 @@ function(appName) {
 /**
 * Returns a handle to the app view manager.
 */
-ZmLiquidMail.prototype.getAppViewMgr =
+ZmZimbraMail.prototype.getAppViewMgr =
 function() {
 	return this._appViewMgr;
 }
@@ -288,7 +288,7 @@ function() {
 /**
 * Returns a handle to the overview panel controller.
 */
-ZmLiquidMail.prototype.getOverviewPanelController =
+ZmZimbraMail.prototype.getOverviewPanelController =
 function() {
 	if (!this._overviewPanelController)
 		this._overviewPanelController = new ZmOverviewPanelController(this._appCtxt, this._shell, this);
@@ -298,7 +298,7 @@ function() {
 /**
 * Returns a handle to the search bar's controller.
 */
-ZmLiquidMail.prototype.getSearchController =
+ZmZimbraMail.prototype.getSearchController =
 function() {
 	if (!this._searchController)
 		this._searchController = new ZmSearchController(this._appCtxt, this._shell, this);
@@ -312,7 +312,7 @@ function() {
 *
 * @param appName	an app name
 */
-ZmLiquidMail.prototype.activateApp =
+ZmZimbraMail.prototype.activateApp =
 function(appName) {
 	try {
 		var bActivated = false;
@@ -350,38 +350,38 @@ function(appName) {
 * @param appName	the current app
 * @param view		the current view
 */
-ZmLiquidMail.prototype.setActiveApp =
+ZmZimbraMail.prototype.setActiveApp =
 function(appName, view) {
 	var toolbar = this._appCtxt.getCurrentAppToolbar();
 	toolbar.showViewMenu(view);
 	if (this._activeApp != appName) {
 		this._activeApp = appName;
 		toolbar.setCurrentApp(appName);
-		toolbar.setViewTooltip(view, LmMsg[ZmLiquidMail.VIEW_TT_KEY[appName]]);
-		this._appCtxt.getSearchController().setDefaultSearchType(ZmLiquidMail.DEFAULT_SEARCH[appName], true);
+		toolbar.setViewTooltip(view, LmMsg[ZmZimbraMail.VIEW_TT_KEY[appName]]);
+		this._appCtxt.getSearchController().setDefaultSearchType(ZmZimbraMail.DEFAULT_SEARCH[appName], true);
 	}
 //	this._components[ZmAppViewMgr.C_APP_CHOOSER].setActiveApp(appName);
 }
 
 // Private methods
 
-ZmLiquidMail.prototype._killSplash =
+ZmZimbraMail.prototype._killSplash =
 function() {
 	this._splashScreen.setVisible(false);
 }
 
 // Creates an app object, which doesn't necessarily do anything just yet.
-ZmLiquidMail.prototype._createApp =
+ZmZimbraMail.prototype._createApp =
 function(appName) {
 	if (this._apps[appName]) return;
 	DBG.println(AjxDebug.DBG1, "Creating app " + appName);
-	this._apps[appName] = new ZmLiquidMail.APP_CLASS[appName](this._appCtxt, this._shell);	
+	this._apps[appName] = new ZmZimbraMail.APP_CLASS[appName](this._appCtxt, this._shell);	
 }
 
 // Launching an app causes it to create a view (if necessary) and display it. The view that is created is up to the app.
 // Since most apps schedule an action as part of their launch, a call to this function should not be
 // followed by any code that depends on it (ie, it should be a leaf action).
-ZmLiquidMail.prototype._launchApp =
+ZmZimbraMail.prototype._launchApp =
 function(appName) {
 	if (!this._apps[appName])
 		this._createApp(appName);
@@ -389,7 +389,7 @@ function(appName) {
 	this._apps[appName].launch();
 }
 
-ZmLiquidMail.prototype._checkOverviewLayout =
+ZmZimbraMail.prototype._checkOverviewLayout =
 function() {
 	if (this._needOverviewLayout && this._settings.userSettingsLoaded) {
 		DBG.println(AjxDebug.DBG1, "laying out overview panel");
@@ -402,7 +402,7 @@ function() {
 	}
 }
 
-ZmLiquidMail.prototype._setUserInfo = 
+ZmZimbraMail.prototype._setUserInfo = 
 function() {
 
 	var login = this._appCtxt.get(ZmSetting.USERNAME);
@@ -463,7 +463,7 @@ function() {
 
 // Listeners
 
-ZmLiquidMail.logOff =
+ZmZimbraMail.logOff =
 function() {
 
 	// stop keeping track of user input (if applicable)
@@ -477,7 +477,7 @@ function() {
 	// it does not, we'll set up a timed action.
 	if (AjxEnv.isIE){
 		var act = new AjxTimedAction();
-		act.method = ZmLiquidMail.redir;
+		act.method = ZmZimbraMail.redir;
 		act.params.add(locationStr);
 		AjxTimedAction.scheduleAction(act, 1);
 	} else {
@@ -485,13 +485,13 @@ function() {
 	}
 }
 
-ZmLiquidMail.redir =
+ZmZimbraMail.redir =
 function(args){
 	var locationStr = args[0];
 	window.location = locationStr;
 }
 
-ZmLiquidMail.prototype.setSessionTimer =
+ZmZimbraMail.prototype.setSessionTimer =
 function(bStartTimer) {
 
 	// ALWAYS set back reference into our world (also used by unload handler)
@@ -508,19 +508,19 @@ function(bStartTimer) {
 		DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER SET (" + (new Date()).toLocaleString() + ")");
 		this._sessionTimerId = AjxTimedAction.scheduleAction(this._sessionTimer, timeout);
 		
-		DwtEventManager.addListener(DwtEvent.ONMOUSEUP, ZmLiquidMail._userEventHdlr);
-		htmlElement.onmouseup = ZmLiquidMail._userEventHdlr;
+		DwtEventManager.addListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
+		htmlElement.onmouseup = ZmZimbraMail._userEventHdlr;
 		if (AjxEnv.isIE)
-			htmlElement.onkeydown = ZmLiquidMail._userEventHdlr;
+			htmlElement.onkeydown = ZmZimbraMail._userEventHdlr;
 		else
-			window.onkeydown = ZmLiquidMail._userEventHdlr;
+			window.onkeydown = ZmZimbraMail._userEventHdlr;
 	} else {
 		DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER CANCELED (" + (new Date()).toLocaleString() + ")");
 		
 		AjxTimedAction.cancelAction(this._sessionTimerId);
 		this._sessionTimerId = -1;
 
-		DwtEventManager.removeListener(DwtEvent.ONMOUSEUP, ZmLiquidMail._userEventHdlr);
+		DwtEventManager.removeListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
 		htmlElement.onmouseup = null;
 		if (AjxEnv.isIE)
 			htmlElement.onkeydown = null;
@@ -529,7 +529,7 @@ function(bStartTimer) {
 	}
 }
 
-ZmLiquidMail.prototype.addChildWindow = 
+ZmZimbraMail.prototype.addChildWindow = 
 function(childWin) {
 	if (this._childWinList == null)
 		this._childWinList = new AjxVector();
@@ -537,7 +537,7 @@ function(childWin) {
 	this._childWinList.add(childWin);
 }
 
-ZmLiquidMail.prototype.removeChildWindow =
+ZmZimbraMail.prototype.removeChildWindow =
 function(childWin) {
 	if (this._childWinList) {
 		for (var i = 0; i < this._childWinList.size(); i++) {
@@ -549,7 +549,7 @@ function(childWin) {
 	}
 }
 
-ZmLiquidMail.prototype._handleHeader =
+ZmZimbraMail.prototype._handleHeader =
 function(hdr) {
 	if (!hdr.context) return;
 	
@@ -568,7 +568,7 @@ function(hdr) {
 // Note: this could be optimized to do a compare (since for the large majority of refreshes, the tags and
 // folders won't have changed except unread counts), but a session timeout should be relatively rare when
 // we're doing polling.
-ZmLiquidMail.prototype._refreshHandler =
+ZmZimbraMail.prototype._refreshHandler =
 function(refresh) {
 	DBG.println(AjxDebug.DBG2, "Handling REFRESH");
 	
@@ -609,7 +609,7 @@ function(refresh) {
 	}
 }
 
-ZmLiquidMail.prototype._checkUnread =
+ZmZimbraMail.prototype._checkUnread =
 function(tree, unread) {
 	var organizers = new Array();
 	var list = tree.asList();
@@ -626,7 +626,7 @@ function(tree, unread) {
 }
 
 // This method is called by the window.onbeforeunload method.
-ZmLiquidMail._confirmExitMethod =
+ZmZimbraMail._confirmExitMethod =
 function() {
 DBG.println("HERE");
 	return LmMsg.appExitWarning;
@@ -635,7 +635,7 @@ DBG.println("HERE");
 // To handle notifications, we keep track of all the models in use. A model could
 // be an item, a list of items, or an organizer tree. Currently we never get an
 // organizer by itself.
-ZmLiquidMail.prototype._notifyHandler =
+ZmZimbraMail.prototype._notifyHandler =
 function(notify) {
 	DBG.println(AjxDebug.DBG2, "Handling NOTIFY");
 	notify = this._adjustNotifies(notify);
@@ -653,7 +653,7 @@ function(notify) {
 }
 
 // Normalize the notifications that occur when a virtual conv gets promoted to a real conv.
-ZmLiquidMail.prototype._adjustNotifies =
+ZmZimbraMail.prototype._adjustNotifies =
 function(notify) {
 	if (!(notify.deleted && notify.created && notify.modified))	return notify;
 	
@@ -751,9 +751,9 @@ function(notify) {
 *
 * @param model		a data model
 */
-ZmLiquidMail.prototype.addModel =
+ZmZimbraMail.prototype.addModel =
 function(model) {
-	DBG.println(AjxDebug.DBG2, "ZmLiquidMail: Adding model: " + model.toString());
+	DBG.println(AjxDebug.DBG2, "ZmZimbraMail: Adding model: " + model.toString());
 	if (this._models.contains(model))
 		this._models.remove(model);
 	this._models.add(model);
@@ -764,9 +764,9 @@ function(model) {
 *
 * @param model		a data model
 */
-ZmLiquidMail.prototype.removeModel =
+ZmZimbraMail.prototype.removeModel =
 function(model) {
-	DBG.println(AjxDebug.DBG2, "ZmLiquidMail: Removing model: " + model.toString());
+	DBG.println(AjxDebug.DBG2, "ZmZimbraMail: Removing model: " + model.toString());
 	this._models.remove(model);
 }
 
@@ -781,7 +781,7 @@ function(model) {
 *
 * @param ids		a list of item IDs
 */
-ZmLiquidMail.prototype.setActionedIds =
+ZmZimbraMail.prototype.setActionedIds =
 function(ids) {
 	this._actionedIds = new Object();
 	for (var i = 0; i < ids.length; i++)
@@ -790,7 +790,7 @@ function(ids) {
 
 // Delete notification just gives us a list of IDs which could be anything.
 // Hand that list to each model and let it check.
-ZmLiquidMail.prototype._handleDeletes =
+ZmZimbraMail.prototype._handleDeletes =
 function(deletes) {
 	var ids = deletes.id.split(",");
 	this._calController.notifyDelete(ids);
@@ -816,7 +816,7 @@ function(deletes) {
 // list (mail lists are always the result of a search), so we notify each 
 // ZmMailList that we know about. To make life easier, we figure out which 
 // folder(s) a conv spans before we hand it off.
-ZmLiquidMail.prototype._handleCreates =
+ZmZimbraMail.prototype._handleCreates =
 function(creates, modifies) {
 	var list = this._getObjList(creates);
 	var convs = new Object();
@@ -858,7 +858,7 @@ function(creates, modifies) {
 			convs[conv.id] = conv;
 			gotMail = true;
 		} else if (name == "cn") {
-			var list = this.getApp(ZmLiquidMail.CONTACTS_APP).getContactList();
+			var list = this.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 			list.notifyCreate(create, true);
 		}
 	}
@@ -878,7 +878,7 @@ function(creates, modifies) {
 
 // Change notifications are handled at the item/organizer level. The item or
 // organizer will notify its list/tree, if any.
-ZmLiquidMail.prototype._handleModifies =
+ZmZimbraMail.prototype._handleModifies =
 function(modifies) {
 	var list = this._getObjList(modifies);
 	// always notify cal controller on all
@@ -911,7 +911,7 @@ function(modifies) {
 
 // Returns a list of objects that have the given parent, flattening child
 // arrays in the process. It also saves each child's name into it.
-ZmLiquidMail.prototype._getObjList =
+ZmZimbraMail.prototype._getObjList =
 function(parent) {
 	var list = new Array();
 	for (var name in parent) {
@@ -930,7 +930,7 @@ function(parent) {
 }
 
 // Sends a NoOpRequest to see if we get any notifications (eg new mail). Ignores exceptions.
-ZmLiquidMail.prototype._doPoll =
+ZmZimbraMail.prototype._doPoll =
 function() {
 	this._pollActionId = null; // so we don't try to cancel
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:liquidMail");
@@ -939,7 +939,7 @@ function() {
 	} catch (ex) {}
 }
 
-ZmLiquidMail._userEventHdlr =
+ZmZimbraMail._userEventHdlr =
 function(ev) {
 	
 	var lm = window._liquidMail;
@@ -954,7 +954,7 @@ function(ev) {
 	DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER RESET (" + (new Date()).toLocaleString() + ")");
 }
 
-ZmLiquidMail.prototype._settingsChangeListener =
+ZmZimbraMail.prototype._settingsChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 	
@@ -963,7 +963,7 @@ function(ev) {
 		this._setUserInfo();
 }
 
-ZmLiquidMail.prototype._unreadChangeListener =
+ZmZimbraMail.prototype._unreadChangeListener =
 function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY) {
 		var fields = ev.getDetail("fields");
@@ -979,7 +979,7 @@ function(ev) {
 	}
 }
 
-ZmLiquidMail.prototype._createBanner =
+ZmZimbraMail.prototype._createBanner =
 function() {
 	// The LogoContainer style centers the logo
 	var banner = new DwtComposite(this._shell, "LogoContainer", Dwt.ABSOLUTE_STYLE);
@@ -992,7 +992,7 @@ function() {
 	return banner;
 }
 
-ZmLiquidMail.prototype._createUserInfo =
+ZmZimbraMail.prototype._createUserInfo =
 function() {
 	var userInfo = new DwtComposite(this._shell, "BannerBar", Dwt.ABSOLUTE_STYLE);
 	userInfo.setScrollStyle(Dwt.CLIP);
@@ -1016,7 +1016,7 @@ function() {
 	return userInfo;
 }
 
-ZmLiquidMail.prototype._createAppChooser =
+ZmZimbraMail.prototype._createAppChooser =
 function() {
 	var buttons = [ZmAppChooser.B_EMAIL];
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
@@ -1037,38 +1037,38 @@ function() {
 	return appChooser;
 }
 
-ZmLiquidMail.prototype.setStatusMsg =
+ZmZimbraMail.prototype.setStatusMsg =
 function(msg) {
 	this._statusBox.setText(msg);
 	if (msg) {
 		var act = new AjxTimedAction ();
-		act.method = ZmLiquidMail._clearStatus;
+		act.method = ZmZimbraMail._clearStatus;
 		act.params.add(this._statusBox);
-		AjxTimedAction.scheduleAction(act, ZmLiquidMail.STATUS_LIFE);
+		AjxTimedAction.scheduleAction(act, ZmZimbraMail.STATUS_LIFE);
 	}
 }
 
-ZmLiquidMail._clearStatus =
+ZmZimbraMail._clearStatus =
 function(args) {
 	args[0].setText("");
 }
 
-ZmLiquidMail.prototype._appButtonListener =
+ZmZimbraMail.prototype._appButtonListener =
 function(ev) {
 	var searchController = this._appCtxt.getSearchController();
 	var id = ev.item.getData(Dwt.KEY_ID);
-	DBG.println("ZmLiquidMail button press: " + id);
+	DBG.println("ZmZimbraMail button press: " + id);
 	if (id == ZmAppChooser.B_EMAIL) {
-		this.activateApp(ZmLiquidMail.MAIL_APP);
+		this.activateApp(ZmZimbraMail.MAIL_APP);
 	} else if (id == ZmAppChooser.B_CONTACTS) {
-		this.getApp(ZmLiquidMail.CONTACTS_APP).launch();
+		this.getApp(ZmZimbraMail.CONTACTS_APP).launch();
 	} else if (id == ZmAppChooser.B_CALENDAR) {
-		this.activateApp(ZmLiquidMail.CALENDAR_APP);
+		this.activateApp(ZmZimbraMail.CALENDAR_APP);
 	} else if (id == ZmAppChooser.B_HELP) {
 		window.open(this._appCtxt.get(ZmSetting.HELP_URI));
 	} else if (id == ZmAppChooser.B_OPTIONS) {
-		this.activateApp(ZmLiquidMail.PREFERENCES_APP);
+		this.activateApp(ZmZimbraMail.PREFERENCES_APP);
 	} else if (id == ZmAppChooser.B_LOGOUT) {
-		ZmLiquidMail.logOff();
+		ZmZimbraMail.logOff();
 	}
 }

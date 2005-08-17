@@ -4,7 +4,7 @@
 * hook into the overall application.
 */
 function ZmPreferencesApp(appCtxt, container) {
-	ZmApp.call(this, ZmLiquidMail.PREFERENCES_APP, appCtxt, container);
+	ZmApp.call(this, ZmZimbraMail.PREFERENCES_APP, appCtxt, container);
 }
 
 ZmPreferencesApp.prototype = new ZmApp;

@@ -563,7 +563,7 @@ function(contact, abridged, appCtxt) {
 		}
 		html[idx++] = "</table>";
 	} else {
-		var cc = appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactController();
+		var cc = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController();
 		var printView = new ZmContactView(cc.getCurrentView(), true);
 		printView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 		printView.zShow(false);

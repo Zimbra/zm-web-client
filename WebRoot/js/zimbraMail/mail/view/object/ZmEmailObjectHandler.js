@@ -2,7 +2,7 @@ function ZmEmailObjectHandler(appCtxt) {
 
 	ZmObjectHandler.call(this, appCtxt, "email", null);
 
-	this._contacts = appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactList();
+	this._contacts = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 }
 
 ZmEmailObjectHandler.prototype = new ZmObjectHandler;
@@ -94,13 +94,13 @@ function(obj) {
 ZmEmailObjectHandler.prototype.selected =
 function(obj, span, ev) {
 	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
-	var cc = this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getComposeController();
+	var cc = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
 	cc.doAction(ZmOperation.NEW_MESSAGE, inNewWindow, null, obj+ZmEmailAddress.SEPARATOR);
 }
 
 ZmEmailObjectHandler.prototype._contactListener =
 function(ev) {
-	var cc = this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactController();
+	var cc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController();
 	if (this._actionContact) {
 		cc.show(this._actionContact);
 	} else {
@@ -114,7 +114,7 @@ ZmEmailObjectHandler.prototype._composeListener =
 function(ev) {
 	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
 	// TODO: what if no email? probably should disable this menu. what if multiple emails?
-	var cc = this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getComposeController();
+	var cc = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
 	cc.doAction(ZmOperation.NEW_MESSAGE, inNewWindow, null, this._actionAddress+ZmEmailAddress.SEPARATOR);
 }
 

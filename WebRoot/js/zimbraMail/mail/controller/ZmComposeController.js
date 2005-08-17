@@ -77,7 +77,7 @@ function(params) {
 		if (!msg) return;
 		
 		var contactList = !isDraft 
-			? this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactList() : null;
+			? this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList() : null;
 
 		var resp = msg.send(contactList, isDraft);
 		

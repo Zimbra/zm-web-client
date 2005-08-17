@@ -10,7 +10,7 @@
 * @param parentController	Reference to the parent "uber" controller - populated if this is a child window opened by the parent
 */
 function ZmContactsApp(appCtxt, container, parentController) {
-	ZmApp.call(this, ZmLiquidMail.CONTACTS_APP, appCtxt, container, parentController);
+	ZmApp.call(this, ZmZimbraMail.CONTACTS_APP, appCtxt, container, parentController);
 }
 
 ZmContactsApp.prototype = new ZmApp;
@@ -39,7 +39,7 @@ function() {
 		try {
 			// check if a parent controller exists and ask it for the contact list
 			if (this._parentController) {
-				this._contactList = this._parentController.getApp(ZmLiquidMail.CONTACTS_APP).getContactList();
+				this._contactList = this._parentController.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 			} else {
 				this._contactList = new ZmContactList(this._appCtxt, false);
 				this._contactList.load();

@@ -376,7 +376,7 @@ function(address) {
 		var toolTip;
 		var addr = address.getAddress();
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && addr) {
-			var contactApp = ZmAppCtxt.getFromShell(this.shell).getApp(ZmLiquidMail.CONTACTS_APP);
+			var contactApp = ZmAppCtxt.getFromShell(this.shell).getApp(ZmZimbraMail.CONTACTS_APP);
 			var contacts = contactApp.getContactList();
 			var contact = contacts ? contacts.getContactByEmail(addr) : null;
 			if (contact)

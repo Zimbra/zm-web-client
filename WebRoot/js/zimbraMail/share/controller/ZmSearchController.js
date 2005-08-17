@@ -273,13 +273,13 @@ function(params) {
 
 	DBG.timePt("handle search results");
 	if (results.type == ZmItem.CONV) {
-		this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getConvListController().show(results, params.query);
+		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().show(results, params.query);
 	} else if (results.type == ZmItem.MSG) {
-		this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getTradController().show(results, params.query);
+		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController().show(results, params.query);
 	} else if (results.type == ZmItem.CONTACT) {
-		this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactListController().show(results, params.query, this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
+		this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController().show(results, params.query, this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
 	} else if (results.type == ZmList.MIXED) {
-		this._appCtxt.getApp(ZmLiquidMail.MIXED_APP).getMixedController().show(results, params.query);
+		this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, params.query);
 	}
 //	Dwt.setTitle(search.getTitle());
 	DBG.timePt("render search results");

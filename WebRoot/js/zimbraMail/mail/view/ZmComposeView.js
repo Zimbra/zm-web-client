@@ -784,7 +784,7 @@ function(composeMode) {
 	// init autocomplete list
 	// TODO: add option to match against GAL contacts (based on pref? form field?)
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var contactsClass = this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP);
+		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		var contactsLoader = contactsClass.getContactList;
 		var locCallback = new AjxCallback(this, this._getAcListLoc, this);
 		this._acAddrSelectList = new ZmAutocompleteListView(this, null, contactsClass, contactsLoader, locCallback);

@@ -222,6 +222,6 @@ function(ev) {
 
 ZmLoginDialog._loginDiffListener =
 function(ev) {
-	ZmLiquidMail.logOff();
+	ZmZimbraMail.logOff();
 	return;
 };

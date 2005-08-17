@@ -146,7 +146,7 @@ function(ev) {
 		conv.id = msg.getConvId();
 		conv.msgs.add(msg);
 		conv.msgHitList[msg.id] = msg;
-		this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getConvController().show(conv);
+		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController().show(conv);
 	}	
 }
 

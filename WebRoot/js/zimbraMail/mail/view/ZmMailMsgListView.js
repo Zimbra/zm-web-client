@@ -165,7 +165,7 @@ function(msg, now, isDndIcon, isMixedView) {
 					htmlArr[idx++] = AjxStringUtil.htmlEncode(name);
 					// XXX: IM HACK
 					if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
-				   		var contacts = ZmAppCtxt.getFromShell(this.shell).getApp(ZmLiquidMail.CONTACTS_APP).getContactList();
+				   		var contacts = ZmAppCtxt.getFromShell(this.shell).getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 						var contact = contacts.getContactByEmail(fromAddr.getAddress());
 						if (contact && contact.hasIMProfile())
 							htmlArr[idx++] = AjxImg.getImageHtml(contact.isIMAvailable() ? ZmImg.I_IM : ZmImg.ID_IM);
@@ -282,7 +282,7 @@ function(ev) {
 			this._changeFolderName(items);
 		}
 	} else if (this._mode == ZmController.CONV_VIEW && ev.event == ZmEvent.E_CREATE) {
-		var conv = this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getConvController().getConv();
+		var conv = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController().getConv();
 		var msg = items[0].type == ZmItem.MSG ? items[0] : null;
 		if (conv && msg && (msg.cid == conv.id)) {
 			ZmMailListView.prototype._changeListener.call(this, ev);
@@ -387,8 +387,8 @@ function(columnItem, bSortAsc) {
 
 	if (this.getList().size() > 1 && this._sortByString) {
 		var controller = this._mode == ZmController.CONV_VIEW
-			? this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getConvController()
-			: this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getTradController();
+			? this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController()
+			: this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController();
 		
 		var searchString = controller.getSearchString();
 

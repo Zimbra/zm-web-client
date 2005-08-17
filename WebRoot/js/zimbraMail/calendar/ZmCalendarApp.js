@@ -1,5 +1,5 @@
 function ZmCalendarApp(appCtxt, container) {
-	ZmApp.call(this, ZmLiquidMail.CALENDAR_APP, appCtxt, container);
+	ZmApp.call(this, ZmZimbraMail.CALENDAR_APP, appCtxt, container);
 }
 
 ZmCalendarApp.prototype = new ZmApp;

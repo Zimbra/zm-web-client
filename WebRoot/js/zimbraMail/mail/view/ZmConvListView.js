@@ -185,7 +185,7 @@ function(columnItem, bSortAsc) {
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 	
 	if (this.getList().size() > 1 && this._sortByString) {
-		var searchString = this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getConvListController().getSearchString();
+		var searchString = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().getSearchString();
 		this._appCtxt.getSearchController().search(searchString, [ZmItem.CONV], this._sortByString, 0, this.getLimit());
 	}
 }

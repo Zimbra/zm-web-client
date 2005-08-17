@@ -102,10 +102,10 @@ function(params) {
 		// depending on the command, do the right thing
 		if (window.command == "compose" || window.command == "composeDetach") {
 			this.activateApp(ZmNewWindow.MAIL_APP);
-			var cc = this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getComposeController();
+			var cc = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
 			cc.isChildWindow = true;
 			if (window.command == "compose") {
-				this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getComposeController()._setView(window.args[0], window.args[1], window.args[2], window.args[3], window.args[4]);
+				this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController()._setView(window.args[0], window.args[1], window.args[2], window.args[3], window.args[4]);
 			} else {
 				cc._setView(ZmOperation.NEW_MESSAGE, window.args.msg, null, null, null, window.args.composeMode);
 				cc._composeView.setDetach(window.args);

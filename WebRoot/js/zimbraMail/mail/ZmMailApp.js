@@ -1,5 +1,5 @@
 function ZmMailApp(appCtxt, container, parentController) {
-	ZmApp.call(this, ZmLiquidMail.MAIL_APP, appCtxt, container, parentController);
+	ZmApp.call(this, ZmZimbraMail.MAIL_APP, appCtxt, container, parentController);
 }
 
 ZmMailApp.prototype = new ZmApp;
