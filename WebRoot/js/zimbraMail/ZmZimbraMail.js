@@ -1,10 +1,10 @@
 /**
-* Creates a controller to run LiquidMail. Do not call directly, instead use the run()
+* Creates a controller to run ZimbraMail. Do not call directly, instead use the run()
 * factory method.
 * @constructor
 * @class
 * This class is the "ubercontroller", as it manages all the apps as well as bootstrapping
-* the LiquidMail application.
+* the ZimbraMail application.
 *
 * @param appCtxt		the app context (global storage)
 * @param domain			current domain
@@ -106,7 +106,7 @@ function() {
 }
 
 /**
-* Sets up LiquidMail, and then starts it by calling its constructor. It is assumed that the
+* Sets up ZimbraMail, and then starts it by calling its constructor. It is assumed that the
 * CSFE is on the same host.
 *
 * @param domain		the host that we're running on
@@ -139,7 +139,7 @@ function(domain, app, userShellId) {
 */
 ZmZimbraMail.unload = 
 function(ev) {
-	var childWinList = window._liquidMail ? window._liquidMail._childWinList : null;
+	var childWinList = window._zimbraMail ? window._zimbraMail._childWinList : null;
 	if (childWinList) {
 		for (var i = 0; i < childWinList.size(); i++) {
 			var childWin = childWinList.get(i);
@@ -148,7 +148,7 @@ function(ev) {
 			childWin.close();
 		}
 		
-		window._liquidMail = null;
+		window._zimbraMail = null;
 	}
 }
 
@@ -467,12 +467,12 @@ ZmZimbraMail.logOff =
 function() {
 
 	// stop keeping track of user input (if applicable)
-	if (window._liquidMail)
-		window._liquidMail.setSessionTimer(false);
+	if (window._zimbraMail)
+		window._zimbraMail.setSessionTimer(false);
 
 	LsCsfeCommand.clearAuthToken();
 	
-	var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80')? "" : ":" + location.port) + "/liquid/" + window.location.search;
+	var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80')? "" : ":" + location.port) + "/zimbra/" + window.location.search;
 	// not sure why IE doesn't allow this to process immediately, but since
 	// it does not, we'll set up a timed action.
 	if (AjxEnv.isIE){
@@ -495,7 +495,7 @@ ZmZimbraMail.prototype.setSessionTimer =
 function(bStartTimer) {
 
 	// ALWAYS set back reference into our world (also used by unload handler)
-	window._liquidMail = this;
+	window._zimbraMail = this;
 	
 	// if no timeout value, user's client never times out from inactivity	
 	var timeout = this._appCtxt.get(ZmSetting.IDLE_SESSION_TIMEOUT);
@@ -933,7 +933,7 @@ function(parent) {
 ZmZimbraMail.prototype._doPoll =
 function() {
 	this._pollActionId = null; // so we don't try to cancel
-	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
 	try {
 		this.sendRequest(soapDoc);
 	} catch (ex) {}
@@ -942,7 +942,7 @@ function() {
 ZmZimbraMail._userEventHdlr =
 function(ev) {
 	
-	var lm = window._liquidMail;
+	var lm = window._zimbraMail;
 
 	if (lm) {
 		// cancel old timer and start a new one
