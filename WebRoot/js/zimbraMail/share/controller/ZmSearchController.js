@@ -242,7 +242,7 @@ function(params) {
 		this._searchToolBar.setEnabled(true);
 		DBG.println(AjxDebug.DBG2, "Search exception: " + ex.code);
 		// Only restart on error if we are not initialized
-		if (ex.code == LsCsfeException.MAIL_NO_SUCH_FOLDER || ex.code == LsCsfeException.MAIL_NO_SUCH_TAG) {
+		if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER || ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG) {
 			results = new ZmSearchResult(this._appCtxt);
 			results.type = params.types ? params.types[0]: null;
 			var msg = this._getErrorMsg(ex.code);

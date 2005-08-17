@@ -29,13 +29,13 @@ function(uname, pword) {
 		el.setAttribute("by", "name");
 		soapDoc.set("password", pword);
 
-		var resp = LsCsfeCommand.invoke(soapDoc, true).Body.AuthResponse;
+		var resp = ZmCsfeCommand.invoke(soapDoc, true).Body.AuthResponse;
 		this._setAuthToken(resp);
 	} else {
 		var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAdmin", null);
 		soapDoc.set("name", uname);
 		soapDoc.set("password", pword);
-		var resp = LsCsfeCommand.invoke(soapDoc, true).Body.AuthResponse;
+		var resp = ZmCsfeCommand.invoke(soapDoc, true).Body.AuthResponse;
 		this._setAuthToken(resp);	
 	}
 };
@@ -44,5 +44,5 @@ ZmAuthenticate.prototype._setAuthToken =
 function(resp) {
 	var lifetime = !this._appCtxt.isPublicComputer() ? resp.lifetime : null;
 	// ignore sessionId so we get a <refresh> block
-	LsCsfeCommand.setAuthToken(resp.authToken, lifetime);
+	ZmCsfeCommand.setAuthToken(resp.authToken, lifetime);
 };

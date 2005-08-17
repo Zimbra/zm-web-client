@@ -163,16 +163,16 @@ function(view) {
 ZmController.prototype._handleException =
 function(ex, method, params, restartOnError, obj) {
 	DBG.dumpObj(AjxDebug.DBG1, ex);
-	if (ex.code == LsCsfeException.SVC_AUTH_EXPIRED || 
-		ex.code == LsCsfeException.SVC_AUTH_REQUIRED || 
-		ex.code == LsCsfeException.NO_AUTH_TOKEN) {
+	if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED || 
+		ex.code == ZmCsfeException.SVC_AUTH_REQUIRED || 
+		ex.code == ZmCsfeException.NO_AUTH_TOKEN) {
 		var bReloginMode = true;
-		if (ex.code == LsCsfeException.SVC_AUTH_EXPIRED) {
+		if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED) {
 			// remember the last operation attempted ONLY for expired auth token exception
 			this._execFrame = {obj: obj, method: method, params: params, restartOnError: restartOnError};
 			this._loginDialog.registerCallback(this._loginCallback, this);
 			this._loginDialog.setError(LmMsg.sessionExpired);
-		} else if (ex.code == LsCsfeException.SVC_AUTH_REQUIRED) {
+		} else if (ex.code == ZmCsfeException.SVC_AUTH_REQUIRED) {
 			// bug fix #413 - always logoff if we get a auth required
 			ZmZimbraMail.logOff();
 			return;
@@ -199,34 +199,34 @@ function(code, params) {
 	switch (code) {
 		// network errors
 		case AjxException.NETWORK_ERROR:					msg = LmMsg.errorNetwork; break;
-		case LsCsfeException.NETWORK_ERROR:				msg = LmMsg.errorNetwork; break;
-		case LsCsfeException.SOAP_ERROR: 				msg = LmMsg.errorNetwork; break;
-		case LsCsfeException.CSFE_SVC_ERROR: 			msg = LmMsg.errorService; break;
+		case ZmCsfeException.NETWORK_ERROR:				msg = LmMsg.errorNetwork; break;
+		case ZmCsfeException.SOAP_ERROR: 				msg = LmMsg.errorNetwork; break;
+		case ZmCsfeException.CSFE_SVC_ERROR: 			msg = LmMsg.errorService; break;
 		
 		// CSFE errors
-		case LsCsfeException.SVC_FAILURE: 				msg = LmMsg.errorService; break;
-		case LsCsfeException.SVC_UNKNOWN_DOCUMENT: 		msg = LmMsg.errorUnknownDoc; break;
-		case LsCsfeException.SVC_PARSE_ERROR: 			msg = LmMsg.errorParse; break;
-		case LsCsfeException.SVC_PERM_DENIED: 			msg = LmMsg.errorPermission; break;
+		case ZmCsfeException.SVC_FAILURE: 				msg = LmMsg.errorService; break;
+		case ZmCsfeException.SVC_UNKNOWN_DOCUMENT: 		msg = LmMsg.errorUnknownDoc; break;
+		case ZmCsfeException.SVC_PARSE_ERROR: 			msg = LmMsg.errorParse; break;
+		case ZmCsfeException.SVC_PERM_DENIED: 			msg = LmMsg.errorPermission; break;
 		
 		// account errors
-		case LsCsfeException.ACCT_NO_SUCH_ACCOUNT: 		msg = LmMsg.errorNoSuchAcct; break;
-		case LsCsfeException.ACCT_INVALID_PASSWORD: 	msg = LmMsg.errorInvalidPass; break;
-		case LsCsfeException.ACCT_INVALID_PREF_NAME:	msg = LmMsg.errorInvalidPrefName; break;
-		case LsCsfeException.ACCT_INVALID_PREF_VALUE: 	msg = LmMsg.errorInvalidPrefValue; break;
-		case LsCsfeException.ACCT_NO_SUCH_SAVED_SEARCH: msg = LmMsg.errorNoSuchSavedSearch; break;
-		case LsCsfeException.ACCT_NO_SUCH_TAG:  		msg = LmMsg.errorNoSuchTag; break;
-		case LsCsfeException.ACCT_PASS_RECENTLY_USED: 	msg = LmMsg.errorPassRecentlyUsed; break;
+		case ZmCsfeException.ACCT_NO_SUCH_ACCOUNT: 		msg = LmMsg.errorNoSuchAcct; break;
+		case ZmCsfeException.ACCT_INVALID_PASSWORD: 	msg = LmMsg.errorInvalidPass; break;
+		case ZmCsfeException.ACCT_INVALID_PREF_NAME:	msg = LmMsg.errorInvalidPrefName; break;
+		case ZmCsfeException.ACCT_INVALID_PREF_VALUE: 	msg = LmMsg.errorInvalidPrefValue; break;
+		case ZmCsfeException.ACCT_NO_SUCH_SAVED_SEARCH: msg = LmMsg.errorNoSuchSavedSearch; break;
+		case ZmCsfeException.ACCT_NO_SUCH_TAG:  		msg = LmMsg.errorNoSuchTag; break;
+		case ZmCsfeException.ACCT_PASS_RECENTLY_USED: 	msg = LmMsg.errorPassRecentlyUsed; break;
 
 		// mail errors
-		case LsCsfeException.MAIL_INVALID_NAME: 		msg = AjxStringUtil.resolve(LmMsg.errorInvalidName, params.name); break;
-		case LsCsfeException.MAIL_NO_SUCH_FOLDER: 		msg = LmMsg.errorNoSuchFolder; break;
-		case LsCsfeException.MAIL_NO_SUCH_TAG:	 		msg = LmMsg.errorNoSuchTag; break;
-		case LsCsfeException.MAIL_NO_SUCH_CONV:  		msg = LmMsg.errorNoSuchConv; break;
-		case LsCsfeException.MAIL_NO_SUCH_MSG: 			msg = LmMsg.errorNoSuchMsg; break;
-		case LsCsfeException.MAIL_NO_SUCH_PART: 		msg = LmMsg.errorNoSuchPart; break;
-		case LsCsfeException.MAIL_QUERY_PARSE_ERROR:	msg = LmMsg.errorQueryParse; break;
-		case LsCsfeException.MAIL_QUOTA_EXCEEDED: 		msg = LmMsg.errorQuotaExceeded; break;
+		case ZmCsfeException.MAIL_INVALID_NAME: 		msg = AjxStringUtil.resolve(LmMsg.errorInvalidName, params.name); break;
+		case ZmCsfeException.MAIL_NO_SUCH_FOLDER: 		msg = LmMsg.errorNoSuchFolder; break;
+		case ZmCsfeException.MAIL_NO_SUCH_TAG:	 		msg = LmMsg.errorNoSuchTag; break;
+		case ZmCsfeException.MAIL_NO_SUCH_CONV:  		msg = LmMsg.errorNoSuchConv; break;
+		case ZmCsfeException.MAIL_NO_SUCH_MSG: 			msg = LmMsg.errorNoSuchMsg; break;
+		case ZmCsfeException.MAIL_NO_SUCH_PART: 		msg = LmMsg.errorNoSuchPart; break;
+		case ZmCsfeException.MAIL_QUERY_PARSE_ERROR:	msg = LmMsg.errorQueryParse; break;
+		case ZmCsfeException.MAIL_QUOTA_EXCEEDED: 		msg = LmMsg.errorQuotaExceeded; break;
 
 		// general errors
 		default: 									msg = LmMsg.errorGeneric; break;
@@ -237,7 +237,7 @@ function(code, params) {
 
 ZmController.prototype._doAuth = 
 function(params) {
-	LsCsfeCommand.clearAuthToken();
+	ZmCsfeCommand.clearAuthToken();
 	var auth = new ZmAuthenticate(this._appCtxt);
 	try {
 		auth.execute(params.username, params.password);
@@ -249,8 +249,8 @@ function(params) {
 		if (this._execFrame)
 			this._schedule(this._doLastSearch);
 	} catch (ex) {
-		if (ex.code == LsCsfeException.ACCT_AUTH_FAILED || 
-			ex.code == LsCsfeException.SVC_INVALID_REQUEST) 
+		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || 
+			ex.code == ZmCsfeException.SVC_INVALID_REQUEST) 
 		{
 			this._loginDialog.setError(LmMsg.loginError);
 			return;

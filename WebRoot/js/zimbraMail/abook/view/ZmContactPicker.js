@@ -312,8 +312,8 @@ function(params) {
 	try {
 		var searchResult = search.execute();
 	} catch (ex) {
-		if (ex.code == LsCsfeException.SVC_AUTH_EXPIRED || ex.code == LsCsfeException.SVC_AUTH_REQUIRED || 
-			 ex.code == LsCsfeException.NO_AUTH_TOKEN) {
+		if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED || ex.code == ZmCsfeException.SVC_AUTH_REQUIRED || 
+			 ex.code == ZmCsfeException.NO_AUTH_TOKEN) {
 			cp.popdown();
 		}
 		this._handleException(ex, ZmContactPicker.prototype._doSearch, params, false);

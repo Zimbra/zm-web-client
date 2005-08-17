@@ -143,7 +143,7 @@ function(ev, checkedBrowser) {
 		u.style.display = 'none';
 	}
 	ZmLogin.setServerUri();
-	var authToken = LsCsfeCommand.getAuthToken();
+	var authToken = ZmCsfeCommand.getAuthToken();
 	if (authToken != null) {
 		// check the server we're using
 		var mailServer = AjxCookie.getCookie(document, 
@@ -186,7 +186,7 @@ function() {
 	var value = location.protocol + "//" + location.hostname + ZmLogin.CSFE_SERVER_URI;
 	if (location.search && location.search.indexOf("host=") != -1)
 		value += location.search;
-    LsCsfeCommand.setServerUri(value);
+    ZmCsfeCommand.setServerUri(value);
 };
 
 // -----------------------------------------------------------------
@@ -319,7 +319,7 @@ function(border) {
 ZmLogin.submitNoOpRequest = 
 function() {
     var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-	LsCsfeCommand.invoke(soapDoc, false, null, null, true);
+	ZmCsfeCommand.invoke(soapDoc, false, null, null, true);
 };
 
 //changing for default domain support
@@ -359,23 +359,23 @@ function() {
     el.setAttribute("by", "name");
     soapDoc.set("password", pword);
     try {
-		var resp = LsCsfeCommand.invoke(soapDoc, true).Body.AuthResponse;
+		var resp = ZmCsfeCommand.invoke(soapDoc, true).Body.AuthResponse;
 		ZmLogin._authToken = resp.authToken;
 		ZmLogin._authTokenLifetime = resp.lifetime;
-	    //LsCsfeCommand.setAuthToken(authToken, lifetime, sessionId);
+	    //ZmCsfeCommand.setAuthToken(authToken, lifetime, sessionId);
 		var mailServer = resp.refer;
 		
 		ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword);
 		ZmLogin._authToken = ZmLogin._authTokenLifetime = null;
     } catch (ex) {
 		DBG.dumpObj(ex);
-		if (ex.code == LsCsfeException.ACCT_AUTH_FAILED || 
-			ex.code == LsCsfeException.NO_SUCH_ACCOUNT) 
+		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || 
+			ex.code == ZmCsfeException.NO_SUCH_ACCOUNT) 
 		{
 			ZmLogin.setErrorMessage(LmMsg.loginError, -20);
 		} 
-		else if (ex.code == LsCsfeException.SOAP_ERROR || 
-				 ex.code == LsCsfeException.NETWORK_ERROR) 
+		else if (ex.code == ZmCsfeException.SOAP_ERROR || 
+				 ex.code == ZmCsfeException.NETWORK_ERROR) 
 		{
 			var msg = LmMsg.errorNetwork + "\n\n" + LmMsg.errorTryAgain + " " + LmMsg.errorContact;
 			ZmLogin.setErrorMessage(msg, -15);

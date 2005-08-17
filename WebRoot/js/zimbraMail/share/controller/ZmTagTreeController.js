@@ -175,7 +175,7 @@ function(params) {
 	try {
 		parent.create(params.name, params.color);
 	} catch (ex) {
-		if (ex.code == LsCsfeException.MAIL_INVALID_NAME) {
+		if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {
 			var msg = AjxStringUtil.resolve(LmMsg.errorInvalidName, params.name);
 			this._msgDialog.setMessage(msg, null, DwtMessageDialog.CRITICAL_STYLE);
 			this._msgDialog.popup();

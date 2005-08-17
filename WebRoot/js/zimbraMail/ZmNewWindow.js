@@ -112,7 +112,7 @@ function(params) {
 			}
 		}
 	} catch (ex) {
-		ex.code = LsCsfeException.SVC_AUTH_EXPIRED;
+		ex.code = ZmCsfeException.SVC_AUTH_EXPIRED;
 		this._handleException(ex, this.startup, null, true);
 	}
 }

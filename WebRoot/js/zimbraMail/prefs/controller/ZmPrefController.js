@@ -125,10 +125,10 @@ function(args) {
 		if (resp.ChangePasswordResponse) {
 			this._appCtxt.getAppController().setStatusMsg(LmMsg.passwordChangeSucceeded);
 		} else {
-			throw new AjxException(LmMsg.passwordChangeFailed + " " + LmMsg.errorContact, LsCsfeException.CSFE_SVC_ERROR, "changePassword");
+			throw new AjxException(LmMsg.passwordChangeFailed + " " + LmMsg.errorContact, ZmCsfeException.CSFE_SVC_ERROR, "changePassword");
 		}
 	} catch (ex) {
-		if (ex.code == LsCsfeException.ACCT_AUTH_FAILED) {
+		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED) {
 			this._appCtxt.getAppController().setStatusMsg(LmMsg.oldPasswordIsIncorrect);
 		} else {
 			this._handleException(ex, this._passwordChangeListener, args, false);

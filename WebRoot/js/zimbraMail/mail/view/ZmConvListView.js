@@ -209,7 +209,7 @@ function(conv, preferHtml) {
 		var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:zimbraMail");
 		var msgNode = soapDoc.set("c");
 		msgNode.setAttribute("id", conv.id);
-		var resp = LsCsfeCommand.invoke(soapDoc).Body.GetConvResponse.c[0];
+		var resp = ZmCsfeCommand.invoke(soapDoc).Body.GetConvResponse.c[0];
 		var msgIds = new Array();
 		for (var i = 0; i < resp.m.length; i++)
 			msgIds.push(resp.m[i].id);
@@ -232,7 +232,7 @@ function(conv, preferHtml) {
 			msgNode.setAttribute("html", "1");
 		msgRequest.appendChild(msgNode);
 	}
-	var resp = LsCsfeCommand.invoke(soapDoc).Body.BatchResponse.GetMsgResponse;
+	var resp = ZmCsfeCommand.invoke(soapDoc).Body.BatchResponse.GetMsgResponse;
 	
 	var html = new Array();
 	var idx = 0;

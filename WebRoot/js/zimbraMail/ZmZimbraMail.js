@@ -21,7 +21,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	DBG.println(AjxDebug.DBG1, "Branch: " + appCtxt.get(ZmSetting.BRANCH));
 	this._settings.addChangeListener(new AjxListener(this, this._settingsChangeListener));
 
-	LsCsfeCommand.setServerUri(location.protocol + "//" + domain + appCtxt.get(ZmSetting.CSFE_SERVER_URI));
+	ZmCsfeCommand.setServerUri(location.protocol + "//" + domain + appCtxt.get(ZmSetting.CSFE_SERVER_URI));
 
 	appCtxt.setAppController(this);
 	appCtxt.setClientCmdHdlr(new ZmClientCmdHandler(appCtxt));
@@ -207,8 +207,8 @@ function(params) {
 
 		} catch (ex) {
 			// handle exceptions for getting user settings a special way.
-			//LsCsfeCommand.clearAuthToken();
-			ex.code = LsCsfeException.SVC_AUTH_EXPIRED;
+			//ZmCsfeCommand.clearAuthToken();
+			ex.code = ZmCsfeException.SVC_AUTH_EXPIRED;
 			this._handleException(ex, this.startup, null, true);
 		}
 	}
@@ -224,7 +224,7 @@ function(settings) {
 	// need to decide what to clean up, what to have startup load lazily
 	// could have each app do shutdown()
 	DBG.println(AjxDebug.DBG1, "RESTARTING APP");
-	LsCsfeCommand.setSessionId(null);			// so we get a refresh block
+	ZmCsfeCommand.setSessionId(null);			// so we get a refresh block
 	var tagList = this._appCtxt.getTagList();
 	if (tagList) tagList.reset();
 	var folderTree = this._appCtxt.getFolderTree()
@@ -250,7 +250,7 @@ function(settings) {
 ZmZimbraMail.prototype.sendRequest = 
 function(soapDoc, useXml) {
 	useXml = (useXml == null) ? this._appCtxt.get(ZmSetting.USE_XML) : useXml;
-	var result = LsCsfeCommand.invoke(soapDoc, null, null, null, useXml);
+	var result = ZmCsfeCommand.invoke(soapDoc, null, null, null, useXml);
 	if (!useXml && result.Header)
 		this._handleHeader(result.Header);
 	this._checkOverviewLayout();
@@ -470,7 +470,7 @@ function() {
 	if (window._zimbraMail)
 		window._zimbraMail.setSessionTimer(false);
 
-	LsCsfeCommand.clearAuthToken();
+	ZmCsfeCommand.clearAuthToken();
 	
 	var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80')? "" : ":" + location.port) + "/zimbra/" + window.location.search;
 	// not sure why IE doesn't allow this to process immediately, but since

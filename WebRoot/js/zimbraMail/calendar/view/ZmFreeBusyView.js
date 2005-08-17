@@ -1342,7 +1342,7 @@ LmUserSchedule.getSchedules = function (start, end, uids) {
 		resp = LmUserSchedule.commandSender.sendRequest(soapDoc);
 	} else {
 		// testing only
-		resp = LsCsfeCommand.invoke(soapDoc, null, null, null, false);
+		resp = ZmCsfeCommand.invoke(soapDoc, null, null, null, false);
 		resp = resp.Body;
 	}
 	if (resp != null) {
@@ -1409,7 +1409,7 @@ LmUserSchedule.prototype.getSchedule = function (start, end, uid, force) {
 			var resp = LmUserSchedule.commandSender.sendRequest(soapDoc);
 		} else {
 			// testing only
-			var resp = LsCsfeCommand.invoke(soapDoc, null, null, null, false).Body;
+			var resp = ZmCsfeCommand.invoke(soapDoc, null, null, null, false).Body;
 		}
 		var user = resp.GetFreeBusyResponse.usr[0];
 		LmUserSchedule._parseOneScheduleResponse(user, this);
