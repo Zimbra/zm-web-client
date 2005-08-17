@@ -1,12 +1,12 @@
 /**
  * This file needs to be kept in sync with the timezones listed in ldap.
  */
-function LmTimezones () {}
+function ZmTimezones () {}
 
-LmTimezones.GMT ="(GMT) Greenwich Mean Time - Dublin / Edinburgh / Lisbon / London";
+ZmTimezones.GMT ="(GMT) Greenwich Mean Time - Dublin / Edinburgh / Lisbon / London";
 
 
-LmTimezones.valueToDisplay = {
+ZmTimezones.valueToDisplay = {
 	"(GMT-12.00) International Date Line West":							LmMsg.TZF_internationalDateLineWest,
 	"(GMT-11.00) Midway Island / Samoa":									LmMsg.TZF_MidwayIsland,
 	"(GMT-10.00) Hawaii":												LmMsg.TZF_Hawaii,
@@ -84,7 +84,7 @@ LmTimezones.valueToDisplay = {
 	"(GMT+13.00) Nuku'alofa":											LmMsg.TZF_Nukualofa
 };
 
-LmTimezones._fullZoneChoices = [
+ZmTimezones._fullZoneChoices = [
 	{value:"(GMT-12.00) International Date Line West",							label:LmMsg.TZF_internationalDateLineWest},
 	{value:"(GMT-11.00) Midway Island / Samoa",									label:LmMsg.TZF_MidwayIsland},
 	{value:"(GMT-10.00) Hawaii",												label:LmMsg.TZF_Hawaii},
@@ -162,7 +162,7 @@ LmTimezones._fullZoneChoices = [
 	{value:"(GMT+13.00) Nuku'alofa",											label:LmMsg.TZF_Nukualofa}
 ];
 
-LmTimezones._fullZoneChoices = [
+ZmTimezones._fullZoneChoices = [
 	{value:"(GMT-12.00) International Date Line West",							label:LmMsg.TZF_internationalDateLineWest},
 	{value:"(GMT-11.00) Midway Island / Samoa",									label:LmMsg.TZF_MidwayIsland},
 	{value:"(GMT-10.00) Hawaii",												label:LmMsg.TZF_Hawaii},
@@ -240,7 +240,7 @@ LmTimezones._fullZoneChoices = [
 	{value:"(GMT+13.00) Nuku'alofa",											label:LmMsg.TZF_Nukualofa}
 ];
 
-LmTimezones._abbreviatedZoneChoices = [
+ZmTimezones._abbreviatedZoneChoices = [
 	{value:"(GMT-12.00) International Date Line West",							label:LmMsg.TZA_internationalDateLineWest},
 	{value:"(GMT-11.00) Midway Island / Samoa",									label:LmMsg.TZA_MidwayIsland},
 	{value:"(GMT-10.00) Hawaii",												label:LmMsg.TZA_Hawaii},
@@ -318,7 +318,7 @@ LmTimezones._abbreviatedZoneChoices = [
 	{value:"(GMT+13.00) Nuku'alofa",											label:LmMsg.TZA_Nukualofa}
 ];
 
-LmTimezones.ruleLists = {
+ZmTimezones.ruleLists = {
 	 noDSTList: [
 	  { name:"(GMT-12.00) International Date Line West", stdOffset: -720, hasDOffset: false },
 	  { name:"(GMT-11.00) Midway Island / Samoa", stdOffset: -660,hasDOffset: false },
@@ -457,7 +457,7 @@ LmTimezones.ruleLists = {
  * the browser isn't updated. You have to restart firefox for it to get the 
  * new machine timezone.
  */
-LmTimezones.guessMachineTimezone = function () {
+ZmTimezones.guessMachineTimezone = function () {
 	var dec1 = new Date(2005, 12, 1, 0, 0, 0);
 	var jun1 = new Date(2005, 6, 1, 0, 0, 0);
 	var dec1offset = dec1.getTimezoneOffset();
@@ -471,7 +471,7 @@ LmTimezones.guessMachineTimezone = function () {
 	// if the offset for jun is the same as the offset in december,
 	// then we have a timezone that doesn't deal with daylight savings.
 	if (jun1offset == dec1offset) {
-		var list = LmTimezones.ruleLists.noDSTList;
+		var list = ZmTimezones.ruleLists.noDSTList;
  		for (var i = 0; i < list.length ; ++i ){
 			if (list[i].stdOffset == jun1offset) {
 				tz = list[i];
@@ -480,14 +480,14 @@ LmTimezones.guessMachineTimezone = function () {
 		}
 	} else {
 		// we need to find a rule that matches both offsets
-		var list = LmTimezones.ruleLists.DSTList;
+		var list = ZmTimezones.ruleLists.DSTList;
 		var dst = Math.max(dec1offset, jun1offset);
 		var std = Math.min(dec1offset, jun1offset);
 		var rule;
  		for (var i = 0; i < list.length ; ++i ){
 			rule = list[i];
 			if (rule.stdOffset == std && rule.dstOffset == dst) {
-				if (LmTimezones._compareRules(rule, std, dst, pos)) {
+				if (ZmTimezones._compareRules(rule, std, dst, pos)) {
 					tz = rule;
 					break;
 				}
@@ -497,7 +497,7 @@ LmTimezones.guessMachineTimezone = function () {
 	return tz.name;
 };
 
-LmTimezones._compareRules = function (rule, std, dst, pos) {
+ZmTimezones._compareRules = function (rule, std, dst, pos) {
 	var equal = false;
 	var d = new Date(rule.changeStd[0], rule.changeStd[1], (rule.changeStd[2] -1)).getTimezoneOffset();
 	var s = new Date(rule.changeStd[0], rule.changeStd[1], (rule.changeStd[2] + 1)).getTimezoneOffset();
@@ -521,36 +521,36 @@ LmTimezones._compareRules = function (rule, std, dst, pos) {
 	return equal;
 };
 
-LmTimezones.getFullZoneChoices = function () {
-	return LmTimezones._fullZoneChoices;
+ZmTimezones.getFullZoneChoices = function () {
+	return ZmTimezones._fullZoneChoices;
 };
 
-LmTimezones.getAbbreviatedZoneChoices = function () {
-	return LmTimezones._abbreviatedZoneChoices;
+ZmTimezones.getAbbreviatedZoneChoices = function () {
+	return ZmTimezones._abbreviatedZoneChoices;
 };
 
 
-LmTimezones.getDefault = function () {
+ZmTimezones.getDefault = function () {
 	// should get the user default, set via the options page.
-	var appCtxt = LmAppCtxt.getFromShell(DwtShell.getShell(window));
+	var appCtxt = ZmAppCtxt.getFromShell(DwtShell.getShell(window));
 	if (appCtxt != null) {
-		return appCtxt.get(LmSetting.DEFAULT_CALENDAR_TIMEZONE);
+		return appCtxt.get(ZmSetting.DEFAULT_CALENDAR_TIMEZONE);
 	}
 	return null;
 };
 
-LmTimezones.setDefault = function () {
+ZmTimezones.setDefault = function () {
 	// set the default timezone
 };
 
-LmTimezones.initializeServerTimezone = function () {
-	var machineTz = LmTimezones.guessMachineTimezone();
-	var currentDefault = LmTimezones.getDefault();
+ZmTimezones.initializeServerTimezone = function () {
+	var machineTz = ZmTimezones.guessMachineTimezone();
+	var currentDefault = ZmTimezones.getDefault();
 	if (machineTz != currentDefault) {
-		var appCtxt = LmAppCtxt.getFromShell(DwtShell.getShell(window));
+		var appCtxt = ZmAppCtxt.getFromShell(DwtShell.getShell(window));
 		if (appCtxt != null) {
 			var settings = appCtxt.getSettings(); 
-			var setting = settings.getSetting(LmSetting.DEFAULT_CALENDAR_TIMEZONE);
+			var setting = settings.getSetting(ZmSetting.DEFAULT_CALENDAR_TIMEZONE);
 			if (setting){
 				setting.setValue(machineTz);
 				settings.save([setting]);

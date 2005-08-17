@@ -1,37 +1,37 @@
-function LmBrowseView(parent, pickers) {
+function ZmBrowseView(parent, pickers) {
 
-	DwtComposite.call(this, parent, "LmBrowseView", DwtControl.ABSOLUTE_STYLE);
+	DwtComposite.call(this, parent, "ZmBrowseView", DwtControl.ABSOLUTE_STYLE);
 
 	this.setScrollStyle(DwtControl.SCROLL);
-	this.addControlListener(new LsListener(this, this._controlListener));
-	this._pickers = new LsVector();
+	this.addControlListener(new AjxListener(this, this._controlListener));
+	this._pickers = new AjxVector();
 }
 
-LmBrowseView.prototype = new DwtComposite;
-LmBrowseView.prototype.constructor = LmBrowseView;
+ZmBrowseView.prototype = new DwtComposite;
+ZmBrowseView.prototype.constructor = ZmBrowseView;
 
-LmBrowseView.prototype.toString = 
+ZmBrowseView.prototype.toString = 
 function() {
-	return "LmBrowseView";
+	return "ZmBrowseView";
 }
 
-LmBrowseView.prototype.getToolBar = 
+ZmBrowseView.prototype.getToolBar = 
 function() {
 	return this._toolbar;
 }
 
-LmBrowseView.prototype.addPicker =
+ZmBrowseView.prototype.addPicker =
 function(picker, id) {
     this._pickers.add(picker);
     this.layout();
 }
 
-LmBrowseView.prototype.getPickers = 
+ZmBrowseView.prototype.getPickers = 
 function() {
 	return this._pickers;
 }
 
-LmBrowseView.prototype.removePicker =
+ZmBrowseView.prototype.removePicker =
 function(picker) {
 	var p = this._pickers;
 	if (p.size() == 0)
@@ -42,7 +42,7 @@ function(picker) {
     }
 }
 
-LmBrowseView.prototype.removeAllPickers =
+ZmBrowseView.prototype.removeAllPickers =
 function() {
 	var p = this._pickers;
 	while (p.size() > 0) {
@@ -52,7 +52,7 @@ function() {
     }
 }
 
-LmBrowseView.prototype.layout =
+ZmBrowseView.prototype.layout =
 function() {
 	if (!this.getVisible())
 		return;
@@ -67,7 +67,7 @@ function() {
 	return this;
 }
 
-LmBrowseView.prototype._controlListener =
+ZmBrowseView.prototype._controlListener =
 function(ev) {
 	this.layout();
 }

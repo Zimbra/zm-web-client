@@ -1,6 +1,6 @@
-function LmMailMsgView(parent, className, posStyle, mode) {
+function ZmMailMsgView(parent, className, posStyle, mode) {
 
-	className = className || "LmMailMsgView";
+	className = className || "ZmMailMsgView";
 	DwtComposite.call(this, parent, className, posStyle);
 	
 	this._mode = mode;
@@ -8,53 +8,53 @@ function LmMailMsgView(parent, className, posStyle, mode) {
 	this._displayImagesId = Dwt.getNextId();
 	this._tagRowId = Dwt.getNextId();
 	this._tagCellId = Dwt.getNextId();
-	this._appCtxt = this.shell.getData(LmAppCtxt.LABEL);
+	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	
 	this.setScrollStyle(DwtControl.SCROLL);
 	
 	// customize per "mode"
-	if (mode == LmController.MSG_NEW_WIN_VIEW) {
+	if (mode == ZmController.MSG_NEW_WIN_VIEW) {
 		return;
-	} else if (mode == LmController.MSG_VIEW) {
+	} else if (mode == ZmController.MSG_VIEW) {
 		// Add a change listener to taglist to track tag color changes
 		this._tagList = this._appCtxt.getTagList();
-		this._tagList.addChangeListener(new LsListener(this, LmMailMsgView.prototype._tagChangeListener));
+		this._tagList.addChangeListener(new AjxListener(this, ZmMailMsgView.prototype._tagChangeListener));
 	}
 
 	this._setKeyEventHdlrs();
 	this._setMouseEventHdlrs(); // needed by object manager
 	
 	// this manages all the detected objects within the view
-	this._objectManager = new LmObjectManager(this, this._appCtxt);
+	this._objectManager = new ZmObjectManager(this, this._appCtxt);
 	
-	this._changeListener = new LsListener(this, this._msgChangeListener);
-	this.addListener(DwtEvent.ONMOUSEDOWN, new LsListener(this, this._mouseDownListener));
-	this.addListener(DwtEvent.ONSELECTSTART, new LsListener(this, this._selectStartListener));
-	this.addListener(DwtEvent.ONCONTEXTMENU, new LsListener(this, this._contextMenuListener));
+	this._changeListener = new AjxListener(this, this._msgChangeListener);
+	this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
+	this.addListener(DwtEvent.ONSELECTSTART, new AjxListener(this, this._selectStartListener));
+	this.addListener(DwtEvent.ONCONTEXTMENU, new AjxListener(this, this._contextMenuListener));
 	
 }
 
-LmMailMsgView.prototype = new DwtComposite;
-LmMailMsgView.prototype.constructor = LmMailMsgView;
+ZmMailMsgView.prototype = new DwtComposite;
+ZmMailMsgView.prototype.constructor = ZmMailMsgView;
 
 // Consts
 
-LmMailMsgView.HEADER_ID = "h--" + Dwt.getNextId();
-LmMailMsgView.QUOTE_DEPTH_MOD = 3;
-LmMailMsgView.MAX_SIG_LINES = 8;
-LmMailMsgView.SIG_LINE = /^(- ?-+)|(__+)\r?$/;
-LmMailMsgView._inited = false;
+ZmMailMsgView.HEADER_ID = "h--" + Dwt.getNextId();
+ZmMailMsgView.QUOTE_DEPTH_MOD = 3;
+ZmMailMsgView.MAX_SIG_LINES = 8;
+ZmMailMsgView.SIG_LINE = /^(- ?-+)|(__+)\r?$/;
+ZmMailMsgView._inited = false;
 
-LmMailMsgView.REPLY_INVITE_EVENT = "inviteReply";
+ZmMailMsgView.REPLY_INVITE_EVENT = "inviteReply";
 
 // Public methods
 
-LmMailMsgView.prototype.toString = 
+ZmMailMsgView.prototype.toString = 
 function() {
-	return "LmMailMsgView";
+	return "ZmMailMsgView";
 };
 
-LmMailMsgView.prototype.reset =
+ZmMailMsgView.prototype.reset =
 function() {
 	this._htmlBody = null;
 	this.getHtmlElement().innerHTML = "";
@@ -62,20 +62,20 @@ function() {
 		this._objectManager.reset();
 }
 
-LmMailMsgView.prototype._getInviteToolbar =
+ZmMailMsgView.prototype._getInviteToolbar =
 function() {
 	// TODO: reuse the toolbar 
 	if (this._inviteToolbar)
 		this._inviteToolbar.dispose();
 
-	this._operationButtonIds = [LmOperation.REPLY_ACCEPT, LmOperation.REPLY_TENTATIVE, LmOperation.REPLY_DECLINE];
-	this._inviteToolbar = new LmButtonToolBar(this,	this._operationButtonIds,
+	this._operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
+	this._inviteToolbar = new ZmButtonToolBar(this,	this._operationButtonIds,
 											  null, DwtControl.STATIC_STYLE, 
 											  "LmInviteToolBar", "DwtButton");
 	// get a little space between the buttons.
 	var toolbarHtmlEl = this._inviteToolbar.getHtmlElement();
 	toolbarHtmlEl.firstChild.cellPadding = "3";
-	var inviteToolBarListener = new LsListener(this, this._inviteToolBarListener);
+	var inviteToolBarListener = new AjxListener(this, this._inviteToolBarListener);
 
 	for (var i = 0; i < this._operationButtonIds.length; i++) {
 		var id = this._operationButtonIds[i];
@@ -93,26 +93,26 @@ function() {
 	return this._inviteToolbar;
 };
 
-LmMailMsgView.prototype._inviteToolBarListener = 
+ZmMailMsgView.prototype._inviteToolBarListener = 
 function(ev) {
-	ev._inviteReplyType = ev.item.getData(LmOperation.KEY_ID);;
+	ev._inviteReplyType = ev.item.getData(ZmOperation.KEY_ID);;
 	ev._inviteComponentId = null;
-	this.notifyListeners(LmMailMsgView.REPLY_INVITE_EVENT, ev);
+	this.notifyListeners(ZmMailMsgView.REPLY_INVITE_EVENT, ev);
 }
 
-LmMailMsgView.prototype.addInviteReplyListener = 
+ZmMailMsgView.prototype.addInviteReplyListener = 
 function (listener) {
-	this.addListener(LmMailMsgView.REPLY_INVITE_EVENT, listener);
+	this.addListener(ZmMailMsgView.REPLY_INVITE_EVENT, listener);
 };
 
-LmMailMsgView.prototype.set =
+ZmMailMsgView.prototype.set =
 function(msg) {
 	this.reset();
 	var contentDiv = this.getHtmlElement();
 	var oldMsg = this._msg;
 	this._msg = msg;
 	this._dateObjectHandlerDate = msg.sentDate ? new Date(msg.sentDate) : new Date(msg.date);
-	if ((this._appCtxt.get(LmSetting.CALENDAR_ENABLED)) && msg.isInvite() && msg.needsRsvp()) {
+	if ((this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) && msg.isInvite() && msg.needsRsvp()) {
 		var invite = msg.getInvite();
 		// in the single component case, which I think is going to be 90%
 		// of the time, we will just show a single toobar.
@@ -138,16 +138,16 @@ function(msg) {
 		this._populateHtmlIframe();
 	}
 
-	if (this._mode == LmController.MSG_VIEW) {
+	if (this._mode == ZmController.MSG_VIEW) {
 		this._setTags(msg);
 		// Remove listener for current msg if it exists
 		if (oldMsg != null)
 			oldMsg.removeChangeListener(this._changeListener);
 		msg.addChangeListener(this._changeListener);
-	} else if (this._mode == LmController.TRAD_VIEW) {
+	} else if (this._mode == ZmController.TRAD_VIEW) {
 		if (oldMsg != null)
 			oldMsg.list.removeChangeListener(this._listChangeListener);
-		msg.list.addChangeListener(new LsListener(this, this._listChangeListener));
+		msg.list.addChangeListener(new AjxListener(this, this._listChangeListener));
 	}
 		
 	// reset scroll view to top most
@@ -155,7 +155,7 @@ function(msg) {
 }
 
 // This looks for anchor tags first, to exclude them, and all other tags later.
-LmMailMsgView.htmlPreprocRegex = /(<[aA][^>]*>)([^<]*)(<\/[aA][^>]*>)|(<[^>]*>)([^<]*)|([^<>]+)/g;
+ZmMailMsgView.htmlPreprocRegex = /(<[aA][^>]*>)([^<]*)(<\/[aA][^>]*>)|(<[^>]*>)([^<]*)|([^<>]+)/g;
 
 /**
  * This function trys to filter out all text in between tags, and pass it 
@@ -165,12 +165,12 @@ LmMailMsgView.htmlPreprocRegex = /(<[aA][^>]*>)([^<]*)(<\/[aA][^>]*>)|(<[^>]*>)(
  * This function will grab http://www., and yahoo.com seperately, thus not
  * finding that it's an url.
  */
-LmMailMsgView.prototype._preProcessHtml = 
+ZmMailMsgView.prototype._preProcessHtml = 
 function(html) {
 	var results;
 	var resultingHtml = new Array();
 	var idx = 0;
-	while ( (results = LmMailMsgView.htmlPreprocRegex.exec(html)) != null ) {
+	while ( (results = ZmMailMsgView.htmlPreprocRegex.exec(html)) != null ) {
 		if (results[1] || results[2] || results[3]){
 			// we've matched an anchor tag
 			resultingHtml[idx++] = results[0];
@@ -187,7 +187,7 @@ function(html) {
 	return resultingHtml.join("");
 };
 
-LmMailMsgView.prototype._populateHtmlIframe = 
+ZmMailMsgView.prototype._populateHtmlIframe = 
 function() {
 	var doc = this.getDocument();
 	var iframe = Dwt.getDomObj(doc, this._iframeId);
@@ -211,14 +211,14 @@ function() {
 		}
 	}
 	// set height of view according to height of iframe on timer
-	var act = new LsTimedAction();
-	act.method = LmMailMsgView._resetIframeHeight;
+	var act = new AjxTimedAction();
+	act.method = ZmMailMsgView._resetIframeHeight;
 	act.params.add(idoc);
 	act.params.add(iframe);
-	LsTimedAction.scheduleAction(act, 5);		
+	AjxTimedAction.scheduleAction(act, 5);		
 };
 
-LmMailMsgView.prototype._fixMultipartRelatedImages =
+ZmMailMsgView.prototype._fixMultipartRelatedImages =
 function(msg, idoc, domain) {
 	var images = idoc.getElementsByTagName("img");
 	var num = 0;
@@ -251,7 +251,7 @@ function(msg, idoc, domain) {
 	return (num == images.length);
 }
 
-LmMailMsgView.prototype._createDisplayImageClickClosure =
+ZmMailMsgView.prototype._createDisplayImageClickClosure =
 function(msg, idoc, id, iframe) {
 	var func = function () {
 		var images = idoc.getElementsByTagName("img");
@@ -260,15 +260,15 @@ function(msg, idoc, id, iframe) {
 				// If we just loop through the images, IE for some reason,
 				// doesn't fetch the image. By launching them off in the
 				// background we seem to kick IE's engine a bit.
-				if (LsEnv.isIE) {
-					var act = new LsTimedAction();
-					act.method = LmMailMsgView._swapIdAndSrc;
+				if (AjxEnv.isIE) {
+					var act = new AjxTimedAction();
+					act.method = ZmMailMsgView._swapIdAndSrc;
 					act.params.add(images[i]);
 					act.params.add(i);
 					act.params.add(images.length);
 					act.params.add(msg);
 					act.params.add(idoc);
-					LsTimedAction.scheduleAction(act, 0);
+					AjxTimedAction.scheduleAction(act, 0);
 				} else {
 					images[i].src = images[i].getAttribute("dfsrc");
 				}
@@ -279,16 +279,16 @@ function(msg, idoc, id, iframe) {
 		msg.setHtmlContent(idoc.documentElement.innerHTML);		
 		
 		// reset the iframe height (bug #2886)
-		var act = new LsTimedAction();
-		act.method = LmMailMsgView._resetIframeHeight;
+		var act = new AjxTimedAction();
+		act.method = ZmMailMsgView._resetIframeHeight;
 		act.params.add(idoc);
 		act.params.add(iframe);
-		LsTimedAction.scheduleAction(act, 5);
+		AjxTimedAction.scheduleAction(act, 5);
 	}
 	return func;
 }
 
-LmMailMsgView._swapIdAndSrc = 
+ZmMailMsgView._swapIdAndSrc = 
 function (args) {
 	var image = args[0];
 	var i = args[1];
@@ -301,12 +301,12 @@ function (args) {
 	}
 }
 
-LmMailMsgView._resetIframeHeight = 
+ZmMailMsgView._resetIframeHeight = 
 function(args) {
 	var idoc = args[0];
 	var iframe = args[1];
 
-	if (LsEnv.isIE) {
+	if (AjxEnv.isIE) {
 		idoc.recalc(true);
 		iframe.style.height = parseInt(idoc.body.scrollHeight);
 	} else {
@@ -314,7 +314,7 @@ function(args) {
 	}
 };
 
-LmMailMsgView.prototype._generateHtmlBody =
+ZmMailMsgView.prototype._generateHtmlBody =
 function(html, idx, body) {
 	this._iframeId = Dwt.getNextId();
 	var doc = null;
@@ -325,7 +325,7 @@ function(html, idx, body) {
 	if (body.search(/<img/i) != -1){
 		html[idx++] = "<div id='" + this._displayImagesId + "' style='background-color: rgb(230, 230, 230);'>External images are not displayed. <a href='javascript:;'>Display external images</a></div>";
 	}
-	var src = (LsEnv.isIE && (location.protocol == "https:"))? "src='/liquid/public/blank.html'" : "";
+	var src = (AjxEnv.isIE && (location.protocol == "https:"))? "src='/liquid/public/blank.html'" : "";
  	html[idx++] = "<iframe scrolling='no' frameborder='0' width='100%' height='100%' id='";
 	html[idx++] = this._iframeId ;
 	html[idx++] = "' ";
@@ -334,7 +334,7 @@ function(html, idx, body) {
  	return idx;
 }
 
-LmMailMsgView.prototype.resetMsg = 
+ZmMailMsgView.prototype.resetMsg = 
 function(newMsg) {
 	// Remove listener for current msg if it exists
 	if (this._msg != null)
@@ -343,57 +343,57 @@ function(newMsg) {
 	this._msg = newMsg;
 }
 
-LmMailMsgView.prototype.isDisplayingMsg =
+ZmMailMsgView.prototype.isDisplayingMsg =
 function(msg) {
 	return (this._msg == msg);
 }
 
-LmMailMsgView.prototype.getMsg =
+ZmMailMsgView.prototype.getMsg =
 function() {
 	return this._msg;
 }
 
 // Following two overrides are a hack to allow this view to pretend it's a list view
-LmMailMsgView.prototype.getSelection = 
+ZmMailMsgView.prototype.getSelection = 
 function() {
 	return this._msg;
 }
 
-LmMailMsgView.prototype.getSelectionCount = 
+ZmMailMsgView.prototype.getSelectionCount = 
 function() {
 	return 1;
 }
 
-LmMailMsgView.prototype.getMinHeight = 
+ZmMailMsgView.prototype.getMinHeight = 
 function() {
 	if (!this._headerHeight) {
-		var headerObj = Dwt.getDomObj(this.getDocument(), LmMailMsgView.HEADER_ID);
+		var headerObj = Dwt.getDomObj(this.getDocument(), ZmMailMsgView.HEADER_ID);
 		this._headerHeight = headerObj ? Dwt.getSize(headerObj).y : 0;
 	}
 	return this._headerHeight;
 }
 
-LmMailMsgView.prototype.getTitle =
+ZmMailMsgView.prototype.getTitle =
 function() {
 	return [LmMsg.zimbraTitle, ": ", this._msg.subject].join("");
 }
 
 // Private / Protected methods
 
-LmMailMsgView.prototype._addAddressHeaderHtml =
+ZmMailMsgView.prototype._addAddressHeaderHtml =
 function(htmlArr, idx, addrs, prefix) {
 	htmlArr[idx++] = "<tr><td class='LabelColName'>";
-	htmlArr[idx++] = LsStringUtil.htmlEncode(prefix);
+	htmlArr[idx++] = AjxStringUtil.htmlEncode(prefix);
 	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
 	for (var i = 0; i < addrs.size(); i++) {
 		if (i > 0)
-			htmlArr[idx++] = LsStringUtil.htmlEncode(LmEmailAddress.SEPARATOR);
+			htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmEmailAddress.SEPARATOR);
 
 		var addr = addrs.get(i);
 		if (this._objectManager && addr.address) {
 			idx = this._objectManager.generateSpan(this._objectManager.getEmailHandler(), htmlArr, idx, addr, null);
 		} else {
-			htmlArr[idx++] = addr.address ? addr.address : (LsStringUtil.htmlEncode(addr.name));
+			htmlArr[idx++] = addr.address ? addr.address : (AjxStringUtil.htmlEncode(addr.name));
 		}
 	}
    	htmlArr[idx++] = "</td></tr>";
@@ -401,32 +401,32 @@ function(htmlArr, idx, addrs, prefix) {
 	return idx;
 }
 
-LmMailMsgView.prototype._renderMessage =
+ZmMailMsgView.prototype._renderMessage =
 function(msg, container) {
-	LmDateObjectHandler.setCurrentDate(this._dateObjectHandlerDate);
+	ZmDateObjectHandler.setCurrentDate(this._dateObjectHandlerDate);
 	
 	var idx = 0;
 	var htmlArr = new Array();
 	this._hdrTableId = Dwt.getNextId();
-	htmlArr[idx++] = "<div id='" + LmMailMsgView.HEADER_ID + "' class='MsgHeader'>";
-	var w = LsEnv.isIE ? "style='width:auto'" : "";
+	htmlArr[idx++] = "<div id='" + ZmMailMsgView.HEADER_ID + "' class='MsgHeader'>";
+	var w = AjxEnv.isIE ? "style='width:auto'" : "";
 	htmlArr[idx++] = "<table id='" + this._hdrTableId + "' cellspacing=2 cellpadding=2 border=0 " + w + " >";
 	
 	// Date
 	htmlArr[idx++] = "<tr><td class='LabelColName'>";
-	htmlArr[idx++] = LsStringUtil.htmlEncode(LmMsg.sent);
+	htmlArr[idx++] = AjxStringUtil.htmlEncode(LmMsg.sent);
 	htmlArr[idx++] = ": </td><td>";
 	htmlArr[idx++] = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
 	htmlArr[idx++] = "</td></tr>";
 	
 	// From/To
-	for (var i = 0; i < LmMailMsg.ADDRS.length; i++) {
-		var type = LmMailMsg.ADDRS[i];
-		if (type == LmEmailAddress.BCC)
+	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
+		var type = ZmMailMsg.ADDRS[i];
+		if (type == ZmEmailAddress.BCC)
 			continue;
 		var addrs = msg.getAddresses(type);
 		if (addrs.size() > 0) {
-			var prefix = LmMsg[LmEmailAddress.TYPE_STRING[type]];
+			var prefix = LmMsg[ZmEmailAddress.TYPE_STRING[type]];
 			idx = this._addAddressHeaderHtml(htmlArr, idx, addrs, prefix);
 		}
 	}		
@@ -434,7 +434,7 @@ function(msg, container) {
 	// Subject
 	var subject = msg.getSubject() || LmMsg.noSubject;
 	htmlArr[idx++] = "<tr><td class='LabelColName'>";
-	htmlArr[idx++] = LsStringUtil.htmlEncode(LmMsg.subject);
+	htmlArr[idx++] = AjxStringUtil.htmlEncode(LmMsg.subject);
 	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
 	htmlArr[idx++] = this._objectManager ? this._objectManager.findObjects(subject, true) : subject;
 	htmlArr[idx++] = "</td></tr>"
@@ -464,12 +464,12 @@ function(msg, container) {
 
 	var bodyPart = msg.getBodyPart();
 	if (bodyPart) {
-		if (bodyPart.ct == LmMimeTable.TEXT_HTML && this._appCtxt.get(LmSetting.VIEW_AS_HTML)) {
+		if (bodyPart.ct == ZmMimeTable.TEXT_HTML && this._appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
 			idx = this._generateHtmlBody(htmlArr, idx, bodyPart.content);
 		} else {
 			// otherwise, get the text part if necessary
 			var content = null;
-			if (bodyPart.ct != LmMimeTable.TEXT_PLAIN) {
+			if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
 				// try to go retrieve the text part
 				content = msg.getTextPart();
 				// if no text part, just dump the raw html (see bug 859)
@@ -481,7 +481,7 @@ function(msg, container) {
 			//this._htmlBody = null;
 			var _st = new Date();
 			idx = this._generateBody(htmlArr, idx, content);
-			DBG.println(LsDebug.DBG1, "generateBody took " + (new Date() - _st.getTime()) + "ms");
+			DBG.println(AjxDebug.DBG1, "generateBody took " + (new Date() - _st.getTime()) + "ms");
 		}
 	}
 
@@ -491,7 +491,7 @@ function(msg, container) {
 }
 
 // TODO: prefix char can also be "|"
-LmMailMsgView.prototype._generateBody =
+ZmMailMsgView.prototype._generateBody =
 function(html, idx, body) {
 	if (!body) return;
 
@@ -503,9 +503,9 @@ function(html, idx, body) {
 	//html[idx++] = b.replace(/^ /mg, "&nbsp;").replace(/^&gt;(.*)$/mg, "<span class='QuotedText0'>&gt;$1</span>").replace(/\n/g, "<br>");
 }
 
-LmMailMsgView.prototype._setTags =
+ZmMailMsgView.prototype._setTags =
 function(msg) {
-	if (!this._appCtxt.get(LmSetting.TAGGING_ENABLED) || (this._mode != LmController.MSG_VIEW)) return;
+	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED) || (this._mode != ZmController.MSG_VIEW)) return;
 
 	var table = Dwt.getDomObj(this.getDocument(), this._hdrTableId);
 	var tagRow = Dwt.getDomObj(this.getDocument(), this._tagRowId);
@@ -532,25 +532,25 @@ function(msg) {
 	var ta = new Array();	
 	for (var i = 0; i < numTags; i++)
 		ta[i] = this._tagList.getById(msg.tags[i]);
-	ta.sort(LmTag.sortCompare);
+	ta.sort(ZmTag.sortCompare);
 	
 	if (numTags > 0) {
 		var html = new Array();
 		var idx = 0;
 		for (var i = 0; i < numTags; i++) {
-			var colorInfo = LmTag.COLOR_MINI_ICON[ta[i].color];
+			var colorInfo = ZmTag.COLOR_MINI_ICON[ta[i].color];
 			var txtWidth = Dwt.getHtmlExtent(ta[i].name).x;
 			html[idx++] = "<table cellpadding=0 cellspacing=0 style='display:inline; width:";
 			html[idx++] = txtWidth + colorInfo[1]; 
 			html[idx++] = "'><tr><td style='width:";
 			html[idx++] = colorInfo[1];
 			html[idx++] = "'>";
-			var fieldId = this._tagCellId + LmDoublePaneView._TAG_IMG + ta[i].id;
-			html[idx++] = LsImg.getImageHtml(colorInfo, null, ["id='", fieldId, "'"].join(""), true);
+			var fieldId = this._tagCellId + ZmDoublePaneView._TAG_IMG + ta[i].id;
+			html[idx++] = AjxImg.getImageHtml(colorInfo, null, ["id='", fieldId, "'"].join(""), true);
 			html[idx++] = "</td><td style='cursor:default;width:'";
 			html[idx++] = txtWidth;
 			html[idx++] = "'>"
-			html[idx++] = LsStringUtil.htmlEncode(ta[i].name);
+			html[idx++] = AjxStringUtil.htmlEncode(ta[i].name);
 			html[idx++] = "</td></tr></table>";
 		}
 	}
@@ -558,22 +558,22 @@ function(msg) {
 	tagCell.innerHTML = html.join("");
 }
 
-LmMailMsgView.prototype._msgChangeListener = 
+ZmMailMsgView.prototype._msgChangeListener = 
 function(ev) {
-	if (ev.type != LmEvent.S_MSG)
+	if (ev.type != ZmEvent.S_MSG)
 		return;
-	if (ev.event == LmEvent.E_TAGS || ev.event == LmEvent.E_REMOVE_ALL)
+	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL)
 		this._setTags(this._msg);
 }
 
-LmMailMsgView.prototype._listChangeListener = 
+ZmMailMsgView.prototype._listChangeListener = 
 function(ev) {
 	// bug fix #3398 - check list size before nuking the msg view
-	if (ev.source.size() == 0 && (ev.event == LmEvent.E_DELETE || ev.event == LmEvent.E_MOVE))
+	if (ev.source.size() == 0 && (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE))
 		this.reset();
 }
 
-LmMailMsgView.prototype._mouseDownListener = 
+ZmMailMsgView.prototype._mouseDownListener = 
 function(ev) {
 	if (ev.button == DwtMouseEvent.LEFT) {
 		// reset mouse event to propagate event to browser (allows text selection)
@@ -583,7 +583,7 @@ function(ev) {
 	}
 }
 
-LmMailMsgView.prototype._selectStartListener = 
+ZmMailMsgView.prototype._selectStartListener = 
 function(ev) {
 	// reset mouse event to propagate event to browser (allows text selection)
 	ev._stopPropagation = false;
@@ -591,7 +591,7 @@ function(ev) {
 	ev._populated = true;
 }
 
-LmMailMsgView.prototype._contextMenuListener = 
+ZmMailMsgView.prototype._contextMenuListener = 
 function(ev) {
 	// reset mouse event to propagate event to browser (allows context menu)
 	ev._stopPropagation = false;
@@ -599,12 +599,12 @@ function(ev) {
 	ev._populated = true;
 }
 
-LmMailMsgView.prototype.preventSelection = 
+ZmMailMsgView.prototype.preventSelection = 
 function() {
 	return false;
 }
 
-LmMailMsgView.prototype.preventContextMenu = 
+ZmMailMsgView.prototype.preventContextMenu = 
 function(target) {
 	var bObjFound = target.id.indexOf("OBJ_") == 0;
 	var bSelection = false;
@@ -622,29 +622,29 @@ function(target) {
 	return bSelection && !bObjFound ? false : true;
 }
 
-LmMailMsgView.prototype._tagChangeListener = 
+ZmMailMsgView.prototype._tagChangeListener = 
 function(ev) {
-	if (ev.type != LmEvent.S_TAG)
+	if (ev.type != ZmEvent.S_TAG)
 		return;
 
 	var fields = ev.getDetail("fields");
-	if (ev.event == LmEvent.E_MODIFY && (fields && fields[LmOrganizer.F_COLOR])) {
-		var img = Dwt.getDomObj(this.getDocument(), this._tagCellId +  LmDoublePaneView._TAG_IMG + ev.source.id);
+	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
+		var img = Dwt.getDomObj(this.getDocument(), this._tagCellId +  ZmDoublePaneView._TAG_IMG + ev.source.id);
 		if (img)
-			LsImg.setImage(img, LmTag.COLOR_MINI_ICON[ev.source.color]);
+			AjxImg.setImage(img, ZmTag.COLOR_MINI_ICON[ev.source.color]);
 	}
 	
-	if (ev.event == LmEvent.E_DELETE || ev.event == LmEvent.E_RENAME || ev.event == LmEvent.MODIFY)
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_RENAME || ev.event == ZmEvent.MODIFY)
 		this._setTags(this._msg);
 }
 
-LmMailMsgView.getPrintHtml = 
+ZmMailMsgView.getPrintHtml = 
 function(msg, preferHtml) {
-	if (!(msg instanceof LmMailMsg))
+	if (!(msg instanceof ZmMailMsg))
 		return;
 	
 	if (!msg.isLoaded()) {
-		var soapDoc = LsSoapDoc.create("GetMsgRequest", "urn:liquidMail", null);
+		var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:liquidMail", null);
 		var msgNode = soapDoc.set("m");
 		msgNode.setAttribute("id", msg.id);
 		if (preferHtml)
@@ -661,8 +661,8 @@ function(msg, preferHtml) {
 	html[idx++] = "<tr><td><font size=+1>";
 	
 	// print FROM address and DATE
-	var from = msg.getAddresses(LmEmailAddress.FROM).get(0);
-	html[idx++] = from ? LsStringUtil.htmlEncode(from.toString()) : "";
+	var from = msg.getAddresses(ZmEmailAddress.FROM).get(0);
+	html[idx++] = from ? AjxStringUtil.htmlEncode(from.toString()) : "";
 	html[idx++] = "</font></td>";
 	html[idx++] = "<td align=right><font size=+1>";
 	html[idx++] = msg.sentDate 
@@ -673,19 +673,19 @@ function(msg, preferHtml) {
 	html[idx++] = "<table border=0 width=100%>";
 
 	// print TO and CC addresses
-	for (var j = 0; j < LmMailMsg.ADDRS.length; j++) {
-		if (LmMailMsg.ADDRS[j] != LmEmailAddress.TO && LmMailMsg.ADDRS[j] != LmEmailAddress.CC)
+	for (var j = 0; j < ZmMailMsg.ADDRS.length; j++) {
+		if (ZmMailMsg.ADDRS[j] != ZmEmailAddress.TO && ZmMailMsg.ADDRS[j] != ZmEmailAddress.CC)
 			continue;
 		
-		var addrs = msg.getAddresses(LmMailMsg.ADDRS[j]);
+		var addrs = msg.getAddresses(ZmMailMsg.ADDRS[j]);
 		var len = addrs.size();
 		if (len > 0) {
 			html[idx++] = "<tr>";
 			html[idx++] = "<td valign=top style='font-size: 14px'>";
-			html[idx++] = LmMsg[LmEmailAddress.TYPE_STRING[LmMailMsg.ADDRS[j]]];
+			html[idx++] = LmMsg[ZmEmailAddress.TYPE_STRING[ZmMailMsg.ADDRS[j]]];
 			html[idx++] = ": </td><td width=100% style='font-size: 14px'>";
 			for (var i = 0; i < len; i++) {
-				html[idx++] = i > 0 ? LsStringUtil.htmlEncode(LmEmailAddress.SEPARATOR) : "";
+				html[idx++] = i > 0 ? AjxStringUtil.htmlEncode(ZmEmailAddress.SEPARATOR) : "";
 				html[idx++] = addrs.get(i).address;
 			}
 			html[idx++] = "</td>";
@@ -700,14 +700,14 @@ function(msg, preferHtml) {
 	var bodyPart = msg.getBodyPart();
 	if (bodyPart) {
 		html[idx++] = "<div style='padding: 10px; font-size: 12px'>";
-		if (bodyPart.ct == LmMimeTable.TEXT_HTML && preferHtml) {
+		if (bodyPart.ct == ZmMimeTable.TEXT_HTML && preferHtml) {
 			// TODO - html should really sit in its own iframe but not so easy to do...
 			html[idx++] = bodyPart.content;
 		} else {
-			content = bodyPart.ct != LmMimeTable.TEXT_PLAIN 
+			content = bodyPart.ct != ZmMimeTable.TEXT_PLAIN 
 				? msg.getTextPart() 
 				: bodyPart.content;
-			html[idx++] = LsStringUtil.htmlEncodeSpace(content);
+			html[idx++] = AjxStringUtil.htmlEncodeSpace(content);
 		}
 		html[idx++] = "</div>";
 	}

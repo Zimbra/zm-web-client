@@ -1,22 +1,22 @@
-function LmTrackingObjectHandler(appCtxt) {
+function ZmTrackingObjectHandler(appCtxt) {
 
-	LmObjectHandler.call(this, appCtxt, "url", null);
+	ZmObjectHandler.call(this, appCtxt, "url", null);
 }
 
-LmTrackingObjectHandler.prototype = new LmObjectHandler;
-LmTrackingObjectHandler.prototype.constructor = LmTrackingObjectHandler;
+ZmTrackingObjectHandler.prototype = new ZmObjectHandler;
+ZmTrackingObjectHandler.prototype.constructor = ZmTrackingObjectHandler;
 
-LmTrackingObjectHandler.UPS = "1[zZ]\\s?\\w{3}\\s?\\w{3}\\s?\\w{2}\\s?\\w{4}\\s?\\w{3}\\s?\\w{1}";
-LmTrackingObjectHandler.FEDEX = "(\\d{12}|\\d{22})";
+ZmTrackingObjectHandler.UPS = "1[zZ]\\s?\\w{3}\\s?\\w{3}\\s?\\w{2}\\s?\\w{4}\\s?\\w{3}\\s?\\w{1}";
+ZmTrackingObjectHandler.FEDEX = "(\\d{12}|\\d{22})";
 
-LmTrackingObjectHandler.TRACKING = "\\b(?:"+LmTrackingObjectHandler.UPS+"|"+LmTrackingObjectHandler.FEDEX+")\\b";
+ZmTrackingObjectHandler.TRACKING = "\\b(?:"+ZmTrackingObjectHandler.UPS+"|"+ZmTrackingObjectHandler.FEDEX+")\\b";
 
-LmTrackingObjectHandler.TRACKING_RE = new RegExp(LmTrackingObjectHandler.TRACKING, "g");
+ZmTrackingObjectHandler.TRACKING_RE = new RegExp(ZmTrackingObjectHandler.TRACKING, "g");
 
-LmTrackingObjectHandler.prototype.match =
+ZmTrackingObjectHandler.prototype.match =
 function(line, startIndex) {
-	LmTrackingObjectHandler.TRACKING_RE.lastIndex = startIndex;
-	var m = LmTrackingObjectHandler.TRACKING_RE.exec(line);
+	ZmTrackingObjectHandler.TRACKING_RE.lastIndex = startIndex;
+	var m = ZmTrackingObjectHandler.TRACKING_RE.exec(line);
 	if (m != null) {
 		if (m[0].charAt(1) == 'z' || m[0].charAt(1) == 'Z') 
 			m.context = "ups";
@@ -26,7 +26,7 @@ function(line, startIndex) {
 	return m;
 }
 
-LmTrackingObjectHandler.prototype._getHtmlContent =
+ZmTrackingObjectHandler.prototype._getHtmlContent =
 function(html, idx, tracking, context) {
 	var t = tracking.replace(/\s/g, '');
 	var url;
@@ -43,25 +43,25 @@ function(html, idx, tracking, context) {
 	}
 
 	if (url) {
-		html[idx++] = '<a target="_blank" href="'+url+'">'+LsStringUtil.htmlEncode(tracking)+'</a>';	
+		html[idx++] = '<a target="_blank" href="'+url+'">'+AjxStringUtil.htmlEncode(tracking)+'</a>';	
 	} else {
-		html[idx++] = LsStringUtil.htmlEncode(tracking);
+		html[idx++] = AjxStringUtil.htmlEncode(tracking);
 	}
 	return idx;
 }
 
-LmTrackingObjectHandler.prototype.getToolTipText =
+ZmTrackingObjectHandler.prototype.getToolTipText =
 function(obj, context) {
 	if (context == 'ups') {
-		return "<b>UPS Tracking Number: </b>"+LsStringUtil.htmlEncode(obj);
+		return "<b>UPS Tracking Number: </b>"+AjxStringUtil.htmlEncode(obj);
 	} else if (context == 'fedex') {
-		return "<b>Fedex Tracking Number: </b>"+LsStringUtil.htmlEncode(obj);
+		return "<b>Fedex Tracking Number: </b>"+AjxStringUtil.htmlEncode(obj);
 	} else {
-		return "<b>Tracking Number: </b>"+LsStringUtil.htmlEncode(obj);
+		return "<b>Tracking Number: </b>"+AjxStringUtil.htmlEncode(obj);
 	}
 }
 
-LmTrackingObjectHandler.prototype.getActionMenu =
+ZmTrackingObjectHandler.prototype.getActionMenu =
 function(obj, span, context) {
 	return null;
 }

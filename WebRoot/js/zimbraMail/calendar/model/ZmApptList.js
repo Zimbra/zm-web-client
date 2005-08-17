@@ -5,27 +5,27 @@
 * This class represents a list of appts.
 *
 */
-function LmApptList(appCtxt) {
+function ZmApptList(appCtxt) {
 	
-	LmList.call(this, LmItem.APPT, appCtxt);
+	ZmList.call(this, ZmItem.APPT, appCtxt);
 }
 
-LmApptList.prototype = new LmList;
-LmApptList.prototype.constructor = LmApptList;
+ZmApptList.prototype = new ZmList;
+ZmApptList.prototype.constructor = ZmApptList;
 
-LmApptList.prototype.toString = 
+ZmApptList.prototype.toString = 
 function() {
-	return "LmApptList";
+	return "ZmApptList";
 }
 
-LmApptList.prototype._getAttr =
+ZmApptList.prototype._getAttr =
 function(appt, inst, name)
 {
 	var v = inst[name];
 	return (v !=  undefined) ? v : ( (appt[name] != null)? appt[name]: null);
 }
 
-LmApptList.prototype.loadFromSummaryJs =
+ZmApptList.prototype.loadFromSummaryJs =
 function(resp) {
 	if (!resp.appt)
 		return;
@@ -38,7 +38,7 @@ function(resp) {
 		// Now deal with instances		
 		var instances = apptNode.inst;
 		for (var j = 0; j < instances.length; j++) {
-			var appt = new LmAppt(this._appCtxt, this);
+			var appt = new ZmAppt(this._appCtxt, this);
 			appt.uid =  apptNode.uid;
 			appt.notes = apptNode.fr;	
 			var instNode = instances[j];
@@ -73,16 +73,16 @@ function(resp) {
 	}
 }
 
-LmApptList.prototype.indexOf =
+ZmApptList.prototype.indexOf =
 function (obj) {
 	return this._vector.indexOf(obj);
 };
 
-LmApptList.toVector =
+ZmApptList.toVector =
 function(apptList, startTime, endTime, fanoutAllDay)
 {
 	var _st = new Date();
-	var result  = new LsVector();
+	var result  = new AjxVector();
 	var list = apptList.getVector();
 	var size = list.size();
 	for (var i=0; i < size; i++) {
@@ -92,18 +92,18 @@ function(apptList, startTime, endTime, fanoutAllDay)
 			if (ao.isAllDayEvent() && !fanoutAllDay) {
 				result.add(ao.clone());
 			} else {
-				LmApptList._fanout(ao, result, startTime, endTime, fanoutAllDay);
+				ZmApptList._fanout(ao, result, startTime, endTime, fanoutAllDay);
 			}
 		}
 	}
-	result.getArray().sort(LmAppt.compareByTimeAndDuration);
-	DBG.println("LmApptList.toVector took " + (new Date() - _st.getTime()) + "ms");		
+	result.getArray().sort(ZmAppt.compareByTimeAndDuration);
+	DBG.println("ZmApptList.toVector took " + (new Date() - _st.getTime()) + "ms");		
 	return result;
 }
 
 // fanout multi-day appoints into multiple single day appts. This has nothing to do with recurrence...
 // TODO: should be more efficient by not fanning out appts in if part of the while if they are not in the range.
-LmApptList._fanout =
+ZmApptList._fanout =
 function(orig, result, startTime, endTime) {
 //	DBG.println("fanout>>>>>>>>>>>>>>>>>>>>");
 	var appt = orig.clone();
@@ -113,7 +113,7 @@ function(orig, result, startTime, endTime) {
 			var nextDay = new Date(appt.getStartTime());
 			nextDay.setDate(nextDay.getDate()+1);
 			nextDay.setHours(0,0,0,0);
-			if (LsDateUtil.isInRange(appt.getStartTime(), nextDay.getTime(), startTime, endTime)) {
+			if (AjxDateUtil.isInRange(appt.getStartTime(), nextDay.getTime(), startTime, endTime)) {
 				var slice = appt.clone();
 				slice._fanoutFirst = (fanoutNum == 0);
 				slice._orig = orig;
@@ -148,10 +148,10 @@ function(orig, result, startTime, endTime) {
 
 // given an app list, return a new appt list containing only appts in the given range.
 // doesn't clone appts
-LmApptList.prototype.getSubset =
+ZmApptList.prototype.getSubset =
 function(startTime, endTime)
 {
-	var result  = new LmApptList(this._appCtxt);
+	var result  = new ZmApptList(this._appCtxt);
 	var list = this.getVector();
 	var size = list.size();
 	for (var i=0; i < size; i++) {

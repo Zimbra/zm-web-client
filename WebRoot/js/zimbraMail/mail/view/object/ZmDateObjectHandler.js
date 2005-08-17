@@ -1,16 +1,16 @@
-function LmDateObjectHandler(appCtxt) {
+function ZmDateObjectHandler(appCtxt) {
 	if (arguments.length == 0) return;
 
-	LmObjectHandler.call(this, appCtxt, "date", null);
+	ZmObjectHandler.call(this, appCtxt, "date", null);
 }
 
-LmDateObjectHandler.prototype = new LmObjectHandler;
-LmDateObjectHandler.prototype.constructor = LmDateObjectHandler;
+ZmDateObjectHandler.prototype = new ZmObjectHandler;
+ZmDateObjectHandler.prototype.constructor = ZmDateObjectHandler;
 
-// needs to be kept in sync with LmDateObjectHandler.DOW
+// needs to be kept in sync with ZmDateObjectHandler.DOW
 var $RE_DOW = "(Mon(?:day)?|Tue(?:s(?:day)?)?|Wed(?:nesday)?|Thu(?:rs(?:day)?)?|Fri(?:day)?|Sat(?:urday)?|Sun(?:day)?)";
 
-LmDateObjectHandler.DOW = { 
+ZmDateObjectHandler.DOW = { 
 	sunday: 0, sun:0, monday: 1, mon: 1, tuesday: 2, tue: 2, tues: 2, wednesday: 3, wed: 3, 
 	thursday: 4, thur: 4, thu: 4, friday: 5, fri: 5, saturday: 6, sat: 6 
 };
@@ -20,7 +20,7 @@ var $RE_DOM = "(\\d{1,2})(?:st|nd|rd|th)?";
 // needs to be kept in sync with LmDateObjectHAndler.MONTH
 var $RE_MONTH = "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
 
-LmDateObjectHandler.MONTH = { 
+ZmDateObjectHandler.MONTH = { 
 	january: 0, jan: 0, february: 1, feb: 1, march: 2, mar: 2, april: 3, apr: 3, may: 4, june: 5, jun: 5, 
 	july: 6, jul: 6, august: 7, aug: 7, september: 8, sept: 8, sep: 8, october: 9, oct: 9, november: 10, nov: 10, 
 	december: 11, dec: 11
@@ -59,7 +59,7 @@ $RE_DOW + $RE_COMMA_OR_SP + RE_MONTH + $RE_SP + $RE_DOM +
                  $RE_OP_TIME + $RE_OP_YEAR42  // {Friday, March 2nd}, {Mon Mar 22}, {Tue May 24 10:11:26 2005}
 */
 
-LmDateObjectHandler.registerHandlers =
+ZmDateObjectHandler.registerHandlers =
 function(handlers, appCtxt) {
 	handlers.push(new LmDate1ObjectHandler(appCtxt));
 	handlers.push(new LmDate2ObjectHandler(appCtxt));
@@ -69,72 +69,72 @@ function(handlers, appCtxt) {
 	handlers.push(new LmDate6ObjectHandler(appCtxt));
 }
 
-LmDateObjectHandler._currentDate = new Date();
+ZmDateObjectHandler._currentDate = new Date();
 
-LmDateObjectHandler.setCurrentDate =
+ZmDateObjectHandler.setCurrentDate =
 function(date) {
-	LmDateObjectHandler._currentDate = new Date(date);
+	ZmDateObjectHandler._currentDate = new Date(date);
 }
 
-LmDateObjectHandler.getCurrentDate =
+ZmDateObjectHandler.getCurrentDate =
 function(date) {
-	return LmDateObjectHandler._currentDate;
+	return ZmDateObjectHandler._currentDate;
 }
 
-LmDateObjectHandler.prototype.getToolTipText =
+ZmDateObjectHandler.prototype.getToolTipText =
 function(obj, context) {
-	var cc = this._appCtxt.getApp(LmLiquidMail.CALENDAR_APP).getCalController();
+	var cc = this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();
 	return cc.getDayToolTipText(context ? context.date : new Date());
 
 }
 
 // Create action menu if needed
-LmDateObjectHandler.prototype.getActionMenu =
+ZmDateObjectHandler.prototype.getActionMenu =
 function(obj, span, context) {
-	//var isMonthYear = obj.match(LmDateObjectHandler.MonthYear_RE);
-	//var calOp = isMonthYear ? LmOperation.MONTH_VIEW : LmOperation.DAY_VIEW;
-	var calOp = LmOperation.DAY_VIEW;
-	var list = [calOp, LmOperation.NEW_APPT];
-	this._menu = new LmActionMenu(this._appCtxt.getShell(), list);
-	this._menu.addSelectionListener(calOp, new LsListener(this, this._dayViewListener));
-	this._menu.addSelectionListener(LmOperation.NEW_APPT, new LsListener(this, this._newApptListener));
+	//var isMonthYear = obj.match(ZmDateObjectHandler.MonthYear_RE);
+	//var calOp = isMonthYear ? ZmOperation.MONTH_VIEW : ZmOperation.DAY_VIEW;
+	var calOp = ZmOperation.DAY_VIEW;
+	var list = [calOp, ZmOperation.NEW_APPT];
+	this._menu = new ZmActionMenu(this._appCtxt.getShell(), list);
+	this._menu.addSelectionListener(calOp, new AjxListener(this, this._dayViewListener));
+	this._menu.addSelectionListener(ZmOperation.NEW_APPT, new AjxListener(this, this._newApptListener));
 	this._actionObject = obj;
 	this._actionContext = context;
 	return this._menu;
 }
 
-LmDateObjectHandler.prototype._calViewListener =
+ZmDateObjectHandler.prototype._calViewListener =
 function(ev) {
 	var obj = this._actionObject;
-	var op = ev.item.getData(LmOperation.KEY_ID);
-	var isDayView = (op == LmOperation.DAY_VIEW);
-	var view = isDayView ? LmController.CAL_DAY_VIEW : LmController.CAL_MONTH_VIEW;
-	DBG.println(LsDebug.DBG3, "handing date off to calendar " + isDayView ? "day" : "month" + " view: " + date);
-	var cc = this._appCtxt.getApp(LmLiquidMail.CALENDAR_APP).getCalController();
+	var op = ev.item.getData(ZmOperation.KEY_ID);
+	var isDayView = (op == ZmOperation.DAY_VIEW);
+	var view = isDayView ? ZmController.CAL_DAY_VIEW : ZmController.CAL_MONTH_VIEW;
+	DBG.println(AjxDebug.DBG3, "handing date off to calendar " + isDayView ? "day" : "month" + " view: " + date);
+	var cc = this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();
 	cc.show();
 	cc.setDate(this._actionContext.date);
 }
 
 
-LmDateObjectHandler.prototype._dayViewListener =
+ZmDateObjectHandler.prototype._dayViewListener =
 function(ev) {
 	var obj = this._actionObject;
-	var cc = this._appCtxt.getApp(LmLiquidMail.CALENDAR_APP).getCalController();
-	cc.show(LmCalViewMgr.DAY_VIEW);
+	var cc = this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();
+	cc.show(ZmCalViewMgr.DAY_VIEW);
 	cc.setDate(this._actionContext.date);
 }
 
-LmDateObjectHandler.prototype._newApptListener =
+ZmDateObjectHandler.prototype._newApptListener =
 function(ev) {
-	DBG.println(LsDebug.DBG1, "new appt listener");
-	var cc = this._appCtxt.getApp(LmLiquidMail.CALENDAR_APP).getCalController();
+	DBG.println(AjxDebug.DBG1, "new appt listener");
+	var cc = this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();
 	var p = new DwtPoint(ev.docX, ev.docY);
 	cc._showAppointmentDetails(null, p, this._actionContext.date);
 }
 
-LmDateObjectHandler.prototype.selected =
+ZmDateObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
-	var cc = this._appCtxt.getApp(LmLiquidMail.CALENDAR_APP).getCalController();
+	var cc = this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();
 	cc.show();
 	cc.setDate(context.date);
 }
@@ -142,10 +142,10 @@ function(obj, span, ev, context) {
 // today/yesterday =======================
 
 function LmDate1ObjectHandler(appCtxt) {
-	LmDateObjectHandler.call(this, appCtxt);
+	ZmDateObjectHandler.call(this, appCtxt);
 }
 
-LmDate1ObjectHandler.prototype = new LmDateObjectHandler;
+LmDate1ObjectHandler.prototype = new ZmDateObjectHandler;
 LmDate1ObjectHandler.prototype.constructor = LmDate1ObjectHandler;
 
 LmDate1ObjectHandler.REGEX = new RegExp("\\b" + $RE_TODAY_TOMORROW_YESTERDAY + "\\b", "ig"),
@@ -156,7 +156,7 @@ function(line, startIndex) {
 	var result = LmDate1ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 	
-	var d = new Date(LmDateObjectHandler.getCurrentDate());
+	var d = new Date(ZmDateObjectHandler.getCurrentDate());
 	var when = result[1].toLowerCase();
 	if (when == "yesterday") {
 		d.setDate(d.getDate()-1);
@@ -170,10 +170,10 @@ function(line, startIndex) {
 // {next Tuesday}, {last Monday}, etc
 
 function LmDate2ObjectHandler(appCtxt) {
-	LmDateObjectHandler.call(this, appCtxt);
+	ZmDateObjectHandler.call(this, appCtxt);
 }
 
-LmDate2ObjectHandler.prototype = new LmDateObjectHandler;
+LmDate2ObjectHandler.prototype = new ZmDateObjectHandler;
 LmDate2ObjectHandler.prototype.constructor = LmDate2ObjectHandler;
 
 LmDate2ObjectHandler.REGEX = new RegExp("\\b" + $RE_NEXT_LAST + $RE_SP + $RE_DOW + "\\b", "ig"),
@@ -184,9 +184,9 @@ function(line, startIndex) {
 	var result = LmDate2ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(LmDateObjectHandler.getCurrentDate());
+	var d = new Date(ZmDateObjectHandler.getCurrentDate());
 	var dow = d.getDay();
-	var ndow = LmDateObjectHandler.DOW[result[2].toLowerCase()];
+	var ndow = ZmDateObjectHandler.DOW[result[2].toLowerCase()];
 	var addDays;
 			
 	if (result[1].toLowerCase() == "next") {
@@ -208,10 +208,10 @@ function(line, startIndex) {
 // {25th December}, {6th, June}, {6 June 2004}, {25th December, 2005}
 
 function LmDate3ObjectHandler(appCtxt) {
-	LmDateObjectHandler.call(this, appCtxt);
+	ZmDateObjectHandler.call(this, appCtxt);
 }
 
-LmDate3ObjectHandler.prototype = new LmDateObjectHandler;
+LmDate3ObjectHandler.prototype = new ZmDateObjectHandler;
 LmDate3ObjectHandler.prototype.constructor = LmDate3ObjectHandler;
 
 LmDate3ObjectHandler.REGEX = 	new RegExp("\\b" + $RE_DOM + $RE_COMMA_OR_SP + $RE_MONTH + $RE_OP_YEAR42 + "\\b", "ig"),
@@ -222,9 +222,9 @@ function(line, startIndex) {
 	var result = LmDate3ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(LmDateObjectHandler.getCurrentDate());
+	var d = new Date(ZmDateObjectHandler.getCurrentDate());
 	var dom = parseInt(result[1], 10);;
-	var month = LmDateObjectHandler.MONTH[result[2].toLowerCase()];
+	var month = ZmDateObjectHandler.MONTH[result[2].toLowerCase()];
 	d.setMonth(month, dom);
 	if (result[3]) {
 		var year = parseInt(result[3], 10);
@@ -241,10 +241,10 @@ function(line, startIndex) {
 // {June 6th, 2005}, {June 6}, {May 3rd, 04}, {May 24 10:11:26 2005}, 
 
 function LmDate4ObjectHandler(appCtxt) {
-	LmDateObjectHandler.call(this, appCtxt);
+	ZmDateObjectHandler.call(this, appCtxt);
 }
 
-LmDate4ObjectHandler.prototype = new LmDateObjectHandler;
+LmDate4ObjectHandler.prototype = new ZmDateObjectHandler;
 LmDate4ObjectHandler.prototype.constructor = LmDate4ObjectHandler;
 
 LmDate4ObjectHandler.REGEX = new RegExp("\\b" + $RE_MONTH + $RE_SP + $RE_DOM + $RE_OP_TIME + $RE_OP_YEAR42 + "\\b", "ig"),
@@ -255,8 +255,8 @@ function(line, startIndex) {
 	var result = LmDate4ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(LmDateObjectHandler.getCurrentDate());
-	var month = LmDateObjectHandler.MONTH[result[1].toLowerCase()];
+	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var month = ZmDateObjectHandler.MONTH[result[1].toLowerCase()];
 	var dom = parseInt(result[2], 10);;
 	d.setMonth(month, dom);
 	if (result[3]) {
@@ -274,10 +274,10 @@ function(line, startIndex) {
 //{12/25/2005}, {06/06/05}, {12-25-2005}, {06-06-05}, etc
 
 function LmDate5ObjectHandler(appCtxt) {
-	LmDateObjectHandler.call(this, appCtxt);
+	ZmDateObjectHandler.call(this, appCtxt);
 }
 
-LmDate5ObjectHandler.prototype = new LmDateObjectHandler;
+LmDate5ObjectHandler.prototype = new ZmDateObjectHandler;
 LmDate5ObjectHandler.prototype.constructor = LmDate5ObjectHandler;
 
 LmDate5ObjectHandler.REGEX = new RegExp("\\b" + $RE_MM + $RE_DASH_OR_SLASH + $RE_DD + $RE_DASH_OR_SLASH + $RE_YEAR42 + "\\b", "ig"),
@@ -288,7 +288,7 @@ function(line, startIndex) {
 	var result = LmDate5ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(LmDateObjectHandler.getCurrentDate());
+	var d = new Date(ZmDateObjectHandler.getCurrentDate());
 	var month = parseInt(result[1], 10) - 1;
 	var dom = parseInt(result[2], 10);
 	d.setMonth(month, dom);
@@ -306,10 +306,10 @@ function(line, startIndex) {
 // {2005/06/24}, {2005/12/25}, {2005-06-24}
 
 function LmDate6ObjectHandler(appCtxt) {
-	LmDateObjectHandler.call(this, appCtxt);
+	ZmDateObjectHandler.call(this, appCtxt);
 }
 
-LmDate6ObjectHandler.prototype = new LmDateObjectHandler;
+LmDate6ObjectHandler.prototype = new ZmDateObjectHandler;
 LmDate6ObjectHandler.prototype.constructor = LmDate6ObjectHandler;
 
 LmDate6ObjectHandler.REGEX = new RegExp("\\b" + $RE_YEAR4 + $RE_DASH_OR_SLASH + $RE_MM + $RE_DASH_OR_SLASH + $RE_DD + "\\b", "ig"),
@@ -320,7 +320,7 @@ function(line, startIndex) {
 	var result = LmDate6ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(LmDateObjectHandler.getCurrentDate());
+	var d = new Date(ZmDateObjectHandler.getCurrentDate());
 	var year = parseInt(result[1], 10);
 	var month = parseInt(result[2], 10) - 1;
 	var dom = parseInt(result[3], 10);

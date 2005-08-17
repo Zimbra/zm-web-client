@@ -1,19 +1,19 @@
-function LmAttachmentIconView(parent, className, posStyle) {
+function ZmAttachmentIconView(parent, className, posStyle) {
 
-	LmMailListView.call(this, parent, className, posStyle, LmController.ATT_ICON_VIEW, LmItem.ATT);
+	ZmMailListView.call(this, parent, className, posStyle, ZmController.ATT_ICON_VIEW, ZmItem.ATT);
 
 	this.getHtmlElement().style.backgroundColor = "white";
 }
 
-LmAttachmentIconView.prototype = new LmMailListView;
-LmAttachmentIconView.prototype.constructor = LmAttachmentIconView;
+ZmAttachmentIconView.prototype = new ZmMailListView;
+ZmAttachmentIconView.prototype.constructor = ZmAttachmentIconView;
 
-LmAttachmentIconView.prototype.toString = 
+ZmAttachmentIconView.prototype.toString = 
 function() {
-	return "LmAttachmentIconView";
+	return "ZmAttachmentIconView";
 }
 
-LmAttachmentIconView.prototype._createItemHtml =
+ZmAttachmentIconView.prototype._createItemHtml =
 function(attachment, now) {
 	var div;
 	var htmlArr = new Array(50);
@@ -29,11 +29,11 @@ function(attachment, now) {
 	var ct = attachment.getContentType();
 	var url = this._csfeMsgFetchSvc + "id=" + id + "&amp;part=" + attachment.getPartName();
 	var name = attachment.getName() || attachment.getFilename();
-	name = LsStringUtil.htmlEncode(name);
-	var subject = LsStringUtil.htmlEncode(attachment.getSubject());
+	name = AjxStringUtil.htmlEncode(name);
+	var subject = AjxStringUtil.htmlEncode(attachment.getSubject());
 	var from = null;
 	if (msg) {
-		var fromAddr = msg._addrs[LmEmailAddress.FROM].get(0)
+		var fromAddr = msg._addrs[ZmEmailAddress.FROM].get(0)
 		from = fromAddr.getName();
 	}
 	var size = attachment.getSize();
@@ -52,19 +52,19 @@ function(attachment, now) {
 		htmlArr[idx++] = "<tr><td overflow='hidden'><a href='" + url + 
 						 "'><img src='" + url + "' width='80' height='80'/></a></td></tr>";
 	} else {
-		var mimeInfo = LmMimeTable.getInfo(ct);
-		fieldId = this._getFieldId(attachment, LmItem.F_ICON);
+		var mimeInfo = ZmMimeTable.getInfo(ct);
+		fieldId = this._getFieldId(attachment, ZmItem.F_ICON);
 		htmlArr[idx++] = "<td class='Icon'><a href='" + url + "'>";
-		htmlArr[idx++] = LsImg.getImageHtml(mimeInfo ? mimeInfo.imageLarge : LmImg.IL_DOCUMENT, ["id='", fieldId, "'"].join(""));
+		htmlArr[idx++] = AjxImg.getImageHtml(mimeInfo ? mimeInfo.imageLarge : ZmImg.IL_DOCUMENT, ["id='", fieldId, "'"].join(""));
 		htmlArr[idx++] = "</a></td>";
 	}
 	htmlArr[idx++] = "<tr><td overflow='hidden'>" + name + "</td></tr>";
-	fieldId = this._getFieldId(attachment, LmItem.F_SUBJECT);
+	fieldId = this._getFieldId(attachment, ZmItem.F_SUBJECT);
 	htmlArr[idx++] = "<tr><td overflow='hidden' id='" + 
 					  fieldId + "'>" +
 					  subject + "</td></tr>";
 	if (from) {
-		fieldId = this._getFieldId(attachment, LmItem.F_FROM);
+		fieldId = this._getFieldId(attachment, ZmItem.F_FROM);
 		htmlArr[idx++] = "<tr><td overflow='hidden' id='" +
 						  fieldId + "'>" +
 						  from + "</td></tr>";
@@ -77,7 +77,7 @@ function(attachment, now) {
 	return div;
 }
 
-LmAttachmentIconView.prototype._mouseOverAction =
+ZmAttachmentIconView.prototype._mouseOverAction =
 function(ev, div) {
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
 	var id = element.id;
@@ -87,11 +87,11 @@ function(ev, div) {
 	var m = this._parseId(id);
 	var msg = this.getItemFromElement(div).getMessage();
 	if (m && m.field && msg) {
-		if (m.field == LmListView.FIELD_PREFIX[LmItem.F_FROM]) {
-			var fromAddr = msg._addrs[LmEmailAddress.FROM].get(0);
+		if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) {
+			var fromAddr = msg._addrs[ZmEmailAddress.FROM].get(0);
 			this._setParticipantToolTip(fromAddr);
-		} else if (m.field == LmListView.FIELD_PREFIX[LmItem.F_SUBJECT]) {
-			this.setToolTipContent(LsStringUtil.htmlEncode(msg.fragment));
+		} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) {
+			this.setToolTipContent(AjxStringUtil.htmlEncode(msg.fragment));
 		} else {
 			this.setToolTipContent(null);
 		}

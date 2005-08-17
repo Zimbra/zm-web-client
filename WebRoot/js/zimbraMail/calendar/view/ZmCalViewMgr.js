@@ -1,8 +1,8 @@
-function LmCalViewMgr(parent, dropTgt) {
+function ZmCalViewMgr(parent, dropTgt) {
 	if (arguments.length == 0) return;
 
-	DwtComposite.call(this, parent, "LmCalViewMgr", Dwt.ABSOLUTE_STYLE);
-	this.addControlListener(new LsListener(this, this._controlListener));
+	DwtComposite.call(this, parent, "ZmCalViewMgr", Dwt.ABSOLUTE_STYLE);
+	this.addControlListener(new AjxListener(this, this._controlListener));
 
 	this._dropTgt = dropTgt;	
 
@@ -10,65 +10,65 @@ function LmCalViewMgr(parent, dropTgt) {
 	this._views = new Object();
 	this._date = new Date();
 	this._viewFactory = new Object();
-	this._viewFactory[LmCalViewMgr.DAY_VIEW] = LmCalDayView;
-	this._viewFactory[LmCalViewMgr.WORK_WEEK_VIEW] = LmCalWorkWeekView;
-	this._viewFactory[LmCalViewMgr.WEEK_VIEW] = LmCalWeekView;
-	this._viewFactory[LmCalViewMgr.MONTH_VIEW] = LmCalMonthView;
+	this._viewFactory[ZmCalViewMgr.DAY_VIEW] = ZmCalDayView;
+	this._viewFactory[ZmCalViewMgr.WORK_WEEK_VIEW] = ZmCalWorkWeekView;
+	this._viewFactory[ZmCalViewMgr.WEEK_VIEW] = ZmCalWeekView;
+	this._viewFactory[ZmCalViewMgr.MONTH_VIEW] = ZmCalMonthView;
 }
 
-LmCalViewMgr.prototype = new DwtComposite;
-LmCalViewMgr.prototype.constructor = LmCalViewMgr;
+ZmCalViewMgr.prototype = new DwtComposite;
+ZmCalViewMgr.prototype.constructor = ZmCalViewMgr;
 
-LmCalViewMgr.DAY_VIEW = "DayView";
-LmCalViewMgr.WORK_WEEK_VIEW = "WorkWeekView";
-LmCalViewMgr.WEEK_VIEW = "WeekView";
-LmCalViewMgr.MONTH_VIEW = "MonthView";
+ZmCalViewMgr.DAY_VIEW = "DayView";
+ZmCalViewMgr.WORK_WEEK_VIEW = "WorkWeekView";
+ZmCalViewMgr.WEEK_VIEW = "WeekView";
+ZmCalViewMgr.MONTH_VIEW = "MonthView";
 
-LmCalViewMgr._SEP = 5;
+ZmCalViewMgr._SEP = 5;
 
-LmCalViewMgr.prototype.toString = 
+ZmCalViewMgr.prototype.toString = 
 function() {
-	return "LmCalViewMgr";
+	return "ZmCalViewMgr";
 }
 
 // sets need refresh on all views
-LmCalViewMgr.prototype.setNeedsRefresh = 
+ZmCalViewMgr.prototype.setNeedsRefresh = 
 function() {
 	for (var name in this._views) {
 		this._views[name].setNeedsRefresh(true);
 	}
 }
 
-LmCalViewMgr.prototype.getCurrentView =
+ZmCalViewMgr.prototype.getCurrentView =
 function() {
 	return this._views[this._currentViewName];
 }
 
-LmCalViewMgr.prototype.getCurrentViewName =
+ZmCalViewMgr.prototype.getCurrentViewName =
 function() {
 	return this._currentViewName;
 }
 
-LmCalViewMgr.prototype.getView =
+ZmCalViewMgr.prototype.getView =
 function(viewName) {
 	return this._views[viewName];
 }
 
-LmCalViewMgr.prototype.getTitle =
+ZmCalViewMgr.prototype.getTitle =
 function() {
 	return this.getCurrentView().getTitle();
 }
 
-LmCalViewMgr.prototype.getDate =
+ZmCalViewMgr.prototype.getDate =
 function() 
 {
 	return this._date;
 }
 
-LmCalViewMgr.prototype.setDate =
+ZmCalViewMgr.prototype.setDate =
 function(date, duration, roll)
 {
-//DBG.println("LmCalViewMgr.setDate = "+date);
+//DBG.println("ZmCalViewMgr.setDate = "+date);
 	this._date = new Date(date.getTime());
 	if (this._currentViewName != null) {
 		var view = this._views[this._currentViewName];
@@ -76,40 +76,40 @@ function(date, duration, roll)
 	}
 }
 
-LmCalViewMgr.prototype.createView =
+ZmCalViewMgr.prototype.createView =
 function(viewName) {
-//DBG.println("LmCalViewMgr.prototype.createView: " + viewName);
+//DBG.println("ZmCalViewMgr.prototype.createView: " + viewName);
 	view = new this._viewFactory[viewName](this, DwtControl.ABSOLUTE_STYLE, this._dropTgt);
 	view.setDragSource(this._dragSrc);
-	view.addTimeSelectionListener(new LsListener(this, this._viewTimeSelectionListener));	
-	view.addDateRangeListener(new LsListener(this, this._viewDateRangeListener));
+	view.addTimeSelectionListener(new AjxListener(this, this._viewTimeSelectionListener));	
+	view.addDateRangeListener(new AjxListener(this, this._viewDateRangeListener));
 	this._views[viewName] = view;
 	return view;
 }
 
-LmCalViewMgr.prototype.addTimeSelectionListener = 
+ZmCalViewMgr.prototype.addTimeSelectionListener = 
 function(listener) {
-	this.addListener(LmCalBaseView.TIME_SELECTION, listener);
+	this.addListener(ZmCalBaseView.TIME_SELECTION, listener);
 }
 
-LmCalViewMgr.prototype.removeTimeSelectionListener = 
+ZmCalViewMgr.prototype.removeTimeSelectionListener = 
 function(listener) {
-	this.removeListener(LmCalBaseView.TIME_SELECTION, listener);
+	this.removeListener(ZmCalBaseView.TIME_SELECTION, listener);
 }
 
-LmCalViewMgr.prototype.addDateRangeListener = 
+ZmCalViewMgr.prototype.addDateRangeListener = 
 function(listener) {
 	this.addListener(DwtEvent.DATE_RANGE, listener);
 }
 
-LmCalViewMgr.prototype.removeDateRangeListener = 
+ZmCalViewMgr.prototype.removeDateRangeListener = 
 function(listener) {
 	this.removeListener(DwtEvent.DATE_RANGE, listener);	
 }
 
-LmCalViewMgr.prototype.setView =
+ZmCalViewMgr.prototype.setView =
 function(viewName) {
-//DBG.println("LmCalViewMgr.prototype.setView: " + viewName);
+//DBG.println("ZmCalViewMgr.prototype.setView: " + viewName);
 	if (viewName != this._currentViewName) {
 		if (this._currentViewName) {
 			//this._views[this._currentViewName].setVisible(false);
@@ -128,7 +128,7 @@ function(viewName) {
 	}
 }
 
-LmCalViewMgr.prototype._layout =
+ZmCalViewMgr.prototype._layout =
 function() {
 	var mySz = this.getSize();
 //DBG.println("_layout");
@@ -136,7 +136,7 @@ function() {
 	if (mySz.x == 0 || mySz.y == 0)
 		return;
 	var view = this._views[this._currentViewName];
-	var width = mySz.x - LmCalViewMgr._SEP;
+	var width = mySz.x - ZmCalViewMgr._SEP;
 	var height = mySz.y;
 	var viewSz = view.getSize();
 	if (viewSz.x == width && viewSz.y == height)
@@ -145,9 +145,9 @@ function() {
 		view.setBounds(0, 0, width, height);	
 }
 
-LmCalViewMgr.prototype._controlListener =
+ZmCalViewMgr.prototype._controlListener =
 function(ev) {
-//DBG.println("LmCalViewMgr._controlListener!!! this._oldHeight="+this._oldHeight+" this._oldWidth="+this._oldWidth);
+//DBG.println("ZmCalViewMgr._controlListener!!! this._oldHeight="+this._oldHeight+" this._oldWidth="+this._oldWidth);
 //DBG.dumpObj(ev);
 	if (ev.oldHeight != ev.newHeight
 		|| ev.oldWidth != ev.newWidth) {
@@ -155,19 +155,19 @@ function(ev) {
 	}	
 }
 
-LmCalViewMgr.prototype._viewTimeSelectionListener =
+ZmCalViewMgr.prototype._viewTimeSelectionListener =
 function(ev) {
-	//DBG.println("LmCalViewMgr: VTS LISTENER: " + ev.detail);
-	this.notifyListeners(LmCalBaseView.TIME_SELECTION, ev);
+	//DBG.println("ZmCalViewMgr: VTS LISTENER: " + ev.detail);
+	this.notifyListeners(ZmCalBaseView.TIME_SELECTION, ev);
 }
 
-LmCalViewMgr.prototype._viewSelectionListener =
+ZmCalViewMgr.prototype._viewSelectionListener =
 function(ev) {
-//	DBG.println("LmCalViewMgr: VS LISTENER: " + ev.detail);
-	//this.notifyListeners(LmCalBaseView.TIME_SELECTION, ev);
+//	DBG.println("ZmCalViewMgr: VS LISTENER: " + ev.detail);
+	//this.notifyListeners(ZmCalBaseView.TIME_SELECTION, ev);
 }
 
-LmCalViewMgr.prototype._viewDateRangeListener =
+ZmCalViewMgr.prototype._viewDateRangeListener =
 function(ev) {
 	//DBG.println("viewRangeListener!!!");
 	//DBG.dumpObj(ev);

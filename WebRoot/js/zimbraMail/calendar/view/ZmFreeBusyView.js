@@ -8,11 +8,11 @@
  * Not sure if I should use a DwtListView here, since there is no
  * list to display, and since the layout is very static. Hmm ...
  *
- * This needs to use an LmAppt as it's model data.... Maybe LmAppt
+ * This needs to use an ZmAppt as it's model data.... Maybe ZmAppt
  * needs to handle the fetch of the data, and the creation of the busy blocks.
  */
-function LmFreeBusyView (parent, userSchedules, start, end, appt, className, posStyle) {
-	var clsName = className? className: "LmFreeBusyView";
+function ZmFreeBusyView (parent, userSchedules, start, end, appt, className, posStyle) {
+	var clsName = className? className: "ZmFreeBusyView";
 	var pStyle = posStyle? posStyle: DwtControl.RELATIVE_STYLE;
 	DwtComposite.call(this, parent, clsName, pStyle);
 	this.userSchedules = userSchedules? userSchedules: new Array();
@@ -21,7 +21,7 @@ function LmFreeBusyView (parent, userSchedules, start, end, appt, className, pos
 	this.startDate = start;
 	//this.endDate = end;
 	this.endDate = new Date(start.getTime());
-	LsDateUtil.roll(this.endDate, LsDateUtil.DAY, 1);
+	AjxDateUtil.roll(this.endDate, AjxDateUtil.DAY, 1);
 	// this has to come from an appointment
 	this._appt = appt;
 	this._currentAppt = new LmFreeBusyAppointment(appt.getStartDate(), appt.getEndDate(), this);
@@ -29,22 +29,22 @@ function LmFreeBusyView (parent, userSchedules, start, end, appt, className, pos
 	//this._endApptDate = appt.getEndDate();
 	// If this uses the list view, we will have to
 	this._dummyBlock = new LmBusyBlock();
-	this._selectionManager = new LsSelectionManager(this);
+	this._selectionManager = new AjxSelectionManager(this);
 	this._aggregatedSchedule = new Array();
 	this.enable();
 	this.render();
 }
 
-LmFreeBusyView.prototype = new DwtComposite;
-LmFreeBusyView.prototype.constructor = LmFreeBusyView;
+ZmFreeBusyView.prototype = new DwtComposite;
+ZmFreeBusyView.prototype.constructor = ZmFreeBusyView;
 
-LmFreeBusyView.ADD_NAME_MSG = "Click to add a name";
+ZmFreeBusyView.ADD_NAME_MSG = "Click to add a name";
 
-LmFreeBusyView.PAGINATE_FORWARD = 1;
-LmFreeBusyView.PAGINATE_BACK = 2;
+ZmFreeBusyView.PAGINATE_FORWARD = 1;
+ZmFreeBusyView.PAGINATE_BACK = 2;
 
-LmFreeBusyView.MAX_DURATION_MILLIS = 86400000;
-LmFreeBusyView.BLOCK_TYPE_TO_CLASSNAME = {
+ZmFreeBusyView.MAX_DURATION_MILLIS = 86400000;
+ZmFreeBusyView.BLOCK_TYPE_TO_CLASSNAME = {
 	b: "busy",
 	f: "free",
 	t: "tentative",
@@ -52,7 +52,7 @@ LmFreeBusyView.BLOCK_TYPE_TO_CLASSNAME = {
 	n: "n_a"
 };
 
-LmFreeBusyView.TYPE_RANKING = {
+ZmFreeBusyView.TYPE_RANKING = {
 	'n_a': 0,
 	'free': 1,
 	'tentative': 2,
@@ -60,7 +60,7 @@ LmFreeBusyView.TYPE_RANKING = {
 	'ooo': 4
 };
 
-LmFreeBusyView.CLASS_TO_HIGHLIGHTEDCLASS = {
+ZmFreeBusyView.CLASS_TO_HIGHLIGHTEDCLASS = {
 	'free': 'freeHighlighted',
 	'tentative': 'tentativeHighlighted',
 	'busy': 'busyHighlighted',
@@ -68,7 +68,7 @@ LmFreeBusyView.CLASS_TO_HIGHLIGHTEDCLASS = {
 	'n_a': 'n_aHighlighted'
 };
 
-LmFreeBusyView.HIGHLIGHTEDCLASS_TO_CLASS = {
+ZmFreeBusyView.HIGHLIGHTEDCLASS_TO_CLASS = {
 	'freeHighlighted': 	'free',
 	'tentativeHighlighted': 'tentative',
 	'busyHighlighted': 'busy',
@@ -76,12 +76,12 @@ LmFreeBusyView.HIGHLIGHTEDCLASS_TO_CLASS = {
 	'n_aHighlighted': 'n_a'
 };
 
-LmFreeBusyView.ADDR_SELECTED = "addrSelected";
-LmFreeBusyView.ADDRESS_CELL = "addressCell";
-LmFreeBusyView.ADDRESS_INPUT_CELL = "addressInputCell";
-LmFreeBusyView.ADDRESS_INPUT_EMPTY_CELL = "addressInputEmptyCell";
+ZmFreeBusyView.ADDR_SELECTED = "addrSelected";
+ZmFreeBusyView.ADDRESS_CELL = "addressCell";
+ZmFreeBusyView.ADDRESS_INPUT_CELL = "addressInputCell";
+ZmFreeBusyView.ADDRESS_INPUT_EMPTY_CELL = "addressInputEmptyCell";
 
-LmFreeBusyView.hourMap = {
+ZmFreeBusyView.hourMap = {
 	0:"12", 1:"1", 2:"2", 3:"3", 4:"4", 5:"5",
 	6:"6", 7:"7", 8:"8", 9:"9", 10:"10", 11:"11",
 	12:"12", 13:"1", 14:"2", 15:"3", 16:"4",17:"5",
@@ -89,7 +89,7 @@ LmFreeBusyView.hourMap = {
 };
 
 
-LmFreeBusyView.prototype._createDummySchedule = function () {
+ZmFreeBusyView.prototype._createDummySchedule = function () {
 
 	var a = new LmUserSchedule();
 	a.blocks = [
@@ -111,8 +111,8 @@ LmFreeBusyView.prototype._createDummySchedule = function () {
 	return schedule;
 };
 
-LmFreeBusyView.ROW_HEIGHT = 21;
-LmFreeBusyView.ID_PREFIX="LFBV_";
+ZmFreeBusyView.ROW_HEIGHT = 21;
+ZmFreeBusyView.ID_PREFIX="LFBV_";
 
 // ========================================================================
 // main render methods
@@ -123,16 +123,16 @@ LmFreeBusyView.ID_PREFIX="LFBV_";
  * been called. That means that we can render the table in one pass, 
  * using colspan for the rendering of scheduled items.
  */
-LmFreeBusyView.prototype.render = function () {
+ZmFreeBusyView.prototype.render = function () {
 	//DBG.showTiming(true,"Start Render");
-	var buf = new LsBuffer();
+	var buf = new AjxBuffer();
 	var i = 0;
 	var x = 0;
 	//var containerHeight = this.parent.getH() - 88;
 	var containerHeight = 240;
 	var rowsToSubtract = 2;
-	if (LsEnv.isIE) rowsToSubtract = 2;
-	this._totalRows = (Math.round(containerHeight/LmFreeBusyView.ROW_HEIGHT) ) - rowsToSubtract;
+	if (AjxEnv.isIE) rowsToSubtract = 2;
+	this._totalRows = (Math.round(containerHeight/ZmFreeBusyView.ROW_HEIGHT) ) - rowsToSubtract;
 	this._origTotalRows = this._totalRows;
 	this._startDateId = Dwt.getNextId();
 	this._startTimeHrId = Dwt.getNextId();
@@ -160,11 +160,11 @@ LmFreeBusyView.prototype.render = function () {
 			   "</tr></table></div>",
 
 			   "<div class='LmFreeBusyView_key'>",
-			   LsImg.getImageHtml(LmImg.CAL_FB_KEY),
+			   AjxImg.getImageHtml(ZmImg.CAL_FB_KEY),
 			   "</div>",
 
 			   "<div class='LmFreeBusyView_dateString' id='", this._rangeDateId, "'>", 
-			   (LsDateUtil.getTimeStr(this.startDate,"%M %d, %Y")) ,"</div>",
+			   (AjxDateUtil.getTimeStr(this.startDate,"%M %d, %Y")) ,"</div>",
 
 			   //"<tr style='height:", containerHeight, ";'><td colspan=2 class='LmFreeBusyView_scheduleCol' id='", 
 			   "<div class='LmFreeBusyView_scheduleCol' id='",
@@ -192,20 +192,20 @@ LmFreeBusyView.prototype.render = function () {
 		// create the slider thingy
 		var div = document.createElement('div');
 		div.className = "LmFreeBusyView_slider";
-		div.id = this._sliderId = LmFreeBusyView.ID_PREFIX + "_slider";
+		div.id = this._sliderId = ZmFreeBusyView.ID_PREFIX + "_slider";
 		// TODO: add drag handlers
 		div.innerHTML = "<div class='LmFreeBusyView_slider_left'>&nbsp;</div><div class='LmFreeBusyView_slider_right'>&nbsp;</div>";
 		this.highlightAppointment(div);
 		document.getElementById(this._scheduleContainerId).appendChild(div);
-		//DBG.println(LsStringUtil.htmlEncode(this.getHtmlElement().innerHTML));
+		//DBG.println(AjxStringUtil.htmlEncode(this.getHtmlElement().innerHTML));
 	}
-	var action = new LsTimedAction();
+	var action = new AjxTimedAction();
 	action.obj = this;
 	action.method = datePickerCreation;
-	LsTimedAction.scheduleAction(action, 2);
+	AjxTimedAction.scheduleAction(action, 2);
 };
 
-LmFreeBusyView.prototype.highlightAppointment = function (optionalSliderDiv){
+ZmFreeBusyView.prototype.highlightAppointment = function (optionalSliderDiv){
 	var st = this.startDate.getTime();
 	var et = this.endDate.getTime();
 	var apptStartCell, dur;
@@ -230,27 +230,27 @@ LmFreeBusyView.prototype.highlightAppointment = function (optionalSliderDiv){
 	this.highlightRange(apptStartCell, dur, optionalSliderDiv);
 };
 
-LmFreeBusyView.prototype.setData = function (schedules, appt) {
+ZmFreeBusyView.prototype.setData = function (schedules, appt) {
 	this.enable();
 	this.setSchedules(schedules);
 	this.setAppointment(appt);
 };
 
-LmFreeBusyView.prototype.setAppointment = function (appt) {
+ZmFreeBusyView.prototype.setAppointment = function (appt) {
 	this._appt = appt;
 	this._currentAppt.setDates(appt.getStartDate(), appt.getEndDate());
 	this.highlightAppointment();
 	this._updateDateTimes();
 };
 
-LmFreeBusyView.prototype._renderSchedules = function ( buf, containerHeight) {
+ZmFreeBusyView.prototype._renderSchedules = function ( buf, containerHeight) {
 	var hours = this._getViewHours();
 	var start = this._getStartHour();
 	var numCells = (hours * 2);
 
 	this._scheduleTableId = Dwt.getNextId();
-	buf.append("<table id='", this._scheduleTableId, "' class='LmFreeBusyView_scheduleCol_table' onmousedown='LsCore.objectWithId(", this.__internalId,")._handleScheduleMouseDown(event)'><colgroup><col class='adCol2'><col class='adCol3'><col class='endZone'>");
-	var className = (LsEnv.isIE)? "LmFreeBusyView_scheduleCol_colIE": "LmFreeBusyView_scheduleCol_col";
+	buf.append("<table id='", this._scheduleTableId, "' class='LmFreeBusyView_scheduleCol_table' onmousedown='AjxCore.objectWithId(", this.__internalId,")._handleScheduleMouseDown(event)'><colgroup><col class='adCol2'><col class='adCol3'><col class='endZone'>");
+	var className = (AjxEnv.isIE)? "LmFreeBusyView_scheduleCol_colIE": "LmFreeBusyView_scheduleCol_col";
 	for (i = 0; i < numCells; ++i) {
 
 		buf.append("<col class='",className,"'>");
@@ -265,18 +265,18 @@ LmFreeBusyView.prototype._renderSchedules = function ( buf, containerHeight) {
 	buf.append("<tr class='firstRow'><td><div>&nbsp;</div></td><td><div>&nbsp;</div></td><td><div>&nbsp;</div></td>");
 	var numHeaderCells = hours;
 	for (i = 0; i < numHeaderCells; ++i) {
-		buf.append("<td colspan=2><div class='hour'>", LmFreeBusyView.hourMap[ (start + i) % hours], "</div></td>");
+		buf.append("<td colspan=2><div class='hour'>", ZmFreeBusyView.hourMap[ (start + i) % hours], "</div></td>");
 	}
 	buf.append("<td><div>&nbsp;</div></td></tr>");
 
 	// write the row with the paginate areas
-	buf.append("<tr class='hiddenRow'><td></td><td></td><td class='endZoneCell' onclick='LsCore.objectWithId(",this.__internalId,").paginate(", LmFreeBusyView.PAGINATE_BACK, ")' rowspan='", (this._totalRows + 300), "'><div class='endZoneContainer'>", LsImg.getImageHtml(LmImg.CAL_FB_PREV_DAY), "</div></td>");
+	buf.append("<tr class='hiddenRow'><td></td><td></td><td class='endZoneCell' onclick='AjxCore.objectWithId(",this.__internalId,").paginate(", ZmFreeBusyView.PAGINATE_BACK, ")' rowspan='", (this._totalRows + 300), "'><div class='endZoneContainer'>", AjxImg.getImageHtml(ZmImg.CAL_FB_PREV_DAY), "</div></td>");
 	for (i = 0; i < numCells; ++i) {
 		buf.append("<td></td>");
 	}
-	buf.append("<td class='endZoneCell' rowspan=", (this._totalRows + 300), " onclick='LsCore.objectWithId(",this.__internalId,").paginate(", LmFreeBusyView.PAGINATE_FORWARD, ")'><div class='endZoneContainer'>", LsImg.getImageHtml(LmImg.CAL_FB_NEXT_DAY,"height:249px; border-bottom:1px solid #9F9F9F"),"</div></td></tr>");
+	buf.append("<td class='endZoneCell' rowspan=", (this._totalRows + 300), " onclick='AjxCore.objectWithId(",this.__internalId,").paginate(", ZmFreeBusyView.PAGINATE_FORWARD, ")'><div class='endZoneContainer'>", AjxImg.getImageHtml(ZmImg.CAL_FB_NEXT_DAY,"height:249px; border-bottom:1px solid #9F9F9F"),"</div></td></tr>");
 	// write the aggregate row
-	buf.append("<tr><td class='", LmFreeBusyView.ADDRESS_CELL, "'><div class='mozWidth'>&nbsp;</div></td><td class='", LmFreeBusyView.ADDRESS_INPUT_CELL,"'><div>All Attendees</div></td>");
+	buf.append("<tr><td class='", ZmFreeBusyView.ADDRESS_CELL, "'><div class='mozWidth'>&nbsp;</div></td><td class='", ZmFreeBusyView.ADDRESS_INPUT_CELL,"'><div>All Attendees</div></td>");
 
 	var rowBuf = new Array();
 	var idx = 0;
@@ -303,13 +303,13 @@ LmFreeBusyView.prototype._renderSchedules = function ( buf, containerHeight) {
 			   
 };
 
-LmFreeBusyView.prototype._updateAggregatedSchedule = function (blocks) {
+ZmFreeBusyView.prototype._updateAggregatedSchedule = function (blocks) {
 	for (var i = 0; i < blocks.length; ++i){
 		this._aggregatedSchedule.push(blocks[i]);
 	}
 };
 
-LmFreeBusyView.prototype._createAggregatedSchedule = function () {
+ZmFreeBusyView.prototype._createAggregatedSchedule = function () {
 	this._aggregatedSchedule = new Array();
 	var len = this.userSchedules.length;
 	for ( var i = 0; i < len; ++i) {
@@ -321,7 +321,7 @@ LmFreeBusyView.prototype._createAggregatedSchedule = function () {
 	}
 };
 
-LmFreeBusyView.prototype._getViewHours = function () {
+ZmFreeBusyView.prototype._getViewHours = function () {
 	if (this._viewHours == null) {
 		var duration = this.endDate.getTime() - this.startDate.getTime();
 		this._viewHours = this._durationToCellNum(duration)/2;
@@ -329,15 +329,15 @@ LmFreeBusyView.prototype._getViewHours = function () {
 	return this._viewHours;
 };
 
-LmFreeBusyView.prototype._getStartHour = function () {
+ZmFreeBusyView.prototype._getStartHour = function () {
 	return this.startDate.getHours();
 };
 
 
-LmFreeBusyView.prototype._dateToCell = function (date) {
+ZmFreeBusyView.prototype._dateToCell = function (date) {
 	var start = this._getStartHour();
 	var hours = date.getHours();
-	var min = LsDateUtil.getRoundedMins(date, 30);
+	var min = AjxDateUtil.getRoundedMins(date, 30);
 	if (min == 60){
 		hours++;
 	} else if (min == 30){
@@ -356,7 +356,7 @@ LmFreeBusyView.prototype._dateToCell = function (date) {
 // date picker rendering methods
 // ========================================================================
 
-LmFreeBusyView.prototype._createDatePicker = function (date, isEnd) {
+ZmFreeBusyView.prototype._createDatePicker = function (date, isEnd) {
 	var dateCell, timeHrCell, timeMinCell, timeAmPmCell;
 	if (isEnd) {
 		dateCell = document.getElementById(this._endDateId);
@@ -380,7 +380,7 @@ LmFreeBusyView.prototype._createDatePicker = function (date, isEnd) {
 	cal.setDate(date);
 	dPick.__cal = cal;
 	cal.__date = date;
-	var ls = new LsListener(this, this._dateChangeHandler);
+	var ls = new AjxListener(this, this._dateChangeHandler);
 	cal.addSelectionListener(ls);
 	dPick.setMenu(menu, true);
 	menu.setAssociatedObj(dPick);
@@ -395,16 +395,16 @@ LmFreeBusyView.prototype._createDatePicker = function (date, isEnd) {
 	sel.setSelectedValue("" + hours);
 	var selEl = sel.getHtmlElement();
 	sel.__cal = cal;
-	var ls = new LsListener(this, this._hourChangeHandler);
+	var ls = new AjxListener(this, this._hourChangeHandler);
 	sel.addChangeListener(ls);
 	selEl.parentNode.removeChild(selEl);
 	timeHrCell.appendChild(selEl);
 
 	var sel = new DwtSelect(this, ["00","15","30","45"]);
-	sel.setSelectedValue(LsDateUtil.getRoundedMins(date, 15));
+	sel.setSelectedValue(AjxDateUtil.getRoundedMins(date, 15));
 	var selEl = sel.getHtmlElement();
 	sel.__cal = cal;
-	var ls = new LsListener(this, this._minuteChangeHandler);
+	var ls = new AjxListener(this, this._minuteChangeHandler);
 	sel.addChangeListener(ls);
 	selEl.parentNode.removeChild(selEl);
 	timeMinCell.appendChild(selEl);
@@ -413,7 +413,7 @@ LmFreeBusyView.prototype._createDatePicker = function (date, isEnd) {
 	sel.setSelectedValue( (date.getHours() >= 12)? "PM": "AM");
 	var selEl = sel.getHtmlElement();
 	sel.__cal = cal;
-	var ls = new LsListener(this, this._amPmChangeHandler);
+	var ls = new AjxListener(this, this._amPmChangeHandler);
 	sel.addChangeListener(ls);
 	selEl.parentNode.removeChild(selEl);
 	timeAmPmCell.appendChild(selEl);
@@ -421,7 +421,7 @@ LmFreeBusyView.prototype._createDatePicker = function (date, isEnd) {
 
 };
 
-LmFreeBusyView.prototype._getSelectOptions = function (choices) {
+ZmFreeBusyView.prototype._getSelectOptions = function (choices) {
 	var selectOptions = new Array();
 	for (var i = 0; i < choices.length; i++) {
 		var choice = choices[i];
@@ -432,12 +432,12 @@ LmFreeBusyView.prototype._getSelectOptions = function (choices) {
 	return selectOptions;
 };
 
-LmFreeBusyView.prototype._getDateValueStr = function(date) {
+ZmFreeBusyView.prototype._getDateValueStr = function(date) {
 	if (date == null || !(date instanceof Date)) return "";
 	return (date.getMonth()+1) + "/" + date.getDate() + "/" + (date.getFullYear());
 };
 
-LmFreeBusyView.prototype._getTimeValueStr = function(date, rounded) {
+ZmFreeBusyView.prototype._getTimeValueStr = function(date, rounded) {
 	if (date == null || !(date instanceof Date)) date = new Date();
 	var mins = date.getMinutes();
 	var hours = date.getHours();
@@ -455,11 +455,11 @@ LmFreeBusyView.prototype._getTimeValueStr = function(date, rounded) {
 // ========================================================================
 // render helper methods
 // ========================================================================
-LmFreeBusyView.prototype._getClassName = function (block) {
-	return LmFreeBusyView.BLOCK_TYPE_TO_CLASSNAME[block.type];
+ZmFreeBusyView.prototype._getClassName = function (block) {
+	return ZmFreeBusyView.BLOCK_TYPE_TO_CLASSNAME[block.type];
 };
 
-LmFreeBusyView.prototype._renderExtraRows = function (buf, rowString, containerHeight, alreadyRendered) {
+ZmFreeBusyView.prototype._renderExtraRows = function (buf, rowString, containerHeight, alreadyRendered) {
 	if (this._totalRows > alreadyRendered) {
 		var extraRows = this._totalRows - alreadyRendered;
 		var replacedRowString = null;
@@ -470,21 +470,21 @@ LmFreeBusyView.prototype._renderExtraRows = function (buf, rowString, containerH
 
 };
 
-LmFreeBusyView.prototype._getAddressOnclickHandler = function () {
+ZmFreeBusyView.prototype._getAddressOnclickHandler = function () {
 	if (this._addrOnclickFunc == null) {
-		this._addrOnclickFunc = new Function ("event", "LsCore.objectWithId(" + this.__internalId + ").handleAddrRowClick(event);");
+		this._addrOnclickFunc = new Function ("event", "AjxCore.objectWithId(" + this.__internalId + ").handleAddrRowClick(event);");
 	}
 	return this._addrOnclickFunc;
 };
 
-LmFreeBusyView.prototype._getAddressOnchangeHandler = function () {
+ZmFreeBusyView.prototype._getAddressOnchangeHandler = function () {
 	if (this._addrOnchangeFunc == null) {
-		this._addrOnchangeFunc = new Function ("event", "LsCore.objectWithId(" + this.__internalId + ").handleAddrChange(event);");
+		this._addrOnchangeFunc = new Function ("event", "AjxCore.objectWithId(" + this.__internalId + ").handleAddrChange(event);");
 	}
 	return this._addrOnchangeFunc;
 };
 
-LmFreeBusyView.prototype._getAddressInput = function (address) {
+ZmFreeBusyView.prototype._getAddressInput = function (address) {
 	if (this._dummyInput == null) {
 		this._dummyInput = document.createElement("input");
 	}
@@ -500,21 +500,21 @@ LmFreeBusyView.prototype._getAddressInput = function (address) {
 // ========================================================================
 
 /** This assumes that the skeleton grid has been set in the dom **/
-LmFreeBusyView.prototype._writeAggregatedRow = function () {
+ZmFreeBusyView.prototype._writeAggregatedRow = function () {
 	this._updateScheduleRow(this._aggregatedSchedule, 2, null, true);
 };
 
-LmFreeBusyView.prototype._resetAggregatedRow = function () {
+ZmFreeBusyView.prototype._resetAggregatedRow = function () {
 	this._resetScheduleRow(2);
 	var scheduleTable = document.getElementById(this._scheduleTableId);
 	var row = scheduleTable.rows[2];
-	row.cells[0].className = LmFreeBusyView.ADDRESS_CELL;
+	row.cells[0].className = ZmFreeBusyView.ADDRESS_CELL;
 	row.cells[0].innerHTML = "<div class='mozWidth'></div>";
-	row.cells[1].className = LmFreeBusyView.ADDRESS_INPUT_CELL;
+	row.cells[1].className = ZmFreeBusyView.ADDRESS_INPUT_CELL;
 	row.cells[1].innerHTML = "<div>All Attendees</div>";
 };
 
-LmFreeBusyView.prototype._resetScheduleRow = function (index, optionalRow) {
+ZmFreeBusyView.prototype._resetScheduleRow = function (index, optionalRow) {
 	var scheduleTable = document.getElementById(this._scheduleTableId);
 	var row;
 	if (optionalRow != null) {
@@ -528,7 +528,7 @@ LmFreeBusyView.prototype._resetScheduleRow = function (index, optionalRow) {
 	scheduleTable.lastChild.replaceChild(newRow, row);
 };
 
-LmFreeBusyView.prototype._updateRow = function (schedule, index, optionalRow) {
+ZmFreeBusyView.prototype._updateRow = function (schedule, index, optionalRow) {
 	var row;
 	if (optionalRow != null) {
 		row = optionalRow;
@@ -543,14 +543,14 @@ LmFreeBusyView.prototype._updateRow = function (schedule, index, optionalRow) {
 	this._updateScheduleRow(schedule, index, row);	
 };
 
-LmFreeBusyView.prototype._addRow = function (scheduleTable) {
+ZmFreeBusyView.prototype._addRow = function (scheduleTable) {
 	var row = scheduleTable.rows[scheduleTable.rows.length - 1].cloneNode(true);
 	scheduleTable.tBodies[0].insertBefore(row, null);
 	this._totalRows++;
 	return row;
 };
 
-LmFreeBusyView.prototype._removeRow = function (index) {
+ZmFreeBusyView.prototype._removeRow = function (index) {
 	var scheduleTable = document.getElementById(this._scheduleTableId);
 	//var row = scheduleTable.rows[index]
 	if (index < scheduleTable.rows.length) {
@@ -559,11 +559,11 @@ LmFreeBusyView.prototype._removeRow = function (index) {
 	}
 };
 
-LmFreeBusyView.prototype._updateEmptyRow = function (index) {
+ZmFreeBusyView.prototype._updateEmptyRow = function (index) {
 	this._updateAddressRow(null, index, null, true);
 };
 
-LmFreeBusyView.prototype._updateAddressRow = function (userSchedule, index, optionalRow, empty){
+ZmFreeBusyView.prototype._updateAddressRow = function (userSchedule, index, optionalRow, empty){
 	var row;
 	if (optionalRow != null) {
 		row = optionalRow;
@@ -583,24 +583,24 @@ LmFreeBusyView.prototype._updateAddressRow = function (userSchedule, index, opti
 		}
 	} else {
 		row.id = "LMFBA_Empty";
-		addr = LmFreeBusyView.ADD_NAME_MSG;
+		addr = ZmFreeBusyView.ADD_NAME_MSG;
 	}
 	var onclickFunc = this._getAddressOnclickHandler();
 	var cell0 = row.cells[0];
 	var cell1 = row.cells[1];
 	cell0.onclick = onclickFunc;
 	cell1.onclick = onclickFunc;
-	cell0.className = LmFreeBusyView.ADDRESS_CELL;
+	cell0.className = ZmFreeBusyView.ADDRESS_CELL;
 	if (empty == true) {
-		cell1.className = LmFreeBusyView.ADDRESS_INPUT_EMPTY_CELL;
+		cell1.className = ZmFreeBusyView.ADDRESS_INPUT_EMPTY_CELL;
 	} else {
-		cell1.className = LmFreeBusyView.ADDRESS_INPUT_CELL;
+		cell1.className = ZmFreeBusyView.ADDRESS_INPUT_CELL;
 	}
 	cell1.innerHTML = "";
 	cell1.appendChild(this._getAddressInput(addr));
 };
 
-LmFreeBusyView.prototype._updateScheduleRow = function (userSchedule, index, optionalRow, aggregated) {
+ZmFreeBusyView.prototype._updateScheduleRow = function (userSchedule, index, optionalRow, aggregated) {
 	var row;
 	if (optionalRow != null) {
 		row = optionalRow;
@@ -641,7 +641,7 @@ LmFreeBusyView.prototype._updateScheduleRow = function (userSchedule, index, opt
 				if (cell.className){
 					var clArr = cell.className.split("Higlighted");
 					var baseCl = clArr[0];
-					if (LmFreeBusyView.TYPE_RANKING[baseCl] > LmFreeBusyView.TYPE_RANKING[className]){
+					if (ZmFreeBusyView.TYPE_RANKING[baseCl] > ZmFreeBusyView.TYPE_RANKING[className]){
 						continue;
 					}
 				}
@@ -650,7 +650,7 @@ LmFreeBusyView.prototype._updateScheduleRow = function (userSchedule, index, opt
 			className = baseClassName;
 			var highlight = (cell.className.indexOf("Highlighted") != -1);
 			if (highlight) {
-				className = LmFreeBusyView.CLASS_TO_HIGHLIGHTEDCLASS[baseClassName];
+				className = ZmFreeBusyView.CLASS_TO_HIGHLIGHTEDCLASS[baseClassName];
 			}
 			cell.className = className;
 			cell = cell.nextSibling;
@@ -662,7 +662,7 @@ LmFreeBusyView.prototype._updateScheduleRow = function (userSchedule, index, opt
 // ========================================================================
 // Event handling methods
 // ========================================================================
-LmFreeBusyView.prototype.paginate = function (direction) {
+ZmFreeBusyView.prototype.paginate = function (direction) {
 
 	var len = this.userSchedules.length;
 	var uids = new Array();
@@ -671,31 +671,31 @@ LmFreeBusyView.prototype.paginate = function (direction) {
 	}
 	var v;
 	switch (direction) {
-	case LmFreeBusyView.PAGINATE_FORWARD:
-		LsDateUtil.roll(this.startDate, LsDateUtil.DAY, 1);
-		LsDateUtil.roll(this.endDate, LsDateUtil.DAY, 1);
+	case ZmFreeBusyView.PAGINATE_FORWARD:
+		AjxDateUtil.roll(this.startDate, AjxDateUtil.DAY, 1);
+		AjxDateUtil.roll(this.endDate, AjxDateUtil.DAY, 1);
 		break;
-	case LmFreeBusyView.PAGINATE_BACK:
-		LsDateUtil.roll(this.startDate, LsDateUtil.DAY, -1);
-		LsDateUtil.roll(this.endDate, LsDateUtil.DAY, -1);
+	case ZmFreeBusyView.PAGINATE_BACK:
+		AjxDateUtil.roll(this.startDate, AjxDateUtil.DAY, -1);
+		AjxDateUtil.roll(this.endDate, AjxDateUtil.DAY, -1);
 		break;
 	};
 	this.getSchedulesForDates(this.startDate, this.endDate, uids);
 };
 
-LmFreeBusyView.prototype.getSchedulesForDates = function (start, end, uids) {
+ZmFreeBusyView.prototype.getSchedulesForDates = function (start, end, uids) {
 	this.startDate.setTime(start.getTime());
 	this.endDate.setTime(end.getTime());
 	this.userSchedules = LmUserSchedule.getSchedules(this.startDate, this.endDate, uids);
 	this.setSchedules(this.userSchedules);
 	
 	// set the display date
-	document.getElementById(this._rangeDateId).innerHTML = LsDateUtil.getTimeStr(this.startDate, "%M %d, %Y");
+	document.getElementById(this._rangeDateId).innerHTML = AjxDateUtil.getTimeStr(this.startDate, "%M %d, %Y");
 	this.highlightAppointment();
 
 };
 
-LmFreeBusyView.prototype.setSchedules = function (schedules){
+ZmFreeBusyView.prototype.setSchedules = function (schedules){
 	var len = (schedules != null)? schedules.length: 0;
 	var oldLen = this.userSchedules.length;
 	for (var i = 0; i < len ; ++i) {
@@ -721,7 +721,7 @@ LmFreeBusyView.prototype.setSchedules = function (schedules){
 	this._writeAggregatedRow();
 };
 
-LmFreeBusyView.prototype._dateChangeHandler = function (event) {
+ZmFreeBusyView.prototype._dateChangeHandler = function (event) {
 	var newDate = event.detail;
 	var cal = event.item;
 	var dateChanged = cal.__date;
@@ -734,7 +734,7 @@ LmFreeBusyView.prototype._dateChangeHandler = function (event) {
 	this._updateTime(dur, cal.__isEnd);
 };
 
-LmFreeBusyView.prototype._minuteChangeHandler = function (event) {
+ZmFreeBusyView.prototype._minuteChangeHandler = function (event) {
 	var sel = event._args.selectObj;
 	var cal = sel.__cal;
 	var date = cal.__date;
@@ -747,7 +747,7 @@ LmFreeBusyView.prototype._minuteChangeHandler = function (event) {
 	this._updateTime(dur, cal.__isEnd);
 };
 
-LmFreeBusyView.prototype._amPmChangeHandler = function (event) {
+ZmFreeBusyView.prototype._amPmChangeHandler = function (event) {
 	var sel = event._args.selectObj;
 	var cal = sel.__cal;
 	var date = cal.__date;
@@ -762,7 +762,7 @@ LmFreeBusyView.prototype._amPmChangeHandler = function (event) {
 
 };
 
-LmFreeBusyView.prototype._updateTime = function (dur, isEnd, isHour) {
+ZmFreeBusyView.prototype._updateTime = function (dur, isEnd, isHour) {
 	var oldStartDate = this._currentAppt.getStartDate().getDate();
 	// make adjustments ( apply our constraints );
 	this._adjustStartEndDate(dur, isEnd, isHour);
@@ -790,7 +790,7 @@ LmFreeBusyView.prototype._updateTime = function (dur, isEnd, isHour) {
 	
 };
 
-LmFreeBusyView.prototype._hourChangeHandler = function (event) {
+ZmFreeBusyView.prototype._hourChangeHandler = function (event) {
 	var sel = event._args.selectObj;
 	var cal = sel.__cal;
 	var date = cal.__date;
@@ -808,12 +808,12 @@ LmFreeBusyView.prototype._hourChangeHandler = function (event) {
 };
 
 
-LmFreeBusyView.prototype._getRowFromAddressEvent = function ( event ){
+ZmFreeBusyView.prototype._getRowFromAddressEvent = function ( event ){
 	var target = DwtUiEvent.getTarget(event);
 	return this._getAncestor(target, "TR");
 };
 
-LmFreeBusyView.prototype.handleAddrRowClick = function ( event ) {
+ZmFreeBusyView.prototype.handleAddrRowClick = function ( event ) {
 	event = DwtUiEvent.getEvent(event);
 	var target = DwtUiEvent.getTarget(event);
 	var row = this._getRowFromAddressEvent(event);
@@ -841,7 +841,7 @@ LmFreeBusyView.prototype.handleAddrRowClick = function ( event ) {
 	}
 };
 
-LmFreeBusyView.prototype._getAncestor = function (element, tag) {
+ZmFreeBusyView.prototype._getAncestor = function (element, tag) {
 	if (!element){
 		return null;
 	}
@@ -856,7 +856,7 @@ LmFreeBusyView.prototype._getAncestor = function (element, tag) {
 	return retEl;
 };
 
-LmFreeBusyView.prototype.handleAddrChange = function ( event ) {
+ZmFreeBusyView.prototype.handleAddrChange = function ( event ) {
 	// This is really to prevent us making a server request when
 	// the view is going 
 	if (!this._enabled) return true;
@@ -904,7 +904,7 @@ LmFreeBusyView.prototype.handleAddrChange = function ( event ) {
 			// a row deletion.
 			if (tr.id != null) {
 				if (tr.id.indexOf("Empty")!= -1){
-					target.value = LmFreeBusyView.ADD_NAME_MSG;
+					target.value = ZmFreeBusyView.ADD_NAME_MSG;
 				} else {
 
 					// delete row
@@ -927,7 +927,7 @@ LmFreeBusyView.prototype.handleAddrChange = function ( event ) {
 	return true;
 };
 
-LmFreeBusyView.prototype._getScheduleIndexById = function (schedId) {
+ZmFreeBusyView.prototype._getScheduleIndexById = function (schedId) {
 	var index = -1;
 	for (var i = 0 ; i < this.userSchedules.length ; ++i ){
 		if (this.userSchedules[i].getUniqueId() == schedId ){
@@ -939,7 +939,7 @@ LmFreeBusyView.prototype._getScheduleIndexById = function (schedId) {
 	return index;
 };
 
-LmFreeBusyView.prototype._handleScheduleMouseDown = function (event){
+ZmFreeBusyView.prototype._handleScheduleMouseDown = function (event){
 	var target = DwtUiEvent.getTarget(event);
 	var hourCell = target.cellIndex;
 	// if we are in the address section of the table, don't do anything
@@ -960,17 +960,17 @@ LmFreeBusyView.prototype._handleScheduleMouseDown = function (event){
 	this.highlightRange(hourCell, 1800000);
 };
 
-LmFreeBusyView.prototype._selectAddress = function ( cell, selected ) {
+ZmFreeBusyView.prototype._selectAddress = function ( cell, selected ) {
 	if (cell) {
 		if (selected) {
-			cell.className = LmFreeBusyView.ADDR_SELECTED;
+			cell.className = ZmFreeBusyView.ADDR_SELECTED;
 		} else {
-			cell.className = LmFreeBusyView.ADDRESS_CELL;
+			cell.className = ZmFreeBusyView.ADDRESS_CELL;
 		}
 	}
 };
 
-LmFreeBusyView.prototype._updateDateTimes = function () {
+ZmFreeBusyView.prototype._updateDateTimes = function () {
 	//DBG.println("_updateDateTimes startDate = ", this._currentAppt.getStartDate(), " end = " , this._currentAppt.getEndDate());
 	var startDateCell = document.getElementById(this._startDateId);
 	var startTimeHrCell = document.getElementById(this._startTimeHrId);
@@ -982,25 +982,25 @@ LmFreeBusyView.prototype._updateDateTimes = function () {
 	var endTimeAmPmCell = document.getElementById(this._endTimeAmPmId);
 	
 	var startDate = this._currentAppt.getStartDate();
-	var b = LsCore.objectWithId(startDateCell.firstChild.dwtObj);
+	var b = AjxCore.objectWithId(startDateCell.firstChild.dwtObj);
 	if (b) {
 		b.setText(this._getDateValueStr(startDate));
 		b.__cal.setDate(startDate, true);
 	}
-	var sel = LsCore.objectWithId(startTimeHrCell.firstChild.dwtObj);
+	var sel = AjxCore.objectWithId(startTimeHrCell.firstChild.dwtObj);
 	if (sel) {
 		var hr = startDate.getHours() %12;
 		hr = (hr == 0) ? "12": "" + hr;
 		sel.setSelectedValue(hr);
 	}
 
-	sel = LsCore.objectWithId(startTimeMinCell.firstChild.dwtObj);
+	sel = AjxCore.objectWithId(startTimeMinCell.firstChild.dwtObj);
 	if (sel) {
-		var min = LsDateUtil._pad(LsDateUtil.getRoundedMins(startDate));
+		var min = AjxDateUtil._pad(AjxDateUtil.getRoundedMins(startDate));
 		sel.setSelectedValue(min);
 	}
 	
-	sel = LsCore.objectWithId(startTimeAmPmCell.firstChild.dwtObj);
+	sel = AjxCore.objectWithId(startTimeAmPmCell.firstChild.dwtObj);
 	if (sel) {
 		var amPm = (startDate.getHours() >= 12)? LsMsg.pm: LsMsg.am;
 		sel.setSelectedValue(amPm);
@@ -1008,35 +1008,35 @@ LmFreeBusyView.prototype._updateDateTimes = function () {
 
 
 	var endDate = this._currentAppt.getEndDate();
-	b = LsCore.objectWithId(endDateCell.firstChild.dwtObj);
+	b = AjxCore.objectWithId(endDateCell.firstChild.dwtObj);
 	if (b) {
 		b.setText(this._getDateValueStr(endDate));
 		b.__cal.setDate(endDate,true);
 	}
 
-	sel = LsCore.objectWithId(endTimeHrCell.firstChild.dwtObj);
+	sel = AjxCore.objectWithId(endTimeHrCell.firstChild.dwtObj);
 	if (sel) {
 		var hr = endDate.getHours() %12;
 		hr = (hr == 0) ? "12": "" + hr;
 		sel.setSelectedValue(hr);
 	}
 
-	sel = LsCore.objectWithId(endTimeMinCell.firstChild.dwtObj);
+	sel = AjxCore.objectWithId(endTimeMinCell.firstChild.dwtObj);
 	if (sel) {
-		var min = LsDateUtil._pad(LsDateUtil.getRoundedMins(endDate));
+		var min = AjxDateUtil._pad(AjxDateUtil.getRoundedMins(endDate));
 		sel.setSelectedValue(min);
 	}
 	
-	sel = LsCore.objectWithId(endTimeAmPmCell.firstChild.dwtObj);
+	sel = AjxCore.objectWithId(endTimeAmPmCell.firstChild.dwtObj);
 	if (sel) {
 		var amPm = (endDate.getHours() >= 12)? LsMsg.pm: LsMsg.am;
 		sel.setSelectedValue(amPm);
 	}
 };
 
-LmFreeBusyView.prototype.getAppointmentAttendees = function () {
+ZmFreeBusyView.prototype.getAppointmentAttendees = function () {
 	var tempArr = new Array();
-	var userName = this.shell.getData(LmAppCtxt.LABEL).get(LmSetting.USERNAME);
+	var userName = this.shell.getData(ZmAppCtxt.LABEL).get(ZmSetting.USERNAME);
 	for (var i = 0; i < this.userSchedules.length; ++i) {
 		if (this.userSchedules[i].id == userName) {
 			continue;
@@ -1045,35 +1045,35 @@ LmFreeBusyView.prototype.getAppointmentAttendees = function () {
 	}
 	var possiblyEmptyRow = document.getElementById("LMFBA_Empty");
 	var val = (possiblyEmptyRow != null)? possiblyEmptyRow.cells[1].firstChild.value: null;
-	if (val != "" && val != LmFreeBusyView.ADD_NAME_MSG) {
+	if (val != "" && val != ZmFreeBusyView.ADD_NAME_MSG) {
 		tempArr.push(val);
 	}
 	return tempArr.toString();
 };
 
-LmFreeBusyView.prototype.getAppointmentStartDate = function () {
+ZmFreeBusyView.prototype.getAppointmentStartDate = function () {
 	return this._currentAppt.getStartDate();
 };
 
-LmFreeBusyView.prototype.getAppointmentEndDate = function () {
+ZmFreeBusyView.prototype.getAppointmentEndDate = function () {
 	return this._currentAppt.getEndDate();
 };
 
-LmFreeBusyView.prototype.disable = function () {
+ZmFreeBusyView.prototype.disable = function () {
 	this._enabled = false;
 };
 
-LmFreeBusyView.prototype.enable = function () {
+ZmFreeBusyView.prototype.enable = function () {
 	this._enabled = true;
 };
 
-LmFreeBusyView.prototype.saveAppointmentInfo = function () {
+ZmFreeBusyView.prototype.saveAppointmentInfo = function () {
 	this._appt.setStartDate(this._currentAppt.getStartDate());
 	this._appt.setEndDate(this._currentAppt.getEndDate());
 	this._appt.attendees = this.getAppointmentAttendees();
 };
 
-LmFreeBusyView.prototype._adjustStartEndDate = function (duration, endChanged, hourChanged) {
+ZmFreeBusyView.prototype._adjustStartEndDate = function (duration, endChanged, hourChanged) {
 	var startDate = this._currentAppt.getStartDate();
 	var endDate = this._currentAppt.getEndDate();
 
@@ -1108,7 +1108,7 @@ LmFreeBusyView.prototype._adjustStartEndDate = function (duration, endChanged, h
 // slider handling methods
 // ========================================================================
 
-LmFreeBusyView.prototype._getCellWidth = function () {
+ZmFreeBusyView.prototype._getCellWidth = function () {
 	if (this._cellWidth == null || this._cellWidth == 0) {
 		var paddingFactor = 1;
 		var start = this._getStartHour();
@@ -1116,7 +1116,7 @@ LmFreeBusyView.prototype._getCellWidth = function () {
 		this._cellWidth = parseInt(DwtCssStyle.getProperty(aCell, "width"));
 		//DBG.println("cell width = " + this._cellWidth);
 		this._cellWidth = (!isNaN(this._cellWidth))? this._cellWidth: 0;
-		if (!LsEnv.isIE){
+		if (!AjxEnv.isIE){
 			var paddingRight = parseFloat(DwtCssStyle.getProperty(aCell, "padding-right"));
 			var paddingLeft = parseFloat(DwtCssStyle.getProperty(aCell, "padding-left"));
 			paddingRight = (!isNaN(paddingRight))? paddingRight: 0;
@@ -1131,7 +1131,7 @@ LmFreeBusyView.prototype._getCellWidth = function () {
 	return this._cellWidth;
 };
 
-LmFreeBusyView.prototype._durationToCellNumRelativeToStart = function (duration, optionalStartCell) {
+ZmFreeBusyView.prototype._durationToCellNumRelativeToStart = function (duration, optionalStartCell) {
 	var startCell = (optionalStartCell != null)? optionalStartCell: this._dateToCell(this._currentAppt.getStartDate());
 	var start = this._getStartHour();
 	var normalizedStartCell = startCell - start;
@@ -1139,11 +1139,11 @@ LmFreeBusyView.prototype._durationToCellNumRelativeToStart = function (duration,
 	return Math.min(dur,  (48  - normalizedStartCell));
 };
 
-LmFreeBusyView.prototype._durationToCellNum = function (duration, optionalStartCell) {
+ZmFreeBusyView.prototype._durationToCellNum = function (duration, optionalStartCell) {
 	return Math.round((duration/1000) / (60 * 30));
 };
 
-LmFreeBusyView.prototype.highlightRange = function(startCell, duration, optionalSlider){
+ZmFreeBusyView.prototype.highlightRange = function(startCell, duration, optionalSlider){
 	var slider = optionalSlider? optionalSlider : document.getElementById(this._sliderId);
 	if (duration > 0) {
 		this._setSliderBounds(startCell, duration, this._getCellWidth(), slider);
@@ -1167,14 +1167,14 @@ LmFreeBusyView.prototype.highlightRange = function(startCell, duration, optional
 		this._lastHighlightedDuration = null;
 	}
 };
-LmFreeBusyView.CLASS_HIGHLIGHTED = "Highlighted";
+ZmFreeBusyView.CLASS_HIGHLIGHTED = "Highlighted";
 
-LmFreeBusyView.prototype._toggleHighlight = function (highlight, rows, numCells, startCellIndex) {
+ZmFreeBusyView.prototype._toggleHighlight = function (highlight, rows, numCells, startCellIndex) {
 	
 	var cell = null;
 	var table = document.getElementById(this._scheduleTableId);
 	var start = this._getStartHour();
-	if (!LsEnv.isIE) {
+	if (!AjxEnv.isIE) {
 		var rows = table.rows;
 		var numRows = rows.length;		
 		for(var i = 2; i < numRows; i++) {
@@ -1187,12 +1187,12 @@ LmFreeBusyView.prototype._toggleHighlight = function (highlight, rows, numCells,
 			for (; (x < stopCell && x < rowLen); ++x){
 				cell = row.cells[x];
 				if (!highlight) {
-					newClass = LmFreeBusyView.HIGHLIGHTEDCLASS_TO_CLASS[cell.className];
+					newClass = ZmFreeBusyView.HIGHLIGHTEDCLASS_TO_CLASS[cell.className];
 					if (newClass != null) {
 						cell.className = newClass;
 					}
 				} else {
-					cell.className = LmFreeBusyView.CLASS_TO_HIGHLIGHTEDCLASS[cell.className];
+					cell.className = ZmFreeBusyView.CLASS_TO_HIGHLIGHTEDCLASS[cell.className];
 				}
 			}
 		}
@@ -1209,11 +1209,11 @@ LmFreeBusyView.prototype._toggleHighlight = function (highlight, rows, numCells,
 	}
 };
 
-LmFreeBusyView.prototype._hideSlider  = function(slider) {
+ZmFreeBusyView.prototype._hideSlider  = function(slider) {
 	slider.style.display = "none";
 };
 
-LmFreeBusyView.prototype._setSliderBounds = function (startCell, duration, cellWidth, slider){
+ZmFreeBusyView.prototype._setSliderBounds = function (startCell, duration, cellWidth, slider){
 	var scheduleTable = document.getElementById(this._scheduleTableId);
 	var scheduleContainer = document.getElementById(this._scheduleContainerId);
 	// get the location relative to our container, since the container will move around.
@@ -1225,9 +1225,9 @@ LmFreeBusyView.prototype._setSliderBounds = function (startCell, duration, cellW
 	slider.style.left = newLeft + "px";
 	slider.style.top  = location.y + "px";
 	var extraRows = 3;
-	//slider.style.height = ((this._totalRows + extraRows)* LmFreeBusyView.ROW_HEIGHT) + "px";
+	//slider.style.height = ((this._totalRows + extraRows)* ZmFreeBusyView.ROW_HEIGHT) + "px";
 	var topTwoRowsHeight = 30;
-	if (LsEnv.isIE) {
+	if (AjxEnv.isIE) {
 		topTwoRowsHeight = 26
 	}
 	slider.style.height = (tableSize.y - topTwoRowsHeight) + "px";
@@ -1250,21 +1250,21 @@ LmFreeBusyView.prototype._setSliderBounds = function (startCell, duration, cellW
 
 
 // ========================================================================
-// LsSelectionManager interface methods
+// AjxSelectionManager interface methods
 // ========================================================================
 
-LmFreeBusyView.prototype.getItemCount = function () {
+ZmFreeBusyView.prototype.getItemCount = function () {
 	return this.userSchedules.length + 1;
 };
 
-LmFreeBusyView.prototype.getItem = function (index) {
+ZmFreeBusyView.prototype.getItem = function (index) {
 	if (index == this.userSchedules.length){
 		return this._dummyBlock;
 	}
 	return this.userSchedules[index];
 };
 
-LmFreeBusyView.prototype.itemSelectionChanged = function (item, index, isSelected) {
+ZmFreeBusyView.prototype.itemSelectionChanged = function (item, index, isSelected) {
 	var id = null;
 	var inputChangeNeeded = false;
 	if (index == this.userSchedules.length) {
@@ -1279,12 +1279,12 @@ LmFreeBusyView.prototype.itemSelectionChanged = function (item, index, isSelecte
 	if (row != null) {
 		this._selectAddress(row.cells[0], isSelected);
 		var input = row.cells[1].firstChild;
-		if (inputChangeNeeded && isSelected && input.value == LmFreeBusyView.ADD_NAME_MSG){
-			row.cells[1].className = LmFreeBusyView.ADDRESS_INPUT_CELL;
+		if (inputChangeNeeded && isSelected && input.value == ZmFreeBusyView.ADD_NAME_MSG){
+			row.cells[1].className = ZmFreeBusyView.ADDRESS_INPUT_CELL;
 			input.value = "";
 		} else if (inputChangeNeeded && !isSelected && input.value == ""){
-			row.cells[1].className = LmFreeBusyView.ADDRESS_INPUT_EMPTY_CELL;
-			input.value =  LmFreeBusyView.ADD_NAME_MSG;
+			row.cells[1].className = ZmFreeBusyView.ADDRESS_INPUT_EMPTY_CELL;
+			input.value =  ZmFreeBusyView.ADD_NAME_MSG;
 		}
 		if (isSelected){
 			input.focus();
@@ -1292,7 +1292,7 @@ LmFreeBusyView.prototype.itemSelectionChanged = function (item, index, isSelecte
 	}
 };
 
-LmFreeBusyView.prototype.selectionChanged = function () {
+ZmFreeBusyView.prototype.selectionChanged = function () {
 	//DBG.println("Selection Changed called");
 	// do nothing for now
 };
@@ -1323,7 +1323,7 @@ LmUserSchedule.prototype.valueOf = function () {
 };
 
 LmUserSchedule.getSchedules = function (start, end, uids) {
-	var soapDoc = LsSoapDoc.create("GetFreeBusyRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:liquidMail");
 	soapDoc.setMethodAttribute("s", start.getTime());
 	soapDoc.setMethodAttribute("e", end.getTime());
 	var u = null;
@@ -1399,7 +1399,7 @@ LmUserSchedule.prototype.getSchedule = function (start, end, uid, force) {
 			this.blocks = new Array();
 		}
 		// go to the server
-		var soapDoc = LsSoapDoc.create("GetFreeBusyRequest", "urn:liquidMail");
+		var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:liquidMail");
 		soapDoc.setMethodAttribute("s", start.getTime());
 		// TODO: Not sure what the period should be here
 		soapDoc.setMethodAttribute("e", end.getTime());
@@ -1444,7 +1444,7 @@ LmBusyBlock.prototype.getDuration = function () {
 LmBusyBlock.prototype.getStartHour = function () {
 	if (this._startDate == null) {
 		this._startDate = new Date(this.startTime);
-		this._startDate = LsDateUtil.roundTimeMins(this._startDate, 30);
+		this._startDate = AjxDateUtil.roundTimeMins(this._startDate, 30);
 		this._startHour = this._startDate.getHours();
 		if (this._startDate.getMinutes() == 30){
 			this._startHour += 0.5;

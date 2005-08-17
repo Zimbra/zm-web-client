@@ -1,47 +1,47 @@
-function LmMoveToDialog(parent, msgDialog, className, folderTree) {
+function ZmMoveToDialog(parent, msgDialog, className, folderTree) {
 
-	var newButton = new DwtDialog_ButtonDescriptor(LmMoveToDialog.NEW_BUTTON, LmMsg._new, DwtDialog.ALIGN_LEFT);
-	LmDialog.call(this, parent, msgDialog, className, LmMsg.move, [newButton]);
+	var newButton = new DwtDialog_ButtonDescriptor(ZmMoveToDialog.NEW_BUTTON, LmMsg._new, DwtDialog.ALIGN_LEFT);
+	ZmDialog.call(this, parent, msgDialog, className, LmMsg.move, [newButton]);
 
 	this.setContent(this._contentHtml());
 	this._setFolderTree(folderTree, null, this._folderTreeCellId, null, true);
 
-	this.registerCallback(LmMoveToDialog.NEW_BUTTON, this._showNewDialog, this);
-	this._changeListener = new LsListener(this, this._folderTreeChangeListener);
+	this.registerCallback(ZmMoveToDialog.NEW_BUTTON, this._showNewDialog, this);
+	this._changeListener = new AjxListener(this, this._folderTreeChangeListener);
 
 	this._creatingFolder = false;
 }
 
-LmMoveToDialog.prototype = new LmDialog;
-LmMoveToDialog.prototype.constructor = LmMoveToDialog;
+ZmMoveToDialog.prototype = new ZmDialog;
+ZmMoveToDialog.prototype.constructor = ZmMoveToDialog;
 
-LmMoveToDialog.NEW_BUTTON = DwtDialog.LAST_BUTTON + 1;
+ZmMoveToDialog.NEW_BUTTON = DwtDialog.LAST_BUTTON + 1;
 
-LmMoveToDialog.prototype.toString = 
+ZmMoveToDialog.prototype.toString = 
 function() {
-	return "LmMoveToDialog";
+	return "ZmMoveToDialog";
 }
 
-LmMoveToDialog.prototype.popup =
+ZmMoveToDialog.prototype.popup =
 function(data, loc) {
 	var omit = new Object();
-	omit[LmFolder.ID_DRAFTS] = true;
-	if (data instanceof LmFolder) {
+	omit[ZmFolder.ID_DRAFTS] = true;
+	if (data instanceof ZmFolder) {
 		this._folder = data;
-		omit[LmFolder.ID_SPAM] = true;
+		omit[ZmFolder.ID_SPAM] = true;
 	} else {
 		this._items = data;
 	}
 
 	this._folderTree.removeChangeListener(this._changeListener);
-	var folders = [LmFolder.ID_USER];
+	var folders = [ZmFolder.ID_USER];
 	this._folderTreeView.set(this._folderTree, folders, false, omit);
 	// this listener has to be added after folder tree view is set (so that it comes after the view's standard change listener)
 	this._folderTree.addChangeListener(this._changeListener);
 
-	LmDialog.prototype.popup.call(this, loc);
-	if (this._appCtxt.get(LmSetting.USER_FOLDERS_ENABLED)) {
-		var userFolder = this._folderTree.getById(LmFolder.ID_USER);
+	ZmDialog.prototype.popup.call(this, loc);
+	if (this._appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED)) {
+		var userFolder = this._folderTree.getById(ZmFolder.ID_USER);
 		var ti = this._folderTreeView.getTreeItemById(userFolder.id);
 		ti.setExpanded(true);
 		if (this._folder)
@@ -49,7 +49,7 @@ function(data, loc) {
 	}
 }
 
-LmMoveToDialog.prototype._contentHtml = 
+ZmMoveToDialog.prototype._contentHtml = 
 function() {
 	this._folderTreeCellId = Dwt.getNextId();
 	var html = new Array();
@@ -62,7 +62,7 @@ function() {
 	return html.join("");
 }
 
-LmMoveToDialog.prototype._showNewDialog =
+ZmMoveToDialog.prototype._showNewDialog =
 function() {
 	var dialog = this._appCtxt.getNewFolderDialog();
 	dialog.reset();
@@ -70,7 +70,7 @@ function() {
 	dialog.popup(null, this);
 }
 
-LmMoveToDialog.prototype._newCallback =
+ZmMoveToDialog.prototype._newCallback =
 function(args) {
 	var ftc = this._appCtxt.getOverviewPanelController().getFolderTreeController();
 	ftc._schedule(ftc._doCreate, {name: args[0], parent: args[1]});
@@ -78,15 +78,15 @@ function(args) {
 	this._creatingFolder = true;
 }
 
-LmMoveToDialog.prototype._folderTreeChangeListener =
+ZmMoveToDialog.prototype._folderTreeChangeListener =
 function(ev) {
-	if (ev.event == LmEvent.E_CREATE && this._creatingFolder) {
+	if (ev.event == ZmEvent.E_CREATE && this._creatingFolder) {
 		this._folderTreeView.setSelected(ev.source, true);
 		this._creatingFolder = false;
 	}
 }
 
-LmMoveToDialog.prototype._okButtonListener =
+ZmMoveToDialog.prototype._okButtonListener =
 function(ev) {
 	var msg;
 	var tgtFolder = this._folderTreeView.getSelected();

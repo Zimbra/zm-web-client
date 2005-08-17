@@ -1,20 +1,20 @@
-function LmMixedApp(appCtxt, container) {
-	LmApp.call(this, LmLiquidMail.MIXED_APP, appCtxt, container);
+function ZmMixedApp(appCtxt, container) {
+	ZmApp.call(this, ZmLiquidMail.MIXED_APP, appCtxt, container);
 }
 
-LmMixedApp.prototype = new LmApp;
-LmMixedApp.prototype.constructor = LmMixedApp;
+ZmMixedApp.prototype = new ZmApp;
+ZmMixedApp.prototype.constructor = ZmMixedApp;
 
-LmMixedApp.prototype.toString = 
+ZmMixedApp.prototype.toString = 
 function() {
-	return "LmMixedApp";
+	return "ZmMixedApp";
 }
 
-LmMixedApp.prototype.launch = function() {}
+ZmMixedApp.prototype.launch = function() {}
 
-LmMixedApp.prototype.getMixedController =
+ZmMixedApp.prototype.getMixedController =
 function() {
 	if (!this._mixedController)
-		this._mixedController = new LmMixedController(this._appCtxt, this._container, this);
+		this._mixedController = new ZmMixedController(this._appCtxt, this._container, this);
 	return this._mixedController;
 }

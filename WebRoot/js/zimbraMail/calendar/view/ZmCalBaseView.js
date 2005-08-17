@@ -1,23 +1,23 @@
-function LmCalBaseView(parent, className, posStyle, view, dropTgt) {
+function ZmCalBaseView(parent, className, posStyle, view, dropTgt) {
 	if (arguments.length == 0) return;
 
-	DBG.println("LmCalBaseView");
-	LmListView.call(this, parent, className, posStyle, view, LmItem.APPT, null, dropTgt);
+	DBG.println("ZmCalBaseView");
+	ZmListView.call(this, parent, className, posStyle, view, ZmItem.APPT, null, dropTgt);
 	this._timeRangeStart = 0;
 	this._timeRangeEnd = 0;
-	this.addControlListener(new LsListener(this, this._controlListener));	
+	this.addControlListener(new AjxListener(this, this._controlListener));	
 	this._createHtml();
 	this._firstSet = true;
 	this._needsRefresh = true;
 	this.setMultiSelect(false);
 }
 
-LmCalBaseView.prototype = new LmListView;
-LmCalBaseView.prototype.constructor = LmCalBaseView;
+ZmCalBaseView.prototype = new ZmListView;
+ZmCalBaseView.prototype.constructor = ZmCalBaseView;
 
-LmCalBaseView.TIME_SELECTION = "LmCalTimeSelection";
+ZmCalBaseView.TIME_SELECTION = "LmCalTimeSelection";
 
-LmCalBaseView.prototype._parseId =
+ZmCalBaseView.prototype._parseId =
 function(id) {
 	var m = id.match(/^V(\d+)_([a-z]?)((DWT)?.+)_?(\d*)$/);
 	if (m)
@@ -26,95 +26,95 @@ function(id) {
 		return null;
 }
 
-LmCalBaseView.prototype.getTitle = 
+ZmCalBaseView.prototype.getTitle = 
 function() {
 	return [LmMsg.zimbraTitle, this.getCalTitle()].join(": ");
 }
 
-LmCalBaseView.prototype.needsRefresh = 
+ZmCalBaseView.prototype.needsRefresh = 
 function() {
 	return this._needsRefresh;
 }
 
-LmCalBaseView.prototype.setNeedsRefresh = 
+ZmCalBaseView.prototype.setNeedsRefresh = 
 function(refresh) {
 	 this._needsRefresh = refresh;
 }
 
-LmCalBaseView.prototype.isFirstSet = 
+ZmCalBaseView.prototype.isFirstSet = 
 function() {
 	return this._firstSet;
 }
 
-LmCalBaseView.prototype.setFirstSet = 
+ZmCalBaseView.prototype.setFirstSet = 
 function(set) {
 	this._firstSet = set;
 }
 
-LmCalBaseView.prototype._getItemId =
+ZmCalBaseView.prototype._getItemId =
 function(item) {
 	return id = item ? (this._getViewPrefix()+item.getUniqueId()) : null;
 }
 
-LmCalBaseView.prototype.addTimeSelectionListener = 
+ZmCalBaseView.prototype.addTimeSelectionListener = 
 function(listener) {
-	this.addListener(LmCalBaseView.TIME_SELECTION, listener);
+	this.addListener(ZmCalBaseView.TIME_SELECTION, listener);
 }
 
-LmCalBaseView.prototype.removeTimeSelectionListener = 
+ZmCalBaseView.prototype.removeTimeSelectionListener = 
 function(listener) { 
-	this.removeListener(LmCalBaseView.TIME_SELECTION, listener);
+	this.removeListener(ZmCalBaseView.TIME_SELECTION, listener);
 }
 
-LmCalBaseView.prototype.addDateRangeListener = 
+ZmCalBaseView.prototype.addDateRangeListener = 
 function(listener) {
 	this.addListener(DwtEvent.DATE_RANGE, listener);
 }
 
-LmCalBaseView.prototype.removeDateRangeListener = 
+ZmCalBaseView.prototype.removeDateRangeListener = 
 function(listener) { 
 	this.removeListener(DwtEvent.DATE_RANGE, listener);
 }
 
 // override. 
-LmCalBaseView.prototype.getRollField =
+ZmCalBaseView.prototype.getRollField =
 function(isDouble)
 {
 	return 0;
 }
 
-LmCalBaseView.prototype.getDate =
+ZmCalBaseView.prototype.getDate =
 function() {
 	return this._date;
 }
 
-LmCalBaseView.prototype.getTimeRange =
+ZmCalBaseView.prototype.getTimeRange =
 function() {
 	return { start: this._timeRangeStart, end: this._timeRangeEnd };
 }
 
-LmCalBaseView.prototype.isInView =
+ZmCalBaseView.prototype.isInView =
 function(appt) {
 	return appt.isInRange(this._timeRangeStart, this._timeRangeEnd);
 }
 
-LmCalBaseView.prototype.isStartInView =
+ZmCalBaseView.prototype.isStartInView =
 function(appt) {
 	return appt.isStartInRange(this._timeRangeStart, this._timeRangeEnd);
 }
 
-LmCalBaseView.prototype.isEndInView =
+ZmCalBaseView.prototype.isEndInView =
 function(appt) {
 	return appt.isEndInRange(this._timeRangeStart, this._timeRangeEnd);
 }
 
-LmCalBaseView.prototype._dayKey =
+ZmCalBaseView.prototype._dayKey =
 function(date) {
 	var key = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate();
 	return key;
 }
 
-LmCalBaseView.prototype.setDate =
+ZmCalBaseView.prototype.setDate =
 function(date, duration, roll)
 {
 	this._date = new Date(date.getTime());
@@ -144,7 +144,7 @@ function(date, duration, roll)
 /*
 * override: responsible for updating any view-specific data when the date changes during a setDate call.
 */
-LmCalBaseView.prototype._dateUpdate =
+ZmCalBaseView.prototype._dateUpdate =
 function(rangeChanged) 
 {
 
@@ -156,31 +156,31 @@ function(rangeChanged)
 * you are in month view though and have a day selected, thne day should still be selected if the appt you clicked on is in 
 * the same day.
 */
-LmCalBaseView.prototype._apptSelected =
+ZmCalBaseView.prototype._apptSelected =
 function() {
 
 }
 
 // override
-LmCalBaseView.prototype._updateRange =
+ZmCalBaseView.prototype._updateRange =
 function() { }
 
 // override 
-LmCalBaseView.prototype._updateTitle =
+ZmCalBaseView.prototype._updateTitle =
 function() { }
 
 
-LmCalBaseView.prototype.addAppt = 
+ZmCalBaseView.prototype.addAppt = 
 function(ao, now) {
 	var item = this._createItemHtml(ao, now);
 	var div = this._getDivForAppt(ao);
 	if (div) div.appendChild(item);
 }
 
-LmCalBaseView.prototype.set = 
+ZmCalBaseView.prototype.set = 
 function(list) {
 	this._preSet();
-//	LmListView.prototype.set.call(this, list);
+//	ZmListView.prototype.set.call(this, list);
 	this._selectedItems.removeAll();
 	this._resetList();
 	this._list = list;	
@@ -199,51 +199,51 @@ function(list) {
 }
 
 // override
-LmCalBaseView.prototype._fanoutAllDay =
+ZmCalBaseView.prototype._fanoutAllDay =
 function(appt) {
 	return true;
 }
 
 // override
-LmCalBaseView.prototype._postSet =
+ZmCalBaseView.prototype._postSet =
 function(appt) {}
 
 // override
-LmCalBaseView.prototype._preSet =
+ZmCalBaseView.prototype._preSet =
 function(appt) {}
 
 // override
-LmCalBaseView.prototype._getDivForAppt =
+ZmCalBaseView.prototype._getDivForAppt =
 function(appt) {}
 
-LmCalBaseView.prototype.setUI =
+ZmCalBaseView.prototype.setUI =
 function(defaultColumnSort) {	/* do nothing */ }
 
-LmCalBaseView.prototype._setNoResultsHtml =
+ZmCalBaseView.prototype._setNoResultsHtml =
 function() { /* do nothing */ }
 
-LmCalBaseView.prototype._addApptIcons =
+ZmCalBaseView.prototype._addApptIcons =
 function(appt, html, idx) {
 
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
 
 	if (appt.hasOtherAttendees())
-		html[idx++] = "<td>" + LsImg.getImageHtml(LmImg.I_APPT_MEETING) + "</td>";
+		html[idx++] = "<td>" + AjxImg.getImageHtml(ZmImg.I_APPT_MEETING) + "</td>";
 
 	if (appt.isException())
-		html[idx++] = "<td>" + LsImg.getImageHtml(LmImg.I_APPT_EXCEPTION) + "</td>";
+		html[idx++] = "<td>" + AjxImg.getImageHtml(ZmImg.I_APPT_EXCEPTION) + "</td>";
 	else if (appt.isRecurring())
-		html[idx++] = "<td>" + LsImg.getImageHtml(LmImg.I_APPT_RECUR) + "</td>";
+		html[idx++] = "<td>" + AjxImg.getImageHtml(ZmImg.I_APPT_RECUR) + "</td>";
 
 	if (appt.hasAlarm())
-		html[idx++] = "<td>" + LsImg.getImageHtml(LmImg.I_APPT_REMINDER) + "</td>";
+		html[idx++] = "<td>" + AjxImg.getImageHtml(ZmImg.I_APPT_REMINDER) + "</td>";
 	
 	html[idx++] = "</tr></table>";
 
 	return idx;
 }
 
-LmCalBaseView.prototype._resetList =
+ZmCalBaseView.prototype._resetList =
 function() {
 	var doc = this.getDocument();
 	var list = this.getList();
@@ -257,33 +257,33 @@ function() {
 		var appt = Dwt.getDomObj(doc, this._getItemId(ao));
 		if (appt) {
 			appt.parentNode.removeChild(appt);
-			LsCore.unassignId(appt._itemIndex);
+			AjxCore.unassignId(appt._itemIndex);
 		}
 	}
 	list.removeAll();
 	this.removeAll();	
 }
 
-LmCalBaseView.prototype.removeAll =
+ZmCalBaseView.prototype.removeAll =
 function() {
 	this._selectedItems.removeAll();
 	this._selAnchor = null;
 }
 
-LmCalBaseView.prototype.getCalTitle = 
+ZmCalBaseView.prototype.getCalTitle = 
 function() {
 	return this._title;
 }
 
 // override
-LmCalBaseView.prototype._createItemHtml =
+ZmCalBaseView.prototype._createItemHtml =
 function(appt, now, isDndIcon) {}
 
 // override
-LmCalBaseView.prototype._createHtml =
+ZmCalBaseView.prototype._createHtml =
 function() {}
 
-LmCalBaseView.prototype._controlListener =
+ZmCalBaseView.prototype._controlListener =
 function(ev) {
 	if ((ev.oldWidth != ev.newWidth) ||
 		(ev.oldHeight != ev.newHeight)) {
@@ -294,17 +294,17 @@ function(ev) {
 /**
 * override
 */
-LmCalBaseView.prototype._layout =
+ZmCalBaseView.prototype._layout =
 function() {}
 
-LmCalBaseView.prototype._mouseOverAction =
+ZmCalBaseView.prototype._mouseOverAction =
 function(ev, div) {
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
 	//var id = ev.target.id ? ev.target.id : div.id;
 	//if (!id) return true;
 
 	var item = this.getItemFromElement(div);
-	if (item instanceof LmAppt) {
+	if (item instanceof ZmAppt) {
 		this.setToolTipContent(item.getToolTip());
 	} else {
 		this.setToolTipContent(null);

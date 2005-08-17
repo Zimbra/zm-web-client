@@ -1,62 +1,62 @@
-function LmMimePart() {
+function ZmMimePart() {
 	
-	LmModel.call(this, true);
+	ZmModel.call(this, true);
 	
-	this.children = new LsVector();
+	this.children = new AjxVector();
 	this.node = new Object();
 }
 
-LmMimePart.prototype = new LmModel;
-LmMimePart.prototype.constructor = LmMimePart;
+ZmMimePart.prototype = new ZmModel;
+ZmMimePart.prototype.constructor = ZmMimePart;
 
-LmMimePart.prototype.toString = 
+ZmMimePart.prototype.toString = 
 function() {
-	return "LmMimePart";
+	return "ZmMimePart";
 }
 
-LmMimePart.createFromDom =
+ZmMimePart.createFromDom =
 function(node, args) {
-	var mimePart = new LmMimePart();
+	var mimePart = new ZmMimePart();
 	mimePart._loadFromDom(node, args.attachments, args.bodyParts);
 	return mimePart;
 }
 
-LmMimePart.prototype.getContent = 
+ZmMimePart.prototype.getContent = 
 function() {
 	return this.node.content;
 }
 
-LmMimePart.prototype.setContent = 
+ZmMimePart.prototype.setContent = 
 function(content) {
 	this.node.content = content;
 }
 
-LmMimePart.prototype.getContentDisposition =
+ZmMimePart.prototype.getContentDisposition =
 function() {
 	return this.node.cd;
 }
 
-LmMimePart.prototype.getContentType =
+ZmMimePart.prototype.getContentType =
 function() {
 	return this.node.ct;
 }
 
-LmMimePart.prototype.setContentType =
+ZmMimePart.prototype.setContentType =
 function(ct) {
 	this.node.ct = ct;
 }
 
-LmMimePart.prototype.setIsBody = 
+ZmMimePart.prototype.setIsBody = 
 function(isBody) {
 	this.node.body = isBody;
 }
 
-LmMimePart.prototype.getFilename =
+ZmMimePart.prototype.getFilename =
 function() {
 	return this.node.filename;
 }
 
-LmMimePart.prototype._loadFromDom =
+ZmMimePart.prototype._loadFromDom =
 function(partNode, attachments, bodyParts) {
 	for (var i = 0; i < partNode.length; i++) {
 		this.node = partNode[i];
@@ -65,7 +65,7 @@ function(partNode, attachments, bodyParts) {
 			this._loaded = true;
 		
 		if (this.node.cd == "attachment" || 
-			this.node.ct == LmMimeTable.MSG_RFC822 ||
+			this.node.ct == ZmMimeTable.MSG_RFC822 ||
 			this.node.filename != null)
 		{
 			attachments.push(this.node);
@@ -76,7 +76,7 @@ function(partNode, attachments, bodyParts) {
 		
 		if (this.node.mp) {
 			var params = {attachments: attachments, bodyParts: bodyParts};
-			this.children.add(LmMimePart.createFromDom(this.node.mp, params));
+			this.children.add(ZmMimePart.createFromDom(this.node.mp, params));
 		}
 	}
 }

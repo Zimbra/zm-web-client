@@ -17,15 +17,15 @@
  *
  *  - handle 3 different modes - HTTP, HTTP->Login via HTTPS->HTTP, HTTPS
  */
-LmLogin = function () {}
+ZmLogin = function () {}
 
-LmLogin.lastGoodUserNameCookie   = "ls_last_username"; // <-- DO NOT EVER CHANGE THIS (or grep b4 u do)
-LmLogin.lastGoodMailServerCookie = "ls_last_server";
+ZmLogin.lastGoodUserNameCookie   = "ls_last_username"; // <-- DO NOT EVER CHANGE THIS (or grep b4 u do)
+ZmLogin.lastGoodMailServerCookie = "ls_last_server";
 
 // -----------------------------------------------------------------
 // positioning methods
 // -----------------------------------------------------------------
-LmLogin.setPanelText = 
+ZmLogin.setPanelText = 
 function() {
 	// fill in the text fields we're using
 	var lb = document.getElementById('logonText');
@@ -38,7 +38,7 @@ function() {
 	p.innerHTML = LmMsg.password + ":";
 };
 
-LmLogin.centerElement = 
+ZmLogin.centerElement = 
 function(element) {
 	var el = element;
 	var top = (document.body.clientHeight - parseInt(el.offsetHeight))/2;
@@ -47,25 +47,25 @@ function(element) {
 	el.style.left = left;
 };
 
-LmLogin.positionPanel = 
+ZmLogin.positionPanel = 
 function() {
 	var el = document.getElementById('loginPanel');
-	LmLogin.centerElement(el);
+	ZmLogin.centerElement(el);
 	var event = null;
-	if (LsEnv.isIE) {
+	if (AjxEnv.isIE) {
 		event = "onkeydown";
-		document.getElementById("loginPanel")[event] = LmLogin.handleKeyPress;
+		document.getElementById("loginPanel")[event] = ZmLogin.handleKeyPress;
 	} else {
 		event = "onkeypress";
-		window[event] = LmLogin.handleKeyPress;
+		window[event] = ZmLogin.handleKeyPress;
 	}
 	el.style.visibility="visible";
 
 };
 
-LmLogin.setUserNameAndFocus = 
+ZmLogin.setUserNameAndFocus = 
 function () {
-	var lastUser = LsCookie.getCookie(document, LmLogin.lastGoodUserNameCookie);
+	var lastUser = AjxCookie.getCookie(document, ZmLogin.lastGoodUserNameCookie);
 	var focusEl = null;
 	// if we have a username, fill out the username field, and focus on the 
 	// password field. Otherwise focus on the username field. 
@@ -78,7 +78,7 @@ function () {
     focusEl.focus();
 };
 
-LmLogin.setErrorMessage = 
+ZmLogin.setErrorMessage = 
 function (msg, msgOffsetFromCurrent) {
 	var errCell = document.getElementById("errorMessage");
 	errCell.innerHTML = msg;
@@ -104,21 +104,21 @@ function (msg, msgOffsetFromCurrent) {
 	document.getElementById("pi").style.top = "36px";
 	document.getElementById("bi").style.top = "68px";
 	document.getElementById("pc").style.top = "68px";
-	LmLogin.positionPanel();
+	ZmLogin.positionPanel();
 	document.getElementById("uname").focus();
 	// hide the error panel very briefly ... make it flicker a bit
 	// this makes it look like something happened if the user has
 	// successive errors
-	window.setTimeout(LmLogin._flickerErrorMessagePanel, 0);
+	window.setTimeout(ZmLogin._flickerErrorMessagePanel, 0);
 };
 
-LmLogin._flickerErrorMessagePanel = 
+ZmLogin._flickerErrorMessagePanel = 
 function() {
 	document.getElementById("errorMessageContainer").style.visibility = "hidden";
-	window.setTimeout(LmLogin._showErrorMessagePanel, 5);
+	window.setTimeout(ZmLogin._showErrorMessagePanel, 5);
 };
 
-LmLogin._showErrorMessagePanel = 
+ZmLogin._showErrorMessagePanel = 
 function() {
 	document.getElementById("errorMessageContainer").style.visibility = "visible";
 };
@@ -126,34 +126,34 @@ function() {
 // -----------------------------------------------------------------
 // onload handler method
 // -----------------------------------------------------------------
-LmLogin.isSupportedBrowser = 
+ZmLogin.isSupportedBrowser = 
 function() {
-	return (LsEnv.isIE6up || LsEnv.isMozilla1_4up || LsEnv.isFirefox);
+	return (AjxEnv.isIE6up || AjxEnv.isMozilla1_4up || AjxEnv.isFirefox);
 };
 
-LmLogin.handleOnload = 
+ZmLogin.handleOnload = 
 function(ev, checkedBrowser) {
-	if (!checkedBrowser && !LmLogin.isSupportedBrowser()) {
+	if (!checkedBrowser && !ZmLogin.isSupportedBrowser()) {
 		var u = document.getElementById('unsupportedBrowserMessage');
 		u.style.display = 'block';
-		LmLogin.centerElement(u);
+		ZmLogin.centerElement(u);
 		return;
 	} else {
 		var u = document.getElementById('unsupportedBrowserMessage');
 		u.style.display = 'none';
 	}
-	LmLogin.setServerUri();
+	ZmLogin.setServerUri();
 	var authToken = LsCsfeCommand.getAuthToken();
 	if (authToken != null) {
 		// check the server we're using
-		var mailServer = LsCookie.getCookie(document, 
-											LmLogin.lastGoodMailServerCookie);
+		var mailServer = AjxCookie.getCookie(document, 
+											ZmLogin.lastGoodMailServerCookie);
 		// if we have info, we just need to check that the token hasn't expired
 		// let's send a no op request
 		try {
-			LmLogin.submitNoOpRequest();
-			//window.location = LmLogin.getMailUrl(mailServer);
-			LmLogin.handleSuccess(authToken, null, mailServer);
+			ZmLogin.submitNoOpRequest();
+			//window.location = ZmLogin.getMailUrl(mailServer);
+			ZmLogin.handleSuccess(authToken, null, mailServer);
 			return;
 		} catch (ex) {
 			// if we're here, it means we got an error sending the no op
@@ -162,7 +162,7 @@ function(ev, checkedBrowser) {
 		}
 
 	}
-	if (!LsEnv.isIE) {
+	if (!AjxEnv.isIE) {
 		var input = document.createElement('input');
 		input.type='button';
 		input.style.display="none";
@@ -170,20 +170,20 @@ function(ev, checkedBrowser) {
 		var loginButton = document.getElementById('loginButton');
 		loginButton.appendChild(input);
 	}
-	LmLogin.setPanelText();
-	LmLogin.positionPanel();
-	LmLogin.setUserNameAndFocus();
+	ZmLogin.setPanelText();
+	ZmLogin.positionPanel();
+	ZmLogin.setUserNameAndFocus();
 
 	// try and source some of the scripts we will need for the app
-	//LmLogin.preLoadScripts();
+	//ZmLogin.preLoadScripts();
 };
 
-LmLogin.CSFE_SERVER_URI = location.port == "80" ? "/service/soap/" : ":" + location.port + "/service/soap/";
-LmLogin.LIQUID_APP_URI  = location.port == "80" ? "/liquid/mail" : ":" + location.port + "/liquid/mail";
+ZmLogin.CSFE_SERVER_URI = location.port == "80" ? "/service/soap/" : ":" + location.port + "/service/soap/";
+ZmLogin.LIQUID_APP_URI  = location.port == "80" ? "/liquid/mail" : ":" + location.port + "/liquid/mail";
 
-LmLogin.setServerUri = 
+ZmLogin.setServerUri = 
 function() {
-	var value = location.protocol + "//" + location.hostname + LmLogin.CSFE_SERVER_URI;
+	var value = location.protocol + "//" + location.hostname + ZmLogin.CSFE_SERVER_URI;
 	if (location.search && location.search.indexOf("host=") != -1)
 		value += location.search;
     LsCsfeCommand.setServerUri(value);
@@ -192,17 +192,17 @@ function() {
 // -----------------------------------------------------------------
 // Future use methods? -- preloading images and scripts
 // -----------------------------------------------------------------
-LmLogin.getFullUrl = 
+ZmLogin.getFullUrl = 
 function(uri) {
     return location.protocol + "//" + location.hostname + ((location.port == "80") 
     	? "" 
     	: (":" + location.port)) + uri;
 };
 
-LmLogin.preLoadScripts = 
+ZmLogin.preLoadScripts = 
 function() {
     var s = document.createElement('script');
-    s.src = LmLogin.getFullUrl(mailBall);
+    s.src = ZmLogin.getFullUrl(mailBall);
     document.body.appendChild(s);
 	
 	if (window.devIframeSrc) {
@@ -218,7 +218,7 @@ function() {
 // event handler methods
 // -----------------------------------------------------------------
 
-LmLogin.cancelEvent = 
+ZmLogin.cancelEvent = 
 function(ev) {
 	if (ev.stopPropagation)
 		ev.stopPropagation();
@@ -230,7 +230,7 @@ function(ev) {
 	ev.returnValue = false;
 }
 
-LmLogin.handleKeyPress = 
+ZmLogin.handleKeyPress = 
 function(ev) {
     ev = ev || window.event;
     if (ev == null) return true;
@@ -249,17 +249,17 @@ function(ev) {
 			} else if (target.id == "publicComputer"){
 				target.checked = true;
 			} else {
-				LmLogin.submitAuthRequest();
+				ZmLogin.submitAuthRequest();
 			}
 			
-			LmLogin.cancelEvent(ev);
+			ZmLogin.cancelEvent(ev);
 			return false;
 	    case 0x09: // TAB
 			if (target.id == "uname"){
 				if (!shiftKey){
 					document.getElementById("pass").focus();
 				} else {
-					LmLogin._focusLoginButton(target);
+					ZmLogin._focusLoginButton(target);
 				}
 			} else if (target.id == "pass"){
 				if (!shiftKey){
@@ -269,44 +269,44 @@ function(ev) {
 				}
 			} else if (target.id == "publicComputer"){
 				if (!shiftKey){			
-					LmLogin._focusLoginButton(target);
+					ZmLogin._focusLoginButton(target);
 				} else {
 					document.getElementById("pass").focus();
 				}
 			} else {
 				if (!shiftKey){
 					document.getElementById("uname").focus();
-					if (!LsEnv.isIE) {
-						LmLogin.loginButtonBlur(button.parentNode.parentNode);
+					if (!AjxEnv.isIE) {
+						ZmLogin.loginButtonBlur(button.parentNode.parentNode);
 					}
 				} else {
 					document.getElementById("publicComputer").focus();
 				}
 			}
-			LmLogin.cancelEvent(ev);
+			ZmLogin.cancelEvent(ev);
 			return false;
     }
     return true;
 };
 
-LmLogin._focusLoginButton = 
+ZmLogin._focusLoginButton = 
 function(target) {
 	var button = document.getElementById("loginButton");
-	if (LsEnv.isIE) {
+	if (AjxEnv.isIE) {
 		button.focus();
 	} else {
-		LmLogin.loginButtonFocus(button.parentNode.parentNode);
+		ZmLogin.loginButtonFocus(button.parentNode.parentNode);
 		target.blur();
 		document.getElementById('hiddenButton').focus();
 	}
 };
 
-LmLogin.loginButtonFocus = 
+ZmLogin.loginButtonFocus = 
 function(border) {
 	border.className = "focusBorder";
 };
 
-LmLogin.loginButtonBlur = 
+ZmLogin.loginButtonBlur = 
 function(border) {
 	border.className = "whiteBorder";	
 };
@@ -316,38 +316,38 @@ function(border) {
 // -----------------------------------------------------------------
 
 
-LmLogin.submitNoOpRequest = 
+ZmLogin.submitNoOpRequest = 
 function() {
-    var soapDoc = LsSoapDoc.create("NoOpRequest", "urn:liquidMail");
+    var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:liquidMail");
 	LsCsfeCommand.invoke(soapDoc, false, null, null, true);
 };
 
 //changing for default domain support
-//LmLogin.mailboxPat =/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-LmLogin.mailboxPat =/^([a-zA-Z0-9_\.\-])+(\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+)?$/;
+//ZmLogin.mailboxPat =/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+ZmLogin.mailboxPat =/^([a-zA-Z0-9_\.\-])+(\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+)?$/;
 
-LmLogin.isValidUsername = 
+ZmLogin.isValidUsername = 
 function(uname) {
-	return uname.match(LmLogin.mailboxPat);
+	return uname.match(ZmLogin.mailboxPat);
 };
 
-LmLogin.submitAuthRequest = 
+ZmLogin.submitAuthRequest = 
 function() {
     var uname = document.getElementById("uname").value;
     var pword = document.getElementById("pass").value;
     
     // check uname and pword first
-    if (!LmLogin.isValidUsername(uname)){
-		LmLogin.setErrorMessage(LmMsg.badUsername);
+    if (!ZmLogin.isValidUsername(uname)){
+		ZmLogin.setErrorMessage(LmMsg.badUsername);
 		return;
     }
 
     if (uname == null || pword == null || uname=="" || pword == ""){
-		LmLogin.setErrorMessage(LmMsg.enterUsername);
+		ZmLogin.setErrorMessage(LmMsg.enterUsername);
 		return;
     }
 	
-    var soapDoc = LsSoapDoc.create("AuthRequest", "urn:liquidAccount");
+    var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:liquidAccount");
 	var header = soapDoc.createHeaderElement();
 	var context = soapDoc.set("context", null, header);
 	context.setAttribute("xmlns", "urn:liquid");
@@ -360,54 +360,54 @@ function() {
     soapDoc.set("password", pword);
     try {
 		var resp = LsCsfeCommand.invoke(soapDoc, true).Body.AuthResponse;
-		LmLogin._authToken = resp.authToken;
-		LmLogin._authTokenLifetime = resp.lifetime;
+		ZmLogin._authToken = resp.authToken;
+		ZmLogin._authTokenLifetime = resp.lifetime;
 	    //LsCsfeCommand.setAuthToken(authToken, lifetime, sessionId);
 		var mailServer = resp.refer;
 		
-		LmLogin.handleSuccess(LmLogin._authToken, LmLogin._authTokenLifetime, mailServer, uname, pword);
-		LmLogin._authToken = LmLogin._authTokenLifetime = null;
+		ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword);
+		ZmLogin._authToken = ZmLogin._authTokenLifetime = null;
     } catch (ex) {
 		DBG.dumpObj(ex);
 		if (ex.code == LsCsfeException.ACCT_AUTH_FAILED || 
 			ex.code == LsCsfeException.NO_SUCH_ACCOUNT) 
 		{
-			LmLogin.setErrorMessage(LmMsg.loginError, -20);
+			ZmLogin.setErrorMessage(LmMsg.loginError, -20);
 		} 
 		else if (ex.code == LsCsfeException.SOAP_ERROR || 
 				 ex.code == LsCsfeException.NETWORK_ERROR) 
 		{
 			var msg = LmMsg.errorNetwork + "\n\n" + LmMsg.errorTryAgain + " " + LmMsg.errorContact;
-			LmLogin.setErrorMessage(msg, -15);
+			ZmLogin.setErrorMessage(msg, -15);
 		} 
 		else 
 		{
 			var msg = LmMsg.errorApplication + "\n\n" + LmMsg.errorTryAgain + " " + LmMsg.errorContact;
-			LmLogin.setErrorMessage(msg + " (" + ex.code + ")", -15);
+			ZmLogin.setErrorMessage(msg + " (" + ex.code + ")", -15);
 		}
     }
 };
 
-LmLogin.handleSuccess = 
+ZmLogin.handleSuccess = 
 function(authToken, tokenLifetime, mailServer, uname, password) {
-	var uri = LmLogin.getMailUrl(mailServer);
+	var uri = ZmLogin.getMailUrl(mailServer);
 	// save the username for later use
 	if (uname)
-		LsCookie.setCookie(document, LmLogin.lastGoodUserNameCookie, uname, null, "/");
+		AjxCookie.setCookie(document, ZmLogin.lastGoodUserNameCookie, uname, null, "/");
 
 	if (mailServer != null)
-		LsCookie.setCookie(document, LmLogin.lastGoodMailServerCookie, mailServer, null, "/");
+		AjxCookie.setCookie(document, ZmLogin.lastGoodMailServerCookie, mailServer, null, "/");
 
 	if (window.initMode != "" && (window.initMode != location.protocol))
-		LsDebug.deleteWindowCookie();
+		AjxDebug.deleteWindowCookie();
 
 	var pcChecked = document.getElementById("publicComputer").checked;
 	// make sure we add the query string to the new page
 	//window.location = uri;
-	LmLogin.postAuthToServer(mailServer, authToken, tokenLifetime, !pcChecked);
+	ZmLogin.postAuthToServer(mailServer, authToken, tokenLifetime, !pcChecked);
 };
 
-LmLogin.postAuthToServer = function (mailServer, authToken, tokenLifetime, pubComputer){
+ZmLogin.postAuthToServer = function (mailServer, authToken, tokenLifetime, pubComputer){
 	var form = document.createElement('form');
 	form.style.display = 'none';
 	document.body.appendChild(form);
@@ -423,18 +423,18 @@ LmLogin.postAuthToServer = function (mailServer, authToken, tokenLifetime, pubCo
 	}
 
 	form.innerHTML = html.join('');
-	form.action = LmLogin.getAuthUrl(mailServer);
+	form.action = ZmLogin.getAuthUrl(mailServer);
 	form.method = 'post';
 	form.submit();
 };
 
-LmLogin.getMailUrl = 
+ZmLogin.getMailUrl = 
 function (mailServer) {
 	var ms = mailServer || location.hostname;
-	return (location.protocol + "//" + ms + LmLogin.LIQUID_APP_URI + window.location.search);
+	return (location.protocol + "//" + ms + ZmLogin.LIQUID_APP_URI + window.location.search);
 };
 
-LmLogin.getAuthUrl = 
+ZmLogin.getAuthUrl = 
 function (mailServer) {
 	var ms = mailServer? mailServer: location.hostname;
 	return (location.protocol + "//" + ms + ((location.port == 80) 

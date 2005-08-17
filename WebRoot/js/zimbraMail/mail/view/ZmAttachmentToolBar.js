@@ -1,29 +1,29 @@
-function LmAttachmentToolBar(parent) {
+function ZmAttachmentToolBar(parent) {
 
-	LmToolBar.call(this, parent);
+	ZmToolBar.call(this, parent);
 
-	this._viewButton = this._createButton(LmAttachmentToolBar.VIEW_BUTTON, null, LmMsg.view, null, null, true);
+	this._viewButton = this._createButton(ZmAttachmentToolBar.VIEW_BUTTON, null, LmMsg.view, null, null, true);
     var menu = new DwtMenu(this._viewButton, null, "ActionMenu");
     this._viewButton.setMenu(menu);
 
-    var mi = DwtMenuItem.create(menu, LmImg.I_LIST, LmMsg.list);
-	mi.setData(LmAttachmentToolBar.MENUITEM_ID, LmAttachmentToolBar.LIST_MI);
+    var mi = DwtMenuItem.create(menu, ZmImg.I_LIST, LmMsg.list);
+	mi.setData(ZmAttachmentToolBar.MENUITEM_ID, ZmAttachmentToolBar.LIST_MI);
 	
-    mi = DwtMenuItem.create(menu, LmImg.I_ICON, LmMsg.icon);
-	mi.setData(LmAttachmentToolBar.MENUITEM_ID, LmAttachmentToolBar.ICON_MI);
+    mi = DwtMenuItem.create(menu, ZmImg.I_ICON, LmMsg.icon);
+	mi.setData(ZmAttachmentToolBar.MENUITEM_ID, ZmAttachmentToolBar.ICON_MI);
 }
 
-LmAttachmentToolBar.VIEW_BUTTON = 1;
+ZmAttachmentToolBar.VIEW_BUTTON = 1;
 
-LmAttachmentToolBar.LIST_MI = 1;
-LmAttachmentToolBar.ICON_MI = 2;
+ZmAttachmentToolBar.LIST_MI = 1;
+ZmAttachmentToolBar.ICON_MI = 2;
 
-LmAttachmentToolBar.MENUITEM_ID = "_menuItemId";
+ZmAttachmentToolBar.MENUITEM_ID = "_menuItemId";
 
-LmAttachmentToolBar.prototype = new LmToolBar;
-LmAttachmentToolBar.prototype.constructor = LmAttachmentToolBar;
+ZmAttachmentToolBar.prototype = new ZmToolBar;
+ZmAttachmentToolBar.prototype.constructor = ZmAttachmentToolBar;
 
-LmAttachmentToolBar.prototype.toString = 
+ZmAttachmentToolBar.prototype.toString = 
 function() {
-	return "LmAttachmentToolBar";
+	return "ZmAttachmentToolBar";
 }

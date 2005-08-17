@@ -1,170 +1,170 @@
-function LmPicker(parent, id) {
+function ZmPicker(parent, id) {
 	if (arguments.length == 0) return;
-	DwtComposite.call(this, parent, "LmPicker", DwtControl.ABSOLUTE_STYLE);
+	DwtComposite.call(this, parent, "ZmPicker", DwtControl.ABSOLUTE_STYLE);
 
-	this._appCtxt = this.shell.getData(LmAppCtxt.LABEL);
+	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._header = new DwtToolBar(this);
 	this._label = new DwtLabel(this._header, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "LmPickerLabel");
 	this._header.addFiller();
 	this._close = new DwtButton(this._header, DwtLabel.IMAGE_LEFT, "TBButton");
-	this._close.setImage(LmImg.I_RED_X);
+	this._close.setImage(ZmImg.I_RED_X);
 	this._close.setToolTipContent(LmMsg.close);
 	this._picker = new DwtComposite(this, "LmPickerOverview");
 	this._picker.setSize(Dwt.DEFAULT, parent.getH() - this._header.getH());
 	this._picker.setScrollStyle(DwtControl.SCROLL);
-	this._pickerEvent = new LmEvent(LmEvent.S_PICKER);
-	this._pickerEvent.set(LmEvent.E_MODIFY, this);
+	this._pickerEvent = new ZmEvent(ZmEvent.S_PICKER);
+	this._pickerEvent.set(ZmEvent.E_MODIFY, this);
 	this._setupPicker(this._picker);
 	this.id = id;
-    this.setTitle(LmMsg[LmPicker.T_MSG_KEY[id]]);
-    this.setImage(LmPicker.IMAGE[id]);
+    this.setTitle(LmMsg[ZmPicker.T_MSG_KEY[id]]);
+    this.setImage(ZmPicker.IMAGE[id]);
 }
 
-LmPicker.prototype = new DwtComposite;
-LmPicker.prototype.constructor = LmPicker;
+ZmPicker.prototype = new DwtComposite;
+ZmPicker.prototype.constructor = ZmPicker;
 
 var i = 1;
-LmPicker.ATTACHMENT	= i++;
-LmPicker.BASIC		= i++;
-LmPicker.CUSTOM		= i++;
-LmPicker.DATE		= i++;
-LmPicker.DOMAIN		= i++;
-LmPicker.FLAG		= i++;
-LmPicker.FOLDER		= i++;
-LmPicker.OBJECT		= i++;
-LmPicker.SEARCH		= i++;
-LmPicker.SIZE		= i++;
-LmPicker.TAG		= i++;
-LmPicker.TIME		= i++;
-LmPicker.RESET		= i++;	// not really a picker
-LmPicker.CLOSE		= i++;	// not really a picker
+ZmPicker.ATTACHMENT	= i++;
+ZmPicker.BASIC		= i++;
+ZmPicker.CUSTOM		= i++;
+ZmPicker.DATE		= i++;
+ZmPicker.DOMAIN		= i++;
+ZmPicker.FLAG		= i++;
+ZmPicker.FOLDER		= i++;
+ZmPicker.OBJECT		= i++;
+ZmPicker.SEARCH		= i++;
+ZmPicker.SIZE		= i++;
+ZmPicker.TAG		= i++;
+ZmPicker.TIME		= i++;
+ZmPicker.RESET		= i++;	// not really a picker
+ZmPicker.CLOSE		= i++;	// not really a picker
 
 // Button labels
-LmPicker.MSG_KEY = new Object();
-LmPicker.MSG_KEY[LmPicker.ATTACHMENT]	= "attachment";
-LmPicker.MSG_KEY[LmPicker.BASIC]		= "basic";
-LmPicker.MSG_KEY[LmPicker.CUSTOM]		= "custom";
-LmPicker.MSG_KEY[LmPicker.DATE]			= "date";
-LmPicker.MSG_KEY[LmPicker.DOMAIN]		= "domain";
-LmPicker.MSG_KEY[LmPicker.FLAG]			= "status";
-LmPicker.MSG_KEY[LmPicker.FOLDER]		= "folder";
-LmPicker.MSG_KEY[LmPicker.OBJECT]		= "special";
-LmPicker.MSG_KEY[LmPicker.SEARCH]		= "savedSearch";
-LmPicker.MSG_KEY[LmPicker.SIZE]			= "size";
-LmPicker.MSG_KEY[LmPicker.TAG]			= "tag";
-LmPicker.MSG_KEY[LmPicker.TIME]			= "time";
-LmPicker.MSG_KEY[LmPicker.RESET]		= "removeAll";
-LmPicker.MSG_KEY[LmPicker.CLOSE]		= "close";
+ZmPicker.MSG_KEY = new Object();
+ZmPicker.MSG_KEY[ZmPicker.ATTACHMENT]	= "attachment";
+ZmPicker.MSG_KEY[ZmPicker.BASIC]		= "basic";
+ZmPicker.MSG_KEY[ZmPicker.CUSTOM]		= "custom";
+ZmPicker.MSG_KEY[ZmPicker.DATE]			= "date";
+ZmPicker.MSG_KEY[ZmPicker.DOMAIN]		= "domain";
+ZmPicker.MSG_KEY[ZmPicker.FLAG]			= "status";
+ZmPicker.MSG_KEY[ZmPicker.FOLDER]		= "folder";
+ZmPicker.MSG_KEY[ZmPicker.OBJECT]		= "special";
+ZmPicker.MSG_KEY[ZmPicker.SEARCH]		= "savedSearch";
+ZmPicker.MSG_KEY[ZmPicker.SIZE]			= "size";
+ZmPicker.MSG_KEY[ZmPicker.TAG]			= "tag";
+ZmPicker.MSG_KEY[ZmPicker.TIME]			= "time";
+ZmPicker.MSG_KEY[ZmPicker.RESET]		= "removeAll";
+ZmPicker.MSG_KEY[ZmPicker.CLOSE]		= "close";
 
 // Button and picker icons
-LmPicker.IMAGE = new Object();
-LmPicker.IMAGE[LmPicker.ATTACHMENT]	= LmImg.I_ATTACHMENT;
-LmPicker.IMAGE[LmPicker.BASIC]		= LmImg.I_SEARCH_FOLDER;
-LmPicker.IMAGE[LmPicker.CUSTOM]		= LmImg.I_SEARCH;
-LmPicker.IMAGE[LmPicker.DATE]		= LmImg.I_DATE;
-LmPicker.IMAGE[LmPicker.DOMAIN]		= LmImg.I_URL;
-LmPicker.IMAGE[LmPicker.FLAG]		= LmImg.I_FLAG_ON;
-LmPicker.IMAGE[LmPicker.FOLDER]		= LmImg.I_FOLDER;
-LmPicker.IMAGE[LmPicker.OBJECT]		= LmImg.I_SEARCH_FOLDER;
-LmPicker.IMAGE[LmPicker.SEARCH]		= LmImg.I_SEARCH_FOLDER;
-LmPicker.IMAGE[LmPicker.SIZE]		= LmImg.I_SEARCH_FOLDER;
-LmPicker.IMAGE[LmPicker.TAG]		= LmImg.I_TAG_FOLDER;
-LmPicker.IMAGE[LmPicker.TIME]		= LmImg.I_DATE;
-LmPicker.IMAGE[LmPicker.RESET]		= LmImg.I_RED_X;
-LmPicker.IMAGE[LmPicker.CLOSE]		= LmImg.I_RED_X;
+ZmPicker.IMAGE = new Object();
+ZmPicker.IMAGE[ZmPicker.ATTACHMENT]	= ZmImg.I_ATTACHMENT;
+ZmPicker.IMAGE[ZmPicker.BASIC]		= ZmImg.I_SEARCH_FOLDER;
+ZmPicker.IMAGE[ZmPicker.CUSTOM]		= ZmImg.I_SEARCH;
+ZmPicker.IMAGE[ZmPicker.DATE]		= ZmImg.I_DATE;
+ZmPicker.IMAGE[ZmPicker.DOMAIN]		= ZmImg.I_URL;
+ZmPicker.IMAGE[ZmPicker.FLAG]		= ZmImg.I_FLAG_ON;
+ZmPicker.IMAGE[ZmPicker.FOLDER]		= ZmImg.I_FOLDER;
+ZmPicker.IMAGE[ZmPicker.OBJECT]		= ZmImg.I_SEARCH_FOLDER;
+ZmPicker.IMAGE[ZmPicker.SEARCH]		= ZmImg.I_SEARCH_FOLDER;
+ZmPicker.IMAGE[ZmPicker.SIZE]		= ZmImg.I_SEARCH_FOLDER;
+ZmPicker.IMAGE[ZmPicker.TAG]		= ZmImg.I_TAG_FOLDER;
+ZmPicker.IMAGE[ZmPicker.TIME]		= ZmImg.I_DATE;
+ZmPicker.IMAGE[ZmPicker.RESET]		= ZmImg.I_RED_X;
+ZmPicker.IMAGE[ZmPicker.CLOSE]		= ZmImg.I_RED_X;
 
 // Button tooltips
-LmPicker.TT_MSG_KEY = new Object();
-LmPicker.TT_MSG_KEY[LmPicker.ATTACHMENT]	= "searchByAttachment";
-LmPicker.TT_MSG_KEY[LmPicker.BASIC]			= "searchByBasic";
-LmPicker.TT_MSG_KEY[LmPicker.CUSTOM]		= "searchByCustom";
-LmPicker.TT_MSG_KEY[LmPicker.DATE]			= "searchByDate";
-LmPicker.TT_MSG_KEY[LmPicker.DOMAIN]		= "searchByDomain";
-LmPicker.TT_MSG_KEY[LmPicker.FLAG]			= "searchByFlag";
-LmPicker.TT_MSG_KEY[LmPicker.FOLDER]		= "searchByFolder";
-LmPicker.TT_MSG_KEY[LmPicker.OBJECT]		= "searchByObject";
-LmPicker.TT_MSG_KEY[LmPicker.SEARCH]		= "searchBySavedSearch";
-LmPicker.TT_MSG_KEY[LmPicker.SIZE]			= "searchBySize";
-LmPicker.TT_MSG_KEY[LmPicker.TAG]			= "searchByTag";
-LmPicker.TT_MSG_KEY[LmPicker.TIME]			= "searchByTime";
-LmPicker.TT_MSG_KEY[LmPicker.RESET]			= "clearAdvSearch";
-LmPicker.TT_MSG_KEY[LmPicker.CLOSE]			= "closeSearchBuilder";
+ZmPicker.TT_MSG_KEY = new Object();
+ZmPicker.TT_MSG_KEY[ZmPicker.ATTACHMENT]	= "searchByAttachment";
+ZmPicker.TT_MSG_KEY[ZmPicker.BASIC]			= "searchByBasic";
+ZmPicker.TT_MSG_KEY[ZmPicker.CUSTOM]		= "searchByCustom";
+ZmPicker.TT_MSG_KEY[ZmPicker.DATE]			= "searchByDate";
+ZmPicker.TT_MSG_KEY[ZmPicker.DOMAIN]		= "searchByDomain";
+ZmPicker.TT_MSG_KEY[ZmPicker.FLAG]			= "searchByFlag";
+ZmPicker.TT_MSG_KEY[ZmPicker.FOLDER]		= "searchByFolder";
+ZmPicker.TT_MSG_KEY[ZmPicker.OBJECT]		= "searchByObject";
+ZmPicker.TT_MSG_KEY[ZmPicker.SEARCH]		= "searchBySavedSearch";
+ZmPicker.TT_MSG_KEY[ZmPicker.SIZE]			= "searchBySize";
+ZmPicker.TT_MSG_KEY[ZmPicker.TAG]			= "searchByTag";
+ZmPicker.TT_MSG_KEY[ZmPicker.TIME]			= "searchByTime";
+ZmPicker.TT_MSG_KEY[ZmPicker.RESET]			= "clearAdvSearch";
+ZmPicker.TT_MSG_KEY[ZmPicker.CLOSE]			= "closeSearchBuilder";
 
 // Picker titles
-LmPicker.T_MSG_KEY = new Object();
-LmPicker.T_MSG_KEY[LmPicker.ATTACHMENT]	= "attachments";
-LmPicker.T_MSG_KEY[LmPicker.BASIC]		= "basicSearch";
-LmPicker.T_MSG_KEY[LmPicker.CUSTOM]		= "custom";
-LmPicker.T_MSG_KEY[LmPicker.DATE]		= "date";
-LmPicker.T_MSG_KEY[LmPicker.DOMAIN]		= "domains";
-LmPicker.T_MSG_KEY[LmPicker.FLAG]		= "status";
-LmPicker.T_MSG_KEY[LmPicker.FOLDER]		= "folders";
-LmPicker.T_MSG_KEY[LmPicker.OBJECT]		= "special";
-LmPicker.T_MSG_KEY[LmPicker.SEARCH]		= "savedSearches";
-LmPicker.T_MSG_KEY[LmPicker.SIZE]		= "size";
-LmPicker.T_MSG_KEY[LmPicker.TAG]		= "tags";
-LmPicker.T_MSG_KEY[LmPicker.TIME]		= "time";
+ZmPicker.T_MSG_KEY = new Object();
+ZmPicker.T_MSG_KEY[ZmPicker.ATTACHMENT]	= "attachments";
+ZmPicker.T_MSG_KEY[ZmPicker.BASIC]		= "basicSearch";
+ZmPicker.T_MSG_KEY[ZmPicker.CUSTOM]		= "custom";
+ZmPicker.T_MSG_KEY[ZmPicker.DATE]		= "date";
+ZmPicker.T_MSG_KEY[ZmPicker.DOMAIN]		= "domains";
+ZmPicker.T_MSG_KEY[ZmPicker.FLAG]		= "status";
+ZmPicker.T_MSG_KEY[ZmPicker.FOLDER]		= "folders";
+ZmPicker.T_MSG_KEY[ZmPicker.OBJECT]		= "special";
+ZmPicker.T_MSG_KEY[ZmPicker.SEARCH]		= "savedSearches";
+ZmPicker.T_MSG_KEY[ZmPicker.SIZE]		= "size";
+ZmPicker.T_MSG_KEY[ZmPicker.TAG]		= "tags";
+ZmPicker.T_MSG_KEY[ZmPicker.TIME]		= "time";
 
 // Max number of instances for each picker
-LmPicker.LIMIT = new Object();
-LmPicker.LIMIT[LmPicker.ATTACHMENT]	= 1;
-LmPicker.LIMIT[LmPicker.BASIC]		= -1;	// no limit
-LmPicker.LIMIT[LmPicker.CUSTOM]		= 1;
-LmPicker.LIMIT[LmPicker.DATE]		= 2;
-LmPicker.LIMIT[LmPicker.DOMAIN]		= 2;
-LmPicker.LIMIT[LmPicker.FLAG]		= 4;
-LmPicker.LIMIT[LmPicker.FOLDER]		= 1;
-LmPicker.LIMIT[LmPicker.OBJECT]		= 3;
-LmPicker.LIMIT[LmPicker.SEARCH]		= -1;
-LmPicker.LIMIT[LmPicker.SIZE]		= 2;
-LmPicker.LIMIT[LmPicker.TAG]		= -1;	// no limit
-LmPicker.LIMIT[LmPicker.TIME]		= 1;
+ZmPicker.LIMIT = new Object();
+ZmPicker.LIMIT[ZmPicker.ATTACHMENT]	= 1;
+ZmPicker.LIMIT[ZmPicker.BASIC]		= -1;	// no limit
+ZmPicker.LIMIT[ZmPicker.CUSTOM]		= 1;
+ZmPicker.LIMIT[ZmPicker.DATE]		= 2;
+ZmPicker.LIMIT[ZmPicker.DOMAIN]		= 2;
+ZmPicker.LIMIT[ZmPicker.FLAG]		= 4;
+ZmPicker.LIMIT[ZmPicker.FOLDER]		= 1;
+ZmPicker.LIMIT[ZmPicker.OBJECT]		= 3;
+ZmPicker.LIMIT[ZmPicker.SEARCH]		= -1;
+ZmPicker.LIMIT[ZmPicker.SIZE]		= 2;
+ZmPicker.LIMIT[ZmPicker.TAG]		= -1;	// no limit
+ZmPicker.LIMIT[ZmPicker.TIME]		= 1;
 
-LmPicker.MULTI_JOIN = new Object();
-for (var i = 1; i <= LmPicker.CLOSE; i++)
-	LmPicker.MULTI_JOIN[i] = " ";
-LmPicker.MULTI_JOIN[LmPicker.BASIC] = " OR ";
+ZmPicker.MULTI_JOIN = new Object();
+for (var i = 1; i <= ZmPicker.CLOSE; i++)
+	ZmPicker.MULTI_JOIN[i] = " ";
+ZmPicker.MULTI_JOIN[ZmPicker.BASIC] = " OR ";
 
-LmPicker.CTOR = new Object();
+ZmPicker.CTOR = new Object();
 
-LmPicker.DEFAULT_PICKER = LmPicker.BASIC;
+ZmPicker.DEFAULT_PICKER = ZmPicker.BASIC;
 
-LmPicker.KEY_ID = "_id_";
-LmPicker.KEY_CTOR = "_ctor_";
-LmPicker.KEY_PICKER = "_picker_";
+ZmPicker.KEY_ID = "_id_";
+ZmPicker.KEY_CTOR = "_ctor_";
+ZmPicker.KEY_PICKER = "_picker_";
 
 function LmPicker_Descriptor(id, label, image, toolTip, ctor) {
 	this.id = id;
-	this.label = label || LmMsg[LmPicker.MSG_KEY[id]];
-	this.image = image || LmPicker.IMAGE[id];
-	this.toolTip = toolTip || LmMsg[LmPicker.TT_MSG_KEY[id]] || this.label;
+	this.label = label || LmMsg[ZmPicker.MSG_KEY[id]];
+	this.image = image || ZmPicker.IMAGE[id];
+	this.toolTip = toolTip || LmMsg[ZmPicker.TT_MSG_KEY[id]] || this.label;
 	this.ctor = ctor;
 }
 
-LmPicker.prototype.toString = 
+ZmPicker.prototype.toString = 
 function() {
-	return "LmPicker";
+	return "ZmPicker";
 }
 
-LmPicker.prototype._setupPicker  = function() {}
-LmPicker.prototype._updateQuery  = function() {}
+ZmPicker.prototype._setupPicker  = function() {}
+ZmPicker.prototype._updateQuery  = function() {}
 
-LmPicker.prototype.setTitle =
+ZmPicker.prototype.setTitle =
 function(text) {
     this._label.setText(text);
 }
 
-LmPicker.prototype.setImage =
+ZmPicker.prototype.setImage =
 function(imageInfo) {
     this._label.setImage(imageInfo);
 }
 
-LmPicker.prototype.getCloseButton = 
+ZmPicker.prototype.getCloseButton = 
 function() {
 	return this._close;
 }
 
-LmPicker.prototype.setEnabled =
+ZmPicker.prototype.setEnabled =
 function(enabled) {
    DwtControl.prototype.setEnabled(this, enabled);
     this._label.setEnabled(enabled);
@@ -172,29 +172,29 @@ function(enabled) {
 	    this._picker.setEnabled(enabled);
 }
 
-LmPicker.prototype.addPickerListener =
+ZmPicker.prototype.addPickerListener =
 function(listener) {
-	this.addListener(LmEvent.L_PICKER, listener);
+	this.addListener(ZmEvent.L_PICKER, listener);
 }
 
-LmPicker.prototype.removePickerListener =
+ZmPicker.prototype.removePickerListener =
 function(listener) {
-	this.removeListener(LmEvent.L_PICKER, listener);
+	this.removeListener(ZmEvent.L_PICKER, listener);
 }
 
-LmPicker.prototype.execute =
+ZmPicker.prototype.execute =
 function() {
-	if (this.isListenerRegistered(LmEvent.L_PICKER)) {
-		this._pickerEvent.set(LmEvent.E_LOAD, this);
-		this.notifyListeners(LmEvent.L_PICKER, this._pickerEvent);
+	if (this.isListenerRegistered(ZmEvent.L_PICKER)) {
+		this._pickerEvent.set(ZmEvent.E_LOAD, this);
+		this.notifyListeners(ZmEvent.L_PICKER, this._pickerEvent);
 	}
 }
 
-LmPicker.prototype.setQuery =
+ZmPicker.prototype.setQuery =
 function(query) {
 	this._query = query;
-	if (this.isListenerRegistered(LmEvent.L_PICKER)) {
-		this._pickerEvent.set(LmEvent.E_MODIFY, this);
-		this.notifyListeners(LmEvent.L_PICKER, this._pickerEvent);
+	if (this.isListenerRegistered(ZmEvent.L_PICKER)) {
+		this._pickerEvent.set(ZmEvent.E_MODIFY, this);
+		this.notifyListeners(ZmEvent.L_PICKER, this._pickerEvent);
 	}
 }

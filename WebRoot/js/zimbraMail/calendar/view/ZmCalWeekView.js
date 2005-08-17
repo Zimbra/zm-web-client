@@ -1,12 +1,12 @@
-function LmCalWeekView(parent, posStyle, dropTgt) {
+function ZmCalWeekView(parent, posStyle, dropTgt) {
 	if (arguments.length == 0) return;
-	LmCalDayView.call(this, parent, posStyle, dropTgt, LmController.CAL_WEEK_VIEW, 7);
+	ZmCalDayView.call(this, parent, posStyle, dropTgt, ZmController.CAL_WEEK_VIEW, 7);
 }
 
-LmCalWeekView.prototype = new LmCalDayView;
-LmCalWeekView.prototype.constructor = LmCalWeekView;
+ZmCalWeekView.prototype = new ZmCalDayView;
+ZmCalWeekView.prototype.constructor = ZmCalWeekView;
 
-LmCalWeekView.prototype.toString = 
+ZmCalWeekView.prototype.toString = 
 function() {
-	return "LmCalWeekView";
+	return "ZmCalWeekView";
 }

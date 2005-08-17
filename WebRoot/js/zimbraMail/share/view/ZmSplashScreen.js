@@ -1,12 +1,12 @@
-function LmSplashScreen(shell, imageInfo, className) {
+function ZmSplashScreen(shell, imageInfo, className) {
 
 	if (arguments.length == 0) return;
 	
 	if (!(shell instanceof DwtShell)) {
-		throw new LsException("Parent must be a DwtShell", LsException.INVALIDPARENT, "LmSplashScreen");
+		throw new AjxException("Parent must be a DwtShell", AjxException.INVALIDPARENT, "ZmSplashScreen");
 	}
 	
-	className = className || "LmSplashScreen";
+	className = className || "ZmSplashScreen";
 	DwtControl.call(this, shell, className, Dwt.ABSOLUTE_STYLE);
 
 	this.setZIndex(Dwt.Z_SPLASH);
@@ -21,7 +21,7 @@ function LmSplashScreen(shell, imageInfo, className) {
 	var cell = row.insertCell(0);
 	cell.vAlign = "middle";
 	cell.align = "center";
-	LsImg.setImage(cell, imageInfo);
+	AjxImg.setImage(cell, imageInfo);
 	
 	this.getHtmlElement().appendChild(myTable);
     this.setBounds(0, 0, "100%", "100%")
@@ -29,5 +29,5 @@ function LmSplashScreen(shell, imageInfo, className) {
 	this.setCursor("wait");
 }
 
-LmSplashScreen.prototype = new DwtControl;
-LmSplashScreen.prototype.constructor = LmSplashScreen;
+ZmSplashScreen.prototype = new DwtControl;
+ZmSplashScreen.prototype.constructor = ZmSplashScreen;

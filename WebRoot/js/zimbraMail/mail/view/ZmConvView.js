@@ -1,44 +1,44 @@
-function LmConvView(parent, className, posStyle, controller, dropTgt) {
+function ZmConvView(parent, className, posStyle, controller, dropTgt) {
 
-	className = className ? className : "LmConvView";
-	LmDoublePaneView.call(this, parent, className, posStyle, LmController.CONV_VIEW, controller, dropTgt);
+	className = className ? className : "ZmConvView";
+	ZmDoublePaneView.call(this, parent, className, posStyle, ZmController.CONV_VIEW, controller, dropTgt);
 
-	this._changeListener = new LsListener(this, this._convChangeListener);
+	this._changeListener = new AjxListener(this, this._convChangeListener);
 	
 	// add change listener to tree view to catch empty trash action
 	var folderTree = this._appCtxt.getFolderTree();
-	folderTree.addChangeListener(new LsListener(this, this._folderChangeListener));
+	folderTree.addChangeListener(new AjxListener(this, this._folderChangeListener));
 	
 	// Add a change listener to taglist to track tag color changes
-	this._tagList = this.shell.getData(LmAppCtxt.LABEL).getTagList();
-	this._tagList.addChangeListener(new LsListener(this, this._tagChangeListener));
+	this._tagList = this.shell.getData(ZmAppCtxt.LABEL).getTagList();
+	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	
 	this._controller = controller;
 }
 
-LmConvView.prototype = new LmDoublePaneView;
-LmConvView.prototype.constructor = LmConvView;
+ZmConvView.prototype = new ZmDoublePaneView;
+ZmConvView.prototype.constructor = ZmConvView;
 
-LmConvView.prototype.toString = 
+ZmConvView.prototype.toString = 
 function() {
-	return "LmConvView";
+	return "ZmConvView";
 }
 
-LmConvView._TAG_CLICK = "LmConvView._TAG_CLICK";
-LmConvView._TAG_ANCHOR = "TA";
-LmConvView._TAGLIST_HEIGHT = 18;
+ZmConvView._TAG_CLICK = "ZmConvView._TAG_CLICK";
+ZmConvView._TAG_ANCHOR = "TA";
+ZmConvView._TAGLIST_HEIGHT = 18;
 
-LmConvView.prototype.addTagClickListener =
+ZmConvView.prototype.addTagClickListener =
 function(listener) {
-	this.addListener(LmConvView._TAG_CLICK, listener);
+	this.addListener(ZmConvView._TAG_CLICK, listener);
 }
 
-LmConvView.prototype.setItem =
+ZmConvView.prototype.setItem =
 function(conv) {
-	if (!(conv instanceof LmConv))
+	if (!(conv instanceof ZmConv))
 		return;
 		
-	LmDoublePaneView.prototype.setItem.call(this, conv);
+	ZmDoublePaneView.prototype.setItem.call(this, conv);
 	
 	// Remove and re-add listeners for current conversation if it exists
 	if (this._conv)
@@ -46,7 +46,7 @@ function(conv) {
 	this._conv = conv;
 	conv.addChangeListener(this._changeListener);
 	
-	this._msgListView.set(conv.msgs, LmItem.F_DATE);
+	this._msgListView.set(conv.msgs, ZmItem.F_DATE);
 	this._setSubject(conv.subject);
 	this._setTags(conv);
 	
@@ -55,10 +55,10 @@ function(conv) {
 	this._msgListView.setSelection(hot);
 }
 
-LmConvView.prototype.reset = 
+ZmConvView.prototype.reset = 
 function() {
 	this._sashMoved = false;
-	LmDoublePaneView.prototype.reset.call(this);
+	ZmDoublePaneView.prototype.reset.call(this);
 }
 
 /*
@@ -68,19 +68,19 @@ function() {
 * want to remove their listeners; otherwise we have models that don't correspond to the 
 * current conv view calling the view's listeners.
 */
-LmConvView.prototype.deactivate = 
+ZmConvView.prototype.deactivate = 
 function() {
 	if (this._conv.msgs)
 		this._conv.msgs.removeChangeListener(this._msgListView._listChangeListener);
 	this._conv.removeChangeListener(this._conv._listChangeListener);
 }
 
-LmConvView.prototype.getTitle =
+ZmConvView.prototype.getTitle =
 function() {
 	return [LmMsg.zimbraTitle, ": ", this._conv.subject].join("");
 }
 
-LmConvView.prototype._resetSize = 
+ZmConvView.prototype._resetSize = 
 function(newWidth, newHeight) {
 	if (newHeight <= 0)
 		return;
@@ -122,7 +122,7 @@ function(newWidth, newHeight) {
 	this._msgListView._resetColWidth();
 }
 
-LmConvView.prototype._sashCallback =
+ZmConvView.prototype._sashCallback =
 function(delta) {
 	this._sashMoved = true;
 	if (delta > 0) {	// moving sash down
@@ -155,7 +155,7 @@ function(delta) {
 	return delta;
 }
 
-LmConvView.prototype._initHeader = 
+ZmConvView.prototype._initHeader = 
 function() {
 	this._summary = new DwtComposite(this, "Summary", Dwt.RELATIVE_STYLE);
 
@@ -167,29 +167,29 @@ function() {
 	var html = new Array(2);
 	var idx = 0;
 	html[idx++] = "<div class='Subject' id='" + subjDivId + "'>&nbsp;</div>";
-	if (this._appCtxt.get(LmSetting.TAGGING_ENABLED))
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		html[idx++] = "<div class='Tags' id='" + tagDivId + "'>&nbsp;</div>";
 	this._subjectBar.innerHTML = html.join("");
 	this._summary.getHtmlElement().appendChild(this._subjectBar);
 
 	this._subjectDiv = Dwt.getDomObj(doc, subjDivId);
-	if (this._appCtxt.get(LmSetting.TAGGING_ENABLED)) {
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		this._tagDiv = Dwt.getDomObj(doc, tagDivId);
-		Dwt.setSize(this._tagDiv, Dwt.DEFAULT, LmConvView._TAGLIST_HEIGHT);
+		Dwt.setSize(this._tagDiv, Dwt.DEFAULT, ZmConvView._TAGLIST_HEIGHT);
 		Dwt.setVisible(this._tagDiv, false);
 	}
 }
 
-LmConvView.prototype._setSubject =
+ZmConvView.prototype._setSubject =
 function(subject) {
 	this._subjectDiv.innerHTML = subject != null && subject != ""
-		? LsStringUtil.htmlEncode(LmMsg.subject + ": " + subject)
-		: LsStringUtil.htmlEncode(LmMsg.subject + ": " + LmMsg.noSubject);
+		? AjxStringUtil.htmlEncode(LmMsg.subject + ": " + subject)
+		: AjxStringUtil.htmlEncode(LmMsg.subject + ": " + LmMsg.noSubject);
 }
 
-LmConvView.prototype._setTags =
+ZmConvView.prototype._setTags =
 function(conv) {
-	if (!this._appCtxt.get(LmSetting.TAGGING_ENABLED)) return;
+	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) return;
 
 	var numTags = conv.tags.length;
 	var origVis = Dwt.getVisible(this._tagDiv);
@@ -218,52 +218,52 @@ function(conv) {
 		if (tag)
 			ta[i] = tag;
 		else
-			DBG.println(LsDebug.DBG1, "Could not get tag with ID " + conv.tags[i]);
+			DBG.println(AjxDebug.DBG1, "Could not get tag with ID " + conv.tags[i]);
 	}
 	if (ta.length == 0)	return;
-	ta.sort(LmTag.sortCompare);
+	ta.sort(ZmTag.sortCompare);
 
-	var tagWidth = LmTag.COLOR_MINI_ICON[ta[0].color][1];
+	var tagWidth = ZmTag.COLOR_MINI_ICON[ta[0].color][1];
 
 	for (var i = 0; i < numTags; i++) {
 		var txtWidth = Dwt.getHtmlExtent(ta[i].name).x;
-		htmlStr[idx++] = "<a href='javascript: void LmConvView._tagClick(\"";
+		htmlStr[idx++] = "<a href='javascript: void ZmConvView._tagClick(\"";
 		htmlStr[idx++] = this._htmlElId;
 		htmlStr[idx++] = '","';
 		htmlStr[idx++] = ta[i].id;
 		htmlStr[idx++] = "\")' id='";
-		htmlStr[idx++] = this._tagDiv.id + LmConvView._TAG_ANCHOR + ta[i].id;
+		htmlStr[idx++] = this._tagDiv.id + ZmConvView._TAG_ANCHOR + ta[i].id;
 		htmlStr[idx++] = "'>";
 		htmlStr[idx++] = "<table style='display:inline;' border=0 cellspacing=0 cellpadding=0 width=";
 		htmlStr[idx++] = tagWidth;
 		htmlStr[idx++] = "><tr><td width=";
 		htmlStr[idx++] = tagWidth;
 		htmlStr[idx++] = ">";
-		htmlStr[idx++] = LsImg.getImageHtml(LmTag.COLOR_MINI_ICON[ta[i].color], null, ["id='", this._tagDiv.id + LmDoublePaneView._TAG_IMG + ta[i].id, "'"].join(""));
+		htmlStr[idx++] = AjxImg.getImageHtml(ZmTag.COLOR_MINI_ICON[ta[i].color], null, ["id='", this._tagDiv.id + ZmDoublePaneView._TAG_IMG + ta[i].id, "'"].join(""));
 		htmlStr[idx++] = "</td></tr></table>";
-		htmlStr[idx++] = LsStringUtil.htmlEncodeSpace(ta[i].name) + "</a>";
+		htmlStr[idx++] = AjxStringUtil.htmlEncodeSpace(ta[i].name) + "</a>";
 	}
 	htmlStr[idx++] = "</td></tr></table>";
 	this._tagDiv.innerHTML = htmlStr.join("");
 }
 
-LmConvView.prototype._convChangeListener =
+ZmConvView.prototype._convChangeListener =
 function(ev) {
-	if (ev.type != LmEvent.S_CONV)
+	if (ev.type != ZmEvent.S_CONV)
 		return;
 	var fields = ev.getDetail("fields");
-	if (ev.event == LmEvent.E_TAGS || ev.event == LmEvent.E_REMOVE_ALL) {
+	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
 		this._setTags(this._conv);
-	} else if (ev.event == LmEvent.E_MODIFY && (fields && fields[LmItem.F_ID])) {
+	} else if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_ID])) {
 		this._controller._convId = this._conv.id;
 	}
 }
 
-LmConvView.prototype._folderChangeListener = 
+ZmConvView.prototype._folderChangeListener = 
 function(ev) {
-	if (ev.event == LmEvent.E_DELETE &&
-	    ev.source instanceof LmFolder && 
-		ev.source.id == LmFolder.ID_TRASH && 
+	if (ev.event == ZmEvent.E_DELETE &&
+	    ev.source instanceof ZmFolder && 
+		ev.source.id == ZmFolder.ID_TRASH && 
 		this._conv.msgs) 
 	{
 		// user emptied trash folder.. search for any msgs in trash and remove from list view
@@ -280,7 +280,7 @@ function(ev) {
 		}
 		
 		// reset navigation buttons if necessary
-		var pageSize = this._appCtxt.get(LmSetting.PAGE_SIZE);
+		var pageSize = this._appCtxt.get(ZmSetting.PAGE_SIZE);
 		this._conv.numMsgs = this._conv.msgs.size();
 		if (len > pageSize && this._conv.numMsgs < pageSize) {
 			this._controller._resetNavToolBarButtons(this._controller._getViewType());
@@ -289,32 +289,32 @@ function(ev) {
 		if (len != this._conv.numMsgs) {
 			// allow CLV to update its msg count if its been changed
 			var fields = new Object();
-			fields[LmItem.F_COUNT] = true;
-			this._conv._listNotify(LmEvent.E_MODIFY, {fields: fields});
+			fields[ZmItem.F_COUNT] = true;
+			this._conv._listNotify(ZmEvent.E_MODIFY, {fields: fields});
 			// reset selection to first msg
 			this._msgListView.setSelection(this._conv.msgs.getVector().get(0));
 		}
 	}
 }
 
-LmConvView.prototype._tagChangeListener =
+ZmConvView.prototype._tagChangeListener =
 function(ev) {
-	if (ev.type != LmEvent.S_TAG)
+	if (ev.type != ZmEvent.S_TAG)
 		return;
 
 	var fields = ev.getDetail("fields");
-	if (ev.event == LmEvent.E_MODIFY && (fields && fields[LmOrganizer.F_COLOR])) {
-		var img = Dwt.getDomObj(this.getDocument(), this._tagDiv.id +  LmDoublePaneView._TAG_IMG + ev.source.id);
+	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
+		var img = Dwt.getDomObj(this.getDocument(), this._tagDiv.id +  ZmDoublePaneView._TAG_IMG + ev.source.id);
 		if (img)
-			LsImg.setImage(img, LmTag.COLOR_MINI_ICON[ev.source.color]);
+			AjxImg.setImage(img, ZmTag.COLOR_MINI_ICON[ev.source.color]);
 	}
 	
-	if (ev.event == LmEvent.E_DELETE || ev.event == LmEvent.E_RENAME || ev.event == LmEvent.MODIFY)
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_RENAME || ev.event == ZmEvent.MODIFY)
 		this._setTags(this._conv);
 }
 
-LmConvView._tagClick =
+ZmConvView._tagClick =
 function(myId, tagId) {
 	var dwtObj = Dwt.getObjectFromElement(Dwt.getDomObj(document, myId));
-	dwtObj.notifyListeners(LmConvView._TAG_CLICK, tagId);
+	dwtObj.notifyListeners(ZmConvView._TAG_CLICK, tagId);
 }

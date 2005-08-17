@@ -10,74 +10,74 @@
 * @param container		the shell
 * @param prefsApp		the preferences app
 */
-function LmPrefController(appCtxt, container, prefsApp) {
+function ZmPrefController(appCtxt, container, prefsApp) {
 
-	LmController.call(this, appCtxt, container, prefsApp);
+	ZmController.call(this, appCtxt, container, prefsApp);
 
 	this._listeners = new Object();
-	this._listeners[LmOperation.SAVE] = new LsListener(this, this._saveListener);
-	this._listeners[LmOperation.CLOSE] = new LsListener(this, this._backListener);
-	this._filtersEnabled = appCtxt.get(LmSetting.FILTERS_ENABLED);
+	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
+	this._listeners[ZmOperation.CLOSE] = new AjxListener(this, this._backListener);
+	this._filtersEnabled = appCtxt.get(ZmSetting.FILTERS_ENABLED);
 }
 
-LmPrefController.prototype = new LmController();
-LmPrefController.prototype.constructor = LmPrefController;
+ZmPrefController.prototype = new ZmController();
+ZmPrefController.prototype.constructor = ZmPrefController;
 
 /**
 * Displays the tabbed options pages.
 */
-LmPrefController.prototype.show = 
+ZmPrefController.prototype.show = 
 function() {
 	this._setView();
 	this._prefsView.show();
-	this._app.pushView(LmController.PREF_VIEW);
+	this._app.pushView(ZmController.PREF_VIEW);
 }
 
 // Creates the prefs view, with a tab for each preferences page.
-LmPrefController.prototype._setView = 
+ZmPrefController.prototype._setView = 
 function() {
 	if (!this._passwordDialog) {
-		this._passwordDialog = new LmChangePasswordDialog(this._shell, this._appCtxt.getMsgDialog());
+		this._passwordDialog = new ZmChangePasswordDialog(this._shell, this._appCtxt.getMsgDialog());
 		this._passwordDialog.registerCallback(DwtDialog.OK_BUTTON, this._changePassword, this);
 	}
 
 	if (!this._prefsView) {
 		this._initializeToolBar();
 		if (this._filtersEnabled) {
-			LmFilterRules.setRequestSender(this._appCtxt.getAppController());
+			ZmFilterRules.setRequestSender(this._appCtxt.getAppController());
 			try {
-				LmFilterRules.getRules();
+				ZmFilterRules.getRules();
 			} catch (ex) {
 				// TODO: let the user know that the preferences were not saved
-				this._handleException(ex, LmPrefController.prototype._setView, null, false);
+				this._handleException(ex, ZmPrefController.prototype._setView, null, false);
 			}
 		}
 		var callbacks = new Object();
-		callbacks[LmAppViewMgr.CB_PRE_HIDE] = new LsCallback(this, this.popShield);
-		this._prefsView = new LmPrefView(this._container, this._app, Dwt.ABSOLUTE_STYLE, this._passwordDialog);
+		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
+		this._prefsView = new ZmPrefView(this._container, this._app, Dwt.ABSOLUTE_STYLE, this._passwordDialog);
 		var elements = new Object();
-		elements[LmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[LmAppViewMgr.C_APP_CONTENT] = this._prefsView;
-		this._app.createView(LmController.PREF_VIEW, elements, callbacks, true);
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
+		this._app.createView(ZmController.PREF_VIEW, elements, callbacks, true);
 	}
 }
 
 // Initializes the toolbar and sets up the listeners
-LmPrefController.prototype._initializeToolBar = 
+ZmPrefController.prototype._initializeToolBar = 
 function () {
 	if (this._toolbar) return;
 	
-	var buttons = [LmOperation.SAVE, LmOperation.CLOSE];
-	this._toolbar = new LmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "LmAppToolBar");
+	var buttons = [ZmOperation.SAVE, ZmOperation.CLOSE];
+	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "LmAppToolBar");
 	for (var i = 0; i < buttons.length; i++) {
 		if (buttons[i] > 0 && this._listeners[buttons[i]])
 			this._toolbar.addSelectionListener(buttons[i], this._listeners[buttons[i]]);
 	}
-	this._toolbar.getButton(LmOperation.SAVE).setToolTipContent(LmMsg.savePrefs);
+	this._toolbar.getButton(ZmOperation.SAVE).setToolTipContent(LmMsg.savePrefs);
 }
 
 // Saves any options that have been changed.
-LmPrefController.prototype._saveListener = 
+ZmPrefController.prototype._saveListener = 
 function() {
 	try {
 		var list = this._prefsView.getChangedPrefs();
@@ -87,37 +87,37 @@ function() {
 
 			var rulesToSave = false;
 			if (this._filtersEnabled) {
-				rulesToSave = LmFilterRules.shouldSave();
+				rulesToSave = ZmFilterRules.shouldSave();
 				if (rulesToSave)
-					LmFilterRules.saveRules();
+					ZmFilterRules.saveRules();
 			}
 			if (list.length || rulesToSave)
 				this._appCtxt.getAppController().setStatusMsg(LmMsg.optionsSaved);
 			return true;
 		} catch (ex) {
 			// TODO: let the user know that the preferences were not saved
-			this._handleException(ex, LmPrefController.prototype._saveListener, null, false);
+			this._handleException(ex, ZmPrefController.prototype._saveListener, null, false);
 		}
 	} catch (e) {
-		// getChangedPrefs throws an LsException if any of the values have not passed validation.
-		if (e instanceof LsException) {
+		// getChangedPrefs throws an AjxException if any of the values have not passed validation.
+		if (e instanceof AjxException) {
 			this._appCtxt.getAppController().setStatusMsg(e.msg);
 		}
 	}
 	return false;
 }
 
-LmPrefController.prototype._backListener = 
+ZmPrefController.prototype._backListener = 
 function() {
 	this._app.popView();
 }
 
-LmPrefController.prototype._changePassword =
+ZmPrefController.prototype._changePassword =
 function(args) {
-	var soapDoc = LsSoapDoc.create("ChangePasswordRequest", "urn:liquidAccount");
+	var soapDoc = AjxSoapDoc.create("ChangePasswordRequest", "urn:liquidAccount");
 	soapDoc.set("oldPassword", args[0]);
 	soapDoc.set("password", args[1]);
-	var accountNode = soapDoc.set("account", this._appCtxt.get(LmSetting.USERNAME));
+	var accountNode = soapDoc.set("account", this._appCtxt.get(ZmSetting.USERNAME));
 	accountNode.setAttribute("by", "name");
 	try { 
 		var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
@@ -125,7 +125,7 @@ function(args) {
 		if (resp.ChangePasswordResponse) {
 			this._appCtxt.getAppController().setStatusMsg(LmMsg.passwordChangeSucceeded);
 		} else {
-			throw new LsException(LmMsg.passwordChangeFailed + " " + LmMsg.errorContact, LsCsfeException.CSFE_SVC_ERROR, "changePassword");
+			throw new AjxException(LmMsg.passwordChangeFailed + " " + LmMsg.errorContact, LsCsfeException.CSFE_SVC_ERROR, "changePassword");
 		}
 	} catch (ex) {
 		if (ex.code == LsCsfeException.ACCT_AUTH_FAILED) {
@@ -136,7 +136,7 @@ function(args) {
 	}
 }
 
-LmPrefController.prototype.popShield =
+ZmPrefController.prototype.popShield =
 function() {
 	if (!this._prefsView.isDirty()) {
 		return true;
@@ -155,20 +155,20 @@ function() {
 	return false;
 }
 
-LmPrefController.prototype._popShieldYesCallback =
+ZmPrefController.prototype._popShieldYesCallback =
 function() {
 	var saved = this._saveListener();
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(saved);
 }
 
-LmPrefController.prototype._popShieldNoCallback =
+ZmPrefController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(true);
 }
 
-LmPrefController.prototype._popShieldCancelCallback =
+ZmPrefController.prototype._popShieldCancelCallback =
 function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(false);

@@ -2,17 +2,17 @@
  * @class
  * @constructor
  */
-function LmMailSignaturePref ( mId, labl, showSep){
+function ZmMailSignaturePref ( mId, labl, showSep){
     var htmlTempl ="<div id=%1><input id=%2 type='radio' %6 name='signature'>No Signature</input><div style='width:%wpx''><input id=%3 type='radio' %7 name='signature' style ='float:left'> <textarea  id=%4 wrap='on' rows='4' cols='60' style='float:right; width:380'>%5</textarea></div></div>";
     LmMailPref.call(this, mId, labl, htmlTempl, showSep, 
                     this.htmlReplaceCallback,
                     "defaultSig", this.onChangeHandler);
 };
 
-LmMailSignaturePref.prototype = new LmMailPref;
-LmMailSignaturePref.prototype.coinstructor = LmMailSignaturePref;
+ZmMailSignaturePref.prototype = new LmMailPref;
+ZmMailSignaturePref.prototype.coinstructor = ZmMailSignaturePref;
 
-LmMailSignaturePref.prototype.htmlReplaceCallback = function (id, value) {
+ZmMailSignaturePref.prototype.htmlReplaceCallback = function (id, value) {
     var html = this.htmlTemplate.replace("%1", id); 
     //var html = this.htmlTemplate.replace("%1", this._textAreaId); 
     html = html.replace("%5", value);
@@ -29,7 +29,7 @@ LmMailSignaturePref.prototype.htmlReplaceCallback = function (id, value) {
     html = html.replace("%2", this._input1Id);
     html = html.replace("%3", this._input2Id);
     html = html.replace("%4", this._textAreaId);
-    if (LsEnv.isIE) {
+    if (AjxEnv.isIE) {
         html = html.replace("%w", 400);
     } else {
         html = html.replace("%w", 402);
@@ -40,8 +40,8 @@ LmMailSignaturePref.prototype.htmlReplaceCallback = function (id, value) {
     return html;
 };
 
-LmMailSignaturePref.prototype.installEventListeners = function () {
-    if (LsEnv.isIE) {
+ZmMailSignaturePref.prototype.installEventListeners = function () {
+    if (AjxEnv.isIE) {
         var elem = null;
         var div =  document.getElementById(this.htmlId);
         this._installEHandler(div);
@@ -55,7 +55,7 @@ LmMailSignaturePref.prototype.installEventListeners = function () {
         LmMailPref.prototype.installEventListeners.call(this);
     }
 };
-LmMailSignaturePref.prototype._installEHandler = function ( elem ){
+ZmMailSignaturePref.prototype._installEHandler = function ( elem ){
     if(elem) {
 	elem.onchange = this.onChangeHandler;
         elem._targetField = this.targetField;
@@ -67,7 +67,7 @@ LmMailSignaturePref.prototype._installEHandler = function ( elem ){
 
 };
 
-LmMailSignaturePref.prototype.onChangeHandler = function (event) {
+ZmMailSignaturePref.prototype.onChangeHandler = function (event) {
     var dwtEv = new DwtUiEvent();
     dwtEv.setFromDhtmlEvent(event);
     var targetFieldName = dwtEv.target._targetField;

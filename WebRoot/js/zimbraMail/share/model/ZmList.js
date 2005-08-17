@@ -2,7 +2,7 @@
 * Creates an empty list of items of the given type.
 * @constructor
 * @class
-* This class represents a list of items (LmItem objects). Any SOAP method that can be
+* This class represents a list of items (ZmItem objects). Any SOAP method that can be
 * applied to a list of item IDs is represented here, so that we can perform an action
 * on multiple items with just one CSFE call. For the sake of convenience, a hash 
 * matching item IDs to items is maintained. Items are assumed to have an 'id'
@@ -12,64 +12,64 @@
 * @param type			item type
 * @param appCtxt		the app context
 */
-function LmList(type, appCtxt) {
+function ZmList(type, appCtxt) {
 
 	if (arguments.length == 0) return;
-	LmModel.call(this, true);
+	ZmModel.call(this, true);
 
 	this.type = type;
 	this._appCtxt = appCtxt;
 	this.searchResults = null; // search results that generated this list
 	
-	this._vector = new LsVector();
+	this._vector = new AjxVector();
 	this._hasMore = false;
 	this._idHash = new Object();
-	this._evt = new LmEvent(type);
+	this._evt = new ZmEvent(type);
 }
 
-LmList.prototype = new LmModel;
-LmList.prototype.constructor = LmList;
+ZmList.prototype = new ZmModel;
+ZmList.prototype.constructor = ZmList;
 
 // for item creation
-LmList.ITEM_CLASS = new Object();
-LmList.ITEM_CLASS[LmItem.CONV] = LmConv; 
-LmList.ITEM_CLASS[LmItem.MSG] = LmMailMsg;
-LmList.ITEM_CLASS[LmItem.ATT] = LmMimePart;
-LmList.ITEM_CLASS[LmItem.CONTACT] = LmContact;
-LmList.ITEM_CLASS[LmItem.APPT] = LmAppt;
+ZmList.ITEM_CLASS = new Object();
+ZmList.ITEM_CLASS[ZmItem.CONV] = ZmConv; 
+ZmList.ITEM_CLASS[ZmItem.MSG] = ZmMailMsg;
+ZmList.ITEM_CLASS[ZmItem.ATT] = ZmMimePart;
+ZmList.ITEM_CLASS[ZmItem.CONTACT] = ZmContact;
+ZmList.ITEM_CLASS[ZmItem.APPT] = ZmAppt;
 
 // node names for item types
-LmList.NODE = new Object();
-LmList.NODE[LmItem.CONV] = "c";
-LmList.NODE[LmItem.MSG] = "m";
-LmList.NODE[LmItem.ATT] = "mp";
-LmList.NODE[LmItem.CONTACT] = "cn";
+ZmList.NODE = new Object();
+ZmList.NODE[ZmItem.CONV] = "c";
+ZmList.NODE[ZmItem.MSG] = "m";
+ZmList.NODE[ZmItem.ATT] = "mp";
+ZmList.NODE[ZmItem.CONTACT] = "cn";
 
 // item types based on node name
-LmList.ITEM_TYPE = new Object();
-LmList.ITEM_TYPE["c"] = LmItem.CONV;
-LmList.ITEM_TYPE["m"] = LmItem.MSG;
-LmList.ITEM_TYPE["mp"] = LmItem.ATT;
-LmList.ITEM_TYPE["cn"] = LmItem.CONTACT;
+ZmList.ITEM_TYPE = new Object();
+ZmList.ITEM_TYPE["c"] = ZmItem.CONV;
+ZmList.ITEM_TYPE["m"] = ZmItem.MSG;
+ZmList.ITEM_TYPE["mp"] = ZmItem.ATT;
+ZmList.ITEM_TYPE["cn"] = ZmItem.CONTACT;
 
-LmList.TYPES = [LmItem.CONTACT, LmItem.CONV, LmItem.MSG, LmItem.ATT, LmItem.APPT];
-LmList.MIXED = -1; // special type for heterogeneous list
+ZmList.TYPES = [ZmItem.CONTACT, ZmItem.CONV, ZmItem.MSG, ZmItem.ATT, ZmItem.APPT];
+ZmList.MIXED = -1; // special type for heterogeneous list
 
-LmList.prototype.toString = 
+ZmList.prototype.toString = 
 function() {
-	return "LmList";
+	return "ZmList";
 }
 
-LmList.prototype.addChangeListener = 
+ZmList.prototype.addChangeListener = 
 function(listener) {
-	if (LmModel.prototype.addChangeListener.call(this, listener))
+	if (ZmModel.prototype.addChangeListener.call(this, listener))
 		this._appCtxt.getAppController().addModel(this);	
 }
 
-LmList.prototype.removeChangeListener = 
+ZmList.prototype.removeChangeListener = 
 function(listener) {
-	if (LmModel.prototype.removeChangeListener.call(this, listener))
-		if (!this._evtMgr.isListenerRegistered(LmEvent.L_MODIFY))
+	if (ZmModel.prototype.removeChangeListener.call(this, listener))
+		if (!this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY))
 			this._appCtxt.getAppController().removeModel(this);
 }
 
@@ -79,7 +79,7 @@ function(listener) {
 * @param item	the item to add
 * @param index	the index at which to add the item (defaults to end of list)
 */
-LmList.prototype.add = 
+ZmList.prototype.add = 
 function(item, index) {
 	this._vector.add(item, index);
 	if (item.id)
@@ -91,7 +91,7 @@ function(item, index) {
 *
 * @param item	the item to remove
 */
-LmList.prototype.remove = 
+ZmList.prototype.remove = 
 function(item) {
 	this._vector.remove(item);
 	if (item.id)
@@ -109,9 +109,9 @@ function(item) {
 *
 * @param args	arbitrary hash of args to pass along
 */
-LmList.prototype.create =
+ZmList.prototype.create =
 function(args) {
-	var item = new LmList.ITEM_CLASS[this.type](this._appCtxt, this);
+	var item = new ZmList.ITEM_CLASS[this.type](this._appCtxt, this);
 	item.create(args);
 
 	return item;
@@ -120,7 +120,7 @@ function(args) {
 /**
 * Returns the number of items in the list.
 */
-LmList.prototype.size = 
+ZmList.prototype.size = 
 function() {
 	return this._vector.size();
 }
@@ -128,7 +128,7 @@ function() {
 /**
 * Returns true if there are more items for this search.
 */
-LmList.prototype.hasMore = 
+ZmList.prototype.hasMore = 
 function() {
 	return this._hasMore;
 }
@@ -138,7 +138,7 @@ function() {
 *
 * @param bHasMore	whether there are more items
 */
-LmList.prototype.setHasMore = 
+ZmList.prototype.setHasMore = 
 function(bHasMore) {
 	this._hasMore = bHasMore;
 }
@@ -146,15 +146,15 @@ function(bHasMore) {
 /**
 * Returns the list as an array.
 */
-LmList.prototype.getArray =
+ZmList.prototype.getArray =
 function() {
 	return this._vector.getArray();
 }
 
 /**
-* Returns the list as a LsVector.
+* Returns the list as a AjxVector.
 */
-LmList.prototype.getVector =
+ZmList.prototype.getVector =
 function() {
 	return this._vector;
 }
@@ -164,7 +164,7 @@ function() {
 *
 * @param id		an item ID
 */
-LmList.prototype.getById =
+ZmList.prototype.getById =
 function(id) {
 	return this._idHash[id];
 }
@@ -172,16 +172,16 @@ function(id) {
 /**
 * Clears the list, including its ID hash.
 */
-LmList.prototype.clear =
+ZmList.prototype.clear =
 function() {
 	// First, let each item run its clear() method
 	var a = this.getArray();
 	for (var i = 0; i < a.length; i++)
 		a[i].clear();
 
-	if (this._evtMgr.isListenerRegistered(LmEvent.L_MODIFY))
+	if (this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY))
 		this._appCtxt.getAppController().removeModel(this);
-	this._evtMgr.removeAll(LmEvent.L_MODIFY);
+	this._evtMgr.removeAll(ZmEvent.L_MODIFY);
 	this._vector.removeAll();
 	for (var id in this._idHash)
 		this._idHash[id] = null;
@@ -195,18 +195,18 @@ function() {
 *
 * @param respNode	an XML node whose children are item nodes
 */
-LmList.prototype.set = 
+ZmList.prototype.set = 
 function(respNode) {
 	this.clear();
 	var nodes = respNode.childNodes;
 	var args = {appCtxt: this._appCtxt, list: this, addressHash: new Object()};
 	for (var i = 0; i < nodes.length; i++) {
 		var node = nodes[i];
-		if (node.nodeName == LmList.NODE[this.type]) {
+		if (node.nodeName == ZmList.NODE[this.type]) {
 			/// TODO: take this out, let view decide whether to show items in Trash
-			if (parseInt(node.getAttribute("l")) == LmFolder.ID_TRASH && (this.type != LmItem.CONTACT))
+			if (parseInt(node.getAttribute("l")) == ZmFolder.ID_TRASH && (this.type != ZmItem.CONTACT))
 				continue;
-			this.add(LmList.ITEM_CLASS[this.type].createFromDom(node, args));
+			this.add(ZmList.ITEM_CLASS[this.type].createFromDom(node, args));
 		}
 	}
 }
@@ -217,12 +217,12 @@ function(respNode) {
 * @param node	an XML node
 * @param args	an optional list of arguments to pass to the item's creation function
 */
-LmList.prototype.addFromDom = 
+ZmList.prototype.addFromDom = 
 function(node, args) {
 	if (!args) args = new Object();
 	args.appCtxt = this._appCtxt;
 	args.list = this;
-	this.add(LmList.ITEM_CLASS[this.type].createFromDom(node, args));
+	this.add(ZmList.ITEM_CLASS[this.type].createFromDom(node, args));
 }
 
 /**
@@ -232,10 +232,10 @@ function(node, args) {
 * @param flagOp		the name of the flag operation ("flag" or "read")
 * @param on			whether to set the flag
 */
-LmList.prototype.flagItems =
+ZmList.prototype.flagItems =
 function(items, flagOp, on) {
 	var itemMode = false;
-	if (items instanceof LmItem) {
+	if (items instanceof ZmItem) {
 		items = [items];
 		itemMode = true;
 	}
@@ -243,15 +243,15 @@ function(items, flagOp, on) {
 	var action = on ? flagOp : "!" + flagOp;
 	var flaggedItems = this._itemAction(items, action);
 	if (flaggedItems.length) {
-		var flag = LmItem.FLAG_FLAGGED;
+		var flag = ZmItem.FLAG_FLAGGED;
 		if (flagOp == "read") {
-			flag = LmItem.FLAG_UNREAD;
+			flag = ZmItem.FLAG_UNREAD;
 			on = !on;
 		}
 		this.flagLocal(flaggedItems, flag, on);
 		for (var i = 0; i < flaggedItems.length; i++)
 			flaggedItems[i].flagLocal(flag, on);
-		this._eventNotify(LmEvent.E_FLAGS, flaggedItems, {flags: [flag]}, itemMode);
+		this._eventNotify(ZmEvent.E_FLAGS, flaggedItems, {flags: [flag]}, itemMode);
 	}
 }
 
@@ -263,10 +263,10 @@ function(items, flagOp, on) {
 * @param tagId		the tag to add/remove from each item
 * @param doTag		true if adding the tag, false if removing it
 */
-LmList.prototype.tagItems =
+ZmList.prototype.tagItems =
 function(items, tagId, doTag) {
 	var itemMode = false;
-	if (items instanceof LmItem) {
+	if (items instanceof ZmItem) {
 		items = [items];
 		itemMode = true;
 	}
@@ -284,16 +284,16 @@ function(items, tagId, doTag) {
 			this.tagLocal(taggedItems, tagId, doTag);
 			for (var i = 0; i < taggedItems.length; i++)
 				taggedItems[i].tagLocal(tagId, doTag);
-			this._eventNotify(LmEvent.E_TAGS, taggedItems, {tag: tagId, add: doTag}, itemMode);
+			this._eventNotify(ZmEvent.E_TAGS, taggedItems, {tag: tagId, add: doTag}, itemMode);
 		}
 	}
 }
 
-LmList.prototype.removeAllTags = 
+ZmList.prototype.removeAllTags = 
 function(items) {
 	
 	var itemMode = false;
-	if (items instanceof LmItem) {
+	if (items instanceof ZmItem) {
 		items = [items];
 		itemMode = true;
 	}
@@ -304,7 +304,7 @@ function(items) {
 		for (var i = 0; i < removedItems.length; i++) {
 			removedItems[i].removeAllTagsLocal();
 		}
-		this._eventNotify(LmEvent.E_REMOVE_ALL, removedItems, null, itemMode);
+		this._eventNotify(ZmEvent.E_REMOVE_ALL, removedItems, null, itemMode);
 	}
 }
 
@@ -319,10 +319,10 @@ function(items) {
 * @param items		a list of items to move
 * @param folder		destination folder
 */
-LmList.prototype.moveItems =
+ZmList.prototype.moveItems =
 function(items, folder) {
 	var itemMode = false;
-	if (items instanceof LmItem) {
+	if (items instanceof ZmItem) {
 		items = [items];
 		itemMode = true;
 	}
@@ -337,7 +337,7 @@ function(items, folder) {
 		this.moveLocal(movedItems, folder.id);
 		for (var i = 0; i < movedItems.length; i++)
 			movedItems[i].moveLocal(folder.id);
-		this._eventNotify(LmEvent.E_MOVE, movedItems, null, itemMode);
+		this._eventNotify(ZmEvent.E_MOVE, movedItems, null, itemMode);
 	}
 }
 
@@ -349,10 +349,10 @@ function(items, folder) {
 * @param items			list of items to delete
 * @param hardDelete		whether to force physical removal of items
 */
-LmList.prototype.deleteItems =
+ZmList.prototype.deleteItems =
 function(items, hardDelete) {
 	var itemMode = false;
-	if (items instanceof LmItem) {
+	if (items instanceof ZmItem) {
 		items = [items];
 		itemMode = true;
 	}
@@ -361,7 +361,7 @@ function(items, hardDelete) {
 	var toMove = new Array();
 	var toDelete = new Array();	
 	for (var i = 0; i < items.length; i++) {
-		if (hardDelete || items[i].folderId == LmFolder.ID_TRASH)
+		if (hardDelete || items[i].folderId == ZmFolder.ID_TRASH)
 			toDelete.push(items[i]);
 		else
 			toMove.push(items[i]);
@@ -369,7 +369,7 @@ function(items, hardDelete) {
 
 	// move (soft delete)
 	if (toMove.length)
-		this.moveItems(toMove, this._appCtxt.getFolderTree().getById(LmFolder.ID_TRASH));
+		this.moveItems(toMove, this._appCtxt.getFolderTree().getById(ZmFolder.ID_TRASH));
 
 	// hard delete - items actually deleted from data store
 	if (toDelete.length) {
@@ -378,7 +378,7 @@ function(items, hardDelete) {
 			this.deleteLocal(deletedItems);
 			for (var i = 0; i < deletedItems.length; i++)
 				deletedItems[i].deleteLocal();
-			this._eventNotify(LmEvent.E_DELETE, deletedItems, null, itemMode);
+			this._eventNotify(ZmEvent.E_DELETE, deletedItems, null, itemMode);
 		}
 	}
 }
@@ -390,10 +390,10 @@ function(items, hardDelete) {
 * @param items			list of items to delete
 * @param mods			whether to force physical removal of items
 */
-LmList.prototype.modifyItems =
+ZmList.prototype.modifyItems =
 function(items, mods) {
 	var itemMode = false;
-	if (items instanceof LmItem) {
+	if (items instanceof ZmItem) {
 		items = [items];
 		itemMode = true;
 	}
@@ -401,24 +401,24 @@ function(items, mods) {
 	for (var i = 0; i < items.length; i++) {
 		var details = items[i].modify(mods);
 		if (details) {
-			this._eventNotify(LmEvent.E_MODIFY, items, details, itemMode);
+			this._eventNotify(ZmEvent.E_MODIFY, items, details, itemMode);
 			this.modifyLocal(items[i], details);
 		}
 	}
 }
 
 // returns a vector containing a subset of items of this list
-LmList.prototype.getSubList = 
+ZmList.prototype.getSubList = 
 function(offset, limit) {
 	var subVector = null;
 	var end = (offset + limit > this.size()) ? this.size() : offset + limit;
 	var subList = this.getArray();
 	if (offset < end)
-		subVector = LsVector.fromArray(subList.slice(offset, end));
+		subVector = AjxVector.fromArray(subList.slice(offset, end));
 	return subVector;
 }
 
-LmList.prototype.cache = 
+ZmList.prototype.cache = 
 function(offset, newList) {
 	this.getVector().merge(offset, newList);
 	// reparent each item within new list, and add it to ID hash
@@ -431,16 +431,16 @@ function(offset, newList) {
 	}
 }
 
-LmList.prototype._itemAction =
+ZmList.prototype._itemAction =
 function(items, action, attrs) {
-	if (this.type == LmList.MIXED)
+	if (this.type == ZmList.MIXED)
 		return this._mixedItemAction(items, action, attrs);
 	else
 		return this._singleItemAction(items, action, attrs);
 }
 
 
-LmList.prototype._singleItemAction =
+ZmList.prototype._singleItemAction =
 function(items, action, attrs, type) {
 	if (!type) type = this.type;
 
@@ -450,8 +450,8 @@ function(items, action, attrs, type) {
 	if (!(idStr && idStr.length))
 		return actionedItems;
 
-	var soapCmd = LmItem.SOAP_CMD[type] + "Request";
-	var soapDoc = LsSoapDoc.create(soapCmd, "urn:liquidMail");
+	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
+	var soapDoc = AjxSoapDoc.create(soapCmd, "urn:liquidMail");
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("id", idStr);
 	actionNode.setAttribute("op", action);
@@ -459,7 +459,7 @@ function(items, action, attrs, type) {
 		actionNode.setAttribute(attr, attrs[attr]);
 	var appCtlr = this._appCtxt.getAppController();
 	appCtlr.setActionedIds(idHash.list.concat(idHash.extra));
-	var resp = appCtlr.sendRequest(soapDoc)[LmItem.SOAP_CMD[type] + "Response"];
+	var resp = appCtlr.sendRequest(soapDoc)[ZmItem.SOAP_CMD[type] + "Response"];
 	var ids = resp.action.id.split(",");
 	if (ids) {
 		for (var i = 0; i < ids.length; i++) {
@@ -473,13 +473,13 @@ function(items, action, attrs, type) {
 	return actionedItems;
 }
 
-LmList.prototype._mixedItemAction =
+ZmList.prototype._mixedItemAction =
 function(items, action, attrs) {
 	var lists = new Object();
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		var type = item.type;
-		if (!lists[type]) lists[type] = new LmList(type, this._appCtxt);
+		if (!lists[type]) lists[type] = new ZmList(type, this._appCtxt);
 		lists[type].add(item);
 	}
 	
@@ -494,15 +494,15 @@ function(items, action, attrs) {
 	return allActionedItems;
 }
 
-LmList.prototype.notifyCreate =
+ZmList.prototype.notifyCreate =
 function(node) {
-	var item = LmList.ITEM_CLASS[this.type].createFromDom(node, {appCtxt: this._appCtxt, list: this});
+	var item = ZmList.ITEM_CLASS[this.type].createFromDom(node, {appCtxt: this._appCtxt, list: this});
 	this.add(item, this._sortIndex(item));
 	this.createLocal(item);
-	this._eventNotify(LmEvent.E_CREATE, [item]);
+	this._eventNotify(ZmEvent.E_CREATE, [item]);
 }
 
-LmList.prototype.notifyDelete =
+ZmList.prototype.notifyDelete =
 function(ids) {
 	var deleted = new Array();
 	for (var i = 0; i < ids.length; i++) {
@@ -514,46 +514,46 @@ function(ids) {
 		}
 	}
 	if (deleted.length)
-		this._eventNotify(LmEvent.E_DELETE, deleted);
+		this._eventNotify(ZmEvent.E_DELETE, deleted);
 }
 
 // These generic methods allow a derived class to perform the appropriate internal changes
-LmList.prototype.flagLocal 			= function(items, flag, state) {}
-LmList.prototype.tagLocal 			= function(items, tag, state) {}
-LmList.prototype.removeAllTagsLocal = function(items) {}
-LmList.prototype.modifyLocal 		= function(items, mods) {}
-LmList.prototype.createLocal 		= function(item) {}
+ZmList.prototype.flagLocal 			= function(items, flag, state) {}
+ZmList.prototype.tagLocal 			= function(items, tag, state) {}
+ZmList.prototype.removeAllTagsLocal = function(items) {}
+ZmList.prototype.modifyLocal 		= function(items, mods) {}
+ZmList.prototype.createLocal 		= function(item) {}
 
 // default action is to remove each deleted item from this list
-LmList.prototype.deleteLocal =
+ZmList.prototype.deleteLocal =
 function(items) {
 	for (var i = 0; i < items.length; i++)
 		this.remove(items[i]);
 }
 
 // default action is to remove each moved item from this list
-LmList.prototype.moveLocal = 
+ZmList.prototype.moveLocal = 
 function(items, folder) {
 	for (var i = 0; i < items.length; i++)
 		this.remove(items[i]);
 }
 
 // Notify listeners on this list of a model change.
-LmList.prototype._eventNotify =
+ZmList.prototype._eventNotify =
 function(event, items, details, itemMode) {
 	if (itemMode)
 		items[0]._eventNotify(event, details);
 
-	if (items.length && this._evtMgr.isListenerRegistered(LmEvent.L_MODIFY)) {
+	if (items.length && this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
 		this._evt.set(event, this);
 		this._evt.setDetails(details);
 		this._evt.setDetail("items", items);
-		this._evtMgr.notifyListeners(LmEvent.L_MODIFY, this._evt);
+		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
 	}
 }
 
 // Grab the IDs out of a list of items, and return them as both a string and a hash.
-LmList.prototype._getIds =
+ZmList.prototype._getIds =
 function(list) {
 	var idHash = new Object();
 	if (!(list && list.length))
@@ -568,7 +568,7 @@ function(list) {
 			idHash[id] = item;
 		}
 		// so we ignore related conv notifs (except virtual convs)
-		if ((item.type == LmItem.MSG) && item.cid && (item.cid > 0))
+		if ((item.type == ZmItem.MSG) && item.cid && (item.cid > 0))
 			extra.push(item.cid);
 	}
 	idHash.list = ids;
@@ -579,7 +579,7 @@ function(list) {
 
 // Returns the index at which the given item should be inserted into this list.
 // Subclasses should override to return a meaningful value.
-LmList.prototype._sortIndex = 
+ZmList.prototype._sortIndex = 
 function(item) {
 	return 0;
 }

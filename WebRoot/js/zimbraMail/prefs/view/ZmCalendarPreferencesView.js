@@ -1,9 +1,9 @@
 /**
- * @class LmCalendarPreferencesView
+ * @class ZmCalendarPreferencesView
  * handles the layout of the mail preferences.
  */ 
-function LmCalendarPreferencesView(parent, app) {
-    DwtTabViewPage.call(this, parent, "LmCalendarPreferencesView");
+function ZmCalendarPreferencesView(parent, app) {
+    DwtTabViewPage.call(this, parent, "ZmCalendarPreferencesView");
     this._fieldIds = new Object(); //stores the ids of all the form elements
     
     // _fieldIds[] - this is a map, the keys are the field names of the 
@@ -15,11 +15,11 @@ function LmCalendarPreferencesView(parent, app) {
 };
 
 // Descend the class from DwtTabViewPage
-LmCalendarPreferencesView.prototype = new DwtTabViewPage;
-LmCalendarPreferencesView.prototype.constructor = LmCalendarPreferencesView;
+ZmCalendarPreferencesView.prototype = new DwtTabViewPage;
+ZmCalendarPreferencesView.prototype.constructor = ZmCalendarPreferencesView;
 
 
-LmCalendarPreferencesView.DAY_TIMES = 
+ZmCalendarPreferencesView.DAY_TIMES = 
     new Array('12:00', '12:30', '1:00', '1:30',
 	      '2:00', '2:30', '3:00','3:30', 
 	      '4:00', '4:30', '5:00', '5:30', 
@@ -29,7 +29,7 @@ LmCalendarPreferencesView.DAY_TIMES =
 	      );
 
 
-LmCalendarPreferencesView.prototype._createOptionTablePre = 
+ZmCalendarPreferencesView.prototype._createOptionTablePre = 
     function(title, imageInfo, html, idx) {
     html[idx++] = "<div class='TitleBar'>";
     
@@ -39,7 +39,7 @@ LmCalendarPreferencesView.prototype._createOptionTablePre =
     html[idx++] = "<col style='width: 32px;'/>";	
     html[idx++] = "<col/>";
     html[idx++] = "<tr valign='center'><td>";
-    html[idx++] = LsImg.getImageHtml(imageInfo);
+    html[idx++] = AjxImg.getImageHtml(imageInfo);
     html[idx++] = "</td><td>";	
     html[idx++] = "<div class='Title'>";
     html[idx++] = title;
@@ -51,11 +51,11 @@ LmCalendarPreferencesView.prototype._createOptionTablePre =
     return idx;
 };
 
-LmCalendarPreferencesView.prototype._createHTML = function () {
+ZmCalendarPreferencesView.prototype._createHTML = function () {
     var div = this.getDocument().createElement("div");
     var html = new Array(25);
     var idx = 0;
-    idx = this._createOptionTablePre("Calendar Options", LmImg.IN_CALENDAR, html, idx);
+    idx = this._createOptionTablePre("Calendar Options", ZmImg.IN_CALENDAR, html, idx);
     
     html[idx++] = "<table cellpadding='0' cellspacing='5' border='0' style='width:100%'>";
     
@@ -94,31 +94,31 @@ LmCalendarPreferencesView.prototype._createHTML = function () {
 
     el = document.getElementById(startTimeId);
     sel = new DwtSelect(this);
-    for (i = 0; i < LmCalendarPreferencesView.DAY_TIMES.length; ++i) {
+    for (i = 0; i < ZmCalendarPreferencesView.DAY_TIMES.length; ++i) {
         optionId = 
-            sel.addOption(LmCalendarPreferencesView.DAY_TIMES[i] + " AM");
+            sel.addOption(ZmCalendarPreferencesView.DAY_TIMES[i] + " AM");
     	if (i == 16) { 
             sel.setSelected(optionId);
     	}
     }
     i = 0;
-    for (; i< LmCalendarPreferencesView.DAY_TIMES.length; ++i) {
+    for (; i< ZmCalendarPreferencesView.DAY_TIMES.length; ++i) {
         optionId = 
-            sel.addOption(LmCalendarPreferencesView.DAY_TIMES[i] + " PM");
+            sel.addOption(ZmCalendarPreferencesView.DAY_TIMES[i] + " PM");
     }
     el.appendChild(sel.getHtmlElement());
 
     el = document.getElementById(endTimeId);
     sel = new DwtSelect(this);
     i = 0;
-    for ( ; i <LmCalendarPreferencesView.DAY_TIMES.length ; ++i) {
+    for ( ; i <ZmCalendarPreferencesView.DAY_TIMES.length ; ++i) {
         optionId = 
-            sel.addOption(LmCalendarPreferencesView.DAY_TIMES[i] + " AM");
+            sel.addOption(ZmCalendarPreferencesView.DAY_TIMES[i] + " AM");
     }
     i = 0;
-    for (; i< LmCalendarPreferencesView.DAY_TIMES.length; ++i) {
+    for (; i< ZmCalendarPreferencesView.DAY_TIMES.length; ++i) {
         optionId = 
-            sel.addOption(LmCalendarPreferencesView.DAY_TIMES[i] + " PM");
+            sel.addOption(ZmCalendarPreferencesView.DAY_TIMES[i] + " PM");
 	if (i == 10) {
             sel.setSelected(optionId);
 	}

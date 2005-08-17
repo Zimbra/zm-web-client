@@ -49,7 +49,7 @@
 * both IE and Firefox have display bugs related to the use of z-index, we use relocation as
 * well: a hidden component is positioned way off the screen. (In IE, SELECT fields don't 
 * obey z-index, and in Firefox, the cursor bleeds through.)</p>
-* <p>In the current model of view management, each type of view (see LmController) has only one
+* <p>In the current model of view management, each type of view (see ZmController) has only one
 * instance at a given time. For example, we only ever track a single conv view. If we decide to do
 * view caching, the model would have to change so that we can have multiple instances of views.</p>
 *
@@ -59,7 +59,7 @@
 * @param isNewWindow	true if we are a child window of the main app
 * @param hasSkin		true if the app has provided containing HTML
 */
-function LmAppViewMgr(shell, controller, isNewWindow, hasSkin) {
+function ZmAppViewMgr(shell, controller, isNewWindow, hasSkin) {
 
 	this._shell = shell;
 	this._controller = controller;
@@ -68,7 +68,7 @@ function LmAppViewMgr(shell, controller, isNewWindow, hasSkin) {
 	this._hasSkin = hasSkin;
 
 	this._shellSz = this._shell.getSize();
-	this._controlListener = new LsListener(this, this._shellControlListener);
+	this._controlListener = new AjxListener(this, this._shellControlListener);
 	this._shell.addControlListener(this._controlListener);
 
 	this._lastView = null;				// ID of previously visible view
@@ -88,57 +88,57 @@ function LmAppViewMgr(shell, controller, isNewWindow, hasSkin) {
 	this._contBounds = new Object();	// bounds for the containers
 
 	// view preemption
-	this._pushCallback = new LsCallback(this, this.pushView);
-	this._popCallback = new LsCallback(this, this.popView);
+	this._pushCallback = new AjxCallback(this, this.pushView);
+	this._popCallback = new AjxCallback(this, this.popView);
 }
 
 // components
-LmAppViewMgr.C_BANNER					= "BANNER";
-LmAppViewMgr.C_USER_INFO				= "USER INFO";
-LmAppViewMgr.C_SEARCH					= "SEARCH";
-LmAppViewMgr.C_SEARCH_BUILDER			= "SEARCH BUILDER";
-LmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR	= "SEARCH BUILDER TOOLBAR";
-LmAppViewMgr.C_CURRENT_APP				= "CURRENT APP";
-LmAppViewMgr.C_APP_CHOOSER				= "APP CHOOSER";
-LmAppViewMgr.C_TREE						= "TREE";
-LmAppViewMgr.C_TREE_FOOTER				= "TREE FOOTER";
-LmAppViewMgr.C_TOOLBAR_TOP				= "TOP TOOLBAR";
-LmAppViewMgr.C_TOOLBAR_BOTTOM			= "BOTTOM TOOLBAR";
-LmAppViewMgr.C_APP_CONTENT				= "APP CONTENT";
-LmAppViewMgr.C_STATUS					= "STATUS";
-LmAppViewMgr.C_SASH						= "SASH";
+ZmAppViewMgr.C_BANNER					= "BANNER";
+ZmAppViewMgr.C_USER_INFO				= "USER INFO";
+ZmAppViewMgr.C_SEARCH					= "SEARCH";
+ZmAppViewMgr.C_SEARCH_BUILDER			= "SEARCH BUILDER";
+ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR	= "SEARCH BUILDER TOOLBAR";
+ZmAppViewMgr.C_CURRENT_APP				= "CURRENT APP";
+ZmAppViewMgr.C_APP_CHOOSER				= "APP CHOOSER";
+ZmAppViewMgr.C_TREE						= "TREE";
+ZmAppViewMgr.C_TREE_FOOTER				= "TREE FOOTER";
+ZmAppViewMgr.C_TOOLBAR_TOP				= "TOP TOOLBAR";
+ZmAppViewMgr.C_TOOLBAR_BOTTOM			= "BOTTOM TOOLBAR";
+ZmAppViewMgr.C_APP_CONTENT				= "APP CONTENT";
+ZmAppViewMgr.C_STATUS					= "STATUS";
+ZmAppViewMgr.C_SASH						= "SASH";
 
 // keys for getting container IDs
-LmAppViewMgr.CONT_ID_KEY = new Object();
-LmAppViewMgr.CONT_ID_KEY[LmAppViewMgr.C_BANNER]					= LmSetting.SKIN_LOGO_ID;
-LmAppViewMgr.CONT_ID_KEY[LmAppViewMgr.C_USER_INFO]				= LmSetting.SKIN_USER_INFO_ID;
-LmAppViewMgr.CONT_ID_KEY[LmAppViewMgr.C_SEARCH]					= LmSetting.SKIN_SEARCH_ID;
-LmAppViewMgr.CONT_ID_KEY[LmAppViewMgr.C_SEARCH_BUILDER]			= LmSetting.SKIN_SEARCH_BUILDER_ID;
-LmAppViewMgr.CONT_ID_KEY[LmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR]	= LmSetting.SKIN_SEARCH_BUILDER_TOOLBAR_ID;
-LmAppViewMgr.CONT_ID_KEY[LmAppViewMgr.C_CURRENT_APP]			= LmSetting.SKIN_CURRENT_APP_ID;
-LmAppViewMgr.CONT_ID_KEY[LmAppViewMgr.C_APP_CHOOSER]			= LmSetting.SKIN_APP_CHOOSER_ID;
-LmAppViewMgr.CONT_ID_KEY[LmAppViewMgr.C_TREE]					= LmSetting.SKIN_TREE_ID;
-LmAppViewMgr.CONT_ID_KEY[LmAppViewMgr.C_TREE_FOOTER]			= LmSetting.SKIN_TREE_FOOTER_ID;
-LmAppViewMgr.CONT_ID_KEY[LmAppViewMgr.C_TOOLBAR_TOP]			= LmSetting.SKIN_APP_TOP_TOOLBAR_ID;
-LmAppViewMgr.CONT_ID_KEY[LmAppViewMgr.C_TOOLBAR_BOTTOM]			= LmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID;
-LmAppViewMgr.CONT_ID_KEY[LmAppViewMgr.C_APP_CONTENT]			= LmSetting.SKIN_APP_MAIN_ID;
-LmAppViewMgr.CONT_ID_KEY[LmAppViewMgr.C_STATUS]					= LmSetting.SKIN_STATUS_ID;
-LmAppViewMgr.CONT_ID_KEY[LmAppViewMgr.C_SASH]					= LmSetting.SKIN_SASH_ID;
+ZmAppViewMgr.CONT_ID_KEY = new Object();
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_BANNER]					= ZmSetting.SKIN_LOGO_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_USER_INFO]				= ZmSetting.SKIN_USER_INFO_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH]					= ZmSetting.SKIN_SEARCH_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER]			= ZmSetting.SKIN_SEARCH_BUILDER_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR]	= ZmSetting.SKIN_SEARCH_BUILDER_TOOLBAR_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_CURRENT_APP]			= ZmSetting.SKIN_CURRENT_APP_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CHOOSER]			= ZmSetting.SKIN_APP_CHOOSER_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE]					= ZmSetting.SKIN_TREE_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE_FOOTER]			= ZmSetting.SKIN_TREE_FOOTER_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TOOLBAR_TOP]			= ZmSetting.SKIN_APP_TOP_TOOLBAR_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TOOLBAR_BOTTOM]			= ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT]			= ZmSetting.SKIN_APP_MAIN_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_STATUS]					= ZmSetting.SKIN_STATUS_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SASH]					= ZmSetting.SKIN_SASH_ID;
 
 // callbacks
-LmAppViewMgr.CB_PRE_HIDE	= 1;
-LmAppViewMgr.CB_POST_HIDE	= 2;
-LmAppViewMgr.CB_PRE_SHOW	= 3;
-LmAppViewMgr.CB_POST_SHOW	= 4;
+ZmAppViewMgr.CB_PRE_HIDE	= 1;
+ZmAppViewMgr.CB_POST_HIDE	= 2;
+ZmAppViewMgr.CB_PRE_SHOW	= 3;
+ZmAppViewMgr.CB_POST_SHOW	= 4;
 
 // used to continue when returning from callbacks
-LmAppViewMgr.PENDING_VIEW = "LmAppViewMgr.PENDING_VIEW";
+ZmAppViewMgr.PENDING_VIEW = "ZmAppViewMgr.PENDING_VIEW";
 
 // Public methods
 
-LmAppViewMgr.prototype.toString = 
+ZmAppViewMgr.prototype.toString = 
 function() {
-	return "LmAppViewMgr";
+	return "ZmAppViewMgr";
 }
 
 /**
@@ -149,7 +149,7 @@ function() {
 * @param doFit			if true, go ahead and fit the components within their containers
 * @param noSetZ			if true, do not set the z-index to VIEW
 */
-LmAppViewMgr.prototype.addComponents =
+ZmAppViewMgr.prototype.addComponents =
 function(components, doFit, noSetZ) {
 	var list = new Array();
 	for (var cid in components) {
@@ -159,11 +159,11 @@ function(components, doFit, noSetZ) {
 		var htmlEl = comp.getHtmlElement();
 		this._htmlEl[cid] = htmlEl;
 		if (this._hasSkin) {
-			var contId = this._appCtxt.get(LmAppViewMgr.CONT_ID_KEY[cid]);
+			var contId = this._appCtxt.get(ZmAppViewMgr.CONT_ID_KEY[cid]);
 			var contEl = document.getElementById(contId);
 			this._containers[cid] = contEl;
 			if (Dwt.contains(contEl, htmlEl))
-				throw new LsException("element already added to container: " + cid);		
+				throw new AjxException("element already added to container: " + cid);		
 			Dwt.removeChildren(contEl);
 			list.push(cid);
 		}
@@ -171,7 +171,7 @@ function(components, doFit, noSetZ) {
 		if (!noSetZ)
 			comp.zShow(true);
 
-		if (cid == LmAppViewMgr.C_SASH)
+		if (cid == ZmAppViewMgr.C_SASH)
 //			comp.registerCallback(this._sashCallback, this);
 			comp.setCursor("default");
 	}
@@ -184,19 +184,19 @@ function(components, doFit, noSetZ) {
 *
 * @param visible	if true, the search builder is shown
 */
-LmAppViewMgr.prototype.showSearchBuilder =
+ZmAppViewMgr.prototype.showSearchBuilder =
 function(visible) {
-	DBG.println(LsDebug.DBG1, "show search builder: " + visible);
+	DBG.println(AjxDebug.DBG1, "show search builder: " + visible);
 	skin.showSearchBuilder(visible);
-	this._components[LmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR].zShow(visible);
-	this._components[LmAppViewMgr.C_SEARCH_BUILDER].zShow(visible);
-	var list = [LmAppViewMgr.C_SEARCH_BUILDER, LmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
-				LmAppViewMgr.C_CURRENT_APP, LmAppViewMgr.C_APP_CHOOSER, LmAppViewMgr.C_TREE,
-				LmAppViewMgr.C_TREE_FOOTER, LmAppViewMgr.C_TOOLBAR_TOP, LmAppViewMgr.C_APP_CONTENT];
+	this._components[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR].zShow(visible);
+	this._components[ZmAppViewMgr.C_SEARCH_BUILDER].zShow(visible);
+	var list = [ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
+				ZmAppViewMgr.C_CURRENT_APP, ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE,
+				ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT];
 	this._fitToContainer(list);
 	// search builder contains forms, and browsers have quirks around form fields and z-index
 	if (!visible)
-		this._components[LmAppViewMgr.C_SEARCH_BUILDER].setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+		this._components[ZmAppViewMgr.C_SEARCH_BUILDER].setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 }
 
 /**
@@ -204,18 +204,18 @@ function(visible) {
 *
 * @param visible	if true, the tree footer is shown
 */
-LmAppViewMgr.prototype.showTreeFooter =
+ZmAppViewMgr.prototype.showTreeFooter =
 function(visible) {
-	DBG.println(LsDebug.DBG1, "show tree footer: " + visible);
+	DBG.println(AjxDebug.DBG1, "show tree footer: " + visible);
 	skin.showTreeFooter(visible);
-	this._components[LmAppViewMgr.C_TREE_FOOTER].zShow(visible);
-	this._fitToContainer([LmAppViewMgr.C_TREE, LmAppViewMgr.C_TREE_FOOTER]);
+	this._components[ZmAppViewMgr.C_TREE_FOOTER].zShow(visible);
+	this._fitToContainer([ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER]);
 }
 
 /**
 * Returns the name of the app view currently being displayed.
 */
-LmAppViewMgr.prototype.getCurrentView =
+ZmAppViewMgr.prototype.getCurrentView =
 function() {
 	return this._currentView;
 }
@@ -225,7 +225,7 @@ function() {
 *
 * @param app	the name of an app
 */
-LmAppViewMgr.prototype.getAppView =
+ZmAppViewMgr.prototype.getAppView =
 function(app) {
 	return this._appView[app];
 }
@@ -237,7 +237,7 @@ function(app) {
 * @param app		the name of an app
 * @param viewID		the ID of a view
 */
-LmAppViewMgr.prototype.setAppView =
+ZmAppViewMgr.prototype.setAppView =
 function(app, viewId) {
 	this._appView[app] = viewId;
 }
@@ -251,9 +251,9 @@ function(app, viewId) {
 * @param callbacks 		functions to call before/after this view is shown/hidden
 * @param isAppView 		whether this view is an app-level view
 */
-LmAppViewMgr.prototype.createView =
+ZmAppViewMgr.prototype.createView =
 function(viewId, appName, elements, callbacks, isAppView) {
-	DBG.println(LsDebug.DBG1, "createView: " + viewId);
+	DBG.println(AjxDebug.DBG1, "createView: " + viewId);
 
 	this._views[viewId] = elements;
 	this._callbacks[viewId] = callbacks ? callbacks : new Object();
@@ -272,7 +272,7 @@ function(viewId, appName, elements, callbacks, isAppView) {
 * @param force		ignore preemption callbacks
 * @returns			true if the view was pushed (is now visible)
 */
-LmAppViewMgr.prototype.pushView =
+ZmAppViewMgr.prototype.pushView =
 function(viewId, force) {
 	// if same view, no need to go through hide/show
 	if (viewId == this._currentView) {
@@ -280,12 +280,12 @@ function(viewId, force) {
 		return true;
 	}
 
-	DBG.println(LsDebug.DBG1, "pushView: " + viewId);
-	DBG.println(LsDebug.DBG1, "hidden size: " + this._hidden.length);
+	DBG.println(AjxDebug.DBG1, "pushView: " + viewId);
+	DBG.println(AjxDebug.DBG1, "hidden size: " + this._hidden.length);
 	var viewController = this._controller.getControllerForView(viewId);
 	
-	if (viewId == LmAppViewMgr.PENDING_VIEW) {
-		DBG.println(LsDebug.DBG1, "push of pending view: " + this._pendingView);
+	if (viewId == ZmAppViewMgr.PENDING_VIEW) {
+		DBG.println(AjxDebug.DBG1, "push of pending view: " + this._pendingView);
 		viewId = this._pendingView;
 		viewController = this._controller.getControllerForView(viewId);
 		force = true;
@@ -300,7 +300,7 @@ function(viewId, force) {
 	var temp = this._lastView;
 	this._lastView = this._currentView;
 	this._currentView = viewId;
-	DBG.println(LsDebug.DBG2, "app view mgr: current view is now " + this._currentView);
+	DBG.println(AjxDebug.DBG2, "app view mgr: current view is now " + this._currentView);
 
 	if (!this._showView(viewId, this._pushCallback, viewId, force, (viewId != this._currentView))){
 		this._currentView = this._lastView;
@@ -322,12 +322,12 @@ function(viewId, force) {
 * @param force	ignore preemption callbacks
 * @returns		true if the view was popped
 */
-LmAppViewMgr.prototype.popView =
+ZmAppViewMgr.prototype.popView =
 function(force) {
 	if (!this._currentView)
-		throw new LsException("no view to pop");
+		throw new AjxException("no view to pop");
 
-	DBG.println(LsDebug.DBG1, "popView: " + this._currentView);
+	DBG.println(AjxDebug.DBG1, "popView: " + this._currentView);
 	if (!this._hideView(this._currentView, this._popCallback, null, force))
 		return false;
 	this._deactivateView(this._views[this._currentView]);
@@ -340,9 +340,9 @@ function(force) {
 		return;
 	}
 	
-	DBG.println(LsDebug.DBG2, "app view mgr: current view is now " + this._currentView);
+	DBG.println(AjxDebug.DBG2, "app view mgr: current view is now " + this._currentView);
 	if (!this._showView(this._currentView, this._popCallback, null, force, true))
-		throw new LsException("no view to show");
+		throw new AjxException("no view to show");
 	this._removeFromHidden(this._currentView);
 	
 	this._layout(this._currentView);
@@ -358,9 +358,9 @@ function(force) {
 * @param force		ignore preemption callbacks
 * @returns			true if the view was set
 */
-LmAppViewMgr.prototype.setView =
+ZmAppViewMgr.prototype.setView =
 function(viewId, force) {
-	DBG.println(LsDebug.DBG1, "setView: " + viewId);
+	DBG.println(AjxDebug.DBG1, "setView: " + viewId);
 	var result = this.pushView(viewId, force);
 	if (result) {
 		for (var i = 0; i < this._hidden.length; i++) {
@@ -379,10 +379,10 @@ function(viewId, force) {
 *
 * @param show		whether to show the pending view
 */
-LmAppViewMgr.prototype.showPendingView =
+ZmAppViewMgr.prototype.showPendingView =
 function(show) {
 	if (show && this._pendingAction) {
-		if (this._pendingAction.run(LmAppViewMgr.PENDING_VIEW) && this._pendingView) {
+		if (this._pendingAction.run(ZmAppViewMgr.PENDING_VIEW) && this._pendingView) {
 			this._controller.setActiveApp(this._viewApp[this._pendingView], this._pendingView);
 		}
 	}
@@ -392,7 +392,7 @@ function(show) {
 /**
 * Destructor for this object.
 */
-LmAppViewMgr.prototype.dtor = 
+ZmAppViewMgr.prototype.dtor = 
 function() {
 	this._shell.removeControlListener(this._controlListener);
 	for (var i in this._views) {
@@ -411,20 +411,20 @@ function() {
 // Private methods
 
 // Locates and sizes the given list of components to fit within their containers.
-LmAppViewMgr.prototype._fitToContainer =
+ZmAppViewMgr.prototype._fitToContainer =
 function(components) {
 	for (var i = 0; i < components.length; i++) {
 		var cid = components[i];
 		// don't resize logo image (it will tile) or reposition it (centered via style)
-		if (cid == LmAppViewMgr.C_BANNER) continue;
-		DBG.println(LsDebug.DBG3, "fitting to container: " + cid);
+		if (cid == ZmAppViewMgr.C_BANNER) continue;
+		DBG.println(AjxDebug.DBG3, "fitting to container: " + cid);
 		var cont = this._containers[cid];
 		if (cont) {
 			var contBds = Dwt.getBounds(cont);
 			var comp = this._components[cid];
-			if (cid == LmAppViewMgr.C_APP_CONTENT || 
-				cid == LmAppViewMgr.C_TOOLBAR_TOP || 
-				cid == LmAppViewMgr.C_TOOLBAR_BOTTOM) {
+			if (cid == ZmAppViewMgr.C_APP_CONTENT || 
+				cid == ZmAppViewMgr.C_TOOLBAR_TOP || 
+				cid == ZmAppViewMgr.C_TOOLBAR_BOTTOM) {
 				// make sure we fit the component that's current
 				var elements = this._views[this._currentView];
 				comp = elements[cid];
@@ -440,36 +440,36 @@ function(components) {
 
 // Performs manual layout of the components, absent a containing skin. Currently assumes
 // that there will be a top toolbar and app content.
-LmAppViewMgr.prototype._layout =
+ZmAppViewMgr.prototype._layout =
 function(view) {
 	// if skin, elements already laid out by being placed in their containers
 	if (this._hasSkin) return; 
 	
-	var topToolbar = this._components[LmAppViewMgr.C_TOOLBAR_TOP];
+	var topToolbar = this._components[ZmAppViewMgr.C_TOOLBAR_TOP];
 	var sz = topToolbar.getSize();
 	var height = sz.y ? sz.y : topToolbar.getHtmlElement().clientHeight;
 	topToolbar.setBounds(0, 0, this._shellSz.x, height);
-	var appContent = this._components[LmAppViewMgr.C_APP_CONTENT];
+	var appContent = this._components[ZmAppViewMgr.C_APP_CONTENT];
 	appContent.setBounds(0, height, this._shellSz.x, this._shellSz.y - height);
 }
 
 // Tries to hide the given view. First checks to see if the view has a callback
 // for when it is hidden. The callback must return true for the view to be hidden.
-LmAppViewMgr.prototype._hideView =
+ZmAppViewMgr.prototype._hideView =
 function(view, pendingAction, pendingView, skipCallback) {
 	if (!view) return true;
 	var okToContinue = true;
-	var callback = this._callbacks[view] ? this._callbacks[view][LmAppViewMgr.CB_PRE_HIDE] : null;
+	var callback = this._callbacks[view] ? this._callbacks[view][ZmAppViewMgr.CB_PRE_HIDE] : null;
 	if (callback && !skipCallback) {
-		DBG.println(LsDebug.DBG2, "hiding " + view + ", waiting on " + pendingView + "; skip = " + skipCallback);
+		DBG.println(AjxDebug.DBG2, "hiding " + view + ", waiting on " + pendingView + "; skip = " + skipCallback);
 		this._pendingAction = pendingAction;
 		this._pendingView = pendingView;
 		okToContinue = callback.run(view);
 	}
 	if (okToContinue) {
 		this._setViewVisible(view, false);
-		DBG.println(LsDebug.DBG2, view + " hidden");
-		callback = this._callbacks[view] ? this._callbacks[view][LmAppViewMgr.CB_POST_HIDE] : null;
+		DBG.println(AjxDebug.DBG2, view + " hidden");
+		callback = this._callbacks[view] ? this._callbacks[view][ZmAppViewMgr.CB_POST_HIDE] : null;
 		if (callback)
 			callback.run(view);
 	}
@@ -478,20 +478,20 @@ function(view, pendingAction, pendingView, skipCallback) {
 }
 
 // Makes the given view visible.
-LmAppViewMgr.prototype._showView =
+ZmAppViewMgr.prototype._showView =
 function(view, pendingAction, pendingView, skipCallback, isNewView) {
 	var okToContinue = true;
-	var callback = this._callbacks[view] ? this._callbacks[view][LmAppViewMgr.CB_PRE_SHOW] : null;
+	var callback = this._callbacks[view] ? this._callbacks[view][ZmAppViewMgr.CB_PRE_SHOW] : null;
 	if (callback && !skipCallback) {
-		DBG.println(LsDebug.DBG2, "showing " + view + ", waiting on " + pendingView + "; skip = " + skipCallback);
+		DBG.println(AjxDebug.DBG2, "showing " + view + ", waiting on " + pendingView + "; skip = " + skipCallback);
 		this._pendingAction = pendingAction;
 		this._pendingView = pendingView;
 		okToContinue = callback.run(view, isNewView);
 	}
 	if (okToContinue) {
 		this._setViewVisible(view, true);
-		DBG.println(LsDebug.DBG2, view + " shown");
-		callback = this._callbacks[view] ? this._callbacks[view][LmAppViewMgr.CB_POST_SHOW] : null;
+		DBG.println(AjxDebug.DBG2, view + " shown");
+		callback = this._callbacks[view] ? this._callbacks[view][ZmAppViewMgr.CB_POST_SHOW] : null;
 		if (callback)
 			callback.run(view, isNewView);
 	}
@@ -501,7 +501,7 @@ function(view, pendingAction, pendingView, skipCallback, isNewView) {
 
 // Makes elements visible/hidden by locating them off- or onscreen and setting
 // their z-index.
-LmAppViewMgr.prototype._setViewVisible =
+ZmAppViewMgr.prototype._setViewVisible =
 function(view, show) {
 	var elements = this._views[view];
 	if (show) {
@@ -524,7 +524,7 @@ function(view, show) {
 }
 
 // Removes a view from the hidden stack.
-LmAppViewMgr.prototype._removeFromHidden =
+ZmAppViewMgr.prototype._removeFromHidden =
 function(view) {
 	var newHidden = new Array();
 	for (var i = 0; i < this._hidden.length; i++)
@@ -534,7 +534,7 @@ function(view) {
 }
 
 // Tells a view that it has been hidden.
-LmAppViewMgr.prototype._deactivateView =
+ZmAppViewMgr.prototype._deactivateView =
 function(view) {
 	for (var cid in view) {
 		var comp = this._components[cid];
@@ -543,10 +543,10 @@ function(view) {
 	}
 }
 
-LmAppViewMgr.prototype._setTitle =
+ZmAppViewMgr.prototype._setTitle =
 function(view) {
 	var elements = this._views[view];
-	var content = elements[LmAppViewMgr.C_APP_CONTENT];
+	var content = elements[ZmAppViewMgr.C_APP_CONTENT];
 	if (content && content.getTitle) {
 		var title = content.getTitle();
 		Dwt.setTitle(title ? title : LmMsg.zimbraTitle);
@@ -556,40 +556,40 @@ function(view) {
 // Listeners
 
 // Handles shell resizing event.
-LmAppViewMgr.prototype._shellControlListener =
+ZmAppViewMgr.prototype._shellControlListener =
 function(ev) {
 	if (ev.oldWidth != ev.newWidth || ev.oldHeight != ev.newHeight) {
 		this._shellSz.x = ev.newWidth;
 		this._shellSz.y = ev.newHeight;
 		var deltaWidth = ev.newWidth - ev.oldWidth;
 		var deltaHeight = ev.newHeight - ev.oldHeight;
-		DBG.println(LsDebug.DBG1, "shell control event: dW = " + deltaWidth + ", dH = " + deltaHeight);
+		DBG.println(AjxDebug.DBG1, "shell control event: dW = " + deltaWidth + ", dH = " + deltaHeight);
 		if (this._isNewWindow) {
 			// reset width of top toolbar
-			var topToolbar = this._views[this._currentView][LmAppViewMgr.C_TOOLBAR_TOP];
+			var topToolbar = this._views[this._currentView][ZmAppViewMgr.C_TOOLBAR_TOP];
 			if (topToolbar)
 				topToolbar.setSize(ev.newWidth, Dwt.DEFAULT);
 			// make sure to remove height of top toolbar for height of app content
-			var appContent = this._views[this._currentView][LmAppViewMgr.C_APP_CONTENT];
+			var appContent = this._views[this._currentView][ZmAppViewMgr.C_APP_CONTENT];
 			if (appContent)
 				appContent.setSize(ev.newWidth, ev.newHeight - topToolbar.getH());
 		} else {
 			if (deltaHeight) {
-				var list = [LmAppViewMgr.C_APP_CHOOSER, LmAppViewMgr.C_TREE, LmAppViewMgr.C_TREE_FOOTER,
-							LmAppViewMgr.C_SASH, LmAppViewMgr.C_APP_CONTENT, LmAppViewMgr.C_STATUS];
+				var list = [ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
+							ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_STATUS];
 				this._fitToContainer(list);
 			}
 			if (deltaWidth) {
-				var list = [LmAppViewMgr.C_BANNER, LmAppViewMgr.C_SEARCH, LmAppViewMgr.C_USER_INFO,
-							LmAppViewMgr.C_SEARCH_BUILDER, LmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
-							LmAppViewMgr.C_TOOLBAR_TOP, LmAppViewMgr.C_APP_CONTENT, LmAppViewMgr.C_TOOLBAR_BOTTOM];
+				var list = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_USER_INFO,
+							ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
+							ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_TOOLBAR_BOTTOM];
 				this._fitToContainer(list);
 			}
 		}
 	}
 }
 
-LmAppViewMgr.prototype._debugShowMetrics =
+ZmAppViewMgr.prototype._debugShowMetrics =
 function(components) {
 	for (var i = 0; i < components.length; i++) {
 		var cid = components[i];
@@ -604,7 +604,7 @@ function(components) {
 
 // Handles sash movement. An attempt to move the sash beyond the extent of the overview 
 // panel or the view results in no movement at all.
-LmAppViewMgr.prototype._sashCallback =
+ZmAppViewMgr.prototype._sashCallback =
 function(delta) {
 	
 	DBG.println("************ sash callback **************");
@@ -629,12 +629,12 @@ function(delta) {
 
 	Dwt.setSize(table, tableSz.x + delta, Dwt.DEFAULT);
 
-	var list = [LmAppViewMgr.C_CURRENT_APP, LmAppViewMgr.C_TREE,
-				LmAppViewMgr.C_TREE_FOOTER, LmAppViewMgr.C_STATUS];
+	var list = [ZmAppViewMgr.C_CURRENT_APP, ZmAppViewMgr.C_TREE,
+				ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_STATUS];
 	this._fitToContainer(list);
 //	this._fitToContainer(this._compList);
 
-	list = [LmAppViewMgr.C_TOOLBAR_TOP, LmAppViewMgr.C_APP_CONTENT];
+	list = [ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT];
 	for (var i = 0; i < list.length; i++) {
 		var cid = list[i];
 		var newX = this._contBounds[cid].x + delta;
@@ -671,7 +671,7 @@ function(delta) {
 		appContent.setSize(width, Dwt.DEFAULT);
 		this._contWidth = width;
 	}
-	if (LsEnv.isIE)
+	if (AjxEnv.isIE)
 		return delta;
 
 	var settings = this._appCtxt.getSettings();
@@ -681,12 +681,12 @@ function(delta) {
 	var width = caSz.x + delta;
 	currentApp.setSize(width, Dwt.DEFAULT);
 	DBG.println("current app width: " + caSz.x + " -> " + width);
-	var currentAppEl = document.getElementById(settings.get(LmSetting.SKIN_CURRENT_APP_ID));
+	var currentAppEl = document.getElementById(settings.get(ZmSetting.SKIN_CURRENT_APP_ID));
 	var caSz = Dwt.getSize(currentAppEl);
 	Dwt.setSize(currentAppEl, width, Dwt.DEFAULT);
 	DBG.println(" *** current app el width = " + currentAppEl.style.width);
 
-	var statusEl = document.getElementById(settings.get(LmSetting.SKIN_STATUS_ID));
+	var statusEl = document.getElementById(settings.get(ZmSetting.SKIN_STATUS_ID));
 //	var sbSz = Dwt.getSize(statusEl);
 //	var sbSz = this._statusBox.getSize();
 //	var width = sbSz.x + delta;

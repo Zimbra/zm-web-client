@@ -1,48 +1,48 @@
-function LmCalMonthView(parent, posStyle, dropTgt) {
-	LmCalBaseView.call(this, parent, "calendar_view", posStyle, LmController.CAL_MONTH_VIEW, dropTgt);	
+function ZmCalMonthView(parent, posStyle, dropTgt) {
+	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, ZmController.CAL_MONTH_VIEW, dropTgt);	
 	this.getHtmlElement().style.overflow = "hidden";
 	//this.setScrollStyle(DwtControl.SCROLL);
 	this._needFirstLayout = true;
 }
 
-LmCalMonthView.prototype = new LmCalBaseView;
-LmCalMonthView.prototype.constructor = LmCalMonthView;
+ZmCalMonthView.prototype = new ZmCalBaseView;
+ZmCalMonthView.prototype.constructor = ZmCalMonthView;
 
-LmCalMonthView._DaySpacer = 1; // space between days
+ZmCalMonthView._DaySpacer = 1; // space between days
 
-LmCalMonthView.prototype.toString = 
+ZmCalMonthView.prototype.toString = 
 function() {
-	return "LmCalMonthView";
+	return "ZmCalMonthView";
 }
 
-LmCalMonthView.prototype.getRollField =
+ZmCalMonthView.prototype.getRollField =
 function(isDouble)
 {
-	return isDouble? LsDateUtil.YEAR : LsDateUtil.MONTH;
+	return isDouble? AjxDateUtil.YEAR : AjxDateUtil.MONTH;
 }
 
-LmCalMonthView.prototype._dateUpdate =
+ZmCalMonthView.prototype._dateUpdate =
 function(rangeChanged)
 {
 	this._clearSelectedDay();
 	this._updateSelectedDay();
 }
 
-LmCalMonthView.prototype._updateRange =
+ZmCalMonthView.prototype._updateRange =
 function()
 {
 	this._updateDays();
 	this._timeRangeStart = this._days[0].date.getTime();
-	this._timeRangeEnd = this._days[41].date.getTime() + LsDateUtil.MSEC_PER_DAY;
+	this._timeRangeEnd = this._days[41].date.getTime() + AjxDateUtil.MSEC_PER_DAY;
 }
 
-LmCalMonthView.prototype._updateTitle =
+ZmCalMonthView.prototype._updateTitle =
 function() 
 {	
 	// updated in updateDays
 }
 
-LmCalMonthView.prototype._clearSelectedDay =
+ZmCalMonthView.prototype._clearSelectedDay =
 function() 
 {
 	if (this._selectedData != null) {
@@ -56,7 +56,7 @@ function()
 	}
 }
 
-LmCalMonthView.prototype._updateSelectedDay =
+ZmCalMonthView.prototype._updateSelectedDay =
 function() 
 {
 	var day = this._dateToDayIndex[this._dayKey(this._date)];
@@ -65,29 +65,29 @@ function()
 	this._selectedData = day;	
 }
 
-LmCalMonthView.prototype._apptSelected =
+ZmCalMonthView.prototype._apptSelected =
 function() {
 	this._clearSelectedDay();
 }
 
-LmCalMonthView.prototype._getWeekForAppt =
+ZmCalMonthView.prototype._getWeekForAppt =
 function(appt) {
 	var day = this._getDayForAppt(appt);
 	return day ? this._weeks[day.week] : null;
 }
 
-LmCalMonthView.prototype._getDayForAppt =
+ZmCalMonthView.prototype._getDayForAppt =
 function(appt) {
 	return this._dateToDayIndex[this._dayKey(appt.getStartDate())];
 }
 
-LmCalMonthView.prototype._getDivForAppt =
+ZmCalMonthView.prototype._getDivForAppt =
 function(appt) {
 	var day = this._getDayForAppt(appt);
 	return day ? Dwt.getDomObj(this.getDocument(), day.dayId) : null;
 }
 
-LmCalMonthView.prototype._dayTitle =
+ZmCalMonthView.prototype._dayTitle =
 function(date) {
 	if (this._shortMonInDay != date.getMonth()) {
 		this._shortMonInDay = date.getMonth();
@@ -97,7 +97,7 @@ function(date) {
 	}
 }
 
-LmCalMonthView.prototype._reserveRow = 
+ZmCalMonthView.prototype._reserveRow = 
 function(day, data, appt, weekAppts) {
 	var appts = day.allDayAppts;
 	if (data == null) { // find free slot or push
@@ -133,7 +133,7 @@ function(day, data, appt, weekAppts) {
 	}
 }
 
-LmCalMonthView.prototype.addAppt = 
+ZmCalMonthView.prototype.addAppt = 
 function(appt, now) {
 	var day = this._getDayForAppt(appt);
 	if (!day) return;
@@ -158,7 +158,7 @@ function(appt, now) {
 	}
 }
 
-LmCalMonthView.prototype._postSet = 
+ZmCalMonthView.prototype._postSet = 
 function() {
 	// now go through each day and create appts in correct order to line things up
 	var allDayParent = Dwt.getDomObj(this.getDocument(), this._daysId); 
@@ -188,7 +188,7 @@ function() {
 		this._layout();
 }
 
-LmCalMonthView.prototype._preSet = 
+ZmCalMonthView.prototype._preSet = 
 function() {
 	// reset all layout data
 	// cleanup any filler
@@ -210,7 +210,7 @@ function() {
 	}
 }
 
-LmCalMonthView.prototype._createAllDayItemHtml =
+ZmCalMonthView.prototype._createAllDayItemHtml =
 function(appt, apptEnd) {
 	var isStartInView = appt._fanoutFirst;
 	var isEndInView = apptEnd._fanoutLast;
@@ -238,7 +238,7 @@ function(appt, apptEnd) {
 	html[idx++] = "<td width=100%>";		
 	html[idx++] = "<div class=allday_blue_stretch><div class=allday_text>";
 	if (needTitle)
-		html[idx++] = LsStringUtil.htmlEncode(appt.getName());
+		html[idx++] = AjxStringUtil.htmlEncode(appt.getName());
 	html[idx++] = "</div></div>";
 	html[idx++] = "</td>";
 	if (isEndInView)
@@ -250,7 +250,7 @@ function(appt, apptEnd) {
 	return result;
 }
 
-LmCalMonthView.prototype._createAllDayFillerHtml =
+ZmCalMonthView.prototype._createAllDayFillerHtml =
 function(day) {
 	var dayTable = Dwt.getDomObj(this.getDocument(), day.dayId);
 	var	result = dayTable.insertRow(-1);
@@ -265,7 +265,7 @@ function(day) {
 	return result;
 }
 
-LmCalMonthView.prototype._createItemHtml =
+ZmCalMonthView.prototype._createItemHtml =
 function(appt, now, isDndIcon) {
 	var result;
 
@@ -298,13 +298,13 @@ function(appt, now, isDndIcon) {
 	if (dur != "") {
 		html[idx++] = "&nbsp;";
 	}
-	html[idx++] = LsStringUtil.htmlEncode(appt.getName());
+	html[idx++] = AjxStringUtil.htmlEncode(appt.getName());
 	html[idx++] = "</LI>";	
 	/**/
 
-	//html[idx++] = "<LI>"+LsStringUtil.htmlEncode(appt.getName())+"</LI>";
+	//html[idx++] = "<LI>"+AjxStringUtil.htmlEncode(appt.getName())+"</LI>";
 
-	//if (appt.getLocation() != "")	html[idx++] = "&nbsp;("+LsStringUtil.htmlEncode(appt.getLocation())+")";
+	//if (appt.getLocation() != "")	html[idx++] = "&nbsp;("+AjxStringUtil.htmlEncode(appt.getLocation())+")";
 	
 	if (isDndIcon) {
 		result.innerHTML = html.join("");
@@ -330,27 +330,27 @@ function(appt, now, isDndIcon) {
 	return result;
 }
 
-LmCalMonthView._idToData = {};
+ZmCalMonthView._idToData = {};
 
-LmCalMonthView.prototype._createDay =
+ZmCalMonthView.prototype._createDay =
 function(html, idx, loc, week, dow) {
 	var tdid = Dwt.getNextId();
 	var did = Dwt.getNextId();
 	var tid = Dwt.getNextId();	
 
-	html[idx++] = "<td class='calendar_month_cells_td' id='"+tdid+"' ondblclick='LmCalMonthView._ondblclickHandler(event)' onclick='LmCalMonthView._onclickHandler(event)'>";
+	html[idx++] = "<td class='calendar_month_cells_td' id='"+tdid+"' ondblclick='ZmCalMonthView._ondblclickHandler(event)' onclick='ZmCalMonthView._onclickHandler(event)'>";
 	html[idx++] = "<table class='calendar_month_day_table'>";
-	html[idx++] = "<tr><td colspan=2 id='"+tid+"' ondblclick='LmCalMonthView._ondblclickHandler(event)' onclick='LmCalMonthView._onclickHandler(event)'></td></tr></table>";
+	html[idx++] = "<tr><td colspan=2 id='"+tid+"' ondblclick='ZmCalMonthView._ondblclickHandler(event)' onclick='ZmCalMonthView._onclickHandler(event)'></td></tr></table>";
 	html[idx++] = "<table class='calendar_month_day_table'><tbody id='"+did+"'>";
 	html[idx++] = "</tbody></table>";
 	html[idx++] = "</td>";
 	var data = { dayId: did, titleId: tid, tdId: tdid, week: week, dow: dow, view: this};
 	this._days[loc] = data;
-	LmCalMonthView._idToData[tdid] = LmCalMonthView._idToData[did] = LmCalMonthView._idToData[tid] = data;
+	ZmCalMonthView._idToData[tdid] = ZmCalMonthView._idToData[did] = ZmCalMonthView._idToData[tid] = data;
 	return idx;
 }
 
-LmCalMonthView.prototype._createHtml =
+ZmCalMonthView.prototype._createHtml =
 function() {
 	this._days = new Object();	
 	this._weeks = new Array();
@@ -416,7 +416,7 @@ function() {
 	this.getHtmlElement().innerHTML = html.join("");
 }
 
-LmCalMonthView.prototype._updateDays =
+ZmCalMonthView.prototype._updateDays =
 function() {
 	var d = new Date(this._date.getTime());
 	this._month = d.getMonth();
@@ -459,7 +459,7 @@ function() {
 	title.innerHTML = this._title;
 }
 
-LmCalMonthView.prototype._layoutAllDay = 
+ZmCalMonthView.prototype._layoutAllDay = 
 function() {
 	var dayY = [];
 	var dayWidth;
@@ -488,7 +488,7 @@ function() {
 	}
 }
 
-LmCalMonthView.prototype._layout =
+ZmCalMonthView.prototype._layout =
 function() {
 	var sz = this.getSize();
 	var width = sz.x;
@@ -526,7 +526,7 @@ function() {
 	this._layoutAllDay(h);
 }
 
-LmCalMonthView.getDayToolTipText =
+ZmCalMonthView.getDayToolTipText =
 function(date, list) {
 	var html = new Array(50);
 	var idx = 0;
@@ -552,7 +552,7 @@ function(date, list) {
 				html[idx++] = "<td><div class=allday_blue_start></div></td>";
 			html[idx++] = "<td width=100%>";		
 			html[idx++] = "<div class=allday_blue_stretch><div class=allday_text>";
-			html[idx++] = LsStringUtil.htmlEncode(ao.getName());
+			html[idx++] = AjxStringUtil.htmlEncode(ao.getName());
 			html[idx++] = "</div></div>";
 			html[idx++] = "</td>";
 			if (ao._fanoutLast)
@@ -571,7 +571,7 @@ function(date, list) {
 			if (dur != "") {
 				html[idx++] = "&nbsp;";
 			}
-			html[idx++] = LsStringUtil.htmlEncode(ao.getName());
+			html[idx++] = AjxStringUtil.htmlEncode(ao.getName());
 			html[idx++] = "</LI>";
 			html[idx++] ="</td></tr>";
 		}
@@ -589,26 +589,26 @@ function(date, list) {
 	return html.join("");	
 }
 
-LmCalMonthView._ondblclickHandler =
+ZmCalMonthView._ondblclickHandler =
 function (ev){
 	ev = DwtUiEvent.getEvent(ev);
 	ev._isDblClick = true;
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
 	if (!element) return;
 	var id = element.id;
-	var data = LmCalMonthView._idToData[id];
+	var data = ZmCalMonthView._idToData[id];
 	if (!data) return;
 	var now = new Date();
 	data.date.setHours(now.getHours(), now.getMinutes(), 0, 0);
-	LmCalMonthView._onclickHandler(ev, data);
+	ZmCalMonthView._onclickHandler(ev, data);
 };
 
-LmCalMonthView._onclickHandler =
+ZmCalMonthView._onclickHandler =
 function(ev, optionalData) {
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
 	if (!element) return;
 	var id = element.id;
-	var data = (optionalData != null )? optionalData: LmCalMonthView._idToData[id];
+	var data = (optionalData != null )? optionalData: ZmCalMonthView._idToData[id];
 	if (!data) return;
 	var view = data.view;
 	if (view) {
@@ -618,7 +618,7 @@ function(ev, optionalData) {
 	   	view._selectionEvent.detail = data.date;
 	   	view._selectionEvent.force = false;
 		view._selectionEvent._isDblClick = ev._isDblClick;
-	   	view.notifyListeners(LmCalBaseView.TIME_SELECTION, view._selectionEvent);
+	   	view.notifyListeners(ZmCalBaseView.TIME_SELECTION, view._selectionEvent);
 		view._selectionEvent._isDblClick = false;
 	}
 }

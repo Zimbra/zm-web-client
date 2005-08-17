@@ -250,30 +250,30 @@ var _TIME_OF_DAY_CHOICES = [
 	{ label:'11:00 PM', value: '23:00' }, { label:'11:30 PM', value: '23:30' }
  ];
 
-LmAppointmentView.UPLOAD_FIELD_NAME = "LmAppointmentView_upload_field";
-LmAppointmentView.IFRAME_HEIGHT = 30;
-LmAppointmentView.MODE_NEW = 1;
-LmAppointmentView.MODE_EDIT_SERIES = 2;
-LmAppointmentView.MODE_EDIT_INSTANCE = 3;
+ZmAppointmentView.UPLOAD_FIELD_NAME = "LmAppointmentView_upload_field";
+ZmAppointmentView.IFRAME_HEIGHT = 30;
+ZmAppointmentView.MODE_NEW = 1;
+ZmAppointmentView.MODE_EDIT_SERIES = 2;
+ZmAppointmentView.MODE_EDIT_INSTANCE = 3;
 
-LmAppointmentView.DEFAULT_APPOINTMENT_DURATION = 3600000;
+ZmAppointmentView.DEFAULT_APPOINTMENT_DURATION = 3600000;
 
-LmAppointmentView.MAX_HEIGHT = 470;
+ZmAppointmentView.MAX_HEIGHT = 470;
 
-function LmAppointmentView(dwtContainer, modelObj, delayInitialization) {
+function ZmAppointmentView(dwtContainer, modelObj, delayInitialization) {
 	this._dwtContainer = dwtContainer;
-	DwtComposite.call(this, dwtContainer, "LmAppointmentView");
-	this._appCtxt = this.shell.getData(LmAppCtxt.LABEL);
+	DwtComposite.call(this, dwtContainer, "ZmAppointmentView");
+	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	if (!delayInitialization) {
 		this._initializeView(modelObj);
 	}
 
 }
 
-LmAppointmentView.prototype = new DwtComposite();
-LmAppointmentView.prototype.constructor = LmAppointmentView;
+ZmAppointmentView.prototype = new DwtComposite();
+ZmAppointmentView.prototype.constructor = ZmAppointmentView;
 
-LmAppointmentView.prototype._initializeView = function (modelObj, mode, optionalStartDate) {
+ZmAppointmentView.prototype._initializeView = function (modelObj, mode, optionalStartDate) {
 	if (!this.__initialized) {
 		this._initForm(modelObj, mode, optionalStartDate);
 		this._fbDirty = true;
@@ -282,32 +282,32 @@ LmAppointmentView.prototype._initializeView = function (modelObj, mode, optional
 	}
 };
 
-LmAppointmentView.prototype._replaceDwtContainer = function () {
+ZmAppointmentView.prototype._replaceDwtContainer = function () {
 	var el = this.getHtmlElement();
 	el.parentNode.replaceChild(this._apptForm.getHtmlElement(), el);
 	this._htmlElId = this._apptForm._htmlElId;
-	this._apptForm.setClassName("LmAppointmentView");
+	this._apptForm.setClassName("ZmAppointmentView");
 };
 
-LmAppointmentView.prototype._initForm = function (modelObj, mode, optionalStartDate) {
-	this._apptXModel = new XModel(LmAppointmentView.appointmentModel);
+ZmAppointmentView.prototype._initForm = function (modelObj, mode, optionalStartDate) {
+	this._apptXModel = new XModel(ZmAppointmentView.appointmentModel);
 	XModel.registerErrorMessage("invalidEmail", "All attendees must have valid email addresses.");
 	XModel.registerErrorMessage("endDateBeforeStart", "The end date you've selected is before the start date.");
 	this._apptForm = new XForm(this.getAppointmentForm(), this._apptXModel, modelObj, this);
 	this._apptForm.setController(this);
-	this._apptForm.__username = this._appCtxt.get(LmSetting.USERNAME);
-	var ls = new LsListener(this, this._formUpdatedListener);
+	this._apptForm.__username = this._appCtxt.get(ZmSetting.USERNAME);
+	var ls = new AjxListener(this, this._formUpdatedListener);
 	this._apptForm.addListener(DwtEvent.XFORMS_DISPLAY_UPDATED, ls);
-	ls = new LsListener(this, this._itemUpdatedListener);
+	ls = new AjxListener(this, this._itemUpdatedListener);
 	this._apptForm.addListener(DwtEvent.XFORMS_VALUE_CHANGED, ls);
-	ls = new LsListener(this, this._itemErrorListener);
+	ls = new AjxListener(this, this._itemErrorListener);
 	this._apptForm.addListener(DwtEvent.XFORMS_VALUE_ERROR, ls);
 	this.setModel(modelObj, mode, optionalStartDate);
 	this._populateForm();
 	this._replaceDwtContainer();
 };
 
-LmAppointmentView.prototype._populateForm = function () {
+ZmAppointmentView.prototype._populateForm = function () {
 	if (!this._formDrawn) {
 		this._apptForm.draw();
 		this._formDrawn = true;
@@ -334,22 +334,22 @@ LmAppointmentView.prototype._populateForm = function () {
 	}
 };
 
-LmAppointmentView.prototype.getAppt = function () {
+ZmAppointmentView.prototype.getAppt = function () {
 	return this._appt;
 };
 
-LmAppointmentView.prototype.setModel = function (modelObj, mode, optionalStartDate) {
+ZmAppointmentView.prototype.setModel = function (modelObj, mode, optionalStartDate) {
 	// if we don't have a model Object, assume this is a call for the
 	// edit view, for a createAppointment call.
 	if (modelObj == null) {
-		this._appt = new LmAppt(this._appCtxt);
+		this._appt = new ZmAppt(this._appCtxt);
 		this._appt.name = "New Appointment";
 		if (optionalStartDate == null){
 			optionalStartDate = new Date();
 		}
-		optionalStartDate = LsDateUtil.roundTimeMins(optionalStartDate,30);
+		optionalStartDate = AjxDateUtil.roundTimeMins(optionalStartDate,30);
 		this._appt.setStartDate(optionalStartDate);
-		this._appt.setEndDate(optionalStartDate.getTime() + LmAppointmentView.DEFAULT_APPOINTMENT_DURATION);
+		this._appt.setEndDate(optionalStartDate.getTime() + ZmAppointmentView.DEFAULT_APPOINTMENT_DURATION);
 		this._appt.resetRepeatWeeklyDays();
 		this._appt.resetRepeatMonthlyDayList();
 		this._appt.repeatYearlyMonthsList = optionalStartDate.getMonth();
@@ -364,7 +364,7 @@ LmAppointmentView.prototype.setModel = function (modelObj, mode, optionalStartDa
 	this._fbDirty = true;
 };
 
-LmAppointmentView.prototype.showDetail = function (modelObj, optionalStartDate, mode) {
+ZmAppointmentView.prototype.showDetail = function (modelObj, optionalStartDate, mode) {
 	if (!this.__initialized) {
 		this._initializeView(modelObj, mode, optionalStartDate);
 		this._appt.setViewMode(mode);
@@ -373,30 +373,30 @@ LmAppointmentView.prototype.showDetail = function (modelObj, optionalStartDate, 
 	}
 };
 
-LmAppointmentView.prototype.focus = function () {
+ZmAppointmentView.prototype.focus = function () {
 	if (this._appt.isOrganizer()) {
 		this._apptForm.getItemsById(_SUBJECT_)[0].focus();
 	}
 };
 
-LmAppointmentView.prototype.reset = function (modelObj) {
+ZmAppointmentView.prototype.reset = function (modelObj) {
 	// nothing for now
 }
 
-LmAppointmentView.prototype.addControlListener = function (listener) {
+ZmAppointmentView.prototype.addControlListener = function (listener) {
 	this.addListener(DwtEvent.CONTROL, listener);
 };
 
-LmAppointmentView.prototype._formUpdatedListener = function (event) {
+ZmAppointmentView.prototype._formUpdatedListener = function (event) {
 	var s = this._apptForm.getSize();
 	event.size = s;
 	// Hack to make IE play the max-height game.
-	if (LsEnv.isIE) {
+	if (AjxEnv.isIE) {
 		var el = this.getHtmlElement();
 		var child = el.firstChild;
 		s = Dwt.getSize(child);
-		if (s.y > LmAppointmentView.MAX_HEIGHT ){
-			el.style.height = LmAppointmentView.MAX_HEIGHT;
+		if (s.y > ZmAppointmentView.MAX_HEIGHT ){
+			el.style.height = ZmAppointmentView.MAX_HEIGHT;
 		} else {
 			el.style.height = "";
 		}
@@ -404,11 +404,11 @@ LmAppointmentView.prototype._formUpdatedListener = function (event) {
 	this.notifyListeners(DwtEvent.CONTROL, event);
 };
 
-LmAppointmentView.prototype._itemErrorListener = function (event) {
+ZmAppointmentView.prototype._itemErrorListener = function (event) {
 	this._handleStateChange(event.form);
 };
 
-LmAppointmentView.prototype._handleStateChange = function () {
+ZmAppointmentView.prototype._handleStateChange = function () {
 	var hadErrors = this._formHasErrors;
 	var event = new DwtEvent();
 	event.item = this;
@@ -423,7 +423,7 @@ LmAppointmentView.prototype._handleStateChange = function () {
 	
 };
 
-LmAppointmentView.prototype._itemUpdatedListener = function (event) {
+ZmAppointmentView.prototype._itemUpdatedListener = function (event) {
 	var model = event.formItem.getModelItem();
 	if (model) {
 		var field = model.id;
@@ -443,7 +443,7 @@ LmAppointmentView.prototype._itemUpdatedListener = function (event) {
 // -----------------------------------------------------------------------------
 // Attachment handling methods
 // -----------------------------------------------------------------------------
-LmAppointmentView.prototype._resetAttachments = function () {
+ZmAppointmentView.prototype._resetAttachments = function () {
 	if (this._iframeId != null) {
 		var iframe = document.getElementById(this._iframeId);
 		var iframeDoc = Dwt.getIframeDoc(iframe);
@@ -458,7 +458,7 @@ LmAppointmentView.prototype._resetAttachments = function () {
 	}
 };
 
-LmAppointmentView.prototype._addKeyHandlers = function () {
+ZmAppointmentView.prototype._addKeyHandlers = function () {
  	var el = this.getHtmlElement();
 	if (el.addEventListener) {
 		el.addEventListener('keypress', this.handleKeys, false);
@@ -467,7 +467,7 @@ LmAppointmentView.prototype._addKeyHandlers = function () {
 	}
 };
 
-LmAppointmentView.prototype._removeKeyHandlers = function () {
+ZmAppointmentView.prototype._removeKeyHandlers = function () {
  	var el = this.getHtmlElement();
 	if (el.addEventListener) {
 		el.removeEventListener('keypress', this.handleKeys, false);
@@ -477,7 +477,7 @@ LmAppointmentView.prototype._removeKeyHandlers = function () {
 };
 
 
-LmAppointmentView.prototype.hasAttachments = function () {
+ZmAppointmentView.prototype.hasAttachments = function () {
 	var hasAtt = false;
 	if (this._iframeId != null) {
 		var iframe = document.getElementById(this._iframeId);
@@ -496,9 +496,9 @@ LmAppointmentView.prototype.hasAttachments = function () {
 	return hasAtt;
 };
 
-LmAppointmentView.prototype.submitAttachments = function (successCb, failedCb){
+ZmAppointmentView.prototype.submitAttachments = function (successCb, failedCb){
 	var iframe = document.getElementById(this._iframeId);
-	var callback = new LsCallback(this, this._uploadDone);
+	var callback = new AjxCallback(this, this._uploadDone);
 	var uploadManager = this._appCtxt.getUploadManager();
 	this._uploadFailedCallback = failedCb;
 	this._uploadSuccessCallback = successCb;
@@ -507,36 +507,36 @@ LmAppointmentView.prototype.submitAttachments = function (successCb, failedCb){
 	uploadManager.execute(iframe, callback, this._uploadFormId);
 };
 
-LmAppointmentView.prototype._uploadDone = function (args) {
-	//DBG.println(LsDebug.DBG1, "Attachments: status = " + args[0] + ", attId = " + args[1]);
+ZmAppointmentView.prototype._uploadDone = function (args) {
+	//DBG.println(AjxDebug.DBG1, "Attachments: status = " + args[0] + ", attId = " + args[1]);
 	var status = args[0];
 	if (status != 200) {
-		//DBG.println(LsDebug.DBG1, "attachment error: " + status);
+		//DBG.println(AjxDebug.DBG1, "attachment error: " + status);
 		if (this._uploadFailedCallback != null) {
 			this._uploadFailCallback.run(status, null);
 		}
 	} else {
-		//DBG.println(LsDebug.DBG1, "attachment success: " + status + " succ cb = " + this._uploadSuccessCallback);
+		//DBG.println(AjxDebug.DBG1, "attachment success: " + status + " succ cb = " + this._uploadSuccessCallback);
 		if (this._uploadSuccessCallback != null) {
 			this._uploadSuccessCallback.run(args);
 		}
 	}
 }
-LmAppointmentView.prototype.addAttachments = function () {
+ZmAppointmentView.prototype.addAttachments = function () {
 	var iframe = null;
 	var iframeDoc = null;
 	if (this._iframeId == null) {
 		var iframe = document.createElement('iframe');
 		iframe.id = this._iframeId = Dwt.getNextId();
 		iframe.scrolling = iframe.frameBorder = "no";
-		if (LsEnv.isIE && (location.protocol == "https:")){
+		if (AjxEnv.isIE && (location.protocol == "https:")){
 			iframe.src = "/liquid/public/blank.html";
 		}
 		this.getHtmlElement().appendChild(iframe);
 		this._attNeedRefresh = true;
 	}
 	if (this._attNeedRefresh) {
-		var uri = location.protocol + "//" + document.domain + this._appCtxt.get(LmSetting.CSFE_UPLOAD_URI);
+		var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 		html = new Array();
 		var idx = 0;
 		html[idx++] = "<html><head><style type='text/css'><!-- @import url(/liquid/js/liquidMail/config/style/lm.css); --></style></head><body scroll=no style='padding:none; border:none'>"
@@ -549,8 +549,8 @@ LmAppointmentView.prototype.addAttachments = function () {
 		html[idx++] = this._attachmentTableId = Dwt.getNextId();
 		html[idx++] = "'><colgroup><col style='width:230px'><col></colgroup>";
 		html[idx++] = "<tr><td><input size=30 type='file' name='";
-		html[idx++] = LmAppointmentView.UPLOAD_FIELD_NAME;
-		html[idx++] = "'></input></td><td><a onclick='top.LsCore.objectWithId(" + this.__internalId + ")._removeAttachment(this.parentNode.parentNode, event, true)' href='javascript:;'>Remove</a></td></tr>";
+		html[idx++] = ZmAppointmentView.UPLOAD_FIELD_NAME;
+		html[idx++] = "'></input></td><td><a onclick='top.AjxCore.objectWithId(" + this.__internalId + ")._removeAttachment(this.parentNode.parentNode, event, true)' href='javascript:;'>Remove</a></td></tr>";
 		html[idx++] = "</table></form></body></html>";
 		if (iframe == null) {
 			iframe = document.getElementById(this._iframeId);
@@ -565,26 +565,26 @@ LmAppointmentView.prototype.addAttachments = function () {
 		iframe = document.getElementById(this._iframeId);
 		iframeDoc = Dwt.getIframeDoc(iframe);
 		var attTable = iframeDoc.getElementById(this._attachmentTableId);
-		if (LsEnv.isIE){
-			var rowStr = LsBuffer.concat("<tr><td><input size=30 type='file' name='",
-										 LmAppointmentView.UPLOAD_FIELD_NAME,
-										 "'></input></td><td><a onclick='top.LsCore.objectWithId(",
+		if (AjxEnv.isIE){
+			var rowStr = AjxBuffer.concat("<tr><td><input size=30 type='file' name='",
+										 ZmAppointmentView.UPLOAD_FIELD_NAME,
+										 "'></input></td><td><a onclick='top.AjxCore.objectWithId(",
 										 this.__internalId,
 										 ")._removeAttachment(this.parentNode.parentNode, event, true)' href='javascript:;'",
 										 ">Remove</a></td></tr>");
 			var row = attTable.insertRow(-1);
 			var cell1 = row.insertCell(-1);
 			var cell2 = row.insertCell(-1);
-			cell1.innerHTML = LsBuffer.concat("<input type='file' name='",LmAppointmentView.UPLOAD_FIELD_NAME,"'></input>");
-			cell2.innerHTML = LsBuffer.concat("<a onclick='top.LsCore.objectWithId(",this.__internalId,
+			cell1.innerHTML = AjxBuffer.concat("<input type='file' name='",ZmAppointmentView.UPLOAD_FIELD_NAME,"'></input>");
+			cell2.innerHTML = AjxBuffer.concat("<a onclick='top.AjxCore.objectWithId(",this.__internalId,
 												  ")._removeAttachment(this.parentNode.parentNode, event, true)' href='javascript:;'",
 												  ">Remove</a>");
 			
 		} else {
 			var row = attTable.insertRow(-1);
-			row.innerHTML = LsBuffer.concat("<td><input size=30 type='file' name='",
-											LmAppointmentView.UPLOAD_FIELD_NAME,
-											"'></input></td><td><a onclick='top.LsCore.objectWithId(",
+			row.innerHTML = AjxBuffer.concat("<td><input size=30 type='file' name='",
+											ZmAppointmentView.UPLOAD_FIELD_NAME,
+											"'></input></td><td><a onclick='top.AjxCore.objectWithId(",
 											this.__internalId,
 											")._removeAttachment(this.parentNode.parentNode, event, true)' href='javascript:;'",
 											">Remove</a></td>");
@@ -595,38 +595,38 @@ LmAppointmentView.prototype.addAttachments = function () {
 	this._handleStateChange();
 };
 
-LmAppointmentView.prototype._removeAttachment = function ( row, event, setHeight ) {
+ZmAppointmentView.prototype._removeAttachment = function ( row, event, setHeight ) {
 	row.parentNode.removeChild(row);
 	if (setHeight) {
 		this._setAttachmentsContainerHeight(false);
 	}
 };
 
-LmAppointmentView.prototype._setAttachmentsContainerHeight =
+ZmAppointmentView.prototype._setAttachmentsContainerHeight =
 function (add, optionalIframe) {
 	var iframe = optionalIframe? optionalIframe: document.getElementById(this._iframeId);
 	var height = parseInt(iframe.style.height);
 	height = isNaN(height)? 0 : height;
 	if (add){
-		height = height + LmAppointmentView.IFRAME_HEIGHT;
+		height = height + ZmAppointmentView.IFRAME_HEIGHT;
 	} else {
-		height = height - LmAppointmentView.IFRAME_HEIGHT;
+		height = height - ZmAppointmentView.IFRAME_HEIGHT;
 	}
 	iframe.style.height = height;
 };
 
 // in this function, this refers to the item
-LmAppointmentView.prototype.itemRFCAttachmentClicked = function ( event, item) {
+ZmAppointmentView.prototype.itemRFCAttachmentClicked = function ( event, item) {
 	var appt = this._appt;
 	var index = item.getParentItem().getParentItem().getParentItem().instanceNum;
 
 	var part = appt._validAttachments[attIndex].part;
-	LmMailMsg.rfc822Callback(a, appt.msgId, part);
+	ZmMailMsg.rfc822Callback(a, appt.msgId, part);
 };
 
 // this is the XFormItem
-LmAppointmentView.prototype.itemAttachmentClicked = function (event, item) {
-	var csfeMsgFetchSvc = location.protocol+"//" + document.domain + this._appCtxt.get(LmSetting.CSFE_MSG_FETCHER_URI);
+ZmAppointmentView.prototype.itemAttachmentClicked = function (event, item) {
+	var csfeMsgFetchSvc = location.protocol+"//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 	var index = item.getParentItem().getParentItem().instanceNum;
 	var attach = this._appt._validAttachments[index];
 	// id and partx
@@ -638,15 +638,15 @@ LmAppointmentView.prototype.itemAttachmentClicked = function (event, item) {
 // form callback methods
 // -----------------------------------------------------------------------------
 
-LmAppointmentView.prototype.shouldShowTimezone = function () {
-	return this._appCtxt.get(LmSetting.CAL_SHOW_TIMEZONE);
+ZmAppointmentView.prototype.shouldShowTimezone = function () {
+	return this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
 };
 
 // -----------------------------------------------------------------------------
 // key handling methods
 // -----------------------------------------------------------------------------
 
-LmAppointmentView.prototype.handleKeys = function (event) {
+ZmAppointmentView.prototype.handleKeys = function (event) {
 	var target = DwtUiEvent.getTarget(event);
 	var keyCode = DwtKeyEvent.getCharCode(event);
 	switch (keyCode) {
@@ -666,7 +666,7 @@ LmAppointmentView.prototype.handleKeys = function (event) {
 // free/busy controller methods
 // -----------------------------------------------------------------------------
 	
-LmAppointmentView.prototype.openSchedule = function () {
+ZmAppointmentView.prototype.openSchedule = function () {
 	// TODO -- adjust range based on preferences
 	var start = new Date(this._appt.getStartDate().getTime());
 	start.setSeconds(0);
@@ -679,19 +679,19 @@ LmAppointmentView.prototype.openSchedule = function () {
 	var schedules = null;
 	if (this._fbDirty) {
 		var organizer = this._appt.getOrganizer();
-		organizer = (organizer != "")? organizer : this._appCtxt.get(LmSetting.USERNAME);
+		organizer = (organizer != "")? organizer : this._appCtxt.get(ZmSetting.USERNAME);
 		var uids = [organizer];
-		uids = uids.concat(this._appt.getAttendees().split(LmAppt.ATTENDEES_SEPARATOR_REGEX));
+		uids = uids.concat(this._appt.getAttendees().split(ZmAppt.ATTENDEES_SEPARATOR_REGEX));
 		if (uids != null && uids.length != 0 && uids != "") {
 			schedules = LmUserSchedule.getSchedules(start, end, uids);
 		}
 	}
 	if (this._bDialog == null) {
-		this._fbView = new LmFreeBusyView(this.shell, schedules, start, end, this.getAppt());
-		this._bDialog = new LmDialog(this.shell, null, null, "Meeting", null, this._fbView);
-		var ls = new LsListener(this, this._saveFreeBusyTimes);
+		this._fbView = new ZmFreeBusyView(this.shell, schedules, start, end, this.getAppt());
+		this._bDialog = new ZmDialog(this.shell, null, null, "Meeting", null, this._fbView);
+		var ls = new AjxListener(this, this._saveFreeBusyTimes);
 		this._bDialog.setButtonListener(DwtDialog.OK_BUTTON, ls);
-		ls = new LsListener(this, this._cancelFreeBusy);
+		ls = new AjxListener(this, this._cancelFreeBusy);
 		this._bDialog.setButtonListener(DwtDialog.CANCEL_BUTTON, ls);
 		this._fbDirty = false;
 	}
@@ -703,7 +703,7 @@ LmAppointmentView.prototype.openSchedule = function () {
 	this._fbDirty = false;
 };
 
-LmAppointmentView.prototype._saveFreeBusyTimes = function () {
+ZmAppointmentView.prototype._saveFreeBusyTimes = function () {
 	this._fbView.disable();
 	this._fbView.saveAppointmentInfo();
 	this._apptForm.refresh();
@@ -714,20 +714,20 @@ LmAppointmentView.prototype._saveFreeBusyTimes = function () {
 	this._fbDirty = true;
 };
 
-LmAppointmentView.prototype._cancelFreeBusy = function () {
+ZmAppointmentView.prototype._cancelFreeBusy = function () {
 	this._fbDirty = true;
 	this._bDialog.popdown();
 };
 
 
-LmAppointmentView.prototype.validateEmail = function (attendees) {
+ZmAppointmentView.prototype.validateEmail = function (attendees) {
 	if (attendees == null || attendees == "") return true;
 
-	var addrArr = attendees.split(LmAppt.ATTENDEES_SEPARATOR_REGEX);
+	var addrArr = attendees.split(ZmAppt.ATTENDEES_SEPARATOR_REGEX);
 	for (var z = 0 ; z < addrArr.length; ++z) {
 		if (addrArr[z].length == 0) continue;
 
-		var e = LmEmailAddress.parse(addrArr[z]);
+		var e = ZmEmailAddress.parse(addrArr[z]);
 		if (e == null) {
 			return false;
 		}
@@ -735,7 +735,7 @@ LmAppointmentView.prototype.validateEmail = function (attendees) {
 	return true;
 };
 
-LmAppointmentView.allDayChanged = function(value,instanceValue,event) {
+ZmAppointmentView.allDayChanged = function(value,instanceValue,event) {
 	var instance = this.getForm().getInstance();
 	var range = instance.getDateRange();
 	if (value == "1") {
@@ -783,7 +783,7 @@ LmAppointmentView.allDayChanged = function(value,instanceValue,event) {
 // form/model creation methods
 // -----------------------------------------------------------------------------
 
-LmAppointmentView.prototype.getAppointmentForm = function () {
+ZmAppointmentView.prototype.getAppointmentForm = function () {
 	if (this._appointmentForm != null) return this._appointmentForm;
 
 	this._appointmentForm = {
@@ -811,11 +811,11 @@ LmAppointmentView.prototype.getAppointmentForm = function () {
 																			 function (rangeObj) {
 																					 if (rangeObj != null) {
 																							 if (this.getForm().get(_ALL_DAY_) != "1"){
-																									 return LsBuffer.concat(LsDateUtil.simpleComputeDateStr(rangeObj.startDate),
+																									 return AjxBuffer.concat(AjxDateUtil.simpleComputeDateStr(rangeObj.startDate),
 																																					"&nbsp;",
-																																					LsDateUtil.getTimeStr(rangeObj.startDate,"%h:%m %P"));
+																																					AjxDateUtil.getTimeStr(rangeObj.startDate,"%h:%m %P"));
 																							 } else {
-																									 return LsDateUtil.simpleComputeDateStr(rangeObj.startDate);
+																									 return AjxDateUtil.simpleComputeDateStr(rangeObj.startDate);
 																							 }
 																					 }
 																			 }
@@ -824,17 +824,17 @@ LmAppointmentView.prototype.getAppointmentForm = function () {
 																			 getDisplayValue: function (rangeObj){
 																					 if (rangeObj != null) {
 																							 if (this.getForm().get(_ALL_DAY_) != "1"){
-																									 return LsBuffer.concat(LsDateUtil.simpleComputeDateStr(rangeObj.endDate),
+																									 return AjxBuffer.concat(AjxDateUtil.simpleComputeDateStr(rangeObj.endDate),
 																																					"&nbsp;",
-																																					LsDateUtil.getTimeStr(rangeObj.endDate, "%h:%m %P"));
+																																					AjxDateUtil.getTimeStr(rangeObj.endDate, "%h:%m %P"));
 																							 } else {
-																									 return LsDateUtil.simpleComputeDateStr(rangeObj.endDate);
+																									 return AjxDateUtil.simpleComputeDateStr(rangeObj.endDate);
 																							 }
 																					 }
 																			 }
 																	 },
 																	 {type:_GROUP_, useParentTable:false,label:"Recurrence:", colSpan:"*", numCols:2,
-																			 relevant:"instance.editTimeRepeat() == LmAppt.EDIT_NO_REPEAT",
+																			 relevant:"instance.editTimeRepeat() == ZmAppt.EDIT_NO_REPEAT",
 																			 items:[
 																							{ref: _REPEAT_DISPLAY_, type:_OUTPUT_, nowrap:true},
 																							{type:_OUTPUT_,width:80, value:"&nbsp;"}
@@ -851,8 +851,8 @@ LmAppointmentView.prototype.getAppointmentForm = function () {
 																							{type:_GROUP_, useParentTable:false, colSpan:"*", numCols:4,
 																									items: [
 																													{ref:_ALL_DAY_, type:_CHECKBOX_, value:'0', trueValue:'1', falseValue:'0',
-																															labelCssClass:"xform_label", elementChanged:LmAppointmentView.allDayChanged},
-																													{ref:_TIMEZONE_, type:_DWT_SELECT_, choices:LmTimezones.getAbbreviatedZoneChoices(),
+																															labelCssClass:"xform_label", elementChanged:ZmAppointmentView.allDayChanged},
+																													{ref:_TIMEZONE_, type:_DWT_SELECT_, choices:ZmTimezones.getAbbreviatedZoneChoices(),
 																															width:"115px", relevant:"get(_ALL_DAY_) != '1'"},
 																												 ]
 																							}
@@ -862,7 +862,7 @@ LmAppointmentView.prototype.getAppointmentForm = function () {
 																			 relevant:"(this.getController().shouldShowTimezone() != true && !instance.isReadOnly())", 
 																			 items:[
 																							{ref:_ALL_DAY_, type:_CHECKBOX_, value:'0', trueValue:'1', falseValue:'0',labelCssClass:"xform_label",
-																									labelCssStyle:"text-align:left",elementChanged:LmAppointmentView.allDayChanged }
+																									labelCssStyle:"text-align:left",elementChanged:ZmAppointmentView.allDayChanged }
 																						 ]
 																	 },
 																	 {type:_GROUP_, useParentTable:true, relevant:"get(_ALL_DAY_) != '1'",
@@ -882,7 +882,7 @@ LmAppointmentView.prototype.getAppointmentForm = function () {
 						 }, // END READ ONLY SWITCH
 
 						 {type:_GROUP_, useParentTable:false, colSpang:"*", label:_Repeat_, numCols:3,
-								 relevant:"instance.editTimeRepeat() == LmAppt.EDIT_TIME_REPEAT", 
+								 relevant:"instance.editTimeRepeat() == ZmAppt.EDIT_TIME_REPEAT", 
 								 items:[
 												{ref:_REPEAT_TYPE_, type:_DWT_SELECT_, selection:_CLOSED_, choices:_REPEAT_TYPE_CHOICES_,
 														label:null},
@@ -891,7 +891,7 @@ LmAppointmentView.prototype.getAppointmentForm = function () {
 											 ]
 						 },
 						 {type:_SWITCH_, id:"repeat_custom", label:"", labelLocation:_LEFT_, numCols:1, 
-								 relevant:"get(_REPEAT_TYPE_) != 'NON' && get(_REPEAT_CUSTOM_) == '1' && instance.editTimeRepeat() == LmAppt.EDIT_TIME_REPEAT", 
+								 relevant:"get(_REPEAT_TYPE_) != 'NON' && get(_REPEAT_CUSTOM_) == '1' && instance.editTimeRepeat() == ZmAppt.EDIT_TIME_REPEAT", 
 								 items:[
 												{type:_CASE_, id:"repeat_custom_day", useParentTable:false, numCols:5,
 														relevant:"get(_REPEAT_TYPE_) == 'DAI'", width:"auto",
@@ -1027,7 +1027,7 @@ LmAppointmentView.prototype.getAppointmentForm = function () {
 											 ]
 						 },	//end repeat custom
 						 
-						 {type:_GROUP_, numCols:3, relevant:"get(_REPEAT_TYPE_) != 'NON'  && instance.editTimeRepeat() == LmAppt.EDIT_TIME_REPEAT", 
+						 {type:_GROUP_, numCols:3, relevant:"get(_REPEAT_TYPE_) != 'NON'  && instance.editTimeRepeat() == ZmAppt.EDIT_TIME_REPEAT", 
 								 label:_Repeat_End_Type_, useParentTable:false,
 								 items:[
 												{ref:_REPEAT_END_TYPE_, rowSpang:2, type:_DWT_SELECT_, selection:_CLOSED_, choices:_REPEAT_END_TYPE_CHOICES_,
@@ -1048,7 +1048,7 @@ LmAppointmentView.prototype.getAppointmentForm = function () {
 						 {type:_SPACER_, height:5},
 						 
 						 {ref: _ORGANIZER_,  type:_OUTPUT_ , label:LmMsg.organizer,
-								 relevant:"instance.getViewMode() != LmAppt.MODE_NEW", labelCssStyle:"text-align:left"},
+								 relevant:"instance.getViewMode() != ZmAppt.MODE_NEW", labelCssStyle:"text-align:left"},
 						 {type:_OUTPUT_, value:LmMsg.attendees, cssClass:"xform_label", cssStyle:"text-align:left"},
 						 {type:_DWT_BUTTON_, onActivate:"this.getFormController().openSchedule()", label:LmMsg.scheduleAttendees,
 								 width:"105px",  cssStyle:"float:right", relevant:"(instance.isOrganizer() == true)", relevantBehavior:_DISABLE_},
@@ -1079,13 +1079,13 @@ LmAppointmentView.prototype.getAppointmentForm = function () {
 														 items:[
 																		{ref:".", type:_SWITCH_, id:"attachmentType", colSpan:"*", numCols:"2", label:null,
 																				items:[
-																							 {ref:".",type:_CASE_, id:"attRFC", relevant:"get('ct') == LmMimeTable.MSG_RFC822", 
+																							 {ref:".",type:_CASE_, id:"attRFC", relevant:"get('ct') == ZmMimeTable.MSG_RFC822", 
 																									 numCols:3, colSizes:["20px", "auto", "100px"],
 																									 items:[
 																													{ref:"ct", type:_IMAGE_, 
 																															getDisplayValue:function(value){
-																																	var mimeInfo = LmMimeTable.getInfo(value);
-																																	return (mimeInfo)? mimeInfo.image: LmImg.I_DOCUMENT;
+																																	var mimeInfo = ZmMimeTable.getInfo(value);
+																																	return (mimeInfo)? mimeInfo.image: ZmImg.I_DOCUMENT;
 																															}
 																													},
 																													{ref:"filename", type:_DATA_ANCHOR_, href:"javascript:;", 
@@ -1096,14 +1096,14 @@ LmAppointmentView.prototype.getAppointmentForm = function () {
 																															}
 																													}
 																												 ]},
-																							 {ref:".",type:_CASE_, id:"attRFC", relevant:"get('ct') != LmMimeTable.MSG_RFC822",
+																							 {ref:".",type:_CASE_, id:"attRFC", relevant:"get('ct') != ZmMimeTable.MSG_RFC822",
 																									 numCols:3, colSizes:["20px","auto", "100px"],
 																									 items:[
 																													{ref:"ct", type:_LS_IMAGE_, 
 																															getDisplayValue:function(value){
 																																	if (value != null) {
-																																			var mimeInfo = LmMimeTable.getInfo(value);
-																																			return (mimeInfo)? mimeInfo.image: LmImg.I_DOCUMENT;
+																																			var mimeInfo = ZmMimeTable.getInfo(value);
+																																			return (mimeInfo)? mimeInfo.image: ZmImg.I_DOCUMENT;
 																																	}
 																																	return null;
 																															}
@@ -1234,7 +1234,7 @@ Appt_Date_Range_XFormItem.prototype.items =
 ];
 
 
-LmAppointmentView.validateWholeNumber = function (value, form, formItem, instance) {
+ZmAppointmentView.validateWholeNumber = function (value, form, formItem, instance) {
 	if (value != null) {
 		var valStr = "" + value;
 		if (valStr.indexOf(".") != -1){
@@ -1249,7 +1249,7 @@ LmAppointmentView.validateWholeNumber = function (value, form, formItem, instanc
 }
 
 
-LmAppointmentView.appointmentModel = {
+ZmAppointmentView.appointmentModel = {
 	items: [
 			{id:_SUBJECT_, label:_Subject_, required: true},
 
@@ -1301,7 +1301,7 @@ LmAppointmentView.appointmentModel = {
 		},
 		{id:_REPEAT_CUSTOM_COUNT_, type:_NUMBER_, cssClass:"xform_width_30",
 		 relevant:"get(_REPEAT_CUSTOM_) == '1'",
-		 constraints:[ {type:"method", value: LmAppointmentView.validateWholeNumber } ]
+		 constraints:[ {type:"method", value: ZmAppointmentView.validateWholeNumber } ]
 		},
 	
 		{id:_REPEAT_CUSTOM_TYPE_, type:_STRING_, 
@@ -1321,11 +1321,11 @@ LmAppointmentView.appointmentModel = {
 		 constraints:[ {type:"method", value: 
 						function (day, form, formItem, instance) {
 							if (day != null) {
-								LmAppointmentView.validateWholeNumber(day, form, formItem, instance);
+								ZmAppointmentView.validateWholeNumber(day, form, formItem, instance);
 								var month = parseInt(form.get(_REPEAT_YEARLY_MONTHS_LIST_));
-								var maxDay = LsDateUtil._daysPerMonth[month];
+								var maxDay = AjxDateUtil._daysPerMonth[month];
 								if ( day > maxDay ) {
-									throw "There are only " + maxDay + " days in " + LsDateUtil._months[month];
+									throw "There are only " + maxDay + " days in " + AjxDateUtil._months[month];
 								} else {
 									return day;
 								}
@@ -1362,7 +1362,7 @@ LmAppointmentView.appointmentModel = {
 		{id:_REPEAT_END_COUNT_, type:_NUMBER_, 
 			relevant:"get(_REPEAT_TYPE_) != 'NON' " +
 		 "&& get(_REPEAT_END_TYPE_) == 'A'",
-		 constraints:[ {type:"method", value: LmAppointmentView.validateWholeNumber } ]
+		 constraints:[ {type:"method", value: ZmAppointmentView.validateWholeNumber } ]
 		},
 
 	    {id:_REPEAT_CUSTOM_ORDINAL_CHOICES_, type:_STRING_},

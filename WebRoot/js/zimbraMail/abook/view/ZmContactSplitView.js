@@ -1,50 +1,50 @@
 //////////////////////////////////////////////////////////////////////////////
-// LmContactSplitView
+// ZmContactSplitView
 // - parent for the simple list view and xform view
 //////////////////////////////////////////////////////////////////////////////
-function LmContactSplitView(parent, dropTgt, posStyle) {
+function ZmContactSplitView(parent, dropTgt, posStyle) {
 
 	if (arguments.length == 0) return;
 	posStyle = posStyle || Dwt.ABSOLUTE_STYLE;
-	DwtComposite.call(this, parent, "LmContactSplitView", posStyle);
+	DwtComposite.call(this, parent, "ZmContactSplitView", posStyle);
 
 	this._listPart = new LmContactSimpleView(this, "LmContactSimpleView", dropTgt, posStyle);
 	this._contactPart = new DwtComposite(this, "LmContactInfoView", posStyle);
 
-	this._changeListener = new LsListener(this, this._contactChangeListener);
+	this._changeListener = new AjxListener(this, this._contactChangeListener);
 };
 
-LmContactSplitView.prototype = new DwtComposite;
-LmContactSplitView.prototype.constructor = LmContactSplitView;
+ZmContactSplitView.prototype = new DwtComposite;
+ZmContactSplitView.prototype.constructor = ZmContactSplitView;
 
-LmContactSplitView.prototype.toString = 
+ZmContactSplitView.prototype.toString = 
 function() {
-	return "LmContactSplitView";
+	return "ZmContactSplitView";
 };
 
-LmContactSplitView.prototype.getListView = 
+ZmContactSplitView.prototype.getListView = 
 function() {
 	return this._listPart;
 };
 
-LmContactSplitView.prototype.setSize = 
+ZmContactSplitView.prototype.setSize = 
 function(width, height) {
 	DwtComposite.prototype.setSize.call(this, width-10, height-10);
 	this._sizeChildren(width, height);
 };
 
-LmContactSplitView.prototype.setBounds = 
+ZmContactSplitView.prototype.setBounds = 
 function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width-10, height-10);
 	this._sizeChildren(width, height);
 };
 
-LmContactSplitView.prototype.getTitle = 
+ZmContactSplitView.prototype.getTitle = 
 function() {
 	return [LmMsg.zimbraTitle, LmMsg.contacts].join(": ");
 };
 
-LmContactSplitView.prototype.setContact = 
+ZmContactSplitView.prototype.setContact = 
 function(contact, isGal) {
 
 	if (!isGal) {
@@ -58,16 +58,16 @@ function(contact, isGal) {
 	this._setContact(contact, isGal);
 };
 
-LmContactSplitView.prototype.clear = 
+ZmContactSplitView.prototype.clear = 
 function() {
 	// clear the right pane
 	this._contactPart.getHtmlElement().innerHTML = "";
 	this._htmlInitialized = false;
 }
 
-LmContactSplitView.prototype._sizeChildren = 
+ZmContactSplitView.prototype._sizeChildren = 
 function(width, height) {
-	var padding = 4;		// css padding value (see LmContactSplitView class in lm.css)
+	var padding = 4;		// css padding value (see ZmContactSplitView class in lm.css)
 	var listWidth = 200;	// fixed width size of list view
 	
 	// calc. height for children of this view
@@ -92,7 +92,7 @@ function(width, height) {
 	}	
 }
 
-LmContactSplitView.prototype._createHtml = 
+ZmContactSplitView.prototype._createHtml = 
 function() {
 
 	this._contactHeaderId = Dwt.getNextId();
@@ -111,15 +111,15 @@ function() {
 	this._htmlInitialized = true;
 }
 
-LmContactSplitView.prototype._contactChangeListener = 
+ZmContactSplitView.prototype._contactChangeListener = 
 function(ev) {
-	if (ev.type != LmEvent.S_CONTACT || ev.source != this._contact)
+	if (ev.type != ZmEvent.S_CONTACT || ev.source != this._contact)
 		return;
 
 	this._setContact(ev.source);
 };
 
-LmContactSplitView.prototype._setContact = 
+ZmContactSplitView.prototype._setContact = 
 function(contact, isGal) {
 
 	if (!this._htmlInitialized)
@@ -143,9 +143,9 @@ function(contact, isGal) {
 	// start real content
 	
 	// add email fields
-	var email = contact.getAttr(LmContact.F_email);
-	var email2 = contact.getAttr(LmContact.F_email2);
-	var email3 = contact.getAttr(LmContact.F_email3);
+	var email = contact.getAttr(ZmContact.F_email);
+	var email2 = contact.getAttr(ZmContact.F_email2);
+	var email3 = contact.getAttr(ZmContact.F_email3);
 
 	html[idx++] = "<tr><td colspan='*' valign=top>";
 	// - column 1
@@ -165,13 +165,13 @@ function(contact, isGal) {
 	
 	// add work fields
 	var workField = contact.getWorkAddrField();
-	var workPhone = contact.getAttr(LmContact.F_workPhone);
-	var workPhone2 = contact.getAttr(LmContact.F_workPhone2);
-	var workFax = contact.getAttr(LmContact.F_workFax);
-	var workAsst = contact.getAttr(LmContact.F_assistantPhone);
-	var workCompany = contact.getAttr(LmContact.F_companyPhone);
-	var workCallback = contact.getAttr(LmContact.F_callbackPhone);
-	var workURL = contact.getAttr(LmContact.F_workURL);
+	var workPhone = contact.getAttr(ZmContact.F_workPhone);
+	var workPhone2 = contact.getAttr(ZmContact.F_workPhone2);
+	var workFax = contact.getAttr(ZmContact.F_workFax);
+	var workAsst = contact.getAttr(ZmContact.F_assistantPhone);
+	var workCompany = contact.getAttr(ZmContact.F_companyPhone);
+	var workCallback = contact.getAttr(ZmContact.F_callbackPhone);
+	var workURL = contact.getAttr(ZmContact.F_workURL);
 
 	html[idx++] = "<tr><td valign=top width='" + width + "'>";
 	// - column 1
@@ -200,12 +200,12 @@ function(contact, isGal) {
 	
 	// add home fields
 	var homeField = contact.getHomeAddrField();
-	var homePhone = contact.getAttr(LmContact.F_homePhone);
-	var homePhone2 = contact.getAttr(LmContact.F_homePhone2);
-	var homeFax = contact.getAttr(LmContact.F_homeFax);
-	var mobile = contact.getAttr(LmContact.F_mobilePhone);
-	var pager = contact.getAttr(LmContact.F_pager);
-	var homeURL = contact.getAttr(LmContact.F_homeURL);
+	var homePhone = contact.getAttr(ZmContact.F_homePhone);
+	var homePhone2 = contact.getAttr(ZmContact.F_homePhone2);
+	var homeFax = contact.getAttr(ZmContact.F_homeFax);
+	var mobile = contact.getAttr(ZmContact.F_mobilePhone);
+	var pager = contact.getAttr(ZmContact.F_pager);
+	var homeURL = contact.getAttr(ZmContact.F_homeURL);
 
 	html[idx++] = "<tr><td valign=top width='" + width + "'>";
 	// - column 1
@@ -233,9 +233,9 @@ function(contact, isGal) {
 	
 	// add other fields
 	var otherField = contact.getOtherAddrField();
-	var otherPhone = contact.getAttr(LmContact.F_otherPhone);
-	var otherFax = contact.getAttr(LmContact.F_otherFax);
-	var otherURL = contact.getAttr(LmContact.F_otherURL);
+	var otherPhone = contact.getAttr(ZmContact.F_otherPhone);
+	var otherFax = contact.getAttr(ZmContact.F_otherFax);
+	var otherURL = contact.getAttr(ZmContact.F_otherURL);
 
 	html[idx++] = "<tr><td valign=top width='" + width + "'>";
 	// - column 1
@@ -258,7 +258,7 @@ function(contact, isGal) {
 	
 	html[idx++] = "<tr><td><br></td></tr>";
 	
-	var notes = contact.getAttr(LmContact.F_notes);
+	var notes = contact.getAttr(ZmContact.F_notes);
 	html[idx++] = "<tr><td valign=top colspan='10'>";
 	if (notes) {
 		html[idx++] = "<table border=0 width=100%>";
@@ -278,10 +278,10 @@ function(contact, isGal) {
 // - a simple contact list view (contains only full name)
 //////////////////////////////////////////////////////////////////////////////
 function LmContactSimpleView(parent, className, dropTgt, posStyle) {
-	LmContactsBaseView.call(this, parent, className, LmController.CONTACT_SIMPLE_VIEW, null, dropTgt, posStyle);
+	ZmContactsBaseView.call(this, parent, className, ZmController.CONTACT_SIMPLE_VIEW, null, dropTgt, posStyle);
 };
 
-LmContactSimpleView.prototype = new LmContactsBaseView;
+LmContactSimpleView.prototype = new ZmContactsBaseView;
 LmContactSimpleView.prototype.constructor = LmContactSimpleView;
 
 LmContactSimpleView.prototype.toString = 
@@ -291,14 +291,14 @@ function() {
 
 LmContactSimpleView.prototype.set =
 function(list, defaultColumnSort) {
-	LmContactsBaseView.prototype.set.call(this, list, defaultColumnSort);
-	if (!(this._list instanceof LsVector) || this._list.size() == 0)
+	ZmContactsBaseView.prototype.set.call(this, list, defaultColumnSort);
+	if (!(this._list instanceof AjxVector) || this._list.size() == 0)
 		this.parent.clear();
 };
 
 LmContactSimpleView.prototype._modifyContact =
 function(ev) {
-	LmContactsBaseView.prototype._modifyContact.call(this, ev);
+	ZmContactsBaseView.prototype._modifyContact.call(this, ev);
 	
 	if (ev.getDetail("fileAsChanged")) {
 		var selected = this.getSelection()[0];
@@ -312,7 +312,7 @@ function() {
 	// explicitly remove each child (setting innerHTML causes mem leak)
 	while (this._parentEl.hasChildNodes()) {
 		cDiv = this._parentEl.removeChild(this._parentEl.firstChild);
-		LsCore.unassignId(cDiv._itemIndex);
+		AjxCore.unassignId(cDiv._itemIndex);
 	}
 
 	var size = this._list.size();
@@ -328,7 +328,7 @@ LmContactSimpleView.prototype._createItemHtml =
 function(contact, now, isDndIcon) {
 
 	// in canonical view, don't show contacts in the Trash
-	if (contact.list.isCanonical && (contact.folderId == LmFolder.ID_TRASH))
+	if (contact.list.isCanonical && (contact.folderId == ZmFolder.ID_TRASH))
 		return null;
 	
 	var div = this._getDiv(contact, isDndIcon);
@@ -351,15 +351,15 @@ function(contact, now, isDndIcon) {
 	idx = this._getRow(htmlArr, idx, contact);
 
 	// tags
-	if (this._appCtxt.get(LmSetting.TAGGING_ENABLED)) {
-		var cellId = this._getFieldId(contact, LmItem.F_TAG_CELL);
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		var cellId = this._getFieldId(contact, ZmItem.F_TAG_CELL);
 		htmlArr[idx++] = "<td style='vertical-align:middle; height:24px' width=16 class='Tag' id='" + cellId + "'>";
-		htmlArr[idx++] = this._getTagImgHtml(contact, LmItem.F_TAG);
+		htmlArr[idx++] = this._getTagImgHtml(contact, ZmItem.F_TAG);
 		htmlArr[idx++] = "</td>";
 	}
 		
 	// file as
-	htmlArr[idx++] = "<td style='vertical-align: middle'>&nbsp;" + LsStringUtil.htmlEncode(contact.getFileAs()) + "&nbsp;</td>";
+	htmlArr[idx++] = "<td style='vertical-align: middle'>&nbsp;" + AjxStringUtil.htmlEncode(contact.getFileAs()) + "&nbsp;</td>";
 	
 	htmlArr[idx++] = "</tr></table>";
 	
@@ -373,7 +373,7 @@ LmContactSimpleView.prototype._createContactHtmlForMixed =
 function(contact, now, isDndIcon) {
 
 	// in canonical view, don't show contacts in the Trash
-	if (contact.list.isCanonical && (contact.folderId == LmFolder.ID_TRASH))
+	if (contact.list.isCanonical && (contact.folderId == ZmFolder.ID_TRASH))
 		return null;
 	
 	var	div = this._getDiv(contact, isDndIcon);
@@ -391,42 +391,42 @@ function(contact, now, isDndIcon) {
 	for (var i = 0; i < this._headerList.length; i++) {
 		var id = this._headerList[i]._id;
 		// IE does not obey box model properly so we over compensate :(
-		var width = LsEnv.isIE ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
+		var width = AjxEnv.isIE ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
 
-		if (id.indexOf(LmListView.FIELD_PREFIX[LmItem.F_ICON]) == 0) {
+		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ICON]) == 0) {
 			// Type icon
-			idx = this._getField(htmlArr, idx, contact, LmItem.F_ITEM_TYPE, i);
-		} else if (id.indexOf(LmListView.FIELD_PREFIX[LmItem.F_FLAG]) == 0) {
+			idx = this._getField(htmlArr, idx, contact, ZmItem.F_ITEM_TYPE, i);
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) == 0) {
 			// Flag
-			idx = this._getField(htmlArr, idx, contact, LmItem.F_FLAG, i);
-		} else if (id.indexOf(LmListView.FIELD_PREFIX[LmItem.F_TAG]) == 0) {
+			idx = this._getField(htmlArr, idx, contact, ZmItem.F_FLAG, i);
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) == 0) {
 			// Tags
-			idx = this._getField(htmlArr, idx, contact, LmItem.F_TAG, i);
-		} else if (id.indexOf(LmListView.FIELD_PREFIX[LmItem.F_PARTICIPANT]) == 0) {
+			idx = this._getField(htmlArr, idx, contact, ZmItem.F_TAG, i);
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) == 0) {
 			// Name (fileAs)
 			htmlArr[idx++] = "<td width=" + width;
-			htmlArr[idx++] = " id='" + this._getFieldId(contact, LmItem.F_PARTICIPANT) + "'>";
-			htmlArr[idx++] = LsStringUtil.htmlEncode(contact.getFileAs());
-			if (this._appCtxt.get(LmSetting.IM_ENABLED) && contact.hasIMProfile())
-				htmlArr[idx++] = LsImg.getImageHtml(contact.isIMAvailable() ? LmImg.I_IM : LmImg.ID_IM);
-			if (LsEnv.isNav)
-				htmlArr[idx++] = LmListView._fillerString;
+			htmlArr[idx++] = " id='" + this._getFieldId(contact, ZmItem.F_PARTICIPANT) + "'>";
+			htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
+			if (this._appCtxt.get(ZmSetting.IM_ENABLED) && contact.hasIMProfile())
+				htmlArr[idx++] = AjxImg.getImageHtml(contact.isIMAvailable() ? ZmImg.I_IM : ZmImg.ID_IM);
+			if (AjxEnv.isNav)
+				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";
-		} else if (id.indexOf(LmListView.FIELD_PREFIX[LmItem.F_ATTACHMENT]) == 0) {
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0) {
 			// Attachment icon
-			idx = this._getField(htmlArr, idx, contact, LmItem.F_ATTACHMENT, i);
-		} else if (id.indexOf(LmListView.FIELD_PREFIX[LmItem.F_SUBJECT]) == 0) {
+			idx = this._getField(htmlArr, idx, contact, ZmItem.F_ATTACHMENT, i);
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
 			// Company
-			htmlArr[idx++] = "<td id='" + this._getFieldId(contact, LmItem.F_COMPANY) + "'>";
-			htmlArr[idx++] = LsStringUtil.htmlEncode(contact.getCompanyField());
-			htmlArr[idx++] = LsEnv.isNav ? LmListView._fillerString : "";
+			htmlArr[idx++] = "<td id='" + this._getFieldId(contact, ZmItem.F_COMPANY) + "'>";
+			htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getCompanyField());
+			htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
 			htmlArr[idx++] = "</td>";
-		} else if (id.indexOf(LmListView.FIELD_PREFIX[LmItem.F_DATE]) == 0) {
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
 			htmlArr[idx++] = "<td width=" + width;
-			htmlArr[idx++] = " id='" + this._getFieldId(contact, LmItem.F_DATE) + "'>";
-			htmlArr[idx++] = LsDateUtil.computeDateStr(now, contact.modified);
-			if (LsEnv.isNav)
-				htmlArr[idx++] = LmListView._fillerString;
+			htmlArr[idx++] = " id='" + this._getFieldId(contact, ZmItem.F_DATE) + "'>";
+			htmlArr[idx++] = AjxDateUtil.computeDateStr(now, contact.modified);
+			if (AjxEnv.isNav)
+				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";
 		}
 	}

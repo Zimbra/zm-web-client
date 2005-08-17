@@ -1,4 +1,4 @@
-function LmPopupMenu(parent, className, dialog) {
+function ZmPopupMenu(parent, className, dialog) {
 
 	if (arguments.length == 0) return;
 	className = className || "ActionMenu";
@@ -7,25 +7,25 @@ function LmPopupMenu(parent, className, dialog) {
 	this._menuItems = new Object();
 }
 
-LmPopupMenu.prototype = new DwtMenu;
-LmPopupMenu.prototype.constructor = LmPopupMenu;
+ZmPopupMenu.prototype = new DwtMenu;
+ZmPopupMenu.prototype.constructor = ZmPopupMenu;
 
-LmPopupMenu.prototype.toString = 
+ZmPopupMenu.prototype.toString = 
 function() {
-	return "LmPopupMenu";
+	return "ZmPopupMenu";
 }
 
-LmPopupMenu.prototype.addSelectionListener =
+ZmPopupMenu.prototype.addSelectionListener =
 function(menuItemId, listener) {
 	this._menuItems[menuItemId].addSelectionListener(listener);
 }
 
-LmPopupMenu.prototype.removeSelectionListener =
+ZmPopupMenu.prototype.removeSelectionListener =
 function(menuItemId, listener) {
 	this._menuItems[menuItemId].removeSelectionListener(listener);
 }
 
-LmPopupMenu.prototype.popup =
+ZmPopupMenu.prototype.popup =
 function(delay, x, y) {
 	if (delay == null)
 		delay = 0;
@@ -42,7 +42,7 @@ function(delay, x, y) {
 * @param ids		a list of menu item IDs
 * @param enabled	whether to enable the menu items
 */
-LmPopupMenu.prototype.enable =
+ZmPopupMenu.prototype.enable =
 function(ids, enabled) {
 	if (!(ids instanceof Array))
 		ids = [ids];
@@ -51,18 +51,18 @@ function(ids, enabled) {
 			this._menuItems[ids[i]].setEnabled(enabled);
 }
 
-LmPopupMenu.prototype.enableAll =
+ZmPopupMenu.prototype.enableAll =
 function(enabled) {
 	for (var i in this._menuItems)
 		this._menuItems[i].setEnabled(enabled);
 }
 
-LmPopupMenu.prototype.addMenuItem =
+ZmPopupMenu.prototype.addMenuItem =
 function(menuItemId, menuItem) {
 	this._menuItems[menuItemId] = menuItem;
 }
 
-LmPopupMenu.prototype.createMenuItem =
+ZmPopupMenu.prototype.createMenuItem =
 function(menuItemId, imageInfo, text, disImageInfo, enabled, style, radioGroupId) {
 	var mi = this._menuItems[menuItemId] = new DwtMenuItem(this, style, radioGroupId);
 	if (imageInfo)
@@ -75,7 +75,7 @@ function(menuItemId, imageInfo, text, disImageInfo, enabled, style, radioGroupId
 	return mi;
 }
 
-LmPopupMenu.prototype.createSeparator =
+ZmPopupMenu.prototype.createSeparator =
 function() {
 	new DwtMenuItem(this, DwtMenuItem.SEPARATOR_STYLE);
 }

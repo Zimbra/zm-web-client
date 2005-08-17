@@ -1,34 +1,34 @@
-function LmDoublePaneView(parent, className, posStyle, mode, controller, dropTgt) {
+function ZmDoublePaneView(parent, className, posStyle, mode, controller, dropTgt) {
 
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, parent, className, posStyle);
 
-	this._appCtxt = this.shell.getData(LmAppCtxt.LABEL);
+	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._initHeader();
-	this._msgListView = new LmMailMsgListView(this, null, Dwt.ABSOLUTE_STYLE, mode, controller, dropTgt);
-	this._msgSash = new DwtSash(this, DwtSash.VERTICAL_STYLE, "AppSash-vert", LmDoublePaneView.SASH_THRESHOLD, Dwt.ABSOLUTE_STYLE);
-	this._msgView = new LmMailMsgView(this, null, posStyle, mode);
+	this._msgListView = new ZmMailMsgListView(this, null, Dwt.ABSOLUTE_STYLE, mode, controller, dropTgt);
+	this._msgSash = new DwtSash(this, DwtSash.VERTICAL_STYLE, "AppSash-vert", ZmDoublePaneView.SASH_THRESHOLD, Dwt.ABSOLUTE_STYLE);
+	this._msgView = new ZmMailMsgView(this, null, posStyle, mode);
 
 	this._msgSash.registerCallback(this._sashCallback, this);
 }
 
-LmDoublePaneView.prototype = new DwtComposite;
-LmDoublePaneView.prototype.constructor = LmDoublePaneView;
+ZmDoublePaneView.prototype = new DwtComposite;
+ZmDoublePaneView.prototype.constructor = ZmDoublePaneView;
 
-LmDoublePaneView.prototype.toString = 
+ZmDoublePaneView.prototype.toString = 
 function() {
-	return "LmDoublePaneView";
+	return "ZmDoublePaneView";
 }
 
 // consts
 
-LmDoublePaneView.SASH_THRESHOLD = 5;
-LmDoublePaneView._TAG_IMG = "TI";
+ZmDoublePaneView.SASH_THRESHOLD = 5;
+ZmDoublePaneView._TAG_IMG = "TI";
 
 
 // public methods
 
-LmDoublePaneView.prototype.toggleView = 
+ZmDoublePaneView.prototype.toggleView = 
 function() {
 	var bIsVisible = this._isMsgViewVisible();
 	
@@ -52,76 +52,76 @@ function() {
 	}
 }
 
-LmDoublePaneView.prototype.getMsgListView =
+ZmDoublePaneView.prototype.getMsgListView =
 function() {
 	return this._msgListView;
 }
 
-LmDoublePaneView.prototype.getSelectionCount = 
+ZmDoublePaneView.prototype.getSelectionCount = 
 function() {
 	return this._msgListView.getSelectionCount();
 }
 
-LmDoublePaneView.prototype.getSelection = 
+ZmDoublePaneView.prototype.getSelection = 
 function() {
 	return this._msgListView.getSelection();
 }
 
-LmDoublePaneView.prototype.isDisplayingMsg =
+ZmDoublePaneView.prototype.isDisplayingMsg =
 function(msg) {
 	return this._msgView.isDisplayingMsg(msg);
 }
 
-LmDoublePaneView.prototype.reset =
+ZmDoublePaneView.prototype.reset =
 function() {
 	this._msgView.reset();
 }
 
-LmDoublePaneView.prototype.setMsg =
+ZmDoublePaneView.prototype.setMsg =
 function(msg) {
 	this._msgView.set(msg);
 }
 
-LmDoublePaneView.prototype.addInviteReplyListener =
+ZmDoublePaneView.prototype.addInviteReplyListener =
 function (listener){
 	this._msgView.addInviteReplyListener(listener);
 }
 
-LmDoublePaneView.prototype.resetMsg = 
+ZmDoublePaneView.prototype.resetMsg = 
 function(newMsg) {
 	this._msgView.resetMsg(newMsg);
 }
 
-LmDoublePaneView.prototype.setBounds = 
+ZmDoublePaneView.prototype.setBounds = 
 function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
 	this._resetSize(width, height);
 }
 
-LmDoublePaneView.prototype.setItem = 
+ZmDoublePaneView.prototype.setItem = 
 function(item) {
 	// overload me
 }
 
 // Private / Protected methods
 
-LmDoublePaneView.prototype._initHeader = 
+ZmDoublePaneView.prototype._initHeader = 
 function() {
 	// overload me if you want a header
 	return this;
 }
 
-LmDoublePaneView.prototype._resetSize = 
+ZmDoublePaneView.prototype._resetSize = 
 function(newWidth, newHeight) {
 	// overload me
 }
 
-LmDoublePaneView.prototype._sashCallback =
+ZmDoublePaneView.prototype._sashCallback =
 function(delta) {
 	// overload me
 }
 
-LmDoublePaneView.prototype._isMsgViewVisible = 
+ZmDoublePaneView.prototype._isMsgViewVisible = 
 function() {
 	return this._msgView.getVisible();
 }

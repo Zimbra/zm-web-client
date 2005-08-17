@@ -1,6 +1,6 @@
-function LmLoginDialog(parent, zIndex, className, isAdmin) { 
+function ZmLoginDialog(parent, zIndex, className, isAdmin) { 
 
-    className = className || "LmLoginDialog";
+    className = className || "ZmLoginDialog";
     DwtComposite.call(this, parent, className, DwtControl.ABSOLUTE_STYLE);
 
 	this._isAdmin = (isAdmin === true);	
@@ -23,12 +23,12 @@ function LmLoginDialog(parent, zIndex, className, isAdmin) {
     this._errorCell = Dwt.getDomObj(doc, errorCellId);
     
     this._unameField = Dwt.getDomObj(doc, unameId);
-    this._unameField.onkeypress = LmLoginDialog._keyPressHdlr;
+    this._unameField.onkeypress = ZmLoginDialog._keyPressHdlr;
     this._unameField._parentId = this._htmlElId;
     
     this._pwordField = Dwt.getDomObj(doc, pwordId);
     this._pwordField._parentId = this._htmlElId;
-    this._pwordField.onkeypress = LmLoginDialog._keyPressHdlr;
+    this._pwordField.onkeypress = ZmLoginDialog._keyPressHdlr;
     
     this._reloginModeField = Dwt.getDomObj(doc, reloginModeId);
     this.setReloginMode(false);
@@ -36,52 +36,52 @@ function LmLoginDialog(parent, zIndex, className, isAdmin) {
     this._loginButton = new DwtButton(this, null, "DwtButton contrast");
     this._loginButton.setText(LmMsg.login);
     this._loginButton.setData("me", this);
-    this._loginButton.addSelectionListener(new LsListener(this, this._loginSelListener));
+    this._loginButton.addSelectionListener(new AjxListener(this, this._loginSelListener));
     Dwt.getDomObj(doc, okCellId).appendChild(this._loginButton.getHtmlElement());
 }
 
-LmLoginDialog.prototype = new DwtComposite;
-LmLoginDialog.prototype.constructor = LmLoginDialog;
+ZmLoginDialog.prototype = new DwtComposite;
+ZmLoginDialog.prototype.constructor = ZmLoginDialog;
 
-LmLoginDialog.prototype.toString = 
+ZmLoginDialog.prototype.toString = 
 function() {
-	return "LmLoginDialog";
+	return "ZmLoginDialog";
 }
 
-LmLoginDialog.prototype.registerCallback =
+ZmLoginDialog.prototype.registerCallback =
 function(func, obj) {
-	this._callback = new LsCallback(obj, func);
+	this._callback = new AjxCallback(obj, func);
 }
 
-LmLoginDialog.prototype.clearAll =
+ZmLoginDialog.prototype.clearAll =
 function() {
 	this._unameField.value = this._pwordField.value = "";
 	this._pubCompField.checked = false;
 }
 
-LmLoginDialog.prototype.clearPassword =
+ZmLoginDialog.prototype.clearPassword =
 function() {
 	this._pwordField.value = "";
 }
 
-LmLoginDialog.prototype.setError =
+ZmLoginDialog.prototype.setError =
 function(errorStr) {
 	this.setCursor("default");
 	var htmlArr = new Array();
 	var i = 0;
 	if (errorStr && errorStr.length) {
-		htmlArr[i++] = "<table align=center class='LmLoginDialog-ErrorPanel'>";
+		htmlArr[i++] = "<table align=center class='ZmLoginDialog-ErrorPanel'>";
 		htmlArr[i++] = "<tr><td>";
-		htmlArr[i++] = LsImg.getImageHtml(LmImg.I_CRITICAL);
+		htmlArr[i++] = AjxImg.getImageHtml(ZmImg.I_CRITICAL);
 		htmlArr[i++] = "</td>";
-		htmlArr[i++] = "<td class='LmLoginDialog-ErrorText'>" + errorStr + "</td></tr></table>";
+		htmlArr[i++] = "<td class='ZmLoginDialog-ErrorText'>" + errorStr + "</td></tr></table>";
 	} else {
 		htmlArr[i++] = "&nbsp;";
 	}
 	this._errorCell.innerHTML = htmlArr.join("");
 }
 
-LmLoginDialog.prototype.setFocus =
+ZmLoginDialog.prototype.setFocus =
 function(username, bReloginMode) {
 	if (this._unameField.value.length > 0) {
 		this._pwordField.focus();
@@ -102,7 +102,7 @@ function(username, bReloginMode) {
 	}
  }
 
-LmLoginDialog.prototype.setVisible = 
+ZmLoginDialog.prototype.setVisible = 
 function(visible, transparentBg) {
 	DwtComposite.prototype.setVisible.call(this, visible);
 	Dwt._ffOverflowHack(this._htmlElId, this.getZIndex(), null, visible);
@@ -121,22 +121,22 @@ function(visible, transparentBg) {
 }
 
 // TODO: Rewrite this using box model rather than tables
-LmLoginDialog.prototype._createHtml = 
+ZmLoginDialog.prototype._createHtml = 
 function(unameId, pwordId, okCellId, errorCellId, reloginModeId) {
 	var html = new Array();
 	var i = 0;
 
 	html[i++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td>";
 	html[i++] = "<table align=center border=0 cellspacing=0 cellpadding=0 style='width:447px; border: 2px solid; border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;'>";
-	html[i++] = "<tr><td colspan=10 bgcolor='#FFFFFF'><div class='LmLoginDialog-HeaderPanel'></div></td></tr>";
+	html[i++] = "<tr><td colspan=10 bgcolor='#FFFFFF'><div class='ZmLoginDialog-HeaderPanel'></div></td></tr>";
 	html[i++] = "<tr><td>";
-	html[i++] = "<table border=0 width=100% class='LmLoginDialog-MainPanel'>";
+	html[i++] = "<table border=0 width=100% class='ZmLoginDialog-MainPanel'>";
 	html[i++] = "<tr><td colspan=3 id='" + errorCellId + "'>&nbsp;</td></tr>";
 	html[i++] = "<tr height=40><td width=100 align=right>" + LmMsg.username + ":</td>";
-	html[i++] = "<td colspan=2><input type=text tabIndex=1 class='LmLoginDialog-Field' id='" + unameId + "'></td>";
+	html[i++] = "<td colspan=2><input type=text tabIndex=1 class='ZmLoginDialog-Field' id='" + unameId + "'></td>";
 	html[i++] = "</tr><tr height=30>";
 	html[i++] = "<td align=right width=100>" + LmMsg.password + ":</td>";
-	html[i++] = "<td colspan=2><input type=password tabIndex=2 class='LmLoginDialog-Field' id='" + pwordId + "'></td>";
+	html[i++] = "<td colspan=2><input type=password tabIndex=2 class='ZmLoginDialog-Field' id='" + pwordId + "'></td>";
 	html[i++] = "</tr><tr height=40>";
 	html[i++] = "<td></td>";
 	html[i++] = "<td valign=top><table border=0 width=100%><tr>";
@@ -150,12 +150,12 @@ function(unameId, pwordId, okCellId, errorCellId, reloginModeId) {
 	return html.join("");
 }
 
-LmLoginDialog.prototype._addChild =
+ZmLoginDialog.prototype._addChild =
 function(child, childHtmlElement) {
     this._children.add(child);
 }
 
-LmLoginDialog.prototype.setReloginMode = 
+ZmLoginDialog.prototype.setReloginMode = 
 function(bReloginMode, app, obj) {
 
 	var modeId = Dwt.getNextId();
@@ -164,7 +164,7 @@ function(bReloginMode, app, obj) {
 	if (bReloginMode) {
 		this._reloginModeField.innerHTML =  "<a id='" + modeId + "' href='javascript:;'>" + LmMsg.loginAsDiff + "</a>";
 		var anchor = Dwt.getDomObj(this.getDocument(), modeId);
-		anchor.onclick = LmLoginDialog._loginDiffListener;
+		anchor.onclick = ZmLoginDialog._loginDiffListener;
 		anchor._app = app;
 		anchor._obj = obj;
 		anchor._parent = this;
@@ -181,7 +181,7 @@ function(bReloginMode, app, obj) {
 	}
 }
 
-LmLoginDialog.prototype._loginSelListener =
+ZmLoginDialog.prototype._loginSelListener =
 function(selEvt) {
 	this.setCursor("wait");
 	var username = this._unameField.value;
@@ -191,7 +191,7 @@ function(selEvt) {
 	}
 	
 	/* commenting this out due to default domain name support
-	if (!this._isAdmin && !LmEmailAddress.isValid(username)) {
+	if (!this._isAdmin && !ZmEmailAddress.isValid(username)) {
 		this.setError(LmMsg.badUsername);
 		return;
 	}
@@ -200,7 +200,7 @@ function(selEvt) {
 		this._callback.run([username, this._pwordField.value, this._pubCompField.checked]);
 }
 
-LmLoginDialog._keyPressHdlr =
+ZmLoginDialog._keyPressHdlr =
 function(ev) {
 	var charCode = DwtKeyEvent.getCharCode(ev);
 	if (charCode == 13 || charCode == 3) {
@@ -220,8 +220,8 @@ function(ev) {
 	return true;
 }
 
-LmLoginDialog._loginDiffListener =
+ZmLoginDialog._loginDiffListener =
 function(ev) {
-	LmLiquidMail.logOff();
+	ZmLiquidMail.logOff();
 	return;
 };

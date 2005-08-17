@@ -1,9 +1,9 @@
-function LmClientCmdHandler(appCtxt) {
+function ZmClientCmdHandler(appCtxt) {
 	this._appCtxt = appCtxt;
 	this._settings = new Object();
 }
 
-LmClientCmdHandler.prototype.execute =
+ZmClientCmdHandler.prototype.execute =
 function(argv) {
 	if (!argv || !argv[0]) return ;
 	var arg0 = argv[0].toLowerCase();
@@ -16,7 +16,7 @@ function(argv) {
 			DBG.showTiming(!on);
 		} else {
 			var arg = Number(argv[1]);
-			var level = LsDebug.DBG[arg];
+			var level = AjxDebug.DBG[arg];
 			if (level) {
 				alert("Setting Debug to level:" + level);
 				DBG.setDebugLevel(level);
@@ -39,7 +39,7 @@ function(argv) {
 	} else if (arg0 == "support") {
 		if (!argv[1]) return;
 		var feature = argv[1].toUpperCase();
-		var setting = "LmSetting." + feature + "_ENABLED"
+		var setting = "ZmSetting." + feature + "_ENABLED"
 		var id = eval(setting);
 		var on = this._appCtxt.get(id);
 		if (on == undefined) {

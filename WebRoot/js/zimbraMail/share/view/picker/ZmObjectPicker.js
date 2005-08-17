@@ -1,40 +1,40 @@
-function LmObjectPicker(parent) {
+function ZmObjectPicker(parent) {
 
-	LmPicker.call(this, parent, LmPicker.OBJECT);
+	ZmPicker.call(this, parent, ZmPicker.OBJECT);
 }
 
-LmObjectPicker.prototype = new LmPicker;
-LmObjectPicker.prototype.constructor = LmObjectPicker;
+ZmObjectPicker.prototype = new ZmPicker;
+ZmObjectPicker.prototype.constructor = ZmObjectPicker;
 
-LmPicker.CTOR[LmPicker.OBJECT] = LmObjectPicker;
+ZmPicker.CTOR[ZmPicker.OBJECT] = ZmObjectPicker;
 
-LmObjectPicker.prototype.toString = 
+ZmObjectPicker.prototype.toString = 
 function() {
-	return "LmObjectPicker";
+	return "ZmObjectPicker";
 }
 
-LmObjectPicker.prototype._addObject =
+ZmObjectPicker.prototype._addObject =
 function(tree, text, imageInfo, type) {
 	var ti = this._objects[type] = new DwtTreeItem(tree);
 	ti.setText(text);
 	ti.setImage(imageInfo);
 }
 
-LmObjectPicker.prototype._setupPicker =
+ZmObjectPicker.prototype._setupPicker =
 function(parent) {
 	this._objects = new Object();
 	
     var tti, ti;
 	var tree = this._tree = new DwtTree(parent, DwtTree.CHECKEDITEM_STYLE);
-	tree.addSelectionListener(new LsListener(this, LmObjectPicker.prototype._treeListener));
+	tree.addSelectionListener(new AjxListener(this, ZmObjectPicker.prototype._treeListener));
 	
-	this._addObject(tree, LmMsg.tracking, LmImg.I_PO, "tracking");
-	this._addObject(tree, LmMsg.phoneNumber, LmImg.I_TELEPHONE, "phone");
-	this._addObject(tree, LmMsg.po, LmImg.I_PO, "po");
-	this._addObject(tree, LmMsg.url, LmImg.I_URL, "url");	
+	this._addObject(tree, LmMsg.tracking, ZmImg.I_PO, "tracking");
+	this._addObject(tree, LmMsg.phoneNumber, ZmImg.I_TELEPHONE, "phone");
+	this._addObject(tree, LmMsg.po, ZmImg.I_PO, "po");
+	this._addObject(tree, LmMsg.url, ZmImg.I_URL, "url");	
 }
 
-LmObjectPicker.prototype._updateQuery = 
+ZmObjectPicker.prototype._updateQuery = 
 function() {
 	var types = new Array();
 	for (var type in this._objects)
@@ -52,7 +52,7 @@ function() {
 	this.execute();
 }
 
-LmObjectPicker.prototype._treeListener =
+ZmObjectPicker.prototype._treeListener =
 function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED)
  		this._updateQuery();

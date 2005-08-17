@@ -597,7 +597,7 @@ LmMsg.AB_MOVE_CONTACTS = "Move Contacts";
 LmMsg.AB_TAG_CONTACT = "Tag Contact";
 LmMsg.AB_TAG_CONTACTS = "Tag Contacts";
 
-// these need to be kept in sync with LmContact.F_*
+// these need to be kept in sync with ZmContact.F_*
 LmMsg.AB_FIELD = {
 	firstName: "First",
 	lastName: "Last",
@@ -656,7 +656,7 @@ LmMsg.AB_FIELD = {
 	otherFax: "Fax"
 };
 
-// these need to be kept in sync with LmContact.FA_*
+// these need to be kept in sync with ZmContact.FA_*
 LmMsg.AB_FILE_AS = {
 	1: "Last, First",
 	2: "First Last",

@@ -1,35 +1,35 @@
-function LmConv(appCtxt, list) {
+function ZmConv(appCtxt, list) {
 
-	LmMailItem.call(this, appCtxt, LmItem.CONV, list);
+	ZmMailItem.call(this, appCtxt, ZmItem.CONV, list);
 	// conversations are always sorted by date desc initially
-	this._sortBy = LmSearch.DATE_DESC; 
-	this._listChangeListener = new LsListener(this, this._msgListChangeListener);
+	this._sortBy = ZmSearch.DATE_DESC; 
+	this._listChangeListener = new AjxListener(this, this._msgListChangeListener);
 }
 
-LmConv.prototype = new LmMailItem;
-LmConv.prototype.constructor = LmConv;
+ZmConv.prototype = new ZmMailItem;
+ZmConv.prototype.constructor = ZmConv;
 
-LmConv.prototype.toString = 
+ZmConv.prototype.toString = 
 function() {
-	return "LmConv";
+	return "ZmConv";
 }
 
 // Public methods
 
-LmConv.createFromDom =
+ZmConv.createFromDom =
 function(node, args) {
-	var conv = new LmConv(args.appCtxt, args.list);
+	var conv = new ZmConv(args.appCtxt, args.list);
 	conv._participantHash = args.addressHash ? args.addressHash : new Object();
 	conv._loadFromDom(node);
 	return conv;
 }
 
-LmConv.prototype.load =
+ZmConv.prototype.load =
 function(searchString, sortBy, offset, limit, callback) {
 
-	var sortBy = sortBy || LmSearch.DATE_DESC;
+	var sortBy = sortBy || ZmSearch.DATE_DESC;
 	var offset = offset || 0;
-	var limit = limit || this.list._appCtxt.get(LmSetting.PAGE_SIZE);
+	var limit = limit || this.list._appCtxt.get(ZmSetting.PAGE_SIZE);
 	
 	if (this.msgs) {
 		if (this._sortBy != sortBy) {
@@ -51,14 +51,14 @@ function(searchString, sortBy, offset, limit, callback) {
 		}
 	}
 	
-	var types = LsVector.fromArray([LmItem.MSG]);
-	var search = new LmSearch(this.list._appCtxt, searchString, types, sortBy, offset, limit);
+	var types = AjxVector.fromArray([ZmItem.MSG]);
+	var search = new ZmSearch(this.list._appCtxt, searchString, types, sortBy, offset, limit);
 	var results = search.forConv(this.id);
 	
 	if (callback) {
 		callback.run(results);	// user is paging...
 	} else {
-		this.msgs = results.getResults(LmItem.MSG);
+		this.msgs = results.getResults(ZmItem.MSG);
 		this.msgs.convId = this.id;
 		this.msgs.addChangeListener(this._listChangeListener);
 		this.msgs.setHasMore(results.getAttribute("more"));
@@ -73,14 +73,14 @@ function(searchString, sortBy, offset, limit, callback) {
 	}
 }
 
-LmConv.prototype.clear =
+ZmConv.prototype.clear =
 function() {
 	if (this.msgs) {
 		this.msgs.clear();
 		this.msgs = null;
 	}
 	
-	LmMailItem.prototype.clear.call(this);
+	ZmMailItem.prototype.clear.call(this);
 }
 
 /**
@@ -89,7 +89,7 @@ function() {
 *
 * @param obj		item with the changed attributes/content
 */
-LmConv.prototype.notifyModify =
+ZmConv.prototype.notifyModify =
 function(obj) {
 	var fields = new Object();
 	// a conv's ID can change if it's a virtual conv becoming real
@@ -100,32 +100,32 @@ function(obj) {
 		var a = this.msgs.getArray();
 		for (var i = 0; i < a.length; i++)
 			a[i].cid = this.id;
-		fields[LmItem.F_ID] = true;
-		this._notify(LmEvent.E_MODIFY, {fields : fields});
+		fields[ZmItem.F_ID] = true;
+		this._notify(ZmEvent.E_MODIFY, {fields : fields});
 	}
 	if (obj.n != null) {
 		this.numMsgs = obj.n;
-		fields[LmItem.F_COUNT] = true;
-		this._notify(LmEvent.E_MODIFY, {fields : fields});
+		fields[ZmItem.F_COUNT] = true;
+		this._notify(ZmEvent.E_MODIFY, {fields : fields});
 	}
 
-	LmMailItem.prototype.notifyModify.call(this, obj);
+	ZmMailItem.prototype.notifyModify.call(this, obj);
 }
 
-LmConv.prototype._checkFlags = 
+ZmConv.prototype._checkFlags = 
 function(flags) {
 	var msgs = this.msgs.getArray();
 	var convOn = new Object();
 	var msgsOn = new Object();
 	for (var i = 0; i < flags.length; i++) {
 		var flag = flags[i];
-		if (!(flag == LmItem.FLAG_FLAGGED || flag == LmItem.FLAG_UNREAD 
-			|| flag == LmItem.FLAG_ATTACH)) continue;
-		convOn[flag] = this[LmItem.FLAG_PROP[flag]];
+		if (!(flag == ZmItem.FLAG_FLAGGED || flag == ZmItem.FLAG_UNREAD 
+			|| flag == ZmItem.FLAG_ATTACH)) continue;
+		convOn[flag] = this[ZmItem.FLAG_PROP[flag]];
 		msgsOn[flag] = false;
 		for (var j = 0; j < msgs.length; j++) {
 			var msg = msgs[j];
-			if (msg[LmItem.FLAG_PROP[flag]]) {
+			if (msg[ZmItem.FLAG_PROP[flag]]) {
 				msgsOn[flag] = true;
 				break;
 			}
@@ -135,21 +135,21 @@ function(flags) {
 	var flags = new Array();
 	for (var flag in convOn) {
 		if (convOn[flag] != msgsOn[flag]) {
-			this[LmItem.FLAG_PROP[flag]] = msgsOn[flag];
+			this[ZmItem.FLAG_PROP[flag]] = msgsOn[flag];
 			flags.push(flag);
 			doNotify = true;
 		}
 	}
 
 	if (doNotify)
-		this._notify(LmEvent.E_FLAGS, {flags: flags});
+		this._notify(ZmEvent.E_FLAGS, {flags: flags});
 }
 
 /**
 * Figure out if any tags have been added or removed by comparing what we have now with what
 * our messages have.
 */
-LmConv.prototype._checkTags = 
+ZmConv.prototype._checkTags = 
 function() {
 	newTags = new Object();
 	allTags = new Object();
@@ -177,10 +177,10 @@ function() {
 	}
 
 	if (notify)
-		this._notify(LmEvent.E_TAGS);
+		this._notify(ZmEvent.E_TAGS);
 }
 
-LmConv.prototype.checkMoved = 
+ZmConv.prototype.checkMoved = 
 function(folderId) {
 	var msgs = this.msgs.getArray();
 	var bNotify = true;
@@ -191,12 +191,12 @@ function(folderId) {
 		}
 	}
 	if (bNotify)
-		this._notify(LmEvent.E_MOVE);
+		this._notify(ZmEvent.E_MOVE);
 	
 	return bNotify;
 }
 
-LmConv.prototype.moveLocal =
+ZmConv.prototype.moveLocal =
 function(folderId) {
 	if (this.folders)
 		delete this.folders;
@@ -208,7 +208,7 @@ function(folderId) {
  * search scenario; however if this is not a search (i.e. we are playing 
  * primary mailbox), then pick the newest message in the conversation
  */
-LmConv.prototype.getHotMsg = 
+ZmConv.prototype.getHotMsg = 
 function(offset, limit) {
 	
 	var numMsgs = this.msgs.size();
@@ -239,12 +239,12 @@ function(offset, limit) {
 	return msg;
 }
 
-LmConv.prototype.getSubject = 
+ZmConv.prototype.getSubject = 
 function (){
 	return this.subject;
 };
 
-LmConv.prototype._loadFromDom =
+ZmConv.prototype._loadFromDom =
 function(convNode) {
 	this.id = convNode.id;
 	this.numMsgs = convNode.n;
@@ -264,7 +264,7 @@ function(convNode) {
 		this.msgOpId = convNode.m[0].id;
 }
 
-LmConv.prototype._loadMsgs = 
+ZmConv.prototype._loadMsgs = 
 function(convNode) {
 	// for all messages in this conversation,
 	var childNodes = convNode.childNodes;
@@ -274,13 +274,13 @@ function(convNode) {
 	}	
 }
 
-LmConv.prototype._msgListChangeListener =
+ZmConv.prototype._msgListChangeListener =
 function(ev) {
-	if (ev.type != LmEvent.S_MSG)
+	if (ev.type != ZmEvent.S_MSG)
 		return;
-	if (ev.event == LmEvent.E_TAGS || ev.event == LmEvent.E_REMOVE_ALL) {
+	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
 		this._checkTags();
-	} else if (ev.event == LmEvent.E_FLAGS) {
+	} else if (ev.event == ZmEvent.E_FLAGS) {
 		this._checkFlags(ev.getDetail("flags"));
 	}
 }

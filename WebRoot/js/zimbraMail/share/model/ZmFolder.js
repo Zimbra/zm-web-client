@@ -1,84 +1,84 @@
-function LmFolder(id, name, parent, tree, numUnread, numTotal) {
+function ZmFolder(id, name, parent, tree, numUnread, numTotal) {
 
-	LmOrganizer.call(this, LmOrganizer.FOLDER, id, name, parent, tree, numUnread, numTotal);
+	ZmOrganizer.call(this, ZmOrganizer.FOLDER, id, name, parent, tree, numUnread, numTotal);
 }
 
-LmFolder.prototype = new LmOrganizer;
-LmFolder.prototype.constructor = LmFolder;
+ZmFolder.prototype = new ZmOrganizer;
+ZmFolder.prototype.constructor = ZmFolder;
 
 // path separator
-LmFolder.SEP = "/";
+ZmFolder.SEP = "/";
 
 // system folders (see Mailbox.java in LiquidArchive for positive integer constants)
-LmFolder.ID_SEARCH			= -3;
-LmFolder.ID_SEP				= -2;
-LmFolder.ID_USER			= -1;
-LmFolder.ID_ROOT = LmOrganizer.ID_ROOT;
-LmFolder.ID_INBOX			= 2;
-LmFolder.ID_TRASH			= 3;
-LmFolder.ID_SPAM			= 4;
-LmFolder.ID_SENT			= 5;
-LmFolder.ID_DRAFTS			= 6;
-LmFolder.LAST_SYSTEM_ID		= 6;
-LmFolder.ID_CONTACTS 		= 7;
-LmFolder.ID_TAGS	 		= 8;
-LmFolder.ID_CALENDAR		= 10;
-LmFolder.FIRST_USER_ID		= 256;
+ZmFolder.ID_SEARCH			= -3;
+ZmFolder.ID_SEP				= -2;
+ZmFolder.ID_USER			= -1;
+ZmFolder.ID_ROOT = ZmOrganizer.ID_ROOT;
+ZmFolder.ID_INBOX			= 2;
+ZmFolder.ID_TRASH			= 3;
+ZmFolder.ID_SPAM			= 4;
+ZmFolder.ID_SENT			= 5;
+ZmFolder.ID_DRAFTS			= 6;
+ZmFolder.LAST_SYSTEM_ID		= 6;
+ZmFolder.ID_CONTACTS 		= 7;
+ZmFolder.ID_TAGS	 		= 8;
+ZmFolder.ID_CALENDAR		= 10;
+ZmFolder.FIRST_USER_ID		= 256;
 
 // folder name overrides
-LmFolder.NAME = new Object();
-LmFolder.NAME[LmFolder.ID_INBOX] = LmMsg.inbox;
-LmFolder.NAME[LmFolder.ID_SPAM] = LmMsg.junk;
+ZmFolder.NAME = new Object();
+ZmFolder.NAME[ZmFolder.ID_INBOX] = LmMsg.inbox;
+ZmFolder.NAME[ZmFolder.ID_SPAM] = LmMsg.junk;
 
 // name to use within the query language
-LmFolder.QUERY_NAME = new Object();
-LmFolder.QUERY_NAME[LmFolder.ID_INBOX]		= "inbox";
-LmFolder.QUERY_NAME[LmFolder.ID_TRASH]		= "trash";
-LmFolder.QUERY_NAME[LmFolder.ID_SPAM]		= "junk";
-LmFolder.QUERY_NAME[LmFolder.ID_SENT]		= "sent";
-LmFolder.QUERY_NAME[LmFolder.ID_DRAFTS]		= "drafts";
-LmFolder.QUERY_NAME[LmFolder.ID_CONTACTS]	= "contacts";
-LmFolder.QUERY_NAME[LmFolder.ID_CALENDAR]	= "calendar";
+ZmFolder.QUERY_NAME = new Object();
+ZmFolder.QUERY_NAME[ZmFolder.ID_INBOX]		= "inbox";
+ZmFolder.QUERY_NAME[ZmFolder.ID_TRASH]		= "trash";
+ZmFolder.QUERY_NAME[ZmFolder.ID_SPAM]		= "junk";
+ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]		= "sent";
+ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]		= "drafts";
+ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]	= "contacts";
+ZmFolder.QUERY_NAME[ZmFolder.ID_CALENDAR]	= "calendar";
 
-LmFolder.SORT_ORDER = new Object();
-LmFolder.SORT_ORDER[LmFolder.ID_USER]		= 1;
-LmFolder.SORT_ORDER[LmFolder.ID_TAGS]		= 2;
-LmFolder.SORT_ORDER[LmFolder.ID_SEARCH]		= 3;
-LmFolder.SORT_ORDER[LmFolder.ID_INBOX]		= 101;
-LmFolder.SORT_ORDER[LmFolder.ID_SENT]		= 102;
-LmFolder.SORT_ORDER[LmFolder.ID_DRAFTS]		= 103;
-LmFolder.SORT_ORDER[LmFolder.ID_SPAM]		= 104;
-LmFolder.SORT_ORDER[LmFolder.ID_TRASH]		= 105;
-LmFolder.SORT_ORDER[LmFolder.ID_SEP]		= 106;
+ZmFolder.SORT_ORDER = new Object();
+ZmFolder.SORT_ORDER[ZmFolder.ID_USER]		= 1;
+ZmFolder.SORT_ORDER[ZmFolder.ID_TAGS]		= 2;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SEARCH]		= 3;
+ZmFolder.SORT_ORDER[ZmFolder.ID_INBOX]		= 101;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]		= 102;
+ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]		= 103;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]		= 104;
+ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]		= 105;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]		= 106;
 
 // map name to ID
-LmFolder.QUERY_ID = new Object();
-for (var i in LmFolder.QUERY_NAME)
-	LmFolder.QUERY_ID[LmFolder.QUERY_NAME[i]] = i;
+ZmFolder.QUERY_ID = new Object();
+for (var i in ZmFolder.QUERY_NAME)
+	ZmFolder.QUERY_ID[ZmFolder.QUERY_NAME[i]] = i;
 
-LmFolder.createFromJs =
+ZmFolder.createFromJs =
 function(parent, obj, tree, isSearch) {
 	if (!obj) return;
 	
-	var name = LmFolder.NAME[obj.id] ? LmFolder.NAME[obj.id] : obj.name;
+	var name = ZmFolder.NAME[obj.id] ? ZmFolder.NAME[obj.id] : obj.name;
 	var folder;
 	if (isSearch) {
 		var types = obj.types ? obj.types.split(",") : null;
-		folder = new LmSearchFolder(obj.id, obj.name, parent, tree, obj.u, obj.query, types, obj.sortBy);
-	} else if (obj.id <= LmFolder.LAST_SYSTEM_ID || obj.id >= LmFolder.FIRST_USER_ID) {
-		folder = new LmFolder(obj.id, name, parent, tree, obj.u, obj.n);
+		folder = new ZmSearchFolder(obj.id, obj.name, parent, tree, obj.u, obj.query, types, obj.sortBy);
+	} else if (obj.id <= ZmFolder.LAST_SYSTEM_ID || obj.id >= ZmFolder.FIRST_USER_ID) {
+		folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n);
 	}
 	if (!folder) return;
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
-			var childFolder = LmFolder.createFromJs(folder, obj.folder[i], tree, false);
+			var childFolder = ZmFolder.createFromJs(folder, obj.folder[i], tree, false);
 			if (childFolder)
 				folder.children.add(childFolder);
 		}
 	}
 	if (obj.search && obj.search.length) {
 		for (var i = 0; i < obj.search.length; i++) {
-			var childFolder = LmFolder.createFromJs(folder, obj.search[i], tree, true);
+			var childFolder = ZmFolder.createFromJs(folder, obj.search[i], tree, true);
 			if (childFolder)
 				folder.children.add(childFolder);
 		}
@@ -93,12 +93,12 @@ function(parent, obj, tree, isSearch) {
 * @param	folderA		a folder
 * @param	folderB		a folder
 */
-LmFolder.sortCompare = 
+ZmFolder.sortCompare = 
 function(folderA, folderB) {
-	if (LmFolder.SORT_ORDER[folderA.id] && LmFolder.SORT_ORDER[folderB.id])
-		return (LmFolder.SORT_ORDER[folderA.id] - LmFolder.SORT_ORDER[folderB.id]);
-	if (!LmFolder.SORT_ORDER[folderA.id] && LmFolder.SORT_ORDER[folderB.id]) return 1;
-	if (LmFolder.SORT_ORDER[folderA.id] && !LmFolder.SORT_ORDER[folderB.id]) return -1;
+	if (ZmFolder.SORT_ORDER[folderA.id] && ZmFolder.SORT_ORDER[folderB.id])
+		return (ZmFolder.SORT_ORDER[folderA.id] - ZmFolder.SORT_ORDER[folderB.id]);
+	if (!ZmFolder.SORT_ORDER[folderA.id] && ZmFolder.SORT_ORDER[folderB.id]) return 1;
+	if (ZmFolder.SORT_ORDER[folderA.id] && !ZmFolder.SORT_ORDER[folderB.id]) return -1;
 	if (folderA.name.toLowerCase() > folderB.name.toLowerCase()) return 1;
 	if (folderA.name.toLowerCase() < folderB.name.toLowerCase()) return -1;
 	return 0;
@@ -111,9 +111,9 @@ function(folderA, folderB) {
 *
 * @param name		a folder name
 */
-LmFolder.checkName =
+ZmFolder.checkName =
 function(name) {
-	return LmOrganizer.checkName(name);
+	return ZmOrganizer.checkName(name);
 }
 
 /**
@@ -125,44 +125,44 @@ function(name) {
 * @param name		a folder name
 * @param parent		the parent folder
 */
-LmFolder.checkParent =
+ZmFolder.checkParent =
 function(name, parent) {
 	// make sure folder with this name doesn't already exist at this level
-	if (parent.hasChild(name) || (parent.id < 0 && LmFolder.QUERY_ID[name.toLowerCase()]))
+	if (parent.hasChild(name) || (parent.id < 0 && ZmFolder.QUERY_ID[name.toLowerCase()]))
 		return LmMsg.folderNameExists;
 
 	// check for top-level folder or saved search
 	var root = null;
-	if (parent.id == LmFolder.ID_USER)
-		root = parent.tree.getById(LmFolder.ID_SEARCH);
-	else if (parent.id == LmFolder.ID_SEARCH)
-		root = parent.tree.getById(LmFolder.ID_USER);
+	if (parent.id == ZmFolder.ID_USER)
+		root = parent.tree.getById(ZmFolder.ID_SEARCH);
+	else if (parent.id == ZmFolder.ID_SEARCH)
+		root = parent.tree.getById(ZmFolder.ID_USER);
 	if (root && root.hasChild(name))
 		return LmMsg.folderOrSearchNameExists;
 	
 	return null;
 }
 
-LmFolder.prototype.toString = 
+ZmFolder.prototype.toString = 
 function() {
-	return "LmFolder";
+	return "ZmFolder";
 }
 
-LmFolder.prototype.create =
+ZmFolder.prototype.create =
 function(name) {
-	if (this.id == LmFolder.ID_SPAM || this.id == LmFolder.ID_DRAFTS)
-		throw new LsException("Cannot create subfolder of Spam or Drafts");
-	var soapDoc = LsSoapDoc.create("CreateFolderRequest", "urn:liquidMail");
+	if (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_DRAFTS)
+		throw new AjxException("Cannot create subfolder of Spam or Drafts");
+	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:liquidMail");
 	var folderNode = soapDoc.set("folder");
 	folderNode.setAttribute("name", name);
-	var id = (this.id > 0) ? this.id : LmFolder.ID_ROOT;
+	var id = (this.id > 0) ? this.id : ZmFolder.ID_ROOT;
 	folderNode.setAttribute("l", id);
 	var resp = this.tree._appCtxt.getAppController().sendRequest(soapDoc).firstChild;
 }
 
 // User can move a folder to Trash even if there's already a folder there with the
 // same name. We find a new name for this folder and rename it before the move.
-LmFolder.prototype.move =
+ZmFolder.prototype.move =
 function(newParent) {
 	var origName = this.name;
 	var name = this.name;
@@ -170,17 +170,17 @@ function(newParent) {
 		name = name + "_";
 	if (origName != name)
 		this.rename(name);
-	LmOrganizer.prototype.move.call(this, newParent);
+	ZmOrganizer.prototype.move.call(this, newParent);
 }
 
-LmFolder.prototype.isInTrash =
+ZmFolder.prototype.isInTrash =
 function() {
-	if (this.id == LmFolder.ID_TRASH)
+	if (this.id == ZmFolder.ID_TRASH)
 		return true;
 
 	var parent = this.parent;
-	while (parent && parent.id != LmFolder.ID_ROOT) {
-		if (parent.id == LmFolder.ID_TRASH)
+	while (parent && parent.id != ZmFolder.ID_ROOT) {
+		if (parent.id == ZmFolder.ID_TRASH)
 			return true;
 		else
 			parent = parent.parent;
@@ -188,9 +188,9 @@ function() {
 	return false;
 }
 
-LmFolder.prototype.hasSearch =
+ZmFolder.prototype.hasSearch =
 function(id) {
-	if (this.type == LmOrganizer.SEARCH)
+	if (this.type == ZmOrganizer.SEARCH)
 		return true;
 	
 	var a = this.children.getArray();
@@ -202,41 +202,41 @@ function(id) {
 	return false;
 }
 
-LmFolder.prototype.notifyCreate =
+ZmFolder.prototype.notifyCreate =
 function(obj, isSearch) {
 	// ignore creates of system folders
-	if (obj.id < LmFolder.FIRST_USER_ID) return;
+	if (obj.id < ZmFolder.FIRST_USER_ID) return;
 
-	var folder = LmFolder.createFromJs(this, obj, this.tree, isSearch);
-	var index = LmOrganizer.getSortIndex(folder, LmFolder.sortCompare);
+	var folder = ZmFolder.createFromJs(this, obj, this.tree, isSearch);
+	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
 	this.children.add(folder, index);
-	this._eventNotify(LmEvent.E_CREATE, folder);
+	this._eventNotify(ZmEvent.E_CREATE, folder);
 }
 
-LmFolder.prototype.notifyModify =
+ZmFolder.prototype.notifyModify =
 function(obj) {
-	var fields = LmOrganizer.prototype._getCommonFields.call(this, obj);
+	var fields = ZmOrganizer.prototype._getCommonFields.call(this, obj);
 	var parentId = obj.l;
-	if (parentId == LmFolder.ID_ROOT)
-		parentId = (this.type == LmOrganizer.FOLDER) ? LmFolder.ID_USER : LmFolder.ID_SEARCH;
+	if (parentId == ZmFolder.ID_ROOT)
+		parentId = (this.type == ZmOrganizer.FOLDER) ? ZmFolder.ID_USER : ZmFolder.ID_SEARCH;
 	if ((parentId != null) && this.parent.id != parentId) {
 		var newParent = this.tree.getById(parentId);
 		this.reparent(newParent);
-		fields[LmOrganizer.F_PARENT] = true;
+		fields[ZmOrganizer.F_PARENT] = true;
 	}
-	this._eventNotify(LmEvent.E_MODIFY, this, {fields: fields});
+	this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
 }
 
-LmFolder.prototype.createQuery =
+ZmFolder.prototype.createQuery =
 function(pathOnly) {
 	var query;
-	if (this.id < LmFolder.FIRST_USER_ID) {
-		query = pathOnly ? LmFolder.QUERY_NAME[this.id] : "in:" + LmFolder.QUERY_NAME[this.id];
+	if (this.id < ZmFolder.FIRST_USER_ID) {
+		query = pathOnly ? ZmFolder.QUERY_NAME[this.id] : "in:" + ZmFolder.QUERY_NAME[this.id];
 		return query;
 	}
 	var path = this.name;
 	var f = this.parent;
-	while (f && f.id > LmFolder.ID_ROOT && f.name.length) {
+	while (f && f.id > ZmFolder.ID_ROOT && f.name.length) {
 		path = f.name + "/" + path;
 		f = f.parent;
 	}
@@ -245,30 +245,30 @@ function(pathOnly) {
 	return query;
 }
 
-LmFolder.prototype.dispose =
+ZmFolder.prototype.dispose =
 function() {
-	DBG.println(LsDebug.DBG1, "disposing: " + this.name + ", ID: " + this.id);
-	var isEmptyOp = (this.id == LmFolder.ID_SPAM || this.id == LmFolder.ID_TRASH);
+	DBG.println(AjxDebug.DBG1, "disposing: " + this.name + ", ID: " + this.id);
+	var isEmptyOp = (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH);
 	// make sure we're not deleting a system folder (unless we're emptying SPAM or TRASH)
-	if (this.id < LmFolder.FIRST_USER_ID && !isEmptyOp)
+	if (this.id < ZmFolder.FIRST_USER_ID && !isEmptyOp)
 		return;
 	
-	var action = (this.id == LmFolder.ID_SPAM || this.id == LmFolder.ID_TRASH) ? "empty" : "delete";
+	var action = (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH) ? "empty" : "delete";
 	this._organizerAction(action);
 
 	if (isEmptyOp) {
 		// emptied Trash or Spam will have no unread items
 		this.numUnread = 0;
-		this._eventNotify(LmEvent.E_DELETE);
+		this._eventNotify(ZmEvent.E_DELETE);
 	} else {
 		this.tree.deleteLocal([this]);
-		this._eventNotify(LmEvent.E_DELETE);
+		this._eventNotify(ZmEvent.E_DELETE);
 	}
 }
 
-LmFolder.prototype.getName = 
+ZmFolder.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
-	if (this.id == LmFolder.ID_DRAFTS) {
+	if (this.id == ZmFolder.ID_DRAFTS) {
 		var name = this.name;
 		if (showUnread && this.numTotal > 0) {
 			name = [name, " (", this.numTotal, ")"].join("");
@@ -277,7 +277,7 @@ function(showUnread, maxLength, noMarkup) {
 		}
 		return name;
 	} else {
-		return LmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
+		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
 	}
 }
 
@@ -286,13 +286,13 @@ function(showUnread, maxLength, noMarkup) {
 *
 * @param includeUser		whether to include "My Folders" at the beginning of the path
 */
-LmFolder.prototype.getPath = 
+ZmFolder.prototype.getPath = 
 function(includeUser) {
 	var parent = this.parent;
 	var path = this.getName();
-	while (parent && (parent.id != LmFolder.ID_ROOT) &&
-		   ((parent.id != LmFolder.ID_USER) || includeUser)) {
-		path = parent.getName() + LmFolder.SEP + path;
+	while (parent && (parent.id != ZmFolder.ID_ROOT) &&
+		   ((parent.id != ZmFolder.ID_USER) || includeUser)) {
+		path = parent.getName() + ZmFolder.SEP + path;
 		parent = parent.parent;
 	}
 	
@@ -319,31 +319,31 @@ function(includeUser) {
 *
 * @param what		object(s) to possibly move into this folder
 */
-LmFolder.prototype.mayContain =
+ZmFolder.prototype.mayContain =
 function(what) {
 	var invalid = false;
-	if (what instanceof LmFolder) {
+	if (what instanceof ZmFolder) {
 		var folder = what;
 		invalid = (folder.parent == this || this.isChildOf(folder) || 
-				   this.id == LmFolder.ID_DRAFTS || this.id == LmFolder.ID_SPAM || 
+				   this.id == ZmFolder.ID_DRAFTS || this.id == ZmFolder.ID_SPAM || 
 				   (!this.isInTrash() && this.hasChild(folder.name)) ||
-				   (folder.type == LmOrganizer.FOLDER && this.type == LmOrganizer.SEARCH) ||
-				   (folder.type == LmOrganizer.SEARCH && this.id == LmFolder.ID_USER) ||
+				   (folder.type == ZmOrganizer.FOLDER && this.type == ZmOrganizer.SEARCH) ||
+				   (folder.type == ZmOrganizer.SEARCH && this.id == ZmFolder.ID_USER) ||
 				   (folder.id == this.id));
 	} else {
 		// An item or an array of items is being moved
 		var items = (what instanceof Array) ? what : [what];
 		var item = items[0];
-		if (this.id == LmFolder.ID_USER || this.id == LmFolder.ID_DRAFTS) {
+		if (this.id == ZmFolder.ID_USER || this.id == ZmFolder.ID_DRAFTS) {
 			invalid = true;		// user folder can only contain folders, can't move items to Drafts
-		} else if (this.type == LmOrganizer.SEARCH) {
+		} else if (this.type == ZmOrganizer.SEARCH) {
 			invalid = true;		// can't drop items into saved searches
-		} else if ((item instanceof LmConv) && item.list.search && (item.list.search.folderId == this.id)) {
+		} else if ((item instanceof ZmConv) && item.list.search && (item.list.search.folderId == this.id)) {
 			invalid = true;		// convs which are a result of a search for this folder
 		} else {
 			invalid = false;	// make sure no drafts or contacts are being moved
 			for (var i = 0; i < items.length; i++) {
-				if (items[i].isDraft || (items[i] instanceof LmContact && this.id != LmFolder.ID_TRASH)) {
+				if (items[i].isDraft || (items[i] instanceof ZmContact && this.id != ZmFolder.ID_TRASH)) {
 					invalid = true;
 					break;
 				}
@@ -369,15 +369,15 @@ function(what) {
 *
 * @param path		the path to search for
 */
-LmFolder.prototype.getByPath =
+ZmFolder.prototype.getByPath =
 function(path) {
 	return this._getByPath(path.toLowerCase());
 }
 
 // Test the path of this folder and then descendants against the given path, case insensitively
-LmFolder.prototype._getByPath =
+ZmFolder.prototype._getByPath =
 function(path) {
-	if (this.id == LmFolder.ID_TAGS) return null;
+	if (this.id == ZmFolder.ID_TAGS) return null;
 
 	if (path == this.getPath().toLowerCase())
 		return this;

@@ -2,39 +2,39 @@
  * Represents the tab for the filter rules.
  * Internally, it uses a LmFilterListView ( descendant of DwtListView )
  * to do the rendering of the summary of rules. To show details, it also
- * uses the LmFilterDetailsView object, and inserts it as needed in the 
+ * uses the ZmFilterDetailsView object, and inserts it as needed in the 
  * summary table.
  *
  * TODO:
  * - remove styles to lm.css
  */
-function LmFilterPrefView(parent, appCtxt) {
+function ZmFilterPrefView(parent, appCtxt) {
 
-	DwtTabViewPage.call(this, parent, "LmFilterPrefView",
+	DwtTabViewPage.call(this, parent, "ZmFilterPrefView",
 						DwtControl.STATIC_STYLE);
 	this._appCtxt = appCtxt;
 
 	// setup listeners for when rules are added or removed from the 
-	// LmFilterRules object
+	// ZmFilterRules object
 	var ruleAddedList = 
-		new LsListener(this, 
-					   LmFilterPrefView.prototype._ruleAddedListener);
+		new AjxListener(this, 
+					   ZmFilterPrefView.prototype._ruleAddedListener);
 	var ruleRemovedList = 
-		new LsListener(this, 
-					   LmFilterPrefView.prototype._ruleRemovedListener);
+		new AjxListener(this, 
+					   ZmFilterPrefView.prototype._ruleRemovedListener);
 
 	var ruleModList = 
-		new LsListener(this, 
-					   LmFilterPrefView.prototype._ruleModifiedListener);
+		new AjxListener(this, 
+					   ZmFilterPrefView.prototype._ruleModifiedListener);
 
 	var ruleReorderedList = 
-		new LsListener(this, 
-					   LmFilterPrefView.prototype._rulesReorderedListener);
+		new AjxListener(this, 
+					   ZmFilterPrefView.prototype._rulesReorderedListener);
 
-	LmFilterRules.addListener(LmFilterRules.RULE_ADDED, ruleAddedList);
-	LmFilterRules.addListener(LmFilterRules.RULE_MODIFIED, ruleModList);
-	LmFilterRules.addListener(LmFilterRules.RULE_REMOVED, ruleRemovedList);
-	LmFilterRules.addListener(LmFilterRules.RULES_REORDERED, ruleReorderedList);
+	ZmFilterRules.addListener(ZmFilterRules.RULE_ADDED, ruleAddedList);
+	ZmFilterRules.addListener(ZmFilterRules.RULE_MODIFIED, ruleModList);
+	ZmFilterRules.addListener(ZmFilterRules.RULE_REMOVED, ruleRemovedList);
+	ZmFilterRules.addListener(ZmFilterRules.RULES_REORDERED, ruleReorderedList);
 
     // message dialogs 
     this._noRuleMessageDialog = 
@@ -46,38 +46,38 @@ function LmFilterPrefView(parent, appCtxt) {
 				     DwtDialog.CANCEL_BUTTON]);
 
 	this._rendered = false;
-	this._title = [LmMsg.zimbraTitle, LmMsg.options, LmPrefView.TAB_NAME[LmPrefView.FILTER_RULES]].join(": ");
+	this._title = [LmMsg.zimbraTitle, LmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]].join(": ");
 
-	this._operationButtonIds = [LmOperation.ADD_FILTER_RULE,
-								LmOperation.SEP,
-								LmOperation.EDIT_FILTER_RULE,
-								LmOperation.SEP,
-								LmOperation.REMOVE_FILTER_RULE,
-								LmOperation.SEP,
-								LmOperation.MOVE_UP_FILTER_RULE,
-								LmOperation.SEP,
-								LmOperation.MOVE_DOWN_FILTER_RULE ];	
+	this._operationButtonIds = [ZmOperation.ADD_FILTER_RULE,
+								ZmOperation.SEP,
+								ZmOperation.EDIT_FILTER_RULE,
+								ZmOperation.SEP,
+								ZmOperation.REMOVE_FILTER_RULE,
+								ZmOperation.SEP,
+								ZmOperation.MOVE_UP_FILTER_RULE,
+								ZmOperation.SEP,
+								ZmOperation.MOVE_DOWN_FILTER_RULE ];	
 	this._buttonListeners = new Object();
 	var id, funcName;
 	for (var i = 0; i < this._operationButtonIds.length; i++) {
 		id = this._operationButtonIds[i];
-		if (LmOperation.SEP == id) {
+		if (ZmOperation.SEP == id) {
 			continue;
 		}
 
-		funcName = '_'+ LmOperation.MSG_KEY[id] + 'Listener';
-		this._buttonListeners[id] = new LsListener(this, this[funcName] );
+		funcName = '_'+ ZmOperation.MSG_KEY[id] + 'Listener';
+		this._buttonListeners[id] = new AjxListener(this, this[funcName] );
 	}
 };
 
-LmFilterPrefView.prototype = new DwtTabViewPage;
-LmFilterPrefView.prototype.constructor = LmFilterPrefView;
+ZmFilterPrefView.prototype = new DwtTabViewPage;
+ZmFilterPrefView.prototype.constructor = ZmFilterPrefView;
 
-LmFilterPrefView.prototype.toString = function() {
-	return "LmFilterPrefView";
+ZmFilterPrefView.prototype.toString = function() {
+	return "ZmFilterPrefView";
 };
 
-LmFilterPrefView.prototype.hasRendered = function () {
+ZmFilterPrefView.prototype.hasRendered = function () {
 	return this._rendered;
 };
 
@@ -87,7 +87,7 @@ LmFilterPrefView.prototype.hasRendered = function () {
 /**
  * Overrides the DwtTabView method allowing us to render only once.
  */
-LmFilterPrefView.prototype.showMe = function() {
+ZmFilterPrefView.prototype.showMe = function() {
 	Dwt.setTitle(this._title);
 	if (!this._rendered){
 		this.render();
@@ -95,12 +95,12 @@ LmFilterPrefView.prototype.showMe = function() {
 	}
 };
 
-LmFilterPrefView.prototype.render = function (html,idx) {
+ZmFilterPrefView.prototype.render = function (html,idx) {
 
 	this._summaryContainer = new DwtComposite(this, "filterSummaryContainer",
 											  Dwt.RELATIVE_STYLE);	
 	var w = "100%";
-	if (LsEnv.isNav){
+	if (AjxEnv.isNav){
 		w = "99.8%";
 	}
     this._summaryContainer.getHtmlElement().style.width = w;
@@ -111,9 +111,9 @@ LmFilterPrefView.prototype.render = function (html,idx) {
     this._detailsDiv = document.createElement('div');
 	this._detailsDiv.id = this._detailsContainerId = Dwt.getNextId();
 
-	this.filterDetailsView = new LmFilterDetailsView(this, this._appCtxt);
-	var ls = new LsListener(this, 
-							LmFilterPrefView.prototype._hideDetailsListener);
+	this.filterDetailsView = new ZmFilterDetailsView(this, this._appCtxt);
+	var ls = new AjxListener(this, 
+							ZmFilterPrefView.prototype._hideDetailsListener);
 	this.filterDetailsView.addHideListener(ls);
 	var detailsEl = this.filterDetailsView.getHtmlElement();
 	if (detailsEl && detailsEl.parentNode){
@@ -122,7 +122,7 @@ LmFilterPrefView.prototype.render = function (html,idx) {
 	this._detailsDiv.appendChild(detailsEl);
 };
 
-LmFilterPrefView.prototype.getTitle =
+ZmFilterPrefView.prototype.getTitle =
 function() {
 	return this._title;
 }
@@ -134,7 +134,7 @@ function() {
 /**
  * Renderes the filter rules skeleton
  */
-LmFilterPrefView.prototype._renderSummary = function (){
+ZmFilterPrefView.prototype._renderSummary = function (){
 	this._ruleContainerId = Dwt.getNextId();
 	var tableHtml = '<table class="summaryTable" cellspacing=0 cellpadding=0 border=0>\
  	  <colgroup>\
@@ -156,9 +156,9 @@ LmFilterPrefView.prototype._renderSummary = function (){
 	this._listView = new LmFilterListView(this);
 	this._listView.onDoubleClick = this._doubleClickHandler;
 	this._listView.onDoubleClickOwnerObject = this;
-	var selList = new LsListener(this, this._handleSelectionChange);
+	var selList = new AjxListener(this, this._handleSelectionChange);
 	this._listView.addSelectionListener(selList);
-	this._setListView(LmFilterRules.getRules());
+	this._setListView(ZmFilterRules.getRules());
 	var listEl = this._listView.getHtmlElement();
 	if (listEl.parentNode){
 		listEl.parentNode.removeChild(listEl);
@@ -169,10 +169,10 @@ LmFilterPrefView.prototype._renderSummary = function (){
 /**
  *   
  */
-LmFilterPrefView.prototype._setupToolBar = function () {
+ZmFilterPrefView.prototype._setupToolBar = function () {
 
 	// create toolbar
-	this._toolbar = new LmButtonToolBar(this._summaryContainer, 
+	this._toolbar = new ZmButtonToolBar(this._summaryContainer, 
 										this._operationButtonIds, null,
 										DwtControl.RELATIVE_STYLE);
 
@@ -180,9 +180,9 @@ LmFilterPrefView.prototype._setupToolBar = function () {
 	var id;
 	for (var i = 0; i < this._operationButtonIds.length; ++i) {
 		id = this._operationButtonIds[i];
-		if (id != LmOperation.SEP){
+		if (id != ZmOperation.SEP){
 			this._toolbar.addSelectionListener(id, this._buttonListeners[id]);
-			if (id != LmOperation.ADD_FILTER_RULE){
+			if (id != ZmOperation.ADD_FILTER_RULE){
 				this._toolbar.enable(id, false);
 			}
 		}
@@ -193,7 +193,7 @@ LmFilterPrefView.prototype._setupToolBar = function () {
 // ----------------------------------------------------------------
 // rule details ( internal ) methods
 // ----------------------------------------------------------------
-LmFilterPrefView.prototype._hideDetailsListener = function (ev){
+ZmFilterPrefView.prototype._hideDetailsListener = function (ev){
 	var rule = ev;
 	if (this._ruleBeingEdited) {
 		this._ruleBeingEdited = null;
@@ -201,21 +201,21 @@ LmFilterPrefView.prototype._hideDetailsListener = function (ev){
 	this._resetDetailsState();
 };
 
-LmFilterPrefView.prototype._resetDetailsState = function () {
-	if (LmFilterRules.getRules().size() == 0){
-		this._setListView(LmFilterRules.getRules());
+ZmFilterPrefView.prototype._resetDetailsState = function () {
+	if (ZmFilterRules.getRules().size() == 0){
+		this._setListView(ZmFilterRules.getRules());
 	} else {
 		this._listView.deleteRow(this._detailsDiv);
 		this._detailsDiv.className = "";
 	}
 };
 
-LmFilterPrefView.prototype._hideDetailsForMove = function () {
+ZmFilterPrefView.prototype._hideDetailsForMove = function () {
 	this.filterDetailsView.hide(true);
 	this._resetDetailsState();
 };
 
-LmFilterPrefView.prototype._insertDetails = function (rule){
+ZmFilterPrefView.prototype._insertDetails = function (rule){
 	if (this.filterDetailsView.isVisible()){
 		this.filterDetailsView.hide();
 	}
@@ -224,15 +224,15 @@ LmFilterPrefView.prototype._insertDetails = function (rule){
 	if (rule != null) {	
 		// get the row index of the selected row, and insert the details
 		// below that.
-		var index = LmFilterRules.getIndexOfRule(rule);
-		nextRule = LmFilterRules.getRuleByIndex(index + 1);
-		var len = LmFilterRules.getNumberOfRules();
+		var index = ZmFilterRules.getIndexOfRule(rule);
+		nextRule = ZmFilterRules.getRuleByIndex(index + 1);
+		var len = ZmFilterRules.getNumberOfRules();
 		if (index + 1 <  len ) {
 			var itemId = this._listView._getItemId(nextRule);
 			selectedRow = document.getElementById(itemId);
 			this._detailsDiv.className = "Row";
 		}
-	} else if (LmFilterRules.getRules().size() == 0 ){
+	} else if (ZmFilterRules.getRules().size() == 0 ){
 		// case where there are no rules defined, and we are inserting 
 		// the details.
 		this._listView.deleteRow();
@@ -242,39 +242,39 @@ LmFilterPrefView.prototype._insertDetails = function (rule){
 };
 
 
-LmFilterPrefView.prototype._getCheckedRule = function() {
+ZmFilterPrefView.prototype._getCheckedRule = function() {
 	var rule = this._listView.getSelectedItem();
 	return rule;
 };
 
-LmFilterPrefView.prototype._setListView = function (list) {
+ZmFilterPrefView.prototype._setListView = function (list) {
 	var myList = list;
-	if (myList === LmFilterRules.getRules()){
+	if (myList === ZmFilterRules.getRules()){
 		myList = myList.clone();
 	}
 	this._listView.set(myList);
 };
 
 // ------------------------------------------------------------------
-// LmFilterRules listening methods
+// ZmFilterRules listening methods
 // ------------------------------------------------------------------
 
 /**
  * For 
  */
-LmFilterPrefView.prototype._ruleAddedListener = function (ev) {
-	this._setListView(LmFilterRules.getRules());
+ZmFilterPrefView.prototype._ruleAddedListener = function (ev) {
+	this._setListView(ZmFilterRules.getRules());
 	this._listView.setSelection(ev.rule);
 };
 
-LmFilterPrefView.prototype._ruleModifiedListener = function (ev) {
-	this._setListView(LmFilterRules.getRules());
+ZmFilterPrefView.prototype._ruleModifiedListener = function (ev) {
+	this._setListView(ZmFilterRules.getRules());
 	this._listView.setSelection(ev.rule);
 };
 
-LmFilterPrefView.prototype._ruleRemovedListener = function (ev){
-	this._setListView(LmFilterRules.getRules());
-	if (LmFilterRules.getNumberOfRules() <= 0 ) {
+ZmFilterPrefView.prototype._ruleRemovedListener = function (ev){
+	this._setListView(ZmFilterRules.getRules());
+	if (ZmFilterRules.getNumberOfRules() <= 0 ) {
 		this._updateToolbarButtons(0);
 	}
 	if (this._ruleBeingEdited) {
@@ -283,8 +283,8 @@ LmFilterPrefView.prototype._ruleRemovedListener = function (ev){
 	// TODO : selection change
 };
 
-LmFilterPrefView.prototype._rulesReorderedListener = function (ev) {
-	this._setListView(LmFilterRules.getRules());
+ZmFilterPrefView.prototype._rulesReorderedListener = function (ev) {
+	this._setListView(ZmFilterRules.getRules());
 	this._listView.setSelection(ev.rule);
 	if (this._ruleBeingEdited) {
 		this._openEdit(this._ruleBeingEdited);
@@ -295,7 +295,7 @@ LmFilterPrefView.prototype._rulesReorderedListener = function (ev) {
 // button handling methods
 // ------------------------------------------------------------------
 
-LmFilterPrefView.prototype._filterAddListener =
+ZmFilterPrefView.prototype._filterAddListener =
 function(evt) {
 	// add a rule
 	var rule = this._getCheckedRule();
@@ -304,7 +304,7 @@ function(evt) {
 };
 
 
-LmFilterPrefView.prototype._filterEditListener =
+ZmFilterPrefView.prototype._filterEditListener =
 function(evt) {
 	var rule = this._getCheckedRule();
 	if (rule != null){
@@ -318,13 +318,13 @@ function(evt) {
 	}
 };
 
-LmFilterPrefView.prototype._openEdit = function (rule){
+ZmFilterPrefView.prototype._openEdit = function (rule){
 	this._insertDetails(rule);
 	this._ruleBeingEdited = rule;
 	this.filterDetailsView.edit(rule);
 };
 
-LmFilterPrefView.prototype._filterRemoveListener = function(evt) {
+ZmFilterPrefView.prototype._filterRemoveListener = function(evt) {
 	var selectedRules = this._listView.getSelection();
     if (selectedRules.length > 0) {
         this._selectedRules = selectedRules;
@@ -338,7 +338,7 @@ LmFilterPrefView.prototype._filterRemoveListener = function(evt) {
                  DwtMessageDialog.INFO_STYLE);
         this._removeConfirmMessageDialog.registerCallback(
                  DwtDialog.OK_BUTTON,
-                 LmFilterPrefView.prototype._doRemoveCallback, this);
+                 ZmFilterPrefView.prototype._doRemoveCallback, this);
         var loc = this._getDialogXY();
         this._removeConfirmMessageDialog.popup(loc);
     } else {
@@ -350,15 +350,15 @@ LmFilterPrefView.prototype._filterRemoveListener = function(evt) {
 	}
 };
 
-LmFilterPrefView.prototype._filterMoveUpListener = function (evt){
+ZmFilterPrefView.prototype._filterMoveUpListener = function (evt){
 	var rule = this._getCheckedRule();
 	if (rule) {
 		this._hideDetailsForMove();
-		LmFilterRules.moveUp(rule);
+		ZmFilterRules.moveUp(rule);
 	}
 };
 
-LmFilterPrefView.prototype._filterMoveDownListener = function (evt){
+ZmFilterPrefView.prototype._filterMoveDownListener = function (evt){
 	var rule = this._getCheckedRule();
 	if (rule){
 		var ruleBeingEdited = this._ruleBeingEdited;
@@ -366,11 +366,11 @@ LmFilterPrefView.prototype._filterMoveDownListener = function (evt){
 		if (ruleBeingEdited) {
 			this._ruleBeingEdited = ruleBeingEdited;
 		}
-		LmFilterRules.moveDown(rule);
+		ZmFilterRules.moveDown(rule);
 	}
 };
 
-LmFilterPrefView.prototype._doRemoveCallback = function() {
+ZmFilterPrefView.prototype._doRemoveCallback = function() {
 	this._removeConfirmMessageDialog.popdown();
 	var items = this._selectedRules;
 	// see if any of the rules are being edited
@@ -387,41 +387,41 @@ LmFilterPrefView.prototype._doRemoveCallback = function() {
 
 	if (items){
 		// also remove it from the model
-		LmFilterRules.removeRules(items);
+		ZmFilterRules.removeRules(items);
 	}
 };
 
-LmFilterPrefView.prototype._doubleClickHandler = function (ev, item) {
+ZmFilterPrefView.prototype._doubleClickHandler = function (ev, item) {
 	this._openEdit(item);
 };
 
-LmFilterPrefView.prototype._handleSelectionChange = function (ev, item){
+ZmFilterPrefView.prototype._handleSelectionChange = function (ev, item){
 	var selArray = this._listView.getSelection();
 	var numSelected = selArray.length;
 	this._updateToolbarButtons(numSelected);
 };
 
-LmFilterPrefView.prototype._updateToolbarButtons = function (numSelected) {
+ZmFilterPrefView.prototype._updateToolbarButtons = function (numSelected) {
 	var dArr = null;
 	var eArr = null;
 	if (numSelected == 0 ){
-		dArr = [LmOperation.EDIT_FILTER_RULE,
-				LmOperation.REMOVE_FILTER_RULE,
-				LmOperation.MOVE_UP_FILTER_RULE,
-				LmOperation.MOVE_DOWN_FILTER_RULE];
-		eArr = [LmOperation.ADD_FILTER_RULE];
+		dArr = [ZmOperation.EDIT_FILTER_RULE,
+				ZmOperation.REMOVE_FILTER_RULE,
+				ZmOperation.MOVE_UP_FILTER_RULE,
+				ZmOperation.MOVE_DOWN_FILTER_RULE];
+		eArr = [ZmOperation.ADD_FILTER_RULE];
 	} else if (numSelected == 1) {
-		eArr = [LmOperation.ADD_FILTER_RULE,
-				LmOperation.EDIT_FILTER_RULE,
-				LmOperation.REMOVE_FILTER_RULE,
-				LmOperation.MOVE_UP_FILTER_RULE,
-				LmOperation.MOVE_DOWN_FILTER_RULE];
+		eArr = [ZmOperation.ADD_FILTER_RULE,
+				ZmOperation.EDIT_FILTER_RULE,
+				ZmOperation.REMOVE_FILTER_RULE,
+				ZmOperation.MOVE_UP_FILTER_RULE,
+				ZmOperation.MOVE_DOWN_FILTER_RULE];
 	} else if (numSelected > 1){
-		dArr = [LmOperation.ADD_FILTER_RULE,
-				LmOperation.EDIT_FILTER_RULE,
-				LmOperation.MOVE_UP_FILTER_RULE,
-				LmOperation.MOVE_DOWN_FILTER_RULE];
-		eArr = [LmOperation.REMOVE_FILTER_RULE];
+		dArr = [ZmOperation.ADD_FILTER_RULE,
+				ZmOperation.EDIT_FILTER_RULE,
+				ZmOperation.MOVE_UP_FILTER_RULE,
+				ZmOperation.MOVE_DOWN_FILTER_RULE];
+		eArr = [ZmOperation.REMOVE_FILTER_RULE];
 	}
 	if (dArr){
 		this._toolbar.enable(dArr, false);
@@ -435,10 +435,10 @@ LmFilterPrefView.prototype._updateToolbarButtons = function (numSelected) {
 // ------------------------------------------------------------------
 
 // Consistent spot to locate various dialogs
-LmFilterPrefView.prototype._getDialogXY = function() {
+ZmFilterPrefView.prototype._getDialogXY = function() {
 	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
-	return new DwtPoint(loc.x + LmComposeView.DIALOG_X, loc.y + 
-						LmComposeView.DIALOG_Y);
+	return new DwtPoint(loc.x + ZmComposeView.DIALOG_X, loc.y + 
+						ZmComposeView.DIALOG_Y);
 }	
 
 
@@ -515,7 +515,7 @@ LmFilterListView._rowHtmlTemplate =
 
 LmFilterListView.prototype._createItemHtml = function(item) {
 	var checked = item.isActive()? "checked": "";
-	var rowHtml = LsStringUtil.resolve(LmFilterListView._rowHtmlTemplate,
+	var rowHtml = AjxStringUtil.resolve(LmFilterListView._rowHtmlTemplate,
 									   [this._headerList[0]._width,
 										this._headerList[1]._width,
 										item.getName(), checked]);
@@ -527,7 +527,7 @@ LmFilterListView.prototype._createItemHtml = function(item) {
 	this.associateItemWithElement(item, itemEl, DwtListView.TYPE_LIST_ITEM);
 	var input = itemEl.getElementsByTagName('input')[0];
 	input._itemId = itemEl._itemIndex;
-	if (!LsEnv.isIE){
+	if (!AjxEnv.isIE){
 		itemEl.onchange = LmFilterListView._activeStateChange;
 	} else {
 		input.onclick = LmFilterListView._activeStateChange;
@@ -538,9 +538,9 @@ LmFilterListView.prototype._createItemHtml = function(item) {
 LmFilterListView._activeStateChange = function (event, element) {
 	var ev = DwtUiEvent.getEvent(event);
 	var target = DwtUiEvent.getTarget(ev);
-	var item = LsCore.objectWithId(target._itemId);
+	var item = AjxCore.objectWithId(target._itemId);
 	item.setActive(target.checked);
-	LmFilterRules.markDirty();
+	ZmFilterRules.markDirty();
 };
 
 LmFilterListView.prototype._setNoResultsHtml = 
@@ -552,7 +552,7 @@ function() {
 
 	htmlArr[idx++] = "<table width='100%' cellspacing='0' cellpadding='1' style='table-layout:fixed'>";
 	htmlArr[idx++] = "<tr><td class='NoResults'><br>";
-	htmlArr[idx++] = LsStringUtil.htmlEncodeSpace("No Filters defined");
+	htmlArr[idx++] = AjxStringUtil.htmlEncodeSpace("No Filters defined");
 	htmlArr[idx++] = "</td></tr></table>";
 
 	div.innerHTML = htmlArr.join("");
@@ -578,7 +578,7 @@ LmFilterListView.prototype._itemClicked = function(clickedEl, ev) {
 		return;
 	} else {		
 		DwtListView.prototype._itemClicked.call(this, clickedEl, ev);
-		this._selEv.item = LsCore.objectWithId(clickedEl._itemIndex)
+		this._selEv.item = AjxCore.objectWithId(clickedEl._itemIndex)
 		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv)
 	}
 };

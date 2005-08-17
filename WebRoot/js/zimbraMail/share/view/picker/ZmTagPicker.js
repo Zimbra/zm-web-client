@@ -1,30 +1,30 @@
-function LmTagPicker(parent) {
+function ZmTagPicker(parent) {
 
-	LmPicker.call(this, parent, LmPicker.TAG);
+	ZmPicker.call(this, parent, ZmPicker.TAG);
 
     this._checkedItems = new Object();
 }
 
-LmTagPicker.prototype = new LmPicker;
-LmTagPicker.prototype.constructor = LmTagPicker;
+ZmTagPicker.prototype = new ZmPicker;
+ZmTagPicker.prototype.constructor = ZmTagPicker;
 
-LmPicker.CTOR[LmPicker.TAG] = LmTagPicker;
+ZmPicker.CTOR[ZmPicker.TAG] = ZmTagPicker;
 
-LmTagPicker.prototype.toString = 
+ZmTagPicker.prototype.toString = 
 function() {
-	return "LmTagPicker";
+	return "ZmTagPicker";
 }
 
-LmTagPicker.prototype._setupPicker =
+ZmTagPicker.prototype._setupPicker =
 function(parent) {
 	var tree = this._tree = new DwtTree(parent, DwtTree.CHECKEDITEM_STYLE);
-	var appCtxt = this.shell.getData(LmAppCtxt.LABEL);
-	tree.addSelectionListener(new LsListener(this, LmTagPicker.prototype._treeListener));
-	this._tagTreeView = new LmTagTreeView(appCtxt, this._tree, this._tree);
+	var appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
+	tree.addSelectionListener(new AjxListener(this, ZmTagPicker.prototype._treeListener));
+	this._tagTreeView = new ZmTagTreeView(appCtxt, this._tree, this._tree);
 	this._tagTreeView.set(appCtxt.getTagList());
 }
 
-LmTagPicker.prototype._updateQuery = 
+ZmTagPicker.prototype._updateQuery = 
 function() {
 	var tags = new Array();
 	for (var tag in this._checkedItems)
@@ -42,7 +42,7 @@ function() {
 	this.execute();
 }
 
-LmTagPicker.prototype._treeListener =
+ZmTagPicker.prototype._treeListener =
 function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED) {
  		var ti = ev.item;

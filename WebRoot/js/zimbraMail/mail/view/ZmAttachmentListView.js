@@ -1,21 +1,21 @@
-function LmAttachmentListView(parent, className, posStyle) {
+function ZmAttachmentListView(parent, className, posStyle) {
 
 	var headerList = this._getHeaderList(parent);
-	LmMailListView.call(this, parent, className, posStyle, LmController.ATT_LIST_VIEW, LmItem.ATT, headerList);
+	ZmMailListView.call(this, parent, className, posStyle, ZmController.ATT_LIST_VIEW, ZmItem.ATT, headerList);
 }
 
-LmAttachmentListView.prototype = new LmMailListView;
-LmAttachmentListView.prototype.constructor = LmAttachmentListView;
+ZmAttachmentListView.prototype = new ZmMailListView;
+ZmAttachmentListView.prototype.constructor = ZmAttachmentListView;
 
-LmAttachmentListView.prototype.toString = 
+ZmAttachmentListView.prototype.toString = 
 function() {
-	return "LmAttachmentListView";
+	return "ZmAttachmentListView";
 }
 
-LmAttachmentListView._MIME_PART = 1;
-LmAttachmentListView._MSG = 2;
+ZmAttachmentListView._MIME_PART = 1;
+ZmAttachmentListView._MSG = 2;
 
-LmAttachmentListView.prototype._createItemHtml =
+ZmAttachmentListView.prototype._createItemHtml =
 function(attachment, now) {
 	var htmlArr = new Array();
 	var idx = 0;
@@ -37,10 +37,10 @@ function(attachment, now) {
 	var fieldId;
 	
 	// Icon
-	var mimeInfo = LmMimeTable.getInfo(attachment.getContentType());
-	fieldId = this._getFieldId(attachment, LmItem.F_ICON);
+	var mimeInfo = ZmMimeTable.getInfo(attachment.getContentType());
+	fieldId = this._getFieldId(attachment, ZmItem.F_ICON);
 	htmlArr[idx++] = "<td class='Icon'>";
-	htmlArr[idx++] = LsImg.getImageHtml(mimeInfo ? mimeInfo.image : LmImg.I_DOCUMENT, null, ["id='", fieldId, "'"].join(""));
+	htmlArr[idx++] = AjxImg.getImageHtml(mimeInfo ? mimeInfo.image : ZmImg.I_DOCUMENT, null, ["id='", fieldId, "'"].join(""));
 	htmlArr[idx++] = "</td>";
 		
 	// Name
@@ -48,32 +48,32 @@ function(attachment, now) {
 	var name = attachment.getName() || attachment.getFilename();
 	if (name) {
 		var url = this._csfeMsgFetchSvc + "id=" + attachment.messageId + "&amp;part=" + attachment.getPartName();
-		name = "<a class='AttLink' href='" + url + "'>" + LsStringUtil.htmlEncode(name) + "</a>";
+		name = "<a class='AttLink' href='" + url + "'>" + AjxStringUtil.htmlEncode(name) + "</a>";
 	}
 	htmlArr[idx++] = name ? name : " ";
 	htmlArr[idx++] = "</td>";
 	
 	if (msg) {
 		// Sender
-		var fromAddr = msg._addrs[LmEmailAddress.FROM].get(0);
+		var fromAddr = msg._addrs[ZmEmailAddress.FROM].get(0);
 		if (fromAddr) {
-			fieldId = this._getFieldId(attachment, LmItem.F_FROM);
+			fieldId = this._getFieldId(attachment, ZmItem.F_FROM);
 	    	htmlArr[idx++] = "<td id='" + fieldId;
     		htmlArr[idx++] = "'>";
     		var name = fromAddr.getName() || " ";
- 			htmlArr[idx++] = LsStringUtil.htmlEncode(name);
+ 			htmlArr[idx++] = AjxStringUtil.htmlEncode(name);
     		htmlArr[idx++] = "</td>";
 		}
 		// Subject
-		fieldId = this._getFieldId(attachment, LmItem.F_SUBJECT);
+		fieldId = this._getFieldId(attachment, ZmItem.F_SUBJECT);
 		htmlArr[idx++] = "<td id='" + fieldId;
 		htmlArr[idx++] = "'>";
 		var subject = attachment.getSubject() || msg.getSubject() || " ";
-		htmlArr[idx++] = LsStringUtil.htmlEncode(subject);
+		htmlArr[idx++] = AjxStringUtil.htmlEncode(subject);
 		htmlArr[idx++] = "</td>";
 	}
 
-DBG.println(LsDebug.DBG2, "Content type: " + attachment.getContentType() + " - " + name);
+DBG.println(AjxDebug.DBG2, "Content type: " + attachment.getContentType() + " - " + name);
 			
 	// Size
 	htmlArr[idx++] = "<td>"
@@ -87,8 +87,8 @@ DBG.println(LsDebug.DBG2, "Content type: " + attachment.getContentType() + " - "
 	htmlArr[idx++] = size;
 			
 	// Date
-	var dateStr = LsDateUtil.computeDateStr(now, attachment.date);
-	fieldId = this._getFieldId(attachment, LmItem.F_DATE);
+	var dateStr = AjxDateUtil.computeDateStr(now, attachment.date);
+	fieldId = this._getFieldId(attachment, ZmItem.F_DATE);
 	htmlArr[idx++] = "</td><td id='" + fieldId;
 	htmlArr[idx++] = "'>";
 	htmlArr[idx++] = dateStr;
@@ -98,7 +98,7 @@ DBG.println(LsDebug.DBG2, "Content type: " + attachment.getContentType() + " - "
 	return div;
 }
 
-LmAttachmentListView.prototype._mouseOverAction =
+ZmAttachmentListView.prototype._mouseOverAction =
 function(ev, div) {
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
 	var id = element.id;
@@ -109,11 +109,11 @@ function(ev, div) {
 	
 	var msg = this.getItemFromElement(div).getMessage();
 	if (m && m.field && msg) {
-		if (m.field == LmListView.FIELD_PREFIX[LmItem.F_FROM]) {
-			var fromAddr = msg._addrs[LmEmailAddress.FROM].get(0);
+		if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) {
+			var fromAddr = msg._addrs[ZmEmailAddress.FROM].get(0);
 			this._setParticipantToolTip(fromAddr);
-		} else if (m.field == LmListView.FIELD_PREFIX[LmItem.F_SUBJECT]) {
-			this.setToolTipContent(LsStringUtil.htmlEncode(msg.fragment));
+		} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) {
+			this.setToolTipContent(AjxStringUtil.htmlEncode(msg.fragment));
 		} else {
 			this.setToolTipContent(null);
 		}
@@ -124,12 +124,12 @@ function(ev, div) {
 	return true;
 }
 
-LmAttachmentListView.prototype._getHeaderList =
+ZmAttachmentListView.prototype._getHeaderList =
 function(parent) {
 
 	var headerList = new Array();
 
-	headerList.push(new DwtListHeaderItem("", null, LmImg.I_ATTACHMENT, 16));
+	headerList.push(new DwtListHeaderItem("", null, ZmImg.I_ATTACHMENT, 16));
 	headerList.push(new DwtListHeaderItem("", LmMsg._name, null, 145));
 	headerList.push(new DwtListHeaderItem("", LmMsg.from, null, 145));
 	headerList.push(new DwtListHeaderItem("", LmMsg.subject, null, null));

@@ -1,22 +1,22 @@
-function LmTagTreeView(appCtxt, parent, tree, dragSrc, dropTgt) {
+function ZmTagTreeView(appCtxt, parent, tree, dragSrc, dropTgt) {
 
-	LmTreeView.call(this, LmOrganizer.TAG, appCtxt, parent, tree, dragSrc, dropTgt);
+	ZmTreeView.call(this, ZmOrganizer.TAG, appCtxt, parent, tree, dragSrc, dropTgt);
 }
 
-LmTagTreeView.prototype = new LmTreeView;
-LmTagTreeView.prototype.constructor = LmTagTreeView;
+ZmTagTreeView.prototype = new ZmTreeView;
+ZmTagTreeView.prototype.constructor = ZmTagTreeView;
 
 // Public methods
 
-LmTagTreeView.prototype.toString = 
+ZmTagTreeView.prototype.toString = 
 function() {
-	return "LmTagTreeView";
+	return "ZmTagTreeView";
 }
 
 /**
 * Renders the list of tags. Tags are technically a tree, but they have only one level.
 */
-LmTagTreeView.prototype.set =
+ZmTagTreeView.prototype.set =
 function(tagTree, showUnread) {
 	if (this._dataTree)
 		this._dataTree.removeChangeListener(this._dataChangeListener);
@@ -25,8 +25,8 @@ function(tagTree, showUnread) {
 	this._showUnread = showUnread;
 
 	var rootTag = tagTree.root;
-	this._treeHash[LmOrganizer.ID_ROOT] = this._parent;
-	this._treeHash[LmFolder.ID_TAGS] = this._parent;
+	this._treeHash[ZmOrganizer.ID_ROOT] = this._parent;
+	this._treeHash[ZmFolder.ID_TAGS] = this._parent;
 	
 	if (this._parent == this._tree)
 		this._tree.clear();
@@ -34,19 +34,19 @@ function(tagTree, showUnread) {
 }
 
 // Handles tag changes
-LmTagTreeView.prototype._changeListener =
+ZmTagTreeView.prototype._changeListener =
 function(ev) {
-	LmTreeView.prototype._changeListener.call(this, ev);
+	ZmTreeView.prototype._changeListener.call(this, ev);
 	var fields = ev.getDetail("fields");
-	if (ev.event == LmEvent.E_MODIFY && ((fields && fields[LmOrganizer.F_COLOR]))) {
+	if (ev.event == ZmEvent.E_MODIFY && ((fields && fields[ZmOrganizer.F_COLOR]))) {
 		var tag = ev.source;
 		var node = this._treeHash[tag.id];
 		if (node)
-			node.setImage(LmTag.COLOR_ICON[tag.color]);
+			node.setImage(ZmTag.COLOR_ICON[tag.color]);
 	}
 }
 
-LmTagTreeView.prototype._getIcon = 
+ZmTagTreeView.prototype._getIcon = 
 function(tag) {
-	return LmTag.COLOR_ICON[tag.color];
+	return ZmTag.COLOR_ICON[tag.color];
 }

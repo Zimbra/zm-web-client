@@ -14,19 +14,19 @@
 * @param dataType		string, int, or boolean
 * @param defaultValue	default value
 */
-function LmSetting(id, name, type, dataType, defaultValue, settings) {
+function ZmSetting(id, name, type, dataType, defaultValue, settings) {
 
 	if (arguments.length == 0) return;
-	LmModel.call(this, true);
+	ZmModel.call(this, true);
 	
 	this.id = id;
 	this.name = name;
 	this.type = type;
-	this.dataType = dataType ? dataType : LmSetting.D_STRING;
+	this.dataType = dataType ? dataType : ZmSetting.D_STRING;
 	this.defaultValue = defaultValue;
 	this.settings = settings;
 	
-	if (this.dataType == LmSetting.D_HASH_TABLE) {
+	if (this.dataType == ZmSetting.D_HASH_TABLE) {
 		this.value = new Object();
 		this.defaultValue = new Object();
 	} else {
@@ -34,281 +34,281 @@ function LmSetting(id, name, type, dataType, defaultValue, settings) {
 	}
 }
 
-LmSetting.prototype = new LmModel;
-LmSetting.prototype.constructor = LmSetting;
+ZmSetting.prototype = new ZmModel;
+ZmSetting.prototype.constructor = ZmSetting;
 
-LmSetting.CAL_DAY			= "day";
-LmSetting.CAL_MONTH			= "month";
-LmSetting.CAL_WEEK			= "week";
-LmSetting.CAL_WORK_WEEK		= "workWeek";
-LmSetting.COMPOSE_TEXT 		= "text";					// liquidPrefComposeFormat
-LmSetting.COMPOSE_HTML 		= "html";
-LmSetting.CV_CARDS			= "cards"; 					// liquidPrefContactsInitialView
-LmSetting.CV_LIST			= "list";
-LmSetting.GROUP_BY_CONV		= "conversation";			// liquidPrefGroupMailBy
-LmSetting.GROUP_BY_MESSAGE	= "message";
-LmSetting.INCLUDE_NONE		= "includeNone";			// liquidPrefForwardIncludeOriginalText
-LmSetting.INCLUDE			= "includeBody";
-LmSetting.INCLUDE_PREFIX	= "includeBodyWithPrefix";
-LmSetting.INCLUDE_ATTACH	= "includeAsAttachment";
-LmSetting.INCLUDE_SMART		= "includeSmart";
-LmSetting.DEDUPE_NONE		= "dedupeNone";				// liquidPrefDedupeMessagesSentToSelf
-LmSetting.DEDUPE_SECOND		= "secondCopyifOnToOrCC";
-LmSetting.DEDUPE_INBOX		= "moveSentMessageToInbox";
-LmSetting.DEDUPE_ALL		= "dedupeAll";
-LmSetting.SIG_INTERNET		= "internet";				// liquidPrefMailSignatureStyle
-LmSetting.SIG_OUTLOOK		= "outlook";
+ZmSetting.CAL_DAY			= "day";
+ZmSetting.CAL_MONTH			= "month";
+ZmSetting.CAL_WEEK			= "week";
+ZmSetting.CAL_WORK_WEEK		= "workWeek";
+ZmSetting.COMPOSE_TEXT 		= "text";					// liquidPrefComposeFormat
+ZmSetting.COMPOSE_HTML 		= "html";
+ZmSetting.CV_CARDS			= "cards"; 					// liquidPrefContactsInitialView
+ZmSetting.CV_LIST			= "list";
+ZmSetting.GROUP_BY_CONV		= "conversation";			// liquidPrefGroupMailBy
+ZmSetting.GROUP_BY_MESSAGE	= "message";
+ZmSetting.INCLUDE_NONE		= "includeNone";			// liquidPrefForwardIncludeOriginalText
+ZmSetting.INCLUDE			= "includeBody";
+ZmSetting.INCLUDE_PREFIX	= "includeBodyWithPrefix";
+ZmSetting.INCLUDE_ATTACH	= "includeAsAttachment";
+ZmSetting.INCLUDE_SMART		= "includeSmart";
+ZmSetting.DEDUPE_NONE		= "dedupeNone";				// liquidPrefDedupeMessagesSentToSelf
+ZmSetting.DEDUPE_SECOND		= "secondCopyifOnToOrCC";
+ZmSetting.DEDUPE_INBOX		= "moveSentMessageToInbox";
+ZmSetting.DEDUPE_ALL		= "dedupeAll";
+ZmSetting.SIG_INTERNET		= "internet";				// liquidPrefMailSignatureStyle
+ZmSetting.SIG_OUTLOOK		= "outlook";
 
 // Constants for various setting types. A setting can represent configuration data, a COS attribute, or a user preference.
 // Any setting added here must also be added to INIT below.
 var i = 1;
 
 // CONFIG SETTINGS
-LmSetting.AC_TIMER_INTERVAL				= i++;
-LmSetting.BRANCH						= i++;
-LmSetting.CONFIG_PATH					= i++;
-LmSetting.CSFE_MSG_FETCHER_URI			= i++;
-LmSetting.CSFE_SERVER_URI				= i++;
-LmSetting.CSFE_UPLOAD_URI				= i++;
-LmSetting.CSFE_EXPORT_URI 				= i++;
-LmSetting.FORCE_CAL_OFF					= i++;
-LmSetting.HELP_URI						= i++;
-LmSetting.LOGO_URI						= i++;
-LmSetting.USE_XML						= i++;
+ZmSetting.AC_TIMER_INTERVAL				= i++;
+ZmSetting.BRANCH						= i++;
+ZmSetting.CONFIG_PATH					= i++;
+ZmSetting.CSFE_MSG_FETCHER_URI			= i++;
+ZmSetting.CSFE_SERVER_URI				= i++;
+ZmSetting.CSFE_UPLOAD_URI				= i++;
+ZmSetting.CSFE_EXPORT_URI 				= i++;
+ZmSetting.FORCE_CAL_OFF					= i++;
+ZmSetting.HELP_URI						= i++;
+ZmSetting.LOGO_URI						= i++;
+ZmSetting.USE_XML						= i++;
 
 // IDs FOR HTML COMPONENTS IN THE SKIN
-LmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID	= i++;
-LmSetting.SKIN_APP_CHOOSER_ID			= i++;
-LmSetting.SKIN_APP_MAIN_ID				= i++;
-LmSetting.SKIN_APP_TOP_TOOLBAR_ID		= i++;
-LmSetting.SKIN_CURRENT_APP_ID			= i++;
-LmSetting.SKIN_LOGO_ID					= i++;
-LmSetting.SKIN_SASH_ID					= i++;
-LmSetting.SKIN_SEARCH_BUILDER_ID		= i++;
-LmSetting.SKIN_SEARCH_BUILDER_TOOLBAR_ID= i++;
-LmSetting.SKIN_SEARCH_BUILDER_TR_ID		= i++;
-LmSetting.SKIN_SEARCH_ID				= i++;
-LmSetting.SKIN_SHELL_ID					= i++;
-LmSetting.SKIN_STATUS_ID				= i++;
-LmSetting.SKIN_TREE_ID					= i++;
-LmSetting.SKIN_TREE_FOOTER_ID			= i++;
-LmSetting.SKIN_USER_INFO_ID				= i++;
+ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID	= i++;
+ZmSetting.SKIN_APP_CHOOSER_ID			= i++;
+ZmSetting.SKIN_APP_MAIN_ID				= i++;
+ZmSetting.SKIN_APP_TOP_TOOLBAR_ID		= i++;
+ZmSetting.SKIN_CURRENT_APP_ID			= i++;
+ZmSetting.SKIN_LOGO_ID					= i++;
+ZmSetting.SKIN_SASH_ID					= i++;
+ZmSetting.SKIN_SEARCH_BUILDER_ID		= i++;
+ZmSetting.SKIN_SEARCH_BUILDER_TOOLBAR_ID= i++;
+ZmSetting.SKIN_SEARCH_BUILDER_TR_ID		= i++;
+ZmSetting.SKIN_SEARCH_ID				= i++;
+ZmSetting.SKIN_SHELL_ID					= i++;
+ZmSetting.SKIN_STATUS_ID				= i++;
+ZmSetting.SKIN_TREE_ID					= i++;
+ZmSetting.SKIN_TREE_FOOTER_ID			= i++;
+ZmSetting.SKIN_USER_INFO_ID				= i++;
 
 // COS SETTINGS
-LmSetting.BROWSE_ENABLED				= i++;
-LmSetting.CALENDAR_ENABLED				= i++;
-LmSetting.CHANGE_PASSWORD_ENABLED		= i++;
-LmSetting.CONTACTS_ENABLED				= i++;
-LmSetting.CONVERSATIONS_ENABLED			= i++;
-LmSetting.DISPLAY_NAME					= i++;
-LmSetting.FILTERS_ENABLED				= i++;
-LmSetting.GAL_ENABLED					= i++;
-LmSetting.HTML_COMPOSE_ENABLED 			= i++;
-LmSetting.IDLE_SESSION_TIMEOUT 			= i++;
-LmSetting.INITIAL_SEARCH_ENABLED		= i++;
-LmSetting.MAX_CONTACTS					= i++;
-LmSetting.MIN_POLLING_INTERVAL			= i++;
-LmSetting.QUOTA							= i++;
-LmSetting.SAVED_SEARCHES_ENABLED		= i++;
-LmSetting.TAGGING_ENABLED				= i++;
+ZmSetting.BROWSE_ENABLED				= i++;
+ZmSetting.CALENDAR_ENABLED				= i++;
+ZmSetting.CHANGE_PASSWORD_ENABLED		= i++;
+ZmSetting.CONTACTS_ENABLED				= i++;
+ZmSetting.CONVERSATIONS_ENABLED			= i++;
+ZmSetting.DISPLAY_NAME					= i++;
+ZmSetting.FILTERS_ENABLED				= i++;
+ZmSetting.GAL_ENABLED					= i++;
+ZmSetting.HTML_COMPOSE_ENABLED 			= i++;
+ZmSetting.IDLE_SESSION_TIMEOUT 			= i++;
+ZmSetting.INITIAL_SEARCH_ENABLED		= i++;
+ZmSetting.MAX_CONTACTS					= i++;
+ZmSetting.MIN_POLLING_INTERVAL			= i++;
+ZmSetting.QUOTA							= i++;
+ZmSetting.SAVED_SEARCHES_ENABLED		= i++;
+ZmSetting.TAGGING_ENABLED				= i++;
 // user metadata (included with COS since the user can't change them)
-LmSetting.QUOTA_USED					= i++;
-LmSetting.TOKEN_LIFETIME				= i++;
-LmSetting.USERNAME						= i++;
+ZmSetting.QUOTA_USED					= i++;
+ZmSetting.TOKEN_LIFETIME				= i++;
+ZmSetting.USERNAME						= i++;
 
 // CLIENT SIDE FEATURE SUPPORT
-LmSetting.ATT_VIEW_ENABLED				= i++;
-LmSetting.EVAL_ENABLED 					= i++;
-LmSetting.HELP_ENABLED					= i++;
-LmSetting.IM_ENABLED					= i++;
-LmSetting.MIXED_VIEW_ENABLED			= i++;
-LmSetting.NOTES_ENABLED					= i++;
-LmSetting.PREFS_ENABLED					= i++;
-LmSetting.PRINT_ENABLED					= i++;
-LmSetting.REPLY_MENU_ENABLED			= i++;
-LmSetting.SAVE_DRAFT_ENABLED			= i++;
-LmSetting.SEARCH_ENABLED				= i++;
-LmSetting.SKI_HACK_ENABLED				= i++;
-LmSetting.SPAM_ENABLED					= i++;
-LmSetting.USER_FOLDERS_ENABLED			= i++;
+ZmSetting.ATT_VIEW_ENABLED				= i++;
+ZmSetting.EVAL_ENABLED 					= i++;
+ZmSetting.HELP_ENABLED					= i++;
+ZmSetting.IM_ENABLED					= i++;
+ZmSetting.MIXED_VIEW_ENABLED			= i++;
+ZmSetting.NOTES_ENABLED					= i++;
+ZmSetting.PREFS_ENABLED					= i++;
+ZmSetting.PRINT_ENABLED					= i++;
+ZmSetting.REPLY_MENU_ENABLED			= i++;
+ZmSetting.SAVE_DRAFT_ENABLED			= i++;
+ZmSetting.SEARCH_ENABLED				= i++;
+ZmSetting.SKI_HACK_ENABLED				= i++;
+ZmSetting.SPAM_ENABLED					= i++;
+ZmSetting.USER_FOLDERS_ENABLED			= i++;
 
 // USER PREFERENCES (mutable)
 
 // address book preferences
-LmSetting.AUTO_ADD_ADDRESS				= i++;
-LmSetting.CONTACTS_PER_PAGE 			= i++;
-LmSetting.CONTACTS_VIEW					= i++;
-LmSetting.EXPORT 						= i++;
-LmSetting.IMPORT 						= i++;
+ZmSetting.AUTO_ADD_ADDRESS				= i++;
+ZmSetting.CONTACTS_PER_PAGE 			= i++;
+ZmSetting.CONTACTS_VIEW					= i++;
+ZmSetting.EXPORT 						= i++;
+ZmSetting.IMPORT 						= i++;
 // calendar preferences
-LmSetting.CAL_SHOW_TIMEZONE				= i++;
-LmSetting.CALENDAR_INITIAL_VIEW			= i++;
-LmSetting.DEFAULT_CALENDAR_TIMEZONE		= i++;
+ZmSetting.CAL_SHOW_TIMEZONE				= i++;
+ZmSetting.CALENDAR_INITIAL_VIEW			= i++;
+ZmSetting.DEFAULT_CALENDAR_TIMEZONE		= i++;
 // general preferences
-LmSetting.PASSWORD						= i++;
-LmSetting.SEARCH_INCLUDES_SPAM			= i++;
-LmSetting.SEARCH_INCLUDES_TRASH			= i++;
-LmSetting.SHOW_SEARCH_STRING			= i++;
-LmSetting.SORTING_PREF 					= i++;
+ZmSetting.PASSWORD						= i++;
+ZmSetting.SEARCH_INCLUDES_SPAM			= i++;
+ZmSetting.SEARCH_INCLUDES_TRASH			= i++;
+ZmSetting.SHOW_SEARCH_STRING			= i++;
+ZmSetting.SORTING_PREF 					= i++;
 // mail preferences
-LmSetting.COMPOSE_AS_FORMAT				= i++;
-LmSetting.COMPOSE_SAME_FORMAT 			= i++;
-LmSetting.DEDUPE_MSG_TO_SELF			= i++;
-LmSetting.FORWARD_INCLUDE_ORIG			= i++;
-LmSetting.GROUP_MAIL_BY					= i++;
-LmSetting.INITIAL_SEARCH				= i++;
-LmSetting.NEW_WINDOW_COMPOSE			= i++;
-LmSetting.NOTIF_ADDRESS					= i++;
-LmSetting.NOTIF_ENABLED					= i++;
-LmSetting.PAGE_SIZE						= i++;
-LmSetting.POLLING_INTERVAL				= i++;
-LmSetting.REPLY_INCLUDE_ORIG			= i++;
-LmSetting.REPLY_PREFIX					= i++;
-LmSetting.REPLY_TO_ADDRESS				= i++;
-LmSetting.SAVE_TO_SENT					= i++;
-LmSetting.SENT_FOLDER_NAME				= i++;
-LmSetting.SHOW_FRAGMENTS				= i++;
-LmSetting.SIGNATURE						= i++;
-LmSetting.SIGNATURE_ENABLED				= i++;
-LmSetting.SIGNATURE_STYLE				= i++;
-LmSetting.USE_KEYBOARD_SHORTCUTS		= i++;
-LmSetting.VACATION_MSG					= i++;
-LmSetting.VACATION_MSG_ENABLED			= i++;
-LmSetting.VIEW_AS_HTML					= i++;
+ZmSetting.COMPOSE_AS_FORMAT				= i++;
+ZmSetting.COMPOSE_SAME_FORMAT 			= i++;
+ZmSetting.DEDUPE_MSG_TO_SELF			= i++;
+ZmSetting.FORWARD_INCLUDE_ORIG			= i++;
+ZmSetting.GROUP_MAIL_BY					= i++;
+ZmSetting.INITIAL_SEARCH				= i++;
+ZmSetting.NEW_WINDOW_COMPOSE			= i++;
+ZmSetting.NOTIF_ADDRESS					= i++;
+ZmSetting.NOTIF_ENABLED					= i++;
+ZmSetting.PAGE_SIZE						= i++;
+ZmSetting.POLLING_INTERVAL				= i++;
+ZmSetting.REPLY_INCLUDE_ORIG			= i++;
+ZmSetting.REPLY_PREFIX					= i++;
+ZmSetting.REPLY_TO_ADDRESS				= i++;
+ZmSetting.SAVE_TO_SENT					= i++;
+ZmSetting.SENT_FOLDER_NAME				= i++;
+ZmSetting.SHOW_FRAGMENTS				= i++;
+ZmSetting.SIGNATURE						= i++;
+ZmSetting.SIGNATURE_ENABLED				= i++;
+ZmSetting.SIGNATURE_STYLE				= i++;
+ZmSetting.USE_KEYBOARD_SHORTCUTS		= i++;
+ZmSetting.VACATION_MSG					= i++;
+ZmSetting.VACATION_MSG_ENABLED			= i++;
+ZmSetting.VIEW_AS_HTML					= i++;
 
 
-LmSetting.MAX_INDEX 	= i-1;
+ZmSetting.MAX_INDEX 	= i-1;
 
 // setting types
-LmSetting.T_CONFIG		= 1;
-LmSetting.T_PREF		= 2;
-LmSetting.T_COS			= 3;
+ZmSetting.T_CONFIG		= 1;
+ZmSetting.T_PREF		= 2;
+ZmSetting.T_COS			= 3;
 
 // setting data types
-LmSetting.D_STRING		= 1; // default type
-LmSetting.D_INT			= 2;
-LmSetting.D_BOOLEAN		= 3;
-LmSetting.D_LDAP_TIME 	= 4;
-LmSetting.D_HASH_TABLE 	= 5;
+ZmSetting.D_STRING		= 1; // default type
+ZmSetting.D_INT			= 2;
+ZmSetting.D_BOOLEAN		= 3;
+ZmSetting.D_LDAP_TIME 	= 4;
+ZmSetting.D_HASH_TABLE 	= 5;
 
 
 // initialization for settings: [name, type, data type, default value]
-LmSetting.INIT = new Object();
+ZmSetting.INIT = new Object();
 
 // CONFIG SETTINGS
-LmSetting.INIT[LmSetting.AC_TIMER_INTERVAL]				= [null, LmSetting.T_CONFIG, LmSetting.D_INT, 300];
-LmSetting.INIT[LmSetting.BRANCH]						= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "main"];
-LmSetting.INIT[LmSetting.CONFIG_PATH]					= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "/liquid/js/liquidMail/config"];
-LmSetting.INIT[LmSetting.CSFE_MSG_FETCHER_URI]			= [null, LmSetting.T_CONFIG, LmSetting.D_STRING];
-LmSetting.INIT[LmSetting.CSFE_SERVER_URI]				= [null, LmSetting.T_CONFIG, LmSetting.D_STRING];
-LmSetting.INIT[LmSetting.CSFE_UPLOAD_URI]				= [null, LmSetting.T_CONFIG, LmSetting.D_STRING];
-LmSetting.INIT[LmSetting.CSFE_EXPORT_URI]				= [null, LmSetting.T_CONFIG, LmSetting.D_STRING];
-LmSetting.INIT[LmSetting.FORCE_CAL_OFF]					= [null, LmSetting.T_CONFIG, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.HELP_URI]						= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "/liquid/help/Zimbra_User_Help.htm"];
-LmSetting.INIT[LmSetting.LOGO_URI]						= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "http://www.zimbra.com"];
-LmSetting.INIT[LmSetting.USE_XML]						= [null, LmSetting.T_CONFIG, LmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.AC_TIMER_INTERVAL]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_INT, 300];
+ZmSetting.INIT[ZmSetting.BRANCH]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "main"];
+ZmSetting.INIT[ZmSetting.CONFIG_PATH]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "/liquid/js/liquidMail/config"];
+ZmSetting.INIT[ZmSetting.CSFE_MSG_FETCHER_URI]			= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING];
+ZmSetting.INIT[ZmSetting.CSFE_SERVER_URI]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING];
+ZmSetting.INIT[ZmSetting.CSFE_UPLOAD_URI]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING];
+ZmSetting.INIT[ZmSetting.CSFE_EXPORT_URI]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING];
+ZmSetting.INIT[ZmSetting.FORCE_CAL_OFF]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.HELP_URI]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "/liquid/help/Zimbra_User_Help.htm"];
+ZmSetting.INIT[ZmSetting.LOGO_URI]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "http://www.zimbra.com"];
+ZmSetting.INIT[ZmSetting.USE_XML]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, false];
 
 // IDs FOR HTML COMPONENTS IN THE SKIN
-LmSetting.INIT[LmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID]	= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_container_app_bottom_toolbar"];
-LmSetting.INIT[LmSetting.SKIN_APP_CHOOSER_ID]			= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_container_app_chooser"];
-LmSetting.INIT[LmSetting.SKIN_APP_MAIN_ID]				= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_container_app_main"];
-LmSetting.INIT[LmSetting.SKIN_APP_TOP_TOOLBAR_ID]		= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_container_app_top_toolbar"];
-LmSetting.INIT[LmSetting.SKIN_CURRENT_APP_ID]			= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_container_current_app"];
-LmSetting.INIT[LmSetting.SKIN_LOGO_ID]					= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_container_logo"];
-LmSetting.INIT[LmSetting.SKIN_SASH_ID]					= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_container_tree_app_sash"];
-LmSetting.INIT[LmSetting.SKIN_SEARCH_BUILDER_ID]		= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_container_search_builder"];
-LmSetting.INIT[LmSetting.SKIN_SEARCH_BUILDER_TOOLBAR_ID]= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_container_search_builder_toolbar"];
-LmSetting.INIT[LmSetting.SKIN_SEARCH_BUILDER_TR_ID]		= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_tr_search_builder"];
-LmSetting.INIT[LmSetting.SKIN_SEARCH_ID]				= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_container_search"];
-LmSetting.INIT[LmSetting.SKIN_SHELL_ID]					= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_outer"];
-LmSetting.INIT[LmSetting.SKIN_STATUS_ID]				= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_container_status"];
-LmSetting.INIT[LmSetting.SKIN_TREE_ID]					= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_container_tree"];
-LmSetting.INIT[LmSetting.SKIN_TREE_FOOTER_ID]			= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_container_tree_footer"];
-LmSetting.INIT[LmSetting.SKIN_USER_INFO_ID]				= [null, LmSetting.T_CONFIG, LmSetting.D_STRING, "skin_container_quota"];
+ZmSetting.INIT[ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID]	= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_app_bottom_toolbar"];
+ZmSetting.INIT[ZmSetting.SKIN_APP_CHOOSER_ID]			= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_app_chooser"];
+ZmSetting.INIT[ZmSetting.SKIN_APP_MAIN_ID]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_app_main"];
+ZmSetting.INIT[ZmSetting.SKIN_APP_TOP_TOOLBAR_ID]		= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_app_top_toolbar"];
+ZmSetting.INIT[ZmSetting.SKIN_CURRENT_APP_ID]			= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_current_app"];
+ZmSetting.INIT[ZmSetting.SKIN_LOGO_ID]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_logo"];
+ZmSetting.INIT[ZmSetting.SKIN_SASH_ID]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_tree_app_sash"];
+ZmSetting.INIT[ZmSetting.SKIN_SEARCH_BUILDER_ID]		= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_search_builder"];
+ZmSetting.INIT[ZmSetting.SKIN_SEARCH_BUILDER_TOOLBAR_ID]= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_search_builder_toolbar"];
+ZmSetting.INIT[ZmSetting.SKIN_SEARCH_BUILDER_TR_ID]		= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_tr_search_builder"];
+ZmSetting.INIT[ZmSetting.SKIN_SEARCH_ID]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_search"];
+ZmSetting.INIT[ZmSetting.SKIN_SHELL_ID]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_outer"];
+ZmSetting.INIT[ZmSetting.SKIN_STATUS_ID]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_status"];
+ZmSetting.INIT[ZmSetting.SKIN_TREE_ID]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_tree"];
+ZmSetting.INIT[ZmSetting.SKIN_TREE_FOOTER_ID]			= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_tree_footer"];
+ZmSetting.INIT[ZmSetting.SKIN_USER_INFO_ID]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_quota"];
 
 // COS SETTINGS
-LmSetting.INIT[LmSetting.BROWSE_ENABLED]				= ["liquidFeatureAdvancedSearchEnabled", LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.CALENDAR_ENABLED]				= ["liquidFeatureCalendarEnabled", LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.CHANGE_PASSWORD_ENABLED]		= ["liquidFeatureChangePasswordEnabled", LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.CONTACTS_ENABLED]				= ["liquidFeatureContactsEnabled", LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.CONVERSATIONS_ENABLED]			= ["liquidFeatureConversationsEnabled", LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.DISPLAY_NAME]					= ["displayName", LmSetting.T_COS, LmSetting.D_STRING];
-LmSetting.INIT[LmSetting.FILTERS_ENABLED]				= ["liquidFeatureFiltersEnabled", LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.GAL_ENABLED]					= ["liquidFeatureGalEnabled", LmSetting.T_COS, LmSetting.D_BOOLEAN, true];
-LmSetting.INIT[LmSetting.HTML_COMPOSE_ENABLED] 			= ["liquidFeatureHtmlComposeEnabled", LmSetting.T_COS, LmSetting.D_BOOLEAN, true];
-LmSetting.INIT[LmSetting.IDLE_SESSION_TIMEOUT] 			= ["liquidMailIdleSessionTimeout", LmSetting.T_COS, LmSetting.D_LDAP_TIME, 0];
-LmSetting.INIT[LmSetting.INITIAL_SEARCH_ENABLED]		= ["liquidFeatureInitialSearchPreferenceEnabled", LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.MAX_CONTACTS]					= ["liquidContactMaxNumEntries", LmSetting.T_COS, LmSetting.D_INT, 0];
-LmSetting.INIT[LmSetting.MIN_POLLING_INTERVAL]			= ["liquidMailMinPollingInterval", LmSetting.T_COS, LmSetting.D_LDAP_TIME, 300];
-LmSetting.INIT[LmSetting.QUOTA]							= ["liquidMailQuota", LmSetting.T_COS, LmSetting.D_INT, 0];
-LmSetting.INIT[LmSetting.SAVED_SEARCHES_ENABLED]		= ["liquidFeatureSavedSearchesEnabled", LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.TAGGING_ENABLED]				= ["liquidFeatureTaggingEnabled", LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.BROWSE_ENABLED]				= ["liquidFeatureAdvancedSearchEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.CALENDAR_ENABLED]				= ["liquidFeatureCalendarEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.CHANGE_PASSWORD_ENABLED]		= ["liquidFeatureChangePasswordEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.CONTACTS_ENABLED]				= ["liquidFeatureContactsEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.CONVERSATIONS_ENABLED]			= ["liquidFeatureConversationsEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.DISPLAY_NAME]					= ["displayName", ZmSetting.T_COS, ZmSetting.D_STRING];
+ZmSetting.INIT[ZmSetting.FILTERS_ENABLED]				= ["liquidFeatureFiltersEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.GAL_ENABLED]					= ["liquidFeatureGalEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.HTML_COMPOSE_ENABLED] 			= ["liquidFeatureHtmlComposeEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.IDLE_SESSION_TIMEOUT] 			= ["liquidMailIdleSessionTimeout", ZmSetting.T_COS, ZmSetting.D_LDAP_TIME, 0];
+ZmSetting.INIT[ZmSetting.INITIAL_SEARCH_ENABLED]		= ["liquidFeatureInitialSearchPreferenceEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.MAX_CONTACTS]					= ["liquidContactMaxNumEntries", ZmSetting.T_COS, ZmSetting.D_INT, 0];
+ZmSetting.INIT[ZmSetting.MIN_POLLING_INTERVAL]			= ["liquidMailMinPollingInterval", ZmSetting.T_COS, ZmSetting.D_LDAP_TIME, 300];
+ZmSetting.INIT[ZmSetting.QUOTA]							= ["liquidMailQuota", ZmSetting.T_COS, ZmSetting.D_INT, 0];
+ZmSetting.INIT[ZmSetting.SAVED_SEARCHES_ENABLED]		= ["liquidFeatureSavedSearchesEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.TAGGING_ENABLED]				= ["liquidFeatureTaggingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 // user metadata (included with COS since the user can't change them)
-LmSetting.INIT[LmSetting.QUOTA_USED]					= [null, LmSetting.T_COS, LmSetting.D_INT];
-LmSetting.INIT[LmSetting.TOKEN_LIFETIME]				= [null, LmSetting.T_COS, LmSetting.D_INT];
-LmSetting.INIT[LmSetting.USERNAME]						= [null, LmSetting.T_COS, LmSetting.D_STRING];
+ZmSetting.INIT[ZmSetting.QUOTA_USED]					= [null, ZmSetting.T_COS, ZmSetting.D_INT];
+ZmSetting.INIT[ZmSetting.TOKEN_LIFETIME]				= [null, ZmSetting.T_COS, ZmSetting.D_INT];
+ZmSetting.INIT[ZmSetting.USERNAME]						= [null, ZmSetting.T_COS, ZmSetting.D_STRING];
 
 // CLIENT SIDE FEATURE SUPPORT
-LmSetting.INIT[LmSetting.ATT_VIEW_ENABLED]				= [null, LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.EVAL_ENABLED] 			 		= [null, LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.HELP_ENABLED]					= [null, LmSetting.T_COS, LmSetting.D_BOOLEAN, true];
-LmSetting.INIT[LmSetting.IM_ENABLED]					= [null, LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.MIXED_VIEW_ENABLED]			= [null, LmSetting.T_COS, LmSetting.D_BOOLEAN, true];
-LmSetting.INIT[LmSetting.NOTES_ENABLED]					= [null, LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.PREFS_ENABLED]					= [null, LmSetting.T_COS, LmSetting.D_BOOLEAN, true];
-LmSetting.INIT[LmSetting.PRINT_ENABLED]					= [null, LmSetting.T_COS, LmSetting.D_BOOLEAN, true];
-LmSetting.INIT[LmSetting.REPLY_MENU_ENABLED]			= [null, LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.SAVE_DRAFT_ENABLED]			= [null, LmSetting.T_COS, LmSetting.D_BOOLEAN, true];
-LmSetting.INIT[LmSetting.SEARCH_ENABLED]				= [null, LmSetting.T_COS, LmSetting.D_BOOLEAN, true];
-LmSetting.INIT[LmSetting.SKI_HACK_ENABLED]				= [null, LmSetting.T_COS, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.SPAM_ENABLED]					= [null, LmSetting.T_COS, LmSetting.D_BOOLEAN, true];
-LmSetting.INIT[LmSetting.USER_FOLDERS_ENABLED]			= [null, LmSetting.T_COS, LmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.ATT_VIEW_ENABLED]				= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.EVAL_ENABLED] 			 		= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.HELP_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.IM_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.MIXED_VIEW_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.NOTES_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.PREFS_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.PRINT_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.REPLY_MENU_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.SAVE_DRAFT_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.SEARCH_ENABLED]				= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.SKI_HACK_ENABLED]				= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.SPAM_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.USER_FOLDERS_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 
 // USER PREFERENCES (mutable)
 
 // address book preferences
-LmSetting.INIT[LmSetting.AUTO_ADD_ADDRESS]				= ["liquidPrefAutoAddAddressEnabled", LmSetting.T_PREF, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.CONTACTS_PER_PAGE] 			= ["liquidPrefContactsPerPage", LmSetting.T_PREF, LmSetting.D_INT, 25];
-LmSetting.INIT[LmSetting.CONTACTS_VIEW]					= ["liquidPrefContactsInitialView", LmSetting.T_PREF, LmSetting.D_STRING, LmSetting.CV_LIST];
-LmSetting.INIT[LmSetting.EXPORT] 						= [null, LmSetting.T_PREF];
-LmSetting.INIT[LmSetting.IMPORT] 						= [null, LmSetting.T_PREF];
+ZmSetting.INIT[ZmSetting.AUTO_ADD_ADDRESS]				= ["liquidPrefAutoAddAddressEnabled", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.CONTACTS_PER_PAGE] 			= ["liquidPrefContactsPerPage", ZmSetting.T_PREF, ZmSetting.D_INT, 25];
+ZmSetting.INIT[ZmSetting.CONTACTS_VIEW]					= ["liquidPrefContactsInitialView", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.CV_LIST];
+ZmSetting.INIT[ZmSetting.EXPORT] 						= [null, ZmSetting.T_PREF];
+ZmSetting.INIT[ZmSetting.IMPORT] 						= [null, ZmSetting.T_PREF];
 // calendar preferences
-LmSetting.INIT[LmSetting.CAL_SHOW_TIMEZONE]	 			= ["liquidPrefUseTimeZoneListInCalendar", LmSetting.T_PREF, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.CALENDAR_INITIAL_VIEW]			= ["liquidPrefCalendarInitialView", LmSetting.T_PREF, LmSetting.D_STRING, LmSetting.CAL_DAY];
-LmSetting.INIT[LmSetting.DEFAULT_CALENDAR_TIMEZONE]		= ["liquidPrefTimeZoneId", LmSetting.T_PREF, LmSetting.D_STRING];
+ZmSetting.INIT[ZmSetting.CAL_SHOW_TIMEZONE]	 			= ["liquidPrefUseTimeZoneListInCalendar", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.CALENDAR_INITIAL_VIEW]			= ["liquidPrefCalendarInitialView", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.CAL_DAY];
+ZmSetting.INIT[ZmSetting.DEFAULT_CALENDAR_TIMEZONE]		= ["liquidPrefTimeZoneId", ZmSetting.T_PREF, ZmSetting.D_STRING];
 // general preferences
-LmSetting.INIT[LmSetting.PASSWORD]						= [null, LmSetting.T_PREF];
-LmSetting.INIT[LmSetting.SEARCH_INCLUDES_SPAM]			= ["liquidPrefIncludeSpamInSearch", LmSetting.T_PREF, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.SEARCH_INCLUDES_TRASH]			= ["liquidPrefIncludeTrashInSearch", LmSetting.T_PREF, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.SHOW_SEARCH_STRING]			= ["liquidPrefShowSearchString", LmSetting.T_PREF, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.SORTING_PREF] 					= [null, LmSetting.T_PREF, LmSetting.D_HASH_TABLE];
+ZmSetting.INIT[ZmSetting.PASSWORD]						= [null, ZmSetting.T_PREF];
+ZmSetting.INIT[ZmSetting.SEARCH_INCLUDES_SPAM]			= ["liquidPrefIncludeSpamInSearch", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.SEARCH_INCLUDES_TRASH]			= ["liquidPrefIncludeTrashInSearch", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.SHOW_SEARCH_STRING]			= ["liquidPrefShowSearchString", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.SORTING_PREF] 					= [null, ZmSetting.T_PREF, ZmSetting.D_HASH_TABLE];
 // mail preferences
-LmSetting.INIT[LmSetting.COMPOSE_AS_FORMAT] 			= ["liquidPrefComposeFormat", LmSetting.T_PREF, LmSetting.D_STRING, LmSetting.COMPOSE_TEXT];
-LmSetting.INIT[LmSetting.COMPOSE_SAME_FORMAT] 			= ["liquidPrefForwardReplyInOriginalFormat", LmSetting.T_PREF, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.DEDUPE_MSG_TO_SELF]			= ["liquidPrefDedupeMessagesSentToSelf", LmSetting.T_PREF, LmSetting.D_STRING, LmSetting.DEDUPE_NONE];
-LmSetting.INIT[LmSetting.FORWARD_INCLUDE_ORIG]			= ["liquidPrefForwardIncludeOriginalText", LmSetting.T_PREF, LmSetting.D_STRING, LmSetting.INCLUDE];
-LmSetting.INIT[LmSetting.GROUP_MAIL_BY]					= ["liquidPrefGroupMailBy", LmSetting.T_PREF, LmSetting.D_STRING, LmSetting.GROUP_BY_MESSAGE];
-LmSetting.INIT[LmSetting.INITIAL_SEARCH]				= ["liquidPrefMailInitialSearch", LmSetting.T_PREF, LmSetting.D_STRING, "in:inbox"];
-LmSetting.INIT[LmSetting.NEW_WINDOW_COMPOSE]			= ["liquidPrefComposeInNewWindow", LmSetting.T_PREF, LmSetting.D_BOOLEAN, true];
-LmSetting.INIT[LmSetting.NOTIF_ENABLED]					= ["liquidPrefNewMailNotificationEnabled", LmSetting.T_PREF, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.NOTIF_ADDRESS]					= ["liquidPrefNewMailNotificationAddress", LmSetting.T_PREF];
-LmSetting.INIT[LmSetting.PAGE_SIZE]						= ["liquidPrefMailItemsPerPage", LmSetting.T_PREF, LmSetting.D_INT, 25];
-LmSetting.INIT[LmSetting.POLLING_INTERVAL]				= ["liquidPrefMailPollingInterval", LmSetting.T_PREF, LmSetting.D_LDAP_TIME, 300];
-LmSetting.INIT[LmSetting.REPLY_INCLUDE_ORIG]			= ["liquidPrefReplyIncludeOriginalText", LmSetting.T_PREF, LmSetting.D_STRING, LmSetting.INCLUDE];
-LmSetting.INIT[LmSetting.REPLY_PREFIX]					= ["liquidPrefForwardReplyPrefixChar", LmSetting.T_PREF, LmSetting.D_STRING, ">"];
-LmSetting.INIT[LmSetting.REPLY_TO_ADDRESS]				= ["liquidPrefReplyToAddress", LmSetting.T_PREF];
-LmSetting.INIT[LmSetting.SAVE_TO_SENT]					= ["liquidPrefSaveToSent", LmSetting.T_PREF, LmSetting.D_BOOLEAN, true];
-LmSetting.INIT[LmSetting.SENT_FOLDER_NAME]				= ["liquidPrefSentMailFolder", LmSetting.T_PREF, LmSetting.D_STRING, "sent"];
-LmSetting.INIT[LmSetting.SHOW_FRAGMENTS]				= ["liquidPrefShowFragments", LmSetting.T_PREF, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.SIGNATURE]						= ["liquidPrefMailSignature", LmSetting.T_PREF];
-LmSetting.INIT[LmSetting.SIGNATURE_ENABLED]				= ["liquidPrefMailSignatureEnabled", LmSetting.T_PREF, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.SIGNATURE_STYLE]				= ["liquidPrefMailSignatureStyle", LmSetting.T_PREF, LmSetting.D_STRING, LmSetting.SIG_OUTLOOK];
-LmSetting.INIT[LmSetting.USE_KEYBOARD_SHORTCUTS]		= ["liquidPrefUseKeyboardShortcuts", LmSetting.T_PREF, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.VACATION_MSG]					= ["liquidPrefOutOfOfficeReply", LmSetting.T_PREF];
-LmSetting.INIT[LmSetting.VACATION_MSG_ENABLED]			= ["liquidPrefOutOfOfficeReplyEnabled", LmSetting.T_PREF, LmSetting.D_BOOLEAN, false];
-LmSetting.INIT[LmSetting.VIEW_AS_HTML]					= ["liquidPrefMessageViewHtmlPreferred", LmSetting.T_PREF, LmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.COMPOSE_AS_FORMAT] 			= ["liquidPrefComposeFormat", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.COMPOSE_TEXT];
+ZmSetting.INIT[ZmSetting.COMPOSE_SAME_FORMAT] 			= ["liquidPrefForwardReplyInOriginalFormat", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.DEDUPE_MSG_TO_SELF]			= ["liquidPrefDedupeMessagesSentToSelf", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.DEDUPE_NONE];
+ZmSetting.INIT[ZmSetting.FORWARD_INCLUDE_ORIG]			= ["liquidPrefForwardIncludeOriginalText", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.INCLUDE];
+ZmSetting.INIT[ZmSetting.GROUP_MAIL_BY]					= ["liquidPrefGroupMailBy", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.GROUP_BY_MESSAGE];
+ZmSetting.INIT[ZmSetting.INITIAL_SEARCH]				= ["liquidPrefMailInitialSearch", ZmSetting.T_PREF, ZmSetting.D_STRING, "in:inbox"];
+ZmSetting.INIT[ZmSetting.NEW_WINDOW_COMPOSE]			= ["liquidPrefComposeInNewWindow", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.NOTIF_ENABLED]					= ["liquidPrefNewMailNotificationEnabled", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.NOTIF_ADDRESS]					= ["liquidPrefNewMailNotificationAddress", ZmSetting.T_PREF];
+ZmSetting.INIT[ZmSetting.PAGE_SIZE]						= ["liquidPrefMailItemsPerPage", ZmSetting.T_PREF, ZmSetting.D_INT, 25];
+ZmSetting.INIT[ZmSetting.POLLING_INTERVAL]				= ["liquidPrefMailPollingInterval", ZmSetting.T_PREF, ZmSetting.D_LDAP_TIME, 300];
+ZmSetting.INIT[ZmSetting.REPLY_INCLUDE_ORIG]			= ["liquidPrefReplyIncludeOriginalText", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.INCLUDE];
+ZmSetting.INIT[ZmSetting.REPLY_PREFIX]					= ["liquidPrefForwardReplyPrefixChar", ZmSetting.T_PREF, ZmSetting.D_STRING, ">"];
+ZmSetting.INIT[ZmSetting.REPLY_TO_ADDRESS]				= ["liquidPrefReplyToAddress", ZmSetting.T_PREF];
+ZmSetting.INIT[ZmSetting.SAVE_TO_SENT]					= ["liquidPrefSaveToSent", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.SENT_FOLDER_NAME]				= ["liquidPrefSentMailFolder", ZmSetting.T_PREF, ZmSetting.D_STRING, "sent"];
+ZmSetting.INIT[ZmSetting.SHOW_FRAGMENTS]				= ["liquidPrefShowFragments", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.SIGNATURE]						= ["liquidPrefMailSignature", ZmSetting.T_PREF];
+ZmSetting.INIT[ZmSetting.SIGNATURE_ENABLED]				= ["liquidPrefMailSignatureEnabled", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.SIGNATURE_STYLE]				= ["liquidPrefMailSignatureStyle", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.SIG_OUTLOOK];
+ZmSetting.INIT[ZmSetting.USE_KEYBOARD_SHORTCUTS]		= ["liquidPrefUseKeyboardShortcuts", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.VACATION_MSG]					= ["liquidPrefOutOfOfficeReply", ZmSetting.T_PREF];
+ZmSetting.INIT[ZmSetting.VACATION_MSG_ENABLED]			= ["liquidPrefOutOfOfficeReplyEnabled", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.VIEW_AS_HTML]					= ["liquidPrefMessageViewHtmlPreferred", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 
-LmSetting.prototype.toString =
+ZmSetting.prototype.toString =
 function() {
 	return this.name + ": " + this.value;
 };
@@ -318,7 +318,7 @@ function() {
 *
 * @param key 			optional key for use by hash table data type
 */
-LmSetting.prototype.getValue =
+ZmSetting.prototype.getValue =
 function(key) {
 	if (this.value != null)
 		return key ? this.value[key] : this.value;
@@ -335,20 +335,20 @@ function(key) {
 * @param key 			optional key for use by hash table data type
 * @param setDefault		if true, also set the default value
 */
-LmSetting.prototype.setValue =
+ZmSetting.prototype.setValue =
 function(value, key, setDefault) {
-	if (this.dataType == LmSetting.D_STRING) {
+	if (this.dataType == ZmSetting.D_STRING) {
 		this.value = value;
-	} else if (this.dataType == LmSetting.D_INT) {
+	} else if (this.dataType == ZmSetting.D_INT) {
 		this.value = parseInt(value);
 		if (isNaN(this.value)) // revert to string if NaN
 			this.value = value;
-	} else if (this.dataType == LmSetting.D_BOOLEAN) {
+	} else if (this.dataType == ZmSetting.D_BOOLEAN) {
 		if (typeof(value) == "string")
 			this.value = (value.toLowerCase() == "true");
 		else
 			this.value = value;
-	} else if (this.dataType == LmSetting.D_LDAP_TIME) {
+	} else if (this.dataType == ZmSetting.D_LDAP_TIME) {
 		var lastChar = (value.toLowerCase()).charAt(value.length-1);
 		var num = parseInt(value);
 		// convert to seconds
@@ -361,7 +361,7 @@ function(value, key, setDefault) {
 		} else {
 			this.value = num;	// default
 		}
-	} else if (this.dataType == LmSetting.D_HASH_TABLE) {
+	} else if (this.dataType == ZmSetting.D_HASH_TABLE) {
 		if (key) {
 			this.value[key] = value;
 		}
@@ -375,19 +375,19 @@ function(value, key, setDefault) {
 	}
 };
 
-LmSetting.prototype.notify =
+ZmSetting.prototype.notify =
 function(event, details) {
-	if (this.settings._evtMgr.isListenerRegistered(LmEvent.L_MODIFY)) {
+	if (this.settings._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
 		this.settings._evt.set(event, this);
 		this.settings._evt.setDetails(details);
-		this.settings._evtMgr.notifyListeners(LmEvent.L_MODIFY, this.settings._evt);
+		this.settings._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this.settings._evt);
 	}
 };
 
-LmSetting.prototype.notifyModify = 
+ZmSetting.prototype.notifyModify = 
 function(obj) {
-	if (this.id == LmSetting.QUOTA_USED && obj._name == "mbx") {
+	if (this.id == ZmSetting.QUOTA_USED && obj._name == "mbx") {
 		this.setValue(obj.s);
-		this.notify(LmEvent.E_MODIFY);
+		this.notify(ZmEvent.E_MODIFY);
 	}
 };

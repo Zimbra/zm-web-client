@@ -1,4 +1,4 @@
-function LmOverviewPanel(parent, className, posStyle, appCtxt) {
+function ZmOverviewPanel(parent, className, posStyle, appCtxt) {
 
 	DwtComposite.call(this, parent, className, posStyle);
 
@@ -7,20 +7,20 @@ function LmOverviewPanel(parent, className, posStyle, appCtxt) {
 	this._createFolderTree();
 }
 
-LmOverviewPanel.prototype = new DwtComposite();
-LmOverviewPanel.prototype.constructor = LmOverviewPanel;
+ZmOverviewPanel.prototype = new DwtComposite();
+ZmOverviewPanel.prototype.constructor = ZmOverviewPanel;
 
-LmOverviewPanel.prototype.toString = 
+ZmOverviewPanel.prototype.toString = 
 function() {
-	return "LmOverviewPanel";
+	return "ZmOverviewPanel";
 }
 
-LmOverviewPanel.prototype.getFolderTree =
+ZmOverviewPanel.prototype.getFolderTree =
 function() {
 	return this._tree;
 }
 
-LmOverviewPanel.prototype.reset =
+ZmOverviewPanel.prototype.reset =
 function() {
 	this._treePanel.dispose();
 	this._treePanel = null;
@@ -29,12 +29,12 @@ function() {
 	this._createElements();
 }
 
-LmOverviewPanel.prototype._createElements =
+ZmOverviewPanel.prototype._createElements =
 function() {
 	this._createFolderTree();
 }
 
-LmOverviewPanel.prototype._createFolderTree =
+ZmOverviewPanel.prototype._createFolderTree =
 function() {
 	this._treePanel = new DwtComposite(this, "OverviewTreePanel", DwtControl.RELATIVE_STYLE);
 	this._treePanel.setScrollStyle(DwtControl.SCROLL);

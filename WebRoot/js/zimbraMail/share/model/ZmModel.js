@@ -1,23 +1,23 @@
-// LmModel is data with a change listener.
-function LmModel(init) {
+// ZmModel is data with a change listener.
+function ZmModel(init) {
  	if (arguments.length == 0) return;
 
-	this._evtMgr = new LsEventMgr();
+	this._evtMgr = new AjxEventMgr();
 }
 
-LmModel.prototype.toString = 
+ZmModel.prototype.toString = 
 function() {
-	return "LmModel";
+	return "ZmModel";
 }
 
-LmModel.prototype.addChangeListener = 
+ZmModel.prototype.addChangeListener = 
 function(listener) {
-	return this._evtMgr.addListener(LmEvent.L_MODIFY, listener);
+	return this._evtMgr.addListener(ZmEvent.L_MODIFY, listener);
 }
 
-LmModel.prototype.removeChangeListener = 
+ZmModel.prototype.removeChangeListener = 
 function(listener) {
-	return this._evtMgr.removeListener(LmEvent.L_MODIFY, listener);    	
+	return this._evtMgr.removeListener(ZmEvent.L_MODIFY, listener);    	
 }
 
 

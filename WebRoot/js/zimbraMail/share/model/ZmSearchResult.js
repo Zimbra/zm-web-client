@@ -1,27 +1,27 @@
-function LmSearchResult(appCtxt, search) {
+function ZmSearchResult(appCtxt, search) {
 
 	this._results = new Object();
-	if (appCtxt.get(LmSetting.CONVERSATIONS_ENABLED))
-		this._results[LmItem.CONV] = new LmMailList(LmItem.CONV, appCtxt, search);
-	this._results[LmItem.MSG] = new LmMailList(LmItem.MSG, appCtxt, search);
-	if (appCtxt.get(LmSetting.ATT_VIEW_ENABLED))
-		this._results[LmItem.ATT] = new LmMailList(LmItem.ATT, appCtxt, search);
-	if (appCtxt.get(LmSetting.CONTACTS_ENABLED) || appCtxt.get(LmSetting.GAL_ENABLED))
-		this._results[LmItem.CONTACT] = new LmContactList(appCtxt, false);
+	if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED))
+		this._results[ZmItem.CONV] = new ZmMailList(ZmItem.CONV, appCtxt, search);
+	this._results[ZmItem.MSG] = new ZmMailList(ZmItem.MSG, appCtxt, search);
+	if (appCtxt.get(ZmSetting.ATT_VIEW_ENABLED))
+		this._results[ZmItem.ATT] = new ZmMailList(ZmItem.ATT, appCtxt, search);
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED))
+		this._results[ZmItem.CONTACT] = new ZmContactList(appCtxt, false);
 
 	this._appCtxt = appCtxt;
 	this.search = search;
 }
 
-LmSearchResult.prototype.toString = 
+ZmSearchResult.prototype.toString = 
 function() {
-	return "LmSearchResult";
+	return "ZmSearchResult";
 }
 
-LmSearchResult.prototype.dtor = 
+ZmSearchResult.prototype.dtor = 
 function() {
-	for (var i = 0; i < LmList.TYPES.length; i++) {
-		var type = LmList.TYPES[i];
+	for (var i = 0; i < ZmList.TYPES.length; i++) {
+		var type = ZmList.TYPES[i];
 		if (this._results[type]) {
 			this._results[type].clear();
 			this._results[type] = null;
@@ -30,12 +30,12 @@ function() {
 	this._results = null;
 }
 
-LmSearchResult.prototype.getResults =
+ZmSearchResult.prototype.getResults =
 function(type) {
-	if (type == LmList.MIXED) {
-		var list = new LmList(LmList.MIXED, this._appCtxt);
-		for (var i = 0; i < LmList.TYPES.length; i++) {
-			var type = LmList.TYPES[i];
+	if (type == ZmList.MIXED) {
+		var list = new ZmList(ZmList.MIXED, this._appCtxt);
+		for (var i = 0; i < ZmList.TYPES.length; i++) {
+			var type = ZmList.TYPES[i];
 			var results = this._results[type];
 			if (results) {
 				var a = results.getArray();
@@ -49,19 +49,19 @@ function(type) {
 	}
 }
 
-LmSearchResult.prototype.getAttribute = 
+ZmSearchResult.prototype.getAttribute = 
 function(name) {
 	return this._respEl ? this._respEl[name] : null;
 }
 
-LmSearchResult.prototype.set =
+ZmSearchResult.prototype.set =
 function(respEl, contactSource) {
 
 	this._respEl = respEl;
 	
-	var isGalSearch = (contactSource == LmSearchToolBar.FOR_GAL_MI);
+	var isGalSearch = (contactSource == ZmSearchToolBar.FOR_GAL_MI);
 	if (contactSource)
-		this._results[LmItem.CONTACT].setIsGal(isGalSearch);
+		this._results[ZmItem.CONTACT].setIsGal(isGalSearch);
 	
 	var addressHash = new Object();
 	var foundType = new Object();
@@ -72,7 +72,7 @@ function(respEl, contactSource) {
 	var _count = 0; // XXX: FOR DEBUG USE ONLY :XXX
 	if (isGalSearch) {
 		// process JS eval result for SearchGalRequest
-		currentType = LmItem.CONTACT;
+		currentType = ZmItem.CONTACT;
 		var data = respEl.cn;
 		if (data) {
 			for (var j = 0; j < data.length; j++)
@@ -84,7 +84,7 @@ function(respEl, contactSource) {
 		var types = this.search.types.getArray();
 		for (var i = 0; i < types.length; i++) {
 			var type = types[i];
-			var data = respEl[LmList.NODE[type]];
+			var data = respEl[ZmList.NODE[type]];
 			
 			// do a bunch of sanity checks
 			if (this._results[type] && data && (data instanceof Array) && data.length) {
@@ -102,13 +102,13 @@ function(respEl, contactSource) {
 	}
 	
 	var _en = new Date();
-	DBG.println(LsDebug.DBG1, "TOTAL PARSE TIME for " + _count + " NODES: " + (_en.getTime() - _st.getTime()));
+	DBG.println(AjxDebug.DBG1, "TOTAL PARSE TIME for " + _count + " NODES: " + (_en.getTime() - _st.getTime()));
 	
 	if (numTypes <= 1) {
 		this.type = currentType;
 	} else {
-		this.type = this._appCtxt.get(LmSetting.MIXED_VIEW_ENABLED)
-			? LmList.MIXED : currentType;
+		this.type = this._appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED)
+			? ZmList.MIXED : currentType;
 	}
 
 	return this.type;

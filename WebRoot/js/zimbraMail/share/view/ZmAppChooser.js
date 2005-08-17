@@ -1,6 +1,6 @@
-function LmAppChooser(parent, className, buttons) {
+function ZmAppChooser(parent, className, buttons) {
 
-	className = className ? className : "LmAppChooser";
+	className = className ? className : "ZmAppChooser";
 	DwtToolBar.call(this, parent, className, Dwt.ABSOLUTE_STYLE, null, null, DwtToolBar.VERT_STYLE);
 
 	this.setScrollStyle(Dwt.CLIP);
@@ -8,8 +8,8 @@ function LmAppChooser(parent, className, buttons) {
 	this._buttons = new Object();
 	for (var i = 0; i < buttons.length; i++) {
 		var id = buttons[i];
-		if (id == LmAppChooser.SEP) {
-			this.addSpacer(LmAppChooser.SEP_HEIGHT);
+		if (id == ZmAppChooser.SEP) {
+			this.addSpacer(ZmAppChooser.SEP_HEIGHT);
 		} else {
 			this._createButton(id);
 		}
@@ -18,60 +18,60 @@ function LmAppChooser(parent, className, buttons) {
 }
 
 var i = 1;
-LmAppChooser.OUTER		= i++;
-LmAppChooser.OUTER_ACT	= i++;
-LmAppChooser.OUTER_TRIG	= i++;
+ZmAppChooser.OUTER		= i++;
+ZmAppChooser.OUTER_ACT	= i++;
+ZmAppChooser.OUTER_TRIG	= i++;
 
-LmAppChooser.SEP		= i++;
+ZmAppChooser.SEP		= i++;
 
-LmAppChooser.B_EMAIL	= i++;
-LmAppChooser.B_CONTACTS	= i++;
-LmAppChooser.B_CALENDAR	= i++;
-LmAppChooser.B_HELP		= i++;
-LmAppChooser.B_OPTIONS	= i++;
-LmAppChooser.B_LOGOUT	= i++;
+ZmAppChooser.B_EMAIL	= i++;
+ZmAppChooser.B_CONTACTS	= i++;
+ZmAppChooser.B_CALENDAR	= i++;
+ZmAppChooser.B_HELP		= i++;
+ZmAppChooser.B_OPTIONS	= i++;
+ZmAppChooser.B_LOGOUT	= i++;
 
-LmAppChooser.IMAGE = new Object();
-LmAppChooser.IMAGE[LmAppChooser.OUTER]		= "app_chiclet";
-LmAppChooser.IMAGE[LmAppChooser.OUTER_ACT]	= "app_chiclet_selected";
-LmAppChooser.IMAGE[LmAppChooser.OUTER_TRIG]	= "app_chiclet_selected";
+ZmAppChooser.IMAGE = new Object();
+ZmAppChooser.IMAGE[ZmAppChooser.OUTER]		= "app_chiclet";
+ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]	= "app_chiclet_selected";
+ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]	= "app_chiclet_selected";
 
-LmAppChooser.IMAGE[LmAppChooser.B_EMAIL]	= "sm_icon_email";
-LmAppChooser.IMAGE[LmAppChooser.B_CONTACTS]	= "sm_icon_contact";
-LmAppChooser.IMAGE[LmAppChooser.B_CALENDAR]	= "sm_icon_calendar";
-LmAppChooser.IMAGE[LmAppChooser.B_HELP]		= "sm_icon_help";
-LmAppChooser.IMAGE[LmAppChooser.B_OPTIONS]	= "sm_icon_options";
-LmAppChooser.IMAGE[LmAppChooser.B_LOGOUT]	= "sm_icon_logout";
+ZmAppChooser.IMAGE[ZmAppChooser.B_EMAIL]	= "sm_icon_email";
+ZmAppChooser.IMAGE[ZmAppChooser.B_CONTACTS]	= "sm_icon_contact";
+ZmAppChooser.IMAGE[ZmAppChooser.B_CALENDAR]	= "sm_icon_calendar";
+ZmAppChooser.IMAGE[ZmAppChooser.B_HELP]		= "sm_icon_help";
+ZmAppChooser.IMAGE[ZmAppChooser.B_OPTIONS]	= "sm_icon_options";
+ZmAppChooser.IMAGE[ZmAppChooser.B_LOGOUT]	= "sm_icon_logout";
 
-LmAppChooser.TOOLTIP = new Object();
-LmAppChooser.TOOLTIP[LmAppChooser.B_EMAIL]		= LmMsg.goToMail;
-LmAppChooser.TOOLTIP[LmAppChooser.B_CONTACTS]	= LmMsg.goToContacts;
-LmAppChooser.TOOLTIP[LmAppChooser.B_CALENDAR]	= LmMsg.goToCalendar;
-LmAppChooser.TOOLTIP[LmAppChooser.B_HELP]		= LmMsg.goToHelp;
-LmAppChooser.TOOLTIP[LmAppChooser.B_OPTIONS]	= LmMsg.goToOptions;
-LmAppChooser.TOOLTIP[LmAppChooser.B_LOGOUT]		= LmMsg.logOff;
+ZmAppChooser.TOOLTIP = new Object();
+ZmAppChooser.TOOLTIP[ZmAppChooser.B_EMAIL]		= LmMsg.goToMail;
+ZmAppChooser.TOOLTIP[ZmAppChooser.B_CONTACTS]	= LmMsg.goToContacts;
+ZmAppChooser.TOOLTIP[ZmAppChooser.B_CALENDAR]	= LmMsg.goToCalendar;
+ZmAppChooser.TOOLTIP[ZmAppChooser.B_HELP]		= LmMsg.goToHelp;
+ZmAppChooser.TOOLTIP[ZmAppChooser.B_OPTIONS]	= LmMsg.goToOptions;
+ZmAppChooser.TOOLTIP[ZmAppChooser.B_LOGOUT]		= LmMsg.logOff;
 
-LmAppChooser.SEP_HEIGHT = 10;
+ZmAppChooser.SEP_HEIGHT = 10;
 
-LmAppChooser.prototype = new DwtToolBar;
-LmAppChooser.prototype.constructor = LmAppChooser;
+ZmAppChooser.prototype = new DwtToolBar;
+ZmAppChooser.prototype.constructor = ZmAppChooser;
 
-LmAppChooser.prototype.toString = 
+ZmAppChooser.prototype.toString = 
 function() {
-	return "LmAppChooser";
+	return "ZmAppChooser";
 }
 
-LmAppChooser.prototype.getButton =
+ZmAppChooser.prototype.getButton =
 function(id) {
 	return this._buttons[id];
 }
 
-LmAppChooser.prototype._createButton =
+ZmAppChooser.prototype._createButton =
 function(id) {
-	var b = new LmChicletButton(this, LmAppChooser.IMAGE[LmAppChooser.OUTER], LmAppChooser.IMAGE[id]);
-	b.setActivatedImage(LmAppChooser.IMAGE[LmAppChooser.OUTER_ACT]);
-	b.setTriggeredImage(LmAppChooser.IMAGE[LmAppChooser.OUTER_TRIG]);
-	b.setToolTipContent(LmAppChooser.TOOLTIP[id]);
+	var b = new ZmChicletButton(this, ZmAppChooser.IMAGE[ZmAppChooser.OUTER], ZmAppChooser.IMAGE[id]);
+	b.setActivatedImage(ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]);
+	b.setTriggeredImage(ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]);
+	b.setToolTipContent(ZmAppChooser.TOOLTIP[id]);
 	b.setData(Dwt.KEY_ID, id);
 	this._buttons[id] = b;
 }

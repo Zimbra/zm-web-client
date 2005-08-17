@@ -1,31 +1,31 @@
-function LmBrowseToolBar(parent, pickers) {
+function ZmBrowseToolBar(parent, pickers) {
 
-	LmToolBar.call(this, parent, "LmBrowseToolBar");
+	ZmToolBar.call(this, parent, "ZmBrowseToolBar");
 	
 	for (var i = 0; i < pickers.length; i++) {
 		var id = pickers[i];
-		var b = this._createButton(id, LmPicker.IMAGE[id], LmMsg[LmPicker.MSG_KEY[id]], null, LmMsg[LmPicker.TT_MSG_KEY[id]], true);
-		b.setData(LmPicker.KEY_ID, id);
-		b.setData(LmPicker.KEY_CTOR, LmPicker.CTOR[id]);
+		var b = this._createButton(id, ZmPicker.IMAGE[id], LmMsg[ZmPicker.MSG_KEY[id]], null, LmMsg[ZmPicker.TT_MSG_KEY[id]], true);
+		b.setData(ZmPicker.KEY_ID, id);
+		b.setData(ZmPicker.KEY_CTOR, ZmPicker.CTOR[id]);
 	}
 
 	this._createSeparator();
 
-	var id = LmPicker.RESET;
-	var b = this._createButton(id, LmPicker.IMAGE[id], LmMsg[LmPicker.MSG_KEY[id]], null, LmMsg[LmPicker.TT_MSG_KEY[id]], true);
-	b.setData(LmPicker.KEY_ID, id);
+	var id = ZmPicker.RESET;
+	var b = this._createButton(id, ZmPicker.IMAGE[id], LmMsg[ZmPicker.MSG_KEY[id]], null, LmMsg[ZmPicker.TT_MSG_KEY[id]], true);
+	b.setData(ZmPicker.KEY_ID, id);
 
 	this.addFiller();
 
-	var id = LmPicker.CLOSE;
-	var b = this._createButton(id, LmPicker.IMAGE[id], LmMsg[LmPicker.MSG_KEY[id]], null, LmMsg[LmPicker.TT_MSG_KEY[id]], true);
-	b.setData(LmPicker.KEY_ID, id);
+	var id = ZmPicker.CLOSE;
+	var b = this._createButton(id, ZmPicker.IMAGE[id], LmMsg[ZmPicker.MSG_KEY[id]], null, LmMsg[ZmPicker.TT_MSG_KEY[id]], true);
+	b.setData(ZmPicker.KEY_ID, id);
 }
 
-LmBrowseToolBar.prototype = new LmToolBar;
-LmBrowseToolBar.prototype.constructor = LmBrowseToolBar;
+ZmBrowseToolBar.prototype = new ZmToolBar;
+ZmBrowseToolBar.prototype.constructor = ZmBrowseToolBar;
 
-LmBrowseToolBar.prototype.toString = 
+ZmBrowseToolBar.prototype.toString = 
 function() {
-	return "LmBrowseToolBar";
+	return "ZmBrowseToolBar";
 }

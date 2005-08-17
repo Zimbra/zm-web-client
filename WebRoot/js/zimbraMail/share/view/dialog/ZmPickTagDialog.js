@@ -1,8 +1,8 @@
-function LmPickTagDialog(parent, msgDialog, className) {
+function ZmPickTagDialog(parent, msgDialog, className) {
 
 	if (arguments.length == 0 ) return;
 
-	var newButton = new DwtDialog_ButtonDescriptor(LmPickTagDialog.NEW_BUTTON,
+	var newButton = new DwtDialog_ButtonDescriptor(ZmPickTagDialog.NEW_BUTTON,
 												   LmMsg._new,
 												   DwtDialog.ALIGN_LEFT);
 	DwtDialog.call(this, parent, className, LmMsg.pickATag, null, [newButton]);
@@ -12,39 +12,39 @@ function LmPickTagDialog(parent, msgDialog, className) {
 
 	var tree = this._tree = new DwtTree(parent, DwtTree.SINGLE_STYLE);
 	this._tree.setScrollStyle(DwtControl.SCROLL);
-	var appCtxt = this._appCtxt = this.shell.getData(LmAppCtxt.LABEL);
+	var appCtxt = this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
-	this._tagTreeView = new LmTagTreeView(appCtxt, this._tree, this._tree);
+	this._tagTreeView = new ZmTagTreeView(appCtxt, this._tree, this._tree);
 	this._tagTreeView.set(appCtxt.getTagList());
 
 	var cell = 	Dwt.getDomObj(this.getDocument(), this._tagTreeCellId);
 	cell.appendChild(this._tree.getHtmlElement());
     
 	this.setButtonListener(DwtDialog.OK_BUTTON,
-						   new LsListener(this, this._okButtonListener));
-	this.registerCallback(LmPickTagDialog.NEW_BUTTON, 
+						   new AjxListener(this, this._okButtonListener));
+	this.registerCallback(ZmPickTagDialog.NEW_BUTTON, 
 						  this._showNewDialog, this);
 	this._creatingTag = false;
 }
 
-LmPickTagDialog.prototype = new DwtDialog;
-LmPickTagDialog.prototype.constructor = LmPickTagDialog;
+ZmPickTagDialog.prototype = new DwtDialog;
+ZmPickTagDialog.prototype.constructor = ZmPickTagDialog;
 
-LmPickTagDialog.NEW_BUTTON = DwtDialog.LAST_BUTTON + 1;
+ZmPickTagDialog.NEW_BUTTON = DwtDialog.LAST_BUTTON + 1;
 
-LmPickTagDialog.prototype.toString = function() {
-	return "LmPickTagDialog";
+ZmPickTagDialog.prototype.toString = function() {
+	return "ZmPickTagDialog";
 };
 
-LmPickTagDialog.prototype.render = function () {
+ZmPickTagDialog.prototype.render = function () {
 	this.setContent(this._contentHtml());
 };
 
-LmPickTagDialog.prototype.popup = function(loc) {
+ZmPickTagDialog.prototype.popup = function(loc) {
 	DwtDialog.prototype.popup.call(this, loc);
 };
 
-LmPickTagDialog.prototype._contentHtml = 
+ZmPickTagDialog.prototype._contentHtml = 
 function() {
 	this._tagTreeCellId = Dwt.getNextId();
 	var html = new Array();
@@ -61,11 +61,11 @@ function() {
 	return html.join("");
 };
 
-LmPickTagDialog.prototype._showNewDialog = function() {
+ZmPickTagDialog.prototype._showNewDialog = function() {
 	var dialog = this._appCtxt.getNewTagDialog();
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._newCallback, this);
-	if (LsEnv.isNav){
+	if (AjxEnv.isNav){
 		this.popdown();
 		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, 
 								this._newCancelCallback,
@@ -74,8 +74,8 @@ LmPickTagDialog.prototype._showNewDialog = function() {
 	dialog.popup(null, this);
 };
 
-LmPickTagDialog.prototype._newCallback = function(args) {
-	if (LsEnv.isNav){
+ZmPickTagDialog.prototype._newCallback = function(args) {
+	if (AjxEnv.isNav){
 		this.popup();
 	}
 	this._appCtxt.getNewTagDialog().popdown();
@@ -86,22 +86,22 @@ LmPickTagDialog.prototype._newCallback = function(args) {
 	this._creatingTag = true;
 };
 
-LmPickTagDialog.prototype._newCancelCallback = function(args) {
-	if (LsEnv.isNav){
+ZmPickTagDialog.prototype._newCancelCallback = function(args) {
+	if (AjxEnv.isNav){
 		this.popup();
 	}
 	this._appCtxt.getNewTagDialog().popdown();
 };
 
-LmPickTagDialog.prototype._tagTreeChangeListener = function(ev) {
+ZmPickTagDialog.prototype._tagTreeChangeListener = function(ev) {
 	// TODO - listener for changing tags
-	if (ev.event == LmEvent.E_CREATE && this._creatingTag) {
+	if (ev.event == ZmEvent.E_CREATE && this._creatingTag) {
 		this._tagTreeView.setSelected(ev.source, true);
 		this._creatingTag = false;
 	}
 };
 
-LmPickTagDialog.prototype._okButtonListener = function(ev) {
+ZmPickTagDialog.prototype._okButtonListener = function(ev) {
 	// Reset the msg dialog (it is a shared resource)
 	this._msgDialog.reset();
 	var loc = new DwtPoint(this.getLocation().x + 50, 

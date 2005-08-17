@@ -1,35 +1,35 @@
-function LmAttachmentPicker(parent) {
-	LmPicker.call(this, parent, LmPicker.ATTACHMENT);
+function ZmAttachmentPicker(parent) {
+	ZmPicker.call(this, parent, ZmPicker.ATTACHMENT);
     this._checkedItems = new Object();
 };
 
-LmAttachmentPicker.prototype = new LmPicker;
-LmAttachmentPicker.prototype.constructor = LmAttachmentPicker;
+ZmAttachmentPicker.prototype = new ZmPicker;
+ZmAttachmentPicker.prototype.constructor = ZmAttachmentPicker;
 
-LmPicker.CTOR[LmPicker.ATTACHMENT] = LmAttachmentPicker;
+ZmPicker.CTOR[ZmPicker.ATTACHMENT] = ZmAttachmentPicker;
 
-LmAttachmentPicker.NONE	= 1;
-LmAttachmentPicker.ANY	= 2;
-LmAttachmentPicker.SPEC	= 3;
-LmAttachmentPicker.RADIO_BUTTONS = [LmAttachmentPicker.NONE, LmAttachmentPicker.ANY, LmAttachmentPicker.SPEC];
-LmAttachmentPicker.MSG_KEY = new Object();
-LmAttachmentPicker.MSG_KEY[LmAttachmentPicker.NONE] = "noAtt";
-LmAttachmentPicker.MSG_KEY[LmAttachmentPicker.ANY] = "anyAtt";
-LmAttachmentPicker.MSG_KEY[LmAttachmentPicker.SPEC] = "specAtt";
-LmAttachmentPicker.RADIO_CHECKED = LmAttachmentPicker.ANY;
+ZmAttachmentPicker.NONE	= 1;
+ZmAttachmentPicker.ANY	= 2;
+ZmAttachmentPicker.SPEC	= 3;
+ZmAttachmentPicker.RADIO_BUTTONS = [ZmAttachmentPicker.NONE, ZmAttachmentPicker.ANY, ZmAttachmentPicker.SPEC];
+ZmAttachmentPicker.MSG_KEY = new Object();
+ZmAttachmentPicker.MSG_KEY[ZmAttachmentPicker.NONE] = "noAtt";
+ZmAttachmentPicker.MSG_KEY[ZmAttachmentPicker.ANY] = "anyAtt";
+ZmAttachmentPicker.MSG_KEY[ZmAttachmentPicker.SPEC] = "specAtt";
+ZmAttachmentPicker.RADIO_CHECKED = ZmAttachmentPicker.ANY;
 
-LmAttachmentPicker.ATT_KEY = "_att_";
+ZmAttachmentPicker.ATT_KEY = "_att_";
 
-LmAttachmentPicker.prototype.toString = 
+ZmAttachmentPicker.prototype.toString = 
 function() {
-	return "LmAttachmentPicker";
+	return "ZmAttachmentPicker";
 };
 
-LmAttachmentPicker.prototype._newType =
+ZmAttachmentPicker.prototype._newType =
 function(tree, atts) {
 	var ti = new DwtTreeItem(tree);
 	ti.setImage(atts[0].image);
-	ti.setData(LmAttachmentPicker.ATT_KEY, atts[0].desc);
+	ti.setData(ZmAttachmentPicker.ATT_KEY, atts[0].desc);
 	ti.setText(atts[0].desc);
 	var types = new Array();
 	for (var i = 0; i < atts.length; i++)
@@ -38,11 +38,11 @@ function(tree, atts) {
 	return ti;
 };
 
-LmAttachmentPicker.prototype._newRadio =
+ZmAttachmentPicker.prototype._newRadio =
 function(radioId) {
 	var html = new Array(5);
-	var text = LmMsg[LmAttachmentPicker.MSG_KEY[radioId]];
-	var checked = (radioId == LmAttachmentPicker.RADIO_CHECKED) ? "checked" : "";
+	var text = LmMsg[ZmAttachmentPicker.MSG_KEY[radioId]];
+	var checked = (radioId == ZmAttachmentPicker.RADIO_CHECKED) ? "checked" : "";
 	var id = this._radioId[radioId];
 	var i = 0;
 	html[i++] = "<tr valign='middle'>";
@@ -54,16 +54,16 @@ function(radioId) {
 	return html.join("");
 };
 
-LmAttachmentPicker.prototype._setupRadio =
+ZmAttachmentPicker.prototype._setupRadio =
 function(radioId, doc) {
 	var id = this._radioId[radioId];
 	var rb = this._radio[radioId] = Dwt.getDomObj(doc, id);
-	rb.onclick = LmAttachmentPicker._radioChange;
+	rb.onclick = ZmAttachmentPicker._radioChange;
 	rb._picker = this;
 	rb._radioId = radioId;
 };
 
-LmAttachmentPicker.prototype._setupPicker =
+ZmAttachmentPicker.prototype._setupPicker =
 function(parent) {
 
 	var picker = new DwtComposite(parent);
@@ -71,28 +71,28 @@ function(parent) {
     this._radio = new Object();
     this._radioId = new Object();
 
-	for (var i = 0; i < LmAttachmentPicker.RADIO_BUTTONS.length; i++)
-		this._radioId[LmAttachmentPicker.RADIO_BUTTONS[i]] = Dwt.getNextId();
+	for (var i = 0; i < ZmAttachmentPicker.RADIO_BUTTONS.length; i++)
+		this._radioId[ZmAttachmentPicker.RADIO_BUTTONS[i]] = Dwt.getNextId();
 
 	var treeId = Dwt.getNextId();
 	
 	var html = new Array(10);
 	var idx = 0;
 	html[idx++] = "<table cellpadding='2' cellspacing='0' border='0'>";
-	for (var i = 0; i < LmAttachmentPicker.RADIO_BUTTONS.length; i++)
-		html[idx++] = this._newRadio(LmAttachmentPicker.RADIO_BUTTONS[i], doc);
+	for (var i = 0; i < ZmAttachmentPicker.RADIO_BUTTONS.length; i++)
+		html[idx++] = this._newRadio(ZmAttachmentPicker.RADIO_BUTTONS[i], doc);
 	html[idx++] = "</table>";
 	html[idx++] = "<div id='" + treeId + "'><hr /></div>";
 	picker.getHtmlElement().innerHTML = html.join("");
 
 	var doc = this.getDocument();
-	for (var i = 0; i < LmAttachmentPicker.RADIO_BUTTONS.length; i++)
-		this._setupRadio(LmAttachmentPicker.RADIO_BUTTONS[i], doc);
+	for (var i = 0; i < ZmAttachmentPicker.RADIO_BUTTONS.length; i++)
+		this._setupRadio(ZmAttachmentPicker.RADIO_BUTTONS[i], doc);
 	
     var tti, ti;
 	var tree = this._tree = new DwtTree(picker, DwtTree.CHECKEDITEM_STYLE);
-	tree.addSelectionListener(new LsListener(this, this._treeListener));	
-	var attachTypeList = new LmAttachmentTypeList(this.shell.getData(LmAppCtxt.LABEL));
+	tree.addSelectionListener(new AjxListener(this, this._treeListener));	
+	var attachTypeList = new ZmAttachmentTypeList(this.shell.getData(ZmAppCtxt.LABEL));
 	attachTypeList.load();
 	var attachments = attachTypeList.getAttachments();
 	this._attsByDesc = new Object();
@@ -117,19 +117,19 @@ function(parent) {
 	this._updateQuery();
 };
 
-LmAttachmentPicker._radioChange = 
+ZmAttachmentPicker._radioChange = 
 function(ev) {
 	var element = DwtUiEvent.getTarget(ev);
 	var picker = element._picker;
-	Dwt.setVisible(picker._treeDiv, (element._radioId == LmAttachmentPicker.SPEC));
+	Dwt.setVisible(picker._treeDiv, (element._radioId == ZmAttachmentPicker.SPEC));
 	picker._updateQuery();
 };
 
-LmAttachmentPicker.prototype._updateQuery = 
+ZmAttachmentPicker.prototype._updateQuery = 
 function() {
-	if (this._radio[LmAttachmentPicker.ANY].checked) {
+	if (this._radio[ZmAttachmentPicker.ANY].checked) {
 		this.setQuery("attachment:any");
-	} else if (this._radio[LmAttachmentPicker.NONE].checked) {
+	} else if (this._radio[ZmAttachmentPicker.NONE].checked) {
 		this.setQuery("attachment:none");	
 	} else {
 		var types = new Array();
@@ -150,15 +150,15 @@ function() {
 	this.execute();
 };
 
-LmAttachmentPicker.prototype._treeListener =
+ZmAttachmentPicker.prototype._treeListener =
 function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED) {
  		var ti = ev.item;
  		var checked = ti.getChecked();
 		if (checked)
-			this._checkedItems[ti.getData(LmAttachmentPicker.ATT_KEY)] = true;
+			this._checkedItems[ti.getData(ZmAttachmentPicker.ATT_KEY)] = true;
 		else
-			delete this._checkedItems[ti.getData(LmAttachmentPicker.ATT_KEY)];
+			delete this._checkedItems[ti.getData(ZmAttachmentPicker.ATT_KEY)];
 		this._updateQuery();
  	}
 };

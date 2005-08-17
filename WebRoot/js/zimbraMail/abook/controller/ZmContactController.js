@@ -1,19 +1,19 @@
-function LmContactController(appCtxt, container, abApp) {
+function ZmContactController(appCtxt, container, abApp) {
 
-	LmListController.call(this, appCtxt, container, abApp);
+	ZmListController.call(this, appCtxt, container, abApp);
 	
-	this._listeners[LmOperation.SAVE] = new LsListener(this, this._saveListener);
+	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 }
 
-LmContactController.prototype = new LmListController();
-LmContactController.prototype.constructor = LmContactController;
+ZmContactController.prototype = new ZmListController();
+ZmContactController.prototype.constructor = ZmContactController;
 
-LmContactController.prototype.toString =
+ZmContactController.prototype.toString =
 function() {
-	return "LmContactController";
+	return "ZmContactController";
 }
 
-LmContactController.prototype.show = 
+ZmContactController.prototype.show = 
 function(contact) {
 	this._currentView = this._getViewType();
 	this._contact = contact;
@@ -24,72 +24,72 @@ function(contact) {
 	this._setup(this._currentView);
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
 	var elements = new Object();
-	elements[LmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[LmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements);
 }
 
-// Private methods (mostly overrides of LmListController protected methods)
+// Private methods (mostly overrides of ZmListController protected methods)
 
-LmContactController.prototype._getToolBarOps = 
+ZmContactController.prototype._getToolBarOps = 
 function() {
-	var list = [LmOperation.SAVE];
-	list.push(LmOperation.SEP);
-	if (this._appCtxt.get(LmSetting.TAGGING_ENABLED))
-		list.push(LmOperation.TAG_MENU);
-	if (this._appCtxt.get(LmSetting.PRINT_ENABLED))
-		list.push(LmOperation.PRINT);
-	list.push(LmOperation.DELETE);
-	list.push(LmOperation.SEP);
-	list.push(LmOperation.CLOSE);
+	var list = [ZmOperation.SAVE];
+	list.push(ZmOperation.SEP);
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+		list.push(ZmOperation.TAG_MENU);
+	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
+		list.push(ZmOperation.PRINT);
+	list.push(ZmOperation.DELETE);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.CLOSE);
 	return list;
 }
 
-LmContactController.prototype._getActionMenuOps =
+ZmContactController.prototype._getActionMenuOps =
 function() {
 	return null;
 }
 
-LmContactController.prototype._getViewType = 
+ZmContactController.prototype._getViewType = 
 function() {
-	return LmController.CONTACT_VIEW;
+	return ZmController.CONTACT_VIEW;
 }
 
-LmContactController.prototype._initializeListView = 
+ZmContactController.prototype._initializeListView = 
 function(view) {
 	if (!this._listView[view])
-		this._listView[view] = new LmContactView(this._container);
+		this._listView[view] = new ZmContactView(this._container);
 }
 
-LmContactController.prototype._getTagMenuMsg = 
+ZmContactController.prototype._getTagMenuMsg = 
 function() {
 	return LmMsg.tagContact;
 }
 
-LmContactController.prototype._setViewContents =
+ZmContactController.prototype._setViewContents =
 function(view) {
 	this._listView[view].set(this._contact);
 }
 
-LmContactController.prototype._paginate = 
+ZmContactController.prototype._paginate = 
 function(view, bPageForward) {
 	// TODO
 	DBG.println("TODO - page to next/previous contact");
 }
 
-LmContactController.prototype._resetOperations = 
+ZmContactController.prototype._resetOperations = 
 function(parent, num) {
 	if (!parent) return;
 	if (this._contact.id == undefined || this._contact.isGal) {
 		// disble all buttons except SAVE and CLOSE
 		parent.enableAll(false);
-		parent.enable([LmOperation.SAVE, LmOperation.CLOSE], true);
+		parent.enable([ZmOperation.SAVE, ZmOperation.CLOSE], true);
 	} else {
-		LmListController.prototype._resetOperations.call(this, parent, num);
+		ZmListController.prototype._resetOperations.call(this, parent, num);
 	}
 }
 
-LmContactController.prototype._saveListener =
+ZmContactController.prototype._saveListener =
 function(ev, bIsPopCallback) {
 	try {
 		var view = this._currentView;
@@ -114,15 +114,15 @@ function(ev, bIsPopCallback) {
 	}
 }
 
-LmContactController.prototype._doDelete = 
+ZmContactController.prototype._doDelete = 
 function(params) {
-	LmListController.prototype._doDelete.call(this, params);
+	ZmListController.prototype._doDelete.call(this, params);
 	// disable input fields (to prevent blinking cursor from bleeding through)
 	this._listView[this._currentView].enableInputs(false);
 	this._app.popView();
 }
 
-LmContactController.prototype._preHideCallback =
+ZmContactController.prototype._preHideCallback =
 function() {
 	var view = this._listView[this._currentView];
 	if (!view.isDirty())
@@ -140,20 +140,20 @@ function() {
 	return false;
 }
 
-LmContactController.prototype._popShieldYesCallback =
+ZmContactController.prototype._popShieldYesCallback =
 function() {
 	this._saveListener(null, true);
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(true);
 }
 
-LmContactController.prototype._popShieldNoCallback =
+ZmContactController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(true);
 }
 
-LmContactController.prototype._popShieldCancelCallback =
+ZmContactController.prototype._popShieldCancelCallback =
 function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(false);

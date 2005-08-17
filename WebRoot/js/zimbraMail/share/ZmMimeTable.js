@@ -1,84 +1,84 @@
-function LmMimeTable() {
+function ZmMimeTable() {
 };
 
 // IGNORE means the client will not display these attachment types to the user
-LmMimeTable.APP					= "application";
-LmMimeTable.APP_ADOBE_PDF		= "application/pdf";
-LmMimeTable.APP_ADOBE_PS		= "application/postscript";
-LmMimeTable.APP_APPLE_DOUBLE 	= "application/applefile";		// IGNORE
-LmMimeTable.APP_EXE				= "application/exe";
-LmMimeTable.APP_MS_DOWNLOAD		= "application/x-msdownload";
-LmMimeTable.APP_MS_EXCEL		= "application/vnd.ms-excel";
-LmMimeTable.APP_MS_PPT			= "application/vnd.ms-powerpoint";
-LmMimeTable.APP_MS_PROJECT		= "application/vnd.ms-project";
-LmMimeTable.APP_MS_TNEF			= "application/ms-tnef"; 		// IGNORE
-LmMimeTable.APP_MS_TNEF2 		= "application/vnd.ms-tnef"; 	// IGNORE (added per bug 2339)
-LmMimeTable.APP_MS_VISIO		= "application/vnd.visio";
-LmMimeTable.APP_MS_WORD			= "application/msword";
-LmMimeTable.APP_OCTET_STREAM	= "application/octet-stream";
-LmMimeTable.APP_ZIP				= "application/zip";
-LmMimeTable.APP_ZIP2			= "application/x-zip-compressed";
-LmMimeTable.AUDIO				= "audio";
-LmMimeTable.AUDIO_WAV			= "audio/x-wav";
-LmMimeTable.AUDIO_MP3			= "audio/mpeg";
-LmMimeTable.IMG					= "image";
-LmMimeTable.IMG_GIF				= "image/gif";
-LmMimeTable.IMG_JPEG			= "image/jpeg";
-LmMimeTable.IMG_PNG				= "image/png";
-LmMimeTable.IMG_TIFF			= "image/tiff";
-LmMimeTable.MSG_RFC822			= "message/rfc822";
-LmMimeTable.MULTI_ALT			= "multipart/alternative"; 		// IGNORE
-LmMimeTable.MULTI_MIXED			= "multipart/mixed"; 			// IGNORE
-LmMimeTable.MULTI_RELATED		= "multipart/related"; 			// IGNORE
-LmMimeTable.TEXT				= "text";
-LmMimeTable.TEXT_RTF			= "text/enriched";
-LmMimeTable.TEXT_HTML			= "text/html";
-LmMimeTable.TEXT_CAL			= "text/calendar"; 				// IGNORE
-LmMimeTable.TEXT_JAVA			= "text/x-java";
-LmMimeTable.TEXT_PLAIN			= "text/plain";
-LmMimeTable.TEXT_XML			= "text/xml";
-LmMimeTable.VIDEO				= "video";
-LmMimeTable.VIDEO_WMV			= "video/x-ms-wmv";
+ZmMimeTable.APP					= "application";
+ZmMimeTable.APP_ADOBE_PDF		= "application/pdf";
+ZmMimeTable.APP_ADOBE_PS		= "application/postscript";
+ZmMimeTable.APP_APPLE_DOUBLE 	= "application/applefile";		// IGNORE
+ZmMimeTable.APP_EXE				= "application/exe";
+ZmMimeTable.APP_MS_DOWNLOAD		= "application/x-msdownload";
+ZmMimeTable.APP_MS_EXCEL		= "application/vnd.ms-excel";
+ZmMimeTable.APP_MS_PPT			= "application/vnd.ms-powerpoint";
+ZmMimeTable.APP_MS_PROJECT		= "application/vnd.ms-project";
+ZmMimeTable.APP_MS_TNEF			= "application/ms-tnef"; 		// IGNORE
+ZmMimeTable.APP_MS_TNEF2 		= "application/vnd.ms-tnef"; 	// IGNORE (added per bug 2339)
+ZmMimeTable.APP_MS_VISIO		= "application/vnd.visio";
+ZmMimeTable.APP_MS_WORD			= "application/msword";
+ZmMimeTable.APP_OCTET_STREAM	= "application/octet-stream";
+ZmMimeTable.APP_ZIP				= "application/zip";
+ZmMimeTable.APP_ZIP2			= "application/x-zip-compressed";
+ZmMimeTable.AUDIO				= "audio";
+ZmMimeTable.AUDIO_WAV			= "audio/x-wav";
+ZmMimeTable.AUDIO_MP3			= "audio/mpeg";
+ZmMimeTable.IMG					= "image";
+ZmMimeTable.IMG_GIF				= "image/gif";
+ZmMimeTable.IMG_JPEG			= "image/jpeg";
+ZmMimeTable.IMG_PNG				= "image/png";
+ZmMimeTable.IMG_TIFF			= "image/tiff";
+ZmMimeTable.MSG_RFC822			= "message/rfc822";
+ZmMimeTable.MULTI_ALT			= "multipart/alternative"; 		// IGNORE
+ZmMimeTable.MULTI_MIXED			= "multipart/mixed"; 			// IGNORE
+ZmMimeTable.MULTI_RELATED		= "multipart/related"; 			// IGNORE
+ZmMimeTable.TEXT				= "text";
+ZmMimeTable.TEXT_RTF			= "text/enriched";
+ZmMimeTable.TEXT_HTML			= "text/html";
+ZmMimeTable.TEXT_CAL			= "text/calendar"; 				// IGNORE
+ZmMimeTable.TEXT_JAVA			= "text/x-java";
+ZmMimeTable.TEXT_PLAIN			= "text/plain";
+ZmMimeTable.TEXT_XML			= "text/xml";
+ZmMimeTable.VIDEO				= "video";
+ZmMimeTable.VIDEO_WMV			= "video/x-ms-wmv";
 
-LmMimeTable._table = new Object();
+ZmMimeTable._table = new Object();
 
 // only add types which are NOT ignored by the client	
-LmMimeTable._table[LmMimeTable.APP]					= {desc: LmMsg.unknownBinaryType, image: LmImg.I_BINARY, imageLarge: LmImg.IL_BINARY};
-LmMimeTable._table[LmMimeTable.APP_ADOBE_PDF]		= {desc: LmMsg.adobePdfDocument, image: LmImg.I_PDF, imageLarge: LmImg.IL_PDF};
-LmMimeTable._table[LmMimeTable.APP_ADOBE_PS]		= {desc: LmMsg.adobePsDocument, image: LmImg.I_DOCUMENT, imageLarge: LmImg.IL_DOCUMENT};
-LmMimeTable._table[LmMimeTable.APP_EXE]				= {desc: LmMsg.application, image: LmImg.I_BINARY, imageLarge: LmImg.IL_BINARY};
-LmMimeTable._table[LmMimeTable.APP_MS_DOWNLOAD]		= {desc: LmMsg.msDownload, image: LmImg.I_BINARY, imageLarge: LmImg.IL_BINARY};
-LmMimeTable._table[LmMimeTable.APP_MS_EXCEL]		= {desc: LmMsg.msExcelDocument, image: LmImg.I_MS_EXCEL, imageLarge: LmImg.IL_MS_EXCEL};
-LmMimeTable._table[LmMimeTable.APP_MS_PPT]			= {desc: LmMsg.msPPTDocument, image: LmImg.I_MS_POWERPOINT, imageLarge: LmImg.IL_MS_POWERPOINT};
-LmMimeTable._table[LmMimeTable.APP_MS_PROJECT]		= {desc: LmMsg.msProjectDocument, image: LmImg.I_MS_PROJECT, imageLarge: LmImg.IL_MS_PROJECT};
-LmMimeTable._table[LmMimeTable.APP_MS_VISIO]		= {desc: LmMsg.msVisioDocument, image: LmImg.I_MS_VISIO, imageLarge: LmImg.IL_MS_VISIO};
-LmMimeTable._table[LmMimeTable.APP_MS_WORD]			= {desc: LmMsg.msWordDocument, image: LmImg.I_MS_WORD, imageLarge: LmImg.IL_MS_WORD};
-LmMimeTable._table[LmMimeTable.APP_OCTET_STREAM]	= {desc: LmMsg.unknownBinaryType, image: LmImg.I_BINARY, imageLarge: LmImg.IL_BINARY};
-LmMimeTable._table[LmMimeTable.APP_ZIP]				= {desc: LmMsg.zipFile, image: LmImg.I_ZIP, imageLarge: LmImg.IL_ZIP};
-LmMimeTable._table[LmMimeTable.APP_ZIP2]			= {desc: LmMsg.zipFile, image: LmImg.I_ZIP, imageLarge: LmImg.IL_ZIP};
-LmMimeTable._table[LmMimeTable.AUDIO]				= {desc: LmMsg.audio, image: LmImg.I_AUDIO, imageLarge: LmImg.IL_AUDIO};
-LmMimeTable._table[LmMimeTable.AUDIO_WAV]			= {desc: LmMsg.waveAudio, image: LmImg.I_AUDIO, imageLarge: LmImg.IL_AUDIO};
-LmMimeTable._table[LmMimeTable.AUDIO_MP3]			= {desc: LmMsg.mp3Audio, image: LmImg.I_AUDIO, imageLarge: LmImg.IL_AUDIO};
-LmMimeTable._table[LmMimeTable.VIDEO]				= {desc: LmMsg.video, image: LmImg.I_MS_WMV, imageLarge: LmImg.IL_MS_WMV};
-LmMimeTable._table[LmMimeTable.VIDEO_WMV]			= {desc: LmMsg.msWMV, image: LmImg.I_MS_WMV, imageLarge: LmImg.IL_MS_WMV};
-LmMimeTable._table[LmMimeTable.IMG]					= {desc: LmMsg.image, image: LmImg.I_IMAGE, imageLarge: LmImg.IL_IMAGE};
-LmMimeTable._table[LmMimeTable.IMG_GIF]				= {desc: LmMsg.gifImage, image: LmImg.I_GIF, imageLarge: LmImg.IL_GIF};
-LmMimeTable._table[LmMimeTable.IMG_JPEG]			= {desc: LmMsg.jpegImage, image: LmImg.I_JPEG, imageLarge: LmImg.IL_JPEG};
-LmMimeTable._table[LmMimeTable.IMG_PNG]				= {desc: LmMsg.pngImage, image: LmImg.I_IMAGE, imageLarge: LmImg.IL_IMAGE};
-LmMimeTable._table[LmMimeTable.IMG_TIFF]			= {desc: LmMsg.tiffImage, image: LmImg.I_IMAGE, imageLarge: LmImg.IL_IMAGE};
-LmMimeTable._table[LmMimeTable.MSG_RFC822]			= {desc: LmMsg.mailMessage, image: LmImg.I_ENVELOPE, imageLarge: LmImg.IL_ENVELOPE};
-LmMimeTable._table[LmMimeTable.TEXT]				= {desc: LmMsg.textDocuments, image: LmImg.I_DOCUMENT, imageLarge: LmImg.IL_DOCUMENT};
-LmMimeTable._table[LmMimeTable.TEXT_RTF]			= {desc: LmMsg.enrichedText, image: LmImg.I_DOCUMENT, imageLarge: LmImg.IL_DOCUMENT};
-LmMimeTable._table[LmMimeTable.TEXT_HTML]			= {desc: LmMsg.htmlDocument, image: LmImg.I_HTML, imageLarge: LmImg.IL_HTML};
-LmMimeTable._table[LmMimeTable.TEXT_JAVA]			= {desc: LmMsg.javaSource, image: LmImg.I_DOCUMENT, imageLarge: LmImg.IL_DOCUMENT};
-LmMimeTable._table[LmMimeTable.TEXT_PLAIN]			= {desc: LmMsg.textFile, image: LmImg.I_DOCUMENT, imageLarge: LmImg.IL_DOCUMENT};
-LmMimeTable._table[LmMimeTable.TEXT_XML]			= {desc: LmMsg.xmlDocument, image: LmImg.I_DOCUMENT, imageLarge: LmImg.IL_DOCUMENT};
+ZmMimeTable._table[ZmMimeTable.APP]					= {desc: LmMsg.unknownBinaryType, image: ZmImg.I_BINARY, imageLarge: ZmImg.IL_BINARY};
+ZmMimeTable._table[ZmMimeTable.APP_ADOBE_PDF]		= {desc: LmMsg.adobePdfDocument, image: ZmImg.I_PDF, imageLarge: ZmImg.IL_PDF};
+ZmMimeTable._table[ZmMimeTable.APP_ADOBE_PS]		= {desc: LmMsg.adobePsDocument, image: ZmImg.I_DOCUMENT, imageLarge: ZmImg.IL_DOCUMENT};
+ZmMimeTable._table[ZmMimeTable.APP_EXE]				= {desc: LmMsg.application, image: ZmImg.I_BINARY, imageLarge: ZmImg.IL_BINARY};
+ZmMimeTable._table[ZmMimeTable.APP_MS_DOWNLOAD]		= {desc: LmMsg.msDownload, image: ZmImg.I_BINARY, imageLarge: ZmImg.IL_BINARY};
+ZmMimeTable._table[ZmMimeTable.APP_MS_EXCEL]		= {desc: LmMsg.msExcelDocument, image: ZmImg.I_MS_EXCEL, imageLarge: ZmImg.IL_MS_EXCEL};
+ZmMimeTable._table[ZmMimeTable.APP_MS_PPT]			= {desc: LmMsg.msPPTDocument, image: ZmImg.I_MS_POWERPOINT, imageLarge: ZmImg.IL_MS_POWERPOINT};
+ZmMimeTable._table[ZmMimeTable.APP_MS_PROJECT]		= {desc: LmMsg.msProjectDocument, image: ZmImg.I_MS_PROJECT, imageLarge: ZmImg.IL_MS_PROJECT};
+ZmMimeTable._table[ZmMimeTable.APP_MS_VISIO]		= {desc: LmMsg.msVisioDocument, image: ZmImg.I_MS_VISIO, imageLarge: ZmImg.IL_MS_VISIO};
+ZmMimeTable._table[ZmMimeTable.APP_MS_WORD]			= {desc: LmMsg.msWordDocument, image: ZmImg.I_MS_WORD, imageLarge: ZmImg.IL_MS_WORD};
+ZmMimeTable._table[ZmMimeTable.APP_OCTET_STREAM]	= {desc: LmMsg.unknownBinaryType, image: ZmImg.I_BINARY, imageLarge: ZmImg.IL_BINARY};
+ZmMimeTable._table[ZmMimeTable.APP_ZIP]				= {desc: LmMsg.zipFile, image: ZmImg.I_ZIP, imageLarge: ZmImg.IL_ZIP};
+ZmMimeTable._table[ZmMimeTable.APP_ZIP2]			= {desc: LmMsg.zipFile, image: ZmImg.I_ZIP, imageLarge: ZmImg.IL_ZIP};
+ZmMimeTable._table[ZmMimeTable.AUDIO]				= {desc: LmMsg.audio, image: ZmImg.I_AUDIO, imageLarge: ZmImg.IL_AUDIO};
+ZmMimeTable._table[ZmMimeTable.AUDIO_WAV]			= {desc: LmMsg.waveAudio, image: ZmImg.I_AUDIO, imageLarge: ZmImg.IL_AUDIO};
+ZmMimeTable._table[ZmMimeTable.AUDIO_MP3]			= {desc: LmMsg.mp3Audio, image: ZmImg.I_AUDIO, imageLarge: ZmImg.IL_AUDIO};
+ZmMimeTable._table[ZmMimeTable.VIDEO]				= {desc: LmMsg.video, image: ZmImg.I_MS_WMV, imageLarge: ZmImg.IL_MS_WMV};
+ZmMimeTable._table[ZmMimeTable.VIDEO_WMV]			= {desc: LmMsg.msWMV, image: ZmImg.I_MS_WMV, imageLarge: ZmImg.IL_MS_WMV};
+ZmMimeTable._table[ZmMimeTable.IMG]					= {desc: LmMsg.image, image: ZmImg.I_IMAGE, imageLarge: ZmImg.IL_IMAGE};
+ZmMimeTable._table[ZmMimeTable.IMG_GIF]				= {desc: LmMsg.gifImage, image: ZmImg.I_GIF, imageLarge: ZmImg.IL_GIF};
+ZmMimeTable._table[ZmMimeTable.IMG_JPEG]			= {desc: LmMsg.jpegImage, image: ZmImg.I_JPEG, imageLarge: ZmImg.IL_JPEG};
+ZmMimeTable._table[ZmMimeTable.IMG_PNG]				= {desc: LmMsg.pngImage, image: ZmImg.I_IMAGE, imageLarge: ZmImg.IL_IMAGE};
+ZmMimeTable._table[ZmMimeTable.IMG_TIFF]			= {desc: LmMsg.tiffImage, image: ZmImg.I_IMAGE, imageLarge: ZmImg.IL_IMAGE};
+ZmMimeTable._table[ZmMimeTable.MSG_RFC822]			= {desc: LmMsg.mailMessage, image: ZmImg.I_ENVELOPE, imageLarge: ZmImg.IL_ENVELOPE};
+ZmMimeTable._table[ZmMimeTable.TEXT]				= {desc: LmMsg.textDocuments, image: ZmImg.I_DOCUMENT, imageLarge: ZmImg.IL_DOCUMENT};
+ZmMimeTable._table[ZmMimeTable.TEXT_RTF]			= {desc: LmMsg.enrichedText, image: ZmImg.I_DOCUMENT, imageLarge: ZmImg.IL_DOCUMENT};
+ZmMimeTable._table[ZmMimeTable.TEXT_HTML]			= {desc: LmMsg.htmlDocument, image: ZmImg.I_HTML, imageLarge: ZmImg.IL_HTML};
+ZmMimeTable._table[ZmMimeTable.TEXT_JAVA]			= {desc: LmMsg.javaSource, image: ZmImg.I_DOCUMENT, imageLarge: ZmImg.IL_DOCUMENT};
+ZmMimeTable._table[ZmMimeTable.TEXT_PLAIN]			= {desc: LmMsg.textFile, image: ZmImg.I_DOCUMENT, imageLarge: ZmImg.IL_DOCUMENT};
+ZmMimeTable._table[ZmMimeTable.TEXT_XML]			= {desc: LmMsg.xmlDocument, image: ZmImg.I_DOCUMENT, imageLarge: ZmImg.IL_DOCUMENT};
 
-LmMimeTable.getInfo =
+ZmMimeTable.getInfo =
 function(type, createIfUndefined) {
-	var entry = LmMimeTable._table[type];
+	var entry = ZmMimeTable._table[type];
 	if (!entry && createIfUndefined) {
-		entry = LmMimeTable._table[type] = {desc: type, image: LmImg.I_BINARY, imageLarge: LmImg.IL_BINARY};
+		entry = ZmMimeTable._table[type] = {desc: type, image: ZmImg.I_BINARY, imageLarge: ZmImg.IL_BINARY};
 	}
 	if (entry) {
 		if (!entry.type)
@@ -87,20 +87,20 @@ function(type, createIfUndefined) {
 		// otherwise, check if main category is in table
 		var baseType = type.split("/")[0];
 		if (baseType)
-			entry = LmMimeTable._table[baseType];
+			entry = ZmMimeTable._table[baseType];
 	}
 	return entry;
 };
 
-LmMimeTable.isIgnored = 
+ZmMimeTable.isIgnored = 
 function(type) {
-	if (type == LmMimeTable.MULTI_ALT || 
-		type == LmMimeTable.MULTI_MIXED || 
-		type == LmMimeTable.TEXT_CAL || 
-		type == LmMimeTable.MULTI_RELATED || 
-		type == LmMimeTable.APP_MS_TNEF ||
-		type == LmMimeTable.APP_MS_TNEF2 || 
-		type == LmMimeTable.APP_APPLE_DOUBLE)
+	if (type == ZmMimeTable.MULTI_ALT || 
+		type == ZmMimeTable.MULTI_MIXED || 
+		type == ZmMimeTable.TEXT_CAL || 
+		type == ZmMimeTable.MULTI_RELATED || 
+		type == ZmMimeTable.APP_MS_TNEF ||
+		type == ZmMimeTable.APP_MS_TNEF2 || 
+		type == ZmMimeTable.APP_APPLE_DOUBLE)
 	{
 		return true;
 	}

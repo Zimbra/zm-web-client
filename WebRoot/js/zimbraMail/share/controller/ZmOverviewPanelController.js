@@ -1,67 +1,67 @@
-function LmOverviewPanelController(appCtxt, container) {
+function ZmOverviewPanelController(appCtxt, container) {
 
-	LmController.call(this, appCtxt, container);
+	ZmController.call(this, appCtxt, container);
 }
 
-LmOverviewPanelController.prototype = new LmController;
-LmOverviewPanelController.prototype.constructor = LmOverviewPanelController;
+ZmOverviewPanelController.prototype = new ZmController;
+ZmOverviewPanelController.prototype.constructor = ZmOverviewPanelController;
 
-LmOverviewPanelController.DEFAULT_FOLDER_ID = LmFolder.ID_INBOX;
+ZmOverviewPanelController.DEFAULT_FOLDER_ID = ZmFolder.ID_INBOX;
 
-LmOverviewPanelController.prototype.toString = 
+ZmOverviewPanelController.prototype.toString = 
 function() {
-	return "LmOverviewPanelController";
+	return "ZmOverviewPanelController";
 }
 
-LmOverviewPanelController.prototype.getOverviewPanel =
+ZmOverviewPanelController.prototype.getOverviewPanel =
 function() {
 	return this._overviewPanel;
 }
 
-LmOverviewPanelController.prototype.getTagTreeController =
+ZmOverviewPanelController.prototype.getTagTreeController =
 function() {
 	return this._tagTreeController;
 }
 
-LmOverviewPanelController.prototype.getFolderTreeController =
+ZmOverviewPanelController.prototype.getFolderTreeController =
 function() {
 	return this._folderTreeController;
 }
 
-LmOverviewPanelController.prototype.setView =
+ZmOverviewPanelController.prototype.setView =
 function() {
 	if (this._overviewPanel) {
 		this._overviewPanel.reset();
 	} else {
-		this._overviewPanel = new LmOverviewPanel(this._container, "OverviewPanel", DwtControl.ABSOLUTE_STYLE, this._appCtxt);
+		this._overviewPanel = new ZmOverviewPanel(this._container, "OverviewPanel", DwtControl.ABSOLUTE_STYLE, this._appCtxt);
 	}
 	this._buildFolderTree();
-	var id = LmOverviewPanelController.DEFAULT_FOLDER_ID;
+	var id = ZmOverviewPanelController.DEFAULT_FOLDER_ID;
 	var folder = this._appCtxt.getFolderTree().getById(id);
 	this._folderTreeController.getTreeView().setSelected(folder, true);
 }
 
-LmOverviewPanelController.prototype._buildFolderTree =
+ZmOverviewPanelController.prototype._buildFolderTree =
 function() {
 	var tree = this._overviewPanel.getFolderTree();
 	
-	var folders = [LmFolder.ID_USER];
-	if (this._appCtxt.get(LmSetting.SAVED_SEARCHES_ENABLED))
-		folders.push(LmFolder.ID_SEP, LmFolder.ID_SEARCH);
-	if (this._appCtxt.get(LmSetting.TAGGING_ENABLED))
-		folders.push(LmFolder.ID_SEP, LmFolder.ID_TAGS);
-	this._folderTreeController = new LmFolderTreeController(this._appCtxt, tree);
+	var folders = [ZmFolder.ID_USER];
+	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED))
+		folders.push(ZmFolder.ID_SEP, ZmFolder.ID_SEARCH);
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+		folders.push(ZmFolder.ID_SEP, ZmFolder.ID_TAGS);
+	this._folderTreeController = new ZmFolderTreeController(this._appCtxt, tree);
 	var ttc = this._folderTreeController.show(folders, true);
 	if (ttc)
 		this._tagTreeController = ttc;
-	this._setExpanded(LmFolder.ID_USER);
-	if (this._appCtxt.get(LmSetting.TAGGING_ENABLED))
-		this._setExpanded(LmFolder.ID_TAGS);
-	if (this._appCtxt.get(LmSetting.SAVED_SEARCHES_ENABLED))
-		this._setExpanded(LmFolder.ID_SEARCH);
+	this._setExpanded(ZmFolder.ID_USER);
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+		this._setExpanded(ZmFolder.ID_TAGS);
+	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED))
+		this._setExpanded(ZmFolder.ID_SEARCH);
 }
 
-LmOverviewPanelController.prototype._setExpanded =
+ZmOverviewPanelController.prototype._setExpanded =
 function(id, recurse) {
 	var node = this._folderTreeController.getTreeView().getTreeItemById(id);
 	node.setExpanded(true, recurse);

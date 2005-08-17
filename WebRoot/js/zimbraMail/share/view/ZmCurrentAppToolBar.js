@@ -4,7 +4,7 @@
 * switching views within the current app.
 * @class
 */
-function LmCurrentAppToolBar(parent, className, buttons) {
+function ZmCurrentAppToolBar(parent, className, buttons) {
 
 	DwtToolBar.call(this, parent, className, Dwt.ABSOLUTE_STYLE);
 
@@ -23,42 +23,42 @@ function LmCurrentAppToolBar(parent, className, buttons) {
 	this._viewMenu = new Object();
 }
 
-LmCurrentAppToolBar.prototype = new DwtToolBar;
-LmCurrentAppToolBar.prototype.constructor = LmCurrentAppToolBar;
+ZmCurrentAppToolBar.prototype = new DwtToolBar;
+ZmCurrentAppToolBar.prototype.constructor = ZmCurrentAppToolBar;
 
-LmCurrentAppToolBar.prototype.toString = 
+ZmCurrentAppToolBar.prototype.toString = 
 function() {
-	return "LmCurrentAppToolBar";
+	return "ZmCurrentAppToolBar";
 }
 
-LmCurrentAppToolBar.prototype.setCurrentApp = 
+ZmCurrentAppToolBar.prototype.setCurrentApp = 
 function(appName) {
-	this._currentAppLabel.setText(LmMsg[LmLiquidMail.MSG_KEY[appName]]);
-	this._currentAppLabel.setImage(LmLiquidMail.APP_ICON[appName]);
+	this._currentAppLabel.setText(LmMsg[ZmLiquidMail.MSG_KEY[appName]]);
+	this._currentAppLabel.setImage(ZmLiquidMail.APP_ICON[appName]);
 }
 
-LmCurrentAppToolBar.prototype.getViewButton = 
+ZmCurrentAppToolBar.prototype.getViewButton = 
 function() {
 	return this._viewButton;
 }
 
-LmCurrentAppToolBar.prototype.setViewTooltip = 
+ZmCurrentAppToolBar.prototype.setViewTooltip = 
 function(view, tooltip) {
 	this._viewTooltip[view] = tooltip;
 }
 
-LmCurrentAppToolBar.prototype.getViewMenu = 
+ZmCurrentAppToolBar.prototype.getViewMenu = 
 function(view) {
 	return this._viewMenu[view];
 }
 
-LmCurrentAppToolBar.prototype.setViewMenu = 
+ZmCurrentAppToolBar.prototype.setViewMenu = 
 function(view, menu) {
 	this._viewMenu[view] = menu;
 	this.showViewMenu(view);
 }
 
-LmCurrentAppToolBar.prototype.showViewMenu = 
+ZmCurrentAppToolBar.prototype.showViewMenu = 
 function(view) {
 	var viewMenu = this._viewMenu[view];
 	if (viewMenu) {

@@ -13,59 +13,59 @@
 * @param container		containing shell
 * @param contactsApp	containing app
 */
-function LmContactListController(appCtxt, container, contactsApp) {
+function ZmContactListController(appCtxt, container, contactsApp) {
 
-	LmListController.call(this, appCtxt, container, contactsApp);
+	ZmListController.call(this, appCtxt, container, contactsApp);
 
 	this._viewFactory = new Object();
-	this._viewFactory[LmController.CONTACT_CARDS_VIEW] = LmContactCardsView;
-	this._viewFactory[LmController.CONTACT_SIMPLE_VIEW] = LmContactSplitView;
+	this._viewFactory[ZmController.CONTACT_CARDS_VIEW] = ZmContactCardsView;
+	this._viewFactory[ZmController.CONTACT_SIMPLE_VIEW] = ZmContactSplitView;
 	
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-	this._dragSrc.addDragListener(new LsListener(this, this._dragListener));
+	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 	
-	this._listeners[LmOperation.EDIT] = new LsListener(this, this._editListener);
+	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
 
-	this._appCtxt.getSettings().addChangeListener(new LsListener(this, this._changeListener));
+	this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._changeListener));
 	this._isGalSearch = false;
 	this._parentView = new Object();
 }
 
-LmContactListController.prototype = new LmListController;
-LmContactListController.prototype.constructor = LmContactListController;
+ZmContactListController.prototype = new ZmListController;
+ZmContactListController.prototype.constructor = ZmContactListController;
 
-LmContactListController.ICON = new Object();
-LmContactListController.ICON[LmController.CONTACT_SIMPLE_VIEW]		= LmImg.I_LIST;
-LmContactListController.ICON[LmController.CONTACT_CARDS_VIEW]		= LmImg.I_CONTACT;
+ZmContactListController.ICON = new Object();
+ZmContactListController.ICON[ZmController.CONTACT_SIMPLE_VIEW]		= ZmImg.I_LIST;
+ZmContactListController.ICON[ZmController.CONTACT_CARDS_VIEW]		= ZmImg.I_CONTACT;
 
-LmContactListController.MSG_KEY = new Object();
-LmContactListController.MSG_KEY[LmController.CONTACT_SIMPLE_VIEW]	= "contactList";
-LmContactListController.MSG_KEY[LmController.CONTACT_CARDS_VIEW]	= "detailedCards";
+ZmContactListController.MSG_KEY = new Object();
+ZmContactListController.MSG_KEY[ZmController.CONTACT_SIMPLE_VIEW]	= "contactList";
+ZmContactListController.MSG_KEY[ZmController.CONTACT_CARDS_VIEW]	= "detailedCards";
 
-LmContactListController.VIEWS = [LmController.CONTACT_SIMPLE_VIEW, LmController.CONTACT_CARDS_VIEW];
+ZmContactListController.VIEWS = [ZmController.CONTACT_SIMPLE_VIEW, ZmController.CONTACT_CARDS_VIEW];
 
-LmContactListController.prototype.toString = 
+ZmContactListController.prototype.toString = 
 function() {
-	return "LmContactListController";
+	return "ZmContactListController";
 }
 
 // Public methods
 
-LmContactListController.prototype.show =
+ZmContactListController.prototype.show =
 function(search, searchString, bIsGalSearch) {
 	try {
 		this._isGalSearch = bIsGalSearch;
 		var bForce = false;
 		
-		if (search instanceof LmList) {
+		if (search instanceof ZmList) {
 			// show canonical list of contacts
 			this._list = search;
 			bForce = true; // always force display
-		} else if (search instanceof LmSearchResult) {
+		} else if (search instanceof ZmSearchResult) {
 			this._isNewSearch = bForce = true;
-			this._list = search.getResults(LmItem.CONTACT);
+			this._list = search.getResults(ZmItem.CONTACT);
 			if (bIsGalSearch && (this._list == null))
-				this._list = new LmContactList(this._appCtxt, bIsGalSearch);
+				this._list = new ZmContactList(this._appCtxt, bIsGalSearch);
 			this._activeSearch = search;
 			this._searchString = searchString;
 		}
@@ -82,14 +82,14 @@ function(search, searchString, bIsGalSearch) {
 	}
 }
 
-LmContactListController.prototype.switchView = 
+ZmContactListController.prototype.switchView = 
 function(view, force) {
 	if (view != this._currentView || force) {
 		this._setup(view);
 		this._resetNavToolBarButtons(view);
 		var elements = new Object();
-		elements[LmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
-		elements[LmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
 		var ok = this._setView(view, elements, true);
 		this._currentView = view;
 		if (ok)
@@ -97,7 +97,7 @@ function(view, force) {
 
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)
 		if (this._isGalSearch)
-			this._appCtxt.getSearchController().setDefaultSearchType(LmSearchToolBar.FOR_GAL_MI, true);
+			this._appCtxt.getSearchController().setDefaultSearchType(ZmSearchToolBar.FOR_GAL_MI, true);
 
 		// get the first selected item if applicable
 		var item = this._listView[view].getSelection()[0];
@@ -120,7 +120,7 @@ function(view, force) {
 	}
 }
 
-LmContactListController.prototype._preShowCallback =
+ZmContactListController.prototype._preShowCallback =
 function(view) {
 	if (this._isNewSearch) {
 		this._isNewSearch = false;
@@ -133,33 +133,33 @@ function(view) {
 
 // Private and protected methods
 
-LmContactListController.prototype._getToolBarOps =
+ZmContactListController.prototype._getToolBarOps =
 function() {
 	var list = this._standardToolBarOps();
-	list.push(LmOperation.SEP);
-	list.push(LmOperation.EDIT);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.EDIT);
 	return list;
 }
 
-LmContactListController.prototype._getActionMenuOps =
+ZmContactListController.prototype._getActionMenuOps =
 function() {
 	var list = this._contactOps();
-	list.push(LmOperation.SEP);
+	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;
 }
 
-LmContactListController.prototype._getViewType = 
+ZmContactListController.prototype._getViewType = 
 function() {
 	return this._currentView;
 }
 
-LmContactListController.prototype._defaultView =
+ZmContactListController.prototype._defaultView =
 function() {
-	return (this._appCtxt.get(LmSetting.CONTACTS_VIEW) == "cards") ? LmController.CONTACT_CARDS_VIEW : LmController.CONTACT_SIMPLE_VIEW;
+	return (this._appCtxt.get(ZmSetting.CONTACTS_VIEW) == "cards") ? ZmController.CONTACT_CARDS_VIEW : ZmController.CONTACT_SIMPLE_VIEW;
 }
 
-LmContactListController.prototype._createNewView = 
+ZmContactListController.prototype._createNewView = 
 function(view) {
 	this._parentView[view] = new this._viewFactory[view](this._container, this._dropTgt, Dwt.ABSOLUTE_STYLE, this);
 	var listView = this._parentView[view].getListView();
@@ -168,38 +168,38 @@ function(view) {
 	return listView;
 }
 
-LmContactListController.prototype._getTagMenuMsg = 
+ZmContactListController.prototype._getTagMenuMsg = 
 function(num) {
 	return (num == 1) ? LmMsg.AB_TAG_CONTACT : LmMsg.AB_TAG_CONTACTS;
 }
 
-LmContactListController.prototype._getMoveDialogTitle = 
+ZmContactListController.prototype._getMoveDialogTitle = 
 function(num) {
 	return (num == 1) ? LmMsg.AB_MOVE_CONTACT : LmMsg.AB_MOVE_CONTACTS;
 }
 
-LmContactListController.prototype._initializeToolBar = 
+ZmContactListController.prototype._initializeToolBar = 
 function(view) {
 	if (this._toolbar[view]) return;
 
-	LmListController.prototype._initializeToolBar.call(this, view);
+	ZmListController.prototype._initializeToolBar.call(this, view);
 	this._setupViewMenu(view);
-	this._setNewButtonProps(view, LmMsg.createNewContact, LmImg.I_CONTACT, LmImg.ID_CONTACT, LmOperation.NEW_CONTACT);
+	this._setNewButtonProps(view, LmMsg.createNewContact, ZmImg.I_CONTACT, ZmImg.ID_CONTACT, ZmOperation.NEW_CONTACT);
 	this._toolbar[view].addFiller();
-	var tb = new LmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, LmNavToolBar.SINGLE_ARROWS, true);
+	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
 	this._setNavToolBar(tb);
 }
 
-LmContactListController.prototype._initializeActionMenu = 
+ZmContactListController.prototype._initializeActionMenu = 
 function(view) {
 	if (this._actionMenu) return;
 
-	LmListController.prototype._initializeActionMenu.call(this);
-	LmOperation.setOperation(this._actionMenu, LmOperation.CONTACT, LmOperation.EDIT_CONTACT);
+	ZmListController.prototype._initializeActionMenu.call(this);
+	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT);
 }
 
 // Load contacts into the given view and perform layout.
-LmContactListController.prototype._setViewContents =
+ZmContactListController.prototype._setViewContents =
 function(view) {
 	this._listView[view].set(this._list);
 }
@@ -207,12 +207,12 @@ function(view) {
 // List listeners
 
 // Double click displays a contact.
-LmContactListController.prototype._listSelectionListener =
+ZmContactListController.prototype._listSelectionListener =
 function(ev) {
-	LmListController.prototype._listSelectionListener.call(this, ev);
+	ZmListController.prototype._listSelectionListener.call(this, ev);
 	
 	if (ev.detail == DwtListView.ITEM_SELECTED && 
-		this._currentView == LmController.CONTACT_SIMPLE_VIEW)
+		this._currentView == ZmController.CONTACT_SIMPLE_VIEW)
 	{
 		this._resetNavToolBarButtons(this._currentView);
 		this._parentView[this._currentView].setContact(ev.item, this._isGalSearch);
@@ -225,73 +225,73 @@ function(ev) {
 }
 
 // Get info on selected contact to provide context for action menu.
-LmContactListController.prototype._listActionListener =
+ZmContactListController.prototype._listActionListener =
 function(ev) {
-	LmListController.prototype._listActionListener.call(this, ev);
+	ZmListController.prototype._listActionListener.call(this, ev);
 	this._actionEv.contact = ev.item;
-	var email = ev.item.getAttr([LmContact.F_email]) || ev.item.getAttr([LmContact.F_email2]) || ev.item.getAttr([LmContact.F_email3]);
-	this._actionEv.address = new LmEmailAddress(email);
+	var email = ev.item.getAttr([ZmContact.F_email]) || ev.item.getAttr([ZmContact.F_email2]) || ev.item.getAttr([ZmContact.F_email3]);
+	this._actionEv.address = new ZmEmailAddress(email);
 	// enable/disable New Email menu item per valid email found for this contact
 	var enableNewEmail = email != null && this._listView[this._currentView].getSelectionCount() == 1;
-	this._actionMenu.enable([LmOperation.SEARCH, LmOperation.BROWSE, LmOperation.NEW_MESSAGE], enableNewEmail);
+	this._actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MESSAGE], enableNewEmail);
 	this._setContactText(!this._isGalSearch);
 	this._actionMenu.popup(0, ev.docX, ev.docY);
 }
 
-LmContactListController.prototype._editListener =
+ZmContactListController.prototype._editListener =
 function(ev) {
 	var contact = this._listView[this._currentView].getSelection()[0];
 	this._app.getContactController().show(contact, false);
 }
 
-LmContactListController.prototype._changeListener = 
+ZmContactListController.prototype._changeListener = 
 function(ev) {
-	if (ev.type != LmEvent.S_SETTING) return;
+	if (ev.type != ZmEvent.S_SETTING) return;
 	
 	var setting = ev.source;
-	if (setting.id == LmSetting.CONTACTS_PER_PAGE)
+	if (setting.id == ZmSetting.CONTACTS_PER_PAGE)
 		this._isNewSearch = true; // mark flag for relayout
 }
 
 // Miscellaneous
 
-LmContactListController.prototype._paginate =
+ZmContactListController.prototype._paginate =
 function(view, bPageForward) {
 	this._listView[view].paginate(this._list, bPageForward);
 	this._resetNavToolBarButtons(view);
 }
 
-LmContactListController.prototype._doDelete = 
+ZmContactListController.prototype._doDelete = 
 function(params) {
-	LmListController.prototype._doDelete.call(this, params);
+	ZmListController.prototype._doDelete.call(this, params);
 	// if more contacts to show, 
 	var size = this._listView[this._currentView].getSelectedItems().size();
 	if (size == 0) {
 		// and if in split view allow split view to clear
-		if (this._currentView == LmController.CONTACT_SIMPLE_VIEW)
+		if (this._currentView == ZmController.CONTACT_SIMPLE_VIEW)
 			this._listView[this._currentView].parent.clear();
 
 		this._resetOperations(this._toolbar[this._currentView], 0);
 	}
 }
 
-LmContactListController.prototype._checkReplenish = 
+ZmContactListController.prototype._checkReplenish = 
 function() {
 	// lets not allow replenishment for contacts since they all get loaded at once
 }
 
 // Create menu for View button and add listeners.
-LmContactListController.prototype._setupViewMenu =
+ZmContactListController.prototype._setupViewMenu =
 function(view) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = appToolbar.getViewMenu(view);
 	if (!menu) {
-		var menu = new LmPopupMenu(appToolbar.getViewButton());
-		for (var i = 0; i < LmContactListController.VIEWS.length; i++) {
-			var id = LmContactListController.VIEWS[i];
-			var mi = menu.createMenuItem(id, LmContactListController.ICON[id], LmMsg[LmContactListController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
-			mi.setData(LmOperation.MENUITEM_ID, id);
-			mi.addSelectionListener(this._listeners[LmOperation.VIEW]);
+		var menu = new ZmPopupMenu(appToolbar.getViewButton());
+		for (var i = 0; i < ZmContactListController.VIEWS.length; i++) {
+			var id = ZmContactListController.VIEWS[i];
+			var mi = menu.createMenuItem(id, ZmContactListController.ICON[id], LmMsg[ZmContactListController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
+			mi.setData(ZmOperation.MENUITEM_ID, id);
+			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 			if (id == view)
 				mi.setChecked(true, true);
 		}
@@ -301,39 +301,39 @@ function(view) {
 }
 
 // Resets the available options on a toolbar or action menu.
-LmContactListController.prototype._resetOperations = 
+ZmContactListController.prototype._resetOperations = 
 function(parent, num) {
 	if (!this._isGalSearch) {
-		LmListController.prototype._resetOperations.call(this, parent, num);
-		parent.enable(LmOperation.EDIT, num==1);
+		ZmListController.prototype._resetOperations.call(this, parent, num);
+		parent.enable(ZmOperation.EDIT, num==1);
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
 		parent.enableAll(false);
-		parent.enable([LmOperation.SEARCH, LmOperation.BROWSE, LmOperation.NEW_MENU, LmOperation.VIEW], true);
-		parent.enable([LmOperation.CONTACT, LmOperation.NEW_MESSAGE, LmOperation.PRINT], num>0);
+		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW], true);
+		parent.enable([ZmOperation.CONTACT, ZmOperation.NEW_MESSAGE, ZmOperation.PRINT], num>0);
 	}
 }
 
-LmContactListController.prototype._resetNavToolBarButtons = 
+ZmContactListController.prototype._resetNavToolBarButtons = 
 function(view) {
-	LmListController.prototype._resetNavToolBarButtons.call(this, view);
+	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
 	
 	var offset = this._listView[view].getOffset();
-	this._navToolBar.enable(LmOperation.PAGE_BACK, offset > 0);
+	this._navToolBar.enable(ZmOperation.PAGE_BACK, offset > 0);
 	
 	var evenMore = this._list ? (offset + this._listView[view].getLimit()) < this._list.size() : false;
-	this._navToolBar.enable(LmOperation.PAGE_FORWARD, evenMore);
+	this._navToolBar.enable(ZmOperation.PAGE_FORWARD, evenMore);
 	
-	this._navToolBar.setToolTip(LmOperation.PAGE_BACK, LmMsg.previous + " " + LmMsg.page);
-	this._navToolBar.setToolTip(LmOperation.PAGE_FORWARD, LmMsg.next + " " + LmMsg.page);
+	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, LmMsg.previous + " " + LmMsg.page);
+	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, LmMsg.next + " " + LmMsg.page);
 
 	this._showListRange(view);
 }
 
-LmContactListController.prototype._printListener = 
+ZmContactListController.prototype._printListener = 
 function(ev) {
 	if (!this._printView)
-		this._printView = new LmPrintView(this._appCtxt);
+		this._printView = new ZmPrintView(this._appCtxt);
 	
 	this._printView.render(this._list);
 }

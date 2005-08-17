@@ -11,29 +11,29 @@
 * @param parent				the containing widget
 * @param app				the preferences app
 * @param view				which page we are (eg mail or contacts)
-* @param passwordDialog		a LmChangePasswordDialog
+* @param passwordDialog		a ZmChangePasswordDialog
 */
-function LmPreferencesPage(parent, app, view, passwordDialog) {
+function ZmPreferencesPage(parent, app, view, passwordDialog) {
 
 	if (arguments.length == 0) return;
-	DwtTabViewPage.call(this, parent, "LmPreferencesPage");
+	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
 	
 	this._appCtxt = app._appCtxt;
 	this._view = view; // which preferences page we are
 	this._passwordDialog = passwordDialog;
-	this._title = [LmMsg.zimbraTitle, LmMsg.options, LmPrefView.TAB_NAME[view]].join(": ");
+	this._title = [LmMsg.zimbraTitle, LmMsg.options, ZmPrefView.TAB_NAME[view]].join(": ");
 
 	this.selects = new Object();
 	this._createHtml();
 	this._rendered = false;
 };
 
-LmPreferencesPage.prototype = new DwtTabViewPage;
-LmPreferencesPage.prototype.constructor = LmPreferencesPage;
+ZmPreferencesPage.prototype = new DwtTabViewPage;
+ZmPreferencesPage.prototype.constructor = ZmPreferencesPage;
 
-LmPreferencesPage.IMPORT_FIELD_NAME = "importUpload";
+ZmPreferencesPage.IMPORT_FIELD_NAME = "importUpload";
 
-LmPreferencesPage.prototype.hasRendered =
+ZmPreferencesPage.prototype.hasRendered =
 function () {
 	return this._rendered;
 };
@@ -43,31 +43,31 @@ function () {
 * already. Note that this is an override of DwtTabViewPage.showMe(), so that it's
 * called only when the tab is selected and the page becomes visible.
 */
-LmPreferencesPage.prototype.showMe =
+ZmPreferencesPage.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
 	if (this._rendered) return;
-	DBG.println(LsDebug.DBG2, "rendering preferences page " + this._view);
+	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._view);
 
-	var prefs = LmPrefView.PREFS[this._view];
+	var prefs = ZmPrefView.PREFS[this._view];
 	var settings = this._appCtxt.getSettings();
 	for (var i = 0; i < prefs.length; i++) {
 		var id = prefs[i];
 		var pref = settings.getSetting(id);
 		// make sure editing the pref is supported
-		if ((id == LmSetting.INITIAL_SEARCH && (!this._appCtxt.get(LmSetting.INITIAL_SEARCH_ENABLED))) ||
-			(id == LmSetting.PASSWORD && (!this._appCtxt.get(LmSetting.CHANGE_PASSWORD_ENABLED))) ||
-			(id == LmSetting.SEARCH_INCLUDES_SPAM && (!this._appCtxt.get(LmSetting.SPAM_ENABLED)))) {
+		if ((id == ZmSetting.INITIAL_SEARCH && (!this._appCtxt.get(ZmSetting.INITIAL_SEARCH_ENABLED))) ||
+			(id == ZmSetting.PASSWORD && (!this._appCtxt.get(ZmSetting.CHANGE_PASSWORD_ENABLED))) ||
+			(id == ZmSetting.SEARCH_INCLUDES_SPAM && (!this._appCtxt.get(ZmSetting.SPAM_ENABLED)))) {
 			continue;
 		}
 		// save the current value (for checking later if it changed)
 		var value = pref.origValue = pref.getValue();
-		if (id == LmSetting.SIGNATURE_STYLE)
-			value = (value == LmSetting.SIG_INTERNET);		
-		var prefId = LmPref.KEY_ID + id;
-		DBG.println(LsDebug.DBG3, "adding pref " + pref.name + " / " + value);
+		if (id == ZmSetting.SIGNATURE_STYLE)
+			value = (value == ZmSetting.SIG_INTERNET);		
+		var prefId = ZmPref.KEY_ID + id;
+		DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
 
-		var setup = LmPref.SETUP[id];
+		var setup = ZmPref.SETUP[id];
 		var type = setup.displayContainer;
 		if (type == "select") {
 			var selObj = new DwtSelect(this);
@@ -128,29 +128,29 @@ function() {
 			this._createRow(setup.displayName, html.join(""), setup.displaySeparator);
 			if (type == "x_password") {
 				this._addButton(buttonId, LmMsg.change, 50,
-								new LsListener(this, this._changePasswordListener));
+								new AjxListener(this, this._changePasswordListener));
 			} else if (type == "import") {
 				this._importDiv = document.getElementById(buttonId);
 				this._addImportWidgets(this._importDiv);
 			} else if (type == "export") {
 				this._addButton(buttonId, LmMsg._export, 65,
-								new LsListener(this, this._exportContactsListener));
+								new AjxListener(this, this._exportContactsListener));
 			}
 		}
 	}
 	this._addButton(this._resetId, LmMsg.restoreDefaults, 100,
-					new LsListener(this, this._resetListener));
+					new AjxListener(this, this._resetListener));
 	this._rendered = true;
 };
 
-LmPreferencesPage.prototype.getTitle =
+ZmPreferencesPage.prototype.getTitle =
 function() {
 	return this._title;
 }
 
 // Creates a table that we can later add preference rows to, and a placeholder DIV for
 // the reset button.
-LmPreferencesPage.prototype._createHtml =
+ZmPreferencesPage.prototype._createHtml =
 function() {
 	var html = new Array();
 	var i = 0;
@@ -168,14 +168,14 @@ function() {
 };
 
 // Add a row to the table for the given preference.
-LmPreferencesPage.prototype._createRow =
+ZmPreferencesPage.prototype._createRow =
 function(label, content, addSep) {
 	var tr = this._table.insertRow(-1);
 	tr.id = Dwt.getNextId();
 	tr.valign = "top";
 	var cell1 = tr.insertCell(0);
 //	cell1.className = "prefLabel";
-	cell1.innerHTML = LsStringUtil.htmlEncode(label + ":");
+	cell1.innerHTML = AjxStringUtil.htmlEncode(label + ":");
 
 	var cell2 = tr.insertCell(1);
 	if (typeof (content) == 'string'){
@@ -198,7 +198,7 @@ function(label, content, addSep) {
 }
 
 // Add a button to the preferences page
-LmPreferencesPage.prototype._addButton =
+ZmPreferencesPage.prototype._addButton =
 function(parentId, text, width, listener) {
 	var button = new DwtButton(this);
 	button.setSize(width, Dwt.DEFAULT);
@@ -211,13 +211,13 @@ function(parentId, text, width, listener) {
 	return button;
 }
 
-LmPreferencesPage.prototype._addImportWidgets = 
+ZmPreferencesPage.prototype._addImportWidgets = 
 function(buttonDiv) {
 	
 	this._uploadFormId = Dwt.getNextId();
 	this._attInputId = Dwt.getNextId();
 
-	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(LmSetting.CSFE_UPLOAD_URI);
+	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	
 	// set up iframe
 	var iframe = this._importIframe = document.createElement('iframe');
@@ -230,7 +230,7 @@ function(buttonDiv) {
 	buttonDiv.appendChild(iframe);
 	
 	// set up import button
-	this._importBtn = this._addButton(buttonDiv.id, LmMsg._import, 65, new LsListener(this, this._importContactsListener));
+	this._importBtn = this._addButton(buttonDiv.id, LmMsg._import, 65, new AjxListener(this, this._importContactsListener));
 
 	var idoc = Dwt.getIframeDoc(iframe);
 	idoc.open();
@@ -238,7 +238,7 @@ function(buttonDiv) {
 	var idx = 0;
 	html[idx++] = "<html><head></head><body scroll=no bgcolor='#EEEEEE'>";
 	html[idx++] = "<form method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
-	html[idx++] = "<input style='font-family:Tahoma; font-size:10px' name='" + LmPreferencesPage.IMPORT_FIELD_NAME + "' type='file' id='" + this._attInputId + "'>";
+	html[idx++] = "<input style='font-family:Tahoma; font-size:10px' name='" + ZmPreferencesPage.IMPORT_FIELD_NAME + "' type='file' id='" + this._attInputId + "'>";
 	html[idx++] = "</form>";
 	html[idx++] = "</body></html>";
 	idoc.write(html.join(""));
@@ -246,27 +246,27 @@ function(buttonDiv) {
 }
 
 // Popup the change password dialog.
-LmPreferencesPage.prototype._changePasswordListener =
+ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
 	this._passwordDialog.popup();
 }
 
-LmPreferencesPage.prototype._exportContactsListener = 
+ZmPreferencesPage.prototype._exportContactsListener = 
 function(ev) {
-	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(LmSetting.CSFE_EXPORT_URI);
+	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_EXPORT_URI);
 	window.open(uri, "_blank");
 }
 
-LmPreferencesPage.prototype._importContactsListener =
+ZmPreferencesPage.prototype._importContactsListener =
 function(ev) {
 	var idoc = Dwt.getIframeDoc(this._importIframe);
 	var fileInput = idoc.getElementById(this._attInputId);
-	var val = fileInput ? LsStringUtil.trim(fileInput.value) : null;
+	var val = fileInput ? AjxStringUtil.trim(fileInput.value) : null;
 	
 	// TODO - test val against regex for valid .csv filename
 	
 	if (val) {
-		var callback = new LsCallback(this, this._importDoneCallback);
+		var callback = new AjxCallback(this, this._importDoneCallback);
 		var um = this._appCtxt.getUploadManager();
 		window._uploadManager = um;
 		um.execute(this._importIframe, callback, this._uploadFormId);
@@ -275,7 +275,7 @@ function(ev) {
 	}
 }
 
-LmPreferencesPage.prototype._importDoneCallback = 
+ZmPreferencesPage.prototype._importDoneCallback = 
 function(args) {
 
 	var appCtrlr = this._appCtxt.getAppController();
@@ -286,7 +286,7 @@ function(args) {
 		this._importIframe.style.visibility = "hidden";
 		appCtrlr.setStatusMsg(LmMsg.importingContacts);
 		// we have to schedule the rest since it freezes the UI (and status never gets set)
-		appCtrlr._schedule(LmPreferencesPage._finishImport, {aid: args[1], prefPage: this});
+		appCtrlr._schedule(ZmPreferencesPage._finishImport, {aid: args[1], prefPage: this});
 	} else {
 		appCtrlr.setStatusMsg(LmMsg.errorImporting + " (" + status + ")");
 		// always re-render input file widget and its parent IFRAME
@@ -295,13 +295,13 @@ function(args) {
 	}
 }
 
-LmPreferencesPage._finishImport = 
+ZmPreferencesPage._finishImport = 
 function(params) {
 
 	var appCtrlr = this._appCtxt.getAppController();
 
 	// send the import request w/ the att Id to the server
-	var soapDoc = LsSoapDoc.create("ImportContactsRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("ImportContactsRequest", "urn:liquidMail");
 	var method = soapDoc.getMethod();
 	method.setAttribute("ct", "csv"); // always "csv" for now
 	var content = soapDoc.set("content", "");
@@ -322,13 +322,13 @@ function(params) {
 // Reset the form values to the pref defaults. Note that the pref defaults aren't the
 // values that the user last had, they're the values that the prefs have before the
 // user ever touches them.
-LmPreferencesPage.prototype._resetListener =
+ZmPreferencesPage.prototype._resetListener =
 function(ev) {
 	var settings = this._appCtxt.getSettings();
-	var prefs = LmPrefView.PREFS[this._view];
+	var prefs = ZmPrefView.PREFS[this._view];
 	for (var i = 0; i < prefs.length; i++) {
 		var id = prefs[i];
-		var setup = LmPref.SETUP[id];
+		var setup = ZmPref.SETUP[id];
 		var type = setup.displayContainer;
 		if (type.indexOf("x_") == 0) // ignore non-form elements			
 			continue;
@@ -339,7 +339,7 @@ function(ev) {
 			if (defValue != null && (curValue != defValue))
 				this.selects[id].setSelectedValue(defValue);
 		} else {
-			var prefId = LmPref.KEY_ID + id;
+			var prefId = ZmPref.KEY_ID + id;
 			var element = document.getElementById(prefId);
 			if (!element || element.value == defValue) continue;
 			if (type == "checkbox") {

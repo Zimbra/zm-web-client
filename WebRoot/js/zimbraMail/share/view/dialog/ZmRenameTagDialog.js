@@ -1,28 +1,28 @@
-function LmRenameTagDialog(parent, msgDialog, className) {
+function ZmRenameTagDialog(parent, msgDialog, className) {
 
-	LmDialog.call(this, parent, msgDialog, className, LmMsg.renameTag);
+	ZmDialog.call(this, parent, msgDialog, className, LmMsg.renameTag);
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
 }
 
-LmRenameTagDialog.prototype = new LmDialog;
-LmRenameTagDialog.prototype.constructor = LmRenameTagDialog;
+ZmRenameTagDialog.prototype = new ZmDialog;
+ZmRenameTagDialog.prototype.constructor = ZmRenameTagDialog;
 
-LmRenameTagDialog.prototype.toString = 
+ZmRenameTagDialog.prototype.toString = 
 function() {
-	return "LmRenameTagDialog";
+	return "ZmRenameTagDialog";
 }
 
-LmRenameTagDialog.prototype.popup =
+ZmRenameTagDialog.prototype.popup =
 function(tag, source, loc) {
-	LmDialog.prototype.popup.call(this, loc);
-	this.setTitle(LmMsg.renameTag + ': ' + tag.getName(false, LmOrganizer.MAX_DISPLAY_NAME_LENGTH));
+	ZmDialog.prototype.popup.call(this, loc);
+	this.setTitle(LmMsg.renameTag + ': ' + tag.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
 	this._nameField.value = tag.getName(false);
 	this._tag = tag;
 }
 
-LmRenameTagDialog.prototype._contentHtml = 
+ZmRenameTagDialog.prototype._contentHtml = 
 function() {
 	this._nameFieldId = Dwt.getNextId();
 	var html = new Array();
@@ -35,18 +35,18 @@ function() {
 	return html.join("");
 }
 
-LmRenameTagDialog.prototype._okButtonListener =
+ZmRenameTagDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getTagData();
 	if (results)
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
 }
 
-LmRenameTagDialog.prototype._getTagData =
+ZmRenameTagDialog.prototype._getTagData =
 function() {
 	// check name for presence and validity
-	var name = LsStringUtil.trim(this._nameField.value);
-	var msg = LmTag.checkName(name);
+	var name = AjxStringUtil.trim(this._nameField.value);
+	var msg = ZmTag.checkName(name);
 	
 	// make sure tag name doesn't already exist
 	if (!msg) {
@@ -58,7 +58,7 @@ function() {
 	return (msg ? this._showError(msg) : [this._tag, name]);
 }
 
-LmRenameTagDialog.prototype._enterListener =
+ZmRenameTagDialog.prototype._enterListener =
 function(ev) {
 	var results = this._getTagData();
 	if (results)

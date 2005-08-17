@@ -1,39 +1,39 @@
-function LmFolderPicker(parent) {
+function ZmFolderPicker(parent) {
 
-	LmPicker.call(this, parent, LmPicker.FOLDER);
+	ZmPicker.call(this, parent, ZmPicker.FOLDER);
 
-    this._checkedItems = new LsVector();
+    this._checkedItems = new AjxVector();
 }
 
-LmFolderPicker.prototype = new LmPicker;
-LmFolderPicker.prototype.constructor = LmFolderPicker;
+ZmFolderPicker.prototype = new ZmPicker;
+ZmFolderPicker.prototype.constructor = ZmFolderPicker;
 
-LmPicker.CTOR[LmPicker.FOLDER] = LmFolderPicker;
+ZmPicker.CTOR[ZmPicker.FOLDER] = ZmFolderPicker;
 
-LmFolderPicker.prototype.toString = 
+ZmFolderPicker.prototype.toString = 
 function() {
-	return "LmFolderPicker";
+	return "ZmFolderPicker";
 }
 
-LmFolderPicker.prototype._setupPicker =
+ZmFolderPicker.prototype._setupPicker =
 function(parent) {
 	var tree = this._tree = new DwtTree(parent, DwtTree.CHECKEDITEM_STYLE);
-	var appCtxt = this.shell.getData(LmAppCtxt.LABEL);
-	tree.addSelectionListener(new LsListener(this, this._treeListener));
-	this._folderTreeView = new LmFolderTreeView(appCtxt, this._tree, this._tree);
-	this._folderTreeView._restrictedType = LmOrganizer.FOLDER;
-	var folders = [LmFolder.ID_USER];
+	var appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
+	tree.addSelectionListener(new AjxListener(this, this._treeListener));
+	this._folderTreeView = new ZmFolderTreeView(appCtxt, this._tree, this._tree);
+	this._folderTreeView._restrictedType = ZmOrganizer.FOLDER;
+	var folders = [ZmFolder.ID_USER];
 	this._folderTreeView.set(appCtxt.getFolderTree(), folders, false);
 	// Remove the checkbox for My Folders, and expand it
-	if (appCtxt.get(LmSetting.USER_FOLDERS_ENABLED)) {
-		var ti = this._folderTreeView.getTreeItemById(LmFolder.ID_USER);
+	if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED)) {
+		var ti = this._folderTreeView.getTreeItemById(ZmFolder.ID_USER);
 		Dwt.setVisible(ti._checkBoxCell, false);
 		ti.setExpanded(true);
 		ti.setVisible(false, true);
 	}
 }
 
-LmFolderPicker.prototype._updateQuery = 
+ZmFolderPicker.prototype._updateQuery = 
 function() {
 	var folders = new Array();
 	var num = this._checkedItems.size();
@@ -52,7 +52,7 @@ function() {
 	this.execute();
 }
 
-LmFolderPicker.prototype._treeListener =
+ZmFolderPicker.prototype._treeListener =
 function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED) {
  		var ti = ev.item;

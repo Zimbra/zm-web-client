@@ -1,30 +1,30 @@
-function LmFolderTree(appCtxt) {
+function ZmFolderTree(appCtxt) {
 	
-	LmTree.call(this, LmOrganizer.FOLDER, appCtxt);
+	ZmTree.call(this, ZmOrganizer.FOLDER, appCtxt);
 	
-	this._evt = new LmEvent(LmEvent.S_FOLDER);
+	this._evt = new ZmEvent(ZmEvent.S_FOLDER);
 }
 
-LmFolderTree.prototype = new LmTree;
-LmFolderTree.prototype.constructor = LmFolderTree;
+ZmFolderTree.prototype = new ZmTree;
+ZmFolderTree.prototype.constructor = ZmFolderTree;
 
-LmFolderTree.prototype.toString = 
+ZmFolderTree.prototype.toString = 
 function() {
-	return "LmFolderTree";
+	return "ZmFolderTree";
 }
 
-LmFolderTree.prototype.loadFromJs =
+ZmFolderTree.prototype.loadFromJs =
 function(rootFolderObj) {
-	this.root = LmFolder.createFromJs(null, rootFolderObj, this);
+	this.root = ZmFolder.createFromJs(null, rootFolderObj, this);
 	this._moveUserFolders();
 }
 
-LmFolderTree.prototype.getByPath =
+ZmFolderTree.prototype.getByPath =
 function(path) {
 	return this.root ? this.root.getByPath(path) : null;
 }
 
-LmFolderTree.prototype._moveUserFolders =
+ZmFolderTree.prototype._moveUserFolders =
 function() {
 	var userTop = new Array();
 	var searchTop = new Array();
@@ -32,20 +32,20 @@ function() {
 	var addedSep = false;
 	for (var i = 0; i < children.length; i++) {
 		var child = children[i];
-		if (child.id > LmFolder.ID_ROOT && child.id <= LmFolder.LAST_SYSTEM_ID) {
+		if (child.id > ZmFolder.ID_ROOT && child.id <= ZmFolder.LAST_SYSTEM_ID) {
 			userTop.push(child);
-			if (child.id == LmFolder.ID_TRASH)
+			if (child.id == ZmFolder.ID_TRASH)
 				child.addSep = true; // add some space below the last system folder
-		} else if (child.id >= LmFolder.FIRST_USER_ID) {
-			if (child.type == LmOrganizer.FOLDER)
+		} else if (child.id >= ZmFolder.FIRST_USER_ID) {
+			if (child.type == ZmOrganizer.FOLDER)
 				userTop.push(child);
-			else if (child.type == LmOrganizer.SEARCH)
+			else if (child.type == ZmOrganizer.SEARCH)
 				searchTop.push(child);
 		}
 	}
 
-	var name = LmMsg[LmFolderTreeView.MSG_KEY[LmFolder.ID_USER]];
-	this.userRoot = new LmFolder(LmFolder.ID_USER, name, this.root, this);
+	var name = LmMsg[ZmFolderTreeView.MSG_KEY[ZmFolder.ID_USER]];
+	this.userRoot = new ZmFolder(ZmFolder.ID_USER, name, this.root, this);
 	this.root.children.add(this.userRoot);
 	for (var i = 0; i < userTop.length; i++) {
 		var userFolder = userTop[i];
@@ -54,8 +54,8 @@ function() {
 		userFolder.parent = this.userRoot;
 	}
 
-	name = LmMsg[LmFolderTreeView.MSG_KEY[LmFolder.ID_SEARCH]];
-	this.searchRoot = new LmSearchFolder(LmFolder.ID_SEARCH, name, this.root, this);
+	name = LmMsg[ZmFolderTreeView.MSG_KEY[ZmFolder.ID_SEARCH]];
+	this.searchRoot = new ZmSearchFolder(ZmFolder.ID_SEARCH, name, this.root, this);
 	this.root.children.add(this.searchRoot);
 	for (var i = 0; i < searchTop.length; i++) {
 		var searchFolder = searchTop[i];
@@ -65,11 +65,11 @@ function() {
 	}
 }
 
-LmFolderTree.prototype._sortFolder =
+ZmFolderTree.prototype._sortFolder =
 function(folder) {
 	var children = folder.children;
 	if (children && children.length) {
-		children.sort(LmFolder.sortCompare);
+		children.sort(ZmFolder.sortCompare);
 		for (var i = 0; i < children.length; i++)
 			this._sortFolder(children[i]);
 	}

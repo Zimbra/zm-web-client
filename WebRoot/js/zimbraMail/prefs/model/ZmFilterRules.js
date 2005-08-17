@@ -3,13 +3,13 @@
  * FilterRules is a static class that handles the list of filter rules.
  * The list of rules should be modified via the api presented.
  */
-function LmFilterRules() {
+function ZmFilterRules() {
 }
 
-LmFilterRules.TYPE_INPUT = 1;
-LmFilterRules.TYPE_EMPTY = 2;
-LmFilterRules.TYPE_SELECT = 3;
-LmFilterRules.TYPE_BUTTON = 4;
+ZmFilterRules.TYPE_INPUT = 1;
+ZmFilterRules.TYPE_EMPTY = 2;
+ZmFilterRules.TYPE_SELECT = 3;
+ZmFilterRules.TYPE_BUTTON = 4;
 /*
  * Condition constraints
  * each type of condition is mapped to:
@@ -20,41 +20,41 @@ LmFilterRules.TYPE_BUTTON = 4;
  *         to identify which header
  *   rhs:  if this condition expects a RHS value.
  */
-LmFilterRules.CONDITIONS = {
+ZmFilterRules.CONDITIONS = {
 	from: { 
 		desc:        "From",
 		op:          ["is", "contains", "matches"], 
 		negativeOps: ["is not", "does not contain", "does not match"],
-		cell1:       LmFilterRules.TYPE_EMPTY, 
-		cell3:       LmFilterRules.TYPE_INPUT,
-		cell4:       LmFilterRules.TYPE_EMPTY,
+		cell1:       ZmFilterRules.TYPE_EMPTY, 
+		cell3:       ZmFilterRules.TYPE_INPUT,
+		cell4:       ZmFilterRules.TYPE_EMPTY,
 		isHeader:    true
 	},
 	to: {
 		desc:        "To", 
 		op:          ["is", "contains", "matches"], 
 		negativeOps: ["is not", "does not contain", "does not match"],
-		cell1:       LmFilterRules.TYPE_EMPTY, 
-		cell3:       LmFilterRules.TYPE_INPUT,
-		cell4:       LmFilterRules.TYPE_EMPTY,
+		cell1:       ZmFilterRules.TYPE_EMPTY, 
+		cell3:       ZmFilterRules.TYPE_INPUT,
+		cell4:       ZmFilterRules.TYPE_EMPTY,
 		isHeader:    true
 	},
 	cc: {
 		desc:        "Cc", 
 		op:          ["is", "contains", "matches"], 
 		negativeOps: ["is not", "does not contain", "does not match"],
-		cell1:       LmFilterRules.TYPE_EMPTY, 
-		cell3:       LmFilterRules.TYPE_INPUT, 
-		cell4:       LmFilterRules.TYPE_EMPTY,
+		cell1:       ZmFilterRules.TYPE_EMPTY, 
+		cell3:       ZmFilterRules.TYPE_INPUT, 
+		cell4:       ZmFilterRules.TYPE_EMPTY,
 		isHeader:    true
 	},
 	subject: {
 		desc:        "Subject", 
 		op:          ["is", "contains", "matches"],
 		negativeOps: ["is not", "does not contain", "does not match"],
-		cell1:       LmFilterRules.TYPE_EMPTY, 
-		cell3:       LmFilterRules.TYPE_INPUT, 
-		cell4:       LmFilterRules.TYPE_EMPTY,
+		cell1:       ZmFilterRules.TYPE_EMPTY, 
+		cell3:       ZmFilterRules.TYPE_INPUT, 
+		cell4:       ZmFilterRules.TYPE_EMPTY,
 		isHeader:    true
 	},
 	header: {
@@ -62,18 +62,18 @@ LmFilterRules.CONDITIONS = {
 		op:          ["is", "contains", "matches", "exists"], 
 		negativeOps: ["is not", "does not contain", "does not match",
 					  "does not exist"],
-		cell1:       LmFilterRules.TYPE_INPUT, 
-		cell3:       LmFilterRules.TYPE_INPUT,
-		cell4:       LmFilterRules.TYPE_EMPTY,
+		cell1:       ZmFilterRules.TYPE_INPUT, 
+		cell3:       ZmFilterRules.TYPE_INPUT,
+		cell4:       ZmFilterRules.TYPE_EMPTY,
 		isHeader:    true
 	},
 	size: {
 		desc:        "Size", 
 		op:          ["under", "over"], 
 		negativeOps: ["not under", "not over"],
-		cell1:       LmFilterRules.TYPE_EMPTY,
-		cell3:       LmFilterRules.TYPE_INPUT,
-		cell4:       LmFilterRules.TYPE_SELECT,
+		cell1:       ZmFilterRules.TYPE_EMPTY,
+		cell3:       ZmFilterRules.TYPE_INPUT,
+		cell4:       ZmFilterRules.TYPE_SELECT,
 		cell4length: 1,
 		cell4ops:    [ {display:"B", value:"B"},
                        {display:"KB", value:"K"}, {display:"MB", value:"M"}],
@@ -83,46 +83,46 @@ LmFilterRules.CONDITIONS = {
 		desc:        "Date", 
 		op:          ["before", "after"], 
 		negativeOps: ["not before", "not after"],
-		cell1:       LmFilterRules.TYPE_EMPTY, 
-		cell3:       LmFilterRules.TYPE_BUTTON,
-		cell4:       LmFilterRules.TYPE_EMPTY,
+		cell1:       ZmFilterRules.TYPE_EMPTY, 
+		cell3:       ZmFilterRules.TYPE_BUTTON,
+		cell4:       ZmFilterRules.TYPE_EMPTY,
 		isHeader:    false
 	},
 	body: {
 		desc:        "Body",
 		op:          ["contains"], 
 		negativeOps: ["does not contain"], 
-		cell1:       LmFilterRules.TYPE_EMPTY, 
-		cell3:       LmFilterRules.TYPE_INPUT,
-		cell4:       LmFilterRules.TYPE_EMPTY,
+		cell1:       ZmFilterRules.TYPE_EMPTY, 
+		cell3:       ZmFilterRules.TYPE_INPUT,
+		cell4:       ZmFilterRules.TYPE_EMPTY,
 		isHeader:    false
 	},
 	attachment: {
 		desc:        "Attachment", 
 		op:          ["exists"], 
 		negativeOps: ["does not exist"], 
-		cell1:       LmFilterRules.TYPE_EMPTY, 
-		cell3:       LmFilterRules.TYPE_EMPTY,
-		cell4:       LmFilterRules.TYPE_EMPTY,
+		cell1:       ZmFilterRules.TYPE_EMPTY, 
+		cell3:       ZmFilterRules.TYPE_EMPTY,
+		cell4:       ZmFilterRules.TYPE_EMPTY,
 		isHeader:    false
 	},
 	addressbook: {
 		desc:        "Address in",
 		op:          ["in"], 
 		negativeOps: ["not in"],
-		cell1:       LmFilterRules.TYPE_SELECT,
+		cell1:       ZmFilterRules.TYPE_SELECT,
 		cell1ops:    [{display:"From", value:"from"},{display:"To", value:"to"}, {display:"Cc", value:"cc"},{display:"Bcc", value:"bcc"}],
-		cell3:       LmFilterRules.TYPE_SELECT,
+		cell3:       ZmFilterRules.TYPE_SELECT,
 		cell3ops:    [{display:"My contacts", value:"contacts"}],
-		cell4:       LmFilterRules.TYPE_EMPTY,
+		cell4:       ZmFilterRules.TYPE_EMPTY,
 		isHeader:    false
 	}
 };
 
-LmFilterRules.getConfigForCondition = function (name) {
-	for (var conditionName in LmFilterRules.CONDITIONS) {
+ZmFilterRules.getConfigForCondition = function (name) {
+	for (var conditionName in ZmFilterRules.CONDITIONS) {
 		if (name != null && conditionName == name.toLowerCase()) {
-			return LmFilterRules.CONDITIONS[conditionName];
+			return ZmFilterRules.CONDITIONS[conditionName];
 		}
 	}
 	return null;
@@ -134,44 +134,44 @@ LmFilterRules.getConfigForCondition = function (name) {
  *   desc: display name
  *   canHaveParam: if this action expects a parameter
  */
-LmFilterRules.ACTIONS = { 
+ZmFilterRules.ACTIONS = { 
 	keep:{ 
 		desc:"Keep in INBOX", 
-		param:LmFilterRules.TYPE_EMPTY
+		param:ZmFilterRules.TYPE_EMPTY
 	}, 
 	fileinto:{ 
 		desc:"File into folder", 
-		param: LmFilterRules.TYPE_INPUT 
+		param: ZmFilterRules.TYPE_INPUT 
 	},
 	discard:{ 
 		desc:"Discard", 
-		param: LmFilterRules.TYPE_EMPTY 
+		param: ZmFilterRules.TYPE_EMPTY 
 	},
 	stop:{ 
 		desc:"Stop further evaluation", 
-		param: LmFilterRules.TYPE_EMPTY 
+		param: ZmFilterRules.TYPE_EMPTY 
 	},
 	flag:{ 
 		desc:"Mark", 
-		param: LmFilterRules.TYPE_SELECT,
+		param: ZmFilterRules.TYPE_SELECT,
 		paramOps: [{display: "As read", value:"read"},
 	               {display: "As flagged", value: "flagged"}]
 	},
 	tag:{ 
 		desc:"Tag with", 
-		param: LmFilterRules.TYPE_INPUT 
+		param: ZmFilterRules.TYPE_INPUT 
 	}
 };
 
-LmFilterRules.RULE_ADDED = "ruleAdded";
-LmFilterRules.RULE_MODIFIED = "ruleModified";
-LmFilterRules.RULE_MODIFIED = "ruleRemoved";
-LmFilterRules.RULES_REORDERED = "rulesReordered";
+ZmFilterRules.RULE_ADDED = "ruleAdded";
+ZmFilterRules.RULE_MODIFIED = "ruleModified";
+ZmFilterRules.RULE_MODIFIED = "ruleRemoved";
+ZmFilterRules.RULES_REORDERED = "rulesReordered";
 
 // private "class" members
-LmFilterRules._rules = new LsVector();
-LmFilterRules._dirty = false;
-LmFilterRules._eventManager = new LsEventMgr();
+ZmFilterRules._rules = new AjxVector();
+ZmFilterRules._dirty = false;
+ZmFilterRules._eventManager = new AjxEventMgr();
 // -------------------------------------------------------------------
 // Public methods
 // -------------------------------------------------------------------
@@ -179,74 +179,74 @@ LmFilterRules._eventManager = new LsEventMgr();
  * This is important to call before using the filter rules.
  * The requestSender, is an object that has the method sendRequest(soapDoc).
  */
-LmFilterRules.setRequestSender = 
+ZmFilterRules.setRequestSender = 
 function(reqSender) {
-	LmFilterRules._sender = reqSender;
+	ZmFilterRules._sender = reqSender;
 };
 
 /**
  * Add a listener for a given event
  */
-LmFilterRules.addListener = 
+ZmFilterRules.addListener = 
 function(eventName, listener) {
-	LmFilterRules._eventManager.addListener(eventName, listener);
+	ZmFilterRules._eventManager.addListener(eventName, listener);
 };
 
 /**
  * Add a rule to the rules list.
  */
-LmFilterRules.addRule = 
+ZmFilterRules.addRule = 
 function(rule) {
-	LmFilterRules.insertRule(rule);
+	ZmFilterRules.insertRule(rule);
 };
 
 /**
  * Add a rule into the list before the referenceRule.
  */
-LmFilterRules.insertRule = 
+ZmFilterRules.insertRule = 
 function(rule, referenceRule) {
-	var index = LmFilterRules._rules.indexOf(referenceRule);
-	LmFilterRules._internalInsertRule(rule, index, true);
+	var index = ZmFilterRules._rules.indexOf(referenceRule);
+	ZmFilterRules._internalInsertRule(rule, index, true);
 };
 
 /**
  * Modify a given rule. Notifies listeners of RULE_MODIFIED.
  */
-LmFilterRules.modifyRule = 
+ZmFilterRules.modifyRule = 
 function(modifiedRule) {
-	LmFilterRules.markDirty();
+	ZmFilterRules.markDirty();
 	var ev = new Object();
 	ev.rule = modifiedRule;
-	LmFilterRules._eventManager.notifyListeners(LmFilterRules.RULE_MODIFIED, ev);
+	ZmFilterRules._eventManager.notifyListeners(ZmFilterRules.RULE_MODIFIED, ev);
 };
 
-LmFilterRules.removeRules = 
+ZmFilterRules.removeRules = 
 function(rulesArray) {
 	for (var i = 0; i < rulesArray.length; ++i) {
-		var idx = LmFilterRules.getIndexOfRule(rulesArray[i]);
+		var idx = ZmFilterRules.getIndexOfRule(rulesArray[i]);
 		var notify = i == (rulesArray.length - 1);
-		LmFilterRules._internalRemoveRule(idx, notify);
+		ZmFilterRules._internalRemoveRule(idx, notify);
 	}
 };
 
 /**
  * Remove a rule from the list. Notifies listeners of RULE_REMOVED.
  */
-LmFilterRules.removeRule = 
+ZmFilterRules.removeRule = 
 function(rule) {
-	var index = LmFilterRules.getIndexOfRule(rule);
-	LmFilterRules._internalRemoveRule(index, true);
+	var index = ZmFilterRules.getIndexOfRule(rule);
+	ZmFilterRules._internalRemoveRule(index, true);
 };
 
 /**
  * Moves a rule up in the list. If the rule is the first in the list, it wraps
  * to the bottom. Notifies listeners of RULES_REORDERED.
  */
-LmFilterRules.moveUp = 
+ZmFilterRules.moveUp = 
 function(rule) {
-	var index = LmFilterRules.getIndexOfRule(rule);
+	var index = ZmFilterRules.getIndexOfRule(rule);
 	var previous = index - 1;
-	var rulesLen = LmFilterRules._rules.size();
+	var rulesLen = ZmFilterRules._rules.size();
 	if (previous < 0 || previous > rulesLen) { 
 		previous = rulesLen - 1;;
 	}
@@ -254,22 +254,22 @@ function(rule) {
 		return;
 	}
 
-	LmFilterRules._internalRemoveRule(index, false);
-	LmFilterRules._internalInsertRule(rule, previous, false);
+	ZmFilterRules._internalRemoveRule(index, false);
+	ZmFilterRules._internalInsertRule(rule, previous, false);
 	var ev = new Object();
 	ev.rule = rule;
-	LmFilterRules._eventManager.notifyListeners(LmFilterRules.RULES_REORDERED, ev);
+	ZmFilterRules._eventManager.notifyListeners(ZmFilterRules.RULES_REORDERED, ev);
 };
 
 /**
  * Moves a rule down in the list. If the rule is the last in the list, it wraps
  * to the top. Notifies listeners of RULES_REORDERED.
  */
-LmFilterRules.moveDown = 
+ZmFilterRules.moveDown = 
 function(rule) {
-	var index = LmFilterRules.getIndexOfRule(rule);
+	var index = ZmFilterRules.getIndexOfRule(rule);
 	var next = index + 1;
-	var rulesLen = LmFilterRules._rules.size();
+	var rulesLen = ZmFilterRules._rules.size();
 	if (next < 0 || next >= rulesLen ){
 		next = 0;
 	}
@@ -277,7 +277,7 @@ function(rule) {
 		return;
 	}
 
-	var nextRule = LmFilterRules.getRuleByIndex(next);
+	var nextRule = ZmFilterRules.getRuleByIndex(next);
 	var ruleToMove, removeIndex, insertIndex;
 	if (next > index ) {
 		removeIndex = next;
@@ -288,16 +288,16 @@ function(rule) {
 		ruleToMove = rule;
 		insertIndex = next;
 	}
-	LmFilterRules._internalRemoveRule(removeIndex, false);
-	LmFilterRules._internalInsertRule(ruleToMove, insertIndex, false);
+	ZmFilterRules._internalRemoveRule(removeIndex, false);
+	ZmFilterRules._internalInsertRule(ruleToMove, insertIndex, false);
 	var ev = new Object();
 	ev.rule = rule;
-	LmFilterRules._eventManager.notifyListeners(LmFilterRules.RULES_REORDERED, ev);
+	ZmFilterRules._eventManager.notifyListeners(ZmFilterRules.RULES_REORDERED, ev);
 };
 
-LmFilterRules.markDirty = 
+ZmFilterRules.markDirty = 
 function() {
-	LmFilterRules._dirty = true;
+	ZmFilterRules._dirty = true;
 };
 // -------------------------------------------------------------------
 // Server interaction methods
@@ -311,11 +311,11 @@ function() {
  * @param force - force a trip to the server, and replace the existing
  *                internal list of rules.
  */
-LmFilterRules.getRules = 
+ZmFilterRules.getRules = 
 function(force) {
-	if (force || (!LmFilterRules._rulesInitialized)) {
-		var soapDoc = LsSoapDoc.create("GetRulesRequest", "urn:liquidMail");
-		var resp = LmFilterRules._sender.sendRequest(soapDoc).GetRulesResponse;
+	if (force || (!ZmFilterRules._rulesInitialized)) {
+		var soapDoc = AjxSoapDoc.create("GetRulesRequest", "urn:liquidMail");
+		var resp = ZmFilterRules._sender.sendRequest(soapDoc).GetRulesResponse;
 		var rulesNode = resp.rules;
 		var children = rulesNode.r;
 
@@ -323,7 +323,7 @@ function(force) {
 			for (var i = 0; i < children.length; i++) {
 				var ruleNode = children[i];
 				var name = ruleNode.name;
-				var rule = new LmFilterRule(name, ruleNode.active);
+				var rule = new ZmFilterRule(name, ruleNode.active);
 				
 				if (ruleNode.g) {
 					for (var j = 0; j < ruleNode.g.length; j++) {
@@ -331,12 +331,12 @@ function(force) {
 						rule.setGroupOp(caNode.op);
 						var condNodes = caNode.c;
 						for (var k = 0; k < condNodes.length; k++)
-							LmFilterRules._createConditionFromNode(condNodes[k], rule);
+							ZmFilterRules._createConditionFromNode(condNodes[k], rule);
 					}
 				}
 				
 				if (ruleNode.c) {
-					LmFilterRules._createConditionFromNode(ruleNode.c, rule);
+					ZmFilterRules._createConditionFromNode(ruleNode.c, rule);
 				}
 				
 				if (ruleNode.action) {
@@ -352,27 +352,27 @@ function(force) {
 						rule.addAction(aName, aArg);
 					}
 				}
-				LmFilterRules.addRule(rule);
+				ZmFilterRules.addRule(rule);
 			}
 		}
 
 		// reset the dirty setting, since we just got the full list from the server.
-		LmFilterRules._dirty = false;
-		LmFilterRules._rulesInitialized = true;
+		ZmFilterRules._dirty = false;
+		ZmFilterRules._rulesInitialized = true;
 	}
-	return LmFilterRules._rules;
+	return ZmFilterRules._rules;
 };
 
-LmFilterRules.saveRules = 
+ZmFilterRules.saveRules = 
 function() {
 
-	if (!LmFilterRules._dirty)
+	if (!ZmFilterRules._dirty)
 		return null;
 	
-	var soapDoc = LsSoapDoc.create("SaveRulesRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("SaveRulesRequest", "urn:liquidMail");
 	var topNode = soapDoc.set("rules");
 
-	var rules = LmFilterRules._rules.getArray();
+	var rules = ZmFilterRules._rules.getArray();
 	for (var i = 0; i < rules.length; ++i) {
 		var rule = rules[i];
 		var ruleName = rule.getName();
@@ -431,57 +431,57 @@ function() {
 		//}
 	}
 
-	LmFilterRules._dirty = false;
-	return LmFilterRules._sender.sendRequest(soapDoc).SaveRulesResponse;
+	ZmFilterRules._dirty = false;
+	return ZmFilterRules._sender.sendRequest(soapDoc).SaveRulesResponse;
 };
 
 
-LmFilterRules.getIndexOfRule = 
+ZmFilterRules.getIndexOfRule = 
 function(rule) {
-	return LmFilterRules._rules.indexOf(rule);
+	return ZmFilterRules._rules.indexOf(rule);
 };
 
-LmFilterRules.getNumberOfRules = 
+ZmFilterRules.getNumberOfRules = 
 function() {
-	return LmFilterRules._rules.size();
+	return ZmFilterRules._rules.size();
 };
 
-LmFilterRules.getRuleByIndex = 
+ZmFilterRules.getRuleByIndex = 
 function(index) {
-    return LmFilterRules._rules.get(index);
+    return ZmFilterRules._rules.get(index);
 };
 				       
-LmFilterRules.shouldSave = 
+ZmFilterRules.shouldSave = 
 function() {
-	return LmFilterRules._dirty;
+	return ZmFilterRules._dirty;
 };
 
 // -------------------------------------------------------------------
 // Private methods
 // -------------------------------------------------------------------
-LmFilterRules._internalRemoveRule = 
+ZmFilterRules._internalRemoveRule = 
 function(ruleIndex, notify) {
-	var rule = LmFilterRules._rules.removeAt(ruleIndex);
-	LmFilterRules.markDirty();
+	var rule = ZmFilterRules._rules.removeAt(ruleIndex);
+	ZmFilterRules.markDirty();
 	if (notify !== void 0 && notify !== null && notify == true) {
 		var ev = new Object();
 		ev.rule = rule;
-		LmFilterRules._eventManager.notifyListeners(LmFilterRules.RULE_REMOVED,	ev);
+		ZmFilterRules._eventManager.notifyListeners(ZmFilterRules.RULE_REMOVED,	ev);
 	}
 };
 
-LmFilterRules._internalInsertRule = 
+ZmFilterRules._internalInsertRule = 
 function(rule, referenceRuleIndex, notify) {
-	LmFilterRules._rules.add(rule, referenceRuleIndex);
-	LmFilterRules.markDirty();
+	ZmFilterRules._rules.add(rule, referenceRuleIndex);
+	ZmFilterRules.markDirty();
 	if (notify !== void 0 && notify !== null && notify == true) {
 		var ev = new Object();
 		ev.rule = rule;
-		LmFilterRules._eventManager.notifyListeners(LmFilterRules.RULE_ADDED, ev);
+		ZmFilterRules._eventManager.notifyListeners(ZmFilterRules.RULE_ADDED, ev);
 	}
 };
 
-LmFilterRules._createConditionFromNode = 
+ZmFilterRules._createConditionFromNode = 
 function(node, rule) {
 	var k0  = node.k0  ? node.k0.substring(2, node.k0.length-2) : null;
 	var op  = node.op  ? node.op.replace(/:/, "") : null;

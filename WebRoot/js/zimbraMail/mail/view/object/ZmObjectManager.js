@@ -1,4 +1,4 @@
-function LmObjectManager(view, appCtxt) {
+function ZmObjectManager(view, appCtxt) {
 
 	if (arguments.length == 0) return;
 
@@ -7,53 +7,53 @@ function LmObjectManager(view, appCtxt) {
 	this._uuid = Dwt.getNextId();	
 	this._objectIdPrefix = "OBJ_" + this._uuid + "_";		
 	// TODO: make this dynamic, have handlers register a factory method...
-	this._emailHandler = new LmEmailObjectHandler(appCtxt);
+	this._emailHandler = new ZmEmailObjectHandler(appCtxt);
 	// URL should be first, to handle email addresses embedded in URLs
 	this._objectHandlers = [
-		new LmURLObjectHandler(appCtxt),	
+		new ZmURLObjectHandler(appCtxt),	
 		this._emailHandler,
-		new LmPhoneObjectHandler(appCtxt),
-		new LmPOObjectHandler(appCtxt),
-		new LmTrackingObjectHandler(appCtxt),		
+		new ZmPhoneObjectHandler(appCtxt),
+		new ZmPOObjectHandler(appCtxt),
+		new ZmTrackingObjectHandler(appCtxt),		
 		// Removed due to cost of emoticon icons
-		// new LmEmoticonObjectHandler(appCtxt)
+		// new ZmEmoticonObjectHandler(appCtxt)
 	];
-	if (this._appCtxt.get(LmSetting.CALENDAR_ENABLED)) {
-		LmDateObjectHandler.registerHandlers(this._objectHandlers, appCtxt);
+	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+		ZmDateObjectHandler.registerHandlers(this._objectHandlers, appCtxt);
 	}
 	this.reset();
 
 	// install handlers
-    view.addListener(DwtEvent.ONMOUSEOVER, new LsListener(this, this._mouseOverListener));
-    view.addListener(DwtEvent.ONMOUSEOUT, new LsListener(this, this._mouseOutListener));    
-    view.addListener(DwtEvent.ONMOUSEDOWN, new LsListener(this, this._mouseDownListener));        
-    view.addListener(DwtEvent.ONMOUSEUP, new LsListener(this, this._mouseUpListener));            
-    view.addListener(DwtEvent.ONMOUSEMOVE, new LsListener(this, this._mouseMoveListener));                
+    view.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
+    view.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this._mouseOutListener));    
+    view.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));        
+    view.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._mouseUpListener));            
+    view.addListener(DwtEvent.ONMOUSEMOVE, new AjxListener(this, this._mouseMoveListener));                
 }
 
-LmObjectManager._TOOLTIP_DELAY = 275;
+ZmObjectManager._TOOLTIP_DELAY = 275;
 
-LmObjectManager.prototype.toString = 
+ZmObjectManager.prototype.toString = 
 function() {
-	return "LmObjectManager";
+	return "ZmObjectManager";
 }
 
-LmObjectManager.prototype.reset = 
+ZmObjectManager.prototype.reset = 
 function() {
 	this._objects = new Object();
 }
 
-LmObjectManager.prototype.getEmailHandler = 
+ZmObjectManager.prototype.getEmailHandler = 
 function() {
 	return this._emailHandler;
 }
 
-LmObjectManager.prototype.getHandlers = 
+ZmObjectManager.prototype.getHandlers = 
 function() {
 	return this._objectHandlers;
 }
 
-LmObjectManager.prototype.findObjects =
+ZmObjectManager.prototype.findObjects =
 function(content, htmlEncode) {
 	if  (content == null) return "";
 	
@@ -89,7 +89,7 @@ function(content, htmlEncode) {
 			// do last chunk
 			var chunk = content.substring(lastIndex, maxIndex);
 			if (htmlEncode)
-				html[idx++] = LsStringUtil.htmlEncode(chunk, true);
+				html[idx++] = AjxStringUtil.htmlEncode(chunk, true);
 			else
 				html[idx++] = chunk;
 			break;
@@ -99,7 +99,7 @@ function(content, htmlEncode) {
 		if (lowestIndex > lastIndex) {
 			var chunk = content.substring(lastIndex, lowestIndex);
 			if (htmlEncode)
-				html[idx++] = LsStringUtil.htmlEncode(chunk, true);
+				html[idx++] = AjxStringUtil.htmlEncode(chunk, true);
 			else
 				html[idx++] = chunk;
 		}
@@ -115,7 +115,7 @@ function(content, htmlEncode) {
 }
 
 /*
-LmObjectManager.prototype.match =
+ZmObjectManager.prototype.match =
 function(line) {
 	var result = null;
 	for (var i in this._objectHandlers) {
@@ -128,14 +128,14 @@ function(line) {
 }
 */
 
-LmObjectManager.prototype.generateSpan = 
+ZmObjectManager.prototype.generateSpan = 
 function(handler, html, idx, obj, context) {
 	var id = this._objectIdPrefix + Dwt.getNextId();
 	this._objects[id] = {object: obj, handler: handler, id: id, context: context };
 	return handler.generateSpan(html, idx, obj, id, context);
 }
 
-LmObjectManager.prototype._findObjectSpan = 
+ZmObjectManager.prototype._findObjectSpan = 
 function(e) {
 	while (e && (e.id == null || e.id.indexOf(this._objectIdPrefix) != 0)) {
 		e = e.parentNode;
@@ -143,7 +143,7 @@ function(e) {
 	return e;
 }
 
-LmObjectManager.prototype._mouseOverListener = 
+ZmObjectManager.prototype._mouseOverListener = 
 function(ev) {
 	var span = this._findObjectSpan(ev.target);
 	if (!span) return false;
@@ -155,12 +155,12 @@ function(ev) {
 		var shell = DwtShell.getShell(window);
 		var tooltip = shell.getToolTip();
 		tooltip.setContent(object.handler.getToolTipText(object.object, object.context));
-		tooltip.mouseOver(ev.docX, ev.docY, LmObjectManager._TOOLTIP_DELAY);
+		tooltip.mouseOver(ev.docX, ev.docY, ZmObjectManager._TOOLTIP_DELAY);
 	}
 	return false;
 }
 
-LmObjectManager.prototype._mouseOutListener = 
+ZmObjectManager.prototype._mouseOutListener = 
 function(ev) {
 	var span = this._findObjectSpan(ev.target);
 	if (!span) return false;
@@ -174,15 +174,15 @@ function(ev) {
 	return false;
 }
 
-LmObjectManager.prototype._mouseMoveListener = 
+ZmObjectManager.prototype._mouseMoveListener = 
 function(ev) {
 	var shell = DwtShell.getShell(window);
 	var tooltip = shell.getToolTip();
-	tooltip.mouseMove(LmObjectManager._TOOLTIP_DELAY);
+	tooltip.mouseMove(ZmObjectManager._TOOLTIP_DELAY);
 	return false;
 }
 
-LmObjectManager.prototype._mouseDownListener = 
+ZmObjectManager.prototype._mouseDownListener = 
 function(ev) {
 	var shell = DwtShell.getShell(window);
 	var tooltip = shell.getToolTip();
@@ -205,7 +205,7 @@ function(ev) {
 	return false;
 }
 
-LmObjectManager.prototype._mouseUpListener = 
+ZmObjectManager.prototype._mouseUpListener = 
 function(ev) {
 	var span = this._findObjectSpan(ev.target);
 	if (!span) return false;

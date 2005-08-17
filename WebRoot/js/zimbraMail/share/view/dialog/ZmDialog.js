@@ -1,10 +1,10 @@
 /**
-* Creates an empty LmDialog.
+* Creates an empty ZmDialog.
 * @constructor
 * @class
 * This class provides a common place for code used various dialogs for creating/renaming tags and folders.
 */
-function LmDialog(parent, msgDialog, className, title, extraButtons, view) {
+function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 
 	if (arguments.length == 0) return;
 	DwtDialog.call(this, parent, className, title, null, extraButtons);
@@ -16,17 +16,17 @@ function LmDialog(parent, msgDialog, className, title, extraButtons, view) {
 	this._doc = this.getDocument();
 
 	this._msgDialog = msgDialog;
-	this._appCtxt = this.shell.getData(LmAppCtxt.LABEL);
+	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	if (this._msgDialog == null) {
 		this._msgDialog = this._appCtxt.getMsgDialog();
 	}
-	this.setButtonListener(DwtDialog.OK_BUTTON, new LsListener(this, this._okButtonListener));
+	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 }
 
-LmDialog.prototype = new DwtDialog;
-LmDialog.prototype.constructor = LmDialog;
+ZmDialog.prototype = new DwtDialog;
+ZmDialog.prototype.constructor = ZmDialog;
 
-LmDialog.prototype.setView =
+ZmDialog.prototype.setView =
 function (newView, noReset) {
 	this.reset();
 	if (newView) {
@@ -37,58 +37,58 @@ function (newView, noReset) {
 	}
 };
 
-LmDialog.prototype.popup =
+ZmDialog.prototype.popup =
 function(tag, loc) {
 	DwtDialog.prototype.popup.call(this, loc);
-// 	var action = new LsTimedAction();
+// 	var action = new AjxTimedAction();
 // 	action.method = this.focus;
 // 	action.obj = this;
-// 	LsTimedAction.scheduleAction(action, 5);
+// 	AjxTimedAction.scheduleAction(action, 5);
 }
 
 /* Child classes should implement this */
-LmDialog.prototype._contentHtml = function () {return "";}
-LmDialog.prototype._okButtonListener = function (event) {};
+ZmDialog.prototype._contentHtml = function () {return "";}
+ZmDialog.prototype._okButtonListener = function (event) {};
 
-// LmDialog.prototype.focus = 
+// ZmDialog.prototype.focus = 
 // function () {
 // 	if (this._nameField)
 // 		this._nameField.focus();
 // }
 
-LmDialog.prototype.reset =
+ZmDialog.prototype.reset =
 function() {
 	if (this._nameField)
 		this._nameField.value = "";
 	DwtDialog.prototype.reset.call(this);
 }
 
-LmDialog.prototype._setNameField =
+ZmDialog.prototype._setNameField =
 function(fieldId) {
 	this._nameField = Dwt.getDomObj(this._doc, fieldId);
 	if (this._nameField) this._focusElementId = fieldId;
 	this.setTabOrder([fieldId]);
-	this.addEnterListener(new LsListener(this, this._enterListener));
+	this.addEnterListener(new AjxListener(this, this._enterListener));
 }
 
-LmDialog.prototype._setFolderTree =
+ZmDialog.prototype._setFolderTree =
 function(folderTree, folders, fieldId, omit, noRender) {
 	this._folderTree = folderTree;
 	this._tree = new DwtTree(this, DwtTree.SINGLE_STYLE, "FolderTree");
 	this._tree.setScrollStyle(DwtControl.SCROLL);
-	this._folderTreeView = new LmFolderTreeView(this._appCtxt, this._tree, this._tree);
+	this._folderTreeView = new ZmFolderTreeView(this._appCtxt, this._tree, this._tree);
 	if (!noRender)
 		this._folderTreeView.set(this._folderTree, folders, false, omit);
 	Dwt.getDomObj(this._doc, fieldId).appendChild(this._tree.getHtmlElement());
 }
 
-LmDialog.prototype._getInputFields = 
+ZmDialog.prototype._getInputFields = 
 function() {
 	if (this._nameField)
 		return [this._nameField];
 }
 
-LmDialog.prototype._showError =
+ZmDialog.prototype._showError =
 function(msg, loc) {
 	this._msgDialog.reset();
 	loc = loc ? loc : new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100);

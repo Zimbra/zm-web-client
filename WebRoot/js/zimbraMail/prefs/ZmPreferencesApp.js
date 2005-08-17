@@ -3,32 +3,32 @@
 * Application for the preferences UI. This is where the preferences
 * hook into the overall application.
 */
-function LmPreferencesApp(appCtxt, container) {
-	LmApp.call(this, LmLiquidMail.PREFERENCES_APP, appCtxt, container);
+function ZmPreferencesApp(appCtxt, container) {
+	ZmApp.call(this, ZmLiquidMail.PREFERENCES_APP, appCtxt, container);
 }
 
-LmPreferencesApp.prototype = new LmApp;
-LmPreferencesApp.prototype.constructor = LmPreferencesApp;
+ZmPreferencesApp.prototype = new ZmApp;
+ZmPreferencesApp.prototype.constructor = ZmPreferencesApp;
 
-LmPreferencesApp.prototype.toString =
+ZmPreferencesApp.prototype.toString =
 function() {
-	return "LmPreferencesApp";
+	return "ZmPreferencesApp";
 }
 
-LmPreferencesApp.prototype.launch =
+ZmPreferencesApp.prototype.launch =
 function(appCtxt) {
 	this.getPrefController().show();
 }
 
-LmPreferencesApp.prototype.getPrefController =
+ZmPreferencesApp.prototype.getPrefController =
 function() {
 	if (!this._prefController) {
-		this._prefController = new LmPrefController(this._appCtxt, this._container, this);
+		this._prefController = new ZmPrefController(this._appCtxt, this._container, this);
 	}
 	return this._prefController;
 }
 
-LmPreferencesApp.prototype.getFilterController = function() {
+ZmPreferencesApp.prototype.getFilterController = function() {
 	if (!this._filterController) {
 		this._filterController = new LmFilterController(this._appCtxt, this._container, this);
 	}

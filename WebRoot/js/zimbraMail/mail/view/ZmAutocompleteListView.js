@@ -25,12 +25,12 @@
 * @param dataLoader		a method of dataClass that returns data to match against
 * @param locCallback	callback into client to get desired location of autocomplete list
 */
-function LmAutocompleteListView(parent, className, dataClass, dataLoader, locCallback) {
+function ZmAutocompleteListView(parent, className, dataClass, dataLoader, locCallback) {
 
-	className = className || "LmAutocompleteListView";
+	className = className || "ZmAutocompleteListView";
 	DwtComposite.call(this, parent, className, DwtControl.ABSOLUTE_STYLE);
 
-	this._appCtxt = this.shell.getData(LmAppCtxt.LABEL);
+	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._dataClass = dataClass;
 	this._dataLoader = dataLoader;
 	this._dataLoaded = false;
@@ -38,37 +38,37 @@ function LmAutocompleteListView(parent, className, dataClass, dataLoader, locCal
 
 	// mouse event handling
 	this._setMouseEventHdlrs();
-	this.addListener(DwtEvent.ONMOUSEDOWN, new LsListener(this, this._mouseDownListener));
-	this.addListener(DwtEvent.ONMOUSEOVER, new LsListener(this, this._mouseOverListener));
-	this._addSelectionListener(new LsListener(this, this._update));
+	this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
+	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
+	this._addSelectionListener(new AjxListener(this, this._update));
 
 	// only trigger matching after a sufficient pause
-	this._acInterval = this._appCtxt.get(LmSetting.AC_TIMER_INTERVAL);
-	this._acAction = new LsTimedAction();
+	this._acInterval = this._appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
+	this._acAction = new AjxTimedAction();
 	this._acAction.method = this._autocompleteAction;
 	this._acActionId = -1;
 
 	// for managing focus on Tab in Firefox
-	if (LsEnv.isFirefox) {
-		this._focusAction = new LsTimedAction();
+	if (AjxEnv.isFirefox) {
+		this._focusAction = new AjxTimedAction();
 		this._focusAction.method = this._focus;
 	}
 
-	this._internalId = LsCore.assignId(this);
+	this._internalId = AjxCore.assignId(this);
 	this._numChars = 0;
-	this._matches = new LsVector();
+	this._matches = new AjxVector();
 	this._done = new Object();
 	this.setVisible(false);
 }
 
-LmAutocompleteListView.prototype = new DwtComposite;
-LmAutocompleteListView.prototype.constructor = LmAutocompleteListView;
+ZmAutocompleteListView.prototype = new DwtComposite;
+ZmAutocompleteListView.prototype.constructor = ZmAutocompleteListView;
 
 // map of characters that are completion characters
-LmAutocompleteListView.DELIMS = [',', ';', '\n', '\r', '\t'];
-LmAutocompleteListView.IS_DELIM = new Object();
-for (var i = 0; i < LmAutocompleteListView.DELIMS.length; i++)
-	LmAutocompleteListView.IS_DELIM[LmAutocompleteListView.DELIMS[i]] = true;
+ZmAutocompleteListView.DELIMS = [',', ';', '\n', '\r', '\t'];
+ZmAutocompleteListView.IS_DELIM = new Object();
+for (var i = 0; i < ZmAutocompleteListView.DELIMS.length; i++)
+	ZmAutocompleteListView.IS_DELIM[ZmAutocompleteListView.DELIMS[i]] = true;
 
 // Public static methods
 
@@ -78,11 +78,11 @@ for (var i = 0; i < LmAutocompleteListView.DELIMS.length; i++)
 *
 * @param ev		the key event
 */
-LmAutocompleteListView.onKeyDown =
+ZmAutocompleteListView.onKeyDown =
 function(ev) {
-	DBG.println(LsDebug.DBG3, "onKeyDown");
+	DBG.println(AjxDebug.DBG3, "onKeyDown");
 	var key = DwtKeyEvent.getCharCode(ev);
-	return (key == 9 || key == 27) ? LmAutocompleteListView.onKeyUp(ev) : true;
+	return (key == 9 || key == 27) ? ZmAutocompleteListView.onKeyUp(ev) : true;
 }
 
 /**
@@ -91,25 +91,25 @@ function(ev) {
 *
 * @param ev		the key event
 */
-LmAutocompleteListView.onKeyUp =
+ZmAutocompleteListView.onKeyUp =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 	if (ev.type == "keyup")
-		DBG.println(LsDebug.DBG3, "onKeyUp");
+		DBG.println(AjxDebug.DBG3, "onKeyUp");
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	var aclv = LsCore.objectWithId(element._acListViewId);
+	var aclv = AjxCore.objectWithId(element._acListViewId);
 	
 	var id = element.id;
 	var key = DwtKeyEvent.getCharCode(ev);
 	// Tab/Esc handled in keydown for IE
-	if (LsEnv.isIE && ev.type == "keyup" && (key == 9 || key == 27))
+	if (AjxEnv.isIE && ev.type == "keyup" && (key == 9 || key == 27))
 		return true;
 	var value = element.value;
-	DBG.println(LsDebug.DBG3, ev.type + " event, key = " + key + ", value = " + value);
+	DBG.println(AjxDebug.DBG3, ev.type + " event, key = " + key + ", value = " + value);
 
 	// reset timer on any address field key activity
 	if (aclv._acActionId != -1) {
-		LsTimedAction.cancelAction(aclv._acActionId);
+		AjxTimedAction.cancelAction(aclv._acActionId);
 		aclv._acActionId = -1;
 	}
 	
@@ -135,28 +135,28 @@ function(ev) {
 	if ((key == 9) && !aclv.size())
 		return true;
 
-	if (LsStringUtil.isPrintKey(key) || (key == 3 || key == 9 || key == 13))
+	if (AjxStringUtil.isPrintKey(key) || (key == 3 || key == 9 || key == 13))
 		aclv._numChars++;
 
 	// if the user types a single delimiting character with the list showing, do completion
 	var isDelim = (aclv.getVisible() && (aclv._numChars == 1) && 
 				   ((key == 3 || key == 9 || key == 13) || (!ev.shiftKey && (key == 59 || key == 186 || key == 188))));
 
-	DBG.println(LsDebug.DBG3, "numChars = " + aclv._numChars + ", key = " + key + ", isDelim: " + isDelim);
+	DBG.println(AjxDebug.DBG3, "numChars = " + aclv._numChars + ", key = " + key + ", isDelim: " + isDelim);
 	if (isDelim || (key == 27 || key == 38 || key == 40)) {
 		aclv.handleAction(key, isDelim);
 		// In Firefox, focus shifts on Tab even if we return false (and stop propagation and prevent default),
 		// so make sure the focus stays in this element.
-		if (LsEnv.isFirefox && key == 9) {
+		if (AjxEnv.isFirefox && key == 9) {
 			aclv._focusAction.params.add(element);
-			LsTimedAction.scheduleAction(aclv._focusAction, 0);
+			AjxTimedAction.scheduleAction(aclv._focusAction, 0);
 		}
 		DwtUiEvent.setBehaviour(ev, true, false);
 		return false;
 	}
 
 	// skip if it's some weird character
-	if (!LsStringUtil.isPrintKey(key) && 
+	if (!AjxStringUtil.isPrintKey(key) && 
 		(key != 3 && key != 13 && key != 9 && key != 8 && key != 46))
 		return true;
 
@@ -168,17 +168,17 @@ function(ev) {
 	aclv._acAction.params.removeAll();
 	aclv._acAction.params.add(ev1);
 	aclv._acAction.obj = aclv;
-	DBG.println(LsDebug.DBG2, "scheduling autocomplete");
-	aclv._acActionId = LsTimedAction.scheduleAction(aclv._acAction, aclv._acInterval);
+	DBG.println(AjxDebug.DBG2, "scheduling autocomplete");
+	aclv._acActionId = AjxTimedAction.scheduleAction(aclv._acAction, aclv._acInterval);
 	
 	return true;
 }
 
 // Public methods
 
-LmAutocompleteListView.prototype.toString = 
+ZmAutocompleteListView.prototype.toString = 
 function() {
-	return "LmAutocompleteListView";
+	return "ZmAutocompleteListView";
 }
 
 /**
@@ -186,11 +186,11 @@ function() {
 *
 * @param element		an HTML element
 */
-LmAutocompleteListView.prototype.handle =
+ZmAutocompleteListView.prototype.handle =
 function(element) {
 	element._acListViewId = this._internalId;
-	element.onkeydown = LmAutocompleteListView.onKeyDown;
-	element.onkeyup = LmAutocompleteListView.onKeyUp;
+	element.onkeydown = ZmAutocompleteListView.onKeyDown;
+	element.onkeyup = ZmAutocompleteListView.onKeyUp;
 }
 
 /**
@@ -199,7 +199,7 @@ function(element) {
 * @param element	the element (some sort of text field) doing autocomplete
 * @param loc		where to popup the list, if appropriate
 */
-LmAutocompleteListView.prototype.autocomplete =
+ZmAutocompleteListView.prototype.autocomplete =
 function(element, loc) {
 
 	this.reset(); // start fresh
@@ -219,7 +219,7 @@ function(element, loc) {
 /**
 * Resets the state of the autocomplete list.
 */
-LmAutocompleteListView.prototype.reset =
+ZmAutocompleteListView.prototype.reset =
 function() {
 	this._matches.removeAll();
 	this.show(false);
@@ -242,9 +242,9 @@ function() {
 * @param key		a numeric key code
 * @param isDelim	true if a single delimiter key was typed
 */
-LmAutocompleteListView.prototype.handleAction =
+ZmAutocompleteListView.prototype.handleAction =
 function(key, isDelim) {
-	DBG.println(LsDebug.DBG2, "autocomplete handleAction for key " + key + " / " + isDelim);
+	DBG.println(AjxDebug.DBG2, "autocomplete handleAction for key " + key + " / " + isDelim);
 
 	if (isDelim) {
 		this._update(true);
@@ -269,10 +269,10 @@ function(key, isDelim) {
 // Private methods
 
 // Called as a timed action, after a sufficient pause in typing within an address field.
-LmAutocompleteListView.prototype._autocompleteAction =
+ZmAutocompleteListView.prototype._autocompleteAction =
 function(ev, key) {
 	try {
-		DBG.println(LsDebug.DBG2, "performing autocomplete");
+		DBG.println(AjxDebug.DBG2, "performing autocomplete");
 		var element = ev.element;
 		var aclv = ev.aclv;
 		aclv._acActionId = -1; // so we don't try to cancel
@@ -291,9 +291,9 @@ function(ev, key) {
 * @param show	whether to display the list
 * @param loc	where to display the list
 */
-LmAutocompleteListView.prototype.show =
+ZmAutocompleteListView.prototype.show =
 function(show, loc) {
-	DBG.println(LsDebug.DBG3, "autocomplete show: " + show);
+	DBG.println(AjxDebug.DBG3, "autocomplete show: " + show);
 	if (show) {
 		this._popup(loc);
 	} else {
@@ -305,13 +305,13 @@ function(show, loc) {
 
 // Finds the next chunk of text in a string that we should try to autocomplete, by reading
 // until it hits some sort of address delimiter (or runs out of text)
-LmAutocompleteListView.prototype._nextChunk =
+ZmAutocompleteListView.prototype._nextChunk =
 function(text, start) {
 	while (text.charAt(start) == ' ')	// ignore leading space
 		start++;
 	for (var i = start; i < text.length; i++) {
 		var c = text.charAt(i);
-		if (LmAutocompleteListView.IS_DELIM[c])
+		if (ZmAutocompleteListView.IS_DELIM[c])
 			return {text: text, str: text.substring(start, i), start: start, end: i, delim: true};
 	}
 	return {text: text, str: text.substring(start, i), start: start, end: i, delim: false};
@@ -320,7 +320,7 @@ function(text, start) {
 // Looks for matches for a string and either displays them in a list, or does the completion
 // immediately (if the string was followed by a delimiter). The chunk object that we get has
 // information that allows us to do the replacement if we are performing completion.
-LmAutocompleteListView.prototype._autocomplete =
+ZmAutocompleteListView.prototype._autocomplete =
 function(chunk) {
 
 	var str = chunk.str;
@@ -340,7 +340,7 @@ function(chunk) {
 	var list = this._getMatches(str);
 	if (list && list.length > 0) {
 		var len = list.length;
-		DBG.println(LsDebug.DBG2, "found " + len + " match" + len > 1 ? "es" : "");
+		DBG.println(AjxDebug.DBG2, "found " + len + " match" + len > 1 ? "es" : "");
 		for (var i = 0; i < len; i++) {
 			var match = list[i];
 			this._append(match);
@@ -364,23 +364,23 @@ function(chunk) {
 }
 
 // Replaces a string within some text with the selected address match.
-LmAutocompleteListView.prototype._complete =
+ZmAutocompleteListView.prototype._complete =
 function(text, hasDelim) {
-	DBG.println(LsDebug.DBG3, "complete: selected is " + this._selected);
+	DBG.println(AjxDebug.DBG3, "complete: selected is " + this._selected);
 	var match = this._getSelected();
 	if (!match)	return;
 
 	var start = this._start;
 	var end = hasDelim ? this._end + 1 : this._end;
-	DBG.println(LsDebug.DBG2, "update replace range: " + start + " - " + end);
-	var newText = [text.substring(0, start), match.value, LmEmailAddress.SEPARATOR, text.substring(end, text.length)].join("");
+	DBG.println(AjxDebug.DBG2, "update replace range: " + start + " - " + end);
+	var newText = [text.substring(0, start), match.value, ZmEmailAddress.SEPARATOR, text.substring(end, text.length)].join("");
 	this._done[match.value] = true;
-	DBG.display(LsDebug.DBG2, newText);
-	return {text: newText, start: start + match.value.length + LmEmailAddress.SEPARATOR.length};
+	DBG.display(AjxDebug.DBG2, newText);
+	return {text: newText, start: start + match.value.length + ZmEmailAddress.SEPARATOR.length};
 }
 
 // Resets the value of an element to the given text.
-LmAutocompleteListView.prototype._updateField =
+ZmAutocompleteListView.prototype._updateField =
 function(text) {
 	this._element.value = text;
 	this._element.focus();
@@ -388,7 +388,7 @@ function(text) {
 }
 
 // Updates the element with the currently selected match.
-LmAutocompleteListView.prototype._update =
+ZmAutocompleteListView.prototype._update =
 function(hasDelim) {
 	var result = this._complete(this._element.value, hasDelim);
 	this._updateField(result.text);
@@ -397,7 +397,7 @@ function(hasDelim) {
 // Listeners
 
 // Mouse down selects a match and performs an update
-LmAutocompleteListView.prototype._mouseDownListener = 
+ZmAutocompleteListView.prototype._mouseDownListener = 
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 	var div = DwtUiEvent.getTarget(ev);
@@ -417,7 +417,7 @@ function(ev) {
 }
 
 // Mouse over selects a match
-LmAutocompleteListView.prototype._mouseOverListener = 
+ZmAutocompleteListView.prototype._mouseOverListener = 
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 	var div = DwtUiEvent.getTarget(ev);
@@ -427,7 +427,7 @@ function(ev) {
 }
 
 // Seems like DwtComposite should define this method
-LmAutocompleteListView.prototype._addSelectionListener = 
+ZmAutocompleteListView.prototype._addSelectionListener = 
 function(listener) {
 	this._eventMgr.addListener(DwtEvent.SELECTION, listener);
 }
@@ -436,7 +436,7 @@ function(listener) {
 
 // Creates the list and its member elements based on the matches we have. Each match becomes a 
 // DIV. The first match is automatically selected.
-LmAutocompleteListView.prototype._set =
+ZmAutocompleteListView.prototype._set =
 function(sel) {
 	var thisHtmlElement = this.getHtmlElement();
 	thisHtmlElement.innerHTML = "";
@@ -457,22 +457,22 @@ function(sel) {
 }
 
 // Displays the list
-LmAutocompleteListView.prototype._popup = 
+ZmAutocompleteListView.prototype._popup = 
 function(loc) {
 	this.setLocation(loc.x, loc.y);
 	this.setVisible(true);
 }
 
 // Hides the list
-LmAutocompleteListView.prototype._popdown = 
+ZmAutocompleteListView.prototype._popdown = 
 function() {
 	this.setVisible(false);
 }
 
 // Selects a match by changing its CSS class
-LmAutocompleteListView.prototype._setSelected =
+ZmAutocompleteListView.prototype._setSelected =
 function(sel) {
-	DBG.println(LsDebug.DBG3, "setting selected index to " + sel);
+	DBG.println(AjxDebug.DBG3, "setting selected index to " + sel);
 	var children = this.getHtmlElement().childNodes;
 	if (!children) return;
 
@@ -492,13 +492,13 @@ function(sel) {
 // Miscellaneous
 
 // Adds a match to the internal list of matches
-LmAutocompleteListView.prototype._append =
+ZmAutocompleteListView.prototype._append =
 function(match) {
 	this._matches.add(match);
 }
 
 // Clears the internal list of matches
-LmAutocompleteListView.prototype._removeAll =
+ZmAutocompleteListView.prototype._removeAll =
 function() {
 	this._matches.removeAll();
 	var htmlElement = this.getHtmlElement();
@@ -507,26 +507,26 @@ function() {
 }
 
 // Returns the number of matches
-LmAutocompleteListView.prototype.size =
+ZmAutocompleteListView.prototype.size =
 function() {
 	return this._matches.size();
 }
 
 // Returns the index of the currently selected match
-LmAutocompleteListView.prototype._getSelectedIndex =
+ZmAutocompleteListView.prototype._getSelectedIndex =
 function() {
 	return this._selected;
 }
 
 // Returns the currently selected match
-LmAutocompleteListView.prototype._getSelected =
+ZmAutocompleteListView.prototype._getSelected =
 function() {
 	return this._matches.get(this._selected);
 }
 
 // Calls the data class's matching function to get a list of matches for the given string. The data
 // is loaded lazily here.
-LmAutocompleteListView.prototype._getMatches =
+ZmAutocompleteListView.prototype._getMatches =
 function(str) {
 	if (!this._dataLoaded) {
 		this._data = this._dataLoader.call(this._dataClass);
@@ -536,7 +536,7 @@ function(str) {
 }
 
 // Force the focus to the element in args[0]
-LmAutocompleteListView.prototype._focus =
+ZmAutocompleteListView.prototype._focus =
 function(args) {
 	args[0].focus();
 }

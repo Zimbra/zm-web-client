@@ -3,34 +3,34 @@
  *
  * @author Ross Dargahi
  */
-function LmHtmlEditor(parent, className, posStyle, content, mode) {
+function ZmHtmlEditor(parent, className, posStyle, content, mode) {
 	if (arguments.length == 0) return;
-	className = className || "LmHtmlEditor";
+	className = className || "ZmHtmlEditor";
 	
 	DwtHtmlEditor.call(this, parent, className, posStyle, content, mode);
 
-	this.addStateChangeListener(new LsListener(this, this._rteStateChangeListener));	
+	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));	
 };
 
-LmHtmlEditor.prototype = new DwtHtmlEditor();
-LmHtmlEditor.prototype.constructor = LmHtmlEditor;
+ZmHtmlEditor.prototype = new DwtHtmlEditor();
+ZmHtmlEditor.prototype.constructor = ZmHtmlEditor;
 
 
 // Consts
-LmHtmlEditor._VALUE = "value";
+ZmHtmlEditor._VALUE = "value";
 
-LmHtmlEditor.prototype.isHtmlEditingSupported =
+ZmHtmlEditor.prototype.isHtmlEditingSupported =
 function() {
 	var isSupported = DwtHtmlEditor.prototype.isHtmlEditingSupported.call(this);
 	if (isSupported) {
 		// browser supports html edit but check if user pref allows it
-		isSupported = this.parent._appCtxt.get(LmSetting.HTML_COMPOSE_ENABLED);
+		isSupported = this.parent._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	}
 	
 	return isSupported;
 };
 
-LmHtmlEditor.prototype.setMode = 
+ZmHtmlEditor.prototype.setMode = 
 function(mode, convert) {
 	DwtHtmlEditor.prototype.setMode.call(this, mode, convert);
 	
@@ -39,13 +39,13 @@ function(mode, convert) {
 	this._toolbar2.setVisible(mode == DwtHtmlEditor.HTML);
 };
 
-LmHtmlEditor.prototype.getBodyFieldId = 
+ZmHtmlEditor.prototype.getBodyFieldId = 
 function() {
 	return this._mode == DwtHtmlEditor.HTML ? this._iFrameId : this._textAreaId;
 };
 
 // returns the text version of the html message
-LmHtmlEditor.prototype.getTextVersion = 
+ZmHtmlEditor.prototype.getTextVersion = 
 function() {
 	return this._mode == DwtHtmlEditor.HTML
 		? this._convertHtml2Text()
@@ -53,14 +53,14 @@ function() {
 };
 
 // Re-sets design mode for buggy gecko-based browser
-LmHtmlEditor.prototype.reEnableDesignMode = 
+ZmHtmlEditor.prototype.reEnableDesignMode = 
 function() {
-	if (LsEnv.isGeckoBased) {
+	if (AjxEnv.isGeckoBased) {
 		this._enableDesignMode([this._getIframeDoc()]);
 	}
 };
 
-LmHtmlEditor.prototype._initialize = 
+ZmHtmlEditor.prototype._initialize = 
 function() {
 	this._createToolBar1(this);
 	this._createToolBar2(this);
@@ -68,57 +68,57 @@ function() {
 	DwtHtmlEditor.prototype._initialize.call(this);
 };
 
-LmHtmlEditor.prototype._styleListener =
+ZmHtmlEditor.prototype._styleListener =
 function(ev) {
 	this.setStyle(ev._args.newValue);
 };
 
-LmHtmlEditor.prototype._fontNameListener =
+ZmHtmlEditor.prototype._fontNameListener =
 function(ev) {
 	this.setFont(ev._args.newValue);
 };
 
-LmHtmlEditor.prototype._fontSizeListener =
+ZmHtmlEditor.prototype._fontSizeListener =
 function(ev) {
 	this.setFont(null, null, ev._args.newValue);
 };
 
-LmHtmlEditor.prototype._directionListener =
+ZmHtmlEditor.prototype._directionListener =
 function(ev) {
-	this.setTextDirection(ev.item.getData(LmHtmlEditor._VALUE));
+	this.setTextDirection(ev.item.getData(ZmHtmlEditor._VALUE));
 };
 
-LmHtmlEditor.prototype._indentListener =
+ZmHtmlEditor.prototype._indentListener =
 function(ev) {
-	this.setIndent(ev.item.getData(LmHtmlEditor._VALUE));
+	this.setIndent(ev.item.getData(ZmHtmlEditor._VALUE));
 };
 
-LmHtmlEditor.prototype._insElementListener =
+ZmHtmlEditor.prototype._insElementListener =
 function(ev) {
-	this.insertElement(ev.item.getData(LmHtmlEditor._VALUE));
+	this.insertElement(ev.item.getData(ZmHtmlEditor._VALUE));
 };
 
-LmHtmlEditor.prototype._justificationListener =
+ZmHtmlEditor.prototype._justificationListener =
 function(ev) {
-	this.setJustification(ev.item.getData(LmHtmlEditor._VALUE));
+	this.setJustification(ev.item.getData(ZmHtmlEditor._VALUE));
 };
 
-LmHtmlEditor.prototype._fontStyleListener =
+ZmHtmlEditor.prototype._fontStyleListener =
 function(ev) {
-	this.setFont(null, ev.item.getData(LmHtmlEditor._VALUE));
+	this.setFont(null, ev.item.getData(ZmHtmlEditor._VALUE));
 };
 
-LmHtmlEditor.prototype._fontColorListener =
+ZmHtmlEditor.prototype._fontColorListener =
 function(ev) {
 	this.setFont(null, null, null, ev.detail, null);
 };
 
-LmHtmlEditor.prototype._fontHiliteListener =
+ZmHtmlEditor.prototype._fontHiliteListener =
 function(ev) {
 	this.setFont(null, null, null, null, ev.detail);
 };
 
-LmHtmlEditor.prototype._createToolBar1 =
+ZmHtmlEditor.prototype._createToolBar1 =
 function(parent) {
 	var tb = this._toolbar1 = new DwtToolBar(parent, "ToolBar", DwtControl.RELATIVE_STYLE, 2);
 	tb.setVisible(this._mode == DwtHtmlEditor.HTML);
@@ -128,132 +128,132 @@ function(parent) {
 	this._createFontSizeMenu(tb);
 	new DwtControl(tb, "vertSep");
 	
-	var listener = new LsListener(this, this._fontStyleListener);
+	var listener = new AjxListener(this, this._fontStyleListener);
 	var b = this._boldButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage(LmImg.I_BOLD_TEXT);
+	b.setImage(ZmImg.I_BOLD_TEXT);
 	b.setToolTipContent(LmMsg.boldText);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
 	b.addSelectionListener(listener);
 	
 	b = this._italicButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage(LmImg.I_ITALIC_TEXT);
+	b.setImage(ZmImg.I_ITALIC_TEXT);
 	b.setToolTipContent(LmMsg.italicText);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
 	b.addSelectionListener(listener);
 	
 	b = this._underlineButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage(LmImg.I_UNDERLINE_TEXT);
+	b.setImage(ZmImg.I_UNDERLINE_TEXT);
 	b.setToolTipContent(LmMsg.underlineText);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
 	b.addSelectionListener(listener);
 	
 	b = this._strikeThruButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage(LmImg.I_STRIKETHRU_TEXT);
+	b.setImage(ZmImg.I_STRIKETHRU_TEXT);
 	b.setToolTipContent(LmMsg.strikeThruText);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.STRIKETHRU_STYLE);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.STRIKETHRU_STYLE);
 	b.addSelectionListener(listener);
 
 	b = this._superscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage(LmImg.I_SUPERSCRIPT);
+	b.setImage(ZmImg.I_SUPERSCRIPT);
 	b.setToolTipContent(LmMsg.superscript);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.SUPERSCRIPT_STYLE);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUPERSCRIPT_STYLE);
 	b.addSelectionListener(listener);
 	
 	b = this._subscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage(LmImg.I_SUBSCRIPT);
+	b.setImage(ZmImg.I_SUBSCRIPT);
 	b.setToolTipContent(LmMsg.subscript);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.SUBSCRIPT_STYLE);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUBSCRIPT_STYLE);
 	b.addSelectionListener(listener);
 };
 
-LmHtmlEditor.prototype._createToolBar2 =
+ZmHtmlEditor.prototype._createToolBar2 =
 function(parent) {
 	var tb = this._toolbar2 = new DwtToolBar(parent, "ToolBar", DwtControl.RELATIVE_STYLE, 2);
 	tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 	
-	var listener = new LsListener(this, this._justificationListener);
+	var listener = new AjxListener(this, this._justificationListener);
 	var b = this._leftJustifyButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage(LmImg.I_LEFT_JUSTIFY);
+	b.setImage(ZmImg.I_LEFT_JUSTIFY);
 	b.setToolTipContent(LmMsg.leftJustify);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT);
 	b.addSelectionListener(listener);
 	
 	b = this._centerJustifyButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage(LmImg.I_CENTER_JUSTIFY);
+	b.setImage(ZmImg.I_CENTER_JUSTIFY);
 	b.setToolTipContent(LmMsg.centerJustify);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_CENTER);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_CENTER);
 	b.addSelectionListener(listener);
 
 	b = this._rightJustifyButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage(LmImg.I_RIGHT_JUSTIFY);
+	b.setImage(ZmImg.I_RIGHT_JUSTIFY);
 	b.setToolTipContent(LmMsg.rightJustify);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_RIGHT);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_RIGHT);
 	b.addSelectionListener(listener);
 	
 	b = this._fullJustifyButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage(LmImg.I_FULL_JUSTIFY);
+	b.setImage(ZmImg.I_FULL_JUSTIFY);
 	b.setToolTipContent(LmMsg.justify);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_FULL);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_FULL);
 	b.addSelectionListener(listener);
 	
 	new DwtControl(tb, "vertSep");
 
-	var insElListener = new LsListener(this, this._insElementListener);
+	var insElListener = new AjxListener(this, this._insElementListener);
 	b = this._listButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE,  "TBButton");
 	b.setToolTipContent(LmMsg.bulletedList);
-	b.setImage(LmImg.I_BULLETED_LIST);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.UNORDERED_LIST);
+	b.setImage(ZmImg.I_BULLETED_LIST);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNORDERED_LIST);
 	b.addSelectionListener(insElListener);
 	
 	b = this._numberedListButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
 	b.setToolTipContent(LmMsg.numberedList);
-	b.setImage(LmImg.I_NUMBERED_LIST);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.ORDERED_LIST);
+	b.setImage(ZmImg.I_NUMBERED_LIST);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ORDERED_LIST);
 	b.addSelectionListener(insElListener);
 
-	listener = new LsListener(this, this._indentListener);	
+	listener = new AjxListener(this, this._indentListener);	
 	b = this._outdentButton = new DwtButton(tb, null, "TBButton");
 	b.setToolTipContent(LmMsg.outdent);
-	b.setImage(LmImg.I_OUTDENT);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.OUTDENT);
+	b.setImage(ZmImg.I_OUTDENT);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.OUTDENT);
 	b.addSelectionListener(insElListener);
 	
 	b = this._indentButton = new DwtButton(tb, null, "TBButton");
 	b.setToolTipContent(LmMsg.indent);
-	b.setImage(LmImg.I_INDENT);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.INDENT);
+	b.setImage(ZmImg.I_INDENT);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.INDENT);
 	b.addSelectionListener(insElListener);
 	
 	new DwtControl(tb, "vertSep");
 
 	b = this._fontColorButton = new DwtButton(tb, null, "TBButton");
-	b.setImage(LmImg.I_FONT_COLOR);
+	b.setImage(ZmImg.I_FONT_COLOR);
 	b.setToolTipContent(LmMsg.fontColor);
 	var m = new DwtMenu(b, DwtMenu.COLOR_PICKER_STYLE);
 	var cp = new DwtColorPicker(m);
-	cp.addSelectionListener(new LsListener(this, this._fontColorListener));
+	cp.addSelectionListener(new AjxListener(this, this._fontColorListener));
 	b.setMenu(m);
 	
 	b = this._fontBackgroundButton = new DwtButton(tb, null, "TBButton");
-	b.setImage(LmImg.I_FONT_BACKGROUND);
+	b.setImage(ZmImg.I_FONT_BACKGROUND);
 	b.setToolTipContent(LmMsg.fontBackground);
 	m = new DwtMenu(b, DwtMenu.COLOR_PICKER_STYLE);
 	cp = new DwtColorPicker(m);
-	cp.addSelectionListener(new LsListener(this, this._fontHiliteListener));
+	cp.addSelectionListener(new AjxListener(this, this._fontHiliteListener));
 	b.setMenu(m);
 	
 	new DwtControl(tb, "vertSep");
 	
 	b = this._horizRuleButton = new DwtButton(tb, null, "TBButton");
-	b.setImage(LmImg.I_HORIZ_RULE);
+	b.setImage(ZmImg.I_HORIZ_RULE);
 	b.setToolTipContent(LmMsg.horizRule);
-	b.setData(LmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
 	b.addSelectionListener(insElListener);
 };
 
-LmHtmlEditor.prototype._createStyleSelect =
+ZmHtmlEditor.prototype._createStyleSelect =
 function(tb) {
-	var listener = new LsListener(this, this._styleListener);
+	var listener = new AjxListener(this, this._styleListener);
 	var s = this._styleSelect = new DwtSelect(tb, null);
 	s.addChangeListener(listener);
 	
@@ -268,9 +268,9 @@ function(tb) {
 	s.addOption("Preformatted", false, DwtHtmlEditor.PREFORMATTED);
 };
 
-LmHtmlEditor.prototype._createFontFamilySelect =
+ZmHtmlEditor.prototype._createFontFamilySelect =
 function(tb) {
-	var listener = new LsListener(this, this._fontNameListener);
+	var listener = new AjxListener(this, this._fontNameListener);
 	var s = this._fontFamilySelect = new DwtSelect(tb, null);
 	s.addChangeListener(listener);
 	
@@ -280,9 +280,9 @@ function(tb) {
 	s.addOption("Verdana", false, DwtHtmlEditor.VERDANA);
 };
 
-LmHtmlEditor.prototype._createFontSizeMenu =
+ZmHtmlEditor.prototype._createFontSizeMenu =
 function(tb) {
-	var listener = new LsListener(this, this._fontSizeListener);
+	var listener = new AjxListener(this, this._fontSizeListener);
 	var s = this._fontSizeSelect = new DwtSelect(tb, null);
 	s.addChangeListener(listener);
 	
@@ -295,7 +295,7 @@ function(tb) {
 	s.addOption("7 (36pt)", false, 7);
 };
 
-LmHtmlEditor.prototype._rteStateChangeListener =
+ZmHtmlEditor.prototype._rteStateChangeListener =
 function(ev) {
 
 	this._boldButton.setToggled(ev.isBold);

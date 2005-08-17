@@ -1,37 +1,37 @@
-function LmNewFolderDialog(parent, msgDialog, className, folderTree) {
+function ZmNewFolderDialog(parent, msgDialog, className, folderTree) {
 
-	LmDialog.call(this, parent, msgDialog, className, LmMsg.createNewFolder);
+	ZmDialog.call(this, parent, msgDialog, className, LmMsg.createNewFolder);
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
-	var folders = [LmFolder.ID_USER];
+	var folders = [ZmFolder.ID_USER];
 	var omit = new Object();
-	omit[LmFolder.ID_SPAM] = true;
-	omit[LmFolder.ID_DRAFTS] = true;
+	omit[ZmFolder.ID_SPAM] = true;
+	omit[ZmFolder.ID_DRAFTS] = true;
 	this._setFolderTree(folderTree, folders, this._folderTreeCellId, omit);
 }
 
-LmNewFolderDialog.prototype = new LmDialog;
-LmNewFolderDialog.prototype.constructor = LmNewFolderDialog;
+ZmNewFolderDialog.prototype = new ZmDialog;
+ZmNewFolderDialog.prototype.constructor = ZmNewFolderDialog;
 
-LmNewFolderDialog.prototype.toString = 
+ZmNewFolderDialog.prototype.toString = 
 function() {
-	return "LmNewFolderDialog";
+	return "ZmNewFolderDialog";
 }
 
-LmNewFolderDialog.prototype.popup =
+ZmNewFolderDialog.prototype.popup =
 function(folder, loc) {
-	folder = folder || this._folderTree.getById(LmFolder.ID_USER);
+	folder = folder || this._folderTree.getById(ZmFolder.ID_USER);
 	if (folder)
 		this._folderTreeView.setSelected(folder);
-	if (folder.id == LmFolder.ID_USER) {
+	if (folder.id == ZmFolder.ID_USER) {
 		var ti = this._folderTreeView.getTreeItemById(folder.id);
 		ti.setExpanded(true);
 	}
-	LmDialog.prototype.popup.call(this, loc);
+	ZmDialog.prototype.popup.call(this, loc);
 }
 
-LmNewFolderDialog.prototype._contentHtml = 
+ZmNewFolderDialog.prototype._contentHtml = 
 function() {
 	this._nameFieldId = Dwt.getNextId();
 	this._folderTreeCellId = Dwt.getNextId();
@@ -48,18 +48,18 @@ function() {
 	return html.join("");
 }
 
-LmNewFolderDialog.prototype._okButtonListener =
+ZmNewFolderDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getFolderData();
 	if (results)
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
 }
 
-LmNewFolderDialog.prototype._getFolderData =
+ZmNewFolderDialog.prototype._getFolderData =
 function() {
 	// check name for presence and validity
-	var name = LsStringUtil.trim(this._nameField.value);
-	var msg = LmFolder.checkName(name);
+	var name = AjxStringUtil.trim(this._nameField.value);
+	var msg = ZmFolder.checkName(name);
 
 	// make sure a parent was selected
 	var parentFolder = this._folderTreeView.getSelected();
@@ -68,12 +68,12 @@ function() {
 
 	// make sure parent doesn't already have a child by this name
 	if (!msg)
-		msg = LmFolder.checkParent(name, parentFolder);
+		msg = ZmFolder.checkParent(name, parentFolder);
 
 	return (msg ? this._showError(msg) : [name, parentFolder]);
 }
 
-LmNewFolderDialog.prototype._enterListener =
+ZmNewFolderDialog.prototype._enterListener =
 function(ev) {
 	var results = this._getFolderData();
 	if (results)

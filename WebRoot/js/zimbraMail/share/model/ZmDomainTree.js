@@ -1,26 +1,26 @@
-function LmDomainTree(appCtxt) {
-	LmModel.call(this, true);
+function ZmDomainTree(appCtxt) {
+	ZmModel.call(this, true);
 	this._appCtxt = appCtxt;
 };
 
-LmDomainTree.prototype = new LmModel;
-LmDomainTree.prototype.constructor = LmDomainTree;
+ZmDomainTree.prototype = new ZmModel;
+ZmDomainTree.prototype.constructor = ZmDomainTree;
 
-LmDomainTree.prototype.toString = 
+ZmDomainTree.prototype.toString = 
 function() {
-	return "LmDomainTree";
+	return "ZmDomainTree";
 };
 
-LmDomainTree.prototype.getRootDomain =
+ZmDomainTree.prototype.getRootDomain =
 function() {
 	return this._rootDomain;
 };
 
-LmDomainTree.prototype.load =
+ZmDomainTree.prototype.load =
 function() {
-	this._rootDomain = new LmDomain(".", null, "");
+	this._rootDomain = new ZmDomain(".", null, "");
 
-	var soapDoc = LsSoapDoc.create("BrowseRequest", "urn:liquidMail", null);
+	var soapDoc = AjxSoapDoc.create("BrowseRequest", "urn:liquidMail", null);
 	soapDoc.getMethod().setAttribute("browseBy", "domains");
 
 	var domains = this._appCtxt.getAppController().sendRequest(soapDoc).BrowseResponse.bd;

@@ -1,22 +1,22 @@
-function LmCustomPicker(parent) {
+function ZmCustomPicker(parent) {
 
-	LmPicker.call(this, parent);
+	ZmPicker.call(this, parent);
 
     this.setTitle(LmMsg.search);
-    this.setImage(LmImg.I_SEARCH);
+    this.setImage(ZmImg.I_SEARCH);
 }
 
-LmCustomPicker.prototype = new LmPicker;
-LmCustomPicker.prototype.constructor = LmCustomPicker;
+ZmCustomPicker.prototype = new ZmPicker;
+ZmCustomPicker.prototype.constructor = ZmCustomPicker;
 
-LmPicker.CTOR[LmPicker.CUSTOM] = LmCustomPicker;
+ZmPicker.CTOR[ZmPicker.CUSTOM] = ZmCustomPicker;
 
-LmCustomPicker.prototype.toString = 
+ZmCustomPicker.prototype.toString = 
 function() {
-	return "LmCustomPicker";
+	return "ZmCustomPicker";
 }
 
-LmCustomPicker.prototype._setupPicker =
+ZmCustomPicker.prototype._setupPicker =
 function(parent) {
 	var picker = new DwtComposite(parent);
 	var size = 24;
@@ -33,11 +33,11 @@ function(parent) {
 	picker.getHtmlElement().innerHTML = html.join("");
 
 	var field = this._field = Dwt.getDomObj(this.getDocument(), fieldId);
-	field.onkeyup = LmCustomPicker._onChange;	
+	field.onkeyup = ZmCustomPicker._onChange;	
 	field._picker = this;
 }
 
-LmCustomPicker._onChange = 
+ZmCustomPicker._onChange = 
 function(ev) {
 	var element = DwtUiEvent.getTarget(ev);
 	var picker = element._picker;
@@ -51,7 +51,7 @@ function(ev) {
 	}	
 }
 
-LmCustomPicker.prototype._updateQuery = 
+ZmCustomPicker.prototype._updateQuery = 
 function() {
 	var val = this._field.value;
 	if (val)

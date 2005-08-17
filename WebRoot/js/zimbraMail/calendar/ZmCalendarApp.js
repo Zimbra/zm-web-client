@@ -1,23 +1,23 @@
-function LmCalendarApp(appCtxt, container) {
-	LmApp.call(this, LmLiquidMail.CALENDAR_APP, appCtxt, container);
+function ZmCalendarApp(appCtxt, container) {
+	ZmApp.call(this, ZmLiquidMail.CALENDAR_APP, appCtxt, container);
 }
 
-LmCalendarApp.prototype = new LmApp;
-LmCalendarApp.prototype.constructor = LmCalendarApp;
+ZmCalendarApp.prototype = new ZmApp;
+ZmCalendarApp.prototype.constructor = ZmCalendarApp;
 
-LmCalendarApp.prototype.toString = 
+ZmCalendarApp.prototype.toString = 
 function() {
-	return "LmCalendarApp";
+	return "ZmCalendarApp";
 }
 
-LmCalendarApp.prototype.launch =
+ZmCalendarApp.prototype.launch =
 function(appCtxt) {
 DBG.println("LAUNCHING CALENDAR APP!");
 	var cc = this.getCalController();
 	cc.show(cc._defaultView());
 }
 
-LmCalendarApp.prototype.setActive =
+ZmCalendarApp.prototype.setActive =
 function(active) {
 DBG.println("SETTING CAL APP ACTIVE!");
 	if (active) {
@@ -25,14 +25,14 @@ DBG.println("SETTING CAL APP ACTIVE!");
 	}
 }
 
-LmCalendarApp.prototype.getCalController =
+ZmCalendarApp.prototype.getCalController =
 function() {
 	if (!this._calController)
-		this._calController = new LmCalViewController(this._appCtxt, this._container, this);
+		this._calController = new ZmCalViewController(this._appCtxt, this._container, this);
 	return this._calController;
 };
 
-LmCalendarApp.prototype.getApptDetailController =
+ZmCalendarApp.prototype.getApptDetailController =
 function () {
 	if (!this._apptDetailController) {
 		this._apptDetailController = 

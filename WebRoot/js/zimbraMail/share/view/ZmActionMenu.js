@@ -4,8 +4,8 @@
 * @class
 * This class represents an action menu, which is a popup menu with a few added features.
 * It can be easily created using a set of standard operations, and/or custom menu items
-* can be provided. This class is designed for use with items (LmItem), so it can for
-* example contain a tab submenu. See also LmButtonToolBar.
+* can be provided. This class is designed for use with items (ZmItem), so it can for
+* example contain a tab submenu. See also ZmButtonToolBar.
 *
 * @author Conrad Damon
 * @param parent					the containing widget
@@ -13,43 +13,43 @@
 * @param extraMenuItems			a list of operation descriptors
 * @param dialog					containing dialog, if any
 */
-function LmActionMenu(parent, standardMenuItems, extraMenuItems, dialog) {
+function ZmActionMenu(parent, standardMenuItems, extraMenuItems, dialog) {
 
-	LmPopupMenu.call(this, parent, null, dialog);
+	ZmPopupMenu.call(this, parent, null, dialog);
 
-	this._appCtxt = this.shell.getData(LmAppCtxt.LABEL);
+	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
 	// standard menu items default to Tag/Print/Delete
 	if (!standardMenuItems) {
 		standardMenuItems = new Array();
-		if (this._appCtxt.get(LmSetting.TAGGING_ENABLED))
-			standardMenuItems.push(LmOperation.TAG_MENU);
-		if (this._appCtxt.get(LmSetting.PRINT_ENABLED))
-			standardMenuItems.push(LmOperation.PRINT);
-		standardMenuItems.push(LmOperation.DELETE);
-	} else if (standardMenuItems == LmOperation.NONE) {
+		if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+			standardMenuItems.push(ZmOperation.TAG_MENU);
+		if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
+			standardMenuItems.push(ZmOperation.PRINT);
+		standardMenuItems.push(ZmOperation.DELETE);
+	} else if (standardMenuItems == ZmOperation.NONE) {
 		standardMenuItems = null;
 	}
-	this._menuItems = LmOperation.createOperations(this, standardMenuItems, extraMenuItems);
+	this._menuItems = ZmOperation.createOperations(this, standardMenuItems, extraMenuItems);
 }
 
-LmActionMenu.prototype = new LmPopupMenu;
-LmActionMenu.prototype.constructor = LmActionMenu;
+ZmActionMenu.prototype = new ZmPopupMenu;
+ZmActionMenu.prototype.constructor = ZmActionMenu;
 
 // Public methods
 
-LmActionMenu.prototype.toString = 
+ZmActionMenu.prototype.toString = 
 function() {
-	return "LmActionMenu";
+	return "ZmActionMenu";
 }
 
 /**
 * Creates a menu item and adds its operation ID as data.
 */
-LmActionMenu.prototype.createOp =
+ZmActionMenu.prototype.createOp =
 function(menuItemId, text, imageInfo, disImageInfo, enabled) {
-	var mi = LmPopupMenu.prototype.createMenuItem.call(this, menuItemId, imageInfo, text, disImageInfo, enabled);
-	mi.setData(LmOperation.KEY_ID, menuItemId);
+	var mi = ZmPopupMenu.prototype.createMenuItem.call(this, menuItemId, imageInfo, text, disImageInfo, enabled);
+	mi.setData(ZmOperation.KEY_ID, menuItemId);
 	return mi;
 }
 
@@ -58,7 +58,7 @@ function(menuItemId, text, imageInfo, disImageInfo, enabled) {
 *
 * @param id		an operation ID
 */
-LmActionMenu.prototype.getMenuItem =
+ZmActionMenu.prototype.getMenuItem =
 function(id) {
 	return this._menuItems[id];
 }
@@ -68,7 +68,7 @@ function(id) {
 *
 * @param id		an operation ID
 */
-LmActionMenu.prototype.getOp =
+ZmActionMenu.prototype.getOp =
 function(id) {
 	return this.getMenuItem(id);
 }
@@ -76,17 +76,17 @@ function(id) {
 /**
 * Returns the menu's tag submenu, if any.
 */
-LmActionMenu.prototype.getTagMenu =
+ZmActionMenu.prototype.getTagMenu =
 function() {
-	var menuItem = this.getMenuItem(LmOperation.TAG_MENU);
+	var menuItem = this.getMenuItem(ZmOperation.TAG_MENU);
 	if (menuItem)
-		return menuItem.getData(LmOperation.KEY_TAG_MENU);
+		return menuItem.getData(ZmOperation.KEY_TAG_MENU);
 }
 
 // Private methods
 
 // Returns the ID for the given menu item.
-LmActionMenu.prototype._menuItemId =
+ZmActionMenu.prototype._menuItemId =
 function(menuItem) {
-	return menuItem.getData(LmOperation.KEY_ID);
+	return menuItem.getData(ZmOperation.KEY_ID);
 }

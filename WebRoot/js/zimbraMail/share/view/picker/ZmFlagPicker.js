@@ -1,53 +1,53 @@
-function LmFlagPicker(parent) {
+function ZmFlagPicker(parent) {
 
-	LmPicker.call(this, parent, LmPicker.FLAG);
+	ZmPicker.call(this, parent, ZmPicker.FLAG);
 }
 
-LmFlagPicker.prototype = new LmPicker;
-LmFlagPicker.prototype.constructor = LmFlagPicker;
+ZmFlagPicker.prototype = new ZmPicker;
+ZmFlagPicker.prototype.constructor = ZmFlagPicker;
 
-LmPicker.CTOR[LmPicker.FLAG] = LmFlagPicker;
+ZmPicker.CTOR[ZmPicker.FLAG] = ZmFlagPicker;
 
-LmFlagPicker.prototype.toString = 
+ZmFlagPicker.prototype.toString = 
 function() {
-	return "LmFlagPicker";
+	return "ZmFlagPicker";
 }
 
-LmFlagPicker.prototype._setupPicker =
+ZmFlagPicker.prototype._setupPicker =
 function(parent) {
 	var tree = this._tree = new DwtTree(parent, DwtTree.CHECKEDITEM_STYLE);
-	tree.addSelectionListener(new LsListener(this, LmFlagPicker.prototype._treeListener));
+	tree.addSelectionListener(new AjxListener(this, ZmFlagPicker.prototype._treeListener));
 	
 	var ti = this._flagged = new DwtTreeItem(tree);
 	ti.setText(LmMsg.flagged);
-	ti.setImage(LmImg.I_FLAG_ON);
+	ti.setImage(ZmImg.I_FLAG_ON);
 	
 	ti = this._unflagged = new DwtTreeItem(tree);
 	ti.setText(LmMsg.unflagged);
-	ti.setImage(LmImg.I_FLAG_OFF);
+	ti.setImage(ZmImg.I_FLAG_OFF);
 	
 	tree.addSeparator();
 
 	ti = this._read = new DwtTreeItem(tree);
 	ti.setText(LmMsg.read);
-	ti.setImage(LmImg.I_READ_MSG);
+	ti.setImage(ZmImg.I_READ_MSG);
 	
 	ti = this._unread = new DwtTreeItem(tree);
 	ti.setText(LmMsg.unread);
-	ti.setImage(LmImg.I_ENVELOPE);	
+	ti.setImage(ZmImg.I_ENVELOPE);	
 
 	tree.addSeparator();
 
 	ti = this._replied = new DwtTreeItem(tree);
 	ti.setText(LmMsg.replied);
-	ti.setImage(LmImg.I_REPLY);
+	ti.setImage(ZmImg.I_REPLY);
 	
 	ti = this._forwarded = new DwtTreeItem(tree);
 	ti.setText(LmMsg.forwarded);
-	ti.setImage(LmImg.I_FORWARD);	
+	ti.setImage(ZmImg.I_FORWARD);	
 }
 
-LmFlagPicker.prototype._updateQuery = 
+ZmFlagPicker.prototype._updateQuery = 
 function() {
 	var query = new Array();
 
@@ -75,7 +75,7 @@ function() {
 	this.execute();
 }
 
-LmFlagPicker.prototype._treeListener =
+ZmFlagPicker.prototype._treeListener =
 function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED) {
  		var ti = ev.item;

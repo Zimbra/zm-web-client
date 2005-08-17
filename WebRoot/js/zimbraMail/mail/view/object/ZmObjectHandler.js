@@ -1,4 +1,4 @@
-function LmObjectHandler(appCtxt, typeName, className) {
+function ZmObjectHandler(appCtxt, typeName, className) {
 
 	if (arguments.length == 0) return;
 
@@ -7,21 +7,21 @@ function LmObjectHandler(appCtxt, typeName, className) {
 	this._className = className != null ? className : "Object";
 }
 
-LmObjectHandler.prototype.constructor = LmObjectHandler;
+ZmObjectHandler.prototype.constructor = ZmObjectHandler;
 
-LmObjectHandler.prototype.toString = 
+ZmObjectHandler.prototype.toString = 
 function() {
-	return "LmObjectHandler: type(" + this._typeName + ") class(" + this._className + ")";
+	return "ZmObjectHandler: type(" + this._typeName + ") class(" + this._className + ")";
 }
 
 // OVERRIDE if need be
-LmObjectHandler.prototype.getClassName =
+ZmObjectHandler.prototype.getClassName =
 function(obj, context) {
 	return this._className;
 }
 
 // OVERRIDE if need be
-LmObjectHandler.prototype.getActivatedClassName =
+ZmObjectHandler.prototype.getActivatedClassName =
 function(obj, context) {
 	var cname = this.getClassName(obj);
 	if (this._cachedClassNameForActivated !== cname) {
@@ -32,7 +32,7 @@ function(obj, context) {
 }
 
 // OVERRIDE if need be
-LmObjectHandler.prototype.getTriggeredClassName =
+ZmObjectHandler.prototype.getTriggeredClassName =
 function(obj, context) {
 	var cname = this.getClassName(obj);
 	if (this._cachedClassNameForTriggered !== cname) {
@@ -42,7 +42,7 @@ function(obj, context) {
 	return this._classNameTriggered;
 }
 
-LmObjectHandler.prototype.findObject =
+ZmObjectHandler.prototype.findObject =
 function(content, startIndex) {
 	if (startIndex == 0) {
 		this._lastMatch = null;
@@ -67,20 +67,20 @@ function(content, startIndex) {
 * handlers should set regex.lastIndex to startIndex and then use regex.exec(content). they should also use the "g" option when
 * constructing their regex.
 */
-LmObjectHandler.prototype.match =
+ZmObjectHandler.prototype.match =
 function(content, startIndex) {
 	return null;
 }
 
 // OVERRIDE IF NEED BE. Generates content inside the <span>
-LmObjectHandler.prototype._getHtmlContent =
+ZmObjectHandler.prototype._getHtmlContent =
 function(html, idx, obj, context) {
-	html[idx++] = LsStringUtil.htmlEncode(obj, true);
+	html[idx++] = AjxStringUtil.htmlEncode(obj, true);
 	return idx;
 }
 
 // generates the span
-LmObjectHandler.prototype.generateSpan = 
+ZmObjectHandler.prototype.generateSpan = 
 function(html, idx, obj, spanId, context) {
 	html[idx++] = "<span class='";
 	html[idx++] = this.getClassName(obj);
@@ -92,22 +92,22 @@ function(html, idx, obj, spanId, context) {
 	return idx;
 }
 
-LmObjectHandler.prototype.hasToolTipText =
+ZmObjectHandler.prototype.hasToolTipText =
 function(obj, context) {
 	return true;
 }
 
-LmObjectHandler.prototype.getToolTipText =
+ZmObjectHandler.prototype.getToolTipText =
 function(obj, context) {
-	return LsStringUtil.htmlEncode(obj);
+	return AjxStringUtil.htmlEncode(obj);
 }
 
-LmObjectHandler.prototype.getActionMenu =
+ZmObjectHandler.prototype.getActionMenu =
 function(obj, span, context) {
 	return null;
 }
 
-LmObjectHandler.prototype.selected =
+ZmObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
 	return;
 }

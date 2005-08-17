@@ -11,7 +11,7 @@
 * @param container			the element that contains everything but the banner (aka _composite)
 * @param parentController	this is an optional parent window controller set by the child window
 */
-function LmApp(name, appCtxt, container, parentController) {
+function ZmApp(name, appCtxt, container, parentController) {
 
 	if (arguments.length == 0) return;
 	
@@ -24,15 +24,15 @@ function LmApp(name, appCtxt, container, parentController) {
 
 // Public methods
 
-LmApp.prototype.toString = 
+ZmApp.prototype.toString = 
 function() {
-	return "LmApp";
+	return "ZmApp";
 }
 
 /**
 * Returns the app's name.
 */
-LmApp.prototype.getName =
+ZmApp.prototype.getName =
 function() {
 	return this._name;
 }
@@ -40,34 +40,34 @@ function() {
 /**
 * Returns the app view manager.
 */
-LmApp.prototype.getAppViewMgr = 
+ZmApp.prototype.getAppViewMgr = 
 function() {
 	return this._appViewMgr;
 }
 
-// Convenience functions that call through to app view manager. See LmAppViewMgr for details.
+// Convenience functions that call through to app view manager. See ZmAppViewMgr for details.
 
-LmApp.prototype.setAppView =
+ZmApp.prototype.setAppView =
 function(view) {
 	this._appViewMgr.setAppView(this._name, view);
 }
 
-LmApp.prototype.createView =
+ZmApp.prototype.createView =
 function(viewName, elements, callbacks, isAppView) {
 	return this._appViewMgr.createView(viewName, this._name, elements, callbacks, isAppView);
 }
 
-LmApp.prototype.pushView =
+ZmApp.prototype.pushView =
 function(name, force) {
 	return this._appViewMgr.pushView(name, force);
 }
 
-LmApp.prototype.popView =
+ZmApp.prototype.popView =
 function(force) {
 	return this._appViewMgr.popView(force);
 }
 
-LmApp.prototype.setView =
+ZmApp.prototype.setView =
 function(name, force) {
 	return this._appViewMgr.setView(name, force);
 }
@@ -77,20 +77,20 @@ function(name, force) {
 /**
 * Launches an app, which creates a view and shows it.
 */
-LmApp.prototype.launch =
+ZmApp.prototype.launch =
 function() {
 }
 
 /**
 * Run when the activation state of an app changes.
 */
-LmApp.prototype.activate =
+ZmApp.prototype.activate =
 function(active) {
 }
 
 /**
 * Clears an app's state.
 */
-LmApp.prototype.reset =
+ZmApp.prototype.reset =
 function(active) {
 }

@@ -1,21 +1,21 @@
-function LmDomainPicker(parent) {
+function ZmDomainPicker(parent) {
 
-	LmPicker.call(this, parent, LmPicker.DOMAIN);
+	ZmPicker.call(this, parent, ZmPicker.DOMAIN);
 
     this._checkedItems = new Object();
 }
 
-LmDomainPicker.prototype = new LmPicker;
-LmDomainPicker.prototype.constructor = LmDomainPicker;
+ZmDomainPicker.prototype = new ZmPicker;
+ZmDomainPicker.prototype.constructor = ZmDomainPicker;
 
-LmPicker.CTOR[LmPicker.DOMAIN] = LmDomainPicker;
+ZmPicker.CTOR[ZmPicker.DOMAIN] = ZmDomainPicker;
 
-LmDomainPicker.prototype.toString = 
+ZmDomainPicker.prototype.toString = 
 function() {
-	return "LmDomainPicker";
+	return "ZmDomainPicker";
 }
 
-LmDomainPicker.onclick =
+ZmDomainPicker.onclick =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var picker = el._picker;
@@ -27,7 +27,7 @@ function(ev) {
 	picker._updateQuery();
 }
 
-LmDomainPicker.prototype._domainHtml =
+ZmDomainPicker.prototype._domainHtml =
 function(domain, html, idx) {
 	var divId = this._divIds[domain] = Dwt.getNextId();
 	var inputId = this._inputIds[domain] = Dwt.getNextId();	
@@ -42,7 +42,7 @@ function(domain, html, idx) {
 	return idx;
 }
 
-LmDomainPicker.prototype._setupPicker =
+ZmDomainPicker.prototype._setupPicker =
 function(parent) {
     this._elements = new Object();
 	this._divIds = new Object();
@@ -55,11 +55,11 @@ function(parent) {
     var idx = 0;
 
 	// this probably doesn't belong here...
-	if (LmDomainPicker.root == null) {
-		LmDomainPicker.root = new LmDomainTree(this.shell.getData(LmAppCtxt.LABEL));
-		LmDomainPicker.root.load();
-		var root = LmDomainPicker.root.getRootDomain();
-		LmDomainPicker.domains = root.getSortedSubDomains();
+	if (ZmDomainPicker.root == null) {
+		ZmDomainPicker.root = new ZmDomainTree(this.shell.getData(ZmAppCtxt.LABEL));
+		ZmDomainPicker.root.load();
+		var root = ZmDomainPicker.root.getRootDomain();
+		ZmDomainPicker.domains = root.getSortedSubDomains();
 	}
     
 	html[idx++] = "<table cellpadding='3' cellspacing='0' border='0' style='width:100%;'>";
@@ -72,7 +72,7 @@ function(parent) {
 	html[idx++] = "</tr>";
 	html[idx++] = "</table>";
 	
-	var domains = LmDomainPicker.domains;
+	var domains = ZmDomainPicker.domains;
 	for (var i in domains) {
 		idx = this._domainHtml(domains[i].name, html, idx);
 	}
@@ -82,7 +82,7 @@ function(parent) {
 	for (var i in domains) {
 		var domain = domains[i];
 		var ip = Dwt.getDomObj(doc, this._inputIds[domain.name]);
-		ip.onclick = LmDomainPicker.onclick;
+		ip.onclick = ZmDomainPicker.onclick;
 		ip.value = domain.name;
 		ip._picker = this;
 		ip._div = Dwt.getDomObj(doc, this._divIds[domain.name]);
@@ -90,16 +90,16 @@ function(parent) {
 	}	
 
 	var from = this._from = Dwt.getDomObj(doc, fromId);
-	from.onchange = LmDomainPicker._onChange;
+	from.onchange = ZmDomainPicker._onChange;
 	from._picker = this;
 	var to = this._to = Dwt.getDomObj(doc, toId);
-	to.onchange = LmDomainPicker._onChange;
+	to.onchange = ZmDomainPicker._onChange;
 	to._picker = this;
 
 	this._updateDomains();
 }
 
-LmDomainPicker._onChange =
+ZmDomainPicker._onChange =
 function(ev) {
 	var element = DwtUiEvent.getTarget(ev);
 	var picker = element._picker;
@@ -107,9 +107,9 @@ function(ev) {
 	picker._updateQuery();
 }
 
-LmDomainPicker.prototype._updateDomains = 
+ZmDomainPicker.prototype._updateDomains = 
 function() {
-	var domains = LmDomainPicker.domains;
+	var domains = ZmDomainPicker.domains;
 	for (var i in domains) {
 		var domain = domains[i];
 		var el = this._elements[domain.name];
@@ -123,7 +123,7 @@ function() {
     this._checkedItems = new Object();	
 }
 
-LmDomainPicker.prototype._updateQuery = 
+ZmDomainPicker.prototype._updateQuery = 
 function() {
 	var domains = new Array(10);
 	var query = new Array(10);

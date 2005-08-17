@@ -1,22 +1,22 @@
-function LmTradView(parent, className, posStyle, controller, dropTgt) {
+function ZmTradView(parent, className, posStyle, controller, dropTgt) {
 
-	className = className || "LmTradView";
-	LmDoublePaneView.call(this, parent, className, posStyle, LmController.TRAD_VIEW, controller, dropTgt);
+	className = className || "ZmTradView";
+	ZmDoublePaneView.call(this, parent, className, posStyle, ZmController.TRAD_VIEW, controller, dropTgt);
 }
 
-LmTradView.prototype = new LmDoublePaneView;
-LmTradView.prototype.constructor = LmTradView;
+ZmTradView.prototype = new ZmDoublePaneView;
+ZmTradView.prototype.constructor = ZmTradView;
 
-LmTradView.prototype.toString = 
+ZmTradView.prototype.toString = 
 function() {
-	return "LmTradView";
+	return "ZmTradView";
 }
 
-LmTradView.prototype.setItem =
+ZmTradView.prototype.setItem =
 function(msgs) {
-	LmDoublePaneView.prototype.setItem.call(this, msgs);
+	ZmDoublePaneView.prototype.setItem.call(this, msgs);
 
-	this._msgListView.set(msgs, LmItem.F_DATE);
+	this._msgListView.set(msgs, ZmItem.F_DATE);
 
 	// XXX: for now always show the first msg 
 	//      (whether user clicked inbox or paginated)
@@ -27,7 +27,7 @@ function(msgs) {
 	}
 }
 
-LmTradView.prototype._resetSize = 
+ZmTradView.prototype._resetSize = 
 function(newWidth, newHeight) {
 	if (newHeight <= 0)
 		return;
@@ -55,7 +55,7 @@ function(newWidth, newHeight) {
 	this._msgListView._resetColWidth();
 }
 
-LmTradView.prototype._sashCallback =
+ZmTradView.prototype._sashCallback =
 function(delta) {
 
 	if (!this._sashMoved)

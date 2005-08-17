@@ -1,33 +1,33 @@
-function LmNewSearchDialog(parent, msgDialog, className, folderTree) {
+function ZmNewSearchDialog(parent, msgDialog, className, folderTree) {
 
-	LmDialog.call(this, parent, msgDialog, className, LmMsg.saveSearch);
+	ZmDialog.call(this, parent, msgDialog, className, LmMsg.saveSearch);
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
-	var folders = [LmFolder.ID_USER, LmFolder.ID_SEP, LmFolder.ID_SEARCH];
+	var folders = [ZmFolder.ID_USER, ZmFolder.ID_SEP, ZmFolder.ID_SEARCH];
 	var omit = new Object();
-	omit[LmFolder.ID_SPAM] = true;
-	omit[LmFolder.ID_DRAFTS] = true;
+	omit[ZmFolder.ID_SPAM] = true;
+	omit[ZmFolder.ID_DRAFTS] = true;
 	this._setFolderTree(folderTree, folders, this._folderTreeCellId, omit);
 }
 
-LmNewSearchDialog.prototype = new LmDialog;
-LmNewSearchDialog.prototype.constructor = LmNewSearchDialog;
+ZmNewSearchDialog.prototype = new ZmDialog;
+ZmNewSearchDialog.prototype.constructor = ZmNewSearchDialog;
 
-LmNewSearchDialog.prototype.toString = 
+ZmNewSearchDialog.prototype.toString = 
 function() {
-	return "LmNewSearchDialog";
+	return "ZmNewSearchDialog";
 }
 
-LmNewSearchDialog.prototype.popup =
+ZmNewSearchDialog.prototype.popup =
 function(search, loc) {
 	this._search = search;
-	var folder = this._folderTree.getById(LmFolder.ID_SEARCH);
+	var folder = this._folderTree.getById(ZmFolder.ID_SEARCH);
 	this._folderTreeView.setSelected(folder);
-	LmDialog.prototype.popup.call(this, loc);
+	ZmDialog.prototype.popup.call(this, loc);
 }
 
-LmNewSearchDialog.prototype._contentHtml = 
+ZmNewSearchDialog.prototype._contentHtml = 
 function() {
 	this._nameFieldId = Dwt.getNextId();
 	this._folderTreeCellId = Dwt.getNextId();
@@ -44,18 +44,18 @@ function() {
 	return html.join("");
 }
 
-LmNewSearchDialog.prototype._okButtonListener =
+ZmNewSearchDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getSearchData();
 	if (results)
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
 }
 
-LmNewSearchDialog.prototype._getSearchData =
+ZmNewSearchDialog.prototype._getSearchData =
 function() {
 	// check name for presence and validity
-	var name = LsStringUtil.trim(this._nameField.value);
-	var msg = LmFolder.checkName(name);
+	var name = AjxStringUtil.trim(this._nameField.value);
+	var msg = ZmFolder.checkName(name);
 
 	// make sure a parent was selected
 	var parentFolder = this._folderTreeView.getSelected();
@@ -64,12 +64,12 @@ function() {
 
 	// make sure parent doesn't already have a child by this name
 	if (!msg)
-		msg = LmFolder.checkParent(name, parentFolder);
+		msg = ZmFolder.checkParent(name, parentFolder);
 
 	return (msg ? this._showError(msg) : [name, parentFolder, this._search]);
 }
 
-LmNewSearchDialog.prototype._enterListener =
+ZmNewSearchDialog.prototype._enterListener =
 function(ev) {
 	var results = this._getSearchData();
 	if (results)

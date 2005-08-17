@@ -1,21 +1,21 @@
-function LmTimePicker(parent) {
+function ZmTimePicker(parent) {
 
-	LmPicker.call(this, parent, LmPicker.TIME);
+	ZmPicker.call(this, parent, ZmPicker.TIME);
 
     this._checkedItems = new Object();
 }
 
-LmTimePicker.prototype = new LmPicker;
-LmTimePicker.prototype.constructor = LmTimePicker;
+ZmTimePicker.prototype = new ZmPicker;
+ZmTimePicker.prototype.constructor = ZmTimePicker;
 
-LmPicker.CTOR[LmPicker.TIME] = LmTimePicker;
+ZmPicker.CTOR[ZmPicker.TIME] = ZmTimePicker;
 
-LmTimePicker.prototype.toString = 
+ZmTimePicker.prototype.toString = 
 function() {
-	return "LmTimePicker";
+	return "ZmTimePicker";
 }
 
-LmTimePicker.prototype._makeRow =
+ZmTimePicker.prototype._makeRow =
 function(left, leftId, right, rightId) {
     var size = 20;
     var html = new Array(10);
@@ -29,7 +29,7 @@ function(left, leftId, right, rightId) {
 	return html.join("");
 }
 
-LmTimePicker.prototype._setupPicker =
+ZmTimePicker.prototype._setupPicker =
 function(parent) {
     var picker = new DwtComposite(parent);
 
@@ -67,15 +67,15 @@ function(parent) {
 	this._installOnChange(lastYearId, "(after:-2year AND before:-1year)"); 
 }
 
-LmTimePicker.prototype._installOnChange =
+ZmTimePicker.prototype._installOnChange =
 function(id, query) {
 	var box = Dwt.getDomObj(this.getDocument(), id);
-	box.onclick = LmTimePicker.prototype._onChange;
+	box.onclick = ZmTimePicker.prototype._onChange;
 	box._query = query;
 	box._picker = this;
 }
 
-LmTimePicker.prototype._onChange =
+ZmTimePicker.prototype._onChange =
 function(ev) {
 	var element = DwtUiEvent.getTarget(ev);
 	var picker = element._picker;
@@ -86,7 +86,7 @@ function(ev) {
 	picker._updateQuery();
 }
 
-LmTimePicker.prototype._updateQuery = 
+ZmTimePicker.prototype._updateQuery = 
 function() {
 	var query = new Array();
 	for (var q in this._checkedItems)

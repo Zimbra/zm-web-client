@@ -1,23 +1,23 @@
-function LmAttachmentTypeList(appCtxt) {
+function ZmAttachmentTypeList(appCtxt) {
 	if (arguments.length == 0) return;
-	LmModel.call(this, true);
+	ZmModel.call(this, true);
 	this._appCtxt = appCtxt;
 };
 
-LmAttachmentTypeList.prototype = new LmModel;
-LmAttachmentTypeList.prototype.constructor = LmAttachmentTypeList;
+ZmAttachmentTypeList.prototype = new ZmModel;
+ZmAttachmentTypeList.prototype.constructor = ZmAttachmentTypeList;
 
-LmAttachmentTypeList.prototype.toString = 
+ZmAttachmentTypeList.prototype.toString = 
 function() {
-	return "LmAttachmentTypeList";
+	return "ZmAttachmentTypeList";
 };
 
-LmAttachmentTypeList.prototype.getAttachments =
+ZmAttachmentTypeList.prototype.getAttachments =
 function() {
 	return this._attachments;
 };
 
-LmAttachmentTypeList.compareEntry = 
+ZmAttachmentTypeList.compareEntry = 
 function(a,b) {
 	if (a.desc.toLowerCase() < b.desc.toLowerCase())
 		return -1;
@@ -27,20 +27,20 @@ function(a,b) {
 		return 0;
 };
 
-LmAttachmentTypeList.prototype.load =
+ZmAttachmentTypeList.prototype.load =
 function() {
 	this._attachments = new Array();
 
-	var soapDoc = LsSoapDoc.create("BrowseRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("BrowseRequest", "urn:liquidMail");
 	soapDoc.getMethod().setAttribute("browseBy", "attachments");
 
 	var att = this._appCtxt.getAppController().sendRequest(soapDoc).BrowseResponse.bd;
 	if (att) {
 		for (var i=0; i<att.length; i++) {
 			var type = att[i]._content;
-			if (!LmMimeTable.isIgnored(type) && (type.indexOf("/") != -1 || type == "image"))
-				this._attachments.push(LmMimeTable.getInfo(type, true));
+			if (!ZmMimeTable.isIgnored(type) && (type.indexOf("/") != -1 || type == "image"))
+				this._attachments.push(ZmMimeTable.getInfo(type, true));
 		}
-		this._attachments.sort(LmAttachmentTypeList.compareEntry);
+		this._attachments.sort(ZmAttachmentTypeList.compareEntry);
 	}
 };

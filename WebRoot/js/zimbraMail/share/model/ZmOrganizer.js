@@ -16,7 +16,7 @@
 * @param numUnread	number of unread items for this organizer
 * @param numTotal	number of items for this organizer
 */
-function LmOrganizer(type, id, name, parent, tree, numUnread, numTotal) {
+function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal) {
 
 	if (arguments.length == 0) return;
 	
@@ -28,41 +28,41 @@ function LmOrganizer(type, id, name, parent, tree, numUnread, numTotal) {
 	this.numUnread = numUnread || 0;
 	this.numTotal = numTotal || 0;
 
-	this.children = new LsVector();
+	this.children = new AjxVector();
 }
 
 // organizer types
-LmOrganizer.FOLDER	= LmEvent.S_FOLDER;
-LmOrganizer.TAG		= LmEvent.S_TAG;
-LmOrganizer.SEARCH	= LmEvent.S_SEARCH;
+ZmOrganizer.FOLDER	= ZmEvent.S_FOLDER;
+ZmOrganizer.TAG		= ZmEvent.S_TAG;
+ZmOrganizer.SEARCH	= ZmEvent.S_SEARCH;
 
-LmOrganizer.ID_ROOT = 1;
+ZmOrganizer.ID_ROOT = 1;
 
-LmOrganizer.SOAP_CMD = new Object();
-LmOrganizer.SOAP_CMD[LmOrganizer.FOLDER]	= "FolderAction";
-LmOrganizer.SOAP_CMD[LmOrganizer.TAG]		= "TagAction";
-LmOrganizer.SOAP_CMD[LmOrganizer.SEARCH]	= "FolderAction";
+ZmOrganizer.SOAP_CMD = new Object();
+ZmOrganizer.SOAP_CMD[ZmOrganizer.FOLDER]	= "FolderAction";
+ZmOrganizer.SOAP_CMD[ZmOrganizer.TAG]		= "TagAction";
+ZmOrganizer.SOAP_CMD[ZmOrganizer.SEARCH]	= "FolderAction";
 
 // fields that can be part of a displayed organizer
 var i = 1;
-LmOrganizer.F_NAME		= i++;
-LmOrganizer.F_UNREAD	= i++;
-LmOrganizer.F_TOTAL		= i++;
-LmOrganizer.F_PARENT	= i++;
-LmOrganizer.F_COLOR		= i++; // tags only
-LmOrganizer.F_QUERY		= i++; // saved search only
+ZmOrganizer.F_NAME		= i++;
+ZmOrganizer.F_UNREAD	= i++;
+ZmOrganizer.F_TOTAL		= i++;
+ZmOrganizer.F_PARENT	= i++;
+ZmOrganizer.F_COLOR		= i++; // tags only
+ZmOrganizer.F_QUERY		= i++; // saved search only
 
 // Following chars invalid in organizer names: " : /
-LmOrganizer.VALID_NAME_CHARS = "[\\w ~`!@#\\$%\\^&\\*\\(\\)\\-\\+=\\{\\}\\[\\];<>,\\.\\?\\|\\\\']";
-LmOrganizer.VALID_PATH_CHARS = "[\\w ~`!@#\\$%\\^&\\*\\(\\)\\-\\+=\\{\\}\\[\\];<>,\\.\\?\\|\\\\'\\/]"; // add /
-LmOrganizer.VALID_NAME_RE = new RegExp("^" + LmOrganizer.VALID_NAME_CHARS + "+$");
+ZmOrganizer.VALID_NAME_CHARS = "[\\w ~`!@#\\$%\\^&\\*\\(\\)\\-\\+=\\{\\}\\[\\];<>,\\.\\?\\|\\\\']";
+ZmOrganizer.VALID_PATH_CHARS = "[\\w ~`!@#\\$%\\^&\\*\\(\\)\\-\\+=\\{\\}\\[\\];<>,\\.\\?\\|\\\\'\\/]"; // add /
+ZmOrganizer.VALID_NAME_RE = new RegExp("^" + ZmOrganizer.VALID_NAME_CHARS + "+$");
 
-LmOrganizer.MAX_NAME_LENGTH			= 128;	// max allowed by server
-LmOrganizer.MAX_DISPLAY_NAME_LENGTH	= 30;	// max we will show
+ZmOrganizer.MAX_NAME_LENGTH			= 128;	// max allowed by server
+ZmOrganizer.MAX_DISPLAY_NAME_LENGTH	= 30;	// max we will show
 
 // Abstract methods
-LmOrganizer.sortCompare = function(organizerA, organizerB) {}
-LmOrganizer.prototype.create = function() {}
+ZmOrganizer.sortCompare = function(organizerA, organizerB) {}
+ZmOrganizer.prototype.create = function() {}
 
 /**
 * Checks an organizer (folder or tag) name for validity. Returns an error message if the
@@ -71,25 +71,25 @@ LmOrganizer.prototype.create = function() {}
 *
 * @param name		an organizer name
 */
-LmOrganizer.checkName =
+ZmOrganizer.checkName =
 function(name) {
 	if (name.length == 0)
 		return LmMsg.nameEmpty;
 
-	if (name.length > LmOrganizer.MAX_NAME_LENGTH)
-		return LsStringUtil.resolve(LmMsg.nameTooLong, LmOrganizer.MAX_NAME_LENGTH);
+	if (name.length > ZmOrganizer.MAX_NAME_LENGTH)
+		return AjxStringUtil.resolve(LmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
 
-	if (!LmOrganizer.VALID_NAME_RE.test(name))
-		return LsStringUtil.resolve(LmMsg.errorInvalidName, name);
+	if (!ZmOrganizer.VALID_NAME_RE.test(name))
+		return AjxStringUtil.resolve(LmMsg.errorInvalidName, name);
 
 	return null;
 }
 
 // Public methods
 
-LmOrganizer.prototype.toString = 
+ZmOrganizer.prototype.toString = 
 function() {
-	return "LmOrganizer";
+	return "ZmOrganizer";
 }
 
 /**
@@ -99,11 +99,11 @@ function() {
 * @param maxLength		length in chars to truncate the name to
 * @param noMarkup		if true, don't return any HTML
 */
-LmOrganizer.prototype.getName = 
+ZmOrganizer.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
 	var name = (maxLength && this.name.length > maxLength) ? this.name.substring(0, maxLength - 3) + "..." : this.name;
 	if (!noMarkup)
-		name = LsStringUtil.htmlEncode(name, true);
+		name = AjxStringUtil.htmlEncode(name, true);
 	if (showUnread && this.numUnread > 0) {
 		name = [name, " (", this.numUnread, ")"].join("");
 		if (!noMarkup)
@@ -115,13 +115,13 @@ function(showUnread, maxLength, noMarkup) {
 /**
 * Assigns the organizer a new name.
 */
-LmOrganizer.prototype.rename =
+ZmOrganizer.prototype.rename =
 function(name) {
 	if (name == this.name) return;
 	var success = this._organizerAction("rename", {name: name});
 	if (success) {
 		this.name = name;
-		this._eventNotify(LmEvent.E_RENAME);
+		this._eventNotify(ZmEvent.E_RENAME);
 	}
 }
 
@@ -130,11 +130,11 @@ function(name) {
 *
 * @param newParent		the new parent of this organizer
 */
-LmOrganizer.prototype.move =
+ZmOrganizer.prototype.move =
 function(newParent) {
-	var newId = (newParent.id > 0) ? newParent.id : LmOrganizer.ID_ROOT;
+	var newId = (newParent.id > 0) ? newParent.id : ZmOrganizer.ID_ROOT;
 	if ((newId == this.id || newId == this.parent.id) ||
-		(this.type == LmOrganizer.FOLDER && newId == LmFolder.ID_SPAM) ||
+		(this.type == ZmOrganizer.FOLDER && newId == ZmFolder.ID_SPAM) ||
 		(newParent.isChildOf(this))) {
 		return;
 	}
@@ -142,11 +142,11 @@ function(newParent) {
 	var success = this._organizerAction("move", {l: newId});
 	if (success) {
 		this.reparent(newParent);
-		this._eventNotify(LmEvent.E_MOVE);
+		this._eventNotify(ZmEvent.E_MOVE);
 		// moving a folder to Trash marks its contents as read
-		if (this.type == LmOrganizer.FOLDER && newParent.id == LmFolder.ID_TRASH) {
+		if (this.type == ZmOrganizer.FOLDER && newParent.id == ZmFolder.ID_TRASH) {
 			this.numUnread = 0;
-			this._eventNotify(LmEvent.E_FLAGS, null, {item: this, flag: LmItem.FLAG_UNREAD, state: false});
+			this._eventNotify(ZmEvent.E_FLAGS, null, {item: this, flag: ZmItem.FLAG_UNREAD, state: false});
 		}
 	}
 }
@@ -157,27 +157,27 @@ function(newParent) {
 * In that case, we don't bother to remove it from the UI (and we ignore creates on
 * system folders).
 */
-LmOrganizer.prototype.dispose =
+ZmOrganizer.prototype.dispose =
 function() {
-	DBG.println(LsDebug.DBG1, "disposing: " + this.name + ", ID: " + this.id);
-	var isEmptyOp = (this.type == LmOrganizer.FOLDER && (this.id == LmFolder.ID_SPAM || this.id == LmFolder.ID_TRASH));
+	DBG.println(AjxDebug.DBG1, "disposing: " + this.name + ", ID: " + this.id);
+	var isEmptyOp = (this.type == ZmOrganizer.FOLDER && (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH));
 	// make sure we're not deleting a system object (unless we're emptying SPAM or TRASH)
-	if (this.id < LmTree.CLASS[this.type].FIRST_USER_ID && !isEmptyOp)
+	if (this.id < ZmTree.CLASS[this.type].FIRST_USER_ID && !isEmptyOp)
 		return;
 	
 	this._organizerAction("delete");
 	if (!isEmptyOp) {
 		this.tree.deleteLocal([this]);
-		this._eventNotify(LmEvent.E_DELETE);
+		this._eventNotify(ZmEvent.E_DELETE);
 	}
 }
 
-LmOrganizer.prototype.markAllRead =
+ZmOrganizer.prototype.markAllRead =
 function() {
 	var success = this._organizerAction("read", {l: this.id});
 	if (success) {
 		this.numUnread = 0;
-		this._eventNotify(LmEvent.E_FLAGS, null, {item: this, flag: LmItem.FLAG_UNREAD, state: false});
+		this._eventNotify(ZmEvent.E_FLAGS, null, {item: this, flag: ZmItem.FLAG_UNREAD, state: false});
 	}
 }
 
@@ -186,7 +186,7 @@ function() {
 *
 * @param name		the name of the organizer to look for
 */
-LmOrganizer.prototype.hasChild =
+ZmOrganizer.prototype.hasChild =
 function(name) {
 	name = name.toLowerCase();
 	var a = this.children.getArray();
@@ -198,7 +198,7 @@ function(name) {
 	return false;
 }
 
-LmOrganizer.prototype.reparent =
+ZmOrganizer.prototype.reparent =
 function(newParent) {
 	this.parent.children.remove(this);
 	newParent.children.add(this);
@@ -210,7 +210,7 @@ function(newParent) {
 *
 * @param id		the ID to search for
 */
-LmOrganizer.prototype.getById =
+ZmOrganizer.prototype.getById =
 function(id) {
 	if (this.id == id)
 		return this;
@@ -230,7 +230,7 @@ function(id) {
 *
 * @param name		the name to search for
 */
-LmOrganizer.prototype.getByName =
+ZmOrganizer.prototype.getByName =
 function(name) {
 	return this._getByName(name.toLowerCase());
 }
@@ -238,7 +238,7 @@ function(name) {
 /**
 * Returns the number of children of this organizer.
 */
-LmOrganizer.prototype.size =
+ZmOrganizer.prototype.size =
 function() {
 	return this.children.size();
 }
@@ -248,7 +248,7 @@ function() {
 *
 * @param organizer		a possible descendant of ours
 */
-LmOrganizer.prototype.isChildOf =
+ZmOrganizer.prototype.isChildOf =
 function (organizer) {
 	var parent = this.parent;
 	while (parent) {
@@ -262,12 +262,12 @@ function (organizer) {
 /**
 * Returns true is this is a system tag or folder.
 */
-LmOrganizer.prototype.isSystem =
+ZmOrganizer.prototype.isSystem =
 function () {
-	return (this.id < LmTree.CLASS[this.type].FIRST_USER_ID);
+	return (this.id < ZmTree.CLASS[this.type].FIRST_USER_ID);
 }
 
-LmOrganizer.getSortIndex =
+ZmOrganizer.getSortIndex =
 function(child, sortFunction) {
 	if (!sortFunction) return null;
 	var children = child.parent.children.getArray();
@@ -279,7 +279,7 @@ function(child, sortFunction) {
 	return i;
 }
 
-LmOrganizer.prototype._getCommonFields =
+ZmOrganizer.prototype._getCommonFields =
 function(obj) {
 	var name = obj.name;
 	var numUnread = obj.u;
@@ -287,25 +287,25 @@ function(obj) {
 	var fields = new Object();
 	if ((name != null) && this.name != name) {
 		this.name = name;
-		fields[LmOrganizer.F_NAME] = true;
+		fields[ZmOrganizer.F_NAME] = true;
 	}
 	if ((numUnread != null) && this.numUnread != numUnread) {
 		this.numUnread = numUnread;
-		fields[LmOrganizer.F_UNREAD] = true;
+		fields[ZmOrganizer.F_UNREAD] = true;
 	}
 	if ((numTotal != null) && this.numTotal != numTotal) {
 		this.numTotal = numTotal;
-		fields[LmOrganizer.F_TOTAL] = true;
+		fields[ZmOrganizer.F_TOTAL] = true;
 	}
 	return fields;
 }
 
 // General method for handling the SOAP call. 
 // NOTE: exceptions need to be handled by calling method!
-LmOrganizer.prototype._organizerAction =
+ZmOrganizer.prototype._organizerAction =
 function(action, attrs) {
-	var cmd = LmOrganizer.SOAP_CMD[this.type];
-	var soapDoc = LsSoapDoc.create(cmd + "Request", "urn:liquidMail");
+	var cmd = ZmOrganizer.SOAP_CMD[this.type];
+	var soapDoc = AjxSoapDoc.create(cmd + "Request", "urn:liquidMail");
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("op", action);
 	actionNode.setAttribute("id", this.id);
@@ -319,7 +319,7 @@ function(action, attrs) {
 }
 
 // Test the name of this organizer and then descendants against the given name, case insensitively
-LmOrganizer.prototype._getByName =
+ZmOrganizer.prototype._getByName =
 function(name) {
 	if (this.name && name == this.name.toLowerCase())
 		return this;
@@ -335,12 +335,12 @@ function(name) {
 }
 
 // Notify our listeners.
-LmOrganizer.prototype._eventNotify =
+ZmOrganizer.prototype._eventNotify =
 function(event, organizer, details) {
 	organizer = organizer || this;
-	if (this.tree._evtMgr.isListenerRegistered(LmEvent.L_MODIFY)) {
+	if (this.tree._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
 		this.tree._evt.set(event, organizer);
 		this.tree._evt.setDetails(details);
-		this.tree._evtMgr.notifyListeners(LmEvent.L_MODIFY, this.tree._evt);
+		this.tree._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this.tree._evt);
 	}
 }

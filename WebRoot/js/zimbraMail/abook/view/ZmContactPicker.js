@@ -10,7 +10,7 @@
 * @author Conrad Damon
 * @param shell	the enclosing shell (which we are displayed on)
 */
-function LmContactPicker(controller, shell, appCtxt) {
+function ZmContactPicker(controller, shell, appCtxt) {
 
 	DwtDialog.call(this, shell, null, LmMsg.selectAddresses);
 	
@@ -19,25 +19,25 @@ function LmContactPicker(controller, shell, appCtxt) {
 	this._initialize();
 }
 
-LmContactPicker.prototype = new DwtDialog;
-LmContactPicker.prototype.constructor = LmContactPicker;
+ZmContactPicker.prototype = new DwtDialog;
+ZmContactPicker.prototype.constructor = ZmContactPicker;
 
 // Consts
 
-LmContactPicker.SEARCHFOR_CONTACTS 	= 1;
-LmContactPicker.SEARCHFOR_GAL 		= 2;
-LmContactPicker.SEARCHFOR_MAX 		= 50;
-LmContactPicker.ADDRS = [LmEmailAddress.TO, LmEmailAddress.CC, LmEmailAddress.BCC];
+ZmContactPicker.SEARCHFOR_CONTACTS 	= 1;
+ZmContactPicker.SEARCHFOR_GAL 		= 2;
+ZmContactPicker.SEARCHFOR_MAX 		= 50;
+ZmContactPicker.ADDRS = [ZmEmailAddress.TO, ZmEmailAddress.CC, ZmEmailAddress.BCC];
 
-LmContactPicker.ID_ICON 		= "i--";
-LmContactPicker.ID_PARTICIPANT 	= "p--";
-LmContactPicker.ID_EMAIL 		= "e--";
+ZmContactPicker.ID_ICON 		= "i--";
+ZmContactPicker.ID_PARTICIPANT 	= "p--";
+ZmContactPicker.ID_EMAIL 		= "e--";
 
 // Public methods
 
-LmContactPicker.prototype.toString = 
+ZmContactPicker.prototype.toString = 
 function() {
-	return "LmContactPicker";
+	return "ZmContactPicker";
 }
 
 /**
@@ -50,22 +50,22 @@ function() {
 * @param addrs		array of 3 vectors (one for each type of address)
 * @param addrType	the address type of the button that called us
 */
-LmContactPicker.prototype.popup =
+ZmContactPicker.prototype.popup =
 function(addrType) {
 	// create source list view if necessary
 	if (!this._sourceListView) {
-		this._sourceListView = this._createListView(this._sourceListId, LmController.CONTACT_SRC_VIEW);
-		this._sourceListView.addSelectionListener(new LsListener(this, this._sourceListener));
+		this._sourceListView = this._createListView(this._sourceListId, ZmController.CONTACT_SRC_VIEW);
+		this._sourceListView.addSelectionListener(new AjxListener(this, this._sourceListener));
 	}
 	
 	// create target list view if necessary
 	if (!this._targetListView) {
-		this._targetListView = this._createListView(this._targetListId, LmController.CONTACT_TGT_VIEW, true);
-		this._targetListView.addSelectionListener(new LsListener(this, this._targetListener));
+		this._targetListView = this._createListView(this._targetListId, ZmController.CONTACT_TGT_VIEW, true);
+		this._targetListView.addSelectionListener(new AjxListener(this, this._targetListener));
 	}
 	
 	// reset column sorting preference
-	this._sourceListView.setSortByAsc(LmItem.F_PARTICIPANT, true);
+	this._sourceListView.setSortByAsc(ZmItem.F_PARTICIPANT, true);
 
 	// reset button states
 	this._setActiveButton(this._addrButtonId[addrType], addrType);
@@ -83,7 +83,7 @@ function(addrType) {
 /**
 * Closes the dialog
 */
-LmContactPicker.prototype.popdown =
+ZmContactPicker.prototype.popdown =
 function() {
 	// cleanup
 	this._targetListView._resetList();
@@ -105,8 +105,8 @@ function() {
 
 // Private methods
 
-// called only when LmContactPicker is first created. Sets up initial layout.
-LmContactPicker.prototype._initialize = 
+// called only when ZmContactPicker is first created. Sets up initial layout.
+ZmContactPicker.prototype._initialize = 
 function() {
 
 	var doc = this.getDocument();
@@ -114,8 +114,8 @@ function() {
 	// init To/CC/BCC buttons
 	this._addrButtonId = new Array();
 	this._addrDivId = new Array();
-	for (var i = 0; i < LmContactPicker.ADDRS.length; i++) {
-		var type = LmContactPicker.ADDRS[i];
+	for (var i = 0; i < ZmContactPicker.ADDRS.length; i++) {
+		var type = ZmContactPicker.ADDRS[i];
 		this._addrDivId[type] = Dwt.getNextId();
 		this._addrButtonId[type] = Dwt.getNextId();
 	}
@@ -127,48 +127,48 @@ function() {
 	var searchSpan = Dwt.getDomObj(doc, this._listSearchId);
 	var searchButton = new DwtButton(this);
 	searchButton.setText(LmMsg.search);
-	searchButton.addSelectionListener(new LsListener(this, this._searchButtonListener));
+	searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
 	searchSpan.appendChild(searchButton.getHtmlElement());
 
 	// add transfer buttons
 	this._addrButton = new Array();
 	this._vecs = new Array();
-	for (var i = 0; i < LmContactPicker.ADDRS.length; i++) {
-		var type = LmContactPicker.ADDRS[i];
-		var typeStr = LmEmailAddress.TYPE_STRING[type];
+	for (var i = 0; i < ZmContactPicker.ADDRS.length; i++) {
+		var type = ZmContactPicker.ADDRS[i];
+		var typeStr = ZmEmailAddress.TYPE_STRING[type];
 		this._addrButton[type] = this._setupButton(this._addrButtonId[type], typeStr, type);
-		this._addrButton[type].addSelectionListener(new LsListener(this, this._addressButtonListener));
+		this._addrButton[type].addSelectionListener(new AjxListener(this, this._addressButtonListener));
 		var addrDiv = Dwt.getDomObj(doc, this._addrDivId[type]);
 		addrDiv.appendChild(this._addrButton[type].getHtmlElement());
-		this._vecs[type] = new LsVector();
+		this._vecs[type] = new AjxVector();
 	}
 
 	// add remove button
 	this._removeButtonId = Dwt.getNextId();
 	this._removeButton = this._setupButton(this._removeButtonId, "remove");
-	this._removeButton.addSelectionListener(new LsListener(this, this._removeButtonListener));
+	this._removeButton.addSelectionListener(new AjxListener(this, this._removeButtonListener));
 	var removeDiv = Dwt.getDomObj(doc, this._removeDivId);
 	removeDiv.appendChild(this._removeButton.getHtmlElement());
 
 	// add select menu
-	if (this._appCtxt.get(LmSetting.CONTACTS_ENABLED) && this._appCtxt.get(LmSetting.GAL_ENABLED)) {
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var listSelect = document.getElementById(this._listSelectId);
 		this._selectDiv = new DwtSelect(this);
-		this._selectDiv.addOption(LmMsg.contacts, true, LmContactPicker.SEARCHFOR_CONTACTS);
-		this._selectDiv.addOption(LmMsg.GAL, false, LmContactPicker.SEARCHFOR_GAL);
+		this._selectDiv.addOption(LmMsg.contacts, true, ZmContactPicker.SEARCHFOR_CONTACTS);
+		this._selectDiv.addOption(LmMsg.GAL, false, ZmContactPicker.SEARCHFOR_GAL);
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
 	}
    
     // init listeners
-	this.setButtonListener(DwtDialog.OK_BUTTON, new LsListener(this, this._okButtonListener));
-	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new LsListener(this, this._cancelButtonListener));
+	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
+	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 	
 	var searchField = Dwt.getDomObj(doc, this._searchFieldId);
-	searchField.onkeypress = LmContactPicker._keyPressHdlr;
-	this._keyPressCallback = new LsCallback(this, this._searchButtonListener);
+	searchField.onkeypress = ZmContactPicker._keyPressHdlr;
+	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
 }
 
-LmContactPicker.prototype._contentHtml = 
+ZmContactPicker.prototype._contentHtml = 
 function() {
 	this._listSelectId = Dwt.getNextId();
 	this._listSearchId = Dwt.getNextId();
@@ -180,20 +180,20 @@ function() {
 	var html = new Array();
 	var idx = 0;
 	
-	html[idx++] = "<div class='LmContactPicker'>";
+	html[idx++] = "<div class='ZmContactPicker'>";
 	html[idx++] = "<table border=0 cellpadding=1 cellspacing=1 width=100%>";
 	html[idx++] = "<tr><td>";
 	// add search input field and search button
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
 	html[idx++] = "<td valign=middle>";
-	html[idx++] = LsImg.getImageHtml(LmImg.I_SEARCH);
+	html[idx++] = AjxImg.getImageHtml(ZmImg.I_SEARCH);
 	html[idx++] = "</td>";
 	html[idx++] = "<td><input type='text' size=30 nowrap id='" + this._searchFieldId + "'>&nbsp;</td>";
 	html[idx++] = "<td id='" + this._listSearchId + "'></td>";
 	html[idx++] = "</tr></table>";
 	html[idx++] = "</td><td align=right>";
 	// add placeholder for drop down select widget
-	if (this._appCtxt.get(LmSetting.CONTACTS_ENABLED) && this._appCtxt.get(LmSetting.GAL_ENABLED)) {
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		html[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
 		html[idx++] = "<td class='Label nobreak'>" + LmMsg.showNames + ":&nbsp;</td>";
 		html[idx++] = "<td id='" + this._listSelectId + "'></td>";
@@ -207,8 +207,8 @@ function() {
 	html[idx++] = "<td><div id='" + this._sourceListId + "' class='abPickList'></div></td>";
 	// address buttons
 	html[idx++] = "<td valign='middle'>";
-	for (var i = 0; i < LmContactPicker.ADDRS.length; i++) {
-		var type = LmContactPicker.ADDRS[i];
+	for (var i = 0; i < ZmContactPicker.ADDRS.length; i++) {
+		var type = ZmContactPicker.ADDRS[i];
 		html[idx++] = "<div id='" + this._addrDivId[type] + "'></div><br>";
 	}
 	// remove button
@@ -220,14 +220,14 @@ function() {
 	return html.join("");
 }
 
-LmContactPicker.prototype._createListView = 
+ZmContactPicker.prototype._createListView = 
 function(listViewId, view, bExtendedHeader) {
 	var listView = new LmContactPickerListView(this, view, bExtendedHeader);
 	var listDiv = document.getElementById(listViewId);
  	listDiv.appendChild(listView.getHtmlElement());
 	var size = Dwt.getSize(listDiv);
 	listView.setSize(size.x, size.y);
-	var defaultSortCol = bExtendedHeader ? null : LmItem.F_PARTICIPANT;
+	var defaultSortCol = bExtendedHeader ? null : ZmItem.F_PARTICIPANT;
 	listView.setUI(defaultSortCol);
 	listView._initialized = true;
 	
@@ -235,13 +235,13 @@ function(listViewId, view, bExtendedHeader) {
 }
 
 // Creates a DwtButton and adds a few props to it
-LmContactPicker.prototype._setupButton =
+ZmContactPicker.prototype._setupButton =
 function(id, name, addrType) {
 	var button = new DwtButton(this);
 	button.setText(LmMsg[name]);
 	button.id = id;
 	button.setHtmlElementId(id);
-	button._activeClassName = button._origClassName + " LmContactPicker-Active";
+	button._activeClassName = button._origClassName + " ZmContactPicker-Active";
 	button._nonActiveClassName = button._origClassName;
 	button._addrType = addrType;
 
@@ -251,7 +251,7 @@ function(id, name, addrType) {
 // Listeners
 
 // Handle click and double-click in source list (for adding addresses)
-LmContactPicker.prototype._sourceListener =
+ZmContactPicker.prototype._sourceListener =
 function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		this._addEmails(this._activeAddrType, this._sourceListView.getSelection());
@@ -266,7 +266,7 @@ function(ev) {
 }
 
 // Handle click and double-click in target list (for removing addresses)
-LmContactPicker.prototype._targetListener =
+ZmContactPicker.prototype._targetListener =
 function(ev) {
 	this._enableButtons(false, true);
 	this._setActiveButton(this._removeButtonId);
@@ -274,7 +274,7 @@ function(ev) {
 }
 
 // Clicking an address button adds the selected address
-LmContactPicker.prototype._addressButtonListener =
+ZmContactPicker.prototype._addressButtonListener =
 function(ev) {
 	var element = DwtUiEvent.getDwtObjFromEvent(ev);
 	if (this._sourceListView.getSelectionCount() > 0) {
@@ -284,31 +284,31 @@ function(ev) {
 	}
 }
 
-LmContactPicker.prototype._searchButtonListener = 
+ZmContactPicker.prototype._searchButtonListener = 
 function(ev) {
-	this._query = LsStringUtil.trim(Dwt.getDomObj(this.getDocument(), this._searchFieldId).value);
+	this._query = AjxStringUtil.trim(Dwt.getDomObj(this.getDocument(), this._searchFieldId).value);
 	if (this._query.length) {
-		if (this._appCtxt.get(LmSetting.CONTACTS_ENABLED) && this._appCtxt.get(LmSetting.GAL_ENABLED)) {
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			var searchFor = this._selectDiv.getSelectedOption().getValue();
-			this._contactSource = (searchFor == LmContactPicker.SEARCHFOR_CONTACTS) ? LmItem.CONTACT : LmSearchToolBar.FOR_GAL_MI;
+			this._contactSource = (searchFor == ZmContactPicker.SEARCHFOR_CONTACTS) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 		} else {
-			this._contactSource = this._appCtxt.get(LmSetting.CONTACTS_ENABLED) ? LmItem.CONTACT : LmSearchToolBar.FOR_GAL_MI;
+			this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 		}
-		this.search(LmSearch.NAME_ASC);
+		this.search(ZmSearch.NAME_ASC);
 	}
 }
 
-// The controller used here is a LmComposeController, so we pass a handle to this object
-LmContactPicker.prototype.search = 
+// The controller used here is a ZmComposeController, so we pass a handle to this object
+ZmContactPicker.prototype.search = 
 function(sortBy) {
 	this._controller._schedule(this._doSearch, {contactPicker: this, sortBy: sortBy})
 }
 
-LmContactPicker.prototype._doSearch = 
+ZmContactPicker.prototype._doSearch = 
 function(params) {
 	var cp = params.contactPicker;
-	var types = LsVector.fromArray([LmItem.CONTACT]);
-	var search = new LmSearch(this._appCtxt, cp._query, types, params.sortBy, 0, LmContactPicker.SEARCHFOR_MAX, cp._contactSource);
+	var types = AjxVector.fromArray([ZmItem.CONTACT]);
+	var search = new ZmSearch(this._appCtxt, cp._query, types, params.sortBy, 0, ZmContactPicker.SEARCHFOR_MAX, cp._contactSource);
 	try {
 		var searchResult = search.execute();
 	} catch (ex) {
@@ -316,14 +316,14 @@ function(params) {
 			 ex.code == LsCsfeException.NO_AUTH_TOKEN) {
 			cp.popdown();
 		}
-		this._handleException(ex, LmContactPicker.prototype._doSearch, params, false);
+		this._handleException(ex, ZmContactPicker.prototype._doSearch, params, false);
 	}
 	if (!searchResult) return;
 	
 	if (cp._list && cp._list.size())
 		cp._list.clear();
 	
-	cp._list = searchResult.getResults(LmItem.CONTACT);
+	cp._list = searchResult.getResults(ZmItem.CONTACT);
 	
 	// Take the contacts and create a list of their email addresses (a contact may have more than one)
 	var list = new Array();
@@ -332,31 +332,31 @@ function(params) {
 		var contact = a[i];
 		var emails = contact.getEmails();
 		for (var j = 0; j < emails.length; j++) {
-			var email = new LmEmailAddress(emails[j], null, contact.getFullName());
+			var email = new ZmEmailAddress(emails[j], null, contact.getFullName());
 			email.id = Dwt.getNextId();
 			list.push(email);
 		}
 	}
-	cp._sourceListView.set(LsVector.fromArray(list));
+	cp._sourceListView.set(AjxVector.fromArray(list));
 	// if there's only one, select it
 	if (list.length == 1)
 		cp._sourceListView.setSelection(list[0]);
 }
 
 // Removes the selected address
-LmContactPicker.prototype._removeButtonListener =
+ZmContactPicker.prototype._removeButtonListener =
 function(ev) {
 	this._handleRemove(this._targetListView.getSelection());
 }
 
 // Done choosing addresses, add them to the compose form
-LmContactPicker.prototype._okButtonListener =
+ZmContactPicker.prototype._okButtonListener =
 function(ev) {
 	DwtDialog.prototype._buttonListener.call(this, ev, [this._vecs]);
 }
 
 // Call custom popdown method
-LmContactPicker.prototype._cancelButtonListener =
+ZmContactPicker.prototype._cancelButtonListener =
 function(ev) {
 	DwtDialog.prototype._buttonListener.call(this, ev, [this._vecs]);
 	this.popdown();
@@ -365,17 +365,17 @@ function(ev) {
 // Miscellaneous methods
 
 // Enable/disable the address/remove buttons
-LmContactPicker.prototype._enableButtons =
+ZmContactPicker.prototype._enableButtons =
 function(enableAddrs, enableRemove) {
-	for (var i = 0; i < LmContactPicker.ADDRS.length; i++) {
-		var type = LmContactPicker.ADDRS[i];
+	for (var i = 0; i < ZmContactPicker.ADDRS.length; i++) {
+		var type = ZmContactPicker.ADDRS[i];
 		this._addrButton[type].setEnabled(enableAddrs);
 	}
 	this._removeButton.setEnabled(enableRemove);
 }
 
 // Remove any selected addresses from target list. Also handles button state.
-LmContactPicker.prototype._handleRemove =
+ZmContactPicker.prototype._handleRemove =
 function(items) {
 	for (var i = 0; i < items.length; i++) {
 		var addr = items[i];
@@ -393,7 +393,7 @@ function(items) {
 // Make a button "active" (the default for double-clicks). Done by 
 // manipulating the style class. The active/non-active class is set as the 
 // "_origClassName" so that activation/triggering still work.
-LmContactPicker.prototype._setActiveButton =
+ZmContactPicker.prototype._setActiveButton =
 function(id, addrType) {
 	var doc = this.getDocument();
 	id = id || this._addrButtonId[addrType];
@@ -413,13 +413,13 @@ function(id, addrType) {
 }
 
 // Add selected addresses to the target list.
-LmContactPicker.prototype._addEmails =
+ZmContactPicker.prototype._addEmails =
 function(addrType, items) {
 	this._setActiveButton(this._addrButtonId[addrType], addrType);
 	for (var i = 0; i < items.length; i++) {
 		var selItem = items[i];
 		if (!this._vecs[addrType] || !this._vecs[addrType].containsLike(selItem, selItem.getAddress)) {
-			var addr = new LmEmailAddress(selItem.getAddress(), addrType, selItem.getName(), selItem.getDispName());
+			var addr = new ZmEmailAddress(selItem.getAddress(), addrType, selItem.getName(), selItem.getDispName());
 			addr.id = selItem.id;
 			this._addToTarget(addr);
 			this._vecs[addrType].add(addr);
@@ -429,7 +429,7 @@ function(addrType, items) {
 }
 
 // Adds an email to the target list, prefixed by its type
-LmContactPicker.prototype._addToTarget =
+ZmContactPicker.prototype._addToTarget =
 function(email) {
 	var emailType = email.getType();
 	
@@ -439,15 +439,15 @@ function(email) {
 	var count = 0;
 	var addr = len > 0 ? this._targetListView.getItemFromElement(children[count++]) : null;
 	
-	while (addr && addr.getType() == LmEmailAddress.TO)
+	while (addr && addr.getType() == ZmEmailAddress.TO)
 		addr = len > count ? this._targetListView.getItemFromElement(children[count++]) : null;
 
-	if (emailType != LmEmailAddress.TO) {
-		while (addr && addr.getType() == LmEmailAddress.CC)
+	if (emailType != ZmEmailAddress.TO) {
+		while (addr && addr.getType() == ZmEmailAddress.CC)
 			addr = len > count ? this._targetListView.getItemFromElement(children[count++]) : null;
 		
-		if (emailType == LmEmailAddress.BCC) {
-			while (addr && addr.getType() == LmEmailAddress.BCC)
+		if (emailType == ZmEmailAddress.BCC) {
+			while (addr && addr.getType() == ZmEmailAddress.BCC)
 				addr = len > count ? this._targetListView.getItemFromElement(children[count++]) : null;
 		}
 	}
@@ -458,7 +458,7 @@ function(email) {
 		this._targetListView.addItem(email);
 }
 
-LmContactPicker._keyPressHdlr =
+ZmContactPicker._keyPressHdlr =
 function(ev) {
     var stb = DwtUiEvent.getDwtObjFromEvent(ev);
 	var charCode = DwtKeyEvent.getCharCode(ev);
@@ -488,12 +488,12 @@ function(ev) {
 function LmContactPickerListView(parent, view, bExtHeader) {
 	
 	var headerList = this._getHeaderList(parent, bExtHeader);
-	LmListView.call(this, parent, null, null, view, LmItem.CONTACT, headerList);
+	ZmListView.call(this, parent, null, null, view, ZmItem.CONTACT, headerList);
 	
 	this._extHeader = bExtHeader || false;
 }
 
-LmContactPickerListView.prototype = new LmListView;
+LmContactPickerListView.prototype = new ZmListView;
 LmContactPickerListView.prototype.constructor = LmContactPickerListView;
 
 LmContactPickerListView.prototype.toString = 
@@ -503,13 +503,13 @@ function() {
 
 LmContactPickerListView.prototype.setSize =
 function(width, height) {
-	LmListView.prototype.setSize.call(this, width, height);
+	ZmListView.prototype.setSize.call(this, width, height);
 	this._sizeChildren(width, height);
 }
 
 LmContactPickerListView.prototype.setBounds =
 function(x, y, width, height) {
-	LmListView.prototype.setBounds.call(this, x, y, width, height);
+	ZmListView.prototype.setBounds.call(this, x, y, width, height);
 	this._sizeChildren(width, height);
 }
 
@@ -523,10 +523,10 @@ LmContactPickerListView.prototype._setNoResultsHtml =
 function() {
 	// ignore if target list view
 	if (this._initialized && !this._extHeader)
-		LmListView.prototype._setNoResultsHtml.call(this);
+		ZmListView.prototype._setNoResultsHtml.call(this);
 }
 
-// The items are LmEmailAddress objects
+// The items are ZmEmailAddress objects
 LmContactPickerListView.prototype._createItemHtml =
 function(item) {
 
@@ -539,26 +539,26 @@ function(item) {
 	var html = new Array();
 	var idx = 0;
 
-	if (this.view == LmController.CONTACT_SRC_VIEW) {
+	if (this.view == ZmController.CONTACT_SRC_VIEW) {
 		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>";
 		for (var i = 0; i < this._headerList.length; i++) {
 			var id = this._headerList[i]._id;
-			if (id.indexOf(LmContactPicker.ID_PARTICIPANT) == 0) {
+			if (id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
 				html[idx++] = "<td width=" + this._headerList[i]._width + ">&nbsp;" + item.name + "</td>";
-			} else if (id.indexOf(LmContactPicker.ID_EMAIL) == 0) {
+			} else if (id.indexOf(ZmContactPicker.ID_EMAIL) == 0) {
 				html[idx++] = "<td>&nbsp;" + item.address + "</td>";
 			}
 		}
 		html[idx++] = "</tr></table>";
-	} else if (this.view == LmController.CONTACT_TGT_VIEW) {
+	} else if (this.view == ZmController.CONTACT_TGT_VIEW) {
 		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>";
 		for (var i = 0; i < this._headerList.length; i++) {
 			var id = this._headerList[i]._id;
-			if (id.indexOf(LmContactPicker.ID_ICON) == 0) {
+			if (id.indexOf(ZmContactPicker.ID_ICON) == 0) {
 				html[idx++] = "<td width=" + this._headerList[i]._width + ">" + LmMsg[item.getTypeAsString()] + ":</td>";
-			} else if (id.indexOf(LmContactPicker.ID_PARTICIPANT) == 0) {
+			} else if (id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
 				html[idx++] = "<td width=" + this._headerList[i]._width + ">&nbsp;" + item.name + "</td>";
-			} else if (id.indexOf(LmContactPicker.ID_EMAIL) == 0) {
+			} else if (id.indexOf(ZmContactPicker.ID_EMAIL) == 0) {
 				html[idx++] = "<td>&nbsp;" + item.address + "</td>";
 			}
 		}
@@ -578,11 +578,11 @@ function(parent, bExtHeader) {
 	var headerList = new Array();
 
 	if (bExtHeader)
-		headerList.push(new DwtListHeaderItem(LmContactPicker.ID_ICON, null, LmImg.I_CONTACT_PICKER, 20));
+		headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_ICON, null, ZmImg.I_CONTACT_PICKER, 20));
 	
-	var sortBy = bExtHeader ? null : LmItem.F_PARTICIPANT;
-	headerList.push(new DwtListHeaderItem(LmContactPicker.ID_PARTICIPANT, LmMsg._name, null, 100, sortBy));
-	headerList.push(new DwtListHeaderItem(LmContactPicker.ID_EMAIL, LmMsg.email));
+	var sortBy = bExtHeader ? null : ZmItem.F_PARTICIPANT;
+	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_PARTICIPANT, LmMsg._name, null, 100, sortBy));
+	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_EMAIL, LmMsg.email));
 	
 	return headerList;
 }
@@ -594,12 +594,12 @@ function(clickedEl, ev) {
 	if (!ev.shiftKey && !ev.ctrlKey && ev.button == DwtMouseEvent.RIGHT) {
 		return;
 	} else {
-		LmListView.prototype._itemClicked.call(this, clickedEl, ev);
+		ZmListView.prototype._itemClicked.call(this, clickedEl, ev);
 	}
 }
 
 LmContactPickerListView.prototype._sortColumn = 
 function(columnItem, bSortAsc) {
-	var sortBy = bSortAsc ? LmSearch.NAME_ASC : LmSearch.NAME_DESC;
+	var sortBy = bSortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC;
 	this.parent.search(sortBy);
 }

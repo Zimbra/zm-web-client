@@ -1,4 +1,4 @@
-function LmChangePasswordDialog(parent, msgDialog, className) {
+function ZmChangePasswordDialog(parent, msgDialog, className) {
 
 	DwtDialog.call(this, parent, className, LmMsg.changePassword);
 
@@ -15,27 +15,27 @@ function LmChangePasswordDialog(parent, msgDialog, className) {
 	this._newPasswordField = Dwt.getDomObj(doc, this._newPasswordId);
 	this._confirmPasswordField = Dwt.getDomObj(doc, this._confirmPasswordId);
 
-	this.setButtonListener(DwtDialog.OK_BUTTON, new LsListener(this, this._okButtonListener));
+	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this.setTabOrder([this._oldPasswordId, this._newPasswordId, 
 					  this._confirmPasswordId]);
 	this.addEnterListener(this._enterListener);
 }
 
-LmChangePasswordDialog.prototype = new DwtDialog;
-LmChangePasswordDialog.prototype.constructor = LmChangePasswordDialog;
+ZmChangePasswordDialog.prototype = new DwtDialog;
+ZmChangePasswordDialog.prototype.constructor = ZmChangePasswordDialog;
 
-LmChangePasswordDialog.prototype.toString = 
+ZmChangePasswordDialog.prototype.toString = 
 function() {
-	return "LmChangePasswordDialog";
+	return "ZmChangePasswordDialog";
 }
 
-LmChangePasswordDialog.prototype.popup = 
+ZmChangePasswordDialog.prototype.popup = 
 function(loc) {
 	DwtDialog.prototype.popup.call(this, loc);
 	this._oldPasswordField.focus();
 }
 
-LmChangePasswordDialog.prototype._contentHtml = 
+ZmChangePasswordDialog.prototype._contentHtml = 
 function() {
 	var html = new Array();
 	var idx = 0;
@@ -54,7 +54,7 @@ function() {
 	return html.join("");
 }
 
-LmChangePasswordDialog.prototype.showMessageDialog = 
+ZmChangePasswordDialog.prototype.showMessageDialog = 
 function (message, loc, style){
 	if (!loc) {
 		var myLoc = this.getLocation();
@@ -65,7 +65,7 @@ function (message, loc, style){
 	this._msgDialog.popup(loc);
 }
 
-LmChangePasswordDialog.prototype._okButtonListener =
+ZmChangePasswordDialog.prototype._okButtonListener =
 function(ev) {
 	var args = this._getPasswordData();
 	if (args) {
@@ -73,17 +73,17 @@ function(ev) {
 	}
 };
 
-LmChangePasswordDialog.leadingWhitespaceRegex = /\s+[^\s]*/g;
-LmChangePasswordDialog.trailingWhitespaceRegex = /\s*[^\s]*\s+/g;
-LmChangePasswordDialog.prototype._hasWhiteSpace = function (field){
-	if ((field.search(LmChangePasswordDialog.trailingWhitespaceRegex) != -1) ||
-		(field.search(LmChangePasswordDialog.leadingWhitespaceRegex) != -1) ){
+ZmChangePasswordDialog.leadingWhitespaceRegex = /\s+[^\s]*/g;
+ZmChangePasswordDialog.trailingWhitespaceRegex = /\s*[^\s]*\s+/g;
+ZmChangePasswordDialog.prototype._hasWhiteSpace = function (field){
+	if ((field.search(ZmChangePasswordDialog.trailingWhitespaceRegex) != -1) ||
+		(field.search(ZmChangePasswordDialog.leadingWhitespaceRegex) != -1) ){
 		return true;
 	}
 
 };
 
-LmChangePasswordDialog.prototype._getPasswordData =
+ZmChangePasswordDialog.prototype._getPasswordData =
 function() {
 	// Reset the msg dialog (it is a shared resource)
 	this._msgDialog.reset();
@@ -125,12 +125,12 @@ function() {
 	return  [oldPassword, newPassword];
 }
 
-LmChangePasswordDialog.prototype._getInputFields = 
+ZmChangePasswordDialog.prototype._getInputFields = 
 function() {
 	return [this._oldPasswordField, this._newPasswordField, this._confirmPasswordField];
 }
 
-LmChangePasswordDialog.prototype._enterListener =
+ZmChangePasswordDialog.prototype._enterListener =
 function (ev){
 	var args = this._getPasswordData();
 	if (args) {
@@ -138,6 +138,6 @@ function (ev){
 	}
 };
 
-LmChangePasswordDialog.prototype.focus = function () {
+ZmChangePasswordDialog.prototype.focus = function () {
 	this._oldPasswordField.focus();
 };

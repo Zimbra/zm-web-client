@@ -1,25 +1,25 @@
-function LmBalloonDialog(parent, className, view) {
-	var clsName = className? className: "LmBalloonDialog";
+function ZmBalloonDialog(parent, className, view) {
+	var clsName = className? className: "ZmBalloonDialog";
 	this._view = view;
 	//DwtDialog.call(this, parent, clsName, null, null, null, null, DwtDialog.MODELESS);
 	DwtDialog.call(this, parent, clsName);
 
-	this._cListener = new LsListener(this, this._controlListener);
+	this._cListener = new AjxListener(this, this._controlListener);
 	// useful stuff
-	//this.setButtonListener(DwtDialog.OK_BUTTON, new LsListener(this, this._okButtonListener));
+	//this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	//this.setTabOrder([this._nameFieldId]);
 	//this.addEnterListener(this._enterListener);
 }
 
-LmBalloonDialog.prototype = new DwtDialog;
-LmBalloonDialog.prototype.constructor = LmBalloonDialog;
+ZmBalloonDialog.prototype = new DwtDialog;
+ZmBalloonDialog.prototype.constructor = ZmBalloonDialog;
 
-LmBalloonDialog.prototype.toString = 
+ZmBalloonDialog.prototype.toString = 
 function() {
-	return "LmBalloonDialog";
+	return "ZmBalloonDialog";
 };
 
-LmBalloonDialog.prototype.popup =
+ZmBalloonDialog.prototype.popup =
 function(loc) {
 	if (loc) {
 		loc.y = loc.y - this.getH() + 15;
@@ -30,17 +30,17 @@ function(loc) {
 	this.getHtmlElement().style.height = this.getH() + "px";
 
 	this._view.addControlListener(this._cListener);
-	//DBG.println("html = " + LsStringUtil.htmlEncodeSpace(this.getHtmlElement().outerHTML));
+	//DBG.println("html = " + AjxStringUtil.htmlEncodeSpace(this.getHtmlElement().outerHTML));
 };
 
-LmBalloonDialog.prototype.popdown =
+ZmBalloonDialog.prototype.popdown =
 function (){
 	DwtDialog.prototype.popdown.call(this);
 	this._view._apptForm.removeListener("YO", this._cListener);
 	this._view.reset();
 };
 
-LmBalloonDialog.prototype._controlListener = function (event) {
+ZmBalloonDialog.prototype._controlListener = function (event) {
 	if (event && event.size) {
 		var currHeight = this.getH();
 		var bcDiv = document.getElementById(this._balloonContentsId);
@@ -54,7 +54,7 @@ LmBalloonDialog.prototype._controlListener = function (event) {
 		}
 	}
 };
-LmBalloonDialog.htmlTemplate = 
+ZmBalloonDialog.htmlTemplate = 
 "<div class=balloonFrame id='$0'>\
 		<table id='$1' class=balloonFrameTable>\
 			<tr><td height=1><div class=balloonTL></div></td>\
@@ -76,7 +76,7 @@ LmBalloonDialog.htmlTemplate =
  * Override the creation method in DwtDialog
  */
 
-LmBalloonDialog.prototype._createHtml = 
+ZmBalloonDialog.prototype._createHtml = 
 function() {
 	DwtBaseDialog.prototype._createHtml.call(this);
 	var div = document.createElement('div');
@@ -110,32 +110,32 @@ function() {
 	}
 	this._frameId = Dwt.getNextId();
 	var handleId = this._htmlElId + "_handle";
-	var framerHtml = LsStringUtil.resolve(LmBalloonDialog.htmlTemplate,
+	var framerHtml = AjxStringUtil.resolve(ZmBalloonDialog.htmlTemplate,
 										  [this._frameId,
 										   handleId]);
 	div = Dwt.parseHtmlFragment(framerHtml);
 	contentDiv.appendChild(div);
-	//DBG.println(LsStringUtil.htmlEncodeSpace(this.getHtmlElement().innerHTML));
+	//DBG.println(AjxStringUtil.htmlEncodeSpace(this.getHtmlElement().innerHTML));
 };
 
 
-LmBalloonDialog.prototype._getSeparatorTemplate =
+ZmBalloonDialog.prototype._getSeparatorTemplate =
 function () {
 	return "";
 };
 
-LmBalloonDialog.prototype._getButtonsContainerStartTemplate =
+ZmBalloonDialog.prototype._getButtonsContainerStartTemplate =
 function () {
 	return "<table cellspacing='0' cellpadding='0' border='0' width=100%>\
               <tr>";
 };
 
-LmBalloonDialog.prototype._getButtonsAlignStartTemplate =
+ZmBalloonDialog.prototype._getButtonsAlignStartTemplate =
 function () {
 	return "<td align='$0'><table cellspacing='2' cellpadding='0' border='0'><tr>";
 };
 
-LmBalloonDialog.prototype.getAlignmentForButton =
+ZmBalloonDialog.prototype.getAlignmentForButton =
 function (id) {
 	var align = null;
 	switch (id) {
@@ -153,18 +153,18 @@ function (id) {
 };
 
 
-LmBalloonDialog.prototype._okButtonListener =
+ZmBalloonDialog.prototype._okButtonListener =
 function(ev) {
 };
 
-LmBalloonDialog.prototype._getInputFields = 
+ZmBalloonDialog.prototype._getInputFields = 
 function() {
 };
 
-LmBalloonDialog.prototype._enterListener =
+ZmBalloonDialog.prototype._enterListener =
 function (ev){
 };
 
-LmBalloonDialog.prototype.focus =
+ZmBalloonDialog.prototype.focus =
 function(){
 };

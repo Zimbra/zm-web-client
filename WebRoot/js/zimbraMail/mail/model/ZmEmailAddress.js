@@ -1,5 +1,5 @@
 /**
-* Creates a new LmEmailAddress, either by parsing an email string or from component parts.
+* Creates a new ZmEmailAddress, either by parsing an email string or from component parts.
 * @constructor
 * @class
 * This class represents an email address and defines some related constants. The class does not attempt full compliance
@@ -11,54 +11,54 @@
 * @param name		the personal name portion
 * @param dispName	an abbreviated form of the name (not currently used)
 */
-function LmEmailAddress(address, type, name, dispName) {
+function ZmEmailAddress(address, type, name, dispName) {
 	this.address = address;
 	this.name = name;
 	this.dispName = dispName;
-	this.type = type || LmEmailAddress.TO;
+	this.type = type || ZmEmailAddress.TO;
 }
 
-LmEmailAddress.FROM			= 1;
-LmEmailAddress.TO			= 2;
-LmEmailAddress.CC			= 3;
-LmEmailAddress.BCC			= 4;
-LmEmailAddress.REPLY_TO		= 5;
-LmEmailAddress.LAST_ADDR	= 5;
+ZmEmailAddress.FROM			= 1;
+ZmEmailAddress.TO			= 2;
+ZmEmailAddress.CC			= 3;
+ZmEmailAddress.BCC			= 4;
+ZmEmailAddress.REPLY_TO		= 5;
+ZmEmailAddress.LAST_ADDR	= 5;
 
-LmEmailAddress.TYPE_STRING = new Array();
-LmEmailAddress.TYPE_STRING[LmEmailAddress.FROM]		= "from";
-LmEmailAddress.TYPE_STRING[LmEmailAddress.TO]		= "to";
-LmEmailAddress.TYPE_STRING[LmEmailAddress.CC]		= "cc";
-LmEmailAddress.TYPE_STRING[LmEmailAddress.BCC]		= "bcc";
-LmEmailAddress.TYPE_STRING[LmEmailAddress.REPLY_TO]	= "replyTo";
+ZmEmailAddress.TYPE_STRING = new Array();
+ZmEmailAddress.TYPE_STRING[ZmEmailAddress.FROM]		= "from";
+ZmEmailAddress.TYPE_STRING[ZmEmailAddress.TO]		= "to";
+ZmEmailAddress.TYPE_STRING[ZmEmailAddress.CC]		= "cc";
+ZmEmailAddress.TYPE_STRING[ZmEmailAddress.BCC]		= "bcc";
+ZmEmailAddress.TYPE_STRING[ZmEmailAddress.REPLY_TO]	= "replyTo";
 
-LmEmailAddress.fromSoapType = new Array();
-LmEmailAddress.fromSoapType["f"] = LmEmailAddress.FROM;
-LmEmailAddress.fromSoapType["t"] = LmEmailAddress.TO;
-LmEmailAddress.fromSoapType["c"] = LmEmailAddress.CC;
-LmEmailAddress.fromSoapType["b"] = LmEmailAddress.BCC;
-LmEmailAddress.fromSoapType["r"] = LmEmailAddress.REPLY_TO;
+ZmEmailAddress.fromSoapType = new Array();
+ZmEmailAddress.fromSoapType["f"] = ZmEmailAddress.FROM;
+ZmEmailAddress.fromSoapType["t"] = ZmEmailAddress.TO;
+ZmEmailAddress.fromSoapType["c"] = ZmEmailAddress.CC;
+ZmEmailAddress.fromSoapType["b"] = ZmEmailAddress.BCC;
+ZmEmailAddress.fromSoapType["r"] = ZmEmailAddress.REPLY_TO;
 
-LmEmailAddress.toSoapType = new Array();
-LmEmailAddress.toSoapType[LmEmailAddress.FROM]		= "f";
-LmEmailAddress.toSoapType[LmEmailAddress.TO]		= "t";
-LmEmailAddress.toSoapType[LmEmailAddress.CC]		= "c";
-LmEmailAddress.toSoapType[LmEmailAddress.BCC]		= "b";
-LmEmailAddress.toSoapType[LmEmailAddress.REPLY_TO]	= "r";
+ZmEmailAddress.toSoapType = new Array();
+ZmEmailAddress.toSoapType[ZmEmailAddress.FROM]		= "f";
+ZmEmailAddress.toSoapType[ZmEmailAddress.TO]		= "t";
+ZmEmailAddress.toSoapType[ZmEmailAddress.CC]		= "c";
+ZmEmailAddress.toSoapType[ZmEmailAddress.BCC]		= "b";
+ZmEmailAddress.toSoapType[ZmEmailAddress.REPLY_TO]	= "r";
 
-LmEmailAddress.SEPARATOR = "; ";			// used to join addresses
-LmEmailAddress.DELIMS = [';', ',', '\n'];	// recognized as address delimiters
-LmEmailAddress.IS_DELIM = new Object();
-for (var i = 0; i < LmEmailAddress.DELIMS.length; i++)
-	LmEmailAddress.IS_DELIM[LmEmailAddress.DELIMS[i]] = true;
+ZmEmailAddress.SEPARATOR = "; ";			// used to join addresses
+ZmEmailAddress.DELIMS = [';', ',', '\n'];	// recognized as address delimiters
+ZmEmailAddress.IS_DELIM = new Object();
+for (var i = 0; i < ZmEmailAddress.DELIMS.length; i++)
+	ZmEmailAddress.IS_DELIM[ZmEmailAddress.DELIMS[i]] = true;
 
-LmEmailAddress.mailboxPat = /^((((((\s*[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))+)?(\s*<(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))>\s*))|(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*))))(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|)+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*)*)$/;	
-LmEmailAddress.addrAnglePat = /(\s*<(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))>\s*)/;
-LmEmailAddress.addrPat = /(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))/;
-LmEmailAddress.commentPat = /(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|)+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*)/;
-LmEmailAddress.phrasePat = /(((\s*[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))+)/;
+ZmEmailAddress.mailboxPat = /^((((((\s*[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))+)?(\s*<(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))>\s*))|(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*))))(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|)+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*)*)$/;	
+ZmEmailAddress.addrAnglePat = /(\s*<(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))>\s*)/;
+ZmEmailAddress.addrPat = /(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))/;
+ZmEmailAddress.commentPat = /(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|)+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*)/;
+ZmEmailAddress.phrasePat = /(((\s*[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))+)/;
 
-LmEmailAddress.boundAddrPat = /(\s*<?(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))>?\s*)$/;
+ZmEmailAddress.boundAddrPat = /(\s*<?(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))>?\s*)$/;
 
 /**
 * Parses an email address string into its component parts. The parsing is adapted from the perl module 
@@ -70,48 +70,48 @@ LmEmailAddress.boundAddrPat = /(\s*<?(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\
 * 
 * <p>If the address parses successfully, the current object's properties will be set.</p>
 */
-LmEmailAddress.parse =
+ZmEmailAddress.parse =
 function(str) {
-	var str = LsStringUtil.trim(str);
+	var str = AjxStringUtil.trim(str);
 	// Do preliminary check for @ since we don't support local addresses, and as workaround for Mozilla bug
 	// https://bugzilla.mozilla.org/show_bug.cgi?id=225094
 	// Also check for . since we require FQDN
 	var atIndex = str.indexOf('@');
 	var dotIndex = str.lastIndexOf('.');
 	var prelimOkay = ((atIndex != -1) && (dotIndex != -1) && (dotIndex > atIndex));
-	if (!(prelimOkay && str.match(LmEmailAddress.mailboxPat))) {
-		DBG.println(LsDebug.DBG1, "mailbox match failed: " + str);
+	if (!(prelimOkay && str.match(ZmEmailAddress.mailboxPat))) {
+		DBG.println(AjxDebug.DBG1, "mailbox match failed: " + str);
 		return null;
 	}
 
 	// Note: It would be nice if you could get back the matching parenthesized subexpressions from replace,
 	// then we wouldn't have to do both a match and a replace. The parsing works by removing parts after it
 	// finds them.
-	var parts = str.match(LmEmailAddress.addrAnglePat);
+	var parts = str.match(ZmEmailAddress.addrAnglePat);
 	var user, host, name, comment;
 	if (parts) {
 		user = parts[3];
 		host = parts[12];
-		str = str.replace(LmEmailAddress.addrAnglePat, '');
+		str = str.replace(ZmEmailAddress.addrAnglePat, '');
 	} else {
-		parts = str.match(LmEmailAddress.addrPat);
+		parts = str.match(ZmEmailAddress.addrPat);
 		if (parts) {
 			user = parts[2];
 			host = parts[11];
-			str = str.replace(LmEmailAddress.addrPat, '');
+			str = str.replace(ZmEmailAddress.addrPat, '');
 		}
 	}
-	parts = str.match(LmEmailAddress.commentPat);
+	parts = str.match(ZmEmailAddress.commentPat);
 	if (parts) {
 		comment = parts[2]; // doesn't include the ()
-		str = str.replace(LmEmailAddress.commentPat, '');
+		str = str.replace(ZmEmailAddress.commentPat, '');
 	}
-	parts = str.match(LmEmailAddress.phrasePat);
+	parts = str.match(ZmEmailAddress.phrasePat);
 	if (parts) {
-		name = LsStringUtil.trim(LsStringUtil.trim(parts[0]), false, '"');
+		name = AjxStringUtil.trim(AjxStringUtil.trim(parts[0]), false, '"');
 	}
 	
-	var addr = new LmEmailAddress();
+	var addr = new ZmEmailAddress();
 	addr.address = [user, '@', host].join("");
 	addr.name = name ? name : comment;
 	
@@ -127,22 +127,22 @@ function(str) {
 * @param type			address type of the string
 * @param strict			enforce RFC822
 */
-LmEmailAddress.parseEmailString =
+ZmEmailAddress.parseEmailString =
 function(emailStr, type, strict) {
-	var good = new LsVector();
-	var bad = new LsVector();
-	var all = new LsVector();
-	var addrList = LmEmailAddress._split(emailStr);
+	var good = new AjxVector();
+	var bad = new AjxVector();
+	var all = new AjxVector();
+	var addrList = ZmEmailAddress._split(emailStr);
 	for (var i = 0; i < addrList.length; i++) {
-		var addrStr = LsStringUtil.trim(addrList[i]);
+		var addrStr = AjxStringUtil.trim(addrList[i]);
 		if (addrStr) {
-			var addr = LmEmailAddress.parse(addrStr);
+			var addr = ZmEmailAddress.parse(addrStr);
 			if (!addr && !strict) {
 				var temp = addrStr;
-				if (temp.match(LmEmailAddress.addrAnglePat)) {
-					var t1 = temp.replace(LmEmailAddress.addrAnglePat, '');
+				if (temp.match(ZmEmailAddress.addrAnglePat)) {
+					var t1 = temp.replace(ZmEmailAddress.addrAnglePat, '');
 					temp = temp.replace(t1, ['"', t1, '"'].join(""));
-					var addr = LmEmailAddress.parse(temp);
+					var addr = ZmEmailAddress.parse(temp);
 					if (addr)
 						addr.name = t1; // reset name to original form
 				}
@@ -153,7 +153,7 @@ function(emailStr, type, strict) {
 				all.add(addr);
 			} else {
 				bad.add(addrStr);
-				all.add(new LmEmailAddress(addrStr));
+				all.add(new ZmEmailAddress(addrStr));
 			}
 		}
 	}
@@ -165,10 +165,10 @@ function(emailStr, type, strict) {
 *
 * @param str		an email string
 */
-LmEmailAddress.isValid =
+ZmEmailAddress.isValid =
 function(str) {
-	str = LsStringUtil.trim(str);
-	return str.match(LmEmailAddress.mailboxPat);
+	str = AjxStringUtil.trim(str);
+	return str.match(ZmEmailAddress.mailboxPat);
 }
 
 /**
@@ -183,7 +183,7 @@ function(str) {
 *
 * @param str	the string to be split
 */
-LmEmailAddress._split =
+ZmEmailAddress._split =
 function(str) {
 	// first, construct a list of ranges to ignore because they are quoted or comment text
 	var ignore = new Array();
@@ -222,7 +222,7 @@ function(str) {
 		var delimPos = sub.length;
 		while ((delimPos == sub.length) && (pos < sub.length)) {
 			var ch = sub.charAt(pos);
-			if (LmEmailAddress.IS_DELIM[ch]) {
+			if (ZmEmailAddress.IS_DELIM[ch]) {
 				var doIgnore = false;
 				if (ch != "\n") {
 					for (var i = 0; i < ignore.length; i++) {
@@ -235,7 +235,7 @@ function(str) {
 					var doAdd = true;
 					var test = sub.substring(0, pos);
 					if (ch == ",")
-						doAdd = test.match(LmEmailAddress.boundAddrPat);
+						doAdd = test.match(ZmEmailAddress.boundAddrPat);
 					if (doAdd) {
 						addrList.push(test);
 						delimPos = pos;
@@ -255,12 +255,12 @@ function(str) {
 	return addrList;
 }
 
-LmEmailAddress.prototype.toString =
+ZmEmailAddress.prototype.toString =
 function() {
 	if (this.name) {
 		var name = this.name.replace(/"/g, '\\"', this.name);
 		var addr = [name, " <", this.address, ">"].join("");
-		if (!LmEmailAddress.parse(addr))
+		if (!ZmEmailAddress.parse(addr))
 			addr = ['"', name, '" <', this.address, ">"].join("");
 		return addr;
 	} else {
@@ -268,37 +268,37 @@ function() {
 	}
 }
 
-LmEmailAddress.prototype.getAddress =
+ZmEmailAddress.prototype.getAddress =
 function() {
 	return this.address;
 }
 
-LmEmailAddress.prototype.setAddress =
+ZmEmailAddress.prototype.setAddress =
 function(addr) {
 	this.address = addr;
 }
 
-LmEmailAddress.prototype.getType =
+ZmEmailAddress.prototype.getType =
 function() {
 	return this.type;
 }
 
-LmEmailAddress.prototype.setType =
+ZmEmailAddress.prototype.setType =
 function(type) {
 	this.type = type;
 }
 
-LmEmailAddress.prototype.getTypeAsString =
+ZmEmailAddress.prototype.getTypeAsString =
 function() {
-	return LmEmailAddress.TYPE_STRING[this.type];
+	return ZmEmailAddress.TYPE_STRING[this.type];
 }
 
-LmEmailAddress.prototype.getName =
+ZmEmailAddress.prototype.getName =
 function() {
 	return this.name;
 }
 
-LmEmailAddress.prototype.getDispName =
+ZmEmailAddress.prototype.getDispName =
 function() {
 	return this.dispName;
 }

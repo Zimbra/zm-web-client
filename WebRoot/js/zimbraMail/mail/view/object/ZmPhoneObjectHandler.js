@@ -1,23 +1,23 @@
-function LmPhoneObjectHandler(appCtxt) {
+function ZmPhoneObjectHandler(appCtxt) {
 
-	LmObjectHandler.call(this, appCtxt, "phone", null);
+	ZmObjectHandler.call(this, appCtxt, "phone", null);
 }
 
-LmPhoneObjectHandler.prototype = new LmObjectHandler;
-LmPhoneObjectHandler.prototype.constructor = LmPhoneObjectHandler;
+ZmPhoneObjectHandler.prototype = new ZmObjectHandler;
+ZmPhoneObjectHandler.prototype.constructor = ZmPhoneObjectHandler;
 
-LmPhoneObjectHandler.PHONE_RE = /(^|\W)(?:(?:\(\d{3}\)[-.\s]?|\d{3}[-.\s]))?\d{3}[-.\s]\d{4}(\W|$)/g;
+ZmPhoneObjectHandler.PHONE_RE = /(^|\W)(?:(?:\(\d{3}\)[-.\s]?|\d{3}[-.\s]))?\d{3}[-.\s]\d{4}(\W|$)/g;
 
-LmPhoneObjectHandler.prototype.getReString =
+ZmPhoneObjectHandler.prototype.getReString =
 function() {
-	return LmPhoneObjectHandler.PHONE;
+	return ZmPhoneObjectHandler.PHONE;
 }
 
-LmPhoneObjectHandler.prototype.match =
+ZmPhoneObjectHandler.prototype.match =
 function(line, startIndex) {
-	LmPhoneObjectHandler.PHONE_RE.lastIndex = startIndex;
+	ZmPhoneObjectHandler.PHONE_RE.lastIndex = startIndex;
 
-	var m = LmPhoneObjectHandler.PHONE_RE.exec(line);
+	var m = ZmPhoneObjectHandler.PHONE_RE.exec(line);
 	if (m != null) {
 		if (m[1] != "" || m[2] != "") {
 			var from = 0;
@@ -32,62 +32,62 @@ function(line, startIndex) {
 	return m;
 }
 
-LmPhoneObjectHandler.prototype.getToolTipText =
+ZmPhoneObjectHandler.prototype.getToolTipText =
 function(obj) {
 	// TODO: implement tooltip cache?
 	var html = new Array();
 	var i = 0;
 	html[i++] = "<table cellpadding=2 cellspacing=0 border=0><tr valign='center'>";
 	html[i++] = "<td>";
-	html[i++] = LsImg.getImageHtml(LmImg.I_TELEPHONE);
+	html[i++] = AjxImg.getImageHtml(ZmImg.I_TELEPHONE);
 	html[i++] = "</td>";
 	html[i++] = "<td><b><div style='white-space:nowrap'>" + LmMsg.phoneNumber + ":</div></b></td>";
-	html[i++] = "<td><div style='white-space:nowrap'>" + LsStringUtil.htmlEncode(obj) + "</div></td></tr></table>";
+	html[i++] = "<td><div style='white-space:nowrap'>" + AjxStringUtil.htmlEncode(obj) + "</div></td></tr></table>";
 	return html.join("");
 }
 
-LmPhoneObjectHandler.prototype.getActionMenu =
+ZmPhoneObjectHandler.prototype.getActionMenu =
 function(obj) {
 	if (this._menu == null) {
-		var list = [LmOperation.SEARCH];
-		if (this._appCtxt.get(LmSetting.CONTACTS_ENABLED))
-			list.push(LmOperation.CONTACT);
+		var list = [ZmOperation.SEARCH];
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
+			list.push(ZmOperation.CONTACT);
 		
 		// Call option for SkypeOut (If you don't have Skype Windows will default to NetMeeting)
-		list.push(LmOperation.CALL);
-		this._menu = new LmActionMenu(this._appCtxt.getShell(), list);
-		this._menu.addSelectionListener(LmOperation.SEARCH, new LsListener(this, this._searchListener));
+		list.push(ZmOperation.CALL);
+		this._menu = new ZmActionMenu(this._appCtxt.getShell(), list);
+		this._menu.addSelectionListener(ZmOperation.SEARCH, new AjxListener(this, this._searchListener));
 
-		if (this._appCtxt.get(LmSetting.CONTACTS_ENABLED)) {
-			LmOperation.setOperation(this._menu, LmOperation.CONTACT, LmOperation.NEW_CONTACT, LmMsg.AB_ADD_CONTACT);
-			this._menu.addSelectionListener(LmOperation.CONTACT, new LsListener(this, this._contactListener));
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+			ZmOperation.setOperation(this._menu, ZmOperation.CONTACT, ZmOperation.NEW_CONTACT, LmMsg.AB_ADD_CONTACT);
+			this._menu.addSelectionListener(ZmOperation.CONTACT, new AjxListener(this, this._contactListener));
 		}
 
-		LmOperation.setOperation(this._menu, LmOperation.CALL, LmOperation.CALL, LmMsg.call);
-		this._menu.addSelectionListener(LmOperation.CALL, new LsListener(this, this._callListener));
+		ZmOperation.setOperation(this._menu, ZmOperation.CALL, ZmOperation.CALL, LmMsg.call);
+		this._menu.addSelectionListener(ZmOperation.CALL, new AjxListener(this, this._callListener));
 	}
 	this._actionObject = obj;
 
 	return this._menu;
 }
 
-LmPhoneObjectHandler.prototype._searchListener =
+ZmPhoneObjectHandler.prototype._searchListener =
 function(ev) {
 	// XXX: needs more params...
 	this._appCtxt.getSearchController().search(this._actionObject);
 }
 
-LmPhoneObjectHandler.prototype._contactListener = 
+ZmPhoneObjectHandler.prototype._contactListener = 
 function(ev) {
 	// always create new contact (at least until someone complains)
-	var contact = new LmContact(this._appCtxt);
+	var contact = new ZmContact(this._appCtxt);
 	contact.initFromPhone(this._actionObject);
-	this._appCtxt.getApp(LmLiquidMail.CONTACTS_APP).getContactController().show(contact);
+	this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactController().show(contact);
 }
 
-LmPhoneObjectHandler.prototype._callListener = 
+ZmPhoneObjectHandler.prototype._callListener = 
 function(ev) {
-    var phone = LsStringUtil.trim(this._actionObject.toString())
+    var phone = AjxStringUtil.trim(this._actionObject.toString())
     // XXX: Assumes 10 digit US number.  Need to support 11 digit and intl numbers.
 	phone = "callto:+1" + phone;
 	window.location=phone

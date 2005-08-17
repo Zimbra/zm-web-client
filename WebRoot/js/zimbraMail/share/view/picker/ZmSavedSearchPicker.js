@@ -1,33 +1,33 @@
-function LmSavedSearchPicker(parent) {
+function ZmSavedSearchPicker(parent) {
 
-	LmPicker.call(this, parent, LmPicker.SEARCH);
+	ZmPicker.call(this, parent, ZmPicker.SEARCH);
 
-    this._checkedItems = new LsVector();
+    this._checkedItems = new AjxVector();
 }
 
-LmSavedSearchPicker.prototype = new LmPicker;
-LmSavedSearchPicker.prototype.constructor = LmSavedSearchPicker;
+ZmSavedSearchPicker.prototype = new ZmPicker;
+ZmSavedSearchPicker.prototype.constructor = ZmSavedSearchPicker;
 
-LmPicker.CTOR[LmPicker.SEARCH] = LmSavedSearchPicker;
+ZmPicker.CTOR[ZmPicker.SEARCH] = ZmSavedSearchPicker;
 
-LmSavedSearchPicker.prototype.toString = 
+ZmSavedSearchPicker.prototype.toString = 
 function() {
-	return "LmSavedSearchPicker";
+	return "ZmSavedSearchPicker";
 }
 
-LmSavedSearchPicker.prototype._setupPicker =
+ZmSavedSearchPicker.prototype._setupPicker =
 function(parent) {
 	var tree = this._tree = new DwtTree(parent, DwtTree.CHECKEDITEM_STYLE);
-	var appCtxt = this.shell.getData(LmAppCtxt.LABEL);
-	tree.addSelectionListener(new LsListener(this, this._treeListener));
-	this._folderTreeView = new LmFolderTreeView(appCtxt, this._tree, this._tree);
-	this._folderTreeView._restrictedType = LmOrganizer.SEARCH;
-	var folders = [LmFolder.ID_USER, LmFolder.ID_SEP, LmFolder.ID_SEARCH];
+	var appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
+	tree.addSelectionListener(new AjxListener(this, this._treeListener));
+	this._folderTreeView = new ZmFolderTreeView(appCtxt, this._tree, this._tree);
+	this._folderTreeView._restrictedType = ZmOrganizer.SEARCH;
+	var folders = [ZmFolder.ID_USER, ZmFolder.ID_SEP, ZmFolder.ID_SEARCH];
 	this._folderTreeView.set(appCtxt.getFolderTree(), folders, false);
 	this._twiddle(folders);
 }
 
-LmSavedSearchPicker.prototype._updateQuery = 
+ZmSavedSearchPicker.prototype._updateQuery = 
 function() {
 	var searches = new Array();
 	var num = this._checkedItems.size();
@@ -48,7 +48,7 @@ function() {
 	this.execute();
 }
 
-LmSavedSearchPicker.prototype._treeListener =
+ZmSavedSearchPicker.prototype._treeListener =
 function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED) {
  		var ti = ev.item;
@@ -64,7 +64,7 @@ function(ev) {
 }
 
 // Take the checkboxes away from folders, and make sure saved searches are visible
-LmSavedSearchPicker.prototype._twiddle =
+ZmSavedSearchPicker.prototype._twiddle =
 function(folders) {
 	// expand everything at the top level recursively
 	for (var i = 0; i < folders.length; i++) {
@@ -79,7 +79,7 @@ function(folders) {
 	for (var id in this._folderTreeView._treeHash) {
 		var ti = this._folderTreeView._treeHash[id];
 		var organizer = ti.getData(Dwt.KEY_OBJECT);
-		if (organizer.type != LmOrganizer.SEARCH || id < 0)
+		if (organizer.type != ZmOrganizer.SEARCH || id < 0)
 			if (ti._checkBoxCell)
 				Dwt.setVisible(ti._checkBoxCell, false);
 	}

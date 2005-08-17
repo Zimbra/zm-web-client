@@ -1,15 +1,15 @@
-function LmSearchFolder(id, name, parent, tree, numUnread, query, types, sortBy) {
+function ZmSearchFolder(id, name, parent, tree, numUnread, query, types, sortBy) {
 
-	LmFolder.call(this, id, name, parent, tree, numUnread);
+	ZmFolder.call(this, id, name, parent, tree, numUnread);
 	
-	this.type = LmOrganizer.SEARCH;
+	this.type = ZmOrganizer.SEARCH;
 	this.query = query;
 }
 
-LmSearchFolder.prototype = new LmFolder;
-LmSearchFolder.prototype.constructor = LmSearchFolder;
+ZmSearchFolder.prototype = new ZmFolder;
+ZmSearchFolder.prototype.constructor = ZmSearchFolder;
 
-LmSearchFolder.ID_ROOT = LmOrganizer.ID_ROOT;
+ZmSearchFolder.ID_ROOT = ZmOrganizer.ID_ROOT;
 
 /**
 * Creates a new saved search.
@@ -18,9 +18,9 @@ LmSearchFolder.ID_ROOT = LmOrganizer.ID_ROOT;
 * @param search		a search object which contains the details of the search
 * @param parentId	ID of the parent (present only if parent is a folder)
 */
-LmSearchFolder.prototype.create =
+ZmSearchFolder.prototype.create =
 function(name, search, parentId) {
-	var soapDoc = LsSoapDoc.create("CreateSearchFolderRequest", "urn:liquidMail");
+	var soapDoc = AjxSoapDoc.create("CreateSearchFolderRequest", "urn:liquidMail");
 	var searchNode = soapDoc.set("search");
 	searchNode.setAttribute("name", name);
 	searchNode.setAttribute("query", search.query);
@@ -29,14 +29,14 @@ function(name, search, parentId) {
 		if (a.length) {
 			var typeStr = new Array();
 			for (var i = 0; i < a.length; i++)
-				typeStr.push(LmSearch.TYPE[a[i]]);
+				typeStr.push(ZmSearch.TYPE[a[i]]);
 			searchNode.setAttribute("types", typeStr.join(","));
 		}
 	}
 	if (search.sortBy)
 		searchNode.setAttribute("sortBy", search.sortBy);
 	var id = parentId || this.id;
-	var id = Math.max(id, LmFolder.ID_ROOT);
+	var id = Math.max(id, ZmFolder.ID_ROOT);
 	searchNode.setAttribute("l", id);
 	var resp = this.tree._appCtxt.getAppController().sendRequest(soapDoc).firstChild;
 }

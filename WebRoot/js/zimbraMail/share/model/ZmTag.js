@@ -1,148 +1,148 @@
-function LmTag(id, name, color, parent, tree, numUnread) {
+function ZmTag(id, name, color, parent, tree, numUnread) {
 
-	LmOrganizer.call(this, LmOrganizer.TAG, id, name, parent, tree, numUnread);
-	color = color || LmTag.DEFAULT_COLOR;
+	ZmOrganizer.call(this, ZmOrganizer.TAG, id, name, parent, tree, numUnread);
+	color = color || ZmTag.DEFAULT_COLOR;
 	this.color = color;
 }
 
-LmTag.prototype = new LmOrganizer;
-LmTag.prototype.constructor = LmTag;
+ZmTag.prototype = new ZmOrganizer;
+ZmTag.prototype.constructor = ZmTag;
 
-LmTag.prototype.toString = 
+ZmTag.prototype.toString = 
 function() {
-	return "LmTag";
+	return "ZmTag";
 }
 
 // tag colors - these are the server values
-LmTag.C_ORANGE	= 0;
-LmTag.C_BLUE	= 1;
-LmTag.C_CYAN	= 2;
-LmTag.C_GREEN	= 3;
-LmTag.C_PURPLE	= 4;
-LmTag.C_RED		= 5;
-LmTag.C_YELLOW	= 6;
-LmTag.MAX_COLOR	= LmTag.C_YELLOW;
-LmTag.DEFAULT_COLOR = LmTag.C_ORANGE;
+ZmTag.C_ORANGE	= 0;
+ZmTag.C_BLUE	= 1;
+ZmTag.C_CYAN	= 2;
+ZmTag.C_GREEN	= 3;
+ZmTag.C_PURPLE	= 4;
+ZmTag.C_RED		= 5;
+ZmTag.C_YELLOW	= 6;
+ZmTag.MAX_COLOR	= ZmTag.C_YELLOW;
+ZmTag.DEFAULT_COLOR = ZmTag.C_ORANGE;
 
 // color names
-LmTag.COLOR_TEXT = new Object();
-LmTag.COLOR_TEXT[LmTag.C_ORANGE]	= LmMsg.orange;
-LmTag.COLOR_TEXT[LmTag.C_BLUE]		= LmMsg.blue;
-LmTag.COLOR_TEXT[LmTag.C_CYAN]		= LmMsg.cyan;
-LmTag.COLOR_TEXT[LmTag.C_GREEN]		= LmMsg.green;
-LmTag.COLOR_TEXT[LmTag.C_PURPLE]	= LmMsg.purple;
-LmTag.COLOR_TEXT[LmTag.C_RED]		= LmMsg.red;
-LmTag.COLOR_TEXT[LmTag.C_YELLOW]	= LmMsg.yellow;
+ZmTag.COLOR_TEXT = new Object();
+ZmTag.COLOR_TEXT[ZmTag.C_ORANGE]	= LmMsg.orange;
+ZmTag.COLOR_TEXT[ZmTag.C_BLUE]		= LmMsg.blue;
+ZmTag.COLOR_TEXT[ZmTag.C_CYAN]		= LmMsg.cyan;
+ZmTag.COLOR_TEXT[ZmTag.C_GREEN]		= LmMsg.green;
+ZmTag.COLOR_TEXT[ZmTag.C_PURPLE]	= LmMsg.purple;
+ZmTag.COLOR_TEXT[ZmTag.C_RED]		= LmMsg.red;
+ZmTag.COLOR_TEXT[ZmTag.C_YELLOW]	= LmMsg.yellow;
 
 // color icons
-LmTag.COLOR_ICON = new Object();
-LmTag.COLOR_ICON[LmTag.C_ORANGE]	= LmImg.I_TAG_ORANGE;
-LmTag.COLOR_ICON[LmTag.C_BLUE]		= LmImg.I_TAG_BLUE;
-LmTag.COLOR_ICON[LmTag.C_CYAN]		= LmImg.I_TAG_CYAN;
-LmTag.COLOR_ICON[LmTag.C_GREEN]		= LmImg.I_TAG_GREEN;
-LmTag.COLOR_ICON[LmTag.C_PURPLE]	= LmImg.I_TAG_PURPLE;
-LmTag.COLOR_ICON[LmTag.C_RED]		= LmImg.I_TAG_RED;
-LmTag.COLOR_ICON[LmTag.C_YELLOW]	= LmImg.I_TAG_YELLOW;
+ZmTag.COLOR_ICON = new Object();
+ZmTag.COLOR_ICON[ZmTag.C_ORANGE]	= ZmImg.I_TAG_ORANGE;
+ZmTag.COLOR_ICON[ZmTag.C_BLUE]		= ZmImg.I_TAG_BLUE;
+ZmTag.COLOR_ICON[ZmTag.C_CYAN]		= ZmImg.I_TAG_CYAN;
+ZmTag.COLOR_ICON[ZmTag.C_GREEN]		= ZmImg.I_TAG_GREEN;
+ZmTag.COLOR_ICON[ZmTag.C_PURPLE]	= ZmImg.I_TAG_PURPLE;
+ZmTag.COLOR_ICON[ZmTag.C_RED]		= ZmImg.I_TAG_RED;
+ZmTag.COLOR_ICON[ZmTag.C_YELLOW]	= ZmImg.I_TAG_YELLOW;
 
 // color mini icons
-LmTag.COLOR_MINI_ICON = new Object();
-LmTag.COLOR_MINI_ICON[LmTag.C_ORANGE]	= LmImg.I_MINI_TAG_ORANGE;
-LmTag.COLOR_MINI_ICON[LmTag.C_BLUE]		= LmImg.I_MINI_TAG_BLUE;
-LmTag.COLOR_MINI_ICON[LmTag.C_CYAN]		= LmImg.I_MINI_TAG_CYAN;
-LmTag.COLOR_MINI_ICON[LmTag.C_GREEN]	= LmImg.I_MINI_TAG_GREEN;
-LmTag.COLOR_MINI_ICON[LmTag.C_PURPLE]	= LmImg.I_MINI_TAG_PURPLE;
-LmTag.COLOR_MINI_ICON[LmTag.C_RED]		= LmImg.I_MINI_TAG_RED;
-LmTag.COLOR_MINI_ICON[LmTag.C_YELLOW]	= LmImg.I_MINI_TAG_YELLOW;
+ZmTag.COLOR_MINI_ICON = new Object();
+ZmTag.COLOR_MINI_ICON[ZmTag.C_ORANGE]	= ZmImg.I_MINI_TAG_ORANGE;
+ZmTag.COLOR_MINI_ICON[ZmTag.C_BLUE]		= ZmImg.I_MINI_TAG_BLUE;
+ZmTag.COLOR_MINI_ICON[ZmTag.C_CYAN]		= ZmImg.I_MINI_TAG_CYAN;
+ZmTag.COLOR_MINI_ICON[ZmTag.C_GREEN]	= ZmImg.I_MINI_TAG_GREEN;
+ZmTag.COLOR_MINI_ICON[ZmTag.C_PURPLE]	= ZmImg.I_MINI_TAG_PURPLE;
+ZmTag.COLOR_MINI_ICON[ZmTag.C_RED]		= ZmImg.I_MINI_TAG_RED;
+ZmTag.COLOR_MINI_ICON[ZmTag.C_YELLOW]	= ZmImg.I_MINI_TAG_YELLOW;
 
 // system tags
-LmTag.ID_ROOT = LmOrganizer.ID_ROOT;
-LmTag.ID_UNREAD		= 32;
-LmTag.ID_FLAGGED	= 33;
-LmTag.ID_FROM_ME	= 34;
-LmTag.ID_REPLIED	= 35;
-LmTag.ID_FORWARDED	= 36;
-LmTag.ID_ATTACHED	= 37;
-LmTag.FIRST_USER_ID	= 64;
+ZmTag.ID_ROOT = ZmOrganizer.ID_ROOT;
+ZmTag.ID_UNREAD		= 32;
+ZmTag.ID_FLAGGED	= 33;
+ZmTag.ID_FROM_ME	= 34;
+ZmTag.ID_REPLIED	= 35;
+ZmTag.ID_FORWARDED	= 36;
+ZmTag.ID_ATTACHED	= 37;
+ZmTag.FIRST_USER_ID	= 64;
 
-LmTag.sortCompare = 
+ZmTag.sortCompare = 
 function(tagA, tagB) {
 	if (tagA.name.toLowerCase() > tagB.name.toLowerCase()) return 1;
 	if (tagA.name.toLowerCase() < tagB.name.toLowerCase()) return -1;
 	return 0;
 }
 
-LmTag.checkName =
+ZmTag.checkName =
 function(name) {
-	var msg = LmOrganizer.checkName(name);
+	var msg = ZmOrganizer.checkName(name);
 	if (msg) return msg;
 
 	if (name.indexOf('\\') == 0)
-		return LsStringUtil.resolve(LmMsg.errorInvalidName, name);
+		return AjxStringUtil.resolve(LmMsg.errorInvalidName, name);
 
 	return null;
 }
 
-LmTag.prototype.create =
+ZmTag.prototype.create =
 function(name, color) {
-	color = LmTag.checkColor(color);
-	var soapDoc = LsSoapDoc.create("CreateTagRequest", "urn:liquidMail");
+	color = ZmTag.checkColor(color);
+	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:liquidMail");
 	var tagNode = soapDoc.set("tag");
 	tagNode.setAttribute("name", name);
 	tagNode.setAttribute("color", color);
 	var resp = this.tree._appCtxt.getAppController().sendRequest(soapDoc).firstChild;
 }
 
-LmTag.prototype.notifyCreate =
+ZmTag.prototype.notifyCreate =
 function(obj) {
-	var child = LmTag.createFromJs(this, obj, this.tree, true);
-	this._eventNotify(LmEvent.E_CREATE, child);
+	var child = ZmTag.createFromJs(this, obj, this.tree, true);
+	this._eventNotify(ZmEvent.E_CREATE, child);
 }
 
-LmTag.prototype.notifyModify =
+ZmTag.prototype.notifyModify =
 function(obj) {
 	if (!obj) return;
 	
-	var fields = LmOrganizer.prototype._getCommonFields.call(this, obj);
+	var fields = ZmOrganizer.prototype._getCommonFields.call(this, obj);
 	if (obj.color) {
-		var color = LmTag.checkColor(obj.color);
+		var color = ZmTag.checkColor(obj.color);
 		if (this.color != color) {
 			this.color = color;
-			fields[LmOrganizer.F_COLOR] = true;
+			fields[ZmOrganizer.F_COLOR] = true;
 		}
 	}
-	this._eventNotify(LmEvent.E_MODIFY, this, {fields: fields});
+	this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
 }
 
-LmTag.prototype.setColor =
+ZmTag.prototype.setColor =
 function(color) {
-	var color = LmTag.checkColor(color);
+	var color = ZmTag.checkColor(color);
 	if (this.color == color) return;
 	var success = this._organizerAction("color", {color: color});
 	if (success) {
 		this.color = color;
 		var fields = new Object();
-		fields[LmOrganizer.F_COLOR] = true;
-		this._eventNotify(LmEvent.E_MODIFY, this, {fields: fields});
+		fields[ZmOrganizer.F_COLOR] = true;
+		this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
 	}
 }
 
 /**
 * Tags come from back end as a flat list, and we manually create a root tag, so all tags
 * have the root as parent. If tags ever have a tree structure, then this should do what
-* LmFolder does (recursively create children).
+* ZmFolder does (recursively create children).
 */
-LmTag.createFromJs =
+ZmTag.createFromJs =
 function(parent, obj, tree, sorted) {
-	if (obj.id < LmTag.FIRST_USER_ID)
+	if (obj.id < ZmTag.FIRST_USER_ID)
 		return;
-	var tag = new LmTag(obj.id, obj.name, LmTag.checkColor(obj.color), parent, tree, obj.u);
-	var index = sorted ? LmOrganizer.getSortIndex(tag, LmTag.sortCompare) : null;
+	var tag = new ZmTag(obj.id, obj.name, ZmTag.checkColor(obj.color), parent, tree, obj.u);
+	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;
 	parent.children.add(tag, index);
 
 	return tag;
 }
 
-LmTag.checkColor =
+ZmTag.checkColor =
 function(color) {
-	return ((color != null) && (color >= 0 && color <= LmTag.MAX_COLOR)) ? color : LmTag.DEFAULT_COLOR;
+	return ((color != null) && (color >= 0 && color <= ZmTag.MAX_COLOR)) ? color : ZmTag.DEFAULT_COLOR;
 }

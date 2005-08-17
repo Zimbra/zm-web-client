@@ -10,28 +10,28 @@
  * endTime
 */
 
-function LmInvite() {
-	LmModel.call(this);
+function ZmInvite() {
+	ZmModel.call(this);
 }
 
-LmInvite.prototype = new LmModel;
-LmInvite.prototype.constructor = LmInvite;
+ZmInvite.prototype = new ZmModel;
+ZmInvite.prototype.constructor = ZmInvite;
 
-LmInvite.prototype.toString = 
+ZmInvite.prototype.toString = 
 function() {
-	return "LmInvite: name=" + this.name + " id=" + this.id;
+	return "ZmInvite: name=" + this.name + " id=" + this.id;
 };
 
 /**
  * function that will be used to send requests.
- * This should be set via LmInvite.setSendFunction.
+ * This should be set via ZmInvite.setSendFunction.
  */
-LmInvite._sendFun = null;
+ZmInvite._sendFun = null;
 
 // Class methods
-LmInvite.createFromDom = 
+ZmInvite.createFromDom = 
 function(node) {
-	var invite = new LmInvite();
+	var invite = new ZmInvite();
 	invite.components = node[0].comp;
 	// not sure why components are null .. but.
 	if (invite.components == null) {
@@ -40,7 +40,7 @@ function(node) {
 	return invite;
 };
 
-LmInvite.prototype.setMessageId = 
+ZmInvite.prototype.setMessageId = 
 function (id) {
 	this.msgId = id;
 };
@@ -48,22 +48,22 @@ function (id) {
 /*
  * mail item id on appt instance
  */
-LmInvite.prototype.getMessageId = 
+ZmInvite.prototype.getMessageId = 
 function() {
 	return this.msgId;
 };
 
-LmInvite.prototype.getComponent = 
+ZmInvite.prototype.getComponent = 
 function(id) {
 	return this.components[id];
 };
 
-LmInvite.prototype.getComponents = 
+ZmInvite.prototype.getComponents = 
 function () {
 	return this.components;
 };
 
-LmInvite.prototype.getComponentByUid = 
+ZmInvite.prototype.getComponentByUid = 
 function(uid) {
 	for (var i = 0 ; i < components.length ; ++i) {
 		if (components.uid == uid) {
@@ -72,19 +72,19 @@ function(uid) {
 	}
 };
 
-LmInvite.prototype.hasMultipleComponents = 
+ZmInvite.prototype.hasMultipleComponents = 
 function() {
 	return (this.components.length > 1);
 };
 
-LmInvite.prototype.getEventName = function (compNum) {
+ZmInvite.prototype.getEventName = function (compNum) {
 	if (this.components[compNum] != null ){
 		return this.components[compNum].name;
 	}
 	return null;
 };
 
-LmInvite.prototype.getOrganizerEmail = 
+ZmInvite.prototype.getOrganizerEmail = 
 function (compNum) {
 	if (this.components[compNum] != null &&
 		this.components[compNum].or != null &&
@@ -94,7 +94,7 @@ function (compNum) {
 	return null;
 };
 
-LmInvite.prototype.getOrganizerName = 
+ZmInvite.prototype.getOrganizerName = 
 function (compNum) {
 	if (this.components[compNum] != null &&
 		this.components[compNum.org] != null) {
@@ -103,14 +103,14 @@ function (compNum) {
 	return null;
 };
 
-LmInvite.prototype.isOrganizer = function (compNum) {
+ZmInvite.prototype.isOrganizer = function (compNum) {
 	if (this.components[compNum] != null) {
 		return ((this.components[compNum].isOrg != null)? this.components[compNum].isOrg: false);
 	}
 	return false;
 };
 
-LmInvite.prototype.shouldRsvp =
+ZmInvite.prototype.shouldRsvp =
 function (compNum){
 	if (this.components[compNum] != null) {
 		return this.components[compNum].rsvp;
@@ -118,18 +118,18 @@ function (compNum){
 	return null;
 };
 
-LmInvite.prototype.getRecurrenceRules = function (compNum) {
+ZmInvite.prototype.getRecurrenceRules = function (compNum) {
 	return this.components[compNum].recur
 };
 
-LmInvite.prototype.isException = function (compNum) {
+ZmInvite.prototype.isException = function (compNum) {
 	if (this.components[compNum] != null){
 		return (this.components[compNum].exceptionId != null);
 	}
 	return false;
 };
 
-LmInvite.prototype.getServerEndTime = function (compNum) {
+ZmInvite.prototype.getServerEndTime = function (compNum) {
 	if (this.components[compNum] != null) {
 		if (this._serverEndTime == null) {
 			if (this.components[compNum].e != null ) {
@@ -158,11 +158,11 @@ LmInvite.prototype.getServerEndTime = function (compNum) {
 				var endDate = new Date(d.getTime() + (t * 1000));
 
 				// put the end date into server DURATION format.
-				MM = LsDateUtil._pad(d.getMonth() + 1);
-				dd = LsDateUtil._pad(d.getDate());
-				hh = LsDateUtil._pad(d.getHours());
-				mm = LsDateUtil._pad(d.getMinutes());
-				ss = LsDateUtil._pad(d.getSeconds());
+				MM = AjxDateUtil._pad(d.getMonth() + 1);
+				dd = AjxDateUtil._pad(d.getDate());
+				hh = AjxDateUtil._pad(d.getHours());
+				mm = AjxDateUtil._pad(d.getMinutes());
+				ss = AjxDateUtil._pad(d.getSeconds());
 				yyyy = d.getFullYear();
 				this._serverEndTime = StringBuffer.concat(yyyy,MM,dd,"T",hh,mm,ss);
 			}
@@ -171,18 +171,18 @@ LmInvite.prototype.getServerEndTime = function (compNum) {
 	}
 };
 
-LmInvite.prototype.getServerStartTime = function (compNum) {
+ZmInvite.prototype.getServerStartTime = function (compNum) {
 	if (this.components[compNum] != null) {
 		return this.components[compNum].s[0].d;
 	}
 };
 
-LmInvite.prototype.getServerStartTimeTz = function (compNum) {
+ZmInvite.prototype.getServerStartTimeTz = function (compNum) {
 	if (this.components[compNum] != null){
 		if (this._serverStartTimeZone == null) {
 			var startTime = this.getServerStartTime();
 			if (startTime && startTime.charAt(startTime.length -1) == 'Z') {
-				this._serverStartTimeZone = LmTimezones.GMT;
+				this._serverStartTimeZone = ZmTimezones.GMT;
 			} else {
 				this._serverStartTimeZone = this.components[compNum].s[0].tz;
 			}
@@ -191,12 +191,12 @@ LmInvite.prototype.getServerStartTimeTz = function (compNum) {
 	}
 };
 
-LmInvite.prototype.getServerEndTimeTz = function (compNum) {
+ZmInvite.prototype.getServerEndTimeTz = function (compNum) {
 	if (this.components[compNum] != null) {
 		if (this._serverEndTimeZone == null) {
 			var endTime = this.getServerEndTime();
 			if (endTime && startTime.charAt(endTime.length -1) == 'Z') {
-				this._serverEndTimeZone =  LmTimezones.GMT;
+				this._serverEndTimeZone =  ZmTimezones.GMT;
 			} else {
 				this._serverEndTimeZone = this.components[compNum].e[0].tz;
 			}

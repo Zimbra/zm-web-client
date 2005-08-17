@@ -1,65 +1,65 @@
-function LmBrowseController(appCtxt, parent) {
+function ZmBrowseController(appCtxt, parent) {
 
-	LmController.call(this, appCtxt);
+	ZmController.call(this, appCtxt);
 
 	var pickers = this._allPickers = this._getPickers();
-	this._browseView = new LmBrowseView(this._shell, pickers);
-	this._toolbar = new LmBrowseToolBar(this._shell, pickers);
+	this._browseView = new ZmBrowseView(this._shell, pickers);
+	this._toolbar = new ZmBrowseToolBar(this._shell, pickers);
 	this._browseView._toolbar = this._toolbar;
-    var addListener = new LsListener(this, this._addPickerListener);
+    var addListener = new AjxListener(this, this._addPickerListener);
 	for (var i = 0; i < pickers.length; i++) {
 		var id = pickers[i];
 		this._toolbar.addSelectionListener(id, addListener);
 	}
-	this._toolbar.addSelectionListener(LmPicker.RESET, new LsListener(this, this._resetListener));
-	this._toolbar.addSelectionListener(LmPicker.CLOSE, new LsListener(this, this._closeListener));
+	this._toolbar.addSelectionListener(ZmPicker.RESET, new AjxListener(this, this._resetListener));
+	this._toolbar.addSelectionListener(ZmPicker.CLOSE, new AjxListener(this, this._closeListener));
 	this._resetPickers();
 	this._browseViewVisible = false;
 
 	var components = new Object();
-	components[LmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR] = this._toolbar;
-	components[LmAppViewMgr.C_SEARCH_BUILDER] = this._browseView;
+	components[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR] = this._toolbar;
+	components[ZmAppViewMgr.C_SEARCH_BUILDER] = this._browseView;
 	this._appCtxt.getAppViewMgr().addComponents(components, true);
 }
 
-LmBrowseController.prototype = new LmController;
-LmBrowseController.prototype.constructor = LmBrowseController;
+ZmBrowseController.prototype = new ZmController;
+ZmBrowseController.prototype.constructor = ZmBrowseController;
 
-LmBrowseController.prototype.toString = 
+ZmBrowseController.prototype.toString = 
 function() {
-	return "LmBrowseController";
+	return "ZmBrowseController";
 }
 
-LmBrowseController.prototype._getPickers =
+ZmBrowseController.prototype._getPickers =
 function() {
-	var list = [LmPicker.ATTACHMENT,
-				LmPicker.BASIC,
-				LmPicker.DATE,
-				LmPicker.DOMAIN,
-				LmPicker.FOLDER];
-	if (this._appCtxt.get(LmSetting.SAVED_SEARCHES_ENABLED))
-		list.push(LmPicker.SEARCH);
-	list.push(LmPicker.SIZE);
-	list.push(LmPicker.OBJECT);
-	list.push(LmPicker.FLAG);
-	if (this._appCtxt.get(LmSetting.TAGGING_ENABLED))
-		list.push(LmPicker.TAG);
-	list.push(LmPicker.TIME);
+	var list = [ZmPicker.ATTACHMENT,
+				ZmPicker.BASIC,
+				ZmPicker.DATE,
+				ZmPicker.DOMAIN,
+				ZmPicker.FOLDER];
+	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED))
+		list.push(ZmPicker.SEARCH);
+	list.push(ZmPicker.SIZE);
+	list.push(ZmPicker.OBJECT);
+	list.push(ZmPicker.FLAG);
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+		list.push(ZmPicker.TAG);
+	list.push(ZmPicker.TIME);
 
 	return list;
 }
 
-LmBrowseController.prototype.getBrowseView =
+ZmBrowseController.prototype.getBrowseView =
 function() {
-	return (this._appCtxt.get(LmSetting.BROWSE_ENABLED)) ? this._browseView : null;
+	return (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) ? this._browseView : null;
 }
 
-LmBrowseController.prototype.getBrowseViewVisible =
+ZmBrowseController.prototype.getBrowseViewVisible =
 function() {
 	return this._browseViewVisible;
 }
 
-LmBrowseController.prototype.setBrowseViewVisible =
+ZmBrowseController.prototype.setBrowseViewVisible =
 function(visible) {
 	if (this._browseViewVisible == visible) return;
 
@@ -67,9 +67,9 @@ function(visible) {
 	this._browseViewVisible = visible;
 	if (visible) {
 		if (this._browseView.getPickers().size() == 0)
-			this.addPicker(LmPicker.DEFAULT_PICKER);
+			this.addPicker(ZmPicker.DEFAULT_PICKER);
 	}
-	var browseButton = this._appCtxt.getSearchController().getSearchToolbar().getButton(LmSearchToolBar.BROWSE_BUTTON);
+	var browseButton = this._appCtxt.getSearchController().getSearchToolbar().getButton(ZmSearchToolBar.BROWSE_BUTTON);
 	browseButton.setToolTipContent(visible ? LmMsg.closeSearchBuilder : LmMsg.openSearchBuilder);
 }
 
@@ -79,7 +79,7 @@ function(visible) {
 * AND (represented as a space). In that case, we need parens around each of the picker
 * queries as well as around the query for the type of picker, in order to protect the OR.
 */
-LmBrowseController.prototype._updateQuery =
+ZmBrowseController.prototype._updateQuery =
 function(doSearch) {
 	var queries = new Array();
 	var numPickers = 0;
@@ -102,7 +102,7 @@ function(doSearch) {
 		if (a && a.length) {
 			if (a.length > 1) {
 				var q = new Array();
-				var j = LmPicker.MULTI_JOIN[id];
+				var j = ZmPicker.MULTI_JOIN[id];
 				var needParen = (j != " ");
 				for (var i = 0; i < a.length; i++)
 					q.push((needParen && a.length > 1) ? "(" + a[i] + ")" : a[i]);
@@ -119,79 +119,79 @@ function(doSearch) {
 	var newQuery = queryStr.join(" ");
 	if (newQuery != this._query) {
 		this._query = newQuery;
-		DBG.println(LsDebug.DBG3, "Browse query: " + this._query);
+		DBG.println(AjxDebug.DBG3, "Browse query: " + this._query);
 		if (doSearch)
 			this._appCtxt.getSearchController().search(this._query);
-		else if (this._appCtxt.get(LmSetting.SHOW_SEARCH_STRING))
+		else if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING))
 			this._appCtxt.getSearchController().setSearchField(this._query);
 	}
 }
 
-LmBrowseController.prototype._executeQuery =
+ZmBrowseController.prototype._executeQuery =
 function() {
 	this._appCtxt.getSearchController().search(this._query);
 }
 
-LmBrowseController.prototype._resetListener =
+ZmBrowseController.prototype._resetListener =
 function(ev) {
 	this.removeAllPickers();
 }
 
-LmBrowseController.prototype._closeListener =
+ZmBrowseController.prototype._closeListener =
 function(ev) {
 	this.setBrowseViewVisible(false);
 }
 
-LmBrowseController.prototype.removeAllPickers =
+ZmBrowseController.prototype.removeAllPickers =
 function(ev) {
 	this._browseView.removeAllPickers();
 	this._clearQuery();
 	this._resetPickers();
 }
 
-LmBrowseController.prototype.addPicker =
+ZmBrowseController.prototype.addPicker =
 function(id) {
-	if (LmPicker.LIMIT[id] != -1 && this._pickers[id].size() >= LmPicker.LIMIT[id])
+	if (ZmPicker.LIMIT[id] != -1 && this._pickers[id].size() >= ZmPicker.LIMIT[id])
 		return;
 
-	var ctor = LmPicker.CTOR[id];
+	var ctor = ZmPicker.CTOR[id];
 	var picker = new ctor(this._browseView);
 	this._browseView.addPicker(picker, id);
 	this._pickers[id].add(picker);
 	this._numPickers++;
-	if (id == LmPicker.DATE && this._pickers[id].size() == LmPicker.LIMIT[id])
+	if (id == ZmPicker.DATE && this._pickers[id].size() == ZmPicker.LIMIT[id])
 		picker.secondDate();
     var cb = picker.getCloseButton();
-    cb.setData(LmPicker.KEY_ID, id);
-    cb.setData(LmPicker.KEY_PICKER, picker);
-    cb.addSelectionListener(new LsListener(this, this._pickerCloseListener));
-    picker.addPickerListener(new LsListener(this, this._pickerListener));
+    cb.setData(ZmPicker.KEY_ID, id);
+    cb.setData(ZmPicker.KEY_PICKER, picker);
+    cb.addSelectionListener(new AjxListener(this, this._pickerCloseListener));
+    picker.addPickerListener(new AjxListener(this, this._pickerListener));
 	this._updateQuery(true);
 	
 	// disable picker button if max instances of this picker has been reached
-	if (LmPicker.LIMIT[id] != -1 && this._pickers[id].size() == LmPicker.LIMIT[id])
+	if (ZmPicker.LIMIT[id] != -1 && this._pickers[id].size() == ZmPicker.LIMIT[id])
 		this._toolbar.enable(id, false);
 	
 	
 	return picker;
 }
 
-LmBrowseController.prototype._addPickerListener =
+ZmBrowseController.prototype._addPickerListener =
 function(ev) {
 	try {
-		var id = ev.item.getData(LmPicker.KEY_ID);
+		var id = ev.item.getData(ZmPicker.KEY_ID);
 		this.addPicker(id);
 	} catch (ex) {
 		this._handleException(ex, this._addPickerListener, ev, false);
 	}
 }
 
-LmBrowseController.prototype._pickerCloseListener =
+ZmBrowseController.prototype._pickerCloseListener =
 function(ev) {
     var b = ev.item;
-	var picker = b.getData(LmPicker.KEY_PICKER);
+	var picker = b.getData(ZmPicker.KEY_PICKER);
 	this._browseView.removePicker(picker);
-	var id = b.getData(LmPicker.KEY_ID);
+	var id = b.getData(ZmPicker.KEY_ID);
 	this._pickers[id].remove(picker);
 	this._numPickers--;
 	if (this._numPickers == 0) {
@@ -200,34 +200,34 @@ function(ev) {
 		this._updateQuery(true);
 	}
 	// enable picker button if max instances of this picker has not been reached
-	if (LmPicker.LIMIT[id] != -1 && this._pickers[id].size() < LmPicker.LIMIT[id])
+	if (ZmPicker.LIMIT[id] != -1 && this._pickers[id].size() < ZmPicker.LIMIT[id])
 		this._toolbar.enable(id, true);
 	
 }
 
-LmBrowseController.prototype._clearQuery =
+ZmBrowseController.prototype._clearQuery =
 function() {
 	this._query = "";
 	this._appCtxt.getSearchController().setSearchField("");
 }
 
-LmBrowseController.prototype._pickerListener =
+ZmBrowseController.prototype._pickerListener =
 function(ev) {
-	if (ev.type != LmEvent.S_PICKER)
+	if (ev.type != ZmEvent.S_PICKER)
 		return;
-	if (ev.event == LmEvent.E_MODIFY) {
+	if (ev.event == ZmEvent.E_MODIFY) {
 		this._updateQuery(false);
-	} else if (ev.event == LmEvent.E_LOAD) {
+	} else if (ev.event == ZmEvent.E_LOAD) {
 		this._executeQuery();
 	}
 }
 
-LmBrowseController.prototype._resetPickers =
+ZmBrowseController.prototype._resetPickers =
 function() {
 	this._pickers = new Object();
 	for (var i = 0; i < this._allPickers.length; i++) {
 		var id = this._allPickers[i];
-		this._pickers[id] = new LsVector();
+		this._pickers[id] = new AjxVector();
 		this._toolbar.enable(id, true);
 	}
 	this._numPickers = 0;

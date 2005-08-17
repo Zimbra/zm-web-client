@@ -1,4 +1,4 @@
-function LmController(appCtxt, container, app, isAdmin) {
+function ZmController(appCtxt, container, app, isAdmin) {
 
 	if (arguments.length == 0) return;
 
@@ -20,40 +20,40 @@ function LmController(appCtxt, container, app, isAdmin) {
 }
 
 var i = 1;
-LmController.CONVLIST_VIEW 			= i++;
-LmController.CONV_VIEW 				= i++;
-LmController.TRAD_VIEW 				= i++;
-LmController.MSG_VIEW 				= i++;
-LmController.MSG_NEW_WIN_VIEW 		= i++; // needed for HACK (see LmMailMsg)
-LmController.CONTACT_CARDS_VIEW 	= i++;
-LmController.CONTACT_SIMPLE_VIEW 	= i++;
-LmController.CONTACT_VIEW			= i++;
-LmController.READING_PANE_VIEW 		= i++;
-LmController.ATT_LIST_VIEW 			= i++;
-LmController.ATT_ICON_VIEW 			= i++;
-LmController.CAL_VIEW				= i++;
-LmController.COMPOSE_VIEW			= i++;
-LmController.CONTACT_SRC_VIEW		= i++; // contact picker source list
-LmController.CONTACT_TGT_VIEW		= i++; // contact picker target list
-LmController.PREF_VIEW				= i++;
-LmController.CAL_DAY_VIEW			= i++;
-LmController.CAL_WEEK_VIEW			= i++;
-LmController.CAL_MONTH_VIEW			= i++;
-LmController.CAL_WORK_WEEK_VIEW		= i++;
-LmController.APPT_DETAIL_VIEW		= i++;
-LmController.MIXED_VIEW				= i++;
+ZmController.CONVLIST_VIEW 			= i++;
+ZmController.CONV_VIEW 				= i++;
+ZmController.TRAD_VIEW 				= i++;
+ZmController.MSG_VIEW 				= i++;
+ZmController.MSG_NEW_WIN_VIEW 		= i++; // needed for HACK (see ZmMailMsg)
+ZmController.CONTACT_CARDS_VIEW 	= i++;
+ZmController.CONTACT_SIMPLE_VIEW 	= i++;
+ZmController.CONTACT_VIEW			= i++;
+ZmController.READING_PANE_VIEW 		= i++;
+ZmController.ATT_LIST_VIEW 			= i++;
+ZmController.ATT_ICON_VIEW 			= i++;
+ZmController.CAL_VIEW				= i++;
+ZmController.COMPOSE_VIEW			= i++;
+ZmController.CONTACT_SRC_VIEW		= i++; // contact picker source list
+ZmController.CONTACT_TGT_VIEW		= i++; // contact picker target list
+ZmController.PREF_VIEW				= i++;
+ZmController.CAL_DAY_VIEW			= i++;
+ZmController.CAL_WEEK_VIEW			= i++;
+ZmController.CAL_MONTH_VIEW			= i++;
+ZmController.CAL_WORK_WEEK_VIEW		= i++;
+ZmController.APPT_DETAIL_VIEW		= i++;
+ZmController.MIXED_VIEW				= i++;
 
 // Abstract methods
 
-LmController.prototype._setView =
+ZmController.prototype._setView =
 function() {
 }
 
 // Public methods
 
-LmController.prototype.toString = 
+ZmController.prototype.toString = 
 function() {
-	return "LmController";
+	return "ZmController";
 }
 
 /*
@@ -65,30 +65,30 @@ function() {
 * UI loop). You can't schedule something, and then have subsequent code that depends on the 
 * scheduled action. 
 */
-LmController.prototype._schedule =
+ZmController.prototype._schedule =
 function(method, params, delay) {
 	if (!delay) {
 		delay = 0;
 		this._shell.setBusy(true);
 	}
-	this._action = new LsTimedAction();
+	this._action = new AjxTimedAction();
 	this._action.obj = this;
-	this._action.method = LmController._exec;
+	this._action.method = ZmController._exec;
 	this._action.params.removeAll();
 	this._action.params.add(method);
 	this._action.params.add(params);
 	this._action.params.add(delay);
-	return LsTimedAction.scheduleAction(this._action, delay);
+	return AjxTimedAction.scheduleAction(this._action, delay);
 }
 
-LmController._exec =
+ZmController._exec =
 function(method, params, delay) {
 	method.call(this, params);
 	if (!delay)
 		this._shell.setBusy(false);
 }
 
-LmController.prototype.popupMsgDialog = 
+ZmController.prototype.popupMsgDialog = 
 function(msg, ex, noExecReset)  {
 	if (!noExecReset)
 		this._execFrame = {method: null, params: null, restartOnError: false};
@@ -100,51 +100,51 @@ function(msg, ex, noExecReset)  {
 	this._msgDialog.popup();
 }
 
-LmController.prototype.getControllerForView =
+ZmController.prototype.getControllerForView =
 function(view) {
 	switch (view) {
-		case LmController.CONVLIST_VIEW:
-			return this._appCtxt.getApp(LmLiquidMail.MAIL_APP).getConvListController();
-		case LmController.CONV_VIEW:
-			return this._appCtxt.getApp(LmLiquidMail.MAIL_APP).getConvController();
-		case LmController.TRAD_VIEW:
-			return this._appCtxt.getApp(LmLiquidMail.MAIL_APP).getTradController();
-		case LmController.MSG_VIEW:
-			return this._appCtxt.getApp(LmLiquidMail.MAIL_APP).getMsgController();
-		case LmController.CONTACT_CARDS_VIEW:
-		case LmController.CONTACT_SIMPLE_VIEW:
-			return this._appCtxt.getApp(LmLiquidMail.CONTACTS_APP).getContactListController();
-		case LmController.CONTACT_VIEW:
-			return this._appCtxt.getApp(LmLiquidMail.CONTACTS_APP).getContactController();
-		case LmController.CAL_VIEW:
-		case LmController.CAL_DAY_VIEW:
-		case LmController.CAL_WEEK_VIEW:
-		case LmController.CAL_MONTH_VIEW:
-		case LmController.CAL_WORK_WEEK_VIEW:
-			return this._appCtxt.getApp(LmLiquidMail.CALENDAR_APP).getCalController();
-		case LmController.ATT_LIST_VIEW:
-		case LmController.ATT_ICON_VIEW:
-			return this._appCtxt.getApp(LmLiquidMail.MAIL_APP).getAttachmentListController();
-		case LmController.COMPOSE_VIEW:
-			return this._appCtxt.getApp(LmLiquidMail.MAIL_APP).getComposeController();
-		case LmController.PREF_VIEW:
-			return this._appCtxt.getApp(LmLiquidMail.PREFERENCES_APP).getPrefController();
-		case LmController.MIXED_VIEW:
-			return this._appCtxt.getApp(LmLiquidMail.MIXED_APP).getMixedController();
-		case LmController.APPT_DETAIL_VIEW:
-		    return this._appCtxt.getApp(LmLiquidMail.CALENDAR_APP).getCalController();
+		case ZmController.CONVLIST_VIEW:
+			return this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getConvListController();
+		case ZmController.CONV_VIEW:
+			return this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getConvController();
+		case ZmController.TRAD_VIEW:
+			return this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getTradController();
+		case ZmController.MSG_VIEW:
+			return this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getMsgController();
+		case ZmController.CONTACT_CARDS_VIEW:
+		case ZmController.CONTACT_SIMPLE_VIEW:
+			return this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactListController();
+		case ZmController.CONTACT_VIEW:
+			return this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactController();
+		case ZmController.CAL_VIEW:
+		case ZmController.CAL_DAY_VIEW:
+		case ZmController.CAL_WEEK_VIEW:
+		case ZmController.CAL_MONTH_VIEW:
+		case ZmController.CAL_WORK_WEEK_VIEW:
+			return this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();
+		case ZmController.ATT_LIST_VIEW:
+		case ZmController.ATT_ICON_VIEW:
+			return this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getAttachmentListController();
+		case ZmController.COMPOSE_VIEW:
+			return this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getComposeController();
+		case ZmController.PREF_VIEW:
+			return this._appCtxt.getApp(ZmLiquidMail.PREFERENCES_APP).getPrefController();
+		case ZmController.MIXED_VIEW:
+			return this._appCtxt.getApp(ZmLiquidMail.MIXED_APP).getMixedController();
+		case ZmController.APPT_DETAIL_VIEW:
+		    return this._appCtxt.getApp(ZmLiquidMail.CALENDAR_APP).getCalController();
 		default: {
-			DBG.println(LsDebug.DBG1, "*** controller not found for view " + view);
+			DBG.println(AjxDebug.DBG1, "*** controller not found for view " + view);
 			return this._appCtxt.getAppController();}
 	}
 }
 
-LmController.prototype.setCurrentView =
+ZmController.prototype.setCurrentView =
 function(view) {
 	this._currentView = view;
 }
 
-LmController.prototype._showLoginDialog =
+ZmController.prototype._showLoginDialog =
 function(bReloginMode) {
 	this._authenticating = true;
 	this._loginDialog.setVisible(true, false);
@@ -155,14 +155,14 @@ function(bReloginMode) {
 	}
 }
 
-LmController.prototype._processPrePopView = 
+ZmController.prototype._processPrePopView = 
 function(view) {
 	// overload me
 }
 
-LmController.prototype._handleException =
+ZmController.prototype._handleException =
 function(ex, method, params, restartOnError, obj) {
-	DBG.dumpObj(LsDebug.DBG1, ex);
+	DBG.dumpObj(AjxDebug.DBG1, ex);
 	if (ex.code == LsCsfeException.SVC_AUTH_EXPIRED || 
 		ex.code == LsCsfeException.SVC_AUTH_REQUIRED || 
 		ex.code == LsCsfeException.NO_AUTH_TOKEN) {
@@ -174,7 +174,7 @@ function(ex, method, params, restartOnError, obj) {
 			this._loginDialog.setError(LmMsg.sessionExpired);
 		} else if (ex.code == LsCsfeException.SVC_AUTH_REQUIRED) {
 			// bug fix #413 - always logoff if we get a auth required
-			LmLiquidMail.logOff();
+			ZmLiquidMail.logOff();
 			return;
 		} else {
 			this._loginDialog.setError(null);
@@ -192,13 +192,13 @@ function(ex, method, params, restartOnError, obj) {
 }
 
 // Map error code to error message. Optional params can be substituted.
-LmController.prototype._getErrorMsg =
+ZmController.prototype._getErrorMsg =
 function(code, params) {
 	var msg = null;
 	
 	switch (code) {
 		// network errors
-		case LsException.NETWORK_ERROR:					msg = LmMsg.errorNetwork; break;
+		case AjxException.NETWORK_ERROR:					msg = LmMsg.errorNetwork; break;
 		case LsCsfeException.NETWORK_ERROR:				msg = LmMsg.errorNetwork; break;
 		case LsCsfeException.SOAP_ERROR: 				msg = LmMsg.errorNetwork; break;
 		case LsCsfeException.CSFE_SVC_ERROR: 			msg = LmMsg.errorService; break;
@@ -219,7 +219,7 @@ function(code, params) {
 		case LsCsfeException.ACCT_PASS_RECENTLY_USED: 	msg = LmMsg.errorPassRecentlyUsed; break;
 
 		// mail errors
-		case LsCsfeException.MAIL_INVALID_NAME: 		msg = LsStringUtil.resolve(LmMsg.errorInvalidName, params.name); break;
+		case LsCsfeException.MAIL_INVALID_NAME: 		msg = AjxStringUtil.resolve(LmMsg.errorInvalidName, params.name); break;
 		case LsCsfeException.MAIL_NO_SUCH_FOLDER: 		msg = LmMsg.errorNoSuchFolder; break;
 		case LsCsfeException.MAIL_NO_SUCH_TAG:	 		msg = LmMsg.errorNoSuchTag; break;
 		case LsCsfeException.MAIL_NO_SUCH_CONV:  		msg = LmMsg.errorNoSuchConv; break;
@@ -235,10 +235,10 @@ function(code, params) {
 	return msg;
 }
 
-LmController.prototype._doAuth = 
+ZmController.prototype._doAuth = 
 function(params) {
 	LsCsfeCommand.clearAuthToken();
-	var auth = new LmAuthenticate(this._appCtxt);
+	var auth = new ZmAuthenticate(this._appCtxt);
 	try {
 		auth.execute(params.username, params.password);
     	this._authenticating = false;
@@ -260,7 +260,7 @@ function(params) {
 	}
 }
 
-LmController.prototype._hideLoginDialog =
+ZmController.prototype._hideLoginDialog =
 function() {
 	this._loginDialog.setVisible(false);
 	this._loginDialog.setError(null);
@@ -269,12 +269,12 @@ function() {
 
 /*********** Login dialog Callbacks */
 
-LmController.prototype._loginCallback =
+ZmController.prototype._loginCallback =
 function(args) {
 	this._schedule(this._doAuth, {username: args[0], password: args[1], pubComp: args[2]});
 }
 
-LmController.prototype._doLastSearch = 
+ZmController.prototype._doLastSearch = 
 function() {
 	var obj = this._execFrame.obj ? this._execFrame.obj : this;
 	this._execFrame.method.call(obj, this._execFrame.params);
@@ -283,7 +283,7 @@ function() {
 
 /*********** Msg dialog Callbacks */
 
-LmController.prototype._msgDialogCallback =
+ZmController.prototype._msgDialogCallback =
 function() {
 	this._msgDialog.popdown();
 	if (this._execFrame) {
@@ -295,7 +295,7 @@ function() {
 
 
 // Pop up a dialog. Since it's a shared resource, we need to reset first.
-LmController.prototype._showDialog = 
+ZmController.prototype._showDialog = 
 function(dialog, callback, data, loc, args) {
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, callback, this, args);
@@ -305,7 +305,7 @@ function(dialog, callback, data, loc, args) {
 // Pop down the dialog and clear any pending actions (initiated from an action menu).
 // The action menu's popdown listener got deferred when the dialog popped up, so
 // run it now.
-LmController.prototype._clearDialog =
+ZmController.prototype._clearDialog =
 function(dialog) {
 	dialog.popdown();
 	this._pendingActionData = null;

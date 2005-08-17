@@ -1,17 +1,17 @@
-function LmMailListView(parent, className, posStyle, view, type, headerList, dropTgt) {
+function ZmMailListView(parent, className, posStyle, view, type, headerList, dropTgt) {
 
 	if (arguments.length == 0) return;
-	LmListView.call(this, parent, className, posStyle, view, type, headerList, dropTgt);
+	ZmListView.call(this, parent, className, posStyle, view, type, headerList, dropTgt);
 	
 	// create a action menu for the header list
-	this._colHeaderActionMenu = new LmPopupMenu(this);
-	var actionListener = new LsListener(this, this._colHeaderActionListener);
+	this._colHeaderActionMenu = new ZmPopupMenu(this);
+	var actionListener = new AjxListener(this, this._colHeaderActionListener);
 	for (var i = 0; i < headerList.length; i++) {
 		var hCol = headerList[i];
 		// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
 		if (hCol._width) {
 			var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, null, hCol._name, null, null, DwtMenuItem.CHECK_STYLE);
-			mi.setData(LmMailListView.KEY_ID, hCol._id);
+			mi.setData(ZmMailListView.KEY_ID, hCol._id);
 			mi.setChecked(true, true);
 			this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
 		}
@@ -20,61 +20,61 @@ function LmMailListView(parent, className, posStyle, view, type, headerList, dro
 	this._folderId = null;
 }
 
-LmMailListView.prototype = new LmListView;
-LmMailListView.prototype.constructor = LmMailListView;
+ZmMailListView.prototype = new ZmListView;
+ZmMailListView.prototype.constructor = ZmMailListView;
 
 // Consts
-LmMailListView.KEY_ID = "_keyId";
+ZmMailListView.KEY_ID = "_keyId";
 
-LmMailListView.prototype.toString = 
+ZmMailListView.prototype.toString = 
 function() {
-	return "LmMailListView";
+	return "ZmMailListView";
 }
 
 // abstract methods
-LmMailListView.prototype.markUIAsRead = function(items, on) {}
+ZmMailListView.prototype.markUIAsRead = function(items, on) {}
 
-LmMailListView.prototype.set =
+ZmMailListView.prototype.set =
 function(list, sortField) {
 	this._folderId = list.search ? list.search.folderId : null;
-	LmListView.prototype.set.call(this, list, sortField);
+	ZmListView.prototype.set.call(this, list, sortField);
 }
 
-LmMailListView.prototype.getTitle =
+ZmMailListView.prototype.getTitle =
 function() {
 	return this._controller._activeSearch ? this._controller._activeSearch.search.getTitle() : null;
 }
 
-LmMailListView.prototype._changeListener =
+ZmMailListView.prototype._changeListener =
 function(ev) {
 	var items = ev.getDetail("items");
-	if (ev.event == LmEvent.E_FLAGS) { // handle "unread" flag
-		DBG.println(LsDebug.DBG2, "LmMailListView: FLAGS");
+	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" flag
+		DBG.println(AjxDebug.DBG2, "ZmMailListView: FLAGS");
 		var flags = ev.getDetail("flags");
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			for (var j = 0; j < flags.length; j++) {
 				var flag = flags[j];
-				if (flag == LmItem.FLAG_UNREAD) {
-					var on = item[LmItem.FLAG_PROP[flag]];
+				if (flag == ZmItem.FLAG_UNREAD) {
+					var on = item[ZmItem.FLAG_PROP[flag]];
 					this.markUIAsRead([item], !on);
 				}
 			}
 		}
-		LmListView.prototype._changeListener.call(this, ev); // handle other flags
-	} else if (ev.event == LmEvent.E_CREATE) {
-		DBG.println(LsDebug.DBG2, "LmMailListView: CREATE");
+		ZmListView.prototype._changeListener.call(this, ev); // handle other flags
+	} else if (ev.event == ZmEvent.E_CREATE) {
+		DBG.println(AjxDebug.DBG2, "ZmMailListView: CREATE");
 		var now = new Date();
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			DBG.println(LsDebug.DBG3, "Item to add: " + item.id);
+			DBG.println(AjxDebug.DBG3, "Item to add: " + item.id);
 			if (this._list && this._list.contains(item)) // skip if we already have it
 				continue;
 			// For now, we assume that the new conv/msg is the most recent one. If we're on the
 			// first page with date desc order, we insert it at the top. If we're on the last
 			// page with date asc order, we insert it at the bottom. Otherwise, we do nothing.
-			// TODO: put result of LmMailList._sortIndex() in ev.details
-			if ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == LmSearch.DATE_DESC)) {
+			// TODO: put result of ZmMailList._sortIndex() in ev.details
+			if ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
 				// add new item at the beg. of list view's internal list
 				this.addItem(item, 0);
 	
@@ -82,7 +82,7 @@ function(ev) {
 				if (this.size() > this.getLimit()) {
 					this.removeLastItem();
 				}
-			} else if ((this._controller.getList().hasMore() === false) && (!this._sortByString || this._sortByString == LmSearch.DATE_ASC)) {
+			} else if ((this._controller.getList().hasMore() === false) && (!this._sortByString || this._sortByString == ZmSearch.DATE_ASC)) {
 				if (this.size() < this.getLimit()) {
 					// add new item at the end of list view's internal list
 					this.addItem(item);
@@ -92,14 +92,14 @@ function(ev) {
 			}
 		}
 	} else {
-		LmListView.prototype._changeListener.call(this, ev);
+		ZmListView.prototype._changeListener.call(this, ev);
 	}
 }
 
-LmMailListView.prototype._colHeaderActionListener = 
+ZmMailListView.prototype._colHeaderActionListener = 
 function(ev) {
 
-	var menuItemId = ev.item.getData(LmMailListView.KEY_ID);
+	var menuItemId = ev.item.getData(ZmMailListView.KEY_ID);
 
 	for (var i = 0; i < this._headerList.length; i++) {
 		var col = this._headerList[i];
@@ -112,12 +112,12 @@ function(ev) {
 	this._relayout();
 }
 
-LmMailListView.prototype.getLimit = 
+ZmMailListView.prototype.getLimit = 
 function() {
-	return this._appCtxt.get(LmSetting.PAGE_SIZE);
+	return this._appCtxt.get(ZmSetting.PAGE_SIZE);
 }
 
-LmMailListView.prototype.replenish = 
+ZmMailListView.prototype.replenish = 
 function(list) {
 	DwtListView.prototype.replenish.call(this, list);
 	this._resetColWidth();
@@ -136,7 +136,7 @@ function(list) {
 // that's tested is bolded, since that's bigger and the conv may be unread.
 //
 // Returns a list of objects with name and original index.
-LmMailListView.prototype._fitParticipants = 
+ZmMailListView.prototype._fitParticipants = 
 function(participants, participantsElided, width) {
 	// fudge factor since we're basing calc on em width; the actual ratio is around 1.5
 	width = width * 1.3;
@@ -144,13 +144,13 @@ function(participants, participantsElided, width) {
 	if (participants.length == 1) {
 		var p = participants[0];
 		var name = p.name ? p.name : p.dispName;
-		var tmp = {name: LsStringUtil.htmlEncode(name), index: 0};
+		var tmp = {name: AjxStringUtil.htmlEncode(name), index: 0};
 		return [tmp];
 	}
 	// create a list of "others" (not the originator)
 	var list = new Array();
 	for (var i = 0; i < participants.length; i++) {
-		var tmp = {name: LsStringUtil.htmlEncode(participants[i].dispName), index: i};
+		var tmp = {name: AjxStringUtil.htmlEncode(participants[i].dispName), index: i};
 		list.push(tmp);
 	}
 	var origLen = list.length;
@@ -175,9 +175,9 @@ function(participants, participantsElided, width) {
 			w = w + (test.length - 2) * DwtUnits.WIDTH_SEP; // and remaining commas
 			for (var i = 0; i < list.length; i++)
 				tmp.push(list[i].name);
-			text = originator.name + LsStringUtil.ELLIPSIS + tmp.join(", ");
+			text = originator.name + AjxStringUtil.ELLIPSIS + tmp.join(", ");
 		}
-		DBG.println(LsDebug.DBG3, "calc width of [" + text + "] = " + w);
+		DBG.println(AjxDebug.DBG3, "calc width of [" + text + "] = " + w);
 		if (w <= width)
 			return test;
 		else
@@ -186,7 +186,7 @@ function(participants, participantsElided, width) {
 	return [originator];
 }
 
-LmMailListView.prototype._getActionMenuForColHeader = 
+ZmMailListView.prototype._getActionMenuForColHeader = 
 function() {
 	return this._colHeaderActionMenu;
 }

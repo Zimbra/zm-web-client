@@ -2,8 +2,8 @@
  * This class represents the view of the details of a filter rule. It
  * is a sub-class of DwtComposite.
  */
-function LmFilterDetailsView(parent, appCtxt, className) {
-    var clsName = this._className = className || "LmFilterDetailsView";
+function ZmFilterDetailsView(parent, appCtxt, className) {
+    var clsName = this._className = className || "ZmFilterDetailsView";
 	this._appCtxt = appCtxt;
     DwtComposite.call(this, parent, clsName, DwtControl.STATIC_STYLE);
 	// this has to be done, so that the dwtselect is created after we've set
@@ -28,12 +28,12 @@ function LmFilterDetailsView(parent, appCtxt, className) {
 	
 	// add the onmousedown listener, allowing the user to access the
 	// input areas.
-	var ls = new LsListener(this, 
-							LmFilterDetailsView.prototype._mouseDownListener);
+	var ls = new AjxListener(this, 
+							ZmFilterDetailsView.prototype._mouseDownListener);
 	this.addListener(DwtEvent.ONMOUSEDOWN, ls);
 
-	LmFilterDetailsView.DEFAULT_CONDITION = new LmCondition('from', null, 'is', null);
-	LmFilterDetailsView.DEFAULT_ACTION = new LmCondition('keep', null);
+	ZmFilterDetailsView.DEFAULT_CONDITION = new LmCondition('from', null, 'is', null);
+	ZmFilterDetailsView.DEFAULT_ACTION = new LmCondition('keep', null);
 
 	// create the msgDialog used for reporting an incomplete rule.
 	this._msgDialog = new DwtMessageDialog(this.shell, null, 
@@ -48,35 +48,35 @@ function LmFilterDetailsView(parent, appCtxt, className) {
 	
 }
 
-LmFilterDetailsView.prototype = new DwtComposite;
-LmFilterDetailsView.prototype.constructor = LmFilterDetailsView;
+ZmFilterDetailsView.prototype = new DwtComposite;
+ZmFilterDetailsView.prototype.constructor = ZmFilterDetailsView;
 
-LmFilterDetailsView.EVENT_HIDE = "hide";
+ZmFilterDetailsView.EVENT_HIDE = "hide";
 
-LmFilterDetailsView.TAG_CONTEXT = 1;
-LmFilterDetailsView.FOLDER_CONTEXT = 2;
-LmFilterDetailsView.contextMap = {
-	"tag": LmFilterDetailsView.TAG_CONTEXT,
-	"fileinto": LmFilterDetailsView.FOLDER_CONTEXT
+ZmFilterDetailsView.TAG_CONTEXT = 1;
+ZmFilterDetailsView.FOLDER_CONTEXT = 2;
+ZmFilterDetailsView.contextMap = {
+	"tag": ZmFilterDetailsView.TAG_CONTEXT,
+	"fileinto": ZmFilterDetailsView.FOLDER_CONTEXT
 };
 
 
-LmFilterDetailsView.prototype.toString = function() {
-	return "LmFilterDetailsView";
+ZmFilterDetailsView.prototype.toString = function() {
+	return "ZmFilterDetailsView";
 };
 
-LmFilterDetailsView.prototype.getNextDwtObjectId = function () {
+ZmFilterDetailsView.prototype.getNextDwtObjectId = function () {
 	return this._nextSelect++;
 };
-LmFilterDetailsView.prototype.addHideListener = function (listener){
-	this.addListener(LmFilterDetailsView.EVENT_HIDE, listener);
+ZmFilterDetailsView.prototype.addHideListener = function (listener){
+	this.addListener(ZmFilterDetailsView.EVENT_HIDE, listener);
 };
 
-LmFilterDetailsView.prototype.isVisible = function () {
+ZmFilterDetailsView.prototype.isVisible = function () {
 	var el = this.getHtmlElement();
 	return (el && el.style.display == 'block');
 };
-LmFilterDetailsView.prototype.hide = function(silent) {
+ZmFilterDetailsView.prototype.hide = function(silent) {
 	// hide all SELECT boxes as a workaround for IE
 	var el = this.getHtmlElement();
 	var rule = this._rule;
@@ -87,20 +87,20 @@ LmFilterDetailsView.prototype.hide = function(silent) {
 		this._referenceRule = null;
 		this._editMode = void 0;
 		if (!silent){
-			this.notifyListeners(LmFilterDetailsView.EVENT_HIDE, rule);
+			this.notifyListeners(ZmFilterDetailsView.EVENT_HIDE, rule);
 		}
 	}
 };
 
 
-LmFilterDetailsView.prototype.edit = function(rule) {
+ZmFilterDetailsView.prototype.edit = function(rule) {
 	this.show(rule);
 };
 
-LmFilterDetailsView.prototype.show = function(rule, referenceRule) {
+ZmFilterDetailsView.prototype.show = function(rule, referenceRule) {
 	var el = this.getHtmlElement();
 	if (el.style.display == "none") {
-		this._rule = rule? rule : LmFilterRule.DUMMY_RULE;
+		this._rule = rule? rule : ZmFilterRule.DUMMY_RULE;
 		this._referenceRule = referenceRule? referenceRule: null;	
 		var rule = this._rule;
 		var doc = this.getDocument();
@@ -130,7 +130,7 @@ LmFilterDetailsView.prototype.show = function(rule, referenceRule) {
 			var okButtonCell = Dwt.getDomObj( doc, this._okButtonCellId);
 			var okButton = new DwtButton(this);
 			okButton.setText("Ok");
-			okButton.addSelectionListener(new LsListener(this, 
+			okButton.addSelectionListener(new AjxListener(this, 
 														 this._okButtonListener));
 			var okButtonEl = okButton.getHtmlElement();
 			if (okButtonEl && okButtonEl.parentNode){
@@ -143,7 +143,7 @@ LmFilterDetailsView.prototype.show = function(rule, referenceRule) {
 			var cancelButton = new DwtButton(this);
 			var cancelButtonEl = cancelButton.getHtmlElement();
 			cancelButton.setText("Cancel");
-			cancelButton.addSelectionListener(new LsListener(this, 
+			cancelButton.addSelectionListener(new AjxListener(this, 
 												 this._cancelButtonListener));
 			var cancelButtonEl = cancelButton.getHtmlElement();
 			if (cancelButtonEl && cancelButtonEl.parentNode){
@@ -157,7 +157,7 @@ LmFilterDetailsView.prototype.show = function(rule, referenceRule) {
 	}
 };
 
-LmFilterDetailsView.prototype._addDwtObjects = function () {
+ZmFilterDetailsView.prototype._addDwtObjects = function () {
 	var selEl, id, wrapper, selParent;
 	for (var j =0; j < this._dwtObjects.length; ++j ){
 		wrapper = this._dwtObjects[j];
@@ -176,7 +176,7 @@ LmFilterDetailsView.prototype._addDwtObjects = function () {
 // ----------------------------------------------------------------------
 // private rendering methods methods
 // ----------------------------------------------------------------------
-LmFilterDetailsView.prototype._renderConditions = function(rule) {
+ZmFilterDetailsView.prototype._renderConditions = function(rule) {
 	// select the condition grouping op
 	var doc = this.getDocument();
 	var conditionTable = Dwt.getDomObj(doc, this._conditionTableId);
@@ -199,7 +199,7 @@ LmFilterDetailsView.prototype._renderConditions = function(rule) {
 	}
 };
 
-LmFilterDetailsView.prototype._renderActions = function(rule) {
+ZmFilterDetailsView.prototype._renderActions = function(rule) {
 	var doc = this.getDocument();
 	var actionTable = Dwt.getDomObj(doc, this._actionTableId);
 	var html, row, cell;
@@ -231,11 +231,11 @@ LmFilterDetailsView.prototype._renderActions = function(rule) {
 	}
 };
 
-LmFilterDetailsView.prototype._renderRow = function (rowStr){
+ZmFilterDetailsView.prototype._renderRow = function (rowStr){
 	return Dwt.parseHtmlFragment(rowStr, "TR");
 };
 
-LmFilterDetailsView.prototype._contentHtml = function() {
+ZmFilterDetailsView.prototype._contentHtml = function() {
 	var html = new Array(25);
 	var idx = 0;
 	this._outerTableId = Dwt.getNextId();
@@ -259,7 +259,7 @@ LmFilterDetailsView.prototype._contentHtml = function() {
 	html[idx++] = "<tr><td></td><td>";
 	// the dynamic table for conditions
 	this._conditionTableId = Dwt.getNextId();
-	//var shadedBoxWidth = LsEnv.isIE? "100%": "";
+	//var shadedBoxWidth = AjxEnv.isIE? "100%": "";
 	var shadedBoxWidth = "auto";
 	html[idx++] = "<div style='margin-top:5px;' class=shadedBox >";
 	html[idx++] = "<table id='";
@@ -296,7 +296,7 @@ LmFilterDetailsView.prototype._contentHtml = function() {
 // ----------------------------------------------------------------------
 // conditions construction methods
 // ----------------------------------------------------------------------
-LmFilterDetailsView.prototype._getConditionsHtml = function(con) {
+ZmFilterDetailsView.prototype._getConditionsHtml = function(con) {
 	var html = new Array(10);
 	var idx = 0;
 	var v, condFound, conditionName, conName;
@@ -305,20 +305,20 @@ LmFilterDetailsView.prototype._getConditionsHtml = function(con) {
 	// default condition when adding a rule		
 	condFound = "from";
 
-	var configCond = LmFilterRules.getConfigForCondition (conName)
+	var configCond = ZmFilterRules.getConfigForCondition (conName)
 	if (configCond == null) {
-		configCond = LmFilterRules.CONDITIONS["from"];
+		configCond = ZmFilterRules.CONDITIONS["from"];
 	}
 	
 	// Adjust for the header condition if necessary
 
 	var condition = con;
 	if (conName != null){
-		if (LmFilterRules.CONDITIONS[conName].isHeader) {
-			if (LmFilterRules.CONDITIONS[con.key0] != null ){
+		if (ZmFilterRules.CONDITIONS[conName].isHeader) {
+			if (ZmFilterRules.CONDITIONS[con.key0] != null ){
 				condition = new LmCondition(con.key0, null, con.comparator, 
 											con.key1);
-				configCond = LmFilterRules.CONDITIONS[con.key0];
+				configCond = ZmFilterRules.CONDITIONS[con.key0];
 			}
 		}
 	}
@@ -349,15 +349,15 @@ LmFilterDetailsView.prototype._getConditionsHtml = function(con) {
 	return html.join("");
 };
 
-LmFilterDetailsView.prototype._getConditionsCell4Html =
+ZmFilterDetailsView.prototype._getConditionsCell4Html =
 function(configCond, condition){
 	var visibility, value;
 	var nextId = Dwt.getNextId();
 	var htmlStr = "<td class='paddedTableCell' valign='center' id='" + nextId + "'></td>";
 	switch (configCond.cell4) {
-	case LmFilterRules.TYPE_INPUT:
+	case ZmFilterRules.TYPE_INPUT:
 		break;
-	case LmFilterRules.TYPE_SELECT:
+	case ZmFilterRules.TYPE_SELECT:
 		var sel = new DwtSelect(this);
 		var selWrapper = {id: nextId, obj: sel}
 		this._dwtObjects[this.getNextDwtObjectId()] = selWrapper;
@@ -376,7 +376,7 @@ function(configCond, condition){
 		}
 
 		break;
-	case LmFilterRules.TYPE_EMPTY:
+	case ZmFilterRules.TYPE_EMPTY:
 		break;
 	default:
 		break;
@@ -384,22 +384,22 @@ function(configCond, condition){
 	return {html: htmlStr, id: nextId};	
 };
 
-LmFilterDetailsView.prototype._getConditionsCell3Html =
+ZmFilterDetailsView.prototype._getConditionsCell3Html =
 function (configCond, condition) {
 	var visibility;
 	var htmlStr = null;
 	var nextId = Dwt.getNextId();
 	var value = condition.key1;
-	if ( (value == null) && (configCond.cell1 == LmFilterRules.TYPE_EMPTY)){
+	if ( (value == null) && (configCond.cell1 == ZmFilterRules.TYPE_EMPTY)){
 		value = condition.key0;
 	}
 	value = value? value : "";
 	switch (configCond.cell3) {
-	case LmFilterRules.TYPE_INPUT:
+	case ZmFilterRules.TYPE_INPUT:
 		visibility = "visible";
 		// if we have extra data for this type of condition,
 		// trim it off here, and save it for cell 4.
-		if (configCond.cell4 != LmFilterRules.TYPE_EMPTY){
+		if (configCond.cell4 != ZmFilterRules.TYPE_EMPTY){
 			var vlen = value.length;
 			var c4len = configCond.cell4length;
 			var cell4Val = value.substring(vlen - c4len, vlen);
@@ -407,10 +407,10 @@ function (configCond, condition) {
 			value = value.substring(0, vlen - c4len);
 		}
 		htmlStr = 
-			LsStringUtil.resolve(LmFilterDetailsView._cell3Template,
+			AjxStringUtil.resolve(ZmFilterDetailsView._cell3Template,
 								 [nextId, visibility, value]);
 		break;
-	case LmFilterRules.TYPE_SELECT:
+	case ZmFilterRules.TYPE_SELECT:
 		var sel = new DwtSelect(this);
 		var selWrapper = {id: nextId, obj: sel}
 		this._dwtObjects[this.getNextDwtObjectId()] = selWrapper;
@@ -429,7 +429,7 @@ function (configCond, condition) {
 		}
 		htmlStr = "<td valign='center' class='paddedTableCell' style='visibility:visible' id='" + selWrapper.id + "'></td>";
 		break;
-	case LmFilterRules.TYPE_BUTTON:
+	case ZmFilterRules.TYPE_BUTTON:
 		// we can use the default string, but we need to handle the button 
 		// after in the same way that we insert the select objects.
 		var b = new DwtButton(this, null, "pickerButton");
@@ -446,34 +446,34 @@ function (configCond, condition) {
 		var cal = new DwtCalendar(menu);
 		cal.setDate(new Date());
 		cal._filterDetailsButton = b;
-		var ls = new LsListener(this, this._dateSelListener);
+		var ls = new AjxListener(this, this._dateSelListener);
 		cal.addSelectionListener(ls);
 		b.setMenu(menu, true);
 		htmlStr = "<td valign='center' class='paddedTableCell' style='visibility:visible' id='" + bWrapper.id + "'></td>";
 		break;
-	case LmFilterRules.TYPE_EMPTY:
+	case ZmFilterRules.TYPE_EMPTY:
 		value = "";
 		visibility = "hidden";
 		htmlStr = 
-			LsStringUtil.resolve(LmFilterDetailsView._cell3Template,
+			AjxStringUtil.resolve(ZmFilterDetailsView._cell3Template,
 								 [nextId, visibility, value]);
 		break;
 	}
 	return {html: htmlStr, id: nextId};
 };
 
-LmFilterDetailsView._cell3Template = "<td id='$0' valign='center' class='paddedTableCell' style='visibility:$1'><input type='text' size='25' value='$2' style='width:100%'></td>";
-LmFilterDetailsView._cell1Template =
+ZmFilterDetailsView._cell3Template = "<td id='$0' valign='center' class='paddedTableCell' style='visibility:$1'><input type='text' size='25' value='$2' style='width:100%'></td>";
+ZmFilterDetailsView._cell1Template =
 		"<td id='$0' valign='center' class='paddedTableCell' style='visibility: $1'><input type='text' size='10' value='$2' style='width:100%'></td>";
 
-LmFilterDetailsView.prototype._getConditionsCell1Html = 
+ZmFilterDetailsView.prototype._getConditionsCell1Html = 
 function (configCond, cond){
 	var condition = cond? cond: new LmCondition();
 	var nextId = Dwt.getNextId();
 	var visibility, value;
 	var htmlStr = null;
 	switch (configCond.cell1) {
-	case LmFilterRules.TYPE_SELECT:
+	case ZmFilterRules.TYPE_SELECT:
 		var sel = new DwtSelect(this);
 		var selWrapper = {id: nextId, obj: sel}
 		this._dwtObjects[this.getNextDwtObjectId()] = selWrapper;
@@ -492,34 +492,34 @@ function (configCond, cond){
 		}
 		htmlStr = "<td valign='center' class='paddedTableCell' style='visibility:visible' id='" + selWrapper.id + "'></td>";
 		break;
-	case LmFilterRules.TYPE_INPUT:
+	case ZmFilterRules.TYPE_INPUT:
 		visibility = "visible";
 		value = condition.key0;
 		if (value == null) {
 			value = "";
 		}
 		htmlStr = 
-			LsStringUtil.resolve(LmFilterDetailsView._cell1Template,
+			AjxStringUtil.resolve(ZmFilterDetailsView._cell1Template,
 								 [nextId, visibility, value]);
 		break;
-	case LmFilterRules.TYPE_EMPTY:
+	case ZmFilterRules.TYPE_EMPTY:
 		value = "";
 		visibility = "hidden";
 		htmlStr = 
-			LsStringUtil.resolve(LmFilterDetailsView._cell1Template,
+			AjxStringUtil.resolve(ZmFilterDetailsView._cell1Template,
 								 [nextId, visibility, value]);
 		break;
 	}
 	return {html: htmlStr, id: nextId};
 };
 
-LmFilterDetailsView.prototype._createOptionsToConditionSelect = 
+ZmFilterDetailsView.prototype._createOptionsToConditionSelect = 
 function (condition) {
 	var sel = new DwtSelect(this);
 	var selWrapper = {id: Dwt.getNextId(), obj: sel};
 	this._dwtObjects[this.getNextDwtObjectId()] = selWrapper;
-	sel.addChangeListener(new LsListener(this, this._conditionSelListener));
-	for (var conditionName in LmFilterRules.CONDITIONS) {
+	sel.addChangeListener(new AjxListener(this, this._conditionSelListener));
+	for (var conditionName in ZmFilterRules.CONDITIONS) {
 		v = false;
 		var ruleCondField = condition.field;
 		if (ruleCondField != null && 
@@ -528,7 +528,7 @@ function (condition) {
 		}
 		sel.addOption(new DwtSelectOptionData(
 								  conditionName,
-								  LmFilterRules.CONDITIONS[conditionName].desc,
+								  ZmFilterRules.CONDITIONS[conditionName].desc,
 								  v));
 	}
 	if (sel.getValue() == null){
@@ -537,7 +537,7 @@ function (condition) {
 	return selWrapper;
 };
 
-LmFilterDetailsView.prototype._createConditionOperatorSelect = 
+ZmFilterDetailsView.prototype._createConditionOperatorSelect = 
 function (configCond, condition){
 	var sel = new DwtSelect(this);
 	var selWrapper = {id: Dwt.getNextId(), obj: sel}
@@ -546,7 +546,7 @@ function (configCond, condition){
 	return selWrapper;
 };
 
-LmFilterDetailsView.prototype._addConditionOperatorOptions =
+ZmFilterDetailsView.prototype._addConditionOperatorOptions =
 function (sel, configCond, condition){
 	if (!condition) condition = new LmCondition();
 	var relatedComparators = configCond.op;
@@ -579,7 +579,7 @@ function (sel, configCond, condition){
 // ----------------------------------------------------------------------
 // actions construction methods
 // ----------------------------------------------------------------------
-LmFilterDetailsView.prototype._getActionsHtml = function (action) {
+ZmFilterDetailsView.prototype._getActionsHtml = function (action) {
 	var html = new Array(10);
 	var idx = 0;
 	var v, actFound;
@@ -593,8 +593,8 @@ LmFilterDetailsView.prototype._getActionsHtml = function (action) {
 	this._dwtObjects[this.getNextDwtObjectId()] = selWrapper;
 	html[idx++] = selWrapper.id;
 	html[idx++] = "' class='paddedTableCell' valign='center'>";
-	sel.addChangeListener(new LsListener(this, this._actionSelListener));
-	for (var actionName in LmFilterRules.ACTIONS) {
+	sel.addChangeListener(new AjxListener(this, this._actionSelListener));
+	for (var actionName in ZmFilterRules.ACTIONS) {
 		v = false;
 		var ruleActName = action.name;
 		if (ruleActName != null && ruleActName == actionName) {
@@ -603,7 +603,7 @@ LmFilterDetailsView.prototype._getActionsHtml = function (action) {
 		}
 		sel.addOption(new DwtSelectOptionData(
 										actionName,
-										LmFilterRules.ACTIONS[actionName].desc,
+										ZmFilterRules.ACTIONS[actionName].desc,
 										v));
 		if (sel.getValue() == null){
 			sel.setSelected(0);
@@ -611,7 +611,7 @@ LmFilterDetailsView.prototype._getActionsHtml = function (action) {
 	}
 	html[idx++] = "</td>";
 	
-	var configAction = LmFilterRules.ACTIONS[actFound];
+	var configAction = ZmFilterRules.ACTIONS[actFound];
 
 	// action parameter
 	v = action.arg;
@@ -619,7 +619,7 @@ LmFilterDetailsView.prototype._getActionsHtml = function (action) {
 		v = "";
 	}
 	var vis = "visible";
-	if (configAction.param == LmFilterRules.TYPE_EMPTY) {
+	if (configAction.param == ZmFilterRules.TYPE_EMPTY) {
 		vis= "hidden";
 	}
 	
@@ -636,15 +636,15 @@ LmFilterDetailsView.prototype._getActionsHtml = function (action) {
 	return html.join("");
 };
 
-LmFilterDetailsView.prototype._getActionParamHtml = 
+ZmFilterDetailsView.prototype._getActionParamHtml = 
 function ( configAction, action, nextId){
 	var htmlStr = "";
 	var value = action.arg? action.arg: "";
 	switch(configAction.param) {
-	case LmFilterRules.TYPE_INPUT:
+	case ZmFilterRules.TYPE_INPUT:
 		htmlStr = "<input type='text' size='25' value='" + value + "'>";
 		break;
-	case LmFilterRules.TYPE_SELECT:
+	case ZmFilterRules.TYPE_SELECT:
 		htmlStr = "";
 		var sel = new DwtSelect(this);
 		var selWrapper = {id: nextId, obj: sel};
@@ -671,7 +671,7 @@ function ( configAction, action, nextId){
 // ----------------------------------------------------------------------
 // + - button construction methods
 // ----------------------------------------------------------------------
-LmFilterDetailsView.prototype._plusMinusHtml = function(cell, isActionRow) {
+ZmFilterDetailsView.prototype._plusMinusHtml = function(cell, isActionRow) {
 	var doc = this.getDocument();
 	cell.align = "right";
 	cell.width = "80";
@@ -686,15 +686,15 @@ LmFilterDetailsView.prototype._plusMinusHtml = function(cell, isActionRow) {
 	var plusButton = new DwtButton(this);
 	plusEl = plusButton.getHtmlElement();
  	plusEl.style.width="30px";
-	plusButton.setImage(LmImg.I_PLUS);
+	plusButton.setImage(ZmImg.I_PLUS);
 	var plusList = null;
 	var minusList = null;
 	if (isActionRow) {
-		plusList = new LsListener(this, this._actionPlusClickListener);
-		minusList = new LsListener(this, this._actionMinusClickListener);
+		plusList = new AjxListener(this, this._actionPlusClickListener);
+		minusList = new AjxListener(this, this._actionMinusClickListener);
 	} else {
-		plusList = new LsListener(this, this._conditionPlusClickListener);
-		minusList = new LsListener(this, this._conditionMinusClickListener);
+		plusList = new AjxListener(this, this._conditionPlusClickListener);
+		minusList = new AjxListener(this, this._conditionMinusClickListener);
 	}
 	plusButton.addSelectionListener(plusList);
 	               
@@ -704,29 +704,29 @@ LmFilterDetailsView.prototype._plusMinusHtml = function(cell, isActionRow) {
 	minusEl.style.width="30px";
 	minusButton.addSelectionListener(minusList);
 
-	minusButton.setImage(LmImg.I_MINUS);
+	minusButton.setImage(ZmImg.I_MINUS);
 	cell0.appendChild(plusButton.getHtmlElement());
 	cell1.appendChild(minusButton.getHtmlElement());
 	cell.appendChild(buttonsTable);
 };
 
-LmFilterDetailsView._getAncestor = function (el, tagName){
+ZmFilterDetailsView._getAncestor = function (el, tagName){
 	while (el && el.tagName != tagName){
 		el = el.parentNode;
 	}
 	return el;
 };
 
-LmFilterDetailsView.prototype._getRowFromButtonEvent = function(ev){
+ZmFilterDetailsView.prototype._getRowFromButtonEvent = function(ev){
 	var button = ev.item;
 	var el = button.getHtmlElement();
 	// get the second TR we see in the DOM ( going up ).
-	var row = LmFilterDetailsView._getAncestor(el, "TR");
-	row = LmFilterDetailsView._getAncestor(row.parentNode, "TR");
+	var row = ZmFilterDetailsView._getAncestor(el, "TR");
+	row = ZmFilterDetailsView._getAncestor(row.parentNode, "TR");
 	return row;	
 };
 
-LmFilterDetailsView.prototype._deleteRow = function (tableOrId, row){
+ZmFilterDetailsView.prototype._deleteRow = function (tableOrId, row){
 	var table = null;
 	if (typeof(tableOrId) == 'string'){
 		table = Dwt.getDomObj(this.getDocument(), tableId);
@@ -752,7 +752,7 @@ LmFilterDetailsView.prototype._deleteRow = function (tableOrId, row){
 // ----------------------------------------------------------------------
 // button listening methods
 // ----------------------------------------------------------------------
-LmFilterDetailsView.prototype._dateSelListener = function (ev) {
+ZmFilterDetailsView.prototype._dateSelListener = function (ev) {
 	var cal = ev.item;
 	var b = cal._filterDetailsButton;
 	var date = ev.detail;
@@ -762,7 +762,7 @@ LmFilterDetailsView.prototype._dateSelListener = function (ev) {
 	b._detailsViewValue = dateString;
 };
 
-LmFilterDetailsView.prototype._actionMinusClickListener = function (ev) {
+ZmFilterDetailsView.prototype._actionMinusClickListener = function (ev) {
 	var row = this._getRowFromButtonEvent(ev);
 	if (row == null) return;
 	var actionTable = document.getElementById(this._actionTableId);
@@ -774,7 +774,7 @@ LmFilterDetailsView.prototype._actionMinusClickListener = function (ev) {
 	var deleted = this._deleteRow(actionTable, row, actionTable);	
 };
 
-LmFilterDetailsView.prototype._cleanUpActionRow = function (row) {
+ZmFilterDetailsView.prototype._cleanUpActionRow = function (row) {
 	//clean up objects -- the action row has 3 cells:
 	// 1. contains a DwtSelect Object
 	// 2. contains a table which houses an input and a DwtButton
@@ -793,7 +793,7 @@ LmFilterDetailsView.prototype._cleanUpActionRow = function (row) {
 	button.dispose();
 };
 
-LmFilterDetailsView.prototype._conditionMinusClickListener = function (ev) {
+ZmFilterDetailsView.prototype._conditionMinusClickListener = function (ev) {
 	var row = this._getRowFromButtonEvent(ev);
 	if (row == null) return;
 
@@ -805,7 +805,7 @@ LmFilterDetailsView.prototype._conditionMinusClickListener = function (ev) {
 	var deleted = this._deleteRow(conditionTable, row);
 };
 
-LmFilterDetailsView.prototype._cleanUpConditionRow = function (row) {
+ZmFilterDetailsView.prototype._cleanUpConditionRow = function (row) {
 	//clean up objects -- the action row has 3 cells:
 	// 0. contains a DwtSelect Object
 	// 1. contains an input widget
@@ -816,17 +816,17 @@ LmFilterDetailsView.prototype._cleanUpConditionRow = function (row) {
 
 	var selObj = DwtSelect.getObjectFromElement(row.cells[0].firstChild);
 	var conditionName = selObj.getValue();
-	var configCond = LmFilterRules.CONDITIONS[conditionName];
+	var configCond = ZmFilterRules.CONDITIONS[conditionName];
 	selObj.dispose();
 
-	if (configCond.cell1 == LmFilterRules.TYPE_SELECT) {
+	if (configCond.cell1 == ZmFilterRules.TYPE_SELECT) {
 		selObj = DwtSelect.getObjectFromElement(row.cells[1].firstChild);
 		selObj.dispose();
 	}
 	selObj = DwtSelect.getObjectFromElement(row.cells[2].firstChild);
 	selObj.dispose();
 
-	if (configCond.cell4 == LmFilterRules.TYPE_SELECT) {
+	if (configCond.cell4 == ZmFilterRules.TYPE_SELECT) {
 		selObj = DwtSelect.getObjectFromElement(row.cells[4].firstChild);
 		selObj.dispose();
 	}
@@ -838,23 +838,23 @@ LmFilterDetailsView.prototype._cleanUpConditionRow = function (row) {
 	button.dispose();
 };
 
-LmFilterDetailsView.prototype._actionPlusClickListener = function (ev) {
+ZmFilterDetailsView.prototype._actionPlusClickListener = function (ev) {
  	// doesn't really matter where the action is added, so we'll always 
 	// add at the end;
-	var rule = LmFilterRule.DUMMY_RULE;
+	var rule = ZmFilterRule.DUMMY_RULE;
 	this._renderActions(rule);
 	this._addDwtObjects();
 };
 
-LmFilterDetailsView.prototype._conditionPlusClickListener = function (ev) {
+ZmFilterDetailsView.prototype._conditionPlusClickListener = function (ev) {
  	// doesn't really matter where the row is added, so we'll always 
 	// add at the end;
-	var rule = LmFilterRule.DUMMY_RULE;
+	var rule = ZmFilterRule.DUMMY_RULE;
 	this._renderConditions(rule);
 	this._addDwtObjects();
 };
 
-LmFilterDetailsView.prototype._okButtonListener = function(evt) {
+ZmFilterDetailsView.prototype._okButtonListener = function(evt) {
 	// This is where we have to save the information
 	// generate the soap call here for the save. If it fails, I think we have
 	// to popup another dialog in front of this one. Ugly.
@@ -865,8 +865,8 @@ LmFilterDetailsView.prototype._okButtonListener = function(evt) {
 	var andOrOpVal = this._dwtObjects[0].obj.getValue();
 	var ruleObj = this._rule;
 	this._editMode = true;
-	if (this._rule == LmFilterRule.DUMMY_RULE){
-		ruleObj = new LmFilterRule(ruleName);
+	if (this._rule == ZmFilterRule.DUMMY_RULE){
+		ruleObj = new ZmFilterRule(ruleName);
 		ruleObj.setGroupOp(andOrOpVal);
 		this._editMode = false;
 	} else {
@@ -888,18 +888,18 @@ LmFilterDetailsView.prototype._okButtonListener = function(evt) {
 		sel = 
 			DwtSelect.getObjectFromElement(rows[i].cells[0].firstChild);
 		conditionName = sel.getValue();
-		configCond = LmFilterRules.CONDITIONS[conditionName];
+		configCond = ZmFilterRules.CONDITIONS[conditionName];
 		var cellEl = rows[i].cells[1].firstChild;
 		switch (configCond.cell1){
-		case LmFilterRules.TYPE_INPUT:
+		case ZmFilterRules.TYPE_INPUT:
 			lhs = cellEl.value;
 			break;
-		case LmFilterRules.TYPE_SELECT:
+		case ZmFilterRules.TYPE_SELECT:
 			var selObj = 
 				DwtSelect.getObjectFromElement(cellEl);
 			lhs = selObj.getValue();
 			break;
-		case LmFilterRules.TYPE_EMPTY:
+		case ZmFilterRules.TYPE_EMPTY:
 			if (configCond.isHeader){
 				lhs = conditionName;
 				conditionName = "header";
@@ -917,15 +917,15 @@ LmFilterDetailsView.prototype._okButtonListener = function(evt) {
 		opValue = opSel.getValue();
 		cellEl = rows[i].cells[3].firstChild;
 		switch (configCond.cell3) {
-		case LmFilterRules.TYPE_INPUT:
+		case ZmFilterRules.TYPE_INPUT:
 			rhs = cellEl.value;
 			break;
-		case LmFilterRules.TYPE_SELECT:
+		case ZmFilterRules.TYPE_SELECT:
 			var selObj = 
 				DwtSelect.getObjectFromElement(cellEl);
 			rhs = selObj.getValue();			
 			break;
-		case LmFilterRules.TYPE_BUTTON:
+		case ZmFilterRules.TYPE_BUTTON:
 			var b = Dwt.getObjectFromElement(cellEl);
 			rhs = b._detailsViewValue;
 			break;
@@ -935,7 +935,7 @@ LmFilterDetailsView.prototype._okButtonListener = function(evt) {
 
 		}
 
-		if (configCond.cell4 == LmFilterRules.TYPE_SELECT){
+		if (configCond.cell4 == ZmFilterRules.TYPE_SELECT){
 			var cellSel = 
 				DwtSelect.getObjectFromElement(rows[i].cells[4].firstChild);
 			rhs += cellSel.getValue();;
@@ -959,15 +959,15 @@ LmFilterDetailsView.prototype._okButtonListener = function(evt) {
 		sel = 
 			DwtSelect.getObjectFromElement(rows[i].cells[0].firstChild);
 		name = sel.getValue();
-		action = LmFilterRules.ACTIONS[name];
+		action = ZmFilterRules.ACTIONS[name];
 		var cell = rows[i].cells[1].firstChild.rows[0].cells[0];
 		switch (action.param) {
 			
-		case LmFilterRules.TYPE_INPUT:
+		case ZmFilterRules.TYPE_INPUT:
 			input = cell.firstChild;
 			actionValue = input.value;
 			break;
-		case LmFilterRules.TYPE_SELECT:
+		case ZmFilterRules.TYPE_SELECT:
 			sel = DwtSelect.getObjectFromElement(cell.firstChild);
 			actionValue = sel.getValue();
 			break;
@@ -992,17 +992,17 @@ LmFilterDetailsView.prototype._okButtonListener = function(evt) {
 	}
 };
 
-LmFilterDetailsView.prototype._msgDialogYesCallback = function (args){
+ZmFilterDetailsView.prototype._msgDialogYesCallback = function (args){
 	this._msgDialog.popdown();
 	this._saveRule();
 };
 
-LmFilterDetailsView.prototype._msgDialogNoCallback = function (args){
+ZmFilterDetailsView.prototype._msgDialogNoCallback = function (args){
 	this._msgDialog.popdown();
 	// do nothing.
 };
 
-LmFilterDetailsView.prototype._saveRule = function () {
+ZmFilterDetailsView.prototype._saveRule = function () {
 	// Save the reference rule, since hide will reset state for the widget.
 	var refRule = this._referenceRule;
 	var ruleObj = this._ruleToBeSaved;
@@ -1012,40 +1012,40 @@ LmFilterDetailsView.prototype._saveRule = function () {
 
 	if (!editMode){
 		if (refRule){
-			LmFilterRules.insertRule(ruleObj, refRule);
+			ZmFilterRules.insertRule(ruleObj, refRule);
 		}else {
-			LmFilterRules.addRule(ruleObj);
+			ZmFilterRules.addRule(ruleObj);
 		}
 	} else {
-		LmFilterRules.modifyRule(ruleObj);
+		ZmFilterRules.modifyRule(ruleObj);
 	}
 };
 
-LmFilterDetailsView.prototype._isConditionComplete = function (conditionName, lhs,
+ZmFilterDetailsView.prototype._isConditionComplete = function (conditionName, lhs,
 															   op, rhs){
 
-	var configCond = LmFilterRules.CONDITIONS[conditionName];
-	if (configCond.cell1 != LmFilterRules.TYPE_EMPTY && 
+	var configCond = ZmFilterRules.CONDITIONS[conditionName];
+	if (configCond.cell1 != ZmFilterRules.TYPE_EMPTY && 
 		( (!lhs) || (lhs == ""))) {
 			return false;
 	}
-	if (configCond.cell3 != LmFilterRules.TYPE_EMPTY &&
+	if (configCond.cell3 != ZmFilterRules.TYPE_EMPTY &&
 		( (!rhs) || (rhs == ""))){
 		return false;
 	}
 	return true;
 };
 
-LmFilterDetailsView.prototype._isActionComplete = function (actionName, param) {
-	var configAction = LmFilterRules.ACTIONS[actionName];
-	if (configAction.param != LmFilterRules.TYPE_EMPTY &&
+ZmFilterDetailsView.prototype._isActionComplete = function (actionName, param) {
+	var configAction = ZmFilterRules.ACTIONS[actionName];
+	if (configAction.param != ZmFilterRules.TYPE_EMPTY &&
 		( (!param) || (param == ""))) {
 			return false;
 	}
 	return true;
 };
 
-LmFilterDetailsView.prototype._cancelButtonListener = function(evt) {
+ZmFilterDetailsView.prototype._cancelButtonListener = function(evt) {
 	var cancelButton = evt.item;
 	cancelButton.setActivated(false);
 	this.hide();
@@ -1055,7 +1055,7 @@ LmFilterDetailsView.prototype._cancelButtonListener = function(evt) {
 // private reset methods
 // ----------------------------------------------------------------------
 
-LmFilterDetailsView.prototype._resetTables = function() {
+ZmFilterDetailsView.prototype._resetTables = function() {
 	var doc = this.getDocument();
 	var conditionTable = Dwt.getDomObj(doc, this._conditionTableId);
 	var tbody = conditionTable.tBodies[0];
@@ -1080,12 +1080,12 @@ LmFilterDetailsView.prototype._resetTables = function() {
  * compose the allowed comparators depending on the newly chosen condition
  * type.
  */
-LmFilterDetailsView.prototype._conditionSelListener = function(ev) {
+ZmFilterDetailsView.prototype._conditionSelListener = function(ev) {
 	var condFound = ev._args.newValue;
-	var configCond = LmFilterRules.CONDITIONS[condFound];
+	var configCond = ZmFilterRules.CONDITIONS[condFound];
 	var selectObj = ev._args.selectObj;
 	var sel = selectObj.getHtmlElement();
-	var rowEl = LmFilterDetailsView._getAncestor(sel, "TR");
+	var rowEl = ZmFilterDetailsView._getAncestor(sel, "TR");
 
 	var parentCell = sel.parentNode;
 	var lhsCell = sel.parentNode.nextSibling;
@@ -1099,7 +1099,7 @@ LmFilterDetailsView.prototype._conditionSelListener = function(ev) {
 	newCell1.innerHTML = htmlObj.html.replace(/<\?td[^>]*>?/g,"");
 	newCell1.id = htmlObj.id;
 	newCell1.style.visibility = 
-	  (configCond.cell1 != LmFilterRules.TYPE_EMPTY) ? "visible" : "hidden";
+	  (configCond.cell1 != ZmFilterRules.TYPE_EMPTY) ? "visible" : "hidden";
 	rowEl.insertBefore(newCell1, lhsCell);
 	rowEl.removeChild(lhsCell);	
 	
@@ -1116,7 +1116,7 @@ LmFilterDetailsView.prototype._conditionSelListener = function(ev) {
 	newCell3.innerHTML = htmlObj.html.replace(/<\/?td[^>]*>?/g,"");;
 	newCell3.id = htmlObj.id;
 	newCell3.style.visibility = 
-	  (configCond.cell3 != LmFilterRules.TYPE_EMPTY) ? "visible" : "hidden";
+	  (configCond.cell3 != ZmFilterRules.TYPE_EMPTY) ? "visible" : "hidden";
 	rowEl.insertBefore(newCell3, rhsCell);
 	rowEl.removeChild(rhsCell);
 	
@@ -1134,10 +1134,10 @@ LmFilterDetailsView.prototype._conditionSelListener = function(ev) {
  * When an action is selected, dynamically show/hide the param input box 
  * depending on whether the action can take a parameter.
  */
-LmFilterDetailsView.prototype._actionSelListener = function(ev) {
+ZmFilterDetailsView.prototype._actionSelListener = function(ev) {
 	var sel = ev._args.selectObj;
 	var actFound = sel.getValue();
-	var configAction = LmFilterRules.ACTIONS[actFound];
+	var configAction = ZmFilterRules.ACTIONS[actFound];
 	var selEl = sel.getHtmlElement();
 	var paramTableCell = selEl.parentNode.nextSibling;
 	var paramCell = paramTableCell.firstChild.rows[0].cells[0];
@@ -1155,43 +1155,43 @@ LmFilterDetailsView.prototype._actionSelListener = function(ev) {
 	this._addDwtObjects();
 
 	paramTableCell.style.visibility = 
-	   (configAction.param == LmFilterRules.TYPE_EMPTY)? "hidden": "visible";
+	   (configAction.param == ZmFilterRules.TYPE_EMPTY)? "hidden": "visible";
 	var button = paramTableCell.firstChild.rows[0].cells[1].firstChild;
-	if (configAction.param == LmFilterRules.TYPE_INPUT &&
+	if (configAction.param == ZmFilterRules.TYPE_INPUT &&
 		(actFound == 'fileinto') || (actFound == 'tag')){
-		var b = LsCore.objectWithId(button.dwtObj);
+		var b = AjxCore.objectWithId(button.dwtObj);
 		this._setupActionDialogButton(button, b, actFound, newCell.firstChild);
 	} else {
 		button.style.visibility = "hidden";
 	}
 };
 
-LmFilterDetailsView.prototype._setupActionDialogButton = function (el, button,
+ZmFilterDetailsView.prototype._setupActionDialogButton = function (el, button,
 																   actionName,
 																   destInput){
 	el.style.visibility = "visible";
-	var ctxt = LmFilterDetailsView.contextMap[actionName];
+	var ctxt = ZmFilterDetailsView.contextMap[actionName];
 	button.removeSelectionListeners();
-	var ls = new LsListener(this, this._showContextDialog);
+	var ls = new AjxListener(this, this._showContextDialog);
 	ls._args = [ctxt, destInput];
 	button.addSelectionListener(ls);
 };
 
-LmFilterDetailsView.prototype._showContextDialog = function(args) {
+ZmFilterDetailsView.prototype._showContextDialog = function(args) {
 	var dialog = null;
 	var callback = null;
 	var ctxt = args[0];
 	var input = args[1];
 	switch (ctxt){
-	case LmFilterDetailsView.FOLDER_CONTEXT:
+	case ZmFilterDetailsView.FOLDER_CONTEXT:
 		dialog = this._appCtxt.getMoveToDialog();
 		dialog.reset();
 		dialog.setTitle("Pick a Folder");
 		callback = this._handleFolderSelection;
 		break;
-	case LmFilterDetailsView.TAG_CONTEXT:
+	case ZmFilterDetailsView.TAG_CONTEXT:
 		var dialog = this._tagDialog = 
-			new LmPickTagDialog(this.shell,this._appCtxt.getMsgDialog());
+			new ZmPickTagDialog(this.shell,this._appCtxt.getMsgDialog());
 		callback = this._handleTagSelection;
 		break;
 	default:
@@ -1203,7 +1203,7 @@ LmFilterDetailsView.prototype._showContextDialog = function(args) {
 };
 
 
-LmFilterDetailsView.prototype._handleFolderSelection = function(args) {
+ZmFilterDetailsView.prototype._handleFolderSelection = function(args) {
 	this._appCtxt.getMoveToDialog().popdown();
 	var destInput = args[0];
 	var folder = args[1];
@@ -1211,7 +1211,7 @@ LmFilterDetailsView.prototype._handleFolderSelection = function(args) {
 	destInput.value = fullPath;
 };
 
-LmFilterDetailsView.prototype._handleTagSelection = function(args) {
+ZmFilterDetailsView.prototype._handleTagSelection = function(args) {
 	this._tagDialog.popdown();
 	var destInput = args[0];
 	var tag = args[1];
@@ -1223,7 +1223,7 @@ LmFilterDetailsView.prototype._handleTagSelection = function(args) {
  * Since we have inputs inside of a dwt widget, we have to make sure that
  * focus clicks get to them.
  */
-LmFilterDetailsView.prototype._mouseDownListener = function (ev){
+ZmFilterDetailsView.prototype._mouseDownListener = function (ev){
 	var target = ev.target;
 	if (target.tagName == "INPUT"){
 		// reset mouse event to propagate event to browser 

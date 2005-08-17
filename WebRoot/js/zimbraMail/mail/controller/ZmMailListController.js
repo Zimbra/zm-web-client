@@ -10,60 +10,60 @@
 * @param container	containing shell
 * @param mailApp	containing app
 */
-function LmMailListController(appCtxt, container, mailApp) {
+function ZmMailListController(appCtxt, container, mailApp) {
 
 	if (arguments.length == 0) return;
-	LmListController.call(this, appCtxt, container, mailApp);
+	ZmListController.call(this, appCtxt, container, mailApp);
 
-	this._listeners[LmOperation.MARK_READ] = new LsListener(this, this._markReadListener);
-	this._listeners[LmOperation.MARK_UNREAD] = new LsListener(this, this._markUnreadListener);
-	var replyLis = new LsListener(this, this._replyListener);
-	if (this._appCtxt.get(LmSetting.REPLY_MENU_ENABLED))
-		this._listeners[LmOperation.REPLY_MENU] = replyLis;
+	this._listeners[ZmOperation.MARK_READ] = new AjxListener(this, this._markReadListener);
+	this._listeners[ZmOperation.MARK_UNREAD] = new AjxListener(this, this._markUnreadListener);
+	var replyLis = new AjxListener(this, this._replyListener);
+	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED))
+		this._listeners[ZmOperation.REPLY_MENU] = replyLis;
 	else {
-		this._listeners[LmOperation.REPLY] = replyLis;
-		this._listeners[LmOperation.REPLY_ALL] = replyLis;
+		this._listeners[ZmOperation.REPLY] = replyLis;
+		this._listeners[ZmOperation.REPLY_ALL] = replyLis;
 	}
-	this._listeners[LmOperation.FORWARD] = new LsListener(this, this._forwardListener);
+	this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
 	
-	if (this._appCtxt.get(LmSetting.SPAM_ENABLED))
-		this._listeners[LmOperation.SPAM] = new LsListener(this, this._spamListener);
+	if (this._appCtxt.get(ZmSetting.SPAM_ENABLED))
+		this._listeners[ZmOperation.SPAM] = new AjxListener(this, this._spamListener);
 
-	this._inviteReplyListener = new LsListener(this, this._inviteReplyHandler);
+	this._inviteReplyListener = new AjxListener(this, this._inviteReplyHandler);
 }
 
-LmMailListController.prototype = new LmListController;
-LmMailListController.prototype.constructor = LmMailListController;
+ZmMailListController.prototype = new ZmListController;
+ZmMailListController.prototype.constructor = ZmMailListController;
 
 // Stuff for the View menu
-LmMailListController.ICON = new Object();
-LmMailListController.ICON[LmController.CONVLIST_VIEW]	= LmImg.I_CONV;
-LmMailListController.ICON[LmController.TRAD_VIEW]		= LmImg.I_MAIL;
+ZmMailListController.ICON = new Object();
+ZmMailListController.ICON[ZmController.CONVLIST_VIEW]	= ZmImg.I_CONV;
+ZmMailListController.ICON[ZmController.TRAD_VIEW]		= ZmImg.I_MAIL;
 
-LmMailListController.MSG_KEY = new Object();
-LmMailListController.MSG_KEY[LmController.CONVLIST_VIEW]	= "byConversation";
-LmMailListController.MSG_KEY[LmController.TRAD_VIEW]		= "byMessage";
+ZmMailListController.MSG_KEY = new Object();
+ZmMailListController.MSG_KEY[ZmController.CONVLIST_VIEW]	= "byConversation";
+ZmMailListController.MSG_KEY[ZmController.TRAD_VIEW]		= "byMessage";
 
-LmMailListController.GROUP_BY_VIEWS = [LmController.CONVLIST_VIEW, LmController.TRAD_VIEW];
+ZmMailListController.GROUP_BY_VIEWS = [ZmController.CONVLIST_VIEW, ZmController.TRAD_VIEW];
 
 // Public methods
 
-LmMailListController.prototype.toString = 
+ZmMailListController.prototype.toString = 
 function() {
-	return "LmMailListController";
+	return "ZmMailListController";
 }
 
-LmMailListController.prototype.getSearchString = 
+ZmMailListController.prototype.getSearchString = 
 function() {
 	return this._searchString;
 }
 
 // Private and protected methods
 
-LmMailListController.prototype._setupViewMenu = function(view) {}
+ZmMailListController.prototype._setupViewMenu = function(view) {}
 
 // Creates a participant menu in addition to standard initialization.
-LmMailListController.prototype._initialize =
+ZmMailListController.prototype._initialize =
 function(view) {
 
 	// save info. returned by search result
@@ -77,13 +77,13 @@ function(view) {
 	}
 
 	// call base class
-	LmListController.prototype._initialize.call(this, view);
+	ZmListController.prototype._initialize.call(this, view);
 	
 	if (!this._participantActionMenu) {
 		var menuItems = this._contactOps();
-		menuItems.push(LmOperation.SEP);
+		menuItems.push(ZmOperation.SEP);
 		menuItems = menuItems.concat(this._getActionMenuOps());
-    	this._participantActionMenu = new LmActionMenu(this._shell, menuItems);
+    	this._participantActionMenu = new ZmActionMenu(this._shell, menuItems);
 		for (var i = 0; i < menuItems.length; i++)
 			if (menuItems[i] > 0)
 				this._participantActionMenu.addSelectionListener(menuItems[i], this._listeners[menuItems[i]]);
@@ -92,16 +92,16 @@ function(view) {
     }
 }
 
-LmMailListController.prototype._initializeToolBar = 
+ZmMailListController.prototype._initializeToolBar = 
 function(view, arrowStyle) {
 	if (!this._toolbar[view]) {
-		LmListController.prototype._initializeToolBar.call(this, view);
+		ZmListController.prototype._initializeToolBar.call(this, view);
 		this._setupViewMenu(view);
-		this._propagateMenuListeners(this._toolbar[view], LmOperation.REPLY_MENU);
+		this._propagateMenuListeners(this._toolbar[view], ZmOperation.REPLY_MENU);
 		this._setReplyText(this._toolbar[view]);
 		this._toolbar[view].addFiller();
-		arrowStyle = arrowStyle || LmNavToolBar.SINGLE_ARROWS;
-		var tb = new LmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, arrowStyle, true);
+		arrowStyle = arrowStyle || ZmNavToolBar.SINGLE_ARROWS;
+		var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, arrowStyle, true);
 		this._setNavToolBar(tb);
 	}
 
@@ -109,41 +109,41 @@ function(view, arrowStyle) {
 	this._setupSpamButton(view);
 
 	// reset new button properties
-	this._setNewButtonProps(view, LmMsg.compose, LmImg.I_MAIL_MSG, LmImg.ID_MAIL_MSG, LmOperation.NEW_MESSAGE);
+	this._setNewButtonProps(view, LmMsg.compose, ZmImg.I_MAIL_MSG, ZmImg.ID_MAIL_MSG, ZmOperation.NEW_MESSAGE);
 }
 
-LmMailListController.prototype._initializeActionMenu = 
+ZmMailListController.prototype._initializeActionMenu = 
 function() {
 	if (this._actionMenu) return;
 	
-	LmListController.prototype._initializeActionMenu.call(this);
-	this._propagateMenuListeners(this._actionMenu, LmOperation.REPLY_MENU);
+	ZmListController.prototype._initializeActionMenu.call(this);
+	this._propagateMenuListeners(this._actionMenu, ZmOperation.REPLY_MENU);
 	this._setReplyText(this._actionMenu);
 }
 
 // Groups of mail-related operations
 
-LmMailListController.prototype._flagOps =
+ZmMailListController.prototype._flagOps =
 function() {
-	return ([LmOperation.MARK_READ, LmOperation.MARK_UNREAD]);
+	return ([ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD]);
 }
 
-LmMailListController.prototype._msgOps =
+ZmMailListController.prototype._msgOps =
 function() {
 	var list = new Array();
-	if (this._appCtxt.get(LmSetting.REPLY_MENU_ENABLED))
-		list.push(LmOperation.REPLY_MENU, LmOperation.FORWARD);
+	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED))
+		list.push(ZmOperation.REPLY_MENU, ZmOperation.FORWARD);
 	else
-		list.push(LmOperation.REPLY, LmOperation.REPLY_ALL, LmOperation.FORWARD);
+		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD);
 	return list;
 }
 
 // List listeners
 
 // Based on context, enable read/unread operation, add/edit contact.
-LmMailListController.prototype._listActionListener =
+ZmMailListController.prototype._listActionListener =
 function(ev) {
-	LmListController.prototype._listActionListener.call(this, ev);
+	ZmListController.prototype._listActionListener.call(this, ev);
 	
 	// enable/disable mark as read/unread as necessary	
 	var bHasRead = false;
@@ -155,14 +155,14 @@ function(ev) {
 			break;
 	}
 	
-	if (items.length == 1 && (ev.field == LmListView.FIELD_PREFIX[LmItem.F_PARTICIPANT] ||
-							  ev.field == LmListView.FIELD_PREFIX[LmItem.F_FROM])) {
+	if (items.length == 1 && (ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT] ||
+							  ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM])) {
 		// show participant menu
 		this._setTagMenu(this._participantActionMenu);
-		this._actionEv.address = (ev.field == LmListView.FIELD_PREFIX[LmItem.F_PARTICIPANT]) ?
-			ev.detail : ev.item.getAddress(LmEmailAddress.FROM);
-		if (this._appCtxt.get(LmSetting.CONTACTS_ENABLED)) {
-			var contacts = this._appCtxt.getApp(LmLiquidMail.CONTACTS_APP).getContactList();
+		this._actionEv.address = (ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) ?
+			ev.detail : ev.item.getAddress(ZmEmailAddress.FROM);
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+			var contacts = this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactList();
 			this._actionEv.contact = contacts.getContactByEmail(this._actionEv.address.getAddress());
 			this._setContactText(this._actionEv.contact != null);
 		}
@@ -176,7 +176,7 @@ function(ev) {
 
 // Operation listeners
 
-LmMailListController.prototype._markReadListener = 
+ZmMailListController.prototype._markReadListener = 
 function(ev) {
 	try {
 		this._list.markRead(this._listView[this._currentView].getSelection(), true);
@@ -185,7 +185,7 @@ function(ev) {
 	}
 }
 
-LmMailListController.prototype._markUnreadListener = 
+ZmMailListController.prototype._markUnreadListener = 
 function(ev) {
 	try {
 		this._list.markRead(this._listView[this._currentView].getSelection(), false);
@@ -194,21 +194,21 @@ function(ev) {
 	}
 }
 
-LmMailListController.prototype._replyListener =
+ZmMailListController.prototype._replyListener =
 function(ev) {
-	var action = ev.item.getData(LmOperation.KEY_ID);
-	if (!action || action == LmOperation.REPLY_MENU)
-		action = LmOperation.REPLY;
+	var action = ev.item.getData(ZmOperation.KEY_ID);
+	if (!action || action == ZmOperation.REPLY_MENU)
+		action = ZmOperation.REPLY;
 
 	this._doAction(ev, action);
 }
 
-LmMailListController.prototype._forwardListener =
+ZmMailListController.prototype._forwardListener =
 function(ev) {
-	this._doAction(ev, ev.item.getData(LmOperation.KEY_ID));
+	this._doAction(ev, ev.item.getData(ZmOperation.KEY_ID));
 }
 
-LmMailListController.prototype._doAction = 
+ZmMailListController.prototype._doAction = 
 function(ev, action, extraBodyText) {
 	try {	
 		// retrieve msg and make sure its loaded
@@ -219,21 +219,21 @@ function(ev, action, extraBodyText) {
 		//   then if opening draft always request html 
 		// 	 otherwise just check if user prefers html or
 		//   msg hasnt been loaded yet and user prefers format of orig. msg
-		var htmlEnabled = this._appCtxt.get(LmSetting.HTML_COMPOSE_ENABLED);
-		var prefersHtml = this._appCtxt.get(LmSetting.COMPOSE_AS_FORMAT) == LmSetting.COMPOSE_HTML;
-		var sameFormat = this._appCtxt.get(LmSetting.COMPOSE_SAME_FORMAT);
-		var getHtml = (htmlEnabled && (action == LmOperation.DRAFT || (action != LmOperation.DRAFT && (prefersHtml || (!msg.isLoaded() && sameFormat)))));
+		var htmlEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+		var prefersHtml = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML;
+		var sameFormat = this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
+		var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg.isLoaded() && sameFormat)))));
 		
-		msg.load(getHtml, action == LmOperation.DRAFT);
+		msg.load(getHtml, action == ZmOperation.DRAFT);
 
-		var inNewWindow = this._appCtxt.get(LmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
+		var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
 		this._app.getComposeController().doAction(action, inNewWindow, msg, null, null, extraBodyText);
 	} catch (ex) {
 		this._handleException(ex, this._doAction, {ev: ev, action: action, extraBodyText: extraBodyText}, false);
 	}
 }
 
-LmMailListController.prototype._inviteReplyHandler = 
+ZmMailListController.prototype._inviteReplyHandler = 
 function (ev) {
 	if (!this._inviteReplyDialog) {
 		var d = this._inviteReplyDialog = new DwtMessageDialog(this._shell, null, 
@@ -254,17 +254,17 @@ function (ev) {
 	return false;
 };
 
-LmMailListController.prototype.getReferenceView = 
+ZmMailListController.prototype.getReferenceView = 
 function() {
 	return null;
 };
 
 // If we're in the Trash folder, change the "Delete" button tooltip
-LmMailListController.prototype._setupDeleteButton =
+ZmMailListController.prototype._setupDeleteButton =
 function(view) {
-	var inTrashFolder = (this._getSearchFolderId() == LmFolder.ID_TRASH);
-	var deleteButton = this._toolbar[view].getButton(LmOperation.DELETE);
-	var deleteMenuButton = this._toolbar[view].getButton(LmOperation.DELETE_MENU);
+	var inTrashFolder = (this._getSearchFolderId() == ZmFolder.ID_TRASH);
+	var deleteButton = this._toolbar[view].getButton(ZmOperation.DELETE);
+	var deleteMenuButton = this._toolbar[view].getButton(ZmOperation.DELETE_MENU);
 	if (deleteButton)
 		deleteButton.setToolTipContent(inTrashFolder ? LmMsg.deletePermanentTooltip : LmMsg.deleteTooltip);
 	if (deleteMenuButton)
@@ -272,10 +272,10 @@ function(view) {
 };
 
 // If we're in the Spam folder, the "Spam" button becomes the "Not Spam" button
-LmMailListController.prototype._setupSpamButton = 
+ZmMailListController.prototype._setupSpamButton = 
 function(view) {
-	var inSpamFolder = (this._getSearchFolderId() == LmFolder.ID_SPAM);
-	var spamButton = this._toolbar[view].getButton(LmOperation.SPAM);
+	var inSpamFolder = (this._getSearchFolderId() == ZmFolder.ID_SPAM);
+	var spamButton = this._toolbar[view].getButton(ZmOperation.SPAM);
 	if (spamButton) {
 		spamButton.setText(inSpamFolder ? LmMsg.notJunk : LmMsg.junk);
 		spamButton.setToolTipContent(inSpamFolder ? LmMsg.notJunkTooltip : LmMsg.junkTooltip);
@@ -283,12 +283,12 @@ function(view) {
 }
 
 // this method gets overloaded if folder id is retrieved another way
-LmMailListController.prototype._getSearchFolderId = 
+ZmMailListController.prototype._getSearchFolderId = 
 function() {
 	return this._activeSearch.search ? this._activeSearch.search.folderId : null;
 }
 
-LmMailListController.prototype._inviteReplyDialogYesCallback = 
+ZmMailListController.prototype._inviteReplyDialogYesCallback = 
 function(ev) {
     this._inviteReplyDialog.popdown();
  	var action = ev._inviteReplyType;
@@ -297,30 +297,30 @@ function(ev) {
 	this._doAction(ev, action, replyBody);
 }
 
-LmMailListController.prototype._getInviteReplyBody = function (type) {
+ZmMailListController.prototype._getInviteReplyBody = function (type) {
 	var replyBody = null;
 	switch (type) {
-	case LmOperation.REPLY_ACCEPT:		replyBody = LmMsg.defaultInviteReplyAcceptMessage; break;
-	case LmOperation.REPLY_DECLINE:		replyBody = LmMsg.defaultInviteReplyDeclineMessage; break;
-	case LmOperation.REPLY_TENTATIVE: 	replyBody = LmMsg.defaultInviteReplyTentativeMessage; break;
-	case LmOperation.REPLY_NEW_TIME: 	replyBody = LmMsg.defaultInviteReplyNewTimeMessage;	break;
+	case ZmOperation.REPLY_ACCEPT:		replyBody = LmMsg.defaultInviteReplyAcceptMessage; break;
+	case ZmOperation.REPLY_DECLINE:		replyBody = LmMsg.defaultInviteReplyDeclineMessage; break;
+	case ZmOperation.REPLY_TENTATIVE: 	replyBody = LmMsg.defaultInviteReplyTentativeMessage; break;
+	case ZmOperation.REPLY_NEW_TIME: 	replyBody = LmMsg.defaultInviteReplyNewTimeMessage;	break;
 	}
 	
 	return replyBody;
 };
 
-LmMailListController.prototype._getInviteReplySubject = function (type) {
+ZmMailListController.prototype._getInviteReplySubject = function (type) {
 	var replySubject = null;
 	switch (type) {
-	case LmOperation.REPLY_ACCEPT:		replySubject = LmMsg.subjectAccept + ": "; break;
-	case LmOperation.REPLY_DECLINE:		replySubject = LmMsg.subjectDecline + ": "; break;
-	case LmOperation.REPLY_TENTATIVE:	replySubject = LmMsg.subjectTentative + ": "; break;
-	case LmOperation.REPLY_NEW_TIME:	replySubject = LmMsg.subjectNewTime + ": "; break;
+	case ZmOperation.REPLY_ACCEPT:		replySubject = LmMsg.subjectAccept + ": "; break;
+	case ZmOperation.REPLY_DECLINE:		replySubject = LmMsg.subjectDecline + ": "; break;
+	case ZmOperation.REPLY_TENTATIVE:	replySubject = LmMsg.subjectTentative + ": "; break;
+	case ZmOperation.REPLY_NEW_TIME:	replySubject = LmMsg.subjectNewTime + ": "; break;
 	}
 	return replySubject;
 };
 
-LmMailListController.prototype._inviteReplyDialogNoCallback = 
+ZmMailListController.prototype._inviteReplyDialogNoCallback = 
 function(ev) {
 	try {
 	 	var type = ev._inviteReplyType;
@@ -331,8 +331,8 @@ function(ev) {
 		// the server handles all the details for us.
 	
 		//var msg = this._getMsg();
-		var msg = new LmMailMsg(this._appCtxt);
-		var contactList = this._appCtxt.getApp(LmLiquidMail.CONTACTS_APP).getContactList();
+		var msg = new ZmMailMsg(this._appCtxt);
+		var contactList = this._appCtxt.getApp(ZmLiquidMail.CONTACTS_APP).getContactList();
 	
 		msg._origMsg = this._getMsg();
 		msg.inviteMode = type;
@@ -341,8 +341,8 @@ function(ev) {
 		msg.isInviteReply = true;
 		var replyBody = this._getInviteReplyBody(type);
 		if (replyBody != null) {
-			var top = new LmMimePart(this._appCtxt);
-			top.setContentType(LmMimeTable.TEXT_PLAIN);
+			var top = new ZmMimePart(this._appCtxt);
+			top.setContentType(ZmMimeTable.TEXT_PLAIN);
 			top.setContent(replyBody);	
 			msg.setTopPart(top);
 		}
@@ -357,33 +357,33 @@ function(ev) {
 	}
 }
 
-LmMailListController.prototype._inviteReplyDialogCancelCallback = 
+ZmMailListController.prototype._inviteReplyDialogCancelCallback = 
 function (args){
     this._inviteReplyDialog.popdown();
 }
 
-LmMailListController.prototype._spamListener = 
+ZmMailListController.prototype._spamListener = 
 function(ev) {
 	var items = this._listView[this._currentView].getSelection();
-	var markAsSpam = this._getSearchFolderId() != LmFolder.ID_SPAM;
+	var markAsSpam = this._getSearchFolderId() != ZmFolder.ID_SPAM;
 	this._schedule(this._doSpam, {items: items, markAsSpam: markAsSpam});
 }
 
 // Miscellaneous
 
 // Adds "By Conversation" and "By Message" to a view menu
-LmMailListController.prototype._setupGroupByMenuItems =
+ZmMailListController.prototype._setupGroupByMenuItems =
 function(view) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = appToolbar.getViewMenu(view);
 	if (!menu) {
-		menu = new LmPopupMenu(appToolbar.getViewButton());
+		menu = new ZmPopupMenu(appToolbar.getViewButton());
 		appToolbar.setViewMenu(view, menu);
-		for (var i = 0; i < LmMailListController.GROUP_BY_VIEWS.length; i++) {
-			var id = LmMailListController.GROUP_BY_VIEWS[i];
-			var mi = menu.createMenuItem(id, LmMailListController.ICON[id], LmMsg[LmMailListController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
-			mi.setData(LmOperation.MENUITEM_ID, id);
-			mi.addSelectionListener(this._listeners[LmOperation.VIEW]);
+		for (var i = 0; i < ZmMailListController.GROUP_BY_VIEWS.length; i++) {
+			var id = ZmMailListController.GROUP_BY_VIEWS[i];
+			var mi = menu.createMenuItem(id, ZmMailListController.ICON[id], LmMsg[ZmMailListController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
+			mi.setData(ZmOperation.MENUITEM_ID, id);
+			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 			if (id == this._defaultView())
 				mi.setChecked(true, true);
 		}
@@ -392,52 +392,52 @@ function(view) {
 }
 
 // Handle participant menu.
-LmMailListController.prototype._setContactText =
+ZmMailListController.prototype._setContactText =
 function(isContact) {
-	LmListController.prototype._setContactText.call(this, isContact);
-	var newOp = isContact ? LmOperation.EDIT_CONTACT : LmOperation.NEW_CONTACT;
+	ZmListController.prototype._setContactText.call(this, isContact);
+	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
 	var newText = isContact ? null : LmMsg.AB_ADD_CONTACT;
-	LmOperation.setOperation(this._participantActionMenu, LmOperation.CONTACT, newOp, newText);
+	ZmOperation.setOperation(this._participantActionMenu, ZmOperation.CONTACT, newOp, newText);
 }
 
-LmMailListController.prototype._setReplyText =
+ZmMailListController.prototype._setReplyText =
 function(parent) {
-	if (this._appCtxt.get(LmSetting.REPLY_MENU_ENABLED)) {
-		var op = parent.getOp(LmOperation.REPLY_MENU);
+	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
+		var op = parent.getOp(ZmOperation.REPLY_MENU);
 		if (op) {
 			var menu = op.getMenu();
-			var replyOp = menu.getOp(LmOperation.REPLY);
+			var replyOp = menu.getOp(ZmOperation.REPLY);
 			replyOp.setText(LmMsg.replySender);
 		}
 	}
 }
 
-LmMailListController.prototype._doMove = 
+ZmMailListController.prototype._doMove = 
 function(params) {
 	// check to make sure user isnt actually trying to spam/unspam
-	if (params.folder.id == LmFolder.ID_SPAM) {
+	if (params.folder.id == ZmFolder.ID_SPAM) {
 		params.markAsSpam = true;
 		this._doSpam(params);
 		return;
 	} 
 
 	// if we're already in the spam folder, and we're not moving spam to trash, unspam!
-	if (this._getSearchFolderId() == LmFolder.ID_SPAM && params.folder.id != LmFolder.ID_TRASH) {
+	if (this._getSearchFolderId() == ZmFolder.ID_SPAM && params.folder.id != ZmFolder.ID_TRASH) {
 		params.markAsSpam = false;
 		this._doSpam(params);
 	} else {
-		if (this._appCtxt.get(LmSetting.SEARCH_INCLUDES_SPAM)) {
+		if (this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM)) {
 			// TODO
 			// if searches incl. spam folder it is possible to get a listview w/ 
 			// both spam and not spam items in which case we (need to) weed them out
 		}
 
 		// otherwise just call base class
-		LmListController.prototype._doMove.call(this, params);
+		ZmListController.prototype._doMove.call(this, params);
 	}
 }
 
-LmMailListController.prototype._doSpam = 
+ZmMailListController.prototype._doSpam = 
 function(params) {
 	try {
 		var optFolderId = params.folder ? params.folder.id : null;
@@ -449,38 +449,38 @@ function(params) {
 	}
 }
 
-LmMailListController.prototype._resetOperations = 
+ZmMailListController.prototype._resetOperations = 
 function(parent, num) {
-	LmListController.prototype._resetOperations.call(this, parent, num);
+	ZmListController.prototype._resetOperations.call(this, parent, num);
 	if (parent) {
-		var isDrafts = (this._getSearchFolderId() == LmFolder.ID_DRAFTS);
-		parent.enable([LmOperation.REPLY, LmOperation.REPLY_ALL, LmOperation.FORWARD], !isDrafts && num == 1);
-		parent.enable(LmOperation.SPAM, !isDrafts && num > 0);
-		parent.enable(LmOperation.MOVE, !isDrafts && num > 0);
+		var isDrafts = (this._getSearchFolderId() == ZmFolder.ID_DRAFTS);
+		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD], !isDrafts && num == 1);
+		parent.enable(ZmOperation.SPAM, !isDrafts && num > 0);
+		parent.enable(ZmOperation.MOVE, !isDrafts && num > 0);
 	}
 }
 
-LmMailListController.prototype._resetNavToolBarButtons = 
+ZmMailListController.prototype._resetNavToolBarButtons = 
 function(view) {
-	LmListController.prototype._resetNavToolBarButtons.call(this, view);
+	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
 	this._showListRange(view);
 }
 
 // Enable mark read/unread as appropriate.
-LmMailListController.prototype._enableFlags =
+ZmMailListController.prototype._enableFlags =
 function(menu, bHasUnread, bHasRead) {
-	menu.enable([LmOperation.MARK_READ, LmOperation.MARK_UNREAD], true);
+	menu.enable([ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD], true);
 	if (!bHasUnread)
-		menu.enable(LmOperation.MARK_READ, false);
+		menu.enable(ZmOperation.MARK_READ, false);
 	if (!bHasRead)
-		menu.enable(LmOperation.MARK_UNREAD, false);
+		menu.enable(ZmOperation.MARK_UNREAD, false);
 }
 
 // This method is actually called by a pushed view's controller when a user 
 // attempts to page conversations (from CV) or messages (from MV ala TV).
 // We want the underlying view (CLV or MLV) to update itself silently as it 
 // feeds the next/prev conv/msg to its respective controller.
-LmMailListController.prototype.pageItemSilently = 
+ZmMailListController.prototype.pageItemSilently = 
 function(currentItem, bNextItem) {
 	
 	// find the current item w/in its list - optimize?
@@ -496,7 +496,7 @@ function(currentItem, bNextItem) {
 		
 	var itemIdx = bNextItem ? i+1 : i-1;
 	if (itemIdx < 0)
-		throw new DwtException("Bad index!", DwtException.INTERNAL_ERROR, "LmMailListController.pageItemSilently");
+		throw new DwtException("Bad index!", DwtException.INTERNAL_ERROR, "ZmMailListController.pageItemSilently");
 	
 	var bPageWasCached = true;
 	if (itemIdx >= list.length) {
@@ -504,7 +504,7 @@ function(currentItem, bNextItem) {
 			bPageWasCached = this._paginate(this._currentView, true, itemIdx);
 		} else {
 			// ERROR: no more conv's to retrieve!
-			throw new DwtException("Index has exceeded number of items in list!", DwtException.INTERNAL_ERROR, "LmMailListController.pageItemSilently");
+			throw new DwtException("Index has exceeded number of items in list!", DwtException.INTERNAL_ERROR, "ZmMailListController.pageItemSilently");
 		}
 	} else {
 		// this means the conv must be cached. Find out if we need to page back/forward.
@@ -523,9 +523,9 @@ function(currentItem, bNextItem) {
 }
 
 
-LmMailListController.prototype._setGroupMailBy =
+ZmMailListController.prototype._setGroupMailBy =
 function(id) {
-	this._appCtxt.set(LmSetting.GROUP_MAIL_BY, LmPref.GROUP_MAIL_BY_VALUE[id]);
+	this._appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmPref.GROUP_MAIL_BY_VALUE[id]);
 	var searchCtlr = this._appCtxt.getSearchController();
 	if (searchCtlr)
 		searchCtlr.setGroupMailBy(id);

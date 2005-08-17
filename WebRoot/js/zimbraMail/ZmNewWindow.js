@@ -1,14 +1,14 @@
 /**
-* Creates a controller to run LmNewWindow. Do not call directly, instead use the run()
+* Creates a controller to run ZmNewWindow. Do not call directly, instead use the run()
 * factory method.
 * @constructor
 * @class
 * This class is the new child window "controller" for all new windows created 
 * by the parent window's controller *i think, maybe? please?*
 */
-function LmNewWindow(appCtxt, domain) {
+function ZmNewWindow(appCtxt, domain) {
 
-	LmController.call(this, appCtxt);
+	ZmController.call(this, appCtxt);
 
 	appCtxt.setAppController(this);
 
@@ -16,31 +16,31 @@ function LmNewWindow(appCtxt, domain) {
 	this._shell = appCtxt.getShell();
 	this._apps = new Object();
 	this._activeApp = null;
-	this._models = new LsVector();
+	this._models = new AjxVector();
 	this._needOverviewLayout = false;
 	this._schedule(this.startup);
 }
 
-LmNewWindow.prototype = new LmController;
-LmNewWindow.prototype.constructor = LmNewWindow;
+ZmNewWindow.prototype = new ZmController;
+ZmNewWindow.prototype.constructor = ZmNewWindow;
 
-LmNewWindow.MAIL_APP			= "mail";
-LmNewWindow.CONTACTS_APP		= "contacts";
-LmNewWindow.CALENDAR_APP		= "cal";
-LmNewWindow.PREFERENCES_APP		= "prefs";
-LmNewWindow.MIXED_APP			= "mixed";
+ZmNewWindow.MAIL_APP			= "mail";
+ZmNewWindow.CONTACTS_APP		= "contacts";
+ZmNewWindow.CALENDAR_APP		= "cal";
+ZmNewWindow.PREFERENCES_APP		= "prefs";
+ZmNewWindow.MIXED_APP			= "mixed";
 
 // XXX: may not need this...
-LmNewWindow.APP_CLASS = new Object();
-LmNewWindow.APP_CLASS[LmNewWindow.MAIL_APP]			= LmMailApp;
-LmNewWindow.APP_CLASS[LmNewWindow.CONTACTS_APP]		= LmContactsApp;
-LmNewWindow.APP_CLASS[LmNewWindow.CALENDAR_APP]		= LmCalendarApp;
-LmNewWindow.APP_CLASS[LmNewWindow.PREFERENCES_APP]	= LmPreferencesApp;
-LmNewWindow.APP_CLASS[LmNewWindow.MIXED_APP]		= LmMixedApp;
+ZmNewWindow.APP_CLASS = new Object();
+ZmNewWindow.APP_CLASS[ZmNewWindow.MAIL_APP]			= ZmMailApp;
+ZmNewWindow.APP_CLASS[ZmNewWindow.CONTACTS_APP]		= ZmContactsApp;
+ZmNewWindow.APP_CLASS[ZmNewWindow.CALENDAR_APP]		= ZmCalendarApp;
+ZmNewWindow.APP_CLASS[ZmNewWindow.PREFERENCES_APP]	= ZmPreferencesApp;
+ZmNewWindow.APP_CLASS[ZmNewWindow.MIXED_APP]		= ZmMixedApp;
 
-LmNewWindow.prototype.toString = 
+ZmNewWindow.prototype.toString = 
 function() {
-	return "LmNewWindow";
+	return "ZmNewWindow";
 }
 
 // Public methods
@@ -51,11 +51,11 @@ function() {
 *
 * @param domain		the host that we're running on
 */
-LmNewWindow.run =
+ZmNewWindow.run =
 function(domain) {
 
 	// Create the global app context
-	var appCtxt = new LmAppCtxt();
+	var appCtxt = new ZmAppCtxt();
 	appCtxt.setIsPublicComputer(false);
 	
 	// set any global references in parent w/in child window
@@ -68,16 +68,16 @@ function(domain) {
     appCtxt.setShell(shell);
     
 	// Create upload manager (for sending attachments)
-	appCtxt.setUploadManager(new LsPost());
+	appCtxt.setUploadManager(new AjxPost());
 	
     // Go!
-    var lm = new LmNewWindow(appCtxt, domain);
+    var lm = new ZmNewWindow(appCtxt, domain);
 }
 
 /**
 * Allows this child window to inform parent its going away
 */
-LmNewWindow.unload = 
+ZmNewWindow.unload = 
 function(ev) {	
 	if (window.parentController) {
 		window.parentController.removeChildWindow(window);
@@ -85,29 +85,29 @@ function(ev) {
 }
 
 /**
-* Starts up LmNewWindow. Since it's a 
+* Starts up ZmNewWindow. Since it's a 
 * scheduled method, it receives its args bundled up in a single params arg.
 *
 * @param settings		forced values for settings (for dev client command hack)
 *
 * TODO: launch app based on prefs
 */
-LmNewWindow.prototype.startup =
+ZmNewWindow.prototype.startup =
 function(params) {
 
 	if (!this._appViewMgr)
-		this._appViewMgr = new LmAppViewMgr(this._shell, this, true, false);
+		this._appViewMgr = new ZmAppViewMgr(this._shell, this, true, false);
 
 	try {
 		// depending on the command, do the right thing
 		if (window.command == "compose" || window.command == "composeDetach") {
-			this.activateApp(LmNewWindow.MAIL_APP);
-			var cc = this._appCtxt.getApp(LmLiquidMail.MAIL_APP).getComposeController();
+			this.activateApp(ZmNewWindow.MAIL_APP);
+			var cc = this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getComposeController();
 			cc.isChildWindow = true;
 			if (window.command == "compose") {
-				this._appCtxt.getApp(LmLiquidMail.MAIL_APP).getComposeController()._setView(window.args[0], window.args[1], window.args[2], window.args[3], window.args[4]);
+				this._appCtxt.getApp(ZmLiquidMail.MAIL_APP).getComposeController()._setView(window.args[0], window.args[1], window.args[2], window.args[3], window.args[4]);
 			} else {
-				cc._setView(LmOperation.NEW_MESSAGE, window.args.msg, null, null, null, window.args.composeMode);
+				cc._setView(ZmOperation.NEW_MESSAGE, window.args.msg, null, null, null, window.args.composeMode);
 				cc._composeView.setDetach(window.args);
 			}
 		}
@@ -117,7 +117,7 @@ function(params) {
 	}
 }
 
-LmNewWindow.prototype.sendRequest = 
+ZmNewWindow.prototype.sendRequest = 
 function(soapDoc, useXml) {
 
 	// defer all server requests to the parent window
@@ -133,7 +133,7 @@ function(soapDoc, useXml) {
 *
 * @param appName	an app name
 */
-LmNewWindow.prototype.getApp =
+ZmNewWindow.prototype.getApp =
 function(appName) {
 	if (!this._apps[appName])
 		this._createApp(appName);
@@ -143,7 +143,7 @@ function(appName) {
 /**
 * Returns a handle to the app view manager.
 */
-LmNewWindow.prototype.getAppViewMgr =
+ZmNewWindow.prototype.getAppViewMgr =
 function() {
 	return this._appViewMgr;
 }
@@ -155,7 +155,7 @@ function() {
 *
 * @param appName	an app name
 */
-LmNewWindow.prototype.activateApp =
+ZmNewWindow.prototype.activateApp =
 function(appName) {
 	var bActivated = false;
     if (this._activeApp) {
@@ -185,7 +185,7 @@ function(appName) {
 *
 * @param appName	the app
 */
-LmNewWindow.prototype.setActiveApp =
+ZmNewWindow.prototype.setActiveApp =
 function(appName) {
 	this._activeApp = appName;
 }
@@ -193,9 +193,9 @@ function(appName) {
 // Private methods
 
 // Creates an app object, which doesn't necessarily do anything just yet.
-LmNewWindow.prototype._createApp =
+ZmNewWindow.prototype._createApp =
 function(appName) {
 	if (this._apps[appName]) return;
-	this._apps[appName] = new LmNewWindow.APP_CLASS[appName](this._appCtxt, this._shell, window.parentController);
+	this._apps[appName] = new ZmNewWindow.APP_CLASS[appName](this._appCtxt, this._shell, window.parentController);
 }
 

@@ -1,30 +1,30 @@
-function LmRenameFolderDialog(parent, msgDialog, className, folderTree) {
+function ZmRenameFolderDialog(parent, msgDialog, className, folderTree) {
 
-	LmDialog.call(this, parent, msgDialog, className, LmMsg.renameFolder);
+	ZmDialog.call(this, parent, msgDialog, className, LmMsg.renameFolder);
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
 	this._folderTree = folderTree;
 }
 
-LmRenameFolderDialog.prototype = new LmDialog;
-LmRenameFolderDialog.prototype.constructor = LmRenameFolderDialog;
+ZmRenameFolderDialog.prototype = new ZmDialog;
+ZmRenameFolderDialog.prototype.constructor = ZmRenameFolderDialog;
 
-LmRenameFolderDialog.prototype.toString = 
+ZmRenameFolderDialog.prototype.toString = 
 function() {
-	return "LmRenameFolderDialog";
+	return "ZmRenameFolderDialog";
 }
 
-LmRenameFolderDialog.prototype.popup =
+ZmRenameFolderDialog.prototype.popup =
 function(folder, source, loc) {
-	LmDialog.prototype.popup.call(this, loc);
-	var title = (folder.type == LmOrganizer.SEARCH) ? LmMsg.renameSearch : LmMsg.renameFolder;
-	this.setTitle(title + ': ' + folder.getName(false, LmOrganizer.MAX_DISPLAY_NAME_LENGTH));
+	ZmDialog.prototype.popup.call(this, loc);
+	var title = (folder.type == ZmOrganizer.SEARCH) ? LmMsg.renameSearch : LmMsg.renameFolder;
+	this.setTitle(title + ': ' + folder.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
 	this._nameField.value = folder.getName(false);
 	this._folder = folder;
 }
 
-LmRenameFolderDialog.prototype._contentHtml = 
+ZmRenameFolderDialog.prototype._contentHtml = 
 function() {
 	this._nameFieldId = Dwt.getNextId();
 	var html = new Array();
@@ -37,18 +37,18 @@ function() {
 	return html.join("");
 }
 
-LmRenameFolderDialog.prototype._okButtonListener =
+ZmRenameFolderDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getFolderData();
 	if (results)
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
 }
 
-LmRenameFolderDialog.prototype._getFolderData =
+ZmRenameFolderDialog.prototype._getFolderData =
 function() {
 	// check name for presence and validity
-	var name = LsStringUtil.trim(this._nameField.value);
-	var msg = LmFolder.checkName(name);
+	var name = AjxStringUtil.trim(this._nameField.value);
+	var msg = ZmFolder.checkName(name);
 
 	// make sure folder with this name doesn't already exist at this level
 	if (!msg) {
@@ -61,7 +61,7 @@ function() {
 	return (msg ? this._showError(msg) : [this._folder, name]);
 }
 
-LmRenameFolderDialog.prototype._enterListener =
+ZmRenameFolderDialog.prototype._enterListener =
 function (ev){
 	var results = this._getFolderData();
 	if (results)

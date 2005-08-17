@@ -1,19 +1,19 @@
-function LmBasicPicker(parent) {
+function ZmBasicPicker(parent) {
 
-	LmPicker.call(this, parent, LmPicker.BASIC);
+	ZmPicker.call(this, parent, ZmPicker.BASIC);
 }
 
-LmBasicPicker.prototype = new LmPicker;
-LmBasicPicker.prototype.constructor = LmBasicPicker;
+ZmBasicPicker.prototype = new ZmPicker;
+ZmBasicPicker.prototype.constructor = ZmBasicPicker;
 
-LmPicker.CTOR[LmPicker.BASIC] = LmBasicPicker;
+ZmPicker.CTOR[ZmPicker.BASIC] = ZmBasicPicker;
 
-LmBasicPicker.prototype.toString = 
+ZmBasicPicker.prototype.toString = 
 function() {
-	return "LmBasicPicker";
+	return "ZmBasicPicker";
 }
 
-LmBasicPicker.prototype._makeRow =
+ZmBasicPicker.prototype._makeRow =
 function(text, id) {
     var size = 20;
     var html = new Array(10);
@@ -27,7 +27,7 @@ function(text, id) {
 }
 
 // TODO: if we really wanted, we could add a prefs listener to update the "also search" checkboxes
-LmBasicPicker.prototype._setupPicker =
+ZmBasicPicker.prototype._setupPicker =
 function(parent) {
     var picker = new DwtComposite(parent);
 
@@ -46,15 +46,15 @@ function(parent) {
 	html[i++] = this._makeRow(LmMsg.subject, subjectId);
 	html[i++] = this._makeRow(LmMsg.content, contentId);
 	
-	if (this._appCtxt.get(LmSetting.SPAM_ENABLED)) {
+	if (this._appCtxt.get(ZmSetting.SPAM_ENABLED)) {
 		inSpamId = Dwt.getNextId();
-		checked = this._appCtxt.get(LmSetting.SEARCH_INCLUDES_SPAM) ? " checked" : "";
+		checked = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM) ? " checked" : "";
 		html[i++] = "<tr valign='middle'>";
 		html[i++] = "<td align='right'><input type='checkbox'" + checked + " id='" + inSpamId + "' /></td>";
 		html[i++] = "<td align='left' nowrap>" + LmMsg.includeJunk + "</td>";
 		html[i++] = "</tr>";
 	}
-	checked = this._appCtxt.get(LmSetting.SEARCH_INCLUDES_TRASH) ? " checked" : "";
+	checked = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH) ? " checked" : "";
 	html[i++] = "<tr valign='middle'>";
 	html[i++] = "<td align='right'><input type='checkbox'" + checked + " id='" + inTrashId + "' /></td>";
 	html[i++] = "<td align='left' nowrap>" + LmMsg.includeTrash + "</td>";
@@ -66,52 +66,52 @@ function(parent) {
 	this._to = this._setupField(toId);
 	this._subject= this._setupField(subjectId);
 	this._content = this._setupField(contentId);
-	if (this._appCtxt.get(LmSetting.SPAM_ENABLED))
+	if (this._appCtxt.get(ZmSetting.SPAM_ENABLED))
 		this._inSpam = this._setupSearch(inSpamId);
 	this._inTrash = this._setupSearch(inTrashId);
 }
 
-LmBasicPicker.prototype.setFrom =
+ZmBasicPicker.prototype.setFrom =
 function(from) {
 	this._from.value = from;
 	this._updateQuery();
 }
 
-LmBasicPicker.prototype.setTo =
+ZmBasicPicker.prototype.setTo =
 function(to) {
 	this._to.value = to;
 	this._updateQuery();
 }
 
-LmBasicPicker.prototype.setSubject =
+ZmBasicPicker.prototype.setSubject =
 function(subject) {
 	this._subject.value = subject;
 	this._updateQuery();
 }
 
-LmBasicPicker.prototype.setContent =
+ZmBasicPicker.prototype.setContent =
 function(content) {
 	this._content.value = content;
 	this._updateQuery();
 }
 
-LmBasicPicker.prototype._setupField = 
+ZmBasicPicker.prototype._setupField = 
 function(id) {
 	var f = Dwt.getDomObj(this.getDocument(), id);
-	f.onkeyup = LmBasicPicker._onChange;	
+	f.onkeyup = ZmBasicPicker._onChange;	
 	f._picker = this;
 	return f;
 }
 
-LmBasicPicker.prototype._setupSearch = 
+ZmBasicPicker.prototype._setupSearch = 
 function(id) {
 	var f = Dwt.getDomObj(this.getDocument(), id);
-	f.onchange = LmBasicPicker._onChange;
+	f.onchange = ZmBasicPicker._onChange;
 	f._picker = this;
 	return f;
 }
 
-LmBasicPicker._onChange =
+ZmBasicPicker._onChange =
 function(ev) {
 	var element = DwtUiEvent.getTarget(ev);
 	var picker = element._picker;
@@ -126,19 +126,19 @@ function(ev) {
 	}
 }
 
-LmBasicPicker.prototype._updateQuery = 
+ZmBasicPicker.prototype._updateQuery = 
 function() {
 	var query = new Array();
-	var from = LsStringUtil.trim(this._from.value, true);
+	var from = AjxStringUtil.trim(this._from.value, true);
 	if (from.length)
 		query.push("from:(" + from + ")");
-	var to = LsStringUtil.trim(this._to.value, true);
+	var to = AjxStringUtil.trim(this._to.value, true);
 	if (to.length)
 		query.push("(to:(" + to + ")" + " OR cc:(" + to + "))");
-	var subject = LsStringUtil.trim(this._subject.value, true);
+	var subject = AjxStringUtil.trim(this._subject.value, true);
 	if (subject.length)
 		query.push("subject:(" + subject + ")");
-	var content = LsStringUtil.trim(this._content.value, true);
+	var content = AjxStringUtil.trim(this._content.value, true);
 	if (content.length)
 		query.push("content:(" + content + ")");
 	var gotInput = (query.length > 0);

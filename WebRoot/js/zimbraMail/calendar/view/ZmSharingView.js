@@ -5,25 +5,25 @@ var _DUMMY_USERS_= [{value:"Jimmy", label:"Jimmy"},
 	{value:"Xochitl", label:"Xochitl"}];
 
 
-function LmSharingView (parent, className) {
-	className = className || "LmSharingView";
+function ZmSharingView (parent, className) {
+	className = className || "ZmSharingView";
 	DwtComposite.call(this,parent, className);
 	// FOR TESTING
-	this._apptXModel = new XModel(LmSharingView.xmodel);
+	this._apptXModel = new XModel(ZmSharingView.xmodel);
 	var instance = new LmShare();
 	instance.setUsers(_DUMMY_USERS_);
-	LmSharingView._userChoices.setChoices(instance.getUsers());
-	this._xform = new XForm(LmSharingView.xform, this._apptXModel, instance, this);
+	ZmSharingView._userChoices.setChoices(instance.getUsers());
+	this._xform = new XForm(ZmSharingView.xform, this._apptXModel, instance, this);
 	this._xform.setController(this);
 	this._xform.draw();
 }
 
-LmSharingView.prototype = new DwtComposite;
-LmSharingView.prototype.constructor = LmSharingView;
+ZmSharingView.prototype = new DwtComposite;
+ZmSharingView.prototype.constructor = ZmSharingView;
 
-LmSharingView._userChoices = new XFormChoices([], XFormChoices.OBJECT_LIST);
+ZmSharingView._userChoices = new XFormChoices([], XFormChoices.OBJECT_LIST);
 
-LmSharingView.prototype.addUser = function (event) {
+ZmSharingView.prototype.addUser = function (event) {
 	// Get the name from the input
 	// hmm ... how to correctly get the list of users out of the input item.
 	// add new name to the list of users
@@ -33,12 +33,12 @@ LmSharingView.prototype.addUser = function (event) {
 	instance.tempAdd = null;
 	
 	instance.addUser({label:nameToAdd, value:nameToAdd});
-	LmSharingView._userChoices.setChoices(instance.getUsers());
-	LmSharingView._userChoices.dirtyChoices();
+	ZmSharingView._userChoices.setChoices(instance.getUsers());
+	ZmSharingView._userChoices.dirtyChoices();
 	this._xform.refresh();
 };
 
-LmSharingView.prototype.removeUser = function (event) {
+ZmSharingView.prototype.removeUser = function (event) {
 	var instance = this._xform.getInstance();
 	var selectedUsers = instance.getSelectedUsers();
 	var newChoices = new Array();
@@ -60,27 +60,27 @@ LmSharingView.prototype.removeUser = function (event) {
 		}
 	}
 	instance.setUsers(newChoices);
-	LmSharingView._userChoices.setChoices(instance.getUsers());
-	LmSharingView._userChoices.dirtyChoices();
+	ZmSharingView._userChoices.setChoices(instance.getUsers());
+	ZmSharingView._userChoices.dirtyChoices();
 	this._xform.refresh();
 };
 
 
-LmSharingView._USERS_ = "users";
-LmSharingView._TEMP_ADD_ = "tempAdd";
+ZmSharingView._USERS_ = "users";
+ZmSharingView._TEMP_ADD_ = "tempAdd";
 
-LmSharingView.xform = {
+ZmSharingView.xform = {
 	numCols:4, 
 	items:[
 	{type:_OUTPUT_, colSpan:"*", width: "100%", value:"Your calendar is currently shared with:"},
-	{ref: LmSharingView._USERS_, type:_OSELECT_, colSpan:"*",height:150, multiple:true, choices:LmSharingView._userChoices},
+	{ref: ZmSharingView._USERS_, type:_OSELECT_, colSpan:"*",height:150, multiple:true, choices:ZmSharingView._userChoices},
 	
 	{type:_CELL_SPACER_},
 	{type:_CELL_SPACER_},
 	{type:_CELL_SPACER_},
 	{type:_DWT_BUTTON_, label:"Remove", onActivate:"this.getFormController().removeUser(event)"},
 
-	{ref:LmSharingView._TEMP_ADD_, type:_INPUT_, label:null, width:"100%",colSpan:3},
+	{ref:ZmSharingView._TEMP_ADD_, type:_INPUT_, label:null, width:"100%",colSpan:3},
 	{type:_DWT_BUTTON_, label:"Add", onActivate:"this.getFormController().addUser(event)"},
 
 	{type:_SEPARATOR_, height:5,colSpan:"*"},
@@ -94,17 +94,17 @@ LmSharingView.xform = {
 	]
 };
 
-LmSharingView.xmodel = {
+ZmSharingView.xmodel = {
 	items: [
-	{id:LmSharingView._USERS_, type:_UNTYPED_, getter:"getSelectedUsers", getterScope:_INSTANCE_, setter:"setSelectedUsers", setterScope:_INSTANCE_},
-	{id:LmSharingView._TEMP_ADD_, type:_STRING_}
+	{id:ZmSharingView._USERS_, type:_UNTYPED_, getter:"getSelectedUsers", getterScope:_INSTANCE_, setter:"setSelectedUsers", setterScope:_INSTANCE_},
+	{id:ZmSharingView._TEMP_ADD_, type:_STRING_}
 	]
 };
 
 function LmShare () {
-	this._users = new LsVector();
+	this._users = new AjxVector();
 	this.tempAdd = null;
-	this._selectedUsers = new LsVector();
+	this._selectedUsers = new AjxVector();
 }
 
 
@@ -113,8 +113,8 @@ LmShare.prototype.getSelectedUsers = function (userName) {
 };
 
 LmShare.prototype.setSelectedUsers = function (arr) {
-	if (LsUtil.isString(arr)) arr = arr.split(',');
-	return this._selectedUsers = LsVector.fromArray(arr);
+	if (AjxUtil.isString(arr)) arr = arr.split(',');
+	return this._selectedUsers = AjxVector.fromArray(arr);
 };
 
 /**
@@ -125,7 +125,7 @@ LmShare.prototype.getUsers = function (userName) {
 };
 
 LmShare.prototype.setUsers = function (arr) {
-	this._users = LsVector.fromArray(arr);
+	this._users = AjxVector.fromArray(arr);
 };
 
 LmShare.prototype.addUser = function (user) {

@@ -1,67 +1,67 @@
-function LmContactsBaseView(parent, className, view, headerList, dropTgt, posStyle) {
+function ZmContactsBaseView(parent, className, view, headerList, dropTgt, posStyle) {
 
 	if (arguments.length == 0) return;
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
-	LmListView.call(this, parent, className, posStyle, view, LmItem.CONTACT, headerList, dropTgt);
+	ZmListView.call(this, parent, className, posStyle, view, ZmItem.CONTACT, headerList, dropTgt);
 };
 
-LmContactsBaseView.CONTACTLIST_REPLENISH_THRESHOLD = 0;
+ZmContactsBaseView.CONTACTLIST_REPLENISH_THRESHOLD = 0;
 
-LmContactsBaseView.prototype = new LmListView;
-LmContactsBaseView.prototype.constructor = LmContactsBaseView;
+ZmContactsBaseView.prototype = new ZmListView;
+ZmContactsBaseView.prototype.constructor = ZmContactsBaseView;
 
-LmContactsBaseView.prototype.toString = 
+ZmContactsBaseView.prototype.toString = 
 function() {
-	return "LmContactsBaseView";
+	return "ZmContactsBaseView";
 };
 
-LmContactsBaseView.prototype.paginate = 
+ZmContactsBaseView.prototype.paginate = 
 function(contacts, bPageForward) {
 	var offset = this.getNewOffset(bPageForward);
 	var subVector = contacts.getSubList(offset, this.getLimit());
-	LmListView.prototype.set.call(this, subVector);
+	ZmListView.prototype.set.call(this, subVector);
 	this.setOffset(offset);
 	this.setSelection(contacts.getVector().get(offset));
 };
 
-LmContactsBaseView.prototype._setParticipantToolTip = 
+ZmContactsBaseView.prototype._setParticipantToolTip = 
 function(address) {
 	// XXX: OVERLOADED TO SUPPRESS JS ERRORS..
-	// XXX: REMOVE WHEN IMPLEMENTED - SEE BASE CLASS LmListView
+	// XXX: REMOVE WHEN IMPLEMENTED - SEE BASE CLASS ZmListView
 };
 
-LmContactsBaseView.prototype.getLimit = 
+ZmContactsBaseView.prototype.getLimit = 
 function() {
-	return this._appCtxt.get(LmSetting.CONTACTS_PER_PAGE);
+	return this._appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
 };
 
-LmContactsBaseView.prototype.getReplenishThreshold = 
+ZmContactsBaseView.prototype.getReplenishThreshold = 
 function() {
-	return LmContactsBaseView.CONTACTLIST_REPLENISH_THRESHOLD;
+	return ZmContactsBaseView.CONTACTLIST_REPLENISH_THRESHOLD;
 };
 
-LmContactsBaseView.prototype.getListView = 
+ZmContactsBaseView.prototype.getListView = 
 function() {
 	return this;
 };
 
-LmContactsBaseView.prototype.getTitle = 
+ZmContactsBaseView.prototype.getTitle = 
 function() {
 	return [LmMsg.zimbraTitle, LmMsg.contacts].join(": ");
 };
 
-LmContactsBaseView.prototype._changeListener =
+ZmContactsBaseView.prototype._changeListener =
 function(ev) {
-	LmListView.prototype._changeListener.call(this, ev);
-	if (ev.event == LmEvent.E_MODIFY) {
+	ZmListView.prototype._changeListener.call(this, ev);
+	if (ev.event == ZmEvent.E_MODIFY) {
 		this._modifyContact(ev);
-	} else if (ev.event == LmEvent.E_CREATE) {
+	} else if (ev.event == ZmEvent.E_CREATE) {
 		// XXX: this is somewhat inefficient 
 		// - needs to be rethought once SearchRequest w/ type attribute is implemented.
 		var subVector = ev.source.getSubList(this.getOffset(), this.getLimit());
-		LmListView.prototype.set.call(this, subVector);
+		ZmListView.prototype.set.call(this, subVector);
 		// only relayout if this is cards view
-		if (this instanceof LmContactCardsView)
+		if (this instanceof ZmContactCardsView)
 			this._layout();
 		// always select newly add contact if its been added to the current page of contacts
 		var newContact = ev._details.items[0];
@@ -70,15 +70,15 @@ function(ev) {
 	} 
 };
 
-LmContactsBaseView.prototype._modifyContact = 
+ZmContactsBaseView.prototype._modifyContact = 
 function(ev) {
 	// if fileAs changed, resort the internal list
 	// XXX: this is somewhat inefficient. We should just remove this contact and reinsert
 	if (ev.getDetail("fileAsChanged"))
-		this.getList().sort(LmContact.compareByFileAs);
+		this.getList().sort(ZmContact.compareByFileAs);
 };
 
-LmContactsBaseView.prototype._setNextSelection = 
+ZmContactsBaseView.prototype._setNextSelection = 
 function() {
 	// set the next appropriate selected item
 	if (this._firstSelIndex < 0)
@@ -86,12 +86,12 @@ function() {
 	
 	// get first valid item to select
 	var item = this._list.get(this._firstSelIndex);
-	if (item == null || (item && item.folderId == LmFolder.ID_TRASH)) {
+	if (item == null || (item && item.folderId == ZmFolder.ID_TRASH)) {
 		// get the first non-trash contact to select
 		item = null;
 		var list = this._list.getArray();
 		for (var i=0; i < list.length; i++) {
-			if (list[i].folderId != LmFolder.ID_TRASH) {
+			if (list[i].folderId != ZmFolder.ID_TRASH) {
 				item = list[i];
 				break;
 			}
@@ -100,7 +100,7 @@ function() {
 		// reset first sel index
 		if (item) {
 			var div = Dwt.getDomObj(this.getDocument(), this._getItemId(item));
-			this._firstSelIndex = div ? this._list.indexOf(LsCore.objectWithId(div._itemIndex)) : -1;
+			this._firstSelIndex = div ? this._list.indexOf(AjxCore.objectWithId(div._itemIndex)) : -1;
 		}
 	}
 	

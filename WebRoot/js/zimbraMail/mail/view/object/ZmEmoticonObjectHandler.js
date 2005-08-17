@@ -1,16 +1,16 @@
 // This class is currently not being used and has been removed from the build
-function LmEmoticonObjectHandler(appCtxt) {
+function ZmEmoticonObjectHandler(appCtxt) {
 
-	LmObjectHandler.call(this, appCtxt, "url", null);
+	ZmObjectHandler.call(this, appCtxt, "url", null);
 
 	this._emoticons = [
-	   { smiley: ">:)", image: LmImg.E_DEVIL, tooltip: LmMsg.devil },
-       { smiley: ":)", image: LmImg.E_HAPPY, tooltip: LmMsg.happy },
-	   { smiley: "=))", image: LmImg.E_ROTFL, tooltip: LmMsg.rotfl },
-	   { smiley: "=((", image: LmImg.E_BROKEN_HEART, tooltip: LmMsg.brokenHeart },
-	   { smiley: ":((", image: LmImg.E_CRYING, tooltip: LmMsg.crying }, 
-	   { smiley: "<:-P", image: LmImg.E_PARTY, tooltip: LmMsg.party },
-	   { smiley: ":O)", image: LmImg.E_CLOWN, tooltip: LmMsg.clown }
+	   { smiley: ">:)", image: ZmImg.E_DEVIL, tooltip: LmMsg.devil },
+       { smiley: ":)", image: ZmImg.E_HAPPY, tooltip: LmMsg.happy },
+	   { smiley: "=))", image: ZmImg.E_ROTFL, tooltip: LmMsg.rotfl },
+	   { smiley: "=((", image: ZmImg.E_BROKEN_HEART, tooltip: LmMsg.brokenHeart },
+	   { smiley: ":((", image: ZmImg.E_CRYING, tooltip: LmMsg.crying }, 
+	   { smiley: "<:-P", image: ZmImg.E_PARTY, tooltip: LmMsg.party },
+	   { smiley: ":O)", image: ZmImg.E_CLOWN, tooltip: LmMsg.clown }
    ];
 	
 	var regex = new Array(10);
@@ -25,23 +25,23 @@ function LmEmoticonObjectHandler(appCtxt) {
 		if (emot.re != null)
 			regex[idx++] = emot.re;
 		else
-			regex[idx++] = emot.smiley.replace(LmEmoticonObjectHandler.RE_ESCAPE_RE, "\\$1");
+			regex[idx++] = emot.smiley.replace(ZmEmoticonObjectHandler.RE_ESCAPE_RE, "\\$1");
 		regex[idx++] =")";		
 	}
 	this._EMOTICONS_RE = new RegExp(regex.join(""));
 }
 
-LmEmoticonObjectHandler.prototype = new LmObjectHandler;
-LmEmoticonObjectHandler.prototype.constructor = LmEmoticonObjectHandler;
+ZmEmoticonObjectHandler.prototype = new ZmObjectHandler;
+ZmEmoticonObjectHandler.prototype.constructor = ZmEmoticonObjectHandler;
 
-LmEmoticonObjectHandler.RE_ESCAPE_RE = /([\(\)\-\$])/g;
+ZmEmoticonObjectHandler.RE_ESCAPE_RE = /([\(\)\-\$])/g;
 
-LmEmoticonObjectHandler.prototype.match =
+ZmEmoticonObjectHandler.prototype.match =
 function(line) {
 	return line.match(this._EMOTICONS_RE);
 }
 
-LmEmoticonObjectHandler.prototype._getEmoticon =
+ZmEmoticonObjectHandler.prototype._getEmoticon =
 function(smiley) {
 	smiley = smiley.replace(/^\s+/, "");
 	smiley = smiley.replace(/\s+$/, "");
@@ -54,20 +54,20 @@ function(smiley) {
 	return null;
 }
 
-LmEmoticonObjectHandler.prototype._getHtmlContent =
+ZmEmoticonObjectHandler.prototype._getHtmlContent =
 function(html, idx, smiley) {
 	var sd = this._getEmoticon(smiley);
-	html[idx++] = LsImg.tag(sd.image, {alt: sd.smiley});
+	html[idx++] = AjxImg.tag(sd.image, {alt: sd.smiley});
 	return idx;
 }
 	
-LmEmoticonObjectHandler.prototype.getToolTipText =
+ZmEmoticonObjectHandler.prototype.getToolTipText =
 function(smiley) {
 	var sd = this._getEmoticon(smiley);
 	return "<b>" + sd.tooltip + "</b>";
 }
 
-LmEmoticonObjectHandler.prototype.getActionMenu =
+ZmEmoticonObjectHandler.prototype.getActionMenu =
 function(obj) {
 	return null;
 }

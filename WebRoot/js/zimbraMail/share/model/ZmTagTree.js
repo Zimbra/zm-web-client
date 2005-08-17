@@ -1,36 +1,36 @@
-function LmTagTree(appCtxt) {
+function ZmTagTree(appCtxt) {
 
-	LmTree.call(this, LmOrganizer.TAG, appCtxt);
+	ZmTree.call(this, ZmOrganizer.TAG, appCtxt);
 
-	this._evt = new LmEvent(LmEvent.S_TAG);
+	this._evt = new ZmEvent(ZmEvent.S_TAG);
 }
 
-LmTagTree.prototype = new LmTree;
-LmTagTree.prototype.constructor = LmTagTree;
+ZmTagTree.prototype = new ZmTree;
+ZmTagTree.prototype.constructor = ZmTagTree;
 
 // ordered list of colors
-LmTagTree.COLOR_LIST = [LmTag.C_CYAN, LmTag.C_BLUE, LmTag.C_PURPLE, LmTag.C_RED,
-						LmTag.C_ORANGE, LmTag.C_YELLOW, LmTag.C_GREEN];
+ZmTagTree.COLOR_LIST = [ZmTag.C_CYAN, ZmTag.C_BLUE, ZmTag.C_PURPLE, ZmTag.C_RED,
+						ZmTag.C_ORANGE, ZmTag.C_YELLOW, ZmTag.C_GREEN];
 
-LmTagTree.prototype.toString = 
+ZmTagTree.prototype.toString = 
 function() {
-	return "LmTagTree";
+	return "ZmTagTree";
 }
 
-LmTagTree.prototype.loadFromJs =
+ZmTagTree.prototype.loadFromJs =
 function(tagsObj) {
 	if (!tagsObj || !tagsObj.tag || !tagsObj.tag.length) return;
 
 	this.createRoot();
 	for (var i = 0; i < tagsObj.tag.length; i++)
-		LmTag.createFromJs(this.root, tagsObj.tag[i], this);
+		ZmTag.createFromJs(this.root, tagsObj.tag[i], this);
 	var children = this.root.children.getArray();
 	if (children.length)
-		children.sort(LmTag.sortCompare);
+		children.sort(ZmTag.sortCompare);
 }
 
-LmTagTree.prototype.createRoot =
+ZmTagTree.prototype.createRoot =
 function() {
 	if (!this.root)
-		this.root = new LmTag(LmTag.ID_ROOT, null, null, null, this);
+		this.root = new ZmTag(ZmTag.ID_ROOT, null, null, null, this);
 }

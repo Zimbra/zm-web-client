@@ -1,47 +1,47 @@
-function LmContactCardsView(parent, dropTgt, posStyle) {
+function ZmContactCardsView(parent, dropTgt, posStyle) {
 
 	posStyle = posStyle || Dwt.ABSOLUTE_STYLE;
-	LmContactsBaseView.call(this, parent, "LmContactCardsView", LmController.CONTACT_CARDS_VIEW, null, dropTgt, posStyle);
+	ZmContactsBaseView.call(this, parent, "ZmContactCardsView", ZmController.CONTACT_CARDS_VIEW, null, dropTgt, posStyle);
 };
 
-LmContactCardsView.prototype = new LmContactsBaseView;
-LmContactCardsView.prototype.constructor = LmContactCardsView;
+ZmContactCardsView.prototype = new ZmContactsBaseView;
+ZmContactCardsView.prototype.constructor = ZmContactCardsView;
 
-LmContactCardsView.prototype.toString = 
+ZmContactCardsView.prototype.toString = 
 function() {
-	return "LmContactCardsView";
+	return "ZmContactCardsView";
 };
 
-LmContactCardsView.prototype.paginate = 
+ZmContactCardsView.prototype.paginate = 
 function(contacts, bPageForward) {
-	LmContactsBaseView.prototype.paginate.call(this, contacts, bPageForward);
+	ZmContactsBaseView.prototype.paginate.call(this, contacts, bPageForward);
 	this._layout();
 };
 
-LmContactCardsView.prototype.replenish = 
+ZmContactCardsView.prototype.replenish = 
 function(list) {
-	LmContactsBaseView.prototype.replenish.call(this, list);
+	ZmContactsBaseView.prototype.replenish.call(this, list);
 	this._layout();
 };
 
 // lets just try to optimally layout all the cards by not letting base class do its thing
-LmContactCardsView.prototype.setUI =
+ZmContactCardsView.prototype.setUI =
 function(defaultColumnSort) {
 	// do nothing
 };
 
-LmContactCardsView.prototype.set = 
+ZmContactCardsView.prototype.set = 
 function(contacts) {
 	// XXX: optimize later - switch view always forces layout unnecessarily
-	LmContactsBaseView.prototype.set.call(this, contacts);
+	ZmContactsBaseView.prototype.set.call(this, contacts);
 	this._layout();
 };
 
-LmContactCardsView.prototype._createItemHtml =
+ZmContactCardsView.prototype._createItemHtml =
 function(contact, now, isDndIcon) {
 
 	// in canonical view, don't show contacts in the Trash
-	if (contact.list.isCanonical && (contact.folderId == LmFolder.ID_TRASH))
+	if (contact.list.isCanonical && (contact.folderId == ZmFolder.ID_TRASH))
 		return null;
 	
 	// create div to add
@@ -57,18 +57,18 @@ function(contact, now, isDndIcon) {
 	
 	this.associateItemWithElement(contact, div, DwtListView.TYPE_LIST_ITEM);
 
-	var style = LsEnv.isLinux ? " style='line-height:13px'" : "";
+	var style = AjxEnv.isLinux ? " style='line-height:13px'" : "";
 	var html = new Array();
 	var idx = 0;
 
 	html[idx++] = "<table border=0 width=100% cellpadding=0 cellspacing=0>";
 	html[idx++] = "<tr style='padding:0' class='contactHeader'><td valign=top class='contactHeader' style='font-size:16px'>" + contact.getFileAs() + "</td>";
 	// Tag
-	if (this._appCtxt.get(LmSetting.TAGGING_ENABLED)) {
-		var cellId = this._getFieldId(contact, LmItem.F_TAG_CELL);
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		var cellId = this._getFieldId(contact, ZmItem.F_TAG_CELL);
 		html[idx++] = "<td id='" + cellId + "'>";
-		var fieldId = this._getFieldId(contact, LmItem.F_TAG);
-		html[idx++] = LsImg.getImageHtml(contact.getTagImageInfo(), null, ["id='", fieldId, "'"].join(""));
+		var fieldId = this._getFieldId(contact, ZmItem.F_TAG);
+		html[idx++] = AjxImg.getImageHtml(contact.getTagImageInfo(), null, ["id='", fieldId, "'"].join(""));
 		html[idx++] = "</td>";
 	}
 	html[idx++] = "</tr><tr" + style + ">"
@@ -121,22 +121,22 @@ function(contact, now, isDndIcon) {
 	return div;
 };
 
-LmContactCardsView.prototype._getField = 
+ZmContactCardsView.prototype._getField = 
 function(fname, value) {
 	return "<td valign=top class='LmContactFieldValue'>" + fname + " </td><td valign=top class='LmContactField'>" + value + "</td>";
 };
 
-// override so that we don't get back LmListView._fillerString
-LmContactCardsView.prototype._getTagImgHtml =
+// override so that we don't get back ZmListView._fillerString
+ZmContactCardsView.prototype._getTagImgHtml =
 function(item, id) {
 	var idStr = id ? ["id='", id, "'"].join("") : null;
-	return LsImg.getImageHtml(item.getTagImageInfo(), null, idStr);
+	return AjxImg.getImageHtml(item.getTagImageInfo(), null, idStr);
 };
 
-LmContactCardsView.prototype._layout =
+ZmContactCardsView.prototype._layout =
 function() {
 	this.removeAll();
-	if (this._list instanceof LsVector && this._list.size()) {
+	if (this._list instanceof AjxVector && this._list.size()) {
 		var html = new Array();
 		var idx = 0;
 		var size = Dwt.getSize(this._parentEl);
@@ -167,19 +167,19 @@ function() {
 	}
 };
 
-LmContactCardsView.prototype._modifyContact =
+ZmContactCardsView.prototype._modifyContact =
 function(ev) {
 	// always call base class first to resort list if necessary
-	LmContactsBaseView.prototype._modifyContact.call(this, ev);
+	ZmContactsBaseView.prototype._modifyContact.call(this, ev);
 	// XXX: opitimize later - always re-layout no matter which field changed
 	this._parentEl.innerHTML = "";
 	this._layout();
 };
 
-LmContactCardsView.prototype._changeListener =
+ZmContactCardsView.prototype._changeListener =
 function(ev) {
 	// need custom handling for delete (can't just remove row)
-	if (ev.event == LmEvent.E_DELETE || ev.event == LmEvent.E_MOVE) {
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		var items = ev.getDetail("items");
 		for (var i = 0; i < items.length; i++)
 			this._list.remove(items[i]);
@@ -187,7 +187,7 @@ function(ev) {
 		// XXX: need to iterate for the non-trash contact in list!
 		this.setSelection(this.getList().get(0));
 	} else {
-		LmContactsBaseView.prototype._changeListener.call(this, ev);
+		ZmContactsBaseView.prototype._changeListener.call(this, ev);
 		// XXX: need to iterate for the non-trash contact in list!
 		this.setSelection(this.getList().get(0));
 	}
@@ -195,12 +195,12 @@ function(ev) {
 
 // we have to overload _tagChangeListener here since DOM hierarchy is 
 // unconventional compared w/ other list views
-LmContactCardsView.prototype._tagChangeListener =
+ZmContactCardsView.prototype._tagChangeListener =
 function(ev) {
-	if (ev.type != LmEvent.S_TAG) return;
+	if (ev.type != ZmEvent.S_TAG) return;
 
 	var fields = ev.getDetail("fields");
-	if (ev.event == LmEvent.E_MODIFY && (fields && fields[LmOrganizer.F_COLOR])) {
+	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
 		var tag = ev.source;
 		var children = this._getChildren();
 		for (var i = 0; i < children.length; i++) {
@@ -208,7 +208,7 @@ function(ev) {
 			if (item && item.tags && (item.tags.length == 1) && (item.tags[0] == tag.id))
 				this._setTagImg(item);
 		}
-	} else if (ev.event == LmEvent.E_DELETE) {
+	} else if (ev.event == ZmEvent.E_DELETE) {
 		var tag = ev.source;
 		var children = this._getChildren();
 		for (var i = 0; i < children.length; i++) {
@@ -219,12 +219,12 @@ function(ev) {
 			}
 		}
 	} else {
-		LmContactsBaseView.prototype._tagChangeListener.call(this, ev);
+		ZmContactsBaseView.prototype._tagChangeListener.call(this, ev);
 	}
 };
 
 // returns all child divs w/in each table's rows/cells
-LmContactCardsView.prototype._getChildren = 
+ZmContactCardsView.prototype._getChildren = 
 function() {
 	var children = new Array();
 	
@@ -238,10 +238,10 @@ function() {
 	return children;
 };
 
-LmContactCardsView.prototype._setDnDIconState =
+ZmContactCardsView.prototype._setDnDIconState =
 function(dropAllowed) {
-	if (this._dndImg || !LsEnv.isLinux) {
-		LmContactsBaseView.prototype._setDnDIconState.call(this, dropAllowed)
+	if (this._dndImg || !AjxEnv.isLinux) {
+		ZmContactsBaseView.prototype._setDnDIconState.call(this, dropAllowed)
 	} else {
 		// bug fix #3235 - no opacity for linux
 		this._dndIcon._origClassName = dropAllowed
@@ -250,7 +250,7 @@ function(dropAllowed) {
 	}
 };
 
-LmContactCardsView.getPrintHtml = 
+ZmContactCardsView.getPrintHtml = 
 function(list) {
 
 	var html = new Array();
@@ -263,7 +263,7 @@ function(list) {
 		var contact = list[i];
 		
 		// dont include contacts in trash folder
-		if (contact.folderId == LmFolder.ID_TRASH)
+		if (contact.folderId == ZmFolder.ID_TRASH)
 			continue;
 		
 		// add a new row every 3 columns
@@ -272,7 +272,7 @@ function(list) {
 		html[idx++] = "<td valign=top height=100%>";
 		
 		html[idx++] = "<div style='height: 100%; width: 2.2in; border: 1px solid #CCCCCC;'>";
-		html[idx++] = LmContactView.getPrintHtml(contact, true);
+		html[idx++] = ZmContactView.getPrintHtml(contact, true);
 		html[idx++] = "</div>";
 		
 		html[idx++] = "</td>";

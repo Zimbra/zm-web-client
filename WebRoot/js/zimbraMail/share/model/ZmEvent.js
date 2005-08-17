@@ -7,7 +7,7 @@
 * The event has a data type (eg conversation), an event type (eg delete), a source (the
 * data object generating the event), and a hash of arbitrary information (details).
 */
-function LmEvent(type) {
+function ZmEvent(type) {
 
 	this.type = type; //source type
 	this.event = null; //event type
@@ -16,49 +16,49 @@ function LmEvent(type) {
 }
 
 // Listener types
-LmEvent.L_MODIFY = 1;
-LmEvent.L_PICKER = 2;
+ZmEvent.L_MODIFY = 1;
+ZmEvent.L_PICKER = 2;
 
 // Source types (note: there are not separate types for list models)
 var i = 1;
-LmEvent.S_FOLDER		= i++;
-LmEvent.S_TAG			= i++;
-LmEvent.S_CONV			= i++;
-LmEvent.S_MSG			= i++;
-LmEvent.S_ATT			= i++;
-LmEvent.S_CONTACT		= i++;
-LmEvent.S_APPT			= i++;
-LmEvent.S_NOTE			= i++;
-LmEvent.S_PICKER		= i++;
-LmEvent.S_SEARCH		= i++;
-LmEvent.S_SETTING		= i++;
+ZmEvent.S_FOLDER		= i++;
+ZmEvent.S_TAG			= i++;
+ZmEvent.S_CONV			= i++;
+ZmEvent.S_MSG			= i++;
+ZmEvent.S_ATT			= i++;
+ZmEvent.S_CONTACT		= i++;
+ZmEvent.S_APPT			= i++;
+ZmEvent.S_NOTE			= i++;
+ZmEvent.S_PICKER		= i++;
+ZmEvent.S_SEARCH		= i++;
+ZmEvent.S_SETTING		= i++;
 
 //Source types for admin
-LmEvent.S_ACCOUNT		= i++;
-LmEvent.S_COS			= i++;
-LmEvent.S_DOMAIN		= i++;
-LmEvent.S_SERVER		= i++;
-LmEvent.S_GLOBALCONFIG	= i++;
-LmEvent.S_STATUS		= i++;
+ZmEvent.S_ACCOUNT		= i++;
+ZmEvent.S_COS			= i++;
+ZmEvent.S_DOMAIN		= i++;
+ZmEvent.S_SERVER		= i++;
+ZmEvent.S_GLOBALCONFIG	= i++;
+ZmEvent.S_STATUS		= i++;
 
 // Event types
 i = 1;
-LmEvent.E_CREATE		= i++;
-LmEvent.E_DELETE		= i++;
-LmEvent.E_MODIFY		= i++;
-LmEvent.E_LOAD			= i++;
-LmEvent.E_REMOVE		= i++;
-LmEvent.E_REMOVE_ALL	= i++;
-LmEvent.E_RENAME		= i++;
-LmEvent.E_MOVE			= i++;
-LmEvent.E_FLAGS			= i++;
-LmEvent.E_TAGS			= i++;
+ZmEvent.E_CREATE		= i++;
+ZmEvent.E_DELETE		= i++;
+ZmEvent.E_MODIFY		= i++;
+ZmEvent.E_LOAD			= i++;
+ZmEvent.E_REMOVE		= i++;
+ZmEvent.E_REMOVE_ALL	= i++;
+ZmEvent.E_RENAME		= i++;
+ZmEvent.E_MOVE			= i++;
+ZmEvent.E_FLAGS			= i++;
+ZmEvent.E_TAGS			= i++;
 
 // Public methods
 
-LmEvent.prototype.toString = 
+ZmEvent.prototype.toString = 
 function() {
-	return "LmEvent";
+	return "ZmEvent";
 }
 
 /**
@@ -67,7 +67,7 @@ function() {
 * @param event		event type
 * @param source		object that generated the event (typically "this")
 */
-LmEvent.prototype.set =
+ZmEvent.prototype.set =
 function(event, source) {
 	this.event = event; 
 	this.source = source; 
@@ -79,7 +79,7 @@ function(event, source) {
 * @param field		the detail's name
 * @param value		the detail's value
 */
-LmEvent.prototype.setDetail =
+ZmEvent.prototype.setDetail =
 function(field, value) {
 	this._details[field] = value;
 }
@@ -89,7 +89,7 @@ function(field, value) {
 *
 * @param field		the detail's name
 */
-LmEvent.prototype.getDetail =
+ZmEvent.prototype.getDetail =
 function(field) {
 	return this._details[field];
 }
@@ -99,7 +99,7 @@ function(field) {
 *
 * @param details	a hash representing event details
 */
-LmEvent.prototype.setDetails =
+ZmEvent.prototype.setDetails =
 function(details) {
 	this._details = details ? details : new Object();
 }
@@ -107,7 +107,7 @@ function(details) {
 /**
 * Returns the event details.
 */
-LmEvent.prototype.getDetails =
+ZmEvent.prototype.getDetails =
 function() {
 	return this._details;
 }

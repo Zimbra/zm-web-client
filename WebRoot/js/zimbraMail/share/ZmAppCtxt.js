@@ -7,14 +7,14 @@
 * stuff that is common to the app as a whole (such as tags). The methods are almost all
 * just getters and setters.
 */
-function LmAppCtxt() {
+function ZmAppCtxt() {
 }
 
-LmAppCtxt.LABEL = "appCtxt";
+ZmAppCtxt.LABEL = "appCtxt";
 
-LmAppCtxt.prototype.toString = 
+ZmAppCtxt.prototype.toString = 
 function() {
-	return "LmAppCtxt";
+	return "ZmAppCtxt";
 }
 
 /**
@@ -23,224 +23,224 @@ function() {
 * @param shell		the shell
 * @returns			the app context
 */
-LmAppCtxt.getFromShell =
+ZmAppCtxt.getFromShell =
 function(shell) {
-	return shell.getData(LmAppCtxt.LABEL);
+	return shell.getData(ZmAppCtxt.LABEL);
 }
 
-LmAppCtxt.prototype.isPublicComputer =
+ZmAppCtxt.prototype.isPublicComputer =
 function() {
 	return this._isPublicComputer;
 }
 
-LmAppCtxt.prototype.setIsPublicComputer =
+ZmAppCtxt.prototype.setIsPublicComputer =
 function(isPublicComputer) {
 	this._isPublicComputer = isPublicComputer;
 }
 
-LmAppCtxt.prototype.setAppController =
+ZmAppCtxt.prototype.setAppController =
 function(appController) {
 	this._appController = appController;
 }
 
-LmAppCtxt.prototype.getAppController =
+ZmAppCtxt.prototype.getAppController =
 function() {
 	return this._appController;
 }
 
-LmAppCtxt.prototype.getSettings =
+ZmAppCtxt.prototype.getSettings =
 function() {
 	if (!this._settings)
-		this._settings = new LmSettings(this);
+		this._settings = new ZmSettings(this);
 	return this._settings;
 }
 
 // NOTE: this is only to be used by any child windows!
-LmAppCtxt.prototype.setSettings = 
+ZmAppCtxt.prototype.setSettings = 
 function(settings) {
 	this._settings = settings;
 }
 
 // convenience method to return the value of a setting
 // key param is *optional* (used for hash table data type)
-LmAppCtxt.prototype.get =
+ZmAppCtxt.prototype.get =
 function(id, key) {
 	return this.getSettings().get(id, key);
 }
 
 // convenience method to set the value of a setting
-LmAppCtxt.prototype.set =
+ZmAppCtxt.prototype.set =
 function(id, value, key) {
 	var setting = this.getSettings().getSetting(id);
 	if (setting)
 		setting.setValue(value, key);
 }
 
-LmAppCtxt.prototype.getApp =
+ZmAppCtxt.prototype.getApp =
 function(appName) {
 	return this._appController.getApp(appName);
 }
 
-LmAppCtxt.prototype.getAppViewMgr =
+ZmAppCtxt.prototype.getAppViewMgr =
 function() {
 	return this._appController.getAppViewMgr();
 }
 
-LmAppCtxt.prototype.setClientCmdHdlr =
+ZmAppCtxt.prototype.setClientCmdHdlr =
 function(clientCmdHdlr) {
 	this._clientCmdHdlr = clientCmdHdlr;
 }
 
-LmAppCtxt.prototype.getClientCmdHdlr =
+ZmAppCtxt.prototype.getClientCmdHdlr =
 function() {
 	return this._clientCmdHdlr;
 }
 
-LmAppCtxt.prototype.getSearchController =
+ZmAppCtxt.prototype.getSearchController =
 function() {
 	return this._appController.getSearchController();
 }
 
-LmAppCtxt.prototype.getOverviewPanelController =
+ZmAppCtxt.prototype.getOverviewPanelController =
 function() {
 	return this._appController.getOverviewPanelController();
 }
 
-LmAppCtxt.prototype.getLoginDialog =
+ZmAppCtxt.prototype.getLoginDialog =
 function(isAdmin) {
 	if (!this._loginDialog)
-		this._loginDialog = new LmLoginDialog(this.getShell(), null, null, isAdmin);
+		this._loginDialog = new ZmLoginDialog(this.getShell(), null, null, isAdmin);
 	return this._loginDialog;
 }
 
-LmAppCtxt.prototype.getMsgDialog =
+ZmAppCtxt.prototype.getMsgDialog =
 function() {
 	if (!this._msgDialog)
 		this._msgDialog = new DwtMessageDialog(this.getShell());
 	return this._msgDialog;
 }
 
-LmAppCtxt.prototype.getNewTagDialog =
+ZmAppCtxt.prototype.getNewTagDialog =
 function() {
 	if (!this._newTagDialog)
-		this._newTagDialog = new LmNewTagDialog(this.getShell(), this.getMsgDialog());
+		this._newTagDialog = new ZmNewTagDialog(this.getShell(), this.getMsgDialog());
 	return this._newTagDialog;
 }
 
-LmAppCtxt.prototype.getRenameTagDialog =
+ZmAppCtxt.prototype.getRenameTagDialog =
 function() {
 	if (!this._renameTagDialog)
-		this._renameTagDialog = new LmRenameTagDialog(this.getShell(), this.getMsgDialog());
+		this._renameTagDialog = new ZmRenameTagDialog(this.getShell(), this.getMsgDialog());
 	return this._renameTagDialog;
 }
 
-LmAppCtxt.prototype.getNewFolderDialog =
+ZmAppCtxt.prototype.getNewFolderDialog =
 function() {
 	if (!this._newFolderDialog)
-		this._newFolderDialog = new LmNewFolderDialog(this.getShell(), this.getMsgDialog(), null, this.getFolderTree());
+		this._newFolderDialog = new ZmNewFolderDialog(this.getShell(), this.getMsgDialog(), null, this.getFolderTree());
 	return this._newFolderDialog;
 }
 
-LmAppCtxt.prototype.getNewSearchDialog =
+ZmAppCtxt.prototype.getNewSearchDialog =
 function() {
 	if (!this._newSearchDialog)
-		this._newSearchDialog = new LmNewSearchDialog(this.getShell(), this.getMsgDialog(), null, this.getFolderTree());
+		this._newSearchDialog = new ZmNewSearchDialog(this.getShell(), this.getMsgDialog(), null, this.getFolderTree());
 	return this._newSearchDialog;
 }
 
-LmAppCtxt.prototype.getRenameFolderDialog =
+ZmAppCtxt.prototype.getRenameFolderDialog =
 function() {
 	if (!this._renameFolderDialog)
-		this._renameFolderDialog = new LmRenameFolderDialog(this.getShell(), this.getMsgDialog(), null, this.getFolderTree());
+		this._renameFolderDialog = new ZmRenameFolderDialog(this.getShell(), this.getMsgDialog(), null, this.getFolderTree());
 	return this._renameFolderDialog;
 }
 
-LmAppCtxt.prototype.getMoveToDialog =
+ZmAppCtxt.prototype.getMoveToDialog =
 function() {
 	if (!this._moveToDialog)
-		this._moveToDialog = new LmMoveToDialog(this.getShell(), this.getMsgDialog(), null, this.getFolderTree());
+		this._moveToDialog = new ZmMoveToDialog(this.getShell(), this.getMsgDialog(), null, this.getFolderTree());
 	return this._moveToDialog;
 }
 
-LmAppCtxt.prototype.clearFolderDialogs =
+ZmAppCtxt.prototype.clearFolderDialogs =
 function() {
 	this._newFolderDialog = this._newSearchDialog = this._renameFolderDialog = this._moveToFolderDialog = null;
 }
 
-LmAppCtxt.prototype.getShell =
+ZmAppCtxt.prototype.getShell =
 function() {
 	return this._shell;
 }
 
-LmAppCtxt.prototype.setShell =
+ZmAppCtxt.prototype.setShell =
 function(shell) {
 	this._shell = shell;
-	shell.setData(LmAppCtxt.LABEL, this);
+	shell.setData(ZmAppCtxt.LABEL, this);
 }
 
-LmAppCtxt.prototype.getTagList =
+ZmAppCtxt.prototype.getTagList =
 function() {
 	return this._tagList;
 }
 
-LmAppCtxt.prototype.setTagList =
+ZmAppCtxt.prototype.setTagList =
 function(tagList) {
 	this._tagList = tagList;
 }
 
-LmAppCtxt.prototype.getFolderTree =
+ZmAppCtxt.prototype.getFolderTree =
 function() {
 	return this._folderTree;
 }
 
-LmAppCtxt.prototype.setFolderTree =
+ZmAppCtxt.prototype.setFolderTree =
 function(folderTree) {
 	this._folderTree = folderTree;
 }
 
-LmAppCtxt.prototype.getUsername = 
+ZmAppCtxt.prototype.getUsername = 
 function() { 
 	// get username from the cookie set during successful login
-	return LsCookie.getCookie(document, "ls_last_username");
+	return AjxCookie.getCookie(document, "ls_last_username");
 }
 
-LmAppCtxt.prototype.getUploadManager = 
+ZmAppCtxt.prototype.getUploadManager = 
 function() { 
 	return this._uploadManager;
 }
 
-LmAppCtxt.prototype.setUploadManager = 
+ZmAppCtxt.prototype.setUploadManager = 
 function(uploadManager) {
 	this._uploadManager = uploadManager;
 }
 
-LmAppCtxt.prototype.getCurrentSearch =
+ZmAppCtxt.prototype.getCurrentSearch =
 function() { 
 	return this._currentSearch;
 }
 
-LmAppCtxt.prototype.setCurrentSearch =
+ZmAppCtxt.prototype.setCurrentSearch =
 function(search) {
 	this._currentSearch = search;
 }
 
-LmAppCtxt.prototype.getCurrentAppToolbar =
+ZmAppCtxt.prototype.getCurrentAppToolbar =
 function() { 
 	return this._currentAppToolbar;
 }
 
-LmAppCtxt.prototype.setCurrentAppToolbar =
+ZmAppCtxt.prototype.setCurrentAppToolbar =
 function(toolbar) {
 	this._currentAppToolbar = toolbar;
 }
 
-LmAppCtxt.prototype.getCurrentView =
+ZmAppCtxt.prototype.getCurrentView =
 function() {
 	return this.getAppViewMgr().getCurrentView();
 }
 
 // XXX: this could potentially go away since we have a static class that does this
-LmAppCtxt.prototype.getNewWindow = 
+ZmAppCtxt.prototype.getNewWindow = 
 function() {
 	// XXX: the jsp url might change depending what new window is being opened (or possibly add an argument to url?)
 	var args = "height=450,width=615,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";

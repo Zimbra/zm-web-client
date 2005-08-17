@@ -11,24 +11,24 @@
 * @param hasText		true if this toolbar includes text in the middle
 */
 
-function LmNavToolBar(parent, posStyle, className, arrowStyle, hasText) {
+function ZmNavToolBar(parent, posStyle, className, arrowStyle, hasText) {
 
-	className = className || "LmNavToolBar";
-	LmButtonToolBar.call(this, parent, this._getButtons(arrowStyle, hasText), null, posStyle, className);
+	className = className || "ZmNavToolBar";
+	ZmButtonToolBar.call(this, parent, this._getButtons(arrowStyle, hasText), null, posStyle, className);
 	if (hasText)
-		this._textButton = this.getButton(LmOperation.TEXT);
+		this._textButton = this.getButton(ZmOperation.TEXT);
 };
 
-LmNavToolBar.SINGLE_ARROWS	= 1;
-LmNavToolBar.DOUBLE_ARROWS	= 2;
-LmNavToolBar.ALL_ARROWS		= 3;
+ZmNavToolBar.SINGLE_ARROWS	= 1;
+ZmNavToolBar.DOUBLE_ARROWS	= 2;
+ZmNavToolBar.ALL_ARROWS		= 3;
 
-LmNavToolBar.prototype = new LmButtonToolBar;
-LmNavToolBar.prototype.constructor = LmNavToolBar;
+ZmNavToolBar.prototype = new ZmButtonToolBar;
+ZmNavToolBar.prototype.constructor = ZmNavToolBar;
 
-LmNavToolBar.prototype.toString = 
+ZmNavToolBar.prototype.toString = 
 function() {
-	return "LmNavToolBar";
+	return "ZmNavToolBar";
 };
 
 /**
@@ -37,9 +37,9 @@ function() {
 * @param ids		a list of button IDs
 * @param enabled	whether to enable the buttons
 */
-LmNavToolBar.prototype.enable =
+ZmNavToolBar.prototype.enable =
 function(ids, enabled) {
-	LmButtonToolBar.prototype.enable.call(this, ids, enabled);
+	ZmButtonToolBar.prototype.enable.call(this, ids, enabled);
 
 	// 	also kill the tooltips if buttons are disabled
 	if (!enabled) {
@@ -52,29 +52,29 @@ function(ids, enabled) {
 	}
 };
 
-LmNavToolBar.prototype.setToolTip = 
+ZmNavToolBar.prototype.setToolTip = 
 function(buttonId, tooltip) {
 	var button = this.getButton(buttonId);
 	if (button)
 		button.setToolTipContent(tooltip);
 };
 
-LmNavToolBar.prototype.setText =
+ZmNavToolBar.prototype.setText =
 function(text) {
 	if (!this._textButton) return;
 	this._textButton.setText(text);
 };
 
-LmNavToolBar.prototype._getButtons = 
+ZmNavToolBar.prototype._getButtons = 
 function(arrowStyle, hasText) {
 	var buttons = new Array();
-	this.hasSingleArrows = (arrowStyle == LmNavToolBar.SINGLE_ARROWS || arrowStyle == LmNavToolBar.ALL_ARROWS);
-	this.hasDoubleArrows = (arrowStyle == LmNavToolBar.DOUBLE_ARROWS || arrowStyle == LmNavToolBar.ALL_ARROWS);
-	if (this.hasDoubleArrows) buttons.push(LmOperation.PAGE_DBL_BACK);
-	if (this.hasSingleArrows) buttons.push(LmOperation.PAGE_BACK);
-	if (hasText) buttons.push(LmOperation.TEXT);
-	if (this.hasSingleArrows) buttons.push(LmOperation.PAGE_FORWARD);
-	if (this.hasDoubleArrows) buttons.push(LmOperation.PAGE_DBL_FORW);
+	this.hasSingleArrows = (arrowStyle == ZmNavToolBar.SINGLE_ARROWS || arrowStyle == ZmNavToolBar.ALL_ARROWS);
+	this.hasDoubleArrows = (arrowStyle == ZmNavToolBar.DOUBLE_ARROWS || arrowStyle == ZmNavToolBar.ALL_ARROWS);
+	if (this.hasDoubleArrows) buttons.push(ZmOperation.PAGE_DBL_BACK);
+	if (this.hasSingleArrows) buttons.push(ZmOperation.PAGE_BACK);
+	if (hasText) buttons.push(ZmOperation.TEXT);
+	if (this.hasSingleArrows) buttons.push(ZmOperation.PAGE_FORWARD);
+	if (this.hasDoubleArrows) buttons.push(ZmOperation.PAGE_DBL_FORW);
 
 	return buttons;
 };

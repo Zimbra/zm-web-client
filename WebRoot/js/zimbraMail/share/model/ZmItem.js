@@ -5,7 +5,7 @@
 * An item is a piece of data that may contain user content. Most items are taggable. Currently,
 * the following things are items: conversation, message, attachment, and contact.
 * <p>
-* An item typically appears in the context of a containing LmList, so its event handling
+* An item typically appears in the context of a containing ZmList, so its event handling
 * has been pushed up there so we avoid having the same listeners on every single item. If we
 * create a context where an item stands alone outside a list context, then the item has
 * to create its own event and handle the notifications.</p>
@@ -13,12 +13,12 @@
 * @author Conrad Damon
 * @param appCtxt	the app context
 * @param type		type of object (conv, msg, etc)
-* @param list		LmList that contains this item
+* @param list		ZmList that contains this item
 */
-function LmItem(appCtxt, type, list) {
+function ZmItem(appCtxt, type, list) {
 
 	if (arguments.length == 0) return;
-	LmModel.call(this, true);
+	ZmModel.call(this, true);
 
 	this._appCtxt = appCtxt;
 	this.type = type;
@@ -27,99 +27,99 @@ function LmItem(appCtxt, type, list) {
 	this.tags = new Array();
 	this.tagHash = new Object();
 	this.folderId = 0;
-	this._evt = new LmEvent(type);
+	this._evt = new ZmEvent(type);
 }
 
-LmItem.prototype = new LmModel;
-LmItem.prototype.constructor = LmItem;
+ZmItem.prototype = new ZmModel;
+ZmItem.prototype.constructor = ZmItem;
 
 // Item types
-LmItem.CONV		= LmEvent.S_CONV;
-LmItem.MSG		= LmEvent.S_MSG;
-LmItem.ATT		= LmEvent.S_ATT;
-LmItem.CONTACT	= LmEvent.S_CONTACT;
-LmItem.APPT		= LmEvent.S_APPT;
-LmItem.NOTE		= LmEvent.S_NOTE;
-LmItem.MAX		= LmItem.NOTE;
+ZmItem.CONV		= ZmEvent.S_CONV;
+ZmItem.MSG		= ZmEvent.S_MSG;
+ZmItem.ATT		= ZmEvent.S_ATT;
+ZmItem.CONTACT	= ZmEvent.S_CONTACT;
+ZmItem.APPT		= ZmEvent.S_APPT;
+ZmItem.NOTE		= ZmEvent.S_NOTE;
+ZmItem.MAX		= ZmItem.NOTE;
 
 // Type names
-LmItem.MSG_KEY = new Object();
-LmItem.MSG_KEY = new Object();
-LmItem.MSG_KEY[LmItem.CONV]		= "conversation";
-LmItem.MSG_KEY[LmItem.MSG]		= "message";
-LmItem.MSG_KEY[LmItem.ATT]		= "attachment";
-LmItem.MSG_KEY[LmItem.CONTACT]	= "contact";
-LmItem.MSG_KEY[LmItem.APPT]		= "appointment";
-LmItem.MSG_KEY[LmItem.NOTE]		= "note";
+ZmItem.MSG_KEY = new Object();
+ZmItem.MSG_KEY = new Object();
+ZmItem.MSG_KEY[ZmItem.CONV]		= "conversation";
+ZmItem.MSG_KEY[ZmItem.MSG]		= "message";
+ZmItem.MSG_KEY[ZmItem.ATT]		= "attachment";
+ZmItem.MSG_KEY[ZmItem.CONTACT]	= "contact";
+ZmItem.MSG_KEY[ZmItem.APPT]		= "appointment";
+ZmItem.MSG_KEY[ZmItem.NOTE]		= "note";
 
 // Representative icons
-LmItem.ICON = new Object();
-LmItem.ICON[LmItem.CONV]	= LmImg.I_CONV;
-LmItem.ICON[LmItem.MSG]		= LmImg.I_MAIL;
-LmItem.ICON[LmItem.ATT]		= LmImg.I_ATTACHMENT;
-LmItem.ICON[LmItem.CONTACT]	= LmImg.I_CONTACT;
-LmItem.ICON[LmItem.APPT]	= LmImg.I_APPT;
-LmItem.ICON[LmItem.NOTE]	= LmImg.I_NOTE;
+ZmItem.ICON = new Object();
+ZmItem.ICON[ZmItem.CONV]	= ZmImg.I_CONV;
+ZmItem.ICON[ZmItem.MSG]		= ZmImg.I_MAIL;
+ZmItem.ICON[ZmItem.ATT]		= ZmImg.I_ATTACHMENT;
+ZmItem.ICON[ZmItem.CONTACT]	= ZmImg.I_CONTACT;
+ZmItem.ICON[ZmItem.APPT]	= ZmImg.I_APPT;
+ZmItem.ICON[ZmItem.NOTE]	= ZmImg.I_NOTE;
 
 // fields that can be part of a displayed item
 var i = 1;
-LmItem.F_ID				= i++;
-LmItem.F_ITEM_ROW		= i++;
-LmItem.F_ICON			= i++;
-LmItem.F_FLAG			= i++;
-LmItem.F_ATTACHMENT		= i++;
-LmItem.F_TAG			= i++;
-LmItem.F_PARTICIPANT	= i++;
-LmItem.F_FROM			= i++;
-LmItem.F_FRAGMENT		= i++;
-LmItem.F_SUBJECT		= i++;
-LmItem.F_COUNT			= i++;
-LmItem.F_DATE			= i++;
-LmItem.F_STATUS			= i++;
-LmItem.F_FOLDER			= i++;
-LmItem.F_COMPANY		= i++;
-LmItem.F_EMAIL			= i++;
-LmItem.F_PHONE_BUS		= i++;
-LmItem.F_PHONE_MOBILE 	= i++;
-LmItem.F_FREE_BUSY		= i++;
-LmItem.F_ITEM_TYPE		= i++;
-LmItem.F_TAG_CELL		= i++;
-LmItem.F_SIZE			= i++;
+ZmItem.F_ID				= i++;
+ZmItem.F_ITEM_ROW		= i++;
+ZmItem.F_ICON			= i++;
+ZmItem.F_FLAG			= i++;
+ZmItem.F_ATTACHMENT		= i++;
+ZmItem.F_TAG			= i++;
+ZmItem.F_PARTICIPANT	= i++;
+ZmItem.F_FROM			= i++;
+ZmItem.F_FRAGMENT		= i++;
+ZmItem.F_SUBJECT		= i++;
+ZmItem.F_COUNT			= i++;
+ZmItem.F_DATE			= i++;
+ZmItem.F_STATUS			= i++;
+ZmItem.F_FOLDER			= i++;
+ZmItem.F_COMPANY		= i++;
+ZmItem.F_EMAIL			= i++;
+ZmItem.F_PHONE_BUS		= i++;
+ZmItem.F_PHONE_MOBILE 	= i++;
+ZmItem.F_FREE_BUSY		= i++;
+ZmItem.F_ITEM_TYPE		= i++;
+ZmItem.F_TAG_CELL		= i++;
+ZmItem.F_SIZE			= i++;
 
 // Action requests for different items
-LmItem.SOAP_CMD = new Object();
-LmItem.SOAP_CMD[LmItem.CONV]	= "ConvAction";
-LmItem.SOAP_CMD[LmItem.MSG]		= "MsgAction";
-LmItem.SOAP_CMD[LmItem.ATT]		= "unsupported";
-LmItem.SOAP_CMD[LmItem.CONTACT]	= "ContactAction";
+ZmItem.SOAP_CMD = new Object();
+ZmItem.SOAP_CMD[ZmItem.CONV]	= "ConvAction";
+ZmItem.SOAP_CMD[ZmItem.MSG]		= "MsgAction";
+ZmItem.SOAP_CMD[ZmItem.ATT]		= "unsupported";
+ZmItem.SOAP_CMD[ZmItem.CONTACT]	= "ContactAction";
 
 // Item fields (for modify events)
-LmItem.TAGS_FIELD = 1;
+ZmItem.TAGS_FIELD = 1;
 
 // Item flags
-LmItem.FLAG_FLAGGED		= "f";
-LmItem.FLAG_ATTACH		= "a";
-LmItem.FLAG_UNREAD		= "u";
-LmItem.FLAG_REPLIED		= "r";
-LmItem.FLAG_FORWARDED	= "w";
-LmItem.FLAG_ISSENT		= "s";
-LmItem.FLAG_ISDRAFT 	= "d";
-LmItem.ALL_FLAGS = [LmItem.FLAG_FLAGGED, LmItem.FLAG_ATTACH, LmItem.FLAG_UNREAD,
-					LmItem.FLAG_REPLIED, LmItem.FLAG_FORWARDED, LmItem.FLAG_ISSENT, LmItem.FLAG_ISDRAFT];
+ZmItem.FLAG_FLAGGED		= "f";
+ZmItem.FLAG_ATTACH		= "a";
+ZmItem.FLAG_UNREAD		= "u";
+ZmItem.FLAG_REPLIED		= "r";
+ZmItem.FLAG_FORWARDED	= "w";
+ZmItem.FLAG_ISSENT		= "s";
+ZmItem.FLAG_ISDRAFT 	= "d";
+ZmItem.ALL_FLAGS = [ZmItem.FLAG_FLAGGED, ZmItem.FLAG_ATTACH, ZmItem.FLAG_UNREAD,
+					ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED, ZmItem.FLAG_ISSENT, ZmItem.FLAG_ISDRAFT];
 
 // Map flag to item property
-LmItem.FLAG_PROP = new Object();
-LmItem.FLAG_PROP[LmItem.FLAG_FLAGGED]	= "isFlagged";
-LmItem.FLAG_PROP[LmItem.FLAG_ATTACH]	= "hasAttach";
-LmItem.FLAG_PROP[LmItem.FLAG_UNREAD]	= "isUnread";
-LmItem.FLAG_PROP[LmItem.FLAG_REPLIED]	= "isReplied";
-LmItem.FLAG_PROP[LmItem.FLAG_FORWARDED]	= "isForwarded";
-LmItem.FLAG_PROP[LmItem.FLAG_ISSENT]	= "isSent";
-LmItem.FLAG_PROP[LmItem.FLAG_ISDRAFT] 	= "isDraft";
+ZmItem.FLAG_PROP = new Object();
+ZmItem.FLAG_PROP[ZmItem.FLAG_FLAGGED]	= "isFlagged";
+ZmItem.FLAG_PROP[ZmItem.FLAG_ATTACH]	= "hasAttach";
+ZmItem.FLAG_PROP[ZmItem.FLAG_UNREAD]	= "isUnread";
+ZmItem.FLAG_PROP[ZmItem.FLAG_REPLIED]	= "isReplied";
+ZmItem.FLAG_PROP[ZmItem.FLAG_FORWARDED]	= "isForwarded";
+ZmItem.FLAG_PROP[ZmItem.FLAG_ISSENT]	= "isSent";
+ZmItem.FLAG_PROP[ZmItem.FLAG_ISDRAFT] 	= "isDraft";
 
 // abstract methods
-LmItem.prototype.create = function(args) {}
-LmItem.prototype.modify = function(mods) {}
+ZmItem.prototype.create = function(args) {}
+ZmItem.prototype.modify = function(mods) {}
 
 /**
 * Adds a change listener to this item, and adds this item to the list of
@@ -127,9 +127,9 @@ LmItem.prototype.modify = function(mods) {}
 *
 * @param listener	the listener
 */
-LmItem.prototype.addChangeListener = 
+ZmItem.prototype.addChangeListener = 
 function(listener) {
-	if (LmModel.prototype.addChangeListener.call(this, listener))
+	if (ZmModel.prototype.addChangeListener.call(this, listener))
 		this._appCtxt.getAppController().addModel(this);	
 }
 
@@ -139,10 +139,10 @@ function(listener) {
 *
 * @param listener	the listener
 */
-LmItem.prototype.removeChangeListener = 
+ZmItem.prototype.removeChangeListener = 
 function(listener) {
-	if (LmModel.prototype.removeChangeListener.call(this, listener))
-		if (!this._evtMgr.isListenerRegistered(LmEvent.L_MODIFY))
+	if (ZmModel.prototype.removeChangeListener.call(this, listener))
+		if (!this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY))
 			this._appCtxt.getAppController().removeModel(this);	
 }
 
@@ -152,17 +152,17 @@ function(listener) {
 *
 * @param id		an item ID
 */
-LmItem.prototype.getById =
+ZmItem.prototype.getById =
 function(id) {
 	if (id == this.id)
 		return this;
 }
 
-LmItem.prototype.clear =
+ZmItem.prototype.clear =
 function() {
-	if (this._evtMgr.isListenerRegistered(LmEvent.L_MODIFY))
+	if (this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY))
 		this._appCtxt.getAppController().removeModel(this);
-	this._evtMgr.removeAll(LmEvent.L_MODIFY);
+	this._evtMgr.removeAll(ZmEvent.L_MODIFY);
 	if (this.tags.length) {
 		for (var i = 0; i < this.tags.length; i++)
 			this.tags[i] = null;
@@ -178,7 +178,7 @@ function() {
 *
 * @param tagId		a numeric tag ID
 */
-LmItem.prototype.hasTag =
+ZmItem.prototype.hasTag =
 function(tagId) {
 	return (this.tagHash[tagId] == true);
 }
@@ -186,17 +186,17 @@ function(tagId) {
 /**
 * Returns the ID of the appropriate tag image for this item.
 */
-LmItem.prototype.getTagImageInfo =
+ZmItem.prototype.getTagImageInfo =
 function() {
 	var tagList = this._appCtxt.getTagList();
 	var tagImageInfo;
 	if (!this.tags.length) {
-		tagImageInfo = LmImg.I_BLANK;
+		tagImageInfo = ZmImg.I_BLANK;
 	} else if (this.tags.length == 1) {
 		var color = tagList.getById(this.tags[0]).color;
-		tagImageInfo = LmTag.COLOR_MINI_ICON[color];
+		tagImageInfo = ZmTag.COLOR_MINI_ICON[color];
 	} else {
-		tagImageInfo = LmImg.I_MINI_TAG_STACK;
+		tagImageInfo = ZmImg.I_MINI_TAG_STACK;
 	}
 	return tagImageInfo;
 }
@@ -207,9 +207,9 @@ function() {
 * @param flag		the flag that changed
 * @param on			true if the flag is now set
 */
-LmItem.prototype.flagLocal =
+ZmItem.prototype.flagLocal =
 function(flag, on) {
-	this[LmItem.FLAG_PROP[flag]] = on;
+	this[ZmItem.FLAG_PROP[flag]] = on;
 }
 
 /**
@@ -218,7 +218,7 @@ function(flag, on) {
 * @param tagId		a numeric tag ID
 * @param doTag		true if tag is being added, false if it is being removed
 */
-LmItem.prototype.tagLocal =
+ZmItem.prototype.tagLocal =
 function(tagId, doTag) {
 	var bNotify = false;
 	if (doTag) {
@@ -241,7 +241,7 @@ function(tagId, doTag) {
 	return bNotify;
 }
 
-LmItem.prototype.removeAllTagsLocal =
+ZmItem.prototype.removeAllTagsLocal =
 function() {
 	this.tags = new Array();
 	for (var i in this.tagHash) {
@@ -253,14 +253,14 @@ function() {
 * Here for completeness. There isn't anything for an item to do once it's
 * been deleted.
 */
-LmItem.prototype.deleteLocal = function() {}
+ZmItem.prototype.deleteLocal = function() {}
 
 /**
 * Updates the folder for this item.
 *
 * @param folderId		the new folder ID
 */
-LmItem.prototype.moveLocal =
+ZmItem.prototype.moveLocal =
 function(folderId) {
 	this.folderId = folderId;
 }
@@ -271,7 +271,7 @@ function(folderId) {
 *
 * @param ids	IDs that got deleted
 */
-LmItem.prototype.notifyDelete =
+ZmItem.prototype.notifyDelete =
 function(ids) {
 	for (var i = 0; i < ids.length; i++) {
 		if (ids[i] == this.id) {
@@ -286,40 +286,40 @@ function(ids) {
 *
 * @param obj		item with the changed attributes/content
 */
-LmItem.prototype.notifyModify =
+ZmItem.prototype.notifyModify =
 function(obj) {
 	// empty string is meaningful here, it means no tags
 	if (obj.t != null) {
 		this._parseTags(obj.t);
-		this._notify(LmEvent.E_TAGS);
+		this._notify(ZmEvent.E_TAGS);
 	}
 	// empty string is meaningful here, it means no flags
 	if (obj.f != null) {
 		var flags = this._getFlags();
 		var origFlags = new Object();
 		for (var i = 0; i < flags.length; i++)
-			origFlags[flags[i]] = this[LmItem.FLAG_PROP[flags[i]]];
+			origFlags[flags[i]] = this[ZmItem.FLAG_PROP[flags[i]]];
 		this._parseFlags(obj.f);
 		var changedFlags = new Array();
 		for (var i = 0; i < flags.length; i++)
-			if (origFlags[flags[i]] != this[LmItem.FLAG_PROP[flags[i]]])
+			if (origFlags[flags[i]] != this[ZmItem.FLAG_PROP[flags[i]]])
 				changedFlags.push(flags[i]);
-		this._notify(LmEvent.E_FLAGS, {flags: changedFlags});
+		this._notify(ZmEvent.E_FLAGS, {flags: changedFlags});
 	}
 	if (obj.l != null) {
 		this.moveLocal(obj.l);
-		this._notify(LmEvent.E_MOVE);
+		this._notify(ZmEvent.E_MOVE);
 	}
 }
 
 // Any item can be flagged or have an attachment
-LmItem.prototype._getFlags =
+ZmItem.prototype._getFlags =
 function() {
-	return [LmItem.FLAG_FLAGGED, LmItem.FLAG_ATTACH];
+	return [ZmItem.FLAG_FLAGGED, ZmItem.FLAG_ATTACH];
 }
 
 // Takes a comma-separated list of tag IDs and applies the tags to this item.
-LmItem.prototype._parseTags =
+ZmItem.prototype._parseTags =
 function(str) {	
 	this.tags = new Array();
 	this.tagHash = new Object();
@@ -327,33 +327,33 @@ function(str) {
 		var tags = str.split(",");
 		for (var i = 0; i < tags.length; i++) {
 			var tagId = Number(tags[i]);
-			if (tagId >= LmTag.FIRST_USER_ID)
+			if (tagId >= ZmTag.FIRST_USER_ID)
 				this.tagLocal(tagId, true);
 		}
 	}
 }
 
 // Takes a string of flag chars and applies them to this item.
-LmItem.prototype._parseFlags =
+ZmItem.prototype._parseFlags =
 function(str) {
-	for (var i = 0; i < LmItem.ALL_FLAGS.length; i++) {
-		var flag = LmItem.ALL_FLAGS[i];
-		this[LmItem.FLAG_PROP[flag]] = str && (str.indexOf(flag) != -1) ? true : false;
+	for (var i = 0; i < ZmItem.ALL_FLAGS.length; i++) {
+		var flag = ZmItem.ALL_FLAGS[i];
+		this[ZmItem.FLAG_PROP[flag]] = str && (str.indexOf(flag) != -1) ? true : false;
 	}
 }
 
 // Notifies listeners on this item
-LmItem.prototype._eventNotify =
+ZmItem.prototype._eventNotify =
 function(event, details) {
-	if (this._evtMgr.isListenerRegistered(LmEvent.L_MODIFY)) {
+	if (this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
 		this._evt.set(event, this);
 		this._evt.setDetails(details);
-		this._evtMgr.notifyListeners(LmEvent.L_MODIFY, this._evt);
+		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
 	}
 }
 
 // Notifies listeners on this item's list
-LmItem.prototype._listNotify =
+ZmItem.prototype._listNotify =
 function(event, details) {
 	if (this.list) {
 		this._evt.set(event, this);
@@ -362,7 +362,7 @@ function(event, details) {
 	}
 }
 
-LmItem.prototype._notify =
+ZmItem.prototype._notify =
 function(event, details) {
 	this._eventNotify(event, details);
 	if (this.list)

@@ -1,24 +1,24 @@
-function LmAuthenticate(appCtxt) {
+function ZmAuthenticate(appCtxt) {
 	if (arguments.length == 0) return;
 	this._appCtxt = appCtxt;
 };
 
-LmAuthenticate._isAdmin = false;
+ZmAuthenticate._isAdmin = false;
 
-LmAuthenticate.setAdmin =
+ZmAuthenticate.setAdmin =
 function(isAdmin) {
-	LmAuthenticate._isAdmin = isAdmin;
+	ZmAuthenticate._isAdmin = isAdmin;
 };
 
-LmAuthenticate.prototype.toString = 
+ZmAuthenticate.prototype.toString = 
 function() {
-	return "LmAuthenticate";
+	return "ZmAuthenticate";
 };
 
-LmAuthenticate.prototype.execute =
+ZmAuthenticate.prototype.execute =
 function(uname, pword) {
-	if (!LmAuthenticate._isAdmin) {
-		var soapDoc = LsSoapDoc.create("AuthRequest", "urn:liquidAccount");
+	if (!ZmAuthenticate._isAdmin) {
+		var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:liquidAccount");
 		var header = soapDoc.createHeaderElement();
 		var context = soapDoc.set("context", null, header);
 		context.setAttribute("xmlns", "urn:liquid");
@@ -32,7 +32,7 @@ function(uname, pword) {
 		var resp = LsCsfeCommand.invoke(soapDoc, true).Body.AuthResponse;
 		this._setAuthToken(resp);
 	} else {
-		var soapDoc = LsSoapDoc.create("AuthRequest", "urn:liquidAdmin", null);
+		var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:liquidAdmin", null);
 		soapDoc.set("name", uname);
 		soapDoc.set("password", pword);
 		var resp = LsCsfeCommand.invoke(soapDoc, true).Body.AuthResponse;
@@ -40,7 +40,7 @@ function(uname, pword) {
 	}
 };
 
-LmAuthenticate.prototype._setAuthToken =
+ZmAuthenticate.prototype._setAuthToken =
 function(resp) {
 	var lifetime = !this._appCtxt.isPublicComputer() ? resp.lifetime : null;
 	// ignore sessionId so we get a <refresh> block

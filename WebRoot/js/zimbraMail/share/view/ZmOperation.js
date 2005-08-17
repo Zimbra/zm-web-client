@@ -2,289 +2,289 @@
 * @class
 * This mostly abstract class provides constants and a few utility functions for widgets that
 * provide the user with access to various operations (such as tagging, deletion, etc).
-* The two primary clients of this class are LmButtonToolBar and LmActionMenu. Clients 
+* The two primary clients of this class are ZmButtonToolBar and ZmActionMenu. Clients 
 * should support createOp() and getOp() methods. See the two aforementioned clients for
 * examples.
 */
-function LmOperation() {
+function ZmOperation() {
 }
 
 // Operations
-LmOperation.NONE 					= -2;		// no operations or menu items
-LmOperation.SEP 					= -1;		// separator
+ZmOperation.NONE 					= -2;		// no operations or menu items
+ZmOperation.SEP 					= -1;		// separator
 var i = 1;
 // !! PLEASE ADD IN ALPHA ORDER !!
-LmOperation.ADD_FILTER_RULE			= i++;
-LmOperation.ADD_SIGNATURE			= i++;
-LmOperation.ATTACHMENT				= i++;
-LmOperation.BROWSE					= i++;
-LmOperation.CALL					= i++;
-LmOperation.CANCEL					= i++;
-LmOperation.CLOSE					= i++;
-LmOperation.COLOR_MENU				= i++;
-LmOperation.COMPOSE_FORMAT 			= i++;
-LmOperation.CONTACT					= i++; 		// (placeholder) add or edit contact
-LmOperation.DAY_VIEW				= i++;
-LmOperation.DELETE					= i++;
-LmOperation.DELETE_CONV				= i++;
-LmOperation.DELETE_MENU				= i++;
-LmOperation.DETACH_COMPOSE 			= i++;
-LmOperation.DRAFT 					= i++;
-LmOperation.EDIT 					= i++;
-LmOperation.EDIT_CONTACT			= i++;
-LmOperation.EDIT_FILTER_RULE		= i++;
-LmOperation.EXPAND_ALL				= i++;
-LmOperation.FORWARD					= i++;
-LmOperation.IM						= i++;
-LmOperation.MARK_ALL_READ			= i++;
-LmOperation.MARK_READ				= i++;
-LmOperation.MARK_UNREAD				= i++;
-LmOperation.MODIFY_SEARCH			= i++;
-LmOperation.MONTH_VIEW				= i++;
-LmOperation.MOVE					= i++;
-LmOperation.MOVE_UP_FILTER_RULE		= i++;
-LmOperation.MOVE_DOWN_FILTER_RULE	= i++;
-LmOperation.NEW_APPT				= i++;
-LmOperation.NEW_CONTACT				= i++;
-LmOperation.NEW_FOLDER				= i++;
-LmOperation.NEW_MENU				= i++;
-LmOperation.NEW_MESSAGE				= i++;
-LmOperation.NEW_TAG					= i++;
-LmOperation.PAGE_BACK				= i++;
-LmOperation.PAGE_DBL_BACK 			= i++;
-LmOperation.PAGE_DBL_FORW			= i++;
-LmOperation.PAGE_FORWARD			= i++;
-LmOperation.PRINT					= i++;
-LmOperation.REMOVE_FILTER_RULE		= i++;
-LmOperation.RENAME_FOLDER			= i++;
-LmOperation.RENAME_SEARCH			= i++;
-LmOperation.RENAME_TAG				= i++;
-LmOperation.REPLY					= i++;
-LmOperation.REPLY_ACCEPT			= i++;
-LmOperation.REPLY_ALL				= i++;
-LmOperation.REPLY_DECLINE			= i++;
-LmOperation.REPLY_MENU				= i++;
-LmOperation.REPLY_NEW_TIME		    = i++;
-LmOperation.REPLY_TENTATIVE			= i++;
-LmOperation.SAVE					= i++;
-LmOperation.SAVE_DRAFT				= i++;
-LmOperation.SEARCH					= i++;
-LmOperation.SEND					= i++;
-LmOperation.SHOW_ORIG				= i++;
-LmOperation.SPAM 					= i++;
-LmOperation.TAG_MENU				= i++;
-LmOperation.TAG						= i++;
-LmOperation.TEXT 					= i++;
-LmOperation.TODAY					= i++;
-LmOperation.VIEW					= i++;
-LmOperation.WEEK_VIEW				= i++;
-LmOperation.WORK_WEEK_VIEW			= i++;
+ZmOperation.ADD_FILTER_RULE			= i++;
+ZmOperation.ADD_SIGNATURE			= i++;
+ZmOperation.ATTACHMENT				= i++;
+ZmOperation.BROWSE					= i++;
+ZmOperation.CALL					= i++;
+ZmOperation.CANCEL					= i++;
+ZmOperation.CLOSE					= i++;
+ZmOperation.COLOR_MENU				= i++;
+ZmOperation.COMPOSE_FORMAT 			= i++;
+ZmOperation.CONTACT					= i++; 		// (placeholder) add or edit contact
+ZmOperation.DAY_VIEW				= i++;
+ZmOperation.DELETE					= i++;
+ZmOperation.DELETE_CONV				= i++;
+ZmOperation.DELETE_MENU				= i++;
+ZmOperation.DETACH_COMPOSE 			= i++;
+ZmOperation.DRAFT 					= i++;
+ZmOperation.EDIT 					= i++;
+ZmOperation.EDIT_CONTACT			= i++;
+ZmOperation.EDIT_FILTER_RULE		= i++;
+ZmOperation.EXPAND_ALL				= i++;
+ZmOperation.FORWARD					= i++;
+ZmOperation.IM						= i++;
+ZmOperation.MARK_ALL_READ			= i++;
+ZmOperation.MARK_READ				= i++;
+ZmOperation.MARK_UNREAD				= i++;
+ZmOperation.MODIFY_SEARCH			= i++;
+ZmOperation.MONTH_VIEW				= i++;
+ZmOperation.MOVE					= i++;
+ZmOperation.MOVE_UP_FILTER_RULE		= i++;
+ZmOperation.MOVE_DOWN_FILTER_RULE	= i++;
+ZmOperation.NEW_APPT				= i++;
+ZmOperation.NEW_CONTACT				= i++;
+ZmOperation.NEW_FOLDER				= i++;
+ZmOperation.NEW_MENU				= i++;
+ZmOperation.NEW_MESSAGE				= i++;
+ZmOperation.NEW_TAG					= i++;
+ZmOperation.PAGE_BACK				= i++;
+ZmOperation.PAGE_DBL_BACK 			= i++;
+ZmOperation.PAGE_DBL_FORW			= i++;
+ZmOperation.PAGE_FORWARD			= i++;
+ZmOperation.PRINT					= i++;
+ZmOperation.REMOVE_FILTER_RULE		= i++;
+ZmOperation.RENAME_FOLDER			= i++;
+ZmOperation.RENAME_SEARCH			= i++;
+ZmOperation.RENAME_TAG				= i++;
+ZmOperation.REPLY					= i++;
+ZmOperation.REPLY_ACCEPT			= i++;
+ZmOperation.REPLY_ALL				= i++;
+ZmOperation.REPLY_DECLINE			= i++;
+ZmOperation.REPLY_MENU				= i++;
+ZmOperation.REPLY_NEW_TIME		    = i++;
+ZmOperation.REPLY_TENTATIVE			= i++;
+ZmOperation.SAVE					= i++;
+ZmOperation.SAVE_DRAFT				= i++;
+ZmOperation.SEARCH					= i++;
+ZmOperation.SEND					= i++;
+ZmOperation.SHOW_ORIG				= i++;
+ZmOperation.SPAM 					= i++;
+ZmOperation.TAG_MENU				= i++;
+ZmOperation.TAG						= i++;
+ZmOperation.TEXT 					= i++;
+ZmOperation.TODAY					= i++;
+ZmOperation.VIEW					= i++;
+ZmOperation.WEEK_VIEW				= i++;
+ZmOperation.WORK_WEEK_VIEW			= i++;
 
 // Labels
 // !! PLEASE ADD IN ALPHA ORDER !!
-LmOperation.MSG_KEY = new Object();
-LmOperation.MSG_KEY[LmOperation.ADD_FILTER_RULE]		= "filterAdd";
-LmOperation.MSG_KEY[LmOperation.ADD_SIGNATURE]			= "addSignature";
-LmOperation.MSG_KEY[LmOperation.ATTACHMENT]				= "addAttachment";
-LmOperation.MSG_KEY[LmOperation.BROWSE]					= "advancedSearch";
-LmOperation.MSG_KEY[LmOperation.CANCEL]					= "cancel";
-LmOperation.MSG_KEY[LmOperation.COLOR_MENU]				= "tagColor";
-LmOperation.MSG_KEY[LmOperation.COMPOSE_FORMAT] 		= "format";
-LmOperation.MSG_KEY[LmOperation.CLOSE]					= "close";
-LmOperation.MSG_KEY[LmOperation.DETACH_COMPOSE] 		= "detach";
-LmOperation.MSG_KEY[LmOperation.EDIT] 					= "edit";
-LmOperation.MSG_KEY[LmOperation.EDIT_CONTACT]			= "AB_EDIT_CONTACT";
-LmOperation.MSG_KEY[LmOperation.EXPAND_ALL]				= "expandAll";
-LmOperation.MSG_KEY[LmOperation.DAY_VIEW]				= "viewDay";
-LmOperation.MSG_KEY[LmOperation.DELETE]					= "del";
-LmOperation.MSG_KEY[LmOperation.DELETE_CONV]			= "delConv";
-//LmOperation.MSG_KEY[LmOperation.DELETE_MENU]			= "del";
-LmOperation.MSG_KEY[LmOperation.EDIT_FILTER_RULE]		= "filterEdit";
-LmOperation.MSG_KEY[LmOperation.FORWARD]				= "forward";
-LmOperation.MSG_KEY[LmOperation.IM]						= "newIM";
-LmOperation.MSG_KEY[LmOperation.MARK_ALL_READ]			= "markAllRead";
-LmOperation.MSG_KEY[LmOperation.MARK_READ]				= "markAsRead";
-LmOperation.MSG_KEY[LmOperation.MARK_UNREAD]			= "markAsUnread";
-LmOperation.MSG_KEY[LmOperation.MODIFY_SEARCH]			= "modifySearch";
-LmOperation.MSG_KEY[LmOperation.MONTH_VIEW]				= "viewMonth";
-LmOperation.MSG_KEY[LmOperation.MOVE]					= "move";
-LmOperation.MSG_KEY[LmOperation.MOVE_UP_FILTER_RULE]	= "filterMoveUp";
-LmOperation.MSG_KEY[LmOperation.MOVE_DOWN_FILTER_RULE]	= "filterMoveDown";
-LmOperation.MSG_KEY[LmOperation.NEW_APPT]				= "newAppt";
-LmOperation.MSG_KEY[LmOperation.NEW_CONTACT]			= "newContact";
-LmOperation.MSG_KEY[LmOperation.NEW_FOLDER]				= "newFolder";
-LmOperation.MSG_KEY[LmOperation.NEW_MENU]				= "_new";
-LmOperation.MSG_KEY[LmOperation.NEW_MESSAGE]			= "newEmail";
-LmOperation.MSG_KEY[LmOperation.NEW_TAG]				= "newTag";
-LmOperation.MSG_KEY[LmOperation.PRINT]					= "print";
-LmOperation.MSG_KEY[LmOperation.REMOVE_FILTER_RULE]		= "filterRemove";
-LmOperation.MSG_KEY[LmOperation.RENAME_FOLDER]			= "renameFolder";
-LmOperation.MSG_KEY[LmOperation.RENAME_SEARCH]			= "renameSearch";
-LmOperation.MSG_KEY[LmOperation.RENAME_TAG]				= "renameTag";
-LmOperation.MSG_KEY[LmOperation.REPLY]					= "reply";
-LmOperation.MSG_KEY[LmOperation.REPLY_ACCEPT]			= "replyAccept";
-LmOperation.MSG_KEY[LmOperation.REPLY_ALL]				= "replyAll";
-LmOperation.MSG_KEY[LmOperation.REPLY_MENU]				= "reply";
-LmOperation.MSG_KEY[LmOperation.REPLY_TENTATIVE]        = "replyTentative";
-LmOperation.MSG_KEY[LmOperation.REPLY_NEW_TIME]		    = "replyNewTime";
-LmOperation.MSG_KEY[LmOperation.REPLY_DECLINE]			= "replyDecline";
-LmOperation.MSG_KEY[LmOperation.SAVE]					= "save";
-LmOperation.MSG_KEY[LmOperation.SAVE_DRAFT]				= "saveDraft";
-LmOperation.MSG_KEY[LmOperation.SEARCH]					= "search";
-LmOperation.MSG_KEY[LmOperation.SEND]					= "send";
-LmOperation.MSG_KEY[LmOperation.SHOW_ORIG]				= "showOrig";
-LmOperation.MSG_KEY[LmOperation.SPAM] 					= "junk";
-LmOperation.MSG_KEY[LmOperation.TAG_MENU]				= "tag";
-LmOperation.MSG_KEY[LmOperation.TODAY]					= "today";
-LmOperation.MSG_KEY[LmOperation.VIEW]					= "view";
-LmOperation.MSG_KEY[LmOperation.WEEK_VIEW]				= "viewWeek";
-LmOperation.MSG_KEY[LmOperation.WORK_WEEK_VIEW]			= "viewWorkWeek";
+ZmOperation.MSG_KEY = new Object();
+ZmOperation.MSG_KEY[ZmOperation.ADD_FILTER_RULE]		= "filterAdd";
+ZmOperation.MSG_KEY[ZmOperation.ADD_SIGNATURE]			= "addSignature";
+ZmOperation.MSG_KEY[ZmOperation.ATTACHMENT]				= "addAttachment";
+ZmOperation.MSG_KEY[ZmOperation.BROWSE]					= "advancedSearch";
+ZmOperation.MSG_KEY[ZmOperation.CANCEL]					= "cancel";
+ZmOperation.MSG_KEY[ZmOperation.COLOR_MENU]				= "tagColor";
+ZmOperation.MSG_KEY[ZmOperation.COMPOSE_FORMAT] 		= "format";
+ZmOperation.MSG_KEY[ZmOperation.CLOSE]					= "close";
+ZmOperation.MSG_KEY[ZmOperation.DETACH_COMPOSE] 		= "detach";
+ZmOperation.MSG_KEY[ZmOperation.EDIT] 					= "edit";
+ZmOperation.MSG_KEY[ZmOperation.EDIT_CONTACT]			= "AB_EDIT_CONTACT";
+ZmOperation.MSG_KEY[ZmOperation.EXPAND_ALL]				= "expandAll";
+ZmOperation.MSG_KEY[ZmOperation.DAY_VIEW]				= "viewDay";
+ZmOperation.MSG_KEY[ZmOperation.DELETE]					= "del";
+ZmOperation.MSG_KEY[ZmOperation.DELETE_CONV]			= "delConv";
+//ZmOperation.MSG_KEY[ZmOperation.DELETE_MENU]			= "del";
+ZmOperation.MSG_KEY[ZmOperation.EDIT_FILTER_RULE]		= "filterEdit";
+ZmOperation.MSG_KEY[ZmOperation.FORWARD]				= "forward";
+ZmOperation.MSG_KEY[ZmOperation.IM]						= "newIM";
+ZmOperation.MSG_KEY[ZmOperation.MARK_ALL_READ]			= "markAllRead";
+ZmOperation.MSG_KEY[ZmOperation.MARK_READ]				= "markAsRead";
+ZmOperation.MSG_KEY[ZmOperation.MARK_UNREAD]			= "markAsUnread";
+ZmOperation.MSG_KEY[ZmOperation.MODIFY_SEARCH]			= "modifySearch";
+ZmOperation.MSG_KEY[ZmOperation.MONTH_VIEW]				= "viewMonth";
+ZmOperation.MSG_KEY[ZmOperation.MOVE]					= "move";
+ZmOperation.MSG_KEY[ZmOperation.MOVE_UP_FILTER_RULE]	= "filterMoveUp";
+ZmOperation.MSG_KEY[ZmOperation.MOVE_DOWN_FILTER_RULE]	= "filterMoveDown";
+ZmOperation.MSG_KEY[ZmOperation.NEW_APPT]				= "newAppt";
+ZmOperation.MSG_KEY[ZmOperation.NEW_CONTACT]			= "newContact";
+ZmOperation.MSG_KEY[ZmOperation.NEW_FOLDER]				= "newFolder";
+ZmOperation.MSG_KEY[ZmOperation.NEW_MENU]				= "_new";
+ZmOperation.MSG_KEY[ZmOperation.NEW_MESSAGE]			= "newEmail";
+ZmOperation.MSG_KEY[ZmOperation.NEW_TAG]				= "newTag";
+ZmOperation.MSG_KEY[ZmOperation.PRINT]					= "print";
+ZmOperation.MSG_KEY[ZmOperation.REMOVE_FILTER_RULE]		= "filterRemove";
+ZmOperation.MSG_KEY[ZmOperation.RENAME_FOLDER]			= "renameFolder";
+ZmOperation.MSG_KEY[ZmOperation.RENAME_SEARCH]			= "renameSearch";
+ZmOperation.MSG_KEY[ZmOperation.RENAME_TAG]				= "renameTag";
+ZmOperation.MSG_KEY[ZmOperation.REPLY]					= "reply";
+ZmOperation.MSG_KEY[ZmOperation.REPLY_ACCEPT]			= "replyAccept";
+ZmOperation.MSG_KEY[ZmOperation.REPLY_ALL]				= "replyAll";
+ZmOperation.MSG_KEY[ZmOperation.REPLY_MENU]				= "reply";
+ZmOperation.MSG_KEY[ZmOperation.REPLY_TENTATIVE]        = "replyTentative";
+ZmOperation.MSG_KEY[ZmOperation.REPLY_NEW_TIME]		    = "replyNewTime";
+ZmOperation.MSG_KEY[ZmOperation.REPLY_DECLINE]			= "replyDecline";
+ZmOperation.MSG_KEY[ZmOperation.SAVE]					= "save";
+ZmOperation.MSG_KEY[ZmOperation.SAVE_DRAFT]				= "saveDraft";
+ZmOperation.MSG_KEY[ZmOperation.SEARCH]					= "search";
+ZmOperation.MSG_KEY[ZmOperation.SEND]					= "send";
+ZmOperation.MSG_KEY[ZmOperation.SHOW_ORIG]				= "showOrig";
+ZmOperation.MSG_KEY[ZmOperation.SPAM] 					= "junk";
+ZmOperation.MSG_KEY[ZmOperation.TAG_MENU]				= "tag";
+ZmOperation.MSG_KEY[ZmOperation.TODAY]					= "today";
+ZmOperation.MSG_KEY[ZmOperation.VIEW]					= "view";
+ZmOperation.MSG_KEY[ZmOperation.WEEK_VIEW]				= "viewWeek";
+ZmOperation.MSG_KEY[ZmOperation.WORK_WEEK_VIEW]			= "viewWorkWeek";
 
 // !! PLEASE ADD IN ALPHA ORDER !!
-LmOperation.MSG_KEY_TT = new Object();
-LmOperation.MSG_KEY_TT[LmOperation.ATTACHMENT]			= "attachmentTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.CANCEL]				= "cancelTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.CLOSE]				= "closeTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.COMPOSE]				= "newMessageTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.COMPOSE_FORMAT] 		= "formatTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.DAY_VIEW]			= "viewDayTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.DELETE]				= "deleteTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.DELETE_MENU]			= "deleteTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.DETACH_COMPOSE] 		= "detachTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.EDIT]				= "editTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.FORWARD]				= "forwardTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.MONTH_VIEW]			= "viewMonthTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.MOVE]				= "moveTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.NEW_APPT]			= "newApptTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.NEW_CONTACT]			= "newContactTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.NEW_FOLDER]			= "newFolderTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.NEW_MESSAGE]			= "newMessageTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.NEW_TAG]				= "newTagTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.PRINT]				= "printTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.REPLY]				= "replyTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.REPLY_ALL]			= "replyAllTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.SAVE_DRAFT]			= "saveDraftTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.SEND]				= "sendTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.SPAM]				= "junkTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.TAG_MENU]			= "tagTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.TODAY]				= "todayTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.WEEK_VIEW]			= "viewWeekTooltip";
-LmOperation.MSG_KEY_TT[LmOperation.WORK_WEEK_VIEW]		= "viewWorkWeekTooltip";
+ZmOperation.MSG_KEY_TT = new Object();
+ZmOperation.MSG_KEY_TT[ZmOperation.ATTACHMENT]			= "attachmentTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.CANCEL]				= "cancelTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.CLOSE]				= "closeTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.COMPOSE]				= "newMessageTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.COMPOSE_FORMAT] 		= "formatTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.DAY_VIEW]			= "viewDayTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.DELETE]				= "deleteTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.DELETE_MENU]			= "deleteTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.DETACH_COMPOSE] 		= "detachTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.EDIT]				= "editTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.FORWARD]				= "forwardTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.MONTH_VIEW]			= "viewMonthTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.MOVE]				= "moveTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.NEW_APPT]			= "newApptTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.NEW_CONTACT]			= "newContactTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.NEW_FOLDER]			= "newFolderTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.NEW_MESSAGE]			= "newMessageTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.NEW_TAG]				= "newTagTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.PRINT]				= "printTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.REPLY]				= "replyTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.REPLY_ALL]			= "replyAllTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.SAVE_DRAFT]			= "saveDraftTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.SEND]				= "sendTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.SPAM]				= "junkTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.TAG_MENU]			= "tagTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.TODAY]				= "todayTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.WEEK_VIEW]			= "viewWeekTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.WORK_WEEK_VIEW]		= "viewWorkWeekTooltip";
 
 // Icons (when enabled)
 // !! PLEASE ADD IN ALPHA ORDER !!
-LmOperation.IMAGE = new Object();
-LmOperation.IMAGE[LmOperation.ADD_FILTER_RULE]			= LmImg.I_PLUS;
-LmOperation.IMAGE[LmOperation.ATTACHMENT]				= LmImg.I_ATTACHMENT;
-LmOperation.IMAGE[LmOperation.BROWSE]					= LmImg.I_BROWSE;
-LmOperation.IMAGE[LmOperation.CALL]						= LmImg.I_TELEPHONE;
-LmOperation.IMAGE[LmOperation.CANCEL]					= LmImg.I_RED_X;
-LmOperation.IMAGE[LmOperation.CLOSE]					= LmImg.I_UNDO;
-LmOperation.IMAGE[LmOperation.COMPOSE_FORMAT] 			= LmImg.I_FORMAT;
-LmOperation.IMAGE[LmOperation.DAY_VIEW]					= LmImg.I_DAY_VIEW;
-LmOperation.IMAGE[LmOperation.DELETE]					= LmImg.I_DELETE;
-LmOperation.IMAGE[LmOperation.DELETE_CONV]				= LmImg.I_DELETE_CONV;
-LmOperation.IMAGE[LmOperation.DELETE_MENU]				= LmImg.I_DELETE;
-LmOperation.IMAGE[LmOperation.DETACH_COMPOSE] 			= LmImg.I_DETACH;
-LmOperation.IMAGE[LmOperation.EDIT] 					= LmImg.I_FORMAT;
-LmOperation.IMAGE[LmOperation.EDIT_CONTACT]				= LmImg.I_FORMAT;
-LmOperation.IMAGE[LmOperation.EDIT_FILTER_RULE] 		= LmImg.I_FORMAT;
-LmOperation.IMAGE[LmOperation.EXPAND_ALL]				= LmImg.I_PLUS;
-LmOperation.IMAGE[LmOperation.FORWARD]					= LmImg.I_FORWARD;
-LmOperation.IMAGE[LmOperation.IM]						= LmImg.I_IM;
-LmOperation.IMAGE[LmOperation.MARK_ALL_READ]			= LmImg.I_READ_MSG;
-LmOperation.IMAGE[LmOperation.MARK_READ]				= LmImg.I_READ_MSG;
-LmOperation.IMAGE[LmOperation.MARK_UNREAD]				= LmImg.I_ENVELOPE;
-LmOperation.IMAGE[LmOperation.MODIFY_SEARCH]			= LmImg.I_SEARCH_FOLDER;
-LmOperation.IMAGE[LmOperation.MONTH_VIEW]				= LmImg.I_MONTH_VIEW;
-LmOperation.IMAGE[LmOperation.MOVE]						= LmImg.I_MOVE;
-LmOperation.IMAGE[LmOperation.MOVE_DOWN_FILTER_RULE]	= LmImg.I_DOWN_ARROW;
-LmOperation.IMAGE[LmOperation.MOVE_UP_FILTER_RULE]		= LmImg.I_UP_ARROW;
-LmOperation.IMAGE[LmOperation.NEW_APPT]					= LmImg.I_APPT;
-LmOperation.IMAGE[LmOperation.NEW_CONTACT]				= LmImg.I_CONTACT;
-LmOperation.IMAGE[LmOperation.NEW_FOLDER]				= LmImg.I_NEW_FOLDER;
-LmOperation.IMAGE[LmOperation.NEW_MESSAGE]				= LmImg.I_MAIL_MSG;
-LmOperation.IMAGE[LmOperation.NEW_TAG]					= LmImg.I_TAG;
-LmOperation.IMAGE[LmOperation.PAGE_BACK]				= LmImg.I_BACK_ARROW;
-LmOperation.IMAGE[LmOperation.PAGE_DBL_BACK]			= LmImg.I_DBL_BACK_ARROW;
-LmOperation.IMAGE[LmOperation.PAGE_DBL_FORW]			= LmImg.I_DBL_FORW_ARROW;
-LmOperation.IMAGE[LmOperation.PAGE_FORWARD]				= LmImg.I_FORWARD_ARROW;
-LmOperation.IMAGE[LmOperation.PRINT]					= LmImg.I_PRINTER;
-LmOperation.IMAGE[LmOperation.REMOVE_FILTER_RULE]		= LmImg.I_DELETE;
-LmOperation.IMAGE[LmOperation.RENAME_FOLDER]			= LmImg.I_RENAME;
-LmOperation.IMAGE[LmOperation.RENAME_SEARCH]			= LmImg.I_RENAME;
-LmOperation.IMAGE[LmOperation.RENAME_TAG]				= LmImg.I_RENAME;
-LmOperation.IMAGE[LmOperation.REPLY]					= LmImg.I_REPLY;
-LmOperation.IMAGE[LmOperation.REPLY_ACCEPT]			    = LmImg.I_CHECK;
-LmOperation.IMAGE[LmOperation.REPLY_ALL]				= LmImg.I_REPLY_ALL;
-LmOperation.IMAGE[LmOperation.REPLY_DECLINE]			= LmImg.I_RED_X;
-LmOperation.IMAGE[LmOperation.REPLY_MENU]				= LmImg.I_REPLY;
-LmOperation.IMAGE[LmOperation.REPLY_NEW_TIME]		    = LmImg.I_NEW_TIME;
-LmOperation.IMAGE[LmOperation.REPLY_TENTATIVE]          = LmImg.I_QUESTION_MARK;
-LmOperation.IMAGE[LmOperation.SAVE]						= LmImg.I_SAVE;
-LmOperation.IMAGE[LmOperation.SAVE_DRAFT]				= LmImg.I_DRAFT_FOLDER;
-LmOperation.IMAGE[LmOperation.SEARCH]					= LmImg.I_SEARCH;
-LmOperation.IMAGE[LmOperation.SEND]						= LmImg.I_MAIL;
-LmOperation.IMAGE[LmOperation.SHOW_ORIG]				= LmImg.I_MAIL;
-LmOperation.IMAGE[LmOperation.SPAM] 					= LmImg.I_SPAM_FOLDER;
-LmOperation.IMAGE[LmOperation.TAG_MENU]					= LmImg.I_TAG;
-LmOperation.IMAGE[LmOperation.VIEW]						= LmImg.I_PANE_DOUBLE;
-LmOperation.IMAGE[LmOperation.WEEK_VIEW]				= LmImg.I_WEEK_VIEW;
-LmOperation.IMAGE[LmOperation.WORK_WEEK_VIEW]			= LmImg.I_WORK_WEEK_VIEW;
+ZmOperation.IMAGE = new Object();
+ZmOperation.IMAGE[ZmOperation.ADD_FILTER_RULE]			= ZmImg.I_PLUS;
+ZmOperation.IMAGE[ZmOperation.ATTACHMENT]				= ZmImg.I_ATTACHMENT;
+ZmOperation.IMAGE[ZmOperation.BROWSE]					= ZmImg.I_BROWSE;
+ZmOperation.IMAGE[ZmOperation.CALL]						= ZmImg.I_TELEPHONE;
+ZmOperation.IMAGE[ZmOperation.CANCEL]					= ZmImg.I_RED_X;
+ZmOperation.IMAGE[ZmOperation.CLOSE]					= ZmImg.I_UNDO;
+ZmOperation.IMAGE[ZmOperation.COMPOSE_FORMAT] 			= ZmImg.I_FORMAT;
+ZmOperation.IMAGE[ZmOperation.DAY_VIEW]					= ZmImg.I_DAY_VIEW;
+ZmOperation.IMAGE[ZmOperation.DELETE]					= ZmImg.I_DELETE;
+ZmOperation.IMAGE[ZmOperation.DELETE_CONV]				= ZmImg.I_DELETE_CONV;
+ZmOperation.IMAGE[ZmOperation.DELETE_MENU]				= ZmImg.I_DELETE;
+ZmOperation.IMAGE[ZmOperation.DETACH_COMPOSE] 			= ZmImg.I_DETACH;
+ZmOperation.IMAGE[ZmOperation.EDIT] 					= ZmImg.I_FORMAT;
+ZmOperation.IMAGE[ZmOperation.EDIT_CONTACT]				= ZmImg.I_FORMAT;
+ZmOperation.IMAGE[ZmOperation.EDIT_FILTER_RULE] 		= ZmImg.I_FORMAT;
+ZmOperation.IMAGE[ZmOperation.EXPAND_ALL]				= ZmImg.I_PLUS;
+ZmOperation.IMAGE[ZmOperation.FORWARD]					= ZmImg.I_FORWARD;
+ZmOperation.IMAGE[ZmOperation.IM]						= ZmImg.I_IM;
+ZmOperation.IMAGE[ZmOperation.MARK_ALL_READ]			= ZmImg.I_READ_MSG;
+ZmOperation.IMAGE[ZmOperation.MARK_READ]				= ZmImg.I_READ_MSG;
+ZmOperation.IMAGE[ZmOperation.MARK_UNREAD]				= ZmImg.I_ENVELOPE;
+ZmOperation.IMAGE[ZmOperation.MODIFY_SEARCH]			= ZmImg.I_SEARCH_FOLDER;
+ZmOperation.IMAGE[ZmOperation.MONTH_VIEW]				= ZmImg.I_MONTH_VIEW;
+ZmOperation.IMAGE[ZmOperation.MOVE]						= ZmImg.I_MOVE;
+ZmOperation.IMAGE[ZmOperation.MOVE_DOWN_FILTER_RULE]	= ZmImg.I_DOWN_ARROW;
+ZmOperation.IMAGE[ZmOperation.MOVE_UP_FILTER_RULE]		= ZmImg.I_UP_ARROW;
+ZmOperation.IMAGE[ZmOperation.NEW_APPT]					= ZmImg.I_APPT;
+ZmOperation.IMAGE[ZmOperation.NEW_CONTACT]				= ZmImg.I_CONTACT;
+ZmOperation.IMAGE[ZmOperation.NEW_FOLDER]				= ZmImg.I_NEW_FOLDER;
+ZmOperation.IMAGE[ZmOperation.NEW_MESSAGE]				= ZmImg.I_MAIL_MSG;
+ZmOperation.IMAGE[ZmOperation.NEW_TAG]					= ZmImg.I_TAG;
+ZmOperation.IMAGE[ZmOperation.PAGE_BACK]				= ZmImg.I_BACK_ARROW;
+ZmOperation.IMAGE[ZmOperation.PAGE_DBL_BACK]			= ZmImg.I_DBL_BACK_ARROW;
+ZmOperation.IMAGE[ZmOperation.PAGE_DBL_FORW]			= ZmImg.I_DBL_FORW_ARROW;
+ZmOperation.IMAGE[ZmOperation.PAGE_FORWARD]				= ZmImg.I_FORWARD_ARROW;
+ZmOperation.IMAGE[ZmOperation.PRINT]					= ZmImg.I_PRINTER;
+ZmOperation.IMAGE[ZmOperation.REMOVE_FILTER_RULE]		= ZmImg.I_DELETE;
+ZmOperation.IMAGE[ZmOperation.RENAME_FOLDER]			= ZmImg.I_RENAME;
+ZmOperation.IMAGE[ZmOperation.RENAME_SEARCH]			= ZmImg.I_RENAME;
+ZmOperation.IMAGE[ZmOperation.RENAME_TAG]				= ZmImg.I_RENAME;
+ZmOperation.IMAGE[ZmOperation.REPLY]					= ZmImg.I_REPLY;
+ZmOperation.IMAGE[ZmOperation.REPLY_ACCEPT]			    = ZmImg.I_CHECK;
+ZmOperation.IMAGE[ZmOperation.REPLY_ALL]				= ZmImg.I_REPLY_ALL;
+ZmOperation.IMAGE[ZmOperation.REPLY_DECLINE]			= ZmImg.I_RED_X;
+ZmOperation.IMAGE[ZmOperation.REPLY_MENU]				= ZmImg.I_REPLY;
+ZmOperation.IMAGE[ZmOperation.REPLY_NEW_TIME]		    = ZmImg.I_NEW_TIME;
+ZmOperation.IMAGE[ZmOperation.REPLY_TENTATIVE]          = ZmImg.I_QUESTION_MARK;
+ZmOperation.IMAGE[ZmOperation.SAVE]						= ZmImg.I_SAVE;
+ZmOperation.IMAGE[ZmOperation.SAVE_DRAFT]				= ZmImg.I_DRAFT_FOLDER;
+ZmOperation.IMAGE[ZmOperation.SEARCH]					= ZmImg.I_SEARCH;
+ZmOperation.IMAGE[ZmOperation.SEND]						= ZmImg.I_MAIL;
+ZmOperation.IMAGE[ZmOperation.SHOW_ORIG]				= ZmImg.I_MAIL;
+ZmOperation.IMAGE[ZmOperation.SPAM] 					= ZmImg.I_SPAM_FOLDER;
+ZmOperation.IMAGE[ZmOperation.TAG_MENU]					= ZmImg.I_TAG;
+ZmOperation.IMAGE[ZmOperation.VIEW]						= ZmImg.I_PANE_DOUBLE;
+ZmOperation.IMAGE[ZmOperation.WEEK_VIEW]				= ZmImg.I_WEEK_VIEW;
+ZmOperation.IMAGE[ZmOperation.WORK_WEEK_VIEW]			= ZmImg.I_WORK_WEEK_VIEW;
 
 // Icons (when disabled)
 // !! PLEASE ADD IN ALPHA ORDER !!
-LmOperation.DIS_IMAGE = new Object();
-LmOperation.DIS_IMAGE[LmOperation.ATTACHMENT]			= LmImg.ID_ATTACHMENT;
-LmOperation.DIS_IMAGE[LmOperation.BROWSE]				= LmImg.ID_BROWSE;
-LmOperation.DIS_IMAGE[LmOperation.DAY_VIEW]				= LmImg.ID_DAY_VIEW;
-LmOperation.DIS_IMAGE[LmOperation.DELETE]				= LmImg.ID_DELETE;
-LmOperation.DIS_IMAGE[LmOperation.DELETE_MENU]			= LmImg.ID_DELETE;
-LmOperation.DIS_IMAGE[LmOperation.EDIT] 				= LmImg.ID_FORMAT;
-LmOperation.DIS_IMAGE[LmOperation.EDIT_FILTER_RULE] 	= LmImg.ID_FORMAT;
-LmOperation.DIS_IMAGE[LmOperation.FORWARD]				= LmImg.ID_FORWARD;
-LmOperation.DIS_IMAGE[LmOperation.IM]					= LmImg.ID_IM;
-LmOperation.DIS_IMAGE[LmOperation.MONTH_VIEW]			= LmImg.ID_MONTH_VIEW;
-LmOperation.DIS_IMAGE[LmOperation.MOVE]					= LmImg.ID_MOVE;
-LmOperation.DIS_IMAGE[LmOperation.NEW_MESSAGE]			= LmImg.ID_MAIL_MSG;
-LmOperation.DIS_IMAGE[LmOperation.NEW_TAG]				= LmImg.ID_TAG;
-LmOperation.DIS_IMAGE[LmOperation.PAGE_BACK]			= LmImg.ID_BACK_ARROW;
-LmOperation.DIS_IMAGE[LmOperation.PAGE_DBL_BACK]		= LmImg.ID_DBL_BACK_ARROW;
-LmOperation.DIS_IMAGE[LmOperation.PAGE_DBL_FORW]		= LmImg.ID_DBL_FORW_ARROW;
-LmOperation.DIS_IMAGE[LmOperation.PAGE_FORWARD]			= LmImg.ID_FORWARD_ARROW;
-LmOperation.DIS_IMAGE[LmOperation.PRINT]				= LmImg.ID_PRINTER;
-LmOperation.DIS_IMAGE[LmOperation.REPLY]				= LmImg.ID_REPLY;
-LmOperation.DIS_IMAGE[LmOperation.REPLY_ALL]			= LmImg.ID_REPLY_ALL;
-LmOperation.DIS_IMAGE[LmOperation.REPLY_MENU]			= LmImg.ID_REPLY;
-LmOperation.DIS_IMAGE[LmOperation.SAVE]					= LmImg.ID_SAVE;
-LmOperation.DIS_IMAGE[LmOperation.SEARCH]				= LmImg.ID_SEARCH;
-LmOperation.DIS_IMAGE[LmOperation.SEND]					= LmImg.ID_MAIL;
-LmOperation.DIS_IMAGE[LmOperation.SHOW_ORIG]			= LmImg.ID_MAIL;
-LmOperation.DIS_IMAGE[LmOperation.SPAM] 				= LmImg.ID_SPAM_FOLDER;
-LmOperation.DIS_IMAGE[LmOperation.TAG_MENU]				= LmImg.ID_TAG;
-LmOperation.DIS_IMAGE[LmOperation.WEEK_VIEW]			= LmImg.ID_WEEK_VIEW;
-LmOperation.DIS_IMAGE[LmOperation.WORK_WEEK_VIEW]		= LmImg.ID_WORK_WEEK_VIEW;
+ZmOperation.DIS_IMAGE = new Object();
+ZmOperation.DIS_IMAGE[ZmOperation.ATTACHMENT]			= ZmImg.ID_ATTACHMENT;
+ZmOperation.DIS_IMAGE[ZmOperation.BROWSE]				= ZmImg.ID_BROWSE;
+ZmOperation.DIS_IMAGE[ZmOperation.DAY_VIEW]				= ZmImg.ID_DAY_VIEW;
+ZmOperation.DIS_IMAGE[ZmOperation.DELETE]				= ZmImg.ID_DELETE;
+ZmOperation.DIS_IMAGE[ZmOperation.DELETE_MENU]			= ZmImg.ID_DELETE;
+ZmOperation.DIS_IMAGE[ZmOperation.EDIT] 				= ZmImg.ID_FORMAT;
+ZmOperation.DIS_IMAGE[ZmOperation.EDIT_FILTER_RULE] 	= ZmImg.ID_FORMAT;
+ZmOperation.DIS_IMAGE[ZmOperation.FORWARD]				= ZmImg.ID_FORWARD;
+ZmOperation.DIS_IMAGE[ZmOperation.IM]					= ZmImg.ID_IM;
+ZmOperation.DIS_IMAGE[ZmOperation.MONTH_VIEW]			= ZmImg.ID_MONTH_VIEW;
+ZmOperation.DIS_IMAGE[ZmOperation.MOVE]					= ZmImg.ID_MOVE;
+ZmOperation.DIS_IMAGE[ZmOperation.NEW_MESSAGE]			= ZmImg.ID_MAIL_MSG;
+ZmOperation.DIS_IMAGE[ZmOperation.NEW_TAG]				= ZmImg.ID_TAG;
+ZmOperation.DIS_IMAGE[ZmOperation.PAGE_BACK]			= ZmImg.ID_BACK_ARROW;
+ZmOperation.DIS_IMAGE[ZmOperation.PAGE_DBL_BACK]		= ZmImg.ID_DBL_BACK_ARROW;
+ZmOperation.DIS_IMAGE[ZmOperation.PAGE_DBL_FORW]		= ZmImg.ID_DBL_FORW_ARROW;
+ZmOperation.DIS_IMAGE[ZmOperation.PAGE_FORWARD]			= ZmImg.ID_FORWARD_ARROW;
+ZmOperation.DIS_IMAGE[ZmOperation.PRINT]				= ZmImg.ID_PRINTER;
+ZmOperation.DIS_IMAGE[ZmOperation.REPLY]				= ZmImg.ID_REPLY;
+ZmOperation.DIS_IMAGE[ZmOperation.REPLY_ALL]			= ZmImg.ID_REPLY_ALL;
+ZmOperation.DIS_IMAGE[ZmOperation.REPLY_MENU]			= ZmImg.ID_REPLY;
+ZmOperation.DIS_IMAGE[ZmOperation.SAVE]					= ZmImg.ID_SAVE;
+ZmOperation.DIS_IMAGE[ZmOperation.SEARCH]				= ZmImg.ID_SEARCH;
+ZmOperation.DIS_IMAGE[ZmOperation.SEND]					= ZmImg.ID_MAIL;
+ZmOperation.DIS_IMAGE[ZmOperation.SHOW_ORIG]			= ZmImg.ID_MAIL;
+ZmOperation.DIS_IMAGE[ZmOperation.SPAM] 				= ZmImg.ID_SPAM_FOLDER;
+ZmOperation.DIS_IMAGE[ZmOperation.TAG_MENU]				= ZmImg.ID_TAG;
+ZmOperation.DIS_IMAGE[ZmOperation.WEEK_VIEW]			= ZmImg.ID_WEEK_VIEW;
+ZmOperation.DIS_IMAGE[ZmOperation.WORK_WEEK_VIEW]		= ZmImg.ID_WORK_WEEK_VIEW;
 
-LmOperation.KEY_ID = "_opId";
-LmOperation.KEY_TAG_MENU = "_tagMenu";
+ZmOperation.KEY_ID = "_opId";
+ZmOperation.KEY_TAG_MENU = "_tagMenu";
 
 function LmOperation_Descriptor(id, label, image, disImage, enabled, toolTip) {
 	this.id = id;
-	this.label = label ? label : LmMsg[LmOperation.MSG_KEY[id]];
-	this.image = image ? image : LmOperation.IMAGE[id];
-	this.disImage = disImage ? disImage : LmOperation.DIS_IMAGE[id];
+	this.label = label ? label : LmMsg[ZmOperation.MSG_KEY[id]];
+	this.image = image ? image : ZmOperation.IMAGE[id];
+	this.disImage = disImage ? disImage : ZmOperation.DIS_IMAGE[id];
 	this.enabled = (enabled !== false);
-	this.toolTip = toolTip ? toolTip : LmMsg[LmOperation.MSG_KEY_TT[id]];
+	this.toolTip = toolTip ? toolTip : LmMsg[ZmOperation.MSG_KEY_TT[id]];
 	this.toolTip = toolTip ? toolTip : this.label;
 }
 
 // Static hash of operation IDs and descriptors
-LmOperation._operationDesc = new Object();
+ZmOperation._operationDesc = new Object();
 
-LmOperation._createOperationDesc =
+ZmOperation._createOperationDesc =
 function(id) {
-	return new LmOperation_Descriptor(id, LmMsg[LmOperation.MSG_KEY[id]],
-				LmOperation.IMAGE[id], LmOperation.DIS_IMAGE[id], true, LmMsg[LmOperation.MSG_KEY_TT[id]]);
+	return new LmOperation_Descriptor(id, LmMsg[ZmOperation.MSG_KEY[id]],
+				ZmOperation.IMAGE[id], ZmOperation.DIS_IMAGE[id], true, LmMsg[ZmOperation.MSG_KEY_TT[id]]);
 }
 
 /**
@@ -303,17 +303,17 @@ function(id) {
 *
 * TODO: allow for ordered mixing of standard and extra ops  (add index to descriptor)
 */
-LmOperation.createOperations =
+ZmOperation.createOperations =
 function(parent, standardOperations, extraOperations) {
-	var obj = new LmOperation();
+	var obj = new ZmOperation();
 	return obj._createOperations(parent, standardOperations, extraOperations);
 }
 
 // Done through an object so that we can have more than one invocation going without 
 // sharing memory (eg, creating New submenu).
-LmOperation.prototype._createOperations =
+ZmOperation.prototype._createOperations =
 function(parent, standardOperations, extraOperations) {
-	if (standardOperations == LmOperation.NONE) {
+	if (standardOperations == ZmOperation.NONE) {
 		standardOperations = null;
 	}
 	// assemble the list of operation IDs, and the list of operation descriptors
@@ -323,57 +323,57 @@ function(parent, standardOperations, extraOperations) {
 			for (var i = 0; i < standardOperations.length; i++) {
 				var id = standardOperations[i];
 				operationList.push(id);
-				LmOperation._operationDesc[id] = LmOperation._createOperationDesc(id);
+				ZmOperation._operationDesc[id] = ZmOperation._createOperationDesc(id);
 			}
 		}
 		if (extraOperations && extraOperations.length) {
 			for (var i = 0; i < extraOperations.length; i++) {
 				var extra = extraOperations[i];
 				var id = extra.id;
-				extra.label = (extra.label == Dwt.DEFAULT) ? LmMsg[LmOperation.MSG_KEY[id]] : extra.label;
-				extra.image = (extra.image == Dwt.DEFAULT) ? LmOperation.IMAGE[id] : extra.image;
-				extra.disImage = (extra.disImage == Dwt.DEFAULT) ? LmOperation.DIS_IMAGE[id] : extra.disImage;
-				extra.toolTip = (extra.toolTip == Dwt.DEFAULT) ? LmMsg[LmOperation.MSG_KEY_TT[id]] : extra.toolTip;
+				extra.label = (extra.label == Dwt.DEFAULT) ? LmMsg[ZmOperation.MSG_KEY[id]] : extra.label;
+				extra.image = (extra.image == Dwt.DEFAULT) ? ZmOperation.IMAGE[id] : extra.image;
+				extra.disImage = (extra.disImage == Dwt.DEFAULT) ? ZmOperation.DIS_IMAGE[id] : extra.disImage;
+				extra.toolTip = (extra.toolTip == Dwt.DEFAULT) ? LmMsg[ZmOperation.MSG_KEY_TT[id]] : extra.toolTip;
 				operationList.push(id);
-				LmOperation._operationDesc[id] = extra;
+				ZmOperation._operationDesc[id] = extra;
 			}
 		}
 	}
 
 	var operations = new Object();
 	for (var i = 0; i < operationList.length; i++) {
-		LmOperation.addOperation(parent, operationList[i], operations);
+		ZmOperation.addOperation(parent, operationList[i], operations);
 	}
 	
 	return operations;
 }
 
-LmOperation.addOperation =
+ZmOperation.addOperation =
 function(parent, id, opHash) {
-	if (!LmOperation._operationDesc[id])
-		LmOperation._operationDesc[id] = LmOperation._createOperationDesc(id);
-	if (id == LmOperation.SEP) {
+	if (!ZmOperation._operationDesc[id])
+		ZmOperation._operationDesc[id] = ZmOperation._createOperationDesc(id);
+	if (id == ZmOperation.SEP) {
 		parent.createSeparator();
 	} else {
-		var label = LmOperation._operationDesc[id].label;
-		var image = LmOperation._operationDesc[id].image;
-		var disImage = LmOperation._operationDesc[id].disImage;
-		var enabled = LmOperation._operationDesc[id].enabled;
-		var toolTip = LmOperation._operationDesc[id].toolTip;
+		var label = ZmOperation._operationDesc[id].label;
+		var image = ZmOperation._operationDesc[id].image;
+		var disImage = ZmOperation._operationDesc[id].disImage;
+		var enabled = ZmOperation._operationDesc[id].enabled;
+		var toolTip = ZmOperation._operationDesc[id].toolTip;
 		opHash[id] = parent.createOp(id, label, image, disImage, enabled, toolTip);
 	}
-	if (id == LmOperation.NEW_MENU) {
-		LmOperation.addNewMenu(opHash[id]);
-	} else if (id == LmOperation.TAG_MENU) {
-		LmOperation.addTagMenu(opHash[id]);
-	} else if (id == LmOperation.COLOR_MENU) {
-		LmOperation.addColorMenu(opHash[id]);
-	} else if (id == LmOperation.REPLY_MENU) {
-		LmOperation.addReplyMenu(opHash[id]);
+	if (id == ZmOperation.NEW_MENU) {
+		ZmOperation.addNewMenu(opHash[id]);
+	} else if (id == ZmOperation.TAG_MENU) {
+		ZmOperation.addTagMenu(opHash[id]);
+	} else if (id == ZmOperation.COLOR_MENU) {
+		ZmOperation.addColorMenu(opHash[id]);
+	} else if (id == ZmOperation.REPLY_MENU) {
+		ZmOperation.addReplyMenu(opHash[id]);
 	}
 }
 
-LmOperation.removeOperation =
+ZmOperation.removeOperation =
 function(parent, id, opHash) {
 	parent.getOp(id).dispose();
 	delete opHash[id];
@@ -389,13 +389,13 @@ function(parent, id, opHash) {
 * @param image		new image (overrides image of newOp)
 * @param disImage	new disabled image (overrides that of newOp)
 */
-LmOperation.setOperation =
+ZmOperation.setOperation =
 function(parent, oldOp, newOp, text, image, disImage) {
 	var op = parent.getOp(oldOp);
 	if (op) {
-		op.setText(text || LmMsg[LmOperation.MSG_KEY[newOp]]);
-		op.setImage(image || LmOperation.IMAGE[newOp]);
-		op.setDisabledImage(disImage || LmOperation.DIS_IMAGE[newOp]);
+		op.setText(text || LmMsg[ZmOperation.MSG_KEY[newOp]]);
+		op.setImage(image || ZmOperation.IMAGE[newOp]);
+		op.setDisabledImage(disImage || ZmOperation.DIS_IMAGE[newOp]);
 	}
 }
 
@@ -405,22 +405,22 @@ function(parent, oldOp, newOp, text, image, disImage) {
 *
 * @param parent		parent widget
 */
-LmOperation.addNewMenu =
+ZmOperation.addNewMenu =
 function(parent) {
-	var appCtxt = parent.shell.getData(LmAppCtxt.LABEL);
+	var appCtxt = parent.shell.getData(ZmAppCtxt.LABEL);
 	var list = new Array();
-	list.push(new LmOperation_Descriptor(LmOperation.NEW_MESSAGE, LmMsg.message, Dwt.DEFAULT, Dwt.DEFAULT));
-	list.push(new LmOperation_Descriptor(LmOperation.NEW_CONTACT, LmMsg.contact, Dwt.DEFAULT, Dwt.DEFAULT));
-	if (appCtxt.get(LmSetting.CALENDAR_ENABLED))
-		list.push(new LmOperation_Descriptor(LmOperation.NEW_APPT, LmMsg.appointment, Dwt.DEFAULT, Dwt.DEFAULT));
-	if (appCtxt.get(LmSetting.USER_FOLDERS_ENABLED) || appCtxt.get(LmSetting.TAGGING_ENABLED)) {
-		list.push(new LmOperation_Descriptor(LmOperation.SEP, Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT));
-		if (appCtxt.get(LmSetting.USER_FOLDERS_ENABLED))
-			list.push(new LmOperation_Descriptor(LmOperation.NEW_FOLDER, LmMsg.folder, Dwt.DEFAULT, Dwt.DEFAULT));
-		if (appCtxt.get(LmSetting.TAGGING_ENABLED))
-			list.push(new LmOperation_Descriptor(LmOperation.NEW_TAG, LmMsg.tag, Dwt.DEFAULT, Dwt.DEFAULT));
+	list.push(new LmOperation_Descriptor(ZmOperation.NEW_MESSAGE, LmMsg.message, Dwt.DEFAULT, Dwt.DEFAULT));
+	list.push(new LmOperation_Descriptor(ZmOperation.NEW_CONTACT, LmMsg.contact, Dwt.DEFAULT, Dwt.DEFAULT));
+	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED))
+		list.push(new LmOperation_Descriptor(ZmOperation.NEW_APPT, LmMsg.appointment, Dwt.DEFAULT, Dwt.DEFAULT));
+	if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED) || appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		list.push(new LmOperation_Descriptor(ZmOperation.SEP, Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT));
+		if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED))
+			list.push(new LmOperation_Descriptor(ZmOperation.NEW_FOLDER, LmMsg.folder, Dwt.DEFAULT, Dwt.DEFAULT));
+		if (appCtxt.get(ZmSetting.TAGGING_ENABLED))
+			list.push(new LmOperation_Descriptor(ZmOperation.NEW_TAG, LmMsg.tag, Dwt.DEFAULT, Dwt.DEFAULT));
 	}
-	var menu = new LmActionMenu(parent, LmOperation.NONE, list);
+	var menu = new ZmActionMenu(parent, ZmOperation.NONE, list);
 	parent.setMenu(menu);
 }
 
@@ -429,10 +429,10 @@ function(parent) {
 *
 * @param parent		parent widget (a toolbar or action menu)
 */
-LmOperation.addTagMenu =
+ZmOperation.addTagMenu =
 function(parent) {
-	var tagMenu = new LmTagMenu(parent, null);
-	parent.setData(LmOperation.KEY_TAG_MENU, tagMenu);
+	var tagMenu = new ZmTagMenu(parent, null);
+	parent.setData(ZmOperation.KEY_TAG_MENU, tagMenu);
 }
 
 /**
@@ -441,15 +441,15 @@ function(parent) {
 * @param parent		parent widget (a toolbar or action menu)
 * @param dialog		containing dialog, if any
 */
-LmOperation.addColorMenu =
+ZmOperation.addColorMenu =
 function(parent, dialog) {
-	var menu = new LmPopupMenu(parent, null, dialog);
+	var menu = new ZmPopupMenu(parent, null, dialog);
 	parent.setMenu(menu);
-	var list = LmTagTree.COLOR_LIST;
+	var list = ZmTagTree.COLOR_LIST;
 	for (var i = 0; i < list.length; i++) {
 		var color = list[i];
-		var mi = menu.createMenuItem(color, LmTag.COLOR_ICON[color], LmTag.COLOR_TEXT[color]);
-		mi.setData(LmOperation.MENUITEM_ID, color);
+		var mi = menu.createMenuItem(color, ZmTag.COLOR_ICON[color], ZmTag.COLOR_TEXT[color]);
+		mi.setData(ZmOperation.MENUITEM_ID, color);
 	}
 }
 
@@ -458,9 +458,9 @@ function(parent, dialog) {
 *
 * @param parent		parent widget (a toolbar or action menu)
 */
-LmOperation.addReplyMenu =
+ZmOperation.addReplyMenu =
 function(parent) {
-	var list = [LmOperation.REPLY, LmOperation.REPLY_ALL];
-	var menu = new LmActionMenu(parent, list, null);
+	var list = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
+	var menu = new ZmActionMenu(parent, list, null);
 	parent.setMenu(menu);
 }

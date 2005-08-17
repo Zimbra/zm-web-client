@@ -3,7 +3,7 @@
 * @constructor
 * @class
 * This class controls the display and management of a single message in the content area. Since it
-* needs to handle pretty much the same operations as a list, it extends LmMailListController.
+* needs to handle pretty much the same operations as a list, it extends ZmMailListController.
 *
 * @author Parag Shah
 * @author Conrad Damon
@@ -11,19 +11,19 @@
 * @param container	containing shell
 * @param mailApp	containing app
 */
-function LmMsgController(appCtxt, container, mailApp) {
+function ZmMsgController(appCtxt, container, mailApp) {
 
-	LmMailListController.call(this, appCtxt, container, mailApp);
+	ZmMailListController.call(this, appCtxt, container, mailApp);
 }
 
-LmMsgController.prototype = new LmMailListController;
-LmMsgController.prototype.constructor = LmMsgController;
+ZmMsgController.prototype = new ZmMailListController;
+ZmMsgController.prototype.constructor = ZmMsgController;
 
 // Public methods
 
-LmMsgController.prototype.toString = 
+ZmMsgController.prototype.toString = 
 function() {
-	return "LmMsgController";
+	return "ZmMsgController";
 }
 
 /**
@@ -32,104 +32,104 @@ function() {
 * @param msg		the message to display
 * @param conv		the conv to which the message belongs, if any
 */
-LmMsgController.prototype.show = 
+ZmMsgController.prototype.show = 
 function(msg, mode) {
 	this.setMsg(msg);
 	this._mode = mode;
 	this._currentView = this._getViewType();
 	this._list = msg.list;
 	if (!msg.isLoaded())
-		msg.load(this._appCtxt.get(LmSetting.VIEW_AS_HTML));
+		msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML));
 
 	this._setup(this._currentView);
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
 	var elements = new Object();
-	elements[LmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[LmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements);
 }
 
-// Private methods (mostly overrides of LmListController protected methods)
+// Private methods (mostly overrides of ZmListController protected methods)
 
-LmMsgController.prototype._getToolBarOps = 
+ZmMsgController.prototype._getToolBarOps = 
 function() {
 	var list = this._standardToolBarOps();
-	list.push(LmOperation.SEP);
+	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
-	list.push(LmOperation.SEP);
-	list.push(LmOperation.SPAM);
-	list.push(LmOperation.SEP);
-	list.push(LmOperation.CLOSE);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.SPAM);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.CLOSE);
 	return list;
 }
 
-LmMsgController.prototype._getActionMenuOps =
+ZmMsgController.prototype._getActionMenuOps =
 function() {
 	return null;
 }
 
-LmMsgController.prototype._getViewType = 
+ZmMsgController.prototype._getViewType = 
 function() {
-	return LmController.MSG_VIEW;
+	return ZmController.MSG_VIEW;
 }
 
-LmMsgController.prototype._defaultView = 
+ZmMsgController.prototype._defaultView = 
 function() {
-	return LmController.MSG_VIEW;
+	return ZmController.MSG_VIEW;
 }
 
-LmMsgController.prototype._initializeListView = 
+ZmMsgController.prototype._initializeListView = 
 function(view) {
 	if (!this._listView[view]) {
-		this._listView[view] = new LmMailMsgView(this._container, null, Dwt.ABSOLUTE_STYLE, LmController.MSG_VIEW);
+		this._listView[view] = new ZmMailMsgView(this._container, null, Dwt.ABSOLUTE_STYLE, ZmController.MSG_VIEW);
 		this._listView[view].addInviteReplyListener(this._inviteReplyListener);
 	}
 }
 
-LmMsgController.prototype.getReferenceView = 
+ZmMsgController.prototype.getReferenceView = 
 function () {
 	return this._listView[this._currentView];
 };
 
-LmMsgController.prototype._getSearchFolderId = 
+ZmMsgController.prototype._getSearchFolderId = 
 function() {
 	return this._msg.list.search.folderId;
 }
 
-LmMsgController.prototype._getTagMenuMsg = 
+ZmMsgController.prototype._getTagMenuMsg = 
 function() {
 	return LmMsg.tagMessage;
 }
 
-LmMsgController.prototype._getMoveDialogTitle = 
+ZmMsgController.prototype._getMoveDialogTitle = 
 function() {
 	return LmMsg.moveMessage;
 }
 
-LmMsgController.prototype._setViewContents =
+ZmMsgController.prototype._setViewContents =
 function(view) {
 	this._listView[view].set(this._msg);
 }
 
-LmMsgController.prototype._resetNavToolBarButtons = 
+ZmMsgController.prototype._resetNavToolBarButtons = 
 function(view) {
 	// NOTE: we purposely do not call base class here!
 	
 	var list = this._msg.list.getVector();
 	
-	this._navToolBar.enable(LmOperation.PAGE_BACK, list.get(0) != this._msg);
+	this._navToolBar.enable(ZmOperation.PAGE_BACK, list.get(0) != this._msg);
 	
 	var bEnableForw = this._msg.list.hasMore() || (list.getLast() != this._msg);
-	this._navToolBar.enable(LmOperation.PAGE_FORWARD, bEnableForw);
+	this._navToolBar.enable(ZmOperation.PAGE_FORWARD, bEnableForw);
 	
-	this._navToolBar.setToolTip(LmOperation.PAGE_BACK, LmMsg.previous + " " + LmMsg.message);	
-	this._navToolBar.setToolTip(LmOperation.PAGE_FORWARD, LmMsg.next + " " + LmMsg.message);
+	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, LmMsg.previous + " " + LmMsg.message);	
+	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, LmMsg.next + " " + LmMsg.message);
 }
 
-LmMsgController.prototype._paginate = 
+ZmMsgController.prototype._paginate = 
 function(view, bPageForward) {
 	// NOTE: do not call base class.
-	var controller = this._mode == LmController.TRAD_VIEW 
+	var controller = this._mode == ZmController.TRAD_VIEW 
 		? this._app.getTradController() 
 		: this._app.getConvController();
 
@@ -139,12 +139,12 @@ function(view, bPageForward) {
 	}
 }
 
-LmMsgController.prototype._processPrePopView = 
+ZmMsgController.prototype._processPrePopView = 
 function(view) {
 	this._resetNavToolBarButtons(view);
 }
 
-LmMsgController.prototype._popdownActionListener = 
+ZmMsgController.prototype._popdownActionListener = 
 function(ev) {
 	// dont do anything since msg view has no action menus
 }
@@ -152,41 +152,41 @@ function(ev) {
 // Actions
 
 // Override so we can pop view
-LmMsgController.prototype._doDelete = 
+ZmMsgController.prototype._doDelete = 
 function(params) {
-	LmMailListController.prototype._doDelete.call(this, params);
+	ZmMailListController.prototype._doDelete.call(this, params);
 	this._app.popView();
 }
 
 // Override so we can pop view
-LmMsgController.prototype._doMove = 
+ZmMsgController.prototype._doMove = 
 function(params) {
-	LmMailListController.prototype._doMove.call(this, params);
+	ZmMailListController.prototype._doMove.call(this, params);
 	this._app.popView();
 }
 
 // Override so we can pop view
-LmMsgController.prototype._doSpam = 
+ZmMsgController.prototype._doSpam = 
 function(params) {
-	LmMailListController.prototype._doSpam.call(this, params);
+	ZmMailListController.prototype._doSpam.call(this, params);
 	this._app.popView();
 }
 
 // Miscellaneous
 
 // Returns the message currently being displayed.
-LmMsgController.prototype._getMsg =
+ZmMsgController.prototype._getMsg =
 function() {
 	return this._msg;
 }
 
-LmMsgController.prototype.setMsg =
+ZmMsgController.prototype.setMsg =
 function (msg) {
 	this._msg = msg;
 };
 
 // No-op replenishment
-LmMsgController.prototype._checkReplenish =
+ZmMsgController.prototype._checkReplenish =
 function(params) {
 	// XXX: remove this when replenishment is fixed for msg controller!
 	DBG.println("SORRY. NO REPLENISHMENT FOR YOU.");

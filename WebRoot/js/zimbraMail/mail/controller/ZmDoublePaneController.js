@@ -10,26 +10,26 @@
 * @param container	containing shell
 * @param mailApp	containing app
 */
-function LmDoublePaneController(appCtxt, container, mailApp) {
+function ZmDoublePaneController(appCtxt, container, mailApp) {
 
 	if (arguments.length == 0) return;
-	LmMailListController.call(this, appCtxt, container, mailApp);
+	ZmMailListController.call(this, appCtxt, container, mailApp);
 	this._readingPaneOn = true;
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-	this._dragSrc.addDragListener(new LsListener(this, this._dragListener));	
+	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));	
 	
-	this._listeners[LmOperation.SHOW_ORIG] = new LsListener(this, this._showOrigListener);
+	this._listeners[ZmOperation.SHOW_ORIG] = new AjxListener(this, this._showOrigListener);
 }
 
-LmDoublePaneController.prototype = new LmMailListController;
-LmDoublePaneController.prototype.constructor = LmDoublePaneController;
+ZmDoublePaneController.prototype = new ZmMailListController;
+ZmDoublePaneController.prototype.constructor = ZmDoublePaneController;
 
 // Public methods
 
-LmDoublePaneController.prototype.toString = 
+ZmDoublePaneController.prototype.toString = 
 function() {
-	return "LmDoublePaneController";
+	return "ZmDoublePaneController";
 }
 
 /**
@@ -39,12 +39,12 @@ function() {
 *
 * @param activeSearch	the current search results
 * @param searchString	the current search query string
-* @param item			a generic item (LmItem)
+* @param item			a generic item (ZmItem)
 */
-LmDoublePaneController.prototype.show =
+ZmDoublePaneController.prototype.show =
 function(search, searchString, item) {
 
-	LmMailListController.prototype.show.call(this, search, searchString);
+	ZmMailListController.prototype.show.call(this, search, searchString);
 	this.reset();
 	this._item = item;
 	this._setup(this._currentView);
@@ -57,7 +57,7 @@ function(search, searchString, item) {
 /**
 * Clears the conversation view, which actually just clears the message view.
 */
-LmDoublePaneController.prototype.reset =
+ZmDoublePaneController.prototype.reset =
 function() {
 	if (this._doublePaneView)
 		this._doublePaneView.reset();
@@ -68,11 +68,11 @@ function() {
 *
 * @param view		the id of the menu item
 */
-LmDoublePaneController.prototype.switchView = 
+ZmDoublePaneController.prototype.switchView = 
 function(view) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = appToolbar.getViewButton().getMenu();
-	var mi = menu.getItemById(LmOperation.MENUITEM_ID, view);
+	var mi = menu.getItemById(ZmOperation.MENUITEM_ID, view);
 	if (this._readingPaneOn == mi.getChecked()) return;
 	
 	this._readingPaneOn = mi.getChecked();
@@ -84,7 +84,7 @@ function(view) {
 		// DONT bother checking if current msg is already being displayed!
 		if (currentMsg) {
 			if (!currentMsg.isLoaded())
-				currentMsg.load(this._appCtxt.get(LmSetting.VIEW_AS_HTML));
+				currentMsg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML));
 	
 			this._doublePaneView.setMsg(currentMsg);
 		}
@@ -95,21 +95,21 @@ function(view) {
 
 // called after a delete has occurred. 
 // Return value indicates whether view was popped as a result of a delete
-LmDoublePaneController.prototype.handleDelete = 
+ZmDoublePaneController.prototype.handleDelete = 
 function() {
 	return false;
 }
 
 // Private and protected methods
 
-LmDoublePaneController.prototype._createDoublePaneView = 
+ZmDoublePaneController.prototype._createDoublePaneView = 
 function() {
 	// overload me
 };
 
 // Creates the conv view, which is not a standard list view (it's a two-pane
 // sort of thing).
-LmDoublePaneController.prototype._initialize =
+ZmDoublePaneController.prototype._initialize =
 function(view) {
 	// set up double pane view (which creates the MLV and MV)
 	if (!this._doublePaneView){
@@ -117,33 +117,33 @@ function(view) {
 		this._doublePaneView.addInviteReplyListener(this._inviteReplyListener);
 	}
 
-	LmMailListController.prototype._initialize.call(this, view);
+	ZmMailListController.prototype._initialize.call(this, view);
 }
 
-LmDoublePaneController.prototype._getToolBarOps =
+ZmDoublePaneController.prototype._getToolBarOps =
 function() {
 	var list = this._standardToolBarOps();
-	list.push(LmOperation.SEP);
+	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
-	list.push(LmOperation.SEP);
-	list.push(LmOperation.SPAM);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.SPAM);
 	return list;
 }
 
-LmDoublePaneController.prototype._getActionMenuOps =
+ZmDoublePaneController.prototype._getActionMenuOps =
 function() {
 	var list = this._flagOps();
-	list.push(LmOperation.SEP);
+	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
-	list.push(LmOperation.SEP);
+	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
-	list.push(LmOperation.SEP);
-	list.push(LmOperation.SHOW_ORIG);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.SHOW_ORIG);
 	return list;
 }
 
 // Returns the already-created message list view.
-LmDoublePaneController.prototype._createNewView = 
+ZmDoublePaneController.prototype._createNewView = 
 function() {
 	var mlv = null;
 	if (this._doublePaneView) {
@@ -153,27 +153,27 @@ function() {
 	return mlv;
 }
 
-LmDoublePaneController.prototype.getReferenceView = 
+ZmDoublePaneController.prototype.getReferenceView = 
 function() {
 	return this._doublePaneView;
 };
 
-LmDoublePaneController.prototype._getTagMenuMsg = 
+ZmDoublePaneController.prototype._getTagMenuMsg = 
 function(num) {
 	return (num == 1) ? LmMsg.tagMessage : LmMsg.tagMessages;
 }
 
-LmDoublePaneController.prototype._getMoveDialogTitle = 
+ZmDoublePaneController.prototype._getMoveDialogTitle = 
 function(num) {
 	return (num == 1) ? LmMsg.moveMessage : LmMsg.moveMessages;
 }
 
-LmDoublePaneController.prototype._setViewContents =
+ZmDoublePaneController.prototype._setViewContents =
 function(view) {
 	this._doublePaneView.setItem(this._item);
 }
 
-LmDoublePaneController.prototype._setSelectedMsg =
+ZmDoublePaneController.prototype._setSelectedMsg =
 function() {
 	var selCnt = this._listView[this._currentView].getSelectionCount();
 	if (selCnt == 1) {
@@ -191,18 +191,18 @@ function() {
 }
 
 // Adds a "Reading Pane" checked menu item to a view menu
-LmDoublePaneController.prototype._setupReadingPaneMenuItem =
+ZmDoublePaneController.prototype._setupReadingPaneMenuItem =
 function(view, menu, checked) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = menu ? menu : appToolbar.getViewMenu(view);
 	if (!menu) { // should have a menu by now, from _setupGroupByMenuItems()
-		menu = new LmPopupMenu(appToolbar.getViewButton());
+		menu = new ZmPopupMenu(appToolbar.getViewButton());
 	}
-	var id = LmController.READING_PANE_VIEW;
+	var id = ZmController.READING_PANE_VIEW;
 	if (menu._menuItems[id] == null) {
-		var mi = menu.createMenuItem(id, LmImg.I_PANE_DOUBLE, LmMsg.readingPane, null, true, DwtMenuItem.CHECK_STYLE);
-		mi.setData(LmOperation.MENUITEM_ID, id);
-		mi.addSelectionListener(this._listeners[LmOperation.VIEW]);
+		var mi = menu.createMenuItem(id, ZmImg.I_PANE_DOUBLE, LmMsg.readingPane, null, true, DwtMenuItem.CHECK_STYLE);
+		mi.setData(ZmOperation.MENUITEM_ID, id);
+		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 		mi.setChecked(checked, true);
 	}
 	appToolbar.setViewMenu(view, menu);
@@ -212,9 +212,9 @@ function(view, menu, checked) {
 // List listeners
 
 // Clicking on a message in the message list loads and displays it.
-LmDoublePaneController.prototype._listSelectionListener =
+ZmDoublePaneController.prototype._listSelectionListener =
 function(ev) {
-	LmMailListController.prototype._listSelectionListener.call(this, ev);
+	ZmMailListController.prototype._listSelectionListener.call(this, ev);
 	
 	var currView = this._listView[this._currentView];
 
@@ -223,7 +223,7 @@ function(ev) {
 		if (msg) {
 			if (msg.isDraft) {
 				// open draft in compose view
-				this._doAction(ev, LmOperation.DRAFT);
+				this._doAction(ev, ZmOperation.DRAFT);
 			} else if (!this._readingPaneOn) {
 				try {
 					this._app.getMsgController().show(msg, currView._mode);
@@ -243,9 +243,9 @@ function(ev) {
     }
 }
 
-LmDoublePaneController.prototype._listActionListener =
+ZmDoublePaneController.prototype._listActionListener =
 function(ev) {
-	LmMailListController.prototype._listActionListener.call(this, ev);
+	ZmMailListController.prototype._listActionListener.call(this, ev);
 
 	if (!this._readingPaneOn) {
 		// reset current message
@@ -256,23 +256,23 @@ function(ev) {
 }
 
 // Check to see if the entire conversation is now read.
-LmDoublePaneController.prototype._markReadListener = 
+ZmDoublePaneController.prototype._markReadListener = 
 function(ev) {
 	this._list.markRead(this._listView[this._currentView].getSelection(), true);
 }
 
 // Check to see if the entire conversation is now unread.
-LmDoublePaneController.prototype._markUnreadListener = 
+ZmDoublePaneController.prototype._markUnreadListener = 
 function(ev) {
 	this._list.markRead(this._listView[this._currentView].getSelection(), false);
 }
 
-LmDoublePaneController.prototype._showOrigListener = 
+ZmDoublePaneController.prototype._showOrigListener = 
 function(ev) {
 
 	var msg = this._listView[this._currentView].getSelection()[0];
 	if (msg) {
-		var msgFetchUrl = location.protocol + "//" + document.domain + this._appCtxt.get(LmSetting.CSFE_MSG_FETCHER_URI) + "id=" + msg.id;
+		var msgFetchUrl = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "id=" + msg.id;
 		// create a new window w/ generated msg based on msg id
 		window.open(msgFetchUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 	}
@@ -282,19 +282,19 @@ function(ev) {
 
 // Loads the given item and displays it. The first message will be 
 // selected, which will trigger a message load/display.
-LmDoublePaneController.prototype._loadItem =
+ZmDoublePaneController.prototype._loadItem =
 function(params) {
 	try {
 		if (params.item.load) {
 			var results = params.item.load(this.getSearchString());
-			if (results instanceof LmList) {
+			if (results instanceof ZmList) {
 				this._list = results;
 				this._activeSearch = results;
 			}
 		}
 		var elements = new Object();
-		elements[LmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[params.view];
-		elements[LmAppViewMgr.C_APP_CONTENT] = this._doublePaneView;
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[params.view];
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._doublePaneView;
 		this._setView(params.view, elements, this._isTopLevelView());
 		this._resetNavToolBarButtons(params.view);
 				
@@ -302,22 +302,22 @@ function(params) {
 		var sz = this._doublePaneView.getSize();
 		this._doublePaneView._resetSize(sz.x, sz.y);
 	} catch (ex) {
-		this._handleException(ex, LmDoublePaneController.prototype._loadItem, params);
+		this._handleException(ex, ZmDoublePaneController.prototype._loadItem, params);
 	}
 }
 
 // Loads and displays the given message. If the message was unread, it gets marked as
 // read, and the conversation may be marked as read as well.
-LmDoublePaneController.prototype._doGetMsg =
+ZmDoublePaneController.prototype._doGetMsg =
 function(params) {
 	var msg = params.msg;
 	if (msg) {
 		try {
-			msg.load(this._appCtxt.get(LmSetting.VIEW_AS_HTML));
+			msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML));
 			this._doublePaneView.setMsg(msg);
 			this._appCtxt.getSearchController().setEnabled(true);
 		} catch (ex) {
-			this._handleException(ex, LmDoublePaneController.prototype._doGetMsg, params, false);
+			this._handleException(ex, ZmDoublePaneController.prototype._doGetMsg, params, false);
 		}
 	} else {
 		DBG.println("XXX: msg not loaded!");
@@ -325,39 +325,39 @@ function(params) {
 }
 
 // Returns the message currently being displayed.
-LmDoublePaneController.prototype._getMsg =
+ZmDoublePaneController.prototype._getMsg =
 function() {
 	return this._listView[this._currentView].getSelection()[0];
 }
 
-LmDoublePaneController.prototype._dragListener =
+ZmDoublePaneController.prototype._dragListener =
 function(ev) {
-	LmListController.prototype._dragListener.call(this, ev);
+	ZmListController.prototype._dragListener.call(this, ev);
 	if (ev.action == DwtDragEvent.DRAG_END)
 		this._resetOperations(this._toolbar[this._currentView], this._doublePaneView.getSelection().length);
 }
 
-LmDoublePaneController.prototype._cacheList = 
+ZmDoublePaneController.prototype._cacheList = 
 function(search) {
 
 	if (this._list) {
-		var newList = search.getResults(LmItem.MSG).getVector();
+		var newList = search.getResults(ZmItem.MSG).getVector();
 		var offset = parseInt(search.getAttribute("offset"));
 		this._list.cache(offset, newList);
 	} else {
-		this._list = search.getResults(LmItem.MSG);
+		this._list = search.getResults(ZmItem.MSG);
 	}
 }
 
-LmDoublePaneController.prototype._resetOperations = 
+ZmDoublePaneController.prototype._resetOperations = 
 function(parent, num) {
-	LmMailListController.prototype._resetOperations.call(this, parent, num);
-	parent.enable(LmOperation.SHOW_ORIG, num == 1);
+	ZmMailListController.prototype._resetOperations.call(this, parent, num);
+	parent.enable(ZmOperation.SHOW_ORIG, num == 1);
 }
 
 // top level view means this view is allowed to get shown when user clicks on 
 // app icon in app toolbar - overload to not allow this.
-LmDoublePaneController.prototype._isTopLevelView = 
+ZmDoublePaneController.prototype._isTopLevelView = 
 function() {
 	return true;
 }

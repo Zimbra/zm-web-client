@@ -1,38 +1,38 @@
-function LmTagMenu(parent) {
+function ZmTagMenu(parent) {
 
 	// create a menu (though we don't put anything in it yet) so that parent widget shows it has one
-	LmPopupMenu.call(this, parent);
+	ZmPopupMenu.call(this, parent);
 
 	parent.setMenu(this);
-	this._changeListener = new LsListener(this, this._tagChangeListener);
+	this._changeListener = new AjxListener(this, this._tagChangeListener);
 	this._addHash = new Object();
 	this._removeHash = new Object();
-	this._evtMgr = new LsEventMgr();
+	this._evtMgr = new AjxEventMgr();
 	this._desiredState = true;
 }
 
-LmTagMenu.prototype = new LmPopupMenu;
-LmTagMenu.prototype.constructor = LmTagMenu;
+ZmTagMenu.prototype = new ZmPopupMenu;
+ZmTagMenu.prototype.constructor = ZmTagMenu;
 
-LmTagMenu.KEY_TAG_EVENT = "_tagEvent_";
-LmTagMenu.KEY_TAG_ADDED = "_tagAdded_";
+ZmTagMenu.KEY_TAG_EVENT = "_tagEvent_";
+ZmTagMenu.KEY_TAG_ADDED = "_tagAdded_";
 
-LmTagMenu.prototype.toString = 
+ZmTagMenu.prototype.toString = 
 function() {
-	return "LmTagMenu";
+	return "ZmTagMenu";
 }
 
-LmTagMenu.prototype.addSelectionListener = 
+ZmTagMenu.prototype.addSelectionListener = 
 function(listener) {
 	this._evtMgr.addListener(DwtEvent.SELECTION, listener);
 }
 
-LmTagMenu.prototype.removeSelectionListener = 
+ZmTagMenu.prototype.removeSelectionListener = 
 function(listener) {
 	this._evtMgr.removeListener(DwtEvent.SELECTION, listener);    	
 }
 
-LmTagMenu.prototype.setEnabled =
+ZmTagMenu.prototype.setEnabled =
 function(enabled) {
 	// If there are no tags, then enable later
 	this._desiredState = enabled;
@@ -42,7 +42,7 @@ function(enabled) {
 }
 
 // Dynamically set the list of tags that can be added/removed based on the given list of items.
-LmTagMenu.prototype.set =
+ZmTagMenu.prototype.set =
 function(items, tagList) {
 	if (this._tagList)
 		this._tagList.removeChangeListener(this._changeListener);
@@ -61,7 +61,7 @@ function(items, tagList) {
 // Given a list of items, produce two lists: one of tags that could be added (any tag
 // that the entire list doesn't have), and one of tags that could be removed (any tag
 // that any item has).
-LmTagMenu.prototype._getAddRemove = 
+ZmTagMenu.prototype._getAddRemove = 
 function(items, tagList) {
 	// find out how many times each tag shows up in the items
 	var tagCount = new Object();
@@ -94,7 +94,7 @@ function(items, tagList) {
 
 // Create the list of tags that can be added, and the submenu with the list of
 // tags that can be removed.
-LmTagMenu.prototype._render =
+ZmTagMenu.prototype._render =
 function(tagList, addRemove) {
 	var sz = tagList.size();
 	var a = tagList.children.getArray();
@@ -113,16 +113,16 @@ function(tagList, addRemove) {
 
 	// add static "New Tag" menu item
 	var miNew = new DwtMenuItem(this);
-	miNew.setText(LsStringUtil.htmlEncode(LmMsg.newTag));
-	miNew.setImage(LmImg.I_NEW_TAG);
-	miNew.setData(LmTagMenu.KEY_TAG_EVENT, LmEvent.E_CREATE);
-	miNew.addSelectionListener(new LsListener(this, this._menuItemSelectionListener));
+	miNew.setText(AjxStringUtil.htmlEncode(LmMsg.newTag));
+	miNew.setImage(ZmImg.I_NEW_TAG);
+	miNew.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_CREATE);
+	miNew.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener));
 
 	// add static "Remove Tag" menu item
 	var miRemove = new DwtMenuItem(this);
 	miRemove.setEnabled(false);
-	miRemove.setText(LsStringUtil.htmlEncode(LmMsg.removeTag));
-	miRemove.setImage(LmImg.I_DELETE_TAG);
+	miRemove.setText(AjxStringUtil.htmlEncode(LmMsg.removeTag));
+	miRemove.setImage(ZmImg.I_DELETE_TAG);
 
 	if (removeList.length > 0) {
 		miRemove.setEnabled(true);
@@ -138,10 +138,10 @@ function(tagList, addRemove) {
 			}
 		} else if (removeList.length == 1) {
 			var tag = tagList.getById(removeList[0]);
-			miRemove.setData(LmTagMenu.KEY_TAG_EVENT, LmEvent.E_TAGS);
-			miRemove.setData(LmTagMenu.KEY_TAG_ADDED, false);
+			miRemove.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_TAGS);
+			miRemove.setData(ZmTagMenu.KEY_TAG_ADDED, false);
 			miRemove.setData(Dwt.KEY_OBJECT, tag);
-			miRemove.addSelectionListener(new LsListener(this, this._menuItemSelectionListener));
+			miRemove.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener));
 		}		
 
 		// if multiple removable tags, offer "Remove All"
@@ -149,33 +149,33 @@ function(tagList, addRemove) {
 			new DwtMenuItem(removeMenu, DwtMenuItem.SEPARATOR_STYLE);
 			var mi = new DwtMenuItem(removeMenu);
 			mi.setText(LmMsg.allTags);
-			mi.setImage(LmImg.I_MINI_TAG_STACK);
-			mi.setData(LmTagMenu.KEY_TAG_EVENT, LmEvent.E_REMOVE_ALL);
+			mi.setImage(ZmImg.I_MINI_TAG_STACK);
+			mi.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_REMOVE_ALL);
 			mi.setData(Dwt.KEY_OBJECT, removeList);
-			mi.addSelectionListener(new LsListener(this, this._menuItemSelectionListener));
+			mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener));
 		}
 	}
 }
 
-LmTagMenu.prototype._addNewTag =
+ZmTagMenu.prototype._addNewTag =
 function(menu, newTag, add, index, tagHash) {
 	var mi = new DwtMenuItem(menu, null, null, index);
 	mi.setText(newTag.getName(false));
-	mi.setImage(LmTag.COLOR_ICON[newTag.color]);
-	mi.setData(LmTagMenu.KEY_TAG_EVENT, LmEvent.E_TAGS);
-	mi.setData(LmTagMenu.KEY_TAG_ADDED, add);
+	mi.setImage(ZmTag.COLOR_ICON[newTag.color]);
+	mi.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_TAGS);
+	mi.setData(ZmTagMenu.KEY_TAG_ADDED, add);
 	mi.setData(Dwt.KEY_OBJECT, newTag);
-	mi.addSelectionListener(new LsListener(this, this._menuItemSelectionListener));
+	mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener));
 	tagHash[newTag.id] = mi;
 }
 
-LmTagMenu.prototype._tagChangeListener =
+ZmTagMenu.prototype._tagChangeListener =
 function(ev) {
-	if (ev.type != LmEvent.S_TAG)
+	if (ev.type != ZmEvent.S_TAG)
 		return;
-	if (ev.event == LmEvent.E_RENAME) {
-		DBG.println(LsDebug.DBG2, "TAG RENAME");
-	} else if (ev.event == LmEvent.E_DELETE) {
+	if (ev.event == ZmEvent.E_RENAME) {
+		DBG.println(AjxDebug.DBG2, "TAG RENAME");
+	} else if (ev.event == ZmEvent.E_DELETE) {
 		var mi;
 		if (mi = this._addHash[ev.source.id])
 			mi.dispose();
@@ -186,21 +186,21 @@ function(ev) {
 			this.parent.setMenu(null);
 			this.parent.setEnabled(false);
 		}		
-	} else if (ev.event == LmEvent.E_CREATE) {
-		var index = LmTreeView.getSortIndex(this, ev.source, LmTag.sortCompare);
+	} else if (ev.event == ZmEvent.E_CREATE) {
+		var index = ZmTreeView.getSortIndex(this, ev.source, ZmTag.sortCompare);
 		this._addNewTag(this, ev.source, true, index, this._addHash);
 		this.parent.setEnabled(this._desiredState); // in case this is first child
-	} else if (ev.event == LmEvent.E_MODIFY) {
+	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var tag = ev.source;
 		var fields = ev.getDetail("fields");
 		var mi;
-		if (fields && fields[LmOrganizer.F_COLOR]) {
+		if (fields && fields[ZmOrganizer.F_COLOR]) {
 			if (mi = this._addHash[tag.id])
-				mi.setImage(LmTag.COLOR_ICON[tag.color]);
+				mi.setImage(ZmTag.COLOR_ICON[tag.color]);
 			if (mi = this._removeHash[ev.source.id])
-				mi.setImage(LmTag.COLOR_ICON[tag.color]);
+				mi.setImage(ZmTag.COLOR_ICON[tag.color]);
 		}
-		if ((fields && fields[LmOrganizer.F_NAME]) || (fields && fields[LmOrganizer.F_UNREAD])) {
+		if ((fields && fields[ZmOrganizer.F_NAME]) || (fields && fields[ZmOrganizer.F_UNREAD])) {
 			if (mi = this._addHash[tag.id])
 				mi.setText(tag.getName(false));
 			if (mi = this._removeHash[tag.id])
@@ -209,10 +209,10 @@ function(ev) {
 	}
 }
 
-LmTagMenu.prototype._menuItemSelectionListener =
+ZmTagMenu.prototype._menuItemSelectionListener =
 function(ev) {
 	// Only notify if the node is one of our nodes
-	if (ev.item.getData(LmTagMenu.KEY_TAG_EVENT)) {
+	if (ev.item.getData(ZmTagMenu.KEY_TAG_EVENT)) {
 		this._evtMgr.notifyListeners(DwtEvent.SELECTION, ev.item);
 	}
 }

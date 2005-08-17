@@ -6,61 +6,61 @@
  */
 // event handling
 
-function LmFilterRule (name, isActive) {
+function ZmFilterRule (name, isActive) {
 	this.name = name;
 	this.groupOp = "anyof";
 	this.actions = new Array();
 	this.conditions = new Array();
 	this.active = isActive;
-	this._id = LmFilterRule._uniqueId++;
+	this._id = ZmFilterRule._uniqueId++;
 }
 
-LmFilterRule._uniqueId = 0;
+ZmFilterRule._uniqueId = 0;
 
-LmFilterRule.prototype.getUniqueId = function() {
+ZmFilterRule.prototype.getUniqueId = function() {
 	return this._id;
 };
 
-LmFilterRule.prototype.setActive = function (isActive) {
+ZmFilterRule.prototype.setActive = function (isActive) {
 	this.active = isActive;
 };
 
-LmFilterRule.prototype.isActive = function () {
+ZmFilterRule.prototype.isActive = function () {
 	return this.active;
 };
 
-LmFilterRule.prototype.setGroupOp = function (groupOp) {
+ZmFilterRule.prototype.setGroupOp = function (groupOp) {
 	this.groupOp = groupOp;
 };
 
-LmFilterRule.prototype.toString = function() {
-	return "LmFilterRules";
+ZmFilterRule.prototype.toString = function() {
+	return "ZmFilterRules";
 };
 
-LmFilterRule.prototype.getName = function () {
+ZmFilterRule.prototype.getName = function () {
 	return this.name;
 };
 
-LmFilterRule.prototype.setName = function (newName) {
+ZmFilterRule.prototype.setName = function (newName) {
 	this.name = newName;
 };
 
-LmFilterRule.prototype.getConditionsOperator = function () {
+ZmFilterRule.prototype.getConditionsOperator = function () {
 	return this.groupOp;
 };
 
-LmFilterRule.prototype.addAction = function (name, arg) {
+ZmFilterRule.prototype.addAction = function (name, arg) {
 	if (name) {
 		this.actions.push(new LmAction(name, arg));
 	}
 };
 
-LmFilterRule.prototype.clearActions = function () {
+ZmFilterRule.prototype.clearActions = function () {
 	this.actions = null;
 	this.actions = new Array();
 };
 
-LmFilterRule.prototype.clearConditions = function () {
+ZmFilterRule.prototype.clearConditions = function () {
 	this.conditions = null;
 	this.conditions = new Array();
 };
@@ -69,7 +69,7 @@ LmFilterRule.prototype.clearConditions = function () {
 /**
  * only accepts LmConditions, fails silently if it's not an LmCondition
  */
-LmFilterRule.prototype.addCondition = function (conditionName, lhs, 
+ZmFilterRule.prototype.addCondition = function (conditionName, lhs, 
 												opValue, rhs, mod) {
 	if (conditionName && opValue) {
 		this.conditions.push(new LmCondition(conditionName, lhs, opValue,
@@ -78,9 +78,9 @@ LmFilterRule.prototype.addCondition = function (conditionName, lhs,
 };
 
 // a place-holder rule used for adding a new rule
-LmFilterRule.DUMMY_RULE = new LmFilterRule;
-LmFilterRule.DUMMY_RULE.conditions = [ new LmCondition ];
-LmFilterRule.DUMMY_RULE.actions = [ new LmAction ];
+ZmFilterRule.DUMMY_RULE = new ZmFilterRule;
+ZmFilterRule.DUMMY_RULE.conditions = [ new LmCondition ];
+ZmFilterRule.DUMMY_RULE.actions = [ new LmAction ];
 
 /*
  * Condition. Each condition has the following fields:

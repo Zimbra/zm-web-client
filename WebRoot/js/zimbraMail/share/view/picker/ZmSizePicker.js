@@ -1,19 +1,19 @@
-function LmSizePicker(parent) {
+function ZmSizePicker(parent) {
 
-	LmPicker.call(this, parent, LmPicker.SIZE);
+	ZmPicker.call(this, parent, ZmPicker.SIZE);
 }
 
-LmSizePicker.prototype = new LmPicker;
-LmSizePicker.prototype.constructor = LmSizePicker;
+ZmSizePicker.prototype = new ZmPicker;
+ZmSizePicker.prototype.constructor = ZmSizePicker;
 
-LmPicker.CTOR[LmPicker.SIZE] = LmSizePicker;
+ZmPicker.CTOR[ZmPicker.SIZE] = ZmSizePicker;
 
-LmSizePicker.prototype.toString = 
+ZmSizePicker.prototype.toString = 
 function() {
-	return "LmSizePicker";
+	return "ZmSizePicker";
 }
 
-LmSizePicker.prototype._setupPicker =
+ZmSizePicker.prototype._setupPicker =
 function(parent) {
 	var picker = new DwtComposite(parent);
 
@@ -57,23 +57,23 @@ function(parent) {
 	this._units = this._setupField(unitsId);
 }
 
-LmSizePicker.prototype._setupField = 
+ZmSizePicker.prototype._setupField = 
 function(id) {
 	var f = Dwt.getDomObj(this.getDocument(), id);
-	f.onchange = LmSizePicker._onChange;
+	f.onchange = ZmSizePicker._onChange;
 	f._picker = this;
 	return f;
 }
 
-LmSizePicker.prototype._setupSizeField = 
+ZmSizePicker.prototype._setupSizeField = 
 function(id) {
 	var f = Dwt.getDomObj(this.getDocument(), id);
-	f.onkeyup = LmSizePicker._onKeyUp;
+	f.onkeyup = ZmSizePicker._onKeyUp;
 	f._picker = this;
 	return f;
 }
 
-LmSizePicker._onChange =
+ZmSizePicker._onChange =
 function(ev) {
 	var element = DwtUiEvent.getTarget(ev);
 	var picker = element._picker;
@@ -81,7 +81,7 @@ function(ev) {
 	picker.execute();
 }
 
-LmSizePicker._onKeyUp =
+ZmSizePicker._onKeyUp =
 function(ev) {
 	var element = DwtUiEvent.getTarget(ev);
 	var picker = element._picker;
@@ -96,7 +96,7 @@ function(ev) {
 
 }
 
-LmSizePicker.prototype._updateQuery = 
+ZmSizePicker.prototype._updateQuery = 
 function() {
 	if (this._size.value && this._size.value.match(/^[1-9][0-9]*$/)) {
 		this.setQuery(this._op.value + ":" + this._size.value + this._units.value);

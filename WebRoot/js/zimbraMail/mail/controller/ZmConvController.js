@@ -11,23 +11,23 @@
 * @param container	containing shell
 * @param mailApp	containing app
 */
-function LmConvController(appCtxt, container, mailApp) {
+function ZmConvController(appCtxt, container, mailApp) {
 
-	LmDoublePaneController.call(this, appCtxt, container, mailApp);
+	ZmDoublePaneController.call(this, appCtxt, container, mailApp);
 
-	this._convDeleteListener = new LsListener(this, this._deleteListener);
-	this._listeners[LmOperation.DELETE_MENU] = this._convDeleteListener;
-	this._listeners[LmOperation.CLOSE] = new LsListener(this, this._backListener);
+	this._convDeleteListener = new AjxListener(this, this._deleteListener);
+	this._listeners[ZmOperation.DELETE_MENU] = this._convDeleteListener;
+	this._listeners[ZmOperation.CLOSE] = new AjxListener(this, this._backListener);
 }
 
-LmConvController.prototype = new LmDoublePaneController;
-LmConvController.prototype.constructor = LmConvController;
+ZmConvController.prototype = new ZmDoublePaneController;
+ZmConvController.prototype.constructor = ZmConvController;
 
 // Public methods
 
-LmConvController.prototype.toString = 
+ZmConvController.prototype.toString = 
 function() {
-	return "LmConvController";
+	return "ZmConvController";
 }
 
 /**
@@ -37,66 +37,66 @@ function() {
 *
 * @param activeSearch	the current search results
 * @param searchString	the current search query string
-* @param conv			a conversation (LmConv)
+* @param conv			a conversation (ZmConv)
 */
-LmConvController.prototype.show =
+ZmConvController.prototype.show =
 function(activeSearch, searchString, conv) {
 	this._conv = conv;
 	// always reset offset & sortby to asc.
 	if (this._listView[this._currentView]) {
 		this._listView[this._currentView].setOffset(0);	
-		this._listView[this._currentView].setSortByAsc(LmItem.F_DATE, false);
+		this._listView[this._currentView].setSortByAsc(ZmItem.F_DATE, false);
 	}
-	this._setViewMenu(LmController.CONV_VIEW);
+	this._setViewMenu(ZmController.CONV_VIEW);
 
 	// this._list will be set when conv is loaded
-	LmDoublePaneController.prototype.show.call(this, activeSearch, searchString, conv);
+	ZmDoublePaneController.prototype.show.call(this, activeSearch, searchString, conv);
 }
 
-LmConvController.prototype.getConv = 
+ZmConvController.prototype.getConv = 
 function() {
 	return this._conv;
 }
 
 // Private and protected methods
 
-LmConvController.prototype._createDoublePaneView = 
+ZmConvController.prototype._createDoublePaneView = 
 function() {
-	return new LmConvView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
+	return new ZmConvView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
 }
 
 // Creates the conv view, which is not a standard list view (it's a two-pane sort of thing).
-LmConvController.prototype._initialize =
+ZmConvController.prototype._initialize =
 function(view) {
-	LmDoublePaneController.prototype._initialize.call(this, view);
+	ZmDoublePaneController.prototype._initialize.call(this, view);
 	
 	// set up custom listeners for this view 
 	if (this._doublePaneView)
-		this._doublePaneView.addTagClickListener(new LsListener(this, LmConvController.prototype._convTagClicked));
+		this._doublePaneView.addTagClickListener(new AjxListener(this, ZmConvController.prototype._convTagClicked));
 }
 
-LmConvController.prototype._initializeToolBar = 
+ZmConvController.prototype._initializeToolBar = 
 function(view) {
 	if (!this._toolbar[view])
-		LmDoublePaneController.prototype._initializeToolBar.call(this, view, LmNavToolBar.ALL_ARROWS);
+		ZmDoublePaneController.prototype._initializeToolBar.call(this, view, ZmNavToolBar.ALL_ARROWS);
 	this._setupDeleteMenu(view);	// ALWAYS call setup to turn delete menu on/off
 }
 
-LmConvController.prototype._setupViewMenu =
+ZmConvController.prototype._setupViewMenu =
 function(view) {
 	this._setupReadingPaneMenuItem(view, null, true);
 }
 
-LmConvController.prototype._setupDeleteMenu =
+ZmConvController.prototype._setupDeleteMenu =
 function(view) {
-	var delButton = this._toolbar[view].getButton(LmOperation.DELETE_MENU);
+	var delButton = this._toolbar[view].getButton(ZmOperation.DELETE_MENU);
 	if (this._conv.numMsgs > 1) {
-		var menu = new LmPopupMenu(delButton);
+		var menu = new ZmPopupMenu(delButton);
 		delButton.setMenu(menu);
 		
-		var mi = menu.createMenuItem(LmOperation.DELETE_CONV, LmOperation.IMAGE[LmOperation.DELETE_CONV], LmMsg[LmOperation.MSG_KEY[LmOperation.DELETE_CONV]]);
-		mi.setData(LmOperation.MENUITEM_ID, LmOperation.DELETE_CONV);
-		mi.addSelectionListener(this._listeners[LmOperation.DELETE]);
+		var mi = menu.createMenuItem(ZmOperation.DELETE_CONV, ZmOperation.IMAGE[ZmOperation.DELETE_CONV], LmMsg[ZmOperation.MSG_KEY[ZmOperation.DELETE_CONV]]);
+		mi.setData(ZmOperation.MENUITEM_ID, ZmOperation.DELETE_CONV);
+		mi.addSelectionListener(this._listeners[ZmOperation.DELETE]);
 
 	} else {
 		if (delButton.getMenu())
@@ -104,40 +104,40 @@ function(view) {
 	}
 }
 
-LmConvController.prototype._getToolBarOps =
+ZmConvController.prototype._getToolBarOps =
 function() {
-	var list = LmDoublePaneController.prototype._getToolBarOps.call(this);
-	list.push(LmOperation.CLOSE);
+	var list = ZmDoublePaneController.prototype._getToolBarOps.call(this);
+	list.push(ZmOperation.CLOSE);
 	return list;
 }
 
-LmConvController.prototype._standardToolBarOps =
+ZmConvController.prototype._standardToolBarOps =
 function() {
-	var list = [LmOperation.NEW_MENU];
-	if (this._appCtxt.get(LmSetting.TAGGING_ENABLED))
-		list.push(LmOperation.TAG_MENU);
-	if (this._appCtxt.get(LmSetting.PRINT_ENABLED))
-		list.push(LmOperation.PRINT);
-	list.push(LmOperation.DELETE_MENU, LmOperation.MOVE);
+	var list = [ZmOperation.NEW_MENU];
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+		list.push(ZmOperation.TAG_MENU);
+	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
+		list.push(ZmOperation.PRINT);
+	list.push(ZmOperation.DELETE_MENU, ZmOperation.MOVE);
 	return list;
 }
 
-LmConvController.prototype._getViewType =
+ZmConvController.prototype._getViewType =
 function() {
-	return LmController.CONV_VIEW;
+	return ZmController.CONV_VIEW;
 }
 
-LmConvController.prototype._getItemType =
+ZmConvController.prototype._getItemType =
 function() {
-	return LmItem.MSG;
+	return ZmItem.MSG;
 }
 
-LmConvController.prototype._defaultView =
+ZmConvController.prototype._defaultView =
 function() {
-	return LmController.CONV_VIEW;
+	return ZmController.CONV_VIEW;
 }
 
-LmConvController.prototype._resetSelection = 
+ZmConvController.prototype._resetSelection = 
 function(idx) {
 	// do nothing (dont want base class functionality)
 }
@@ -145,16 +145,16 @@ function(idx) {
 // Operation listeners
 
 // Delete one or more items.
-LmConvController.prototype._deleteListener = 
+ZmConvController.prototype._deleteListener = 
 function(ev) {
 	
-	if (ev.item.getData(LmOperation.MENUITEM_ID) == LmOperation.DELETE_CONV) {
+	if (ev.item.getData(ZmOperation.MENUITEM_ID) == ZmOperation.DELETE_CONV) {
 		// use conv list controller to delete conv
 		var clc = this._app.getConvListController();
 		clc._schedule(clc._doDelete, {items: [this._conv]});
 		this._app.popView();
 	} else {
-		LmDoublePaneController.prototype._deleteListener.call(this, ev);
+		ZmDoublePaneController.prototype._deleteListener.call(this, ev);
 	}
 }
 
@@ -162,7 +162,7 @@ function(ev) {
 // folder contents, see if this conv still belongs in that folder. It does if it has at least
 // one message still in that folder. Note that the conv item in the CLV isn't physically moved
 // or deleted, it's just removed from the view and its underlying list.
-LmConvController.prototype._checkConvLocation =
+ZmConvController.prototype._checkConvLocation =
 function() {
 	var clc = this._app.getConvListController();
 	var list = clc.getList();
@@ -176,7 +176,7 @@ function() {
 }
 
 // Tag in the summary area clicked, do a tag search.
-LmConvController.prototype._convTagClicked =
+ZmConvController.prototype._convTagClicked =
 function(tagId) {
 	var tag = this._appCtxt.getTagList().getById(tagId);
 	var query = 'tag:"' + tag.name + '"';
@@ -184,29 +184,29 @@ function(tagId) {
 	searchController.search(query);
 }
 
-LmConvController.prototype._doDelete =
+ZmConvController.prototype._doDelete =
 function(params) {
-	LmDoublePaneController.prototype._doDelete.call(this, params);
+	ZmDoublePaneController.prototype._doDelete.call(this, params);
 	this._checkConvLocation();
 }
 
-LmConvController.prototype._doMove =
+ZmConvController.prototype._doMove =
 function(params) {
-	LmDoublePaneController.prototype._doMove.call(this, params);
+	ZmDoublePaneController.prototype._doMove.call(this, params);
 	this._checkConvLocation();
 }
 
-LmConvController.prototype._doSpam =
+ZmConvController.prototype._doSpam =
 function(params) {
-	LmDoublePaneController.prototype._doSpam.call(this, params);
+	ZmDoublePaneController.prototype._doSpam.call(this, params);
 	this._checkConvLocation();
 }
 
 // Handle DnD tagging (can only add a tag to a single item) - if a tag got dropped onto
 // a msg, we need to update its conv
-LmConvController.prototype._dropListener =
+ZmConvController.prototype._dropListener =
 function(ev) {
-	LmListController.prototype._dropListener.call(this, ev);
+	ZmListController.prototype._dropListener.call(this, ev);
 	// need to check to make sure tagging actually happened
 	if (ev.action == DwtDropEvent.DRAG_DROP) {
 		var div = DwtUiEvent.getTargetWithProp(ev.uiEvent, "_itemIndex");
@@ -223,7 +223,7 @@ function(ev) {
 
 // called after a delete has occurred. 
 // Return value indicates whether view was popped as a result of a delete
-LmConvController.prototype.handleDelete = 
+ZmConvController.prototype.handleDelete = 
 function() {
 	
 	var popView = true;
@@ -258,66 +258,66 @@ function() {
 		var bAllDeleted = true;
 		var selection = this._listView[this._currentView].getSelection();
 		for (var i = 0; i < selection.length; i++) {
-			if (selection[i].folderId != LmFolder.ID_TRASH) {
+			if (selection[i].folderId != ZmFolder.ID_TRASH) {
 				bAllDeleted = false;
 				break;
 			}
 		}
-		this._toolbar[this._currentView].getButton(LmOperation.DELETE_MENU).setEnabled(!bAllDeleted);
+		this._toolbar[this._currentView].getButton(ZmOperation.DELETE_MENU).setEnabled(!bAllDeleted);
 	}
 
 	return popView;
 }
 
-LmConvController.prototype._resetOperations = 
+ZmConvController.prototype._resetOperations = 
 function(parent, num) {
-	LmDoublePaneController.prototype._resetOperations.call(this, parent, num);
+	ZmDoublePaneController.prototype._resetOperations.call(this, parent, num);
 
 	var canDelete = true;
-	if (this._getSearchFolderId() != LmFolder.ID_TRASH) {
+	if (this._getSearchFolderId() != ZmFolder.ID_TRASH) {
 		// if all selected items are deleted, then disable delete button
 		// XXX: hmmm, that also disables "Delete Conv" in the menu
 		canDelete = false;
 		var selItems = this._listView[this._currentView].getSelection();
 		for (var i = 0; i < selItems.length; i++) {
-			if (selItems[i] && selItems[i].folderId != LmFolder.ID_TRASH) {
+			if (selItems[i] && selItems[i].folderId != ZmFolder.ID_TRASH) {
 				canDelete = true;
 				break;
 			}
 		}
 	}
 	
-	parent.enable(LmOperation.DELETE_MENU, canDelete);
-	parent.enable(LmOperation.CLOSE, true);
+	parent.enable(ZmOperation.DELETE_MENU, canDelete);
+	parent.enable(ZmOperation.CLOSE, true);
 }
 
-LmConvController.prototype._resetNavToolBarButtons = 
+ZmConvController.prototype._resetNavToolBarButtons = 
 function(view) {
-	LmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
+	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
 
 	var list = this._conv.list.getVector();
 	
 	// enable/disable up/down buttons per conversation index
 	var first = list.get(0);
-	this._navToolBar.enable(LmOperation.PAGE_DBL_BACK, (first && first != this._conv));
+	this._navToolBar.enable(ZmOperation.PAGE_DBL_BACK, (first && first != this._conv));
 	var enablePgDn = this._conv.list.hasMore() || (list.getLast() != this._conv);
-	this._navToolBar.enable(LmOperation.PAGE_DBL_FORW, enablePgDn);
+	this._navToolBar.enable(ZmOperation.PAGE_DBL_FORW, enablePgDn);
 
-	this._navToolBar.setToolTip(LmOperation.PAGE_BACK, LmMsg.previous + " " + LmMsg.page);	
-	this._navToolBar.setToolTip(LmOperation.PAGE_FORWARD, LmMsg.next + " " + LmMsg.page);
-	this._navToolBar.setToolTip(LmOperation.PAGE_DBL_BACK, LmMsg.previous + " " + LmMsg.conversation);
-	this._navToolBar.setToolTip(LmOperation.PAGE_DBL_FORW, LmMsg.next + " " + LmMsg.conversation);
+	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, LmMsg.previous + " " + LmMsg.page);	
+	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, LmMsg.next + " " + LmMsg.page);
+	this._navToolBar.setToolTip(ZmOperation.PAGE_DBL_BACK, LmMsg.previous + " " + LmMsg.conversation);
+	this._navToolBar.setToolTip(ZmOperation.PAGE_DBL_FORW, LmMsg.next + " " + LmMsg.conversation);
 }
 
 // overloaded...
-LmConvController.prototype._search = 
+ZmConvController.prototype._search = 
 function(view, offset, limit, callback) {
 
-	var sortby = this._appCtxt.get(LmSetting.SORTING_PREF, view);
+	var sortby = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
 	this._schedule(this._doSearch, {sortby: sortby, offset: offset, limit: limit, callback: callback});
 }
 
-LmConvController.prototype._doSearch = 
+ZmConvController.prototype._doSearch = 
 function(params) {
 	try {
 		this._conv.load(this._searchString, params.sortby, params.offset, params.limit, params.callback);
@@ -326,16 +326,16 @@ function(params) {
 	}
 }
 
-LmConvController.prototype._paginateDouble = 
+ZmConvController.prototype._paginateDouble = 
 function(bDoubleForward) {
 	var clc = this._app.getConvListController();
 	if (clc)
 		clc.pageItemSilently(this._conv, bDoubleForward);
 }
 
-LmConvController.prototype._paginateCallback = 
+ZmConvController.prototype._paginateCallback = 
 function(args) {
-	LmMailListController.prototype._paginateCallback.call(this, args);
+	ZmMailListController.prototype._paginateCallback.call(this, args);
 	
 	var msgIdx = args[1];
 	var newMsg = msgIdx ? this._list.getVector().get(msgIdx) : null;
@@ -343,14 +343,14 @@ function(args) {
 		this._listView[this._currentView].emulateDblClick(newMsg);
 }
 
-LmConvController.prototype._getSearchFolderId = 
+ZmConvController.prototype._getSearchFolderId = 
 function() {
 	return this._conv.list.search.folderId;
 }
 
 // top level view means this view is allowed to get shown when user clicks on 
 // app icon in app toolbar - we dont want conv view to be top level (always show CLV)
-LmConvController.prototype._isTopLevelView = 
+ZmConvController.prototype._isTopLevelView = 
 function() {
 	return false;
 }

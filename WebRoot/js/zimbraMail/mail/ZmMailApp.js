@@ -1,58 +1,58 @@
-function LmMailApp(appCtxt, container, parentController) {
-	LmApp.call(this, LmLiquidMail.MAIL_APP, appCtxt, container, parentController);
+function ZmMailApp(appCtxt, container, parentController) {
+	ZmApp.call(this, ZmLiquidMail.MAIL_APP, appCtxt, container, parentController);
 }
 
-LmMailApp.prototype = new LmApp;
-LmMailApp.prototype.constructor = LmMailApp;
+ZmMailApp.prototype = new ZmApp;
+ZmMailApp.prototype.constructor = ZmMailApp;
 
-LmMailApp.prototype.toString = 
+ZmMailApp.prototype.toString = 
 function() {
-	return "LmMailApp";
+	return "ZmMailApp";
 }
 
-LmMailApp.prototype.launch =
+ZmMailApp.prototype.launch =
 function() {
-	this._appCtxt.getSearchController().search(this._appCtxt.get(LmSetting.INITIAL_SEARCH));
+	this._appCtxt.getSearchController().search(this._appCtxt.get(ZmSetting.INITIAL_SEARCH));
 }
 
-LmMailApp.prototype.getAttachmentListController =
+ZmMailApp.prototype.getAttachmentListController =
 function() {
 	if (!this._attachmentListController)
-		this._attachmentListController = new LmAttachmentListController(this._appCtxt, this._container, this);
+		this._attachmentListController = new ZmAttachmentListController(this._appCtxt, this._container, this);
 	return this._attachmentListController;
 }
 
-LmMailApp.prototype.getConvListController =
+ZmMailApp.prototype.getConvListController =
 function() {
 	if (!this._convListController)
-		this._convListController = new LmConvListController(this._appCtxt, this._container, this);
+		this._convListController = new ZmConvListController(this._appCtxt, this._container, this);
 	return this._convListController;
 }
 
-LmMailApp.prototype.getConvController =
+ZmMailApp.prototype.getConvController =
 function() {
 	if (!this._convController)
-		this._convController = new LmConvController(this._appCtxt, this._container, this);
+		this._convController = new ZmConvController(this._appCtxt, this._container, this);
 	return this._convController;
 }
 
-LmMailApp.prototype.getTradController = 
+ZmMailApp.prototype.getTradController = 
 function() {
 	if (!this._tradController)
-		this._tradController = new LmTradController(this._appCtxt, this._container, this);
+		this._tradController = new ZmTradController(this._appCtxt, this._container, this);
 	return this._tradController;
 }
 
-LmMailApp.prototype.getMsgController = 
+ZmMailApp.prototype.getMsgController = 
 function() {
 	if (!this._msgController)
-		this._msgController = new LmMsgController(this._appCtxt, this._container, this);
+		this._msgController = new ZmMsgController(this._appCtxt, this._container, this);
 	return this._msgController;
 }
 
-LmMailApp.prototype.getComposeController =
+ZmMailApp.prototype.getComposeController =
 function() {
 	if (!this._composeController)
-		this._composeController = new LmComposeController(this._appCtxt, this._container, this);
+		this._composeController = new ZmComposeController(this._appCtxt, this._container, this);
 	return this._composeController;
 }

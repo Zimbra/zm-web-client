@@ -1,37 +1,37 @@
-function LmToolBar(parent, className, posStyle) {
+function ZmToolBar(parent, className, posStyle) {
 
 	if (arguments.length == 0) return;
-	className = className ? className : "LmToolBar";
+	className = className ? className : "ZmToolBar";
 	posStyle = posStyle ? posStyle : DwtControl.ABSOLUTE_STYLE;
 		
 	DwtToolBar.call(this, parent, className, posStyle);
 	this._buttons = new Object();
 }
 
-LmToolBar.prototype = new DwtToolBar;
-LmToolBar.prototype.constructor = LmToolBar;
+ZmToolBar.prototype = new DwtToolBar;
+ZmToolBar.prototype.constructor = ZmToolBar;
 
-LmToolBar.prototype.toString = 
+ZmToolBar.prototype.toString = 
 function() {
-	return "LmToolBar";
+	return "ZmToolBar";
 }
 
-LmToolBar.prototype.addSelectionListener =
+ZmToolBar.prototype.addSelectionListener =
 function(buttonId, listener) {
 	this._buttons[buttonId].addSelectionListener(listener);
 }
 
-LmToolBar.prototype.removeSelectionListener =
+ZmToolBar.prototype.removeSelectionListener =
 function(buttonId, listener) {
 	this._buttons[buttonId].removeSelectionListener(listener);
 }
 
-LmToolBar.prototype.getButton =
+ZmToolBar.prototype.getButton =
 function(buttonId) {
 	return this._buttons[buttonId];
 }
 
-LmToolBar.prototype.setData = 
+ZmToolBar.prototype.setData = 
 function(buttonId, key, data) {
 	this._buttons[buttonId].setData(key, data);
 }
@@ -42,7 +42,7 @@ function(buttonId, key, data) {
 * @param ids		a list of button IDs
 * @param enabled	whether to enable the buttons
 */
-LmToolBar.prototype.enable =
+ZmToolBar.prototype.enable =
 function(ids, enabled) {
 	if (!(ids instanceof Array))
 		ids = [ids];
@@ -51,13 +51,13 @@ function(ids, enabled) {
 			this._buttons[ids[i]].setEnabled(enabled);
 }
 
-LmToolBar.prototype.enableAll =
+ZmToolBar.prototype.enableAll =
 function(enabled) {
 	for (var i in this._buttons)
 		this._buttons[i].setEnabled(enabled);
 }
 
-LmToolBar.prototype._createButton =
+ZmToolBar.prototype._createButton =
 function(buttonId, imageInfo, text, disImageInfo, toolTip, enabled, style, align) {
 	if (!style)
 		style = "TBButton";
@@ -75,12 +75,12 @@ function(buttonId, imageInfo, text, disImageInfo, toolTip, enabled, style, align
 	return b;
 }
 
-LmToolBar.prototype._createSeparator =
+ZmToolBar.prototype._createSeparator =
 function() {
 	new DwtControl(this, "vertSep");
 }
 
-LmToolBar.prototype._buttonId =
+ZmToolBar.prototype._buttonId =
 function(button) {
 	return button.getData("_buttonId");
 }
