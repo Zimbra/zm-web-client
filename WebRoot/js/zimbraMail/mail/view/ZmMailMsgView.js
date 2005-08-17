@@ -382,9 +382,9 @@ function() {
 
 ZmMailMsgView.prototype._addAddressHeaderHtml =
 function(htmlArr, idx, addrs, prefix) {
-	htmlArr[idx++] = "<tr><td class='ZabelColName'>";
+	htmlArr[idx++] = "<tr><td class='LabelColName'>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(prefix);
-	htmlArr[idx++] = ": </td><td class='ZabelColValue'>";
+	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
 	for (var i = 0; i < addrs.size(); i++) {
 		if (i > 0)
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmEmailAddress.SEPARATOR);
@@ -413,7 +413,7 @@ function(msg, container) {
 	htmlArr[idx++] = "<table id='" + this._hdrTableId + "' cellspacing=2 cellpadding=2 border=0 " + w + " >";
 	
 	// Date
-	htmlArr[idx++] = "<tr><td class='ZabelColName'>";
+	htmlArr[idx++] = "<tr><td class='LabelColName'>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.sent);
 	htmlArr[idx++] = ": </td><td>";
 	htmlArr[idx++] = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
@@ -433,18 +433,18 @@ function(msg, container) {
 
 	// Subject
 	var subject = msg.getSubject() || ZmMsg.noSubject;
-	htmlArr[idx++] = "<tr><td class='ZabelColName'>";
+	htmlArr[idx++] = "<tr><td class='LabelColName'>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.subject);
-	htmlArr[idx++] = ": </td><td class='ZabelColValue'>";
+	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
 	htmlArr[idx++] = this._objectManager ? this._objectManager.findObjects(subject, true) : subject;
 	htmlArr[idx++] = "</td></tr>"
 	
 	// Attachments
 	var attLinks = msg.buildAttachLinks(true, this.getDocument().domain);
 	if (attLinks.length > 0) {
-		htmlArr[idx++] = "<tr><td class='ZabelColName'>";
+		htmlArr[idx++] = "<tr><td class='LabelColName'>";
 		htmlArr[idx++] = ZmMsg.attachments;
-		htmlArr[idx++] = ": </td><td class='ZabelColValue'>";
+		htmlArr[idx++] = ": </td><td class='LabelColValue'>";
 		for (var i = 0; i<attLinks.length; i++)
 			htmlArr[idx++] = attLinks[i].html;
 		htmlArr[idx++] = "</td></tr>";
@@ -516,10 +516,10 @@ function(msg) {
 		tagRow = table.insertRow(-1);
 		tagRow.id = this._tagRowId;
 		var tagCell = tagRow.insertCell(-1);
-		tagCell.className = "ZabelColName";
+		tagCell.className = "LabelColName";
 		tagCell.innerHTML = ZmMsg.tags + ": ";
 		tagCell = tagRow.insertCell(-1);
-		tagCell.className = "ZabelColValue";
+		tagCell.className = "LabelColValue";
 		tagCell.id = this._tagCellId;
 	} else if (hadTags && !hasTags) {
 		table.deleteRow(-1);

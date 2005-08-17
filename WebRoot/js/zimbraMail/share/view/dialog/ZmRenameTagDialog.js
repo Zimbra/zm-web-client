@@ -28,7 +28,7 @@ function() {
 	var html = new Array();
 	var idx = 0;
 	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
-	html[idx++] = "<tr><td class='Zabel' colspan=2 style='padding: 0px 0px 5px 0px;'>" + ZmMsg.newTagName + ": </td></tr>";
+	html[idx++] = "<tr><td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>" + ZmMsg.newTagName + ": </td></tr>";
 	html[idx++] = "<tr><td><input type='text' class='Field' id='" + this._nameFieldId + "' /></td></tr>";
 	html[idx++] = "</table>";
 	

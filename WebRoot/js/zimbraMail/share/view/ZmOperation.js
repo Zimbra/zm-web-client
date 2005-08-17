@@ -80,7 +80,7 @@ ZmOperation.VIEW					= i++;
 ZmOperation.WEEK_VIEW				= i++;
 ZmOperation.WORK_WEEK_VIEW			= i++;
 
-// Zabels
+// Labels
 // !! PLEASE ADD IN ALPHA ORDER !!
 ZmOperation.MSG_KEY = new Object();
 ZmOperation.MSG_KEY[ZmOperation.ADD_FILTER_RULE]		= "filterAdd";

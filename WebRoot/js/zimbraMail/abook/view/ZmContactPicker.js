@@ -195,7 +195,7 @@ function() {
 	// add placeholder for drop down select widget
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		html[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
-		html[idx++] = "<td class='Zabel nobreak'>" + ZmMsg.showNames + ":&nbsp;</td>";
+		html[idx++] = "<td class='Label nobreak'>" + ZmMsg.showNames + ":&nbsp;</td>";
 		html[idx++] = "<td id='" + this._listSelectId + "'></td>";
 		html[idx++] = "</tr></table>";
 	}

@@ -680,11 +680,11 @@ function(bFindHits, domain, partNameList) {
 
 			// calc. widths of all data involved
     		var icon = mimeInfo ? mimeInfo.image : ZmImg.I_DOCUMENT;
-    		var encZabel = "&nbsp;" + AjxStringUtil.htmlEncode(label) + "&nbsp;";
-    		var labelWidth = Dwt.getHtmlExtent(encZabel).x;
+    		var encLabel = "&nbsp;" + AjxStringUtil.htmlEncode(label) + "&nbsp;";
+    		var labelWidth = Dwt.getHtmlExtent(encLabel).x;
     		// The 5 is for padding for IE
     		labelWidth += sizeText ? Dwt.getHtmlExtent(sizeText).x + 5 : 0;
-    		var iconZabelWidth = icon[1] + labelWidth;
+    		var iconLabelWidth = icon[1] + labelWidth;
 
 			// set link
 		    var link = type == ZmMimeTable.MSG_RFC822
@@ -692,11 +692,11 @@ function(bFindHits, domain, partNameList) {
 		    	: "<a target='att_view_win' class='AttLink' " + hrefRoot + attach.part + "'>";
 
     		htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 style='display:inline; width:";
-    		htmlArr[idx++] = iconZabelWidth;
-    		htmlArr[idx++] = "'><tr><td style='width:" + iconZabelWidth + "'>";
+    		htmlArr[idx++] = iconLabelWidth;
+    		htmlArr[idx++] = "'><tr><td style='width:" + iconLabelWidth + "'>";
 
     		htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 style='display:inline; width:";
-    		htmlArr[idx++] = iconZabelWidth;
+    		htmlArr[idx++] = iconLabelWidth;
     		htmlArr[idx++] = "'><tr><td style='width:" + icon[1] + "'>";
 
 			// position:relative required to make this work in FF    		
@@ -705,9 +705,9 @@ function(bFindHits, domain, partNameList) {
     		
     		// if this attachment is a match for the current search, set class name
     		if (bFindHits && this._isAttInHitList(attach)) {
-	    		htmlArr[idx++] = "<span class='AttName-matched'>" + link + encZabel + sizeText + "</a></span>";
+	    		htmlArr[idx++] = "<span class='AttName-matched'>" + link + encLabel + sizeText + "</a></span>";
 	    	} else {
-				htmlArr[idx++] = link + encZabel +  sizeText +  "</a>";
+				htmlArr[idx++] = link + encLabel +  sizeText +  "</a>";
 		    }
 
     		htmlArr[idx++] = "</td></tr></table></td>";

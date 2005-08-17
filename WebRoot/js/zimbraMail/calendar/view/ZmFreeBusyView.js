@@ -426,8 +426,8 @@ ZmFreeBusyView.prototype._getSelectOptions = function (choices) {
 	for (var i = 0; i < choices.length; i++) {
 		var choice = choices[i];
 		var choiceValue = (typeof choice == "string" ? choice : choice.value);
-		var choiceZabel = (typeof choice == "string" ? choice : choice.label);
-		selectOptions[i] = new DwtSelectOptionData(choiceValue, choiceZabel);
+		var choiceLabel = (typeof choice == "string" ? choice : choice.label);
+		selectOptions[i] = new DwtSelectOptionData(choiceValue, choiceLabel);
 	}
 	return selectOptions;
 };

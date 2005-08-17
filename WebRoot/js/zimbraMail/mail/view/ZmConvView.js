@@ -208,7 +208,7 @@ function(conv) {
 		
 	var htmlStr = new Array();
 	var idx = 0;
-	htmlStr[idx++] = "<table cellspacing=0 cellpadding=0><tr><td valign='top' class='ZabelTd'>";
+	htmlStr[idx++] = "<table cellspacing=0 cellpadding=0><tr><td valign='top' class='LabelTd'>";
 	htmlStr[idx++] = ZmMsg.tags;
 	htmlStr[idx++] = ":</td><td class='TagTd'>";
 	

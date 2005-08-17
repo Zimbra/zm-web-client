@@ -4,9 +4,9 @@ function ZmPicker(parent, id) {
 
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._header = new DwtToolBar(this);
-	this._label = new DwtZabel(this._header, DwtZabel.IMAGE_LEFT | DwtZabel.ALIGN_LEFT, "ZmPickerZabel");
+	this._label = new DwtLabel(this._header, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmPickerLabel");
 	this._header.addFiller();
-	this._close = new DwtButton(this._header, DwtZabel.IMAGE_LEFT, "TBButton");
+	this._close = new DwtButton(this._header, DwtLabel.IMAGE_LEFT, "TBButton");
 	this._close.setImage(ZmImg.I_RED_X);
 	this._close.setToolTipContent(ZmMsg.close);
 	this._picker = new DwtComposite(this, "ZmPickerOverview");

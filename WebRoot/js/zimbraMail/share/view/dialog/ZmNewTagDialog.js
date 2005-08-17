@@ -55,7 +55,7 @@ function() {
 	this._nameFieldId = Dwt.getNextId();
 	this._tagColorButtonCellId = Dwt.getNextId();
 	return "<table cellpadding=2 cellspacing=2 border=0>" +
-			"<tr><td class='Zabel' colspan=2>" + ZmMsg.tagName + ": </td></tr>" +
+			"<tr><td class='Label' colspan=2>" + ZmMsg.tagName + ": </td></tr>" +
 			"<tr><td><input type=text autocomplete=OFF class='Field' id='" + this._nameFieldId + "' /></td>" +
 		    "<td id='" + this._tagColorButtonCellId + "' /></tr>" +
 			"</table>";

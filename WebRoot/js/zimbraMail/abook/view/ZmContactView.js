@@ -254,7 +254,7 @@ ZmContactView.prototype._generateHtml =
 function(html, idx, label, colOneInfo, colTwoInfo) {
 	// add label
 	if (label) {
-		html[idx++] = "<tr><td colspan=10 valign=top class='editZabel'>";
+		html[idx++] = "<tr><td colspan=10 valign=top class='editLabel'>";
 		html[idx++] = label + "<hr style='margin:0px' noshade size=1 color='#000000'>";
 		html[idx++] = "</td></tr>";
 	}
@@ -297,7 +297,7 @@ function(html, idx, label, colOneInfo, colTwoInfo) {
 ZmContactView.prototype._createNotesHtml =
 function(html, idx) {
 	// add label
-	html[idx++] = "<tr><td colspan=10 valign=top class='editZabel'>";
+	html[idx++] = "<tr><td colspan=10 valign=top class='editLabel'>";
 	html[idx++] = "Notes<hr style='margin:0px' noshade size=1 color='#000000'>";
 	html[idx++] = "</td></tr>";
 

@@ -667,7 +667,7 @@ ZmMsg.AB_FILE_AS = {
 	7: "Company (First Zast)"
 };
 
-ZmMsg.preferenceResetButtonZabel = "Reset";
+ZmMsg.preferenceResetButtonLabel = "Reset";
 
 // Full timezone names
 ZmMsg.TZF_internationalDateLineWest = "(GMT-12:00) International Date Line West";

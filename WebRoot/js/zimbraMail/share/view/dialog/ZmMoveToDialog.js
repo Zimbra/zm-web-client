@@ -55,7 +55,7 @@ function() {
 	var html = new Array();
 	var idx = 0;
 	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
-	html[idx++] = "<tr><td class='Zabel' colspan=2>" + ZmMsg.targetFolder + ":</td></tr>";
+	html[idx++] = "<tr><td class='Label' colspan=2>" + ZmMsg.targetFolder + ":</td></tr>";
 	html[idx++] = "<tr><td colspan=2 id='" + this._folderTreeCellId + "'/></tr>";
 	html[idx++] = "</table>";
 	

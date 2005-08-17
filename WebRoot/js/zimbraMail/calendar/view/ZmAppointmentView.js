@@ -319,9 +319,9 @@ ZmAppointmentView.prototype._populateForm = function () {
 			
 			var attLinks = this._appt.getMessage().buildAttachLinks(true, document.domain);
 			if (attLinks.length > 0) {
-				htmlArr[idx++] = "<div><table><tr><td class='ZabelColName'>";
+				htmlArr[idx++] = "<div><table><tr><td class='LabelColName'>";
 				htmlArr[idx++] = ZmMsg.attachments;
-				htmlArr[idx++] = ": </td><td class='ZabelColValue'>";
+				htmlArr[idx++] = ": </td><td class='LabelColValue'>";
 				for (var i = 0; i<attLinks.length; i++){
 					htmlArr[idx++] = attLinks[i].htl;
 				}
