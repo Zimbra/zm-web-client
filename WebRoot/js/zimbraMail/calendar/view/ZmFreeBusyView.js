@@ -598,6 +598,7 @@ ZmFreeBusyView.prototype._updateAddressRow = function (userSchedule, index, opti
 	}
 	cell1.innerHTML = "";
 	cell1.appendChild(this._getAddressInput(addr));
+	cell1.firstChild.onclick = onclickFunc;
 };
 
 ZmFreeBusyView.prototype._updateScheduleRow = function (userSchedule, index, optionalRow, aggregated) {
@@ -891,20 +892,20 @@ ZmFreeBusyView.prototype.handleAddrChange = function ( event ) {
 				
 				// update the view
 				this._updateRow(sched, index);
-// 				this._updateAddressRow(sched, index);
-// 				this._updateScheduleRow(sched, index);
 				this._updateAggregatedSchedule(sched.blocks);
 				this._writeAggregatedRow();
-				//this._saveAppointmentInfo();
 			}
 		} else {
 			// when there is no value in the input, if it's the empty row,
 			// then just replace the message in the input.
 			// if it's one of the intialized rows, then this should trigger 
 			// a row deletion.
-			if (tr.id != null) {
-				if (tr.id.indexOf("Empty")!= -1){
-					target.value = ZmFreeBusyView.ADD_NAME_MSG;
+			if (tr.id != null) {				
+				if (tr.id.indexOf("Empty")!= -1) {
+					var selectedItems = this._selectionManager.getItems();
+					if (selectedItems.get(0) != this._dummyBlock){
+						target.value = ZmFreeBusyView.ADD_NAME_MSG;
+					}
 				} else {
 
 					// delete row
