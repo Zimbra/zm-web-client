@@ -472,6 +472,8 @@ function() {
 
 	ZmCsfeCommand.clearAuthToken();
 	
+	window.onbeforeunload = null;
+	
 	var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80')? "" : ":" + location.port) + "/zimbra/" + window.location.search;
 	// not sure why IE doesn't allow this to process immediately, but since
 	// it does not, we'll set up a timed action.
@@ -487,8 +489,7 @@ function() {
 
 ZmZimbraMail.redir =
 function(args){
-	var locationStr = args[0];
-	window.location = locationStr;
+	window.location = args[0];
 }
 
 ZmZimbraMail.prototype.setSessionTimer =
