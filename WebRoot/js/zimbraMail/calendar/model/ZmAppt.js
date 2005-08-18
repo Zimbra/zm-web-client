@@ -675,6 +675,22 @@ ZmAppt.prototype.hasDetails = function () {
 	return m != null;
 };
 
+ZmAppt.prototype.getUniqueStartDate = function () {
+	if (this._uniqueStartDate == null) {
+		this._uniqueStartDate = new Date(this.getUniqueStartTime());
+	}
+	return this._uniqueStartDate;
+};
+
+ZmAppt.prototype.getUniqueEndDate = function () {
+	if (this._uniqueEndDate == null) {
+		var st = this.getUniqueStartTime();
+		var dur = this.getDuration();
+		this._uniqueEndDate = new Date(st + dur);
+	}
+	return this._uniqueEndDate;
+};
+
 ZmAppt.prototype.getDetails =
 function (viewMode) {
 	var mode = viewMode || this._viewMode;
@@ -708,10 +724,8 @@ function (viewMode) {
 		// in the appointment summaries. The associated message will contain
 		// only the original start time.
 		if (mode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
-			var uniqStartDate = new Date(this.getUniqueStartTime());
-			var dur = this.getDuration();
-			this.setStartDate(uniqStartDate);
-			this.setEndDate(uniqStartDate.getTime() + dur);
+			this.setStartDate(this.getUniqueStartDate());
+			this.setEndDate(this.getUniqueEndDate());
 		} else {
 			this.setEndDate(this._parseServerDateTime(message.invite.getServerEndTime(0), this.endDate));
 			this.setStartDate(this._parseServerDateTime(message.invite.getServerStartTime(0), this.startDate));
@@ -1350,33 +1364,46 @@ ZmAppt.prototype._addAttendeesToSoap = function(soapDoc, inv, m){
 	}
 };
 
+//TODO -- cleanup
 ZmAppt.prototype._getDefaultBlurb = function (cancel) {
 	// if there are attendees, then create a simple message
 	// describing the meeting invitation.
 	var html = new Array();
 	var idx = 0;
 	var showingTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
-	if (this.repeatType == "NON"){
+	// instances of recurring meetings should send out information that looks very
+	// much like a simple appointment.
+	if ((this.repeatType == "NON") || (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) || 
+		this._viewMode == ZmAppt.MODE_DELETE_INSTANCE) {
 		// simple meeting
 		html[idx++] = this._editingUser;
 		html[idx++] = " has ";
-		html[idx++] = (cancel)? "cancelled ": "invited you to ";
+		html[idx++] = (cancel)? "cancelled ": ((this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE)? "modified ": "invited you to ");
+		if ( (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) || (this._viewMode == ZmAppt.MODE_DELETE_INSTANCE)){
+			html[idx++] = "an instance of ";
+		}
 		html[idx++] = "\"";
 		html[idx++] = this.name;
 		html[idx++] = "\"";
 		html[idx++] = (this.isAllDayEvent())? "(all day) ": " ";
 		html[idx++] = "starting ";
-		html[idx++] = AjxDateUtil.simpleComputeDateStr(this.startDate);
+		var s = this.startDate;
+		var e = this.endDate;
+		if (this._viewMode == ZmAppt.MODE_DELETE_INSTANCE){
+			s = this.getUniqueStartDate();
+			e = this.getUniqueEndDate();
+		}
+		html[idx++] = AjxDateUtil.simpleComputeDateStr(s);
 		html[idx++] = " ";
-		html[idx++] = AjxDateUtil.getTimeStr(this.startDate, "%h:%m %P");
+		html[idx++] = AjxDateUtil.getTimeStr(s, "%h:%m %P");
 		if (showingTimezone){
 			html[idx++] = " ";
 			html[idx++] = ZmTimezones.valueToDisplay[this.timezone];
 		}
 		html[idx++] = " , ending ";
-		html[idx++] = AjxDateUtil.simpleComputeDateStr(this.endDate);
+		html[idx++] = AjxDateUtil.simpleComputeDateStr(e);
 		html[idx++] = " ";
-		html[idx++] = AjxDateUtil.getTimeStr(this.endDate, "%h:%m %P");
+		html[idx++] = AjxDateUtil.getTimeStr(e, "%h:%m %P");
 		if (showingTimezone){
 			html[idx++] = " ";
 			html[idx++] = ZmTimezones.valueToDisplay[this.timezone];
@@ -1601,8 +1628,7 @@ ZmAppt.prototype._sendRequest = function (sender, soapDoc) {
 };
 
 ZmAppt.prototype.cancel = function (sender, mode) {
-	// TODO -- what to do if they are trying to delete one instance?
-	var mole;
+	this.setViewMode(mode);
 	// To get the attendees for this appointment, we have to get the 
 	// message.
 	this.getDetails();
