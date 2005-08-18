@@ -33,9 +33,13 @@ ZmOperation.DRAFT 					= i++;
 ZmOperation.EDIT 					= i++;
 ZmOperation.EDIT_CONTACT			= i++;
 ZmOperation.EDIT_FILTER_RULE		= i++;
+ZmOperation.EDIT_REPLY_ACCEPT		= i++;
+ZmOperation.EDIT_REPLY_DECLINE		= i++;
+ZmOperation.EDIT_REPLY_TENTATIVE	= i++;
 ZmOperation.EXPAND_ALL				= i++;
 ZmOperation.FORWARD					= i++;
 ZmOperation.IM						= i++;
+ZmOperation.INVITE_REPLY_MENU		= i++;
 ZmOperation.MARK_ALL_READ			= i++;
 ZmOperation.MARK_READ				= i++;
 ZmOperation.MARK_UNREAD				= i++;
@@ -93,6 +97,9 @@ ZmOperation.MSG_KEY[ZmOperation.COMPOSE_FORMAT] 		= "format";
 ZmOperation.MSG_KEY[ZmOperation.CLOSE]					= "close";
 ZmOperation.MSG_KEY[ZmOperation.DETACH_COMPOSE] 		= "detach";
 ZmOperation.MSG_KEY[ZmOperation.EDIT] 					= "edit";
+ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_ACCEPT]		= "replyAccept";
+ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_DECLINE]		= "replyDecline";
+ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_TENTATIVE]   = "replyTentative";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_CONTACT]			= "AB_EDIT_CONTACT";
 ZmOperation.MSG_KEY[ZmOperation.EXPAND_ALL]				= "expandAll";
 ZmOperation.MSG_KEY[ZmOperation.DAY_VIEW]				= "viewDay";
@@ -102,6 +109,7 @@ ZmOperation.MSG_KEY[ZmOperation.DELETE_CONV]			= "delConv";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_FILTER_RULE]		= "filterEdit";
 ZmOperation.MSG_KEY[ZmOperation.FORWARD]				= "forward";
 ZmOperation.MSG_KEY[ZmOperation.IM]						= "newIM";
+ZmOperation.MSG_KEY[ZmOperation.INVITE_REPLY_MENU]		= "editReply";
 ZmOperation.MSG_KEY[ZmOperation.MARK_ALL_READ]			= "markAllRead";
 ZmOperation.MSG_KEY[ZmOperation.MARK_READ]				= "markAsRead";
 ZmOperation.MSG_KEY[ZmOperation.MARK_UNREAD]			= "markAsUnread";
@@ -189,9 +197,13 @@ ZmOperation.IMAGE[ZmOperation.DETACH_COMPOSE] 			= ZmImg.I_DETACH;
 ZmOperation.IMAGE[ZmOperation.EDIT] 					= ZmImg.I_FORMAT;
 ZmOperation.IMAGE[ZmOperation.EDIT_CONTACT]				= ZmImg.I_FORMAT;
 ZmOperation.IMAGE[ZmOperation.EDIT_FILTER_RULE] 		= ZmImg.I_FORMAT;
+ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_ACCEPT]		= ZmImg.I_CHECK;
+ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_DECLINE]		= ZmImg.I_RED_X;
+ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_TENTATIVE]		= ZmImg.I_QUESTION_MARK;
 ZmOperation.IMAGE[ZmOperation.EXPAND_ALL]				= ZmImg.I_PLUS;
 ZmOperation.IMAGE[ZmOperation.FORWARD]					= ZmImg.I_FORWARD;
 ZmOperation.IMAGE[ZmOperation.IM]						= ZmImg.I_IM;
+ZmOperation.IMAGE[ZmOperation.INVITE_REPLY_MENU]		= ZmImg.I_REPLY;
 ZmOperation.IMAGE[ZmOperation.MARK_ALL_READ]			= ZmImg.I_READ_MSG;
 ZmOperation.IMAGE[ZmOperation.MARK_READ]				= ZmImg.I_READ_MSG;
 ZmOperation.IMAGE[ZmOperation.MARK_UNREAD]				= ZmImg.I_ENVELOPE;
@@ -370,7 +382,10 @@ function(parent, id, opHash) {
 		ZmOperation.addColorMenu(opHash[id]);
 	} else if (id == ZmOperation.REPLY_MENU) {
 		ZmOperation.addReplyMenu(opHash[id]);
+	} else if (id == ZmOperation.INVITE_REPLY_MENU) {
+		ZmOperation.addInviteReplyMenu(opHash[id]);
 	}
+
 }
 
 ZmOperation.removeOperation =
@@ -464,3 +479,15 @@ function(parent) {
 	var menu = new ZmActionMenu(parent, list, null);
 	parent.setMenu(menu);
 }
+
+/**
+ * Adds an invite actions submenu for accept/decline/tentative.
+ *
+ * @param parent		parent widget (a toolbar or action menu)
+ */
+ZmOperation.addInviteReplyMenu =
+function(parent) {
+	var list = [ZmOperation.EDIT_REPLY_ACCEPT, ZmOperation.EDIT_REPLY_DECLINE, ZmOperation.EDIT_REPLY_TENTATIVE];
+	var menu = new ZmActionMenu(parent, list, null);
+	parent.setMenu(menu);
+};

@@ -16,6 +16,10 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._listeners[ZmOperation.REPLY_ACCEPT] = new AjxListener(this,this._handleApptRespondAction);
 	this._listeners[ZmOperation.REPLY_DECLINE] = new AjxListener(this,this._handleApptRespondAction);
 	this._listeners[ZmOperation.REPLY_TENTATIVE] = new AjxListener(this,this._handleApptRespondAction);
+	this._listeners[ZmOperation.EDIT_REPLY_ACCEPT] = new AjxListener(this,this._handleApptEditRespondAction);
+	this._listeners[ZmOperation.EDIT_REPLY_DECLINE] = new AjxListener(this,this._handleApptEditRespondAction);
+	this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE] = new AjxListener(this,this._handleApptEditRespondAction);
+
 	//DND//this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	//DND//this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));	
 	this.resetApptSummaryCache();
@@ -399,16 +403,6 @@ function(params) {
 	}
 };
 
-// ZmCalViewController.prototype._handleMenuDelete = function (event) {
-// 	DBG.println("_handleMenuDelete called");
-// 	var menuItem = event.item;
-// 	var menuDetail = event.detail;
-// 	var appt = this._actionMenu.__appt;
-// 	delete this._actionMenu.__appt;
-// 	this._actionMenu.popdown();
-// 	this._deleteAppointment(appt);
-// };
-
 ZmCalViewController.prototype._deleteAppointment = function (appt) {
 	if (appt == null) return;
 	if (appt.isRecurring()){
@@ -704,13 +698,33 @@ function(ev) {
 
 ZmCalViewController.prototype._handleApptRespondAction = function (ev){
 	var appt = this._listView[this._currentView].getSelection()[0];
-	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
-	ev._inviteReplyType = ev.item.getData(ZmOperation.KEY_ID);;
-	ev._inviteComponentId = null;
 	appt.getDetails();
+	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 	msgController.setMsg(appt.getMessage());
-	// poke the handler for inviteReply events
-	msgController._inviteReplyListener.handleEvent(ev);
+	// poke the msgController
+	msgController._sendInviteReply(ev.item.getData(ZmOperation.KEY_ID), 0);
+};
+
+ZmCalViewController.prototype._handleApptEditRespondAction = function (ev){
+	
+	var appt = this._listView[this._currentView].getSelection()[0];
+	appt.getDetails();
+	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
+	msgController.setMsg(appt.getMessage());
+	// poke the msgController
+	var id = ev.item.getData(ZmOperation.KEY_ID);
+	switch (id) {
+	case ZmOperation.EDIT_REPLY_ACCEPT:
+		id = ZmOperation.REPLY_ACCEPT;
+		break;
+	case ZmOperation.EDIT_REPLY_DECLINE:
+		id = ZmOperation.REPLY_DECLINE;
+		break;
+	case ZmOperation.EDIT_REPLY_TENTATIVE:
+		id = ZmOperation.REPLY_TENTATIVE;
+		break;
+	}
+	msgController._editInviteReply(id, 0);
 };
 
 /**
@@ -724,6 +738,12 @@ ZmCalViewController.prototype._initializeActionMenu = function (){
 	this._actionMenu = new ZmActionMenu(this._shell, menuItems);
 	for (var i = 0; i < menuItems.length; i++){
 		if (menuItems[i] > 0) {
+			if (menuItems[i] == ZmOperation.INVITE_REPLY_MENU) {
+				var menu = this._actionMenu.getOp(ZmOperation.INVITE_REPLY_MENU).getMenu();
+				menu.addSelectionListener(ZmOperation.EDIT_REPLY_ACCEPT, this._listeners[ZmOperation.EDIT_REPLY_ACCEPT]);
+				menu.addSelectionListener(ZmOperation.EDIT_REPLY_DECLINE, this._listeners[ZmOperation.EDIT_REPLY_DECLINE]);
+				menu.addSelectionListener(ZmOperation.EDIT_REPLY_TENTATIVE, this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE]);
+			}
 			this._actionMenu.addSelectionListener(menuItems[i],this._listeners[menuItems[i]]);
 		}
 	}
@@ -734,10 +754,32 @@ ZmCalViewController.prototype._initializeActionMenu = function (){
  * Overrides ZmListController.prototype._getActionMenuOptions
  */
 ZmCalViewController.prototype._getActionMenuOps = function () {
-	return [ZmOperation.DELETE, ZmOperation.SEP,ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE]
+	return [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE, 
+			ZmOperation.INVITE_REPLY_MENU, ZmOperation.SEP, ZmOperation.DELETE]
 };
 
+//ZmCalViewController.prototype._disableActionMenuReplyOptions = function () {
+// 	var item = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_ACCEPT);
+// 	item.setEnabled(false);
+// 	item = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_DECLINE);
+// 	item.setEnabled(false);
+// 	item = this._actionMenu.getItemById(ZmOperation.KEY_ID,ZmOperation.REPLY_TENTATIVE);
+// 	item.setEnabled(false);
+//};
+
+// ZmCalViewController.prototype._resetOperations = function(parent, num) {
+// 	// do nothing for now
+// 	ZmListController.prototype._resetOperations.call(this, parent, num);
+// 	var ops = this._getActionMenuOps();
+// 	var item;
+// 	for (var i = 0 ; i < ops.length ; ++i) {
+// 		item = this._actionMenu.getItem(i);
+// 		item.setEnabled(true);
+// 	}
+// }
+
 ZmCalViewController.prototype._listActionListener = function (ev){
+	//ZmListController.prototype._listActionListener.call(this, ev);
 	this._actionMenu.popup(0, ev.docX, ev.docY);
 	ZmListController.prototype._listActionListener.call(this, ev);
 };

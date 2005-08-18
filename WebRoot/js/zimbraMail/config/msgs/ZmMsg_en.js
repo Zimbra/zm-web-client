@@ -152,6 +152,7 @@ ZmMsg.draft = "Draft";
 ZmMsg.drafts = "Drafts";
 ZmMsg.draftSaved = "Draft saved successfully.";
 ZmMsg.edit = "Edit";
+ZmMsg.editReply = "Edit Reply";
 ZmMsg.editTooltip = "Edit the selected item";
 ZmMsg.email = "Email";
 ZmMsg.emptyContact = "Empty contact not saved.";

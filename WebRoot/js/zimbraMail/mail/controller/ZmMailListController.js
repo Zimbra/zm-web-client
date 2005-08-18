@@ -297,8 +297,7 @@ function(ev) {
     this._inviteReplyDialog.popdown();
  	var action = ev._inviteReplyType;
 	var compId = ev._inviteComponentId;
-	var replyBody = this._getInviteReplyBody(action);
-	this._doAction(ev, action, replyBody);
+	this._editInviteReply(action, compId);
 }
 
 ZmMailListController.prototype._getInviteReplyBody = function (type) {
@@ -326,15 +325,21 @@ ZmMailListController.prototype._getInviteReplySubject = function (type) {
 
 ZmMailListController.prototype._inviteReplyDialogNoCallback = 
 function(ev) {
+	var type = ev._inviteReplyType;
+	var compId = ev._inviteComponentId;	
+	this._inviteReplyDialog.popdown();
+	this._sendInviteReply(type, compId);
+};
+
+ZmMailListController.prototype._editInviteReply =
+function (action , componentId) {
+	var replyBody = this._getInviteReplyBody(action);
+	this._doAction({}, action, replyBody);
+};
+
+ZmMailListController.prototype._sendInviteReply = 
+function(type, componentId) {
 	try {
-	 	var type = ev._inviteReplyType;
-		var compId = ev._inviteComponentId;	
-	    this._inviteReplyDialog.popdown();
-	
-		// TODO : send an InviteReply message with no body --
-		// the server handles all the details for us.
-	
-		//var msg = this._getMsg();
 		var msg = new ZmMailMsg(this._appCtxt);
 		var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 	
@@ -355,11 +360,11 @@ function(ev) {
 		if (subject != null) {
 			msg.setSubject(subject);
 		}
-		msg.sendInviteReply(contactList, true, compId);
+		msg.sendInviteReply(contactList, true, componentId);
 	} catch (ex) {
-		this._handleException(ex, this._inviteReplyDialogNoCallback, ev, false);
+		this._handleException(ex, this._sendInviteReply, [type, componentId], false);
 	}
-}
+};
 
 ZmMailListController.prototype._inviteReplyDialogCancelCallback = 
 function (args){
