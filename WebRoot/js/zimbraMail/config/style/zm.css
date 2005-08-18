@@ -731,7 +731,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	background-color: rgb(233,236,216);
 	color: rgb(201, 201, 194);
 }
-.Row-matched, .Row-matched-dnd { background-color: #FFFF99; }
+.Row-matched, .Row-matched-dnd { background-color: #FFFFBB; }
 .Row-selected-right, .Row-drag, .Row-matched-drag { background-color: #EAF5F5; }
 
 .Row-selected table, .Row-selected-drag table, .Row-drag table, 

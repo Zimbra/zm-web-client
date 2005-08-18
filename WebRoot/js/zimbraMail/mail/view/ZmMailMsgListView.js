@@ -73,8 +73,8 @@ function(defaultColumnSort) {
 ZmMailMsgListView.prototype._createItemHtml =
 function(msg, now, isDndIcon, isMixedView) {
 
-	// Bug 2531 - Remove yellow hilighting that indicates hits from various lists :(
-	var isMatched = false;/*(msg.isInHitList() && (this._mode == ZmController.CONV_VIEW));*/
+	// bug fix #3595 - dont hilite if search was in:<folder name>
+	var isMatched = msg.isInHitList() && this._mode == ZmController.CONV_VIEW && this._appCtxt.getCurrentSearch().folderId == null;
 	var	div = this._getDiv(msg, isDndIcon, isMatched);
 	div.className = div._styleClass;
 
