@@ -122,7 +122,7 @@
   </target>
 
   <target name="jam-files" depends="compile">
-    <taskdef name="jammer" classname="com.zimbra.zimbraConsole.build.JammerTask" classpath="${build.dir}"/>
+    <taskdef name="jammer" classname="com.zimbra.webClient.build.JammerTask" classpath="${build.dir}"/>
     <jammer copyright="${copyrightText}" webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/AjxNet_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="Zimbra-net.jsp"/>
     </jammer>
@@ -351,7 +351,7 @@
   <!-- 
   This target is meant only to be run after a full deploy has
   been done once. It does not deal with the java code used by the
-  ZimbraConsole webapp, so if there are any java changes, another
+  ZimbraWebClient webapp, so if there are any java changes, another
   deploy will have to be run.
   -->
   <target name="dev-sync">
