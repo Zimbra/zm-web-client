@@ -628,7 +628,7 @@ function(tree, unread) {
 // This method is called by the window.onbeforeunload method.
 ZmZimbraMail._confirmExitMethod =
 function() {
-DBG.println("HERE");
+	DBG.println(AjxDebug.DBG1, "_confirmExitMethod, received unload event");
 	return ZmMsg.appExitWarning;
 }
 
