@@ -102,17 +102,9 @@ function(view, force) {
 		// get the first selected item if applicable
 		var item = this._listView[view].getSelection()[0];
 		var list = this._listView[view].getList();
-		if (!item && list) {
-			// find the first non-trash contact
-			var folderTree = this._appCtxt.getFolderTree();
-			for (var i=0; i<list.size(); i++) {
-				var folder = folderTree.getById(list.get(i).folderId);
-				if (!folder || !folder.isInTrash()) {
-					item = list.get(i);
-					break;
-				}
-			}
-		}
+		// find the first non-trash contact
+		if (!item && list)
+			item = this._listView[view].getFirstValid(list);
 
 		// reset selection since we wiped the canvas
 		if (item)

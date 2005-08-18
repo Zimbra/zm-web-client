@@ -184,13 +184,13 @@ function(ev) {
 		for (var i = 0; i < items.length; i++)
 			this._list.remove(items[i]);
 		this._layout();
-		// XXX: need to iterate for the non-trash contact in list!
-		this.setSelection(this.getList().get(0));
 	} else {
 		ZmContactsBaseView.prototype._changeListener.call(this, ev);
-		// XXX: need to iterate for the non-trash contact in list!
-		this.setSelection(this.getList().get(0));
 	}
+	// set selection to the first non-trash contact in list
+	var selected = this.getFirstValid(this.getList());
+	if (selected)
+		this.setSelection(selected);
 };
 
 // we have to overload _tagChangeListener here since DOM hierarchy is 
@@ -236,6 +236,19 @@ function() {
 	}
 	
 	return children;
+};
+
+// we overload this base class method since cards view is unconventional
+ZmContactCardsView.prototype._getElFromItem = 
+function(item) {
+	var children = this._getChildren();
+	var comparisonId = this._getItemId(item);
+
+	for (var i = 0; i < children.length; i++) {
+		if (children[i].id == comparisonId)
+			return children[i];
+	}
+	return null;
 };
 
 ZmContactCardsView.prototype._setDnDIconState =

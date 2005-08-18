@@ -50,6 +50,19 @@ function() {
 	return [ZmMsg.zimbraTitle, ZmMsg.contacts].join(": ");
 };
 
+// returns the first non-trash contact in the list
+ZmContactsBaseView.prototype.getFirstValid = 
+function(list) {
+	var folderTree = this._appCtxt.getFolderTree();
+	for (var i = 0; i < list.size(); i++) {
+		var contact = list.get(i);
+		var folder = folderTree.getById(contact.folderId);
+		if (!folder || !folder.isInTrash())
+			return contact;
+	}
+	return null;
+};
+
 ZmContactsBaseView.prototype._changeListener =
 function(ev) {
 	ZmListView.prototype._changeListener.call(this, ev);
