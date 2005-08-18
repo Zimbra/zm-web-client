@@ -97,7 +97,8 @@ function(newWidth, newHeight) {
 				this._summaryTotalHeight = summaryHeight + maxHeight + DwtListView.HEADERITEM_HEIGHT;
 				var sashHeight = this._msgSash.getSize().y;
 				this._msgListView.resetHeight(maxHeight + DwtListView.HEADERITEM_HEIGHT);
-				this._msgView.setBounds(Dwt.DEFAULT, this._summaryTotalHeight + 5, Dwt.DEFAULT, newHeight - (this._summaryTotalHeight + 5));
+				var mvHeight = Math.max((newHeight - (this._summaryTotalHeight + 5)), 0);
+				this._msgView.setBounds(Dwt.DEFAULT, this._summaryTotalHeight + 5, Dwt.DEFAULT, mvHeight);
 				this._msgSash.setLocation(Dwt.DEFAULT, this._summaryTotalHeight);
 			}
 		} else {
