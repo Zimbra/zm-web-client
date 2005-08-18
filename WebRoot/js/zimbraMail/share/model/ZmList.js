@@ -25,6 +25,12 @@ function ZmList(type, appCtxt) {
 	this._hasMore = false;
 	this._idHash = new Object();
 	this._evt = new ZmEvent(type);
+
+	var tagList = appCtxt.getTagList();
+	if (tagList) {
+		this._tagChangeListener = new AjxListener(this, this._tagTreeChangeListener);
+		tagList.addChangeListener(this._tagChangeListener);
+	}
 }
 
 ZmList.prototype = new ZmModel;
@@ -582,4 +588,27 @@ function(list) {
 ZmList.prototype._sortIndex = 
 function(item) {
 	return 0;
+}
+
+ZmList.prototype._tagTreeChangeListener = 
+function(ev) {
+	if (ev.type != ZmEvent.S_TAG) return;
+
+	if (ev.event == ZmEvent.E_DELETE) {
+		// Remove tag from any items that have it
+		var tag = ev.source;
+		var a = this.getArray();
+		var taggedItems = new Array();
+		for (var i = 0; i < a.length; i++) {
+			var item = a[i];
+			if (item && item.hasTag(tag.id)) {
+				item.tagLocal(tag.id, false);
+				taggedItems.push(item);
+			}
+		}
+		// Send listeners a tag event so they'll notice it's gone
+		if (taggedItems.length && this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
+			this._eventNotify(ZmEvent.E_TAGS, taggedItems);
+		}
+	}
 }

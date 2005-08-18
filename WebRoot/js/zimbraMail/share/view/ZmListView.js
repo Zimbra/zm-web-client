@@ -125,28 +125,24 @@ function(ev) {
 
 ZmListView.prototype._tagChangeListener =
 function(ev) {
-	if (ev.type != ZmEvent.S_TAG)
-		return;
+	if (ev.type != ZmEvent.S_TAG) return;
+
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
-		var divs = this._parentEl.childNodes;
+		var divs = this._getChildren();
 		var tag = ev.source;
 		for (var i = 0; i < divs.length; i++) {
 			var item = this.getItemFromElement(divs[i]);
 			if (item && item.tags && (item.tags.length == 1) && (item.tags[0] == tag.id))
 				this._setTagImg(item);
 		}
-	} else if (ev.event == ZmEvent.E_DELETE) {
-		var divs = this._parentEl.childNodes;
-		var tag = ev.source;
-		for (var d = 0; d < divs.length; d++) {
-			var item = this.getItemFromElement(divs[d]);
-			if (item && item.hasTag(tag.id)) {
-				item.tagLocal(tag.id, false);
-				this._setTagImg(item);
-			}
-		}	
 	}
+}
+
+// returns all child divs for this list view
+ZmListView.prototype._getChildren =
+function() {
+	return this._parentEl.childNodes;
 }
 
 // Common routines for createItemHtml()

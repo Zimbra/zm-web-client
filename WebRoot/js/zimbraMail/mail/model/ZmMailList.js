@@ -25,12 +25,6 @@ function ZmMailList(type, appCtxt, search) {
 		this._folderChangeListener = new AjxListener(this, this._folderTreeChangeListener);
 		folderTree.addChangeListener(this._folderChangeListener);
 	}
-
-	var tagList = appCtxt.getTagList();
-	if (tagList) {
-		this._tagChangeListener = new AjxListener(this, this._tagTreeChangeListener);
-		tagList.addChangeListener(this._tagChangeListener);
-	}
 }
 
 ZmMailList.prototype = new ZmList;
@@ -249,11 +243,13 @@ function(ev) {
 
 ZmMailList.prototype._tagTreeChangeListener = 
 function(ev) {
-	if (this.size() == 0)
-		return;
+	if (this.size() == 0) return;
+
 	var flag = ev.getDetail("flag");
 	if (ev.event == ZmEvent.E_FLAGS && (flag == ZmItem.FLAG_UNREAD)) {
 		return this._folderTreeChangeListener(ev);
+	} else {
+		return ZmList.prototype._tagTreeChangeListener.call(this, ev);
 	}
 }
 

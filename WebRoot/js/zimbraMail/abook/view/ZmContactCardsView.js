@@ -193,36 +193,6 @@ function(ev) {
 		this.setSelection(selected);
 };
 
-// we have to overload _tagChangeListener here since DOM hierarchy is 
-// unconventional compared w/ other list views
-ZmContactCardsView.prototype._tagChangeListener =
-function(ev) {
-	if (ev.type != ZmEvent.S_TAG) return;
-
-	var fields = ev.getDetail("fields");
-	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
-		var tag = ev.source;
-		var children = this._getChildren();
-		for (var i = 0; i < children.length; i++) {
-			var item = this.getItemFromElement(children[i]);
-			if (item && item.tags && (item.tags.length == 1) && (item.tags[0] == tag.id))
-				this._setTagImg(item);
-		}
-	} else if (ev.event == ZmEvent.E_DELETE) {
-		var tag = ev.source;
-		var children = this._getChildren();
-		for (var i = 0; i < children.length; i++) {
-			var item = this.getItemFromElement(children[i]);
-			if (item && item.hasTag(tag.id)) {
-				item.tagLocal(tag.id, false);
-				this._setTagImg(item);
-			}
-		}
-	} else {
-		ZmContactsBaseView.prototype._tagChangeListener.call(this, ev);
-	}
-};
-
 // returns all child divs w/in each table's rows/cells
 ZmContactCardsView.prototype._getChildren = 
 function() {
