@@ -422,8 +422,7 @@ function(msg, container) {
 	// From/To
 	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
-		if (type == ZmEmailAddress.BCC)
-			continue;
+		// bug fix #3227 - dont bother filtering out BCC - server wont return any if they dont belong
 		var addrs = msg.getAddresses(type);
 		if (addrs.size() > 0) {
 			var prefix = ZmMsg[ZmEmailAddress.TYPE_STRING[type]];
