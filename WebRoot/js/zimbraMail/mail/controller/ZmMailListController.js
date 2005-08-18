@@ -155,12 +155,16 @@ function(ev) {
 			break;
 	}
 	
-	if (items.length == 1 && (ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT] ||
-							  ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM])) {
+	// bug fix #3602
+	var address = ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT] 
+		? ev.detail : ev.item.getAddress(ZmEmailAddress.FROM);
+	if (address && items.length == 1 && 
+		(ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT] || 
+		 ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM])) 
+	{
 		// show participant menu
 		this._setTagMenu(this._participantActionMenu);
-		this._actionEv.address = (ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) ?
-			ev.detail : ev.item.getAddress(ZmEmailAddress.FROM);
+		this._actionEv.address = address;
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			var contacts = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 			this._actionEv.contact = contacts.getContactByEmail(this._actionEv.address.getAddress());
