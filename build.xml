@@ -308,7 +308,7 @@
   </target>
   
   <target name="copy-help">	
-    <unzip src="WebRoot/help/WebHelp.zip" dest="${build.dir}/WebRoot/tmp/help" overwrite="yes">
+    <unzip src="WebRoot/help/CS/WebHelp.zip" dest="${build.dir}/WebRoot/tmp/help" overwrite="yes">
       <patternset>
 	<include name="WebHelp/**/*"/>
       </patternset>
@@ -320,7 +320,7 @@
   </target>	
   
   <target name="copy-admin-help">	
-    <unzip src="WebRoot/adminhelp/html/ZimbraAdminOLH.zip" dest="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp" overwrite="yes">
+    <unzip src="WebRoot/adminhelp/CS/html/ZimbraAdminOLH.zip" dest="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp" overwrite="yes">
       <patternset>
 	<include name="WebHelp/**/*"/>
       </patternset>
@@ -329,7 +329,7 @@
       <fileset dir="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp/" includes="**/*"/>
     </copy>
     <copy todir="${build.dir}/WebRoot/adminhelp/pdf/" overwrite="true" >
-      <fileset dir="WebRoot/adminhelp/pdf/" includes="*"/>
+      <fileset dir="WebRoot/adminhelp/CS/pdf/" includes="*"/>
     </copy>  	
     <delete dir="${build.dir}/WebRoot/tmp/adminhelp/html"/>
   </target>	
