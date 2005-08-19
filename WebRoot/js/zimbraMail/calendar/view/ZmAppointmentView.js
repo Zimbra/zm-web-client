@@ -803,339 +803,367 @@ ZmAppointmentView.prototype.getAppointmentForm = function () {
 			colSizes:["65px","315px"],
 	    numCols:2, 
 	    items:[
-						 {ref:_SUBJECT_, type:_INPUT_, width: "100%", required: true, relevant:"instance.isOrganizer()", relevantBehavior:_DISABLE_},
-						 // MAKE A SELECT WITH A PREDETERMINED ITEMSET?
-						 {ref:_LOCATION_, type:_INPUT_,  width: "100%",relevant:"instance.isOrganizer()", relevantBehavior:_DISABLE_},		
-						 
-						 {type:_SEPARATOR_, height:10},
-						 {type:_SPACER_, height:5, cssStyle:"font-size:1px"},
+			 {ref:_SUBJECT_, type:_INPUT_, width: "100%", required: true, relevant:"instance.isOrganizer()", relevantBehavior:_DISABLE_},
+			 // MAKE A SELECT WITH A PREDETERMINED ITEMSET?
+			 {ref:_LOCATION_, type:_INPUT_,  width: "100%",relevant:"instance.isOrganizer()", relevantBehavior:_DISABLE_},	
+			 
+			 {type:_SEPARATOR_, height:10},
+			 {type:_SPACER_, height:5, cssStyle:"font-size:1px"},
 
-						 // NOTE: show a DATE field if ALL_DAY is true, otherwise show a dateTime
-						 {type:_SWITCH_, useParentTable:true, colSpan:"*",
-								 items:[
-												{type:_CASE_, relevant:"instance.isReadOnly()", colSpan:"*", useParentTable:true,
-														items:[
-																	 {type: _OUTPUT_, value: "All day appointment", relevant:"get(_ALL_DAY_) == '1'", label: " "},
-																	 {ref: _START_END_DATE_RANGE_, type:_OUTPUT_, label:_Starts_,
-																			 getDisplayValue: 
-																			 function (rangeObj) {
-																					 if (rangeObj != null) {
-																							 if (this.getForm().get(_ALL_DAY_) != "1"){
-																									 return AjxBuffer.concat(AjxDateUtil.simpleComputeDateStr(rangeObj.startDate),
-																																					"&nbsp;",
-																																					AjxDateUtil.getTimeStr(rangeObj.startDate,"%h:%m %P"));
-																							 } else {
-																									 return AjxDateUtil.simpleComputeDateStr(rangeObj.startDate);
-																							 }
-																					 }
-																			 }
-																	 },
-																	 {ref: _START_END_DATE_RANGE_, type:_OUTPUT_, label:_Ends_,
-																			 getDisplayValue: function (rangeObj){
-																					 if (rangeObj != null) {
-																							 if (this.getForm().get(_ALL_DAY_) != "1"){
-																									 return AjxBuffer.concat(AjxDateUtil.simpleComputeDateStr(rangeObj.endDate),
-																																					"&nbsp;",
-																																					AjxDateUtil.getTimeStr(rangeObj.endDate, "%h:%m %P"));
-																							 } else {
-																									 return AjxDateUtil.simpleComputeDateStr(rangeObj.endDate);
-																							 }
-																					 }
-																			 }
-																	 },
-																	 {type:_GROUP_, useParentTable:false,label:"Recurrence:", colSpan:"*", numCols:2,
-																			 relevant:"instance.editTimeRepeat() == ZmAppt.EDIT_NO_REPEAT",
-																			 items:[
-																							{ref: _REPEAT_DISPLAY_, type:_OUTPUT_, nowrap:true},
-																							{type:_OUTPUT_,width:80, value:"&nbsp;"}
-																						 ]
-																	 }
-																	]
-												}, // END READ ONLY 
-												
-												{type:_CASE_, relevant:"!instance.isReadOnly()",colSpan:"*", useParentTable:true,
-														items:[
-																	 {type:_GROUP_, useParentTable:true,
-																			 relevant:"(this.getController().shouldShowTimezone() == true && !instance.isReadOnly())", 
-																			 items:[
-																							{type:_GROUP_, useParentTable:false, colSpan:"*", numCols:4,
-																									items: [
-																													{ref:_ALL_DAY_, type:_CHECKBOX_, value:'0', trueValue:'1', falseValue:'0',
-																															labelCssClass:"xform_label", elementChanged:ZmAppointmentView.allDayChanged},
-																													{ref:_TIMEZONE_, type:_DWT_SELECT_, choices:ZmTimezones.getAbbreviatedZoneChoices(),
-																															width:"115px", relevant:"get(_ALL_DAY_) != '1'"},
-																												 ]
-																							}
-																						 ]
-																	 },
-																	 {type:_GROUP_, useParentTable:true,
-																			 relevant:"(this.getController().shouldShowTimezone() != true && !instance.isReadOnly())", 
-																			 items:[
-																							{ref:_ALL_DAY_, type:_CHECKBOX_, value:'0', trueValue:'1', falseValue:'0',labelCssClass:"xform_label",
-																									labelCssStyle:"text-align:left",elementChanged:ZmAppointmentView.allDayChanged }
-																						 ]
-																	 },
-																	 {type:_GROUP_, useParentTable:true, relevant:"get(_ALL_DAY_) != '1'",
-																			 items:[
-																							{ref: _START_END_DATE_RANGE_, type:_APPT_DATE_TIME_RANGE_}
-																						 ]
-																	 },
-																	 {type:_GROUP_, useParentTable:true, relevant:"get(_ALL_DAY_) == '1'",
-																			 items:[
-																							{type:_CELL_SPACER_, height:"1px", width:"auto"},
-																							{ref: _START_END_DATE_RANGE_, type:_APPT_DATE_RANGE_}
-																						 ]
-																	 }
-																	]
-												}, // END !READ ONLY
-											 ]
-						 }, // END READ ONLY SWITCH
-
-						 {type:_GROUP_, useParentTable:false, colSpang:"*", label:_Repeat_, numCols:3,
-								 relevant:"instance.editTimeRepeat() == ZmAppt.EDIT_TIME_REPEAT", 
-								 items:[
-												{ref:_REPEAT_TYPE_, type:_DWT_SELECT_, selection:_CLOSED_, choices:_REPEAT_TYPE_CHOICES_,
-														label:null},
-												{ref:_REPEAT_CUSTOM_, type:_CHECKBOX_, trueValue:"1", falseValue:"0", cellCssClass:"xform_cell",
-														relevant:"get(_REPEAT_TYPE_) != 'NON'"},
-											 ]
-						 },
-						 {type:_SWITCH_, id:"repeat_custom", label:"", labelLocation:_LEFT_, numCols:1, 
-								 relevant:"get(_REPEAT_TYPE_) != 'NON' && get(_REPEAT_CUSTOM_) == '1' && instance.editTimeRepeat() == ZmAppt.EDIT_TIME_REPEAT", 
-								 items:[
-												{type:_CASE_, id:"repeat_custom_day", useParentTable:false, numCols:5,
-														relevant:"get(_REPEAT_TYPE_) == 'DAI'", width:"auto",
-														items:[
-																	 {type:_CELL_SPACER_, width:10},
-																	 {type:_OUTPUT_, value:_Every_, valign:_MIDDLE_},
-																	 {ref:_REPEAT_CUSTOM_COUNT_, type:_INPUT_, cssStyle:"width:30px"},
-																	 {type:_OUTPUT_, value:"day",  relevant:"get(_REPEAT_CUSTOM_COUNT_) == 1", valign:_MIDDLE_},
-																	 {type:_OUTPUT_, value:"days",  relevant:"get(_REPEAT_CUSTOM_COUNT_) > 1", valign:_MIDDLE_}
-																	]
-												},
-												
-												{type:_CASE_, id:"repeat_custom_week", numCols:2, useParentTable:false, width:"auto",
-														relevant:"get(_REPEAT_TYPE_) == 'WEE'",
-														items:[
-																	 {type:_CELL_SPACER_, rowSpan:2, width:10},
-																	 {type:_GROUP_, useParentTable:false, numCols:4, 
-																			 items:[
-																							{type:_OUTPUT_, value:_Every_, valign:_MIDDLE_},
-																							{ref:_REPEAT_CUSTOM_COUNT_, type:_INPUT_, cssStyle:"width:30px"},
-																							{type:_OUTPUT_, value:"week on:", relevant:"get(_REPEAT_CUSTOM_COUNT_) == 1", valign:_MIDDLE_},
-																							{type:_OUTPUT_, value:"weeks on:", relevant:"get(_REPEAT_CUSTOM_COUNT_) > 1", valign:_MIDDLE_}
-																						 ]
-																	 },
-																	 {type:_GROUP_, useParentTable:false, numCols:4, 
-																			 items:[
-																							{type:_CELL_SPACER_, width:10},
-																							{ref:_REPEAT_WEEKLY_DAYS_, colSpan:"*", type:_DWT_SELECT_, selection:_CLOSED_, 
-																									type:_BUTTON_GRID_, numCols:7, cssClass:"xform_button_grid_small",
-																									choices:_DAY_OF_WEEK_INITIAL_CHOICES_
-																									//  									getDisplayValue:function(value) {
-																											//  										if (value != null) return value;
-																											// 										var date = this.getForm().get(_START_DATE_);
-																											// 										var dow = date.getDay();
-																											// 										var choices = this.getChoices();
-																											// 										return choices[dow].value;
-																											// 									}
-																							}
-																						 ]
-																	 }
-																	]
-												},
-												
-												{type:_CASE_, id:"repeat_custom_month", numCols:2, useParentTable:false, width:"auto",
-														relevant:"get(_REPEAT_TYPE_) == 'MON'",
-														items:[
-																	 {type:_CELL_SPACER_, rowSpan:3, width:10},
-																	 {type:_GROUP_, useParentTable:false, numCols:4, colSpan:"*", 
-																			 items:[
-																							{type:_OUTPUT_, value:_Every_, valign:_MIDDLE_},
-																							{ref:_REPEAT_CUSTOM_COUNT_, type:_INPUT_, cssStyle:"width:30px"},
-																							{type:_OUTPUT_, value:"month:", relevant:"get(_REPEAT_CUSTOM_COUNT_) == 1", valign:_MIDDLE_},
-																							{type:_OUTPUT_, value:"months:", relevant:"get(_REPEAT_CUSTOM_COUNT_) > 1", valign:_MIDDLE_}
-																						 ]
-																	 },
-																	 
-																	 {type:_GROUP_, useParentTable:false, numCols:3, colSpan:"*", 
-																			 items:[
-																							{ref:_REPEAT_CUSTOM_TYPE_, type:_DWT_SELECT_, selection:_CLOSED_, value:"S",
-																									choices:[
-																													 {value:"O", label:"On the:"},
-																													 {value:"S", label:"On day(s):"}
-																													]
-																							},
-																							{ref:_REPEAT_CUSTOM_ORDINAL_, type:_DWT_SELECT_, selection:_CLOSED_, 
-																									relevant:"get(_REPEAT_CUSTOM_TYPE_) == 'O'",
-																									choices:_REPEAT_CUSTOM_ORDINAL_CHOICES_, value:1
-																							},
-																							{ref:_REPEAT_CUSTOM_DAY_OF_WEEK_, type:_DWT_SELECT_, selection:_CLOSED_,
-																									relevant:"get(_REPEAT_CUSTOM_TYPE_) == 'O'",
-																									choices:_EXTENDED_DAY_OF_WEEK_CHOICES_ , value:_DAY_
-																							}
-																						 ]
-																	 },
-																	 {type:_GROUP_, numCols:2, useParentTable:false, colSpan:"*",
-																			 relevant:"get(_REPEAT_CUSTOM_TYPE_) == 'S'",
-																			 items:[
-																							{type:_CELL_SPACER_, width:10},
-																							{ref:_REPEAT_MONTHLY_DAY_LIST_, colSpan:"*", type:_BUTTON_GRID_, numCols:7, 
-																									cssClass:"xform_button_grid_small", choices:_MONTH_DAY_CHOICES_
-																							}
-																						 ]
-																	 }
-																	]
-												},
-												
-												{type:_CASE_, id:"repeat_custom_year", numCols:2, useParentTable:false, width:"auto",
-														relevant:"get(_REPEAT_TYPE_) == 'YEA'",
-														items:[
-																	 {type:_CELL_SPACER_, rowSpan:2, width:2},
-																	 {type:_GROUP_, useParentTable:false, numCols:5, 
-																			 items:[
-																							{ref:_REPEAT_CUSTOM_TYPE_, type:_CHECKBOX_, value:"O", trueValue:"S", falseValue:"O", 
-																									label:"Every", labelCssClass:"xform_output", labelWrap:false, cellCssClass:"xform_cell"},
-																							{type:_CELL_SPACER_, width:8},
-																							{ref:_REPEAT_YEARLY_MONTHS_LIST_, type:_DWT_SELECT_, selection:_CLOSED_, 
-																									relevant:"get(_REPEAT_CUSTOM_TYPE_) != 'O'", 
-																									relevantBehavior:_DISABLE_, choices:_MONTH_ABBR_CHOICES_
-																							},
-																							{ref:_REPEAT_CUSTOM_MONTH_DAY_, type:_INPUT_, width:30, relevant:"get(_REPEAT_CUSTOM_TYPE_) != 'O'",
-																									relevantBehavior:_DISABLE_, errorLocation:_PARENT_ }
-																							//{ref:_REPEAT_CUSTOM_COUNT_, type:_INPUT_, cssStyle:"width:30px"},
-																							//{type:_OUTPUT_, value:"year in:", relevant:"get(_REPEAT_CUSTOM_COUNT_) == 1", valign:_MIDDLE_},
-																							//{type:_OUTPUT_, value:"years in:", relevant:"get(_REPEAT_CUSTOM_COUNT_) > 1", valign:_MIDDLE_},
-																							
-																						 ]
-																	 },
-																	 //{type:_GROUP_, numCols:2, useParentTable:false,
-																			 //items:[
-																								//	{type:_CELL_SPACER_, width:10},
-																								//	{ref:_REPEAT_YEARLY_MONTHS_LIST_, type:_DWT_SELECT_, selection:_CLOSED_, 
-																										//	 type:_BUTTON_GRID_, numCols:4, cssClass:"xform_button_grid_medium",
-																										//		choices:_MONTH_ABBR_CHOICES_
-																										//	}
-																								//]
-																			 //},
-																	 {type:_GROUP_, numCols:5, useParentTable:false,
-																			 items:[
-																							{ref:_REPEAT_CUSTOM_TYPE_, type:_INPUT_, value:"O", trueValue:"O", falseValue:"S", 
-																									label:"On the:", labelCssClass:"xform_output", labelWrap:false, cellCssClass:"xform_cell"},
-																							{ref:_REPEAT_CUSTOM_ORDINAL_, type:_DWT_SELECT_, selection:_CLOSED_, 
-																									relevant:"get(_REPEAT_CUSTOM_TYPE_) != 'S'", relevantBehavior:_DISABLE_,
-																									choices:_REPEAT_CUSTOM_ORDINAL_CHOICES_, value:1},
-																							{ref:_REPEAT_CUSTOM_DAY_OF_WEEK_, type:_DWT_SELECT_, selection:_CLOSED_,
-																									relevant:"get(_REPEAT_CUSTOM_TYPE_) != 'S'", relevantBehavior:_DISABLE_,
-																									choices:_EXTENDED_DAY_OF_WEEK_CHOICES_, value:_DAY_},
-																							{ref:_REPEAT_YEARLY_MONTHS_LIST_, type:_DWT_SELECT_, selection:_CLOSED_, relevant:"get(_REPEAT_CUSTOM_TYPE_) != 'S'",
-																									relevantBehavior:_DISABLE_, choices:_MONTH_ABBR_CHOICES_}
-																						 ]
-																	 }
-																	]
-												}
-											 ]
-						 },	//end repeat custom
-						 
-						 {type:_GROUP_, numCols:3, relevant:"get(_REPEAT_TYPE_) != 'NON'  && instance.editTimeRepeat() == ZmAppt.EDIT_TIME_REPEAT", 
-								 label:_Repeat_End_Type_, useParentTable:false,
-								 items:[
-												{ref:_REPEAT_END_TYPE_, rowSpang:2, type:_DWT_SELECT_, selection:_CLOSED_, choices:_REPEAT_END_TYPE_CHOICES_,
-														value:"N", label:null },
-												{ref:_REPEAT_END_DATE_, type:_DWT_DATE_, relevant:"get(_REPEAT_END_TYPE_) == 'D'", valign:_MIDDLE_},
-												
-												{type:_GROUP_, numCols:3, relevant:"get(_REPEAT_END_TYPE_) == 'A'", useParentTable:false, errorLocation:_PARENT_,
-														items:[
-																	 {ref:_REPEAT_END_COUNT_, type:_INPUT_, cssStyle:"width:30px;", errorLocation:_PARENT_}, 
-																	 {type:_OUTPUT_, value:"time", relevant:"get(_REPEAT_END_COUNT_) == 1", valign:_MIDDLE_},
-																	 {type:_OUTPUT_, value:"times", relevant:"get(_REPEAT_END_COUNT_) > 1", valign:_MIDDLE_}
-																	]
-												}
-											 ]
-						 },
-
-						 {type:_SEPARATOR_, height:10},
-						 {type:_SPACER_, height:5},
-						 
-						 {ref: _ORGANIZER_,  type:_OUTPUT_ , label:ZmMsg.organizer,
-								 relevant:"instance.getViewMode() != ZmAppt.MODE_NEW", labelCssStyle:"text-align:left"},
-						 {type:_OUTPUT_, value:ZmMsg.attendees, cssClass:"xform_label", cssStyle:"text-align:left"},
-						 {type:_DWT_BUTTON_, onActivate:"this.getFormController().openSchedule()", label:ZmMsg.scheduleAttendees,
-								 width:"105px",  cssStyle:"float:right", relevant:"(instance.isOrganizer() == true)", relevantBehavior:_DISABLE_},
-						 {ref:_ATTENDEES_, 	type:_TEXTAREA_, 	colSpan:"*", label:null, height:"50px", cssStyle:"width:100%",
-								 relevant:"(instance.isOrganizer() == true)", relevantBehavior:_DISABLE_},
-						 {type:_SEPARATOR_, height:5},
-						 {type:_OUTPUT_, value:ZmMsg.notes, colSpan:"*", cssClass:"xform_label",  cssStyle:"text-align:left"},
-						 {ref:_NOTES_, 		type:_TEXTAREA_, 	colSpan:"*", label:null, height:"50px", cssStyle:"width:100%",
-								 relevant: "instance.isOrganizer()", relevantBehavior:_DISABLE_},
-						 {type:_SEPARATOR_, height:10},
-						 {type:_SPACER_, height:5},
-						 
-						 {type:_OUTPUT_, value:"Attachments:", cssClass:"xform_label",  cssStyle:"text-align:left"},
-						 {type:_DWT_BUTTON_, onActivate:"this.getFormController().addAttachments(event)", label:"Add Attachment",
-								 width:"100px", cssStyle:"float:right", relevant:"instance.isOrganizer()", relevantBehavior:_DISABLE_},
-						 {type:_GROUP_, relevant:"instance.hasAttachments() == true", colSpan:"*", width:"100%", useParentTable:false, numCols:2,
-								 items: [
-												 {ref: _ATTACHMENTS_, type:_REPEAT_, label:null,colSpan:"*",width:"100%",showAddButton:false, showRemoveButton:true,
-														 useParentTable:false, 
-														 removeButton:{type:_DWT_BUTTON_, label:"-", width:20, cssStyle:"float:right", 	
-																 onActivate: function (event) {
-																		 var repeatItem = this.getParentItem().getParentItem();
-																		 repeatItem.removeRowButtonClicked(this.getParentItem().instanceNum);
-																 },
-																 relevantBehavior:_HIDE_,
-																 relevant:"instance.isOrganizer() && item.getParentItem().getParentItem().instanceNum != 0",
-																 forceUpdate:true},
-														 items:[
-																		{ref:".", type:_SWITCH_, id:"attachmentType", colSpan:"*", numCols:"2", label:null,
-																				items:[
-																							 {ref:".",type:_CASE_, id:"attRFC", relevant:"get('ct') == ZmMimeTable.MSG_RFC822", 
-																									 numCols:3, colSizes:["20px", "auto", "100px"],
-																									 items:[
-																													{ref:"ct", type:_IMAGE_, 
-																															getDisplayValue:function(value){
-																																	var mimeInfo = ZmMimeTable.getInfo(value);
-																																	return (mimeInfo)? mimeInfo.image: ZmImg.I_DOCUMENT;
-																															}
-																													},
-																													{ref:"filename", type:_DATA_ANCHOR_, href:"javascript:;", 
-																															onActivate:"this.getFormController().itemRFCAttachmentClicked(event, this)",
-																															getDisplayValue:function(value) {
-																																	if (value != null) return value + "   (" + 
-																																	(this.getForm().get(this.getParentItem().refPath + "/s") )+  " B)";
-																															}
-																													}
-																												 ]},
-																							 {ref:".",type:_CASE_, id:"attRFC", relevant:"get('ct') != ZmMimeTable.MSG_RFC822",
-																									 numCols:3, colSizes:["20px","auto", "100px"],
-																									 items:[
-																													{ref:"ct", type:_AJX_IMAGE_, 
-																															getDisplayValue:function(value){
-																																	if (value != null) {
-																																			var mimeInfo = ZmMimeTable.getInfo(value);
-																																			return (mimeInfo)? mimeInfo.image: ZmImg.I_DOCUMENT;
-																																	}
-																																	return null;
-																															}
-																													},
-																													
-																													{ref:"filename", type:_DATA_ANCHOR_, href:"javascript:;", 
-																															onActivate:"this.getFormController().itemAttachmentClicked(event, this)", showInNewWindow:false,
-																															getDisplayValue:function(value) {
-																																	if (value != null) return value + "  (" +
-																																	(this.getForm().get(this.getParentItem().refPath + "/s") )+  " B)";
-																															}
-																													}
-																												 ]
-																							 },
-																							]
-																		}
-																	 ]
+			 // NOTE: show a DATE field if ALL_DAY is true, otherwise show a dateTime
+			 {type:_SWITCH_, useParentTable:true, colSpan:"*",
+				 items:[
+						{type:_CASE_, relevant:"instance.isReadOnly()", colSpan:"*", useParentTable:true,
+							items:[
+									 {type: _OUTPUT_, value: "All day appointment", relevant:"get(_ALL_DAY_) == '1'", label: " "},
+									 {ref: _START_END_DATE_RANGE_, type:_OUTPUT_, label:_Starts_,
+										 getDisplayValue: 
+										 function (rangeObj) {
+											 if (rangeObj != null) {
+												 if (this.getForm().get(_ALL_DAY_) != "1"){
+													 return AjxBuffer.concat(AjxDateUtil.simpleComputeDateStr(rangeObj.startDate),
+																			"&nbsp;",
+																			AjxDateUtil.getTimeStr(rangeObj.startDate,"%h:%m %P"));
+												 } else {
+													 return AjxDateUtil.simpleComputeDateStr(rangeObj.startDate);
 												 }
-												]
-						 } // End attachments group,
-						 
+											 }
+										 }
+									 },
+									 {ref: _START_END_DATE_RANGE_, type:_OUTPUT_, label:_Ends_,
+										 getDisplayValue: function (rangeObj){
+											 if (rangeObj != null) {
+												 if (this.getForm().get(_ALL_DAY_) != "1"){
+													 return AjxBuffer.concat(AjxDateUtil.simpleComputeDateStr(rangeObj.endDate),
+																			"&nbsp;",
+																			AjxDateUtil.getTimeStr(rangeObj.endDate, "%h:%m %P"));
+												 } else {
+													 return AjxDateUtil.simpleComputeDateStr(rangeObj.endDate);
+												 }
+											 }
+										 }
+									 },
+									 {type:_GROUP_, useParentTable:false,label:"Recurrence:", colSpan:"*", numCols:2,
+										 relevant:"instance.editTimeRepeat() == ZmAppt.EDIT_NO_REPEAT",
+										 items:[
+												{ref: _REPEAT_DISPLAY_, type:_OUTPUT_, nowrap:true},
+												{type:_OUTPUT_,width:80, value:"&nbsp;"}
+											 ]
+									 }
+									]
+						}, // END READ ONLY 
+						
+						{type:_CASE_, relevant:"!instance.isReadOnly()",colSpan:"*", useParentTable:true,
+							items:[
+									 {type:_GROUP_, useParentTable:true,
+										 relevant:"(this.getController().shouldShowTimezone() == true && !instance.isReadOnly())", 
+										 items:[
+												{type:_GROUP_, useParentTable:false, colSpan:"*", numCols:4,
+													items: [
+															{ref:_ALL_DAY_, type:_CHECKBOX_, value:'0', trueValue:'1', falseValue:'0',
+																labelCssClass:"xform_label", elementChanged:ZmAppointmentView.allDayChanged},
+															{ref:_TIMEZONE_, type:_DWT_SELECT_, choices:ZmTimezones.getAbbreviatedZoneChoices(),
+																width:"115px", relevant:"get(_ALL_DAY_) != '1'"},
+														 ]
+												}
+											 ]
+									 },
+									 {type:_GROUP_, useParentTable:true,
+										 relevant:"(this.getController().shouldShowTimezone() != true && !instance.isReadOnly())", 
+										 items:[
+												{ref:_ALL_DAY_, type:_CHECKBOX_, value:'0', trueValue:'1', falseValue:'0',labelCssClass:"xform_label",
+													labelCssStyle:"text-align:left",elementChanged:ZmAppointmentView.allDayChanged }
+											 ]
+									 },
+									 {type:_GROUP_, useParentTable:true, relevant:"get(_ALL_DAY_) != '1'",
+										 items:[
+												{ref: _START_END_DATE_RANGE_, type:_APPT_DATE_TIME_RANGE_}
+											 ]
+									 },
+									 {type:_GROUP_, useParentTable:true, relevant:"get(_ALL_DAY_) == '1'",
+										 items:[
+												{type:_CELL_SPACER_, height:"1px", width:"auto"},
+												{ref: _START_END_DATE_RANGE_, type:_APPT_DATE_RANGE_}
+											 ]
+									 }
+									]
+						}, // END !READ ONLY
+						 ]
+			 }, // END READ ONLY SWITCH
+
+			 {type:_GROUP_, useParentTable:false, colSpang:"*", label:_Repeat_, numCols:3,
+				 relevant:"instance.editTimeRepeat() == ZmAppt.EDIT_TIME_REPEAT", 
+				 items:[
+						{ref:_REPEAT_TYPE_, type:_DWT_SELECT_, selection:_CLOSED_, choices:_REPEAT_TYPE_CHOICES_,
+							label:null},
+						{ref:_REPEAT_CUSTOM_, type:_CHECKBOX_, trueValue:"1", falseValue:"0", cellCssClass:"xform_cell",
+							relevant:"get(_REPEAT_TYPE_) != 'NON'"},
+						 ]
+			 },
+			 {type:_SWITCH_, id:"repeat_custom", label:"", labelLocation:_LEFT_, numCols:1, 
+				 relevant:"get(_REPEAT_TYPE_) != 'NON' && get(_REPEAT_CUSTOM_) == '1' && instance.editTimeRepeat() == ZmAppt.EDIT_TIME_REPEAT", 
+				 items:[
+						{type:_CASE_, id:"repeat_custom_day", useParentTable:false, numCols:5,
+							relevant:"get(_REPEAT_TYPE_) == 'DAI'", width:"auto",
+							items:[
+									 {type:_CELL_SPACER_, width:10},
+									 {type:_OUTPUT_, value:_Every_, valign:_MIDDLE_},
+									 {ref:_REPEAT_CUSTOM_COUNT_, type:_INPUT_, cssStyle:"width:30px"},
+									 {type:_OUTPUT_, value:"day",  relevant:"get(_REPEAT_CUSTOM_COUNT_) == 1", valign:_MIDDLE_},
+									 {type:_OUTPUT_, value:"days",  relevant:"get(_REPEAT_CUSTOM_COUNT_) > 1", valign:_MIDDLE_}
+									]
+						},
+						
+						{type:_CASE_, id:"repeat_custom_week", numCols:2, useParentTable:false, width:"auto",
+							relevant:"get(_REPEAT_TYPE_) == 'WEE'",
+							items:[
+									 {type:_CELL_SPACER_, rowSpan:2, width:10},
+									 {type:_GROUP_, useParentTable:false, numCols:4, 
+										 items:[
+												{type:_OUTPUT_, value:_Every_, valign:_MIDDLE_},
+												{ref:_REPEAT_CUSTOM_COUNT_, type:_INPUT_, cssStyle:"width:30px"},
+												{type:_OUTPUT_, value:"week on:", relevant:"get(_REPEAT_CUSTOM_COUNT_) == 1", valign:_MIDDLE_},
+												{type:_OUTPUT_, value:"weeks on:", relevant:"get(_REPEAT_CUSTOM_COUNT_) > 1", valign:_MIDDLE_}
+											 ]
+									 },
+									 {type:_GROUP_, useParentTable:false, numCols:4, 
+										 items:[
+												{type:_CELL_SPACER_, width:10},
+												{ref:_REPEAT_WEEKLY_DAYS_, colSpan:"*", type:_DWT_SELECT_, selection:_CLOSED_, 
+													type:_BUTTON_GRID_, numCols:7, cssClass:"xform_button_grid_small",
+													choices:_DAY_OF_WEEK_INITIAL_CHOICES_
+													//  					getDisplayValue:function(value) {
+														//  					if (value != null) return value;
+														// 					var date = this.getForm().get(_START_DATE_);
+														// 					var dow = date.getDay();
+														// 					var choices = this.getChoices();
+														// 					return choices[dow].value;
+														// 					}
+												}
+											 ]
+									 }
+									]
+						},
+						
+						{type:_CASE_, id:"repeat_custom_month", numCols:2, useParentTable:false, width:"auto",
+							relevant:"get(_REPEAT_TYPE_) == 'MON'",
+							items:[
+									 {type:_CELL_SPACER_, rowSpan:3, width:10},
+									 {type:_GROUP_, useParentTable:false, numCols:4, colSpan:"*", 
+										 items:[
+												{type:_OUTPUT_, value:_Every_, valign:_MIDDLE_},
+												{ref:_REPEAT_CUSTOM_COUNT_, type:_INPUT_, cssStyle:"width:30px"},
+												{type:_OUTPUT_, value:"month:", relevant:"get(_REPEAT_CUSTOM_COUNT_) == 1", valign:_MIDDLE_},
+												{type:_OUTPUT_, value:"months:", relevant:"get(_REPEAT_CUSTOM_COUNT_) > 1", valign:_MIDDLE_}
+											 ]
+									 },
+									 
+									 {type:_GROUP_, useParentTable:false, numCols:3, colSpan:"*", 
+										 items:[
+												{ref:_REPEAT_CUSTOM_TYPE_, type:_DWT_SELECT_, selection:_CLOSED_, value:"S",
+													choices:[
+															 {value:"O", label:"On the:"},
+															 {value:"S", label:"On day(s):"}
+															]
+												},
+												{ref:_REPEAT_CUSTOM_ORDINAL_, type:_DWT_SELECT_, selection:_CLOSED_, 
+													relevant:"get(_REPEAT_CUSTOM_TYPE_) == 'O'",
+													choices:_REPEAT_CUSTOM_ORDINAL_CHOICES_, value:1
+												},
+												{ref:_REPEAT_CUSTOM_DAY_OF_WEEK_, type:_DWT_SELECT_, selection:_CLOSED_,
+													relevant:"get(_REPEAT_CUSTOM_TYPE_) == 'O'",
+													choices:_EXTENDED_DAY_OF_WEEK_CHOICES_ , value:_DAY_
+												}
+											 ]
+									 },
+									 {type:_GROUP_, numCols:2, useParentTable:false, colSpan:"*",
+										 relevant:"get(_REPEAT_CUSTOM_TYPE_) == 'S'",
+										 items:[
+												{type:_CELL_SPACER_, width:10},
+												{ref:_REPEAT_MONTHLY_DAY_LIST_, colSpan:"*", type:_BUTTON_GRID_, numCols:7, 
+													cssClass:"xform_button_grid_small", choices:_MONTH_DAY_CHOICES_
+												}
+											 ]
+									 }
+									]
+						},
+						
+						{type:_CASE_, id:"repeat_custom_year", numCols:2, useParentTable:false, width:"auto",
+							relevant:"get(_REPEAT_TYPE_) == 'YEA'",
+							items:[
+									 {type:_CELL_SPACER_, rowSpan:2, width:2},
+									 {type:_GROUP_, useParentTable:false, numCols:5, 
+										 items:[
+												{ref:_REPEAT_CUSTOM_TYPE_, type:_CHECKBOX_, value:"O", trueValue:"S", falseValue:"O", 
+													label:"Every", labelCssClass:"xform_output", labelWrap:false, cellCssClass:"xform_cell"},
+												{type:_CELL_SPACER_, width:8},
+												{ref:_REPEAT_YEARLY_MONTHS_LIST_, type:_DWT_SELECT_, selection:_CLOSED_, 
+													relevant:"get(_REPEAT_CUSTOM_TYPE_) != 'O'", 
+													relevantBehavior:_DISABLE_, choices:_MONTH_ABBR_CHOICES_
+												},
+												{ref:_REPEAT_CUSTOM_MONTH_DAY_, type:_INPUT_, width:30, relevant:"get(_REPEAT_CUSTOM_TYPE_) != 'O'",
+													relevantBehavior:_DISABLE_, errorLocation:_PARENT_ }
+												//{ref:_REPEAT_CUSTOM_COUNT_, type:_INPUT_, cssStyle:"width:30px"},
+												//{type:_OUTPUT_, value:"year in:", relevant:"get(_REPEAT_CUSTOM_COUNT_) == 1", valign:_MIDDLE_},
+												//{type:_OUTPUT_, value:"years in:", relevant:"get(_REPEAT_CUSTOM_COUNT_) > 1", valign:_MIDDLE_},
+												
+											 ]
+									 },
+									 //{type:_GROUP_, numCols:2, useParentTable:false,
+										 //items:[
+												//	{type:_CELL_SPACER_, width:10},
+												//	{ref:_REPEAT_YEARLY_MONTHS_LIST_, type:_DWT_SELECT_, selection:_CLOSED_, 
+													//	 type:_BUTTON_GRID_, numCols:4, cssClass:"xform_button_grid_medium",
+													//	choices:_MONTH_ABBR_CHOICES_
+													//	}
+												//]
+										 //},
+									 {type:_GROUP_, numCols:5, useParentTable:false,
+										 items:[
+												{ref:_REPEAT_CUSTOM_TYPE_, type:_INPUT_, value:"O", trueValue:"O", falseValue:"S", 
+													label:"On the:", labelCssClass:"xform_output", labelWrap:false, cellCssClass:"xform_cell"},
+												{ref:_REPEAT_CUSTOM_ORDINAL_, type:_DWT_SELECT_, selection:_CLOSED_, 
+													relevant:"get(_REPEAT_CUSTOM_TYPE_) != 'S'", relevantBehavior:_DISABLE_,
+													choices:_REPEAT_CUSTOM_ORDINAL_CHOICES_, value:1},
+												{ref:_REPEAT_CUSTOM_DAY_OF_WEEK_, type:_DWT_SELECT_, selection:_CLOSED_,
+													relevant:"get(_REPEAT_CUSTOM_TYPE_) != 'S'", relevantBehavior:_DISABLE_,
+													choices:_EXTENDED_DAY_OF_WEEK_CHOICES_, value:_DAY_},
+												{ref:_REPEAT_YEARLY_MONTHS_LIST_, type:_DWT_SELECT_, selection:_CLOSED_, relevant:"get(_REPEAT_CUSTOM_TYPE_) != 'S'",
+													relevantBehavior:_DISABLE_, choices:_MONTH_ABBR_CHOICES_}
+											 ]
+									 }
+									]
+						}
+						 ]
+			 },	//end repeat custom
+			 
+			 {type:_GROUP_, numCols:3, relevant:"get(_REPEAT_TYPE_) != 'NON'  && instance.editTimeRepeat() == ZmAppt.EDIT_TIME_REPEAT", 
+				 label:_Repeat_End_Type_, useParentTable:false,
+				 items:[
+						{ref:_REPEAT_END_TYPE_, rowSpang:2, type:_DWT_SELECT_, selection:_CLOSED_, choices:_REPEAT_END_TYPE_CHOICES_,
+							value:"N", label:null },
+						{ref:_REPEAT_END_DATE_, type:_DWT_DATE_, relevant:"get(_REPEAT_END_TYPE_) == 'D'", valign:_MIDDLE_},
+						
+						{type:_GROUP_, numCols:3, relevant:"get(_REPEAT_END_TYPE_) == 'A'", useParentTable:false, errorLocation:_PARENT_,
+							items:[
+									 {ref:_REPEAT_END_COUNT_, type:_INPUT_, cssStyle:"width:30px;", errorLocation:_PARENT_}, 
+									 {type:_OUTPUT_, value:"time", relevant:"get(_REPEAT_END_COUNT_) == 1", valign:_MIDDLE_},
+									 {type:_OUTPUT_, value:"times", relevant:"get(_REPEAT_END_COUNT_) > 1", valign:_MIDDLE_}
+									]
+						}
+						 ]
+			 },
+
+			 {type:_SEPARATOR_, height:10},
+			 {type:_SPACER_, height:5},
+			 
+			 {ref: _ORGANIZER_,  type:_OUTPUT_ , label:ZmMsg.organizer,
+				 relevant:"instance.getViewMode() != ZmAppt.MODE_NEW", labelCssStyle:"text-align:left"},
+			 {type:_SWITCH_, useParentTable:true, colSpan:"*",
+				 items:[
+					{type:_CASE_, relevant:"instance.isReadOnly()", colSpan:"*", useParentTable:true,
+					 items: [
+						{type:_OUTPUT_, value:ZmMsg.attendees, cssClass:"xform_label", cssStyle:"text-align:left"},
+						{type:_CELL_SPACER_, width:10},
+						{ref:_ATTENDEES_, type:_OUTPUT_, colSpan:"*", label: null, height:"25px", cssStyle:"overflow:auto"}
 						]
+					},
+					{type:_CASE_, relevant:"!instance.isReadOnly()", colSpan:"*", useParentTable:true,
+					 items: [
+						{type:_OUTPUT_, value:ZmMsg.attendees, cssClass:"xform_label", cssStyle:"text-align:left"},
+						{type:_DWT_BUTTON_, onActivate:"this.getFormController().openSchedule()", label:ZmMsg.scheduleAttendees,
+						 width:"105px",  cssStyle:"float:right", relevant:"(instance.isOrganizer() == true)", relevantBehavior:_DISABLE_},
+						{ref:_ATTENDEES_, 	type:_TEXTAREA_, 	colSpan:"*", label:null, height:"50px", cssStyle:"width:100%",
+						 relevant:"(instance.isOrganizer() == true)", relevantBehavior:_DISABLE_},
+						]
+					}
+					]
+			 },
+
+			 {type:_SEPARATOR_, height:5},
+			 {type:_OUTPUT_, value:ZmMsg.notes, colSpan:"*", cssClass:"xform_label",  cssStyle:"text-align:left"},
+			 {type:_SWITCH_, useParentTable:true, colSpan:"*",
+				 items:[
+					{type:_CASE_, relevant:"instance.isReadOnly()", colSpan:"*", useParentTable:true,
+					 items: [
+						{ref:_NOTES_, type:_OUTPUT_, colSpan:"*", label: null, height:"50px", cssStyle:"overflow:auto"}
+						]
+					},
+					{type:_CASE_, relevant:"!instance.isReadOnly()", colSpan:"*", useParentTable:true,
+					 items: [
+						 {ref:_NOTES_, 	type:_TEXTAREA_, 	colSpan:"*", label:null, height:"50px", cssStyle:"width:100%"}
+						 ]
+					}
+					]
+			 },
+			 {type:_SEPARATOR_, height:10},
+			 {type:_SPACER_, height:5},
+			 
+			 {type:_OUTPUT_, value:"Attachments:", cssClass:"xform_label",  cssStyle:"text-align:left"},
+			 {type:_DWT_BUTTON_, onActivate:"this.getFormController().addAttachments(event)", label:"Add Attachment",
+				 width:"100px", cssStyle:"float:right", relevant:"instance.isOrganizer()", relevantBehavior:_DISABLE_},
+			 {type:_GROUP_, relevant:"instance.hasAttachments() == true", colSpan:"*", width:"100%", useParentTable:false, numCols:2,
+				 items: [
+						 {ref: _ATTACHMENTS_, type:_REPEAT_, label:null,colSpan:"*",width:"100%",showAddButton:false, showRemoveButton:true,
+							 useParentTable:false, 
+							 removeButton:{type:_DWT_BUTTON_, label:"-", width:20, cssStyle:"float:right", 	
+								 onActivate: function (event) {
+									 var repeatItem = this.getParentItem().getParentItem();
+									 repeatItem.removeRowButtonClicked(this.getParentItem().instanceNum);
+								 },
+								 relevantBehavior:_HIDE_,
+								 relevant:"instance.isOrganizer() && item.getParentItem().getParentItem().instanceNum != 0",
+								 forceUpdate:true},
+							 items:[
+									{ref:".", type:_SWITCH_, id:"attachmentType", colSpan:"*", numCols:"2", label:null,
+										items:[
+												 {ref:".",type:_CASE_, id:"attRFC", relevant:"get('ct') == ZmMimeTable.MSG_RFC822", 
+													 numCols:3, colSizes:["20px", "auto", "100px"],
+													 items:[
+															{ref:"ct", type:_IMAGE_, 
+																getDisplayValue:function(value){
+																	var mimeInfo = ZmMimeTable.getInfo(value);
+																	return (mimeInfo)? mimeInfo.image: ZmImg.I_DOCUMENT;
+																}
+															},
+															{ref:"filename", type:_DATA_ANCHOR_, href:"javascript:;", 
+																onActivate:"this.getFormController().itemRFCAttachmentClicked(event, this)",
+																getDisplayValue:function(value) {
+																	if (value != null) return value + "   (" + 
+																	(this.getForm().get(this.getParentItem().refPath + "/s") )+  " B)";
+																}
+															}
+														 ]},
+												 {ref:".",type:_CASE_, id:"attRFC", relevant:"get('ct') != ZmMimeTable.MSG_RFC822",
+													 numCols:3, colSizes:["20px","auto", "100px"],
+													 items:[
+															{ref:"ct", type:_AJX_IMAGE_, 
+																getDisplayValue:function(value){
+																	if (value != null) {
+																		var mimeInfo = ZmMimeTable.getInfo(value);
+																		return (mimeInfo)? mimeInfo.image: ZmImg.I_DOCUMENT;
+																	}
+																	return null;
+																}
+															},
+															
+															{ref:"filename", type:_DATA_ANCHOR_, href:"javascript:;", 
+																onActivate:"this.getFormController().itemAttachmentClicked(event, this)", showInNewWindow:false,
+																getDisplayValue:function(value) {
+																	if (value != null) return value + "  (" +
+																	(this.getForm().get(this.getParentItem().refPath + "/s") )+  " B)";
+																}
+															}
+														 ]
+												 },
+												]
+									}
+									 ]
+						 }
+						]
+			 } // End attachments group,
+			 
+			]
 	}
     return this._appointmentForm;
 };
@@ -1150,44 +1178,44 @@ Appt_Date_Time_Range_XFormItem.prototype.items =
 	{ref:'startDate', type:_DWT_DATETIME_, choices: _TIME_OF_DAY_CHOICES, label:_Starts_, errorLocation:_PARENT_,
 	 elementChanged: 
 	 function (newDate, instanceValue, event) {
-		 var instance = this.getForm().getInstance();
-		 var s = newDate.getTime();
-		 var parent = this.getParentItem();
-		 var rangeObj  = parent.getInstanceValue();
-		 var endDate = rangeObj.endDate;
-		 var e = endDate.getTime();
-		 // calling parent.hasError() means that we are expecting the parent to
-		 // have only one type of error. For now that works, but I'm not sure we 
-		 // want that going forward. What I want, is to know if we're already showing a bad end date.
-		 if (!parent.hasError()) {
-			 var currentDur = instance.getDuration();
-			 // The dwt date time is a composite, so we have to be 
-			 // consistent. If the date changes, and is invalid, we 
-			 // want the user to see the invalid value, because the 
-			 // selects will have the invalid value as well ( due to
-			 // their having an elementChanged handler.
-			 endDate.setTime(s + currentDur);
-		 }
-		 rangeObj.startDate.setTime(s);
-		 //DBG.println("elementChanged for startDate: start = ", rangeObj.startDate, " end = " ,endDate);
-		 this.getForm().itemChanged(this.getParentItem().getId(), rangeObj , null);
+	 var instance = this.getForm().getInstance();
+	 var s = newDate.getTime();
+	 var parent = this.getParentItem();
+	 var rangeObj  = parent.getInstanceValue();
+	 var endDate = rangeObj.endDate;
+	 var e = endDate.getTime();
+	 // calling parent.hasError() means that we are expecting the parent to
+	 // have only one type of error. For now that works, but I'm not sure we 
+	 // want that going forward. What I want, is to know if we're already showing a bad end date.
+	 if (!parent.hasError()) {
+		 var currentDur = instance.getDuration();
+		 // The dwt date time is a composite, so we have to be 
+		 // consistent. If the date changes, and is invalid, we 
+		 // want the user to see the invalid value, because the 
+		 // selects will have the invalid value as well ( due to
+		 // their having an elementChanged handler.
+		 endDate.setTime(s + currentDur);
+	 }
+	 rangeObj.startDate.setTime(s);
+	 //DBG.println("elementChanged for startDate: start = ", rangeObj.startDate, " end = " ,endDate);
+	 this.getForm().itemChanged(this.getParentItem().getId(), rangeObj , null);
 	 }
 	},
 	{ref:'endDate', type:_DWT_DATETIME_, choices: _TIME_OF_DAY_CHOICES, label:_Ends_, errorLocation:_PARENT_,
 	 elementChanged:
 	 function (newDate, instanceValue, event) {
-		 var rangeObj  = this.getParentItem().getInstanceValue();
-		 rangeObj.endDate.setTime(newDate.getTime());
-		 var startHrs = rangeObj.startDate.getHours();
-		 var endHrs = rangeObj.endDate.getHours();
-		 // This should only happend when the changes come from a select
-		 if (event._args != null) {
-			 var newValue = event._args.newValue;
-			 if (endHrs < startHrs && (startHrs < 12) && !(newValue == AjxMsg.am || newValue == AjxMsg.pm)) {
-				 rangeObj.endDate.setHours(endHrs + 12);
-			 }
+	 var rangeObj  = this.getParentItem().getInstanceValue();
+	 rangeObj.endDate.setTime(newDate.getTime());
+	 var startHrs = rangeObj.startDate.getHours();
+	 var endHrs = rangeObj.endDate.getHours();
+	 // This should only happend when the changes come from a select
+	 if (event._args != null) {
+		 var newValue = event._args.newValue;
+		 if (endHrs < startHrs && (startHrs < 12) && !(newValue == AjxMsg.am || newValue == AjxMsg.pm)) {
+		 rangeObj.endDate.setHours(endHrs + 12);
 		 }
-		 this.getForm().itemChanged(this.getParentItem().getId(), rangeObj , null);
+	 }
+	 this.getForm().itemChanged(this.getParentItem().getId(), rangeObj , null);
 	 }
 }
 ];
@@ -1203,42 +1231,42 @@ Appt_Date_Range_XFormItem.prototype.items =
 	{ref:'startDate', type:_DWT_DATE_, label:_Starts_, errorLocation:_SELF_,
 	 elementChanged: 
 	 function (newDate, instanceValue, event) {
-		 var instance = this.getForm().getInstance();
-		 var s = newDate.getTime();
-		 var parent = this.getParentItem();
-		 var rangeObj  = parent.getInstanceValue();
-		 var endDate = rangeObj.endDate;
-		 var e = endDate.getTime();
-		 // calling parent.hasError() means that we are expecting the parent to
-		 // have only one type of error. For now that works, but I'm not sure we 
-		 // want that going forward. What I want, is to know if we're already showing a bad end date.
-		 if (!parent.hasError()) {
-			 var currentDur = instance.getDuration();
-			 // The dwt date time is a composite, so we have to be 
-			 // consistent. If the date changes, and is invalid, we 
-			 // want the user to see the invalid value, because the 
-			 // selects will have the invalid value as well ( due to
-			 // their having an elementChanged handler.
-			 endDate.setTime(s + currentDur);
-		 }
-		 rangeObj.startDate.setTime(newDate.getTime());
-		 this.getForm().itemChanged(this.getParentItem().getId(), rangeObj , null);
+	 var instance = this.getForm().getInstance();
+	 var s = newDate.getTime();
+	 var parent = this.getParentItem();
+	 var rangeObj  = parent.getInstanceValue();
+	 var endDate = rangeObj.endDate;
+	 var e = endDate.getTime();
+	 // calling parent.hasError() means that we are expecting the parent to
+	 // have only one type of error. For now that works, but I'm not sure we 
+	 // want that going forward. What I want, is to know if we're already showing a bad end date.
+	 if (!parent.hasError()) {
+		 var currentDur = instance.getDuration();
+		 // The dwt date time is a composite, so we have to be 
+		 // consistent. If the date changes, and is invalid, we 
+		 // want the user to see the invalid value, because the 
+		 // selects will have the invalid value as well ( due to
+		 // their having an elementChanged handler.
+		 endDate.setTime(s + currentDur);
+	 }
+	 rangeObj.startDate.setTime(newDate.getTime());
+	 this.getForm().itemChanged(this.getParentItem().getId(), rangeObj , null);
 	 }
 	},
 	{ref:'endDate', type:_DWT_DATE_,label:_Ends_, errorLocation:_SELF_,
 	 elementChanged:
 	 function (newDate, instanceValue, event) {
-		 var rangeObj  = this.getParentItem().getInstanceValue();
-		 rangeObj.endDate.setTime(newDate.getTime());
-		 var startHrs = rangeObj.startDate.getHours();
-		 var endHrs = rangeObj.endDate.getHours();
-		 if (event._args != null) {
-			 var newValue = event._args.newValue;
-			 if (endHrs < startHrs && (startHrs < 12) && !(newValue == AjxMsg.am || newValue == AjxMsg.pm)) {
-				 rangeObj.endDate.setHours(endHrs + 12);
-			 }
+	 var rangeObj  = this.getParentItem().getInstanceValue();
+	 rangeObj.endDate.setTime(newDate.getTime());
+	 var startHrs = rangeObj.startDate.getHours();
+	 var endHrs = rangeObj.endDate.getHours();
+	 if (event._args != null) {
+		 var newValue = event._args.newValue;
+		 if (endHrs < startHrs && (startHrs < 12) && !(newValue == AjxMsg.am || newValue == AjxMsg.pm)) {
+		 rangeObj.endDate.setHours(endHrs + 12);
 		 }
-		 this.getForm().itemChanged(this.getParentItem().getId(), rangeObj , null);
+	 }
+	 this.getForm().itemChanged(this.getParentItem().getId(), rangeObj , null);
 	 }
 	}
 ];
@@ -1246,159 +1274,159 @@ Appt_Date_Range_XFormItem.prototype.items =
 
 ZmAppointmentView.validateWholeNumber = function (value, form, formItem, instance) {
 	if (value != null) {
-		var valStr = "" + value;
-		if (valStr.indexOf(".") != -1){
-			throw ZmMsg.onlyWholeNumbersError;
-		}
-		if (value <= 0) {
-			throw ZmMsg.positiveNumberError;
-		} else {
-			return value;
-		}
+	var valStr = "" + value;
+	if (valStr.indexOf(".") != -1){
+		throw ZmMsg.onlyWholeNumbersError;
+	}
+	if (value <= 0) {
+		throw ZmMsg.positiveNumberError;
+	} else {
+		return value;
+	}
 	}
 }
 
 
 ZmAppointmentView.appointmentModel = {
 	items: [
-			{id:_SUBJECT_, label:_Subject_, required: true},
+		{id:_SUBJECT_, label:_Subject_, required: true},
 
-			{id:_LOCATION_, label:_Location_},
+		{id:_LOCATION_, label:_Location_},
 	
-		{id:_ALL_DAY_, label:_All_Day_, length:1},
+	{id:_ALL_DAY_, label:_All_Day_, length:1},
 
 	    {id:_TIMEZONE_, label:"Timezone"},
 
-		{ id: _START_END_DATE_RANGE_, type:_UNTYPED_,  setterScope: _INSTANCE_, setter:"setDateRange",  
-		  getterScope: _INSTANCE_, getter:"getDateRange",
-		  constraints:[ 
-			{errorMessageId: 'endDateBeforeStart', type:"method", value: 
-			 function (range, form, formItem, instance) {
-				 var s = range.startDate.getTime();
-				 var e = range.endDate.getTime();
-				 if (e <= s) {
-					 // The dwt date time is a composite, so we have to be 
-					 // consistent. If the date changes, and is invalid, we 
-					 // want the user to see the invalid value, because the 
-					 // selects will have the invalid value as well ( due to
-					 // their having an elementChanged handler.
-					 instance.getEndDate().setTime(range.endDate.getTime());
-					 instance.setEndDate(instance.endDate);
-					 form.refresh();
-					 throw this.getModel().getErrorMessage('endDateBeforeStart', range);
-				 } else {
-					 return range;
-				 }
-			 }
-			}
-			]
-		},
+	{ id: _START_END_DATE_RANGE_, type:_UNTYPED_,  setterScope: _INSTANCE_, setter:"setDateRange",  
+	  getterScope: _INSTANCE_, getter:"getDateRange",
+	  constraints:[ 
+		{errorMessageId: 'endDateBeforeStart', type:"method", value: 
+		 function (range, form, formItem, instance) {
+		 var s = range.startDate.getTime();
+		 var e = range.endDate.getTime();
+		 if (e <= s) {
+			 // The dwt date time is a composite, so we have to be 
+			 // consistent. If the date changes, and is invalid, we 
+			 // want the user to see the invalid value, because the 
+			 // selects will have the invalid value as well ( due to
+			 // their having an elementChanged handler.
+			 instance.getEndDate().setTime(range.endDate.getTime());
+			 instance.setEndDate(instance.endDate);
+			 form.refresh();
+			 throw this.getModel().getErrorMessage('endDateBeforeStart', range);
+		 } else {
+			 return range;
+		 }
+		 }
+		}
+		]
+	},
 
-		{id:_START_DATE_, type:_DATETIME_, label:_Starts_},
+	{id:_START_DATE_, type:_DATETIME_, label:_Starts_},
 
-		{id:_END_DATE_, type:_DATETIME_, label:_Ends_},
+	{id:_END_DATE_, type:_DATETIME_, label:_Ends_},
 
-		{id:_REPEAT_TYPE_, type:_STRING_, label:_Repeat_},
+	{id:_REPEAT_TYPE_, type:_STRING_, label:_Repeat_},
 
 	    {id:_VIEW_MODE_, type:_UNTYPED_ , getter:"getViewMode"},
-		
+	
 	    {id:_REPEAT_DISPLAY_, type:_STRING_, getterScope: _INSTANCE_, 
-		 getter:"getRecurrenceDisplayString"
-		},
-		
-		{id:_REPEAT_CUSTOM_, type:_STRING_, length:1, label:_Repeat_Custom_,
-			relevant:"get(_REPEAT_TYPE_) != 'NON'"
-		},
-		{id:_REPEAT_CUSTOM_COUNT_, type:_NUMBER_, cssClass:"xform_width_30",
-		 relevant:"get(_REPEAT_CUSTOM_) == '1'",
-		 constraints:[ {type:"method", value: ZmAppointmentView.validateWholeNumber } ]
-		},
+	 getter:"getRecurrenceDisplayString"
+	},
 	
-		{id:_REPEAT_CUSTOM_TYPE_, type:_STRING_, 
-			relevant:"get(_REPEAT_CUSTOM_) == '1' " +
-					 "&& (get(_REPEAT_TYPE_) == 'MON' || get(_REPEAT_TYPE_) == 'YEA')"
-		},
-		{id:_REPEAT_CUSTOM_ORDINAL_, type:_STRING_, 
-			relevant:" get(_REPEAT_CUSTOM_) == '1'" +
-					 "&& (get(_REPEAT_TYPE_) == 'MON' || get(_REPEAT_TYPE_) == 'YEA')"
-		},
-		{id:_REPEAT_CUSTOM_DAY_OF_WEEK_, type:_STRING_, selection:"closed",
-			relevant:" get(_REPEAT_CUSTOM_) == '1'" +
-					 "&& (get(_REPEAT_TYPE_) == 'MON' || get(_REPEAT_TYPE_) == 'YEA')"
-		},
+	{id:_REPEAT_CUSTOM_, type:_STRING_, length:1, label:_Repeat_Custom_,
+		relevant:"get(_REPEAT_TYPE_) != 'NON'"
+	},
+	{id:_REPEAT_CUSTOM_COUNT_, type:_NUMBER_, cssClass:"xform_width_30",
+	 relevant:"get(_REPEAT_CUSTOM_) == '1'",
+	 constraints:[ {type:"method", value: ZmAppointmentView.validateWholeNumber } ]
+	},
 	
-		{id:_REPEAT_CUSTOM_MONTH_DAY_, type:_NUMBER_,
-		 constraints:[ {type:"method", value: 
-						function (day, form, formItem, instance) {
-							if (day != null) {
-								ZmAppointmentView.validateWholeNumber(day, form, formItem, instance);
-								var month = parseInt(form.get(_REPEAT_YEARLY_MONTHS_LIST_));
-								var maxDay = AjxDateUtil._daysPerMonth[month];
-								if ( day > maxDay ) {
-									throw "There are only " + maxDay + " days in " + AjxDateUtil._months[month];
-								} else {
-									return day;
-								}
-							}
-						}
+	{id:_REPEAT_CUSTOM_TYPE_, type:_STRING_, 
+		relevant:"get(_REPEAT_CUSTOM_) == '1' " +
+			 "&& (get(_REPEAT_TYPE_) == 'MON' || get(_REPEAT_TYPE_) == 'YEA')"
+	},
+	{id:_REPEAT_CUSTOM_ORDINAL_, type:_STRING_, 
+		relevant:" get(_REPEAT_CUSTOM_) == '1'" +
+			 "&& (get(_REPEAT_TYPE_) == 'MON' || get(_REPEAT_TYPE_) == 'YEA')"
+	},
+	{id:_REPEAT_CUSTOM_DAY_OF_WEEK_, type:_STRING_, selection:"closed",
+		relevant:" get(_REPEAT_CUSTOM_) == '1'" +
+			 "&& (get(_REPEAT_TYPE_) == 'MON' || get(_REPEAT_TYPE_) == 'YEA')"
+	},
+	
+	{id:_REPEAT_CUSTOM_MONTH_DAY_, type:_NUMBER_,
+	 constraints:[ {type:"method", value: 
+			function (day, form, formItem, instance) {
+				if (day != null) {
+				ZmAppointmentView.validateWholeNumber(day, form, formItem, instance);
+				var month = parseInt(form.get(_REPEAT_YEARLY_MONTHS_LIST_));
+				var maxDay = AjxDateUtil._daysPerMonth[month];
+				if ( day > maxDay ) {
+					throw "There are only " + maxDay + " days in " + AjxDateUtil._months[month];
+				} else {
+					return day;
+				}
+				}
 			}
-					   ]
-		},
+		}
+			   ]
+	},
 
-		{id:_REPEAT_WEEKLY_DAYS_, type:_LIST_, dataType:_STRING_, 		// "Su,Mo,We"
-			relevant:" get(_REPEAT_CUSTOM_) == '1' " +
-		 "&& get(_REPEAT_TYPE_) == 'WEE'"
-		},
+	{id:_REPEAT_WEEKLY_DAYS_, type:_LIST_, dataType:_STRING_, 	// "Su,Mo,We"
+		relevant:" get(_REPEAT_CUSTOM_) == '1' " +
+	 "&& get(_REPEAT_TYPE_) == 'WEE'"
+	},
 
 
-		{id:_REPEAT_MONTHLY_DAY_LIST_, type:_LIST_, dataType:_STRING_, 		// "0,11,14,15,31"
-			relevant:" get(_REPEAT_CUSTOM_) == '1' " +
-					 " && get(_REPEAT_TYPE_) == 'MON' " +
-					 " && get(_REPEAT_CUSTOM_TYPE_) == 'S'"
-		},
-		
-		{id:_REPEAT_YEARLY_MONTHS_LIST_, type:_LIST_, dataType:_NUMBER_, unique:true,
-			relevant:" get(_REPEAT_CUSTOM_) == '1' " +
-		 " && get(_REPEAT_TYPE_) == 'YEA'"
-		},
-		
-		{id:_REPEAT_END_TYPE_, type:_STRING_, label:_Repeat_End_Type_,
-			relevant:"get(_REPEAT_TYPE_) != 'NON'"
-		},
-		{id:_REPEAT_END_DATE_, type:_DATE_, 
-			relevant:"get(_REPEAT_TYPE_) != 'NON' " +
-					 "&& get(_REPEAT_END_TYPE_) == 'D'"
-		},
-		{id:_REPEAT_END_COUNT_, type:_NUMBER_, 
-			relevant:"get(_REPEAT_TYPE_) != 'NON' " +
-		 "&& get(_REPEAT_END_TYPE_) == 'A'",
-		 constraints:[ {type:"method", value: ZmAppointmentView.validateWholeNumber } ]
-		},
+	{id:_REPEAT_MONTHLY_DAY_LIST_, type:_LIST_, dataType:_STRING_, 	// "0,11,14,15,31"
+		relevant:" get(_REPEAT_CUSTOM_) == '1' " +
+			 " && get(_REPEAT_TYPE_) == 'MON' " +
+			 " && get(_REPEAT_CUSTOM_TYPE_) == 'S'"
+	},
+	
+	{id:_REPEAT_YEARLY_MONTHS_LIST_, type:_LIST_, dataType:_NUMBER_, unique:true,
+		relevant:" get(_REPEAT_CUSTOM_) == '1' " +
+	 " && get(_REPEAT_TYPE_) == 'YEA'"
+	},
+	
+	{id:_REPEAT_END_TYPE_, type:_STRING_, label:_Repeat_End_Type_,
+		relevant:"get(_REPEAT_TYPE_) != 'NON'"
+	},
+	{id:_REPEAT_END_DATE_, type:_DATE_, 
+		relevant:"get(_REPEAT_TYPE_) != 'NON' " +
+			 "&& get(_REPEAT_END_TYPE_) == 'D'"
+	},
+	{id:_REPEAT_END_COUNT_, type:_NUMBER_, 
+		relevant:"get(_REPEAT_TYPE_) != 'NON' " +
+	 "&& get(_REPEAT_END_TYPE_) == 'A'",
+	 constraints:[ {type:"method", value: ZmAppointmentView.validateWholeNumber } ]
+	},
 
 	    {id:_REPEAT_CUSTOM_ORDINAL_CHOICES_, type:_STRING_},
 
-		{id:_ORGANIZER_, type: _STRING_, getter:"getOrganizer", getterScope:_INSTANCE_},
+	{id:_ORGANIZER_, type: _STRING_, getter:"getOrganizer", getterScope:_INSTANCE_},
 
-		{id:_ATTENDEES_, type:_STRING_, label:_Attendees_,
-		 constraints:[ {errorMessageId: 'invalidEmail', type:"method", value: 
-						function (value, form, formItem, instance) {
-							//instance.attendees = value;
-							if (!form.getController().validateEmail(value)) {
-								throw this.getModel().getErrorMessage('invalidEmail', value);
-							} else {
-								return value;
-							}
-						}}
-					   ]},
+	{id:_ATTENDEES_, type:_STRING_, label:_Attendees_,
+	 constraints:[ {errorMessageId: 'invalidEmail', type:"method", value: 
+			function (value, form, formItem, instance) {
+				//instance.attendees = value;
+				if (!form.getController().validateEmail(value)) {
+				throw this.getModel().getErrorMessage('invalidEmail', value);
+				} else {
+				return value;
+				}
+			}}
+			   ]},
 	    {id:_NOTES_, type:_STRING_, label:_Notes_},
 	    {id:_ATTACHMENTS_, type:_LIST_, setterg:"setAttachments",
-		 items: [
+	 items: [
 	            {id: "filename" ,type: _STRING_},
 	            {id: "s" ,type: _NUMBER_},
 	            {id: "part" ,type: _STRING_},
 	            {id: "ct" ,type: _STRING_},
 	            {id: "cd" ,type: _STRING_}
-				]
-		}
+		]
+	}
 	]
 }	
