@@ -157,7 +157,8 @@ function(ev) {
 	
 	// bug fix #3602
 	var address = ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT] 
-		? ev.detail : ev.item.getAddress(ZmEmailAddress.FROM);
+		? ev.detail 
+		: ((ev.item instanceof ZmContact) ? ev.item.getAddress(ZmEmailAddress.FROM) : null); // yuck
 	if (address && items.length == 1 && 
 		(ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT] || 
 		 ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM])) 
