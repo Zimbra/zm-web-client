@@ -18,7 +18,7 @@ function() {
 ZmNewTagDialog.prototype.cleanup =
 function(bPoppedUp) {
 	DwtDialog.prototype.cleanup.call(this, bPoppedUp);
-    var color = ZmTag.DEFAULT_COLOR;
+    var color = this._getNextColor();
  	this._setColorButton(color, ZmTag.COLOR_TEXT[color], ZmTag.COLOR_ICON[color]);
 }
 
@@ -83,8 +83,24 @@ function() {
 }
 
 ZmNewTagDialog.prototype._enterListener =
-function (ev){
+function(ev) {
 	var results = this._getTagData();
 	if (results)
 		this._runEnterCallback(results);
+}
+
+ZmNewTagDialog.prototype._getNextColor =
+function() {
+	var colorUsed = new Object();
+	var tags = this._appCtxt.getTagList().root.children.getArray();
+	if (!(tags && tags.length))
+		return ZmTag.DEFAULT_COLOR;
+	for (var i = 0; i < tags.length; i++)
+		colorUsed[tags[i].color] = true;
+	for (var i = 0; i < ZmTagTree.COLOR_LIST.length; i++) {
+		var color = ZmTagTree.COLOR_LIST[i];
+		if (!colorUsed[color])
+			return color;
+	}
+	return ZmTag.DEFAULT_COLOR;
 }
