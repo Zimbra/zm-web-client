@@ -124,10 +124,3 @@ ZmTradController.prototype._processPrePopView =
 function(view) {
 	this._resetNavToolBarButtons(view);
 };
-
-/**
- * Let our view do some cleanup.
- */
-ZmTradController.prototype._postHideCallback = function (view) {
-	this._doublePaneView.reset();
-};

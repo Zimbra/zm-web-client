@@ -57,6 +57,11 @@ function() {
 	return this._msgListView;
 }
 
+ZmDoublePaneView.prototype.getMsgView = 
+function() {
+	return this._msgView;
+};
+
 ZmDoublePaneView.prototype.getSelectionCount = 
 function() {
 	return this._msgListView.getSelectionCount();

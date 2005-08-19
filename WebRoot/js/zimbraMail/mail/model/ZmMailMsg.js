@@ -401,12 +401,18 @@ function() {
 	}
 };
 
-// XXX: doesnt look like this method is called anywhere?!
-ZmMailMsg.prototype.getHtmlContent =
-function() {
-	// XXX: especially since getHtmlPart() doesnt exist!?
-	this.getHtmlPart();
-	return this._htmlBody ? this._htmlBody : null;
+// we may want to set the text part w/o requesting it from the server 
+// (i.e. if we already have the HTML part)
+ZmMailMsg.prototype.setTextPart = 
+function(textPartStr) {
+	var textPart = new Object();
+	textPart.ct = ZmMimeTable.TEXT_PLAIN;
+	textPart.s = textPartStr.length;
+	textPart.content = textPartStr;
+	// XXX: not sure whether these params should be faked
+	//textPart.body = 
+	//textPart.part = 
+	this._bodyParts.push(textPart);
 };
 
 ZmMailMsg.prototype.setHtmlContent =

@@ -357,12 +357,12 @@ function() {
 ZmMailMsgView.prototype.getSelection = 
 function() {
 	return this._msg;
-}
+};
 
 ZmMailMsgView.prototype.getSelectionCount = 
 function() {
 	return 1;
-}
+};
 
 ZmMailMsgView.prototype.getMinHeight = 
 function() {
@@ -371,12 +371,32 @@ function() {
 		this._headerHeight = headerObj ? Dwt.getSize(headerObj).y : 0;
 	}
 	return this._headerHeight;
-}
+};
 
 ZmMailMsgView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, ": ", this._msg.subject].join("");
-}
+};
+
+// returns true if the current message was rendered in HTML
+ZmMailMsgView.prototype.hasHtmlBody = 
+function() {
+	return this._htmlBody != null;
+};
+
+// returns the html body element w/in the IFRAME's document for html messages
+ZmMailMsgView.prototype.getHtmlBodyElement = 
+function() {
+	var htmlBodyEl = null;
+	
+	if (this._htmlBody) {
+		var iframe = Dwt.getDomObj(this.getDocument(), this._iframeId);
+		var idoc = iframe ? Dwt.getIframeDoc(iframe) : null;
+		htmlBodyEl = idoc ? idoc.body : null;
+	}
+	
+	return htmlBodyEl;
+};
 
 // Private / Protected methods
 

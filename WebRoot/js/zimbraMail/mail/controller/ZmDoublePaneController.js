@@ -278,6 +278,32 @@ function(ev) {
 	}
 }
 
+// we overload _doAction for bug fix #3623
+ZmDoublePaneController.prototype._doAction =
+function(ev, action, extraBodyText) {
+	// first find out if the current message is in HTML
+	var msgView = this._doublePaneView.getMsgView();
+	if (action != ZmOperation.DRAFT && msgView.hasHtmlBody()) {
+		// then find out if the user's preference is Text
+		if (this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_TEXT) {
+			// then find out if a text part currently exists for the message
+			var msg = this._getMsg();
+			var textPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
+			if (!textPart) {
+				// if not, get the DOM tree for the IFRAME create for the HTML message
+				var bodyEl = msgView.getHtmlBodyElement();
+				// and run it thru the HTML stripper
+				textPart = bodyEl ? AjxStringUtil.convertHtml2Text(bodyEl) : null;
+				// set the text part back into the message
+				if (textPart)
+					msg.setTextPart(textPart);
+			}
+		}
+	}
+	// finally, call the base class last
+	ZmMailListController.prototype._doAction.call(this, ev, action, extraBodyText);
+};
+
 // Data handling
 
 // Loads the given item and displays it. The first message will be 

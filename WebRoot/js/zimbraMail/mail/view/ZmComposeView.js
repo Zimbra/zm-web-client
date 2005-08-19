@@ -336,7 +336,7 @@ function(action, msg, extraBodyText) {
 			}
 		} else {
 			// grab text part out of the body part
-			var bodyPart = msg.getBodyPart();
+			var bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
 			body = bodyPart ? this._getTextPart(bodyPart) : null;
 		}
 		
