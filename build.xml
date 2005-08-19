@@ -16,7 +16,6 @@
   <property name="jars.archive.dir"   location="../ZimbraServer/jars"/>
   <property name="src.dir"            location="src"/>
   <property name="gzipExtension" value=".jgz"/>	
-  <property name="copyrightText" value="Copyright 2005 (C) Zimbra Systems, Inc. All Rights Reserved"/>
 
   <condition property="ajax.dir" value="${env.AJAX_DIR}">
     <isset property="env.AJAX_DIR" />
@@ -123,13 +122,13 @@
 
   <target name="jam-files" depends="compile">
     <taskdef name="jammer" classname="com.zimbra.webClient.build.JammerTask" classpath="${build.dir}"/>
-    <jammer copyright="${copyrightText}" webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/AjxNet_all.js">
+    <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/AjxNet_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="Zimbra-net.jsp"/>
     </jammer>
-    <jammer copyright="${copyrightText}" webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/AjxMail_all.js">
+    <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/AjxMail_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="Zimbra.jsp, Dwt.jsp, ZimbraMail.jsp"/>
     </jammer>
-    <jammer copyright="${copyrightText}" webrootDir="${build.dir}/WebRoot/" pathToWebApp="/zimbra" destFile="${build.dir}/WebRoot/js/AjxAdmin_all.js">
+    <jammer webrootDir="${build.dir}/WebRoot/" pathToWebApp="/zimbra" destFile="${build.dir}/WebRoot/js/AjxAdmin_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="Zimbra.jsp, Dwt.jsp, ZimbraAdmin.jsp"/>
     </jammer> 
   </target>
@@ -299,14 +298,6 @@
     <copy todir="${build.dir}/WebRoot/js/ajax" overwrite="${isProduction}" >
  	  <fileset dir="${ajax.dir}/WebRoot/js"/>
     </copy>
-  	<condition property='replace-copyright-in-js-skip'>
-  	  <equals arg1='${isProduction}' arg2='false'/>
-	</condition>
-  	<antcall target='replace-copyright-in-js'/>
-  </target>
-	
-  <target name='replace-copyright-in-js' unless='replace-copyright-in-js-skip'>
-    <replace dir="${build.dir}/WebRoot/js" includes="**/*.js" token="@copyright@" value="${copyrightText}" />
   </target>
 	
   <target name="copy-imgs-to-tmp-area" depends="check4zimbraajax">

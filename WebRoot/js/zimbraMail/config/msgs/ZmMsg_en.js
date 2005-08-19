@@ -1,5 +1,3 @@
-// @copyright@
-
 function ZmMsg() {
 }
 

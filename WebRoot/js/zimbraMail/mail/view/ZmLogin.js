@@ -1,5 +1,3 @@
-// @copyright@
-
 /**
  * Login script for the Login.jsp page.
  * This should handle initial authentication. If auth succeeds, it redirects
