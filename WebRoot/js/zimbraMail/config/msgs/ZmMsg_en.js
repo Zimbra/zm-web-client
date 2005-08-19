@@ -170,6 +170,7 @@ ZmMsg.errorInvalidName = 'Sorry, "$0" is not a valid name. It contains at least 
 ZmMsg.errorInvalidPass = "You have entered an invalid password.";
 ZmMsg.errorInvalidPrefName = "Invalid preference name.";
 ZmMsg.errorInvalidPrefValue = "Invalid preference value.";
+ZmMsg.errorNoActiveX = "You need to enable ActiveX controls in order to use the Zimbra Collaboration Suite.";
 ZmMsg.errorNoSuchAcct = "No such account exists.";
 ZmMsg.errorNoSuchConv = "No such conversation exists.";
 ZmMsg.errorNoSuchFolder = "No such folder exists.";

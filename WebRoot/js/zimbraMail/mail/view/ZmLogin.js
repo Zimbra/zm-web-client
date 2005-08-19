@@ -347,7 +347,14 @@ function() {
 		return;
     }
 	
-    var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAccount");
+	try {
+	    var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAccount");
+	} catch (ex) {
+		if (AjxEnv.isIE && (ex.code == AjxException.INTERNAL_ERROR)) {
+			ZmLogin.setErrorMessage(ZmMsg.errorNoActiveX, -15);
+		}
+		return;
+	}
 	var header = soapDoc.createHeaderElement();
 	var context = soapDoc.set("context", null, header);
 	context.setAttribute("xmlns", "urn:zimbra");
