@@ -42,8 +42,9 @@ function(list, sortField) {
 
 ZmMailListView.prototype.getTitle =
 function() {
-	return this._controller._activeSearch ? this._controller._activeSearch.search.getTitle() : null;
-}
+	return this._controller._activeSearch && this._controller._activeSearch.search 
+		? this._controller._activeSearch.search.getTitle() : null;
+};
 
 ZmMailListView.prototype._changeListener =
 function(ev) {
