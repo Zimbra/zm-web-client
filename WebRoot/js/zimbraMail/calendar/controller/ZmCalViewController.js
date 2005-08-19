@@ -567,17 +567,11 @@ ZmCalViewController.prototype._continueSave = function (args) {
 
 		// get the appointment from the appointmentView,
 		var appt = this._apptView.getAppt();
-		var editMode = appt.getViewMode();
+		//var editMode = appt.getViewMode();
 
 		// save it to the server
 		appt.save(this._appCtxt.getAppController(), attId);
-		if (this._list != null) {
-			if (editMode != ZmAppt.MODE_NEW) {
-				this._list.replace(this._apptIndexShowing, appt);
-			} else {
-				this._list.add(appt);
-			}
-		}
+		// let notifications cause the internal list to be updated
 		this._apptDialog.popdown();
 	} catch (ex) {
 		this._handleException(ex, this._saveAppointment, args, false);
