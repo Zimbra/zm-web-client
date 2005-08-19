@@ -445,7 +445,7 @@ function (contactList, edited, componentId) {
 
 	soapDoc.setMethodAttribute("verb", verb);
 
-	if (this.getAddress(ZmEmailAddress.TO) == null) {
+	if (this.getAddress(ZmEmailAddress.TO) == null && !this._origMsg.invite.isOrganizer(0)) {
 		var toEmail = this._origMsg.getInvite().getOrganizerEmail(0);
 		var to = new ZmEmailAddress(toEmail, ZmEmailAddress.TO, null, null);
 		this.setAddress(ZmEmailAddress.TO, to);
