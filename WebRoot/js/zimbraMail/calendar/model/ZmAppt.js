@@ -25,7 +25,7 @@ function ZmAppt(appCtxt, list, noinit) {
 	this.repeatCustomCount = 1; // ival
 	this.repeatCustomType = 'S'; // (S)pecific, (O)rdinal
 	this.repeatCustomOrdinal = "1";
-	this.repeatCustomDayOfWeek = null; //(DAY|WEEKDAY|WEEKEND)|((SUNDAY|MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY))
+	this.repeatCustomDayOfWeek = "SU"; //(DAY|WEEKDAY|WEEKEND)|((SUNDAY|MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY))
 	this.repeatCustomMonthDay = this.startDate.getDate();
 	this.repeatWeeklyDays = null; //SU|MO|TU|WE|TH|FR|SA
 	this.repeatMonthlyDayList = null;

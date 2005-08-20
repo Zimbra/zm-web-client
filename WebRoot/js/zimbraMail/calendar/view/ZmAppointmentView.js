@@ -353,6 +353,7 @@ ZmAppointmentView.prototype.setModel = function (modelObj, mode, optionalStartDa
 		this._appt.resetRepeatWeeklyDays();
 		this._appt.resetRepeatMonthlyDayList();
 		this._appt.repeatYearlyMonthsList = optionalStartDate.getMonth();
+		this._appt.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[optionalStartDate.getDay()];
 	} else {
 		modelObj.getDetails(mode);
 		this._appt = modelObj.clone();
