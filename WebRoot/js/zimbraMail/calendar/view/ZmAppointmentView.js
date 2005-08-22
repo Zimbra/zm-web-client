@@ -1087,7 +1087,13 @@ ZmAppointmentView.prototype.getAppointmentForm = function () {
 				 items:[
 					{type:_CASE_, relevant:"instance.isReadOnly()", colSpan:"*", useParentTable:true,
 					 items: [
-						{ref:_NOTES_, type:_OUTPUT_, colSpan:"*", label: null, height:"50px", cssStyle:"overflow:auto"}
+						{ref:_NOTES_, type:_OUTPUT_, colSpan:"*", label: null, height:"50px", cssStyle:"overflow:auto",
+						 getDisplayValue: function (value) {
+								if (value != null) {
+									return AjxStringUtil.htmlEncodeSpace(value);
+								}
+							}
+						}
 						]
 					},
 					{type:_CASE_, relevant:"!instance.isReadOnly()", colSpan:"*", useParentTable:true,

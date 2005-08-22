@@ -92,6 +92,9 @@ ZmAppt.SERVER_DAYS_TO_DISPLAY = {
 
 ZmAppt.SERVER_WEEK_DAYS = ["SU","MO","TU", "WE", "TH", "FR", "SA","SU"];
 
+ZmAppt.NOTES_SEPARATOR = "\n\n*~*~*~*~*~*~*~*~*~*\n\n";
+ZmAppt.NOTES_SEPARATOR_REGEX = /\s*\*~\*~\*~\*~\*~\*~\*~\*~\*~\*\s*/;
+
 ZmAppt.prototype.toString = 
 function() {
 	return "ZmAppt: name="+this.name+" sd="+this.getStartDate()+" ed="+this.getEndDate()+" id=" + this.id;
@@ -1540,13 +1543,16 @@ ZmAppt.prototype._getRecurrenceBlurbForSave = function () {
 };
 
 ZmAppt.prototype._trimNotesSummary = function () {
-	var notesDelim = -1;
-	if (this.notes != null && ((notesDelim = this.notes.indexOf(ZmAppt.NOTES_SEPARATOR)) != -1)) {
-		this.notes = this.notes.substring(notesDelim + ZmAppt.NOTES_SEPARATOR.length); 
+	var notesArr;
+	if (this.notes != null){
+		notesArr = this.notes.split(ZmAppt.NOTES_SEPARATOR_REGEX);
+		if (notesArr.length > 1) {
+			this.notes = notesArr[1];
+		}
 	}
 };
 
-ZmAppt.NOTES_SEPARATOR = "\n\n*~*~*~*~*~*~*~*~*~*\n\n";
+
 ZmAppt.prototype._addNotesToSoap = function (soapDoc, m, cancel) {	
 	var mp = soapDoc.set("mp", null, m);
 	mp.setAttribute("content-type", "text/plain");
