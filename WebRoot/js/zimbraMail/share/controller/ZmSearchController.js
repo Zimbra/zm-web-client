@@ -161,7 +161,7 @@ function() {
 }
 
 ZmSearchController.prototype.search =
-function(query, types, sortBy, offset, limit, callback) {
+function(query, types, sortBy, offset, limit, callback, userText) {
 	if (!(query && query.length)) return;
 	
 	// if the search string starts with "$set:" then it is a command to the client 
@@ -170,7 +170,7 @@ function(query, types, sortBy, offset, limit, callback) {
 		return;
 	}
 
-	var params = {query: query, types: types, sortBy: sortBy, offset: offset, limit: limit, callback: callback};
+	var params = {query: query, types: types, sortBy: sortBy, offset: offset, limit: limit, callback: callback, userText: userText};
 	this._schedule(this._doSearch, params);
 }
 
@@ -240,7 +240,7 @@ function(types) {
 ZmSearchController.prototype._doSearch =
 function(params) {
 	if (this._searchToolBar) {
-		var value = this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) ? params.query : "";
+		var value = (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText) ? params.query : "";
 		this._searchToolBar.setSearchFieldValue(value);
 		this._searchToolBar.setEnabled(false);
 	}
@@ -303,7 +303,6 @@ function(params) {
 	} else if (results.type == ZmList.MIXED) {
 		this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, params.query);
 	}
-//	Dwt.setTitle(search.getTitle());
 	DBG.timePt("render search results");
 }
 
@@ -311,7 +310,7 @@ function(params) {
 
 ZmSearchController.prototype._searchFieldCallback =
 function(queryString) {
-	this.search(queryString);
+	this.search(queryString, null, null, null, null, null, true);
 }
 
 /*********** Search Bar Callbacks */
@@ -319,7 +318,7 @@ function(queryString) {
 ZmSearchController.prototype._searchButtonListener =
 function(ev) {
 	var queryString = this._searchToolBar.getSearchFieldValue();
-	this.search(queryString);
+	this.search(queryString, null, null, null, null, null, true);
 }
 
 ZmSearchController.prototype._browseButtonListener =
