@@ -1224,6 +1224,7 @@ function() {
 	this.enableInputs(true);
 	this._confirmDialog.popdown();
 	this._subjectField.focus();
+	this._app.getComposeController()._toolbar.enableAll(true);
 	this.reEnableDesignMode();
 }
 
