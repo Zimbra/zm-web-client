@@ -32,6 +32,11 @@ function(item, now, isDndIcon) {
 	}
 };
 
+ZmMixedView.prototype._getParticipantHtml = 
+function(conv, fieldId) {
+	return ZmConvListView.prototype._getParticipantHtml.call(this, conv, fieldId);
+};
+
 ZmMixedView.prototype._fitParticipants = 
 function(participants, participantsElided, width) {
 	return ZmMailListView.prototype._fitParticipants.call(this, participants, participantsElided, width);
