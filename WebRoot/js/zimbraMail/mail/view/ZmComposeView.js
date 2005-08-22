@@ -1245,6 +1245,7 @@ function(type) {
 	this._confirmDialog.popdown();
 	if (this._using[type])
 		this._field[type].focus()
+	this._app.getComposeController()._toolbar.enableAll(true);
 	this.reEnableDesignMode();
 }
 
