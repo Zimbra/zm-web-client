@@ -197,6 +197,7 @@ ZmFreeBusyView.prototype.render = function () {
 		div.innerHTML = "<div class='ZmFreeBusyView_slider_left'>&nbsp;</div><div class='ZmFreeBusyView_slider_right'>&nbsp;</div>";
 		this.highlightAppointment(div);
 		document.getElementById(this._scheduleContainerId).appendChild(div);
+		this._focusFirstRow();
 		//DBG.println(AjxStringUtil.htmlEncode(this.getHtmlElement().innerHTML));
 	}
 	var action = new AjxTimedAction();
@@ -234,6 +235,7 @@ ZmFreeBusyView.prototype.setData = function (schedules, appt) {
 	this.enable();
 	this.setSchedules(schedules);
 	this.setAppointment(appt);
+	this._focusFirstRow();
 };
 
 ZmFreeBusyView.prototype.setAppointment = function (appt) {
@@ -1066,6 +1068,10 @@ ZmFreeBusyView.prototype.disable = function () {
 
 ZmFreeBusyView.prototype.enable = function () {
 	this._enabled = true;
+};
+
+ZmFreeBusyView.prototype._focusFirstRow = function () {
+	this._selectionManager.selectOneItem(this.userSchedules[0]);
 };
 
 ZmFreeBusyView.prototype.saveAppointmentInfo = function () {
