@@ -800,7 +800,7 @@ ZmCalViewController.prototype._findCachedApptSummaries =
 function(start,end) {
 	var found = false;
 	var entry = this._cachedApptSummaries[start+":"+end];
-	if (entry != null) return entry;
+	if (entry != null) return entry.list;
 
 	for (var key in this._cachedApptSummaries) {
 		entry = this._cachedApptSummaries[key];
@@ -855,7 +855,7 @@ function(start,end, fanoutAllDay) {
 		if (list != null) return list; // already cloned
 		var apptList = this._findCachedApptSummaries(start,end);
 		if (apptList != null) {
-			list = ZmApptList.toVector(apptList, start, end, fanoutAllDay);			
+			list = ZmApptList.toVector(apptList, start, end, fanoutAllDay);
 			this._cachedApptVectors[start+":"+end+":"+fanoutAllDay] = list;
 			return list.clone();
 		}
