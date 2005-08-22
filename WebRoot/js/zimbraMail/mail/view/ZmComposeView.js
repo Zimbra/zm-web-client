@@ -1003,6 +1003,9 @@ function() {
 		// create a brand new iframe
 		var iframe = container = doc.createElement("iframe");
 		iframe.id = this._iframeId;
+ 		if (AjxEnv.isIE && location.protocol == "https:") {
+			iframe.src = "'/zimbra/public/blank.html'";
+		}
 		iframe.name = this._iframeId;
 		iframe.frameBorder = iframe.vspace = iframe.hspace = iframe.marginWidth = iframe.marginHeight = 0;
 		iframe.width = "100%";

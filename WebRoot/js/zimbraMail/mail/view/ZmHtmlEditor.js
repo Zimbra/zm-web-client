@@ -29,7 +29,7 @@ function ZmHtmlEditor(parent, className, posStyle, content, mode) {
 	if (arguments.length == 0) return;
 	className = className || "ZmHtmlEditor";
 	
-	DwtHtmlEditor.call(this, parent, className, posStyle, content, mode);
+	DwtHtmlEditor.call(this, parent, className, posStyle, content, mode, "/zimbra/public/blank.html");
 
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));	
 };
