@@ -66,6 +66,7 @@ function(resp) {
 			var instNode = instances[j];
 			var duration = parseInt(this._getAttr(apptNode, instNode, "d"));
 			appt.type = this._getAttr(apptNode, instNode, "type");
+			appt.isOrg = this._getAttr(apptNode, instNode, "isOrg");
 			appt.transparency = this._getAttr(apptNode, instNode,"transp");
 			appt.status = this._getAttr(apptNode, instNode,"status");
 			appt.ptst = this._getAttr(apptNode, instNode,"ptst");			

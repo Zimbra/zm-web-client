@@ -506,7 +506,7 @@ function () {
 };
 
 ZmAppt.prototype.isOrganizer = function () {
-	return ( (typeof(this._isOrganizer) === 'undefined') || (this._isOrganizer == true) );
+	return ( (typeof(this.isOrg) === 'undefined') || (this.isOrg == true) );
 };
 
 ZmAppt.prototype.getAttendees =
@@ -744,7 +744,7 @@ function (viewMode) {
 
 ZmAppt.prototype.setFromMessage = function (message, viewMode) {
 	if (message !== this._currentlyLoaded) {
-		this._isOrganizer = message.invite.isOrganizer(0);
+		this.isOrg = message.invite.isOrganizer(0);
 		this.organizer = message.getInviteOrganizer();
 		this._isException = message.invite.isException(0);
 		// if this is an instance of a recurring appointment, 
@@ -1123,12 +1123,13 @@ ZmAppt.prototype.editTimeRepeat = function () {
 	}
 	var u = this._editingUser;
 	var m = this._viewMode;
-	if ((m == ZmAppt.MODE_EDIT_SERIES && !this._isOrganizer)){
+	var isOrg = this.isOrganizer();
+	if ((m == ZmAppt.MODE_EDIT_SERIES && isOrg)){
 		return ZmAppt.EDIT_NO_REPEAT;
 	}
 
 	if ( ( ((m == ZmAppt.MODE_EDIT_SERIES) || (m == ZmAppt.MODE_EDIT))
-		 && (this._isOrganizer)) ||
+		 && (isOrg)) ||
 		 m == ZmAppt.MODE_NEW){
 		return ZmAppt.EDIT_TIME_REPEAT;
 	}

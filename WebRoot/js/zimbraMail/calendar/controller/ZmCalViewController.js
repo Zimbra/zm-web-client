@@ -811,25 +811,18 @@ ZmCalViewController.prototype._getActionMenuOps = function () {
 			ZmOperation.INVITE_REPLY_MENU, ZmOperation.SEP, ZmOperation.DELETE];
 };
 
-//ZmCalViewController.prototype._disableActionMenuReplyOptions = function () {
-// 	var item = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_ACCEPT);
-// 	item.setEnabled(false);
-// 	item = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_DECLINE);
-// 	item.setEnabled(false);
-// 	item = this._actionMenu.getItemById(ZmOperation.KEY_ID,ZmOperation.REPLY_TENTATIVE);
-// 	item.setEnabled(false);
-//};
+ZmCalViewController.prototype._enableActionMenuReplyOptions = function (appt) {
+	var accept = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_ACCEPT);
+	var decline = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_DECLINE);
+	var tent = this._actionMenu.getItemById(ZmOperation.KEY_ID,ZmOperation.REPLY_TENTATIVE);
+	var editReply = this._actionMenu.getItemById(ZmOperation.KEY_ID,ZmOperation.INVITE_REPLY_MENU);
 
-// ZmCalViewController.prototype._resetOperations = function(parent, num) {
-// 	// do nothing for now
-// 	ZmListController.prototype._resetOperations.call(this, parent, num);
-// 	var ops = this._getActionMenuOps();
-// 	var item;
-// 	for (var i = 0 ; i < ops.length ; ++i) {
-// 		item = this._actionMenu.getItem(i);
-// 		item.setEnabled(true);
-// 	}
-// }
+	var enabled = !appt.isOrganizer();
+	accept.setEnabled(enabled);
+	decline.setEnabled(enabled);
+	tent.setEnabled(enabled);
+	editReply.setEnabled(enabled);
+};
 
 ZmCalViewController.prototype._enableActionMenuOpenOptions = function (appt) {
 	if (appt == null) return;
@@ -837,20 +830,16 @@ ZmCalViewController.prototype._enableActionMenuOpenOptions = function (appt) {
 	var open = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.VIEW_APPOINTMENT);
 	var openInstance = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.VIEW_APPT_INSTANCE);
 	var openSeries = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.VIEW_APPT_SERIES);
-	if (appt.isRecurring()){
-		open.setEnabled(false);
-		openInstance.setEnabled(true);
-		openSeries.setEnabled(true);
-	} else {
-		open.setEnabled(true);
-		openInstance.setEnabled(false);
-		openSeries.setEnabled(false);
-	}
+	var recur = appt.isRecurring();
+	open.setEnabled(!recur);
+	openInstance.setEnabled(recur);
+	openSeries.setEnabled(recur);
 };
 
 ZmCalViewController.prototype._listActionListener = function (ev){
 	ZmListController.prototype._listActionListener.call(this, ev);
 	this._enableActionMenuOpenOptions(ev.item);
+	this._enableActionMenuReplyOptions(ev.item);
 	this._actionMenu.__appt = ev.item;
 	this._actionMenu.popup(0, ev.docX, ev.docY);
 	
