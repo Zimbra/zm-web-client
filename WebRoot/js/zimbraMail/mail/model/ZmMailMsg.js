@@ -716,7 +716,7 @@ function(bFindHits, domain, partNameList) {
 
 			// set link
 		    var link = type == ZmMimeTable.MSG_RFC822
-		    	? "<a href='javascript:;' onclick='ZmMailMsg.rfc822Callback(this," + this.getId() + "," + attach.part + ")' class='AttLink'>"
+		    	? "<a href='javascript:;' onclick='ZmMailMsg.rfc822Callback(this," + this.getId() + ",\"" + attach.part + "\")' class='AttLink'>"
 		    	: "<a target='att_view_win' class='AttLink' " + hrefRoot + attach.part + "'>";
 
     		htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 style='display:inline; width:";
@@ -874,7 +874,7 @@ function(anchorEl, msgId, msgPartId) {
 
 		// validate response
 		if (resp == null || resp.m == null || resp.m[0] == null ||
-			resp.m[0].id != msgId || (parseInt(resp.m[0].part) != msgPartId))
+			resp.m[0].id != msgId || resp.m[0].part != msgPartId)
 		{
 			return;
 		}
