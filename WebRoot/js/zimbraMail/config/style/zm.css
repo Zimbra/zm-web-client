@@ -293,7 +293,8 @@ DIV.vSpace {
 * Tool tips
 */
 
-.DwtToolTip {	}
+.DwtToolTip {
+}
 
 /*
 * Sashes
@@ -2724,9 +2725,48 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .balloon_spacer_v 		{	width:10;		height:100%;}
 .balloon_spacer_m 		{	width:100%;		height:100%;	background-color:#EEEEEE;}
 
-
-
-
+.hover_frame {
+	border-collapse: collapse;
+	padding: 0;
+} 
+.hover_spacer_tl {
+	width: 12;
+	height: 12;
+}
+.hover_spacer_tm {
+	height: 12;
+}
+.hover_spacer_tr {
+	width: 20;
+	height: 12;
+}
+.hover_spacer_ml	{
+	width: 12;
+	height: 100%;
+}
+.hover_spacer_mr {
+	width: 20;
+	height: 100%;
+}
+.hover_spacer_bl {
+	width: 12;
+	height: 20;
+}
+.hover_spacer_bm {
+	height: 20;
+}
+.hover_spacer_br {
+	width: 20;
+	height: 20;
+}
+.hover_contents {
+}
+.hover_tip_top {
+	position: absolute;
+}
+.hover_tip_bottom {
+	position: relative;
+}
 
 .dialog_title				{	background-color:#3d3d3d; cursor:move}
 .dialog_title_text			{	color:white;	width:auto;	 font-weight:bold;	}
