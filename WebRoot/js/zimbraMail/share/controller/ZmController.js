@@ -38,7 +38,9 @@ function ZmController(appCtxt, container, app, isAdmin) {
 	this._loginDialog.registerCallback(this._loginCallback, this);
 
 	this._msgDialog = appCtxt.getMsgDialog();
-    this._msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._msgDialogCallback, this);
+	
+	this._errorDialog = appCtxt.getErrorDialog();
+    this._errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
 }
 
 var i = 1;
@@ -110,7 +112,7 @@ function(method, params, delay) {
 		this._shell.setBusy(false);
 }
 
-ZmController.prototype.popupMsgDialog = 
+ZmController.prototype.popupErrorDialog = 
 function(msg, ex, noExecReset)  {
 	if (!noExecReset)
 		this._execFrame = {method: null, params: null, restartOnError: false};
@@ -118,8 +120,8 @@ function(msg, ex, noExecReset)  {
 	var detailStr = "";
 	for (var prop in ex)
 		detailStr = detailStr + prop + " - " + ex[prop] + "\n";				
-	this._msgDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
-	this._msgDialog.popup();
+	this._errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
+	this._errorDialog.popup();
 }
 
 ZmController.prototype.getControllerForView =
@@ -207,9 +209,9 @@ function(ex, method, params, restartOnError, obj) {
 	} else {
 		// remember the last search attempted for all other exceptions
 		this._execFrame = {obj: obj, method: method, params: params, restartOnError: restartOnError};
-		this._msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._msgDialogCallback, this);
+		this._errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
 		var msg = this._getErrorMsg(ex.code, params);
-		this.popupMsgDialog(msg, ex, true);
+		this.popupErrorDialog(msg, ex, true);
 	}
 }
 
@@ -220,7 +222,7 @@ function(code, params) {
 	
 	switch (code) {
 		// network errors
-		case AjxException.NETWORK_ERROR:					msg = ZmMsg.errorNetwork; break;
+		case AjxException.NETWORK_ERROR:				msg = ZmMsg.errorNetwork; break;
 		case ZmCsfeException.NETWORK_ERROR:				msg = ZmMsg.errorNetwork; break;
 		case ZmCsfeException.SOAP_ERROR: 				msg = ZmMsg.errorNetwork; break;
 		case ZmCsfeException.CSFE_SVC_ERROR: 			msg = ZmMsg.errorService; break;
@@ -277,7 +279,7 @@ function(params) {
 			this._loginDialog.setError(ZmMsg.loginError);
 			return;
 		} else {
-			this.popupMsgDialog(ZmMsg.errorGeneric, ex); 
+			this.popupErrorDialog(ZmMsg.errorGeneric, ex); 
 		}
 	}
 }
@@ -305,9 +307,9 @@ function() {
 
 /*********** Msg dialog Callbacks */
 
-ZmController.prototype._msgDialogCallback =
+ZmController.prototype._errorDialogCallback =
 function() {
-	this._msgDialog.popdown();
+	this._errorDialog.popdown();
 	if (this._execFrame) {
 		if (this._execFrame.restartOnError && !this._authenticating)
 			this._execFrame.method.call(this, this._execFrame.params);

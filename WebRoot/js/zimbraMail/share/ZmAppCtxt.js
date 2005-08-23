@@ -142,6 +142,13 @@ function() {
 	return this._msgDialog;
 }
 
+ZmAppCtxt.prototype.getErrorDialog = 
+function() {
+	if (!this._errorDialog)
+		this._errorDialog = new ZmErrorDialog(this.getShell(), this);
+	return this._errorDialog;
+}
+
 ZmAppCtxt.prototype.getNewTagDialog =
 function() {
 	if (!this._newTagDialog)

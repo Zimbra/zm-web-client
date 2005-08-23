@@ -449,6 +449,7 @@ ZmMsg.replyTo = "Reply To";
 ZmMsg.replyToAddress = "Reply-to address";
 ZmMsg.replyTooltip = "Reply to the sender of the selected message";
 ZmMsg.replyTooltipConv = "Reply to the sender of the most recent message in the conversation";
+ZmMsg.report = "Report";
 ZmMsg.restoreDefaults = "Restore Defaults";
 ZmMsg.rightJustify = "Align Right (Ctrl+R)"; 
 ZmMsg.rotfl = "rolling on the floor laughing";
