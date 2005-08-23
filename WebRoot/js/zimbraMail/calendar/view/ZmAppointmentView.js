@@ -153,7 +153,7 @@ var _Yearly_ = "Yearly";
 var _Custom_ = "Custom";
 
 var _Never_ = "Never";
-var _On_Date_ = "On Date:";
+var _On_Date_ = "By Date:";
 var _After_ = "After:";
 
 var _First_ = "first";
