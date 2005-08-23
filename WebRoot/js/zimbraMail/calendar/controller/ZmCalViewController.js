@@ -41,6 +41,9 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._listeners[ZmOperation.EDIT_REPLY_ACCEPT] = new AjxListener(this,this._handleApptEditRespondAction);
 	this._listeners[ZmOperation.EDIT_REPLY_DECLINE] = new AjxListener(this,this._handleApptEditRespondAction);
 	this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE] = new AjxListener(this,this._handleApptEditRespondAction);
+	this._listeners[ZmOperation.VIEW_APPOINTMENT] = new AjxListener(this, this._handleMenuViewAction);
+	this._listeners[ZmOperation.VIEW_APPT_INSTANCE] = new AjxListener(this, this._handleMenuViewAction);
+	this._listeners[ZmOperation.VIEW_APPT_SERIES] = new AjxListener(this, this._handleMenuViewAction);
 
 	//DND//this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	//DND//this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));	
@@ -596,7 +599,13 @@ ZmCalViewController.prototype._continueSave = function (args) {
 		// let notifications cause the internal list to be updated
 		this._apptDialog.popdown();
 	} catch (ex) {
-		this._handleException(ex, this._saveAppointment, args, false);
+// 		if (ex.code == ZmCsfeException.SVC_INVALID_REQUEST) {
+// 			// This is probably an invalid email address
+// 			this.popupMsgDialog("Your appointment was saved, but we were unable to send it to one or more of the attendees");
+// 			this._apptDialog.popdown();
+// 		} else {
+			this._handleException(ex, this._saveAppointment, args, false);
+// 		}
 	} finally {
 		this._savingAppointment = false;
 	}
@@ -696,6 +705,13 @@ function(parent, num) {
 	if (parent) {
 		parent.enable([ZmOperation.TODAY, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.DAY_VIEW], true);
 	}
+
+ 	var ops = this._getActionMenuOps();
+ 	var item;
+ 	for (var i = 0 ; i < ops.length ; ++i) {
+ 		item = this._actionMenu.getItem(i);
+ 		item.setEnabled(true);
+ 	}
 }
 
 ZmCalViewController.prototype._listSelectionListener = 
@@ -711,6 +727,26 @@ function(ev) {
 		this._showAppointmentDetails(ev.item, p);		
 	}
 }
+
+ZmCalViewController.prototype._handleMenuViewAction = function (ev) {
+	var id = ev.item.getData(ZmOperation.KEY_ID);
+	var appt = this._actionMenu.__appt;
+	delete this._actionMenu.__appt;
+	var mode;
+	switch(id) {
+	case ZmOperation.VIEW_APPOINTMENT:
+		mode = ZmAppt.MODE_EDIT;
+		break;
+	case ZmOperation.VIEW_APPT_INSTANCE:
+		mode = ZmAppt.MODE_EDIT_SINGLE_INSTANCE;
+		break;
+	case ZmOperation.VIEW_APPT_SERIES:
+		mode = ZmAppt.MODE_EDIT_SERIES;
+		break;
+	}
+	this.editAppointment(appt, null, mode);
+
+};
 
 ZmCalViewController.prototype._handleApptRespondAction = function (ev){
 	var appt = this._listView[this._currentView].getSelection()[0];
@@ -770,8 +806,9 @@ ZmCalViewController.prototype._initializeActionMenu = function (){
  * Overrides ZmListController.prototype._getActionMenuOptions
  */
 ZmCalViewController.prototype._getActionMenuOps = function () {
-	return [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE, 
-			ZmOperation.INVITE_REPLY_MENU, ZmOperation.SEP, ZmOperation.DELETE]
+	return [ZmOperation.VIEW_APPOINTMENT, ZmOperation.VIEW_APPT_INSTANCE, ZmOperation.VIEW_APPT_SERIES, ZmOperation.SEP, 
+			ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE, 
+			ZmOperation.INVITE_REPLY_MENU, ZmOperation.SEP, ZmOperation.DELETE];
 };
 
 //ZmCalViewController.prototype._disableActionMenuReplyOptions = function () {
@@ -794,10 +831,29 @@ ZmCalViewController.prototype._getActionMenuOps = function () {
 // 	}
 // }
 
+ZmCalViewController.prototype._enableActionMenuOpenOptions = function (appt) {
+	if (appt == null) return;
+
+	var open = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.VIEW_APPOINTMENT);
+	var openInstance = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.VIEW_APPT_INSTANCE);
+	var openSeries = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.VIEW_APPT_SERIES);
+	if (appt.isRecurring()){
+		open.setEnabled(false);
+		openInstance.setEnabled(true);
+		openSeries.setEnabled(true);
+	} else {
+		open.setEnabled(true);
+		openInstance.setEnabled(false);
+		openSeries.setEnabled(false);
+	}
+};
+
 ZmCalViewController.prototype._listActionListener = function (ev){
-	//ZmListController.prototype._listActionListener.call(this, ev);
-	this._actionMenu.popup(0, ev.docX, ev.docY);
 	ZmListController.prototype._listActionListener.call(this, ev);
+	this._enableActionMenuOpenOptions(ev.item);
+	this._actionMenu.__appt = ev.item;
+	this._actionMenu.popup(0, ev.docX, ev.docY);
+	
 };
 
 ZmCalViewController.prototype.sendRequest = function (soapDoc, useXml) {

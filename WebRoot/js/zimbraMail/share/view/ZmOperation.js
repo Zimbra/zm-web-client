@@ -103,6 +103,9 @@ ZmOperation.TAG						= i++;
 ZmOperation.TEXT 					= i++;
 ZmOperation.TODAY					= i++;
 ZmOperation.VIEW					= i++;
+ZmOperation.VIEW_APPOINTMENT		= i++;
+ZmOperation.VIEW_APPT_INSTANCE		= i++;
+ZmOperation.VIEW_APPT_SERIES		= i++;
 ZmOperation.WEEK_VIEW				= i++;
 ZmOperation.WORK_WEEK_VIEW			= i++;
 
@@ -167,6 +170,9 @@ ZmOperation.MSG_KEY[ZmOperation.SPAM] 					= "junk";
 ZmOperation.MSG_KEY[ZmOperation.TAG_MENU]				= "tag";
 ZmOperation.MSG_KEY[ZmOperation.TODAY]					= "today";
 ZmOperation.MSG_KEY[ZmOperation.VIEW]					= "view";
+ZmOperation.MSG_KEY[ZmOperation.VIEW_APPOINTMENT]		= "viewAppointment";
+ZmOperation.MSG_KEY[ZmOperation.VIEW_APPT_INSTANCE]		= "viewAppointmentInstance";
+ZmOperation.MSG_KEY[ZmOperation.VIEW_APPT_SERIES]		= "viewAppointmentSeries";
 ZmOperation.MSG_KEY[ZmOperation.WEEK_VIEW]				= "viewWeek";
 ZmOperation.MSG_KEY[ZmOperation.WORK_WEEK_VIEW]			= "viewWorkWeek";
 
