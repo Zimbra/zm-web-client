@@ -1398,71 +1398,67 @@ ZmAppt.prototype._getDefaultBlurb = function (cancel) {
 	var showingTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
 	// instances of recurring meetings should send out information that looks very
 	// much like a simple appointment.
-	if ((this.repeatType == "NON") || (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) || 
-		this._viewMode == ZmAppt.MODE_DELETE_INSTANCE) {
-		// simple meeting
-		html[idx++] = this._editingUser;
-		html[idx++] = " has ";
-		html[idx++] = (cancel)? "cancelled ": ((this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE)? "modified ": "invited you to ");
-		if ( (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) || (this._viewMode == ZmAppt.MODE_DELETE_INSTANCE)){
-			html[idx++] = "an instance of ";
-		}
-		html[idx++] = "\"";
-		html[idx++] = this.name;
-		html[idx++] = "\"";
-		html[idx++] = (this.isAllDayEvent())? "(all day) ": " ";
-		html[idx++] = "starting ";
-		var s = this.startDate;
-		var e = this.endDate;
-		if (this._viewMode == ZmAppt.MODE_DELETE_INSTANCE){
-			s = this.getUniqueStartDate();
-			e = this.getUniqueEndDate();
-		}
-		html[idx++] = AjxDateUtil.simpleComputeDateStr(s);
-		html[idx++] = " ";
-		html[idx++] = AjxDateUtil.getTimeStr(s, "%h:%m %P");
-		if (showingTimezone){
-			html[idx++] = " ";
-			html[idx++] = ZmTimezones.valueToDisplay[this.timezone];
-		}
-		html[idx++] = " , ending ";
-		html[idx++] = AjxDateUtil.simpleComputeDateStr(e);
-		html[idx++] = " ";
-		html[idx++] = AjxDateUtil.getTimeStr(e, "%h:%m %P");
-		if (showingTimezone){
-			html[idx++] = " ";
-			html[idx++] = ZmTimezones.valueToDisplay[this.timezone];
-		}
- 		if (this.location != "") {
-			html[idx++] = " at ";
-			html[idx++] = this.location;
-		}
+	// simple meeting
+	html[idx++] = "Action:";
+	if (cancel) {
+		html[idx++] =" Cancelled";
 	} else {
-		html[idx++] = this._editingUser;
-		html[idx++] = " has ";
-		html[idx++] = (cancel)? "cancelled ": "invited you to ";
-		html[idx++] = "\"";
-		html[idx++] = this.name;
-		html[idx++] = "\"";
-		html[idx++] = (this.isAllDayEvent())? "(all day) ": " ";
+		if (( this._viewMode == ZmAppt.MODE_EDIT) || (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) ||
+			(this._viewMode == ZmAppt.MODE_EDIT_SERIES)) {
+			html[idx++] = " Modified";
+		} else {
+			html[idx++] = " Created";
+		}
+	}
+	if ( (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) || (this._viewMode == ZmAppt.MODE_DELETE_INSTANCE)){
+		html[idx++] = " a single instance";
+	}
+	html[idx++] = "\n";
+	html[idx++] = "Organizer Email: "
+	html[idx++] = this._editingUser;
+	html[idx++] = "\n";
+	html[idx++] = "Subject:"
+	html[idx++] = "\"";
+	html[idx++] = this.name;
+	html[idx++] = "\"\n";
+	if (this.location != "") {
+		html[idx++] = "Location: ";
+		html[idx++] = this.location;
+		html[idx++] = "\n";
+	}
+	if ((this.repeatType != "NON") && (this._viewMode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE) &&
+		this._viewMode != ZmAppt.MODE_DELETE_INSTANCE) {
+		html[idx++] = "Recurrence: ";
 		html[idx++] = this._getRecurrenceBlurbForSave();
-		html[idx++] = ", starting at ";
-		html[idx++] = AjxDateUtil.getTimeStr(this.startDate, "%h:%m %P");
-		if (showingTimezone){
-			html[idx++] = " ";
-			html[idx++] = ZmTimezones.valueToDisplay[this.timezone];
-		}
-		html[idx++] = " , ending at ";
-		html[idx++] = AjxDateUtil.getTimeStr(this.endDate, "%h:%m %P");
-		if (showingTimezone){
-			html[idx++] = " ";
-			html[idx++] = ZmTimezones.valueToDisplay[this.timezone];
-		}
-
- 		if (this.location != "") {
-			html[idx++] = " and located at ";
-			html[idx++] = this.location;
-		}
+		html[idx++] = "\n";
+	}
+	html[idx++] = "Start:";
+	var s = this.startDate;
+	var e = this.endDate;
+	if (this._viewMode == ZmAppt.MODE_DELETE_INSTANCE){
+		s = this.getUniqueStartDate();
+		e = this.getUniqueEndDate();
+	}
+	html[idx++] = AjxDateUtil.simpleComputeDateStr(s);
+	html[idx++] = " ";
+	html[idx++] = AjxDateUtil.getTimeStr(s, "%h:%m %P");
+	if (showingTimezone){
+		html[idx++] = " ";
+		html[idx++] = ZmTimezones.valueToDisplay[this.timezone];
+	}
+	html[idx++] = "\n";
+	html[idx++] = "Ends:";
+	html[idx++] = AjxDateUtil.simpleComputeDateStr(e);
+	html[idx++] = " ";
+	html[idx++] = AjxDateUtil.getTimeStr(e, "%h:%m %P");
+	if (showingTimezone){
+		html[idx++] = " ";
+		html[idx++] = ZmTimezones.valueToDisplay[this.timezone];
+	}
+	html[idx++] = "\n";
+	if (this.isAllDayEvent()) {
+		html[idx++] = "(all day)";
+		html[idx++] = "\n";
 	}
 	html[idx++] = ZmAppt.NOTES_SEPARATOR;
 	return html.join("");
