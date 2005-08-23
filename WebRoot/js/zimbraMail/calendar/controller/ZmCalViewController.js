@@ -599,13 +599,13 @@ ZmCalViewController.prototype._continueSave = function (args) {
 		// let notifications cause the internal list to be updated
 		this._apptDialog.popdown();
 	} catch (ex) {
-// 		if (ex.code == ZmCsfeException.SVC_INVALID_REQUEST) {
-// 			// This is probably an invalid email address
-// 			this.popupMsgDialog("Your appointment was saved, but we were unable to send it to one or more of the attendees");
-// 			this._apptDialog.popdown();
-// 		} else {
+		if (ex.code == ZmCsfeException.MAIL_UNKNOWN_LOCAL_RECIPIENTS) {
+ 			// This is probably an invalid email address
+			var addresses = ex.msg.replace(/^.*unknown:/, "");
+ 			this.popupErrorDialog(AjxStringUtil.resolve(ZmMsg.unknownLocalRecipients,[addresses]));
+ 		} else {
 			this._handleException(ex, this._saveAppointment, args, false);
-// 		}
+ 		}
 	} finally {
 		this._savingAppointment = false;
 	}

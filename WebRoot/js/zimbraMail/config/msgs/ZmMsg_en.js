@@ -567,6 +567,7 @@ ZmMsg.underlineText = "Underline (Ctrl+U)"
 ZmMsg.unflagged = "Unflagged";
 ZmMsg.units = "Units";
 ZmMsg.unknown = "Unknown";
+ZmMsg.unknownLocalRecipients = "The following email addresses are unknown: $0";
 ZmMsg.unknownBinaryType = "Unknown Binary Type";
 ZmMsg.unread = "Unread";
 ZmMsg.url = "URL";
