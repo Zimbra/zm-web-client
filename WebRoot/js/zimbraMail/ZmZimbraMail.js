@@ -581,7 +581,8 @@ function(hdr) {
 	
 	if (hdr.context.refresh) {
 		this._refreshHandler(hdr.context.refresh);
-	} else if (hdr.context.notify) {
+	}
+	if (hdr.context.notify) {
 		this._notifyHandler(hdr.context.notify);
 	}
 }
@@ -864,7 +865,8 @@ function(creates, modifies) {
 			if (parentId == ZmFolder.ID_ROOT)
 				parentId = isSearch ? ZmFolder.ID_SEARCH : ZmFolder.ID_USER;
 			var parent = this._appCtxt.getFolderTree().getById(parentId);
-			parent.notifyCreate(create, isSearch);
+			if (parent)
+				parent.notifyCreate(create, isSearch);
 		} else if (name == "m") {
 			var msg = ZmMailMsg.createFromDom(create, {appCtxt: this._appCtxt}, true);
 			if (msg.isInvite()) 
