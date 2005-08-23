@@ -92,7 +92,7 @@ ZmPicker.IMAGE[ZmPicker.SEARCH]		= ZmImg.I_SEARCH_FOLDER;
 ZmPicker.IMAGE[ZmPicker.SIZE]		= ZmImg.I_SEARCH_FOLDER;
 ZmPicker.IMAGE[ZmPicker.TAG]		= ZmImg.I_TAG_FOLDER;
 ZmPicker.IMAGE[ZmPicker.TIME]		= ZmImg.I_DATE;
-ZmPicker.IMAGE[ZmPicker.RESET]		= ZmImg.I_RED_X;
+//ZmPicker.IMAGE[ZmPicker.RESET]		= ZmImg.I_RED_X;	//MOW: no image for reset button
 ZmPicker.IMAGE[ZmPicker.CLOSE]		= ZmImg.I_RED_X;
 
 // Button tooltips
