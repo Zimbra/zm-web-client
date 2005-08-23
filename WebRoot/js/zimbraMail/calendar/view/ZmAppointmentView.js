@@ -1107,9 +1107,22 @@ ZmAppointmentView.prototype.getAppointmentForm = function () {
 			 {type:_OUTPUT_, value:ZmMsg.notes, colSpan:"*", cssClass:"xform_label",  cssStyle:"text-align:left"},
 			 {type:_SWITCH_, useParentTable:true, colSpan:"*",
 				 items:[
-					{type:_CASE_, relevant:"instance.isReadOnly()", colSpan:"*", useParentTable:true,
+					{type:_CASE_, relevant:"instance.isReadOnly() && AjxEnv.isIE", colSpan:"*", useParentTable:true,
 					 items: [
-						{ref:_NOTES_, type:_OUTPUT_, colSpan:"*", label: null, height:"50px", cssStyle:"overflow:auto",
+						{ref:_NOTES_, type:_OUTPUT_, colSpan:"*", label: null, height:"70px", 
+						 cssStyle:"overflow:auto; width:100%",
+						 getDisplayValue: function (value) {
+								if (value != null) {
+									return AjxStringUtil.htmlEncodeSpace(value);
+								}
+							}
+						}
+						]
+					},
+					{type:_CASE_, relevant:"instance.isReadOnly() && AjxEnv.isNav", colSpan:"*", useParentTable:true,
+					 items: [
+						{ref:_NOTES_, type:_OUTPUT_, colSpan:"*", label: null, height:"70px", 
+						 cssStyle:"overflow:auto;",
 						 getDisplayValue: function (value) {
 								if (value != null) {
 									return AjxStringUtil.htmlEncodeSpace(value);
@@ -1120,7 +1133,7 @@ ZmAppointmentView.prototype.getAppointmentForm = function () {
 					},
 					{type:_CASE_, relevant:"!instance.isReadOnly()", colSpan:"*", useParentTable:true,
 					 items: [
-						 {ref:_NOTES_, 	type:_TEXTAREA_, 	colSpan:"*", label:null, height:"50px", cssStyle:"width:100%"}
+						 {ref:_NOTES_, 	type:_TEXTAREA_, 	colSpan:"*", label:null, height:"70px", cssStyle:"width:100%"}
 						 ]
 					}
 					]
