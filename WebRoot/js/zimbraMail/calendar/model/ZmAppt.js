@@ -184,6 +184,14 @@ ZmAppt.prototype.getParticipationStatusString = function () {
 	return ZmAppt._pstatusString[this.ptst];
 };
 
+ZmApptClone = function() { }
+
+ZmAppt.quickClone = function (appt) {
+	ZmApptClone.prototype = appt;
+	var newAppt = new ZmApptClone();
+	return newAppt;
+}
+
 ZmAppt.prototype.clone = function () {
 	var newAppt = new ZmAppt(this._appCtxt, this.list, true);
 	var key = null;
