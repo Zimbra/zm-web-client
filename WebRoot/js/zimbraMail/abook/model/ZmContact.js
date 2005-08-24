@@ -564,7 +564,7 @@ function(street, city, state, zipcode, country) {
 	if (street) {
 		html[idx++] = street;
 		if (city || state || zipcode)
-			html[idx++] = "<br>";
+			html[idx++] = "\n";
 	}
 	
 	if (city) {
@@ -583,9 +583,10 @@ function(street, city, state, zipcode, country) {
 		html[idx++] = zipcode;
 	
 	if (country)
-		html[idx++] = "<br>" + country;
-	
-	return html.join("");
+		html[idx++] = "\n" + country;
+
+	// bug fix #3712 - convert newlines to <br>'s	
+	return AjxStringUtil.htmlEncodeSpace(html.join(""));
 }
 
 // IM presence

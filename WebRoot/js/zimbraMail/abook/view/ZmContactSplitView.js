@@ -282,8 +282,9 @@ function(contact, isGal) {
 	html[idx++] = "</td></tr>";
 	
 	html[idx++] = "<tr><td><br></td></tr>";
-	
-	var notes = contact.getAttr(ZmContact.F_notes);
+
+	// bug fix #3712 - convert newlines to <br>'s	
+	var notes = AjxStringUtil.htmlEncodeSpace(contact.getAttr(ZmContact.F_notes));
 	html[idx++] = "<tr><td valign=top colspan='10'>";
 	if (notes) {
 		html[idx++] = "<table border=0 width=100%>";
