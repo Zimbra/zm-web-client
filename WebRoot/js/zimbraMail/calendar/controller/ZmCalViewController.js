@@ -602,10 +602,10 @@ ZmCalViewController.prototype._continueSave = function (args) {
 		// let notifications cause the internal list to be updated
 		this._apptDialog.popdown();
 	} catch (ex) {
-		if (ex.code == ZmCsfeException.MAIL_UNKNOWN_LOCAL_RECIPIENTS) {
+		if (ex.code == ZmCsfeException.MAIL_SEND_FAILURE) {
  			// This is probably an invalid email address
-			var addresses = ex.msg.replace(/^.*unknown:/, "");
- 			this.popupErrorDialog(AjxStringUtil.resolve(ZmMsg.unknownLocalRecipients,[addresses]));
+			// var addresses = ex.msg.replace(/^.*addresses:/, "");
+ 			this.popupErrorDialog(AjxStringUtil.resolve(ZmMsg.mailSendFailure,ex.msg));
  		} else {
 			this._handleException(ex, this._saveAppointment, args, false);
  		}
