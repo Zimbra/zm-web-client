@@ -51,10 +51,6 @@
   <property name="deploy.admin.path" value="/zimbraAdmin"/>
   <property name="deploy.admin.war" value="${adminwarfile}"/>
 	
-  <property name="tf.warfile" location="${dist.tomcat.webapps.dir}/tradeflow.war"/>	
-  <property name="tf.deploy.war" value="${tf.warfile}"/>
-  <property name="tf.deploy.path" value="/tradeflow"/>
-
   <property name="images.hiRes.destDir" value="${build.dir}/WebRoot/img/hiRes"/>
   <property name="images.loRes.destDir" value="${build.dir}/WebRoot/img/loRes"/>
   <property name="images.cssFile" value="imgs.css"/>
@@ -376,21 +372,6 @@
     </war>
   </target>
 
-  <target name="tradeflow-war" depends="copy-files-to-build-area, jam-files, generate-build-info">
-    <property file="${build.dir}/build.properties" />
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
-    <war warfile="${tf.warfile}"  webxml="WebRoot/WEB-INF/web.xml.tradeflow">
-      <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
-      <classes dir="${src.dir}" includes="*.properties"/>
-      <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-      <!--fileset dir="${build.dir}/WebRoot" includes="help/**/*"/-->
-      <fileset dir="${build.dir}/WebRoot" includes="js/**" excludes="js/zimbraMail/**,js/zimbraAdmin/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="public/TradeFlow.jsp,public/TradeFlow-Dwt.jsp,public/TradeFlow-Zimbra.jsp,public/TradeFlow-Zimbra-net.jsp"/>
-    </war>
-    <unwar src="${warfile}" dest="${deploy.dir}${deploy.path}"></unwar>
-  </target>	
-  
   <target name="generate-build-info">
     <propertyfile file="${build.dir}/build.properties" >
       <entry  key="build.number" type="int" default="1" operation="+" pattern="00000"/>
@@ -423,11 +404,6 @@
       path="${deploy.path}" war="${deploy.war}" update="true"/>
   </target>
 	
-  <target name="tradeflow-deploy" depends="tradeflow-war">
-    <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
-      path="${tf.deploy.path}" war="${tf.deploy.war}" update="true"/>
-  </target>
-
   <target name="prod-deploy" depends="prod-war">
     <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
       path="${deploy.path}" war="${deploy.war}" update="true"/>
