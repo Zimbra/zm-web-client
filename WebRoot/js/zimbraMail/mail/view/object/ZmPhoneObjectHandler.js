@@ -33,6 +33,7 @@ ZmPhoneObjectHandler.prototype.constructor = ZmPhoneObjectHandler;
 
 ZmPhoneObjectHandler.PHONE_RE = /(^|\W)(?:(?:\(\d{3}\)[-.\s]?|\d{3}[-.\s]))?\d{3}[-.\s]\d{4}(\W|$)/g;
 
+
 ZmPhoneObjectHandler.prototype.getReString =
 function() {
 	return ZmPhoneObjectHandler.PHONE;
@@ -55,6 +56,13 @@ function(line, startIndex) {
 		}
 	}
 	return m;
+}
+
+ZmPhoneObjectHandler.prototype._getHtmlContent =
+function(html, idx, phone, context) {
+	var call = 'callto:+1' + AjxStringUtil.trim(phone)
+	html[idx++] = '<a href="' + call + '" onclick="ZmPhoneObjectHandler.unsetOnbeforeunload()">'+AjxStringUtil.htmlEncode(phone)+'</a>';	
+	return idx;
 }
 
 ZmPhoneObjectHandler.prototype.getToolTipText =
@@ -113,7 +121,21 @@ function(ev) {
 ZmPhoneObjectHandler.prototype._callListener = 
 function(ev) {
     var phone = AjxStringUtil.trim(this._actionObject.toString())
-    // XXX: Assumes 10 digit US number.  Need to support 11 digit and intl numbers.
+    // XXX: Regex assumes 10 digit US number.  Need to support intl numbers.
 	phone = "callto:+1" + phone;
-	window.location=phone
+	ZmPhoneObjectHandler.unsetOnbeforeunload();
+	window.location=phone;
+}
+
+ZmPhoneObjectHandler.resetOnbeforeunload = 
+function() {
+	window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
+}
+
+ZmPhoneObjectHandler.unsetOnbeforeunload = 
+function() {
+	window.onbeforeunload = null;
+	this._timerObj = new AjxTimedAction();
+	this._timerObj.method = ZmPhoneObjectHandler.resetOnbeforeunload;	
+	AjxTimedAction.scheduleAction(this._timerObj,3000);
 }
