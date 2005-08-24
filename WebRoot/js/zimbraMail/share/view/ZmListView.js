@@ -188,6 +188,9 @@ function(item, isDndIcon, isMatched) {
 		div._styleClass = [base, DwtCssStyle.MATCHED].join("-");		// Row-matched
 	} else if (isDndIcon) {
 		div._styleClass = [base, DwtCssStyle.DND].join("-");			// Row-dnd
+		// bug fix #3654 - yuck
+		if (AjxEnv.isMozilla)
+			div.style.overflow = "visible";
 	}
 	if (isDndIcon)
 		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);

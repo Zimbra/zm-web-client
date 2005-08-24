@@ -76,6 +76,9 @@ function(contact, now, isDndIcon) {
 		div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
 	} else {
 		div._styleClass = "ZmContactCard-dnd";
+		// bug fix #3654 - yuck
+		if (AjxEnv.isMozilla)
+			div.style.overflow = "visible";
 		div.style.position = "absolute";
 	}
 	div.className = div._styleClass;
