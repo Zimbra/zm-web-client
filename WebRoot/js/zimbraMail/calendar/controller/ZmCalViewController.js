@@ -347,7 +347,9 @@ function(date, duration, roll) {
 	if (this._miniCalendar.getDate() == null || this._miniCalendar.getDate().getTime() != date.getTime()) 
 		this._miniCalendar.setDate(date, true, roll);
 	this._viewMgr.setDate(date, duration, roll);
-	this._navToolBar.setText(this._viewMgr.getCurrentView().getCalTitle());
+	var title = this._viewMgr.getCurrentView().getCalTitle();
+	this._navToolBar.setText(title);
+	Dwt.setTitle(title);
 }
 
 ZmCalViewController.prototype._dateSelectionListener =
