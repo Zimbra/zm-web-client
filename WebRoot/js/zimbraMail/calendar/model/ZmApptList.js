@@ -62,11 +62,22 @@ function(resp) {
 		if (!apptNode.inst) continue;
 		// Now deal with instances		
 		var instances = apptNode.inst;
+		// emc 8/24/2005 - instanceStartTimes is a workaround for bug 3590.
+		// When the server side is fixed, we can remove the few lines containing
+		// instanceStartTimes.
+		var instanceStartTimes = new AjxVector();
 		for (var j = 0; j < instances.length; j++) {
+			var instNode = instances[j];
+			var startTime = parseInt(this._getAttr(apptNode, instNode, "s"));
+			if (instanceStartTimes.contains(startTime)){
+				DBG.println("Found multiple instances with startTime = ", startTime);
+				continue;
+			}
+			instanceStartTimes.add(startTime);
 			var appt = new ZmAppt(this._appCtxt, this);
 			appt.uid =  apptNode.uid;
 			appt.notes = apptNode.fr;	
-			var instNode = instances[j];
+
 			var duration = parseInt(this._getAttr(apptNode, instNode, "d"));
 			appt.type = this._getAttr(apptNode, instNode, "type");
 			appt.isOrg = this._getAttr(apptNode, instNode, "isOrg");
@@ -88,7 +99,7 @@ function(resp) {
 			}
 			appt.name = this._getAttr(apptNode, instNode, "name");
 			appt.location = this._getAttr(apptNode, instNode, "loc");
-			var startTime = parseInt(this._getAttr(apptNode, instNode, "s"));
+
 			appt.startDate = new Date(startTime);
 			appt._uniqStartTime = appt.startDate.getTime(); // neede to construct uniq id later
 			//appt.exception = this._getAttr(apptNode, instNode, "exception");
