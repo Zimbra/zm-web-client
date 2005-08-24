@@ -1127,7 +1127,7 @@ ZmAppt.prototype.editTimeRepeat = function () {
 	var u = this._editingUser;
 	var m = this._viewMode;
 	var isOrg = this.isOrganizer();
-	if ((m == ZmAppt.MODE_EDIT_SERIES && isOrg)){
+	if ((m == ZmAppt.MODE_EDIT_SERIES && !isOrg)){
 		return ZmAppt.EDIT_NO_REPEAT;
 	}
 
