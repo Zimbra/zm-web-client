@@ -644,11 +644,9 @@ ZmCalViewController.prototype.getDayToolTipText =
 function(date)
 {
 	try {
-		var start = new Date(date);
+		var start = new Date(date.getTime());
 		start.setHours(0, 0, 0, 0);
-		var end = new Date(start);
-		end.setDate(start.getDate()+1);
-		var result = this.getApptSummaries(start.getTime(), end.getTime(), true);
+		var result = this.getApptSummaries(start.getTime(), start.getTime()+AjxDateUtil.MSEC_PER_DAY, true);
 		return ZmCalMonthView.getDayToolTipText(start,result);
 	} catch (ex) {
 		//alert(ex);
