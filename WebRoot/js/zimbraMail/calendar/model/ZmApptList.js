@@ -119,7 +119,7 @@ function (obj) {
 ZmApptList.toVector =
 function(apptList, startTime, endTime, fanoutAllDay)
 {
-	var _st = new Date();
+	//var _st = new Date();
 	var result  = new AjxVector();
 	var list = apptList.getVector();
 	var size = list.size();
@@ -135,7 +135,7 @@ function(apptList, startTime, endTime, fanoutAllDay)
 		}
 	}
 	result.getArray().sort(ZmAppt.compareByTimeAndDuration);
-	DBG.println("ZmApptList.toVector took " + (new Date() - _st.getTime()) + "ms");		
+	//DBG.println("ZmApptList.toVector took " + (new Date() - _st.getTime()) + "ms");		
 	return result;
 }
 
