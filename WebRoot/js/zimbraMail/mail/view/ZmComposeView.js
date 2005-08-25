@@ -1146,11 +1146,11 @@ function(type, show) {
 	
 	this._using[type] = show;
 	Dwt.setVisible(Dwt.getDomObj(doc, this._divId[type]), show);
+	this._field[type].value = ""; // bug fix #750 and #3680
 	if (show) {
 		this._field[type].focus();
 		this._field[type].tabIndex = type;
 	} else {
-		this._field[type].value = ""; // bug fix #750
 		this._field[type].tabIndex = 0;
 	}
 	var link = Dwt.getDomObj(doc, this._addLinkId[type]);
