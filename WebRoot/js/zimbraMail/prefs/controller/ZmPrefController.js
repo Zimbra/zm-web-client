@@ -135,7 +135,8 @@ function() {
 
 ZmPrefController.prototype._backListener = 
 function() {
-	this._app.popView();
+	this._reallyWantToExitWithoutDialog = true;
+	this._app.getAppViewMgr().popView();
 }
 
 ZmPrefController.prototype._changePassword =
@@ -164,7 +165,8 @@ function(args) {
 
 ZmPrefController.prototype.popShield =
 function() {
-	if (!this._prefsView.isDirty()) {
+	if (this._reallyWantToExitWithoutDialog || !this._prefsView.isDirty()) {
+		delete this._reallyWantToExitWithoutDialog;
 		return true;
 	}
 
