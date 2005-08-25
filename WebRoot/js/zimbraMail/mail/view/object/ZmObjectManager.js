@@ -50,7 +50,7 @@ function ZmObjectManager(view, appCtxt) {
 		new GPoint(217,10);
 		this._objectHandlers.push(new ZmAddressObjectHandler(appCtxt));
 	} catch (e) { 
-	;
+		;
 	}
 	
 	this.reset();
@@ -107,6 +107,8 @@ function(content, htmlEncode) {
 		// when we are done, we take the handler with the lowest index.
 		for (var i=0; i < this._objectHandlers.length; i++) {
 			var handler = this._objectHandlers[i];
+			// IE seems to lose objects so skip any nulls.
+			if(!handler) {continue;}
 			var result = handler.findObject(content, lastIndex);
 			if (result != null && result.index < lowestIndex) {
 				lowestResult = result;
