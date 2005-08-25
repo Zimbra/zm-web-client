@@ -1222,6 +1222,8 @@ function (soapDoc, attachmentId) {
 };
 
 ZmAppt.prototype._setSimpleSoapAttributes = function (soapDoc, method,  attachmentId) {
+
+	if (this.organizer == null) this.organizer = this._appCtxt.get(ZmSetting.USERNAME);
 	var m = this._messageNode = soapDoc.set('m');
 
 	m.setAttribute("d", new Date().getTime());
@@ -1284,7 +1286,6 @@ ZmAppt.prototype._setSimpleSoapAttributes = function (soapDoc, method,  attachme
 	var org = soapDoc.set("or", null, inv);
 	// TODO: make attendees list, a list of ZmEmailAddresses.
 	// org.setAttribute("d",
-	if (this.organizer == null) this.organizer = this._appCtxt.get(ZmSetting.USERNAME);
 	org.setAttribute("a", this.organizer);
 
 	// handle attachments
