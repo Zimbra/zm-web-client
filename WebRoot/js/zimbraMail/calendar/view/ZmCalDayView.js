@@ -317,7 +317,7 @@ function(appt, now, isDndIcon) {
 		starttime: appt.getDurationText(true, true),
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		statusKey: appt.getParticipationStatus(),
-		status: isAccepted ? "" : appt.getParticipationStatusString()
+		status: appt.getParticipationStatusString()
 	};
 
 	div.innerHTML = DwtBorder.getBorderHtml(titleOnly ? "calendar_appt_30" : "calendar_appt", subs, null);
