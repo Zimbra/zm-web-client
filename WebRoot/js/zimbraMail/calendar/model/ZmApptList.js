@@ -128,7 +128,7 @@ function(apptList, startTime, endTime, fanoutAllDay)
 		//DBG.println("_appListToVector: "+ao);
 		if (ao.isInRange(startTime, endTime)) {
 			if (ao.isAllDayEvent() && !fanoutAllDay) {
-				result.add(ao.clone());
+				result.add(ZmAppt.quickClone(ao));
 			} else {
 				ZmApptList._fanout(ao, result, startTime, endTime, fanoutAllDay);
 			}
@@ -144,7 +144,7 @@ function(apptList, startTime, endTime, fanoutAllDay)
 ZmApptList._fanout =
 function(orig, result, startTime, endTime) {
 //	DBG.println("fanout>>>>>>>>>>>>>>>>>>>>");
-	var appt = orig.clone();
+	var appt = ZmAppt.quickClone(orig);
 	var fanoutNum = 0;
 	while (appt.isInRange(startTime,endTime)) {
 		if (appt.isMultiDay()) {
@@ -152,7 +152,7 @@ function(orig, result, startTime, endTime) {
 			nextDay.setDate(nextDay.getDate()+1);
 			nextDay.setHours(0,0,0,0);
 			if (AjxDateUtil.isInRange(appt.getStartTime(), nextDay.getTime(), startTime, endTime)) {
-				var slice = appt.clone();
+				var slice = ZmAppt.quickClone(appt);
 				slice._fanoutFirst = (fanoutNum == 0);
 				slice._orig = orig;
 				slice.setEndDate(nextDay);			

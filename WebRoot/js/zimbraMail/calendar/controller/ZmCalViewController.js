@@ -169,10 +169,13 @@ function(viewName) {
 	if (cv.isFirstSet()) {
 		// schedule	
 		cv.setFirstSet(false);
+		this.refreshView();		
+		/*
 		var act = new AjxTimedAction();
 		act.obj = this;
 		act.method = ZmCalViewController.prototype.refreshView;
 		AjxTimedAction.scheduleAction(act, 0);
+		*/
 	} else {
 		this.refreshView();
 	}

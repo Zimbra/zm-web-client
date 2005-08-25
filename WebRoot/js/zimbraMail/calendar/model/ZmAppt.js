@@ -184,6 +184,18 @@ ZmAppt.prototype.getParticipationStatusString = function () {
 	return ZmAppt._pstatusString[this.ptst];
 };
 
+ZmApptClone = function() { }
+
+ZmAppt.quickClone = function (appt) {
+	//return appt.clone();
+	ZmApptClone.prototype = appt;
+	var newAppt = new ZmApptClone();
+	// make our own copy
+	newAppt.startDate = new Date(appt.startDate.getTime());
+	newAppt.endDate = new Date(appt.endDate.getTime());
+	return newAppt;
+}
+
 ZmAppt.prototype.clone = function () {
 	var newAppt = new ZmAppt(this._appCtxt, this.list, true);
 	var key = null;
