@@ -1382,11 +1382,15 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .calendar_grid_body_time_text {
 	white-space: nowrap;
-/*	position:relative;*/
-/*	right:3px;*/
-/*	bottom:-6px;*/
+	padding-right:2px;
 	width:40px;
+	color:#666666;
 }
+HTML>BODY .calendar_grid_body_time_text {	/* HACK to match times up with their lines -- FF only */
+	position:relative;
+	top:-8px;
+}
+
 
 .calendar_grid_body_hour_td {
 	border-bottom:1px solid #DDDDDD;
@@ -1403,7 +1407,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .calendar_grid_body_cell-selected {
 	height:20px;
-	background-color:#EEEEEE;
+	background-color:#ADD6D6;
 }
 
 .month_calendar_c0,.month_calendar_c1,.month_calendar_c2,.month_calendar_c3,
@@ -2854,122 +2858,30 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .Imgtab_disabled_R			{	background-image:url(/zimbra/skins/steel/images/tab_disabled_R.gif);	 	width:9;	height:28;	overflow:hidden;	}
 
 
-/* appointment images (will need to be in different colors) */
-.Imgappt_TL									{	background-image:url(/zimbra/skins/steel/images/appt_new_TL.png);	 			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_TM									{	background-image:url(/zimbra/skins/steel/images/appt_new_TM.png);	 			width:100%;	height:4;	overflow:hidden;	}
-.Imgappt_TR									{	background-image:url(/zimbra/skins/steel/images/appt_new_TR.png);	 			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_ML									{	background-image:url(/zimbra/skins/steel/images/appt_new_ML.png);	 			width:4;	height:100%;overflow:hidden;	}
-.Imgappt_MR									{	background-image:url(/zimbra/skins/steel/images/appt_new_MR.png);	 			width:4;	height:100%;overflow:hidden;	}
-.Imgappt_BL									{	background-image:url(/zimbra/skins/steel/images/appt_new_BL.png);	 			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_BM									{	background-image:url(/zimbra/skins/steel/images/appt_new_BM.png);	 			width:100%;	height:4;	overflow:hidden;	}
-.Imgappt_BR									{	background-image:url(/zimbra/skins/steel/images/appt_new_BR.png);	 			width:4;	height:4;	overflow:hidden;	}
-				
-.appt-selected .Imgappt_TL					{	background-image:url(/zimbra/skins/steel/images/appt_selected_TL.png);		width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_TM					{	background-image:url(/zimbra/skins/steel/images/appt_selected_TM.png);		width:100%;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_TR					{	background-image:url(/zimbra/skins/steel/images/appt_selected_TR.png);		width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_ML					{	background-image:url(/zimbra/skins/steel/images/appt_selected_ML.png);		width:4;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_MR					{	background-image:url(/zimbra/skins/steel/images/appt_selected_MR.png);		width:4;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_BL					{	background-image:url(/zimbra/skins/steel/images/appt_selected_BL.png);	 	width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_BM					{	background-image:url(/zimbra/skins/steel/images/appt_selected_BM.png);	 	width:100%;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_BR					{	background-image:url(/zimbra/skins/steel/images/appt_selected_BR.png);	 	width:4;	height:4;	overflow:hidden;	}
-
-.Imgappt_new_TL								{	background-image:url(/zimbra/skins/steel/images/appt_new_TL.png);			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_new_TM								{	background-image:url(/zimbra/skins/steel/images/appt_new_TM.png);			width:100%;	height:4;	overflow:hidden;	}
-.Imgappt_new_TR								{	background-image:url(/zimbra/skins/steel/images/appt_new_TR.png);			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_new_ML								{	background-image:url(/zimbra/skins/steel/images/appt_new_ML.png);			width:4;	height:100%;overflow:hidden;	}
-.Imgappt_new_MR								{	background-image:url(/zimbra/skins/steel/images/appt_new_MR.png);			width:4;	height:100%;overflow:hidden;	}
-.Imgappt_new_BL								{	background-image:url(/zimbra/skins/steel/images/appt_new_BL.png);	 		width:4;	height:4;	overflow:hidden;	}
-.Imgappt_new_BM								{	background-image:url(/zimbra/skins/steel/images/appt_new_BM.png);	 		width:100%;	height:4;	overflow:hidden;	}
-.Imgappt_new_BR								{	background-image:url(/zimbra/skins/steel/images/appt_new_BR.png);	 		width:4;	height:4;	overflow:hidden;	}
-
-.appt-selected .Imgappt_new_TL				{	background-image:url(/zimbra/skins/steel/images/appt_selected_TL.png);		width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_TM				{	background-image:url(/zimbra/skins/steel/images/appt_selected_TM.png);		width:100%;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_TR				{	background-image:url(/zimbra/skins/steel/images/appt_selected_TR.png);		width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_ML				{	background-image:url(/zimbra/skins/steel/images/appt_selected_ML.png);		width:4;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_new_MR				{	background-image:url(/zimbra/skins/steel/images/appt_selected_MR.png);		width:4;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_new_BL				{	background-image:url(/zimbra/skins/steel/images/appt_selected_BL.png);	 	width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_BM				{	background-image:url(/zimbra/skins/steel/images/appt_selected_BM.png);	 	width:100%;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_BR				{	background-image:url(/zimbra/skins/steel/images/appt_selected_BR.png);	 	width:4;	height:4;	overflow:hidden;	}
-
-.Imgappt_30_L								{	background-image:url(/zimbra/skins/steel/images/appt_30_new_L.png);	 			width:4;	height:25;	overflow:hidden;	}
-.Imgappt_30_M								{	background-image:url(/zimbra/skins/steel/images/appt_30_new_M.png);	 			width:100%;	height:25;	overflow:hidden;	}
-.Imgappt_30_R								{	background-image:url(/zimbra/skins/steel/images/appt_30_new_R.png);	 			width:4;	height:25;	overflow:hidden;	}
-
-.appt-selected .Imgappt_30_L				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_L.png);	width:4;	height:25;	overflow:hidden;	}
-.appt-selected .Imgappt_30_M				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_M.png);	width:100%;	height:25;	overflow:hidden;	}
-.appt-selected .Imgappt_30_R				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_R.png);	width:4;	height:25;	overflow:hidden;	}
-
-
-.Imgappt_30_new_L							{	background-image:url(/zimbra/skins/steel/images/appt_30_new_L.png);	 		width:4;	height:25;	overflow:hidden;	}
-.Imgappt_30_new_M							{	background-image:url(/zimbra/skins/steel/images/appt_30_new_M.png);	 		width:100%;	height:25;	overflow:hidden;	}
-.Imgappt_30_new_R							{	background-image:url(/zimbra/skins/steel/images/appt_30_new_R.png);	 		width:4;	height:25;	overflow:hidden;	}
-
-.appt-selected .Imgappt_30_new_L				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_L.png);	width:4;	height:25;	overflow:hidden;	}
-.appt-selected .Imgappt_30_new_M				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_M.png);	width:100%;	height:25;	overflow:hidden;	}
-.appt-selected .Imgappt_30_new_R				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_R.png);	width:4;	height:25;	overflow:hidden;	}
-
-.Imgappt_shadow_BL							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-.Imgappt_shadow_B							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:100%;	height:8;	overflow:hidden;	}
-.Imgappt_shadow_BR							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-.Imgappt_shadow_R							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:100%;overflow:hidden;	}
-.Imgappt_shadow_TR							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-
-.appt-selected .Imgappt_shadow_BL			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_BL.png);	width:8;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_shadow_B			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_B.png);	width:100%;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_shadow_BR			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_BR.png);	width:8;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_shadow_R			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_R.png);	width:8;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_shadow_TR			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_TR.png);	width:8;	height:8;	overflow:hidden;	}
-
-.Imgappt_new_shadow_BL							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-.Imgappt_new_shadow_B							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:100%;	height:8;	overflow:hidden;	}
-.Imgappt_new_shadow_BR							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-.Imgappt_new_shadow_R							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:100%;overflow:hidden;	}
-.Imgappt_new_shadow_TR							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-
-.appt-selected .Imgappt_new_shadow_BL		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_BL.png);	width:8;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_new_shadow_B		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_B.png);	width:100%;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_new_shadow_BR		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_BR.png);	width:8;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_new_shadow_R		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_R.png);	width:8;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_new_shadow_TR		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_TR.png);	width:8;	height:8;	overflow:hidden;	}
 
 /* end dynamically generated */
 
 
-.appt							{ 	z-index:10;	width:100;}
-.appt-selected					{ 	z-index:20;	width:100;}
-
-.appt_c							{	width:4;	height:4;		overflow:hidden;	}
-.appt_h							{	width:100%;	height:4;		overflow:hidden;}
-.appt_v							{	width:4;	height:100%;	overflow:hidden;}
-
-.appt_shadow_c					{	width:8;	height:8;		overflow:hidden;}
-.appt_shadow_v					{	width:8;	height:100%;	overflow:hidden; }
-.appt_shadow_h					{	width:100%;	height:8;		overflow:hidden;}
+.appt							{ 	z-index:10;	}
+.appt-selected					{ 	z-index:20;	}
 
 
-
-
-.appt_body						{	height:100%;	overflow:hidden;		}
-.appt_30_body					{	height:100%;	overflow:hidden; 
-									position:relative; 
-									top:4; margin-bottom:-4;	}
-
-.appt_blue_header				{	background-color:#7F99CC;	height:100%;	}
-.appt_30_blue_header			{	background-color:#7F99CC;					}
+.appt_blue_header				{	background-color:#99ADD6;					}
+.appt_30_blue_header			{	background-color:#99ADD6;					}
 .appt_blue_body					{	background-color:#CCD6EB;					}
 
 .appt_new_blue_header,			
 .appt_30_new_blue_header		{	background-color:#1947A3;					}
-.appt_new_blue_body				{	background-color:#7F99CC;	height:100%;	}
+.appt_new_blue_body				{	background-color:#7F99CC;					}
 
 
 .appt_new_tag					{	font-weight:bold;	color:#FFCC00;		}
-
-.appt_name						{	padding:2px;										}
+	
+.appt_name						{	padding:2px;											}
 .appt-selected .appt_name 		{	padding:2px;	font-weight:bold;						}
 .appt_new_name					{	padding:2px;	font-weight:bold;	color:white; 		}
 
-.appt_30_name					{	padding:2px;									white-space: nowrap;	}
+.appt_30_name					{	padding:2px;										white-space: nowrap;	}
 .appt-selected .appt_30_name 	{	padding:2px;	font-weight:bold;					white-space: nowrap;	}
 .appt_30_new_name				{	padding:2px;	font-weight:bold;	color:white;	white-space: nowrap;	}
 
@@ -2978,11 +2890,62 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .appt_status-					{	white-space: nowrap;	padding:2px;						}
 .appt_status-NE					{	white-space: nowrap;	padding:2px;	color:white;		}
 .appt_status-TE					{	white-space: nowrap;	padding:2px;	color:FF3300;		}
-.appt_status-AC					{	white-space: nowrap;	padding:2px;	color:999900;		}
-.appt_status-DE					{	white-space: nowrap;	padding:2px;	color:999999;		}
+.appt_status-AC					{	white-space: nowrap;	padding:2px;	color:black;		}
+.appt_status-DE					{	white-space: nowrap;	padding:2px;	color:black;		}
 .appt_status-DG					{	white-space: nowrap;	padding:2px;	color:black;		}
 
 .appt_location					{							padding:2px;						}
+
+
+
+
+.appt_body,
+.appt_30_body {
+	position:relative;
+	overflow:hidden;
+	border-left:2px solid #AAAAAA;
+	border-top:2px solid #AAAAAA;
+	border-right:2px solid #333333;
+	border-bottom:2px solid #333333;	
+	margin-top:0px;
+	margin-left:-1px;
+	margin-right:0px;
+	margin-bottom:0px;
+}
+
+.appt-selected .appt_body,
+.appt-selected .appt_30_body	{
+	position:relative;
+	overflow:hidden;
+	border-left:4px solid #339999;
+	border-top:4px solid #339999;
+	border-right:4px solid #003030;
+	border-bottom:4px solid #003030;	
+	margin-top:0px;
+	margin-left:0px;
+	margin-right:-2px;
+	margin-bottom:-2px;
+	
+}
+
+.appt-selected .appt_body TD,
+.appt-selected .appt_30_body TD{
+	padding:0px;
+}
+
+HTML>BODY .appt-selected .appt_body TD,
+HTML>BODY .appt-selected .appt_30_body TD {
+	padding:2px;
+}
+HTML>BODY .appt-selected .appt_body,
+HTML>BODY .appt-selected .appt_30_body
+{
+	margin-top:-3px;
+	margin-left:-3px;
+}
+
+
+
 
 
 /**** END BORDER STUFF ****/

@@ -45,10 +45,11 @@ ZmCalDayView._minApptWidth = 20;
 ZmCalDayView._dayHeadingHeight = 23;
 ZmCalDayView._dayFbWidth = 5;
 ZmCalDayView._scrollBarWidth = 20;
-ZmCalDayView._apptXFudge = -2; // due to dwt border stuff
-ZmCalDayView._apptYFudge = -2; // ditto
-ZmCalDayView._apptWidthFudge = 10; // due to dwt border stuff
-ZmCalDayView._apptHeightFudge = 10; // ditto
+
+ZmCalDayView._apptXFudge = 0; // due to border stuff
+ZmCalDayView._apptYFudge = -1; // ditto
+ZmCalDayView._apptWidthFudge = (AjxEnv.isIE ? 0 : -3); // due to border stuff
+ZmCalDayView._apptHeightFudge = (AjxEnv.isIE ? 0 : -4); // ditto
 
 ZmCalDayView.prototype.toString = 
 function() {
@@ -308,15 +309,15 @@ function(appt, now, isDndIcon) {
 	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
 	var isAccepted = pstatus == ZmAppt.PSTATUS_ACCEPT;
 	var subs = {
+		id: this._getItemId(appt),
 		newState: isNew ? "_new" : "",
 		color: "_blue",
 		name: AjxStringUtil.htmlEncode(appt.getName()),
-		tag: isNew ? "<span class=appt_new_tag>NEW</span>" : "",		//  HACK: i18n
+		tag: isNew ? "NEW" : "",		//  HACK: i18n
 		starttime: appt.getDurationText(true, true),
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		statusKey: appt.getParticipationStatus(),
-		status: isAccepted ? "" : appt.getParticipationStatusString(),
-		selState: ""
+		status: isAccepted ? "" : appt.getParticipationStatusString()
 	};
 
 	div.innerHTML = DwtBorder.getBorderHtml(titleOnly ? "calendar_appt_30" : "calendar_appt", subs, null);
@@ -470,8 +471,18 @@ function(html,idx) {
 	html[idx++] = "<table class=calendar_grid_day_table>";
 	for (var h=0; h < 24; h++) {
 		var hour = (h==0 || h == 12) ? 12 : h % 12;
-		var ampm = (h < 12) ? "AM" : "PM";
-		html[idx++] = "<tr><td class=calendar_grid_body_time_td><div class=calendar_grid_body_time_text>"+hour+" "+ampm+"</div></td></tr>";	
+		var ampm = (h < 12) ? "am" : "pm";
+		html[idx++] = "<tr><td class=calendar_grid_body_time_td><div class=calendar_grid_body_time_text>";
+		if (h == 0) {
+			html[idx++] = "&nbsp;";
+		} else if (h == 12) {
+			html[idx++] = "Noon";		//XXX i18n		
+		} else {
+			html[idx++] = hour;
+			html[idx++] = " ";
+			html[idx++] = ampm;		
+		}
+		html[idx++] = "</div></td></tr>";	
 	}
 	//html[idx++] = "<tr><td class=calendar_grid_body_time_td><div class=calendar_grid_body_time_text>&nbsp;</div></td></tr>";		
 	html[idx++] = "</table>";
@@ -779,8 +790,8 @@ function() {
 		var layout = this._layouts[i];
 		var awidth = apptW;
 		var ao = layout.appt;
-		var appt = Dwt.getDomObj(doc, this._getItemId(ao));
-		if (appt) {
+		var apptDiv = Dwt.getDomObj(doc, this._getItemId(ao));
+		if (apptDiv) {
 			// only need to do this first time through
 			if (!layout.h) {
 				var sd = ao.getStartDate();
@@ -799,7 +810,7 @@ function() {
 				layout.h = endY - layout.y + 1;					
 				
 				//DBG.println("---- sd="+sd+" ed="+ed);
-				//DBG.println("_layoutAppts: "+appt);
+				//DBG.println("_layoutAppts: "+apptDiv);
 				//DBG.println("_layoutAppts: layout.h="+layout.h+" layout.y="+layout.y+ " endY="+endY);
 			}
 			if (layout.lastDay && AjxEnv.isIE) awidth -= 20;
@@ -812,15 +823,31 @@ function() {
 			/*
 			var pstatus = ao.getParticipationStatus();
 			if ((layout.maxcol > 0) && (pstatus != ZmAppt.PSTATUS_DECLINED && pstatus != ZmAppt.PSTATUS_TENTATIVE)) {
-				this._setOpacity(appt, 95);
+				this._setOpacity(apptDiv, 95);
 			}
 			*/
 			
-			Dwt.setBounds(	appt, x + ZmCalDayView._apptXFudge, 
-							layout.y + ZmCalDayView._apptYFudge, 
+			// MOW: now we're setting the width and height of an inner div
+			//		this allows the clipping and border to work properly
+			//		so that appts are limited to the correct height
+//			Dwt.setBounds(apptDiv, 
+//							x + ZmCalDayView._apptXFudge, 
+//							layout.y + ZmCalDayView._apptYFudge,
+//							w + ZmCalDayView._apptWidthFudge, 
+//							layout.h + ZmCalDayView._apptHeightFudge
+//						);
+			Dwt.setLocation(apptDiv, 
+							x + ZmCalDayView._apptXFudge, 
+							layout.y + ZmCalDayView._apptYFudge
+						);
+
+			// get the inner div that should be sized and set its width/height
+			var apptBodyDiv = Dwt.getDomObj(doc, this._getItemId(ao) + "_body");
+			Dwt.setSize(	apptBodyDiv,
 							w + ZmCalDayView._apptWidthFudge, 
 							layout.h + ZmCalDayView._apptHeightFudge
 						);
+
 		}
 	}
 }
