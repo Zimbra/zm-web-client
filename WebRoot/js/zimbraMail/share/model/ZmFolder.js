@@ -35,9 +35,10 @@ ZmFolder.prototype.constructor = ZmFolder;
 ZmFolder.SEP = "/";
 
 // system folders (see Mailbox.java in ZimbraServer for positive integer constants)
-ZmFolder.ID_SEARCH			= -3;
-ZmFolder.ID_SEP				= -2;
-ZmFolder.ID_USER			= -1;
+ZmFolder.ID_OTHER			= -4;	// used for tcon value (see below)
+ZmFolder.ID_SEARCH			= -3;	// container
+ZmFolder.ID_SEP				= -2;	// separator
+ZmFolder.ID_USER			= -1;	// container
 ZmFolder.ID_ROOT = ZmOrganizer.ID_ROOT;
 ZmFolder.ID_INBOX			= 2;
 ZmFolder.ID_TRASH			= 3;
@@ -65,6 +66,7 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]		= "drafts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]	= "contacts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CALENDAR]	= "calendar";
 
+// order within the overview panel
 ZmFolder.SORT_ORDER = new Object();
 ZmFolder.SORT_ORDER[ZmFolder.ID_USER]		= 1;
 ZmFolder.SORT_ORDER[ZmFolder.ID_TAGS]		= 2;
@@ -75,6 +77,14 @@ ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]		= 103;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]		= 104;
 ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]		= 105;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]		= 106;
+
+// character codes for "tcon" attribute in conv action request, which
+// controls which folders are affected
+ZmFolder.TCON_CODE = new Object();
+ZmFolder.TCON_CODE[ZmFolder.ID_TRASH]	= "t";
+ZmFolder.TCON_CODE[ZmFolder.ID_SPAM]	= "j";
+ZmFolder.TCON_CODE[ZmFolder.ID_SENT]	= "s";
+ZmFolder.TCON_CODE[ZmFolder.ID_OTHER]	= "o";
 
 // map name to ID
 ZmFolder.QUERY_ID = new Object();

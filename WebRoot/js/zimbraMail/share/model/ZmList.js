@@ -349,9 +349,10 @@ function(items) {
 *
 * @param items		a list of items to move
 * @param folder		destination folder
+* @param attrs		additional attrs for SOAP command
 */
 ZmList.prototype.moveItems =
-function(items, folder) {
+function(items, folder, attrs) {
 	var itemMode = false;
 	if (items instanceof ZmItem) {
 		items = [items];
@@ -363,7 +364,10 @@ function(items, folder) {
 		if (!items[i].folderId || (items[i].folderId != folder.id))
 			items1.push(items[i]);
 
-	var movedItems = this._itemAction(items1, "move", {l: folder.id});
+	attrs = attrs ? attrs : new Object();
+	attrs.l = folder.id;
+	
+	var movedItems = this._itemAction(items1, "move", attrs);
 	if (movedItems.length) {
 		this.moveLocal(movedItems, folder.id);
 		for (var i = 0; i < movedItems.length; i++)
@@ -379,9 +383,10 @@ function(items, folder) {
 *
 * @param items			list of items to delete
 * @param hardDelete		whether to force physical removal of items
+* @param attrs			additional attrs for SOAP command
 */
 ZmList.prototype.deleteItems =
-function(items, hardDelete) {
+function(items, hardDelete, attrs) {
 	var itemMode = false;
 	if (items instanceof ZmItem) {
 		items = [items];
@@ -400,11 +405,11 @@ function(items, hardDelete) {
 
 	// move (soft delete)
 	if (toMove.length)
-		this.moveItems(toMove, this._appCtxt.getFolderTree().getById(ZmFolder.ID_TRASH));
+		this.moveItems(toMove, this._appCtxt.getFolderTree().getById(ZmFolder.ID_TRASH), attrs);
 
 	// hard delete - items actually deleted from data store
 	if (toDelete.length) {
-		var deletedItems = this._itemAction(toDelete, "delete");
+		var deletedItems = this._itemAction(toDelete, "delete", attrs);
 		if (deletedItems.length) {
 			this.deleteLocal(deletedItems);
 			for (var i = 0; i < deletedItems.length; i++)
