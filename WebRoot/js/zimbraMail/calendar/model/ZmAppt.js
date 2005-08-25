@@ -187,9 +187,12 @@ ZmAppt.prototype.getParticipationStatusString = function () {
 ZmApptClone = function() { }
 
 ZmAppt.quickClone = function (appt) {
-	return appt.clone();
+	//return appt.clone();
 	ZmApptClone.prototype = appt;
 	var newAppt = new ZmApptClone();
+	// make our own copy
+	newAppt.startDate = new Date(appt.startDate.getTime());
+	newAppt.endDate = new Date(appt.endDate.getTime());
 	return newAppt;
 }
 
