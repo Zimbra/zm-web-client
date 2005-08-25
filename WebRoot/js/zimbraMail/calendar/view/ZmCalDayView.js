@@ -103,7 +103,7 @@ function() {
 	var act = new AjxTimedAction();
 	act.method = ZmCalDayView._scrollTo8AM;
 	act.params.add(this);
-	AjxTimedAction.scheduleAction(act,1);
+	AjxTimedAction.scheduleAction(act,1); // can't be zero
 	//this._scrollTo8AM();
 }
 
@@ -487,6 +487,7 @@ function(abook) {
 	this._layouts = new Array();
 	this._allDayAppts = new Array();
 
+	//var _st = new Date();
 	var idx = 0;
 	var html = new Array(500);
 
@@ -553,11 +554,11 @@ function(abook) {
 	html.length = idx;
 
 	this.getHtmlElement().innerHTML = html.join("");
-	
+	//DBG.println("ZmCalDayView._createHtml took " + (new Date() - _st.getTime()) + "ms");
 	var act = new AjxTimedAction();
 	act.method = ZmCalDayView._scrollTo8AM;
 	act.params.add(this);
-	AjxTimedAction.scheduleAction(act,1);
+	AjxTimedAction.scheduleAction(act,1); // can't be 0
 	
 }
 
@@ -845,8 +846,7 @@ function(d, isStart, dayHeight) {
 
 ZmCalDayView.prototype._layout =
 function() {
-
-	DBG.println("in layout!");
+	DBG.println("ZmCalDayView in layout!");
 	var doc = this.getDocument();
 	
 	var sz = this.getSize();
@@ -902,7 +902,7 @@ function() {
 
 ZmCalDayView.prototype._controlListener =
 function(ev) {
-	//if (ev.oldWidth == ev.newWidth) return;
+	if (ev.newWidth == -1 || ev.newHeight == -1) return;
 	try {	
 		this._layout();
 	} catch(ex) {
