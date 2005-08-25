@@ -761,6 +761,7 @@ ZmAppt.prototype.setFromMessage = function (message, viewMode) {
 	if (message !== this._currentlyLoaded) {
 		this.isOrg = message.invite.isOrganizer(0);
 		this.organizer = message.getInviteOrganizer();
+		this.name = message.invite.getName(0);
 		this._isException = message.invite.isException(0);
 		// if this is an instance of a recurring appointment, 
 		// the start date is generated from the unique start time sent
@@ -1440,7 +1441,7 @@ ZmAppt.prototype.getTextSummary = function (cancel, buffer, idx) {
 	// much like a simple appointment.
 	// simple meeting
 	buffer[idx++] = "Organizer Email: "
-	buffer[idx++] = this._editingUser;
+	buffer[idx++] = this.organizer;
 	buffer[idx++] = "\n";
 	buffer[idx++] = "Subject:"
 	buffer[idx++] = "\"";

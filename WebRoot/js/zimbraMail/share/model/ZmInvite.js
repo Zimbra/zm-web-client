@@ -230,3 +230,9 @@ ZmInvite.prototype.getServerEndTimeTz = function (compNum) {
 	}
 };
 
+ZmInvite.prototype.getName = function (compNum) {
+	if (this.components[compNum] != null) {
+		return this.components[compNum].name;
+	}
+};
+
