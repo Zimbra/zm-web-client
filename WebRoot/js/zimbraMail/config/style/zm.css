@@ -937,7 +937,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmMailMsgView .AttName, .ZmMailMsgView .AttName-matched {padding-right: 8px;}
-.ZmMailMsgView .AttName-matched { background-color: #FFFF99; }
+.ZmMailMsgView .AttName-matched { background-color: #FFFFBB; white-space: nowrap; }
 .ZmMailMsgView .MsgBody {padding: 10px; overflow:auto}
 .ZmMailMsgView .MsgBody, .ZmMailMsgView .MsgBody * {font: 10pt monospace;}
 

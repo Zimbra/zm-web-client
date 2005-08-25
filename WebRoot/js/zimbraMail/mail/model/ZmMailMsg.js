@@ -35,7 +35,7 @@ function ZmMailMsg(appCtxt, list) {
 
 	this._loaded = false;
 	this._inHitList = false;
-	this._attachHitList = new Array();
+	this._attHitList = new Array();
 	this._attachments = new Array();
 	this._bodyParts = new Array();
 	this._addrs = new Array();
@@ -170,11 +170,6 @@ function() {
 ZmMailMsg.prototype.getConvId =
 function() {
 	return this.cid;
-};
-
-ZmMailMsg.prototype.getAttachHitList = 
-function() {
-	return this._attachHitList;
 };
 
 ZmMailMsg.prototype.getHeaderStr =
@@ -777,6 +772,7 @@ function(msgNode) {
 	if (msgNode.fr) 	this.fragment = msgNode.fr;
 	if (msgNode.rt) 	this.rt = msgNode.rt;
 	if (msgNode.origid) this.origId = msgNode.origid;
+	if (msgNode.hp) 	this._attHitList = msgNode.hp;
 
 	if (msgNode.mp) {
 		var params = {attachments: this._attachments, bodyParts: this._bodyParts};
@@ -841,11 +837,11 @@ function(soapDoc, parent, type, contactList, isDraft) {
 
 ZmMailMsg.prototype._isAttInHitList = 
 function(attach) {
-	var part = attach.part;
-	for (var i = 0; i < this._attachHitList.length; i++) {
-		if (this._attachHitList[i] == part)
+	for (var i = 0; i < this._attHitList.length; i++) {
+		if (attach.part == this._attHitList[i].part)
 			return true;
 	}
+	
 	return false;
 };
 
