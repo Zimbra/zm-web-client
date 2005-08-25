@@ -117,7 +117,7 @@ ZmDialog.prototype._showError =
 function(msg, loc) {
 	this._msgDialog.reset();
 	loc = loc ? loc : new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100);
-    this._msgDialog.setMessage(msg, null, DwtMessageDialog.CRITICAL_STYLE);
+    this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
     this._msgDialog.popup(loc);
     return null;
 }

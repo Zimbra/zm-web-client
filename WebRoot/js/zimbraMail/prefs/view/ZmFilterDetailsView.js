@@ -53,23 +53,17 @@ function ZmFilterDetailsView(parent, appCtxt, className) {
 	
 	// add the onmousedown listener, allowing the user to access the
 	// input areas.
-	var ls = new AjxListener(this, 
-							ZmFilterDetailsView.prototype._mouseDownListener);
+	var ls = new AjxListener(this, ZmFilterDetailsView.prototype._mouseDownListener);
 	this.addListener(DwtEvent.ONMOUSEDOWN, ls);
 
 	ZmFilterDetailsView.DEFAULT_CONDITION = new ZmCondition('from', null, 'is', null);
 	ZmFilterDetailsView.DEFAULT_ACTION = new ZmCondition('keep', null);
 
 	// create the msgDialog used for reporting an incomplete rule.
-	this._msgDialog = new DwtMessageDialog(this.shell, null, 
-										   [DwtDialog.YES_BUTTON, 
-											DwtDialog.NO_BUTTON]);
-	this._msgDialog.setMessage(ZmMsg.confirmFilterDetailsSave,
-							   null, DwtMessageDialog.WARNING_STYLE);
-	this._msgDialog.registerCallback(DwtDialog.YES_BUTTON, 
-									 this._msgDialogYesCallback, this);
-	this._msgDialog.registerCallback(DwtDialog.NO_BUTTON, 
-									 this._msgDialogNoCallback, this);
+	this._msgDialog = new DwtMessageDialog(this.shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
+	this._msgDialog.setMessage(ZmMsg.confirmFilterDetailsSave, DwtMessageDialog.WARNING_STYLE);
+	this._msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._msgDialogYesCallback, this);
+	this._msgDialog.registerCallback(DwtDialog.NO_BUTTON, this._msgDialogNoCallback, this);
 	
 }
 

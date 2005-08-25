@@ -148,7 +148,7 @@ function(ev) {
 	var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
 	this._deleteShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
 	var msg = AjxStringUtil.resolve(ZmMsg.askDeleteTag, organizer.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
-	this._deleteShield.setMessage(msg, null, DwtMessageDialog.WARNING_STYLE);
+	this._deleteShield.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 	this._deleteShield.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
 	this._deleteShield.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
     this._deleteShield.popup();
@@ -202,7 +202,7 @@ function(params) {
 	} catch (ex) {
 		if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {
 			var msg = AjxStringUtil.resolve(ZmMsg.errorInvalidName, params.name);
-			this._msgDialog.setMessage(msg, null, DwtMessageDialog.CRITICAL_STYLE);
+			this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 			this._msgDialog.popup();
 		} else {
 			this._handleException(ex, ZmTagTreeController.prototype._doCreate, params, false);

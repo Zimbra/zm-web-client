@@ -493,7 +493,7 @@ function(attId, isDraft) {
 	// Any addresses at all provided? If not, bail.
 	if (!isDraft && !addrs.gotAddress) {
 		this.enableInputs(false);
-    	this._msgDialog.setMessage(ZmMsg.noAddresses, null, DwtMessageDialog.CRITICAL_STYLE);
+    	this._msgDialog.setMessage(ZmMsg.noAddresses, DwtMessageDialog.CRITICAL_STYLE);
 	    this._msgDialog.popup(this._getDialogXY());
 	    this._msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._okCallback, this);
 		this.enableInputs(true);
@@ -504,7 +504,7 @@ function(attId, isDraft) {
 	var subject = AjxStringUtil.trim(this._subjectField.value);
 	if (!isDraft && subject.length == 0 && !this._noSubjectOkay) {
 		this.enableInputs(false);
-    	this._confirmDialog.setMessage(ZmMsg.compSubjectMissing, null, DwtMessageDialog.WARNING_STYLE);
+    	this._confirmDialog.setMessage(ZmMsg.compSubjectMissing, DwtMessageDialog.WARNING_STYLE);
 		this._confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this);
 		this._confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this);
 	    this._confirmDialog.popup(this._getDialogXY());
@@ -516,7 +516,7 @@ function(attId, isDraft) {
 		this.enableInputs(false);
 	    var bad = AjxStringUtil.htmlEncode(addrs[ZmComposeView.BAD].toString(ZmEmailAddress.SEPARATOR));
 	    var msg = AjxStringUtil.resolve(ZmMsg.compBadAddresses, bad);
-    	this._confirmDialog.setMessage(msg, null, DwtMessageDialog.WARNING_STYLE);
+    	this._confirmDialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		this._confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this);
 		this._confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, addrs.badType);
 	    this._confirmDialog.popup(this._getDialogXY());
@@ -1217,6 +1217,7 @@ function() {
 ZmComposeView.prototype._okCallback =
 function() {
 	this._msgDialog.popdown();
+	this._app.getComposeController()._toolbar.enableAll(true);
 	this.reEnableDesignMode();
 }
 

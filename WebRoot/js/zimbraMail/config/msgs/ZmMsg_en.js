@@ -175,6 +175,7 @@ ZmMsg.draft = "Draft";
 ZmMsg.drafts = "Drafts";
 ZmMsg.draftSaved = "Draft saved successfully.";
 ZmMsg.edit = "Edit";
+ZmMsg.editInviteReply = "Would you like to edit the invite reply?";
 ZmMsg.editReply = "Edit Reply";
 ZmMsg.editTooltip = "Edit the selected item";
 ZmMsg.email = "Email";

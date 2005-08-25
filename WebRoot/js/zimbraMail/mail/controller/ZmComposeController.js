@@ -344,7 +344,7 @@ function(ev) {
 	if (!this._detachOkCancel) {
 		// detach ok/cancel dialog is only necessary if user clicked on the add attachments button	
 		this._detachOkCancel = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
-		this._detachOkCancel.setMessage(ZmMsg.detachAnyway, null, DwtMessageDialog.WARNING_STYLE);
+		this._detachOkCancel.setMessage(ZmMsg.detachAnyway, DwtMessageDialog.WARNING_STYLE);
 		this._detachOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._detachCallback, this);
 	}
 
@@ -365,7 +365,7 @@ function(ev) {
 		// if formatting from html to text, confirm w/ user!
 		if (!this._textModeOkCancel) {
 			this._textModeOkCancel = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
-			this._textModeOkCancel.setMessage(ZmMsg.switchToText, null, DwtMessageDialog.WARNING_STYLE);
+			this._textModeOkCancel.setMessage(ZmMsg.switchToText, DwtMessageDialog.WARNING_STYLE);
 			this._textModeOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._textModeOkCallback, this);
 			this._textModeOkCancel.registerCallback(DwtDialog.CANCEL_BUTTON, this._textModeCancelCallback, this);
 		}
@@ -477,13 +477,13 @@ function() {
 	if (!this._popShield) {
 		if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 			this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
-			this._popShield.setMessage(ZmMsg.askSaveDraft, null, DwtMessageDialog.WARNING_STYLE);
+			this._popShield.setMessage(ZmMsg.askSaveDraft, DwtMessageDialog.WARNING_STYLE);
 			this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 			this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 			this._popShield.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
 		} else {
 			this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
-			this._popShield.setMessage(ZmMsg.askLeaveCompose, null, DwtMessageDialog.WARNING_STYLE);
+			this._popShield.setMessage(ZmMsg.askLeaveCompose, DwtMessageDialog.WARNING_STYLE);
 			this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 			this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 		}
