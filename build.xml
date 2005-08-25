@@ -133,7 +133,7 @@
     <gzip src="${var}" zipfile="${var}${gzipExtension}"/>
   </target>
   
-  <target name="gzip-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, copy-migration-wizard, jam-files">
+  <target name="gzip-files" depends="copy-files-to-build-area, copy-help, copy-admin-help,  jam-files">
     <copy todir="${build.dir}/WebRoot">
       <fileset dir="${build.dir}/WebRoot" includes="js/**/*.js"/>
     </copy>
@@ -329,11 +329,6 @@
     </copy>  	
     <delete dir="${build.dir}/WebRoot/tmp/adminhelp/html"/>
   </target>	
-  <target name="copy-migration-wizard">	
-    <copy todir="${build.dir}/WebRoot/migrationwizard/" overwrite="true" >
-      <fileset dir="WebRoot/migrationwizard/" includes="*.exe"/>
-    </copy>  	
-  </target>		
 
   <!-- 
   This target is meant only to be run after a full deploy has
