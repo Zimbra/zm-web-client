@@ -112,6 +112,7 @@ function(viewName) {
 		this._miniCalendar.addSelectionListener(new AjxListener(this, this._miniCalSelectionListener));
 		this._miniCalendar.addDateRangeListener(new AjxListener(this, this._miniCalDateRangeListener));
 		this._miniCalendar.setWorkingWeek([0, 1, 1, 1, 1, 1, 0]);
+		this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
 		this._needMiniCalendarUpdate = true;
 		//this.refreshMiniCalendar();
 		// add mini-calendar to skin
@@ -140,23 +141,23 @@ function(viewName) {
 	
 	switch(viewName) {
 		case ZmCalViewMgr.DAY_VIEW: 
-			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
+			//this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
 			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.day);
 			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.day);
 			break;
 		case ZmCalViewMgr.WORK_WEEK_VIEW:
-			this._miniCalendar.setSelectionMode(DwtCalendar.WORK_WEEK);
+			//this._miniCalendar.setSelectionMode(DwtCalendar.WORK_WEEK);
 			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.workWeek);
 			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.workWeek);			
 			break;
 		case ZmCalViewMgr.WEEK_VIEW:
-			this._miniCalendar.setSelectionMode(DwtCalendar.WEEK);
+			//this._miniCalendar.setSelectionMode(DwtCalendar.WEEK);
 			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.week);
 			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.week);			
 			break;;		
 		case ZmCalViewMgr.MONTH_VIEW:
 			// use day until month does something
-			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);		
+			//this._miniCalendar.setSelectionMode(DwtCalendar.DAY);		
 			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.month);
 			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.month);
 			//this._calendar.setSelectionMode(DwtCalendar.MONTH);
@@ -350,7 +351,9 @@ function(date, duration, roll) {
 	if (this._miniCalendar.getDate() == null || this._miniCalendar.getDate().getTime() != date.getTime()) 
 		this._miniCalendar.setDate(date, true, roll);
 	this._viewMgr.setDate(date, duration, roll);
-	this._navToolBar.setText(this._viewMgr.getCurrentView().getCalTitle());
+	var title = this._viewMgr.getCurrentView().getCalTitle();
+	this._navToolBar.setText(title);
+	Dwt.setTitle(title);
 }
 
 ZmCalViewController.prototype._dateSelectionListener =
