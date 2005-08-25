@@ -55,7 +55,8 @@ function ZmListController(appCtxt, container, app) {
 	this._actionEv = null;
 	
 	this._tagList = this._appCtxt.getTagList();
-	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
+	if (this._tagList)
+		this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	this._creatingTag = false;
 	this._activeSearch = null;
 	this._searchString = null;
@@ -745,9 +746,11 @@ function(view) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	appToolbar.showViewMenu(view);
     var menu = appToolbar.getViewButton().getMenu();
-    var mi = menu.getItemById(ZmOperation.MENUITEM_ID, view);
-    if (mi)
-		mi.setChecked(true, true);
+    if (menu) {
+	    var mi = menu.getItemById(ZmOperation.MENUITEM_ID, view);
+		if (mi)
+			mi.setChecked(true, true);
+	}
 }
 
 // Set up the New button based on the current app.
