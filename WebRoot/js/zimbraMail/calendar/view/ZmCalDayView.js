@@ -904,7 +904,9 @@ ZmCalDayView.prototype._controlListener =
 function(ev) {
 	if (ev.newWidth == -1 || ev.newHeight == -1) return;
 	try {	
-		this._layout();
+		if ((ev.oldWidth != ev.newWidth) || (ev.oldHeight != ev.newHeight)) {
+			this._layout();
+		}
 	} catch(ex) {
 		DBG.dumpObj(ex);
 	}
