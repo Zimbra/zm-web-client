@@ -761,6 +761,7 @@ ZmAppt.prototype.setFromMessage = function (message, viewMode) {
 	if (message !== this._currentlyLoaded) {
 		this.isOrg = message.invite.isOrganizer(0);
 		this.organizer = message.getInviteOrganizer();
+		this.name = message.invite.getName(0);
 		this._isException = message.invite.isException(0);
 		// if this is an instance of a recurring appointment, 
 		// the start date is generated from the unique start time sent
@@ -1221,6 +1222,8 @@ function (soapDoc, attachmentId) {
 };
 
 ZmAppt.prototype._setSimpleSoapAttributes = function (soapDoc, method,  attachmentId) {
+
+	if (this.organizer == null) this.organizer = this._appCtxt.get(ZmSetting.USERNAME);
 	var m = this._messageNode = soapDoc.set('m');
 
 	m.setAttribute("d", new Date().getTime());
@@ -1283,7 +1286,6 @@ ZmAppt.prototype._setSimpleSoapAttributes = function (soapDoc, method,  attachme
 	var org = soapDoc.set("or", null, inv);
 	// TODO: make attendees list, a list of ZmEmailAddresses.
 	// org.setAttribute("d",
-	if (this.organizer == null) this.organizer = this._appCtxt.get(ZmSetting.USERNAME);
 	org.setAttribute("a", this.organizer);
 
 	// handle attachments
@@ -1440,7 +1442,7 @@ ZmAppt.prototype.getTextSummary = function (cancel, buffer, idx) {
 	// much like a simple appointment.
 	// simple meeting
 	buffer[idx++] = "Organizer Email: "
-	buffer[idx++] = this._editingUser;
+	buffer[idx++] = this.organizer;
 	buffer[idx++] = "\n";
 	buffer[idx++] = "Subject:"
 	buffer[idx++] = "\"";
