@@ -288,6 +288,9 @@
     <copy todir="${build.dir}/WebRoot/public/" overwrite="${isProduction}" >
       <fileset dir="WebRoot/public" includes="**/*"/>
     </copy>
+    <copy todir="${build.dir}/WebRoot/zimlets/" overwrite="${isProduction}" >
+      <fileset dir="WebRoot/zimlets" includes="**/*"/>
+    </copy>
     <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" >
       <fileset dir="WebRoot/"/>
     </copy>
@@ -368,7 +371,7 @@
       <classes dir="${build.dir}" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
    	  <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**,skins/**" excludes="js/zimbraAdmin/**,js/AjxAdmin_all.js"/>
-      <fileset dir="${build.dir}/WebRoot" includes="public/**,skins/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp,js/AjxAdmin_all.js"/>
+      <fileset dir="${build.dir}/WebRoot" includes="zimlets/**,public/**,skins/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp,js/AjxAdmin_all.js"/>
     </war>
   </target>
 
@@ -395,7 +398,7 @@
       <fileset dir="${build.dir}/WebRoot" includes="help/**"/>
 
       <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**/*,skins/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="js/ZmLogin.js,public/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp"/>
+      <fileset dir="${build.dir}/WebRoot" includes="js/ZmLogin.js,zimlets/**,public/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp"/>
     </war>
   </target>
   

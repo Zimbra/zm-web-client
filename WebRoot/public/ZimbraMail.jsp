@@ -141,6 +141,7 @@ Contributor(s):
 <script type="text/javascript" src="/zimbra/js/zimbraMail/mail/view/object/ZmURLObjectHandler.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/mail/view/object/ZmTrackingObjectHandler.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/mail/view/object/ZmObjectManager.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="/zimbra/js/zimbraMail/mail/view/object/ZmAddressObjectHandler.js<%= ext %>?v=<%= vers %>"></script> 
 
 <script type="text/javascript" src="/zimbra/js/zimbraMail/mail/view/ZmMailListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/mail/view/ZmDoublePaneView.js<%= ext %>?v=<%= vers %>"></script>
@@ -212,4 +213,10 @@ Contributor(s):
 
 <script type="text/javascript" src="/zimbra/js/zimbraMail/ZmClientCmdHandler.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/ZmZimbraMail.js<%= ext %>?v=<%= vers %>"></script>
+
+<!-- key for: http://localhost:7070/zimbra/ -->
+<!-- to get a new key go to http://www.google.com/apis/maps/signup.html -->
+<!--
+<script src="http://maps.google.com/maps?file=api&v=1&key=ABQIAAAAlip1fdaN5LkmRe0_BI7TdBSWpcJbR5g3pMHCFfZAcTkJf9A7JxTXpYyU7Ys9xTMCTbk0FxNXm0dngw" type="text/javascript"></script>
+-->
 <!-- END SCRIPT BLOCK -->
