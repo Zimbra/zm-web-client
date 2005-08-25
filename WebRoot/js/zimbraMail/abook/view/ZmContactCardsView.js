@@ -41,6 +41,7 @@ ZmContactCardsView.prototype.paginate =
 function(contacts, bPageForward) {
 	ZmContactsBaseView.prototype.paginate.call(this, contacts, bPageForward);
 	this._layout();
+	this.setSelection(contacts.getVector().get(this.getOffset()));
 };
 
 ZmContactCardsView.prototype.replenish = 
@@ -226,11 +227,13 @@ ZmContactCardsView.prototype._getChildren =
 function() {
 	var children = new Array();
 	
-	var table = this._parentEl.childNodes[0];
-	for (var i = 0; i < table.rows.length; i++) {
-		var cells = table.rows[i].cells;
-		for (var j = 0; j < cells.length; j++)
-			children.push(cells[j].firstChild);
+	if (this._parentEl.childNodes.length) {
+		var table = this._parentEl.childNodes[0];
+		for (var i = 0; i < table.rows.length; i++) {
+			var cells = table.rows[i].cells;
+			for (var j = 0; j < cells.length; j++)
+				children.push(cells[j].firstChild);
+		}
 	}
 	
 	return children;
