@@ -166,7 +166,6 @@
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true'
 					cssfile='${images.cssFile}' csspath='/zimbra/img/hiRes/'>
 			<dirset dir='img/hiRes' includes='*' excludes='horizborders,vertborders,backgrounds'/>
-			<dirset dir='img/hiRes/borders' includes='corners,other'/>
 			<dirset dir='${ajax.dwtimg.dir}/hiRes' 
 					includes='*' excludes='horizborders,vertborders,backgrounds'/>
 		</imagemerge>
@@ -176,7 +175,6 @@
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='vertical'
 					cssfile='${images.cssFile}' csspath='/zimbra/img/hiRes/'>
 			<dirset dir='img/hiRes' includes='horizborders'/>
-			<dirset dir='img/hiRes/borders' includes='horizborders'/>
 			<dirset dir='${ajax.dwtimg.dir}/hiRes' includes='horizborders'/>
 		</imagemerge>
 		<echo/>
@@ -185,7 +183,6 @@
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='horizontal'
 					cssfile='${images.cssFile}' csspath='/zimbra/img/hiRes/'>
 			<dirset dir='img/hiRes' includes='vertborders'/>
-			<dirset dir='img/hiRes/borders' includes='vertborders'/>
 			<dirset dir='${ajax.dwtimg.dir}/hiRes' includes='vertborders'/>
 		</imagemerge>
 		<echo/>
@@ -194,7 +191,6 @@
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='repeat'
 					cssfile='${images.cssFile}' csspath='/zimbra/img/hiRes/'>
 			<dirset dir='img/hiRes' includes='backgrounds'/>
-			<dirset dir='img/hiRes/borders' includes='backgrounds'/>
 			<dirset dir='${ajax.dwtimg.dir}/hiRes' includes='backgrounds'/>
 		</imagemerge>
 		
