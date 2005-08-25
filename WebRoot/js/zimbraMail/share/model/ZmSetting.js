@@ -222,7 +222,7 @@ ZmSetting.INIT = new Object();
 
 // CONFIG SETTINGS
 ZmSetting.INIT[ZmSetting.AC_TIMER_INTERVAL]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_INT, 300];
-ZmSetting.INIT[ZmSetting.BRANCH]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "main"];
+ZmSetting.INIT[ZmSetting.BRANCH]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "ARMSTRONG"];
 ZmSetting.INIT[ZmSetting.CONFIG_PATH]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "/zimbra/js/zimbraMail/config"];
 ZmSetting.INIT[ZmSetting.CSFE_MSG_FETCHER_URI]			= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING];
 ZmSetting.INIT[ZmSetting.CSFE_SERVER_URI]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING];
