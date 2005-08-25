@@ -81,6 +81,14 @@ FORM {
 	padding: 0;
 }
 
+INPUT {		/* clean border that works on FF and IE */
+	border-left:1px solid #000000;
+	border-top:1px solid #000000;
+	border-right:1px solid #AAAAAA;
+	border-bottom:1px solid #AAAAAA;
+	padding-left:2px;
+}
+
 
 
 
@@ -296,8 +304,7 @@ DIV.vSpace {
 * Tool tips
 */
 
-.DwtToolTip {
-}
+.DwtToolTip {	}
 
 /*
 * Sashes
@@ -1382,11 +1389,15 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .calendar_grid_body_time_text {
 	white-space: nowrap;
-/*	position:relative;*/
-/*	right:3px;*/
-/*	bottom:-6px;*/
+	padding-right:2px;
 	width:40px;
+	color:#666666;
 }
+HTML>BODY .calendar_grid_body_time_text {	/* HACK to match times up with their lines -- FF only */
+	position:relative;
+	top:-8px;
+}
+
 
 .calendar_grid_body_hour_td {
 	border-bottom:1px solid #DDDDDD;
@@ -1403,7 +1414,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .calendar_grid_body_cell-selected {
 	height:20px;
-	background-color:#EEEEEE;
+	background-color:#ADD6D6;
 }
 
 .month_calendar_c0,.month_calendar_c1,.month_calendar_c2,.month_calendar_c3,
@@ -2691,100 +2702,61 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 
 .card_contents {
+	background-color:white;
 	position:relative;
-	background-color:pink;
-	/* position up and to the left to center w/in the margins */
-	top:-3; left:-3;
+	left:-3px;	top:-3px; 
+	margin-bottom:-3px; margin-right:-3px;
 }
 
-.card_contents_table {
-	Xwidth:100%;
-}
+.card_contents_table {}
 
 
-.card_spacer_c		{ width:10; 	height:10;		overflow:hidden;	}
-.card_spacer_h		{ width:100%; 	height:10;		overflow:hidden;	}
-.card_spacer_v		{ width:10; 	height:100%;	overflow:hidden;	}
-.card_spacer_m		{ width:100%; 	height:100%;	overflow:hidden;	}
+.card_spacer_TL		{ width:10; 	height:10;		overflow:hidden;	}
+.card_spacer_T		{ width:100%; 	height:10;		overflow:hidden;	}
+.card_spacer_TR		{ width:10; 	height:10;		overflow:hidden;	}
+.card_spacer_R		{ width:10; 	height:100%;	overflow:hidden;	}
+.card_spacer_BG		{ background-color:white;	}
+.card_spacer_L		{ width:10; 	height:100%;	overflow:hidden;	}
+.card_spacer_BL		{ width:10; 	height:10;		overflow:hidden;	}
+.card_spacer_B		{ width:100%; 	height:10;		overflow:hidden;	}
+.card_spacer_BR		{ width:10; 	height:10;		overflow:hidden;	}
 
-.selected_card_spacer_c		{ width:10; 	height:10;		overflow:hidden;	}
-.selected_card_spacer_h		{ width:100%; 	height:10;		overflow:hidden;	}
-.selected_card_spacer_v		{ width:10; 	height:100%;	overflow:hidden;	}
-.selected_card_spacer_m		{ width:100%; 	height:100%;	overflow:hidden;	}
 
-.balloon_frame 			{	width:200;	height:70;	z-index:1;	}
-.balloon_frame_table 	{	width:100%;	height:100%;	border-collapse:collapse;	padding:0;	}
-.TL_balloon_contents {
-	position:relative;
-	left:-8;
-	top:-2;
-	margin-bottom:-4px;
-	z-index:2;
-}
 
-.balloon_spacer_tc	 	{	width:20;		height:45;}
-.balloon_spacer_c	 	{	width:20;		height:20;}
-.balloon_spacer_h 		{	width:100%;		height:10;}
-.balloon_spacer_v 		{	width:10;		height:100%;}
-.balloon_spacer_m 		{	width:100%;		height:100%;	background-color:#EEEEEE;}
 
-.hover_frame {
-	border-collapse: collapse;
-	padding: 0;
-} 
-.hover_spacer_tl {
-	width: 12;
-	height: 12;
-}
-.hover_spacer_tm {
-	height: 12;
-}
-.hover_spacer_tr {
-	width: 20;
-	height: 12;
-}
-.hover_spacer_ml	{
-	width: 12;
-	height: 100%;
-}
-.hover_spacer_mr {
-	width: 20;
-	height: 100%;
-}
-.hover_spacer_bl {
-	width: 12;
-	height: 20;
-}
-.hover_spacer_bm {
-	height: 20;
-}
-.hover_spacer_br {
-	width: 20;
-	height: 20;
-}
-.hover_contents {
-}
-.hover_tip_top {
-	position: absolute;
-}
-.hover_tip_bottom {
-	position: relative;
+.hover_frame_table 		{	border-collapse:collapse;	padding:0;	}
+
+.hover_spacer_TL	 	{	width:12;		height:12;}
+.hover_spacer_T 		{	width:100%;		height:16;}
+.hover_spacer_TR	 	{	width:20;		height:16;}
+.hover_spacer_L	 		{	width:20;		height:100%;}
+.hover_spacer_R 		{	width:20;		height:100%;}
+.hover_spacer_BL	 	{	width:20;		height:20;}
+.hover_spacer_B 		{	width:100%;		height:20;}
+.hover_spacer_BR	 	{	width:20;		height:20;}
+
+.hover_contents 	{								}
+.hover_tip_top 		{		position: absolute;		}
+.hover_tip_bottom 	{		position: relative;		}
+
+
+
+
+.DialogBody {
+	background-color:#F8F7F5;
 }
 
-.dialog_title				{	background-color:#3d3d3d; cursor:move}
-.dialog_title_text			{	color:white;	width:auto;	 font-weight:bold;	}
-.dialog_title_cell			{	color:white;	width:auto;	 font-weight:bold;	
+.DialogToolbar {
+	background-image:url(/zimbra/skins/steel/images/bg_pebble_dark.gif);
+}
+
+.DialogTitle				{	background-color:#3d3d3d; cursor:move}
+.DialogTitleCell			{	color:white;	width:auto;	 font-weight:bold;	
+.DialogTitleText			{	color:white;	width:auto;	 font-weight:bold;	}
 								padding-left:2px; padding-right:2px;
 							}
 
-.dialog_table				{	border-collapse:collapse;	width:auto; height:100%;}
-
-.dialog_outset				{	}
-.dialog_outset_contents		{	width:auto;height:100%;		}
-.dialog_outset_table TD		{	padding:0px;	}
-
-.dialog_inset				{	background-color:#F8F7F5	}
-.dialog_inset_contents		{	width:auto;height:100%;		}
+.DialogTable				{	border-collapse:collapse;	}
 
 .dialog_shadow_c			{ 	width:6; 		height:6;		}
 .dialog_shadow_h			{ 	width:100%; 	height:6;		}
@@ -2801,175 +2773,26 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 
 
-/* should be dynamically generated */
-
-.dialog_inset_tl			{	background-image:url(/zimbra/skins/steel/images/dialog_inset_tl.gif);	 	width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_t				{	background-image:url(/zimbra/skins/steel/images/dialog_inset_t.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_tr			{	background-image:url(/zimbra/skins/steel/images/dialog_inset_tr.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_l				{	background-image:url(/zimbra/skins/steel/images/dialog_inset_l.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_r				{	background-image:url(/zimbra/skins/steel/images/dialog_inset_r.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_bl			{	background-image:url(/zimbra/skins/steel/images/dialog_inset_bl.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_b				{	background-image:url(/zimbra/skins/steel/images/dialog_inset_b.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_br			{	background-image:url(/zimbra/skins/steel/images/dialog_inset_br.gif);	 	width:10;	height:10;	overflow:hidden;	}
-
-.dialog_shadow_tr			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_tr.png);	 	width:6;	height:6;	overflow:hidden;	}
-.dialog_shadow_r			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_r.png);	 	width:6;	height:6;	overflow:hidden;	}
-.dialog_shadow_br			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_br.png);	 	width:6;	height:6;	overflow:hidden;	}
-.dialog_shadow_bl			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_bl.png);	 	width:6;	height:6;	overflow:hidden;	}
-.dialog_shadow_b			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_b.png);	 	width:6;	height:6;	overflow:hidden;	}
+.appt							{ 	z-index:10;	}
+.appt-selected					{ 	z-index:20;	}
 
 
-.dialog_outset_tl			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_tl.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_t			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_t.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_tr			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_tr.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_l			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_l.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_r			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_r.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_bl			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_bl.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_b			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_b.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_br			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_br.gif); 		width:4;	height:4;	overflow:hidden;	}
-
-
-.h_sash_l					{	background-image:url(/zimbra/skins/steel/images/h_sash_l.gif); 				width:4;	height:7;	overflow:hidden;	}
-.h_sash_m					{	background-image:url(/zimbra/skins/steel/images/h_sash_m.gif); 				width:20;	height:7;	overflow:hidden;	}
-.h_sash_r					{	background-image:url(/zimbra/skins/steel/images/h_sash_r.gif); 				width:4;	height:7;	overflow:hidden;	}
-.h_sash_grip				{	background-image:url(/zimbra/skins/steel/images/h_sash_grip.gif); 			width:29;	height:7;	overflow:hidden;	}
-
-
-.tab_spacer.gif				{	background-image:url(/zimbra/skins/steel/images/tab_spacer.gif);	 		width:100%;	height:28;	overflow:hidden;	}
-
-.Imgtab_L					{	background-image:url(/zimbra/skins/steel/images/tab_L.gif);	 				width:9;	height:28;	overflow:hidden;	}
-.Imgtab_M					{	background-image:url(/zimbra/skins/steel/images/tab_M.gif);	 				width:100%;	height:28;	overflow:hidden;	}
-.Imgtab_R					{	background-image:url(/zimbra/skins/steel/images/tab_R.gif);	 				width:9;	height:28;	overflow:hidden;	}
-
-.Imgtab_active_L			{	background-image:url(/zimbra/skins/steel/images/tab_active_L.gif);	 		width:9;	height:28;	overflow:hidden;	}
-.Imgtab_active_M			{	background-image:url(/zimbra/skins/steel/images/tab_active_M.gif);	 		width:100%;	height:28;	overflow:hidden;	}
-.Imgtab_active_R			{	background-image:url(/zimbra/skins/steel/images/tab_active_R.gif);	 		width:9;	height:28;	overflow:hidden;	}
-
-.Imgtab_selected_L			{	background-image:url(/zimbra/skins/steel/images/tab_selected_L.gif);	 	width:9;	height:28;	overflow:hidden;	}
-.Imgtab_selected_M			{	background-image:url(/zimbra/skins/steel/images/tab_selected_M.gif);	 	width:100%;	height:28;	overflow:hidden;	}
-.Imgtab_selected_R			{	background-image:url(/zimbra/skins/steel/images/tab_selected_R.gif);	 	width:9;	height:28;	overflow:hidden;	}
-
-.Imgtab_disabled_L			{	background-image:url(/zimbra/skins/steel/images/tab_disabled_L.gif);	 	width:9;	height:28;	overflow:hidden;	}
-.Imgtab_disabled_M			{	background-image:url(/zimbra/skins/steel/images/tab_disabled_M.gif);	 	width:100%;	height:28;	overflow:hidden;	}
-.Imgtab_disabled_R			{	background-image:url(/zimbra/skins/steel/images/tab_disabled_R.gif);	 	width:9;	height:28;	overflow:hidden;	}
-
-
-/* appointment images (will need to be in different colors) */
-.Imgappt_TL									{	background-image:url(/zimbra/skins/steel/images/appt_new_TL.png);	 			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_TM									{	background-image:url(/zimbra/skins/steel/images/appt_new_TM.png);	 			width:100%;	height:4;	overflow:hidden;	}
-.Imgappt_TR									{	background-image:url(/zimbra/skins/steel/images/appt_new_TR.png);	 			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_ML									{	background-image:url(/zimbra/skins/steel/images/appt_new_ML.png);	 			width:4;	height:100%;overflow:hidden;	}
-.Imgappt_MR									{	background-image:url(/zimbra/skins/steel/images/appt_new_MR.png);	 			width:4;	height:100%;overflow:hidden;	}
-.Imgappt_BL									{	background-image:url(/zimbra/skins/steel/images/appt_new_BL.png);	 			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_BM									{	background-image:url(/zimbra/skins/steel/images/appt_new_BM.png);	 			width:100%;	height:4;	overflow:hidden;	}
-.Imgappt_BR									{	background-image:url(/zimbra/skins/steel/images/appt_new_BR.png);	 			width:4;	height:4;	overflow:hidden;	}
-				
-.appt-selected .Imgappt_TL					{	background-image:url(/zimbra/skins/steel/images/appt_selected_TL.png);		width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_TM					{	background-image:url(/zimbra/skins/steel/images/appt_selected_TM.png);		width:100%;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_TR					{	background-image:url(/zimbra/skins/steel/images/appt_selected_TR.png);		width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_ML					{	background-image:url(/zimbra/skins/steel/images/appt_selected_ML.png);		width:4;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_MR					{	background-image:url(/zimbra/skins/steel/images/appt_selected_MR.png);		width:4;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_BL					{	background-image:url(/zimbra/skins/steel/images/appt_selected_BL.png);	 	width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_BM					{	background-image:url(/zimbra/skins/steel/images/appt_selected_BM.png);	 	width:100%;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_BR					{	background-image:url(/zimbra/skins/steel/images/appt_selected_BR.png);	 	width:4;	height:4;	overflow:hidden;	}
-
-.Imgappt_new_TL								{	background-image:url(/zimbra/skins/steel/images/appt_new_TL.png);			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_new_TM								{	background-image:url(/zimbra/skins/steel/images/appt_new_TM.png);			width:100%;	height:4;	overflow:hidden;	}
-.Imgappt_new_TR								{	background-image:url(/zimbra/skins/steel/images/appt_new_TR.png);			width:4;	height:4;	overflow:hidden;	}
-.Imgappt_new_ML								{	background-image:url(/zimbra/skins/steel/images/appt_new_ML.png);			width:4;	height:100%;overflow:hidden;	}
-.Imgappt_new_MR								{	background-image:url(/zimbra/skins/steel/images/appt_new_MR.png);			width:4;	height:100%;overflow:hidden;	}
-.Imgappt_new_BL								{	background-image:url(/zimbra/skins/steel/images/appt_new_BL.png);	 		width:4;	height:4;	overflow:hidden;	}
-.Imgappt_new_BM								{	background-image:url(/zimbra/skins/steel/images/appt_new_BM.png);	 		width:100%;	height:4;	overflow:hidden;	}
-.Imgappt_new_BR								{	background-image:url(/zimbra/skins/steel/images/appt_new_BR.png);	 		width:4;	height:4;	overflow:hidden;	}
-
-.appt-selected .Imgappt_new_TL				{	background-image:url(/zimbra/skins/steel/images/appt_selected_TL.png);		width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_TM				{	background-image:url(/zimbra/skins/steel/images/appt_selected_TM.png);		width:100%;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_TR				{	background-image:url(/zimbra/skins/steel/images/appt_selected_TR.png);		width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_ML				{	background-image:url(/zimbra/skins/steel/images/appt_selected_ML.png);		width:4;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_new_MR				{	background-image:url(/zimbra/skins/steel/images/appt_selected_MR.png);		width:4;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_new_BL				{	background-image:url(/zimbra/skins/steel/images/appt_selected_BL.png);	 	width:4;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_BM				{	background-image:url(/zimbra/skins/steel/images/appt_selected_BM.png);	 	width:100%;	height:4;	overflow:hidden;	}
-.appt-selected .Imgappt_new_BR				{	background-image:url(/zimbra/skins/steel/images/appt_selected_BR.png);	 	width:4;	height:4;	overflow:hidden;	}
-
-.Imgappt_30_L								{	background-image:url(/zimbra/skins/steel/images/appt_30_new_L.png);	 			width:4;	height:25;	overflow:hidden;	}
-.Imgappt_30_M								{	background-image:url(/zimbra/skins/steel/images/appt_30_new_M.png);	 			width:100%;	height:25;	overflow:hidden;	}
-.Imgappt_30_R								{	background-image:url(/zimbra/skins/steel/images/appt_30_new_R.png);	 			width:4;	height:25;	overflow:hidden;	}
-
-.appt-selected .Imgappt_30_L				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_L.png);	width:4;	height:25;	overflow:hidden;	}
-.appt-selected .Imgappt_30_M				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_M.png);	width:100%;	height:25;	overflow:hidden;	}
-.appt-selected .Imgappt_30_R				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_R.png);	width:4;	height:25;	overflow:hidden;	}
-
-
-.Imgappt_30_new_L							{	background-image:url(/zimbra/skins/steel/images/appt_30_new_L.png);	 		width:4;	height:25;	overflow:hidden;	}
-.Imgappt_30_new_M							{	background-image:url(/zimbra/skins/steel/images/appt_30_new_M.png);	 		width:100%;	height:25;	overflow:hidden;	}
-.Imgappt_30_new_R							{	background-image:url(/zimbra/skins/steel/images/appt_30_new_R.png);	 		width:4;	height:25;	overflow:hidden;	}
-
-.appt-selected .Imgappt_30_new_L				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_L.png);	width:4;	height:25;	overflow:hidden;	}
-.appt-selected .Imgappt_30_new_M				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_M.png);	width:100%;	height:25;	overflow:hidden;	}
-.appt-selected .Imgappt_30_new_R				{	background-image:url(/zimbra/skins/steel/images/appt_30_selected_R.png);	width:4;	height:25;	overflow:hidden;	}
-
-.Imgappt_shadow_BL							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-.Imgappt_shadow_B							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:100%;	height:8;	overflow:hidden;	}
-.Imgappt_shadow_BR							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-.Imgappt_shadow_R							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:100%;overflow:hidden;	}
-.Imgappt_shadow_TR							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-
-.appt-selected .Imgappt_shadow_BL			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_BL.png);	width:8;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_shadow_B			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_B.png);	width:100%;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_shadow_BR			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_BR.png);	width:8;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_shadow_R			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_R.png);	width:8;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_shadow_TR			{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_TR.png);	width:8;	height:8;	overflow:hidden;	}
-
-.Imgappt_new_shadow_BL							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-.Imgappt_new_shadow_B							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:100%;	height:8;	overflow:hidden;	}
-.Imgappt_new_shadow_BR							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-.Imgappt_new_shadow_R							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:100%;overflow:hidden;	}
-.Imgappt_new_shadow_TR							{	background-image:url(/zimbra/skins/steel/images/spacer.png);				width:8;	height:8;	overflow:hidden;	}
-
-.appt-selected .Imgappt_new_shadow_BL		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_BL.png);	width:8;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_new_shadow_B		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_B.png);	width:100%;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_new_shadow_BR		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_BR.png);	width:8;	height:8;	overflow:hidden;	}
-.appt-selected .Imgappt_new_shadow_R		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_R.png);	width:8;	height:100%;overflow:hidden;	}
-.appt-selected .Imgappt_new_shadow_TR		{	background-image:url(/zimbra/skins/steel/images/appt_selected_shadow_TR.png);	width:8;	height:8;	overflow:hidden;	}
-
-/* end dynamically generated */
-
-
-.appt							{ 	z-index:10;	width:100;}
-.appt-selected					{ 	z-index:20;	width:100;}
-
-.appt_c							{	width:4;	height:4;		overflow:hidden;	}
-.appt_h							{	width:100%;	height:4;		overflow:hidden;}
-.appt_v							{	width:4;	height:100%;	overflow:hidden;}
-
-.appt_shadow_c					{	width:8;	height:8;		overflow:hidden;}
-.appt_shadow_v					{	width:8;	height:100%;	overflow:hidden; }
-.appt_shadow_h					{	width:100%;	height:8;		overflow:hidden;}
-
-
-
-
-.appt_body						{	height:100%;	overflow:hidden;		}
-.appt_30_body					{	height:100%;	overflow:hidden; 
-									position:relative; 
-									top:4; margin-bottom:-4;	}
-
-.appt_blue_header				{	background-color:#7F99CC;	height:100%;	}
-.appt_30_blue_header			{	background-color:#7F99CC;					}
+.appt_blue_header				{	background-color:#99ADD6;					}
+.appt_30_blue_header			{	background-color:#99ADD6;					}
 .appt_blue_body					{	background-color:#CCD6EB;					}
 
 .appt_new_blue_header,			
 .appt_30_new_blue_header		{	background-color:#1947A3;					}
-.appt_new_blue_body				{	background-color:#7F99CC;	height:100%;	}
+.appt_new_blue_body				{	background-color:#7F99CC;					}
 
 
 .appt_new_tag					{	font-weight:bold;	color:#FFCC00;		}
-
-.appt_name						{	padding:2px;										}
+	
+.appt_name						{	padding:2px;											}
 .appt-selected .appt_name 		{	padding:2px;	font-weight:bold;						}
 .appt_new_name					{	padding:2px;	font-weight:bold;	color:white; 		}
 
-.appt_30_name					{	padding:2px;									white-space: nowrap;	}
+.appt_30_name					{	padding:2px;										white-space: nowrap;	}
 .appt-selected .appt_30_name 	{	padding:2px;	font-weight:bold;					white-space: nowrap;	}
 .appt_30_new_name				{	padding:2px;	font-weight:bold;	color:white;	white-space: nowrap;	}
 
@@ -2978,11 +2801,62 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .appt_status-					{	white-space: nowrap;	padding:2px;						}
 .appt_status-NE					{	white-space: nowrap;	padding:2px;	color:white;		}
 .appt_status-TE					{	white-space: nowrap;	padding:2px;	color:FF3300;		}
-.appt_status-AC					{	white-space: nowrap;	padding:2px;	color:999900;		}
-.appt_status-DE					{	white-space: nowrap;	padding:2px;	color:999999;		}
+.appt_status-AC					{	white-space: nowrap;	padding:2px;	color:black;		}
+.appt_status-DE					{	white-space: nowrap;	padding:2px;	color:black;		}
 .appt_status-DG					{	white-space: nowrap;	padding:2px;	color:black;		}
 
 .appt_location					{							padding:2px;						}
+
+
+
+
+.appt_body,
+.appt_30_body {
+	position:relative;
+	overflow:hidden;
+	border-left:2px solid #AAAAAA;
+	border-top:2px solid #AAAAAA;
+	border-right:2px solid #333333;
+	border-bottom:2px solid #333333;	
+	margin-top:0px;
+	margin-left:-1px;
+	margin-right:0px;
+	margin-bottom:0px;
+}
+
+.appt-selected .appt_body,
+.appt-selected .appt_30_body	{
+	position:relative;
+	overflow:hidden;
+	border-left:4px solid #339999;
+	border-top:4px solid #339999;
+	border-right:4px solid #003030;
+	border-bottom:4px solid #003030;	
+	margin-top:0px;
+	margin-left:0px;
+	margin-right:-2px;
+	margin-bottom:-2px;
+	
+}
+
+.appt-selected .appt_body TD,
+.appt-selected .appt_30_body TD{
+	padding:0px;
+}
+
+HTML>BODY .appt-selected .appt_body TD,
+HTML>BODY .appt-selected .appt_30_body TD {
+	padding:2px;
+}
+HTML>BODY .appt-selected .appt_body,
+HTML>BODY .appt-selected .appt_30_body
+{
+	margin-top:-3px;
+	margin-left:-3px;
+}
+
+
+
 
 
 /**** END BORDER STUFF ****/
