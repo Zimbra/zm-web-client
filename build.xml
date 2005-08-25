@@ -449,7 +449,6 @@
 	    <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Dwt.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/Zimbra-net.jsp,public/frameOpenerHelper.jsp,skins/**,**/*${gzipExtension}"/>
         <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
         <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
-        <fileset dir="${build.dir}/WebRoot" includes="migrationwizard/*.exe"/>		  	
 	  </war>
 	</target>
     	
