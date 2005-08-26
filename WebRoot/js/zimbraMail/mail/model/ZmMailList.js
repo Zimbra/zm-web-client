@@ -67,10 +67,10 @@ function(items, folder) {
 	var attrs = null;
 	if (this.type == ZmItem.CONV) {
 		var chars = ["-"];
-		var searchFolder = this.search ? this.search.folderId : null;
+		var searchFolder = this.search ? this._appCtxt.getFolderTree().getById(this.search.folderId) : null;
 		var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
 		for (var i = 0; i < folders.length; i++)
-			if (searchFolder != folders[i])
+			if (!(searchFolder && searchFolder.isUnder(folders[i])))
 				chars.push(ZmFolder.TCON_CODE[folders[i]]);
 		attrs = {tcon: chars.join("")};
 	}
@@ -83,8 +83,8 @@ ZmMailList.prototype.deleteItems =
 function(items, folder) {
 	var attrs = null;
 	if (this.type == ZmItem.CONV) {
-		var searchFolder = this.search ? this.search.folderId : null;
-		if (searchFolder == ZmFolder.ID_TRASH)
+		var searchFolder = this.search ? this._appCtxt.getFolderTree().getById(this.search.folderId) : null;
+		if (searchFolder && searchFolder.isInTrash())
 			attrs = {tcon: ZmFolder.TCON_CODE[ZmFolder.ID_TRASH]};
 	}
 	ZmList.prototype.deleteItems.call(this, items, folder, attrs);

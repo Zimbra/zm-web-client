@@ -397,7 +397,9 @@ function(items, hardDelete, attrs) {
 	var toMove = new Array();
 	var toDelete = new Array();	
 	for (var i = 0; i < items.length; i++) {
-		if (hardDelete || items[i].folderId == ZmFolder.ID_TRASH)
+		var folderId = items[i].getFolderId();
+		var folder = this._appCtxt.getFolderTree().getById(folderId);
+		if (hardDelete || (folder && folder.isInTrash()))
 			toDelete.push(items[i]);
 		else
 			toMove.push(items[i]);
