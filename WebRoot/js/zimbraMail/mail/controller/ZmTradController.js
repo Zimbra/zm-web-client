@@ -91,8 +91,10 @@ function() {
 
 ZmTradController.prototype._setupViewMenu =
 function(view) {
-	var menu = this._setupGroupByMenuItems(this, view);
-	new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+	if (this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
+		var menu = this._setupGroupByMenuItems(this, view);
+		new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+	}
 	this._setupReadingPaneMenuItem(view, menu, true);
 };
 
