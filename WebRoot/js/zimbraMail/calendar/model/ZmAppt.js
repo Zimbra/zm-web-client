@@ -1466,8 +1466,11 @@ ZmAppt.prototype.getTextSummary = function (cancel, buffer, idx) {
 		s = this.getUniqueStartDate();
 		e = this.getUniqueEndDate();
 	}
-	buffer[idx++] = AjxDateUtil.simpleComputeDateStr(s);
-	buffer[idx++] = " ";
+	if ((this.repeatType == "NON") || (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) &&
+		this._viewMode == ZmAppt.MODE_DELETE_INSTANCE) {
+		buffer[idx++] = AjxDateUtil.simpleComputeDateStr(s);
+		buffer[idx++] = " ";
+	}
 	buffer[idx++] = AjxDateUtil.getTimeStr(s, "%h:%m %P");
 	if (showingTimezone){
 		buffer[idx++] = " ";
@@ -1475,8 +1478,11 @@ ZmAppt.prototype.getTextSummary = function (cancel, buffer, idx) {
 	}
 	buffer[idx++] = "\n";
 	buffer[idx++] = "Ends:";
-	buffer[idx++] = AjxDateUtil.simpleComputeDateStr(e);
-	buffer[idx++] = " ";
+	if ((this.repeatType == "NON") || (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) &&
+		this._viewMode == ZmAppt.MODE_DELETE_INSTANCE) {
+		buffer[idx++] = AjxDateUtil.simpleComputeDateStr(e);
+		buffer[idx++] = " ";
+	}
 	buffer[idx++] = AjxDateUtil.getTimeStr(e, "%h:%m %P");
 	if (showingTimezone){
 		buffer[idx++] = " ";
