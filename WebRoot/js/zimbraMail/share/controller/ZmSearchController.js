@@ -292,7 +292,7 @@ function(params) {
 	} 
 
 	// allow old results to dtor itself
-	if (this._results)
+	if (this._results && (this._results.type == results.type))
 		this._results.dtor();
 	this._results = results;
 
