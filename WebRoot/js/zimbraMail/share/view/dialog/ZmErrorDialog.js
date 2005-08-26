@@ -141,7 +141,7 @@ function() {
 
 	for (var i in ZmSetting.INIT) {
 		if (ZmSetting.INIT[i][0])
-			strPrefs[idx++] = ZmSetting.INIT[i][0] + ": " + (ZmSetting.INIT[i][3] || "") + "\n";
+			strPrefs[idx++] = ZmSetting.INIT[i][0] + ": " + ("" + ZmSetting.INIT[i][3]) + "\n";
 	}
 	// add the user name at the end
 	strPrefs[idx++] = "username: " + this._appCtxt.getUsername() + "\n";
