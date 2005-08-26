@@ -351,10 +351,12 @@ function(includeUser) {
 * - We are not moving a folder into itself
 *
 * If the object is an item or a list or items, check that:
-* - We are not the Folders container, or Drafts
+* - We are not the Folders container
 * - We are not a search folder
 * - The items aren't already in this folder
-* - None of the items is a draft
+* - A contact can only be moved to Trash
+* - A draft can be moved to Trash or Drafts
+* - Non-drafts cannot be moved to Drafts
 *
 * @param what		object(s) to possibly move into this folder
 */
@@ -373,23 +375,29 @@ function(what) {
 		// An item or an array of items is being moved
 		var items = (what instanceof Array) ? what : [what];
 		var item = items[0];
-		if (this.id == ZmFolder.ID_USER || this.id == ZmFolder.ID_DRAFTS) {
-			invalid = true;		// user folder can only contain folders, can't move items to Drafts
+		if (this.id == ZmFolder.ID_USER) {
+			invalid = true;		// user folder can only contain folders
 		} else if (this.type == ZmOrganizer.SEARCH) {
 			invalid = true;		// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
 			invalid = true;
 		} else if ((item.type == ZmItem.CONV) && item.list.search && (item.list.search.folderId == this.id)) {
 			invalid = true;		// convs which are a result of a search for this folder
-		} else {
-			invalid = false;	// make sure no drafts or contacts are being moved (other than into Trash)
+		} else {	// checks that need to be done for each item
 			for (var i = 0; i < items.length; i++) {
-				if ((items[i].isDraft || (items[i].type == ZmItem.CONTACT)) && (this.id != ZmFolder.ID_TRASH)) {
-					invalid = true;
+				if ((items[i].type == ZmItem.CONTACT) && (this.id != ZmFolder.ID_TRASH)) {
+					invalid = true;		// can only move contacts into Trash
+					break;
+				} else if (items[i].isDraft && (this.id != ZmFolder.ID_TRASH && this.id != ZmFolder.ID_DRAFTS)) {
+					invalid = true;		// can move drafts into Trash or Drafts
+					break;
+				} else if (this.id == ZmFolder.ID_DRAFTS && !items[i].isDraft) {
+					invalid = true;		// only drafts can be moved into Drafts
 					break;
 				}
 			}
-			if (!invalid) {		// can't move items to folder they're already in
+			// can't move items to folder they're already in; we're okay if we have one item from another folder
+			if (!invalid) {
 				if (items[0].folderId) {
 					invalid = true;
 					for (var i = 0; i < items.length; i++) {
