@@ -123,8 +123,10 @@ function(type) {
 		type == ZmMimeTable.MULTI_MIXED || 
 		type == ZmMimeTable.TEXT_CAL || 
 		type == ZmMimeTable.MULTI_RELATED || 
+		/* XXX: we have licensing issues so gotta show these for now
 		type == ZmMimeTable.APP_MS_TNEF ||
 		type == ZmMimeTable.APP_MS_TNEF2 || 
+		*/
 		type == ZmMimeTable.APP_APPLE_DOUBLE)
 	{
 		return true;
