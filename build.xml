@@ -133,7 +133,7 @@
     <gzip src="${var}" zipfile="${var}${gzipExtension}"/>
   </target>
   
-  <target name="gzip-files" depends="copy-files-to-build-area, copy-help, copy-admin-help,  jam-files">
+  <target name="gzip-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, copy-migration-wizard, jam-files">
     <copy todir="${build.dir}/WebRoot">
       <fileset dir="${build.dir}/WebRoot" includes="js/**/*.js"/>
     </copy>
@@ -165,8 +165,7 @@
 		<echo/>
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true'
 					cssfile='${images.cssFile}' csspath='/zimbra/img/hiRes/'>
-			<dirset dir='img/hiRes' 
-					includes='*' excludes='horizborders,vertborders,backgrounds'/>
+			<dirset dir='img/hiRes' includes='*' excludes='horizborders,vertborders,backgrounds'/>
 			<dirset dir='${ajax.dwtimg.dir}/hiRes' 
 					includes='*' excludes='horizborders,vertborders,backgrounds'/>
 		</imagemerge>
@@ -288,6 +287,9 @@
     <copy todir="${build.dir}/WebRoot/public/" overwrite="${isProduction}" >
       <fileset dir="WebRoot/public" includes="**/*"/>
     </copy>
+    <copy todir="${build.dir}/WebRoot/zimlets/" overwrite="${isProduction}" >
+      <fileset dir="WebRoot/zimlets" includes="**/*"/>
+    </copy>
     <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" >
       <fileset dir="WebRoot/"/>
     </copy>
@@ -329,6 +331,11 @@
     </copy>  	
     <delete dir="${build.dir}/WebRoot/tmp/adminhelp/html"/>
   </target>	
+  <target name="copy-migration-wizard">	
+    <copy todir="${build.dir}/WebRoot/migrationwizard/" overwrite="true" >
+      <fileset dir="WebRoot/migrationwizard/" includes="*.exe"/>
+    </copy>  	
+  </target>		
 
   <!-- 
   This target is meant only to be run after a full deploy has
@@ -363,7 +370,7 @@
       <classes dir="${build.dir}" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
    	  <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**,skins/**" excludes="js/zimbraAdmin/**,js/AjxAdmin_all.js"/>
-      <fileset dir="${build.dir}/WebRoot" includes="public/**,skins/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp,js/AjxAdmin_all.js"/>
+      <fileset dir="${build.dir}/WebRoot" includes="zimlets/**,public/**,skins/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp,js/AjxAdmin_all.js"/>
     </war>
   </target>
 
@@ -390,7 +397,7 @@
       <fileset dir="${build.dir}/WebRoot" includes="help/**"/>
 
       <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**/*,skins/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="js/ZmLogin.js,public/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp"/>
+      <fileset dir="${build.dir}/WebRoot" includes="js/ZmLogin.js,zimlets/**,public/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp"/>
     </war>
   </target>
   
@@ -449,6 +456,7 @@
 	    <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Dwt.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/Zimbra-net.jsp,public/frameOpenerHelper.jsp,skins/**,**/*${gzipExtension}"/>
         <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
         <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
+        <fileset dir="${build.dir}/WebRoot" includes="migrationwizard/*.exe"/>		  	
 	  </war>
 	</target>
     	

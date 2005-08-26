@@ -33,19 +33,26 @@ function ZmObjectManager(view, appCtxt) {
 	this._objectIdPrefix = "OBJ_" + this._uuid + "_";		
 	// TODO: make this dynamic, have handlers register a factory method...
 	this._emailHandler = new ZmEmailObjectHandler(appCtxt);
-	// URL should be first, to handle email addresses embedded in URAjx
+	// URL should be first, to handle email addresses embedded in URL's
 	this._objectHandlers = [
 		new ZmURLObjectHandler(appCtxt),	
 		this._emailHandler,
 		new ZmPhoneObjectHandler(appCtxt),
 		new ZmPOObjectHandler(appCtxt),
 		new ZmTrackingObjectHandler(appCtxt),		
-		// Removed due to cost of emoticon icons
 		// new ZmEmoticonObjectHandler(appCtxt)
 	];
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		ZmDateObjectHandler.registerHandlers(this._objectHandlers, appCtxt);
 	}
+	// Check for Google map API before adding address handler
+	try {
+		new GPoint(217,10);
+		this._objectHandlers.push(new ZmAddressObjectHandler(appCtxt));
+	} catch (e) { 
+		;
+	}
+	
 	this.reset();
 
 	// install handlers
@@ -98,9 +105,10 @@ function(content, htmlEncode) {
 		// that match again.
 		//
 		// when we are done, we take the handler with the lowest index.
-
-		for (var i in this._objectHandlers) {
+		for (var i=0; i < this._objectHandlers.length; i++) {
 			var handler = this._objectHandlers[i];
+			// IE seems to lose objects so skip any nulls.
+			if(!handler) {continue;}
 			var result = handler.findObject(content, lastIndex);
 			if (result != null && result.index < lowestIndex) {
 				lowestResult = result;
@@ -139,20 +147,6 @@ function(content, htmlEncode) {
 	return html.join("");
 }
 
-/*
-ZmObjectManager.prototype.match =
-function(line) {
-	var result = null;
-	for (var i in this._objectHandlers) {
-		var handler = this._objectHandlers[i];
-		result = handler.match(line);
-		if (result != null)
-			return {result: result, handler: handler};
-	}
-	return null;
-}
-*/
-
 ZmObjectManager.prototype.generateSpan = 
 function(handler, html, idx, obj, context) {
 	var id = this._objectIdPrefix + Dwt.getNextId();
@@ -181,6 +175,7 @@ function(ev) {
 		var tooltip = shell.getToolTip();
 		tooltip.setContent(object.handler.getToolTipText(object.object, object.context));
 		tooltip.mouseOver(ev.docX, ev.docY, ZmObjectManager._TOOLTIP_DELAY);
+		object.handler.populateToolTip(object.object, object.context);
 	}
 	return false;
 }

@@ -28,7 +28,7 @@ function ZmContactController(appCtxt, container, abApp) {
 	ZmListController.call(this, appCtxt, container, abApp);
 	
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
-}
+};
 
 ZmContactController.prototype = new ZmListController();
 ZmContactController.prototype.constructor = ZmContactController;
@@ -36,7 +36,7 @@ ZmContactController.prototype.constructor = ZmContactController;
 ZmContactController.prototype.toString =
 function() {
 	return "ZmContactController";
-}
+};
 
 ZmContactController.prototype.show = 
 function(contact) {
@@ -52,7 +52,7 @@ function(contact) {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements);
-}
+};
 
 // Private methods (mostly overrides of ZmListController protected methods)
 
@@ -68,39 +68,39 @@ function() {
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.CLOSE);
 	return list;
-}
+};
 
 ZmContactController.prototype._getActionMenuOps =
 function() {
 	return null;
-}
+};
 
 ZmContactController.prototype._getViewType = 
 function() {
 	return ZmController.CONTACT_VIEW;
-}
+};
 
 ZmContactController.prototype._initializeListView = 
 function(view) {
 	if (!this._listView[view])
 		this._listView[view] = new ZmContactView(this._container);
-}
+};
 
 ZmContactController.prototype._getTagMenuMsg = 
 function() {
 	return ZmMsg.tagContact;
-}
+};
 
 ZmContactController.prototype._setViewContents =
 function(view) {
 	this._listView[view].set(this._contact);
-}
+};
 
 ZmContactController.prototype._paginate = 
 function(view, bPageForward) {
 	// TODO
 	DBG.println("TODO - page to next/previous contact");
-}
+};
 
 ZmContactController.prototype._resetOperations = 
 function(parent, num) {
@@ -112,7 +112,7 @@ function(parent, num) {
 	} else {
 		ZmListController.prototype._resetOperations.call(this, parent, num);
 	}
-}
+};
 
 ZmContactController.prototype._saveListener =
 function(ev, bIsPopCallback) {
@@ -137,7 +137,7 @@ function(ev, bIsPopCallback) {
 	} catch (ex) {
 		this._handleException(ex, this._saveListener, ev, false);
 	}
-}
+};
 
 ZmContactController.prototype._doDelete = 
 function(params) {
@@ -145,7 +145,7 @@ function(params) {
 	// disable input fields (to prevent blinking cursor from bleeding through)
 	this._listView[this._currentView].enableInputs(false);
 	this._app.popView();
-}
+};
 
 ZmContactController.prototype._preHideCallback =
 function() {
@@ -155,7 +155,7 @@ function() {
 
 	if (!this._popShield) {
 		this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
-		this._popShield.setMessage(ZmMsg.askSaveContact, null, DwtMessageDialog.WARNING_STYLE);
+		this._popShield.setMessage(ZmMsg.askSaveContact, DwtMessageDialog.WARNING_STYLE);
 		this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 		this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 		this._popShield.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldCancelCallback, this);
@@ -163,23 +163,28 @@ function() {
 
     this._popShield.popup(view._getDialogXY());
 	return false;
-}
+};
 
 ZmContactController.prototype._popShieldYesCallback =
 function() {
 	this._saveListener(null, true);
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(true);
-}
+};
 
 ZmContactController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(true);
-}
+};
 
 ZmContactController.prototype._popShieldCancelCallback =
 function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(false);
-}
+};
+
+ZmContactController.prototype._popdownActionListener = 
+function(ev) {
+	// bug fix #3719 - do nothing
+};

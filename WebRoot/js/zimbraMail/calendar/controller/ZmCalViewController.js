@@ -112,7 +112,7 @@ function(viewName) {
 		this._miniCalendar.addSelectionListener(new AjxListener(this, this._miniCalSelectionListener));
 		this._miniCalendar.addDateRangeListener(new AjxListener(this, this._miniCalDateRangeListener));
 		this._miniCalendar.setWorkingWeek([0, 1, 1, 1, 1, 1, 0]);
-		this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
+		//this._miniCalendar.setSelectionMode(DwtCalendar.DAY);		
 		this._needMiniCalendarUpdate = true;
 		//this.refreshMiniCalendar();
 		// add mini-calendar to skin
@@ -170,7 +170,7 @@ function(viewName) {
 	if (cv.isFirstSet()) {
 		// schedule	
 		cv.setFirstSet(false);
-		this.refreshView();		
+		this.refreshView();
 		/*
 		var act = new AjxTimedAction();
 		act.obj = this;
@@ -650,11 +650,9 @@ ZmCalViewController.prototype.getDayToolTipText =
 function(date)
 {
 	try {
-		var start = new Date(date);
+		var start = new Date(date.getTime());
 		start.setHours(0, 0, 0, 0);
-		var end = new Date(start);
-		end.setDate(start.getDate()+1);
-		var result = this.getApptSummaries(start.getTime(), end.getTime(), true);
+		var result = this.getApptSummaries(start.getTime(), start.getTime()+AjxDateUtil.MSEC_PER_DAY, true);
 		return ZmCalMonthView.getDayToolTipText(start,result);
 	} catch (ex) {
 		//alert(ex);

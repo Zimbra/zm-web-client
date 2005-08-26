@@ -939,7 +939,7 @@ ZmFreeBusyView.prototype.handleAddrChange = function ( event ) {
 					var newRow = tr.parentNode.lastChild.cloneNode(true);
 					tr.parentNode.appendChild(newRow);
 					var index = tr.rowIndex;
-					this.userSchedules.splice((index - 2), 1);
+					this.userSchedules.splice((index - 3), 1);
 					tr.parentNode.removeChild(tr);
 
 					// reset the aggregated row

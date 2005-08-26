@@ -118,8 +118,9 @@ function() {
 	// creating new contact (possibly some fields - but not ID - prepopulated)
 	if (this._contact.id == null || this._contact.isGal) {
 		for (var a in this._attr) {		
-			var val = AjxStringUtil.trim(this._attr[a]);
-			if (val && val.length > 0) {
+			// bug fix #2982 - convert fileAs value to a String
+			var val = a == ZmContact.F_fileAs ? ("" + this._attr[a]) : AjxStringUtil.trim(this._attr[a]);
+			if ((val && val.length > 0)) {
 				mods[a] = val;
 				foundOne = true;
 			} else {

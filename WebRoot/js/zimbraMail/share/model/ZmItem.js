@@ -209,6 +209,14 @@ function(tagId) {
 }
 
 /**
+* Returns ID of the folder that contains this item, if available.
+*/
+ZmItem.prototype.getFolderId =
+function() {
+	return this.folderId;
+}
+
+/**
 * Returns the ID of the appropriate tag image for this item.
 */
 ZmItem.prototype.getTagImageInfo =

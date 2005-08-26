@@ -268,7 +268,7 @@ function (ev) {
 	if (!this._inviteReplyDialog) {
 		var d = this._inviteReplyDialog = new DwtMessageDialog(this._shell, null, 
 															   [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
-		d.setMessage("Would you like to edit the invite reply?", null, DwtMessageDialog.INFO_STYLE);
+		d.setMessage(ZmMsg.editInviteReply, DwtMessageDialog.INFO_STYLE);
 		d.registerCallback(DwtDialog.YES_BUTTON, this._inviteReplyDialogYesCallback, this, ev);
 		d.registerCallback(DwtDialog.NO_BUTTON, this._inviteReplyDialogNoCallback, this, ev);
 		d.registerCallback(DwtDialog.CANCEL_BUTTON, this._inviteReplyDialogCancelCallback, this, ev);

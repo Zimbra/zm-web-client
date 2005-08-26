@@ -41,10 +41,9 @@ function ZmChangePasswordDialog(parent, msgDialog, className) {
 	this._confirmPasswordField = Dwt.getDomObj(doc, this._confirmPasswordId);
 
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
-	this.setTabOrder([this._oldPasswordId, this._newPasswordId, 
-					  this._confirmPasswordId]);
+	this.setTabOrder([this._oldPasswordId, this._newPasswordId, this._confirmPasswordId]);
 	this.addEnterListener(this._enterListener);
-}
+};
 
 ZmChangePasswordDialog.prototype = new DwtDialog;
 ZmChangePasswordDialog.prototype.constructor = ZmChangePasswordDialog;
@@ -52,13 +51,13 @@ ZmChangePasswordDialog.prototype.constructor = ZmChangePasswordDialog;
 ZmChangePasswordDialog.prototype.toString = 
 function() {
 	return "ZmChangePasswordDialog";
-}
+};
 
 ZmChangePasswordDialog.prototype.popup = 
 function(loc) {
 	DwtDialog.prototype.popup.call(this, loc);
 	this._oldPasswordField.focus();
-}
+};
 
 ZmChangePasswordDialog.prototype._contentHtml = 
 function() {
@@ -77,18 +76,17 @@ function() {
     html[idx++] = "</div>";
 	
 	return html.join("");
-}
+};
 
 ZmChangePasswordDialog.prototype.showMessageDialog = 
-function (message, loc, style){
+function(message, loc, style) {
 	if (!loc) {
 		var myLoc = this.getLocation();
 		loc = new DwtPoint(myLoc.x - 50, myLoc.y + 75);
 	}
-	var mStyle = style? style : DwtMessageDialog.CRITICAL_STYLE;
-	this._msgDialog.setMessage(message, null, mStyle);
+	this._msgDialog.setMessage(message, (style || DwtMessageDialog.CRITICAL_STYLE));
 	this._msgDialog.popup(loc);
-}
+};
 
 ZmChangePasswordDialog.prototype._okButtonListener =
 function(ev) {
@@ -100,12 +98,14 @@ function(ev) {
 
 ZmChangePasswordDialog.leadingWhitespaceRegex = /\s+[^\s]*/g;
 ZmChangePasswordDialog.trailingWhitespaceRegex = /\s*[^\s]*\s+/g;
-ZmChangePasswordDialog.prototype._hasWhiteSpace = function (field){
+
+ZmChangePasswordDialog.prototype._hasWhiteSpace = 
+function(field) {
 	if ((field.search(ZmChangePasswordDialog.trailingWhitespaceRegex) != -1) ||
-		(field.search(ZmChangePasswordDialog.leadingWhitespaceRegex) != -1) ){
+		(field.search(ZmChangePasswordDialog.leadingWhitespaceRegex) != -1) )
+	{
 		return true;
 	}
-
 };
 
 ZmChangePasswordDialog.prototype._getPasswordData =
@@ -147,22 +147,23 @@ function() {
 		return null;
 	}
 
-	return  [oldPassword, newPassword];
-}
+	return [oldPassword, newPassword];
+};
 
 ZmChangePasswordDialog.prototype._getInputFields = 
 function() {
 	return [this._oldPasswordField, this._newPasswordField, this._confirmPasswordField];
-}
+};
 
 ZmChangePasswordDialog.prototype._enterListener =
-function (ev){
+function(ev){
 	var args = this._getPasswordData();
 	if (args) {
 		this._runEnterCallback(args);
 	}
 };
 
-ZmChangePasswordDialog.prototype.focus = function () {
+ZmChangePasswordDialog.prototype.focus = 
+function() {
 	this._oldPasswordField.focus();
 };

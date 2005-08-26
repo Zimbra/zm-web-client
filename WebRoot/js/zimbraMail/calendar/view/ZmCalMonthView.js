@@ -515,6 +515,9 @@ function() {
 
 ZmCalMonthView.prototype._layout =
 function() {
+
+	DBG.println("ZmCalMonthView _layout!");
+
 	var sz = this.getSize();
 	var width = sz.x;
 	var height = sz.y;

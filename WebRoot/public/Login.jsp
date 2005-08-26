@@ -151,6 +151,7 @@ Contributor(s):
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
+    <link rel="shortcut icon" href="/zimbra/img/hiRes/non-web/favicon.gif" type="image/gif" />
     <title>Zimbra Login</title>
     <style>
       <!--

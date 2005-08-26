@@ -81,6 +81,14 @@ FORM {
 	padding: 0;
 }
 
+INPUT {		/* clean border that works on FF and IE */
+	border-left:1px solid #000000;
+	border-top:1px solid #000000;
+	border-right:1px solid #AAAAAA;
+	border-bottom:1px solid #AAAAAA;
+	padding-left:2px;
+}
+
 
 
 
@@ -201,7 +209,6 @@ DIV.vSpace {
   position:absolute;
   top:0px;
   left:0px;
-  overflow:hidden;
 }
 .MainShell {
 	background-color: #B7B7B7;
@@ -296,8 +303,7 @@ DIV.vSpace {
 * Tool tips
 */
 
-.DwtToolTip {
-}
+.DwtToolTip {	}
 
 /*
 * Sashes
@@ -1654,7 +1660,7 @@ HTML>BODY .calendar_grid_body_time_text {	/* HACK to match times up with their l
 }
 
 .DwtTabTable {
-	background-color: #C6C5D7;
+	background-color: #eee;
 }
 
 .ZmFilterPrefView .ZmToolBar { 
@@ -2695,100 +2701,61 @@ HTML>BODY .calendar_grid_body_time_text {	/* HACK to match times up with their l
 
 
 .card_contents {
+	background-color:white;
 	position:relative;
-	background-color:pink;
-	/* position up and to the left to center w/in the margins */
-	top:-3; left:-3;
+	left:-3px;	top:-3px; 
+	margin-bottom:-3px; margin-right:-3px;
 }
 
-.card_contents_table {
-	Xwidth:100%;
-}
+.card_contents_table {}
 
 
-.card_spacer_c		{ width:10; 	height:10;		overflow:hidden;	}
-.card_spacer_h		{ width:100%; 	height:10;		overflow:hidden;	}
-.card_spacer_v		{ width:10; 	height:100%;	overflow:hidden;	}
-.card_spacer_m		{ width:100%; 	height:100%;	overflow:hidden;	}
+.card_spacer_TL		{ width:10; 	height:10;		overflow:hidden;	}
+.card_spacer_T		{ width:100%; 	height:10;		overflow:hidden;	}
+.card_spacer_TR		{ width:10; 	height:10;		overflow:hidden;	}
+.card_spacer_R		{ width:10; 	height:100%;	overflow:hidden;	}
+.card_spacer_BG		{ background-color:white;	}
+.card_spacer_L		{ width:10; 	height:100%;	overflow:hidden;	}
+.card_spacer_BL		{ width:10; 	height:10;		overflow:hidden;	}
+.card_spacer_B		{ width:100%; 	height:10;		overflow:hidden;	}
+.card_spacer_BR		{ width:10; 	height:10;		overflow:hidden;	}
 
-.selected_card_spacer_c		{ width:10; 	height:10;		overflow:hidden;	}
-.selected_card_spacer_h		{ width:100%; 	height:10;		overflow:hidden;	}
-.selected_card_spacer_v		{ width:10; 	height:100%;	overflow:hidden;	}
-.selected_card_spacer_m		{ width:100%; 	height:100%;	overflow:hidden;	}
 
-.balloon_frame 			{	width:200;	height:70;	z-index:1;	}
-.balloon_frame_table 	{	width:100%;	height:100%;	border-collapse:collapse;	padding:0;	}
-.TL_balloon_contents {
-	position:relative;
-	left:-8;
-	top:-2;
-	margin-bottom:-4px;
-	z-index:2;
-}
 
-.balloon_spacer_tc	 	{	width:20;		height:45;}
-.balloon_spacer_c	 	{	width:20;		height:20;}
-.balloon_spacer_h 		{	width:100%;		height:10;}
-.balloon_spacer_v 		{	width:10;		height:100%;}
-.balloon_spacer_m 		{	width:100%;		height:100%;	background-color:#EEEEEE;}
 
-.hover_frame {
-	border-collapse: collapse;
-	padding: 0;
-} 
-.hover_spacer_tl {
-	width: 12;
-	height: 12;
-}
-.hover_spacer_tm {
-	height: 12;
-}
-.hover_spacer_tr {
-	width: 20;
-	height: 12;
-}
-.hover_spacer_ml	{
-	width: 12;
-	height: 100%;
-}
-.hover_spacer_mr {
-	width: 20;
-	height: 100%;
-}
-.hover_spacer_bl {
-	width: 12;
-	height: 20;
-}
-.hover_spacer_bm {
-	height: 20;
-}
-.hover_spacer_br {
-	width: 20;
-	height: 20;
-}
-.hover_contents {
-}
-.hover_tip_top {
-	position: absolute;
-}
-.hover_tip_bottom {
-	position: relative;
+.hover_frame_table 		{	border-collapse:collapse;	padding:0;	}
+
+.hover_spacer_TL	 	{	width:12;		height:12;}
+.hover_spacer_T 		{	width:100%;		height:16;}
+.hover_spacer_TR	 	{	width:20;		height:16;}
+.hover_spacer_L	 		{	width:20;		height:100%;}
+.hover_spacer_R 		{	width:20;		height:100%;}
+.hover_spacer_BL	 	{	width:20;		height:20;}
+.hover_spacer_B 		{	width:100%;		height:20;}
+.hover_spacer_BR	 	{	width:20;		height:20;}
+
+.hover_contents 	{								}
+.hover_tip_top 		{		position: absolute;		}
+.hover_tip_bottom 	{		position: relative;		}
+
+
+
+
+.DialogBody {
+	background-color:#F8F7F5;
 }
 
-.dialog_title				{	background-color:#3d3d3d; cursor:move}
-.dialog_title_text			{	color:white;	width:auto;	 font-weight:bold;	}
-.dialog_title_cell			{	color:white;	width:auto;	 font-weight:bold;	
+.DialogToolbar {
+	background-image:url(/zimbra/skins/steel/images/bg_pebble_dark.gif);
+}
+
+.DialogTitle				{	background-color:#3d3d3d; cursor:move}
+.DialogTitleCell			{	color:white;	width:auto;	 font-weight:bold;	
+.DialogTitleText			{	color:white;	width:auto;	 font-weight:bold;	}
 								padding-left:2px; padding-right:2px;
 							}
 
-.dialog_table				{	border-collapse:collapse;	width:auto; height:100%;}
-
-.dialog_outset				{	}
-.dialog_outset_contents		{	width:auto;height:100%;		}
-.dialog_outset_table TD		{	padding:0px;	}
-
-.dialog_inset				{	background-color:#F8F7F5	}
-.dialog_inset_contents		{	width:auto;height:100%;		}
+.DialogTable				{	border-collapse:collapse;	}
 
 .dialog_shadow_c			{ 	width:6; 		height:6;		}
 .dialog_shadow_h			{ 	width:100%; 	height:6;		}
@@ -2803,63 +2770,6 @@ HTML>BODY .calendar_grid_body_time_text {	/* HACK to match times up with their l
 .border_shadow_h			{ 	width:auto;		height:6;		}
 .border_shadow_v			{ 	width:6; 		height:100%;	}
 
-
-
-/* should be dynamically generated */
-
-.dialog_inset_tl			{	background-image:url(/zimbra/skins/steel/images/dialog_inset_tl.gif);	 	width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_t				{	background-image:url(/zimbra/skins/steel/images/dialog_inset_t.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_tr			{	background-image:url(/zimbra/skins/steel/images/dialog_inset_tr.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_l				{	background-image:url(/zimbra/skins/steel/images/dialog_inset_l.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_r				{	background-image:url(/zimbra/skins/steel/images/dialog_inset_r.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_bl			{	background-image:url(/zimbra/skins/steel/images/dialog_inset_bl.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_b				{	background-image:url(/zimbra/skins/steel/images/dialog_inset_b.gif); 		width:10;	height:10;	overflow:hidden;	}
-.dialog_inset_br			{	background-image:url(/zimbra/skins/steel/images/dialog_inset_br.gif);	 	width:10;	height:10;	overflow:hidden;	}
-
-.dialog_shadow_tr			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_tr.png);	 	width:6;	height:6;	overflow:hidden;	}
-.dialog_shadow_r			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_r.png);	 	width:6;	height:6;	overflow:hidden;	}
-.dialog_shadow_br			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_br.png);	 	width:6;	height:6;	overflow:hidden;	}
-.dialog_shadow_bl			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_bl.png);	 	width:6;	height:6;	overflow:hidden;	}
-.dialog_shadow_b			{	background-image:url(/zimbra/skins/steel/images/dialog_shadow_b.png);	 	width:6;	height:6;	overflow:hidden;	}
-
-
-.dialog_outset_tl			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_tl.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_t			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_t.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_tr			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_tr.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_l			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_l.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_r			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_r.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_bl			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_bl.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_b			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_b.gif); 		width:4;	height:4;	overflow:hidden;	}
-.dialog_outset_br			{	background-image:url(/zimbra/skins/steel/images/dialog_outset_br.gif); 		width:4;	height:4;	overflow:hidden;	}
-
-
-.h_sash_l					{	background-image:url(/zimbra/skins/steel/images/h_sash_l.gif); 				width:4;	height:7;	overflow:hidden;	}
-.h_sash_m					{	background-image:url(/zimbra/skins/steel/images/h_sash_m.gif); 				width:20;	height:7;	overflow:hidden;	}
-.h_sash_r					{	background-image:url(/zimbra/skins/steel/images/h_sash_r.gif); 				width:4;	height:7;	overflow:hidden;	}
-.h_sash_grip				{	background-image:url(/zimbra/skins/steel/images/h_sash_grip.gif); 			width:29;	height:7;	overflow:hidden;	}
-
-
-.tab_spacer.gif				{	background-image:url(/zimbra/skins/steel/images/tab_spacer.gif);	 		width:100%;	height:28;	overflow:hidden;	}
-
-.Imgtab_L					{	background-image:url(/zimbra/skins/steel/images/tab_L.gif);	 				width:9;	height:28;	overflow:hidden;	}
-.Imgtab_M					{	background-image:url(/zimbra/skins/steel/images/tab_M.gif);	 				width:100%;	height:28;	overflow:hidden;	}
-.Imgtab_R					{	background-image:url(/zimbra/skins/steel/images/tab_R.gif);	 				width:9;	height:28;	overflow:hidden;	}
-
-.Imgtab_active_L			{	background-image:url(/zimbra/skins/steel/images/tab_active_L.gif);	 		width:9;	height:28;	overflow:hidden;	}
-.Imgtab_active_M			{	background-image:url(/zimbra/skins/steel/images/tab_active_M.gif);	 		width:100%;	height:28;	overflow:hidden;	}
-.Imgtab_active_R			{	background-image:url(/zimbra/skins/steel/images/tab_active_R.gif);	 		width:9;	height:28;	overflow:hidden;	}
-
-.Imgtab_selected_L			{	background-image:url(/zimbra/skins/steel/images/tab_selected_L.gif);	 	width:9;	height:28;	overflow:hidden;	}
-.Imgtab_selected_M			{	background-image:url(/zimbra/skins/steel/images/tab_selected_M.gif);	 	width:100%;	height:28;	overflow:hidden;	}
-.Imgtab_selected_R			{	background-image:url(/zimbra/skins/steel/images/tab_selected_R.gif);	 	width:9;	height:28;	overflow:hidden;	}
-
-.Imgtab_disabled_L			{	background-image:url(/zimbra/skins/steel/images/tab_disabled_L.gif);	 	width:9;	height:28;	overflow:hidden;	}
-.Imgtab_disabled_M			{	background-image:url(/zimbra/skins/steel/images/tab_disabled_M.gif);	 	width:100%;	height:28;	overflow:hidden;	}
-.Imgtab_disabled_R			{	background-image:url(/zimbra/skins/steel/images/tab_disabled_R.gif);	 	width:9;	height:28;	overflow:hidden;	}
-
-
-
-/* end dynamically generated */
 
 
 .appt							{ 	z-index:10;	}

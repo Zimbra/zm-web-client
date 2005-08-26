@@ -45,6 +45,15 @@ function() {
 	ZmItem.prototype.clear.call(this);
 }
 
+ZmMailItem.prototype.getFolderId =
+function() {
+	if ((this.type == ZmItem.CONV) && this.list.search) {
+		return this.list.search.folderId;
+	} else {
+		return this.folderId;
+	}
+}
+
 ZmMailItem.prototype.notifyModify =
 function(obj) {
 	var fields = new Object();

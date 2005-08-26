@@ -127,6 +127,12 @@ function(obj, context) {
 	return AjxStringUtil.htmlEncode(obj);
 }
 
+ZmObjectHandler.prototype.populateToolTip =
+function(obj, context) {
+	return;
+}
+
+
 ZmObjectHandler.prototype.getActionMenu =
 function(obj, span, context) {
 	return null;

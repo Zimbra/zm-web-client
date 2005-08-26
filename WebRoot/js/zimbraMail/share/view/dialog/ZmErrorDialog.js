@@ -30,14 +30,24 @@ Contributor(s): ______________________________________.
 function ZmErrorDialog(parent, appCtxt) {
 	if (arguments.length == 0) return;
 
+	this._appCtxt = appCtxt;
 	// go ahead and cache the navigator info now (since it should never change)		
 	this._strNav = this._getNavigatorInfo();
 
-	var newButton = new DwtDialog_ButtonDescriptor(ZmErrorDialog.REPORT_BUTTON, ZmMsg.report, DwtDialog.ALIGN_LEFT);
-	DwtMessageDialog.call(this, parent, null, null, [newButton]);
+	var reportButton = new DwtDialog_ButtonDescriptor(ZmErrorDialog.REPORT_BUTTON, ZmMsg.report, DwtDialog.ALIGN_LEFT);
+	var detailButton = new DwtDialog_ButtonDescriptor(ZmErrorDialog.DETAIL_BUTTON, null, DwtDialog.ALIGN_LEFT);
+	DwtMessageDialog.call(this, parent, null, null, [reportButton, detailButton]);
 
-	this._appCtxt = appCtxt;
+	// setup the detail button
+	this._detailCell = Dwt.getDomObj(this.getDocument(), this._detailCellId);
+	var detailBtn = this._button[ZmErrorDialog.DETAIL_BUTTON];
+	detailBtn.setImage(DwtImg.SELECT_PULL_DOWN);
+	// arrow icon is too big so hack it to fit (instead of adding new image)
+	Dwt.setSize(detailBtn.getHtmlElement(), 22, (AjxEnv.isIE ? 21 : 19));
+	detailBtn.getHtmlElement().style.overflow = "hidden";
+
 	this.registerCallback(ZmErrorDialog.REPORT_BUTTON, this._reportCallback, this);
+	this.registerCallback(ZmErrorDialog.DETAIL_BUTTON, this._showDetail, this);
 };
 
 ZmErrorDialog.prototype = new DwtMessageDialog;
@@ -47,13 +57,68 @@ ZmErrorDialog.prototype.constructor = ZmErrorDialog;
 // Consts
 
 ZmErrorDialog.REPORT_BUTTON = DwtDialog.LAST_BUTTON + 1;
+ZmErrorDialog.DETAIL_BUTTON = DwtDialog.LAST_BUTTON + 2;
+
 ZmErrorDialog.REPORT_URL = "http://localhost:7070/zimbra/public/errorreport.jsp";
+
 
 // Public methods
 
 ZmErrorDialog.prototype.toString = 
 function() {
 	return "ZmErrorDialog";
+};
+
+ZmErrorDialog.prototype.reset =
+function() {
+	this.setDetailString();
+	DwtMessageDialog.prototype.reset.call(this);
+};
+
+ZmErrorDialog.prototype.setMessage =
+function(msgStr, detailStr, style, title) {
+	DwtMessageDialog.prototype.setMessage.call(this, msgStr, style, title);
+	this.setDetailString(detailStr);
+};
+
+/**
+* Sets the text that shows up when the Detail button is pressed.
+*
+* @param text	detail text
+*/
+ZmErrorDialog.prototype.setDetailString = 
+function(text) {
+	if (!(this._buttonElementId[ZmErrorDialog.DETAIL_BUTTON]))
+		return;	
+	this._detailStr = text;
+	if (text) {
+		this._button[ZmErrorDialog.DETAIL_BUTTON].setVisible(true);
+		if (this._detailCell && this._detailCell.innerHTML != "") {
+			this._detailCell.innerHTML = this._getDetailHtml(); //update detailCell if it is shown
+		}
+	} else {
+		this._button[ZmErrorDialog.DETAIL_BUTTON].setVisible(false);
+		if (this._detailCell)
+			this._detailCell.innerHTML = "";
+	}
+};
+
+ZmErrorDialog.prototype._getContentHtml =
+function() {
+	this._detailCellId = Dwt.getNextId();
+	var html = new Array();
+	var idx = 0;
+
+	html[idx++] = DwtMessageDialog.prototype._getContentHtml.call(this);
+	html[idx++] = "<div id='" + this._detailCellId + "'></div>";
+	
+	return html.join("");
+};
+
+ZmErrorDialog.prototype._getDetailHtml =
+function() {
+	return "<div class='vSpace'></div><table cellspacing=0 cellpadding=0 width='100%'>" +
+		   "<tr><td><textarea readonly rows='10'>" + this._detailStr + "</textarea></td></tr></table>";
 };
 
 ZmErrorDialog.prototype._getNavigatorInfo = 
@@ -76,7 +141,7 @@ function() {
 
 	for (var i in ZmSetting.INIT) {
 		if (ZmSetting.INIT[i][0])
-			strPrefs[idx++] = ZmSetting.INIT[i][0] + ": " + (ZmSetting.INIT[i][3] || "") + "\n";
+			strPrefs[idx++] = ZmSetting.INIT[i][0] + ": " + ("" + ZmSetting.INIT[i][3]) + "\n";
 	}
 	// add the user name at the end
 	strPrefs[idx++] = "username: " + this._appCtxt.getUsername() + "\n";
@@ -125,4 +190,18 @@ function() {
 	contentDiv.removeChild(iframe);
 	iframe = null;
 	this.popdown();
+};
+
+// Displays the detail text
+ZmErrorDialog.prototype._showDetail =
+function() {
+	if (this._detailCell) {
+		if (this._detailCell.innerHTML == "") {
+			this._button[ZmErrorDialog.DETAIL_BUTTON].setImage(DwtImg.SELECT_PULL_UP);
+			this._detailCell.innerHTML = this._getDetailHtml();
+		} else {
+			this._button[ZmErrorDialog.DETAIL_BUTTON].setImage(DwtImg.SELECT_PULL_DOWN);
+			this._detailCell.innerHTML = "";
+		}
+	}
 };

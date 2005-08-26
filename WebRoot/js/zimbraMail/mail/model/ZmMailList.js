@@ -60,6 +60,36 @@ function() {
 	return "ZmMailList";
 }
 
+// Override so that we can specify "tcon" attribute for conv move - we don't want
+// to move messages in certain system folders as a side effect
+ZmMailList.prototype.moveItems =
+function(items, folder) {
+	var attrs = null;
+	if (this.type == ZmItem.CONV) {
+		var chars = ["-"];
+		var searchFolder = this.search ? this._appCtxt.getFolderTree().getById(this.search.folderId) : null;
+		var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
+		for (var i = 0; i < folders.length; i++)
+			if (!(searchFolder && searchFolder.isUnder(folders[i])))
+				chars.push(ZmFolder.TCON_CODE[folders[i]]);
+		attrs = {tcon: chars.join("")};
+	}
+	ZmList.prototype.moveItems.call(this, items, folder, attrs);
+}
+
+// Override so that delete of a conv in Trash doesn't hard-delete its msgs in
+// other folders
+ZmMailList.prototype.deleteItems =
+function(items, folder) {
+	var attrs = null;
+	if (this.type == ZmItem.CONV) {
+		var searchFolder = this.search ? this._appCtxt.getFolderTree().getById(this.search.folderId) : null;
+		if (searchFolder && searchFolder.isInTrash())
+			attrs = {tcon: ZmFolder.TCON_CODE[ZmFolder.ID_TRASH]};
+	}
+	ZmList.prototype.deleteItems.call(this, items, folder, attrs);
+}
+
 ZmMailList.prototype.markRead =
 function(items, on) {
 	this.flagItems(items, "read", on);

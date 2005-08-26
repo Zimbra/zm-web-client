@@ -57,7 +57,9 @@ var $RE_NEXT_LAST = "(next|last)";
 
 var $RE_COMMA_OR_SP = "(?:\\s+|\\s*,\\s*)?";
 
-var $RE_DASH_OR_SLASH = "(?:-|\\/)";
+var $RE_DASH = "(?:-)";
+
+var $RE_SLASH = "(?:\\/)";
 
 var $RE_SP = "\\s+";
 
@@ -92,6 +94,8 @@ function(handlers, appCtxt) {
 	handlers.push(new ZmDate4ObjectHandler(appCtxt));
 	handlers.push(new ZmDate5ObjectHandler(appCtxt));
 	handlers.push(new ZmDate6ObjectHandler(appCtxt));
+	handlers.push(new ZmDate7ObjectHandler(appCtxt));
+	handlers.push(new ZmDate8ObjectHandler(appCtxt));	
 }
 
 ZmDateObjectHandler._currentDate = new Date();
@@ -296,7 +300,7 @@ function(line, startIndex) {
 	return result;
 }
 
-//{12/25/2005}, {06/06/05}, {12-25-2005}, {06-06-05}, etc
+// {12-25-2005}, {06-06-05}, etc
 
 function ZmDate5ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
@@ -305,7 +309,7 @@ function ZmDate5ObjectHandler(appCtxt) {
 ZmDate5ObjectHandler.prototype = new ZmDateObjectHandler;
 ZmDate5ObjectHandler.prototype.constructor = ZmDate5ObjectHandler;
 
-ZmDate5ObjectHandler.REGEX = new RegExp("\\b" + $RE_MM + $RE_DASH_OR_SLASH + $RE_DD + $RE_DASH_OR_SLASH + $RE_YEAR42 + "\\b", "ig"),
+ZmDate5ObjectHandler.REGEX = new RegExp("\\b" + $RE_MM + $RE_DASH + $RE_DD + $RE_DASH + $RE_YEAR42 + "\\b", "ig"),
 
 ZmDate5ObjectHandler.prototype.match =
 function(line, startIndex) {
@@ -328,7 +332,7 @@ function(line, startIndex) {
 	return result;
 }
 
-// {2005/06/24}, {2005/12/25}, {2005-06-24}
+// {2005-06-24}
 
 function ZmDate6ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
@@ -337,12 +341,73 @@ function ZmDate6ObjectHandler(appCtxt) {
 ZmDate6ObjectHandler.prototype = new ZmDateObjectHandler;
 ZmDate6ObjectHandler.prototype.constructor = ZmDate6ObjectHandler;
 
-ZmDate6ObjectHandler.REGEX = new RegExp("\\b" + $RE_YEAR4 + $RE_DASH_OR_SLASH + $RE_MM + $RE_DASH_OR_SLASH + $RE_DD + "\\b", "ig"),
+ZmDate6ObjectHandler.REGEX = new RegExp("\\b" + $RE_YEAR4 + $RE_DASH + $RE_MM + $RE_DASH + $RE_DD + "\\b", "ig"),
 
 ZmDate6ObjectHandler.prototype.match =
 function(line, startIndex) {
 	ZmDate6ObjectHandler.REGEX.lastIndex = startIndex;
 	var result = ZmDate6ObjectHandler.REGEX.exec(line);
+	if (result == null) return null;
+
+	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var year = parseInt(result[1], 10);
+	var month = parseInt(result[2], 10) - 1;
+	var dom = parseInt(result[3], 10);
+	d.setMonth(month, dom);
+	d.setYear(year);
+
+	result.context = {date: d, monthOnly: 0};
+	return result;
+}
+
+
+//{12/25/2005}, {06/06/05}, etc
+
+function ZmDate7ObjectHandler(appCtxt) {
+	ZmDateObjectHandler.call(this, appCtxt);
+}
+
+ZmDate7ObjectHandler.prototype = new ZmDateObjectHandler;
+ZmDate7ObjectHandler.prototype.constructor = ZmDate7ObjectHandler;
+
+ZmDate7ObjectHandler.REGEX = new RegExp("\\b" + $RE_MM + $RE_SLASH + $RE_DD + $RE_SLASH + $RE_YEAR42 + "\\b", "ig"),
+
+ZmDate7ObjectHandler.prototype.match =
+function(line, startIndex) {
+	ZmDate7ObjectHandler.REGEX.lastIndex = startIndex;
+	var result = ZmDate7ObjectHandler.REGEX.exec(line);
+	if (result == null) return null;
+
+	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var month = parseInt(result[1], 10) - 1;
+	var dom = parseInt(result[2], 10);
+	d.setMonth(month, dom);
+	var year = parseInt(result[3], 10);
+	if (year < 20) 
+		year += 2000;
+	else if (year < 100)
+		year += 1900;
+	d.setYear(year);
+
+	result.context = {date: d, monthOnly: 0};
+	return result;
+}
+
+// {2005/06/24}, {2005/12/25}
+
+function ZmDate8ObjectHandler(appCtxt) {
+	ZmDateObjectHandler.call(this, appCtxt);
+}
+
+ZmDate8ObjectHandler.prototype = new ZmDateObjectHandler;
+ZmDate8ObjectHandler.prototype.constructor = ZmDate8ObjectHandler;
+
+ZmDate8ObjectHandler.REGEX = new RegExp("\\b" + $RE_YEAR4 + $RE_SLASH + $RE_MM + $RE_SLASH + $RE_DD + "\\b", "ig"),
+
+ZmDate8ObjectHandler.prototype.match =
+function(line, startIndex) {
+	ZmDate8ObjectHandler.REGEX.lastIndex = startIndex;
+	var result = ZmDate8ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
 	var d = new Date(ZmDateObjectHandler.getCurrentDate());

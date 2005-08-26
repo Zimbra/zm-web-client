@@ -335,9 +335,7 @@ function(evt) {
 	if (rule != null){
 		this._openEdit(rule);
 	} else {
-		this._noRuleMessageDialog.setMessage(
-								 "Please select one filter rule first.", null,
-								 DwtMessageDialog.WARNING_STYLE);
+		this._noRuleMessageDialog.setMessage("Please select one filter rule first.", DwtMessageDialog.WARNING_STYLE);
 		var loc = this._getDialogXY();
 		this._noRuleMessageDialog.popup(loc);
 	}
@@ -353,23 +351,13 @@ ZmFilterPrefView.prototype._filterRemoveListener = function(evt) {
 	var selectedRules = this._listView.getSelection();
     if (selectedRules.length > 0) {
         this._selectedRules = selectedRules;
-		var msg = null;
-		if (selectedRules.length == 1 ){
-			msg = ZmMsg.confirmDeleteRule;
-		} else {
-			msg = ZmMsg.confirmDeleteRules;
-		}
-        this._removeConfirmMessageDialog.setMessage(msg, null,
-                 DwtMessageDialog.INFO_STYLE);
-        this._removeConfirmMessageDialog.registerCallback(
-                 DwtDialog.OK_BUTTON,
-                 ZmFilterPrefView.prototype._doRemoveCallback, this);
+		var msg = selectedRules.length == 1 ? ZmMsg.confirmDeleteRule : ZmMsg.confirmDeleteRules;
+        this._removeConfirmMessageDialog.setMessage(msg, DwtMessageDialog.INFO_STYLE);
+        this._removeConfirmMessageDialog.registerCallback(DwtDialog.OK_BUTTON, ZmFilterPrefView.prototype._doRemoveCallback, this);
         var loc = this._getDialogXY();
         this._removeConfirmMessageDialog.popup(loc);
     } else {
-		this._noRuleMessageDialog.setMessage(
-								 "Please select one filter rule for removal.",
-								 null, DwtMessageDialog.WARNING_STYLE);
+		this._noRuleMessageDialog.setMessage("Please select one filter rule for removal.", DwtMessageDialog.WARNING_STYLE);
 		var loc = this._getDialogXY();
 		this._noRuleMessageDialog.popup(loc);
 	}

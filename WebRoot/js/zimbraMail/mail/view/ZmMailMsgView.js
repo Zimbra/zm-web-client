@@ -701,13 +701,10 @@ function(msg, preferHtml) {
 	var idx = 0;
 	
 	html[idx++] = "<div style='width: 100%; background-color: #EEEEEE'>";
-	html[idx++] = "<table border=0 width=100%>";
-	html[idx++] = "<tr><td><font size=+1>";
+	html[idx++] = "<table border=0 width=100%><tr>";
 	
-	// print FROM address and DATE
-	var from = msg.getAddresses(ZmEmailAddress.FROM).get(0);
-	html[idx++] = from ? AjxStringUtil.htmlEncode(from.toString()) : "";
-	html[idx++] = "</font></td>";
+	// print SUBJECT and DATE
+	html[idx++] = "<td><font size=+1>" + msg.getSubject() + "</font></td>";
 	html[idx++] = "<td align=right><font size=+1>";
 	html[idx++] = msg.sentDate 
 		? (new Date(msg.sentDate)).toLocaleString() 
@@ -716,11 +713,8 @@ function(msg, preferHtml) {
 	html[idx++] = "</tr></table>";
 	html[idx++] = "<table border=0 width=100%>";
 
-	// print TO and CC addresses
+	// print all address types
 	for (var j = 0; j < ZmMailMsg.ADDRS.length; j++) {
-		if (ZmMailMsg.ADDRS[j] != ZmEmailAddress.TO && ZmMailMsg.ADDRS[j] != ZmEmailAddress.CC)
-			continue;
-		
 		var addrs = msg.getAddresses(ZmMailMsg.ADDRS[j]);
 		var len = addrs.size();
 		if (len > 0) {

@@ -104,7 +104,7 @@ function() {
 	var act = new AjxTimedAction();
 	act.method = ZmCalDayView._scrollTo8AM;
 	act.params.add(this);
-	AjxTimedAction.scheduleAction(act,1);
+	AjxTimedAction.scheduleAction(act,1); // can't be zero
 	//this._scrollTo8AM();
 }
 
@@ -317,7 +317,7 @@ function(appt, now, isDndIcon) {
 		starttime: appt.getDurationText(true, true),
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		statusKey: appt.getParticipationStatus(),
-		status: isAccepted ? "" : appt.getParticipationStatusString()
+		status: appt.getParticipationStatusString()
 	};
 
 	div.innerHTML = DwtBorder.getBorderHtml(titleOnly ? "calendar_appt_30" : "calendar_appt", subs, null);
@@ -498,6 +498,7 @@ function(abook) {
 	this._layouts = new Array();
 	this._allDayAppts = new Array();
 
+	//var _st = new Date();
 	var idx = 0;
 	var html = new Array(500);
 
@@ -564,11 +565,11 @@ function(abook) {
 	html.length = idx;
 
 	this.getHtmlElement().innerHTML = html.join("");
-	
+	//DBG.println("ZmCalDayView._createHtml took " + (new Date() - _st.getTime()) + "ms");
 	var act = new AjxTimedAction();
 	act.method = ZmCalDayView._scrollTo8AM;
 	act.params.add(this);
-	AjxTimedAction.scheduleAction(act,1);
+	AjxTimedAction.scheduleAction(act,1); // can't be 0
 	
 }
 
@@ -872,8 +873,7 @@ function(d, isStart, dayHeight) {
 
 ZmCalDayView.prototype._layout =
 function() {
-
-	DBG.println("in layout!");
+	DBG.println("ZmCalDayView in layout!");
 	var doc = this.getDocument();
 	
 	var sz = this.getSize();

@@ -41,7 +41,7 @@ function ZmPrefController(appCtxt, container, prefsApp) {
 
 	this._listeners = new Object();
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
-	this._listeners[ZmOperation.CLOSE] = new AjxListener(this, this._backListener);
+	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._backListener);
 	this._filtersEnabled = appCtxt.get(ZmSetting.FILTERS_ENABLED);
 }
 
@@ -92,7 +92,7 @@ ZmPrefController.prototype._initializeToolBar =
 function () {
 	if (this._toolbar) return;
 	
-	var buttons = [ZmOperation.SAVE, ZmOperation.CLOSE];
+	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL];
 	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmAppToolBar");
 	for (var i = 0; i < buttons.length; i++) {
 		if (buttons[i] > 0 && this._listeners[buttons[i]])
@@ -118,6 +118,7 @@ function() {
 			}
 			if (list.length || rulesToSave)
 				this._appCtxt.getAppController().setStatusMsg(ZmMsg.optionsSaved);
+			this._backListener();
 			return true;
 		} catch (ex) {
 			// TODO: let the user know that the preferences were not saved
@@ -134,7 +135,8 @@ function() {
 
 ZmPrefController.prototype._backListener = 
 function() {
-	this._app.popView();
+	this._reallyWantToExitWithoutDialog = true;
+	this._app.getAppViewMgr().popView();
 }
 
 ZmPrefController.prototype._changePassword =
@@ -163,13 +165,14 @@ function(args) {
 
 ZmPrefController.prototype.popShield =
 function() {
-	if (!this._prefsView.isDirty()) {
+	if (this._reallyWantToExitWithoutDialog || !this._prefsView.isDirty()) {
+		delete this._reallyWantToExitWithoutDialog;
 		return true;
 	}
 
 	if (!this._popShield) {
 		this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
-		this._popShield.setMessage(ZmMsg.confirmExitPreferences, null, DwtMessageDialog.WARNING_STYLE);
+		this._popShield.setMessage(ZmMsg.confirmExitPreferences, DwtMessageDialog.WARNING_STYLE);
 		this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 		this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 		this._popShield.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldCancelCallback, this);
