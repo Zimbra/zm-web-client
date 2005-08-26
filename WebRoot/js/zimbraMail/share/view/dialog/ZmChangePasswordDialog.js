@@ -42,7 +42,6 @@ function ZmChangePasswordDialog(parent, msgDialog, className) {
 
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this.setTabOrder([this._oldPasswordId, this._newPasswordId, this._confirmPasswordId]);
-	this.addEnterListener(this._enterListener);
 };
 
 ZmChangePasswordDialog.prototype = new DwtDialog;
@@ -153,14 +152,6 @@ function() {
 ZmChangePasswordDialog.prototype._getInputFields = 
 function() {
 	return [this._oldPasswordField, this._newPasswordField, this._confirmPasswordField];
-};
-
-ZmChangePasswordDialog.prototype._enterListener =
-function(ev){
-	var args = this._getPasswordData();
-	if (args) {
-		this._runEnterCallback(args);
-	}
 };
 
 ZmChangePasswordDialog.prototype.focus = 
