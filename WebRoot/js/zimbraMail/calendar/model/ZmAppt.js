@@ -1081,8 +1081,8 @@ ZmAppt.prototype._getRecurrenceTimeString = function (rule, str, idx) {
 										
 				var h = parseInt(hours[x]);
 				var ampm = " AM";
-				if (h > 12) ampm = " PM";
-				str[idx++] = h % 12;
+				if (h >= 12) ampm = " PM";
+				str[idx++] = (h != 12)? (h % 12): h;
 				str[idx++] = ":";
 				str[idx++] = AjxDateUtil._pad(minutes[y]);
 // 				if (seconds[z] == '0' || seconds[z] == '00') {
