@@ -1,6 +1,8 @@
 
 Zimbra Collaboration Suite - August 26, 2005
 
+For instructions about how to build this release, go to www.zimbra.com/downloads/documentation/ossbuild.txt.
+
 Included in this software release:
 
 Binary release:
