@@ -316,6 +316,7 @@
   </target>	
   
   <target name="copy-admin-help">	
+    <mkdir dir="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp"/>
     <unzip src="WebRoot/adminhelp/CS/html/ZimbraAdminOLH.zip" dest="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp" overwrite="yes">
       <patternset>
 	<include name="WebHelp/**/*"/>
@@ -436,7 +437,7 @@
     <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
   </target>
 
-	<target name="admin-war" depends="copy-admin-help, copy-files-to-build-area, jam-files, generate-build-info, admin-images">
+	<target name="admin-war" depends="build-init, copy-admin-help, copy-files-to-build-area, jam-files, generate-build-info, admin-images">
 	  <property file="${build.dir}/build.properties" />
 	  <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
 	  <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
