@@ -59,7 +59,7 @@ ZmErrorDialog.prototype.constructor = ZmErrorDialog;
 ZmErrorDialog.REPORT_BUTTON = DwtDialog.LAST_BUTTON + 1;
 ZmErrorDialog.DETAIL_BUTTON = DwtDialog.LAST_BUTTON + 2;
 
-ZmErrorDialog.REPORT_URL = "http://localhost:7070/zimbra/public/errorreport.jsp";
+ZmErrorDialog.REPORT_URL = "http://www.zimbra.com/e/";
 
 
 // Public methods
