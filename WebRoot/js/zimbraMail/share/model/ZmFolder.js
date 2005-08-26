@@ -377,12 +377,14 @@ function(what) {
 			invalid = true;		// user folder can only contain folders, can't move items to Drafts
 		} else if (this.type == ZmOrganizer.SEARCH) {
 			invalid = true;		// can't drop items into saved searches
-		} else if ((item instanceof ZmConv) && item.list.search && (item.list.search.folderId == this.id)) {
+		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
+			invalid = true;
+		} else if ((item.type == ZmItem.CONV) && item.list.search && (item.list.search.folderId == this.id)) {
 			invalid = true;		// convs which are a result of a search for this folder
 		} else {
-			invalid = false;	// make sure no drafts or contacts are being moved
+			invalid = false;	// make sure no drafts or contacts are being moved (other than into Trash)
 			for (var i = 0; i < items.length; i++) {
-				if (items[i].isDraft || (items[i] instanceof ZmContact && this.id != ZmFolder.ID_TRASH)) {
+				if ((items[i].isDraft || (items[i].type == ZmItem.CONTACT)) && (this.id != ZmFolder.ID_TRASH)) {
 					invalid = true;
 					break;
 				}
