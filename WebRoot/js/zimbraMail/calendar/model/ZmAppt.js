@@ -1154,7 +1154,7 @@ ZmAppt.prototype.editTimeRepeat = function () {
 };
 
 ZmAppt.prototype._addInviteAndCompNum = function (soapDoc) {
-	if (this._viewMode == ZmAppt.MODE_EDIT_SERIES) {
+	if (this._viewMode == ZmAppt.MODE_EDIT_SERIES || this._viewMode == ZmAppt.MODE_DELETE_SERIES) {
 		if (this.recurring && this._seriesInvId !== void 0 && this._seriesInvId != null) {
 			soapDoc.setMethodAttribute("id", this._seriesInvId);
 			soapDoc.setMethodAttribute("comp", this.compNum);
