@@ -166,6 +166,7 @@ function(dirtyCheck, noValidation) {
 
 		var value;
 		var viewPage = this.prefView[view];
+		if (!viewPage) continue; // if feature is disabled, may not have a view page
 		// if the page hasn't rendered, then nothing could have been changed
 		// so we'll skip the rest of the checks
 		if (!viewPage.hasRendered()) continue;
