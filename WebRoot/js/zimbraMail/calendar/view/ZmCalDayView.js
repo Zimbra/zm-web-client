@@ -929,7 +929,7 @@ function() {
 
 ZmCalDayView.prototype._controlListener =
 function(ev) {
-	if (ev.newWidth == -1 || ev.newHeight == -1) return;
+	if (ev.newWidth == Dwt.DEFAULT && ev.newHeight == Dwt.DEFAULT) return;
 	try {	
 		if ((ev.oldWidth != ev.newWidth) || (ev.oldHeight != ev.newHeight)) {
 			this._layout();

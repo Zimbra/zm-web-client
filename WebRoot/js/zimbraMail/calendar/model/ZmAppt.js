@@ -193,6 +193,7 @@ ZmAppt.quickClone = function (appt) {
 	// make our own copy
 	newAppt.startDate = new Date(appt.startDate.getTime());
 	newAppt.endDate = new Date(appt.endDate.getTime());
+	newAppt._uniqId = Dwt.getNextId();	
 	return newAppt;
 }
 
@@ -254,7 +255,8 @@ function() {
  */
 ZmAppt.prototype.getUniqueId =
 function() {
-	return this.id+"_"+this._uniqStartTime;
+	if (this._uniqId == null) this._uniqId = Dwt.getNextId();
+	return this.id+"_"+this._uniqId;
 }
 
 /**
