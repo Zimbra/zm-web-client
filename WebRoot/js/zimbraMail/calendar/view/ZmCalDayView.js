@@ -327,7 +327,6 @@ function(appt, now, isDndIcon) {
 	};
 
 	div.innerHTML = DwtBorder.getBorderHtml(titleOnly ? "calendar_appt_30" : "calendar_appt", subs, null);
-
 /*
 	// if (we can edit this appt) then create sash....
 	var sash = this.getDocument().createElement("div");
@@ -1015,7 +1014,7 @@ function(event) {
 
 ZmCalDayView._sashMouseOverHdlr =
 function(ev) {
-	DBG.println("ZmCalDayView._sashMouseOverHdlr");
+//	DBG.println("ZmCalDayView._sashMouseOverHdlr");
 	var mouseEv = DwtShell.mouseEvent;
 	mouseEv.setFromDhtmlEvent(ev);
 	mouseEv._stopPropagation = true;
@@ -1027,7 +1026,7 @@ function(ev) {
 
 ZmCalDayView._sashMouseDownHdlr =
 function(event) {
-	DBG.println("ZmCalDayView._sashMouseDownHdlr");
+//	DBG.println("ZmCalDayView._sashMouseDownHdlr");
 	var mouseEv = DwtShell.mouseEvent;
 	mouseEv.setFromDhtmlEvent(event);	
 	if (mouseEv.button != DwtMouseEvent.LEFT) {
@@ -1075,7 +1074,7 @@ function(event) {
 
 ZmCalDayView._sashMouseMoveHdlr =
 function(ev) {
-	DBG.println("ZmCalDayView._sashMouseMoveHdlr");
+//	DBG.println("ZmCalDayView._sashMouseMoveHdlr");
 	var mouseEv = DwtShell.mouseEvent;
 	mouseEv.setFromDhtmlEvent(ev);	
 	var delta = 0;
@@ -1107,7 +1106,7 @@ function(ev) {
 
 ZmCalDayView._sashMouseUpHdlr =
 function(ev) {
-	DBG.println("ZmCalDayView._sashMouseUpHdlr");
+//	DBG.println("ZmCalDayView._sashMouseUpHdlr");
 	var data = DwtMouseEventCapture.getTargetObj();
 	ZmCalDayView._setApptOpacity(data.appt, data.apptEl);	
 	var mouseEv = DwtShell.mouseEvent;
@@ -1135,7 +1134,7 @@ function(ev) {
 
 ZmCalDayView._sashMouseOutHdlr =
 function(ev) {
-	DBG.println("ZmCalDayView._sashMouseOutHdlr");
+//	DBG.println("ZmCalDayView._sashMouseOutHdlr");
 	var mouseEv = DwtShell.mouseEvent;
 	mouseEv.setFromDhtmlEvent(ev);
 	mouseEv._stopPropagation = true;
