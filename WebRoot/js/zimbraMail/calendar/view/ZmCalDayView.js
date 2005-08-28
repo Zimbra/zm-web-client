@@ -452,7 +452,7 @@ ZmCalDayView._idToData = {};
 ZmCalDayView.prototype._createDaysHtml =
 function(html,idx) {
 	for (var i =0; i < this._numDays; i++) {
-		html[idx++] = "<td class='calendar_cells_td' id='"+this._days[i].bodyTdId+"'><div id='"+this._days[i].bodyDivId+"' style='position:relative'>";
+		html[idx++] = "<td class='calendar_cells_td' zm_day='"+i+"' id='"+this._days[i].bodyTdId+"'><div id='"+this._days[i].bodyDivId+"' style='position:relative'>";
 		html[idx++] = "<table class=calendar_grid_day_table>";
 		var hours = this._days[i].hoursId;
 		for (var h=0; h < 24; h++) {
@@ -539,7 +539,7 @@ function(abook) {
 			headerColId: Dwt.getNextId(),
 			bodyColId: Dwt.getNextId(),
 			bodyDivId: Dwt.getNextId(),
-			bodyTdId: Dwt.getNextId(),			
+			bodyTdId: Dwt.getNextId(),
 			hoursId: []
 		};
 	}
@@ -1068,13 +1068,32 @@ function(event) {
 	data.appt.__view.deselectAll();
 	data.appt.__view.setSelection(data.appt);
 	ZmCalDayView._setOpacity(apptEl, 70);
-	data.sash.innerHTML = "<div class=appt_sash_feedback>"+data.appt._getTTHour(data.endDate)+"</div>";
+		data.sash.innerHTML = "<div class=appt_sash_feedback_start>"+data.appt._getTTHour(data.endDate)+"</div>";
 	return false;	
+}
+
+ZmCalDayView._getAttrFromElement =
+function(el, attr)  {
+	while (el != null) {
+		if (el.getAttribute) {
+			var value = el.getAttribute(attr);
+			if (value != null) return value;
+		}
+		el = el.parentNode;
+	}
+	return null;
 }
 
 ZmCalDayView._sashMouseMoveHdlr =
 function(ev) {
 //	DBG.println("ZmCalDayView._sashMouseMoveHdlr");
+
+/*
+	var el = DwtUiEvent.getTargetWithProp(ev, "id");
+	if (el != null) {
+		DBG.println("day index: "+ZmCalDayView._getAttrFromElement(el, "zm_day"));
+	}
+*/
 	var mouseEv = DwtShell.mouseEvent;
 	mouseEv.setFromDhtmlEvent(ev);	
 	var delta = 0;
@@ -1093,7 +1112,8 @@ function(ev) {
 			Dwt.setSize(data.apptBodyEl, Dwt.DEFAULT, newHeight + ZmCalDayView._apptHeightFudge);
 			data.lastDelta = delta;
 			data.endDate.setTime(data.appt.getEndTime() + (delta15 * 15 * 60 * 1000)); // num msecs in 15 minutes
-			data.sash.innerHTML = "<div class=appt_sash_feedback>"+data.appt._getTTHour(data.endDate)+"</div>";
+			var cname = delta == 0 ? "start" : "diff";
+			data.sash.innerHTML = "<div class=appt_sash_feedback_"+cname+">"+data.appt._getTTHour(data.endDate)+"</div>";
 			//data.sash.innerHTML = data.appt._getTTHour(data.endDate);
 		}
 	}
