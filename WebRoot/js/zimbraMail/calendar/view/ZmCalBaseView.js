@@ -268,6 +268,11 @@ function(appt, html, idx) {
 	return idx;
 }
 
+ZmCalBaseView.prototype._getElFromItem = 
+function(item) {
+			return Dwt.getDomObj(this.getDocument(), this._getItemId(item));
+}
+
 ZmCalBaseView.prototype._resetList =
 function() {
 	var doc = this.getDocument();

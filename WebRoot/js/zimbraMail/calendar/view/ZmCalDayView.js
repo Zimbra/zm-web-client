@@ -266,10 +266,22 @@ function(appt) {
 }
 
 // move this to Dwt?
-ZmCalDayView.prototype._setOpacity =
+ZmCalDayView._setOpacity =
 function(el, opacity) {
 	if (AjxEnv.isIE) el.style.filter = "alpha(opacity="+opacity+")";
 	else el.style.opacity = opacity/100;
+}
+
+ZmCalDayView._setApptOpacity =
+function(appt, div) {
+	var pstatus = appt.getParticipationStatus();
+	if (pstatus == ZmAppt.PSTATUS_DECLINED) {
+		ZmCalDayView._setOpacity(div, 20);
+	} else if (pstatus == ZmAppt.PSTATUS_TENTATIVE) {
+		ZmCalDayView._setOpacity(div, 60);
+	} else {
+		ZmCalDayView._setOpacity(div, 100);	
+	}
 }
 
 ZmCalDayView.prototype._createItemHtml =
@@ -280,7 +292,7 @@ function(appt, now, isDndIcon) {
 	}
 	
 	// set up DIV
-	var div = this.getDocument().createElement("div");
+	var div = this.getDocument().createElement("div");	
 
 	div.style.position = 'absolute';
 	Dwt.setSize(div, 10, 10);
@@ -288,28 +300,22 @@ function(appt, now, isDndIcon) {
 	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
 	div.className = div._styleClass;
 
-	var pstatus = appt.getParticipationStatus();
-	if (pstatus == ZmAppt.PSTATUS_DECLINED) {
-		this._setOpacity(div, 20);
-		//if (AjxEnv.isIE) div.style.filter = "alpha(opacity=20)";
-		//else div.style.opacity = ".2";
-	} else if (pstatus == ZmAppt.PSTATUS_TENTATIVE) {
-		this._setOpacity(div, 60);	
-		//if (AjxEnv.isIE) div.style.filter = "alpha(opacity=60)";	
-		//else div.style.opacity = ".6";
-	}
+	ZmCalDayView._setApptOpacity(appt, div);
 
 	this.associateItemWithElement(appt, div, DwtListView.TYPE_LIST_ITEM);
+	appt.__view = this;
 
 	var html = new Array(30);
 	var idx = 0;
 
 	var titleOnly = (appt.getDuration() <= 30*60*1000);
 
+	var pstatus = appt.getParticipationStatus();
 	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
 	var isAccepted = pstatus == ZmAppt.PSTATUS_ACCEPT;
+	var id = this._getItemId(appt);
 	var subs = {
-		id: this._getItemId(appt),
+		id: id,
 		newState: isNew ? "_new" : "",
 		color: "_blue",
 		name: AjxStringUtil.htmlEncode(appt.getName()),
@@ -322,6 +328,17 @@ function(appt, now, isDndIcon) {
 
 	div.innerHTML = DwtBorder.getBorderHtml(titleOnly ? "calendar_appt_30" : "calendar_appt", subs, null);
 
+/*
+	// if (we can edit this appt) then create sash....
+	var sash = this.getDocument().createElement("div");
+	sash.id = id+"_sash";
+	sash.className = 'appt_sash';
+	sash.onmousedown = ZmCalDayView._sashMouseDownHdlr;
+	sash.onmouseover = ZmCalDayView._sashMouseOverHdlr;
+	sash.onmouseout = ZmCalDayView._sashMouseOutHdlr;
+	sash.style.cursor = AjxEnv.isIE ? "row-resize" : "n-resize";
+	div.appendChild(sash);
+*/
 	return div;
 }
 
@@ -770,6 +787,7 @@ function(numCols) {
 	}
 }
 
+ZmCalDayView._fifteenMinuteHeight = 0;
 
 ZmCalDayView.prototype._layoutAppts =
 function() {
@@ -781,6 +799,8 @@ function() {
 	var daySize = Dwt.getSize(Dwt.getDomObj(doc, this._days[0].bodyDivId));
 	var apptW = daySize.x;
 	var dayHeight = daySize.y;
+//DBG.println("DAYHEIGHT = "+dayHeight);	
+	ZmCalDayView._fifteenMinuteHeight = dayHeight / 24 / 4;
 	
 	//apptW -= 5;
 
@@ -808,7 +828,8 @@ function() {
 				}
 				layout.y = this._getYfromDate(sd, true, dayHeight);
 				var endY = this._getYfromDate(ed, false, dayHeight);
-				layout.h = endY - layout.y + 1;					
+				//layout.h = Math.max(endY - layout.y, 2*ZmCalDayView._fiftenMinuteHeight) + 1; 
+				layout.h = endY - layout.y + 1;
 				
 				//DBG.println("---- sd="+sd+" ed="+ed);
 				//DBG.println("_layoutAppts: "+apptDiv);
@@ -821,13 +842,6 @@ function() {
 			//DBG.println("_layoutAppts: "+ao);
 			//DBG.println("_layoutAppts: x="+x+" y="+layout.y+" w="+w+" h="+layout.h);
 
-			/*
-			var pstatus = ao.getParticipationStatus();
-			if ((layout.maxcol > 0) && (pstatus != ZmAppt.PSTATUS_DECLINED && pstatus != ZmAppt.PSTATUS_TENTATIVE)) {
-				this._setOpacity(apptDiv, 95);
-			}
-			*/
-			
 			// MOW: now we're setting the width and height of an inner div
 			//		this allows the clipping and border to work properly
 			//		so that appts are limited to the correct height
@@ -848,7 +862,9 @@ function() {
 							w + ZmCalDayView._apptWidthFudge, 
 							layout.h + ZmCalDayView._apptHeightFudge
 						);
-
+			// set the sash width
+			var apptSashDiv = Dwt.getDomObj(doc, this._getItemId(ao) + "_sash");
+			if (apptSashDiv) Dwt.setSize(apptSashDiv, w + ZmCalDayView._apptWidthFudge, Dwt.DEFAULT);
 		}
 	}
 }
@@ -996,3 +1012,135 @@ function(event) {
 	   	view.notifyListeners(DwtEvent.ONCONTEXTMENU, view._contextMenuEvent);
 	}		
 }
+
+ZmCalDayView._sashMouseOverHdlr =
+function(ev) {
+	DBG.println("ZmCalDayView._sashMouseOverHdlr");
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev);
+	mouseEv._stopPropagation = true;
+	mouseEv._returnValue = false;
+	mouseEv.setToDhtmlEvent(ev);
+	return false;	
+}
+
+
+ZmCalDayView._sashMouseDownHdlr =
+function(event) {
+	DBG.println("ZmCalDayView._sashMouseDownHdlr");
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(event);	
+	if (mouseEv.button != DwtMouseEvent.LEFT) {
+		DwtUiEvent.setBehaviour(event, true, false);
+		return false;
+	}
+	var element = DwtUiEvent.getTargetWithProp(event, "id");
+	element.className = 'appt_sash_active';
+	if (!element) return;
+//	DBG.println("wheeeee! "+element.id);
+	var apptEl = element.parentNode;
+	var apptBodyEl = apptEl.childNodes[0];
+
+	var appt = AjxCore.objectWithId(apptEl._itemIndex);
+//	DBG.println("appt: "+appt);
+	var origY = Dwt.getLocation(apptBodyEl).y;
+	var origHeight = Dwt.getSize(apptBodyEl).y;
+//	DBG.println("origHeight = "+origHeight);
+	var data = { 
+		sash: element,
+		appt:appt, 
+		apptEl: apptEl, 
+		apptBodyEl: apptBodyEl,
+		origHeight: origHeight,
+		origY: origY,
+		startY: mouseEv.docY,
+		endDate: new Date(appt.getEndTime())
+	};
+	//TODO: only create one of these and change data each time...
+	var capture = new DwtMouseEventCapture	(data,
+			ZmCalDayView._sashMouseOverHdlr,
+			ZmCalDayView._sashMouseDownHdlr, ZmCalDayView._sashMouseMoveHdlr, 
+			ZmCalDayView._sashMouseUpHdlr, ZmCalDayView._sashMouseOutHdlr, false);
+	capture.capture();
+	mouseEv._stopPropagation = true;
+	mouseEv._returnValue = false;
+	mouseEv.setToDhtmlEvent(event);
+
+	data.appt.__view.deselectAll();
+	data.appt.__view.setSelection(data.appt);
+	ZmCalDayView._setOpacity(apptEl, 70);
+	data.sash.innerHTML = "<div class=appt_sash_feedback>"+data.appt._getTTHour(data.endDate)+"</div>";
+	return false;	
+}
+
+ZmCalDayView._sashMouseMoveHdlr =
+function(ev) {
+	DBG.println("ZmCalDayView._sashMouseMoveHdlr");
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev);	
+	var delta = 0;
+	var data = DwtMouseEventCapture.getTargetObj();
+
+	if (mouseEv.docY > 0 && mouseEv.docY != data.startY)
+		delta = mouseEv.docY - data.startY;
+
+	var delta15 = Math.floor(delta/ZmCalDayView._fifteenMinuteHeight);
+	delta = delta15 * ZmCalDayView._fifteenMinuteHeight;
+
+	if (delta != data.lastDelta) {
+		var newHeight = data.origHeight + delta;
+		if (newHeight >= ZmCalDayView._fifteenMinuteHeight) {
+//			DBG.println("delta = " + delta);
+			Dwt.setSize(data.apptBodyEl, Dwt.DEFAULT, newHeight + ZmCalDayView._apptHeightFudge);
+			data.lastDelta = delta;
+			data.endDate.setTime(data.appt.getEndTime() + (delta15 * 15 * 60 * 1000)); // num msecs in 15 minutes
+			data.sash.innerHTML = "<div class=appt_sash_feedback>"+data.appt._getTTHour(data.endDate)+"</div>";
+			//data.sash.innerHTML = data.appt._getTTHour(data.endDate);
+		}
+	}
+
+	mouseEv._stopPropagation = true;
+	mouseEv._returnValue = false;
+	mouseEv.setToDhtmlEvent(ev);
+	return false;	
+}
+
+ZmCalDayView._sashMouseUpHdlr =
+function(ev) {
+	DBG.println("ZmCalDayView._sashMouseUpHdlr");
+	var data = DwtMouseEventCapture.getTargetObj();
+	ZmCalDayView._setApptOpacity(data.appt, data.apptEl);	
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev);	
+	if (mouseEv.button != DwtMouseEvent.LEFT) {
+		DwtUiEvent.setBehaviour(ev, true, false);
+		return false;
+	}
+	
+	DwtMouseEventCapture.getCaptureObj().release();
+
+	data.sash.innerHTML = "";
+	data.sash.className = 'appt_sash';
+	mouseEv._stopPropagation = true;
+	mouseEv._returnValue = false;
+	mouseEv.setToDhtmlEvent(ev);
+	
+	if (data.endDate.getTime() != data.appt.getEndTime()) {
+		data.appt._orig.setViewMode(ZmAppt.MODE_EDIT);
+		data.appt._orig.setEndDate(data.endDate);
+		data.appt._orig.save(data.appt.__view._appCtxt.getAppController());
+	}
+	return false;	
+}
+
+ZmCalDayView._sashMouseOutHdlr =
+function(ev) {
+	DBG.println("ZmCalDayView._sashMouseOutHdlr");
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev);
+	mouseEv._stopPropagation = true;
+	mouseEv._returnValue = false;
+	mouseEv.setToDhtmlEvent(ev);
+	return false;	
+}
+
