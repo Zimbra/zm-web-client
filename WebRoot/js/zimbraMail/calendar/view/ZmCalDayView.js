@@ -329,14 +329,16 @@ function(appt, now, isDndIcon) {
 	div.innerHTML = DwtBorder.getBorderHtml(titleOnly ? "calendar_appt_30" : "calendar_appt", subs, null);
 
 	// if (we can edit this appt) then create sash....
-	var sash = this.getDocument().createElement("div");
-	sash.id = id+"_sash";
-	sash.className = 'appt_sash';
-	sash.onmousedown = ZmCalDayView._sashMouseDownHdlr;
-	sash.onmouseover = ZmCalDayView._sashMouseOverHdlr;
-	sash.onmouseout = ZmCalDayView._sashMouseOutHdlr;
-	sash.style.cursor = AjxEnv.isIE ? "row-resize" : "n-resize";
-	div.appendChild(sash);
+	if (!appt.isReadOnly()) {
+		var sash = this.getDocument().createElement("div");
+		sash.id = id+"_sash";
+		sash.className = 'appt_sash';
+		sash.onmousedown = ZmCalDayView._sashMouseDownHdlr;
+		sash.onmouseover = ZmCalDayView._sashMouseOverHdlr;
+		sash.onmouseout = ZmCalDayView._sashMouseOutHdlr;
+		sash.style.cursor = AjxEnv.isIE ? "row-resize" : "n-resize";
+		div.appendChild(sash);
+	}
 
 	return div;
 }
