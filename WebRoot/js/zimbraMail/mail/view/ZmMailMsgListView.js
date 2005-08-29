@@ -237,7 +237,7 @@ function(msg, now, isDndIcon, isMixedView) {
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE]) == 0) {
 			// Size
-			htmlArr[idx++] = "<td width=" + this._headerList[i]._width + ">";
+			htmlArr[idx++] = "<td width=" + this._headerList[i]._width + "><nobr>";
 			htmlArr[idx++] = AjxUtil.formatSize(msg.size);
 			if (AjxEnv.isNav)
 				htmlArr[idx++] = ZmListView._fillerString;
