@@ -233,12 +233,18 @@ function(action, toOverride) {
 			 this._action == ZmOperation.REPLY_ALL ||
 			 this._isInviteReply(this._action))
 	{
-		this.setAddress(ZmEmailAddress.TO, this._msg.getReplyAddresses(this._action));
+		if (!this._msg.isSent)
+			this.setAddress(ZmEmailAddress.TO, this._msg.getReplyAddresses(this._action));
+
 		// reply to all senders (except this account) if reply all (includes To: and Cc:)
 		if (this._action == ZmOperation.REPLY_ALL) {
 			var addrs = this._msg.getAddresses(ZmEmailAddress.CC);
-			if (!this._msg.isSent)
-				addrs.addList(this._msg.getAddresses(ZmEmailAddress.TO));
+			var toAddrs = this._msg.getAddresses(ZmEmailAddress.TO);
+			if (this._msg.isSent) {
+				this.setAddress(ZmEmailAddress.TO, toAddrs);
+			} else {
+				addrs.addList(toAddrs);
+			}
 			var addrs1 = new Array();
 			var check = new Object(); // hash for tracking email addresses we've seen
 			check[this._appCtxt.getUsername()] = true;
