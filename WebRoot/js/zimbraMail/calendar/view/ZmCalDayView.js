@@ -327,7 +327,7 @@ function(appt, now, isDndIcon) {
 	};
 
 	div.innerHTML = DwtBorder.getBorderHtml(titleOnly ? "calendar_appt_30" : "calendar_appt", subs, null);
-/*
+
 	// if (we can edit this appt) then create sash....
 	var sash = this.getDocument().createElement("div");
 	sash.id = id+"_sash";
@@ -337,7 +337,7 @@ function(appt, now, isDndIcon) {
 	sash.onmouseout = ZmCalDayView._sashMouseOutHdlr;
 	sash.style.cursor = AjxEnv.isIE ? "row-resize" : "n-resize";
 	div.appendChild(sash);
-*/
+
 	return div;
 }
 
@@ -1059,7 +1059,7 @@ function(event) {
 	var capture = new DwtMouseEventCapture	(data,
 			ZmCalDayView._sashMouseOverHdlr,
 			ZmCalDayView._sashMouseDownHdlr, ZmCalDayView._sashMouseMoveHdlr, 
-			ZmCalDayView._sashMouseUpHdlr, ZmCalDayView._sashMouseOutHdlr, false);
+			ZmCalDayView._sashMouseUpHdlr, ZmCalDayView._sashMouseOutHdlr, true);
 	capture.capture();
 	mouseEv._stopPropagation = true;
 	mouseEv._returnValue = false;
