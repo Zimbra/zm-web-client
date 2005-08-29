@@ -204,6 +204,7 @@ ZmMsg.errorNoSuchSavedSearch = "No such saved search exists.";
 ZmMsg.errorNoSuchTag = "No such tag exists.";
 ZmMsg.errorParse = "A parsing error has occurred.";
 ZmMsg.errorPassRecentlyUsed = "The password you submitted has recently been used.";
+ZmMsg.errorPassChangeTooSoon = "Password cannot be changed too soon.";
 ZmMsg.errorPermission = "Permission denied.";
 ZmMsg.errorQueryParse = "Unable to parse the search query.";
 ZmMsg.errorQuotaExceeded = "Your message could not be sent because you have exceeded your mail quota.";

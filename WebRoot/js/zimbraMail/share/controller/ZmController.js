@@ -244,6 +244,7 @@ function(code, params) {
 		case ZmCsfeException.ACCT_NO_SUCH_SAVED_SEARCH: msg = ZmMsg.errorNoSuchSavedSearch; break;
 		case ZmCsfeException.ACCT_NO_SUCH_TAG:  		msg = ZmMsg.errorNoSuchTag; break;
 		case ZmCsfeException.ACCT_PASS_RECENTLY_USED: 	msg = ZmMsg.errorPassRecentlyUsed; break;
+		case ZmCsfeException.ACCT_PASS_CHANGE_TOO_SOON: msg = ZmMsg.errorPassChangeTooSoon; break;
 
 		// mail errors
 		case ZmCsfeException.MAIL_INVALID_NAME: 		msg = AjxStringUtil.resolve(ZmMsg.errorInvalidName, params.name); break;
