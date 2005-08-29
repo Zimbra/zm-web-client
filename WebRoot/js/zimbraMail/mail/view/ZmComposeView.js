@@ -247,7 +247,7 @@ function(action, toOverride) {
 			}
 			var addrs1 = new Array();
 			var check = new Object(); // hash for tracking email addresses we've seen
-			check[this._appCtxt.getUsername()] = true;
+			check[this._appCtxt.get(ZmSetting.USERNAME)] = true;
 			var num = addrs.size();
 			for (var i = 0; i < num; i++) {
 				var addr = addrs.get(i);
