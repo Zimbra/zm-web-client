@@ -33,6 +33,9 @@ For both build types, you need:
     - Install rpm-build.  This is required for building a binary
       release with RPMs.
 
+    - Install 'which' - this package is not present in a minimal
+      operating system install.
+
 Building (a) binary release is simple:
 
        $ mkdir ~/zcs-src
@@ -95,6 +98,33 @@ is important if said machine is also your desktop!
 
        $ cd ~/zcs-src/ZimbraBuild
        $ make dev-install
+
+- Your /etc/hosts file should identify 127.0.0.1 as 'localhost' or
+  'localhost.localdomain'.  Having any other name as the first name
+  for this address will cause the developer build to fail because the
+  build's mysql client will not be able to authenticate.  Example
+  valid entry:
+
+       127.0.0.1        localhost.localdomain localhost
+
+- Create a symbolic link /usr/local/java that points at your JDK
+  installation.  Ant requires JAVA_HOME to be set, and we set it to
+  /usr/local/java in the build.  Eg:
+
+       # ls -l /usr/local/java
+       ls: /usr/local/java: No such file or directory
+       # ln -s /usr/java/jdk1.5.0_04 /usr/local/java
+       # ls -l /usr/local/java
+       lrwxrwxrwx  1 root root 21 Aug 29 09:22 /usr/local/java -> /usr/java/jdk1.5.0_04
+
+- Edit /etc/ld.so.conf to add these directories and run the program
+  'ldconfig' after to update your system's shared library settings to
+  include libraries inside ZCS.
+
+       /opt/zimbra/lib
+       /opt/zimbra/sleepycat/lib
+       /opt/zimbra/openldap/lib
+       /opt/zimbra/cyrus-sasl/lib
 
 - As root, edit your /etc/sudoers files to add these three lines
   (substitute 'john' with your login name):
