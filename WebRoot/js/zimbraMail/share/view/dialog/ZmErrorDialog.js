@@ -154,16 +154,18 @@ function() {
 
 ZmErrorDialog.prototype._reportCallback = 
 function() {
-	// initialization...
-	var formId = Dwt.getNextId();
-	var iframe = this.getDocument().createElement("iframe");
-	iframe.style.width = iframe.style.height = 0;
-	iframe.style.visibility = "hidden";
-	var contentDiv = this._getContentDiv();
-	contentDiv.appendChild(iframe);
+	// iframe initialization - recreate iframe if IE and reuse if FF
+	if (this._iframe == null || AjxEnv.isIE) {
+		this._iframe = this.getDocument().createElement("iframe");
+		this._iframe.style.width = this._iframe.style.height = 0;
+		this._iframe.style.visibility = "hidden";
+
+		var contentDiv = this._getContentDiv();
+		contentDiv.appendChild(this._iframe);
+	}
 	
-	// get the prefs for this user
 	var strPrefs = this._getUserPrefs();
+	var formId = Dwt.getNextId();
 
 	// generate html form for submission via POST
 	var html = new Array();
@@ -176,19 +178,16 @@ function() {
 	html[idx++] = "</form>";
 	html[idx++] = "</body></html>";
 
-	var idoc = Dwt.getIframeDoc(iframe);
+	var idoc = Dwt.getIframeDoc(this._iframe);
 	idoc.open();
 	idoc.write(html.join(""));
 	idoc.close();
-	
+
 	// submit the form!
 	var form = idoc.getElementById(formId);
 	if (form)
 		form.submit();
 
-	// clean up
-	contentDiv.removeChild(iframe);
-	iframe = null;
 	this.popdown();
 };
 
