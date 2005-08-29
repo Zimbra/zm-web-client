@@ -117,7 +117,7 @@ is important if said machine is also your desktop!
 
        127.0.0.1        localhost.localdomain localhost
 
-- Add these directories to your /etc/ld.so.conf files:
+- Add these directories to your /etc/ld.so.conf file:
 
        /opt/zimbra/lib
        /opt/zimbra/sleepycat/lib
