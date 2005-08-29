@@ -381,7 +381,8 @@ ZmAppointmentView.prototype.setModel = function (modelObj, mode, optionalStartDa
 		this._appt.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[optionalStartDate.getDay()];
 	} else {
 		modelObj.getDetails(mode);
-		this._appt = modelObj.clone();
+		this._appt = ZmAppt.quickClone(modelObj);
+		//this._appt = modelObj.clone();
 	}
 	this._appt.setViewMode(mode);
 	this._formHasErrors = void 0;
@@ -665,7 +666,12 @@ ZmAppointmentView.prototype.itemAttachmentClicked = function (event, item) {
 // -----------------------------------------------------------------------------
 
 ZmAppointmentView.prototype.shouldShowTimezone = function () {
-	return this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
+	var shouldShow = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
+	return ( shouldShow || (this.isTimezoneDifferentFromDefault()));
+};
+
+ZmAppointmentView.prototype.isTimezoneDifferentFromDefault = function () {
+	return this._appt.timezone != ZmTimezones.getDefault();
 };
 
 // -----------------------------------------------------------------------------
@@ -846,26 +852,36 @@ ZmAppointmentView.prototype.getAppointmentForm = function () {
 										 getDisplayValue: 
 										 function (rangeObj) {
 											 if (rangeObj != null) {
+												 var ret;
 												 if (this.getForm().get(_ALL_DAY_) != "1"){
-													 return AjxBuffer.concat(AjxDateUtil.simpleComputeDateStr(rangeObj.startDate),
+													 ret = AjxBuffer.concat(AjxDateUtil.simpleComputeDateStr(rangeObj.startDate),
 																			"&nbsp;",
 																			AjxDateUtil.getTimeStr(rangeObj.startDate,"%h:%m %P"));
 												 } else {
-													 return AjxDateUtil.simpleComputeDateStr(rangeObj.startDate);
+													 ret = AjxDateUtil.simpleComputeDateStr(rangeObj.startDate);
 												 }
+												 if (this.getFormController().isTimezoneDifferentFromDefault() == true) {
+													 ret = ret + "&nbsp;" + this.getForm().get(_TIMEZONE_);
+												 }
+												 return ret;
 											 }
 										 }
 									 },
 									 {ref: _START_END_DATE_RANGE_, type:_OUTPUT_, label:_Ends_,
 										 getDisplayValue: function (rangeObj){
 											 if (rangeObj != null) {
+												 var ret;
 												 if (this.getForm().get(_ALL_DAY_) != "1"){
-													 return AjxBuffer.concat(AjxDateUtil.simpleComputeDateStr(rangeObj.endDate),
+													 ret = AjxBuffer.concat(AjxDateUtil.simpleComputeDateStr(rangeObj.endDate),
 																			"&nbsp;",
 																			AjxDateUtil.getTimeStr(rangeObj.endDate, "%h:%m %P"));
 												 } else {
-													 return AjxDateUtil.simpleComputeDateStr(rangeObj.endDate);
+													 ret = AjxDateUtil.simpleComputeDateStr(rangeObj.endDate);
 												 }
+												 if (this.getFormController().isTimezoneDifferentFromDefault() == true) {
+													 ret = ret + "&nbsp;" + this.getForm().get(_TIMEZONE_);
+												 }
+												 return ret;
 											 }
 										 }
 									 },
@@ -882,7 +898,7 @@ ZmAppointmentView.prototype.getAppointmentForm = function () {
 						{type:_CASE_, relevant:"!instance.isReadOnly()",colSpan:"*", useParentTable:true,
 							items:[
 									 {type:_GROUP_, useParentTable:true,
-										 relevant:"(this.getController().shouldShowTimezone() == true && !instance.isReadOnly())", 
+										 relevant:"(this.getController().shouldShowTimezone() == true)", 
 										 items:[
 												{type:_GROUP_, useParentTable:false, colSpan:"*", numCols:4,
 													items: [
@@ -895,7 +911,7 @@ ZmAppointmentView.prototype.getAppointmentForm = function () {
 											 ]
 									 },
 									 {type:_GROUP_, useParentTable:true,
-										 relevant:"(this.getController().shouldShowTimezone() != true && !instance.isReadOnly())", 
+										 relevant:"(this.getController().shouldShowTimezone() != true)", 
 										 items:[
 												{ref:_ALL_DAY_, type:_CHECKBOX_, value:'0', trueValue:'1', falseValue:'0',labelCssClass:"xform_label",
 													labelCssStyle:"text-align:left",elementChanged:ZmAppointmentView.allDayChanged }
