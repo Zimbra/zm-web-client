@@ -91,6 +91,16 @@ is important if said machine is also your desktop!
        $ cd ~/zcs-src
        $ tar xvfz /path/to/your/downloads/zcs-src.tgz
 
+- Create a symbolic link /usr/local/java that points at your JDK
+  installation.  Ant requires JAVA_HOME to be set, and we set it to
+  /usr/local/java in the build.  Eg:
+
+       # ls -l /usr/local/java
+       ls: /usr/local/java: No such file or directory
+       # ln -s /usr/java/jdk1.5.0_04 /usr/local/java
+       # ls -l /usr/local/java
+       lrwxrwxrwx  1 root root 21 Aug 29 09:22 /usr/local/java -> /usr/java/jdk1.5.0_04
+
 - Go into the build directory, and make the dev-install target so your
   /opt/zimbra directory is populated with the software for the first
   time.  You need to do this step whenever you blow away your
@@ -107,24 +117,17 @@ is important if said machine is also your desktop!
 
        127.0.0.1        localhost.localdomain localhost
 
-- Create a symbolic link /usr/local/java that points at your JDK
-  installation.  Ant requires JAVA_HOME to be set, and we set it to
-  /usr/local/java in the build.  Eg:
-
-       # ls -l /usr/local/java
-       ls: /usr/local/java: No such file or directory
-       # ln -s /usr/java/jdk1.5.0_04 /usr/local/java
-       # ls -l /usr/local/java
-       lrwxrwxrwx  1 root root 21 Aug 29 09:22 /usr/local/java -> /usr/java/jdk1.5.0_04
-
-- Edit /etc/ld.so.conf to add these directories and run the program
-  'ldconfig' after to update your system's shared library settings to
-  include libraries inside ZCS.
+- Add these directories to your /etc/ld.so.conf files:
 
        /opt/zimbra/lib
        /opt/zimbra/sleepycat/lib
        /opt/zimbra/openldap/lib
        /opt/zimbra/cyrus-sasl/lib
+
+  Run the program 'ldconfig' so the change to /etc/ld.so.conf goes
+  into effect.
+
+       # ldconfig
 
 - As root, edit your /etc/sudoers files to add these three lines
   (substitute 'john' with your login name):
