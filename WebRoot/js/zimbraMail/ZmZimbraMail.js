@@ -673,7 +673,7 @@ function(notify) {
 			this._handleCreates(notify.created, notify.modified);
 		if (notify.modified)
 			this._handleModifies(notify.modified);
-		this._calController.notifyComplete();
+		if (this._calController) this._calController.notifyComplete();
 	} catch (ex) {
 		this._handleException(ex, this._notifyHandler, notify, false);
 	}
@@ -820,7 +820,7 @@ function(ids) {
 ZmZimbraMail.prototype._handleDeletes =
 function(deletes) {
 	var ids = deletes.id.split(",");
-	this._calController.notifyDelete(ids);
+	if (this._calController) this._calController.notifyDelete(ids);
 	// ignore IDs we know about
 	var newIds = new Array();
 	for (var i = 0; i < ids.length; i++) {
@@ -869,7 +869,7 @@ function(creates, modifies) {
 				parent.notifyCreate(create, isSearch);
 		} else if (name == "m") {
 			var msg = ZmMailMsg.createFromDom(create, {appCtxt: this._appCtxt}, true);
-			if (msg.isInvite()) 
+			if (msg.isInvite() && this._calController) 
 				this._calController.notifyCreate(msg);
 			msgs[msg.id] = msg;
 			var cid = msg.cid;
@@ -910,7 +910,7 @@ ZmZimbraMail.prototype._handleModifies =
 function(modifies) {
 	var list = this._getObjList(modifies);
 	// always notify cal controller on all
-	this._calController.notifyModify(list);
+	if (this._calController) this._calController.notifyModify(list);
 	for (var i = 0; i < list.length; i++) {
 		var mod = list[i];
 		var id = mod.id;
