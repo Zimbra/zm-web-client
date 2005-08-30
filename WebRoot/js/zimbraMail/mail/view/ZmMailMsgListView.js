@@ -142,9 +142,9 @@ function(msg, now, isDndIcon, isMixedView) {
 			if (msg.isDraft)
 				imageInfo = ZmImg.I_DRAFT_MSG;
 			else if (msg.isReplied)
-				imageInfo = ZmImg.I_REPLY;
+				imageInfo = ZmImg.I_REPLY_STATUS;
 			else if (msg.isForwarded)
-				imageInfo = ZmImg.I_FORWARD;
+				imageInfo = ZmImg.I_FORWARD_STATUS;
 			else if (msg.isSent)
 				imageInfo = ZmImg.I_MAIL_SENT;
 			else

@@ -173,7 +173,7 @@ ZmAppt.prototype.getParticipationStatus = function () {
 };
 
 ZmAppt._pstatusString = {
-	NE: "Undecided",	//	ZmMsg.needsAction,		// HACK: i18n
+	NE: "NEW",	//	ZmMsg.needsAction,		// HACK: i18n
 	TE: ZmMsg.tentative,
 	AC: ZmMsg.accepted,
 	DE: ZmMsg.declined,

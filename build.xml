@@ -243,11 +243,15 @@
 	</target>
 	
 	<target name='sorticons' depends='sortimagesinit'>
+		<!-- usage:  make a "icons" directory in your ZimbraWebClient directory and do:
+				ant sorticons -Dsort.source=icons
+		-->
 		<fail unless='sort.source' message='Must specify source directory. For example: ant -Dsort.source=src ...'/>		
 
+		<echo message='Sorting ZimbraWebClient/img/hiRes'/><echo/>
 		<imagesort source='${sort.source}' target='img/hiRes' delete='true'/><!-- noop='true'/-->
+		<echo message='Sorting Ajax/dwt/hiRes'/><echo/>
 		<imagesort source='${sort.source}' target='${ajax.dwtimg.dir}/hiRes' delete='true'/><!-- noop='true'/-->
-		<imagesort source='${sort.source}' target='img/unused' delete='true'/><!-- noop='true'/-->
 	</target>
 
 

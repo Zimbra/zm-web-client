@@ -329,6 +329,7 @@ DIV.vSpace {
 }
 
 .DwtTreeItem, .DwtTreeItem-selected, .DwtTreeItem-actioned {
+	padding-top:1px;
 	padding-left:2px;
 	padding-right:2px;
 	cursor: default;
