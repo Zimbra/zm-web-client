@@ -1335,12 +1335,18 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	text-align:center;
 }
 
-
 .calendar_header_allday_separator {
 	background-color:#CCCCCC;
 	height:3px;
+	padding:0px;
 	border-top:1px solid #002D96;
 	border-bottom:1px solid #002D96;
+}
+
+.calendar_day_separator {
+	background-color:#DDDDDD;
+	border: 0px;
+	padding: 0px;
 }
 
 .calendar_header_allday_td {
