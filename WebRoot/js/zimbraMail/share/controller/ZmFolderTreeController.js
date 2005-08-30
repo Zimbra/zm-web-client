@@ -107,7 +107,7 @@ function(parent, id) {
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		if (id == ZmFolder.ID_SPAM || id == ZmFolder.ID_TRASH) {
 			deleteText = (id == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
-			parent.enable(ZmOperation.DELETE, true);
+			parent.enable(ZmOperation.DELETE, (folder.numTotal > 0));
 		}
 	}
 	parent.enable(ZmOperation.MARK_ALL_READ, (folder.numUnread > 0));
@@ -195,10 +195,18 @@ function(ev) {
 ZmFolderTreeController.prototype._deleteListener = 
 function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
-	if (organizer.isInTrash() || 
-		(organizer.id == ZmFolder.ID_TRASH || organizer.id == ZmFolder.ID_SPAM)) {
+	if (organizer.isInTrash()) {
 		this._schedule(this._doDelete, {organizer: organizer});
-	} else {
+	} else if (organizer.id == ZmFolder.ID_SPAM) {
+		this._pendingActionData = organizer;
+		if (!this._deleteShield) {
+			this._deleteShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
+			this._deleteShield.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
+			this._deleteShield.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
+		}
+		this._deleteShield.setMessage(ZmMsg.confirmEmptyJunk, DwtMessageDialog.WARNING_STYLE);
+		this._deleteShield.popup();
+    } else {
 		var trash = this._appCtxt.getFolderTree().getById(ZmFolder.ID_TRASH);
 		this._schedule(this._doMove, {srcFolder: organizer, tgtFolder: trash});
 	}

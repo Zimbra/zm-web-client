@@ -292,16 +292,18 @@ function() {
 	if (this.id < ZmFolder.FIRST_USER_ID && !isEmptyOp)
 		return;
 	
-	var action = (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH) ? "empty" : "delete";
-	this._organizerAction(action);
+	var action = isEmptyOp ? "empty" : "delete";
+	var success = this._organizerAction(action);
 
-	if (isEmptyOp) {
-		// emptied Trash or Spam will have no unread items
-		this.numUnread = 0;
-		this._eventNotify(ZmEvent.E_DELETE);
-	} else {
-		this.tree.deleteLocal([this]);
-		this._eventNotify(ZmEvent.E_DELETE);
+	if (success) {
+		if (isEmptyOp) {
+			// emptied Trash or Spam will have no items
+			this.numUnread = this.numTotal = 0;
+			this._eventNotify(ZmEvent.E_DELETE);
+		} else {
+			this.tree.deleteLocal([this]);
+			this._eventNotify(ZmEvent.E_DELETE);
+		}
 	}
 }
 

@@ -340,7 +340,7 @@ function(action, attrs) {
 	appCtlr.setActionedIds([this.id]);
 	var resp = appCtlr.sendRequest(soapDoc)[cmd + "Response"];
 	var id = parseInt(resp.action.id);
-	return id == this.id;
+	return (id == this.id);
 }
 
 // Test the name of this organizer and then descendants against the given name, case insensitively

@@ -268,3 +268,9 @@ function(ev) {
 	}
 	return null;
 }
+
+ZmTreeController.prototype._deleteShieldYesCallback =
+function(organizer) {
+	this._schedule(this._doDelete, {organizer: organizer});
+	this._clearDialog(this._deleteShield);
+}

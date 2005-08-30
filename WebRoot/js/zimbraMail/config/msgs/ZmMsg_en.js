@@ -117,6 +117,7 @@ ZmMsg.confirmDeleteRule = "Are you sure you want to delete this rule?";
 ZmMsg.confirmDeleteRules = "Are you sure you want to delete these rules?";
 ZmMsg.confirmExitPreferences = "Would you like to save your changes?";
 ZmMsg.confirmFilterDetailsSave = "Your filter rule is incomplete. Do you want to continue saving locally?";
+ZmMsg.confirmEmptyJunk = "Are you sure you want to permanently delete everything within the Junk folder?";
 ZmMsg.confirmPassword = "Confirm new password";
 ZmMsg.confirmPasswordHasWhitespace = "The confirm password field has whitespace. Please correct this, and resubmit your change request.";
 ZmMsg.convCountTooltip = "Total Messages in Conversation";

@@ -573,6 +573,11 @@ function(items, action, attrs) {
 // Hack to support actions on a list of items of more than one type. Since some specialized
 // lists (ZmMailList or ZmContactList, for example) override action methods (such as
 // deleteItems), we need to be able to call the proper method for each item type.
+//
+// XXX: We could optimize this a bit by either using a batch request, or by using
+// ItemActionRequest. But we still want to call the appropriate method for each item type,
+// so that any overridden methods get called. So for now, it's easier to do the requests
+// separately.
 ZmList.prototype._mixedAction =
 function(method, args) {
 	var typedItems = this._getTypedItems(args[0]);
