@@ -880,17 +880,6 @@ function() {
 		currentX += dayWidth;		
 	}	
 	
-//	Dwt.setSize(Dwt.getDomObj(doc, this._bodyHourColId), 40, Dwt.DEFAULT);	
-
-
-/*		// reuse for day separators
-
-	for (var i =0; i < this._numDays; i++) {
-		tableWidth += colWidth;
-		Dwt.setSize(Dwt.getDomObj(doc, this._days[i].headerColId), colWidth - (AjxEnv.isIE ? 0 : 4), Dwt.DEFAULT);	
-	}
-	*/
-	
 	this._layoutAppts();
 
 	return;
@@ -1045,13 +1034,6 @@ function(el, attr)  {
 ZmCalMultiDayView._sashMouseMoveHdlr =
 function(ev) {
 //	DBG.println("ZmCalMultiDayView._sashMouseMoveHdlr");
-
-/*
-	var el = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (el != null) {
-		DBG.println("day index: "+ZmCalMultiDayView._getAttrFromElement(el, "zm_day"));
-	}
-*/
 	var mouseEv = DwtShell.mouseEvent;
 	mouseEv.setFromDhtmlEvent(ev);	
 	var delta = 0;
@@ -1072,7 +1054,6 @@ function(ev) {
 			data.endDate.setTime(data.appt.getEndTime() + (delta15 * 15 * 60 * 1000)); // num msecs in 15 minutes
 			var cname = delta == 0 ? "start" : "diff";
 			data.sash.innerHTML = "<div class=appt_sash_feedback_"+cname+">"+data.appt._getTTHour(data.endDate)+"</div>";
-			//data.sash.innerHTML = data.appt._getTTHour(data.endDate);
 		}
 	}
 
