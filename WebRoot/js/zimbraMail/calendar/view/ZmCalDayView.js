@@ -319,8 +319,9 @@ function(appt, now, isDndIcon) {
 		newState: isNew ? "_new" : "",
 		color: "_blue",
 		name: AjxStringUtil.htmlEncode(appt.getName()),
-		tag: isNew ? "NEW" : "",		//  HACK: i18n
+//		tag: isNew ? "NEW" : "",		//  HACK: i18n
 		starttime: appt.getDurationText(true, true),
+		endtime: appt._getTTHour(appt.getEndDate()),
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		statusKey: appt.getParticipationStatus(),
 		status: appt.getParticipationStatusString()

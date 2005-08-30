@@ -2775,6 +2775,7 @@ HTML>BODY .calendar_grid_body_time_text {	/* HACK to match times up with their l
 .appt							{ 	z-index:10;	}
 .appt-selected					{ 	z-index:20;	}
 
+.appt-selected TD		 		{					font-weight:bold;						}
 
 .appt_blue_header				{	background-color:#99ADD6;					}
 .appt_30_blue_header			{	background-color:#99ADD6;					}
@@ -2788,23 +2789,23 @@ HTML>BODY .calendar_grid_body_time_text {	/* HACK to match times up with their l
 .appt_new_tag					{	font-weight:bold;	color:#FFCC00;		}
 	
 .appt_name						{	padding:2px;											}
-.appt-selected .appt_name 		{	padding:2px;	font-weight:bold;						}
 .appt_new_name					{	padding:2px;	font-weight:bold;	color:white; 		}
 
 .appt_30_name					{	padding:2px;										white-space: nowrap;	}
-.appt-selected .appt_30_name 	{	padding:2px;	font-weight:bold;					white-space: nowrap;	}
 .appt_30_new_name				{	padding:2px;	font-weight:bold;	color:white;	white-space: nowrap;	}
 
 
-.appt_time						{	white-space: nowrap;	padding:2px;						}
-.appt_status-					{	white-space: nowrap;	padding:2px;						}
-.appt_status-NE					{	white-space: nowrap;	padding:2px;	color:white;		}
-.appt_status-TE					{	white-space: nowrap;	padding:2px;	color:FF3300;		}
-.appt_status-AC					{	white-space: nowrap;	padding:2px;	color:black;		}
-.appt_status-DE					{	white-space: nowrap;	padding:2px;	color:black;		}
-.appt_status-DG					{	white-space: nowrap;	padding:2px;	color:black;		}
+.appt_time						{	padding:2px;																}
+.appt_end_time					{	padding:2px;						color:#666666;	white-space: nowrap;	}
 
-.appt_location					{							padding:2px;						}
+.appt_status-					{	padding:2px;										white-space: nowrap;	}
+.appt_status-NE					{	padding:2px;						color:white;	white-space: nowrap;	}
+.appt_status-TE					{	padding:2px;						color:FF3300;	white-space: nowrap;	}
+.appt_status-AC					{	padding:2px;						color:black;	white-space: nowrap;	}
+.appt_status-DE					{	padding:2px;						color:black;	white-space: nowrap;	}
+.appt_status-DG					{	padding:2px;						color:black;	white-space: nowrap;	}
+
+.appt_location					{	padding:2px;						}
 
 .appt_sash { height: 5px; margin-top:-5px; position:relative; Xbackground:red; }
 /* use this style when sash is active, to keep cursor set correctly as sash feedback pushes up sash */
@@ -2843,12 +2844,16 @@ HTML>BODY .calendar_grid_body_time_text {	/* HACK to match times up with their l
 
 .appt-selected .appt_body TD,
 .appt-selected .appt_30_body TD{
-	padding:0px;
+	padding-top:0px;
+	padding-left:0px;
+	padding-right:0px;
 }
 
 HTML>BODY .appt-selected .appt_body TD,
 HTML>BODY .appt-selected .appt_30_body TD {
-	padding:2px;
+	padding-left:2px;
+	padding-top:2px;
+	padding-right:2px;
 }
 HTML>BODY .appt-selected .appt_body,
 HTML>BODY .appt-selected .appt_30_body
