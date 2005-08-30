@@ -1334,6 +1334,9 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	overflow:hidden;
 	text-align:center;
 }
+.calendar_time_selection {
+	background-color:#ADD6D6;
+}
 
 .calendar_header_allday_separator {
 	background-color:#CCCCCC;
