@@ -60,16 +60,15 @@ function(html, idx, url) {
 }
 	
 ZmURLObjectHandler.prototype.getToolTipText =
-function(obj) {
-	return "<b>URL: </b>"+AjxStringUtil.htmlEncode(obj);
+function(url, context) {
+	var escapedUrl = url.replace(/\"/g, '\"');
+	if (escapedUrl.substr(0,4) == 'www.') {
+		escapedUrl = "http://"+escapedUrl+"/";
+	}
+	return '<div id="thumb" style="width: 205px; height: 150px"><img src="http://pthumbnails.alexa.com/image_server.cgi?id=' + document.domain + '&url=' + escapedUrl + '"/></div>';
 }
 
 ZmURLObjectHandler.prototype.getActionMenu =
 function(obj) {
 	return null;
-}
-
-ZmURLObjectHandler.prototype.hasToolTipText =
-function(obj, context) {
-	return false;
 }
