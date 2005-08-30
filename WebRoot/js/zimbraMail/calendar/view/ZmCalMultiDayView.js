@@ -330,7 +330,7 @@ function(appt, now, isDndIcon) {
 		endtime: appt._getTTHour(appt.getEndDate()),
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		statusKey: appt.getParticipationStatus(),
-		status: appt.getParticipationStatusString()
+		status: appt.isOrganizer() ? "" : appt.getParticipationStatusString()
 	};	
 
 	div.innerHTML = DwtBorder.getBorderHtml(titleOnly ? "calendar_appt_30" : "calendar_appt", subs, null);
@@ -737,6 +737,20 @@ function(numCols) {
 	}
 }
 
+ZmCalMultiDayView.prototype._layoutAppt =
+function(apptDiv, x, y, w, h) {
+	// position overall div
+	Dwt.setLocation(apptDiv, x + ZmCalMultiDayView._apptXFudge, y + ZmCalMultiDayView._apptYFudge);
+
+	// get the inner div that should be sized and set its width/height
+	var apptBodyDiv = Dwt.getDomObj(this.getDocument(), apptDiv.id + "_body");
+	Dwt.setSize(	apptBodyDiv,	w + ZmCalMultiDayView._apptWidthFudge, h + ZmCalMultiDayView._apptHeightFudge);
+
+	// set the sash width. sash should really be inside appt_body...
+	var apptSashDiv = Dwt.getDomObj(this.getDocument(), apptDiv.id + "_sash");
+	if (apptSashDiv) Dwt.setSize(apptSashDiv, w + ZmCalMultiDayView._apptWidthFudge, Dwt.DEFAULT);
+}
+
 ZmCalMultiDayView.prototype._layoutAppts =
 function() {
 
@@ -768,29 +782,15 @@ function() {
 				var endY = this._getYfromDate(ed, false);
 				//layout.h = Math.max(endY - layout.y, 2*ZmCalMultiDayView._fiftenMinuteHeight) + 1; 
 				layout.h = endY - layout.y + 1;
-				
 				//DBG.println("---- sd="+sd+" ed="+ed);
 				//DBG.println("_layoutAppts: "+apptDiv);
 				//DBG.println("_layoutAppts: layout.h="+layout.h+" layout.y="+layout.y+ " endY="+endY);
 			}
-			//if (layout.lastDay && AjxEnv.isIE) awidth -= 20;
 			var w = Math.floor(day.dayWidth*ZmCalMultiDayView._getApptWidthPercent(layout.maxcol+1));
 			var xinc = layout.maxcol ? ((day.dayWidth - w) / layout.maxcol) : 0; // n-1
 			var x = xinc * layout.col + (day.dayX);
-			Dwt.setLocation(apptDiv, 
-							x + ZmCalMultiDayView._apptXFudge, 
-							layout.y + ZmCalMultiDayView._apptYFudge
-						);
-
-			// get the inner div that should be sized and set its width/height
-			var apptBodyDiv = Dwt.getDomObj(doc, this._getItemId(ao) + "_body");
-			Dwt.setSize(	apptBodyDiv,
-							w + ZmCalMultiDayView._apptWidthFudge, 
-							layout.h + ZmCalMultiDayView._apptHeightFudge
-						);
-			// set the sash width
-			var apptSashDiv = Dwt.getDomObj(doc, this._getItemId(ao) + "_sash");
-			if (apptSashDiv) Dwt.setSize(apptSashDiv, w + ZmCalMultiDayView._apptWidthFudge, Dwt.DEFAULT);
+			
+			this._layoutAppt(apptDiv, x, layout.y, w, layout.h);
 		}
 	}
 }
@@ -877,6 +877,7 @@ function() {
 		var day = this._days[i];
 		day.dayX = currentX + ZmCalMultiDayView._daySepWidth;
 		day.dayWidth = dayWidth - ZmCalMultiDayView._daySepWidth;
+		Dwt.setSize(Dwt.getDomObj(doc, this._days[i].headerColId), dayWidth, Dwt.DEFAULT);	
 		currentX += dayWidth;		
 	}	
 	
