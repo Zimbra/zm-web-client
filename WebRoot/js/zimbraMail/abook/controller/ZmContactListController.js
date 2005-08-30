@@ -90,7 +90,7 @@ function(search, searchString, bIsGalSearch) {
 			this._isNewSearch = bForce = true;
 			this._list = search.getResults(ZmItem.CONTACT);
 			if (bIsGalSearch && (this._list == null))
-				this._list = new ZmContactList(this._appCtxt, bIsGalSearch);
+				this._list = new ZmContactList(this._appCtxt, search.search, bIsGalSearch);
 			this._activeSearch = search;
 			this._searchString = searchString;
 		}

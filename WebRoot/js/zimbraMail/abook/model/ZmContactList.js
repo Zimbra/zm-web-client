@@ -36,9 +36,9 @@
 * those created by a search) will have minimal data, and will get their attribute
 * values from the canonical list.
 */
-function ZmContactList(appCtxt, isGal) {
+function ZmContactList(appCtxt, search, isGal) {
 	
-	ZmList.call(this, ZmItem.CONTACT, appCtxt);
+	ZmList.call(this, ZmItem.CONTACT, appCtxt, search);
 
 	this.isGal = isGal;
 	this.isCanonical = false;

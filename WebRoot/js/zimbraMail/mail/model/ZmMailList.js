@@ -39,9 +39,8 @@
 */
 function ZmMailList(type, appCtxt, search) {
 
-	ZmList.call(this, type, appCtxt);
+	ZmList.call(this, type, appCtxt, search);
 
-	this.search = search;
 	this.convId = null; // for msg list within a conv
 
 	// mail list can be changed via folder or tag action (eg "Mark All Read")
@@ -82,7 +81,7 @@ function(items, folder) {
 ZmMailList.prototype.deleteItems =
 function(items, folder) {
 	var attrs = null;
-	if (this.type == ZmItem.CONV) {
+	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
 		var searchFolder = this.search ? this._appCtxt.getFolderTree().getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isInTrash())
 			attrs = {tcon: ZmFolder.TCON_CODE[ZmFolder.ID_TRASH]};

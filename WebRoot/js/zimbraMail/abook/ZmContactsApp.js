@@ -66,7 +66,7 @@ function() {
 			if (this._parentController) {
 				this._contactList = this._parentController.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 			} else {
-				this._contactList = new ZmContactList(this._appCtxt, false);
+				this._contactList = new ZmContactList(this._appCtxt, null, false);
 				this._contactList.load();
 			}
 		} catch (ex) {
@@ -82,7 +82,7 @@ ZmContactsApp.prototype.getGalContactList =
 function() {
 	if (!this._galContactList) {
 		try {
-			this._galContactList = new ZmContactList(this._appCtxt, true);
+			this._galContactList = new ZmContactList(this._appCtxt, null, true);
 			this._galContactList.load();
 		} catch (ex) {
 			this._galContactList = null;

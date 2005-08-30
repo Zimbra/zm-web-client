@@ -36,15 +36,16 @@
 * @author Conrad Damon
 * @param type			item type
 * @param appCtxt		the app context
+* @param search			ZmSearch that generated this list
 */
-function ZmList(type, appCtxt) {
+function ZmList(type, appCtxt, search) {
 
 	if (arguments.length == 0) return;
 	ZmModel.call(this, true);
 
 	this.type = type;
 	this._appCtxt = appCtxt;
-	this.searchResults = null; // search results that generated this list
+	this.search = search;
 	
 	this._vector = new AjxVector();
 	this._hasMore = false;
@@ -265,6 +266,11 @@ function(node, args) {
 */
 ZmList.prototype.flagItems =
 function(items, flagOp, on) {
+	if (this.type == ZmList.MIXED && !this._mixedType) {
+		this._mixedAction("flagItems", [items, flagOp, on]);
+		return;
+	}
+
 	var itemMode = false;
 	if (items instanceof ZmItem) {
 		items = [items];
@@ -296,6 +302,11 @@ function(items, flagOp, on) {
 */
 ZmList.prototype.tagItems =
 function(items, tagId, doTag) {
+	if (this.type == ZmList.MIXED && !this._mixedType) {
+		this._mixedAction("tagItems", [items, tagId, doTag]);
+		return;
+	}
+
 	var itemMode = false;
 	if (items instanceof ZmItem) {
 		items = [items];
@@ -322,7 +333,11 @@ function(items, tagId, doTag) {
 
 ZmList.prototype.removeAllTags = 
 function(items) {
-	
+	if (this.type == ZmList.MIXED && !this._mixedType) {
+		this._mixedAction("removeAllTags", [items]);
+		return;
+	}
+
 	var itemMode = false;
 	if (items instanceof ZmItem) {
 		items = [items];
@@ -353,6 +368,11 @@ function(items) {
 */
 ZmList.prototype.moveItems =
 function(items, folder, attrs) {
+	if (this.type == ZmList.MIXED && !this._mixedType) {
+		this._mixedAction("moveItems", [items, folder, attrs]);
+		return;
+	}
+
 	var itemMode = false;
 	if (items instanceof ZmItem) {
 		items = [items];
@@ -387,6 +407,11 @@ function(items, folder, attrs) {
 */
 ZmList.prototype.deleteItems =
 function(items, hardDelete, attrs) {
+	if (this.type == ZmList.MIXED && !this._mixedType) {
+		this._mixedAction("deleteItems", [items, hardDelete, attrs]);
+		return;
+	}
+
 	var itemMode = false;
 	if (items instanceof ZmItem) {
 		items = [items];
@@ -423,10 +448,10 @@ function(items, hardDelete, attrs) {
 
 /**
 * Applies the given list of modifications to the items. Currently, we can only
-* modify one item at a time.
+* modify one item at a time. A SOAP request is not made.
 *
-* @param items			list of items to delete
-* @param mods			whether to force physical removal of items
+* @param items			list of items to modify
+* @param mods			hash of new properties
 */
 ZmList.prototype.modifyItems =
 function(items, mods) {
@@ -467,69 +492,6 @@ function(offset, newList) {
 		if (item.id)
 			this._idHash[item.id] = item;
 	}
-}
-
-ZmList.prototype._itemAction =
-function(items, action, attrs) {
-	if (this.type == ZmList.MIXED)
-		return this._mixedItemAction(items, action, attrs);
-	else
-		return this._singleItemAction(items, action, attrs);
-}
-
-
-ZmList.prototype._singleItemAction =
-function(items, action, attrs, type) {
-	if (!type) type = this.type;
-
-	var actionedItems = new Array();
-	var idHash = this._getIds(items);
-	var idStr = idHash.list.join(",");;
-	if (!(idStr && idStr.length))
-		return actionedItems;
-
-	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
-	var soapDoc = AjxSoapDoc.create(soapCmd, "urn:zimbraMail");
-	var actionNode = soapDoc.set("action");
-	actionNode.setAttribute("id", idStr);
-	actionNode.setAttribute("op", action);
-	for (var attr in attrs)
-		actionNode.setAttribute(attr, attrs[attr]);
-	var appCtlr = this._appCtxt.getAppController();
-	appCtlr.setActionedIds(idHash.list.concat(idHash.extra));
-	var resp = appCtlr.sendRequest(soapDoc)[ZmItem.SOAP_CMD[type] + "Response"];
-	var ids = resp.action.id.split(",");
-	if (ids) {
-		for (var i = 0; i < ids.length; i++) {
-			var item = idHash[ids[i]];
-			if (item) {
-				actionedItems.push(item);
-			}
-		}
-	}
-
-	return actionedItems;
-}
-
-ZmList.prototype._mixedItemAction =
-function(items, action, attrs) {
-	var lists = new Object();
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		var type = item.type;
-		if (!lists[type]) lists[type] = new ZmList(type, this._appCtxt);
-		lists[type].add(item);
-	}
-	
-	var allActionedItems = new Array();
-	for (var type in lists) {
-		var list = lists[type];
-		if (list.size()) {
-			var actionedItems = this._singleItemAction(lists[type].getArray(), action, attrs, type);
-			allActionedItems = allActionedItems.concat(actionedItems);
-		}
-	}
-	return allActionedItems;
 }
 
 ZmList.prototype.notifyCreate =
@@ -574,6 +536,66 @@ ZmList.prototype.moveLocal =
 function(items, folder) {
 	for (var i = 0; i < items.length; i++)
 		this.remove(items[i]);
+}
+
+ZmList.prototype._itemAction =
+function(items, action, attrs) {
+	var actionedItems = new Array();
+	var idHash = this._getIds(items);
+	var idStr = idHash.list.join(",");;
+	if (!(idStr && idStr.length))
+		return actionedItems;
+
+	var type = (this.type == ZmList.MIXED) ? this._mixedType : this.type;
+	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
+	var soapDoc = AjxSoapDoc.create(soapCmd, "urn:zimbraMail");
+	var actionNode = soapDoc.set("action");
+	actionNode.setAttribute("id", idStr);
+	actionNode.setAttribute("op", action);
+	for (var attr in attrs)
+		actionNode.setAttribute(attr, attrs[attr]);
+	var appCtlr = this._appCtxt.getAppController();
+	appCtlr.setActionedIds(idHash.list.concat(idHash.extra));
+	var resp = appCtlr.sendRequest(soapDoc)[ZmItem.SOAP_CMD[type] + "Response"];
+	var ids = resp.action.id.split(",");
+	if (ids) {
+		for (var i = 0; i < ids.length; i++) {
+			var item = idHash[ids[i]];
+			if (item) {
+				actionedItems.push(item);
+			}
+		}
+	}
+
+	return actionedItems;
+}
+
+// Hack to support actions on a list of items of more than one type. Since some specialized
+// lists (ZmMailList or ZmContactList, for example) override action methods (such as
+// deleteItems), we need to be able to call the proper method for each item type.
+ZmList.prototype._mixedAction =
+function(method, args) {
+	var typedItems = this._getTypedItems(args[0]);
+	for (var type in typedItems) {
+		this._mixedType = type; // marker that we've been here already
+		if (type == ZmItem.CONTACT)
+			ZmContactList.prototype[method].call(this, typedItems[type], args[1], args[2]);
+		else
+			ZmMailList.prototype[method].call(this, typedItems[type], args[1], args[2]);
+		this._mixedType = null;
+	}
+}
+
+ZmList.prototype._getTypedItems =
+function(items) {
+	var typedItems = new Object();
+	for (var i = 0; i < items.length; i++) {
+		var type = items[i].type;
+		if (!typedItems[type])
+			typedItems[type] = new Array();
+		typedItems[type].push(items[i]);
+	}
+	return typedItems;
 }
 
 // Notify listeners on this list of a model change.

@@ -32,7 +32,7 @@ function ZmSearchResult(appCtxt, search) {
 	if (appCtxt.get(ZmSetting.ATT_VIEW_ENABLED))
 		this._results[ZmItem.ATT] = new ZmMailList(ZmItem.ATT, appCtxt, search);
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED))
-		this._results[ZmItem.CONTACT] = new ZmContactList(appCtxt, false);
+		this._results[ZmItem.CONTACT] = new ZmContactList(appCtxt, search, false);
 
 	this._appCtxt = appCtxt;
 	this.search = search;
@@ -58,11 +58,11 @@ function() {
 ZmSearchResult.prototype.getResults =
 function(type) {
 	if (type == ZmList.MIXED) {
-		var list = new ZmList(ZmList.MIXED, this._appCtxt);
+		var list = new ZmList(ZmList.MIXED, this._appCtxt, this.search);
 		for (var i = 0; i < ZmList.TYPES.length; i++) {
 			var type = ZmList.TYPES[i];
 			var results = this._results[type];
-			if (results) {
+			if (results && results.size()) {
 				var a = results.getArray();
 				for (var j = 0; j < a.length; j++)
 					list.add(a[j]);
@@ -132,8 +132,7 @@ function(respEl, contactSource) {
 	if (numTypes <= 1) {
 		this.type = currentType;
 	} else {
-		this.type = this._appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED)
-			? ZmList.MIXED : currentType;
+		this.type = this._appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED) ? ZmList.MIXED : currentType;
 	}
 
 	return this.type;
