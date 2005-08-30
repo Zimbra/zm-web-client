@@ -105,10 +105,8 @@ function(content, htmlEncode) {
 		// that match again.
 		//
 		// when we are done, we take the handler with the lowest index.
-		for (var i=0; i < this._objectHandlers.length; i++) {
+		for (var i in this._objectHandlers) {
 			var handler = this._objectHandlers[i];
-			// IE seems to lose objects so skip any nulls.
-			if(!handler) {continue;}
 			var result = handler.findObject(content, lastIndex);
 			if (result != null && result.index < lowestIndex) {
 				lowestResult = result;
