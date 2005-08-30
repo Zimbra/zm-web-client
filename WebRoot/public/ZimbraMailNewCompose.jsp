@@ -76,8 +76,8 @@ static final private String AUTH_TOKEN_COOKIE_NAME = "LS_AUTH_TOKEN";
 
 <% } else { %>
 
-	<script type="text/javascript" src="/zimbra/js/AjxNet_all.js<%= ext %>?v=<%= vers %>"></script>
-	<script type="text/javascript" src="/zimbra/js/AjxMail_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="/zimbra/js/ZimbraNet_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="/zimbra/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
 
 <% } %>
 

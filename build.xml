@@ -118,13 +118,13 @@
 
   <target name="jam-files" depends="compile">
     <taskdef name="jammer" classname="com.zimbra.webClient.build.JammerTask" classpath="${build.dir}"/>
-    <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/AjxNet_all.js">
+    <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraNet_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="Zimbra-net.jsp"/>
     </jammer>
-    <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/AjxMail_all.js">
+    <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraMail_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="Zimbra.jsp, Dwt.jsp, ZimbraMail.jsp"/>
     </jammer>
-    <jammer webrootDir="${build.dir}/WebRoot/" pathToWebApp="/zimbra" destFile="${build.dir}/WebRoot/js/AjxAdmin_all.js">
+    <jammer webrootDir="${build.dir}/WebRoot/" pathToWebApp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraAdmin_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="Zimbra.jsp, Dwt.jsp, ZimbraAdmin.jsp"/>
     </jammer> 
   </target>

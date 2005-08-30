@@ -113,8 +113,8 @@ Contributor(s):
 	    <jsp:include page="/public/ZimbraAdmin.jsp"/>
 <% } else { %>
 
-		<script type="text/javascript" src="<%= contextPath %>/js/AjxNet_all.js<%= ext %>?v=<%= vers %>"></script>
-		<script type="text/javascript" src="<%= contextPath %>/js/AjxAdmin_all.js<%= ext %>?v=<%= vers %>"></script>
+		<script type="text/javascript" src="<%= contextPath %>/js/ZimbraNet_all.js<%= ext %>?v=<%= vers %>"></script>
+		<script type="text/javascript" src="<%= contextPath %>/js/ZimbraAdmin_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>
 <script type="text/javascript" src="<fmt:message key="ZaMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
     <script language="JavaScript">   	

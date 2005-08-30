@@ -384,7 +384,7 @@ name="username" value="<%= uname %>" style="width:100%; height:22px" />
   	DwtConfigPath = "js/dwt/config";
 </script>
 <jsp:include page="Messages.jsp"/>
-<script type="text/javascript" src="/zimbra/js/AjxNet_all.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="/zimbra/js/ZimbraNet_all.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/ZmLogin.js<%= ext %>?v=<%= vers %>"></script>
 
 
