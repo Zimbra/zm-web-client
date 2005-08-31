@@ -335,6 +335,12 @@ DIV.vSpace {
 	cursor: default;
 }
 
+.DwtTreeItem-Text {
+	padding-top:1px;
+	padding-left:2px;
+	padding-right:2px;
+}
+
 .DwtTreeItem-selected {
 	background-color: #ADD6D6;
 }
