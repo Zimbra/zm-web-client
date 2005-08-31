@@ -399,6 +399,7 @@ function()
 ZmCalDayView.prototype._updateSelectedTime =
 function() 
 {
+//	return;
 	var t = this._date.getTime();
 	if (t < this._timeRangeStart || t >= this._timeRangeEnd)
 		return;
@@ -416,6 +417,7 @@ function()
 	ZmCalDayView._setOpacity(e, 40);
 	Dwt.setLocation(e, x, y);
  	var m = this._date.getMinutes();
+ 	/*
 	if (m != 0 && m != 30) {
 		var temp = new Date(this._date.getTime());
 		temp.setMinutes( m < 30 ? 0 : 30);
@@ -423,6 +425,7 @@ function()
 	} else {
 		e.innerHTML = ZmAppt._getTTHour(this._date);
 	}
+	*/
 	Dwt.setVisible(e, true);
 }
 
