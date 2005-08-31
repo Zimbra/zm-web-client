@@ -391,34 +391,30 @@ function(d)
 ZmCalMultiDayView.prototype._clearSelectedTime =
 function() 
 {
-	return;
-	if (this._selectedId != null) {
-		var e = Dwt.getDomObj(this.getDocument(), this._selectedId);
-		e.className = this._normalClassName;
-		this._selectedId = null;
-	}
+	var e = Dwt.getDomObj(this.getDocument(), this._timeSelectionDivId);
+	if (e) Dwt.setVisible(e, false);
 }
 	
 ZmCalMultiDayView.prototype._updateSelectedTime =
 function() 
 {
-	return;
-	var d = this._date;
-	var t = d.getTime();
+	var t = this._date.getTime();
 	if (t < this._timeRangeStart || t >= this._timeRangeEnd)
 		return;
 
-	var day =  this._getDayForDate(d);
-	var h = d.getHours();
-	var m = d.getMinutes();
-	var isTop = m < 30;
+	var e = Dwt.getDomObj(this.getDocument(), this._timeSelectionDivId);
+	if (!e) return;
+	e._type = ZmCalNewBaseView.TYPE_SELECTED_TIME;
 
-//	var id = day.hoursId[isTop ? h : h+"h"];
+	var day =  this._getDayForDate(this._date);
+	if (!day) return;
 	
-	var e = Dwt.getDomObj(this.getDocument(), id);
-//ZZZ	e.className = this._selectedClassName;
-	this._selectedId = id;
-
+	var x = day.apptX;
+	var y = this._getYWithSnap(this._date, 30);
+	Dwt.setSize(e, day.apptWidth, ZmCalMultiDayView._15minuteHeight*4-1);
+	ZmCalMultiDayView._setOpacity(e, 40);
+	Dwt.setLocation(e, x, y);
+	Dwt.setVisible(e, true);
 }
 
 ZmCalMultiDayView.prototype._createHeadersColGroupHtml =
@@ -529,7 +525,7 @@ function(abook) {
 
 	this.getHtmlElement().innerHTML = html.join("");
 	
-	Dwt.getDomObj(this.getDocument(), this._apptBodyDivId)._type = ZmCalNewBaseView.TYPE_APPTS_CONTAINER;
+	Dwt.getDomObj(this.getDocument(), this._apptBodyDivId)._type = ZmCalNewBaseView.TYPE_APPTS_DAYGRID;
 
 	ZmCalMultiDayView._idToView[this._bodyDivId] = this;
 	
@@ -821,6 +817,14 @@ function(y) {
 	return Math.floor(y/ZmCalMultiDayView._15minuteHeight) * (15 * 60 * 1000); // num msecs in 15 minutes
 }
 
+// snapto 15, 30 minutes
+ZmCalMultiDayView.prototype._getYWithSnap =
+function(d, snapto) {
+	var h = d.getHours();
+	var m = d.getMinutes();
+	return Math.floor( (m+h*60) / snapto) * ((snapto/60)*ZmCalMultiDayView._hourHeight);
+}
+
 ZmCalMultiDayView.prototype._get30MinuteFromY =
 function(y) {
 	return Math.floor(y/(ZmCalMultiDayView._15minuteHeight*2)) * (30 * 60 * 1000); // num msecs in 30 minutes
@@ -938,7 +942,7 @@ function (ev){
 ZmCalMultiDayView.prototype._mouseUpAction =
 function(ev, div) {
 	ZmCalNewBaseView.prototype._mouseUpAction.call(this, ev, div);
-	if (div._type == ZmCalNewBaseView.TYPE_APPTS_CONTAINER)
+	if (div._type == ZmCalNewBaseView.TYPE_APPTS_DAYGRID || div._type == ZmCalNewBaseView.TYPE_SELECTED_TIME)
 		this._timeSelectionAction(ev, div, false);
 
 }
@@ -946,21 +950,34 @@ function(ev, div) {
 ZmCalMultiDayView.prototype._doubleClickAction =
 function(ev, div) {
 	ZmCalNewBaseView.prototype._doubleClickAction.call(this, ev, div);
-	if (div._type == ZmCalNewBaseView.TYPE_APPTS_CONTAINER)
+	if (div._type == ZmCalNewBaseView.TYPE_APPTS_DAYGRID || div._type == ZmCalNewBaseView.TYPE_SELECTED_TIME)
 		this._timeSelectionAction(ev, div, true);
 }
 
 ZmCalMultiDayView.prototype._timeSelectionAction =
 function(ev, div, dblclick) {
-	if (div._type != ZmCalNewBaseView.TYPE_APPTS_CONTAINER) return;
-
-	var date = this._getDateFromXY(ev.elementX, ev.elementY);
-	if (date == null) return false;
-
-	DBG.println("_mouseUplistener: element "+ev.elementX+ ", "+ev.elementY);
-	DBG.println("_mouseUplistener: date = "+date.toString());
-	DBG.println("_mouseUplistener: dbl click = "+dblclick);
 	
+	var date;
+	
+	switch (div._type) {
+		case ZmCalNewBaseView.TYPE_APPTS_DAYGRID:
+			var date = this._getDateFromXY(ev.elementX, ev.elementY);
+			if (date == null) return false;
+//			DBG.println("_mouseUplistener: element "+ev.elementX+ ", "+ev.elementY);
+//			DBG.println("_mouseUplistener: date = "+date.toString());
+//			DBG.println("_mouseUplistener: dbl click = "+dblclick);			
+			break;
+		case ZmCalNewBaseView.TYPE_SELECTED_TIME:
+			//var date = new Date(this._date.getTime());
+			var loc = Dwt.getLocation(div);
+			var date = this._getDateFromXY(loc.x+ev.elementX, loc.y+ev.elementY);
+			if (date == null) return false;
+//			DBG.println("_mouseUplistener: date = "+date.toString());
+//			DBG.println("_mouseUplistener: dbl click = "+dblclick);						
+			break;
+		default:
+			return;
+	}
 	if (!this._selectionEvent) this._selectionEvent = new DwtSelectionEvent(true);
 	var sev = this._selectionEvent;
 	sev._isDblClick = dblclick;

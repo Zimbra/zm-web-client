@@ -26,7 +26,6 @@
 function ZmCalNewBaseView(parent, className, posStyle, view) {
 	if (arguments.length == 0) return;
 
-	DBG.println("ZmCalNewBaseView");
 	DwtComposite.call(this, parent, className, posStyle, view);
 	
 
@@ -72,12 +71,11 @@ ZmCalNewBaseView.prototype.constructor = ZmCalNewBaseView;
 
 ZmCalNewBaseView.TIME_SELECTION = "ZmCalTimeSelection";
 
-ZmCalNewBaseView.TYPE_APPTS_CONTAINER = 1;
-ZmCalNewBaseView.TYPE_APPT = 2;
-
+ZmCalNewBaseView.TYPE_APPTS_DAYGRID = 1; // grid holding days, for example
+ZmCalNewBaseView.TYPE_APPT = 2; // an appt
+ZmCalNewBaseView.TYPE_SELECTED_TIME = 3; // div representing selected time in a grid
 
 // BEGIIN LIST-RELATED
-
 
 ZmCalNewBaseView.prototype.addSelectionListener = 
 function(listener) {
