@@ -395,6 +395,7 @@ function()
 	if (e) Dwt.setVisible(e, false);
 }
 	
+
 ZmCalDayView.prototype._updateSelectedTime =
 function() 
 {
@@ -912,7 +913,7 @@ function() {
 	}	
 	
 	this._layoutAppts();
-
+	this._updateSelectedTime();
 	return;
 }
 

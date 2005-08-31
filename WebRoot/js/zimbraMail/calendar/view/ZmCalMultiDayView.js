@@ -912,7 +912,7 @@ function() {
 	}	
 	
 	this._layoutAppts();
-
+	this._updateSelectedTime();
 	return;
 }
 
