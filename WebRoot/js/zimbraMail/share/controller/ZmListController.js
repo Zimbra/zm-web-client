@@ -991,9 +991,13 @@ function(view) {
 	var offset = this._listView[view].getOffset();
 	var limit = this._listView[view].getLimit();
 	var size = this._list.size();
-	var start = offset + 1;
-	var end = Math.min(offset + limit, size);
-	this._navToolBar.setText(start + " - " + end);	
+	var text = "";
+	if (size > 0) {
+		var start = offset + 1;
+		var end = Math.min(offset + limit, size);
+		text = start + " - " + end;
+	}
+	this._navToolBar.setText(text);
 }
 
 // default callback before a view is shown - enable/disable nav buttons
