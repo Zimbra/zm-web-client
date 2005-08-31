@@ -414,7 +414,14 @@ function()
 	Dwt.setSize(e, day.apptWidth, ZmCalMultiDayView._15minuteHeight*4-1);
 	ZmCalMultiDayView._setOpacity(e, 40);
 	Dwt.setLocation(e, x, y);
-	e.innerHTML = ZmAppt._getTTHour(this._date);
+	var m = this._date.getMinutes();
+	if (m != 0 && m != 30) {
+		var temp = new Date(this._date.getTime());
+		temp.setMinutes( m < 30 ? 0 : 30);
+		e.innerHTML = ZmAppt._getTTHour(temp);
+	} else {
+		e.innerHTML = ZmAppt._getTTHour(this._date);
+	}
 	Dwt.setVisible(e, true);
 }
 
