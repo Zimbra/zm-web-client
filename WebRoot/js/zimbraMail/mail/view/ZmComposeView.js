@@ -613,16 +613,17 @@ function(attId, isDraft) {
 * Returns true if form contents have changed, or if they are empty.
 *
 * @param incAddrs		takes addresses into consideration
+* @param incSubject		takes subject into consideration
 */
 ZmComposeView.prototype.isDirty =
-function(incAddrs) {
+function(incAddrs, incSubject) {
 	// any attachment activity => dirty
 	if (this._gotAttachments())
 		return true;
 	// reply/forward and empty body => not dirty
 	if ((this._action != ZmOperation.NEW_MESSAGE) && (this._htmlEditor.getContent().match(ZmComposeView.EMPTY_FORM_RE)))
 		return false;
-	var curFormValue = this._formValue(incAddrs);
+	var curFormValue = this._formValue(incAddrs, incSubject);
 	// empty subject and body => not dirty
 	if (curFormValue.match(ZmComposeView.EMPTY_FORM_RE))
 		return false;
@@ -1304,7 +1305,7 @@ function(args) {
 
 // Returns a string representing the form content
 ZmComposeView.prototype._formValue =
-function(incAddrs) {
+function(incAddrs, incSubject) {
 	var vals = new Array();
 	if (incAddrs) {
 		for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
@@ -1313,7 +1314,8 @@ function(incAddrs) {
 				vals.push(this._field[type].value);
 		}
 	}
-	vals.push(this._subjectField.value);
+	if (incSubject)
+		vals.push(this._subjectField.value);
 	vals.push(this._htmlEditor.getContent());
 	var str = vals.join("|");
 	str = str.replace(/\|+/, "|");
