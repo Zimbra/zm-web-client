@@ -141,23 +141,23 @@ function(viewName) {
 	
 	switch(viewName) {
 		case ZmCalViewMgr.DAY_VIEW: 
-			//this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
+			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
 			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.day);
 			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.day);
 			break;
 		case ZmCalViewMgr.WORK_WEEK_VIEW:
-			//this._miniCalendar.setSelectionMode(DwtCalendar.WORK_WEEK);
+			this._miniCalendar.setSelectionMode(DwtCalendar.WORK_WEEK);
 			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.workWeek);
 			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.workWeek);			
 			break;
 		case ZmCalViewMgr.WEEK_VIEW:
-			//this._miniCalendar.setSelectionMode(DwtCalendar.WEEK);
+			this._miniCalendar.setSelectionMode(DwtCalendar.WEEK);
 			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.week);
 			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.week);			
 			break;;		
 		case ZmCalViewMgr.MONTH_VIEW:
 			// use day until month does something
-			//this._miniCalendar.setSelectionMode(DwtCalendar.DAY);		
+			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);		
 			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.month);
 			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.month);
 			//this._calendar.setSelectionMode(DwtCalendar.MONTH);
