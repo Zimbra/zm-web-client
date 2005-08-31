@@ -49,7 +49,7 @@ function ZmMailList(type, appCtxt, search) {
 		this._folderChangeListener = new AjxListener(this, this._folderTreeChangeListener);
 		folderTree.addChangeListener(this._folderChangeListener);
 	}
-}
+};
 
 ZmMailList.prototype = new ZmList;
 ZmMailList.prototype.constructor = ZmMailList;
@@ -57,7 +57,7 @@ ZmMailList.prototype.constructor = ZmMailList;
 ZmMailList.prototype.toString = 
 function() {
 	return "ZmMailList";
-}
+};
 
 // Override so that we can specify "tcon" attribute for conv move - we don't want
 // to move messages in certain system folders as a side effect
@@ -74,7 +74,7 @@ function(items, folder) {
 		attrs = {tcon: chars.join("")};
 	}
 	ZmList.prototype.moveItems.call(this, items, folder, attrs);
-}
+};
 
 // Override so that delete of a conv in Trash doesn't hard-delete its msgs in
 // other folders
@@ -87,12 +87,12 @@ function(items, folder) {
 			attrs = {tcon: ZmFolder.TCON_CODE[ZmFolder.ID_TRASH]};
 	}
 	ZmList.prototype.deleteItems.call(this, items, folder, attrs);
-}
+};
 
 ZmMailList.prototype.markRead =
 function(items, on) {
 	this.flagItems(items, "read", on);
-}
+};
 
 // When a conv or msg is moved to Trash, it is marked read by the server.
 ZmMailList.prototype.moveLocal =
@@ -109,7 +109,7 @@ function(items, folderId) {
 	}
 	if (flaggedItems.length)
 		this._eventNotify(ZmEvent.E_FLAGS, flaggedItems, {flags: [ZmItem.FLAG_UNREAD]});
-}
+};
 
 ZmMailList.prototype.notifyCreate = 
 function(convs, msgs) {
@@ -176,7 +176,7 @@ function(convs, msgs) {
 		this._eventNotify(ZmEvent.E_FLAGS, flaggedItems, {flags: [ZmItem.FLAG_UNREAD]});
 	if (modifiedItems.length)
 		this._eventNotify(ZmEvent.E_MODIFY, modifiedItems, {fields: fields});
-}
+};
 
 /**
 * Convenience method for adding messages to a conv on the fly. The specific use case for
@@ -198,7 +198,7 @@ function(msgs) {
 	}
 	if (addedMsgs.length)
 		this._eventNotify(ZmEvent.E_CREATE, addedMsgs);
-}
+};
 
 ZmMailList.prototype.remove = 
 function(item, bForce) {
@@ -206,7 +206,7 @@ function(item, bForce) {
 	// msg is always going to be part of a conv unless its a hard delete!
 	if (!this.convId || bForce)
 		ZmList.prototype.remove.call(this, item);
-}
+};
 
 ZmMailList.prototype.clear =
 function() {
@@ -217,7 +217,7 @@ function() {
 		this._appCtxt.getTagList().removeChangeListener(this._tagChangeListener);
 
 	ZmList.prototype.clear.call(this);
-}
+};
 
 ZmMailList.prototype.spamItems = 
 function(items, markAsSpam, optFolderId) {
@@ -247,7 +247,7 @@ function(items, markAsSpam, optFolderId) {
 			this._eventNotify(ZmEvent.E_MOVE, respItems, null, itemMode);
 		}
 	}
-}
+};
 
 ZmMailList.prototype._folderTreeChangeListener = 
 function(ev) {
@@ -287,13 +287,12 @@ function(ev) {
 			   ev.source instanceof ZmFolder && 
 			   ev.source.id == ZmFolder.ID_TRASH) 
 	{
-		// user just emptied the trash.. update applicable views
-		if (this.type == ZmItem.CONV && view == ZmController.CONVLIST_VIEW) {
-			this._redoSearch(ctlr, view, true);
-			return false;
-		}
+		// user emptied trash - reset a bunch of stuff w/o having to redo the search
+		ctlr.getCurrentView().setOffset(0);
+		ctlr._resetNavToolBarButtons(view);
+		ctlr._showListRange(view);
 	}
-}
+};
 
 ZmMailList.prototype._tagTreeChangeListener = 
 function(ev) {
@@ -305,21 +304,10 @@ function(ev) {
 	} else {
 		return ZmList.prototype._tagTreeChangeListener.call(this, ev);
 	}
-}
+};
 
 ZmMailList.prototype._redoSearch = 
-function(ctlr, view, bPreservePage) {
-
-	var callback = null;
-
-	if (bPreservePage) {
-		// redo search; if it was a pagination search, run callback to maintain cache
-		for (var i = 1; i <= ctlr.maxPage; i++)
-			ctlr.pageIsDirty[i] = true;
-		if (ctlr.currentPage > 0)
-			callback = new AjxCallback(ctlr, ctlr._paginateCallback, [view, -1, true]);
-	}
-
+function(ctlr, view) {
 	var sc = this._appCtxt.getSearchController();
-	sc.redoSearch(ctlr._currentSearch, callback);
-}
+	sc.redoSearch(ctlr._currentSearch);
+};
