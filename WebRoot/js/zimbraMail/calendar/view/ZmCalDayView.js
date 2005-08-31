@@ -321,7 +321,7 @@ function(appt, now, isDndIcon) {
 		name: AjxStringUtil.htmlEncode(appt.getName()),
 //		tag: isNew ? "NEW" : "",		//  HACK: i18n
 		starttime: appt.getDurationText(true, true),
-		endtime: appt._getTTHour(appt.getEndDate()),
+		endtime: ZmAppt._getTTHour(appt.getEndDate()),
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		statusKey: appt.getParticipationStatus(),
 		status: appt.getParticipationStatusString()
@@ -1071,7 +1071,7 @@ function(event) {
 	data.appt.__view.deselectAll();
 	data.appt.__view.setSelection(data.appt);
 	ZmCalDayView._setOpacity(apptEl, 70);
-		data.sash.innerHTML = "<div class=appt_sash_feedback_start>"+data.appt._getTTHour(data.endDate)+"</div>";
+		data.sash.innerHTML = "<div class=appt_sash_feedback_start>"+ZmAppt._getTTHour(data.endDate)+"</div>";
 	return false;	
 }
 
@@ -1116,8 +1116,7 @@ function(ev) {
 			data.lastDelta = delta;
 			data.endDate.setTime(data.appt.getEndTime() + (delta15 * 15 * 60 * 1000)); // num msecs in 15 minutes
 			var cname = delta == 0 ? "start" : "diff";
-			data.sash.innerHTML = "<div class=appt_sash_feedback_"+cname+">"+data.appt._getTTHour(data.endDate)+"</div>";
-			//data.sash.innerHTML = data.appt._getTTHour(data.endDate);
+			data.sash.innerHTML = "<div class=appt_sash_feedback_"+cname+">"+ZmAppt._getTTHour(data.endDate)+"</div>";
 		}
 	}
 

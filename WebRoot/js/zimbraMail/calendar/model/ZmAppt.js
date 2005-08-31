@@ -558,9 +558,9 @@ function(emptyAllDay,startOnly) {
 
 	} else {
 		if (startOnly) {
-			return this._getTTHour(this.getStartDate());
+			return ZmAppt._getTTHour(this.getStartDate());
 		} else {
-			return this._getTTHour(this.getStartDate())+" - "+this._getTTHour(this.getEndDate());
+			return ZmAppt._getTTHour(this.getStartDate())+" - "+ZmAppt._getTTHour(this.getEndDate());
 		}			
 	}
 }
@@ -583,7 +583,7 @@ function() {
 	return h+":"+ms+ampm;
 }
 
-ZmAppt.prototype._getTTHour =
+ZmAppt._getTTHour =
 function(d) {
 	var h = d.getHours();
 	var m = d.getMinutes();	
