@@ -634,6 +634,9 @@ function(refresh) {
 		this._checkUnread(tagTree, unread);
 		this._checkUnread(folderTree, unread);
 	}
+
+	// need to tell calendar to refresh/relayout
+	if (this._calController) this._calController.refreshHandler();	
 }
 
 ZmZimbraMail.prototype._checkUnread =

@@ -993,15 +993,34 @@ function(ids) {
 ZmCalViewController.prototype.notifyComplete =
 function(ids) {
 	//DBG.println("ZmCalViewController: notifyComplete!");
-	if (this._clearCache && this._viewMgr != null) {
+	if (this._clearCache) {
+		var act = new AjxTimedAction();
+		act.obj = this;
+		act.method = ZmCalViewController.prototype._refreshAction;
+		AjxTimedAction.scheduleAction(act, 0);
+		this._clearCache = false;			
+	}
+}
+
+ZmCalViewController.prototype.refreshHandler =
+function() {
+	//DBG.println("ZmCalViewController in refreshHandler");
+	var act = new AjxTimedAction();
+	act.obj = this;
+	act.method = ZmCalViewController.prototype._refreshAction;
+	AjxTimedAction.scheduleAction(act, 0);
+}
+
+ZmCalViewController.prototype._refreshAction =
+function() {
+	//DBG.println("ZmCalViewController in refreshAction");
+	if (this._viewMgr != null) {
 		// reset cache
 		this.resetApptSummaryCache();
 		// mark all views as dirty
 		this._viewMgr.setNeedsRefresh(true);
 		// mark mini cal as dirty
 		this._needMiniCalendarUpdate = true;
-		this._clearCache = false;	
-		
 		if (this._viewVisible) this.refreshView();
 	}
 }
