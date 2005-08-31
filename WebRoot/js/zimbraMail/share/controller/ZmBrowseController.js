@@ -147,7 +147,7 @@ function(doSearch) {
 		DBG.println(AjxDebug.DBG3, "Browse query: " + this._query);
 		if (doSearch)
 			this._appCtxt.getSearchController().search(this._query);
-		else if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING))
+		else
 			this._appCtxt.getSearchController().setSearchField(this._query);
 	}
 }

@@ -153,32 +153,36 @@ function(ev) {
 
 ZmBasicPicker.prototype._updateQuery = 
 function() {
-	var query = new Array();
+	var query1 = new Array();
 	var from = AjxStringUtil.trim(this._from.value, true);
 	if (from.length)
-		query.push("from:(" + from + ")");
+		query1.push("from:(" + from + ")");
 	var to = AjxStringUtil.trim(this._to.value, true);
 	if (to.length)
-		query.push("(to:(" + to + ")" + " OR cc:(" + to + "))");
+		query1.push("(to:(" + to + ")" + " OR cc:(" + to + "))");
 	var subject = AjxStringUtil.trim(this._subject.value, true);
 	if (subject.length)
-		query.push("subject:(" + subject + ")");
+		query1.push("subject:(" + subject + ")");
 	var content = AjxStringUtil.trim(this._content.value, true);
 	if (content.length)
-		query.push("content:(" + content + ")");
-	var gotInput = (query.length > 0);
+		query1.push("content:(" + content + ")");
+	
+	var query2 = new Array();
 	var checkSpam = (this._inSpam && this._inSpam.checked);
 	var checkTrash = (this._inTrash && this._inTrash.checked);
 	if (checkSpam && checkTrash)
-		query.push("is:anywhere");
+		query2.push("is:anywhere");
 	else if (checkSpam)
-		query.push("is:anywhere not in:trash");
+		query2.push("is:anywhere not in:trash");
 	else if (checkTrash)
-		query.push("is:anywhere not in:junk");
+		query2.push("is:anywhere not in:junk");
+	var cbQuery = query2.join(" ");
 
-	// if just the "search Trash/Spam" checkboxes changed, run the query
-	var cbChange = (!gotInput && (this._query != query));
+	// if the "search Trash/Spam" checkboxes changed, run the query
+	var cbChange = (query1.length && (this._cbQuery != cbQuery));
+	var query = query1.concat(query2);
 	this.setQuery(query.length ? query.join(" ") : "");
 	if (cbChange)
 		this.execute();
+	this._cbQuery = cbQuery;
 }

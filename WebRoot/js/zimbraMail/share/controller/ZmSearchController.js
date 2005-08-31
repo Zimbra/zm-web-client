@@ -99,8 +99,10 @@ function() {
 
 ZmSearchController.prototype.setSearchField =
 function(searchString) {
-	if (this._searchToolBar)
+	if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && this._searchToolBar)
 		this._searchToolBar.setSearchFieldValue(searchString);
+	else
+		this._currentQuery = searchString;
 }
 
 ZmSearchController.prototype.getSearchFieldValue =
@@ -321,7 +323,12 @@ function(queryString) {
 ZmSearchController.prototype._searchButtonListener =
 function(ev) {
 	var queryString = this._searchToolBar.getSearchFieldValue();
-	this.search(queryString, null, null, null, null, null, true);
+	var userText = (queryString.length > 0);
+	if (queryString)
+		this._currentQuery = null;
+	else
+		queryString = this._currentQuery;
+	this.search(queryString, null, null, null, null, null, userText);
 }
 
 ZmSearchController.prototype._browseButtonListener =
