@@ -29,7 +29,7 @@ function ZmCalMultiDayView(parent, posStyle, dropTgt, view, numDays) {
 	var className = "calendar_view";
 	if (view == null) view = ZmController.CAL_DAY_VIEW;
 	this._numDays = numDays;
-	ZmCalNewBaseView.call(this, parent, className, posStyle, view);
+	ZmCalBaseView.call(this, parent, className, posStyle, view);
 	//this.getHtmlElement().style.overflow = "hidden";	
 	//this.setScrollStyle(DwtControl.SCROLL);
 	this.setScrollStyle(DwtControl.CLIP);	
@@ -38,7 +38,7 @@ function ZmCalMultiDayView(parent, posStyle, dropTgt, view, numDays) {
 	this._selectedClassName = this._normalClassName+"-selected";
 }
 
-ZmCalMultiDayView.prototype = new ZmCalNewBaseView;
+ZmCalMultiDayView.prototype = new ZmCalBaseView;
 ZmCalMultiDayView.prototype.constructor = ZmCalMultiDayView;
 
 ZmCalMultiDayView._hoursDivWidth = 40; // width of div holding hours (1:00am, etc)
@@ -304,7 +304,7 @@ function(appt, now, isDndIcon) {
 
 	ZmCalMultiDayView._setApptOpacity(appt, div);
 
-	this.associateItemWithElement(appt, div, ZmCalNewBaseView.TYPE_APPT);
+	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
 	appt.__view = this;
 
 	var html = new Array(30);
@@ -360,7 +360,7 @@ function(appt, now, isDndIcon) {
 	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
 	div.className = div._styleClass;
 
-	this.associateItemWithElement(appt, div, ZmCalNewBaseView.TYPE_APPT);
+	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
 	
 	var html = new Array(10);
 	var idx = 0;
@@ -404,7 +404,7 @@ function()
 
 	var e = Dwt.getDomObj(this.getDocument(), this._timeSelectionDivId);
 	if (!e) return;
-	e._type = ZmCalNewBaseView.TYPE_SELECTED_TIME;
+	e._type = ZmCalBaseView.TYPE_SELECTED_TIME;
 
 	var day =  this._getDayForDate(this._date);
 	if (!day) return;
@@ -526,7 +526,7 @@ function(abook) {
 
 	this.getHtmlElement().innerHTML = html.join("");
 	
-	Dwt.getDomObj(this.getDocument(), this._apptBodyDivId)._type = ZmCalNewBaseView.TYPE_APPTS_DAYGRID;
+	Dwt.getDomObj(this.getDocument(), this._apptBodyDivId)._type = ZmCalBaseView.TYPE_APPTS_DAYGRID;
 
 	ZmCalMultiDayView._idToView[this._bodyDivId] = this;
 	
@@ -942,16 +942,16 @@ function (ev){
 
 ZmCalMultiDayView.prototype._mouseUpAction =
 function(ev, div) {
-	ZmCalNewBaseView.prototype._mouseUpAction.call(this, ev, div);
-	if (div._type == ZmCalNewBaseView.TYPE_APPTS_DAYGRID || div._type == ZmCalNewBaseView.TYPE_SELECTED_TIME)
+	ZmCalBaseView.prototype._mouseUpAction.call(this, ev, div);
+	if (div._type == ZmCalBaseView.TYPE_APPTS_DAYGRID || div._type == ZmCalBaseView.TYPE_SELECTED_TIME)
 		this._timeSelectionAction(ev, div, false);
 
 }
 
 ZmCalMultiDayView.prototype._doubleClickAction =
 function(ev, div) {
-	ZmCalNewBaseView.prototype._doubleClickAction.call(this, ev, div);
-	if (div._type == ZmCalNewBaseView.TYPE_APPTS_DAYGRID || div._type == ZmCalNewBaseView.TYPE_SELECTED_TIME)
+	ZmCalBaseView.prototype._doubleClickAction.call(this, ev, div);
+	if (div._type == ZmCalBaseView.TYPE_APPTS_DAYGRID || div._type == ZmCalBaseView.TYPE_SELECTED_TIME)
 		this._timeSelectionAction(ev, div, true);
 }
 
@@ -961,14 +961,14 @@ function(ev, div, dblclick) {
 	var date;
 	
 	switch (div._type) {
-		case ZmCalNewBaseView.TYPE_APPTS_DAYGRID:
+		case ZmCalBaseView.TYPE_APPTS_DAYGRID:
 			var date = this._getDateFromXY(ev.elementX, ev.elementY);
 			if (date == null) return false;
 //			DBG.println("_mouseUplistener: element "+ev.elementX+ ", "+ev.elementY);
 //			DBG.println("_mouseUplistener: date = "+date.toString());
 //			DBG.println("_mouseUplistener: dbl click = "+dblclick);			
 			break;
-		case ZmCalNewBaseView.TYPE_SELECTED_TIME:
+		case ZmCalBaseView.TYPE_SELECTED_TIME:
 			//var date = new Date(this._date.getTime());
 			var loc = Dwt.getLocation(div);
 			var date = this._getDateFromXY(loc.x+ev.elementX, loc.y+ev.elementY);
