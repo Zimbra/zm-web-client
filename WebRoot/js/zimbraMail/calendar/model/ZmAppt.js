@@ -1204,7 +1204,12 @@ ZmAppt.prototype._parseServerDateTime = function (serverStr) {
 	var MM = parseInt(serverStr.substr(4,2), 10);
 	var dd = parseInt(serverStr.substr(6,2), 10);
 	d.setFullYear(yyyy);
+	// EMC 8/31/05 - fix for bug 3839. It looks like firefox needs to call setMonth twice for 
+	// dates starting sept 1. No good reason at this point, but I noticed that
+	// setting it twice seems to do the trick. Very odd.
 	d.setMonth(MM - 1);
+	d.setMonth(MM - 1);
+	// DON'T remove second call to setMonth
 	d.setDate(dd);
 	this._parseServerTime(serverStr, d);
 	return d;
