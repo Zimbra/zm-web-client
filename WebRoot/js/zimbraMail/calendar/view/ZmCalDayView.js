@@ -1024,19 +1024,112 @@ function(event) {
 }
 */
 
-
-ZmCalBaseView.prototype._mouseDownAction = 
+ZmCalDayView.prototype._mouseDownAction = 
 function(ev, div) {
 	//ZmCalBaseView.prototype._mouseDownAction.call(this, ev, div);
-	if (div._type == ZmCalBaseView.TYPE_APPT_BOTTOM_SASH) {
-		DBG.println("_mouseDownAction for SASH!");
-		return this._sashMouseDownAction(ev, div);
+	switch (div._type) {
+		case	 ZmCalBaseView.TYPE_APPT_BOTTOM_SASH:
+			//DBG.println("_mouseDownAction for SASH!");
+			return this._sashMouseDownAction(ev, div);
+			break;
+		case ZmCalBaseView.TYPE_APPT:
+			//return this._apptMouseDownAction(ev, div);
+			break;
 	}
 	return false;
 }
 
-// BEGIN SASH ACTION HANDLERS
+// BEGIN APPT ACTION HANDLERS
 
+ZmCalDayView.prototype._apptMouseDownAction =
+function(ev, apptEl) {
+	if (ev.button != DwtMouseEvent.LEFT) {
+		return false;
+	}
+
+	var appt = AjxCore.objectWithId(apptEl._itemIndex);
+	var loc = Dwt.getLocation(apptEl);
+	
+	var apptOffset = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, apptEl);
+	
+	var data = { 
+		appt:appt, 
+		view:this,
+		apptEl: apptEl, 
+		apptX: loc.x,
+		apptOffset: apptOffset,
+		apptY: loc.y,
+		docX: ev.docX,
+		docY: ev.docY,
+		date: new Date(appt.getStartTime())
+	};
+	var capture = new DwtMouseEventCapture	(data,
+			ZmCalDayView._emptyHdlr, // mouse over
+			ZmCalDayView._emptyHdlr, // mouse down (already handled by action)
+			ZmCalDayView._apptMouseMoveHdlr, 
+			ZmCalDayView._apptMouseUpHdlr, 
+			ZmCalDayView._emptyHdlr, // mouse out
+			true);
+	capture.capture();
+	this.deselectAll();
+	this.setSelection(data.appt);
+	ZmCalDayView._setOpacity(apptEl, 70);
+	return false;	
+}
+
+ZmCalDayView._apptMouseMoveHdlr =
+function(ev) {
+
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev);	
+	var data = DwtMouseEventCapture.getTargetObj();
+
+	var deltaX = mouseEv.docX - data.docX;
+	var deltaY = mouseEv.docY - data.docY;
+
+	// calculate new potential start time
+	var newX = data.apptX + data.apptOffset.x + deltaX;
+	var newY = data.apptY + deltaY;
+	
+	var newDate = data.view._getDateFromXY(newX, newY, true);
+	DBG.println("new Date = "+newDate);
+	if (newDate != null && newDate.getTime() != data.date.getTime()) {
+		Dwt.setLocation(data.apptEl, data.view._getDayFromX(newX).apptX, data.view._getYWithSnap(newDate,15));
+		data.date = newDate;		
+	}
+
+	mouseEv._stopPropagation = true;
+	mouseEv._returnValue = false;
+	mouseEv.setToDhtmlEvent(ev);
+	return false;	
+}
+
+ZmCalDayView._apptMouseUpHdlr =
+function(ev) {
+//	DBG.println("ZmCalDayView._sashMouseUpHdlr");
+	var data = DwtMouseEventCapture.getTargetObj();
+	ZmCalDayView._setApptOpacity(data.appt, data.apptEl);	
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev);	
+	if (mouseEv.button != DwtMouseEvent.LEFT) {
+		DwtUiEvent.setBehaviour(ev, true, false);
+		return false;
+	}
+
+	DwtMouseEventCapture.getCaptureObj().release();
+
+	Dwt.setLocation(data.apptEl, data.apptX, data.apptY);
+
+	mouseEv._stopPropagation = true;
+	mouseEv._returnValue = false;
+	mouseEv.setToDhtmlEvent(ev);
+
+	return false;	
+}
+
+// END APPT ACTION HANDLERS
+
+// BEGIN SASH ACTION HANDLERS
 
 ZmCalDayView.prototype._sashMouseDownAction =
 function(ev, sash) {
@@ -1065,11 +1158,11 @@ function(ev, sash) {
 	};
 	//TODO: only create one of these and change data each time...
 	var capture = new DwtMouseEventCapture	(data,
-			ZmCalDayView._sashEmptyHdlr, // mouse over
-			ZmCalDayView._sashEmptyHdlr, // mouse down (already handled by action)
+			ZmCalDayView._emptyHdlr, // mouse over
+			ZmCalDayView._emptyHdlr, // mouse down (already handled by action)
 			ZmCalDayView._sashMouseMoveHdlr, 
 			ZmCalDayView._sashMouseUpHdlr, 
-			ZmCalDayView._sashEmptyHdlr, // mouse out
+			ZmCalDayView._emptyHdlr, // mouse out
 			true);
 	capture.capture();
 	this.deselectAll();
@@ -1077,28 +1170,6 @@ function(ev, sash) {
 	ZmCalDayView._setOpacity(apptEl, 70);
 	sash.innerHTML = "<div class=appt_sash_feedback_start>"+ZmAppt._getTTHour(data.endDate)+"</div>";
 	return false;	
-}
-
-ZmCalDayView.sashEmptyHdlr =
-function(ev) {
-	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev);	
-	mouseEv._stopPropagation = true;
-	mouseEv._returnValue = false;
-	mouseEv.setToDhtmlEvent(ev);
-	return false;	
-}
-
-ZmCalDayView._getAttrFromElement =
-function(el, attr)  {
-	while (el != null) {
-		if (el.getAttribute) {
-			var value = el.getAttribute(attr);
-			if (value != null) return value;
-		}
-		el = el.parentNode;
-	}
-	return null;
 }
 
 ZmCalDayView._sashMouseMoveHdlr =
@@ -1162,3 +1233,26 @@ function(ev) {
 }
 
 // END SASH ACTION HANDLERS
+
+ZmCalDayView._emptyHdlr =
+function(ev) {
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev);	
+	mouseEv._stopPropagation = true;
+	mouseEv._returnValue = false;
+	mouseEv.setToDhtmlEvent(ev);
+	return false;	
+}
+
+ZmCalDayView._getAttrFromElement =
+function(el, attr)  {
+	while (el != null) {
+		if (el.getAttribute) {
+			var value = el.getAttribute(attr);
+			if (value != null) return value;
+		}
+		el = el.parentNode;
+	}
+	return null;
+}
+
