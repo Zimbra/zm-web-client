@@ -1064,7 +1064,7 @@ function () {
 
 ZmComposeView.prototype._showForwardField =
 function(msg, action, pref) {
-	var subj = msg.getSubject();
+	var subj = msg.getSubject() || AjxStringUtil.htmlEncode(ZmMsg.noSubject);
 	var html = new Array();
 	var idx = 0;
 	
