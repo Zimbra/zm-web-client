@@ -57,6 +57,7 @@ function ZmFreeBusyView (parent, userSchedules, start, end, appt, className, pos
 	this._selectionManager = new AjxSelectionManager(this);
 	this._aggregatedSchedule = new Array();
 	this.enable();
+	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this.render();
 }
 
@@ -201,6 +202,10 @@ ZmFreeBusyView.prototype.render = function () {
 	//buf.append("</td></tr></table>");
 	buf.append("</div>");
 	this.setContent(buf.toString());
+
+	// create autocomplete list
+	this._createAutoCompleteWidget();
+
 	for ( var i = 0 ; i < this.userSchedules.length; ++i) {
 		this._updateRow(this.userSchedules[i], i + 3);
 // 		this._updateAddressRow(this.userSchedules[i], i + 3);
@@ -209,7 +214,8 @@ ZmFreeBusyView.prototype.render = function () {
 	}
 	this._updateEmptyRow(i + 3);
 
-	this._writeAggregatedRow()
+	this._writeAggregatedRow();
+
 	var datePickerCreation = function () {
 		this._createDatePicker(this._currentAppt.getStartDate());
 		this._createDatePicker(this._currentAppt.getEndDate(), true);
@@ -229,6 +235,35 @@ ZmFreeBusyView.prototype.render = function () {
 	action.obj = this;
 	action.method = datePickerCreation;
 	AjxTimedAction.scheduleAction(action, 2);
+};
+
+
+// --------------------------------------------------------------------------------
+// auto complete methods
+// --------------------------------------------------------------------------------
+
+ZmFreeBusyView.prototype._createAutoCompleteWidget = function () {
+	var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+	var contactsLoader = contactsClass.getContactList;
+	var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, this);
+	this._autocompleteList = new ZmAutocompleteListView(this, null, contactsClass, contactsLoader, locCallback);
+	this._autocompleteList.setHandleEnterOnKeydown(true);
+};
+
+/**
+ * Locates the autocomplete list below the given element -- which in these cases, should
+ * always be an input element
+ */
+ZmFreeBusyView.prototype._getNewAutocompleteLocation = function(args) {
+	var cv = args[0];
+	var ev = args[1];
+	var element = ev.element;
+	var id = element.id;
+	
+	var viewEl = this.getHtmlElement();
+	var location = Dwt.toWindow(element, 0, 0, viewEl);
+	var size = Dwt.getSize(element);
+	return new DwtPoint((location.x), (location.y + size.y) );
 };
 
 ZmFreeBusyView.prototype.highlightAppointment = function (optionalSliderDiv){
@@ -258,6 +293,11 @@ ZmFreeBusyView.prototype.highlightAppointment = function (optionalSliderDiv){
 
 ZmFreeBusyView.prototype.setData = function (schedules, appt) {
 	this.enable();
+	if (this._autocompleteList) {
+		this._autocompleteList.reset();
+		this._autocompleteList.show(false);
+	}
+
 	this.setSchedules(schedules);
 	this.setAppointment(appt);
 	this._focusFirstRow();
@@ -498,17 +538,11 @@ ZmFreeBusyView.prototype._renderExtraRows = function (buf, rowString, containerH
 };
 
 ZmFreeBusyView.prototype._getAddressOnclickHandler = function () {
-	if (this._addrOnclickFunc == null) {
-		this._addrOnclickFunc = new Function ("event", "AjxCore.objectWithId(" + this.__internalId + ").handleAddrRowClick(event);");
-	}
-	return this._addrOnclickFunc;
+	return  (new Function ("event", "AjxCore.objectWithId(" + this.__internalId + ").handleAddrRowClick(event);"));
 };
 
 ZmFreeBusyView.prototype._getAddressOnchangeHandler = function () {
-	if (this._addrOnchangeFunc == null) {
-		this._addrOnchangeFunc = new Function ("event", "AjxCore.objectWithId(" + this.__internalId + ").handleAddrChange(event);");
-	}
-	return this._addrOnchangeFunc;
+	return (new Function ("event", "AjxCore.objectWithId(" + this.__internalId + ").handleAddrChange(event);"));
 };
 
 ZmFreeBusyView.prototype._getAddressInput = function (address) {
@@ -626,6 +660,12 @@ ZmFreeBusyView.prototype._updateAddressRow = function (userSchedule, index, opti
 	cell1.innerHTML = "";
 	cell1.appendChild(this._getAddressInput(addr));
 	cell1.firstChild.onclick = onclickFunc;
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		this._autocompleteList.handle(cell1.firstChild);
+		//this._setEventHandler(this._fieldId[type], "onFocus");
+		//this._setEventHandler(this._fieldId[type], "onClick");
+	}
+
 };
 
 ZmFreeBusyView.prototype._updateScheduleRow = function (userSchedule, index, optionalRow, aggregated) {
@@ -884,9 +924,34 @@ ZmFreeBusyView.prototype._getAncestor = function (element, tag) {
 	return retEl;
 };
 
+ZmFreeBusyView.prototype._getScheduleForEmptyRow = function (row) {
+	var rowIndex = row.rowIndex;
+	this._updateEmptyRow(rowIndex + 1);
+	var sched = new ZmUserSchedule();
+	this.userSchedules[this.userSchedules.length] = sched;
+	row.id = "LMFBA_" + sched.getUniqueId();
+	index = rowIndex;
+	this._selectionManager.selectOneItem(this._dummyBlock);
+	return sched;
+};
+
+ZmFreeBusyView.ADDR_REGEX = /.*<([^>]*)>.*/;
+ZmFreeBusyView.prototype._getEmailAddressFromTargetText = function ( value ) {
+	// Check for < >, and take the text in between, if they exist
+	var retVal = value;
+	if (value.indexOf('<') != -1){ 
+		var results = ZmFreeBusyView.ADDR_REGEX.exec(value);
+		if (results && results[1]) {
+			retVal = results[1];
+		}
+	}
+	return retVal;
+};
+
+
 ZmFreeBusyView.prototype.handleAddrChange = function ( event ) {
 	// This is really to prevent us making a server request when
-	// the view is going 
+	// the view is going away.
 	if (!this._enabled) return true;
 
 	var target = DwtUiEvent.getTarget(event);
@@ -898,24 +963,21 @@ ZmFreeBusyView.prototype.handleAddrChange = function ( event ) {
 			// create the new row
 			// see if we are dealing with the empty row
 			if (tr.id != null) {
+				index = tr.rowIndex;
 				if (tr.id.indexOf("Empty")!= -1){
-					this._updateEmptyRow(tr.rowIndex + 1);
-					sched = new ZmUserSchedule();
-					this.userSchedules[this.userSchedules.length] = sched;
-					tr.id = "LMFBA_" + sched.getUniqueId();
-					index = tr.rowIndex;//this.userSchedules.length;
-					this._selectionManager.selectOneItem(this._dummyBlock);
+					sched = this._getScheduleForEmptyRow(tr);
 				} else {
-					// from the id we should be able to decide which row we are working with.
-					index = tr.rowIndex;
 					if (index != -1) {
 						sched = this.userSchedules[index - 2];
 					}
 				}
+
+				var value = this._getEmailAddressFromTargetText(target.value);
+
 				// send a request to the server for the free busy information for the new
 				// address.
 				// TODO: This should probably live in a controller somewhere.
-				sched.getSchedule(this.startDate, this.endDate, target.value, true);
+				sched.getSchedule(this.startDate, this.endDate, value, true);
 				
 				// update the view
 				this._updateRow(sched, index);

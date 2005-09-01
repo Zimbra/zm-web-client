@@ -79,6 +79,8 @@ function ZmAutocompleteListView(parent, className, dataClass, dataLoader, locCal
 		this._focusAction.method = this._focus;
 	}
 
+	this._trapEnterOnKeyDown = false;
+
 	this._internalId = AjxCore.assignId(this);
 	this._numChars = 0;
 	this._matches = new AjxVector();
@@ -107,7 +109,11 @@ ZmAutocompleteListView.onKeyDown =
 function(ev) {
 	DBG.println(AjxDebug.DBG3, "onKeyDown");
 	var key = DwtKeyEvent.getCharCode(ev);
-	return (key == 9 || key == 27) ? ZmAutocompleteListView.onKeyUp(ev) : true;
+	if (this._trapEnterOnKeyDown) {
+		return (key == DwtKeyEvent.KEY_TAB || key == DwtKeyEvent.KEY_ESCAPE || key == DwtKeyEvent.KEY_RETURN) ? ZmAutocompleteListView.onKeyUp(ev) : true;
+	} else {
+		return (key == DwtKeyEvent.KEY_TAB || key == DwtKeyEvent.KEY_ESCAPE) ? ZmAutocompleteListView.onKeyUp(ev) : true;
+	}
 }
 
 /**
@@ -206,6 +212,11 @@ function() {
 	return "ZmAutocompleteListView";
 }
 
+ZmAutocompleteListView.prototype.setHandleEnterOnKeydown = 
+function (set) {
+	this._trapEnterOnKeyDown = set;
+};
+
 /**
 * Adds autocompletion to the given field by setting key event handlers.
 *
@@ -216,6 +227,7 @@ function(element) {
 	element._acListViewId = this._internalId;
 	element.onkeydown = ZmAutocompleteListView.onKeyDown;
 	element.onkeyup = ZmAutocompleteListView.onKeyUp;
+	element._trapEnterOnKeyDown = this._trapEnterOnKeyDown;
 }
 
 /**
