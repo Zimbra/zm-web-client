@@ -336,10 +336,8 @@ function(appt, now, isDndIcon) {
 		var sash = this.getDocument().createElement("div");
 		sash.id = id+"_sash";
 		sash.className = 'appt_sash';
-		sash.onmousedown = ZmCalDayView._sashMouseDownHdlr;
-		sash.onmouseover = ZmCalDayView._sashMouseOverHdlr;
-		sash.onmouseout = ZmCalDayView._sashMouseOutHdlr;
 		sash.style.cursor = AjxEnv.isIE ? "row-resize" : "n-resize";
+		sash._type = ZmCalBaseView.TYPE_APPT_BOTTOM_SASH;
 		div.appendChild(sash);
 	}
 
@@ -1026,63 +1024,68 @@ function(event) {
 }
 */
 
-ZmCalDayView._sashMouseOverHdlr =
-function(ev) {
-//	DBG.println("ZmCalDayView._sashMouseOverHdlr");
-	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev);
-	mouseEv._stopPropagation = true;
-	mouseEv._returnValue = false;
-	mouseEv.setToDhtmlEvent(ev);
-	return false;	
+
+ZmCalBaseView.prototype._mouseDownAction = 
+function(ev, div) {
+	//ZmCalBaseView.prototype._mouseDownAction.call(this, ev, div);
+	if (div._type == ZmCalBaseView.TYPE_APPT_BOTTOM_SASH) {
+		DBG.println("_mouseDownAction for SASH!");
+		return this._sashMouseDownAction(ev, div);
+	}
+	return false;
 }
 
+// BEGIN SASH ACTION HANDLERS
 
-ZmCalDayView._sashMouseDownHdlr =
-function(event) {
+
+ZmCalDayView.prototype._sashMouseDownAction =
+function(ev, sash) {
 //	DBG.println("ZmCalDayView._sashMouseDownHdlr");
-	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(event);	
-	if (mouseEv.button != DwtMouseEvent.LEFT) {
-		DwtUiEvent.setBehaviour(event, true, false);
+	if (ev.button != DwtMouseEvent.LEFT) {
 		return false;
 	}
-	var element = DwtUiEvent.getTargetWithProp(event, "id");
-	element.className = 'appt_sash_active';
-	if (!element) return;
-//	DBG.println("wheeeee! "+element.id);
-	var apptEl = element.parentNode;
+	sash.className = 'appt_sash_active';
+
+	var apptEl = sash.parentNode;
 	var apptBodyEl = apptEl.childNodes[0];
 
 	var appt = AjxCore.objectWithId(apptEl._itemIndex);
-//	DBG.println("appt: "+appt);
 	var origY = Dwt.getLocation(apptBodyEl).y;
 	var origHeight = Dwt.getSize(apptBodyEl).y;
-//	DBG.println("origHeight = "+origHeight);
 	var data = { 
-		sash: element,
+		sash: sash,
 		appt:appt, 
+		view:this,
 		apptEl: apptEl, 
 		apptBodyEl: apptBodyEl,
 		origHeight: origHeight,
 		origY: origY,
-		startY: mouseEv.docY,
+		startY: ev.docY,
 		endDate: new Date(appt.getEndTime())
 	};
 	//TODO: only create one of these and change data each time...
 	var capture = new DwtMouseEventCapture	(data,
-			ZmCalDayView._sashMouseOverHdlr,
-			ZmCalDayView._sashMouseDownHdlr, ZmCalDayView._sashMouseMoveHdlr, 
-			ZmCalDayView._sashMouseUpHdlr, ZmCalDayView._sashMouseOutHdlr, true);
+			ZmCalDayView._sashEmptyHdlr, // mouse over
+			ZmCalDayView._sashEmptyHdlr, // mouse down (already handled by action)
+			ZmCalDayView._sashMouseMoveHdlr, 
+			ZmCalDayView._sashMouseUpHdlr, 
+			ZmCalDayView._sashEmptyHdlr, // mouse out
+			true);
 	capture.capture();
+	this.deselectAll();
+	this.setSelection(data.appt);
+	ZmCalDayView._setOpacity(apptEl, 70);
+	sash.innerHTML = "<div class=appt_sash_feedback_start>"+ZmAppt._getTTHour(data.endDate)+"</div>";
+	return false;	
+}
+
+ZmCalDayView.sashEmptyHdlr =
+function(ev) {
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev);	
 	mouseEv._stopPropagation = true;
 	mouseEv._returnValue = false;
-	mouseEv.setToDhtmlEvent(event);
-
-	data.appt.__view.deselectAll();
-	data.appt.__view.setSelection(data.appt);
-	ZmCalDayView._setOpacity(apptEl, 70);
-		data.sash.innerHTML = "<div class=appt_sash_feedback_start>"+ZmAppt._getTTHour(data.endDate)+"</div>";
+	mouseEv.setToDhtmlEvent(ev);
 	return false;	
 }
 
@@ -1153,19 +1156,9 @@ function(ev) {
 	if (data.endDate.getTime() != data.appt.getEndTime()) {
 		data.appt._orig.setViewMode(ZmAppt.MODE_EDIT);
 		data.appt._orig.setEndDate(data.endDate);
-		data.appt._orig.save(data.appt.__view._appCtxt.getAppController());
+		data.appt._orig.save(data.view._appCtxt.getAppController());
 	}
 	return false;	
 }
 
-ZmCalDayView._sashMouseOutHdlr =
-function(ev) {
-//	DBG.println("ZmCalDayView._sashMouseOutHdlr");
-	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev);
-	mouseEv._stopPropagation = true;
-	mouseEv._returnValue = false;
-	mouseEv.setToDhtmlEvent(ev);
-	return false;	
-}
-
+// END SASH ACTION HANDLERS

@@ -74,6 +74,7 @@ ZmCalBaseView.TIME_SELECTION = "ZmCalTimeSelection";
 ZmCalBaseView.TYPE_APPTS_DAYGRID = 1; // grid holding days, for example
 ZmCalBaseView.TYPE_APPT = 2; // an appt
 ZmCalBaseView.TYPE_SELECTED_TIME = 3; // div representing selected time in a grid
+ZmCalBaseView.TYPE_APPT_BOTTOM_SASH = 4; // a sash for appt duration
 
 // BEGIIN LIST-RELATED
 
@@ -161,6 +162,11 @@ function(mouseEv, div) {
 	return true;
 }
 
+ZmCalBaseView.prototype._mouseDownAction = 
+function(mouseEv, div) {
+	return true;
+}
+
 ZmCalBaseView.prototype._mouseOverListener = 
 function(ev) {
 	var div = ev.target;
@@ -223,7 +229,7 @@ ZmCalBaseView.prototype._mouseDownListener =
 function(ev) {
 	var div = ev.target;
 
-	div = this._findAncestor(div, "_itemIndex");
+	div = this._findAncestor(div, "_type");
 
 	if (div == null){
 		this._dndSelection = null;
@@ -234,7 +240,9 @@ function(ev) {
 			this._dndSelection = null;
 		else
 			this._dndSelection = (this._selectedItems.contains(div)) ? this._selectedItems :  div._itemIndex;
+		return this._mouseDownAction(ev, div);	
 	}
+
 }
 
 ZmCalBaseView.prototype._mouseUpListener = 
