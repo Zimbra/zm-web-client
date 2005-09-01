@@ -262,7 +262,7 @@ function(buttonDiv) {
 	var html = new Array();
 	var idx = 0;
 	html[idx++] = "<html><head></head><body scroll=no bgcolor='#EEEEEE'>";
-	html[idx++] = "<form method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
+	html[idx++] = "<form style='margin: 0px; padding: 0px;' method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
 	html[idx++] = "<input style='font-family:Tahoma; font-size:10px' name='" + ZmPreferencesPage.IMPORT_FIELD_NAME + "' type='file' id='" + this._attInputId + "'>";
 	html[idx++] = "</form>";
 	html[idx++] = "</body></html>";
