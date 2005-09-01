@@ -1061,13 +1061,15 @@ function(ev, apptEl) {
 	var apptOffset = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, apptEl);
 
 	// snap it to grid
-	var snap = this._snapXY(loc.x + apptOffset.x, loc.y, 15);
+	var snap = this._snapXY(loc.x + apptOffset.x, loc.y, 30);
 	if (snap == null) return false;
 //DBG.println("mouseDown snap: "+snap.x+","+snap.y);	
 	var data = { 
 		appt:appt, 
 		view:this,
 		apptEl: apptEl, 
+		startTimeEl: Dwt.getDomObj(this.getDocument(), apptEl.id +"_st"),
+		endTimeEl: Dwt.getDomObj(this.getDocument(), apptEl.id +"_et"),		
 		apptX: loc.x,
 		apptOffset: apptOffset,
 		apptY: loc.y,
@@ -1101,15 +1103,17 @@ function(ev) {
 	var deltaY = mouseEv.docY - data.docY;
 
 	// snap new location to grid
-	var snap = data.view._snapXY(data.apptX + data.apptOffset.x + deltaX, data.apptY + deltaY, 15);
+	var snap = data.view._snapXY(data.apptX + data.apptOffset.x + deltaX, data.apptY + deltaY, 30);
 	//DBG.println("mouseMove new snap: "+snap.x+","+snap.y+ " data snap: "+data.snap.x+","+data.snap.y);
 	if (snap != null && (snap.x != data.snap.x || snap.y != data.snap.y)) {
-		var newDate = data.view._getDateFromXY(snap.x, snap.y, 15);
+		var newDate = data.view._getDateFromXY(snap.x, snap.y, 30);
 		//DBG.println("new Date = "+newDate);
 		if (newDate != null && newDate.getTime() != data.date.getTime()) {
 			data.view._positionAppt(data.apptEl, snap.x, snap.y);
 			data.date = newDate;
 			data.snap = snap;
+			if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.date);
+			if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(new Date(data.date.getTime()+data.appt.getDuration()));
 		}
 	}
 	mouseEv._stopPropagation = true;
@@ -1132,7 +1136,10 @@ function(ev) {
 
 	DwtMouseEventCapture.getCaptureObj().release();
 
+	// move back to original for now...
 	data.view._positionAppt(data.apptEl, data.apptX, data.apptY);
+	if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.appt.getStartDate());
+	if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.appt.getEndDate());
 
 	mouseEv._stopPropagation = true;
 	mouseEv._returnValue = false;
