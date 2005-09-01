@@ -37,6 +37,11 @@ function ZmContactSplitView(parent, dropTgt, posStyle) {
 	this._contactPart = new DwtComposite(this, "ZmContactInfoView", posStyle);
 
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
+	
+	this._contactPart._setMouseEventHdlrs(); // needed by object manager
+	// this manages all the detected objects within the view
+	this._objectManager = new ZmObjectManager(this._contactPart, this.shell.getData(ZmAppCtxt.LABEL));
+	
 };
 
 ZmContactSplitView.prototype = new DwtComposite;
@@ -71,6 +76,9 @@ function() {
 
 ZmContactSplitView.prototype.setContact = 
 function(contact, isGal) {
+
+	if (this._objectManager)
+		this._objectManager.reset();
 
 	if (!isGal) {
 		// Remove and re-add listeners for current contact if exists
@@ -144,6 +152,16 @@ function(ev) {
 	this._setContact(ev.source);
 };
 
+ZmContactSplitView.prototype._generateEmail =
+function(addr, html, idx) {
+	return this._objectManager.generateSpan(this._objectManager.getEmailHandler(), html, idx, addr, null);
+}
+
+ZmContactSplitView.prototype._generateObject =
+function(data) {
+	return this._objectManager.findObjects(data, true);
+}
+
 ZmContactSplitView.prototype._setContact = 
 function(contact, isGal) {
 
@@ -178,9 +196,9 @@ function(contact, isGal) {
 	if (email || email2 || email3) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Email</td><td valign=top class='contactOutput'>";
 		// TODO: make into EmailObjects and call compose view
-		if (email) 		html[idx++] = email + "<br>";
-		if (email2) 	html[idx++] = email2 + "<br>";
-		if (email3) 	html[idx++] = email3 + "<br>";
+		if (email) 	{	idx = this._generateEmail(email, html, idx); html[idx++] = "<br>"; }
+		if (email2) 	{	idx = this._generateEmail(email2, html, idx); html[idx++] = "<br>"; }
+		if (email3) 	{	idx = this._generateEmail(email3, html, idx); html[idx++] = "<br>"; }				
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
@@ -205,14 +223,15 @@ function(contact, isGal) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Work</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (workField) 	html[idx++] = workField + "<br>";
-		if (workURL) 	html[idx++] = "<a href='" + workURL + "' target='_blank'>" + workURL + "</a>";
+		if (workURL) 	html[idx++] = this._generateObject(workURL);
+		//if (workURL) 	html[idx++] = "<a href='" + workURL + "' target='_blank'>" + workURL + "</a>";		
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
 	html[idx++] = "</td>";
 	// - column 2
 	html[idx++] = "<td valign=top><table border=0>";
-	if (workPhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + workPhone + "</td></tr>";
+	if (workPhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + this._generateObject(workPhone) + "</td></tr>";
 	if (workPhone2)		html[idx++] = "<tr><td class='contactLabel'>Phone 2</td><td class='contactOutput'>" + workPhone2 + "</td></tr>";
 	if (workFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + workFax + "</td></tr>";
 	if (workAsst)		html[idx++] = "<tr><td class='contactLabel'>Assistant</td><td class='contactOutput'>" + workAsst + "</td></tr>";
