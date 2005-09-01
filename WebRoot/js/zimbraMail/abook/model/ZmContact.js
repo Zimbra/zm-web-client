@@ -585,8 +585,7 @@ function(street, city, state, zipcode, country) {
 	if (country)
 		html[idx++] = "\n" + country;
 
-	// bug fix #3712 - convert newlines to <br>'s	
-	return AjxStringUtil.htmlEncodeSpace(html.join(""));
+	return html.join("");
 }
 
 // IM presence

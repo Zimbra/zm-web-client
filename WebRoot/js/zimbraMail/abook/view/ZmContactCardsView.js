@@ -27,6 +27,10 @@ function ZmContactCardsView(parent, dropTgt, posStyle) {
 
 	posStyle = posStyle || Dwt.ABSOLUTE_STYLE;
 	ZmContactsBaseView.call(this, parent, "ZmContactCardsView", ZmController.CONTACT_CARDS_VIEW, null, dropTgt, posStyle);
+
+	this._setMouseEventHdlrs(); // needed by object manager
+	// this manages all the detected objects within the view
+	this._objectManager = new ZmObjectManager(this, this.shell.getData(ZmAppCtxt.LABEL));
 };
 
 ZmContactCardsView.prototype = new ZmContactsBaseView;
@@ -58,9 +62,17 @@ function(defaultColumnSort) {
 
 ZmContactCardsView.prototype.set = 
 function(contacts) {
+	if (this._objectManager)
+		this._objectManager.reset();
+
 	// XXX: optimize later - switch view always forces layout unnecessarily
 	ZmContactsBaseView.prototype.set.call(this, contacts);
 	this._layout();
+};
+
+ZmContactCardsView.prototype._generateObject =
+function(data) {
+	return this._objectManager.findObjects(data, true);
 };
 
 ZmContactCardsView.prototype._createItemHtml =
@@ -113,17 +125,17 @@ function(contact, now, isDndIcon) {
 	html[idx++] = "<table border=0><tr" + style + ">";
 	// add first column of work info here
 	if (value = contact.getWorkAddrField())
-		html[idx++] = this._getField("W", value);
+		html[idx++] = this._getField("W", value, isDndIcon);
 	else if (value = contact.getHomeAddrField())
-		html[idx++] = this._getField("H", value);
+		html[idx++] = this._getField("H", value, isDndIcon);
 	html[idx++] = "</tr>";
 	
 	if (value = contact.getAttr("email"))
-		html[idx++] = "<tr" + style + ">" + this._getField("E", value) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("E", value, isDndIcon) + "</tr>";
 	if (value = contact.getAttr("email2"))
-		html[idx++] = "<tr" + style + ">" + this._getField("E2", value) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("E2", value, isDndIcon) + "</tr>";
 	else if (value = contact.getAttr("email3"))
-		html[idx++] = "<tr" + style + ">" + this._getField("E3", value) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("E3", value, isDndIcon) + "</tr>";
 	
 	html[idx++] = "</table>";
 	
@@ -131,15 +143,15 @@ function(contact, now, isDndIcon) {
 	html[idx++] = "<table border=0>";
 	// add second column of home info here
 	if (value = contact.getAttr("workPhone"))
-		html[idx++] = "<tr" + style + ">" + this._getField("W", value) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("W", value, isDndIcon) + "</tr>";
 	if (value = contact.getAttr("workPhone2"))
-		html[idx++] = "<tr" + style + ">" + this._getField("W2", value) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("W2", value, isDndIcon) + "</tr>";
 	if (value = contact.getAttr("workFax"))
-		html[idx++] = "<tr" + style + ">" + this._getField("F", value) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("F", value, isDndIcon) + "</tr>";
 	if (value = contact.getAttr("mobilePhone"))
-		html[idx++] = "<tr" + style + ">" + this._getField("M", value) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("M", value, isDndIcon) + "</tr>";
 	if (value = contact.getAttr("homePhone"))
-		html[idx++] = "<tr" + style + ">" + this._getField("H", value) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("H", value, isDndIcon) + "</tr>";
 	
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr></table>";
@@ -151,8 +163,9 @@ function(contact, now, isDndIcon) {
 };
 
 ZmContactCardsView.prototype._getField = 
-function(fname, value) {
-	return "<td valign=top class='ZmContactFieldValue'>" + fname + " </td><td valign=top class='ZmContactField'>" + value + "</td>";
+function(fname, value, skipObjectify) {
+	var newValue = skipObjectify ? value : this._generateObject(value);
+	return "<td valign=top class='ZmContactFieldValue'>" + fname + " </td><td valign=top class='ZmContactField'>" + AjxStringUtil.nl2br(newValue) + "</td>";
 };
 
 // override so that we don't get back ZmListView._fillerString

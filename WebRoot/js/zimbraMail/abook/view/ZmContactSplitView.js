@@ -96,7 +96,7 @@ function() {
 	// clear the right pane
 	this._contactPart.getHtmlElement().innerHTML = "";
 	this._htmlInitialized = false;
-}
+};
 
 ZmContactSplitView.prototype._sizeChildren = 
 function(width, height) {
@@ -123,7 +123,7 @@ function(width, height) {
 		bodyDiv.style.width = this._contactPartWidth;
 		bodyDiv.style.height = this._contactPartHeight - 40;
 	}	
-}
+};
 
 ZmContactSplitView.prototype._createHtml = 
 function() {
@@ -152,15 +152,10 @@ function(ev) {
 	this._setContact(ev.source);
 };
 
-ZmContactSplitView.prototype._generateEmail =
-function(addr, html, idx) {
-	return this._objectManager.generateSpan(this._objectManager.getEmailHandler(), html, idx, addr, null);
-}
-
 ZmContactSplitView.prototype._generateObject =
 function(data) {
 	return this._objectManager.findObjects(data, true);
-}
+};
 
 ZmContactSplitView.prototype._setContact = 
 function(contact, isGal) {
@@ -186,7 +181,7 @@ function(contact, isGal) {
 	// start real content
 	
 	// add email fields
-	var email = contact.getAttr(ZmContact.F_email);
+	var email  = contact.getAttr(ZmContact.F_email);
 	var email2 = contact.getAttr(ZmContact.F_email2);
 	var email3 = contact.getAttr(ZmContact.F_email3);
 
@@ -196,9 +191,9 @@ function(contact, isGal) {
 	if (email || email2 || email3) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Email</td><td valign=top class='contactOutput'>";
 		// TODO: make into EmailObjects and call compose view
-		if (email) 	{	idx = this._generateEmail(email, html, idx); html[idx++] = "<br>"; }
-		if (email2) 	{	idx = this._generateEmail(email2, html, idx); html[idx++] = "<br>"; }
-		if (email3) 	{	idx = this._generateEmail(email3, html, idx); html[idx++] = "<br>"; }				
+		if (email) 		{	html[idx++] = this._generateObject(email); html[idx++] = "<br>"; }
+		if (email2) 	{	html[idx++] = this._generateObject(email2); html[idx++] = "<br>"; }
+		if (email3) 	{	html[idx++] = this._generateObject(email3); html[idx++] = "<br>"; }				
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
@@ -207,7 +202,7 @@ function(contact, isGal) {
 	html[idx++] = "<tr><td><br></td></tr>";
 	
 	// add work fields
-	var workField = contact.getWorkAddrField();
+	var workField = AjxStringUtil.nl2br(contact.getWorkAddrField());
 	var workPhone = contact.getAttr(ZmContact.F_workPhone);
 	var workPhone2 = contact.getAttr(ZmContact.F_workPhone2);
 	var workFax = contact.getAttr(ZmContact.F_workFax);
@@ -224,7 +219,6 @@ function(contact, isGal) {
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (workField) 	html[idx++] = workField + "<br>";
 		if (workURL) 	html[idx++] = this._generateObject(workURL);
-		//if (workURL) 	html[idx++] = "<a href='" + workURL + "' target='_blank'>" + workURL + "</a>";		
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
@@ -232,18 +226,18 @@ function(contact, isGal) {
 	// - column 2
 	html[idx++] = "<td valign=top><table border=0>";
 	if (workPhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + this._generateObject(workPhone) + "</td></tr>";
-	if (workPhone2)		html[idx++] = "<tr><td class='contactLabel'>Phone 2</td><td class='contactOutput'>" + workPhone2 + "</td></tr>";
-	if (workFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + workFax + "</td></tr>";
-	if (workAsst)		html[idx++] = "<tr><td class='contactLabel'>Assistant</td><td class='contactOutput'>" + workAsst + "</td></tr>";
-	if (workCompany)	html[idx++] = "<tr><td class='contactLabel'>Company</td><td class='contactOutput'>" + workCompany + "</td></tr>";
-	if (workCallback)	html[idx++] = "<tr><td class='contactLabel'>Callback</td><td class='contactOutput'>" + workCallback + "</td></tr>";
+	if (workPhone2)		html[idx++] = "<tr><td class='contactLabel'>Phone 2</td><td class='contactOutput'>" + this._generateObject(workPhone2) + "</td></tr>";
+	if (workFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + this._generateObject(workFax) + "</td></tr>";
+	if (workAsst)		html[idx++] = "<tr><td class='contactLabel'>Assistant</td><td class='contactOutput'>" + this._generateObject(workAsst) + "</td></tr>";
+	if (workCompany)	html[idx++] = "<tr><td class='contactLabel'>Company</td><td class='contactOutput'>" + this._generateObject(workCompany) + "</td></tr>";
+	if (workCallback)	html[idx++] = "<tr><td class='contactLabel'>Callback</td><td class='contactOutput'>" + this._generateObject(workCallback) + "</td></tr>";
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr>";
 
 	html[idx++] = "<tr><td><br></td></tr>";
 	
 	// add home fields
-	var homeField = contact.getHomeAddrField();
+	var homeField = AjxStringUtil.nl2br(contact.getHomeAddrField());
 	var homePhone = contact.getAttr(ZmContact.F_homePhone);
 	var homePhone2 = contact.getAttr(ZmContact.F_homePhone2);
 	var homeFax = contact.getAttr(ZmContact.F_homeFax);
@@ -258,25 +252,25 @@ function(contact, isGal) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Home</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (homeField) 	html[idx++] = homeField + "<br>";
-		if (homeURL) 	html[idx++] = "<a href='" + homeURL + "' target='_blank'>" + homeURL + "</a>";
+		if (homeURL) 	html[idx++] = this._generateObject(homeURL);
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
 	html[idx++] = "</td>";
 	// - column 2
 	html[idx++] = "<td valign=top><table border=0>";
-	if (homePhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + homePhone + "</td></tr>";
-	if (homePhone2)		html[idx++] = "<tr><td class='contactLabel'>Phone 2</td><td class='contactOutput'>" + homePhone2 + "</td></tr>";
-	if (homeFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + homeFax + "</td></tr>";
-	if (mobile)			html[idx++] = "<tr><td class='contactLabel'>Mobile</td><td class='contactOutput'>" + mobile + "</td></tr>";
-	if (pager)			html[idx++] = "<tr><td class='contactLabel'>Pager</td><td class='contactOutput'>" + pager + "</td></tr>";
+	if (homePhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + this._generateObject(homePhone) + "</td></tr>";
+	if (homePhone2)		html[idx++] = "<tr><td class='contactLabel'>Phone 2</td><td class='contactOutput'>" + this._generateObject(homePhone2) + "</td></tr>";
+	if (homeFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + this._generateObject(homeFax) + "</td></tr>";
+	if (mobile)			html[idx++] = "<tr><td class='contactLabel'>Mobile</td><td class='contactOutput'>" + this._generateObject(mobile) + "</td></tr>";
+	if (pager)			html[idx++] = "<tr><td class='contactLabel'>Pager</td><td class='contactOutput'>" + this._generateObject(pager) + "</td></tr>";
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr>";
 
 	html[idx++] = "<tr><td><br></td></tr>";
 	
 	// add other fields
-	var otherField = contact.getOtherAddrField();
+	var otherField = AjxStringUtil.nl2br(contact.getOtherAddrField());
 	var otherPhone = contact.getAttr(ZmContact.F_otherPhone);
 	var otherFax = contact.getAttr(ZmContact.F_otherFax);
 	var otherURL = contact.getAttr(ZmContact.F_otherURL);
@@ -288,26 +282,25 @@ function(contact, isGal) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Other</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (otherField) html[idx++] = otherField + "<br>";
-		if (otherURL) 	html[idx++] = "<a href='" + otherURL + "' target='_blank'>" + otherURL + "</a>";
+		if (otherURL) 	html[idx++] = this._generateObject(otherURL);
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
 	html[idx++] = "</td>";
 	// - column 2
 	html[idx++] = "<td valign=top><table border=0>";
-	if (otherPhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + otherPhone + "</td></tr>";
-	if (otherFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + otherFax + "</td></tr>";
+	if (otherPhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + this._generateObject(otherPhone) + "</td></tr>";
+	if (otherFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + this._generateObject(otherFax) + "</td></tr>";
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr>";
 	
 	html[idx++] = "<tr><td><br></td></tr>";
 
-	// bug fix #3712 - convert newlines to <br>'s	
-	var notes = AjxStringUtil.htmlEncodeSpace(contact.getAttr(ZmContact.F_notes));
+	var notes = this._generateObject(contact.getAttr(ZmContact.F_notes));
 	html[idx++] = "<tr><td valign=top colspan='10'>";
 	if (notes) {
 		html[idx++] = "<table border=0 width=100%>";
-		html[idx++] = "<tr><td valign=top class='contactLabel'>Notes</td><td class='contactOutput'>" + notes + "</td></tr>";
+		html[idx++] = "<tr><td valign=top class='contactLabel'>Notes</td><td class='contactOutput'>" + AjxStringUtil.nl2br(notes) + "</td></tr>";
 		html[idx++] = "</table>";
 	}
 	html[idx++] = "</td></tr>";
