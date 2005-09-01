@@ -816,7 +816,7 @@ ZmCalDayView.prototype._getYfromDate =
 function(d) {
 	var h = d.getHours();
 	var m = d.getMinutes();
-	return (h+m/60) * ZmCalDayView._hourHeight;
+	return Math.floor((h+m/60) * ZmCalDayView._hourHeight) + 1;
 }
 
 ZmCalDayView.prototype._getLocationForDate =
@@ -825,7 +825,7 @@ function(d) {
 	var m = d.getMinutes();
 	var day = this._getDayForDate(d);
 	if (day == null) return null;
-	return new DwtPoint(day.apptX, ((h+m/60) * ZmCalDayView._hourHeight));
+	return new DwtPoint(day.apptX, Math.floor(((h+m/60) * ZmCalDayView._hourHeight))+1);
 }
 
 ZmCalDayView.prototype._getBoundsForDate =
@@ -920,8 +920,8 @@ function() {
 		Dwt.setLocation(daySepDiv, currentX, 0);
 		Dwt.setSize(daySepDiv, ZmCalDayView._daySepWidth, apptsDivHeight);
 		var day = this._days[i];
-		day.apptX = currentX + ZmCalDayView._daySepWidth +2 ; //ZZZ
-		day.apptWidth = dayWidth - ZmCalDayView._daySepWidth - 3;  //ZZZZ
+		day.apptX = currentX + ZmCalDayView._daySepWidth +1 ; //ZZZ
+		day.apptWidth = dayWidth - ZmCalDayView._daySepWidth - 2;  //ZZZZ
 		Dwt.setSize(Dwt.getDomObj(doc, this._days[i].headerColId), dayWidth, Dwt.DEFAULT);	
 		currentX += dayWidth;		
 	}	
