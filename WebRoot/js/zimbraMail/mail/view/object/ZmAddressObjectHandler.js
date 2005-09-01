@@ -26,7 +26,7 @@
 
 function ZmAddressObjectHandler(appCtxt) {
 
-	ZmObjectHandler.call(this, appCtxt, "url", null);
+	ZmObjectHandler.call(this, appCtxt, "address", null);
 }
 
 ZmAddressObjectHandler.prototype = new ZmObjectHandler;
