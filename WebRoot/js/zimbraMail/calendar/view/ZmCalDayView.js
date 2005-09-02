@@ -1060,6 +1060,12 @@ function(ev, apptEl) {
 	
 	var apptOffset = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, apptEl);
 
+	var apptsDiv = Dwt.getDomObj(this.getDocument(), this._apptBodyDivId);
+	var apptsDivOffset = Dwt.toWindow(apptsDiv, 0, 0, null);
+	var bodyDivEl = Dwt.getDomObj(view.getDocument(), view._bodyDivId);
+	var apptsDivHeight = Dwt.getSize(apptsDiv).y;
+	var apptsDivVisibleHeight = Dwt.getSize(bodyDivEl).y;	
+
 	// snap it to grid
 	var snap = this._snapXY(loc.x + apptOffset.x, loc.y, 30);
 	if (snap == null) return false;
@@ -1068,10 +1074,15 @@ function(ev, apptEl) {
 		appt:appt, 
 		view:this,
 		apptEl: apptEl, 
+		bodyDivEl: bodyDivEl,
 		startTimeEl: Dwt.getDomObj(this.getDocument(), apptEl.id +"_st"),
-		endTimeEl: Dwt.getDomObj(this.getDocument(), apptEl.id +"_et"),		
+		endTimeEl: Dwt.getDomObj(this.getDocument(), apptEl.id +"_et"),
 		apptX: loc.x,
 		apptOffset: apptOffset,
+		apptsDivOffset: apptsDivOffset,
+		apptsDivVisibleHeight: apptsDivVisibleHeight,
+		apptsDivHeight: apptsDivHeight,
+		apptsDiv: apptsDiv,
 		apptY: loc.y,
 		docX: ev.docX,
 		docY: ev.docY,
@@ -1102,6 +1113,30 @@ function(ev) {
 	var deltaX = mouseEv.docX - data.docX;
 	var deltaY = mouseEv.docY - data.docY;
 
+/* // auto-scroll near edges	
+	if (mouseEv.docY < data.apptsDivOffset.y || mouseEv.docY > data.apptsDivOffset.y+data.apptsDivVisibleHeight) {
+		if (mouseEv.docY < data.apptsDivOffset.y) {
+			var sTop = data.bodyDivEl.scrollTop;
+			if (sTop > 0) {
+				var offset = sTop > 42 ? 42 : sTop;
+				data.bodyDivEl.scrollTop -= offset;
+				data.docY += offset;
+				deltaY -= offset;				
+			}
+		} else {
+			var sVisibleTop = data.apptsDivHeight - data.apptsDivVisibleHeight;
+			var sTop = data.bodyDivEl.scrollTop;
+			if (sTop < sVisibleTop) {
+				var spaceLeft = sVisibleTop - sTop;
+				var offset = spaceLeft  > 42 ? 42 : spaceLeft;
+				data.bodyDivEl.scrollTop += offset;
+				data.docY -= offset;
+				deltaY += offset;				
+			}
+			
+		}
+	}
+*/
 	// snap new location to grid
 	var snap = data.view._snapXY(data.apptX + data.apptOffset.x + deltaX, data.apptY + deltaY, 30);
 	//DBG.println("mouseMove new snap: "+snap.x+","+snap.y+ " data snap: "+data.snap.x+","+data.snap.y);
@@ -1171,6 +1206,7 @@ function(ev, sash) {
 		appt:appt, 
 		view:this,
 		apptEl: apptEl, 
+		endTimeEl: Dwt.getDomObj(this.getDocument(), apptEl.id +"_et"),
 		apptBodyEl: apptBodyEl,
 		origHeight: origHeight,
 		origY: origY,
@@ -1189,7 +1225,6 @@ function(ev, sash) {
 	this.deselectAll();
 	this.setSelection(data.appt);
 	ZmCalDayView._setOpacity(apptEl, 70);
-	sash.innerHTML = "<div class=appt_sash_feedback_start>"+ZmAppt._getTTHour(data.endDate)+"</div>";
 	return false;	
 }
 
@@ -1214,8 +1249,7 @@ function(ev) {
 			Dwt.setSize(data.apptBodyEl, Dwt.DEFAULT, newHeight + ZmCalDayView._apptHeightFudge);
 			data.lastDelta = delta;
 			data.endDate.setTime(data.appt.getEndTime() + (delta15 * 15 * 60 * 1000)); // num msecs in 15 minutes
-			var cname = delta == 0 ? "start" : "diff";
-			data.sash.innerHTML = "<div class=appt_sash_feedback_"+cname+">"+ZmAppt._getTTHour(data.endDate)+"</div>";
+			if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.endDate);
 		}
 	}
 
@@ -1239,7 +1273,7 @@ function(ev) {
 	
 	DwtMouseEventCapture.getCaptureObj().release();
 
-	data.sash.innerHTML = "";
+	//data.sash.innerHTML = "";
 	data.sash.className = 'appt_sash';
 	mouseEv._stopPropagation = true;
 	mouseEv._returnValue = false;
