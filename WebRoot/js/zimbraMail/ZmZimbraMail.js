@@ -275,7 +275,7 @@ function(settings) {
 ZmZimbraMail.prototype.sendRequest = 
 function(soapDoc, useXml) {
 	useXml = (useXml == null) ? this._appCtxt.get(ZmSetting.USE_XML) : useXml;
-	var result = ZmCsfeCommand.invoke(soapDoc, null, null, null, useXml);
+	var result = ZmCsfeCommand.invoke(soapDoc, null, null, null, useXml, false, this._changeToken);
 	if (!useXml && result.Header)
 		this._handleHeader(result.Header);
 	this._checkOverviewLayout();
@@ -584,6 +584,9 @@ function(hdr) {
 	}
 	if (hdr.context.notify) {
 		this._notifyHandler(hdr.context.notify);
+	}
+	if (hdr.context.change) {
+		this._changeToken = hdr.context.change.token;
 	}
 }
 

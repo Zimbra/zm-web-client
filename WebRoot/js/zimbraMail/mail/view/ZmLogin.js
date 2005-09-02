@@ -378,21 +378,14 @@ function() {
 		}
 		return;
 	}
-	var header = soapDoc.createHeaderElement();
-	var context = soapDoc.set("context", null, header);
-	context.setAttribute("xmlns", "urn:zimbra");
-	soapDoc.set("nosession", null, context);
-	var js = soapDoc.set("format", null, context);
-	js.setAttribute("type", "js");
 
     var el = soapDoc.set("account", uname);
     el.setAttribute("by", "name");
     soapDoc.set("password", pword);
     try {
-		var resp = ZmCsfeCommand.invoke(soapDoc, true).Body.AuthResponse;
+		var resp = ZmCsfeCommand.invoke(soapDoc, true, null, null, false, true).Body.AuthResponse;
 		ZmLogin._authToken = resp.authToken;
 		ZmLogin._authTokenLifetime = resp.lifetime;
-	    //ZmCsfeCommand.setAuthToken(authToken, lifetime, sessionId);
 		var mailServer = resp.refer;
 		
 		ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword);

@@ -44,12 +44,6 @@ ZmAuthenticate.prototype.execute =
 function(uname, pword) {
 	if (!ZmAuthenticate._isAdmin) {
 		var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAccount");
-		var header = soapDoc.createHeaderElement();
-		var context = soapDoc.set("context", null, header);
-		context.setAttribute("xmlns", "urn:zimbra");
-		var js = soapDoc.set("format", null, context);
-		js.setAttribute("type", "js");
-
 		var el = soapDoc.set("account", uname);
 		el.setAttribute("by", "name");
 		soapDoc.set("password", pword);
