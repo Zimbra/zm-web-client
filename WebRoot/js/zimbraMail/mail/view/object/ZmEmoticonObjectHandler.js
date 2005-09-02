@@ -26,7 +26,7 @@
 // This class is currently not being used and has been removed from the build
 function ZmEmoticonObjectHandler(appCtxt) {
 
-	ZmObjectHandler.call(this, appCtxt, "url", null);
+	ZmObjectHandler.call(this, appCtxt, ZmURLObjectHandler.TYPE);
 
 	this._emoticons = [
 	   { smiley: ">:)", image: ZmImg.E_DEVIL, tooltip: ZmMsg.devil },
@@ -54,7 +54,7 @@ function ZmEmoticonObjectHandler(appCtxt) {
 		regex[idx++] =")";		
 	}
 	this._EMOTICONS_RE = new RegExp(regex.join(""));
-}
+};
 
 ZmEmoticonObjectHandler.prototype = new ZmObjectHandler;
 ZmEmoticonObjectHandler.prototype.constructor = ZmEmoticonObjectHandler;
@@ -64,7 +64,7 @@ ZmEmoticonObjectHandler.RE_ESCAPE_RE = /([\(\)\-\$])/g;
 ZmEmoticonObjectHandler.prototype.match =
 function(line) {
 	return line.match(this._EMOTICONS_RE);
-}
+};
 
 ZmEmoticonObjectHandler.prototype._getEmoticon =
 function(smiley) {
@@ -77,22 +77,22 @@ function(smiley) {
 			return emot;
 	}
 	return null;
-}
+};
 
 ZmEmoticonObjectHandler.prototype._getHtmlContent =
 function(html, idx, smiley) {
 	var sd = this._getEmoticon(smiley);
 	html[idx++] = AjxImg.tag(sd.image, {alt: sd.smiley});
 	return idx;
-}
+};
 	
 ZmEmoticonObjectHandler.prototype.getToolTipText =
 function(smiley) {
 	var sd = this._getEmoticon(smiley);
 	return "<b>" + sd.tooltip + "</b>";
-}
+};
 
 ZmEmoticonObjectHandler.prototype.getActionMenu =
 function(obj) {
 	return null;
-}
+};

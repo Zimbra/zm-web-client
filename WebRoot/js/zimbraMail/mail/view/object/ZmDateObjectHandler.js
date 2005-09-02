@@ -25,12 +25,14 @@
 
 function ZmDateObjectHandler(appCtxt) {
 	if (arguments.length == 0) return;
-
-	ZmObjectHandler.call(this, appCtxt, "date", null);
-}
+	ZmObjectHandler.call(this, appCtxt, ZmDateObjectHandler.TYPE);
+};
 
 ZmDateObjectHandler.prototype = new ZmObjectHandler;
 ZmDateObjectHandler.prototype.constructor = ZmDateObjectHandler;
+
+
+ZmDateObjectHandler.TYPE = "date";
 
 // needs to be kept in sync with ZmDateObjectHandler.DOW
 var $RE_DOW = "(Mon(?:day)?|Tue(?:s(?:day)?)?|Wed(?:nesday)?|Thu(?:rs(?:day)?)?|Fri(?:day)?|Sat(?:urday)?|Sun(?:day)?)";
@@ -88,34 +90,34 @@ $RE_DOW + $RE_COMMA_OR_SP + RE_MONTH + $RE_SP + $RE_DOM +
 
 ZmDateObjectHandler.registerHandlers =
 function(handlers, appCtxt) {
-	handlers.push(new ZmDate1ObjectHandler(appCtxt));
-	handlers.push(new ZmDate2ObjectHandler(appCtxt));
-	handlers.push(new ZmDate3ObjectHandler(appCtxt));
-	handlers.push(new ZmDate4ObjectHandler(appCtxt));
-	handlers.push(new ZmDate5ObjectHandler(appCtxt));
-	handlers.push(new ZmDate6ObjectHandler(appCtxt));
-	handlers.push(new ZmDate7ObjectHandler(appCtxt));
-	handlers.push(new ZmDate8ObjectHandler(appCtxt));	
-}
+	handlers[ZmDateObjectHandler.TYPE] = [new ZmDate1ObjectHandler(appCtxt), 
+					 					new ZmDate2ObjectHandler(appCtxt),
+							 			new ZmDate3ObjectHandler(appCtxt),
+							 			new ZmDate4ObjectHandler(appCtxt),
+							 			new ZmDate5ObjectHandler(appCtxt),
+							 			new ZmDate6ObjectHandler(appCtxt),
+							 			new ZmDate7ObjectHandler(appCtxt),
+							 			new ZmDate8ObjectHandler(appCtxt)];
+};
 
 ZmDateObjectHandler._currentDate = new Date();
 
 ZmDateObjectHandler.setCurrentDate =
 function(date) {
 	ZmDateObjectHandler._currentDate = new Date(date);
-}
+};
 
 ZmDateObjectHandler.getCurrentDate =
 function(date) {
 	return ZmDateObjectHandler._currentDate;
-}
+};
 
 ZmDateObjectHandler.prototype.getToolTipText =
 function(obj, context) {
 	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	return cc.getDayToolTipText(context ? context.date : new Date());
 
-}
+};
 
 // Create action menu if needed
 ZmDateObjectHandler.prototype.getActionMenu =
@@ -130,7 +132,7 @@ function(obj, span, context) {
 	this._actionObject = obj;
 	this._actionContext = context;
 	return this._menu;
-}
+};
 
 ZmDateObjectHandler.prototype._calViewListener =
 function(ev) {
@@ -142,7 +144,7 @@ function(ev) {
 	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	cc.show();
 	cc.setDate(this._actionContext.date);
-}
+};
 
 
 ZmDateObjectHandler.prototype._dayViewListener =
@@ -151,7 +153,7 @@ function(ev) {
 	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	cc.show(ZmCalViewMgr.DAY_VIEW);
 	cc.setDate(this._actionContext.date);
-}
+};
 
 ZmDateObjectHandler.prototype._newApptListener =
 function(ev) {
@@ -159,20 +161,20 @@ function(ev) {
 	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	var p = new DwtPoint(ev.docX, ev.docY);
 	cc._showAppointmentDetails(null, p, this._actionContext.date);
-}
+};
 
 ZmDateObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
 	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	cc.show();
 	cc.setDate(context.date);
-}
+};
 
 // today/yesterday =======================
 
 function ZmDate1ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
-}
+};
 
 ZmDate1ObjectHandler.prototype = new ZmDateObjectHandler;
 ZmDate1ObjectHandler.prototype.constructor = ZmDate1ObjectHandler;
@@ -194,13 +196,13 @@ function(line, startIndex) {
 	}
 	result.context = {date: d, monthOnly: 0};
 	return result;
-}
+};
 
 // {next Tuesday}, {last Monday}, etc
 
 function ZmDate2ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
-}
+};
 
 ZmDate2ObjectHandler.prototype = new ZmDateObjectHandler;
 ZmDate2ObjectHandler.prototype.constructor = ZmDate2ObjectHandler;
@@ -232,13 +234,13 @@ function(line, startIndex) {
 	d.setDate(d.getDate() + addDays);
 	result.context = {date: d, monthOnly: 0};
 	return result;
-}
+};
 
 // {25th December}, {6th, June}, {6 June 2004}, {25th December, 2005}
 
 function ZmDate3ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
-}
+};
 
 ZmDate3ObjectHandler.prototype = new ZmDateObjectHandler;
 ZmDate3ObjectHandler.prototype.constructor = ZmDate3ObjectHandler;
@@ -265,13 +267,13 @@ function(line, startIndex) {
 	}
 	result.context = {date: d, monthOnly: 0};
 	return result;
-}
+};
 
 // {June 6th, 2005}, {June 6}, {May 3rd, 04}, {May 24 10:11:26 2005}, 
 
 function ZmDate4ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
-}
+};
 
 ZmDate4ObjectHandler.prototype = new ZmDateObjectHandler;
 ZmDate4ObjectHandler.prototype.constructor = ZmDate4ObjectHandler;
@@ -298,13 +300,13 @@ function(line, startIndex) {
 	}
 	result.context = {date: d, monthOnly: 0};
 	return result;
-}
+};
 
 // {12-25-2005}, {06-06-05}, etc
 
 function ZmDate5ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
-}
+};
 
 ZmDate5ObjectHandler.prototype = new ZmDateObjectHandler;
 ZmDate5ObjectHandler.prototype.constructor = ZmDate5ObjectHandler;
@@ -330,13 +332,13 @@ function(line, startIndex) {
 
 	result.context = {date: d, monthOnly: 0};
 	return result;
-}
+};
 
 // {2005-06-24}
 
 function ZmDate6ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
-}
+};
 
 ZmDate6ObjectHandler.prototype = new ZmDateObjectHandler;
 ZmDate6ObjectHandler.prototype.constructor = ZmDate6ObjectHandler;
@@ -358,14 +360,14 @@ function(line, startIndex) {
 
 	result.context = {date: d, monthOnly: 0};
 	return result;
-}
+};
 
 
 //{12/25/2005}, {06/06/05}, etc
 
 function ZmDate7ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
-}
+};
 
 ZmDate7ObjectHandler.prototype = new ZmDateObjectHandler;
 ZmDate7ObjectHandler.prototype.constructor = ZmDate7ObjectHandler;
@@ -391,13 +393,13 @@ function(line, startIndex) {
 
 	result.context = {date: d, monthOnly: 0};
 	return result;
-}
+};
 
 // {2005/06/24}, {2005/12/25}
 
 function ZmDate8ObjectHandler(appCtxt) {
 	ZmDateObjectHandler.call(this, appCtxt);
-}
+};
 
 ZmDate8ObjectHandler.prototype = new ZmDateObjectHandler;
 ZmDate8ObjectHandler.prototype.constructor = ZmDate8ObjectHandler;
@@ -419,5 +421,4 @@ function(line, startIndex) {
 
 	result.context = {date: d, monthOnly: 0};
 	return result;
-}
-
+};

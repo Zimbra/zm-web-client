@@ -25,19 +25,20 @@
 
 function ZmPhoneObjectHandler(appCtxt) {
 
-	ZmObjectHandler.call(this, appCtxt, "phone", null);
-}
+	ZmObjectHandler.call(this, appCtxt, ZmPhoneObjectHandler.TYPE);
+};
 
 ZmPhoneObjectHandler.prototype = new ZmObjectHandler;
 ZmPhoneObjectHandler.prototype.constructor = ZmPhoneObjectHandler;
 
+ZmPhoneObjectHandler.TYPE = "phone";
 ZmPhoneObjectHandler.PHONE_RE = /(^|\W)(?:(?:\(\d{3}\)[-.\s]?|\d{3}[-.\s]))?\d{3}[-.\s]\d{4}(\W|$)/g;
 
 
 ZmPhoneObjectHandler.prototype.getReString =
 function() {
 	return ZmPhoneObjectHandler.PHONE;
-}
+};
 
 ZmPhoneObjectHandler.prototype.match =
 function(line, startIndex) {
@@ -56,14 +57,14 @@ function(line, startIndex) {
 		}
 	}
 	return m;
-}
+};
 
 ZmPhoneObjectHandler.prototype._getHtmlContent =
 function(html, idx, phone, context) {
 	var call = 'callto:+1' + AjxStringUtil.trim(phone)
 	html[idx++] = '<a href="' + call + '" onclick="ZmPhoneObjectHandler.unsetOnbeforeunload()">'+AjxStringUtil.htmlEncode(phone)+'</a>';	
 	return idx;
-}
+};
 
 ZmPhoneObjectHandler.prototype.getToolTipText =
 function(obj) {
@@ -77,7 +78,7 @@ function(obj) {
 	html[i++] = "<td><b><div style='white-space:nowrap'>" + ZmMsg.phoneNumber + ":</div></b></td>";
 	html[i++] = "<td><div style='white-space:nowrap'>" + AjxStringUtil.htmlEncode(obj) + "</div></td></tr></table>";
 	return html.join("");
-}
+};
 
 ZmPhoneObjectHandler.prototype.getActionMenu =
 function(obj) {
@@ -102,13 +103,13 @@ function(obj) {
 	this._actionObject = obj;
 
 	return this._menu;
-}
+};
 
 ZmPhoneObjectHandler.prototype._searchListener =
 function(ev) {
 	// XXX: needs more params...
 	this._appCtxt.getSearchController().search(this._actionObject);
-}
+};
 
 ZmPhoneObjectHandler.prototype._contactListener = 
 function(ev) {
@@ -116,7 +117,7 @@ function(ev) {
 	var contact = new ZmContact(this._appCtxt);
 	contact.initFromPhone(this._actionObject);
 	this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(contact);
-}
+};
 
 ZmPhoneObjectHandler.prototype._callListener = 
 function(ev) {
@@ -125,12 +126,12 @@ function(ev) {
 	phone = "callto:+1" + phone;
 	ZmPhoneObjectHandler.unsetOnbeforeunload();
 	window.location=phone;
-}
+};
 
 ZmPhoneObjectHandler.resetOnbeforeunload = 
 function() {
 	window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
-}
+};
 
 ZmPhoneObjectHandler.unsetOnbeforeunload = 
 function() {
@@ -138,4 +139,4 @@ function() {
 	this._timerObj = new AjxTimedAction();
 	this._timerObj.method = ZmPhoneObjectHandler.resetOnbeforeunload;	
 	AjxTimedAction.scheduleAction(this._timerObj,3000);
-}
+};

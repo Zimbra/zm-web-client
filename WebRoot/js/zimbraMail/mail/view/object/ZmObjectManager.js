@@ -34,21 +34,18 @@ function ZmObjectManager(view, appCtxt) {
 	// TODO: make this dynamic, have handlers register a factory method...
 	this._emailHandler = new ZmEmailObjectHandler(appCtxt);
 	// URL should be first, to handle email addresses embedded in URL's
-	this._objectHandlers = [
-		new ZmURLObjectHandler(appCtxt),	
-		this._emailHandler,
-		new ZmPhoneObjectHandler(appCtxt),
-		new ZmPOObjectHandler(appCtxt),
-		new ZmTrackingObjectHandler(appCtxt),		
-		// new ZmEmoticonObjectHandler(appCtxt)
-	];
+	this._objectHandlers = new Object();
+	this._objectHandlers[ZmURLObjectHandler.TYPE] = [new ZmURLObjectHandler(appCtxt), new ZmTrackingObjectHandler(appCtxt)/*, new ZmEmoticonObjectHandler(appCtxt)*/ ];
+	this._objectHandlers[ZmEmailObjectHandler.TYPE] = [this._emailHandler];
+	this._objectHandlers[ZmPhoneObjectHandler.TYPE] = [new ZmPhoneObjectHandler(appCtxt)];
+	this._objectHandlers[ZmPOObjectHandler.TYPE] = [new ZmPOObjectHandler(appCtxt)];
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		ZmDateObjectHandler.registerHandlers(this._objectHandlers, appCtxt);
 	}
 	// Check for Google map API before adding address handler
 	try {
 		new GPoint(217,10);
-		this._objectHandlers.push(new ZmAddressObjectHandler(appCtxt));
+		this._objectHandlers[ZmAddressObjectHandler.TYPE] = [new ZmAddressObjectHandler(appCtxt)];
 	} catch (e) { 
 		;
 	}
@@ -80,13 +77,10 @@ function() {
 	return this._emailHandler;
 }
 
-ZmObjectManager.prototype.getHandlers = 
-function() {
-	return this._objectHandlers;
-}
-
+// type is optional.. if you know what type of content is being passed in, set the 
+// type param so we dont have to figure out what kind of content we're dealing with
 ZmObjectManager.prototype.findObjects =
-function(content, htmlEncode) {
+function(content, htmlEncode, type) {
 	if  (content == null) return "";
 	
 	var html = new Array();
@@ -99,19 +93,37 @@ function(content, htmlEncode) {
 		var lowestResult = null;
 		var lowestIndex = maxIndex;
 
-		// go through each handler and ask it to find us a match >= to lastIndex.
-		// handlers that didn't match last time will simply return, handlers that matched
-		// last time that we didn't use (because we found a closer match) will simply return 
-		// that match again.
+		// if given a type, just go thru the handler defined for that type.
+		// otherwise, go thru every handler we have. Regardless, ask each handler
+		// to find us a match >= to lastIndex. Handlers that didn't match last 
+		// time will simply return, handlers that matched last time that we didn't 
+		// use (because we found a closer match) will simply return that match again.
 		//
 		// when we are done, we take the handler with the lowest index.
-		for (var i in this._objectHandlers) {
-			var handler = this._objectHandlers[i];
-			var result = handler.findObject(content, lastIndex);
-			if (result != null && result.index < lowestIndex) {
-				lowestResult = result;
-				lowestIndex = result.index;
-				lowestHandler = handler;
+		if (type) {
+			var handlers = this._objectHandlers[type];
+			if (handlers) {
+				var result = null;
+				for (var i = 0; i < handlers.length; i++) {
+					result = handlers[i].findObject(content, lastIndex);
+					if (result == null || result.index >= lowestIndex)
+						break;
+					lowestResult = result;
+					lowestIndex = result.index;
+					lowestHandler = handlers[i];
+				}
+			}
+		} else {
+			for (var i in this._objectHandlers) {
+				var handlers = this._objectHandlers[i];
+				for (var j = 0; j < handlers.length; j++) {
+					var result = handlers[j].findObject(content, lastIndex);
+					if (result != null && result.index < lowestIndex) {
+						lowestResult = result;
+						lowestIndex = result.index;
+						lowestHandler = handlers[j];
+					}
+				}
 			}
 		}
 

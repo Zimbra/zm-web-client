@@ -71,8 +71,8 @@ function(contacts) {
 };
 
 ZmContactCardsView.prototype._generateObject =
-function(data) {
-	return this._objectManager.findObjects(data, true);
+function(data, type) {
+	return this._objectManager.findObjects(data, true, type);
 };
 
 ZmContactCardsView.prototype._createItemHtml =
@@ -131,11 +131,11 @@ function(contact, now, isDndIcon) {
 	html[idx++] = "</tr>";
 	
 	if (value = contact.getAttr("email"))
-		html[idx++] = "<tr" + style + ">" + this._getField("E", value, isDndIcon) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("E", value, isDndIcon, ZmEmailObjectHandler.TYPE) + "</tr>";
 	if (value = contact.getAttr("email2"))
-		html[idx++] = "<tr" + style + ">" + this._getField("E2", value, isDndIcon) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("E2", value, isDndIcon, ZmEmailObjectHandler.TYPE) + "</tr>";
 	else if (value = contact.getAttr("email3"))
-		html[idx++] = "<tr" + style + ">" + this._getField("E3", value, isDndIcon) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("E3", value, isDndIcon, ZmEmailObjectHandler.TYPE) + "</tr>";
 	
 	html[idx++] = "</table>";
 	
@@ -143,15 +143,15 @@ function(contact, now, isDndIcon) {
 	html[idx++] = "<table border=0>";
 	// add second column of home info here
 	if (value = contact.getAttr("workPhone"))
-		html[idx++] = "<tr" + style + ">" + this._getField("W", value, isDndIcon) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("W", value, isDndIcon, ZmPhoneObjectHandler.TYPE) + "</tr>";
 	if (value = contact.getAttr("workPhone2"))
-		html[idx++] = "<tr" + style + ">" + this._getField("W2", value, isDndIcon) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("W2", value, isDndIcon, ZmPhoneObjectHandler.TYPE) + "</tr>";
 	if (value = contact.getAttr("workFax"))
-		html[idx++] = "<tr" + style + ">" + this._getField("F", value, isDndIcon) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("F", value, isDndIcon, ZmPhoneObjectHandler.TYPE) + "</tr>";
 	if (value = contact.getAttr("mobilePhone"))
-		html[idx++] = "<tr" + style + ">" + this._getField("M", value, isDndIcon) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("M", value, isDndIcon, ZmPhoneObjectHandler.TYPE) + "</tr>";
 	if (value = contact.getAttr("homePhone"))
-		html[idx++] = "<tr" + style + ">" + this._getField("H", value, isDndIcon) + "</tr>";
+		html[idx++] = "<tr" + style + ">" + this._getField("H", value, isDndIcon, ZmPhoneObjectHandler.TYPE) + "</tr>";
 	
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr></table>";
@@ -163,8 +163,8 @@ function(contact, now, isDndIcon) {
 };
 
 ZmContactCardsView.prototype._getField = 
-function(fname, value, skipObjectify) {
-	var newValue = skipObjectify ? value : this._generateObject(value);
+function(fname, value, skipObjectify, type) {
+	var newValue = skipObjectify ? value : this._generateObject(value, type);
 	return "<td valign=top class='ZmContactFieldValue'>" + fname + " </td><td valign=top class='ZmContactField'>" + AjxStringUtil.nl2br(newValue) + "</td>";
 };
 

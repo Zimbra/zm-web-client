@@ -25,12 +25,13 @@
 
 function ZmURLObjectHandler(appCtxt) {
 
-	ZmObjectHandler.call(this, appCtxt, "url", null);
-}
+	ZmObjectHandler.call(this, appCtxt, ZmURLObjectHandler.TYPE);
+};
 
 ZmURLObjectHandler.prototype = new ZmObjectHandler;
 ZmURLObjectHandler.prototype.constructor = ZmURLObjectHandler;
 
+ZmURLObjectHandler.TYPE = "url";
 ZmURLObjectHandler.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\(\)\<\>\[\]\{\}\'\"]*/ig;
 
 ZmURLObjectHandler.prototype.match =
@@ -47,7 +48,7 @@ function(line, startIndex) {
 	} else {
 		return m;
 	}
-}
+};
 
 ZmURLObjectHandler.prototype._getHtmlContent =
 function(html, idx, url) {
@@ -57,7 +58,7 @@ function(html, idx, url) {
 	}
 	html[idx++] = '<a target="_blank" href="'+escapedUrl+'">'+AjxStringUtil.htmlEncode(url)+'</a>';	
 	return idx;
-}
+};
 	
 ZmURLObjectHandler.prototype.getToolTipText =
 function(url, context) {
@@ -66,9 +67,9 @@ function(url, context) {
 		escapedUrl = "http://"+escapedUrl+"/";
 	}
 	return '<div id="thumb" style="width: 205px; height: 150px"><img src="http://pthumbnails.alexa.com/image_server.cgi?id=' + document.domain + '&url=' + escapedUrl + '"/></div>';
-}
+};
 
 ZmURLObjectHandler.prototype.getActionMenu =
 function(obj) {
 	return null;
-}
+};

@@ -25,8 +25,8 @@
 
 function ZmPOObjectHandler(appCtxt) {
 
-	ZmObjectHandler.call(this, appCtxt, "po", null);
-}
+	ZmObjectHandler.call(this, appCtxt, ZmPOObjectHandler.TYPE);
+};
 
 ZmPOObjectHandler.prototype = new ZmObjectHandler;
 ZmPOObjectHandler.prototype.constructor = ZmPOObjectHandler;
@@ -37,9 +37,11 @@ ZmPOObjectHandler.prototype.match =
 function(line, startIndex) {
 	ZmPOObjectHandler.PO_RE.lastIndex = startIndex;
 	return ZmPOObjectHandler.PO_RE.exec(line);
-}
+};
 
-ZmPOObjectHandler.NEITHER = 0;
+ZmPOObjectHandler.TYPE = "po";
+
+ZmPOObjectHandler.NEITHER  = 0;
 ZmPOObjectHandler.APPROVED = 1;
 ZmPOObjectHandler.REJECTED = 2;
 
@@ -56,7 +58,7 @@ function(obj) {
 	if (po == null)
 		po = ZmPOObjectHandler.PO_DATA["GR9328B2-3X499"];
 	return po;
-}
+};
 
 ZmPOObjectHandler.prototype.getClassName =
 function(obj) {
@@ -67,7 +69,7 @@ function(obj) {
 		case ZmPOObjectHandler.REJECTED: return "POObjectRejected";
 		default: return "POObject";
 	}
-}
+};
 
 ZmPOObjectHandler.prototype._addEntryRow =
 function(field, data, html, idx) {
@@ -77,7 +79,7 @@ function(field, data, html, idx) {
 	html[idx++] = AjxStringUtil.htmlEncode(data);
 	html[idx++] = "</div></td></tr>";
 	return idx;
-}
+};
 
 ZmPOObjectHandler.prototype.getToolTipText =
 function(obj) {
@@ -103,7 +105,7 @@ function(obj) {
 	idx = this._addEntryRow("Total", po.total, html, idx);
 	html[idx++] = "</table>";
 	return html.join("");
-}
+};
 
 ZmPOObjectHandler.APPROVE_ITEM = 1;
 ZmPOObjectHandler.REJECT_ITEM = 2;
@@ -123,7 +125,7 @@ function(obj, span) {
 	this._actionObject = obj;
 	this._actionSpan = span;	
 	return this._menu;
-}
+};
 
 ZmPOObjectHandler.prototype._approveListener =
 function(ev) {
@@ -131,7 +133,7 @@ function(ev) {
 	var po = this.getPOData(obj);
 	po.state = ZmPOObjectHandler.APPROVED;	
 	this._actionSpan.className = this.getClassName(obj);	
-}
+};
 
 ZmPOObjectHandler.prototype._rejectListener =
 function(ev) {
@@ -140,4 +142,4 @@ function(ev) {
 	
 	po.state = ZmPOObjectHandler.REJECTED;	
 	this._actionSpan.className = this.getClassName(obj);
-}
+};

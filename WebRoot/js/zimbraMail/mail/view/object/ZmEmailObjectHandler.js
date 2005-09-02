@@ -25,21 +25,21 @@
 
 function ZmEmailObjectHandler(appCtxt) {
 
-	ZmObjectHandler.call(this, appCtxt, "email", null);
-
+	ZmObjectHandler.call(this, appCtxt, ZmEmailObjectHandler.TYPE);
 	this._contacts = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
-}
+};
 
 ZmEmailObjectHandler.prototype = new ZmObjectHandler;
 ZmEmailObjectHandler.prototype.constructor = ZmEmailObjectHandler;
 
+ZmEmailObjectHandler.TYPE = "email";
 ZmEmailObjectHandler.EMAIL_RE = /[\w.\-]+@[\w.\-]+/g;
 
 ZmEmailObjectHandler.prototype.match =
 function(content, startIndex) {
 	ZmEmailObjectHandler.EMAIL_RE.lastIndex = startIndex;
 	return ZmEmailObjectHandler.EMAIL_RE.exec(content);
-}
+};
 
 ZmEmailObjectHandler.prototype._getAddress =
 function(obj) {
@@ -48,7 +48,7 @@ function(obj) {
 	} else {
 		return obj;
 	}
-}
+};
 
 ZmEmailObjectHandler.prototype._getHtmlContent =
 function(html, idx, obj) {
@@ -67,7 +67,7 @@ function(html, idx, obj) {
 	}
 	html[idx++] = AjxStringUtil.htmlEncode(content);
 	return idx;
-}
+};
 
 ZmEmailObjectHandler.prototype.getToolTipText =
 function(obj) {
@@ -80,7 +80,7 @@ function(obj) {
 	    toolTip = "<b>E-mail: </b>" + AjxStringUtil.htmlEncode(obj.toString());
    	}
 	return toolTip;
-}
+};
 
 ZmEmailObjectHandler.prototype.getActionMenu =
 function(obj) {
@@ -114,14 +114,14 @@ function(obj) {
 	}
 
 	return this._menu;
-}
+};
 
 ZmEmailObjectHandler.prototype.selected =
 function(obj, span, ev) {
 	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
 	var cc = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
 	cc.doAction(ZmOperation.NEW_MESSAGE, inNewWindow, null, obj+ZmEmailAddress.SEPARATOR);
-}
+};
 
 ZmEmailObjectHandler.prototype._contactListener =
 function(ev) {
@@ -133,7 +133,7 @@ function(ev) {
 		contact.initFromEmail(this._actionObject);
 		cc.show(contact);
 	}
-}
+};
 
 ZmEmailObjectHandler.prototype._composeListener =
 function(ev) {
@@ -141,16 +141,16 @@ function(ev) {
 	// TODO: what if no email? probably should disable this menu. what if multiple emails?
 	var cc = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
 	cc.doAction(ZmOperation.NEW_MESSAGE, inNewWindow, null, this._actionAddress+ZmEmailAddress.SEPARATOR);
-}
+};
 
 ZmEmailObjectHandler.prototype._browseListener =
 function(ev) {
 	// TODO: use fullname if email empty? What if there are multiple emails?
 	this._appCtxt.getSearchController().fromBrowse(this._actionAddress);
-}
+};
 
 ZmEmailObjectHandler.prototype._searchListener =
 function(ev) {
 	// TODO: use fullname if email empty? What if there are multiple emails?
 	this._appCtxt.getSearchController().fromSearch(this._actionAddress);
-}
+};

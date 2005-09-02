@@ -153,8 +153,8 @@ function(ev) {
 };
 
 ZmContactSplitView.prototype._generateObject =
-function(data) {
-	return this._objectManager.findObjects(data, true);
+function(data, type) {
+	return this._objectManager.findObjects(data, true, type);
 };
 
 ZmContactSplitView.prototype._setContact = 
@@ -191,9 +191,9 @@ function(contact, isGal) {
 	if (email || email2 || email3) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Email</td><td valign=top class='contactOutput'>";
 		// TODO: make into EmailObjects and call compose view
-		if (email) 		{	html[idx++] = this._generateObject(email); html[idx++] = "<br>"; }
-		if (email2) 	{	html[idx++] = this._generateObject(email2); html[idx++] = "<br>"; }
-		if (email3) 	{	html[idx++] = this._generateObject(email3); html[idx++] = "<br>"; }				
+		if (email) 	{ html[idx++] = this._generateObject(email,  ZmEmailObjectHandler.TYPE); html[idx++] = "<br>"; }
+		if (email2) { html[idx++] = this._generateObject(email2, ZmEmailObjectHandler.TYPE); html[idx++] = "<br>"; }
+		if (email3) { html[idx++] = this._generateObject(email3, ZmEmailObjectHandler.TYPE); html[idx++] = "<br>"; }
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
@@ -218,19 +218,19 @@ function(contact, isGal) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Work</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (workField) 	html[idx++] = workField + "<br>";
-		if (workURL) 	html[idx++] = this._generateObject(workURL);
+		if (workURL) 	html[idx++] = this._generateObject(workURL, ZmURLObjectHandler.TYPE);
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
 	html[idx++] = "</td>";
 	// - column 2
 	html[idx++] = "<td valign=top><table border=0>";
-	if (workPhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + this._generateObject(workPhone) + "</td></tr>";
-	if (workPhone2)		html[idx++] = "<tr><td class='contactLabel'>Phone 2</td><td class='contactOutput'>" + this._generateObject(workPhone2) + "</td></tr>";
-	if (workFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + this._generateObject(workFax) + "</td></tr>";
-	if (workAsst)		html[idx++] = "<tr><td class='contactLabel'>Assistant</td><td class='contactOutput'>" + this._generateObject(workAsst) + "</td></tr>";
-	if (workCompany)	html[idx++] = "<tr><td class='contactLabel'>Company</td><td class='contactOutput'>" + this._generateObject(workCompany) + "</td></tr>";
-	if (workCallback)	html[idx++] = "<tr><td class='contactLabel'>Callback</td><td class='contactOutput'>" + this._generateObject(workCallback) + "</td></tr>";
+	if (workPhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + this._generateObject(workPhone, ZmPhoneObjectHandler.TYPE) + "</td></tr>";
+	if (workPhone2)		html[idx++] = "<tr><td class='contactLabel'>Phone 2</td><td class='contactOutput'>" + this._generateObject(workPhone2, ZmPhoneObjectHandler.TYPE) + "</td></tr>";
+	if (workFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + this._generateObject(workFax, ZmPhoneObjectHandler.TYPE) + "</td></tr>";
+	if (workAsst)		html[idx++] = "<tr><td class='contactLabel'>Assistant</td><td class='contactOutput'>" + this._generateObject(workAsst, ZmPhoneObjectHandler.TYPE) + "</td></tr>";
+	if (workCompany)	html[idx++] = "<tr><td class='contactLabel'>Company</td><td class='contactOutput'>" + this._generateObject(workCompany, ZmPhoneObjectHandler.TYPE) + "</td></tr>";
+	if (workCallback)	html[idx++] = "<tr><td class='contactLabel'>Callback</td><td class='contactOutput'>" + this._generateObject(workCallback, ZmPhoneObjectHandler.TYPE) + "</td></tr>";
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr>";
 
@@ -252,18 +252,18 @@ function(contact, isGal) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Home</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (homeField) 	html[idx++] = homeField + "<br>";
-		if (homeURL) 	html[idx++] = this._generateObject(homeURL);
+		if (homeURL) 	html[idx++] = this._generateObject(homeURL, ZmURLObjectHandler.TYPE);
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
 	html[idx++] = "</td>";
 	// - column 2
 	html[idx++] = "<td valign=top><table border=0>";
-	if (homePhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + this._generateObject(homePhone) + "</td></tr>";
-	if (homePhone2)		html[idx++] = "<tr><td class='contactLabel'>Phone 2</td><td class='contactOutput'>" + this._generateObject(homePhone2) + "</td></tr>";
-	if (homeFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + this._generateObject(homeFax) + "</td></tr>";
-	if (mobile)			html[idx++] = "<tr><td class='contactLabel'>Mobile</td><td class='contactOutput'>" + this._generateObject(mobile) + "</td></tr>";
-	if (pager)			html[idx++] = "<tr><td class='contactLabel'>Pager</td><td class='contactOutput'>" + this._generateObject(pager) + "</td></tr>";
+	if (homePhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + this._generateObject(homePhone, ZmPhoneObjectHandler.TYPE) + "</td></tr>";
+	if (homePhone2)		html[idx++] = "<tr><td class='contactLabel'>Phone 2</td><td class='contactOutput'>" + this._generateObject(homePhone2, ZmPhoneObjectHandler.TYPE) + "</td></tr>";
+	if (homeFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + this._generateObject(homeFax, ZmPhoneObjectHandler.TYPE) + "</td></tr>";
+	if (mobile)			html[idx++] = "<tr><td class='contactLabel'>Mobile</td><td class='contactOutput'>" + this._generateObject(mobile, ZmPhoneObjectHandler.TYPE) + "</td></tr>";
+	if (pager)			html[idx++] = "<tr><td class='contactLabel'>Pager</td><td class='contactOutput'>" + this._generateObject(pager, ZmPhoneObjectHandler.TYPE) + "</td></tr>";
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr>";
 
@@ -282,15 +282,15 @@ function(contact, isGal) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Other</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (otherField) html[idx++] = otherField + "<br>";
-		if (otherURL) 	html[idx++] = this._generateObject(otherURL);
+		if (otherURL) 	html[idx++] = this._generateObject(otherURL, ZmURLObjectHandler.TYPE);
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
 	html[idx++] = "</td>";
 	// - column 2
 	html[idx++] = "<td valign=top><table border=0>";
-	if (otherPhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + this._generateObject(otherPhone) + "</td></tr>";
-	if (otherFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + this._generateObject(otherFax) + "</td></tr>";
+	if (otherPhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + this._generateObject(otherPhone, ZmPhoneObjectHandler.TYPE) + "</td></tr>";
+	if (otherFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + this._generateObject(otherFax, ZmPhoneObjectHandler.TYPE) + "</td></tr>";
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr>";
 	

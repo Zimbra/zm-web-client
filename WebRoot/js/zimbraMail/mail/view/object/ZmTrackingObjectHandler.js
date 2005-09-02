@@ -25,8 +25,8 @@
 
 function ZmTrackingObjectHandler(appCtxt) {
 
-	ZmObjectHandler.call(this, appCtxt, "url", null);
-}
+	ZmObjectHandler.call(this, appCtxt, ZmURLObjectHandler.TYPE);
+};
 
 ZmTrackingObjectHandler.prototype = new ZmObjectHandler;
 ZmTrackingObjectHandler.prototype.constructor = ZmTrackingObjectHandler;
@@ -49,7 +49,7 @@ function(line, startIndex) {
 			m.context = "fedex";
 	}
 	return m;
-}
+};
 
 ZmTrackingObjectHandler.prototype._getHtmlContent =
 function(html, idx, tracking, context) {
@@ -73,7 +73,7 @@ function(html, idx, tracking, context) {
 		html[idx++] = AjxStringUtil.htmlEncode(tracking);
 	}
 	return idx;
-}
+};
 
 ZmTrackingObjectHandler.prototype.getToolTipText =
 function(obj, context) {
@@ -84,9 +84,9 @@ function(obj, context) {
 	} else {
 		return "<b>Tracking Number: </b>"+AjxStringUtil.htmlEncode(obj);
 	}
-}
+};
 
 ZmTrackingObjectHandler.prototype.getActionMenu =
 function(obj, span, context) {
 	return null;
-}
+};

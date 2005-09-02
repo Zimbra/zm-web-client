@@ -25,17 +25,22 @@
 
 function ZmAddressObjectHandler(appCtxt) {
 
-	ZmObjectHandler.call(this, appCtxt, "address", null);
+	ZmObjectHandler.call(this, appCtxt, ZmAddressObjectHandler.TYPE);
 }
 
 ZmAddressObjectHandler.prototype = new ZmObjectHandler;
 ZmAddressObjectHandler.prototype.constructor = ZmAddressObjectHandler;
 
+// Consts
+
+ZmAddressObjectHandler.TYPE = "address";
 // XXX This regex is very very simple.  It only matches single line simpler addresses like:
 // 1234 Main St City CA 99999
 ZmAddressObjectHandler.ADDRESS_RE = /[\w]{3,}([A-Za-z]\.)?([ \w]*\#\d+)?(\r\n| )[ \w]{3,}\x20[A-Za-z]{2}\x20\d{5}(-\d{4})?/ig;
-
 ZmAddressObjectHandler.CACHE = new Array();
+
+
+// Public methods
 
 ZmAddressObjectHandler.prototype.match =
 function(line, startIndex) {
