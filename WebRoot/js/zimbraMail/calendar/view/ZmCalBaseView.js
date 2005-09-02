@@ -75,6 +75,7 @@ ZmCalBaseView.TYPE_APPTS_DAYGRID = 1; // grid holding days, for example
 ZmCalBaseView.TYPE_APPT = 2; // an appt
 ZmCalBaseView.TYPE_SELECTED_TIME = 3; // div representing selected time in a grid
 ZmCalBaseView.TYPE_APPT_BOTTOM_SASH = 4; // a sash for appt duration
+ZmCalBaseView.TYPE_APPT_TOP_SASH = 5; // a sash for appt duration
 
 // BEGIIN LIST-RELATED
 

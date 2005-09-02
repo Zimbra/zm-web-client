@@ -2791,9 +2791,8 @@ HTML>BODY .calendar_grid_body_time_text {	/* HACK to match times up with their l
 
 .appt_location					{	padding:2px;						}
 
-.appt_sash { height: 5px; margin-top:-5px; position:relative; Xbackground:red; }
-/* use this style when sash is active, to keep cursor set correctly as sash feedback pushes up sash */
-.appt_sash_active { height: 35px; margin-top:-5px; position:relative; Xbackground:red; }
+.appt_top_sash { height: 4px; width:100%; top:0; position:absolute; Xbackground:red; }
+.appt_bottom_sash { height: 4px; width:100%; bottom:0; position:absolute; Xbackground:red; }
 
 .appt_body,
 .appt_30_body {

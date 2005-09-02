@@ -287,7 +287,8 @@ function(appt, now, isDndIcon) {
 	}
 	
 	// set up DIV
-	var div = this.getDocument().createElement("div");	
+	var doc = this.getDocument();
+	var div = doc.createElement("div");	
 
 	div.style.position = 'absolute';
 	Dwt.setSize(div, 10, 10);
@@ -326,14 +327,19 @@ function(appt, now, isDndIcon) {
 
 	// if (we can edit this appt) then create sash....
 	if (!appt.isReadOnly()) {
-		var sash = this.getDocument().createElement("div");
-		sash.id = id+"_sash";
-		sash.className = 'appt_sash';
-		sash.style.cursor = AjxEnv.isIE ? "row-resize" : "n-resize";
-		sash._type = ZmCalBaseView.TYPE_APPT_BOTTOM_SASH;
-		div.appendChild(sash);
-	}
+		var bottom = this.getDocument().createElement("div");
+		//sash.id = id+"_sash";
+		bottom.className = 'appt_bottom_sash';
+		bottom.style.cursor = AjxEnv.isIE ? "row-resize" : "n-resize";
+		bottom._type = ZmCalBaseView.TYPE_APPT_BOTTOM_SASH;
+		div.firstChild.appendChild(bottom);
 
+		var top = this.getDocument().createElement("div");
+		top.style.cursor = AjxEnv.isIE ? "row-resize" : "n-resize";		
+		top.className = 'appt_top_sash';
+		top._type = ZmCalBaseView.TYPE_APPT_TOP_SASH;
+		div.firstChild.appendChild(top);
+	}
 	return div;
 }
 
@@ -743,9 +749,9 @@ function(apptDiv, w, h) {
 	var apptBodyDiv = Dwt.getDomObj(this.getDocument(), apptDiv.id + "_body");
 	Dwt.setSize(	apptBodyDiv,	w + ZmCalDayView._apptWidthFudge, h + ZmCalDayView._apptHeightFudge);
 
-	// set the sash width. sash should really be inside appt_body...
-	var apptSashDiv = Dwt.getDomObj(this.getDocument(), apptDiv.id + "_sash");
-	if (apptSashDiv) Dwt.setSize(apptSashDiv, w + ZmCalDayView._apptWidthFudge, Dwt.DEFAULT);
+//	// set the sash width. sash should really be inside appt_body...
+//	var apptSashDiv = Dwt.getDomObj(this.getDocument(), apptDiv.id + "_sash");
+//	if (apptSashDiv) Dwt.setSize(apptSashDiv, w + ZmCalDayView._apptWidthFudge, Dwt.DEFAULT);
 }
 
 
@@ -1057,6 +1063,7 @@ function(ev, div) {
 	//ZmCalBaseView.prototype._mouseDownAction.call(this, ev, div);
 	switch (div._type) {
 		case	 ZmCalBaseView.TYPE_APPT_BOTTOM_SASH:
+		case	 ZmCalBaseView.TYPE_APPT_TOP_SASH:
 			//DBG.println("_mouseDownAction for SASH!");
 			return this._sashMouseDownAction(ev, div);
 			break;
@@ -1193,16 +1200,17 @@ function(ev, sash) {
 	if (ev.button != DwtMouseEvent.LEFT) {
 		return false;
 	}
-	sash.className = 'appt_sash_active';
 
-	var apptEl = sash.parentNode;
-	var apptBodyEl = apptEl.childNodes[0];
-
+	var apptBodyEl = sash.parentNode;
+	var apptEl = apptBodyEl.parentNode;
+	
 	var appt = AjxCore.objectWithId(apptEl._itemIndex);
 	var origY = Dwt.getLocation(apptBodyEl).y;
 	var origHeight = Dwt.getSize(apptBodyEl).y;
+	var isTop = sash._type == ZmCalBaseView.TYPE_APPT_TOP_SASH;
 	var data = { 
 		sash: sash,
+		isTop: isTop,
 		appt:appt, 
 		view:this,
 		apptEl: apptEl, 
@@ -1211,8 +1219,11 @@ function(ev, sash) {
 		origHeight: origHeight,
 		origY: origY,
 		startY: ev.docY,
-		endDate: new Date(appt.getEndTime())
 	};
+
+	if (isTop) data.startDate = new Date(appt.getStartTime());
+	else data.endDate = new Date(appt.getEndTime());
+	
 	//TODO: only create one of these and change data each time...
 	var capture = new DwtMouseEventCapture	(data,
 			ZmCalDayView._emptyHdlr, // mouse over
@@ -1250,13 +1261,17 @@ function(ev) {
 	delta = delta15 * ZmCalDayView._15minuteHeight;
 
 	if (delta != data.lastDelta) {
-		var newHeight = data.origHeight + delta;
-		if (newHeight >= ZmCalDayView._15minuteHeight) {
+		if (data.isTop) {
+			
+		} else {
+			var newHeight = data.origHeight + delta;
+			if (newHeight >= ZmCalDayView._15minuteHeight) {
 //			DBG.println("delta = " + delta);
-			Dwt.setSize(data.apptBodyEl, Dwt.DEFAULT, newHeight + ZmCalDayView._apptHeightFudge);
-			data.lastDelta = delta;
-			data.endDate.setTime(data.appt.getEndTime() + (delta15 * 15 * 60 * 1000)); // num msecs in 15 minutes
-			if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.endDate);
+				Dwt.setSize(data.apptBodyEl, Dwt.DEFAULT, newHeight + ZmCalDayView._apptHeightFudge);
+				data.lastDelta = delta;
+				data.endDate.setTime(data.appt.getEndTime() + (delta15 * 15 * 60 * 1000)); // num msecs in 15 minutes
+				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.endDate);
+			}
 		}
 	}
 
@@ -1281,12 +1296,14 @@ function(ev) {
 	DwtMouseEventCapture.getCaptureObj().release();
 
 	//data.sash.innerHTML = "";
-	data.sash.className = 'appt_sash';
+//	data.sash.className = 'appt_sash';
 	mouseEv._stopPropagation = true;
 	mouseEv._returnValue = false;
 	mouseEv.setToDhtmlEvent(ev);
-	
-	if (data.endDate.getTime() != data.appt.getEndTime()) {
+
+	if (data.isTop) {
+		//DBG.println("were dragging top");
+	} else if (!data.isTop && data.endDate.getTime() != data.appt.getEndTime()) {
 		data.appt._orig.setViewMode(ZmAppt.MODE_EDIT);
 		data.appt._orig.setEndDate(data.endDate);
 		data.appt._orig.save(data.view._appCtxt.getAppController());
