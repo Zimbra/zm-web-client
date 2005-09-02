@@ -32,25 +32,32 @@
 * This class implements autocomplete functionality. It has two main parts: matching data based
 * on keystroke events, and displaying/managing the list of matches. This class is theoretically
 * neutral concerning the data that gets matched (as long as its class has an autocompleteMatch()
-* method), and the field that it's being called from. In practice, it's only been used from the
-* compose form address fields to match contacts.
+* method), and the field that it's being called from.
 * <p>
 * The data class's autocompleteMatch() method should returns a list of matches, where each match is
 * an object with the following properties:</p>
 * <table border="1">
 * <tr><td>data</td><td>the object being matched</td></tr>
 * <tr><td>text</td><td>the text to display for this object in the list</td></tr>
-* <tr><td>value</td><td>the string that shows up in the element on selection</td></tr>
+* <tr><td>[key1]</td><td>a string that may be used to replace the typed text<td></tr>
+* <tr><td>[keyN]</td><td>a string that may be used to replace the typed text<td></tr>
 * </table>
-*
+* </p><p>
+* The calling client also specifies the key in the match result for the string that will be used
+* to replace the typed text (also called the "completion string"). For example, the completion 
+* string for matching contacts could be a full address, or just the email.
+* </p>
+* 
 * @author Conrad Damon
 * @param parent			the element that created this list
 * @param className		CSS class
 * @param dataClass		the class that has the data loader
 * @param dataLoader		a method of dataClass that returns data to match against
+* @param matchValue		name of field in match result to use for completion
 * @param locCallback	callback into client to get desired location of autocomplete list
+* @param compCallback	callback into client to notify it that completion happened
 */
-function ZmAutocompleteListView(parent, className, dataClass, dataLoader, locCallback) {
+function ZmAutocompleteListView(parent, className, dataClass, dataLoader, matchValue, locCallback, compCallback) {
 
 	className = className || "ZmAutocompleteListView";
 	DwtComposite.call(this, parent, className, DwtControl.ABSOLUTE_STYLE);
@@ -59,7 +66,9 @@ function ZmAutocompleteListView(parent, className, dataClass, dataLoader, locCal
 	this._dataClass = dataClass;
 	this._dataLoader = dataLoader;
 	this._dataLoaded = false;
+	this._matchValue = matchValue;
 	this._locCallback = locCallback;
+	this._compCallback = compCallback;
 
 	// mouse event handling
 	this._setMouseEventHdlrs();
@@ -78,8 +87,6 @@ function ZmAutocompleteListView(parent, className, dataClass, dataLoader, locCal
 		this._focusAction = new AjxTimedAction();
 		this._focusAction.method = this._focus;
 	}
-
-	this._trapEnterOnKeyDown = false;
 
 	this._internalId = AjxCore.assignId(this);
 	this._numChars = 0;
@@ -109,11 +116,7 @@ ZmAutocompleteListView.onKeyDown =
 function(ev) {
 	DBG.println(AjxDebug.DBG3, "onKeyDown");
 	var key = DwtKeyEvent.getCharCode(ev);
-	if (this._trapEnterOnKeyDown) {
-		return (key == DwtKeyEvent.KEY_TAB || key == DwtKeyEvent.KEY_ESCAPE || key == DwtKeyEvent.KEY_RETURN) ? ZmAutocompleteListView.onKeyUp(ev) : true;
-	} else {
-		return (key == DwtKeyEvent.KEY_TAB || key == DwtKeyEvent.KEY_ESCAPE) ? ZmAutocompleteListView.onKeyUp(ev) : true;
-	}
+	return (key == DwtKeyEvent.KEY_TAB || key == DwtKeyEvent.KEY_ESCAPE) ? ZmAutocompleteListView.onKeyUp(ev) : true;
 }
 
 /**
@@ -212,11 +215,6 @@ function() {
 	return "ZmAutocompleteListView";
 }
 
-ZmAutocompleteListView.prototype.setHandleEnterOnKeydown = 
-function (set) {
-	this._trapEnterOnKeyDown = set;
-};
-
 /**
 * Adds autocompletion to the given field by setting key event handlers.
 *
@@ -227,7 +225,6 @@ function(element) {
 	element._acListViewId = this._internalId;
 	element.onkeydown = ZmAutocompleteListView.onKeyDown;
 	element.onkeyup = ZmAutocompleteListView.onKeyUp;
-	element._trapEnterOnKeyDown = this._trapEnterOnKeyDown;
 }
 
 /**
@@ -314,9 +311,11 @@ function(ev, key) {
 		var aclv = ev.aclv;
 		aclv._acActionId = -1; // so we don't try to cancel
 		aclv._numChars = 0;
-	
-		var loc = this._locCallback.run(ev);
-		aclv.autocomplete(element, loc, key);
+
+		if (this._locCallback) {	
+			var loc = this._locCallback.run(ev);
+			aclv.autocomplete(element, loc, key);
+		}
 	} catch (ex) {
 		DBG.println("Session expired? No controller to handle exception. Cannot autocomplete w/o contact list.");
 	}
@@ -410,16 +409,19 @@ function(text, hasDelim) {
 	var start = this._start;
 	var end = hasDelim ? this._end + 1 : this._end;
 	DBG.println(AjxDebug.DBG2, "update replace range: " + start + " - " + end);
-	var newText = [text.substring(0, start), match.value, ZmEmailAddress.SEPARATOR, text.substring(end, text.length)].join("");
-	this._done[match.value] = true;
+	var value = match[this._matchValue];
+	var newText = [text.substring(0, start), value, ZmEmailAddress.SEPARATOR, text.substring(end, text.length)].join("");
+	this._done[value] = true;
 	DBG.display(AjxDebug.DBG2, newText);
-	return {text: newText, start: start + match.value.length + ZmEmailAddress.SEPARATOR.length};
+	return {text: newText, start: start + value.length + ZmEmailAddress.SEPARATOR.length};
 }
 
 // Resets the value of an element to the given text.
 ZmAutocompleteListView.prototype._updateField =
 function(text) {
 	this._element.value = text;
+	if (this._compCallback)
+		this._compCallback.run(text);
 	this._element.focus();
 	this.reset();
 }
