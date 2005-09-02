@@ -1149,7 +1149,7 @@ function(ev) {
 		//DBG.println("new Date = "+newDate);
 		if (newDate != null && newDate.getTime() != data.startDate.getTime()) {
 			data.view._positionAppt(data.apptEl, snap.x, snap.y);
-			data.startdate = newDate;
+			data.startDate = newDate;
 			data.snap = snap;
 			if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.startDate);
 			if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(new Date(data.startDate.getTime()+data.appt.getDuration()));
