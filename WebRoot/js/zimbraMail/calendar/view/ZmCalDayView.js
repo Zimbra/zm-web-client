@@ -1218,7 +1218,7 @@ function(ev, sash) {
 		apptBodyEl: apptBodyEl,
 		origHeight: origHeight,
 		origY: origY,
-		startY: ev.docY,
+		startY: ev.docY
 	};
 
 	if (isTop) data.startDate = new Date(appt.getStartTime());
