@@ -1253,19 +1253,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	font-weight: bold;
 }
 
-.ZmCalView, .ZmCalViewOverview {
-	background-color: white;
-	border: 1px solid #C6C5D7;
-}
-
-.ZmCalViewContent {
-	background-color:#EEEEEE;
-}
-
-.ZmCalViewOverview {width:160px;}
-
-
-
 /* new calendar */
 
 .calendar_view {
@@ -1411,25 +1398,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 HTML>BODY .calendar_grid_body_time_text {	/* HACK to match times up with their lines -- FF only */
 	position:relative;
 	top:-8px;
-}
-
-
-.calendar_grid_body_hour_td {
-	border-bottom:1px solid #DDDDDD;
-}
-
-.calendar_grid_body_half_hour_td {
-	border-bottom:1px solid #BBBBBB;
-	border-top:1px solid #DDDDDD;
-}
-
-.calendar_grid_body_cell {
-	height:20px;
-}
-
-.calendar_grid_body_cell-selected {
-	height:20px;
-	background-color:#ADD6D6;
 }
 
 .month_calendar_c0,.month_calendar_c1,.month_calendar_c2,.month_calendar_c3,

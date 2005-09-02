@@ -30,18 +30,14 @@ function ZmCalDayView(parent, posStyle, dropTgt, view, numDays) {
 	if (view == null) view = ZmController.CAL_DAY_VIEW;
 	this._numDays = numDays;
 	ZmCalBaseView.call(this, parent, className, posStyle, view);
-	//this.getHtmlElement().style.overflow = "hidden";	
-	//this.setScrollStyle(DwtControl.SCROLL);
 	this.setScrollStyle(DwtControl.CLIP);	
 	this._needFirstLayout = true;
-	this._normalClassName = "calendar_grid_body_cell";
-	this._selectedClassName = this._normalClassName+"-selected";
 }
 
 ZmCalDayView.prototype = new ZmCalBaseView;
 ZmCalDayView.prototype.constructor = ZmCalDayView;
 
-ZmCalDayView._hoursDivWidth = 40; // width of div holding hours (1:00am, etc)
+ZmCalDayView._hoursDivWidth = 40; // width of div holding hours text (1:00am, etc)
 ZmCalDayView._hoursDivWidth_pad = 5; // space between hours div and appts
 
 ZmCalDayView._allDaySepHeight = 4; // height of separator between all day appts and body
