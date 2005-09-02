@@ -22,8 +22,6 @@ Contributor(s):
 
 ***** END LICENSE BLOCK *****
 -->
-
-<%@ page language="java" import="java.lang.*, java.util.*" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -93,13 +91,13 @@ static final private String LOGIN_PAGE = "/zimbra/";
 
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 
-	<jsp:include page="Zimbra.jsp"/>
+	<jsp:include page="Ajax.jsp"/>
 	<jsp:include page="Dwt.jsp"/>
 	<jsp:include page="ZimbraMail.jsp"/>
 
 <% } else { %>
 
-	<script type="text/javascript" src="/zimbra/js/ZimbraNet_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="/zimbra/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
 	<script type="text/javascript" src="/zimbra/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
 
 <% } %>

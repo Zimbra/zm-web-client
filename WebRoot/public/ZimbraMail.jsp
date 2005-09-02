@@ -22,11 +22,6 @@ Contributor(s):
 
 ***** END LICENSE BLOCK *****
 -->
-
-<%@ page language="java" 
-         import="java.lang.*, java.util.*" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
-
 <% 
    String vers = (String)request.getAttribute("version");
    String ext = (String)request.getAttribute("fileExtension");
@@ -37,7 +32,6 @@ Contributor(s):
       ext = "";
    }
 %>
-<!-- Shared Components -->
 <!-- BEGIN SCRIPT BLOCK -->
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/model/ZmEvent.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/model/ZmModel.js<%= ext %>?v=<%= vers %>"></script>
@@ -214,10 +208,10 @@ Contributor(s):
 
 <script type="text/javascript" src="/zimbra/js/zimbraMail/ZmClientCmdHandler.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/ZmZimbraMail.js<%= ext %>?v=<%= vers %>"></script>
-
-<!-- key for: http://localhost:7070/zimbra/ -->
-<!-- to get a new key go to http://www.google.com/apis/maps/signup.html -->
-<!--
-<script src="http://maps.google.com/maps?file=api&v=1&key=ABQIAAAAlip1fdaN5LkmRe0_BI7TdBSWpcJbR5g3pMHCFfZAcTkJf9A7JxTXpYyU7Ys9xTMCTbk0FxNXm0dngw" type="text/javascript"></script>
--->
 <!-- END SCRIPT BLOCK -->
+
+<!-- Test key for: http://localhost:7070/zimbra/ -->
+<!-- to get a new key go to http://www.google.com/apis/maps/signup.html -->
+<!-- 
+<script src="http://maps.google.com/maps?file=api&v=1&key=ABQIAAAAlip1fdaN5LkmRe0_BI7TdBSWpcJbR5g3pMHCFfZAcTkJf9A7JxTXpYyU7Ys9xTMCTbk0FxNXm0dngw" type="text/javascript"></script>
+ -->

@@ -22,10 +22,6 @@ Contributor(s):
 
 ***** END LICENSE BLOCK *****
 -->
-
-<%@ page language="java" 
-         import="java.lang.*, java.util.*" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <% 
    String vers = (String)request.getAttribute("version");
    String ext = (String)request.getAttribute("fileExtension");
@@ -134,6 +130,5 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/globalconfig/view/GlobalConfigXFormView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/backuprestore/view/SingleAccountRestoreXWizard.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/ZaZimbraAdmin.js<%= ext %>?v=<%= vers %>"></script>
-
 
 <!-- END SCRIPT BLOCK -->

@@ -22,10 +22,6 @@ Contributor(s):
 
 ***** END LICENSE BLOCK *****
 -->
-
-<%@ page language="java" 
-         import="java.lang.*, java.util.*" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <% 
    String vers = (String)request.getAttribute("version");
    String ext = (String)request.getAttribute("fileExtension");
@@ -36,7 +32,6 @@ Contributor(s):
    if (ext == null){
       ext = "";
    }
-
 %>
 
 <!-- BEGIN SCRIPT BLOCK -->
@@ -107,6 +102,4 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/xforms/XFormChoices.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/xforms/OSelect_XFormItem.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/xforms/ButtonGrid.js<%= ext %>?v=<%= vers %>"></script>
-
-
 <!-- END SCRIPT BLOCK -->

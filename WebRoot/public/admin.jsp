@@ -108,12 +108,12 @@ Contributor(s):
 <script type="text/javascript" src="<fmt:message key="AjxMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
 
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
-   		<jsp:include page="/public/Zimbra.jsp"/>
+   		<jsp:include page="/public/Ajax.jsp"/>
     	<jsp:include page="/public/Dwt.jsp"/>
 	    <jsp:include page="/public/ZimbraAdmin.jsp"/>
 <% } else { %>
 
-		<script type="text/javascript" src="<%= contextPath %>/js/ZimbraNet_all.js<%= ext %>?v=<%= vers %>"></script>
+		<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
 		<script type="text/javascript" src="<%= contextPath %>/js/ZimbraAdmin_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>
 <script type="text/javascript" src="<fmt:message key="ZaMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>

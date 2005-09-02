@@ -16,6 +16,8 @@
   <property name="jars.archive.dir"   location="../ZimbraServer/jars"/>
   <property name="src.dir"            location="src"/>
   <property name="gzipExtension" value=".jgz"/>	
+  <property name="jsminExtension" value=".jsmin"/>	
+  <property name="licenseExtension" value=".license"/>	
 
   <condition property="ajax.dir" value="${env.AJAX_DIR}">
     <isset property="env.AJAX_DIR" />
@@ -112,36 +114,99 @@
   <target name="clean" depends="build-init" description="Removes any temporary files">
     <delete dir="${build.dir}"/>
     <delete>
-      <fileset dir="WebRoot" includes="js/**/*${gzipExtension}, js/*_all.js*"/>
+      <fileset dir="WebRoot" includes="js/**/*${jsminExtension}, js/**/*${gzipExtension}, js/*_all.js*"/>
     </delete>	
   </target>
 
   <target name="jam-files" depends="compile">
     <taskdef name="jammer" classname="com.zimbra.webClient.build.JammerTask" classpath="${build.dir}"/>
-    <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraNet_all.js">
-      <filelist dir="${build.dir}/WebRoot/public" files="Zimbra-net.jsp"/>
+  	<jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/Ajax_all.js">
+      <filelist dir="${build.dir}/WebRoot/public" files="Ajax.jsp, Dwt.jsp"/>
     </jammer>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraMail_all.js">
-      <filelist dir="${build.dir}/WebRoot/public" files="Zimbra.jsp, Dwt.jsp, ZimbraMail.jsp"/>
+      <filelist dir="${build.dir}/WebRoot/public" files="ZimbraMail.jsp"/>
     </jammer>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebApp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraAdmin_all.js">
-      <filelist dir="${build.dir}/WebRoot/public" files="Zimbra.jsp, Dwt.jsp, ZimbraAdmin.jsp"/>
+      <filelist dir="${build.dir}/WebRoot/public" files="ZimbraAdmin.jsp"/>
     </jammer> 
   </target>
 
-  <target name="gzip-one-file">
-    <gzip src="${var}" zipfile="${var}${gzipExtension}"/>
+  <target name="gzip">
+    <gzip src="${var}${jsminExtension}${licenseExtension}" zipfile="${var}${gzipExtension}"/>
   </target>
-  
-  <target name="gzip-files" depends="copy-files-to-build-area, copy-help, copy-admin-help,  jam-files">
-    <copy todir="${build.dir}/WebRoot">
-      <fileset dir="${build.dir}/WebRoot" includes="js/**/*.js"/>
+
+  <target name="rm-temp-file">
+    <delete file="${var}${jsminExtension}" />
+    <delete file="${var}${jsminExtension}${licenseExtension}" />
+  </target>
+
+  <target name="jsmin">
+  	<exec executable="jsmin/jsmin">
+  	    <redirector input="${var}" output="${var}${jsminExtension}"/>
+  	</exec>
+  	<echo>Strip whitespace: ${var}</echo>
+  </target>
+
+  <target name="prepend-ZPL">
+    <concat destfile="${var}${jsminExtension}${licenseExtension}">
+       <header filtering="no" file="jsmin/ZPL.txt"/>
+       <path>
+       		<fileset file="${var}${jsminExtension}"/>
+       </path>
+    </concat>
+  	<echo>Prepend ZPL: ${var}</echo>
+  </target>
+
+  <target name="prepend-ZAPL">
+    <concat destfile="${var}${jsminExtension}${licenseExtension}">
+       <header filtering="no" file="jsmin/ZAPL.txt"/>
+       <path>
+       		<fileset file="${var}${jsminExtension}"/>
+       </path>
+    </concat>
+  	<echo>Prepend ZAPL: ${var}</echo>
+  </target>
+
+  <target name="compress-js-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, jam-files">
+    <fileset id="js-includes" dir="${build.dir}/WebRoot" includes="js/**/msgs/**/*.js, js/*.js"/>
+  	<copy todir="${build.dir}/WebRoot">
+      	<fileset refid="js-includes"/>
     </copy>
-    <foreach target="gzip-one-file" param="var">
-      <path>	
-	<fileset dir="${build.dir}/WebRoot" includes="js/**/*.js"/>
-      </path>	
+    <foreach target="jsmin" param="var">
+    	<path>
+    		<fileset refid="js-includes"/>
+        </path>
     </foreach>
+    <foreach target="prepend-ZPL" param="var">
+    	<path>
+    		<fileset dir="${build.dir}/WebRoot/js/zimbraAdmin/config/msgs" includes="*.js" />
+    		<fileset dir="${build.dir}/WebRoot/js/zimbraMail/config/msgs" includes="*.js" />
+    		<fileset dir="${build.dir}/WebRoot/js">
+    			<include name="ZimbraAdmin_all.js"/>
+    			<include name="ZimbraMail_all.js"/>
+       			<include name="ZmLogin.js"/>
+    		</fileset>
+        </path>
+    </foreach>
+    <foreach target="prepend-ZAPL" param="var">
+    	<path>
+    		<fileset dir="${build.dir}/WebRoot/js/ajax/dwt/config/msgs" includes="*.js" />
+    		<fileset dir="${build.dir}/WebRoot/js/ajax/config/msgs" includes="*.js"/>
+    		<fileset dir="${build.dir}/WebRoot/js">
+    			<include name="Ajax_all.js"/>
+    		</fileset>
+        </path>
+    </foreach>
+  	<foreach target="gzip" param="var">
+    	<path>
+    		<fileset refid="js-includes"/>
+        </path>
+    </foreach>
+  	<foreach target="rm-temp-file" param="var">
+    	<path>
+    		<fileset refid="js-includes"/>
+        </path>
+    </foreach>	
   </target>
 
 	<target name='images' depends='imagesinit,compile' unless='imagesdone'>
@@ -391,14 +456,14 @@
     </propertyfile>	
   </target>
 
-  <target name="prod-war" depends="gzip-files, generate-build-info, images">
+  <target name="prod-war" depends="compress-js-files, generate-build-info, images">
     <property file="${build.dir}/build.properties" />
     <copy file="WebRoot/WEB-INF/web.xml.production" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="true"/>
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <war warfile="${warfile}"
       webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
-      <lib dir="${jars.dir}" includes="*.jar"/>
+      <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
       <classes dir="${src.dir}" includes="*.properties"/>
       <classes dir="${build.dir}" includes="**/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
@@ -460,8 +525,8 @@
 	     <classes dir="${src.dir}" includes="*.properties"/>
 	     <classes dir="${build.dir}" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
 	     <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-	    <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,skins/**" excludes="js/AjxMail_all.js,js/ZmLogin.js,js/zimbraMail/**"/>
-	    <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Dwt.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/Zimbra-net.jsp,public/frameOpenerHelper.jsp,skins/**,**/*${gzipExtension}"/>
+	    <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,skins/**" excludes="js/ZimbraMail_all.js,js/ZmLogin.js,js/zimbraMail/**"/>
+	    <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Dwt.jsp,public/Ajax.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,skins/**,**/*${gzipExtension}"/>
         <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
         <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
 	  </war>
