@@ -56,8 +56,6 @@ ZmCalDayView._hourHeight = 42;
 ZmCalDayView._15minuteHeight = 10.5;
 ZmCalDayView._dayHeight = 1008; // 24*42
 
-ZmCalDayView._idToView = {}; // used to find a view object given the id for the appts div
-
 ZmCalDayView.prototype.toString = 
 function() {
 	return "ZmCalDayView";
@@ -108,15 +106,18 @@ function() {
 	if (!this._needFirstLayout)
 		this._layoutAppts();
 	this._layout();
-	ZmCalDayView._scrollTo8AM([this]);
+	this._scrollTo8AM();
 }
 
-ZmCalDayView._scrollTo8AM =
-function(args)
+ZmCalDayView.prototype._scrollTo8AM =
+function()
 {
-	var view = args[0];
-	var bodyElement = Dwt.getDomObj(view.getDocument(), view._bodyDivId);
-	bodyElement.scrollTop = ZmCalDayView._hourHeight*8 - 10;
+	if (!this._autoScrollDisabled) {
+		var bodyElement = Dwt.getDomObj(this.getDocument(), this._bodyDivId);
+		bodyElement.scrollTop = ZmCalDayView._hourHeight*8 - 10;
+	} else {
+		this._autoScrollDisabled = false;
+	}
 }
 
 ZmCalDayView.prototype._updateTitle =
@@ -330,12 +331,10 @@ function(appt, now, isDndIcon) {
 		var bottom = this.getDocument().createElement("div");
 		//sash.id = id+"_sash";
 		bottom.className = 'appt_bottom_sash';
-		bottom.style.cursor = AjxEnv.isIE ? "row-resize" : "n-resize";
 		bottom._type = ZmCalBaseView.TYPE_APPT_BOTTOM_SASH;
 		div.appendChild(bottom);		
 
 		var top = this.getDocument().createElement("div");
-		top.style.cursor = AjxEnv.isIE ? "row-resize" : "n-resize";		
 		top.className = 'appt_top_sash';
 		top._type = ZmCalBaseView.TYPE_APPT_TOP_SASH;
 		div.appendChild(top);		
@@ -535,10 +534,8 @@ function(abook) {
 	this.getHtmlElement().innerHTML = html.join("");
 	
 	Dwt.getDomObj(this.getDocument(), this._apptBodyDivId)._type = ZmCalBaseView.TYPE_APPTS_DAYGRID;
-
-	ZmCalDayView._idToView[this._bodyDivId] = this;
 	
-	ZmCalDayView._scrollTo8AM([this]);
+	this._scrollTo8AM();
 }
 
 ZmCalDayView.prototype._computeMaxCols =
@@ -1122,6 +1119,7 @@ function(ev, apptEl) {
 			ZmCalDayView._emptyHdlr, // mouse out
 			true);
 	capture.capture();
+	bodyDivEl.style.cursor = 'move';
 	this.deselectAll();
 	this.setSelection(data.appt);
 	ZmCalDayView._setOpacity(apptEl, 70);
@@ -1177,7 +1175,7 @@ function(ev) {
 	}
 
 	DwtMouseEventCapture.getCaptureObj().release();
-
+	data.bodyDivEl.style.cursor = 'auto';
 	mouseEv._stopPropagation = true;
 	mouseEv._returnValue = false;
 	mouseEv.setToDhtmlEvent(ev);
@@ -1186,9 +1184,9 @@ function(ev) {
 		data.appt._orig.setViewMode(ZmAppt.MODE_EDIT);
 		data.appt._orig.setStartDate(data.startDate);
 		data.appt._orig.setEndDate(new Date(data.startDate.getTime()+data.appt.getDuration()));
+		data.view._autoScrollDisabled = true;
 		data.appt._orig.save(data.view._appCtxt.getAppController());
 	}
-
 	return false;	
 }
 
@@ -1324,10 +1322,12 @@ function(ev) {
 	if (data.isTop  && data.startDate.getTime() != data.appt.getStartTime()) {
 		data.appt._orig.setViewMode(ZmAppt.MODE_EDIT);
 		data.appt._orig.setStartDate(data.startDate);
+		data.view._autoScrollDisabled = true;
 		data.appt._orig.save(data.view._appCtxt.getAppController());
 	} else if (!data.isTop && data.endDate.getTime() != data.appt.getEndTime()) {
 		data.appt._orig.setViewMode(ZmAppt.MODE_EDIT);
 		data.appt._orig.setEndDate(data.endDate);
+		data.view._autoScrollDisabled = true;
 		data.appt._orig.save(data.view._appCtxt.getAppController());
 	}
 	return false;	
