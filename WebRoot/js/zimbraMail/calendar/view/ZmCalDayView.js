@@ -37,6 +37,8 @@ function ZmCalDayView(parent, posStyle, dropTgt, view, numDays) {
 ZmCalDayView.prototype = new ZmCalBaseView;
 ZmCalDayView.prototype.constructor = ZmCalDayView;
 
+ZmCalDayView.DRAG_THRESHOLD = 3;
+
 ZmCalDayView._hoursDivWidth = 40; // width of div holding hours text (1:00am, etc)
 ZmCalDayView._hoursDivWidth_pad = 5; // space between hours div and appts
 
@@ -1002,17 +1004,12 @@ function(ev, div, dblclick) {
 		case ZmCalBaseView.TYPE_APPTS_DAYGRID:
 			var date = this._getDateFromXY(ev.elementX, ev.elementY, 30);
 			if (date == null) return false;
-//			DBG.println("_mouseUplistener: element "+ev.elementX+ ", "+ev.elementY);
-//			DBG.println("_mouseUplistener: date = "+date.toString());
-//			DBG.println("_mouseUplistener: dbl click = "+dblclick);			
 			break;
 		case ZmCalBaseView.TYPE_SELECTED_TIME:
 			//var date = new Date(this._date.getTime());
 			var loc = Dwt.getLocation(div);
 			var date = this._getDateFromXY(loc.x+ev.elementX, loc.y+ev.elementY, 30);
 			if (date == null) return false;
-//			DBG.println("_mouseUplistener: date = "+date.toString());
-//			DBG.println("_mouseUplistener: dbl click = "+dblclick);						
 			break;
 		default:
 			return;
@@ -1082,35 +1079,19 @@ function(ev, apptEl) {
 	var doc = this.getDocument();
 	var appt = AjxCore.objectWithId(apptEl._itemIndex);
 	if (appt.isReadOnly()) return false;
-
-	var loc = Dwt.getLocation(apptEl);
 	
 	var apptOffset = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, apptEl);
 
-	var apptsDiv = Dwt.getDomObj(doc, this._apptBodyDivId);
-//	var apptsDivOffset = Dwt.toWindow(apptsDiv, 0, 0, null);
-	var bodyDivEl = Dwt.getDomObj(view.getDocument(), this._bodyDivId);
-
-	// snap it to grid
-	var snap = this._snapXY(loc.x + apptOffset.x, loc.y, 30);
-	if (snap == null) return false;
-//DBG.println("mouseDown snap: "+snap.x+","+snap.y);	
 	var data = { 
+		dndStarted: false,
 		appt: appt, 
 		view: this,
 		apptEl: apptEl, 
-		bodyDivEl: bodyDivEl,
-		startTimeEl: Dwt.getDomObj(doc, apptEl.id +"_st"),
-		endTimeEl: Dwt.getDomObj(doc, apptEl.id +"_et"),
-		apptX: loc.x,
 		apptOffset: apptOffset,
-		apptsDiv: apptsDiv,
-		apptY: loc.y,
 		docX: ev.docX,
-		docY: ev.docY,
-		snap: snap,
-		startDate: new Date(appt.getStartTime())
+		docY: ev.docY
 	};
+
 	var capture = new DwtMouseEventCapture	(data,
 			ZmCalDayView._emptyHdlr, // mouse over
 			ZmCalDayView._emptyHdlr, // mouse down (already handled by action)
@@ -1119,11 +1100,31 @@ function(ev, apptEl) {
 			ZmCalDayView._emptyHdlr, // mouse out
 			true);
 	capture.capture();
-	bodyDivEl.style.cursor = 'move';
+	return false;	
+}
+
+// called when DND is confirmed after threshold
+ZmCalDayView.prototype._apptDndBegin =
+function(data) {
+
+	var doc = this.getDocument();
+	var loc = Dwt.getLocation(data.apptEl);
+	data.apptX = loc.x;
+	data.apptY = loc.y;
+	data.apptsDiv = Dwt.getDomObj(doc, this._apptBodyDivId);
+	data.bodyDivEl = Dwt.getDomObj(this.getDocument(), this._bodyDivId);
+	data.snap = this._snapXY(data.apptX + data.apptOffset.x, data.apptY, 30); 	// get orig grid snap
+	if (data.snap == null) return false;
+	data.startDate = new Date(data.appt.getStartTime());
+	data.startTimeEl = Dwt.getDomObj(doc, data.apptEl.id +"_st");
+	data.endTimeEl = Dwt.getDomObj(doc, data.apptEl.id +"_et");
+	
+	data.bodyDivEl.style.cursor = 'move';	
 	this.deselectAll();
 	this.setSelection(data.appt);
-	ZmCalDayView._setOpacity(apptEl, 70);
-	return false;	
+	ZmCalDayView._setOpacity(data.apptEl, 70);
+	data.dndStarted = true;
+	return true;
 }
 
 ZmCalDayView._apptMouseMoveHdlr =
@@ -1135,6 +1136,16 @@ function(ev) {
 
 	var deltaX = mouseEv.docX - data.docX;
 	var deltaY = mouseEv.docY - data.docY;
+
+	if (!data.dndStarted) {
+		var withinThreshold =  (Math.abs(deltaX) < ZmCalDayView.DRAG_THRESHOLD && Math.abs(deltaY) < ZmCalDayView.DRAG_THRESHOLD);
+		if (withinThreshold || !data.view._apptDndBegin(data)) {
+			mouseEv._stopPropagation = true;
+			mouseEv._returnValue = false;
+			mouseEv.setToDhtmlEvent(ev);
+			return false;
+		}
+	}
 
 	var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, 42);
 	if (scrollOffset != 0) {
@@ -1169,24 +1180,25 @@ function(ev) {
 	ZmCalDayView._setApptOpacity(data.appt, data.apptEl);	
 	var mouseEv = DwtShell.mouseEvent;
 	mouseEv.setFromDhtmlEvent(ev);	
-	if (mouseEv.button != DwtMouseEvent.LEFT) {
-		DwtUiEvent.setBehaviour(ev, true, false);
-		return false;
-	}
 
 	DwtMouseEventCapture.getCaptureObj().release();
-	data.bodyDivEl.style.cursor = 'auto';
+	
+	if (data.dndStarted) {
+		data.bodyDivEl.style.cursor = 'auto';
+		if (data.startDate.getTime() != data.appt.getStartTime()) {
+			data.appt._orig.setViewMode(ZmAppt.MODE_EDIT);
+			data.appt._orig.setStartDate(data.startDate);
+			data.appt._orig.setEndDate(new Date(data.startDate.getTime()+data.appt.getDuration()));
+			data.view._autoScrollDisabled = true;
+			// TODO: SOAP errors
+			data.appt._orig.save(data.view._appCtxt.getAppController());
+		}			
+	}
+
 	mouseEv._stopPropagation = true;
 	mouseEv._returnValue = false;
 	mouseEv.setToDhtmlEvent(ev);
-
-	if (data.startDate.getTime() != data.appt.getStartTime()) {
-		data.appt._orig.setViewMode(ZmAppt.MODE_EDIT);
-		data.appt._orig.setStartDate(data.startDate);
-		data.appt._orig.setEndDate(new Date(data.startDate.getTime()+data.appt.getDuration()));
-		data.view._autoScrollDisabled = true;
-		data.appt._orig.save(data.view._appCtxt.getAppController());
-	}
+	
 	return false;	
 }
 
@@ -1253,7 +1265,6 @@ function(ev) {
 	if (mouseEv.docY > 0 && mouseEv.docY != data.startY)
 		delta = mouseEv.docY - data.startY;
 
-
 	var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, 42);
 	if (scrollOffset != 0) {
 		data.startY -= scrollOffset;	
@@ -1319,15 +1330,17 @@ function(ev) {
 	mouseEv._returnValue = false;
 	mouseEv.setToDhtmlEvent(ev);
 
-	if (data.isTop  && data.startDate.getTime() != data.appt.getStartTime()) {
+	if (data.isTop && data.startDate.getTime() != data.appt.getStartTime()) {
 		data.appt._orig.setViewMode(ZmAppt.MODE_EDIT);
 		data.appt._orig.setStartDate(data.startDate);
 		data.view._autoScrollDisabled = true;
+		// TODO: SOAP errors
 		data.appt._orig.save(data.view._appCtxt.getAppController());
 	} else if (!data.isTop && data.endDate.getTime() != data.appt.getEndTime()) {
 		data.appt._orig.setViewMode(ZmAppt.MODE_EDIT);
 		data.appt._orig.setEndDate(data.endDate);
 		data.view._autoScrollDisabled = true;
+		// TODO: SOAP errors
 		data.appt._orig.save(data.view._appCtxt.getAppController());
 	}
 	return false;	

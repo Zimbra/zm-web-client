@@ -123,27 +123,10 @@ function() {
 	for (var i = 0; i < sz; i++)
 		a[i].className = a[i]._styleClass;
 	this._selectedItems.removeAll();
-	//this._selAnchor = null;
 }
 
 ZmCalBaseView.prototype._mouseOverAction = 
-function(mouseEv, div) {
-	if (div._type == ZmCalBaseView.TYPE_APPT) {
-		if (div._hoverStyleClass == null || div == this._rightSelItems) {
-			div.hoverSet = false;
-		} else {
-			var selItems = this._selectedItems.getArray();
-			div.hoverSet = true;
-			for (var i = 0; i < selItems.length; i++) {
-				if (div == selItems[i]) {
-					div.hoverSet = false;
-					break;
-				}
-			}
-		}
-		if (div.hoverSet)
-			div.className += " " + div._hoverStyleClass;
-	}
+function(ev, div) {
 
 	var item = this.getItemFromElement(div);
 	if (item instanceof ZmAppt) {
@@ -155,16 +138,7 @@ function(mouseEv, div) {
 }
 
 ZmCalBaseView.prototype._mouseOutAction = 
-function(mouseEv, div) {
-	if (div._type == ZmCalBaseView.TYPE_APPT) {
-		if (div._hoverStyleClass && div.hoverSet)
-			div.className = div._styleClass;
-	}
-	return true;
-}
-
-ZmCalBaseView.prototype._mouseDownAction = 
-function(mouseEv, div) {
+function(ev, div) {
 	return true;
 }
 
@@ -200,24 +174,6 @@ function(ev) {
 		return;
 }
 
-ZmCalBaseView.prototype._mouseUpAction = 
-function(ev, div) {
-	if (div._type != ZmCalBaseView.TYPE_APPT) return true;
-	var id = div.id; //(ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : div.id;
-	if (!id) return true;
-
-	if (ev.button == DwtMouseEvent.LEFT) {
-		if (this._evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
-			this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
-		}
-	} else if (ev.button == DwtMouseEvent.RIGHT) {
-		if (this._evtMgr.isListenerRegistered(DwtEvent.ACTION)) {
-			this._evtMgr.notifyListeners(DwtEvent.ACTION, this._actionEv);
-		}
-	}
-	return true;
-}
-
 ZmCalBaseView.prototype._findAncestor =
 function(elem, attr) {
 	while (elem && (elem[attr] == void 0)){
@@ -231,19 +187,24 @@ function(ev) {
 	var div = ev.target;
 
 	div = this._findAncestor(div, "_type");
+	if (!div) return false;
 
-	if (div == null){
-		this._dndSelection = null;
-	} else {
-		this._clickDiv = div;
-
-		if (div._type != ZmCalBaseView.TYPE_APPT)
-			this._dndSelection = null;
-		else
-			this._dndSelection = (this._selectedItems.contains(div)) ? this._selectedItems :  div._itemIndex;
-		return this._mouseDownAction(ev, div);	
+	this._clickDiv = div;
+	if (div._type == ZmCalBaseView.TYPE_APPT) {
+		if (ev.button == DwtMouseEvent.LEFT || ev.button == DwtMouseEvent.RIGHT)
+			this._itemClicked(div, ev);
 	}
+	return this._mouseDownAction(ev, div);	
+}
 
+ZmCalBaseView.prototype._mouseDownAction = 
+function(ev, div) {
+	if (ev.button == DwtMouseEvent.RIGHT) {
+		if (this._evtMgr.isListenerRegistered(DwtEvent.ACTION)) {
+			this._evtMgr.notifyListeners(DwtEvent.ACTION, this._actionEv);
+		}
+	}
+	return true;
 }
 
 ZmCalBaseView.prototype._mouseUpListener = 
@@ -254,19 +215,22 @@ function(ev) {
 	delete this._clickDiv;
 	
 	if (!div) return true;
-	
-	switch (div._type) {
-		case ZmCalBaseView.TYPE_APPT:
-			// set item selection, then hand off to derived class for handling
-			if (ev.button == DwtMouseEvent.LEFT || ev.button == DwtMouseEvent.RIGHT)
-				this._itemClicked(div, ev);
-			break;	
-	}
 	return this._mouseUpAction(ev, div);
 }
 
+ZmCalBaseView.prototype._mouseUpAction = 
+function(ev, div) {
+	if (div._type != ZmCalBaseView.TYPE_APPT) return true;
+	if (ev.button == DwtMouseEvent.LEFT) {
+		if (this._evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
+			this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
+		}
+	}
+	return true;
+}
+
 ZmCalBaseView.prototype._doubleClickAction = 
-function(mouseEv, div) {return true;}
+function(ev, div) {return true;}
 
 ZmCalBaseView.prototype._doubleClickListener =
 function(ev) {
@@ -292,119 +256,33 @@ function(clickedEl, ev) {
 	var a = this._selectedItems.getArray();
 	var numSelectedItems = this._selectedItems.size();
 
-	// always clear out old right click selection
-	if (this._rightSelItems) {
-		this._rightSelItems.className = this._rightSelItems._styleClass;
-		this._rightSelItems = null;
-	}
+	// is this element currently in the selected items list?
+	var bContained = this._selectedItems.contains(clickedEl);
 
-	if ((!ev.shiftKey && !ev.ctrlKey) || !this.isMultiSelectEnabled()) {
-		// always reset detail if left/right click
-		if (ev.button == DwtMouseEvent.LEFT || ev.button == DwtMouseEvent.RIGHT)
-			this._selEv.detail = DwtListView.ITEM_SELECTED;
-		
-		// is this element currently in the selected items list?
-		var bContained = this._selectedItems.contains(clickedEl);
-		
-		if (ev.button == DwtMouseEvent.LEFT) {
-		
-			// clear out old left click selection(s)
-			for (i = 0; i < numSelectedItems; i++)
-				a[i].className = a[i]._styleClass;
-			this._selectedItems.removeAll();
+	if (ev.shiftKey && bContained) {
+		this._selectedItems.remove(clickedEl);
+		clickedEl.className = clickedEl._styleClass;
+		this._selEv.detail = DwtListView.ITEM_DESELECTED;
+	} else if (!bContained) {
+		// clear out old left click selection(s)
+		for (i = 0; i < numSelectedItems; i++)
+			a[i].className = a[i]._styleClass;
+		this._selectedItems.removeAll();
 			
-			// save new left click selection
-			this._selectedItems.add(clickedEl);
-			this._selAnchor = clickedEl;
-			clickedEl.className = clickedEl._selectedStyleClass;
-			this._firstSelIndex = this._list 
-				? this._list.indexOf(AjxCore.objectWithId(clickedEl._itemIndex)) : -1;
-		} else if (ev.button == DwtMouseEvent.RIGHT && !bContained) {
-			// save right click selection
-			this._rightSelItems = clickedEl;
-			clickedEl.className = clickedEl._selectedStyleClass + "-right";
-		}
-		clickedEl.hoverSet = false;
-	} else {
-		if (ev.ctrlKey) {
-			if (this._selectedItems.contains(clickedEl)) {
-				this._selectedItems.remove(clickedEl);
-				clickedEl.className = clickedEl._styleClass;
-				this._selEv.detail = DwtListView.ITEM_DESELECTED;
-				this._firstSelIndex = this._selectedItems.size() > 0 
-					? this._selectedItems.get(0)._itemIndex : -1;
-			} else {
-				this._selectedItems.add(clickedEl);
-				clickedEl.className = clickedEl._selectedStyleClass;
-				clickedEl.hoverSet = false;
-				this._selEv.detail = DwtListView.ITEM_SELECTED;
-			}
-			// The element that was part of the ctrl action always becomes
-			// the anchor since it gets focus
-			this._selAnchor = clickedEl;
-		} else { // SHIFT KEY
-			// Adds to the selection to/from the current node to the selection anchor
-			if (this._selAnchor == null)
-				return;				
-			var convEls = this._getChildren() || clickedEl.parentNode.childNodes;
-			var numConvEls = convEls.length;
-			var convEl;
-			var state = 0;
-			for (var i = 0; i < numConvEls; i++) {
-				convEl = convEls[i];
-				if (convEl == this._rightSelItems)
-					this._rightSelItems = null;
-				
-				if (convEl == clickedEl) {
-					/* Increment the state. 
-					 * 0 - means we havent started
-					 * 1 - means we are in selection range
-					 * 2 - means we are out of selection range */
-					state++;
-				}
-				if (convEl == this._selAnchor) {
-					state++;
-					if (convEl.className != convEl._selectedStyleClass) {
-						convEl.className = convEl._selectedStyleClass;
-						this._selectedItems.add(convEl);
-					}
-					continue;
-				}
-				
-				// If state == 0 or 2 (i.e. we are out of the selection range, 
-				// we have to deselect the node. Else we select it
-				if (state != 1 && convEl.className == convEl._selectedStyleClass && convEl != clickedEl) {
-					convEl.className = convEl._styleClass;
-					this._selectedItems.remove(convEl);
-				} else if (state == 1 || convEl == clickedEl) {
-					if (convEl.className != convEl._selectedStyleClass) {
-						convEl.className = convEl._selectedStyleClass;
-						convEl.hoverSet = false;
-						this._selectedItems.add(convEl);
-					}
-				}
-			}
-			var newSelectedItems = this._selectedItems.size();
-			if (numSelectedItems < newSelectedItems)
-				this._selEv.detail = DwtListView.ITEM_SELECTED;
-			else if (numSelectedItems > newSelectedItems)
-				this._selEv.detail = DwtListView.ITEM_DESELECTED;
-			else
-				return;
-		}
+		// save new left click selection
+		this._selectedItems.add(clickedEl);
+		clickedEl.className = clickedEl._selectedStyleClass;
+		this._selEv.detail = DwtListView.ITEM_SELECTED;
 	}
 
-	// let derived class call notifyListeners(), since it may want to add to event
-	if (ev.button == DwtMouseEvent.LEFT) {
-		DwtUiEvent.copy(this._selEv, ev);
-		this._selEv.item = AjxCore.objectWithId(clickedEl._itemIndex);
-		if (this.constructor == ZmCalBaseView)
-			this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
-	} else if (ev.button == DwtMouseEvent.RIGHT) {
+	DwtUiEvent.copy(this._selEv, ev);
+	this._selEv.item = AjxCore.objectWithId(clickedEl._itemIndex);
+	this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
+
+	if (ev.button == DwtMouseEvent.RIGHT) {
 		DwtUiEvent.copy(this._actionEv, ev);
 		this._actionEv.item = AjxCore.objectWithId(clickedEl._itemIndex);
-		if (this.constructor == ZmCalBaseView)
-			this._evtMgr.notifyListeners(DwtEvent.ACTION, this._actionEv);
+		this._evtMgr.notifyListeners(DwtEvent.ACTION, this._actionEv);
 	}
 }
 
@@ -433,7 +311,6 @@ function(item, skipNotify) {
 			a[i].className = a[i]._styleClass;
 		this._selectedItems.removeAll();
 		this._selectedItems.add(el);
-		this._selAnchor = el;
 		el.className = this.getEnabled() ? el._selectedStyleClass : el._selectedDisabledStyleClass;
 		if (!skipNotify && this._evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
 			var selEv = new DwtSelectionEvent(true);
@@ -448,20 +325,16 @@ function(item, skipNotify) {
 
 ZmCalBaseView.prototype.getSelectionCount =
 function() {
-	return this._rightSelItems ? 1 : this._selectedItems.size();
+	return this._selectedItems.size();
 }
 
 ZmCalBaseView.prototype.getSelection =
 function() {
 	var a = new Array();
-	if (this._rightSelItems) {
-		a.push(AjxCore.objectWithId(this._rightSelItems._itemIndex));
-	} else {
-		var sa = this._selectedItems.getArray();
-		var saLen = this._selectedItems.size();
-		for (var i = 0; i < saLen; i++)
-			a[i] = AjxCore.objectWithId(sa[i]._itemIndex);
-	}
+	var sa = this._selectedItems.getArray();
+	var saLen = this._selectedItems.size();
+	for (var i = 0; i < saLen; i++)
+		a[i] = AjxCore.objectWithId(sa[i]._itemIndex);
 	return a;
 }
 
@@ -473,10 +346,6 @@ function() {
 ZmCalBaseView.prototype.handleActionPopdown = 
 function(ev) {
 	// clear out old right click selection
-	if (this._rightSelItems) {
-		this._rightSelItems.className = this._rightSelItems._styleClass;
-		this._rightSelItems = null;
-	}
 }
 
 // END LIST-RELATED
@@ -721,7 +590,6 @@ function() {
 ZmCalBaseView.prototype.removeAll =
 function() {
 	this._selectedItems.removeAll();
-	this._selAnchor = null;
 }
 
 ZmCalBaseView.prototype.getCalTitle = 
