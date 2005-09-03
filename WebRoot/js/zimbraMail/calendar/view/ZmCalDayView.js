@@ -1089,7 +1089,7 @@ function(ev, apptEl) {
 
 	var apptsDiv = Dwt.getDomObj(doc, this._apptBodyDivId);
 //	var apptsDivOffset = Dwt.toWindow(apptsDiv, 0, 0, null);
-	var bodyDivEl = Dwt.getDomObj(view.getDocument(), view._bodyDivId);
+	var bodyDivEl = Dwt.getDomObj(view.getDocument(), this._bodyDivId);
 
 	// snap it to grid
 	var snap = this._snapXY(loc.x + apptOffset.x, loc.y, 30);
