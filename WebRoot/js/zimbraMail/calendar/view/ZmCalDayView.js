@@ -86,8 +86,7 @@ function(rangeChanged) {
 
 ZmCalDayView.prototype._dateUpdate =
 function(rangeChanged) {
-	this._clearSelectedTime();
-	this._updateSelectedTime();
+
 }
 
 ZmCalDayView.prototype._preSet = 
@@ -384,52 +383,6 @@ function(d)
 {
 	return this._dateToDayIndex[this._dayKey(d)];
 }	
-
-ZmCalDayView.prototype._clearSelectedTime =
-function() 
-{
-	var e = Dwt.getDomObj(this.getDocument(), this._timeSelectionDivId);
-	if (e) Dwt.setVisible(e, false);
-}
-
-ZmCalDayView.prototype._updateDuration =
-function(duration) {
-	this._duration = duration;
-	this._updateSelectedTime();
-}
-
-ZmCalDayView.prototype._updateSelectedTime =
-function() 
-{
-	if (!this._durationVisible) return;
-
-	var t = this._date.getTime();
-	if (t < this._timeRangeStart || t >= this._timeRangeEnd)
-		return;
-
-	var e = Dwt.getDomObj(this.getDocument(), this._timeSelectionDivId);
-	if (!e) return;
-
-	var bounds = this._getBoundsForDate(this._date, this.getDuration());
-	if (bounds == null) return;
-	var snap = this._snapXY(bounds.x, bounds.y, 30);
-
-	Dwt.setLocation(e, snap.x, snap.y);
-	Dwt.setSize(e, bounds.width, bounds.height);
-	ZmCalDayView._setOpacity(e, 40);
-	Dwt.setVisible(e, true);
- 	/*
- 	var m = this._date.getMinutes(); 	
-	if (m != 0 && m != 30) {
-		var temp = new Date(this._date.getTime());
-		temp.setMinutes( m < 30 ? 0 : 30);
-		e.innerHTML = ZmAppt._getTTHour(temp);
-	} else {
-		e.innerHTML = ZmAppt._getTTHour(this._date);
-	}
-	*/
-
-}
 
 ZmCalDayView.prototype._createHeadersColGroupHtml =
 function(html,idx) {
@@ -936,7 +889,6 @@ function() {
 	}	
 
 	this._layoutAppts();
-	this._updateSelectedTime();
 
 	this._apptBodyDivOffset = Dwt.toWindow(apptsDiv, 0, 0, null);
 
@@ -980,8 +932,7 @@ function(ev) {
 
 ZmCalDayView.prototype._apptSelected =
 function() {
-	this._clearSelectedTime();
-	this._durationVisible = false;
+	//
 }
 
 ZmCalDayView._ondblclickHandler =
@@ -1025,7 +976,6 @@ function(ev, div, dblclick) {
 
 ZmCalDayView.prototype._timeSelectionEvent =
 function(date, duration, isDblClick) {
-	this._durationVisible = true;
 	if (!this._selectionEvent) this._selectionEvent = new DwtSelectionEvent(true);
 	var sev = this._selectionEvent;
 	sev._isDblClick = isDblClick;
@@ -1508,9 +1458,11 @@ function(ev) {
 		var duration = (data.endDate.getTime() - data.startDate.getTime());
 		if (duration < 30 * 60 * 1000) duration = 30 * 60 * 1000;
 		//DBG.println("calling timeSelectionEvent with : "+data.startDate+ " duration "+duration);
-		data.view._timeSelectionEvent(data.startDate, duration, false);
+//		data.view._timeSelectionEvent(data.startDate, duration, false);
 		data._timeSelectionDiv.innerHTML = "";
-		data._timeSelectionDiv.style.zIndex = 0;		
+		data._timeSelectionDiv.style.zIndex = 0;
+		Dwt.setVisible(data._timeSelectionDiv, false);
+		data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAppointment(data.startDate, duration);		
 	}
 
 	mouseEv._stopPropagation = true;

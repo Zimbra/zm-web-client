@@ -438,21 +438,9 @@ function(date) {
 	return key;
 }
 
-// return duration in msecs
-ZmCalBaseView.prototype.getDuration =
-function() {
-	return this._duration ? this._duration : 30 * 1000 * 60;
-}
-
-ZmCalBaseView.prototype._updateDuration =
-function() {
-	// override in subclasses. called by viewmgr when duration is stale
-}
-
 ZmCalBaseView.prototype.setDate =
 function(date, duration, roll)
 {
-	if (duration == null || duration == 0) duration = 30 * 1000 * 60;
 	this._duration = duration;
 	this._date = new Date(date.getTime());
 	var d = new Date(date.getTime());

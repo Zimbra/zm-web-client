@@ -331,7 +331,7 @@ function(viewName, forward) {
 	var field = view.getRollField();
 	var d = new Date(this._viewMgr.getDate());
 	d = AjxDateUtil.roll(d, field, forward ? 1 : -1);
-	this.setDate(d, view.getDuration(), true);	
+	this.setDate(d, 0, true);	
 }
 
 // attempts to process a nav toolbar up/down button click
@@ -341,7 +341,7 @@ function(forward) {
 	var field = view.getRollField(true);
 	var d = new Date(this._viewMgr.getDate());
 	d = AjxDateUtil.roll(d, field, forward ? 1 : -1);
-	this.setDate(d, view.getDuration(), true);	
+	this.setDate(d, 0, true);	
 }
 
 ZmCalViewController.prototype.setDate = 
@@ -374,13 +374,13 @@ function(ev) {
 		view.deselectAll();
 		this._resetOperations(this._toolbar[ZmCalViewMgr.DAY_VIEW], 0);
 	}
-	this.setDate(ev.detail, ev.duration, ev.force);
+	this.setDate(ev.detail, 0, ev.force);
 
 	// popup the edit dialog 
 	if (ev._isDblClick){
 		var p = new DwtPoint(ev.docX, ev.docY);
 		this._apptFromView = view;
-		this._showAppointmentDetails(null, p, ev.detail, ev.duration);
+		this._showAppointmentDetails(null, p, ev.detail);
 	}
 }
 
@@ -480,8 +480,6 @@ ZmCalViewController.prototype._getInstanceSeriesDialog = function (message, mode
 ZmCalViewController.prototype.newAppointment = function (optionalStartDate, optionalDuration) {
 	// Create a new appointment
 	optionalStartDate = (optionalStartDate != null)? optionalStartDate: ((this._viewMgr != null)? this._viewMgr.getDate(): null);
-	optionalDuration = (optionalDuration != null)? optionalDuration: ((this._viewMgr != null)? this._viewMgr.getDuration(): null);	
-	//optionalDuration = (optionalDuration != null) ? optionalDuration : 30 * 60 * 1000;
 	this._getAppointmentDialog();
 	this._apptDialog.setTitle(ZmMsg.appointmentNewTitle);
 	this._popupAppointmentDialog(null, optionalStartDate, ZmAppt.MODE_NEW, optionalDuration);
