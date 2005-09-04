@@ -73,6 +73,7 @@ ZmCalBaseView.TIME_SELECTION = "ZmCalTimeSelection";
 
 ZmCalBaseView.TYPE_APPTS_DAYGRID = 1; // grid holding days, for example
 ZmCalBaseView.TYPE_APPT = 2; // an appt
+ZmCalBaseView.TYPE_HOURS_COL = 3; // hours on lefthand side
 ZmCalBaseView.TYPE_APPT_BOTTOM_SASH = 4; // a sash for appt duration
 ZmCalBaseView.TYPE_APPT_TOP_SASH = 5; // a sash for appt duration
 

@@ -540,6 +540,7 @@ function(abook) {
 	this.getHtmlElement().innerHTML = html.join("");
 	
 	Dwt.getDomObj(this.getDocument(), this._apptBodyDivId)._type = ZmCalBaseView.TYPE_APPTS_DAYGRID;
+	Dwt.getDomObj(this.getDocument(), this._bodyHourDivId)._type = ZmCalBaseView.TYPE_HOURS_COL;
 	
 	this._scrollTo8AM();
 }
@@ -1071,13 +1072,22 @@ function(ev, div) {
 			this.setToolTipContent(null);		
 			return this._apptMouseDownAction(ev, div);
 			break;
+		case ZmCalBaseView.TYPE_HOURS_COL:
+			var gridLoc = AjxEnv.isIE ? Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div) : {x: ev.elementX, y: ev.elementY};
+			var fakeLoc = this._getLocationForDate(this.getDate());
+			if (fakeLoc) {
+				gridLoc.x = fakeLoc.x;
+				var gridDiv = Dwt.getDomObj(this.getDocument(), this._apptBodyDivId);
+				return this._gridMouseDownAction(ev, gridDiv, gridLoc);
+			}
+			break;
 		case ZmCalBaseView.TYPE_APPTS_DAYGRID:
 			if (ev.button == DwtMouseEvent.LEFT) {
 				// save grid location here, since timeSelection might move the time selection div
 				var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
 				if (div._type == ZmCalBaseView.TYPE_APPTS_DAYGRID)
 					this._timeSelectionAction(ev, div, false);
-				return this._gridMouseDownAction(ev, div, gridLoc);	
+				return this._gridMouseDownAction(ev, div, gridLoc);
 			}
 			break;
 	}
@@ -1373,7 +1383,7 @@ function(ev, gridEl, gridLoc) {
 		return false;
 	}
 
-	var doc = this.getDocument();
+	//DBG.println("gridLoc: "+gridLoc.x+","+gridLoc.y);
 
 	//var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, gridEl);
 
