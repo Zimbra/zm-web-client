@@ -331,7 +331,7 @@ function(viewName, forward) {
 	var field = view.getRollField();
 	var d = new Date(this._viewMgr.getDate());
 	d = AjxDateUtil.roll(d, field, forward ? 1 : -1);
-	this.setDate(d, 0, true);	
+	this.setDate(d, view.getDuration(), true);	
 }
 
 // attempts to process a nav toolbar up/down button click
@@ -341,7 +341,7 @@ function(forward) {
 	var field = view.getRollField(true);
 	var d = new Date(this._viewMgr.getDate());
 	d = AjxDateUtil.roll(d, field, forward ? 1 : -1);
-	this.setDate(d, 0, true);	
+	this.setDate(d, view.getDuration(), true);	
 }
 
 ZmCalViewController.prototype.setDate = 

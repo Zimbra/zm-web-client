@@ -158,8 +158,10 @@ function(viewName) {
 		var vd = view.getDate();
 		
 		if (vd == null || (view.getDate().getTime() != this._date.getTime())) {
-				view.setDate(this._date, this._duration, true);
+			view._durationVisible = true;		
+			view.setDate(this._date, this._duration, true);
 		} else if (view.getDuration() != this._duration) {
+			view._durationVisible = true;
 			view._updateDuration(this._duration);
 		}
 		this._layout();

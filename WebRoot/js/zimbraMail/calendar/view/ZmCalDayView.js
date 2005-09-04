@@ -388,7 +388,6 @@ function(d)
 ZmCalDayView.prototype._clearSelectedTime =
 function() 
 {
-	this._durationVisible = false;
 	var e = Dwt.getDomObj(this.getDocument(), this._timeSelectionDivId);
 	if (e) Dwt.setVisible(e, false);
 }
@@ -402,7 +401,8 @@ function(duration) {
 ZmCalDayView.prototype._updateSelectedTime =
 function() 
 {
-	this._durationVisible = true;
+	if (!this._durationVisible) return;
+
 	var t = this._date.getTime();
 	if (t < this._timeRangeStart || t >= this._timeRangeEnd)
 		return;
@@ -981,6 +981,7 @@ function(ev) {
 ZmCalDayView.prototype._apptSelected =
 function() {
 	this._clearSelectedTime();
+	this._durationVisible = false;
 }
 
 ZmCalDayView._ondblclickHandler =
@@ -1024,6 +1025,7 @@ function(ev, div, dblclick) {
 
 ZmCalDayView.prototype._timeSelectionEvent =
 function(date, duration, isDblClick) {
+	this._durationVisible = true;
 	if (!this._selectionEvent) this._selectionEvent = new DwtSelectionEvent(true);
 	var sev = this._selectionEvent;
 	sev._isDblClick = isDblClick;
