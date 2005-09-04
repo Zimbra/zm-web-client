@@ -247,7 +247,7 @@ ZmFreeBusyView.prototype._createAutoCompleteWidget = function () {
 	var contactsLoader = contactsClass.getContactList;
 	var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, this);
 	this._autocompleteList = new ZmAutocompleteListView(this, null, contactsClass, contactsLoader, locCallback);
-	this._autocompleteList.setHandleEnterOnKeydown(true);
+//	this._autocompleteList.setHandleEnterOnKeydown(true);
 };
 
 /**
