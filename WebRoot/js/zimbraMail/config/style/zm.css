@@ -1395,10 +1395,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	width:40px;
 	color:#666666;
 }
-HTML>BODY .calendar_grid_body_time_text {	/* HACK to match times up with their lines -- FF only */
-	position:relative;
-	top:-8px;
-}
 
 .month_calendar_c0,.month_calendar_c1,.month_calendar_c2,.month_calendar_c3,
 .month_calendar_c4,.month_calendar_c5,.month_calendar_c6{ width: 14.7%; }

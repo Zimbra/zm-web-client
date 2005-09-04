@@ -455,7 +455,7 @@ function(html,idx) {
 
 ZmCalDayView.prototype._createHoursHtml =
 function(html,idx) {
-	html[idx++] = "<div style='position:absolute; width:"+ZmCalDayView._hoursDivWidth+"px;' id='"+this._bodyHourDivId+"'>";
+	html[idx++] = "<div style='position:absolute; top:-8; width:"+ZmCalDayView._hoursDivWidth+"px;' id='"+this._bodyHourDivId+"'>";
 	html[idx++] = "<table class=calendar_grid_day_table>";
 	for (var h=0; h < 24; h++) {
 		var hour = (h==0 || h == 12) ? 12 : h % 12;
