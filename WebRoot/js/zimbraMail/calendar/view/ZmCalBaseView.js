@@ -73,7 +73,6 @@ ZmCalBaseView.TIME_SELECTION = "ZmCalTimeSelection";
 
 ZmCalBaseView.TYPE_APPTS_DAYGRID = 1; // grid holding days, for example
 ZmCalBaseView.TYPE_APPT = 2; // an appt
-ZmCalBaseView.TYPE_SELECTED_TIME = 3; // div representing selected time in a grid
 ZmCalBaseView.TYPE_APPT_BOTTOM_SASH = 4; // a sash for appt duration
 ZmCalBaseView.TYPE_APPT_TOP_SASH = 5; // a sash for appt duration
 
@@ -438,9 +437,22 @@ function(date) {
 	return key;
 }
 
+// return duration in msecs
+ZmCalBaseView.prototype.getDuration =
+function() {
+	return this._duration ? this._duration : 30 * 1000 * 60;
+}
+
+ZmCalBaseView.prototype._updateDuration =
+function() {
+	// override in subclasses. called by viewmgr when duration is stale
+}
+
 ZmCalBaseView.prototype.setDate =
 function(date, duration, roll)
 {
+	if (duration == null || duration == 0) duration = 30 * 1000 * 60;
+	this._duration = duration;
 	this._date = new Date(date.getTime());
 	var d = new Date(date.getTime());
 	d.setHours(0, 0, 0, 0);

@@ -90,11 +90,22 @@ function()
 	return this._date;
 }
 
+ZmCalViewMgr.prototype.getDuration =
+function() 
+{
+	if (this.getCurrentView()._durationVisible)
+		return this._duration;
+	else
+		return 0;		
+}
+
+
 ZmCalViewMgr.prototype.setDate =
 function(date, duration, roll)
 {
 //DBG.println("ZmCalViewMgr.setDate = "+date);
 	this._date = new Date(date.getTime());
+	this._duration = duration;
 	if (this._currentViewName != null) {
 		var view = this._views[this._currentViewName];
 		view.setDate(date, duration, roll);
@@ -147,7 +158,9 @@ function(viewName) {
 		var vd = view.getDate();
 		
 		if (vd == null || (view.getDate().getTime() != this._date.getTime())) {
-				view.setDate(this._date, 0, true);
+				view.setDate(this._date, this._duration, true);
+		} else if (view.getDuration() != this._duration) {
+			view._updateDuration(this._duration);
 		}
 		this._layout();
 	}

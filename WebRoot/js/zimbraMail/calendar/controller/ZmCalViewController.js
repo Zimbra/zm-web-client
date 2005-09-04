@@ -374,13 +374,13 @@ function(ev) {
 		view.deselectAll();
 		this._resetOperations(this._toolbar[ZmCalViewMgr.DAY_VIEW], 0);
 	}
-	this.setDate(ev.detail, 0, ev.force);
+	this.setDate(ev.detail, ev.duration, ev.force);
 
 	// popup the edit dialog 
 	if (ev._isDblClick){
 		var p = new DwtPoint(ev.docX, ev.docY);
 		this._apptFromView = view;
-		this._showAppointmentDetails(null, p, ev.detail);
+		this._showAppointmentDetails(null, p, ev.detail, ev.duration);
 	}
 }
 
@@ -477,12 +477,14 @@ ZmCalViewController.prototype._getInstanceSeriesDialog = function (message, mode
 	return this._showSingleInstanceDialog;
 };
 
-ZmCalViewController.prototype.newAppointment = function (optionalStartDate) {
+ZmCalViewController.prototype.newAppointment = function (optionalStartDate, optionalDuration) {
 	// Create a new appointment
 	optionalStartDate = (optionalStartDate != null)? optionalStartDate: ((this._viewMgr != null)? this._viewMgr.getDate(): null);
+	optionalDuration = (optionalDuration != null)? optionalDuration: ((this._viewMgr != null)? this._viewMgr.getDuration(): null);	
+	//optionalDuration = (optionalDuration != null) ? optionalDuration : 30 * 60 * 1000;
 	this._getAppointmentDialog();
 	this._apptDialog.setTitle(ZmMsg.appointmentNewTitle);
-	this._popupAppointmentDialog(null, optionalStartDate, ZmAppt.MODE_NEW);
+	this._popupAppointmentDialog(null, optionalStartDate, ZmAppt.MODE_NEW, optionalDuration);
 };
 
 ZmCalViewController.prototype.editRecurringAppointment = function (appt, optionalStartDate) {
@@ -498,7 +500,7 @@ ZmCalViewController.prototype.editSimpleAppointment = function (appt, optionalSt
 };
 
 ZmCalViewController.prototype._showAppointmentDetails =
-function (appt, point, optionalStartDate){
+function (appt, point, optionalStartDate, optionalDuration){
 	var appModels = this._appCtxt.getAppController()._models;
 	var arr = appModels.getArray();
 	var mailList = null;
@@ -522,7 +524,7 @@ function (appt, point, optionalStartDate){
 				this.editAppointment(appt, optionalStartDate, ZmAppt.MODE_EDIT);
 			}
 		} else {
-			this.newAppointment(optionalStartDate);
+			this.newAppointment(optionalStartDate, optionalDuration);
 		}
 	} catch (ex) {
 		var params = [appt, point];
@@ -559,8 +561,8 @@ ZmCalViewController.prototype.editAppointment = function (appt, optionalStartDat
 	this._popupAppointmentDialog(appt, optionalStartDate, mode);
 };
 
-ZmCalViewController.prototype._popupAppointmentDialog = function (appt, optionalStartDate, mode) {
-	this._apptView.showDetail(appt, optionalStartDate, mode);
+ZmCalViewController.prototype._popupAppointmentDialog = function (appt, optionalStartDate, mode, optionalDuration) {
+	this._apptView.showDetail(appt, optionalStartDate, mode, optionalDuration);
 	this._apptDialog.popup();
 	if (appt && !appt.isOrganizer()) {
 		this._apptDialog.setButtonEnabled(DwtDialog.OK_BUTTON, false);
@@ -887,7 +889,7 @@ function(start,end) {
 	if (!found)
 		return null;
 
-	DBG.println("cache hit!");
+	//DBG.println("cache hit!");
 			
 	if (entry.start == start && entry.end == end)
 		return entry.list;
