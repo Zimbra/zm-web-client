@@ -1430,11 +1430,11 @@ function(ev) {
 		if (bounds == null) return false;
 		Dwt.setLocation(e, newStart.x, newStart.y);
 		Dwt.setSize(e, bounds.width, bounds.height);
-		ZmCalDayView._setOpacity(e, 40);
+		ZmCalDayView._setOpacity(e, 70);
 		Dwt.setVisible(e, true);
 //		e.innerHTML = ZmAppt._getTTHour(data.startDate) + " - " + ZmAppt._getTTHour(data.endDate);
 		e.innerHTML = "<div style='position:absolute; top:0; left:0;'>"+ZmAppt._getTTHour(data.startDate) + 
-					"</div> - <div style='position:absolute; bottom:0;left:0'>" + ZmAppt._getTTHour(data.endDate) + "</div>";
+					"</div><div style='position:absolute; bottom:0;left:0'>" + ZmAppt._getTTHour(data.endDate) + "</div>";
 		data._timeSelectionDiv.style.zIndex = 30;
 	}
 	mouseEv._stopPropagation = true;
