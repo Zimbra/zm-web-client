@@ -1073,9 +1073,11 @@ function(ev, div) {
 			break;
 		case ZmCalBaseView.TYPE_APPTS_DAYGRID:
 			if (ev.button == DwtMouseEvent.LEFT) {
+				// save grid location here, since timeSelection might move the time selection div
+				var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
 				if (div._type == ZmCalBaseView.TYPE_APPTS_DAYGRID)
 					this._timeSelectionAction(ev, div, false);
-				return this._gridMouseDownAction(ev, div);	
+				return this._gridMouseDownAction(ev, div, gridLoc);	
 			}
 			break;
 	}
@@ -1366,14 +1368,14 @@ function(ev) {
 // BEGIN APPT ACTION HANDLERS
 
 ZmCalDayView.prototype._gridMouseDownAction =
-function(ev, gridEl) {
+function(ev, gridEl, gridLoc) {
 	if (ev.button != DwtMouseEvent.LEFT) {
 		return false;
 	}
 
 	var doc = this.getDocument();
 
-	var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, gridEl);
+	//var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, gridEl);
 
 	var data = { 
 		dndStarted: false,
@@ -1471,6 +1473,7 @@ function(ev) {
 //		e.innerHTML = ZmAppt._getTTHour(data.startDate) + " - " + ZmAppt._getTTHour(data.endDate);
 		e.innerHTML = "<div style='position:absolute; top:0; left:0;'>"+ZmAppt._getTTHour(data.startDate) + 
 					"</div> - <div style='position:absolute; bottom:0;left:0'>" + ZmAppt._getTTHour(data.endDate) + "</div>";
+		data._timeSelectionDiv.style.zIndex = 30;
 	}
 	mouseEv._stopPropagation = true;
 	mouseEv._returnValue = false;
@@ -1495,6 +1498,7 @@ function(ev) {
 		//DBG.println("calling timeSelectionEvent with : "+data.startDate+ " duration "+duration);
 		data.view._timeSelectionEvent(data.startDate, duration, false);
 		data._timeSelectionDiv.innerHTML = "";
+		data._timeSelectionDiv.style.zIndex = 0;		
 	}
 
 	mouseEv._stopPropagation = true;
