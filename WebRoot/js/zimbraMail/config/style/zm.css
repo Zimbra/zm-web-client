@@ -1291,41 +1291,26 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	padding:0px;
 }
 
-.calendar_header_time_td {
+.calendar_heading {
+	background-color:#EEEEEE;
+	height: 20px;
+	border-bottom:1px solid #CCCCCC;	
+}
+.calendar_heading_year_text {
 	width:40px;
-	height:20px;
+	top: 2;
+	left: 0;
+	position: absolute;
 	text-align:center;
-	background-color:#EEEEEE;
-	border-bottom:1px solid #CCCCCC;
-}
-.calendar_header_time_text {
-	width:40px;
-	text-align:center;	
 }
 
-.calendar_header_cells_td {
-	background-color:#EEEEEE;
-/*	border-left:1px solid #CCCCCC; */
-	border-bottom:1px solid #CCCCCC;
-	padding-top:3px;
-	padding-bottom:3px;
-}
-
-.calendar_header_cells_td_today {
-	background-color:#FFFAE5;
-	/*background-color:#FFFAE5;	*/
-	border-left:1px solid #CCCCCC;
-	border-bottom:1px solid #CCCCCC;
-	padding-top:3px;
-	padding-bottom:3px;
-}
-
-.calendar_header_cells_text {
+.calendar_heading_day_text {
 	white-space: nowrap;
-	height:100%;
-	width:100%;
 	overflow:hidden;
 	text-align:center;
+	height: 100%;
+	top: 2;
+	position: absolute;
 }
 
 .calendar_header_allday_separator {
@@ -1337,19 +1322,10 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .calendar_day_separator {
-	background-color:#DDDDDD;
+	Xbackground-color:#AAAAAA;
+	background-color:#BBBBBB;
 	border: 0px;
 	padding: 0px;
-}
-
-.calendar_header_allday_td {
-/*	border-left:1px solid #CCCCCC;*/
-	height:18px;
-}
-.calendar_header_allday_td_today {
-/*	border-left:1px solid #CCCCCC;*/
-	height:18px;
-	background-color:#FFFAE5;
 }
 
 .calendar_body {
@@ -1360,22 +1336,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .calendar_month_body {
 	position:relative;
 	overflow:hidden;
-}
-
-.calendar_time_td {
-	Xwidth:70px;
-}
-
-.calendar_cells_td {
-	Xwidth:120px;
-	border-left:1px solid #CCCCCC;
-	padding:0px;
-}
-.calendar_cells_td_today {
-	Xwidth:120px;
-	border-left:1px solid #CCCCCC;
-	background-color:#FFFAE5;
-	padding:0px;
 }
 
 .calendar_grid_body_time_td {
