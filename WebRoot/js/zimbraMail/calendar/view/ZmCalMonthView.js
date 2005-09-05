@@ -253,25 +253,24 @@ function(appt, apptEnd) {
 
 	this.associateItemWithElement(appt, result, DwtListView.TYPE_LIST_ITEM);
 	
-	var html = new Array(10);
-	var idx = 0;
+	var html = new AjxBuffer();
 
-	html[idx++] = "<table class=allday>";
-	html[idx++] = "<tr>";
+	html.append("<table class=allday>");
+	html.append("<tr>");
 	if (isStartInView)
-		html[idx++] = "<td><div class=allday_blue_start></div></td>";
-	html[idx++] = "<td width=100%>";		
-	html[idx++] = "<div class=allday_blue_stretch><div class=allday_text>";
+		html.append("<td><div class=allday_blue_start></div></td>");
+	html.append("<td width=100%>");
+	html.append("<div class=allday_blue_stretch><div class=allday_text>");
 	if (needTitle)
-		html[idx++] = AjxStringUtil.htmlEncode(appt.getName());
-	html[idx++] = "</div></div>";
-	html[idx++] = "</td>";
+		html.append(AjxStringUtil.htmlEncode(appt.getName()));
+	html.append("</div></div>");
+	html.append("</td>");
 	if (isEndInView)
-		html[idx++] = "<td><div class=allday_blue_end></div></td>";
-	html[idx++] = "</tr>";
-	html[idx++] = "</table>";
+		html.append("<td><div class=allday_blue_end></div></td>");
+	html.append("</tr>");
+	html.append("</table>");
 
-	result.innerHTML = html.join("");
+	result.innerHTML = html.toString();
 	return result;
 }
 
@@ -312,30 +311,29 @@ function(appt, now, isDndIcon) {
 		
 	this.associateItemWithElement(appt, result, DwtListView.TYPE_LIST_ITEM);
 	
-	var html = new Array(10);
-	var idx = 0;
+	var html = new AjxBuffer();
 
 	/*includeDuration */
 	//var dur = appt.getDurationText(true, true);
 	var dur = appt.getShortStartHour();
-	html[idx++] = "<LI>";
-	html[idx++] = dur;
+	html.append("<LI>");
+	html.append(dur);
 	if (dur != "") {
-		html[idx++] = "&nbsp;";
+		html.append("&nbsp;");
 	}
-	html[idx++] = AjxStringUtil.htmlEncode(appt.getName());
-	html[idx++] = "</LI>";	
+	html.append(AjxStringUtil.htmlEncode(appt.getName()));
+	html.append("</LI>");	
 	/**/
 
-	//html[idx++] = "<LI>"+AjxStringUtil.htmlEncode(appt.getName())+"</LI>";
+	//html.append("<LI>"+AjxStringUtil.htmlEncode(appt.getName())+"</LI>";
 
-	//if (appt.getLocation() != "")	html[idx++] = "&nbsp;("+AjxStringUtil.htmlEncode(appt.getLocation())+")";
+	//if (appt.getLocation() != "")	html.append("&nbsp;("+AjxStringUtil.htmlEncode(appt.getLocation())+")";
 	
 	if (isDndIcon) {
-		result.innerHTML = html.join("");
+		result.innerHTML = html.toString();
 	} else {
 		var cell = result.insertCell(-1);
-		cell.innerHTML = html.join("");
+		cell.innerHTML = html.toString();
 		//cell.colSpan = 2;
 		cell.className = "calendar_month_day_item";
 	}
@@ -358,21 +356,20 @@ function(appt, now, isDndIcon) {
 ZmCalMonthView._idToData = {};
 
 ZmCalMonthView.prototype._createDay =
-function(html, idx, loc, week, dow) {
+function(html, loc, week, dow) {
 	var tdid = Dwt.getNextId();
 	var did = Dwt.getNextId();
 	var tid = Dwt.getNextId();	
 
-	html[idx++] = "<td class='calendar_month_cells_td' id='"+tdid+"' ondblclick='ZmCalMonthView._ondblclickHandler(event)' onclick='ZmCalMonthView._onclickHandler(event)'>";
-	html[idx++] = "<table class='calendar_month_day_table'>";
-	html[idx++] = "<tr><td colspan=2 id='"+tid+"' ondblclick='ZmCalMonthView._ondblclickHandler(event)' onclick='ZmCalMonthView._onclickHandler(event)'></td></tr></table>";
-	html[idx++] = "<table class='calendar_month_day_table'><tbody id='"+did+"'>";
-	html[idx++] = "</tbody></table>";
-	html[idx++] = "</td>";
+	html.append("<td class='calendar_month_cells_td' id='", tdid, "' ondblclick='ZmCalMonthView._ondblclickHandler(event)' onclick='ZmCalMonthView._onclickHandler(event)'>");
+	html.append("<table class='calendar_month_day_table'>");
+	html.append("<tr><td colspan=2 id='", tid, "' ondblclick='ZmCalMonthView._ondblclickHandler(event)' onclick='ZmCalMonthView._onclickHandler(event)'></td></tr></table>");
+	html.append("<table class='calendar_month_day_table'><tbody id='", did, "'>");
+	html.append("</tbody></table>");
+	html.append("</td>");
 	var data = { dayId: did, titleId: tid, tdId: tdid, week: week, dow: dow, view: this};
 	this._days[loc] = data;
 	ZmCalMonthView._idToData[tdid] = ZmCalMonthView._idToData[did] = ZmCalMonthView._idToData[tid] = data;
-	return idx;
 }
 
 ZmCalMonthView.prototype._createHtml =
@@ -388,57 +385,55 @@ function() {
 	this._headerColId = [];
 	this._bodyColId = [];	
 
-	var idx = 0;
-	var html = new Array(250);
+	var html = new AjxBuffer();
 			
-	html[idx++] = "<table class=calendar_view_table>";
-	html[idx++] = "<tr><td>";
-	html[idx++] = "<div id='"+this._headerId+"' style='position:relative;'>";
-	html[idx++] = "<table id=calendar_month_header_table class=calendar_month_table>";
-	html[idx++] = "<colgroup>";
+	html.append("<table class=calendar_view_table>");
+	html.append("<tr><td>");
+	html.append("<div id='", this._headerId, "' style='position:relative;'>");
+	html.append("<table id=calendar_month_header_table class=calendar_month_table>");
+	html.append("<colgroup>");
 	for (var i=0; i < 7; i++) {
 		this._headerColId[i] = Dwt.getNextId();
-		html[idx++] = "<col id='"+this._headerColId[i]+"'/>";
+		html.append("<col id='", this._headerColId[i], "'/>");
 	}
-	html[idx++] = "</colgroup>";
-	html[idx++] = "<tr>";
-	html[idx++] = "<td colspan=7 class=calendar_month_header_month id='"+this._titleId+"'></td>";
-	html[idx++] = "</tr>";
-	html[idx++] = "<tr>";
+	html.append("</colgroup>");
+	html.append("<tr>");
+	html.append("<td colspan=7 class=calendar_month_header_month id='", this._titleId, "'></td>");
+	html.append("</tr>");
+	html.append("<tr>");
 	
 	for (var day in DwtMsg.LONG_WEEKDAY) {
-		html[idx++] = "<td class=calendar_month_header_cells_text>"+DwtMsg.LONG_WEEKDAY[day]+"</td>";
+		html.append("<td class=calendar_month_header_cells_text>", DwtMsg.LONG_WEEKDAY[day], "</td>");
 	}
 
-	html[idx++] = "</tr>";
-	html[idx++] = "</table>";
-	html[idx++] = "</div>";
-	html[idx++] = "</td></tr>";
-	html[idx++] = "<tr><td>";
-	html[idx++] = "<div id='"+this._daysId+"' class=calendar_month_body>";
-	html[idx++] = "<table id='"+this._bodyId+"' class=calendar_month_table>";
-	html[idx++] = "<colgroup>";
+	html.append("</tr>");
+	html.append("</table>");
+	html.append("</div>");
+	html.append("</td></tr>");
+	html.append("<tr><td>");
+	html.append("<div id='", this._daysId, "' class=calendar_month_body>");
+	html.append("<table id='", this._bodyId, "' class=calendar_month_table>");
+	html.append("<colgroup>");
 	for (var i=0; i < 7; i++) {
 		this._bodyColId[i] = Dwt.getNextId();
-		html[idx++] = "<col id='"+this._bodyColId[i]+"'/>";
+		html.append("<col id='", this._bodyColId[i], "'/>");
 	}
-	html[idx++] = "</colgroup>";
+	html.append("</colgroup>");
 								
 	for (var i=0; i < 6; i++)	 {
 		this._weeks[i] = { appts: {} };
-		html[idx++] = "<tr>";
+		html.append("<tr>");
 		for (var j=0; j < 7; j++)	 {
-			idx = this._createDay(html, idx, i*7+j, i, j);
+			this._createDay(html, i*7+j, i, j);
 		}
-		html[idx++] = "</tr>";	
+		html.append("</tr>");	
 	}
 	
-	html[idx++] = "</table>";
-	html[idx++] = "</div>";
-	html[idx++] = "</td></tr>";
-	html[idx++] = "</table>";
-	html.length = idx;
-	this.getHtmlElement().innerHTML = html.join("");
+	html.append("</table>");
+	html.append("</div>");
+	html.append("</td></tr>");
+	html.append("</table>");
+	this.getHtmlElement().innerHTML = html.toString();
 }
 
 ZmCalMonthView.prototype._updateDays =
@@ -556,17 +551,16 @@ function() {
 
 ZmCalMonthView.getDayToolTipText =
 function(date, list) {
-	var html = new Array(50);
-	var idx = 0;
+	var html = new AjxBuffer();
 	
 	var title = DwtMsg.LONG_MONTH[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear();
 	
-	html[idx++] = "<div>";
-	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";	
-	html[idx++] = "<tr><td><div class='calendar_tooltip_month_day_label'>"+title+"</div></td></tr>";
+	html.append("<div>");
+	html.append("<table cellpadding='0' cellspacing='0' border='0'>");
+	html.append("<tr><td><div class='calendar_tooltip_month_day_label'>", title, "</div></td></tr>");
 		
-	html[idx++] = "<tr><td>";
-	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";	
+	html.append("<tr><td>");
+	html.append("<table cellpadding='0' cellspacing='0' border='0'>");
 	
 	var size = list ? list.size() : 0;
 
@@ -574,47 +568,45 @@ function(date, list) {
 		var ao = list.get(i);
 		if (ao.isAllDayEvent()) {
 			//DBG.println("AO    "+ao);
-			html[idx++] = "<tr><td><table width=100% cellpadding='0' cellspacing='0' border='0'>";
-			html[idx++] = "<tr>";
+			html.append("<tr><td><table width=100% cellpadding='0' cellspacing='0' border='0'>");
+			html.append("<tr>");
 			if (ao._fanoutFirst)
-				html[idx++] = "<td><div class=allday_blue_start></div></td>";
-			html[idx++] = "<td width=100%>";		
-			html[idx++] = "<div class=allday_blue_stretch><div class=allday_text>";
-			html[idx++] = AjxStringUtil.htmlEncode(ao.getName());
-			html[idx++] = "</div></div>";
-			html[idx++] = "</td>";
+				html.append("<td><div class=allday_blue_start></div></td>");
+			html.append("<td width=100%>");
+			html.append("<div class=allday_blue_stretch><div class=allday_text>");
+			html.append(AjxStringUtil.htmlEncode(ao.getName()));
+			html.append("</div></div>");
+			html.append("</td>");
 			if (ao._fanoutLast)
-				html[idx++] = "<td><div class=allday_blue_end></div></td>";
-			html[idx++] ="</tr>";
-			html[idx++] = "</table></td></tr>";
+				html.append("<td><div class=allday_blue_end></div></td>");
+			html.append("</tr>");
+			html.append("</table></td></tr>");
 		}
 	}
 
 	for (var i=0; i < size; i++) {
 		var ao = list.get(i);
 		if (!ao.isAllDayEvent()) {
-			html[idx++] = "<tr><td class='calendar_month_day_item'><LI>";
+			html.append("<tr><td class='calendar_month_day_item'><LI>");
 			var dur = ao.getShortStartHour();
-			html[idx++] = dur;
+			html.append(dur);
 			if (dur != "") {
-				html[idx++] = "&nbsp;";
+				html.append("&nbsp;");
 			}
-			html[idx++] = AjxStringUtil.htmlEncode(ao.getName());
-			html[idx++] = "</LI>";
-			html[idx++] ="</td></tr>";
+			html.append(AjxStringUtil.htmlEncode(ao.getName()));
+			html.append("</LI>");
+			html.append("</td></tr>");
 		}
 	}
 	
 	if ( size == 0) {
-		html[idx++] = "<tr><td>no appointments</td></tr>"; // TODO: i18n
+		html.append("<tr><td>no appointments</td></tr>"); // TODO: i18n
 	}
-	html[idx++] = "</table>";
-	html[idx++] = "</tr></td></table>";
-	html[idx++] = "</div>";
+	html.append("</table>");
+	html.append("</tr></td></table>");
+	html.append("</div>");
 
-	html.length = idx;
-
-	return html.join("");	
+	return html.toString();
 }
 
 ZmCalMonthView._ondblclickHandler =
