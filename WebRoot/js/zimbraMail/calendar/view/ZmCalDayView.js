@@ -189,6 +189,8 @@ function() {
 
  		var te = Dwt.getDomObj(doc, day.titleId);
 		te.innerHTML = this._dayTitle(d);
+		te.parentNode._type = ZmCalBaseView.TYPE_DAY_HEADER;
+		te.parentNode._dayIndex = i;
 
  		//var ttd = Dwt.getDomObj(doc, day.titleTdId);
 		//ttd.className = d.getTime() == now.getTime() ? "calendar_header_cells_td_today" : "calendar_header_cells_td";
@@ -950,10 +952,40 @@ function (ev){
 	ZmCalDayView._onclickHandler(ev);
 };
 
+/*
+ZmCalDayView.prototype._mouseOverAction =
+function(ev, div) {
+	ZmCalBaseView.prototype._mouseOverAction.call(this, ev, div);
+	DBG.println("mouse over "+div._type);
+	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER) 
+}
+
+ZmCalDayView.prototype._mouseOutAction =
+function(ev, div) {
+	ZmCalBaseView.prototype._mouseOutAction.call(this, ev, div);
+	DBG.println("mouse out "+div._type);
+	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER) 
+}
+*/
+
 ZmCalDayView.prototype._mouseUpAction =
 function(ev, div) {
 	ZmCalBaseView.prototype._mouseUpAction.call(this, ev, div);
+	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER) {
+		var date = this._days[div._dayIndex].date;
+		var cc = this._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 
+		if (this._numDays > 1) {
+			cc.setDate(date);
+			cc.show(ZmCalViewMgr.DAY_VIEW);
+		} else {
+			// TODO: use pref for work week
+			if (date.getDay() > 0 && date.getDay() < 6)
+				cc.show(ZmCalViewMgr.WORK_WEEK_VIEW);
+			else
+				cc.show(ZmCalViewMgr.WEEK_VIEW);			
+		}
+	}	
 }
 
 ZmCalDayView.prototype._doubleClickAction =

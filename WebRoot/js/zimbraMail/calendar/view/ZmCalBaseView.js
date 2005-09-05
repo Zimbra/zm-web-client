@@ -76,6 +76,7 @@ ZmCalBaseView.TYPE_APPT = 2; // an appt
 ZmCalBaseView.TYPE_HOURS_COL = 3; // hours on lefthand side
 ZmCalBaseView.TYPE_APPT_BOTTOM_SASH = 4; // a sash for appt duration
 ZmCalBaseView.TYPE_APPT_TOP_SASH = 5; // a sash for appt duration
+ZmCalBaseView.TYPE_DAY_HEADER = 6; // over date header for a day
 
 // BEGIIN LIST-RELATED
 
@@ -125,8 +126,19 @@ function() {
 	this._selectedItems.removeAll();
 }
 
+ZmCalBaseView.prototype._mouseOverListener = 
+function(ev) {
+	var div = ev.target;
+	div = this._findAncestor(div, "_type");
+	if (!div)
+		return;
+	
+	this._mouseOverAction(ev, div);
+}
+
 ZmCalBaseView.prototype._mouseOverAction = 
 function(ev, div) {
+	if (div._type != ZmCalBaseView.TYPE_APPT) return true;
 
 	var item = this.getItemFromElement(div);
 	if (item instanceof ZmAppt) {
@@ -137,25 +149,10 @@ function(ev, div) {
 	return true;
 }
 
-ZmCalBaseView.prototype._mouseOutAction = 
-function(ev, div) {
-	return true;
-}
-
-ZmCalBaseView.prototype._mouseOverListener = 
-function(ev) {
-	var div = ev.target;
-	div = this._findAncestor(div, "_itemIndex");
-	if (!div)
-		return;
-	
-	this._mouseOverAction(ev, div);
-}
-
 ZmCalBaseView.prototype._mouseOutListener = 
 function(ev) {
 	var div = ev.target;
-	div = this._findAncestor(div, "_itemIndex");
+	div = this._findAncestor(div, "_type");
 	if (!div)
 		return;
 	// NOTE: The DwtListView handles the mouse events on the list items
@@ -164,9 +161,17 @@ function(ev) {
 	//		 a mouse out event. This will prevent the tooltip from
 	//		 being displayed when we re-enter the listview even though
 	//		 we're not over a list item.
-	this._toolTipContent = null;
+	if (div._type == ZmCalBaseView.TYPE_APPT) {
+		this._toolTipContent = null;
+	}
 	this._mouseOutAction(ev, div);
 }
+
+ZmCalBaseView.prototype._mouseOutAction = 
+function(ev, div) {
+	return true;
+}
+
 
 ZmCalBaseView.prototype._mouseMoveListener = 
 function(ev) {
