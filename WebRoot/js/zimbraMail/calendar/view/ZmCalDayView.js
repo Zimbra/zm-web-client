@@ -378,23 +378,22 @@ function(appt, now, isDndIcon) {
 
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
 	
-	var html = new Array(10);
-	var idx = 0;
+	var html = new AjxBuffer();
 
-	html[idx++] = "<table class=allday>";
-	html[idx++] = "<tr>";
+	html.append("<table class=allday>");
+	html.append("<tr>");
 	if (isStartInView)
-		html[idx++] = "<td><div class=allday_blue_start></div></td>";
-	html[idx++] = "<td width=100%>";
-	html[idx++] = "<div class=allday_blue_stretch><div class=allday_text>";
-	html[idx++] = AjxStringUtil.htmlEncode(appt.getName());
-	html[idx++] = "</div></div>";
-	html[idx++] = "</td>";
+		html.append("<td><div class=allday_blue_start></div></td>");
+	html.append("<td width=100%>");
+	html.append("<div class=allday_blue_stretch><div class=allday_text>");
+	html.append(AjxStringUtil.htmlEncode(appt.getName()));
+	html.append("</div></div>");
+	html.append("</td>");
 	if (isEndInView)
-		html[idx++] = "<td><div class=allday_blue_end></div></td>";
-	html[idx++] = "</tr>";
-	html[idx++] = "</table>";
-	div.innerHTML = html.join("");
+		html.append("<td><div class=allday_blue_end></div></td>");
+	html.append("</tr>");
+	html.append("</table>");
+	div.innerHTML = html.toString();
 	return div;
 }
 
@@ -405,49 +404,41 @@ function(d)
 }	
 
 ZmCalDayView.prototype._createHeadersColGroupHtml =
-function(html,idx) {
-	html[idx++] = "<colgroup>";
-	html[idx++] = "<col id='"+this._headerHourColId+"'>";
+function(html) {
+	html.append("<colgroup><col id='", this._headerHourColId, "'>");
 	for (var i =0; i < this._numDays; i++) {
-		html[idx++] = "<col id='"+this._days[i].headerColId+"'>";
+		html.append("<col id='", this._days[i].headerColId, "'>");
 	}
-	html[idx++] =	"<col id='"+this._headerGutterColId+"'>"; // gutter
-	html[idx++] = "</colgroup>";
-	return idx;
+	html.append("<col id='", this._headerGutterColId, "'></colgroup>");
 }
 
 ZmCalDayView.prototype._createHeadersHtml =
-function(html,idx) {
-	html[idx++] = "<td class=calendar_header_time_td><div id='"+this._headerYearId+"' class=calendar_header_time_text></div></td>";
+function(html) {
+	html.append("<td class=calendar_header_time_td><div id='", this._headerYearId, "' class=calendar_header_time_text></div></td>");
 	for (var i =0; i < this._numDays; i++) {
-		html[idx++] = "<td class=calendar_header_cells_td id='"+this._days[i].titleTdId+"'><div id='"+this._days[i].titleId+"' class=calendar_header_cells_text></div></td>";
+		html.append("<td class=calendar_header_cells_td id='", this._days[i].titleTdId, "'><div id='", this._days[i].titleId, "' class=calendar_header_cells_text></div></td>");
 	}
-	html[idx++] = "<td class=calendar_header_cells_td style='border-left:none'><div class=calendar_header_cells_text>&nbsp;</div></td>";
-	return idx;	
+	html.append("<td class=calendar_header_cells_td style='border-left:none'><div class=calendar_header_cells_text>&nbsp;</div></td>");
 }
 
 ZmCalDayView.prototype._createHoursHtml =
-function(html,idx) {
-	html[idx++] = "<div style='position:absolute; top:-8; width:"+ZmCalDayView._HOURS_DIV_WIDTH+"px;' id='"+this._bodyHourDivId+"'>";
-	html[idx++] = "<table class=calendar_grid_day_table>";
+function(html) {
+	html.append("<div style='position:absolute; top:-8; width:", ZmCalDayView._HOURS_DIV_WIDTH, "px;' id='", this._bodyHourDivId, "'>");
+	html.append("<table class=calendar_grid_day_table>");
 	for (var h=0; h < 24; h++) {
 		var hour = (h==0 || h == 12) ? 12 : h % 12;
 		var ampm = (h < 12) ? "am" : "pm";
-		html[idx++] = "<tr><td class=calendar_grid_body_time_td><div class=calendar_grid_body_time_text>";
+		html.append("<tr><td class=calendar_grid_body_time_td><div class=calendar_grid_body_time_text>");
 		if (h == 0) {
-			html[idx++] = "&nbsp;";
+			html.append("&nbsp;");
 		} else if (h == 12) {
-			html[idx++] = "Noon";		//XXX i18n		
+			html.append("Noon");		//XXX i18n		
 		} else {
-			html[idx++] = hour;
-			html[idx++] = " ";
-			html[idx++] = ampm;		
+			html.append(hour, " ", ampm);
 		}
-		html[idx++] = "</div></td></tr>";	
+		html.append("</div></td></tr>");	
 	}
-	html[idx++] = "</table>";
-	html[idx++] = "</div>";	
-	return idx;
+	html.append("</table>", "</div>");	
 }
 
 ZmCalDayView.prototype._createHtml =
@@ -458,8 +449,7 @@ function(abook) {
 	this._layouts = new Array();
 	this._allDayAppts = new Array();
 
-	var idx = 0;
-	var html = new Array(50);
+	var html = new AjxBuffer();
 
 	this._headerYearId = Dwt.getNextId();
 	this._headerDivId = Dwt.getNextId();
@@ -489,28 +479,26 @@ function(abook) {
 		};
 	}
 
-	html[idx++] = "<div id='"+this._headerDivId+"'>";
-	html[idx++] =  "<table id='"+this._headerTableId+"' class=calendar_grid_table>";
-	idx = this._createHeadersColGroupHtml(html, idx);
-	html[idx++] =   "<tr>";
-	idx = this._createHeadersHtml(html, idx);
-	html[idx++] =   "</tr>";
-	html[idx++] =   "</table>";
-	html[idx++] =  "</div>";
-	html[idx++] = "<div id='"+this._alldaySepDivId+"' class=calendar_header_allday_separator style='overflow:hidden;'></div>";
-	html[idx++] =  "<div id='"+this._bodyDivId+"' class=calendar_body style='overflow-x:hidden; overflow:-moz-scrollbars-vertical;'>";
-	idx = this._createHoursHtml(html, idx);
-	html[idx++] =  "<div id='"+this._apptBodyDivId+"' class='ImgCalendarDayGrid_BG' style='width:100%; height:1008px; position:absolute;'>";	
-	html[idx++] =  "<div id='"+this._newApptDivId+"' class='appt-Selected' style='position:absolute; display:none;'></div>";
+	html.append("<div id='", this._headerDivId, "'>");
+	html.append("<table id='", this._headerTableId, "' class=calendar_grid_table>");
+	 this._createHeadersColGroupHtml(html);
+	html.append("<tr>");
+	this._createHeadersHtml(html);
+	html.append("</tr>");
+	html.append("</table>");
+	html.append("</div>");
+	html.append("<div id='", this._alldaySepDivId, "' class=calendar_header_allday_separator style='overflow:hidden;'></div>");
+	html.append("<div id='", this._bodyDivId, "' class=calendar_body style='overflow-x:hidden; overflow:-moz-scrollbars-vertical;'>");
+	this._createHoursHtml(html);
+	html.append("<div id='", this._apptBodyDivId, "' class='ImgCalendarDayGrid_BG' style='width:100%; height:1008px; position:absolute;'>");	
+	html.append("<div id='", this._newApptDivId, "' class='appt-Selected' style='position:absolute; display:none;'></div>");
 	for (var i =0; i < this._numDays; i++) {
-		html[idx++] =  "<div id='"+this._days[i].daySepDivId+"' class='calendar_day_separator' style='position:absolute'></div>";
+		html.append("<div id='", this._days[i].daySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
 	}		
-	html[idx++] = "</div>";
-	html[idx++] = "</div>";
-	
-	html.length = idx;
+	html.append("</div>");
+	html.append("</div>");
 
-	this.getHtmlElement().innerHTML = html.join("");
+	this.getHtmlElement().innerHTML = html.toString();
 	
 	Dwt.getDomObj(this.getDocument(), this._apptBodyDivId)._type = ZmCalBaseView.TYPE_APPTS_DAYGRID;
 	Dwt.getDomObj(this.getDocument(), this._bodyHourDivId)._type = ZmCalBaseView.TYPE_HOURS_COL;
