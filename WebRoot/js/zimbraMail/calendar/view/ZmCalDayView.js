@@ -715,8 +715,8 @@ function(apptDiv, w, h) {
 	// set outer as well as inner
 	Dwt.setSize(	apptDiv,	w + ZmCalDayView._APPT_WIDTH_FUDGE, h); // no fudge for you
 	// get the inner div that should be sized and set its width/height
-//	var apptBodyDiv = Dwt.getDomObj(this.getDocument(), apptDiv.id + "_body");
-	Dwt.setSize(	apptDiv.firstChild, w + ZmCalDayView._APPT_WIDTH_FUDGE, h + ZmCalDayView._APPT_HEIGHT_FUDGE);
+	var apptBodyDiv = Dwt.getDomObj(this.getDocument(), apptDiv.id + "_body");
+	Dwt.setSize(	apptBodyDiv, w + ZmCalDayView._APPT_WIDTH_FUDGE, h + ZmCalDayView._APPT_HEIGHT_FUDGE);
 }
 
 
@@ -1129,8 +1129,11 @@ function(data) {
 	var loc = Dwt.getLocation(data.apptEl);
 	data.apptX = loc.x;
 	data.apptY = loc.y;
+	data.apptSize = Dwt.getSize(data.apptEl);
 	data.apptsDiv = Dwt.getDomObj(doc, this._apptBodyDivId);
 	data.bodyDivEl = Dwt.getDomObj(this.getDocument(), this._bodyDivId);
+	data.apptBodyEl = Dwt.getDomObj(this.getDocument(), data.apptEl.id + "_body");	
+	data.apptBodySize = Dwt.getSize(data.apptBodyEl);
 	data.snap = this._snapXY(data.apptX + data.apptOffset.x, data.apptY, 30); 	// get orig grid snap
 	if (data.snap == null) return false;
 	data.startDate = new Date(data.appt.getStartTime());
@@ -1183,7 +1186,7 @@ function(ev) {
 			var day = data.view._getDayFromX(snap.x);
 			Dwt.setSize(	data.apptEl,	day.apptWidth + ZmCalDayView._APPT_WIDTH_FUDGE, Dwt.DEFAULT);
 			// get the inner div that should be sized and set its width/height
-			Dwt.setSize(	data.apptEl.firstChild, day.apptWidth + ZmCalDayView._APPT_WIDTH_FUDGE, Dwt.DEFAULT);
+			Dwt.setSize(	data.apptBodyEl, day.apptWidth + ZmCalDayView._APPT_WIDTH_FUDGE, Dwt.DEFAULT);
 // end size width
 			data.startDate = newDate;
 			data.snap = snap;
@@ -1216,7 +1219,11 @@ function(ev) {
 			data.view._autoScrollDisabled = true;
 			// TODO: SOAP errors
 			data.appt._orig.save(data.view._appCtxt.getAppController());
-		}			
+		} else {
+			Dwt.setLocation(data.apptEl, data.apptX, data.apptY);
+			Dwt.setSize(data.apptEl, data.apptSize.x, data.apptSize.y);
+			Dwt.setSize(data.apptBodyEl, data.apptBodySize.x, data.apptBodySize.y);	
+		}
 	}
 
 	mouseEv._stopPropagation = true;
@@ -1238,8 +1245,8 @@ function(ev, sash) {
 	}
 
 	var apptEl = sash.parentNode;
-	var apptBodyEl = apptEl.firstChild;
-	
+	var apptBodyEl = Dwt.getDomObj(this.getDocument(), apptEl.id + "_body");	
+
 	var appt = AjxCore.objectWithId(apptEl._itemIndex);
 	var origHeight = Dwt.getSize(apptBodyEl).y;
 	var origY = Dwt.getLocation(apptEl).y;	
@@ -1407,9 +1414,10 @@ function(ev, gridEl, gridLoc) {
 ZmCalDayView.prototype._gridDndBegin =
 function(data) {
 	data.gridEl.style.cursor = 's-resize';	
-	data.newApptDiv = Dwt.getDomObj(data.view.getDocument(), data.view._newApptDivId);
-	data.endTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDiv.id +"_et");
-	data.startTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDiv.id +"_st");
+	data.newApptDivEl = Dwt.getDomObj(data.view.getDocument(), data.view._newApptDivId);
+	data.apptBodyEl = Dwt.getDomObj(data.view.getDocument(), data.newApptDivEl.id + "_body");
+	data.endTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDivEl.id +"_et");
+	data.startTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDivEl.id +"_st");
 	this.deselectAll();
 	return true;
 }
@@ -1466,7 +1474,7 @@ function(ev) {
 		data.startDate = data.view._getDateFromXY(data.start.x, data.start.y, 30, false);
 		data.endDate = data.view._getDateFromXY(data.end.x, data.end.y, 30, false);
 
-		var e = data.newApptDiv;
+		var e = data.newApptDivEl;
 		if (!e) return;
 		var duration = (data.endDate.getTime() - data.startDate.getTime());
 		if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;
@@ -1475,7 +1483,7 @@ function(ev) {
 		if (bounds == null) return false;
 		Dwt.setLocation(e, newStart.x, newStart.y);
 		Dwt.setSize(e, bounds.width, bounds.height);
-		Dwt.setSize(e.firstChild, bounds.width, bounds.height);		
+		Dwt.setSize(data.apptBodyEl, bounds.width, bounds.height);		
 //		ZmCalDayView._setOpacity(e, ZmCalDayView._OPACITY_APPT_DND);
 		Dwt.setVisible(e, true);
 //		e.innerHTML = ZmAppt._getTTHour(data.startDate) + " - " + ZmAppt._getTTHour(data.endDate);
@@ -1507,7 +1515,7 @@ function(ev) {
 		var duration = (data.endDate.getTime() - data.startDate.getTime());
 		if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;		
 		//DBG.println("calling timeSelectionEvent with : "+data.startDate+ " duration "+duration);
-		Dwt.setVisible(data.newApptDiv, false);
+		Dwt.setVisible(data.newApptDivEl, false);
 		data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAppointment(data.startDate, duration);
 
 	}
