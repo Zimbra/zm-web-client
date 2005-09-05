@@ -282,6 +282,28 @@ function(appt, div) {
 	}
 }
 
+// for the new appt when drag selecting time grid
+ZmCalDayView.prototype._populateNewApptHtml =
+function(div) {
+	div.style.position = 'absolute';
+	Dwt.setSize(div, 10, 10);// will be resized
+	div.className = 	"appt-" + DwtCssStyle.SELECTED;
+	ZmCalDayView._setOpacity(div, ZmCalDayView._OPACITY_APPT_DND);
+	var subs = {
+		id: div.id,
+		newState: "",
+		color: "_blue",
+		name: AjxStringUtil.htmlEncode("New Appointment"), // TODO: get from elsewhere
+		starttime: "",
+		endtime: "",
+		location: "",
+		statusKey: "",
+		status: ""
+	};	
+	div.innerHTML = DwtBorder.getBorderHtml("calendar_appt", subs, null);
+	return div;
+}
+
 ZmCalDayView.prototype._createItemHtml =
 function(appt, now, isDndIcon) {
 	//DBG.println("---- createItem ---- "+appt);
@@ -302,9 +324,6 @@ function(appt, now, isDndIcon) {
 	ZmCalDayView._setApptOpacity(appt, div);
 
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
-
-	var html = new Array(30);
-	var idx = 0;
 
 	var titleOnly = (appt.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
 
@@ -452,7 +471,7 @@ function(abook) {
 	this._alldaySepDivId = Dwt.getNextId();
 	this._bodyDivId = Dwt.getNextId();
 	this._apptBodyDivId = Dwt.getNextId();
-	this._timeSelectionDivId = Dwt.getNextId();
+	this._newApptDivId = Dwt.getNextId();
 
 	this._allDayRows = new Array();
 		
@@ -482,7 +501,7 @@ function(abook) {
 	html[idx++] =  "<div id='"+this._bodyDivId+"' class=calendar_body style='overflow-x:hidden; overflow:-moz-scrollbars-vertical;'>";
 	idx = this._createHoursHtml(html, idx);
 	html[idx++] =  "<div id='"+this._apptBodyDivId+"' class='ImgCalendarDayGrid_BG' style='width:100%; height:1008px; position:absolute;'>";	
-	html[idx++] =  "<div id='"+this._timeSelectionDivId+"' class='calendar_time_selection' style='position:absolute; display:none;'></div>";
+	html[idx++] =  "<div id='"+this._newApptDivId+"' class='appt-Selected' style='position:absolute; display:none;'></div>";
 	for (var i =0; i < this._numDays; i++) {
 		html[idx++] =  "<div id='"+this._days[i].daySepDivId+"' class='calendar_day_separator' style='position:absolute'></div>";
 	}		
@@ -495,7 +514,7 @@ function(abook) {
 	
 	Dwt.getDomObj(this.getDocument(), this._apptBodyDivId)._type = ZmCalBaseView.TYPE_APPTS_DAYGRID;
 	Dwt.getDomObj(this.getDocument(), this._bodyHourDivId)._type = ZmCalBaseView.TYPE_HOURS_COL;
-	
+	this._populateNewApptHtml(Dwt.getDomObj(this.getDocument(), this._newApptDivId));
 	this._scrollTo8AM();
 }
 
@@ -1362,7 +1381,9 @@ function(ev, gridEl, gridLoc) {
 ZmCalDayView.prototype._gridDndBegin =
 function(data) {
 	data.gridEl.style.cursor = 's-resize';	
-	data._timeSelectionDiv = Dwt.getDomObj(data.view.getDocument(), data.view._timeSelectionDivId);
+	data.newApptDiv = Dwt.getDomObj(data.view.getDocument(), data.view._newApptDivId);
+	data.endTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDiv.id +"_et");
+	data.startTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDiv.id +"_st");
 	this.deselectAll();
 	return true;
 }
@@ -1419,7 +1440,7 @@ function(ev) {
 		data.startDate = data.view._getDateFromXY(data.start.x, data.start.y, 30, false);
 		data.endDate = data.view._getDateFromXY(data.end.x, data.end.y, 30, false);
 
-		var e = data._timeSelectionDiv;
+		var e = data.newApptDiv;
 		if (!e) return;
 		var duration = (data.endDate.getTime() - data.startDate.getTime());
 		if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;
@@ -1428,12 +1449,16 @@ function(ev) {
 		if (bounds == null) return false;
 		Dwt.setLocation(e, newStart.x, newStart.y);
 		Dwt.setSize(e, bounds.width, bounds.height);
-		ZmCalDayView._setOpacity(e, ZmCalDayView._OPACITY_APPT_DND);
+		Dwt.setSize(e.firstChild, bounds.width, bounds.height);		
+//		ZmCalDayView._setOpacity(e, ZmCalDayView._OPACITY_APPT_DND);
 		Dwt.setVisible(e, true);
 //		e.innerHTML = ZmAppt._getTTHour(data.startDate) + " - " + ZmAppt._getTTHour(data.endDate);
-		e.innerHTML = "<div style='position:absolute; top:0; left:0;'>"+ZmAppt._getTTHour(data.startDate) + 
-					"</div><div style='position:absolute; bottom:0;left:0'>" + ZmAppt._getTTHour(data.endDate) + "</div>";
-		data._timeSelectionDiv.style.zIndex = 30;
+//		e.innerHTML = "<div style='position:absolute; top:0; left:0;'>"+ZmAppt._getTTHour(data.startDate) + 
+//					"</div><div style='position:absolute; bottom:0;left:0'>" + ZmAppt._getTTHour(data.endDate) + "</div>";
+//		data.newApptDiv.style.zIndex = 30;
+
+		if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.startDate);
+		if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.endDate);
 	}
 	mouseEv._stopPropagation = true;
 	mouseEv._returnValue = false;
@@ -1456,11 +1481,9 @@ function(ev) {
 		var duration = (data.endDate.getTime() - data.startDate.getTime());
 		if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;		
 		//DBG.println("calling timeSelectionEvent with : "+data.startDate+ " duration "+duration);
-//		data.view._timeSelectionEvent(data.startDate, duration, false);
-		data._timeSelectionDiv.innerHTML = "";
-		data._timeSelectionDiv.style.zIndex = 0;
-		Dwt.setVisible(data._timeSelectionDiv, false);
-		data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAppointment(data.startDate, duration);		
+		Dwt.setVisible(data.newApptDiv, false);
+		data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAppointment(data.startDate, duration);
+
 	}
 
 	mouseEv._stopPropagation = true;
@@ -1481,16 +1504,3 @@ function(ev) {
 	mouseEv.setToDhtmlEvent(ev);
 	return false;
 }
-
-ZmCalDayView._getAttrFromElement =
-function(el, attr)  {
-	while (el != null) {
-		if (el.getAttribute) {
-			var value = el.getAttribute(attr);
-			if (value != null) return value;
-		}
-		el = el.parentNode;
-	}
-	return null;
-}
-
