@@ -656,8 +656,7 @@ function() {
 ZmCalDayView.prototype._layoutAllDayAppts =
 function() {
 	var rows = this._allDayApptsRowLayouts;
-
-//	var table = Dwt.getDomObj(this.getDocument(), this._headerTableId);
+	if (!rows) return;
 	
 	var rowY = 0; 
 	for (var i=0; i < rows.length; i++) {
@@ -669,8 +668,6 @@ function() {
 				Dwt.setLocation(div, this._days[j].allDayX, rowY);
 				Dwt.setSize(div, this._days[j].allDayWidth * slot.data.numDays - ZmCalDayView._DAY_SEP_WIDTH,
 							 ZmCalDayView._ALL_DAY_APPT_HEIGHT);
-				//td.colSpan = slot.data.numDays;
-				//td.appendChild(slot.data.div);
 			}
 		}
 		rowY += ZmCalDayView._ALL_DAY_APPT_HEIGHT + ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD;
