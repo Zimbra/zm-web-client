@@ -501,7 +501,7 @@ function() {
 			if (ae) {
 				var apptWidth = (dayWidth * data.num) - 1;
 				var apptX = dayWidth*data.dow;
-				var apptY = dayY[i] + (17*data.row) + 17; //first 17, each appt + 1, second 17, day heading
+				var apptY = dayY[i] + (17*data.row) + 17 + 3; //first 17, each appt + 1, second 17, day heading
 				Dwt.setBounds(ae, apptX, apptY, apptWidth, Dwt.DEFAULT);
 			}
 		}
