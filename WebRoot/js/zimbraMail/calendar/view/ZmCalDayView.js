@@ -1179,6 +1179,12 @@ function(ev) {
 		//DBG.println("new Date = "+newDate);
 		if (newDate != null && newDate.getTime() != data.startDate.getTime()) {
 			data.view._positionAppt(data.apptEl, snap.x, snap.y);
+// begin size width
+			var day = data.view._getDayFromX(snap.x);
+			Dwt.setSize(	data.apptEl,	day.apptWidth + ZmCalDayView._APPT_WIDTH_FUDGE, Dwt.DEFAULT);
+			// get the inner div that should be sized and set its width/height
+			Dwt.setSize(	data.apptEl.firstChild, day.apptWidth + ZmCalDayView._APPT_WIDTH_FUDGE, Dwt.DEFAULT);
+// end size width
 			data.startDate = newDate;
 			data.snap = snap;
 			if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.startDate);
