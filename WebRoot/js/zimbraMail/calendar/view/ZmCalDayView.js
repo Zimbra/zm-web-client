@@ -1164,8 +1164,10 @@ function(ev) {
 		data.bodyDivEl.style.cursor = 'auto';
 		if (data.startDate.getTime() != data.appt.getStartTime()) {
 			data.appt._orig.setViewMode(ZmAppt.MODE_EDIT);
+			// save before we muck with start/end dates
+			var origDuration = data.appt._orig.getDuration();
 			data.appt._orig.setStartDate(data.startDate);
-			data.appt._orig.setEndDate(new Date(data.startDate.getTime()+data.appt.getDuration()));
+			data.appt._orig.setEndDate(new Date(data.startDate.getTime()+origDuration));
 			data.view._autoScrollDisabled = true;
 			// TODO: SOAP errors
 			data.appt._orig.save(data.view._appCtxt.getAppController());
