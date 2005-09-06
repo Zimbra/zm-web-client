@@ -46,7 +46,7 @@ Contributor(s):
 </style>
 
 <%! 
-static final private String AUTH_TOKEN_COOKIE_NAME = "LS_AUTH_TOKEN";
+static final private String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
 %>
 
 <% 

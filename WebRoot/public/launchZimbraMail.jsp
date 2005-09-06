@@ -34,7 +34,7 @@ Contributor(s):
 <title>Zimbra</title>
 
 <%! 
-static final private String AUTH_TOKEN_COOKIE_NAME = "LS_AUTH_TOKEN";
+static final private String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
 static final private String LOGIN_PAGE = "/zimbra/";
 %>
 
@@ -56,7 +56,7 @@ static final private String LOGIN_PAGE = "/zimbra/";
                 response.sendRedirect(LOGIN_PAGE);
             }
         } else {
-            Cookie c = new Cookie("LS_AUTH_TOKEN", authToken);
+            Cookie c = new Cookie(AUTH_TOKEN_COOKIE_NAME, authToken);
             c.setPath("/");
             c.setMaxAge(-1);                
             response.addCookie(c);
