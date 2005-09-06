@@ -251,7 +251,7 @@ function(appt, apptEnd) {
 	result._selectedStyleClass = result._styleClass + '-' + DwtCssStyle.SELECTED;
 	result.className = result._styleClass;	
 
-	this.associateItemWithElement(appt, result, DwtListView.TYPE_LIST_ITEM);
+	this.associateItemWithElement(appt, result, ZmCalBaseView.TYPE_APPT);
 	
 	var html = new AjxBuffer();
 
@@ -309,7 +309,7 @@ function(appt, now, isDndIcon) {
 	}
 	result.className = result._styleClass;	
 		
-	this.associateItemWithElement(appt, result, DwtListView.TYPE_LIST_ITEM);
+	this.associateItemWithElement(appt, result, ZmCalBaseView.TYPE_APPT);
 	
 	var html = new AjxBuffer();
 
