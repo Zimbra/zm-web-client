@@ -159,7 +159,7 @@ function(day, data, appt, weekAppts) {
 }
 
 ZmCalMonthView.prototype.addAppt = 
-function(appt, now) {
+function(appt) {
 	var day = this._getDayForAppt(appt);
 	if (!day) return;
 	
@@ -290,23 +290,11 @@ function(day) {
 }
 
 ZmCalMonthView.prototype._createItemHtml =
-function(appt, now, isDndIcon) {
-	var result;
+function(appt) {
+	var result = this._getDivForAppt(appt).insertRow(-1);
+	result._styleClass = "calendar_month_day_item_row";
+	result._selectedStyleClass = result._styleClass + '-' + DwtCssStyle.SELECTED;
 
-	/*
-	if (appt.isAllDayEvent()) {
-		return this._createAllDayItemHtml(appt, now, isDndIcon);
-	}
-	*/
-
-	if (!isDndIcon) {
-		result = this._getDivForAppt(appt).insertRow(-1);
-		result._styleClass = "calendar_month_day_item_row";
-		result._selectedStyleClass = result._styleClass + '-' + DwtCssStyle.SELECTED;
-	} else {
-		result = this.getDocument().createElement("div");	
-		result._styleClass = "calendar_month_day_item";
-	}
 	result.className = result._styleClass;	
 		
 	this.associateItemWithElement(appt, result, ZmCalBaseView.TYPE_APPT);
@@ -329,27 +317,11 @@ function(appt, now, isDndIcon) {
 
 	//if (appt.getLocation() != "")	html.append("&nbsp;("+AjxStringUtil.htmlEncode(appt.getLocation())+")";
 	
-	if (isDndIcon) {
-		result.innerHTML = html.toString();
-	} else {
-		var cell = result.insertCell(-1);
-		cell.innerHTML = html.toString();
-		//cell.colSpan = 2;
-		cell.className = "calendar_month_day_item";
-	}
-	
-	if (isDndIcon) {
-		result.style.position = 'absolute';	
-		var ae= Dwt.getDomObj(this.getDocument(), this._getItemId(appt));
-		var sz;
-		if (ae) {
-			sz = Dwt.getSize(ae);
-			//sz.x *= 2;
-		} else {
-			sz = new DwtPoint(250, 100);
-		}
-		Dwt.setSize(result, Dwt.DEFAULT, sz.y);
-	}
+	var cell = result.insertCell(-1);
+	cell.innerHTML = html.toString();
+	//cell.colSpan = 2;
+	cell.className = "calendar_month_day_item";
+
 	return result;
 }
 

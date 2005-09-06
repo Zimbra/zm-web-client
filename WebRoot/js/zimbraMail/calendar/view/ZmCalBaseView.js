@@ -499,10 +499,9 @@ function() { }
 ZmCalBaseView.prototype._updateTitle =
 function() { }
 
-
 ZmCalBaseView.prototype.addAppt = 
-function(ao, now) {
-	var item = this._createItemHtml(ao, now);
+function(ao) {
+	var item = this._createItemHtml(ao);
 	var div = this._getDivForAppt(ao);
 	if (div) div.appendChild(item);
 }
@@ -518,10 +517,9 @@ function(list) {
 	if (list) {
 		var size = list.size();
 		if (size != 0) {
-			var now = new Date();
 			for (var i=0; i < size; i++) {
 				var ao = list.get(i);
-				this.addAppt(ao, now);
+				this.addAppt(ao);
 			}
 		}
 	}
@@ -605,7 +603,7 @@ function() {
 
 // override
 ZmCalBaseView.prototype._createItemHtml =
-function(appt, now, isDndIcon) {}
+function(appt) {}
 
 // override
 ZmCalBaseView.prototype._createHtml =
