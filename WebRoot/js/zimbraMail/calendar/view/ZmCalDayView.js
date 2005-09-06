@@ -277,7 +277,7 @@ function(appt) {
 
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
 
-	var titleOnly = (appt.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
+	var titleOnly = (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
 
 	var pstatus = appt.getParticipationStatus();
 	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
