@@ -643,6 +643,7 @@ ZmCalDayView.prototype._positionAppt =
 function(apptDiv, x, y) {
 	// position overall div
 	Dwt.setLocation(apptDiv, x + ZmCalDayView._APPT_X_FUDGE, y + ZmCalDayView._APPT_Y_FUDGE);
+
 }
 
 ZmCalDayView.prototype._sizeAppt =
@@ -656,7 +657,9 @@ function(apptDiv, w, h) {
 
 
 ZmCalDayView.prototype._layoutAppt =
-function(apptDiv, x, y, w, h) {
+function(ao, apptDiv, x, y, w, h) {
+	// record to restore after dnd/sash
+	ao._layout = {x: x, y: y, w: w, h: h};
 	this._positionAppt(apptDiv, x, y);
 	this._sizeAppt(apptDiv, w, h);
 }
@@ -700,7 +703,7 @@ function() {
 			var xinc = layout.maxcol ? ((day.apptWidth - w) / layout.maxcol) : 0; // n-1
 			var x = xinc * layout.col + (day.apptX);
 			
-			this._layoutAppt(apptDiv, x, layout.y, w, layout.h);
+			this._layoutAppt(ao, apptDiv, x, layout.y, w, layout.h);
 		}
 	}
 }
@@ -1079,11 +1082,9 @@ function(data) {
 	var loc = Dwt.getLocation(data.apptEl);
 	data.apptX = loc.x;
 	data.apptY = loc.y;
-	data.apptSize = Dwt.getSize(data.apptEl);
 	data.apptsDiv = Dwt.getDomObj(doc, this._apptBodyDivId);
 	data.bodyDivEl = Dwt.getDomObj(this.getDocument(), this._bodyDivId);
 	data.apptBodyEl = Dwt.getDomObj(this.getDocument(), data.apptEl.id + "_body");	
-	data.apptBodySize = Dwt.getSize(data.apptBodyEl);
 	data.snap = this._snapXY(data.apptX + data.apptOffset.x, data.apptY, 30); 	// get orig grid snap
 	if (data.snap == null) return false;
 	data.startDate = new Date(data.appt.getStartTime());
@@ -1172,9 +1173,9 @@ function(ev) {
 			// TODO: SOAP errors
 			data.appt._orig.save(data.view._appCtxt.getAppController());
 		} else {
-			Dwt.setLocation(data.apptEl, data.apptX, data.apptY);
-			Dwt.setSize(data.apptEl, data.apptSize.x, data.apptSize.y);
-			Dwt.setSize(data.apptBodyEl, data.apptBodySize.x, data.apptBodySize.y);	
+			// restore
+			var lo = data.appt._layout;
+			data.view._layoutAppt(data.appt, data.apptEl, lo.x, lo.y, lo.w, lo.h);
 		}
 	}
 
@@ -1201,7 +1202,7 @@ function(ev, sash) {
 
 	var appt = AjxCore.objectWithId(apptEl._itemIndex);
 	var origHeight = Dwt.getSize(apptBodyEl).y;
-	var origY = Dwt.getLocation(apptEl).y;	
+	var origLoc = Dwt.getLocation(apptEl);
 	var parentOrigHeight = Dwt.getSize(apptEl).y;	
 	var isTop = sash._type == ZmCalBaseView.TYPE_APPT_TOP_SASH;
 	var data = { 
@@ -1214,7 +1215,8 @@ function(ev, sash) {
 		startTimeEl: Dwt.getDomObj(this.getDocument(), apptEl.id +"_st"),		
 		apptBodyEl: apptBodyEl,
 		origHeight: origHeight,
-		origY: origY,
+		apptX: origLoc.x,
+		apptY: origLoc.y,
 		parentOrigHeight: parentOrigHeight,		
 		startY: ev.docY
 	};
@@ -1259,7 +1261,7 @@ function(ev) {
 
 	if (delta != data.lastDelta) {
 		if (data.isTop) {
-			var newY = data.origY + delta;
+			var newY = data.apptY + delta;
 			var newHeight = data.origHeight - delta;
 			if (newHeight >= ZmCalDayView._15_MINUTE_HEIGHT) {
 				Dwt.setLocation(data.apptEl, Dwt.DEFAULT, newY);
@@ -1322,6 +1324,10 @@ function(ev) {
 		data.view._autoScrollDisabled = true;
 		// TODO: SOAP errors
 		data.appt._orig.save(data.view._appCtxt.getAppController());
+	} else {
+		// restore
+		var lo = data.appt._layout;
+		data.view._layoutAppt(data.appt, data.apptEl, lo.x, lo.y, lo.w, lo.h);	
 	}
 	return false;	
 }
