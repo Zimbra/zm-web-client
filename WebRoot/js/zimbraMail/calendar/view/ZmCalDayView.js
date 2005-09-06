@@ -290,7 +290,7 @@ function(appt) {
 		name: AjxStringUtil.htmlEncode(appt.getName()),
 //		tag: isNew ? "NEW" : "",		//  HACK: i18n
 		starttime: appt.getDurationText(true, true),
-		endtime: (appt._fanoutFirst || (appt._fanoutNum > 0 && !appt._fanoutLast)) ? "" : ZmAppt._getTTHour(appt.getEndDate()),
+		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmAppt._getTTHour(appt.getEndDate()),
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		statusKey: appt.getParticipationStatus(),
 		status: appt.isOrganizer() ? "" : appt.getParticipationStatusString()
