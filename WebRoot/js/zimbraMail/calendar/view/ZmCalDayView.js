@@ -290,13 +290,14 @@ function(appt) {
 		name: AjxStringUtil.htmlEncode(appt.getName()),
 //		tag: isNew ? "NEW" : "",		//  HACK: i18n
 		starttime: appt.getDurationText(true, true),
-		endtime: ZmAppt._getTTHour(appt.getEndDate()),
+		endtime: (appt._fanoutFirst || (appt._fanoutNum > 0 && !appt._fanoutLast)) ? "" : ZmAppt._getTTHour(appt.getEndDate()),
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		statusKey: appt.getParticipationStatus(),
 		status: appt.isOrganizer() ? "" : appt.getParticipationStatusString()
 	};	
-
-	div.innerHTML = DwtBorder.getBorderHtml(titleOnly ? "calendar_appt_30" : "calendar_appt", subs, null);
+	
+	var template = titleOnly ? "calendar_appt_30" : (appt._fanoutNum > 0 ? "calendar_appt_bottom_only" : "calendar_appt");
+	div.innerHTML = DwtBorder.getBorderHtml(template, subs, null);
 
 	// if (we can edit this appt) then create sash....
 	if (!appt.isReadOnly()) {
