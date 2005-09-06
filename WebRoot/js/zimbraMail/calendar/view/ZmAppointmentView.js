@@ -1119,8 +1119,8 @@ ZmAppointmentView.prototype.getAppointmentForm = function () {
 						{type:_OUTPUT_, value:ZmMsg.attendees, cssClass:"xform_label", cssStyle:"text-align:left"},
 						{type:_DWT_BUTTON_, onActivate:"this.getFormController().openSchedule()", label:ZmMsg.scheduleAttendees,
 						 width:"105px",  cssStyle:"float:right", relevant:"(instance.isOrganizer() == true)", relevantBehavior:_DISABLE_},
-						{ref:_ATTENDEES_, 	type:_TEXTAREA_, 	colSpan:"*", label:null, height:"50px", cssStyle:"width:100%",
-						 relevant:"(instance.isOrganizer() == true)", relevantBehavior:_DISABLE_},
+						{ref:_ATTENDEES_, 	type:_AUTO_COMPLETE_TEXTAREA_, 	colSpan:"*", label:null, height:"50px", cssStyle:"width:100%",
+						 relevant:"(instance.isOrganizer() == true)", relevantBehavior:_DISABLE_}
 						]
 					}
 					]
@@ -1336,6 +1336,48 @@ Appt_Date_Range_XFormItem.prototype.items =
 	}
 ];
 
+
+//
+// XFormItem class: autocompletetextarea
+//
+function Autocomplete_Textarea_XFormItem() {}
+XFormItemFactory.createItemType("_AUTO_COMPLETE_TEXTAREA_", "autocompletetextarea", Autocomplete_Textarea_XFormItem, Textarea_XFormItem)
+Textarea_XFormItem.prototype.useAutocomplete = true;
+
+Autocomplete_Textarea_XFormItem.prototype.initFormItem = function() {
+ 	XFormItem.prototype.initFormItem.call(this);
+	var shell = DwtShell.getShell(window);
+	var contactsClass = shell.getData(ZmAppCtxt.LABEL).getApp(ZmZimbraMail.CONTACTS_APP);
+	var contactsLoader = contactsClass.getContactList;
+	var compCallback = new AjxCallback(this, this._handleAutoCompleteData);
+	this._autocompleteWidget = new ZmAutocompleteListView(shell, null, contactsClass, contactsLoader, ZmContactList.AC_VALUE_EMAIL, null, compCallback);
+
+};
+
+Autocomplete_Textarea_XFormItem.prototype._getLocation = function () {
+	var element = this.getElement();
+	var location = Dwt.toWindow(element, 0, 0);
+	var size = Dwt.getSize(element);
+	return new DwtPoint((location.x), (location.y + size.y) );
+};
+
+Autocomplete_Textarea_XFormItem.prototype._handleAutoCompleteData = function (text) {
+	text = text.replace(/;\s/, ";");
+	var elem = this.getElement();
+	elem.value = text;
+};
+
+Autocomplete_Textarea_XFormItem.prototype.handleKeyPressDelay = function(ev, domItem) {
+	var continu = true;
+	if (this.useAutocomplete) {
+		var loc = this._getLocation();
+		this._autocompleteWidget.autocomplete(domItem,loc);
+		continu = !this._autocompleteWidget.getVisible();
+	}
+	if (continu) {
+		XFormItem.prototype.handleKeyPressDelay.call(this, ev, domItem);
+	}
+}
 
 ZmAppointmentView.validateWholeNumber = function (value, form, formItem, instance) {
 	if (value != null) {

@@ -260,6 +260,23 @@ function() {
 }
 
 /**
+ * Override the DwtControl definition of this method
+ */
+ZmAutocompleteListView.prototype.getVisible =
+function () {
+	return this._showing;
+};
+
+/**
+ * Convenience method -- calls getVisible
+ */
+ZmAutocompleteListView.prototype.isShowing =
+function () {
+	return this.getVisible();
+};
+
+
+/**
 * Checks the given key to see if it's used to control the autocomplete list in some way.
 * If it does, the action is taken and the key won't be echoed into the input area.
 *
@@ -500,12 +517,16 @@ ZmAutocompleteListView.prototype._popup =
 function(loc) {
 	this.setLocation(loc.x, loc.y);
 	this.setVisible(true);
+	this.setZIndex(Dwt.Z_DIALOG_MENU);
+	this._showing = true;
 }
 
 // Hides the list
 ZmAutocompleteListView.prototype._popdown = 
 function() {
+	this.setZIndex(Dwt.Z_HIDDEN);
 	this.setVisible(false);
+	this._showing = false;
 }
 
 // Selects a match by changing its CSS class

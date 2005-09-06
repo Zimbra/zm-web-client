@@ -246,7 +246,7 @@ ZmFreeBusyView.prototype._createAutoCompleteWidget = function () {
 	var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 	var contactsLoader = contactsClass.getContactList;
 	var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, this);
-	this._autocompleteList = new ZmAutocompleteListView(this, null, contactsClass, contactsLoader, locCallback);
+	this._autocompleteList = new ZmAutocompleteListView(this, null, contactsClass, contactsLoader, ZmContactList.AC_VALUE_EMAIL, locCallback);
 //	this._autocompleteList.setHandleEnterOnKeydown(true);
 };
 
@@ -949,10 +949,17 @@ ZmFreeBusyView.prototype._getEmailAddressFromTargetText = function ( value ) {
 };
 
 
+ZmFreeBusyView.prototype._isAutocompleteShowing = function () {
+	return (this._autocompleteList && this._autocompleteList.isShowing());
+};
+
 ZmFreeBusyView.prototype.handleAddrChange = function ( event ) {
 	// This is really to prevent us making a server request when
 	// the view is going away.
 	if (!this._enabled) return true;
+
+	// if the auto complete widget is showing, let its handlers handle this
+	if (this._isAutocompleteShowing()) return true;
 
 	var target = DwtUiEvent.getTarget(event);
 	if (target.tagName == "INPUT"){
