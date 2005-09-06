@@ -70,13 +70,13 @@ static final private String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
 
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 
-	<jsp:include page="Zimbra.jsp"/>
+	<jsp:include page="Ajax.jsp"/>
 	<jsp:include page="Dwt.jsp"/>
 	<jsp:include page="ZimbraMail.jsp"/>
 
 <% } else { %>
 
-	<script type="text/javascript" src="/zimbra/js/ZimbraNet_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="/zimbra/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
 	<script type="text/javascript" src="/zimbra/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
 
 <% } %>
