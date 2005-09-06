@@ -139,7 +139,9 @@ function(ev) {
 		this.resetOperations(actionMenu, id);
 		actionMenu.popup(0, ev.docX, ev.docY)
 	} else if ((ev.detail == DwtTree.ITEM_SELECTED) && (org instanceof ZmTag) && (org.id >= ZmTag.FIRST_USER_ID)) {
-		this._appCtxt.getSearchController().search('tag:"' + org.name + '"');
+		var searchController = this._appCtxt.getSearchController();
+		var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
+		searchController.search('tag:"' + org.name + '"', types);
 	}
 }
 

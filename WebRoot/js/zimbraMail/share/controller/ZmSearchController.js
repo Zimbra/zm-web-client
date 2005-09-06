@@ -199,15 +199,20 @@ function(search, callback, changes) {
 	this._schedule(this._doSearch, newSearch);
 }
 
-// Assemble a list of item types to return based on the current values of the search menu.
-// They're pushed onto a list in preparation for the search menu having checkboxes.
-ZmSearchController.prototype._getTypes =
-function() {
+/**
+* Assembles a list of item types to return based on a search menu value (which can
+* be passed in).
+*
+* @param searchFor		the value of a search menu item (see ZmSearchToolBar)
+*/
+ZmSearchController.prototype.getTypes =
+function(searchFor) {
 	var types = new AjxVector();
+	searchFor = searchFor ? searchFor : this._searchFor;
 	var groupBy = this._appCtxt.getSettings().getGroupMailBy();
-	if (this._searchFor == ZmSearchToolBar.FOR_MAIL_MI) {
+	if (searchFor == ZmSearchToolBar.FOR_MAIL_MI) {
 		types.add(groupBy);
-	} else if (this._searchFor == ZmSearchToolBar.FOR_ANY_MI) {
+	} else if (searchFor == ZmSearchToolBar.FOR_ANY_MI) {
 		types.add(groupBy);
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
 			types.add(ZmItem.CONTACT);
@@ -216,7 +221,7 @@ function() {
 		if (this._appCtxt.get(ZmSetting.NOTES_ENABLED))
 			types.add(ZmItem.NOTE);
 	} else {
-		types.add(this._searchFor);
+		types.add(searchFor);
 	}
 	return types;
 }
@@ -251,7 +256,7 @@ function(params) {
 	}
 
 	// get types from search menu if not passed in
-	var types = params.types || this._getTypes();
+	var types = params.types || this.getTypes();
 	if (types instanceof Array) // convert array to AjxVector if necessary
 		types = AjxVector.fromArray(types);
 

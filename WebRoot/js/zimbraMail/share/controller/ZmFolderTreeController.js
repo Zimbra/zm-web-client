@@ -181,13 +181,11 @@ function(ev) {
 		actionMenu.popup(0, ev.docX, ev.docY);
 	} else if ((ev.detail == DwtTree.ITEM_SELECTED) && folder) {
 		var searchController = this._appCtxt.getSearchController();
-		// for now, click on folder searches for mail (except for Trash)
-		var type = folder.isInTrash() ? ZmSearchToolBar.FOR_ANY_MI : ZmSearchToolBar.FOR_MAIL_MI;
-		searchController.setDefaultSearchType(type);
+		var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
 		if (folder.type == ZmOrganizer.SEARCH) {
 			searchController.search(folder.query, folder.types, folder.sortBy);
 		} else {
-			searchController.search(folder.createQuery());
+			searchController.search(folder.createQuery(), types);
 		}
 	}
 }
