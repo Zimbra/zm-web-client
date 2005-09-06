@@ -1164,19 +1164,15 @@ function(ev) {
 	if (data.dndStarted) {
 		data.bodyDivEl.style.cursor = 'auto';
 		if (data.startDate.getTime() != data.appt.getStartTime()) {
-			data.appt._orig.setViewMode(ZmAppt.MODE_EDIT);
 			// save before we muck with start/end dates
 			var origDuration = data.appt._orig.getDuration();
-			data.appt._orig.setStartDate(data.startDate);
-			data.appt._orig.setEndDate(new Date(data.startDate.getTime()+origDuration));
-			data.view._autoScrollDisabled = true;
-			// TODO: SOAP errors
-			data.appt._orig.save(data.view._appCtxt.getAppController());
-		} else {
-			// restore
-			var lo = data.appt._layout;
-			data.view._layoutAppt(data.appt, data.apptEl, lo.x, lo.y, lo.w, lo.h);
+			data.view._autoScrollDisabled = true;			
+			var cc = data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
+			if (cc.updateApptDate(data.appt._orig, data.startDate, new Date(data.startDate.getTime()+origDuration), false)) return false;
 		}
+		// restore
+		var lo = data.appt._layout;
+		data.view._layoutAppt(data.appt, data.apptEl, lo.x, lo.y, lo.w, lo.h);
 	}
 
 	mouseEv._stopPropagation = true;
@@ -1313,22 +1309,17 @@ function(ev) {
 	mouseEv.setToDhtmlEvent(ev);
 
 	if (data.isTop && data.startDate.getTime() != data.appt.getStartTime()) {
-		data.appt._orig.setViewMode(ZmAppt.MODE_EDIT);
-		data.appt._orig.setStartDate(data.startDate);
 		data.view._autoScrollDisabled = true;
-		// TODO: SOAP errors
-		data.appt._orig.save(data.view._appCtxt.getAppController());
+		var cc = data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
+		if (cc.updateApptDate(data.appt._orig, data.startDate, null, false)) return false;	
 	} else if (!data.isTop && data.endDate.getTime() != data.appt.getEndTime()) {
-		data.appt._orig.setViewMode(ZmAppt.MODE_EDIT);
-		data.appt._orig.setEndDate(data.endDate);
-		data.view._autoScrollDisabled = true;
-		// TODO: SOAP errors
-		data.appt._orig.save(data.view._appCtxt.getAppController());
-	} else {
-		// restore
-		var lo = data.appt._layout;
-		data.view._layoutAppt(data.appt, data.apptEl, lo.x, lo.y, lo.w, lo.h);	
+		data.view._autoScrollDisabled = true;	
+		var cc = data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
+		if (cc.updateApptDate(data.appt._orig, null, data.endDate, false)) return false;
 	}
+	// restore
+	var lo = data.appt._layout;
+	data.view._layoutAppt(data.appt, data.apptEl, lo.x, lo.y, lo.w, lo.h);	
 	return false;	
 }
 

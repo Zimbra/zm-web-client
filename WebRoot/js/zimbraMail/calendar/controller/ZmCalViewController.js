@@ -624,6 +624,29 @@ ZmCalViewController.prototype._cancelAppointmentSave = function (event) {
 	this._apptDialog.popdown();
 };
 
+/*
+* appt - appt to change
+* startDate - new date or null to leave alone
+* endDate - new or null to leave alone
+* changeSeries - if recurring, change the whole series
+*
+* TODO: change this to work with _handleException, and take callback so view can restore appt location/size on failure
+*/
+ZmCalViewController.prototype.updateApptDate =
+function(appt, startDate, endDate, changeSeries) {
+	try {
+		if (startDate) appt.setStartDate(startDate);
+		if (endDate) appt.setEndDate(endDate);
+		appt.setViewMode(!appt.isRecurring() ? ZmAppt.MODE_EDIT :
+						 (changeSeries ? ZmAppt.MODE_EDIT_SERIES : ZmAppt.MODE_EDIT_SINGLE_INSTANCE));
+		appt.save(this._appCtxt.getAppController());
+	} catch (ex) {
+		this.popupErrorDialog(AjxStringUtil.resolve(ZmMsg.mailSendFailure,ex.msg));
+		return false;
+	}
+	return true;	
+}
+
 ZmCalViewController.prototype._miniCalDateRangeListener =
 function(ev) {
 	//this._schedule(this._doPopulateMiniCal, {view : ev.item, startTime: ev.start.getTime(), endTime: ev.end.getTime()});
