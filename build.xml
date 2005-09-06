@@ -141,7 +141,7 @@
   </target>
 
   <target name="jsmin">
-  	<exec executable="jsmin/jsmin">
+  	<exec executable="bin/jsmin">
   	    <redirector input="${var}" output="${var}${jsminExtension}"/>
   	</exec>
   	<echo>Strip whitespace: ${var}</echo>
@@ -149,7 +149,7 @@
 
   <target name="prepend-ZPL">
     <concat destfile="${var}${jsminExtension}${licenseExtension}">
-       <header filtering="no" file="jsmin/ZPL.txt"/>
+       <header filtering="no" file="zpl.txt"/>
        <path>
        		<fileset file="${var}${jsminExtension}"/>
        </path>
@@ -159,7 +159,7 @@
 
   <target name="prepend-ZAPL">
     <concat destfile="${var}${jsminExtension}${licenseExtension}">
-       <header filtering="no" file="jsmin/ZAPL.txt"/>
+        <header filtering="no" file="zapl.txt"/>
        <path>
        		<fileset file="${var}${jsminExtension}"/>
        </path>
@@ -169,6 +169,20 @@
 
   <target name="compress-js-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, jam-files">
     <fileset id="js-includes" dir="${build.dir}/WebRoot" includes="js/**/msgs/**/*.js, js/*.js"/>
+    <concat destfile="zapl.txt">
+        <header>/*</header>
+    	<footer>*/</footer>
+       <path>
+       		<fileset file="../ZimbraLicenses/zimbra/zapl.txt"/>
+       </path>
+    </concat>
+    <concat destfile="zpl.txt">
+        <header>/*</header>
+    	<footer>*/</footer>
+       <path>
+       		<fileset file="../ZimbraLicenses/zimbra/zpl.txt"/>
+       </path>
+    </concat>
   	<copy todir="${build.dir}/WebRoot">
       	<fileset refid="js-includes"/>
     </copy>
@@ -207,6 +221,8 @@
     		<fileset refid="js-includes"/>
         </path>
     </foreach>	
+  	<delete file="zpl.txt" />
+  	<delete file="zapl.txt" />
   </target>
 
 	<target name='images' depends='imagesinit,compile' unless='imagesdone'>
