@@ -131,11 +131,16 @@ ZmSearch.prototype.getTitle =
 function() {
 	var where = null;
 	if (this.folderId) {
-		var folder = this._appCtxt.getFolderTree().getById(this.folderId);
-		if (folder)
-			where = folder.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
+		var folderTree = this._appCtxt.getFolderTree();
+		if (folderTree) {
+			var folder = folderTree.getById(this.folderId);
+			if (folder)
+				where = folder.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
+		}
 	} else if (this.tagId) {
-		where = this._appCtxt.getTagList().getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
+		var tagList = this._appCtxt.getTagList();
+		if (tagList)
+			where = tagList.getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 	}
 	var title = where ? [ZmMsg.zimbraTitle, where].join(": ") : 
 						[ZmMsg.zimbraTitle, ZmMsg.searchResults].join(": ");
