@@ -372,7 +372,9 @@ function(d)
 
 ZmCalDayView.prototype._createHeadingsHtml =
 function(html) {
-	html.append("<div id='", this._headerYearId, "' class=calendar_heading_year_text style='position:absolute;'></div>");
+	html.append("<div id='", this._headerYearId, 
+		"' class=calendar_heading_year_text style='position:absolute; width:", ZmCalDayView._HOURS_DIV_WIDTH,"px;'></div>");
+
 	for (var i =0; i < this._numDays; i++) {
 		html.append("<div id='", this._days[i].titleId, "' class=calendar_heading_day_text style='position:absolute;'></div>");
 	}
@@ -385,7 +387,8 @@ function(html) {
 	for (var h=0; h < 24; h++) {
 		var hour = (h==0 || h == 12) ? 12 : h % 12;
 		var ampm = (h < 12) ? "am" : "pm";
-		html.append("<tr><td class=calendar_grid_body_time_td><div class=calendar_grid_body_time_text>");
+		html.append("<tr><td class=calendar_grid_body_time_td style='height:",
+		ZmCalDayView._HOUR_HEIGHT ,"px; width:", ZmCalDayView._HOURS_DIV_WIDTH, "px'><div class=calendar_grid_body_time_text>");
 		if (h == 0) {
 			html.append("&nbsp;");
 		} else if (h == 12) {

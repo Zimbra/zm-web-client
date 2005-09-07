@@ -1298,8 +1298,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	overflow: hidden;	
 }
 .calendar_heading_year_text {
-	width:40px;
-	Zheight: 16px;	
 	padding-top: 4px;
 	left: 0;
 	position: absolute;
@@ -1352,8 +1350,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .calendar_grid_body_time_td {
-	width:40px;
-	height:42px;
 	vertical-align:top;
 	text-align:right;
 	border:none;
@@ -1362,7 +1358,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .calendar_grid_body_time_text {
 	white-space: nowrap;
 	padding-right:2px;
-	width:40px;
 	color:#666666;
 }
 
