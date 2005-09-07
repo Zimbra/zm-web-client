@@ -246,7 +246,8 @@ ZmFreeBusyView.prototype._createAutoCompleteWidget = function () {
 	var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 	var contactsLoader = contactsClass.getContactList;
 	var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, this);
-	this._autocompleteList = new ZmAutocompleteListView(this, null, contactsClass, contactsLoader, ZmContactList.AC_VALUE_EMAIL, locCallback);
+	var compCallback = new AjxCallback(this, this._handleCompletionData, this);
+	this._autocompleteList = new ZmAutocompleteListView(this, null, contactsClass, contactsLoader, ZmContactList.AC_VALUE_EMAIL, locCallback, compCallback);
 //	this._autocompleteList.setHandleEnterOnKeydown(true);
 };
 
@@ -264,6 +265,20 @@ ZmFreeBusyView.prototype._getNewAutocompleteLocation = function(args) {
 	var location = Dwt.toWindow(element, 0, 0, viewEl);
 	var size = Dwt.getSize(element);
 	return new DwtPoint((location.x), (location.y + size.y) );
+};
+
+ZmFreeBusyView.prototype._handleCompletionData = function (args) {
+	var text = args[1];
+	var element = args[2];
+	var t = text.replace(/;\s*/, "");
+	element.value = t;
+	if (element.fireEvent) {
+		element.fireEvent("onchange");
+	} else if (document.createEvent) {
+		var ev = document.createEvent("UIEvents");
+		ev.initUIEvent("change",false,window, 1);
+		element.dispatchEvent(ev);
+	}
 };
 
 ZmFreeBusyView.prototype.highlightAppointment = function (optionalSliderDiv){

@@ -436,11 +436,12 @@ function(text, hasDelim) {
 // Resets the value of an element to the given text.
 ZmAutocompleteListView.prototype._updateField =
 function(text) {
-	this._element.value = text;
-	if (this._compCallback)
-		this._compCallback.run(text);
-	this._element.focus();
+	var el = this._element;
+	el.value = text;
+	el.focus();
 	this.reset();
+	if (this._compCallback)
+		this._compCallback.run([text, el]);
 }
 
 // Updates the element with the currently selected match.
