@@ -1291,6 +1291,10 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	padding:0px;
 }
 
+.calendar_time_selection {
+	background-color:#ADD6D6;
+}
+
 .calendar_heading {
 	background-color:#EEEEEE;
 	height: 20px;

@@ -5,7 +5,7 @@
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.1 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
- * http://www.zimbra.com/license
+ * http://www.zimbraga.com/license
  * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
@@ -37,7 +37,7 @@ function ZmCalDayView(parent, posStyle, dropTgt, view, numDays) {
 ZmCalDayView.prototype = new ZmCalBaseView;
 ZmCalDayView.prototype.constructor = ZmCalDayView;
 
-ZmCalDayView.DRAG_THRESHOLD = 3;
+ZmCalDayView.DRAG_THRESHOLD = 5;
 
 ZmCalDayView._OPACITY_APPT_NORMAL = 100;
 ZmCalDayView._OPACITY_APPT_DECLINED = 20;
@@ -93,6 +93,8 @@ function(rangeChanged) {
 ZmCalDayView.prototype._dateUpdate =
 function(rangeChanged) {
 	this._selectDay(this._date);
+	this._clearSelectedTime();
+	this._updateSelectedTime();
 }
 
 ZmCalDayView.prototype._selectDay =
@@ -108,6 +110,43 @@ function(date) {
 		var te = Dwt.getDomObj(doc, day.titleId);
  		te.className = day.isToday ? 'calendar_heading_day_today-selected' : 'calendar_heading_day-selected';
 	}
+}
+
+ZmCalDayView.prototype._clearSelectedTime =
+function() 
+{
+	var e = Dwt.getDomObj(this.getDocument(), this._timeSelectionDivId);
+	if (e) Dwt.setVisible(e, false);
+}
+
+ZmCalDayView.prototype._updateSelectedTime =
+function() 
+{
+	var t = this._date.getTime();
+	if (t < this._timeRangeStart || t >= this._timeRangeEnd)
+		return;
+
+	var e = Dwt.getDomObj(this.getDocument(), this._timeSelectionDivId);
+	if (!e) return;
+
+	var bounds = this._getBoundsForDate(this._date,  AjxDateUtil.MSEC_PER_HALF_HOUR);
+	if (bounds == null) return;
+	var snap = this._snapXY(bounds.x, bounds.y, 30);
+
+	Dwt.setLocation(e, snap.x, snap.y);
+	Dwt.setSize(e, bounds.width, bounds.height);
+	ZmCalDayView._setOpacity(e, 40);
+	Dwt.setVisible(e, true);
+ 	/*
+ 	var m = this._date.getMinutes(); 	
+	if (m != 0 && m != 30) {
+		var temp = new Date(this._date.getTime());
+		temp.setMinutes( m < 30 ? 0 : 30);
+		e.innerHTML = ZmAppt._getTTHour(temp);
+	} else {
+		e.innerHTML = ZmAppt._getTTHour(this._date);
+	}
+	*/
 }
 
 ZmCalDayView.prototype._preSet = 
@@ -435,6 +474,7 @@ function(abook) {
 	this._bodyDivId = Dwt.getNextId();
 	this._apptBodyDivId = Dwt.getNextId();
 	this._newApptDivId = Dwt.getNextId();
+	this._timeSelectionDivId = Dwt.getNextId();
 
 	this._allDayRows = new Array();
 		
@@ -465,11 +505,11 @@ function(abook) {
 	html.append("</div>");
 
 	html.append("<div id='", this._allDayDivId, "' style='position:relative'></div>");
-	
 	html.append("<div id='", this._alldaySepDivId, "' class=calendar_header_allday_separator style='overflow:hidden'></div>");
 	html.append("<div id='", this._bodyDivId, "' class=calendar_body style='overflow-x:hidden; overflow:-moz-scrollbars-vertical;'>");
 	this._createHoursHtml(html);
 	html.append("<div id='", this._apptBodyDivId, "' class='ImgCalendarDayGrid_BG' style='width:100%; height:1008px; position:absolute;'>");	
+	html.append("<div id='", this._timeSelectionDivId, "' class='calendar_time_selection' style='position:absolute; display:none;'></div>");
 	html.append("<div id='", this._newApptDivId, "' class='appt-Selected' style='position:absolute; display:none;'></div>");
 	for (var i =0; i < this._numDays; i++) {
 		html.append("<div id='", this._days[i].daySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
