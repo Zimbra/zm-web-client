@@ -1294,23 +1294,36 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .calendar_heading {
 	background-color:#EEEEEE;
 	height: 20px;
-	border-bottom:1px solid #CCCCCC;	
+	border-bottom:1px solid #CCCCCC;
+	overflow: hidden;	
 }
 .calendar_heading_year_text {
 	width:40px;
-	top: 2;
+	Zheight: 16px;	
+	padding-top: 4px;
 	left: 0;
 	position: absolute;
 	text-align:center;
+	overflow: hidden;
 }
 
 .calendar_heading_day_text {
 	white-space: nowrap;
 	overflow:hidden;
 	text-align:center;
-	height: 100%;
-	top: 2;
+	padding-top: 4px;
 	position: absolute;
+}
+
+.calendar_heading_day_text_today {
+	white-space: nowrap;
+	overflow:hidden;
+	text-align:center;
+	padding-top: 4px;
+	color: red;
+	position: absolute;
+	ZZZborder: 1px solid red;
+	ZZZbackground-color: #ADD6D6;	
 }
 
 .calendar_header_allday_separator {

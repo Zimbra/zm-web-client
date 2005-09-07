@@ -52,6 +52,7 @@ ZmCalDayView._DAY_SEP_WIDTH = 1; // width of separator between days
 
 ZmCalDayView._SCROLLBAR_WIDTH = 15;
 
+ZmCalDayView._DAY_HEADING_HEIGHT = 20;
 ZmCalDayView._ALL_DAY_APPT_HEIGHT = 16;
 ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD = 3; // space between all day appt rows
 ZmCalDayView._APPT_X_FUDGE = 0; // due to border stuff
@@ -172,6 +173,9 @@ function() {
 	
 	this._dateToDayIndex = new Object();
 	
+	var today = new Date();
+	today.setHours(0,0,0,0);
+
 	var lastDay = this._numDays - 1;
 	for (var i=0; i < this._numDays; i++) {
 		var day = this._days[i];
@@ -185,7 +189,7 @@ function() {
 		te.innerHTML = this._dayTitle(d);
 		te._type = ZmCalBaseView.TYPE_DAY_HEADER;
 		te._dayIndex = i;
-
+		te.className = (day.date.getTime() == today.getTime()) ? 'calendar_heading_day_text_today' : 'calendar_heading_day_text';
 		d.setDate(d.getDate()+1);
 	}
 	
@@ -612,7 +616,7 @@ function() {
 	if (!rows) return;
 	
 	var doc = this.getDocument();
-	var rowY = 0; 
+	var rowY = ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD;
 	for (var i=0; i < rows.length; i++) {
 		var row = rows[i];
 		for (var j=0; j < this._numDays; j++) {
@@ -793,7 +797,8 @@ function() {
 		
 	var allDayDiv = Dwt.getDomObj(doc, this._allDayDivId);
 	var numRows = this._allDayApptsRowLayouts ? this._allDayApptsRowLayouts.length : 1;	
-	Dwt.setSize(allDayDiv, width, (ZmCalDayView._ALL_DAY_APPT_HEIGHT+ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD) * numRows);
+	var allDayDivHeight = (ZmCalDayView._ALL_DAY_APPT_HEIGHT+ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD) * numRows + ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD;
+	Dwt.setSize(allDayDiv, width, allDayDivHeight);
 	var allDayDivHeight = Dwt.getSize(allDayDiv).y
 
 	var allDaySepDivElement = Dwt.getDomObj(doc, this._alldaySepDivId);
@@ -828,7 +833,7 @@ function() {
 		// position day heading
 		var dayHeadingDiv = Dwt.getDomObj(doc, this._days[i].titleId);
 		Dwt.setLocation(dayHeadingDiv, apptsDivX+currentX, Dwt.DEFAULT);
-		Dwt.setSize(dayHeadingDiv, dayWidth, Dwt.DEFAULT); // TODO: fixed height?
+		Dwt.setSize(dayHeadingDiv, dayWidth, ZmCalDayView._DAY_HEADING_HEIGHT); // TODO: fixed height?
 
 		var headingDaySepDiv = Dwt.getDomObj(doc, this._days[i].headingDaySepDivId);
 		Dwt.setLocation(headingDaySepDiv, apptsDivX+currentX, 0);
