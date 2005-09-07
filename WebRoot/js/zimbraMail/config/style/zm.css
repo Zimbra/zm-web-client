@@ -1305,12 +1305,34 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	overflow: hidden;
 }
 
+.calendar_heading_day {
+	ZZZbackground-color: yellow;
+	overflow: hidden;
+}
+
+.calendar_heading_day-selected {
+	overflow: hidden;
+	background-color: #ADD6D6;
+}
+
+.calendar_heading_day_today {
+	overflow: hidden;
+	border: 1px solid red;
+}
+
+.calendar_heading_day_today-selected {
+	overflow: hidden;
+	border: 1px solid red;
+	background-color: #ADD6D6;
+}
+
 .calendar_heading_day_text {
 	white-space: nowrap;
 	overflow:hidden;
 	text-align:center;
-	padding-top: 4px;
-	position: absolute;
+	padding-top: 2px;
+	width: 100%;
+	height: 100%;
 }
 
 .calendar_heading_day_text_today {

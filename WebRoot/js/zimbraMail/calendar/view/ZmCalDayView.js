@@ -92,7 +92,22 @@ function(rangeChanged) {
 
 ZmCalDayView.prototype._dateUpdate =
 function(rangeChanged) {
+	this._selectDay(this._date);
+}
 
+ZmCalDayView.prototype._selectDay =
+function(date) {
+	var day = this._getDayForDate(date);
+	if (day != null) {
+		var doc = this.getDocument();
+		if (this._selectedDay) {
+	 		var te = Dwt.getDomObj(doc, this._selectedDay.titleId);
+	 		te.className = this._selectedDay.isToday ? 'calendar_heading_day_today' : 'calendar_heading_day';
+		}
+		this._selectedDay = day;
+		var te = Dwt.getDomObj(doc, day.titleId);
+ 		te.className = day.isToday ? 'calendar_heading_day_today-selected' : 'calendar_heading_day-selected';
+	}
 }
 
 ZmCalDayView.prototype._preSet = 
@@ -183,13 +198,14 @@ function() {
 		day.date = new Date(d);
 		day.endDate = new Date(d);
 		day.endDate.setHours(23,59,59,999);
+		day.isToday = day.date.getTime() == today.getTime();
 		this._dateToDayIndex[this._dayKey(day.date)] = day;
 
  		var te = Dwt.getDomObj(doc, day.titleId);
-		te.innerHTML = this._dayTitle(d);
+		te.firstChild.innerHTML = this._dayTitle(d);
 		te._type = ZmCalBaseView.TYPE_DAY_HEADER;
 		te._dayIndex = i;
-		te.className = (day.date.getTime() == today.getTime()) ? 'calendar_heading_day_text_today' : 'calendar_heading_day_text';
+		te.className = day.isToday ? 'calendar_heading_day_today' : 'calendar_heading_day';
 		d.setDate(d.getDate()+1);
 	}
 	
@@ -376,7 +392,7 @@ function(html) {
 		"' class=calendar_heading_year_text style='position:absolute; width:", ZmCalDayView._HOURS_DIV_WIDTH,"px;'></div>");
 
 	for (var i =0; i < this._numDays; i++) {
-		html.append("<div id='", this._days[i].titleId, "' class=calendar_heading_day_text style='position:absolute;'></div>");
+		html.append("<div id='", this._days[i].titleId, "' class=calendar_heading_day style='position:absolute;'><div class=calendar_heading_day_text></div></div>");
 	}
 }
 
@@ -833,20 +849,22 @@ function() {
 
 	var currentX = 0;
 	for (var i =0; i < this._numDays; i++) {
+		var day = this._days[i];
+			
 		// position day heading
-		var dayHeadingDiv = Dwt.getDomObj(doc, this._days[i].titleId);
-		Dwt.setLocation(dayHeadingDiv, apptsDivX+currentX, Dwt.DEFAULT);
-		Dwt.setSize(dayHeadingDiv, dayWidth, ZmCalDayView._DAY_HEADING_HEIGHT); // TODO: fixed height?
+		var dayHeadingDiv = Dwt.getDomObj(doc, day.titleId);
+		Dwt.setLocation(dayHeadingDiv, apptsDivX+currentX+1, Dwt.DEFAULT);
+		var dayWfudge = (day.isToday && !AjxEnv.isIE) ? 1 : 0;
+		Dwt.setSize(dayHeadingDiv, dayWidth-1 - dayWfudge, ZmCalDayView._DAY_HEADING_HEIGHT-1); // TODO: fixed height?
 
-		var headingDaySepDiv = Dwt.getDomObj(doc, this._days[i].headingDaySepDivId);
+		var headingDaySepDiv = Dwt.getDomObj(doc, day.headingDaySepDivId);
 		Dwt.setLocation(headingDaySepDiv, apptsDivX+currentX, 0);
 		Dwt.setSize(headingDaySepDiv, ZmCalDayView._DAY_SEP_WIDTH, allDayHeadingDivHeight + allDayDivHeight);
 		
-		var daySepDiv = Dwt.getDomObj(doc, this._days[i].daySepDivId);
+		var daySepDiv = Dwt.getDomObj(doc, day.daySepDivId);
 		Dwt.setLocation(daySepDiv, currentX, 0);
 		Dwt.setSize(daySepDiv, ZmCalDayView._DAY_SEP_WIDTH, this._apptBodyDivHeight);
-		
-		var day = this._days[i];
+
 		day.apptX = currentX + ZmCalDayView._DAY_SEP_WIDTH +1 ; //ZZZ
 		day.apptWidth = dayWidth - ZmCalDayView._DAY_SEP_WIDTH - 2;  //ZZZZ
 		day.allDayX = apptsDivX + day.apptX;
