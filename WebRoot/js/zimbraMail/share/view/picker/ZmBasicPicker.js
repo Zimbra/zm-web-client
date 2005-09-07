@@ -26,6 +26,8 @@
 function ZmBasicPicker(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.BASIC);
+	
+	this._cbQuery = null;
 }
 
 ZmBasicPicker.prototype = new ZmPicker;
@@ -176,10 +178,10 @@ function() {
 		query2.push("is:anywhere not in:trash");
 	else if (checkTrash)
 		query2.push("is:anywhere not in:junk");
-	var cbQuery = query2.join(" ");
+	var cbQuery = query2.length ? query2.join(" ") : null;
 
 	// if the "search Trash/Spam" checkboxes changed, run the query
-	var cbChange = (query1.length && (this._cbQuery != cbQuery));
+	var cbChange = (query1.length && ((this._cbQuery || cbQuery) && (this._cbQuery != cbQuery)));
 	var query = query1.concat(query2);
 	this.setQuery(query.length ? query.join(" ") : "");
 	if (cbChange)
