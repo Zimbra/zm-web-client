@@ -734,7 +734,7 @@ ZmAppointmentView.prototype.openSchedule = function () {
 	this._fbView.enable();
 	this._bDialog.popup();	
 	if (this._fbDirty){
-		this._fbView.setData(schedules, this.getAppt());
+		this._fbView.setData(start, end, schedules, this.getAppt());
 	}
 	this._fbDirty = false;
 };

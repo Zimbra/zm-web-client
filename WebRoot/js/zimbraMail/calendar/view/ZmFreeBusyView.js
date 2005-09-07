@@ -291,8 +291,9 @@ ZmFreeBusyView.prototype.highlightAppointment = function (optionalSliderDiv){
 	this.highlightRange(apptStartCell, dur, optionalSliderDiv);
 };
 
-ZmFreeBusyView.prototype.setData = function (schedules, appt) {
+ZmFreeBusyView.prototype.setData = function (start, end, schedules, appt) {
 	this.enable();
+	this.setDateRange(start, end);
 	if (this._autocompleteList) {
 		this._autocompleteList.reset();
 		this._autocompleteList.show(false);
@@ -583,10 +584,11 @@ ZmFreeBusyView.prototype._resetScheduleRow = function (index, optionalRow) {
 	} else {
 		row = scheduleTable.rows[index];
 	}
-	//var newRow = scheduleTable.rows[scheduleTable.rows.length - 1].cloneNode(true);
-	var newRow = this._dummyEmptyRow.cloneNode(true);
-	var startHour = this._getStartHour();
-	scheduleTable.lastChild.replaceChild(newRow, row);
+	if (row != null) {
+		var newRow = this._dummyEmptyRow.cloneNode(true);
+		var startHour = this._getStartHour();
+		scheduleTable.lastChild.replaceChild(newRow, row);
+	}
 };
 
 ZmFreeBusyView.prototype._updateRow = function (schedule, index, optionalRow) {
@@ -763,6 +765,12 @@ ZmFreeBusyView.prototype.getSchedulesForDates = function (start, end, uids) {
 
 };
 
+ZmFreeBusyView.prototype.setDateRange = function (start, end) {
+	this.startDate = new Date(start.getTime());
+	this.endDate = new Date(end.getTime());
+	document.getElementById(this._rangeDateId).innerHTML = AjxDateUtil.getTimeStr(this.startDate, "%M %d, %Y");
+};
+
 ZmFreeBusyView.prototype.setSchedules = function (schedules){
 	var len = (schedules != null)? schedules.length: 0;
 	var oldLen = this.userSchedules.length;
@@ -781,6 +789,7 @@ ZmFreeBusyView.prototype.setSchedules = function (schedules){
 			}
 		}
 	}
+	this._resetScheduleRow(len + 3);
 	this._updateEmptyRow(len + 3);
 	
 	this.userSchedules = (schedules != null)? schedules: new Array();
