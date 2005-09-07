@@ -96,7 +96,7 @@
 			or https.
 		</description>
 		<env-entry-name>protocolMode</env-entry-name>
-		<env-entry-value>http</env-entry-value>
+		<env-entry-value>http</env-entry-value><!-- PROTOCOL MODE -->
 		<env-entry-type>java.lang.String</env-entry-type>
 	</env-entry>
 
