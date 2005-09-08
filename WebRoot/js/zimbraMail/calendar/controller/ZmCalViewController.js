@@ -511,6 +511,16 @@ ZmCalViewController.prototype.newAppointment = function (optionalStartDate, opti
 	this._popupAppointmentDialog(null, optionalStartDate, ZmAppt.MODE_NEW, optionalDuration);
 };
 
+ZmCalViewController.prototype.newApptDialog = function (loc, optionalStartDate, optionalDuration) {
+	// Create a new appointment
+	optionalStartDate = (optionalStartDate != null)? optionalStartDate: ((this._viewMgr != null)? this._viewMgr.getDate(): null);
+	if (this._newApptDialog == null) {
+		this._newApptDialog = new ZmNewApptDialog(this._shell, null);
+	}
+	this._newApptDialog.popup(loc);
+};
+
+
 ZmCalViewController.prototype.editRecurringAppointment = function (appt, optionalStartDate) {
 	var m = AjxStringUtil.resolve(ZmMsg.showOccurrenceMessage,[appt.name]);
 	this._getInstanceSeriesDialog(m, ZmAppt.MODE_EDIT);

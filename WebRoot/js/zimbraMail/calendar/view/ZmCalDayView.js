@@ -1538,7 +1538,9 @@ function(ev) {
 		//DBG.println("calling timeSelectionEvent with : "+data.startDate+ " duration "+duration);
 		Dwt.setVisible(data.newApptDivEl, false);
 		data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAppointment(data.startDate, duration);
-
+		//var loc = new DwtPoint(mouseEv.docX, mouseEv.docY);
+		//DBG.println("loc = "+loc.x+","+loc.y);
+		//data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newApptDialog(loc, data.startDate, duration);
 	}
 
 	mouseEv._stopPropagation = true;

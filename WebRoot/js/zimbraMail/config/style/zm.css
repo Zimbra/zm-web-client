@@ -1360,8 +1360,8 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .calendar_day_separator {
 	Xbackground-color:#AAAAAA;
-	background-color:#BBBBBB;
-	border: 0px;
+	ZZZbackground-color:#BBBBBB;
+	border-left: 1px solid #666666;
 	padding: 0px;
 }
 
