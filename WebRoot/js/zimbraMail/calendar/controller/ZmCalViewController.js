@@ -651,10 +651,13 @@ ZmCalViewController.prototype._cancelAppointmentSave = function (event) {
 ZmCalViewController.prototype.updateApptDate =
 function(appt, startDate, endDate, changeSeries) {
 	try {
+		var viewMode = !appt.isRecurring() ? ZmAppt.MODE_EDIT :
+						 (changeSeries ? ZmAppt.MODE_EDIT_SERIES : ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
+		appt.setViewMode(viewMode);
+		appt.getDetails(viewMode);
+
 		if (startDate) appt.setStartDate(startDate);
 		if (endDate) appt.setEndDate(endDate);
-		appt.setViewMode(!appt.isRecurring() ? ZmAppt.MODE_EDIT :
-						 (changeSeries ? ZmAppt.MODE_EDIT_SERIES : ZmAppt.MODE_EDIT_SINGLE_INSTANCE));
 		appt.save(this._appCtxt.getAppController());
 	} catch (ex) {
 		this.popupErrorDialog(AjxStringUtil.resolve(ZmMsg.mailSendFailure,ex.msg));
