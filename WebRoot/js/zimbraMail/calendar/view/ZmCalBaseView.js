@@ -70,6 +70,7 @@ ZmCalBaseView.prototype = new DwtComposite;
 ZmCalBaseView.prototype.constructor = ZmCalBaseView;
 
 ZmCalBaseView.TIME_SELECTION = "ZmCalTimeSelection";
+ZmCalBaseView.VIEW_ACTION = "ZmCalViewAction";
 
 ZmCalBaseView.TYPE_APPTS_DAYGRID = 1; // grid holding days, for example
 ZmCalBaseView.TYPE_APPT = 2; // an appt
@@ -77,6 +78,16 @@ ZmCalBaseView.TYPE_HOURS_COL = 3; // hours on lefthand side
 ZmCalBaseView.TYPE_APPT_BOTTOM_SASH = 4; // a sash for appt duration
 ZmCalBaseView.TYPE_APPT_TOP_SASH = 5; // a sash for appt duration
 ZmCalBaseView.TYPE_DAY_HEADER = 6; // over date header for a day
+
+ZmCalBaseView.prototype.addViewActionListener =
+function(listener) {
+	this._evtMgr.addListener(ZmCalBaseView.VIEW_ACTION, listener);
+}
+
+ZmCalBaseView.prototype.removeViewActionListener =
+function(listener) {
+	this._evtMgr.removeListener(ZmCalBaseView.VIEW_ACTION, listener);
+}
 
 // BEGIIN LIST-RELATED
 
@@ -204,11 +215,13 @@ function(ev) {
 
 ZmCalBaseView.prototype._mouseDownAction = 
 function(ev, div) {
+/*
 	if (ev.button == DwtMouseEvent.RIGHT) {
 		if (this._evtMgr.isListenerRegistered(DwtEvent.ACTION)) {
 			this._evtMgr.notifyListeners(DwtEvent.ACTION, this._actionEv);
 		}
 	}
+	*/
 	return true;
 }
 

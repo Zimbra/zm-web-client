@@ -99,6 +99,7 @@ function(rangeChanged) {
 
 ZmCalDayView.prototype._selectDay =
 function(date) {
+	if (this._numDays == 1) return;
 	var day = this._getDayForDate(date);
 	if (day != null) {
 		var doc = this.getDocument();
@@ -1099,6 +1100,10 @@ function(ev, div) {
 				if (div._type == ZmCalBaseView.TYPE_APPTS_DAYGRID)
 					this._timeSelectionAction(ev, div, false);
 				return this._gridMouseDownAction(ev, div, gridLoc);
+			} else if (ev.button == DwtMouseEvent.RIGHT) {
+				DwtUiEvent.copy(this._actionEv, ev);
+				this._actionEv.item = this;
+				this._evtMgr.notifyListeners(ZmCalBaseView.VIEW_ACTION, this._actionEv);
 			}
 			break;
 	}

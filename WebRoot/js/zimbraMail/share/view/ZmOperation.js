@@ -43,6 +43,7 @@ ZmOperation.ADD_FILTER_RULE			= i++;
 ZmOperation.ADD_SIGNATURE			= i++;
 ZmOperation.ATTACHMENT				= i++;
 ZmOperation.BROWSE					= i++;
+ZmOperation.CAL_VIEW_MENU				= i++;
 ZmOperation.CALL					= i++;
 ZmOperation.CANCEL					= i++;
 ZmOperation.CLOSE					= i++;
@@ -105,6 +106,7 @@ ZmOperation.TAG_MENU				= i++;
 ZmOperation.TAG						= i++;
 ZmOperation.TEXT 					= i++;
 ZmOperation.TODAY					= i++;
+ZmOperation.TODAY_GOTO				= i++;
 ZmOperation.VIEW					= i++;
 ZmOperation.VIEW_APPOINTMENT		= i++;
 ZmOperation.VIEW_APPT_INSTANCE		= i++;
@@ -119,6 +121,7 @@ ZmOperation.MSG_KEY[ZmOperation.ADD_FILTER_RULE]		= "filterAdd";
 ZmOperation.MSG_KEY[ZmOperation.ADD_SIGNATURE]			= "addSignature";
 ZmOperation.MSG_KEY[ZmOperation.ATTACHMENT]				= "addAttachment";
 ZmOperation.MSG_KEY[ZmOperation.BROWSE]					= "advancedSearch";
+ZmOperation.MSG_KEY[ZmOperation.CAL_VIEW_MENU]				= "view";
 ZmOperation.MSG_KEY[ZmOperation.CANCEL]					= "cancel";
 ZmOperation.MSG_KEY[ZmOperation.COLOR_MENU]				= "tagColor";
 ZmOperation.MSG_KEY[ZmOperation.COMPOSE_FORMAT] 		= "format";
@@ -172,6 +175,7 @@ ZmOperation.MSG_KEY[ZmOperation.SHOW_ORIG]				= "showOrig";
 ZmOperation.MSG_KEY[ZmOperation.SPAM] 					= "junk";
 ZmOperation.MSG_KEY[ZmOperation.TAG_MENU]				= "tag";
 ZmOperation.MSG_KEY[ZmOperation.TODAY]					= "today";
+ZmOperation.MSG_KEY[ZmOperation.TODAY_GOTO]			= "todayGoto";
 ZmOperation.MSG_KEY[ZmOperation.VIEW]					= "view";
 ZmOperation.MSG_KEY[ZmOperation.VIEW_APPOINTMENT]		= "viewAppointment";
 ZmOperation.MSG_KEY[ZmOperation.VIEW_APPT_INSTANCE]		= "viewAppointmentInstance";
@@ -216,6 +220,7 @@ ZmOperation.IMAGE = new Object();
 ZmOperation.IMAGE[ZmOperation.ADD_FILTER_RULE]			= ZmImg.I_PLUS;
 ZmOperation.IMAGE[ZmOperation.ATTACHMENT]				= ZmImg.I_ATTACHMENT;
 ZmOperation.IMAGE[ZmOperation.BROWSE]					= ZmImg.I_BROWSE;
+ZmOperation.IMAGE[ZmOperation.CAL_VIEW_MENU]			= ZmImg.I_APPT;
 ZmOperation.IMAGE[ZmOperation.CALL]						= ZmImg.I_TELEPHONE;
 ZmOperation.IMAGE[ZmOperation.CANCEL]					= ZmImg.I_RED_X;
 ZmOperation.IMAGE[ZmOperation.CLOSE]					= ZmImg.I_UNDO;
@@ -271,6 +276,7 @@ ZmOperation.IMAGE[ZmOperation.SEND]						= ZmImg.I_MAIL;
 ZmOperation.IMAGE[ZmOperation.SHOW_ORIG]				= ZmImg.I_MAIL;
 ZmOperation.IMAGE[ZmOperation.SPAM] 					= ZmImg.I_SPAM_FOLDER;
 ZmOperation.IMAGE[ZmOperation.TAG_MENU]					= ZmImg.I_TAG;
+ZmOperation.IMAGE[ZmOperation.TODAY_GOTO]					= ZmImg.I_DATE;
 ZmOperation.IMAGE[ZmOperation.VIEW]						= ZmImg.I_PANE_DOUBLE;
 ZmOperation.IMAGE[ZmOperation.WEEK_VIEW]				= ZmImg.I_WEEK_VIEW;
 ZmOperation.IMAGE[ZmOperation.WORK_WEEK_VIEW]			= ZmImg.I_WORK_WEEK_VIEW;
@@ -415,6 +421,8 @@ function(parent, id, opHash) {
 		ZmOperation.addReplyMenu(opHash[id]);
 	} else if (id == ZmOperation.INVITE_REPLY_MENU) {
 		ZmOperation.addInviteReplyMenu(opHash[id]);
+	} else if (id == ZmOperation.CAL_VIEW_MENU) {
+		ZmOperation.addCalViewMenu(opHash[id]);
 	}
 
 }
@@ -520,6 +528,19 @@ function(parent) {
 ZmOperation.addInviteReplyMenu =
 function(parent) {
 	var list = [ZmOperation.EDIT_REPLY_ACCEPT, ZmOperation.EDIT_REPLY_DECLINE, ZmOperation.EDIT_REPLY_TENTATIVE];
+	var menu = new ZmActionMenu(parent, list, null);
+	parent.setMenu(menu);
+};
+
+
+/**
+ * Adds an invite actions submenu for accept/decline/tentative.
+ *
+ * @param parent		parent widget (a toolbar or action menu)
+ */
+ZmOperation.addCalViewMenu =
+function(parent) {
+	var list = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW];
 	var menu = new ZmActionMenu(parent, list, null);
 	parent.setMenu(menu);
 };

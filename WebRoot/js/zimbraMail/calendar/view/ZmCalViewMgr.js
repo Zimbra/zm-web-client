@@ -109,8 +109,19 @@ function(viewName) {
 	view.setDragSource(this._dragSrc);
 	view.addTimeSelectionListener(new AjxListener(this, this._viewTimeSelectionListener));	
 	view.addDateRangeListener(new AjxListener(this, this._viewDateRangeListener));
+	view.addViewActionListener(new AjxListener(this, this._viewActionListener));	
 	this._views[viewName] = view;
 	return view;
+}
+
+ZmCalViewMgr.prototype.addViewActionListener = 
+function(listener) {
+	this.addListener(ZmCalBaseView.VIEW_ACTION, listener);
+}
+
+ZmCalViewMgr.prototype.removeViewActionListener = 
+function(listener) {
+	this.removeListener(ZmCalBaseView.VIEW_ACTION, listener);
 }
 
 ZmCalViewMgr.prototype.addTimeSelectionListener = 
@@ -185,6 +196,13 @@ ZmCalViewMgr.prototype._viewTimeSelectionListener =
 function(ev) {
 	//DBG.println("ZmCalViewMgr: VTS LISTENER: " + ev.detail);
 	this.notifyListeners(ZmCalBaseView.TIME_SELECTION, ev);
+}
+
+
+ZmCalViewMgr.prototype._viewActionListener =
+function(ev) {
+	//DBG.println("ZmCalViewMgr: VA LISTENER: " + ev.detail);
+	this.notifyListeners(ZmCalBaseView.VIEW_ACTION, ev);
 }
 
 ZmCalViewMgr.prototype._viewSelectionListener =

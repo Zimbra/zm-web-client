@@ -567,6 +567,7 @@ ZmMsg.time = "Time";
 ZmMsg.to = "To";
 ZmMsg.toCc = "To / Cc";
 ZmMsg.today = "Today";
+ZmMsg.todayGoto = "Go to Today";
 ZmMsg.todayTooltip = "Show the calendar for today";
 ZmMsg.tracking = "Package Tracking Number";
 ZmMsg.trash = "Trash";
