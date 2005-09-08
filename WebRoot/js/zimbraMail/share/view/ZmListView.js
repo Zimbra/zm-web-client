@@ -556,7 +556,7 @@ function(dragOp) {
 		icon.appendChild(div);
 
 		// The size of the Icon is envelopeImg.width + sealImg.width - 20, ditto for height
-		Dwt.setSize(icon, 43 + 32 - 20, 36 + 32 - 20);
+		Dwt.setSize(icon, 43 + 32 - 16, 36 + 32 - 20);
 	}
 	
 	this.shell.getHtmlElement().appendChild(icon);
@@ -565,7 +565,7 @@ function(dragOp) {
 	// Position the text in the middle of the seal
 	if (div) {
 		var sz = Dwt.getSize(div);
-		Dwt.setLocation(div, 20 + (32 - sz.x) / 2, 19 + (32 - sz.y) / 2);
+		Dwt.setLocation(div, 16 + (32 - sz.x) / 2, 19 + (32 - sz.y) / 2);
 	}
 	
 	Dwt.setZIndex(icon, Dwt.Z_DND);
