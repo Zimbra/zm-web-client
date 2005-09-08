@@ -168,7 +168,7 @@
   </target>
 
   <target name="compress-js-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, jam-files">
-    <fileset id="js-includes" dir="${build.dir}/WebRoot" includes="js/**/msgs/**/*.js, js/*.js"/>
+    <fileset id="js-includes" dir="${build.dir}/WebRoot" includes="js/**/msgs/**/*.js, js/*.js, js/zimbraMail/*.js"/>
     <concat destfile="zapl.txt">
         <header>/*</header>
     	<footer>*/</footer>
@@ -195,6 +195,7 @@
     	<path>
     		<fileset dir="${build.dir}/WebRoot/js/zimbraAdmin/config/msgs" includes="*.js" />
     		<fileset dir="${build.dir}/WebRoot/js/zimbraMail/config/msgs" includes="*.js" />
+    		<fileset dir="${build.dir}/WebRoot/js/zimbraMail" includes="*.js" />
     		<fileset dir="${build.dir}/WebRoot/js">
     			<include name="ZimbraAdmin_all.js"/>
     			<include name="ZimbraMail_all.js"/>
