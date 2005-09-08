@@ -58,6 +58,9 @@ function ZmObjectManager(view, appCtxt) {
     view.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));        
     view.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._mouseUpListener));            
     view.addListener(DwtEvent.ONMOUSEMOVE, new AjxListener(this, this._mouseMoveListener));                
+    
+    this._hoverOverListener = new AjxListener(this, this._handleHoverOver);
+    this._hoverOutListener = new AjxListener(this, this._handleHoverOut);
 }
 
 ZmObjectManager._TOOLTIP_DELAY = 275;
@@ -181,11 +184,13 @@ function(ev) {
 
 	span.className = object.handler.getActivatedClassName(object.object, object.context);
 	if (object.handler.hasToolTipText()) {
-		var shell = DwtShell.getShell(window);
-		var tooltip = shell.getToolTip();
-		tooltip.setContent(object.handler.getToolTipText(object.object, object.context));
-		tooltip.mouseOver(ev.docX, ev.docY, ZmObjectManager._TOOLTIP_DELAY);
-		object.handler.populateToolTip(object.object, object.context);
+ 		var shell = DwtShell.getShell(window);
+		var manager = shell.getHoverMgr();
+		manager.reset();
+		manager.setHoverOverDelay(ZmObjectManager._TOOLTIP_DELAY);
+		manager.setHoverOverData(object);
+		manager.setHoverOverListener(this._hoverOverListener);
+		manager.hoverOver(ev.docX, ev.docY);
 	}
 	return false;
 }
@@ -193,34 +198,49 @@ function(ev) {
 ZmObjectManager.prototype._mouseOutListener = 
 function(ev) {
 	var span = this._findObjectSpan(ev.target);
-	if (!span) return false;
-	var object = this._objects[span.id];
-	if (!object) return false;
+	var object = span ? this._objects[span.id] : null;
 		
-	span.className = object.handler.getClassName(object.object, object.context);
-	var shell = DwtShell.getShell(window);
-	var tooltip = shell.getToolTip();
-	tooltip.mouseOut(0);
+	if (object) {
+		span.className = object.handler.getClassName(object.object, object.context);
+		var shell = DwtShell.getShell(window);
+		var manager = shell.getHoverMgr();
+		manager.setHoverOutDelay(0);
+		manager.setHoverOutData(object);
+		manager.setHoverOutListener(this._hoverOutListener);
+		manager.hoverOut();
+	}
+	
 	return false;
 }
 
 ZmObjectManager.prototype._mouseMoveListener = 
 function(ev) {
-	var shell = DwtShell.getShell(window);
-	var tooltip = shell.getToolTip();
-	tooltip.mouseMove(ZmObjectManager._TOOLTIP_DELAY);
+	var span = this._findObjectSpan(ev.target);
+	var object = span ? this._objects[span.id] : null;
+
+	if (object) {		
+		var shell = DwtShell.getShell(window);
+		var manager = shell.getHoverMgr();
+		// NOTE: mouseOver already init'd hover settings
+		manager.hoverOver(ev.docX, ev.docY);
+	}
+	
 	return false;
 }
 
 ZmObjectManager.prototype._mouseDownListener = 
 function(ev) {
-	var shell = DwtShell.getShell(window);
-	var tooltip = shell.getToolTip();
-	tooltip.mouseDown();
 	var span = this._findObjectSpan(ev.target);
 	if (!span) return true;
 	var object = this._objects[span.id];
 	if (!object) return true;
+
+	var shell = DwtShell.getShell(window);
+	var manager = shell.getHoverMgr();
+	manager.setHoverOutDelay(0);
+	manager.setHoverOutData(object);
+	manager.setHoverOutListener(this._hoverOutListener);
+	manager.hoverOut();
 	
 	span.className = object.handler.getTriggeredClassName(object.object, object.context);
 	if (ev.button == DwtMouseEvent.RIGHT) {
@@ -244,4 +264,21 @@ function(ev) {
 		
 	span.className = object.handler.getActivatedClassName(object.object, object.context);
 	return false;
+}
+
+ZmObjectManager.prototype._handleHoverOver = function(event) {
+	var handler = event.object.handler;
+	var object = event.object.object;
+	var context = event.object.context;
+	var x = event.x;
+	var y = event.y;
+	
+	handler.hoverOver(object, context, x, y);
+}
+ZmObjectManager.prototype._handleHoverOut = function(event) {
+	var handler = event.object.handler;
+	var object = event.object.object;
+	var context = event.object.context;
+	
+	handler.hoverOut(object, context);
 }

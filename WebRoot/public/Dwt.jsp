@@ -59,11 +59,14 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/events/DwtSelectionEvent.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/events/DwtHtmlEditorStateEvent.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/events/DwtTreeEvent.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/events/DwtHoverEvent.js<%= ext %>?v=<%= vers %>"></script>
 
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/dnd/DwtDragEvent.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/dnd/DwtDragSource.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/dnd/DwtDropEvent.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/dnd/DwtDropTarget.js<%= ext %>?v=<%= vers %>"></script>
+
+<script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtHoverMgr.js<%= ext %>?v=<%= vers %>"></script>
 
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtControl.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtComposite.js<%= ext %>?v=<%= vers %>"></script>

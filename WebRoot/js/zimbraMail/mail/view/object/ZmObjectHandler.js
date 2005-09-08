@@ -142,3 +142,16 @@ ZmObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
 	return;
 }
+
+ZmObjectHandler.prototype.hoverOver = function(object, context, x, y) {
+	var shell = DwtShell.getShell(window);
+	var tooltip = shell.getToolTip();
+	tooltip.setContent(this.getToolTipText(object, context));
+	this.populateToolTip(object, context);
+	tooltip.popup(x, y);
+}
+ZmObjectHandler.prototype.hoverOut = function(object, context) {
+	var shell = DwtShell.getShell(window);
+	var tooltip = shell.getToolTip();
+	tooltip.popdown();
+}
