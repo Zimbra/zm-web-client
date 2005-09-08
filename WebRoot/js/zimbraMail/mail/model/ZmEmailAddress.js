@@ -77,6 +77,8 @@ ZmEmailAddress.IS_DELIM = new Object();
 for (var i = 0; i < ZmEmailAddress.DELIMS.length; i++)
 	ZmEmailAddress.IS_DELIM[ZmEmailAddress.DELIMS[i]] = true;
 
+// the pattern below is close to RFC822-complete, however long addresses can cause the regex engine to hang with it,
+// so we're currently using addrPat to validate strings as email addresses
 ZmEmailAddress.mailboxPat = /^((((((\s*[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))+)?(\s*<(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))>\s*))|(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*))))(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|)+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*)*)$/;	
 ZmEmailAddress.addrAnglePat = /(\s*<(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))>\s*)/;
 ZmEmailAddress.addrPat = /(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))/;
@@ -104,7 +106,7 @@ function(str) {
 	var atIndex = str.indexOf('@');
 	var dotIndex = str.lastIndexOf('.');
 	var prelimOkay = ((atIndex != -1) && (dotIndex != -1) && (dotIndex > atIndex));
-	if (!(prelimOkay && str.match(ZmEmailAddress.mailboxPat))) {
+	if (!(prelimOkay && str.match(ZmEmailAddress.addrPat))) {
 		DBG.println(AjxDebug.DBG1, "mailbox match failed: " + str);
 		return null;
 	}
@@ -193,7 +195,7 @@ function(emailStr, type, strict) {
 ZmEmailAddress.isValid =
 function(str) {
 	str = AjxStringUtil.trim(str);
-	return str.match(ZmEmailAddress.mailboxPat);
+	return str.match(ZmEmailAddress.addrPat);
 }
 
 /**
