@@ -107,7 +107,7 @@ function(parent, id) {
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		if (id == ZmFolder.ID_SPAM || id == ZmFolder.ID_TRASH) {
 			deleteText = (id == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
-			parent.enable(ZmOperation.DELETE, (folder.numTotal > 0));
+			parent.enable(ZmOperation.DELETE, true);
 		}
 	}
 	parent.enable(ZmOperation.MARK_ALL_READ, (folder.numUnread > 0));
