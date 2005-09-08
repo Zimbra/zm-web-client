@@ -1367,7 +1367,9 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .calendar_body {
 	position:relative;
-	overflow:auto;
+  	overflow:-moz-scrollbars-vertical;
+  	overflow-x:hidden;
+  	overflow-y:auto;
 }
 
 .calendar_month_body {
@@ -1516,6 +1518,60 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	padding-bottom:3px;
 	border-bottom:1px solid black;
 	background-color:#EEEEEE;
+}
+
+.calendar_print_date_header { 
+  margin-top:5px;
+  font-size: 16px;
+  font-weight:bold;
+  height:22px;
+  border-bottom: 2px solid #DDDDDD;
+  width:100%;
+}
+.calendar_print_date_header_weekday { 
+  font-size: 12px;
+  font-weight:normal;
+}
+
+.calendar_print_appointment_container {
+  position:relative;
+  height:60px;
+}
+
+.calendar_print_appointment_time {
+  position:absolute;
+  top:0px;
+  left:0px;
+  width:140px;
+  font-weight:bold;
+}
+
+.calendar_print_appointment_name {
+  position:absolute;
+  top:0px;
+  left:140px;
+  width:240px;
+  height:12px;
+  overflow:hidden;
+  font-weight:bold;
+}
+
+.calendar_print_appointment_notes {
+  position:absolute;
+  top:12px;
+  left:140px;
+  width:240px;
+  height:40px;
+  overflow:hidden;
+  font-weight:normal;
+}
+
+.calendar_print_appointment_location {
+  position:absolute;
+  top:0px;
+  left:400px;
+  width:240px;
+  font-weight:bold;
 }
 
 /** The cal/appt images are here temporarily **/ 

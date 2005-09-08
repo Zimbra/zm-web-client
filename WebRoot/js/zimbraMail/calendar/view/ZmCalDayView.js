@@ -28,7 +28,8 @@ function ZmCalDayView(parent, posStyle, dropTgt, view, numDays) {
 	if (numDays == null) numDays = 1;
 	var className = "calendar_view";
 	if (view == null) view = ZmController.CAL_DAY_VIEW;
-	this._numDays = numDays;
+	this.setNumDays(numDays);
+	//this._numDays = numDays;
 	ZmCalBaseView.call(this, parent, className, posStyle, view);
 	this.setScrollStyle(DwtControl.CLIP);	
 	this._needFirstLayout = true;
@@ -81,13 +82,6 @@ function(isDouble) {
 			return isDouble ? AjxDateUtil.WEEK : AjxDateUtil.DAY;
 			break;		
 	}
-}
-
-ZmCalDayView.prototype._updateRange =
-function(rangeChanged) {
-	this._updateDays();
-	this._timeRangeStart = this._days[0].date.getTime();
-	this._timeRangeEnd = this._days[this._numDays-1].date.getTime() + AjxDateUtil.MSEC_PER_DAY;
 }
 
 ZmCalDayView.prototype._dateUpdate =
@@ -180,12 +174,13 @@ function()
 ZmCalDayView.prototype._updateTitle =
 function() 
 {
-	if (this._numDays == 1) {
+	var numDays = this.getNumDays();
+	if (numDays == 1) {
 		var date = this._date;	
 		this._title = DwtMsg.LONG_MONTH[date.getMonth()] + " " + date.getDate(); // + ", " + date.getFullYear();
 	} else {
 		var first = this._days[0].date;
-		var last = this._days[this._numDays-1].date;
+		var last = this._days[numDays-1].date;
 		this._title = DwtMsg.LONG_MONTH[first.getMonth()]+" "+first.getDate()+" - " +
 				 DwtMsg.LONG_MONTH[last.getMonth()]+" "+last.getDate(); //+", "+last.getFullYear();
 	}				 
@@ -193,7 +188,7 @@ function()
 
 ZmCalDayView.prototype._dayTitle =
 function(date) {
-	var title = (this._numDays == 1) ?
+	var title = (this.getNumDays() == 1) ?
 		DwtMsg.LONG_WEEKDAY[date.getDay()]+", "+DwtMsg.LONG_MONTH[date.getMonth()]+" "+date.getDate() :
 		DwtMsg.MEDIUM_WEEKDAY[date.getDay()]+", "+DwtMsg.MEDIUM_MONTH[date.getMonth()]+" "+date.getDate();
 	return AjxStringUtil.htmlEncode(title);
@@ -231,8 +226,9 @@ function() {
 	var today = new Date();
 	today.setHours(0,0,0,0);
 
-	var lastDay = this._numDays - 1;
-	for (var i=0; i < this._numDays; i++) {
+	var numDays = this.getNumDays();
+	var lastDay = numDays - 1;
+	for (var i=0; i < numDays; i++) {
 		var day = this._days[i];
 		day.lastDay = (i == lastDay);
 		day.date = new Date(d);
@@ -431,7 +427,7 @@ function(html) {
 	html.append("<div id='", this._headerYearId, 
 		"' class=calendar_heading_year_text style='position:absolute; width:", ZmCalDayView._HOURS_DIV_WIDTH,"px;'></div>");
 
-	for (var i =0; i < this._numDays; i++) {
+	for (var i =0; i < this.getNumDays(); i++) {
 		html.append("<div id='", this._days[i].titleId, "' class=calendar_heading_day style='position:absolute;'><div class=calendar_heading_day_text></div></div>");
 	}
 }
@@ -479,7 +475,8 @@ function(abook) {
 
 	this._allDayRows = new Array();
 		
-	for (var i =0; i < this._numDays; i++) {
+	var numDays = this.getNumDays();
+	for (var i =0; i < numDays; i++) {
 		this._days[i] = {
 			index: i,
 			titleId: Dwt.getNextId(),
@@ -493,11 +490,11 @@ function(abook) {
 	}
 
 	// one more for right side
-	this._days[this._numDays] = {	
+	this._days[numDays] = {	
 			headingDaySepDivId: Dwt.getNextId()
 	}
 	
-	for (var i =0; i < this._numDays+1; i++) {
+	for (var i =0; i < numDays+1; i++) {
 		html.append("<div id='", this._days[i].headingDaySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
 	}		
 	
@@ -507,12 +504,12 @@ function(abook) {
 
 	html.append("<div id='", this._allDayDivId, "' style='position:relative'></div>");
 	html.append("<div id='", this._alldaySepDivId, "' class=calendar_header_allday_separator style='overflow:hidden'></div>");
-	html.append("<div id='", this._bodyDivId, "' class=calendar_body style='overflow-x:hidden; overflow:-moz-scrollbars-vertical;'>");
+	html.append("<div id='", this._bodyDivId, "' class=calendar_body>");
 	this._createHoursHtml(html);
 	html.append("<div id='", this._apptBodyDivId, "' class='ImgCalendarDayGrid_BG' style='width:100%; height:1008px; position:absolute;'>");	
 	html.append("<div id='", this._timeSelectionDivId, "' class='calendar_time_selection' style='position:absolute; display:none;'></div>");
 	html.append("<div id='", this._newApptDivId, "' class='appt-Selected' style='position:absolute; display:none;'></div>");
-	for (var i =0; i < this._numDays; i++) {
+	for (var i =0; i < numDays; i++) {
 		html.append("<div id='", this._days[i].daySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
 	}		
 	html.append("</div>");
@@ -609,7 +606,8 @@ function() {
 ZmCalDayView.prototype._addAllDayApptRowLayout =
 function() {
 	var data = [];
-	for (var i=0; i < this._numDays; i++) {
+	var numDays = this.getNumDays();
+	for (var i=0; i < numDays; i++) {
 		// free is set to true if slot is available, false otherwise
 		// appt is set to the _allDayAppts data in the first slot only (if appt spans days)
 		data[i] = { free: true, data: null };
@@ -679,7 +677,8 @@ function() {
 	var rowY = ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD;
 	for (var i=0; i < rows.length; i++) {
 		var row = rows[i];
-		for (var j=0; j < this._numDays; j++) {
+		var numDays = this.getNumDays();
+		for (var j=0; j < numDays; j++) {
 			var slot = row[j];
 			if (slot.data) {
 				var div = Dwt.getDomObj(doc, this._getItemId(slot.data.appt));
@@ -774,7 +773,8 @@ function() {
 
 ZmCalDayView.prototype._getDayFromX =
 function(x) {
-	for (var i =0; i < this._numDays; i++) {
+	var numDays = this.getNumDays();
+	for (var i =0; i < numDays; i++) {
 		var day = this._days[i];
 		if (x >= day.apptX && x <= day.apptX+day.apptWidth) return day;
 	}		
@@ -883,13 +883,14 @@ function() {
 	Dwt.setLocation(apptsDiv, apptsDivX, -1);
 	Dwt.setSize( apptsDiv, this._apptBodyDivWidth, this._apptBodyDivHeight);
 
-	var dayWidth = Math.floor((this._apptBodyDivWidth-ZmCalDayView._SCROLLBAR_WIDTH)/this._numDays);
+	var numDays = this.getNumDays();
+	var dayWidth = Math.floor((this._apptBodyDivWidth-ZmCalDayView._SCROLLBAR_WIDTH)/numDays);
 
 	// position year
 	//var yearDiv = Dwt.getDomObj(doc, this._headerYearId);
 
 	var currentX = 0;
-	for (var i =0; i < this._numDays; i++) {
+	for (var i =0; i < numDays; i++) {
 		var day = this._days[i];
 			
 		// position day heading
@@ -913,7 +914,7 @@ function() {
 		currentX += dayWidth;		
 	}	
 
-	var headingDaySepDiv = Dwt.getDomObj(doc, this._days[this._numDays].headingDaySepDivId);
+	var headingDaySepDiv = Dwt.getDomObj(doc, this._days[numDays].headingDaySepDivId);
 	Dwt.setLocation(headingDaySepDiv, apptsDivX+currentX, 0);
 	Dwt.setSize(headingDaySepDiv, ZmCalDayView._DAY_SEP_WIDTH, allDayHeadingDivHeight + allDayDivHeight);
 
@@ -995,7 +996,7 @@ function(ev, div) {
 		var date = this._days[div._dayIndex].date;
 		var cc = this._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 
-		if (this._numDays > 1) {
+		if (this.getNumDays() > 1) {
 			cc.setDate(date);
 			cc.show(ZmCalViewMgr.DAY_VIEW);
 		} else {

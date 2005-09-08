@@ -368,6 +368,16 @@ function(ev) {
 
 // END LIST-RELATED
 
+ZmCalBaseView.prototype.setNumDays = 
+function (num) {
+	this._numDays = num;
+};
+
+ZmCalBaseView.prototype.getNumDays = 
+function (num) {
+	return this._numDays;
+};
+
 ZmCalBaseView.prototype.getTitle = 
 function() {
 	return [ZmMsg.zimbraTitle, this.getCalTitle()].join(": ");
@@ -506,7 +516,11 @@ function() {
 
 // override
 ZmCalBaseView.prototype._updateRange =
-function() { }
+function() { 
+	this._updateDays();
+	this._timeRangeStart = this._days[0].date.getTime();
+	this._timeRangeEnd = this._days[this.getNumDays()-1].date.getTime() + AjxDateUtil.MSEC_PER_DAY;
+}
 
 // override 
 ZmCalBaseView.prototype._updateTitle =
@@ -613,6 +627,71 @@ ZmCalBaseView.prototype.getCalTitle =
 function() {
 	return this._title;
 }
+
+//
+// Print methods
+//
+
+/**
+ * Called to generate line summaries for each appointment in the
+ * view's range. 
+ * Do not use this method if you want full details about a single appointment.
+ */
+ZmCalBaseView.prototype.getPrintHtml = 
+function() {
+	//var el = this.getHtmlElement();
+	//return "<style>.calendar_body{overflow:visible;}</style><div style='position:relative'>" + el.innerHTML + "</div>";
+	var list = this.getList();
+	var buffer = new AjxBuffer();
+	if (list) {
+
+		var timeRange = this.getTimeRange();
+		var startDate = new Date(timeRange.start);
+		var lastDay = null;
+		var size = list.size();
+		if (size != 0) {
+			for (var i=0; i < size; i++) {
+				var appt = list.get(i);
+				var apptStartDate = appt.getStartDate();
+				var as = apptStartDate.getDate();
+				if (as != lastDay) {
+					lastDay = as;
+					this.getPrintHtmlForDay(buffer, apptStartDate);
+				}
+				this.getPrintHtmlForApptSummary(buffer, appt);
+			}
+		}
+	}
+	return buffer.toString();
+};
+
+/**
+ * Gets the header html for a given date
+ */
+ZmCalBaseView.prototype.getPrintHtmlForDay = function (buffer, date) {
+	buffer.append("<div class='calendar_print_date_header'>",
+				  AjxDateUtil.getTimeStr(date, "%w, %M %D, %Y"), 
+				  "</div>");
+};
+
+/**
+ * Gets the html for a given appointment.
+ * Currently this shows, the time of the appointment, the subject, location, and some of the notes.
+ * This does not give all possible details about the appointment.
+ */
+ZmCalBaseView.prototype.getPrintHtmlForApptSummary = function (buffer, appt) {
+	var startDate = appt.getStartDate();
+	var endDate = appt.getEndDate();
+	var startTimeStr = AjxDateUtil.getTimeStr(startDate, "%h:%m %p");
+	var endTimeStr = AjxDateUtil.getTimeStr(endDate, "%h:%m %p");
+	var timeStr = (!appt.isAllDayEvent())? AjxBuffer.concat(startTimeStr, " - ", endTimeStr): "All Day"
+	buffer.append("<div class='calendar_print_appointment_container'><div  class='calendar_print_appointment_time'>", 
+				  timeStr, ": </div><div class='calendar_print_appointment_name'>",
+				  appt.getName(),"</div><div class='calendar_print_appointment_notes'>",appt.getNotes(),"</div>",
+				  "<div class='calendar_print_appointment_location'>",appt.getLocation(),
+				  "</div></div>");
+};
+
 
 // override
 ZmCalBaseView.prototype._createItemHtml =

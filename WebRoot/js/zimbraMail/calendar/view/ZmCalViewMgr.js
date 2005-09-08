@@ -165,6 +165,11 @@ function(viewName) {
 	}
 }
 
+ZmCalViewMgr.getPrintHtml = function (mgr) {
+	var currentView = mgr.getCurrentView();
+	return currentView.getPrintHtml();
+};
+
 ZmCalViewMgr.prototype._layout =
 function() {
 	var mySz = this.getSize();

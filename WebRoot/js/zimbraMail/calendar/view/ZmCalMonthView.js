@@ -28,6 +28,7 @@ function ZmCalMonthView(parent, posStyle, dropTgt) {
 	this.getHtmlElement().style.overflow = "hidden";
 	//this.setScrollStyle(DwtControl.SCROLL);
 	this._needFirstLayout = true;
+	this.setNumDays(42);
 }
 
 ZmCalMonthView.prototype = new ZmCalBaseView;
@@ -51,14 +52,6 @@ function(rangeChanged)
 {
 	this._clearSelectedDay();
 	this._updateSelectedDay();
-}
-
-ZmCalMonthView.prototype._updateRange =
-function()
-{
-	this._updateDays();
-	this._timeRangeStart = this._days[0].date.getTime();
-	this._timeRangeEnd = this._days[41].date.getTime() + AjxDateUtil.MSEC_PER_DAY;
 }
 
 ZmCalMonthView.prototype._updateTitle =

@@ -193,6 +193,7 @@ function() {
 	var list = new Array();
 	list.push(ZmOperation.NEW_MENU);
 	list.push(ZmOperation.DELETE);
+	list.push(ZmOperation.PRINT);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.DAY_VIEW);
 	list.push(ZmOperation.WORK_WEEK_VIEW);
@@ -399,6 +400,15 @@ function(ev) {
 		this._showAppointmentDetails(null, p, ev.detail);
 	}
 }
+
+ZmCalViewController.prototype._printListener = 
+function(ev) {
+	var viewMgr = this._viewMgr;
+	if (!this._printView) {
+		this._printView = new ZmPrintView(this._appCtxt);
+	}
+	this._printView.render(viewMgr);
+};
 
 // =======================================================================
 // Appointment methods
@@ -752,7 +762,7 @@ ZmCalViewController.prototype._resetOperations =
 function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 	if (parent) {
-		parent.enable([ZmOperation.TODAY, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.DAY_VIEW], true);
+		parent.enable([ZmOperation.PRINT,ZmOperation.TODAY, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.DAY_VIEW], true);
 	}
 
  	var ops = this._getActionMenuOps();
