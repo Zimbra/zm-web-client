@@ -52,6 +52,7 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._listeners[ZmOperation.WEEK_VIEW] = new AjxListener(this, this._calViewButtonListener);
 	this._listeners[ZmOperation.WORK_WEEK_VIEW] = new AjxListener(this, this._calViewButtonListener);
 	this._listeners[ZmOperation.MONTH_VIEW] = new AjxListener(this, this._calViewButtonListener);
+	this._listeners[ZmOperation.NEW_APPT] = new AjxListener(this, this._newApptAction);
 
 	this.resetApptSummaryCache();
 }
@@ -305,6 +306,11 @@ ZmCalViewController.prototype._todayButtonListener =
 function(ev) {
 	//DBG.println("TODAY LISTENER");
 	this.setDate(new Date(), 0, true);
+}
+
+ZmCalViewController.prototype._newApptAction =
+function(ev) {
+	this.newAppointment();
 }
 
 ZmCalViewController._miniCalVisible = false;
@@ -854,7 +860,7 @@ function(menu) {
  */
 ZmCalViewController.prototype._getViewActionMenuOps =
 function () {
-	return [ZmOperation.CAL_VIEW_MENU, ZmOperation.TODAY_GOTO];
+	return [ZmOperation.NEW_APPT, ZmOperation.SEP, ZmOperation.TODAY_GOTO, ZmOperation.CAL_VIEW_MENU];
 };
 
 /**

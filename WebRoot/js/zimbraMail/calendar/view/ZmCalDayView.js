@@ -1094,11 +1094,11 @@ function(ev, div) {
 			}
 			break;
 		case ZmCalBaseView.TYPE_APPTS_DAYGRID:
+			if (div._type == ZmCalBaseView.TYPE_APPTS_DAYGRID)
+				this._timeSelectionAction(ev, div, false);
 			if (ev.button == DwtMouseEvent.LEFT) {
 				// save grid location here, since timeSelection might move the time selection div
 				var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
-				if (div._type == ZmCalBaseView.TYPE_APPTS_DAYGRID)
-					this._timeSelectionAction(ev, div, false);
 				return this._gridMouseDownAction(ev, div, gridLoc);
 			} else if (ev.button == DwtMouseEvent.RIGHT) {
 				DwtUiEvent.copy(this._actionEv, ev);
