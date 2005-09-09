@@ -892,8 +892,8 @@ function(creates, modifies) {
 			convs[conv.id] = conv;
 			gotMail = true;
 		} else if (name == "cn") {
-			var list = this.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
-			list.notifyCreate(create, true);
+			var contactList = this.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+			contactList.notifyCreate(create, true);
 		}
 	}
 	if (gotMail) {
