@@ -62,9 +62,9 @@ function(obj, context) {
 
 ZmAddressObjectHandler.prototype.populateToolTip =
 function(obj, context) {
-		if(ZmAddressObjectHandler.CACHE[obj]) {
-			ZmAddressObjectHandler.displayMap(ZmAddressObjectHandler.CACHE[obj], obj);
-		} else {
+//		if(ZmAddressObjectHandler.CACHE[obj]) {
+//			ZmAddressObjectHandler.displayMap(ZmAddressObjectHandler.CACHE[obj], obj);
+//		} else {
 			var request = GXmlHttp.create();
 			var url = "/zimbra/zimlets/geocode.jsp?address="+AjxStringUtil.urlEncode(obj);
 			request.open("GET", url, true);
@@ -81,7 +81,7 @@ function(obj, context) {
 			  	}
 			};
 			request.send(null);
-		}
+//		}
 };
 
 ZmAddressObjectHandler.displayMap =
@@ -91,7 +91,7 @@ function(point, obj) {
 	var marker = new GMarker(point);
 	map.addOverlay(marker);
 	marker.openInfoWindowHtml('<br/>'+obj);
-	if(!ZmAddressObjectHandler.CACHE[obj]) {
-		ZmAddressObjectHandler.CACHE[obj] = point;
-	}
+//	if(!ZmAddressObjectHandler.CACHE[obj]) {
+//		ZmAddressObjectHandler.CACHE[obj] = point;
+//	}
 };
