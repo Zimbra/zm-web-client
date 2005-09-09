@@ -238,6 +238,10 @@ DIV.vSpace {
 	cursor: "not-allowed";
 }
 
+.CurtainOverlay table {
+	background-color: #B7B7B7;
+}
+
 /*
 * Splash Screen
 */
