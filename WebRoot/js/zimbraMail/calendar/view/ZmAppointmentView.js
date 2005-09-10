@@ -725,6 +725,7 @@ ZmAppointmentView.prototype.openSchedule = function () {
 	if (this._bDialog == null) {
 		this._fbView = new ZmFreeBusyView(this.shell, schedules, start, end, this.getAppt());
 		this._bDialog = new ZmDialog(this.shell, null, null, "Meeting", null, this._fbView);
+		this._bDialog._disableFFhack();
 		var ls = new AjxListener(this, this._saveFreeBusyTimes);
 		this._bDialog.setButtonListener(DwtDialog.OK_BUTTON, ls);
 		ls = new AjxListener(this, this._cancelFreeBusy);

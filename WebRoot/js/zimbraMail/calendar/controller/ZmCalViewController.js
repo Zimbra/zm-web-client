@@ -418,6 +418,7 @@ ZmCalViewController.prototype._getAppointmentDialog = function () {
 		ZmUserSchedule.setCommandSender(this);
 		this._apptView = new ZmAppointmentView(this._container, null, true);
 		this._apptDialog = new ZmDialog (this._shell, null, null, ZmMsg.appointmentNewTitle, null, this._apptView);
+		this._apptDialog._disableFFhack();
 		// create listeners for the save and cancel buttons
 		var sLis = new AjxListener(this, this._saveAppointment);
 		var enterLis = new AjxListener(this, this._apptEnterKeyHandler);
