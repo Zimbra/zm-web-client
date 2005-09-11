@@ -54,7 +54,7 @@ ZmCalDayView._DAY_SEP_WIDTH = 1; // width of separator between days
 ZmCalDayView._SCROLLBAR_WIDTH = 15;
 
 ZmCalDayView._DAY_HEADING_HEIGHT = 20;
-ZmCalDayView._ALL_DAY_APPT_HEIGHT = 16;
+ZmCalDayView._ALL_DAY_APPT_HEIGHT = 20;
 ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD = 3; // space between all day appt rows
 ZmCalDayView._APPT_X_FUDGE = 0; // due to border stuff
 ZmCalDayView._APPT_Y_FUDGE = -1; // ditto
@@ -316,7 +316,16 @@ ZmCalDayView.prototype._createItemHtml =
 function(appt) {
 	//DBG.println("---- createItem ---- "+appt);
 	if (appt.isAllDayEvent()) {
-		return this._createAllDayItemHtml(appt);
+		var dataId = appt.getUniqueId();
+		var startTime = Math.max(appt.getStartTime(), this._timeRangeStart);
+		var endTime = Math.min(appt.getEndTime(), this._timeRangeEnd);
+		var numDays = Math.floor((endTime-startTime)/AjxDateUtil.MSEC_PER_DAY);
+		var data = this._allDayAppts[dataId] = {
+			appt: appt,
+			startTime: startTime,
+			numDays: numDays
+		};
+		this._allDayApptsList.push(appt);
 	}
 	
 	// set up DIV
@@ -332,8 +341,6 @@ function(appt) {
 	ZmCalDayView._setApptOpacity(appt, div);
 
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
-
-	var titleOnly = (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
 
 	var pstatus = appt.getParticipationStatus();
 	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
@@ -352,11 +359,21 @@ function(appt) {
 		status: appt.isOrganizer() ? "" : appt.getParticipationStatusString()
 	};	
 	
-	var template = titleOnly ? "calendar_appt_30" : (appt._fanoutNum > 0 ? "calendar_appt_bottom_only" : "calendar_appt");
+	var template;
+	if (appt.isAllDayEvent()) {
+		template = "calendar_appt_allday";
+	} else if (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR) {
+		template = "calendar_appt_30";
+	} else if (appt._fanoutNum > 0) {
+		template = "calendar_appt_bottom_only";
+	} else {
+		template = "calendar_appt";
+	}
+
 	div.innerHTML = DwtBorder.getBorderHtml(template, subs, null);
 
 	// if (we can edit this appt) then create sash....
-	if (!appt.isReadOnly()) {
+ 	if (!appt.isReadOnly() && !appt.isAllDayEvent()) {
 	
 		if (appt._fanoutLast || (!appt._fanoutFirst && (!appt._fanoutNum))) {
 			var bottom = this.getDocument().createElement("div");
@@ -373,46 +390,6 @@ function(appt) {
 			div.appendChild(top);		
 		}
 	}
-	return div;
-}
-
-ZmCalDayView.prototype._createAllDayItemHtml =
-function(appt) {
-	var dataId = appt.getUniqueId();
-	var startTime = Math.max(appt.getStartTime(), this._timeRangeStart);
-	var endTime = Math.min(appt.getEndTime(), this._timeRangeEnd);
-	var numDays = Math.floor((endTime-startTime)/AjxDateUtil.MSEC_PER_DAY);
-	var data = this._allDayAppts[dataId] = {
-		appt: appt,
-		startTime: startTime,
-		numDays: numDays
-	};
-	this._allDayApptsList.push(appt);
-
-	var div = this.getDocument().createElement("div");
-	Dwt.setSize(div, 10, Dwt.DEFAULT);
-	div.style.position = 'absolute';
-
-	div._styleClass = "allday";
-	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
-	div.className = div._styleClass;
-
-	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
-	
-	var html = new AjxBuffer();
-
-	html.append("<table class=allday>");
-	html.append("<tr>");
-	if (this.isStartInView(appt)) html.append("<td><div class=allday_blue_start></div></td>");
-	html.append("<td width=100%>");
-	html.append("<div class=allday_blue_stretch><div class=allday_text>");
-	html.append(AjxStringUtil.htmlEncode(appt.getName()));
-	html.append("</div></div>");
-	html.append("</td>");
-	if (this.isEndInView(appt)) html.append("<td><div class=allday_blue_end></div></td>");
-	html.append("</tr>");
-	html.append("</table>");
-	div.innerHTML = html.toString();
 	return div;
 }
 
@@ -674,7 +651,7 @@ function() {
 	if (!rows) return;
 	
 	var doc = this.getDocument();
-	var rowY = ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD;
+	var rowY = ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD + 2;
 	for (var i=0; i < rows.length; i++) {
 		var row = rows[i];
 		var numDays = this.getNumDays();
@@ -682,8 +659,8 @@ function() {
 			var slot = row[j];
 			if (slot.data) {
 				var div = Dwt.getDomObj(doc, this._getItemId(slot.data.appt));
-				Dwt.setLocation(div, this._days[j].allDayX, rowY);
-				Dwt.setSize(div, this._days[j].allDayWidth * slot.data.numDays - ZmCalDayView._DAY_SEP_WIDTH,
+				this._positionAppt(div, this._days[j].allDayX, rowY);
+				this._sizeAppt(div, this._days[j].allDayWidth * slot.data.numDays - ZmCalDayView._DAY_SEP_WIDTH - 2,
 							 ZmCalDayView._ALL_DAY_APPT_HEIGHT);
 			}
 		}

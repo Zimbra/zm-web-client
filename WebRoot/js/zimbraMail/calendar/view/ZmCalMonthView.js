@@ -228,43 +228,47 @@ function() {
 	}
 }
 
+ZmCalMonthView._allDayItemHtml =
+function(appt,id) {
+	var pstatus = appt.getParticipationStatus();
+	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
+	var isAccepted = pstatus == ZmAppt.PSTATUS_ACCEPT;
+	var subs = {
+		id: id,
+		newState: isNew ? "_new" : "",
+		color: "_blue",
+		name: AjxStringUtil.htmlEncode(appt.getName()),
+//		tag: isNew ? "NEW" : "",		//  HACK: i18n
+		starttime: appt.getDurationText(true, true),
+		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmAppt._getTTHour(appt.getEndDate()),
+		location: AjxStringUtil.htmlEncode(appt.getLocation()),
+		statusKey: appt.getParticipationStatus(),
+		status: appt.isOrganizer() ? "" : appt.getParticipationStatusString()
+	};	
+	var template = "calendar_appt_allday";
+	return DwtBorder.getBorderHtml(template, subs, null);
+}
+
 ZmCalMonthView.prototype._createAllDayItemHtml =
-function(appt, apptEnd) {
-	var isStartInView = appt._fanoutFirst;
-	var isEndInView = apptEnd._fanoutLast;
-
-	var needTitle = true; 
-
-	var result = this.getDocument().createElement("div");
+function(appt) {
+	//DBG.println("---- createItem ---- "+appt);
 	
-	Dwt.setSize(result, 100, Dwt.DEFAULT);
-	result.style.position = 'absolute';
+	// set up DIV
+	var doc = this.getDocument();
+	var div = doc.createElement("div");	
 
-	result._styleClass = "allday";
-	result._selectedStyleClass = result._styleClass + '-' + DwtCssStyle.SELECTED;
-	result.className = result._styleClass;	
+	div.style.position = 'absolute';
+	Dwt.setSize(div, 10, 10);
+	div._styleClass = "appt";	
+	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
+	div.className = div._styleClass;
 
-	this.associateItemWithElement(appt, result, ZmCalBaseView.TYPE_APPT);
-	
-	var html = new AjxBuffer();
+	ZmCalDayView._setApptOpacity(appt, div);
 
-	html.append("<table class=allday>");
-	html.append("<tr>");
-	if (isStartInView)
-		html.append("<td><div class=allday_blue_start></div></td>");
-	html.append("<td width=100%>");
-	html.append("<div class=allday_blue_stretch><div class=allday_text>");
-	if (needTitle)
-		html.append(AjxStringUtil.htmlEncode(appt.getName()));
-	html.append("</div></div>");
-	html.append("</td>");
-	if (isEndInView)
-		html.append("<td><div class=allday_blue_end></div></td>");
-	html.append("</tr>");
-	html.append("</table>");
+	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
+	div.innerHTML = ZmCalMonthView._allDayItemHtml(appt, this._getItemId(appt));
 
-	result.innerHTML = html.toString();
-	return result;
+	return div;
 }
 
 ZmCalMonthView.prototype._createAllDayFillerHtml =
@@ -464,10 +468,13 @@ function() {
 			var appt = data.first;
 			var ae = Dwt.getDomObj(this.getDocument(), this._getItemId(appt));
 			if (ae) {
-				var apptWidth = (dayWidth * data.num) - 1;
-				var apptX = dayWidth*data.dow;
-				var apptY = dayY[i] + (17*data.row) + 17 + 3; //first 17, each appt + 1, second 17, day heading
-				Dwt.setBounds(ae, apptX, apptY, apptWidth, Dwt.DEFAULT);
+				var apptWidth = (dayWidth * data.num) - 6;
+				var apptX = dayWidth*data.dow + 3;
+				var apptY = dayY[i] + (21*data.row) + 17 + 3; //first 17, each appt + 1, second 17, day heading
+				Dwt.setLocation(ae, apptX, apptY);
+				Dwt.setSize(ae, apptWidth, 16); //Dwt.DEFAULT);
+				var apptBodyDiv = Dwt.getDomObj(this.getDocument(), ae.id + "_body");
+				Dwt.setSize(apptBodyDiv, apptWidth, 16); //Dwt.DEFAULT);
 			}
 		}
 	}
@@ -533,19 +540,9 @@ function(date, list) {
 		var ao = list.get(i);
 		if (ao.isAllDayEvent()) {
 			//DBG.println("AO    "+ao);
-			html.append("<tr><td><table width=100% cellpadding='0' cellspacing='0' border='0'>");
-			html.append("<tr>");
-			if (ao._fanoutFirst)
-				html.append("<td><div class=allday_blue_start></div></td>");
-			html.append("<td width=100%>");
-			html.append("<div class=allday_blue_stretch><div class=allday_text>");
-			html.append(AjxStringUtil.htmlEncode(ao.getName()));
-			html.append("</div></div>");
-			html.append("</td>");
-			if (ao._fanoutLast)
-				html.append("<td><div class=allday_blue_end></div></td>");
-			html.append("</tr>");
-			html.append("</table></td></tr>");
+			html.append("<tr><td><div class=appt>");
+			html.append(ZmCalMonthView._allDayItemHtml(ao, Dwt.getNextId()));
+			html.append("</div></td></tr>");
 		}
 	}
 
@@ -563,7 +560,6 @@ function(date, list) {
 			html.append("</td></tr>");
 		}
 	}
-	
 	if ( size == 0) {
 		html.append("<tr><td>no appointments</td></tr>"); // TODO: i18n
 	}

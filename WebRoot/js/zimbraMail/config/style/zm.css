@@ -1595,41 +1595,10 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	padding:0px;
 }
 
- 
-.allday-dnd {
-        left:0;
-        top:0;
-        width:100%;
-}
- 
-.allday-selected {
-        left:0;
-        top:0;
-        width:100%;
-}
-
-.allday-selected .allday_text {
-	color:black;
-}
-
-.allday_text {
-        overflow:hidden;
-        white-space: nowrap;
-        padding-left:3px;
-        padding-right:3px;
-        padding-top:1px;
-}
-
 /* filler for a blank all day item row in month view */
 .allday_item_filler {
-		height:16;
+		height:20;
 }
-
-.allday_blue_start   { width:11;      height:16;   background-image:url(/zimbra/img/hiRes/calendar/allday_begin_blue.gif);     }
-/*.allday_blue_stretch { width:100%;    height:16;   color:blue;  background-image:url(/zimbra/img/hiRes/calendar/allday_stretch_blue.gif); }*/
-.allday_blue_stretch { width:100%;    height:16;   color:#2869FF;  background-image:url(/zimbra/img/hiRes/calendar/allday_stretch_blue.gif); }
-.allday_blue_end     { width:11;      height:16;   background-image:url(/zimbra/img/hiRes/calendar/allday_end_blue.gif); }
-
 
 /*
 * Miscellaneous
@@ -2809,12 +2778,14 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .appt-selected TD		 		{					font-weight:bold;						}
 
 .appt_blue_header				{	background-color:#99ADD6;					}
-.appt_30_blue_header			{	background-color:#99ADD6;					}
-.appt_blue_body					{	background-color:#CCD6EB;					}
+.appt_30_blue_header     			{	background-color:#99ADD6;	}
+.appt_blue_body,
+.appt_allday_blue_body			{	background-color:#CCD6EB;					}
 
 .appt_new_blue_header,			
-.appt_30_new_blue_header		{	background-color:#1947A3;					}
-.appt_new_blue_body				{	background-color:#7F99CC;					}
+.appt_30_new_blue_header			{	background-color:#1947A3;					}
+.appt_new_blue_body,
+.appt_allday_new_blue_body		{	background-color:#7F99CC;					}
 
 
 .appt_new_tag					{	font-weight:bold;	color:#FFCC00;		}
@@ -2822,8 +2793,10 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .appt_name						{	padding:2px;											}
 .appt_new_name					{	padding:2px;	font-weight:bold;	color:white; 		}
 
-.appt_30_name					{	padding:2px;										white-space: nowrap;	}
-.appt_30_new_name				{	padding:2px;	font-weight:bold;	color:white;	white-space: nowrap;	}
+.appt_30_name,
+.appt_allday_name				{	padding:2px;	white-space: nowrap;	}
+.appt_30_new_name,
+.appt_allday_new_name {	padding:2px;	font-weight:bold;	color:white;	white-space: nowrap;	}
 
 
 .appt_time						{	padding:2px;																}
@@ -2856,7 +2829,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .appt-selected .appt_body,
-.appt-selected .appt_30_body	{
+.appt-selected .appt_30_body {
 	position:relative;
 	overflow:hidden;
 	border-left:4px solid #339999;
@@ -2866,32 +2839,56 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	margin-top:0px;
 	margin-left:0px;
 	margin-right:-2px;
-	margin-bottom:-2px;
-	
+	margin-bottom:-2px;	
+}
+
+.appt_allday_body {
+	position:relative;
+	overflow:hidden;
+	border-left:1px solid #AAAAAA;
+	border-top:1px solid #AAAAAA;
+	border-right:1px solid #333333;
+	border-bottom:1px solid #333333;	
+	margin-top:0px;
+	margin-left:-1px;
+	margin-right:0px;
+	margin-bottom:0px;
+}
+
+.appt-selected .appt_allday_body {
+	position:relative;
+	overflow:hidden;
+	border-left:2px solid #339999;
+	border-top:2px solid #339999;
+	border-right:2px solid #003030;
+	border-bottom:2px solid #003030;	
+	margin-top:0px;
+	margin-left:0px;
+	margin-right:-1px;
+	margin-bottom:-1px;	
 }
 
 .appt-selected .appt_body TD,
-.appt-selected .appt_30_body TD{
+.appt-selected .appt_allday_body TD,
+.appt-selected .appt_30_body TD {
 	padding-top:0px;
 	padding-left:0px;
 	padding-right:0px;
 }
 
 HTML>BODY .appt-selected .appt_body TD,
+HTML>BODY .appt-selected .appt_allday_body TD,
 HTML>BODY .appt-selected .appt_30_body TD {
 	padding-left:2px;
 	padding-top:2px;
 	padding-right:2px;
 }
 HTML>BODY .appt-selected .appt_body,
-HTML>BODY .appt-selected .appt_30_body
+HTML>BODY .appt-selected .appt_30_body,
+HTML>BODY .appt-selected .appt_allday_body
 {
 	margin-top:-3px;
 	margin-left:-3px;
 }
-
-
-
-
 
 /**** END BORDER STUFF ****/
