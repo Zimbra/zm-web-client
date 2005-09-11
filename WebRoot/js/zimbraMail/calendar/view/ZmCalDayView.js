@@ -950,21 +950,22 @@ function (ev){
 	ZmCalDayView._onclickHandler(ev);
 };
 
-/*
 ZmCalDayView.prototype._mouseOverAction =
 function(ev, div) {
 	ZmCalBaseView.prototype._mouseOverAction.call(this, ev, div);
-	DBG.println("mouse over "+div._type);
-	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER) 
+	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER) {
+		div.firstChild.style.textDecoration = "underline";
+	}
 }
 
 ZmCalDayView.prototype._mouseOutAction =
 function(ev, div) {
 	ZmCalBaseView.prototype._mouseOutAction.call(this, ev, div);
-	DBG.println("mouse out "+div._type);
-	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER) 
+	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER) {
+		div.firstChild.style.textDecoration = "none";
+	}
 }
-*/
+
 
 ZmCalDayView.prototype._mouseUpAction =
 function(ev, div) {
@@ -1063,12 +1064,18 @@ function(ev, div) {
 			return this._apptMouseDownAction(ev, div);
 			break;
 		case ZmCalBaseView.TYPE_HOURS_COL:
-			var gridLoc = AjxEnv.isIE ? Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div) : {x: ev.elementX, y: ev.elementY};
-			var fakeLoc = this._getLocationForDate(this.getDate());
-			if (fakeLoc) {
-				gridLoc.x = fakeLoc.x;
-				var gridDiv = Dwt.getDomObj(this.getDocument(), this._apptBodyDivId);
-				return this._gridMouseDownAction(ev, gridDiv, gridLoc);
+			if (ev.button == DwtMouseEvent.LEFT) {
+				var gridLoc = AjxEnv.isIE ? Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div) : {x: ev.elementX, y: ev.elementY};
+				var fakeLoc = this._getLocationForDate(this.getDate());
+				if (fakeLoc) {
+					gridLoc.x = fakeLoc.x;
+					var gridDiv = Dwt.getDomObj(this.getDocument(), this._apptBodyDivId);
+					return this._gridMouseDownAction(ev, gridDiv, gridLoc);
+				}
+			} else if (ev.button == DwtMouseEvent.RIGHT) {
+				DwtUiEvent.copy(this._actionEv, ev);
+				this._actionEv.item = this;
+				this._evtMgr.notifyListeners(ZmCalBaseView.VIEW_ACTION, this._actionEv);	
 			}
 			break;
 		case ZmCalBaseView.TYPE_APPTS_DAYGRID:

@@ -470,7 +470,7 @@ function() {
 			if (ae) {
 				var apptWidth = (dayWidth * data.num) - 6;
 				var apptX = dayWidth*data.dow + 3;
-				var apptY = dayY[i] + (21*data.row) + 17 + 3; //first 17, each appt + 1, second 17, day heading
+				var apptY = dayY[i] + (21*data.row) + 18 + 3; //first 17, each appt + 1, second 17, day heading
 				Dwt.setLocation(ae, apptX, apptY);
 				Dwt.setSize(ae, apptWidth, 16); //Dwt.DEFAULT);
 				var apptBodyDiv = Dwt.getDomObj(this.getDocument(), ae.id + "_body");

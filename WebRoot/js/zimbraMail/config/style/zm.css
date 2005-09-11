@@ -1343,17 +1343,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	height: 100%;
 }
 
-.calendar_heading_day_text_today {
-	white-space: nowrap;
-	overflow:hidden;
-	text-align:center;
-	padding-top: 4px;
-	color: red;
-	position: absolute;
-	ZZZborder: 1px solid red;
-	ZZZbackground-color: #ADD6D6;	
-}
-
 .calendar_header_allday_separator {
 	background-color:#CCCCCC;
 	height:3px;
