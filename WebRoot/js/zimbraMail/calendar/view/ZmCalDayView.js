@@ -301,7 +301,7 @@ function(div) {
 		id: div.id,
 		newState: "",
 		color: "_blue",
-		name: AjxStringUtil.htmlEncode("New Appointment"), // TODO: get from elsewhere
+		name: AjxStringUtil.htmlEncode(ZmMsg.newAppt),
 		starttime: "",
 		endtime: "",
 		location: "",
@@ -421,7 +421,7 @@ function(html) {
 		if (h == 0) {
 			html.append("&nbsp;");
 		} else if (h == 12) {
-			html.append("Noon");		//XXX i18n		
+			html.append(ZmMsg.noon);
 		} else {
 			html.append(hour, " ", ampm);
 		}

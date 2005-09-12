@@ -561,7 +561,7 @@ function(date, list) {
 		}
 	}
 	if ( size == 0) {
-		html.append("<tr><td>no appointments</td></tr>"); // TODO: i18n
+		html.append("<tr><td>"+ZmMsg.noAppts+"</td></tr>");
 	}
 	html.append("</table>");
 	html.append("</tr></td></table>");

@@ -720,7 +720,7 @@ function(date)
 		return ZmCalMonthView.getDayToolTipText(start,result);
 	} catch (ex) {
 		//alert(ex);
-		return "<b>error getting summary</b>";
+		return "<b"+ZmMsg.errorGettingAppts+"</b>";
 	}
 }
 
