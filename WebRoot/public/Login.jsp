@@ -184,7 +184,7 @@ input {width:185px;}
 .mainPanel table{ table-layout:fixed }
 
 .logoRow{ 
-  height:118px;
+  height:163px;
 }
 
 .logoRow .banner { 
@@ -315,7 +315,7 @@ Or Fedora
     <form style="margin:0px; border:0px; padding:0px" method="post">
       <div id="loginPanel" class=mainPanel >
 		<table class="LoginPanel" cellpadding=0 cellspacing=0 border=0>
-	    <tr style="height:118px" class=logoRow>
+	    <tr class=logoRow>
 	      <td>
 				<div class=banner></div>
 	      </td>
