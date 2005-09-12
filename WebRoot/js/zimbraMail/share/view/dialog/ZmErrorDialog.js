@@ -41,7 +41,7 @@ function ZmErrorDialog(parent, appCtxt) {
 	// setup the detail button
 	this._detailCell = Dwt.getDomObj(this.getDocument(), this._detailCellId);
 	var detailBtn = this._button[ZmErrorDialog.DETAIL_BUTTON];
-	detailBtn.setImage(DwtImg.SELECT_PULL_DOWN);
+	detailBtn.setImage("SelectPullDownArrow");
 	// arrow icon is too big so hack it to fit (instead of adding new image)
 	Dwt.setSize(detailBtn.getHtmlElement(), 22, (AjxEnv.isIE ? 21 : 19));
 	detailBtn.getHtmlElement().style.overflow = "hidden";
@@ -196,10 +196,10 @@ ZmErrorDialog.prototype._showDetail =
 function() {
 	if (this._detailCell) {
 		if (this._detailCell.innerHTML == "") {
-			this._button[ZmErrorDialog.DETAIL_BUTTON].setImage(DwtImg.SELECT_PULL_UP);
+			this._button[ZmErrorDialog.DETAIL_BUTTON].setImage("selectPullUpArrow");
 			this._detailCell.innerHTML = this._getDetailHtml();
 		} else {
-			this._button[ZmErrorDialog.DETAIL_BUTTON].setImage(DwtImg.SELECT_PULL_DOWN);
+			this._button[ZmErrorDialog.DETAIL_BUTTON].setImage("SelectPullDownArrow");
 			this._detailCell.innerHTML = "";
 		}
 	}

@@ -61,10 +61,10 @@ ZmCalViewController.prototype = new ZmListController();
 ZmCalViewController.prototype.constructor = ZmCalViewController;
 
 ZmCalViewController.ICON = new Object();
-ZmCalViewController.ICON[ZmCalViewMgr.DAY_VIEW]			= ZmImg.I_DAY_VIEW;
-ZmCalViewController.ICON[ZmCalViewMgr.WORK_WEEK_VIEW]	= ZmImg.I_WORK_WEEK_VIEW;
-ZmCalViewController.ICON[ZmCalViewMgr.WEEK_VIEW]		= ZmImg.I_WEEK_VIEW;
-ZmCalViewController.ICON[ZmCalViewMgr.MONTH_VIEW]		= ZmImg.I_MONTH_VIEW;
+ZmCalViewController.ICON[ZmCalViewMgr.DAY_VIEW]			= "DayView";
+ZmCalViewController.ICON[ZmCalViewMgr.WORK_WEEK_VIEW]	= "WorkWeekView";
+ZmCalViewController.ICON[ZmCalViewMgr.WEEK_VIEW]		= "WeekView";
+ZmCalViewController.ICON[ZmCalViewMgr.MONTH_VIEW]		= "MonthView";
 
 ZmCalViewController.MSG_KEY = new Object();
 ZmCalViewController.MSG_KEY[ZmCalViewMgr.DAY_VIEW]			= "viewDay";
@@ -236,8 +236,7 @@ function(viewName) {
 	var tb = new ZmNavToolBar(this._toolbar[ZmCalViewMgr.DAY_VIEW], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
 	this._setNavToolBar(tb);
 
-	this._setNewButtonProps(viewName, ZmMsg.createNewAppt, ZmImg.I_APPT,
-							ZmImg.ID_APPT, ZmOperation.NEW_APPT);
+	this._setNewButtonProps(viewName, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
 
 }
 

@@ -53,10 +53,10 @@ function(parent) {
 	var tree = this._tree = new DwtTree(parent, DwtTree.CHECKEDITEM_STYLE);
 	tree.addSelectionListener(new AjxListener(this, ZmObjectPicker.prototype._treeListener));
 	
-	this._addObject(tree, ZmMsg.tracking, ZmImg.I_PO, "tracking");
-	this._addObject(tree, ZmMsg.phoneNumber, ZmImg.I_TELEPHONE, "phone");
-	this._addObject(tree, ZmMsg.po, ZmImg.I_PO, "po");
-	this._addObject(tree, ZmMsg.url, ZmImg.I_URL, "url");	
+	this._addObject(tree, ZmMsg.tracking, "PurchaseOrder", "tracking");
+	this._addObject(tree, ZmMsg.phoneNumber, "Telephone", "phone");
+	this._addObject(tree, ZmMsg.po, "PurchaseOrder", "po");
+	this._addObject(tree, ZmMsg.url, "URL", "url");	
 }
 
 ZmObjectPicker.prototype._updateQuery = 

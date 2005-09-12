@@ -67,6 +67,7 @@
 */
 
 /* Global ELEMENT declarations */
+
 P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON {
 	font-size: 11px;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
@@ -81,11 +82,10 @@ FORM {
 	padding: 0;
 }
 
-INPUT {		/* clean border that works on FF and IE */
-	border-left:1px solid #000000;
-	border-top:1px solid #000000;
-	border-right:1px solid #AAAAAA;
-	border-bottom:1px solid #AAAAAA;
+
+HTML>BODY INPUT {		/* clean border that works on FF and IE */
+	border:1px solid;
+	border-color: black AAAAAA AAAAAA black;
 	padding-left:2px;
 }
 
@@ -455,7 +455,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 
-
 .ZmLoginDialog .DwtButton, 		.ZmLoginDialog .DwtButton-activated,		.ZmLoginDialog .DwtButton-triggered,
 .DwtDialog .DwtButton,			.DwtDialog .DwtButton-activated,			.DwtDialog .DwtButton-triggered,
 .DwtTabViewPage .DwtButton,		.DwtTabViewPage .DwtButton-activated,		.DwtTabViewPage .DwtButton-triggered,
@@ -478,6 +477,42 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 
+/*
+ * Dialogs
+ */
+
+.DwtDialog { background-color: transparent; }
+.DwtDialog .Title {
+	background: #2557AD;
+	color: white;
+	font-size: 10pt;
+	font-weight: bold;
+	padding: 5px 0 3px 10px;
+}
+.DwtDialog .MainPanel {
+	background-color: #C6C5D7;
+	border: 2px solid #2557AD;
+	padding: 10px;
+}
+.DwtDialog textarea { width: 100%; }
+.DwtDialog .Label { font-size: 10pt; }
+.DwtDialog .Field { width: 290px; }
+
+/* Message dialog */
+.DwtMsgDialog { width: 400px; }
+.DwtMsgArea { padding-left: 12px; }
+
+
+
+.DialogBody 			{	background-color:#EEEEEE;		}
+.DialogTable			{	border-collapse:collapse;		}
+
+.DialogToolbar 			{	background-image:url(/zimbra/skins/steel/images/bg_pebble_dark.gif);	}
+
+.DialogTitle			{	background-color:#3d3d3d; cursor:move			}
+.DialogTitleCell		{	color:white;	width:auto;	 font-weight:bold;	}
+.DialogTitleText		{	color:white;	width:auto;	 font-weight:bold;	}
+
 
 /*
 * Modifiers
@@ -494,7 +529,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .DisabledText { 
 	color: #999999; 
 }
-
 
 
 /*** Overrides for modifiers for specific elements  ***/
@@ -533,6 +567,11 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .DwtColorPicker { border: 1px solid #999999; }
 .DwtColorPicker table td img { border: 1px none black; }
 
+
+
+
+
+
 /* Login Panel */
 .ZmLoginDialog {
 	background-color: #b7b7b7; 
@@ -544,7 +583,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	margin-top:10px;
 	margin-bottom:10px;
 	height:110px; 
-	background-image:url("/zimbra/img/hiRes/non-web/LoginBanner.gif");
+	background-image:url("/zimbra/img/hiRes/logo/LoginBanner.gif");
 }
 .ZmLoginDialog-HeaderText, .ZmLoginDialog-SubHeaderText {
 	color: white;
@@ -1917,26 +1956,15 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	padding: 3px;
 }
 
-.DwtTabButtonTL {
-}
-.DwtTabButtonTM {
-}
-.DwtTabButtonTR {
-}
-.DwtTabButtonML {
-	width: 9px;
-}
-.DwtTabButtonMM {
-}
-.DwtTabButtonMR {
-	width: 9px;
-}
-.DwtTabButtonBL {
-}
-.DwtTabButtonBM {
-}
-.DwtTabButtonBR {
-}
+.DwtTabButtonTL {}
+.DwtTabButtonTM {}
+.DwtTabButtonTR {}
+.DwtTabButtonML {	width: 9px;		}
+.DwtTabButtonMM {}
+.DwtTabButtonMR {	width: 9px;		}
+.DwtTabButtonBL {}
+.DwtTabButtonBM {}
+.DwtTabButtonBR {}
 
 .DwtPropertyPage {
 	background-color:#EEEEEE;
@@ -1979,7 +2007,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmAppointmentView_attachTable { 
-  background-color: #F8F7F5;
+  background-color: #EEEEEE;
   table-layout: fixed;
   border-spacing: 0px;
 }
@@ -2204,6 +2232,67 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	padding-left:10px;padding-right:10px;
 	border-bottom:1px solid black;
 }
+
+
+.GrouperBorder,
+.RadioGrouperBorder,
+.TopGrouperBorder {
+	border:1px solid #999999;
+	margin-top:10px;
+	margin-bottom:5px;
+
+	padding-left:10px;
+	padding-right:10px;
+	padding-bottom:5px;
+}
+
+.TopGrouperBorder {
+	border:1px dotted #999999;
+	border-left:none;
+	border-right:none;
+	border-bottom:none;
+}
+
+.GrouperLabel,
+.RadioGrouperLabel {
+	font-weight:bold;
+	font-size:13px;
+	Xborder:1px solid #999999;
+	position:relative;	left:3; top:-8; margin-bottom:-10px; margin-top:20px;
+	background-color:#EEEEEE;
+	padding-left:2px; padding-right:2px;
+	padding-top:2px; padding-bottom:2px;
+}
+
+.GrouperInset {
+	position:relative;	top:-5px;
+}
+
+.RadioGrouperInset {
+	position:relative;	top:-4px;
+}
+
+.RadioGrouperBorder {
+	border:1px solid #999999;
+	margin-bottom:2px;
+
+}
+
+HTML>BODY .RadioGrouperBorder {
+	border:1px dotted #999999;
+}
+
+.RadioGrouperLabel {
+	margin-left:5px;
+	color:#666666;
+	font-weight:normal;
+	font-size:11px;
+}
+
+HTML>BODY .RadioGrouperLabel {
+	margin-left:-5px;
+}
+
 
 
 
@@ -2730,21 +2819,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 
 
-.DialogBody {
-	background-color:#F8F7F5;
-}
 
-.DialogToolbar {
-	background-image:url(/zimbra/skins/steel/images/bg_pebble_dark.gif);
-}
-
-.DialogTitle				{	background-color:#3d3d3d; cursor:move}
-.DialogTitleCell			{	color:white;	width:auto;	 font-weight:bold;	
-.DialogTitleText			{	color:white;	width:auto;	 font-weight:bold;	}
-								padding-left:2px; padding-right:2px;
-							}
-
-.DialogTable				{	border-collapse:collapse;	}
 
 .dialog_shadow_c			{ 	width:6; 		height:6;		}
 .dialog_shadow_h			{ 	width:100%; 	height:6;		}
@@ -2767,12 +2842,12 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .appt-selected TD		 		{					font-weight:bold;						}
 
 .appt_blue_header				{	background-color:#99ADD6;					}
-.appt_30_blue_header     			{	background-color:#99ADD6;	}
+.appt_30_blue_header     		{	background-color:#99ADD6;	}
 .appt_blue_body,
 .appt_allday_blue_body			{	background-color:#CCD6EB;					}
 
 .appt_new_blue_header,			
-.appt_30_new_blue_header			{	background-color:#1947A3;					}
+.appt_30_new_blue_header		{	background-color:#1947A3;					}
 .appt_new_blue_body,
 .appt_allday_new_blue_body		{	background-color:#7F99CC;					}
 
@@ -2785,7 +2860,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .appt_30_name,
 .appt_allday_name				{	padding:2px;	white-space: nowrap;	}
 .appt_30_new_name,
-.appt_allday_new_name {	padding:2px;	font-weight:bold;	color:white;	white-space: nowrap;	}
+.appt_allday_new_name 			{	padding:2px;	font-weight:bold;	color:white;	white-space: nowrap;	}
 
 
 .appt_time						{	padding:2px;																}
@@ -2880,7 +2955,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin-left:-3px;
 }
 
-/**** END BORDER STUFF ****/
 
 .DwtStickyToolTip {
 }
@@ -2894,6 +2968,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	font-weight: bold;
 	padding-bottom: 2px;
 }
+
+
+/**** END BORDER STUFF ****/
+
 
 .AddressContent {
 	width: 350px;

@@ -577,15 +577,15 @@ function(appt, html, idx) {
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
 
 	if (appt.hasOtherAttendees())
-		html[idx++] = "<td>" + AjxImg.getImageHtml(ZmImg.I_APPT_MEETING) + "</td>";
+		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptMeeting") + "</td>";
 
 	if (appt.isException())
-		html[idx++] = "<td>" + AjxImg.getImageHtml(ZmImg.I_APPT_EXCEPTION) + "</td>";
+		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptException") + "</td>";
 	else if (appt.isRecurring())
-		html[idx++] = "<td>" + AjxImg.getImageHtml(ZmImg.I_APPT_RECUR) + "</td>";
+		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptRecur") + "</td>";
 
 	if (appt.hasAlarm())
-		html[idx++] = "<td>" + AjxImg.getImageHtml(ZmImg.I_APPT_REMINDER) + "</td>";
+		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptReminder") + "</td>";
 	
 	html[idx++] = "</tr></table>";
 

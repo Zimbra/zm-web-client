@@ -95,7 +95,7 @@ function(obj) {
 	html[idx++] = "<b>"+AjxStringUtil.htmlEncode("PO# "+obj)+"</b>";
 	html[idx++] = "</td>";
 	html[idx++] = "<td align='right'>";
-	html[idx++] = AjxImg.getImageHtml(ZmImg.I_TASK);
+	html[idx++] = AjxImg.getImageHtml("Task");
 	html[idx++] = "</td>";
 	html[idx++] = "</table>";		
 	html[idx++] ="</div>";
@@ -115,10 +115,10 @@ ZmPOObjectHandler.prototype.getActionMenu =
 function(obj, span) {
 	if (this._menu == null) {
 		this._menu =  new ZmPopupMenu(this._appCtxt.getShell(), "ActionMenu");
-		this._menu.createMenuItem(ZmPOObjectHandler.APPROVE_ITEM, ZmImg.I_CHECK, "Approve", null, true);
-		this._menu.createMenuItem(ZmPOObjectHandler.REJECT_ITEM, ZmImg.I_RED_X, "Reject", null, true);
+		this._menu.createMenuItem(ZmPOObjectHandler.APPROVE_ITEM, "Check", "Approve", null, true);
+		this._menu.createMenuItem(ZmPOObjectHandler.REJECT_ITEM, "Cancel", "Reject", null, true);
 		this._menu.createSeparator();
-		this._menu.createMenuItem(ZmPOObjectHandler.SHOWFULL_ITEM, ZmImg.I_TASK, "View Full PO", null, true);
+		this._menu.createMenuItem(ZmPOObjectHandler.SHOWFULL_ITEM, "Task", "View Full PO", null, true);
 		this._menu.addSelectionListener(ZmPOObjectHandler.APPROVE_ITEM, new AjxListener(this, ZmPOObjectHandler.prototype._approveListener));
 		this._menu.addSelectionListener(ZmPOObjectHandler.REJECT_ITEM, new AjxListener(this, ZmPOObjectHandler.prototype._rejectListener));		
 	}

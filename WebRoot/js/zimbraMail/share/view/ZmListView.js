@@ -116,11 +116,11 @@ function(ev) {
 				if (flag == ZmItem.FLAG_FLAGGED) {
 					var img = Dwt.getDomObj(this.getDocument(), this._getFieldId(item, ZmItem.F_FLAG));
 					if (img && img.parentNode)
-						AjxImg.setImage(img.parentNode, on ? ZmImg.I_FLAG_ON : ZmImg.I_FLAG_OFF);
+						AjxImg.setImage(img.parentNode, on ? "FlagRed" : "Blank_16");
 				} else if (flag == ZmItem.FLAG_ATTACH) {
 					var img = Dwt.getDomObj(this.getDocument(), this._getFieldId(item, ZmItem.F_ATTACHMENT));
 					if (img && img.parentNode)
-						AjxImg.setImage(img.parentNode, on ? ZmImg.I_ATTACHMENT : ZmImg.I_BLANK);
+						AjxImg.setImage(img.parentNode, on ? "Attachment" : "Blank_16");
 				}
 			}
 		}
@@ -226,7 +226,7 @@ function(htmlArr, idx, item, field, colIdx, now) {
 		htmlArr[idx++] = AjxImg.getImageHtml(ZmItem.ICON[item.type], null, ["id='", fieldId, "'"].join(""));
 		htmlArr[idx++] = "</td>";					
 	} else if (field == ZmItem.F_FLAG) {
-		var flagImageInfo = item.isFlagged ? ZmImg.I_FLAG_ON : ZmImg.I_FLAG_OFF;
+		var flagImageInfo = item.isFlagged ? "FlagRed" : "Blank_16";
 		htmlArr[idx++] = "<td width=" + width + " class='Flag'>";
 		htmlArr[idx++] = AjxImg.getImageHtml(flagImageInfo, null, ["id='", fieldId, "'"].join(""));
 		htmlArr[idx++] = "</td>";
@@ -238,7 +238,7 @@ function(htmlArr, idx, item, field, colIdx, now) {
 		htmlArr[idx++] = this._getTagImgHtml(item, fieldId);
 		htmlArr[idx++] = "</td>";
 	} else if (field == ZmItem.F_ATTACHMENT) {
-		var attImageInfo = item.hasAttach ? ZmImg.I_ATTACHMENT : ZmImg.I_BLANK;
+		var attImageInfo = item.hasAttach ? "Attachment" : "Blank_16";
 		htmlArr[idx++] = "<td width=" + width + " class='Attach'>";
 		htmlArr[idx++] = AjxImg.getImageHtml(attImageInfo, null, ["id='", fieldId, "'"].join(""));
 		htmlArr[idx++] = "</td>";					
@@ -546,7 +546,7 @@ function(dragOp) {
 		Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE); 
 		
 		//Dwt.setPosition(this._dndImg, Dwt.ABSOLUTE_STYLE);
-		AjxImg.setImage(icon, ZmImg.M_DND_MULTI_YES);
+		AjxImg.setImage(icon, "DndMultiYes_48");
 		this._dndImg = icon;
 								
 		div = doc.createElement("div");
@@ -577,7 +577,7 @@ function(dropAllowed) {
 	// If we are moving multiple items then set borders & icons, else delegate up
 	// to DwtControl.prototype._setDnDIconState()
 	if (this._dndImg)
-		AjxImg.setImage(this._dndImg, dropAllowed ? ZmImg.M_DND_MULTI_YES : ZmImg.M_DND_MULTI_NO);
+		AjxImg.setImage(this._dndImg, dropAllowed ? "DndMultiYes_48" : "DndMultiNo_48");
 	else {
 		this._dndIcon.className = (dropAllowed) ? this._dndIcon._origClassName + " DropAllowed" 
 												: this._dndIcon._origClassName + " DropNotAllowed";

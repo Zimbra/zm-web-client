@@ -61,12 +61,12 @@ ZmAppChooser.IMAGE[ZmAppChooser.OUTER]		= "app_chiclet";
 ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]	= "app_chiclet_selected";
 ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]	= "app_chiclet_selected";
 
-ZmAppChooser.IMAGE[ZmAppChooser.B_EMAIL]	= "sm_icon_email";
-ZmAppChooser.IMAGE[ZmAppChooser.B_CONTACTS]	= "sm_icon_contact";
-ZmAppChooser.IMAGE[ZmAppChooser.B_CALENDAR]	= "sm_icon_calendar";
-ZmAppChooser.IMAGE[ZmAppChooser.B_HELP]		= "sm_icon_help";
-ZmAppChooser.IMAGE[ZmAppChooser.B_OPTIONS]	= "sm_icon_options";
-ZmAppChooser.IMAGE[ZmAppChooser.B_LOGOUT]	= "sm_icon_logout";
+ZmAppChooser.IMAGE[ZmAppChooser.B_EMAIL]	= "MailApp";
+ZmAppChooser.IMAGE[ZmAppChooser.B_CONTACTS]	= "ContactsApp";
+ZmAppChooser.IMAGE[ZmAppChooser.B_CALENDAR]	= "CalendarApp";
+ZmAppChooser.IMAGE[ZmAppChooser.B_HELP]		= "Help";
+ZmAppChooser.IMAGE[ZmAppChooser.B_OPTIONS]	= "Preferences";
+ZmAppChooser.IMAGE[ZmAppChooser.B_LOGOUT]	= "Logoff";
 
 ZmAppChooser.TOOLTIP = new Object();
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_EMAIL]		= ZmMsg.goToMail;

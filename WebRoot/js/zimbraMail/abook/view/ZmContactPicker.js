@@ -211,7 +211,7 @@ function() {
 	// add search input field and search button
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
 	html[idx++] = "<td valign=middle>";
-	html[idx++] = AjxImg.getImageHtml(ZmImg.I_SEARCH);
+	html[idx++] = AjxImg.getImageHtml("Search");
 	html[idx++] = "</td>";
 	html[idx++] = "<td><input type='text' size=30 nowrap id='" + this._searchFieldId + "'>&nbsp;</td>";
 	html[idx++] = "<td id='" + this._listSearchId + "'></td>";
@@ -603,7 +603,7 @@ function(parent, bExtHeader) {
 	var headerList = new Array();
 
 	if (bExtHeader)
-		headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_ICON, null, ZmImg.I_CONTACT_PICKER, 20));
+		headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_ICON, null, "ContactsPicker", 20));
 	
 	var sortBy = bExtHeader ? null : ZmItem.F_PARTICIPANT;
 	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_PARTICIPANT, ZmMsg._name, null, 100, sortBy));

@@ -246,13 +246,13 @@ function() {
 		formatButton.setMenu(m);
 	
 		var mi = new DwtMenuItem(m, DwtMenuItem.RADIO_STYLE);
-		mi.setImage(ZmImg.I_HTML);
+		mi.setImage("HtmlDoc");
 		mi.setText(ZmMsg.htmlDocument);
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
 		mi.addSelectionListener(new AjxListener(this, this._formatListener));
 		
 		mi = new DwtMenuItem(m, DwtMenuItem.RADIO_STYLE);
-		mi.setImage(ZmImg.I_DOCUMENT);
+		mi.setImage("GenericDoc");
 		mi.setText(ZmMsg.plainText);
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
 		mi.addSelectionListener(new AjxListener(this, this._formatListener));	

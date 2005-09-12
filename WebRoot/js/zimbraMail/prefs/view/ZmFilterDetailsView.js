@@ -705,7 +705,7 @@ ZmFilterDetailsView.prototype._plusMinusHtml = function(cell, isActionRow) {
 	var plusButton = new DwtButton(this);
 	plusEl = plusButton.getHtmlElement();
  	plusEl.style.width="30px";
-	plusButton.setImage(ZmImg.I_PLUS);
+	plusButton.setImage("Plus");
 	var plusList = null;
 	var minusList = null;
 	if (isActionRow) {
@@ -723,7 +723,7 @@ ZmFilterDetailsView.prototype._plusMinusHtml = function(cell, isActionRow) {
 	minusEl.style.width="30px";
 	minusButton.addSelectionListener(minusList);
 
-	minusButton.setImage(ZmImg.I_MINUS);
+	minusButton.setImage("Minus");
 	cell0.appendChild(plusButton.getHtmlElement());
 	cell1.appendChild(minusButton.getHtmlElement());
 	cell.appendChild(buttonsTable);

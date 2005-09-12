@@ -72,17 +72,17 @@ function(parent) {
 
 	var headerList = new Array();
 	
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ICON], null, ZmImg.I_GLOBE, ZmMixedView.COLWIDTH_ICON));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, ZmImg.I_FLAG_ON, ZmMixedView.COLWIDTH_ICON));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ICON], null, "Globe", ZmMixedView.COLWIDTH_ICON));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, "FlagRed", ZmMixedView.COLWIDTH_ICON));
 	
 	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
 	var appCtxt = shell.getData(ZmAppCtxt.LABEL); // this._appCtxt not set until parent constructor is called
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, ZmImg.I_MINI_TAG, ZmMixedView.COLWIDTH_ICON));
+		headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "MiniTag", ZmMixedView.COLWIDTH_ICON));
 	}
 	
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], ZmMsg.from, null, ZmMixedView.COLWIDTH_FROM, null, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, ZmImg.I_ATTACHMENT, ZmMixedView.COLWIDTH_ICON));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, "Attachment", ZmMixedView.COLWIDTH_ICON));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null, null, true));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.date, null, ZmMixedView.COLWIDTH_DATE));
 	

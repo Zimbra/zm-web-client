@@ -28,7 +28,7 @@ function ZmCustomPicker(parent) {
 	ZmPicker.call(this, parent);
 
     this.setTitle(ZmMsg.search);
-    this.setImage(ZmImg.I_SEARCH);
+    this.setImage("Search");
 }
 
 ZmCustomPicker.prototype = new ZmPicker;

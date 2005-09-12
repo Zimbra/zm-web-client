@@ -46,16 +46,16 @@ ZmFolderTreeView.MSG_KEY[ZmFolder.ID_SEARCH]	= "searches";
 
 // system folder icons
 ZmFolderTreeView.IMAGE = new Object();
-ZmFolderTreeView.IMAGE[ZmFolder.ID_INBOX]		= ZmImg.I_MAIL_FOLDER;
-ZmFolderTreeView.IMAGE[ZmFolder.ID_TRASH]		= ZmImg.I_TRASH;
-ZmFolderTreeView.IMAGE[ZmFolder.ID_SPAM]		= ZmImg.I_SPAM_FOLDER;
-ZmFolderTreeView.IMAGE[ZmFolder.ID_SENT]		= ZmImg.I_SENT_FOLDER;
-ZmFolderTreeView.IMAGE[ZmFolder.ID_DRAFTS]		= ZmImg.I_DRAFT_FOLDER;
-//ZmFolderTreeView.IMAGE[ZmFolder.ID_USER]		= ZmImg.I_FOLDER;
-ZmFolderTreeView.IMAGE[ZmFolder.ID_CONTACTS]	= ZmImg.I_CONTACT;
-ZmFolderTreeView.IMAGE[ZmFolder.ID_CALENDAR]	= ZmImg.I_APPT;
-//ZmFolderTreeView.IMAGE[ZmFolder.ID_TAGS]		= ZmImg.I_TAG_FOLDER;
-//ZmFolderTreeView.IMAGE[ZmFolder.ID_SEARCH]		= ZmImg.I_SEARCH_FOLDER;
+ZmFolderTreeView.IMAGE[ZmFolder.ID_INBOX]		= "Inbox";
+ZmFolderTreeView.IMAGE[ZmFolder.ID_TRASH]		= "Trash";
+ZmFolderTreeView.IMAGE[ZmFolder.ID_SPAM]		= "SpamFolder";
+ZmFolderTreeView.IMAGE[ZmFolder.ID_SENT]		= "SentFolder";
+ZmFolderTreeView.IMAGE[ZmFolder.ID_DRAFTS]		= "DraftFolder";
+//ZmFolderTreeView.IMAGE[ZmFolder.ID_USER]		= "Group";
+ZmFolderTreeView.IMAGE[ZmFolder.ID_CONTACTS]	= "ContactsFolder";
+ZmFolderTreeView.IMAGE[ZmFolder.ID_CALENDAR]	= "CalendarFolder";
+//ZmFolderTreeView.IMAGE[ZmFolder.ID_TAGS]		= "TagFolder";
+//ZmFolderTreeView.IMAGE[ZmFolder.ID_SEARCH]		= "SearchFolder";
 
 // Public methods
 
@@ -139,5 +139,5 @@ function(folder) {
 	if (ZmFolderTreeView.IMAGE[folder.id])
 		return ZmFolderTreeView.IMAGE[folder.id];
 	else
-		return (folder.type == ZmOrganizer.SEARCH) ? ZmImg.I_SEARCH_FOLDER : ZmImg.I_FOLDER;
+		return (folder.type == ZmOrganizer.SEARCH) ? "SearchFolder": "Folder";
 }

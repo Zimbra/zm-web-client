@@ -1189,7 +1189,7 @@ ZmAppointmentView.prototype.getAppointmentForm = function () {
 															{ref:"ct", type:_IMAGE_, 
 																getDisplayValue:function(value){
 																	var mimeInfo = ZmMimeTable.getInfo(value);
-																	return (mimeInfo)? mimeInfo.image: ZmImg.I_DOCUMENT;
+																	return (mimeInfo)? mimeInfo.image: "GenericDoc";
 																}
 															},
 															{ref:"filename", type:_DATA_ANCHOR_, href:"javascript:;", 
@@ -1207,7 +1207,7 @@ ZmAppointmentView.prototype.getAppointmentForm = function () {
 																getDisplayValue:function(value){
 																	if (value != null) {
 																		var mimeInfo = ZmMimeTable.getInfo(value);
-																		return (mimeInfo)? mimeInfo.image: ZmImg.I_DOCUMENT;
+																		return (mimeInfo)? mimeInfo.image: "GenericDoc";
 																	}
 																	return null;
 																}

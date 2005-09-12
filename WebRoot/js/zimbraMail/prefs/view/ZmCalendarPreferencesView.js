@@ -80,7 +80,7 @@ ZmCalendarPreferencesView.prototype._createHTML = function () {
     var div = this.getDocument().createElement("div");
     var html = new Array(25);
     var idx = 0;
-    idx = this._createOptionTablePre("Calendar Options", ZmImg.IN_CALENDAR, html, idx);
+    idx = this._createOptionTablePre("Calendar Options", "CalendarApp", html, idx);
     
     html[idx++] = "<table cellpadding='0' cellspacing='5' border='0' style='width:100%'>";
     

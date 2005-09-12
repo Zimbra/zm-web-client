@@ -488,7 +488,7 @@ function(abook) {
 	html.append("<div id='", this._alldaySepDivId, "' class=calendar_header_allday_separator style='overflow:hidden'></div>");
 	html.append("<div id='", this._bodyDivId, "' class=calendar_body>");
 	this._createHoursHtml(html);
-	html.append("<div id='", this._apptBodyDivId, "' class='ImgCalendarDayGrid_BG' style='width:100%; height:1008px; position:absolute;'>");	
+	html.append("<div id='", this._apptBodyDivId, "' class='ImgCalendarDayGrid__BG' style='width:100%; height:1008px; position:absolute;'>");	
 	html.append("<div id='", this._timeSelectionDivId, "' class='calendar_time_selection' style='position:absolute; display:none;'></div>");
 	html.append("<div id='", this._newApptDivId, "' class='appt-Selected' style='position:absolute; display:none;'></div>");
 	for (var i =0; i < numDays; i++) {

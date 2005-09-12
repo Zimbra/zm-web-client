@@ -708,7 +708,7 @@ function(bFindHits, domain, partNameList) {
     		}
 
 			// calc. widths of all data involved
-    		var icon = mimeInfo ? mimeInfo.image : ZmImg.I_DOCUMENT;
+    		var icon = mimeInfo ? mimeInfo.image : "GenericDoc";
     		var encLabel = "&nbsp;" + AjxStringUtil.htmlEncode(label) + "&nbsp;";
     		var labelWidth = Dwt.getHtmlExtent(encLabel).x;
     		// The 5 is for padding for IE

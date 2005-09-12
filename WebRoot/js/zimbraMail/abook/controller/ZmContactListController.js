@@ -60,8 +60,8 @@ ZmContactListController.prototype = new ZmListController;
 ZmContactListController.prototype.constructor = ZmContactListController;
 
 ZmContactListController.ICON = new Object();
-ZmContactListController.ICON[ZmController.CONTACT_SIMPLE_VIEW]		= ZmImg.I_LIST;
-ZmContactListController.ICON[ZmController.CONTACT_CARDS_VIEW]		= ZmImg.I_CONTACT;
+ZmContactListController.ICON[ZmController.CONTACT_SIMPLE_VIEW]		= "ListView";
+ZmContactListController.ICON[ZmController.CONTACT_CARDS_VIEW]		= "CardsView";
 
 ZmContactListController.MSG_KEY = new Object();
 ZmContactListController.MSG_KEY[ZmController.CONTACT_SIMPLE_VIEW]	= "contactList";
@@ -201,7 +201,7 @@ function(view) {
 
 	ZmListController.prototype._initializeToolBar.call(this, view);
 	this._setupViewMenu(view);
-	this._setNewButtonProps(view, ZmMsg.createNewContact, ZmImg.I_CONTACT, ZmImg.ID_CONTACT, ZmOperation.NEW_CONTACT);
+	this._setNewButtonProps(view, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
 	this._toolbar[view].addFiller();
 	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
 	this._setNavToolBar(tb);

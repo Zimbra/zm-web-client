@@ -73,7 +73,7 @@ function(obj) {
 	var i = 0;
 	html[i++] = "<table cellpadding=2 cellspacing=0 border=0><tr valign='center'>";
 	html[i++] = "<td>";
-	html[i++] = AjxImg.getImageHtml(ZmImg.I_TELEPHONE);
+	html[i++] = AjxImg.getImageHtml("Telephone");
 	html[i++] = "</td>";
 	html[i++] = "<td><b><div style='white-space:nowrap'>" + ZmMsg.phoneNumber + ":</div></b></td>";
 	html[i++] = "<td><div style='white-space:nowrap'>" + AjxStringUtil.htmlEncode(obj) + "</div></td></tr></table>";

@@ -96,7 +96,7 @@ function(errorStr) {
 	if (errorStr && errorStr.length) {
 		htmlArr[i++] = "<table align=center class='ZmLoginDialog-ErrorPanel'>";
 		htmlArr[i++] = "<tr><td>";
-		htmlArr[i++] = AjxImg.getImageHtml(ZmImg.I_CRITICAL);
+		htmlArr[i++] = AjxImg.getImageHtml("Critical_32");
 		htmlArr[i++] = "</td>";
 		htmlArr[i++] = "<td class='ZmLoginDialog-ErrorText'>" + errorStr + "</td></tr></table>";
 	} else {

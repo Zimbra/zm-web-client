@@ -633,22 +633,22 @@ function() {
 		// IMGHACK - added outer table for new image changes...
 		html[idx++] = "<div style='white-space:nowrap'><table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
 		if (this.hasOtherAttendees()) 
-			html[idx++] = "<td>" + AjxImg.getImageHtml(ZmImg.I_APPT_MEETING) + "</td>";
+			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptMeeting") + "</td>";
 			
 		if (this.isException()) 
-			html[idx++] = "<td>" + AjxImg.getImageHtml(ZmImg.I_APPT_EXCEPTION) + "</td>";
+			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptException") + "</td>";
 		else if (this.isRecurring()) 
-			html[idx++] = "<td>" + AjxImg.getImageHtml(ZmImg.I_APPT_RECUR) + "</td>";
+			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptRecur") + "</td>";
 			
 //		if (this.hasAlarm()) 
-//			html[idx++] = "<td>" + AjxImg.getImageHtml(ZmImg.I_APPT_REMINDER) + "</td>";
+//			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptReminder") + "</td>";
 
 		html[idx++] = "</tr></table>";
 		
 		html[idx++] = "&nbsp;"+AjxStringUtil.htmlEncode(this.getName());
 		html[idx++] = "&nbsp;</div></b></td>";		
 		html[idx++] = "<td align='right'>";
-		html[idx++] = AjxImg.getImageHtml(ZmImg.I_APPT);
+		html[idx++] = AjxImg.getImageHtml("Appointment");
 		html[idx++] = "</td></table></div></td></tr>";
 		//idx = this._addEntryRow("Subject", this.getName(), html, idx);
 		//idx = this._addEntryRow(ZmMsg.meetingStatus, this.getStatusString(), html, idx, false);
