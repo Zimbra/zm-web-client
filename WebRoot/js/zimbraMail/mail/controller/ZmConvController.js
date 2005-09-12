@@ -246,8 +246,8 @@ function(ev) {
 
 // Miscellaneous
 
-// called after a delete has occurred. 
-// Return value indicates whether view was popped as a result of a delete
+// Called after a delete/move notification has been received.
+// Return value indicates whether view was popped as a result of a delete.
 ZmConvController.prototype.handleDelete = 
 function() {
 	
@@ -268,7 +268,7 @@ function() {
 				}
 			}
 		} else {
-			// must be custom/saved search, dont pop!
+			// must be custom/saved search, don't pop!
 			popView = false;
 		}
 	}
@@ -277,6 +277,7 @@ function() {
 	popView = popView && (this._appCtxt.getCurrentView() == this._currentView);
 
 	if (popView) {
+		this._checkConvLocation();
 		this._app.popView();
 	} else {
 		// otherwise disable delete toolbar button if selected msg has been deleted
