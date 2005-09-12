@@ -312,7 +312,7 @@ Or Fedora
      <a href="javascript:ZmLogin.handleOnload(null, true);">Click here to continue</a>
    </div>
    </div>
-    <form style="margin:0px; border:0px; padding:0px" method="post" action="/service/Login.jsp">
+    <form style="margin:0px; border:0px; padding:0px" method="post">
       <div id="loginPanel" class=mainPanel >
 		<table class="LoginPanel" cellpadding=0 cellspacing=0 border=0>
 	    <tr style="height:118px" class=logoRow>
