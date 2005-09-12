@@ -259,6 +259,7 @@ ZmMsg.goToContacts = "Show all Contacts";
 ZmMsg.goToHelp = "Read online help documentation";
 ZmMsg.goToMail = "Go to Mail";
 ZmMsg.goToOptions = "View or edit your options";
+ZmMsg.goToUrl = "Go to $0";
 ZmMsg.green = "Green";
 ZmMsg.groupMailBy = "Group mail by";
 ZmMsg.happy = "happy";

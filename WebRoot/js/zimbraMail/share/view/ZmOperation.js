@@ -43,7 +43,7 @@ ZmOperation.ADD_FILTER_RULE			= i++;
 ZmOperation.ADD_SIGNATURE			= i++;
 ZmOperation.ATTACHMENT				= i++;
 ZmOperation.BROWSE					= i++;
-ZmOperation.CAL_VIEW_MENU				= i++;
+ZmOperation.CAL_VIEW_MENU			= i++;
 ZmOperation.CALL					= i++;
 ZmOperation.CANCEL					= i++;
 ZmOperation.CLOSE					= i++;
@@ -64,6 +64,7 @@ ZmOperation.EDIT_REPLY_DECLINE		= i++;
 ZmOperation.EDIT_REPLY_TENTATIVE	= i++;
 ZmOperation.EXPAND_ALL				= i++;
 ZmOperation.FORWARD					= i++;
+ZmOperation.GO_TO_URL				= i++;
 ZmOperation.IM						= i++;
 ZmOperation.INVITE_REPLY_MENU		= i++;
 ZmOperation.MARK_ALL_READ			= i++;
@@ -121,7 +122,7 @@ ZmOperation.MSG_KEY[ZmOperation.ADD_FILTER_RULE]		= "filterAdd";
 ZmOperation.MSG_KEY[ZmOperation.ADD_SIGNATURE]			= "addSignature";
 ZmOperation.MSG_KEY[ZmOperation.ATTACHMENT]				= "addAttachment";
 ZmOperation.MSG_KEY[ZmOperation.BROWSE]					= "advancedSearch";
-ZmOperation.MSG_KEY[ZmOperation.CAL_VIEW_MENU]				= "view";
+ZmOperation.MSG_KEY[ZmOperation.CAL_VIEW_MENU]			= "view";
 ZmOperation.MSG_KEY[ZmOperation.CANCEL]					= "cancel";
 ZmOperation.MSG_KEY[ZmOperation.COLOR_MENU]				= "tagColor";
 ZmOperation.MSG_KEY[ZmOperation.COMPOSE_FORMAT] 		= "format";
@@ -238,6 +239,7 @@ ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_DECLINE]		= ZmImg.I_RED_X;
 ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_TENTATIVE]		= ZmImg.I_QUESTION_MARK;
 ZmOperation.IMAGE[ZmOperation.EXPAND_ALL]				= ZmImg.I_PLUS;
 ZmOperation.IMAGE[ZmOperation.FORWARD]					= ZmImg.I_FORWARD;
+ZmOperation.IMAGE[ZmOperation.GO_TO_URL]				= ZmImg.I_HTML;
 ZmOperation.IMAGE[ZmOperation.IM]						= ZmImg.I_IM;
 ZmOperation.IMAGE[ZmOperation.INVITE_REPLY_MENU]		= ZmImg.I_REPLY;
 ZmOperation.IMAGE[ZmOperation.MARK_ALL_READ]			= ZmImg.I_READ_MSG;
@@ -446,11 +448,11 @@ function(parent, id, opHash) {
 ZmOperation.setOperation =
 function(parent, oldOp, newOp, text, image, disImage) {
 	var op = parent.getOp(oldOp);
-	if (op) {
-		op.setText(text || ZmMsg[ZmOperation.MSG_KEY[newOp]]);
-		op.setImage(image || ZmOperation.IMAGE[newOp]);
-		op.setDisabledImage(disImage || ZmOperation.DIS_IMAGE[newOp]);
-	}
+	if (!op) return;
+	
+	op.setText(text || ZmMsg[ZmOperation.MSG_KEY[newOp]]);
+	op.setImage(image || ZmOperation.IMAGE[newOp]);
+	op.setDisabledImage(disImage || ZmOperation.DIS_IMAGE[newOp]);
 }
 
 /**
