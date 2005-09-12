@@ -492,6 +492,7 @@ ZmCalViewController.prototype._getInstanceSeriesDialog = function (message, mode
 		this._rView = new ZmEditInstanceSeriesView(this._shell, this._recInstance);
 		this._showSingleInstanceDialog = new DwtBaseDialog (this._shell, null, t, null, null, null, this._rView);
 															//this._rView.getDragHandleId());
+		this._showSingleInstanceDialog._disableFFhack();
 		this._rView.addListener(DwtEvent.BUTTON_PRESSED,
 								new AjxListener(this, this._handleSingleInstanceButton));
 	} else {
