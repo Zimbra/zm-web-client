@@ -186,11 +186,13 @@ function(ev) {
 	if (object.handler.hasToolTipText()) {
  		var shell = DwtShell.getShell(window);
 		var manager = shell.getHoverMgr();
-		manager.reset();
-		manager.setHoverOverDelay(ZmObjectManager._TOOLTIP_DELAY);
-		manager.setHoverOverData(object);
-		manager.setHoverOverListener(this._hoverOverListener);
-		manager.hoverOver(ev.docX, ev.docY);
+		if (!manager.isHovering()) {
+			manager.reset();
+			manager.setHoverOverDelay(ZmObjectManager._TOOLTIP_DELAY);
+			manager.setHoverOverData(object);
+			manager.setHoverOverListener(this._hoverOverListener);
+			manager.hoverOver(ev.docX, ev.docY);
+		}
 	}
 	return false;
 }
@@ -218,11 +220,13 @@ function(ev) {
 	var span = this._findObjectSpan(ev.target);
 	var object = span ? this._objects[span.id] : null;
 
-	if (object) {		
+	if (object) {
 		var shell = DwtShell.getShell(window);
 		var manager = shell.getHoverMgr();
-		// NOTE: mouseOver already init'd hover settings
-		manager.hoverOver(ev.docX, ev.docY);
+		if (!manager.isHovering()) {
+			// NOTE: mouseOver already init'd hover settings
+			manager.hoverOver(ev.docX, ev.docY);
+		}
 	}
 	
 	return false;

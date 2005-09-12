@@ -2881,3 +2881,22 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 /**** END BORDER STUFF ****/
+
+.DwtStickyToolTip {
+}
+
+.DwtStickyToolTipClose {
+}
+.DwtStickyToolTipClose-activated {
+}
+
+.DwtStickyToolTipTitle {
+	font-weight: bold;
+	padding-bottom: 2px;
+}
+
+.AddressContent {
+	width: 350px;
+	height: 250px;
+	border: solid gray 1px;
+}
