@@ -175,7 +175,7 @@ input {width:185px;}
   position:absolute; 
   visibility:hidden; 
   width:460px; 
-  height:288px; 
+  height:333px; 
   border: 2px solid; 
   border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;
   background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
@@ -192,7 +192,7 @@ input {width:185px;}
   margin-top:10px;
   margin-bottom:10px;
   width:447px; 
-  height:110px; 
+  height:155px; 
   background-image:url("/zimbra/img/hiRes/non-web/LoginBanner.gif");
   
 }
