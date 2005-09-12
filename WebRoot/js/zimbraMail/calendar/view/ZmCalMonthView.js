@@ -229,12 +229,13 @@ function() {
 }
 
 ZmCalMonthView._allDayItemHtml =
-function(appt,id) {
+function(appt,id, body_style) {
 	var pstatus = appt.getParticipationStatus();
 	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
 	var isAccepted = pstatus == ZmAppt.PSTATUS_ACCEPT;
 	var subs = {
 		id: id,
+		body_style: body_style,
 		newState: isNew ? "_new" : "",
 		color: "_blue",
 		name: AjxStringUtil.htmlEncode(appt.getName()),
@@ -250,7 +251,7 @@ function(appt,id) {
 }
 
 ZmCalMonthView.prototype._createAllDayItemHtml =
-function(appt) {
+function(appt, apptEnd) {
 	//DBG.println("---- createItem ---- "+appt);
 	
 	// set up DIV
@@ -265,8 +266,14 @@ function(appt) {
 
 	ZmCalDayView._setApptOpacity(appt, div);
 
+
+	var bs = "";
+	if (!appt._fanoutFirst) bs = "border-left:none;";
+	if (!apptEnd._fanoutLast) bs += "border-right:none;";
+	var body_style = (bs != "") ? "style='"+bs+"'" : "";
+
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
-	div.innerHTML = ZmCalMonthView._allDayItemHtml(appt, this._getItemId(appt));
+	div.innerHTML = ZmCalMonthView._allDayItemHtml(appt, this._getItemId(appt), body_style);
 
 	return div;
 }
@@ -468,7 +475,7 @@ function() {
 			var appt = data.first;
 			var ae = Dwt.getDomObj(this.getDocument(), this._getItemId(appt));
 			if (ae) {
-				var apptWidth = (dayWidth * data.num) - 6;
+				var apptWidth = (dayWidth * data.num) - 8;
 				var apptX = dayWidth*data.dow + 3;
 				var apptY = dayY[i] + (21*data.row) + 18 + 3; //first 17, each appt + 1, second 17, day heading
 				Dwt.setLocation(ae, apptX, apptY);
@@ -540,9 +547,14 @@ function(date, list) {
 		var ao = list.get(i);
 		if (ao.isAllDayEvent()) {
 			//DBG.println("AO    "+ao);
+			var bs = "";
+			if (!ao._fanoutFirst) bs = "border-left:none;";
+			if (!ao._fanoutLast) bs += "border-right:none;";
+			var body_style = (bs != "") ? "style='"+bs+"'" : "";
 			html.append("<tr><td><div class=appt>");
-			html.append(ZmCalMonthView._allDayItemHtml(ao, Dwt.getNextId()));
+			html.append(ZmCalMonthView._allDayItemHtml(ao, Dwt.getNextId(), body_style));
 			html.append("</div></td></tr>");
+			html.append("<tr><td><div style='height=2px;'></div></td></tr>");
 		}
 	}
 

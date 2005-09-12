@@ -2834,9 +2834,9 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .appt_allday_body {
 	position:relative;
 	overflow:hidden;
-	border-left:1px solid #AAAAAA;
+	border-left:2px solid #AAAAAA;
 	border-top:1px solid #AAAAAA;
-	border-right:1px solid #333333;
+	border-right:2px solid #333333;
 	border-bottom:1px solid #333333;	
 	margin-top:0px;
 	margin-left:-1px;

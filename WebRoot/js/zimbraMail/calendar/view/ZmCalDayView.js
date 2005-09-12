@@ -348,6 +348,7 @@ function(appt) {
 	var id = this._getItemId(appt);
 	var subs = {
 		id: id,
+		body_style: "",
 		newState: isNew ? "_new" : "",
 		color: "_blue",
 		name: AjxStringUtil.htmlEncode(appt.getName()),
@@ -362,6 +363,10 @@ function(appt) {
 	var template;
 	if (appt.isAllDayEvent()) {
 		template = "calendar_appt_allday";
+		var bs = "";
+		if (!this.isStartInView(appt._orig)) bs = "border-left:none;";
+		if (!this.isEndInView(appt._orig)) bs += "border-right:none;";
+		if (bs != "") subs.body_style = "style='"+bs+"'";
 	} else if (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR) {
 		template = "calendar_appt_30";
 	} else if (appt._fanoutNum > 0) {
@@ -658,9 +663,10 @@ function() {
 		for (var j=0; j < numDays; j++) {
 			var slot = row[j];
 			if (slot.data) {
-				var div = Dwt.getDomObj(doc, this._getItemId(slot.data.appt));
-				this._positionAppt(div, this._days[j].allDayX, rowY);
-				this._sizeAppt(div, this._days[j].allDayWidth * slot.data.numDays - ZmCalDayView._DAY_SEP_WIDTH - 2,
+				var appt = slot.data.appt;
+				var div = Dwt.getDomObj(doc, this._getItemId(appt));
+				this._positionAppt(div, this._days[j].allDayX +2, rowY);
+				this._sizeAppt(div, this._days[j].allDayWidth * slot.data.numDays - ZmCalDayView._DAY_SEP_WIDTH - 4,
 							 ZmCalDayView._ALL_DAY_APPT_HEIGHT);
 			}
 		}
