@@ -132,9 +132,9 @@ function() {
 }
 
 ZmAppCtxt.prototype.getLoginDialog =
-function(isAdmin) {
+function() {
 	if (!this._loginDialog)
-		this._loginDialog = new ZmLoginDialog(this.getShell(), null, null, isAdmin);
+		this._loginDialog = new ZmLoginDialog(this.getShell());
 	return this._loginDialog;
 }
 

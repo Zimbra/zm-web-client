@@ -44,6 +44,9 @@ ZmLogin = function () {}
 
 ZmLogin.lastGoodUserNameCookie   = "ls_last_username"; // <-- DO NOT EVER CHANGE THIS (or grep b4 u do)
 ZmLogin.lastGoodMailServerCookie = "ls_last_server";
+ZmLogin.CSFE_SERVER_URI = location.port == "80" ? "/service/soap/" : ":" + location.port + "/service/soap/";
+ZmLogin.ZIMBRA_APP_URI  = location.port == "80" ? "/zimbra/mail" : ":" + location.port + "/zimbra/mail";
+ZmLogin.MAILBOX_REGEX =/^([a-zA-Z0-9_\.\-])+(\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+)?$/;
 
 // -----------------------------------------------------------------
 // positioning methods
@@ -87,7 +90,7 @@ function() {
 };
 
 ZmLogin.setUserNameAndFocus = 
-function () {
+function() {
 	var lastUser = AjxCookie.getCookie(document, ZmLogin.lastGoodUserNameCookie);
 	var focusEl = null;
 	// if we have a username, fill out the username field, and focus on the 
@@ -102,7 +105,7 @@ function () {
 };
 
 ZmLogin.setErrorMessage = 
-function (msg, msgOffsetFromCurrent) {
+function(msg, msgOffsetFromCurrent) {
 	var errCell = document.getElementById("errorMessage");
 	errCell.innerHTML = msg;
 	document.getElementById("errorMessageContainer").style.display = "block";
@@ -156,23 +159,21 @@ function() {
 
 ZmLogin.handleOnload = 
 function(ev, checkedBrowser) {
+	// check if browser is supported
+	var u = document.getElementById('unsupportedBrowserMessage');
 	if (!checkedBrowser && !ZmLogin.isSupportedBrowser()) {
-		var u = document.getElementById('unsupportedBrowserMessage');
-		u.style.display = 'block';
+		u.style.display = "block";
 		ZmLogin.centerElement(u);
 		return;
-	} else {
-		var u = document.getElementById('unsupportedBrowserMessage');
-		u.style.display = 'none';
 	}
+	u.style.display = "none";
+
 	ZmLogin.setServerUri();
 	var authToken = ZmCsfeCommand.getAuthToken();
 	if (authToken != null) {
 		// check the server we're using
-		var mailServer = AjxCookie.getCookie(document, 
-											ZmLogin.lastGoodMailServerCookie);
-		// if we have info, we just need to check that the token hasn't expired
-		// let's send a no op request
+		var mailServer = AjxCookie.getCookie(document, ZmLogin.lastGoodMailServerCookie);
+		// if we have info, just check token hasn't expired w/ no op request
 		try {
 			ZmLogin.submitNoOpRequest();
 			//window.location = ZmLogin.getMailUrl(mailServer);
@@ -183,26 +184,21 @@ function(ev, checkedBrowser) {
 			// request ... presumably because the auth credentials were invalid.
 			// do nothing, but fall through to showing the login panel
 		}
-
 	}
+
 	if (!AjxEnv.isIE) {
 		var input = document.createElement('input');
-		input.type='button';
-		input.style.display="none";
-		input.id ="hiddenButton";
+		input.type = 'button';
+		input.style.display = "none";
+		input.id = "hiddenButton";
 		var loginButton = document.getElementById('loginButton');
 		loginButton.appendChild(input);
 	}
+
 	ZmLogin.setPanelText();
 	ZmLogin.positionPanel();
 	ZmLogin.setUserNameAndFocus();
-
-	// try and source some of the scripts we will need for the app
-	//ZmLogin.preLoadScripts();
 };
-
-ZmLogin.CSFE_SERVER_URI = location.port == "80" ? "/service/soap/" : ":" + location.port + "/service/soap/";
-ZmLogin.ZIMBRA_APP_URI  = location.port == "80" ? "/zimbra/mail" : ":" + location.port + "/zimbra/mail";
 
 ZmLogin.setServerUri = 
 function() {
@@ -212,9 +208,6 @@ function() {
     ZmCsfeCommand.setServerUri(value);
 };
 
-// -----------------------------------------------------------------
-// Future use methods? -- preloading images and scripts
-// -----------------------------------------------------------------
 ZmLogin.getFullUrl = 
 function(uri) {
     return location.protocol + "//" + location.hostname + ((location.port == "80") 
@@ -222,24 +215,8 @@ function(uri) {
     	: (":" + location.port)) + uri;
 };
 
-ZmLogin.preLoadScripts = 
-function() {
-    var s = document.createElement('script');
-    s.src = ZmLogin.getFullUrl(mailBall);
-    document.body.appendChild(s);
-	
-	if (window.devIframeSrc) {
-		var iframe = document.createElement('iframe');
-		iframe.src = window.devIframeSrc;
-		iframe.style.display="none";
-		document.body.appendChild(iframe);
-	}
-}
 
-
-// -----------------------------------------------------------------
 // event handler methods
-// -----------------------------------------------------------------
 
 ZmLogin.cancelEvent = 
 function(ev) {
@@ -334,10 +311,8 @@ function(border) {
 	border.className = "whiteBorder";	
 };
 
-// -----------------------------------------------------------------
-// server communication methods
-// -----------------------------------------------------------------
 
+// server communication methods
 
 ZmLogin.submitNoOpRequest = 
 function() {
@@ -345,27 +320,25 @@ function() {
 	ZmCsfeCommand.invoke(soapDoc, false, null, null, true);
 };
 
-//changing for default domain support
-//ZmLogin.mailboxPat =/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-ZmLogin.mailboxPat =/^([a-zA-Z0-9_\.\-])+(\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+)?$/;
-
 ZmLogin.isValidUsername = 
 function(uname) {
-	return uname.match(ZmLogin.mailboxPat);
+	return uname.match(ZmLogin.MAILBOX_REGEX);
 };
 
 ZmLogin.submitAuthRequest = 
 function() {
-    var uname = document.getElementById("uname").value;
-    var pword = document.getElementById("pass").value;
+	var unameField = document.getElementById("uname");
+	var pwordField = document.getElementById("pass");
+    var uname = unameField.value;
+    var pword = pwordField.value;
     
     // check uname and pword first
-    if (!ZmLogin.isValidUsername(uname)){
+    if (!ZmLogin.isValidUsername(uname)) {
 		ZmLogin.setErrorMessage(ZmMsg.badUsername);
 		return;
     }
 
-    if (uname == null || pword == null || uname=="" || pword == ""){
+    if (uname == null || pword == null || uname=="" || pword == "") {
 		ZmLogin.setErrorMessage(ZmMsg.enterUsername);
 		return;
     }
@@ -403,6 +376,14 @@ function() {
 			var msg = ZmMsg.errorNetwork + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
 			ZmLogin.setErrorMessage(msg, -15);
 		} 
+		else if (ex.code == ZmCsfeException.ACCT_CHANGE_PASSWORD) 
+		{	
+			// TODO
+			unameField.disabled = pwordField.disabled = true;
+			// need to show password change dialog here and reauth
+			var msg = "Your password in no longer valid. Please choose a new password.";
+			ZmLogin.setErrorMessage(msg);
+		}
 		else 
 		{
 			var msg = ZmMsg.errorApplication + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
@@ -418,7 +399,7 @@ function(authToken, tokenLifetime, mailServer, uname, password) {
 	if (uname)
 		AjxCookie.setCookie(document, ZmLogin.lastGoodUserNameCookie, uname, null, "/");
 
-	if (mailServer != null)
+	if (mailServer)
 		AjxCookie.setCookie(document, ZmLogin.lastGoodMailServerCookie, mailServer, null, "/");
 
 	if (window.initMode != "" && (window.initMode != location.protocol))
@@ -430,7 +411,8 @@ function(authToken, tokenLifetime, mailServer, uname, password) {
 	ZmLogin.postAuthToServer(mailServer, authToken, tokenLifetime, !pcChecked);
 };
 
-ZmLogin.postAuthToServer = function (mailServer, authToken, tokenLifetime, pubComputer){
+ZmLogin.postAuthToServer = 
+function(mailServer, authToken, tokenLifetime, pubComputer) {
 	var form = document.createElement('form');
 	form.style.display = 'none';
 	document.body.appendChild(form);
