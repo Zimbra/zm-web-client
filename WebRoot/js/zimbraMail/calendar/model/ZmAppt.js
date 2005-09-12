@@ -551,7 +551,9 @@ function(emptyAllDay,startOnly) {
 		if (emptyAllDay)
 			return "";
 		if (this.isMultiDay()) {
-			return this._getTTDay(this.getStartDate()) + " - " + this._getTTDay(this.getEndDate());
+			var endDate = new Date(this.getEndDate());
+			endDate.setDate(endDate.getDate()-1);
+			return this._getTTDay(this.getStartDate()) + " - " + this._getTTDay(endDate);
 		} else {
 			return this._getTTDay(this.getStartDate());
 		}
