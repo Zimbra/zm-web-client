@@ -390,7 +390,13 @@ function(chunk) {
 
 	// do matching
 	this._removeAll();
+
 	var list = this._getMatches(str);
+	if (list.length == 1 && this._data.isUniqueValue(str)) {
+		DBG.println(AjxDebug.DBG2, "unique match on email, hiding autocomplete list");
+		return {text: text, start: start};
+	}
+
 	if (list && list.length > 0) {
 		var len = list.length;
 		DBG.println(AjxDebug.DBG2, "found " + len + " match" + len > 1 ? "es" : "");
