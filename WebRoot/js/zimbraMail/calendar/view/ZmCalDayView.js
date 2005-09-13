@@ -1019,29 +1019,6 @@ function(ev, div, dblclick) {
 	this._timeSelectionEvent(date, AjxDateUtil.MSEC_PER_HALF_HOUR, dblclick);
 }
 
-/*
-ZmCalDayView._oncontextmenuHandler =
-function(event) {
-	var event = DwtUiEvent.getEvent(event);
-	var element = DwtUiEvent.getTargetWithProp(event, "id");
-	if (!element) return;
-	var id = element.id;
-	var data = ZmCalDayView._idToData[id];
-	var view = data.view;
-	if (view) {
-		if (!view._contextMenuEvent) {
-			view._contextMenuEvent = new DwtUiEvent(true);
-		}
-		var ev = view._contextMenuEvent;
-	   	ev.item = view;
-	   	ev.detail = new Date(view._days[data.day].date.getTime() + 
-		   					(data.hour * AjxDateUtil.MSEC_PER_HOUR) +
-						   	(data.top ? 0 : AjxDateUtil.MSEC_PER_HALF_HOUR));
-	   	view.notifyListeners(DwtEvent.ONCONTEXTMENU, view._contextMenuEvent);
-	}		
-}
-*/
-
 ZmCalDayView.prototype._mouseDownAction = 
 function(ev, div) {
 	//ZmCalBaseView.prototype._mouseDownAction.call(this, ev, div);
@@ -1072,8 +1049,7 @@ function(ev, div) {
 			}
 			break;
 		case ZmCalBaseView.TYPE_APPTS_DAYGRID:
-			if (div._type == ZmCalBaseView.TYPE_APPTS_DAYGRID)
-				this._timeSelectionAction(ev, div, false);
+			this._timeSelectionAction(ev, div, false);
 			if (ev.button == DwtMouseEvent.LEFT) {
 				// save grid location here, since timeSelection might move the time selection div
 				var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
