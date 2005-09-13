@@ -149,7 +149,7 @@ Contributor(s):
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <link rel="shortcut icon" href="/zimbra/img/hiRes/non-web/favicon.gif" type="image/gif" />
+    <link rel="shortcut icon" href="/zimbra/img/hiRes/logo/favicon.gif" type="image/gif" />
     <title>Zimbra Login</title>
     <style>
       <!--
@@ -184,7 +184,7 @@ input {width:185px;}
 .mainPanel table{ table-layout:fixed }
 
 .logoRow{ 
-  height:118px;
+  height:163px;
 }
 
 .logoRow .banner { 
@@ -193,7 +193,7 @@ input {width:185px;}
   margin-bottom:10px;
   width:447px; 
   height:155px; 
-  background-image:url("/zimbra/img/hiRes/non-web/LoginBanner.gif");
+  background-image:url("/zimbra/img/hiRes/logo/LoginBanner.gif");
   
 }
 .logo { 
@@ -299,7 +299,7 @@ input {width:185px;}
  <body style="margin:0px; border:0px; padding:0px;">
     <div id='unsupportedBrowserMessage' style="border:1px solid black;background-color:white;height:300px; width:400px;display:none;position:absolute;font-size:16px">
       <div style="margin:4px;background-color: rgb(37, 87,173);;height:40px;font-size:18px;font-weight:bold;">
-        <div style="position:relative; top:0px; left:100px; width:200px; height:38;background-image:url('/zimbra/js/img/hiRes/Banner.jpg')">&nbsp;       </div>
+        <div style="position:relative; top:0px; left:100px;background-image:url('/zimbra/js/img/hiRes/logo/AppBanner.gif')"></div>
      </div>
      <div style="text-align:center">
       <pre>
@@ -312,10 +312,10 @@ Or Fedora
      <a href="javascript:ZmLogin.handleOnload(null, true);">Click here to continue</a>
    </div>
    </div>
-    <form style="margin:0px; border:0px; padding:0px" method="post" action="/service/Login.jsp">
+    <form style="margin:0px; border:0px; padding:0px" method="post">
       <div id="loginPanel" class=mainPanel >
 		<table class="LoginPanel" cellpadding=0 cellspacing=0 border=0>
-	    <tr style="height:118px" class=logoRow>
+	    <tr class=logoRow>
 	      <td>
 				<div class=banner></div>
 	      </td>
@@ -323,7 +323,7 @@ Or Fedora
 	    <tr id="errorRow">
               <td>
                 <div class=errorDiv id="errorMessageContainer" >
-                  <img class=errorIcon src="/zimbra/img/hiRes/dwt/CriticalIcon32x32.gif">
+                  <img class=errorIcon src="/zimbra/img/hiRes/dwt/Critical_32.gif">
                   <div id="errorMessage" class=errorMsg style="top:25px">yo yo</div>
                 </div>
             </td></tr>
