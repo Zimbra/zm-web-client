@@ -120,7 +120,7 @@ function (msg, msgOffsetFromCurrent) {
 	    errCell.style.top = errCell._origTop;
 	}
 
-	document.getElementById("loginPanel").style.height = "332px";
+	document.getElementById("loginPanel").style.height = "393px";
 	document.getElementById("ut").style.top = "3px";
 	document.getElementById("ui").style.top = "0px";
 	document.getElementById("pt").style.top = "39px";
