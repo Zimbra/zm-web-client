@@ -719,7 +719,8 @@ function(date)
 		return ZmCalMonthView.getDayToolTipText(start,result);
 	} catch (ex) {
 		//alert(ex);
-		return "<b"+ZmMsg.errorGettingAppts+"</b>";
+		DBG.println(ex);
+		return "<b>"+ZmMsg.errorGettingAppts+"</b>";
 	}
 }
 

@@ -1019,19 +1019,6 @@ function(ev, div, dblclick) {
 	this._timeSelectionEvent(date, AjxDateUtil.MSEC_PER_HALF_HOUR, dblclick);
 }
 
-ZmCalDayView.prototype._timeSelectionEvent =
-function(date, duration, isDblClick) {
-	if (!this._selectionEvent) this._selectionEvent = new DwtSelectionEvent(true);
-	var sev = this._selectionEvent;
-	sev._isDblClick = isDblClick;
-	sev.item = this;
-	sev.detail = date;
-	sev.duration = duration;
-	sev.force = false;
-	this.notifyListeners(ZmCalBaseView.TIME_SELECTION, this._selectionEvent);
-	sev._isDblClick = false;
-}
-
 /*
 ZmCalDayView._oncontextmenuHandler =
 function(event) {

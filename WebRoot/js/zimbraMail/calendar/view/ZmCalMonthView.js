@@ -293,7 +293,7 @@ function(day) {
 	return result;
 }
 
-ZmCalMonthView.prototype._createItemHtml =
+ZmCalMonthView.prototype._createItemHtml =	
 function(appt) {
 	var result = this._getDivForAppt(appt).insertRow(-1);
 	result._styleClass = "calendar_month_day_item_row";
@@ -329,23 +329,20 @@ function(appt) {
 	return result;
 }
 
-ZmCalMonthView._idToData = {};
-
 ZmCalMonthView.prototype._createDay =
 function(html, loc, week, dow) {
 	var tdid = Dwt.getNextId();
 	var did = Dwt.getNextId();
 	var tid = Dwt.getNextId();	
 
-	html.append("<td class='calendar_month_cells_td' id='", tdid, "' ondblclick='ZmCalMonthView._ondblclickHandler(event)' onclick='ZmCalMonthView._onclickHandler(event)'>");
+	html.append("<td class='calendar_month_cells_td' id='", tdid, "'>");
 	html.append("<table class='calendar_month_day_table'>");
-	html.append("<tr><td colspan=2 id='", tid, "' ondblclick='ZmCalMonthView._ondblclickHandler(event)' onclick='ZmCalMonthView._onclickHandler(event)'></td></tr></table>");
+	html.append("<tr><td colspan=2 id='", tid, "'></td></tr></table>");
 	html.append("<table class='calendar_month_day_table'><tbody id='", did, "'>");
 	html.append("</tbody></table>");
 	html.append("</td>");
 	var data = { dayId: did, titleId: tid, tdId: tdid, week: week, dow: dow, view: this};
 	this._days[loc] = data;
-	ZmCalMonthView._idToData[tdid] = ZmCalMonthView._idToData[did] = ZmCalMonthView._idToData[tid] = data;
 }
 
 ZmCalMonthView.prototype._createHtml =
@@ -434,7 +431,8 @@ function() {
 	
 	for (var i=0; i < 6; i++) {
 		for (var j=0; j < 7; j++) {
-			var day = this._days[i*7+j];
+			var loc = i*7+j;
+			var day = this._days[loc];
 			day.date = new Date(d);
 			this._dateToDayIndex[this._dayKey(day.date)] = day;
 			var thisMonth = day.date.getMonth() == this._month;
@@ -443,16 +441,15 @@ function() {
 			te.className = thisMonth ? 'calendar_month_day_label' : 'calendar_month_day_label_off_month';
 	 		var de = Dwt.getDomObj(doc, day.tdId);			
 			de.className = d.getTime() == today.getTime() ? 'calendar_month_cells_td_today' :'calendar_month_cells_td';
+			de._loc = loc;
+			de._type = ZmCalBaseView.TYPE_MONTH_DAY;
 			d.setDate(d.getDate()+1);
 		}
 	}
 	
-	var first = this._days[0].date;
-	var last = this._days[41].date;
 	this._title = DwtMsg.LONG_MONTH[this._date.getMonth()]+" "+this._date.getFullYear();	
-	
-	var title = Dwt.getDomObj(doc, this._titleId);
-	title.innerHTML = this._title;
+	var titleEl = Dwt.getDomObj(doc, this._titleId);
+	titleEl.innerHTML = this._title;
 }
 
 ZmCalMonthView.prototype._layoutAllDay = 
@@ -532,7 +529,7 @@ ZmCalMonthView.getDayToolTipText =
 function(date, list) {
 	var html = new AjxBuffer();
 	
-	var title = DwtMsg.LONG_MONTH[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear();
+	var title = DwtMsg.LONG_WEEKDAY[date.getDay()]+", "+DwtMsg.LONG_MONTH[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear();
 	
 	html.append("<div>");
 	html.append("<table cellpadding='0' cellspacing='0' border='0'>");
@@ -582,37 +579,37 @@ function(date, list) {
 	return html.toString();
 }
 
-ZmCalMonthView._ondblclickHandler =
-function (ev){
-	ev = DwtUiEvent.getEvent(ev);
-	ev._isDblClick = true;
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) return;
-	var id = element.id;
-	var data = ZmCalMonthView._idToData[id];
-	if (!data) return;
-	var now = new Date();
-	data.date.setHours(now.getHours(), now.getMinutes(), 0, 0);
-	ZmCalMonthView._onclickHandler(ev, data);
-};
+ZmCalMonthView.prototype._mouseDownAction = 
+function(ev, div) {
+	switch (div._type) {
+		case ZmCalBaseView.TYPE_MONTH_DAY:
+			this._timeSelectionAction(ev, div, false);
+			break;
+	}
+	return false;
+}
 
-ZmCalMonthView._onclickHandler =
-function(ev, optionalData) {
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) return;
-	var id = element.id;
-	var data = (optionalData != null )? optionalData: ZmCalMonthView._idToData[id];
-	if (!data) return;
-	var view = data.view;
-	if (view) {
-		if (!view._selectionEvent)
-			view._selectionEvent = new DwtSelectionEvent(true);
-	   	view._selectionEvent.item = view;
-	   	view._selectionEvent.detail = data.date;
-	   	view._selectionEvent.force = false;
-		view._selectionEvent._isDblClick = ev._isDblClick;
-	   	view.notifyListeners(ZmCalBaseView.TIME_SELECTION, view._selectionEvent);
-		view._selectionEvent._isDblClick = false;
+ZmCalMonthView.prototype._doubleClickAction =
+function(ev, div) {
+	ZmCalBaseView.prototype._doubleClickAction.call(this, ev, div);
+	if (div._type == ZmCalBaseView.TYPE_MONTH_DAY) {
+		this._timeSelectionAction(ev, div, true);
 	}
 }
 
+ZmCalMonthView.prototype._timeSelectionAction =
+function(ev, div, dblclick) {
+	
+	var date;
+	
+	switch (div._type) {
+		case ZmCalBaseView.TYPE_MONTH_DAY:
+			var date = new Date(this._days[div._loc].date);
+			var now = new Date();
+			date.setHours(now.getHours(), now.getMinutes());
+			break;
+		default:
+			return;
+	}
+	this._timeSelectionEvent(date, AjxDateUtil.MSEC_PER_HOUR, dblclick);
+}
