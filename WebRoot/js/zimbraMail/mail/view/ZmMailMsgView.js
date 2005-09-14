@@ -623,7 +623,6 @@ function(ev) {
 		// reset mouse event to propagate event to browser (allows text selection)
 		ev._stopPropagation = false;
 		ev._returnValue = true;
-		ev._populated = true;
 	}
 }
 
@@ -632,7 +631,6 @@ function(ev) {
 	// reset mouse event to propagate event to browser (allows text selection)
 	ev._stopPropagation = false;
 	ev._returnValue = true;
-	ev._populated = true;
 }
 
 ZmMailMsgView.prototype._contextMenuListener = 
@@ -640,7 +638,6 @@ function(ev) {
 	// reset mouse event to propagate event to browser (allows context menu)
 	ev._stopPropagation = false;
 	ev._returnValue = true;
-	ev._populated = true;
 }
 
 ZmMailMsgView.prototype.preventSelection = 

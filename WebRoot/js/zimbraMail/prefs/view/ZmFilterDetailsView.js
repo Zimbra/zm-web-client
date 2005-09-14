@@ -1249,6 +1249,5 @@ ZmFilterDetailsView.prototype._mouseDownListener = function (ev){
 		// (allows text selection)
 		ev._stopPropagation = false;
 		ev._returnValue = true;
-		ev._populated = true;
 	}
 };
