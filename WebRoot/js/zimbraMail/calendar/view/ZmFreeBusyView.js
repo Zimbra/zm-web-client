@@ -974,7 +974,7 @@ ZmFreeBusyView.prototype._getEmailAddressFromTargetText = function ( value ) {
 
 
 ZmFreeBusyView.prototype._isAutocompleteShowing = function () {
-	return (this._autocompleteList && this._autocompleteList.isShowing());
+	return (this._autocompleteList && this._autocompleteList.getVisible());
 };
 
 ZmFreeBusyView.prototype.handleAddrChange = function ( event ) {

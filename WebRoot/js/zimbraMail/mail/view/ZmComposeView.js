@@ -901,12 +901,6 @@ function(ev) {
 		case cv._addLinkId[ZmEmailAddress.BCC]:
 			cv._showField(element._addrType, !cv._using[element._addrType]);
 			return false; // disable following of link
-		case cv._fieldId[ZmEmailAddress.TO]:
-		case cv._fieldId[ZmEmailAddress.CC]:
-		case cv._fieldId[ZmEmailAddress.BCC]:
-			if (cv._acAddrSelectList)
-				cv._acAddrSelectList.show(false);
-			break;
 	}
 }
 
