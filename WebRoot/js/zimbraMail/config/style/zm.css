@@ -2909,8 +2909,8 @@ HTML>BODY .RadioGrouperLabel {
 .appt_allday_body {
 	position:relative;
 	overflow:hidden;
-	border-left:2px solid #AAAAAA;
-	border-top:1px solid #AAAAAA;
+	border-left:2px solid #333333;
+	border-top:1px solid #333333;
 	border-right:2px solid #333333;
 	border-bottom:1px solid #333333;	
 	margin-top:0px;
@@ -2922,9 +2922,9 @@ HTML>BODY .RadioGrouperLabel {
 .appt-selected .appt_allday_body {
 	position:relative;
 	overflow:hidden;
-	border-left:2px solid #339999;
+	border-left:3px solid #339999;
 	border-top:2px solid #339999;
-	border-right:2px solid #003030;
+	border-right:3px solid #003030;
 	border-bottom:2px solid #003030;	
 	margin-top:0px;
 	margin-left:0px;
