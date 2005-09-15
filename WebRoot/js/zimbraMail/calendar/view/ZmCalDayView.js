@@ -84,6 +84,217 @@ function(isDouble) {
 	}
 }
 
+ZmCalDayView.prototype.getPrintHtml = 
+function() {
+	var html = new Array();
+	var idx = 0;
+	
+	var timeRange = this.getTimeRange();
+	var startDate = new Date(timeRange.start);
+	var endDate = new Date(timeRange.end);
+
+	// print the common header for calendar by calling base class
+	html[idx++] = ZmCalBaseView.prototype.getPrintHtml.call(this);
+	html[idx++] = "<div style='width:100%'>";
+	html[idx++] = "<table width=100% border=0 cellpadding=1 cellspacing=1 style='border: 2px solid black'>";
+
+	var list = this.getList();
+	var numAppts = list ? list.size() : 0;
+	var nextDay = new Date(startDate);
+	var numDays = this.getNumDays();
+
+	// single day print out requires all details for each appointment
+	if (numDays == 1) {
+		this._loadDetailsForAppts(list, numAppts);
+	}
+	
+	for (var i = 0; i < numDays; i++) {
+		nextDay.setDate(startDate.getDate() + i);
+		
+		html[idx++] = "<tr><td width=100%>";
+		if (numDays > 1) {
+			// XXX: set the styles inline so we force the printer to acknowledge them!
+			var style = "background-color:#EEEEEE; text-align:center; font-family: Arial; font-size: 14px; font-weight: bold; border:1px solid #EEEEEE;";
+			html[idx++] = "<div style='" + style + "'>";
+			html[idx++] = AjxDateUtil.getTimeStr(nextDay, "%w, %M %D");
+			html[idx++] = "</div>";
+		}
+		
+		// print out all the appointments for this day
+		var inTable = false;
+		for (var j = 0; j < numAppts; j++) {
+			var appt = list.get(j);
+			if (appt.startDate.getDate() == nextDay.getDate() || numDays == 1) {
+				var location = appt.getLocation();
+				var status = appt.getParticipationStatusString();
+				if (appt.isAllDayEvent()) {
+					// XXX: this is bad HTML but the browsers do the right thing and help us out
+					html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100% style='border:1px solid black'>";
+					html[idx++] = "<tr><td style='font-family:Arial; font-size:13px; width:100%;'>";
+					html[idx++] = "<b>" + appt.getName() + "</b>";
+					if (location)
+						html[idx++] = " (" + location + ")";
+					html[idx++] = " [" + status + "]";
+					// print more detail if we're printing a single day
+					if (numDays == 1) {
+						html[idx++] = this._printApptDetails(appt);
+					}
+					html[idx++] = "</td></tr></table>";
+				} else {
+					if (!inTable) {
+						inTable = true;
+						html[idx++] = "<table border=0>";
+					}
+					var startTime = AjxDateUtil.getTimeStr(appt.startDate, "%h:%m%p");
+					var endTime = AjxDateUtil.getTimeStr(appt.endDate, "%h:%m%p");
+					style = "font-family:Arial; font-size:13px; vertical-align:top;"
+					html[idx++] = "<tr>";
+					html[idx++] = "<td align=right style='" + style + "'><b>" + startTime + "</b></td>";
+					html[idx++] = "<td valign=top> - </td>";
+					html[idx++] = "<td align=right style='" + style + "'><b>" + endTime + "</b></td>";
+					html[idx++] = "<td style='" + style + "'>";
+					html[idx++] = appt.getName();
+					if (location) {
+						html[idx++] = " (" + location + ")";
+					}
+					html[idx++] = " [" + status + "]";
+					html[idx++] = "</td></tr>";
+					
+					if (numDays == 1) {
+						html[idx++] = "<tr><td></td><td></td><td></td><td>";
+						html[idx++] = this._printApptDetails(appt);
+						html[idx++] = "</td></tr>";
+					}
+					
+					// spacer
+					html[idx++] = "<tr><td><br></td></tr>";
+				}
+			}
+		}
+		if (inTable)
+			html[idx++] = "</table>";
+
+		html[idx++] = "<br><br></td></tr>";
+	}
+	html[idx++] = "</table>";
+	html[idx++] = "</div>";
+
+	return html.join("");
+};
+
+// Helper function that collects all appointments that dont have details loaded
+// and makes batch request to go fetch them. Used for printing.
+ZmCalDayView.prototype._loadDetailsForAppts = 
+function(list, numAppts) {
+	var makeBatchReq = false;
+	var needToLoad = new Object();
+	var apptHash = new Object();
+
+	// collect all appointments that dont have details loaded yet
+	for (var i = 0; i < numAppts; i++) {
+		var appt = list.get(i);
+		if (!appt.hasDetails()) {
+			var newMessage = new ZmMailMsg(this._appCtxt);
+			newMessage.id = appt.getInvId();
+			needToLoad[newMessage.id] = newMessage;
+			apptHash[newMessage.id] = appt;
+			appt.setMessage(newMessage);
+			makeBatchReq = true;
+		}
+	}
+
+	if (makeBatchReq) {
+		// set up batch request call
+		var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
+		soapDoc.setMethodAttribute("onerror", "continue");
+
+		for (var i in needToLoad) {
+			var msgRequest = soapDoc.set("GetMsgRequest");
+			msgRequest.setAttribute("xmlns", "urn:zimbraMail");
+
+			var doc = soapDoc.getDoc();
+			var msgNode = doc.createElement("m");
+			msgNode.setAttribute("id", i);
+	
+			msgRequest.appendChild(msgNode);
+		}
+
+		var resp = ZmCsfeCommand.invoke(soapDoc).Body.BatchResponse.GetMsgResponse;
+
+		for (var i = 0; i < resp.length; i++) {
+			var msgNode = resp[i].m[0];
+			var msg = needToLoad[msgNode.id];
+			if (msg) {
+				msg._loadFromDom(msgNode);
+				// parse ZmMailMsg into ZmAppt
+				var appt = apptHash[msgNode.id];
+				if (appt)
+					appt.setFromMessage(msg);
+			}
+		}
+	}
+};
+
+ZmCalDayView.prototype._printApptDetails = 
+function(appt) {
+	var html = new Array();
+	var idx = 0;
+	var style= "font-family:Arial; font-size:12px; vertical-align:top;";
+	
+	html[idx++] = "<table border=0 width=100%>";
+	
+	var organizer = appt.getOrganizer();
+	var attendees = appt.getAttendees();
+
+	if (organizer && attendees) {
+		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.organizer + "</u></td>";
+		html[idx++] = "<td style='" + style + "'>" + appt.getOrganizer() + "</td></tr>";
+		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.attendees + ":</u></td>";
+		html[idx++] = "<td style='" + style + "'>" + attendees + "</td></tr>";
+	}
+	
+	var attachments = appt.getAttachments();
+	if (attachments) {
+		html[idx++] = "<tr>";
+		html[idx++] = "<td width=1% style='" + style + "'><u>" + ZmMsg.attachments + ":</u></td>";
+		html[idx++] = "<td style='" + style + "'>";
+		for (var i = 0; i < attachments.length; i++) {
+			 html[idx++] = attachments[i].filename;
+			 if (i != attachments.length-1)
+			 	html[idx++] = ", ";
+		}
+		html[idx++] = "</td></tr>";
+	}
+	
+	var notes = appt.getNotes();
+	if (notes) {
+		style= "font-family:Arial; font-size:11px; vertical-align:top; margin-top:3px";
+		html[idx++] = "<tr><td colspan=2 style='" + style + "'>" + AjxStringUtil.nl2br(notes) + "</td></tr>";
+	}
+
+	html[idx++] = "</table>";
+	
+	return html.join("");
+};
+
+ZmCalDayView.prototype._getDateHdrForPrintView = 
+function() {
+	var header = "";
+	var timeRange = this.getTimeRange();
+	var startDate = new Date(timeRange.start);
+
+	if (this.getNumDays() > 1) {
+		var endDate = new Date(timeRange.end - AjxDateUtil.MSEC_PER_DAY);
+		var startWeek = AjxDateUtil.getTimeStr(startDate, "%t %D");
+		var endWeek = AjxDateUtil.getTimeStr(endDate, "%t %D");
+		header = startWeek + " - " + endWeek;
+	} else {
+		header = AjxDateUtil.getTimeStr(startDate, "%M %D, %Y<br><font size=-1>%w</font>");
+	}
+
+	return header;
+};
+
 ZmCalDayView.prototype._dateUpdate =
 function(rangeChanged) {
 	this._selectDay(this._date);

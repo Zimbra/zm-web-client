@@ -595,16 +595,14 @@ function(appt, html, idx) {
 
 ZmCalBaseView.prototype._getElFromItem = 
 function(item) {
-			return Dwt.getDomObj(this.getDocument(), this._getItemId(item));
+	return Dwt.getDomObj(this.getDocument(), this._getItemId(item));
 }
 
 ZmCalBaseView.prototype._resetList =
 function() {
 	var doc = this.getDocument();
 	var list = this.getList();
-	if (list == null) return;
-
-	var size = list.size();
+	var size = list ? list.size() : 0;
 	if (size == 0) return;
 
 	for (var i=0; i < size; i++) {
@@ -640,59 +638,44 @@ function() {
  */
 ZmCalBaseView.prototype.getPrintHtml = 
 function() {
-	//var el = this.getHtmlElement();
-	//return "<style>.calendar_body{overflow:visible;}</style><div style='position:relative'>" + el.innerHTML + "</div>";
-	var list = this.getList();
-	var buffer = new AjxBuffer();
-	if (list) {
+	var html = new Array();
+	var idx = 0;
 
-		var timeRange = this.getTimeRange();
-		var startDate = new Date(timeRange.start);
-		var lastDay = null;
-		var size = list.size();
-		if (size != 0) {
-			for (var i=0; i < size; i++) {
-				var appt = list.get(i);
-				var apptStartDate = appt.getStartDate();
-				var as = apptStartDate.getDate();
-				if (as != lastDay) {
-					lastDay = as;
-					this.getPrintHtmlForDay(buffer, apptStartDate);
-				}
-				this.getPrintHtmlForApptSummary(buffer, appt);
-			}
-		}
-	}
-	return buffer.toString();
+	// let set up the mini calendar
+	var miniCal = new DwtCalendar(this, null, null, null, null, null, true, true);
+	var timeRange = this.getTimeRange();
+	var startDate = new Date(timeRange.start);
+	
+	// set the date to current month
+	miniCal.setDate(startDate, true);
+
+	html[idx++] = "<div style='width:100%'>";
+	html[idx++] = "<table width=100% cellpadding=3 cellspacing=3 bgcolor='#EEEEEE' style='border: 2px solid black; margin-bottom: 2px'><tr>";
+	html[idx++] = "<td valign=top width=100% style='font-size:22px; font-weight:bold; white-space:nowrap'>";
+	html[idx++] = this._getDateHdrForPrintView();
+	html[idx++] = "</td>";
+	html[idx++] = "<td><div style='width: 140px;'>";
+	html[idx++] = miniCal.getHtmlElement().innerHTML;
+	html[idx++] = "</div></td>";
+	// spacer
+	html[idx++] = "<td width=25>&nbsp;</td>";
+	// set the date to the following month
+	startDate.setMonth(startDate.getMonth() + 1);
+	miniCal.setDate(startDate, true);
+	html[idx++] = "<td><div style='width: 140px'>";
+	html[idx++] = miniCal.getHtmlElement().innerHTML;
+	html[idx++] = "</div></td>";
+	html[idx++] = "</tr></table>";
+	html[idx++] = "</div>";
+	
+	return html.join("");
 };
 
-/**
- * Gets the header html for a given date
- */
-ZmCalBaseView.prototype.getPrintHtmlForDay = function (buffer, date) {
-	buffer.append("<div class='calendar_print_date_header'>",
-				  AjxDateUtil.getTimeStr(date, "%w, %M %D, %Y"), 
-				  "</div>");
+// override
+ZmCalBaseView.prototype._getDateHdrForPrintView = 
+function() {
+	return "";
 };
-
-/**
- * Gets the html for a given appointment.
- * Currently this shows, the time of the appointment, the subject, location, and some of the notes.
- * This does not give all possible details about the appointment.
- */
-ZmCalBaseView.prototype.getPrintHtmlForApptSummary = function (buffer, appt) {
-	var startDate = appt.getStartDate();
-	var endDate = appt.getEndDate();
-	var startTimeStr = AjxDateUtil.getTimeStr(startDate, "%h:%m %p");
-	var endTimeStr = AjxDateUtil.getTimeStr(endDate, "%h:%m %p");
-	var timeStr = (!appt.isAllDayEvent())? AjxBuffer.concat(startTimeStr, " - ", endTimeStr): "All Day"
-	buffer.append("<div class='calendar_print_appointment_container'><div  class='calendar_print_appointment_time'>", 
-				  timeStr, ": </div><div class='calendar_print_appointment_name'>",
-				  appt.getName(),"</div><div class='calendar_print_appointment_notes'>",appt.getNotes(),"</div>",
-				  "<div class='calendar_print_appointment_location'>",appt.getLocation(),
-				  "</div></div>");
-};
-
 
 // override
 ZmCalBaseView.prototype._createItemHtml =
