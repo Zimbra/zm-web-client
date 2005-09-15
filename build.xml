@@ -279,6 +279,7 @@
 -->	
 
 		<!-- merge loRes images -->
+		<!-- 
 		<mkdir dir="${images.loRes.destDir}"/>
 		<delete file='${images.loRes.destDir}/${images.cssFile}'/>
 		<echo/>
@@ -292,6 +293,7 @@
 					includes='*'/>
 		</imagemerge>
 		<echo/>
+		-->
 <!--  MOW: NO LONGER NECESSARY TO SPLIT OUT BY HORIZ/VERT/ETC
 		<echo message='Merging low resolution horizontal borders'/>
 		<echo/>
