@@ -69,7 +69,7 @@ function()
 		
 		var te = Dwt.getDomObj(this.getDocument(),this._selectedData.tdId);
 		var isToday = this._selectedData.date.getTime() == today.getTime();
-		te.className = isToday ? 'calendar_month_cells_td_today' :'calendar_month_cells_td';
+		te.className = 'calendar_month_cells_td';			
 		this._selectedData = null;
 	}
 }
@@ -437,10 +437,10 @@ function() {
 			this._dateToDayIndex[this._dayKey(day.date)] = day;
 			var thisMonth = day.date.getMonth() == this._month;
 	 		var te = Dwt.getDomObj(doc, day.titleId);
-			te.innerHTML = this._dayTitle(d);
+			te.innerHTML = d.getTime() == today.getTime() ? ("<div class=calendar_month_day_today>" + this._dayTitle(d) + "</div>") : this._dayTitle(d);
 			te.className = thisMonth ? 'calendar_month_day_label' : 'calendar_month_day_label_off_month';
 	 		var de = Dwt.getDomObj(doc, day.tdId);			
-			de.className = d.getTime() == today.getTime() ? 'calendar_month_cells_td_today' :'calendar_month_cells_td';
+			de.className = 'calendar_month_cells_td';	
 			de._loc = loc;
 			de._type = ZmCalBaseView.TYPE_MONTH_DAY;
 			d.setDate(d.getDate()+1);

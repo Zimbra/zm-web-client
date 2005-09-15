@@ -1453,16 +1453,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	white-space: nowrap;
 }
 
-.calendar_month_cells_td_today {
-	height:16%;
-	background-color:#FFFAE5;
-	border-left:none;
-	vertical-align:top;
-	overflow: hidden;
-	white-space: nowrap;
-}
-
-
 .calendar_month_day_table {
 	width:100%;
 }
@@ -1497,6 +1487,16 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	text-align:right;
 	font-size:14px;
 	color:#AAAAAA;
+}
+
+.calendar_month_day_today {
+	border:1px solid red;	
+	overflow: hidden;	
+	white-space: nowrap;	
+	padding-top:2px;
+	padding-right:4px;
+	text-align:right;
+	font-size:14px;
 }
 
 .calendar_month_day_allday {
