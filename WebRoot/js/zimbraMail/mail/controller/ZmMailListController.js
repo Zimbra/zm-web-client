@@ -62,8 +62,8 @@ ZmMailListController.prototype.constructor = ZmMailListController;
 
 // Stuff for the View menu
 ZmMailListController.ICON = new Object();
-ZmMailListController.ICON[ZmController.CONVLIST_VIEW]	= "ConversationView";
-ZmMailListController.ICON[ZmController.TRAD_VIEW]		= "MessageView";
+ZmMailListController.ICON[ZmController.CONVLIST_VIEW]	= ZmImg.I_CONV;
+ZmMailListController.ICON[ZmController.TRAD_VIEW]		= ZmImg.I_MAIL;
 
 ZmMailListController.MSG_KEY = new Object();
 ZmMailListController.MSG_KEY[ZmController.CONVLIST_VIEW]	= "byConversation";
@@ -134,7 +134,7 @@ function(view, arrowStyle) {
 	this._setupSpamButton(view);
 
 	// reset new button properties
-	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+	this._setNewButtonProps(view, ZmMsg.compose, ZmImg.I_MAIL_MSG, ZmImg.ID_MAIL_MSG, ZmOperation.NEW_MESSAGE);
 }
 
 ZmMailListController.prototype._initializeActionMenu = 

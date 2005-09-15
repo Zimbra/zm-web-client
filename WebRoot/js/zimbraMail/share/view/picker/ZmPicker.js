@@ -32,7 +32,7 @@ function ZmPicker(parent, id) {
 	this._label = new DwtLabel(this._header, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmPickerLabel");
 	this._header.addFiller();
 	this._close = new DwtButton(this._header, DwtLabel.IMAGE_LEFT, "TBButton");
-	this._close.setImage("Close");
+	this._close.setImage(ZmImg.I_RED_X);
 	this._close.setToolTipContent(ZmMsg.close);
 	this._picker = new DwtComposite(this, "ZmPickerOverview");
 	this._picker.setSize(Dwt.DEFAULT, parent.getH() - this._header.getH());
@@ -83,20 +83,20 @@ ZmPicker.MSG_KEY[ZmPicker.CLOSE]		= "close";
 
 // Button and picker icons
 ZmPicker.IMAGE = new Object();
-ZmPicker.IMAGE[ZmPicker.ATTACHMENT]	= "Attachment";
-ZmPicker.IMAGE[ZmPicker.BASIC]		= "Message";
-ZmPicker.IMAGE[ZmPicker.CUSTOM]		= "Search";
-ZmPicker.IMAGE[ZmPicker.DATE]		= "Date";
-ZmPicker.IMAGE[ZmPicker.DOMAIN]		= "URL";
-ZmPicker.IMAGE[ZmPicker.FLAG]		= "FlagRed";
-ZmPicker.IMAGE[ZmPicker.FOLDER]		= "Folder";
-ZmPicker.IMAGE[ZmPicker.OBJECT]		= "PurchaseOrder";
-ZmPicker.IMAGE[ZmPicker.SEARCH]		= "SearchFolder";
-ZmPicker.IMAGE[ZmPicker.SIZE]		= "Folder";
-ZmPicker.IMAGE[ZmPicker.TAG]		= "Tag";
-ZmPicker.IMAGE[ZmPicker.TIME]		= "Date";
-//ZmPicker.IMAGE[ZmPicker.RESET]		= "Close";	//MOW: no image for reset button
-ZmPicker.IMAGE[ZmPicker.CLOSE]		= "Close";
+ZmPicker.IMAGE[ZmPicker.ATTACHMENT]	= ZmImg.I_ATTACHMENT;
+ZmPicker.IMAGE[ZmPicker.BASIC]		= ZmImg.I_SEARCH_FOLDER;
+ZmPicker.IMAGE[ZmPicker.CUSTOM]		= ZmImg.I_SEARCH;
+ZmPicker.IMAGE[ZmPicker.DATE]		= ZmImg.I_DATE;
+ZmPicker.IMAGE[ZmPicker.DOMAIN]		= ZmImg.I_URL;
+ZmPicker.IMAGE[ZmPicker.FLAG]		= ZmImg.I_FLAG_ON;
+ZmPicker.IMAGE[ZmPicker.FOLDER]		= ZmImg.I_FOLDER;
+ZmPicker.IMAGE[ZmPicker.OBJECT]		= ZmImg.I_SEARCH_FOLDER;
+ZmPicker.IMAGE[ZmPicker.SEARCH]		= ZmImg.I_SEARCH_FOLDER;
+ZmPicker.IMAGE[ZmPicker.SIZE]		= ZmImg.I_SEARCH_FOLDER;
+ZmPicker.IMAGE[ZmPicker.TAG]		= ZmImg.I_TAG_FOLDER;
+ZmPicker.IMAGE[ZmPicker.TIME]		= ZmImg.I_DATE;
+//ZmPicker.IMAGE[ZmPicker.RESET]		= ZmImg.I_RED_X;	//MOW: no image for reset button
+ZmPicker.IMAGE[ZmPicker.CLOSE]		= ZmImg.I_RED_X;
 
 // Button tooltips
 ZmPicker.TT_MSG_KEY = new Object();

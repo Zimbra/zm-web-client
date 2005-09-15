@@ -186,7 +186,7 @@ ZmFreeBusyView.prototype.render = function () {
 			   "</tr></table></div>",
 
 			   "<div class='ZmFreeBusyView_key'>",
-			   AjxImg.getImageHtml("FreeBusyKey"),
+			   AjxImg.getImageHtml(ZmImg.CAL_FB_KEY),
 			   "</div>",
 
 			   "<div class='ZmFreeBusyView_dateString' id='", this._rangeDateId, "'>", 
@@ -353,11 +353,11 @@ ZmFreeBusyView.prototype._renderSchedules = function ( buf, containerHeight) {
 	buf.append("<td><div>&nbsp;</div></td></tr>");
 
 	// write the row with the paginate areas
-	buf.append("<tr class='hiddenRow'><td></td><td></td><td class='endZoneCell' onclick='AjxCore.objectWithId(",this.__internalId,").paginate(", ZmFreeBusyView.PAGINATE_BACK, ")' rowspan='", (this._totalRows + 300), "'><div class='endZoneContainer'>", AjxImg.getImageHtml("FreeBusyPrevDay"), "</div></td>");
+	buf.append("<tr class='hiddenRow'><td></td><td></td><td class='endZoneCell' onclick='AjxCore.objectWithId(",this.__internalId,").paginate(", ZmFreeBusyView.PAGINATE_BACK, ")' rowspan='", (this._totalRows + 300), "'><div class='endZoneContainer'>", AjxImg.getImageHtml(ZmImg.CAL_FB_PREV_DAY), "</div></td>");
 	for (i = 0; i < numCells; ++i) {
 		buf.append("<td></td>");
 	}
-	buf.append("<td class='endZoneCell' rowspan=", (this._totalRows + 300), " onclick='AjxCore.objectWithId(",this.__internalId,").paginate(", ZmFreeBusyView.PAGINATE_FORWARD, ")'><div class='endZoneContainer'>", AjxImg.getImageHtml("FreeBusyNextDay","height:249px; border-bottom:1px solid #9F9F9F"),"</div></td></tr>");
+	buf.append("<td class='endZoneCell' rowspan=", (this._totalRows + 300), " onclick='AjxCore.objectWithId(",this.__internalId,").paginate(", ZmFreeBusyView.PAGINATE_FORWARD, ")'><div class='endZoneContainer'>", AjxImg.getImageHtml(ZmImg.CAL_FB_NEXT_DAY,"height:249px; border-bottom:1px solid #9F9F9F"),"</div></td></tr>");
 	// write the aggregate row
 	buf.append("<tr><td class='", ZmFreeBusyView.ADDRESS_CELL, "'><div class='mozWidth'>&nbsp;</div></td><td class='", ZmFreeBusyView.ADDRESS_INPUT_CELL,"'><div>All Attendees</div></td>");
 
@@ -974,7 +974,7 @@ ZmFreeBusyView.prototype._getEmailAddressFromTargetText = function ( value ) {
 
 
 ZmFreeBusyView.prototype._isAutocompleteShowing = function () {
-	return (this._autocompleteList && this._autocompleteList.getVisible());
+	return (this._autocompleteList && this._autocompleteList.isShowing());
 };
 
 ZmFreeBusyView.prototype.handleAddrChange = function ( event ) {

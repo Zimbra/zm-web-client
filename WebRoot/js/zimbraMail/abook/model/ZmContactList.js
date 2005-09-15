@@ -193,10 +193,9 @@ function(str) {
 			var result = this._acMatch(acContact, str);
 			if (result) {
 				// propagate previous match forward, reset matched text
-				DBG.println(AjxDebug.DBG2, "adding " + result[ZmContactList.AC_VALUE_EMAIL]);
+				DBG.println(AjxDebug.DBG2, "adding " + result.value);
 				match.text = result.text;
-				match[ZmContactList.AC_VALUE_FULL] = result[ZmContactList.AC_VALUE_FULL];
-				match[ZmContactList.AC_VALUE_EMAIL] = result[ZmContactList.AC_VALUE_EMAIL];
+				match.value = result.value;
 				this._acAddrList[str].push(match);
 				foundOne = true;
 			}
@@ -206,7 +205,7 @@ function(str) {
 		for (var i = 0; i < this._acContacts.length; i++) {
 			var match = this._acMatch(this._acContacts[i], str);
 			if (match) {
-				DBG.println(AjxDebug.DBG2, "adding " + match[ZmContactList.AC_VALUE_EMAIL]);
+				DBG.println(AjxDebug.DBG2, "adding " + match.value);
 				if (!this._acAddrList[str])
 					this._acAddrList[str] = new Array();
 				this._acAddrList[str].push(match);
@@ -221,16 +220,6 @@ function(str) {
 
 	DBG.timePt("end autocomplete match");
 	return this._matchList(str);
-}
-
-/**
-* Returns true if the given string maps to a single contact. Used by autocomplete.
-*
-* @param str		string to test for uniqueness
-*/
-ZmContactList.prototype.isUniqueValue =
-function(str) {
-	return (this.getContactByEmail(str) != null);
 }
 
 ZmContactList.prototype.setIsGal = 

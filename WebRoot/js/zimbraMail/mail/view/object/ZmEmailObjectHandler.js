@@ -93,7 +93,6 @@ function(obj) {
 		list.push(ZmOperation.NEW_MESSAGE);
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
 			list.push(ZmOperation.CONTACT);
-		list.push(ZmOperation.GO_TO_URL);
 		this._menu = new ZmActionMenu(this._appCtxt.getShell(), list);
 	
 		if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED))
@@ -103,7 +102,6 @@ function(obj) {
 		this._menu.addSelectionListener(ZmOperation.NEW_MESSAGE, new AjxListener(this, this._composeListener));
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
 			this._menu.addSelectionListener(ZmOperation.CONTACT, new AjxListener(this, this._contactListener));
-		this._menu.addSelectionListener(ZmOperation.GO_TO_URL, new AjxListener(this, this._goToUrlListener));
 	}
 	this._actionObject = obj;
 	this._actionAddress = this._getAddress(this._actionObject);	
@@ -113,16 +111,6 @@ function(obj) {
 		var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
 		var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
 		ZmOperation.setOperation(this._menu, ZmOperation.CONTACT, newOp, newText);
-	}
-	var m = this._actionAddress.match(/([\w\-]+\.\w+)$/);
-	if (m && m[1]) {
-		var url = 'www.' + m[1];
-		var text = AjxStringUtil.resolve(ZmMsg.goToUrl, [url]);
-		this._menu.getOp(ZmOperation.GO_TO_URL).setText(text);
-		this._actionUrl = "http://" + url;
-	} else {
-		this._menu.removeOp(ZmOperation.GO_TO_URL);
-		this._actionUrl = null;
 	}
 
 	return this._menu;
@@ -165,10 +153,4 @@ ZmEmailObjectHandler.prototype._searchListener =
 function(ev) {
 	// TODO: use fullname if email empty? What if there are multiple emails?
 	this._appCtxt.getSearchController().fromSearch(this._actionAddress);
-};
-
-ZmEmailObjectHandler.prototype._goToUrlListener =
-function(ev) {
-	if (this._actionUrl)
-		window.open(this._actionUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 };

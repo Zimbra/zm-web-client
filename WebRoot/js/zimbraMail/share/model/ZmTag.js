@@ -61,23 +61,23 @@ ZmTag.COLOR_TEXT[ZmTag.C_YELLOW]	= ZmMsg.yellow;
 
 // color icons
 ZmTag.COLOR_ICON = new Object();
-ZmTag.COLOR_ICON[ZmTag.C_ORANGE]	= "TagOrange";
-ZmTag.COLOR_ICON[ZmTag.C_BLUE]		= "TagBlue";
-ZmTag.COLOR_ICON[ZmTag.C_CYAN]		= "TagCyan";
-ZmTag.COLOR_ICON[ZmTag.C_GREEN]		= "TagGreen";
-ZmTag.COLOR_ICON[ZmTag.C_PURPLE]	= "TagPurple";
-ZmTag.COLOR_ICON[ZmTag.C_RED]		= "TagRed";
-ZmTag.COLOR_ICON[ZmTag.C_YELLOW]	= "TagYellow";
+ZmTag.COLOR_ICON[ZmTag.C_ORANGE]	= ZmImg.I_TAG_ORANGE;
+ZmTag.COLOR_ICON[ZmTag.C_BLUE]		= ZmImg.I_TAG_BLUE;
+ZmTag.COLOR_ICON[ZmTag.C_CYAN]		= ZmImg.I_TAG_CYAN;
+ZmTag.COLOR_ICON[ZmTag.C_GREEN]		= ZmImg.I_TAG_GREEN;
+ZmTag.COLOR_ICON[ZmTag.C_PURPLE]	= ZmImg.I_TAG_PURPLE;
+ZmTag.COLOR_ICON[ZmTag.C_RED]		= ZmImg.I_TAG_RED;
+ZmTag.COLOR_ICON[ZmTag.C_YELLOW]	= ZmImg.I_TAG_YELLOW;
 
 // color mini icons
 ZmTag.COLOR_MINI_ICON = new Object();
-ZmTag.COLOR_MINI_ICON[ZmTag.C_ORANGE]	= "MiniTagOrange";
-ZmTag.COLOR_MINI_ICON[ZmTag.C_BLUE]		= "MiniTagBlue";
-ZmTag.COLOR_MINI_ICON[ZmTag.C_CYAN]		= "MiniTagCyan";
-ZmTag.COLOR_MINI_ICON[ZmTag.C_GREEN]	= "MiniTagGreen";
-ZmTag.COLOR_MINI_ICON[ZmTag.C_PURPLE]	= "MiniTagPurple";
-ZmTag.COLOR_MINI_ICON[ZmTag.C_RED]		= "MiniTagRed";
-ZmTag.COLOR_MINI_ICON[ZmTag.C_YELLOW]	= "MiniTagYellow";
+ZmTag.COLOR_MINI_ICON[ZmTag.C_ORANGE]	= ZmImg.I_MINI_TAG_ORANGE;
+ZmTag.COLOR_MINI_ICON[ZmTag.C_BLUE]		= ZmImg.I_MINI_TAG_BLUE;
+ZmTag.COLOR_MINI_ICON[ZmTag.C_CYAN]		= ZmImg.I_MINI_TAG_CYAN;
+ZmTag.COLOR_MINI_ICON[ZmTag.C_GREEN]	= ZmImg.I_MINI_TAG_GREEN;
+ZmTag.COLOR_MINI_ICON[ZmTag.C_PURPLE]	= ZmImg.I_MINI_TAG_PURPLE;
+ZmTag.COLOR_MINI_ICON[ZmTag.C_RED]		= ZmImg.I_MINI_TAG_RED;
+ZmTag.COLOR_MINI_ICON[ZmTag.C_YELLOW]	= ZmImg.I_MINI_TAG_YELLOW;
 
 // system tags
 ZmTag.ID_ROOT = ZmOrganizer.ID_ROOT;

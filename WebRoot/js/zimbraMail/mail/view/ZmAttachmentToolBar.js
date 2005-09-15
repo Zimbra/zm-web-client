@@ -31,10 +31,10 @@ function ZmAttachmentToolBar(parent) {
     var menu = new DwtMenu(this._viewButton, null, "ActionMenu");
     this._viewButton.setMenu(menu);
 
-    var mi = DwtMenuItem.create(menu, "ListView", ZmMsg.list);
+    var mi = DwtMenuItem.create(menu, ZmImg.I_LIST, ZmMsg.list);
 	mi.setData(ZmAttachmentToolBar.MENUITEM_ID, ZmAttachmentToolBar.LIST_MI);
 	
-    mi = DwtMenuItem.create(menu, "IconView", ZmMsg.icon);
+    mi = DwtMenuItem.create(menu, ZmImg.I_ICON, ZmMsg.icon);
 	mi.setData(ZmAttachmentToolBar.MENUITEM_ID, ZmAttachmentToolBar.ICON_MI);
 }
 

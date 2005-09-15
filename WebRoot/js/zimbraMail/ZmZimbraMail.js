@@ -52,7 +52,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	appCtxt.setClientCmdHdlr(new ZmClientCmdHandler(appCtxt));
 
 	this._shell = appCtxt.getShell();
-    this._splashScreen = new ZmSplashScreen(this._shell, "SplashScreen");
+    this._splashScreen = new ZmSplashScreen(this._shell, ZmImg.M_SPLASH);
    
 	this._apps = new Object();
 	this._activeApp = null;
@@ -91,11 +91,11 @@ ZmZimbraMail.MSG_KEY[ZmZimbraMail.PREFERENCES_APP]	= "options";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MIXED_APP]		= "zimbraTitle";
 
 ZmZimbraMail.APP_ICON = new Object();
-ZmZimbraMail.APP_ICON[ZmZimbraMail.MAIL_APP]		= "MailApp";
-ZmZimbraMail.APP_ICON[ZmZimbraMail.CONTACTS_APP]	= "ContactsApp";
-ZmZimbraMail.APP_ICON[ZmZimbraMail.CALENDAR_APP]	= "CalendarApp";
-ZmZimbraMail.APP_ICON[ZmZimbraMail.PREFERENCES_APP]	= "Preferences";
-ZmZimbraMail.APP_ICON[ZmZimbraMail.MIXED_APP]		= "Globe";
+ZmZimbraMail.APP_ICON[ZmZimbraMail.MAIL_APP]		= ZmImg.I_MAIL;
+ZmZimbraMail.APP_ICON[ZmZimbraMail.CONTACTS_APP]	= ZmImg.I_CONTACT;
+ZmZimbraMail.APP_ICON[ZmZimbraMail.CALENDAR_APP]	= ZmImg.I_APPT;
+ZmZimbraMail.APP_ICON[ZmZimbraMail.PREFERENCES_APP]	= ZmImg.I_PREFERENCES;
+ZmZimbraMail.APP_ICON[ZmZimbraMail.MIXED_APP]		= ZmImg.I_MAIL;
 
 ZmZimbraMail.APP_BUTTON = new Object();
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.MAIL_APP]			= ZmAppChooser.B_EMAIL;
@@ -1021,7 +1021,7 @@ function() {
 	var i = 0;
 	html[i++] = "<a href='";
 	html[i++] = this._appCtxt.get(ZmSetting.LOGO_URI);
-	html[i++] = "' target='_blank'><div class='"+AjxImg.getClassForImage("AppBanner")+"'></div></a>";
+	html[i++] = "' target='_blank'><div class='logo'></div></a>";
 	banner.getHtmlElement().innerHTML = html.join("");
 	return banner;
 }

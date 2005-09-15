@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmController(appCtxt, container, app) {
+function ZmController(appCtxt, container, app, isAdmin) {
 
 	if (arguments.length == 0) return;
 
@@ -37,7 +37,7 @@ function ZmController(appCtxt, container, app) {
 	
 	this._authenticating = false;
 
-	this._loginDialog = appCtxt.getLoginDialog();
+	this._loginDialog = appCtxt.getLoginDialog(isAdmin);
 	this._loginDialog.registerCallback(this._loginCallback, this);
 
 	this._msgDialog = appCtxt.getMsgDialog();

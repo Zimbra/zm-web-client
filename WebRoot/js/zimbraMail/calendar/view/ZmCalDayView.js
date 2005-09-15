@@ -54,7 +54,7 @@ ZmCalDayView._DAY_SEP_WIDTH = 1; // width of separator between days
 ZmCalDayView._SCROLLBAR_WIDTH = 15;
 
 ZmCalDayView._DAY_HEADING_HEIGHT = 20;
-ZmCalDayView._ALL_DAY_APPT_HEIGHT = 20;
+ZmCalDayView._ALL_DAY_APPT_HEIGHT = 16;
 ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD = 3; // space between all day appt rows
 ZmCalDayView._APPT_X_FUDGE = 0; // due to border stuff
 ZmCalDayView._APPT_Y_FUDGE = -1; // ditto
@@ -83,217 +83,6 @@ function(isDouble) {
 			break;		
 	}
 }
-
-ZmCalDayView.prototype.getPrintHtml = 
-function() {
-	var html = new Array();
-	var idx = 0;
-	
-	var timeRange = this.getTimeRange();
-	var startDate = new Date(timeRange.start);
-	var endDate = new Date(timeRange.end);
-
-	// print the common header for calendar by calling base class
-	html[idx++] = ZmCalBaseView.prototype.getPrintHtml.call(this);
-	html[idx++] = "<div style='width:100%'>";
-	html[idx++] = "<table width=100% border=0 cellpadding=1 cellspacing=1 style='border: 2px solid black'>";
-
-	var list = this.getList();
-	var numAppts = list ? list.size() : 0;
-	var nextDay = new Date(startDate);
-	var numDays = this.getNumDays();
-
-	// single day print out requires all details for each appointment
-	if (numDays == 1) {
-		this._loadDetailsForAppts(list, numAppts);
-	}
-	
-	for (var i = 0; i < numDays; i++) {
-		nextDay.setDate(startDate.getDate() + i);
-		
-		html[idx++] = "<tr><td width=100%>";
-		if (numDays > 1) {
-			// XXX: set the styles inline so we force the printer to acknowledge them!
-			var style = "background-color:#EEEEEE; text-align:center; font-family: Arial; font-size: 14px; font-weight: bold; border:1px solid #EEEEEE;";
-			html[idx++] = "<div style='" + style + "'>";
-			html[idx++] = AjxDateUtil.getTimeStr(nextDay, "%w, %M %D");
-			html[idx++] = "</div>";
-		}
-		
-		// print out all the appointments for this day
-		var inTable = false;
-		for (var j = 0; j < numAppts; j++) {
-			var appt = list.get(j);
-			if (appt.startDate.getDate() == nextDay.getDate() || numDays == 1) {
-				var location = appt.getLocation();
-				var status = appt.getParticipationStatusString();
-				if (appt.isAllDayEvent()) {
-					// XXX: this is bad HTML but the browsers do the right thing and help us out
-					html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100% style='border:1px solid black'>";
-					html[idx++] = "<tr><td style='font-family:Arial; font-size:13px; width:100%;'>";
-					html[idx++] = "<b>" + appt.getName() + "</b>";
-					if (location)
-						html[idx++] = " (" + location + ")";
-					html[idx++] = " [" + status + "]";
-					// print more detail if we're printing a single day
-					if (numDays == 1) {
-						html[idx++] = this._printApptDetails(appt);
-					}
-					html[idx++] = "</td></tr></table>";
-				} else {
-					if (!inTable) {
-						inTable = true;
-						html[idx++] = "<table border=0>";
-					}
-					var startTime = AjxDateUtil.getTimeStr(appt.startDate, "%h:%m%p");
-					var endTime = AjxDateUtil.getTimeStr(appt.endDate, "%h:%m%p");
-					style = "font-family:Arial; font-size:13px; vertical-align:top;"
-					html[idx++] = "<tr>";
-					html[idx++] = "<td align=right style='" + style + "'><b>" + startTime + "</b></td>";
-					html[idx++] = "<td valign=top> - </td>";
-					html[idx++] = "<td align=right style='" + style + "'><b>" + endTime + "</b></td>";
-					html[idx++] = "<td style='" + style + "'>";
-					html[idx++] = appt.getName();
-					if (location) {
-						html[idx++] = " (" + location + ")";
-					}
-					html[idx++] = " [" + status + "]";
-					html[idx++] = "</td></tr>";
-					
-					if (numDays == 1) {
-						html[idx++] = "<tr><td></td><td></td><td></td><td>";
-						html[idx++] = this._printApptDetails(appt);
-						html[idx++] = "</td></tr>";
-					}
-					
-					// spacer
-					html[idx++] = "<tr><td><br></td></tr>";
-				}
-			}
-		}
-		if (inTable)
-			html[idx++] = "</table>";
-
-		html[idx++] = "<br><br></td></tr>";
-	}
-	html[idx++] = "</table>";
-	html[idx++] = "</div>";
-
-	return html.join("");
-};
-
-// Helper function that collects all appointments that dont have details loaded
-// and makes batch request to go fetch them. Used for printing.
-ZmCalDayView.prototype._loadDetailsForAppts = 
-function(list, numAppts) {
-	var makeBatchReq = false;
-	var needToLoad = new Object();
-	var apptHash = new Object();
-
-	// collect all appointments that dont have details loaded yet
-	for (var i = 0; i < numAppts; i++) {
-		var appt = list.get(i);
-		if (!appt.hasDetails()) {
-			var newMessage = new ZmMailMsg(this._appCtxt);
-			newMessage.id = appt.getInvId();
-			needToLoad[newMessage.id] = newMessage;
-			apptHash[newMessage.id] = appt;
-			appt.setMessage(newMessage);
-			makeBatchReq = true;
-		}
-	}
-
-	if (makeBatchReq) {
-		// set up batch request call
-		var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
-		soapDoc.setMethodAttribute("onerror", "continue");
-
-		for (var i in needToLoad) {
-			var msgRequest = soapDoc.set("GetMsgRequest");
-			msgRequest.setAttribute("xmlns", "urn:zimbraMail");
-
-			var doc = soapDoc.getDoc();
-			var msgNode = doc.createElement("m");
-			msgNode.setAttribute("id", i);
-	
-			msgRequest.appendChild(msgNode);
-		}
-
-		var resp = ZmCsfeCommand.invoke(soapDoc).Body.BatchResponse.GetMsgResponse;
-
-		for (var i = 0; i < resp.length; i++) {
-			var msgNode = resp[i].m[0];
-			var msg = needToLoad[msgNode.id];
-			if (msg) {
-				msg._loadFromDom(msgNode);
-				// parse ZmMailMsg into ZmAppt
-				var appt = apptHash[msgNode.id];
-				if (appt)
-					appt.setFromMessage(msg);
-			}
-		}
-	}
-};
-
-ZmCalDayView.prototype._printApptDetails = 
-function(appt) {
-	var html = new Array();
-	var idx = 0;
-	var style= "font-family:Arial; font-size:12px; vertical-align:top;";
-	
-	html[idx++] = "<table border=0 width=100%>";
-	
-	var organizer = appt.getOrganizer();
-	var attendees = appt.getAttendees();
-
-	if (organizer && attendees) {
-		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.organizer + "</u></td>";
-		html[idx++] = "<td style='" + style + "'>" + appt.getOrganizer() + "</td></tr>";
-		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.attendees + ":</u></td>";
-		html[idx++] = "<td style='" + style + "'>" + attendees + "</td></tr>";
-	}
-	
-	var attachments = appt.getAttachments();
-	if (attachments) {
-		html[idx++] = "<tr>";
-		html[idx++] = "<td width=1% style='" + style + "'><u>" + ZmMsg.attachments + ":</u></td>";
-		html[idx++] = "<td style='" + style + "'>";
-		for (var i = 0; i < attachments.length; i++) {
-			 html[idx++] = attachments[i].filename;
-			 if (i != attachments.length-1)
-			 	html[idx++] = ", ";
-		}
-		html[idx++] = "</td></tr>";
-	}
-	
-	var notes = appt.getNotes();
-	if (notes) {
-		style= "font-family:Arial; font-size:11px; vertical-align:top; margin-top:3px";
-		html[idx++] = "<tr><td colspan=2 style='" + style + "'>" + AjxStringUtil.nl2br(notes) + "</td></tr>";
-	}
-
-	html[idx++] = "</table>";
-	
-	return html.join("");
-};
-
-ZmCalDayView.prototype._getDateHdrForPrintView = 
-function() {
-	var header = "";
-	var timeRange = this.getTimeRange();
-	var startDate = new Date(timeRange.start);
-
-	if (this.getNumDays() > 1) {
-		var endDate = new Date(timeRange.end - AjxDateUtil.MSEC_PER_DAY);
-		var startWeek = AjxDateUtil.getTimeStr(startDate, "%t %D");
-		var endWeek = AjxDateUtil.getTimeStr(endDate, "%t %D");
-		header = startWeek + " - " + endWeek;
-	} else {
-		header = AjxDateUtil.getTimeStr(startDate, "%M %D, %Y<br><font size=-1>%w</font>");
-	}
-
-	return header;
-};
 
 ZmCalDayView.prototype._dateUpdate =
 function(rangeChanged) {
@@ -512,7 +301,7 @@ function(div) {
 		id: div.id,
 		newState: "",
 		color: "_blue",
-		name: AjxStringUtil.htmlEncode(ZmMsg.newAppt),
+		name: AjxStringUtil.htmlEncode("New Appointment"), // TODO: get from elsewhere
 		starttime: "",
 		endtime: "",
 		location: "",
@@ -527,16 +316,7 @@ ZmCalDayView.prototype._createItemHtml =
 function(appt) {
 	//DBG.println("---- createItem ---- "+appt);
 	if (appt.isAllDayEvent()) {
-		var dataId = appt.getUniqueId();
-		var startTime = Math.max(appt.getStartTime(), this._timeRangeStart);
-		var endTime = Math.min(appt.getEndTime(), this._timeRangeEnd);
-		var numDays = Math.floor((endTime-startTime)/AjxDateUtil.MSEC_PER_DAY);
-		var data = this._allDayAppts[dataId] = {
-			appt: appt,
-			startTime: startTime,
-			numDays: numDays
-		};
-		this._allDayApptsList.push(appt);
+		return this._createAllDayItemHtml(appt);
 	}
 	
 	// set up DIV
@@ -553,13 +333,14 @@ function(appt) {
 
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
 
+	var titleOnly = (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
+
 	var pstatus = appt.getParticipationStatus();
 	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
 	var isAccepted = pstatus == ZmAppt.PSTATUS_ACCEPT;
 	var id = this._getItemId(appt);
 	var subs = {
 		id: id,
-		body_style: "",
 		newState: isNew ? "_new" : "",
 		color: "_blue",
 		name: AjxStringUtil.htmlEncode(appt.getName()),
@@ -571,25 +352,11 @@ function(appt) {
 		status: appt.isOrganizer() ? "" : appt.getParticipationStatusString()
 	};	
 	
-	var template;
-	if (appt.isAllDayEvent()) {
-		template = "calendar_appt_allday";
-		var bs = "";
-		if (!this.isStartInView(appt._orig)) bs = "border-left:none;";
-		if (!this.isEndInView(appt._orig)) bs += "border-right:none;";
-		if (bs != "") subs.body_style = "style='"+bs+"'";
-	} else if (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR) {
-		template = "calendar_appt_30";
-	} else if (appt._fanoutNum > 0) {
-		template = "calendar_appt_bottom_only";
-	} else {
-		template = "calendar_appt";
-	}
-
+	var template = titleOnly ? "calendar_appt_30" : (appt._fanoutNum > 0 ? "calendar_appt_bottom_only" : "calendar_appt");
 	div.innerHTML = DwtBorder.getBorderHtml(template, subs, null);
 
 	// if (we can edit this appt) then create sash....
- 	if (!appt.isReadOnly() && !appt.isAllDayEvent()) {
+	if (!appt.isReadOnly()) {
 	
 		if (appt._fanoutLast || (!appt._fanoutFirst && (!appt._fanoutNum))) {
 			var bottom = this.getDocument().createElement("div");
@@ -606,6 +373,46 @@ function(appt) {
 			div.appendChild(top);		
 		}
 	}
+	return div;
+}
+
+ZmCalDayView.prototype._createAllDayItemHtml =
+function(appt) {
+	var dataId = appt.getUniqueId();
+	var startTime = Math.max(appt.getStartTime(), this._timeRangeStart);
+	var endTime = Math.min(appt.getEndTime(), this._timeRangeEnd);
+	var numDays = Math.floor((endTime-startTime)/AjxDateUtil.MSEC_PER_DAY);
+	var data = this._allDayAppts[dataId] = {
+		appt: appt,
+		startTime: startTime,
+		numDays: numDays
+	};
+	this._allDayApptsList.push(appt);
+
+	var div = this.getDocument().createElement("div");
+	Dwt.setSize(div, 10, Dwt.DEFAULT);
+	div.style.position = 'absolute';
+
+	div._styleClass = "allday";
+	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
+	div.className = div._styleClass;
+
+	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
+	
+	var html = new AjxBuffer();
+
+	html.append("<table class=allday>");
+	html.append("<tr>");
+	if (this.isStartInView(appt)) html.append("<td><div class=allday_blue_start></div></td>");
+	html.append("<td width=100%>");
+	html.append("<div class=allday_blue_stretch><div class=allday_text>");
+	html.append(AjxStringUtil.htmlEncode(appt.getName()));
+	html.append("</div></div>");
+	html.append("</td>");
+	if (this.isEndInView(appt)) html.append("<td><div class=allday_blue_end></div></td>");
+	html.append("</tr>");
+	html.append("</table>");
+	div.innerHTML = html.toString();
 	return div;
 }
 
@@ -637,7 +444,7 @@ function(html) {
 		if (h == 0) {
 			html.append("&nbsp;");
 		} else if (h == 12) {
-			html.append(ZmMsg.noon);
+			html.append("Noon");		//XXX i18n		
 		} else {
 			html.append(hour, " ", ampm);
 		}
@@ -699,7 +506,7 @@ function(abook) {
 	html.append("<div id='", this._alldaySepDivId, "' class=calendar_header_allday_separator style='overflow:hidden'></div>");
 	html.append("<div id='", this._bodyDivId, "' class=calendar_body>");
 	this._createHoursHtml(html);
-	html.append("<div id='", this._apptBodyDivId, "' class='ImgCalendarDayGrid__BG' style='width:100%; height:1008px; position:absolute;'>");	
+	html.append("<div id='", this._apptBodyDivId, "' class='ImgCalendarDayGrid_BG' style='width:100%; height:1008px; position:absolute;'>");	
 	html.append("<div id='", this._timeSelectionDivId, "' class='calendar_time_selection' style='position:absolute; display:none;'></div>");
 	html.append("<div id='", this._newApptDivId, "' class='appt-Selected' style='position:absolute; display:none;'></div>");
 	for (var i =0; i < numDays; i++) {
@@ -867,17 +674,16 @@ function() {
 	if (!rows) return;
 	
 	var doc = this.getDocument();
-	var rowY = ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD + 2;
+	var rowY = ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD;
 	for (var i=0; i < rows.length; i++) {
 		var row = rows[i];
 		var numDays = this.getNumDays();
 		for (var j=0; j < numDays; j++) {
 			var slot = row[j];
 			if (slot.data) {
-				var appt = slot.data.appt;
-				var div = Dwt.getDomObj(doc, this._getItemId(appt));
-				this._positionAppt(div, this._days[j].allDayX +2, rowY);
-				this._sizeAppt(div, this._days[j].allDayWidth * slot.data.numDays - ZmCalDayView._DAY_SEP_WIDTH - 4,
+				var div = Dwt.getDomObj(doc, this._getItemId(slot.data.appt));
+				Dwt.setLocation(div, this._days[j].allDayX, rowY);
+				Dwt.setSize(div, this._days[j].allDayWidth * slot.data.numDays - ZmCalDayView._DAY_SEP_WIDTH,
 							 ZmCalDayView._ALL_DAY_APPT_HEIGHT);
 			}
 		}
@@ -1167,22 +973,21 @@ function (ev){
 	ZmCalDayView._onclickHandler(ev);
 };
 
+/*
 ZmCalDayView.prototype._mouseOverAction =
 function(ev, div) {
 	ZmCalBaseView.prototype._mouseOverAction.call(this, ev, div);
-	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER) {
-		div.firstChild.style.textDecoration = "underline";
-	}
+	DBG.println("mouse over "+div._type);
+	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER) 
 }
 
 ZmCalDayView.prototype._mouseOutAction =
 function(ev, div) {
 	ZmCalBaseView.prototype._mouseOutAction.call(this, ev, div);
-	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER) {
-		div.firstChild.style.textDecoration = "none";
-	}
+	DBG.println("mouse out "+div._type);
+	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER) 
 }
-
+*/
 
 ZmCalDayView.prototype._mouseUpAction =
 function(ev, div) {
@@ -1230,6 +1035,42 @@ function(ev, div, dblclick) {
 	this._timeSelectionEvent(date, AjxDateUtil.MSEC_PER_HALF_HOUR, dblclick);
 }
 
+ZmCalDayView.prototype._timeSelectionEvent =
+function(date, duration, isDblClick) {
+	if (!this._selectionEvent) this._selectionEvent = new DwtSelectionEvent(true);
+	var sev = this._selectionEvent;
+	sev._isDblClick = isDblClick;
+	sev.item = this;
+	sev.detail = date;
+	sev.duration = duration;
+	sev.force = false;
+	this.notifyListeners(ZmCalBaseView.TIME_SELECTION, this._selectionEvent);
+	sev._isDblClick = false;
+}
+
+/*
+ZmCalDayView._oncontextmenuHandler =
+function(event) {
+	var event = DwtUiEvent.getEvent(event);
+	var element = DwtUiEvent.getTargetWithProp(event, "id");
+	if (!element) return;
+	var id = element.id;
+	var data = ZmCalDayView._idToData[id];
+	var view = data.view;
+	if (view) {
+		if (!view._contextMenuEvent) {
+			view._contextMenuEvent = new DwtUiEvent(true);
+		}
+		var ev = view._contextMenuEvent;
+	   	ev.item = view;
+	   	ev.detail = new Date(view._days[data.day].date.getTime() + 
+		   					(data.hour * AjxDateUtil.MSEC_PER_HOUR) +
+						   	(data.top ? 0 : AjxDateUtil.MSEC_PER_HALF_HOUR));
+	   	view.notifyListeners(DwtEvent.ONCONTEXTMENU, view._contextMenuEvent);
+	}		
+}
+*/
+
 ZmCalDayView.prototype._mouseDownAction = 
 function(ev, div) {
 	//ZmCalBaseView.prototype._mouseDownAction.call(this, ev, div);
@@ -1245,22 +1086,17 @@ function(ev, div) {
 			return this._apptMouseDownAction(ev, div);
 			break;
 		case ZmCalBaseView.TYPE_HOURS_COL:
-			if (ev.button == DwtMouseEvent.LEFT) {
-				var gridLoc = AjxEnv.isIE ? Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div) : {x: ev.elementX, y: ev.elementY};
-				var fakeLoc = this._getLocationForDate(this.getDate());
-				if (fakeLoc) {
-					gridLoc.x = fakeLoc.x;
-					var gridDiv = Dwt.getDomObj(this.getDocument(), this._apptBodyDivId);
-					return this._gridMouseDownAction(ev, gridDiv, gridLoc);
-				}
-			} else if (ev.button == DwtMouseEvent.RIGHT) {
-				DwtUiEvent.copy(this._actionEv, ev);
-				this._actionEv.item = this;
-				this._evtMgr.notifyListeners(ZmCalBaseView.VIEW_ACTION, this._actionEv);	
+			var gridLoc = AjxEnv.isIE ? Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div) : {x: ev.elementX, y: ev.elementY};
+			var fakeLoc = this._getLocationForDate(this.getDate());
+			if (fakeLoc) {
+				gridLoc.x = fakeLoc.x;
+				var gridDiv = Dwt.getDomObj(this.getDocument(), this._apptBodyDivId);
+				return this._gridMouseDownAction(ev, gridDiv, gridLoc);
 			}
 			break;
 		case ZmCalBaseView.TYPE_APPTS_DAYGRID:
-			this._timeSelectionAction(ev, div, false);
+			if (div._type == ZmCalBaseView.TYPE_APPTS_DAYGRID)
+				this._timeSelectionAction(ev, div, false);
 			if (ev.button == DwtMouseEvent.LEFT) {
 				// save grid location here, since timeSelection might move the time selection div
 				var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);

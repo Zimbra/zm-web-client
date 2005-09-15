@@ -130,7 +130,7 @@ function(items, on) {
 			row.className = on ? "" : "Unread";
 		var img = Dwt.getDomObj(doc, this._getFieldId(item, ZmItem.F_STATUS));
 		if (img && img.parentNode)
-			AjxImg.setImage(img.parentNode, on ? "MsgStatusRead" : "MsgStatusUnread");
+			AjxImg.setImage(img.parentNode, on ? ZmImg.I_READ_MSG : ZmImg.I_ENVELOPE);
 	}
 }
 
@@ -188,16 +188,16 @@ function(parent) {
 
 	var headerList = new Array();
 	
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, "FlagRed", ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.flag));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, ZmImg.I_FLAG_ON, ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.flag));
 	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
 	var appCtxt = shell.getData(ZmAppCtxt.LABEL); // this._appCtxt not set until parent constructor is called
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "MiniTag", ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.tag));
+		headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, ZmImg.I_MINI_TAG, ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.tag));
 	}
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], ZmMsg.from, null, ZmConvListView.CLV_COLWIDTH_FROM, null, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, "Attachment", ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.attachment));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, ZmImg.I_ATTACHMENT, ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.attachment));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT], null, "Conversation", 25, null, null, null, ZmMsg.count));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT], null, ZmImg.I_CONV, 25, null, null, null, ZmMsg.count));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.received, null, ZmConvListView.CLV_COLWIDTH_DATE, ZmItem.F_DATE));
 	
 	return headerList;

@@ -193,7 +193,7 @@ input {width:185px;}
   margin-bottom:10px;
   width:447px; 
   height:155px; 
-  background-image:url("/zimbra/img/hiRes/logo/LoginBanner.gif");
+  background-image:url("/zimbra/img/hiRes/non-web/LoginBanner.gif");
   
 }
 .logo { 
@@ -323,7 +323,7 @@ Or Fedora
 	    <tr id="errorRow">
               <td>
                 <div class=errorDiv id="errorMessageContainer" >
-                  <img class=errorIcon src="/zimbra/img/hiRes/dwt/Critical_32.gif">
+                  <img class=errorIcon src="/zimbra/img/hiRes/dwt/CriticalIcon32x32.gif">
                   <div id="errorMessage" class=errorMsg style="top:25px">yo yo</div>
                 </div>
             </td></tr>

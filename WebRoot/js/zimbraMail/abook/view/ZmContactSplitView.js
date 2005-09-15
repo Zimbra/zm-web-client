@@ -446,7 +446,7 @@ function(contact, now, isDndIcon) {
 			htmlArr[idx++] = " id='" + this._getFieldId(contact, ZmItem.F_PARTICIPANT) + "'>";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
 			if (this._appCtxt.get(ZmSetting.IM_ENABLED) && contact.hasIMProfile())
-				htmlArr[idx++] = AjxImg.getImageHtml(contact.isIMAvailable() ? "ImAvailable" : "ImUnavailable");
+				htmlArr[idx++] = AjxImg.getImageHtml(contact.isIMAvailable() ? ZmImg.I_IM : ZmImg.ID_IM);
 			if (AjxEnv.isNav)
 				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";

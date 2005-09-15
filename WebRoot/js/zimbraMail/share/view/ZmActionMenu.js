@@ -88,16 +88,6 @@ function(id) {
 	return this._menuItems[id];
 }
 
-ZmActionMenu.prototype.addOp =
-function(id) {
-	ZmOperation.addOperation(this, id, this._menuItems);
-}
-
-ZmActionMenu.prototype.removeOp =
-function(id) {
-	ZmOperation.removeOperation(this, id, this._menuItems);
-}
-
 /**
 * Returns the menu item with the given ID.
 *

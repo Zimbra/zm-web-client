@@ -100,7 +100,12 @@ ZmEmailAddress.boundAddrPat = /(\s*<?(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\
 ZmEmailAddress.parse =
 function(str) {
 	var str = AjxStringUtil.trim(str);
-	var prelimOkay = ZmEmailAddress._prelimCheck(str);
+	// Do preliminary check for @ since we don't support local addresses, and as workaround for Mozilla bug
+	// https://bugzilla.mozilla.org/show_bug.cgi?id=225094
+	// Also check for . since we require FQDN
+	var atIndex = str.indexOf('@');
+	var dotIndex = str.lastIndexOf('.');
+	var prelimOkay = ((atIndex != -1) && (dotIndex != -1) && (dotIndex > atIndex));
 	if (!(prelimOkay && str.match(ZmEmailAddress.addrPat))) {
 		DBG.println(AjxDebug.DBG1, "mailbox match failed: " + str);
 		return null;
@@ -190,19 +195,7 @@ function(emailStr, type, strict) {
 ZmEmailAddress.isValid =
 function(str) {
 	str = AjxStringUtil.trim(str);
-	var prelimOkay = ZmEmailAddress._prelimCheck(str);
-	return (prelimOkay && str.match(ZmEmailAddress.addrPat));
-}
-
-ZmEmailAddress._prelimCheck =
-function(str) {
-	// Do preliminary check for @ since we don't support local addresses, and as workaround for Mozilla bug
-	// https://bugzilla.mozilla.org/show_bug.cgi?id=225094
-	// Also check for . since we require FQDN
-	var atIndex = str.indexOf('@');
-	var dotIndex = str.lastIndexOf('.');
-	var okay = ((atIndex != -1) && (dotIndex != -1) && (dotIndex > atIndex));
-	return okay;
+	return str.match(ZmEmailAddress.addrPat);
 }
 
 /**

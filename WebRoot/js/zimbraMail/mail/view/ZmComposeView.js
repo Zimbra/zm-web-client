@@ -901,6 +901,12 @@ function(ev) {
 		case cv._addLinkId[ZmEmailAddress.BCC]:
 			cv._showField(element._addrType, !cv._using[element._addrType]);
 			return false; // disable following of link
+		case cv._fieldId[ZmEmailAddress.TO]:
+		case cv._fieldId[ZmEmailAddress.CC]:
+		case cv._fieldId[ZmEmailAddress.BCC]:
+			if (cv._acAddrSelectList)
+				cv._acAddrSelectList.show(false);
+			break;
 	}
 }
 
@@ -1068,7 +1074,7 @@ function(msg, action, pref) {
 	{
 		html[idx++] = "<table cellspacing=4 cellpadding=0 border=0 width=100%><tr>";
 		html[idx++] = "<td width=60 align=right>";
-		html[idx++] = AjxImg.getImageHtml("Attachment");
+		html[idx++] = AjxImg.getImageHtml(ZmImg.I_ATTACHMENT);
 		html[idx++] = "</td>";
 		html[idx++] = "<td><b>" + subj + "</b></td>";
 		html[idx++] = "</tr></table>";
@@ -1083,7 +1089,7 @@ function(msg, action, pref) {
 			for (var i = 0; i < attLinks.length; i++) {
 				html[idx++] = "<tr><td width=65 align=right>";
 				if (i == 0) // only add icon for first attachment(?)
-					html[idx++] = AjxImg.getImageHtml("Attachment");
+					html[idx++] = AjxImg.getImageHtml(ZmImg.I_ATTACHMENT);
 				html[idx++] = "</td><td width=1%><input name='" + ZmComposeView.FORWARD_ATT_NAME + "' type='checkbox' id='" + attLinks[i].mpId + "' CHECKED></td>";
 				html[idx++] = "<td valign=top class='nobreak'>" + attLinks[i].html + "</td></tr>";
 			}

@@ -29,13 +29,13 @@ function ZmEmoticonObjectHandler(appCtxt) {
 	ZmObjectHandler.call(this, appCtxt, ZmURLObjectHandler.TYPE);
 
 	this._emoticons = [
-	   { smiley: ">:)", image: "DevilEmoticon", tooltip: ZmMsg.devil },
-       { smiley: ":)", image: "HappyEmoticon", tooltip: ZmMsg.happy },
-	   { smiley: "=))", image: "RotflEmoticon", tooltip: ZmMsg.rotfl },
-	   { smiley: "=((", image: "BrokenHeartEmoticon", tooltip: ZmMsg.brokenHeart },
-	   { smiley: ":((", image: "CryingEmoticon", tooltip: ZmMsg.crying }, 
-	   { smiley: "<:-P", image: "PartyEmoticon", tooltip: ZmMsg.party },
-	   { smiley: ":O)", image: "ClownEmoticon", tooltip: ZmMsg.clown }
+	   { smiley: ">:)", image: ZmImg.E_DEVIL, tooltip: ZmMsg.devil },
+       { smiley: ":)", image: ZmImg.E_HAPPY, tooltip: ZmMsg.happy },
+	   { smiley: "=))", image: ZmImg.E_ROTFL, tooltip: ZmMsg.rotfl },
+	   { smiley: "=((", image: ZmImg.E_BROKEN_HEART, tooltip: ZmMsg.brokenHeart },
+	   { smiley: ":((", image: ZmImg.E_CRYING, tooltip: ZmMsg.crying }, 
+	   { smiley: "<:-P", image: ZmImg.E_PARTY, tooltip: ZmMsg.party },
+	   { smiley: ":O)", image: ZmImg.E_CLOWN, tooltip: ZmMsg.clown }
    ];
 	
 	var regex = new Array(10);

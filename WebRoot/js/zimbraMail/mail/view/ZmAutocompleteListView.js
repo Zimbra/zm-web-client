@@ -75,7 +75,6 @@ function ZmAutocompleteListView(parent, className, dataClass, dataLoader, matchV
 	this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
 	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
 	this._addSelectionListener(new AjxListener(this, this._update));
-	this._outsideListener = new AjxListener(this, this._outsideMouseDownListener);
 
 	// only trigger matching after a sufficient pause
 	this._acInterval = this._appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
@@ -261,6 +260,23 @@ function() {
 }
 
 /**
+ * Override the DwtControl definition of this method
+ */
+ZmAutocompleteListView.prototype.getVisible =
+function () {
+	return this._showing;
+};
+
+/**
+ * Convenience method -- calls getVisible
+ */
+ZmAutocompleteListView.prototype.isShowing =
+function () {
+	return this.getVisible();
+};
+
+
+/**
 * Checks the given key to see if it's used to control the autocomplete list in some way.
 * If it does, the action is taken and the key won't be echoed into the input area.
 *
@@ -374,13 +390,7 @@ function(chunk) {
 
 	// do matching
 	this._removeAll();
-
 	var list = this._getMatches(str);
-	if (list.length == 1 && this._data.isUniqueValue(str)) {
-		DBG.println(AjxDebug.DBG2, "unique match on email, hiding autocomplete list");
-		return {text: text, start: start};
-	}
-
 	if (list && list.length > 0) {
 		var len = list.length;
 		DBG.println(AjxDebug.DBG2, "found " + len + " match" + len > 1 ? "es" : "");
@@ -509,10 +519,7 @@ function(loc) {
 	this.setLocation(loc.x, loc.y);
 	this.setVisible(true);
 	this.setZIndex(Dwt.Z_DIALOG_MENU);
-	ZmAutocompleteListView._activeAcList = this;
-	DwtEventManager.addListener(DwtEvent.ONMOUSEDOWN, ZmAutocompleteListView._outsideMouseDownListener);
-	this.shell._setMouseDownHdlr();
-	this.shell.addListener(DwtEvent.ONMOUSEDOWN, this._outsideListener);
+	this._showing = true;
 }
 
 // Hides the list
@@ -520,10 +527,7 @@ ZmAutocompleteListView.prototype._popdown =
 function() {
 	this.setZIndex(Dwt.Z_HIDDEN);
 	this.setVisible(false);
-	ZmAutocompleteListView._activeAcList = null;
-	DwtEventManager.removeListener(DwtEvent.ONMOUSEDOWN, ZmAutocompleteListView._outsideMouseDownListener);
-	this.shell._setMouseDownHdlr(true);
-	this.shell.removeListener(DwtEvent.ONMOUSEDOWN, this._outsideListener);
+	this._showing = false;
 }
 
 // Selects a match by changing its CSS class
@@ -597,16 +601,3 @@ ZmAutocompleteListView.prototype._focus =
 function(args) {
 	args[0].focus();
 }
-
-ZmAutocompleteListView._outsideMouseDownListener =
-function(ev) {
-	var curList = ZmAutocompleteListView._activeAcList;
-    if (curList.getVisible()) {
-		var obj = DwtUiEvent.getDwtObjFromEvent(ev);
-		if (obj != curList) {
-			curList.show(false);
-			ev._stopPropagation = false;
-			ev._returnValue = true;
-		}
-	}
-};

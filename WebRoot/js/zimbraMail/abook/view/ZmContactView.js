@@ -100,7 +100,7 @@ function(contact) {
 	this._setFields();
 
 	var contentDiv = Dwt.getDomObj(this.getDocument(), this._contentId);
-	Dwt.setVisibility(contentDiv, true);
+	Dwt.setVisible2(contentDiv, true);
 	contentDiv.scrollTop = 0; // bug fix #3362
 	
 	var lastNameInput = Dwt.getDomObj(this.getDocument(), this._fieldIds[ZmContact.F_lastName]);

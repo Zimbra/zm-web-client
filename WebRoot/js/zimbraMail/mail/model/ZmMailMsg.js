@@ -485,11 +485,8 @@ function (contactList, edited, componentId) {
 	var resp = this._sendMessage(soapDoc, true);
 	var id = resp.id ? resp.id.split("-")[0] : null;
 	
-	if (id || resp.status == "OK") {
+	if (id || resp.status == "OK")
 		this._notifySendListeners();
-		this._origMsg.folderId = ZmFolder.ID_TRASH;
-		this._origMsg._listNotify(ZmEvent.E_MOVE);
-	}
 
 	// map this to an int?
 	return (id || status);
@@ -708,7 +705,7 @@ function(bFindHits, domain, partNameList) {
     		}
 
 			// calc. widths of all data involved
-    		var icon = mimeInfo ? mimeInfo.image : "GenericDoc";
+    		var icon = mimeInfo ? mimeInfo.image : ZmImg.I_DOCUMENT;
     		var encLabel = "&nbsp;" + AjxStringUtil.htmlEncode(label) + "&nbsp;";
     		var labelWidth = Dwt.getHtmlExtent(encLabel).x;
     		// The 5 is for padding for IE

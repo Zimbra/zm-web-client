@@ -25,8 +25,8 @@
 
 function ZmPrintView (appCtxt, width, height) {
 	this._appCtxt = appCtxt;
-	this._width = width ? parseInt(width) : null;
-	this._height = height ? parseInt(height) : null;
+	this._width = parseInt(width) + 30;
+	this._height = parseInt(height) + 134;
 }
 
 ZmPrintView.prototype.toString = 
@@ -52,10 +52,10 @@ function(item) {
 	}
 	
 	var optionsStr = "menubar=yes,resizable=yes,scrollbars=yes";
-	if (this._width) {
+	if (this._width != null) {
 		optionsStr = optionsStr + ",width=" + this._width;
 	}
-	if (this._height) {
+	if (this._height != null) {
 		optionsStr = optionsStr + ",height=" + this._height;
 	}
 	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", optionsStr, this._render, this, true);

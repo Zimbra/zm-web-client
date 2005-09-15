@@ -57,8 +57,7 @@ function(html, idx, address, context) {
 
 ZmAddressObjectHandler.prototype.getToolTipText =
 function(obj, context) {
-	return '<div class="AddressContent" id="'+ZmAddressObjectHandler.encodeId(obj)+'"></div>';
-	//return '<div class="AddressContent" id="GMap"></div>';
+	return '<div id="gMap" style="width: 350px; height: 350px"></div>';
 };
 
 ZmAddressObjectHandler.prototype.populateToolTip =
@@ -87,8 +86,7 @@ function(obj, context) {
 
 ZmAddressObjectHandler.displayMap =
 function(point, obj) {
-    var map = new GMap(document.getElementById(ZmAddressObjectHandler.encodeId(obj)));
-    //var map = new GMap(document.getElementById("GMap"));
+    var map = new GMap(document.getElementById("gMap"));
     map.centerAndZoom(point, 4);
 	var marker = new GMarker(point);
 	map.addOverlay(marker);
@@ -97,19 +95,3 @@ function(point, obj) {
 //		ZmAddressObjectHandler.CACHE[obj] = point;
 //	}
 };
-
-ZmAddressObjectHandler.encodeId = function(s) {
-	return s.replace(/[^A-Za-z0-9]/g, "");
-}
-
-ZmAddressObjectHandler.prototype.hoverOver = function(object, context, x, y) {
-	var shell = DwtShell.getShell(window);
-	var tooltip = new DwtStickyToolTip(shell);
-	tooltip.setTitle(object); // NOTE: object is address string
-	tooltip.setContent(this.getToolTipText(object, context));
-	this.populateToolTip(object, context);
-	tooltip.popup(x, y);
-}
-ZmAddressObjectHandler.prototype.hoverOut = function(object, context) {
-	// no-op
-}

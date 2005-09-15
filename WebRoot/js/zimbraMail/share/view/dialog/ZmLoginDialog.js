@@ -23,11 +23,12 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmLoginDialog(parent, zIndex, className) { 
+function ZmLoginDialog(parent, zIndex, className, isAdmin) { 
 
     className = className || "ZmLoginDialog";
     DwtComposite.call(this, parent, className, DwtControl.ABSOLUTE_STYLE);
 
+	this._isAdmin = (isAdmin === true);	
 	var doc = this.getDocument();
     this._origClassName = className;
     this._xparentClassName = className + "-Transparent";
@@ -96,7 +97,7 @@ function(errorStr) {
 	if (errorStr && errorStr.length) {
 		htmlArr[i++] = "<table align=center class='ZmLoginDialog-ErrorPanel'>";
 		htmlArr[i++] = "<tr><td>";
-		htmlArr[i++] = AjxImg.getImageHtml("Critical_32");
+		htmlArr[i++] = AjxImg.getImageHtml(ZmImg.I_CRITICAL);
 		htmlArr[i++] = "</td>";
 		htmlArr[i++] = "<td class='ZmLoginDialog-ErrorText'>" + errorStr + "</td></tr></table>";
 	} else {
@@ -214,6 +215,12 @@ function(selEvt) {
 		return;
 	}
 	
+	/* commenting this out due to default domain name support
+	if (!this._isAdmin && !ZmEmailAddress.isValid(username)) {
+		this.setError(ZmMsg.badUsername);
+		return;
+	}
+	*/
 	if (this._callback)
 		this._callback.run([username, this._pwordField.value, this._pubCompField.checked]);
 }

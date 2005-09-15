@@ -39,7 +39,7 @@ function ZmChicletButton(parent, outerClass, innerClass) {
 	DwtControl.call(this, parent, outerClass, DwtControl.RELATIVE_STYLE);
 
 	this._innerDiv = this.getDocument().createElement("div");
-	this._innerDiv.className = AjxImg.getClassForImage(innerClass);
+	this._innerDiv.className = innerClass;
 	this._innerDiv.style.position = DwtControl.ABSOLUTE_STYLE;
 	this.getHtmlElement().appendChild(this._innerDiv);
 	// center the inner image
@@ -84,7 +84,7 @@ function(className) {
 
 ZmChicletButton.prototype.setInnerImage =
 function(className) {
-	this._innerDiv.className = AjxImg.getClassForImage(className);
+	this._innerDiv.className = className;
 }
 
 ZmChicletButton.prototype.setActivatedImage =

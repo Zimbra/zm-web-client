@@ -99,7 +99,8 @@ function(view) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 		this._setupViewMenu(view);
-		this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+		this._setNewButtonProps(view, ZmMsg.compose, ZmImg.I_MAIL_MSG, 
+								ZmImg.ID_MAIL_MSG, ZmOperation.NEW_MESSAGE);
 		this._toolbar[view].addFiller();
 		var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS);
 		this._setNavToolBar(tb);
@@ -116,9 +117,9 @@ ZmAttachmentListController.prototype._setupViewMenu =
 function(view) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = new ZmPopupMenu(appToolbar.getViewButton());
-	var mi = menu.createMenuItem(ZmController.ATT_LIST_VIEW, "ListView", ZmMsg.list);
+	var mi = menu.createMenuItem(ZmController.ATT_LIST_VIEW, ZmImg.I_LIST, ZmMsg.list);
 	mi.setData(ZmOperation.MENUITEM_ID, ZmController.ATT_LIST_VIEW);
-    mi = menu.createMenuItem(ZmController.ATT_ICON_VIEW, "IconView", ZmMsg.icon);
+    mi = menu.createMenuItem(ZmController.ATT_ICON_VIEW, ZmImg.I_ICON, ZmMsg.icon);
 	mi.setData(ZmOperation.MENUITEM_ID, ZmController.ATT_ICON_VIEW);
 	
 	var items = menu.getItems();

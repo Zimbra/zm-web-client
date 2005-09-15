@@ -65,7 +65,7 @@ function(attachment, now) {
 	var mimeInfo = ZmMimeTable.getInfo(attachment.getContentType());
 	fieldId = this._getFieldId(attachment, ZmItem.F_ICON);
 	htmlArr[idx++] = "<td class='Icon'>";
-	htmlArr[idx++] = AjxImg.getImageHtml(mimeInfo ? mimeInfo.image : "GenericDoc" , null, ["id='", fieldId, "'"].join(""));
+	htmlArr[idx++] = AjxImg.getImageHtml(mimeInfo ? mimeInfo.image : ZmImg.I_DOCUMENT, null, ["id='", fieldId, "'"].join(""));
 	htmlArr[idx++] = "</td>";
 		
 	// Name
@@ -154,7 +154,7 @@ function(parent) {
 
 	var headerList = new Array();
 
-	headerList.push(new DwtListHeaderItem("", null, "Attachment", 16));
+	headerList.push(new DwtListHeaderItem("", null, ZmImg.I_ATTACHMENT, 16));
 	headerList.push(new DwtListHeaderItem("", ZmMsg._name, null, 145));
 	headerList.push(new DwtListHeaderItem("", ZmMsg.from, null, 145));
 	headerList.push(new DwtListHeaderItem("", ZmMsg.subject, null, null));

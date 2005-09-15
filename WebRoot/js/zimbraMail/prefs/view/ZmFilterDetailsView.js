@@ -705,7 +705,7 @@ ZmFilterDetailsView.prototype._plusMinusHtml = function(cell, isActionRow) {
 	var plusButton = new DwtButton(this);
 	plusEl = plusButton.getHtmlElement();
  	plusEl.style.width="30px";
-	plusButton.setImage("Plus");
+	plusButton.setImage(ZmImg.I_PLUS);
 	var plusList = null;
 	var minusList = null;
 	if (isActionRow) {
@@ -723,7 +723,7 @@ ZmFilterDetailsView.prototype._plusMinusHtml = function(cell, isActionRow) {
 	minusEl.style.width="30px";
 	minusButton.addSelectionListener(minusList);
 
-	minusButton.setImage("Minus");
+	minusButton.setImage(ZmImg.I_MINUS);
 	cell0.appendChild(plusButton.getHtmlElement());
 	cell1.appendChild(minusButton.getHtmlElement());
 	cell.appendChild(buttonsTable);
@@ -1249,5 +1249,6 @@ ZmFilterDetailsView.prototype._mouseDownListener = function (ev){
 		// (allows text selection)
 		ev._stopPropagation = false;
 		ev._returnValue = true;
+		ev._populated = true;
 	}
 };

@@ -45,31 +45,31 @@ function(parent) {
 	
 	var ti = this._flagged = new DwtTreeItem(tree);
 	ti.setText(ZmMsg.flagged);
-	ti.setImage("FlagRed");
+	ti.setImage(ZmImg.I_FLAG_ON);
 	
 	ti = this._unflagged = new DwtTreeItem(tree);
 	ti.setText(ZmMsg.unflagged);
-	ti.setImage("FlagDis");
+	ti.setImage(ZmImg.I_FLAG_OFF);
 	
 	tree.addSeparator();
 
 	ti = this._read = new DwtTreeItem(tree);
 	ti.setText(ZmMsg.read);
-	ti.setImage("ReadMessage");
+	ti.setImage(ZmImg.I_READ_MSG);
 	
 	ti = this._unread = new DwtTreeItem(tree);
 	ti.setText(ZmMsg.unread);
-	ti.setImage("UnreadMessage");	
+	ti.setImage(ZmImg.I_ENVELOPE);	
 
 	tree.addSeparator();
 
 	ti = this._replied = new DwtTreeItem(tree);
 	ti.setText(ZmMsg.replied);
-	ti.setImage("Reply");
+	ti.setImage(ZmImg.I_REPLY);
 	
 	ti = this._forwarded = new DwtTreeItem(tree);
 	ti.setText(ZmMsg.forwarded);
-	ti.setImage("Forward");	
+	ti.setImage(ZmImg.I_FORWARD);	
 }
 
 ZmFlagPicker.prototype._updateQuery = 

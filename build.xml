@@ -28,7 +28,7 @@
 
   <property name="ajax.src.dir" value="${ajax.dir}/src"/>
   <property name="ajax.jars.dir" value="${ajax.dir}/jars"/>
-  <property name="ajax.dwtimg.dir" value="${ajax.dir}/img"/>
+  <property name="ajax.dwtimg.dir" value="${ajax.dir}/WebRoot/js/dwt/config/img"/>
   <property name='ajax.imagemerge.dir' location='${ajax.src.dir}/com/zimbra/ajax/imagemerge'/>
 	
   <condition property="deploy.dir" value="${env.DEPLOY_DIR}">
@@ -243,16 +243,15 @@
 		<mkdir dir="${images.hiRes.destDir}"/>
 		<delete file='${images.hiRes.destDir}/${images.cssFile}'/>
 		<echo/>
-		<echo message='Copying high resolution images'/>
+		<echo message='Copying high resolution images (-horizborders -vertborders -backgrounds)'/>
 		<echo/>
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true'
 					cssfile='${images.cssFile}' csspath='/zimbra/img/hiRes/'>
-			<dirset dir='img/hiRes' includes='*'/>
+			<dirset dir='img/hiRes' includes='*' excludes='horizborders,vertborders,backgrounds'/>
 			<dirset dir='${ajax.dwtimg.dir}/hiRes' 
-					includes='*'/>
+					includes='*' excludes='horizborders,vertborders,backgrounds'/>
 		</imagemerge>
 		<echo/>
-<!--  MOW: NO LONGER NECESSARY TO SPLIT OUT BY HORIZ/VERT/ETC
 		<echo message='Copying high resolution horizontal borders'/>
 		<echo/>
 		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='vertical'
@@ -276,25 +275,21 @@
 			<dirset dir='img/hiRes' includes='backgrounds'/>
 			<dirset dir='${ajax.dwtimg.dir}/hiRes' includes='backgrounds'/>
 		</imagemerge>
--->	
-
+		
 		<!-- merge loRes images -->
-		<!-- 
 		<mkdir dir="${images.loRes.destDir}"/>
 		<delete file='${images.loRes.destDir}/${images.cssFile}'/>
 		<echo/>
-		<echo message='Merging low resolution images'/>
+		<echo message='Merging low resolution images (-horizborder -vertborders -backgrounds)'/>
 		<echo/>
 		<imagemerge destdir='${images.loRes.destDir}' layout='auto'
 					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
 			<dirset dir='img/loRes' 
-					includes='*'/>
+					includes='*' excludes='horizborders,vertborders,backgrounds'/>
 			<dirset dir='${ajax.dwtimg.dir}/loRes' 
-					includes='*'/>
+					includes='*' excludes='horizborders,vertborders,backgrounds'/>
 		</imagemerge>
 		<echo/>
-		-->
-<!--  MOW: NO LONGER NECESSARY TO SPLIT OUT BY HORIZ/VERT/ETC
 		<echo message='Merging low resolution horizontal borders'/>
 		<echo/>
 		<imagemerge destdir='${images.loRes.destDir}' layout='vertical'
@@ -318,7 +313,6 @@
 			<dirset dir='img/loRes' includes='backgrounds'/>
 			<dirset dir='${ajax.dwtimg.dir}/loRes' includes='backgrounds'/>
 		</imagemerge>
--->
 	</target>
 
 	<target name='sortimages' depends='sortimagesinit'>
@@ -421,7 +415,7 @@
     <mkdir dir="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp"/>
     <unzip src="WebRoot/adminhelp/html/ZimbraAdminOLH.zip" dest="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp" overwrite="yes">
       <patternset>
-	<include name="OpenSourceAdminHelp/**/*"/>
+	<include name="WebHelp/**/*"/>
       </patternset>
     </unzip>
     <copy todir="${build.dir}/WebRoot/adminhelp/html/" overwrite="true" >

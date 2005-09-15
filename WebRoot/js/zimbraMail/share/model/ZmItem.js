@@ -79,12 +79,12 @@ ZmItem.MSG_KEY[ZmItem.NOTE]		= "note";
 
 // Representative icons
 ZmItem.ICON = new Object();
-ZmItem.ICON[ZmItem.CONV]	= "Conversation";
-ZmItem.ICON[ZmItem.MSG]		= "Message";
-ZmItem.ICON[ZmItem.ATT]		= "Attachment";
-ZmItem.ICON[ZmItem.CONTACT]	= "Contact";
-ZmItem.ICON[ZmItem.APPT]	= "Appointment";
-ZmItem.ICON[ZmItem.NOTE]	= "Note";
+ZmItem.ICON[ZmItem.CONV]	= ZmImg.I_CONV;
+ZmItem.ICON[ZmItem.MSG]		= ZmImg.I_MAIL;
+ZmItem.ICON[ZmItem.ATT]		= ZmImg.I_ATTACHMENT;
+ZmItem.ICON[ZmItem.CONTACT]	= ZmImg.I_CONTACT;
+ZmItem.ICON[ZmItem.APPT]	= ZmImg.I_APPT;
+ZmItem.ICON[ZmItem.NOTE]	= ZmImg.I_NOTE;
 
 // fields that can be part of a displayed item
 var i = 1;
@@ -224,12 +224,12 @@ function() {
 	var tagList = this._appCtxt.getTagList();
 	var tagImageInfo;
 	if (!this.tags.length) {
-		tagImageInfo = "Blank_16";
+		tagImageInfo = ZmImg.I_BLANK;
 	} else if (this.tags.length == 1) {
 		var color = tagList.getById(this.tags[0]).color;
 		tagImageInfo = ZmTag.COLOR_MINI_ICON[color];
 	} else {
-		tagImageInfo = "MiniTagStack";
+		tagImageInfo = ZmImg.I_MINI_TAG_STACK;
 	}
 	return tagImageInfo;
 }

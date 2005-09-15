@@ -451,7 +451,7 @@ function(email) {
 		html[idx++] = "<tr valign='center'>";
 		html[idx++] = "<td><b>" + AjxStringUtil.htmlEncode(entryTitle) + "</b></td>";
 		html[idx++] = "<td align='right'>";
-		html[idx++] = AjxImg.getImageHtml("Contact"); // could use different icon if GAL
+		html[idx++] = AjxImg.getImageHtml(ZmImg.I_CONTACT); // could use different icon if GAL
 		html[idx++] = "</td>";
 		html[idx++] = "</table></div>";
 		html[idx++] = "</td></tr>";
