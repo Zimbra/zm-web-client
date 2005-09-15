@@ -612,6 +612,7 @@
 		</imagemerge>
 		
 		<!-- merge loRes images -->
+		<!--
 		<mkdir dir="${images.loRes.destDir}"/>
 		<delete file='${images.loRes.destDir}/${images.cssFile}'/>
 		<echo/>
@@ -648,5 +649,6 @@
 			<dirset dir='img/loRes' includes='backgrounds'/>
 			<dirset dir='${ajax.dwtimg.dir}/loRes' includes='backgrounds'/>
 		</imagemerge>
+		-->
 	</target>
 </project>
