@@ -252,73 +252,45 @@
 					includes='*'/>
 		</imagemerge>
 		<echo/>
-<!--  MOW: NO LONGER NECESSARY TO SPLIT OUT BY HORIZ/VERT/ETC
-		<echo message='Copying high resolution horizontal borders'/>
-		<echo/>
-		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='vertical'
-					cssfile='${images.cssFile}' csspath='/zimbra/img/hiRes/'>
-			<dirset dir='img/hiRes' includes='horizborders'/>
-			<dirset dir='${ajax.dwtimg.dir}/hiRes' includes='horizborders'/>
-		</imagemerge>
-		<echo/>
-		<echo message='Copying high resolution vertical borders'/>
-		<echo/>
-		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='horizontal'
-					cssfile='${images.cssFile}' csspath='/zimbra/img/hiRes/'>
-			<dirset dir='img/hiRes' includes='vertborders'/>
-			<dirset dir='${ajax.dwtimg.dir}/hiRes' includes='vertborders'/>
-		</imagemerge>
-		<echo/>
-		<echo message='Copying high resolution backgrounds'/>
-		<echo/>
-		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='repeat'
-					cssfile='${images.cssFile}' csspath='/zimbra/img/hiRes/'>
-			<dirset dir='img/hiRes' includes='backgrounds'/>
-			<dirset dir='${ajax.dwtimg.dir}/hiRes' includes='backgrounds'/>
-		</imagemerge>
--->	
 
 		<!-- merge loRes images -->
-		<!-- 
+
 		<mkdir dir="${images.loRes.destDir}"/>
 		<delete file='${images.loRes.destDir}/${images.cssFile}'/>
 		<echo/>
-		<echo message='Merging low resolution images'/>
+
+		<echo message='Merging low resolution dwt images'/>
 		<echo/>
-		<imagemerge destdir='${images.loRes.destDir}' layout='auto'
+		<imagemerge destdir='${images.loRes.destDir}' 
+					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
+			<dirset dir='${ajax.dwtimg.dir}/loRes' includes='*' excludes='**/examples,**/shadow_border'/>
+		</imagemerge>
+
+		<echo message='Copying non-mergeable low resolution dwt images'/>
+		<echo/>
+		<imagemerge destdir='${images.loRes.destDir}' copy='true'
+					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
+			<dirset dir='${ajax.dwtimg.dir}/loRes' includes='**/examples,**/shadow_border'/>
+		</imagemerge>
+
+
+		<echo message='Merging low resolution app images (-logo, -translate)'/>
+		<echo/>
+		<imagemerge destdir='${images.loRes.destDir}' 
 					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
 			<dirset dir='img/loRes' 
-					includes='*'/>
-			<dirset dir='${ajax.dwtimg.dir}/loRes' 
-					includes='*'/>
+					includes='*'  excludes="**/logo,**/translate"/>
 		</imagemerge>
+
 		<echo/>
-		-->
-<!--  MOW: NO LONGER NECESSARY TO SPLIT OUT BY HORIZ/VERT/ETC
-		<echo message='Merging low resolution horizontal borders'/>
+		<echo message='Copying non-mergeable low resolution app images (logo, translate)'/>
 		<echo/>
-		<imagemerge destdir='${images.loRes.destDir}' layout='vertical'
+		<imagemerge destdir='${images.loRes.destDir}' copy='true'
 					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
-			<dirset dir='img/loRes' includes='horizborders'/>
-			<dirset dir='${ajax.dwtimg.dir}/loRes' includes='horizborders'/>
+			<dirset dir='img/loRes' includes='**/logo,**/translate'/>
 		</imagemerge>
 		<echo/>
-		<echo message='Merging low resolution vertical borders'/>
-		<echo/>
-		<imagemerge destdir='${images.loRes.destDir}' layout='horizontal'
-					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
-			<dirset dir='img/loRes' includes='vertborders'/>
-			<dirset dir='${ajax.dwtimg.dir}/loRes' includes='vertborders'/>
-		</imagemerge>
-		<echo/>
-		<echo message='Copying low resolution backgrounds'/>
-		<echo/>
-		<imagemerge destdir='${images.loRes.destDir}' copy='true' layout='repeat'
-					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
-			<dirset dir='img/loRes' includes='backgrounds'/>
-			<dirset dir='${ajax.dwtimg.dir}/loRes' includes='backgrounds'/>
-		</imagemerge>
--->
+
 	</target>
 
 	<target name='sortimages' depends='sortimagesinit'>
@@ -334,12 +306,16 @@
 		<!-- usage:  make a "icons" directory in your ZimbraWebClient directory and do:
 				ant sorticons -Dsort.source=icons
 		-->
-		<fail unless='sort.source' message='Must specify source directory. For example: ant -Dsort.source=src ...'/>		
-
 		<echo message='Sorting ZimbraWebClient/img/hiRes'/><echo/>
-		<imagesort source='${sort.source}' target='img/hiRes' delete='true'/><!-- noop='true'/-->
+		<imagesort source='images' target='img/hiRes' delete='false'/>
+		<echo message='Sorting ZimbraWebClient/img/loRes'/><echo/>
+		<imagesort source='images' target='img/loRes' delete='true'/>
+
 		<echo message='Sorting Ajax/dwt/hiRes'/><echo/>
-		<imagesort source='${sort.source}' target='${ajax.dwtimg.dir}/hiRes' delete='true'/><!-- noop='true'/-->
+		<imagesort source='images' target='${ajax.dwtimg.dir}/hiRes' delete='false'/>
+		<echo message='Sorting Ajax/dwt/loRes'/><echo/>
+		<imagesort source='images' target='${ajax.dwtimg.dir}/loRes' delete='true'/>
+
 	</target>
 
 
@@ -618,7 +594,7 @@
 		<echo/>
 		<echo message='Merging low resolution images (-horizborder -vertborders -backgrounds)'/>
 		<echo/>
-		<imagemerge destdir='${images.loRes.destDir}' layout='auto'
+		<imagemerge destdir='${images.loRes.destDir}' 
 					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/loRes/'>
 			<dirset dir='img/loRes' 
 					includes='*' excludes='horizborders,vertborders,backgrounds'/>

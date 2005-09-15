@@ -192,7 +192,7 @@ input {width:185px;}
   margin-top:10px;
   margin-bottom:10px;
   width:447px; 
-  height:155px; 
+  height:115px; 
   background-image:url("/zimbra/img/hiRes/logo/LoginBanner.gif");
   
 }

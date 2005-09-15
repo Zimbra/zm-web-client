@@ -430,26 +430,26 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .DwtButton, .ColorButton, .TBButton-activated, .TBButtonWhite-activated {
-	background-image:url(/zimbra/skins/steel/images/bg_button_up.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonUp__H.gif);
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 }
 
 .DwtButton-activated, .ColorButton-activated {
-	background-image:url(/zimbra/skins/steel/images/bg_button_down.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDown__H.gif);
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 }
 
 .DwtButton-triggered, .ColorButton-triggered, .TBButton-triggered, .TBButtonWhite-triggered {
-	background-image:url(/zimbra/skins/steel/images/bg_button_down.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDown__H.gif);
 	border:1px solid;
 	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 }
 
 
 .DwtButton-toggled, .ColorButton-toggled, .TBButton-toggled, .TBButtonWhite-toggled {
-	background-image:url(/zimbra/skins/steel/images/bg_button_down.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDown__H.gif);
 	border:1px solid;
 	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 }
@@ -582,7 +582,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .ZmLoginDialog-HeaderPanel {
 	margin-top:10px;
 	margin-bottom:10px;
-	height:110px; 
+	height:115px; 
 	background-image:url("/zimbra/img/hiRes/logo/LoginBanner.gif");
 }
 .ZmLoginDialog-HeaderText, .ZmLoginDialog-SubHeaderText {
@@ -658,12 +658,12 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	border:1px solid #EEEEEE;
 }
 .DwtMenuItem-selected, .DwtMenuItem-IconArea-selected, .DwtMenuItem-CheckedArea-selected {
-	background-image:url(/zimbra/skins/steel/images/bg_button_up.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonUp__H.gif);
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 }
 .DwtMenuItem-triggered, .DwtMenuItem-IconArea-triggered, .DwtMenuItem-CheckedArea-triggered {
-	background-image:url(/zimbra/skins/steel/images/bg_button_down.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDown__H.gif);
 	border:1px solid;
 	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 }
@@ -1224,7 +1224,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }	
 
 .DwtCalendarButton-activated {
-	background-image:url(/zimbra/skins/steel/images/bg_button_small_up.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonSmallUp__H.gif);
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 	text-align:center;
@@ -1233,7 +1233,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .DwtCalendarButton-triggered {
-	background-image:url(/zimbra/skins/steel/images/bg_button_small_down.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonSmallDown__H.gif);
 	border:1px solid;
 	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 	text-align:center;
@@ -1247,13 +1247,13 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .DwtCalendarDay-activated {
-	background-image:url(/zimbra/skins/steel/images/bg_button_small_up.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonSmallUp__H.gif);
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 }
 
 .DwtCalendarDay-triggered {
-	background-image:url(/zimbra/skins/steel/images/bg_button_small_down.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonSmallDown__H.gif);
 	border:1px solid;
 	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 }
@@ -1813,7 +1813,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	cursor: default;
 	overflow:hidden;
 	height:20px;
-	background-image:url(/zimbra/skins/steel/images/bg_button_up.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonUp__H.gif);
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 	min-width:40px;
@@ -1823,7 +1823,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	cursor: default;
 	overflow:hidden;
 	height:20px;
-	background-image:url(/zimbra/skins/steel/images/bg_button_down.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDown__H.gif);
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 	min-width:40px;
@@ -1833,7 +1833,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	cursor: default;
 	overflow:hidden;
 	height:20px;
-	background-image:url(/zimbra/skins/steel/images/bg_button_down.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDown__H.gif);
 	border:1px solid;
 	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 	min-width:40px;
@@ -2113,13 +2113,13 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .xform_button {
-	background-image:url(/zimbra/skins/steel/images/bg_button_small_up.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonSmallUp__H.gif);
 	border:1px outset #999999;	
 	white-space:nowrap;
 }
 
 .xform_button_default {
-	background-image:url(/zimbra/skins/steel/images/bg_button_small_up.gif);
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonSmallUp__H.gif);
 	border:2px outset #999999;	
 	white-space:nowrap;
 }
@@ -2307,7 +2307,8 @@ HTML>BODY .RadioGrouperLabel {
 }
 .oselect_table,
 .oselect_check_table {
-	background-image:url(/zimbra/skins/steel/images/bg_button_small_up.gif);
+
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonSmallUp__H.gif);
 	border:1px outset #999999;	
 
 	border-collapse:collapse;
