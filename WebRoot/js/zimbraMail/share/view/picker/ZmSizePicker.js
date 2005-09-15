@@ -85,7 +85,7 @@ function(parent) {
 ZmSizePicker.prototype._setupField = 
 function(id) {
 	var f = Dwt.getDomObj(this.getDocument(), id);
-	f.onchange = ZmSizePicker._onChange;
+	Dwt.setHandler(f, DwtEvent.ONCHANGE, ZmSizePicker._onChange);
 	f._picker = this;
 	return f;
 }
@@ -93,7 +93,7 @@ function(id) {
 ZmSizePicker.prototype._setupSizeField = 
 function(id) {
 	var f = Dwt.getDomObj(this.getDocument(), id);
-	f.onkeyup = ZmSizePicker._onKeyUp;
+	Dwt.setHandler(f, DwtEvent.ONKEYUP, ZmSizePicker._onKeyUp);
 	f._picker = this;
 	return f;
 }

@@ -232,7 +232,8 @@ function() {
 		if (didAllImages) {
 			displayImages.style.display = "none";
 		} else {
-			displayImages.onclick = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, iframe);
+			var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, iframe);
+			Dwt.setHandler(displayImages, DwtEvent.ONCLICK, func);
 		}
 	}
 	// set height of view according to height of iframe on timer

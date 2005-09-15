@@ -39,7 +39,7 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 
 	var doc = this.getDocument();
 	this._searchField = Dwt.getDomObj(doc, fieldId);
-	this._searchField.onkeypress = ZmSearchToolBar._keyPressHdlr;
+	Dwt.setHandler(this._searchField, DwtEvent.ONKEYPRESS, ZmSearchToolBar._keyPressHdlr);
 	
 	var groupBy = this._appCtxt.getSettings().getGroupMailBy();
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];

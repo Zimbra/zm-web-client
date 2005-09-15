@@ -224,8 +224,8 @@ function() {
 ZmAutocompleteListView.prototype.handle =
 function(element) {
 	element._acListViewId = this._internalId;
-	element.onkeydown = ZmAutocompleteListView.onKeyDown;
-	element.onkeyup = ZmAutocompleteListView.onKeyUp;
+	Dwt.setHandler(element, DwtEvent.ONKEYDOWN, ZmAutocompleteListView.onKeyDown);
+	Dwt.setHandler(element, DwtEvent.ONKEYUP, ZmAutocompleteListView.onKeyUp);
 }
 
 /**
@@ -511,7 +511,7 @@ function(loc) {
 	this.setZIndex(Dwt.Z_DIALOG_MENU);
 	ZmAutocompleteListView._activeAcList = this;
 	DwtEventManager.addListener(DwtEvent.ONMOUSEDOWN, ZmAutocompleteListView._outsideMouseDownListener);
-	this.shell._setMouseDownHdlr();
+	this.shell._setEventHdlrs([DwtEvent.ONMOUSEDOWN]);
 	this.shell.addListener(DwtEvent.ONMOUSEDOWN, this._outsideListener);
 }
 
@@ -522,7 +522,7 @@ function() {
 	this.setVisible(false);
 	ZmAutocompleteListView._activeAcList = null;
 	DwtEventManager.removeListener(DwtEvent.ONMOUSEDOWN, ZmAutocompleteListView._outsideMouseDownListener);
-	this.shell._setMouseDownHdlr(true);
+	this.shell._setEventHdlrs([DwtEvent.ONMOUSEDOWN], true);
 	this.shell.removeListener(DwtEvent.ONMOUSEDOWN, this._outsideListener);
 }
 

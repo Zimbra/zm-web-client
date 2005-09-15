@@ -528,16 +528,14 @@ function(bStartTimer) {
 	if (timeout <= 0)
 		return;
 
-	var htmlElement = this._shell.getHtmlElement();
-
 	if (bStartTimer) {
 		DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER SET (" + (new Date()).toLocaleString() + ")");
 		this._sessionTimerId = AjxTimedAction.scheduleAction(this._sessionTimer, timeout);
 		
 		DwtEventManager.addListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
-		htmlElement.onmouseup = ZmZimbraMail._userEventHdlr;
+		this._shell.setHandler(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
 		if (AjxEnv.isIE)
-			htmlElement.onkeydown = ZmZimbraMail._userEventHdlr;
+			this._shell.setHandler(DwtEvent.ONMOUSEDOWN, ZmZimbraMail._userEventHdlr);
 		else
 			window.onkeydown = ZmZimbraMail._userEventHdlr;
 	} else {
@@ -547,9 +545,9 @@ function(bStartTimer) {
 		this._sessionTimerId = -1;
 
 		DwtEventManager.removeListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
-		htmlElement.onmouseup = null;
+		this._shell.clearHandler(DwtEvent.ONMOUSEUP);
 		if (AjxEnv.isIE)
-			htmlElement.onkeydown = null;
+			this._shell.clearHandler(DwtEvent.ONMOUSEDOWN);
 		else
 			window.onkeydown = null;
 	}

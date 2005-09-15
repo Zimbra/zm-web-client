@@ -47,12 +47,12 @@ function ZmLoginDialog(parent, zIndex, className) {
     this._errorCell = Dwt.getDomObj(doc, errorCellId);
     
     this._unameField = Dwt.getDomObj(doc, unameId);
-    this._unameField.onkeypress = ZmLoginDialog._keyPressHdlr;
+	Dwt.setHandler(this._unameField, DwtEvent.ONKEYPRESS, ZmLoginDialog._keyPressHdlr);
     this._unameField._parentId = this._htmlElId;
     
     this._pwordField = Dwt.getDomObj(doc, pwordId);
     this._pwordField._parentId = this._htmlElId;
-    this._pwordField.onkeypress = ZmLoginDialog._keyPressHdlr;
+	Dwt.setHandler(this._pwordField, DwtEvent.ONKEYPRESS, ZmLoginDialog._keyPressHdlr);
     
     this._reloginModeField = Dwt.getDomObj(doc, reloginModeId);
     this.setReloginMode(false);
@@ -188,7 +188,7 @@ function(bReloginMode, app, obj) {
 	if (bReloginMode) {
 		this._reloginModeField.innerHTML =  "<a id='" + modeId + "' href='javascript:;'>" + ZmMsg.loginAsDiff + "</a>";
 		var anchor = Dwt.getDomObj(this.getDocument(), modeId);
-		anchor.onclick = ZmLoginDialog._loginDiffListener;
+		Dwt.setHandler(anchor, DwtEvent.ONCLICK, ZmLoginDialog._loginDiffListener);
 		anchor._app = app;
 		anchor._obj = obj;
 		anchor._parent = this;

@@ -540,11 +540,8 @@ ZmFilterListView.prototype._createItemHtml = function(item) {
 	this.associateItemWithElement(item, itemEl, DwtListView.TYPE_LIST_ITEM);
 	var input = itemEl.getElementsByTagName('input')[0];
 	input._itemId = itemEl._itemIndex;
-	if (!AjxEnv.isIE){
-		itemEl.onchange = ZmFilterListView._activeStateChange;
-	} else {
-		input.onclick = ZmFilterListView._activeStateChange;
-	}
+	Dwt.setHandler(AjxEnv.isIE ? input : itemEl, DwtEvent.ONCHANGE, ZmFilterListView._activeStateChange);
+
 	return itemEl;
 };
 

@@ -566,7 +566,7 @@ ZmFreeBusyView.prototype._getAddressInput = function (address) {
 		this._dummyInput = document.createElement("input");
 	}
 	var i = this._dummyInput.cloneNode(true);
-	i.onchange = this._getAddressOnchangeHandler();
+	Dwt.setHandler(i, DwtEvent.ONCHANGE, this._getAddressOnchangeHandler());
 	i.value = address;
 	
 	return i;
@@ -666,8 +666,8 @@ ZmFreeBusyView.prototype._updateAddressRow = function (userSchedule, index, opti
 	var onclickFunc = this._getAddressOnclickHandler();
 	var cell0 = row.cells[0];
 	var cell1 = row.cells[1];
-	cell0.onclick = onclickFunc;
-	cell1.onclick = onclickFunc;
+	Dwt.setHandler(cell0, DwtEvent.ONCLICK, onclickFunc);
+	Dwt.setHandler(cell1, DwtEvent.ONCLICK, onclickFunc);
 	cell0.className = ZmFreeBusyView.ADDRESS_CELL;
 	if (empty == true) {
 		cell1.className = ZmFreeBusyView.ADDRESS_INPUT_EMPTY_CELL;
@@ -676,11 +676,9 @@ ZmFreeBusyView.prototype._updateAddressRow = function (userSchedule, index, opti
 	}
 	cell1.innerHTML = "";
 	cell1.appendChild(this._getAddressInput(addr));
-	cell1.firstChild.onclick = onclickFunc;
+	Dwt.setHandler(cell1.firstChild, DwtEvent.ONCLICK, onclickFunc);
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		this._autocompleteList.handle(cell1.firstChild);
-		//this._setEventHandler(this._fieldId[type], "onFocus");
-		//this._setEventHandler(this._fieldId[type], "onClick");
 	}
 
 };

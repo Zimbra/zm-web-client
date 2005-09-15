@@ -81,8 +81,8 @@ ZmMailSignaturePref.prototype.installEventListeners = function () {
     }
 };
 ZmMailSignaturePref.prototype._installEHandler = function ( elem ){
-    if(elem) {
-	elem.onchange = this.onChangeHandler;
+    if (elem) {
+    	Dwt.setHandler(elem, DwtEvent.ONCHANGE, this.onChangeHandler);
         elem._targetField = this.targetField;
         elem._fieldName = this.modelId;
         elem._objId = this._internalId;

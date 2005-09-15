@@ -347,7 +347,7 @@ function(field) {
 		// only add onkeyup handlers to input/textarea's
 		var tagName = e.tagName.toLowerCase();
 		if (tagName == "input" || tagName == "textarea") {
-			e.onkeyup = ZmContactView._onKeyUp;
+			Dwt.setHandler(e, DwtEvent.ONKEYUP, ZmContactView._onKeyUp); 
 			// TODO circular reference
 			e._view = this;
 			e._field = field;

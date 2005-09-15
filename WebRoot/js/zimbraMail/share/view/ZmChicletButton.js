@@ -32,6 +32,8 @@
 *
 * - cannot have a menu
 * - does not support enabled/disabled
+*
+* @author Conrad Damon
 */
 function ZmChicletButton(parent, outerClass, innerClass) {
 

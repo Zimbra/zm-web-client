@@ -70,7 +70,7 @@ function(parent) {
 	var doc = this.getDocument();
 	Dwt.getDomObj(doc, calId).appendChild(cal.getHtmlElement());
 	var select = this._select = Dwt.getDomObj(doc, selectId);
-	select.onchange = ZmDatePicker._onChange;
+	Dwt.setHandler(select, DwtEvent.ONCHANGE, ZmDatePicker._onChange);
 	select._picker = this;
 	this._updateQuery();
 }

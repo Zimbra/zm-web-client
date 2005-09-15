@@ -40,7 +40,7 @@ function() {
 	return "ZmDomainPicker";
 }
 
-ZmDomainPicker.onclick =
+ZmDomainPicker.onClick =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var picker = el._picker;
@@ -107,7 +107,7 @@ function(parent) {
 	for (var i in domains) {
 		var domain = domains[i];
 		var ip = Dwt.getDomObj(doc, this._inputIds[domain.name]);
-		ip.onclick = ZmDomainPicker.onclick;
+		Dwt.setHandler(ip, DwtEvent.ONCLICK, ZmDomainPicker.onClick);
 		ip.value = domain.name;
 		ip._picker = this;
 		ip._div = Dwt.getDomObj(doc, this._divIds[domain.name]);
@@ -115,10 +115,10 @@ function(parent) {
 	}	
 
 	var from = this._from = Dwt.getDomObj(doc, fromId);
-	from.onchange = ZmDomainPicker._onChange;
+	Dwt.setHandler(from, DwtEvent.ONCHANGE, ZmDomainPicker.onChange);
 	from._picker = this;
 	var to = this._to = Dwt.getDomObj(doc, toId);
-	to.onchange = ZmDomainPicker._onChange;
+	Dwt.setHandler(to, DwtEvent.ONCHANGE, ZmDomainPicker.onChange);
 	to._picker = this;
 
 	this._updateDomains();

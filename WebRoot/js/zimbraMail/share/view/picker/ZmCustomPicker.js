@@ -58,7 +58,7 @@ function(parent) {
 	picker.getHtmlElement().innerHTML = html.join("");
 
 	var field = this._field = Dwt.getDomObj(this.getDocument(), fieldId);
-	field.onkeyup = ZmCustomPicker._onChange;	
+	Dwt.setHandler(field, DwtEvent.ONCHANGE, ZmCustomPicker._onChange);
 	field._picker = this;
 }
 

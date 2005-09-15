@@ -189,7 +189,7 @@ function() {
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 	
 	var searchField = Dwt.getDomObj(doc, this._searchFieldId);
-	searchField.onkeypress = ZmContactPicker._keyPressHdlr;
+	Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmContactPicker._keyPressHdlr);
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
 }
 

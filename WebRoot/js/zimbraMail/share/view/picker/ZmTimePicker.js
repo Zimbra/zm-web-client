@@ -80,27 +80,27 @@ function(parent) {
 	html[i++] = "</table>";
 	picker.getHtmlElement().innerHTML = html.join("");
 
-	this._installOnChange(lastHourId, "after:-1hour");
-	this._installOnChange(last4HoursId, "after:-4hour");
-	this._installOnChange(todayId, "after:-1day");
-	this._installOnChange(yesterdayId, "(after:-2day AND before:-1day)");
-	this._installOnChange(thisWeekId, "after:-1week");
-	this._installOnChange(lastWeekId, "(after:-2week AND before:-1week)");
-	this._installOnChange(thisMonthId, "after:-1month");
-	this._installOnChange(lastMonthId,"(after:-2month AND before:-1month)"); 
-	this._installOnChange(thisYearId, "after:-1year"); 
-	this._installOnChange(lastYearId, "(after:-2year AND before:-1year)"); 
+	this._installOnClick(lastHourId, "after:-1hour");
+	this._installOnClick(last4HoursId, "after:-4hour");
+	this._installOnClick(todayId, "after:-1day");
+	this._installOnClick(yesterdayId, "(after:-2day AND before:-1day)");
+	this._installOnClick(thisWeekId, "after:-1week");
+	this._installOnClick(lastWeekId, "(after:-2week AND before:-1week)");
+	this._installOnClick(thisMonthId, "after:-1month");
+	this._installOnClick(lastMonthId,"(after:-2month AND before:-1month)"); 
+	this._installOnClick(thisYearId, "after:-1year"); 
+	this._installOnClick(lastYearId, "(after:-2year AND before:-1year)"); 
 }
 
-ZmTimePicker.prototype._installOnChange =
+ZmTimePicker.prototype._installOnClick =
 function(id, query) {
 	var box = Dwt.getDomObj(this.getDocument(), id);
-	box.onclick = ZmTimePicker.prototype._onChange;
+	Dwt.setHandler(box, DwtEvent.ONCLICK, ZmTimePicker.onClick);
 	box._query = query;
 	box._picker = this;
 }
 
-ZmTimePicker.prototype._onChange =
+ZmTimePicker._onClick =
 function(ev) {
 	var element = DwtUiEvent.getTarget(ev);
 	var picker = element._picker;

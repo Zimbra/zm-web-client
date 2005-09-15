@@ -83,7 +83,7 @@ ZmAttachmentPicker.prototype._setupRadio =
 function(radioId, doc) {
 	var id = this._radioId[radioId];
 	var rb = this._radio[radioId] = Dwt.getDomObj(doc, id);
-	rb.onclick = ZmAttachmentPicker._radioChange;
+	Dwt.setHandler(rb, DwtEvent.ONCLICK, ZmAttachmentPicker._radioChange);
 	rb._picker = this;
 	rb._radioId = radioId;
 };
