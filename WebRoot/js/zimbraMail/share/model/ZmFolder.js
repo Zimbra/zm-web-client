@@ -364,6 +364,8 @@ function(includeUser) {
 */
 ZmFolder.prototype.mayContain =
 function(what) {
+	if (!what) return true;
+
 	var invalid = false;
 	if (what instanceof ZmFolder) {
 		var folder = what;
