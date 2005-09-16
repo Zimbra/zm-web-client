@@ -82,12 +82,9 @@ function() {
 				for (var i = 0; i < a.length; i++)
 					typeStr.push(ZmSearch.TYPE[a[i]]);
 				method.setAttribute("types", typeStr.join(","));
-				// bug fix #2744 and #3298
-				if (a.length == 1 && a[0] == ZmItem.MSG && 
-					(this.query == "in:sent" || this.query == "in:drafts"))
-				{
+				// bug fix #2744,3298,298
+				if (this.query == "in:sent" || this.query == "in:drafts")
 					method.setAttribute("recip", "1");
-				}
 			}
 		}
 	}
