@@ -26,43 +26,40 @@
 function ZmCalMonthView(parent, posStyle, dropTgt) {
 	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, ZmController.CAL_MONTH_VIEW, dropTgt);	
 	this.getHtmlElement().style.overflow = "hidden";
-	//this.setScrollStyle(DwtControl.SCROLL);
 	this._needFirstLayout = true;
 	this.setNumDays(42);
-}
+};
 
 ZmCalMonthView.prototype = new ZmCalBaseView;
 ZmCalMonthView.prototype.constructor = ZmCalMonthView;
 
-ZmCalMonthView._DaySpacer = 1; // space between days
+ZmCalMonthView._DaySpacer = 1; 			// space between days
+ZmCalMonthView.FIRST_WORKWEEK_DAY = 1; 	// hard code to monday until we get real prefs
+ZmCalMonthView.NUM_DAYS_IN_WORKWEEK = 5;// hard code to 5 days until we get real prefs
 
 ZmCalMonthView.prototype.toString = 
 function() {
 	return "ZmCalMonthView";
-}
+};
 
 ZmCalMonthView.prototype.getRollField =
-function(isDouble)
-{
+function(isDouble) {
 	return isDouble? AjxDateUtil.YEAR : AjxDateUtil.MONTH;
-}
+};
 
 ZmCalMonthView.prototype._dateUpdate =
-function(rangeChanged)
-{
+function(rangeChanged) {
 	this._clearSelectedDay();
 	this._updateSelectedDay();
-}
+};
 
 ZmCalMonthView.prototype._updateTitle =
-function() 
-{	
+function()  {	
 	// updated in updateDays
-}
+};
 
 ZmCalMonthView.prototype._clearSelectedDay =
-function() 
-{
+function() {
 	if (this._selectedData != null) {
 		var today = new Date();
 		today.setHours(0,0,0, 0);
@@ -72,38 +69,159 @@ function()
 		te.className = 'calendar_month_cells_td';			
 		this._selectedData = null;
 	}
-}
+};
 
 ZmCalMonthView.prototype._updateSelectedDay =
-function() 
-{
+function() {
 	var day = this._dateToDayIndex[this._dayKey(this._date)];
 	var te = Dwt.getDomObj(this.getDocument(), day.tdId);	
 	te.className = 'calendar_month_cells_td-Selected';	
 	this._selectedData = day;	
-}
+};
 
 ZmCalMonthView.prototype._apptSelected =
 function() {
 	this._clearSelectedDay();
-}
+};
 
 ZmCalMonthView.prototype._getWeekForAppt =
 function(appt) {
 	var day = this._getDayForAppt(appt);
 	return day ? this._weeks[day.week] : null;
-}
+};
 
 ZmCalMonthView.prototype._getDayForAppt =
 function(appt) {
 	return this._dateToDayIndex[this._dayKey(appt.getStartDate())];
-}
+};
 
 ZmCalMonthView.prototype._getDivForAppt =
 function(appt) {
 	var day = this._getDayForAppt(appt);
 	return day ? Dwt.getDomObj(this.getDocument(), day.dayId) : null;
-}
+};
+
+ZmCalMonthView.prototype._getStartDate = 
+function() {
+	return new Date(this.getDate());
+};
+
+ZmCalMonthView.prototype.getPrintHtml = 
+function() {
+	var html = new Array();
+	var idx = 0;
+	var startDate = new Date(this.getTimeRange().start);
+	var endDate = new Date(this.getTimeRange().end);
+	var currDate = new Date(startDate);
+	var currMonth = this.getDate().getMonth();
+	var currYear = this.getDate().getFullYear();
+	var list = this.getList();
+	var count = 0;
+	var numAppts = 0;
+
+	html[idx++] = "<div style='width:100%'>";
+	html[idx++] = "<table width=100% cellpadding=3 cellspacing=3 bgcolor='#EEEEEE' style='border: 2px solid black; margin-bottom: 2px'><tr>";
+	html[idx++] = "<td valign=top width=100% style='font-size:22px; font-weight:bold; white-space:nowrap'>";
+	html[idx++] = this._getDateHdrForPrintView();
+	html[idx++] = "</td></tr></table>";
+
+	html[idx++] = "<table border=0 cellpadding=1 cellspacing=1 style='border:2px solid black'><tr><td>";
+	
+	html[idx++] = "<table border=0>";
+	// print the weekdays
+	html[idx++] = "<tr>";
+	for (var i = 0; i < AjxDateUtil._daysOfTheWeek.length; i++) {
+		html[idx++] = "<td valign=top style='";
+		html[idx++] = "width:120px; font-family:Arial; font-size:11px; white-space:nowrap; overflow:hidden; border:1px solid black;";
+		html[idx++] = "'><center><b>" + AjxDateUtil._daysOfTheWeek[i] + "</b></center></td>";
+	}
+	html[idx++] = "</tr>";
+	
+	var style = "width:118px; font-family:Arial; font-size:10px; white-space:nowrap; overflow:hidden;";
+	
+	// calc. the number of weeks in the current month
+	var numOfWeeks = 0;
+	while (currDate < endDate) {
+		if ((currDate.getMonth() > currMonth && currDate.getFullYear() == currYear) || currDate.getFullYear() > currYear)
+			break;
+		currDate.setDate(currDate.getDate() + 7);
+		numOfWeeks++;
+	}
+	
+	currDate = new Date(startDate);
+	while (currDate < endDate) {
+		// prevent printing extra week for next month
+		if ((currDate.getMonth() > currMonth && currDate.getFullYear() == currYear) || currDate.getFullYear() > currYear)
+			break;
+		
+		var rowHeight = numOfWeeks == 5 ? "100px" : "85px";
+		var maxNumAppts = numOfWeeks == 5 ? 6 : 4;
+		
+		html[idx++] = "<tr style='height:" + rowHeight + ";'>";
+		for (var i = 0; i < AjxDateUtil._daysOfTheWeek.length; i++) {
+			html[idx++] = "<td valign=top style='border:1px solid black;'>"
+			html[idx++] = "<div style='text-align:right; color:#AAAAAA; " + style + "'>";
+			
+			var dateHdr = (i == 0 && currDate.getMonth() != currMonth) || (currDate.getDate() == 1)
+				? AjxDateUtil.getTimeStr(currDate, "%t %D")
+				: currDate.getDate();
+			
+			html[idx++] = "<b>" + dateHdr + "</b></div>";
+			numAppts = 0;
+			var appt = list.get(count);
+			while (appt && appt.startDate.getDate() == currDate.getDate()) {
+				if (numAppts < maxNumAppts) {
+					var loc = appt.getLocation();
+					if (appt.isAllDayEvent()) {
+						html[idx++] = "<div style='border:1px solid #AAAAAA; ";
+						if (currDate.getMonth() != currMonth)
+							html[idx++] = "color:#AAAAAA; ";
+						html[idx++] = style + "'>";
+						html[idx++] = "<b>" + appt.getName() + "</b>";
+						if (loc)
+							html[idx++] = " (" + loc+ ")";
+						html[idx++] = "</div>";
+					} else {
+						var startTime = AjxDateUtil.getTimeStr(appt.startDate, "%H:%m%p");
+						html[idx++] = "<div style='" + style;
+						if (currDate.getMonth() != currMonth)
+							html[idx++] = " color:#AAAAAA;";
+						html[idx++] = "'>";
+						html[idx++] = startTime + "&nbsp;";
+						html[idx++] = appt.getName();
+						if (loc)
+							html[idx++] = " (" + loc+ ")";
+						html[idx++] = "</div>";
+					}
+					appt = list.get(++count);
+					numAppts++;
+				} else {
+					html[idx++] = "<div style='" + style + "'>More...</div>";
+					// move passed this day
+					while (appt && appt.startDate.getDate() == currDate.getDate())
+						appt = list.get(++count);
+					break;
+				}				
+			}
+			html[idx++] ="</td>";
+			currDate.setDate(currDate.getDate() + 1);
+			// if this is the last day of the week and the next day is the next month, dont bother continuing
+			if (i == 6 && ((currDate.getMonth() > currMonth && currDate.getFullYear() == currYear) || currDate.getFullYear() > currYear))
+				break;
+		}
+		html[idx++] = "</tr>";
+	}
+	html[idx++] = "</table>";
+	
+	html[idx++] = "</td></tr></table>";
+	
+	return html.join("");
+};
+
+ZmCalMonthView.prototype._getDateHdrForPrintView = 
+function() {
+	return AjxDateUtil.getTimeStr(this.getDate(), "%M %Y");
+};
 
 ZmCalMonthView.prototype._dayTitle =
 function(date) {
@@ -113,7 +231,7 @@ function(date) {
 	} else {
 		return date.getDate();
 	}
-}
+};
 
 ZmCalMonthView.prototype._reserveRow = 
 function(day, data, appt, weekAppts) {
@@ -149,7 +267,7 @@ function(day, data, appt, weekAppts) {
 		data.num++;
 		return data;
 	}
-}
+};
 
 ZmCalMonthView.prototype.addAppt = 
 function(appt) {
@@ -174,7 +292,7 @@ function(appt) {
 	} else {
 		week.appts[uniqId] = this._reserveRow(day, null, appt, null);
 	}
-}
+};
 
 ZmCalMonthView.prototype._postSet = 
 function() {
@@ -204,7 +322,7 @@ function() {
 	}
 	if (!this._needFirstLayout)
 		this._layout();
-}
+};
 
 ZmCalMonthView.prototype._preSet = 
 function() {
@@ -226,7 +344,7 @@ function() {
 			if (day.appts) delete day.appts;
 		}
 	}
-}
+};
 
 ZmCalMonthView._allDayItemHtml =
 function(appt,id, body_style) {
@@ -248,7 +366,7 @@ function(appt,id, body_style) {
 	};	
 	var template = "calendar_appt_allday";
 	return DwtBorder.getBorderHtml(template, subs, null);
-}
+};
 
 ZmCalMonthView.prototype._createAllDayItemHtml =
 function(appt, apptEnd) {
@@ -276,7 +394,7 @@ function(appt, apptEnd) {
 	div.innerHTML = ZmCalMonthView._allDayItemHtml(appt, this._getItemId(appt), body_style);
 
 	return div;
-}
+};
 
 ZmCalMonthView.prototype._createAllDayFillerHtml =
 function(day) {
@@ -291,7 +409,7 @@ function(day) {
 	//cell.colSpan = 2;
 	cell.className = "calendar_month_day_item";
 	return result;
-}
+};
 
 ZmCalMonthView.prototype._createItemHtml =	
 function(appt) {
@@ -327,7 +445,7 @@ function(appt) {
 	cell.className = "calendar_month_day_item";
 
 	return result;
-}
+};
 
 ZmCalMonthView.prototype._createDay =
 function(html, loc, week, dow) {
@@ -343,7 +461,7 @@ function(html, loc, week, dow) {
 	html.append("</td>");
 	var data = { dayId: did, titleId: tid, tdId: tdid, week: week, dow: dow, view: this};
 	this._days[loc] = data;
-}
+};
 
 ZmCalMonthView.prototype._createHtml =
 function() {
@@ -407,7 +525,7 @@ function() {
 	html.append("</td></tr>");
 	html.append("</table>");
 	this.getHtmlElement().innerHTML = html.toString();
-}
+};
 
 ZmCalMonthView.prototype._updateDays =
 function() {
@@ -450,7 +568,7 @@ function() {
 	this._title = DwtMsg.LONG_MONTH[this._date.getMonth()]+" "+this._date.getFullYear();	
 	var titleEl = Dwt.getDomObj(doc, this._titleId);
 	titleEl.innerHTML = this._title;
-}
+};
 
 ZmCalMonthView.prototype._layoutAllDay = 
 function() {
@@ -482,7 +600,7 @@ function() {
 			}
 		}
 	}
-}
+};
 
 ZmCalMonthView.prototype._layout =
 function() {
@@ -523,7 +641,7 @@ function() {
 	}
 
 	this._layoutAllDay(h);
-}
+};
 
 ZmCalMonthView.getDayToolTipText =
 function(date, list) {
@@ -577,7 +695,7 @@ function(date, list) {
 	html.append("</div>");
 
 	return html.toString();
-}
+};
 
 ZmCalMonthView.prototype._mouseDownAction = 
 function(ev, div) {
@@ -592,7 +710,7 @@ function(ev, div) {
 			break;
 	}
 	return false;
-}
+};
 
 ZmCalMonthView.prototype._doubleClickAction =
 function(ev, div) {
@@ -600,7 +718,7 @@ function(ev, div) {
 	if (div._type == ZmCalBaseView.TYPE_MONTH_DAY) {
 		this._timeSelectionAction(ev, div, true);
 	}
-}
+};
 
 ZmCalMonthView.prototype._timeSelectionAction =
 function(ev, div, dblclick) {
@@ -617,4 +735,4 @@ function(ev, div, dblclick) {
 			return;
 	}
 	this._timeSelectionEvent(date, AjxDateUtil.MSEC_PER_HOUR, dblclick);
-}
+};

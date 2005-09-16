@@ -96,7 +96,7 @@ function() {
 	// print the common header for calendar by calling base class
 	html[idx++] = ZmCalBaseView.prototype.getPrintHtml.call(this);
 	html[idx++] = "<div style='width:100%'>";
-	html[idx++] = "<table width=100% border=0 cellpadding=1 cellspacing=1 style='border: 2px solid black'>";
+	html[idx++] = "<table width=100% border=0 cellpadding=1 cellspacing=1 style='border:2px solid black'>";
 
 	var list = this.getList();
 	var numAppts = list ? list.size() : 0;
@@ -109,12 +109,10 @@ function() {
 	}
 	
 	for (var i = 0; i < numDays; i++) {
-		nextDay.setDate(startDate.getDate() + i);
-		
 		html[idx++] = "<tr><td width=100%>";
 		if (numDays > 1) {
 			// XXX: set the styles inline so we force the printer to acknowledge them!
-			var style = "background-color:#EEEEEE; text-align:center; font-family: Arial; font-size: 14px; font-weight: bold; border:1px solid #EEEEEE;";
+			var style = "background-color:#EEEEEE; text-align:center; font-family:Arial; font-size:14px; font-weight:bold; border:1px solid #EEEEEE;";
 			html[idx++] = "<div style='" + style + "'>";
 			html[idx++] = AjxDateUtil.getTimeStr(nextDay, "%w, %M %D");
 			html[idx++] = "</div>";
@@ -125,15 +123,15 @@ function() {
 		for (var j = 0; j < numAppts; j++) {
 			var appt = list.get(j);
 			if (appt.startDate.getDate() == nextDay.getDate() || numDays == 1) {
-				var location = appt.getLocation();
+				var loc = appt.getLocation();
 				var status = appt.getParticipationStatusString();
 				if (appt.isAllDayEvent()) {
 					// XXX: this is bad HTML but the browsers do the right thing and help us out
 					html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100% style='border:1px solid black'>";
 					html[idx++] = "<tr><td style='font-family:Arial; font-size:13px; width:100%;'>";
 					html[idx++] = "<b>" + appt.getName() + "</b>";
-					if (location)
-						html[idx++] = " (" + location + ")";
+					if (loc)
+						html[idx++] = " (" + loc + ")";
 					html[idx++] = " [" + status + "]";
 					// print more detail if we're printing a single day
 					if (numDays == 1) {
@@ -154,8 +152,8 @@ function() {
 					html[idx++] = "<td align=right style='" + style + "'><b>" + endTime + "</b></td>";
 					html[idx++] = "<td style='" + style + "'>";
 					html[idx++] = appt.getName();
-					if (location) {
-						html[idx++] = " (" + location + ")";
+					if (loc) {
+						html[idx++] = " (" + loc + ")";
 					}
 					html[idx++] = " [" + status + "]";
 					html[idx++] = "</td></tr>";
@@ -175,6 +173,8 @@ function() {
 			html[idx++] = "</table>";
 
 		html[idx++] = "<br><br></td></tr>";
+
+		nextDay.setDate(nextDay.getDate() + 1);
 	}
 	html[idx++] = "</table>";
 	html[idx++] = "</div>";

@@ -643,8 +643,7 @@ function() {
 
 	// let set up the mini calendar
 	var miniCal = new DwtCalendar(this, null, null, null, null, null, true, true);
-	var timeRange = this.getTimeRange();
-	var startDate = new Date(timeRange.start);
+	var startDate = this._getStartDate();
 	
 	// set the date to current month
 	miniCal.setDate(startDate, true);
@@ -675,6 +674,12 @@ function() {
 ZmCalBaseView.prototype._getDateHdrForPrintView = 
 function() {
 	return "";
+};
+
+ZmCalBaseView.prototype._getStartDate =
+function() {
+	var timeRange = this.getTimeRange();
+	return new Date(timeRange.start);
 };
 
 // override
