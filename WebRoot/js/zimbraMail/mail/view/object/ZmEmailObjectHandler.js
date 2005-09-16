@@ -114,9 +114,11 @@ function(obj) {
 		var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
 		ZmOperation.setOperation(this._menu, ZmOperation.CONTACT, newOp, newText);
 	}
-	var m = this._actionAddress.match(/([\w\-]+\.\w+)$/);
-	if (m && m[1]) {
-		var url = 'www.' + m[1];
+	var parts = this._actionAddress.split("@");
+	if (parts.length) {
+		var domain = parts[parts.length - 1];
+		var pieces = domain.split(".");
+		var url = (pieces.length <= 2) ? 'www.' + domain : domain;
 		var text = AjxStringUtil.resolve(ZmMsg.goToUrl, [url]);
 		this._menu.getOp(ZmOperation.GO_TO_URL).setText(text);
 		this._actionUrl = "http://" + url;
