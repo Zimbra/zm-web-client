@@ -171,3 +171,9 @@ ZmTag.checkColor =
 function(color) {
 	return ((color != null) && (color >= 0 && color <= ZmTag.MAX_COLOR)) ? color : ZmTag.DEFAULT_COLOR;
 }
+
+
+ZmTag.prototype.getIcon = 
+function() {
+	return ZmTag.COLOR_ICON[this.color];
+}

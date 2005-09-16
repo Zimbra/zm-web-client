@@ -51,10 +51,31 @@ ZmFolder.ID_TAGS	 		= 8;
 ZmFolder.ID_CALENDAR		= 10;
 ZmFolder.FIRST_USER_ID		= 256;
 
-// folder name overrides
-ZmFolder.NAME = new Object();
-ZmFolder.NAME[ZmFolder.ID_INBOX] = ZmMsg.inbox;
-ZmFolder.NAME[ZmFolder.ID_SPAM] = ZmMsg.junk;
+// system folder names
+ZmFolder.MSG_KEY = new Object();
+ZmFolder.MSG_KEY[ZmFolder.ID_INBOX]		= "inbox";
+ZmFolder.MSG_KEY[ZmFolder.ID_TRASH]		= "trash";
+ZmFolder.MSG_KEY[ZmFolder.ID_SPAM]		= "junk";
+ZmFolder.MSG_KEY[ZmFolder.ID_SENT]		= "sent";
+ZmFolder.MSG_KEY[ZmFolder.ID_DRAFTS]	= "drafts";
+ZmFolder.MSG_KEY[ZmFolder.ID_USER]		= "folders";
+ZmFolder.MSG_KEY[ZmFolder.ID_CONTACTS]	= "contacts";
+ZmFolder.MSG_KEY[ZmFolder.ID_CALENDAR]	= "calendar";
+ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]		= "tags";
+ZmFolder.MSG_KEY[ZmFolder.ID_SEARCH]	= "searches";
+
+// system folder icons
+ZmFolder.IMAGE = new Object();
+ZmFolder.IMAGE[ZmFolder.ID_INBOX]		= "Inbox";
+ZmFolder.IMAGE[ZmFolder.ID_TRASH]		= "Trash";
+ZmFolder.IMAGE[ZmFolder.ID_SPAM]		= "SpamFolder";
+ZmFolder.IMAGE[ZmFolder.ID_SENT]		= "SentFolder";
+ZmFolder.IMAGE[ZmFolder.ID_DRAFTS]		= "DraftFolder";
+//ZmFolder.IMAGE[ZmFolder.ID_USER]		= "Group";
+ZmFolder.IMAGE[ZmFolder.ID_CONTACTS]	= "ContactsFolder";
+ZmFolder.IMAGE[ZmFolder.ID_CALENDAR]	= "CalendarFolder";
+//ZmFolder.IMAGE[ZmFolder.ID_TAGS]		= "TagFolder";
+//ZmFolder.IMAGE[ZmFolder.ID_SEARCH]	= "SearchFolder";
 
 // name to use within the query language
 ZmFolder.QUERY_NAME = new Object();
@@ -95,7 +116,7 @@ ZmFolder.createFromJs =
 function(parent, obj, tree, isSearch) {
 	if (!obj) return;
 	
-	var name = ZmFolder.NAME[obj.id] ? ZmFolder.NAME[obj.id] : obj.name;
+	var name = ZmFolder.MSG_KEY[obj.id] ? ZmFolder.MSG_KEY[obj.id] : obj.name;
 	var folder;
 	if (isSearch) {
 		var types = obj.types ? obj.types.split(",") : null;
@@ -320,6 +341,14 @@ function(showUnread, maxLength, noMarkup) {
 	} else {
 		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
 	}
+}
+
+ZmFolder.prototype.getIcon = 
+function() {
+	if (ZmFolder.IMAGE[this.id])
+		return ZmFolder.IMAGE[this.id];
+	else
+		return (this.type == ZmOrganizer.SEARCH) ? "SearchFolder": "Folder";
 }
 
 /**

@@ -137,6 +137,8 @@ function(showUnread, maxLength, noMarkup) {
 	return name;
 }
 
+ZmOrganizer.prototype.getIcon = function() {};
+
 /**
 * Assigns the organizer a new name.
 */

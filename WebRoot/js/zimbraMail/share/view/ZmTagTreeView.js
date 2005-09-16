@@ -70,8 +70,3 @@ function(ev) {
 			node.setImage(ZmTag.COLOR_ICON[tag.color]);
 	}
 }
-
-ZmTagTreeView.prototype._getIcon = 
-function(tag) {
-	return ZmTag.COLOR_ICON[tag.color];
-}

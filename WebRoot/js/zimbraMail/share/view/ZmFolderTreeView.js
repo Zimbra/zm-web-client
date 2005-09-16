@@ -31,32 +31,6 @@ function ZmFolderTreeView(appCtxt, parent, tree, dragSrc, dropTgt) {
 ZmFolderTreeView.prototype = new ZmTreeView;
 ZmFolderTreeView.prototype.constructor = ZmFolderTreeView;
 
-// system folder names
-ZmFolderTreeView.MSG_KEY = new Object();
-ZmFolderTreeView.MSG_KEY[ZmFolder.ID_INBOX]		= "inbox";
-ZmFolderTreeView.MSG_KEY[ZmFolder.ID_TRASH]		= "trash";
-ZmFolderTreeView.MSG_KEY[ZmFolder.ID_SPAM]		= "junk";
-ZmFolderTreeView.MSG_KEY[ZmFolder.ID_SENT]		= "sent";
-ZmFolderTreeView.MSG_KEY[ZmFolder.ID_DRAFTS]	= "drafts";
-ZmFolderTreeView.MSG_KEY[ZmFolder.ID_USER]		= "folders";
-ZmFolderTreeView.MSG_KEY[ZmFolder.ID_CONTACTS]	= "contacts";
-ZmFolderTreeView.MSG_KEY[ZmFolder.ID_CALENDAR]	= "calendar";
-ZmFolderTreeView.MSG_KEY[ZmFolder.ID_TAGS]		= "tags";
-ZmFolderTreeView.MSG_KEY[ZmFolder.ID_SEARCH]	= "searches";
-
-// system folder icons
-ZmFolderTreeView.IMAGE = new Object();
-ZmFolderTreeView.IMAGE[ZmFolder.ID_INBOX]		= "Inbox";
-ZmFolderTreeView.IMAGE[ZmFolder.ID_TRASH]		= "Trash";
-ZmFolderTreeView.IMAGE[ZmFolder.ID_SPAM]		= "SpamFolder";
-ZmFolderTreeView.IMAGE[ZmFolder.ID_SENT]		= "SentFolder";
-ZmFolderTreeView.IMAGE[ZmFolder.ID_DRAFTS]		= "DraftFolder";
-//ZmFolderTreeView.IMAGE[ZmFolder.ID_USER]		= "Group";
-ZmFolderTreeView.IMAGE[ZmFolder.ID_CONTACTS]	= "ContactsFolder";
-ZmFolderTreeView.IMAGE[ZmFolder.ID_CALENDAR]	= "CalendarFolder";
-//ZmFolderTreeView.IMAGE[ZmFolder.ID_TAGS]		= "TagFolder";
-//ZmFolderTreeView.IMAGE[ZmFolder.ID_SEARCH]		= "SearchFolder";
-
 // Public methods
 
 ZmFolderTreeView.prototype.toString = 
@@ -106,10 +80,10 @@ function(folderTree, folders, showUnread, omit) {
 			var ti = new DwtTreeItem(this._parent, null, null, null, null, className);
 			if (isContainer)
 				ti.enableSelection(false);
-			var text = folder ? folder.getName(showUnread) : ZmMsg[ZmFolderTreeView.MSG_KEY[id]];
+			var text = folder ? folder.getName(showUnread) : ZmMsg[ZmFolder.MSG_KEY[id]];
 			ti.setText(text);
-			if (ZmFolderTreeView.IMAGE[id])
-				ti.setImage(ZmFolderTreeView.IMAGE[id]);
+			if (ZmFolder.IMAGE[id])
+				ti.setImage(ZmFolder.IMAGE[id]);
 			ti.setData(Dwt.KEY_ID, id);
 			// can't drop anything into these folders
 			if (id != ZmFolder.ID_CONTACTS && id != ZmFolder.ID_CALENDAR && id != ZmFolder.ID_TAGS)
@@ -120,7 +94,7 @@ function(folderTree, folders, showUnread, omit) {
 				this._render(ti, folder, omit);
 			} else {
 				// create a fake placeholder folder for Tags container, with root folder as parent
-				var name = ZmMsg[ZmFolderTreeView.MSG_KEY[id]];
+				var name = ZmMsg[ZmFolder.MSG_KEY[id]];
 				folder = new ZmFolder(id, name, folderTree, folderTree);
 				folderTree.root.children.add(folder);
 				if (id == ZmFolder.ID_TAGS) {
@@ -132,12 +106,4 @@ function(folderTree, folders, showUnread, omit) {
 		}
 	}
 	return tagTreeController;
-}
-
-ZmFolderTreeView.prototype._getIcon = 
-function(folder) {
-	if (ZmFolderTreeView.IMAGE[folder.id])
-		return ZmFolderTreeView.IMAGE[folder.id];
-	else
-		return (folder.type == ZmOrganizer.SEARCH) ? "SearchFolder": "Folder";
 }

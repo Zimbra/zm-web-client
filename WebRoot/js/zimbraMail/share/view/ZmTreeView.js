@@ -165,7 +165,7 @@ function(treeNode, organizer, omit) {
 // Adds a tree item node to the tree, and then adds its children.
 ZmTreeView.prototype._addNew =
 function(parentNode, newOrganizer, index) {
-	var tn = new DwtTreeItem(parentNode, index, newOrganizer.getName(this._showUnread), this._getIcon(newOrganizer));
+	var tn = new DwtTreeItem(parentNode, index, newOrganizer.getName(this._showUnread), newOrganizer.getIcon());
 	tn.setData(Dwt.KEY_ID, newOrganizer.id);
 	tn.setData(Dwt.KEY_OBJECT, newOrganizer);
 	if (this._dragSrc)
