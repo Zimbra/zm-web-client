@@ -49,6 +49,7 @@ ZmPOObjectHandler.PO_DATA = {
 	"GR9328B2-3X499": { req: "Steve Patterson", desc: "Cisco Catalyst 2912MF XL 12-port Switch", total: "$25,437.38", state: ZmPOObjectHandler.REJECTED },
 	"GR9328X2-3Y847": { req: "Jeanine Martin", desc: "Software for Graphics Artists in Marketing", total: "$1,298.00", state: ZmPOObjectHandler.APPROVED },
 	"GR738B64-8774Q": { req: "Arlene Johnson", desc: "Telecom Hardware for new office building", total: "$12,736.17", state:ZmPOObjectHandler.NEITHER }
+	"GR733454-8788Q": { req: "Chris Smith", desc: "Performance Test Server", total: "$5,723.17", state:ZmPOObjectHandler.NEITHER }
 };
 
 
