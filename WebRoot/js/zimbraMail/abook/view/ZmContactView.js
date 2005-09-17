@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmContactView(parent, isReadOnly) {
+function ZmContactView(parent, appCtxt, isReadOnly) {
 	DwtComposite.call(this, parent, "ZmContactView", DwtControl.ABSOLUTE_STYLE);
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
+	this._appCtxt = appCtxt;
 	// read only flag is mainly used for printing a single contact
 	this._isReadOnly = isReadOnly;
 	this.getHtmlElement().style.overflow = "hidden";
@@ -590,7 +590,7 @@ function(contact, abridged, appCtxt) {
 		html[idx++] = "</table>";
 	} else {
 		var cc = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController();
-		var printView = new ZmContactView(cc.getCurrentView(), true);
+		var printView = new ZmContactView(cc._container, appCtxt, true);
 		printView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 		printView.zShow(false);
 		printView.set(contact);
@@ -598,6 +598,9 @@ function(contact, abridged, appCtxt) {
 		html[idx++] = "<div class='ZmContactView'>";
 		html[idx++] = printView.getHtmlElement().innerHTML;
 		html[idx++] = "</div>";
+		
+		// cleanup
+		cc._container.getHtmlElement().removeChild(printView.getHtmlElement());
 	}
 	
 	return html.join("");

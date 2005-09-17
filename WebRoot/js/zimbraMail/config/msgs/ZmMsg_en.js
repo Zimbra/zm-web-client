@@ -426,6 +426,7 @@ ZmMsg.preferences = "Preferences";
 ZmMsg.prefix = "Prefix each included line with";
 ZmMsg.previous = "Previous";
 ZmMsg.print = "Print";
+ZmMsg.printContactListTooltip = "Print whole list";
 ZmMsg.printTooltip = "Print selected item(s)";
 ZmMsg.publicComputer = "Remember me on this computer";
 ZmMsg.purple = "Purple";

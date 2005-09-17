@@ -50,6 +50,7 @@ function ZmContactListController(appCtxt, container, contactsApp) {
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 	
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
+	this._listeners[ZmOperation.PRINT_MENU] = new AjxListener(this, this._printContactListener);
 
 	this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._changeListener));
 	this._isGalSearch = false;
@@ -150,6 +151,18 @@ function(view) {
 
 // Private and protected methods
 
+ZmContactListController.prototype._standardToolBarOps =
+function() {
+	var list = [ZmOperation.NEW_MENU];
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+		list.push(ZmOperation.TAG_MENU);
+	list.push(ZmOperation.SEP);
+	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
+		list.push(ZmOperation.PRINT_MENU);
+	list.push(ZmOperation.DELETE, ZmOperation.MOVE);
+	return list;
+}
+
 ZmContactListController.prototype._getToolBarOps =
 function() {
 	var list = this._standardToolBarOps();
@@ -202,6 +215,7 @@ function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 	this._setupViewMenu(view);
 	this._setNewButtonProps(view, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
+	this._setupPrintMenu(view);
 	this._toolbar[view].addFiller();
 	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
 	this._setNavToolBar(tb);
@@ -317,6 +331,17 @@ function(view) {
 	return menu;
 }
 
+ZmContactListController.prototype._setupPrintMenu = 
+function(view) {
+	var printButton = this._toolbar[view].getButton(ZmOperation.PRINT_MENU);
+	var menu = new ZmPopupMenu(printButton);
+	printButton.setMenu(menu);
+	
+	var mi = menu.createMenuItem(ZmOperation.PRINT_CONTACTLIST, ZmOperation.IMAGE[ZmOperation.PRINT_CONTACTLIST], ZmMsg[ZmOperation.MSG_KEY[ZmOperation.PRINT_CONTACTLIST]]);
+	mi.setData(ZmOperation.MENUITEM_ID, ZmOperation.PRINT_CONTACTLIST);
+	mi.addSelectionListener(this._listeners[ZmOperation.PRINT]);
+}
+
 // Resets the available options on a toolbar or action menu.
 ZmContactListController.prototype._resetOperations = 
 function(parent, num) {
@@ -353,4 +378,14 @@ function(ev) {
 		this._printView = new ZmPrintView(this._appCtxt);
 	
 	this._printView.render(this._list);
+}
+
+ZmContactListController.prototype._printContactListener = 
+function(ev) {
+	if (!this._printView)
+		this._printView = new ZmPrintView(this._appCtxt);
+	
+	var contact = this._listView[this._currentView].getSelection()[0];
+	if (contact)
+		this._printView.render(contact);
 }
