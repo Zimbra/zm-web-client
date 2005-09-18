@@ -116,7 +116,7 @@ ZmFolder.createFromJs =
 function(parent, obj, tree, isSearch) {
 	if (!obj) return;
 	
-	var name = ZmFolder.MSG_KEY[obj.id] ? ZmFolder.MSG_KEY[obj.id] : obj.name;
+	var name = ZmFolder.MSG_KEY[obj.id] ? ZmMsg[ZmFolder.MSG_KEY[obj.id]] : obj.name;
 	var folder;
 	if (isSearch) {
 		var types = obj.types ? obj.types.split(",") : null;

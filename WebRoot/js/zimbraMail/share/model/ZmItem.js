@@ -222,6 +222,8 @@ function() {
 ZmItem.prototype.getTagImageInfo =
 function() {
 	var tagList = this._appCtxt.getTagList();
+	if (!tagList) return ZmTag.DEFAULT_COLOR;
+	
 	var tagImageInfo;
 	if (!this.tags.length) {
 		tagImageInfo = "Blank_16";
