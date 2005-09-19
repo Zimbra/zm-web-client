@@ -88,7 +88,7 @@ function() {
 	var tip = "";
 	if (ZmLogin.isAlmostSupportedBrowser()) {
 		tip = "Please note that because you are running an unsupported browser, your user experience may be affected, and all functionality may not be available.<p>" + 
-			  "<a href='javascript:;' onclick='ZmLogin.handleOnload(null, false);'>Click here to continue.</a>";
+			  "<a href='javascript:;' onclick='ZmLogin.handleOnload(null, true);'>Click here to continue.</a>";
 	} else {
 		tip = "To learn more about Zimbra and the Zimbra Collaboration Suite, visit <a href='http://www.zimbra.com'>www.zimbra.com</a> or send an email to <a href='mailto:info@zimbra.com'>info@zimbra.com</a>.";
 	}
