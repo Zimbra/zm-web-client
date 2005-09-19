@@ -28,19 +28,20 @@
  * This should handle initial authentication. If auth succeeds, it redirects
  * to zimbra/mail. If auth fails it displays the appropriate message.
  *
- * It handles if the session has timed out and the user hits the back button.
+ * Also handles if session has timed out and the user hits the back button.
  * To do this, it sends a noop request just to see if the server chokes
  * on the auth token.
  *
  * TODO:
  *  - mke sure all strings are drawn from ZmMsg.js
-
+ *
  *  - parse the query string, look for whether the page is standalone, or
  *    if the app has opened a window to it.
  *
  *  - handle 3 different modes - HTTP, HTTP->Login via HTTPS->HTTP, HTTPS
  */
-ZmLogin = function () {}
+ 
+ZmLogin = function() {}
 
 ZmLogin.lastGoodUserNameCookie   = "ls_last_username"; // <-- DO NOT EVER CHANGE THIS (or grep b4 u do)
 ZmLogin.lastGoodMailServerCookie = "ls_last_server";
@@ -48,45 +49,160 @@ ZmLogin.CSFE_SERVER_URI = location.port == "80" ? "/service/soap/" : ":" + locat
 ZmLogin.ZIMBRA_APP_URI  = location.port == "80" ? "/zimbra/mail" : ":" + location.port + "/zimbra/mail";
 ZmLogin.MAILBOX_REGEX =/^([a-zA-Z0-9_\.\-])+(\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+)?$/;
 
-// -----------------------------------------------------------------
-// positioning methods
-// -----------------------------------------------------------------
-ZmLogin.setPanelText = 
-function() {
-	// fill in the text fields we're using
-	var lb = document.getElementById('logonText');
-	lb.innerHTML = ZmMsg.login;
-	var pc = document.getElementById('pcText');
-	pc.innerHTML = ZmMsg.publicComputer;
-	var u = document.getElementById('ut');
-	u.innerHTML = ZmMsg.username + ":";
-	var p = document.getElementById('pt');
-	p.innerHTML = ZmMsg.password + ":";
-};
-
-ZmLogin.centerElement = 
-function(element) {
-	var el = element;
-	var top = (document.body.clientHeight - parseInt(el.offsetHeight))/2;
-	var left = (document.body.clientWidth - parseInt(el.offsetWidth))/2;
-	el.style.top = top;
-	el.style.left = left;
-};
-
-ZmLogin.positionPanel = 
-function() {
-	var el = document.getElementById('loginPanel');
-	ZmLogin.centerElement(el);
-	var event = null;
-	if (AjxEnv.isIE) {
-		event = "onkeydown";
-		document.getElementById("loginPanel")[event] = ZmLogin.handleKeyPress;
+ZmLogin.handleOnload = 
+function(ev, checkBrowser) {
+	if (!ZmLogin.isSupportedBrowser() && !checkBrowser) {
+		ZmLogin.showUnsupported();
 	} else {
-		event = "onkeypress";
-		window[event] = ZmLogin.handleKeyPress;
+		if (!ZmLogin.tryReAuth())
+			ZmLogin.showPanel();
 	}
-	el.style.visibility="visible";
+};
 
+// returns true if user agent is supported
+ZmLogin.isSupportedBrowser = 
+function() {
+	return AjxEnv.isIE6up || AjxEnv.isMozilla1_4up || AjxEnv.isFirefox;
+};
+
+// returns true if user agent is not really supported but user can try anyway
+ZmLogin.isAlmostSupportedBrowser = 
+function() {
+	return AjxEnv.isSafari || AjxEnv.isOpera;
+};
+
+ZmLogin.showUnsupported = 
+function() {
+	// TODO - move to ZmMsg for localization!
+	var errorMsg = new Array()
+	var idx = 0;
+	errorMsg[idx++] = "We have detected that you are running <b>";
+	errorMsg[idx++] = navigator.appName + " " + navigator.appVersion + "</b>";
+	errorMsg[idx++] = ", which is an unsupported browser for the Zimbra Collaboration Suite. ";
+	errorMsg[idx++] = "The Zimbra Collaboration Suite is supported on:<br>";
+	errorMsg[idx++] = "<li>Microsoft Internet Explorer v6.x,";
+	errorMsg[idx++] = "<li>Netscape v7.x,";
+	errorMsg[idx++] = "<li>or Firefox v1.x.";
+	var errorStr = errorMsg.join("");
+
+	var tip = "";
+	if (ZmLogin.isAlmostSupportedBrowser()) {
+		tip = "Please note that because you are running an unsupported browser, your user experience may be affected, and all functionality may not be available.<p>" + 
+			  "<a href='javascript:;' onclick='ZmLogin.handleOnload(null, false);'>Click here to continue.</a>";
+	} else {
+		tip = "To learn more about Zimbra and the Zimbra Collaboration Suite, visit <a href='http://www.zimbra.com'>www.zimbra.com</a> or send an email to <a href='mailto:info@zimbra.com'>info@zimbra.com</a>.";
+	}
+	
+	var html = new Array();
+	idx = 0;
+	
+	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td>";
+	html[idx++] = "<table width=450 align=center border=0 cellspacing=0 cellpadding=0 style='border: 2px solid; border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;'>";
+	html[idx++] = "<tr><td bgcolor='#FFFFFF'><div class='banner'></div></td></tr>";
+	html[idx++] = "<tr><td class='mainPanel' align=center><div class='error'>";
+	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2><tr>";
+	html[idx++] = "<td valign=top width=40><img src='/zimbra/img/hiRes/dwt/Critical_32.gif' width=32 height=32></td>";
+	html[idx++] = "<td>";
+	html[idx++] = errorStr;
+	html[idx++] = "</td></tr></table>";
+	html[idx++] = "</div><p>";
+	html[idx++] = "<div style='text-align:left; width:85%'>" + tip + "</div><br>";
+	html[idx++] = "</td></tr>";
+	html[idx++] = "</table>";
+	html[idx++] = "</td></tr></table>";
+
+	document.body.innerHTML = html.join("");
+};
+
+ZmLogin.tryReAuth = 
+function() {
+	ZmLogin.setServerUri();
+	var authToken = ZmCsfeCommand.getAuthToken();
+	if (authToken) {
+		// check the server we're using
+		var mailServer = AjxCookie.getCookie(document, ZmLogin.lastGoodMailServerCookie);
+		try {
+			// if we have info, just check token hasn't expired w/ no op request
+			ZmLogin.submitNoOpRequest();
+			ZmLogin.handleSuccess(authToken, null, mailServer);
+			return true;
+		} catch (ex) {
+			// if we're here, it means we got an error sending the no op
+			// request ... presumably b/c auth credentials were invalid.
+			// just show login panel
+		}
+	}
+	return false;
+};
+
+ZmLogin.showPanel = 
+function() {
+
+	var html = new Array()
+	var idx = 0;
+	
+	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td>";
+	html[idx++] = "<table width=450 align=center border=0 cellspacing=0 cellpadding=0 style='border: 2px solid; border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;'>";
+	html[idx++] = "<tr><td bgcolor='#FFFFFF'><div class='banner'></div></td></tr>";
+	html[idx++] = "<tr><td id='loginPanel' class='mainPanel'>";
+	// error message div
+	html[idx++] = "<center><div class='error' style='display:none' id='errorMessageContainer'>";
+	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2><tr>";
+	html[idx++] = "<td valign=top width=40><img src='/zimbra/img/hiRes/dwt/Critical_32.gif' id='errorIcon' width=32 height=32></td>";
+	html[idx++] = "<td id='errorMessage'>";
+	html[idx++] = "</td></tr></table>";
+	html[idx++] = "</div></center>";
+	// real content
+	html[idx++] = "<table border=0 width=425>";
+	html[idx++] = "<tr height=40>";
+	html[idx++] = "<td width=100 align=right>" + ZmMsg.username + ":</td>";
+	html[idx++] = "<td><input style='width:100%' autocomplete=OFF type=text tabIndex=1 id='uname'></td>";
+	html[idx++] = "</tr><tr height=30>";
+	html[idx++] = "<td align=right width=100>" + ZmMsg.password + ":</td>";
+	html[idx++] = "<td><input style='width:100%' type=password tabIndex=2 id='pass'></td>";
+	html[idx++] = "</tr><tr><td></td>";
+	html[idx++] = "<td><table border=0 width=100%><tr height=28><td width=1><input style='width:13px' id='publicComputer' type='checkbox'></td>";
+	html[idx++] = "<td style='width:1px' width=1><nobr>" + ZmMsg.publicComputer + "</td>";
+	html[idx++] = "<td width=100%></td>";
+	html[idx++] = "<td>";
+	// logon button starts here
+	html[idx++] = "<div id='loginButton' class='DwtButton' style='text-align:center; cursor:default' ";
+	html[idx++] = "onclick='javascript:ZmLogin.submitAuthRequest(); return false;' ";
+	html[idx++] = "onmouseover='javascript:this.className=\"DwtButton-activated\";' ";
+	html[idx++] = "onmouseout='javascript:this.className=\"DwtButton\";' ";
+	html[idx++] = "onmousedown='javascript:this.className=\"DwtButton-triggered\"; return false;' ";
+	html[idx++] = "onmouseup='javascript:this.className=\"DwtButton\";' ";
+	html[idx++] = "onmousemove='javascript:return false;' ";
+	html[idx++] = "onselectstart='javascript: return false;' ";
+	html[idx++] = "onfocus='javascript:ZmLogin.loginButtonFocus(this.parentNode);return false;' ";
+	html[idx++] = "onblur='javascript:ZmLogin.loginButtonBlur(this.parentNode);return false;'";
+	html[idx++] = ">";
+	html[idx++] = ZmMsg.login;
+	// non-IE browsers dont allow focus for non-INPUT elements so we have to 
+	// create a hidden input to fake focus for our DIV which acts asa input btn.
+	if (!AjxEnv.isIE)
+		html[idx++] = "<input type='button' style='display:none' id='hiddenButton'>";
+	html[idx++] = "</div></td>";
+	
+	html[idx++] = "</tr></table>";
+	html[idx++] = "</td></tr></table><br><br>";
+	html[idx++] = "</td></tr>";
+	html[idx++] = "</table>";
+	html[idx++] = "</td></tr></table>";
+	document.body.innerHTML = html.join("");
+
+	ZmLogin.registerKeyPress();
+	ZmLogin.setUserNameAndFocus();
+};
+
+ZmLogin.registerKeyPress = 
+function() {
+	if (AjxEnv.isIE) {
+		var el = document.getElementById("loginPanel");
+		el["onkeydown"] = ZmLogin.handleKeyPress;
+	} else {
+		window["onkeypress"] = ZmLogin.handleKeyPress;
+	}
 };
 
 ZmLogin.setUserNameAndFocus = 
@@ -95,7 +211,7 @@ function() {
 	var focusEl = null;
 	// if we have a username, fill out the username field, and focus on the 
 	// password field. Otherwise focus on the username field. 
-	if (lastUser != null && lastUser != ""){
+	if (lastUser && lastUser != "") {
 		document.getElementById("uname").value = lastUser;
 		focusEl = document.getElementById("pass");
 	} else {
@@ -110,32 +226,11 @@ function(msg, msgOffsetFromCurrent) {
 	errCell.innerHTML = msg;
 	document.getElementById("errorMessageContainer").style.display = "block";
 
-	if (msgOffsetFromCurrent) {
-		var currTop = null;
-		if (errCell._origTop) {
-			currTop = errCell._origTop;
-		} else {
-			currTop = parseInt(errCell.style.top);
-			errCell._origTop = currTop;
-		}
-	    errCell.style.top =  currTop + msgOffsetFromCurrent + "px";
-	} else if (errCell._origTop) {
-	    errCell.style.top = errCell._origTop;
-	}
-
-	document.getElementById("loginPanel").style.height = "393px";
-	document.getElementById("ut").style.top = "3px";
-	document.getElementById("ui").style.top = "0px";
-	document.getElementById("pt").style.top = "39px";
-	document.getElementById("pi").style.top = "36px";
-	document.getElementById("bi").style.top = "68px";
-	document.getElementById("pc").style.top = "68px";
-	ZmLogin.positionPanel();
 	document.getElementById("uname").focus();
-	// hide the error panel very briefly ... make it flicker a bit
-	// this makes it look like something happened if the user has
-	// successive errors
-	window.setTimeout(ZmLogin._flickerErrorMessagePanel, 0);
+	
+	// hide error panel very briefly.. making it look like something happened if 
+	// user has successive errors
+	ZmLogin._flickerErrorMessagePanel();
 };
 
 ZmLogin._flickerErrorMessagePanel = 
@@ -149,57 +244,6 @@ function() {
 	document.getElementById("errorMessageContainer").style.visibility = "visible";
 };
 
-// -----------------------------------------------------------------
-// onload handler method
-// -----------------------------------------------------------------
-ZmLogin.isSupportedBrowser = 
-function() {
-	return (AjxEnv.isIE6up || AjxEnv.isMozilla1_4up || AjxEnv.isFirefox);
-};
-
-ZmLogin.handleOnload = 
-function(ev, checkedBrowser) {
-	// check if browser is supported
-	var u = document.getElementById('unsupportedBrowserMessage');
-	if (!checkedBrowser && !ZmLogin.isSupportedBrowser()) {
-		u.style.display = "block";
-		ZmLogin.centerElement(u);
-		return;
-	}
-	u.style.display = "none";
-
-	ZmLogin.setServerUri();
-	var authToken = ZmCsfeCommand.getAuthToken();
-	if (authToken != null) {
-		// check the server we're using
-		var mailServer = AjxCookie.getCookie(document, ZmLogin.lastGoodMailServerCookie);
-		// if we have info, just check token hasn't expired w/ no op request
-		try {
-			ZmLogin.submitNoOpRequest();
-			//window.location = ZmLogin.getMailUrl(mailServer);
-			ZmLogin.handleSuccess(authToken, null, mailServer);
-			return;
-		} catch (ex) {
-			// if we're here, it means we got an error sending the no op
-			// request ... presumably because the auth credentials were invalid.
-			// do nothing, but fall through to showing the login panel
-		}
-	}
-
-	if (!AjxEnv.isIE) {
-		var input = document.createElement('input');
-		input.type = 'button';
-		input.style.display = "none";
-		input.id = "hiddenButton";
-		var loginButton = document.getElementById('loginButton');
-		loginButton.appendChild(input);
-	}
-
-	ZmLogin.setPanelText();
-	ZmLogin.positionPanel();
-	ZmLogin.setUserNameAndFocus();
-};
-
 ZmLogin.setServerUri = 
 function() {
 	var value = location.protocol + "//" + location.hostname + ZmLogin.CSFE_SERVER_URI;
@@ -207,16 +251,6 @@ function() {
 		value += location.search;
     ZmCsfeCommand.setServerUri(value);
 };
-
-ZmLogin.getFullUrl = 
-function(uri) {
-    return location.protocol + "//" + location.hostname + ((location.port == "80") 
-    	? "" 
-    	: (":" + location.port)) + uri;
-};
-
-
-// event handler methods
 
 ZmLogin.cancelEvent = 
 function(ev) {
@@ -241,50 +275,51 @@ function(ev) {
     
     var keyCode = ev.keyCode;
 	var shiftKey = ev.shiftKey;
-    
-    switch (keyCode) {
-	    case 0x0D: // ENTER
-			if (target.id == "uname"){
+
+	// ENTER    
+    if (keyCode == 0x0D) 
+    {
+		if (target.id == "uname") {
+			document.getElementById("pass").focus();
+		} else if (target.id == "publicComputer") {
+			target.checked = true;
+		} else {
+			ZmLogin.submitAuthRequest();
+		}
+		ZmLogin.cancelEvent(ev);
+		return false;
+	} 
+	// TAB
+	else if (keyCode == 0x09) 
+	{
+		if (target.id == "uname") {
+			if (!shiftKey) {
 				document.getElementById("pass").focus();
-			} else if (target.id == "publicComputer"){
-				target.checked = true;
 			} else {
-				ZmLogin.submitAuthRequest();
+				ZmLogin._focusLoginButton(target);
 			}
-			
-			ZmLogin.cancelEvent(ev);
-			return false;
-	    case 0x09: // TAB
-			if (target.id == "uname"){
-				if (!shiftKey){
-					document.getElementById("pass").focus();
-				} else {
-					ZmLogin._focusLoginButton(target);
-				}
-			} else if (target.id == "pass"){
-				if (!shiftKey){
-					document.getElementById("publicComputer").focus();
-				} else {
-					document.getElementById("uname").focus();
-				}
-			} else if (target.id == "publicComputer"){
-				if (!shiftKey){			
-					ZmLogin._focusLoginButton(target);
-				} else {
-					document.getElementById("pass").focus();
-				}
+		} else if (target.id == "pass") {
+			var obj = !shiftKey 
+				? document.getElementById("publicComputer")
+				: document.getElementById("uname");
+			obj.focus();
+		} else if (target.id == "publicComputer") {
+			if (!shiftKey) {			
+				ZmLogin._focusLoginButton(target);
 			} else {
-				if (!shiftKey){
-					document.getElementById("uname").focus();
-					if (!AjxEnv.isIE) {
-						ZmLogin.loginButtonBlur(button.parentNode.parentNode);
-					}
-				} else {
-					document.getElementById("publicComputer").focus();
-				}
+				document.getElementById("pass").focus();
 			}
-			ZmLogin.cancelEvent(ev);
-			return false;
+		} else {
+			if (!shiftKey) {
+				document.getElementById("uname").focus();
+				if (!AjxEnv.isIE)
+					ZmLogin.loginButtonBlur(button.parentNode);
+			} else {
+				document.getElementById("publicComputer").focus();
+			}
+		}
+		ZmLogin.cancelEvent(ev);
+		return false;
     }
     return true;
 };
@@ -295,7 +330,7 @@ function(target) {
 	if (AjxEnv.isIE) {
 		button.focus();
 	} else {
-		ZmLogin.loginButtonFocus(button.parentNode.parentNode);
+		ZmLogin.loginButtonFocus(button.parentNode);
 		target.blur();
 		document.getElementById('hiddenButton').focus();
 	}
@@ -308,11 +343,8 @@ function(border) {
 
 ZmLogin.loginButtonBlur = 
 function(border) {
-	border.className = "whiteBorder";	
+	border.className = "";	
 };
-
-
-// server communication methods
 
 ZmLogin.submitNoOpRequest = 
 function() {
@@ -347,7 +379,7 @@ function() {
 	    var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAccount");
 	} catch (ex) {
 		if (AjxEnv.isIE && (ex.code == AjxException.INTERNAL_ERROR)) {
-			ZmLogin.setErrorMessage(ZmMsg.errorNoActiveX, -15);
+			ZmLogin.setErrorMessage(ZmMsg.errorNoActiveX);
 		}
 		return;
 	}
@@ -368,13 +400,13 @@ function() {
 		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || 
 			ex.code == ZmCsfeException.NO_SUCH_ACCOUNT) 
 		{
-			ZmLogin.setErrorMessage(ZmMsg.loginError, -20);
+			ZmLogin.setErrorMessage(ZmMsg.loginError);
 		} 
 		else if (ex.code == ZmCsfeException.SOAP_ERROR || 
 				 ex.code == ZmCsfeException.NETWORK_ERROR) 
 		{
 			var msg = ZmMsg.errorNetwork + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
-			ZmLogin.setErrorMessage(msg, -15);
+			ZmLogin.setErrorMessage(msg);
 		} 
 		else if (ex.code == ZmCsfeException.ACCT_CHANGE_PASSWORD) 
 		{	
@@ -387,7 +419,7 @@ function() {
 		else 
 		{
 			var msg = ZmMsg.errorApplication + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
-			ZmLogin.setErrorMessage(msg + " (" + ex.code + ")", -15);
+			ZmLogin.setErrorMessage(msg + " (" + ex.code + ")");
 		}
     }
 };
@@ -414,22 +446,22 @@ function(authToken, tokenLifetime, mailServer, uname, password) {
 ZmLogin.postAuthToServer = 
 function(mailServer, authToken, tokenLifetime, pubComputer) {
 	var form = document.createElement('form');
-	form.style.display = 'none';
 	document.body.appendChild(form);
+
 	var html = new Array();
 	var i = 0;
-	html[i++] = "<input type='hidden' name='authToken' value='" + authToken + "'>";
-	if (pubComputer) {
-		html[i++] = "<input type='hidden' name='publicComputer' value='" + pubComputer + "'>";
-	}
 
-	if (tokenLifetime) {
+	html[i++] = "<input type='hidden' name='authToken' value='" + authToken + "'>";
+
+	if (pubComputer)
+		html[i++] = "<input type='hidden' name='publicComputer' value='" + pubComputer + "'>";
+
+	if (tokenLifetime)
 		html[i++] = "<input type='hidden' name='atl' value='" + tokenLifetime + "'>";
-	}
 
 	form.innerHTML = html.join('');
 	form.action = ZmLogin.getAuthUrl(mailServer);
-	form.method = 'post';
+	form.method = "post";
 	form.submit();
 };
 
