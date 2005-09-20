@@ -1362,7 +1362,8 @@ Autocomplete_Textarea_XFormItem.prototype._getLocation = function () {
 	return new DwtPoint((location.x), (location.y + size.y) );
 };
 
-Autocomplete_Textarea_XFormItem.prototype._handleAutoCompleteData = function (text) {
+Autocomplete_Textarea_XFormItem.prototype._handleAutoCompleteData = function (textElArray) {
+	var text = textElArray[0];
 	text = text.replace(/;\s/, ";");
 	var elem = this.getElement();
 	elem.value = text;
