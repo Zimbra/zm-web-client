@@ -674,9 +674,8 @@ function(appt, startDate, endDate, changeSeries) {
 	try {
 		var viewMode = !appt.isRecurring() ? ZmAppt.MODE_EDIT :
 						 (changeSeries ? ZmAppt.MODE_EDIT_SERIES : ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
-		appt.setViewMode(viewMode);
 		appt.getDetails(viewMode);
-
+		appt.setViewMode(viewMode);
 		if (startDate) appt.setStartDate(startDate);
 		if (endDate) appt.setEndDate(endDate);
 		appt.save(this._appCtxt.getAppController());
