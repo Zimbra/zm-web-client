@@ -42,21 +42,19 @@ function() {
 
 ZmAuthenticate.prototype.execute =
 function(uname, pword) {
+	var command = new ZmCsfeCommand();
+	var soapDoc;
 	if (!ZmAuthenticate._isAdmin) {
-		var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAccount");
+		soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAccount");
 		var el = soapDoc.set("account", uname);
 		el.setAttribute("by", "name");
-		soapDoc.set("password", pword);
-
-		var resp = ZmCsfeCommand.invoke(soapDoc, true).Body.AuthResponse;
-		this._setAuthToken(resp);
 	} else {
-		var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAdmin", null);
+		soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAdmin", null);
 		soapDoc.set("name", uname);
-		soapDoc.set("password", pword);
-		var resp = ZmCsfeCommand.invoke(soapDoc, true).Body.AuthResponse;
-		this._setAuthToken(resp);	
 	}
+	soapDoc.set("password", pword);
+	var resp = command.invoke(soapDoc, true).Body.AuthResponse;
+	this._setAuthToken(resp);
 };
 
 ZmAuthenticate.prototype._setAuthToken =

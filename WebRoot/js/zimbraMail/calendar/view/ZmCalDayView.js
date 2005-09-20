@@ -219,7 +219,8 @@ function(list, numAppts) {
 			msgRequest.appendChild(msgNode);
 		}
 
-		var resp = ZmCsfeCommand.invoke(soapDoc).Body.BatchResponse.GetMsgResponse;
+		var command = new ZmCsfeCommand();
+		var resp = command.invoke(soapDoc).Body.BatchResponse.GetMsgResponse;
 
 		for (var i = 0; i < resp.length; i++) {
 			var msgNode = resp[i].m[0];

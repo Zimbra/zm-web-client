@@ -246,9 +246,14 @@ function(types) {
 	return sortBy;
 }
 
-
+/*
+* Performs the search.
+*
+* @param params	[Object]	a hash of arguments for the search (see search() method)
+*/
 ZmSearchController.prototype._doSearch =
 function(params) {
+
 	if (this._searchToolBar) {
 		var value = (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText) ? params.query : "";
 		this._searchToolBar.setSearchFieldValue(value);
@@ -268,26 +273,43 @@ function(params) {
 	
 	var search = new ZmSearch(this._appCtxt, params.query, types, params.sortBy, params.offset, params.limit, contactSource);
 	var results;
+	var useAsync = this._appCtxt.get(ZmSetting.ASYNC_MODE);
 	try {
-		results = search.execute();
-	} catch (ex) {
-		this._searchToolBar.setEnabled(true);
-		DBG.println(AjxDebug.DBG2, "Search exception: " + ex.code);
-		// Only restart on error if we are not initialized
-		if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER || ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG) {
-			results = new ZmSearchResult(this._appCtxt);
-			results.type = params.types ? params.types[0]: null;
-			var msg = this._getErrorMsg(ex.code);
-			this._appCtxt.getAppController().setStatusMsg(msg);
+		if (useAsync) {
+			var callback = new AjxCallback(this, this._handleResponse, [search, params, types]);
+			search.execute(callback);
 		} else {
-			this._handleException(ex, this._doSearch, params, false);
-			return;
+			results = search.execute();
+			this._handleResponse([search, params, types, results]);
 		}
+	} catch (ex) {
+		this._handleError(ex, params);
 	}
-	if (!results) return;
+}
 
-	DBG.timePt("execute search");
+/*
+* Takes the search result and hands it to the appropriate controller.
+*
+* @params args	[Object]	
+*/
+ZmSearchController.prototype._handleResponse =
+function(args) {
+
+	var search = args[0];
+	var params = args[1];
+	var types = args[2];
+	var results = args[3];
+
+	if (!results) return;
+	var gotError = (results instanceof ZmCsfeException);
+	if (gotError) {
+		this._handleError(results, params);
+		results = new ZmSearchResult(this._appCtxt);
+		results.type = params.types ? params.types[0]: null;
+	}
+
 	this._appCtxt.setCurrentSearch(search);
+	DBG.timePt("execute search");
 	if (this._searchToolBar)
 		this._searchToolBar.setEnabled(true);
 	if (!results.type)
@@ -314,6 +336,20 @@ function(params) {
 		this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, params.query);
 	}
 	DBG.timePt("render search results");
+}
+
+ZmSearchController.prototype._handleError =
+function(ex, params) {
+	if (this._searchToolBar)
+		this._searchToolBar.setEnabled(true);
+	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
+	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER || ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG) {
+		var msg = this._getErrorMsg(ex.code);
+		this._appCtxt.getAppController().setStatusMsg(msg);
+	} else {
+		this._handleException(ex, this._doSearch, params, false);
+		return;
+	}
 }
 
 /*********** Search Field Callback */

@@ -90,6 +90,7 @@ var i = 1;
 
 // CONFIG SETTINGS
 ZmSetting.AC_TIMER_INTERVAL				= i++;
+ZmSetting.ASYNC_MODE					= i++;
 ZmSetting.BRANCH						= i++;
 ZmSetting.CONFIG_PATH					= i++;
 ZmSetting.CSFE_MSG_FETCHER_URI			= i++;
@@ -136,7 +137,8 @@ ZmSetting.MIN_POLLING_INTERVAL			= i++;
 ZmSetting.QUOTA							= i++;
 ZmSetting.SAVED_SEARCHES_ENABLED		= i++;
 ZmSetting.TAGGING_ENABLED				= i++;
-// user metadata (included with COS since the user can't change them)
+
+// USER METADATA
 ZmSetting.QUOTA_USED					= i++;
 ZmSetting.TOKEN_LIFETIME				= i++;
 ZmSetting.USERNAME						= i++;
@@ -222,6 +224,7 @@ ZmSetting.INIT = new Object();
 
 // CONFIG SETTINGS
 ZmSetting.INIT[ZmSetting.AC_TIMER_INTERVAL]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_INT, 300];
+ZmSetting.INIT[ZmSetting.ASYNC_MODE]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.BRANCH]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "main"];
 ZmSetting.INIT[ZmSetting.CONFIG_PATH]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "/zimbra/js/zimbraMail/config"];
 ZmSetting.INIT[ZmSetting.CSFE_MSG_FETCHER_URI]			= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING];

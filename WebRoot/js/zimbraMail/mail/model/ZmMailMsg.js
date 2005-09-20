@@ -377,7 +377,7 @@ function (sender, msgId, getHtml) {
 	if (getHtml) {
 		msgNode.setAttribute("html", "1");
 	}
-	return sender.sendRequest(soapDoc, false).GetMsgResponse;
+	return sender.sendRequest(soapDoc).GetMsgResponse;
 
 };
 
@@ -872,7 +872,7 @@ function(anchorEl, msgId, msgPartId) {
 		var msgNode = soapDoc.set("m");
 		msgNode.setAttribute("id", msgId);
 		msgNode.setAttribute("part", msgPartId);
-		var resp = controller.sendRequest(soapDoc, false).GetMsgResponse;
+		var resp = controller.sendRequest(soapDoc).GetMsgResponse;
 
 		// validate response
 		if (resp == null || resp.m == null || resp.m[0] == null ||

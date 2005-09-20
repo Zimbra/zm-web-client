@@ -273,12 +273,29 @@ function(settings) {
 }
 
 ZmZimbraMail.prototype.sendRequest = 
-function(soapDoc, useXml) {
-	useXml = (useXml == null) ? this._appCtxt.get(ZmSetting.USE_XML) : useXml;
-	var result = ZmCsfeCommand.invoke(soapDoc, null, null, null, useXml, false, this._changeToken);
-	if (!useXml && result.Header)
-		this._handleHeader(result.Header);
-	this._checkOverviewLayout();
+function(soapDoc, callback) {
+	var useXml = this._appCtxt.get(ZmSetting.USE_XML);
+	var asyncMode = (callback != null);
+	var asyncCallback = callback ? new AjxCallback(this, this._handleResponse, [true, useXml, callback]) : null;
+	var command = new ZmCsfeCommand();
+	var response = command.invoke(soapDoc, false, null, null, useXml, false, this._changeToken, asyncCallback);
+	if (!asyncMode)
+		return this._handleResponse([false, useXml, null, response]);
+}
+
+ZmZimbraMail.prototype._handleResponse =
+function(args) {
+	var asyncMode = args[0];
+	var useXml = args[1];
+	var callback = args[2];
+	var result = args[3];
+
+	var gotError = (result instanceof ZmCsfeException);
+	if (!gotError) {
+		if (!useXml && result.Header)
+			this._handleHeader(result.Header);
+		this._checkOverviewLayout();
+	}
 	this._actionedIds = null; // reset for next request
 
 	// we just got activity, reset polling action		
@@ -287,7 +304,11 @@ function(soapDoc, useXml) {
 	if (this._pollInterval)
 		this._pollActionId = this._schedule(this._doPoll, null, this._pollInterval);
 	
-	return useXml ? result : result.Body;
+	var returnValue = (useXml || gotError) ? result : result.Body;
+	if (asyncMode)
+		callback.run(returnValue);
+	else
+		return returnValue;
 }
 
 /**

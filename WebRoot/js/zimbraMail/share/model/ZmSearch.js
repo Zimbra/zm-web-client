@@ -32,6 +32,7 @@ function ZmSearch(appCtxt, query, types, sortBy, offset, limit, contactSource) {
 	this.offset = offset;
 	this.limit = limit;
 	this.contactSource = contactSource;
+	
 	this._parseQuery();
 }
 
@@ -62,10 +63,18 @@ function() {
 	return "ZmSearch";
 }
 
-// NOTE: exception handling should be responsibility of calling function!
+/**
+* Creates a SOAP request that represents this search and sends it to the server.
+*
+* @param callback	[AjxCallback]*	Callback to run when response is received (async mode)
+*/
 ZmSearch.prototype.execute =
-function() {
+function(callback) {
+
 	if (!this.query) return;
+	
+	var asyncMode = (callback != null);
+	this._asyncCallback = callback;
 
 	var isGalSearch = (this.contactSource == ZmSearchToolBar.FOR_GAL_MI);
 	var soapDoc;
@@ -83,18 +92,41 @@ function() {
 					typeStr.push(ZmSearch.TYPE[a[i]]);
 				method.setAttribute("types", typeStr.join(","));
 				// bug fix #2744,3298,298
-				if (this.query == "in:sent" || this.query == "in:drafts")
+				if (this.folderId == ZmFolder.ID_SENT || this.folderId == ZmFolder.ID_DRAFTS)
 					method.setAttribute("recip", "1");
 			}
 		}
 	}
 	
-	var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
-	resp = isGalSearch ? resp.SearchGalResponse : resp.SearchResponse;
+	if (asyncMode) {
+		var callback = new AjxCallback(this, this._handleResponse, isGalSearch);
+		this._appCtxt.getAppController().sendRequest(soapDoc, callback);
+	} else {
+		var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
+		return this._handleResponse([isGalSearch, resp]);
+	}
+}
+
+ZmSearch.prototype._handleResponse = 
+function(args) {
+	var isGalSearch = args[0];
+	var response = args[1];
 	
-	var searchResult = new ZmSearchResult(this._appCtxt, this);
-	searchResult.set(resp, this.contactSource);
-	return searchResult;
+	var returnValue;
+	if (response instanceof ZmCsfeException) {
+		returnValue = response;
+	} else {
+		response = isGalSearch ? response.SearchGalResponse : response.SearchResponse;
+		var searchResult = new ZmSearchResult(this._appCtxt, this);
+		searchResult.set(response, this.contactSource);
+		returnValue = searchResult;
+	}
+	
+	if (this._asyncCallback) {
+		this._asyncCallback.run(returnValue);
+	} else {
+		return returnValue;
+	}
 }
 
 // searching w/in a conv (to get its messages) has its own special command

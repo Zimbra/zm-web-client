@@ -349,7 +349,8 @@ function(border) {
 ZmLogin.submitNoOpRequest = 
 function() {
     var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-	ZmCsfeCommand.invoke(soapDoc, false, null, null, true);
+	var command = new ZmCsfeCommand();
+	command.invoke(soapDoc, false, null, null, true);
 };
 
 ZmLogin.isValidUsername = 
@@ -388,7 +389,8 @@ function() {
     el.setAttribute("by", "name");
     soapDoc.set("password", pword);
     try {
-		var resp = ZmCsfeCommand.invoke(soapDoc, true, null, null, false, true).Body.AuthResponse;
+		var command = new ZmCsfeCommand();
+		var resp = command.invoke(soapDoc, true, null, null, false, true).Body.AuthResponse;
 		ZmLogin._authToken = resp.authToken;
 		ZmLogin._authTokenLifetime = resp.lifetime;
 		var mailServer = resp.refer;
