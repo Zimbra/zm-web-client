@@ -207,6 +207,10 @@ function(width, height) {
 	var contactHeader = Dwt.getDomObj(doc, this._contactHeaderId);
 	if (contactHeader)
 		Dwt.setSize(contactHeader, width);
+
+	var contactHeaderDiv = Dwt.getDomObj(doc, this._fieldIds[ZmContactView.F_contactTitle]);
+	if (contactHeaderDiv)
+		Dwt.setSize(contactHeaderDiv, width-50); // offet by 50px to allow tag icon!
 }
 
 ZmContactView.prototype._contactChangeListener =
@@ -531,7 +535,7 @@ function(contact) {
 		html[idx++] = "<td><div class='contactHeader'>" + contact.getFileAs() + "</div></td>";
 	} else {
 		html[idx++] = "<td><div class='contactHeader' id='" + titleId + "'></div></td>";
-		html[idx++] = "<td width=20 align='right' id='" + tagsId + "'></td>";
+		html[idx++] = "<td align='right' id='" + tagsId + "'></td>";
 	}
 	html[idx++] = "</tr></table>";
 
