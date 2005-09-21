@@ -65,6 +65,7 @@ Contributor(s):
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmAppViewMgr.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmNavToolBar.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmSearchToolBar.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmAutocompleteListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmSplashScreen.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmTreeView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmTagTreeView.js<%= ext %>?v=<%= vers %>"></script>
@@ -141,7 +142,6 @@ Contributor(s):
 <script type="text/javascript" src="/zimbra/js/zimbraMail/mail/view/ZmAttachmentIconView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/mail/view/ZmAttachmentListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/mail/view/ZmAttachmentToolBar.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="/zimbra/js/zimbraMail/mail/view/ZmAutocompleteListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/mail/view/ZmHtmlEditor.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/mail/view/ZmComposeView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/mail/view/ZmConvView.js<%= ext %>?v=<%= vers %>"></script>
