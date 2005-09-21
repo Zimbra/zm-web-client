@@ -103,7 +103,10 @@ function(contact, now, isDndIcon) {
 	var idx = 0;
 
 	html[idx++] = "<table border=0 width=100% cellpadding=0 cellspacing=0>";
-	html[idx++] = "<tr style='padding:0' class='contactHeader'><td valign=top class='contactHeader' style='font-size:16px'>" + contact.getFileAs() + "</td>";
+	html[idx++] = "<tr style='padding:0' class='contactHeader'><td valign=top><div class='contactHeader' style='font-size:16px;";
+	if (AjxEnv.isIE)
+		html[idx++] = " width:280;";
+	html[idx++] = "'>" + contact.getFileAs() + "</div></td>";
 	// Tag
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		var cellId = this._getFieldId(contact, ZmItem.F_TAG_CELL);

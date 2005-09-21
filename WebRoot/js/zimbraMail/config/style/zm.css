@@ -1111,7 +1111,8 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .ZmContactInfoView .contactHeader, 
 .ZmContactView .contactHeader,
-.ZmContactCardsView .contactHeader {
+.ZmContactCardsView .contactHeader,
+.ZmContactCard-dnd .contactHeader {
 	font-size: 22px;
 	font-weight: bold;
 	background-color: #CCCCCC;
