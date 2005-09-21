@@ -135,10 +135,10 @@ function() {
 	} else {
 		for (var a in this._attr) {	
 			var val = this._contact.getAttr(a);
-			if (val) {
+			// do some normalizing
+			if (val && AjxUtil.isString(val)) {
 				val = AjxStringUtil.trim(val);
-				// fileAs is an Int!
-				if (a == ZmContact.F_fileAs && AjxUtil.isString(val))
+				if (a == ZmContact.F_fileAs)
 					val = parseInt(val);
 			}
 			
