@@ -98,6 +98,7 @@ Contributor(s):
         @import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
 <% } %>
    @import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css?v=<%= vers %>);
+   @import url(/zimbraAdmin/skins/steel/skin.css?v=<%= vers %>);   
      -->
     </style>
 	<script language="JavaScript">
@@ -135,9 +136,11 @@ Contributor(s):
 
 	    	ZaZimbraAdmin.run(document.domain);
 	    }
+		AjxCore.addOnloadListener(launch);
     </script>
   </head>
   <body onload="javascript:void launch()">
+		<jsp:include page="../skins/steel/skin.html"/>  
    </body>
 </html>
 
