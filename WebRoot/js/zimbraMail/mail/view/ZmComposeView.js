@@ -846,18 +846,13 @@ function(composeMode) {
 		// autocomplete-related handlers
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._acAddrSelectList.handle(this._field[type]);
-			this._setEventHandler(this._fieldId[type], "onFocus");
 			this._setEventHandler(this._fieldId[type], "onClick");
 		}
 	}
-	
+
 	// init event handlers for add cc/bcc links
 	this._setEventHandler(this._addLinkId[ZmEmailAddress.CC], "onClick", ZmEmailAddress.CC);
 	this._setEventHandler(this._addLinkId[ZmEmailAddress.BCC], "onClick", ZmEmailAddress.BCC);
-
-	// so we can pop down autocomplete list if present
-	this._setEventHandler(this._subjectFieldId, "onFocus");
-	this._setEventHandler(this._bodyFieldId, "onFocus");
 }
 
 // Listeners
@@ -904,28 +899,6 @@ function(ev) {
 	}
 }
 
-// If a text field gets focus, hide the autocomplete list.
-ZmComposeView._onFocus = 
-function(ev) {
-	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element)
-		return;
-	var id = element.id;
-	DBG.println(AjxDebug.DBG3, element.tagName + " focus event for " + id);
-	var cv = AjxCore.objectWithId(element._composeView);
-	if (!cv._acAddrSelectList) return;
-
-	switch (id) {
-		case cv._fieldId[ZmEmailAddress.TO]:
-		case cv._fieldId[ZmEmailAddress.CC]:
-		case cv._fieldId[ZmEmailAddress.BCC]:
-		case cv._subjectFieldId:
-		case cv._bodyFieldId:
-			cv._acAddrSelectList.show(false);
-			break;
-	}
-}
-
 ZmComposeView._onKeyDown =
 function(ev) {
 	DBG.println(AjxDebug.DBG3, "onKeyDown");
@@ -938,7 +911,7 @@ function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
 	// ignore return in attachment input field (bug 961)
 	if (id.indexOf("_att_") == 0) {
-		return (key != DwtKeyEvent.KEY_ENTER &&
+		return (key != DwtKeyEvent.KEY_ENTER && 
 				key != DwtKeyEvent.KEY_END_OF_TEXT);
 	}
 }
@@ -980,7 +953,7 @@ function() {
 	// create subject field
 	html[idx++] = "<tr><td><table cellspacing=4 cellpadding=0 border=0 width=100%><tr>";
 	html[idx++] = "<td width=60 align='right'>" + ZmMsg.subject + ":</td>";
-	html[idx++] = "<td><input type='text' tabindex=5 id='" + this._subjectFieldId + "' class='subjectField'></td>";
+	html[idx++] = "<td><input type='text' id='" + this._subjectFieldId + "' class='subjectField'></td>";
 	html[idx++] = "</tr></table></td></tr>";
 
 	// create area to show forwarded attachment(s)
@@ -1150,12 +1123,8 @@ function(type, show) {
 	this._using[type] = show;
 	Dwt.setVisible(Dwt.getDomObj(doc, this._divId[type]), show);
 	this._field[type].value = ""; // bug fix #750 and #3680
-	if (show) {
+	if (show)
 		this._field[type].focus();
-		this._field[type].tabIndex = type;
-	} else {
-		this._field[type].tabIndex = 0;
-	}
 	var link = Dwt.getDomObj(doc, this._addLinkId[type]);
 	if (link) {
 		link.innerHTML = show 
