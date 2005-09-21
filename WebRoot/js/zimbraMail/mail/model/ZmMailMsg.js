@@ -713,7 +713,7 @@ function(bFindHits, domain, partNameList) {
     		var labelWidth = Dwt.getHtmlExtent(encLabel).x;
     		// The 5 is for padding for IE
     		labelWidth += sizeText ? Dwt.getHtmlExtent(sizeText).x + 5 : 0;
-    		var iconLabelWidth = icon[1] + labelWidth;
+    		var iconLabelWidth = 16 + labelWidth;
 
 			// set link
 		    var link = type == ZmMimeTable.MSG_RFC822
