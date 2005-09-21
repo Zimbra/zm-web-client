@@ -351,7 +351,7 @@
   
   <target name="copy-files-to-build-area" depends="check4zimbraajax">
     <copy file="WebRoot/WEB-INF/web.xml" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="${isProduction}"/>
-    <copy file="WebRoot/js/zimbraMail/mail/view/ZmLogin.js" tofile="${build.dir}/WebRoot/js/ZmLogin.js" overwrite="${isProduction}"/>
+    <copy file="WebRoot/js/zimbraMail/share/view/ZmLogin.js" tofile="${build.dir}/WebRoot/js/ZmLogin.js" overwrite="${isProduction}"/>
     <copy todir="${build.dir}/WebRoot/public/" overwrite="${isProduction}" >
       <fileset dir="WebRoot/public" includes="**/*"/>
     </copy>
@@ -416,9 +416,9 @@
   deploy will have to be run.
   -->
   <target name="dev-sync">
-   <copy verbose="true" file="WebRoot/js/zimbraMail/mail/view/ZmLogin.js" tofile="${deploy.dir}${deploy.path}/js/ZmLogin.js"/>
+   <copy verbose="true" file="WebRoot/js/zimbraMail/share/view/ZmLogin.js" tofile="${deploy.dir}${deploy.path}/js/ZmLogin.js"/>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
-      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="js/zimbraMail/mail/view/ZmLogin.js"/>
+      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="js/zimbraMail/share/view/ZmLogin.js"/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}/js/ajax">
