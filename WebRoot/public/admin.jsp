@@ -93,11 +93,11 @@ Contributor(s):
   String loRes = (String) request.getAttribute("loRes");
   	if (loRes == null) {
 %>
-        @import url(<%= contextPath %>/img/hiRes/imgs.css);
+        @import url(<%= contextPath %>/img/hiRes/imgs.css?v=<%= vers %>);
 <% } else { %>
-        @import url(<%= contextPath %>/img/loRes/imgs.css);
+        @import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
 <% } %>
-   @import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css);
+   @import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css?v=<%= vers %>);
      -->
     </style>
 	<script language="JavaScript">
@@ -120,7 +120,19 @@ Contributor(s):
     <script language="JavaScript">   	
    		function launch() {
    			AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
-	    	DBG = new AjxDebug(AjxDebug.NONE, null, false);
+			DBG = new AjxDebug(AjxDebug.NONE, null, false);
+		 	// figure out the debug level
+			if (location.search && (location.search.indexOf("debug=") != -1)) {
+			    var m = location.search.match(/debug=(\d+)/);
+			    if (m.length) {
+				var num = parseInt(m[1]);
+				var level = AjxDebug.DBG[num];
+				if (level) {
+				    DBG.setDebugLevel(level);
+				}
+			    }
+			}
+
 	    	ZaZimbraAdmin.run(document.domain);
 	    }
     </script>
