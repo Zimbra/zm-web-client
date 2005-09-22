@@ -85,6 +85,11 @@ function() {
 	}
 };
 
+ZmHtmlEditor.prototype.addEventCallback = 
+function(callback) {
+	this._eventCallback = callback;
+}
+
 ZmHtmlEditor.prototype._initialize = 
 function() {
 	this._createToolBar1(this);
@@ -363,4 +368,12 @@ function(ev) {
 		this._rightJustifyButton.setToggled(false);
 		this._fullJustifyButton.setToggled(true);		
 	}
+};
+
+ZmHtmlEditor.prototype._handleEditorEvent = 
+function(ev) {
+	var rv = this._eventCallback ? this._eventCallback.run(ev) : true;
+	if (rv)
+		rv = DwtHtmlEditor.prototype._handleEditorEvent.call(this, ev);
+	return rv;
 };

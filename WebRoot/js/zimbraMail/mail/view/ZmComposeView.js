@@ -798,7 +798,9 @@ function(composeMode) {
 	// init compose view w/ based on user prefs 
 	var defaultCompMode = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	this._composeMode = composeMode || defaultCompMode;
+	// init html editor
 	this._htmlEditor = new ZmHtmlEditor(this, "ZmHtmlEditor", DwtControl.RELATIVE_STYLE, null, this._composeMode);
+	this._htmlEditor.addEventCallback(new AjxCallback(this, this._htmlEditorEventCallback));
 	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 	
 	var doc = this.getDocument();
@@ -915,6 +917,23 @@ function(ev) {
 	// ignore return in attachment input field (bug 961)
 	if (id.indexOf("_att_") == 0) 
 		return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
+}
+
+// this callback is triggered when an event occurs inside the html editor (when in HTML mode)
+// it is used to set focus to the To: field when user hits the TAB key
+ZmComposeView.prototype._htmlEditorEventCallback = 
+function(args) {
+	var rv = true;	
+	if (args.type == "keydown") {
+		var key = DwtKeyEvent.getCharCode(args);
+		if (key == DwtKeyEvent.KEY_TAB) {
+			var toField = Dwt.getDomObj(this.getDocument(), this._fieldId[ZmEmailAddress.TO]);
+			if (toField)
+				toField.focus();
+			rv = false;
+		}
+	}
+	return rv;
 }
 
 ZmComposeView.prototype._createHtml =
