@@ -133,8 +133,6 @@ static final private String LOGIN_PAGE = "/zimbra/";
 
 </head>
 <body>
-<c:if test="${empty param.oldUI}">
-	<jsp:include page="../skins/steel/skin.html"/>
-</c:if>
+<jsp:include page="../skins/steel/skin.html"/>
 </body>
 </html>
