@@ -10,6 +10,13 @@ skin.hideSkin = function () {
 	skin.showSkin(false);
 }
 
+skin.showQuota = function (state) {
+	skin._showEl("skin_td_quota_spacer", state);
+	skin._showEl("skin_td_quota", state);
+}
+skin.hideQuota = function () {
+	this.showQuota(false);
+}
 
 skin.showSearchBuilder = function (state) {
 	skin._showEl("skin_tr_search_builder", state);
@@ -50,8 +57,11 @@ skin.setSize = function(id, width, height) {
 
 }
 
+skin._getEl = function(id) {
+	return document.getElementById(id);
+}
 skin._showEl = function(id, state) {
-	var el = document.getElementById(id);
+	var el = skin._getEl(id);
 	var value;
 	if (!el) return;
 	if (state == false) {
@@ -79,7 +89,7 @@ skin._showEl = function(id, state) {
 		<td><div class="console_outset_contents">
 
 		<table id="skin_table_outer" class="skin_table" cellpadding=0>
-			<colgroup><col id="skin_col_left"><col id="skin_col_main"><col id="skin_col_search_spacer"><col id="skin_col_quota"></colgroup>
+			<colgroup><col id="skin_col_left"><col id="skin_col_main"></colgroup>
 			
 <!-- BEGIN TOP SECTION -->
 			<tr id="skin_tr_outer_top">
@@ -90,41 +100,44 @@ skin._showEl = function(id, state) {
 					</div>
 				</td>
 <!-- END LOGO -->
-<!-- BEGIN SEARCH CONTROLS -->
-				<td id="skin_td_search">
-					<div class="Xconsole_inset"  >
-						<table class="console_inset_table" cellpadding=0 id="search_control_inset">
-						<tr><td class="console_inset_corner"><div class="console_inset_tl"></div></td>
-							<td class="console_horizontal" ><div class="console_inset_t" style='width:100%'></div></td>
-							<td class="console_inset_corner"><div class="console_inset_tr"></div></td>
-						</tr>
-						<tr><td class="console_vertical"  ><div class="console_inset_l" style='height:100%'></div></td>
-							<td>
-								<div id="skin_container_search" class="skin_container">
-<!--
-<A HREF='javascript:skin.showSearchBuilder()'>
-SEARCH CONTROLS
-</A>
--->								</div>
-							</td>
-							<td><div class="console_inset_r" style='height:100%'></div></td>
-						</tr>
-						<tr><td><div class="console_inset_bl"></div></td>
-							<td><div class="console_inset_b" style='width:100%'></div></td>
-							<td><div class="console_inset_br"></div></td>
-						</tr>
-						</table>
-					</div xid="search_control_inset">
-				</td>
-<!-- END SEARCH CONTROLS -->
-				<td><div></div></td>	<!-- spacer for the quota -->
-				<td id="skin_td_quota">
-					<div id="skin_container_quota" class="skin_container">
+<!-- BEGIN SEARCH CONTROLS AND QUOTA -->
+				<td>
+					<table cellspacing=0 cellpadding=0 width=100%><tr>
+						<td id="skin_td_search" width="*">
+						<div class="Xconsole_inset">
+							<table class="console_inset_table" cellpadding=0 id="search_control_inset">
+							<tr><td class="console_inset_corner"><div class="console_inset_tl"></div></td>
+								<td class="console_horizontal" ><div class="console_inset_t" style='width:100%'></div></td>
+								<td class="console_inset_corner"><div class="console_inset_tr"></div></td>
+							</tr>
+							<tr><td class="console_vertical"  ><div class="console_inset_l" style='height:100%'></div></td>
+								<td>
+									<div id="skin_container_search" class="skin_container">
+	<!--
+	<A HREF='javascript:skin.showSearchBuilder()'>
+	SEARCH CONTROLS
+	</A>
+	-->								</div>
+								</td>
+								<td><div class="console_inset_r" style='height:100%'></div></td>
+							</tr>
+							<tr><td><div class="console_inset_bl"></div></td>
+								<td><div class="console_inset_b" style='width:100%'></div></td>
+								<td><div class="console_inset_br"></div></td>
+							</tr>
+							</table>
+						</div xid="search_control_inset">
+						</td>
+						<td id="skin_td_quota_spacer"><div></div></td>
+						<td id="skin_td_quota"><div id="skin_container_quota" class="skin_container">X
 <!--
 QUOTA
 -->
-					</div>
+						</div></td>
+					</tr></table>
 				</td>
+<!-- END SEARCH CONTROLS -->
+
 
 <!-- BEGIN SEARCH BUILDER -->
 			<tr id="skin_tr_search_builder">

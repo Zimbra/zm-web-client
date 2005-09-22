@@ -1,0 +1,500 @@
+
+/* 
+* HTML elements - use for global declarations
+*/
+
+P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size:11px;
+}
+
+BODY {
+	margin: 0px;
+}
+
+FORM {
+	margin: 0;
+	padding: 0;
+}
+
+HTML>BODY INPUT {		/* clean border that works in FF */
+	border:1px solid;
+	border-color: black AAAAAA AAAAAA black;
+	padding-left:2px;
+}
+
+
+
+
+/* Generic classes -- try to use one of these if you can */
+.ZmHead {
+	font-size:18px;
+	font-weight:bold;
+	height:20px;
+}
+
+.ZmSubHead {
+	font-size:13px;
+	font-weight:bold;
+	height:18px;
+}
+
+.ZmBigger {
+	font-size:13px;
+	height:18px;
+}
+
+.subtleAnchor {
+	color:black;
+	Xtext-decoration:none;
+}
+
+.subtleAnchor:hover {
+	color:blue;
+	text-decoration:underline;
+}
+
+
+
+
+
+/*
+ *  Skin pieces -- MOVE INTO SKIN???
+ */
+
+.LogoContainer {
+	left: 54px;
+	top: 6px;
+}
+
+
+
+
+
+
+/* Horizontal separator */
+.horizSep {
+	border-bottom: 1px solid #666666;
+    margin: 10px 0;
+	width: 100%;
+}
+/* Vertical separator */
+.vertSep {
+	border-left:1px solid #666666;
+	margin-left:1px;
+	padding-right:1px;
+	width:3;
+	height: 16;
+}
+
+/* Vertical space */
+DIV.vSpace {
+	margin: 10px 0;
+}
+
+/* Link to open an attachment */
+.AttLink:link, .AttLink:active, .AttLink:visited, .AttLink:hover {
+	text-decoration: none;
+	cursor:hand;
+}
+.AttLink:link, .AttLink:active, .AttLink:visited {
+	color: black;
+}
+.Row-selected .AttLink:link, .Row-selected .AttLink:active, .Row-selected .AttLink:visited {
+	color: white;
+}
+.AttLink:hover, .Row-selected .AttLink:hover {color: #CC3333;}
+
+
+
+
+/* 
+* Drag N Drop
+*/
+
+.DndIcon {
+	filter:alpha(opacity=70)
+		   progid:DXImageTransform.Microsoft.Shadow(color=black,direction=135,strength=8);
+	-moz-opacity:0.7;
+	opacity:0.7;
+}
+
+.DropNotAllowed {
+	border: 2px solid red;
+	background-color: white;	
+	filter:alpha(opacity=70)
+		   progid:DXImageTransform.Microsoft.Shadow(color=black,direction=135,strength=8);
+	-moz-opacity:0.7;
+	opacity:0.7;	
+}
+
+/* bug fix# 3235 */
+.DropNotAllowed-linux {
+	border: 2px solid red;
+	background-color: white;	
+}
+
+.DropAllowed {
+	border: 2px solid green;
+	background-color: white;	
+	filter:alpha(opacity=70)
+		   progid:DXImageTransform.Microsoft.Shadow(color=black,direction=135,strength=8);
+	-moz-opacity:0.7;
+	opacity:0.7;
+}
+
+/* bug fix# 3235 */
+.DropAllowed-linux {
+	border: 2px solid green;
+	background-color: white;	
+}
+
+
+/* Used by the text in the multi-select Icon */
+.MailMultiSelectText {
+	font-size: 11px;
+	font-weight: bold;
+	color: white;
+}
+
+
+
+
+.BusyOverlay table, .VeilOverlay table {
+	filter:alpha(opacity=50);
+	-moz-opacity:0.5;
+	opacity:0.5;
+	cursor: "wait";
+	background-color: transparent;
+}
+/* As of 07/22/05 Linux (or rather X) has a nasty issue that causes a huge perf problem with opacity.*/
+
+.BusyOverlay-linux table, .VeilOverlay-linux table {
+	cursor: "wait";
+	background-color: transparent;
+}
+
+
+.VeilOverlay table {
+	cursor: "not-allowed";
+	background-color: white;
+}
+
+.VeilOverlay-linux table {
+	cursor: "not-allowed";
+}
+
+
+
+
+
+
+/*
+ *  New tag dialog 
+ */
+.TagColorMenu {
+	background-color: white;
+	border: solid #CCCCCC 1px;
+}
+
+/* 
+ * New folder dialog 
+ */
+.FolderTree {
+	background-color: white;
+	width: 400px;
+	height: 200px;
+	border: 1px solid #999999;
+	padding: 5px 0 0 5px;
+}
+.FolderTree td {padding: 0;}
+
+/* 
+ * Contact picker 
+ */
+.ZmContactPicker .abPickList {
+	width: 250px;
+	height: 285px;
+	margin: 5 5 0 5;
+}
+
+.ZmContactPicker  {
+	border: 1px solid black;
+	background-color: #CCCCCC;
+}
+
+.ZmContactPicker-Active {
+	border: 1px solid #000000;
+}
+
+/* FROM ADMIN:
+.ZmContactPicker .DwtListView {
+	border: 1px solid black;
+	background-color: white;
+}
+*/
+
+
+
+
+/*
+ *  Autocompletion
+ */
+.ZmAutocompleteListView {
+	background-color: rgb(245, 245, 245);
+	border: 1px outset;
+	padding: 1px;
+	width: auto;
+}
+.ZmAutocompleteListView .Row, .ZmAutocompleteListView .Row-selected {padding: 1px;}
+.ZmAutocompleteListView .Row-selected { color: white; }
+
+
+
+
+/* 
+ *  Row display and highlighting 
+ */
+.Row, .Row-selected, .Row-matched, .Row-matched-drag, 
+.Row-drag, .Row-selected-drag, .Row-selected-right, .Row-selected-disabled {
+	border-bottom: 1px solid #DDDDDD;
+}
+
+.Row-selected, .Row-selected-drag { 
+	background-color: #ADD6D6;
+	color:black;
+}
+.Row-selected-disabled {
+	background-color: rgb(233,236,216);
+	color: rgb(201, 201, 194);
+}
+.Row-matched, .Row-matched-dnd { background-color: #FFFFBB; }
+.Row-selected-right, .Row-drag, .Row-matched-drag { background-color: #EAF5F5; }
+
+.Row-selected table, .Row-selected-drag table, .Row-drag table, 
+.Row-matched-drag table, .Row-selected-right table { 
+	color: black;
+}
+
+.Row table, .Row-selected table, .Row-matched table, .Row-matched-drag table, .Row-dnd table, 
+.Row-selected-drag table, .Row-drag table, .Row-selected-right table {
+	table-layout: fixed;
+}
+
+.Row, .Row-selected, .Row-selected-disabled, .Row-dnd, 
+.Row td, .Row div, .Row-selected td, .Row-matched td, .Row-dnd td, .Row-selected-drag td, 
+.Row-drag td, .Row-matched-drag td, .Row-selected-right td {
+	vertical-align: top;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.Row td.Flag, .Row td.Attach, .Row td.Tag, .Row td.Icon,
+.Row-dnd td.Flag, .Row-dnd td.Attach, .Row-dnd td.Tag, .Row-dnd td.Icon, 
+.Row-selected-drag td.Flag, .Row-selected-drag td.Attach, .Row-selected-drag td.Tag, .Row-selected-drag td.Icon, 
+.Row-matched-drag td.Flag, .Row-matched-drag td.Attach, .Row-matched-drag td.Tag, .Row-matched-drag td.Icon, 
+.Row-drag td.Flag, .Row-drag td.Attach,.Row-drag td.Tag, .Row-drag td.Icon {
+	text-align: center;
+}
+
+
+
+/* 
+ * Flags 
+ */
+.Unread { font-weight: bold; }
+.Trash { text-decoration: line-through; }
+
+
+
+
+/* Overview Panel */
+.OverviewPanel, .OverviewTreePanel {
+	width: 100%;
+	height: 100%;
+}
+.OverviewTree {width: 100%;}
+.overviewPanelHeader {
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+	background-image:url(/zimbra/skins/steel/images/tree_header_bg.gif);
+	padding-top:1px;
+	margin-left:2px;
+	margin-bottom:2px;
+	height:18px;
+	cursor: default;
+}
+
+.overviewPanelHeader-Text, .overviewPanelHeader-actioned,
+.overviewPanelHeader-DragOver {
+	font-weight:bold;
+	height:18px;
+}
+
+
+.overviewPanelHeader .imageCell {
+	padding-right:4px;
+	white-space: nowrap;
+}
+
+
+
+
+/*
+ *   ZmFilterPrefView
+ */
+
+.ZmFilterPrefView .ZmToolBar { 
+  position : relative;
+  height:25px;
+  border-top: 1px solid #A4A8AF;
+  border-bottom: 2px solid #6F757F;
+  border-left: 1px solid #A4A8AF;
+  border-right: 2px solid #6F757F;
+
+}
+
+.ZmFilterPrefView .summaryTable { 
+  table-layout:fixed; 
+  width:100%; 
+  height:100%;
+}
+
+.ZmFilterPrefView .DwtListView { 
+  width:100%;
+}
+.ZmFilterPrefView .filterSummaryContainer { 
+  height :100%;
+  overflow : visible;
+}
+
+.ZmFilterDetailsView {  
+  width:760px;
+}
+
+.ZmFilterDetailsView .shadedBox  {
+  border-top: 2px solid #999999; 
+  border-bottom:2px solid #EEEEEE; 
+  border-right: 2px solid #EEEEEE;
+  border-left: 2px solid #999999;
+  background-color: #CCCCCC;
+}
+
+.ZmFilterDetailsView .shadedBox .pickerButton,
+.ZmFilterDetailsView .shadedBox .pickerButton-activated, 
+.ZmFilterDetailsView .shadedBox .pickerButton-triggered{ 
+  width: 120px;
+  background-color: white;
+  border: 1px solid #6699CC; 
+}
+
+.ZmFilterDetailsView .paddedTableCell { 
+  vertical-align:middle;
+  padding: 0px 0px 0px 2px;
+}
+
+.ZmFilterPrefView .DwtListView {
+  border-bottom:1px solid #CCCCCC; 
+  border-left:1px solid #CCCCCC; 
+  border-top:1px solid #666666; 
+  border-right:1px solid #666666
+}
+
+.ZmFilterPrefView .DwtListView-Rows {
+  overflow:visible;
+  /* 
+     *  this is very important for the filter rules on IE
+     *  For some reason, having height set to 100% makes all
+     *  the content disappear on IE */
+  height:auto;
+}
+
+		/* FROM ADMIN
+		.ZmFilterPrefView .DwtButton { 
+		  margin-bottom:5px;
+		}
+		
+		.ZmFilterDetailsView .DwtButton {
+		  border: 1px solid black;
+		  background-color: rgb(198, 197, 215);
+		  width: 50px;
+		}
+		.ZmFilterDetailsView .DwtButton.activated {  
+		  background-color: rgb(249, 221, 135);
+		}
+		*/
+		
+		
+
+/*
+* Print View
+*/
+.ZmPrintView-username {
+	font-size: 14pt;
+}
+
+.ZmPrintView-company {
+	font-size: 18pt;
+}
+
+
+
+
+/*
+ * Preferences
+ */
+
+.ZmPrefView {
+	background-color:#EEEEEE; 
+	height:100%; 
+	width: 100%;
+}
+.ZmPrefView .TitleBar {
+	padding-top: 10px;
+}
+.ZmPrefView .DwtTabTable {
+	background-color: #C6C5D7;
+}
+
+
+.ZmPrefView tr {vertical-align: top;}
+
+/* Divider between groups of related preferences */
+.ZmPrefView .horizSep {
+	margin-top: 4px;
+	border-bottom: 2px solid #C6C5D7;
+	font-size: 1px;
+}
+
+/* Prefs are laid out in a table */
+.prefTable {
+	table-layout: fixed;
+	width: auto;
+}
+.prefLabel {width: 300px;}
+.prefContent {width: 420px;}
+
+/* make things line up visually */
+.ZmPrefView .leftPad {padding-left: 5px;}
+
+/* buttons */
+.ZmPreferencesPage .changePasswordButton {width: 50px;}
+.ZmPreferencesPage .resetButton {width: 100px;}
+.ZmPreferencesPage .exportButton { width: 65px; }
+
+.Row .ZmFilterDetailsView td {
+	vertical-align: center;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+
+
+/*
+ *  RANDOM BITS
+ */
+
+.ZmChangePasswordDialogInput { 
+  width:250px;
+}

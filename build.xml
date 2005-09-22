@@ -507,6 +507,9 @@
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/ajax">
       <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js" excludes="**/img/"/>
     </copy>
+    <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/zimbraAdmin/config/style">
+      <fileset dir="WebRoot/js/ZimbraMail/config/style" includes="*.css" excludes="zm.css"/>
+    </copy>
     <copy todir="${deploy.dir}${deploy.admin.path}/WEB-INF">  	
       <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
       <fileset dir="WebRoot/WEB-INF" includes="tlds/*"/>		
@@ -515,7 +518,7 @@
     <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
   </target>
 
-	<target name="admin-war" depends="build-init, copy-admin-help, copy-files-to-build-area, jam-files, generate-build-info, admin-images">
+	<target name="admin-war" depends="build-init, copy-admin-help, copy-files-to-build-area, jam-files, generate-build-info, admin-images, copy-common-css-to-admin">
 	  <property file="${build.dir}/build.properties" />
 	  <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
 	  <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
@@ -529,6 +532,13 @@
         <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
         <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
 	  </war>
+	</target>
+	
+	<target name="copy-common-css-to-admin">
+      <echo message="Copying common css files to ${build.dir}${deploy.admin.path}/WebRoot/js/ZimbraAdmin/config/style"/>
+      <copy todir="${build.dir}/WebRoot/js/ZimbraAdmin/config/style">  	
+        <fileset dir="WebRoot/js/ZimbraMail/config/style" includes="*.css" excludes="zm.css"/>
+      </copy>
 	</target>
     	
 	<target name="admin-deploy" depends="admin-war">

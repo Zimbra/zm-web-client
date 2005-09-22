@@ -97,6 +97,8 @@ Contributor(s):
 <% } else { %>
         @import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
 <% } %>
+   @import url(<%= contextPath %>/js/zimbraAdmin/config/style/dwt.css?v=<%= vers %>);
+   @import url(<%= contextPath %>/js/zimbraAdmin/config/style/common.css?v=<%= vers %>);
    @import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css?v=<%= vers %>);
    @import url(/zimbraAdmin/skins/steel/skin.css?v=<%= vers %>);   
      -->
@@ -141,6 +143,9 @@ Contributor(s):
   </head>
   <body onload="javascript:void launch()">
 		<jsp:include page="../skins/steel/skin.html"/>  
-   </body>
+<script language=Javascript>
+	skin.hideQuota();
+</script>
+  </body>
 </html>
 
