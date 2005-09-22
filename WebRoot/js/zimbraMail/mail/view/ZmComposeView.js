@@ -729,8 +729,12 @@ function() {
 	var idx = 0;
 	html[idx++] = "<table cellspacing=4 cellpadding=0 border=0><tr>";
 	html[idx++] = "<td><div class='attachText'>" + ZmMsg.attachFile + ":</div></td>";
-	html[idx++] = "<td class='nobreak'><input id='" + attInputId + "' type='file' name='" + ZmComposeView.UPLOAD_FIELD_NAME + "' size=40>&nbsp;<a href='javascript:;' id='" + attRemoveId + "'>" + ZmMsg.remove + "</a></td>";
-	html[idx++] = "</tr></table>";
+	html[idx++] = "<td class='nobreak'>";
+	html[idx++] = "<input id='" + attInputId + "' type='file' name='" + ZmComposeView.UPLOAD_FIELD_NAME + "' size=40>&nbsp;";
+	html[idx++] = "<span id='" + attRemoveId + "'";
+	html[idx++] = " onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;'";
+	html[idx++] = ">" + ZmMsg.remove + "</span>";
+	html[idx++] = "</td></tr></table>";
 	cell.innerHTML = html.join("");
 	
 	this._setEventHandler(attRemoveId, "onClick", null, !AjxEnv.isNav);
@@ -870,9 +874,8 @@ function(ev) {
 ZmComposeView._onClick =
 function(ev) {
 	// IE doesn't pass event, might have to go fishing in iframe for it
-	if (AjxEnv.isIE && !window.event){
+	if (AjxEnv.isIE && !window.event)
 		ev = parent.window.frames[this._iframeId].event;
-	}
 
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
 	var id = element.id;
@@ -902,7 +905,7 @@ function(ev) {
 ZmComposeView._onKeyDown =
 function(ev) {
 	DBG.println(AjxDebug.DBG3, "onKeyDown");
-	
+
 	// IE doesn't pass event, might have to go fishing in iframe for it
 	if (AjxEnv.isIE && !window.event)
 		ev = parent.window.frames[this._iframeId].event;
@@ -910,10 +913,8 @@ function(ev) {
 	var id = element.id;
 	var key = DwtKeyEvent.getCharCode(ev);
 	// ignore return in attachment input field (bug 961)
-	if (id.indexOf("_att_") == 0) {
-		return (key != DwtKeyEvent.KEY_ENTER && 
-				key != DwtKeyEvent.KEY_END_OF_TEXT);
-	}
+	if (id.indexOf("_att_") == 0) 
+		return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
 }
 
 ZmComposeView.prototype._createHtml =
@@ -946,8 +947,10 @@ function() {
 	// create element for adding address fields
 	html[idx++] = "<tr><td><table cellspacing=4 cellpadding=0 border=0 width=100%><tr>";
 	html[idx++] = "<td width=60></td><td class='nobreak'>";
-	html[idx++] = "<a id='" + this._addLinkId[ZmEmailAddress.CC] + "' href='javascript:;'>" + ZmMsg.addCc + "</a>";
-	html[idx++] = " | <a id='" + this._addLinkId[ZmEmailAddress.BCC] + "' href='javascript:;'>" + ZmMsg.addBcc + "</a></td>";
+	// create a fake link so they dont get focus when tabbing..
+	var fakeLinkStyle = "onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;'";
+	html[idx++] = "<span " + fakeLinkStyle + " id='" + this._addLinkId[ZmEmailAddress.CC] + "'>" + ZmMsg.addCc + "</span>";
+	html[idx++] = " | <span " + fakeLinkStyle + " id='" + this._addLinkId[ZmEmailAddress.BCC] + "'>" + ZmMsg.addBcc + "</span></td>";
 	html[idx++] = "</tr></table></td></tr>";
 
 	// create subject field
@@ -991,6 +994,7 @@ function() {
 		iframe.scrolling = "no";
 		iframe.style.overflowX = iframe.style.overflowY = "visible";
 		iframe.style.height = "0px";
+		iframe.tabIndex = -1; // dont let iframe get focus
 		this._iframeDiv.appendChild(iframe);
 		
 		var idoc = Dwt.getIframeDoc(iframe);
