@@ -293,6 +293,48 @@
 
 	</target>
 
+
+	<target name='skin-images' depends='imagesinit,compile' unless='Ximagesdone'>
+		<!-- define imagemerge task -->
+		<pathconvert property='imagemerge.cp' pathsep='${path.separator}'>
+			<path>
+				<pathelement location='${build.dir}'/>
+				<fileset dir='${jars.dir}' includes='**/*.jar'/>
+			</path>
+		</pathconvert>
+		<taskdef name='imagemerge' 
+				 classname='com.zimbra.ajax.imagemerge.ImageMergeTask' 
+				 classpath='${imagemerge.cp}'
+		/>
+
+		<!-- copy hiRes images -->
+		<mkdir dir="${images.hiRes.destDir}/skins/steel"/>
+		<delete file='${images.hiRes.destDir}/skins/steel/skin.css'/>
+		<echo/>
+		<echo message='Copying skin images'/>
+		<echo/>
+		<imagemerge destdir='${images.hiRes.destDir}/skins/steel' copy='true'
+					cssfile='skin.css' csspath='/zimbra/img/hiRes/skins/steel'>
+			<dirset dir='WebRoot/skins/steel' includes='**/img'/>
+		</imagemerge>
+		<echo/>
+
+
+		<!-- merge loRes images -->
+		<mkdir dir="${images.loRes.destDir}/skins/steel"/>
+		<delete file='${images.loRes.destDir}/skins/steel/skin.css'/>
+		<echo/>
+		<echo message='Copying skin images'/>
+		<echo/>
+		<imagemerge destdir='${images.loRes.destDir}/skins/steel'
+					cssfile='skin.css' csspath='/zimbra/p4/ZimbraWebClient/build/WebRoot/img/loRes/skins/steel/'>
+			<dirset dir='WebRoot/skins/steel' includes='**/img'/>
+		</imagemerge>
+		<echo/>
+	</target>
+	
+	
+
 	<target name='sortimages' depends='sortimagesinit'>
 		<!-- check properties -->
 		<fail unless='sort.source' message='Must specify source directory. For example: ant -Dsort.source=src ...'/>		
@@ -508,7 +550,7 @@
       <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js" excludes="**/img/"/>
     </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/zimbraAdmin/config/style">
-      <fileset dir="WebRoot/js/ZimbraMail/config/style" includes="*.css" excludes="zm.css"/>
+      <fileset dir="WebRoot/js/zimbraMail/config/style" includes="*.css" excludes="zm.css"/>
     </copy>
     <copy todir="${deploy.dir}${deploy.admin.path}/WEB-INF">  	
       <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
@@ -535,9 +577,9 @@
 	</target>
 	
 	<target name="copy-common-css-to-admin">
-      <echo message="Copying common css files to ${build.dir}${deploy.admin.path}/WebRoot/js/ZimbraAdmin/config/style"/>
-      <copy todir="${build.dir}/WebRoot/js/ZimbraAdmin/config/style">  	
-        <fileset dir="WebRoot/js/ZimbraMail/config/style" includes="*.css" excludes="zm.css"/>
+      <echo message="Copying common css files to ${build.dir}${deploy.admin.path}/WebRoot/js/zimbraAdmin/config/style"/>
+      <copy todir="${build.dir}/WebRoot/js/zimbraAdmin/config/style">  	
+        <fileset dir="${build.dir}/WebRoot/js/zimbraMail/config/style" includes="*.css" excludes="zm.css"/>
       </copy>
 	</target>
     	
