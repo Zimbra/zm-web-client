@@ -196,7 +196,7 @@ ZmErrorDialog.prototype._showDetail =
 function() {
 	if (this._detailCell) {
 		if (this._detailCell.innerHTML == "") {
-			this._button[ZmErrorDialog.DETAIL_BUTTON].setImage("selectPullUpArrow");
+			this._button[ZmErrorDialog.DETAIL_BUTTON].setImage("SelectPullUpArrow");
 			this._detailCell.innerHTML = this._getDetailHtml();
 		} else {
 			this._button[ZmErrorDialog.DETAIL_BUTTON].setImage("SelectPullDownArrow");
