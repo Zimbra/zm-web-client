@@ -166,7 +166,7 @@ function() {
 }
 
 ZmSearchController.prototype.search =
-function(query, types, sortBy, offset, limit, callback, userText) {
+function(query, types, sortBy, offset, limit, callback, userText, rpcCallback) {
 	if (!(query && query.length)) return;
 	
 	// if the search string starts with "$set:" then it is a command to the client 
@@ -176,7 +176,15 @@ function(query, types, sortBy, offset, limit, callback, userText) {
 	}
 
 	var params = {query: query, types: types, sortBy: sortBy, offset: offset, limit: limit, callback: callback, userText: userText};
-	this._schedule(this._doSearch, params);
+	var respCallback = null;
+	if (rpcCallback)
+		var respCallback = new AjxCallback(this, this.handleDoSearchResponse, rpcCallback);
+	this._doSearch(params, respCallback);
+}
+
+ZmSearchController.prototype.handleDoSearchResponse =
+function(callback) {
+	callback.run();
 }
 
 /**
@@ -196,7 +204,7 @@ function(search, callback, changes) {
 	} else {
 		newSearch = search;
 	}
-	this._schedule(this._doSearch, newSearch);
+	this._doSearch(newSearch);
 }
 
 /**
@@ -252,7 +260,7 @@ function(types) {
 * @param params	[Object]	a hash of arguments for the search (see search() method)
 */
 ZmSearchController.prototype._doSearch =
-function(params) {
+function(params, rpcCallback) {
 
 	if (this._searchToolBar) {
 		var value = (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText) ? params.query : "";
@@ -272,19 +280,8 @@ function(params) {
 	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
 	
 	var search = new ZmSearch(this._appCtxt, params.query, types, params.sortBy, params.offset, params.limit, contactSource);
-	var results;
-	var useAsync = this._appCtxt.get(ZmSetting.ASYNC_MODE);
-	try {
-		if (useAsync) {
-			var callback = new AjxCallback(this, this._handleResponse, [search, params, types]);
-			search.execute(callback);
-		} else {
-			results = search.execute();
-			this._handleResponse([search, params, types, results]);
-		}
-	} catch (ex) {
-		this._handleError(ex, params);
-	}
+	var respCallback = new AjxCallback(this, this._handleResponse, [search, this._doSearch, params, types, rpcCallback]);
+	search.execute(respCallback);
 }
 
 /*
@@ -296,16 +293,22 @@ ZmSearchController.prototype._handleResponse =
 function(args) {
 
 	var search = args[0];
-	var params = args[1];
-	var types = args[2];
-	var results = args[3];
+	var method = args[1];
+	var params = args[2];
+	var types = args[3];
+	var rpcCallback = args[4];
+	var results = args[5];
 
 	if (!results) return;
 	var gotError = (results instanceof ZmCsfeException);
 	if (gotError) {
-		this._handleError(results, params);
-		results = new ZmSearchResult(this._appCtxt);
-		results.type = params.types ? params.types[0]: null;
+		if (this._handleError(results, method, params)) {
+			// minor problem, show empty result set
+			results = new ZmSearchResult(this._appCtxt);
+			results.type = params.types ? params.types[0] : null;
+		} else {
+			return;
+		}
 	}
 
 	this._appCtxt.setCurrentSearch(search);
@@ -339,16 +342,17 @@ function(args) {
 }
 
 ZmSearchController.prototype._handleError =
-function(ex, params) {
+function(ex, method, params) {
 	if (this._searchToolBar)
 		this._searchToolBar.setEnabled(true);
 	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER || ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG) {
 		var msg = this._getErrorMsg(ex.code);
 		this._appCtxt.getAppController().setStatusMsg(msg);
+		return true;
 	} else {
-		this._handleException(ex, this._doSearch, params, false);
-		return;
+		this._handleException(ex, method, params, false);
+		return false;
 	}
 }
 

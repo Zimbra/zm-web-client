@@ -90,29 +90,36 @@ function() {
 * when the events arrive from the UI. Since the action is executed via win.setTimeout(), it
 * must be a leaf action (scheduled actions are executed after the calling code returns to the
 * UI loop). You can't schedule something, and then have subsequent code that depends on the 
-* scheduled action. 
+* results of the scheduled action.
 */
 ZmController.prototype._schedule =
-function(method, params, delay) {
-	if (!delay) {
-		delay = 0;
-		this._shell.setBusy(true);
+function(method, params, delay, asyncMode) {
+	delay = delay ? delay : 0;
+	if (asyncMode) {
+		method.call(this, params);
+	} else {
+		if (delay == 0) {
+			DBG.println("ZmController call setBusy true");
+			this._shell.setBusy(true);
+		}
+		this._action = new AjxTimedAction();
+		this._action.obj = this;
+		this._action.method = ZmController._exec;
+		this._action.params.removeAll();
+		this._action.params.add(method);
+		this._action.params.add(params);
+		this._action.params.add(delay);
+		return AjxTimedAction.scheduleAction(this._action, delay);
 	}
-	this._action = new AjxTimedAction();
-	this._action.obj = this;
-	this._action.method = ZmController._exec;
-	this._action.params.removeAll();
-	this._action.params.add(method);
-	this._action.params.add(params);
-	this._action.params.add(delay);
-	return AjxTimedAction.scheduleAction(this._action, delay);
 }
 
 ZmController._exec =
 function(method, params, delay) {
 	method.call(this, params);
-	if (!delay)
+	if (!delay) {
+		DBG.println("ZmController call setBusy false");
 		this._shell.setBusy(false);
+	}
 }
 
 ZmController.prototype.popupErrorDialog = 
@@ -185,6 +192,14 @@ function(bReloginMode) {
 ZmController.prototype._processPrePopView = 
 function(view) {
 	// overload me
+}
+
+/*
+* Common exception handling entry point for sync and async commands.
+*/
+ZmController.prototype._handleError =
+function(ex, method, params) {
+	this._handleException(ex, method, params, false);
 }
 
 ZmController.prototype._handleException =

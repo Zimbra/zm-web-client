@@ -73,9 +73,6 @@ function(callback) {
 
 	if (!this.query) return;
 	
-	var asyncMode = (callback != null);
-	this._asyncCallback = callback;
-
 	var isGalSearch = (this.contactSource == ZmSearchToolBar.FOR_GAL_MI);
 	var soapDoc;
 	if (isGalSearch) {
@@ -98,19 +95,15 @@ function(callback) {
 		}
 	}
 	
-	if (asyncMode) {
-		var callback = new AjxCallback(this, this._handleResponse, isGalSearch);
-		this._appCtxt.getAppController().sendRequest(soapDoc, callback);
-	} else {
-		var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
-		return this._handleResponse([isGalSearch, resp]);
-	}
+	var respCallback = new AjxCallback(this, this._handleResponse, [isGalSearch, callback]);
+	this._appCtxt.getAppController().sendRequest(soapDoc, respCallback);
 }
 
 ZmSearch.prototype._handleResponse = 
 function(args) {
 	var isGalSearch = args[0];
-	var response = args[1];
+	var callback = args[1];
+	var response = args[2];
 	
 	var returnValue;
 	if (response instanceof ZmCsfeException) {
@@ -122,11 +115,7 @@ function(args) {
 		returnValue = searchResult;
 	}
 	
-	if (this._asyncCallback) {
-		this._asyncCallback.run(returnValue);
-	} else {
-		return returnValue;
-	}
+	callback.run(returnValue);
 }
 
 // searching w/in a conv (to get its messages) has its own special command
