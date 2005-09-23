@@ -1108,20 +1108,24 @@ function(args) {
 
 ZmZimbraMail.prototype._appButtonListener =
 function(ev) {
-	var searchController = this._appCtxt.getSearchController();
-	var id = ev.item.getData(Dwt.KEY_ID);
-	DBG.println("ZmZimbraMail button press: " + id);
-	if (id == ZmAppChooser.B_EMAIL) {
-		this.activateApp(ZmZimbraMail.MAIL_APP);
-	} else if (id == ZmAppChooser.B_CONTACTS) {
-		this.getApp(ZmZimbraMail.CONTACTS_APP).launch();
-	} else if (id == ZmAppChooser.B_CALENDAR) {
-		this.activateApp(ZmZimbraMail.CALENDAR_APP);
-	} else if (id == ZmAppChooser.B_HELP) {
-		window.open(this._appCtxt.get(ZmSetting.HELP_URI));
-	} else if (id == ZmAppChooser.B_OPTIONS) {
-		this.activateApp(ZmZimbraMail.PREFERENCES_APP);
-	} else if (id == ZmAppChooser.B_LOGOUT) {
-		ZmZimbraMail.logOff();
+	try {
+		var searchController = this._appCtxt.getSearchController();
+		var id = ev.item.getData(Dwt.KEY_ID);
+		DBG.println("ZmZimbraMail button press: " + id);
+		if (id == ZmAppChooser.B_EMAIL) {
+			this.activateApp(ZmZimbraMail.MAIL_APP);
+		} else if (id == ZmAppChooser.B_CONTACTS) {
+			this.getApp(ZmZimbraMail.CONTACTS_APP).launch();
+		} else if (id == ZmAppChooser.B_CALENDAR) {
+			this.activateApp(ZmZimbraMail.CALENDAR_APP);
+		} else if (id == ZmAppChooser.B_HELP) {
+			window.open(this._appCtxt.get(ZmSetting.HELP_URI));
+		} else if (id == ZmAppChooser.B_OPTIONS) {
+			this.activateApp(ZmZimbraMail.PREFERENCES_APP);
+		} else if (id == ZmAppChooser.B_LOGOUT) {
+			ZmZimbraMail.logOff();
+		}
+	} catch (ex) {
+		this._handleException(ex, this._appButtonListener, ev, false);
 	}
 }
