@@ -53,7 +53,7 @@ function(uname, pword) {
 		soapDoc.set("name", uname);
 	}
 	soapDoc.set("password", pword);
-	var resp = command.invoke(soapDoc, true).Body.AuthResponse;
+	var resp = command.invoke(soapDoc, true, null, null, false, true).Body.AuthResponse;
 	this._setAuthToken(resp);
 };
 
