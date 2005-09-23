@@ -1060,7 +1060,7 @@ ZmFreeBusyView.prototype._getScheduleIndexById = function (schedId) {
 
 ZmFreeBusyView.prototype._handleScheduleMouseDown = function (event){
 	var target = DwtUiEvent.getTarget(event);
-	var hourCell = target.cellIndex;
+	var hourCell = Dwt.getCellIndex(target);
 	// if we are in the address section of the table, don't do anything
 	//DBG.println("handleScheduleMouseDown: target.tagName = " + target.tagName + " index = " + target.cellIndex);
 	if (hourCell < 2 || target.tagName != "TD" || target.parentNode.rowIndex < 2) return;
