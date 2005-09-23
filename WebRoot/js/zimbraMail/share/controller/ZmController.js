@@ -99,7 +99,6 @@ function(method, params, delay, asyncMode) {
 		method.call(this, params);
 	} else {
 		if (delay == 0) {
-			DBG.println("ZmController call setBusy true");
 			this._shell.setBusy(true);
 		}
 		this._action = new AjxTimedAction();
@@ -117,7 +116,6 @@ ZmController._exec =
 function(method, params, delay) {
 	method.call(this, params);
 	if (!delay) {
-		DBG.println("ZmController call setBusy false");
 		this._shell.setBusy(false);
 	}
 }
