@@ -197,8 +197,7 @@ function(params) {
 				for (var id in params.settings)
 					this._settings.getSetting(id).setValue(params.settings[id]);
 			}
-			this._pollInterval = this._appCtxt.get(ZmSetting.POLLING_INTERVAL) * 1000;
-			DBG.println(AjxDebug.DBG1, "poll interval = " + this._pollInterval + "ms");
+			this.setPollInterval();
 			ZmTimezones.initializeServerTimezone();
 			this._setUserInfo();
 			this._checkOverviewLayout();
@@ -536,6 +535,12 @@ function() {
 ZmZimbraMail.redir =
 function(args){
 	window.location = args[0];
+}
+
+ZmZimbraMail.prototype.setPollInterval =
+function(minutes) {
+	this._pollInterval = minutes ? minutes : this._appCtxt.get(ZmSetting.POLLING_INTERVAL) * 1000;
+	DBG.println(AjxDebug.DBG1, "poll interval = " + this._pollInterval + "ms");
 }
 
 ZmZimbraMail.prototype.setSessionTimer =

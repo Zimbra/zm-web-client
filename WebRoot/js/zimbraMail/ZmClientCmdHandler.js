@@ -49,7 +49,7 @@ function(argv) {
 				alert("Invalid debug level");
 			}
 		}
-	}  else if (arg0 == "debug_use_div"){
+	} else if (arg0 == "debug_use_div") {
 		if (!argv[1]) {
 			alert('enter true or false');
 			return;
@@ -75,5 +75,11 @@ function(argv) {
 		alert("Turning " + feature + " support " + newState);
 		this._settings[id] = !on;
 		this._appCtxt.getAppController().restart(this._settings);
+	} else if (arg0 == "poll") {
+		if (!argv[1]) return;
+		this._appCtxt.set(ZmSetting.POLLING_INTERVAL, argv[1]);
+		var pi = this._appCtxt.get(ZmSetting.POLLING_INTERVAL); // LDAP time format converted to seconds
+		alert("Set polling interval to " + pi + " seconds");
+		this._appCtxt.getAppController().setPollInterval();
 	}
 }
