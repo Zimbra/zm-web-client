@@ -147,8 +147,9 @@ ZmObjectHandler.prototype.hoverOver = function(object, context, x, y) {
 	var shell = DwtShell.getShell(window);
 	var tooltip = shell.getToolTip();
 	tooltip.setContent(this.getToolTipText(object, context));
-	this.populateToolTip(object, context);
 	tooltip.popup(x, y);
+	this.populateToolTip(object, context);
+
 }
 ZmObjectHandler.prototype.hoverOut = function(object, context) {
 	var shell = DwtShell.getShell(window);

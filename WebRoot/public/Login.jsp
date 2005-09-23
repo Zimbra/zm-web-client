@@ -140,7 +140,6 @@ Contributor(s):
 		gzip = "false";
 	}
 %>
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
@@ -212,15 +211,15 @@ body, form {
 }
 
 </style>
-</head>
-<body>
-</body>
 <script>
 	DwtConfigPath = "js/dwt/config";
 </script>
 <jsp:include page="Messages.jsp"/>
 <script type="text/javascript" src="/zimbra/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/ZmLogin.js<%= ext %>?v=<%= vers %>"></script>
+</head>
+<body>
+</body>
 
 <script language="javascript">
 	var initMode = "<%= initMode %>";
@@ -240,4 +239,5 @@ body, form {
 	}
 	window.onload = ZmLogin.handleOnload;
 </script>
+<script type="text/javascript" src="/zimbra/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
 </html>

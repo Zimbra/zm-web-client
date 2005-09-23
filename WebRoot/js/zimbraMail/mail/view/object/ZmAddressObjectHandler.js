@@ -34,11 +34,21 @@ ZmAddressObjectHandler.prototype.constructor = ZmAddressObjectHandler;
 // Consts
 
 ZmAddressObjectHandler.TYPE = "address";
-// XXX This regex is very very simple.  It only matches single line simpler addresses like:
+// TODO This regex is very very simple.  It only matches single line simple addresses like:
 // 1234 Main St City CA 99999
 ZmAddressObjectHandler.ADDRESS_RE = /[\w]{3,}([A-Za-z]\.)?([ \w]*\#\d+)?(\r\n| )[ \w]{3,}\x20[A-Za-z]{2}\x20\d{5}(-\d{4})?/ig;
-ZmAddressObjectHandler.CACHE = new Array();
 
+// Make DOM safe id's
+ZmAddressObjectHandler.encodeId = function(s) {
+	return s.replace(/[^A-Za-z0-9]/g, "");
+};
+
+ZmAddressObjectHandler.CACHE = new Array();
+// Pre-load a couple addresses for off-line testing
+ZmAddressObjectHandler.CACHE["2510 Fairview Ave Seattle WA 98102"+"lng"] = "-122.328914";
+ZmAddressObjectHandler.CACHE["2510 Fairview Ave Seattle WA 98102"+"lat"] = "47.642286";
+ZmAddressObjectHandler.CACHE["1801 Varsity Dr Raleigh NC 27606"+"lng"] = "-78.683064";
+ZmAddressObjectHandler.CACHE["1801 Varsity Dr Raleigh NC 27606"+"lat"] = "35.777215";
 
 // Public methods
 
@@ -57,15 +67,17 @@ function(html, idx, address, context) {
 
 ZmAddressObjectHandler.prototype.getToolTipText =
 function(obj, context) {
-	return '<div class="AddressContent" id="'+ZmAddressObjectHandler.encodeId(obj)+'"></div>';
-	//return '<div class="AddressContent" id="GMap"></div>';
+	return '<div class="AddressContent" id="'+ZmAddressObjectHandler.encodeId(obj)+'"> </div>';
 };
 
 ZmAddressObjectHandler.prototype.populateToolTip =
 function(obj, context) {
-//		if(ZmAddressObjectHandler.CACHE[obj]) {
-//			ZmAddressObjectHandler.displayMap(ZmAddressObjectHandler.CACHE[obj], obj);
-//		} else {
+		if(ZmAddressObjectHandler.CACHE[obj+"lng"] && ZmAddressObjectHandler.CACHE[obj+"lat"]) {
+			DBG.println(AjxDebug.DBG2, "gMAPS: Using cache");
+			ZmAddressObjectHandler.displayMap(ZmAddressObjectHandler.CACHE[obj+"lng"], 
+			                                  ZmAddressObjectHandler.CACHE[obj+"lat"], obj);
+		} else {
+			DBG.println(AjxDebug.DBG2, "gMAPS: New Request");
 			var request = GXmlHttp.create();
 			var url = "/zimbra/zimlets/geocode.jsp?address="+AjxStringUtil.urlEncode(obj);
 			request.open("GET", url, true);
@@ -77,31 +89,30 @@ function(obj, context) {
 					var lg_e = resp.indexOf("</geo:long>");
 					var lt_s = resp.indexOf("<geo:lat>");
 					var lt_e = resp.indexOf("</geo:lat>");
-				    var point = new GPoint(resp.substring(lg_s+10,lg_e), resp.substring(lt_s+9,lt_e));
-				    ZmAddressObjectHandler.displayMap(point, obj);
+				    ZmAddressObjectHandler.displayMap(resp.substring(lg_s+10,lg_e), resp.substring(lt_s+9,lt_e), obj);
 			  	}
 			};
 			request.send(null);
-//		}
+		}
 };
 
-ZmAddressObjectHandler.displayMap =
-function(point, obj) {
-    var map = new GMap(document.getElementById(ZmAddressObjectHandler.encodeId(obj)));
-    //var map = new GMap(document.getElementById("GMap"));
+ZmAddressObjectHandler.displayMap = function(lng, lat, obj) {
+	DBG.println(AjxDebug.DBG2, "gMAPS: lat: " + lat + " long: " + lng + " obj: '" + obj + "'");
+	var element = document.getElementById(ZmAddressObjectHandler.encodeId(obj));
+    var map = new GMap(element);
+    var point = new GPoint(lng, lat);
     map.centerAndZoom(point, 4);
 	var marker = new GMarker(point);
 	map.addOverlay(marker);
-	marker.openInfoWindowHtml('<br/>'+obj);
-//	if(!ZmAddressObjectHandler.CACHE[obj]) {
-//		ZmAddressObjectHandler.CACHE[obj] = point;
-//	}
+	marker.openInfoWindowHtml(obj);
+    if(!ZmAddressObjectHandler.CACHE[obj+"lng"] || !ZmAddressObjectHandler.CACHE[obj+"lat"]) {
+		DBG.println(AjxDebug.DBG2, "gMAPS: Adding to cache");
+		ZmAddressObjectHandler.CACHE[obj+"lng"] = lng;
+		ZmAddressObjectHandler.CACHE[obj+"lat"] = lat;
+	}
 };
 
-ZmAddressObjectHandler.encodeId = function(s) {
-	return s.replace(/[^A-Za-z0-9]/g, "");
-}
-
+/* Sticky tool tips not ready yet.
 ZmAddressObjectHandler.prototype.hoverOver = function(object, context, x, y) {
 	var shell = DwtShell.getShell(window);
 	var tooltip = new DwtStickyToolTip(shell);
@@ -109,7 +120,9 @@ ZmAddressObjectHandler.prototype.hoverOver = function(object, context, x, y) {
 	tooltip.setContent(this.getToolTipText(object, context));
 	this.populateToolTip(object, context);
 	tooltip.popup(x, y);
+
 }
 ZmAddressObjectHandler.prototype.hoverOut = function(object, context) {
 	// no-op
 }
+*/
