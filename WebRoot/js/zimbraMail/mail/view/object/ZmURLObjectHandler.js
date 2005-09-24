@@ -32,7 +32,7 @@ ZmURLObjectHandler.prototype = new ZmObjectHandler;
 ZmURLObjectHandler.prototype.constructor = ZmURLObjectHandler;
 
 ZmURLObjectHandler.TYPE = "url";
-ZmURLObjectHandler.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\(\)\<\>\[\]\{\}\'\"]*/ig;
+ZmURLObjectHandler.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/ig;
 
 ZmURLObjectHandler.prototype.match =
 function(line, startIndex) {
