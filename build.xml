@@ -101,11 +101,12 @@
 
   <target name="compile" depends="build-init" description="compile the filter source" >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src.dir}" destdir="${build.dir}" source="1.4" target="1.4" debug="on">
+  	<mkdir dir='${build.dir}/classes'/>
+    <javac srcdir="${src.dir}" destdir="${build.dir}/classes" source="1.4" target="1.4" debug="on">
       <classpath refid="class.path"/>
       <include name="**/*.java"/>
     </javac>
-    <javac srcdir="${ajax.src.dir}" destdir="${build.dir}" source="1.4" target="1.4" debug="on">
+    <javac srcdir="${ajax.src.dir}" destdir="${build.dir}/classes" source="1.4" target="1.4" debug="on">
       <classpath refid="class.path"/>
       <include name="**/*.java"/>
     </javac>
@@ -119,7 +120,7 @@
   </target>
 
   <target name="jam-files" depends="compile">
-    <taskdef name="jammer" classname="com.zimbra.webClient.build.JammerTask" classpath="${build.dir}"/>
+    <taskdef name="jammer" classname="com.zimbra.webClient.build.JammerTask" classpath="${build.dir}/classes"/>
   	<jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/Ajax_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="Ajax.jsp, Dwt.jsp"/>
     </jammer>
@@ -230,7 +231,7 @@
 		<!-- define imagemerge task -->
 		<pathconvert property='imagemerge.cp' pathsep='${path.separator}'>
 			<path>
-				<pathelement location='${build.dir}'/>
+				<pathelement location='${build.dir}/classes'/>
 				<fileset dir='${jars.dir}' includes='**/*.jar'/>
 			</path>
 		</pathconvert>
@@ -365,7 +366,7 @@
 		<!-- define sortimages task -->
 		<pathconvert property='sortimages.cp' pathsep='${path.separator}'>
 			<path>
-				<pathelement location='${build.dir}'/>
+				<pathelement location='${build.dir}/classes'/>
 				<fileset dir='${jars.dir}' includes='**/*.jar'/>
 			</path>
 		</pathconvert>
@@ -480,11 +481,13 @@
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
-      <classes dir="${src.dir}" includes="*.properties"/>
-      <classes dir="${build.dir}" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
+      <classes dir="${build.dir}/classes" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
+      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
+	  <classes dir="${build.dir}/WebRoot/js/ajax/dwt/config" includes="msgs/*.properties"/>
+	  <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes="msgs/*.properties"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-   	  <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**,skins/**" excludes="js/zimbraAdmin/**,js/AjxAdmin_all.js"/>
-      <fileset dir="${build.dir}/WebRoot" includes="zimlets/**,public/**,skins/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp,js/AjxAdmin_all.js"/>
+   	  <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**,skins/**" excludes="js/zimbraAdmin/**,js/AjxAdmin_all.js,**/config/msgs/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="zimlets/**,public/**,skins/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp,js/AjxAdmin_all.js,**/config/msgs/**"/>
     </war>
   </target>
 
@@ -505,13 +508,15 @@
     <war warfile="${warfile}"
       webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
-      <classes dir="${src.dir}" includes="*.properties"/>
-      <classes dir="${build.dir}" includes="**/*.class"/>
+      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
+  	  <classes dir="${build.dir}/WebRoot/js/ajax/dwt/config" includes="msgs/*.properties"/>
+  	  <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes="msgs/*.properties"/>
+      <classes dir="${build.dir}/classes" includes="**/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="help/**"/>
 
-      <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**/*,skins/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="js/ZmLogin.js,zimlets/**,public/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp"/>
+      <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**/*,skins/**" excludes='**/config/msgs/**'/>
+      <fileset dir="${build.dir}/WebRoot" includes="js/ZmLogin.js,zimlets/**,public/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**"/>
     </war>
   </target>
   
@@ -566,10 +571,12 @@
 	  <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
 	  <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
 	     <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
-	     <classes dir="${src.dir}" includes="*.properties"/>
-	     <classes dir="${build.dir}" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
+	      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
+	  	  <classes dir="${build.dir}/WebRoot/js/ajax/dwt/config" includes="msgs/*.properties"/>
+	  	  <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes="msgs/*.properties"/>
+	     <classes dir="${build.dir}/classes" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
 	     <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-	    <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,skins/**" excludes="js/ZimbraMail_all.js,js/ZmLogin.js,js/zimbraMail/**"/>
+	    <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,skins/**" excludes="js/ZimbraMail_all.js,js/ZmLogin.js,js/zimbraMail/**,**/config/msgs/**"/>
 	    <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Dwt.jsp,public/Ajax.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,skins/**,**/*${gzipExtension}"/>
         <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
         <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
@@ -592,7 +599,7 @@
 		<!-- define imagemerge task -->
 		<pathconvert property='imagemerge.cp' pathsep='${path.separator}'>
 			<path>
-				<pathelement location='${build.dir}'/>
+				<pathelement location='${build.dir}/classes'/>
 				<fileset dir='${jars.dir}' includes='**/*.jar'/>
 			</path>
 		</pathconvert>

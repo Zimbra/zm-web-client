@@ -227,7 +227,7 @@ ZmCalMonthView.prototype._dayTitle =
 function(date) {
 	if (this._shortMonInDay != date.getMonth()) {
 		this._shortMonInDay = date.getMonth();
-		return DwtMsg.MEDIUM_MONTH[date.getMonth()]+" "+date.getDate();
+		return DwtCalendar.MEDIUM_MONTH[date.getMonth()]+" "+date.getDate();
 	} else {
 		return date.getDate();
 	}
@@ -493,8 +493,8 @@ function() {
 	html.append("</tr>");
 	html.append("<tr>");
 	
-	for (var day in DwtMsg.LONG_WEEKDAY) {
-		html.append("<td class=calendar_month_header_cells_text>", DwtMsg.LONG_WEEKDAY[day], "</td>");
+	for (var day in DwtCalendar.LONG_WEEKDAY) {
+		html.append("<td class=calendar_month_header_cells_text>", DwtCalendar.LONG_WEEKDAY[day], "</td>");
 	}
 
 	html.append("</tr>");
@@ -565,7 +565,7 @@ function() {
 		}
 	}
 	
-	this._title = DwtMsg.LONG_MONTH[this._date.getMonth()]+" "+this._date.getFullYear();	
+	this._title = DwtCalendar.LONG_MONTH[this._date.getMonth()]+" "+this._date.getFullYear();	
 	var titleEl = Dwt.getDomObj(doc, this._titleId);
 	titleEl.innerHTML = this._title;
 };
@@ -647,7 +647,7 @@ ZmCalMonthView.getDayToolTipText =
 function(date, list) {
 	var html = new AjxBuffer();
 	
-	var title = DwtMsg.LONG_WEEKDAY[date.getDay()]+", "+DwtMsg.LONG_MONTH[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear();
+	var title = DwtCalendar.LONG_WEEKDAY[date.getDay()]+", "+DwtCalendar.LONG_MONTH[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear();
 	
 	html.append("<div>");
 	html.append("<table cellpadding='0' cellspacing='0' border='0'>");

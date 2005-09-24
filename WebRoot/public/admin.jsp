@@ -26,7 +26,6 @@ Contributor(s):
 <%@ page language="java" 
          import="java.lang.*, java.util.*" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%
    	String portsCSV = application.getInitParameter("admin.allowed.ports");
    	if (portsCSV != null) {
@@ -82,7 +81,6 @@ Contributor(s):
 		response.sendRedirect("/zimbraAdmin?mode="+mode+"&version="+vers+"&fileExtension="+ext);    	
     }
 %>
-<fmt:setBundle basename="adminconfig" var="configBundle" scope="session"/>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
@@ -107,8 +105,9 @@ Contributor(s):
     	DwtConfigPath = "<%= contextPath %>/js/dwt/config";
     </script>
     
-<script type="text/javascript" src="<fmt:message key="DwtMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
-<script type="text/javascript" src="<fmt:message key="AjxMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
+<script type="text/javascript" src="<%= contextPath %>/js/ajax/config/msgs/AjxMsg.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/config/msgs/DwtMsg.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/config/msgs/ZaMsg.js<%= ext %>?v=<%= vers %>"></script>
 
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
    		<jsp:include page="/public/Ajax.jsp"/>
@@ -119,7 +118,6 @@ Contributor(s):
 		<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
 		<script type="text/javascript" src="<%= contextPath %>/js/ZimbraAdmin_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>
-<script type="text/javascript" src="<fmt:message key="ZaMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
     <script language="JavaScript">   	
    		function launch() {
    			AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"

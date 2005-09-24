@@ -652,7 +652,7 @@ function(field, data, html, idx) {
 	if (data != null && data != "") {
 		html[idx++] = "<tr valign=top>";
 		html[idx++] = "<td align=right style='white-space:nowrap; padding-right:5px;'><b>";
-		html[idx++] = AjxStringUtil.htmlEncode(ZmMsg.AB_FIELD[field]) + ":";
+		html[idx++] = AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]) + ":";
 		html[idx++] = "</b></td>";
 		html[idx++] = "<td style='white-space:nowrap;'>";
 		html[idx++] = AjxStringUtil.htmlEncode(data);
@@ -681,3 +681,72 @@ function(node) {
 	this._parseTags(node.t);
 	this.attr = node._attrs;
 }
+
+// these need to be kept in sync with ZmContact.F_*
+ZmContact._AB_FIELD = {
+	firstName: ZmMsg.AB_FIELD_firstName,
+	lastName: ZmMsg.AB_FIELD_lastName,
+	middleName: ZmMsg.AB_FIELD_middleName,
+	fullName: ZmMsg.AB_FIELD_fullName,
+	jobTitle: ZmMsg.AB_FIELD_jobTitle,
+	company: ZmMsg.AB_FIELD_company,
+	
+	// email addresses
+	email: ZmMsg.AB_FIELD_email,
+	email2: ZmMsg.AB_FIELD_email2,
+	email3: ZmMsg.AB_FIELD_email3,	
+
+	// work address
+	workStreet: ZmMsg.AB_FIELD_workStreet,
+	workCity: ZmMsg.AB_FIELD_workCity,
+	workState: ZmMsg.AB_FIELD_workState,
+	workPostalCode: ZmMsg.AB_FIELD_workPostalCode,
+	workCountry: ZmMsg.AB_FIELD_workCountry,
+	workURL: ZmMsg.AB_FIELD_workURL,
+
+	// work phone numbers
+	workPhone: ZmMsg.AB_FIELD_workPhone,
+	workPhone2: ZmMsg.AB_FIELD_workPhone2,
+	workFax: ZmMsg.AB_FIELD_workFax,	
+	assistantPhone: ZmMsg.AB_FIELD_assistantPhone,
+	companyPhone: ZmMsg.AB_FIELD_companyPhone,
+	callbackPhone: ZmMsg.AB_FIELD_callbackPhone,
+	
+	// home address
+	homeStreet: ZmMsg.AB_FIELD_homeStreet,
+	homeCity: ZmMsg.AB_FIELD_homeCity,
+	homeState: ZmMsg.AB_FIELD_homeState,
+	homePostalCode: ZmMsg.AB_FIELD_homePostalCode,
+	homeCountry: ZmMsg.AB_FIELD_homeCountry,
+	homeURL: ZmMsg.AB_FIELD_homeURL,
+
+	// home phone numbers
+	homePhone: ZmMsg.AB_FIELD_homePhone,
+	homePhone2: ZmMsg.AB_FIELD_homePhone2,
+	homeFax: ZmMsg.AB_FIELD_homeFax,
+	mobilePhone: ZmMsg.AB_FIELD_mobilePhone,
+	pager: ZmMsg.AB_FIELD_pager,
+	carPhone: ZmMsg.AB_FIELD_carPhone,
+	
+	// other address
+	otherStreet: ZmMsg.AB_FIELD_otherStreet,
+	otherCity: ZmMsg.AB_FIELD_otherCity,
+	otherState: ZmMsg.AB_FIELD_otherState,
+	otherPostalCode: ZmMsg.AB_FIELD_otherPostalCode,
+	otherCountry: ZmMsg.AB_FIELD_otherCountry,
+	otherURL: ZmMsg.AB_FIELD_otherURL,
+	
+	// other phone numbers
+	otherPhone: ZmMsg.AB_FIELD_otherPhone,
+	otherFax: ZmMsg.AB_FIELD_otherFax
+};
+
+ZmContact._AB_FILE_AS = {
+	1: ZmMsg.AB_FILE_AS_lastFirst,
+	2: ZmMsg.AB_FILE_AS_firstLast,
+	3: ZmMsg.AB_FILE_AS_company,
+	4: ZmMsg.AB_FILE_AS_lastFirstCompany,
+	5: ZmMsg.AB_FILE_AS_firstLastCompany,
+	6: ZmMsg.AB_FILE_AS_companyLastFirst,
+	7: ZmMsg.AB_FILE_AS_companyFirstLast
+};

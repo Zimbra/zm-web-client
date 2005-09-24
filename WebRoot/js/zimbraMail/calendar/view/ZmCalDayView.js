@@ -389,20 +389,20 @@ function()
 	var numDays = this.getNumDays();
 	if (numDays == 1) {
 		var date = this._date;	
-		this._title = DwtMsg.LONG_MONTH[date.getMonth()] + " " + date.getDate(); // + ", " + date.getFullYear();
+		this._title = DwtCalendar.LONG_MONTH[date.getMonth()] + " " + date.getDate(); // + ", " + date.getFullYear();
 	} else {
 		var first = this._days[0].date;
 		var last = this._days[numDays-1].date;
-		this._title = DwtMsg.LONG_MONTH[first.getMonth()]+" "+first.getDate()+" - " +
-				 DwtMsg.LONG_MONTH[last.getMonth()]+" "+last.getDate(); //+", "+last.getFullYear();
+		this._title = DwtCalendar.LONG_MONTH[first.getMonth()]+" "+first.getDate()+" - " +
+				 DwtCalendar.LONG_MONTH[last.getMonth()]+" "+last.getDate(); //+", "+last.getFullYear();
 	}				 
 }
 
 ZmCalDayView.prototype._dayTitle =
 function(date) {
 	var title = (this.getNumDays() == 1) ?
-		DwtMsg.LONG_WEEKDAY[date.getDay()]+", "+DwtMsg.LONG_MONTH[date.getMonth()]+" "+date.getDate() :
-		DwtMsg.MEDIUM_WEEKDAY[date.getDay()]+", "+DwtMsg.MEDIUM_MONTH[date.getMonth()]+" "+date.getDate();
+		DwtCalendar.LONG_WEEKDAY[date.getDay()]+", "+DwtCalendar.LONG_MONTH[date.getMonth()]+" "+date.getDate() :
+		DwtCalendar.MEDIUM_WEEKDAY[date.getDay()]+", "+DwtCalendar.MEDIUM_MONTH[date.getMonth()]+" "+date.getDate();
 	return AjxStringUtil.htmlEncode(title);
 }
 

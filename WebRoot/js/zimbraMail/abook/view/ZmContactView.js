@@ -58,13 +58,13 @@ ZmContactView.otherPhoneInfo = [ZmContact.F_otherPhone, ZmContact.F_otherFax];
 
 ZmContactView._selectFields = { 
 	"fileAs": [ 
-		{ name: ZmMsg.AB_FILE_AS[ZmContact.FA_LAST_C_FIRST], 			selected: true  }, 
-		{ name: ZmMsg.AB_FILE_AS[ZmContact.FA_FIRST_LAST], 				selected: false },
-		{ name: ZmMsg.AB_FILE_AS[ZmContact.FA_COMPANY], 				selected: false },
-		{ name: ZmMsg.AB_FILE_AS[ZmContact.FA_LAST_C_FIRST_COMPANY], 	selected: false },
-		{ name: ZmMsg.AB_FILE_AS[ZmContact.FA_FIRST_LAST_COMPANY], 		selected: false },
-		{ name: ZmMsg.AB_FILE_AS[ZmContact.FA_COMPANY_LAST_C_FIRST], 	selected: false },
-		{ name: ZmMsg.AB_FILE_AS[ZmContact.FA_COMPANY_FIRST_LAST], 		selected: false }
+		{ name: ZmContact._AB_FILE_AS[ZmContact.FA_LAST_C_FIRST], 			selected: true  }, 
+		{ name: ZmContact._AB_FILE_AS[ZmContact.FA_FIRST_LAST], 				selected: false },
+		{ name: ZmContact._AB_FILE_AS[ZmContact.FA_COMPANY], 				selected: false },
+		{ name: ZmContact._AB_FILE_AS[ZmContact.FA_LAST_C_FIRST_COMPANY], 	selected: false },
+		{ name: ZmContact._AB_FILE_AS[ZmContact.FA_FIRST_LAST_COMPANY], 		selected: false },
+		{ name: ZmContact._AB_FILE_AS[ZmContact.FA_COMPANY_LAST_C_FIRST], 	selected: false },
+		{ name: ZmContact._AB_FILE_AS[ZmContact.FA_COMPANY_FIRST_LAST], 		selected: false }
 	]
 };
 
@@ -224,7 +224,7 @@ function(ev) {
 ZmContactView.prototype._addEntryRow =
 function(field, html, idx) {
 	html[idx++] = "<tr>";
-	html[idx++] = "<td style='width:18ex;'>" + AjxStringUtil.htmlEncode(ZmMsg.AB_FIELD[field]) + ":" + "</td>";
+	html[idx++] = "<td style='width:18ex;'>" + AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]) + ":" + "</td>";
 	if (!this._isReadOnly) {
 		var id = this._fieldIds[field] = Dwt.getNextId();
 		html[idx++] = "<td><input type='text' size=35 id='" + id + "'></td>";
@@ -238,7 +238,7 @@ function(field, html, idx) {
 ZmContactView.prototype._addStreetRow =
 function(field, html, idx) {
 	html[idx++] = "<tr>";
-	html[idx++] = "<td valign=top style='width:18ex;'>" + AjxStringUtil.htmlEncode(ZmMsg.AB_FIELD[field]) + ":" + "</td>";
+	html[idx++] = "<td valign=top style='width:18ex;'>" + AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]) + ":" + "</td>";
 	html[idx++] = "<td align=right>";
 	if (!this._isReadOnly) {
 		var id = this._fieldIds[field] = Dwt.getNextId();
@@ -586,7 +586,7 @@ function(contact, abridged, appCtxt) {
 		for (var i = 0; i < fields.length; i++) {
 			var value = AjxStringUtil.htmlEncode(contact.getAttr(fields[i]));
 			if (value) {
-				html[idx++] = "<tr><td valign=top>" + AjxStringUtil.htmlEncode(ZmMsg.AB_FIELD[fields[i]]) + ":</td>";
+				html[idx++] = "<tr><td valign=top>" + AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[fields[i]]) + ":</td>";
 				html[idx++] = "<td valign=top style='overflow: hidden'>" + AjxStringUtil.htmlEncode(value) + "</td>";
 				html[idx++] = "</tr>";
 			}

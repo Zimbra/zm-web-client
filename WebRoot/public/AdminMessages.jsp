@@ -22,9 +22,8 @@ Contributor(s):
 
 ***** END LICENSE BLOCK *****
 -->
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
-<fmt:setBundle basename="adminconfig" var="configBundle" scope="session"/>
 <% 
+   String contextPath = (String)request.getContextPath(); 
    String vers = (String)request.getAttribute("version");
    String ext = (String)request.getAttribute("fileExtension");
    if (vers == null){
@@ -34,6 +33,6 @@ Contributor(s):
       ext = "";
    }
 %>
-<script type="text/javascript" src="<fmt:message key="DwtMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
-<script type="text/javascript" src="<fmt:message key="AjxMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
-<script type="text/javascript" src="<fmt:message key="ZaMsg" bundle="${configBundle}"/><%= ext %>?v=<%= vers %>"/></script>
+<script type="text/javascript" src="<%= contextPath %>/js/ajax/config/msgs/AjxMsg.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/config/msgs/DwtMsg.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/config/msgs/ZaMsg.js<%= ext %>?v=<%= vers %>"></script>
