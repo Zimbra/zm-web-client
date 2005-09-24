@@ -222,7 +222,7 @@ ZmMailMsgView.prototype._processHtmlDoc = function(doc) {
 			for (i = node.firstChild; i; ) {
 				if (i.nodeType == 3 /* TEXT_NODE */) {
 					tmp = doc.createElement("div");
-					tmp.innerHTML = objectManager.findObjects(i.data, false);
+					tmp.innerHTML = objectManager.findObjects(AjxStringUtil.htmlEncode(i.data), false);
 					while (tmp.firstChild)
 						i.parentNode.insertBefore(tmp.firstChild, i);
 					tmp = i.nextSibling;
