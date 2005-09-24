@@ -1348,7 +1348,7 @@ function(extraBodyText) {
 			tr.collapse(true);
 		}
 		tr.select();
-	} else {
+	} else if (!AjxEnv.isSafari) {
 		var index = 0;
 		if (extraBodyText) {
 			index = extraBodyText.length + 1;
