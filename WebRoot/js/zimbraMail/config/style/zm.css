@@ -692,8 +692,13 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	padding: 0px;
 }
 
+.calendar_hour_scroll {
+	position:absolute;
+	overflow: hidden;
+}
+
 .calendar_body {
-	position:relative;
+	position:absolute;
   	overflow:-moz-scrollbars-vertical;
   	overflow-x:hidden;
   	overflow-y:auto;
