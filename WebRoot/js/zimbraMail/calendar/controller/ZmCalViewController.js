@@ -370,6 +370,9 @@ function(date, duration, roll) {
 	var title = this._viewMgr.getCurrentView().getCalTitle();
 	this._navToolBar.setText(title);
 	Dwt.setTitle(title);
+	if (this._currentView == ZmCalViewMgr.WORK_WEEK_VIEW && (date.getDay() == 0 || date.getDay() ==  6)) {
+		this.show(ZmCalViewMgr.WEEK_VIEW);
+	}
 }
 
 ZmCalViewController.prototype._dateSelectionListener =
