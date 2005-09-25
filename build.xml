@@ -169,7 +169,7 @@
   </target>
 
   <target name="compress-js-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, jam-files">
-    <fileset id="js-includes" dir="${build.dir}/WebRoot" includes="js/**/msgs/**/*.js, js/*.js, js/zimbraMail/*.js"/>
+    <fileset id="js-includes" dir="${build.dir}/WebRoot" includes="js/*.js, js/zimbraMail/*.js"/>
     <concat destfile="zapl.txt">
         <header>/*</header>
     	<footer>*/</footer>
@@ -206,7 +206,6 @@
     </foreach>
     <foreach target="prepend-ZAPL" param="var">
     	<path>
-    		<fileset dir="${build.dir}/WebRoot/js/ajax/dwt/config/msgs" includes="*.js" />
     		<fileset dir="${build.dir}/WebRoot/js/ajax/config/msgs" includes="*.js"/>
     		<fileset dir="${build.dir}/WebRoot/js">
     			<include name="Ajax_all.js"/>
@@ -473,7 +472,6 @@
     </copy>
   	<copy verbose='true' todir='${deploy.dir}${deploy.path}/WEB-INF/classes'>
   		<fileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
-  		<fileset dir='${ajax.dir}/WebRoot/js/dwt/config' includes='msgs/*.properties'/>
   		<fileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
   	</copy>
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
@@ -491,7 +489,6 @@
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
       <classes dir="${build.dir}/classes" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
-	  <classes dir="${build.dir}/WebRoot/js/ajax/dwt/config" includes="msgs/*.properties"/>
 	  <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes="msgs/*.properties"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
    	  <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**,skins/**" excludes="js/zimbraAdmin/**,js/AjxAdmin_all.js,**/config/msgs/**"/>
@@ -517,7 +514,6 @@
       webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
-  	  <classes dir="${build.dir}/WebRoot/js/ajax/dwt/config" includes="msgs/*.properties"/>
   	  <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/classes" includes="**/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
@@ -571,7 +567,6 @@
     </copy>
   	<copy verbose='true' todir='${deploy.dir}${deploy.path}/WEB-INF/classes'>
   		<fileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
-  		<fileset dir='${ajax.dir}/WebRoot/js/dwt/config' includes='msgs/*.properties'/>
   		<fileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
   	</copy>
     <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
@@ -588,7 +583,6 @@
 	  <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
 	     <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
 	      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
-	  	  <classes dir="${build.dir}/WebRoot/js/ajax/dwt/config" includes="msgs/*.properties"/>
 	  	  <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes="msgs/*.properties"/>
 	     <classes dir="${build.dir}/classes" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
 	     <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>

@@ -988,7 +988,7 @@ function(rule, str, idx) {
 		var ord;
 		for (t = 0; t < arr.length; ++t) {
 			ord = parseInt(arr[t]);
-			str[idx++] = AjxDateUtil._months[ord];
+			str[idx++] = AjxDateUtil.MONTH_MEDIUM[ord];
 			if (t < arr.length -1) {
 				str[idx++] = " and ";
 			}
@@ -1703,7 +1703,7 @@ function() {
 					}
 				}
 			} else {
-				blurb[idx++] = AjxDateUtil._daysOfTheWeek[this.startDate.getDay()];
+				blurb[idx++] = AjxDateUtil.WEEKDAY_LONG[this.startDate.getDay()];
 			}
 		} else if (this.repeatType == "MON"){
 			if (this.repeatCustomType == "S") {
@@ -1733,7 +1733,7 @@ function() {
 				blurb[idx++] = " in ";
 				var nums = this.repeatYearlyMonthsList.split(",");
 				for (var i = 0 ; i < nums.length; ++i ){
-					blurb[idx++] = AjxDateUtil._months[nums[i]];
+					blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[nums[i]];
 					if (i < nums.length -1 ) {
 						blurb[idx++] = ",";
 					}
@@ -1749,7 +1749,7 @@ function() {
 				}
 			} else {
 				blurb[idx++] = " on ";
-				blurb[idx++] = AjxDateUtil._months[this.startDate.getMonth()];
+				blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[this.startDate.getMonth()];
 				blurb[idx++] = " ";
 				blurb[idx++] = this.startDate.getDate();
 			}

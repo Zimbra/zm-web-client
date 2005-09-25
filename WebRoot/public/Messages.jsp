@@ -34,6 +34,5 @@ Contributor(s):
    }
 %>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/config/msgs/AjxMsg.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/config/msgs/DwtMsg.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/config/msgs/ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
 

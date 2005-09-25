@@ -1472,7 +1472,7 @@ ZmAppointmentView.appointmentModel = {
 				var month = parseInt(form.get(_REPEAT_YEARLY_MONTHS_LIST_));
 				var maxDay = AjxDateUtil._daysPerMonth[month];
 				if ( day > maxDay ) {
-					throw "There are only " + maxDay + " days in " + AjxDateUtil._months[month];
+					throw "There are only " + maxDay + " days in " + AjxDateUtil.MONTH_MEDIUM[month];
 				} else {
 					return day;
 				}
