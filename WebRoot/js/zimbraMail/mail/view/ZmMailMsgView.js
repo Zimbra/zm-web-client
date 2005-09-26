@@ -220,16 +220,30 @@ ZmMailMsgView.prototype._processHtmlDoc = function(doc) {
 		var i, tmp;
 		if (node.tagName.toLowerCase() != "a") {
 			for (i = node.firstChild; i; ) {
-				if (i.nodeType == 3 /* TEXT_NODE */) {
+				if (i.nodeType == 3 /* TEXT_NODE */ && /[^\s\xA0]/.test(i.data)) {
+					var a = null, b = null;
+					if (/^[\s\xA0]+/.test(i.data)) {
+						a = i;
+						i = i.splitText(RegExp.lastMatch.length);
+					}
+					if (/[\s\xA0]+$/.test(i.data)) {
+						b = i.splitText(RegExp.lastMatch.length);
+					}
 					tmp = doc.createElement("div");
 					tmp.innerHTML = objectManager.findObjects(i.data, true);
+					if (a)
+						tmp.insertBefore(a, tmp.firstChild);
+					if (b)
+						tmp.appendChild(b);
+					a = i.parentNode;
 					while (tmp.firstChild)
-						i.parentNode.insertBefore(tmp.firstChild, i);
+						a.insertBefore(tmp.firstChild, i);
 					tmp = i.nextSibling;
-					i.parentNode.removeChild(i);
+					a.removeChild(i);
 					i = tmp;
-				} else if (i.nodeType == 1) {
-					recurse(i);
+				} else {
+					if (i.nodeType == 1)
+						recurse(i);
 					i = i.nextSibling;
 				}
 			}
