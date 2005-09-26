@@ -71,8 +71,8 @@ static final private String LOGIN_PAGE = "/zimbra/";
 
 <style type="text/css">
 <!--
-<%String loRes = (String) request.getAttribute("loRes");
-  if (loRes == null) {
+<%String hiRes = (String) request.getAttribute("hiRes");
+  if (hiRes != null) {
 %>
         @import url(/zimbra/img/hiRes/imgs.css?v=<%= vers %>);
 <% } else { %>

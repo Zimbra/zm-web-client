@@ -33,7 +33,28 @@
 	overflow: hidden;
 }
 
+/*
+ * DwtShell
+ */
 
+.DwtShellBusyDialog table.DialogContent {
+	width: 300px;
+	height: 75px;
+}
+
+.DwtShellBusyDialog td.WaitIcon {
+	background-image:url("/zimbra/img/animated/wait_64.gif");
+	background-repeat:no-repeat;
+	background-position:center center;
+	width:64px;
+	height:64px;
+}
+
+.DwtShellBusyDialog table td.MsgText {
+	font: 11pt Tahoma, Arial, Helvetica, sans-serif;
+	padding:5px;
+	vertical-align:top;
+}
 
 /*
  *	Tabs

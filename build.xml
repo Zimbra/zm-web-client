@@ -53,6 +53,7 @@
   <property name="deploy.admin.path" value="/zimbraAdmin"/>
   <property name="deploy.admin.war" value="${adminwarfile}"/>
 	
+  <property name="images.animated.destDir" value="${build.dir}/WebRoot/img/animated"/>
   <property name="images.hiRes.destDir" value="${build.dir}/WebRoot/img/hiRes"/>
   <property name="images.loRes.destDir" value="${build.dir}/WebRoot/img/loRes"/>
   <property name="images.cssFile" value="imgs.css"/>
@@ -239,6 +240,16 @@
 				 classpath='${imagemerge.cp}'
 		/>
 
+		<!-- copy animated images 
+		  Since the imagemerge program does not support animated GIFs we have to use the
+		  copy ant task and manually create the CSS rules -->
+		<echo/>
+		<echo message='Copying animated images'/>
+		<echo/>
+	    <copy todir="${images.animated.destDir}">
+	      <fileset dir="${ajax.dwtimg.dir}/animated"  includes="*"/>
+	    </copy>
+			
 		<!-- copy hiRes images -->
 		<mkdir dir="${images.hiRes.destDir}"/>
 		<delete file='${images.hiRes.destDir}/${images.cssFile}'/>
@@ -252,7 +263,7 @@
 					includes='*'/>
 		</imagemerge>
 		<echo/>
-
+			
 		<!-- merge loRes images -->
 
 		<mkdir dir="${images.loRes.destDir}"/>
