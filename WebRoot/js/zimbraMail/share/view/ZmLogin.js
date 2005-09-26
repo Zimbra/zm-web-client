@@ -153,7 +153,7 @@ function() {
 	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</div></center>";
 	// real content
-	html[idx++] = "<table border=0 width=425>";
+	html[idx++] = "<table id='passTable' border=0 width=425>";
 	html[idx++] = "<tr height=40>";
 	html[idx++] = "<td width=100 align=right>" + ZmMsg.username + ":</td>";
 	html[idx++] = "<td><input style='width:100%' autocomplete=OFF type=text tabIndex=1 id='uname'></td>";
@@ -167,7 +167,7 @@ function() {
 	html[idx++] = "<td>";
 	// logon button starts here
 	html[idx++] = "<div id='loginButton' class='DwtButton' style='text-align:center; cursor:default' ";
-	html[idx++] = "onclick='javascript:ZmLogin.submitAuthRequest(); return false;' ";
+	html[idx++] = "onclick='javascript:ZmLogin.handleLogin(); return false;' ";
 	html[idx++] = "onmouseover='javascript:this.className=\"DwtButton-activated\";' ";
 	html[idx++] = "onmouseout='javascript:this.className=\"DwtButton\";' ";
 	html[idx++] = "onmousedown='javascript:this.className=\"DwtButton-triggered\"; return false;' ";
@@ -221,12 +221,13 @@ function() {
 };
 
 ZmLogin.setErrorMessage = 
-function(msg, msgOffsetFromCurrent) {
+function(msg, skipFocus) {
 	var errCell = document.getElementById("errorMessage");
 	errCell.innerHTML = msg;
 	document.getElementById("errorMessageContainer").style.display = "block";
 
-	document.getElementById("uname").focus();
+	if (!skipFocus)
+		document.getElementById("uname").focus();
 	
 	// hide error panel very briefly.. making it look like something happened if 
 	// user has successive errors
@@ -284,7 +285,7 @@ function(ev) {
 		} else if (target.id == "publicComputer") {
 			target.checked = true;
 		} else {
-			ZmLogin.submitAuthRequest();
+			ZmLogin.handleLogin();
 		}
 		ZmLogin.cancelEvent(ev);
 		return false;
@@ -307,13 +308,32 @@ function(ev) {
 			if (!shiftKey) {			
 				ZmLogin._focusLoginButton(target);
 			} else {
-				document.getElementById("pass").focus();
+				var obj = document.getElementById("pass");
+				if (obj.disabled)
+					obj = document.getElementById("passConfirm");
+				obj.focus();
 			}
+		} else if (target.id == "passNew") {
+			if (!shiftKey) {
+				document.getElementById("passConfirm").focus();
+			} else {
+				ZmLogin._focusLoginButton(target);
+			}
+		} else if (target.id == "passConfirm") {
+			var obj = !shiftKey
+				 ? document.getElementById("publicComputer")
+				 : document.getElementById("passNew");
+			obj.focus();
 		} else {
 			if (!shiftKey) {
-				document.getElementById("uname").focus();
-				if (!AjxEnv.isIE)
-					ZmLogin.loginButtonBlur(button.parentNode);
+				var obj = document.getElementById("uname");
+				if (obj.disabled) {
+					obj = document.getElementById("passNew");
+				} else {
+					if (!AjxEnv.isIE)
+						ZmLogin.loginButtonBlur(button.parentNode);
+				}
+				obj.focus();
 			} else {
 				document.getElementById("publicComputer").focus();
 			}
@@ -353,38 +373,19 @@ function() {
 	command.invoke(soapDoc, false, null, null, true);
 };
 
-ZmLogin.isValidUsername = 
-function(uname) {
-	return uname.match(ZmLogin.MAILBOX_REGEX);
-};
-
 ZmLogin.submitAuthRequest = 
-function() {
-	var unameField = document.getElementById("uname");
-	var pwordField = document.getElementById("pass");
-    var uname = unameField.value;
-    var pword = pwordField.value;
-    
-    // check uname and pword first
-    if (!ZmLogin.isValidUsername(uname)) {
-		ZmLogin.setErrorMessage(ZmMsg.badUsername);
-		return;
-    }
-
-    if (uname == null || pword == null || uname=="" || pword == "") {
-		ZmLogin.setErrorMessage(ZmMsg.enterUsername);
-		return;
-    }
-	
+function(uname, pword) {
 	try {
 	    var soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAccount");
 	} catch (ex) {
-		if (AjxEnv.isIE && (ex.code == AjxException.INTERNAL_ERROR)) {
+		if (AjxEnv.isIE && (ex.code == AjxException.INTERNAL_ERROR))
 			ZmLogin.setErrorMessage(ZmMsg.errorNoActiveX);
-		}
 		return;
 	}
 
+	var unameField = document.getElementById("uname");
+	var pwordField = document.getElementById("pass");
+	
     var el = soapDoc.set("account", uname);
     el.setAttribute("by", "name");
     soapDoc.set("password", pword);
@@ -410,13 +411,11 @@ function() {
 			var msg = ZmMsg.errorNetwork + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
 			ZmLogin.setErrorMessage(msg);
 		} 
-		else if (ex.code == ZmCsfeException.ACCT_CHANGE_PASSWORD) 
-		{	
-			// TODO
+		else if (ex.code == ZmCsfeException.ACCT_CHANGE_PASSWORD)
+		{
+			// disable username and password fields
 			unameField.disabled = pwordField.disabled = true;
-			// need to show password change dialog here and reauth
-			var msg = "Your password in no longer valid. Please choose a new password.";
-			ZmLogin.setErrorMessage(msg);
+			ZmLogin.showChangePass(ex);
 		}
 		else 
 		{
@@ -424,6 +423,38 @@ function() {
 			ZmLogin.setErrorMessage(msg + " (" + ex.code + ")");
 		}
     }
+};
+
+ZmLogin.isValidUsername = 
+function(uname) {
+	return uname.match(ZmLogin.MAILBOX_REGEX);
+};
+
+ZmLogin.handleLogin = 
+function() {
+	var unameField = document.getElementById("uname");
+	var pwordField = document.getElementById("pass");
+    var uname = unameField.value;
+    var pword = pwordField.value;
+
+	// check if we're trying to change the password
+	if (unameField.disabled && pwordField.disabled) {
+		ZmLogin.handleChangePass(uname, pword);
+		return;
+	}
+
+    // check uname and pword first
+    if (!ZmLogin.isValidUsername(uname)) {
+		ZmLogin.setErrorMessage(ZmMsg.badUsername);
+		return;
+    }
+
+    if (uname == null || pword == null || uname=="" || pword == "") {
+		ZmLogin.setErrorMessage(ZmMsg.enterUsername);
+		return;
+    }
+
+	ZmLogin.submitAuthRequest(uname, pword);
 };
 
 ZmLogin.handleSuccess = 
@@ -441,8 +472,98 @@ function(authToken, tokenLifetime, mailServer, uname, password) {
 
 	var pcChecked = document.getElementById("publicComputer").checked;
 	// make sure we add the query string to the new page
-	//window.location = uri;
 	ZmLogin.postAuthToServer(mailServer, authToken, tokenLifetime, !pcChecked);
+};
+
+ZmLogin.handleChangePass = 
+function(uname, oldPass) {
+	// error check new and confirmation password
+	var newPassField = document.getElementById("passNew");
+	var conPassField = document.getElementById("passConfirm");
+	var newPass = AjxStringUtil.trim(newPassField.value);
+	var conPass = AjxStringUtil.trim(conPassField.value);
+	
+	if (newPass == null || newPass == "" || conPass == null || conPass == "") {
+		ZmLogin.setErrorMessage(ZmMsg.enterNewPassword, true);
+		return;
+	}
+	
+	if (newPass != conPass) {
+		ZmLogin.setErrorMessage(ZmMsg.bothNewPasswordsMustMatch, true);
+		return;
+	}
+
+    var soapDoc = AjxSoapDoc.create("ChangePasswordRequest", "urn:zimbraAccount");
+    var el = soapDoc.set("account", uname);
+    el.setAttribute("by", "name");
+    soapDoc.set("oldPassword", oldPass);
+    soapDoc.set("password", newPass);
+    var resp = null;
+    try {
+		var command = new ZmCsfeCommand();
+		resp = command.invoke(soapDoc, true, null, null, false, true).Body.ChangePasswordResponse;
+    } catch (ex) {
+		DBG.dumpObj(ex);
+		// XXX: for some reason, ZmCsfeException consts are fubar
+		if (ex.code == "account.PASSWORD_RECENTLY_USED" ||
+			ex.code == "account.PASSWORD_CHANGE_TOO_SOON")
+		{
+			var msg = ex.code == ZmCsfeException.ACCT_PASS_RECENTLY_USED
+				? ZmMsg.errorPassRecentlyUsed
+				: (ZmMsg.errorPassChangeTooSoon + " " + errorContact);
+			ZmLogin.setErrorMessage(msg);
+			newPassField.value = conPassField.value = "";
+			newPassField.focus();
+		}
+		else if (ex.code == "account.PASSWORD_LOCKED")
+		{
+			// remove the new password and confirmation fields
+			var passTable = document.getElementById("passTable");
+			passTable.deleteRow(2);
+			passTable.deleteRow(2);
+			
+			// re-enable username and password fields
+			var unameField = document.getElementById("uname");
+			var pwordField = document.getElementById("pass");
+			unameField.disabled = pwordField.disabled = false;
+			pwordField.value = "";
+			pwordField.focus();
+			
+			ZmLogin.setErrorMessage(ZmMsg.errorPassLocked);
+		}
+	}
+	
+	if (resp) {
+		ZmLogin.submitAuthRequest(uname, newPass);
+	}
+};
+
+ZmLogin.showChangePass = 
+function(ex) {
+	ZmLogin.setErrorMessage(ZmMsg.errorPassChange, true);
+
+	// add new password fields
+	var passTable = document.getElementById("passTable");
+	var newPassRow = passTable.insertRow(2);
+	var newPassMsg = newPassRow.insertCell(-1);
+	var newPassFld = newPassRow.insertCell(-1);
+	newPassRow.style.height = "30";
+	newPassMsg.align = "right";
+	newPassMsg.innerHTML = ZmMsg.newPassword + ":";
+	newPassFld.innerHTML = "<input tabindex=10 style='width:100%' type=password id='passNew'>";
+	
+	// add confirm password fields
+	var conPassRow = passTable.insertRow(3);
+	var conPassMsg = conPassRow.insertCell(-1);
+	var conPassFld = conPassRow.insertCell(-1);
+	conPassRow.style.height = "30";
+	conPassMsg.align = "right";
+	conPassMsg.innerHTML = ZmMsg.confirm + ":";
+	conPassFld.innerHTML = "<input tabindex=10 style='width:100%' type=password id='passConfirm'>";
+	
+	// set focus to the new password field
+	var newPassInput = document.getElementById("passNew");
+	newPassInput.focus();
 };
 
 ZmLogin.postAuthToServer = 
