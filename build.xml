@@ -111,6 +111,30 @@
       <classpath refid="class.path"/>
       <include name="**/*.java"/>
     </javac>
+
+    <!-- define imagemerge task -->
+    <pathconvert property='imagemerge.cp' pathsep='${path.separator}'>
+      <path>
+        <pathelement location='${build.dir}/classes'/>
+        <fileset dir='${jars.dir}' includes='**/*.jar'/>
+      </path>
+    </pathconvert>
+    <taskdef name='imagemerge' 
+         classname='com.zimbra.ajax.imagemerge.ImageMergeTask' 
+         classpath='${imagemerge.cp}'
+  	/>
+
+    <!-- define sortimages task -->
+    <pathconvert property='sortimages.cp' pathsep='${path.separator}'>
+      <path>
+        <pathelement location='${build.dir}/classes'/>
+        <fileset dir='${jars.dir}' includes='**/*.jar'/>
+      </path>
+    </pathconvert>
+    <taskdef name='imagesort' 
+         classname='com.zimbra.ajax.imagesort.ImageSortTask' 
+         classpath='${sortimages.cp}'
+    />
  </target>
 
   <target name="clean" depends="build-init" description="Removes any temporary files">
@@ -227,176 +251,164 @@
   	<delete file="zapl.txt" />
   </target>
 
-	<target name='images' depends='imagesinit,compile' unless='imagesdone'>
-		<!-- define imagemerge task -->
-		<pathconvert property='imagemerge.cp' pathsep='${path.separator}'>
-			<path>
-				<pathelement location='${build.dir}/classes'/>
-				<fileset dir='${jars.dir}' includes='**/*.jar'/>
-			</path>
-		</pathconvert>
-		<taskdef name='imagemerge' 
-				 classname='com.zimbra.ajax.imagemerge.ImageMergeTask' 
-				 classpath='${imagemerge.cp}'
-		/>
 
-		<!-- copy animated images 
-		  Since the imagemerge program does not support animated GIFs we have to use the
-		  copy ant task and manually create the CSS rules -->
-		<echo/>
-		<echo message='Copying animated images'/>
-		<echo/>
-	    <copy todir="${images.animated.destDir}">
-	      <fileset dir="${ajax.dwtimg.dir}/animated"  includes="*"/>
-	    </copy>
-			
-		<!-- copy hiRes images -->
-		<mkdir dir="${images.hiRes.destDir}"/>
-		<delete file='${images.hiRes.destDir}/${images.cssFile}'/>
-		<echo/>
-		<echo message='Copying high resolution images'/>
-		<echo/>
-		<imagemerge destdir='${images.hiRes.destDir}' copy='true'
-					cssfile='${images.cssFile}' csspath='/zimbra/img/hiRes/'>
-			<dirset dir='img/hiRes' includes='*'/>
-			<dirset dir='${ajax.dwtimg.dir}/hiRes' 
-					includes='*'/>
-		</imagemerge>
-		<echo/>
-			
-		<!-- merge loRes images -->
+  <target name='images'>
+    <antcall target='build-images'>
+      <param name="csspathprefix" value="/zimbra/img/"/>
+    </antcall>
+  
+  </target>
+  
+  <target name='admin-images'>
+    <antcall target='build-images'>
+      <param name="csspathprefix" value="/zimbraAdmin/img/"/>
+    </antcall>
+  </target>
+  
 
-		<mkdir dir="${images.loRes.destDir}"/>
-		<delete file='${images.loRes.destDir}/${images.cssFile}'/>
-		<echo/>
+  <target name='build-images' depends='images-are-dirty,compile' unless='imagesdone'>
+    <!-- copy animated images 
+      Since the imagemerge program does not support animated GIFs we have to use the
+      copy ant task and manually create the CSS rules -->
+    <echo/>
+    <echo message='Copying animated images'/>
+    <echo/>
+      <copy todir="${images.animated.destDir}">
+        <fileset dir="${ajax.dwtimg.dir}/animated"  includes="*"/>
+      </copy>
 
-		<echo message='Merging low resolution dwt images'/>
-		<echo/>
-		<imagemerge destdir='${images.loRes.destDir}' 
-					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
-			<dirset dir='${ajax.dwtimg.dir}/loRes' includes='*' excludes='**/examples,**/shadow_border'/>
-		</imagemerge>
+    <!-- copy hiRes images -->
+    <mkdir dir="${images.hiRes.destDir}"/>
+    <delete file='${images.hiRes.destDir}/${images.cssFile}'/>
+    <echo/>
+    <echo message='Copying high resolution images'/>
+    <echo/>
+    <imagemerge destdir='${images.hiRes.destDir}' copy='true'
+          cssfile='${images.cssFile}' csspath='${csspathprefix}hiRes/'>
+      <dirset dir='img/hiRes' includes='*'/>
+      <dirset dir='${ajax.dwtimg.dir}/hiRes' 
+          includes='*'/>
+    </imagemerge>
+    <echo/>
 
-		<echo message='Copying non-mergeable low resolution dwt images'/>
-		<echo/>
-		<imagemerge destdir='${images.loRes.destDir}' copy='true'
-					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
-			<dirset dir='${ajax.dwtimg.dir}/loRes' includes='**/examples,**/shadow_border'/>
-		</imagemerge>
+    <!-- merge loRes images -->
+    <mkdir dir="${images.loRes.destDir}"/>
+    <delete file='${images.loRes.destDir}/${images.cssFile}'/>
+    <echo/>
 
+    <echo message='Merging low resolution dwt images'/>
+    <echo/>
+    <imagemerge destdir='${images.loRes.destDir}' 
+          cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'>
+      <dirset dir='${ajax.dwtimg.dir}/loRes' includes='*' excludes='**/examples,**/shadow_border'/>
+    </imagemerge>
 
-		<echo message='Merging low resolution app images (-logo, -translate)'/>
-		<echo/>
-		<imagemerge destdir='${images.loRes.destDir}' 
-					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
-			<dirset dir='img/loRes' 
-					includes='*'  excludes="**/logo,**/translate"/>
-		</imagemerge>
-
-		<echo/>
-		<echo message='Copying non-mergeable low resolution app images (logo, translate)'/>
-		<echo/>
-		<imagemerge destdir='${images.loRes.destDir}' copy='true'
-					cssfile='${images.cssFile}' csspath='/zimbra/img/loRes/'>
-			<dirset dir='img/loRes' includes='**/logo,**/translate'/>
-		</imagemerge>
-		<echo/>
-
-	</target>
+    <echo message='Copying non-mergeable low resolution dwt images'/>
+    <echo/>
+    <imagemerge destdir='${images.loRes.destDir}' copy='true'
+          cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'>
+      <dirset dir='${ajax.dwtimg.dir}/loRes' includes='**/examples,**/shadow_border'/>
+    </imagemerge>
 
 
-	<target name='skin-images' depends='imagesinit,compile' unless='Ximagesdone'>
-		<!-- define imagemerge task -->
-		<pathconvert property='imagemerge.cp' pathsep='${path.separator}'>
-			<path>
-				<pathelement location='${build.dir}'/>
-				<fileset dir='${jars.dir}' includes='**/*.jar'/>
-			</path>
-		</pathconvert>
-		<taskdef name='imagemerge' 
-				 classname='com.zimbra.ajax.imagemerge.ImageMergeTask' 
-				 classpath='${imagemerge.cp}'
-		/>
+    <echo message='Merging low resolution app images (-logo, -translate)'/>
+    <echo/>
+    <imagemerge destdir='${images.loRes.destDir}' 
+          cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'>
+      <dirset dir='img/loRes' 
+          includes='*'  excludes="**/logo,**/translate"/>
+    </imagemerge>
 
-		<!-- copy hiRes images -->
-		<mkdir dir="${images.hiRes.destDir}/skins/steel"/>
-		<delete file='${images.hiRes.destDir}/skins/steel/skin.css'/>
-		<echo/>
-		<echo message='Copying skin images'/>
-		<echo/>
-		<imagemerge destdir='${images.hiRes.destDir}/skins/steel' copy='true'
-					cssfile='skin.css' csspath='/zimbra/img/hiRes/skins/steel'>
-			<dirset dir='WebRoot/skins/steel' includes='**/img'/>
-		</imagemerge>
-		<echo/>
+    <echo/>
+    <echo message='Copying non-mergeable low resolution app images (logo, translate)'/>
+    <echo/>
+    <imagemerge destdir='${images.loRes.destDir}' copy='true'
+          cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'>
+      <dirset dir='img/loRes' includes='**/logo,**/translate'/>
+    </imagemerge>
+    <echo/>
+    
+    <antcall target="skin-images">
+    </antcall>
+
+  </target>
 
 
-		<!-- merge loRes images -->
-		<mkdir dir="${images.loRes.destDir}/skins/steel"/>
-		<delete file='${images.loRes.destDir}/skins/steel/skin.css'/>
-		<echo/>
-		<echo message='Copying skin images'/>
-		<echo/>
-		<imagemerge destdir='${images.loRes.destDir}/skins/steel'
-					cssfile='skin.css' csspath='/zimbra/p4/ZimbraWebClient/build/WebRoot/img/loRes/skins/steel/'>
-			<dirset dir='WebRoot/skins/steel' includes='**/img'/>
-		</imagemerge>
-		<echo/>
-	</target>
-	
-	
+  <target name='skin-images'>
+    <!-- put in a separate antcall for each skin directory here -->
+    <antcall target='build-skin-images'>
+      <param name="skindir" value="steel"/>
+    </antcall>
+  </target>
 
-	<target name='sortimages' depends='sortimagesinit'>
-		<!-- check properties -->
-		<fail unless='sort.source' message='Must specify source directory. For example: ant -Dsort.source=src ...'/>		
-		<fail unless='sort.target' message='Must specify target directory. For example: ant -Dsort.target=dest ...'/>		
-		
-		<!-- process directories -->
-		<imagesort source='${sort.source}' target='${sort.target}' delete='true'/><!-- noop='true'/-->
-	</target>
-	
-	<target name='sorticons' depends='sortimagesinit'>
-		<!-- usage:  make a "icons" directory in your ZimbraWebClient directory and do:
-				ant sorticons -Dsort.source=icons
-		-->
-		<echo message='Sorting ZimbraWebClient/img/hiRes'/><echo/>
-		<imagesort source='images' target='img/hiRes' delete='false'/>
-		<echo message='Sorting ZimbraWebClient/img/loRes'/><echo/>
-		<imagesort source='images' target='img/loRes' delete='true'/>
-
-		<echo message='Sorting Ajax/dwt/hiRes'/><echo/>
-		<imagesort source='images' target='${ajax.dwtimg.dir}/hiRes' delete='false'/>
-		<echo message='Sorting Ajax/dwt/loRes'/><echo/>
-		<imagesort source='images' target='${ajax.dwtimg.dir}/loRes' delete='true'/>
-
-	</target>
+  <target name='build-skin-images' depends='compile' unless='imagesdone'>
+    <!-- copy hiRes skin images -->
+    <mkdir dir="${images.hiRes.destDir}/skins/${skindir}"/>
+    <delete file='${images.hiRes.destDir}/skins/${skindir}/skin.css'/>
+    <echo/>
+    <echo message='Copying hiRes images for skin ${skindir}'/>
+    <echo/>
+    <imagemerge destdir='${images.hiRes.destDir}/skins/${skindir}' copy='true'
+          cssfile='skin.css' csspath='${csspathprefix}hiRes/skins/${skindir}/'>
+      <dirset dir='WebRoot/skins/${skindir}' includes='**/img'/>
+    </imagemerge>
+    <echo/>
 
 
-	<target name='sortimagesinit' depends='compile'>
-		<!-- define sortimages task -->
-		<pathconvert property='sortimages.cp' pathsep='${path.separator}'>
-			<path>
-				<pathelement location='${build.dir}/classes'/>
-				<fileset dir='${jars.dir}' includes='**/*.jar'/>
-			</path>
-		</pathconvert>
-		<taskdef name='imagesort' 
-				 classname='com.zimbra.ajax.imagesort.ImageSortTask' 
-				 classpath='${sortimages.cp}'
-		/>
-		
-	</target>
-	
-	<target name='imagesinit' description='checks to see if images need to be processed' unless='images.force'>
-		<dependset>
-			<srcfileset dir='img' includes='**/*'/>
-			<srcfileset dir='${ajax.dwtimg.dir}' includes='**/*'/>
-			<srcfileset dir='${ajax.imagemerge.dir}' includes='**/*.java'/>
-			<targetfilelist dir='${images.loRes.destDir}' files='${images.cssFile}'/>
-		</dependset>
-		<available property='imagesdone' file='${images.loRes.destDir}/${images.cssFile}'/>
-	</target>
-		
+    <!-- merge loRes skin images -->
+    <mkdir dir="${images.loRes.destDir}/skins/${skindir}"/>
+    <delete file='${images.loRes.destDir}/skins/${skindir}/skin.css'/>
+    <echo/>
+    <echo message='Merging loRes images for skin ${skindir}'/>
+    <echo/>
+    <imagemerge destdir='${images.loRes.destDir}/skins/${skindir}'
+          cssfile='skin.css' csspath='${csspathprefix}loRes/skins/${skindir}/'>
+      <dirset dir='WebRoot/skins/${skindir}' includes='**/img'/>
+    </imagemerge>
+    <echo/>
+  </target>
+  
+
+  <target name='images-are-dirty' description='checks to see if images need to be processed' unless='images.force'>
+    <dependset>
+      <srcfileset dir='img' includes='**/*'/>
+      <srcfileset dir='${ajax.dwtimg.dir}' includes='**/*'/>
+      <srcfileset dir='${ajax.imagemerge.dir}' includes='**/*.java'/>
+      <targetfilelist dir='${images.loRes.destDir}' files='${images.cssFile}'/>
+    </dependset>
+    <available property='imagesdone' file='${images.loRes.destDir}/${images.cssFile}'/>
+  </target>
+  
+
+  <target name='sortimages' depends='sortimagesinit'>
+    <!-- check properties -->
+    <fail unless='sort.source' message='Must specify source directory. For example: ant -Dsort.source=src ...'/>    
+    <fail unless='sort.target' message='Must specify target directory. For example: ant -Dsort.target=dest ...'/>    
+    
+    <!-- process directories -->
+    <imagesort source='${sort.source}' target='${sort.target}' delete='true'/><!-- noop='true'/-->
+  </target>
+  
+  <target name='sorticons' depends='sortimagesinit'>
+    <!-- usage:  make a "icons" directory in your ZimbraWebClient directory and do:
+        ant sorticons -Dsort.source=icons
+    -->
+    <echo message='Sorting ZimbraWebClient/img/hiRes'/><echo/>
+    <imagesort source='images' target='img/hiRes' delete='false'/>
+    <echo message='Sorting ZimbraWebClient/img/loRes'/><echo/>
+    <imagesort source='images' target='img/loRes' delete='true'/>
+
+    <echo message='Sorting Ajax/dwt/hiRes'/><echo/>
+    <imagesort source='images' target='${ajax.dwtimg.dir}/hiRes' delete='false'/>
+    <echo message='Sorting Ajax/dwt/loRes'/><echo/>
+    <imagesort source='images' target='${ajax.dwtimg.dir}/loRes' delete='true'/>
+
+  </target>
+
+
+  <target name='sortimagesinit' depends='compile'>
+  </target>
+  		
   <target name="check4zimbraajax">
     <available property="ajax.present" file="${ajax.dir}" type="dir"/>
     <fail message="This project depends on Ajax being checked out at: ${ajax.dir}" unless="ajax.present"/>
@@ -615,96 +627,4 @@
 	   <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
 	    path="${deploy.admin.path}" war="${deploy.admin.war}" update="true"/>
 	</target>  
-	
-	<target name='admin-images' depends='imagesinit,compile' unless='imagesdone'>
-		<!-- define imagemerge task -->
-		<pathconvert property='imagemerge.cp' pathsep='${path.separator}'>
-			<path>
-				<pathelement location='${build.dir}/classes'/>
-				<fileset dir='${jars.dir}' includes='**/*.jar'/>
-			</path>
-		</pathconvert>
-		<taskdef name='imagemerge' 
-				 classname='com.zimbra.ajax.imagemerge.ImageMergeTask' 
-				 classpath='${imagemerge.cp}'
-		/>
-
-		<!-- copy hiRes images -->
-		<mkdir dir="${images.hiRes.destDir}"/>
-		<delete file='${images.hiRes.destDir}/${images.cssFile}'/>
-		<echo/>
-		<echo message='Copying high resolution images (-horizborders -vertborders -backgrounds)'/>
-		<echo/>
-		<imagemerge destdir='${images.hiRes.destDir}' copy='true'
-					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/hiRes/'>
-			<dirset dir='img/hiRes' 
-					includes='*' excludes='horizborders,vertborders,backgrounds'/>
-			<dirset dir='${ajax.dwtimg.dir}/hiRes' 
-					includes='*' excludes='horizborders,vertborders,backgrounds'/>
-		</imagemerge>
-		<echo/>
-		<echo message='Copying high resolution horizontal borders'/>
-		<echo/>
-		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='vertical'
-					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/hiRes/'>
-			<dirset dir='img/hiRes' includes='horizborders'/>
-			<dirset dir='${ajax.dwtimg.dir}/hiRes' includes='horizborders'/>
-		</imagemerge>
-		<echo/>
-		<echo message='Copying high resolution vertical borders'/>
-		<echo/>
-		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='horizontal'
-					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/hiRes/'>
-			<dirset dir='img/hiRes' includes='vertborders'/>
-			<dirset dir='${ajax.dwtimg.dir}/hiRes' includes='vertborders'/>
-		</imagemerge>
-		<echo/>
-		<echo message='Copying high resolution backgrounds'/>
-		<echo/>
-		<imagemerge destdir='${images.hiRes.destDir}' copy='true' layout='repeat'
-					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/hiRes/'>
-			<dirset dir='img/hiRes' includes='backgrounds'/>
-			<dirset dir='${ajax.dwtimg.dir}/hiRes' includes='backgrounds'/>
-		</imagemerge>
-		
-		<!-- merge loRes images -->
-		<!--
-		<mkdir dir="${images.loRes.destDir}"/>
-		<delete file='${images.loRes.destDir}/${images.cssFile}'/>
-		<echo/>
-		<echo message='Merging low resolution images (-horizborder -vertborders -backgrounds)'/>
-		<echo/>
-		<imagemerge destdir='${images.loRes.destDir}' 
-					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/loRes/'>
-			<dirset dir='img/loRes' 
-					includes='*' excludes='horizborders,vertborders,backgrounds'/>
-			<dirset dir='${ajax.dwtimg.dir}/loRes' 
-					includes='*' excludes='horizborders,vertborders,backgrounds'/>
-		</imagemerge>
-		<echo/>
-		<echo message='Merging low resolution horizontal borders'/>
-		<echo/>
-		<imagemerge destdir='${images.loRes.destDir}' layout='vertical'
-					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/loRes/'>
-			<dirset dir='img/loRes' includes='horizborders'/>
-			<dirset dir='${ajax.dwtimg.dir}/loRes' includes='horizborders'/>
-		</imagemerge>
-		<echo/>
-		<echo message='Merging low resolution vertical borders'/>
-		<echo/>
-		<imagemerge destdir='${images.loRes.destDir}' layout='horizontal'
-					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/loRes/'>
-			<dirset dir='img/loRes' includes='vertborders'/>
-			<dirset dir='${ajax.dwtimg.dir}/loRes' includes='vertborders'/>
-		</imagemerge>
-		<echo/>
-		<echo message='Copying low resolution backgrounds'/>
-		<echo/>
-		<imagemerge destdir='${images.loRes.destDir}' copy='true' layout='repeat'
-					cssfile='${images.cssFile}' csspath='/zimbraAdmin/img/loRes/'>
-			<dirset dir='img/loRes' includes='backgrounds'/>
-			<dirset dir='${ajax.dwtimg.dir}/loRes' includes='backgrounds'/>
-		</imagemerge>
-		-->
-	</target>
 </project>

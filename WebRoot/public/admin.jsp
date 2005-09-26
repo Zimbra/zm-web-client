@@ -92,8 +92,10 @@ Contributor(s):
   	if (loRes == null) {
 %>
         @import url(<%= contextPath %>/img/hiRes/imgs.css?v=<%= vers %>);
+        @import url(<%= contextPath %>/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
 <% } else { %>
         @import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
+        @import url(<%= contextPath %>/img/loRes/skins/steel/skin.css?v=<%= vers %>);
 <% } %>
    @import url(<%= contextPath %>/js/zimbraAdmin/config/style/dwt.css?v=<%= vers %>);
    @import url(<%= contextPath %>/js/zimbraAdmin/config/style/common.css?v=<%= vers %>);

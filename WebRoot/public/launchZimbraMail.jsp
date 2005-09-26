@@ -72,11 +72,14 @@ static final private String LOGIN_PAGE = "/zimbra/";
 <style type="text/css">
 <!--
 <%String hiRes = (String) request.getAttribute("hiRes");
+  // load dynamically generated image files
   if (hiRes != null) {
 %>
         @import url(/zimbra/img/hiRes/imgs.css?v=<%= vers %>);
+        @import url(/zimbra/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
 <% } else { %>
         @import url(/zimbra/img/loRes/imgs.css?v=<%= vers %>);
+        @import url(/zimbra/img/loRes/skins/steel/skin.css?v=<%= vers %>);
 <% } %>
         @import url(/zimbra/js/zimbraMail/config/style/dwt.css?v=<%= vers %>);
         @import url(/zimbra/js/zimbraMail/config/style/common.css?v=<%= vers %>);
