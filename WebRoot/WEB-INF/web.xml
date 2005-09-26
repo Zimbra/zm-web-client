@@ -100,19 +100,15 @@
   
   <servlet-mapping>
   	<servlet-name>Properties2Javascript</servlet-name>
-  	<url-pattern>/js/ajax/config/msgs/AjxMsg.js</url-pattern>
+  	<url-pattern>/js/ajax/config/msgs/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>Properties2Javascript</servlet-name>
-  	<url-pattern>/js/ajax/dwt/config/msgs/DwtMsg.js</url-pattern> <!-- temporary -->
+  	<url-pattern>/js/zimbraAdmin/config/msgs/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>Properties2Javascript</servlet-name>
-  	<url-pattern>/js/zimbraAdmin/config/msgs/ZaMsg.js</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-  	<servlet-name>Properties2Javascript</servlet-name>
-  	<url-pattern>/js/zimbraMail/config/msgs/ZmMsg.js</url-pattern>
+  	<url-pattern>/js/zimbraMail/config/msgs/*</url-pattern>
   </servlet-mapping>
 
   <welcome-file-list>
