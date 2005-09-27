@@ -680,7 +680,6 @@ function(abook) {
 
 	if (this._scheduleMode) {
 		this._unionHeadingDivId = Dwt.getNextId();
-		this._unionHeadingTextDivId = Dwt.getNextId();
 		this._unionAllDayDivId = Dwt.getNextId();		
 		this._unionHeadingSepDivId = Dwt.getNextId();
 		this._unionGridScrollDivId = Dwt.getNextId();
@@ -719,8 +718,7 @@ function(abook) {
 	if (this._scheduleMode) {
 		// "All" heading
 		html.append("<div id='", this._unionHeadingDivId, "' class=calendar_heading style='position:absolute'>");
-		html.append("<div id='", this._unionHeadingTextDiv, 
-			"' class=calendar_heading_year_text style='position:absolute; width:", ZmCalDayView._HOURS_DIV_WIDTH,"px;'></div>");
+		html.append("<div class=calendar_heading_year_text style='position:absolute; width:", ZmCalDayView._HOURS_DIV_WIDTH,"px;'>",ZmMsg.all,"</div>");
 		html.append("</div>");
 
 		// div in all day space
