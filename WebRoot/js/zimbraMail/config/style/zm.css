@@ -1380,7 +1380,11 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 
-.ZmAppChooser {height: 100%;}
+.ZmAppChooser {
+	margin-left:2px;
+	margin-top:5px;
+	height: 100%;
+}
 
 .currentAppLabel .Text {
 	font-size: 13px;

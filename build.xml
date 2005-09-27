@@ -390,8 +390,8 @@
   </target>
   
   <target name='sorticons' depends='sortimagesinit'>
-    <!-- usage:  make a "icons" directory in your ZimbraWebClient directory and do:
-        ant sorticons -Dsort.source=icons
+    <!-- usage:  make a "images" directory in your ZimbraWebClient directory and do:
+        ant sorticons
     -->
     <echo message='Sorting ZimbraWebClient/img/hiRes'/><echo/>
     <imagesort source='images' target='img/hiRes' delete='false'/>
@@ -403,6 +403,14 @@
     <echo message='Sorting Ajax/dwt/loRes'/><echo/>
     <imagesort source='images' target='${ajax.dwtimg.dir}/loRes' delete='true'/>
 
+  </target>
+
+  <target name='sortskin' depends='sortimagesinit'>
+    <!-- usage:  make a "images" directory in your ZimbraWebClient directory and do:
+        ant sortskin
+    -->
+    <echo message='Sorting skins/steel'/><echo/>
+    <imagesort source='images' target='WebRoot/skins/steel/img' delete='true'/>
   </target>
 
 

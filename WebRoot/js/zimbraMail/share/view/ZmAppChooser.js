@@ -57,9 +57,9 @@ ZmAppChooser.B_OPTIONS	= i++;
 ZmAppChooser.B_LOGOUT	= i++;
 
 ZmAppChooser.IMAGE = new Object();
-ZmAppChooser.IMAGE[ZmAppChooser.OUTER]		= "app_chiclet";
-ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]	= "app_chiclet_selected";
-ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]	= "app_chiclet_selected";
+ZmAppChooser.IMAGE[ZmAppChooser.OUTER]		= "ImgAppChiclet";
+ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]	= "ImgAppChicletHover";
+ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]	= "ImgAppChicletSel";
 
 ZmAppChooser.IMAGE[ZmAppChooser.B_EMAIL]	= "MailApp";
 ZmAppChooser.IMAGE[ZmAppChooser.B_CONTACTS]	= "ContactsApp";
