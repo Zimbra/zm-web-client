@@ -688,20 +688,25 @@ function() {
 
 ZmMailMsgView.prototype.preventContextMenu =
 function(target) {
-	var bObjFound = target.id.indexOf("OBJ_") == 0;
-	var bSelection = false;
-
-	// determine if anything has been selected (IE and mozilla do it differently)
-	if (this.getDocument().selection) { // IE
-		if (this.getDocument().selection.type == "Text")
-			bSelection = true;
-	} else if (getSelection()) { 		// mozilla
-		if (getSelection().toString().length)
-			bSelection = true;
+	if (AjxEnv.isSafari) {
+		// XXX: for some reason Safari is returning false on getSelection()
+		//      even when something is selected w/in msg view. Just return false
+		//      to allow copying text :(
+		return false;
+	} else {
+		var bObjFound = target.id.indexOf("OBJ_") == 0;
+		var bSelection = false;
+	
+		// determine if anything has been selected (IE and mozilla do it differently)
+		if (this.getDocument().selection) { // IE
+			bSelection = this.getDocument().selection.type == "Text";
+		} else if (getSelection()) { 		// mozilla
+			if (getSelection().toString().length)
+				bSelection = true;
+		}
+		// if something has been selected and target is not a custom object,
+		return bSelection && !bObjFound ? false : true;
 	}
-
-	// if something has been selected and target is not a custom object,
-	return bSelection && !bObjFound ? false : true;
 }
 
 ZmMailMsgView.prototype._tagChangeListener =
