@@ -110,7 +110,13 @@ function(conv, now, isDndIcon, isMixedView, div) {
 			idx = this._getField(htmlArr, idx, conv, ZmItem.F_DATE, i, now);
 		} else if (isMixedView && id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ICON]) == 0) {
 			// Type icon (mixed view only)
-			idx = this._getField(htmlArr, idx, conv, ZmItem.F_ITEM_TYPE, i);
+			if (conv.isDraft) {
+				htmlArr[idx++] = "<td width=" + this._headerList[i]._width + " class='Icon'>";
+				htmlArr[idx++] = AjxImg.getImageHtml("MsgStatusDraft", null, ["id='", this._getFieldId(conv, ZmItem.F_STATUS), "'"].join(""));
+				htmlArr[idx++] = "</td>";
+			} else {
+				idx = this._getField(htmlArr, idx, conv, ZmItem.F_ITEM_TYPE, i);
+			}
 		}
 	}
 	

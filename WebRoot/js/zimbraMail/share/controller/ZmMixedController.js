@@ -40,7 +40,9 @@ function ZmMixedController(appCtxt, container, mixedApp) {
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
-}
+	
+	this._listeners[ZmOperation.UNDELETE] = new AjxListener(this, this._undeleteListener);
+};
 
 ZmMixedController.prototype = new ZmListController;
 ZmMixedController.prototype.constructor = ZmMixedController;
@@ -48,7 +50,7 @@ ZmMixedController.prototype.constructor = ZmMixedController;
 ZmMixedController.prototype.toString = 
 function() {
 	return "ZmMixedController";
-}
+};
 
 // Public methods
 
@@ -63,51 +65,68 @@ function(searchResults, searchString) {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements, true);
-}
+};
 
 // Private and protected methods
+
+ZmMixedController.prototype._initializeActionMenu = 
+function() {
+	ZmListController.prototype._initializeActionMenu.call(this);
+	// based on current search, show/hide undelete menu option
+	var showUndelete = false;
+	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
+	if (folderId) {
+		var folderTree = this._appCtxt.getFolderTree();
+		var folder = folderTree ? folderTree.getById(folderId) : null;
+		showUndelete = folder && folder.isInTrash();
+	}
+	var mi = this._actionMenu.getMenuItem(ZmOperation.UNDELETE);
+	mi.setVisible(showUndelete);
+};
 
 ZmMixedController.prototype._getToolBarOps =
 function() {
 	return this._standardToolBarOps();
-}
+};
 
 ZmMixedController.prototype._getActionMenuOps =
 function() {
-	return this._standardActionMenuOps();
-}
+	var list = this._standardActionMenuOps();
+	list.push(ZmOperation.UNDELETE);
+	return list;
+};
 
 ZmMixedController.prototype._getViewType = 
 function() {
 	return ZmController.MIXED_VIEW;
-}
+};
 
 ZmMixedController.prototype._defaultView =
 function() {
 	return ZmController.MIXED_VIEW;
-}
+};
 
 ZmMixedController.prototype._createNewView = 
 function(view) {
 	var mv = new ZmMixedView(this._container, null, DwtControl.ABSOLUTE_STYLE, this, this._dropTgt);
 	mv.setDragSource(this._dragSrc);
 	return mv;
-}
+};
 
 ZmMixedController.prototype._getTagMenuMsg = 
 function(num) {
 	return (num == 1) ? ZmMsg.tagItem : ZmMsg.tagItems;
-}
+};
 
 ZmMixedController.prototype._getMoveDialogTitle = 
 function(num) {
 	return (num == 1) ? ZmMsg.moveItem : ZmMsg.moveItems;
-}
+};
 
 ZmMixedController.prototype._setViewContents =
 function(view) {
 	this._listView[view].set(this._list);
-}
+};
 
 // List listeners
 
@@ -123,10 +142,67 @@ function(ev) {
 		else if (ev.item.type == ZmItem.MSG)
 			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController().show(ev.item);
 	}
-}
+};
 
-ZmMixedController.prototype._listActionListener =
+ZmMixedController.prototype._listActionListener = 
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
+	
+	// based on the items selected, enable/disable and/or show/hide appropriate menu items
+	var selItems = this._listView[this._currentView].getSelection();
+	var selTypes = new Object();
+	var numTypes = 0;
+	for (var i = 0; i < selItems.length; i++) {
+		if (!selTypes[selItems[i].type]) {
+			selTypes[selItems[i].type] = true;
+			numTypes++;
+		}
+	}
+	
+	var miUndelete = this._actionMenu.getMenuItem(ZmOperation.UNDELETE);
+	var miMoveTo = this._actionMenu.getMenuItem(ZmOperation.MOVE);
+	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
+	var folderTree = this._appCtxt.getFolderTree();
+	var folder = folderTree && folderId ? folderTree.getById(folderId) : null;
+
+	if (folder && folder.isInTrash()) {
+		// only want to show Undelete menu item if contact(s) is selected
+		var showUndelete = numTypes == 1 && selTypes[ZmItem.CONTACT] === true;
+		var showMoveTo = numTypes == 1 && (selTypes[ZmItem.CONV] === true || selTypes[ZmItem.MSG] === true);
+		var showBoth = selItems.length > 1 && numTypes > 1;
+		var isDraft = numTypes == 1 && selItems[0].isDraft;
+		
+		miUndelete.setVisible(showUndelete || showBoth || isDraft);
+		miMoveTo.setVisible((showMoveTo || showBoth) && !isDraft);
+	
+		// if >1 item is selected and they're not all the same type, disable both menu items
+		this._actionMenu.enable([ZmOperation.UNDELETE, ZmOperation.MOVE], numTypes == 1);
+	} else {
+ 		miUndelete.setVisible(false);	// never show Undelete option when not in Trash
+ 		miMoveTo.setVisible(true);		// always show Move To option
+ 		// show MoveTo only if one type has been selected and its not contacts
+		var enableMoveTo = numTypes == 1 && selItems[0].type != ZmItem.CONTACT;
+		this._actionMenu.enable(ZmOperation.MOVE, enableMoveTo);
+	}
 	this._actionMenu.popup(0, ev.docX, ev.docY);
-}
+};
+
+ZmMixedController.prototype._undeleteListener = 
+function(ev) {
+	var items = this._listView[this._currentView].getSelection();
+
+	// figure out the default for this item should be moved to
+	var folder = null;
+	if (items[0] instanceof ZmContact) {
+		folder = new ZmFolder(ZmFolder.ID_CONTACTS);
+	} else if (items[0] instanceof ZmAppt) {
+		folder = new ZmFolder(ZmFolder.ID_CALENDAR);
+	} else {
+		var folderTree = this._appCtxt.getFolderTree();
+		var folderId = items[0].isDraft ? ZmFolder.ID_DRAFTS : ZmFolder.ID_INBOX;
+		folder = folderTree.getById(folderId);
+	}
+
+	if (folder)
+		this._schedule(this._doMove, {items: items, folder: folder});
+};

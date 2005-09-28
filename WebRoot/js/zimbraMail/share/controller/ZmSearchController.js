@@ -333,10 +333,18 @@ function(args) {
 		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().show(results, params.query);
 	} else if (results.type == ZmItem.MSG) {
 		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController().show(results, params.query);
-	} else if (results.type == ZmItem.CONTACT) {
-		this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController().show(results, params.query, this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
-	} else if (results.type == ZmList.MIXED) {
-		this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, params.query);
+	} else {
+		// determine if we need to default to mixed view
+		var folderTree = this._appCtxt.getFolderTree();
+		var folder = folderTree ? folderTree.getById(search.folderId) : null;
+		var inTrash = folder && folder.isInTrash();
+
+		// only show contact view if search is not in Trash folder
+		if (results.type == ZmItem.CONTACT && !inTrash) {
+			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController().show(results, params.query, this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
+		} else {
+			this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, params.query);
+		}
 	}
 	DBG.timePt("render search results");
 }
