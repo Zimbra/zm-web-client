@@ -233,7 +233,7 @@
 */
 
 
-.TBButton {
+.TBButton, TBButtonDefault {
 	border: 1px solid #EEEEEE;
 }
 
@@ -264,6 +264,25 @@
 	background-image:url(/zimbra/img/hiRes/dwt/ButtonDown__H.gif);
 	border:1px solid;
 	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+}
+
+
+.TBButtonDefault {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonUpDefault__H.gif);
+	border: 1px solid;
+	border-color: #b6e4e4 #6a9090 #6a9090 #b6e4e4;
+}
+
+.TBButtonDefault-activated {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDownDefault__H.gif);
+	border: 1px solid;
+	border-color: #b6e4e4 #6a9090 #6a9090 #b6e4e4;
+}
+
+.TBButtonDefault-triggered {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDownDefault__H.gif);
+	border: 1px solid;
+	border-color: #6a9090 #b6e4e4 #b6e4e4 #6a9090;
 }
 
 

@@ -1374,9 +1374,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 
-/***********************************************************
-* Styles for the new UI
-************************************************************/
+
 
 .ZmContactCardsView, .ZmCalViewMgr {
 	background-color: #EEEEEE;
@@ -1408,9 +1406,67 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	font-weight: bold;
 }
 
-/***********************************************************
-* End of styles for the new UI
-************************************************************/
+
+
+
+/*
+ * Colors, for use in calendar and elsewhere.
+ *
+ * Use the base color (eg: "Red") to show a list of colors.
+ * Use the "Bg" version ("RedBg" as background in a list, etc)
+ *
+ */
+
+.Selection			{ background-color:#ADD6D6;}
+.SelectionDark		{ background-color:#91C8C8; }
+.SelectionLight		{ background-color:#C8E4E4; }
+.SelectionBg		{ background-color:#E3F1F1; }
+
+.Red				{ background-color:#E34040;}
+.RedDark			{ background-color:#D90000; }
+.RedLight			{ background-color:#EC8080; }
+.RedBg				{ background-color:#F5BFBF; }
+
+.Pink				{ background-color:#F492BF;}
+.PinkDark			{ background-color:#F06EA9; }
+.PinkLight			{ background-color:#F8B7D4; }
+.PinkBg				{ background-color:#FBDBE9; }
+
+.Orange				{ background-color:#FF9940;}
+.OrangeDark			{ background-color:#FF7700; }
+.OrangeLight		{ background-color:#FFBB80; }
+.OrangeBg			{ background-color:#FFDDBF; }
+	
+.Yellow				{ background-color:#FFE640;}
+.YellowDark			{ background-color:#FFDD00; }
+.YellowLight		{ background-color:#FFEE80; }
+.YellowBg			{ background-color:#FFF6BF; }
+
+.Green				{ background-color:#40A05F;}
+.GreenDark			{ background-color:#00802A; }
+.GreenLight			{ background-color:#80C095; }
+.GreenBg			{ background-color:#BFDFCA; }
+
+.Cyan				{ background-color:#40D9D9;}
+.CyanDark			{ background-color:#00CCCC; }
+.CyanLight			{ background-color:#80E6E6; }
+.CyanBg				{ background-color:#BFF2F2; }
+		
+.Blue				{ background-color:#4073D9;}
+.BlueDark			{ background-color:#0044CC; }
+.BlueLight			{ background-color:#80A2E6; }
+.BlueBg				{ background-color:#BFD0F2; }
+
+.Purple				{ background-color:#7940A0;}
+.PurpleDark			{ background-color:#4C0080; }
+.PurpleLight		{ background-color:#A680C0; }
+.PurpleBg			{ background-color:#D2BFDF; }
+
+.Gray				{ background-color:#BFBFBF;}
+.GrayDark			{ background-color:#A9A9A9; }
+.GrayLight			{ background-color:#D4D4D4; }
+.GrayBg				{ background-color:#E9E9E9; }
+
 
 
 
@@ -1423,35 +1479,25 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .appt							{ 	z-index:10;	}
 .appt-selected					{ 	z-index:20;	}
 
-.appt-selected TD		 		{					font-weight:bold;						}
+.appt-selected TD		 		{					font-weight:bold;											}
 
-.appt_blue_header				{	background-color:#99ADD6;					}
-.appt_30_blue_header     		{	background-color:#99ADD6;	}
-.appt_blue_body,
-.appt_allday_blue_body			{	background-color:#CCD6EB;					}
-
-.appt_new_blue_header,			
-.appt_30_new_blue_header		{	background-color:#1947A3;					}
-.appt_new_blue_body,
-.appt_allday_new_blue_body		{	background-color:#7F99CC;					}
-
-
-.appt_new_tag					{	font-weight:bold;	color:#FFCC00;		}
+.appt_new_tag					{					font-weight:bold;	color:#FFCC00;							}
 	
-.appt_name						{	padding:2px;											}
-.appt_new_name					{	padding:2px;	font-weight:bold;	color:white; 		}
+.appt_name						{	padding:2px;																}
+.appt_new_name					{	padding:2px;	font-weight:bold;	color:white; 							}
 
 .appt_30_name,
-.appt_allday_name				{	padding:2px;	white-space: nowrap;	}
+.appt_allday_name				{	padding:2px;	padding-top:1px;					white-space: nowrap;	}
 .appt_30_new_name,
-.appt_allday_new_name 			{	padding:2px;	font-weight:bold;	color:white;	white-space: nowrap;	}
+.appt_allday_new_name 			{	padding:2px;	padding-top:1px; font-weight:bold;	color:white;	white-space: nowrap;	}
 
 
 .appt_time						{	padding:2px;																}
+.appt_new_time					{	padding:2px;	font-weight:bold;	color:white;							}
 .appt_end_time					{	padding:2px;						color:#666666;	white-space: nowrap;	}
 
 .appt_status-					{	padding:2px;										white-space: nowrap;	}
-.appt_status-NE					{	padding:2px;						color:white;	white-space: nowrap;	}
+.appt_status-NE					{	padding:2px;	font-weight:bold;	color:FFE640;	white-space: nowrap;	}
 .appt_status-TE					{	padding:2px;						color:FF3300;	white-space: nowrap;	}
 .appt_status-AC					{	padding:2px;						color:black;	white-space: nowrap;	}
 .appt_status-DE					{	padding:2px;						color:black;	white-space: nowrap;	}

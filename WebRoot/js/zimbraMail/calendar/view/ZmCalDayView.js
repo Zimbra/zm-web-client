@@ -516,7 +516,8 @@ function(div) {
 	var subs = {
 		id: div.id,
 		newState: "",
-		color: "_blue",
+		headerColor: "BlueLight",
+		bodyColor: "BlueBg",
 		name: AjxStringUtil.htmlEncode(ZmMsg.newAppt),
 		starttime: "",
 		endtime: "",
@@ -566,7 +567,8 @@ function(appt) {
 		id: id,
 		body_style: "",
 		newState: isNew ? "_new" : "",
-		color: "_blue",
+		headerColor: (isNew ? "BlueDark" : "BlueLight"),
+		bodyColor: (isNew ? "Blue" : "BlueBg"),
 		name: AjxStringUtil.htmlEncode(appt.getName()),
 //		tag: isNew ? "NEW" : "",		//  HACK: i18n
 		starttime: appt.getDurationText(true, true),
