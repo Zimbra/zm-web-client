@@ -146,7 +146,7 @@
 
 .hover_frame_table 		{	border-collapse:collapse;	padding:0;	}
 
-.hover_contents 	{		background-color:#f1f1f1;			}
+.hover_contents 	{					}
 .hover_tip_top 		{		position: absolute;		}
 .hover_tip_bottom 	{		position: relative;		}
 
