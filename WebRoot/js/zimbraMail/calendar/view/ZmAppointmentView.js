@@ -298,9 +298,9 @@ function ZmAppointmentView(dwtContainer, modelObj, delayInitialization) {
 ZmAppointmentView.prototype = new DwtComposite();
 ZmAppointmentView.prototype.constructor = ZmAppointmentView;
 
-ZmAppointmentView.prototype._initializeView = function (modelObj, mode, optionalStartDate, optionalDuration) {
+ZmAppointmentView.prototype._initializeView = function (modelObj, mode) {
 	if (!this.__initialized) {
-		this._initForm(modelObj, mode, optionalStartDate, optionalDuration);
+		this._initForm(modelObj, mode);
 		this._fbDirty = true;
 		this._addKeyHandlers();
 		this.__initialized = true;
@@ -314,7 +314,7 @@ ZmAppointmentView.prototype._replaceDwtContainer = function () {
 	this._apptForm.setClassName("ZmAppointmentView");
 };
 
-ZmAppointmentView.prototype._initForm = function (modelObj, mode, optionalStartDate, optionalDuration) {
+ZmAppointmentView.prototype._initForm = function (modelObj, mode) {
 	this._apptXModel = new XModel(ZmAppointmentView.appointmentModel);
 	XModel.registerErrorMessage("invalidEmail", "All attendees must have valid email addresses.");
 	XModel.registerErrorMessage("endDateBeforeStart", "The end date you've selected is before the start date.");
@@ -327,7 +327,7 @@ ZmAppointmentView.prototype._initForm = function (modelObj, mode, optionalStartD
 	this._apptForm.addListener(DwtEvent.XFORMS_VALUE_CHANGED, ls);
 	ls = new AjxListener(this, this._itemErrorListener);
 	this._apptForm.addListener(DwtEvent.XFORMS_VALUE_ERROR, ls);
-	this.setModel(modelObj, mode, optionalStartDate, optionalDuration);
+	this.setModel(modelObj, mode);
 	this._populateForm();
 	this._replaceDwtContainer();
 };
@@ -363,26 +363,12 @@ ZmAppointmentView.prototype.getAppt = function () {
 	return this._appt;
 };
 
-ZmAppointmentView.prototype.setModel = function (modelObj, mode, optionalStartDate, optionalDuration) {
+ZmAppointmentView.prototype.setModel = function (modelObj, mode) {
 	// if we don't have a model Object, assume this is a call for the
 	// edit view, for a createAppointment call.
-	if (modelObj == null) {
-		this._appt = new ZmAppt(this._appCtxt);
-		this._appt.name = "New Appointment";
-		if (optionalStartDate == null){
-			optionalStartDate = new Date();
-		}
-		optionalStartDate = AjxDateUtil.roundTimeMins(optionalStartDate,30);
-		this._appt.setStartDate(optionalStartDate);
-		if (optionalDuration) {
-			this._appt.setEndDate(optionalStartDate.getTime() + optionalDuration);
-		} else {
-			this._appt.setEndDate(optionalStartDate.getTime() + ZmAppointmentView.DEFAULT_APPOINTMENT_DURATION);
-		}
-		this._appt.resetRepeatWeeklyDays();
-		this._appt.resetRepeatMonthlyDayList();
-		this._appt.repeatYearlyMonthsList = optionalStartDate.getMonth();
-		this._appt.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[optionalStartDate.getDay()];
+	if (mode == ZmAppt.MODE_NEW) {
+		this._appt = modelObj;
+		// nothing
 	} else {
 		modelObj.getDetails(mode);
 		this._appt = ZmAppt.quickClone(modelObj);
@@ -395,12 +381,12 @@ ZmAppointmentView.prototype.setModel = function (modelObj, mode, optionalStartDa
 	this._fbDirty = true;
 };
 
-ZmAppointmentView.prototype.showDetail = function (modelObj, optionalStartDate, mode, optionalDuration) {
+ZmAppointmentView.prototype.showDetail = function (modelObj, mode) {
 	if (!this.__initialized) {
-		this._initializeView(modelObj, mode, optionalStartDate, optionalDuration);
+		this._initializeView(modelObj, mode);
 		this._appt.setViewMode(mode);
 	} else {
-		this.setModel(modelObj, mode, optionalStartDate, optionalDuration);
+		this.setModel(modelObj, mode);
 	}
 };
 

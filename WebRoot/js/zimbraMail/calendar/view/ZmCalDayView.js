@@ -35,6 +35,7 @@ function ZmCalDayView(parent, posStyle, dropTgt, view, numDays) {
 	ZmCalBaseView.call(this, parent, className, posStyle, view);
 	this.setScrollStyle(DwtControl.CLIP);	
 	this._needFirstLayout = true;
+	this.__colorIndex = 0;
 }
 
 ZmCalDayView.prototype = new ZmCalBaseView;
@@ -563,12 +564,14 @@ function(appt) {
 	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
 	var isAccepted = pstatus == ZmAppt.PSTATUS_ACCEPT;
 	var id = this._getItemId(appt);
+	//var color = ZmCalBaseView.COLORS[(this.__colorIndex++) % ZmCalBaseView.COLORS.length];
+	var color = "Blue";
 	var subs = {
 		id: id,
 		body_style: "",
 		newState: isNew ? "_new" : "",
-		headerColor: (isNew ? "BlueDark" : "BlueLight"),
-		bodyColor: (isNew ? "Blue" : "BlueBg"),
+		headerColor: color + (isNew ? "Dark" : "Light"),
+		bodyColor: color + (isNew ? "" : "Bg"),
 		name: AjxStringUtil.htmlEncode(appt.getName()),
 //		tag: isNew ? "NEW" : "",		//  HACK: i18n
 		starttime: appt.getDurationText(true, true),
@@ -787,6 +790,7 @@ function(abook) {
 	};
 	Dwt.getDomObj(this.getDocument(), this._apptBodyDivId)._type = ZmCalBaseView.TYPE_APPTS_DAYGRID;
 	Dwt.getDomObj(this.getDocument(), this._bodyHourDivId)._type = ZmCalBaseView.TYPE_HOURS_COL;
+	Dwt.getDomObj(this.getDocument(), this._allDayDivId)._type = ZmCalBaseView.TYPE_ALL_DAY;
 	this._populateNewApptHtml(Dwt.getDomObj(this.getDocument(), this._newApptDivId));
 	this._scrollTo8AM();
 }
@@ -1102,6 +1106,13 @@ function(x, y, snapMinutes, roundUp) {
 	return new Date(day.date.getTime() + (minutes * 60 * 1000));
 }
 
+ZmCalDayView.prototype._getAllDayDateFromXY =
+function(x, y) {
+	var day = this._getDayFromX(x);
+	if (day == null) return null;
+	return new Date(day.date.getTime());
+}
+
 // helper function to minimize code and catch errors
 ZmCalDayView.prototype._setBounds =
 function(id, x, y, w, h) {
@@ -1151,7 +1162,7 @@ function() {
 	
 	// div for all day appts
 	//var allDayDiv = Dwt.getDomObj(doc, this._allDayDivId);
-	var numRows = this._allDayApptsRowLayouts ? this._allDayApptsRowLayouts.length : 1;	
+	var numRows = this._allDayApptsRowLayouts ? (this._allDayApptsRowLayouts.length+1) : 1;	
 	var allDayDivHeight = (ZmCalDayView._ALL_DAY_APPT_HEIGHT+ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD) * numRows + ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD;
 	var allDayDivY = allDayHeadingDivHeight;
 	this._setBounds(this._allDayDivId, 0, allDayDivY, width - bodyX + scrollTest, allDayDivHeight);
@@ -1330,7 +1341,7 @@ function(ev, div) {
 ZmCalDayView.prototype._doubleClickAction =
 function(ev, div) {
 	ZmCalBaseView.prototype._doubleClickAction.call(this, ev, div);
-	if (div._type == ZmCalBaseView.TYPE_APPTS_DAYGRID) {
+	if (div._type == ZmCalBaseView.TYPE_APPTS_DAYGRID || div._type == ZmCalBaseView.TYPE_ALL_DAY) {
 		this._timeSelectionAction(ev, div, true);
 	}
 }
@@ -1339,18 +1350,25 @@ ZmCalDayView.prototype._timeSelectionAction =
 function(ev, div, dblclick) {
 	
 	var date;
-	
+	var 	duration = AjxDateUtil.MSEC_PER_HALF_HOUR;
+	var isAllDay = false;
 	switch (div._type) {
 		case ZmCalBaseView.TYPE_APPTS_DAYGRID:
 			var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
 			var date = this._getDateFromXY(gridLoc.x, gridLoc.y, 30);
 			if (date == null) return false;
 			break;
+		case ZmCalBaseView.TYPE_ALL_DAY:
+			var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
+			var date = this._getAllDayDateFromXY(gridLoc.x, gridLoc.y);
+			if (date == null) return false;
+			isAllDay = true;
+			break;			
 		default:
 			return;
 	}
 	//this._timeSelectionEvent(date, (dblclick ? 60 : 30) * 60 * 1000, dblclick);	
-	this._timeSelectionEvent(date, AjxDateUtil.MSEC_PER_HALF_HOUR, dblclick);
+	this._timeSelectionEvent(date, duration, dblclick, isAllDay);
 }
 
 ZmCalDayView.prototype._mouseDownAction = 
@@ -1824,7 +1842,7 @@ function(ev) {
 		if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;		
 		//DBG.println("calling timeSelectionEvent with : "+data.startDate+ " duration "+duration);
 		Dwt.setVisible(data.newApptDivEl, false);
-		data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAppointment(data.startDate, duration);
+		data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAppointmentHelper(data.startDate, duration);
 		//var loc = new DwtPoint(mouseEv.docX, mouseEv.docY);
 		//DBG.println("loc = "+loc.x+","+loc.y);
 		//data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newApptDialog(loc, data.startDate, duration);

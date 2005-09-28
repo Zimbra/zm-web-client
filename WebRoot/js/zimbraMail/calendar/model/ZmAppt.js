@@ -471,6 +471,14 @@ function() {
 };
 
 /*
+ * set is all day
+ */
+ZmAppt.prototype.setAllDayEvent =
+function(isAllDay) {
+	this.allDayEvent = isAllDay ? "1" : "0";
+};
+
+/*
  * true if startDate and endDate are on different days
  */
 ZmAppt.prototype.isMultiDay =

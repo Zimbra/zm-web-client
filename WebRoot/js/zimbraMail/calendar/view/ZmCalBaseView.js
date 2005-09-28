@@ -79,6 +79,9 @@ ZmCalBaseView.TYPE_APPT_BOTTOM_SASH = 4; // a sash for appt duration
 ZmCalBaseView.TYPE_APPT_TOP_SASH = 5; // a sash for appt duration
 ZmCalBaseView.TYPE_DAY_HEADER = 6; // over date header for a day
 ZmCalBaseView.TYPE_MONTH_DAY = 7; // over a day in month view
+ZmCalBaseView.TYPE_ALL_DAY = 8; // all day div area in day view
+
+ZmCalBaseView.COLORS = [ "Red", "Pink", "Orange", "Yellow", "Green", "Cyan", "Blue", "Purple", "Gray" ];
 
 ZmCalBaseView.prototype.addViewActionListener =
 function(listener) {
@@ -704,15 +707,15 @@ function(ev) {
 ZmCalBaseView.prototype._layout =
 function() {}
 
-
 ZmCalBaseView.prototype._timeSelectionEvent =
-function(date, duration, isDblClick) {
+function(date, duration, isDblClick, allDay) {
 	if (!this._selectionEvent) this._selectionEvent = new DwtSelectionEvent(true);
 	var sev = this._selectionEvent;
 	sev._isDblClick = isDblClick;
 	sev.item = this;
 	sev.detail = date;
 	sev.duration = duration;
+	sev.isAllDay = allDay;
 	sev.force = false;
 	this.notifyListeners(ZmCalBaseView.TIME_SELECTION, this._selectionEvent);
 	sev._isDblClick = false;

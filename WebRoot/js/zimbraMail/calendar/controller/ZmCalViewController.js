@@ -310,7 +310,7 @@ function(ev) {
 
 ZmCalViewController.prototype._newApptAction =
 function(ev) {
-	this.newAppointment();
+	this.newAppointment(this._newApptObject(new Date()));
 }
 
 ZmCalViewController._miniCalVisible = false;
@@ -385,6 +385,19 @@ function(ev) {
 	this.setDate(ev.detail, 0, ev.item.getForceRollOver());
 }
 
+ZmCalViewController.prototype._newApptObject = 
+function(startDate, duration) {
+	var newAppt = new ZmAppt(this._appCtxt);
+	newAppt.name = ZmMsg.newAppt;
+	newAppt.setStartDate(AjxDateUtil.roundTimeMins(startDate, 30));
+	newAppt.setEndDate(newAppt.getStartTime() + (duration ? duration : ZmAppointmentView.DEFAULT_APPOINTMENT_DURATION));
+	newAppt.resetRepeatWeeklyDays();
+	newAppt.resetRepeatMonthlyDayList();
+	newAppt.repeatYearlyMonthsList = startDate.getMonth();
+	newAppt.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[startDate.getDay()];	
+	return newAppt;
+}
+
 ZmCalViewController.prototype._timeSelectionListener =
 function(ev) {
 	//DBG.println("LCVC _timeSelectionListener");
@@ -399,7 +412,9 @@ function(ev) {
 	if (ev._isDblClick){
 		var p = new DwtPoint(ev.docX, ev.docY);
 		this._apptFromView = view;
-		this._showAppointmentDetails(null, p, ev.detail);
+		var appt = this._newApptObject(ev.detail);
+		appt.setAllDayEvent(ev.isAllDay);
+		this.newAppointment(appt);
 	}
 }
 
@@ -507,17 +522,20 @@ ZmCalViewController.prototype._getInstanceSeriesDialog = function (message, mode
 	return this._showSingleInstanceDialog;
 };
 
-ZmCalViewController.prototype.newAppointment = function (optionalStartDate, optionalDuration) {
-	// Create a new appointment
-	optionalStartDate = (optionalStartDate != null)? optionalStartDate: ((this._viewMgr != null)? this._viewMgr.getDate(): null);
-	this._getAppointmentDialog();
-	this._apptDialog.setTitle(ZmMsg.appointmentNewTitle);
-	this._popupAppointmentDialog(null, optionalStartDate, ZmAppt.MODE_NEW, optionalDuration);
+ZmCalViewController.prototype.newAppointmentHelper = function (startDate, optionalDuration) {
+	this.newAppointment(this._newApptObject(startDate, optionalDuration));
 };
 
-ZmCalViewController.prototype.newApptDialog = function (loc, optionalStartDate, optionalDuration) {
+ZmCalViewController.prototype.newAppointment = function (newAppt) {
 	// Create a new appointment
-	optionalStartDate = (optionalStartDate != null)? optionalStartDate: ((this._viewMgr != null)? this._viewMgr.getDate(): null);
+	newAppt.__creating = true;
+	this._getAppointmentDialog();
+	this._apptDialog.setTitle(ZmMsg.appointmentNewTitle);
+	this._popupAppointmentDialog(newAppt, ZmAppt.MODE_NEW);
+};
+
+// Not currently used
+ZmCalViewController.prototype.newApptDialog = function (loc) {
 	if (this._newApptDialog == null) {
 		this._newApptDialog = new ZmNewApptDialog(this._shell, null);
 	}
@@ -525,20 +543,19 @@ ZmCalViewController.prototype.newApptDialog = function (loc, optionalStartDate, 
 };
 
 
-ZmCalViewController.prototype.editRecurringAppointment = function (appt, optionalStartDate) {
+ZmCalViewController.prototype.editRecurringAppointment = function (appt) {
 	var m = AjxStringUtil.resolve(ZmMsg.showOccurrenceMessage,[appt.name]);
 	this._getInstanceSeriesDialog(m, ZmAppt.MODE_EDIT);
 	this._showSingleInstanceDialog.__appt = appt;
-	this._showSingleInstanceDialog.__osd = optionalStartDate;
 	this._showSingleInstanceDialog.popup();
 };
 
-ZmCalViewController.prototype.editSimpleAppointment = function (appt, optionalStartDate) {
+ZmCalViewController.prototype.editSimpleAppointment = function (appt) {
 
 };
 
 ZmCalViewController.prototype._showAppointmentDetails =
-function (appt, point, optionalStartDate, optionalDuration){
+function (appt, point, create){
 	var appModels = this._appCtxt.getAppController()._models;
 	var arr = appModels.getArray();
 	var mailList = null;
@@ -549,23 +566,23 @@ function (appt, point, optionalStartDate, optionalDuration){
 		}
 	}
 	try {
-		if (appt != null) {
+		if (!appt.__creating) {
 			// if we have an appointment, go get all the details.
 			// if the appointment is recurring, then ask the user whether to deal with
 			// the one from this day, or the whole appointment
 			if (appt.isRecurring()){
-				this.editRecurringAppointment(appt, optionalStartDate)
+				this.editRecurringAppointment(appt);
 				return;
 			} else {
 				// if we're dealing with a simple appointment, no intermediate dialog
 				// is necessary, so just continue.
-				this.editAppointment(appt, optionalStartDate, ZmAppt.MODE_EDIT);
+				this.editAppointment(appt, ZmAppt.MODE_EDIT);
 			}
 		} else {
-			this.newAppointment(optionalStartDate, optionalDuration);
+			this.newAppointment(appt);
 		}
 	} catch (ex) {
-		var params = [appt, point];
+		var params = [appt, point, create];
 		this._handleException(ex, this._showAppointmentDetails, params, false);
 	}
 };
@@ -577,12 +594,10 @@ ZmCalViewController.prototype._handleSingleInstanceButton = function (event) {
 	var text = btn.getText();
 	var appt = this._showSingleInstanceDialog.__appt;
 	delete this._showSingleInstanceDialog.__appt;
-	var optionalStartDate = this._showSingleInstanceDialog.__osd;
-	delete this._showSingleInstanceDialog.__osd;
 	if (text == ZmMsg.openSeries){
-		this.editAppointment(appt, optionalStartDate, ZmAppt.MODE_EDIT_SERIES);
+		this.editAppointment(appt, ZmAppt.MODE_EDIT_SERIES);
 	} else if (text == ZmMsg.openInstance){
-		this.editAppointment(appt, optionalStartDate, ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
+		this.editAppointment(appt, ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
 	} else if (text == ZmMsg.deleteInstance){
 		this._continueDelete(appt, ZmAppt.MODE_DELETE_INSTANCE);
 	} else if (text == ZmMsg.deleteSeries) {
@@ -593,14 +608,14 @@ ZmCalViewController.prototype._handleSingleInstanceButton = function (event) {
 	this._showSingleInstanceDialog.popdown();
 };
 
-ZmCalViewController.prototype.editAppointment = function (appt, optionalStartDate, mode) {
+ZmCalViewController.prototype.editAppointment = function (appt, mode) {
 	this._getAppointmentDialog();
 	this._apptDialog.setTitle(ZmMsg.appointmentEditTitle);
-	this._popupAppointmentDialog(appt, optionalStartDate, mode);
+	this._popupAppointmentDialog(appt, mode);
 };
 
-ZmCalViewController.prototype._popupAppointmentDialog = function (appt, optionalStartDate, mode, optionalDuration) {
-	this._apptView.showDetail(appt, optionalStartDate, mode, optionalDuration);
+ZmCalViewController.prototype._popupAppointmentDialog = function (appt, mode) {
+	this._apptView.showDetail(appt, mode);
 	this._apptDialog.popup();
 	if (appt && !appt.isOrganizer()) {
 		this._apptDialog.setButtonEnabled(DwtDialog.OK_BUTTON, false);
