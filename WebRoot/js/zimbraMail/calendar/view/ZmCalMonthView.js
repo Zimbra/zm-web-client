@@ -351,11 +351,13 @@ function(appt,id, body_style) {
 	var pstatus = appt.getParticipationStatus();
 	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
 	var isAccepted = pstatus == ZmAppt.PSTATUS_ACCEPT;
+	var color = "Blue";
 	var subs = {
 		id: id,
 		body_style: body_style,
 		newState: isNew ? "_new" : "",
-		color: "_blue",
+		headerColor: color + (isNew ? "Dark" : "Light"),
+		bodyColor: color + (isNew ? "" : "Bg"),
 		name: AjxStringUtil.htmlEncode(appt.getName()),
 //		tag: isNew ? "NEW" : "",		//  HACK: i18n
 		starttime: appt.getDurationText(true, true),
