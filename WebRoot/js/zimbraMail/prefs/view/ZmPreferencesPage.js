@@ -184,7 +184,6 @@ function() {
 	
 	html[i++] = "<div class='TitleBar'>";
 	html[i++] = "<table id='" + tableId + "' cellpadding=0 cellspacing=5 class='prefTable'>";
-	html[i++] = "<colgroup><col class='prefLabel'></col><col class='prefContent'></col><col></col></colgroup>";
 	html[i++] = "</table></div>";
 	html[i++] = "<div id='" + this._resetId + "' class='leftPad'></div>";
 	this.getHtmlElement().innerHTML = html.join("");
@@ -199,10 +198,11 @@ function(label, content, addSep) {
 	tr.id = Dwt.getNextId();
 	tr.valign = "top";
 	var cell1 = tr.insertCell(0);
-//	cell1.className = "prefLabel";
+	cell1.className = "prefLabel";
 	cell1.innerHTML = AjxStringUtil.htmlEncode(label + ":");
 
 	var cell2 = tr.insertCell(1);
+	cell2.className = "prefContent";
 	if (typeof (content) == 'string'){
 		cell2.innerHTML = content;
 	} else if (typeof (content) == 'object'){
