@@ -49,7 +49,7 @@ function ZmPrefView(parent, app, posStyle, passwordDialog) {
 	this.prefView = new Object();
 	this._filtersEnabled = this._appCtxt.get(ZmSetting.FILTERS_ENABLED);
 	this._rendered = false;
-}
+};
 
 ZmPrefView.prototype = new DwtTabView;
 ZmPrefView.prototype.constructor = ZmPrefView;
@@ -65,10 +65,10 @@ ZmPrefView.VIEWS = [ZmPrefView.GENERAL, ZmPrefView.MAIL,
 
 // list of prefs for each page
 ZmPrefView.PREFS = new Object();
-ZmPrefView.PREFS[ZmPrefView.GENERAL]	= ZmPref.GENERAL_PREFS;
-ZmPrefView.PREFS[ZmPrefView.MAIL]		= ZmPref.MAIL_PREFS;
-ZmPrefView.PREFS[ZmPrefView.ADDR_BOOK]	= ZmPref.ADDR_BOOK_PREFS;
-ZmPrefView.PREFS[ZmPrefView.CALENDAR]	= ZmPref.CALENDAR_PREFS;
+ZmPrefView.PREFS[ZmPrefView.GENERAL]			= ZmPref.GENERAL_PREFS;
+ZmPrefView.PREFS[ZmPrefView.MAIL]				= ZmPref.MAIL_PREFS;
+ZmPrefView.PREFS[ZmPrefView.ADDR_BOOK]			= ZmPref.ADDR_BOOK_PREFS;
+ZmPrefView.PREFS[ZmPrefView.CALENDAR]			= ZmPref.CALENDAR_PREFS;
 
 // title for the page's tab
 ZmPrefView.TAB_NAME = new Object();
@@ -89,44 +89,40 @@ function () {
 */
 ZmPrefView.prototype.show =
 function() {
-	if (!this._rendered) {
-		for (var i = 0; i < ZmPrefView.VIEWS.length; i++) {
-			var view = ZmPrefView.VIEWS[i];
-			if ((view == ZmPrefView.FILTER_RULES) && (!this._filtersEnabled)){
-				continue;
-			}
-			if (view == ZmPrefView.ADDR_BOOK && 
-				(!this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))) {
-				continue;
-			}
-			if (view == ZmPrefView.CALENDAR && 
-				(!this._appCtxt.get(ZmSetting.CALENDAR_ENABLED))) {
-				continue;
-			}
-			var viewObj = null;
-			
-			if (view != ZmPrefView.FILTER_RULES) {
-				viewObj = new ZmPreferencesPage(this._parent, this._app, 
-												view, this._passwordDialog);
-			} else {
-					viewObj = new ZmFilterPrefView(this._parent, 
-												   this._app._appCtxt);
-					var size = this.getSize();
-					viewObj.setSize((size.x *.97), (size.y *.97));
-			}
-			this.prefView[view] = viewObj;
-			this.addTab(ZmPrefView.TAB_NAME[view], this.prefView[view]);
+	if (this._rendered)
+		return;
+
+	for (var i = 0; i < ZmPrefView.VIEWS.length; i++) {
+		var view = ZmPrefView.VIEWS[i];
+
+		if ((view == ZmPrefView.FILTER_RULES) && (!this._filtersEnabled))
+			continue;
+
+		if (view == ZmPrefView.ADDR_BOOK && (!this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)))
+			continue;
+
+		if (view == ZmPrefView.CALENDAR && (!this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)))
+			continue;
+
+		var viewObj = null;
+		if (view != ZmPrefView.FILTER_RULES) {
+			viewObj = new ZmPreferencesPage(this._parent, this._app, view, this._passwordDialog);
+		} else {
+			viewObj = new ZmFilterPrefView(this._parent, this._app._appCtxt);
+			var size = this.getSize();
+			viewObj.setSize((size.x *.97), (size.y *.97));
 		}
-		this._rendered = true;
+
+		this.prefView[view] = viewObj;
+		this.addTab(ZmPrefView.TAB_NAME[view], this.prefView[view]);
 	}
-}
+	this._rendered = true;
+};
 
 ZmPrefView.prototype.getTitle =
 function() {
-	if (!this._rendered) return null;
-	var tab = this.getActiveView();
-	return tab.getTitle();
-}
+	return this._rendered ? this.getActiveView().getTitle() : null;
+};
 
 /**
  * For some reason, the filter page, when rendered, resets the height of the
@@ -138,9 +134,8 @@ function(x, y, width, height) {
 	DwtControl.prototype.setBounds.call(this, x, y, width, height);
 	if (this._filtersEnabled) {
 		var filterRulesView = this.prefView[ZmPrefView.FILTER_RULES];
-		if (filterRulesView) {
+		if (filterRulesView)
 			filterRulesView.setSize(width *.97, height *.93);
-		}
 	}
 };
 
@@ -164,13 +159,14 @@ function(dirtyCheck, noValidation) {
 		var view = ZmPrefView.VIEWS[i];
 		if (view == ZmPrefView.FILTER_RULES) continue;
 
-		var value;
 		var viewPage = this.prefView[view];
-		if (!viewPage) continue; // if feature is disabled, may not have a view page
+		if (!viewPage) continue; 
+		// if feature is disabled, may not have a view page
 		// if the page hasn't rendered, then nothing could have been changed
 		// so we'll skip the rest of the checks
 		if (!viewPage.hasRendered()) continue;
 
+		var value;
 		var prefs = ZmPrefView.PREFS[view];
 		for (var j = 0; j < prefs.length; j++) {
 			var id = prefs[j];
@@ -181,9 +177,8 @@ function(dirtyCheck, noValidation) {
 				continue;
 			if (type == "select") {
 				var select = viewPage.selects[id];
-				if (select){
+				if (select)
 					value = select.getValue();
-				}
 			} else {
 				var prefId = ZmPref.KEY_ID + id;
 				var element = document.getElementById(prefId);
@@ -213,10 +208,8 @@ function(dirtyCheck, noValidation) {
 			} else if (!unchanged) {
 				if (!noValidation && validationFunc) {
 					var isValid = validationFunc(value);
-					if (!isValid) {
-						errorStr += "\n" + 
-							AjxStringUtil.resolve(setup.errorMessage,value);
-					}
+					if (!isValid)
+						errorStr += "\n" + AjxStringUtil.resolve(setup.errorMessage,value);
 				}
 				pref.setValue(value);
 				list.push(pref);
@@ -228,17 +221,15 @@ function(dirtyCheck, noValidation) {
 		}
 	}
 	return dirtyCheck ? false : list;
-}
+};
 
 /**
 * Returns true if any pref has changed.
 */
 ZmPrefView.prototype.isDirty =
 function() {
-	if (this._filtersEnabled){
-		return (this.getChangedPrefs(true, true) ||
-				ZmFilterRules.shouldSave());
-	} else {
-		return (this.getChangedPrefs(true, true));
-	}
-}
+	var changed = this.getChangedPrefs(true, true);
+	return this._filtersEnabled
+		? (changed || ZmFilterRules.shouldSave())
+		: changed;
+};
