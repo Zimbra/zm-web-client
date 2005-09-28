@@ -65,6 +65,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaSplashScreen.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaAppChooser.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaChicletButton.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaCurrentAppToolBar.js<%= ext %>?v=<%= vers %>"></script>
 
 
 <!-- Admin UI Specific components -->
