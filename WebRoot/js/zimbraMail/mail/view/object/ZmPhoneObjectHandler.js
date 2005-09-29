@@ -61,8 +61,8 @@ function(line, startIndex) {
 
 ZmPhoneObjectHandler.prototype._getHtmlContent =
 function(html, idx, phone, context) {
-	var call = 'callto:+1' + AjxStringUtil.trim(phone)
-	html[idx++] = '<a href="' + call + '" onclick="ZmPhoneObjectHandler.unsetOnbeforeunload()">'+AjxStringUtil.htmlEncode(phone)+'</a>';	
+	var call = 'callto:+1' + AjxStringUtil.trim(phone);
+	html[idx++] = '<a href="' + call + '" onclick="window.top.ZmPhoneObjectHandler.unsetOnbeforeunload()">'+AjxStringUtil.htmlEncode(phone)+'</a>';	
 	return idx;
 };
 
