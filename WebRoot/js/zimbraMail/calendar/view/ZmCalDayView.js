@@ -1441,7 +1441,7 @@ function(ev, div) {
 			this._timeSelectionAction(ev, div, false);
 			if (ev.button == DwtMouseEvent.LEFT) {
 				var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
-				return this._gridAllDayMouseDownAction(ev, div, gridLoc);
+				return this._gridMouseDownAction(ev, div, gridLoc, true);				
 			} else if (ev.button == DwtMouseEvent.RIGHT) {
 				DwtUiEvent.copy(this._actionEv, ev);
 				this._actionEv.item = this;
@@ -1743,7 +1743,7 @@ function(ev) {
 // BEGIN GRID ACTION HANDLERS
 
 ZmCalDayView.prototype._gridMouseDownAction =
-function(ev, gridEl, gridLoc) {
+function(ev, gridEl, gridLoc, isAllDay) {
 	if (ev.button != DwtMouseEvent.LEFT) {
 		return false;
 	}
@@ -1759,13 +1759,14 @@ function(ev, gridEl, gridLoc) {
 		gridX: gridLoc.x, // ev.elementX,
 		gridY: gridLoc.y,  //ev.elementY,
 		docX: ev.docX,
-		docY: ev.docY
+		docY: ev.docY,
+		isAllDay: isAllDay
 	};
 
 	var capture = new DwtMouseEventCapture	(data,
 			ZmCalDayView._emptyHdlr, // mouse over
 			ZmCalDayView._emptyHdlr, // mouse down (already handled by action)
-			ZmCalDayView._gridMouseMoveHdlr, 
+			isAllDay? ZmCalDayView._gridAllDayMouseMoveHdlr : ZmCalDayView._gridMouseMoveHdlr,
 			ZmCalDayView._gridMouseUpHdlr, 
 			ZmCalDayView._emptyHdlr, // mouse out
 			true);
@@ -1776,11 +1777,17 @@ function(ev, gridEl, gridLoc) {
 // called when DND is confirmed after threshold
 ZmCalDayView.prototype._gridDndBegin =
 function(data) {
-	data.gridEl.style.cursor = 's-resize';	
-	data.newApptDivEl = Dwt.getDomObj(data.view.getDocument(), data.view._newApptDivId);
-	data.apptBodyEl = Dwt.getDomObj(data.view.getDocument(), data.newApptDivEl.id + "_body");
-	data.endTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDivEl.id +"_et");
-	data.startTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDivEl.id +"_st");
+	if (data.isAllDay) {
+		data.gridEl.style.cursor = 'e-resize';	
+		data.newApptDivEl = Dwt.getDomObj(data.view.getDocument(), data.view._newAllDayApptDivId);
+		data.apptBodyEl = Dwt.getDomObj(data.view.getDocument(), data.newApptDivEl.id + "_body");	
+	} else {
+		data.gridEl.style.cursor = 's-resize';	
+		data.newApptDivEl = Dwt.getDomObj(data.view.getDocument(), data.view._newApptDivId);
+		data.apptBodyEl = Dwt.getDomObj(data.view.getDocument(), data.newApptDivEl.id + "_body");
+		data.endTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDivEl.id +"_et");
+		data.startTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDivEl.id +"_st");
+	}
 	this.deselectAll();
 	return true;
 }
@@ -1869,10 +1876,14 @@ function(ev) {
 	
 	if (data.dndStarted) {
 		data.gridEl.style.cursor = 'auto';
-		var duration = (data.endDate.getTime() - data.startDate.getTime());
-		if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;		
-		Dwt.setVisible(data.newApptDivEl, false);
-		data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAppointmentHelper(data.startDate, duration);
+		Dwt.setVisible(data.newApptDivEl, false);		
+		if (data.isAllDay) {
+			data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAllDayAppointmentHelper(data.startDate, data.endDate);		
+		} else {
+			var duration = (data.endDate.getTime() - data.startDate.getTime());
+			if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;	
+			data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAppointmentHelper(data.startDate, duration);			
+		}
 	}
 
 	mouseEv._stopPropagation = true;
@@ -1886,47 +1897,6 @@ function(ev) {
 
 // BEGIN ALLDAY GRID ACTION HANDLERS
 
-ZmCalDayView.prototype._gridAllDayMouseDownAction =
-function(ev, gridEl, gridLoc) {
-	if (ev.button != DwtMouseEvent.LEFT) {
-		return false;
-	}
-
-	//DBG.println("gridLoc: "+gridLoc.x+","+gridLoc.y);
-
-	//var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, gridEl);
-
-	var data = { 
-		dndStarted: false,
-		view: this,
-		gridEl: gridEl, 
-		gridX: gridLoc.x, // ev.elementX,
-		gridY: gridLoc.y,  //ev.elementY,
-		docX: ev.docX,
-		docY: ev.docY
-	};
-
-	var capture = new DwtMouseEventCapture	(data,
-			ZmCalDayView._emptyHdlr, // mouse over
-			ZmCalDayView._emptyHdlr, // mouse down (already handled by action)
-			ZmCalDayView._gridAllDayMouseMoveHdlr, 
-			ZmCalDayView._gridAllDayMouseUpHdlr, 
-			ZmCalDayView._emptyHdlr, // mouse out
-			true);
-	capture.capture();
-	return false;	
-}
-
-// called when DND is confirmed after threshold
-ZmCalDayView.prototype._gridAllDayDndBegin =
-function(data) {
-	data.gridEl.style.cursor = 'e-resize';	
-	data.newApptDivEl = Dwt.getDomObj(data.view.getDocument(), data.view._newAllDayApptDivId);
-	data.apptBodyEl = Dwt.getDomObj(data.view.getDocument(), data.newApptDivEl.id + "_body");
-	this.deselectAll();
-	return true;
-}
-
 ZmCalDayView._gridAllDayMouseMoveHdlr =
 function(ev) {
 
@@ -1939,7 +1909,7 @@ function(ev) {
 
 	if (!data.dndStarted) {
 		var withinThreshold =  (Math.abs(deltaX) < ZmCalDayView.DRAG_THRESHOLD && Math.abs(deltaY) < ZmCalDayView.DRAG_THRESHOLD);
-		if (withinThreshold || !data.view._gridAllDayDndBegin(data)) {
+		if (withinThreshold || !data.view._gridDndBegin(data)) {
 			mouseEv._stopPropagation = true;
 			mouseEv._returnValue = false;
 			mouseEv.setToDhtmlEvent(ev);
@@ -1988,31 +1958,6 @@ function(ev) {
 	mouseEv._stopPropagation = true;
 	mouseEv._returnValue = false;
 	mouseEv.setToDhtmlEvent(ev);
-	return false;	
-}
-
-ZmCalDayView._gridAllDayMouseUpHdlr =
-function(ev) {
-//	DBG.println("ZmCalDayView._sashMouseUpHdlr");
-	var data = DwtMouseEventCapture.getTargetObj();
-	//ZmCalDayView._setApptOpacity(data.appt, data.apptEl);	
-	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev);	
-
-	DwtMouseEventCapture.getCaptureObj().release();
-	
-	if (data.dndStarted) {
-		data.gridEl.style.cursor = 'auto';
-		var duration = (data.endDate.getTime() - data.startDate.getTime());
-		if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;		
-		Dwt.setVisible(data.newApptDivEl, false);
-		data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAllDayAppointmentHelper(data.startDate, data.endDate);
-	}
-
-	mouseEv._stopPropagation = true;
-	mouseEv._returnValue = false;
-	mouseEv.setToDhtmlEvent(ev);
-	
 	return false;	
 }
 
