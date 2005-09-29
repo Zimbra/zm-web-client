@@ -526,7 +526,17 @@ ZmCalViewController.prototype.newAppointmentHelper = function (startDate, option
 	this.newAppointment(this._newApptObject(startDate, optionalDuration));
 };
 
+ZmCalViewController.prototype.newAllDayAppointmentHelper = function (startDate, endDate) {
+	var appt = this._newApptObject(startDate);
+	if (endDate) appt.setEndDate(endDate);
+	appt.setAllDayEvent(true);
+	this.newAppointment(appt);
+};
+
 ZmCalViewController.prototype.newAppointment = function (newAppt) {
+	if (newAppt == null) {
+		newAppt = this._newApptObject(new Date());
+	}
 	// Create a new appointment
 	newAppt.__creating = true;
 	this._getAppointmentDialog();
