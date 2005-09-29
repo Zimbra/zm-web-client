@@ -562,7 +562,7 @@ function() {
 
 	htmlArr[idx++] = "<table width='100%' cellspacing='0' cellpadding='1' style='table-layout:fixed'>";
 	htmlArr[idx++] = "<tr><td class='NoResults'><br>";
-	htmlArr[idx++] = AjxStringUtil.htmlEncodeSpace("No Filters defined");
+	htmlArr[idx++] = "No Filters defined";
 	htmlArr[idx++] = "</td></tr></table>";
 
 	div.innerHTML = htmlArr.join("");

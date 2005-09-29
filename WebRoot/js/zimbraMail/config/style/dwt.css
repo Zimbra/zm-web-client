@@ -609,6 +609,7 @@
 .NoResults {
 	font-size: 10pt;
 	text-align: center;
+	white-space: nowrap;
 }
 
 
