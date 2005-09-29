@@ -238,7 +238,6 @@ function(parentId, text, width, listener) {
 
 ZmPreferencesPage.prototype._addImportWidgets = 
 function(buttonDiv) {
-	
 	this._uploadFormId = Dwt.getNextId();
 	this._attInputId = Dwt.getNextId();
 
@@ -257,17 +256,20 @@ function(buttonDiv) {
 	// set up import button
 	this._importBtn = this._addButton(buttonDiv.id, ZmMsg._import, 65, new AjxListener(this, this._importContactsListener));
 
+	// XXX: for some reason idoc is null in Safari :(
 	var idoc = Dwt.getIframeDoc(iframe);
-	idoc.open();
-	var html = new Array();
-	var idx = 0;
-	html[idx++] = "<html><head></head><body scroll=no bgcolor='#EEEEEE'>";
-	html[idx++] = "<form style='margin: 0px; padding: 0px;' method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
-	html[idx++] = "<input style='font-family:Tahoma; font-size:10px' name='" + ZmPreferencesPage.IMPORT_FIELD_NAME + "' type='file' id='" + this._attInputId + "'>";
-	html[idx++] = "</form>";
-	html[idx++] = "</body></html>";
-	idoc.write(html.join(""));
-	idoc.close();
+	if (idoc) {
+		idoc.open();
+		var html = new Array();
+		var idx = 0;
+		html[idx++] = "<html><head></head><body scroll=no bgcolor='#EEEEEE'>";
+		html[idx++] = "<form style='margin: 0px; padding: 0px;' method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
+		html[idx++] = "<input style='font-family:Tahoma; font-size:10px' name='" + ZmPreferencesPage.IMPORT_FIELD_NAME + "' type='file' id='" + this._attInputId + "'>";
+		html[idx++] = "</form>";
+		html[idx++] = "</body></html>";
+		idoc.write(html.join(""));
+		idoc.close();
+	}
 }
 
 // Popup the change password dialog.
