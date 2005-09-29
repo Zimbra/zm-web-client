@@ -509,7 +509,7 @@ function(appt, div) {
 
 // for the new appt when drag selecting time grid
 ZmCalDayView.prototype._populateNewApptHtml =
-function(div) {
+function(div, allDay) {
 	div.style.position = 'absolute';
 	Dwt.setSize(div, 10, 10);// will be resized
 	div.className = 	"appt-" + DwtCssStyle.SELECTED;
@@ -519,6 +519,7 @@ function(div) {
 		newState: "",
 		headerColor: "BlueLight",
 		bodyColor: "BlueBg",
+		body_style: "",
 		name: AjxStringUtil.htmlEncode(ZmMsg.newAppt),
 		starttime: "",
 		endtime: "",
@@ -526,7 +527,7 @@ function(div) {
 		statusKey: "",
 		status: ""
 	};	
-	div.innerHTML = DwtBorder.getBorderHtml("calendar_appt", subs, null);
+	div.innerHTML = DwtBorder.getBorderHtml(allDay ? "calendar_appt_allday" : "calendar_appt", subs, null);
 	return div;
 }
 
@@ -671,6 +672,7 @@ function(abook) {
 	this._bodyDivId = Dwt.getNextId();
 	this._apptBodyDivId = Dwt.getNextId();
 	this._newApptDivId = Dwt.getNextId();
+	this._newAllDayApptDivId = Dwt.getNextId();	
 	this._timeSelectionDivId = Dwt.getNextId();
 
 	if (this._scheduleMode) {
@@ -738,7 +740,9 @@ function(abook) {
 		html.append("<div id='", this._days[i].headingDaySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
 	}
 	// div holding all day appts
-	html.append("<div id='", this._allDayDivId, "' style='position:absolute'></div>");
+	html.append("<div id='", this._allDayDivId, "' style='position:absolute'>");
+	html.append("<div id='", this._newAllDayApptDivId, "' class='appt-Selected' style='position:absolute; display:none;'></div>");	
+	html.append("</div>"); 	
 	html.append("</div>"); 
 	// end of all day scroll ===========
 	
@@ -768,7 +772,7 @@ function(abook) {
 	html.append("<div id='", this._timeSelectionDivId, "' class='calendar_time_selection' style='position:absolute; display:none;'></div>");
 	html.append("<div id='", this._newApptDivId, "' class='appt-Selected' style='position:absolute; display:none;'></div>");
 	for (var i =0; i < numDays; i++) {
-		html.append("<div id='", this._days[i].daySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
+	  html.append("<div id='", this._days[i].daySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
 	}		
 	html.append("</div>");
 	html.append("</div>");
@@ -792,6 +796,7 @@ function(abook) {
 	Dwt.getDomObj(this.getDocument(), this._bodyHourDivId)._type = ZmCalBaseView.TYPE_HOURS_COL;
 	Dwt.getDomObj(this.getDocument(), this._allDayDivId)._type = ZmCalBaseView.TYPE_ALL_DAY;
 	this._populateNewApptHtml(Dwt.getDomObj(this.getDocument(), this._newApptDivId));
+	this._populateNewApptHtml(Dwt.getDomObj(this.getDocument(), this._newAllDayApptDivId), true);
 	this._scrollTo8AM();
 }
 
@@ -1081,6 +1086,15 @@ function(d, duration) {
 					day.apptWidth, (ZmCalDayView._HOUR_HEIGHT / 60) * durationMinutes);
 }
 
+ZmCalDayView.prototype._getBoundsForAllDayDate =
+function(startDate, endDate) {
+	var startDay = this._getDayForDate(startDate);
+	var endDay = this._getDayForDate(endDate);
+	if (startDay == null || endDay == null) return null;
+	return new DwtRectangle(startDay.allDayX, 0, 
+						(endDay.allDayX + endDay.allDayWidth) - startDay.allDayX - ZmCalDayView._DAY_SEP_WIDTH-1, ZmCalDayView._ALL_DAY_APPT_HEIGHT);
+}
+
 // snapXY coord to specified minute boundary (15,30)
 ZmCalDayView.prototype._snapXY =
 function(x, y, snapMinutes, roundUp) {
@@ -1092,6 +1106,17 @@ function(x, y, snapMinutes, roundUp) {
 	y = Math.floor(y/height) * height;
 	if (roundUp) y += height;
 	return {x:x, y:y};	
+}
+
+
+// snapXY coord to specified minute boundary (15,30)
+ZmCalDayView.prototype._snapAllDayXY =
+function(x, y) {
+	// snap it to grid
+	var day = this._getDayFromX(x);
+	if (day == null) return null;
+	x = day.allDayX;
+	return {x:x, y:0};	
 }
 
 ZmCalDayView.prototype._getDateFromXY =
@@ -1164,15 +1189,15 @@ function() {
 	//var allDayDiv = Dwt.getDomObj(doc, this._allDayDivId);
 	var numRows = this._allDayApptsRowLayouts ? (this._allDayApptsRowLayouts.length) : 1;	
 	if (this._allDayApptsList.length > 0) numRows++;
-	var allDayDivHeight = (ZmCalDayView._ALL_DAY_APPT_HEIGHT+ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD) * numRows + ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD;
+	this._allDayDivHeight = (ZmCalDayView._ALL_DAY_APPT_HEIGHT+ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD) * numRows + ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD;
 	var allDayDivY = allDayHeadingDivHeight;
-	this._setBounds(this._allDayDivId, 0, allDayDivY, width - bodyX + scrollTest, allDayDivHeight);
+	this._setBounds(this._allDayDivId, 0, allDayDivY, width - bodyX + scrollTest, this._allDayDivHeight);
 	
 	// div under year
-	this._setBounds(this._yearAllDayDivId, 0, 0, hoursWidth, allDayDivHeight);	
+	this._setBounds(this._yearAllDayDivId, 0, 0, hoursWidth, this._allDayDivHeight);	
 
 	// all day scroll
-	var allDayScrollHeight = allDayDivY + allDayDivHeight;
+	var allDayScrollHeight = allDayDivY + this._allDayDivHeight;
 	this._setBounds(this._allDayScrollDivId, bodyX, 0, width - bodyX, allDayScrollHeight);	
 
 	// vert sep between year and all day headings
@@ -1184,7 +1209,6 @@ function() {
 	// compute height for hours/grid
 	this._bodyDivWidth = width - bodyX;
 	
-	//var bodyY =allDayHeadingDivHeight + allDayDivHeight + ZmCalDayView._ALL_DAY_SEP_HEIGHT +  (AjxEnv.isIE ? 0 : 2);
 	var bodyY = allDayScrollHeight + ZmCalDayView._ALL_DAY_SEP_HEIGHT +  (AjxEnv.isIE ? 0 : 2);
 
 	this._bodyDivHeight = height - bodyY;
@@ -1210,7 +1234,7 @@ function() {
 		this._setBounds(this._unionHeadingDivId, unionX, 0, ZmCalDayView._UNION_DIV_WIDTH, Dwt.DEFAULT);
 				
 		//div under heading
-		this._setBounds(this._unionAllDayDivId, unionX, allDayDivY, ZmCalDayView._UNION_DIV_WIDTH, allDayDivHeight);		
+		this._setBounds(this._unionAllDayDivId, unionX, allDayDivY, ZmCalDayView._UNION_DIV_WIDTH, this._allDayDivHeight);		
 
 		// sep in all day area
 		var unionSepX = unionX + ZmCalDayView._UNION_DIV_WIDTH;
@@ -1241,7 +1265,7 @@ function() {
 		day.allDayWidth = dayWidth; // doesn't include sep
 		currentX += dayWidth;
 
-		this._setBounds(day.headingDaySepDivId, apptsDivX+currentX, 0, ZmCalDayView._DAY_SEP_WIDTH, allDayHeadingDivHeight + allDayDivHeight);		
+		this._setBounds(day.headingDaySepDivId, apptsDivX+currentX, 0, ZmCalDayView._DAY_SEP_WIDTH, allDayHeadingDivHeight + this._allDayDivHeight);
 		this._setBounds(day.daySepDivId, currentX, 0, ZmCalDayView._DAY_SEP_WIDTH, this._apptBodyDivHeight);
 
 		currentX += ZmCalDayView._DAY_SEP_WIDTH;
@@ -1413,6 +1437,18 @@ function(ev, div) {
 				this._evtMgr.notifyListeners(ZmCalBaseView.VIEW_ACTION, this._actionEv);
 			}
 			break;
+		case ZmCalBaseView.TYPE_ALL_DAY:
+			this._timeSelectionAction(ev, div, false);
+			if (ev.button == DwtMouseEvent.LEFT) {
+				var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
+				return this._gridAllDayMouseDownAction(ev, div, gridLoc);
+			} else if (ev.button == DwtMouseEvent.RIGHT) {
+				DwtUiEvent.copy(this._actionEv, ev);
+				this._actionEv.item = this;
+				this._evtMgr.notifyListeners(ZmCalBaseView.VIEW_ACTION, this._actionEv);
+			}
+			break;
+			
 	}
 	return false;
 }
@@ -1704,7 +1740,7 @@ function(ev) {
 // END SASH ACTION HANDLERS
 
 
-// BEGIN APPT ACTION HANDLERS
+// BEGIN GRID ACTION HANDLERS
 
 ZmCalDayView.prototype._gridMouseDownAction =
 function(ev, gridEl, gridLoc) {
@@ -1811,13 +1847,7 @@ function(ev) {
 		Dwt.setLocation(e, newStart.x, newStart.y);
 		Dwt.setSize(e, bounds.width, bounds.height);
 		Dwt.setSize(data.apptBodyEl, bounds.width, bounds.height);		
-//		ZmCalDayView._setOpacity(e, ZmCalDayView._OPACITY_APPT_DND);
 		Dwt.setVisible(e, true);
-//		e.innerHTML = ZmAppt._getTTHour(data.startDate) + " - " + ZmAppt._getTTHour(data.endDate);
-//		e.innerHTML = "<div style='position:absolute; top:0; left:0;'>"+ZmAppt._getTTHour(data.startDate) + 
-//					"</div><div style='position:absolute; bottom:0;left:0'>" + ZmAppt._getTTHour(data.endDate) + "</div>";
-//		data.newApptDiv.style.zIndex = 30;
-
 		if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.startDate);
 		if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.endDate);
 	}
@@ -1841,12 +1871,8 @@ function(ev) {
 		data.gridEl.style.cursor = 'auto';
 		var duration = (data.endDate.getTime() - data.startDate.getTime());
 		if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;		
-		//DBG.println("calling timeSelectionEvent with : "+data.startDate+ " duration "+duration);
 		Dwt.setVisible(data.newApptDivEl, false);
 		data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAppointmentHelper(data.startDate, duration);
-		//var loc = new DwtPoint(mouseEv.docX, mouseEv.docY);
-		//DBG.println("loc = "+loc.x+","+loc.y);
-		//data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newApptDialog(loc, data.startDate, duration);
 	}
 
 	mouseEv._stopPropagation = true;
@@ -1856,7 +1882,141 @@ function(ev) {
 	return false;	
 }
 
-// END APPT ACTION HANDLERS
+// END GRID ACTION HANDLERS
+
+// BEGIN ALLDAY GRID ACTION HANDLERS
+
+ZmCalDayView.prototype._gridAllDayMouseDownAction =
+function(ev, gridEl, gridLoc) {
+	if (ev.button != DwtMouseEvent.LEFT) {
+		return false;
+	}
+
+	//DBG.println("gridLoc: "+gridLoc.x+","+gridLoc.y);
+
+	//var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, gridEl);
+
+	var data = { 
+		dndStarted: false,
+		view: this,
+		gridEl: gridEl, 
+		gridX: gridLoc.x, // ev.elementX,
+		gridY: gridLoc.y,  //ev.elementY,
+		docX: ev.docX,
+		docY: ev.docY
+	};
+
+	var capture = new DwtMouseEventCapture	(data,
+			ZmCalDayView._emptyHdlr, // mouse over
+			ZmCalDayView._emptyHdlr, // mouse down (already handled by action)
+			ZmCalDayView._gridAllDayMouseMoveHdlr, 
+			ZmCalDayView._gridAllDayMouseUpHdlr, 
+			ZmCalDayView._emptyHdlr, // mouse out
+			true);
+	capture.capture();
+	return false;	
+}
+
+// called when DND is confirmed after threshold
+ZmCalDayView.prototype._gridAllDayDndBegin =
+function(data) {
+	data.gridEl.style.cursor = 'e-resize';	
+	data.newApptDivEl = Dwt.getDomObj(data.view.getDocument(), data.view._newAllDayApptDivId);
+	data.apptBodyEl = Dwt.getDomObj(data.view.getDocument(), data.newApptDivEl.id + "_body");
+	this.deselectAll();
+	return true;
+}
+
+ZmCalDayView._gridAllDayMouseMoveHdlr =
+function(ev) {
+
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev);	
+	var data = DwtMouseEventCapture.getTargetObj();
+
+	var deltaX = mouseEv.docX - data.docX;
+	var deltaY = mouseEv.docY - data.docY;
+
+	if (!data.dndStarted) {
+		var withinThreshold =  (Math.abs(deltaX) < ZmCalDayView.DRAG_THRESHOLD && Math.abs(deltaY) < ZmCalDayView.DRAG_THRESHOLD);
+		if (withinThreshold || !data.view._gridAllDayDndBegin(data)) {
+			mouseEv._stopPropagation = true;
+			mouseEv._returnValue = false;
+			mouseEv.setToDhtmlEvent(ev);
+			return false;
+		}
+	}
+
+	// snap new location to grid
+	var snap = data.view._snapXY(data.gridX + deltaX, data.gridY + deltaY, 30);
+	if (snap == null) return false;
+	
+	var newStart, newEnd;
+
+	if (deltaX >= 0) { // dragging right
+		newStart = data.view._snapAllDayXY(data.gridX, data.gridY);
+		newEnd = data.view._snapAllDayXY(data.gridX + deltaX, data.gridY);
+	} else { // dragging left
+		newEnd = data.view._snapAllDayXY(data.gridX, data.gridY);
+		newStart = data.view._snapAllDayXY(data.gridX + deltaX, data.gridY);
+	}
+
+	if (newStart == null || newEnd == null) return false;
+
+	if ((data.start == null) || (data.start.x != newStart.x) || (data.end.x != newEnd.x)) {
+
+		if (!data.dndStarted) data.dndStarted = true;
+
+		data.start = newStart;
+		data.end = newEnd;
+		
+		data.startDate = data.view._getAllDayDateFromXY(data.start.x, data.start.y);
+		data.endDate = data.view._getAllDayDateFromXY(data.end.x, data.end.y);
+
+		var e = data.newApptDivEl;
+		if (!e) return;
+
+		var bounds = data.view._getBoundsForAllDayDate(data.startDate, data.endDate);
+		if (bounds == null) return false;
+		// blank row at the bottom
+		var y = data.view._allDayDivHeight - (ZmCalDayView._ALL_DAY_APPT_HEIGHT+ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD);
+		Dwt.setLocation(e, newStart.x, y);
+		Dwt.setSize(e, bounds.width, bounds.height);
+		Dwt.setSize(data.apptBodyEl, bounds.width, bounds.height);		
+		Dwt.setVisible(e, true);
+	}
+	mouseEv._stopPropagation = true;
+	mouseEv._returnValue = false;
+	mouseEv.setToDhtmlEvent(ev);
+	return false;	
+}
+
+ZmCalDayView._gridAllDayMouseUpHdlr =
+function(ev) {
+//	DBG.println("ZmCalDayView._sashMouseUpHdlr");
+	var data = DwtMouseEventCapture.getTargetObj();
+	//ZmCalDayView._setApptOpacity(data.appt, data.apptEl);	
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev);	
+
+	DwtMouseEventCapture.getCaptureObj().release();
+	
+	if (data.dndStarted) {
+		data.gridEl.style.cursor = 'auto';
+		var duration = (data.endDate.getTime() - data.startDate.getTime());
+		if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;		
+		Dwt.setVisible(data.newApptDivEl, false);
+		data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAllDayAppointmentHelper(data.startDate, data.endDate);
+	}
+
+	mouseEv._stopPropagation = true;
+	mouseEv._returnValue = false;
+	mouseEv.setToDhtmlEvent(ev);
+	
+	return false;	
+}
+
+// END ALLDAY GRID ACTION HANDLERS
 
 ZmCalDayView._emptyHdlr =
 function(ev) {
