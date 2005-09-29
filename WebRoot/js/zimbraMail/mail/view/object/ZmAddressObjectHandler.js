@@ -104,7 +104,7 @@ ZmAddressObjectHandler.displayMap = function(lng, lat, obj) {
     map.centerAndZoom(point, 4);
 	var marker = new GMarker(point);
 	map.addOverlay(marker);
-	marker.openInfoWindowHtml(obj);
+	marker.openInfoWindowHtml("<div id=\""+ZmAddressObjectHandler.encodeId(obj)+"tip\" style=\"width:255px\"><b>"+obj+"</b></div>");
     if(!ZmAddressObjectHandler.CACHE[obj+"lng"] || !ZmAddressObjectHandler.CACHE[obj+"lat"]) {
 		DBG.println(AjxDebug.DBG2, "gMAPS: Adding to cache");
 		ZmAddressObjectHandler.CACHE[obj+"lng"] = lng;
