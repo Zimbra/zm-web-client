@@ -55,7 +55,9 @@ ZmPref.MAIL_PREFS = [ZmSetting.GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSetting.SHO
 					 ZmSetting.VACATION_MSG_ENABLED, ZmSetting.VACATION_MSG,
 					 ZmSetting.NOTIF_ENABLED, ZmSetting.NOTIF_ADDRESS,
 					 ZmSetting.VIEW_AS_HTML, ZmSetting.DEDUPE_MSG_TO_SELF, 
-					 ZmSetting.COMPOSE_AS_FORMAT, ZmSetting.COMPOSE_SAME_FORMAT, ZmSetting.NEW_WINDOW_COMPOSE];
+					 ZmSetting.COMPOSE_AS_FORMAT, 
+					 ZmSetting.COMPOSE_INIT_FONT_FAMILY, ZmSetting.COMPOSE_INIT_FONT_SIZE, ZmSetting.COMPOSE_INIT_FONT_COLOR,
+					 ZmSetting.COMPOSE_SAME_FORMAT, ZmSetting.NEW_WINDOW_COMPOSE];
 					 
 ZmPref.ADDR_BOOK_PREFS = [ZmSetting.AUTO_ADD_ADDRESS, 
 						  ZmSetting.CONTACTS_VIEW, ZmSetting.CONTACTS_PER_PAGE,
@@ -191,6 +193,19 @@ ZmPref.SETUP[ZmSetting.COMPOSE_AS_FORMAT] = {
 	displayOptions: 	[ZmMsg.text, ZmMsg.htmlDocument],
 	options: 			[ZmSetting.COMPOSE_TEXT, ZmSetting.COMPOSE_HTML]};
 
+ZmPref.SETUP[ZmSetting.COMPOSE_INIT_FONT_FAMILY] = {
+	displayName:		ZmMsg.defaultFontSettings,
+	displayContainer:	"font",
+	displayOptions: 	["Arial", "Times New Roman", "Courier New", "Verdana"]};
+
+ZmPref.SETUP[ZmSetting.COMPOSE_INIT_FONT_SIZE] = {
+	displayName:		null,
+	displayContainer:	"font",
+	displayOptions: 	["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"]};
+
+ZmPref.SETUP[ZmSetting.COMPOSE_INIT_FONT_COLOR] = {
+	displayOptions: 	["rgb(0, 0, 0)"]};
+
 ZmPref.SETUP[ZmSetting.COMPOSE_SAME_FORMAT] = {
 	displayName:		ZmMsg.replyForwardInSameFormat,
 	displayContainer:	"checkbox"};
@@ -204,7 +219,7 @@ ZmPref.SETUP[ZmSetting.DEDUPE_MSG_TO_SELF] = {
 ZmPref.SETUP[ZmSetting.NEW_WINDOW_COMPOSE] = {
 	displayName:		ZmMsg.composeInNewWin,
 	displayContainer:	"checkbox",
-	displaySeparator:	true};
+	displaySeparator: 	true};
 
 ZmPref.SETUP[ZmSetting.AUTO_ADD_ADDRESS] = {
 	displayName:		ZmMsg.autoAddContacts,

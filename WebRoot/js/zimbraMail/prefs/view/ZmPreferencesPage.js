@@ -79,92 +79,77 @@ function() {
 	for (var i = 0; i < prefs.length; i++) {
 		var id = prefs[i];
 		var pref = settings.getSetting(id);
+
 		// make sure editing the pref is supported
 		if ((id == ZmSetting.INITIAL_SEARCH && (!this._appCtxt.get(ZmSetting.INITIAL_SEARCH_ENABLED))) ||
 			(id == ZmSetting.PASSWORD && (!this._appCtxt.get(ZmSetting.CHANGE_PASSWORD_ENABLED))) ||
 			(id == ZmSetting.SEARCH_INCLUDES_SPAM && (!this._appCtxt.get(ZmSetting.SPAM_ENABLED)))) {
 			continue;
 		}
+
 		// save the current value (for checking later if it changed)
 		var value = pref.origValue = pref.getValue();
 		if (id == ZmSetting.SIGNATURE_STYLE)
 			value = (value == ZmSetting.SIG_INTERNET);		
-		var prefId = ZmPref.KEY_ID + id;
 		DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
 
 		var setup = ZmPref.SETUP[id];
-		var type = setup.displayContainer;
+		var type = setup ? setup.displayContainer : null;
 		if (type == "select") {
-			var selObj = new DwtSelect(this);
-			this.selects[id] = selObj;
-
-			var options;
-			if (setup.options || setup.displayOptions){
-				options = setup.options ? setup.options : setup.displayOptions;
-				for (var j = 0; j < options.length; j++) {
-					var data = new DwtSelectOptionData(options[j], setup.displayOptions[j], false);
-					selObj.addOption(data);
-				}
-			} else {
-				options = setup.choices;
-				for (var j = 0; j < options.length; j++) {
-					var data = new DwtSelectOptionData(options[j].value, options[j].label, false);
-					selObj.addOption(data);
-				}
-			}
-
-			selObj.setName(id);
-			selObj.setSelectedValue(value);
-			var div = document.createElement("div");
-			div.className = "leftPad";
-			div.appendChild(selObj.getHtmlElement());
+			var div = this._setupSelect(id, setup, value);
 			this._createRow(setup.displayName, div, setup.displaySeparator);
 		} else {
 			var html = new Array();
 			var j = 0;
 			var buttonId;
+			var prefId = ZmPref.KEY_ID + id;
 			if (type == "checkbox") {
 				var checked = value ? "checked " : "";
-				html[j++] = "<div style='padding: 0px 0px 0px 1px'><input id='";
+				html[j++] = "<input id='";
 				html[j++] = prefId;
 				html[j++] = "' ";
 				html[j++] = checked;
-				html[j++] = "type='checkbox'/></div>";
+				html[j++] = "type='checkbox'/>";
 			} else if (type == "input") {
-				html[j++] = "<div class='leftPad'><input id='";
+				html[j++] = "<input id='";
 				html[j++] = prefId;
 				html[j++] = "' ";
 				html[j++] = "type='text' value='";
 				html[j++] = value;
-				html[j++] = "' size=30></input></div>";
+				html[j++] = "' size=30></input>";
 			} else if (type == "textarea") {
-				html[j++] = "<div class='leftPad'><textarea id='";
+				html[j++] = "<textarea id='";
 				html[j++] = prefId;
 				html[j++] = "' ";
 				html[j++] = "wrap='on' style='width:402' rows='4' cols='60'>";
 				html[j++] = value;
-				html[j++] = "</textarea></div>";
-			} else if (type == "x_password" || type == "import" || type == "export") {
+				html[j++] = "</textarea>";
+			} else if (type == "x_password" || type == "import" || type == "export" || type == "font") {
+				if (id == ZmSetting.COMPOSE_INIT_FONT_SIZE)
+					continue;
 				buttonId = Dwt.getNextId();
-				html[j++] = "<div class='leftPad'><div id='";
+				html[j++] = "<div id='";
 				html[j++] = buttonId;
-				html[j++] = "'></div></div>";
+				html[j++] = "'></div>";
+			} else {
+				continue;
 			}
 			this._createRow(setup.displayName, html.join(""), setup.displaySeparator);
 			if (type == "x_password") {
-				this._addButton(buttonId, ZmMsg.change, 50,
-								new AjxListener(this, this._changePasswordListener));
+				this._addButton(buttonId, ZmMsg.change, 50,	new AjxListener(this, this._changePasswordListener));
 			} else if (type == "import") {
 				this._importDiv = document.getElementById(buttonId);
 				this._addImportWidgets(this._importDiv);
 			} else if (type == "export") {
-				this._addButton(buttonId, ZmMsg._export, 65,
-								new AjxListener(this, this._exportContactsListener));
+				this._addButton(buttonId, ZmMsg._export, 65, new AjxListener(this, this._exportContactsListener));
+			} else if (type == "font") {	
+				this._fontDiv = document.getElementById(buttonId);
+				var fontSizeValue = settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).getValue();
+				this._addFontPrefs(this._fontDiv, id, setup, value, fontSizeValue);
 			}
 		}
 	}
-	this._addButton(this._resetId, ZmMsg.restoreDefaults, 100,
-					new AjxListener(this, this._resetListener));
+	this._addButton(this._resetId, ZmMsg.restoreDefaults, 100, new AjxListener(this, this._resetListener));
 	this._rendered = true;
 };
 
@@ -185,7 +170,7 @@ function() {
 	html[i++] = "<div class='TitleBar'>";
 	html[i++] = "<table id='" + tableId + "' cellpadding=0 cellspacing=5 class='prefTable'>";
 	html[i++] = "</table></div>";
-	html[i++] = "<div id='" + this._resetId + "' class='leftPad'></div>";
+	html[i++] = "<div id='" + this._resetId + "' style='padding-left:5px'></div>";
 	this.getHtmlElement().innerHTML = html.join("");
 	
 	this._table = document.getElementById(tableId);
@@ -236,6 +221,35 @@ function(parentId, text, width, listener) {
 	return button;
 }
 
+ZmPreferencesPage.prototype._setupSelect = 
+function(id, setup, value) {
+	var selObj = new DwtSelect(this);
+	this.selects[id] = selObj;
+
+	var options;
+	if (setup.options || setup.displayOptions) {
+		options = setup.options || setup.displayOptions;
+		for (var j = 0; j < options.length; j++) {
+			var data = new DwtSelectOptionData(options[j], setup.displayOptions[j], false);
+			selObj.addOption(data);
+		}
+	} else {
+		options = setup.choices;
+		for (var j = 0; j < options.length; j++) {
+			var data = new DwtSelectOptionData(options[j].value, options[j].label, false);
+			selObj.addOption(data);
+		}
+	}
+
+	selObj.setName(id);
+	selObj.setSelectedValue(value);
+	
+	var div = document.createElement("div");
+	div.appendChild(selObj.getHtmlElement());
+	
+	return div;
+}
+
 ZmPreferencesPage.prototype._addImportWidgets = 
 function(buttonDiv) {
 	this._uploadFormId = Dwt.getNextId();
@@ -272,10 +286,82 @@ function(buttonDiv) {
 	}
 }
 
+ZmPreferencesPage.prototype._addFontPrefs = 
+function(fontDiv, id, setup, value, fontSizeValue) {
+	var doc = this.getDocument();
+	var table = doc.createElement("table");
+	table.border = table.cellPadding = table.cellSpacing = 0;
+	var row = table.insertRow(-1);
+	
+	var fontFamilyCell = row.insertCell(-1);
+	var sepCell1 = row.insertCell(-1);
+	var fontSizeCell = row.insertCell(-1);
+	var sepCell2 = row.insertCell(-1);
+	var fontColorPickerCell = row.insertCell(-1);
+	var sepCell3 = row.insertCell(-1);
+	var fontColorCell = row.insertCell(-1);
+
+	// get the Select options for font family
+	var div = this._setupSelect(id, setup, value);
+	fontFamilyCell.appendChild(div);
+
+	// get the Select options for font size
+	id = ZmSetting.COMPOSE_INIT_FONT_SIZE;
+	setup = ZmPref.SETUP[id];
+	var div = this._setupSelect(id, setup, fontSizeValue);
+	fontSizeCell.appendChild(div);
+	
+	// add color picker
+	var b = new DwtButton(this, null, "DwtSelect");
+	b.setImage("FontColor");
+	b.setToolTipContent(ZmMsg.fontColor);
+	var m = new DwtMenu(b, DwtMenu.COLOR_PICKER_STYLE);
+	var cp = new DwtColorPicker(m);
+	cp.addSelectionListener(new AjxListener(this, this._fontColorListener));
+	b.setMenu(m);
+	fontColorPickerCell.style.width = "40px";
+	fontColorPickerCell.appendChild(b.getHtmlElement());
+
+	// add color box showing current color
+	var defaultColor = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+	this._defaultFontColorId = Dwt.getNextId();
+	fontColorCell.style.verticalAlign = "bottom";
+	var html = new Array();
+	var i = 0;
+	html[i++] = "<div class='colorBox' id='";
+	html[i++] = this._defaultFontColorId;
+	html[i++] = "' style='background-color:";
+	html[i++] = defaultColor;
+	html[i++] = ";'></div>";
+	html[i++] = "<input type='hidden' id='";
+	html[i++] = ZmPref.KEY_ID + ZmSetting.COMPOSE_INIT_FONT_COLOR;
+	html[i++] = "' value='";
+	html[i++] = defaultColor
+	html[i++] = "'>";
+	fontColorCell.innerHTML = html.join("");
+	
+	// add separators
+	sepCell1.innerHTML = sepCell2.innerHTML = sepCell3.innerHTML = "&nbsp;";
+
+	fontDiv.appendChild(table);	
+}
+
 // Popup the change password dialog.
 ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
 	this._passwordDialog.popup();
+}
+
+ZmPreferencesPage.prototype._fontColorListener = 
+function(ev) {
+	var colorBox = Dwt.getDomObj(this.getDocument(), this._defaultFontColorId);
+	if (colorBox) {
+		colorBox.style.backgroundColor = ev.detail;
+		var fontColorInputId = ZmPref.KEY_ID + ZmSetting.COMPOSE_INIT_FONT_COLOR;
+		var input = Dwt.getDomObj(this.getDocument(), fontColorInputId);
+		if (input)
+			input.value = ev.detail;
+	}
 }
 
 ZmPreferencesPage.prototype._exportContactsListener = 

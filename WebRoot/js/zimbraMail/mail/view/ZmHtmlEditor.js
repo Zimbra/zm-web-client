@@ -35,6 +35,9 @@ function ZmHtmlEditor(parent, className, posStyle, content, mode) {
 	DwtHtmlEditor.call(this, parent, className, posStyle, content, mode, "/zimbra/public/blank.html");
 
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));	
+	
+	var settings = this.parent._appCtxt.getSettings();
+	settings.addChangeListener(new AjxListener(this, this._settingsChangeListener));
 };
 
 ZmHtmlEditor.prototype = new DwtHtmlEditor();
@@ -370,10 +373,54 @@ function(ev) {
 	}
 };
 
+ZmHtmlEditor.prototype._settingsChangeListener = 
+function(ev) {
+	var setting = ev.source;
+	if (setting.id == ZmSetting.COMPOSE_INIT_FONT_COLOR ||
+		setting.id == ZmSetting.COMPOSE_INIT_FONT_FAMILY ||
+		setting.id == ZmSetting.COMPOSE_INIT_FONT_SIZE)
+	{
+		this._initialStyle = this._getInitialStyle(true);
+		var iframeDoc = this._getIframeDoc();
+		var initHtml = "<html><head>" + this._getInitialStyle(false) + "</head><body></body></html>";
+		iframeDoc.open();
+		iframeDoc.write(initHtml);
+		iframeDoc.close();
+		this._updateState();
+	}
+};
+
 ZmHtmlEditor.prototype._handleEditorEvent = 
 function(ev) {
 	var rv = this._eventCallback ? this._eventCallback.run(ev) : true;
 	if (rv)
 		rv = DwtHtmlEditor.prototype._handleEditorEvent.call(this, ev);
 	return rv;
+};
+
+ZmHtmlEditor.prototype._getInitialFontFamily = 
+function() {
+	// get font family user preference
+	var familyPref = this.parent._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+	familyPref = familyPref.toLowerCase(); // normalize value
+	
+	var fontFamily = DwtHtmlEditor._TIMES;
+	if (familyPref.search(DwtHtmlEditor._VERDANA_RE) != -1)
+		fontFamily = DwtHtmlEditor._VERDANA;
+	else if (familyPref.search(DwtHtmlEditor._ARIAL_RE) != -1)
+		fontFamily = DwtHtmlEditor._ARIAL;
+	else if (familyPref.search(DwtHtmlEditor._COURIER_RE) != -1)
+		fontFamily = DwtHtmlEditor._COURIER;
+	
+	return fontFamily;
+};
+
+ZmHtmlEditor.prototype._getInitialFontSize = 
+function() {
+	return this.parent._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+};
+
+ZmHtmlEditor.prototype._getInitialFontColor = 
+function() {
+	return this.parent._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
 };

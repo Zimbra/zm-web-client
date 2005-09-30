@@ -1725,6 +1725,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	background-color: #C6C5D7;
 }
 
+.ZmPrefView .colorBox {
+	border:1px inset; 
+	width:20px; 
+	height:18px; 
+}
 
 .ZmPrefView tr {vertical-align: top;}
 
@@ -1742,9 +1747,6 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 .prefLabel {width: 300px;}
 .prefContent {width: 420px;}
-
-/* make things line up visually */
-.ZmPrefView .leftPad {padding-left: 5px;}
 
 /* buttons */
 .ZmPreferencesPage .changePasswordButton {width: 50px;}

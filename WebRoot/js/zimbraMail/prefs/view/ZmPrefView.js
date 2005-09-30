@@ -171,11 +171,11 @@ function(dirtyCheck, noValidation) {
 		for (var j = 0; j < prefs.length; j++) {
 			var id = prefs[j];
 			var setup = ZmPref.SETUP[id];
-			var type = setup.displayContainer;
-			var validationFunc = setup.validationFunction;
-			if (type.indexOf("x_") == 0) // ignore non-form elements			
+			var type = setup ? setup.displayContainer : null;
+			var validationFunc = setup ? setup.validationFunction : null;
+			if (type && type.indexOf("x_") == 0) // ignore non-form elements			
 				continue;
-			if (type == "select") {
+			if (type == "select" || type == "font") {
 				var select = viewPage.selects[id];
 				if (select)
 					value = select.getValue();
@@ -184,7 +184,7 @@ function(dirtyCheck, noValidation) {
 				var element = document.getElementById(prefId);
 				if (!element) continue;
 				if (type == "checkbox") {
-					value = element.checked ? true : false;
+					value = element.checked;
 					if (id == ZmSetting.SIGNATURE_STYLE)
 						value = value ? ZmSetting.SIG_INTERNET : ZmSetting.SIG_OUTLOOK;
 				} else {

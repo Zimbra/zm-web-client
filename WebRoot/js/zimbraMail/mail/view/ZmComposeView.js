@@ -109,12 +109,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 	this._action = action;
 	this._msg = msg;
 	
-	// new message - clear form
-	if (this._action == ZmOperation.NEW_MESSAGE) {
-		this.reset(true);
-	} else {
-		this.enableInputs(true);
-	}
+	this.reset(true);
 
 	// create iframe EVERY time
 	this._iframe = this._createAttachmentsContainer();
@@ -307,7 +302,6 @@ function(action, msg, subjOverride) {
 
 ZmComposeView.prototype._setBody =
 function(action, msg, extraBodyText) {
-	this._htmlEditor.setContent("");
 	
 	if (action == ZmOperation.NEW_MESSAGE) {
 		if (this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED))
@@ -443,7 +437,11 @@ function(bEnableInputs) {
 		
 	// reset subject / body fields
 	this._subjectField.value = "";
-	this._htmlEditor.setContent("");
+	if (this._initHtmlEditor) {
+		this._htmlEditor.clear();
+	} else {
+		this._initHtmlEditor = true;
+	}
 	
 	// the div that holds the iframe and null out innerHTML
 	this._iframe = null;
