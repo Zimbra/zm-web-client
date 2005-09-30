@@ -53,6 +53,7 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._listeners[ZmOperation.WORK_WEEK_VIEW] = new AjxListener(this, this._calViewButtonListener);
 	this._listeners[ZmOperation.MONTH_VIEW] = new AjxListener(this, this._calViewButtonListener);
 	this._listeners[ZmOperation.NEW_APPT] = new AjxListener(this, this._newApptAction);
+	this._listeners[ZmOperation.NEW_ALLDAY_APPT] = new AjxListener(this, this._newAllDayApptAction);	
 
 	this.resetApptSummaryCache();
 }
@@ -310,7 +311,16 @@ function(ev) {
 
 ZmCalViewController.prototype._newApptAction =
 function(ev) {
-	this.newAppointment(this._newApptObject(new Date()));
+	var d = this._viewMgr ? this._viewMgr.getDate() : null;
+	if (d == null) d = new Date();
+	this.newAppointment(this._newApptObject(d));
+}
+
+ZmCalViewController.prototype._newAllDayApptAction =
+function(ev) {
+	var d = this._viewMgr ? this._viewMgr.getDate() : null;
+	if (d == null) d = new Date();
+	this.newAllDayAppointmentHelper(d);
 }
 
 ZmCalViewController._miniCalVisible = false;
@@ -912,7 +922,7 @@ function(menu) {
  */
 ZmCalViewController.prototype._getViewActionMenuOps =
 function () {
-	return [ZmOperation.NEW_APPT, ZmOperation.SEP, ZmOperation.TODAY_GOTO, ZmOperation.CAL_VIEW_MENU];
+	return [ZmOperation.NEW_APPT, ZmOperation.NEW_ALLDAY_APPT, ZmOperation.SEP, ZmOperation.TODAY_GOTO, ZmOperation.CAL_VIEW_MENU];
 };
 
 /**
