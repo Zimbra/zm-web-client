@@ -36,6 +36,8 @@ Contributor(s):
 <% } else { %>
         @import url(/zimbra/img/loRes/imgs.css);
 <% } %>
+        @import url(/zimbra/js/zimbraMail/config/style/dwt.css);
+        @import url(/zimbra/js/zimbraMail/config/style/common.css);
         @import url(/zimbra/js/zimbraMail/config/style/zm.css);
         @import url(/zimbra/ui/skin.css);
 -->
