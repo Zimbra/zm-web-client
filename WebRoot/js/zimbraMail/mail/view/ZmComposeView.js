@@ -793,8 +793,13 @@ function(composeMode) {
 	// init html
 	this._createHtml();
 
+
+
 	// init compose view w/ based on user prefs 
-	var defaultCompMode = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+	var bComposeEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+	var defaultCompMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
+		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	this._composeMode = composeMode || defaultCompMode;
 	// init html editor
 	this._htmlEditor = new ZmHtmlEditor(this, "ZmHtmlEditor", DwtControl.RELATIVE_STYLE, null, this._composeMode);
