@@ -45,7 +45,8 @@ ZmPref.GROUP_MAIL_BY_VALUE[ZmItem.CONV] = ZmSetting.GROUP_BY_CONV;
 ZmPref.GROUP_MAIL_BY_VALUE[ZmItem.MSG] = ZmSetting.GROUP_BY_MESSAGE;
 
 ZmPref.GENERAL_PREFS = [ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH, ZmSetting.PASSWORD, 
-						ZmSetting.SHOW_SEARCH_STRING];
+						ZmSetting.SHOW_SEARCH_STRING, 
+						ZmSetting.COMPOSE_INIT_FONT_FAMILY, ZmSetting.COMPOSE_INIT_FONT_SIZE, ZmSetting.COMPOSE_INIT_FONT_COLOR];
 
 ZmPref.MAIL_PREFS = [ZmSetting.GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSetting.SHOW_FRAGMENTS,
 					 ZmSetting.INITIAL_SEARCH,
@@ -55,9 +56,7 @@ ZmPref.MAIL_PREFS = [ZmSetting.GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSetting.SHO
 					 ZmSetting.VACATION_MSG_ENABLED, ZmSetting.VACATION_MSG,
 					 ZmSetting.NOTIF_ENABLED, ZmSetting.NOTIF_ADDRESS,
 					 ZmSetting.VIEW_AS_HTML, ZmSetting.DEDUPE_MSG_TO_SELF, 
-					 ZmSetting.COMPOSE_AS_FORMAT, 
-					 ZmSetting.COMPOSE_INIT_FONT_FAMILY, ZmSetting.COMPOSE_INIT_FONT_SIZE, ZmSetting.COMPOSE_INIT_FONT_COLOR,
-					 ZmSetting.COMPOSE_SAME_FORMAT, ZmSetting.NEW_WINDOW_COMPOSE];
+					 ZmSetting.COMPOSE_AS_FORMAT, ZmSetting.COMPOSE_SAME_FORMAT, ZmSetting.NEW_WINDOW_COMPOSE];
 					 
 ZmPref.ADDR_BOOK_PREFS = [ZmSetting.AUTO_ADD_ADDRESS, 
 						  ZmSetting.CONTACTS_VIEW, ZmSetting.CONTACTS_PER_PAGE,
@@ -196,7 +195,8 @@ ZmPref.SETUP[ZmSetting.COMPOSE_AS_FORMAT] = {
 ZmPref.SETUP[ZmSetting.COMPOSE_INIT_FONT_FAMILY] = {
 	displayName:		ZmMsg.defaultFontSettings,
 	displayContainer:	"font",
-	displayOptions: 	["Arial", "Times New Roman", "Courier New", "Verdana"]};
+	displayOptions: 	["Arial", "Times New Roman", "Courier New", "Verdana"],
+	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.COMPOSE_INIT_FONT_SIZE] = {
 	displayName:		null,
