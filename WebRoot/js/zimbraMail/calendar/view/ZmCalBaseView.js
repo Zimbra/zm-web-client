@@ -649,12 +649,20 @@ function() {
 	var html = new Array();
 	var idx = 0;
 
-	// let set up the mini calendar
-	var miniCal = new DwtCalendar(this, null, null, null, null, null, true, true);
+	// set up the mini calendar
+	var fdow = this.firstDayOfWeek(); 
+	var miniCal = new DwtCalendar(this, null, null, fdow, null, null, true, true);
 	miniCal.setVisible(false);
-	var startDate = this._getStartDate();
-	
+	// set the working week as per user pref
+	var workingWeek = []; 
+	for (var i=0; i < 7; i++) { 
+		var d = (i+fdow)%7;
+		workingWeek[i] = (d > 0 && d < 6); 
+	} 
+	miniCal.setWorkingWeek(workingWeek); 
+
 	// set the date to current month
+	var startDate = this._getStartDate();
 	miniCal.setDate(startDate, true);
 
 	html[idx++] = "<div style='width:100%'>";
