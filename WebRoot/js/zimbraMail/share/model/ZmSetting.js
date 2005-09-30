@@ -171,6 +171,7 @@ ZmSetting.CONTACTS_VIEW					= i++;
 ZmSetting.EXPORT 						= i++;
 ZmSetting.IMPORT 						= i++;
 // calendar preferences
+ZmSetting.CAL_FIRST_DAY_OF_WEEK 		= i++;
 ZmSetting.CAL_SHOW_TIMEZONE				= i++;
 ZmSetting.CALENDAR_INITIAL_VIEW			= i++;
 ZmSetting.DEFAULT_CALENDAR_TIMEZONE		= i++;
@@ -307,6 +308,7 @@ ZmSetting.INIT[ZmSetting.CONTACTS_VIEW]					= ["zimbraPrefContactsInitialView", 
 ZmSetting.INIT[ZmSetting.EXPORT] 						= [null, ZmSetting.T_PREF];
 ZmSetting.INIT[ZmSetting.IMPORT] 						= [null, ZmSetting.T_PREF];
 // calendar preferences
+ZmSetting.INIT[ZmSetting.CAL_FIRST_DAY_OF_WEEK] 		= ["zimbraPrefCalendarFirstDayOfWeek", ZmSetting.T_PREF, ZmSetting.D_INT, 0];
 ZmSetting.INIT[ZmSetting.CAL_SHOW_TIMEZONE]	 			= ["zimbraPrefUseTimeZoneListInCalendar", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.CALENDAR_INITIAL_VIEW]			= ["zimbraPrefCalendarInitialView", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.CAL_DAY];
 ZmSetting.INIT[ZmSetting.DEFAULT_CALENDAR_TIMEZONE]		= ["zimbraPrefTimeZoneId", ZmSetting.T_PREF, ZmSetting.D_STRING];

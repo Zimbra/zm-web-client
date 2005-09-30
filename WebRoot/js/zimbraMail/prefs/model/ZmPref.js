@@ -63,7 +63,7 @@ ZmPref.ADDR_BOOK_PREFS = [ZmSetting.AUTO_ADD_ADDRESS,
 						  ZmSetting.CONTACTS_VIEW, ZmSetting.CONTACTS_PER_PAGE,
 						  ZmSetting.IMPORT, ZmSetting.EXPORT];
 						  
-ZmPref.CALENDAR_PREFS = [ZmSetting.CALENDAR_INITIAL_VIEW,  ZmSetting.CAL_SHOW_TIMEZONE];
+ZmPref.CALENDAR_PREFS = [ZmSetting.CALENDAR_INITIAL_VIEW, ZmSetting.CAL_FIRST_DAY_OF_WEEK, ZmSetting.CAL_SHOW_TIMEZONE];
 
 ZmPref.validateEmail = 
 function (emailStr) {
@@ -271,3 +271,8 @@ ZmPref.SETUP[ZmSetting.CALENDAR_INITIAL_VIEW] = {
 	options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH],
  	displaySeparator:	false};
 
+ZmPref.SETUP[ZmSetting.CAL_FIRST_DAY_OF_WEEK] = {
+ 	displayName:		ZmMsg.calendarFirstDayOfWeek,
+ 	displayContainer:	"select",
+	displayOptions:		AjxDateUtil.WEEKDAY_LONG,
+	options:			[0,1,2,3,4,5,6]};
