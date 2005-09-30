@@ -124,21 +124,7 @@ function() {
 		try {
 			// if we have info, just check token hasn't expired w/ no op request
 			ZmLogin.submitNoOpRequest();
-			var rememberMeStr = AjxCookie.getCookie(document, "zm_remember_me");
-			var rememberMe = false;
-			var atl = null;
-			if (rememberMeStr != null) {
-				rememberMe = true;
-				try {
-					atl = parseInt(rememberMeStr);
-					var now = new Date();
-					atl = atl - now.getTime();
-				} catch (e) {
-					atl = null;
-					
-				}
-			}
-			ZmLogin.handleSuccess(authToken, atl, mailServer, null, null, !rememberMe);
+			ZmLogin.handleSuccess(authToken, null, mailServer);
 			return false;
 		} catch (ex) {
 			DBG.dumpObj(ex);
@@ -411,13 +397,6 @@ function(uname, pword) {
 		ZmLogin._authTokenLifetime = resp.lifetime;
 		var mailServer = resp.refer;
 		var pcChecked = document.getElementById("publicComputer").checked;
-		var expiresDate = new Date((new Date()).getTime() + ZmLogin._authTokenLifetime);
-		if (pcChecked){
-			AjxCookie.setCookie(document, "zm_remember_me", expiresDate.getTime(), expiresDate, "/" );
-		} else {
-			AjxCookie.deleteCookie(document, "zm_remember_me");
-		}
-
 		ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword, !pcChecked);
 		ZmLogin._authToken = ZmLogin._authTokenLifetime = null;
     } catch (ex) {
