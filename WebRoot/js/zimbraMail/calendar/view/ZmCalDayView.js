@@ -1190,7 +1190,7 @@ function() {
 	// div for all day appts
 	//var allDayDiv = Dwt.getDomObj(doc, this._allDayDivId);
 	var numRows = this._allDayApptsRowLayouts ? (this._allDayApptsRowLayouts.length) : 1;	
-	if (this._allDayApptsList.length > 0) numRows++;
+	if (this._allDayApptsList && this._allDayApptsList.length > 0) numRows++;
 	this._allDayDivHeight = (ZmCalDayView._ALL_DAY_APPT_HEIGHT+ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD) * numRows + ZmCalDayView._ALL_DAY_APPT_HEIGHT_PAD;
 	var allDayDivY = allDayHeadingDivHeight;
 	this._setBounds(this._allDayDivId, 0, allDayDivY, width - bodyX + scrollTest, this._allDayDivHeight);
