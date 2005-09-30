@@ -426,9 +426,11 @@ function() {
 				d.setDate(d.getDate()-(dow-1));
 			break;				
 		case ZmController.CAL_WEEK_VIEW:
+			var fdow = this.firstDayOfWeek();
 			dow = d.getDay();
-			if (dow != 0)
-				d.setDate(d.getDate()-dow);
+			if (dow != fdow) {
+				d.setDate(d.getDate()-((dow+(7-fdow))%7));
+			}
 			break;
 		case ZmController.CAL_DAY_VIEW:
 		default:

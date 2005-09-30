@@ -92,6 +92,11 @@ function() {
 	else return ZmCalViewMgr.WORK_WEEK_VIEW;
 }
 
+ZmCalViewController.prototype.firstDayOfWeek =
+function() {
+	return this._appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
+}
+
 ZmCalViewController.prototype.show = 
 function(viewName) {
 	if (viewName == null) viewName = this._currentView;
@@ -110,14 +115,20 @@ function(viewName) {
 		this._viewMgr.addTimeSelectionListener(new AjxListener(this, this._timeSelectionListener));
 		this._viewMgr.addDateRangeListener(new AjxListener(this, this._dateRangeListener));
 		this._viewMgr.addViewActionListener(new AjxListener(this, this._viewActionListener));
-		
-		this._miniCalendar = new DwtCalendar(this._container, null, DwtControl.ABSOLUTE_STYLE);
+
+		this._miniCalendar = new DwtCalendar(this._container, null, DwtControl.ABSOLUTE_STYLE, this.firstDayOfWeek());
 		this._miniCalendar.setDate(newDate);
 		//this._miniCalendar.setDate(new Date());
 		this._miniCalendar.setScrollStyle(Dwt.CLIP);
 		this._miniCalendar.addSelectionListener(new AjxListener(this, this._miniCalSelectionListener));
 		this._miniCalendar.addDateRangeListener(new AjxListener(this, this._miniCalDateRangeListener));
-		this._miniCalendar.setWorkingWeek([0, 1, 1, 1, 1, 1, 0]);
+		var workingWeek = [];
+		var fdow = this.firstDayOfWeek();
+		for (var i=0; i < 7; i++) {
+			var d = (i+fdow)%7
+			workingWeek[i] = (d > 0 && d < 6);
+		}
+		this._miniCalendar.setWorkingWeek(workingWeek);
 		//this._miniCalendar.setSelectionMode(DwtCalendar.DAY);		
 		this._needMiniCalendarUpdate = true;
 		//this.refreshMiniCalendar();
@@ -126,7 +137,7 @@ function(viewName) {
 		components[ZmAppViewMgr.C_TREE_FOOTER] = this._miniCalendar;
 		this._appCtxt.getAppViewMgr().addComponents(components, true);
 	}
-	
+
 	if (!this._viewMgr.getView(viewName))
 		this._setup(viewName);
 

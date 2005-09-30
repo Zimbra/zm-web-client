@@ -83,6 +83,11 @@ ZmCalBaseView.TYPE_ALL_DAY = 8; // all day div area in day view
 
 ZmCalBaseView.COLORS = [ "Red", "Pink", "Orange", "Yellow", "Green", "Cyan", "Blue", "Purple", "Gray" ];
 
+ZmCalBaseView.prototype.firstDayOfWeek =
+function() {
+	return this._appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
+}
+
 ZmCalBaseView.prototype.addViewActionListener =
 function(listener) {
 	this._evtMgr.addListener(ZmCalBaseView.VIEW_ACTION, listener);

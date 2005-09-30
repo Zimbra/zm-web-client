@@ -495,8 +495,9 @@ function() {
 	html.append("</tr>");
 	html.append("<tr>");
 	
-	for (var day in AjxDateUtil.WEEKDAY_LONG) {
-		html.append("<td class=calendar_month_header_cells_text>", AjxDateUtil.WEEKDAY_LONG[day], "</td>");
+	var fdow = this.firstDayOfWeek();	
+	for (var day=0; day < 7; day++) {
+		html.append("<td class=calendar_month_header_cells_text>", AjxDateUtil.WEEKDAY_LONG[(day+fdow)%7], "</td>");
 	}
 
 	html.append("</tr>");
@@ -537,10 +538,10 @@ function() {
 	d.setHours(0,0,0,0);
 	d.setDate(1)	
 	var dow = d.getDay();
-	if (dow == 0)
-		d.setDate(d.getDate()-7);
-	else 
-		d.setDate(d.getDate()-dow);
+	var fdow = this.firstDayOfWeek();
+	if (dow != fdow) {
+		d.setDate(d.getDate()-((dow+(7-fdow))%7));
+	}
 
 	var doc = this.getDocument();
 
