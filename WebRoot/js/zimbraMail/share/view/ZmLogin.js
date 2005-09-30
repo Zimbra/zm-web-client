@@ -54,7 +54,7 @@ function(ev, checkBrowser) {
 	if (!ZmLogin.isSupportedBrowser() && !checkBrowser) {
 		ZmLogin.showUnsupported();
 	} else {
-		if (!ZmLogin.tryReAuth())
+		if (ZmLogin.shouldReAuth())
 			ZmLogin.showPanel();
 	}
 };
@@ -114,7 +114,7 @@ function() {
 	document.body.innerHTML = html.join("");
 };
 
-ZmLogin.tryReAuth = 
+ZmLogin.shouldReAuth = 
 function() {
 	ZmLogin.setServerUri();
 	var authToken = ZmCsfeCommand.getAuthToken();
@@ -124,15 +124,30 @@ function() {
 		try {
 			// if we have info, just check token hasn't expired w/ no op request
 			ZmLogin.submitNoOpRequest();
-			ZmLogin.handleSuccess(authToken, null, mailServer);
-			return true;
+			var rememberMeStr = AjxCookie.getCookie(document, "zm_remember_me");
+			var rememberMe = false;
+			var atl = null;
+			if (rememberMeStr != null) {
+				rememberMe = true;
+				try {
+					atl = parseInt(rememberMeStr);
+					var now = new Date();
+					atl = atl - now.getTime();
+				} catch (e) {
+					atl = null;
+					
+				}
+			}
+			ZmLogin.handleSuccess(authToken, atl, mailServer, null, null, !rememberMe);
+			return false;
 		} catch (ex) {
+			DBG.dumpObj(ex);
 			// if we're here, it means we got an error sending the no op
 			// request ... presumably b/c auth credentials were invalid.
 			// just show login panel
 		}
 	}
-	return false;
+	return true;
 };
 
 ZmLogin.showPanel = 
@@ -395,8 +410,15 @@ function(uname, pword) {
 		ZmLogin._authToken = resp.authToken;
 		ZmLogin._authTokenLifetime = resp.lifetime;
 		var mailServer = resp.refer;
-		
-		ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword);
+		var pcChecked = document.getElementById("publicComputer").checked;
+		var expiresDate = new Date((new Date()).getTime() + ZmLogin._authTokenLifetime);
+		if (pcChecked){
+			AjxCookie.setCookie(document, "zm_remember_me", expiresDate.getTime(), expiresDate, "/" );
+		} else {
+			AjxCookie.deleteCookie(document, "zm_remember_me");
+		}
+
+		ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword, !pcChecked);
 		ZmLogin._authToken = ZmLogin._authTokenLifetime = null;
     } catch (ex) {
 		DBG.dumpObj(ex);
@@ -458,7 +480,7 @@ function() {
 };
 
 ZmLogin.handleSuccess = 
-function(authToken, tokenLifetime, mailServer, uname, password) {
+function(authToken, tokenLifetime, mailServer, uname, password, rememberMe) {
 	var uri = ZmLogin.getMailUrl(mailServer);
 	// save the username for later use
 	if (uname)
@@ -470,9 +492,8 @@ function(authToken, tokenLifetime, mailServer, uname, password) {
 	if (window.initMode != "" && (window.initMode != location.protocol))
 		AjxDebug.deleteWindowCookie();
 
-	var pcChecked = document.getElementById("publicComputer").checked;
 	// make sure we add the query string to the new page
-	ZmLogin.postAuthToServer(mailServer, authToken, tokenLifetime, !pcChecked);
+	ZmLogin.postAuthToServer(mailServer, authToken, tokenLifetime, rememberMe);
 };
 
 ZmLogin.handleChangePass = 
