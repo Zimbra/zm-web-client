@@ -130,10 +130,10 @@ function() {
 	html[idx++] = "<table border=0>";
 	// print the weekdays
 	html[idx++] = "<tr>";
-	for (var i = 0; i < AjxDateUtil._daysOfTheWeek.length; i++) {
+	for (var i = 0; i < AjxDateUtil.WEEKDAY_LONG.length; i++) {
 		html[idx++] = "<td valign=top style='";
 		html[idx++] = "width:120px; font-family:Arial; font-size:11px; white-space:nowrap; overflow:hidden; border:1px solid black;";
-		html[idx++] = "'><center><b>" + AjxDateUtil._daysOfTheWeek[i] + "</b></center></td>";
+		html[idx++] = "'><center><b>" + AjxDateUtil.WEEKDAY_LONG[i] + "</b></center></td>";
 	}
 	html[idx++] = "</tr>";
 	
@@ -158,7 +158,7 @@ function() {
 		var maxNumAppts = numOfWeeks == 5 ? 6 : 4;
 		
 		html[idx++] = "<tr style='height:" + rowHeight + ";'>";
-		for (var i = 0; i < AjxDateUtil._daysOfTheWeek.length; i++) {
+		for (var i = 0; i < AjxDateUtil.WEEKDAY_LONG.length; i++) {
 			html[idx++] = "<td valign=top style='border:1px solid black;'>"
 			html[idx++] = "<div style='text-align:right; color:#AAAAAA; " + style + "'>";
 			
