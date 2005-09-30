@@ -651,6 +651,7 @@ function() {
 
 	// let set up the mini calendar
 	var miniCal = new DwtCalendar(this, null, null, null, null, null, true, true);
+	miniCal.setVisible(false);
 	var startDate = this._getStartDate();
 	
 	// set the date to current month
@@ -674,6 +675,9 @@ function() {
 	html[idx++] = "</div></td>";
 	html[idx++] = "</tr></table>";
 	html[idx++] = "</div>";
+	
+	// cleanup
+	this.getHtmlElement().removeChild(miniCal.getHtmlElement());
 	
 	return html.join("");
 };
