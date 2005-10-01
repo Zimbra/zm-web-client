@@ -361,6 +361,9 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   height:20px;
 }
 
+.ZmMailMsgView .MsgHeader {
+	border-bottom: 1px solid #777777;
+}
 
 .ZmMailMsgView .MsgHeader table {
   table-layout: fixed;
@@ -388,7 +391,12 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .ZmMailMsgView .Displayimages {
   cursor: pointer;
   background-color: rgb(230, 230, 230);
-  padding: 10px;
+  padding: 7px;
+  font-size: 10pt;
+  border-bottom: 1px solid #777777;  
+}
+
+.ZmMailMsgView .Displayimages td {
   font-size: 10pt;
 }
 

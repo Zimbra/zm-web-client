@@ -404,7 +404,9 @@ ZmMailMsgView.prototype._makeIframeProxy = function(container, html, isTextMsg) 
 		var displayImages = this.getDocument().createElement("div");
 		displayImages.className = "DisplayImages";
 		displayImages.id = this._displayImagesId;
-		displayImages.innerHTML = "External images are not displayed. <span style='font: inherit; color:blue; text-decoration:underline'>Display external images</span>";
+		displayImages.innerHTML = "<table width='100%' cellspacing='0' cellpadding='0'><tr><td style='width:20px'>"+ AjxImg.getImageHtml("Status") + "</td><td>" +
+		ZmMsg.externalImages + " <span style='font: inherit; color:blue; text-decoration:underline'>"+ZmMsg.displayExternalImages+
+		"</span></td></tr></table>";
 		container.appendChild(displayImages);
 	}
 
