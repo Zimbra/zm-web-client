@@ -32,14 +32,14 @@
 * @author Conrad Damon
 * @param appCtxt	[ZmAppCtxt]		app context
 * @param type		[constant]*		type of organizer we are displaying/controlling (folder or search)
+* @param dropTgt	[DwtDropTgt]	drop target for this type
 */
-function ZmFolderTreeController(appCtxt, type) {
+function ZmFolderTreeController(appCtxt, type, dropTgt) {
 
 	if (arguments.length == 0) return;
 
 	type = type ? type : ZmOrganizer.FOLDER;
-	// searches are not drop targets
-	var dropTgt = (type == ZmOrganizer.FOLDER) ? new DwtDropTarget(ZmFolder, ZmConv, ZmMailMsg, ZmContact) : null;
+	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(ZmFolder, ZmSearchFolder, ZmConv, ZmMailMsg, ZmContact);
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 
 	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
@@ -151,7 +151,7 @@ function(folder) {
 	if (folder.type == ZmOrganizer.SEARCH) {
 		// if the clicked item is a search (within the folder tree), hand
 		// it off to the search tree controller
-		var stc = this._opc.getController(ZmOrganizer.SEARCH);
+		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 		stc._itemClicked(folder);
 	} else {
 		var searchController = this._appCtxt.getSearchController();
@@ -259,6 +259,43 @@ function(ev) {
 			var ctlr = srcData.controller;
 			var items = (data instanceof Array) ? data : [data];
 			ctlr._schedule(ctlr._doMove, {items: items, folder: dropFolder});
+		}
+	}
+}
+
+/*
+* Handles a search folder being moved from Folders to Searches.
+*
+* @param ev			[ZmEvent]		a change event
+* @param treeView	[ZmTreeView]	a tree view
+*/
+ZmFolderTreeController.prototype._changeListener =
+function(ev, treeView) {
+	var organizers = ev.getDetail("organizers");
+	if (!organizers && ev.source)
+		organizers = [ev.source];
+
+	// handle one organizer at a time
+	for (var i = 0; i < organizers.length; i++) {
+		var organizer = organizers[i];
+		var id = organizer.id;
+		var fields = ev.getDetail("fields");
+		var node = treeView.getTreeItemById(id);
+		var parentNode = organizer.parent ? treeView.getTreeItemById(organizer.parent.id) : null;
+		if ((organizer.type == ZmOrganizer.SEARCH && 
+			(organizer.parent.tree.type == ZmOrganizer.SEARCH || id == ZmOrganizer.ID_ROOT)) &&
+		 	(ev.event == ZmEvent.E_MOVE || (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_PARENT])))) {
+			DBG.println(AjxDebug.DBG3, "Moving search from Folders to Searches");
+			if (node)
+				node.dispose();
+			// send a CREATE event to search tree controller to get it to add node
+			var newEv = new ZmEvent(ZmEvent.S_SEARCH);
+			newEv.set(ZmEvent.E_CREATE, organizer);
+			var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
+			var stv = stc.getTreeView(treeView.overviewId);
+			stc._changeListener(newEv, stv);
+		} else {
+			ZmTreeController.prototype._changeListener.call(this, ev, treeView);
 		}
 	}
 }

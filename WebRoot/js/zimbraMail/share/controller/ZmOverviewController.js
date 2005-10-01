@@ -140,9 +140,19 @@ function(overviewId, treeIds, omit) {
 *
 * @param treeId		[constant]		organizer type
 */
-ZmOverviewController.prototype.getController =
+ZmOverviewController.prototype.getTreeController =
 function(treeId) {
 	return this._controllers[treeId];
+}
+
+/**
+* Returns the given tree controller.
+*
+* @param treeId		[constant]		organizer type
+*/
+ZmOverviewController.prototype.getTreeData =
+function(treeId) {
+	return this._controllers[treeId]._getData();
 }
 
 /**
@@ -213,7 +223,7 @@ function(overviewId) {
 */
 ZmOverviewController.prototype.getTreeView =
 function(overviewId, treeId) {
-	return this.getController(treeId).getTreeView(overviewId);
+	return this.getTreeController(treeId).getTreeView(overviewId);
 }
 
 /**

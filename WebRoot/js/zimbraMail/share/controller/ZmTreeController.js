@@ -63,7 +63,6 @@ function ZmTreeController(appCtxt, type, dropTgt) {
 	this._dataTree = this._getData();
 	this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
 	this._dataTree.addChangeListener(this._dataChangeListener);
-	this._treeViews = new AjxVector(); // we can handle changes for other tree views
 	
 	// hash of tree views of this type, by overview ID
 	this._treeView = new Object();

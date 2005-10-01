@@ -23,15 +23,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMoveToDialog(parent, msgDialog, className, folderTree) {
+function ZmMoveToDialog(parent, msgDialog, className) {
 
 	var newButton = new DwtDialog_ButtonDescriptor(ZmMoveToDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.move, [newButton]);
 
 	this.setContent(this._contentHtml());
 	this._createOverview(ZmMoveToDialog._OVERVIEW_ID, this._folderTreeCellId);
-
-	this._folderTree = this._appCtxt.getFolderTree();
 
 	this.registerCallback(ZmMoveToDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._changeListener = new AjxListener(this, this._folderTreeChangeListener);
@@ -55,27 +53,34 @@ ZmMoveToDialog.prototype.popup =
 function(data, loc) {
 	var omit = new Object();
 	omit[ZmFolder.ID_DRAFTS] = true;
-	if (data instanceof ZmFolder) {
+	var treeIds = [ZmOrganizer.FOLDER];
+	if (data instanceof ZmSearchFolder) {
+		this._folder = data;
+		treeIds = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH];
+	} else if (data instanceof ZmFolder) {
 		this._folder = data;
 		omit[ZmFolder.ID_SPAM] = true;
 	} else {
 		this._items = data;
 	}
 
-	this._renderOverview(ZmMoveToDialog._OVERVIEW_ID, [ZmOrganizer.FOLDER], omit);
+	this._renderOverview(ZmMoveToDialog._OVERVIEW_ID, treeIds, omit);
 	this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
-
-	this._folderTree.removeChangeListener(this._changeListener);
-	// this listener has to be added after folder tree view is set (so that it comes after the view's standard change listener)
-	this._folderTree.addChangeListener(this._changeListener);
+	var folderTree = this._opc.getTreeData(ZmOrganizer.FOLDER);
+	folderTree.removeChangeListener(this._changeListener);
+	// this listener has to be added after folder tree view is set
+	// (so that it comes after the view's standard change listener)
+	folderTree.addChangeListener(this._changeListener);
 
 	ZmDialog.prototype.popup.call(this, loc);
-	if (this._appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED)) {
-		var rootFolder = this._folderTree.root;
-		var ti = this._folderTreeView.getTreeItemById(rootFolder.id);
+	for (var i = 0; i < treeIds.length; i++) {
+		var treeId = treeIds[i];
+		var treeView = this._treeView[treeId] = this._opc.getTreeView(ZmMoveToDialog._OVERVIEW_ID, treeId);
+		var tree = this._opc.getTreeData(treeId);
+		var ti = treeView.getTreeItemById(tree.root.id);
 		ti.setExpanded(true);
-		if (this._folder)
-			this._folderTreeView.setSelected(rootFolder);
+		if (this._folder && treeId == this._folder.type)
+			treeView.setSelected(tree.root);
 	}
 }
 
@@ -102,7 +107,7 @@ function() {
 
 ZmMoveToDialog.prototype._newCallback =
 function(args) {
-	var ftc = this._opc.getController(ZmOrganizer.FOLDER);
+	var ftc = this._opc.getTreeController(ZmOrganizer.FOLDER);
 	ftc._schedule(ftc._doCreate, {name: args[0], parent: args[1]});
 	this._appCtxt.getNewFolderDialog().popdown();
 	this._creatingFolder = true;
@@ -119,7 +124,7 @@ function(ev) {
 ZmMoveToDialog.prototype._okButtonListener =
 function(ev) {
 	var msg;
-	var tgtFolder = this._folderTreeView.getSelected();
+	var tgtFolder = this._opc.getSelected(ZmMoveToDialog._OVERVIEW_ID);
 	if (!tgtFolder)
 		msg = ZmMsg.noTargetFolder;
 

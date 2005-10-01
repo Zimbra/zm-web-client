@@ -103,7 +103,7 @@ function(args) {
 		this.popup();
 
 	this._appCtxt.getNewTagDialog().popdown();
-	var ttc = this._appCtxt.getOverviewController().getController(ZmOrganizer.TAG);
+	var ttc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.TAG);
 	ttc._schedule(ttc._doCreate, {name: args[0], color: args[1], parent: args[2]});
 	this._creatingTag = true;
 };

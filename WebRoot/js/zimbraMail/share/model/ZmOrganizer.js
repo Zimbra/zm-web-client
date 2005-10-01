@@ -170,6 +170,8 @@ function(newParent) {
 	if (success) {
 		this.reparent(newParent);
 		this._eventNotify(ZmEvent.E_MOVE);
+		// could be moving search between Folders and Searches
+		this.tree = newParent.tree; 
 		// moving a folder to Trash marks its contents as read
 		if (this.type == ZmOrganizer.FOLDER && newParent.id == ZmFolder.ID_TRASH) {
 			this.numUnread = 0;
