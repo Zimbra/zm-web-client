@@ -307,10 +307,12 @@ function(tb) {
 	var s = this._fontFamilySelect = new DwtSelect(tb, null);
 	s.addChangeListener(listener);
 	
-	s.addOption("Arial", false, DwtHtmlEditor.ARIAL);
-	s.addOption("Times New Roman", true, DwtHtmlEditor.TIMES);
-	s.addOption("Courier New", false, DwtHtmlEditor.COURIER);
-	s.addOption("Verdana", false, DwtHtmlEditor.VERDANA);
+	var fontFamily = this.parent._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+	
+	s.addOption("Arial", fontFamily == "Arial", DwtHtmlEditor.ARIAL);
+	s.addOption("Times New Roman", fontFamily == "Times New Roman", DwtHtmlEditor.TIMES);
+	s.addOption("Courier New", fontFamily == "Courier New", DwtHtmlEditor.COURIER);
+	s.addOption("Verdana", fontFamily == "Verdana", DwtHtmlEditor.VERDANA);
 };
 
 ZmHtmlEditor.prototype._createFontSizeMenu =
@@ -319,13 +321,15 @@ function(tb) {
 	var s = this._fontSizeSelect = new DwtSelect(tb, null);
 	s.addChangeListener(listener);
 	
-	s.addOption("1 (8pt)", false, 1);
-	s.addOption("2 (10pt)", false, 2);
-	s.addOption("3 (12pt)", true, 3);
-	s.addOption("4 (14pt)", false, 4);
-	s.addOption("5 (18pt)", false, 5);
-	s.addOption("6 (24pt)", false, 6);
-	s.addOption("7 (36pt)", false, 7);
+	var fontSize = this.parent._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+
+	s.addOption("1 (8pt)", fontSize == "8pt", 1);
+	s.addOption("2 (10pt)", fontSize == "10pt", 2);
+	s.addOption("3 (12pt)", fontSize == "12pt", 3);
+	s.addOption("4 (14pt)", fontSize == "14pt", 4);
+	s.addOption("5 (18pt)", fontSize == "18pt", 5);
+	s.addOption("6 (24pt)", fontSize == "24pt", 6);
+	s.addOption("7 (36pt)", fontSize == "36pt", 7);
 };
 
 ZmHtmlEditor.prototype._rteStateChangeListener =
@@ -386,7 +390,30 @@ function(ev) {
 		iframeDoc.open();
 		iframeDoc.write(initHtml);
 		iframeDoc.close();
-		this._updateState();
+
+		// update DwtSelect to reflect to new font size or family
+		if (setting.id == ZmSetting.COMPOSE_INIT_FONT_FAMILY) {
+			var fontfamily = this.parent._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+			var selectedValue = null;
+			if (fontfamily == "Arial") 					selectedValue = DwtHtmlEditor.ARIAL;
+			else if (fontfamily == "Times New Roman") 	selectedValue = DwtHtmlEditor.TIMES;
+			else if (fontfamily == "Courier New") 		selectedValue = DwtHtmlEditor.COURIER;
+			else if (fontfamily == "Verdana") 			selectedValue = DwtHtmlEditor.VERDANA;
+			if (selectedValue)
+				this._fontFamilySelect.setSelectedValue(selectedValue);
+		} else if (setting.id == ZmSetting.COMPOSE_INIT_FONT_SIZE) {
+			var fontsize = this.parent._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+			var selectedValue = null;
+			if (fontsize == "8pt") 		 selectedValue = 1;
+			else if (fontsize == "10pt") selectedValue = 2;
+			else if (fontsize == "12pt") selectedValue = 3;
+			else if (fontsize == "14pt") selectedValue = 4;
+			else if (fontsize == "18pt") selectedValue = 5;
+			else if (fontsize == "24pt") selectedValue = 6;
+			else if (fontsize == "36pt") selectedValue = 7;
+			if (selectedValue)
+				this._fontSizeSelect.setSelectedValue(selectedValue);
+		}
 	}
 };
 
