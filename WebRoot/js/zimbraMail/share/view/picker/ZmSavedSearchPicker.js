@@ -30,7 +30,7 @@ function ZmSavedSearchPicker(parent) {
     this._checkedItems = new AjxVector();
 }
 
-ZmSavedSearchPicker._OVERVIEW_ID = "ZmFolderPicker";
+ZmSavedSearchPicker._OVERVIEW_ID = "ZmSavedSearchPicker";
 
 ZmSavedSearchPicker.prototype = new ZmPicker;
 ZmSavedSearchPicker.prototype.constructor = ZmSavedSearchPicker;
