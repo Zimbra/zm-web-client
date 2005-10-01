@@ -159,9 +159,6 @@ function(msg) {
 		}
 	}
 	this._renderMessage(msg, contentDiv);
-	if (this._htmlBody) {
-		this._populateHtmlIframe();
-	}
 
 	if (this._mode == ZmController.MSG_VIEW) {
 		this._setTags(msg);
@@ -214,74 +211,104 @@ function(msg) {
 // 	return resultingHtml.join("");
 // };
 
-ZmMailMsgView.prototype._processHtmlDoc = function(doc) {
-	var objectManager = this._objectManager;
-	function recurse(node) {
-		var i, tmp;
-		if (node.tagName.toLowerCase() != "a") {
-			for (i = node.firstChild; i; ) {
-				if (i.nodeType == 3 /* TEXT_NODE */ && /[^\s\xA0]/.test(i.data)) {
-					var a = null, b = null;
-					if (/^[\s\xA0]+/.test(i.data)) {
-						a = i;
-						i = i.splitText(RegExp.lastMatch.length);
-					}
-					if (/[\s\xA0]+$/.test(i.data)) {
-						b = i.splitText(RegExp.lastMatch.length);
-					}
-					tmp = doc.createElement("div");
-					tmp.innerHTML = objectManager.findObjects(i.data, true);
-					if (a)
-						tmp.insertBefore(a, tmp.firstChild);
-					if (b)
-						tmp.appendChild(b);
-					a = i.parentNode;
-					while (tmp.firstChild)
-						a.insertBefore(tmp.firstChild, i);
-					tmp = i.nextSibling;
-					a.removeChild(i);
-					i = tmp;
-				} else {
-					if (i.nodeType == 1)
-						recurse(i);
-					i = i.nextSibling;
-				}
-			}
-		}
-	};
-	recurse(doc.body);	// ;-)
+// Values in this hash MUST be null or RegExp.  If "null" is passed, then that
+// CSS rule will be dropped regardless the value.  If a RegExp is passed, then
+// the rule is removed only if its value matches the RegExp.  Useful for cases
+// like "position", where we can safely support most values except "fixed".
+ZmMailMsgView._dangerousCSS = {
+
+// It' doesn't make too much sense to cleanup the style if we're using an IFRAME
+
+// 	// clearly, we can't display background image-s :-(
+// 	// in the future we should provide a way for end-users to see them on demand,
+// 	// but at this time, ban.
+// 	backgroundImage       : null,
+// 	backgroundAttachment  : null,
+
+// 	// position: fixed can cause real trouble with browsers that support it
+// 	position              : /fixed/i,
+
+// 	// negative margins can get an element out of the containing DIV.
+// 	// let's ban them
+// 	marginLeft            : /^-/,
+// 	marginRight           : /^-/,
+// 	marginTop             : /^-/,
+// 	marginBottom          : /^-/,
+
+// 	// all of the above being banned, zIndex could as well stay... but better not.
+// 	zIndex                : null,
+
+// 	// not sure this is good
+// 	whiteSpace            : null
+
 };
 
-ZmMailMsgView.prototype._populateHtmlIframe =
-function() {
-	var doc = this.getDocument();
-	var iframe = Dwt.getDomObj(doc, this._iframeId);
-	var idoc = Dwt.getIframeDoc(iframe);
+// Dives recursively into the given DOM node.  Creates ObjectHandlers in text
+// nodes and cleans the mess in element nodes.  Discards by default "script",
+// "link", "object", "style", "applet" and "iframe" (most of them shouldn't
+// even be here since (1) they belong in the <head> and (2) are discarded on
+// the server-side, but we check, just in case..).
+ZmMailMsgView.prototype._processHtmlDoc = function(doc) {
+	var objectManager = this._objectManager,
+		node = doc.documentElement;
 
-	idoc.open();
-	idoc.write(this._htmlBody);
-	this._processHtmlDoc(idoc);
-	idoc.close();
+	// This inner function does the actual work.  BEWARE that it return-s
+	// in various places, not only at the end.
+	function recurse(node, handlers) {
+		var tmp, i, val;
+		switch (node.nodeType) {
+		    case 1:	// ELEMENT_NODE
+			node.normalize();
+			tmp = node.tagName;
+			if (/^(img|a)$/i.test(tmp)) {
+				// make sure we don't generate any object handlers inside these elements.
+				// we still need to dive into them, otherwise one may hide a <script> there.
+				handlers = false;
+			} else if (/^(script|link|object|iframe|applet)$/i.test(tmp)) {
+				tmp = node.nextSibling;
+				node.parentNode.removeChild(node);
+				return tmp;
+			}
+			// fix style
+			// node.nowrap = "";
+			// node.className = "";
 
-	// TODO: only call this if top-level is multipart/related?
-	var didAllImages = this._fixMultipartRelatedImages(this._msg, idoc, this.getDocument().domain);
+			if (AjxEnv.isIE)
+				// strips expression()-s, bwuahahaha!
+				// granted, they get lost on the server-side anyway, but assuming some get through...
+				// the line below exterminates them.
+				node.style.cssText = node.style.cssText;
 
-	var displayImages = Dwt.getDomObj(doc, this._displayImagesId);
-	// setup the click handler for the images
-	if (displayImages) {
-		if (didAllImages) {
-			displayImages.style.display = "none";
-		} else {
-			var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, iframe);
-			Dwt.setHandler(displayImages, DwtEvent.ONCLICK, func);
+			// Clear dangerous rules.  FIXME: implement proper way
+			// using removeAttribute (kind of difficult as it's
+			// (expectedly) quite different in IE from *other*
+			// browsers, so for now style.prop="" will do.)
+			tmp = ZmMailMsgView._dangerousCSS;
+			for (i in tmp) {
+				val = tmp[i];
+				if (!val || val.test(node.style[i]))
+					node.style[i] = "";
+			}
+			for (i = node.firstChild; i; i = recurse(i, handlers));
+			return node.nextSibling;
+
+		    case 3:	// TEXT_NODE
+		    case 4:	// CDATA_SECTION_NODE (just in case)
+			// generate ObjectHandler-s
+			if (handlers && /[^\s\xA0]/.test(node.data)) try {
+				tmp = doc.createElement("div");
+				tmp.innerHTML = objectManager.findObjects(node.data, true);
+				var a = node.parentNode;
+				while (tmp.firstChild)
+					a.insertBefore(tmp.firstChild, node);
+				tmp = node.nextSibling;
+				a.removeChild(node);
+				return tmp;
+			} catch(ex) {};
 		}
-	}
-	// set height of view according to height of iframe on timer
-	var act = new AjxTimedAction();
-	act.method = ZmMailMsgView._resetIframeHeight;
-	act.params.add(idoc);
-	act.params.add(iframe);
-	AjxTimedAction.scheduleAction(act, 5);
+		return node.nextSibling;
+	};
+	recurse(node, true);
 };
 
 ZmMailMsgView.prototype._fixMultipartRelatedImages =
@@ -341,15 +368,11 @@ function(msg, idoc, id, iframe) {
 			}
 		}
 		diEl = Dwt.getDomObj(document, id);
+		var h = diEl.offsetHeight;
 		diEl.style.display = "none";
-		msg.setHtmlContent(idoc.documentElement.innerHTML);
-
-		// reset the iframe height (bug #2886)
-		var act = new AjxTimedAction();
-		act.method = ZmMailMsgView._resetIframeHeight;
-		act.params.add(idoc);
-		act.params.add(iframe);
-		AjxTimedAction.scheduleAction(act, 5);
+		iframe.style.height = parseInt(iframe.style.height) + h + "px";
+		this._htmlBody = idoc.documentElement.innerHTML;
+		msg.setHtmlContent(this._htmlBody);
 	}
 	return func;
 }
@@ -369,36 +392,77 @@ function (args) {
 
 ZmMailMsgView._resetIframeHeight =
 function(args) {
-	var idoc = args[0];
-	var iframe = args[1];
+	var iframe = args[0];
 
-	if (AjxEnv.isIE) {
-		idoc.recalc(true);
-		iframe.style.height = parseInt(idoc.body.scrollHeight);
-	} else {
-		iframe.style.height = parseInt(idoc.getElementsByTagName('html')[0].scrollHeight);
-	}
+	var height = iframe.parentNode.offsetHeight - iframe.offsetTop;
+	iframe.style.height = height + "px";
 };
 
-ZmMailMsgView.prototype._generateHtmlBody =
-function(html, idx, body) {
-	this._iframeId = Dwt.getNextId();
-	var doc = null;
-	this._htmlBody = body;
-
-	// the "External images are not displayed" div+link probably belongs in
-	// the headers section, and should also be hidden after it is clicked
-	if (body.search(/<img/i) != -1){
-		html[idx++] = "<div id='" + this._displayImagesId + "' style='background-color: rgb(230, 230, 230);'>External images are not displayed. <a href='javascript:;'>Display external images</a></div>";
+ZmMailMsgView.prototype._makeIframeProxy = function(container, html, isTextMsg) {
+	var displayImages;
+	if (!isTextMsg && /<img/i.test(html)) {
+		var displayImages = this.getDocument().createElement("div");
+		displayImages.className = "DisplayImages";
+		displayImages.id = this._displayImagesId;
+		displayImages.innerHTML = "External images are not displayed. <span style='font: inherit; color:blue; text-decoration:underline'>Display external images</span>";
+		container.appendChild(displayImages);
 	}
-	var src = (AjxEnv.isIE && (location.protocol == "https:"))? "src='/zimbra/public/blank.html'" : "";
- 	html[idx++] = "<iframe scrolling='no' frameborder='0' width='100%' height='100%' id='";
-	html[idx++] = this._iframeId ;
-	html[idx++] = "' ";
-	html[idx++] = src;
-	html[idx++] = "/>";
- 	return idx;
-}
+
+	var callback = null;
+	if (isTextMsg) {
+		// better process objects directly rather than scanning the DOM afterwards.
+		if (this._objectManager)
+			html = this._objectManager.findObjects(html, true);
+		html = html.replace(/^ /mg, "&nbsp;")
+			.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
+			.replace(/\n/g, "<br>");
+	} else {
+		html = html.replace(/<!--(.*?)-->/g, ""); // remove comments
+		// html = html.replace(/<style>/, "<style type='text/css'>");
+		// this callback will post-process the HTML after the IFRAME is created
+		callback = new AjxCallback(this, this._processHtmlDoc);
+	}
+
+	var ifw = new DwtIframe(this, "MsgBody", html, false, "static", callback);
+	this._iframeId = ifw.getIframe().id;
+
+	var idoc = ifw.getDocument();
+
+	// assign the right class name to the iframe body
+	idoc.body.className = isTextMsg
+		? "MsgBody MsgBody-text"
+		: "MsgBody MsgBody-html";
+
+	// import the object styles
+	var head = idoc.getElementsByTagName("head")[0];
+	var link = idoc.createElement("link");
+	link.rel = "stylesheet";
+	link.href = "/zimbra/js/zimbraMail/config/style/msgview.css";
+	head.appendChild(link);
+
+	if (!isTextMsg) {
+		this._htmlBody = idoc.body.innerHTML;
+
+		// TODO: only call this if top-level is multipart/related?
+		var didAllImages = this._fixMultipartRelatedImages(this._msg, idoc, this.getDocument().domain);
+
+		// setup the click handler for the images
+		if (displayImages) {
+			if (didAllImages) {
+				displayImages.style.display = "none";
+			} else {
+				var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
+				Dwt.setHandler(displayImages, DwtEvent.ONCLICK, func);
+			}
+		}
+	}
+
+	// set height of view according to height of iframe on timer
+	var act = new AjxTimedAction();
+	act.method = ZmMailMsgView._resetIframeHeight;
+	act.params.add(ifw.getIframe());
+	AjxTimedAction.scheduleAction(act, 5);
+};
 
 ZmMailMsgView.prototype.resetMsg =
 function(newMsg) {
@@ -541,19 +605,13 @@ function(msg, container) {
 	var el = container ? container : this.getHtmlElement();
 	el.appendChild(Dwt.parseHtmlFragment(htmlArr.join("")));
 
-	idx = 0;
-	htmlArr.length = 0;
-
-	// Body
-	htmlArr[idx++] = "<div class='MsgBody'>";
-
 	var bodyPart = msg.getBodyPart();
 	if (bodyPart) {
 		if (bodyPart.ct == ZmMimeTable.TEXT_HTML && this._appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
-			idx = this._generateHtmlBody(htmlArr, idx, bodyPart.content);
+			this._makeIframeProxy(el, bodyPart.content, false);
 		} else {
+			var content;
 			// otherwise, get the text part if necessary
-			var content = null;
 			if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
 				// try to go retrieve the text part
 				content = msg.getTextPart();
@@ -563,30 +621,10 @@ function(msg, container) {
 			} else {
 				content = bodyPart.content;
 			}
-			//this._htmlBody = null;
-			var _st = new Date();
-			idx = this._generateBody(htmlArr, idx, content);
-			DBG.println(AjxDebug.DBG1, "generateBody took " + (new Date() - _st.getTime()) + "ms");
+			this._makeIframeProxy(el, content, true);
 		}
 	}
-
-	htmlArr[idx++] = "</div>";
-	el.appendChild(Dwt.parseHtmlFragment(htmlArr.join("")));
-
-}
-
-// TODO: prefix char can also be "|"
-ZmMailMsgView.prototype._generateBody =
-function(html, idx, body) {
-	if (!body) return;
-
-	// checking for object manager wont be necessary once proper new window is created for rfc/822
-	var b = this._objectManager ? this._objectManager.findObjects(body, true) : body;
-	html[idx++] = b.replace(/^ /mg, "&nbsp;").replace(/\t/g, "<pre style='display:inline;'>\t</pre>").replace(/\n/g, "<br>");
-	return idx;
-	//single level of quoted text
-	//html[idx++] = b.replace(/^ /mg, "&nbsp;").replace(/^&gt;(.*)$/mg, "<span class='QuotedText0'>&gt;$1</span>").replace(/\n/g, "<br>");
-}
+};
 
 ZmMailMsgView.prototype._setTags =
 function(msg) {
@@ -696,7 +734,7 @@ function(target) {
 	} else {
 		var bObjFound = target.id.indexOf("OBJ_") == 0;
 		var bSelection = false;
-	
+
 		// determine if anything has been selected (IE and mozilla do it differently)
 		if (this.getDocument().selection) { // IE
 			bSelection = this.getDocument().selection.type == "Text";

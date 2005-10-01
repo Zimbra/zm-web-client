@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.1
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.1 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite.
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -29,13 +29,13 @@
 * - Classes that start with "Dwt" or "Zm" have a corollary Javascript object.
 * - Use one line if there is only one selector and one declaration. Otherwise, indent each declaration on its own line.
 * - Group selectors to avoid repetition of styles, as appropriate (ie group within a section). That means you may have
-*   to look at more than one definition to figure out all the applicable styles, but it lets you give the styles a 
+*   to look at more than one definition to figure out all the applicable styles, but it lets you give the styles a
 *   hierarchy. That way, you're more likely to need to change a style in just one place.
 * - Use shorthand styles when possible (font, margin, padding, etc).
 * - When grouping selectors that correspond to our Javascript objects, show inheritance by using a different line for
 *   each level of inheritance. CSS doesn't care about our object hierarchy, but doing that enhances readability.
 * - Use hex RGB values for colors that don't have names (eg:  #EEEEEE)
-* - Try to stick to hex values of   00, 33, 66, 99, AA, FF so they map cleanly to the web palette, 
+* - Try to stick to hex values of   00, 33, 66, 99, AA, FF so they map cleanly to the web palette,
 *    eg: #666666 rather than #616161
 * - Modifiers are lower case, whether they're a class (eg .activated) or tacked on (eg -selected).
 *
@@ -54,7 +54,7 @@
 * display one of those widgets, you'll have to add a class for it.
 */
 
-
+@import url("msgview.css");
 
 /*
 * Top-level (shell) stuff
@@ -175,9 +175,9 @@
 	background-color: #EEEEEE;
 }
 .ZmNavToolBar {background-color: transparent;}
-.ZmInviteToolBar { 
+.ZmInviteToolBar {
 	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
-	padding: 2px; 
+	padding: 2px;
 	border-bottom: 1px solid #777777;
 }
 
@@ -220,7 +220,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 { width: 100px; }
 
 
-.ZmEditInstanceSeriesView .DwtButton td{ 
+.ZmEditInstanceSeriesView .DwtButton td{
   text-align:center;
 }
 
@@ -231,7 +231,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 /* Login Panel */
 .ZmLoginDialog {
-	background-color: #b7b7b7; 
+	background-color: #b7b7b7;
 	background-image:url(/zimbra/skins/steel/images/bg_steel.gif);
 	overflow:hidden;
 }
@@ -239,7 +239,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .ZmLoginDialog-HeaderPanel {
 	margin-top:10px;
 	margin-bottom:10px;
-	height:115px; 
+	height:115px;
 	background-image:url("/zimbra/img/hiRes/logo/LoginBanner.gif");
 }
 .ZmLoginDialog-HeaderText, .ZmLoginDialog-SubHeaderText {
@@ -250,7 +250,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	font-size: 14pt;
 }
 .ZmLoginDialog-MainPanel {
-	width:460px; 
+	width:460px;
 	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
 }
 .ZmLoginDialog-SubHeaderText { font-size: 12pt; }
@@ -349,15 +349,15 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	background-color: white;
 }
 
-.ZmMailMsgView .ZmToolBar { 
-  background-color: #ffffff; 
+.ZmMailMsgView .ZmToolBar {
+  background-color: #ffffff;
   filter:progid:DXImageTransform.Microsoft.Gradient(enabled=false);
   margin-left :12px;
   height: auto;
   width:auto;
 }
 
-.ZmMailMsgView .vertSep { 
+.ZmMailMsgView .vertSep {
   height:20px;
 }
 
@@ -384,13 +384,13 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .ZmMailMsgView .AttName, .ZmMailMsgView .AttName-matched {padding-right: 8px;}
 .ZmMailMsgView .AttName-matched { background-color: #FFFFBB; white-space: nowrap; }
-.ZmMailMsgView .MsgBody {padding: 10px; overflow:auto}
-.ZmMailMsgView .MsgBody, .ZmMailMsgView .MsgBody * {font: 10pt monospace;}
 
-.MsgBody .SignatureText {color: gray;}
-.MsgBody .QuotedText0 {color: purple}
-.MsgBody .QuotedText1 {color: green}
-.MsgBody .QuotedText2 {color: red}
+.ZmMailMsgView .Displayimages {
+  cursor: pointer;
+  background-color: rgb(230, 230, 230);
+  padding: 10px;
+  font-size: 10pt;
+}
 
 /* Message compose */
 .ZmComposeView {
@@ -464,8 +464,8 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	border: 1px solid #666666;
 }
 
-.ZmContactSimpleView .SimpleContact, 
-.ZmContactSimpleView .SimpleContact-right, 
+.ZmContactSimpleView .SimpleContact,
+.ZmContactSimpleView .SimpleContact-right,
 .ZmContactSimpleView .SimpleContact-drag {
 	border-bottom: 1px solid #EEEEEE
 	width: 100%;
@@ -491,7 +491,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	overflow: hidden;
 }
 
-.ZmContactInfoView .contactHeader, 
+.ZmContactInfoView .contactHeader,
 .ZmContactView .contactHeader,
 .ZmContactCardsView .contactHeader,
 .ZmContactCard-dnd .contactHeader {
@@ -502,7 +502,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	padding: 5px;
 	white-space: nowrap;
 	overflow: hidden;
-	text-overflow: ellipsis;	
+	text-overflow: ellipsis;
 }
 
 .ZmContactInfoView .companyName {
@@ -555,7 +555,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmContactCard-selected, .ZmContactCard-selected-right,
-.ZmContactCard-drag, .ZmContactCard-selected-drag, 
+.ZmContactCard-drag, .ZmContactCard-selected-drag,
 .ZmContactCard-dnd {
 	width: 300px;
 	height: 140px;
@@ -565,8 +565,8 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	background-color: #FFFFFF;
 }
 
-.ZmContactCard-selected .contactHeader, 
-.ZmContactCard-dnd .contactHeader, 
+.ZmContactCard-selected .contactHeader,
+.ZmContactCard-dnd .contactHeader,
 .ZmContactCard-selected-dnd .contactHeader{
 	background-color: #ADD6D6;
 }
@@ -595,7 +595,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .calendar_view {
 	width:100%;
-	height:100%;	
+	height:100%;
 	background-color: white;
 }
 
@@ -622,7 +622,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .calendar_grid_day_table {
 	width:100%;
-	height:100%;	
+	height:100%;
 }
 
 .calendar_grid_day_table td {
@@ -637,7 +637,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	background-color:#EEEEEE;
 	height: 20px;
 	border-bottom:1px solid #CCCCCC;
-	overflow: hidden;	
+	overflow: hidden;
 }
 .calendar_heading_year_text {
 	padding-top: 4px;
@@ -732,7 +732,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .calendar_month_table {
 	width:100%;
 	height:100%;
-	border-collapse:collapse;	
+	border-collapse:collapse;
 	table-layout:fixed;
 }
 
@@ -742,14 +742,14 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	Xborder-left:none;
 	Xborder-bottom:none;
 	vertical-align:top;
-	Xoverflow: hidden;	
-	overflow: hidden;	
-	white-space: nowrap;		
+	Xoverflow: hidden;
+	overflow: hidden;
+	white-space: nowrap;
 }
 
 .calendar_month_cells_td-Selected {
 	height:16%;
-	background-color:#ADD6D6;	
+	background-color:#ADD6D6;
 	border:1px solid #CCCCCC;
 	Xborder-left:none;
 	Xborder-bottom:none;
@@ -763,8 +763,8 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .calendar_month_day_label {
-	overflow: hidden;	
-	white-space: nowrap;	
+	overflow: hidden;
+	white-space: nowrap;
 	padding-top:2px;
 	padding-right:4px;
 	text-align:right;
@@ -772,22 +772,22 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .calendar_tooltip_month_day_label {
-	overflow: hidden;	
-	white-space: nowrap;	
+	overflow: hidden;
+	white-space: nowrap;
 	text-align:center;
 	font-size:14px;
 }
 
 .calendar_month_day_holiday_label {
-	overflow: hidden;	
-	white-space: nowrap;	
+	overflow: hidden;
+	white-space: nowrap;
 	padding:4px;
 	color:CC0000;
 }
 
 .calendar_month_day_label_off_month {
-	overflow: hidden;	
-	white-space: nowrap;	
+	overflow: hidden;
+	white-space: nowrap;
 	padding:4px;
 	text-align:right;
 	font-size:14px;
@@ -795,9 +795,9 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .calendar_month_day_today {
-	border:1px solid red;	
-	overflow: hidden;	
-	white-space: nowrap;	
+	border:1px solid red;
+	overflow: hidden;
+	white-space: nowrap;
 	padding-top:2px;
 	padding-right:4px;
 	text-align:right;
@@ -829,23 +829,23 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .calendar_month_day_item {
 	padding-left:4px;
-	overflow: hidden;	
-	white-space: nowrap;	
+	overflow: hidden;
+	white-space: nowrap;
 	color:#2869FF;
 	/*color: blue;*/
 }
 
 .calendar_month_day_item-dnd {
 	padding-left:4px;
-	overflow: hidden;	
-	white-space: nowrap;	
+	overflow: hidden;
+	white-space: nowrap;
 	border: 1px solid;
 }
 
 .calendar_month_header_month {
 	font-size:18px;
 	text-align:center;
-	background-color:#EEEEEE;	
+	background-color:#EEEEEE;
 }
 
 .calendar_month_header_cells_text {
@@ -857,7 +857,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	background-color:#EEEEEE;
 }
 
-.calendar_print_date_header { 
+.calendar_print_date_header {
   margin-top:5px;
   font-size: 16px;
   font-weight:bold;
@@ -865,7 +865,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   border-bottom: 2px solid #DDDDDD;
   width:100%;
 }
-.calendar_print_date_header_weekday { 
+.calendar_print_date_header_weekday {
   font-size: 12px;
   font-weight:normal;
 }
@@ -911,13 +911,13 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   font-weight:bold;
 }
 
-/** The cal/appt images are here temporarily **/ 
+/** The cal/appt images are here temporarily **/
 
 .calendar_header_note	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_note.gif);	}
 .calendar_header_alarm	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_alarm.gif);	}
 .calendar_header_repeat	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_repeat.gif);	}
 .menu_light				{	width:8;	height:16;	background-image:url(/zimbra/img/hiRes/other/menu_light.gif);	}
- 
+
 .allday {
         left:0;
         top:0;
@@ -938,33 +938,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 */
 
 /* Objects */
-.Object {
-	color: blue;
-	cursor: pointer;
-}
-.Object a:link, .Object a:active, .Object a:visited, .Object a:hover {
-	color: blue;
-	cursor: pointer;
-}
-.Object a:link, .Object a:active, .Object a:visited {
-	text-decoration: none;
-}
-.Object a:hover {text-decoration: underline;}
-/* unfortunately since IE6 ( 7 is supposed to) doesn't handle multiple classes
-   correctly, I have to add this to make the msg view still work */
-.Object-activated {
-	background-color: #F9DD87;
-	text-decoration:underline;
-	cursor: pointer;
-}
-
-.POObject {color: blue;}
-.POObjectApproved {color: green;}
-.POObjectRejected {color: red;}
-.MsgHeader .Object {
-	color: black;
-	white-space: nowrap;
-}
+/* see objects.css */
 
 /* Blank page (view) with some text in it */
 .TextPage {
@@ -980,7 +954,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 /** appointment detail **/
 
-.ZmAppointmentView { 
+.ZmAppointmentView {
   /*position:relative;
   width:400px;*/
   overflow:auto;
@@ -988,7 +962,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   max-height:470px;
 }
 
-.ZmAppointmentView iframe { 
+.ZmAppointmentView iframe {
   margin:none;
   padding:none;
   border:none;
@@ -997,38 +971,38 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   width:100%;
 }
 
-.ZmAppointmentView_attachTable { 
+.ZmAppointmentView_attachTable {
   background-color: #EEEEEE;
   table-layout: fixed;
   border-spacing: 0px;
 }
 
-.ZmAppointmentView_attachTable td{ 
+.ZmAppointmentView_attachTable td{
   padding:2px;
 }
 
-.ZmAppointmentView_attachTable input{ 
+.ZmAppointmentView_attachTable input{
   /*width:100%;*/
 }
 
-.ZmAppointmentView .xform_error { 
+.ZmAppointmentView .xform_error {
   color:red;
 }
 
-.ZmAppointmentView .xform_container { 
+.ZmAppointmentView .xform_container {
   padding:1px;
 }
 
 
-.leftAlign { 
+.leftAlign {
   text-align:left;
 }
 
-.rightAlign { 
+.rightAlign {
   text-align:right;
 }
 
-.checkboxLabel { 
+.checkboxLabel {
   font-weight:bold;
 }
 
@@ -1041,10 +1015,10 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 /*******
 
 	FREE/BUSY VIEW
-	
+
 *******/
 
-.ZmFreeBusyView { 
+.ZmFreeBusyView {
   top:0;
   left:0;
   background-color:rgb(249,248,246);
@@ -1054,12 +1028,12 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   height:420px;
 }
 
-.ZmFreeBusyView .containerTable { 
+.ZmFreeBusyView .containerTable {
   border-spacing:0px;
   table-layout:fixed;
 }
 
-.ZmFreeBusyView_scheduleCol {  
+.ZmFreeBusyView_scheduleCol {
   position:absolute;
   top:110px;
   left:20px;
@@ -1076,57 +1050,57 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   border-collapse: collapse;
 }
 
-.ZmFreeBusyView_scheduleCol_table td { 
+.ZmFreeBusyView_scheduleCol_table td {
   padding: none;
 }
 
-.ZmFreeBusyView .hour{ 
+.ZmFreeBusyView .hour{
   width:22px;
 }
 
-.ZmFreeBusyView .firstRow , 
-.ZmFreeBusyView .hiddenRow { 
+.ZmFreeBusyView .firstRow ,
+.ZmFreeBusyView .hiddenRow {
   background-color:rgb(249,248,246);
 }
-.ZmFreeBusyView .firstRow td{ 
+.ZmFreeBusyView .firstRow td{
   border:none;
 }
 
-.ZmFreeBusyView .hiddenRow { 
+.ZmFreeBusyView .hiddenRow {
   height:0.3px;
 }
 
-.ZmFreeBusyView .hiddenRow td{ 
+.ZmFreeBusyView .hiddenRow td{
   border:none;
 }
 
-.ZmFreeBusyView .mozWidth { 
+.ZmFreeBusyView .mozWidth {
   height:16px;
   font-size:1px;
   width:10px;
 }
 
-.ZmFreeBusyView .adCol2 { 
+.ZmFreeBusyView .adCol2 {
   width:10px;
 }
-.ZmFreeBusyView .adCol3 { 
+.ZmFreeBusyView .adCol3 {
   width:154px;
 }
 
-.ZmFreeBusyView .empty, .ZmFreeBusyView .addressCell { 
+.ZmFreeBusyView .empty, .ZmFreeBusyView .addressCell {
   border: 1px solid #CCCCCC;
 }
 
-.ZmFreeBusyView .addressCell, 
+.ZmFreeBusyView .addressCell,
 .ZmFreeBusyView .addressInputCell,
-.ZmFreeBusyView .addressInputEmptyCell{ 
+.ZmFreeBusyView .addressInputEmptyCell{
   padding:0;
   text-align:center;
-  padding: 0px; 
+  padding: 0px;
   border: none;
   font-weight:normal;
   font-size:14px;
-  height:18px;  
+  height:18px;
   background-color:rgb(249,248,246);
 }
 
@@ -1136,56 +1110,56 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   border: 1px solid black;
 }
 
-.ZmFreeBusyView .addressInputCell { 
+.ZmFreeBusyView .addressInputCell {
   width:154px;
 }
-.ZmFreeBusyView .addressInputCell div{ 
+.ZmFreeBusyView .addressInputCell div{
   width:154px;
 }
 
-.ZmFreeBusyView .addressInputEmptyCell input{ 
+.ZmFreeBusyView .addressInputEmptyCell input{
   color: #9A9A9A;
 }
 
-.ZmFreeBusyView .addrSelected{  
+.ZmFreeBusyView .addrSelected{
   background-color: #3366CC;
 }
 
-.ZmFreeBusyView input { 
+.ZmFreeBusyView input {
   border:0;
   padding:0;
   height:100%;
   width:100%;
 }
 
-.ZmFreeBusyView_scheduleCol_col, .ZmFreeBusyView_scheduleCol_col_highlighted {  
+.ZmFreeBusyView_scheduleCol_col, .ZmFreeBusyView_scheduleCol_col_highlighted {
   width:11px;
 }
 
-.ZmFreeBusyView_scheduleCol_colIE, .ZmFreeBusyView_scheduleCol_colIE_highlighted {  
+.ZmFreeBusyView_scheduleCol_colIE, .ZmFreeBusyView_scheduleCol_colIE_highlighted {
   width:12px;
 }
 
-.ZmFreeBusyView_scheduleCol_col_highlighted{  
+.ZmFreeBusyView_scheduleCol_col_highlighted{
   background-color:#ADD6D6;
 }
 
-.ZmFreeBusyView .endZone { 
+.ZmFreeBusyView .endZone {
   width:20px;
 }
 
-.ZmFreeBusyView .hiddenRow td.endZoneCell { 
+.ZmFreeBusyView .hiddenRow td.endZoneCell {
   padding:2px;
 }
-.ZmFreeBusyView .endZoneContainer { 
+.ZmFreeBusyView .endZoneContainer {
   border-top: 1px solid #9F9F9F;
-  border-left: 1px solid #9F9F9F;  
+  border-left: 1px solid #9F9F9F;
   border-bottom: 1px solid #000000;
   border-right: 1px solid #000000;
   width:20px;
 }
 
-.ZmFreeBusyView .endZoneText { 
+.ZmFreeBusyView .endZoneText {
   border-top: 1px solid #F9F8F7;
   border-left: 1px solid #F9F8F7;
   border-bottom: 1px solid #9F9F9F;
@@ -1196,14 +1170,14 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   font-size:16px;
 }
 
-.ZmFreeBusyView_scheduleCol tr { 
+.ZmFreeBusyView_scheduleCol tr {
   height:23px;
 }
 
-.ZmFreeBusyView_scheduleCol th { 
+.ZmFreeBusyView_scheduleCol th {
   text-align:left;
   border: 0px;
-  padding: 0px; 
+  padding: 0px;
   font-size:14px;
   font-weight:normal;
 }
@@ -1217,7 +1191,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .ZmFreeBusyView_scheduleCol .tentative,
 .ZmFreeBusyView_scheduleCol .tentativeHighlighted,
 .ZmFreeBusyView_scheduleCol .ooo,
-.ZmFreeBusyView_scheduleCol .oooHighlighted { 
+.ZmFreeBusyView_scheduleCol .oooHighlighted {
   border: 1px solid #CCCCCC;
 }
 
@@ -1225,43 +1199,43 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .ZmFreeBusyView_scheduleCol .freeHighlighted,
 .ZmFreeBusyView_scheduleCol .busyHighlighted,
 .ZmFreeBusyView_scheduleCol .tentativeHighlighted,
-.ZmFreeBusyView_scheduleCol .oooHighlighted { 
+.ZmFreeBusyView_scheduleCol .oooHighlighted {
   border: 1px solid #A7A7A7;
 }
 
 .ZmFreeBusyView .ooo,
-.ZmFreeBusyView .oooHighlighted { 
+.ZmFreeBusyView .oooHighlighted {
   background-color:#FFCC00;
 }
 
 .ZmFreeBusyView .tentative,
-.ZmFreeBusyView .tentativeHighlighted { 
+.ZmFreeBusyView .tentativeHighlighted {
   background-color:#FF3300;
 }
 
 .ZmFreeBusyView .busy,
-.ZmFreeBusyView .busyHighlighted { 
+.ZmFreeBusyView .busyHighlighted {
   background-color: 990000;
   border: 1px solid #CCCCCC;
 }
 
-.ZmFreeBusyView .free { 
+.ZmFreeBusyView .free {
   background-color:inherit;
 }
 
-.ZmFreeBusyView .freeHighlighted { 
+.ZmFreeBusyView .freeHighlighted {
   background-color:#ADD6D6;
 }
 
-.ZmFreeBusyView .n_a { 
+.ZmFreeBusyView .n_a {
   background-color:#FFFAE5;
 }
 
-.ZmFreeBusyView .n_aHighlighted { 
+.ZmFreeBusyView .n_aHighlighted {
   background-color:#ADD6D6;
 }
 
-.ZmFreeBusyView_slider { 
+.ZmFreeBusyView_slider {
   position:absolute;
   top:0;
   left: 205;
@@ -1270,7 +1244,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   font-size:1px;
 }
 
-.ZmFreeBusyView_slider_left { 
+.ZmFreeBusyView_slider_left {
   background-color: #666666;
   width:2px;
   float:left;
@@ -1279,7 +1253,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   cursor:default;
   font-size: 1px;
 }
-.ZmFreeBusyView_slider_right { 
+.ZmFreeBusyView_slider_right {
   background-color: #666666;
   width:2px;
   float:right;
@@ -1289,12 +1263,12 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   font-size: 1px;
 }
 
-.ZmFreeBusyView_headers { 
+.ZmFreeBusyView_headers {
   position:absolute;
   top:20px;
   left:66px;
 }
-.ZmFreeBusyView_headers table{ 
+.ZmFreeBusyView_headers table{
   table-layout:fixed;
 }
 
@@ -1326,7 +1300,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   border-right:1px solid #CCCCCC;
 }
 
-.ZmFreeBusyView_dateString { 
+.ZmFreeBusyView_dateString {
   position:absolute;
   top:90px;
   left:460px;
@@ -1336,34 +1310,34 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 /** ** ** ** ** ** ** End ZmFreeBusy ** ** **/
-.ZmAttachFileDialog { 
+.ZmAttachFileDialog {
   width:300px;
 }
 
-.ZmAttachFileDialog iframe { 
+.ZmAttachFileDialog iframe {
   margin:none;
   padding:none;
   border:none;
 }
 
-.ZmAttachFileDialog_table { 
+.ZmAttachFileDialog_table {
   table-layout:fixed;
   padding:0px;
 }
 
-.ZmAttachFileDialog_table td{ 
+.ZmAttachFileDialog_table td{
   padding:2px;
 }
 
-.ZmEditInstanceSeriesView { 
+.ZmEditInstanceSeriesView {
   width:310px;
 }
 
-.ZmEditInstanceSeriesView .xform_table{ 
+.ZmEditInstanceSeriesView .xform_table{
   width:auto;
 }
 
-.ZmEditInstanceSeriesView .title{ 
+.ZmEditInstanceSeriesView .title{
   background: #2557AD;
   color: white;
   font-size: 10pt;
@@ -1436,7 +1410,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .OrangeDark			{ background-color:#FF7700; }
 .OrangeLight		{ background-color:#FFBB80; }
 .OrangeBg			{ background-color:#FFDDBF; }
-	
+
 .Yellow				{ background-color:#FFE640;}
 .YellowDark			{ background-color:#FFDD00; }
 .YellowLight		{ background-color:#FFEE80; }
@@ -1451,7 +1425,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .CyanDark			{ background-color:#00CCCC; }
 .CyanLight			{ background-color:#80E6E6; }
 .CyanBg				{ background-color:#BFF2F2; }
-		
+
 .Blue				{ background-color:#4073D9;}
 .BlueDark			{ background-color:#0044CC; }
 .BlueLight			{ background-color:#80A2E6; }
@@ -1482,7 +1456,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .appt-selected TD		 		{					font-weight:bold;											}
 
 .appt_new_tag					{					font-weight:bold;	color:#FFCC00;							}
-	
+
 .appt_name						{	padding:2px;																}
 .appt_new_name					{	padding:2px;	font-weight:bold;	color:white; 							}
 
@@ -1515,7 +1489,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	border-left:2px solid #AAAAAA;
 	border-top:2px solid #AAAAAA;
 	border-right:2px solid #333333;
-	border-bottom:2px solid #333333;	
+	border-bottom:2px solid #333333;
 	margin-top:0px;
 	margin-left:-1px;
 	margin-right:0px;
@@ -1529,11 +1503,11 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	border-left:4px solid #339999;
 	border-top:4px solid #339999;
 	border-right:4px solid #003030;
-	border-bottom:4px solid #003030;	
+	border-bottom:4px solid #003030;
 	margin-top:0px;
 	margin-left:0px;
 	margin-right:-2px;
-	margin-bottom:-2px;	
+	margin-bottom:-2px;
 }
 
 .appt_allday_body {
@@ -1542,7 +1516,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	border-left:2px solid #333333;
 	border-top:1px solid #333333;
 	border-right:2px solid #333333;
-	border-bottom:1px solid #333333;	
+	border-bottom:1px solid #333333;
 	margin-top:0px;
 	margin-left:-1px;
 	margin-right:0px;
@@ -1555,11 +1529,11 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	border-left:3px solid #339999;
 	border-top:2px solid #339999;
 	border-right:3px solid #003030;
-	border-bottom:2px solid #003030;	
+	border-bottom:2px solid #003030;
 	margin-top:0px;
 	margin-left:0px;
 	margin-right:-1px;
-	margin-bottom:-1px;	
+	margin-bottom:-1px;
 }
 
 .appt-selected .appt_body TD,
@@ -1594,8 +1568,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	border: solid gray 1px;
 }
 
-/* 
- * Contact picker 
+/*
+ * Contact picker
  */
 .ZmContactPicker .abPickList {
 	width: 250px;
@@ -1634,7 +1608,7 @@ HTML>BODY .appt-selected .appt_allday_body
  *   ZmFilterPrefView
  */
 
-.ZmFilterPrefView .ZmToolBar { 
+.ZmFilterPrefView .ZmToolBar {
   position : relative;
   height:25px;
   border-top: 1px solid #A4A8AF;
@@ -1644,55 +1618,55 @@ HTML>BODY .appt-selected .appt_allday_body
 
 }
 
-.ZmFilterPrefView .summaryTable { 
-  table-layout:fixed; 
-  width:100%; 
+.ZmFilterPrefView .summaryTable {
+  table-layout:fixed;
+  width:100%;
   height:100%;
 }
 
-.ZmFilterPrefView .DwtListView { 
+.ZmFilterPrefView .DwtListView {
   width:100%;
 }
-.ZmFilterPrefView .filterSummaryContainer { 
+.ZmFilterPrefView .filterSummaryContainer {
   height :100%;
   overflow : visible;
 }
 
-.ZmFilterDetailsView {  
+.ZmFilterDetailsView {
   width:760px;
 }
 
 .ZmFilterDetailsView .shadedBox  {
-  border-top: 2px solid #999999; 
-  border-bottom:2px solid #EEEEEE; 
+  border-top: 2px solid #999999;
+  border-bottom:2px solid #EEEEEE;
   border-right: 2px solid #EEEEEE;
   border-left: 2px solid #999999;
   background-color: #CCCCCC;
 }
 
 .ZmFilterDetailsView .shadedBox .pickerButton,
-.ZmFilterDetailsView .shadedBox .pickerButton-activated, 
-.ZmFilterDetailsView .shadedBox .pickerButton-triggered{ 
+.ZmFilterDetailsView .shadedBox .pickerButton-activated,
+.ZmFilterDetailsView .shadedBox .pickerButton-triggered{
   width: 120px;
   background-color: white;
-  border: 1px solid #6699CC; 
+  border: 1px solid #6699CC;
 }
 
-.ZmFilterDetailsView .paddedTableCell { 
+.ZmFilterDetailsView .paddedTableCell {
   vertical-align:middle;
   padding: 0px 0px 0px 2px;
 }
 
 .ZmFilterPrefView .DwtListView {
-  border-bottom:1px solid #CCCCCC; 
-  border-left:1px solid #CCCCCC; 
-  border-top:1px solid #666666; 
+  border-bottom:1px solid #CCCCCC;
+  border-left:1px solid #CCCCCC;
+  border-top:1px solid #666666;
   border-right:1px solid #666666
 }
 
 .ZmFilterPrefView .DwtListView-Rows {
   overflow:visible;
-  /* 
+  /*
      *  this is very important for the filter rules on IE
      *  For some reason, having height set to 100% makes all
      *  the content disappear on IE */
@@ -1714,8 +1688,8 @@ HTML>BODY .appt-selected .appt_allday_body
  */
 
 .ZmPrefView {
-	background-color:#EEEEEE; 
-	height:100%; 
+	background-color:#EEEEEE;
+	height:100%;
 	width: 100%;
 }
 .ZmPrefView .TitleBar {
@@ -1765,6 +1739,6 @@ HTML>BODY .appt-selected .appt_allday_body
  *  RANDOM BITS
  */
 
-.ZmChangePasswordDialogInput { 
+.ZmChangePasswordDialogInput {
   width:250px;
 }
