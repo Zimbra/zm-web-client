@@ -123,6 +123,8 @@ ZmZimbraMail._PREFS_ID	= 1;
 ZmZimbraMail._HELP_ID	= 2;
 ZmZimbraMail._LOGOFF_ID	= 3;
 
+ZmZimbraMail._OVERVIEW_ID = "ZmZimbraMail";
+
 // Public methods
 
 ZmZimbraMail.prototype.toString = 
@@ -200,12 +202,15 @@ function(params) {
 			this.setPollInterval();
 			ZmTimezones.initializeServerTimezone();
 			this._setUserInfo();
+			var opc = this._appCtxt.getOverviewController();
+			opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
+								selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true});
 			this._checkOverviewLayout();
 
 			var app = params ? params.app : null;
 			var startApp = ZmZimbraMail.APP_CLASS[app] ? app : ZmZimbraMail.defaultStartApp;
 			if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED))
-				this._components[ZmAppViewMgr.C_SEARCH] = this.getSearchController().getSearchPanel();
+				this._components[ZmAppViewMgr.C_SEARCH] = this._appCtxt.getSearchController().getSearchPanel();
 			var currentAppToolbar = new ZmCurrentAppToolBar(this._shell);
 			this._appCtxt.setCurrentAppToolbar(currentAppToolbar);
 			this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
@@ -267,7 +272,7 @@ function(settings) {
 	this._activeApp = null;
 	this._appViewMgr.dtor();
 	this._appViewMgr = null;
-	this._searchController = this._overviewPanelController = null;
+	this._searchController = this._overviewController = null;
 	this._schedule(this.startup, {bIsRelogin: false, settings: settings});
 }
 
@@ -328,26 +333,6 @@ function(appName) {
 ZmZimbraMail.prototype.getAppViewMgr =
 function() {
 	return this._appViewMgr;
-}
-
-/**
-* Returns a handle to the overview panel controller.
-*/
-ZmZimbraMail.prototype.getOverviewPanelController =
-function() {
-	if (!this._overviewPanelController)
-		this._overviewPanelController = new ZmOverviewPanelController(this._appCtxt, this._shell, this);
-	return this._overviewPanelController;
-}
-
-/**
-* Returns a handle to the search bar's controller.
-*/
-ZmZimbraMail.prototype.getSearchController =
-function() {
-	if (!this._searchController)
-		this._searchController = new ZmSearchController(this._appCtxt, this._shell, this);
-	return this._searchController;
 }
 
 /**
@@ -438,9 +423,10 @@ ZmZimbraMail.prototype._checkOverviewLayout =
 function() {
 	if (this._needOverviewLayout && this._settings.userSettingsLoaded) {
 		DBG.println(AjxDebug.DBG1, "laying out overview panel");
-		var opc = this.getOverviewPanelController();
-		opc.setView();
-		this._components[ZmAppViewMgr.C_TREE] = opc.getOverviewPanel();
+		var opc = this._appCtxt.getOverviewController();
+		var panels = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+		opc.set(ZmZimbraMail._OVERVIEW_ID, panels);
+		this._components[ZmAppViewMgr.C_TREE] = opc.getOverview(ZmZimbraMail._OVERVIEW_ID);
 		// clear shared folder dialogs so they'll be recreated with new folder tree
 		this._appCtxt.clearFolderDialogs();
 		this._needOverviewLayout = false;
@@ -639,7 +625,7 @@ function(refresh) {
 
 	var folderTree = this._appCtxt.getFolderTree();
 	if (!folderTree) {
-		folderTree = new ZmFolderTree(this._appCtxt);
+		folderTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.FOLDER);
 		folderTree.addChangeListener(this._unreadListener);
 		this._appCtxt.setFolderTree(folderTree);
 	}
@@ -647,10 +633,20 @@ function(refresh) {
 	folderTree.getUnreadHash(unread);
 	folderTree.reset();
 
+	var searchTree = this._appCtxt.getSearchTree();
+	if (!searchTree) {
+		searchTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.SEARCH);
+		this._appCtxt.setSearchTree(searchTree);
+	}
+	var searchString = searchTree.asString();
+	searchTree.reset();
+
 	if (refresh.tags)
 		tagTree.loadFromJs(refresh.tags);
-	if (refresh.folder)
+	if (refresh.folder) {
 		folderTree.loadFromJs(refresh.folder[0]);
+		searchTree.loadFromJs(refresh.folder[0]);
+	}
 	
 	if (tagTree.asString() != tagString || folderTree.asString() != folderString) {
 		DBG.println(AjxDebug.DBG1, "overview layout needed (refresh)");
@@ -890,13 +886,20 @@ function(creates, modifies) {
 			var tagList = this._appCtxt.getTagList();
 			tagList.root.notifyCreate(create);
 		} else if (name == "folder" || name == "search") {
-			var isSearch = (name == "search");
 			var parentId = create.l;
-			if (parentId == ZmFolder.ID_ROOT)
-				parentId = isSearch ? ZmFolder.ID_SEARCH : ZmFolder.ID_USER;
-			var parent = this._appCtxt.getFolderTree().getById(parentId);
+			var parent;
+			var folderTree = this._appCtxt.getFolderTree();
+			var searchTree = this._appCtxt.getSearchTree();
+			// parent could be a folder or a search
+			if (parentId == ZmOrganizer.ID_ROOT) {
+				parent = (name == "folder") ? folderTree.getById(parentId) : searchTree.getById(parentId);
+			} else {
+				parent = folderTree.getById(parentId);
+				if (!parent)
+					parent = searchTree.getById(parentId);
+			}
 			if (parent)
-				parent.notifyCreate(create, isSearch);
+				parent.notifyCreate(create, (name == "search"));
 		} else if (name == "m") {
 			var msg = ZmMailMsg.createFromDom(create, {appCtxt: this._appCtxt}, true);
 			if (msg.isInvite() && this._calController) 
@@ -949,6 +952,9 @@ function(modifies) {
 		// ignore IDs we know about
 		if (this._actionedIds && this._actionedIds[id] && !((name == "c") && mod._wasVirtConv))
 			continue;
+		// ignore changes to root folder
+		if (id == ZmOrganizer.ID_ROOT) continue;
+		
 		if (name == "mbx") {
 			var setting = this._settings.getSetting(ZmSetting.QUOTA_USED);
 			setting.notifyModify(mod);

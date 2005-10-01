@@ -29,13 +29,17 @@ function ZmMoveToDialog(parent, msgDialog, className, folderTree) {
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.move, [newButton]);
 
 	this.setContent(this._contentHtml());
-	this._setFolderTree(folderTree, null, this._folderTreeCellId, null, true);
+	this._createOverview(ZmMoveToDialog._OVERVIEW_ID, this._folderTreeCellId);
+
+	this._folderTree = this._appCtxt.getFolderTree();
 
 	this.registerCallback(ZmMoveToDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._changeListener = new AjxListener(this, this._folderTreeChangeListener);
 
 	this._creatingFolder = false;
 }
+
+ZmMoveToDialog._OVERVIEW_ID = "ZmMoveToFolderDialog";
 
 ZmMoveToDialog.prototype = new ZmDialog;
 ZmMoveToDialog.prototype.constructor = ZmMoveToDialog;
@@ -58,19 +62,20 @@ function(data, loc) {
 		this._items = data;
 	}
 
+	this._renderOverview(ZmMoveToDialog._OVERVIEW_ID, [ZmOrganizer.FOLDER], omit);
+	this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
+
 	this._folderTree.removeChangeListener(this._changeListener);
-	var folders = [ZmFolder.ID_USER];
-	this._folderTreeView.set(this._folderTree, folders, false, omit);
 	// this listener has to be added after folder tree view is set (so that it comes after the view's standard change listener)
 	this._folderTree.addChangeListener(this._changeListener);
 
 	ZmDialog.prototype.popup.call(this, loc);
 	if (this._appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED)) {
-		var userFolder = this._folderTree.getById(ZmFolder.ID_USER);
-		var ti = this._folderTreeView.getTreeItemById(userFolder.id);
+		var rootFolder = this._folderTree.root;
+		var ti = this._folderTreeView.getTreeItemById(rootFolder.id);
 		ti.setExpanded(true);
 		if (this._folder)
-			this._folderTreeView.setSelected(userFolder);
+			this._folderTreeView.setSelected(rootFolder);
 	}
 }
 
@@ -97,7 +102,7 @@ function() {
 
 ZmMoveToDialog.prototype._newCallback =
 function(args) {
-	var ftc = this._appCtxt.getOverviewPanelController().getFolderTreeController();
+	var ftc = this._opc.getController(ZmOrganizer.FOLDER);
 	ftc._schedule(ftc._doCreate, {name: args[0], parent: args[1]});
 	this._appCtxt.getNewFolderDialog().popdown();
 	this._creatingFolder = true;

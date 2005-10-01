@@ -23,13 +23,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmRenameFolderDialog(parent, msgDialog, className, folderTree) {
+function ZmRenameFolderDialog(parent, msgDialog, className) {
 
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.renameFolder);
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
-	this._folderTree = folderTree;
+	this._folderTree = this._appCtxt.getFolderTree();
 }
 
 ZmRenameFolderDialog.prototype = new ZmDialog;
@@ -77,9 +77,7 @@ function() {
 
 	// make sure folder with this name doesn't already exist at this level
 	if (!msg) {
-		var parentFolder = this._folder.parent;
-		var f = parentFolder.getByName(name);
-		if (f && (f.id != this._folder.id))
+		if (this._folder.parent.hasChild(name))
 			msg = ZmMsg.folderNameExists;
 	}
 

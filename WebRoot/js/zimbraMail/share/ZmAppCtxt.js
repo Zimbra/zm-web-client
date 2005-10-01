@@ -121,14 +121,24 @@ function() {
 	return this._clientCmdHdlr;
 }
 
+/**
+* Returns a handle to the search bar's controller.
+*/
 ZmAppCtxt.prototype.getSearchController =
 function() {
-	return this._appController.getSearchController();
+	if (!this._searchController)
+		this._searchController = new ZmSearchController(this, this.getShell());
+	return this._searchController;
 }
 
-ZmAppCtxt.prototype.getOverviewPanelController =
+/**
+* Returns a handle to the overview controller.
+*/
+ZmAppCtxt.prototype.getOverviewController =
 function() {
-	return this._appController.getOverviewPanelController();
+	if (!this._overviewController)
+		this._overviewController = new ZmOverviewController(this, this.getShell());
+	return this._overviewController;
 }
 
 ZmAppCtxt.prototype.getLoginDialog =
@@ -228,6 +238,16 @@ function() {
 ZmAppCtxt.prototype.setFolderTree =
 function(folderTree) {
 	this._folderTree = folderTree;
+}
+
+ZmAppCtxt.prototype.getSearchTree =
+function() {
+	return this._searchTree;
+}
+
+ZmAppCtxt.prototype.setSearchTree =
+function(searchTree) {
+	this._searchTree = searchTree;
 }
 
 ZmAppCtxt.prototype.getUsername = 

@@ -55,7 +55,6 @@ Contributor(s):
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/model/ZmInvite.js<%= ext %>?v=<%= vers %>"></script>
 
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmBrowseView.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmOverviewPanel.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmOperation.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmPopupMenu.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmActionMenu.js<%= ext %>?v=<%= vers %>"></script>
@@ -68,8 +67,6 @@ Contributor(s):
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmAutocompleteListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmSplashScreen.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmTreeView.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmTagTreeView.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmFolderTreeView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmTagMenu.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/view/ZmPrintView.js<%= ext %>?v=<%= vers %>"></script>
@@ -109,8 +106,9 @@ Contributor(s):
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/controller/ZmTreeController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/controller/ZmTagTreeController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/controller/ZmFolderTreeController.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="/zimbra/js/zimbraMail/share/controller/ZmSearchTreeController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/controller/ZmBrowseController.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="/zimbra/js/zimbraMail/share/controller/ZmOverviewPanelController.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="/zimbra/js/zimbraMail/share/controller/ZmOverviewController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/controller/ZmSearchController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/share/controller/ZmMixedController.js<%= ext %>?v=<%= vers %>"></script>
 

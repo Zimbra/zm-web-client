@@ -23,11 +23,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmFolderTree(appCtxt) {
+function ZmFolderTree(appCtxt, type) {
 	
-	ZmTree.call(this, ZmOrganizer.FOLDER, appCtxt);
+	ZmTree.call(this, type, appCtxt);
 	
-	this._evt = new ZmEvent(ZmEvent.S_FOLDER);
+	this._evt = new ZmEvent(type);
 }
 
 ZmFolderTree.prototype = new ZmTree;
@@ -40,54 +40,15 @@ function() {
 
 ZmFolderTree.prototype.loadFromJs =
 function(rootFolderObj) {
-	this.root = ZmFolder.createFromJs(null, rootFolderObj, this);
-	this._moveUserFolders();
+	if (this.type == ZmOrganizer.FOLDER)
+		this.root = ZmFolder.createFromJs(null, rootFolderObj, this);
+	else if (this.type == ZmOrganizer.SEARCH)
+		this.root = ZmSearchFolder.createFromJs(null, rootFolderObj, this);
 }
 
 ZmFolderTree.prototype.getByPath =
 function(path) {
 	return this.root ? this.root.getByPath(path) : null;
-}
-
-ZmFolderTree.prototype._moveUserFolders =
-function() {
-	var userTop = new Array();
-	var searchTop = new Array();
-	var children = this.root.children.getArray();
-	var addedSep = false;
-	for (var i = 0; i < children.length; i++) {
-		var child = children[i];
-		if (child.id > ZmFolder.ID_ROOT && child.id <= ZmFolder.LAST_SYSTEM_ID) {
-			userTop.push(child);
-			if (child.id == ZmFolder.ID_TRASH)
-				child.addSep = true; // add some space below the last system folder
-		} else if (child.id >= ZmFolder.FIRST_USER_ID) {
-			if (child.type == ZmOrganizer.FOLDER)
-				userTop.push(child);
-			else if (child.type == ZmOrganizer.SEARCH)
-				searchTop.push(child);
-		}
-	}
-
-	var name = ZmMsg[ZmFolder.MSG_KEY[ZmFolder.ID_USER]];
-	this.userRoot = new ZmFolder(ZmFolder.ID_USER, name, this.root, this);
-	this.root.children.add(this.userRoot);
-	for (var i = 0; i < userTop.length; i++) {
-		var userFolder = userTop[i];
-		this.root.children.remove(userFolder);
-		this.userRoot.children.add(userFolder);
-		userFolder.parent = this.userRoot;
-	}
-
-	name = ZmMsg[ZmFolder.MSG_KEY[ZmFolder.ID_SEARCH]];
-	this.searchRoot = new ZmSearchFolder(ZmFolder.ID_SEARCH, name, this.root, this);
-	this.root.children.add(this.searchRoot);
-	for (var i = 0; i < searchTop.length; i++) {
-		var searchFolder = searchTop[i];
-		this.root.children.remove(searchFolder);
-		this.searchRoot.children.add(searchFolder);
-		searchFolder.parent = this.searchRoot;
-	}
 }
 
 ZmFolderTree.prototype._sortFolder =

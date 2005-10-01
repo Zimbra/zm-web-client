@@ -209,9 +209,6 @@ DIV.vSpace {
 }
 .FolderTree td {padding: 0;}
 
-
-
-
 /* 
  *  Row display and highlighting 
  */
@@ -269,13 +266,26 @@ DIV.vSpace {
 
 
 
-/* Overview Panel */
-.OverviewPanel, .OverviewTreePanel {
+/* Overview */
+
+.overview {
 	width: 100%;
 	height: 100%;
 }
-.OverviewTree {width: 100%;}
-.overviewPanelHeader {
+
+.dialogOverview {
+	background-color: white;
+	height: 200px;
+	border: 1px solid #999999;
+	padding: 5px 0 0 5px;
+}
+
+.pickerOverview {
+	background-color: white;
+	height: 100%;
+}
+
+.overviewHeader {
 	border: 1px solid;
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 	background-image:url(/zimbra/skins/steel/images/tree_header_bg.gif);
@@ -286,20 +296,13 @@ DIV.vSpace {
 	cursor: default;
 }
 
-.overviewPanelHeader-Text, .overviewPanelHeader-actioned,
-.overviewPanelHeader-DragOver {
+.overviewHeader-Text, .overviewHeader-actioned,
+.overviewHeader-DragOver {
 	font-weight:bold;
 	height:18px;
 }
 
-
-.overviewPanelHeader .imageCell {
+.overviewHeader .imageCell {
 	padding-right:4px;
 	white-space: nowrap;
 }
-
-
-
-
-
-

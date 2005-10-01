@@ -30,6 +30,8 @@ function ZmSavedSearchPicker(parent) {
     this._checkedItems = new AjxVector();
 }
 
+ZmSavedSearchPicker._OVERVIEW_ID = "ZmFolderPicker";
+
 ZmSavedSearchPicker.prototype = new ZmPicker;
 ZmSavedSearchPicker.prototype.constructor = ZmSavedSearchPicker;
 
@@ -42,14 +44,8 @@ function() {
 
 ZmSavedSearchPicker.prototype._setupPicker =
 function(parent) {
-	var tree = this._tree = new DwtTree(parent, DwtTree.CHECKEDITEM_STYLE);
-	var appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	tree.addSelectionListener(new AjxListener(this, this._treeListener));
-	this._folderTreeView = new ZmFolderTreeView(appCtxt, this._tree, this._tree);
-	this._folderTreeView._restrictedType = ZmOrganizer.SEARCH;
-	var folders = [ZmFolder.ID_USER, ZmFolder.ID_SEP, ZmFolder.ID_SEARCH];
-	this._folderTreeView.set(appCtxt.getFolderTree(), folders, false);
-	this._twiddle(folders);
+	this._setOverview(ZmSavedSearchPicker._OVERVIEW_ID, parent, [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH]);
+	this._twiddle();
 }
 
 ZmSavedSearchPicker.prototype._updateQuery = 
@@ -90,22 +86,28 @@ function(ev) {
 
 // Take the checkboxes away from folders, and make sure saved searches are visible
 ZmSavedSearchPicker.prototype._twiddle =
-function(folders) {
-	// expand everything at the top level recursively
-	for (var i = 0; i < folders.length; i++) {
-		var id = folders[i];
-		var ti = this._folderTreeView._treeHash[id];
-		if (ti) {
-			ti.setExpanded(true, true);
-			ti.setVisible(false, true);
+function() {
+	for (var i in this._treeView) {
+		var treeView = this._treeView[i];
+		var hi = treeView.getHeaderItem();
+		// expand everything at the top level recursively
+		if (hi) {
+			hi.setExpanded(true, true);
+			hi.setVisible(false, true);
 		}
-	}
-	// take the checkbox away from anything that's not a saved search
-	for (var id in this._folderTreeView._treeHash) {
-		var ti = this._folderTreeView._treeHash[id];
-		var organizer = ti.getData(Dwt.KEY_OBJECT);
-		if (organizer.type != ZmOrganizer.SEARCH || id < 0)
-			if (ti._checkBoxCell)
-				Dwt.setVisible(ti._checkBoxCell, false);
+		// hide folders that don't have searches under them, and
+		// take the checkbox away from folders
+		for (var id in treeView._treeHash) {
+			var ti = treeView._treeHash[id];
+			var organizer = ti.getData(Dwt.KEY_OBJECT);
+			if (organizer.type == ZmOrganizer.FOLDER && organizer.id != ZmOrganizer.ID_ROOT) {
+				if (organizer.hasSearch()) {
+					if (ti._checkBoxCell)
+						Dwt.setVisible(ti._checkBoxCell, false);
+				} else {
+					ti.setVisible(false);
+				}
+			}
+		}
 	}
 }

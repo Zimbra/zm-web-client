@@ -29,12 +29,19 @@ function ZmNewSearchDialog(parent, msgDialog, className, folderTree) {
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
-	var folders = [ZmFolder.ID_USER, ZmFolder.ID_SEP, ZmFolder.ID_SEARCH];
 	var omit = new Object();
 	omit[ZmFolder.ID_SPAM] = true;
 	omit[ZmFolder.ID_DRAFTS] = true;
-	this._setFolderTree(folderTree, folders, this._folderTreeCellId, omit);
+
+	this._setOverview(ZmNewSearchDialog._OVERVIEW_ID, this._folderTreeCellId,
+					  [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH], omit);
+	this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
+	this._searchTreeView = this._treeView[ZmOrganizer.SEARCH];
+	this._folderTree = this._appCtxt.getFolderTree();
+	this._searchTree = this._appCtxt.getSearchTree();
 }
+
+ZmNewSearchDialog._OVERVIEW_ID = "ZmNewSearchDialog";
 
 ZmNewSearchDialog.prototype = new ZmDialog;
 ZmNewSearchDialog.prototype.constructor = ZmNewSearchDialog;
@@ -47,8 +54,7 @@ function() {
 ZmNewSearchDialog.prototype.popup =
 function(search, loc) {
 	this._search = search;
-	var folder = this._folderTree.getById(ZmFolder.ID_SEARCH);
-	this._folderTreeView.setSelected(folder);
+	this._searchTreeView.setSelected(this._searchTree.root, true);
 	ZmDialog.prototype.popup.call(this, loc);
 }
 
@@ -83,15 +89,15 @@ function() {
 	var msg = ZmFolder.checkName(name);
 
 	// make sure a parent was selected
-	var parentFolder = this._folderTreeView.getSelected();
+	var parentFolder = this._opc.getSelected(ZmNewSearchDialog._OVERVIEW_ID);
 	if (!msg && !parentFolder)
 		msg = ZmMsg.searchNameNoLocation;
 
 	// make sure parent doesn't already have a child by this name
-	if (!msg)
-		msg = ZmFolder.checkParent(name, parentFolder);
+	if (!msg && parentFolder.hasChild(name))
+		msg = ZmMsg.folderOrSearchNameExists;
 
-	return (msg ? this._showError(msg) : [name, parentFolder, this._search]);
+	return (msg ? this._showError(msg) : [name, parentFolder, ZmOrganizer.SEARCH, this._search]);
 }
 
 ZmNewSearchDialog.prototype._enterListener =

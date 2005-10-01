@@ -223,3 +223,38 @@ function(query) {
 		this.notifyListeners(ZmEvent.L_PICKER, this._pickerEvent);
 	}
 }
+
+ZmPicker.prototype.dispose =
+function() {
+	DwtComposite.prototype.dispose.call(this);
+	if (this._treeView) {
+		var opc = this._appCtxt.getOverviewController();
+		opc.clearOverview(this._overviewId);
+	}
+}
+
+ZmPicker.prototype._setOverview =
+function(overviewId, parent, types, allowedTypes) {
+	this._overviewId = overviewId;
+	this._picker.setScrollStyle(Dwt.CLIP);
+	var opc = this._appCtxt.getOverviewController();
+	opc.createOverview({overviewId: overviewId, parent: parent, //scroll: Dwt.VISIBLE,
+						overviewClass: "pickerOverview", headerClass: "DwtTreeItem",
+						treeStyle: DwtTree.CHECKEDITEM_STYLE});
+	opc.set(overviewId, types, null, allowedTypes);
+	this._treeView = new Object();
+	for (var i = 0; i < types.length; i++) {
+		var treeView = this._treeView[types[i]] = opc.getTreeView(overviewId, types[i]);
+		treeView.addSelectionListener(new AjxListener(this, this._treeListener));
+	}
+	if (types.length == 1)
+		this._hideRoot(types[0]);
+}
+
+ZmPicker.prototype._hideRoot =
+function(type) {
+	var ti = this._treeView[type].getTreeItemById(ZmOrganizer.ID_ROOT);
+	Dwt.setVisible(ti._checkBoxCell, false);
+	ti.setExpanded(true);
+	ti.setVisible(false, true);
+}

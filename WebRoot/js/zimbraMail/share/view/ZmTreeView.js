@@ -27,34 +27,36 @@
 * Creates an empty tree view.
 * @constructor
 * @class
-* This class is the base class for trees that display tree data (tags and folders).
+* This class displays data in a tree structure.
 *
 * @author Conrad Damon
-* @param type		tag or folder
-* @param appCtxt	the app context
-* @param parent		the tree's parent widget
-* @param tree		the tree widget
-* @param dragSrc	drag source
-* @param dropTgt	drop target
+* @param parent			[DwtControl]		the tree's parent widget
+* @param type			[constant]			organizer type
+* @param className		[string]*			CSS class
+* @param posStyle		[constant]*			positioning style
+* @param overviewId		[constant]*			overview ID
+* @param headerClass	[string]*			CSS class for header item
+* @param dragSrc		[DwtDragSource]*	drag source
+* @param dropTgt		[DwtDropTarget]*	drop target
+* @param treeStyle		[constant]*			tree style (see DwtTree)
 */
-function ZmTreeView(type, appCtxt, parent, tree, dragSrc, dropTgt) {
+function ZmTreeView(params) {
 
 	if (arguments.length == 0) return;
 
-	this.type = type;
-	this._appCtxt = appCtxt;
-	this._tree = tree;
-	this._parent = parent;
-	this._dragSrc = dragSrc;
-	this._dropTgt = dropTgt;
-	this._dataTree = null;
-	this._restrictedType = null;
+	var className = params.className ? params.className : "OverviewTree";
+	var treeStyle = params.treeStyle ? params.treeStyle : DwtTree.SINGLE_STYLE;
+	DwtTree.call(this, params.parent, treeStyle, className, params.posStyle);
+
+	this._headerClass = params.headerClass ? params.headerClass : "overviewHeader";
+	this.overviewId = params.overviewId;
+	this.type = params.type;
 	
+	this._dragSrc = params.dragSrc;
+	this._dropTgt = params.dropTgt;
+
+	this._dataTree = null;
 	this._treeHash = new Object();
-	this._evtMgr = new AjxEventMgr();
-	tree.addDisposeListener(new AjxListener(this, this._treeDisposeListener));
-	this._dataChangeListener = new AjxListener(this, this._changeListener);
-	tree.addSelectionListener(new AjxListener(this, this._treeSelectionListener));
 }
 
 // compare functions for each type
@@ -63,6 +65,19 @@ ZmTreeView.COMPARE_FUNC[ZmOrganizer.FOLDER] = ZmFolder.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.TAG] = ZmTag.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.SEARCH] = ZmFolder.sortCompare;
 
+ZmTreeView.KEY_TYPE	= "_type_";
+ZmTreeView.KEY_ID	= "_treeId_";
+
+// Static methods
+
+/**
+* Finds the correct position for an organizer within a node, given
+* a sort function.
+*
+* @param node			[DwtTreeItem]	node under which organizer is to be added
+* @param organizer		[ZmOrganizer]	organizer
+* @param sortFunction	[method]		method for comparing two organizers
+*/
 ZmTreeView.getSortIndex =
 function(node, organizer, sortFunction) {
 	if (!sortFunction) return null;
@@ -79,11 +94,10 @@ function(node, organizer, sortFunction) {
 	return i;
 }
 
+ZmTreeView.prototype = new DwtTree;
+ZmTreeView.prototype.constructor = ZmTreeView;
+
 // Public methods
-
-ZmTreeView.prototype.set = function() {};
-
-ZmTreeView.prototype._getIcon = function() {}
 
 ZmTreeView.prototype.toString = 
 function() {
@@ -91,58 +105,93 @@ function() {
 }
 
 /**
+* Populates the tree view with the given data and displays it.
+*
+* @param dataTree		[ZmTree]	data in tree form
+* @param showUnread		[boolean]*	if true, show unread counts
+* @param omit			[Object]*	hash of organizer IDs to ignore	
+*/
+ZmTreeView.prototype.set =
+function(dataTree, showUnread, omit) {
+
+	this._showUnread = showUnread;
+	this._dataTree = dataTree;	
+	var root = this._dataTree.root;
+	this._treeHash[ZmOrganizer.ID_ROOT] = root;
+	
+	this.clear();
+
+	// create header item
+	var ti = this._headerItem = new DwtTreeItem(this, null, null, null, null, this._headerClass);
+	ti.enableSelection(false); // by default, disallow selection
+	var name = root.getName();
+	if (name)
+		ti.setText(name);
+	var icon = root.getIcon();
+	if (icon)
+		ti.setImage(icon);
+	ti.setData(Dwt.KEY_ID, root.id);
+	ti.setData(Dwt.KEY_OBJECT, root);
+	ti.setData(ZmTreeView.KEY_ID, this.overviewId);
+	ti.setData(ZmTreeView.KEY_TYPE, this.type);
+	if (this._dropTgt)
+		ti.setDropTarget(this._dropTgt);
+	this._treeHash[root.id] = ti;
+	
+	// render the root item's children (ie everything else)
+	this._render(ti, root, omit);
+	ti.setExpanded(true);
+}
+
+/**
 * Returns the tree item that represents the organizer with the given ID.
 *
-* @param id		an organizer ID
+* @param id		[int]	an organizer ID
 */
 ZmTreeView.prototype.getTreeItemById =
 function(id) {
 	return this._treeHash[id];
 }
 
-ZmTreeView.prototype.addSelectionListener = 
-function(listener) {
-	this._evtMgr.addListener(DwtEvent.SELECTION, listener);
-}
-
-ZmTreeView.prototype.removeSelectionListener = 
-function(listener) {
-	this._evtMgr.removeListener(DwtEvent.SELECTION, listener);    	
+/**
+* Returns the tree view's header node
+*/
+ZmTreeView.prototype.getHeaderItem =
+function() {
+	return this._headerItem;
 }
 
 /**
-* Returns the selected tree item. There can only be one.
+* Returns the currently selected organizer. There can only be one.
 */
 ZmTreeView.prototype.getSelected =
 function() {
-	if (this._tree.getSelectionCount() != 1)
+	if (this.getSelectionCount() != 1)
 		return null;
-	return this._tree.getSelection()[0].getData(Dwt.KEY_OBJECT);
+	return this.getSelection()[0].getData(Dwt.KEY_OBJECT);
 }
 
 /**
-* Sets the tree item for the given organizer as selected.
+* Selects the tree item for the given organizer.
 *
-* @param organizer		the organizer to select
-* @param skipNotify		whether to skip notifications
+* @param organizer		[ZmOrganizer]	the organizer to select
+* @param skipNotify		[boolean]*		whether to skip notifications
 */
 ZmTreeView.prototype.setSelected =
 function(organizer, skipNotify) {
 	if (!organizer || !this._treeHash[organizer.id]) return;
-	this._tree.setSelection(this._treeHash[organizer.id], skipNotify);
-}
-
-/**
-* Makes this tree view visible (or not).
-*/
-ZmTreeView.prototype.setVisible =
-function(visible) {
-	this._tree.setVisible(visible);
+	this.setSelection(this._treeHash[organizer.id], skipNotify);
 }
 
 // Private and protected methods
 
-// Draws the children of the given node.
+/*
+* Draws the children of the given node.
+*
+* @param treeNode	[DwtTreeItem]	current node
+* @param organizer	[ZmOrganizer]	its organizer
+* @param omit		[Object]*		hash of organizer IDs to ignore	
+*/
 ZmTreeView.prototype._render =
 function(treeNode, organizer, omit) {
 	var children = organizer.children.getArray();
@@ -150,115 +199,34 @@ function(treeNode, organizer, omit) {
 	DBG.println(AjxDebug.DBG3, "Render: " + organizer.name + ": " + children.length);
 	for (var i = 0; i < children.length; i++) {
 		var child = children[i];
-		if (omit && omit[child.id])
-			continue;
-		var type = this._restrictedType;
-		if (type) {
-			if ((type == ZmOrganizer.FOLDER && child.type != ZmOrganizer.FOLDER) ||
-				(type == ZmOrganizer.SEARCH && !child.hasSearch()))
-				continue;
-		}
+		if (omit && omit[child.id]) continue;
+		if (this._allowedTypes && !this._allowedTypes[child.type]) continue;
 		this._addNew(treeNode, child, null);
 	}
 }
 
-// Adds a tree item node to the tree, and then adds its children.
+/*
+* Adds a tree item node to the tree, and then adds its children.
+*
+* @param parentNode	[DwtTreeItem]	node under which to add the new one
+* @param organizer	[ZmOrganizer]	organizer for the new node
+* @param index		[int]*			position at which to add the new node
+*/
 ZmTreeView.prototype._addNew =
-function(parentNode, newOrganizer, index) {
-	var tn = new DwtTreeItem(parentNode, index, newOrganizer.getName(this._showUnread), newOrganizer.getIcon());
-	tn.setData(Dwt.KEY_ID, newOrganizer.id);
-	tn.setData(Dwt.KEY_OBJECT, newOrganizer);
+function(parentNode, organizer, index) {
+	var ti = new DwtTreeItem(parentNode, index, organizer.getName(this._showUnread), organizer.getIcon());
+	ti.setData(Dwt.KEY_ID, organizer.id);
+	ti.setData(Dwt.KEY_OBJECT, organizer);
+	ti.setData(ZmTreeView.KEY_ID, this.overviewId);
+	ti.setData(ZmTreeView.KEY_TYPE, organizer.type);
 	if (this._dragSrc)
-		tn.setDragSource(this._dragSrc);
+		ti.setDragSource(this._dragSrc);
 	if (this._dropTgt)
-		tn.setDropTarget(this._dropTgt);
-	this._treeHash[newOrganizer.id] = tn;
-	if (newOrganizer.addSep)
+		ti.setDropTarget(this._dropTgt);
+	this._treeHash[organizer.id] = ti;
+
+	if (organizer.id == ZmFolder.ID_TRASH)
 		parentNode.addSeparator();
-	if (newOrganizer.children && newOrganizer.children.size())
-		this._render(tn, newOrganizer);
-}
-
-// Cleans up when this tree is deleted.
-ZmTreeView.prototype._treeDisposeListener =
-function(ev) {
-	// Remove the listener on the model
-	if (this._folderTree)
-		this._folderTree.removeChangeListener(this._dataChangeListener);
-}
-
-// Handles changes to the underlying model.
-ZmTreeView.prototype._changeListener =
-function(ev) {
-	if (ev.type != this.type)
-		return;
-	var organizers = ev.getDetail("organizers");
-	if (!organizers && ev.source)
-		organizers = [ev.source];
-	for (var i = 0; i < organizers.length; i++) {
-		var organizer = organizers[i];
-		// ignore changes for type not allowed in this tree
-		if (this._restrictedType && (organizer.type != this._restrictedType))
-			return;
-		var id = organizer.id;
-		if (id == ZmOrganizer.ID_ROOT) // ignore changes to root element, it doesn't appear in tree view
-			return;
-		var node = this._treeHash[id];
-		var parentNode;
-		if (organizer.parent)
-			parentNode = this._treeHash[organizer.parent.id];
-		else
-			parentNode = this._parent || this._tree;
-		var fields = ev.getDetail("fields");
-		if (ev.event == ZmEvent.E_FLAGS) {
-			var flag = ev.getDetail("flag");
-			var state = ev.getDetail("state");
-			// handle "Mark All As Read"
-			if (node && (flag == ZmItem.FLAG_UNREAD) && !state)
-				node.setText(organizer.getName(false));
-		} else if (ev.event == ZmEvent.E_RENAME) {
-			if (node) {
-				if (parentNode.getNumChildren() == 1) {
-					node.setText(organizer.getName(true));
-				} else {
-					node.dispose();
-					var idx = ZmTreeView.getSortIndex(parentNode, organizer, ZmTreeView.COMPARE_FUNC[organizer.type]);
-					this._addNew(parentNode, organizer, idx);
-				}
-			}
-		} else if (ev.event == ZmEvent.E_DELETE) {
-			if (node) {
-				if (id == ZmFolder.ID_TRASH || id == ZmFolder.ID_SPAM)
-					node.setText(organizer.getName(false));
-				else
-					node.dispose();
-			}
-		} else if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE ||
-				   (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_PARENT]))) {
-			if (node && (ev.event != ZmEvent.E_CREATE))
-				node.dispose(); // remove from current parent
-			if (parentNode) {
-				var idx = ZmTreeView.getSortIndex(parentNode, organizer, ZmTreeView.COMPARE_FUNC[organizer.type]);
-				this._addNew(parentNode, organizer, idx);
-				if (parentNode != this._tree)
-					parentNode.setExpanded(true);
-			}
-		} else if (ev.event == ZmEvent.E_MODIFY) {
-			if (node) {
-				if ((fields && fields[ZmOrganizer.F_NAME]) || (fields && fields[ZmOrganizer.F_UNREAD]) ||
-					((id == ZmFolder.ID_DRAFTS) && (fields && fields[ZmOrganizer.F_TOTAL])))
-					node.setText(organizer.getName(true));
-				if (parentNode && (parentNode != this._tree))
-					parentNode.setExpanded(true);
-			}
-		}
-	}
-}
-
-// Handles selection events (both left and right mouse clicks).
-ZmTreeView.prototype._treeSelectionListener =
-function(ev) {
-	// Only notify if the node is one of our nodes
-	if (ev.item instanceof DwtTreeItem && ev.item.getData(Dwt.KEY_OBJECT))
-		this._evtMgr.notifyListeners(DwtEvent.SELECTION, ev);
+	if (organizer.children && organizer.children.size()) // recursively add children
+		this._render(ti, organizer);
 }

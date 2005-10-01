@@ -89,6 +89,22 @@ ZmTag.ID_FORWARDED	= 36;
 ZmTag.ID_ATTACHED	= 37;
 ZmTag.FIRST_USER_ID	= 64;
 
+/**
+* Tags come from back end as a flat list, and we manually create a root tag, so all tags
+* have the root as parent. If tags ever have a tree structure, then this should do what
+* ZmFolder does (recursively create children).
+*/
+ZmTag.createFromJs =
+function(parent, obj, tree, sorted) {
+	if (obj.id < ZmTag.FIRST_USER_ID)
+		return;
+	var tag = new ZmTag(obj.id, obj.name, ZmTag.checkColor(obj.color), parent, tree, obj.u);
+	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;
+	parent.children.add(tag, index);
+
+	return tag;
+}
+
 ZmTag.sortCompare = 
 function(tagA, tagB) {
 	if (tagA.name.toLowerCase() > tagB.name.toLowerCase()) return 1;
@@ -107,6 +123,11 @@ function(name) {
 	return null;
 }
 
+ZmTag.checkColor =
+function(color) {
+	return ((color != null) && (color >= 0 && color <= ZmTag.MAX_COLOR)) ? color : ZmTag.DEFAULT_COLOR;
+}
+
 ZmTag.prototype.create =
 function(name, color) {
 	color = ZmTag.checkColor(color);
@@ -115,6 +136,20 @@ function(name, color) {
 	tagNode.setAttribute("name", name);
 	tagNode.setAttribute("color", color);
 	var resp = this.tree._appCtxt.getAppController().sendRequest(soapDoc).firstChild;
+}
+
+ZmTag.prototype.getName = 
+function(showUnread, maxLength, noMarkup) {
+	if (this.id == ZmOrganizer.ID_ROOT) {
+		return ZmMsg.tags;
+	} else {
+		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
+	}
+}
+
+ZmTag.prototype.getIcon = 
+function() {
+	return ZmTag.COLOR_ICON[this.color];
 }
 
 ZmTag.prototype.notifyCreate =
@@ -149,31 +184,4 @@ function(color) {
 		fields[ZmOrganizer.F_COLOR] = true;
 		this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
 	}
-}
-
-/**
-* Tags come from back end as a flat list, and we manually create a root tag, so all tags
-* have the root as parent. If tags ever have a tree structure, then this should do what
-* ZmFolder does (recursively create children).
-*/
-ZmTag.createFromJs =
-function(parent, obj, tree, sorted) {
-	if (obj.id < ZmTag.FIRST_USER_ID)
-		return;
-	var tag = new ZmTag(obj.id, obj.name, ZmTag.checkColor(obj.color), parent, tree, obj.u);
-	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;
-	parent.children.add(tag, index);
-
-	return tag;
-}
-
-ZmTag.checkColor =
-function(color) {
-	return ((color != null) && (color >= 0 && color <= ZmTag.MAX_COLOR)) ? color : ZmTag.DEFAULT_COLOR;
-}
-
-
-ZmTag.prototype.getIcon = 
-function() {
-	return ZmTag.COLOR_ICON[this.color];
 }

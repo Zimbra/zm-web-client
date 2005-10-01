@@ -23,18 +23,22 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewFolderDialog(parent, msgDialog, className, folderTree) {
+function ZmNewFolderDialog(parent, msgDialog, className) {
 
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.createNewFolder);
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
-	var folders = [ZmFolder.ID_USER];
 	var omit = new Object();
 	omit[ZmFolder.ID_SPAM] = true;
 	omit[ZmFolder.ID_DRAFTS] = true;
-	this._setFolderTree(folderTree, folders, this._folderTreeCellId, omit);
+	
+	this._setOverview(ZmNewFolderDialog._OVERVIEW_ID, this._folderTreeCellId, [ZmOrganizer.FOLDER], omit);
+	this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
+	this._folderTree = this._appCtxt.getFolderTree();
 }
+
+ZmNewFolderDialog._OVERVIEW_ID = "ZmNewFolderDialog";
 
 ZmNewFolderDialog.prototype = new ZmDialog;
 ZmNewFolderDialog.prototype.constructor = ZmNewFolderDialog;
@@ -46,10 +50,9 @@ function() {
 
 ZmNewFolderDialog.prototype.popup =
 function(folder, loc) {
-	folder = folder || this._folderTree.getById(ZmFolder.ID_USER);
-	if (folder)
-		this._folderTreeView.setSelected(folder);
-	if (folder.id == ZmFolder.ID_USER) {
+	folder = folder ? folder : this._folderTree.root;
+	this._folderTreeView.setSelected(folder);
+	if (folder.id == ZmOrganizer.ID_ROOT) {
 		var ti = this._folderTreeView.getTreeItemById(folder.id);
 		ti.setExpanded(true);
 	}
@@ -92,10 +95,10 @@ function() {
 		msg = ZmMsg.folderNameNoLocation;
 
 	// make sure parent doesn't already have a child by this name
-	if (!msg)
-		msg = ZmFolder.checkParent(name, parentFolder);
+	if (!msg && parentFolder.hasChild(name))
+		msg = ZmMsg.folderOrSearchNameExists;
 
-	return (msg ? this._showError(msg) : [name, parentFolder]);
+	return (msg ? this._showError(msg) : [name, parentFolder, ZmOrganizer.FOLDER]);
 }
 
 ZmNewFolderDialog.prototype._enterListener =

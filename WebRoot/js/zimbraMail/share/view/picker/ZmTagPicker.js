@@ -30,6 +30,8 @@ function ZmTagPicker(parent) {
     this._checkedItems = new Object();
 }
 
+ZmTagPicker._OVERVIEW_ID = "ZmTagPicker";
+
 ZmTagPicker.prototype = new ZmPicker;
 ZmTagPicker.prototype.constructor = ZmTagPicker;
 
@@ -42,11 +44,7 @@ function() {
 
 ZmTagPicker.prototype._setupPicker =
 function(parent) {
-	var tree = this._tree = new DwtTree(parent, DwtTree.CHECKEDITEM_STYLE);
-	var appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	tree.addSelectionListener(new AjxListener(this, ZmTagPicker.prototype._treeListener));
-	this._tagTreeView = new ZmTagTreeView(appCtxt, this._tree, this._tree);
-	this._tagTreeView.set(appCtxt.getTagList());
+	this._setOverview(ZmTagPicker._OVERVIEW_ID, parent, [ZmOrganizer.TAG]);
 }
 
 ZmTagPicker.prototype._updateQuery = 

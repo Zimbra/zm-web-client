@@ -23,10 +23,19 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmTagTreeController(appCtxt, parent, tree) {
+/**
+* Creates a tag tree controller.
+* @constructor
+* @class
+* This class controls a tree display of tags.
+*
+* @author Conrad Damon
+* @param appCtxt	[ZmAppCtxt]		app context
+*/
+function ZmTagTreeController(appCtxt) {
 
 	var dropTgt = new DwtDropTarget(ZmConv, ZmMailMsg, ZmContact);
-	ZmTreeController.call(this, appCtxt, parent, tree, dropTgt);
+	ZmTreeController.call(this, appCtxt, ZmOrganizer.TAG, dropTgt);
 
 	this._listeners[ZmOperation.NEW_TAG] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_TAG] = new AjxListener(this, this._renameListener);
@@ -43,32 +52,17 @@ function() {
 	return "ZmTagTreeController";
 }
 
-ZmTagTreeController.prototype.show = 
-function(tagTree, showUnread) {
-	this._setup();
-	this._treeView.set(tagTree, showUnread);
-}
-
-ZmTagTreeController.prototype.createActionMenu = 
-function(parent, menuItems) {
-	var menu = ZmTreeController.prototype.createActionMenu.call(this, parent, menuItems);
-	var mi = menu.getMenuItem(ZmOperation.COLOR_MENU);
+/*
+* Adds listeners for the color change menu items.
+*/
+ZmTagTreeController.prototype._initializeActionMenus = 
+function() {
+	ZmTreeController.prototype._initializeActionMenus.call(this);
+	var mi = this._actionMenu.getMenuItem(ZmOperation.COLOR_MENU);
 	if (mi) {
 		var items = mi.getMenu().getItems();
 		for (var i = 0; i < items.length; i++)
 			items[i].addSelectionListener(this._listeners[ZmOperation.COLOR_MENU]);
-	}
-
-	return menu;
-}
-
-// Override so we can create special Tags folder menu
-ZmTagTreeController.prototype._setup = 
-function() {
-	ZmTreeController.prototype._setup.call(this);
-	if (!this._customActionMenu) {
-		this._customActionMenu = new Object();
-		this._customActionMenu[ZmFolder.ID_TAGS] = this.createActionMenu(this._shell, [ZmOperation.NEW_TAG]);
 	}
 }
 
@@ -79,18 +73,28 @@ function() {
 * @param id			the currently selected/activated organizer
 */
 ZmTagTreeController.prototype.resetOperations = 
-function(parent, id) {
+function(parent, type, id) {
 	var tag = this._appCtxt.getTagList().getById(id);
-	if (id >= ZmTag.FIRST_USER_ID)
-		parent.enableAll(true);
-	else
+	parent.enableAll(true);
+	if (id < ZmTag.FIRST_USER_ID) // system tag
 		parent.enable([ZmOperation.RENAME_TAG, 
 					   ZmOperation.COLOR_MENU, ZmOperation.DELETE], false);
 	parent.enable(ZmOperation.MARK_ALL_READ, (tag && (tag.numUnread > 0)));
 }
 
-// Private methods
+// Private/protected methods
 
+/*
+* Returns ops available for "Tags" container.
+*/
+ZmTagTreeController.prototype._getHeaderActionMenuOps =
+function() {
+	return [ZmOperation.NEW_TAG];
+}
+
+/*
+* Returns ops available for tags.
+*/
 ZmTagTreeController.prototype._getActionMenuOps =
 function() {
 	var list = new Array();
@@ -102,21 +106,38 @@ function() {
 	return list;
 }
 
-ZmTagTreeController.prototype._createNewTreeView =
+/*
+* Underlying model is a tag list (tag trees are flat).
+*/
+ZmTagTreeController.prototype._getData =
 function() {
-	return (new ZmTagTreeView(this._appCtxt, this.parent, this.tree, this._dragSrc, this._dropTgt));
+	return this._appCtxt.getTagList();
 }
 
+/*
+* Returns a "New Tag" dialog.
+*/
 ZmTagTreeController.prototype._getNewDialog =
 function() {
 	return this._appCtxt.getNewTagDialog();
 }
 
+/*
+* Returns a "Rename Folder" dialog.
+*/
 ZmTagTreeController.prototype._getRenameDialog =
 function() {
 	return this._appCtxt.getRenameTagDialog();
 }
 
+// Actions
+
+/*
+* Changes a tag's color.
+*
+* @param tag	[ZmTag]		a tag
+* @param color	[constant]	its new color
+*/
 ZmTagTreeController.prototype._doColorTag =
 function(params) {
 	try {
@@ -126,25 +147,27 @@ function(params) {
 	}
 }
 
-// Listeners
-
-ZmTagTreeController.prototype._treeViewListener =
-function(ev) {
-	this._actionedOrganizer = ev.item.getData(Dwt.KEY_OBJECT);
-	var org = this._actionedOrganizer; // org is either a tag or the Tags folder
-	if (!(org && ((org instanceof ZmTag) || (org.id == ZmFolder.ID_TAGS)))) return;
-	var id = org.id;
-	if (ev.detail == DwtTree.ITEM_ACTIONED) {
-		var actionMenu = this._customActionMenu[id] ? this._customActionMenu[id] : this._actionMenu;
-		this.resetOperations(actionMenu, id);
-		actionMenu.popup(0, ev.docX, ev.docY)
-	} else if ((ev.detail == DwtTree.ITEM_SELECTED) && (org instanceof ZmTag) && (org.id >= ZmTag.FIRST_USER_ID)) {
-		var searchController = this._appCtxt.getSearchController();
-		var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
-		searchController.search('tag:"' + org.name + '"', types);
-	}
+/*
+* Called when a left click occurs (by the tree view listener). A search for
+* the tag will be performed.
+*
+* @param tag		ZmTag		tag that was clicked
+*/
+ZmTagTreeController.prototype._itemClicked =
+function(tag) {
+	var searchController = this._appCtxt.getSearchController();
+	var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
+	searchController.search('tag:"' + tag.name + '"', types);
 }
 
+// Listeners
+
+/*
+* Deletes a tag. A dialog will first be displayed asking the user if they
+* are sure they want to delete the tag.
+*
+* @param ev		[DwtUiEvent]	the UI event
+*/
 ZmTagTreeController.prototype._deleteListener = 
 function(ev) {
 	var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
@@ -158,12 +181,24 @@ function(ev) {
 	this._deleteShield.popup();
 }
 
+/*
+* Changes a tag's color.
+*
+* @param ev		[DwtUiEvent]	the UI event
+*/
 ZmTagTreeController.prototype._colorListener = 
 function(ev) {
 	this._schedule(this._doColorTag, {tag: this._getActionedOrganizer(ev), color: ev.item.getData(ZmOperation.MENUITEM_ID)});
 }
 
-// Note: ZmListController's drag listener passes us a two-piece object as srcData.
+/*
+* Handles the potential drop of something onto a tag. Only items may be dropped.
+* The source data is not the items themselves, but an object with the items (data)
+* and their controller, so they can be moved appropriately. Dropping an item onto
+* a tag causes the item to be tagged.
+*
+* @param ev		[DwtDropEvent]		the drop event
+*/
 ZmTagTreeController.prototype._dropListener =
 function(ev) {
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
@@ -182,20 +217,52 @@ function(ev) {
 	}
 }
 
+/*
+* Handles a color change event.
+*
+* @param ev			[ZmEvent]		a change event
+* @param treeView	[ZmTreeView]	a tree view
+*/
+ZmTagTreeController.prototype._changeListener =
+function(ev, treeView) {
+	var fields = ev.getDetail("fields");
+	if (ev.event == ZmEvent.E_MODIFY && ((fields && fields[ZmOrganizer.F_COLOR]))) {
+		var tag = ev.source;
+		var node = treeView.getTreeItemById(tag.id);
+		if (node)
+			node.setImage(ZmTag.COLOR_ICON[tag.color]);
+	} else {
+		ZmTreeController.prototype._changeListener.call(this, ev, treeView);
+	}
+}
+
 // Callbacks
 
+/*
+* Called when a "New Tag" dialog is submitted. This override is necessary because we
+* need to pass the tag color to _doCreate().
+* 
+* @param 0	[string]	name of the new tag
+* @param 1	[constant]	color of the new tag
+*/
 ZmTagTreeController.prototype._newCallback =
 function(args) {
-	this._schedule(this._doCreate, {name: args[0], color: args[1], parent: args[2]});
+	this._schedule(this._doCreate, {name: args[0], color: args[1]});
 	this._clearDialog(this._getNewDialog());
 }
 
 // Actions
 
+/*
+* Creates a new tag.
+*
+* @param name	[string]	name of the new tag
+* @param color	[constant]	color of the new tag
+*/
 ZmTagTreeController.prototype._doCreate =
 function(params) {
-	var parent = params.parent || this._appCtxt.getTagList().root;
 	try {
+		var parent = this._appCtxt.getTagList().root;
 		parent.create(params.name, params.color);
 	} catch (ex) {
 		if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {

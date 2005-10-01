@@ -346,9 +346,9 @@ function(ev) {
 }
 
 ZmListController.prototype._popdownActionListener = 
-function(ev) {
+function() {
 	if (!this._pendingActionData)
-		this._listView[this._currentView].handleActionPopdown(ev);
+		this._listView[this._currentView].handleActionPopdown();
 }
 
 // Operation listeners
@@ -595,7 +595,7 @@ function(ev) {
 ZmListController.prototype._newFolderCallback =
 function(args) {
 	this._appCtxt.getNewFolderDialog().popdown();
-	var ftc = this._appCtxt.getOverviewPanelController().getFolderTreeController();
+	var ftc = this._appCtxt.getOverviewController().getController(ZmOrganizer.FOLDER);
 	this._schedule(ftc._doCreate, {name: args[0], parent: args[1]});
 }
 
@@ -603,7 +603,7 @@ function(args) {
 ZmListController.prototype._newTagCallback =
 function(args) {
 	this._appCtxt.getNewTagDialog().popdown();
-	var ttc = this._appCtxt.getOverviewPanelController().getTagTreeController();
+	var ttc = this._appCtxt.getOverviewController().getController(ZmOrganizer.TAG);
 	this._schedule(ttc._doCreate, {name: args[1], color: args[2]});
 	this._creatingTag = args[0];
 }

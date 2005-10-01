@@ -30,6 +30,8 @@ function ZmFolderPicker(parent) {
     this._checkedItems = new AjxVector();
 }
 
+ZmFolderPicker._OVERVIEW_ID = "ZmFolderPicker";
+
 ZmFolderPicker.prototype = new ZmPicker;
 ZmFolderPicker.prototype.constructor = ZmFolderPicker;
 
@@ -42,20 +44,8 @@ function() {
 
 ZmFolderPicker.prototype._setupPicker =
 function(parent) {
-	var tree = this._tree = new DwtTree(parent, DwtTree.CHECKEDITEM_STYLE);
-	var appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	tree.addSelectionListener(new AjxListener(this, this._treeListener));
-	this._folderTreeView = new ZmFolderTreeView(appCtxt, this._tree, this._tree);
-	this._folderTreeView._restrictedType = ZmOrganizer.FOLDER;
-	var folders = [ZmFolder.ID_USER];
-	this._folderTreeView.set(appCtxt.getFolderTree(), folders, false);
-	// Remove the checkbox for My Folders, and expand it
-	if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED)) {
-		var ti = this._folderTreeView.getTreeItemById(ZmFolder.ID_USER);
-		Dwt.setVisible(ti._checkBoxCell, false);
-		ti.setExpanded(true);
-		ti.setVisible(false, true);
-	}
+	this._setOverview(ZmFolderPicker._OVERVIEW_ID, parent, [ZmOrganizer.FOLDER], [ZmOrganizer.FOLDER]);
+	this._twiddle();
 }
 
 ZmFolderPicker.prototype._updateQuery = 
@@ -90,4 +80,18 @@ function(ev) {
  		}
 		this._updateQuery();
  	}
+}
+
+// Hide saved searches
+ZmFolderPicker.prototype._twiddle =
+function() {
+	for (var i in this._treeView) {
+		var treeView = this._treeView[i];
+		for (var id in treeView._treeHash) {
+			var ti = treeView._treeHash[id];
+			var organizer = ti.getData(Dwt.KEY_OBJECT);
+			if (organizer.type == ZmOrganizer.SEARCH)
+				ti.setVisible(false);
+		}
+	}
 }

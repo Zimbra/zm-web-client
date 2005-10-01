@@ -27,7 +27,15 @@
 * Creates an empty ZmDialog.
 * @constructor
 * @class
-* This class provides a common place for code used various dialogs for creating/renaming tags and folders.
+* This class is a base class for miscellaneous organizer-related dialogs.
+*
+* @author Conrad Damon
+* @param parent			[DwtControl]	parent widget
+* @param msgDialog		[DwtMsgDialog]*	message dialog
+* @param className		[string]*		CSS class
+* @param title			[string]*		dialog title
+* @param extraButtons	[Array]*		buttons to show in addition to standard set
+* @param view			[DwtControl]*	dialog contents
 */
 function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 
@@ -46,13 +54,19 @@ function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 		this._msgDialog = this._appCtxt.getMsgDialog();
 	}
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
+	
+	this._treeView = new Object();
+	this._opc = this._appCtxt.getOverviewController();
 }
 
 ZmDialog.prototype = new DwtDialog;
 ZmDialog.prototype.constructor = ZmDialog;
 
+ZmDialog.prototype._contentHtml = function () {return "";};
+ZmDialog.prototype._okButtonListener = function () {};
+
 ZmDialog.prototype.setView =
-function (newView, noReset) {
+function(newView, noReset) {
 	this.reset();
 	if (newView) {
 		var el = newView.getHtmlElement();
@@ -65,21 +79,7 @@ function (newView, noReset) {
 ZmDialog.prototype.popup =
 function(tag, loc) {
 	DwtDialog.prototype.popup.call(this, loc);
-// 	var action = new AjxTimedAction();
-// 	action.method = this.focus;
-// 	action.obj = this;
-// 	AjxTimedAction.scheduleAction(action, 5);
 }
-
-/* Child classes should implement this */
-ZmDialog.prototype._contentHtml = function () {return "";}
-ZmDialog.prototype._okButtonListener = function (event) {};
-
-// ZmDialog.prototype.focus = 
-// function () {
-// 	if (this._nameField)
-// 		this._nameField.focus();
-// }
 
 ZmDialog.prototype.reset =
 function() {
@@ -96,15 +96,27 @@ function(fieldId) {
 	this.addEnterListener(new AjxListener(this, this._enterListener));
 }
 
-ZmDialog.prototype._setFolderTree =
-function(folderTree, folders, fieldId, omit, noRender) {
-	this._folderTree = folderTree;
-	this._tree = new DwtTree(this, DwtTree.SINGLE_STYLE, "FolderTree");
-	this._tree.setScrollStyle(DwtControl.SCROLL);
-	this._folderTreeView = new ZmFolderTreeView(this._appCtxt, this._tree, this._tree);
-	if (!noRender)
-		this._folderTreeView.set(this._folderTree, folders, false, omit);
-	Dwt.getDomObj(this._doc, fieldId).appendChild(this._tree.getHtmlElement());
+ZmDialog.prototype._setOverview =
+function(overviewId, fieldId, treeIds, omit) {
+	this._createOverview(overviewId, fieldId);
+	this._renderOverview(overviewId, treeIds, omit);
+}
+
+ZmDialog.prototype._createOverview =
+function(overviewId, fieldId) {
+	var overview = this._opc.createOverview({overviewId: overviewId, overviewClass: "dialogOverview",
+											 headerClass: "DwtTreeItem"});
+	Dwt.getDomObj(this._doc, fieldId).appendChild(overview.getHtmlElement());
+}
+
+ZmDialog.prototype._renderOverview =
+function(overviewId, treeIds, omit) {
+	this._opc.set(overviewId, treeIds, omit);
+	for (var i = 0; i < treeIds.length; i++) {
+		var treeView = this._treeView[treeIds[i]] = this._opc.getTreeView(overviewId, treeIds[i]);
+		var hi = treeView.getHeaderItem();
+		hi.enableSelection(true);
+	}
 }
 
 ZmDialog.prototype._getInputFields = 

@@ -36,32 +36,33 @@ ZmSearchFolder.prototype.constructor = ZmSearchFolder;
 
 ZmSearchFolder.ID_ROOT = ZmOrganizer.ID_ROOT;
 
-/**
-* Creates a new saved search.
-*
-* @param name		the name of the saved search
-* @param search		a search object which contains the details of the search
-* @param parentId	ID of the parent (present only if parent is a folder)
-*/
-ZmSearchFolder.prototype.create =
-function(name, search, parentId) {
-	var soapDoc = AjxSoapDoc.create("CreateSearchFolderRequest", "urn:zimbraMail");
-	var searchNode = soapDoc.set("search");
-	searchNode.setAttribute("name", name);
-	searchNode.setAttribute("query", search.query);
-	if (search.types) {
-		var a = search.types.getArray();
-		if (a.length) {
-			var typeStr = new Array();
-			for (var i = 0; i < a.length; i++)
-				typeStr.push(ZmSearch.TYPE[a[i]]);
-			searchNode.setAttribute("types", typeStr.join(","));
+ZmSearchFolder.createFromJs =
+function(parent, obj, tree) {
+	if (!(obj && obj.id)) return;
+	
+	// check ID - can't be lower than root, or in tag range
+	if (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID && obj.id < ZmFolder.FIRST_USER_ID)) return;
+
+	var types = obj.types ? obj.types.split(",") : null;
+	var folder = new ZmSearchFolder(obj.id, obj.name, parent, tree, obj.u, obj.query, types, obj.sortBy);
+
+	// a search may only contain other searches
+	if (obj.search && obj.search.length) {
+		for (var i = 0; i < obj.search.length; i++) {
+			var childFolder = ZmSearchFolder.createFromJs(folder, obj.search[i], tree);
+			if (childFolder)
+				folder.children.add(childFolder);
 		}
 	}
-	if (search.sortBy)
-		searchNode.setAttribute("sortBy", search.sortBy);
-	var id = parentId || this.id;
-	var id = Math.max(id, ZmFolder.ID_ROOT);
-	searchNode.setAttribute("l", id);
-	var resp = this.tree._appCtxt.getAppController().sendRequest(soapDoc).firstChild;
+
+	return folder;
+}
+
+ZmSearchFolder.prototype.getName = 
+function(showUnread, maxLength, noMarkup) {
+	if (this.id == ZmOrganizer.ID_ROOT) {
+		return ZmMsg.searches;
+	} else {
+		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
+	}
 }

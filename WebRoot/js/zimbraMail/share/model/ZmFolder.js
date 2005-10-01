@@ -35,10 +35,8 @@ ZmFolder.prototype.constructor = ZmFolder;
 ZmFolder.SEP = "/";
 
 // system folders (see Mailbox.java in ZimbraServer for positive integer constants)
-ZmFolder.ID_OTHER			= -4;	// used for tcon value (see below)
-ZmFolder.ID_SEARCH			= -3;	// container
-ZmFolder.ID_SEP				= -2;	// separator
-ZmFolder.ID_USER			= -1;	// container
+ZmFolder.ID_OTHER			= -2;	// used for tcon value (see below)
+ZmFolder.ID_SEP				= -1;	// separator
 ZmFolder.ID_ROOT = ZmOrganizer.ID_ROOT;
 ZmFolder.ID_INBOX			= 2;
 ZmFolder.ID_TRASH			= 3;
@@ -58,11 +56,9 @@ ZmFolder.MSG_KEY[ZmFolder.ID_TRASH]		= "trash";
 ZmFolder.MSG_KEY[ZmFolder.ID_SPAM]		= "junk";
 ZmFolder.MSG_KEY[ZmFolder.ID_SENT]		= "sent";
 ZmFolder.MSG_KEY[ZmFolder.ID_DRAFTS]	= "drafts";
-ZmFolder.MSG_KEY[ZmFolder.ID_USER]		= "folders";
 ZmFolder.MSG_KEY[ZmFolder.ID_CONTACTS]	= "contacts";
 ZmFolder.MSG_KEY[ZmFolder.ID_CALENDAR]	= "calendar";
 ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]		= "tags";
-ZmFolder.MSG_KEY[ZmFolder.ID_SEARCH]	= "searches";
 
 // system folder icons
 ZmFolder.IMAGE = new Object();
@@ -71,11 +67,8 @@ ZmFolder.IMAGE[ZmFolder.ID_TRASH]		= "Trash";
 ZmFolder.IMAGE[ZmFolder.ID_SPAM]		= "SpamFolder";
 ZmFolder.IMAGE[ZmFolder.ID_SENT]		= "SentFolder";
 ZmFolder.IMAGE[ZmFolder.ID_DRAFTS]		= "DraftFolder";
-//ZmFolder.IMAGE[ZmFolder.ID_USER]		= "Group";
 ZmFolder.IMAGE[ZmFolder.ID_CONTACTS]	= "ContactsFolder";
 ZmFolder.IMAGE[ZmFolder.ID_CALENDAR]	= "CalendarFolder";
-//ZmFolder.IMAGE[ZmFolder.ID_TAGS]		= "TagFolder";
-//ZmFolder.IMAGE[ZmFolder.ID_SEARCH]	= "SearchFolder";
 
 // name to use within the query language
 ZmFolder.QUERY_NAME = new Object();
@@ -89,15 +82,12 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_CALENDAR]	= "calendar";
 
 // order within the overview panel
 ZmFolder.SORT_ORDER = new Object();
-ZmFolder.SORT_ORDER[ZmFolder.ID_USER]		= 1;
-ZmFolder.SORT_ORDER[ZmFolder.ID_TAGS]		= 2;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SEARCH]		= 3;
-ZmFolder.SORT_ORDER[ZmFolder.ID_INBOX]		= 101;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]		= 102;
-ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]		= 103;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]		= 104;
-ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]		= 105;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]		= 106;
+ZmFolder.SORT_ORDER[ZmFolder.ID_INBOX]		= 1;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]		= 2;
+ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]		= 3;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]		= 4;
+ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]		= 5;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]		= 6;
 
 // character codes for "tcon" attribute in conv action request, which
 // controls which folders are affected
@@ -113,28 +103,26 @@ for (var i in ZmFolder.QUERY_NAME)
 	ZmFolder.QUERY_ID[ZmFolder.QUERY_NAME[i]] = i;
 
 ZmFolder.createFromJs =
-function(parent, obj, tree, isSearch) {
-	if (!obj) return;
-	
+function(parent, obj, tree) {
+	if (!(obj && obj.id)) return;
+
+	// check ID - can't be lower than root, or in tag range
+	if (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID && obj.id < ZmFolder.FIRST_USER_ID)) return;
+
 	var name = ZmFolder.MSG_KEY[obj.id] ? ZmMsg[ZmFolder.MSG_KEY[obj.id]] : obj.name;
-	var folder;
-	if (isSearch) {
-		var types = obj.types ? obj.types.split(",") : null;
-		folder = new ZmSearchFolder(obj.id, obj.name, parent, tree, obj.u, obj.query, types, obj.sortBy);
-	} else if (obj.id <= ZmFolder.LAST_SYSTEM_ID || obj.id >= ZmFolder.FIRST_USER_ID) {
-		folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n);
-	}
-	if (!folder) return;
+	var folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n);
+
+	// a folder may contain other folders or searches
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
-			var childFolder = ZmFolder.createFromJs(folder, obj.folder[i], tree, false);
+			var childFolder = ZmFolder.createFromJs(folder, obj.folder[i], tree);
 			if (childFolder)
 				folder.children.add(childFolder);
 		}
 	}
-	if (obj.search && obj.search.length) {
+	if (parent && obj.search && obj.search.length) {
 		for (var i = 0; i < obj.search.length; i++) {
-			var childFolder = ZmFolder.createFromJs(folder, obj.search[i], tree, true);
+			var childFolder = ZmSearchFolder.createFromJs(folder, obj.search[i], tree);
 			if (childFolder)
 				folder.children.add(childFolder);
 		}
@@ -172,47 +160,41 @@ function(name) {
 	return ZmOrganizer.checkName(name);
 }
 
-/**
-* Checks that a folder with the given name can be created under the given parent.
-* Returns an error message if the parent already has a child by the same name.
-* Top-level folders and saved searches share a namespace on the server (USER_ROOT),
-* so this method also checks for that case.
-*
-* @param name		a folder name
-* @param parent		the parent folder
-*/
-ZmFolder.checkParent =
-function(name, parent) {
-	// make sure folder with this name doesn't already exist at this level
-	if (parent.hasChild(name) || (parent.id < 0 && ZmFolder.QUERY_ID[name.toLowerCase()]))
-		return ZmMsg.folderNameExists;
-
-	// check for top-level folder or saved search
-	var root = null;
-	if (parent.id == ZmFolder.ID_USER)
-		root = parent.tree.getById(ZmFolder.ID_SEARCH);
-	else if (parent.id == ZmFolder.ID_SEARCH)
-		root = parent.tree.getById(ZmFolder.ID_USER);
-	if (root && root.hasChild(name))
-		return ZmMsg.folderOrSearchNameExists;
-	
-	return null;
-}
-
 ZmFolder.prototype.toString = 
 function() {
 	return "ZmFolder";
 }
 
+// Searches created here since they may be created under a folder or
+// another search.
 ZmFolder.prototype.create =
-function(name) {
+function(name, search) {
 	if (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_DRAFTS)
 		throw new AjxException("Cannot create subfolder of Spam or Drafts");
-	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
-	var folderNode = soapDoc.set("folder");
-	folderNode.setAttribute("name", name);
-	var id = (this.id > 0) ? this.id : ZmFolder.ID_ROOT;
-	folderNode.setAttribute("l", id);
+
+	if (search) {
+		var soapDoc = AjxSoapDoc.create("CreateSearchFolderRequest", "urn:zimbraMail");
+		var searchNode = soapDoc.set("search");
+		searchNode.setAttribute("name", name);
+		searchNode.setAttribute("query", search.query);
+		if (search.types) {
+			var a = search.types.getArray();
+			if (a.length) {
+				var typeStr = new Array();
+				for (var i = 0; i < a.length; i++)
+					typeStr.push(ZmSearch.TYPE[a[i]]);
+				searchNode.setAttribute("types", typeStr.join(","));
+			}
+		}
+		if (search.sortBy)
+			searchNode.setAttribute("sortBy", search.sortBy);
+		searchNode.setAttribute("l", this.id);
+	} else {
+		var soapDoc = AjxSoapDoc.create(search ? "CreateSearchFolderRequest" : "CreateFolderRequest", "urn:zimbraMail");
+		var folderNode = soapDoc.set("folder");
+		folderNode.setAttribute("name", name);
+		folderNode.setAttribute("l", this.id);
+	}
 	var resp = this.tree._appCtxt.getAppController().sendRequest(soapDoc).firstChild;
 }
 
@@ -262,12 +244,21 @@ function(id) {
 	return false;
 }
 
+/**
+* Handles the creation of a folder or search folder. This folder is the parent
+* of the newly created folder. A folder may hold a folder or search folder,
+* and a search folder may hold another search folder.
+*
+* @param obj		[Object]	a JS folder object from the notification
+* @param isSearch	[boolean]	true if the created object is a search folder
+*/
 ZmFolder.prototype.notifyCreate =
 function(obj, isSearch) {
 	// ignore creates of system folders
 	if (obj.id < ZmFolder.FIRST_USER_ID) return;
 
-	var folder = ZmFolder.createFromJs(this, obj, this.tree, isSearch);
+	var folder = isSearch ? ZmSearchFolder.createFromJs(this, obj, this.tree) :
+							ZmFolder.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
 	this.children.add(folder, index);
 	this._eventNotify(ZmEvent.E_CREATE, folder);
@@ -277,8 +268,6 @@ ZmFolder.prototype.notifyModify =
 function(obj) {
 	var fields = ZmOrganizer.prototype._getCommonFields.call(this, obj);
 	var parentId = obj.l;
-	if (parentId == ZmFolder.ID_ROOT)
-		parentId = (this.type == ZmOrganizer.FOLDER) ? ZmFolder.ID_USER : ZmFolder.ID_SEARCH;
 	if ((parentId != null) && this.parent.id != parentId) {
 		var newParent = this.tree.getById(parentId);
 		this.reparent(newParent);
@@ -330,7 +319,9 @@ function() {
 
 ZmFolder.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
-	if (this.id == ZmFolder.ID_DRAFTS) {
+	if (this.id == ZmOrganizer.ID_ROOT) {
+		return ZmMsg.folders;
+	} else if (this.id == ZmFolder.ID_DRAFTS) {
 		var name = this.name;
 		if (showUnread && this.numTotal > 0) {
 			name = [name, " (", this.numTotal, ")"].join("");
@@ -345,23 +336,25 @@ function(showUnread, maxLength, noMarkup) {
 
 ZmFolder.prototype.getIcon = 
 function() {
-	if (ZmFolder.IMAGE[this.id])
+	if (this.id == ZmOrganizer.ID_ROOT) {
+		return null;
+	} else if (ZmFolder.IMAGE[this.id]) {
 		return ZmFolder.IMAGE[this.id];
-	else
+	} else {
 		return (this.type == ZmOrganizer.SEARCH) ? "SearchFolder": "Folder";
+	}
 }
 
 /**
 * Returns the full folder path as a string.
 *
-* @param includeUser		whether to include "My Folders" at the beginning of the path
+* @param includeRoot		whether to include root name at the beginning of the path
 */
 ZmFolder.prototype.getPath = 
-function(includeUser) {
+function(includeRoot) {
 	var parent = this.parent;
 	var path = this.getName();
-	while (parent && (parent.id != ZmFolder.ID_ROOT) &&
-		   ((parent.id != ZmFolder.ID_USER) || includeUser)) {
+	while (parent && ((parent.id != ZmOrganizer.ID_ROOT) || includeRoot)) {
 		path = parent.getName() + ZmFolder.SEP + path;
 		parent = parent.parent;
 	}
@@ -402,14 +395,14 @@ function(what) {
 				   this.id == ZmFolder.ID_DRAFTS || this.id == ZmFolder.ID_SPAM || 
 				   (!this.isInTrash() && this.hasChild(folder.name)) ||
 				   (folder.type == ZmOrganizer.FOLDER && this.type == ZmOrganizer.SEARCH) ||
-				   (folder.type == ZmOrganizer.SEARCH && this.id == ZmFolder.ID_USER) ||
+				   (folder.type == ZmOrganizer.SEARCH && this.type == ZmOrganizer.FOLDER && this.id == ZmOrganizer.ID_ROOT) ||
 				   (folder.id == this.id));
 	} else {
 		// An item or an array of items is being moved
 		var items = (what instanceof Array) ? what : [what];
 		var item = items[0];
-		if (this.id == ZmFolder.ID_USER) {
-			invalid = true;		// user folder can only contain folders
+		if (this.id == ZmOrganizer.ID_ROOT) {
+			invalid = true;		// container can only have folders/searches
 		} else if (this.type == ZmOrganizer.SEARCH) {
 			invalid = true;		// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {

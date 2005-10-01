@@ -392,8 +392,8 @@ function(ev) {
 ZmSearchController.prototype._saveButtonListener =
 function(ev) {
 	if (this._results && this._results.search) {
-		var ftc = this._appCtxt.getOverviewPanelController().getFolderTreeController();
-		ftc._showDialog(ftc._getNewSearchDialog(), ftc._newSearchCallback, this._results.search);
+		var stc = this._appCtxt.getOverviewController().getController(ZmOrganizer.SEARCH);
+		stc._showDialog(stc._getNewDialog(), stc._newCallback, this._results.search);
 	}
 }
 
