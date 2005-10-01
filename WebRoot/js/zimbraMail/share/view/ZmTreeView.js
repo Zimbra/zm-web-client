@@ -59,14 +59,18 @@ function ZmTreeView(params) {
 	this._treeHash = new Object();
 }
 
+ZmTreeView.KEY_TYPE	= "_type_";
+ZmTreeView.KEY_ID	= "_treeId_";
+
 // compare functions for each type
 ZmTreeView.COMPARE_FUNC = new Object();
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.FOLDER] = ZmFolder.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.TAG] = ZmTag.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.SEARCH] = ZmFolder.sortCompare;
 
-ZmTreeView.KEY_TYPE	= "_type_";
-ZmTreeView.KEY_ID	= "_treeId_";
+// add space after the following items
+ZmTreeView.ADD_SEP = new Object();
+ZmTreeView.ADD_SEP[ZmFolder.ID_TRASH] = true;
 
 // Static methods
 
@@ -225,7 +229,7 @@ function(parentNode, organizer, index) {
 		ti.setDropTarget(this._dropTgt);
 	this._treeHash[organizer.id] = ti;
 
-	if (organizer.id == ZmFolder.ID_TRASH)
+	if (ZmTreeView.ADD_SEP[organizer.id])
 		parentNode.addSeparator();
 	if (organizer.children && organizer.children.size()) // recursively add children
 		this._render(ti, organizer);
