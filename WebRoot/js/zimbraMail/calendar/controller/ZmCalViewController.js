@@ -55,6 +55,8 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._listeners[ZmOperation.NEW_APPT] = new AjxListener(this, this._newApptAction);
 	this._listeners[ZmOperation.NEW_ALLDAY_APPT] = new AjxListener(this, this._newAllDayApptAction);	
 
+	this._maintTimedAction = new AjxTimedAction(this, ZmCalViewController.prototype._maintenanceAction);
+	this._pendingWork = ZmCalViewController.MAINT_NONE;	
 	this.resetApptSummaryCache();
 }
 
@@ -76,6 +78,11 @@ ZmCalViewController.MSG_KEY[ZmCalViewMgr.MONTH_VIEW]		= "viewMonth";
 ZmCalViewController.VIEWS = [ZmCalViewMgr.DAY_VIEW, ZmCalViewMgr.WORK_WEEK_VIEW, ZmCalViewMgr.WEEK_VIEW, ZmCalViewMgr.MONTH_VIEW ];
 
 ZmCalViewController.OPS = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW];
+
+// maintenance needed on views and/or minical
+ZmCalViewController.MAINT_NONE = 0x0; // no work todo
+ZmCalViewController.MAINT_MINICAL = 0x1; // minical needs refresh
+ZmCalViewController.MAINT_VIEW = 0x2; // view needs refersh
 
 ZmCalViewController.prototype.toString =
 function() {
@@ -129,9 +136,7 @@ function(viewName) {
 			workingWeek[i] = (d > 0 && d < 6);
 		}
 		this._miniCalendar.setWorkingWeek(workingWeek);
-		//this._miniCalendar.setSelectionMode(DwtCalendar.DAY);		
-		this._needMiniCalendarUpdate = true;
-		//this.refreshMiniCalendar();
+		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
 		// add mini-calendar to skin
 		var components = new Object();
 		components[ZmAppViewMgr.C_TREE_FOOTER] = this._miniCalendar;
@@ -184,19 +189,7 @@ function(viewName) {
 	
 	this._navToolBar.setText(cv.getCalTitle());
 	
-	if (cv.isFirstSet()) {
-		// schedule	
-		cv.setFirstSet(false);
-		this.refreshView();
-		/*
-		var act = new AjxTimedAction();
-		act.obj = this;
-		act.method = ZmCalViewController.prototype.refreshView;
-		AjxTimedAction.scheduleAction(act, 0);
-		*/
-	} else {
-		this.refreshView();
-	}
+	this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
 }
 
 ZmCalViewController.prototype._getToolBarOps =
@@ -340,7 +333,9 @@ ZmCalViewController.prototype._postShowCallback =
 function() {
 	this.showMiniCalendar(true);
 	this._viewVisible = true;
-	this.refreshView();
+	if (this._needFullRefresh) {
+		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW);	
+	}
 }
 
 ZmCalViewController.prototype._postHideCallback =
@@ -391,7 +386,7 @@ function(date, duration, roll) {
 	var title = this._viewMgr.getCurrentView().getCalTitle();
 	this._navToolBar.setText(title);
 	Dwt.setTitle(title);
-	if (this._currentView == ZmCalViewMgr.WORK_WEEK_VIEW && (date.getDay() == 0 || date.getDay() ==  6)) {
+	if (!roll && this._currentView == ZmCalViewMgr.WORK_WEEK_VIEW && (date.getDay() == 0 || date.getDay() ==  6)) {
 		this.show(ZmCalViewMgr.WEEK_VIEW);
 	}
 }
@@ -735,28 +730,6 @@ function(appt, startDate, endDate, changeSeries) {
 	return true;	
 }
 
-ZmCalViewController.prototype._miniCalDateRangeListener =
-function(ev) {
-	//this._schedule(this._doPopulateMiniCal, {view : ev.item, startTime: ev.start.getTime(), endTime: ev.end.getTime()});
-	this._doPopulateMiniCal({view : ev.item, startTime: ev.start.getTime(), endTime: ev.end.getTime()});	
-}
-
-ZmCalViewController.prototype._doPopulateMiniCal =
-function(params)
-{
-	try {
-		var result = this.getApptSummaries(params.startTime, params.endTime, true);
-		var highlight = new Array();
-		for (var i=0; i < result.size(); i++) {
-			var sd = result.get(i).getStartDate();
-			highlight[sd.getFullYear()+"/"+sd.getMonth()+"/"+sd.getDate()] = sd;
-		}
-		params.view.setHilite(highlight, true, true);
-	} catch (ex) {
-		this._handleException(ex, this._doPopulateMiniCal, params, false);
-	}
-}
-
 ZmCalViewController.prototype.getDayToolTipText =
 function(date)
 {
@@ -772,36 +745,16 @@ function(date)
 	}
 }
 
+ZmCalViewController.prototype._miniCalDateRangeListener =
+function(ev) {
+	this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
+}
+
 ZmCalViewController.prototype._dateRangeListener =
 function(ev) {
-	//this._schedule(this._doPopulateView, {view : ev.item, startTime: ev.start.getTime(), endTime: ev.end.getTime()});
-	this._doPopulateView({view : ev.item, startTime: ev.start.getTime(), endTime: ev.end.getTime()});	
+	ev.item.setNeedsRefresh(true);
+	this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
 }
-
-ZmCalViewController.prototype._doPopulateView =
-function(params)
-{
-	// first set, get on a refresh
-	if (params.view.isFirstSet())
-		return;
-
-	try {
-		var list = this._list = this.getApptSummaries(params.startTime, params.endTime, params.view._fanoutAllDay());
-		params.view.set(list);
-	} catch (ex) {
-		this._handleException(ex, this._doPopulateView, params, false);
-	}
-}
-
-/* 
-ZmCalViewController.prototype._getActionMenuOps =
-function() {
-	var list = this._contactOps();
-	list.push(ZmOperation.SEP);
-	list = list.concat(this._standardActionMenuOps());
-	return list;
-}
-*/
 
 ZmCalViewController.prototype._getViewType = 
 function() {
@@ -1057,8 +1010,6 @@ function(start,end) {
 	return apptList;
 }
 
-ZmCalViewController.CACHING_ENABLED = true;
-
 ZmCalViewController.prototype.resetApptSummaryCache =
 function() {
 	this._cachedApptSummaries = {};
@@ -1081,39 +1032,67 @@ function(apptList) {
 * caller is responsible for exception handling. caller should also not modify appts in this list directly.
 */
 ZmCalViewController.prototype.getApptSummaries =
-function(start,end, fanoutAllDay) {
+function(start,end, fanoutAllDay, callback, nowait) {
 	var list;
 	
-	if (ZmCalViewController.CACHING_ENABLED) {
-		list = this._getCachedVector(start, end, fanoutAllDay);
-		if (list != null) return list; // already cloned
-		var apptList = this._findCachedApptSummaries(start,end);
-		if (apptList != null) {
-			list = ZmApptList.toVector(apptList, start, end, fanoutAllDay);
-			this._cachedApptVectors[start+":"+end+":"+fanoutAllDay] = list;
-			return list.clone();
-		}
+	list = this._getCachedVector(start, end, fanoutAllDay);
+	if (list != null) {
+		if (callback) callback.run(list);
+		return list; // already cloned
+	}
+	var apptList = this._findCachedApptSummaries(start,end);
+	if (apptList != null) {
+		list = ZmApptList.toVector(apptList, start, end, fanoutAllDay);
+		this._cachedApptVectors[start+":"+end+":"+fanoutAllDay] = list;
+		var newList = list.clone();
+		if (callback) callback.run(newList);
+		return newList;
 	}
 
-	apptList = new ZmApptList(this._shell.getData(ZmAppCtxt.LABEL));
+	if (nowait) return null;
+
 	var soapDoc = AjxSoapDoc.create("GetApptSummariesRequest", "urn:zimbraMail");
 	var method = soapDoc.getMethod();
 	method.setAttribute("s", start);
 	method.setAttribute("e", end);
-	var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
-	apptList.loadFromSummaryJs(resp.GetApptSummariesResponse);
+
+	if (callback) {
+		var respCallback = new AjxCallback(this, this.__getApptSummariesResponse, [callback, start, end, fanoutAllDay]);
+		this._appCtxt.getAppController().sendRequest(soapDoc, respCallback);	
+	} else {
+		var response = this._appCtxt.getAppController().sendRequest(soapDoc);
+		return this.__getApptSummariesResponse([null, start, end, fanoutAllDay, response]);
+	}
+}
+
+ZmCalViewController.prototype.__getApptSummariesResponse =	
+function(args) {
+	var callback = args[0];
+	var start = args[1];
+	var end = args[2];
+	var fanoutAllDay = args[3];
+	var response = args[4];
+
+	if (!response) return; // TODO: mark both as needing refresh?
+	if (response instanceof ZmCsfeException) {
+		if (callback) callback.run(response);	
+		return;
+	}
 	
-	if (ZmCalViewController.CACHING_ENABLED)
-		this._updateCachedIds(apptList);
+	var apptList = new ZmApptList(this._shell.getData(ZmAppCtxt.LABEL));	
+
+	apptList.loadFromSummaryJs(response.GetApptSummariesResponse);
+
+	this._updateCachedIds(apptList);
 	
 	// cache it 
-	if (ZmCalViewController.CACHING_ENABLED)
-		this._cachedApptSummaries[start+":"+end] = {start: start, end:end, list: apptList};	
+	this._cachedApptSummaries[start+":"+end] = {start: start, end:end, list: apptList};	
 	list = ZmApptList.toVector(apptList, start, end, fanoutAllDay);	
-	if (ZmCalViewController.CACHING_ENABLED)	
-		this._cachedApptVectors[start+":"+end+":"+fanoutAllDay] = list;
-	
-	return list.clone();
+	this._cachedApptVectors[start+":"+end+":"+fanoutAllDay] = list;
+
+	var newList = list.clone();
+	if (callback) callback.run(newList);	
+	return newList;
 }
 
 ZmCalViewController.prototype.notifyCreate =
@@ -1150,18 +1129,18 @@ function(ids) {
 	}
 }
 
+// this gets called afer all the above notify* methods get called
 ZmCalViewController.prototype.notifyComplete =
 function(ids) {
 	//DBG.println("ZmCalViewController: notifyComplete!");
 	if (this._clearCache) {
-		var act = new AjxTimedAction();
-		act.obj = this;
-		act.method = ZmCalViewController.prototype._refreshAction;
+		var act = new AjxTimedAction(this, ZmCalViewController.prototype._refreshAction);
 		AjxTimedAction.scheduleAction(act, 0);
 		this._clearCache = false;			
 	}
 }
 
+// this gets called when we get a refresh block from the server
 ZmCalViewController.prototype.refreshHandler =
 function() {
 	//DBG.println("ZmCalViewController in refreshHandler");
@@ -1179,35 +1158,100 @@ function() {
 		this.resetApptSummaryCache();
 		// mark all views as dirty
 		this._viewMgr.setNeedsRefresh(true);
-		// mark mini cal as dirty
-		this._needMiniCalendarUpdate = true;
-		if (this._viewVisible) this.refreshView();
+		if (this._viewVisible) {
+			this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW);
+		} else {
+			// delay until we are visible
+			this._needFullRefresh = true;
+		}
 	}
 }
 
-ZmCalViewController.prototype.refreshMiniCalendar =
-function() {
-	var cal = this._miniCalendar;
-	var calRange = cal.getDateRange();
-	var params = {startTime:calRange.start.getTime(), endTime: calRange.end.getTime(), view: cal};
-	this._doPopulateMiniCal(params);
+ZmCalViewController.prototype._maintErrorHandler =
+function(params) {
+	// TODO: resched work?
 }
 
-ZmCalViewController.prototype.refreshView = 
-function () {
+ZmCalViewController.prototype._maintGetApptCallback =
+function(args) {
+	//DBG.println("ZmCalViewController.__maintGetApptCallback: entering");
+	var work = args[0];
+	var view = args[1];
+	var list = args[2];
+
+	// TODO: turn off shell busy
+	
+	if (list instanceof ZmCsfeException) {	
+		this._handleError(list, this._maintErrorHandler, null);
+		return;
+	}
+
+	if (work & ZmCalViewController.MAINT_MINICAL) {	
+		//DBG.println("ZmCalViewController.__maintGetApptCallback: minical!");
+		var highlight = new Array();
+		for (var i=0; i < list.size(); i++) {
+			var sd = list.get(i).getStartDate();
+			highlight[sd.getFullYear()+"/"+sd.getMonth()+"/"+sd.getDate()] = sd;
+		}
+		this._miniCalendar.setHilite(highlight, true, true);
+		
+		if (work & ZmCalViewController.MAINT_VIEW) {
+			// now schedule view for maint
+			//DBG.println("ZmCalViewController.__maintGetApptCallback: now scheduling view!");
+			this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
+			return;
+		}
+	} else if (work & ZmCalViewController.MAINT_VIEW) {
+		//DBG.println("ZmCalViewController.__maintGetApptCallback: view!");
+		this._list = list;
+		view.set(list);
+	}
+}
+
+ZmCalViewController.prototype._scheduleMaintenance =
+function(work) {
+	//DBG.println("ZmCalViewController._scheduleMaintenance: entering");
+	// schedule timed action
+	if (this._pendingWork == ZmCalViewController.MAINT_NONE) {
+		//DBG.println("ZmCalViewController._scheduleMaintenance: scheduled!");	
+		//DBG.println("ZmCalViewController in refreshHandler");
+		AjxTimedAction.scheduleAction(this._maintTimedAction, 0);
+	} else {
+		//DBG.println("ZmCalViewController._scheduleMaintenance: already scheduled");
+	}
+	this._pendingWork |= work;	
+}
+
+ZmCalViewController.prototype._maintenanceAction =
+function() {
+	var work = this._pendingWork;
+	this._pendingWork = ZmCalViewController.MAINT_NONE;
+
+	//DBG.println("ZmCalViewController._maintenanceAction: maint");
+
 	if (this._viewMgr == null)
 		return;
 
-	if (this._needMiniCalendarUpdate) {
-		this.refreshMiniCalendar();
-		this._needMiniCalendarUpdate = false;
-	}
-
-	var cV = this.getCurrentView();
-	if (cV && cV.needsRefresh()) {
-		var rt = cV.getTimeRange();
-		var params = {startTime:rt.start, endTime :rt.end, view : cV};		
-		this._doPopulateView(params);	
-		cV.setNeedsRefresh(false);			
+	//DBG.println("maintenanceAction ====");
+	// do minical first, since it might load in a whole month worth of appts 
+	// the main view can use
+	if (work & ZmCalViewController.MAINT_MINICAL) {
+		//DBG.println("--- update minical!");
+		var calRange = this._miniCalendar.getDateRange();
+		var cb = new AjxCallback(this, this._maintGetApptCallback, [ work, null]);
+		// TODO: turn on shell busy
+		this.getApptSummaries(calRange.start.getTime(), calRange.end.getTime(), true, cb);
+		// return. callback will check and see if MAINT_VIEW is nededed as well.
+		return;
+	} else if (work & ZmCalViewController.MAINT_VIEW) {
+		var view = this.getCurrentView();
+		if (view && view.needsRefresh()) {
+			//DBG.println("--- update view!");	
+			var rt = view.getTimeRange();
+			var cb = new AjxCallback(this, this._maintGetApptCallback, [work, view]);
+			// TODO: turn on shell busy
+			this.getApptSummaries(rt.start, rt.end, view._fanoutAllDay(), cb);
+			view.setNeedsRefresh(false);
+		}
 	}
 }

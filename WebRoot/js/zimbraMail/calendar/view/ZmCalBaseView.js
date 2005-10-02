@@ -62,7 +62,6 @@ function ZmCalBaseView(parent, className, posStyle, view) {
 	this._timeRangeEnd = 0;
 	this.addControlListener(new AjxListener(this, this._controlListener));	
 	this._createHtml();
-	this._firstSet = true;
 	this._needsRefresh = true;
 }
 
@@ -400,16 +399,6 @@ function() {
 ZmCalBaseView.prototype.setNeedsRefresh = 
 function(refresh) {
 	 this._needsRefresh = refresh;
-}
-
-ZmCalBaseView.prototype.isFirstSet = 
-function() {
-	return this._firstSet;
-}
-
-ZmCalBaseView.prototype.setFirstSet = 
-function(set) {
-	this._firstSet = set;
 }
 
 ZmCalBaseView.prototype._getItemId =
