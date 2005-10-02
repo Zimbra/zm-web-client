@@ -35,7 +35,7 @@ function ZmMailMsgView(parent, className, posStyle, mode) {
 	this._tagCellId = Dwt.getNextId();
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
-	this.setScrollStyle(DwtControl.SCROLL);
+	this.setScrollStyle(DwtControl.CLIP);
 
 	// customize per "mode"
 	if (mode == ZmController.MSG_NEW_WIN_VIEW) {
