@@ -376,7 +376,7 @@ function(chunk) {
 	this._removeAll();
 
 	var list = this._getMatches(str);
-	if (list.length == 1 && this._data.isUniqueValue(str)) {
+	if (list && list.length == 1 && this._data.isUniqueValue(str)) {
 		DBG.println(AjxDebug.DBG2, "unique match on email, hiding autocomplete list");
 		return {text: text, start: start};
 	}
