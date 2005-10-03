@@ -406,7 +406,7 @@ function(startDate, duration) {
 	var newAppt = new ZmAppt(this._appCtxt);
 	newAppt.name = ZmMsg.newAppt;
 	newAppt.setStartDate(AjxDateUtil.roundTimeMins(startDate, 30));
-	newAppt.setEndDate(newAppt.getStartTime() + (duration ? duration : ZmAppointmentView.DEFAULT_APPOINTMENT_DURATION));
+	newAppt.setEndDate(newAppt.getStartTime() + (duration ? duration : ZmAppointmentDialog.DEFAULT_APPOINTMENT_DURATION));
 	newAppt.resetRepeatWeeklyDays();
 	newAppt.resetRepeatMonthlyDayList();
 	newAppt.repeatYearlyMonthsList = startDate.getMonth();
@@ -449,7 +449,7 @@ function(ev) {
 ZmCalViewController.prototype._getAppointmentDialog = function () {
 	if (this._apptView == null) {
 		ZmUserSchedule.setCommandSender(this);
-		this._apptView = new ZmAppointmentView(this._container, null, true);
+		this._apptView = new ZmAppointmentDialog(this._container, null, true);
 		this._apptDialog = new ZmDialog (this._shell, null, null, ZmMsg.appointmentNewTitle, null, this._apptView);
 		this._apptDialog._disableFFhack();
 		// create listeners for the save and cancel buttons

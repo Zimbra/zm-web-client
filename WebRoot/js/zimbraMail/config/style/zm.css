@@ -211,7 +211,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 { width: 60px; }
 
 .DwtDialog .ColorButton,		.DwtDialog .ColorButton-activated,			.DwtDialog .ColorButton-triggered,
-.ZmAppointmentView .DwtButton,	.ZmAppointmentView .DwtButton-activated,	.ZmAppointmentView .DwtButton-triggered,
+.ZmAppointmentDialog .DwtButton,	.ZmAppointmentDialog .DwtButton-activated,	.ZmAppointmentDialog .DwtButton-triggered,
 .ZmFreeBusyView .DwtButton,		.ZmFreeBusyView .DwtButton-activated,		.ZmFreeBusyView .DwtButton-triggered
 { width: 80px; }
 
@@ -963,7 +963,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 /** appointment detail **/
 
-.ZmAppointmentView {
+.ZmAppointmentDialog {
   /*position:relative;
   width:400px;*/
   overflow:auto;
@@ -971,7 +971,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   max-height:470px;
 }
 
-.ZmAppointmentView iframe {
+.ZmAppointmentDialog iframe {
   margin:none;
   padding:none;
   border:none;
@@ -980,25 +980,25 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   width:100%;
 }
 
-.ZmAppointmentView_attachTable {
+.ZmAppointmentDialog_attachTable {
   background-color: #EEEEEE;
   table-layout: fixed;
   border-spacing: 0px;
 }
 
-.ZmAppointmentView_attachTable td{
+.ZmAppointmentDialog_attachTable td{
   padding:2px;
 }
 
-.ZmAppointmentView_attachTable input{
+.ZmAppointmentDialog_attachTable input{
   /*width:100%;*/
 }
 
-.ZmAppointmentView .xform_error {
+.ZmAppointmentDialog .xform_error {
   color:red;
 }
 
-.ZmAppointmentView .xform_container {
+.ZmAppointmentDialog .xform_container {
   padding:1px;
 }
 
