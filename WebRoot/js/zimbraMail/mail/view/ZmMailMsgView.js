@@ -777,7 +777,7 @@ function(msg, preferHtml) {
 		if (preferHtml)
 			msgNode.setAttribute("html", "1");
 		var command = new ZmCsfeCommand();
-		var resp = command.invoke(soapDoc).Body.GetMsgResponse;
+		var resp = command.invoke({soapDoc: soapDoc}).Body.GetMsgResponse;
 		msg._loadFromDom(resp.m[0]);
 	}
 

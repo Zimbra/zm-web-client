@@ -1466,7 +1466,7 @@ ZmUserSchedule.getSchedules = function (start, end, uids) {
 	} else {
 		// testing only
 		var command = new ZmCsfeCommand();
-		resp = command.invoke(soapDoc, null, null, null, false);
+		resp = command.invoke({soapDoc: soapDoc});
 		resp = resp.Body;
 	}
 	if (resp != null) {
@@ -1534,7 +1534,7 @@ ZmUserSchedule.prototype.getSchedule = function (start, end, uid, force) {
 		} else {
 			// testing only
 			var command = new ZmCsfeCommand();
-			var resp = command.invoke(soapDoc, null, null, null, false).Body;
+			var resp = command.invoke({soapDoc: soapDoc}).Body;
 		}
 		var user = resp.GetFreeBusyResponse.usr[0];
 		ZmUserSchedule._parseOneScheduleResponse(user, this);

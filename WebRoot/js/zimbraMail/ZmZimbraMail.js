@@ -64,6 +64,9 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._needOverviewLayout = false;
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);	
 
+	this._useXml = this._appCtxt.get(ZmSetting.USE_XML);
+	this._logRequest = this._appCtxt.get(ZmSetting.LOG_REQUEST);
+
 	this._schedule(this.startup, {app: app});
 }
 
@@ -278,37 +281,36 @@ function(settings) {
 
 ZmZimbraMail.prototype.sendRequest = 
 function(soapDoc, callback) {
-	var useXml = this._appCtxt.get(ZmSetting.USE_XML);
 	var asyncMode = (callback != null);
-	var asyncCallback = callback ? new AjxCallback(this, this._handleResponse, [true, useXml, callback]) : null;
+	var asyncCallback = callback ? new AjxCallback(this, this._handleResponse, [true, callback]) : null;
 	var command = new ZmCsfeCommand();
-	var response = command.invoke(soapDoc, false, null, null, useXml, false, this._changeToken, asyncCallback);
+	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken, callback: asyncCallback, logRequest: this._logRequest}
+	var response = command.invoke(params);
 	if (!asyncMode)
-		return this._handleResponse([false, useXml, null, response]);
+		return this._handleResponse([false, null, response]);
 }
 
 ZmZimbraMail.prototype._handleResponse =
 function(args) {
 	var asyncMode = args[0];
-	var useXml = args[1];
-	var callback = args[2];
-	var result = args[3];
+	var callback = args[1];
+	var result = args[2];
 
 	var gotError = (result instanceof ZmCsfeException);
 	if (!gotError) {
-		if (!useXml && result.Header)
+		if (!this._useXml && result.Header)
 			this._handleHeader(result.Header);
 		this._checkOverviewLayout();
 	}
 	this._actionedIds = null; // reset for next request
 
-	// we just got activity, reset polling action		
+	// we just got activity, reset polling action
 	if (this._pollActionId)
 		AjxTimedAction.cancelAction(this._pollActionId);
 	if (this._pollInterval)
 		this._pollActionId = this._schedule(this._doPoll, null, this._pollInterval);
 	
-	var returnValue = (useXml || gotError) ? result : result.Body;
+	var returnValue = (this._useXml || gotError) ? result : result.Body;
 	if (asyncMode)
 		callback.run(returnValue);
 	else

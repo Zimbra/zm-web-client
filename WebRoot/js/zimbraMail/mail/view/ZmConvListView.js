@@ -241,7 +241,7 @@ function(conv, preferHtml) {
 		var msgNode = soapDoc.set("c");
 		msgNode.setAttribute("id", conv.id);
 		var command = new ZmCsfeCommand();
-		var resp = command.invoke(soapDoc).Body.GetConvResponse.c[0];
+		var resp = command.invoke({soapDoc: soapDoc}).Body.GetConvResponse.c[0];
 		var msgIds = new Array();
 		for (var i = 0; i < resp.m.length; i++)
 			msgIds.push(resp.m[i].id);
@@ -265,7 +265,7 @@ function(conv, preferHtml) {
 		msgRequest.appendChild(msgNode);
 	}
 	var command = new ZmCsfeCommand();
-	var resp = command.invoke(soapDoc).Body.BatchResponse.GetMsgResponse;
+	var resp = command.invoke({soapDoc: soapDoc}).Body.BatchResponse.GetMsgResponse;
 	
 	var html = new Array();
 	var idx = 0;

@@ -371,7 +371,7 @@ ZmLogin.submitNoOpRequest =
 function() {
     var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
 	var command = new ZmCsfeCommand();
-	command.invoke(soapDoc, false, null, null, true);
+	command.invoke({soapDoc: soapDoc, useXml: true});
 };
 
 ZmLogin.submitAuthRequest = 
@@ -392,7 +392,7 @@ function(uname, pword) {
     soapDoc.set("password", pword);
     try {
 		var command = new ZmCsfeCommand();
-		var resp = command.invoke(soapDoc, true, null, null, false, true).Body.AuthResponse;
+		var resp = command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true}).Body.AuthResponse;
 		ZmLogin._authToken = resp.authToken;
 		ZmLogin._authTokenLifetime = resp.lifetime;
 		var mailServer = resp.refer;
@@ -501,7 +501,7 @@ function(uname, oldPass) {
     var resp = null;
     try {
 		var command = new ZmCsfeCommand();
-		resp = command.invoke(soapDoc, true, null, null, false, true).Body.ChangePasswordResponse;
+		resp = command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true}).Body.ChangePasswordResponse;
     } catch (ex) {
 		DBG.dumpObj(ex);
 		// XXX: for some reason, ZmCsfeException consts are fubar

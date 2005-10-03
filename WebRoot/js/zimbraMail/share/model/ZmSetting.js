@@ -240,6 +240,7 @@ ZmSetting.INIT[ZmSetting.CSFE_UPLOAD_URI]				= [null, ZmSetting.T_CONFIG, ZmSett
 ZmSetting.INIT[ZmSetting.CSFE_EXPORT_URI]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING];
 ZmSetting.INIT[ZmSetting.FORCE_CAL_OFF]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.HELP_URI]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "/zimbra/help/Zimbra_User_Help.htm"];
+ZmSetting.INIT[ZmSetting.LOG_REQUEST]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.LOGO_URI]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "http://www.zimbra.com"];
 ZmSetting.INIT[ZmSetting.USE_XML]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, false];
 
