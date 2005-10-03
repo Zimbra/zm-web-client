@@ -77,7 +77,7 @@ function(obj) {
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && (contact = this._contacts.getContactByEmail(addr))) {
 		toolTip = contact.getToolTip(addr);
 	} else {
-	    toolTip = "<b>E-mail: </b>" + AjxStringUtil.htmlEncode(obj.toString());
+	    toolTip = "<b>" + ZmMsg.email + ": </b>" + AjxStringUtil.htmlEncode(obj.toString());
    	}
 	return toolTip;
 };

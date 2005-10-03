@@ -410,7 +410,7 @@ function(address) {
 		if (!toolTip) {
 			var addrstr = address.toString();
 			if (addrstr)
-			    toolTip = "<div style='white-space:nowrap'><b>E-mail: </b>" + AjxStringUtil.htmlEncode(addrstr) + "</div>";
+			    toolTip = "<div style='white-space:nowrap'><b>" + ZmMsg.email + ": </b>" + AjxStringUtil.htmlEncode(addrstr) + "</div>";
 	    }
 	    
 	    if (toolTip) {
