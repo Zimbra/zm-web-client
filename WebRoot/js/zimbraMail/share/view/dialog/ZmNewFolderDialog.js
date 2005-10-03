@@ -98,6 +98,13 @@ function() {
 	if (!msg && parentFolder.hasChild(name))
 		msg = ZmMsg.folderOrSearchNameExists;
 
+	// if we're creating a top-level folder, check for conflict with top-level search
+	if (!msg && (parentFolder.id == ZmOrganizer.ID_ROOT)) {
+		var searchTree = this._appCtxt.getSearchTree();
+		if (searchTree && searchTree.root.hasChild(name))
+			msg = ZmMsg.folderOrSearchNameExists;
+	}
+
 	return (msg ? this._showError(msg) : [name, parentFolder, ZmOrganizer.FOLDER]);
 }
 

@@ -76,9 +76,14 @@ function() {
 	var msg = ZmFolder.checkName(name);
 
 	// make sure folder with this name doesn't already exist at this level
-	if (!msg) {
-		if (this._folder.parent.hasChild(name))
-			msg = ZmMsg.folderNameExists;
+	if (!msg &&	this._folder.parent.hasChild(name))
+		msg = ZmMsg.folderOrSearchNameExists;
+
+	// if we're creating a top-level folder, check for conflict with top-level search
+	if (!msg && (this._folder.parent.id == ZmOrganizer.ID_ROOT)) {
+		var otherTree = (this._folder.type == ZmOrganizer.SEARCH) ? this._appCtxt.getFolderTree() : this._appCtxt.getSearchTree();
+		if (otherTree && otherTree.root.hasChild(name))
+			msg = ZmMsg.folderOrSearchNameExists;
 	}
 
 	return (msg ? this._showError(msg) : [this._folder, name]);
