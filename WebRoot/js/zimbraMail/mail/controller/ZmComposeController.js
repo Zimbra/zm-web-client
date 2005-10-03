@@ -229,6 +229,9 @@ function() {
 	if (addSig) {
 		buttons.push(ZmOperation.ADD_SIGNATURE);
 	}
+	
+	buttons.push(ZmOperation.SPELL_CHECK);
+	
 	if (!this.isChildWindow) {
 		buttons.push(ZmOperation.SEP);
 		buttons.push(ZmOperation.DETACH_COMPOSE);
@@ -266,6 +269,8 @@ function() {
 
 	if (addSig)
 	  	this._toolbar.addSelectionListener(ZmOperation.ADD_SIGNATURE, new AjxListener(this, this._addSignatureListener));
+	  
+	  this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
 }
 
 ZmComposeController.prototype._setComposeMode = 
@@ -426,6 +431,12 @@ function(ev) {
 ZmComposeController.prototype._addSignatureListener =
 function(ev) {
 	this._composeView.addSignature();
+}
+
+ZmComposeController.prototype._spellCheckListener = 
+function(ev) {
+	// TODO
+	DBG.println("TODO! haha");
 }
 
 ZmComposeController.prototype._settingsChangeListener =
