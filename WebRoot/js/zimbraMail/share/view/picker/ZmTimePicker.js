@@ -30,10 +30,21 @@ function ZmTimePicker(parent) {
     this._checkedItems = new Object();
 }
 
+ZmPicker.CTOR[ZmPicker.TIME] = ZmTimePicker;
+
+ZmTimePicker._onClick =
+function(ev) {
+	var element = DwtUiEvent.getTarget(ev);
+	var picker = element._picker;
+	if (element.checked)
+		picker._checkedItems[element._query] = true;
+	else
+		delete picker._checkedItems[element._query];
+	picker._updateQuery();
+}
+
 ZmTimePicker.prototype = new ZmPicker;
 ZmTimePicker.prototype.constructor = ZmTimePicker;
-
-ZmPicker.CTOR[ZmPicker.TIME] = ZmTimePicker;
 
 ZmTimePicker.prototype.toString = 
 function() {
@@ -95,20 +106,9 @@ function(parent) {
 ZmTimePicker.prototype._installOnClick =
 function(id, query) {
 	var box = Dwt.getDomObj(this.getDocument(), id);
-	Dwt.setHandler(box, DwtEvent.ONCLICK, ZmTimePicker.onClick);
+	Dwt.setHandler(box, DwtEvent.ONCLICK, ZmTimePicker._onClick);
 	box._query = query;
 	box._picker = this;
-}
-
-ZmTimePicker._onClick =
-function(ev) {
-	var element = DwtUiEvent.getTarget(ev);
-	var picker = element._picker;
-	if (element.checked)
-		picker._checkedItems[element._query] = true;
-	else
-		delete picker._checkedItems[element._query];
-	picker._updateQuery();
 }
 
 ZmTimePicker.prototype._updateQuery = 

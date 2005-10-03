@@ -35,12 +35,7 @@ ZmDomainPicker.prototype.constructor = ZmDomainPicker;
 
 ZmPicker.CTOR[ZmPicker.DOMAIN] = ZmDomainPicker;
 
-ZmDomainPicker.prototype.toString = 
-function() {
-	return "ZmDomainPicker";
-}
-
-ZmDomainPicker.onClick =
+ZmDomainPicker._onClick =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var picker = el._picker;
@@ -50,6 +45,19 @@ function(ev) {
 		delete picker._checkedItems[el.value];
  	}
 	picker._updateQuery();
+}
+
+ZmDomainPicker._onChange =
+function(ev) {
+	var element = DwtUiEvent.getTarget(ev);
+	var picker = element._picker;
+	picker._updateDomains();
+	picker._updateQuery();
+}
+
+ZmDomainPicker.prototype.toString = 
+function() {
+	return "ZmDomainPicker";
 }
 
 ZmDomainPicker.prototype._domainHtml =
@@ -107,7 +115,7 @@ function(parent) {
 	for (var i in domains) {
 		var domain = domains[i];
 		var ip = Dwt.getDomObj(doc, this._inputIds[domain.name]);
-		Dwt.setHandler(ip, DwtEvent.ONCLICK, ZmDomainPicker.onClick);
+		Dwt.setHandler(ip, DwtEvent.ONCLICK, ZmDomainPicker._onClick);
 		ip.value = domain.name;
 		ip._picker = this;
 		ip._div = Dwt.getDomObj(doc, this._divIds[domain.name]);
@@ -115,21 +123,13 @@ function(parent) {
 	}	
 
 	var from = this._from = Dwt.getDomObj(doc, fromId);
-	Dwt.setHandler(from, DwtEvent.ONCHANGE, ZmDomainPicker.onChange);
+	Dwt.setHandler(from, DwtEvent.ONCHANGE, ZmDomainPicker._onChange);
 	from._picker = this;
 	var to = this._to = Dwt.getDomObj(doc, toId);
-	Dwt.setHandler(to, DwtEvent.ONCHANGE, ZmDomainPicker.onChange);
+	Dwt.setHandler(to, DwtEvent.ONCHANGE, ZmDomainPicker._onChange);
 	to._picker = this;
 
 	this._updateDomains();
-}
-
-ZmDomainPicker._onChange =
-function(ev) {
-	var element = DwtUiEvent.getTarget(ev);
-	var picker = element._picker;
-	picker._updateDomains();
-	picker._updateQuery();
 }
 
 ZmDomainPicker.prototype._updateDomains = 
