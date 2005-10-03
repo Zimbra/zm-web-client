@@ -57,7 +57,7 @@ var $RE_TODAY_TOMORROW_YESTERDAY = "(today|tomorrow|yesterday)";
 
 var $RE_NEXT_LAST = "(next|last)";
 
-var $RE_COMMA_OR_SP = "(?:\\s+|\\s*,\\s*)?";
+var $RE_COMMA_OR_SP = "(?:\\s+|\\s*,\\s*)";
 
 var $RE_DASH = "(?:-)";
 
@@ -73,7 +73,7 @@ var $RE_DD = "(\\d{1,2})";
 
 var $RE_YEAR42 = "(\\d{4}|\\d{2})";
 
-var $RE_OP_TIME = "(?:\\s*\\d{1,2}:\\d{2}:\\d{2}\\s*)?";
+var $RE_OP_TIME = "(?:\\s+\\d{1,2}:\\d{2}:\\d{2}\\s*)?";
 
 var $RE_OP_DOW = "(?:\\s*"+$RE_DOW+"\\s*)?";
 
