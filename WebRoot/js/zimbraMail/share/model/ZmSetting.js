@@ -103,6 +103,7 @@ ZmSetting.CSFE_EXPORT_URI 				= i++;
 ZmSetting.FORCE_CAL_OFF					= i++;
 ZmSetting.HELP_URI						= i++;
 ZmSetting.LOGO_URI						= i++;
+ZmSetting.LOG_REQUEST					= i++;
 ZmSetting.USE_XML						= i++;
 
 // IDs FOR HTML COMPONENTS IN THE SKIN
