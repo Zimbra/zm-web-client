@@ -320,7 +320,7 @@ function(action, msg, extraBodyText) {
 				body = body.content;
 			} else {
 				var bodyPart = msg.getBodyPart();
-				body = bodyPart ? (AjxStringUtil.htmlEncodeSpace(bodyPart.content)) : null;
+				body = bodyPart ? (AjxStringUtil.convertToHtml(bodyPart.content)) : null;
 			}
 		} else {
 			var bodyPart = msg.getBodyPart();
@@ -417,7 +417,7 @@ function(bodyPart, encodeSpace) {
 	// if the only content type returned is html, convert to text
 	return bodyPart.ct == ZmMimeTable.TEXT_HTML
 		? AjxStringUtil.convertHtml2Text(Dwt.parseHtmlFragment("<div>" + bodyPart.content + "</div>"))
-		: (encodeSpace ? AjxStringUtil.htmlEncodeSpace(bodyPart.content) : bodyPart.content);
+		: (encodeSpace ? AjxStringUtil.convertToHtml(bodyPart.content) : bodyPart.content);
 };
 
 /**
