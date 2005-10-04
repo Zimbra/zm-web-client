@@ -167,10 +167,12 @@ Contributor(s):
 <script type="text/javascript" src="/zimbra/js/zimbraMail/calendar/view/ZmCalWeekView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/calendar/view/ZmCalMonthView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/calendar/view/ZmAppointmentDialog.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="/zimbra/js/zimbraMail/calendar/view/ZmAppointmentView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/calendar/view/ZmEditInstanceSeriesView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/calendar/view/ZmFreeBusyView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/calendar/view/ZmNewApptDialog.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/calendar/controller/ZmCalViewController.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="/zimbra/js/zimbraMail/calendar/controller/ZmAppointmentController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="/zimbra/js/zimbraMail/calendar/ZmCalendarApp.js<%= ext %>?v=<%= vers %>"></script>
 
 <!-- Addressbook Application -->

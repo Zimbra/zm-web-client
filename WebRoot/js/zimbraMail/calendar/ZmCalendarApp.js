@@ -25,7 +25,7 @@
 
 function ZmCalendarApp(appCtxt, container) {
 	ZmApp.call(this, ZmZimbraMail.CALENDAR_APP, appCtxt, container);
-}
+};
 
 ZmCalendarApp.prototype = new ZmApp;
 ZmCalendarApp.prototype.constructor = ZmCalendarApp;
@@ -33,22 +33,19 @@ ZmCalendarApp.prototype.constructor = ZmCalendarApp;
 ZmCalendarApp.prototype.toString = 
 function() {
 	return "ZmCalendarApp";
-}
+};
 
 ZmCalendarApp.prototype.launch =
 function(appCtxt) {
-DBG.println("LAUNCHING CALENDAR APP!");
 	var cc = this.getCalController();
 	cc.show(cc._defaultView());
-}
+};
 
 ZmCalendarApp.prototype.setActive =
 function(active) {
-DBG.println("SETTING CAL APP ACTIVE!");
-	if (active) {
+	if (active)
 		this.getCalController().show();
-	}
-}
+};
 
 ZmCalendarApp.prototype.getCalController =
 function() {
@@ -57,12 +54,9 @@ function() {
 	return this._calController;
 };
 
-ZmCalendarApp.prototype.getApptDetailController =
-function () {
-	if (!this._apptDetailController) {
-		this._apptDetailController = 
-		     new ZmApptDetailController(this._appCtxt, this._container, this);
-	}
-	return this._apptDetailController;
+ZmCalendarApp.prototype.getAppointmentController = 
+function() {
+	if (!this._apptController)
+		this._apptController = new ZmAppointmentController(this._appCtxt, this._container, this);
+	return this._apptController;
 };
-

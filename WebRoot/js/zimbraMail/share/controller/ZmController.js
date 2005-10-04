@@ -68,6 +68,7 @@ ZmController.CAL_WEEK_VIEW			= i++;
 ZmController.CAL_MONTH_VIEW			= i++;
 ZmController.CAL_WORK_WEEK_VIEW		= i++;
 ZmController.APPT_DETAIL_VIEW		= i++;
+ZmController.APPOINTMENT_VIEW 		= i++;
 ZmController.MIXED_VIEW				= i++;
 
 // Abstract methods
@@ -135,39 +136,29 @@ function(msg, ex, noExecReset)  {
 ZmController.prototype.getControllerForView =
 function(view) {
 	switch (view) {
-		case ZmController.CONVLIST_VIEW:
-			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController();
-		case ZmController.CONV_VIEW:
-			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController();
-		case ZmController.TRAD_VIEW:
-			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController();
-		case ZmController.MSG_VIEW:
-			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
+		case ZmController.CONVLIST_VIEW:		return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController();
+		case ZmController.CONV_VIEW:			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController();
+		case ZmController.TRAD_VIEW:			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController();
+		case ZmController.MSG_VIEW:				return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 		case ZmController.CONTACT_CARDS_VIEW:
-		case ZmController.CONTACT_SIMPLE_VIEW:
-			return this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
-		case ZmController.CONTACT_VIEW:
-			return this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController();
+		case ZmController.CONTACT_SIMPLE_VIEW:	return this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
+		case ZmController.CONTACT_VIEW:			return this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController();
 		case ZmController.CAL_VIEW:
 		case ZmController.CAL_DAY_VIEW:
 		case ZmController.CAL_WEEK_VIEW:
 		case ZmController.CAL_MONTH_VIEW:
-		case ZmController.CAL_WORK_WEEK_VIEW:
-			return this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
+		case ZmController.CAL_WORK_WEEK_VIEW:	return this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 		case ZmController.ATT_LIST_VIEW:
-		case ZmController.ATT_ICON_VIEW:
-			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getAttachmentListController();
-		case ZmController.COMPOSE_VIEW:
-			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
-		case ZmController.PREF_VIEW:
-			return this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
-		case ZmController.MIXED_VIEW:
-			return this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController();
-		case ZmController.APPT_DETAIL_VIEW:
-		    return this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
+		case ZmController.ATT_ICON_VIEW:		return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getAttachmentListController();
+		case ZmController.COMPOSE_VIEW:			return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
+		case ZmController.PREF_VIEW:			return this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
+		case ZmController.MIXED_VIEW:			return this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController();
+		case ZmController.APPT_DETAIL_VIEW:		return this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
+		case ZmController.APPOINTMENT_VIEW:		return this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getAppointmentController();
 		default: {
 			DBG.println(AjxDebug.DBG1, "*** controller not found for view " + view);
-			return this._appCtxt.getAppController();}
+			return this._appCtxt.getAppController();
+		}
 	}
 }
 

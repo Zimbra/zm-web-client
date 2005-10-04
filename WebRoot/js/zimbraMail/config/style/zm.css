@@ -959,7 +959,11 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .TextPage span {margin: 10ex 0 0 0}
 
 
-
+/* Appointment View */
+.ZmAppointmentView {
+	width: 100%;
+	background-color: #EEEEEE;
+}
 
 /** appointment detail **/
 

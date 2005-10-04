@@ -105,6 +105,7 @@ ZmSetting.HELP_URI						= i++;
 ZmSetting.LOGO_URI						= i++;
 ZmSetting.LOG_REQUEST					= i++;
 ZmSetting.USE_XML						= i++;
+ZmSetting.NEW_APPOINTMENT_VIEW 			= i++;
 
 // IDs FOR HTML COMPONENTS IN THE SKIN
 ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID	= i++;
@@ -244,6 +245,7 @@ ZmSetting.INIT[ZmSetting.HELP_URI]						= [null, ZmSetting.T_CONFIG, ZmSetting.D
 ZmSetting.INIT[ZmSetting.LOG_REQUEST]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.LOGO_URI]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "http://www.zimbra.com"];
 ZmSetting.INIT[ZmSetting.USE_XML]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.NEW_APPOINTMENT_VIEW]			= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, false];
 
 // IDs FOR HTML COMPONENTS IN THE SKIN
 ZmSetting.INIT[ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID]	= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_app_bottom_toolbar"];
