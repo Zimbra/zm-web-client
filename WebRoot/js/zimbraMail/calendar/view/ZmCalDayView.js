@@ -972,7 +972,6 @@ ZmCalDayView.prototype._positionAppt =
 function(apptDiv, x, y) {
 	// position overall div
 	Dwt.setLocation(apptDiv, x + ZmCalDayView._APPT_X_FUDGE, y + ZmCalDayView._APPT_Y_FUDGE);
-
 }
 
 ZmCalDayView.prototype._sizeAppt =
@@ -984,11 +983,10 @@ function(apptDiv, w, h) {
 	Dwt.setSize(	apptBodyDiv, w + ZmCalDayView._APPT_WIDTH_FUDGE, h + ZmCalDayView._APPT_HEIGHT_FUDGE);
 }
 
-
 ZmCalDayView.prototype._layoutAppt =
 function(ao, apptDiv, x, y, w, h) {
 	// record to restore after dnd/sash
-	ao._layout = {x: x, y: y, w: w, h: h};
+	if (ao) ao._layout = {x: x, y: y, w: w, h: h};
 	this._positionAppt(apptDiv, x, y);
 	this._sizeAppt(apptDiv, w, h);
 }
@@ -1522,13 +1520,8 @@ function(ev) {
 		var newDate = data.view._getDateFromXY(snap.x, snap.y, 30);
 		//DBG.println("new Date = "+newDate);
 		if (newDate != null && newDate.getTime() != data.startDate.getTime()) {
-			data.view._positionAppt(data.apptEl, snap.x, snap.y);
-// begin size width
-			var day = data.view._getDayFromX(snap.x);
-			Dwt.setSize(	data.apptEl,	day.apptWidth + ZmCalDayView._APPT_WIDTH_FUDGE, Dwt.DEFAULT);
-			// get the inner div that should be sized and set its width/height
-			Dwt.setSize(	data.apptBodyEl, day.apptWidth + ZmCalDayView._APPT_WIDTH_FUDGE, Dwt.DEFAULT);
-// end size width
+			var bounds = data.view._getBoundsForDate(newDate, data.appt._orig.getDuration());
+			data.view._layoutAppt(null, data.apptEl, bounds.x, bounds.y, bounds.width, bounds.height);
 			data.startDate = newDate;
 			data.snap = snap;
 			if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.startDate);
@@ -1562,7 +1555,7 @@ function(ev) {
 		}
 		// restore
 		var lo = data.layout;
-		data.view._layoutAppt(data.appt, data.apptEl, lo.x, lo.y, lo.w, lo.h);
+		data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);
 	}
 
 	mouseEv._stopPropagation = true;
@@ -1709,7 +1702,7 @@ function(ev) {
 	}
 	// restore
 	var lo = data.appt._layout;
-	data.view._layoutAppt(data.appt, data.apptEl, lo.x, lo.y, lo.w, lo.h);	
+	data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);	
 	return false;	
 }
 
@@ -1827,9 +1820,7 @@ function(ev) {
 
 		var bounds = data.view._getBoundsForDate(data.startDate, duration);
 		if (bounds == null) return false;
-		Dwt.setLocation(e, newStart.x, newStart.y);
-		Dwt.setSize(e, bounds.width, bounds.height);
-		Dwt.setSize(data.apptBodyEl, bounds.width, bounds.height);		
+		data.view._layoutAppt(null, e, newStart.x, newStart.y, bounds.width, bounds.height);
 		Dwt.setVisible(e, true);
 		if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.startDate);
 		if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.endDate);
