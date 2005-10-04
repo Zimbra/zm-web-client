@@ -36,8 +36,11 @@ function ZmHtmlEditor(parent, className, posStyle, content, mode) {
 
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));	
 	
-	var settings = this.parent._appCtxt.getSettings();
-	settings.addChangeListener(new AjxListener(this, this._settingsChangeListener));
+	// only add listener if this is not a child window
+	if (this.parent._app._parentController == null) {
+		var settings = this.parent._appCtxt.getSettings();
+		settings.addChangeListener(new AjxListener(this, this._settingsChangeListener));
+	}
 };
 
 ZmHtmlEditor.prototype = new DwtHtmlEditor();
