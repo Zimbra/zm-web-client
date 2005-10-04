@@ -93,15 +93,6 @@ ZmAppt.PSTATUS_ACCEPT = "AC";
 ZmAppt.PSTATUS_DECLINED = "DE";
 ZmAppt.PSTATUS_DELEGATED = "DG";
 
-ZmAppt.FREQ_TO_DISPLAY = {
-	SEC: ["second", "seconds"],
-	HOU: ["hour" , "hours"],
-	DAI: ["day" , "days"],
-	WEE: ["week" , "weeks"],
-	MON: ["month" , "months"],
-	YEA: ["year" , "years"]
-};
-
 ZmAppt.SERVER_DAYS_TO_DISPLAY = {
 	SU: "Sunday",
 	MO: "Monday",
@@ -905,7 +896,7 @@ function () {
 ZmAppt.prototype.frequencyToDisplayString = 
 function(freq, count) {
 	var plural = count > 1 ? 1 : 0;
-	return ZmAppt.FREQ_TO_DISPLAY[freq][plural];
+	return AjxDateUtil.FREQ_TO_DISPLAY[freq][plural];
 };
 
 

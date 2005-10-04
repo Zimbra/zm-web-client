@@ -62,7 +62,7 @@ function(composeMode) {
 	}
 
 	if (!this._apptView) {
-		this._apptView = new ZmAppointmentView(this._container, null, this._app, Dwt.ABSOLUTE_STYLE, this._contactPicker, composeMode);
+		this._apptView = new ZmAppointmentView(this._container, null, this._app, this, this._contactPicker, composeMode);
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
 		var elements = new Object();
@@ -99,6 +99,11 @@ function() {
     this._popShield.popup(this._apptView._getDialogXY());
 
 	return false;
+};
+
+ZmAppointmentController.prototype.getToolbar = 
+function() {
+	return this._toolbar;
 };
 
 
@@ -162,10 +167,12 @@ function(composeMode) {
 
 // Listeners
 
-// Send button was pressed
-ZmAppointmentController.prototype._sendListener =
+// Save button was pressed
+ZmAppointmentController.prototype._saveListener =
 function(ev) {
-	this.saveAppt();
+	DBG.println("TODO: save");
+	this._apptView.reset(true);
+	this._app.popView(false);
 };
 
 // Cancel button was pressed
@@ -185,7 +192,8 @@ function(ev) {
 // Attachment button was pressed
 ZmAppointmentController.prototype._attachmentListener =
 function(ev) {
-
+	DBG.println("TODO: attachment");
+/*
 	if (!this._detachOkCancel) {
 		// detach ok/cancel dialog is only necessary if user clicked on the add attachments button	
 		this._detachOkCancel = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
@@ -194,6 +202,7 @@ function(ev) {
 	}
 
 	this._apptView.addAttachmentField();
+*/
 };
 
 ZmAppointmentController.prototype._formatListener = 
@@ -222,6 +231,8 @@ function(ev) {
 
 ZmAppointmentController.prototype._detachListener = 
 function(ev) {
+	DBG.println("TODO: detach");
+/*
 	var atts = this._apptView.getAttFieldValues();
 	if (atts.length) {
 		this._detachOkCancel.popup(this._apptView._getDialogXY());
@@ -230,12 +241,13 @@ function(ev) {
 		this._apptView.reset(true);
 		this._app.popView(true);
 	}
+*/
 };
 
 ZmAppointmentController.prototype._spellCheckListener = 
 function(ev) {
 	// TODO
-	DBG.println("TODO! haha");
+	DBG.println("TODO! spell check");
 };
 
 
