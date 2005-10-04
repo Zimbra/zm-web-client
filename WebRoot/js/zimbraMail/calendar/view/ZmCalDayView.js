@@ -369,10 +369,12 @@ function() {
 ZmCalDayView.prototype._syncScroll =
 function()
 {
-	var bodyElement = Dwt.getDomObj(this.getDocument(), this._bodyDivId);
-	var hourElement = Dwt.getDomObj(this.getDocument(), this._hoursScrollDivId);
-	var unionGridScrollElement = Dwt.getDomObj(this.getDocument(), this._unionGridScrollDivId);	
+	var bodyElement = Dwt.getDomObj(document, this._bodyDivId);
+	var hourElement = Dwt.getDomObj(document, this._hoursScrollDivId);
+	var alldayElement = Dwt.getDomObj(document, this._allDayScrollDivId);
+	var unionGridScrollElement = Dwt.getDomObj(document, this._unionGridScrollDivId);
 	hourElement.scrollTop = bodyElement.scrollTop;
+	alldayElement.scrollLeft = bodyElement.scrollLeft;
 	if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
 }
 
@@ -781,18 +783,9 @@ function(abook) {
 
 	this.getHtmlElement().innerHTML = html.toString();
 	
-	var bdi = this._bodyDivId;
-	var hsdi = this._hoursScrollDivId;
-	var adsdi = this._allDayScrollDivId;
-	var ugsdi = this._unionGridScrollDivId;	
+	var myView = this;
 	Dwt.getDomObj(this.getDocument(), this._bodyDivId).onscroll = function() {
-		var bodyElement = Dwt.getDomObj(document, bdi);
-		var hourElement = Dwt.getDomObj(document, hsdi);
-		var alldayElement = Dwt.getDomObj(document, adsdi);
-		var unionGridScrollElement = Dwt.getDomObj(document, ugsdi);
-		hourElement.scrollTop = bodyElement.scrollTop;
-		alldayElement.scrollLeft = bodyElement.scrollLeft;
-		if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
+		myView._syncScroll();
 	};
 	Dwt.getDomObj(this.getDocument(), this._apptBodyDivId)._type = ZmCalBaseView.TYPE_APPTS_DAYGRID;
 	Dwt.getDomObj(this.getDocument(), this._bodyHourDivId)._type = ZmCalBaseView.TYPE_HOURS_COL;
