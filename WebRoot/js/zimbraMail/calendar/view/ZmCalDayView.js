@@ -451,7 +451,6 @@ function() {
 	var lastDay = numDays - 1;
 	for (var i=0; i < numDays; i++) {
 		var day = this._days[i];
-		day.lastDay = (i == lastDay);
 		day.date = new Date(d);
 		day.endDate = new Date(d);
 		day.endDate.setHours(23,59,59,999);
@@ -623,12 +622,6 @@ function(appt) {
 	}
 	return div;
 }
-
-ZmCalDayView.prototype._getDayForDate =
-function(d) 
-{
-	return this._dateToDayIndex[this._dayKey(d)];
-}	
 
 ZmCalDayView.prototype._createHoursHtml =
 function(html) {
@@ -1011,38 +1004,23 @@ function() {
 	var doc = this.getDocument();
 	for (var i=0; i < this._layouts.length; i++) {
 		var layout = this._layouts[i];
-
-		var ao = layout.appt;
-		var apptDiv = Dwt.getDomObj(doc, this._getItemId(ao));
+		var apptDiv = Dwt.getDomObj(doc, this._getItemId(layout.appt));
 		if (apptDiv) {
-			// only need to do this first time through
-			var sd = ao.getStartDate();			
-			var day = this._getDayForDate(sd);
-			if (!layout.h) {
-				var et = ao.getEndTime();
-				var ed;
-				layout.lastDay = day.lastDay;
-				if (et >= day.endDate.getTime()) {
-					ed = day.endDate;
-				} else {
-					ed = ao.getEndDate();
-				}
-				layout.y = this._getYfromDate(sd, true);
-				var endY = this._getYfromDate(ed, false);
-				//layout.h = Math.max(endY - layout.y, 2*ZmCalDayView._fiftenMinuteHeight) + 1; 
-				layout.h = endY - layout.y + 1;
-				//DBG.println("---- sd="+sd+" ed="+ed);
-				//DBG.println("_layoutAppts: "+apptDiv);
-				//DBG.println("_layoutAppts: layout.h="+layout.h+" layout.y="+layout.y+ " endY="+endY);
-			}
-			var w = Math.floor(day.apptWidth*ZmCalDayView._getApptWidthPercent(layout.maxcol+1));
-			var xinc = layout.maxcol ? ((day.apptWidth - w) / layout.maxcol) : 0; // n-1
-			var x = xinc * layout.col + (day.apptX);
-			
-			this._layoutAppt(ao, apptDiv, x, layout.y, w, layout.h);
+			// only need to get bounds first time through
+			if (!layout.bounds) layout.bounds = this._getBoundsForAppt(layout.appt);
+			var w = Math.floor(layout.bounds.width*ZmCalDayView._getApptWidthPercent(layout.maxcol+1));
+			var xinc = layout.maxcol ? ((layout.bounds.width - w) / layout.maxcol) : 0; // n-1
+			var x = xinc * layout.col + (layout.bounds.x);
+			this._layoutAppt(layout.appt, apptDiv, x, layout.bounds.y, w, layout.bounds.height);
 		}
 	}
 }
+
+ZmCalDayView.prototype._getDayForDate =
+function(d) 
+{
+	return this._dateToDayIndex[this._dayKey(d)];
+}	
 
 ZmCalDayView.prototype._getDayFromX =
 function(x) {
@@ -1054,13 +1032,6 @@ function(x) {
 	return null;
 }
 
-ZmCalDayView.prototype._getYfromDate =
-function(d) {
-	var h = d.getHours();
-	var m = d.getMinutes();
-	return Math.floor((h+m/60) * ZmCalDayView._HOUR_HEIGHT) + 1;
-}
-
 ZmCalDayView.prototype._getLocationForDate =
 function(d) {
 	var h = d.getHours();
@@ -1068,6 +1039,15 @@ function(d) {
 	var day = this._getDayForDate(d);
 	if (day == null) return null;
 	return new DwtPoint(day.apptX, Math.floor(((h+m/60) * ZmCalDayView._HOUR_HEIGHT))+1);
+}
+
+ZmCalDayView.prototype._getBoundsForAppt =
+function(appt) {
+	var sd = appt.getStartDate();
+	var endOfDay = new Date(sd);
+	endOfDay.setHours(23,59,59,999);
+	var et = Math.min(appt.getEndTime(), endOfDay.getTime());
+	return this._getBoundsForDate(sd, et - sd.getTime());
 }
 
 ZmCalDayView.prototype._getBoundsForDate =
@@ -1499,7 +1479,8 @@ function(data) {
 	data.startDate = new Date(data.appt.getStartTime());
 	data.startTimeEl = Dwt.getDomObj(doc, data.apptEl.id +"_st");
 	data.endTimeEl = Dwt.getDomObj(doc, data.apptEl.id +"_et");
-	
+	data.layout = data.appt._layout; // record original layout
+			
 	data.bodyDivEl.style.cursor = 'move';	
 	this.deselectAll();
 	this.setSelection(data.appt);
@@ -1580,7 +1561,7 @@ function(ev) {
 			if (cc.updateApptDate(data.appt._orig, data.startDate, new Date(data.startDate.getTime()+origDuration), false)) return false;
 		}
 		// restore
-		var lo = data.appt._layout;
+		var lo = data.layout;
 		data.view._layoutAppt(data.appt, data.apptEl, lo.x, lo.y, lo.w, lo.h);
 	}
 
