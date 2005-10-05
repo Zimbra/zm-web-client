@@ -347,6 +347,9 @@ function(args) {
 		}
 	}
 	DBG.timePt("render search results");
+	
+	if (rpcCallback)
+		rpcCallback.run();
 }
 
 ZmSearchController.prototype._handleError =

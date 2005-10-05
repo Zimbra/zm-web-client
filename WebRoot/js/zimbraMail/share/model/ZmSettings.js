@@ -119,12 +119,23 @@ function(list) {
 /**
 * Retrieves the preferences, COS settings, and metadata for the current user.
 * All the data gets stored into the settings collection.
-*/ 
+*
+* @param callback [AjxCallback]		callback to run after response is received
+*/
 ZmSettings.prototype.loadUserSettings =
-function() {
+function(callback) {
     var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
-	var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
-	var obj = resp.GetInfoResponse;
+    var respCallback = new AjxCallback(this, this._handleResponse, callback);
+	this._appCtxt.getAppController().sendRequest(soapDoc, respCallback);
+}
+
+ZmSettings.prototype._handleResponse =
+function(args) {
+
+	var callback = args[0];
+	var response = args[1];
+	
+	var obj = response.GetInfoResponse;
 	if (obj.name)
 		this._settings[ZmSetting.USERNAME].setValue(obj.name);
 	if (obj.lifetime)
@@ -146,6 +157,8 @@ function() {
 		this._settings[ZmSetting.CALENDAR_ENABLED].setValue(false, null, true);
 
 	this.userSettingsLoaded = true;
+	
+	callback.run();
 }
 
 /**

@@ -36,8 +36,14 @@ function() {
 }
 
 ZmMailApp.prototype.launch =
-function() {
-	this._appCtxt.getSearchController().search(this._appCtxt.get(ZmSetting.INITIAL_SEARCH));
+function(callback) {
+	var respCallback = new AjxCallback(this, this._handleResponse, callback);
+	this._appCtxt.getSearchController().search(this._appCtxt.get(ZmSetting.INITIAL_SEARCH), null, null, null, null, null, null, respCallback);
+}
+
+ZmMailApp.prototype._handleResponse =
+function(callback) {
+	callback.run();
 }
 
 ZmMailApp.prototype.getAttachmentListController =

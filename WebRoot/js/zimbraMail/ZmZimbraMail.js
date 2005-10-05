@@ -190,61 +190,56 @@ function(params) {
 			this._appViewMgr = new ZmAppViewMgr(this._shell, this, false, true);
 		}
 
-		try {
-			this._components = new Object();
-			this._components[ZmAppViewMgr.C_SASH] = new DwtSash(this._shell, DwtSash.HORIZONTAL_STYLE,
+		skin.showSkin(true);
+		this._components = new Object();
+		this._components[ZmAppViewMgr.C_SASH] = new DwtSash(this._shell, DwtSash.HORIZONTAL_STYLE,
 												 				"console_inset_app_l", 20);
-			this._components[ZmAppViewMgr.C_BANNER] = this._createBanner();
-			this._components[ZmAppViewMgr.C_USER_INFO] = this._createUserInfo();
-			this._settings.loadUserSettings(); // load user prefs and COS data
-			if (params && params.settings) {
-				this._needOverviewLayout = true;
-				for (var id in params.settings)
-					this._settings.getSetting(id).setValue(params.settings[id]);
-			}
-			this.setPollInterval();
-			ZmTimezones.initializeServerTimezone();
-			this._setUserInfo();
-			var opc = this._appCtxt.getOverviewController();
-			opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
-								selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true});
-			this._checkOverviewLayout();
-
-			var app = params ? params.app : null;
-			var startApp = ZmZimbraMail.APP_CLASS[app] ? app : ZmZimbraMail.defaultStartApp;
-			if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED))
-				this._components[ZmAppViewMgr.C_SEARCH] = this._appCtxt.getSearchController().getSearchPanel();
-			var currentAppToolbar = new ZmCurrentAppToolBar(this._shell);
-			this._appCtxt.setCurrentAppToolbar(currentAppToolbar);
-			this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
-			this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._createAppChooser();
-			this._components[ZmAppViewMgr.C_STATUS] = this._statusBox = new DwtText(this._shell, "statusBox", Dwt.ABSOLUTE_STYLE);
-			this._statusBox.setScrollStyle(Dwt.CLIP);
+		this._components[ZmAppViewMgr.C_BANNER] = this._createBanner();
+		this._components[ZmAppViewMgr.C_USER_INFO] = this._createUserInfo();
+		var respCallback = new AjxCallback(this, this._handleLoadUserSettingsResponse, params);
+		this._settings.loadUserSettings(respCallback); // load user prefs and COS data
 			
-			this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();		
-
-			// the outer element of the entire skin is hidden until this point
-			// so that the skin won't flash (become briefly visible) during app loading
-			if (skin && skin.showSkin)
-				skin.showSkin(true);
-			this._appViewMgr.addComponents(this._components, true);
-			
-			try {
-				this.activateApp(startApp);
-			} catch (ex) {
-				this._handleException(ex, this.startup, null, true);
-			}
-			
-			this.setSessionTimer(true);
-
-		} catch (ex) {
-			// handle exceptions for getting user settings a special way.
-			//ZmCsfeCommand.clearAuthToken();
-			ex.code = ZmCsfeException.SVC_AUTH_EXPIRED;
-			this._handleException(ex, this.startup, null, true);
-		}
+		this.setSessionTimer(true);
 	}
-	this._schedule(this._killSplash);	// kill splash screen
+}
+
+ZmZimbraMail.prototype._handleLoadUserSettingsResponse =
+function(params) {
+	if (params && params.settings) {
+		this._needOverviewLayout = true;
+		for (var id in params.settings)
+			this._settings.getSetting(id).setValue(params.settings[id]);
+	}
+	this.setPollInterval();
+	ZmTimezones.initializeServerTimezone();
+	this._setUserInfo();
+	var opc = this._appCtxt.getOverviewController();
+	opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
+						selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true});
+	this._checkOverviewLayout();
+
+	var app = params ? params.app : null;
+	var startApp = ZmZimbraMail.APP_CLASS[app] ? app : ZmZimbraMail.defaultStartApp;
+	if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED))
+		this._components[ZmAppViewMgr.C_SEARCH] = this._appCtxt.getSearchController().getSearchPanel();
+	var currentAppToolbar = new ZmCurrentAppToolBar(this._shell);
+	this._appCtxt.setCurrentAppToolbar(currentAppToolbar);
+	this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
+	this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._createAppChooser();
+	this._components[ZmAppViewMgr.C_STATUS] = this._statusBox = new DwtText(this._shell, "statusBox", Dwt.ABSOLUTE_STYLE);
+	this._statusBox.setScrollStyle(Dwt.CLIP);
+	this._appViewMgr.addComponents(this._components, true);
+			
+	this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();		
+
+	var respCallback = new AjxCallback(this, this._handleActivateAppResponse);
+	this.activateApp(startApp, respCallback);
+}
+
+ZmZimbraMail.prototype._handleActivateAppResponse =
+function() {
+	this.setSessionTimer(true);
+	this._killSplash();
 }
 
 /**
@@ -285,9 +280,17 @@ function(soapDoc, callback) {
 	var asyncCallback = callback ? new AjxCallback(this, this._handleResponse, [true, callback]) : null;
 	var command = new ZmCsfeCommand();
 	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken, callback: asyncCallback, logRequest: this._logRequest}
-	var response = command.invoke(params);
+	try {
+		var response = command.invoke(params);
+	} catch (ex) {
+		DBG.println("**** sendRequest got exception");
+		if (asyncMode)
+			this._handleResponse([asyncMode, asyncCallback, ex]);
+		else
+			throw ex;
+	}
 	if (!asyncMode)
-		return this._handleResponse([false, null, response]);
+		return this._handleResponse([asyncMode, null, response]);
 }
 
 ZmZimbraMail.prototype._handleResponse =
@@ -344,8 +347,9 @@ function() {
 *
 * @param appName	an app name
 */
+/*
 ZmZimbraMail.prototype.activateApp =
-function(appName) {
+function(appName, callback) {
 	try {
 		var bActivated = false;
 	    DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
@@ -373,6 +377,41 @@ function(appName) {
 	} catch (ex) {
 		this._handleException(ex, this.activateApp, appName, false);
 	}
+}
+*/
+
+ZmZimbraMail.prototype.activateApp =
+function(appName, callback) {
+    DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
+    if (this._activeApp) {
+		// some views are not stored in _apps collection, so check if it exists.
+		var app = this._apps[this._activeApp];
+		if (app)
+		    app.activate(false); // notify previously active app
+    }
+	    
+    var view = this._appViewMgr.getAppView(appName);
+    if (view) {
+    	// if the app has been launched, make its view the current one
+    	bActivated = true;
+	    DBG.println(AjxDebug.DBG3, "activateApp, current " + appName + " view: " + view);
+		if (this._appViewMgr.pushView(view)) {
+		    this._apps[appName].activate(true);
+		    this._appViewMgr.setAppView(appName, view);
+		}
+    } else {
+    	// launch the app
+    	if (!this._apps[appName])
+			this._createApp(appName);
+		DBG.println(AjxDebug.DBG1, "Launching app " + appName);
+		var respCallback = new AjxCallback(this, this._handleLaunchResponse, callback);
+		this._apps[appName].launch(respCallback);
+    }
+}
+
+ZmZimbraMail.prototype._handleLaunchResponse =
+function(callback) {
+	callback.run();
 }
 
 /**
