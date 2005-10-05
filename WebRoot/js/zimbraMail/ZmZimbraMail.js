@@ -377,7 +377,8 @@ function(appName, callback) {
 
 ZmZimbraMail.prototype._handleLaunchResponse =
 function(callback) {
-	callback.run();
+	if (callback)
+		callback.run();
 }
 
 /**

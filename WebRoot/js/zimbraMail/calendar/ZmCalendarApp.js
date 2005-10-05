@@ -36,9 +36,11 @@ function() {
 };
 
 ZmCalendarApp.prototype.launch =
-function(appCtxt) {
+function(callback) {
 	var cc = this.getCalController();
 	cc.show(cc._defaultView());
+	if (callback)
+		callback.run();
 };
 
 ZmCalendarApp.prototype.setActive =
