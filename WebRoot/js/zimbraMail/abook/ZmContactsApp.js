@@ -74,14 +74,25 @@ function(callback) {
 				this._contactList = this._parentController.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 			} else {
 				this._contactList = new ZmContactList(this._appCtxt, null, false);
-				this._contactList.load(null, callback);
+				var respCallback = new AjxCallback(this, this._handleLoadResponse, callback);
+				this._contactList.load(null, respCallback);
 			}
 		} catch (ex) {
 			this._contactList = null;
 			throw ex;
 		}
+	} else {
+		if (callback)
+			callback.run();
 	}
-	return this._contactList;
+	if (!callback)
+		return this._contactList;
+}
+
+ZmContactsApp.prototype._handleLoadResponse =
+function(callback) {
+	if (callback)
+		callback.run();
 }
 
 // NOTE: calling method should handle exceptions!
