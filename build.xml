@@ -596,7 +596,7 @@
       <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
       <fileset dir="WebRoot/WEB-INF" includes="tlds/*"/>		
     </copy>
-  	<copy verbose='true' todir='${deploy.dir}${deploy.path}/WEB-INF/classes'>
+  	<copy verbose='true' todir='${deploy.dir}${deploy.admin.path}/WEB-INF/classes'>
   		<fileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
   		<fileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
   	</copy>
@@ -604,7 +604,7 @@
     <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
   	
   	<!-- Note: touching the web.xml file causes Tomcat to reload app -->
-  	<touch file='${deploy.dir}${deploy.path}/WEB-INF/web.xml'/>
+  	<touch file='${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml'/>
   </target>
 
 	<target name="admin-war" depends="build-init, copy-admin-help, copy-files-to-build-area, jam-files, generate-build-info, admin-images, copy-common-css-to-admin">
