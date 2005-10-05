@@ -314,6 +314,10 @@ function(args) {
 	if (this._pollInterval)
 		this._pollActionId = this._schedule(this._doPoll, null, this._pollInterval);
 	
+	if (gotError) {
+		this._handleException(result);
+		return;
+	}	
 	var returnValue = (this._useXml || gotError) ? result : result.Body;
 	if (asyncMode)
 		callback.run(returnValue);
