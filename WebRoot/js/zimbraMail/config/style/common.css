@@ -217,7 +217,7 @@ DIV.vSpace {
 	border-bottom: 1px solid #DDDDDD;
 }
 
-.Row-selected, .Row-selected-drag { 
+.selected, .Row-selected, .Row-selected-drag { 
 	background-color: #ADD6D6;
 	color:black;
 }
