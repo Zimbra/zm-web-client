@@ -240,6 +240,7 @@ ZmZimbraMail.prototype._handleActivateAppResponse =
 function() {
 	this.setSessionTimer(true);
 	this._killSplash();
+	this.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 }
 
 /**

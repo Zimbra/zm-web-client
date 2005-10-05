@@ -115,7 +115,8 @@ function(args) {
 		returnValue = searchResult;
 	}
 	
-	callback.run(returnValue);
+	if (callback)
+		callback.run(returnValue);
 }
 
 // searching w/in a conv (to get its messages) has its own special command

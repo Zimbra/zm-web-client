@@ -90,21 +90,20 @@ function(attrs) {
 		}
 	}
 	
-	var _st = new Date();
-	var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
-	DBG.println(AjxDebug.DBG1, "------ TOTAL time to EVAL contacts list: " +  (new Date() - _st.getTime()) + "ms");
+	var respCallback = new AjxCallback(this, this._handleResponse);
+	this._appCtxt.getAppController().sendRequest(soapDoc, respCallback);
+}
 
-	// extract the list of contacts out from eval'd result
-	var list = resp.GetContactsResponse.cn;
-	
+ZmContactList.prototype._handleResponse =
+function(response) {
+	var list = response.GetContactsResponse.cn;
 	if (list) {
 		var _st = new Date();
 		this.set(list);
-		DBG.println(AjxDebug.DBG1, this.size() + " contacts parsed (time: " + (new Date() - _st.getTime()) + "ms)");
-	
-		var _st = new Date();
+		DBG.println(AjxDebug.DBG3, this.size() + " contacts parsed (time: " + (new Date() - _st.getTime()) + "ms)");
+		_st = new Date();
 		this.getArray().sort(ZmContact.compareByFileAs); // sort in place
-		DBG.println(AjxDebug.DBG1, "------ TOTAL time to SORT contacts list: " + (new Date() - _st.getTime()) + "ms");
+		DBG.println(AjxDebug.DBG3, "------ TOTAL time to SORT contacts list: " + (new Date() - _st.getTime()) + "ms");
 	}
 	this._acContacts = this._getAcContacts(this.getArray());
 }

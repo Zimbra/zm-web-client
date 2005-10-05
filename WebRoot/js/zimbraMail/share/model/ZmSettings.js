@@ -158,7 +158,8 @@ function(args) {
 
 	this.userSettingsLoaded = true;
 	
-	callback.run();
+	if (callback)
+		callback.run();
 }
 
 /**
