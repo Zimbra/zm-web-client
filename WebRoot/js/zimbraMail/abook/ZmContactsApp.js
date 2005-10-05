@@ -47,8 +47,16 @@ function() {
 }
 
 ZmContactsApp.prototype.launch =
-function() {
-	this.getContactListController().show(this.getContactList());
+function(callback) {
+	var respCallback = new AjxCallback(this, this._handleResponse, callback);
+	this.getContactList(respCallback);
+}
+
+ZmContactsApp.prototype._handleResponse =
+function(callback) {
+	this.getContactListController().show(this._contactList);
+	if (callback)
+		callback.run();
 }
 
 ZmContactsApp.prototype.setActive =
@@ -57,9 +65,8 @@ function(active) {
 		this.getContactListController().show();
 }
 
-// NOTE: calling method should handle exceptions!
 ZmContactsApp.prototype.getContactList =
-function() {
+function(callback) {
 	if (!this._contactList) {
 		try {
 			// check if a parent controller exists and ask it for the contact list
@@ -67,7 +74,7 @@ function() {
 				this._contactList = this._parentController.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 			} else {
 				this._contactList = new ZmContactList(this._appCtxt, null, false);
-				this._contactList.load();
+				this._contactList.load(null, callback);
 			}
 		} catch (ex) {
 			this._contactList = null;

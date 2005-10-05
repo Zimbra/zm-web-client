@@ -75,7 +75,7 @@ function() {
 * @param attrs		load only these attributes
 */
 ZmContactList.prototype.load =
-function(attrs) {
+function(attrs, callback) {
 
 	// only the canonical list gets loaded
 	this.isCanonical = true;
@@ -90,12 +90,21 @@ function(attrs) {
 		}
 	}
 	
-	var respCallback = new AjxCallback(this, this._handleResponse);
+	var respCallback = new AjxCallback(this, this._handleResponse, callback);
 	this._appCtxt.getAppController().sendRequest(soapDoc, respCallback);
 }
 
 ZmContactList.prototype._handleResponse =
-function(response) {
+function(args) {
+	var callback = null;
+	var response;
+	if (args instanceof Array) {
+		callback = args[0];
+		response = args[1];
+	} else {
+		response = args;
+	}
+	
 	var list = response.GetContactsResponse.cn;
 	if (list) {
 		var _st = new Date();
@@ -106,6 +115,9 @@ function(response) {
 		DBG.println(AjxDebug.DBG3, "------ TOTAL time to SORT contacts list: " + (new Date() - _st.getTime()) + "ms");
 	}
 	this._acContacts = this._getAcContacts(this.getArray());
+	
+	if (callback)
+		callback.run();
 }
 
 ZmContactList.prototype.set = 

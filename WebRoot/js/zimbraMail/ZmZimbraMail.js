@@ -341,45 +341,6 @@ function() {
 	return this._appViewMgr;
 }
 
-/**
-* Makes the given app the active (displayed) one. The stack of hidden views will be cleared.
-* Note that setting the name of the currently active app is done separately, since a view
-* switch may not actually happen due to view preemption.
-*
-* @param appName	an app name
-*/
-/*
-ZmZimbraMail.prototype.activateApp =
-function(appName, callback) {
-	try {
-		var bActivated = false;
-	    DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
-	    if (this._activeApp) {
-			// some views are not stored in _apps collection, so check if it exists.
-			var app = this._apps[this._activeApp];
-			if (app)
-			    app.activate(false); // notify previously active app
-	    }
-	    
-	    var view = this._appViewMgr.getAppView(appName);
-	    if (view) {
-	    	bActivated = true;
-		    DBG.println(AjxDebug.DBG3, "activateApp, current " + appName + " view: " + view);
-			if (this._appViewMgr.pushView(view)) {
-			    this._apps[appName].activate(true);
-			    this._appViewMgr.setAppView(appName, view);
-			}
-	    } else {
-			this._launchApp(appName);
-			view = this._appViewMgr.getCurrentView();
-	    }
-	    
-		return bActivated;
-	} catch (ex) {
-		this._handleException(ex, this.activateApp, appName, false);
-	}
-}
-*/
 
 ZmZimbraMail.prototype.activateApp =
 function(appName, callback) {
