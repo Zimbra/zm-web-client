@@ -56,9 +56,9 @@ function() {
 	return this._calController;
 };
 
-ZmCalendarApp.prototype.getAppointmentController = 
+ZmCalendarApp.prototype.getApptComposeController = 
 function() {
 	if (!this._apptController)
-		this._apptController = new ZmAppointmentController(this._appCtxt, this._container, this);
+		this._apptController = new ZmApptComposeController(this._appCtxt, this._container, this);
 	return this._apptController;
 };

@@ -793,8 +793,6 @@ function(composeMode) {
 	// init html
 	this._createHtml();
 
-
-
 	// init compose view w/ based on user prefs 
 	var bComposeEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
@@ -802,7 +800,7 @@ function(composeMode) {
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	this._composeMode = composeMode || defaultCompMode;
 	// init html editor
-	this._htmlEditor = new ZmHtmlEditor(this, "ZmHtmlEditor", DwtControl.RELATIVE_STYLE, null, this._composeMode);
+	this._htmlEditor = new ZmHtmlEditor(this, null, DwtControl.RELATIVE_STYLE, null, this._composeMode, this._appCtxt);
 	this._htmlEditor.addEventCallback(new AjxCallback(this, this._htmlEditorEventCallback));
 	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 	
@@ -1023,7 +1021,9 @@ function() {
 		idoc.open();
 		var html = new Array();
 		var idx = 0;
-		html[idx++] = "<html><head><style type='text/css'><!-- @import url(/zimbra/js/zimbraMail/config/style/zm.css); --></style></head>";
+		html[idx++] = "<html><head><style type='text/css'>";
+		html[idx++] = "<!-- @import url(/zimbra/js/zimbraMail/config/style/zm.css); -->";
+		html[idx++] = "</style></head>";
 		html[idx++] = "<body scroll=no bgcolor='#EEEEEE'>";
 		html[idx++] = "<form method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
 		html[idx++] = "<table id='" + this._attachmentTableId + "' cellspacing=0 cellpadding=0 border=0 class='iframeTable'></table>";

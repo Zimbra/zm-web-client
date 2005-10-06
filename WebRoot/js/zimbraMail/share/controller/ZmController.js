@@ -154,7 +154,7 @@ function(view) {
 		case ZmController.PREF_VIEW:			return this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
 		case ZmController.MIXED_VIEW:			return this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController();
 		case ZmController.APPT_DETAIL_VIEW:		return this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
-		case ZmController.APPOINTMENT_VIEW:		return this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getAppointmentController();
+		case ZmController.APPOINTMENT_VIEW:		return this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getApptComposeController();
 		default: {
 			DBG.println(AjxDebug.DBG1, "*** controller not found for view " + view);
 			return this._appCtxt.getAppController();

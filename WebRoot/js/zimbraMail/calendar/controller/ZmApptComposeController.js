@@ -34,23 +34,23 @@
 * @param container		the containing element
 * @param mailApp		a handle to the calendar application
 */
-function ZmAppointmentController(appCtxt, container, calApp) {
+function ZmApptComposeController(appCtxt, container, calApp) {
 
 	ZmController.call(this, appCtxt, container, calApp);
 };
 
-ZmAppointmentController.prototype = new ZmController();
-ZmAppointmentController.prototype.constructor = ZmAppointmentController;
+ZmApptComposeController.prototype = new ZmController();
+ZmApptComposeController.prototype.constructor = ZmApptComposeController;
 
-ZmAppointmentController.prototype.toString =
+ZmApptComposeController.prototype.toString =
 function() {
-	return "ZmAppointmentController";
+	return "ZmApptComposeController";
 };
 
 // Public methods
 
-ZmAppointmentController.prototype.show =
-function(composeMode) {
+ZmApptComposeController.prototype.show =
+function() {
 	if (!this._toolbar)
 		this._createToolBar();
 
@@ -62,7 +62,7 @@ function(composeMode) {
 	}
 
 	if (!this._apptView) {
-		this._apptView = new ZmAppointmentView(this._container, null, this._app, this, this._contactPicker, composeMode);
+		this._apptView = new ZmApptComposeView(this._container, null, this._app, this, this._contactPicker);
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
 		var elements = new Object();
@@ -71,21 +71,14 @@ function(composeMode) {
 	    this._app.createView(ZmController.APPOINTMENT_VIEW, elements, callbacks);
 	}
 
-/*
-	// if a compose mode is already supplied, set it	
-	if (composeMode) {
-		this._setFormatBtnItem(composeMode);
-	} else {
-		// otherwise, figure it out based on the given msg and mode type
-		this._setComposeMode(msg);
-	}
-*/
+	this._setFormatBtnItem();
+
 	this._apptView.set();
 	this._app.pushView(ZmController.APPOINTMENT_VIEW, true);
 	this._apptView.reEnableDesignMode();
 };
 
-ZmAppointmentController.prototype.popShield =
+ZmApptComposeController.prototype.popShield =
 function() {
 	if (!this._apptView.isDirty())
 		return true;
@@ -101,7 +94,7 @@ function() {
 	return false;
 };
 
-ZmAppointmentController.prototype.getToolbar = 
+ZmApptComposeController.prototype.getToolbar = 
 function() {
 	return this._toolbar;
 };
@@ -109,7 +102,7 @@ function() {
 
 // Private / Protected methods
 
-ZmAppointmentController.prototype._createToolBar =
+ZmApptComposeController.prototype._createToolBar =
 function() {
 	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.ATTACHMENT];
 
@@ -119,12 +112,12 @@ function() {
 	}
 
 	buttons.push(ZmOperation.SPELL_CHECK);
-	
+/*
 	if (!this.isChildWindow) {
 		buttons.push(ZmOperation.SEP);
 		buttons.push(ZmOperation.DETACH_COMPOSE);
 	}
-
+*/
 	var className = this.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
 	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, className);
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
@@ -148,27 +141,31 @@ function() {
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
 		mi.addSelectionListener(new AjxListener(this, this._formatListener));	
 	}
-
+/*
 	if (!this.isChildWindow)
 		this._toolbar.addSelectionListener(ZmOperation.DETACH_COMPOSE, new AjxListener(this, this._detachListener));
-
+*/
 	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
 };
 
-// sets the check mark for the appropriate menu item depending on the compose mode
-ZmAppointmentController.prototype._setFormatBtnItem = 
-function(composeMode) {
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, composeMode);
-	}
+// inits check mark for menu item depending on compose mode preference
+ZmApptComposeController.prototype._setFormatBtnItem = 
+function() {
+	// based on preference, set the compose mode
+	var bComposeEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+	var composeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
+		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+
+	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+	formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, composeMode);
 };
 
 
 // Listeners
 
 // Save button was pressed
-ZmAppointmentController.prototype._saveListener =
+ZmApptComposeController.prototype._saveListener =
 function(ev) {
 	DBG.println("TODO: save");
 	this._apptView.reset(true);
@@ -176,7 +173,7 @@ function(ev) {
 };
 
 // Cancel button was pressed
-ZmAppointmentController.prototype._cancelListener =
+ZmApptComposeController.prototype._cancelListener =
 function(ev) {
 	
 	var dirty = this._apptView.isDirty();
@@ -190,7 +187,7 @@ function(ev) {
 };
 
 // Attachment button was pressed
-ZmAppointmentController.prototype._attachmentListener =
+ZmApptComposeController.prototype._attachmentListener =
 function(ev) {
 	DBG.println("TODO: attachment");
 /*
@@ -205,7 +202,7 @@ function(ev) {
 */
 };
 
-ZmAppointmentController.prototype._formatListener = 
+ZmApptComposeController.prototype._formatListener = 
 function(ev) {
 
 	if (!ev.item.getChecked()) 
@@ -229,7 +226,7 @@ function(ev) {
 	}
 };
 
-ZmAppointmentController.prototype._detachListener = 
+ZmApptComposeController.prototype._detachListener = 
 function(ev) {
 	DBG.println("TODO: detach");
 /*
@@ -244,7 +241,7 @@ function(ev) {
 */
 };
 
-ZmAppointmentController.prototype._spellCheckListener = 
+ZmApptComposeController.prototype._spellCheckListener = 
 function(ev) {
 	// TODO
 	DBG.println("TODO! spell check");
@@ -254,7 +251,7 @@ function(ev) {
 // Callbacks
 
 // Transfers addresses from the contact picker to the compose view.
-ZmAppointmentController.prototype._contactPickerCallback =
+ZmApptComposeController.prototype._contactPickerCallback =
 function(args) {
 	var addrs = args[0];
 	this._apptView.enableInputs(true);
@@ -273,7 +270,7 @@ function(args) {
 	this._apptView.reEnableDesignMode();
 };
 
-ZmAppointmentController.prototype._contactPickerCancel = 
+ZmApptComposeController.prototype._contactPickerCancel = 
 function(args) {
 	this._apptView.enableInputs(true);
 	this._apptView.reEnableDesignMode();
@@ -281,7 +278,7 @@ function(args) {
 
 // Called as: Yes, save as draft
 //			  Yes, go ahead and cancel
-ZmAppointmentController.prototype._popShieldYesCallback =
+ZmApptComposeController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(true);
@@ -290,7 +287,7 @@ function() {
 
 // Called as: No, don't save as draft
 //			  No, don't cancel
-ZmAppointmentController.prototype._popShieldNoCallback =
+ZmApptComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
 	this._apptView.enableInputs(true);
@@ -298,13 +295,13 @@ function() {
 	this._apptView.reEnableDesignMode();
 };
 
-ZmAppointmentController.prototype._textModeOkCallback = 
+ZmApptComposeController.prototype._textModeOkCallback = 
 function(ev) {
 	this._textModeOkCancel.popdown();
 	this._apptView.setComposeMode(DwtHtmlEditor.TEXT);
 };
 
-ZmAppointmentController.prototype._textModeCancelCallback = 
+ZmApptComposeController.prototype._textModeCancelCallback = 
 function(ev) {
 	this._textModeOkCancel.popdown();
 	// reset the radio button for the format button menu
@@ -313,7 +310,7 @@ function(ev) {
 	this._apptViewView.reEnableDesignMode();
 };
 
-ZmAppointmentController.prototype._detachCallback = 
+ZmApptComposeController.prototype._detachCallback = 
 function() {
 	this._detachOkCancel.popdown();
 	this.detach();

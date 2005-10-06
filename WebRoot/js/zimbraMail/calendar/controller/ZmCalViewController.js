@@ -538,8 +538,7 @@ function(startDate, endDate) {
 ZmCalViewController.prototype.newAppointment = 
 function(newAppt) {
 	if (this._appCtxt.get(ZmSetting.NEW_APPOINTMENT_VIEW)) {
-		DBG.println("showing appointment view!");
-		this._app.getAppointmentController().show();
+		this._app.getApptComposeController().show();
 	} else {
 		if (newAppt == null) {
 			newAppt = this._newApptObject(new Date());

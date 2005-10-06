@@ -28,17 +28,18 @@
  *
  * @author Ross Dargahi
  */
-function ZmHtmlEditor(parent, className, posStyle, content, mode) {
+function ZmHtmlEditor(parent, className, posStyle, content, mode, appCtxt) {
 	if (arguments.length == 0) return;
 	className = className || "ZmHtmlEditor";
+	this._appCtxt = appCtxt;
 	
 	DwtHtmlEditor.call(this, parent, className, posStyle, content, mode, "/zimbra/public/blank.html");
 
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));	
 	
 	// only add listener if this is not a child window
-	if (this.parent._app._parentController == null) {
-		var settings = this.parent._appCtxt.getSettings();
+	if (window._parentController || window._parentController === void 0) {
+		var settings = this._appCtxt.getSettings();
 		settings.addChangeListener(new AjxListener(this, this._settingsChangeListener));
 	}
 };
@@ -55,7 +56,7 @@ function() {
 	var isSupported = DwtHtmlEditor.prototype.isHtmlEditingSupported.call(this);
 	if (isSupported) {
 		// browser supports html edit but check if user pref allows it
-		isSupported = this.parent._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+		isSupported = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	}
 	
 	return isSupported;
@@ -310,7 +311,7 @@ function(tb) {
 	var s = this._fontFamilySelect = new DwtSelect(tb, null);
 	s.addChangeListener(listener);
 	
-	var fontFamily = this.parent._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+	var fontFamily = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
 	
 	s.addOption("Arial", fontFamily == "Arial", DwtHtmlEditor.ARIAL);
 	s.addOption("Times New Roman", fontFamily == "Times New Roman", DwtHtmlEditor.TIMES);
@@ -324,7 +325,7 @@ function(tb) {
 	var s = this._fontSizeSelect = new DwtSelect(tb, null);
 	s.addChangeListener(listener);
 	
-	var fontSize = this.parent._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+	var fontSize = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 
 	s.addOption("1 (8pt)", fontSize == "8pt", 1);
 	s.addOption("2 (10pt)", fontSize == "10pt", 2);
@@ -396,7 +397,7 @@ function(ev) {
 
 		// update DwtSelect to reflect to new font size or family
 		if (setting.id == ZmSetting.COMPOSE_INIT_FONT_FAMILY) {
-			var fontfamily = this.parent._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+			var fontfamily = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
 			var selectedValue = null;
 			if (fontfamily == "Arial") 					selectedValue = DwtHtmlEditor.ARIAL;
 			else if (fontfamily == "Times New Roman") 	selectedValue = DwtHtmlEditor.TIMES;
@@ -405,7 +406,7 @@ function(ev) {
 			if (selectedValue)
 				this._fontFamilySelect.setSelectedValue(selectedValue);
 		} else if (setting.id == ZmSetting.COMPOSE_INIT_FONT_SIZE) {
-			var fontsize = this.parent._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+			var fontsize = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 			var selectedValue = null;
 			if (fontsize == "8pt") 		 selectedValue = 1;
 			else if (fontsize == "10pt") selectedValue = 2;
@@ -431,7 +432,7 @@ function(ev) {
 ZmHtmlEditor.prototype._getInitialFontFamily = 
 function() {
 	// get font family user preference
-	var familyPref = this.parent._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+	var familyPref = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
 	familyPref = familyPref.toLowerCase(); // normalize value
 	
 	var fontFamily = DwtHtmlEditor._TIMES;
@@ -447,10 +448,10 @@ function() {
 
 ZmHtmlEditor.prototype._getInitialFontSize = 
 function() {
-	return this.parent._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+	return this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 };
 
 ZmHtmlEditor.prototype._getInitialFontColor = 
 function() {
-	return this.parent._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+	return this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
 };
