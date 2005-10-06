@@ -281,7 +281,11 @@ function(params, rpcCallback) {
 	
 	var search = new ZmSearch(this._appCtxt, params.query, types, params.sortBy, params.offset, params.limit, contactSource);
 	var respCallback = new AjxCallback(this, this._handleResponse, [search, this._doSearch, params, types, rpcCallback]);
-	search.execute(respCallback);
+	var errors = new Object();
+	errors[ZmCsfeException.MAIL_NO_SUCH_FOLDER] = true;
+	errors[ZmCsfeException.MAIL_NO_SUCH_TAG] = true;
+	errors[ZmCsfeException.MAIL_QUERY_PARSE_ERROR] = true;
+	search.execute(respCallback, errors);
 }
 
 /*
@@ -352,19 +356,19 @@ function(args) {
 		rpcCallback.run();
 }
 
+/*
+* Handle a few minor errors where we show an empty result set and issue a 
+* status message to indicate why the query failed. Those errors are: no such
+* folder, no such tag, and bad query.
+*/
 ZmSearchController.prototype._handleError =
 function(ex, method, params) {
 	if (this._searchToolBar)
 		this._searchToolBar.setEnabled(true);
 	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
-	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER || ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG) {
-		var msg = this._getErrorMsg(ex.code);
-		this._appCtxt.getAppController().setStatusMsg(msg);
-		return true;
-	} else {
-		this._handleException(ex, method, params, false);
-		return false;
-	}
+	var msg = this._getErrorMsg(ex.code);
+	this._appCtxt.getAppController().setStatusMsg(msg);
+	return true;
 }
 
 /*********** Search Field Callback */

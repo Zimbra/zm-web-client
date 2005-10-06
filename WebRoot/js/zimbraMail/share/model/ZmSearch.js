@@ -69,7 +69,7 @@ function() {
 * @param callback	[AjxCallback]*	Callback to run when response is received (async mode)
 */
 ZmSearch.prototype.execute =
-function(callback) {
+function(callback, errors) {
 
 	if (!this.query) return;
 	
@@ -96,7 +96,7 @@ function(callback) {
 	}
 	
 	var respCallback = new AjxCallback(this, this._handleResponse, [isGalSearch, callback]);
-	this._appCtxt.getAppController().sendRequest(soapDoc, respCallback);
+	this._appCtxt.getAppController().sendRequest(soapDoc, respCallback, errors);
 }
 
 ZmSearch.prototype._handleResponse = 
