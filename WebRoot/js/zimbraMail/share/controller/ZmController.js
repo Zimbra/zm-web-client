@@ -273,7 +273,7 @@ function(params) {
 		auth.execute(params.username, params.password);
     	this._authenticating = false;
     	this._appCtxt.setIsPublicComputer(params.pubComp);
-		this._appCtxt.getAppController().startup({bIsRelogin: (this._execFrame != null)}); // restart application after login
+		this._appCtxt.getAppController().startup({isRelogin: this._execFrame != null}); // restart application after login
 		// Schedule this since we want to make sure the app is built up before we actually hide the login dialog
 		this._schedule(this._hideLoginDialog);
 		if (this._execFrame)

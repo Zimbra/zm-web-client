@@ -280,7 +280,7 @@ function(params, rpcCallback) {
 	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
 	
 	var search = new ZmSearch(this._appCtxt, params.query, types, params.sortBy, params.offset, params.limit, contactSource);
-	var respCallback = new AjxCallback(this, this._handleResponse, [search, this._doSearch, params, types, rpcCallback]);
+	var respCallback = new AjxCallback(this, this._handleResponse, [search, params.callback, rpcCallback]);
 	var errors = new Object();
 	errors[ZmCsfeException.MAIL_NO_SUCH_FOLDER] = true;
 	errors[ZmCsfeException.MAIL_NO_SUCH_TAG] = true;
@@ -291,28 +291,24 @@ function(params, rpcCallback) {
 /*
 * Takes the search result and hands it to the appropriate controller.
 *
-* @params args	[Object]	
+* @param search			[ZmSearch]
+* @param callback		[AjxCallback]*
+* @param rpcCallback	[AjxCallback]
+* @param result			[ZmCsfeResult]
 */
 ZmSearchController.prototype._handleResponse =
 function(args) {
 
-	var search = args[0];
-	var method = args[1];
-	var params = args[2];
-	var types = args[3];
-	var rpcCallback = args[4];
-	var results = args[5];
+	var search		= args[0];
+	var callback	= args[1];
+	var rpcCallback	= args[2];
+	var result		= args[3];
 
-	if (!results) return;
-	var gotError = (results instanceof ZmCsfeException);
-	if (gotError) {
-		if (this._handleError(results, method, params)) {
-			// minor problem, show empty result set
-			results = new ZmSearchResult(this._appCtxt);
-			results.type = params.types ? params.types[0] : null;
-		} else {
-			return;
-		}
+	var results;
+	try {
+		results = result.getResponse();
+	} catch (ex) {
+		results = this._handleError(ex, search.types.get(0)); // minor problem, show empty result set
 	}
 
 	this._appCtxt.setCurrentSearch(search);
@@ -320,10 +316,10 @@ function(args) {
 	if (this._searchToolBar)
 		this._searchToolBar.setEnabled(true);
 	if (!results.type)
-		results.type = types.get(0);
+		results.type = search.types.get(0);
 	
-	if (params.callback) {
-		params.callback.run(results);
+	if (callback) {
+		callback.run(results);
 		return;
 	} 
 
@@ -334,9 +330,9 @@ function(args) {
 
 	DBG.timePt("handle search results");
 	if (results.type == ZmItem.CONV) {
-		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().show(results, params.query);
+		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().show(results, search.query);
 	} else if (results.type == ZmItem.MSG) {
-		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController().show(results, params.query);
+		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController().show(results, search.query);
 	} else {
 		// determine if we need to default to mixed view
 		var folderTree = this._appCtxt.getFolderTree();
@@ -345,9 +341,9 @@ function(args) {
 
 		// only show contact view if search is not in Trash folder
 		if (results.type == ZmItem.CONTACT && !inTrash) {
-			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController().show(results, params.query, this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
+			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController().show(results, search.query, this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
 		} else {
-			this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, params.query);
+			this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, search.query);
 		}
 	}
 	DBG.timePt("render search results");
@@ -360,15 +356,21 @@ function(args) {
 * Handle a few minor errors where we show an empty result set and issue a 
 * status message to indicate why the query failed. Those errors are: no such
 * folder, no such tag, and bad query.
+*
+* @param ex			[ZmCsfeException]	the exception
+* @param params		[Object]			search params
 */
 ZmSearchController.prototype._handleError =
-function(ex, method, params) {
+function(ex, type) {
 	if (this._searchToolBar)
 		this._searchToolBar.setEnabled(true);
 	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
 	var msg = this._getErrorMsg(ex.code);
 	this._appCtxt.getAppController().setStatusMsg(msg);
-	return true;
+	var results = new ZmSearchResult(this._appCtxt);
+	results.type = params.types ? params.types[0] : null;
+	
+	return results;
 }
 
 /*********** Search Field Callback */

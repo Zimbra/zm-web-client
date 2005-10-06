@@ -99,24 +99,29 @@ function(callback, errors) {
 	this._appCtxt.getAppController().sendRequest(soapDoc, respCallback, errors);
 }
 
+/*
+* Convert the SOAP response into a ZmSearchResult and pass it along. If we got an
+* exception, just pass that along.
+*/
 ZmSearch.prototype._handleResponse = 
 function(args) {
 	var isGalSearch = args[0];
 	var callback = args[1];
-	var response = args[2];
+	var result = args[2];
 	
-	var returnValue;
-	if (response instanceof ZmCsfeException) {
-		returnValue = response;
-	} else {
-		response = isGalSearch ? response.SearchGalResponse : response.SearchResponse;
-		var searchResult = new ZmSearchResult(this._appCtxt, this);
-		searchResult.set(response, this.contactSource);
-		returnValue = searchResult;
+	var response;
+	try {
+		response = result.getResponse();
+	} catch (ex) {
+		callback.run(result);
 	}
 	
-	if (callback)
-		callback.run(returnValue);
+	response = isGalSearch ? response.SearchGalResponse : response.SearchResponse;
+	var searchResult = new ZmSearchResult(this._appCtxt, this);
+	searchResult.set(response, this.contactSource);
+	result.set(searchResult);
+	
+	callback.run(result);
 }
 
 // searching w/in a conv (to get its messages) has its own special command

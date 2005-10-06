@@ -133,8 +133,9 @@ ZmSettings.prototype._handleResponse =
 function(args) {
 
 	var callback = args[0];
-	var response = args[1];
+	var result = args[1];
 	
+	var response = result.getResponse();
 	var obj = response.GetInfoResponse;
 	if (obj.name)
 		this._settings[ZmSetting.USERNAME].setValue(obj.name);

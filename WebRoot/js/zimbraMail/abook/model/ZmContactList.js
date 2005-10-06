@@ -97,14 +97,15 @@ function(attrs, callback) {
 ZmContactList.prototype._handleResponse =
 function(args) {
 	var callback = null;
-	var response;
+	var result;
 	if (args instanceof Array) {
 		callback = args[0];
-		response = args[1];
+		result = args[1];
 	} else {
-		response = args;
+		result = args;
 	}
 	
+	var response = result.getResponse();
 	var list = response.GetContactsResponse.cn;
 	if (list) {
 		var _st = new Date();

@@ -1051,11 +1051,14 @@ function(args) {
 	var start = args[1];
 	var end = args[2];
 	var fanoutAllDay = args[3];
-	var response = args[4];
+	var result = args[4];
 
-	if (!response) return; // TODO: mark both as needing refresh?
-	if (response instanceof ZmCsfeException) {
-		if (callback) callback.run(response);	
+	if (!result) return; // TODO: mark both as needing refresh?
+	var response;
+	try {
+		response = result.getResponse();
+	} catch (ex) {
+		if (callback) callback.run(response);
 		return;
 	}
 	
