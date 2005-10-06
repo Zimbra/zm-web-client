@@ -80,15 +80,17 @@ function(conv, now, isDndIcon, isMixedView, div) {
 			var width = AjxEnv.isIE ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
 			var fieldId = this._getFieldId(conv, ZmItem.F_PARTICIPANT);
 			htmlArr[idx++] = "<td width=" + width + " id='" + fieldId + "'>";
+			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 			htmlArr[idx++] = this._getParticipantHtml(conv, fieldId);
+			htmlArr[idx++] = AjxEnv.isSafari ? "</div>" : "";
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0) {
 			// Attachments icon
 			idx = this._getField(htmlArr, idx, conv, ZmItem.F_ATTACHMENT, i);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
 			// Subject
-			htmlArr[idx++] = "<td id='" + this._getFieldId(conv, ZmItem.F_SUBJECT) + "'";
-			htmlArr[idx++] = AjxEnv.isSafari ? " style='width: auto;'>" : ">";
+			htmlArr[idx++] = "<td id='" + this._getFieldId(conv, ZmItem.F_SUBJECT) + "'>";
+			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 			htmlArr[idx++] = conv.subject ? AjxStringUtil.htmlEncode(conv.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
 			if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && conv.fragment) {
 				htmlArr[idx++] = "<span class='ZmConvListFragment'>";
@@ -97,7 +99,7 @@ function(conv, now, isDndIcon, isMixedView, div) {
 				htmlArr[idx++] = "</span>";
 			}
 			htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
-			htmlArr[idx++] = "</td>";
+			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT]) == 0) {
 			var width = AjxEnv.isIE ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
 			htmlArr[idx++] = "<td id='" + this._getFieldId(conv, ZmItem.F_COUNT) + "'";

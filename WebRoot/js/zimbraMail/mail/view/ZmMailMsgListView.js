@@ -208,22 +208,21 @@ function(msg, now, isDndIcon, isMixedView) {
 			// Fragment
 			if (this._mode == ZmController.CONV_VIEW) {
 				htmlArr[idx++] = "<td id='" + this._getFieldId(msg, ZmItem.F_FRAGMENT) + "'";
-				htmlArr[idx++] = AjxEnv.isSafari ? " style='width:auto;'>" : " width=100%>";
+				htmlArr[idx++] = AjxEnv.isSafari ? " style='width:auto;'><div style='overflow:hidden'>" : " width=100%>";
 				htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
 			} else {
 				htmlArr[idx++] = "<td id='" + this._getFieldId(msg, ZmItem.F_SUBJECT) + "'";
-				htmlArr[idx++] = AjxEnv.isSafari ? " style='width:auto;'>" : " width=100%>";
+				htmlArr[idx++] = AjxEnv.isSafari ? " style='width:auto;'><div style='overflow:hidden'>" : " width=100%>";
 				var subj = msg.getSubject() || ZmMsg.noSubject;
 				htmlArr[idx++] = AjxStringUtil.htmlEncode(subj);
 				if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
-					htmlArr[idx++] = "<span class='ZmConvListFragment'>";
-					htmlArr[idx++] = " - ";
+					htmlArr[idx++] = "<span class='ZmConvListFragment'> - ";
 					htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
 					htmlArr[idx++] = "</span>";
 				}
 			}
-			if (AjxEnv.isNav)
-				htmlArr[idx++] = ZmListView._fillerString;
+			htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
+			htmlArr[idx++] = AjxEnv.isSafari ? "</div>" : "";
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER]) == 0) {
 			// Folder
