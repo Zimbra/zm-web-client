@@ -290,7 +290,7 @@ function(soapDoc, callback, errors) {
 			throw ex;
 	}
 	if (!asyncMode)
-		return this._handleResponse([asyncMode, null, response, errors]);
+		return this._handleResponse([asyncMode, null, errors, response]);
 }
 
 ZmZimbraMail.prototype._handleResponse =
