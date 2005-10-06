@@ -249,8 +249,9 @@ ZmMailMsgView._dangerousCSS = {
 // even be here since (1) they belong in the <head> and (2) are discarded on
 // the server-side, but we check, just in case..).
 ZmMailMsgView.prototype._processHtmlDoc = function(doc) {
+	// var T1 = new Date().getTime();
 	var objectManager = this._objectManager,
-		node = doc.documentElement;
+		node = doc.body;
 
 	// This inner function does the actual work.  BEWARE that it return-s
 	// in various places, not only at the end.
@@ -309,6 +310,7 @@ ZmMailMsgView.prototype._processHtmlDoc = function(doc) {
 		return node.nextSibling;
 	};
 	recurse(node, true);
+	// alert((new Date().getTime() - T1)/1000);
 };
 
 ZmMailMsgView.prototype._fixMultipartRelatedImages =
@@ -401,12 +403,16 @@ function(args) {
 ZmMailMsgView.prototype._makeIframeProxy = function(container, html, isTextMsg) {
 	var displayImages;
 	if (!isTextMsg && /<img/i.test(html)) {
-		var displayImages = this.getDocument().createElement("div");
+		displayImages = this.getDocument().createElement("div");
 		displayImages.className = "DisplayImages";
 		displayImages.id = this._displayImagesId;
-		displayImages.innerHTML = "<table width='100%' cellspacing='0' cellpadding='0'><tr><td style='width:20px'>"+ AjxImg.getImageHtml("Status") + "</td><td>" +
-		ZmMsg.externalImages + " <span style='font: inherit; color:blue; text-decoration:underline'>"+ZmMsg.displayExternalImages+
-		"</span></td></tr></table>";
+		displayImages.innerHTML =
+			[ "<table width='100%' cellspacing='0' cellpadding='0'><tr><td style='width:20px'>",
+			  AjxImg.getImageHtml("Status") + "</td><td>",
+			  ZmMsg.externalImages,
+			  " <span style='font: inherit; color:blue; text-decoration:underline'>",
+			  ZmMsg.displayExternalImages,
+			  "</span></td></tr></table>" ].join("");
 		container.appendChild(displayImages);
 	}
 
