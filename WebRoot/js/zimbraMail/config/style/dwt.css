@@ -789,17 +789,6 @@
 
 
 
-/* tables */
-.xform_table {
-	border-collapse:collapse;
-	padding:0;
-}
-.xform_composite_table {
-	border-collapse:collapse;
-	padding:0;
-}
-
-
 /* widgets */
 .xform_table {
 	border-collapse:collapse;
