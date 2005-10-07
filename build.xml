@@ -497,19 +497,21 @@
     <copy verbose="true" todir="${deploy.dir}${deploy.path}/js/ajax">
       <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js" excludes="**/img/"/>
     </copy>
-    <copy todir="${deploy.dir}${deploy.path}/WEB-INF">  	
-      <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
-      <fileset dir="WebRoot/WEB-INF" includes="tlds/*"/>		
-    </copy>
   	<copy verbose='true' todir='${deploy.dir}${deploy.path}/WEB-INF/classes'>
   		<fileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
   		<fileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
   	</copy>
+  	<dependset>
+  		<srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
+  		<srcfileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
+  		<targetfilelist dir='${deploy.dir}${deploy.path}/WEB-INF' files='web.xml'/>
+  	</dependset>
+    <copy todir="${deploy.dir}${deploy.path}/WEB-INF">  	
+      <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
+      <fileset dir="WebRoot/WEB-INF" includes="tlds/*"/>		
+    </copy>
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
-  	
-  	<!-- Note: touching the web.xml file causes Tomcat to reload app -->
-  	<touch file='${deploy.dir}${deploy.path}/WEB-INF/web.xml'/>
   </target>
 
  <target name="war" depends="copy-files-to-build-area, jam-files, generate-build-info, images">
@@ -592,19 +594,21 @@
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/zimbraAdmin/config/style">
       <fileset dir="WebRoot/js/zimbraMail/config/style" includes="*.css" excludes="zm.css"/>
     </copy>
-    <copy todir="${deploy.dir}${deploy.admin.path}/WEB-INF">  	
-      <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
-      <fileset dir="WebRoot/WEB-INF" includes="tlds/*"/>		
-    </copy>
   	<copy verbose='true' todir='${deploy.dir}${deploy.admin.path}/WEB-INF/classes'>
   		<fileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
   		<fileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
   	</copy>
+  	<dependset>
+  		<srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
+  		<srcfileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
+  		<targetfilelist dir='${deploy.dir}${deploy.admin.path}/WEB-INF' files='web.xml'/>
+  	</dependset>
+    <copy todir="${deploy.dir}${deploy.admin.path}/WEB-INF">  	
+      <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
+      <fileset dir="WebRoot/WEB-INF" includes="tlds/*"/>		
+    </copy>
     <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
-  	
-  	<!-- Note: touching the web.xml file causes Tomcat to reload app -->
-  	<touch file='${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml'/>
   </target>
 
 	<target name="admin-war" depends="build-init, copy-admin-help, copy-files-to-build-area, jam-files, generate-build-info, admin-images, copy-common-css-to-admin">
