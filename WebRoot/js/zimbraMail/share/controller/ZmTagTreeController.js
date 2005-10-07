@@ -204,7 +204,10 @@ function(ev) {
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		var data = ev.srcData.data;
 		var sample = (data instanceof Array) ? data[0] : data;
-		if (sample instanceof ZmContact && sample.isGal) {
+		var tag = ev.targetControl.getData(Dwt.KEY_OBJECT);
+		if (tag.id == ZmOrganizer.ID_ROOT) {
+			ev.doIt = false;
+		} else if (sample instanceof ZmContact && sample.isGal) {
 			ev.doIt = false;
 		} else {
 			ev.doIt = this._dropTgt.isValidTarget(data);
