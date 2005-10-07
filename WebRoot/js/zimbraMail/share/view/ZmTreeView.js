@@ -219,6 +219,7 @@ function(treeNode, organizer, omit) {
 ZmTreeView.prototype._addNew =
 function(parentNode, organizer, index) {
 	var ti = new DwtTreeItem(parentNode, index, organizer.getName(this._showUnread), organizer.getIcon());
+	ti.setDndText(organizer.getName());
 	ti.setData(Dwt.KEY_ID, organizer.id);
 	ti.setData(Dwt.KEY_OBJECT, organizer);
 	ti.setData(ZmTreeView.KEY_ID, this.overviewId);
