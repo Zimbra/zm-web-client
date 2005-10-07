@@ -56,7 +56,7 @@ function ZmMailMsgView(parent, className, posStyle, mode) {
 	this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
 	this.addListener(DwtEvent.ONSELECTSTART, new AjxListener(this, this._selectStartListener));
 	this.addListener(DwtEvent.ONCONTEXTMENU, new AjxListener(this, this._contextMenuListener));
-
+	this.addListener(DwtEvent.CONTROL, new AjxListener(this, this._controlEventListener));
 }
 
 ZmMailMsgView.prototype = new DwtComposite;
@@ -69,6 +69,9 @@ ZmMailMsgView.QUOTE_DEPTH_MOD = 3;
 ZmMailMsgView.MAX_SIG_LINES = 8;
 ZmMailMsgView.SIG_LINE = /^(- ?-+)|(__+)\r?$/;
 ZmMailMsgView._inited = false;
+
+ZmMailMsgView.OBJ_SIZE_TEXT = 50; // max. size of text emails that will automatically highlight objects
+ZmMailMsgView.OBJ_SIZE_HTML = 50; // similar for HTML emails.
 
 ZmMailMsgView.REPLY_INVITE_EVENT = "inviteReply";
 
@@ -95,8 +98,8 @@ function() {
 
 	this._operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
 	this._inviteToolbar = new ZmButtonToolBar(this,	this._operationButtonIds,
-											  null, DwtControl.STATIC_STYLE,
-											  "ZmInviteToolBar", "DwtButton");
+						  null, DwtControl.STATIC_STYLE,
+						  "ZmInviteToolBar", "DwtButton");
 	// get a little space between the buttons.
 	var toolbarHtmlEl = this._inviteToolbar.getHtmlElement();
 	toolbarHtmlEl.firstChild.cellPadding = "3";
@@ -128,6 +131,10 @@ function(ev) {
 ZmMailMsgView.prototype.addInviteReplyListener =
 function (listener) {
 	this.addListener(ZmMailMsgView.REPLY_INVITE_EVENT, listener);
+};
+
+ZmMailMsgView.prototype._controlEventListener = function(ev) {
+	ZmMailMsgView._resetIframeHeight([ this, this.getElementById(this._iframeId) ]);
 };
 
 ZmMailMsgView.prototype.set =
@@ -174,7 +181,7 @@ function(msg) {
 
 	// reset scroll view to top most
 	this.getHtmlElement().scrollTop = 0;
-}
+};
 
 // This looks for anchor tags first, to exclude them, and all other tags later.
 // ZmMailMsgView.htmlPreprocRegex = /(<[aA][^>]*>)([^<]*)(<\/[aA][^>]*>)|(<[^>]*>)([^<]*)|([^<>]+)/g;
@@ -344,10 +351,11 @@ function(msg, idoc, domain) {
 		}
 	}
 	return (num == images.length);
-}
+};
 
 ZmMailMsgView.prototype._createDisplayImageClickClosure =
 function(msg, idoc, id, iframe) {
+	var self = this;
 	var func = function () {
 		var images = idoc.getElementsByTagName("img");
 		for (var i = 0; i < images.length; i++) {
@@ -370,14 +378,13 @@ function(msg, idoc, id, iframe) {
 			}
 		}
 		diEl = Dwt.getDomObj(document, id);
-		var h = diEl.offsetHeight;
 		diEl.style.display = "none";
-		iframe.style.height = parseInt(iframe.style.height) + h + "px";
 		this._htmlBody = idoc.documentElement.innerHTML;
+		ZmMailMsgView._resetIframeHeight([ self, iframe ]);
 		msg.setHtmlContent(this._htmlBody);
-	}
+	};
 	return func;
-}
+};
 
 ZmMailMsgView._swapIdAndSrc =
 function (args) {
@@ -390,14 +397,64 @@ function (args) {
 	if (i == len -1) {
 		msg.setHtmlContent(idoc.documentElement.innerHTML);
 	}
-}
+};
 
 ZmMailMsgView._resetIframeHeight =
 function(args) {
-	var iframe = args[0];
+	var self = args[0];
+	var iframe = args[1];
+	var h = self.getH() - 1;
+	function substract(id) {
+		if (id) {
+			var el = self.getElementById(id);
+			if (el)
+				h -= Dwt.getSize(el, true).y;
+		}
+	};
+	substract(self._hdrTableId);
+	substract(self._displayImagesId);
+	substract(self._highlightObjectsId);
+	iframe.style.height = h + "px";
+};
 
-	var height = iframe.parentNode.offsetHeight - iframe.offsetTop;
-	iframe.style.height = height + "px";
+ZmMailMsgView.prototype.highlightObjects = function() {
+	// This turns out to work fine for both HTML and Text emails.  For
+	// text, however, it's slower than if we were just calling findObjects
+	// on the whole text content, but has the advantage that it doesn't
+	// scroll the iframe to top.  If anyone thinks that hiliting objects in
+	// big text messages is too slow, lemme know.  -mihai@zimbra.com
+	var idoc = this.getElementById(this._iframeId).contentWindow.document;
+	this._processHtmlDoc(idoc);
+};
+
+ZmMailMsgView.prototype._makeHighlightObjectsDiv = function() {
+	var self = this;
+	function func() {
+		var div = self.getElementById(self._highlightObjectsId);
+		div.innerHTML = ZmMsg.pleaseWaitHilitingObjects;
+		setTimeout(function() {
+			self.highlightObjects();
+			div.style.display = "none";
+			ZmMailMsgView._resetIframeHeight([ self, self.getElementById(self._iframeId) ]);
+		}, 3);
+		return false;
+	};
+	// avoid closure memory leaks
+	(function() {
+		self._highlightObjectsId = Dwt.getNextId();
+		var div = self.getDocument().createElement("div");
+		div.className = "DisplayImages";
+		div.id = self._highlightObjectsId;
+		div.innerHTML =
+			[ "<table width='100%' cellspacing='0' cellpadding='0'><tr><td style='width:20px'>",
+			  AjxImg.getImageHtml("Status") + "</td><td>",
+			  ZmMsg.objectsNotDisplayed,
+			  " <span style='font: inherit; color:blue; text-decoration:underline'>",
+			  ZmMsg.hiliteObjects,
+			  "</span></td></tr></table>" ].join("");
+		self.getHtmlElement().appendChild(div);
+		Dwt.setHandler(div, DwtEvent.ONCLICK, func);
+	})();
 };
 
 ZmMailMsgView.prototype._makeIframeProxy = function(container, html, isTextMsg) {
@@ -417,10 +474,15 @@ ZmMailMsgView.prototype._makeIframeProxy = function(container, html, isTextMsg) 
 	}
 
 	var callback = null;
+	var msgSize = html.length / 1024;
 	if (isTextMsg) {
-		// better process objects directly rather than scanning the DOM afterwards.
-		if (this._objectManager)
+		if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT && this._objectManager)
+			// better process objects directly rather than scanning the DOM afterwards.
 			html = this._objectManager.findObjects(html, true);
+		else {
+			html = AjxStringUtil.convertToHtml(html);
+			this._makeHighlightObjectsDiv();
+		}
 		html = html.replace(/^ /mg, "&nbsp;")
 			.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
 			.replace(/\n/g, "<br>");
@@ -428,7 +490,10 @@ ZmMailMsgView.prototype._makeIframeProxy = function(container, html, isTextMsg) 
 		html = html.replace(/<!--(.*?)-->/g, ""); // remove comments
 		// html = html.replace(/<style>/, "<style type='text/css'>");
 		// this callback will post-process the HTML after the IFRAME is created
-		callback = new AjxCallback(this, this._processHtmlDoc);
+		if (msgSize <= ZmMailMsgView.OBJ_SIZE_HTML)
+			callback = new AjxCallback(this, this._processHtmlDoc);
+		else
+			this._makeHighlightObjectsDiv();
 	}
 
 	var ifw = new DwtIframe(this, "MsgBody", true, html, false, "static", callback);
@@ -470,6 +535,7 @@ ZmMailMsgView.prototype._makeIframeProxy = function(container, html, isTextMsg) 
 	// set height of view according to height of iframe on timer
 	var act = new AjxTimedAction();
 	act.method = ZmMailMsgView._resetIframeHeight;
+	act.params.add(this);
 	act.params.add(ifw.getIframe());
 	AjxTimedAction.scheduleAction(act, 5);
 };
@@ -481,17 +547,17 @@ function(newMsg) {
 		this._msg.removeChangeListener(this._changeListener);
 	// don't want add change listener for new until shown
 	this._msg = newMsg;
-}
+};
 
 ZmMailMsgView.prototype.isDisplayingMsg =
 function(msg) {
 	return (this._msg == msg);
-}
+};
 
 ZmMailMsgView.prototype.getMsg =
 function() {
 	return this._msg;
-}
+};
 
 // Following two overrides are a hack to allow this view to pretend it's a list view
 ZmMailMsgView.prototype.getSelection =
@@ -559,7 +625,7 @@ function(htmlArr, idx, addrs, prefix) {
    	htmlArr[idx++] = "</td></tr>";
 
 	return idx;
-}
+};
 
 ZmMailMsgView.prototype._renderMessage =
 function(msg, container) {
@@ -689,7 +755,7 @@ function(msg) {
 	}
 	var tagCell = Dwt.getDomObj(this.getDocument(), this._tagCellId);
 	tagCell.innerHTML = html.join("");
-}
+};
 
 ZmMailMsgView.prototype._msgChangeListener =
 function(ev) {
@@ -697,14 +763,14 @@ function(ev) {
 		return;
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL)
 		this._setTags(this._msg);
-}
+};
 
 ZmMailMsgView.prototype._listChangeListener =
 function(ev) {
 	// bug fix #3398 - check list size before nuking the msg view
 	if (ev.source.size() == 0 && (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE))
 		this.reset();
-}
+};
 
 ZmMailMsgView.prototype._mouseDownListener =
 function(ev) {
@@ -713,26 +779,26 @@ function(ev) {
 		ev._stopPropagation = false;
 		ev._returnValue = true;
 	}
-}
+};
 
 ZmMailMsgView.prototype._selectStartListener =
 function(ev) {
 	// reset mouse event to propagate event to browser (allows text selection)
 	ev._stopPropagation = false;
 	ev._returnValue = true;
-}
+};
 
 ZmMailMsgView.prototype._contextMenuListener =
 function(ev) {
 	// reset mouse event to propagate event to browser (allows context menu)
 	ev._stopPropagation = false;
 	ev._returnValue = true;
-}
+};
 
 ZmMailMsgView.prototype.preventSelection =
 function() {
 	return false;
-}
+};
 
 ZmMailMsgView.prototype.preventContextMenu =
 function(target) {
@@ -755,7 +821,7 @@ function(target) {
 		// if something has been selected and target is not a custom object,
 		return bSelection && !bObjFound ? false : true;
 	}
-}
+};
 
 ZmMailMsgView.prototype._tagChangeListener =
 function(ev) {
@@ -771,7 +837,7 @@ function(ev) {
 
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_RENAME || ev.event == ZmEvent.MODIFY)
 		this._setTags(this._msg);
-}
+};
 
 ZmMailMsgView.getPrintHtml =
 function(msg, preferHtml) {
@@ -843,4 +909,4 @@ function(msg, preferHtml) {
 	}
 
 	return html.join("");
-}
+};

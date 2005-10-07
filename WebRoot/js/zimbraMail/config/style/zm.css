@@ -393,8 +393,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   background-color: #FFFFCC;
   padding: 7px;
   font-size: 10pt;
-  margin: 2px;
-  border: 1px solid #777777;
+  border-bottom: 1px solid #777777;
 }
 
 .ZmMailMsgView .Displayimages td {
