@@ -1004,8 +1004,7 @@ function() {
 		var layout = this._layouts[i];
 		var apptDiv = Dwt.getDomObj(doc, this._getItemId(layout.appt));
 		if (apptDiv) {
-			// only need to get bounds first time through
-			if (!layout.bounds) layout.bounds = this._getBoundsForAppt(layout.appt);
+			layout.bounds = this._getBoundsForAppt(layout.appt);
 			var w = Math.floor(layout.bounds.width*ZmCalDayView._getApptWidthPercent(layout.maxcol+1));
 			var xinc = layout.maxcol ? ((layout.bounds.width - w) / layout.maxcol) : 0; // n-1
 			var x = xinc * layout.col + (layout.bounds.x);
