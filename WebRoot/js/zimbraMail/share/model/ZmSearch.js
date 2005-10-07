@@ -96,7 +96,7 @@ function(callback, errors) {
 	}
 	
 	var respCallback = new AjxCallback(this, this._handleResponse, [isGalSearch, callback]);
-	this._appCtxt.getAppController().sendRequest(soapDoc, respCallback, errors);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errors);
 }
 
 /*

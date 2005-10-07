@@ -91,7 +91,7 @@ function(attrs, callback) {
 	}
 	
 	var respCallback = new AjxCallback(this, this._handleResponse, callback);
-	this._appCtxt.getAppController().sendRequest(soapDoc, respCallback);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
 }
 
 ZmContactList.prototype._handleResponse =

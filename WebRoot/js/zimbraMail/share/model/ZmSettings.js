@@ -126,7 +126,7 @@ ZmSettings.prototype.loadUserSettings =
 function(callback) {
     var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
     var respCallback = new AjxCallback(this, this._handleResponse, callback);
-	this._appCtxt.getAppController().sendRequest(soapDoc, respCallback);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
 }
 
 ZmSettings.prototype._handleResponse =

@@ -949,9 +949,9 @@ function(ev) {
 };
 
 ZmCalViewController.prototype.sendRequest = 
-function(soapDoc, useXml) {
+function(soapDoc) {
 	try {
-		return this._appCtxt.getAppController().sendRequest(soapDoc, useXml);
+		return this._appCtxt.getAppController().sendRequest(soapDoc);
 	} catch (ex) {
 		// do nothing
 		return null;
@@ -1038,7 +1038,7 @@ function(start,end, fanoutAllDay, callback, nowait) {
 
 	if (callback) {
 		var respCallback = new AjxCallback(this, this.__getApptSummariesResponse, [callback, start, end, fanoutAllDay]);
-		this._appCtxt.getAppController().sendRequest(soapDoc, respCallback);	
+		this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);	
 	} else {
 		var response = this._appCtxt.getAppController().sendRequest(soapDoc);
 		return this.__getApptSummariesResponse([null, start, end, fanoutAllDay, response]);
