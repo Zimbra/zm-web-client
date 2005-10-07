@@ -358,10 +358,11 @@ function(args) {
 	if (this._pollInterval)
 		this._pollActionId = this._schedule(this._doPoll, null, this._pollInterval);
 
-	if (asyncMode)
+	if (asyncMode) {
 		if (callback) callback.run(result);
-	else
+	} else {
 		return response.Body;
+	}
 }
 
 /**
