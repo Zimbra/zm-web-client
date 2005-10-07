@@ -38,7 +38,7 @@ function ZmHtmlEditor(parent, className, posStyle, content, mode, appCtxt) {
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));	
 	
 	// only add listener if this is not a child window
-	if (window._parentController || window._parentController === void 0) {
+	if (window.parentController == null) {
 		var settings = this._appCtxt.getSettings();
 		settings.addChangeListener(new AjxListener(this, this._settingsChangeListener));
 	}
