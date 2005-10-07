@@ -1078,8 +1078,9 @@ function(args) {
 	return newList;
 }
 
+// TODO: appt is null for now. we are just clearing our caches...
 ZmCalViewController.prototype.notifyCreate =
-function(msg) {
+function(appt) {
 	//DBG.println("ZmCalViewController: notifyCreate!");
 	if (!this._clearCache) {
 		this._clearCache = true;

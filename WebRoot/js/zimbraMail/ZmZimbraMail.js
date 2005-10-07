@@ -953,8 +953,6 @@ function(creates, modifies) {
 				parent.notifyCreate(create, (name == "search"));
 		} else if (name == "m") {
 			var msg = ZmMailMsg.createFromDom(create, {appCtxt: this._appCtxt}, true);
-			if (msg.isInvite() && this._calController) 
-				this._calController.notifyCreate(msg);
 			msgs[msg.id] = msg;
 			var cid = msg.cid;
 			var folder = msg.folderId;
@@ -972,6 +970,10 @@ function(creates, modifies) {
 		} else if (name == "cn") {
 			var contactList = this.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 			contactList.notifyCreate(create, true);
+		} else if (name == "appt") {
+			// TODO: create appt object and pass into notify create
+			if (this._calController) 
+				this._calController.notifyCreate(null);
 		}
 	}
 	if (gotMail) {
