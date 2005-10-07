@@ -431,7 +431,7 @@ ZmMailMsgView.prototype._makeIframeProxy = function(container, html, isTextMsg) 
 		callback = new AjxCallback(this, this._processHtmlDoc);
 	}
 
-	var ifw = new DwtIframe(this, "MsgBody", html, false, "static", callback);
+	var ifw = new DwtIframe(this, "MsgBody", true, html, false, "static", callback);
 	this._iframeId = ifw.getIframe().id;
 
 	var idoc = ifw.getDocument();
@@ -447,6 +447,8 @@ ZmMailMsgView.prototype._makeIframeProxy = function(container, html, isTextMsg) 
 	link.rel = "stylesheet";
 	link.href = "/zimbra/js/zimbraMail/config/style/msgview.css";
 	head.appendChild(link);
+
+	ifw.getIframe().style.visibility = "";
 
 	if (!isTextMsg) {
 		this._htmlBody = idoc.body.innerHTML;
