@@ -59,10 +59,6 @@ ZmApptComposeView.prototype.constructor = ZmApptComposeView;
 ZmApptComposeView.DIALOG_X = 50;
 ZmApptComposeView.DIALOG_Y = 100;
 
-// The iframe holds a form with attachment input fields
-ZmApptComposeView.IFRAME_HEIGHT = 30;
-ZmApptComposeView.UPLOAD_FIELD_NAME = "attUpload";
-
 ZmApptComposeView.EMPTY_FORM_RE = /^[\s\|]*$/;
 
 
@@ -125,49 +121,12 @@ function(bEnable) {
 	// TODO
 };
 
-ZmApptComposeView.prototype.getHtmlEditor = 
-function() {
-	return this._htmlEditor;
-};
-
 /**
 * Adds an attachment file upload field to the compose form.
 */
 ZmApptComposeView.prototype.addAttachmentField =
 function() {
-
-	// just in case... iframes are tempermental
-	var attTable = this._getAttachmentTable();
-	if (!attTable) return;
-	
-	// add new row
-	var	row = attTable.insertRow(-1);
-	var attId = "_att_" + Dwt.getNextId();
-	var attRemoveId = attId + "_r";
-	var attInputId = attId + "_i";
-	row.id = attId;
-	row.style.height = ZmApptComposeView.IFRAME_HEIGHT;
-
-	// add new cell and build html for inserting file upload input element
-	var	cell = row.insertCell(-1);
-	var html = new Array();
-	var idx = 0;
-	html[idx++] = "<table cellspacing=4 cellpadding=0 border=0><tr>";
-	html[idx++] = "<td><div class='attachText'>" + ZmMsg.attachFile + ":</div></td>";
-	html[idx++] = "<td class='nobreak'>";
-	html[idx++] = "<input id='" + attInputId + "' type='file' name='" + ZmComposeView.UPLOAD_FIELD_NAME + "' size=40>&nbsp;";
-	html[idx++] = "<span id='" + attRemoveId + "'";
-	html[idx++] = " onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;'";
-	html[idx++] = ">" + ZmMsg.remove + "</span>";
-	html[idx++] = "</td></tr></table>";
-	cell.innerHTML = html.join("");
-	
-	this._setEventHandler(attRemoveId, "onClick", null, !AjxEnv.isNav);
-	// trap key presses in IE for input field so we can ignore ENTER key (bug 961)
-	if (AjxEnv.isIE)
-		this._setEventHandler(attInputId, "onKeyDown", null, !AjxEnv.isNav);
-	this._setAttachmentsContainerHeight(true);
-	//this._resetBodySize();
+	this._apptTab.addAttachmentField();
 };
 
 ZmApptComposeView.prototype.tabSwitched =
@@ -182,6 +141,8 @@ function(tabKey) {
 		if (!this.isChildWindow)
 			buttons.push(ZmOperation.DETACH_COMPOSE);
 		toolbar.enable(buttons, false);
+	} else {
+		this._apptTab.reEnableDesignMode();
 	}
 };
 
@@ -208,39 +169,6 @@ ZmApptComposeView.prototype._getDialogXY =
 function() {
 	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
 	return new DwtPoint(loc.x + ZmComposeView.DIALOG_X, loc.y + ZmComposeView.DIALOG_Y);
-};
-
-ZmApptComposeView.prototype._getAttachmentTable =
-function() {
-	var attTable = null;
-
-	if (!this._iframe)
-		this._iframe = this._createAttachmentsContainer();
-
-	if (AjxEnv.isIE) {
-		// get iframe doc (if doesnt exist, create new iframe)
-		var iframeDoc = this._getIframeDocument();
-		if (!iframeDoc)	return;
-	
-		attTable = Dwt.getDomObj(iframeDoc, this._attachmentTableId);
-
-	} else {
-		attTable = Dwt.getDomObj(document, this._attachmentTableId);
-	}
-	return attTable;
-};
-
-ZmApptComposeView.prototype._setAttachmentsContainerHeight =
-function(add) {
-	if (AjxEnv.isIE) {
-		var height = parseInt(this._iframe.style.height);
-		if (add) {
-			height += ZmComposeView.IFRAME_HEIGHT;
-		} else {
-			height -= ZmComposeView.IFRAME_HEIGHT;
-		}
-		this._iframe.style.height = height
-	}
 };
 
 ZmApptComposeView.prototype._submitAttachments =

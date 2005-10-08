@@ -189,7 +189,6 @@ function(ev) {
 // Attachment button was pressed
 ZmApptComposeController.prototype._attachmentListener =
 function(ev) {
-	DBG.println("TODO: attachment");
 /*
 	if (!this._detachOkCancel) {
 		// detach ok/cancel dialog is only necessary if user clicked on the add attachments button	
@@ -197,9 +196,8 @@ function(ev) {
 		this._detachOkCancel.setMessage(ZmMsg.detachAnyway, DwtMessageDialog.WARNING_STYLE);
 		this._detachOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._detachCallback, this);
 	}
-
-	this._apptView.addAttachmentField();
 */
+	this._apptView.addAttachmentField();
 };
 
 ZmApptComposeController.prototype._formatListener = 
