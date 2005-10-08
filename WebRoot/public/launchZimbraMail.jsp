@@ -97,7 +97,7 @@ static final private String LOGIN_PAGE = "/zimbra/";
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 
 	<jsp:include page="Ajax.jsp"/>
-	<jsp:include page="Dwt.jsp"/>
+	<jsp:include page="Zimbra.jsp"/>
 	<jsp:include page="ZimbraMail.jsp"/>
 
 <% } else { %>

@@ -39,9 +39,9 @@ Contributor(s):
 	<script language="JavaScript">
     	DwtConfigPath = "js/dwt/config";
     </script>
+    <jsp:include page="Ajax.jsp"/>
     <jsp:include page="Messages.jsp"/>
     <jsp:include page="Zimbra.jsp"/>
-    <jsp:include page="Dwt.jsp"/>
     <jsp:include page="ZimbraMail.jsp"/>
     <script language="JavaScript">   	
    		function launch() {
