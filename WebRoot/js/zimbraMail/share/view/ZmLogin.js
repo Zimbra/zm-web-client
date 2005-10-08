@@ -33,7 +33,7 @@
  * on the auth token.
  *
  * TODO:
- *  - mke sure all strings are drawn from ZmMsg.js
+ *  - make sure all strings are drawn from ZmMsg.js
  *
  *  - parse the query string, look for whether the page is standalone, or
  *    if the app has opened a window to it.
@@ -371,7 +371,7 @@ ZmLogin.submitNoOpRequest =
 function() {
     var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
 	var command = new ZmCsfeCommand();
-	command.invoke({soapDoc: soapDoc, useXml: true});
+	command.invoke({soapDoc: soapDoc, useXml: true, asyncMode: true});
 };
 
 ZmLogin.submitAuthRequest = 
@@ -390,6 +390,48 @@ function(uname, pword) {
     var el = soapDoc.set("account", uname);
     el.setAttribute("by", "name");
     soapDoc.set("password", pword);
+
+	var command = new ZmCsfeCommand();
+	var respCallback = new AjxCallback(null, ZmLogin._handleAuthResponse, [uname, pword]);
+	command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true, asyncMode: true, callback: respCallback});
+}
+
+ZmLogin._handleAuthResponse =
+function(args) {
+	var uname = args[0];
+	var pword = args[1];
+	var result = args[2];
+	
+	var response;
+	try {
+		response = result.getResponse();
+	} catch (ex) {
+		DBG.dumpObj(ex);
+		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || ex.code == ZmCsfeException.NO_SUCH_ACCOUNT) {
+			ZmLogin.setErrorMessage(ZmMsg.loginError);
+		} else if (ex.code == ZmCsfeException.SOAP_ERROR || ex.code == ZmCsfeException.NETWORK_ERROR) {
+			var msg = ZmMsg.errorNetwork + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
+			ZmLogin.setErrorMessage(msg);
+		} else if (ex.code == ZmCsfeException.ACCT_CHANGE_PASSWORD)	{
+			// disable username and password fields
+			unameField.disabled = pwordField.disabled = true;
+			ZmLogin.showChangePass(ex);
+		} else {
+			var msg = ZmMsg.errorApplication + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
+			ZmLogin.setErrorMessage(msg + " (" + ex.code + ")");
+		}
+		return;
+	}
+	var resp = response.Body.AuthResponse;
+	ZmLogin._authToken = resp.authToken;
+	ZmLogin._authTokenLifetime = resp.lifetime;
+	var mailServer = resp.refer;
+	var pcChecked = document.getElementById("publicComputer").checked;
+	ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword, !pcChecked);
+	ZmLogin._authToken = ZmLogin._authTokenLifetime = null;
+};
+
+/*
     try {
 		var command = new ZmCsfeCommand();
 		var resp = command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true}).Body.AuthResponse;
@@ -424,7 +466,7 @@ function(uname, pword) {
 			ZmLogin.setErrorMessage(msg + " (" + ex.code + ")");
 		}
     }
-};
+*/
 
 ZmLogin.isValidUsername = 
 function(uname) {
