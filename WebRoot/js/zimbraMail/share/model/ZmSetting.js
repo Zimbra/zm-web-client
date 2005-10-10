@@ -147,6 +147,7 @@ ZmSetting.TAGGING_ENABLED				= i++;
 ZmSetting.QUOTA_USED					= i++;
 ZmSetting.TOKEN_LIFETIME				= i++;
 ZmSetting.USERNAME						= i++;
+ZmSetting.USERID						= i++;
 
 // CLIENT SIDE FEATURE SUPPORT
 ZmSetting.ATT_VIEW_ENABLED				= i++;
@@ -286,6 +287,7 @@ ZmSetting.INIT[ZmSetting.TAGGING_ENABLED]				= ["zimbraFeatureTaggingEnabled", Z
 ZmSetting.INIT[ZmSetting.QUOTA_USED]					= [null, ZmSetting.T_COS, ZmSetting.D_INT];
 ZmSetting.INIT[ZmSetting.TOKEN_LIFETIME]				= [null, ZmSetting.T_COS, ZmSetting.D_INT];
 ZmSetting.INIT[ZmSetting.USERNAME]						= [null, ZmSetting.T_COS, ZmSetting.D_STRING];
+ZmSetting.INIT[ZmSetting.USERID]						= ["zimbraId", ZmSetting.T_COS, ZmSetting.D_STRING];
 
 // CLIENT SIDE FEATURE SUPPORT
 ZmSetting.INIT[ZmSetting.ATT_VIEW_ENABLED]				= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];

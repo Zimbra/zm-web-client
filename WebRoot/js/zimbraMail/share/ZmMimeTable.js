@@ -64,6 +64,7 @@ ZmMimeTable.TEXT_PLAIN			= "text/plain";
 ZmMimeTable.TEXT_XML			= "text/xml";
 ZmMimeTable.VIDEO				= "video";
 ZmMimeTable.VIDEO_WMV			= "video/x-ms-wmv";
+ZmMimeTable.XML_ZIMBRA_SHARE	= "xml/x-zimbra-share";
 
 ZmMimeTable._table = new Object();
 

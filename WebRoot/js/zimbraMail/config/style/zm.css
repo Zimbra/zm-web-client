@@ -175,7 +175,7 @@
 	background-color: #EEEEEE;
 }
 .ZmNavToolBar {background-color: transparent;}
-.ZmInviteToolBar {
+.ZmInviteToolBar, .ZmShareToolBar {
 	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
 	padding: 2px;
 	border-bottom: 1px solid #777777;

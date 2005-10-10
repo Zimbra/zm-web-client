@@ -55,6 +55,7 @@ function ZmMailListController(appCtxt, container, mailApp) {
 		this._listeners[ZmOperation.SPAM] = new AjxListener(this, this._spamListener);
 
 	this._inviteReplyListener = new AjxListener(this, this._inviteReplyHandler);
+	this._shareListener = new AjxListener(this, this._shareHandler);
 }
 
 ZmMailListController.prototype = new ZmListController;
@@ -283,6 +284,25 @@ function (ev) {
 	this._inviteReplyDialog.popup(point);
 	return false;
 };
+
+ZmMailListController.prototype._shareHandler =
+function(ev) {
+	if (ev._buttonId == ZmOperation.REPLY_ACCEPT) {
+		var acceptDialog = this._appCtxt.getAcceptShareDialog();
+		// TODO: make sure to only register this callback once
+		acceptDialog.registerCallback(DwtDialog.OK_BUTTON, this._shareDialogOkCallback, this, ev);
+		acceptDialog.setShareInfo(ev._share);
+		acceptDialog.popup();
+	}
+	else {
+		alert("TODO: move message to trash");
+	}
+}
+
+ZmMailListController.prototype._shareDialogOkCallback = 
+function(args) {
+	alert("TODO: move message to trash");
+}
 
 ZmMailListController.prototype.getReferenceView = 
 function() {

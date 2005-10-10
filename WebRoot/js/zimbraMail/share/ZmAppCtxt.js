@@ -204,9 +204,31 @@ function() {
 	return this._moveToDialog;
 }
 
+ZmAppCtxt.prototype.getFolderPropsDialog = function() {
+	if (!this._folderPropsDialog) {
+		this._folderPropsDialog = new ZmFolderPropsDialog(this, this.getShell());
+	}
+	return this._folderPropsDialog;
+}
+ZmAppCtxt.prototype.getSharePropsDialog = function() {
+	if (!this._sharePropsDialog) {
+		this._sharePropsDialog = new ZmSharePropsDialog(this, this.getShell());
+	}
+	return this._sharePropsDialog;
+}
+ZmAppCtxt.prototype.getAcceptShareDialog = function() {
+	if (!this._acceptShareDialog) {
+		this._acceptShareDialog = new ZmAcceptShareDialog(this, this.getShell());
+	}
+	return this._acceptShareDialog;
+}
+
 ZmAppCtxt.prototype.clearFolderDialogs =
 function() {
 	this._newFolderDialog = this._newSearchDialog = this._renameFolderDialog = this._moveToFolderDialog = null;
+	this._folderPropsDialog = null;
+	this._sharePropsDialog = null;
+	this._acceptShareDialog = null;
 }
 
 ZmAppCtxt.prototype.getShell =

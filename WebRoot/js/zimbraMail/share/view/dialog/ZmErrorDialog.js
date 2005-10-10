@@ -56,8 +56,8 @@ ZmErrorDialog.prototype.constructor = ZmErrorDialog;
 
 // Consts
 
-ZmErrorDialog.REPORT_BUTTON = DwtDialog.LAST_BUTTON + 1;
-ZmErrorDialog.DETAIL_BUTTON = DwtDialog.LAST_BUTTON + 2;
+ZmErrorDialog.REPORT_BUTTON = ++DwtDialog.LAST_BUTTON;
+ZmErrorDialog.DETAIL_BUTTON = ++DwtDialog.LAST_BUTTON;
 
 ZmErrorDialog.REPORT_URL = "http://www.zimbra.com/e/";
 

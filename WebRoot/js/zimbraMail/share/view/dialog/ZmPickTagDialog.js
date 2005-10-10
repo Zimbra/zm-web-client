@@ -51,7 +51,7 @@ function ZmPickTagDialog(parent, msgDialog, className) {
 ZmPickTagDialog.prototype = new DwtDialog;
 ZmPickTagDialog.prototype.constructor = ZmPickTagDialog;
 
-ZmPickTagDialog.NEW_BUTTON = DwtDialog.LAST_BUTTON + 1;
+ZmPickTagDialog.NEW_BUTTON = ++DwtDialog.LAST_BUTTON;
 
 ZmPickTagDialog.prototype.toString = 
 function() {

@@ -111,6 +111,14 @@ function(parent, obj, tree) {
 
 	var name = ZmFolder.MSG_KEY[obj.id] ? ZmMsg[ZmFolder.MSG_KEY[obj.id]] : obj.name;
 	var folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n);
+		if (obj.acl && obj.acl.grant && obj.acl.grant.length > 0) {
+			var shares = new Array(obj.acl.grant.length);
+			for (var i = 0; i < obj.acl.grant.length; i++) {
+				var grant = obj.acl.grant[i];
+				shares[i] = new ZmOrganizerShare(folder, grant.gt, grant.zid, grant.d, grant.perm, grant.inh);
+			}
+			folder.setShares(shares);
+		}
 
 	// a folder may contain other folders or searches
 	if (obj.folder && obj.folder.length) {

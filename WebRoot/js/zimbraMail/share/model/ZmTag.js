@@ -38,46 +38,25 @@ function() {
 	return "ZmTag";
 }
 
-// tag colors - these are the server values
-ZmTag.C_ORANGE	= 0;
-ZmTag.C_BLUE	= 1;
-ZmTag.C_CYAN	= 2;
-ZmTag.C_GREEN	= 3;
-ZmTag.C_PURPLE	= 4;
-ZmTag.C_RED		= 5;
-ZmTag.C_YELLOW	= 6;
-ZmTag.MAX_COLOR	= ZmTag.C_YELLOW;
-ZmTag.DEFAULT_COLOR = ZmTag.C_ORANGE;
-
-// color names
-ZmTag.COLOR_TEXT = new Object();
-ZmTag.COLOR_TEXT[ZmTag.C_ORANGE]	= ZmMsg.orange;
-ZmTag.COLOR_TEXT[ZmTag.C_BLUE]		= ZmMsg.blue;
-ZmTag.COLOR_TEXT[ZmTag.C_CYAN]		= ZmMsg.cyan;
-ZmTag.COLOR_TEXT[ZmTag.C_GREEN]		= ZmMsg.green;
-ZmTag.COLOR_TEXT[ZmTag.C_PURPLE]	= ZmMsg.purple;
-ZmTag.COLOR_TEXT[ZmTag.C_RED]		= ZmMsg.red;
-ZmTag.COLOR_TEXT[ZmTag.C_YELLOW]	= ZmMsg.yellow;
-
 // color icons
 ZmTag.COLOR_ICON = new Object();
-ZmTag.COLOR_ICON[ZmTag.C_ORANGE]	= "TagOrange";
-ZmTag.COLOR_ICON[ZmTag.C_BLUE]		= "TagBlue";
-ZmTag.COLOR_ICON[ZmTag.C_CYAN]		= "TagCyan";
-ZmTag.COLOR_ICON[ZmTag.C_GREEN]		= "TagGreen";
-ZmTag.COLOR_ICON[ZmTag.C_PURPLE]	= "TagPurple";
-ZmTag.COLOR_ICON[ZmTag.C_RED]		= "TagRed";
-ZmTag.COLOR_ICON[ZmTag.C_YELLOW]	= "TagYellow";
+ZmTag.COLOR_ICON[ZmOrganizer.C_ORANGE]	= "TagOrange";
+ZmTag.COLOR_ICON[ZmOrganizer.C_BLUE]	= "TagBlue";
+ZmTag.COLOR_ICON[ZmOrganizer.C_CYAN]	= "TagCyan";
+ZmTag.COLOR_ICON[ZmOrganizer.C_GREEN]	= "TagGreen";
+ZmTag.COLOR_ICON[ZmOrganizer.C_PURPLE]	= "TagPurple";
+ZmTag.COLOR_ICON[ZmOrganizer.C_RED]		= "TagRed";
+ZmTag.COLOR_ICON[ZmOrganizer.C_YELLOW]	= "TagYellow";
 
 // color mini icons
 ZmTag.COLOR_MINI_ICON = new Object();
-ZmTag.COLOR_MINI_ICON[ZmTag.C_ORANGE]	= "MiniTagOrange";
-ZmTag.COLOR_MINI_ICON[ZmTag.C_BLUE]		= "MiniTagBlue";
-ZmTag.COLOR_MINI_ICON[ZmTag.C_CYAN]		= "MiniTagCyan";
-ZmTag.COLOR_MINI_ICON[ZmTag.C_GREEN]	= "MiniTagGreen";
-ZmTag.COLOR_MINI_ICON[ZmTag.C_PURPLE]	= "MiniTagPurple";
-ZmTag.COLOR_MINI_ICON[ZmTag.C_RED]		= "MiniTagRed";
-ZmTag.COLOR_MINI_ICON[ZmTag.C_YELLOW]	= "MiniTagYellow";
+ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_ORANGE]	= "MiniTagOrange";
+ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_BLUE]	= "MiniTagBlue";
+ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_CYAN]	= "MiniTagCyan";
+ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_GREEN]	= "MiniTagGreen";
+ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_PURPLE]	= "MiniTagPurple";
+ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_RED]	= "MiniTagRed";
+ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_YELLOW]	= "MiniTagYellow";
 
 // system tags
 ZmTag.ID_ROOT = ZmOrganizer.ID_ROOT;
@@ -130,7 +109,7 @@ function(color) {
 
 ZmTag.prototype.create =
 function(name, color) {
-	color = ZmTag.checkColor(color);
+	color = ZmOrganizer.checkColor(color);
 	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:zimbraMail");
 	var tagNode = soapDoc.set("tag");
 	tagNode.setAttribute("name", name);
@@ -164,7 +143,7 @@ function(obj) {
 	
 	var fields = ZmOrganizer.prototype._getCommonFields.call(this, obj);
 	if (obj.color) {
-		var color = ZmTag.checkColor(obj.color);
+		var color = ZmOrganizer.checkColor(obj.color);
 		if (this.color != color) {
 			this.color = color;
 			fields[ZmOrganizer.F_COLOR] = true;
@@ -184,4 +163,27 @@ function(color) {
 		fields[ZmOrganizer.F_COLOR] = true;
 		this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
 	}
+}
+
+/**
+* Tags come from back end as a flat list, and we manually create a root tag, so all tags
+* have the root as parent. If tags ever have a tree structure, then this should do what
+* ZmFolder does (recursively create children).
+*/
+ZmTag.createFromJs =
+function(parent, obj, tree, sorted) {
+	if (obj.id < ZmTag.FIRST_USER_ID)
+		return;
+	var tag = new ZmTag(obj.id, obj.name, ZmOrganizer.checkColor(obj.color), parent, tree, obj.u);
+	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;
+	parent.children.add(tag, index);
+
+	return tag;
+}
+
+
+
+ZmTag.prototype.getIcon = 
+function() {
+	return ZmTag.COLOR_ICON[this.color];
 }

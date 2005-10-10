@@ -59,6 +59,7 @@ ZmOperation.DRAFT 					= i++;
 ZmOperation.EDIT 					= i++;
 ZmOperation.EDIT_CONTACT			= i++;
 ZmOperation.EDIT_FILTER_RULE		= i++;
+ZmOperation.EDIT_PROPS				= i++;
 ZmOperation.EDIT_REPLY_ACCEPT		= i++;
 ZmOperation.EDIT_REPLY_DECLINE		= i++;
 ZmOperation.EDIT_REPLY_TENTATIVE	= i++;
@@ -104,6 +105,9 @@ ZmOperation.SAVE					= i++;
 ZmOperation.SAVE_DRAFT				= i++;
 ZmOperation.SEARCH					= i++;
 ZmOperation.SEND					= i++;
+ZmOperation.SHARE					= i++;
+//ZmOperation.SHARE_ACCEPT			= i++;
+//ZmOperation.SHARE_DECLINE			= i++;
 ZmOperation.SHOW_ORIG				= i++;
 ZmOperation.SPAM 					= i++;
 ZmOperation.SPELL_CHECK 			= i++;
@@ -134,6 +138,7 @@ ZmOperation.MSG_KEY[ZmOperation.COMPOSE_FORMAT] 		= "format";
 ZmOperation.MSG_KEY[ZmOperation.CLOSE]					= "close";
 ZmOperation.MSG_KEY[ZmOperation.DETACH_COMPOSE] 		= "detach";
 ZmOperation.MSG_KEY[ZmOperation.EDIT] 					= "edit";
+ZmOperation.MSG_KEY[ZmOperation.EDIT_PROPS]				= "editProperties";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_ACCEPT]		= "replyAccept";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_DECLINE]		= "replyDecline";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_TENTATIVE]   = "replyTentative";
@@ -178,6 +183,9 @@ ZmOperation.MSG_KEY[ZmOperation.SAVE]					= "save";
 ZmOperation.MSG_KEY[ZmOperation.SAVE_DRAFT]				= "saveDraft";
 ZmOperation.MSG_KEY[ZmOperation.SEARCH]					= "search";
 ZmOperation.MSG_KEY[ZmOperation.SEND]					= "send";
+// BEGIN network bits
+ZmOperation.MSG_KEY[ZmOperation.SHARE]					= "share";
+// END network bits
 ZmOperation.MSG_KEY[ZmOperation.SHOW_ORIG]				= "showOrig";
 ZmOperation.MSG_KEY[ZmOperation.SPAM] 					= "junk";
 ZmOperation.MSG_KEY[ZmOperation.SPELL_CHECK] 			= "spellCheck";
@@ -204,6 +212,7 @@ ZmOperation.MSG_KEY_TT[ZmOperation.DELETE]				= "deleteTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.DELETE_MENU]			= "deleteTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.DETACH_COMPOSE] 		= "detachTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.EDIT]				= "editTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.EDIT_PROPS]			= "editPropertiesTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.FORWARD]				= "forwardTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.MONTH_VIEW]			= "viewMonthTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.MOVE]				= "moveTooltip";
@@ -217,6 +226,9 @@ ZmOperation.MSG_KEY_TT[ZmOperation.PRINT]				= "printTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.PRINT_MENU]	 		= "printTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.REPLY]				= "replyTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.REPLY_ALL]			= "replyAllTooltip";
+// BEGIN network bits
+ZmOperation.MSG_KEY_TT[ZmOperation.SHARE]				= "shareTooltip";
+// END network bits
 ZmOperation.MSG_KEY_TT[ZmOperation.SAVE_DRAFT]			= "saveDraftTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.SEND]				= "sendTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.SPAM]				= "junkTooltip";
@@ -245,6 +257,7 @@ ZmOperation.IMAGE[ZmOperation.DETACH_COMPOSE] 			= "OpenInNewWindow";
 ZmOperation.IMAGE[ZmOperation.EDIT] 					= "Edit";
 ZmOperation.IMAGE[ZmOperation.EDIT_CONTACT]				= "Edit";
 ZmOperation.IMAGE[ZmOperation.EDIT_FILTER_RULE] 		= "Edit";
+ZmOperation.IMAGE[ZmOperation.EDIT_PROPS]				= "Properties";
 ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_ACCEPT]		= "Check";
 ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_DECLINE]		= "Cancel";
 ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_TENTATIVE]		= "QuestionMark";
@@ -310,6 +323,7 @@ ZmOperation.DIS_IMAGE[ZmOperation.DELETE_MENU]			= "DeleteDis";
 ZmOperation.DIS_IMAGE[ZmOperation.DETACH_COMPOSE] 		= "OpenInNewWindowDis";
 ZmOperation.DIS_IMAGE[ZmOperation.EDIT] 				= "EditDis";
 ZmOperation.DIS_IMAGE[ZmOperation.EDIT_FILTER_RULE] 	= "EditDis";
+ZmOperation.DIS_IMAGE[ZmOperation.EDIT_PROPS]			= "PropertiesDis";
 ZmOperation.DIS_IMAGE[ZmOperation.FORWARD]				= "ForwardDis";
 ZmOperation.DIS_IMAGE[ZmOperation.IM]					= "ImStartChatDis";
 ZmOperation.DIS_IMAGE[ZmOperation.MONTH_VIEW]			= "MonthViewDis";
@@ -525,7 +539,7 @@ function(parent, dialog) {
 	var list = ZmTagTree.COLOR_LIST;
 	for (var i = 0; i < list.length; i++) {
 		var color = list[i];
-		var mi = menu.createMenuItem(color, ZmTag.COLOR_ICON[color], ZmTag.COLOR_TEXT[color]);
+		var mi = menu.createMenuItem(color, ZmTag.COLOR_ICON[color], ZmOrganizer.COLOR_TEXT[color]);
 		mi.setData(ZmOperation.MENUITEM_ID, color);
 	}
 }

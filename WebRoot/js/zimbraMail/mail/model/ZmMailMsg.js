@@ -282,6 +282,17 @@ function(part) {
 	this._topPart = part;
 };
 
+/** 
+ * Note: It's assumed by other parts of the code that this._bodyParts
+ * is an array of the node properties of ZmMimePart, <em>not</em> the
+ * ZmMimePart objects themselves. Therefore, the caller must pass in
+ * an array like [ part.node, ... ].
+ */
+ZmMailMsg.prototype.setBodyParts = 
+function(parts) {
+	this._bodyParts = parts;
+}
+
 /**
 * Sets the ID of any attachments which have already been uploaded.
 *
@@ -380,6 +391,11 @@ function (sender, msgId, getHtml) {
 	return sender.sendRequest(soapDoc).GetMsgResponse;
 
 };
+
+ZmMailMsg.prototype.getBodyParts = 
+function() {
+	return this._bodyParts;
+}
 
 ZmMailMsg.prototype.getBodyPart =
 function(contentType) {
@@ -781,6 +797,12 @@ function(msgNode) {
 		var params = {attachments: this._attachments, bodyParts: this._bodyParts};
 		this._topPart = ZmMimePart.createFromDom(msgNode.mp, params);
 		this._loaded = this._bodyParts.length > 0 || this._attachments.length > 0;
+	}
+	
+	if (msgNode.shr) {
+		// TODO: Make server output better msgNode.shr property...
+		var shareXmlDoc = AjxXmlDoc.createFromXml(msgNode.shr[0].content);
+		this.share = ZmShareInfo.createFromDom(shareXmlDoc.getDoc());
 	}
 
 	if (msgNode.e && this.participants.size() == 0) {

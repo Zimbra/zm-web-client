@@ -42,7 +42,7 @@ ZmMoveToDialog._OVERVIEW_ID = "ZmMoveToFolderDialog";
 ZmMoveToDialog.prototype = new ZmDialog;
 ZmMoveToDialog.prototype.constructor = ZmMoveToDialog;
 
-ZmMoveToDialog.NEW_BUTTON = DwtDialog.LAST_BUTTON + 1;
+ZmMoveToDialog.NEW_BUTTON = ++DwtDialog.LAST_BUTTON;
 
 ZmMoveToDialog.prototype.toString = 
 function() {

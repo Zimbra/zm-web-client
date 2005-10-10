@@ -138,6 +138,19 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 
 	// save form state (to check for change later)
 	this._origFormValue = this._formValue();
+
+	// save extra mime parts
+	var bodyParts = msg.getBodyParts();
+	for (var i = 0; i < bodyParts.length; i++) {
+		var bodyPart = bodyParts[i];
+		var contentType = bodyPart.ct;
+		if (contentType != ZmMimeTable.TEXT_PLAIN && contentType != ZmMimeTable.TEXT_HTML) {
+			var mimePart = new ZmMimePart();
+			mimePart.setContentType(contentType);
+			mimePart.setContent(bodyPart.content);
+			this.addMimePart(mimePart);
+		}
+	}
 }
 
 ZmComposeView.prototype.setDetach =
@@ -220,7 +233,7 @@ function(action){
 
 ZmComposeView.prototype._setAddresses =
 function(action, toOverride) {
-	if ((this._action == ZmOperation.NEW_MESSAGE) && toOverride)
+	if (this._action == ZmOperation.NEW_MESSAGE && toOverride)
 	{
 		this.setAddress(ZmEmailAddress.TO, toOverride);
 	}
@@ -254,7 +267,7 @@ function(action, toOverride) {
 			}
 			this.setAddress(ZmEmailAddress.CC, addrs1.join(ZmEmailAddress.SEPARATOR));
 		}
-	} else if (this._action == ZmOperation.DRAFT) {
+	} else if (this._action == ZmOperation.DRAFT || this._action == ZmOperation.SHARE) {
 		for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
 			var addrs = this._msg.getAddresses(ZmComposeView.ADDRS[i]);
 			this.setAddress(ZmComposeView.ADDRS[i], addrs.getArray().join(ZmEmailAddress.SEPARATOR));
@@ -310,7 +323,7 @@ function(action, msg, extraBodyText) {
 	}
 	
 	// XXX: consolidate this code later.
-	if (action == ZmOperation.DRAFT) {
+	if (action == ZmOperation.DRAFT || action == ZmOperation.SHARE) {
 		var body = "";
 		if (this._composeMode == DwtHtmlEditor.HTML) {
 			body = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
@@ -459,6 +472,9 @@ function(bEnableInputs) {
 	// reset dirty shields	
 	this._noSubjectOkay = this._badAddrsOkay = false;
 	
+	// remove extra mime parts
+	this._extraParts = null;
+	
 	// enable/disable input fields
 	this.enableInputs(bEnableInputs);
 }
@@ -484,6 +500,18 @@ function(type, addr, bDontClear) {
 	{
 		this._field[type].focus()
 	}
+}
+
+/** 
+ * Adds an extra MIME part to the message. The extra parts will be
+ * added, in order, to the end of the parts after the primary message
+ * part.
+ */
+ZmComposeView.prototype.addMimePart = function(mimePart) {
+	if (!this._extraParts) {
+		this._extraParts = [];
+	}
+	this._extraParts.push(mimePart);
 }
 
 /**
@@ -559,8 +587,22 @@ function(attId, isDraft) {
 		htmlPart.setContent(this._htmlEditor.getContent());
 		top.children.add(htmlPart);
 	} else {
-		top.setContentType(ZmMimeTable.TEXT_PLAIN);
-		top.setContent(this._htmlEditor.getContent());
+		var textPart = this._extraParts ? new ZmMimePart(this._appCtxt) : top;
+		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
+		textPart.setContent(this._htmlEditor.getContent());
+
+		if (this._extraParts) {
+			top.setContentType(ZmMimeTable.MULTI_ALT);
+			top.children.add(textPart);
+		}
+	}
+	
+	// add extra message parts
+	if (this._extraParts) {
+		for (var i = 0; i < this._extraParts.length; i++) {
+			var mimePart = this._extraParts[i];
+			top.children.add(mimePart);
+		}
 	}
 	
 	var msg = new ZmMailMsg(this._appCtxt);

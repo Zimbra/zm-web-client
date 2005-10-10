@@ -150,10 +150,10 @@
       <filelist dir="${build.dir}/WebRoot/public" files="Ajax.jsp"/>
     </jammer>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraMail_all.js">
-      <filelist dir="${build.dir}/WebRoot/public" files="ZimbraMail.jsp, Zimbra.jsp"/>
+      <filelist dir="${build.dir}/WebRoot/public" files="Zimbra.jsp,ZimbraMail.jsp"/>
     </jammer>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebApp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraAdmin_all.js">
-      <filelist dir="${build.dir}/WebRoot/public" files="ZimbraAdmin.jsp, Zimbra.jsp"/>
+      <filelist dir="${build.dir}/WebRoot/public" files="Zimbra.jsp,ZimbraAdmin.jsp"/>
     </jammer> 
   </target>
 

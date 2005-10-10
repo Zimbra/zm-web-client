@@ -140,6 +140,7 @@ function(view) {
 	if (!this._doublePaneView){
 		this._doublePaneView = this._createDoublePaneView();
 		this._doublePaneView.addInviteReplyListener(this._inviteReplyListener);
+		this._doublePaneView.addShareListener(this._shareListener);
 	}
 
 	ZmMailListController.prototype._initialize.call(this, view);

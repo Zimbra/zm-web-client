@@ -60,6 +60,7 @@ function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal) {
 ZmOrganizer.FOLDER	= ZmEvent.S_FOLDER;
 ZmOrganizer.TAG		= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH	= ZmEvent.S_SEARCH;
+ZmOrganizer.CALENDAR = ZmEvent.S_APPT;
 
 ZmOrganizer.ID_ROOT = 1;
 
@@ -76,6 +77,7 @@ ZmOrganizer.F_TOTAL		= i++;
 ZmOrganizer.F_PARENT	= i++;
 ZmOrganizer.F_COLOR		= i++; // tags only
 ZmOrganizer.F_QUERY		= i++; // saved search only
+ZmOrganizer.F_SHARES	= i++;
 
 // Following chars invalid in organizer names: " : /
 ZmOrganizer.VALID_NAME_CHARS = "[\\w ~`!@#\\$%\\^&\\*\\(\\)\\-\\+=\\{\\}\\[\\];<>,\\.\\?\\|\\\\']";
@@ -84,6 +86,39 @@ ZmOrganizer.VALID_NAME_RE = new RegExp("^" + ZmOrganizer.VALID_NAME_CHARS + "+$"
 
 ZmOrganizer.MAX_NAME_LENGTH			= 128;	// max allowed by server
 ZmOrganizer.MAX_DISPLAY_NAME_LENGTH	= 30;	// max we will show
+
+// tag colors - these are the server values
+ZmOrganizer.C_ORANGE	= 0;
+ZmOrganizer.C_BLUE		= 1;
+ZmOrganizer.C_CYAN		= 2;
+ZmOrganizer.C_GREEN		= 3;
+ZmOrganizer.C_PURPLE	= 4;
+ZmOrganizer.C_RED		= 5;
+ZmOrganizer.C_YELLOW	= 6;
+ZmOrganizer.C_PINK		= 7;
+ZmOrganizer.C_GRAY		= 8;
+ZmOrganizer.MAX_COLOR	= ZmOrganizer.C_GRAY;
+ZmOrganizer.DEFAULT_COLOR = ZmOrganizer.C_ORANGE;
+
+// color names
+ZmOrganizer.COLOR_TEXT = new Object();
+ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_ORANGE]	= ZmMsg.orange;
+ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_BLUE]		= ZmMsg.blue;
+ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_CYAN]		= ZmMsg.cyan;
+ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_GREEN]		= ZmMsg.green;
+ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_PURPLE]	= ZmMsg.purple;
+ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_RED]		= ZmMsg.red;
+ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_YELLOW]	= ZmMsg.yellow;
+ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_PINK]		= ZmMsg.pink;
+ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_GRAY]		= ZmMsg.gray;
+
+ZmOrganizer.COLORS = [];
+ZmOrganizer.COLOR_CHOICES = [];
+for (var i = 0; i <= ZmOrganizer.MAX_COLOR; i++) {
+	var color = ZmOrganizer.COLOR_TEXT[i];
+	ZmOrganizer.COLORS.push(color);
+	ZmOrganizer.COLOR_CHOICES.push( { value: i, label: color } );
+}
 
 // Abstract methods
 ZmOrganizer.sortCompare = function(organizerA, organizerB) {}
@@ -137,6 +172,19 @@ function(showUnread, maxLength, noMarkup) {
 	return name;
 }
 
+/** NOTE: Does not notify change. */
+ZmOrganizer.prototype.setShares = function(shares) {
+	this.shares = shares;
+}
+
+/** NOTE: Does not notify change. */
+ZmOrganizer.prototype.addShare = function(share) {
+	if (!this.shares) {
+		this.shares = [];
+	}
+	this.shares.push(share);
+}
+
 ZmOrganizer.prototype.getIcon = function() {};
 
 /**
@@ -149,6 +197,19 @@ function(name) {
 	if (success) {
 		this.name = name;
 		this._eventNotify(ZmEvent.E_RENAME);
+	}
+}
+
+ZmOrganizer.prototype.setColor =
+function(color) {
+	var color = ZmOrganizer.checkColor(color);
+	if (this.color == color) return;
+	var success = this._organizerAction("color", {color: color});
+	if (success) {
+		this.color = color;
+		var fields = new Object();
+		fields[ZmOrganizer.F_COLOR] = true;
+		this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
 	}
 }
 
@@ -363,6 +424,13 @@ function(name) {
 	return null;	
 }
 
+ZmOrganizer.prototype.addChangeListener = function(listener) {
+	this.tree.addChangeListener(listener);
+}
+ZmOrganizer.prototype.removeChangeListener = function(listener) {
+	this.tree.removeChangeListener(listener);
+}
+
 // Notify our listeners.
 ZmOrganizer.prototype._eventNotify =
 function(event, organizer, details) {
@@ -372,4 +440,109 @@ function(event, organizer, details) {
 		this.tree._evt.setDetails(details);
 		this.tree._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this.tree._evt);
 	}
+}
+
+ZmOrganizer.checkColor =
+function(color) {
+	return ((color != null) && (color >= 0 && color <= ZmOrganizer.MAX_COLOR)) ? color : ZmOrganizer.DEFAULT_COLOR;
+}
+
+//
+// ZmOrganizerShare
+//
+
+function ZmOrganizerShare(organizer, granteeType, granteeId, granteeName, perm, inherit) {
+	this.organizer = organizer;
+	this.granteeType = granteeType;
+	this.granteeId = granteeId;
+	this.granteeName = granteeName;
+	this.perm = perm;
+	this.inherit = inherit;
+}
+
+// Public methods
+
+ZmOrganizerShare.prototype.setPermissions = function(perm) {
+	if (this.perm == perm) return;
+	var success = this._organizerShareAction("grant", null, {perm: perm});
+	if (success) {
+		this.perm = perm;
+		var fields = new Object();
+		fields[ZmOrganizer.F_SHARES] = true;
+		this.organizer._eventNotify(ZmEvent.E_MODIFY, this.organizer, {fields: fields});
+	}
+}
+
+ZmOrganizerShare.prototype.isRead = function() {
+	return this.perm.indexOf('r') != -1;
+}
+ZmOrganizerShare.prototype.isWrite = function() {
+	return this.perm.indexOf('w') != -1;
+}
+ZmOrganizerShare.prototype.isInsert = function() {
+	return this.perm.indexOf('i') != -1;
+}
+ZmOrganizerShare.prototype.isDelete = function() {
+	return this.perm.indexOf('d') != -1;
+}
+ZmOrganizerShare.prototype.isAdminister = function() {
+	return this.perm.indexOf('a') != -1;
+}
+ZmOrganizerShare.prototype.isWorkflow = function() {
+	return this.perm.indexOf('x') != -1;
+}
+
+ZmOrganizerShare.prototype.revoke = function() {
+	var success = this._organizerShareAction("!grant", { zid: this.granteeId } );
+	if (success) {
+		var index = this._indexOf(this.granteeName);
+		this.organizer.shares.splice(index,1);
+	
+		var fields = new Object();
+		fields[ZmOrganizer.F_SHARES] = true;
+		this.organizer._eventNotify(ZmEvent.E_MODIFY, this.organizer, {fields: fields});
+	}
+}
+
+// Protected methods
+
+ZmOrganizerShare.prototype._indexOf = function(granteeName) {
+	for (var i = 0; i < this.organizer.shares.length; i++) {
+		if (this.organizer.shares[i].granteeName == granteeName) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+/**
+ * General method for handling the SOAP call. 
+ * <p>
+ * <strong>Note:</strong>
+ * Exceptions need to be handled by calling method.
+ */
+ZmOrganizerShare.prototype._organizerShareAction =
+function(operation, actionAttrs, grantAttrs) {
+	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
+	
+	var actionNode = soapDoc.set("action");
+	actionNode.setAttribute("op", operation);
+	actionNode.setAttribute("id", this.organizer.id);
+	for (var attr in actionAttrs) {
+		actionNode.setAttribute(attr, actionAttrs[attr]);
+	}
+	
+	var shareNode = soapDoc.set("grant", null, actionNode);
+	shareNode.setAttribute("gt", this.granteeType);
+	shareNode.setAttribute("d", this.granteeName);
+	for (var attr in grantAttrs) {
+		shareNode.setAttribute(attr, grantAttrs[attr]);
+	}
+	
+	var appCtlr = this.organizer.tree._appCtxt.getAppController();
+	appCtlr.setActionedIds([this.organizer.id]);
+	var resp = appCtlr.sendRequest(soapDoc)["FolderActionResponse"];
+	
+	var id = parseInt(resp.action.id);
+	return (id == this.organizer.id);
 }

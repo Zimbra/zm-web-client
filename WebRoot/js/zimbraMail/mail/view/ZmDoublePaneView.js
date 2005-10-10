@@ -117,6 +117,11 @@ function (listener){
 	this._msgView.addInviteReplyListener(listener);
 }
 
+ZmDoublePaneView.prototype.addShareListener =
+function (listener){
+	this._msgView.addShareListener(listener);
+}
+
 ZmDoublePaneView.prototype.resetMsg = 
 function(newMsg) {
 	this._msgView.resetMsg(newMsg);

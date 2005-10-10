@@ -74,6 +74,7 @@ ZmMailMsgView.OBJ_SIZE_TEXT = 50; // max. size of text emails that will automati
 ZmMailMsgView.OBJ_SIZE_HTML = 50; // similar for HTML emails.
 
 ZmMailMsgView.REPLY_INVITE_EVENT = "inviteReply";
+ZmMailMsgView.SHARE_EVENT = "share";
 
 // Public methods
 
@@ -141,6 +142,51 @@ ZmMailMsgView.prototype._controlEventListener = function(ev) {
 	AjxTimedAction.scheduleAction(act, 5);
 };
 
+ZmMailMsgView.prototype._getShareToolbar = 
+function() {
+	// TODO: reuse the toolbar
+	if (this._shareToolbar)
+		this._shareToolbar.dispose();
+
+	var buttonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE];
+	this._shareToolbar = new ZmButtonToolBar(this,	buttonIds,
+											  null, DwtControl.STATIC_STYLE,
+											  "ZmShareToolBar", "DwtButton");
+	// get a little space between the buttons.
+	var toolbarHtmlEl = this._shareToolbar.getHtmlElement();
+	toolbarHtmlEl.firstChild.cellPadding = "3";
+
+	var shareToolBarListener = new AjxListener(this, this._shareToolBarListener);
+	for (var i = 0; i < buttonIds.length; i++) {
+		var id = buttonIds[i];
+
+		// HACK for IE, which doesn't support multiple classnames. If I
+		// just change the styles, the activated class overrides the basic
+		// activated class definition, thus I have to change what the
+		// activated class name will be for the buttons in the toolbar.
+		var b = this._shareToolbar.getButton(id);
+		b._activatedClassName = b._className + "-" + DwtCssStyle.ACTIVATED;
+		b._triggeredClassName = b._className + "-" + DwtCssStyle.TRIGGERED;
+
+		this._shareToolbar.addSelectionListener(id, shareToolBarListener);
+	}
+	
+	return this._shareToolbar;
+}
+
+ZmMailMsgView.prototype._shareToolBarListener =
+function(ev) {
+	ev._buttonId = ev.item.getData(ZmOperation.KEY_ID);
+	ev._share = this._msg.share;
+	this.notifyListeners(ZmMailMsgView.SHARE_EVENT, ev);
+}
+
+ZmMailMsgView.prototype.addShareListener =
+function (listener) {
+	this.addListener(ZmMailMsgView.SHARE_EVENT, listener);
+}
+
+
 ZmMailMsgView.prototype.set =
 function(msg) {
 	this.reset();
@@ -168,6 +214,14 @@ function(msg) {
 			// selected component.
 			// We need an inviteComponentView. Ughhh.
 		}
+	}
+	else if (msg.share && msg.share.action == ZmShareInfo.NEW) {
+		var topToolbar = this._getShareToolbar();
+		var tEl = topToolbar.getHtmlElement();
+		if (tEl && tEl.parentNode) {
+			tEl.parentNode.removeChild(tEl);
+		}
+		contentDiv.appendChild(tEl);
 	}
 	this._renderMessage(msg, contentDiv);
 

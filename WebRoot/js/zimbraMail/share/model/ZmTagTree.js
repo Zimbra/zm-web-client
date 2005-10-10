@@ -34,8 +34,8 @@ ZmTagTree.prototype = new ZmTree;
 ZmTagTree.prototype.constructor = ZmTagTree;
 
 // ordered list of colors
-ZmTagTree.COLOR_LIST = [ZmTag.C_CYAN, ZmTag.C_BLUE, ZmTag.C_PURPLE, ZmTag.C_RED,
-						ZmTag.C_ORANGE, ZmTag.C_YELLOW, ZmTag.C_GREEN];
+ZmTagTree.COLOR_LIST = [ZmOrganizer.C_CYAN, ZmOrganizer.C_BLUE, ZmOrganizer.C_PURPLE, ZmOrganizer.C_RED,
+						ZmOrganizer.C_ORANGE, ZmOrganizer.C_YELLOW, ZmOrganizer.C_GREEN];
 
 ZmTagTree.prototype.toString = 
 function() {
