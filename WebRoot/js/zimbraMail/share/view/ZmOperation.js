@@ -123,7 +123,7 @@ ZmOperation.WORK_WEEK_VIEW			= i++;
 // Labels
 // !! PLEASE ADD IN ALPHA ORDER !!
 ZmOperation.MSG_KEY = new Object();
-ZmOperation.MSG_KEY[ZmOperation.ADD_FILTER_RULE]		= "filterAdd";
+ZmOperation.MSG_KEY[ZmOperation.ADD_FILTER_RULE]		= "add";
 ZmOperation.MSG_KEY[ZmOperation.ADD_SIGNATURE]			= "addSignature";
 ZmOperation.MSG_KEY[ZmOperation.ATTACHMENT]				= "addAttachment";
 ZmOperation.MSG_KEY[ZmOperation.BROWSE]					= "advancedSearch";

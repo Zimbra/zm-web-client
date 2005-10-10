@@ -37,7 +37,7 @@
 * @param contactPicker	handle to a ZmContactPicker for selecting addresses
 * @param composeMode 	passed in so detached window knows which mode to be in on startup
 */
-function ZmApptComposeView(parent, className, calApp, controller, contactPicker, composeMode) {
+function ZmApptComposeView(parent, className, calApp, controller, composeMode) {
 
 	className = className || "ZmApptComposeView";
 	DwtComposite.call(this, parent, className, Dwt.ABSOLUTE_STYLE);
@@ -45,7 +45,6 @@ function ZmApptComposeView(parent, className, calApp, controller, contactPicker,
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._app = calApp;
 	this._controller = controller;
-	this._contactPicker = contactPicker;
 	
 	this._initialize(composeMode);
 };
@@ -72,15 +71,20 @@ function() {
 ZmApptComposeView.prototype.set =
 function() {
 
-	this.reset(true);
+	// allow both tabs to reset itself
+	this._apptTab.reset();
+	this._scheduleTab.reset();
 
-	// create iframe EVERY time
-	//this._iframe = this._createAttachmentsContainer();
-	
-	// TODO - set focus
-
+	// TODO:
 	// save form state (to check for changes)
 	//this._origFormValue = this._formValue();
+};
+
+ZmApptComposeView.prototype.cleanup = 
+function() {
+	// allow both tabs to cleanup
+	this._apptTab.cleanup();
+	this._scheduleTab.cleanup();
 };
 
 ZmApptComposeView.prototype.getComposeMode = 
@@ -103,22 +107,9 @@ function() {
 	this._apptTab.reEnableDesignMode();
 };
 
-ZmApptComposeView.prototype.reset =
-function(bEnableInputs) {
-	// allow both tabs to reset itself
-	this._apptTab.reset(bEnableInputs);
-	this._scheduleTab.reset(bEnableInputs);
-};
-
 ZmApptComposeView.prototype.isDirty =
 function() {
 	return (this._apptTab.isDirty() || this._scheduleTab.isDirty());
-};
-
-ZmApptComposeView.prototype.enableInputs = 
-function(bEnable) {
-	DBG.println("TODO: enable/disable inputs");
-	// TODO
 };
 
 /**
@@ -135,13 +126,17 @@ function(tabKey) {
 	var toolbar = this._controller.getToolbar();
 	toolbar.enableAll(true);
 	if (tabKey == this._scheduleTabKey) {
+		// disable toolbar buttons (except save/cancel)
 		var buttons = [ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK];
 		if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))
 			buttons.push(ZmOperation.COMPOSE_FORMAT);
 		if (!this.isChildWindow)
 			buttons.push(ZmOperation.DETACH_COMPOSE);
 		toolbar.enable(buttons, false);
+		// disable input fields in appointment tab
+		this._apptTab.enableInputs(false);
 	} else {
+		this._apptTab.enableInputs(true);
 		this._apptTab.reEnableDesignMode();
 	}
 };
@@ -190,78 +185,6 @@ function(isDraft) {
 	um.execute(attCon, callback, this._uploadFormId);
 };
 
-// Returns true if any of the attachment fields is populated
-ZmApptComposeView.prototype._gotAttachments =
-function() {
-	// TODO
-	/*
-	var atts;
-	if (AjxEnv.isIE) {
-		var iframeDoc = this._getIframeDocument();
-		atts = iframeDoc ? iframeDoc.getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME) : [];
-	} else {
-		atts = document.getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME);
-	}
-	for (var i = 0; i < atts.length; i++)
-		if (atts[i].value.length)
-			return true;
-	*/
-
-	return false;
-}
-
-ZmApptComposeView.prototype._createAttachmentsContainer =
-function() {
-	var container = null;
-	var doc = this.getDocument();
-	var uri = location.protocol + "//" + doc.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
-	if (AjxEnv.isIE) {
-	
-		// remove old iframe if it exists
-		this._iframeDiv = Dwt.getDomObj(doc, this._iframeDivId);
-		this._iframeDiv.innerHTML = "";
-		
-		// create a brand new iframe
-		var iframe = container = doc.createElement("iframe");
-		iframe.id = this._iframeId;
- 		if (AjxEnv.isIE && location.protocol == "https:") {
-			iframe.src = "'/zimbra/public/blank.html'";
-		}
-		iframe.name = this._iframeId;
-		iframe.frameBorder = iframe.vspace = iframe.hspace = iframe.marginWidth = iframe.marginHeight = 0;
-		iframe.width = "100%";
-		iframe.scrolling = "no";
-		iframe.style.overflowX = iframe.style.overflowY = "visible";
-		iframe.style.height = "0px";
-		iframe.tabIndex = -1; // dont let iframe get focus
-		this._iframeDiv.appendChild(iframe);
-		
-		var idoc = Dwt.getIframeDoc(iframe);
-		idoc.open();
-		var html = new Array();
-		var idx = 0;
-		html[idx++] = "<html><head><style type='text/css'><!-- @import url(/zimbra/js/zimbraMail/config/style/zm.css); --></style></head>";
-		html[idx++] = "<body scroll=no bgcolor='#EEEEEE'>";
-		html[idx++] = "<form method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
-		html[idx++] = "<table id='" + this._attachmentTableId + "' cellspacing=0 cellpadding=0 border=0 class='iframeTable'></table>";
-		html[idx++] = "</form>";
-		html[idx++] = "</body></html>";
-		idoc.write(html.join(""));
-		idoc.close();
-	} else {
-		var html = new Array();
-		var idx = 0;
-		html[idx++] = "<div style='overflow:visible'>";
-		html[idx++] = "<form method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
-		html[idx++] = "<table id='" + this._attachmentTableId + "' cellspacing=0 cellpadding=0 border=0 class='iframeTable'></table>";
-		html[idx++] = "</form>";
-		html[idx++] = "</div>";
-		this._iframeDiv = Dwt.getDomObj(document, this._iframeDivId);
-		this._iframeDiv.innerHTML = html.join("");
-		container = this._iframeDiv.firstChild;
-	}
-	return container;
-};
 
 
 function ZmSchedTabViewPage(parent, appCtxt, className, posStyle) {
@@ -292,6 +215,11 @@ ZmSchedTabViewPage.prototype.reset =
 function(bEnableInputs) {
 	// TODO
 	DBG.println("TODO: schedule tab view page - enable/disable input fields");
+};
+
+ZmSchedTabViewPage.prototype.cleanup = 
+function() {
+	// TODO
 };
 
 ZmSchedTabViewPage.prototype.isDirty =

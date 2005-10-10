@@ -33,14 +33,18 @@
 * to shuffle addresses back and forth between the two lists.
 *
 * @author Conrad Damon
-* @param shell	the enclosing shell (which we are displayed on)
+* @param controller 	the controller associated w/ this picker (used to schedule requests to server)
+* @param shell			the enclosing shell (which we are displayed on)
+* @param appCtxt		app context
+* @param buttonInfo		table containing array of ID/VALUE pairs used to generate buttons
 */
-function ZmContactPicker(controller, shell, appCtxt) {
+function ZmContactPicker(controller, shell, appCtxt, buttonInfo) {
 
 	DwtDialog.call(this, shell, null, ZmMsg.selectAddresses);
 	
 	this._controller = controller;
 	this._appCtxt = appCtxt;
+	this._buttonInfo = buttonInfo;
 	this._initialize();
 }
 
@@ -52,7 +56,6 @@ ZmContactPicker.prototype.constructor = ZmContactPicker;
 ZmContactPicker.SEARCHFOR_CONTACTS 	= 1;
 ZmContactPicker.SEARCHFOR_GAL 		= 2;
 ZmContactPicker.SEARCHFOR_MAX 		= 50;
-ZmContactPicker.ADDRS = [ZmEmailAddress.TO, ZmEmailAddress.CC, ZmEmailAddress.BCC];
 
 ZmContactPicker.ID_ICON 		= "i--";
 ZmContactPicker.ID_PARTICIPANT 	= "p--";
@@ -139,8 +142,8 @@ function() {
 	// init To/CC/BCC buttons
 	this._addrButtonId = new Array();
 	this._addrDivId = new Array();
-	for (var i = 0; i < ZmContactPicker.ADDRS.length; i++) {
-		var type = ZmContactPicker.ADDRS[i];
+	for (var i = 0; i < this._buttonInfo.length; i++) {
+		var type = this._buttonInfo[i].id;
 		this._addrDivId[type] = Dwt.getNextId();
 		this._addrButtonId[type] = Dwt.getNextId();
 	}
@@ -158,9 +161,9 @@ function() {
 	// add transfer buttons
 	this._addrButton = new Array();
 	this._vecs = new Array();
-	for (var i = 0; i < ZmContactPicker.ADDRS.length; i++) {
-		var type = ZmContactPicker.ADDRS[i];
-		var typeStr = ZmEmailAddress.TYPE_STRING[type];
+	for (var i = 0; i < this._buttonInfo.length; i++) {
+		var type = this._buttonInfo[i].id;
+		var typeStr = this._buttonInfo[i].value;
 		this._addrButton[type] = this._setupButton(this._addrButtonId[type], typeStr, type);
 		this._addrButton[type].addSelectionListener(new AjxListener(this, this._addressButtonListener));
 		var addrDiv = Dwt.getDomObj(doc, this._addrDivId[type]);
@@ -168,7 +171,7 @@ function() {
 		this._vecs[type] = new AjxVector();
 	}
 
-	// add remove button
+	// add standard remove button
 	this._removeButtonId = Dwt.getNextId();
 	this._removeButton = this._setupButton(this._removeButtonId, "remove");
 	this._removeButton.addSelectionListener(new AjxListener(this, this._removeButtonListener));
@@ -206,40 +209,47 @@ function() {
 	var idx = 0;
 	
 	html[idx++] = "<div class='ZmContactPicker'>";
-	html[idx++] = "<table border=0 cellpadding=1 cellspacing=1 width=100%>";
-	html[idx++] = "<tr><td>";
+	html[idx++] = "<table border=0 cellpadding=1 cellspacing=1 width=100%><tr><td>";
 	// add search input field and search button
-	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
-	html[idx++] = "<td valign=middle>";
+	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td width=20 valign=middle>";
 	html[idx++] = AjxImg.getImageHtml("Search");
-	html[idx++] = "</td>";
-	html[idx++] = "<td><input type='text' size=30 nowrap id='" + this._searchFieldId + "'>&nbsp;</td>";
-	html[idx++] = "<td id='" + this._listSearchId + "'></td>";
-	html[idx++] = "</tr></table>";
+	html[idx++] = "</td><td><input type='text' size=30 nowrap id='";
+	html[idx++] = this._searchFieldId;
+	html[idx++] = "'>&nbsp;</td><td id='";
+	html[idx++] = this._listSearchId;
+	html[idx++] = "'></td></tr></table>";
 	html[idx++] = "</td><td align=right>";
 	// add placeholder for drop down select widget
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		html[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
-		html[idx++] = "<td class='Label nobreak'>" + ZmMsg.showNames + ":&nbsp;</td>";
-		html[idx++] = "<td id='" + this._listSelectId + "'></td>";
-		html[idx++] = "</tr></table>";
+		html[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td class='Label nobreak'>";
+		html[idx++] = ZmMsg.showNames;
+		html[idx++] = ":&nbsp;</td><td id='";
+		html[idx++] = this._listSelectId;
+		html[idx++] = "'></td></tr></table>";
 	}
-	html[idx++] = "</td>";
-	html[idx++] = "</tr></table>";
+	html[idx++] = "</td></tr></table>";
 	// start new table for list views
 	html[idx++] = "<table cellspacing=0 cellpadding=0 border=0><tr>";
 	// source list
-	html[idx++] = "<td><div id='" + this._sourceListId + "' class='abPickList'></div></td>";
+	html[idx++] = "<td><div class='abPickList' id='";
+	html[idx++] = this._sourceListId;
+	html[idx++] = "'></div></td>";
 	// address buttons
 	html[idx++] = "<td valign='middle'>";
-	for (var i = 0; i < ZmContactPicker.ADDRS.length; i++) {
-		var type = ZmContactPicker.ADDRS[i];
-		html[idx++] = "<div id='" + this._addrDivId[type] + "'></div><br>";
+	for (var i = 0; i < this._buttonInfo.length; i++) {
+		var type = this._buttonInfo[i].id;
+		html[idx++] = "<div id='";
+		html[idx++] = this._addrDivId[type];
+		html[idx++] = "'></div><br>";
 	}
 	// remove button
-	html[idx++] = "<br><div id='" + this._removeDivId + "'></div></td>";
+	html[idx++] = "<br><div id='";
+	html[idx++] = this._removeDivId;
+	html[idx++] = "'></div></td>";
 	// target list
-	html[idx++] = "<td><div id='" + this._targetListId + "' class='abPickList'></div></td>";	
+	html[idx++] = "<td><div class='abPickList' id='";
+	html[idx++] = this._targetListId;
+	html[idx++] = "'></div></td>";	
 	html[idx++] = "</tr></table></div>";
 
 	return html.join("");
@@ -392,8 +402,8 @@ function(ev) {
 // Enable/disable the address/remove buttons
 ZmContactPicker.prototype._enableButtons =
 function(enableAddrs, enableRemove) {
-	for (var i = 0; i < ZmContactPicker.ADDRS.length; i++) {
-		var type = ZmContactPicker.ADDRS[i];
+	for (var i = 0; i < this._buttonInfo.length; i++) {
+		var type = this._buttonInfo[i].id;
 		this._addrButton[type].setEnabled(enableAddrs);
 	}
 	this._removeButton.setEnabled(enableRemove);
@@ -464,23 +474,15 @@ function(email) {
 	var count = 0;
 	var addr = len > 0 ? this._targetListView.getItemFromElement(children[count++]) : null;
 	
-	while (addr && addr.getType() == ZmEmailAddress.TO)
-		addr = len > count ? this._targetListView.getItemFromElement(children[count++]) : null;
-
-	if (emailType != ZmEmailAddress.TO) {
-		while (addr && addr.getType() == ZmEmailAddress.CC)
-			addr = len > count ? this._targetListView.getItemFromElement(children[count++]) : null;
-		
-		if (emailType == ZmEmailAddress.BCC) {
-			while (addr && addr.getType() == ZmEmailAddress.BCC)
+	for (var i = 0; i < this._buttonInfo.length; i++) {
+		if (emailType == this._buttonInfo[i].id) {
+			while (addr && addr.getType() == this._buttonInfo[i].id)
 				addr = len > count ? this._targetListView.getItemFromElement(children[count++]) : null;
 		}
 	}
 	
-	if (addr && count <= len)
-		this._targetListView.addItem(email, count - 1);
-	else
-		this._targetListView.addItem(email);
+	var idx = (addr && count <= len) ? (count - 1) : null;
+	this._targetListView.addItem(email, idx);
 }
 
 ZmContactPicker._keyPressHdlr =

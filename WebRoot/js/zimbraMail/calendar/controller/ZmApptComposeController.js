@@ -54,15 +54,8 @@ function() {
 	if (!this._toolbar)
 		this._createToolBar();
 
-	var needPicker = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) || this._appCtxt.get(ZmSetting.GAL_ENABLED);
-	if (!this._contactPicker && needPicker) {
-		this._contactPicker = new ZmContactPicker(this, this._shell, this._appCtxt);
-		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerCallback, this);
-		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancel, this);
-	}
-
 	if (!this._apptView) {
-		this._apptView = new ZmApptComposeView(this._container, null, this._app, this, this._contactPicker);
+		this._apptView = new ZmApptComposeView(this._container, null, this._app, this);
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
 		var elements = new Object();
@@ -80,8 +73,10 @@ function() {
 
 ZmApptComposeController.prototype.popShield =
 function() {
-	if (!this._apptView.isDirty())
+	if (!this._apptView.isDirty()) {
+		this._apptView.cleanup();
 		return true;
+	}
 
 	if (!this._popShield) {
 		this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
@@ -90,7 +85,6 @@ function() {
 		this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 	}
     this._popShield.popup(this._apptView._getDialogXY());
-
 	return false;
 };
 
@@ -106,20 +100,12 @@ ZmApptComposeController.prototype._createToolBar =
 function() {
 	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.ATTACHMENT];
 
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		buttons.push(ZmOperation.SEP);
+	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))
 		buttons.push(ZmOperation.COMPOSE_FORMAT);
-	}
 
 	buttons.push(ZmOperation.SPELL_CHECK);
-/*
-	if (!this.isChildWindow) {
-		buttons.push(ZmOperation.SEP);
-		buttons.push(ZmOperation.DETACH_COMPOSE);
-	}
-*/
-	var className = this.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
-	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, className);
+
+	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmAppToolBar");
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
 	this._toolbar.addSelectionListener(ZmOperation.ATTACHMENT, new AjxListener(this, this._attachmentListener));
@@ -141,10 +127,7 @@ function() {
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
 		mi.addSelectionListener(new AjxListener(this, this._formatListener));	
 	}
-/*
-	if (!this.isChildWindow)
-		this._toolbar.addSelectionListener(ZmOperation.DETACH_COMPOSE, new AjxListener(this, this._detachListener));
-*/
+
 	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
 };
 
@@ -167,42 +150,29 @@ function() {
 // Save button was pressed
 ZmApptComposeController.prototype._saveListener =
 function(ev) {
-	DBG.println("TODO: save");
-	this._apptView.reset(true);
-	this._app.popView(false);
+	// TODO:
+	// - check if view is dirty
+	// - check if all fields are populated w/ valid values
+	// - send request to save appointment
+
+	// force pop view
+	this._app.popView(true);
 };
 
 // Cancel button was pressed
 ZmApptComposeController.prototype._cancelListener =
 function(ev) {
-	
-	var dirty = this._apptView.isDirty();
-	if (!dirty) {
-		this._apptView.reset(true);
-	} else {
-		this._apptView.enableInputs(false);
-	}
-	this._apptView.reEnableDesignMode();
-	this._app.popView(!dirty);
+	this._app.popView();
 };
 
 // Attachment button was pressed
 ZmApptComposeController.prototype._attachmentListener =
 function(ev) {
-/*
-	if (!this._detachOkCancel) {
-		// detach ok/cancel dialog is only necessary if user clicked on the add attachments button	
-		this._detachOkCancel = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
-		this._detachOkCancel.setMessage(ZmMsg.detachAnyway, DwtMessageDialog.WARNING_STYLE);
-		this._detachOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._detachCallback, this);
-	}
-*/
 	this._apptView.addAttachmentField();
 };
 
 ZmApptComposeController.prototype._formatListener = 
 function(ev) {
-
 	if (!ev.item.getChecked()) 
 		return;
 	
@@ -224,21 +194,6 @@ function(ev) {
 	}
 };
 
-ZmApptComposeController.prototype._detachListener = 
-function(ev) {
-	DBG.println("TODO: detach");
-/*
-	var atts = this._apptView.getAttFieldValues();
-	if (atts.length) {
-		this._detachOkCancel.popup(this._apptView._getDialogXY());
-	} else {
-		this.detach();
-		this._apptView.reset(true);
-		this._app.popView(true);
-	}
-*/
-};
-
 ZmApptComposeController.prototype._spellCheckListener = 
 function(ev) {
 	// TODO
@@ -248,39 +203,13 @@ function(ev) {
 
 // Callbacks
 
-// Transfers addresses from the contact picker to the compose view.
-ZmApptComposeController.prototype._contactPickerCallback =
-function(args) {
-	var addrs = args[0];
-	this._apptView.enableInputs(true);
-	
-	// TODO
-	
-	/*
-	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
-		var type = ZmComposeView.ADDRS[i];
-		var vec = addrs[type];
-		var addr = vec.size() ? vec.toString(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
-		this._composeView.setAddress(type, addr, true);
-	}
-	*/
-	this._contactPicker.popdown();
-	this._apptView.reEnableDesignMode();
-};
-
-ZmApptComposeController.prototype._contactPickerCancel = 
-function(args) {
-	this._apptView.enableInputs(true);
-	this._apptView.reEnableDesignMode();
-};
-
 // Called as: Yes, save as draft
 //			  Yes, go ahead and cancel
 ZmApptComposeController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(true);
-	this._apptView.reset(false);
+	this._apptView.cleanup();
 };
 
 // Called as: No, don't save as draft
@@ -307,11 +236,3 @@ function(ev) {
 	formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
 	this._apptViewView.reEnableDesignMode();
 };
-
-ZmApptComposeController.prototype._detachCallback = 
-function() {
-	this._detachOkCancel.popdown();
-	this.detach();
-	this._apptView.reset(true);
-	this._app.popView(true);
-}

@@ -186,7 +186,11 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 
 	var needPicker = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) || this._appCtxt.get(ZmSetting.GAL_ENABLED);
 	if (!this._contactPicker && needPicker) {
-		this._contactPicker = new ZmContactPicker(this, this._shell, this._appCtxt);
+		var buttonInfo = [ 
+			{ id: ZmEmailAddress.TO, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.TO] },
+			{ id: ZmEmailAddress.CC, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.CC] },
+			{ id: ZmEmailAddress.BCC, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.BCC] }];
+		this._contactPicker = new ZmContactPicker(this, this._shell, this._appCtxt, buttonInfo);
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerCallback, this);
 		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancel, this);
 	}
