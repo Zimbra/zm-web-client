@@ -187,6 +187,8 @@ function(dirtyCheck, noValidation) {
 					value = element.checked;
 					if (id == ZmSetting.SIGNATURE_STYLE)
 						value = value ? ZmSetting.SIG_INTERNET : ZmSetting.SIG_OUTLOOK;
+				} else if (id == ZmSetting.POLLING_INTERVAL) {
+					value = parseInt(element.value) * 60; // convert minutes to seconds
 				} else {
 					value = element.value;
 				}
@@ -209,13 +211,13 @@ function(dirtyCheck, noValidation) {
 				if (!noValidation && validationFunc) {
 					var isValid = validationFunc(value);
 					if (!isValid)
-						errorStr += "\n" + AjxStringUtil.resolve(setup.errorMessage,value);
+						errorStr += "\n" + AjxStringUtil.resolve(setup.errorMessage, value);
 				}
 				pref.setValue(value);
 				list.push(pref);
 			}
 		}
-		// errorStr will only be non-null if noValidation is false
+		// errorStr can only be non-null if noValidation is false
 		if (errorStr != "") {
 			throw new AjxException(errorStr);
 		}

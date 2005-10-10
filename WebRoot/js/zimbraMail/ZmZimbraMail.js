@@ -171,10 +171,10 @@ ZmZimbraMail.unload =
 function(ev) {
 	var childWinList = window._zimbraMail ? window._zimbraMail._childWinList : null;
 	if (childWinList) {
+		// close all child windows
 		for (var i = 0; i < childWinList.size(); i++) {
 			var childWin = childWinList.get(i);
 			childWin.parentController = null;
-			// for now, lets nuke all the windows (cause its so easy!)
 			childWin.close();
 		}
 		
@@ -213,7 +213,7 @@ function(params) {
 			
 		this.setSessionTimer(true);
 	} else {
-		this._schedule(this._killSplash);	// kill splash screen
+		this._killSplash();
 	}
 }
 
@@ -258,7 +258,7 @@ function(params) {
 ZmZimbraMail.prototype._handleActivateAppResponse =
 function() {
 	this.setSessionTimer(true);
-  	this._schedule(this._killSplash);	// kill splash screen
+	this._killSplash();
   	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
 		this.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 }
@@ -315,7 +315,7 @@ function(soapDoc, asyncMode, callback, errors) {
 		var response = command.invoke(params);
 	} catch (ex) {
 		if (asyncMode)
-			this._handleResponse([asyncMode, asyncCallback, ex, errors]);
+			this._handleResponse([asyncMode, asyncCallback, errors, new ZmCsfeResult(ex, true)]);
 		else
 			throw ex;
 	}
@@ -339,6 +339,7 @@ function(args) {
 		response = asyncMode ? result.getResponse() : result;
 	} catch (ex) {
 		if (!errors || (errors && !errors[ex.code])) {
+			this._killSplash();
 			this._handleException(ex);
 			return;
 		} else {
@@ -1074,8 +1075,11 @@ function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 	
 	var setting = ev.source;
-	if (setting.id == ZmSetting.QUOTA_USED)
+	if (setting.id == ZmSetting.QUOTA_USED) {
 		this._setUserInfo();
+	} else	if (setting.id == ZmSetting.POLLING_INTERVAL) {
+		this.setPollInterval();
+	}
 }
 
 ZmZimbraMail.prototype._unreadChangeListener =

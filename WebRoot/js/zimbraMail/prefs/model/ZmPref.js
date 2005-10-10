@@ -49,7 +49,7 @@ ZmPref.GENERAL_PREFS = [ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDE
 						ZmSetting.COMPOSE_INIT_FONT_FAMILY, ZmSetting.COMPOSE_INIT_FONT_SIZE, ZmSetting.COMPOSE_INIT_FONT_COLOR];
 
 ZmPref.MAIL_PREFS = [ZmSetting.GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSetting.SHOW_FRAGMENTS,
-					 ZmSetting.INITIAL_SEARCH,
+					 ZmSetting.INITIAL_SEARCH, ZmSetting.POLLING_INTERVAL,
 					 ZmSetting.SAVE_TO_SENT, ZmSetting.REPLY_TO_ADDRESS, ZmSetting.REPLY_INCLUDE_ORIG, 
 					 ZmSetting.FORWARD_INCLUDE_ORIG, ZmSetting.REPLY_PREFIX,
 					 ZmSetting.SIGNATURE_ENABLED, ZmSetting.SIGNATURE_STYLE, ZmSetting.SIGNATURE,
@@ -65,12 +65,24 @@ ZmPref.ADDR_BOOK_PREFS = [ZmSetting.AUTO_ADD_ADDRESS,
 ZmPref.CALENDAR_PREFS = [ZmSetting.CALENDAR_INITIAL_VIEW, ZmSetting.CAL_FIRST_DAY_OF_WEEK, ZmSetting.CAL_SHOW_TIMEZONE];
 
 ZmPref.validateEmail = 
-function (emailStr) {
+function(emailStr) {
 	if (emailStr) {
 		var match = ZmEmailAddress.parse(emailStr);
 		return (match != null);
 	}
 	return true;
+}
+
+ZmPref.validatePollingInterval = 
+function(interval) {
+	var minimum = window._zimbraMail._appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL);
+	if (interval && minimum && interval >= minimum) {
+		return true;
+	} else {
+		var min = minimum / 60;
+		ZmPref.SETUP[ZmSetting.POLLING_INTERVAL].errorMessage = AjxStringUtil.resolve(ZmMsg.invalidPollingInterval, min);
+		return false;
+	}
 }
 
 // The SETUP object for a pref gets translated into a form input. Available properties are:
@@ -117,6 +129,12 @@ ZmPref.SETUP[ZmSetting.SHOW_FRAGMENTS] = {
 ZmPref.SETUP[ZmSetting.INITIAL_SEARCH] = {
 	displayName:		ZmMsg.initialMailSearch,
 	displayContainer:	"input",
+	displaySeparator:	false};
+
+ZmPref.SETUP[ZmSetting.POLLING_INTERVAL] = {
+	displayName:		ZmMsg.pollingInterval,
+	displayContainer:	"input",
+	validationFunction: ZmPref.validatePollingInterval,
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.SAVE_TO_SENT] = {

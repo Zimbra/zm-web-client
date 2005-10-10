@@ -200,7 +200,8 @@ function(ex, method, params, restartOnError, obj) {
 		var bReloginMode = true;
 		if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED) {
 			// remember the last operation attempted ONLY for expired auth token exception
-			this._execFrame = {obj: obj, method: method, params: params, restartOnError: restartOnError};
+			if (method)
+				this._execFrame = {obj: obj, method: method, params: params, restartOnError: restartOnError};
 			this._loginDialog.registerCallback(this._loginCallback, this);
 			this._loginDialog.setError(ZmMsg.sessionExpired);
 		} else if (ex.code == ZmCsfeException.SVC_AUTH_REQUIRED) {

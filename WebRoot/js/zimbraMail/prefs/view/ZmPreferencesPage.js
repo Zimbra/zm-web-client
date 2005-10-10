@@ -90,7 +90,9 @@ function() {
 		// save the current value (for checking later if it changed)
 		var value = pref.origValue = pref.getValue();
 		if (id == ZmSetting.SIGNATURE_STYLE)
-			value = (value == ZmSetting.SIG_INTERNET);		
+			value = (value == ZmSetting.SIG_INTERNET);
+		if (id == ZmSetting.POLLING_INTERVAL)
+			value = parseInt(value / 60); // setting stored as seconds, display as minutes
 		DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
 
 		var setup = ZmPref.SETUP[id];

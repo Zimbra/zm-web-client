@@ -278,7 +278,7 @@ ZmSetting.INIT[ZmSetting.HTML_COMPOSE_ENABLED] 			= ["zimbraFeatureHtmlComposeEn
 ZmSetting.INIT[ZmSetting.IDLE_SESSION_TIMEOUT] 			= ["zimbraMailIdleSessionTimeout", ZmSetting.T_COS, ZmSetting.D_LDAP_TIME, 0];
 ZmSetting.INIT[ZmSetting.INITIAL_SEARCH_ENABLED]		= ["zimbraFeatureInitialSearchPreferenceEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.MAX_CONTACTS]					= ["zimbraContactMaxNumEntries", ZmSetting.T_COS, ZmSetting.D_INT, 0];
-ZmSetting.INIT[ZmSetting.MIN_POLLING_INTERVAL]			= ["zimbraMailMinPollingInterval", ZmSetting.T_COS, ZmSetting.D_LDAP_TIME, 300];
+ZmSetting.INIT[ZmSetting.MIN_POLLING_INTERVAL]			= ["zimbraMailMinPollingInterval", ZmSetting.T_COS, ZmSetting.D_LDAP_TIME, 120];
 ZmSetting.INIT[ZmSetting.QUOTA]							= ["zimbraMailQuota", ZmSetting.T_COS, ZmSetting.D_INT, 0];
 ZmSetting.INIT[ZmSetting.SAVED_SEARCHES_ENABLED]		= ["zimbraFeatureSavedSearchesEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.TAGGING_ENABLED]				= ["zimbraFeatureTaggingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
@@ -392,7 +392,7 @@ function(value, key, setDefault) {
 		else
 			this.value = value;
 	} else if (this.dataType == ZmSetting.D_LDAP_TIME) {
-		var lastChar = (value.toLowerCase()).charAt(value.length-1);
+		var lastChar = (value.toLowerCase) ? lastChar = (value.toLowerCase()).charAt(value.length-1) : null;
 		var num = parseInt(value);
 		// convert to seconds
 		if (lastChar == 'd') {
