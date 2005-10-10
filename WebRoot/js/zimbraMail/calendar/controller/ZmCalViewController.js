@@ -1106,7 +1106,7 @@ function(ids) {
 	if (this._cacheCleared) return;
 	// if any of the ids ire in the cache then...	
 	for (var i=0; i < ids.length; i++) {
-		if (this._cachedIds[ids[i]]) {
+		if (ids[i].id && this._cachedIds[ids[i].id]) {
 			this._clearCache = true;
 			return;
 		}
