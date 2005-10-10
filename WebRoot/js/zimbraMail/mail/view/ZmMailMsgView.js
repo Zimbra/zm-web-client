@@ -134,7 +134,11 @@ function (listener) {
 };
 
 ZmMailMsgView.prototype._controlEventListener = function(ev) {
-	ZmMailMsgView._resetIframeHeight([ this, this.getElementById(this._iframeId) ]);
+	var act = new AjxTimedAction();
+	act.method = ZmMailMsgView._resetIframeHeight;
+	act.params.add(this);
+	act.params.add(this.getElementById(this._iframeId));
+	AjxTimedAction.scheduleAction(act, 5);
 };
 
 ZmMailMsgView.prototype.set =
