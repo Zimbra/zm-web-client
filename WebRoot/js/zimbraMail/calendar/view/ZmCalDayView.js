@@ -1166,7 +1166,7 @@ function() {
 	this._setBounds(this._allDayDivId, 0, allDayDivY, width - bodyX + scrollTest, this._allDayDivHeight);
 	
 	// div under year
-	this._setBounds(this._yearAllDayDivId, 0, 0, hoursWidth, this._allDayDivHeight);	
+	this._setBounds(this._yearAllDayDivId, 0, allDayDivY, hoursWidth, this._allDayDivHeight);	
 
 	// all day scroll
 	var allDayScrollHeight = allDayDivY + this._allDayDivHeight;
