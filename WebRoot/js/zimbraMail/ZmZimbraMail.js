@@ -299,6 +299,10 @@ function(settings) {
 * Sends a request to the CSFE and processes the response. Notifications and
 * refresh blocks that come in the response header are handled. Also handles
 * exceptions (unless directed not to by caller).
+* <p>
+* The optional "errors" hash can be used to request that certain exceptions
+* be passed along, rather than handled by the general exception handler.
+* The property "all" can be set to pass through all exceptions.
 *
 * @param soapDoc		[AjxSoapDoc]	SOAP document that represents the request
 * @param asyncMode		[boolean]		if true, request will be made asynchronously
@@ -338,7 +342,7 @@ function(args) {
 	try {
 		response = asyncMode ? result.getResponse() : result;
 	} catch (ex) {
-		if (!errors || (errors && !errors[ex.code])) {
+		if (!errors || (errors && (!(errors.all || errors[ex.code])))) {
 			this._killSplash();
 			this._handleException(ex);
 			return;
@@ -1052,7 +1056,7 @@ ZmZimbraMail.prototype._doPoll =
 function() {
 	this._pollActionId = null; // so we don't try to cancel
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-	this.sendRequest(soapDoc, true);
+	this.sendRequest(soapDoc, true, null, {all: true});
 }
 
 ZmZimbraMail._userEventHdlr =
