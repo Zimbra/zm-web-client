@@ -1811,13 +1811,13 @@ function(sender, attachmentId) {
 		break;
 	case ZmAppt.MODE_EDIT_SINGLE_INSTANCE:
 		if (!this.isException()) {
-			var soapDoc = AjxSoapDoc.create("CreateAppointmentExceptionRequest",
+			var soapDoc = AjxSoapDoc.create("CreateAppointmentRequest",
 										   "urn:zimbraMail");
 			this._addInviteAndCompNum(soapDoc);
 			soapDoc.setMethodAttribute("s", this.getOrigStartTime());
 			needsExceptionId = true;
 		} else {
-			var soapDoc = AjxSoapDoc.create("ModifyAppointmentExceptionRequest",
+			var soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest",
 										   "urn:zimbraMail");
 			this._addInviteAndCompNum(soapDoc);
 		}
@@ -1891,7 +1891,7 @@ function(sender, mode) {
 		this._sendRequest(sender, soapDoc);
 		break;
 	case ZmAppt.MODE_DELETE_INSTANCE:
-		var soapDoc = AjxSoapDoc.create("CancelAppointmentExceptionRequest",
+		var soapDoc = AjxSoapDoc.create("CancelAppointmentRequest",
 									   "urn:zimbraMail");
 		soapDoc.setMethodAttribute("s", this.getOrigStartTime());
 		this._addInviteAndCompNum(soapDoc);
