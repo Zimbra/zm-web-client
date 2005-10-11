@@ -295,6 +295,8 @@ function(organizer) {
 */
 ZmTreeController.prototype._treeViewListener =
 function(ev) {
+	if (ev.detail != DwtTree.ITEM_ACTIONED && ev.detail != DwtTree.ITEM_SELECTED) return;
+	
 	var type = ev.item.getData(ZmTreeView.KEY_TYPE);
 	if (!type) return;
 	
