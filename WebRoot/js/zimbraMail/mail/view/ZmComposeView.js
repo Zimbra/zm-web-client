@@ -140,7 +140,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 	this._origFormValue = this._formValue();
 
 	// save extra mime parts
-	var bodyParts = msg.getBodyParts();
+	var bodyParts = msg ? msg.getBodyParts() : [];
 	for (var i = 0; i < bodyParts.length; i++) {
 		var bodyPart = bodyParts[i];
 		var contentType = bodyPart.ct;
