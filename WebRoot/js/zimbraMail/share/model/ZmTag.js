@@ -68,6 +68,8 @@ ZmTag.ID_FORWARDED	= 36;
 ZmTag.ID_ATTACHED	= 37;
 ZmTag.FIRST_USER_ID	= 64;
 
+ZmTag.DEFAULT_COLOR = ZmOrganizer.DEFAULT_COLOR;
+
 /**
 * Tags come from back end as a flat list, and we manually create a root tag, so all tags
 * have the root as parent. If tags ever have a tree structure, then this should do what
