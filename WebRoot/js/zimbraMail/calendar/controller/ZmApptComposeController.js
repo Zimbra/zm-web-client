@@ -84,6 +84,7 @@ function() {
 		this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 		this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 	}
+	this._apptView.enableInputs(false);
     this._popShield.popup(this._apptView._getDialogXY());
 	return false;
 };
@@ -150,13 +151,21 @@ function() {
 // Save button was pressed
 ZmApptComposeController.prototype._saveListener =
 function(ev) {
-	// TODO:
-	// - check if view is dirty
-	// - check if all fields are populated w/ valid values
-	// - send request to save appointment
+	var popView = true;
+	if (this._apptView.isDirty()) {
+		// check if all fields are populated w/ valid values
+		if (this._apptView.isValid()) {
+			// TODO:
+			// - send request to save appointment
+		} else {
+			popView = false;
+		}
+	}
 
-	// force pop view
-	this._app.popView(true);
+	if (popView) {
+		this._apptView.cleanup();	// always cleanup the views
+		this._app.popView(true);	// force pop view
+	}
 };
 
 // Cancel button was pressed

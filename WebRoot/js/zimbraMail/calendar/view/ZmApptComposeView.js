@@ -70,14 +70,12 @@ function() {
 
 ZmApptComposeView.prototype.set =
 function() {
-
 	// allow both tabs to reset itself
 	this._apptTab.reset();
 	this._scheduleTab.reset();
 
-	// TODO:
-	// save form state (to check for changes)
-	//this._origFormValue = this._formValue();
+	// always switch to appointment tab
+	this._tabs.switchToTab(this._apptTabKey);
 };
 
 ZmApptComposeView.prototype.cleanup = 
@@ -102,6 +100,18 @@ function(composeMode) {
 	}
 };
 
+ZmApptComposeView.prototype.enableInputs = 
+function(bEnableInputs) {
+	DBG.println("TODO: reset input elements!");
+	// this shit doesnt work right ... 
+	// need to figure out how to get the current tab and reset its inputs
+/*
+	var currTabKey = this._tabs.getCurrentTab();
+	var currTab = currTabKey == this._scheduleTabKey ? this._scheduleTab : this._apptTab;
+	currTab.enableInputs(bEnableInputs);
+*/
+};
+
 ZmApptComposeView.prototype.reEnableDesignMode = 
 function() {
 	this._apptTab.reEnableDesignMode();
@@ -110,6 +120,11 @@ function() {
 ZmApptComposeView.prototype.isDirty =
 function() {
 	return (this._apptTab.isDirty() || this._scheduleTab.isDirty());
+};
+
+ZmApptComposeView.prototype.isValid = 
+function() {
+	return (this._apptTab.isValid() || this._scheduleTab.isValid());
 };
 
 /**
@@ -122,23 +137,23 @@ function() {
 
 ZmApptComposeView.prototype.tabSwitched =
 function(tabKey) {
-	// based on the current tab selected, enable/disable appropriate buttons in toolbar
 	var toolbar = this._controller.getToolbar();
 	toolbar.enableAll(true);
+	// based on the current tab selected, enable/disable appropriate buttons in toolbar
 	if (tabKey == this._scheduleTabKey) {
-		// disable toolbar buttons (except save/cancel)
 		var buttons = [ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK];
 		if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))
 			buttons.push(ZmOperation.COMPOSE_FORMAT);
 		if (!this.isChildWindow)
 			buttons.push(ZmOperation.DETACH_COMPOSE);
 		toolbar.enable(buttons, false);
-		// disable input fields in appointment tab
 		this._apptTab.enableInputs(false);
 	} else {
-		this._apptTab.enableInputs(true);
+		//this._scheduleTab.enableInputs(false);
 		this._apptTab.reEnableDesignMode();
 	}
+	// enable input fields for the current tab
+	//this.enableInputs(true);
 };
 
 
@@ -186,7 +201,22 @@ function(isDraft) {
 };
 
 
-
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// TODO: MOVE TO NEW FILE
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+/**
+* Creates a new tab view that can be used to overload DwtTabView base class methods
+* @constructor
+* @class
+*
+* @author Parag Shah
+* @param parent			the element that created this view
+* @param appCtxt 		app context
+* @param className 		class name for this view
+* @param posStyle		positioning style
+*/
 function ZmSchedTabViewPage(parent, appCtxt, className, posStyle) {
 	DwtTabViewPage.call(this, parent, className, posStyle);
 	this._appCtxt = appCtxt;
@@ -220,13 +250,27 @@ function(bEnableInputs) {
 ZmSchedTabViewPage.prototype.cleanup = 
 function() {
 	// TODO
+	DBG.println("TODO: cleanup schedule tab view");
 };
 
 ZmSchedTabViewPage.prototype.isDirty =
 function() {
 	// TODO
-	DBG.println("TODO: schedule tab view is dirty");
+	DBG.println("TODO: check if schedule tab view is dirty");
 	return false;
+};
+
+ZmSchedTabViewPage.prototype.isValid = 
+function() {
+	// TODO
+	DBG.println("TODO: check if schedule tab fields are all valid");
+	return true;
+};
+
+ZmSchedTabViewPage.prototype.enableInputs = 
+function() {
+	// TODO
+	DBG.println("TODO: enable inputs for schedule tab view");
 };
 
 ZmSchedTabViewPage.prototype._createHTML = 
