@@ -262,6 +262,16 @@ function(folderTree) {
 	this._folderTree = folderTree;
 }
 
+ZmAppCtxt.prototype.setCalendarTree =
+function(calendarTree) {
+	this._calendarTree = calendarTree;
+}
+
+ZmAppCtxt.prototype.getCalendarTree =
+function() {
+	return this._calendarTree;
+}
+
 ZmAppCtxt.prototype.getSearchTree =
 function() {
 	return this._searchTree;

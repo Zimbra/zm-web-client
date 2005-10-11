@@ -68,6 +68,7 @@ ZmOrganizer.SOAP_CMD = new Object();
 ZmOrganizer.SOAP_CMD[ZmOrganizer.FOLDER]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.TAG]		= "TagAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.SEARCH]	= "FolderAction";
+ZmOrganizer.SOAP_CMD[ZmOrganizer.CALENDAR]	= "FolderAction";
 
 // fields that can be part of a displayed organizer
 var i = 1;

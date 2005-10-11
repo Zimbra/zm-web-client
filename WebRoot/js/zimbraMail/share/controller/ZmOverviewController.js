@@ -57,6 +57,7 @@ ZmOverviewController.CONTROLLER = new Object();
 ZmOverviewController.CONTROLLER[ZmOrganizer.FOLDER]	= ZmFolderTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.SEARCH]	= ZmSearchTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.TAG]		= ZmTagTreeController;
+ZmOverviewController.CONTROLLER[ZmOrganizer.CALENDAR]	= ZmCalendarTreeController;
 
 ZmOverviewController.DEFAULT_FOLDER_ID = ZmFolder.ID_INBOX;
 
@@ -108,8 +109,10 @@ function(params) {
 ZmOverviewController.prototype.clearOverview =
 function(overviewId) {
 	var treeIds = this._treeIds[overviewId];
-	for (var i = 0; i < treeIds.length; i++)
-		this._controllers[treeIds[i]].clearTreeView(overviewId);
+	if (treeIds) {
+		for (var i = 0; i < treeIds.length; i++)
+			this._controllers[treeIds[i]].clearTreeView(overviewId);
+	}
 }
 
 /**
@@ -121,12 +124,18 @@ function(overviewId) {
 */
 ZmOverviewController.prototype.set =
 function(overviewId, treeIds, omit) {
-	if (!(overviewId && treeIds && treeIds.length)) return;
+	if (!overviewId) return;
+
+	// hide all controller views for the specified overview
+	for (var controllerId in this._controllers) {
+		this._controllers[controllerId].hide(overviewId);
+	}
+
+	if (!treeIds || !treeIds.length) return;
 	
+	// show controller views for the specified overview	
 	this._treeIds[overviewId] = treeIds;
 	for (var i = 0; i < treeIds.length; i++) {
-		if (i > 0)
-			this._addSpacer(overviewId);
 		var treeId = treeIds[i];
 		// lazily create appropriate tree controller
 		if (!this._controllers[treeId])

@@ -78,6 +78,7 @@ ZmEvent.E_RENAME		= i++;
 ZmEvent.E_MOVE			= i++;
 ZmEvent.E_FLAGS			= i++;
 ZmEvent.E_TAGS			= i++;
+ZmEvent.E_CALENDARS		= i++;
 
 // Public methods
 

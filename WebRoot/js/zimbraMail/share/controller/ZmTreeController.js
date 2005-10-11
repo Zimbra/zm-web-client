@@ -118,6 +118,23 @@ ZmTreeController.prototype.show =
 function(overviewId, showUnread, omit) {
 	this._setup(overviewId);
 	this._treeView[overviewId].set(this._dataTree, showUnread, omit);
+	this._setTreeViewVisible(overviewId, true);
+}
+
+ZmTreeController.prototype.hide =
+function(overviewId) {
+	this._setTreeViewVisible(overviewId, false);
+}
+
+ZmTreeController.prototype._setTreeViewVisible = 
+function(overviewId, visible) {
+	var treeView = this.getTreeView(overviewId);
+	if (treeView) {
+		var element = treeView.getHtmlElement();
+		if (element) {
+			element.style.display = visible ? "block" : "none";
+		}
+	}
 }
 
 /**

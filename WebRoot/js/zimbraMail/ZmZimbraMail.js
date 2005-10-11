@@ -63,6 +63,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._models = new AjxVector();
 	this._needOverviewLayout = false;
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);	
+	this._calendarListener = new AjxListener(this, this._calendarChangeListener);
 
 	this._useXml = this._appCtxt.get(ZmSetting.USE_XML);
 	this._logRequest = this._appCtxt.get(ZmSetting.LOG_REQUEST);
@@ -127,6 +128,12 @@ ZmZimbraMail._HELP_ID	= 2;
 ZmZimbraMail._LOGOFF_ID	= 3;
 
 ZmZimbraMail._OVERVIEW_ID = "ZmZimbraMail";
+
+ZmZimbraMail.DEFAULT_PANELS = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+
+// Data
+
+ZmZimbraMail.prototype._panels = ZmZimbraMail.DEFAULT_PANELS;
 
 // Public methods
 
@@ -215,6 +222,17 @@ function(params) {
 	} else {
 		this._killSplash();
 	}
+}
+
+ZmZimbraMail.prototype.setOverviewPanels = 
+function(panelIdArray) {
+	this._panels = panelIdArray;
+	this._needOverviewLayout = true;
+	this._checkOverviewLayout();
+}
+ZmZimbraMail.prototype.getOverviewPanels = 
+function() {
+	return this._panels;
 }
 
 /*
@@ -417,6 +435,7 @@ function(appName, callback) {
 		DBG.println(AjxDebug.DBG1, "Launching app " + appName);
 		var respCallback = new AjxCallback(this, this._handleLaunchResponse, callback);
 		this._apps[appName].launch(respCallback);
+		this._apps[appName].activate(true);
     }
 }
 
@@ -477,7 +496,7 @@ function() {
 	if (this._needOverviewLayout && this._settings.userSettingsLoaded) {
 		DBG.println(AjxDebug.DBG1, "laying out overview panel");
 		var opc = this._appCtxt.getOverviewController();
-		var panels = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+		var panels = this.getOverviewPanels();
 		opc.set(ZmZimbraMail._OVERVIEW_ID, panels);
 		this._components[ZmAppViewMgr.C_TREE] = opc.getOverview(ZmZimbraMail._OVERVIEW_ID);
 		// clear shared folder dialogs so they'll be recreated with new folder tree
@@ -679,6 +698,15 @@ function(refresh) {
 	tagTree.reset();
 	tagTree.createRoot(); // tag tree root not in the DOM
 
+	var calendarTree = this._appCtxt.getCalendarTree();
+	if (!calendarTree) {
+		calendarTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.CALENDAR);
+		calendarTree.addChangeListener(this._calendarListener);
+		this._appCtxt.setCalendarTree(calendarTree);
+	}
+	var calendarString = calendarTree.asString();
+	calendarTree.reset();
+
 	var folderTree = this._appCtxt.getFolderTree();
 	if (!folderTree) {
 		folderTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.FOLDER);
@@ -688,7 +716,7 @@ function(refresh) {
 	var folderString = folderTree.asString();
 	folderTree.getUnreadHash(unread);
 	folderTree.reset();
-
+	
 	var searchTree = this._appCtxt.getSearchTree();
 	if (!searchTree) {
 		searchTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.SEARCH);
@@ -700,11 +728,13 @@ function(refresh) {
 	if (refresh.tags)
 		tagTree.loadFromJs(refresh.tags);
 	if (refresh.folder) {
+		calendarTree.loadFromJs(refresh.folder[0]);
 		folderTree.loadFromJs(refresh.folder[0]);
 		searchTree.loadFromJs(refresh.folder[0]);
 	}
 	
-	if (tagTree.asString() != tagString || folderTree.asString() != folderString) {
+	if (tagTree.asString() != tagString || folderTree.asString() != folderString ||
+		calendarTree.asString() != calendarString) {
 		DBG.println(AjxDebug.DBG1, "overview layout needed (refresh)");
 		DBG.println(AjxDebug.DBG2, "tags: " + tagString + " / " + tagTree.asString());
 		DBG.println(AjxDebug.DBG2, "folders: " + folderString + " / " + folderTree.asString());
@@ -1102,6 +1132,11 @@ function(ev) {
 	}
 }
 
+ZmZimbraMail.prototype._calendarChangeListener =
+function(ev) {
+	// TODO
+}
+
 ZmZimbraMail.prototype._createBanner =
 function() {
 	// The LogoContainer style centers the logo
@@ -1185,7 +1220,7 @@ function(ev) {
 		if (id == ZmAppChooser.B_EMAIL) {
 			this.activateApp(ZmZimbraMail.MAIL_APP);
 		} else if (id == ZmAppChooser.B_CONTACTS) {
-			this.getApp(ZmZimbraMail.CONTACTS_APP).launch();
+			this.activateApp(ZmZimbraMail.CONTACTS_APP);
 		} else if (id == ZmAppChooser.B_CALENDAR) {
 			this.activateApp(ZmZimbraMail.CALENDAR_APP);
 		} else if (id == ZmAppChooser.B_HELP) {
