@@ -205,10 +205,10 @@ ZmFolderPropsDialog.prototype._generateContent = function(template, share) {
 
 	// REVISIT
 	var content = template;
-	content = content.replace(/{0}/g, share.organizer.name);
-	content = content.replace(/{1}/g, folderType);
-	content = content.replace(/{2}/g, userName);
-	content = content.replace(/{3}/g, share.granteeName);
+	content = content.replace(/\{0}/g, share.organizer.name);
+	content = content.replace(/\{1}/g, folderType);
+	content = content.replace(/\{2}/g, userName);
+	content = content.replace(/\{3}/g, share.granteeName);
 	
 	return content;
 }

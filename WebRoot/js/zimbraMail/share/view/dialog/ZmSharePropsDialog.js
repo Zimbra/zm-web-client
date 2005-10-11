@@ -311,13 +311,13 @@ ZmSharePropsDialog.prototype.__generateContent = function(template, folder, shar
 
 	// REVISIT
 	var content = template;
-	content = content.replace(/{0}/g, folder.name);
-	content = content.replace(/{1}/g, folderType);
-	content = content.replace(/{2}/g, userName);
-	content = content.replace(/{3}/g, share.granteeName);
-	content = content.replace(/{4}/g, ZmShareInfo.ROLES[share.perm]);
-	content = content.replace(/{5}/g, ZmShareInfo.ACTIONS[share.perm]);
-	content = content.replace(/{6}/g, modified);
+	content = content.replace(/\{0}/g, folder.name);
+	content = content.replace(/\{1}/g, folderType);
+	content = content.replace(/\{2}/g, userName);
+	content = content.replace(/\{3}/g, share.granteeName);
+	content = content.replace(/\{4}/g, ZmShareInfo.ROLES[share.perm]);
+	content = content.replace(/\{5}/g, ZmShareInfo.ACTIONS[share.perm]);
+	content = content.replace(/\{6}/g, modified);
 	
 	return content;
 }
