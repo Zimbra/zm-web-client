@@ -135,11 +135,15 @@ function (listener) {
 };
 
 ZmMailMsgView.prototype._controlEventListener = function(ev) {
-	var act = new AjxTimedAction();
-	act.method = ZmMailMsgView._resetIframeHeight;
-	act.params.add(this);
-	act.params.add(this.getElementById(this._iframeId));
-	AjxTimedAction.scheduleAction(act, 5);
+	var iframe = this.getElementById(this._iframeI);
+	// we get here before we have a chance to initialize the IFRAME
+	if (iframe) {
+		var act = new AjxTimedAction();
+		act.method = ZmMailMsgView._resetIframeHeight;
+		act.params.add(this);
+		act.params.add(iframe);
+		AjxTimedAction.scheduleAction(act, 5);
+	}
 };
 
 ZmMailMsgView.prototype._getShareToolbar = 
