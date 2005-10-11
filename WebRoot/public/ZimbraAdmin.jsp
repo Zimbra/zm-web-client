@@ -126,19 +126,15 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/status/view/ZaServicesListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/status/view/ZaClusteredServicesListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaGlobalStatsView.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaGlobalDataStatsPage.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaGlobalMsgsStatsPage.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaGlobalDiskStatsPage.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaGlobalDiskStatsPageD.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaGlobalDiskStatsPage3M.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaGlobalDiskStatsPage12M.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaGlobalMessageVolumePage.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaGlobalMessageCountPage.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaGlobalSpamActivityPage.js<%= ext %>?v=<%= vers %>"></script>
+
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaServerStatsView.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaServerDataStatsPage.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaServerMsgsStatsPage.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaServerDiskStatsPage.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaServerDiskStatsPageD.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaServerDiskStatsPage3M.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaServerDiskStatsPage12M.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaServerMessageVolumePage.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaServerMessageCountPage.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaServerSpamActivityPage.js<%= ext %>?v=<%= vers %>"></script>
+
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/globalconfig/view/GlobalConfigXFormView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/backuprestore/view/SingleAccountRestoreXWizard.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/dl/view/ZaDLListView.js<%= ext %>?v=<%= vers %>"></script>
