@@ -49,6 +49,14 @@ HTML>BODY INPUT {		/* clean border that works in FF */
 	color:darkred;
 }
 
+.ZmOverride {
+	background-color:#FFF6BF;
+}
+
+.ZmSelectedHeaderBg {
+	background-color:#ADD6D6;
+}
+
 .subtleAnchor {
 	color:black;
 	Xtext-decoration:none;
