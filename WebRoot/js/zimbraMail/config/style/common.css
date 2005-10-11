@@ -44,6 +44,11 @@ HTML>BODY INPUT {		/* clean border that works in FF */
 	height:18px;
 }
 
+.ZmImportant {
+	font-weight:bold;
+	color:darkred;
+}
+
 .subtleAnchor {
 	color:black;
 	Xtext-decoration:none;
@@ -53,7 +58,6 @@ HTML>BODY INPUT {		/* clean border that works in FF */
 	color:blue;
 	text-decoration:underline;
 }
-
 
 
 
