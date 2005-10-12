@@ -37,11 +37,11 @@ ZmApptTabViewPage.IFRAME_HEIGHT = "30px";
 ZmApptTabViewPage.UPLOAD_FIELD_NAME = "attUpload";
 
 ZmApptTabViewPage.REMINDER_OPTIONS = [
-	{ label: ZmMsg.none, 		value: "none", 	selected: true },
-	{ label: ZmMsg.showMessage, value: "show", 	selected: false }];
+	{ label: ZmMsg.none, 				value: "none", 	selected: true 	},
+	{ label: ZmMsg.showMessage, 		value: "show", 	selected: false }];
 
 ZmApptTabViewPage.REMINDER_TIME_OPTIONS = [
-	{ label: ZmMsg.atStartTime, 		value: 0, 		selected: true },
+	{ label: ZmMsg.atStartTime, 		value: 0, 		selected: true 	},
 	{ label: "5 " + AjxMsg.minutes, 	value: 5, 		selected: false },
 	{ label: "10 " + AjxMsg.minutes,	value: 10, 		selected: false },
 	{ label: "15 " + AjxMsg.minutes,	value: 15, 		selected: false },
@@ -60,18 +60,18 @@ ZmApptTabViewPage.REMINDER_TIME_OPTIONS = [
 	{ label: "2 " + AjxMsg.weeks,		value: 20160, 	selected: false }];
 
 ZmApptTabViewPage.SHOWAS_OPTIONS = [
-	{ label: ZmMsg.free, 			value: "free", 		selected: true },
-	{ label: ZmMsg.replyTentative, 	value: "tentative", selected: false },
-	{ label: ZmMsg.busy, 			value: "busy", 		selected: false },
-	{ label: ZmMsg.outOfOffice,		value: "out", 		selected: false }];
+	{ label: ZmMsg.free, 				value: "free", 	selected: true 	},
+	{ label: ZmMsg.replyTentative, 		value: "tentative", selected: false },
+	{ label: ZmMsg.busy, 				value: "busy", 	selected: false },
+	{ label: ZmMsg.outOfOffice,			value: "out", 	selected: false }];
 
 ZmApptTabViewPage.REPEAT_OPTIONS = [
-	{ label: ZmMsg.none, 		value: "none", 	selected: true },
-	{ label: ZmMsg.everyDay, 	value: "day", 	selected: false },
-	{ label: ZmMsg.everyWeek, 	value: "week", 	selected: false },
-	{ label: ZmMsg.everyMonth, 	value: "month", selected: false },
-	{ label: ZmMsg.everyYear, 	value: "year", 	selected: false },
-	{ label: ZmMsg.custom, 		value: "custom",selected: false }];
+	{ label: ZmMsg.none, 				value: "NON", 	selected: true 	},
+	{ label: ZmMsg.everyDay, 			value: "DAI", 	selected: false },
+	{ label: ZmMsg.everyWeek, 			value: "WEE", 	selected: false },
+	{ label: ZmMsg.everyMonth, 			value: "MON", 	selected: false },
+	{ label: ZmMsg.everyYear, 			value: "YEA", 	selected: false },
+	{ label: ZmMsg.custom, 				value: "CUS", 	selected: false }];
 
 
 // Public
@@ -134,8 +134,6 @@ function() {
 	// reset iframe containing attachments if any
 	while (this._attachTable.rows.length > 0)
 		this._attachTable.deleteRow(-1);
-	//for (var i = 0; i < this._attachTable.rows.length; i++)
-	//	this._attachTable.deleteRow(0);
 	Dwt.setVisible(this._attachDiv, false);
 
 	// disable all input fields
@@ -253,7 +251,7 @@ function() {
 	this._createApptHtml();
 	this._createSelects();
 	this._createButtons();
-	this._initInputFields();
+	this._cacheFields();
 	this._initAttachIframe();
 	this._initAutocomplete();
 	
@@ -267,7 +265,8 @@ function() {
 
 	// add event listeners where necessary
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
-	this._allDayCheckbox._tabViewPage = this;
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
+	this._allDayCheckbox._tabViewPage = this._repeatDescField._tabViewPage = this;
 	
 	// save the original form data in its initialized state
 	this._origFormValue = this._formValue();
@@ -377,6 +376,7 @@ function() {
 		endTZoneCell.appendChild(this._endTZoneSelect.getHtmlElement());
 	
 	this._repeatSelect = new DwtSelect(this);
+	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
 	for (var i = 0; i < ZmApptTabViewPage.REPEAT_OPTIONS.length; i++) {
 		var option = ZmApptTabViewPage.REPEAT_OPTIONS[i];
 		this._repeatSelect.addOption(option.label, option.selected, option.value);
@@ -494,7 +494,7 @@ function() {
 	html[i++] = ZmMsg.start;
 	html[i++] = ":</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = "<input style='height:22px;' type='text' size=8 maxlength=8 id='";
+	html[i++] = "<input style='height:22px;' type='text' size=10 maxlength=10 id='";
 	html[i++] = this._startDateFieldId;
 	html[i++] = "' value='";
 	html[i++] = currDate;
@@ -504,15 +504,15 @@ function() {
 	html[i++] = "</tr></table></td>";
 	html[i++] = "<td>@</td><td id='";
 	html[i++] = this._startTimeSelectId;
-	html[i++] = "'></td><td><input type='checkbox' id='";
+	html[i++] = "'></td><td width=1%><input type='checkbox' id='";
 	html[i++] = this._allDayCheckboxId;
-	html[i++] = "' onclick='ZmApptTabViewPage._allDayChangeListener'>";
+	html[i++] = "'></td><td>";
 	html[i++] = ZmMsg.allDayEvent;
 	html[i++] = "</td></tr><tr><td align=right>";
 	html[i++] = ZmMsg.end;
 	html[i++] = ":</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = "<input style='height:22px;' type='text' size=8 maxlength=8 id='";
+	html[i++] = "<input style='height:22px;' type='text' size=10 maxlength=10 id='";
 	html[i++] = this._endDateFieldId;
 	html[i++] = "' value='";
 	html[i++] = currDate;
@@ -522,16 +522,17 @@ function() {
 	html[i++] = "</tr></table></td>";
 	html[i++] = "<td>@</td><td id='";
 	html[i++] = this._endTimeSelectId;
-	html[i++] = "'></td><td id='";
+	html[i++] = "'></td><td colspan=2 id='";
 	html[i++] = this._endTZoneSelectId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr><td align=right>";
 	html[i++] = ZmMsg.repeat;
 	html[i++] = ":</td><td colspan=2 id='";
 	html[i++] = this._repeatSelectId;
-	html[i++] = "'><td colspan=10 id='";
+	html[i++] = "'><td colspan=10><span id='";
 	html[i++] = this._repeatDescId;
-	html[i++] = "'></td>";
+	html[i++] = "' onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;'";
+	html[i++] = "></span></td>";
 	html[i++] = "</tr>";
 	html[i++] = "</table>";
 
@@ -603,19 +604,20 @@ function() {
 	return html.join("");
 };
 
-ZmApptTabViewPage.prototype._initInputFields = 
+// cache all input fields so we dont waste time traversing DOM each time
+ZmApptTabViewPage.prototype._cacheFields = 
 function() {
-	// cache all input fields so we dont waste time traversing DOM each time
 	var doc = this.getDocument();
 	
-	this._subjectField = Dwt.getDomObj(doc, this._subjectFieldId);
-	this._locationField = Dwt.getDomObj(doc, this._locationFieldId);
-	this._startDateField = Dwt.getDomObj(doc, this._startDateFieldId);
-	this._endDateField = Dwt.getDomObj(doc, this._endDateFieldId);
-	this._attendeesField = Dwt.getDomObj(doc, this._attendeesFieldId);
-	this._privateCheckbox = Dwt.getDomObj(doc, this._privateCheckboxId);
-	this._allDayCheckbox = Dwt.getDomObj(doc, this._allDayCheckboxId);
-}
+	this._subjectField 		= Dwt.getDomObj(doc, this._subjectFieldId);
+	this._locationField 	= Dwt.getDomObj(doc, this._locationFieldId);
+	this._startDateField 	= Dwt.getDomObj(doc, this._startDateFieldId);
+	this._endDateField 		= Dwt.getDomObj(doc, this._endDateFieldId);
+	this._attendeesField 	= Dwt.getDomObj(doc, this._attendeesFieldId);
+	this._privateCheckbox 	= Dwt.getDomObj(doc, this._privateCheckboxId);
+	this._allDayCheckbox 	= Dwt.getDomObj(doc, this._allDayCheckboxId);
+	this._repeatDescField 	= Dwt.getDomObj(doc, this._repeatDescId);
+};
 
 ZmApptTabViewPage.prototype._initAttachIframe = 
 function() {
@@ -760,6 +762,17 @@ function(show) {
 	Dwt.setVisibility(this._endTimeSelect.getHtmlElement().parentNode.previousSibling, show);
 };
 
+ZmApptTabViewPage.prototype._showRecurDialog = 
+function() {
+	if (!this._recurDialog) {
+		this._recurDialog = new ZmApptRecurDialog(this._appCtxt.getShell(), this._appCtxt);
+		this._recurDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._recurOkListener));
+		this._recurDialog.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._recurCancelListener));
+	}
+	this._recurDialog.initialize(this._startDateField.value, this._endDateField.value);
+	this._recurDialog.popup();
+};
+
 // Returns a string representing the form content
 ZmApptTabViewPage.prototype._formValue =
 function() {
@@ -800,7 +813,7 @@ function(ev) {
 		var workingWeek = [];
 		var fdow = this._appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
 		for (var i=0; i < 7; i++) {
-			var d = (i+fdow)%7
+			var d = (i+fdow)%7;
 			workingWeek[i] = (d > 0 && d < 6);
 		}
 		this._dateCalendar.setWorkingWeek(workingWeek);
@@ -849,14 +862,45 @@ function(ev) {
 	Dwt.setVisibility(this._reminderTimesSelect.getHtmlElement(), ev._args.newValue == "show");
 };
 
-ZmApptTabViewPage._onClick = 
-function(ev) {
-	var el = DwtUiEvent.getTarget(ev);
-
-	// figure out which input field was clicked
-	if (el.id == el._tabViewPage._allDayCheckboxId) {
-		el._tabViewPage._showTimeFields(el.checked ? false : true);
+ZmApptTabViewPage.prototype._repeatChangeListener = 
+function(ev) {	
+	var newSelectVal = ev._args.newValue;
+	if (newSelectVal == "CUS") {
+		this._oldRepeatValue = ev._args.oldValue;
+		this._showRecurDialog();
+	} else {
+		// per new select value, change the recur description
+		var recurDesc = null;
+		switch (newSelectVal) {
+			case "DAI": recurDesc = ZmMsg.everyDay;   break;
+			case "WEE": recurDesc = ZmMsg.everyWeek;  break;
+			case "MON": recurDesc = ZmMsg.everyMonth; break;
+			case "YEA": recurDesc = ZmMsg.everyYear;  break;
+		}
+		this._repeatDescField.innerHTML = recurDesc ? (recurDesc + " (" + ZmMsg.noEndDate + ")") : "";
 	}
+};
+
+ZmApptTabViewPage.prototype._recurOkListener = 
+function(ev) {
+	// TODO
+	// - and get the recur rules to update the recur language
+	var repeatValue = this._recurDialog.getSelectedRepeatValue();
+	if (repeatValue == "NON") {
+		this._repeatSelect.setSelectedValue(repeatValue);
+		this._repeatDescField.innerHTML = "";
+	} else {
+		this._repeatSelect.setSelectedValue("CUS");
+	}
+	
+	this._recurDialog.popdown();
+};
+
+ZmApptTabViewPage.prototype._recurCancelListener = 
+function(ev) {
+	// reset the selected option to whatever it was before user canceled
+	this._repeatSelect.setSelectedValue(this._oldRepeatValue);
+	this._recurDialog.popdown();
 };
 
 
@@ -896,4 +940,21 @@ function(ev) {
 ZmApptTabViewPage.prototype._handleAutoCompleteData = 
 function(ev) {
 	DBG.println("ZmApptTabViewPage.prototype._handleAutoCompleteData = ");
+};
+
+
+// Static methods
+
+ZmApptTabViewPage._onClick = 
+function(ev) {
+	var el = DwtUiEvent.getTarget(ev);
+	var tvp = el._tabViewPage;
+
+	// figure out which input field was clicked
+	if (el.id == tvp._allDayCheckboxId) {
+		el._tabViewPage._showTimeFields(el.checked ? false : true);
+	} else if (el.id == tvp._repeatDescId) {
+		tvp._oldRepeatValue = tvp._repeatSelect.getValue();
+		tvp._showRecurDialog();
+	}
 };

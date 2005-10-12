@@ -149,11 +149,9 @@ function(tabKey) {
 		toolbar.enable(buttons, false);
 		this._apptTab.enableInputs(false);
 	} else {
-		//this._scheduleTab.enableInputs(false);
+		this._apptTab.enableInputs(true);
 		this._apptTab.reEnableDesignMode();
 	}
-	// enable input fields for the current tab
-	//this.enableInputs(true);
 };
 
 
