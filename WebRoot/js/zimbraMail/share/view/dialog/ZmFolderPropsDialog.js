@@ -118,7 +118,7 @@ ZmFolderPropsDialog._XFORM_DEF = { items: [
 						}
 					}
 				]
-			},
+			}
 		]
 	}
 ]};
@@ -128,7 +128,7 @@ ZmFolderPropsDialog._XMODEL_DEF = { items: [
 	{ id: "folder_view", ref: "folder/type", type: _ENUM_, choices: [ ZmOrganizer.FOLDER, ZmOrganizer.CALENDAR ] },
 	//{ id: "folder_parent", ref: "folder/parent/name", type: _STRING_ },
 	{ id: "folder_color", ref: "folder/color", type: _NUMBER_ },
-	{ id: "folder_acl_grant", ref: "folder/shares", type: _LIST_ },
+	{ id: "folder_acl_grant", ref: "folder/shares", type: _LIST_ }
 	//{ id: "msgLocation", ref: "msgLocation", type: _ENUM_, choices: [ "inbox", "special", "trash" ] }
 ]};
 
