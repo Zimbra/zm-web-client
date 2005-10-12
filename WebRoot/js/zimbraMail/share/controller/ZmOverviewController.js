@@ -126,14 +126,13 @@ ZmOverviewController.prototype.set =
 function(overviewId, treeIds, omit) {
 	if (!overviewId) return;
 
-	// hide all controller views for the specified overview
-	for (var controllerId in this._controllers) {
-		this._controllers[controllerId].hide(overviewId);
-	}
+	// hide the current tree views for the specified overview
+	for (var treeId in this._controllers)
+		this.getTreeView(overviewId, treeId).setVisible(false);
 
 	if (!treeIds || !treeIds.length) return;
 	
-	// show controller views for the specified overview	
+	// show tree views for the specified overview	
 	this._treeIds[overviewId] = treeIds;
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];
