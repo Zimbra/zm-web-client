@@ -51,36 +51,6 @@ function() {
 	return this.root ? this._asString(this.root, "") : "";
 }
 
-ZmTree.prototype.addChangeListener = 
-function(listener) {
-	if (ZmModel.prototype.addChangeListener.call(this, listener))
-		this._appCtxt.getAppController().addModel(this);	
-}
-
-ZmTree.prototype.removeChangeListener = 
-function(listener) {
-	if (ZmModel.prototype.removeChangeListener.call(this, listener))
-		if (!this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY))
-			this._appCtxt.getAppController().removeModel(this);	
-}
-
-ZmTree.prototype.notifyDelete =
-function(ids) {
-	var deleted = new Array();
-	for (var i = 0; i < ids.length; i++) {
-		// ignore deletes of system folders
-		if ((this.type == ZmOrganizer.FOLDER) && (ids[i] < ZmFolder.FIRST_USER_ID))
-			continue;
-		var organizer = this.getById(ids[i]);
-		if (organizer)
-			deleted.push(organizer);
-	}
-	if (deleted.length) {
-		this.deleteLocal(deleted);
-		this._eventNotify(ZmEvent.E_DELETE, deleted);
-	}
-}
-
 ZmTree.prototype.getById =
 function(id) {
 	return this.root ? this.root.getById(id) : null;
@@ -105,17 +75,6 @@ ZmTree.prototype.asList =
 function() {
 	var list = new Array();
 	return this.root ? this._addToList(this.root, list) : list;
-}
-
-ZmTree.prototype.deleteLocal =
-function(organizers) {
-	if (!(organizers && organizers.length)) return;
-	
-	for (var i = 0; i < organizers.length; i++) {
-		var organizer = organizers[i];
-		organizer.children.removeAll();
-		organizer.parent.children.remove(organizer);
-	}
 }
 
 ZmTree.prototype.getUnreadHash =
@@ -176,4 +135,3 @@ function(event, organizers, details) {
 		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
 	}
 }
-

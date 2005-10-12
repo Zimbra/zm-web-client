@@ -23,13 +23,26 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+* Creates an empty tag menu.
+* @constructor
+* @class
+* This class represents a menu structure of tags that can be added to or removed
+* from item(s). Based on the items passed in when it renders, it presents a 
+* list of tags that can be added (any tag all the items don't already have), and a
+* list of tags that can be removed (tags that any of the items have).
+* <p>
+* Since the content is set every time it is displayed, the tag menu doesn't need
+* a change listener.</p>
+*
+* @param parent		[DwtControl]	parent widget
+*/
 function ZmTagMenu(parent) {
 
 	// create a menu (though we don't put anything in it yet) so that parent widget shows it has one
 	ZmPopupMenu.call(this, parent);
 
 	parent.setMenu(this);
-	this._changeListener = new AjxListener(this, this._tagChangeListener);
 	this._addHash = new Object();
 	this._removeHash = new Object();
 	this._evtMgr = new AjxEventMgr();
@@ -69,10 +82,8 @@ function(enabled) {
 // Dynamically set the list of tags that can be added/removed based on the given list of items.
 ZmTagMenu.prototype.set =
 function(items, tagList) {
-	if (this._tagList)
-		this._tagList.removeChangeListener(this._changeListener);
+	DBG.println(AjxDebug.DBG3, "set tag menu");
 	this._tagList = tagList;
-	tagList.addChangeListener(this._changeListener);
 	var rootTag = tagList.root;
 	this.parent.setEnabled(true);
 
@@ -192,46 +203,6 @@ function(menu, newTag, add, index, tagHash) {
 	mi.setData(Dwt.KEY_OBJECT, newTag);
 	mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener));
 	tagHash[newTag.id] = mi;
-}
-
-ZmTagMenu.prototype._tagChangeListener =
-function(ev) {
-	if (ev.type != ZmEvent.S_TAG)
-		return;
-	if (ev.event == ZmEvent.E_RENAME) {
-		DBG.println(AjxDebug.DBG2, "TAG RENAME");
-	} else if (ev.event == ZmEvent.E_DELETE) {
-		var mi;
-		if (mi = this._addHash[ev.source.id])
-			mi.dispose();
-		if (mi = this._removeHash[ev.source.id])
-			mi.dispose();
-		// Check to see if we have any tags left. If not, disable "myTags"
-		if (this.getItemCount() == 0) {
-			this.parent.setMenu(null);
-			this.parent.setEnabled(false);
-		}		
-	} else if (ev.event == ZmEvent.E_CREATE) {
-		var index = ZmTreeView.getSortIndex(this, ev.source, ZmTag.sortCompare);
-		this._addNewTag(this, ev.source, true, index, this._addHash);
-		this.parent.setEnabled(this._desiredState); // in case this is first child
-	} else if (ev.event == ZmEvent.E_MODIFY) {
-		var tag = ev.source;
-		var fields = ev.getDetail("fields");
-		var mi;
-		if (fields && fields[ZmOrganizer.F_COLOR]) {
-			if (mi = this._addHash[tag.id])
-				mi.setImage(ZmTag.COLOR_ICON[tag.color]);
-			if (mi = this._removeHash[ev.source.id])
-				mi.setImage(ZmTag.COLOR_ICON[tag.color]);
-		}
-		if ((fields && fields[ZmOrganizer.F_NAME]) || (fields && fields[ZmOrganizer.F_UNREAD])) {
-			if (mi = this._addHash[tag.id])
-				mi.setText(tag.getName(false));
-			if (mi = this._removeHash[tag.id])
-				mi.setText(tag.getName(false));
-		}
-	}
 }
 
 ZmTagMenu.prototype._menuItemSelectionListener =

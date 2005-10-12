@@ -23,9 +23,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmConv(appCtxt, list) {
+/**
+* Creates a conversation.
+* @constructor
+* @class
+* This class represents a conversation, which is a collection of mail messages
+* which have the same subject.
+*
+* @param appCtxt	[ZmAppCtxt]		the app context
+* @param id			[int]			unique ID
+* @param list		[ZmMailList]	list that contains this conversation
+*/
+function ZmConv(appCtxt, id, list) {
 
-	ZmMailItem.call(this, appCtxt, ZmItem.CONV, list);
+	ZmMailItem.call(this, appCtxt, ZmItem.CONV, id, list);
 	// conversations are always sorted by date desc initially
 	this._sortBy = ZmSearch.DATE_DESC; 
 	this._listChangeListener = new AjxListener(this, this._msgListChangeListener);
@@ -43,7 +54,7 @@ function() {
 
 ZmConv.createFromDom =
 function(node, args) {
-	var conv = new ZmConv(args.appCtxt, args.list);
+	var conv = new ZmConv(args.appCtxt, node.id, args.list);
 	conv._participantHash = args.addressHash ? args.addressHash : new Object();
 	conv._loadFromDom(node);
 	return conv;
@@ -273,7 +284,6 @@ function (){
 
 ZmConv.prototype._loadFromDom =
 function(convNode) {
-	this.id = convNode.id;
 	this.numMsgs = convNode.n;
 	this.date = convNode.d;
 	this._parseFlags(convNode.f);

@@ -163,6 +163,8 @@ function(domain, app, userShellId) {
 	var shell = new DwtShell(null, false, ZmZimbraMail._confirmExitMethod, userShell);
     appCtxt.setShell(shell);
     
+    appCtxt.setItemCache(new AjxCache());
+    
 	// Create upload manager (for sending attachments)
 	appCtxt.setUploadManager(new AjxPost());
 	
@@ -291,9 +293,9 @@ function(settings) {
 	// could have each app do shutdown()
 	DBG.println(AjxDebug.DBG1, "RESTARTING APP");
 	ZmCsfeCommand.setSessionId(null);			// so we get a refresh block
-	var tagList = this._appCtxt.getTagList();
+	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 	if (tagList) tagList.reset();
-	var folderTree = this._appCtxt.getFolderTree()
+	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER)
 	if (folderTree) folderTree.reset();
 	if (this._appCtxt.isPublicComputer())
 		this._appCtxt.getLoginDialog().clearAll();
@@ -687,40 +689,40 @@ ZmZimbraMail.prototype._refreshHandler =
 function(refresh) {
 	DBG.println(AjxDebug.DBG2, "Handling REFRESH");
 	
-	var tagTree = this._appCtxt.getTagList();
+	var tagTree = this._appCtxt.getTree(ZmOrganizer.TAG);
 	if (!tagTree) {
 		tagTree = new ZmTagTree(this._appCtxt);
 		tagTree.addChangeListener(this._unreadListener);
-		this._appCtxt.setTagList(tagTree);
+		this._appCtxt.setTree(ZmOrganizer.TAG, tagTree);
 	}
 	var tagString = tagTree.asString();
 	var unread = tagTree.getUnreadHash();
 	tagTree.reset();
 	tagTree.createRoot(); // tag tree root not in the DOM
 
-	var calendarTree = this._appCtxt.getCalendarTree();
+	var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
 	if (!calendarTree) {
 		calendarTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.CALENDAR);
 		calendarTree.addChangeListener(this._calendarListener);
-		this._appCtxt.setCalendarTree(calendarTree);
+		this._appCtxt.setTree(ZmOrganizer.CALENDAR, calendarTree);
 	}
 	var calendarString = calendarTree.asString();
 	calendarTree.reset();
 
-	var folderTree = this._appCtxt.getFolderTree();
+	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 	if (!folderTree) {
 		folderTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.FOLDER);
 		folderTree.addChangeListener(this._unreadListener);
-		this._appCtxt.setFolderTree(folderTree);
+		this._appCtxt.setTree(ZmOrganizer.FOLDER, folderTree);
 	}
 	var folderString = folderTree.asString();
 	folderTree.getUnreadHash(unread);
 	folderTree.reset();
 	
-	var searchTree = this._appCtxt.getSearchTree();
+	var searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
 	if (!searchTree) {
 		searchTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.SEARCH);
-		this._appCtxt.setSearchTree(searchTree);
+		this._appCtxt.setTree(ZmOrganizer.SEARCH, searchTree);
 	}
 	var searchString = searchTree.asString();
 	searchTree.reset();
@@ -884,67 +886,18 @@ function(notify) {
 	return notify;
 }
 
-/**
-* Adds a model to the internal tracking list. If the model is already in the list, the old one is
-* removed first.
-*
-* @param model		a data model
-*/
-ZmZimbraMail.prototype.addModel =
-function(model) {
-	DBG.println(AjxDebug.DBG2, "ZmZimbraMail: Adding model: " + model.toString());
-	if (this._models.contains(model))
-		this._models.remove(model);
-	this._models.add(model);
-}
-
-/**
-* Removes a model from the internal tracking list.
-*
-* @param model		a data model
-*/
-ZmZimbraMail.prototype.removeModel =
-function(model) {
-	DBG.println(AjxDebug.DBG2, "ZmZimbraMail: Removing model: " + model.toString());
-	this._models.remove(model);
-}
-
-/**
-* Sets the list of IDs of items that are being acted on by the most recent SOAP call.
-* Essentially, it's a list of IDs to ignore notifications for in the coming response.
-* If an action has side effects, then notifications that aren't directly tied to the
-* action are also ignored, so those effects must be handled in the response processing.
-* For example, moving an item to Trash marks it as read. Instead of updating the UI to
-* mark it as read based on the notification, we have to recognize that it's being moved
-* to Trash and do it ourselves.
-*
-* @param ids		a list of item IDs
-*/
-ZmZimbraMail.prototype.setActionedIds =
-function(ids) {
-	this._actionedIds = new Object();
-	for (var i = 0; i < ids.length; i++)
-		this._actionedIds[ids[i]] = true;
-}
-
 // Delete notification just gives us a list of IDs which could be anything.
 // Hand that list to each model and let it check.
 ZmZimbraMail.prototype._handleDeletes =
 function(deletes) {
 	var ids = deletes.id.split(",");
 	if (this._calController) this._calController.notifyDelete(ids);
-	// ignore IDs we know about
-	var newIds = new Array();
+
 	for (var i = 0; i < ids.length; i++) {
-		if (!this._actionedIds || (this._actionedIds && !this._actionedIds[ids[i]])) {
-			DBG.println(AjxDebug.DBG2, "handling delete notif for ID " + ids[i]);
-			newIds.push(ids[i]);
-		}
-	}
-	var numModels = this._models.size();
-	for (var i = 0; i < numModels; i++) {
-		var model = this._models.get(i);
-		model.notifyDelete(newIds);
+		var item = this._appCtxt.cacheGet(ids[i]);
+		DBG.println(AjxDebug.DBG2, "handling delete notif for ID " + ids[i]);
+		if (item)
+			item.notifyDelete();
 	}
 }
 
@@ -969,13 +922,13 @@ function(creates, modifies) {
 		if ((name == "c") && create._wasVirtConv) continue;
 		DBG.println(AjxDebug.DBG1, "handling CREATE for node: " + name);
 		if (name == "tag") {
-			var tagList = this._appCtxt.getTagList();
+			var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 			tagList.root.notifyCreate(create);
 		} else if (name == "folder" || name == "search") {
 			var parentId = create.l;
 			var parent;
-			var folderTree = this._appCtxt.getFolderTree();
-			var searchTree = this._appCtxt.getSearchTree();
+			var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+			var searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
 			// parent could be a folder or a search
 			if (parentId == ZmOrganizer.ID_ROOT) {
 				parent = (name == "folder") ? folderTree.getById(parentId) : searchTree.getById(parentId);
@@ -1030,34 +983,23 @@ function(creates, modifies) {
 ZmZimbraMail.prototype._handleModifies =
 function(modifies) {
 	var list = this._getObjList(modifies);
-	// always notify cal controller on all
+	// always notify cal controller
 	if (this._calController) this._calController.notifyModify(list);
 	for (var i = 0; i < list.length; i++) {
 		var mod = list[i];
 		var id = mod.id;
 		var name = mod._name;
 
-		// ignore IDs we know about
-		if (this._actionedIds && this._actionedIds[id] && !((name == "c") && mod._wasVirtConv))
-			continue;
-		// ignore changes to root folder
-		if (id == ZmOrganizer.ID_ROOT) continue;
-		
 		if (name == "mbx") {
 			var setting = this._settings.getSetting(ZmSetting.QUOTA_USED);
 			setting.notifyModify(mod);
 			continue;
 		}
-		
-		// TODO: if we only care about tags and folders, we could optimize here to only look at tag and folder trees
+
 		DBG.println(AjxDebug.DBG2, "handling modified notif for ID " + id + ", node type = " + name);
-		var numModels = this._models.size();
-		for (var j = 0; j < numModels; j++) {
-			var model = this._models.get(j);
-			var item = (model instanceof ZmItem) ? model : model.getById(id);
-			if (item && item.id == id)
-				item.notifyModify(mod);
-		}
+		var item = this._appCtxt.cacheGet(id);
+		if (item)
+			item.notifyModify(mod);
 	}
 }
 

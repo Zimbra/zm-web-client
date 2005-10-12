@@ -33,6 +33,7 @@
 * just getters and setters.
 */
 function ZmAppCtxt() {
+	this._trees = {};
 }
 
 ZmAppCtxt.LABEL = "appCtxt";
@@ -179,38 +180,41 @@ function() {
 ZmAppCtxt.prototype.getNewFolderDialog =
 function() {
 	if (!this._newFolderDialog)
-		this._newFolderDialog = new ZmNewFolderDialog(this.getShell(), this.getMsgDialog(), null, this.getFolderTree());
+		this._newFolderDialog = new ZmNewFolderDialog(this.getShell(), this.getMsgDialog());
 	return this._newFolderDialog;
 }
 
 ZmAppCtxt.prototype.getNewSearchDialog =
 function() {
 	if (!this._newSearchDialog)
-		this._newSearchDialog = new ZmNewSearchDialog(this.getShell(), this.getMsgDialog(), null, this.getFolderTree());
+		this._newSearchDialog = new ZmNewSearchDialog(this.getShell(), this.getMsgDialog());
 	return this._newSearchDialog;
 }
 
 ZmAppCtxt.prototype.getRenameFolderDialog =
 function() {
 	if (!this._renameFolderDialog)
-		this._renameFolderDialog = new ZmRenameFolderDialog(this.getShell(), this.getMsgDialog(), null, this.getFolderTree());
+		this._renameFolderDialog = new ZmRenameFolderDialog(this.getShell(), this.getMsgDialog());
 	return this._renameFolderDialog;
 }
 
 ZmAppCtxt.prototype.getMoveToDialog =
 function() {
 	if (!this._moveToDialog)
-		this._moveToDialog = new ZmMoveToDialog(this.getShell(), this.getMsgDialog(), null, this.getFolderTree());
+		this._moveToDialog = new ZmMoveToDialog(this.getShell(), this.getMsgDialog());
 	return this._moveToDialog;
 }
 
-ZmAppCtxt.prototype.getFolderPropsDialog = function() {
+ZmAppCtxt.prototype.getFolderPropsDialog =
+function() {
 	if (!this._folderPropsDialog) {
 		this._folderPropsDialog = new ZmFolderPropsDialog(this, this.getShell());
 	}
 	return this._folderPropsDialog;
 }
-ZmAppCtxt.prototype.getSharePropsDialog = function() {
+
+ZmAppCtxt.prototype.getSharePropsDialog =
+function() {
 	if (!this._sharePropsDialog) {
 		this._sharePropsDialog = new ZmSharePropsDialog(this, this.getShell());
 	}
@@ -242,44 +246,14 @@ function(shell) {
 	shell.setData(ZmAppCtxt.LABEL, this);
 }
 
-ZmAppCtxt.prototype.getTagList =
-function() {
-	return this._tagList;
+ZmAppCtxt.prototype.getTree =
+function(type) {
+	return this._trees[type];
 }
 
-ZmAppCtxt.prototype.setTagList =
-function(tagList) {
-	this._tagList = tagList;
-}
-
-ZmAppCtxt.prototype.getFolderTree =
-function() {
-	return this._folderTree;
-}
-
-ZmAppCtxt.prototype.setFolderTree =
-function(folderTree) {
-	this._folderTree = folderTree;
-}
-
-ZmAppCtxt.prototype.setCalendarTree =
-function(calendarTree) {
-	this._calendarTree = calendarTree;
-}
-
-ZmAppCtxt.prototype.getCalendarTree =
-function() {
-	return this._calendarTree;
-}
-
-ZmAppCtxt.prototype.getSearchTree =
-function() {
-	return this._searchTree;
-}
-
-ZmAppCtxt.prototype.setSearchTree =
-function(searchTree) {
-	this._searchTree = searchTree;
+ZmAppCtxt.prototype.setTree =
+function(type, tree) {
+	this._trees[type] = tree;
 }
 
 ZmAppCtxt.prototype.getUsername = 
@@ -341,4 +315,24 @@ function() {
 	appController.addChildWindow(newWin);
 
 	return newWin;
+}
+
+ZmAppCtxt.prototype.setItemCache =
+function(cache) {
+	this._itemCache = cache;
+}
+
+ZmAppCtxt.prototype.getItemCache =
+function() {
+	return this._itemCache;
+}
+
+ZmAppCtxt.prototype.cacheSet =
+function(key, value) {
+	this._itemCache.set(key, value);
+}
+
+ZmAppCtxt.prototype.cacheGet =
+function(key) {
+	return this._itemCache.get(key);
 }

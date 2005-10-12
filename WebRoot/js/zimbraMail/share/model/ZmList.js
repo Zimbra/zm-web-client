@@ -52,7 +52,7 @@ function ZmList(type, appCtxt, search) {
 	this._idHash = new Object();
 	this._evt = new ZmEvent(type);
 
-	var tagList = appCtxt.getTagList();
+	var tagList = appCtxt.getTree(ZmOrganizer.TAG);
 	if (tagList) {
 		this._tagChangeListener = new AjxListener(this, this._tagTreeChangeListener);
 		tagList.addChangeListener(this._tagChangeListener);
@@ -90,19 +90,6 @@ ZmList.MIXED = -1; // special type for heterogeneous list
 ZmList.prototype.toString = 
 function() {
 	return "ZmList";
-}
-
-ZmList.prototype.addChangeListener = 
-function(listener) {
-	if (ZmModel.prototype.addChangeListener.call(this, listener))
-		this._appCtxt.getAppController().addModel(this);	
-}
-
-ZmList.prototype.removeChangeListener = 
-function(listener) {
-	if (ZmModel.prototype.removeChangeListener.call(this, listener))
-		if (!this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY))
-			this._appCtxt.getAppController().removeModel(this);
 }
 
 /**
@@ -257,6 +244,32 @@ function(node, args) {
 	this.add(ZmList.ITEM_CLASS[this.type].createFromDom(node, args));
 }
 
+// returns a vector containing a subset of items of this list
+ZmList.prototype.getSubList = 
+function(offset, limit) {
+	var subVector = null;
+	var end = (offset + limit > this.size()) ? this.size() : offset + limit;
+	var subList = this.getArray();
+	if (offset < end)
+		subVector = AjxVector.fromArray(subList.slice(offset, end));
+	return subVector;
+}
+
+ZmList.prototype.cache = 
+function(offset, newList) {
+	this.getVector().merge(offset, newList);
+	// reparent each item within new list, and add it to ID hash
+	var list = newList.getArray();
+	for (var i = 0; i < list.length; i++) {
+		var item = list[i];
+		item.list = this;
+		if (item.id)
+			this._idHash[item.id] = item;
+	}
+}
+
+// Actions
+
 /**
 * Sets/unsets a flag for each of a list of items.
 *
@@ -278,18 +291,7 @@ function(items, flagOp, on) {
 	}
 	
 	var action = on ? flagOp : "!" + flagOp;
-	var flaggedItems = this._itemAction(items, action);
-	if (flaggedItems.length) {
-		var flag = ZmItem.FLAG_FLAGGED;
-		if (flagOp == "read") {
-			flag = ZmItem.FLAG_UNREAD;
-			on = !on;
-		}
-		this.flagLocal(flaggedItems, flag, on);
-		for (var i = 0; i < flaggedItems.length; i++)
-			flaggedItems[i].flagLocal(flag, on);
-		this._eventNotify(ZmEvent.E_FLAGS, flaggedItems, {flags: [flag]}, itemMode);
-	}
+	this._itemAction(items, action);
 }
 
 /**
@@ -321,13 +323,7 @@ function(items, tagId, doTag) {
 	
 	if (items1.length) {
 		var action = doTag ? "tag" : "!tag";
-		var taggedItems = this._itemAction(items1, action, {tag: tagId});
-		if (taggedItems.length) {
-			this.tagLocal(taggedItems, tagId, doTag);
-			for (var i = 0; i < taggedItems.length; i++)
-				taggedItems[i].tagLocal(tagId, doTag);
-			this._eventNotify(ZmEvent.E_TAGS, taggedItems, {tag: tagId, add: doTag}, itemMode);
-		}
+		this._itemAction(items1, action, {tag: tagId});
 	}
 }
 
@@ -344,14 +340,7 @@ function(items) {
 		itemMode = true;
 	}
 
-	var removedItems = this._itemAction(items, "update", {t: ""});
-	if (removedItems.length) {
-		this.removeAllTagsLocal(removedItems);
-		for (var i = 0; i < removedItems.length; i++) {
-			removedItems[i].removeAllTagsLocal();
-		}
-		this._eventNotify(ZmEvent.E_REMOVE_ALL, removedItems, null, itemMode);
-	}
+	this._itemAction(items, "update", {t: ""});
 }
 
 /**
@@ -387,14 +376,9 @@ function(items, folder, attrs) {
 	attrs = attrs ? attrs : new Object();
 	attrs.l = folder.id;
 	
-	var movedItems = this._itemAction(items1, "move", attrs);
-	if (movedItems.length) {
-		this.moveLocal(movedItems, folder.id);
-		for (var i = 0; i < movedItems.length; i++)
-			movedItems[i].moveLocal(folder.id);
-		this._eventNotify(ZmEvent.E_MOVE, movedItems, null, itemMode);
-	}
+	this._itemAction(items1, "move", attrs);
 }
+
 
 /**
 * Deletes one or more items from the list. Normally, deleting an item just
@@ -423,27 +407,20 @@ function(items, hardDelete, attrs) {
 	var toDelete = new Array();	
 	for (var i = 0; i < items.length; i++) {
 		var folderId = items[i].getFolderId();
-		var folder = this._appCtxt.getFolderTree().getById(folderId);
+		var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
 		if (hardDelete || (folder && folder.isInTrash()))
 			toDelete.push(items[i]);
 		else
 			toMove.push(items[i]);
 	}
 
-	// move (soft delete)
+	// soft delete - items moved to Trash
 	if (toMove.length)
-		this.moveItems(toMove, this._appCtxt.getFolderTree().getById(ZmFolder.ID_TRASH), attrs);
+		this.moveItems(toMove, this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_TRASH), attrs);
 
 	// hard delete - items actually deleted from data store
-	if (toDelete.length) {
-		var deletedItems = this._itemAction(toDelete, "delete", attrs);
-		if (deletedItems.length) {
-			this.deleteLocal(deletedItems);
-			for (var i = 0; i < deletedItems.length; i++)
-				deletedItems[i].deleteLocal();
-			this._eventNotify(ZmEvent.E_DELETE, deletedItems, null, itemMode);
-		}
-	}
+	if (toDelete.length)
+		this._itemAction(toDelete, "delete", attrs);
 }
 
 /**
@@ -470,29 +447,7 @@ function(items, mods) {
 	}
 }
 
-// returns a vector containing a subset of items of this list
-ZmList.prototype.getSubList = 
-function(offset, limit) {
-	var subVector = null;
-	var end = (offset + limit > this.size()) ? this.size() : offset + limit;
-	var subList = this.getArray();
-	if (offset < end)
-		subVector = AjxVector.fromArray(subList.slice(offset, end));
-	return subVector;
-}
-
-ZmList.prototype.cache = 
-function(offset, newList) {
-	this.getVector().merge(offset, newList);
-	// reparent each item within new list, and add it to ID hash
-	var list = newList.getArray();
-	for (var i = 0; i < list.length; i++) {
-		var item = list[i];
-		item.list = this;
-		if (item.id)
-			this._idHash[item.id] = item;
-	}
-}
+// Notification handling
 
 ZmList.prototype.notifyCreate =
 function(node) {
@@ -502,27 +457,16 @@ function(node) {
 	this._eventNotify(ZmEvent.E_CREATE, [item]);
 }
 
-ZmList.prototype.notifyDelete =
-function(ids) {
-	var deleted = new Array();
-	for (var i = 0; i < ids.length; i++) {
-		var item = this.getById(ids[i]);
-		if (item) {
-			item.deleteLocal();
-			this.remove(item);
-			deleted.push(item);
-		}
-	}
-	if (deleted.length)
-		this._eventNotify(ZmEvent.E_DELETE, deleted);
-}
+// Local change handling
 
 // These generic methods allow a derived class to perform the appropriate internal changes
+ZmList.prototype.modifyLocal 		= function(items, mods) {}
+ZmList.prototype.createLocal 		= function(item) {}
+
+// These are not currently used; will need support in ZmItem if they are.
 ZmList.prototype.flagLocal 			= function(items, flag, state) {}
 ZmList.prototype.tagLocal 			= function(items, tag, state) {}
 ZmList.prototype.removeAllTagsLocal = function(items) {}
-ZmList.prototype.modifyLocal 		= function(items, mods) {}
-ZmList.prototype.createLocal 		= function(item) {}
 
 // default action is to remove each deleted item from this list
 ZmList.prototype.deleteLocal =
@@ -533,13 +477,13 @@ function(items) {
 
 // default action is to remove each moved item from this list
 ZmList.prototype.moveLocal = 
-function(items, folder) {
+function(items, folderId) {
 	for (var i = 0; i < items.length; i++)
 		this.remove(items[i]);
 }
 
 ZmList.prototype._itemAction =
-function(items, action, attrs) {
+function(items, action, attrs, callback) {
 	var actionedItems = new Array();
 	var idHash = this._getIds(items);
 	var idStr = idHash.list.join(",");;
@@ -555,19 +499,32 @@ function(items, action, attrs) {
 	for (var attr in attrs)
 		actionNode.setAttribute(attr, attrs[attr]);
 	var appCtlr = this._appCtxt.getAppController();
-	appCtlr.setActionedIds(idHash.list.concat(idHash.extra));
-	var resp = appCtlr.sendRequest(soapDoc)[ZmItem.SOAP_CMD[type] + "Response"];
+	var respCallback = callback ? new AjxCallback(this, this._handleResponse, [type, idHash, callback]) : null;
+	appCtlr.sendRequest(soapDoc, true, respCallback);
+}
+
+ZmList.prototype._handleResponse =
+function(args) {
+	var type		= args[0];
+	var idHash		= args[1];
+	var callback	= args[2];
+	var result		= args[3];
+
+	var response = result.getResponse();
+	var resp = response[ZmItem.SOAP_CMD[type] + "Response"]
+	if (!(resp && resp.action)) return;
+	
+	var actionedItems = new Array();
 	var ids = resp.action.id.split(",");
 	if (ids) {
 		for (var i = 0; i < ids.length; i++) {
 			var item = idHash[ids[i]];
-			if (item) {
+			if (item)
 				actionedItems.push(item);
-			}
 		}
 	}
-
-	return actionedItems;
+	if (callback)
+		callback.run([actionedItems]);
 }
 
 // Hack to support actions on a list of items of more than one type. Since some specialized

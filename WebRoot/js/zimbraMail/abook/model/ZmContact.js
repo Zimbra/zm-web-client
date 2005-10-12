@@ -31,17 +31,21 @@
 * of email address, home and work addresses, phone numbers, etc. Contacts can be filed/sorted
 * in different ways, with the default being Last, First. A contact is an item, so
 * it has tagging and flagging support, and belongs to a list.
-*
+* <p>
 * Most of a contact's data is kept in attributes. These include name, phone, etc. Meta-data and
 * data common to items are not kept in attributes. These include flags, tags, folder, and
 * modified/created dates. Since the attribute data for contacts is loaded only once, a contact
-* gets its attribute values from that canonical list.
+* gets its attribute values from that canonical list.</p>
+*
+* @param appCtxt	[ZmAppCtxt]			the app context
+* @param id			[int]				unique ID
+* @param list		[ZmContactList]		list that contains this contact
 */
-function ZmContact(appCtxt, list) {
+function ZmContact(appCtxt, id, list) {
 	
 	var contactList = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 	list = list ? list : contactList;
-	ZmItem.call(this, appCtxt, ZmItem.CONTACT, list);
+	ZmItem.call(this, appCtxt, ZmItem.CONTACT, id, list);
 
 	this.attr = new Object();
 	// handle to canonical list (for contacts that are part of search results)
@@ -134,7 +138,7 @@ function() {
 */
 ZmContact.createFromDom =
 function(node, args) {
-	var contact = new ZmContact(args.appCtxt, args.list);
+	var contact = new ZmContact(args.appCtxt, node.id, args.list);
 	contact._loadFromDom(node);
 	contact._resetCachedFields();
 	args.list._updateEmailHash(contact, true);
@@ -343,7 +347,7 @@ function(attr) {
 	}		
 	
 	var ac = this._appCtxt.getAppController();
-	ac.setActionedIds([this.id]);
+//	ac.setActionedIds([this.id]);
 	var resp = ac.sendRequest(soapDoc).ModifyContactResponse;
 	cn = resp ? resp.cn[0] : null;
 	var id = cn ? cn.id : null;
@@ -673,7 +677,6 @@ function() {
 // Parse a contact node. A contact will only have attribute values if it is in the canonical list.
 ZmContact.prototype._loadFromDom =
 function(node) {
-	this.id = node.id;
 	this.created = node.cd;
 	this.modified = node.md;
 	this.folderId = node.l;

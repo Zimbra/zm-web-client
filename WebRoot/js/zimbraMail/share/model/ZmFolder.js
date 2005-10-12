@@ -272,18 +272,6 @@ function(obj, isSearch) {
 	this._eventNotify(ZmEvent.E_CREATE, folder);
 }
 
-ZmFolder.prototype.notifyModify =
-function(obj) {
-	var fields = ZmOrganizer.prototype._getCommonFields.call(this, obj);
-	var parentId = obj.l;
-	if ((parentId != null) && this.parent.id != parentId) {
-		var newParent = this.tree.getById(parentId);
-		this.reparent(newParent);
-		fields[ZmOrganizer.F_PARENT] = true;
-	}
-	this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
-}
-
 ZmFolder.prototype.createQuery =
 function(pathOnly) {
 	var query;

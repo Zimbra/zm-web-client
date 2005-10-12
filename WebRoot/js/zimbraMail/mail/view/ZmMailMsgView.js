@@ -42,7 +42,7 @@ function ZmMailMsgView(parent, className, posStyle, mode) {
 		return;
 	} else if (mode == ZmController.MSG_VIEW) {
 		// Add a change listener to taglist to track tag color changes
-		this._tagList = this._appCtxt.getTagList();
+		this._tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 		this._tagList.addChangeListener(new AjxListener(this, ZmMailMsgView.prototype._tagChangeListener));
 	}
 
@@ -897,7 +897,7 @@ function(ev) {
 			AjxImg.setImage(img, ZmTag.COLOR_MINI_ICON[ev.source.color]);
 	}
 
-	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_RENAME || ev.event == ZmEvent.MODIFY)
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY)
 		this._setTags(this._msg);
 };
 

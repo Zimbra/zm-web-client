@@ -278,9 +278,8 @@ function(items) {
 ZmContactList.prototype.modifyLocal =
 function(item, details) {
 	// remove traces of old contact
-	var oldContact = new ZmContact(this._appCtxt, this);
+	var oldContact = new ZmContact(this._appCtxt, details.contact.id, this);
 	oldContact.attr = details.oldAttr;
-	oldContact.id = details.contact.id;
 	this._updateEmailHash(oldContact, false);
 	this._updateAcList(oldContact, false);
 

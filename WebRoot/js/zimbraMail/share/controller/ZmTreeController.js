@@ -60,7 +60,7 @@ function ZmTreeController(appCtxt, type, dropTgt) {
 		this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
 
 	// change listening
-	this._dataTree = this._getData();
+	this._dataTree = appCtxt.getTree(type);
 	this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
 	this._dataTree.addChangeListener(this._dataChangeListener);
 	
@@ -81,9 +81,6 @@ ZmTreeController.prototype._getHeaderActionMenuOps = function() {}
 
 // Returns a list of desired action menu operations
 ZmTreeController.prototype._getActionMenuOps = function() {}
-
-// Returns a ZmTree that contains the underlying data
-ZmTreeController.prototype._getData = function() {}
 
 // Returns the dialog for organizer creation
 ZmTreeController.prototype._getNewDialog = function() {}
@@ -234,7 +231,7 @@ function(params) {
 ZmTreeController.prototype._doDelete =
 function(params) {
 	try {
-   		params.organizer.dispose();
+   		params.organizer._delete();
 	} catch (ex) {
 		this._handleException(ex, this._doDelete, params, false);
 	}
@@ -364,17 +361,6 @@ function(ev, treeView) {
 			// handle "Mark All As Read" by clearing unread count
 			if (node && (flag == ZmItem.FLAG_UNREAD) && !state)
 				node.setText(organizer.getName(false));
-		} else if (ev.event == ZmEvent.E_RENAME) {
-			// remove and re-insert the node
-			if (node && parentNode) {
-				if (parentNode.getNumChildren() == 1) {
-					node.setText(organizer.getName(true));
-				} else {
-					node.dispose();
-					var idx = ZmTreeView.getSortIndex(parentNode, organizer, ZmTreeView.COMPARE_FUNC[organizer.type]);
-					treeView._addNew(parentNode, organizer, idx);
-				}
-			}
 		} else if (ev.event == ZmEvent.E_DELETE) {
 			if (node) {
 				if (id == ZmFolder.ID_TRASH || id == ZmFolder.ID_SPAM)
@@ -399,6 +385,12 @@ function(ev, treeView) {
 				if ((fields && fields[ZmOrganizer.F_NAME]) || (fields && fields[ZmOrganizer.F_UNREAD]) ||
 					((id == ZmFolder.ID_DRAFTS) && (fields && fields[ZmOrganizer.F_TOTAL]))) {
 					node.setText(organizer.getName(true));
+					if (fields && fields[ZmOrganizer.F_NAME] && parentNode && (parentNode.getNumChildren() > 1)) {
+						// remove and re-insert the node (if parent has more than one child)
+						node.dispose();
+						var idx = ZmTreeView.getSortIndex(parentNode, organizer, ZmTreeView.COMPARE_FUNC[organizer.type]);
+						treeView._addNew(parentNode, organizer, idx);
+					}
 					if (parentNode)
 						parentNode.setExpanded(true);
 				}

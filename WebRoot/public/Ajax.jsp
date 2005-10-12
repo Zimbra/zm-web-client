@@ -69,6 +69,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/util/AjxSelectionManager.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/net/AjxPost.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/util/AjxBuffer.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/ajax/util/AjxCache.js<%= ext %>?v=<%= vers %>"></script>
 
 <!-- DWT classes -->
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/core/DwtImg.js<%= ext %>?v=<%= vers %>"></script>

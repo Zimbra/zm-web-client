@@ -31,11 +31,11 @@ function ZmConvView(parent, className, posStyle, controller, dropTgt) {
 	this._changeListener = new AjxListener(this, this._convChangeListener);
 	
 	// add change listener to tree view to catch empty trash action
-	var folderTree = this._appCtxt.getFolderTree();
+	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 	folderTree.addChangeListener(new AjxListener(this, this._folderChangeListener));
 	
 	// Add a change listener to taglist to track tag color changes
-	this._tagList = this.shell.getData(ZmAppCtxt.LABEL).getTagList();
+	this._tagList = this.shell.getData(ZmAppCtxt.LABEL).getTree(ZmOrganizer.TAG);
 	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	
 	this._controller = controller;
@@ -295,7 +295,7 @@ function(ev) {
 		// user emptied trash folder.. search for any msgs in trash and remove from list view
 		var list = this._conv.msgs.getArray();
 		var len = list.length; // save original length
-		var folderTree = this._appCtxt.getFolderTree();
+		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		for (var i = 0; i < list.length; i++) {
 			var folder = folderTree.getById(list[i].folderId);
 			if (folder.isInTrash()) {
@@ -335,7 +335,7 @@ function(ev) {
 			AjxImg.setImage(img, ZmTag.COLOR_MINI_ICON[ev.source.color]);
 	}
 	
-	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_RENAME || ev.event == ZmEvent.MODIFY)
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY)
 		this._setTags(this._conv);
 }
 

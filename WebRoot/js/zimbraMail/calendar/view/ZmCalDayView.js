@@ -198,8 +198,7 @@ function(list, numAppts) {
 	for (var i = 0; i < numAppts; i++) {
 		var appt = list.get(i);
 		if (!appt.hasDetails()) {
-			var newMessage = new ZmMailMsg(this._appCtxt);
-			newMessage.id = appt.getInvId();
+			var newMessage = new ZmMailMsg(this._appCtxt, appt.getInvId());
 			needToLoad[newMessage.id] = newMessage;
 			apptHash[newMessage.id] = appt;
 			appt.setMessage(newMessage);

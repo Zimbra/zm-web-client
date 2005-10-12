@@ -74,7 +74,6 @@ ZmEvent.E_MODIFY		= i++;
 ZmEvent.E_LOAD			= i++;
 ZmEvent.E_REMOVE		= i++;
 ZmEvent.E_REMOVE_ALL	= i++;
-ZmEvent.E_RENAME		= i++;
 ZmEvent.E_MOVE			= i++;
 ZmEvent.E_FLAGS			= i++;
 ZmEvent.E_TAGS			= i++;

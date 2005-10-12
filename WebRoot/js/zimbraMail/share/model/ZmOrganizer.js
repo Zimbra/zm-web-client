@@ -53,6 +53,9 @@ function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal) {
 	this.numUnread = numUnread || 0;
 	this.numTotal = numTotal || 0;
 
+	if (id && tree)
+		tree._appCtxt.cacheSet(id, this);
+
 	this.children = new AjxVector();
 }
 
@@ -88,7 +91,7 @@ ZmOrganizer.VALID_NAME_RE = new RegExp("^" + ZmOrganizer.VALID_NAME_CHARS + "+$"
 ZmOrganizer.MAX_NAME_LENGTH			= 128;	// max allowed by server
 ZmOrganizer.MAX_DISPLAY_NAME_LENGTH	= 30;	// max we will show
 
-// tag colors - these are the server values
+// colors - these are the server values
 ZmOrganizer.C_ORANGE	= 0;
 ZmOrganizer.C_BLUE		= 1;
 ZmOrganizer.C_CYAN		= 2;
@@ -146,6 +149,11 @@ function(name) {
 	return null;
 }
 
+ZmOrganizer.checkColor =
+function(color) {
+	return ((color != null) && (color >= 0 && color <= ZmOrganizer.MAX_COLOR)) ? color : ZmOrganizer.DEFAULT_COLOR;
+}
+
 // Public methods
 
 ZmOrganizer.prototype.toString = 
@@ -188,30 +196,22 @@ ZmOrganizer.prototype.addShare = function(share) {
 
 ZmOrganizer.prototype.getIcon = function() {};
 
+// Actions
+
 /**
 * Assigns the organizer a new name.
 */
 ZmOrganizer.prototype.rename =
 function(name) {
 	if (name == this.name) return;
-	var success = this._organizerAction("rename", {name: name});
-	if (success) {
-		this.name = name;
-		this._eventNotify(ZmEvent.E_RENAME);
-	}
+	this._organizerAction("rename", {name: name});
 }
 
 ZmOrganizer.prototype.setColor =
 function(color) {
 	var color = ZmOrganizer.checkColor(color);
 	if (this.color == color) return;
-	var success = this._organizerAction("color", {color: color});
-	if (success) {
-		this.color = color;
-		var fields = new Object();
-		fields[ZmOrganizer.F_COLOR] = true;
-		this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
-	}
+	this._organizerAction("color", {color: color});
 }
 
 /**
@@ -228,18 +228,7 @@ function(newParent) {
 		return;
 	}
 
-	var success = this._organizerAction("move", {l: newId});
-	if (success) {
-		this.reparent(newParent);
-		this._eventNotify(ZmEvent.E_MOVE);
-		// could be moving search between Folders and Searches
-		this.tree = newParent.tree; 
-		// moving a folder to Trash marks its contents as read
-		if (this.type == ZmOrganizer.FOLDER && newParent.id == ZmFolder.ID_TRASH) {
-			this.numUnread = 0;
-			this._eventNotify(ZmEvent.E_FLAGS, null, {item: this, flag: ZmItem.FLAG_UNREAD, state: false});
-		}
-	}
+	this._organizerAction("move", {l: newId});
 }
 
 /**
@@ -248,28 +237,85 @@ function(newParent) {
 * In that case, we don't bother to remove it from the UI (and we ignore creates on
 * system folders).
 */
-ZmOrganizer.prototype.dispose =
+ZmOrganizer.prototype._delete =
 function() {
-	DBG.println(AjxDebug.DBG1, "disposing: " + this.name + ", ID: " + this.id);
+	DBG.println(AjxDebug.DBG1, "deleting: " + this.name + ", ID: " + this.id);
 	var isEmptyOp = (this.type == ZmOrganizer.FOLDER && (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH));
 	// make sure we're not deleting a system object (unless we're emptying SPAM or TRASH)
 	if (this.id < ZmTree.CLASS[this.type].FIRST_USER_ID && !isEmptyOp)
 		return;
 	
 	this._organizerAction("delete");
-	if (!isEmptyOp) {
-		this.tree.deleteLocal([this]);
-		this._eventNotify(ZmEvent.E_DELETE);
-	}
 }
 
 ZmOrganizer.prototype.markAllRead =
 function() {
-	var success = this._organizerAction("read", {l: this.id});
-	if (success) {
-		this.numUnread = 0;
-		this._eventNotify(ZmEvent.E_FLAGS, null, {item: this, flag: ZmItem.FLAG_UNREAD, state: false});
+	this._organizerAction("read", {l: this.id});
+}
+
+// Notification handling
+
+ZmOrganizer.prototype.notifyDelete =
+function() {
+	this.deleteLocal();
+	this._eventNotify(ZmEvent.E_DELETE);
+}
+
+ZmOrganizer.prototype.notifyCreate = function() {};
+
+/*
+* Handle modifications to fields that organizers have in general.
+*
+* @param obj	[Object]	a "modified" notification
+*/
+ZmOrganizer.prototype.notifyModify =
+function(obj) {
+	var doNotify = false;
+	var fields = new Object();
+	if (obj.name != null && this.name != obj.name) {
+		this.name = obj.name;
+		fields[ZmOrganizer.F_NAME] = true;
+		this.parent.children.sort(ZmTreeView.COMPARE_FUNC[this.type]);
+		doNotify = true;
 	}
+	if (obj.u != null && this.numUnread != obj.u) {
+		this.numUnread = obj.u;
+		fields[ZmOrganizer.F_UNREAD] = true;
+		doNotify = true;
+	}
+	if (obj.n != null && this.numTotal != obj.n) {
+		this.numTotal = obj.n;
+		fields[ZmOrganizer.F_TOTAL] = true;
+		doNotify = true;
+	}
+	if (obj.color) {
+		var color = ZmOrganizer.checkColor(obj.color);
+		if (this.color != color) {
+			this.color = color;
+			fields[ZmOrganizer.F_COLOR] = true;
+		}
+		doNotify = true;
+	}
+	
+	if (doNotify)
+		this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
+
+	if (obj.l != null && obj.l != this.parent.id) {
+		var newParent = this._getNewParent(obj.l);
+		this.reparent(newParent);
+		this._eventNotify(ZmEvent.E_MOVE);
+		// could be moving search between Folders and Searches - make sure
+		// it has the correct tree
+		this.tree = newParent.tree; 
+	}
+}
+
+// Local change handling
+
+ZmOrganizer.prototype.deleteLocal =
+function() {
+	this.children.removeAll();
+	this.parent.children.remove(this);
 }
 
 /**
@@ -350,6 +396,16 @@ function (organizer) {
 	return false;
 }
 
+/*
+* Returns the organizer with the given ID. Looks in this organizer's tree.
+*
+* @param parentId	[int]		ID of the organizer to find
+*/
+ZmOrganizer.prototype._getNewParent =
+function(parentId) {
+	return this.tree.getById(parentId);
+}
+
 /**
 * Returns true is this is a system tag or folder.
 */
@@ -370,27 +426,6 @@ function(child, sortFunction) {
 	return i;
 }
 
-ZmOrganizer.prototype._getCommonFields =
-function(obj) {
-	var name = obj.name;
-	var numUnread = obj.u;
-	var numTotal = obj.n;
-	var fields = new Object();
-	if ((name != null) && this.name != name) {
-		this.name = name;
-		fields[ZmOrganizer.F_NAME] = true;
-	}
-	if ((numUnread != null) && this.numUnread != numUnread) {
-		this.numUnread = numUnread;
-		fields[ZmOrganizer.F_UNREAD] = true;
-	}
-	if ((numTotal != null) && this.numTotal != numTotal) {
-		this.numTotal = numTotal;
-		fields[ZmOrganizer.F_TOTAL] = true;
-	}
-	return fields;
-}
-
 // General method for handling the SOAP call. 
 // NOTE: exceptions need to be handled by calling method!
 ZmOrganizer.prototype._organizerAction =
@@ -403,10 +438,7 @@ function(action, attrs) {
 	for (var attr in attrs)
 		actionNode.setAttribute(attr, attrs[attr]);
 	var appCtlr = this.tree._appCtxt.getAppController();
-	appCtlr.setActionedIds([this.id]);
-	var resp = appCtlr.sendRequest(soapDoc)[cmd + "Response"];
-	var id = parseInt(resp.action.id);
-	return (id == this.id);
+	appCtlr.sendRequest(soapDoc, true);
 }
 
 // Test the name of this organizer and then descendants against the given name, case insensitively
@@ -441,11 +473,6 @@ function(event, organizer, details) {
 		this.tree._evt.setDetails(details);
 		this.tree._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this.tree._evt);
 	}
-}
-
-ZmOrganizer.checkColor =
-function(color) {
-	return ((color != null) && (color >= 0 && color <= ZmOrganizer.MAX_COLOR)) ? color : ZmOrganizer.DEFAULT_COLOR;
 }
 
 //
@@ -541,7 +568,6 @@ function(operation, actionAttrs, grantAttrs) {
 	}
 	
 	var appCtlr = this.organizer.tree._appCtxt.getAppController();
-	appCtlr.setActionedIds([this.organizer.id]);
 	var resp = appCtlr.sendRequest(soapDoc)["FolderActionResponse"];
 	
 	var id = parseInt(resp.action.id);

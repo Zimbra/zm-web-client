@@ -28,31 +28,36 @@
 * @constructor
 * @class
 * An item is a piece of data that may contain user content. Most items are taggable. Currently,
-* the following things are items: conversation, message, attachment, and contact.
+* the following things are items: conversation, message, attachment, appointment, and contact.
 * <p>
-* An item typically appears in the context of a containing ZmList, so its event handling
-* has been pushed up there so we avoid having the same listeners on every single item. If we
-* create a context where an item stands alone outside a list context, then the item has
-* to create its own event and handle the notifications.</p>
+* An item typically appears in the context of a containing list. Its event handling
+* is generally handled by the list so we avoid having the same listeners on each item. If we
+* create a context where an item stands alone outside a list context, then the item will have
+* its own listeners and do its own notification handling.</p>
 *
 * @author Conrad Damon
-* @param appCtxt	the app context
-* @param type		type of object (conv, msg, etc)
-* @param list		ZmList that contains this item
+* @param appCtxt	[ZmAppCtxt]		the app context
+* @param type		[constant]		type of object (conv, msg, etc)
+* @param id			[int]			unique ID
+* @param list		[ZmList]		list that contains this item
 */
-function ZmItem(appCtxt, type, list) {
+function ZmItem(appCtxt, type, id, list) {
 
 	if (arguments.length == 0) return;
 	ZmModel.call(this, true);
 
 	this._appCtxt = appCtxt;
 	this.type = type;
+	this.id = id;
 	this.list = list;
 	
 	this.tags = new Array();
 	this.tagHash = new Object();
 	this.folderId = 0;
 	this._evt = new ZmEvent(type);
+	
+	if (id)
+		appCtxt.cacheSet(id, this);
 }
 
 ZmItem.prototype = new ZmModel;
@@ -147,31 +152,6 @@ ZmItem.prototype.create = function(args) {}
 ZmItem.prototype.modify = function(mods) {}
 
 /**
-* Adds a change listener to this item, and adds this item to the list of
-* models the app controller knows about.
-*
-* @param listener	the listener
-*/
-ZmItem.prototype.addChangeListener = 
-function(listener) {
-	if (ZmModel.prototype.addChangeListener.call(this, listener))
-		this._appCtxt.getAppController().addModel(this);	
-}
-
-/**
-* Removes a change listener from this item, and removes this item from the list of
-* models the app controller knows about.
-*
-* @param listener	the listener
-*/
-ZmItem.prototype.removeChangeListener = 
-function(listener) {
-	if (ZmModel.prototype.removeChangeListener.call(this, listener))
-		if (!this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY))
-			this._appCtxt.getAppController().removeModel(this);	
-}
-
-/**
 * Returns this item if it has the given ID. Used by the app controller for
 * handling notifications.
 *
@@ -221,7 +201,7 @@ function() {
 */
 ZmItem.prototype.getTagImageInfo =
 function() {
-	var tagList = this._appCtxt.getTagList();
+	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 	if (!tagList) return ZmTag.DEFAULT_COLOR;
 	
 	var tagImageInfo;
@@ -235,6 +215,56 @@ function() {
 	}
 	return tagImageInfo;
 }
+
+// Notification handling
+
+/**
+* Handles a delete notification.
+*/
+ZmItem.prototype.notifyDelete =
+function() {
+	this.deleteLocal();
+	if (this.list)
+		this.list.deleteLocal([this]);
+	this._notify(ZmEvent.E_DELETE);
+}
+
+/**
+* Handles a modification notification.
+*
+* @param obj		item with the changed attributes/content
+*/
+ZmItem.prototype.notifyModify =
+function(obj) {
+	// empty string is meaningful here, it means no tags
+	if (obj.t != null) {
+		this._parseTags(obj.t);
+		this._notify(ZmEvent.E_TAGS);
+	}
+	// empty string is meaningful here, it means no flags
+	if (obj.f != null) {
+		var flags = this._getFlags();
+		var origFlags = new Object();
+		for (var i = 0; i < flags.length; i++)
+			origFlags[flags[i]] = this[ZmItem.FLAG_PROP[flags[i]]];
+		this._parseFlags(obj.f);
+		var changedFlags = new Array();
+		for (var i = 0; i < flags.length; i++) {
+			var on = this[ZmItem.FLAG_PROP[flags[i]]];
+			if (origFlags[flags[i]] != on)
+				changedFlags.push(flags[i]);
+		}
+		this._notify(ZmEvent.E_FLAGS, {flags: changedFlags});
+	}
+	if (obj.l != null) {
+		this.moveLocal(obj.l);
+		if (this.list)
+			this.list.moveLocal([this], obj.l);
+		this._notify(ZmEvent.E_MOVE);
+	}
+}
+
+// Local change handling
 
 /**
 * Applies the given flag change to this item.
@@ -285,8 +315,7 @@ function() {
 }
 
 /**
-* Here for completeness. There isn't anything for an item to do once it's
-* been deleted.
+* Here for completeness, in case an item wants to do something while being deleted.
 */
 ZmItem.prototype.deleteLocal = function() {}
 
@@ -298,59 +327,6 @@ ZmItem.prototype.deleteLocal = function() {}
 ZmItem.prototype.moveLocal =
 function(folderId) {
 	this.folderId = folderId;
-}
-
-/**
-* Handles a delete notification, checking to see if our ID is in the list of IDs that
-* were deleted.
-*
-* @param ids	IDs that got deleted
-*/
-ZmItem.prototype.notifyDelete =
-function(ids) {
-	for (var i = 0; i < ids.length; i++) {
-		if (ids[i] == this.id) {
-			// not sure what to do here; presumably it's a single-item view that's the listener,
-			// eg a contact or message; msg dialog then pop view?
-		}
-	}
-}
-
-/**
-* Handles a modification notification.
-*
-* @param obj		item with the changed attributes/content
-*/
-ZmItem.prototype.notifyModify =
-function(obj) {
-	// empty string is meaningful here, it means no tags
-	if (obj.t != null) {
-		this._parseTags(obj.t);
-		this._notify(ZmEvent.E_TAGS);
-	}
-	// empty string is meaningful here, it means no flags
-	if (obj.f != null) {
-		var flags = this._getFlags();
-		var origFlags = new Object();
-		for (var i = 0; i < flags.length; i++)
-			origFlags[flags[i]] = this[ZmItem.FLAG_PROP[flags[i]]];
-		this._parseFlags(obj.f);
-		var changedFlags = new Array();
-		for (var i = 0; i < flags.length; i++)
-			if (origFlags[flags[i]] != this[ZmItem.FLAG_PROP[flags[i]]])
-				changedFlags.push(flags[i]);
-		this._notify(ZmEvent.E_FLAGS, {flags: changedFlags});
-	}
-	if (obj.l != null) {
-		this.moveLocal(obj.l);
-		this._notify(ZmEvent.E_MOVE);
-	}
-}
-
-// Any item can be flagged or have an attachment
-ZmItem.prototype._getFlags =
-function() {
-	return [ZmItem.FLAG_FLAGGED, ZmItem.FLAG_ATTACH];
 }
 
 // Takes a comma-separated list of tag IDs and applies the tags to this item.
@@ -373,9 +349,12 @@ ZmItem.prototype._parseFlags =
 function(str) {
 	for (var i = 0; i < ZmItem.ALL_FLAGS.length; i++) {
 		var flag = ZmItem.ALL_FLAGS[i];
-		this[ZmItem.FLAG_PROP[flag]] = str && (str.indexOf(flag) != -1) ? true : false;
+		var on = (str && (str.indexOf(flag) != -1)) ? true : false;
+		this.flagLocal(flag, on);
 	}
 }
+
+// Listener notification
 
 // Notifies listeners on this item
 ZmItem.prototype._eventNotify =
@@ -402,4 +381,12 @@ function(event, details) {
 	this._eventNotify(event, details);
 	if (this.list)
 		this._listNotify(event, details);
+}
+
+/*
+* Returns a list of flags that apply to this type of item.
+*/
+ZmItem.prototype._getFlags =
+function() {
+	return [ZmItem.FLAG_FLAGGED, ZmItem.FLAG_ATTACH];
 }

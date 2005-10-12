@@ -28,10 +28,14 @@
 * @constructor
 * @class
 * This class represents a mail message.
+*
+* @param appCtxt	[ZmAppCtxt]		the app context
+* @param id			[int]			unique ID
+* @param list		[ZmMailList]	list that contains this message
 */
-function ZmMailMsg(appCtxt, list) {
+function ZmMailMsg(appCtxt, id, list) {
 	
-	ZmMailItem.call(this, appCtxt, ZmItem.MSG, list);
+	ZmMailItem.call(this, appCtxt, ZmItem.MSG, id, list);
 
 	this._loaded = false;
 	this._inHitList = false;
@@ -336,7 +340,7 @@ function(forAttIds) {
 */
 ZmMailMsg.createFromDom =
 function(node, args) {
-	var msg = new ZmMailMsg(args.appCtxt, args.list);
+	var msg = new ZmMailMsg(args.appCtxt, node.id, args.list);
 	msg._loadFromDom(node);
 	return msg;
 };
@@ -778,7 +782,6 @@ ZmMailMsg.prototype._loadFromDom =
 function(msgNode) {
 	// this method could potentially be called twice (SearchConvResponse and 
 	// GetMsgResponse) so always check param before setting!
-	if (msgNode.id)		this.id = msgNode.id;
 	if (msgNode.cid) 	this.cid = msgNode.cid;
 	if (msgNode.s) 		this.size = msgNode.s;
 	if (msgNode.d) 		this.date = msgNode.d;
@@ -904,7 +907,7 @@ function(anchorEl, msgId, msgPartId) {
 		}
 
 		// parse rfc/822 into ZmMailMsg
-		var msg = new ZmMailMsg(msgView._appCtxt);
+		var msg = new ZmMailMsg(msgView._appCtxt, msgId);
 		msg._loadFromDom(resp.m[0]);
 		msg._loaded = true;
 

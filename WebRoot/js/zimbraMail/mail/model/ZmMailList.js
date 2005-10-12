@@ -44,7 +44,7 @@ function ZmMailList(type, appCtxt, search) {
 	this.convId = null; // for msg list within a conv
 
 	// mail list can be changed via folder or tag action (eg "Mark All Read")
-	var folderTree = appCtxt.getFolderTree();
+	var folderTree = appCtxt.getTree(ZmOrganizer.FOLDER);
 	if (folderTree) {
 		this._folderChangeListener = new AjxListener(this, this._folderTreeChangeListener);
 		folderTree.addChangeListener(this._folderChangeListener);
@@ -63,17 +63,35 @@ function() {
 // to move messages in certain system folders as a side effect
 ZmMailList.prototype.moveItems =
 function(items, folder) {
-	var attrs = null;
-	if (this.type == ZmItem.CONV) {
-		var chars = ["-"];
-		var searchFolder = this.search ? this._appCtxt.getFolderTree().getById(this.search.folderId) : null;
-		var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
-		for (var i = 0; i < folders.length; i++)
-			if (!(searchFolder && searchFolder.isUnder(folders[i])))
-				chars.push(ZmFolder.TCON_CODE[folders[i]]);
-		attrs = {tcon: chars.join("")};
+	if (this.type != ZmItem.CONV) {
+		ZmList.prototype.moveItems.call(this, items, folder);
+		return;
 	}
-	ZmList.prototype.moveItems.call(this, items, folder, attrs);
+	
+	var chars = ["-"];
+	var searchFolder = this.search ? this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(this.search.folderId) : null;
+	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
+	for (var i = 0; i < folders.length; i++)
+		if (!(searchFolder && searchFolder.isUnder(folders[i])))
+			chars.push(ZmFolder.TCON_CODE[folders[i]]);
+	var attrs = new Object();
+	attrs.tcon = chars.join("");
+	attrs.l = folder.id;
+	var callback = new AjxCallback(this, this._handleMoveItemsResponse, folder);
+	this._itemAction(items, "move", attrs, callback);
+};
+
+ZmMailList.prototype._handleMoveItemsResponse =
+function(args) {
+	var folder		= args[0];
+	var movedItems	= args[1];
+	
+	if (movedItems && movedItems.length) {
+		this.moveLocal(movedItems, folder.id);
+		for (var i = 0; i < movedItems.length; i++)
+			movedItems[i].moveLocal(folder.id);
+		this._eventNotify(ZmEvent.E_MOVE, movedItems);
+	}
 };
 
 // Override so that delete of a conv in Trash doesn't hard-delete its msgs in
@@ -82,7 +100,7 @@ ZmMailList.prototype.deleteItems =
 function(items, folder) {
 	var attrs = null;
 	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
-		var searchFolder = this.search ? this._appCtxt.getFolderTree().getById(this.search.folderId) : null;
+		var searchFolder = this.search ? this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isInTrash())
 			attrs = {tcon: ZmFolder.TCON_CODE[ZmFolder.ID_TRASH]};
 	}
@@ -212,9 +230,9 @@ ZmMailList.prototype.clear =
 function() {
 	// remove listeners for this list from folder tree and tag list
 	if (this._folderChangeListener)
-		this._appCtxt.getFolderTree().removeChangeListener(this._folderChangeListener);
+		this._appCtxt.getTree(ZmOrganizer.FOLDER).removeChangeListener(this._folderChangeListener);
 	if (this._tagChangeListener)
-		this._appCtxt.getTagList().removeChangeListener(this._tagChangeListener);
+		this._appCtxt.getTree(ZmOrganizer.TAG).removeChangeListener(this._tagChangeListener);
 
 	ZmList.prototype.clear.call(this);
 };

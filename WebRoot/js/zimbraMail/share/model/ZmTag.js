@@ -139,34 +139,6 @@ function(obj) {
 	this._eventNotify(ZmEvent.E_CREATE, child);
 }
 
-ZmTag.prototype.notifyModify =
-function(obj) {
-	if (!obj) return;
-	
-	var fields = ZmOrganizer.prototype._getCommonFields.call(this, obj);
-	if (obj.color) {
-		var color = ZmOrganizer.checkColor(obj.color);
-		if (this.color != color) {
-			this.color = color;
-			fields[ZmOrganizer.F_COLOR] = true;
-		}
-	}
-	this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
-}
-
-ZmTag.prototype.setColor =
-function(color) {
-	var color = ZmTag.checkColor(color);
-	if (this.color == color) return;
-	var success = this._organizerAction("color", {color: color});
-	if (success) {
-		this.color = color;
-		var fields = new Object();
-		fields[ZmOrganizer.F_COLOR] = true;
-		this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
-	}
-}
-
 /**
 * Tags come from back end as a flat list, and we manually create a root tag, so all tags
 * have the root as parent. If tags ever have a tree structure, then this should do what
@@ -182,8 +154,6 @@ function(parent, obj, tree, sorted) {
 
 	return tag;
 }
-
-
 
 ZmTag.prototype.getIcon = 
 function() {

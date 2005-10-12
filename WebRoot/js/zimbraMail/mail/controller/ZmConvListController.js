@@ -205,8 +205,7 @@ function() {
 			msg = conv.tempMsg;
 		} else {
 			// otherwise, create a temp msg w/ the msg op Id
-			msg = new ZmMailMsg(this._appCtxt);
-			msg.id = conv.msgOpId;
+			msg = new ZmMailMsg(this._appCtxt, conv.msgOpId);
 			conv.tempMsg = msg; 	// cache it.
 		}
 		

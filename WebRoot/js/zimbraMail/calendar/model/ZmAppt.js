@@ -757,8 +757,7 @@ function(viewMode) {
 	var message;
 	if (mode == ZmAppt.MODE_EDIT_SERIES) {
 		if (this._seriesMessage == null) {
-			message = new ZmMailMsg(this._appCtxt);
-			message.id = this._seriesInvId;
+			message = new ZmMailMsg(this._appCtxt, this._seriesInvId);
 			message.load();
 			this._seriesMessage = message;
 		} else {
@@ -766,8 +765,7 @@ function(viewMode) {
 		}
 	} else {
 		if (this._message == null) {
-			message = new ZmMailMsg(this._appCtxt);
-			message.id = this.invId;
+			message = new ZmMailMsg(this._appCtxt, this.invId);
 			message.load();
 			this._message = message;
 		} else {
