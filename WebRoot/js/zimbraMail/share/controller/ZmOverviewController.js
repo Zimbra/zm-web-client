@@ -127,8 +127,10 @@ function(overviewId, treeIds, omit) {
 	if (!overviewId) return;
 
 	// hide the current tree views for the specified overview
-	for (var treeId in this._controllers)
-		this.getTreeView(overviewId, treeId).setVisible(false);
+	for (var treeId in this._controllers) {
+		var treeView = this.getTreeView(overviewId, treeId);
+		if (treeView) treeView.setVisible(false);
+	}
 
 	if (!treeIds || !treeIds.length) return;
 	
