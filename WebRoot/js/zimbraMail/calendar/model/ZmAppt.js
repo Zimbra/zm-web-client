@@ -1811,7 +1811,7 @@ function(sender, attachmentId) {
 		break;
 	case ZmAppt.MODE_EDIT_SINGLE_INSTANCE:
 		if (!this.isException()) {
-			var soapDoc = AjxSoapDoc.create("CreateAppointmentRequest",
+			var soapDoc = AjxSoapDoc.create("CreateAppointmentExceptionRequest",
 										   "urn:zimbraMail");
 			this._addInviteAndCompNum(soapDoc);
 			soapDoc.setMethodAttribute("s", this.getOrigStartTime());
