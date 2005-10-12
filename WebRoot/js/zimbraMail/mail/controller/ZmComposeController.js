@@ -247,6 +247,10 @@ function() {
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
 	this._toolbar.addSelectionListener(ZmOperation.ATTACHMENT, new AjxListener(this, this._attachmentListener));
 
+	// change default button style to toggle for spell check button
+	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
+	spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
+
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		var formatButton = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 		var m = new DwtMenu(formatButton);
