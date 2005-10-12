@@ -321,11 +321,13 @@ function(action, msg, extraBodyText) {
 			this.addSignature();
 		return;
 	}
+
+	var composingHtml = this._composeMode == DwtHtmlEditor.HTML;
 	
 	// XXX: consolidate this code later.
 	if (action == ZmOperation.DRAFT || action == ZmOperation.SHARE) {
 		var body = "";
-		if (this._composeMode == DwtHtmlEditor.HTML) {
+		if (composingHtml) {
 			body = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
 			// if no html part exists, just grab the text 
 			// (but make sure to preserve whitespace and newlines!)
@@ -359,11 +361,11 @@ function(action, msg, extraBodyText) {
 	} else if (pref == ZmSetting.INCLUDE_ATTACH) {
 		this._msgAttId = this._msg.id;
 	} else {
-		var crlf = this._composeMode == DwtHtmlEditor.HTML ? "<br>" : ZmMsg.CRLF;
-		var crlf2 = this._composeMode == DwtHtmlEditor.HTML ? "<br><br>" : ZmMsg.CRLF2;
+		var crlf = composingHtml ? "<br>" : ZmMsg.CRLF;
+		var crlf2 = composingHtml ? "<br><br>" : ZmMsg.CRLF2;
 		var leadingText = extraBodyText ? extraBodyText + crlf : crlf;
 		var body = null;
-		if (this._composeMode == DwtHtmlEditor.HTML) {
+		if (composingHtml) {
 			body = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
 			if (body) {
 				body = body.content;
@@ -381,13 +383,17 @@ function(action, msg, extraBodyText) {
 		body = body || ""; // prevent from printing "null" if no body found
 		
 		// bug fix# 3215 - dont allow prefixing for html msgs
-		if (pref == ZmSetting.INCLUDE || this._composeMode == DwtHtmlEditor.HTML) {
+		if (pref == ZmSetting.INCLUDE || composingHtml) {
 			var msgText = (action == ZmOperation.FORWARD) ? ZmMsg.forwardedMessage : ZmMsg.origMsg;
 			var text = ZmMsg.DASHES + " " + msgText + " " + ZmMsg.DASHES + crlf;
 			for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
 				var hdr = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
-				if (hdr)
+				if (hdr) {
+					// bugfix: htmlescape the headers if we're composing in HTML mode.
+					if (composingHtml)
+						hdr = AjxStringUtil.convertToHtml(hdr);
 					text = text + hdr + crlf;
+				}
 			}
 			body = text + crlf + body;
 			value += leadingText + body;
