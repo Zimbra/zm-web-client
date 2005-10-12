@@ -28,11 +28,12 @@ Contributor(s): ______________________________________.
 * server when clicked.
 */
 function ZmErrorDialog(parent, appCtxt) {
-	if (arguments.length == 0) return;
+	if (arguments.length === 0) {return;}
 
 	this._appCtxt = appCtxt;
 	// go ahead and cache the navigator info now (since it should never change)		
 	this._strNav = this._getNavigatorInfo();
+	this._subjPfx = this._getSubjectPrefix();
 
 	var reportButton = new DwtDialog_ButtonDescriptor(ZmErrorDialog.REPORT_BUTTON, ZmMsg.report, DwtDialog.ALIGN_LEFT);
 	var detailButton = new DwtDialog_ButtonDescriptor(ZmErrorDialog.DETAIL_BUTTON, null, DwtDialog.ALIGN_LEFT);
@@ -48,7 +49,7 @@ function ZmErrorDialog(parent, appCtxt) {
 
 	this.registerCallback(ZmErrorDialog.REPORT_BUTTON, this._reportCallback, this);
 	this.registerCallback(ZmErrorDialog.DETAIL_BUTTON, this._showDetail, this);
-};
+}
 
 ZmErrorDialog.prototype = new DwtMessageDialog;
 ZmErrorDialog.prototype.constructor = ZmErrorDialog;
@@ -88,18 +89,18 @@ function(msgStr, detailStr, style, title) {
 */
 ZmErrorDialog.prototype.setDetailString = 
 function(text) {
-	if (!(this._buttonElementId[ZmErrorDialog.DETAIL_BUTTON]))
-		return;	
+	if (!(this._buttonElementId[ZmErrorDialog.DETAIL_BUTTON])) {return;}
 	this._detailStr = text;
 	if (text) {
 		this._button[ZmErrorDialog.DETAIL_BUTTON].setVisible(true);
-		if (this._detailCell && this._detailCell.innerHTML != "") {
+		if (this._detailCell && this._detailCell.innerHTML !== "") {
 			this._detailCell.innerHTML = this._getDetailHtml(); //update detailCell if it is shown
 		}
 	} else {
 		this._button[ZmErrorDialog.DETAIL_BUTTON].setVisible(false);
-		if (this._detailCell)
+		if (this._detailCell) {
 			this._detailCell.innerHTML = "";
+		}
 	}
 };
 
@@ -121,27 +122,58 @@ function() {
 		   "<tr><td><textarea readonly rows='10'>" + this._detailStr + "</textarea></td></tr></table>";
 };
 
-ZmErrorDialog.prototype._getNavigatorInfo = 
-function() {
+ZmErrorDialog.prototype._getNavigatorInfo = function() {
 	var strNav = new Array();
 	var idx = 0;
 	
-	for (var i in navigator)
+	// Add the url the user has used to connect
+	strNav[idx++] = "URL: " + location.href + "\n";
+
+	for (var i in navigator) {
 		strNav[idx++] = i + ": " + navigator[i] + "\n";
-	// lets add the url the user has used to connect as well..
-	strNav[idx++] = "href: " + location.href + "\n";
+	}
 
 	return strNav.join("");
-}
+};
 
-ZmErrorDialog.prototype._getUserPrefs = 
-function() {
+ZmErrorDialog.prototype._getSubjectPrefix = function() {
+	var strSubj = new Array();
+	var idx = 0;
+	
+	if(AjxEnv.isIE) {
+		strSubj[idx++] = "IE ";
+	} else if (AjxEnv.isFirefox) {
+		strSubj[idx++] = "FF ";
+	} else if (AjxEnv.isMozilla) {
+		strSubj[idx++] = "MOZ ";
+	} else if (AjxEnv.isSafari) {
+		strSubj[idx++] = "SAF ";
+	} else if (AjxEnv.isOpera) {
+		strSubj[idx++] = "OPE ";
+	} else {
+		strSubj[idx++] = "UKN ";
+	}
+	
+	if(AjxEnv.isWindows) {
+		strSubj[idx++] = "WIN ";
+	} else if (AjxEnv.isLinux) {
+		strSubj[idx++] = "LNX ";
+	} else if (AjxEnv.isMac) {
+		strSubj[idx++] = "MAC ";
+	} else {
+		strSubj[idx++] = "UNK ";
+	}
+	return strSubj.join("");
+};
+
+ZmErrorDialog.prototype._getUserPrefs = function() {
 	var strPrefs = new Array();
 	var idx = 0;
 
 	for (var i in ZmSetting.INIT) {
-		if (ZmSetting.INIT[i][0])
+		if (ZmSetting.INIT[i][0]) {
 			strPrefs[idx++] = ZmSetting.INIT[i][0] + ": " + ("" + ZmSetting.INIT[i][3]) + "\n";
+		}
 	}
 	// add the user name at the end
 	strPrefs[idx++] = "username: " + this._appCtxt.getUsername() + "\n";
@@ -152,8 +184,7 @@ function() {
 
 // Callbacks
 
-ZmErrorDialog.prototype._reportCallback = 
-function() {
+ZmErrorDialog.prototype._reportCallback = function() {
 	// iframe initialization - recreate iframe if IE and reuse if FF
 	if (this._iframe == null || AjxEnv.isIE) {
 		this._iframe = this.getDocument().createElement("iframe");
@@ -170,11 +201,13 @@ function() {
 	// generate html form for submission via POST
 	var html = new Array();
 	var idx = 0;
+	var subject = this._subjPfx + this._detailStr.substring(0,40);
 	html[idx++] = "<html><head></head><body>";
 	html[idx++] = "<form id='" + formId + "' method='POST' action='" + ZmErrorDialog.REPORT_URL + "'>";
 	html[idx++] = "<textarea name='details'>" + this._detailStr + "</textarea>";
 	html[idx++] = "<textarea name='navigator'>" + this._strNav + "</textarea>";
 	html[idx++] = "<textarea name='prefs'>" + strPrefs + "</textarea>";
+	html[idx++] = "<textarea name='subject'>" + subject + "</textarea>";
 	html[idx++] = "</form>";
 	html[idx++] = "</body></html>";
 
@@ -185,17 +218,17 @@ function() {
 
 	// submit the form!
 	var form = idoc.getElementById(formId);
-	if (form)
+	if (form) {
 		form.submit();
+	}
 
 	this.popdown();
 };
 
 // Displays the detail text
-ZmErrorDialog.prototype._showDetail =
-function() {
+ZmErrorDialog.prototype._showDetail = function() {
 	if (this._detailCell) {
-		if (this._detailCell.innerHTML == "") {
+		if (this._detailCell.innerHTML === "") {
 			this._button[ZmErrorDialog.DETAIL_BUTTON].setImage("SelectPullUpArrow");
 			this._detailCell.innerHTML = this._getDetailHtml();
 		} else {

@@ -127,8 +127,11 @@ function(msg, ex, noExecReset)  {
 		this._execFrame = {method: null, params: null, restartOnError: false};
 	// popup alert
 	var detailStr = "";
-	for (var prop in ex)
+	for (var prop in ex) {
+		// Skip any functions on the exception
+		if(typeof ex[prop] == "function") {continue;}
 		detailStr = detailStr + prop + " - " + ex[prop] + "\n";				
+	}
 	this._errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
 	this._errorDialog.popup();
 }
