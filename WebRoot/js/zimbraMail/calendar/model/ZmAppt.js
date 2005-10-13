@@ -173,6 +173,11 @@ function() {
 	return ZmAppt._pstatusString[this.ptst];
 };
 
+ZmAppt.prototype.getFolderId = 
+function() {
+	return this.folderId || ZmFolder.ID_CALENDAR;
+}
+
 ZmApptClone = function() { }
 
 ZmAppt.quickClone = 

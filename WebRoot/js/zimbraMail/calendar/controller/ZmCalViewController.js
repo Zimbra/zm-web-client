@@ -192,6 +192,13 @@ function(viewName) {
 	this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
 }
 
+ZmCalViewController.prototype._getCheckedCalendars =
+function() {
+	var ctc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
+	var checked = ctc.getCheckedCalendars(ZmZimbraMail._OVERVIEW_ID);
+	return checked;
+}
+
 ZmCalViewController.prototype._getToolBarOps =
 function() {
 	var list = new Array();
@@ -1015,6 +1022,8 @@ ZmCalViewController.prototype.getApptSummaries =
 function(start,end, fanoutAllDay, callback, nowait) {
 	var list;
 	
+	//var checked = this._getCheckedCalendars();
+		
 	list = this._getCachedVector(start, end, fanoutAllDay);
 	if (list != null) {
 		if (callback) callback.run(list);
@@ -1035,6 +1044,7 @@ function(start,end, fanoutAllDay, callback, nowait) {
 	var method = soapDoc.getMethod();
 	method.setAttribute("s", start);
 	method.setAttribute("e", end);
+	//method.setAttribute("l", "550");
 
 	if (callback) {
 		var respCallback = new AjxCallback(this, this.__getApptSummariesResponse, [callback, start, end, fanoutAllDay]);

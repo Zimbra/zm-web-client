@@ -77,7 +77,8 @@ function(resp) {
 			var appt = new ZmAppt(this._appCtxt, this);
 			appt.uid =  apptNode.uid;
 			appt.notes = apptNode.fr;	
-
+			appt.folderId = apptNode.l || ZmFolder.ID_CALENDAR;
+			
 			var duration = parseInt(this._getAttr(apptNode, instNode, "d"));
 			appt.type = this._getAttr(apptNode, instNode, "type");
 			appt.isOrg = this._getAttr(apptNode, instNode, "isOrg");
@@ -99,7 +100,6 @@ function(resp) {
 			}
 			appt.name = this._getAttr(apptNode, instNode, "name");
 			appt.location = this._getAttr(apptNode, instNode, "loc");
-
 			appt.startDate = new Date(startTime);
 			appt._uniqStartTime = appt.startDate.getTime(); // neede to construct uniq id later
 			//appt.exception = this._getAttr(apptNode, instNode, "exception");
