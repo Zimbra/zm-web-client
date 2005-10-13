@@ -113,8 +113,10 @@ function() {
 */
 ZmTreeController.prototype.show = 
 function(overviewId, showUnread, omit) {
-	this._setup(overviewId);
-	this._treeView[overviewId].set(this._dataTree, showUnread, omit);
+	if (!this._treeView[overviewId]) {
+		this._setup(overviewId);
+		this._treeView[overviewId].set(this._dataTree, showUnread, omit);
+	}
 	this._treeView[overviewId].setVisible(true);
 }
 
@@ -166,11 +168,17 @@ function(overviewId) {
 		var dropTgt = this._opc.dndSupported(overviewId) ? this._dropTgt : null;
 		var params = {parent: this._opc.getOverview(overviewId), overviewId: overviewId, type: this.type,
 					  headerClass: this._opc.getHeaderClass(overviewId), dragSrc: dragSrc, dropTgt: dropTgt,
-					  treeStyle: this._opc.getTreeStyle(overviewId)}; 
+					  treeStyle: this.getTreeStyle() || this._opc.getTreeStyle(overviewId)}; 
 		this._treeView[overviewId] = new ZmTreeView(params);
 		this._treeView[overviewId].addSelectionListener(new AjxListener(this, this._treeViewListener));
 	}
 }
+
+/** 
+ * This allows a tree controller to override the default tree style
+ * specified by the overview controller.
+ */
+ZmTreeController.prototype.getTreeStyle = function() {}
 
 /*
 * Creates up to two action menus, one for the tree view's header item, and

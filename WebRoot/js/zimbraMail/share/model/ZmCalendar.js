@@ -23,36 +23,49 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalendar(id, name, parent, tree, link) {
+function ZmCalendar(id, name, parent, tree, color, link) {
 	ZmOrganizer.call(this, ZmOrganizer.CALENDAR, id, name, parent, tree);
+	this.color = color || ZmOrganizer.DEFAULT_COLOR;
 	this.link = link;
 }
 
 ZmCalendar.prototype = new ZmOrganizer;
 ZmCalendar.prototype.constructor = ZmCalendar;
 
+// Constants
+
+ZmCalendar.ID_CALENDAR = ZmOrganizer.ID_CALENDAR;
+
+// Public methods
+
 ZmCalendar.createFromJs =
 function(parent, obj, tree, link) {
 	if (!(obj && obj.id)) return;
 
 	// create calendar, populate, and return
-	var calendar = new ZmCalendar(obj.id, obj.name, parent, tree, link);
+	var calendar = new ZmCalendar(obj.id, obj.name, parent, tree, obj.color, link);
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
-			if (obj.folder[i].view == ZmItem.MSG_KEY[ZmItem.APPT]) {
-				var childCalendar = ZmCalendar.createFromJs(calendar, obj.folder[i], tree, false);
+			var folder = obj.folder[i];
+			if (folder.view == ZmItem.MSG_KEY[ZmItem.APPT]) {
+				var childCalendar = ZmCalendar.createFromJs(calendar, folder, tree, false);
 				calendar.children.add(childCalendar);
 			}
 		}
 	}
 	if (obj.link && obj.link.length) {
 		for (var i = 0; i < obj.link.length; i++) {
-			if (obj.link[i].view == ZmItem.MSG_KEY[ZmItem.APPT]) {
-				var childCalendar = ZmCalendar.createFromJs(calendar, obj.link[i], tree, true);
+			var link = obj.link[i];
+			if (link.view == ZmItem.MSG_KEY[ZmItem.APPT]) {
+				var childCalendar = ZmCalendar.createFromJs(calendar, link, tree, true);
 				calendar.children.add(childCalendar);
 			}
 		}
 	}
+	
+	// set shares
+	calendar._setSharesFromJs(obj);
+	
 	return calendar;
 }
 
@@ -84,40 +97,12 @@ function() {
 ZmCalendar.prototype.notifyModify =
 function(obj) {
 	var fields = ZmOrganizer.prototype._getCommonFields.call(this, obj);
-	var parentId = obj.l;
-	/***
-	if ((parentId != null) && this.parent.id != parentId) {
-		var newParent = this.tree.getById(parentId);
-		this.reparent(newParent);
-		fields[ZmOrganizer.F_PARENT] = true;
-	}
-	/***/
 	this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
 }
 
 ZmCalendar.prototype.dispose =
 function() {
 	DBG.println(AjxDebug.DBG1, "disposing: " + this.name + ", ID: " + this.id);
-	/***
-	var isEmptyOp = (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH);
-	// make sure we're not deleting a system folder (unless we're emptying SPAM or TRASH)
-	if (this.id < ZmFolder.FIRST_USER_ID && !isEmptyOp)
-		return;
-	
-	var action = isEmptyOp ? "empty" : "delete";
-	var success = this._organizerAction(action);
-
-	if (success) {
-		if (isEmptyOp) {
-			// emptied Trash or Spam will have no items
-			this.numUnread = this.numTotal = 0;
-			this._eventNotify(ZmEvent.E_DELETE);
-		} else {
-			this.tree.deleteLocal([this]);
-			this._eventNotify(ZmEvent.E_DELETE);
-		}
-	}
-	/***/
 }
 
 ZmCalendar.prototype.getName = 
@@ -133,5 +118,5 @@ function() {
 	if (this.id == ZmOrganizer.ID_ROOT) {
 		return null;
 	}
-	return "CalendarFolder";
+	return this.link ? "GroupSchedule" : "CalendarFolder";
 }

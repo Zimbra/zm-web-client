@@ -16,17 +16,21 @@ ZmShareInfo.NEW = "new";
 ZmShareInfo.EDIT = "edit";
 ZmShareInfo.DELETE = "delete";
 
+// TODO: 
+ZmShareInfo.ROLE_NONE = "";
+ZmShareInfo.ROLE_VIEWER = "r";
+ZmShareInfo.ROLE_MANAGER = "rwidx";
+
 // TODO: i18n
-ZmShareInfo.ROLES = {
-	"":		"None",
-	r:		"Viewer",
-	rwid:	"Manager"
-};
-ZmShareInfo.ACTIONS = {
-	"":		"None",
-	r:		"View",
-	rwid:	"View, Edit, Add, Remove"
-};
+ZmShareInfo.ROLES = {};
+ZmShareInfo.ROLES[ZmShareInfo.ROLE_NONE] = "None";
+ZmShareInfo.ROLES[ZmShareInfo.ROLE_VIEWER] = "Viewer";
+ZmShareInfo.ROLES[ZmShareInfo.ROLE_MANAGER] = "Manager";
+
+ZmShareInfo.ACTIONS = {};
+ZmShareInfo.ACTIONS[ZmShareInfo.ROLE_NONE] = "None";
+ZmShareInfo.ACTIONS[ZmShareInfo.ROLE_VIEWER] = "View";
+ZmShareInfo.ACTIONS[ZmShareInfo.ROLE_MANAGER] = "View, Edit, Add, Remove, Accept, Decline";
 
 // Data
 

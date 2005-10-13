@@ -60,7 +60,13 @@ ZmFolderPropsDialog.TYPE_NAMES[ZmOrganizer.CALENDAR] = "appointment";
 ZmFolderPropsDialog._XFORM_DEF = { items: [
 	{type:_GROUPER_, label:"Properties", width:"100%", 
 		items: [
-			{type:_INPUT_, label:"Name:", ref:"folder_name", width:"200"},
+			// NOTE: user calendar cannot be renamed...
+			{type:_OUTPUT_, label:"Name:", ref:"folder_name", width:"200",
+				relevant: "get('folder_id') == ZmCalendar.ID_CALENDAR", relevantBehavior: _HIDE_
+			},
+			{type:_INPUT_, label:"Name:", ref:"folder_name", width:"200",
+				relevant: "get('folder_id') != ZmCalendar.ID_CALENDAR", relevantBehavior: _HIDE_
+			},
 			{type:_SPACER_, height:3},
 			{type: _OUTPUT_, ref:"folder_view", label:"Type:", 
 				choices: ZmFolderPropsDialog.TYPE_CHOICES
@@ -69,18 +75,6 @@ ZmFolderPropsDialog._XFORM_DEF = { items: [
 			{type:_SELECT1_, ref: "folder_color", label:"Color:",
 				choices: ZmOrganizer.COLOR_CHOICES
 			}
-
-			/***
-			// TODO: Do we want to create a filter for the user?
-			{type:_RADIO_GROUPER_, label:"When calendar messages arrive for this folder:", 
-				relevant: "get('folder_view') == ZmOrganizer.CALENDAR", relevantBehavior: _HIDE_,
-				items: [
-					{type:_RADIO_, ref:"msgLocation", value:"inbox", label:"Place them in my <b>Inbox</b>"},
-					{type:_RADIO_, ref:"msgLocation", value:"special", label:"Place them in the folder <b>Calendar Appointments</b>"},
-					{type:_RADIO_, ref:"msgLocation", value:"trash", label:"Place them in the <b>Trash</b>"},
-				]
-			}
-			/***/
 		]
 	},
 
@@ -93,7 +87,7 @@ ZmFolderPropsDialog._XFORM_DEF = { items: [
 					{type:_OUTPUT_, ref:"granteeName", width:140},
 					{type:_OUTPUT_, ref:"perm", width:130,
 						getDisplayValue: function(value) {
-							return {"":"None",r:"Viewer",rwid:"Manager"}[value];
+							return ZmShareInfo.ROLES[value];
 						}
 					},
 					{type:_ANCHOR_, label:"Edit...", labelLocation:_NONE_,
@@ -109,7 +103,6 @@ ZmFolderPropsDialog._XFORM_DEF = { items: [
 					{type:_CELLSPACER_, width:5},
 					{type:_ANCHOR_, label:"Remove", labelLocation:_NONE_,
 						showInNewWindow: false,
-						//href: "javascript:void 0;",
 						onActivate: function(event) {
 							var form = this.getForm();
 							var controller = form.getController();
@@ -126,10 +119,8 @@ ZmFolderPropsDialog._XMODEL_DEF = { items: [
 	{ id: "folder_id", ref: "folder/id", type: _STRING_ },
 	{ id: "folder_name", ref: "folder/name", type: _STRING_ },
 	{ id: "folder_view", ref: "folder/type", type: _ENUM_, choices: [ ZmOrganizer.FOLDER, ZmOrganizer.CALENDAR ] },
-	//{ id: "folder_parent", ref: "folder/parent/name", type: _STRING_ },
 	{ id: "folder_color", ref: "folder/color", type: _NUMBER_ },
 	{ id: "folder_acl_grant", ref: "folder/shares", type: _LIST_ }
-	//{ id: "msgLocation", ref: "msgLocation", type: _ENUM_, choices: [ "inbox", "special", "trash" ] }
 ]};
 
 // Data
@@ -162,6 +153,12 @@ ZmFolderPropsDialog.prototype.getFolder = function() {
 	return this._folder;
 }
 
+ZmFolderPropsDialog.prototype.popup = function(loc) {
+	var visible = !this.getFolder().link;
+	this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, visible);
+	DwtXFormDialog.prototype.popup.call(this, loc);
+}
+
 // Protected methods
 
 ZmFolderPropsDialog.prototype._getSeparatorTemplate = function() {
@@ -170,9 +167,9 @@ ZmFolderPropsDialog.prototype._getSeparatorTemplate = function() {
 
 ZmFolderPropsDialog.prototype._handleEditShare = function(shareItem) {
 	var sharePropsDialog = this._appCtxt.getSharePropsDialog();
+	sharePropsDialog.setDialogType(ZmSharePropsDialog.EDIT);
 	sharePropsDialog.setFolder(shareItem.organizer);
 	sharePropsDialog.setShareItem(shareItem);
-	sharePropsDialog.setDialogType(ZmSharePropsDialog.EDIT);
 	sharePropsDialog.popup();
 }
 
@@ -252,7 +249,7 @@ ZmFolderPropsDialog.prototype._generateXmlPart = function(share) {
 
 ZmFolderPropsDialog.prototype._handleRemoveShare = function(share) {
 	// TODO: Implement confirmation dialog to allow sending message
-	if (confirm("Are you sure you want to revoke access for "+share.granteeName)+"?") {
+	if (confirm("Are you sure you want to revoke access for "+share.granteeName+"?")) {
 		share.revoke();
 		
 		var textPart = this._generateTextPart(share);

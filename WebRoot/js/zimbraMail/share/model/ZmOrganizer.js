@@ -65,7 +65,9 @@ ZmOrganizer.TAG		= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH	= ZmEvent.S_SEARCH;
 ZmOrganizer.CALENDAR = ZmEvent.S_APPT;
 
+// defined in com.zimbra.cs.mailbox.Mailbox
 ZmOrganizer.ID_ROOT = 1;
+ZmOrganizer.ID_CALENDAR = 10;
 
 ZmOrganizer.SOAP_CMD = new Object();
 ZmOrganizer.SOAP_CMD[ZmOrganizer.FOLDER]	= "FolderAction";
@@ -122,6 +124,19 @@ for (var i = 0; i <= ZmOrganizer.MAX_COLOR; i++) {
 	var color = ZmOrganizer.COLOR_TEXT[i];
 	ZmOrganizer.COLORS.push(color);
 	ZmOrganizer.COLOR_CHOICES.push( { value: i, label: color } );
+}
+
+// Static methods
+
+ZmOrganizer.prototype._setSharesFromJs = function(obj) {
+	if (obj.acl && obj.acl.grant && obj.acl.grant.length > 0) {
+		var shares = new Array(obj.acl.grant.length);
+		for (var i = 0; i < obj.acl.grant.length; i++) {
+			var grant = obj.acl.grant[i];
+			shares[i] = ZmOrganizerShare.createFromJs(this, grant);
+		}
+		this.setShares(shares);
+	}
 }
 
 // Abstract methods
@@ -486,6 +501,12 @@ function ZmOrganizerShare(organizer, granteeType, granteeId, granteeName, perm, 
 	this.granteeName = granteeName;
 	this.perm = perm;
 	this.inherit = inherit;
+}
+
+// Static methods
+
+ZmOrganizerShare.createFromJs = function(parent, grant) {
+	return new ZmOrganizerShare(parent, grant.gt, grant.zid, grant.d, grant.perm, grant.inh);
 }
 
 // Public methods

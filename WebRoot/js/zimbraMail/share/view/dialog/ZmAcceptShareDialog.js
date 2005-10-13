@@ -168,7 +168,7 @@ ZmAcceptShareDialog.prototype.setShareInfo = function(shareInfo) {
 
 ZmAcceptShareDialog.prototype.popup = function(loc) {
 	DwtXFormDialog.prototype.popup.call(this, loc);
-	this.setButtonEnabled(ZmDialog.OK_BUTTON, true);
+	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 }
 
 // Protected methods
@@ -176,19 +176,61 @@ ZmAcceptShareDialog.prototype.popup = function(loc) {
 ZmAcceptShareDialog.prototype._handleOkButton = function(event) {
 	// create mountpoint
 	var soapDoc = AjxSoapDoc.create("CreateMountpointRequest", "urn:zimbraMail");
+
+	var instance = this._xform.getInstance();
+	var share = instance.share;
+	var info = instance.info;
 	
 	var linkNode = soapDoc.set("link");
-	var instance = this._xform.getInstance();
 	linkNode.setAttribute("l", "1"); // place in root folder
-	linkNode.setAttribute("name", instance.share.name);
-	linkNode.setAttribute("zid", instance.info.grantor.id);
-	linkNode.setAttribute("rid", instance.info.link.id);
+	linkNode.setAttribute("name", share.name);
+	linkNode.setAttribute("zid", info.grantor.id);
+	linkNode.setAttribute("rid", info.link.id);
+	if (info.link.view) {
+		linkNode.setAttribute("view", info.link.view);
+	}
 
 	var appCtlr = this._appCtxt.getAppController();
 	//appCtlr.setActionedIds([this.organizer.id]); // TODO: ???
-	var resp = appCtlr.sendRequest(soapDoc)["CreateMountpointResponse"];
-	var id = parseInt(resp.action.id);
-	// TODO: handle error
+	var mountpointId;
+	try {
+		var resp = appCtlr.sendRequest(soapDoc)["CreateMountpointResponse"];
+		mountpointId = parseInt(resp.link[0].id);
+	}
+	catch (ex) {
+		var msg;
+		if (ex instanceof ZmCsfeException) {
+			switch (ex.code) {
+				case "mail.ALREADY_EXISTS": {
+					msg = "A folder with that name already exists.\n"+
+						"Please select a different name.";
+					break;
+				}
+				default: msg = ex.msg;
+			}
+		}
+		else {
+			msg = "Uknown error: "+ex;
+		}
+		alert(msg);
+		return;
+	}
+	
+	// set color
+	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
+	
+	var actionNode = soapDoc.set("action");
+	actionNode.setAttribute("id", mountpointId);
+	actionNode.setAttribute("op", "color");
+	actionNode.setAttribute("color", share.color);
+
+	try {
+		var resp = appCtlr.sendRequest(soapDoc)["FolderActionResponse"];
+	}
+	catch (ex) {
+		// TODO: handle error
+		alert(String(ex));
+	}
 
 	// do default handling
 	DwtXFormDialog.prototype._handleOkButton.call(this, event);

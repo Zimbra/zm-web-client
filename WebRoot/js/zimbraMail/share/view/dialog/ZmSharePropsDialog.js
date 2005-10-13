@@ -59,39 +59,22 @@ ZmSharePropsDialog._XFORM_DEF = { items: [
 	{type:_SPACER_, height:3},
 	{type:_GROUP_, label:"Share with:", width:"100%", numCols:3, useParentTable: false, items:[
 			{type:_OUTPUT_, ref:"share_grantee_name", width:"250", relevant:"get('type')!=ZmSharePropsDialog.NEW",relevantBehavior:_HIDE_},
-			{type:_INPUT_, ref:"share_grantee_name", width:"250", relevant:"get('type')==ZmSharePropsDialog.NEW",relevantBehavior:_HIDE_},
-			{type:_BUTTON_, label:"Search...", cssStyle:"margin-left:10px", 
-				relevant:"get('type')==ZmSharePropsDialog.NEW",relevantBehavior:_HIDE_,
-				onActivate: function() {
-					this.getForm().getController()._popupUserPicker();
+			{type:_GROUP_, useParentTable: false, relevant:"get('type') == ZmSharePropsDialog.NEW", relevantBehavior:_HIDE_, items:[
+				{type:_INPUT_, ref:"share_grantee_name", width:"250"},
+				{type:_BUTTON_, label:"Search...", cssStyle:"margin-left:10px", 
+					relevant:"get('type') == ZmSharePropsDialog.NEW", relevantBehavior:_HIDE_,
+					onActivate: function() {
+						this.getForm().getController()._popupUserPicker();
+					}
 				}
-			}
+			]}
 		]
 	},
 	{type:_SPACER_, height:3},
 	{type:_RADIO_GROUPER_, label:"Role:", numCols:3, colSizes:[25,60,'*'], items: [
-			{type:_RADIO_, ref:"share_rights", value:"", label:"<b>None</b>"},{type:_OUTPUT_, value:""},
-			{type:_RADIO_, ref:"share_rights", value:"r", label:"<b>Viewer</b>"},{type:_OUTPUT_, value:"View"},
-//			{type:_RADIO_, ref:"share_rights", value:"rw", label:"<b>Editor</b>"},{type:_OUTPUT_, value:"View, Accept"},
-			{type:_RADIO_, ref:"share_rights", value:"rwid", label:"<b>Manager</b>"},{type:_OUTPUT_, value:"View, Accept, Create, Edit, Delete"}
-//			{type:_RADIO_, ref:"share_rights", value:"M", label:"<b>Author</b>"},{type:_OUTPUT_, value:"View, Accept, Create and Delete appointments, as if they are you."},
-
-
-			/***
-			{type:_GROUP_, colSpan:'*', width:"100%", numCols:2, colSizes:[25,'*'], items:[
-					{type:_SEPARATOR_, height:11, cssClass:"xform_separator_gray", relevant:"get('share_rights') != ''",},
-					{type:_CHECKBOX_, ref:"share_showPrivate", trueValue:true, falseValue:false, label:"Allow them to see private appointments", relevant:"get('share_rights') != ''",},
-					{type:_CHECKBOX_, ref:"share_sendNotices", trueValue:true, falseValue:false, label:"Send them copies of meeting notices", relevant:"get('share_rights') != '' && get('share_rights') != 'r'",},
-					{type:_CHECKBOX_, ref:"share_proxy", trueValue:true, falseValue:false, label:"Show actions as if they were done by me", relevant:"get('share_rights') != '' && get('share_rights') != 'r'"},
-					{type:_CELLSPACER_},
-					{type:_OUTPUT_, ref:"proxy", forceUpdate:true, cssClass:"xform_label_left", relevant:"get('share_rights') != '' && get('share_rights') != 'r'", choices:{
-							F: "<font size=1>Messages will appear <b>from: Janie O'Toole acting for Satish Dharmaraj</b></font>",
-							T: "<font size=1>Messages will appear <b>from: Satish Dharmaraj</b></font>"
-						}
-					}
-				]
-			}
-			/***/
+			{type:_RADIO_, ref:"share_rights", value:ZmShareInfo.ROLE_NONE, label:"<b>"+ZmShareInfo.ROLES[ZmShareInfo.ROLE_NONE]+"</b>"},{type:_OUTPUT_, value:ZmShareInfo.ACTIONS[""]},
+			{type:_RADIO_, ref:"share_rights", value:ZmShareInfo.ROLE_VIEWER, label:"<b>"+ZmShareInfo.ROLES[ZmShareInfo.ROLE_VIEWER]+"</b>"},{type:_OUTPUT_, value:ZmShareInfo.ACTIONS["r"]},
+			{type:_RADIO_, ref:"share_rights", value:ZmShareInfo.ROLE_MANAGER, label:"<b>"+ZmShareInfo.ROLES[ZmShareInfo.ROLE_MANAGER]+"</b>"},{type:_OUTPUT_, value:ZmShareInfo.ACTIONS["rwidx"]}
 		]
 	},
 
@@ -103,9 +86,13 @@ ZmSharePropsDialog._XFORM_DEF = { items: [
 			{type:_SPACER_, height:3, relevant:"get('sendMail')"},
 			{type:_SELECT1_, ref:"mailType", relevant:"get('sendMail')", label:"", choices:{
 					S:"Send standard message",
-					Q:"Write a quick message",
+					Q:"Add note to standard message",
 					C:"Compose email in new window"
 				}
+			},
+			{type:_OUTPUT_, label: "", //width: "250",
+				value: "<b>Note:</b> The standard message displays the name of the shared item, the owner, and the permissions allowed on the share.",
+				relevant: "get('mailType') == 'S' || get('mailType') == 'Q'", revelantBehavior: _HIDE_
 			},
 			{type:_TEXTAREA_, ref:"quickReply", relevant:"get('sendMail') && get('mailType') == 'Q'", width:"95%", height:50, label:""}
 		]
@@ -151,7 +138,7 @@ ZmSharePropsDialog.prototype.setShareItem = function(shareItem) {
 	if (shareItem == null) {
 		shareItem = {
 			granteeName: "",
-			perm: "r"
+			perm: ZmShareInfo.ROLE_VIEWER
 		};
 	}
 
@@ -202,9 +189,23 @@ ZmSharePropsDialog.prototype._handleOkButton = function(event) {
 	try {
 		this._executeGrantAction(folder, share);
 	}
-	catch (e) {
-		// TODO
-		alert("error: "+e);
+	catch (ex) {
+		var msg;
+		// TODO: i18n
+		if (ex instanceof ZmCsfeException) {
+			switch (ex.code) {
+				case "account.NO_SUCH_ACCOUNT": {
+					msg = "Unknown user '"+share.granteeName+"'.\n"+
+							"Must specify a valid Zimbra user.";
+					break;
+				}
+				default: msg = ex.msg;
+			}
+		}
+		else {
+			msg = "Unknown error: "+ex;
+		}
+		alert(msg);
 		return;
 	}
 
@@ -270,10 +271,10 @@ ZmSharePropsDialog.prototype._executeGrantAction = function(folder, share) {
 	var inherit = null;
 
 	var newShare = new ZmOrganizerShare(organizer, granteeType, granteeId, granteeName, perm, inherit);
+	newShare.setPermissions(share.perm); // this does the FolderActionRequest
 	if (this._dialogType == ZmSharePropsDialog.NEW) {
 		folder.addShare(newShare);
 	}
-	newShare.setPermissions(share.perm); // this does the FolderActionRequest
 }
 
 ZmSharePropsDialog._SHARE_CREATED = "The following share has been created:";
