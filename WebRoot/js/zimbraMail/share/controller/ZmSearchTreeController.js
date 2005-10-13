@@ -88,16 +88,6 @@ function() {
 }
 
 /*
-* Underlying model is a tree of saved searches. Note that saved searches
-* may also be in folders, in which case they are handled by the folder
-* tree controller.
-*/
-ZmSearchTreeController.prototype._getData =
-function() {
-	return this._appCtxt.getSearchTree();
-}
-
-/*
 * Returns a "New Saved Search" dialog.
 */
 ZmSearchTreeController.prototype._getNewDialog =

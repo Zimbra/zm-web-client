@@ -335,7 +335,7 @@ function(args) {
 		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController().show(results, search.query);
 	} else {
 		// determine if we need to default to mixed view
-		var folderTree = this._appCtxt.getFolderTree();
+		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		var folder = folderTree ? folderTree.getById(search.folderId) : null;
 		var inTrash = folder && folder.isInTrash();
 

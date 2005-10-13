@@ -85,7 +85,7 @@ function(domain) {
 	
 	// set any global references in parent w/in child window
 	if (window.parentController) {
-		//appCtxt.setTagList(window.parentController._appCtxt.getTagList());
+		//appCtxt.setTagList(window.parentController._appCtxt.getTree(ZmOrganizer.TAG));
 		appCtxt.setSettings(window.parentController._appCtxt.getSettings());
 	}
 

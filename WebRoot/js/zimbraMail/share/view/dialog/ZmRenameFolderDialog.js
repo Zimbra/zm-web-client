@@ -29,7 +29,7 @@ function ZmRenameFolderDialog(parent, msgDialog, className) {
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
-	this._folderTree = this._appCtxt.getFolderTree();
+	this._folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 }
 
 ZmRenameFolderDialog.prototype = new ZmDialog;
@@ -81,7 +81,8 @@ function() {
 
 	// if we're creating a top-level folder, check for conflict with top-level search
 	if (!msg && (this._folder.parent.id == ZmOrganizer.ID_ROOT)) {
-		var otherTree = (this._folder.type == ZmOrganizer.SEARCH) ? this._appCtxt.getFolderTree() : this._appCtxt.getSearchTree();
+		var otherTree = (this._folder.type == ZmOrganizer.SEARCH) ? this._appCtxt.getTree(ZmOrganizer.FOLDER) :
+																	this._appCtxt.getTree(ZmOrganizer.SEARCH);
 		if (otherTree && otherTree.root.hasChild(name))
 			msg = ZmMsg.folderOrSearchNameExists;
 	}

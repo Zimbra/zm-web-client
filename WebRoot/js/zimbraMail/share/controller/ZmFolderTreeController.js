@@ -116,14 +116,6 @@ function() {
 }
 
 /*
-* Underlying model is a folder tree.
-*/
-ZmFolderTreeController.prototype._getData =
-function() {
-	return this._appCtxt.getFolderTree();
-}
-
-/*
 * Returns a "New Folder" dialog.
 */
 ZmFolderTreeController.prototype._getNewDialog =
@@ -202,7 +194,7 @@ function(ev) {
 		this._deleteShield.setMessage(ZmMsg.confirmEmptyJunk, DwtMessageDialog.WARNING_STYLE);
 		this._deleteShield.popup();
     } else {
-		var trash = this._appCtxt.getFolderTree().getById(ZmFolder.ID_TRASH);
+		var trash = this._dataTree.getById(ZmFolder.ID_TRASH);
 		this._schedule(this._doMove, {organizer: organizer, tgtFolder: trash});
 	}
 }

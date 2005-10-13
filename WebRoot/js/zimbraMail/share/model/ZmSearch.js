@@ -155,14 +155,14 @@ ZmSearch.prototype.getTitle =
 function() {
 	var where = null;
 	if (this.folderId) {
-		var folderTree = this._appCtxt.getFolderTree();
+		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		if (folderTree) {
 			var folder = folderTree.getById(this.folderId);
 			if (folder)
 				where = folder.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 		}
 	} else if (this.tagId) {
-		var tagList = this._appCtxt.getTagList();
+		var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 		if (tagList)
 			where = tagList.getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 	}
@@ -214,7 +214,7 @@ function() {
 				this.folderId = id;
 		// now check all folders by name
 		if (!this.folderId) {
-			var folder = this._appCtxt.getFolderTree().getByPath(path);
+			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getByPath(path);
 			if (folder)
 				this.folderId = folder.id;
 		}
@@ -222,7 +222,7 @@ function() {
 	results = this.query.match(ZmSearch.TAG_QUERY_RE);
 	if (results) {
 		var name = results[1].toLowerCase();
-		var tag = this._appCtxt.getTagList().getByName(name);
+		var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getByName(name);
 		if (tag)
 			this.tagId = tag.id;
 	}

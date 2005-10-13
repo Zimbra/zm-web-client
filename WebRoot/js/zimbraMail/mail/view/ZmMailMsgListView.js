@@ -112,7 +112,7 @@ function(msg, now, isDndIcon, isMixedView) {
 	// Row
 	var className = null;
 	if (this._mode == ZmController.CONV_VIEW) {
-		var folder = this._appCtxt.getFolderTree().getById(msg.folderId);
+		var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(msg.folderId);
 		if (folder != null && folder.isInTrash())
 			className = "Trash";
 	}
@@ -228,7 +228,7 @@ function(msg, now, isDndIcon, isMixedView) {
 			// Folder
 			htmlArr[idx++] = "<td width=" + width + ">";
 			htmlArr[idx++] = "<nobr id='" + this._getFieldId(msg, ZmItem.F_FOLDER) + "'>"; // required for IE bug
-			var folder = this._appCtxt.getFolderTree().getById(msg.folderId);
+			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(msg.folderId);
 			htmlArr[idx++] = folder ? folder.getName() : "";
 			htmlArr[idx++] = "</nobr>";
 			if (AjxEnv.isNav)
@@ -266,7 +266,7 @@ function(items, on) {
 			var className =  on ? "" : "Unread";
 			// don't worry about unread/read trash if in trad. view
 			if (this._mode != ZmController.TRAD_VIEW) {
-				var folder = this._appCtxt.getFolderTree().getById(item.folderId);
+				var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(item.folderId);
 				if (folder && folder.isInTrash())
 					className = (className ? (className + " ") : "") + "Trash";
 			}
@@ -348,7 +348,7 @@ function(items) {
 	for (var i = 0; i < items.length; i++) {
 		var folderCell = Dwt.getDomObj(this.getDocument(), this._getFieldId(items[i], ZmItem.F_FOLDER));
 		if (folderCell) {
-			var folder = this._appCtxt.getFolderTree().getById(items[i].folderId);
+			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(items[i].folderId);
 			if (folder)
 				folderCell.innerHTML = folder.getName();
 			if (items[i].folderId == ZmFolder.ID_TRASH)
@@ -362,7 +362,7 @@ function(items) {
 	for (var i = 0; i < items.length; i++) {
 		var row = Dwt.getDomObj(this.getDocument(), this._getFieldId(items[i], ZmItem.F_ITEM_ROW));
 		if (row) {
-			var folder = this._appCtxt.getFolderTree().getById(items[i].folderId);
+			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(items[i].folderId);
 			var className = null;
 			if (items[i].isUnread)
 				className = "Unread";

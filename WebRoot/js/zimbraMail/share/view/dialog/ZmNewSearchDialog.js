@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewSearchDialog(parent, msgDialog, className, folderTree) {
+function ZmNewSearchDialog(parent, msgDialog, className) {
 
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.saveSearch);
 
@@ -37,8 +37,8 @@ function ZmNewSearchDialog(parent, msgDialog, className, folderTree) {
 					  [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH], omit);
 	this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
 	this._searchTreeView = this._treeView[ZmOrganizer.SEARCH];
-	this._folderTree = this._appCtxt.getFolderTree();
-	this._searchTree = this._appCtxt.getSearchTree();
+	this._folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+	this._searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
 }
 
 ZmNewSearchDialog._OVERVIEW_ID = "ZmNewSearchDialog";

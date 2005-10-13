@@ -38,7 +38,7 @@ function ZmPickTagDialog(parent, msgDialog, className) {
 	var appCtxt = this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
 	this._tagTreeView = new ZmTagTreeView(appCtxt, this._tree, this._tree);
-	this._tagTreeView.set(appCtxt.getTagList());
+	this._tagTreeView.set(appCtxt.getTree(ZmOrganizer.TAG));
 
 	var cell = 	Dwt.getDomObj(this.getDocument(), this._tagTreeCellId);
 	cell.appendChild(this._tree.getHtmlElement());

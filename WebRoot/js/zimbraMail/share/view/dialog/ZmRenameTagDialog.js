@@ -75,7 +75,7 @@ function() {
 	
 	// make sure tag name doesn't already exist
 	if (!msg) {
-		var t = this._appCtxt.getTagList().getByName(name);
+		var t = this._appCtxt.getTree(ZmOrganizer.TAG).getByName(name);
 		if (t && (t.id != this._tag.id))
 			msg = ZmMsg.tagNameExists;
 	}

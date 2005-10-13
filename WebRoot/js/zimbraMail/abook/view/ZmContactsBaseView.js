@@ -78,7 +78,7 @@ function() {
 // returns the first non-trash contact in the list
 ZmContactsBaseView.prototype.getFirstValid = 
 function(list) {
-	var folderTree = this._appCtxt.getFolderTree();
+	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 	for (var i = 0; i < list.size(); i++) {
 		var contact = list.get(i);
 		var folder = folderTree.getById(contact.folderId);

@@ -164,7 +164,7 @@ function(delMsg) {
 		actionNode.setAttribute("id", delMsg.id);
 		actionNode.setAttribute("op", "delete");
 		var ac = this._appCtxt.getAppController();
-		ac.setActionedIds([delMsg.id]);
+//		ac.setActionedIds([delMsg.id]);
 		ac.sendRequest(soapDoc)[ZmItem.SOAP_CMD[ZmItem.MSG] + "Response"];
 		// force a redo Search to refresh the drafts folder
 		var search = this._appCtxt.getCurrentSearch();

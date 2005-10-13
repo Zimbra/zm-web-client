@@ -54,7 +54,7 @@ function ZmListController(appCtxt, container, app) {
 	this._actionMenu = null; 		// ZmActionMenu
 	this._actionEv = null;
 	
-	this._tagList = this._appCtxt.getTagList();
+	this._tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 	if (this._tagList)
 		this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	this._creatingTag = false;

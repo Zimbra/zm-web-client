@@ -35,7 +35,7 @@ function ZmNewFolderDialog(parent, msgDialog, className) {
 	
 	this._setOverview(ZmNewFolderDialog._OVERVIEW_ID, this._folderTreeCellId, [ZmOrganizer.FOLDER], omit);
 	this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
-	this._folderTree = this._appCtxt.getFolderTree();
+	this._folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 }
 
 ZmNewFolderDialog._OVERVIEW_ID = "ZmNewFolderDialog";
@@ -100,7 +100,7 @@ function() {
 
 	// if we're creating a top-level folder, check for conflict with top-level search
 	if (!msg && (parentFolder.id == ZmOrganizer.ID_ROOT)) {
-		var searchTree = this._appCtxt.getSearchTree();
+		var searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
 		if (searchTree && searchTree.root.hasChild(name))
 			msg = ZmMsg.folderOrSearchNameExists;
 	}

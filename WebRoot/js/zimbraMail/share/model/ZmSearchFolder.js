@@ -66,3 +66,20 @@ function(showUnread, maxLength, noMarkup) {
 		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
 	}
 }
+
+/*
+* Returns the organizer with the given ID. Looks in this organizer's tree first.
+* Since a search folder may have either a regular folder or another search folder
+* as its parent, we may need to get the parent folder from another type of tree.
+*
+* @param parentId	[int]		ID of the organizer to find
+*/
+ZmSearchFolder.prototype._getNewParent =
+function(parentId) {
+	var parent = this.tree.getById(parentId);
+	if (parent) return parent;
+	
+	var type = (this.parent.type == ZmOrganizer.SEARCH) ? ZmOrganizer.FOLDER : ZmOrganizer.SEARCH;
+	var tree = this.tree._appCtxt.getTree(type);
+	return tree.getById(parentId); 
+}

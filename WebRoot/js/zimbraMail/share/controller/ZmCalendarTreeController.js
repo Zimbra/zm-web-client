@@ -49,11 +49,6 @@ ZmCalendarTreeController.prototype._getActionMenuOps = function() {
 	return [ ZmOperation.EDIT_PROPS ];
 }
 
-// Returns a ZmTree that contains the underlying data
-ZmCalendarTreeController.prototype._getData = function() {
-	return this._appCtxt.getCalendarTree();
-}
-
 // Returns the dialog for organizer creation
 ZmCalendarTreeController.prototype._getNewDialog = function() {
 	alert("TODO: get new dialog");

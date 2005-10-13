@@ -74,7 +74,7 @@ function() {
 */
 ZmTagTreeController.prototype.resetOperations = 
 function(parent, type, id) {
-	var tag = this._appCtxt.getTagList().getById(id);
+	var tag = this._dataTree.getById(id);
 	parent.enableAll(true);
 	if (id < ZmTag.FIRST_USER_ID) // system tag
 		parent.enable([ZmOperation.RENAME_TAG, 
@@ -104,14 +104,6 @@ function() {
 			  ZmOperation.DELETE,
 			  ZmOperation.COLOR_MENU);
 	return list;
-}
-
-/*
-* Underlying model is a tag list (tag trees are flat).
-*/
-ZmTagTreeController.prototype._getData =
-function() {
-	return this._appCtxt.getTagList();
 }
 
 /*
@@ -265,7 +257,7 @@ function(args) {
 ZmTagTreeController.prototype._doCreate =
 function(params) {
 	try {
-		var parent = this._appCtxt.getTagList().root;
+		var parent = this._dataTree.root;
 		parent.create(params.name, params.color);
 	} catch (ex) {
 		if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {
