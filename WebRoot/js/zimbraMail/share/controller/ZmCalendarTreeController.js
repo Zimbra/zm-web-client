@@ -56,7 +56,7 @@ ZmCalendarTreeController.prototype._eventMgrs;
 
 // Public methods
 
-ZmCalendarTreeController.prototype.getCheckedCalendars = function(overvewId) {
+ZmCalendarTreeController.prototype.getCheckedCalendars = function(overviewId) {
 	var calendars = [];
 	var treeView = this.getTreeView(overviewId);
 	if (treeView) {
