@@ -116,7 +116,7 @@ function(name, color) {
 	var tagNode = soapDoc.set("tag");
 	tagNode.setAttribute("name", name);
 	tagNode.setAttribute("color", color);
-	var resp = this.tree._appCtxt.getAppController().sendRequest(soapDoc).firstChild;
+	this.tree._appCtxt.getAppController().sendRequest(soapDoc, true);
 }
 
 ZmTag.prototype.getName = 

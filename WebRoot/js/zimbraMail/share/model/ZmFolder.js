@@ -203,7 +203,7 @@ function(name, search) {
 		folderNode.setAttribute("name", name);
 		folderNode.setAttribute("l", this.id);
 	}
-	var resp = this.tree._appCtxt.getAppController().sendRequest(soapDoc).firstChild;
+	this.tree._appCtxt.getAppController().sendRequest(soapDoc, true);
 }
 
 // User can move a folder to Trash even if there's already a folder there with the

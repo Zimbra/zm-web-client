@@ -198,8 +198,6 @@ function() {
 	for (var i = 0; i < a.length; i++)
 		a[i].clear();
 
-	if (this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY))
-		this._appCtxt.getAppController().removeModel(this);
 	this._evtMgr.removeAll(ZmEvent.L_MODIFY);
 	this._vector.removeAll();
 	for (var id in this._idHash)

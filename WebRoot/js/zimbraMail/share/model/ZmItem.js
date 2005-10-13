@@ -165,8 +165,6 @@ function(id) {
 
 ZmItem.prototype.clear =
 function() {
-	if (this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY))
-		this._appCtxt.getAppController().removeModel(this);
 	this._evtMgr.removeAll(ZmEvent.L_MODIFY);
 	if (this.tags.length) {
 		for (var i = 0; i < this.tags.length; i++)
