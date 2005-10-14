@@ -72,6 +72,33 @@ ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_REPLY_TO] = ZmMsg.replyTo;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_DATE] = ZmMsg.sent;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT] = ZmMsg.subject;
 
+/**
+ * static method which will fetch a message from the server.
+ * @param sender - (Object) the object which has a method called sendRequest.
+ * @param msgId - (int) the id to be fetched.
+ * @param getHtml - whether to fetch html from the server ( if possible ).
+ */
+ZmMailMsg.fetchMsg = 
+function(sender, msgId, getHtml, callback) {
+	var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail", null);
+	var msgNode = soapDoc.set("m");
+	msgNode.setAttribute("id", msgId);
+	msgNode.setAttribute("read", "1");
+	if (getHtml) {
+		msgNode.setAttribute("html", "1");
+	}
+	var respCallback = new AjxCallback(null, ZmMailMsg._handleGetMsgResponse, callback);
+	sender.sendRequest(soapDoc, true, respCallback);
+};
+
+ZmMailMsg._handleGetMsgResponse =
+function(args) {
+	var callback	= args[0];
+	var result		= args[1];
+	if (callback)
+		callback.run(result);
+}
+
 // Public methods
 
 ZmMailMsg.prototype.toString = 
@@ -352,48 +379,43 @@ function(node, args) {
 * @param getHtml		
 */
 ZmMailMsg.prototype.load =
-function(getHtml, forceLoad) {
+function(getHtml, forceLoad, callback) {
 	// If we are already loaded, then don't bother loading
 	if (!this._loaded || forceLoad) {
-		var resp = ZmMailMsg.fetchMsg(this._appCtxt.getAppController(), this.id, getHtml);
-		
-		// clear address vectors
-		for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
-			var type = ZmMailMsg.ADDRS[i];
-			this._addrs[type].removeAll();
-		}
-	
-		// clear all participants (since it'll get re-parsed w/ diff. ID's)
-		this.participants.removeAll();
-		for (var i in this._participantHash)
-			delete this._participantHash[i];
-		
-		// clear all attachments
-		this._attachments.length = 0;	
-
-		this._loadFromDom(resp.m[0]);
+		var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
+		ZmMailMsg.fetchMsg(this._appCtxt.getAppController(), this.id, getHtml, respCallback);
+	} else {
+		this._markReadLocal(true);
+		if (callback) callback.run();
 	}
-	this._markReadLocal(true);
-
 };
 
-/**
- * static method which will fetch a message from the server.
- * @param sender - (Object) the object which has a method called sendRequest.
- * @param msgId - (int) the id to be fetched.
- * @param getHtml - whether to fetch html from the server ( if possible ).
- */
-ZmMailMsg.fetchMsg = 
-function (sender, msgId, getHtml) {
-	var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail", null);
-	var msgNode = soapDoc.set("m");
-	msgNode.setAttribute("id", msgId);
-	msgNode.setAttribute("read", "1");
-	if (getHtml) {
-		msgNode.setAttribute("html", "1");
-	}
-	return sender.sendRequest(soapDoc).GetMsgResponse;
+ZmMailMsg.prototype._handleResponseLoad =
+function(args) {
 
+	var callback	= args[0];
+	var result		= args[1];
+
+	var response = result.getResponse().GetMsgResponse;
+
+	// clear address vectors
+	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
+		var type = ZmMailMsg.ADDRS[i];
+		this._addrs[type].removeAll();
+	}
+	
+	// clear all participants (since it'll get re-parsed w/ diff. ID's)
+	this.participants.removeAll();
+	for (var i in this._participantHash)
+		delete this._participantHash[i];
+		
+	// clear all attachments
+	this._attachments.length = 0;	
+
+	this._loadFromDom(response.m[0]);
+	this._markReadLocal(true);
+	
+	if (callback) callback.run();
 };
 
 ZmMailMsg.prototype.getBodyParts = 
@@ -427,18 +449,27 @@ function() {
 };
 
 ZmMailMsg.prototype.getTextPart = 
-function() {
+function(callback) {
 	var bodyPart = this.getBodyPart();
 	
 	if (bodyPart && bodyPart.ct == ZmMimeTable.TEXT_PLAIN) {
 		return bodyPart.content;
 	} else {
-		var resp = ZmMailMsg.fetchMsg(this._appCtxt.getAppController(), this.getId());
-		this._loadFromDom(resp.m[0]);
-
-		bodyPart = this.getBodyPart(ZmMimeTable.TEXT_PLAIN);
-		return bodyPart ? bodyPart.content : null;
+		var respCallback = new AjxCallback(this, this._handleResponseGetTextPart, callback);
+		ZmMailMsg.fetchMsg(this._appCtxt.getAppController(), this.getId(), false, respCallback);
 	}
+};
+
+ZmMailMsg.prototype._handleResponseGetTextPart =
+function(args) {
+	var callback	= args[0];
+	var result		= args[1];
+	
+	var response = result.getResponse();
+	this._loadFromDom(response.m[0]);
+	bodyPart = this.getBodyPart(ZmMimeTable.TEXT_PLAIN);
+	result.set(bodyPart ? bodyPart.content : null);
+	if (callback) callback.run(result);
 };
 
 // we may want to set the text part w/o requesting it from the server 

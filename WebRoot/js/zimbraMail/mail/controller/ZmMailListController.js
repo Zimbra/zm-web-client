@@ -241,27 +241,32 @@ function(ev) {
 
 ZmMailListController.prototype._doAction = 
 function(ev, action, extraBodyText) {
-	try {	
-		// retrieve msg and make sure its loaded
-		var msg = this._getMsg();
-		if (!msg) return;
+	// retrieve msg and make sure its loaded
+	var msg = this._getMsg();
+	if (!msg) return;
 
-		// if html compose is allowed, 
-		//   then if opening draft always request html 
-		// 	 otherwise just check if user prefers html or
-		//   msg hasnt been loaded yet and user prefers format of orig. msg
-		var htmlEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
-		var prefersHtml = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML;
-		var sameFormat = this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
-		var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg.isLoaded() && sameFormat)))));
+	// if html compose is allowed, 
+	//   then if opening draft always request html 
+	// 	 otherwise just check if user prefers html or
+	//   msg hasnt been loaded yet and user prefers format of orig. msg
+	var htmlEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+	var prefersHtml = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML;
+	var sameFormat = this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
+	var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg.isLoaded() && sameFormat)))));
 		
-		msg.load(getHtml, action == ZmOperation.DRAFT);
+	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
+	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText]);
+	msg.load(getHtml, action == ZmOperation.DRAFT, respCallback);
+}
 
-		var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
-		this._app.getComposeController().doAction(action, inNewWindow, msg, null, null, extraBodyText);
-	} catch (ex) {
-		this._handleException(ex, this._doAction, {ev: ev, action: action, extraBodyText: extraBodyText}, false);
-	}
+ZmMailListController.prototype._handleResponseDoAction = 
+function(args) {
+	var action			= args[0];
+	var inNewWindow		= args[1];
+	var msg				= args[2];
+	var extraBodyText	= args[3];
+
+	this._app.getComposeController().doAction(action, inNewWindow, msg, null, null, extraBodyText);
 }
 
 ZmMailListController.prototype._inviteReplyHandler = 

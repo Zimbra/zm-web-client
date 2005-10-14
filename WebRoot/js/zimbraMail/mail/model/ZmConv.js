@@ -61,7 +61,7 @@ function(node, args) {
 }
 
 ZmConv.prototype.load =
-function(searchString, sortBy, offset, limit, callback) {
+function(searchString, sortBy, offset, limit, pagCallback, callback) {
 
 	var sortBy = sortBy || ZmSearch.DATE_DESC;
 	var offset = offset || 0;
@@ -74,7 +74,7 @@ function(searchString, sortBy, offset, limit, callback) {
 			this._sortBy = sortBy;
 		} else {
 			var size = this.msgs.size();
-			if (size != this.numMsgs && callback == null) {
+			if (size != this.numMsgs && pagCallback == null) {
 				// msgs list is out of sync
 				this.msgs.clear();
 			} else {
@@ -89,10 +89,19 @@ function(searchString, sortBy, offset, limit, callback) {
 	
 	var types = AjxVector.fromArray([ZmItem.MSG]);
 	var search = new ZmSearch(this.list._appCtxt, searchString, types, sortBy, offset, limit);
-	var results = search.forConv(this.id);
-	
-	if (callback) {
-		callback.run(results);	// user is paging...
+	var respCallback = new AjxCallback(this, this._handleResponseLoad, [pagCallback, callback]);
+	search.forConv(this.id, respCallback);
+}
+
+ZmConv.prototype._handleResponseLoad =
+function(args) {
+	var pagCallback	= args[0];
+	var callback	= args[1];
+	var result		= args[2];
+
+	var results = result.getResponse();
+	if (pagCallback) {
+		pagCallback.run(results);	// user is paging...
 	} else {
 		this.msgs = results.getResults(ZmItem.MSG);
 		this.msgs.convId = this.id;
@@ -104,8 +113,11 @@ function(searchString, sortBy, offset, limit, callback) {
 			this.tempMsg.clear();
 			this.tempMsg = null;
 		}
-		
-		return this.msgs; 		// so that controller has a list
+
+		if (callback) {
+			result.set(this.msgs);
+			callback.run(result);
+		}
 	}
 }
 

@@ -52,7 +52,7 @@ function(defaultColumnSort) {
 
 	ZmMailListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
 	
-	// This is bug fix #298
+	// Show "From" or "To" depending on which folder we're looking at
 	if (this._mode == ZmController.TRAD_VIEW) {
 		var isSentFolder = this._folderId == ZmFolder.ID_SENT;
 		var isDraftsFolder = this._folderId == ZmFolder.ID_DRAFTS;
@@ -419,16 +419,27 @@ function(columnItem, bSortAsc) {
 		if (this._mode == ZmController.CONV_VIEW) {
 			var conv = controller.getConv();
 			if (conv) {
-				var list = conv.load(searchString, this._sortByString);
-				controller.setList(list); // set the new list returned
-				this.setOffset(0);
-				this.set(conv.msgs, columnItem);
-				this.setSelection(conv.getHotMsg(this.getOffset(), this.getLimit()));
+				var respCallback = new AjxCallback(this, this._handleConvLoadResponse, [conv, columnItem, controller]);
+				conv.load(searchString, this._sortByString, null, null, null, respCallback);
 			}
 		} else {
 			this._appCtxt.getSearchController().search(searchString, [ZmItem.MSG], this._sortByString, 0, this.getLimit());
 		}
 	}
+}
+
+ZmMailMsgListView.prototype._handleConvLoadResponse =
+function(args) {
+	var conv		= args[0];
+	var columnItem	= args[1];
+	var controller	= args[2];
+	var result		= args[3];
+	
+	var list = result.getResponse();
+	controller.setList(list); // set the new list returned
+	this.setOffset(0);
+	this.set(conv.msgs, columnItem);
+	this.setSelection(conv.getHotMsg(this.getOffset(), this.getLimit()));
 }
 
 ZmMailMsgListView.prototype._getDefaultSortbyForCol = 

@@ -63,9 +63,21 @@ function(msg, mode) {
 	this._mode = mode;
 	this._currentView = this._getViewType();
 	this._list = msg.list;
-	if (!msg.isLoaded())
-		msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML));
+	if (!msg.isLoaded()) {
+		var respCallback = new AjxCallback(this, this._handleResponseShow);
+		msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback);
+	} else {
+		this._showMsg();	
+	}
+}
 
+ZmMsgController.prototype._handleResponseShow = 
+function(result) {
+	this._showMsg();
+}
+
+ZmMsgController.prototype._showMsg = 
+function() {
 	this._setup(this._currentView);
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
 	var elements = new Object();

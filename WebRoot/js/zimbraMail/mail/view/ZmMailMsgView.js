@@ -227,8 +227,15 @@ function(msg) {
 		}
 		contentDiv.appendChild(tEl);
 	}
-	this._renderMessage(msg, contentDiv);
+	var respCallback = new AjxCallback(this, this._handleResponseSet, [msg, oldMsg]);
+	this._renderMessage(msg, contentDiv, respCallback);
+};
 
+ZmMailMsgView.prototype._handleResponseSet =
+function(args) {
+	var msg		= args[0];
+	var oldMsg	= args[1];
+	
 	if (this._mode == ZmController.MSG_VIEW) {
 		this._setTags(msg);
 		// Remove listener for current msg if it exists
@@ -690,7 +697,7 @@ function(htmlArr, idx, addrs, prefix) {
 };
 
 ZmMailMsgView.prototype._renderMessage =
-function(msg, container) {
+function(msg, container, callback) {
 	ZmDateObjectHandler.setCurrentDate(this._dateObjectHandlerDate);
 
 	var idx = 0;
@@ -752,17 +759,28 @@ function(msg, container) {
 			// otherwise, get the text part if necessary
 			if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
 				// try to go retrieve the text part
-				content = msg.getTextPart();
-				// if no text part, just dump the raw html (see bug 859)
-				if (content == null)
-					content = bodyPart.content;
+				var respCallback = new AjxCallback(this, this._handleResponseRenderMessage, [el, bodyPart, callback]);
+				msg.getTextPart(respCallback);
 			} else {
 				content = bodyPart.content;
+				this._makeIframeProxy(el, content, true);
 			}
-			this._makeIframeProxy(el, content, true);
 		}
 	}
 };
+
+ZmMailMsgView.prototype._handleResponseRenderMessage =
+function(args) {
+	var el			= args[0];
+	var bodyPart	= args[1];
+	var callback	= args[2];
+	var result		= args[3];
+	
+	var content = result.getResponse();
+	// if no text part, just dump the raw html
+	content = content ? content : bodyPart.content;
+	this._makeIframeProxy(el, content, true);
+}
 
 ZmMailMsgView.prototype._setTags =
 function(msg) {

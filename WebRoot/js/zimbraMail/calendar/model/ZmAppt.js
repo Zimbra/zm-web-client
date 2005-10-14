@@ -804,8 +804,6 @@ function(message, viewMode) {
 		var addrs = message.getAddresses(ZmEmailAddress.TO);
 		this._attAddresses = addrs;
 		this.attendees = addrs.toString(ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE, true);
-		this.notes = message.getTextPart();
-		this._trimNotesSummary();
 		this.getAttachments();
 		// parse recurrence rules
 		var recurrences = message.getInvite().getRecurrenceRules(0);
@@ -826,7 +824,15 @@ function(message, viewMode) {
 			this.getRecurrenceDisplayString();
 		}
 		this._currentlyLoaded = message;
+		var respCallback = new AjxCallback(this, this._handleResponseSetFromMessage);
+		message.getTextPart(respCallback);
 	}
+};
+
+ZmAppt.prototype._handleResponseSetFromMessage =
+function(result) {
+	this.notes = result.getResponse();
+	this._trimNotesSummary();
 };
 
 ZmAppt.prototype._populateRecurrenceFields = 

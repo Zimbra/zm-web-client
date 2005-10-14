@@ -108,14 +108,21 @@ function(view) {
 		var currentMsg = this._doublePaneView.getSelection()[0];
 		// DONT bother checking if current msg is already being displayed!
 		if (currentMsg) {
-			if (!currentMsg.isLoaded())
-				currentMsg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML));
-	
-			this._doublePaneView.setMsg(currentMsg);
+			if (!currentMsg.isLoaded()) {
+				var respCallback = new AjxCallback(this, this._handleResponseSwitchView, currentMsg);
+				currentMsg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback);
+			} else {
+				this._doublePaneView.setMsg(currentMsg);
+			}
 		}
 	}
-		
 	this._doublePaneView.getMsgListView()._resetColWidth();
+}
+
+ZmDoublePaneController.prototype._handleResponseSwitchView = 
+function() {
+	var currentMsg = args[0];
+	this._doublePaneView.setMsg(currentMsg);
 }
 
 // called after a delete has occurred. 
@@ -332,30 +339,49 @@ function(ev, action, extraBodyText) {
 
 // Data handling
 
-// Loads the given item and displays it. The first message will be 
-// selected, which will trigger a message load/display.
+/*
+* Displays a list of messages. If passed a conv, loads it to the the message
+* list. If passed a list, simply displays it. The first message will be 
+* selected, which will trigger a message load/display.
+*
+* @param item	[ZmConv or ZmList]		conv or list of msgs
+* @param view	[constant]				owning view type
+*/
 ZmDoublePaneController.prototype._loadItem =
 function(params) {
-	try {
-		if (params.item.load) {
-			var results = params.item.load(this.getSearchString());
-			if (results instanceof ZmList) {
-				this._list = results;
-				this._activeSearch = results;
-			}
-		}
-		var elements = new Object();
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[params.view];
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._doublePaneView;
-		this._setView(params.view, elements, this._isTopLevelView());
-		this._resetNavToolBarButtons(params.view);
-				
-		// always allow derived classes to reset size after loading
-		var sz = this._doublePaneView.getSize();
-		this._doublePaneView._resetSize(sz.x, sz.y);
-	} catch (ex) {
-		this._handleException(ex, ZmDoublePaneController.prototype._loadItem, params);
+	if (params.item.load) { // conv
+		var respCallback = new AjxCallback(this, this._handleResponseLoadItem, params.view);
+		params.item.load(this.getSearchString(), null, null, null, null, respCallback);
+	} else { // msg list
+		this._displayResults(params.view);
 	}
+}
+
+ZmDoublePaneController.prototype._handleResponseLoadItem =
+function(args) {
+	var view	= args[0];
+	var result	= args[1];
+	
+	var results = result.getResponse();
+	if (results instanceof ZmList) {
+		this._list = results;
+		this._activeSearch = results;
+	}
+	this._displayResults(view);
+}
+
+
+ZmDoublePaneController.prototype._displayResults =
+function(view) {
+	var elements = new Object();
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._doublePaneView;
+	this._setView(view, elements, this._isTopLevelView());
+	this._resetNavToolBarButtons(view);
+				
+	// always allow derived classes to reset size after loading
+	var sz = this._doublePaneView.getSize();
+	this._doublePaneView._resetSize(sz.x, sz.y);
 }
 
 // Loads and displays the given message. If the message was unread, it gets marked as
@@ -364,17 +390,19 @@ ZmDoublePaneController.prototype._doGetMsg =
 function(params) {
 	var msg = params.msg;
 	if (msg) {
-		try {
-			msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML));
-			this._doublePaneView.setMsg(msg);
-			this._appCtxt.getSearchController().setEnabled(true);
-		} catch (ex) {
-			this._handleException(ex, ZmDoublePaneController.prototype._doGetMsg, params, false);
-		}
+		var respCallback = new AjxCallback(this, this._handleResponseDoGetMsg, msg);
+		msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback);
 	} else {
 		DBG.println("XXX: msg not loaded!");
 	}
 }
+
+ZmDoublePaneController.prototype._handleResponseDoGetMsg =
+function(msg) {
+	this._doublePaneView.setMsg(msg);
+	this._appCtxt.getSearchController().setEnabled(true);
+}
+
 
 // Returns the message currently being displayed.
 ZmDoublePaneController.prototype._getMsg =
