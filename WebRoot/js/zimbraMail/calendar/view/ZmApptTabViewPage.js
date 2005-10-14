@@ -20,6 +20,7 @@ function ZmApptTabViewPage(parent, appCtxt, className, posStyle) {
 	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 	this._composeMode = this._defaultComposeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+	this._supportTimeZones = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
 };
 
 ZmApptTabViewPage.prototype = new DwtTabViewPage;
@@ -36,6 +37,7 @@ function() {
 ZmApptTabViewPage.IFRAME_HEIGHT = "30px";
 ZmApptTabViewPage.UPLOAD_FIELD_NAME = "attUpload";
 
+/*
 ZmApptTabViewPage.REMINDER_OPTIONS = [
 	{ label: ZmMsg.none, 				value: "none", 	selected: true 	},
 	{ label: ZmMsg.showMessage, 		value: "show", 	selected: false }];
@@ -58,11 +60,12 @@ ZmApptTabViewPage.REMINDER_TIME_OPTIONS = [
 	{ label: "4 " + AjxMsg.days,		value: 5760, 	selected: false },
 	{ label: "1 " + AjxMsg.week,		value: 10080, 	selected: false },
 	{ label: "2 " + AjxMsg.weeks,		value: 20160, 	selected: false }];
+*/
 
 ZmApptTabViewPage.SHOWAS_OPTIONS = [
-	{ label: ZmMsg.free, 				value: "free", 	selected: true 	},
+	{ label: ZmMsg.free, 				value: "free", 	selected: false 	},
 	{ label: ZmMsg.replyTentative, 		value: "tentative", selected: false },
-	{ label: ZmMsg.busy, 				value: "busy", 	selected: false },
+	{ label: ZmMsg.busy, 				value: "busy", 	selected: true },
 	{ label: ZmMsg.outOfOffice,			value: "out", 	selected: false }];
 
 ZmApptTabViewPage.REPEAT_OPTIONS = [
@@ -106,25 +109,31 @@ function() {
 
 ZmApptTabViewPage.prototype.cleanup = 
 function() {
+	if (this._recurDialog) {
+		this._recurDialog.clearState();
+		this._recurDialogRepeatValue = null;
+	}
+
 	// clear out all input fields
 	this._subjectField.value = "";
 	this._locationField.value = "";
 	this._attendeesField.value = "";
+	this._repeatDescField.innerHTML = "";
 	this._notesHtmlEditor.clear();
 	
 	// reinit non-time sensitive selects option values
 	this._calendarSelect.setSelectedValue("personal");
 	this._showAsSelect.setSelectedValue(ZmApptTabViewPage.SHOWAS_OPTIONS[0].value);
-	this._reminderSelect.setSelectedValue(ZmApptTabViewPage.REMINDER_OPTIONS[0].value);
-	this._reminderTimesSelect.setSelectedValue(ZmApptTabViewPage.REMINDER_TIME_OPTIONS[0].value);
+	//this._reminderSelect.setSelectedValue(ZmApptTabViewPage.REMINDER_OPTIONS[0].value);
+	//this._reminderTimesSelect.setSelectedValue(ZmApptTabViewPage.REMINDER_TIME_OPTIONS[0].value);
 	this._repeatSelect.setSelectedValue(ZmApptTabViewPage.REPEAT_OPTIONS[0].value);
 	// reinit checkboxes
-	this._privateCheckbox.checked = false;
+	//this._privateCheckbox.checked = false;
 	this._allDayCheckbox.checked = false;
 	// show/hide elements as necessary
-	Dwt.setVisibility(this._reminderTimesSelect.getHtmlElement(), false);
+	//Dwt.setVisibility(this._reminderTimesSelect.getHtmlElement(), false);
 	this._showTimeFields(true);
-	
+
 	// reset compose view to html preference
 	this.setComposeMode(this._defaultComposeMode);
 
@@ -280,14 +289,20 @@ function() {
 	var i = 0;
 	
 	html[i++] = "<table border=0 width=100%><tr>";
-	html[i++] = "<td valign=top width=50%><fieldset><legend>";
+	html[i++] = "<td valign=top width=50%><fieldset";
+	if (AjxEnv.isMozilla)
+		html[i++] = " style='border: 1px dotted #555555'";
+	html[i++] = "><legend style='color:#555555'>";
 	html[i++] = ZmMsg.details;
-	html[i++] = "</legend><div style='height:110px;'>";
+	html[i++] = "</legend><div style='height:90px;'>";
 	html[i++] = this._getDetailsHtml();
 	html[i++] = "</div></fieldset></td>";
-	html[i++] = "<td valign=top width=50%><fieldset><legend>";
+	html[i++] = "<td valign=top width=50%><fieldset";
+	if (AjxEnv.isMozilla)
+		html[i++] = " style='border: 1px dotted #555555'";
+	html[i++] = "><legend style='color:#555555'>";
 	html[i++] = ZmMsg.time;
-	html[i++] = "</legend><div style='height:110px;'>";
+	html[i++] = "</legend><div style='height:90px;'>";
 	html[i++] = this._getTimeHtml();
 	html[i++] = "</div></fieldset>";
 	html[i++] = "</td></tr></table>";
@@ -311,6 +326,7 @@ function() {
 	var calCell = Dwt.getDomObj(doc, this._calSelectId);
 	if (calCell)
 		calCell.appendChild(this._calendarSelect.getHtmlElement());
+	delete this._calSelectId;
 
 	this._showAsSelect = new DwtSelect(this);
 	for (var i = 0; i < ZmApptTabViewPage.SHOWAS_OPTIONS.length; i++) {
@@ -320,7 +336,9 @@ function() {
 	var showAsCell = Dwt.getDomObj(doc, this._showAsSelectId);
 	if (showAsCell)
 		showAsCell.appendChild(this._showAsSelect.getHtmlElement());
-
+	delete this._showAsSelectId;
+/*
+ * REMINDER IS CURRENTLY NOT SUPPORTED
 	this._reminderSelect = new DwtSelect(this);
 	this._reminderSelect.addChangeListener(new AjxListener(this, this._reminderChangeListener));
 	for (var i = 0; i < ZmApptTabViewPage.REMINDER_OPTIONS.length; i++) {
@@ -330,6 +348,7 @@ function() {
 	var reminderCell = Dwt.getDomObj(doc, this._reminderSelectId);
 	if (reminderCell)
 		reminderCell.appendChild(this._reminderSelect.getHtmlElement());
+	delete this._reminderSelectId;
 	
 	this._reminderTimesSelect = new DwtSelect(this);
 	for (var i = 0; i < ZmApptTabViewPage.REMINDER_TIME_OPTIONS.length; i++) {
@@ -340,7 +359,8 @@ function() {
 	var reminderTimesCell = Dwt.getDomObj(doc, this._reminderTimesSelectId);
 	if (reminderTimesCell)
 		reminderTimesCell.appendChild(this._reminderTimesSelect.getHtmlElement());
-
+	delete this._reminderTimesSelectId;
+*/
 	// create selects for Time section
 	this._startTimeSelect = new DwtSelect(this);
 	if (this._timeOptions) {
@@ -352,6 +372,7 @@ function() {
 	var startTimeCell = Dwt.getDomObj(doc, this._startTimeSelectId);
 	if (startTimeCell)
 		startTimeCell.appendChild(this._startTimeSelect.getHtmlElement());
+	delete this._startTimeSelectId;
 
 	this._endTimeSelect = new DwtSelect(this);
 	if (this._timeOptions) {
@@ -363,17 +384,21 @@ function() {
 	var endTimeCell = Dwt.getDomObj(doc, this._endTimeSelectId);
 	if (endTimeCell)
 		endTimeCell.appendChild(this._endTimeSelect.getHtmlElement());
+	delete this._endTimeSelectId;
 
-	this._endTZoneSelect = new DwtSelect(this);
-	// XXX: this seems like overkill to list all 75 timezones!
-	var timezones = ZmTimezones.getAbbreviatedZoneChoices();
-	for (var i = 0; i < timezones.length; i++)
-		this._endTZoneSelect.addOption(timezones[i].label, false, timezones[i].value);
-	// init timezone to the local machine's time zone
-	this._endTZoneSelect.setSelectedValue(ZmTimezones.guessMachineTimezone());
-	var endTZoneCell = Dwt.getDomObj(doc, this._endTZoneSelectId);
-	if (endTZoneCell)
-		endTZoneCell.appendChild(this._endTZoneSelect.getHtmlElement());
+	if (this._supportTimeZones) {
+		this._endTZoneSelect = new DwtSelect(this);
+		// XXX: this seems like overkill to list all 75 timezones!
+		var timezones = ZmTimezones.getAbbreviatedZoneChoices();
+		for (var i = 0; i < timezones.length; i++)
+			this._endTZoneSelect.addOption(timezones[i].label, false, timezones[i].value);
+		// init timezone to the local machine's time zone
+		this._endTZoneSelect.setSelectedValue(ZmTimezones.guessMachineTimezone());
+		var endTZoneCell = Dwt.getDomObj(doc, this._endTZoneSelectId);
+		if (endTZoneCell)
+			endTZoneCell.appendChild(this._endTZoneSelect.getHtmlElement());
+		delete this._endTZoneSelectId;
+	}
 	
 	this._repeatSelect = new DwtSelect(this);
 	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
@@ -384,6 +409,7 @@ function() {
 	var repeatCell = Dwt.getDomObj(doc, this._repeatSelectId);
 	if (repeatCell)
 		repeatCell.appendChild(this._repeatSelect.getHtmlElement());
+	delete this._repeatSelectId;
 };
 
 ZmApptTabViewPage.prototype._createButtons = 
@@ -399,6 +425,7 @@ function() {
 	var startButtonCell = Dwt.getDomObj(doc, this._startMiniCalBtnId);
 	if (startButtonCell)
 		startButtonCell.appendChild(this._startDateButton.getHtmlElement());
+	delete this._startMiniCalBtnId;
 	
 	this._endDateButton = new DwtButton(this);
 	this._endDateButton.setImage("SelectPullDownArrow");
@@ -408,6 +435,7 @@ function() {
 	var endButtonCell = Dwt.getDomObj(doc, this._endMiniCalBtnId);
 	if (endButtonCell)
 		endButtonCell.appendChild(this._endDateButton.getHtmlElement());
+	delete this._endMiniCalBtnId;
 
 	this._attendeesBtnListener = new AjxListener(this, this._attendeesButtonListener);
 	this._attendeesButton = new DwtButton(this);
@@ -418,6 +446,7 @@ function() {
 	var attendeesButtonCell = Dwt.getDomObj(doc, this._attendeesBtnId);
 	if (attendeesButtonCell)
 		attendeesButtonCell.appendChild(this._attendeesButton.getHtmlElement());
+	delete this._attendeesBtnId;
 };
 
 ZmApptTabViewPage.prototype._getDetailsHtml = 
@@ -426,47 +455,55 @@ function() {
 	this._locationFieldId 		= Dwt.getNextId();
 	this._calSelectId 			= Dwt.getNextId();
 	this._showAsSelectId 		= Dwt.getNextId();
-	this._reminderSelectId 		= Dwt.getNextId();
-	this._reminderTimesSelectId = Dwt.getNextId();
-	this._privateCheckboxId 	= Dwt.getNextId();
+	//this._reminderSelectId 		= Dwt.getNextId();
+	//this._reminderTimesSelectId = Dwt.getNextId();
+	//this._privateCheckboxId 	= Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
 	
 	html[i++] = "<table border=0 width=100%>";
-	html[i++] = "<tr><td width=1% align=right>";
+	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'><sup>*</sup>";
 	html[i++] = ZmMsg.subject;
-	html[i++] = "<sup>*</sup>:</td><td colspan=4><input style='width:100%' id='";
+	html[i++] = ":</td><td colspan=4><input style='width:100%' id='";
 	html[i++] = this._subjectFieldId;
 	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td width=1% align=right>";
+	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.location;
 	html[i++] = ":</td><td colspan=4><input style='width:100%' id='";
 	html[i++] = this._locationFieldId;
 	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td width=1% align=right>";
+	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.calendar;
 	html[i++] = ":</td><td width=1% id='"
 	html[i++] = this._calSelectId;
-	html[i++] = "'></td><td width=1% align=right class='nobreak'>";
+	html[i++] = "'></td><td width=1% class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.showAs;
 	html[i++] = "</td><td width=1% id='";
 	html[i++] = this._showAsSelectId;
 	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td width=1% align=right>";
+	/*
+	 * REMINDER IS CURRENTLY NOT SUPPORTED
+	 *
+	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.reminder;
 	html[i++] = ":</td><td colspan=10>";
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%><tr>";
-	html[i++] = "<td id='";
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td id='";
 	html[i++] = this._reminderSelectId;
 	html[i++] = "'><td>&nbsp;</td><td style='visibility:hidden' id='";
 	html[i++] = this._reminderTimesSelectId;
-	html[i++] = "'></td><td width=100%>&nbsp;</td><td>";
+	html[i++] = "'></td></tr></table></td></tr>";
+	*/
+	/* 
+	 * PRIVATE IS CURRENTLY NOT SUPPORTED
+	 *
+	html[i++] = "<tr><td colspan=10 align=right><table cellpadding=1 cellspacing=1 border=0><tr><td>";
 	html[i++] = "<input type='checkbox' id='";
 	html[i++] = this._privateCheckboxId;
-	html[i++] = "'></td><td>&nbsp;</td><td>";
+	html[i++] = "'></td><td>";
 	html[i++] = ZmMsg._private;
 	html[i++] = "</td></tr></table>";
+	*/
 	html[i++] = "</td></tr></table>";
 	
 	return html.join("");
@@ -489,12 +526,12 @@ function() {
 	var html = new Array();
 	var i = 0;
 	
-	html[i++] = "<table border=0>";
-	html[i++] = "<tr><td align=right>";
+	html[i++] = "<table border=0 width=1%>";
+	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.start;
 	html[i++] = ":</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = "<input style='height:22px;' type='text' size=10 maxlength=10 id='";
+	html[i++] = "<input style='height:22px;' type='text' size=11 maxlength=10 id='";
 	html[i++] = this._startDateFieldId;
 	html[i++] = "' value='";
 	html[i++] = currDate;
@@ -506,13 +543,13 @@ function() {
 	html[i++] = this._startTimeSelectId;
 	html[i++] = "'></td><td width=1%><input type='checkbox' id='";
 	html[i++] = this._allDayCheckboxId;
-	html[i++] = "'></td><td>";
+	html[i++] = "'></td><td><nobr>";
 	html[i++] = ZmMsg.allDayEvent;
-	html[i++] = "</td></tr><tr><td align=right>";
+	html[i++] = "</td></tr><tr><td class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.end;
 	html[i++] = ":</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = "<input style='height:22px;' type='text' size=10 maxlength=10 id='";
+	html[i++] = "<input style='height:22px;' type='text' size=11 maxlength=10 id='";
 	html[i++] = this._endDateFieldId;
 	html[i++] = "' value='";
 	html[i++] = currDate;
@@ -522,10 +559,14 @@ function() {
 	html[i++] = "</tr></table></td>";
 	html[i++] = "<td>@</td><td id='";
 	html[i++] = this._endTimeSelectId;
-	html[i++] = "'></td><td colspan=2 id='";
-	html[i++] = this._endTZoneSelectId;
-	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td align=right>";
+	html[i++] = "'></td>";
+	if (this._supportTimeZones) {
+		html[i++] = "<td colspan=2 id='";
+		html[i++] = this._endTZoneSelectId;
+		html[i++] = "'></td>";
+	}
+	html[i++] = "</tr>";
+	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.repeat;
 	html[i++] = ":</td><td colspan=2 id='";
 	html[i++] = this._repeatSelectId;
@@ -577,7 +618,10 @@ function() {
 
 	html[i++] = "<div style='display:none; overflow:hidden' id='";
 	html[i++] = this._attachDivId;
-	html[i++] = "'><table border=0 width=100%><tr><td><fieldset><legend>";
+	html[i++] = "'><table border=0 width=100%><tr><td><fieldset";
+	if (AjxEnv.isMozilla)
+		html[i++] = " style='border:1px dotted #555555";
+	html[i++] = "><legend style='color:#555555'>";
 	html[i++] = ZmMsg.attachments;
 	html[i++] = "</legend><div id='";
 	html[i++] = this._attachInnerDivId;
@@ -609,12 +653,12 @@ ZmApptTabViewPage.prototype._cacheFields =
 function() {
 	var doc = this.getDocument();
 	
-	this._subjectField 		= Dwt.getDomObj(doc, this._subjectFieldId);
-	this._locationField 	= Dwt.getDomObj(doc, this._locationFieldId);
-	this._startDateField 	= Dwt.getDomObj(doc, this._startDateFieldId);
-	this._endDateField 		= Dwt.getDomObj(doc, this._endDateFieldId);
-	this._attendeesField 	= Dwt.getDomObj(doc, this._attendeesFieldId);
-	this._privateCheckbox 	= Dwt.getDomObj(doc, this._privateCheckboxId);
+	this._subjectField 		= Dwt.getDomObj(doc, this._subjectFieldId); 		delete this._subjectFieldId;
+	this._locationField 	= Dwt.getDomObj(doc, this._locationFieldId); 		delete this._locationFieldId;
+	this._startDateField 	= Dwt.getDomObj(doc, this._startDateFieldId); 		delete this._startDateFieldId;
+	this._endDateField 		= Dwt.getDomObj(doc, this._endDateFieldId);	 		delete this._endDateFieldId;
+	this._attendeesField 	= Dwt.getDomObj(doc, this._attendeesFieldId); 		delete this._attendeesFieldId;
+	//this._privateCheckbox 	= Dwt.getDomObj(doc, this._privateCheckboxId); 	delete this._privateCheckboxId;
 	this._allDayCheckbox 	= Dwt.getDomObj(doc, this._allDayCheckboxId);
 	this._repeatDescField 	= Dwt.getDomObj(doc, this._repeatDescId);
 };
@@ -756,20 +800,22 @@ ZmApptTabViewPage.prototype._showTimeFields =
 function(show) {
 	Dwt.setVisibility(this._startTimeSelect.getHtmlElement(), show);
 	Dwt.setVisibility(this._endTimeSelect.getHtmlElement(), show);
-	Dwt.setVisibility(this._endTZoneSelect.getHtmlElement(), show);
+	if (this._supportTimeZones)
+		Dwt.setVisibility(this._endTZoneSelect.getHtmlElement(), show);
 	// also show/hide the "@" text
 	Dwt.setVisibility(this._startTimeSelect.getHtmlElement().parentNode.previousSibling, show);
 	Dwt.setVisibility(this._endTimeSelect.getHtmlElement().parentNode.previousSibling, show);
 };
 
 ZmApptTabViewPage.prototype._showRecurDialog = 
-function() {
+function(repeatType) {
 	if (!this._recurDialog) {
 		this._recurDialog = new ZmApptRecurDialog(this._appCtxt.getShell(), this._appCtxt);
-		this._recurDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._recurOkListener));
-		this._recurDialog.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._recurCancelListener));
+		this._recurDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._recurOkListener));
+		this._recurDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._recurCancelListener));
 	}
-	this._recurDialog.initialize(this._startDateField.value, this._endDateField.value);
+	var type = repeatType || this._recurDialogRepeatValue;
+	this._recurDialog.initialize(this._startDateField.value, this._endDateField.value, type);
 	this._recurDialog.popup();
 };
 
@@ -857,10 +903,11 @@ function(ev) {
 	this._dateCalendar.setVisible(false);
 };
 
+/*
 ZmApptTabViewPage.prototype._reminderChangeListener = 
 function(ev) {
 	Dwt.setVisibility(this._reminderTimesSelect.getHtmlElement(), ev._args.newValue == "show");
-};
+};*/
 
 ZmApptTabViewPage.prototype._repeatChangeListener = 
 function(ev) {	
@@ -885,9 +932,9 @@ ZmApptTabViewPage.prototype._recurOkListener =
 function(ev) {
 	// TODO
 	// - and get the recur rules to update the recur language
-	var repeatValue = this._recurDialog.getSelectedRepeatValue();
-	if (repeatValue == "NON") {
-		this._repeatSelect.setSelectedValue(repeatValue);
+	this._recurDialogRepeatValue = this._recurDialog.getSelectedRepeatValue();
+	if (this._recurDialogRepeatValue == "NON") {
+		this._repeatSelect.setSelectedValue(this._recurDialogRepeatValue);
 		this._repeatDescField.innerHTML = "";
 	} else {
 		this._repeatSelect.setSelectedValue("CUS");
@@ -955,6 +1002,6 @@ function(ev) {
 		el._tabViewPage._showTimeFields(el.checked ? false : true);
 	} else if (el.id == tvp._repeatDescId) {
 		tvp._oldRepeatValue = tvp._repeatSelect.getValue();
-		tvp._showRecurDialog();
+		tvp._showRecurDialog(tvp._oldRepeatValue);
 	}
 };

@@ -953,6 +953,12 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	background-color: #EEEEEE;
 }
 
+.ZmApptTabViewPageField {
+	text-align: right;
+	color: #555555;
+	white-space: nowrap;
+}
+
 /** appointment detail **/
 
 .ZmAppointmentDialog {
