@@ -162,7 +162,7 @@ function(treeId) {
 */
 ZmOverviewController.prototype.getTreeData =
 function(treeId) {
-	return this._controllers[treeId]._getData();
+	return this._appCtxt.getTree(treeId);
 }
 
 /**
