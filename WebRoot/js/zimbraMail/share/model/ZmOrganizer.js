@@ -66,8 +66,12 @@ ZmOrganizer.SEARCH	= ZmEvent.S_SEARCH;
 ZmOrganizer.CALENDAR = ZmEvent.S_APPT;
 
 // defined in com.zimbra.cs.mailbox.Mailbox
-ZmOrganizer.ID_ROOT = 1;
-ZmOrganizer.ID_CALENDAR = 10;
+ZmOrganizer.ID_ROOT		= 1;
+ZmOrganizer.ID_TRASH	= 3;
+ZmOrganizer.ID_SPAM		= 4;
+ZmOrganizer.ID_CALENDAR	= 10;
+
+ZmOrganizer.FIRST_USER_ID = 256;
 
 ZmOrganizer.SOAP_CMD = new Object();
 ZmOrganizer.SOAP_CMD[ZmOrganizer.FOLDER]	= "FolderAction";
@@ -126,22 +130,12 @@ for (var i = 0; i <= ZmOrganizer.MAX_COLOR; i++) {
 	ZmOrganizer.COLOR_CHOICES.push( { value: i, label: color } );
 }
 
-// Static methods
-
-ZmOrganizer.prototype._setSharesFromJs = function(obj) {
-	if (obj.acl && obj.acl.grant && obj.acl.grant.length > 0) {
-		var shares = new Array(obj.acl.grant.length);
-		for (var i = 0; i < obj.acl.grant.length; i++) {
-			var grant = obj.acl.grant[i];
-			shares[i] = ZmOrganizerShare.createFromJs(this, grant);
-		}
-		this.setShares(shares);
-	}
-}
-
 // Abstract methods
+
 ZmOrganizer.sortCompare = function(organizerA, organizerB) {}
 ZmOrganizer.prototype.create = function() {}
+
+// Static methods
 
 /**
 * Checks an organizer (folder or tag) name for validity. Returns an error message if the
@@ -222,6 +216,29 @@ ZmOrganizer.prototype.addShare = function(share) {
 ZmOrganizer.prototype.getIcon = function() {};
 
 // Actions
+
+ZmOrganizer.prototype.dispose =
+function() {
+	DBG.println(AjxDebug.DBG1, "disposing: " + this.name + ", ID: " + this.id);
+	var isEmptyOp = (this.id == ZmOrganizer.ID_SPAM || this.id == ZmOrganizer.ID_TRASH);
+	// make sure we're not deleting a system folder (unless we're emptying SPAM or TRASH)
+	if (this.id < ZmOrganizer.FIRST_USER_ID && !isEmptyOp)
+		return;
+	
+	var action = isEmptyOp ? "empty" : "delete";
+	var success = this._organizerAction(action);
+
+	if (success) {
+		if (isEmptyOp) {
+			// emptied Trash or Spam will have no items
+			this.numUnread = this.numTotal = 0;
+			this._eventNotify(ZmEvent.E_DELETE);
+		} else {
+			this.tree.deleteLocal([this]);
+			this._eventNotify(ZmEvent.E_DELETE);
+		}
+	}
+}
 
 /**
 * Assigns the organizer a new name.
@@ -502,6 +519,17 @@ ZmOrganizer.prototype.addChangeListener = function(listener) {
 }
 ZmOrganizer.prototype.removeChangeListener = function(listener) {
 	this.tree.removeChangeListener(listener);
+}
+
+ZmOrganizer.prototype._setSharesFromJs = function(obj) {
+	if (obj.acl && obj.acl.grant && obj.acl.grant.length > 0) {
+		var shares = new Array(obj.acl.grant.length);
+		for (var i = 0; i < obj.acl.grant.length; i++) {
+			var grant = obj.acl.grant[i];
+			shares[i] = ZmOrganizerShare.createFromJs(this, grant);
+		}
+		this.setShares(shares);
+	}
 }
 
 // Notify our listeners.

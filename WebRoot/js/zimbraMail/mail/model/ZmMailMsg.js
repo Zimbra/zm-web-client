@@ -837,6 +837,7 @@ function(msgNode) {
 		// TODO: Make server output better msgNode.shr property...
 		var shareXmlDoc = AjxXmlDoc.createFromXml(msgNode.shr[0].content);
 		this.share = ZmShareInfo.createFromDom(shareXmlDoc.getDoc());
+		this.share._msgId = msgNode.id;
 	}
 
 	if (msgNode.e && this.participants.size() == 0) {

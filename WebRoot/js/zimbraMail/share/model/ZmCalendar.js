@@ -102,12 +102,6 @@ function() {
 	return "ZmCalendar";
 }
 
-ZmCalendar.prototype.dispose =
-function() {
-	DBG.println(AjxDebug.DBG1, "disposing: " + this.name + ", ID: " + this.id);
-	// TODO
-}
-
 ZmCalendar.prototype.getName = 
 function() {
 	if (this.id == ZmOrganizer.ID_ROOT) {

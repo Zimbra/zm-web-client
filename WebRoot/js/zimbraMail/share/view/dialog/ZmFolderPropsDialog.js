@@ -61,17 +61,17 @@ ZmFolderPropsDialog._XFORM_DEF = { items: [
 	{type:_GROUPER_, label:"Properties", width:"100%", 
 		items: [
 			// NOTE: user calendar cannot be renamed...
-			{type:_OUTPUT_, label:"Name:", ref:"folder_name", width:"200",
+			{type:_OUTPUT_, label:"Name:", ref:"folder_name", //width:"200",
 				relevant: "get('folder_id') == ZmCalendar.ID_CALENDAR", relevantBehavior: _HIDE_
 			},
-			{type:_INPUT_, label:"Name:", ref:"folder_name", width:"200",
+			{type:_INPUT_, label:"Name:", ref:"folder_name", //width:"200",
 				relevant: "get('folder_id') != ZmCalendar.ID_CALENDAR", relevantBehavior: _HIDE_
 			},
-			{type:_SPACER_, height:3},
+			//{type:_SPACER_, height:3},
 			{type: _OUTPUT_, ref:"folder_view", label:"Type:", 
 				choices: ZmFolderPropsDialog.TYPE_CHOICES
 			},
-			{type:_SPACER_, height:3},
+			//{type:_SPACER_, height:3},
 			{type:_DWT_SELECT_, ref: "folder_color", label:"Color:",
 				choices: ZmOrganizer.COLOR_CHOICES
 			}
@@ -82,17 +82,16 @@ ZmFolderPropsDialog._XFORM_DEF = { items: [
 	{type:_GROUPER_, label:"Sharing for this folder", 
 		relevant: "get('folder_acl_grant') && get('folder_acl_grant').length > 0", relevantBehavior: _HIDE_,
 		items: [
-			{type:_REPEAT_, ref:"folder_acl_grant", number: 0, colSpan:2, 
+			{type:_REPEAT_, ref:"folder_acl_grant", number: 0, colSpan:3, 
 				showAddButton:false, showRemoveButton:false, items: [
-					{type:_OUTPUT_, ref:"granteeName", width:140},
-					{type:_OUTPUT_, ref:"perm", width:130,
+					{type:_OUTPUT_, ref:"granteeName"},//, width:140},
+					{type:_OUTPUT_, ref:"perm", width:80,
 						getDisplayValue: function(value) {
 							return ZmShareInfo.ROLES[value];
 						}
 					},
 					{type:_ANCHOR_, label:"Edit...", labelLocation:_NONE_,
 						showInNewWindow: false,
-						//href: "javascript:void 0;",
 						onActivate: function(event) {
 							var form = this.getForm();
 							var controller = form.getController();

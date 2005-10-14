@@ -51,36 +51,33 @@ ZmSharePropsDialog._MAIL_COMPOSE = 'C';
 // TODO: i18n
 ZmSharePropsDialog._XFORM_DEF = { items: [
 	{type:_OUTPUT_, label:"Folder:", ref:"folder_name", width:"100%", 
-		relevant:"get('folder_view')=='folder'",relevantBehavior:_HIDE_
+		relevant:"get('folder_type') != ZmOrganizer.CALENDAR",relevantBehavior:_HIDE_
 	},
 	{type:_OUTPUT_, label:"Calendar:", ref:"folder_name", width:"100%", 
-		relevant:"get('folder_view')=='calendar'",relevantBehavior:_HIDE_
+		relevant:"get('folder_type') == ZmOrganizer.CALENDAR",relevantBehavior:_HIDE_
 	},
-	{type:_SPACER_, height:3},
 	{type:_GROUP_, label:"Share with:", width:"100%", numCols:3, useParentTable: false, items:[
 			{type:_OUTPUT_, ref:"share_grantee_name", width:"250", relevant:"get('type')!=ZmSharePropsDialog.NEW",relevantBehavior:_HIDE_},
-			{type:_GROUP_, useParentTable: false, relevant:"get('type') == ZmSharePropsDialog.NEW", relevantBehavior:_HIDE_, items:[
-				{type:_INPUT_, ref:"share_grantee_name", width:"250"},
+			{type:_GROUP_, //useParentTable: false, 
+			relevant:"get('type') == ZmSharePropsDialog.NEW", relevantBehavior:_HIDE_, items:[
+				{type:_INPUT_, ref:"share_grantee_name", width:"250"}
+				/***
 				{type:_BUTTON_, label:"Search...", cssStyle:"margin-left:10px", 
 					relevant:"get('type') == ZmSharePropsDialog.NEW", relevantBehavior:_HIDE_,
 					onActivate: function() {
 						this.getForm().getController()._popupUserPicker();
 					}
 				}
+				/***/
 			]}
 		]
 	},
-	{type:_SPACER_, height:3},
 	{type:_RADIO_GROUPER_, label:"Role:", numCols:3, colSizes:[25,60,'*'], items: [
 			{type:_RADIO_, ref:"share_rights", value:ZmShareInfo.ROLE_NONE, label:"<b>"+ZmShareInfo.ROLES[ZmShareInfo.ROLE_NONE]+"</b>"},{type:_OUTPUT_, value:ZmShareInfo.ACTIONS[""]},
 			{type:_RADIO_, ref:"share_rights", value:ZmShareInfo.ROLE_VIEWER, label:"<b>"+ZmShareInfo.ROLES[ZmShareInfo.ROLE_VIEWER]+"</b>"},{type:_OUTPUT_, value:ZmShareInfo.ACTIONS["r"]},
 			{type:_RADIO_, ref:"share_rights", value:ZmShareInfo.ROLE_MANAGER, label:"<b>"+ZmShareInfo.ROLES[ZmShareInfo.ROLE_MANAGER]+"</b>"},{type:_OUTPUT_, value:ZmShareInfo.ACTIONS["rwidx"]}
 		]
 	},
-
-	{type:_SPACER_, height:10},
-
-
 	{type:_GROUP_, colSpan:'*', width:"100%", numCols:2, colSizes:[35,'*'], items:[
 			{type:_CHECKBOX_, ref:"sendMail", trueValue:true, falseValue:false, label:"Send mail to the recipient about this share"},
 			{type:_SPACER_, height:3, relevant:"get('sendMail')"},
@@ -99,7 +96,7 @@ ZmSharePropsDialog._XFORM_DEF = { items: [
 ]};
 ZmSharePropsDialog._XMODEL_DEF = { items: [
 	{ id: "folder_name", ref: "folder/name", type: _STRING_ },
-	{ id: "folder_view", ref: "folder/view", type: _STRING_ },
+	{ id: "folder_type", ref: "folder/type", type: _STRING_ },
 	{ id: "share_grantee_name", ref: "share/granteeName", type: _STRING_, required: true },
 	{ id: "share_rights", ref: "share/perm", type: _STRING_ },
 	{ id: "share_showPrivate", ref: "share/showPrivate", type: _ENUM_, choices: [true, false] },

@@ -37,17 +37,17 @@ ZmFolder.SEP = "/";
 // system folders (see Mailbox.java in ZimbraServer for positive integer constants)
 ZmFolder.ID_OTHER			= -2;	// used for tcon value (see below)
 ZmFolder.ID_SEP				= -1;	// separator
-ZmFolder.ID_ROOT = ZmOrganizer.ID_ROOT;
+ZmFolder.ID_ROOT			= ZmOrganizer.ID_ROOT;
 ZmFolder.ID_INBOX			= 2;
-ZmFolder.ID_TRASH			= 3;
-ZmFolder.ID_SPAM			= 4;
+ZmFolder.ID_TRASH			= ZmOrganizer.ID_TRASH;
+ZmFolder.ID_SPAM			= ZmOrganizer.ID_SPAM;
 ZmFolder.ID_SENT			= 5;
 ZmFolder.ID_DRAFTS			= 6;
 ZmFolder.LAST_SYSTEM_ID		= 6;
 ZmFolder.ID_CONTACTS 		= 7;
 ZmFolder.ID_TAGS	 		= 8;
 ZmFolder.ID_CALENDAR		= ZmOrganizer.ID_CALENDAR;
-ZmFolder.FIRST_USER_ID		= 256;
+ZmFolder.FIRST_USER_ID		= ZmOrganizer.FIRST_USER_ID;
 
 // system folder names
 ZmFolder.MSG_KEY = new Object();
@@ -281,29 +281,6 @@ function(pathOnly) {
 	path = '"' + path + '"';
 	query = pathOnly ? path : "in:" + path;
 	return query;
-}
-
-ZmFolder.prototype.dispose =
-function() {
-	DBG.println(AjxDebug.DBG1, "disposing: " + this.name + ", ID: " + this.id);
-	var isEmptyOp = (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH);
-	// make sure we're not deleting a system folder (unless we're emptying SPAM or TRASH)
-	if (this.id < ZmFolder.FIRST_USER_ID && !isEmptyOp)
-		return;
-	
-	var action = isEmptyOp ? "empty" : "delete";
-	var success = this._organizerAction(action);
-
-	if (success) {
-		if (isEmptyOp) {
-			// emptied Trash or Spam will have no items
-			this.numUnread = this.numTotal = 0;
-			this._eventNotify(ZmEvent.E_DELETE);
-		} else {
-			this.tree.deleteLocal([this]);
-			this._eventNotify(ZmEvent.E_DELETE);
-		}
-	}
 }
 
 ZmFolder.prototype.getName = 

@@ -32,6 +32,7 @@ function ZmCalendarTreeController(appCtxt, type, dropTgt) {
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 
 	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editPropsListener);
+	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 
 	this._eventMgrs = {};
 }
@@ -114,6 +115,12 @@ function(overviewId, showUnread, omit) {
 	}
 }
 
+ZmCalendarTreeController.prototype.resetOperations = 
+function(actionMenu, type, id) {
+	// can't delete personal calendar
+	actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_CALENDAR);
+}
+
 // Returns a list of desired header action menu operations
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps = function() {
 	return null;
@@ -121,36 +128,21 @@ ZmCalendarTreeController.prototype._getHeaderActionMenuOps = function() {
 
 // Returns a list of desired action menu operations
 ZmCalendarTreeController.prototype._getActionMenuOps = function() {
-	return [ ZmOperation.EDIT_PROPS ];
+	return [ ZmOperation.EDIT_PROPS, ZmOperation.DELETE ];
 }
 
 ZmCalendarTreeController.prototype.getTreeStyle = function() {
 	return DwtTree.CHECKEDITEM_STYLE;
 }
 
-// Returns the dialog for organizer creation
-ZmCalendarTreeController.prototype._getNewDialog = function() {
-	alert("TODO: get new dialog");
-}
-
-// Returns the dialog for renaming an organizer
-ZmCalendarTreeController.prototype._getRenameDialog = function() {
-	alert("TODO: get rename dialog");
-}
-
 // Method that is run when a tree item is left-clicked
 ZmCalendarTreeController.prototype._itemClicked = function() {
-	alert("TODO: item clicked");
+	// TODO
 }
 
 // Handles a drop event
 ZmCalendarTreeController.prototype._dropListener = function() {
-	alert("TODO: drop listener");
-}
-
-// Returns an appropriate title for the "Move To" dialog
-ZmCalendarTreeController.prototype._getMoveDialogTitle = function() {
-	alert("TODO: get move dialog title");
+	// TODO
 }
 
 // Listener callbacks
@@ -239,6 +231,12 @@ ZmCalendarTreeController.prototype._editPropsListener = function(ev) {
 	var folder = this._pendingActionData;
 	folderPropsDialog.setFolder(folder);
 	folderPropsDialog.popup();
+}
+ZmCalendarTreeController.prototype._deleteListener = function(ev) {
+	this._pendingActionData = this._getActionedOrganizer(ev);
+	
+	var folder = this._pendingActionData;
+	folder.dispose();
 }
 
 ZmCalendarTreeController.prototype._notifyListeners =

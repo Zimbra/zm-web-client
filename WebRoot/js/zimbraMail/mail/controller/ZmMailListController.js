@@ -309,14 +309,12 @@ function(ev) {
 
 ZmMailListController.prototype._acceptShareHandler = 
 function(ev) {
-	alert("move message to trash");
-	/*** TODO: msg is null -- should I be using conv id?
-	var msgController = this._app.getMsgController();
-	var msg = msgController._getMsg();
-	
+	var cache = this._appCtxt.getItemCache();
+	var msg = cache.get(ev._share._msgId);
+	var folder = cache.get(ZmFolder.ID_TRASH);
+
 	var list = this.getList();
-	list.moveItems([ msg.id ], ZmFolder.ID_TRASH);
-	/***/
+	list.moveItems(msg, folder);
 }
 
 ZmMailListController.prototype._declineShareHandler = ZmMailListController.prototype._acceptShareHandler;
