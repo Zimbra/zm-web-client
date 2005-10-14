@@ -196,12 +196,22 @@ function(showUnread, maxLength, noMarkup) {
 	return name;
 }
 
-/** NOTE: Does not notify change. */
 ZmOrganizer.prototype.setShares = function(shares) {
 	this.shares = shares;
 }
 
-/** NOTE: Does not notify change. */
+ZmOrganizer.prototype.getShareByGranteeId = function(granteeId) {
+	if (this.shares) {
+		for (var i = 0; i < this.shares.length; i++) {
+			var share = this.shares[i];
+			if (share.granteeId == granteeId) {
+				return share;
+			}
+		}
+	}
+	return null;
+}
+
 ZmOrganizer.prototype.addShare = function(share) {
 	if (!this.shares) {
 		this.shares = [];
@@ -309,6 +319,21 @@ function(obj) {
 			this.color = color;
 			fields[ZmOrganizer.F_COLOR] = true;
 		}
+		doNotify = true;
+	}
+	if (obj.acl && obj.acl.grant) {
+		for (var i = 0; i < obj.acl.grant.length; i++) {
+			var grant = obj.acl.grant[i];
+			var share = this.getShareByGranteeId(grant.zid);
+			if (share) {
+				share.perm = grant.perm;
+			}
+			else {
+				share = ZmOrganizerShare.createFromJs(this, grant);
+				this.addShare(share, true);
+			}
+		}
+		fields[ZmOrganizer.F_SHARES] = true;
 		doNotify = true;
 	}
 	

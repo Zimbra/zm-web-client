@@ -84,6 +84,14 @@ function(calA, calB) {
 	return 0;
 }
 
+ZmCalendar.prototype.notifyCreate =
+function(obj, link) {
+	var calendar = ZmCalendar.createFromJs(this, obj, this.tree, link);
+	var index = ZmOrganizer.getSortIndex(calendar, ZmCalendar.sortCompare);
+	this.children.add(calendar, index);
+	this._eventNotify(ZmEvent.E_CREATE, calendar);
+}
+
 ZmCalendar.checkName =
 function(name) {
 	return ZmOrganizer.checkName(name);
@@ -94,15 +102,10 @@ function() {
 	return "ZmCalendar";
 }
 
-ZmCalendar.prototype.notifyModify =
-function(obj) {
-	var fields = ZmOrganizer.prototype._getCommonFields.call(this, obj);
-	this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
-}
-
 ZmCalendar.prototype.dispose =
 function() {
 	DBG.println(AjxDebug.DBG1, "disposing: " + this.name + ", ID: " + this.id);
+	// TODO
 }
 
 ZmCalendar.prototype.getName = 

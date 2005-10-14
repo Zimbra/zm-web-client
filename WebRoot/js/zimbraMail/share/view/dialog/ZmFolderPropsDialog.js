@@ -72,7 +72,7 @@ ZmFolderPropsDialog._XFORM_DEF = { items: [
 				choices: ZmFolderPropsDialog.TYPE_CHOICES
 			},
 			{type:_SPACER_, height:3},
-			{type:_SELECT1_, ref: "folder_color", label:"Color:",
+			{type:_DWT_SELECT_, ref: "folder_color", label:"Color:",
 				choices: ZmOrganizer.COLOR_CHOICES
 			}
 		]

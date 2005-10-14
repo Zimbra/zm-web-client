@@ -39,6 +39,10 @@ ZmAcceptShareDialog.prototype.constructor = ZmAcceptShareDialog;
 
 // Constants
 
+ZmAcceptShareDialog.ACCEPT = "accept";
+ZmAcceptShareDialog.DECLINE = "decline";
+ZmAcceptShareDialog.LATER = "later";
+
 // TODO: i18n
 ZmAcceptShareDialog._XFORM_DEF = { items: [
 	{type:_OUTPUT_, colSpan:2, ref: "msg_header", cssClass:"ZmSubHead", height:23},
@@ -49,16 +53,16 @@ ZmAcceptShareDialog._XFORM_DEF = { items: [
 	{type:_SPACER_, height:10},
 
 	{type:_RADIO_GROUPER_, label:"What do you want to do?", numCols:2, colSizes:["20","300"], items:[
-				{type:_RADIO_, ref:"op", value:"A", label:"Accept the role"},
-				{type:_RADIO_, ref:"op", value:"D", label:"Decline the role"},
-				{type:_RADIO_, ref:"op", value:"T", label:"Decide later"},
+				{type:_RADIO_, ref:"op", value:ZmAcceptShareDialog.ACCEPT, label:"Accept the role"},
+				{type:_RADIO_, ref:"op", value:ZmAcceptShareDialog.DECLINE, label:"Decline the role"},
+				{type:_RADIO_, ref:"op", value:ZmAcceptShareDialog.LATER, label:"Decide later"},
 
 				{type:_GROUP_, colSpan:'*', width:"100%", numCols:2, 
-					relevant: "get('op') == 'A'", relevantBehavior: _HIDE_,
+					relevant: "get('op') == ZmAcceptShareDialog.ACCEPT", relevantBehavior: _HIDE_,
 					items:[
 						{type:_SEPARATOR_, height:11, cssClass:"xform_separator_gray"},
 						{type:_INPUT_, label:"Call the folder:", ref:"share_name", width:"100%"},
-						{type:_SELECT1_, label:"Color:", ref: "share_color",
+						{type:_DWT_SELECT_, label:"Color:", ref: "share_color",
 							choices: ZmOrganizer.COLOR_CHOICES
 						}
 						/***
@@ -85,7 +89,9 @@ ZmAcceptShareDialog._XFORM_DEF = { items: [
 ZmAcceptShareDialog._XMODEL_DEF = { items: [
 	{ id: "msg_header", ref: "msgs/header", type: _STRING_ },
 	{ id: "msg_details", ref: "msgs/details", type: _STRING_ },
-	{ id: "op", ref: "op", type: _ENUM_, choices: [ 'A', 'D', 'T' ] },
+	{ id: "op", ref: "op", type: _ENUM_, choices: [ 
+		ZmAcceptShareDialog.ACCEPT, ZmAcceptShareDialog.DECLINE, ZmAcceptShareDialog.LATER 
+	]},
 	{ id: "grantor_id", ref: "info/grantor/id", type: _STRING_ },
 	{ id: "grantor_name", ref: "info/grantor/name", type: _STRING_ },
 	{ id: "link_id", ref: "info/link/id", type: _NUMBER_ },
@@ -156,7 +162,7 @@ ZmAcceptShareDialog.prototype.setShareInfo = function(shareInfo) {
 				userName+" acting for "+shareInfo.grantor.name+"</b>"
 				/***/
 		},
-		op: "A",
+		op: ZmAcceptShareDialog.ACCEPT,
 		info: shareInfo,
 		share: { 
 			name: shareName,
@@ -171,66 +177,90 @@ ZmAcceptShareDialog.prototype.popup = function(loc) {
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 }
 
+ZmAcceptShareDialog.prototype.setAcceptListener = function(listener) {
+	this.removeAllListeners(ZmAcceptShareDialog.ACCEPT);
+	if (listener) this.addListener(ZmAcceptShareDialog.ACCEPT, listener);
+}
+ZmAcceptShareDialog.prototype.setDeclineListener = function(listener) {
+	this.removeAllListeners(ZmAcceptShareDialog.DECLINE);
+	if (listener) this.addListener(ZmAcceptShareDialog.DECLINE, listener);
+}
+
 // Protected methods
 
 ZmAcceptShareDialog.prototype._handleOkButton = function(event) {
-	// create mountpoint
-	var soapDoc = AjxSoapDoc.create("CreateMountpointRequest", "urn:zimbraMail");
-
 	var instance = this._xform.getInstance();
-	var share = instance.share;
-	var info = instance.info;
-	
-	var linkNode = soapDoc.set("link");
-	linkNode.setAttribute("l", "1"); // place in root folder
-	linkNode.setAttribute("name", share.name);
-	linkNode.setAttribute("zid", info.grantor.id);
-	linkNode.setAttribute("rid", info.link.id);
-	if (info.link.view) {
-		linkNode.setAttribute("view", info.link.view);
-	}
 
-	var appCtlr = this._appCtxt.getAppController();
-	//appCtlr.setActionedIds([this.organizer.id]); // TODO: ???
-	var mountpointId;
-	try {
-		var resp = appCtlr.sendRequest(soapDoc)["CreateMountpointResponse"];
-		mountpointId = parseInt(resp.link[0].id);
-	}
-	catch (ex) {
-		var msg;
-		if (ex instanceof ZmCsfeException) {
-			switch (ex.code) {
-				case "mail.ALREADY_EXISTS": {
-					msg = "A folder with that name already exists.\n"+
-						"Please select a different name.";
-					break;
+	// create mountpoint
+	if (instance.op == ZmAcceptShareDialog.ACCEPT) {
+		var soapDoc = AjxSoapDoc.create("CreateMountpointRequest", "urn:zimbraMail");
+	
+		var share = instance.share;
+		var info = instance.info;
+		
+		var linkNode = soapDoc.set("link");
+		linkNode.setAttribute("l", "1"); // place in root folder
+		linkNode.setAttribute("name", share.name);
+		linkNode.setAttribute("zid", info.grantor.id);
+		linkNode.setAttribute("rid", info.link.id);
+		if (info.link.view) {
+			linkNode.setAttribute("view", info.link.view);
+		}
+	
+		var appCtlr = this._appCtxt.getAppController();
+		//appCtlr.setActionedIds([this.organizer.id]); // TODO: ???
+		var mountpointId;
+		try {
+			var resp = appCtlr.sendRequest(soapDoc)["CreateMountpointResponse"];
+			mountpointId = parseInt(resp.link[0].id);
+		}
+		catch (ex) {
+			var msg;
+			if (ex instanceof ZmCsfeException) {
+				switch (ex.code) {
+					case "mail.ALREADY_EXISTS": {
+						msg = "A folder with that name already exists.\n"+
+							"Please select a different name.";
+						break;
+					}
+					default: msg = ex.msg;
 				}
-				default: msg = ex.msg;
 			}
+			else {
+				msg = "Uknown error: "+ex;
+			}
+			alert(msg);
+			return;
 		}
-		else {
-			msg = "Uknown error: "+ex;
+		
+		// set color
+		var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
+		
+		var actionNode = soapDoc.set("action");
+		actionNode.setAttribute("id", mountpointId);
+		actionNode.setAttribute("op", "color");
+		actionNode.setAttribute("color", share.color);
+	
+		try {
+			var resp = appCtlr.sendRequest(soapDoc)["FolderActionResponse"];
 		}
-		alert(msg);
-		return;
-	}
-	
-	// set color
-	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
-	
-	var actionNode = soapDoc.set("action");
-	actionNode.setAttribute("id", mountpointId);
-	actionNode.setAttribute("op", "color");
-	actionNode.setAttribute("color", share.color);
+		catch (ex) {
+			// TODO: handle error
+			alert(String(ex));
+		}
 
-	try {
-		var resp = appCtlr.sendRequest(soapDoc)["FolderActionResponse"];
+		// notify accept listener
+		this.notifyListeners(ZmAcceptShareDialog.ACCEPT, event);
 	}
-	catch (ex) {
-		// TODO: handle error
-		alert(String(ex));
+	
+	// notify decline listener
+	else if (instance.op == ZmAcceptShareDialog.DECLINE) {
+		this.notifyListeners(ZmAcceptShareDialog.DECLINE, event);
 	}
+
+	// clear listeners
+	this.setAcceptListener(null);
+	this.setDeclineListener(null);
 
 	// do default handling
 	DwtXFormDialog.prototype._handleOkButton.call(this, event);

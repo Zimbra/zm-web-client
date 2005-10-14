@@ -220,12 +220,23 @@ function(msg) {
 		}
 	}
 	else if (msg.share && msg.share.action == ZmShareInfo.NEW) {
-		var topToolbar = this._getShareToolbar();
-		var tEl = topToolbar.getHtmlElement();
-		if (tEl && tEl.parentNode) {
-			tEl.parentNode.removeChild(tEl);
+		/*** This prevents users from accepting shares to themselves...
+		// NOTE: If the grantor id is not current user, then the current
+		//		 user is most likely the intended recipient. In order for
+		//		 us to do this correctly, the share request would need to
+		//		 send the grantee's id which means that the backend would
+		//		 need to send the id back in the FolderActionRequest.
+		if (msg.share.grantor.id != this._appCtxt.get(ZmSetting.USERID)) {
+		/***/
+			var topToolbar = this._getShareToolbar();
+			var tEl = topToolbar.getHtmlElement();
+			if (tEl && tEl.parentNode) {
+				tEl.parentNode.removeChild(tEl);
+			}
+			contentDiv.appendChild(tEl);
+		/***
 		}
-		contentDiv.appendChild(tEl);
+		/***/
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseSet, [msg, oldMsg]);
 	this._renderMessage(msg, contentDiv, respCallback);

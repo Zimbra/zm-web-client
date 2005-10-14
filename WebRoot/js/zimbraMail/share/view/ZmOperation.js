@@ -183,9 +183,7 @@ ZmOperation.MSG_KEY[ZmOperation.SAVE]					= "save";
 ZmOperation.MSG_KEY[ZmOperation.SAVE_DRAFT]				= "saveDraft";
 ZmOperation.MSG_KEY[ZmOperation.SEARCH]					= "search";
 ZmOperation.MSG_KEY[ZmOperation.SEND]					= "send";
-// BEGIN network bits
 ZmOperation.MSG_KEY[ZmOperation.SHARE]					= "share";
-// END network bits
 ZmOperation.MSG_KEY[ZmOperation.SHOW_ORIG]				= "showOrig";
 ZmOperation.MSG_KEY[ZmOperation.SPAM] 					= "junk";
 ZmOperation.MSG_KEY[ZmOperation.SPELL_CHECK] 			= "spellCheck";
@@ -226,9 +224,7 @@ ZmOperation.MSG_KEY_TT[ZmOperation.PRINT]				= "printTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.PRINT_MENU]	 		= "printTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.REPLY]				= "replyTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.REPLY_ALL]			= "replyAllTooltip";
-// BEGIN network bits
 ZmOperation.MSG_KEY_TT[ZmOperation.SHARE]				= "shareTooltip";
-// END network bits
 ZmOperation.MSG_KEY_TT[ZmOperation.SAVE_DRAFT]			= "saveDraftTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.SEND]				= "sendTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.SPAM]				= "junkTooltip";

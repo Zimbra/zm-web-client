@@ -169,13 +169,15 @@ function(ev, treeView) {
 		var organizer = organizers[i];
 		var id = organizer.id;
 		var node = treeView.getTreeItemById(id);
+		if (!node) continue;
 
 		var fields = ev.getDetail("fields");
-		if (ev.event == ZmEvent.E_MODIFY) {
-			if (node && fields && fields[ZmOrganizer.F_COLOR]) {
-				var object = node.getData(Dwt.KEY_OBJECT);
-				this._setTreeItemColor(node, object.color);
-			}
+		// NOTE: ZmTreeController#_changeListener re-inserts the node if the 
+		//		 name changes so we need to reset the color in that case, too.
+		if (ev.event == ZmEvent.E_CREATE || 
+			(ev.event == ZmEvent.E_MODIFY && fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]))) {
+			var object = node.getData(Dwt.KEY_OBJECT);
+			this._setTreeItemColor(node, object.color);
 		}
 	}
 }

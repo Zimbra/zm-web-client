@@ -939,6 +939,16 @@ function(creates, modifies) {
 			}
 			if (parent)
 				parent.notifyCreate(create, (name == "search"));
+		} else if (name == "link") {
+			// TODO: We only support calendar links at the moment...
+			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+
+			var parentId = create.l;
+			var parent = calendarTree.getById(parentId);
+			
+			if (parent) {
+				parent.notifyCreate(create, true);
+			}
 		} else if (name == "m") {
 			var msg = ZmMailMsg.createFromDom(create, {appCtxt: this._appCtxt}, true);
 			msgs[msg.id] = msg;

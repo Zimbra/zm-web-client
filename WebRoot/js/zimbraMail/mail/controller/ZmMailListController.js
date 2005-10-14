@@ -56,6 +56,9 @@ function ZmMailListController(appCtxt, container, mailApp) {
 
 	this._inviteReplyListener = new AjxListener(this, this._inviteReplyHandler);
 	this._shareListener = new AjxListener(this, this._shareHandler);
+	
+	this._acceptShareListener = new AjxListener(this, this._acceptShareHandler);
+	this._declineShareListener = new AjxListener(this, this._declineShareHandler);
 }
 
 ZmMailListController.prototype = new ZmListController;
@@ -294,20 +297,29 @@ ZmMailListController.prototype._shareHandler =
 function(ev) {
 	if (ev._buttonId == ZmOperation.REPLY_ACCEPT) {
 		var acceptDialog = this._appCtxt.getAcceptShareDialog();
-		// TODO: make sure to only register this callback once
-		acceptDialog.registerCallback(DwtDialog.OK_BUTTON, this._shareDialogOkCallback, this, ev);
 		acceptDialog.setShareInfo(ev._share);
+		acceptDialog.setAcceptListener(this._acceptShareListener);
+		acceptDialog.setDeclineListener(this._declineShareListener);
 		acceptDialog.popup();
 	}
-	else {
-		alert("TODO: move message to trash");
+	else if (ev._buttonId == ZmOperation.REPLY_DECLINE) {
+		this._declineShareHandler(ev);
 	}
 }
 
-ZmMailListController.prototype._shareDialogOkCallback = 
-function(args) {
-	alert("TODO: move message to trash");
+ZmMailListController.prototype._acceptShareHandler = 
+function(ev) {
+	alert("move message to trash");
+	/*** TODO: msg is null -- should I be using conv id?
+	var msgController = this._app.getMsgController();
+	var msg = msgController._getMsg();
+	
+	var list = this.getList();
+	list.moveItems([ msg.id ], ZmFolder.ID_TRASH);
+	/***/
 }
+
+ZmMailListController.prototype._declineShareHandler = ZmMailListController.prototype._acceptShareHandler;
 
 ZmMailListController.prototype.getReferenceView = 
 function() {

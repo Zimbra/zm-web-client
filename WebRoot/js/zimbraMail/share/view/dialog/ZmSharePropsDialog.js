@@ -84,15 +84,14 @@ ZmSharePropsDialog._XFORM_DEF = { items: [
 	{type:_GROUP_, colSpan:'*', width:"100%", numCols:2, colSizes:[35,'*'], items:[
 			{type:_CHECKBOX_, ref:"sendMail", trueValue:true, falseValue:false, label:"Send mail to the recipient about this share"},
 			{type:_SPACER_, height:3, relevant:"get('sendMail')"},
-			{type:_SELECT1_, ref:"mailType", relevant:"get('sendMail')", label:"", choices:{
-					S:"Send standard message",
-					Q:"Add note to standard message",
-					C:"Compose email in new window"
-				}
-			},
+			{type:_DWT_SELECT_, ref:"mailType", relevant:"get('sendMail')", label:"", choices: [
+				{value: "S", label: "Send standard message"},
+				{value: "Q", label: "Add note to standard message"},
+				{value: "C", label: "Compose email in new window"}
+			]},
 			{type:_OUTPUT_, label: "", //width: "250",
 				value: "<b>Note:</b> The standard message displays the name of the shared item, the owner, and the permissions allowed on the share.",
-				relevant: "get('mailType') == 'S' || get('mailType') == 'Q'", revelantBehavior: _HIDE_
+				relevant: "get('sendMail') && (get('mailType') == 'S' || get('mailType') == 'Q')", revelantBehavior: _HIDE_
 			},
 			{type:_TEXTAREA_, ref:"quickReply", relevant:"get('sendMail') && get('mailType') == 'Q'", width:"95%", height:50, label:""}
 		]
@@ -237,10 +236,6 @@ ZmSharePropsDialog.prototype._handleOkButton = function(event) {
 
 	// compose in new window
 	if (instance.mailType == ZmSharePropsDialog._MAIL_COMPOSE) {
-		// switch to mail app for compose
-		var appController = this._appCtxt.getAppController();
-		appController.activateApp(ZmZimbraMail.MAIL_APP);
-	
 		// initialize compose message
 		var action = ZmOperation.SHARE;
 		var inNewWindow = true;
@@ -272,9 +267,6 @@ ZmSharePropsDialog.prototype._executeGrantAction = function(folder, share) {
 
 	var newShare = new ZmOrganizerShare(organizer, granteeType, granteeId, granteeName, perm, inherit);
 	newShare.setPermissions(share.perm); // this does the FolderActionRequest
-	if (this._dialogType == ZmSharePropsDialog.NEW) {
-		folder.addShare(newShare);
-	}
 }
 
 ZmSharePropsDialog._SHARE_CREATED = "The following share has been created:";
@@ -373,6 +365,8 @@ ZmSharePropsDialog.prototype._generateXmlPart = function(folder, share) {
 	var settings = this._appCtxt.getSettings();
 	var grantorId = settings.get(ZmSetting.USERID);
 	var grantorName = AjxStringUtil.xmlAttrEncode(settings.get(ZmSetting.DISPLAY_NAME));
+	var granteeId = share.granteeId || "";
+	var granteeName = AjxStringUtil.xmlAttrEncode(share.granteeName);
 	var remoteId = folder.id;
 	var remoteName = AjxStringUtil.xmlAttrEncode(folder.name);
 	var defaultType = ZmFolderPropsDialog.TYPE_NAMES[folder.type];
@@ -380,7 +374,8 @@ ZmSharePropsDialog.prototype._generateXmlPart = function(folder, share) {
 	
 	var content = [
 		"<share xmlns='"+ZmShareInfo.URI+"' version='"+ZmShareInfo.VERSION+"' action='"+action+"'>",
-		"  <grantor id='"+grantorId+"' name='"+grantorName.replace(/'/g,"&apos;")+"' />",
+		"  <grantor id='"+grantorId+"' name='"+grantorName+"' />",
+		"  <grantee id='"+granteeId+"' name='"+granteeName+"' />",
 		"  <link id='"+remoteId+"' name='"+remoteName+"' "+
 				"view='"+defaultType+"' perm='"+rights+"' />",
 		"</share>"
