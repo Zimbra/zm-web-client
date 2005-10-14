@@ -70,6 +70,140 @@ HTML>BODY INPUT {		/* clean border that works in FF */
 
 
 
+/* splash screen and login banner pieces */
+
+/* "url" substitution:  eg:  "<a href='http://www.zimbra.com'>http:/www..." */
+#SplashScreenUrl {
+Xborder:1px solid #cccccc;
+	position:absolute;
+	left:164;
+	top:9;
+	width:300;
+	font-size:12px;
+	text-align:right;
+}
+
+
+/* "appName" substitution:  eg:  "Collaboration Suite" */
+#SplashScreenAppName {
+Xborder:1px solid #eeeeee;
+	position:absolute;
+	left:80;
+	top:115;
+	width:350;
+	height:30;
+	font-size:24px;
+	text-align:right;
+}
+
+/* "version" substitution:  eg:  "V 1.23 * 'Birdseye' * Wed Oct 12, 2005" */
+#SplashScreenVersion {
+Xborder:1px solid #eeeeee;
+	position:absolute;
+	left:80;
+	top:145;
+	width:350;
+	text-align:right;
+}
+
+/* "shortVersion" substitution:  eg:  "BETA" */
+#SplashScreenShortVersion {
+Xborder:1px solid #cccccc;
+	position:absolute;
+	left:384;
+	top:45;
+	width:80;
+	font-size:24px;
+	color:#CCCCCC;
+}
+
+
+/* "contents" substitution:  eg:  "Version: XXX, etc" */
+#SplashScreenContents {
+Xborder:1px solid #eeeeee;
+	position:absolute;
+	left:240;
+	top:185;
+	width:215;
+	height:105;
+	overflow:auto;
+}
+
+/* "button" substitution:  eg:  "<button style='width:60px;'>OK</button>" */
+#SplashScreenOKButton {
+Xborder:1px solid #eeeeee;
+	position:absolute;
+	left:395;
+	top:294;
+	width:60;
+	height:20;
+}
+
+/* "license" substitution:  eg:  "Copyright 2005 Zimbra, Inc..." */
+#SplashScreenLicense {
+Xborder:1px solid #eeeeee;
+	position:absolute;
+	left:8;
+	top:315;
+	font-size:9px;
+	color:#999999;
+	background-color:white;
+}
+
+
+
+/* "url" substitution:  eg:  "<a href='http://www.zimbra.com'>http:/www..." */
+#LoginBannerUrl {
+Xborder:1px solid #cccccc;
+	Xvisibility:hidden;
+	position:absolute;
+	left:25;
+	top:106;
+	width:270;
+	font-size:12px;
+}
+
+
+/* "appName" substitution:  eg:  "Collaboration Suite" */
+#LoginBannerAppName {
+Xborder:1px solid #eeeeee;
+	position:absolute;
+	left:60;
+	top:80;
+	width:350;
+	height:30;
+	font-size:24px;
+	text-align:right;
+}
+
+/* "version" substitution:  eg:  "V 1.23 * 'Birdseye' * Wed Oct 12, 2005" */
+#LoginBannerVersion {
+Xborder:1px solid #eeeeee;
+	position:absolute;
+	left:60;
+	top:107;
+	width:350;
+	text-align:right;
+}
+
+/* "shortVersion" substitution:  eg:  "BETA" */
+#LoginBannerShortVersion {
+Xborder:1px solid #cccccc;
+	position:absolute;
+	left:358;
+	top:15;
+	width:80;
+	font-size:24px;
+	color:#CCCCCC;
+}
+
+.ImgBarberPole_216 {
+	background-image:url(/zimbra/img/animated/BarberPole_216.gif);
+	width:216;
+	height:14;
+}
+
+
 /*
  *  Skin pieces -- MOVE INTO SKIN???
  */
@@ -78,6 +212,7 @@ HTML>BODY INPUT {		/* clean border that works in FF */
 	left: 54px;
 	top: 6px;
 }
+
 
 
 
