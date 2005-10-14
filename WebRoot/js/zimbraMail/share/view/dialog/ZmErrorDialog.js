@@ -47,6 +47,9 @@ function ZmErrorDialog(parent, appCtxt) {
 	Dwt.setSize(detailBtn.getHtmlElement(), 22, (AjxEnv.isIE ? 21 : 19));
 	detailBtn.getHtmlElement().style.overflow = "hidden";
 
+	var reportBtn = this._button[ZmErrorDialog.REPORT_BUTTON];
+	reportBtn.getHtmlElement().style.width = "70px";
+
 	this.registerCallback(ZmErrorDialog.REPORT_BUTTON, this._reportCallback, this);
 	this.registerCallback(ZmErrorDialog.DETAIL_BUTTON, this._showDetail, this);
 }
