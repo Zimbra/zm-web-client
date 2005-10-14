@@ -25,6 +25,9 @@
   <condition property="ajax.dir" value="../Ajax">
     <not><isset property="env.AJAX_DIR"/></not>
   </condition>	
+  <condition property="plat.tag" value="FC4">
+    <not><isset property="plat.tag"/></not>
+  </condition>	
 
   <property name="ajax.src.dir" value="${ajax.dir}/src"/>
   <property name="ajax.jars.dir" value="${ajax.dir}/jars"/>
@@ -167,7 +170,7 @@
   </target>
 
   <target name="jsmin">
-  	<exec executable="bin/jsmin">
+  	<exec executable="bin/${plat.tag}/jsmin">
   	    <redirector input="${var}" output="${var}${jsminExtension}"/>
   	</exec>
   	<echo>Strip whitespace: ${var}</echo>
