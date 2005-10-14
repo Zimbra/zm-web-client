@@ -1553,11 +1553,12 @@ function(ev) {
 			var origDuration = data.appt._orig.getDuration();
 			data.view._autoScrollDisabled = true;			
 			var cc = data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
-			if (cc.updateApptDate(data.appt._orig, data.startDate, new Date(data.startDate.getTime()+origDuration), false)) return false;
+			var endDate = new Date(data.startDate.getTime() + origDuration);
+			var respCallback = new AjxCallback(this, ZmCalDayView._handleResponseApptMouseUpHdlr, data);
+			cc.updateApptDate(data.appt._orig, data.startDate, endDate, false, respCallback);
+		} else {
+			ZmCalDayView._restoreLayout(data);
 		}
-		// restore
-		var lo = data.layout;
-		data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);
 	}
 
 	mouseEv._stopPropagation = true;
@@ -1565,6 +1566,18 @@ function(ev) {
 	mouseEv.setToDhtmlEvent(ev);
 	
 	return false;	
+}
+
+ZmCalDayView._handleResponseApptMouseUpHdlr =
+function(args) {
+	var data	= args[0];
+	var result	= args[1];
+	
+	try {
+		result.getResponse();
+	} catch (ex) {
+		ZmCalDayView._restoreLayout(data);
+	}
 }
 
 // END APPT ACTION HANDLERS
@@ -1693,19 +1706,35 @@ function(ev) {
 	mouseEv._returnValue = false;
 	mouseEv.setToDhtmlEvent(ev);
 
+	var needUpdate = false;
+	var startDate = null, endDate = null;
 	if (data.isTop && data.startDate.getTime() != data.appt.getStartTime()) {
+		needUpdate = true;
+		startDate = data.startDate;
+	} else if (!data.isTop && data.endDate.getTime() != data.appt.getEndTime()) {
+		needUpdate = true;
+		endDate = data.endDate;
+	}
+	if (needUpdate) {
 		data.view._autoScrollDisabled = true;
 		var cc = data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
-		if (cc.updateApptDate(data.appt._orig, data.startDate, null, false)) return false;	
-	} else if (!data.isTop && data.endDate.getTime() != data.appt.getEndTime()) {
-		data.view._autoScrollDisabled = true;	
-		var cc = data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
-		if (cc.updateApptDate(data.appt._orig, null, data.endDate, false)) return false;
+		var respCallback = new AjxCallback(this, ZmCalDayView._handleResponseSashMouseUpHdlr, data);
+		cc.updateApptDate(data.appt._orig, startDate, endDate, false, respCallback);
+	} else {
+		ZmCalDayView._restoreLayout(data);
 	}
-	// restore
-	var lo = data.appt._layout;
-	data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);	
-	return false;	
+}
+
+ZmCalDayView._handleResponseSashMouseUpHdlr =
+function(args) {
+	var data	= args[0];
+	var result	= args[1];
+	
+	try {
+		result.getResponse();
+	} catch (ex) {
+		ZmCalDayView._restoreLayout(data);
+	}
 }
 
 // END SASH ACTION HANDLERS
@@ -1942,4 +1971,10 @@ function(ev) {
 	mouseEv._returnValue = false;
 	mouseEv.setToDhtmlEvent(ev);
 	return false;
+}
+
+ZmCalDayView._restoreLayout =
+function(data) {
+	var lo = data.layout;
+	data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);
 }

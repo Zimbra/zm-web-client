@@ -79,7 +79,7 @@ ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT] = ZmMsg.subject;
  * @param getHtml - whether to fetch html from the server ( if possible ).
  */
 ZmMailMsg.fetchMsg = 
-function(sender, msgId, getHtml, callback) {
+function(sender, msgId, getHtml, callback, errors) {
 	var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail", null);
 	var msgNode = soapDoc.set("m");
 	msgNode.setAttribute("id", msgId);
@@ -88,15 +88,14 @@ function(sender, msgId, getHtml, callback) {
 		msgNode.setAttribute("html", "1");
 	}
 	var respCallback = new AjxCallback(null, ZmMailMsg._handleGetMsgResponse, callback);
-	sender.sendRequest(soapDoc, true, respCallback);
+	sender.sendRequest(soapDoc, true, respCallback, errors);
 };
 
 ZmMailMsg._handleGetMsgResponse =
 function(args) {
 	var callback	= args[0];
 	var result		= args[1];
-	if (callback)
-		callback.run(result);
+	if (callback) callback.run(result);
 }
 
 // Public methods
@@ -379,14 +378,14 @@ function(node, args) {
 * @param getHtml		
 */
 ZmMailMsg.prototype.load =
-function(getHtml, forceLoad, callback) {
+function(getHtml, forceLoad, callback, errors) {
 	// If we are already loaded, then don't bother loading
 	if (!this._loaded || forceLoad) {
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
-		ZmMailMsg.fetchMsg(this._appCtxt.getAppController(), this.id, getHtml, respCallback);
+		ZmMailMsg.fetchMsg(this._appCtxt.getAppController(), this.id, getHtml, respCallback, errors);
 	} else {
 		this._markReadLocal(true);
-		if (callback) callback.run();
+		if (callback) callback.run(new ZmCsfeResult()); // return exceptionless result
 	}
 };
 
@@ -415,7 +414,8 @@ function(args) {
 	this._loadFromDom(response.m[0]);
 	this._markReadLocal(true);
 	
-	if (callback) callback.run();
+	// return result so callers can check for exceptions if they want
+	if (callback) callback.run(result);
 };
 
 ZmMailMsg.prototype.getBodyParts = 

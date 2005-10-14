@@ -38,12 +38,12 @@
 
 function ZmCalViewController(appCtxt, container, calApp) {
 	ZmListController.call(this, appCtxt, container, calApp);
-	this._listeners[ZmOperation.REPLY_ACCEPT] = new AjxListener(this,this._handleApptRespondAction);
-	this._listeners[ZmOperation.REPLY_DECLINE] = new AjxListener(this,this._handleApptRespondAction);
-	this._listeners[ZmOperation.REPLY_TENTATIVE] = new AjxListener(this,this._handleApptRespondAction);
-	this._listeners[ZmOperation.EDIT_REPLY_ACCEPT] = new AjxListener(this,this._handleApptEditRespondAction);
-	this._listeners[ZmOperation.EDIT_REPLY_DECLINE] = new AjxListener(this,this._handleApptEditRespondAction);
-	this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE] = new AjxListener(this,this._handleApptEditRespondAction);
+	this._listeners[ZmOperation.REPLY_ACCEPT] = new AjxListener(this, this._handleApptRespondAction);
+	this._listeners[ZmOperation.REPLY_DECLINE] = new AjxListener(this, this._handleApptRespondAction);
+	this._listeners[ZmOperation.REPLY_TENTATIVE] = new AjxListener(this, this._handleApptRespondAction);
+	this._listeners[ZmOperation.EDIT_REPLY_ACCEPT] = new AjxListener(this, this._handleApptEditRespondAction);
+	this._listeners[ZmOperation.EDIT_REPLY_DECLINE] = new AjxListener(this, this._handleApptEditRespondAction);
+	this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE] = new AjxListener(this, this._handleApptEditRespondAction);
 	this._listeners[ZmOperation.VIEW_APPOINTMENT] = new AjxListener(this, this._handleMenuViewAction);
 	this._listeners[ZmOperation.VIEW_APPT_INSTANCE] = new AjxListener(this, this._handleMenuViewAction);
 	this._listeners[ZmOperation.VIEW_APPT_SERIES] = new AjxListener(this, this._handleMenuViewAction);
@@ -736,21 +736,33 @@ function(event) {
 * TODO: change this to work with _handleException, and take callback so view can restore appt location/size on failure
 */
 ZmCalViewController.prototype.updateApptDate =
-function(appt, startDate, endDate, changeSeries) {
+function(appt, startDate, endDate, changeSeries, callback) {
+	var viewMode = !appt.isRecurring() 
+		? ZmAppt.MODE_EDIT 
+		: (changeSeries ? ZmAppt.MODE_EDIT_SERIES : ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
+	var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDate, endDate, callback]);
+	appt.getDetails(viewMode, respCallback, {all: true}); // have all exceptions passed up to us
+}
+
+ZmCalViewController.prototype._handleResponseUpdateApptDate =
+function(args) {
+	var appt		= args[0];
+	var viewMode	= args[1];
+	var startDate	= args[2];
+	var endDate		= args[3];
+	var callback	= args[4];
+	var result		= args[5];
+	
 	try {
-		var viewMode = !appt.isRecurring() 
-			? ZmAppt.MODE_EDIT 
-			: (changeSeries ? ZmAppt.MODE_EDIT_SERIES : ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
-		appt.getDetails(viewMode);
+		result.getResponse();
 		appt.setViewMode(viewMode);
 		if (startDate) appt.setStartDate(startDate);
 		if (endDate) appt.setEndDate(endDate);
 		appt.save(this._appCtxt.getAppController());
 	} catch (ex) {
-		this.popupErrorDialog(AjxStringUtil.resolve(ZmMsg.mailSendFailure,ex.msg));
-		return false;
+		this.popupErrorDialog(AjxStringUtil.resolve(ZmMsg.mailSendFailure, ex.msg));
 	}
-	return true;	
+	if (callback) callback.run(result);
 }
 
 ZmCalViewController.prototype.getDayToolTipText =
@@ -839,7 +851,15 @@ function(ev) {
 ZmCalViewController.prototype._handleApptRespondAction = 
 function(ev) {
 	var appt = this._listView[this._currentView].getSelection()[0];
-	appt.getDetails();
+	var respCallback = new AjxCallback(this, this._handleResponseHandleApptRespondAction, [appt, ev]);
+	appt.getDetails(null, respCallback);
+};
+
+ZmCalViewController.prototype._handleResponseHandleApptRespondAction =
+function(args) {
+	var appt	= args[0];
+	var ev		= args[1];
+
 	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 	msgController.setMsg(appt.getMessage());
 	// poke the msgController
@@ -849,7 +869,15 @@ function(ev) {
 ZmCalViewController.prototype._handleApptEditRespondAction = 
 function(ev) {
 	var appt = this._listView[this._currentView].getSelection()[0];
-	appt.getDetails();
+	var respCallback = new AjxCallback(this, this._handleResponseHandleApptRespondAction, [appt, ev]);
+	appt.getDetails(null, respCallback);
+};
+
+ZmCalViewController.prototype._handleResponseHandleApptEditRespondAction =
+function(args) {
+	var appt	= args[0];
+	var ev		= args[1];
+
 	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 	msgController.setMsg(appt.getMessage());
 

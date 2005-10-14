@@ -757,9 +757,22 @@ function() {
 };
 
 ZmAppt.prototype.getDetails =
-function(viewMode) {
+function(viewMode, callback, errors) {
 	var mode = viewMode || this._viewMode;
 	var message;
+	
+	var seriesMode = (mode == ZmAppt.MODE_EDIT_SERIES);
+	if ((seriesMode && !this._seriesMessage) || !this._message) {
+		var id = seriesMode ? this._seriesInvId : this.invId;
+		message = new ZmMailMsg(this._appCtxt, id);
+		seriesMode ? this._seriesMessage = message : this._message = message;
+		var respCallback = new AjxCallback(this, this._handleResponseGetDetails, [mode, message, callback]);
+		message.load(false, false, respCallback, errors);
+	} else {
+		message = seriesMode ? this._seriesMessage : this._message;
+		this.setFromMessage(message, mode);
+	}
+/*		
 	if (mode == ZmAppt.MODE_EDIT_SERIES) {
 		if (this._seriesMessage == null) {
 			message = new ZmMailMsg(this._appCtxt, this._seriesInvId);
@@ -778,7 +791,20 @@ function(viewMode) {
 		}
 	}
 	this.setFromMessage(message, mode);
+*/
 };
+
+ZmAppt.prototype._handleResponseGetDetails =
+function(args) {
+	var mode		= args[0];
+	var message		= args[1];
+	var callback	= args[2];
+	var result		= args[3];
+	
+	// msg content should be text, so no need to pass callback to setFromMessage()
+	this.setFromMessage(message, mode);
+	if (callback) callback.run(result);
+}
 
 ZmAppt.prototype.setFromMessage = 
 function(message, viewMode) {
@@ -824,15 +850,9 @@ function(message, viewMode) {
 			this.getRecurrenceDisplayString();
 		}
 		this._currentlyLoaded = message;
-		var respCallback = new AjxCallback(this, this._handleResponseSetFromMessage);
-		message.getTextPart(respCallback);
+		this.notes = message.getTextPart();
+		this._trimNotesSummary();
 	}
-};
-
-ZmAppt.prototype._handleResponseSetFromMessage =
-function(result) {
-	this.notes = result.getResponse();
-	this._trimNotesSummary();
 };
 
 ZmAppt.prototype._populateRecurrenceFields = 
@@ -1881,15 +1901,21 @@ function(sender, soapDoc) {
 ZmAppt.prototype.cancel = 
 function(sender, mode) {
 	this.setViewMode(mode);
-	// To get the attendees for this appointment, we have to get the 
-	// message.
-	this.getDetails();
+	// To get the attendees for this appointment, we have to get the message.
+	var respCallback = new AjxCallback(this, this._handleResponseCancel, [sender, mode]);
+	this.getDetails(null, respCallback);
+};
+
+ZmAppt.prototype._handleResponseCancel =
+function(args) {
+	var sender	= args[0];
+	var mode	= args[1];
+	
 	switch (mode) {
 	case ZmAppt.MODE_DELETE:
 		// fall through
 	case ZmAppt.MODE_DELETE_SERIES:
-		var soapDoc = AjxSoapDoc.create("CancelAppointmentRequest",
-									   "urn:zimbraMail");
+		var soapDoc = AjxSoapDoc.create("CancelAppointmentRequest", "urn:zimbraMail");
 		this._addInviteAndCompNum(soapDoc);
 		var m = soapDoc.set("m");
 		if (this.isOrganizer()) {
@@ -1900,8 +1926,7 @@ function(sender, mode) {
 		this._sendRequest(sender, soapDoc);
 		break;
 	case ZmAppt.MODE_DELETE_INSTANCE:
-		var soapDoc = AjxSoapDoc.create("CancelAppointmentRequest",
-									   "urn:zimbraMail");
+		var soapDoc = AjxSoapDoc.create("CancelAppointmentRequest", "urn:zimbraMail");
 		soapDoc.setMethodAttribute("s", this.getOrigStartTime());
 		this._addInviteAndCompNum(soapDoc);
 		var inst = soapDoc.set("inst");
