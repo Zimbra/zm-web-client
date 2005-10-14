@@ -73,8 +73,6 @@ static final private String LOGIN_PAGE = "/zimbra/";
 <!--
 <%String hiRes = (String) request.getParameter("hiRes");
   // load dynamically generated image files
-   // REMOVE ME
-  hiRes="true";
   if (hiRes != null) {
 %>
         @import url(/zimbra/img/hiRes/imgs.css?v=<%= vers %>);

@@ -359,7 +359,7 @@
 
 
     <!-- merge loRes skin images -->
-<!--    <mkdir dir="${images.loRes.destDir}/skins/${skindir}"/>
+    <mkdir dir="${images.loRes.destDir}/skins/${skindir}"/>
     <delete file='${images.loRes.destDir}/skins/${skindir}/skin.css'/>
     <echo/>
     <echo message='Merging loRes images for skin ${skindir}'/>
@@ -369,7 +369,6 @@
       <dirset dir='WebRoot/skins/${skindir}' includes='**/img'/>
     </imagemerge>
     <echo/>
--->
   </target>
   
 
