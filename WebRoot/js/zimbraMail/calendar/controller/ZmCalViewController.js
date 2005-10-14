@@ -58,6 +58,7 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._maintTimedAction = new AjxTimedAction(this, ZmCalViewController.prototype._maintenanceAction);
 	this._pendingWork = ZmCalViewController.MAINT_NONE;	
 	this.resetApptSummaryCache();
+	this._folderIdToCalendar = {};
 }
 
 ZmCalViewController.prototype = new ZmListController();
@@ -195,8 +196,31 @@ function(viewName) {
 ZmCalViewController.prototype._getCheckedCalendars =
 function() {
 	var ctc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
+	if (ctc == null) return [];
 	var checked = ctc.getCheckedCalendars(ZmZimbraMail._OVERVIEW_ID);
+	for (var i=0; i < checked.length; i++) {
+		var cal = checked[i];
+		this._folderIdToCalendar[cal.id] = cal;
+	}
 	return checked;
+}
+
+ZmCalViewController.prototype.getCalendar =
+function(folderId) {
+	return this._folderIdToCalendar[folderId];
+}
+
+// todo: change to currently "selected" calendar
+ZmCalViewController.prototype.getDefaultCalendarFolderId =
+function() {
+	return ZmFolder.ID_CALENDAR;
+}
+
+ZmCalViewController.prototype.getCalendarColor =
+function(folderId) {
+	if (!folderId) return ZmOrganizer.DEFAULT_COLOR;
+	var cal = this._folderIdToCalendar[folderId];
+	return cal ? cal.color : ZmOrganizer.DEFAULT_COLOR;
 }
 
 ZmCalViewController.prototype._getToolBarOps =
@@ -735,7 +759,7 @@ function(date) {
 		var start = new Date(date.getTime());
 		start.setHours(0, 0, 0, 0);
 		var result = this.getApptSummaries(start.getTime(), start.getTime()+AjxDateUtil.MSEC_PER_DAY, true);
-		return ZmCalMonthView.getDayToolTipText(start,result);
+		return ZmCalMonthView.getDayToolTipText(start,result, this);
 	} catch (ex) {
 		//alert(ex);
 		DBG.println(ex);
@@ -1022,7 +1046,7 @@ ZmCalViewController.prototype.getApptSummaries =
 function(start,end, fanoutAllDay, callback, nowait) {
 	var list;
 	
-	//var checked = this._getCheckedCalendars();
+	var checked = this._getCheckedCalendars();
 		
 	list = this._getCachedVector(start, end, fanoutAllDay);
 	if (list != null) {
@@ -1051,7 +1075,8 @@ function(start,end, fanoutAllDay, callback, nowait) {
 		this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);	
 	} else {
 		var response = this._appCtxt.getAppController().sendRequest(soapDoc);
-		return this.__getApptSummariesResponse([null, start, end, fanoutAllDay, response]);
+		var csfeResult = new ZmCsfeResult(response, false);
+		return this.__getApptSummariesResponse([null, start, end, fanoutAllDay, csfeResult]);
 	}
 }
 

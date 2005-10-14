@@ -55,6 +55,7 @@ function ZmCalBaseView(parent, className, posStyle, view) {
 	this._actionEv = new DwtListViewActionEvent(true);	
 	
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
+	this._calController = this._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();	
 
 	// END LIST-RELATED
 		
@@ -80,7 +81,17 @@ ZmCalBaseView.TYPE_DAY_HEADER = 6; // over date header for a day
 ZmCalBaseView.TYPE_MONTH_DAY = 7; // over a day in month view
 ZmCalBaseView.TYPE_ALL_DAY = 8; // all day div area in day view
 
-ZmCalBaseView.COLORS = [ "Red", "Pink", "Orange", "Yellow", "Green", "Cyan", "Blue", "Purple", "Gray" ];
+ZmCalBaseView.COLORS = [];
+// these need to match CSS rules
+ZmCalBaseView.COLORS[ZmOrganizer.C_ORANGE]	= "Orange";
+ZmCalBaseView.COLORS[ZmOrganizer.C_BLUE]	= "Blue";
+ZmCalBaseView.COLORS[ZmOrganizer.C_CYAN]	= "Cyan";
+ZmCalBaseView.COLORS[ZmOrganizer.C_GREEN]	= "Green";
+ZmCalBaseView.COLORS[ZmOrganizer.C_PURPLE]	= "Purple";
+ZmCalBaseView.COLORS[ZmOrganizer.C_RED]	= "Red";
+ZmCalBaseView.COLORS[ZmOrganizer.C_YELLOW]	= "Yellow";
+ZmCalBaseView.COLORS[ZmOrganizer.C_PINK]	= "Pink";
+ZmCalBaseView.COLORS[ZmOrganizer.C_GRAY]	= "Gray";
 
 ZmCalBaseView.prototype.firstDayOfWeek =
 function() {

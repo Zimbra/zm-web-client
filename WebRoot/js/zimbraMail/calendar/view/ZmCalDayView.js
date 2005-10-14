@@ -512,6 +512,10 @@ function(appt, div) {
 // for the new appt when drag selecting time grid
 ZmCalDayView.prototype._populateNewApptHtml =
 function(div, allDay) {
+	var color = ZmCalBaseView.COLORS[this._calController.getCalendarColor(this._calController.getDefaultCalendarFolderId())];
+	var prop = allDay ? "_newAllDayApptColor" : "_newApptColor";
+	if (this[prop] && this[prop] == color) return div;
+	else this[prop] = color;
 	div.style.position = 'absolute';
 	Dwt.setSize(div, 10, 10);// will be resized
 	div.className = 	"appt-" + DwtCssStyle.SELECTED;
@@ -519,8 +523,8 @@ function(div, allDay) {
 	var subs = {
 		id: div.id,
 		newState: "",
-		headerColor: "BlueLight",
-		bodyColor: "BlueBg",
+		headerColor: color + "Light",
+		bodyColor: color + "Bg",
 		body_style: "",
 		name: AjxStringUtil.htmlEncode(ZmMsg.newAppt),
 		starttime: "",
@@ -567,8 +571,8 @@ function(appt) {
 	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
 	var isAccepted = pstatus == ZmAppt.PSTATUS_ACCEPT;
 	var id = this._getItemId(appt);
-	//var color = ZmCalBaseView.COLORS[(this.__colorIndex++) % ZmCalBaseView.COLORS.length];
-	var color = "Blue";
+	var color = ZmCalBaseView.COLORS[this._calController.getCalendarColor(appt.getFolderId())];
+	//var color = "Blue";
 	var subs = {
 		id: id,
 		body_style: "",
@@ -782,8 +786,8 @@ function(abook) {
 	Dwt.getDomObj(this.getDocument(), this._apptBodyDivId)._type = ZmCalBaseView.TYPE_APPTS_DAYGRID;
 	Dwt.getDomObj(this.getDocument(), this._bodyHourDivId)._type = ZmCalBaseView.TYPE_HOURS_COL;
 	Dwt.getDomObj(this.getDocument(), this._allDayDivId)._type = ZmCalBaseView.TYPE_ALL_DAY;
-	this._populateNewApptHtml(Dwt.getDomObj(this.getDocument(), this._newApptDivId));
-	this._populateNewApptHtml(Dwt.getDomObj(this.getDocument(), this._newAllDayApptDivId), true);
+//	this._populateNewApptHtml(Dwt.getDomObj(this.getDocument(), this._newApptDivId));
+//	this._populateNewApptHtml(Dwt.getDomObj(this.getDocument(), this._newAllDayApptDivId), true);
 	this._scrollTo8AM();
 }
 
@@ -1747,10 +1751,12 @@ function(data) {
 	if (data.isAllDay) {
 		data.gridEl.style.cursor = 'e-resize';	
 		data.newApptDivEl = Dwt.getDomObj(data.view.getDocument(), data.view._newAllDayApptDivId);
+		data.view._populateNewApptHtml(data.newApptDivEl, true);		
 		data.apptBodyEl = Dwt.getDomObj(data.view.getDocument(), data.newApptDivEl.id + "_body");	
 	} else {
 		data.gridEl.style.cursor = 's-resize';	
 		data.newApptDivEl = Dwt.getDomObj(data.view.getDocument(), data.view._newApptDivId);
+		data.view._populateNewApptHtml(data.newApptDivEl);
 		data.apptBodyEl = Dwt.getDomObj(data.view.getDocument(), data.newApptDivEl.id + "_body");
 		data.endTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDivEl.id +"_et");
 		data.startTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDivEl.id +"_st");
