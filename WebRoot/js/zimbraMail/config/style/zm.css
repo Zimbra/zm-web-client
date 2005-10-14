@@ -1461,10 +1461,10 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .BlueDark			{ background-color:#0044CC; }
 .BlueLight			{ background-color:#80A2E6; }
 .BlueBg				{ background-color:#BFD0F2; }
-.BlueC				{ background-color:#4073D9;}
-.BlueDarkC			{ background-color:#0044CC; }
-.BlueLightC			{ background-color:#80A2E6; }
-.BlueBgC				{ background-color:#BFD0F2; }
+.BlueC				{ color:#4073D9;}
+.BlueDarkC			{ color:#0044CC; }
+.BlueLightC			{ color:#80A2E6; }
+.BlueBgC				{ color:#BFD0F2; }
 
 .Purple				{ background-color:#7940A0;}
 .PurpleDark			{ background-color:#4C0080; }
