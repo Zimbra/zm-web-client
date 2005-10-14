@@ -57,7 +57,7 @@ function ZmCalViewController(appCtxt, container, calApp) {
 
 	this._maintTimedAction = new AjxTimedAction(this, ZmCalViewController.prototype._maintenanceAction);
 	this._pendingWork = ZmCalViewController.MAINT_NONE;	
-	this.resetApptSummaryCache();
+	this._apptCache = new ZmApptCache(this, appCtxt);
 	this._folderIdToCalendar = {};
 }
 
@@ -1017,169 +1017,43 @@ function(soapDoc) {
 	}
 }
 
-ZmCalViewController.prototype._getCachedVector =
-function(startTime, endTime, fanoutAllDay) {
-	var cacheKey = startTime + ":" + endTime + ":" + fanoutAllDay;
-	var result  = this._cachedApptVectors[cacheKey];
-	return result ? result.clone() : null;
-}
-
-ZmCalViewController.prototype._findCachedApptSummaries =
-function(start,end) {
-	var found = false;
-	var entry = this._cachedApptSummaries[start+":"+end];
-	if (entry != null) return entry.list;
-
-	for (var key in this._cachedApptSummaries) {
-		entry = this._cachedApptSummaries[key];
-		if (start >= entry.start &&
-			end <= entry.end) {
-			found = true;
-			break;
-		}
-	}
-	if (!found)
-		return null;
-
-	if (entry.start == start && entry.end == end)
-		return entry.list;
-
-	var apptList = entry.list.getSubset(start,end);
-	this._cachedApptSummaries[start+":"+end] = {start: start, end:end, list: apptList};	
-	return apptList;
-}
-
-ZmCalViewController.prototype.resetApptSummaryCache =
-function() {
-	this._cachedApptSummaries = {};
-	this._cachedApptVectors = {};	
-	this._cachedIds = {};		
-}
-
-ZmCalViewController.prototype._updateCachedIds =
-function(apptList) {
-	var list = apptList.getVector();
-	var size = list.size();
-	for (var i=0; i < size; i++) {
-		var ao = list.get(i);
-		this._cachedIds[ao.id] = 1;
-		this._cachedIds[ao.invId] = 1;		
-	}	
-}
-
 /**
 * caller is responsible for exception handling. caller should also not modify appts in this list directly.
 */
 ZmCalViewController.prototype.getApptSummaries =
 function(start,end, fanoutAllDay, callback, nowait) {
-	var list;
-	
-	var checked = this._getCheckedCalendars();
-		
-	list = this._getCachedVector(start, end, fanoutAllDay);
-	if (list != null) {
-		if (callback) callback.run(list);
-		return list; // already cloned
-	}
-	var apptList = this._findCachedApptSummaries(start,end);
-	if (apptList != null) {
-		list = ZmApptList.toVector(apptList, start, end, fanoutAllDay);
-		this._cachedApptVectors[start+":"+end+":"+fanoutAllDay] = list;
-		var newList = list.clone();
-		if (callback) callback.run(newList);
-		return newList;
-	}
-
-	if (nowait) return null;
-
-	var soapDoc = AjxSoapDoc.create("GetApptSummariesRequest", "urn:zimbraMail");
-	var method = soapDoc.getMethod();
-	method.setAttribute("s", start);
-	method.setAttribute("e", end);
-	//method.setAttribute("l", "550");
-
-	if (callback) {
-		var respCallback = new AjxCallback(this, this.__getApptSummariesResponse, [callback, start, end, fanoutAllDay]);
-		this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);	
-	} else {
-		var response = this._appCtxt.getAppController().sendRequest(soapDoc);
-		var csfeResult = new ZmCsfeResult(response, false);
-		return this.__getApptSummariesResponse([null, start, end, fanoutAllDay, csfeResult]);
-	}
-}
-
-ZmCalViewController.prototype.__getApptSummariesResponse =	
-function(args) {
-	var callback = args[0];
-	var start = args[1];
-	var end = args[2];
-	var fanoutAllDay = args[3];
-	var result = args[4];
-
-	if (!result) return; // TODO: mark both as needing refresh?
-	var response;
-	try {
-		response = result.getResponse();
-	} catch (ex) {
-		if (callback) callback.run(response);
-		return;
-	}
-	
-	var apptList = new ZmApptList(this._shell.getData(ZmAppCtxt.LABEL));	
-
-	apptList.loadFromSummaryJs(response.GetApptSummariesResponse);
-
-	this._updateCachedIds(apptList);
-	
-	// cache it 
-	this._cachedApptSummaries[start+":"+end] = {start: start, end:end, list: apptList};	
-	list = ZmApptList.toVector(apptList, start, end, fanoutAllDay);	
-	this._cachedApptVectors[start+":"+end+":"+fanoutAllDay] = list;
-
-	var newList = list.clone();
-	if (callback) callback.run(newList);	
-	return newList;
+	return this._apptCache.getApptSummaries(start, end, fanoutAllDay, callback, nowait);
 }
 
 // TODO: appt is null for now. we are just clearing our caches...
 ZmCalViewController.prototype.notifyCreate =
 function(appt) {
-	//DBG.println("ZmCalViewController: notifyCreate!");
+	DBG.println("ZmCalViewController: notifyCreate! 1 "+this._clearCache);
 	if (!this._clearCache) {
 		this._clearCache = true;
 	}
+	DBG.println("ZmCalViewController: notifyCreate! 2 "+this._clearCache);	
 }
 
 ZmCalViewController.prototype.notifyDelete =
 function(ids) {
 	//DBG.println("ZmCalViewController: notifyDelete!");
-	if (this._cacheCleared) return;
-	// if any of the ids ire in the cache then...	
-	for (var i=0; i < ids.length; i++) {
-		if (this._cachedIds[ids[i]]) {
-			this._clearCache = true;
-			return;
-		}
-	}
+	if (this._clearCache) return;
+	this._clearCache = this._apptCache.containsAnyId(ids);
 }
 
 ZmCalViewController.prototype.notifyModify =
-function(ids) {
+function(items) {
 	//DBG.println("ZmCalViewController: notifyModify!");
-	if (this._cacheCleared) return;
-	// if any of the ids ire in the cache then...	
-	for (var i=0; i < ids.length; i++) {
-		if (ids[i].id && this._cachedIds[ids[i].id]) {
-			this._clearCache = true;
-			return;
-		}
-	}
+	if (this._clearCache) return;	
+	// if any of the ids are in the cache then...	
+	this._clearCache = this._apptCache.containsAnyItem(items);
 }
 
 // this gets called afer all the above notify* methods get called
 ZmCalViewController.prototype.notifyComplete =
 function(ids) {
-	//DBG.println("ZmCalViewController: notifyComplete!");
+	DBG.println("ZmCalViewController: notifyComplete: "+this._clearCache);
 	if (this._clearCache) {
 		var act = new AjxTimedAction(this, ZmCalViewController.prototype._refreshAction);
 		AjxTimedAction.scheduleAction(act, 0);
@@ -1200,7 +1074,7 @@ ZmCalViewController.prototype._refreshAction =
 function() {
 	if (this._viewMgr != null) {
 		// reset cache
-		this.resetApptSummaryCache();
+		this._apptCache.clearCache();
 		// mark all views as dirty
 		this._viewMgr.setNeedsRefresh(true);
 		if (this._viewVisible) {
