@@ -398,7 +398,8 @@ function(params) {
 }
 
 ZmDoublePaneController.prototype._handleResponseDoGetMsg =
-function(msg) {
+function(args) {
+	var msg = args.shift();
 	this._doublePaneView.setMsg(msg);
 	this._appCtxt.getSearchController().setEnabled(true);
 }
