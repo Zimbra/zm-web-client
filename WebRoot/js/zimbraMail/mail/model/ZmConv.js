@@ -82,7 +82,7 @@ function(searchString, sortBy, offset, limit, pagCallback, callback) {
 				// i.e. new msgs that are in the hit list wont be marked hot this way!
 				// dont bother searching for more msgs if all have been loaded	
 				if (!this.msgs.hasMore() || offset + limit <= size)
-					return this.msgs;
+					callback.run(new ZmCsfeResult(this.msgs));
 			}
 		}
 	}
