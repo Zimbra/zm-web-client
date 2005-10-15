@@ -172,7 +172,7 @@ function(ev, div) {
 
 	var item = this.getItemFromElement(div);
 	if (item instanceof ZmAppt) {
-		this.setToolTipContent(item.getToolTip());
+		this.setToolTipContent(item.getToolTip(this._calController));
 	} else {
 		this.setToolTipContent(null);
 	}

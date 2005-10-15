@@ -625,9 +625,9 @@ function(d) {
 * Returns HTML for a tool tip for this appt.
 */
 ZmAppt.prototype.getToolTip =
-function() {
+function(calController) {
 	// update/null if modified
-	if (this._orig) return this._orig.getToolTip();
+	if (this._orig) return this._orig.getToolTip(calController);
 
 	if (!this._toolTip) {
 		var html = new Array(20);
@@ -659,18 +659,34 @@ function() {
 		html[idx++] = "</tr></table>";
 		
 		html[idx++] = "&nbsp;"+AjxStringUtil.htmlEncode(this.getName());
-		html[idx++] = "&nbsp;</div></b></td>";		
+		html[idx++] = "&nbsp;</div></b></td>";	
 		html[idx++] = "<td align='right'>";
-		html[idx++] = AjxImg.getImageHtml("Appointment");
-		html[idx++] = "</td></table></div></td></tr>";
+
+		var cal = null;
+		if ((this.getFolderId() != ZmOrganizer.ID_CALENDAR) && calController) {
+			var cal = calController.getCalendar(this.getFolderId());
+		}
+
+		if (	cal && cal.link)
+			html[idx++] = AjxImg.getImageHtml("GroupSchedule");
+		else	
+			html[idx++] = AjxImg.getImageHtml("Appointment");
+					
+		html[idx++] = "</td>";
+		html[idx++] = "</table></div></td></tr>";
 		//idx = this._addEntryRow("Subject", this.getName(), html, idx);
 		//idx = this._addEntryRow(ZmMsg.meetingStatus, this.getStatusString(), html, idx, false);
+
+		if (cal) {
+			idx = this._addEntryRow(ZmMsg.calendar, cal.getName(), html, idx, false);
+		}
+
 		if (this.hasOtherAttendees()) {
 			idx = this._addEntryRow(ZmMsg.status, this.getParticipationStatusString(), html, idx, false);		
 		}
 		idx = this._addEntryRow(ZmMsg.when, when, html, idx, false);		
 		idx = this._addEntryRow(ZmMsg.location, this.getLocation(), html, idx, false);
-		idx = this._addEntryRow(ZmMsg.notes, this.getNotes(), html, idx, true, "250");		
+		idx = this._addEntryRow(ZmMsg.notes, this.getNotes(), html, idx, true, "250");
 
 		html[idx++] = "</table>";
 		this._toolTip = html.join("");
