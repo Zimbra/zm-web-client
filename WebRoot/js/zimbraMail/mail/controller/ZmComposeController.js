@@ -104,6 +104,59 @@ function(params) {
 		var contactList = !isDraft 
 			? this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList() : null;
 
+		var resp = msg.send(contactList, isDraft);
+		
+		if (!isDraft) {
+			if (resp || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
+				this._composeView.reset(false);
+				this._app.popView(true);
+				
+				// if the original message was a draft, we need to nuke it
+				var origMsg = msg._origMsg;
+				if (origMsg && origMsg.isDraft && origMsg.list) {
+					// if this is a child window, dont schedule!
+					if (this.isChildWindow)
+						this._deleteDraft(origMsg);
+					else
+						this._schedule(this._deleteDraft, origMsg);
+				}
+			}
+			if (this.isChildWindow && window.parentController) {
+				window.parentController.setStatusMsg(ZmMsg.messageSent);
+			} else {
+				this._appCtxt.getAppController().setStatusMsg(ZmMsg.messageSent);
+			}
+		} else {
+			// TODO - disable save draft button indicating a draft was saved
+			//        ** new UI will show in toaster section
+			if (this.isChildWindow && window.parentController) {
+				window.parentController.setStatusMsg(ZmMsg.draftSaved);
+			} else {
+				this._appCtxt.getAppController().setStatusMsg(ZmMsg.draftSaved);
+			}
+			this._composeView.reEnableDesignMode();
+
+			// save message draft so it can be reused if user saves draft again
+			this._composeView.processMsgDraft(resp);
+		}
+	} catch (ex) {
+		this._toolbar.enableAll(true);
+		this._handleException(ex, this.sendMsg, params, false);
+	}
+}
+/*
+ZmComposeController.prototype.sendMsg =
+function(params) {
+	try {
+		var attId = params ? params.attId : null;
+		var isDraft = params ? params.isDraft : null;
+		
+		var msg = this._composeView.getMsg(attId, isDraft);
+		if (!msg) return;
+		
+		var contactList = !isDraft 
+			? this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList() : null;
+
 		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg]);
 		msg.send(contactList, isDraft);
 		
@@ -153,6 +206,7 @@ function(args) {
 		this._composeView.processMsgDraft(resp);
 	}
 }
+*/
 
 // Private methods
 

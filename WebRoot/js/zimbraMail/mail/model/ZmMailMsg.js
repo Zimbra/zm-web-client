@@ -550,6 +550,35 @@ function (contactList, edited, componentId) {
 * Sends the message out into the world.
 */
 ZmMailMsg.prototype.send =
+function(contactList, isDraft) {
+	// TODO - allow invite replies when the server gets updated.
+	// if we have an invite reply, we have to send a different soap message
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	// XXX: not sure how saving a invite draft works?!
+	////////////////////////////////////////////////////////////////////////////////////////
+	if (this.isInviteReply && !isDraft) {
+		return this.sendInviteReply(contactList, true, 0);
+	} else {
+		var request = isDraft ? "SaveDraftRequest" : "SendMsgRequest";
+		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
+		// TODO - return code and put up status message
+		this._createMessageNode(soapDoc, contactList, isDraft);
+		var resp = this._sendMessage(soapDoc, false, isDraft).m[0];
+		
+		// notify listeners of successful send message
+		if (!isDraft) {
+			if (resp.id || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT))
+				this._notifySendListeners();
+			return resp.id;
+		} else {
+			this._loadFromDom(resp);
+			return this;
+		}
+	}	
+};
+/*
+ZmMailMsg.prototype.send =
 function(contactList, isDraft, callback) {
 	// TODO - allow invite replies when the server gets updated.
 	// if we have an invite reply, we have to send a different soap message
@@ -564,15 +593,16 @@ function(contactList, isDraft, callback) {
 		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
 		// TODO - return code and put up status message
 		this._createMessageNode(soapDoc, contactList, isDraft);
-		var respCallback = new AjxCallback(this, this._handleResponseSend, isDraft);
+		var respCallback = new AjxCallback(this, this._handleResponseSend, [isDraft, callback]);
 		this._sendMessage(soapDoc, false, isDraft, respCallback);
 	}
 };
 
 ZmMailMsg.prototype._handleResponseSend =
 function(args) {
-	var isDraft	= args.shift();
-	var result	= args.shift();
+	var isDraft		= args.shift();
+	var callback	= args.shift();
+	var result		= args.shift();
 	
 	var resp = result.getResponse().m[0];
 	// notify listeners of successful send message
@@ -584,7 +614,9 @@ function(args) {
 		this._loadFromDom(resp);
 		result.set(this);
 	}
+	if (callback) callback.run(result);
 };
+*/
 
 ZmMailMsg.prototype._createMessageNode = 
 function(soapDoc, contactList, isDraft) {
@@ -656,6 +688,17 @@ function(soapDoc, contactList, isDraft) {
 
 ZmMailMsg.prototype._sendMessage = 
 function(soapDoc, bIsInvite, bIsDraft) {
+	var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
+	if (bIsInvite)
+		return resp.SendInviteReplyResponse;
+	else if (bIsDraft)
+		return resp.SaveDraftResponse;
+	else
+		return resp.SendMsgResponse;
+};
+/*
+ZmMailMsg.prototype._sendMessage = 
+function(soapDoc, bIsInvite, bIsDraft, callback) {
 	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [bIsInvite, bIsDraft, callback]);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
 };
@@ -677,6 +720,7 @@ function(args) {
 
 	if (callback) callback.run(result);
 };
+*/
 
 ZmMailMsg.prototype._notifySendListeners = 
 function() {
