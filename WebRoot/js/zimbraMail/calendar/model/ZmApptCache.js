@@ -93,11 +93,16 @@ function(apptList) {
 * caller is responsible for exception handling. caller should also not modify appts in this list directly.
 */
 ZmApptCache.prototype.getApptSummaries =
-function(start,end, fanoutAllDay, callback, nowait) {
+function(start,end, fanoutAllDay, folderIds, callback) {
 	var list;
-	
-	var checked = this._calViewController._getCheckedCalendars();
-		
+	if (!(folderIds instanceof Array)) {
+		folderIds = [ folderIds ];
+	} else if (folderIds.length == 0) {
+		var newVec = new AjxVector();
+		if (callback) callback.run(newVec);
+		return newVec;
+	}		
+
 	list = this._getCachedVector(start, end, fanoutAllDay);
 	if (list != null) {
 		if (callback) callback.run(list);
@@ -112,13 +117,17 @@ function(start,end, fanoutAllDay, callback, nowait) {
 		return newList;
 	}
 
-	if (nowait) return null;
+	//if (nowait) return null;
 
 	var soapDoc = AjxSoapDoc.create("GetApptSummariesRequest", "urn:zimbraMail");
 	var method = soapDoc.getMethod();
 	method.setAttribute("s", start);
 	method.setAttribute("e", end);
-	//method.setAttribute("l", "550");
+	/*
+	if ((folderIds instanceof Array) && folderIds[0] != null) {
+		method.setAttribute("l", folderIds[0]);
+	}
+	*/
 
 	if (callback) {
 		var respCallback = new AjxCallback(this, this._getApptSummariesResponse, [callback, start, end, fanoutAllDay]);

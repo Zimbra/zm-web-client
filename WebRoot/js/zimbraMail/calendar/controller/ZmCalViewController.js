@@ -195,14 +195,49 @@ function(viewName) {
 
 ZmCalViewController.prototype._getCheckedCalendars =
 function() {
-	var ctc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
-	if (ctc == null) return [];
-	var checked = ctc.getCheckedCalendars(ZmZimbraMail._OVERVIEW_ID);
-	for (var i=0; i < checked.length; i++) {
-		var cal = checked[i];
-		this._folderIdToCalendar[cal.id] = cal;
+	if (this._checkedCalendars == null) {
+		this._calTreeController = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);	
+		if (this._calTreeController == null) return [];		
+		this._checkedCalendars = this._updateCheckedCalendars();
+		this._calTreeController.addSelectionListener(ZmZimbraMail._OVERVIEW_ID,  new AjxListener(this, this._calTreeSelectionListener));
 	}
-	return checked;
+	return this._checkedCalendars;
+}
+
+
+ZmCalViewController.prototype._getCheckedCalendarFolderIds =
+function() {
+	if (this._checkedCalendarFolderIds == null) {
+		this._getCheckedCalendars();
+	}
+	return this._checkedCalendarFolderIds;
+}
+
+ZmCalViewController.prototype._updateCheckedCalendars =
+function() {
+	DBG.println("updoate checked: ");
+	var cc = this._calTreeController.getCheckedCalendars(ZmZimbraMail._OVERVIEW_ID);
+	this._checkedCalendarFolderIds = [];
+	for (var i=0; i < cc.length; i++) {
+		var cal = cc[i];
+		this._folderIdToCalendar[cal.id] = cal;
+		this._checkedCalendarFolderIds.push(cal.id);
+		DBG.println("checked = "+cal.getName());
+	}
+	return cc;
+}
+
+ZmCalViewController.prototype._calTreeSelectionListener =
+function(ev) {
+	if (ev.detail != DwtTree.ITEM_CHECKED) return;
+	var newCheckedCalendars = this._updateCheckedCalendars();
+	// TODO: diff between new and old...
+	// TODO: and update active views
+	this._checkedCalendars = newCheckedCalendars;
+	// HACK: TESTING
+	//this._apptCache.clearCache();
+	//this._refreshAction();
+	// HACK: TESTING	
 }
 
 ZmCalViewController.prototype.getCalendar =
@@ -770,7 +805,7 @@ function(date) {
 	try {
 		var start = new Date(date.getTime());
 		start.setHours(0, 0, 0, 0);
-		var result = this.getApptSummaries(start.getTime(), start.getTime()+AjxDateUtil.MSEC_PER_DAY, true);
+		var result = this.getApptSummaries(start.getTime(), start.getTime()+AjxDateUtil.MSEC_PER_DAY, true, ZmOrganizer.ID_CALENDAR	);
 		return ZmCalMonthView.getDayToolTipText(start,result, this);
 	} catch (ex) {
 		//alert(ex);
@@ -1021,18 +1056,17 @@ function(soapDoc) {
 * caller is responsible for exception handling. caller should also not modify appts in this list directly.
 */
 ZmCalViewController.prototype.getApptSummaries =
-function(start,end, fanoutAllDay, callback, nowait) {
-	return this._apptCache.getApptSummaries(start, end, fanoutAllDay, callback, nowait);
+function(start,end, fanoutAllDay, folderIds, callback) {
+	return this._apptCache.getApptSummaries(start, end, fanoutAllDay, folderIds, callback);
 }
 
 // TODO: appt is null for now. we are just clearing our caches...
 ZmCalViewController.prototype.notifyCreate =
 function(appt) {
-	DBG.println("ZmCalViewController: notifyCreate! 1 "+this._clearCache);
+	//DBG.println("ZmCalViewController: notifyCreate! 1 "+this._clearCache);
 	if (!this._clearCache) {
 		this._clearCache = true;
 	}
-	DBG.println("ZmCalViewController: notifyCreate! 2 "+this._clearCache);	
 }
 
 ZmCalViewController.prototype.notifyDelete =
@@ -1053,7 +1087,7 @@ function(items) {
 // this gets called afer all the above notify* methods get called
 ZmCalViewController.prototype.notifyComplete =
 function(ids) {
-	DBG.println("ZmCalViewController: notifyComplete: "+this._clearCache);
+	//DBG.println("ZmCalViewController: notifyComplete: "+this._clearCache);
 	if (this._clearCache) {
 		var act = new AjxTimedAction(this, ZmCalViewController.prototype._refreshAction);
 		AjxTimedAction.scheduleAction(act, 0);
@@ -1146,7 +1180,7 @@ function() {
 		var calRange = this._miniCalendar.getDateRange();
 		var cb = new AjxCallback(this, this._maintGetApptCallback, [ work, null]);
 		// TODO: turn on shell busy
-		this.getApptSummaries(calRange.start.getTime(), calRange.end.getTime(), true, cb);
+		this.getApptSummaries(calRange.start.getTime(), calRange.end.getTime(), true, this._getCheckedCalendarFolderIds(), cb);
 		// return. callback will check and see if MAINT_VIEW is nededed as well.
 		return;
 	} else if (work & ZmCalViewController.MAINT_VIEW) {
@@ -1155,7 +1189,7 @@ function() {
 			var rt = view.getTimeRange();
 			var cb = new AjxCallback(this, this._maintGetApptCallback, [work, view]);
 			// TODO: turn on shell busy
-			this.getApptSummaries(rt.start, rt.end, view._fanoutAllDay(), cb);
+			this.getApptSummaries(rt.start, rt.end, view._fanoutAllDay(), this._getCheckedCalendarFolderIds(), cb);
 			view.setNeedsRefresh(false);
 		}
 	}

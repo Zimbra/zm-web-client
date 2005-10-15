@@ -635,7 +635,7 @@ function() {
 		
 		var when = this.getDurationText(false, false);
 				
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0>";
+		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 >";
 		html[idx++] = "<tr valign='center'><td colspan='2' align='left'>";
 		html[idx++] = "<div style='border-bottom: 1px solid black;'>";
 		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
@@ -670,7 +670,7 @@ function() {
 		}
 		idx = this._addEntryRow(ZmMsg.when, when, html, idx, false);		
 		idx = this._addEntryRow(ZmMsg.location, this.getLocation(), html, idx, false);
-		idx = this._addEntryRow(ZmMsg.notes, this.getNotes(), html, idx, true);		
+		idx = this._addEntryRow(ZmMsg.notes, this.getNotes(), html, idx, true, "250");		
 
 		html[idx++] = "</table>";
 		this._toolTip = html.join("");
@@ -680,12 +680,14 @@ function() {
 
 // Adds a row to the tool tip.
 ZmAppt.prototype._addEntryRow =
-function(field, data, html, idx, wrap) {
+function(field, data, html, idx, wrap, width) {
 	if (data != null && data != "") {
 		html[idx++] = "<tr valign='top'><td align='right' style='padding-right: 5px;'><b><div style='white-space:nowrap'>";
 		html[idx++] = AjxStringUtil.htmlEncode(field) + ":";
 		html[idx++] = "</div></b></td><td align='left'><div style='white-space:";
-		html[idx++] = wrap ? "wrap'>" : "nowrap'>";
+		html[idx++] = wrap ? "wrap;" : "nowrap;";
+		if (width) html[idx++] = "width:"+width+"px;";
+		html[idx++] = "'>";
 		html[idx++] = AjxStringUtil.htmlEncode(data);
 		html[idx++] = "</div></td></tr>";
 	}
