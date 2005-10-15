@@ -217,8 +217,9 @@ function(params) {
 		this._components[ZmAppViewMgr.C_STATUS] = this._statusBox = new DwtText(this._shell, "statusBox", Dwt.ABSOLUTE_STYLE);
 		this._statusBox.setScrollStyle(Dwt.CLIP);
 
-		var respCallback = new AjxCallback(this, this._handleLoadUserSettingsResponse, params);
-		this._settings.loadUserSettings(respCallback); // load user prefs and COS data
+		var respCallback = new AjxCallback(this, this._handleResponseStartup, params);
+		this._errorCallback = new AjxCallback(this, this._handleErrorStartup);
+		this._settings.loadUserSettings(respCallback, this._errorCallback); // load user prefs and COS data
 			
 		this.setSessionTimer(true);
 	} else {
@@ -226,15 +227,10 @@ function(params) {
 	}
 }
 
-ZmZimbraMail.prototype.setOverviewPanels = 
-function(panelIdArray) {
-	this._panels = panelIdArray;
-	this._needOverviewLayout = true;
-	this._checkOverviewLayout();
-}
-ZmZimbraMail.prototype.getOverviewPanels = 
-function() {
-	return this._panels;
+ZmZimbraMail.prototype._handleErrorStartup =
+function(ex) {
+	this._killSplash();
+	return false;
 }
 
 /*
@@ -244,7 +240,7 @@ function() {
 * @param settings	[Object]
 * @param app		[constant]		starting app
 */
-ZmZimbraMail.prototype._handleLoadUserSettingsResponse =
+ZmZimbraMail.prototype._handleResponseStartup =
 function(params) {
 	if (params && params.settings) {
 		this._needOverviewLayout = true;
@@ -266,16 +262,16 @@ function(params) {
 			
 	this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();		
 
-	var respCallback = new AjxCallback(this, this._handleActivateAppResponse);
+	var respCallback = new AjxCallback(this, this._handleResponseStartup1);
 	var startApp = (params && params.app) ? params.app : ZmZimbraMail.defaultStartApp;
-	this.activateApp(startApp, respCallback);
+	this.activateApp(startApp, respCallback, this._errorCallback);
 }
 
 /*
 * Startup: part 3
 * Does a couple housecleaning tasks, then loads the contacts.
 */
-ZmZimbraMail.prototype._handleActivateAppResponse =
+ZmZimbraMail.prototype._handleResponseStartup1 =
 function() {
 	this.setSessionTimer(true);
 	this._killSplash();
@@ -318,20 +314,17 @@ function(settings) {
 /**
 * Sends a request to the CSFE and processes the response. Notifications and
 * refresh blocks that come in the response header are handled. Also handles
-* exceptions (unless directed not to by caller).
-* <p>
-* The optional "errors" hash can be used to request that certain exceptions
-* be passed along, rather than handled by the general exception handler.
-* The property "all" can be set to pass through all exceptions.
+* exceptions by default, though the caller can pass in a special callback to
+* run for exceptions.
 *
 * @param soapDoc		[AjxSoapDoc]	SOAP document that represents the request
 * @param asyncMode		[boolean]		if true, request will be made asynchronously
 * @param callback		[AjxCallback]	next callback in chain for async request
-* @param errors			[Object]		hash of error codes to ignore in exception handling
+* @param errorCallback	[Object]		callback to run if there is an exception
 */
 ZmZimbraMail.prototype.sendRequest = 
-function(soapDoc, asyncMode, callback, errors) {
-	var asyncCallback = asyncMode ? new AjxCallback(this, this._handleResponse, [true, callback, errors]) : null;
+function(soapDoc, asyncMode, callback, errorCallback) {
+	var asyncCallback = asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [true, callback, errorCallback]) : null;
 	var command = new ZmCsfeCommand();
 	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken, 
 				  asyncMode: asyncMode, callback: asyncCallback, logRequest: this._logRequest};
@@ -339,20 +332,20 @@ function(soapDoc, asyncMode, callback, errors) {
 		var response = command.invoke(params);
 	} catch (ex) {
 		if (asyncMode)
-			this._handleResponse([asyncMode, asyncCallback, errors, new ZmCsfeResult(ex, true)]);
+			this._handleResponseSendRequest([asyncMode, asyncCallback, errorCallback, new ZmCsfeResult(ex, true)]);
 		else
 			throw ex;
 	}
 	if (!asyncMode)
-		return this._handleResponse([asyncMode, null, errors, response]);
+		return this._handleResponseSendRequest([asyncMode, null, errorCallback, response]);
 }
 
-ZmZimbraMail.prototype._handleResponse =
+ZmZimbraMail.prototype._handleResponseSendRequest =
 function(args) {
-	var asyncMode = args[0];
-	var callback = args[1];
-	var errors = args[2];
-	var result = args[3];
+	var asyncMode		= args.shift();
+	var callback		= args.shift();
+	var errorCallback	= args.shift();
+	var result			= args.shift();
 
 	// we just got activity, cancel current poll timer
 	if (this._pollActionId)
@@ -362,14 +355,16 @@ function(args) {
 	try {
 		response = asyncMode ? result.getResponse() : result;
 	} catch (ex) {
-		if (!errors || (errors && (!(errors.all || errors[ex.code])))) {
-			this._killSplash();
-			this._handleException(ex);
-			return;
+		if (errorCallback) {
+			var handled = errorCallback.run(ex);
+			if (!handled)
+				this._handleException(ex);
 		} else {
-			return result.getException();
+			this._handleException(ex);
 		}
+		return;
 	}
+	
 	if (response.Header) {
 		this._handleHeader(response.Header);
 		this._checkOverviewLayout();
@@ -412,7 +407,7 @@ function() {
 
 
 ZmZimbraMail.prototype.activateApp =
-function(appName, callback) {
+function(appName, callback, errorCallback) {
     DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
     if (this._activeApp) {
 		// some views are not stored in _apps collection, so check if it exists.
@@ -435,16 +430,15 @@ function(appName, callback) {
     	if (!this._apps[appName])
 			this._createApp(appName);
 		DBG.println(AjxDebug.DBG1, "Launching app " + appName);
-		var respCallback = new AjxCallback(this, this._handleLaunchResponse, callback);
-		this._apps[appName].launch(respCallback);
+		var respCallback = new AjxCallback(this, this._handleResponseActivateApp, callback);
+		this._apps[appName].launch(respCallback, errorCallback);
 		this._apps[appName].activate(true);
     }
 }
 
-ZmZimbraMail.prototype._handleLaunchResponse =
+ZmZimbraMail.prototype._handleResponseActivateApp =
 function(callback) {
-	if (callback)
-		callback.run();
+	if (callback) callback.run();
 }
 
 /**
@@ -465,6 +459,18 @@ function(appName, view) {
 		this._appCtxt.getSearchController().setDefaultSearchType(ZmZimbraMail.DEFAULT_SEARCH[appName], true);
 	}
 //	this._components[ZmAppViewMgr.C_APP_CHOOSER].setActiveApp(appName);
+}
+
+ZmZimbraMail.prototype.setOverviewPanels = 
+function(panelIdArray) {
+	this._panels = panelIdArray;
+	this._needOverviewLayout = true;
+	this._checkOverviewLayout();
+}
+
+ZmZimbraMail.prototype.getOverviewPanels = 
+function() {
+	return this._panels;
 }
 
 // Private methods

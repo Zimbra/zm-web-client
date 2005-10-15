@@ -497,16 +497,16 @@ function(items, action, attrs, callback) {
 	for (var attr in attrs)
 		actionNode.setAttribute(attr, attrs[attr]);
 	var appCtlr = this._appCtxt.getAppController();
-	var respCallback = callback ? new AjxCallback(this, this._handleResponse, [type, idHash, callback]) : null;
+	var respCallback = callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, callback]) : null;
 	appCtlr.sendRequest(soapDoc, true, respCallback);
 }
 
-ZmList.prototype._handleResponse =
+ZmList.prototype._handleResponseItemAction =
 function(args) {
-	var type		= args[0];
-	var idHash		= args[1];
-	var callback	= args[2];
-	var result		= args[3];
+	var type		= args.shift();
+	var idHash		= args.shift();
+	var callback	= args.shift();
+	var result		= args.shift();
 
 	var response = result.getResponse();
 	var resp = response[ZmItem.SOAP_CMD[type] + "Response"]

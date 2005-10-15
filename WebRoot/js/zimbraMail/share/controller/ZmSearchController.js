@@ -58,9 +58,9 @@ function() {
 
 ZmSearchController.prototype.fromSearch = 
 function(address) {
-	// bug fix #3297 - always search for mail when doing a "from: <address>" search
+	// always search for mail when doing a "from: <address>" search
 	var groupBy = this._appCtxt.getSettings().getGroupMailBy();
-	this.search("from:(" + address + ")", [groupBy]);
+	this.search({query: "from:(" + address + ")", types: [groupBy]});
 }
 
 ZmSearchController.prototype.fromBrowse = 
@@ -165,26 +165,38 @@ function() {
 		this._searchToolBar.addSelectionListener(ZmSearchToolBar.SAVE_BUTTON, new AjxListener(this, this._saveButtonListener));
 }
 
+/**
+* Performs a search and displays the results.
+*
+* @param query			[string]			search string
+* @param types			[Array]*			item types to search for
+* @param sortBy			[constant]*			sort constraint
+* @param offset			[int]*				starting point in list of matching items
+* @param limit			[int]*				maximum number of items to return
+* @param callback		[AjxCallback]*		callback to run (rather than displaying results)
+* @param userText		[boolean]*			true if text was typed by user into search box
+* @param rpcCallback	[AjxCallback]*		(async) client callback
+* @param errorCallback	[AjxCallback]*		(async) callback to run if there is an exception
+*/
 ZmSearchController.prototype.search =
-function(query, types, sortBy, offset, limit, callback, userText, rpcCallback) {
-	if (!(query && query.length)) return;
+function(params) {
+	if (!(params.query && params.query.length)) return;
 	
 	// if the search string starts with "$set:" then it is a command to the client 
-	if (query.indexOf("$set:") == 0) {
-		this._appCtxt.getClientCmdHdlr().execute((query.substr(5)).split(" "));
+	if (params.query.indexOf("$set:") == 0) {
+		this._appCtxt.getClientCmdHdlr().execute((params.query.substr(5)).split(" "));
 		return;
 	}
 
-	var params = {query: query, types: types, sortBy: sortBy, offset: offset, limit: limit, callback: callback, userText: userText};
 	var respCallback = null;
-	if (rpcCallback)
-		var respCallback = new AjxCallback(this, this.handleDoSearchResponse, rpcCallback);
-	this._doSearch(params, respCallback);
+	if (params.rpcCallback)
+		var respCallback = new AjxCallback(this, this._handleResponseSearch, params.rpcCallback);
+	this._doSearch(params, respCallback, params.errorCallback);
 }
 
-ZmSearchController.prototype.handleDoSearchResponse =
+ZmSearchController.prototype._handleResponseSearch =
 function(callback) {
-	callback.run();
+	if (callback) callback.run();
 }
 
 /**
@@ -260,7 +272,7 @@ function(types) {
 * @param params	[Object]	a hash of arguments for the search (see search() method)
 */
 ZmSearchController.prototype._doSearch =
-function(params, rpcCallback) {
+function(params, rpcCallback, errorCallback) {
 
 	if (this._searchToolBar) {
 		var value = (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText) ? params.query : "";
@@ -280,12 +292,9 @@ function(params, rpcCallback) {
 	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
 	
 	var search = new ZmSearch(this._appCtxt, params.query, types, params.sortBy, params.offset, params.limit, contactSource);
-	var respCallback = new AjxCallback(this, this._handleResponse, [search, params.callback, rpcCallback]);
-	var errors = new Object();
-	errors[ZmCsfeException.MAIL_NO_SUCH_FOLDER] = true;
-	errors[ZmCsfeException.MAIL_NO_SUCH_TAG] = true;
-	errors[ZmCsfeException.MAIL_QUERY_PARSE_ERROR] = true;
-	search.execute(respCallback, errors);
+	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, params.callback, rpcCallback]);
+	if (!errorCallback) errorCallback = new AjxCallback(this, this._handleErrorDoSearch, params);
+	search.execute(respCallback, errorCallback);
 }
 
 /*
@@ -296,20 +305,15 @@ function(params, rpcCallback) {
 * @param rpcCallback	[AjxCallback]
 * @param result			[ZmCsfeResult]
 */
-ZmSearchController.prototype._handleResponse =
+ZmSearchController.prototype._handleResponseDoSearch =
 function(args) {
 
-	var search		= args[0];
-	var callback	= args[1];
-	var rpcCallback	= args[2];
-	var result		= args[3];
+	var search		= args.shift();
+	var callback	= args.shift();
+	var rpcCallback	= args.shift();
+	var result		= args.shift();
 
-	var results;
-	try {
-		results = result.getResponse();
-	} catch (ex) {
-		results = this._handleError(ex, search.types.get(0)); // minor problem, show empty result set
-	}
+	var results = result.getResponse();
 
 	this._appCtxt.setCurrentSearch(search);
 	DBG.timePt("execute search");
@@ -356,28 +360,34 @@ function(args) {
 * Handle a few minor errors where we show an empty result set and issue a 
 * status message to indicate why the query failed. Those errors are: no such
 * folder, no such tag, and bad query.
-*
-* @param ex			[ZmCsfeException]	the exception
-* @param params		[Object]			search params
 */
-ZmSearchController.prototype._handleError =
-function(ex, type) {
-	if (this._searchToolBar)
-		this._searchToolBar.setEnabled(true);
-	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
-	var msg = this._getErrorMsg(ex.code);
-	this._appCtxt.getAppController().setStatusMsg(msg);
-	var results = new ZmSearchResult(this._appCtxt);
-	results.type = params.types ? params.types[0] : null;
+ZmSearchController.prototype._handleErrorDoSearch =
+function(args) {
+	var params	= args.shift();
+	var ex		= args.shift();
 	
-	return results;
+	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER ||
+		ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
+		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR) {
+
+		if (this._searchToolBar)
+			this._searchToolBar.setEnabled(true);
+		DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
+		var msg = this._getErrorMsg(ex.code);
+		this._appCtxt.getAppController().setStatusMsg(msg);
+		var results = new ZmSearchResult(this._appCtxt);
+		results.type = params.types ? params.types[0] : null;
+		return true;
+	} else {
+		return false;
+	}
 }
 
 /*********** Search Field Callback */
 
 ZmSearchController.prototype._searchFieldCallback =
 function(queryString) {
-	this.search(queryString, null, null, null, null, null, true);
+	this.search({query: queryString, userText: true});
 }
 
 /*********** Search Bar Callbacks */
@@ -390,7 +400,7 @@ function(ev) {
 		this._currentQuery = null;
 	else
 		queryString = this._currentQuery;
-	this.search(queryString, null, null, null, null, null, userText);
+	this.search({query: queryString, userText: userText});
 }
 
 ZmSearchController.prototype._browseButtonListener =

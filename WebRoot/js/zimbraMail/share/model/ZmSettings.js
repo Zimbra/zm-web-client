@@ -123,17 +123,17 @@ function(list) {
 * @param callback [AjxCallback]		callback to run after response is received
 */
 ZmSettings.prototype.loadUserSettings =
-function(callback) {
+function(callback, errorCallback) {
     var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
-    var respCallback = new AjxCallback(this, this._handleResponse, callback);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+    var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, callback);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
 }
 
-ZmSettings.prototype._handleResponse =
+ZmSettings.prototype._handleResponseLoadUserSettings =
 function(args) {
 
-	var callback = args[0];
-	var result = args[1];
+	var callback	= args.shift();
+	var result		= args.shift();
 	
 	var response = result.getResponse();
 	var obj = response.GetInfoResponse;

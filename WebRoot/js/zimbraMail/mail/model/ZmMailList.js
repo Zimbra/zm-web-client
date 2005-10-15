@@ -77,14 +77,14 @@ function(items, folder) {
 	var attrs = new Object();
 	attrs.tcon = chars.join("");
 	attrs.l = folder.id;
-	var callback = new AjxCallback(this, this._handleMoveItemsResponse, folder);
+	var callback = new AjxCallback(this, this._handleResponseMoveItems, folder);
 	this._itemAction(items, "move", attrs, callback);
 };
 
-ZmMailList.prototype._handleMoveItemsResponse =
+ZmMailList.prototype._handleResponseMoveItems =
 function(args) {
-	var folder		= args[0];
-	var movedItems	= args[1];
+	var folder		= args.shift();
+	var movedItems	= args.shift();
 	
 	if (movedItems && movedItems.length) {
 		this.moveLocal(movedItems, folder.id);

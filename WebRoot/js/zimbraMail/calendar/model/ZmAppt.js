@@ -759,7 +759,7 @@ function() {
 };
 
 ZmAppt.prototype.getDetails =
-function(viewMode, callback, errors) {
+function(viewMode, callback, errorCallback) {
 	var mode = viewMode || this._viewMode;
 	var message;
 	
@@ -769,44 +769,24 @@ function(viewMode, callback, errors) {
 		message = new ZmMailMsg(this._appCtxt, id);
 		seriesMode ? this._seriesMessage = message : this._message = message;
 		var respCallback = new AjxCallback(this, this._handleResponseGetDetails, [mode, message, callback]);
-		message.load(false, false, respCallback, errors);
+		message.load(false, false, respCallback, errorCallback);
 	} else {
 		message = seriesMode ? this._seriesMessage : this._message;
 		this.setFromMessage(message, mode);
 	}
-/*		
-	if (mode == ZmAppt.MODE_EDIT_SERIES) {
-		if (this._seriesMessage == null) {
-			message = new ZmMailMsg(this._appCtxt, this._seriesInvId);
-			message.load();
-			this._seriesMessage = message;
-		} else {
-			message = this._seriesMessage;
-		}
-	} else {
-		if (this._message == null) {
-			message = new ZmMailMsg(this._appCtxt, this.invId);
-			message.load();
-			this._message = message;
-		} else {
-			message = this._message;
-		}
-	}
-	this.setFromMessage(message, mode);
-*/
 };
 
 ZmAppt.prototype._handleResponseGetDetails =
 function(args) {
-	var mode		= args[0];
-	var message		= args[1];
-	var callback	= args[2];
-	var result		= args[3];
+	var mode		= args.shift();
+	var message		= args.shift();
+	var callback	= args.shift();
+	var result		= args.shift();
 	
 	// msg content should be text, so no need to pass callback to setFromMessage()
 	this.setFromMessage(message, mode);
 	if (callback) callback.run(result);
-}
+};
 
 ZmAppt.prototype.setFromMessage = 
 function(message, viewMode) {
@@ -1910,8 +1890,8 @@ function(sender, mode) {
 
 ZmAppt.prototype._handleResponseCancel =
 function(args) {
-	var sender	= args[0];
-	var mode	= args[1];
+	var sender	= args.shift();
+	var mode	= args.shift();
 	
 	switch (mode) {
 	case ZmAppt.MODE_DELETE:

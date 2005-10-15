@@ -392,15 +392,15 @@ function(uname, pword) {
     soapDoc.set("password", pword);
 
 	var command = new ZmCsfeCommand();
-	var respCallback = new AjxCallback(null, ZmLogin._handleAuthResponse, [uname, pword]);
+	var respCallback = new AjxCallback(null, ZmLogin._handleResponseSubmitAuthRequest, [uname, pword]);
 	command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true, asyncMode: true, callback: respCallback});
 }
 
-ZmLogin._handleAuthResponse =
+ZmLogin._handleResponseSubmitAuthRequest =
 function(args) {
-	var uname = args[0];
-	var pword = args[1];
-	var result = args[2];
+	var uname	= args.shift();
+	var pword	= args.shift();
+	var result	= args.shift();
 	
 	var response;
 	try {
@@ -430,43 +430,6 @@ function(args) {
 	ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword, !pcChecked);
 	ZmLogin._authToken = ZmLogin._authTokenLifetime = null;
 };
-
-/*
-    try {
-		var command = new ZmCsfeCommand();
-		var resp = command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true}).Body.AuthResponse;
-		ZmLogin._authToken = resp.authToken;
-		ZmLogin._authTokenLifetime = resp.lifetime;
-		var mailServer = resp.refer;
-		var pcChecked = document.getElementById("publicComputer").checked;
-		ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword, !pcChecked);
-		ZmLogin._authToken = ZmLogin._authTokenLifetime = null;
-    } catch (ex) {
-		DBG.dumpObj(ex);
-		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || 
-			ex.code == ZmCsfeException.NO_SUCH_ACCOUNT) 
-		{
-			ZmLogin.setErrorMessage(ZmMsg.loginError);
-		} 
-		else if (ex.code == ZmCsfeException.SOAP_ERROR || 
-				 ex.code == ZmCsfeException.NETWORK_ERROR) 
-		{
-			var msg = ZmMsg.errorNetwork + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
-			ZmLogin.setErrorMessage(msg);
-		} 
-		else if (ex.code == ZmCsfeException.ACCT_CHANGE_PASSWORD)
-		{
-			// disable username and password fields
-			unameField.disabled = pwordField.disabled = true;
-			ZmLogin.showChangePass(ex);
-		}
-		else 
-		{
-			var msg = ZmMsg.errorApplication + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
-			ZmLogin.setErrorMessage(msg + " (" + ex.code + ")");
-		}
-    }
-*/
 
 ZmLogin.isValidUsername = 
 function(uname) {

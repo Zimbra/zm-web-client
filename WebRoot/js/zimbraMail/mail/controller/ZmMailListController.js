@@ -264,10 +264,10 @@ function(ev, action, extraBodyText) {
 
 ZmMailListController.prototype._handleResponseDoAction = 
 function(args) {
-	var action			= args[0];
-	var inNewWindow		= args[1];
-	var msg				= args[2];
-	var extraBodyText	= args[3];
+	var action			= args.shift();
+	var inNewWindow		= args.shift();
+	var msg				= args.shift();
+	var extraBodyText	= args.shift();
 
 	this._app.getComposeController().doAction(action, inNewWindow, msg, null, null, extraBodyText);
 }

@@ -1554,8 +1554,8 @@ function(ev) {
 			data.view._autoScrollDisabled = true;			
 			var cc = data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 			var endDate = new Date(data.startDate.getTime() + origDuration);
-			var respCallback = new AjxCallback(this, ZmCalDayView._handleResponseApptMouseUpHdlr, data);
-			cc.updateApptDate(data.appt._orig, data.startDate, endDate, false, respCallback);
+			var errorCallback = new AjxCallback(null, ZmCalDayView._handleError, data);
+			cc.updateApptDate(data.appt._orig, data.startDate, endDate, false, null, errorCallback);
 		} else {
 			ZmCalDayView._restoreLayout(data);
 		}
@@ -1566,18 +1566,6 @@ function(ev) {
 	mouseEv.setToDhtmlEvent(ev);
 	
 	return false;	
-}
-
-ZmCalDayView._handleResponseApptMouseUpHdlr =
-function(args) {
-	var data	= args[0];
-	var result	= args[1];
-	
-	try {
-		result.getResponse();
-	} catch (ex) {
-		ZmCalDayView._restoreLayout(data);
-	}
 }
 
 // END APPT ACTION HANDLERS
@@ -1718,21 +1706,9 @@ function(ev) {
 	if (needUpdate) {
 		data.view._autoScrollDisabled = true;
 		var cc = data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
-		var respCallback = new AjxCallback(this, ZmCalDayView._handleResponseSashMouseUpHdlr, data);
-		cc.updateApptDate(data.appt._orig, startDate, endDate, false, respCallback);
+		var errorCallback = new AjxCallback(null, ZmCalDayView._handleError, data);
+		cc.updateApptDate(data.appt._orig, startDate, endDate, false, null, errorCallback);
 	} else {
-		ZmCalDayView._restoreLayout(data);
-	}
-}
-
-ZmCalDayView._handleResponseSashMouseUpHdlr =
-function(args) {
-	var data	= args[0];
-	var result	= args[1];
-	
-	try {
-		result.getResponse();
-	} catch (ex) {
 		ZmCalDayView._restoreLayout(data);
 	}
 }
@@ -1970,6 +1946,15 @@ function(ev) {
 	mouseEv._stopPropagation = true;
 	mouseEv._returnValue = false;
 	mouseEv.setToDhtmlEvent(ev);
+	return false;
+}
+
+ZmCalDayView._handleError =
+function(args) {
+	var data	= args.shift();
+	var ex		= args.shift();
+	
+	ZmCalDayView._restoreLayout(data);
 	return false;
 }
 

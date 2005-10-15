@@ -483,8 +483,15 @@ function(child, sortFunction) {
 	return i;
 }
 
-// General method for handling the SOAP call. 
-// NOTE: exceptions need to be handled by calling method!
+/*
+* Sends a request to the server. Note that it's done asynchronously, but
+* there is no callback given. Hence, an organizer action is the last thing
+* done before returning to the event loop. The result of the action is
+* handled via notifications.
+*
+* @param action		[string]	operation to perform
+* @param attrs		[Object]	hash of additional attributes to set in the request
+*/
 ZmOrganizer.prototype._organizerAction =
 function(action, attrs) {
 	var cmd = ZmOrganizer.SOAP_CMD[this.type];

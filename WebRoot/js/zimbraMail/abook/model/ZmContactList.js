@@ -75,7 +75,7 @@ function() {
 * @param attrs		load only these attributes
 */
 ZmContactList.prototype.load =
-function(attrs, callback) {
+function(attrs, callback, errorCallback) {
 
 	// only the canonical list gets loaded
 	this.isCanonical = true;
@@ -90,17 +90,17 @@ function(attrs, callback) {
 		}
 	}
 	
-	var respCallback = new AjxCallback(this, this._handleResponse, callback);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+	var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
 }
 
-ZmContactList.prototype._handleResponse =
+ZmContactList.prototype._handleResponseLoad =
 function(args) {
 	var callback = null;
 	var result;
 	if (args instanceof Array) {
-		callback = args[0];
-		result = args[1];
+		callback	= args.shift();
+		result		= args.shift();
 	} else {
 		result = args;
 	}
@@ -117,8 +117,7 @@ function(args) {
 	}
 	this._acContacts = this._getAcContacts(this.getArray());
 	
-	if (callback)
-		callback.run();
+	if (callback) callback.run();
 }
 
 ZmContactList.prototype.set = 

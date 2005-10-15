@@ -36,12 +36,13 @@ function() {
 }
 
 ZmMailApp.prototype.launch =
-function(callback) {
-	var respCallback = new AjxCallback(this, this._handleResponse, callback);
-	this._appCtxt.getSearchController().search(this._appCtxt.get(ZmSetting.INITIAL_SEARCH), null, null, null, null, null, null, respCallback);
+function(callback, errorCallback) {
+	var respCallback = new AjxCallback(this, this._handleResponseLaunch, callback);
+	var params = {query: this._appCtxt.get(ZmSetting.INITIAL_SEARCH), rpcCallback: respCallback, errorCallback: errorCallback};
+	this._appCtxt.getSearchController().search(params);
 }
 
-ZmMailApp.prototype._handleResponse =
+ZmMailApp.prototype._handleResponseLaunch =
 function(callback) {
 	callback.run();
 }

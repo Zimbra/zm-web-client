@@ -74,7 +74,7 @@ ZmTreeController.prototype.constructor = ZmTreeController;
 // Abstract protected methods
 
 // Enables/disables operations based on the given organizer ID
-ZmTreeController.prototype.resetOperations = function(id) {}
+ZmTreeController.prototype.resetOperations = function() {}
 
 // Returns a list of desired header action menu operations
 ZmTreeController.prototype._getHeaderActionMenuOps = function() {}

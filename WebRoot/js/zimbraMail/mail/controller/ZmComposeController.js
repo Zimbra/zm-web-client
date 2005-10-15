@@ -104,44 +104,53 @@ function(params) {
 		var contactList = !isDraft 
 			? this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList() : null;
 
-		var resp = msg.send(contactList, isDraft);
+		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg]);
+		msg.send(contactList, isDraft);
 		
-		if (!isDraft) {
-			if (resp || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
-				this._composeView.reset(false);
-				this._app.popView(true);
-				
-				// if the original message was a draft, we need to nuke it
-				var origMsg = msg._origMsg;
-				if (origMsg && origMsg.isDraft && origMsg.list) {
-					// if this is a child window, dont schedule!
-					if (this.isChildWindow)
-						this._deleteDraft(origMsg);
-					else
-						this._schedule(this._deleteDraft, origMsg);
-				}
-			}
-			if (this.isChildWindow && window.parentController) {
-				window.parentController.setStatusMsg(ZmMsg.messageSent);
-			} else {
-				this._appCtxt.getAppController().setStatusMsg(ZmMsg.messageSent);
-			}
-		} else {
-			// TODO - disable save draft button indicating a draft was saved
-			//        ** new UI will show in toaster section
-			if (this.isChildWindow && window.parentController) {
-				window.parentController.setStatusMsg(ZmMsg.draftSaved);
-			} else {
-				this._appCtxt.getAppController().setStatusMsg(ZmMsg.draftSaved);
-			}
-			this._composeView.reEnableDesignMode();
-
-			// save message draft so it can be reused if user saves draft again
-			this._composeView.processMsgDraft(resp);
-		}
 	} catch (ex) {
 		this._toolbar.enableAll(true);
 		this._handleException(ex, this.sendMsg, params, false);
+	}
+}
+
+ZmComposeController.prototype._handleResponseSendMsg =
+function(args) {
+	var isDraft	= args.shift();
+	var msg		= args.shift();
+	var result	= args.shift();
+	
+	var resp = result.getResponse();
+	if (!isDraft) {
+		if (resp || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
+			this._composeView.reset(false);
+			this._app.popView(true);
+			
+			// if the original message was a draft, we need to nuke it
+			var origMsg = msg._origMsg;
+			if (origMsg && origMsg.isDraft && origMsg.list) {
+				// if this is a child window, dont schedule!
+				if (this.isChildWindow)
+					this._deleteDraft(origMsg);
+				else
+					this._schedule(this._deleteDraft, origMsg);
+			}
+		}
+		if (this.isChildWindow && window.parentController) {
+			window.parentController.setStatusMsg(ZmMsg.messageSent);
+		} else {
+			this._appCtxt.getAppController().setStatusMsg(ZmMsg.messageSent);
+		}
+	} else {
+		// TODO - disable save draft button indicating a draft was saved
+		//        ** new UI will show in toaster section
+		if (this.isChildWindow && window.parentController) {
+			window.parentController.setStatusMsg(ZmMsg.draftSaved);
+		} else {
+			this._appCtxt.getAppController().setStatusMsg(ZmMsg.draftSaved);
+		}
+		this._composeView.reEnableDesignMode();
+			// save message draft so it can be reused if user saves draft again
+		this._composeView.processMsgDraft(resp);
 	}
 }
 
@@ -182,7 +191,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 	
 	if (!this._toolbar)
 		this._createToolBar();
-	this._toolbar.enableAll(true); // bug fix #2499
+	this._toolbar.enableAll(true);
 
 	var needPicker = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) || this._appCtxt.get(ZmSetting.GAL_ENABLED);
 	if (!this._contactPicker && needPicker) {
@@ -332,7 +341,7 @@ function(composeMode) {
 // Send button was pressed
 ZmComposeController.prototype._sendListener =
 function(ev) {
-	this._toolbar.enableAll(false); // bug fix #2499
+	this._toolbar.enableAll(false); // thwart multiple clicks on Send button
 	this.sendMsg();
 }
 
@@ -432,7 +441,7 @@ function() {
 // Save Draft button was pressed
 ZmComposeController.prototype._saveDraftListener =
 function(ev) {
-	this.sendMsg({attId:null, isDraft:true});
+	this.sendMsg({isDraft: true});
 	this._composeView.draftSaved();
 }
 
@@ -518,7 +527,7 @@ ZmComposeController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED))
-		this.sendMsg({attId:null, isDraft:true});
+		this.sendMsg({isDraft: true});
 	this._app.getAppViewMgr().showPendingView(true);
 	this._composeView.reset(false);
 }

@@ -79,7 +79,7 @@ ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT] = ZmMsg.subject;
  * @param getHtml - whether to fetch html from the server ( if possible ).
  */
 ZmMailMsg.fetchMsg = 
-function(sender, msgId, getHtml, callback, errors) {
+function(sender, msgId, getHtml, callback, errorCallback) {
 	var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail", null);
 	var msgNode = soapDoc.set("m");
 	msgNode.setAttribute("id", msgId);
@@ -87,14 +87,14 @@ function(sender, msgId, getHtml, callback, errors) {
 	if (getHtml) {
 		msgNode.setAttribute("html", "1");
 	}
-	var respCallback = new AjxCallback(null, ZmMailMsg._handleGetMsgResponse, callback);
-	sender.sendRequest(soapDoc, true, respCallback, errors);
+	var respCallback = new AjxCallback(null, ZmMailMsg._handleResponseGetMsg, callback);
+	sender.sendRequest(soapDoc, true, respCallback, errorCallback);
 };
 
-ZmMailMsg._handleGetMsgResponse =
+ZmMailMsg._handleResponseGetMsg =
 function(args) {
-	var callback	= args[0];
-	var result		= args[1];
+	var callback	= args.shift();
+	var result		= args.shift();
 	if (callback) callback.run(result);
 }
 
@@ -378,11 +378,11 @@ function(node, args) {
 * @param getHtml		
 */
 ZmMailMsg.prototype.load =
-function(getHtml, forceLoad, callback, errors) {
+function(getHtml, forceLoad, callback, errorCallback) {
 	// If we are already loaded, then don't bother loading
 	if (!this._loaded || forceLoad) {
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
-		ZmMailMsg.fetchMsg(this._appCtxt.getAppController(), this.id, getHtml, respCallback, errors);
+		ZmMailMsg.fetchMsg(this._appCtxt.getAppController(), this.id, getHtml, respCallback, errorCallback);
 	} else {
 		this._markReadLocal(true);
 		if (callback) callback.run(new ZmCsfeResult()); // return exceptionless result
@@ -392,8 +392,8 @@ function(getHtml, forceLoad, callback, errors) {
 ZmMailMsg.prototype._handleResponseLoad =
 function(args) {
 
-	var callback	= args[0];
-	var result		= args[1];
+	var callback	= args.shift();
+	var result		= args.shift();
 
 	var response = result.getResponse().GetMsgResponse;
 
@@ -462,8 +462,8 @@ function(callback) {
 
 ZmMailMsg.prototype._handleResponseGetTextPart =
 function(args) {
-	var callback	= args[0];
-	var result		= args[1];
+	var callback	= args.shift();
+	var result		= args.shift();
 	
 	var response = result.getResponse();
 	this._loadFromDom(response.m[0]);
@@ -550,7 +550,7 @@ function (contactList, edited, componentId) {
 * Sends the message out into the world.
 */
 ZmMailMsg.prototype.send =
-function(contactList, isDraft) {
+function(contactList, isDraft, callback) {
 	// TODO - allow invite replies when the server gets updated.
 	// if we have an invite reply, we have to send a different soap message
 
@@ -564,18 +564,26 @@ function(contactList, isDraft) {
 		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
 		// TODO - return code and put up status message
 		this._createMessageNode(soapDoc, contactList, isDraft);
-		var resp = this._sendMessage(soapDoc, false, isDraft).m[0];
-		
-		// notify listeners of successful send message
-		if (!isDraft) {
-			if (resp.id || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT))
-				this._notifySendListeners();
-			return resp.id;
-		} else {
-			this._loadFromDom(resp);
-			return this;
-		}
-	}	
+		var respCallback = new AjxCallback(this, this._handleResponseSend, isDraft);
+		this._sendMessage(soapDoc, false, isDraft, respCallback);
+	}
+};
+
+ZmMailMsg.prototype._handleResponseSend =
+function(args) {
+	var isDraft	= args.shift();
+	var result	= args.shift();
+	
+	var resp = result.getResponse().m[0];
+	// notify listeners of successful send message
+	if (!isDraft) {
+		if (resp.id || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT))
+			this._notifySendListeners();
+		result.set(resp.id);
+	} else {
+		this._loadFromDom(resp);
+		result.set(this);
+	}
 };
 
 ZmMailMsg.prototype._createMessageNode = 
@@ -648,13 +656,26 @@ function(soapDoc, contactList, isDraft) {
 
 ZmMailMsg.prototype._sendMessage = 
 function(soapDoc, bIsInvite, bIsDraft) {
-	var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
+	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [bIsInvite, bIsDraft, callback]);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+};
+
+ZmMailMsg.prototype._handleResponseSendMessage =
+function(args) {
+	var bIsInvite	= args.shift();
+	var bIsDraft	= args.shift();
+	var callback	= args.shift();
+	var result		= args.shift();
+	
+	var response = result.getResponse();
 	if (bIsInvite)
-		return resp.SendInviteReplyResponse;
+		result.set(resp.SendInviteReplyResponse);
 	else if (bIsDraft)
-		return resp.SaveDraftResponse;
+		result.set(resp.SaveDraftResponse);
 	else
-		return resp.SendMsgResponse;
+		result.set(resp.SendMsgResponse);
+
+	if (callback) callback.run(result);
 };
 
 ZmMailMsg.prototype._notifySendListeners = 

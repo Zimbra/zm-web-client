@@ -219,7 +219,8 @@ function(columnItem, bSortAsc) {
 	
 	if (this.getList().size() > 1 && this._sortByString) {
 		var searchString = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().getSearchString();
-		this._appCtxt.getSearchController().search(searchString, [ZmItem.CONV], this._sortByString, 0, this.getLimit());
+		var params = {query: searchString, types: [ZmItem.CONV], sortBy: this._sortByString, limit: this.getLimit()};
+		this._appCtxt.getSearchController().search(params);
 	}
 }
 

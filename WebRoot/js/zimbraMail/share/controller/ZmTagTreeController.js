@@ -149,7 +149,7 @@ ZmTagTreeController.prototype._itemClicked =
 function(tag) {
 	var searchController = this._appCtxt.getSearchController();
 	var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
-	searchController.search('tag:"' + tag.name + '"', types);
+	searchController.search({query: 'tag:"' + tag.name + '"', types: types});
 }
 
 // Listeners

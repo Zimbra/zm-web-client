@@ -148,7 +148,7 @@ function(folder) {
 	} else {
 		var searchController = this._appCtxt.getSearchController();
 		var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
-		searchController.search(folder.createQuery(), types);
+		searchController.search({query: folder.createQuery(), types: types});
 	}
 }
 

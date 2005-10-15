@@ -66,10 +66,11 @@ function() {
 /**
 * Creates a SOAP request that represents this search and sends it to the server.
 *
-* @param callback	[AjxCallback]*	Callback to run when response is received (async mode)
+* @param callback		[AjxCallback]*		(async) callback to run when response is received
+* @param errorCallback	[AjxCallback]*		(async) callback to run if there is an exception
 */
 ZmSearch.prototype.execute =
-function(callback, errors) {
+function(callback, errorCallback) {
 
 	if (!this.query) return;
 	
@@ -88,34 +89,27 @@ function(callback, errors) {
 				for (var i = 0; i < a.length; i++)
 					typeStr.push(ZmSearch.TYPE[a[i]]);
 				method.setAttribute("types", typeStr.join(","));
-				// bug fix #2744,3298,298
+				// special handling for showing participants ("To" instead of "From")
 				if (this.folderId == ZmFolder.ID_SENT || this.folderId == ZmFolder.ID_DRAFTS)
 					method.setAttribute("recip", "1");
 			}
 		}
 	}
 	
-	var respCallback = new AjxCallback(this, this._handleResponse, [isGalSearch, callback]);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errors);
+	var respCallback = new AjxCallback(this, this._handleResponseExecute, [isGalSearch, callback]);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
 }
 
 /*
-* Convert the SOAP response into a ZmSearchResult and pass it along. If we got an
-* exception, just pass that along.
+* Convert the SOAP response into a ZmSearchResult and pass it along.
 */
-ZmSearch.prototype._handleResponse = 
+ZmSearch.prototype._handleResponseExecute = 
 function(args) {
-	var isGalSearch = args[0];
-	var callback = args[1];
-	var result = args[2];
+	var isGalSearch	= args.shift();
+	var callback	= args.shift();
+	var result		= args.shift();
 	
-	var response;
-	try {
-		response = result.getResponse();
-	} catch (ex) {
-		callback.run(result);
-	}
-	
+	var response = result.getResponse();
 	response = isGalSearch ? response.SearchGalResponse : response.SearchResponse;
 	var searchResult = new ZmSearchResult(this._appCtxt, this);
 	searchResult.set(response, this.contactSource);
@@ -146,8 +140,8 @@ function(cid, callback) {
 
 ZmSearch.prototype._handleResponseForConv = 
 function(args) {
-	var callback	= args[0];
-	var result		= args[1];
+	var callback	= args.shift();
+	var result		= args.shift();
 	
 	response = result.getResponse().SearchConvResponse;
 	var searchResult = new ZmSearchResult(this._appCtxt, this);
@@ -191,11 +185,11 @@ function(soapDoc) {
 		method.setAttribute("sortBy", this.sortBy);
 
 	// always set offset (init to zero if not provided)
-	this.offset = this.offset || 0;
+	this.offset = this.offset ? this.offset : 0;
 	method.setAttribute("offset", this.offset);
 
 	// always set limit (init to user pref for page size if not provided)
-	this.limit = this.limit || this._appCtxt.get(ZmSetting.PAGE_SIZE);
+	this.limit = this.limit ? this.limit : this._appCtxt.get(ZmSetting.PAGE_SIZE);
 	method.setAttribute("limit", this.limit);
 	
 	// and of course, always set the query

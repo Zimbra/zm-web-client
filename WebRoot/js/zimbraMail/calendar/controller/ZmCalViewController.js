@@ -771,22 +771,22 @@ function(event) {
 * TODO: change this to work with _handleException, and take callback so view can restore appt location/size on failure
 */
 ZmCalViewController.prototype.updateApptDate =
-function(appt, startDate, endDate, changeSeries, callback) {
+function(appt, startDate, endDate, changeSeries, callback, errorCallback) {
 	var viewMode = !appt.isRecurring() 
 		? ZmAppt.MODE_EDIT 
 		: (changeSeries ? ZmAppt.MODE_EDIT_SERIES : ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
 	var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDate, endDate, callback]);
-	appt.getDetails(viewMode, respCallback, {all: true}); // have all exceptions passed up to us
+	appt.getDetails(viewMode, respCallback, errorCallback);
 }
 
 ZmCalViewController.prototype._handleResponseUpdateApptDate =
 function(args) {
-	var appt		= args[0];
-	var viewMode	= args[1];
-	var startDate	= args[2];
-	var endDate		= args[3];
-	var callback	= args[4];
-	var result		= args[5];
+	var appt		= args.shift();
+	var viewMode	= args.shift();
+	var startDate	= args.shift();
+	var endDate		= args.shift();
+	var callback	= args.shift();
+	var result		= args.shift();
 	
 	try {
 		result.getResponse();
@@ -892,8 +892,8 @@ function(ev) {
 
 ZmCalViewController.prototype._handleResponseHandleApptRespondAction =
 function(args) {
-	var appt	= args[0];
-	var ev		= args[1];
+	var appt	= args.shift();
+	var ev		= args.shift();
 
 	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 	msgController.setMsg(appt.getMessage());
@@ -910,8 +910,8 @@ function(ev) {
 
 ZmCalViewController.prototype._handleResponseHandleApptEditRespondAction =
 function(args) {
-	var appt	= args[0];
-	var ev		= args[1];
+	var appt	= args.shift();
+	var ev		= args.shift();
 
 	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 	msgController.setMsg(appt.getMessage());

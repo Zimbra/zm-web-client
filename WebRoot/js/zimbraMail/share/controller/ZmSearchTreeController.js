@@ -105,7 +105,7 @@ ZmSearchTreeController.prototype._itemClicked =
 function(search) {
 	var searchController = this._appCtxt.getSearchController();
 	var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
-	searchController.search(search.query, search.types, search.sortBy);
+	searchController.search(search);
 }
 
 // Listeners

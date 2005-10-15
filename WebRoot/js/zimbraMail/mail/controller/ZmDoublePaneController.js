@@ -120,8 +120,8 @@ function(view) {
 }
 
 ZmDoublePaneController.prototype._handleResponseSwitchView = 
-function() {
-	var currentMsg = args[0];
+function(args) {
+	var currentMsg = args.shift();
 	this._doublePaneView.setMsg(currentMsg);
 }
 
@@ -359,8 +359,8 @@ function(params) {
 
 ZmDoublePaneController.prototype._handleResponseLoadItem =
 function(args) {
-	var view	= args[0];
-	var result	= args[1];
+	var view	= args.shift();
+	var result	= args.shift();
 	
 	var results = result.getResponse();
 	if (results instanceof ZmList) {

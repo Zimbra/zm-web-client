@@ -108,7 +108,7 @@ function(obj) {
 ZmPhoneObjectHandler.prototype._searchListener =
 function(ev) {
 	// XXX: needs more params...
-	this._appCtxt.getSearchController().search(this._actionObject);
+	this._appCtxt.getSearchController().search({query: this._actionObject});
 };
 
 ZmPhoneObjectHandler.prototype._contactListener = 

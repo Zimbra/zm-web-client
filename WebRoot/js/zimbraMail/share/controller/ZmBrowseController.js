@@ -146,7 +146,7 @@ function(doSearch) {
 		this._query = newQuery;
 		DBG.println(AjxDebug.DBG3, "Browse query: " + this._query);
 		if (doSearch)
-			this._appCtxt.getSearchController().search(this._query);
+			this._appCtxt.getSearchController().search({query: this._query});
 		else
 			this._appCtxt.getSearchController().setSearchField(this._query);
 	}
@@ -154,7 +154,7 @@ function(doSearch) {
 
 ZmBrowseController.prototype._executeQuery =
 function() {
-	this._appCtxt.getSearchController().search(this._query);
+	this._appCtxt.getSearchController().search({query: this._query});
 }
 
 ZmBrowseController.prototype._resetListener =

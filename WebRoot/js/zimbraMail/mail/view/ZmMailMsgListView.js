@@ -419,21 +419,22 @@ function(columnItem, bSortAsc) {
 		if (this._mode == ZmController.CONV_VIEW) {
 			var conv = controller.getConv();
 			if (conv) {
-				var respCallback = new AjxCallback(this, this._handleConvLoadResponse, [conv, columnItem, controller]);
+				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, controller]);
 				conv.load(searchString, this._sortByString, null, null, null, respCallback);
 			}
 		} else {
-			this._appCtxt.getSearchController().search(searchString, [ZmItem.MSG], this._sortByString, 0, this.getLimit());
+			var params = {query: searchString, types: [ZmItem.MSG], sortBy: this._sortByString, limit: this.getLimit()};
+			this._appCtxt.getSearchController().search(params);
 		}
 	}
 }
 
-ZmMailMsgListView.prototype._handleConvLoadResponse =
+ZmMailMsgListView.prototype._handleResponseSortColumn =
 function(args) {
-	var conv		= args[0];
-	var columnItem	= args[1];
-	var controller	= args[2];
-	var result		= args[3];
+	var conv		= args.shift();
+	var columnItem	= args.shift();
+	var controller	= args.shift();
+	var result		= args.shift();
 	
 	var list = result.getResponse();
 	controller.setList(list); // set the new list returned

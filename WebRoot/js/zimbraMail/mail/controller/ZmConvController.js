@@ -206,7 +206,7 @@ function(tagId) {
 	var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getById(tagId);
 	var query = 'tag:"' + tag.name + '"';
 	var searchController = this._appCtxt.getSearchController();
-	searchController.search(query);
+	searchController.search({query: query});
 }
 
 ZmConvController.prototype._doDelete =

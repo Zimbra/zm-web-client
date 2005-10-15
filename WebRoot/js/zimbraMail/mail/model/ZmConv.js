@@ -95,9 +95,9 @@ function(searchString, sortBy, offset, limit, pagCallback, callback) {
 
 ZmConv.prototype._handleResponseLoad =
 function(args) {
-	var pagCallback	= args[0];
-	var callback	= args[1];
-	var result		= args[2];
+	var pagCallback	= args.shift();
+	var callback	= args.shift();
+	var result		= args.shift();
 
 	var results = result.getResponse();
 	if (pagCallback) {
@@ -119,6 +119,30 @@ function(args) {
 			callback.run(result);
 		}
 	}
+}
+
+ZmConv.prototype.loadMsgIds =
+function(callback) {
+	var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:zimbraMail");
+	var msgNode = soapDoc.set("c");
+	msgNode.setAttribute("id", conv.id);
+	var respCallback = new AjxCallback(this, this._handleResponseLoadMsgIds, callback);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback)
+}
+
+ZmConv.prototype._handleResponseLoadMsgIds =
+function(args) {
+	var callback	= args.shift();
+	var result		= args.shift();
+	
+	var response = result.getResponse();
+	var resp = response.GetConvResponse.c[0];
+	var msgIds = new Array();
+	for (var i = 0; i < resp.m.length; i++)
+		msgIds.push(resp.m[i].id);
+	this.msgIds = msgIds;
+	
+	if (callback) callback.run(result);
 }
 
 ZmConv.prototype.clear =
