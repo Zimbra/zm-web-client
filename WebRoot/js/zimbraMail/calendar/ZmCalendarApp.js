@@ -44,13 +44,13 @@ function(callback) {
 };
 
 ZmCalendarApp.prototype.activate =
-function(active) {
+function(active, view, date) {
 	var appController = this._appCtxt.getAppController();
 	if (active) {
 		this._oldPanels = appController.getOverviewPanels();
 		appController.setOverviewPanels( [ ZmOrganizer.CALENDAR ] );
-		
-		this.getCalController().show();
+		this.getCalController().show(view);
+		if (date) this.getCalController().setDate(date);
 	}
 	else {
 		appController.setOverviewPanels(this._oldPanels);		
