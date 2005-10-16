@@ -137,9 +137,11 @@ function(msg, now, isDndIcon, isMixedView) {
 			idx = this._getField(htmlArr, idx, msg, ZmItem.F_TAG, i);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) == 0) {
 			// Status
-			htmlArr[idx++] = "<td width=" + width + ">";
+			htmlArr[idx++] = "<td width=" + width + "><center>";
 			var imageInfo;
-			if (msg.isDraft)
+			if (msg.isInvite())
+				imageInfo = "Appointment";
+			else if (msg.isDraft)
 				imageInfo = "MsgStatusDraft";
 			else if (msg.isReplied)
 				imageInfo = "MsgStatusReply";
@@ -150,7 +152,7 @@ function(msg, now, isDndIcon, isMixedView) {
 			else
 				imageInfo = msg.isUnread ? "MsgStatusUnread" : "MsgStatusRead";
 			htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, ["id='", this._getFieldId(msg, ZmItem.F_STATUS), "'"].join(""));	
-			htmlArr[idx++] = "</td>";
+			htmlArr[idx++] = "</center></td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) == 0) {
 			// Participants
 			htmlArr[idx++] = "<td width=" + width + ">";
@@ -279,7 +281,9 @@ function(items, on) {
 		if (img && img.parentNode) {
 			if (on) {
 				var imageInfo;
-				if (item.isDraft)
+				if (item.isInvite())
+					imageInfo = "Appointment";
+				else if (item.isDraft)
 					imageInfo = "MsgStatusDraft";
 				else if (item.isReplied)
 					imageInfo = "MsgStatusReply";
@@ -290,7 +294,7 @@ function(items, on) {
 				else
 					imageInfo = "MsgStatusRead";
 			} else {
-				imageInfo = "MsgStatusUnread";
+				imageInfo = item.isInvite() ? "Appointment" : "MsgStatusUnread";
 			}
 			AjxImg.setImage(img.parentNode, imageInfo);
 		}
