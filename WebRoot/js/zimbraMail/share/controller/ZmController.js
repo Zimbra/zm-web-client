@@ -64,6 +64,7 @@ ZmController.CONTACT_SRC_VIEW		= i++; // contact picker source list
 ZmController.CONTACT_TGT_VIEW		= i++; // contact picker target list
 ZmController.PREF_VIEW				= i++;
 ZmController.CAL_DAY_VIEW			= i++;
+ZmController.CAL_SCHEDULE_VIEW		= i++;
 ZmController.CAL_WEEK_VIEW			= i++;
 ZmController.CAL_MONTH_VIEW			= i++;
 ZmController.CAL_WORK_WEEK_VIEW		= i++;
@@ -148,6 +149,7 @@ function(view) {
 		case ZmController.CONTACT_VIEW:			return this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController();
 		case ZmController.CAL_VIEW:
 		case ZmController.CAL_DAY_VIEW:
+		case ZmController.CAL_SCHEDULE_VIEW:		
 		case ZmController.CAL_WEEK_VIEW:
 		case ZmController.CAL_MONTH_VIEW:
 		case ZmController.CAL_WORK_WEEK_VIEW:	return this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();

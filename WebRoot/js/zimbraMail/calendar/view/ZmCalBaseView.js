@@ -27,7 +27,6 @@ function ZmCalBaseView(parent, className, posStyle, view) {
 	if (arguments.length == 0) return;
 
 	DwtComposite.call(this, parent, className, posStyle, view);
-	
 
 	// BEGIN LIST-RELATED
 	this._setMouseEventHdlrs();
@@ -46,7 +45,6 @@ function ZmCalBaseView(parent, className, posStyle, view) {
 	this.addListener(DwtEvent.ONMOUSEUP, this._listenerMouseUp);
 	this.addListener(DwtEvent.ONMOUSEMOVE, this._listenerMouseMove);
 	this.addListener(DwtEvent.ONDBLCLICK, this._listenerDoubleClick);
-	
 	
 	this.view = view;	
 	this._evtMgr = new AjxEventMgr();	 

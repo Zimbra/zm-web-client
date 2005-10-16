@@ -104,6 +104,7 @@ ZmOperation.REPLY_NEW_TIME		    = i++;
 ZmOperation.REPLY_TENTATIVE			= i++;
 ZmOperation.SAVE					= i++;
 ZmOperation.SAVE_DRAFT				= i++;
+ZmOperation.SCHEDULE_VIEW			= i++;
 ZmOperation.SEARCH					= i++;
 ZmOperation.SEND					= i++;
 ZmOperation.SHARE					= i++;
@@ -183,6 +184,7 @@ ZmOperation.MSG_KEY[ZmOperation.REPLY_NEW_TIME]		    = "replyNewTime";
 ZmOperation.MSG_KEY[ZmOperation.REPLY_DECLINE]			= "replyDecline";
 ZmOperation.MSG_KEY[ZmOperation.SAVE]					= "save";
 ZmOperation.MSG_KEY[ZmOperation.SAVE_DRAFT]				= "saveDraft";
+ZmOperation.MSG_KEY[ZmOperation.SCHEDULE_VIEW]				= "viewSchedule";
 ZmOperation.MSG_KEY[ZmOperation.SEARCH]					= "search";
 ZmOperation.MSG_KEY[ZmOperation.SEND]					= "send";
 ZmOperation.MSG_KEY[ZmOperation.SHARE]					= "share";
@@ -227,6 +229,7 @@ ZmOperation.MSG_KEY_TT[ZmOperation.PRINT]				= "printTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.PRINT_MENU]	 		= "printTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.REPLY]				= "replyTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.REPLY_ALL]			= "replyAllTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.SCHEDULE_VIEW]		= "viewScheduleTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.SHARE]				= "shareTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.SAVE_DRAFT]			= "saveDraftTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.SEND]				= "sendTooltip";
@@ -299,6 +302,7 @@ ZmOperation.IMAGE[ZmOperation.REPLY_NEW_TIME]		    = "NewTime";
 ZmOperation.IMAGE[ZmOperation.REPLY_TENTATIVE]          = "QuestionMark";
 ZmOperation.IMAGE[ZmOperation.SAVE]						= "Save";
 ZmOperation.IMAGE[ZmOperation.SAVE_DRAFT]				= "DraftFolder";
+ZmOperation.IMAGE[ZmOperation.SCHEDULE_VIEW]			= "GroupSchedule";
 ZmOperation.IMAGE[ZmOperation.SEARCH]					= "Search";
 ZmOperation.IMAGE[ZmOperation.SEND]						= "Send";
 ZmOperation.IMAGE[ZmOperation.SHOW_ORIG]				= "Message";
@@ -575,7 +579,7 @@ function(parent) {
  */
 ZmOperation.addCalViewMenu =
 function(parent) {
-	var list = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW];
+	var list = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
 	var menu = new ZmActionMenu(parent, list, null);
 	parent.setMenu(menu);
 };

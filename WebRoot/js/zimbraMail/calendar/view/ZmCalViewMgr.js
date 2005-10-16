@@ -39,6 +39,7 @@ function ZmCalViewMgr(parent, dropTgt) {
 	this._viewFactory[ZmCalViewMgr.WORK_WEEK_VIEW] = ZmCalWorkWeekView;
 	this._viewFactory[ZmCalViewMgr.WEEK_VIEW] = ZmCalWeekView;
 	this._viewFactory[ZmCalViewMgr.MONTH_VIEW] = ZmCalMonthView;
+	this._viewFactory[ZmCalViewMgr.SCHEDULE_VIEW] = ZmCalScheduleView;	
 }
 
 ZmCalViewMgr.prototype = new DwtComposite;
@@ -48,6 +49,7 @@ ZmCalViewMgr.DAY_VIEW = "DayView";
 ZmCalViewMgr.WORK_WEEK_VIEW = "WorkWeekView";
 ZmCalViewMgr.WEEK_VIEW = "WeekView";
 ZmCalViewMgr.MONTH_VIEW = "MonthView";
+ZmCalViewMgr.SCHEDULE_VIEW = "ScheduleView";
 
 ZmCalViewMgr._SEP = 5;
 
@@ -225,4 +227,3 @@ function(ev) {
 		return;
 	this.notifyListeners(DwtEvent.DATE_RANGE, ev);
 }
-

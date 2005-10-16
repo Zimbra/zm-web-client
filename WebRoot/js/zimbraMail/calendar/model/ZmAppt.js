@@ -356,7 +356,9 @@ function() {
 };
 
 ZmAppt.prototype.isOverlapping =
-function(other) {
+function(other, checkFolder) {
+	if (checkFolder && this.getFolderId() != other.getFolderId()) return false;
+
 	var tst = this.getStartTime();
 	var tet = this.getEndTime();
 	var ost = other.getStartTime();
