@@ -110,6 +110,16 @@ function(viewName) {
 	if (viewName == null) viewName = this._currentView;
 	if (viewName == null) viewName = this._defaultView();
 
+
+	if (	this._calTreeController == null) {
+		this._calTreeController = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
+		if (this._calTreeController != null) {
+			this._calTreeController.addSelectionListener(ZmZimbraMail._OVERVIEW_ID,  new AjxListener(this, this._calTreeSelectionListener));
+			//this._calTreeController.getTreeView(ZmZimbraMail._OVERVIEW_ID).addChangeListener(new AjxListener(this, this._calTreeChangeListener));
+			// add change listener
+		}
+	}
+
 	//DBG.println("ZmCalViewController._show: " + viewName);
 	if (this._viewMgr == null) {
 	
@@ -196,10 +206,9 @@ function(viewName) {
 ZmCalViewController.prototype._getCheckedCalendars =
 function() {
 	if (this._checkedCalendars == null) {
-		this._calTreeController = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);	
+		//this._calTreeController = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);	
 		if (this._calTreeController == null) return [];		
 		this._checkedCalendars = this._updateCheckedCalendars();
-		this._calTreeController.addSelectionListener(ZmZimbraMail._OVERVIEW_ID,  new AjxListener(this, this._calTreeSelectionListener));
 	}
 	return this._checkedCalendars;
 }
@@ -232,12 +241,13 @@ function(ev) {
 	if (ev.detail != DwtTree.ITEM_CHECKED) return;
 	var newCheckedCalendars = this._updateCheckedCalendars();
 	// TODO: diff between new and old...
-	// TODO: and update active views
 	this._checkedCalendars = newCheckedCalendars;
-	// HACK: TESTING
-	//this._apptCache.clearCache();
-	//this._refreshAction();
-	// HACK: TESTING	
+	this._refreshAction(true);
+}
+
+ZmCalViewController.prototype._calTreeChangeListener =
+function(ev) {
+	DBG.println("wheee!");
 }
 
 ZmCalViewController.prototype.getCalendar =
@@ -258,6 +268,19 @@ function(folderId) {
 	return cal ? cal.color : ZmOrganizer.DEFAULT_COLOR;
 }
 
+ZmCalViewController.prototype.isCalendarLink =
+function(folderId) {
+	//shortcut that also helps when we are invoked before _folderIdToCalendar is init'd
+	if (folderId == ZmOrganizer.ID_CALENDAR) return false;
+	var cal = this._folderIdToCalendar[folderId];
+	return cal ? (cal.link ? true : false) : false;
+}
+
+ZmCalViewController.prototype._refreshButtonListener =
+function(ev) {
+	this._refreshAction(false);
+}
+
 ZmCalViewController.prototype._getToolBarOps =
 function() {
 	var list = new Array();
@@ -269,8 +292,10 @@ function() {
 	list.push(ZmOperation.WORK_WEEK_VIEW);
 	list.push(ZmOperation.WEEK_VIEW);
 	list.push(ZmOperation.MONTH_VIEW);
-	list.push(ZmOperation.SEP);	
+	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.TODAY);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.CAL_REFRESH);
 	return list;
 }
 
@@ -283,6 +308,7 @@ function(viewName) {
 	//DBG.println("ZmCalViewController.prototype._initializeToolBar: " + viewName);
 	var calViewButtonListener = new AjxListener(this, this._calViewButtonListener);
 	var todayButtonListener = new AjxListener(this, this._todayButtonListener);	
+	var refreshButtonListener = new AjxListener(this, this._refreshButtonListener);		
 	
 	ZmListController.prototype._initializeToolBar.call(this, ZmCalViewMgr.DAY_VIEW);
 	this._setupViewMenu(ZmController.CAL_VIEW);
@@ -291,6 +317,7 @@ function(viewName) {
 	this._toolbar[ZmCalViewMgr.DAY_VIEW].addSelectionListener(ZmOperation.WORK_WEEK_VIEW, calViewButtonListener);
 	this._toolbar[ZmCalViewMgr.DAY_VIEW].addSelectionListener(ZmOperation.MONTH_VIEW, calViewButtonListener);	
 	this._toolbar[ZmCalViewMgr.DAY_VIEW].addSelectionListener(ZmOperation.TODAY, todayButtonListener);
+	this._toolbar[ZmCalViewMgr.DAY_VIEW].addSelectionListener(ZmOperation.CAL_REFRESH, refreshButtonListener);	
 	
 	// Set the other view toolbar entries to point to the Day view entry. I.e. this is a trick
 	// to fool the ZmListController into thinking there are multiple toolbars
@@ -299,6 +326,7 @@ function(viewName) {
 
 	// Setup the toolbar stuff
 	this._toolbar[ZmCalViewMgr.DAY_VIEW].enable([ZmOperation.TODAY], true);	
+	this._toolbar[ZmCalViewMgr.DAY_VIEW].enable([ZmOperation.CAL_REFRESH], true);		
 	this._toolbar[ZmCalViewMgr.DAY_VIEW].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);	
 	this._toolbar[ZmCalViewMgr.DAY_VIEW].enable([ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.DAY_VIEW], true);	
 
@@ -844,7 +872,7 @@ ZmCalViewController.prototype._resetOperations =
 function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 	if (parent) {
-		parent.enable([ZmOperation.PRINT,ZmOperation.TODAY, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.DAY_VIEW], true);
+		parent.enable([ZmOperation.PRINT,ZmOperation.TODAY, ZmOperation.CAL_REFRESH, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.DAY_VIEW], true);
 	}
 
  	var ops = this._getActionMenuOps();
@@ -1105,10 +1133,10 @@ function() {
 }
 
 ZmCalViewController.prototype._refreshAction =
-function() {
+function(dontClearCache) {
 	if (this._viewMgr != null) {
 		// reset cache
-		this._apptCache.clearCache();
+		if (!dontClearCache) this._apptCache.clearCache();
 		// mark all views as dirty
 		this._viewMgr.setNeedsRefresh(true);
 		if (this._viewVisible) {

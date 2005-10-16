@@ -116,6 +116,22 @@ function (obj) {
 	return this._vector.indexOf(obj);
 };
 
+ZmApptList.sortVector = 
+function(vec) {
+	vec.sort(ZmAppt.compareByTimeAndDuration);
+}
+
+// merge all the sorted vectors in the specified array into a single sorted vector
+ZmApptList.mergeVectors = 
+function(vecArray) {
+	// clone the single array case!
+	if (vecArray.length == 1) return vecArray[0].clone();
+	var result = new AjxVector();
+	for (var i=0; i < vecArray.length; i++) result.addList(vecArray[i]);
+	ZmApptList.sortVector(result);
+	return result;
+}
+
 ZmApptList.toVector =
 function(apptList, startTime, endTime, fanoutAllDay)
 {
@@ -134,7 +150,7 @@ function(apptList, startTime, endTime, fanoutAllDay)
 			}
 		}
 	}
-	result.getArray().sort(ZmAppt.compareByTimeAndDuration);
+	ZmApptList.sortVector(result);
 	//DBG.println("ZmApptList.toVector took " + (new Date() - _st.getTime()) + "ms");		
 	return result;
 }
