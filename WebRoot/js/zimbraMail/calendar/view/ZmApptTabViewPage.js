@@ -21,6 +21,8 @@ function ZmApptTabViewPage(parent, appCtxt, className, posStyle) {
 	this._composeMode = this._defaultComposeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	this._supportTimeZones = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
+
+	this._attachCount = 0;
 };
 
 ZmApptTabViewPage.prototype = new DwtTabViewPage;
@@ -34,33 +36,9 @@ function() {
 
 // Consts
 
-ZmApptTabViewPage.IFRAME_HEIGHT = "30px";
+ZmApptTabViewPage.ATTACH_HEIGHT = AjxEnv.isIE ? 24 : 22;
 ZmApptTabViewPage.UPLOAD_FIELD_NAME = "attUpload";
-
-/*
-ZmApptTabViewPage.REMINDER_OPTIONS = [
-	{ label: ZmMsg.none, 				value: "none", 	selected: true 	},
-	{ label: ZmMsg.showMessage, 		value: "show", 	selected: false }];
-
-ZmApptTabViewPage.REMINDER_TIME_OPTIONS = [
-	{ label: ZmMsg.atStartTime, 		value: 0, 		selected: true 	},
-	{ label: "5 " + AjxMsg.minutes, 	value: 5, 		selected: false },
-	{ label: "10 " + AjxMsg.minutes,	value: 10, 		selected: false },
-	{ label: "15 " + AjxMsg.minutes,	value: 15, 		selected: false },
-	{ label: "30 " + AjxMsg.minutes, 	value: 30, 		selected: false },
-	{ label: "1 " + AjxMsg.hour, 		value: 60, 		selected: false },
-	{ label: "2 " + AjxMsg.hours, 		value: 120, 	selected: false },
-	{ label: "3 " + AjxMsg.hours, 		value: 180, 	selected: false },
-	{ label: "4 " + AjxMsg.hours, 		value: 240, 	selected: false },
-	{ label: "8 " + AjxMsg.hours, 		value: 480, 	selected: false },
-	{ label: "12 " + AjxMsg.hours,		value: 720, 	selected: false },
-	{ label: "1 " + AjxMsg.day,			value: 1440, 	selected: false },
-	{ label: "2 " + AjxMsg.days,		value: 2880, 	selected: false },
-	{ label: "3 " + AjxMsg.days,		value: 4320, 	selected: false },
-	{ label: "4 " + AjxMsg.days,		value: 5760, 	selected: false },
-	{ label: "1 " + AjxMsg.week,		value: 10080, 	selected: false },
-	{ label: "2 " + AjxMsg.weeks,		value: 20160, 	selected: false }];
-*/
+ZmApptTabViewPage.ATTACH_IFRAME_NAME = Dwt.getNextId();
 
 ZmApptTabViewPage.SHOWAS_OPTIONS = [
 	{ label: ZmMsg.free, 				value: "free", 	selected: false 	},
@@ -81,21 +59,22 @@ ZmApptTabViewPage.REPEAT_OPTIONS = [
 
 ZmApptTabViewPage.prototype.showMe = 
 function() {
+	if (this._rendered)
+		this.parent.tabSwitched(this._tabKey);
+};
+
+ZmApptTabViewPage.prototype.initialize =
+function() {
 	if (!this._rendered) {
 		this._createHTML();
 		this._rendered = true;
+		this.setComposeMode();
 	}
-	DwtTabViewPage.prototype.showMe.call(this);
-	this.parent.tabSwitched(this._tabKey);
+	this._reset();
 };
 
-ZmApptTabViewPage.prototype.reset = 
+ZmApptTabViewPage.prototype._reset = 
 function() {
-	// TODO
-	// - reset heights of all sub components
-	//this._resetBodySize();
-	// - reset all local vars
-
 	// reset the date/time values based on current time
 	this._startDateField.value = this._endDateField.value = AjxDateUtil.simpleComputeDateStr(new Date());
 	this._resetTimeSelect();
@@ -124,26 +103,15 @@ function() {
 	// reinit non-time sensitive selects option values
 	this._calendarSelect.setSelectedValue("personal");
 	this._showAsSelect.setSelectedValue(ZmApptTabViewPage.SHOWAS_OPTIONS[0].value);
-	//this._reminderSelect.setSelectedValue(ZmApptTabViewPage.REMINDER_OPTIONS[0].value);
-	//this._reminderTimesSelect.setSelectedValue(ZmApptTabViewPage.REMINDER_TIME_OPTIONS[0].value);
 	this._repeatSelect.setSelectedValue(ZmApptTabViewPage.REPEAT_OPTIONS[0].value);
-	// reinit checkboxes
-	//this._privateCheckbox.checked = false;
 	this._allDayCheckbox.checked = false;
-	// show/hide elements as necessary
-	//Dwt.setVisibility(this._reminderTimesSelect.getHtmlElement(), false);
 	this._showTimeFields(true);
+
+	// remove attachments if any were added
+	this._removeAllAttachments();
 
 	// reset compose view to html preference
 	this.setComposeMode(this._defaultComposeMode);
-
-	// sometimes attachTable doesnt get set so refetch it
-	if (!this._attachTable)
-		this._attachTable = this._getAttachTable();
-	// reset iframe containing attachments if any
-	while (this._attachTable.rows.length > 0)
-		this._attachTable.deleteRow(-1);
-	Dwt.setVisible(this._attachDiv, false);
 
 	// disable all input fields
 	this.enableInputs(false);
@@ -184,15 +152,15 @@ function() {
 
 ZmApptTabViewPage.prototype.setComposeMode = 
 function(composeMode) {
-	this._composeMode = composeMode;
-	this._notesHtmlEditor.setMode(composeMode, true);
+	this._composeMode = composeMode || this._composeMode;
+	this._notesHtmlEditor.setMode(this._composeMode, true);
 	
 	// dont forget to reset the body field Id and object ref
-	//this._bodyFieldId = this._htmlEditor.getBodyFieldId();
-	//this._bodyField = Dwt.getDomObj(this.getDocument(), this._bodyFieldId);
-	
-	// TODO - reset message body size
-	//this._resetBodySize();
+	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
+	if (this._bodyFieldId != bodyFieldId) {
+		this._bodyFieldId = bodyFieldId;
+		this._bodyField = Dwt.getDomObj(this.getDocument(), this._bodyFieldId);
+	}
 };
 
 ZmApptTabViewPage.prototype.reEnableDesignMode = 
@@ -203,52 +171,76 @@ function() {
 
 ZmApptTabViewPage.prototype.addAttachmentField =
 function() {
-	if (!this._attachTable)
-		this._attachTable = this._getAttachTable();
-
-	var doc = this.getDocument();
-	// make sure the parent DIV containing the attach IFRAME is visible!
-	if (this._attachDiv && !Dwt.getVisible(this._attachDiv)) {
-		Dwt.setVisible(this._attachDiv, true);
-		Dwt.setSize(this._attachDiv, Dwt.DEFAULT, "100px");
-		var attachInnerDiv = Dwt.getDomObj(doc, this._attachInnerDivId);
-		if (attachInnerDiv) {
-			Dwt.setSize(attachInnerDiv, Dwt.DEFAULT, "45px");
-			Dwt.setScrollStyle(attachInnerDiv, Dwt.SCROLL);
-		}
+	if (this._attachCount == 0) {
+		this._initAttachIframe(ZmApptTabViewPage.ATTACH_HEIGHT);
+	} else if (this._attachCount < 3) {
+		this._attachmentRow.style.height = parseInt(this._attachmentRow.style.height) + ZmApptTabViewPage.ATTACH_HEIGHT;
+		this._attachIframe.style.height = parseInt(this._attachIframe.style.height) + ZmApptTabViewPage.ATTACH_HEIGHT;
 	}
+	
+	this._attachCount++;
+	var attachRemoveId = "_att_" + Dwt.getNextId();
+	var attachInputId = "_att_" + Dwt.getNextId();
 
-	// add new row
-	var	row = this._attachTable.insertRow(-1);
-	var attId = "_att_" + Dwt.getNextId();
-	var attRemoveId = attId + "_r";
-	var attInputId = attId + "_i";
-	row.id = attId;
-	row.style.height = ZmApptTabViewPage.IFRAME_HEIGHT;
+	// add file input field w/in iframe
+	var idoc = Dwt.getIframeDoc(this._attachIframe);
+	var div = idoc.createElement("div");
+	div.style.height = ZmApptTabViewPage.ATTACH_HEIGHT;
 
-	// add new cell and build html for inserting file upload input element
-	var	cell = row.insertCell(-1);
 	var html = new Array();
 	var i = 0;
-	html[i++] = "<table cellspacing=2 cellpadding=0 border=0><tr><td><div class='attachText'>";
-	html[i++] = ZmMsg.attachFile;
-	html[i++] = ":</div></td><td class='nobreak'><input type='file' size=40 id='";
-	html[i++] = attInputId;
-	html[i++] = "' name='";
+	html[i++] = "<nobr>&nbsp;<input type='file' size=40 name='";
 	html[i++] = ZmApptTabViewPage.UPLOAD_FIELD_NAME;
+	html[i++] = "' id='";
+	html[i++] = attachInputId;
 	html[i++] = "'>&nbsp;<span onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;' id='";
-	html[i++] = attRemoveId;
+	html[i++] = attachRemoveId;
 	html[i++] = "'>";
 	html[i++] = ZmMsg.remove;
-	html[i++] = "</span></td></tr></table>";
-	cell.innerHTML = html.join("");
-	
-	//this._setEventHandler(attRemoveId, "onClick", null, !AjxEnv.isNav);
-	// trap key presses in IE for input field so we can ignore ENTER key (bug 961)
+	html[i++] = "</span></nobr>";
+
+	div.innerHTML = html.join("");
+
+	if (this._attachDiv == null)
+		this._attachDiv = Dwt.getDomObj(idoc, this._attachDivId);
 	//if (AjxEnv.isIE)
-	//	this._setEventHandler(attInputId, "onKeyDown", null, !AjxEnv.isNav);
-	this._setAttachIframeHeight(true);
-	//this._resetBodySize();
+		this._attachDiv.style.height = this._attachIframe.style.height;
+	this._attachDiv.appendChild(div);
+
+	// add event handlers as necessary
+	var attachRemoveSpan = Dwt.getDomObj(idoc, attachRemoveId);
+	attachRemoveSpan._tabViewPage = this;
+	attachRemoveSpan._parentDiv = div;
+	Dwt.setHandler(attachRemoveSpan, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
+	// trap key presses in IE for input field so we can ignore ENTER key (bug 961)
+	if (AjxEnv.isIE) {
+		var attachInputEl = Dwt.getDomObj(idoc, attachInputId);
+		attachInputEl._tabViewPage = this;
+		Dwt.setHandler(attachInputEl, DwtEvent.ONKEYDOWN, ZmApptTabViewPage._onKeyDown);
+	}
+};
+
+ZmApptTabViewPage.prototype.resize = 
+function(newWidth, newHeight) {
+	if (!this._rendered) return;
+	/*
+	DBG.println("new width = " + newWidth + ", new height = " + newHeight);
+	if (newWidth)
+		this.setSize(newWidth);
+
+	var fudge = this._composeMode == DwtHtmlEditor.HTML ? 30 : 0;
+	var newWidth = newWidth || this.getSize().x;
+	var newHeight = newHeight || (this.getSize().y - fudge);
+
+	var table = this.getHtmlElement().firstChild;
+	if (table && table.tagName.toLowerCase() == "table") {
+		var doubleRowHeight = Dwt.getSize(table.rows[0]).y + Dwt.getSize(table.rows[1]).y;
+		var remainderHeight = newHeight - doubleRowHeight - 45;
+		//Dwt.setSize(table, Dwt.DEFAULT, newHeight - 50);
+		Dwt.setSize(table.rows[2], Dwt.DEFAULT, remainderHeight);
+		Dwt.setSize(this._bodyField, Dwt.DEFAULT, remainderHeight);
+	}
+	*/
 };
 
 
@@ -261,17 +253,9 @@ function() {
 	this._createSelects();
 	this._createButtons();
 	this._cacheFields();
-	this._initAttachIframe();
+	this._initNotesHtmlEditor();
 	this._initAutocomplete();
 	
-	var doc = this.getDocument();
-
-	// add notes html editor
-	this._notesHtmlEditor = new ZmHtmlEditor(this, null, DwtControl.RELATIVE_STYLE, null, this._composeMode, this._appCtxt);
-	var noteHtmlEditorCell = Dwt.getDomObj(doc, this._notesHtmlEditorId);
-	if (noteHtmlEditorCell)
-		noteHtmlEditorCell.appendChild(this._notesHtmlEditor.getHtmlElement());
-
 	// add event listeners where necessary
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
@@ -283,36 +267,47 @@ function() {
 
 ZmApptTabViewPage.prototype._createApptHtml = 
 function() {
-	var div = this.getDocument().createElement("div");
-	
+	var dims = this.parent.getSize();
+	var half = (dims.x / 2) - 5;
+	this.setSize(dims.x-2, dims.y-30);
+	this._notesHtmlEditorId = Dwt.getNextId();
+
 	var html = new Array();
 	var i = 0;
-	
-	html[i++] = "<table border=0 width=100%><tr>";
-	html[i++] = "<td valign=top width=50%><fieldset";
+
+	html[i++] = "<table border=0 style='table-layout:fixed; height:";
+	html[i++] = dims.y-30;
+	html[i++] = "px'><colgroup><col width=";
+	html[i++] = half;
+	html[i++] = "><col width=";
+	html[i++] = half;
+	html[i++] = "></colgroup><tr style='height:110px'><td valign=top><fieldset";
 	if (AjxEnv.isMozilla)
 		html[i++] = " style='border: 1px dotted #555555'";
 	html[i++] = "><legend style='color:#555555'>";
 	html[i++] = ZmMsg.details;
-	html[i++] = "</legend><div style='height:90px;'>";
+	html[i++] = "</legend><div style='height:";
+	html[i++] = AjxEnv.isIE ? "90px;'>" : "80px;'>";
 	html[i++] = this._getDetailsHtml();
 	html[i++] = "</div></fieldset></td>";
-	html[i++] = "<td valign=top width=50%><fieldset";
+	html[i++] = "<td valign=top><fieldset";
 	if (AjxEnv.isMozilla)
 		html[i++] = " style='border: 1px dotted #555555'";
 	html[i++] = "><legend style='color:#555555'>";
 	html[i++] = ZmMsg.time;
-	html[i++] = "</legend><div style='height:90px;'>";
+	html[i++] = "</legend><div style='height:";
+	html[i++] = AjxEnv.isIE ? "90px;'>" : "80px;'>";
 	html[i++] = this._getTimeHtml();
 	html[i++] = "</div></fieldset>";
-	html[i++] = "</td></tr></table>";
-	
+	html[i++] = "</td></tr><tr style='height:30px;'><td colspan=2>";
 	html[i++] = this._getSchedulingHtml();
-	html[i++] = this._getAttachHtml();
-	html[i++] = this._getNotesHtml();
+	html[i++] = "</td></tr><tr><td valign=top colspan=2 id='";
+	html[i++] = this._notesHtmlEditorId;
+	html[i++] = "'>";
+	html[i++] = "</td></tr>";
+	html[i++] = "</table>";
 	
-	div.innerHTML = html.join("");
-	this.getHtmlElement().appendChild(div);
+	this.getHtmlElement().innerHTML = html.join("");
 };
 
 ZmApptTabViewPage.prototype._createSelects = 
@@ -337,30 +332,7 @@ function() {
 	if (showAsCell)
 		showAsCell.appendChild(this._showAsSelect.getHtmlElement());
 	delete this._showAsSelectId;
-/*
- * REMINDER IS CURRENTLY NOT SUPPORTED
-	this._reminderSelect = new DwtSelect(this);
-	this._reminderSelect.addChangeListener(new AjxListener(this, this._reminderChangeListener));
-	for (var i = 0; i < ZmApptTabViewPage.REMINDER_OPTIONS.length; i++) {
-		var option = ZmApptTabViewPage.REMINDER_OPTIONS[i];
-		this._reminderSelect.addOption(option.label, option.selected, option.value);
-	}
-	var reminderCell = Dwt.getDomObj(doc, this._reminderSelectId);
-	if (reminderCell)
-		reminderCell.appendChild(this._reminderSelect.getHtmlElement());
-	delete this._reminderSelectId;
-	
-	this._reminderTimesSelect = new DwtSelect(this);
-	for (var i = 0; i < ZmApptTabViewPage.REMINDER_TIME_OPTIONS.length; i++) {
-		var option = ZmApptTabViewPage.REMINDER_TIME_OPTIONS[i];
-		var label = i > 0 ? (option.label + " " + ZmMsg.before) : option.label;
-		this._reminderTimesSelect.addOption(label, option.selected, option.value);
-	}
-	var reminderTimesCell = Dwt.getDomObj(doc, this._reminderTimesSelectId);
-	if (reminderTimesCell)
-		reminderTimesCell.appendChild(this._reminderTimesSelect.getHtmlElement());
-	delete this._reminderTimesSelectId;
-*/
+
 	// create selects for Time section
 	this._startTimeSelect = new DwtSelect(this);
 	if (this._timeOptions) {
@@ -455,9 +427,6 @@ function() {
 	this._locationFieldId 		= Dwt.getNextId();
 	this._calSelectId 			= Dwt.getNextId();
 	this._showAsSelectId 		= Dwt.getNextId();
-	//this._reminderSelectId 		= Dwt.getNextId();
-	//this._reminderTimesSelectId = Dwt.getNextId();
-	//this._privateCheckboxId 	= Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
@@ -465,12 +434,12 @@ function() {
 	html[i++] = "<table border=0 width=100%>";
 	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'><sup>*</sup>";
 	html[i++] = ZmMsg.subject;
-	html[i++] = ":</td><td colspan=4><input style='width:100%' id='";
+	html[i++] = ":</td><td colspan=4><input style='width:100%; height:22px' type='text' id='";
 	html[i++] = this._subjectFieldId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.location;
-	html[i++] = ":</td><td colspan=4><input style='width:100%' id='";
+	html[i++] = ":</td><td colspan=4><input style='width:100%; height:22px' type='text' id='";
 	html[i++] = this._locationFieldId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'>";
@@ -482,28 +451,6 @@ function() {
 	html[i++] = "</td><td width=1% id='";
 	html[i++] = this._showAsSelectId;
 	html[i++] = "'></td></tr>";
-	/*
-	 * REMINDER IS CURRENTLY NOT SUPPORTED
-	 *
-	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'>";
-	html[i++] = ZmMsg.reminder;
-	html[i++] = ":</td><td colspan=10>";
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td id='";
-	html[i++] = this._reminderSelectId;
-	html[i++] = "'><td>&nbsp;</td><td style='visibility:hidden' id='";
-	html[i++] = this._reminderTimesSelectId;
-	html[i++] = "'></td></tr></table></td></tr>";
-	*/
-	/* 
-	 * PRIVATE IS CURRENTLY NOT SUPPORTED
-	 *
-	html[i++] = "<tr><td colspan=10 align=right><table cellpadding=1 cellspacing=1 border=0><tr><td>";
-	html[i++] = "<input type='checkbox' id='";
-	html[i++] = this._privateCheckboxId;
-	html[i++] = "'></td><td>";
-	html[i++] = ZmMsg._private;
-	html[i++] = "</td></tr></table>";
-	*/
 	html[i++] = "</td></tr></table>";
 	
 	return html.join("");
@@ -590,15 +537,15 @@ function() {
 	
 	html[i++] = "<table border=0 width=100%><tr>";
 	if (this._contactsSupported) {
-		html[i++] = "<td id='";
+		html[i++] = "<td width=1% id='";
 		html[i++] = this._attendeesBtnId;
 		html[i++] = "'></td>";
 	} else {
-		html[i++] = "<td align=right>";
+		html[i++] = "<td width=1% align=right>";
 		html[i++] = ZmMsg.attendees;
 		html[i++] = ":</td>";
 	}
-	html[i++] = "<td width=100%><input style='width:100%' type='text' id='";
+	html[i++] = "<td><input style='width:100%; height:22px' type='text' id='";
 	html[i++] = this._attendeesFieldId;
 	html[i++] = "'></td>";
 	html[i++] = "</tr></table>";
@@ -606,98 +553,21 @@ function() {
 	return html.join("");
 };
 
-ZmApptTabViewPage.prototype._getAttachHtml =
-function() {
-	this._attachDivId = Dwt.getNextId();
-	this._attachInnerDivId = Dwt.getNextId();
-	this._attachIframeId = Dwt.getNextId();
-	var src = AjxEnv.isIE && location.protocol == "https:" ? "'/zimbra/public/blank.html'" : null;
-
-	var html = new Array();
-	var i = 0;
-
-	html[i++] = "<div style='display:none; overflow:hidden' id='";
-	html[i++] = this._attachDivId;
-	html[i++] = "'><table border=0 width=100%><tr><td><fieldset";
-	if (AjxEnv.isMozilla)
-		html[i++] = " style='border:1px dotted #555555";
-	html[i++] = "><legend style='color:#555555'>";
-	html[i++] = ZmMsg.attachments;
-	html[i++] = "</legend><div id='";
-	html[i++] = this._attachInnerDivId;
-	html[i++] = "'><iframe frameborder=0 vspace=0 hspace=0 marginwidth=0 marginheight=0 width=100% scrolling=no tabindex=-1 ";
-	html[i++] = "style='height:0px; overflow-x:visible; overflow-y:visible;' id='";
-	html[i++] = this._attachIframeId;
-	html[i++] = src ? ("' src='" + src + "'>") : "'>";
-	html[i++] = "</iframe></div></fieldset></td></tr></table></div>";
-
-	return html.join("");
-};
-
-ZmApptTabViewPage.prototype._getNotesHtml =
-function() {
-	this._notesHtmlEditorId = Dwt.getNextId();
-
-	var html = new Array();
-	var i = 0;
-
-	html[i++] = "<table border=0 width=100%><tr><td id='";
-	html[i++] = this._notesHtmlEditorId;
-	html[i++] = "'></td></tr></table>";
-
-	return html.join("");
-};
-
-// cache all input fields so we dont waste time traversing DOM each time
-ZmApptTabViewPage.prototype._cacheFields = 
+ZmApptTabViewPage.prototype._initNotesHtmlEditor = 
 function() {
 	var doc = this.getDocument();
-	
-	this._subjectField 		= Dwt.getDomObj(doc, this._subjectFieldId); 		delete this._subjectFieldId;
-	this._locationField 	= Dwt.getDomObj(doc, this._locationFieldId); 		delete this._locationFieldId;
-	this._startDateField 	= Dwt.getDomObj(doc, this._startDateFieldId); 		delete this._startDateFieldId;
-	this._endDateField 		= Dwt.getDomObj(doc, this._endDateFieldId);	 		delete this._endDateFieldId;
-	this._attendeesField 	= Dwt.getDomObj(doc, this._attendeesFieldId); 		delete this._attendeesFieldId;
-	//this._privateCheckbox 	= Dwt.getDomObj(doc, this._privateCheckboxId); 	delete this._privateCheckboxId;
-	this._allDayCheckbox 	= Dwt.getDomObj(doc, this._allDayCheckboxId);
-	this._repeatDescField 	= Dwt.getDomObj(doc, this._repeatDescId);
-};
 
-ZmApptTabViewPage.prototype._initAttachIframe = 
-function() {
-	var doc = this.getDocument();
-	var uri = location.protocol + "//" + doc.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
-	this._uploadFormId = Dwt.getNextId();
-	this._attachTableId = Dwt.getNextId();
-	
-	// add table container w/in attachment iframe
-	var attachIframe = Dwt.getDomObj(doc, this._attachIframeId);
-	var idoc = attachIframe ? Dwt.getIframeDoc(attachIframe) : null;
-	if (idoc) {
-		var html = new Array();
-		var i = 0;
-		
-		html[i++] = "<html><head><style type='text/css'>";
-		html[i++] = "<!-- @import url(/zimbra/js/zimbraMail/config/style/dwt.css); -->";
-		html[i++] = "<!-- @import url(/zimbra/js/zimbraMail/config/style/common.css); -->";
-		html[i++] = "<!-- @import url(/zimbra/js/zimbraMail/config/style/zm.css); -->";
-		html[i++] = "</style></head><body scroll=no bgcolor='#EEEEEE'><form style='margin:0;padding:0' method='POST' action='";
-		html[i++] = uri;
-		html[i++] = "' id='";
-		html[i++] = this._uploadFormId;
-		html[i++] = "' enctype='multipart/form-data'>";
-		html[i++] = "<table cellspacing=0 cellpadding=0 border=0 class='iframeTable' id='";
-		html[i++] = this._attachTableId;
-		html[i++] = "'></table></form></body></html>";
-		
-		idoc.write(html.join(""));
-		idoc.close();
+	// add notes html editor
+	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, null, this._composeMode, this._appCtxt);
+	var notesHtmlEditorDiv = Dwt.getDomObj(doc, this._notesHtmlEditorId);
+	if (notesHtmlEditorDiv)
+		notesHtmlEditorDiv.appendChild(this._notesHtmlEditor.getHtmlElement());
+	delete this._notesHtmlEditorId;
 
-		// save reference to the attachment table w/in the IFRAME
-		this._attachTable = Dwt.getDomObj(idoc, this._attachTableId);
-	}
-	// save reference to the parent DIV holding this IFRAME
-	this._attachDiv = Dwt.getDomObj(doc, this._attachDivId);
+	// init html editor heights
+	this._bodyField = Dwt.getDomObj(doc, this._notesHtmlEditor.getBodyFieldId());
+	this._notesHtmlEditor.setSize(Dwt.DEFAULT, "100%");
+	Dwt.setSize(this._bodyField, Dwt.DEFAULT, "100%");
 };
 
 ZmApptTabViewPage.prototype._initAutocomplete = 
@@ -716,6 +586,20 @@ function() {
 														  ZmContactList.AC_VALUE_EMAIL, 
 														  locCallback, compCallback);
 	this._autocomplete.handle(this._attendeesField);
+};
+
+// cache all input fields so we dont waste time traversing DOM each time
+ZmApptTabViewPage.prototype._cacheFields = 
+function() {
+	var doc = this.getDocument();
+	
+	this._subjectField 		= Dwt.getDomObj(doc, this._subjectFieldId); 		delete this._subjectFieldId;
+	this._locationField 	= Dwt.getDomObj(doc, this._locationFieldId); 		delete this._locationFieldId;
+	this._startDateField 	= Dwt.getDomObj(doc, this._startDateFieldId); 		delete this._startDateFieldId;
+	this._endDateField 		= Dwt.getDomObj(doc, this._endDateFieldId);	 		delete this._endDateFieldId;
+	this._attendeesField 	= Dwt.getDomObj(doc, this._attendeesFieldId); 		delete this._attendeesFieldId;
+	this._allDayCheckbox 	= Dwt.getDomObj(doc, this._allDayCheckboxId);
+	this._repeatDescField 	= Dwt.getDomObj(doc, this._repeatDescId);
 };
 
 ZmApptTabViewPage.prototype._calcTimeOptions = 
@@ -761,24 +645,66 @@ function() {
 	this._endTimeSelect.setSelected(endIdx);
 };
 
-ZmApptTabViewPage.prototype._setAttachIframeHeight =
-function(add) {
-	var attachIframe = Dwt.getDomObj(this.getDocument(), this._attachIframeId);
-	if (attachIframe) {
-		var height = parseInt(attachIframe.style.height);
-		if (add) {
-			height += ZmApptTabViewPage.IFRAME_HEIGHT;
-		} else {
-			height -= ZmApptTabViewPage.IFRAME_HEIGHT;
-		}
-		attachIframe.style.height = height;
+ZmApptTabViewPage.prototype._initAttachIframe = 
+function() {
+	// create new table row which will contain parent fieldset
+	var table = this.getHtmlElement().firstChild;
+	this._attachmentRow = table.insertRow(2);
+	this._attachmentRow.style.height = AjxEnv.isIE ? 44 : 22;
+	var cell = this._attachmentRow.insertCell(-1);
+	cell.colSpan = 2;
+
+	var src = AjxEnv.isIE && location.protocol == "https:" ? "'/zimbra/public/blank.html'" : null;
+
+	// create fieldset and containing IFRAME and append to given table cell
+	var html = new Array();
+	var i = 0;
+	html[i++] = "<fieldset";
+	if (AjxEnv.isMozilla)
+		html[i++] = " style='border:1px dotted #555555'";
+	html[i++] = "><legend style='color:#555555'>";
+	html[i++] = ZmMsg.attachments;
+	html[i++] = "</legend>";
+	html[i++] = "<iframe frameborder=0 vspace=0 hspace=0 marginwidth=0 marginheight=0 width=100% scrolling=no tabindex=-1 ";
+	html[i++] = "style='overflow-x:visible; overflow-y:visible; height:";
+	html[i++] = ZmApptTabViewPage.ATTACH_HEIGHT;
+	html[i++] = "' name='";
+	html[i++] = ZmApptTabViewPage.ATTACH_IFRAME_NAME;
+	html[i++] = "' id='";
+	html[i++] = ZmApptTabViewPage.ATTACH_IFRAME_NAME;
+	html[i++] = src ? ("' src='" + src + "'>") : "'>";
+	html[i++] = "</iframe></fieldset>";
+	cell.innerHTML = html.join("");
+
+	// populate iframe document w/ empty form and DIV which will hold file input fields
+	var doc = this.getDocument();
+	this._uploadFormId = Dwt.getNextId();
+	this._attachDivId = Dwt.getNextId();
+	this._attachIframe = Dwt.getDomObj(doc, ZmApptTabViewPage.ATTACH_IFRAME_NAME);
+	//this._attachIframe.name = this._attachIframe.id = 
+	
+	var idoc = this._attachIframe ? Dwt.getIframeDoc(this._attachIframe) : null;
+	if (idoc) {
+		var html = new Array();
+		var i = 0;
+		html[i++] = "<html><head><style type='text/css'>";
+		html[i++] = "P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON { font-family: Tahoma, Arial, Helvetica, sans-serif;	font-size:11px; }";
+		html[i++] = "</style></head><body scroll=no bgcolor='#EEEEEE'><form style='margin:0;padding:0' method='POST' enctype='multipart/form-data' action='";
+		html[i++] = (location.protocol + "//" + doc.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI));
+		html[i++] = "' id='";
+		html[i++] = this._uploadFormId;
+		html[i++] = "'><div id='";
+		html[i++] = this._attachDivId;
+		html[i++] = "' style='overflow:auto'></div></form></body></html>";
+		idoc.write(html.join(""));
+		idoc.close();
 	}
 };
 
 // Returns true if any of the attachment fields are populated
 ZmApptTabViewPage.prototype._gotAttachments =
 function() {
-	var attachIframe = Dwt.getDomObj(this.getDocument(), this._attachIframeId);
+	var attachIframe = Dwt.getDomObj(this.getDocument(), ZmApptTabViewPage.ATTACH_IFRAME_NAME);
 	var idoc = attachIframe ? Dwt.getIframeDoc(attachIframe) : null;
 	var atts = idoc ? idoc.getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME) : [];
 
@@ -789,11 +715,46 @@ function() {
 	return false;
 };
 
-ZmApptTabViewPage.prototype._getAttachTable = 
+ZmApptTabViewPage.prototype._removeAttachment = 
+function(removeId) {
+	// get document of attachment's iframe
+	var idoc = Dwt.getIframeDoc(this._attachIframe);
+	var removeSpan = idoc ? Dwt.getDomObj(idoc, removeId) : null;
+	if (removeSpan) {
+		// have my parent kill me
+		removeSpan._parentDiv.parentNode.removeChild(removeSpan._parentDiv);
+		if ((this._attachCount-1) == 0) {
+			this._removeAllAttachments();
+		} else {
+			if (--this._attachCount < 3) {
+				// reset the iframe/etc heights - yuck
+				this._attachmentRow.style.height = parseInt(this._attachmentRow.style.height) - ZmApptTabViewPage.ATTACH_HEIGHT;
+				this._attachIframe.style.height = parseInt(this._attachIframe.style.height) - ZmApptTabViewPage.ATTACH_HEIGHT;
+				//if (AjxEnv.isIE)
+					this._attachDiv.style.height = this._attachIframe.style.height;
+			}
+		}
+	}
+};
+
+ZmApptTabViewPage.prototype._removeAllAttachments = 
 function() {
-	var attachIframe = Dwt.getDomObj(this.getDocument(), this._attachIframeId);
-	var idoc = attachIframe ? Dwt.getIframeDoc(attachIframe) : null;
-	return idoc ? Dwt.getDomObj(idoc, this._attachTableId) : null;
+	if (this._attachCount == 0) return;
+
+	// let's be paranoid and really cleanup
+	delete this._uploadFormId;
+	delete this._attachDivId;
+	delete this._attachRemoveId;
+	delete this._attachDiv;
+	delete this._attachIframe;
+	this._attachIframe = this._attachDiv = this._attachRemoveId = this._attachDivId = this._uploadFormId = null;
+	// finally, nuke the whole table row
+	var table = this.getHtmlElement().firstChild;
+	table.deleteRow(2);
+	delete this._attachmentRow;
+	this._attachmentRow = null;
+	// reset any attachment related vars
+	this._attachCount = 0;
 };
 
 ZmApptTabViewPage.prototype._showTimeFields = 
@@ -903,12 +864,6 @@ function(ev) {
 	this._dateCalendar.setVisible(false);
 };
 
-/*
-ZmApptTabViewPage.prototype._reminderChangeListener = 
-function(ev) {
-	Dwt.setVisibility(this._reminderTimesSelect.getHtmlElement(), ev._args.newValue == "show");
-};*/
-
 ZmApptTabViewPage.prototype._repeatChangeListener = 
 function(ev) {	
 	var newSelectVal = ev._args.newValue;
@@ -984,24 +939,40 @@ function(ev) {
 	return null;
 };
 
-ZmApptTabViewPage.prototype._handleAutoCompleteData = 
-function(ev) {
-	DBG.println("ZmApptTabViewPage.prototype._handleAutoCompleteData = ");
-};
-
 
 // Static methods
 
 ZmApptTabViewPage._onClick = 
 function(ev) {
+	// IE doesn't pass events from IFRAMES, might have to go fishing for it
+	if (AjxEnv.isIE && !window.event)
+		ev = parent.window.frames[ZmApptTabViewPage.ATTACH_IFRAME_NAME].event;
+
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = el._tabViewPage;
 
 	// figure out which input field was clicked
 	if (el.id == tvp._allDayCheckboxId) {
-		el._tabViewPage._showTimeFields(el.checked ? false : true);
+		tvp._showTimeFields(el.checked ? false : true);
 	} else if (el.id == tvp._repeatDescId) {
 		tvp._oldRepeatValue = tvp._repeatSelect.getValue();
 		tvp._showRecurDialog(tvp._oldRepeatValue);
+	} else if (el.id.indexOf("_att_") != -1) {
+		tvp._removeAttachment(el.id);
+	}
+};
+
+ZmApptTabViewPage._onKeyDown = 
+function(ev) {
+	// IE doesn't pass events from IFRAMES, might have to go fishing for it
+	if (AjxEnv.isIE && !window.event)
+		ev = parent.window.frames[ZmApptTabViewPage.ATTACH_IFRAME_NAME].event;
+
+	var el = DwtUiEvent.getTarget(ev);
+
+	if (el.id.indexOf("_att_") != -1) {
+		// ignore enter key press in IE otherwise it tries to send the attachment!
+		var key = DwtKeyEvent.getCharCode(ev);
+		return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
 	}
 };

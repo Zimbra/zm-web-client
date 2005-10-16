@@ -66,8 +66,8 @@ function() {
 
 	this._setFormatBtnItem();
 
-	this._apptView.set();
 	this._app.pushView(ZmController.APPOINTMENT_VIEW, true);
+	this._apptView.set();
 	this._apptView.reEnableDesignMode();
 };
 

@@ -37,7 +37,7 @@
 * @param contactPicker	handle to a ZmContactPicker for selecting addresses
 * @param composeMode 	passed in so detached window knows which mode to be in on startup
 */
-function ZmApptComposeView(parent, className, calApp, controller, composeMode) {
+function ZmApptComposeView(parent, className, calApp, controller) {
 
 	className = className || "ZmApptComposeView";
 	DwtComposite.call(this, parent, className, Dwt.ABSOLUTE_STYLE);
@@ -46,7 +46,7 @@ function ZmApptComposeView(parent, className, calApp, controller, composeMode) {
 	this._app = calApp;
 	this._controller = controller;
 	
-	this._initialize(composeMode);
+	this._initialize();
 };
 
 ZmApptComposeView.prototype = new DwtComposite;
@@ -70,10 +70,9 @@ function() {
 
 ZmApptComposeView.prototype.set =
 function() {
-	// allow both tabs to reset itself
-	this._apptTab.reset();
-	this._scheduleTab.reset();
-
+	this._apptTab.initialize();
+	this._scheduleTab.initialize();
+	
 	// always switch to appointment tab
 	this._tabs.switchToTab(this._apptTabKey);
 };
@@ -158,18 +157,16 @@ function(tabKey) {
 // Private / Protected methods
 
 ZmApptComposeView.prototype._initialize = 
-function(composeMode) {
-	// TODO - add other init code here...
-	
-	// create the two tabs
-DBG.println("ZmApptComposeView: creating tabs");
+function() {
 	this._tabs = new DwtTabView(this);
-	
+
 	this._apptTab = new ZmApptTabViewPage(this, this._appCtxt);
 	this._scheduleTab = new ZmSchedTabViewPage(this, this._appCtxt);
-	
+
 	this._apptTabKey = this._tabs.addTab(ZmMsg.appointment, this._apptTab);
 	this._scheduleTabKey = this._tabs.addTab(ZmMsg.scheduleAttendees, this._scheduleTab);
+
+	this.addControlListener(new AjxListener(this, this._controlListener));
 };
 
 // Consistent spot to locate various dialogs
@@ -196,6 +193,21 @@ function(isDraft) {
 		attCon = iframe;
 	}
 	um.execute(attCon, callback, this._uploadFormId);
+};
+
+
+// Listeners
+
+ZmApptComposeView.prototype._controlListener = 
+function(ev) {
+	if (ev.oldHeight == ev.newHeight && ev.oldWidth == ev.newWidth)
+		return;
+
+	if (this._tabs.getCurrentTab() == this._apptTabKey) {
+		this._apptTab.resize(ev.newWidth, ev.newHeight);
+	} else {
+		this._scheduleTab.resize(ev.newWidth, ev.newHeight);
+	}
 };
 
 
@@ -232,17 +244,17 @@ function() {
 ZmSchedTabViewPage.prototype.showMe = 
 function() {
 	DwtTabViewPage.prototype.showMe.call(this);
-	if (!this._rendered) {
-		this._createHTML();
-		this._rendered = true;
-	}
 	this.parent.tabSwitched(this._tabKey);
 };
 
-ZmSchedTabViewPage.prototype.reset = 
-function(bEnableInputs) {
+ZmSchedTabViewPage.prototype.initialize = 
+function() {
 	// TODO
-	DBG.println("TODO: schedule tab view page - enable/disable input fields");
+	if (!this._rendered) {
+		DBG.println("TODO: schedule tab view page - initialize!");
+		this._createHTML();
+		this._rendered = true;
+	}
 };
 
 ZmSchedTabViewPage.prototype.cleanup = 
@@ -269,6 +281,13 @@ ZmSchedTabViewPage.prototype.enableInputs =
 function() {
 	// TODO
 	DBG.println("TODO: enable inputs for schedule tab view");
+};
+
+ZmSchedTabViewPage.prototype.resize = 
+function(newWidth, newHeight) {
+	if (!this._rendered) return;
+	// TODO
+	DBG.println("TODO: resize schedule tab as appropriate");
 };
 
 ZmSchedTabViewPage.prototype._createHTML = 

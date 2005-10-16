@@ -431,13 +431,14 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	padding: 1px;
 	width: 100%;
 	overflow: auto;
-	border: 1px solid black;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #000000 #AAAAAA #AAAAAA #000000;
 }
 
 .ZmHtmlEditor .DwtHtmlEditorIFrame {
 	background-color: white;
 	width: 100%;
-	border: 1px solid black;
 }
 
 
@@ -958,6 +959,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	text-align: right;
 	color: #555555;
 	white-space: nowrap;
+	width: 1%;
 }
 
 /** appointment detail **/
