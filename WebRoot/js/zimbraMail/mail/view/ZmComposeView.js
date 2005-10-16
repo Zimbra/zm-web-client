@@ -1069,7 +1069,8 @@ function() {
 		var html = new Array();
 		var idx = 0;
 		html[idx++] = "<html><head><style type='text/css'>";
-		html[idx++] = "<!-- @import url(/zimbra/js/zimbraMail/config/style/zm.css); -->";
+		html[idx++] = "P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON { font-family: Tahoma, Arial, Helvetica, sans-serif;	font-size:11px; }";
+		html[idx++] = ".attachText { width:60px; text-align:right; white-space:nowrap; overflow:hidden; }";
 		html[idx++] = "</style></head>";
 		html[idx++] = "<body scroll=no bgcolor='#EEEEEE'>";
 		html[idx++] = "<form method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";

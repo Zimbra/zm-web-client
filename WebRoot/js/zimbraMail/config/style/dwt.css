@@ -18,13 +18,6 @@
 	background-color: #C6C5D7;
 }
 
-.attachText {
-	width: 60px;
-	text-align: right;
-	white-space: nowrap;
-	overflow: hidden;
-}
-
 .nobreak {
 	white-space: nowrap;
 	overflow: hidden;
