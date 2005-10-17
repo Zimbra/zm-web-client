@@ -21,16 +21,15 @@ ZmShareInfo.ROLE_NONE = "";
 ZmShareInfo.ROLE_VIEWER = "r";
 ZmShareInfo.ROLE_MANAGER = "rwidx";
 
-// TODO: i18n
 ZmShareInfo.ROLES = {};
-ZmShareInfo.ROLES[ZmShareInfo.ROLE_NONE] = "None";
-ZmShareInfo.ROLES[ZmShareInfo.ROLE_VIEWER] = "Viewer";
-ZmShareInfo.ROLES[ZmShareInfo.ROLE_MANAGER] = "Manager";
+ZmShareInfo.ROLES[ZmShareInfo.ROLE_NONE] = ZmMsg.shareRoleNone;
+ZmShareInfo.ROLES[ZmShareInfo.ROLE_VIEWER] = ZmMsg.shareRoleViewer;
+ZmShareInfo.ROLES[ZmShareInfo.ROLE_MANAGER] = ZmMsg.shareRoleManager;
 
 ZmShareInfo.ACTIONS = {};
-ZmShareInfo.ACTIONS[ZmShareInfo.ROLE_NONE] = "None";
-ZmShareInfo.ACTIONS[ZmShareInfo.ROLE_VIEWER] = "View";
-ZmShareInfo.ACTIONS[ZmShareInfo.ROLE_MANAGER] = "View, Edit, Add, Remove, Accept, Decline";
+ZmShareInfo.ACTIONS[ZmShareInfo.ROLE_NONE] = ZmMsg.shareRoleNoneActions;
+ZmShareInfo.ACTIONS[ZmShareInfo.ROLE_VIEWER] = ZmMsg.shareRoleViewerActions;
+ZmShareInfo.ACTIONS[ZmShareInfo.ROLE_MANAGER] = ZmMsg.shareRoleManagerActions;
 
 // Data
 

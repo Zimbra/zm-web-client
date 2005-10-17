@@ -32,8 +32,7 @@ function ZmFolderPropsDialog(appCtxt, parent, className) {
 	var extraButtons  = [
 		new DwtDialog_ButtonDescriptor(ZmFolderPropsDialog.ADD_SHARE_BUTTON, ZmMsg.addShare, DwtDialog.ALIGN_LEFT)
 	];
-	// TODO: i18n
-	DwtXFormDialog.call(this, xformDef, xmodelDef, parent, className, "Folder Properties", null, extraButtons);
+	DwtXFormDialog.call(this, xformDef, xmodelDef, parent, className, ZmMsg.folderProperties, null, extraButtons);
 	this._xform.setController(this);
 	
 	this.registerCallback(ZmFolderPropsDialog.ADD_SHARE_BUTTON, this._handleAddShareButton, this);
@@ -48,38 +47,35 @@ ZmFolderPropsDialog.prototype.constructor = ZmFolderPropsDialog;
 
 ZmFolderPropsDialog.ADD_SHARE_BUTTON = ++DwtDialog.LAST_BUTTON;
 
-// TODO: i18n
 ZmFolderPropsDialog.TYPE_CHOICES = new Object;
-ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.FOLDER] = "Mail Folder";
-ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.CALENDAR] = "Calendar Folder";
+ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.FOLDER] = ZmMsg.mailFolder;
+ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.CALENDAR] = ZmMsg.calendarFolder;
 
 ZmFolderPropsDialog.TYPE_NAMES = new Object;
 ZmFolderPropsDialog.TYPE_NAMES[ZmOrganizer.FOLDER] = "conversation";
 ZmFolderPropsDialog.TYPE_NAMES[ZmOrganizer.CALENDAR] = "appointment";
 
 ZmFolderPropsDialog._XFORM_DEF = { items: [
-	{type:_GROUPER_, label:"Properties", width:"100%", 
+	{type:_GROUPER_, label:ZmMsg.properties, width:"100%", 
 		items: [
 			// NOTE: user calendar cannot be renamed...
-			{type:_OUTPUT_, label:"Name:", ref:"folder_name", //width:"200",
+			{type:_OUTPUT_, label: ZmMsg.nameLabel, ref:"folder_name", //width:"200",
 				relevant: "get('folder_id') == ZmCalendar.ID_CALENDAR", relevantBehavior: _HIDE_
 			},
-			{type:_INPUT_, label:"Name:", ref:"folder_name", //width:"200",
+			{type:_INPUT_, label: ZmMsg.nameLabel, ref:"folder_name", //width:"200",
 				relevant: "get('folder_id') != ZmCalendar.ID_CALENDAR", relevantBehavior: _HIDE_
 			},
-			//{type:_SPACER_, height:3},
-			{type: _OUTPUT_, ref:"folder_view", label:"Type:", 
+			{type: _OUTPUT_, ref:"folder_view", label: ZmMsg.typeLabel, 
 				choices: ZmFolderPropsDialog.TYPE_CHOICES
 			},
-			//{type:_SPACER_, height:3},
-			{type:_DWT_SELECT_, ref: "folder_color", label:"Color:",
+			{type:_DWT_SELECT_, ref: "folder_color", label: ZmMsg.colorLabel,
 				choices: ZmOrganizer.COLOR_CHOICES
 			}
 		]
 	},
 
 
-	{type:_GROUPER_, label:"Sharing for this folder", 
+	{type:_GROUPER_, label: ZmMsg.folderSharing, 
 		relevant: "get('folder_acl_grant') && get('folder_acl_grant').length > 0", relevantBehavior: _HIDE_,
 		items: [
 			{type:_REPEAT_, ref:"folder_acl_grant", number: 0, colSpan:3, 
@@ -90,7 +86,7 @@ ZmFolderPropsDialog._XFORM_DEF = { items: [
 							return ZmShareInfo.ROLES[value];
 						}
 					},
-					{type:_ANCHOR_, label:"Edit...", labelLocation:_NONE_,
+					{type:_ANCHOR_, label: ZmMsg.editAction, labelLocation:_NONE_,
 						showInNewWindow: false,
 						onActivate: function(event) {
 							var form = this.getForm();
@@ -100,7 +96,7 @@ ZmFolderPropsDialog._XFORM_DEF = { items: [
 						}
 					},
 					{type:_CELLSPACER_, width:5},
-					{type:_ANCHOR_, label:"Remove", labelLocation:_NONE_,
+					{type:_ANCHOR_, label: ZmMsg.remove, labelLocation:_NONE_,
 						showInNewWindow: false,
 						onActivate: function(event) {
 							var form = this.getForm();
@@ -172,104 +168,10 @@ ZmFolderPropsDialog.prototype._handleEditShare = function(shareItem) {
 	sharePropsDialog.popup();
 }
 
-ZmFolderPropsDialog._TEXT_CONTENT = [
-	"The following share has been revoked:",
-	"",
-	"Shared item: {0} {1}",
-	"Owner: {2}",
-	"",
-	"Revokee: {3}"
-].join("\n");
-ZmFolderPropsDialog._HTML_CONTENT = [
-	"<h3>The following share has been revoked:</h3>",
-	"<p>",
-	"<table border='0'>",
-	"<tr><th align='left'>Shared item:</th><td>{0} {1}</td></tr>",
-	"<tr><th align='left'>Owner:</th><td>{2}</td></tr>",
-	"</table>",
-	"<p>",
-	"<table border='0'>",
-	"<tr><th align='left'>Revokee:</th><td>{3}</td></tr>",
-	"</table>"
-].join("\n");
-
-ZmFolderPropsDialog.prototype._generateContent = function(template, share) {
-	var folderType = share.organizer.view 
-					? "(" + ZmFolderPropsDialog.TYPE_CHOICES[share.organizer.view] + ")"
-					: "";
-	var userName = this._appCtxt.getSettings().get(ZmSetting.DISPLAY_NAME);
-
-	// REVISIT
-	var content = template;
-	content = content.replace(/\{0}/g, share.organizer.name);
-	content = content.replace(/\{1}/g, folderType);
-	content = content.replace(/\{2}/g, userName);
-	content = content.replace(/\{3}/g, share.granteeName);
-	
-	return content;
-}
-
-ZmFolderPropsDialog.prototype._generateTextPart = function(share) {
-	var content = this._generateContent(ZmFolderPropsDialog._TEXT_CONTENT, share);
-
-	var mimePart = new ZmMimePart();
-	mimePart.setContentType(ZmMimeTable.TEXT_PLAIN);
-	mimePart.setContent(content);
-	return mimePart;
-}
-ZmFolderPropsDialog.prototype._generateHtmlPart = function(share) {
-	var content = this._generateContent(ZmFolderPropsDialog._HTML_CONTENT, share);
-
-	var mimePart = new ZmMimePart();
-	mimePart.setContentType(ZmMimeTable.TEXT_PLAIN);
-	mimePart.setContent(content);
-	return mimePart;
-}
-ZmFolderPropsDialog.prototype._generateXmlPart = function(share) {
-	var settings = this._appCtxt.getSettings();
-	var grantorId = settings.get(ZmSetting.USERID);
-	var grantorName = AjxStringUtil.xmlAttrEncode(settings.get(ZmSetting.DISPLAY_NAME));
-	var remoteId = share.organizer.id;
-	var remoteName = AjxStringUtil.xmlAttrEncode(share.organizer.name);
-	var defaultType = ZmFolderPropsDialog.TYPE_NAMES[share.organizer.type];
-	
-	var content = [
-		"<share xmlns='"+ZmShareInfo.URI+"' version='"+ZmShareInfo.VERSION+"' action='"+ZmShareInfo.DELETE+"'>",
-		"  <grantor id='"+grantorId+"' name='"+grantorName+"' />",
-		"  <link id='"+remoteId+"' name='"+remoteName+"' view='"+defaultType+"' />",
-		"</share>"
-	].join("\n");
-
-	var mimePart = new ZmMimePart();
-	mimePart.setContentType(ZmMimeTable.XML_ZIMBRA_SHARE);
-	mimePart.setContent(content);
-	return mimePart;
-}
-
 ZmFolderPropsDialog.prototype._handleRemoveShare = function(share) {
-	// TODO: Implement confirmation dialog to allow sending message
-	if (confirm("Are you sure you want to revoke access for "+share.granteeName+"?")) {
-		share.revoke();
-		
-		var textPart = this._generateTextPart(share);
-		var htmlPart = this._generateHtmlPart(share);
-		var xmlPart = this._generateXmlPart(share);
-		
-		var top = new ZmMimePart();
-		top.setContentType(ZmMimeTable.MULTI_ALT);
-		top.children.add(textPart);
-		top.children.add(htmlPart);
-		top.children.add(xmlPart);
-		
-		var msg = new ZmMailMsg(this._appCtxt);
-		msg.setAddress(ZmEmailAddress.TO, new ZmEmailAddress(share.granteeName));
-		msg.setSubject("Share Revoked");
-		msg.setTopPart(top);
-
-		var contactsApp = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
-		var contactList = contactsApp.getContactList();
-		msg.send(contactList);
-	}
+	var revokeShareDialog = this._appCtxt.getRevokeShareDialog();
+	revokeShareDialog.setShareInfo(share);
+	revokeShareDialog.popup();
 }
 
 ZmFolderPropsDialog.prototype._handleAddShareButton = function(event) {

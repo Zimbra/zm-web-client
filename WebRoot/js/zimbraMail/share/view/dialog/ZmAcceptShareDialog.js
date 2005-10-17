@@ -29,10 +29,14 @@ function ZmAcceptShareDialog(appCtxt, parent, className) {
 	className = className || "ZmAcceptShareDialog";
 	DwtXFormDialog.call(this, xformDef, xmodelDef, parent, className);
 	
-	// TODO: i18n
-	this.setTitle("Accept Share");
+	this.setTitle(ZmMsg.acceptShare);
 	
 	this._appCtxt = appCtxt;
+	
+	// create formatters
+	this._headerFormatter = new AjxMessageFormat(ZmMsg.acceptShareHeader);
+	this._detailsFormatter = new AjxMessageFormat(ZmMsg.acceptShareDetails);
+	this._defaultNameFormatter = new AjxMessageFormat(ZmMsg.shareNameDefault);
 }
 ZmAcceptShareDialog.prototype = new DwtXFormDialog;
 ZmAcceptShareDialog.prototype.constructor = ZmAcceptShareDialog;
@@ -43,7 +47,11 @@ ZmAcceptShareDialog.ACCEPT = "accept";
 ZmAcceptShareDialog.DECLINE = "decline";
 ZmAcceptShareDialog.LATER = "later";
 
-// TODO: i18n
+ZmAcceptShareDialog._ACTIONS = {};
+ZmAcceptShareDialog._ACTIONS[ZmShareInfo.ROLE_NONE] = ZmMsg.acceptShareDetailsNone;
+ZmAcceptShareDialog._ACTIONS[ZmShareInfo.ROLE_VIEWER] = ZmMsg.acceptShareDetailsViewer;
+ZmAcceptShareDialog._ACTIONS[ZmShareInfo.ROLE_MANAGER] = ZmMsg.acceptShareDetailsManager;
+
 ZmAcceptShareDialog._XFORM_DEF = { items: [
 	{type:_OUTPUT_, colSpan:2, ref: "msg_header", cssClass:"ZmSubHead", height:23},
 
@@ -52,17 +60,17 @@ ZmAcceptShareDialog._XFORM_DEF = { items: [
 
 	{type:_SPACER_, height:10},
 
-	{type:_RADIO_GROUPER_, label:"What do you want to do?", numCols:2, colSizes:["20","300"], items:[
-				{type:_RADIO_, ref:"op", value:ZmAcceptShareDialog.ACCEPT, label:"Accept the role"},
-				{type:_RADIO_, ref:"op", value:ZmAcceptShareDialog.DECLINE, label:"Decline the role"},
-				{type:_RADIO_, ref:"op", value:ZmAcceptShareDialog.LATER, label:"Decide later"},
+	{type:_RADIO_GROUPER_, label: ZmMsg.acceptShareWhatToDo, numCols:2, colSizes:["20","300"], items:[
+				{type:_RADIO_, ref:"op", value:ZmAcceptShareDialog.ACCEPT, label: ZmMsg.shareAccept},
+				{type:_RADIO_, ref:"op", value:ZmAcceptShareDialog.DECLINE, label: ZmMsg.shareDecline},
+				{type:_RADIO_, ref:"op", value:ZmAcceptShareDialog.LATER, label: ZmMsg.shareDecideLater},
 
 				{type:_GROUP_, colSpan:'*', width:"100%", numCols:2, 
 					relevant: "get('op') == ZmAcceptShareDialog.ACCEPT", relevantBehavior: _HIDE_,
 					items:[
 						{type:_SEPARATOR_, height:11, cssClass:"xform_separator_gray"},
-						{type:_INPUT_, label:"Call the folder:", ref:"share_name", width:"100%"},
-						{type:_DWT_SELECT_, label:"Color:", ref: "share_color",
+						{type:_INPUT_, label: ZmMsg.shareNameLabel, ref:"share_name", width:"100%"},
+						{type:_DWT_SELECT_, label: ZmMsg.colorLabel, ref: "share_color",
 							choices: ZmOrganizer.COLOR_CHOICES
 						}
 						/***
@@ -76,13 +84,15 @@ ZmAcceptShareDialog._XFORM_DEF = { items: [
 						}
 						/***/
 					]
-				},
+				}
 
-				{type:_GROUP_, colSpan:'*', width:"100%", numCols:2, relevant:"get('status') == 'D'",items:[
+				/*** TODO
+				{type:_GROUP_, colSpan:'*', width:"100%", numCols:2, relevant:"get('op') == ZmAcceptShareDialog.LATER",items:[
 						{type:_SEPARATOR_, height:11, cssClass:"xform_separator_gray"},
 						{type:_CHECKBOX_, ref:"sendMail", trueValue:'T', falseValue:'F', label:"Send mail explaining why I decline this role"},
 					]
 				}
+				/***/
 			]
 		}
 ]};
@@ -108,50 +118,18 @@ ZmAcceptShareDialog.prototype.setShareInfo = function(shareInfo) {
 	var settings = this._appCtxt.getSettings();
 	var userName = settings.get(ZmSetting.DISPLAY_NAME);
 	
-	// TODO: i18n
 	// REVISIT: generation of details message
-	var header = [
-		shareInfo.grantor.name," has shared their '",shareInfo.link.name,"' folder with you."
-	].join("");
-	
-	var details = [
-		"They have granted you the <b>",ZmShareInfo.ROLES[shareInfo.link.perm],"</b> role, which means:",
-		"<div style='margin-left:15px;margin-bottom:3px;margin-top:3px;'>"
+	var params = [ shareInfo.grantor.name, shareInfo.link.name ];
+	var header = this._headerFormatter.format(params);
+
+	var params = [ 
+		ZmShareInfo.ROLES[shareInfo.link.perm],
+		ZmAcceptShareDialog._ACTIONS[shareInfo.link.perm]
 	];
-	if (shareInfo.isRead()) {
-		if (shareInfo.isWrite()) {
-			details.push("<li>You can <b>View</b> and <b>Edit</b> items in the folder.</li>");
-		}
-		else {
-			details.push("<li>You can <b>View</b> items in the folder.</li>");
-		}
-	}
-	else if (shareInfo.isWrite()) {
-		details.push("<li>You can <b>Edit</b> items in the folder.</li>");
-	}
-	if (shareInfo.isInsert()) {
-		if (shareInfo.isDelete()) {
-			details.push("<li>You can <b>Add</b> and <b>Remove</b> items to/from the folder.</li>");
-		}
-		else {
-			details.push("<li>You can <b>Add</b> items to the folder.</li>");
-		}
-	}
-	else if (shareInfo.isDelete()) {
-		details.push("<li>You can <b>Remove</b> items from the folder.</li>");
-	}
-	if (shareInfo.isAdmin()) {
-		// TODO
-	}
-	if (shareInfo.isWorkflow()) {
-		details.push("<li>You can <b>Accept</b> and <b>Decline</b> workflow actions for the folder.</li>");
-	}
-	details.push("</div>");
-	details = details.join("");
-	
-	var shareName = [
-		shareInfo.grantor.name,"'s ",shareInfo.link.name," Folder"
-	].join("");
+	var details = this._detailsFormatter.format(params);
+
+	var params = [ shareInfo.grantor.name, shareInfo.link.name ];
+	var shareName = this._defaultNameFormatter.format(params);
 	
 	var instance = {
 		msgs: {
@@ -215,21 +193,14 @@ ZmAcceptShareDialog.prototype._handleOkButton = function(event) {
 			mountpointId = parseInt(resp.link[0].id);
 		}
 		catch (ex) {
-			var msg;
-			if (ex instanceof ZmCsfeException) {
-				switch (ex.code) {
-					case "mail.ALREADY_EXISTS": {
-						msg = "A folder with that name already exists.\n"+
-							"Please select a different name.";
-						break;
-					}
-					default: msg = ex.msg;
-				}
+			var message = Ajx.unknownError;
+			if (ex instanceof ZmCsfeException && ex.code == "mail.ALREADY_EXISTS") {
+				message = Ajx.folderNameExists;
+				// NOTE: This prevents details from being shown
+				ex = null;
 			}
-			else {
-				msg = "Uknown error: "+ex;
-			}
-			alert(msg);
+			
+			appCtlr.popupErrorDialog(message, ex);
 			return;
 		}
 		

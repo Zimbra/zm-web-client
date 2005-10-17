@@ -29,12 +29,18 @@ function ZmSharePropsDialog(appCtxt, shell, className) {
 	className = className || "ZmSharePropsDialog";
 	
 	// TODO: i18n
-	DwtXFormDialog.call(this, xformDef, xmodelDef, shell, className, "Share Properties");
+	DwtXFormDialog.call(this, xformDef, xmodelDef, shell, className, ZmMsg.shareProperties);
 	this._xform.setController(this);
 	this._xform.itemChanged = ZmSharePropsDialog.__xformItemChanged;
 	
 	this._appCtxt = appCtxt;
 	this._userPicker = new ZmUserPicker(this._appCtxt, shell);
+	
+	// message formatters
+	this._createdTextFormatter = new AjxMessageFormat(ZmMsg.shareCreatedText);
+	this._createdHtmlFormatter = new AjxMessageFormat(ZmMsg.shareCreatedHtml);
+	this._modifiedTextFormatter = new AjxMessageFormat(ZmMsg.shareModifiedText);
+	this._modifiedHtmlFormatter = new AjxMessageFormat(ZmMsg.shareModifiedHtml);
 }
 ZmSharePropsDialog.prototype = new DwtXFormDialog;
 ZmSharePropsDialog.prototype.constructor = ZmSharePropsDialog;
@@ -50,13 +56,13 @@ ZmSharePropsDialog._MAIL_COMPOSE = 'C';
 
 // TODO: i18n
 ZmSharePropsDialog._XFORM_DEF = { items: [
-	{type:_OUTPUT_, label:"Folder:", ref:"folder_name", width:"100%", 
+	{type:_OUTPUT_, label: ZmMsg.folderLabel, ref:"folder_name", width:"100%", 
 		relevant:"get('folder_type') != ZmOrganizer.CALENDAR",relevantBehavior:_HIDE_
 	},
-	{type:_OUTPUT_, label:"Calendar:", ref:"folder_name", width:"100%", 
+	{type:_OUTPUT_, label: ZmMsg.calendarLabel, ref:"folder_name", width:"100%", 
 		relevant:"get('folder_type') == ZmOrganizer.CALENDAR",relevantBehavior:_HIDE_
 	},
-	{type:_GROUP_, label:"Share with:", width:"100%", numCols:3, useParentTable: false, items:[
+	{type:_GROUP_, label: ZmMsg.shareWithLabel, width:"100%", numCols:3, useParentTable: false, items:[
 			{type:_OUTPUT_, ref:"share_grantee_name", width:"250", relevant:"get('type')!=ZmSharePropsDialog.NEW",relevantBehavior:_HIDE_},
 			{type:_GROUP_, //useParentTable: false, 
 			relevant:"get('type') == ZmSharePropsDialog.NEW", relevantBehavior:_HIDE_, items:[
@@ -72,25 +78,25 @@ ZmSharePropsDialog._XFORM_DEF = { items: [
 			]}
 		]
 	},
-	{type:_RADIO_GROUPER_, label:"Role:", numCols:3, colSizes:[25,60,'*'], items: [
+	{type:_RADIO_GROUPER_, label: ZmMsg.roleLabel, numCols:3, colSizes:[25,60,'*'], items: [
 			{type:_RADIO_, ref:"share_rights", value:ZmShareInfo.ROLE_NONE, label:"<b>"+ZmShareInfo.ROLES[ZmShareInfo.ROLE_NONE]+"</b>"},{type:_OUTPUT_, value:ZmShareInfo.ACTIONS[""]},
 			{type:_RADIO_, ref:"share_rights", value:ZmShareInfo.ROLE_VIEWER, label:"<b>"+ZmShareInfo.ROLES[ZmShareInfo.ROLE_VIEWER]+"</b>"},{type:_OUTPUT_, value:ZmShareInfo.ACTIONS["r"]},
 			{type:_RADIO_, ref:"share_rights", value:ZmShareInfo.ROLE_MANAGER, label:"<b>"+ZmShareInfo.ROLES[ZmShareInfo.ROLE_MANAGER]+"</b>"},{type:_OUTPUT_, value:ZmShareInfo.ACTIONS["rwidx"]}
 		]
 	},
 	{type:_GROUP_, colSpan:'*', width:"100%", numCols:2, colSizes:[35,'*'], items:[
-			{type:_CHECKBOX_, ref:"sendMail", trueValue:true, falseValue:false, label:"Send mail to the recipient about this share"},
+			{type:_CHECKBOX_, ref:"sendMail", trueValue:true, falseValue:false, label: ZmMsg.sendMailAboutShare },
 			{type:_SPACER_, height:3, relevant:"get('sendMail')"},
 			{type:_DWT_SELECT_, ref:"mailType", relevant:"get('sendMail')", label:"", choices: [
-				{value: "S", label: "Send standard message"},
-				{value: "Q", label: "Add note to standard message"},
-				{value: "C", label: "Compose email in new window"}
+				{value: ZmSharePropsDialog._MAIL_STANDARD, label: ZmMsg.sendStandardMailAboutShare },
+				{value: ZmSharePropsDialog._MAIL_QUICK, label: ZmMsg.sendStandardMailAboutSharePlusNote },
+				{value: ZmSharePropsDialog._MAIL_COMPOSE, label: ZmMsg.sendComposedMailAboutShare }
 			]},
 			{type:_OUTPUT_, label: "", //width: "250",
-				value: "<b>Note:</b> The standard message displays the name of the shared item, the owner, and the permissions allowed on the share.",
-				relevant: "get('sendMail') && (get('mailType') == 'S' || get('mailType') == 'Q')", revelantBehavior: _HIDE_
+				value: ZmMsg.sendMailAboutShareNote,
+				relevant: "get('sendMail') && (get('mailType') == ZmSharePropsDialog._MAIL_STANDARD || get('mailType') == ZmSharePropsDialog._MAIL_QUICK)", revelantBehavior: _HIDE_
 			},
-			{type:_TEXTAREA_, ref:"quickReply", relevant:"get('sendMail') && get('mailType') == 'Q'", width:"95%", height:50, label:""}
+			{type:_TEXTAREA_, ref:"quickReply", relevant:"get('sendMail') && get('mailType') == ZmSharePropsDialog._MAIL_QUICK", width:"95%", height:50, label:""}
 		]
 	}
 ]};
@@ -186,22 +192,18 @@ ZmSharePropsDialog.prototype._handleOkButton = function(event) {
 		this._executeGrantAction(folder, share);
 	}
 	catch (ex) {
-		var msg;
-		// TODO: i18n
-		if (ex instanceof ZmCsfeException) {
-			switch (ex.code) {
-				case "account.NO_SUCH_ACCOUNT": {
-					msg = "Unknown user '"+share.granteeName+"'.\n"+
-							"Must specify a valid Zimbra user.";
-					break;
-				}
-				default: msg = ex.msg;
+		var message = Ajx.unknownError;
+		if (ex instanceof ZmCsfeException && ex.code == "account.NO_SUCH_ACCOUNT") {
+			if (!this._unknownUserFormatter) {
+				this._unknownUserFormatter = new AjxMessageFormat(ZmMsg.unknownUser);
 			}
+			message = this._unknownUserFormatter.format(share.granteeName);
+			// NOTE: This prevents details from being shown
+			ex = null;
 		}
-		else {
-			msg = "Unknown error: "+ex;
-		}
-		alert(msg);
+		
+		var appController = this._appCtxt.getAppController();
+		appController.popupErrorDialog(message, ex);
 		return;
 	}
 
@@ -226,10 +228,7 @@ ZmSharePropsDialog.prototype._handleOkButton = function(event) {
 
 	var msg = new ZmMailMsg(this._appCtxt);
 	msg.setAddress(ZmEmailAddress.TO, new ZmEmailAddress(share.granteeName));
-	msg.setSubject(this._dialogType == ZmSharePropsDialog.NEW ? "Share Created" : "Share Modified");
-	msg.setTopPart(topPart);
-	msg.setBodyParts([ textPart.node, htmlPart.node, xmlPart.node ]);
-
+	msg.setSubject(this._dialogType == ZmSharePropsDialog.NEW ? ZmMsg.shareCreatedSubject : ZmMsg.shareModifiedSubject);
 
 	// compose in new window
 	if (instance.mailType == ZmSharePropsDialog._MAIL_COMPOSE) {
@@ -242,6 +241,8 @@ ZmSharePropsDialog.prototype._handleOkButton = function(event) {
 	
 		var mailApp = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
 		var composeController = mailApp.getComposeController();
+
+		msg.setBodyParts([ textPart.node, htmlPart.node, xmlPart.node ]);
 		composeController.doAction(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText);
 	}
 	
@@ -249,6 +250,8 @@ ZmSharePropsDialog.prototype._handleOkButton = function(event) {
 	else {
 		var contactsApp = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		var contactList = contactsApp.getContactList();
+
+		msg.setTopPart(topPart);
 		msg.send(contactList);
 	}
 }
@@ -266,57 +269,22 @@ ZmSharePropsDialog.prototype._executeGrantAction = function(folder, share) {
 	newShare.setPermissions(share.perm); // this does the FolderActionRequest
 }
 
-ZmSharePropsDialog._SHARE_CREATED = "The following share has been created:";
-ZmSharePropsDialog._SHARE_MODIFIED = "The following share has been modified:";
-ZmSharePropsDialog._TEXT_CONTENT = [
-	"",
-	"Shared item: {0} {1}",
-	"Owner: {2}",
-	"",
-	"Grantee: {3}",
-	"Role: {4} {6}",
-	"Allowed actions: {5} {6}"
-].join("\n");
-ZmSharePropsDialog._HTML_CONTENT = [
-	"<p>",
-	"<table border='0'>",
-	"<tr>","<th align='left'>Shared item:</th>","<td>{0} {1}</td>","</tr>",
-	"<tr>","<th align='left'>Owner:</th>","<td>{2}</td>","</tr>",
-	"</table>",
-	"<p>",
-	"<table border='0'>",
-	"<tr>","<th align='left'>Grantee:</th>","<td>{3}</td>","</tr>",
-	"<tr>","<th align='left'>Role:</th>","<td>{4} {6}</td>","</tr>",
-	"<tr>","<th align='left'>Allowed actions:</th>","<td>{5} {6}</td>",
-	"</tr>",
-	"</table>"
-].join("\n");
-
-ZmSharePropsDialog.prototype.__generateContent = function(template, folder, share) {
-	var folderType = folder.view 
-					? "(" + ZmFolderPropsDialog.TYPE_CHOICES[folder.view] + ")"
-					: "";
+ZmSharePropsDialog.prototype.__generateContent = function(formatter, folder, share) {
+	var folderType = folder.view ? "(" + ZmFolderPropsDialog.TYPE_CHOICES[folder.view] + ")" : "";
 	var userName = this._appCtxt.getSettings().get(ZmSetting.DISPLAY_NAME);
-	var modified = this._dialogType == ZmSharePropsDialog.EDIT ? "[MODIFIED]" : "";
 
-	// REVISIT
-	var content = template;
-	content = content.replace(/\{0}/g, folder.name);
-	content = content.replace(/\{1}/g, folderType);
-	content = content.replace(/\{2}/g, userName);
-	content = content.replace(/\{3}/g, share.granteeName);
-	content = content.replace(/\{4}/g, ZmShareInfo.ROLES[share.perm]);
-	content = content.replace(/\{5}/g, ZmShareInfo.ACTIONS[share.perm]);
-	content = content.replace(/\{6}/g, modified);
+	var params = [ 
+		folder.name, folderType, userName, share.granteeName, 
+		ZmShareInfo.ROLES[share.perm], ZmShareInfo.ACTIONS[share.perm]
+	];
+	var content = formatter.format(params);
 	
 	return content;
 }
 
 ZmSharePropsDialog.prototype._generateTextPart = function(folder, share) {
-	var content = this._dialogType == ZmSharePropsDialog.NEW
-				? ZmSharePropsDialog._SHARE_CREATED : ZmSharePropsDialog._SHARE_MODIFIED;
-
-	content += "\n" + this.__generateContent(ZmSharePropsDialog._TEXT_CONTENT, folder, share);
+	var formatter = this._dialogType == ZmSharePropsDialog.NEW ? this._createdTextFormatter : this._modifiedTextFormatter;
+	var content = this.__generateContent(formatter, folder, share);
 
 	var instance = this._xform.getInstance();
 	if (instance.mailType == ZmSharePropsDialog._MAIL_COMPOSE ||
@@ -333,23 +301,16 @@ ZmSharePropsDialog.prototype._generateTextPart = function(folder, share) {
 	return mimePart;
 }
 ZmSharePropsDialog.prototype._generateHtmlPart = function(folder, share) {
-	var content = this._dialogType == ZmSharePropsDialog.NEW
-				? "<h3>"+ZmSharePropsDialog._SHARE_CREATED+"</h3>"
-				: "<h3>"+ZmSharePropsDialog._SHARE_MODIFIED+"</h3>";
-
-	content += "\n" + this.__generateContent(ZmSharePropsDialog._HTML_CONTENT, folder, share);
+	var formatter = this._dialogType == ZmSharePropsDialog.NEW ? this._createdHtmlFormatter : this._modifiedHtmlFormatter;
+	var content = this.__generateContent(formatter, folder, share);
 
 	var instance = this._xform.getInstance();
-	if (instance.mailType == ZmSharePropsDialog._MAIL_COMPOSE ||
+	if (instance.mailType == ZmRevokeShareDialog._MAIL_COMPOSE ||
 		(instance.quickReply && !instance.quickReply.match(/^\s*$/))) {
-		var quickReply = instance.mailType != ZmSharePropsDialog._MAIL_COMPOSE
-						? instance.quickReply : "";
-		content += [
-			"<p>",
-			"<table border='0'>",
-			"<tr>","<th align='left'>Notes:</th>","<td>",quickReply,"</td>","</tr>",
-			"</table>"
-		].join("\n");
+		if (!this._htmlNoteFormatter) {
+			this._htmlNoteFormatter = new AjxMessageFormat(ZmMsg.shareNotesHtml);
+		}
+		content += this._htmlNoteFormatter.format(instance.quickReply);
 	}
 
 	var mimePart = new ZmMimePart();

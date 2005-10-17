@@ -226,6 +226,12 @@ ZmAppCtxt.prototype.getAcceptShareDialog = function() {
 	}
 	return this._acceptShareDialog;
 }
+ZmAppCtxt.prototype.getRevokeShareDialog = function() {
+	if (!this._revokeShareDialog) {
+		this._revokeShareDialog = new ZmRevokeShareDialog(this, this.getShell());
+	}
+	return this._revokeShareDialog;
+}
 
 ZmAppCtxt.prototype.clearFolderDialogs =
 function() {
@@ -233,6 +239,7 @@ function() {
 	this._folderPropsDialog = null;
 	this._sharePropsDialog = null;
 	this._acceptShareDialog = null;
+	this._revokeShareDialog = null;
 }
 
 ZmAppCtxt.prototype.getShell =
