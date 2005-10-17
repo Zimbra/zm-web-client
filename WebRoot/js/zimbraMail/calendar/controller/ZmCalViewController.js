@@ -231,14 +231,14 @@ function() {
 
 ZmCalViewController.prototype._updateCheckedCalendars =
 function() {
-	DBG.println("updoate checked: ");
+	//DBG.println("updoate checked: ");
 	var cc = this._calTreeController.getCheckedCalendars(ZmZimbraMail._OVERVIEW_ID);
 	this._checkedCalendarFolderIds = [];
 	for (var i=0; i < cc.length; i++) {
 		var cal = cc[i];
 		this._folderIdToCalendar[cal.id] = cal;
 		this._checkedCalendarFolderIds.push(cal.id);
-		DBG.println("checked = "+cal.getName());
+		//DBG.println("checked = "+cal.getName());
 	}
 	return cc;
 }
