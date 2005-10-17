@@ -161,6 +161,8 @@ function(composeMode) {
 		this._bodyFieldId = bodyFieldId;
 		this._bodyField = Dwt.getDomObj(this.getDocument(), this._bodyFieldId);
 	}
+
+	this._resizeNotes();
 };
 
 ZmApptTabViewPage.prototype.reEnableDesignMode = 
@@ -203,8 +205,7 @@ function() {
 
 	if (this._attachDiv == null)
 		this._attachDiv = Dwt.getDomObj(idoc, this._attachDivId);
-	//if (AjxEnv.isIE)
-		this._attachDiv.style.height = this._attachIframe.style.height;
+	this._attachDiv.style.height = this._attachIframe.style.height;
 	this._attachDiv.appendChild(div);
 
 	// add event handlers as necessary
@@ -218,29 +219,24 @@ function() {
 		attachInputEl._tabViewPage = this;
 		Dwt.setHandler(attachInputEl, DwtEvent.ONKEYDOWN, ZmApptTabViewPage._onKeyDown);
 	}
+
+	this._resizeNotes();
 };
 
 ZmApptTabViewPage.prototype.resize = 
 function(newWidth, newHeight) {
 	if (!this._rendered) return;
-	/*
-	DBG.println("new width = " + newWidth + ", new height = " + newHeight);
-	if (newWidth)
+
+	if (newWidth) {
 		this.setSize(newWidth);
-
-	var fudge = this._composeMode == DwtHtmlEditor.HTML ? 30 : 0;
-	var newWidth = newWidth || this.getSize().x;
-	var newHeight = newHeight || (this.getSize().y - fudge);
-
-	var table = this.getHtmlElement().firstChild;
-	if (table && table.tagName.toLowerCase() == "table") {
-		var doubleRowHeight = Dwt.getSize(table.rows[0]).y + Dwt.getSize(table.rows[1]).y;
-		var remainderHeight = newHeight - doubleRowHeight - 45;
-		//Dwt.setSize(table, Dwt.DEFAULT, newHeight - 50);
-		Dwt.setSize(table.rows[2], Dwt.DEFAULT, remainderHeight);
-		Dwt.setSize(this._bodyField, Dwt.DEFAULT, remainderHeight);
+		Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
 	}
-	*/
+
+	if (newHeight) {
+		this.setSize(Dwt.DEFAULT, newHeight - 30);
+		Dwt.setSize(this.getHtmlElement().firstChild, Dwt.DEFAULT, newHeight - 30);
+		this._resizeNotes();
+	}
 };
 
 
@@ -564,10 +560,8 @@ function() {
 		notesHtmlEditorDiv.appendChild(this._notesHtmlEditor.getHtmlElement());
 	delete this._notesHtmlEditorId;
 
-	// init html editor heights
 	this._bodyField = Dwt.getDomObj(doc, this._notesHtmlEditor.getBodyFieldId());
-	this._notesHtmlEditor.setSize(Dwt.DEFAULT, "100%");
-	Dwt.setSize(this._bodyField, Dwt.DEFAULT, "100%");
+	this._resizeNotes();
 };
 
 ZmApptTabViewPage.prototype._initAutocomplete = 
@@ -730,10 +724,10 @@ function(removeId) {
 				// reset the iframe/etc heights - yuck
 				this._attachmentRow.style.height = parseInt(this._attachmentRow.style.height) - ZmApptTabViewPage.ATTACH_HEIGHT;
 				this._attachIframe.style.height = parseInt(this._attachIframe.style.height) - ZmApptTabViewPage.ATTACH_HEIGHT;
-				//if (AjxEnv.isIE)
-					this._attachDiv.style.height = this._attachIframe.style.height;
+				this._attachDiv.style.height = this._attachIframe.style.height;
 			}
 		}
+		this._resizeNotes();
 	}
 };
 
@@ -796,6 +790,19 @@ function() {
 	var str = vals.join("|");
 	str = str.replace(/\|+/, "|");
 	return str;
+};
+
+ZmApptTabViewPage.prototype._resizeNotes = 
+function() {
+	// init html editor heights
+	var rows = this.getHtmlElement().firstChild.rows;
+	var lastRowIdx = rows.length-1;
+	var rowHeight = 0;
+	for (var i = 0; i < lastRowIdx; i++)
+		rowHeight += Dwt.getSize(rows[i]).y;
+	rowHeight = this.getSize().y - rowHeight;
+	var fudge = this._composeMode == DwtHtmlEditor.HTML ? 75 : 15;
+	Dwt.setSize(this._bodyField, Dwt.DEFAULT, rowHeight-fudge);
 };
 
 

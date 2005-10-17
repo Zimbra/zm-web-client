@@ -200,13 +200,16 @@ function(isDraft) {
 
 ZmApptComposeView.prototype._controlListener = 
 function(ev) {
-	if (ev.oldHeight == ev.newHeight && ev.oldWidth == ev.newWidth)
+	var newWidth = ev.oldWidth == ev.newWidth ? null : ev.newWidth;
+	var newHeight = ev.oldHeight == ev.newHeight ? null : ev.newHeight;
+
+	if (newWidth == null && newHeight == null)
 		return;
 
 	if (this._tabs.getCurrentTab() == this._apptTabKey) {
-		this._apptTab.resize(ev.newWidth, ev.newHeight);
+		this._apptTab.resize(newWidth, newHeight);
 	} else {
-		this._scheduleTab.resize(ev.newWidth, ev.newHeight);
+		this._scheduleTab.resize(newWidth, newHeight);
 	}
 };
 
