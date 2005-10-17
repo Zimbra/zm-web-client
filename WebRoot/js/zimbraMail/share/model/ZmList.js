@@ -352,9 +352,10 @@ function(items) {
 * @param items		a list of items to move
 * @param folder		destination folder
 * @param attrs		additional attrs for SOAP command
+* @param callback
 */
 ZmList.prototype.moveItems =
-function(items, folder, attrs) {
+function(items, folder, attrs, callback) {
 	if (this.type == ZmList.MIXED && !this._mixedType) {
 		this._mixedAction("moveItems", [items, folder, attrs]);
 		return;
@@ -374,7 +375,7 @@ function(items, folder, attrs) {
 	attrs = attrs ? attrs : new Object();
 	attrs.l = folder.id;
 	
-	this._itemAction(items1, "move", attrs);
+	this._itemAction(items1, "move", attrs, callback);
 }
 
 
@@ -386,9 +387,10 @@ function(items, folder, attrs) {
 * @param items			list of items to delete
 * @param hardDelete		whether to force physical removal of items
 * @param attrs			additional attrs for SOAP command
+* @param callback		
 */
 ZmList.prototype.deleteItems =
-function(items, hardDelete, attrs) {
+function(items, hardDelete, attrs, callback) {
 	if (this.type == ZmList.MIXED && !this._mixedType) {
 		this._mixedAction("deleteItems", [items, hardDelete, attrs]);
 		return;
@@ -414,11 +416,11 @@ function(items, hardDelete, attrs) {
 
 	// soft delete - items moved to Trash
 	if (toMove.length)
-		this.moveItems(toMove, this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_TRASH), attrs);
+		this.moveItems(toMove, this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_TRASH), attrs, callback);
 
 	// hard delete - items actually deleted from data store
 	if (toDelete.length)
-		this._itemAction(toDelete, "delete", attrs);
+		this._itemAction(toDelete, "delete", attrs, callback);
 }
 
 /**

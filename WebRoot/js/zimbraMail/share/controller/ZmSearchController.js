@@ -202,15 +202,23 @@ function(callback) {
 /**
 * Performs the given search. It takes a ZmSearch, rather than constructing one out of the currently selected menu
 * choices. Aside from re-executing a search, it can be used to perform a canned search.
+*
+* @param search			[ZmSearch]			search object
+* @param callback		[AjxCallback]*		callback to run (rather than displaying results)
+* @param changes		[Object]*			hash of changes to make to search
+* @param rpcCallback	[AjxCallback]*		(async) client callback
+* @param errorCallback	[AjxCallback]*		(async) callback to run if there is an exception
 */
 ZmSearchController.prototype.redoSearch =
-function(search, callback, changes) {
+function(search, callback, changes, rpcCallback, errorCallback) {
 	search.callback = callback;
 	var newSearch;
 	if (changes) {
 		newSearch = new ZmSearch(this._appCtxt, search.query, search.types, search.sortBy,
 								 search.offset, search.limit, search.contactSource);
 		newSearch.callback = callback;
+		newSearch.rpcCallback = rpcCallback;
+		newSearch.errorCallback = errorCallback;
 		for (var key in changes) 
 			newSearch[key] = changes[key];
 	} else {

@@ -651,23 +651,20 @@ function(items) {
 // physically deleted
 ZmListController.prototype._doDelete =
 function(params) {
-	try {
-		this._list.deleteItems(params.items, params.hardDelete);
-		this._checkReplenish();
-	} catch (ex) {
-		this._handleException(ex, this._doDelete, params, false);
-	}
+	var respCallback = new AjxCallback(this, this._handleResponseDoDelete);
+	this._list.deleteItems(params.items, params.hardDelete, null, respCallback);
+}
+
+ZmListController.prototype._handleResponseDoDelete =
+function(result) {
+	this._checkReplenish();
 }
 
 // Move items to a different folder
 ZmListController.prototype._doMove =
 function(params) {
-	try {
-		this._list.moveItems(params.items, params.folder);
-		this._checkReplenish();
-	} catch (ex) {
-		this._handleException(ex, this._doMove, params, false);
-	}
+	var respCallback = new AjxCallback(this, this._handleResponseDoDelete);
+	this._list.moveItems(params.items, params.folder, null, respCallback);
 }
 
 // Modify an item

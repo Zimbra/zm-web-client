@@ -62,7 +62,7 @@ function() {
 // Override so that we can specify "tcon" attribute for conv move - we don't want
 // to move messages in certain system folders as a side effect
 ZmMailList.prototype.moveItems =
-function(items, folder) {
+function(items, folder, attrs, callback) {
 	if (this.type != ZmItem.CONV) {
 		ZmList.prototype.moveItems.call(this, items, folder);
 		return;
@@ -77,13 +77,14 @@ function(items, folder) {
 	var attrs = new Object();
 	attrs.tcon = chars.join("");
 	attrs.l = folder.id;
-	var callback = new AjxCallback(this, this._handleResponseMoveItems, folder);
-	this._itemAction(items, "move", attrs, callback);
+	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder, callback]);
+	this._itemAction(items, "move", attrs, respCallback);
 };
 
 ZmMailList.prototype._handleResponseMoveItems =
 function(args) {
 	var folder		= args.shift();
+	var callback	= args.shift();
 	var movedItems	= args.shift();
 	
 	if (movedItems && movedItems.length) {
@@ -92,19 +93,21 @@ function(args) {
 			movedItems[i].moveLocal(folder.id);
 		this._eventNotify(ZmEvent.E_MOVE, movedItems);
 	}
+	if (callback) callback.run();
 };
 
 // Override so that delete of a conv in Trash doesn't hard-delete its msgs in
 // other folders
 ZmMailList.prototype.deleteItems =
-function(items, folder) {
-	var attrs = null;
+function(items, folder, attrs, callback) {
 	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
 		var searchFolder = this.search ? this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(this.search.folderId) : null;
-		if (searchFolder && searchFolder.isInTrash())
-			attrs = {tcon: ZmFolder.TCON_CODE[ZmFolder.ID_TRASH]};
+		if (searchFolder && searchFolder.isInTrash()) {
+			if (!attrs) attrs = {};
+			attrs.tcon = ZmFolder.TCON_CODE[ZmFolder.ID_TRASH];
+		}
 	}
-	ZmList.prototype.deleteItems.call(this, items, folder, attrs);
+	ZmList.prototype.deleteItems.call(this, items, folder, attrs, callback);
 };
 
 ZmMailList.prototype.markRead =
