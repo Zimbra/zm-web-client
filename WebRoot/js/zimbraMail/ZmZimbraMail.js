@@ -129,6 +129,8 @@ ZmZimbraMail._LOGOFF_ID	= 3;
 
 ZmZimbraMail._OVERVIEW_ID = "ZmZimbraMail";
 
+ZmZimbraMail.IGNORE_ERRORS = "_ignore_";
+
 ZmZimbraMail.DEFAULT_PANELS = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 
 // Data
@@ -315,7 +317,8 @@ function(settings) {
 * Sends a request to the CSFE and processes the response. Notifications and
 * refresh blocks that come in the response header are handled. Also handles
 * exceptions by default, though the caller can pass in a special callback to
-* run for exceptions.
+* run for exceptions. To ignore exceptions, pass in ZmZimbraMail.IGNORE_ERRORS
+* as the value for the error callback.
 *
 * @param soapDoc		[AjxSoapDoc]	SOAP document that represents the request
 * @param asyncMode		[boolean]		if true, request will be made asynchronously
@@ -356,9 +359,11 @@ function(args) {
 		response = asyncMode ? result.getResponse() : result;
 	} catch (ex) {
 		if (errorCallback) {
-			var handled = errorCallback.run(ex);
-			if (!handled)
-				this._handleException(ex);
+			if (errorCallback != ZmZimbraMail.IGNORE_ERRORS) {
+				var handled = errorCallback.run(ex);
+				if (!handled)
+					this._handleException(ex);
+			}
 		} else {
 			this._handleException(ex);
 		}
@@ -1044,7 +1049,7 @@ ZmZimbraMail.prototype._doPoll =
 function() {
 	this._pollActionId = null; // so we don't try to cancel
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-	this.sendRequest(soapDoc, true, null, {all: true});
+	this.sendRequest(soapDoc, true, null, ZmZimbraMail.IGNORE_ERRORS);
 }
 
 ZmZimbraMail._userEventHdlr =
