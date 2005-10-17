@@ -35,7 +35,6 @@ function ZmCalScheduleView(parent, posStyle, dropTgt) {
 	ZmCalBaseView.call(this, parent, className, posStyle, view);
 	this.setScrollStyle(DwtControl.CLIP);	
 	this._needFirstLayout = true;
-	this.__colorIndex = 0;
 }
 
 ZmCalScheduleView.prototype = new ZmCalBaseView;
@@ -82,6 +81,7 @@ function(isDouble) {
 			return isDouble ? AjxDateUtil.MONTH : AjxDateUtil.WEEK;
 			break;
 		case ZmController.CAL_DAY_VIEW:
+		case ZmController.CAL_SCHEDULE_VIEW:
 		default:
 			return isDouble ? AjxDateUtil.WEEK : AjxDateUtil.DAY;
 			break;		
@@ -385,6 +385,7 @@ function() {
 	for (var i =0; i < this._numCalendars; i++) {
 		var cal = this._cals[i] = {
 			index: i,
+			cal: this._calendars[i],
 			titleId: Dwt.getNextId(),
 			headingDaySepDivId: Dwt.getNextId(),
 			daySepDivId: Dwt.getNextId(),
@@ -472,8 +473,9 @@ function()
 {
 	var numDays = this.getNumDays();
 	if (numDays == 1) {
-		var date = this._date;	
-		this._title = AjxDateUtil.MONTH_LONG[date.getMonth()] + " " + date.getDate(); // + ", " + date.getFullYear();
+		var date = this._date;
+		this._title = ((this._scheduleMode) ? AjxDateUtil.WEEKDAY_LONG[date.getDay()]+", " : "") +
+							AjxDateUtil.MONTH_LONG[date.getMonth()] + " " + date.getDate();
 	} else {
 		var first = this._days[0].date;
 		var last = this._days[numDays-1].date;
@@ -589,8 +591,9 @@ function(appt, div) {
 
 // for the new appt when drag selecting time grid
 ZmCalScheduleView.prototype._populateNewApptHtml =
-function(div, allDay) {
-	var color = ZmCalBaseView.COLORS[this._calController.getCalendarColor(this._calController.getDefaultCalendarFolderId())];
+function(div, allDay, folderId) {
+	if (folderId == null) folderId = this._calController.getDefaultCalendarFolderId();
+	var color = ZmCalBaseView.COLORS[this._calController.getCalendarColor(folderId)];
 	var prop = allDay ? "_newAllDayApptColor" : "_newApptColor";
 	if (this[prop] && this[prop] == color) return div;
 	else this[prop] = color;
@@ -1071,10 +1074,15 @@ function(apptDiv, x, y) {
 ZmCalScheduleView.prototype._sizeAppt =
 function(apptDiv, w, h) {
 	// set outer as well as inner
-	Dwt.setSize(	apptDiv,	w + ZmCalScheduleView._APPT_WIDTH_FUDGE, h); // no fudge for you
+	var fw =	 w + ZmCalScheduleView._APPT_WIDTH_FUDGE; // no fudge for you
+	var fh = h;
+	Dwt.setSize(	apptDiv,	fw >= 0 ? fw : 0, fh >= 0 ? fh : 0);
+
 	// get the inner div that should be sized and set its width/height
 	var apptBodyDiv = Dwt.getDomObj(this.getDocument(), apptDiv.id + "_body");
-	Dwt.setSize(	apptBodyDiv, w + ZmCalScheduleView._APPT_WIDTH_FUDGE, h + ZmCalScheduleView._APPT_HEIGHT_FUDGE);
+	fw = w + ZmCalScheduleView._APPT_WIDTH_FUDGE;
+	fh = h + ZmCalScheduleView._APPT_HEIGHT_FUDGE;
+	Dwt.setSize(	apptBodyDiv, fw >= 0 ? fw : 0, fh >= 0 ? fh : 0);
 }
 
 ZmCalScheduleView.prototype._layoutAppt =
@@ -1129,6 +1137,17 @@ function(x) {
 	return null;
 }
 
+ZmCalScheduleView.prototype._getColFromX =
+function(x) {
+	var sched = this._scheduleMode && this._numCalendars > 0;
+	var num = sched ? this._numCalendars : this.getNumDays();
+	for (var i =0; i < num; i++) {
+		var col = sched ? this._cals[i] : this._days[i];
+		if (x >= col.apptX && x <= col.apptX+col.apptWidth) return col;
+	}		
+	return null;
+}
+
 ZmCalScheduleView.prototype._getLocationForDate =
 function(d) {
 	var h = d.getHours();
@@ -1151,14 +1170,14 @@ function(appt) {
 }
 
 ZmCalScheduleView.prototype._getBoundsForDate =
-function(d, duration) {
+function(d, duration, col) {
 	var durationMinutes = duration / 1000 / 60;
 	var h = d.getHours();
 	var m = d.getMinutes();
-	var day = this._getDayForDate(d);
-	if (day == null) return null;
-	return new DwtRectangle(day.apptX, ((h+m/60) * ZmCalScheduleView._HOUR_HEIGHT), 
-					day.apptWidth, (ZmCalScheduleView._HOUR_HEIGHT / 60) * durationMinutes);
+	if (col == null) col = this._getDayForDate(d);
+	if (col == null) return null;
+	return new DwtRectangle(col.apptX, ((h+m/60) * ZmCalScheduleView._HOUR_HEIGHT), 
+					col.apptWidth, (ZmCalScheduleView._HOUR_HEIGHT / 60) * durationMinutes);
 }
 
 ZmCalScheduleView.prototype._getBoundsForCalendar =
@@ -1173,36 +1192,38 @@ function(d, duration, folderId) {
 }
 
 ZmCalScheduleView.prototype._getBoundsForAllDayDate =
-function(startDate, endDate) {
-	var startDay = this._getDayForDate(startDate);
-	var endDay = this._getDayForDate(endDate);
-	if (startDay == null || endDay == null) return null;
-	return new DwtRectangle(startDay.allDayX, 0, 
-						(endDay.allDayX + endDay.allDayWidth) - startDay.allDayX - ZmCalScheduleView._DAY_SEP_WIDTH-1, ZmCalScheduleView._ALL_DAY_APPT_HEIGHT);
+function(startSnap, endSnap) {
+	if (startSnap == null || endSnap == null) return null;
+	return new DwtRectangle(startSnap.col.allDayX, 0, 
+			(endSnap.col.allDayX + endSnap.col.allDayWidth) - startSnap.col.allDayX - ZmCalScheduleView._DAY_SEP_WIDTH-1, 
+			ZmCalScheduleView._ALL_DAY_APPT_HEIGHT);
 }
 
 // snapXY coord to specified minute boundary (15,30)
+// return x, y, col 
 ZmCalScheduleView.prototype._snapXY =
 function(x, y, snapMinutes, roundUp) {
 	// snap it to grid
-	var day = this._getDayFromX(x);
-	if (day == null) return null;
-	x = day.apptX;
+	var col = this._getColFromX(x);
+	//SV var day = this._getDayFromX(x);
+	if (col == null) return null;
+	x = col.apptX;
 	var height = (snapMinutes/60) * ZmCalScheduleView._HOUR_HEIGHT;
 	y = Math.floor(y/height) * height;
 	if (roundUp) y += height;
-	return {x:x, y:y};	
+	return {x:x, y:y, col:col};	
 }
 
-
 // snapXY coord to specified minute boundary (15,30)
+// return x, y, col 
 ZmCalScheduleView.prototype._snapAllDayXY =
 function(x, y) {
 	// snap it to grid
-	var day = this._getDayFromX(x);
-	if (day == null) return null;
-	x = day.allDayX;
-	return {x:x, y:0};	
+	var col = this._getColFromX(x);	
+	//SV var day = this._getDayFromX(x);
+	if (col == null) return null;
+	x = col.allDayX;
+	return {x:x, y:0, col:col};
 }
 
 ZmCalScheduleView.prototype._getDateFromXY =
@@ -1451,7 +1472,6 @@ function(ev, div) {
 	}
 }
 
-
 ZmCalScheduleView.prototype._mouseUpAction =
 function(ev, div) {
 	ZmCalBaseView.prototype._mouseUpAction.call(this, ev, div);
@@ -1655,8 +1675,10 @@ function(ev) {
 	if (snap != null && (snap.x != data.snap.x || snap.y != data.snap.y)) {
 		var newDate = data.view._getDateFromXY(snap.x, snap.y, 30);
 		//DBG.println("new Date = "+newDate);
-		if (newDate != null && newDate.getTime() != data.startDate.getTime()) {
-			var bounds = data.view._getBoundsForDate(newDate, data.appt._orig.getDuration());
+		if (newDate != null && 
+			(!(data.view._scheduleMode && snap.col != data.snap.col)) && // don't allow col moves in sched view
+			newDate.getTime() != data.startDate.getTime()) {
+			var bounds = data.view._getBoundsForDate(newDate, data.appt._orig.getDuration(), data.snap.col);
 			data.view._layoutAppt(null, data.apptEl, bounds.x, bounds.y, bounds.width, bounds.height);
 			data.startDate = newDate;
 			data.snap = snap;
@@ -1887,15 +1909,18 @@ function(ev, gridEl, gridLoc, isAllDay) {
 // called when DND is confirmed after threshold
 ZmCalScheduleView.prototype._gridDndBegin =
 function(data) {
+	var col = data.view._getColFromX(data.gridX);
+	var folderId = col ? col.cal.id : null;
+
 	if (data.isAllDay) {
 		data.gridEl.style.cursor = 'e-resize';	
 		data.newApptDivEl = Dwt.getDomObj(data.view.getDocument(), data.view._newAllDayApptDivId);
-		data.view._populateNewApptHtml(data.newApptDivEl, true);		
+		data.view._populateNewApptHtml(data.newApptDivEl, true, folderId);		
 		data.apptBodyEl = Dwt.getDomObj(data.view.getDocument(), data.newApptDivEl.id + "_body");	
 	} else {
 		data.gridEl.style.cursor = 's-resize';	
 		data.newApptDivEl = Dwt.getDomObj(data.view.getDocument(), data.view._newApptDivId);
-		data.view._populateNewApptHtml(data.newApptDivEl);
+		data.view._populateNewApptHtml(data.newApptDivEl, false, folderId);
 		data.apptBodyEl = Dwt.getDomObj(data.view.getDocument(), data.newApptDivEl.id + "_body");
 		data.endTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDivEl.id +"_et");
 		data.startTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDivEl.id +"_st");
@@ -1961,7 +1986,7 @@ function(ev) {
 		var duration = (data.endDate.getTime() - data.startDate.getTime());
 		if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;
 
-		var bounds = data.view._getBoundsForDate(data.startDate, duration);
+		var bounds = data.view._getBoundsForDate(data.startDate, duration, newStart.col);
 		if (bounds == null) return false;
 		data.view._layoutAppt(null, e, newStart.x, newStart.y, bounds.width, bounds.height);
 		Dwt.setVisible(e, true);
@@ -2043,7 +2068,7 @@ function(ev) {
 
 	if (newStart == null || newEnd == null) return false;
 
-	if ((data.start == null) || (data.start.x != newStart.x) || (data.end.x != newEnd.x)) {
+	if ((data.start == null) || (!data.view._scheduleMode && ((data.start.x != newStart.x) || (data.end.x != newEnd.x)))) {
 
 		if (!data.dndStarted) data.dndStarted = true;
 
@@ -2056,7 +2081,7 @@ function(ev) {
 		var e = data.newApptDivEl;
 		if (!e) return;
 
-		var bounds = data.view._getBoundsForAllDayDate(data.startDate, data.endDate);
+		var bounds = data.view._getBoundsForAllDayDate(data.start, data.end);
 		if (bounds == null) return false;
 		// blank row at the bottom
 		var y = data.view._allDayDivHeight - (ZmCalScheduleView._ALL_DAY_APPT_HEIGHT+ZmCalScheduleView._ALL_DAY_APPT_HEIGHT_PAD);
