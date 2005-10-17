@@ -121,7 +121,11 @@ function(viewName) {
 		this._calTreeController = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
 		if (this._calTreeController != null) {
 			this._calTreeController.addSelectionListener(ZmZimbraMail._OVERVIEW_ID,  new AjxListener(this, this._calTreeSelectionListener));
-			//this._calTreeController.getTreeView(ZmZimbraMail._OVERVIEW_ID).addChangeListener(new AjxListener(this, this._calTreeChangeListener));
+			var calTree = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
+			if (calTree) {
+				calTree.addChangeListener(new AjxListener(this, this._calTreeChangeListener));			
+			}
+
 			// add change listener
 		}
 	}
@@ -254,7 +258,8 @@ function(ev) {
 
 ZmCalViewController.prototype._calTreeChangeListener =
 function(ev) {
-	DBG.println("wheee!");
+	// TODO: check only for color/name changes?
+	this._refreshAction(true);
 }
 
 ZmCalViewController.prototype.getCalendar =
