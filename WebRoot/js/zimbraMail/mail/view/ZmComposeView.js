@@ -483,6 +483,9 @@ function(bEnableInputs) {
 	
 	// enable/disable input fields
 	this.enableInputs(bEnableInputs);
+
+	// reset state of the spell check button
+	this._app.getComposeController()._toolbar.getButton(ZmOperation.SPELL_CHECK).setToggled(false);
 }
 
 /**

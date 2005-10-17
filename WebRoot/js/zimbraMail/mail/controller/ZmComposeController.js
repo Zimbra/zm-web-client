@@ -504,11 +504,39 @@ function(ev) {
 	this._composeView.addSignature();
 }
 
-ZmComposeController.prototype._spellCheckListener = 
-function(ev) {
-	// TODO
-	DBG.println("TODO! haha");
-}
+ZmComposeController.prototype._spellCheckCallback = function(args) {
+	if (args._isException)
+		throw args;
+	var words = args._data.Body.CheckSpellingResponse;
+	if (!words.available)
+		throw new AjxException("Server-side spell checker is not available.");
+	words = words.misspelled;
+	if (!words || words.length == 0) {
+		// alert("Spell checking didn't found any misspelled words.");
+		var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
+		spellCheckButton.setToggled(false);
+	} else
+		this._composeView.getHtmlEditor().highlightMisspelledWords(words);
+};
+
+ZmComposeController.prototype._spellCheckListener = function(ev) {
+	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
+	if (spellCheckButton.isToggled()) {
+		if (this._composeView.getComposeMode() == DwtHtmlEditor.TEXT) {
+			alert("Spell Checking is not yet implemented for text emails.  Please switch to HTML first.");
+			spellCheckButton.setToggled(false);
+			return;
+		}
+		var text = this._composeView.getHtmlEditor().getTextVersion();
+		var soap = AjxSoapDoc.create("CheckSpellingRequest", "urn:zimbraMail");
+		soap.getMethod().appendChild(soap.getDoc().createTextNode(text));
+		var cmd = new ZmCsfeCommand();
+		var callback = new AjxCallback(this, this._spellCheckCallback);
+		cmd.invoke({ soapDoc : soap, asyncMode : true, callback : callback });
+	} else {
+		this._composeView.getHtmlEditor().discardMisspelledWords();
+	}
+};
 
 ZmComposeController.prototype._settingsChangeListener =
 function(ev) {
