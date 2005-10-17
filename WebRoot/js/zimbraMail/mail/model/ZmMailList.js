@@ -59,12 +59,19 @@ function() {
 	return "ZmMailList";
 };
 
-// Override so that we can specify "tcon" attribute for conv move - we don't want
-// to move messages in certain system folders as a side effect
+/*
+* Override so that we can specify "tcon" attribute for conv move - we don't want
+* to move messages in certain system folders as a side effect
+*
+* @param items		[Array]			a list of items to move
+* @param folder		[ZmFolder]		destination folder
+* @param attrs		[Object]		additional attrs for SOAP command
+* @param callback	[AjxCallback]	async callback
+*/
 ZmMailList.prototype.moveItems =
 function(items, folder, attrs, callback) {
 	if (this.type != ZmItem.CONV) {
-		ZmList.prototype.moveItems.call(this, items, folder);
+		ZmList.prototype.moveItems.call(this, items, folder, attrs, callback);
 		return;
 	}
 	
@@ -96,8 +103,15 @@ function(args) {
 	if (callback) callback.run();
 };
 
-// Override so that delete of a conv in Trash doesn't hard-delete its msgs in
-// other folders
+/*
+* Override so that delete of a conv in Trash doesn't hard-delete its msgs in
+* other folders.
+*
+* @param items			[Array]			list of items to delete
+* @param hardDelete		[boolean]		whether to force physical removal of items
+* @param attrs			[Object]		additional attrs for SOAP command
+* @param callback		[AjxCallback]	async callback
+*/
 ZmMailList.prototype.deleteItems =
 function(items, folder, attrs, callback) {
 	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {

@@ -145,16 +145,18 @@ function(address) {
 /**
 * Deletes contacts after checking that this is not a GAL list.
 *
-* @param items			list of contacts to delete
-* @param hardDelete		whether to force physical removal of contacts
+* @param items		[Array]			list of contacts to delete
+* @param hardDelete	[boolean]		whether to force physical removal of items
+* @param attrs		[Object]		hash of additional attrs for SOAP command
+* @param callback	[AjxCallback]	async callback
 */
 ZmContactList.prototype.deleteItems =
-function(items, hardDelete) {
+function(items, hardDelete, attrs, callback) {
 	if (this.isGal) {
 		DBG.println(AjxDebug.DBG1, "Cannot delete GAL contacts");
 		return;
 	}
-	ZmList.prototype.deleteItems.call(this, items, hardDelete);
+	ZmList.prototype.deleteItems.call(this, items, hardDelete, attrs, callback);
 }
 
 /**

@@ -349,10 +349,10 @@ function(items) {
 * results are moved, they will disappear from the view, even though they may still satisfy the
 * search.</p>
 *
-* @param items		a list of items to move
-* @param folder		destination folder
-* @param attrs		additional attrs for SOAP command
-* @param callback
+* @param items		[Array]			a list of items to move
+* @param folder		[ZmFolder]		destination folder
+* @param attrs		[Object]		additional attrs for SOAP command
+* @param callback	[AjxCallback]	async callback
 */
 ZmList.prototype.moveItems =
 function(items, folder, attrs, callback) {
@@ -384,10 +384,10 @@ function(items, folder, attrs, callback) {
 * moves it to the Trash (soft delete). However, if it's already in the Trash,
 * it will be removed from the data store (hard delete).
 *
-* @param items			list of items to delete
-* @param hardDelete		whether to force physical removal of items
-* @param attrs			additional attrs for SOAP command
-* @param callback		
+* @param items			[Array]			list of items to delete
+* @param hardDelete		[boolean]		whether to force physical removal of items
+* @param attrs			[Object]		additional attrs for SOAP command
+* @param callback		[AjxCallback]	async callback
 */
 ZmList.prototype.deleteItems =
 function(items, hardDelete, attrs, callback) {
