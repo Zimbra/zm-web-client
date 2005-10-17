@@ -59,6 +59,7 @@ function ZmAppt(appCtxt, list, noinit) {
 	this.attachments = null;
 	this.timezone = ZmTimezones.getDefault();
 	this._viewMode = ZmAppt.MODE_NEW;
+	this.folderId = ZmFolder.ID_CALENDAR;	
 }
 
 ZmAppt.prototype = new ZmItem;
@@ -176,6 +177,11 @@ function() {
 ZmAppt.prototype.getFolderId = 
 function() {
 	return this.folderId || ZmFolder.ID_CALENDAR;
+}
+
+ZmAppt.prototype.setFolderId = 
+function(folderId) {
+	this.folderId = folderId;
 }
 
 ZmApptClone = function() { }
@@ -1301,6 +1307,10 @@ function(soapDoc, method,  attachmentId) {
 
 	m.setAttribute("d", new Date().getTime());
 
+	if (this.folderId != ZmFolder.ID_CALENDAR) {
+		m.setAttribute("l", this.folderId);
+	}
+
 	var inv = soapDoc.set("inv", null, m);
 	switch (method) {
 		case ZmAppt.SOAP_METHOD_REQUEST: inv.setAttribute('method', "REQUEST"); break;
@@ -1308,6 +1318,7 @@ function(soapDoc, method,  attachmentId) {
 	}
 	
 	inv.setAttribute("type", "event");
+
 
 	if (this.isOrganizer()) {
 		this._addAttendeesToSoap(soapDoc, inv, m);
@@ -1352,6 +1363,7 @@ function(soapDoc, method,  attachmentId) {
 		inv.setAttribute("loc", this.location);
 	}
 
+	
 	var org = soapDoc.set("or", null, inv);
 	// TODO: make attendees list, a list of ZmEmailAddresses.
 	// org.setAttribute("d",

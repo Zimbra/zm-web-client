@@ -1910,17 +1910,17 @@ function(ev, gridEl, gridLoc, isAllDay) {
 ZmCalScheduleView.prototype._gridDndBegin =
 function(data) {
 	var col = data.view._getColFromX(data.gridX);
-	var folderId = col ? col.cal.id : null;
+	data.folderId = col ? col.cal.id : null;
 
 	if (data.isAllDay) {
 		data.gridEl.style.cursor = 'e-resize';	
 		data.newApptDivEl = Dwt.getDomObj(data.view.getDocument(), data.view._newAllDayApptDivId);
-		data.view._populateNewApptHtml(data.newApptDivEl, true, folderId);		
+		data.view._populateNewApptHtml(data.newApptDivEl, true, data.folderId);		
 		data.apptBodyEl = Dwt.getDomObj(data.view.getDocument(), data.newApptDivEl.id + "_body");	
 	} else {
 		data.gridEl.style.cursor = 's-resize';	
 		data.newApptDivEl = Dwt.getDomObj(data.view.getDocument(), data.view._newApptDivId);
-		data.view._populateNewApptHtml(data.newApptDivEl, false, folderId);
+		data.view._populateNewApptHtml(data.newApptDivEl, false, data.folderId);
 		data.apptBodyEl = Dwt.getDomObj(data.view.getDocument(), data.newApptDivEl.id + "_body");
 		data.endTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDivEl.id +"_et");
 		data.startTimeEl = Dwt.getDomObj(this.getDocument(), data.newApptDivEl.id +"_st");
@@ -2013,11 +2013,11 @@ function(ev) {
 		data.gridEl.style.cursor = 'auto';
 		Dwt.setVisible(data.newApptDivEl, false);		
 		if (data.isAllDay) {
-			data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAllDayAppointmentHelper(data.startDate, data.endDate);		
+			data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAllDayAppointmentHelper(data.startDate, data.endDate, data.folderId);		
 		} else {
 			var duration = (data.endDate.getTime() - data.startDate.getTime());
 			if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;	
-			data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAppointmentHelper(data.startDate, duration);			
+			data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAppointmentHelper(data.startDate, duration, data.folderId);
 		}
 	}
 

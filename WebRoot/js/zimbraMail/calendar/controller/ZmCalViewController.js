@@ -492,7 +492,7 @@ function(ev) {
 }
 
 ZmCalViewController.prototype._newApptObject = 
-function(startDate, duration) {
+function(startDate, duration, folderId) {
 	var newAppt = new ZmAppt(this._appCtxt);
 	newAppt.name = ZmMsg.newAppt;
 	newAppt.setStartDate(AjxDateUtil.roundTimeMins(startDate, 30));
@@ -501,6 +501,7 @@ function(startDate, duration) {
 	newAppt.resetRepeatMonthlyDayList();
 	newAppt.repeatYearlyMonthsList = startDate.getMonth();
 	newAppt.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[startDate.getDay()];	
+	if (folderId) newAppt.setFolderId(folderId);
 	return newAppt;
 }
 
@@ -628,13 +629,13 @@ function(message, mode) {
 };
 
 ZmCalViewController.prototype.newAppointmentHelper = 
-function(startDate, optionalDuration) {
-	this.newAppointment(this._newApptObject(startDate, optionalDuration));
+function(startDate, optionalDuration, folderId) {
+	this.newAppointment(this._newApptObject(startDate, optionalDuration, folderId));
 };
 
 ZmCalViewController.prototype.newAllDayAppointmentHelper = 
-function(startDate, endDate) {
-	var appt = this._newApptObject(startDate);
+function(startDate, endDate, folderId) {
+	var appt = this._newApptObject(startDate, null, folderId);
 	if (endDate) appt.setEndDate(endDate);
 	appt.setAllDayEvent(true);
 	this.newAppointment(appt);
