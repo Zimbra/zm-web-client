@@ -25,7 +25,7 @@
   <condition property="ajax.dir" value="../Ajax">
     <not><isset property="env.AJAX_DIR"/></not>
   </condition>	
-  <condition property="plat.tag" value="FC4">
+  <condition property="plat.tag" value="">
     <not><isset property="plat.tag"/></not>
   </condition>	
 
