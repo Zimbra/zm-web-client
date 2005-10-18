@@ -69,12 +69,12 @@ function() {
 };
 
 ZmApptComposeView.prototype.set =
-function() {
-	this._apptTab.initialize();
-	this._scheduleTab.initialize();
-	
+function(appt) {
 	// always switch to appointment tab
 	this._tabs.switchToTab(this._apptTabKey);
+
+	this._apptTab.initialize(appt);
+	this._scheduleTab.initialize(appt);
 };
 
 ZmApptComposeView.prototype.cleanup = 
@@ -151,6 +151,11 @@ function(tabKey) {
 		this._apptTab.enableInputs(true);
 		this._apptTab.reEnableDesignMode();
 	}
+};
+
+ZmApptComposeView.prototype.getAppt = 
+function(attId) {
+	return this._apptTab.getAppt(attId);
 };
 
 
@@ -232,6 +237,7 @@ function(ev) {
 */
 function ZmSchedTabViewPage(parent, appCtxt, className, posStyle) {
 	DwtTabViewPage.call(this, parent, className, posStyle);
+	this.setScrollStyle(Dwt.SCROLL);
 	this._appCtxt = appCtxt;
 	this._rendered = false;
 };
@@ -251,7 +257,9 @@ function() {
 };
 
 ZmSchedTabViewPage.prototype.initialize = 
-function() {
+function(appt) {
+	this._appt = appt;
+
 	// TODO
 	if (!this._rendered) {
 		DBG.println("TODO: schedule tab view page - initialize!");
@@ -295,6 +303,18 @@ function(newWidth, newHeight) {
 
 ZmSchedTabViewPage.prototype._createHTML = 
 function() {
-	// TODO
-	this.getHtmlElement().innerHTML = "TODO";
+	var start = new Date(this._appt.getStartDate().getTime());
+	start.setSeconds(0);
+	start.setHours(0);
+	start.setMinutes(0);
+	var end = new Date(start.getTime() + (24*60*60*1000));
+	end.setHours(0);
+	end.setMinutes(0);
+	end.setSeconds(0);
+
+	this._fbView = new ZmFreeBusyView(this, null, start, end, (new ZmAppt()));
+	this._fbView.enable();
+	var dims = this.parent.getSize();
+	this.setSize(Dwt.DEFAULT, dims.y-30);
+	this._fbView.setSize(Dwt.DEFAULT, dims.y-30);
 };

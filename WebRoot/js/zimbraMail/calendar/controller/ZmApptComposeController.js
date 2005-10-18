@@ -50,7 +50,7 @@ function() {
 // Public methods
 
 ZmApptComposeController.prototype.show =
-function() {
+function(appt) {
 	if (!this._toolbar)
 		this._createToolBar();
 
@@ -64,10 +64,10 @@ function() {
 	    this._app.createView(ZmController.APPOINTMENT_VIEW, elements, callbacks);
 	}
 
-	this._setFormatBtnItem();
+	this._setFormatBtnItem(true);
 
 	this._app.pushView(ZmController.APPOINTMENT_VIEW, true);
-	this._apptView.set();
+	this._apptView.set(appt);
 	this._apptView.reEnableDesignMode();
 };
 
@@ -92,6 +92,13 @@ function() {
 ZmApptComposeController.prototype.getToolbar = 
 function() {
 	return this._toolbar;
+};
+
+ZmApptComposeController.prototype.saveAppt = 
+function(attId) {
+	var appt = this._apptView.getAppt(attId);
+	if (appt)
+		this._schedule(this._doSave, {appt: appt, attId: attId});
 };
 
 
@@ -134,7 +141,7 @@ function() {
 
 // inits check mark for menu item depending on compose mode preference
 ZmApptComposeController.prototype._setFormatBtnItem = 
-function() {
+function(skipNotify) {
 	// based on preference, set the compose mode
 	var bComposeEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
@@ -142,7 +149,7 @@ function() {
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-	formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, composeMode);
+	formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, composeMode, skipNotify);
 };
 
 
@@ -153,12 +160,13 @@ ZmApptComposeController.prototype._saveListener =
 function(ev) {
 	var popView = true;
 	if (this._apptView.isDirty()) {
+		popView = false;
 		// check if all fields are populated w/ valid values
 		if (this._apptView.isValid()) {
-			// TODO:
-			// - send request to save appointment
+			this.saveAppt();
 		} else {
-			popView = false;
+			// TODO: show error dialog for now? 
+			//       until we get proper error handling mechanism
 		}
 	}
 
@@ -212,8 +220,18 @@ function(ev) {
 
 // Callbacks
 
+ZmApptComposeController.prototype._doSave = 
+function(params) {
+	try {
+		params.appt.save(this._appCtxt.getAppController(), params.attId);
+		this._apptView.cleanup();	// always cleanup the views
+		this._app.popView(true);	// force pop view
+	} catch(ex) {
+		this._handleException(ex, this._doSave, params, false);
+	}
+};
+
 // Called as: Yes, save as draft
-//			  Yes, go ahead and cancel
 ZmApptComposeController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
@@ -221,8 +239,7 @@ function() {
 	this._apptView.cleanup();
 };
 
-// Called as: No, don't save as draft
-//			  No, don't cancel
+// Called as: No, don't cancel
 ZmApptComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();

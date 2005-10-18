@@ -41,10 +41,10 @@ ZmApptTabViewPage.UPLOAD_FIELD_NAME = "attUpload";
 ZmApptTabViewPage.ATTACH_IFRAME_NAME = Dwt.getNextId();
 
 ZmApptTabViewPage.SHOWAS_OPTIONS = [
-	{ label: ZmMsg.free, 				value: "free", 	selected: false 	},
-	{ label: ZmMsg.replyTentative, 		value: "tentative", selected: false },
-	{ label: ZmMsg.busy, 				value: "busy", 	selected: true },
-	{ label: ZmMsg.outOfOffice,			value: "out", 	selected: false }];
+	{ label: ZmMsg.free, 				value: "F", 	selected: false },
+	{ label: ZmMsg.replyTentative, 		value: "T", 	selected: false },
+	{ label: ZmMsg.busy, 				value: "B", 	selected: true  },
+	{ label: ZmMsg.outOfOffice,			value: "O", 	selected: false }];
 
 ZmApptTabViewPage.REPEAT_OPTIONS = [
 	{ label: ZmMsg.none, 				value: "NON", 	selected: true 	},
@@ -63,27 +63,77 @@ function() {
 		this.parent.tabSwitched(this._tabKey);
 };
 
+ZmApptTabViewPage.prototype.getAppt = 
+function(attId) {
+	// attempt to submit attachments first!
+	if (!attId && this._gotAttachments()) {
+		this._submitAttachments();
+		return null;
+	}
+
+	// create a copy of the appointment so we dont muck w/ the original
+	var appt = ZmAppt.quickClone(this._appt);
+
+	// save field values of this view w/in given appt
+	appt.setName(this._subjectField.value);
+	appt.location = this._locationField.value;
+	appt.freeBusy = this._showAsSelect.getValue();
+
+	// set the start date by aggregating start date/time fields
+	var startDate = this._startDateField.value;
+	var endDate = this._endDateField.value;
+	if (this._allDayCheckbox.checked) {
+		appt.setAllDayEvent(true);
+	} else {
+		startDate = startDate + " " + this._startTimeSelect.getValue();
+		endDate = endDate + " " + this._endTimeSelect.getValue();
+	}
+	appt.setStartDate(startDate);
+	appt.setEndDate(endDate);
+	this.repeatType = this._repeatSelect.getValue();
+
+	// set the notes parts (always add text part)
+	var top = new ZmMimePart();
+	if (this._composeMode == DwtHtmlEditor.HTML) {
+		top.setContentType(ZmMimeTable.MULTI_ALT);
+
+		// create two more mp's for text and html content types
+		var textPart = new ZmMimePart(this._appCtxt);
+		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
+		textPart.setContent(this._notesHtmlEditor.getTextVersion());
+		top.children.add(textPart);
+
+		var htmlPart = new ZmMimePart(this._appCtxt);
+		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
+		htmlPart.setContent(this._notesHtmlEditor.getContent());
+		top.children.add(htmlPart);
+	} else {
+		top.setContentType(ZmMimeTable.TEXT_PLAIN);
+		top.setContent(this._notesHtmlEditor.getContent());
+	}
+	appt.attendees = this._attendeesField.value;
+	appt.notesTopPart = top;
+	
+	// TODO: SET RECURRENCE!!!
+
+	return appt;
+};
+
 ZmApptTabViewPage.prototype.initialize =
-function() {
+function(appt) {
+	this._appt = appt;
+
 	if (!this._rendered) {
 		this._createHTML();
 		this._rendered = true;
 		this.setComposeMode();
 	}
-	this._reset();
-};
 
-ZmApptTabViewPage.prototype._reset = 
-function() {
-	// reset the date/time values based on current time
-	this._startDateField.value = this._endDateField.value = AjxDateUtil.simpleComputeDateStr(new Date());
-	this._resetTimeSelect();
-
-	// re-enable all input fields
-	this.enableInputs(true);
-	
-	// set focus to first input element
-	this._subjectField.focus();
+	if (appt.getViewMode() != ZmAppt.MODE_NEW) {
+		this._populate(appt);
+	}  else {
+		this._reset();
+	}
 };
 
 ZmApptTabViewPage.prototype.cleanup = 
@@ -92,6 +142,9 @@ function() {
 		this._recurDialog.clearState();
 		this._recurDialogRepeatValue = null;
 	}
+	
+	delete this._appt;
+	this._appt = null;
 
 	// clear out all input fields
 	this._subjectField.value = "";
@@ -102,16 +155,13 @@ function() {
 	
 	// reinit non-time sensitive selects option values
 	this._calendarSelect.setSelectedValue("personal");
-	this._showAsSelect.setSelectedValue(ZmApptTabViewPage.SHOWAS_OPTIONS[0].value);
+	this._showAsSelect.setSelectedValue(ZmApptTabViewPage.SHOWAS_OPTIONS[2].value);
 	this._repeatSelect.setSelectedValue(ZmApptTabViewPage.REPEAT_OPTIONS[0].value);
 	this._allDayCheckbox.checked = false;
 	this._showTimeFields(true);
 
 	// remove attachments if any were added
 	this._removeAllAttachments();
-
-	// reset compose view to html preference
-	this.setComposeMode(this._defaultComposeMode);
 
 	// disable all input fields
 	this.enableInputs(false);
@@ -141,7 +191,7 @@ function() {
 
 ZmApptTabViewPage.prototype.isValid = 
 function() {
-	DBG.prinln("TODO: check if all fields in appointment view tab are valid");
+	DBG.println("TODO: check if all fields in appointment view tab are valid");
 	return true;
 };
 
@@ -241,6 +291,28 @@ function(newWidth, newHeight) {
 
 
 // Private / protected methods
+
+ZmApptTabViewPage.prototype._reset = 
+function() {
+	// reset the date/time values based on current time
+	this._startDateField.value = this._endDateField.value = AjxDateUtil.simpleComputeDateStr(new Date());
+	this._resetTimeSelect();
+
+	// re-enable all input fields
+	this.enableInputs(true);
+
+	// reset compose view to html preference
+	this.setComposeMode(this._defaultComposeMode);
+	
+	// set focus to first input element
+	this._subjectField.focus();
+};
+
+ZmApptTabViewPage.prototype._populate =
+function(appt) {
+	// TODO: populate fields w/ given ZmAppt.
+	DBG.println("TODO: populate fields w/ given ZmAppt.");
+};
 
 ZmApptTabViewPage.prototype._createHTML = 
 function() {
@@ -573,12 +645,11 @@ function() {
 	var contactsApp = shell ? shell.getData(ZmAppCtxt.LABEL).getApp(ZmZimbraMail.CONTACTS_APP) : null;
 	var contactsList = contactsApp ? contactsApp.getContactList : null;
 	var locCallback = new AjxCallback(this, this._getAcListLoc, this);
-	var compCallback = new AjxCallback(this, this._handleAutoCompleteData);
 
 	this._autocomplete = new ZmAutocompleteListView(this._appCtxt.getShell(), null, 
-														  contactsApp, contactsList, 
-														  ZmContactList.AC_VALUE_EMAIL, 
-														  locCallback, compCallback);
+													contactsApp, contactsList, 
+													ZmContactList.AC_VALUE_EMAIL, 
+													locCallback);
 	this._autocomplete.handle(this._attendeesField);
 };
 
@@ -683,11 +754,11 @@ function() {
 		var i = 0;
 		html[i++] = "<html><head><style type='text/css'>";
 		html[i++] = "P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON { font-family: Tahoma, Arial, Helvetica, sans-serif;	font-size:11px; }";
-		html[i++] = "</style></head><body scroll=no bgcolor='#EEEEEE'><form style='margin:0;padding:0' method='POST' enctype='multipart/form-data' action='";
+		html[i++] = "</style></head><body scroll=no bgcolor='#EEEEEE'><form style='margin:0;padding:0' method='POST' action='";
 		html[i++] = (location.protocol + "//" + doc.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI));
 		html[i++] = "' id='";
 		html[i++] = this._uploadFormId;
-		html[i++] = "'><div id='";
+		html[i++] = "' enctype='multipart/form-data'><div id='";
 		html[i++] = this._attachDivId;
 		html[i++] = "' style='overflow:auto'></div></form></body></html>";
 		idoc.write(html.join(""));
@@ -698,8 +769,9 @@ function() {
 // Returns true if any of the attachment fields are populated
 ZmApptTabViewPage.prototype._gotAttachments =
 function() {
-	var attachIframe = Dwt.getDomObj(this.getDocument(), ZmApptTabViewPage.ATTACH_IFRAME_NAME);
-	var idoc = attachIframe ? Dwt.getIframeDoc(attachIframe) : null;
+	if (this._attachIframe == null)
+		this._attachIframe = Dwt.getDomObj(this.getDocument(), ZmApptTabViewPage.ATTACH_IFRAME_NAME);
+	var idoc = this._attachIframe ? Dwt.getIframeDoc(this._attachIframe) : null;
 	var atts = idoc ? idoc.getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME) : [];
 
 	for (var i = 0; i < atts.length; i++)
@@ -803,6 +875,37 @@ function() {
 	rowHeight = this.getSize().y - rowHeight;
 	var fudge = this._composeMode == DwtHtmlEditor.HTML ? 75 : 15;
 	Dwt.setSize(this._bodyField, Dwt.DEFAULT, rowHeight-fudge);
+};
+
+ZmApptTabViewPage.prototype._submitAttachments =
+function() {
+	var callback = new AjxCallback(this, this._attsDoneCallback);
+	var um = this._appCtxt.getUploadManager();
+	window._uploadManager = um;
+	um.execute(this._attachIframe, callback, this._uploadFormId);
+	
+/*	var attCon = null;
+	if (AjxEnv.isIE) {
+		attCon = this._iframe;
+	} else {
+		var iframe = document.getElementById(this._navIframeId);
+		iframe.style.display = "block";
+		var uploadForm = document.getElementById(this._uploadFormId);
+		var idoc = Dwt.getIframeDoc(iframe);
+		idoc.body.appendChild(uploadForm);
+		attCon = iframe;
+	}
+*/
+/*
+	var iframe = document.getElementById(this._iframeId);
+	var callback = new AjxCallback(this, this._uploadDone);
+	var uploadManager = this._appCtxt.getUploadManager();
+	this._uploadFailedCallback = failedCb;
+	this._uploadSuccessCallback = successCb;
+	window._uploadManager = uploadManager;
+	this._attNeedRefresh = true;
+	uploadManager.execute(iframe, callback, this._uploadFormId);
+*/
 };
 
 
@@ -944,6 +1047,18 @@ function(ev) {
 		return (new DwtPoint(loc.x, loc.y+height));
 	}
 	return null;
+};
+
+ZmApptTabViewPage.prototype._attsDoneCallback =
+function(args) {
+	DBG.println(AjxDebug.DBG1, "Attachments: status = " + args[0] + ", attId = " + args[1]);
+	if (args[0] == 200) {
+		this._removeAllAttachments();
+		var acc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getApptComposeController();
+		acc.saveAppt(args[1]);
+	} else {
+		DBG.println(AjxDebug.DBG1, "attachment error: " + args[0]);
+	}
 };
 
 

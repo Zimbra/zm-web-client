@@ -411,7 +411,7 @@ function(type, componentId) {
 		msg.isInviteReply = true;
 		var replyBody = this._getInviteReplyBody(type);
 		if (replyBody != null) {
-			var top = new ZmMimePart(this._appCtxt);
+			var top = new ZmMimePart();
 			top.setContentType(ZmMimeTable.TEXT_PLAIN);
 			var dummyAppt = new ZmAppt(this._appCtxt);
 			dummyAppt.setFromMessage(msg._origMsg);

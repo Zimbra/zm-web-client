@@ -648,17 +648,16 @@ function(startDate, endDate, folderId) {
 
 ZmCalViewController.prototype.newAppointment = 
 function(newAppt) {
+	var appt = newAppt || this._newApptObject(new Date());
+
 	if (this._appCtxt.get(ZmSetting.NEW_APPOINTMENT_VIEW)) {
-		this._app.getApptComposeController().show();
+		this._app.getApptComposeController().show(appt);
 	} else {
-		if (newAppt == null) {
-			newAppt = this._newApptObject(new Date());
-		}
 		// Create a new appointment
-		newAppt.__creating = true;
+		appt.__creating = true;
 		this._getAppointmentDialog();
 		this._apptDialog.setTitle(ZmMsg.appointmentNewTitle);
-		this._popupAppointmentDialog(newAppt, ZmAppt.MODE_NEW);
+		this._popupAppointmentDialog(appt, ZmAppt.MODE_NEW);
 	}
 };
 

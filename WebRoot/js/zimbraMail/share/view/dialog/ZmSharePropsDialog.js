@@ -339,7 +339,7 @@ ZmSharePropsDialog.prototype._generateXmlPart = function(folder, share) {
 		"</share>"
 	].join("\n");
 
-	var mimePart = new ZmMimePart(this._appCtxt);
+	var mimePart = new ZmMimePart();
 	mimePart.setContentType(ZmMimeTable.XML_ZIMBRA_SHARE);
 	mimePart.setContent(content);
 	return mimePart;

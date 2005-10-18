@@ -1353,7 +1353,7 @@ ZmFreeBusyView.prototype._setSliderBounds = function (startCell, duration, cellW
 	if (AjxEnv.isIE) {
 		topTwoRowsHeight = 26
 	}
-	slider.style.height = (tableSize.y - topTwoRowsHeight) + "px";
+	slider.style.height = Math.max((tableSize.y - topTwoRowsHeight),0) + "px";
 	var hours = this._getViewHours();
 	var numCells = (hours * 2) + 1;
 	var widthInCells = this._durationToCellNumRelativeToStart(duration, startCell);

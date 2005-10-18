@@ -28,33 +28,31 @@ function ZmAppt(appCtxt, list, noinit) {
 	if (noinit) return;
 
 	this._evt = new ZmEvent(ZmEvent.S_APPT);
-	this.id = -1;
-	this.uid = -1;
+	this.id = this.uid = -1;
 	this.type = null;
 	this.name = "";
 	this.startDate = new Date();
 	this.endDate = new Date(this.startDate.getTime() + (30*60*1000));
 	this.transparency = "FR";
-	this.allDayEvent = '0';
-	this.exception = false;
-	this.recurring = false;
-	this.alarm = false;
-	this.otherAttendees = false;
+	this.freeBusy = "B"; 														// Free/Busy status (F|B|T|O) (free/busy/tentative/outofoffice)
+	this.allDayEvent = "0";
+	this.exception = this.recurring = this.alarm = this.otherAttendees = false;
 	this.location = "";
-	this.notes = "";
-	this.repeatType = "NON"; // This maps to frequency in the createAppt call.
-	this.repeatCustom = '0';  // 1|0
-	this.repeatCustomCount = 1; // ival
-	this.repeatCustomType = 'S'; // (S)pecific, (O)rdinal
+	this.notes = ""; 															// XXX: DEPRACATED
+	this.notesTopPart = null; 													// ZmMimePart containing children w/ different message parts
+	this.repeatType = "NON"; 													// maps to "freq" in the createAppt call.
+	this.repeatCustom = "0";  													// 1|0
+	this.repeatCustomCount = 1; 												// ival
+	this.repeatCustomType = 'S'; 												// (S)pecific, (O)rdinal
 	this.repeatCustomOrdinal = "1";
-	this.repeatCustomDayOfWeek = "SU"; //(DAY|WEEKDAY|WEEKEND)|((SUNDAY|MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY))
+	this.repeatCustomDayOfWeek = "SU"; 											// (DAY|WEEKDAY|WEEKEND) | (SUNDAY|MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY)
 	this.repeatCustomMonthDay = this.startDate.getDate();
-	this.repeatWeeklyDays = null; //SU|MO|TU|WE|TH|FR|SA
+	this.repeatWeeklyDays = null; 												//SU|MO|TU|WE|TH|FR|SA
 	this.repeatMonthlyDayList = null;
 	this.repeatYearlyMonthsList = '1';
 	this.repeatEnd = null;
-	this.repeatEndDate = null; // maps to until
-	this.repeatEndCount = 1; // this will map count ( when there is no end date specified )
+	this.repeatEndDate = null; 													// maps to "until"
+	this.repeatEndCount = 1; 													// maps to "count" (when there is no end date specified)
 	this.repeatEndType = 'N';
 	this.attachments = null;
 	this.timezone = ZmTimezones.getDefault();
@@ -65,34 +63,38 @@ function ZmAppt(appCtxt, list, noinit) {
 ZmAppt.prototype = new ZmItem;
 ZmAppt.prototype.constructor = ZmAppt;
 
-ZmAppt.MODE_NEW = 1;
-ZmAppt.MODE_EDIT = 2;
-ZmAppt.MODE_EDIT_SINGLE_INSTANCE = 3;
-ZmAppt.MODE_EDIT_SERIES = 4;
-ZmAppt.MODE_DELETE = 5;
-ZmAppt.MODE_DELETE_INSTANCE = 6;
-ZmAppt.MODE_DELETE_SERIES = 7;
+// Consts
 
-ZmAppt.EDIT_NO_REPEAT = 1;
-ZmAppt.EDIT_TIME = 2;
-ZmAppt.EDIT_TIME_REPEAT = 3;
+ZmAppt.MODE_NEW 					= 1;
+ZmAppt.MODE_EDIT 					= 2;
+ZmAppt.MODE_EDIT_SINGLE_INSTANCE 	= 3;
+ZmAppt.MODE_EDIT_SERIES 			= 4;
+ZmAppt.MODE_DELETE 					= 5;
+ZmAppt.MODE_DELETE_INSTANCE 		= 6;
+ZmAppt.MODE_DELETE_SERIES 			= 7;
 
-ZmAppt.SOAP_METHOD_REQUEST = 1;
-ZmAppt.SOAP_METHOD_REPLY = 2;
-ZmAppt.SOAP_METHOD_CANCEL = 3;
+ZmAppt.EDIT_NO_REPEAT 				= 1;
+ZmAppt.EDIT_TIME 					= 2;
+ZmAppt.EDIT_TIME_REPEAT 			= 3;
 
-ZmAppt.ATTENDEES_SEPARATOR_REGEX = /[;,]/;
-ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE = "; ";
+ZmAppt.SOAP_METHOD_REQUEST 			= 1;
+ZmAppt.SOAP_METHOD_REPLY 			= 2;
+ZmAppt.SOAP_METHOD_CANCEL 			= 3;
 
-ZmAppt.STATUS_TENTATIVE = "TENT";
-ZmAppt.STATUS_CONFIRMED = "CONF";
-ZmAppt.STATUS_CANCELLED = "CANC";
+ZmAppt.ATTENDEES_SEPARATOR_REGEX 	= /[;,]/;
+ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE= "; ";
 
-ZmAppt.PSTATUS_NEEDS_ACTION = "NE";
-ZmAppt.PSTATUS_TENTATIVE = "TE";
-ZmAppt.PSTATUS_ACCEPT = "AC";
-ZmAppt.PSTATUS_DECLINED = "DE";
-ZmAppt.PSTATUS_DELEGATED = "DG";
+ZmAppt.STATUS_TENTATIVE 			= "TENT";
+ZmAppt.STATUS_CONFIRMED 			= "CONF";
+ZmAppt.STATUS_CANCELLED 			= "CANC";
+
+ZmAppt.PSTATUS_NEEDS_ACTION 		= "NE";
+ZmAppt.PSTATUS_TENTATIVE 			= "TE";
+ZmAppt.PSTATUS_ACCEPT 				= "AC";
+ZmAppt.PSTATUS_DECLINED 			= "DE";
+ZmAppt.PSTATUS_DELEGATED 			= "DG";
+
+ZmAppt.MODIFIED 					= "[MODIFIED]";
 
 ZmAppt.SERVER_DAYS_TO_DISPLAY = {
 	SU: "Sunday",
@@ -104,12 +106,12 @@ ZmAppt.SERVER_DAYS_TO_DISPLAY = {
 	SAT: "Saturday"
 };
 
-ZmAppt.SERVER_WEEK_DAYS = ["SU","MO","TU", "WE", "TH", "FR", "SA","SU"];
+ZmAppt.SERVER_WEEK_DAYS = ["SU", "MO", "TU", "WE", "TH", "FR", "SA", "SU"];
 ZmAppt.NOTES_SEPARATOR = "\n\n*~*~*~*~*~*~*~*~*~*\n\n";
 ZmAppt.NOTES_SEPARATOR_REGEX = /\s*\*~\*~\*~\*~\*~\*~\*~\*~\*~\*\s*/;
 
 ZmAppt._statusString = {
-	TE: ZmMsg.tentative,
+	TE:   ZmMsg.tentative,
 	CONF: ZmMsg.confirmed,
 	CANC: ZmMsg.cancelled
 };
@@ -122,14 +124,79 @@ ZmAppt._pstatusString = {
 	DG: ZmMsg.delegated
 };
 
+
 ZmAppt.prototype.toString = 
 function() {
 	return "ZmAppt: name="+this.name+" sd="+this.getStartDate()+" ed="+this.getEndDate()+" id=" + this.id;
 }
 
+
+// Getters
+
+ZmAppt.prototype.getViewMode 					= function() { return this._viewMode; };
+ZmAppt.prototype.getStatus 						= function() { return this.status; };
+ZmAppt.prototype.getParticipationStatus 		= function() { return this.ptst; };
+ZmAppt.prototype.getStatusString 				= function() { return ZmAppt._statusString[this.status]; };
+ZmAppt.prototype.getParticipationStatusString 	= function() { return ZmAppt._pstatusString[this.ptst]; };
+ZmAppt.prototype.getFolderId 					= function() { return this.folderId || ZmFolder.ID_CALENDAR; };
+ZmAppt.prototype.getId 							= function() { return this.id; }; 					// mail item id on appt instance
+ZmAppt.prototype.getInvId 						= function() { return this.invId; }; 				// default mail item invite id on appt instance
+ZmAppt.prototype.getUniqueId =
+function() {
+	// return unique (across recurrance) id, by using getUid()+"/"+getStartTime()
+	if (this._uniqId == null)
+		this._uniqId = Dwt.getNextId();
+	return (this.id + "_" + this._uniqId);
+};
+ZmAppt.prototype.getUniqueStartTime 			= function() { return this._uniqStartTime; }; 		// returns unique start time for an instance of recurring appt
+ZmAppt.prototype.getUid 						= function() { return this.uid; }; 					// iCal uid of appt
+ZmAppt.prototype.getType 						= function() { return this.type; };					// type of appt (event|todo)
+ZmAppt.prototype.getName 						= function() { return this.name; }; 				// name (aka Subject) of appt
+ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
+ZmAppt.prototype.getOrigStartDate 				= function() { return this._origStartDate || this.startDate; };
+ZmAppt.prototype.getOrigStartTime 				= function() { return this.getOrigStartDate().getTime(); };
+ZmAppt.prototype.getStartDate 					= function() { return this.startDate; };
+ZmAppt.prototype.getEndDate 					= function() { return this.endDate; };
+ZmAppt.prototype.getStartTime 					= function() { return this.startDate.getTime(); }; 	// start time in ms
+ZmAppt.prototype.getEndTime 					= function() { return this.endDate.getTime(); }; 	// end time in ms
+ZmAppt.prototype.getTransparency 				= function() { return this.transparency; }; 		// transparency (free|busy|oof|tent)
+ZmAppt.prototype.getLocation 					= function() { return this.location; };
+ZmAppt.prototype.getNotes 						= function() { return this.notes; }; 				// XXX: DEPRACATED
+ZmAppt.prototype.getOrganizer 					= function() { return this.organizer || ""; };
+ZmAppt.prototype.getAttendees 					= function() { return this.attendees || ""; };
+ZmAppt.prototype.getAttendeeAddrs 				= function() { return this._attAddresses ? this._attAddresses.getArray() : null; };
+ZmAppt.prototype.isAllDayEvent 					= function() { return this.allDayEvent == "1"; };
+ZmAppt.prototype.isException 					= function() { return this.exception; };
+ZmAppt.prototype.isRecurring 					= function() { return this.recurring; };
+ZmAppt.prototype.isOrganizer 					= function() { return (typeof(this.isOrg) === 'undefined') || (this.isOrg == true); };
+ZmAppt.prototype.isReadOnly 					= function() { return !this.isOrganizer(); };
+ZmAppt.prototype.hasAlarm 						= function() { return this.alarm; };
+ZmAppt.prototype.hasOtherAttendees 				= function() { return this.otherAttendees; };
+ZmAppt.prototype.hasAttachments 				= function() { return this.getAttachments() != null; };
+ZmAppt.prototype.hasDetails 					= function() { return this.getMessage() != null; };
+
+// Setters
+
+ZmAppt.prototype.setFolderId 					= function(folderId) { this.folderId = folderId; };
+ZmAppt.prototype.setType 						= function(newType) { this.type = newType; };
+ZmAppt.prototype.setName 						= function(newName) { this.name = newName; };
+ZmAppt.prototype.setStartDate =
+function(startDate) {
+	if (this._origStartDate == null && this.startDate != null) {
+		this._origStartDate = new Date(this.startDate.getTime());
+	}
+	this.startDate = new Date(startDate);
+	this._resetCached();
+};
+ZmAppt.prototype.setEndDate 					= function(endDate) { this.endDate = new Date(endDate); this._resetCached(); };
+ZmAppt.prototype.setAllDayEvent 				= function(isAllDay) { this.allDayEvent = isAllDay ? "1" : "0"; };
+
+
+// Public methods
+
 /**
- * This method sets the view mode, and resets any other fields
- * that should not be set for that view mode.
+ * This method sets the view mode, and resets any other fields that should not 
+ * be set for that view mode.
  */
 ZmAppt.prototype.setViewMode = 
 function(mode) {
@@ -149,59 +216,26 @@ function(mode) {
 	}
 };
 
-ZmAppt.prototype.getViewMode = 
-function() {
-	return this._viewMode;
-};
-
-ZmAppt.prototype.getStatus = 
-function() {
-	return this.status;
-};
-
-ZmAppt.prototype.getStatusString = 
-function() {
-	return ZmAppt._statusString[this.status];
-};
-
-ZmAppt.prototype.getParticipationStatus = 
-function() {
-	return this.ptst;
-};
-
-ZmAppt.prototype.getParticipationStatusString = 
-function() {
-	return ZmAppt._pstatusString[this.ptst];
-};
-
-ZmAppt.prototype.getFolderId = 
-function() {
-	return this.folderId || ZmFolder.ID_CALENDAR;
-}
-
-ZmAppt.prototype.setFolderId = 
-function(folderId) {
-	this.folderId = folderId;
-}
-
+/**
+ * Used to make our own copy because the form will modify the date object by 
+ * calling its setters instead of replacing it with a new date object.
+*/
 ZmApptClone = function() { }
-
 ZmAppt.quickClone = 
 function(appt) {
-	//return appt.clone();
 	ZmApptClone.prototype = appt;
+
 	var newAppt = new ZmApptClone();
-	// Note: Make our own copy because the form will modify the date object
-	//		 by calling its setters instead of replacing it with a new date
-	//		 object.
 	newAppt.startDate = new Date(appt.startDate.getTime());
 	newAppt.endDate = new Date(appt.endDate.getTime());
 	newAppt._uniqId = Dwt.getNextId();
 	if (newAppt._orig == null) 
 		newAppt._orig = appt;
+
 	return newAppt;
 }
 
+/* XXX: DEPRECATED
 ZmAppt.prototype.clone = 
 function() {
 	var newAppt = new ZmAppt(this._appCtxt, this.list, true);
@@ -217,125 +251,26 @@ function() {
 	}
 	newAppt._resetCached();	
 	return newAppt;
-};
-
-// Class methods
+};*/
 
 /**
-* Compares two appts. sort by (starting date, duration)
-* sort methods.
-*
-* @param a		an appt
-* @param b		an appt
+ * Walks the notesParts array looking for the first part that matches given 
+ * content type
 */
-ZmAppt.compareByTimeAndDuration =
-function(a, b) {
-	if (a.getStartTime() > b.getStartTime()) 	return 1;
-	if (a.getStartTime() < b.getStartTime()) 	return -1;
-	if (a.getDuration() < b.getDuration()) 		return 1;
-	if (a.getDuration() > b.getDuration()) 		return -1;
-	return 0;
-}
-
-// Public methods
-
-/*
- * mail item id on appt instance
- */
-ZmAppt.prototype.getId =
-function() {
-	return this.id;
-}
-
-/*
- * default mail item invite id on appt instance
- */
-ZmAppt.prototype.getInvId =
-function() {
-	return this.invId;
-}
-
-/*
- * return unique (across recurrance) id, by using getUid()+"/"+getStartTime()
- */
-ZmAppt.prototype.getUniqueId =
-function() {
-	if (this._uniqId == null) this._uniqId = Dwt.getNextId();
-	return this.id+"_"+this._uniqId;
-}
-
-/**
- * returns the unique start time for an instance of a recurring appointment.
- */
-ZmAppt.prototype.getUniqueStartTime =
-function() {
-	return this._uniqStartTime;
-};
-
-/*
- * iCal uid of appt
- */
-ZmAppt.prototype.getUid =
-function() {
-	return this.uid;
-}
-
-ZmAppt.prototype.setType =
-function(newType) {
-	this.type = newType;
-}
-
-/*
- * type of appt (event|todo)
- */
-ZmAppt.prototype.getType =
-function() {
-	return this.type;
-}
-
-ZmAppt.prototype.setName =
-function(newName) {
-	this.name = newName;
-}
-/*
- * name (aka Subject) of appt
- */
-ZmAppt.prototype.getName =
-function() {
-	return this.name;
-}
-
-/*
- * duration in milliseconds
- */
-ZmAppt.prototype.getDuration =
-function() {
-	return this.getEndTime() - this.getStartTime();
-}
-
-ZmAppt.prototype.getOrigStartDate = 
-function() {
-	return this._origStartDate || this.startDate;
-};
-
-ZmAppt.prototype.getOrigStartTime =
-function() {
-	return this.getOrigStartDate().getTime();
-};
-
-ZmAppt.prototype.setStartDate =
-function(startDate) {
-	if (this._origStartDate == null && this.startDate != null) {
-		this._origStartDate = new Date(this.startDate.getTime());
+ZmAppt.prototype.getNotesPart = 
+function(contentType) {
+	if (this.notesTopPart) {
+		// default to text/html part if no content type given
+		var ct = contentType || ZmMimeTable.TEXT_PLAIN;
+		var topChildren = this.notesTopPart.children.getArray();
+	
+		for (var i = 0; i < topChildren.length; i++) {
+			if (topChildren[i].ct == contentType)
+				return topChildren[i];
+		}
 	}
-	this.startDate = new Date(startDate);
-	this._resetCached();
-}
-ZmAppt.prototype.setEndDate =
-function(endDate) {
-	this.endDate = new Date(endDate);
-	this._resetCached();
-}
+	return null;
+};
 
 ZmAppt.prototype.resetRepeatWeeklyDays = 
 function() {
@@ -345,20 +280,6 @@ function() {
 ZmAppt.prototype.resetRepeatMonthlyDayList = 
 function() {
 	this.repeatMonthlyDayList = [this.startDate.getDate()];
-};
-
-ZmAppt.prototype._resetCached =
-function() {
-	delete this._validAttachments;
-	delete this.tooltip;
-};
-
-/*
- * start time in milliseconds
- */
-ZmAppt.prototype.getStartTime =
-function() {
-	return this.startDate.getTime();
 };
 
 ZmAppt.prototype.isOverlapping =
@@ -371,7 +292,6 @@ function(other, checkFolder) {
 	var oet = other.getEndTime();
 	
 	return (tst < oet) && (tet > ost);
-	//return (tst >= ost && tst < oet) || (tet > ost && tet < oet);
 };
 
 ZmAppt.prototype.isInRange =
@@ -399,87 +319,17 @@ function(startTime, endTime) {
 	return (tet <= endTime && tet > startTime);
 };
 
-/*
- * start time as a date
- */
-ZmAppt.prototype.getStartDate =
-function() {
-	return this.startDate;
-};
-
-/*
- * end time in milliseconds
- */
-ZmAppt.prototype.getEndTime =
-function() {
-	return this.endDate.getTime();
-};
-
-/*
- * start time as a date
- */
-ZmAppt.prototype.getEndDate =
-function() {
-	return this.endDate;
-};
-
 ZmAppt.prototype.setDateRange = 
 function (rangeObject, instance, parentValue, refPath) {
 	var s = rangeObject.startDate;
 	var e = rangeObject.endDate;
 	this.endDate.setTime(rangeObject.endDate.getTime());
 	this.startDate.setTime(rangeObject.startDate.getTime());
-	//this._createRangeIfNecessary();
-// 	this._rangeObj.startDate.setTime(s.getTime());
-// 	this._rangeObj.endDate.setTime(e.getTime());
-// 	this.startDate.setTime(s.getTime());
-// 	this.endDate.setTime(e.getTime());	
-};
-
-ZmAppt.prototype._createRangeIfNecessary = 
-function() {
- 	if (this._rangeObj == null) {
-		this._rangeObj = new Object();
-		this._rangeObj.startDate = new Date();
-		this._rangeObj.endDate = new Date();
-	}
 };
 
 ZmAppt.prototype.getDateRange = 
 function(instance, current, refPath) {
-	//this._createRangeIfNecessary();
 	return { startDate:this.startDate, endDate: this.endDate };
-// 	if (this.startDate.getTime() != this._rangeObj.startDate.getTime()) {
-// 		this._rangeObj.startDate.setTime(this.startDate.getTime());
-// 	} 
-// 	if (this.getEndDate().getTime() != this.$rangeObj.endDate.getTime()) {
-// 		this.$rangeObj.endDate.setTime(this.getEndDate().getTime());
-// 	}
-// 	return this.$rangeObj;
-};
-
-/*
- * transparancy (free|busy|oof|tent
- */
-ZmAppt.prototype.getTransparency =
-function() {
-	return this.transparency;
-};
-
-/*
- * true if all day event
- */
-ZmAppt.prototype.isAllDayEvent =
-function() {
-	return this.allDayEvent == "1";
-};
-
-/*
- * set is all day
- */
-ZmAppt.prototype.setAllDayEvent =
-function(isAllDay) {
-	this.allDayEvent = isAllDay ? "1" : "0";
 };
 
 /*
@@ -492,67 +342,11 @@ function() {
 	return (sd.getDate() != ed.getDate()) || (sd.getMonth() != ed.getMonth()) || (sd.getFullYear() != ed.getFullYear());
 };
 
-/*
- * true if all day event
- */
-ZmAppt.prototype.isException =
-function() {
-	return this.exception;
-};
-
-/*
- * true if is recurring
- */
-ZmAppt.prototype.isRecurring =
-function() {
-	return this.recurring;
-};
-
-/*
- * true if has alarm
- */
-ZmAppt.prototype.hasAlarm =
-function() {
-	return this.alarm;
-};
-
-/*
- * true if other attendees
- */
-ZmAppt.prototype.hasOtherAttendees =
-function() {
-	return this.otherAttendees;
-};
-
-ZmAppt.prototype.getLocation =
-function() {
-	return this.location;
-};
-
-ZmAppt.prototype.getNotes = 
-function() {
-	return this.notes;
-};
-
-ZmAppt.prototype.getOrganizer =
-function() {
-	return this.organizer || "";
-};
-
-ZmAppt.prototype.isOrganizer = 
-function() {
-	return ( (typeof(this.isOrg) === 'undefined') || (this.isOrg == true) );
-};
-
-ZmAppt.prototype.getAttendees =
-function() {
-	return this.attendees || "";
-};
-
 /**
  * accepts a comma delimeted string of ids
  */
-ZmAppt.prototype.setAttachments = function (ids){
+ZmAppt.prototype.setAttachments = 
+function(ids) {
 	if (ids != null && ids.length > 0) {
 		var ids = ids.split(',');
 		this.attachments = new Array();
@@ -603,126 +397,6 @@ function() {
 	return h+":"+ms+ampm;
 };
 
-ZmAppt._getTTHour =
-function(d) {
-	var h = d.getHours();
-	var m = d.getMinutes();	
-	var ampm = h < 12 ? "am" : "pm";
-	if (h < 13) {
-		if (h == 0)
-			h = 12;
-	} else {
-		h -= 12;
-	}
-
-	//var hs = h;
-	//if (h<10) hs = "0"+hs;
-	var ms = m;
-	if (m < 10) ms = "0"+ms;
-
-	return h+":"+ms+ampm;
-};
-
-// TODO: i18n/l10n
-ZmAppt.prototype._getTTDay =
-function(d) {
-	return (d.getMonth()+1)+"/"+d.getDate();
-};
-
-/**
-* Returns HTML for a tool tip for this appt.
-*/
-ZmAppt.prototype.getToolTip =
-function(calController) {
-	// update/null if modified
-	if (this._orig) return this._orig.getToolTip(calController);
-
-	if (!this._toolTip) {
-		var html = new Array(20);
-		var idx = 0;
-		
-		var when = this.getDurationText(false, false);
-				
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 >";
-		html[idx++] = "<tr valign='center'><td colspan='2' align='left'>";
-		html[idx++] = "<div style='border-bottom: 1px solid black;'>";
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
-		html[idx++] = "<tr valign='center'>";
-		//html[idx++] = "<td><b>" + AjxStringUtil.htmlEncode(this.getName()) + "</b></td>";
-		html[idx++] = "<td><b>";
-		
-		// IMGHACK - added outer table for new image changes...
-		html[idx++] = "<div style='white-space:nowrap'><table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
-		if (this.hasOtherAttendees()) 
-			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptMeeting") + "</td>";
-			
-		if (this.isException()) 
-			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptException") + "</td>";
-		else if (this.isRecurring()) 
-			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptRecur") + "</td>";
-			
-//		if (this.hasAlarm()) 
-//			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptReminder") + "</td>";
-
-		html[idx++] = "</tr></table>";
-		
-		html[idx++] = "&nbsp;"+AjxStringUtil.htmlEncode(this.getName());
-		html[idx++] = "&nbsp;</div></b></td>";	
-		html[idx++] = "<td align='right'>";
-
-		var cal = null;
-		if ((this.getFolderId() != ZmOrganizer.ID_CALENDAR) && calController) {
-			var cal = calController.getCalendar(this.getFolderId());
-		}
-
-		if (	cal && cal.link)
-			html[idx++] = AjxImg.getImageHtml("GroupSchedule");
-		else	
-			html[idx++] = AjxImg.getImageHtml("Appointment");
-					
-		html[idx++] = "</td>";
-		html[idx++] = "</table></div></td></tr>";
-		//idx = this._addEntryRow("Subject", this.getName(), html, idx);
-		//idx = this._addEntryRow(ZmMsg.meetingStatus, this.getStatusString(), html, idx, false);
-
-		if (cal) {
-			idx = this._addEntryRow(ZmMsg.calendar, cal.getName(), html, idx, false);
-		}
-
-		if (this.hasOtherAttendees()) {
-			idx = this._addEntryRow(ZmMsg.status, this.getParticipationStatusString(), html, idx, false);		
-		}
-		idx = this._addEntryRow(ZmMsg.when, when, html, idx, false);		
-		idx = this._addEntryRow(ZmMsg.location, this.getLocation(), html, idx, false);
-		idx = this._addEntryRow(ZmMsg.notes, this.getNotes(), html, idx, true, "250");
-
-		html[idx++] = "</table>";
-		this._toolTip = html.join("");
-	}
-	return this._toolTip;
-};
-
-// Adds a row to the tool tip.
-ZmAppt.prototype._addEntryRow =
-function(field, data, html, idx, wrap, width) {
-	if (data != null && data != "") {
-		html[idx++] = "<tr valign='top'><td align='right' style='padding-right: 5px;'><b><div style='white-space:nowrap'>";
-		html[idx++] = AjxStringUtil.htmlEncode(field) + ":";
-		html[idx++] = "</div></b></td><td align='left'><div style='white-space:";
-		html[idx++] = wrap ? "wrap;" : "nowrap;";
-		if (width) html[idx++] = "width:"+width+"px;";
-		html[idx++] = "'>";
-		html[idx++] = AjxStringUtil.htmlEncode(data);
-		html[idx++] = "</div></td></tr>";
-	}
-	return idx;
-};
-
-ZmAppt.prototype.hasAttachments = 
-function() {
-	return this.getAttachments() != null;
-};
-
 ZmAppt.prototype.getAttachments = 
 function() {
 	var m = this.getMessage();	
@@ -742,26 +416,18 @@ function() {
 
 ZmAppt.prototype.clearDetailsCache = 
 function() {
-	this._message = null;
-	// the series message should never change
+	this._message = null; // the series message should never change
 };
 
 ZmAppt.prototype.getMessage = 
 function() {
-	return this._viewMode == ZmAppt.MODE_EDIT_SERIES ?
-		 this._seriesMessage : this._message;
+	return this._viewMode == ZmAppt.MODE_EDIT_SERIES ? this._seriesMessage : this._message;
 };
 
 ZmAppt.prototype.setMessage = 
 function(message) {
-	if (this._viewMode != ZmAppt.MODE_EDIT_SERIES) {
+	if (this._viewMode != ZmAppt.MODE_EDIT_SERIES)
 		this._message = message;
-	}
-};
-
-ZmAppt.prototype.hasDetails = 
-function() {
-	return this.getMessage() != null;
 };
 
 ZmAppt.prototype.getUniqueStartDate = 
@@ -798,18 +464,6 @@ function(viewMode, callback, errorCallback) {
 		message = seriesMode ? this._seriesMessage : this._message;
 		this.setFromMessage(message, mode);
 	}
-};
-
-ZmAppt.prototype._handleResponseGetDetails =
-function(args) {
-	var mode		= args.shift();
-	var message		= args.shift();
-	var callback	= args.shift();
-	var result		= args.shift();
-	
-	// msg content should be text, so no need to pass callback to setFromMessage()
-	this.setFromMessage(message, mode);
-	if (callback) callback.run(result);
 };
 
 ZmAppt.prototype.setFromMessage = 
@@ -856,9 +510,388 @@ function(message, viewMode) {
 			this.getRecurrenceDisplayString();
 		}
 		this._currentlyLoaded = message;
-		this.notes = message.getTextPart();
+		this.notes = message.getTextPart(); // XXX: this.notes is DEPRACATED
 		this._trimNotesSummary();
 	}
+};
+
+/**
+* Returns HTML for a tool tip for this appt.
+*/
+ZmAppt.prototype.getToolTip =
+function(calController) {
+	// update/null if modified
+	if (this._orig) return this._orig.getToolTip(calController);
+
+	if (!this._toolTip) {
+		var html = new Array(20);
+		var idx = 0;
+		
+		var when = this.getDurationText(false, false);
+				
+		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 >";
+		html[idx++] = "<tr valign='center'><td colspan='2' align='left'>";
+		html[idx++] = "<div style='border-bottom: 1px solid black;'>";
+		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
+		html[idx++] = "<tr valign='center'>";
+		html[idx++] = "<td><b>";
+		
+		// IMGHACK - added outer table for new image changes...
+		html[idx++] = "<div style='white-space:nowrap'><table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
+		if (this.hasOtherAttendees()) 
+			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptMeeting") + "</td>";
+			
+		if (this.isException()) 
+			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptException") + "</td>";
+		else if (this.isRecurring()) 
+			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptRecur") + "</td>";
+			
+//		if (this.hasAlarm()) 
+//			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptReminder") + "</td>";
+
+		html[idx++] = "</tr></table>";
+		
+		html[idx++] = "&nbsp;"+AjxStringUtil.htmlEncode(this.getName());
+		html[idx++] = "&nbsp;</div></b></td>";	
+		html[idx++] = "<td align='right'>";
+
+		var cal = null;
+		if ((this.getFolderId() != ZmOrganizer.ID_CALENDAR) && calController) {
+			var cal = calController.getCalendar(this.getFolderId());
+		}
+
+		if (cal && cal.link)
+			html[idx++] = AjxImg.getImageHtml("GroupSchedule");
+		else	
+			html[idx++] = AjxImg.getImageHtml("Appointment");
+					
+		html[idx++] = "</td>";
+		html[idx++] = "</table></div></td></tr>";
+		//idx = this._addEntryRow("Subject", this.getName(), html, idx);
+		//idx = this._addEntryRow(ZmMsg.meetingStatus, this.getStatusString(), html, idx, false);
+
+		if (cal)
+			idx = this._addEntryRow(ZmMsg.calendar, cal.getName(), html, idx, false);
+
+		if (this.hasOtherAttendees())
+			idx = this._addEntryRow(ZmMsg.status, this.getParticipationStatusString(), html, idx, false);		
+
+		idx = this._addEntryRow(ZmMsg.when, when, html, idx, false);		
+		idx = this._addEntryRow(ZmMsg.location, this.getLocation(), html, idx, false);
+		idx = this._addEntryRow(ZmMsg.notes, this.getNotes(), html, idx, true, "250");
+
+		html[idx++] = "</table>";
+		this._toolTip = html.join("");
+	}
+	return this._toolTip;
+};
+
+ZmAppt.prototype.editTimeRepeat = 
+function() {
+	if (this._editingUser == null )
+		this._editingUser = this._appCtxt.get(ZmSetting.USERNAME);
+
+	var u = this._editingUser;
+	var m = this._viewMode;
+	var isOrg = this.isOrganizer();
+	if ((m == ZmAppt.MODE_EDIT_SERIES && !isOrg)) {
+		return ZmAppt.EDIT_NO_REPEAT;
+	}
+
+	if (((m == ZmAppt.MODE_EDIT_SERIES || m == ZmAppt.MODE_EDIT) && isOrg) || m == ZmAppt.MODE_NEW) {
+		return ZmAppt.EDIT_TIME_REPEAT;
+	}
+
+	return ZmAppt.EDIT_TIME;
+};
+
+ZmAppt.prototype.save = 
+function(sender, attachmentId) {
+	var soapDoc = null;
+	var needsExceptionId = false;
+	if (this._viewMode == ZmAppt.MODE_NEW) 
+	{
+		soapDoc = AjxSoapDoc.create("CreateAppointmentRequest", "urn:zimbraMail");
+	} 
+	else if (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) 
+	{
+		if (!this.isException()) {
+			soapDoc = AjxSoapDoc.create("CreateAppointmentExceptionRequest", "urn:zimbraMail");
+			this._addInviteAndCompNum(soapDoc);
+			soapDoc.setMethodAttribute("s", this.getOrigStartTime());
+			needsExceptionId = true;
+		} else {
+			soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest", "urn:zimbraMail");
+			this._addInviteAndCompNum(soapDoc);
+		}
+	}/*
+	else if (this._viewMode == ZmAppt.MODE_EDIT_SERIES) 
+	{
+		soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest", "urn:zimbraMail");
+		this._addInviteAndCompNum(soapDoc);
+		soapDoc.setMethodAttribute("thisAndFuture",true);
+	}*/
+	else 
+	{
+		soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest", "urn:zimbraMail");
+		this._addInviteAndCompNum(soapDoc);
+	}
+
+	var invAndM = this._prepareSoapForSave(soapDoc, attachmentId);
+
+	if (needsExceptionId) {
+		var exceptId = soapDoc.set("exceptId", null, invAndM.inv);
+		if (this.allDayEvent != "1") {
+			exceptId.setAttribute("d", this._getServerDateTime(this.getOrigStartDate()));
+			exceptId.setAttribute("tz", this.timezone);
+		} else {
+			exceptId.setAttribute("d", this._getServerDate(this.getOrigStartDate()));
+		}
+	}
+	this._sendRequest(sender, soapDoc);
+};
+
+ZmAppt.prototype.cancel = 
+function(sender, mode) {
+	this.setViewMode(mode);
+	// To get the attendees for this appointment, we have to get the message.
+	var respCallback = new AjxCallback(this, this._handleResponseCancel, [sender, mode]);
+	this.getDetails(null, respCallback);
+};
+
+//TODO -- cleanup
+ZmAppt.prototype.getTextSummary = 
+function(cancel, buffer, idx) {
+	var edit = this._viewMode == ZmAppt.MODE_EDIT || 
+				this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE ||
+				this._viewMode == ZmAppt.MODE_EDIT_SERIES;
+	
+	// if there are attendees, then create a simple message
+	// describing the meeting invitation.
+	var showingTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
+	// instances of recurring meetings should send out information that looks very
+	// much like a simple appointment.
+	// simple meeting
+	buffer[idx++] = "Subject: "
+	buffer[idx++] = this.name;
+	if (edit && this.hasOwnProperty("name")) {
+		buffer[idx++] = " ";
+		buffer[idx++] = ZmAppt.MODIFIED;
+	}
+	buffer[idx++] = "\n";
+	
+	buffer[idx++] = "Organizer: "
+	buffer[idx++] = this.organizer;
+	buffer[idx++] = "\n\n";
+	
+	if (this.location != "") {
+		buffer[idx++] = "Location: ";
+		buffer[idx++] = this.location;
+		if (edit && this.hasOwnProperty("location")) {
+			buffer[idx++] = " ";
+			buffer[idx++] = ZmAppt.MODIFIED;
+		}
+		buffer[idx++] = "\n";
+	}
+
+	var s = this.startDate;
+	var e = this.endDate;
+	if (this._viewMode == ZmAppt.MODE_DELETE_INSTANCE){
+		s = this.getUniqueStartDate();
+		e = this.getUniqueEndDate();
+	}
+
+	var recurrence = this.repeatType != "NON" && 
+						this._viewMode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE &&
+						this._viewMode != ZmAppt.MODE_DELETE_INSTANCE;
+	if (recurrence) {
+		buffer[idx++] = "Time: ";
+		if (this.isAllDayEvent()) {
+			buffer[idx++] = "All day";
+		}
+		else {
+			buffer[idx++] = AjxDateUtil.getTimeStr(s, "%h:%m %P");
+			buffer[idx++] = " - ";
+			buffer[idx++] = AjxDateUtil.getTimeStr(e, "%h:%m %P");
+			if (showingTimezone){
+				buffer[idx++] = " ";
+				buffer[idx++] = ZmTimezones.valueToDisplay[this.timezone];
+			}
+		}
+		// NOTE: This relies on the fact that setModel creates a clone of the
+		//		 appointment object and that the original object is saved in 
+		//		 the clone as the _orig property.
+		if (edit && (this.hasOwnProperty("allDayEvent") ||
+			this._orig.startDate.getTime() != s.getTime() ||
+			this._orig.endDate.getTime() != e.getTime()) ) {
+			buffer[idx++] = " ";
+			buffer[idx++] = ZmAppt.MODIFIED;
+		}
+	}
+	else if (s.getFullYear() == e.getFullYear() && 
+			 s.getMonth() == e.getMonth() && s.getDate() == e.getDate()) {
+		buffer[idx++] = "Time: ";
+		buffer[idx++] = AjxDateUtil.longComputeDateStr(s);
+		buffer[idx++] = ", ";
+		if (this.isAllDayEvent()) {
+			buffer[idx++] = "All day";
+		}
+		else {
+			buffer[idx++] = AjxDateUtil.getTimeStr(s, "%h:%m %P");
+			buffer[idx++] = " - ";
+			buffer[idx++] = AjxDateUtil.getTimeStr(e, "%h:%m %P");
+			if (showingTimezone){
+				buffer[idx++] = " ";
+				buffer[idx++] = ZmTimezones.valueToDisplay[this.timezone];
+			}
+		}
+		// NOTE: This relies on the fact that setModel creates a clone of the
+		//		 appointment object and that the original object is saved in 
+		//		 the clone as the _orig property.
+		if (edit && (this.hasOwnProperty("allDayEvent") ||
+			this._orig.startDate.getTime() != this.startDate.getTime() ||
+			this._orig.endDate.getTime() != this.endDate.getTime()) ) {
+			buffer[idx++] = " ";
+			buffer[idx++] = ZmAppt.MODIFIED;
+		}
+	}
+	else {
+		buffer[idx++] = "Start: ";
+		buffer[idx++] = AjxDateUtil.longComputeDateStr(s);
+		buffer[idx++] = ", ";
+		if (this.isAllDayEvent()) {
+			buffer[idx++] = "All day";
+		}
+		else {
+			buffer[idx++] = AjxDateUtil.getTimeStr(s, "%h:%m %P");
+			if (showingTimezone){
+				buffer[idx++] = " ";
+				buffer[idx++] = ZmTimezones.valueToDisplay[this.timezone];
+			}
+		}
+		// NOTE: This relies on the fact that setModel creates a clone of the
+		//		 appointment object and that the original object is saved in 
+		//		 the clone as the _orig property.
+		if (edit && (this.hasOwnProperty("allDayEvent") ||
+			this._orig.startDate.getTime() != this.startDate.getTime()) ) {
+			buffer[idx++] = " ";
+			buffer[idx++] = ZmAppt.MODIFIED;
+		}
+		buffer[idx++] = "\n";
+		buffer[idx++] = "End: ";
+		buffer[idx++] = AjxDateUtil.longComputeDateStr(e);
+		buffer[idx++] = ", ";
+		if (this.isAllDayEvent()) {
+			buffer[idx++] = "All day";
+		}
+		else {
+			buffer[idx++] = AjxDateUtil.getTimeStr(e, "%h:%m %P");
+			if (showingTimezone){
+				buffer[idx++] = " ";
+				buffer[idx++] = ZmTimezones.valueToDisplay[this.timezone];
+			}
+		}
+		// NOTE: This relies on the fact that setModel creates a clone of the
+		//		 appointment object and that the original object is saved in 
+		//		 the clone as the _orig property.
+		if (edit && (this.hasOwnProperty("allDayEvent") ||
+			this._orig.endDate.getTime() != this.endDate.getTime()) ) {
+			buffer[idx++] = " ";
+			buffer[idx++] = ZmAppt.MODIFIED;
+		}
+	}
+	buffer[idx++] = "\n";
+
+	if (recurrence) {
+		buffer[idx++] = "Recurrence: ";
+		buffer[idx++] = this._getRecurrenceBlurbForSave();
+		var modified = this.hasOwnProperty("repeatType");
+		modified = modified || 
+					this.hasOwnProperty("repeatCustom") ||
+					this.hasOwnProperty("repeatCustomType") ||
+					this.hasOwnProperty("repeatCustomCount") ||
+					this.hasOwnProperty("repeatCustomOrdinal") ||
+					this.hasOwnProperty("repeatCustomDayOfWeek") ||
+					this.hasOwnProperty("repeatCustomMonthday");
+		modified = modified || 
+					this.hasOwnProperty("repeatEnd") ||
+					this.hasOwnProperty("repeatEndType") || 
+					this.hasOwnProperty("repeatEndCount") || 
+					this.hasOwnProperty("repeatEndDate") ||
+					this.hasOwnProperty("repeatWeeklyDays") ||
+					this.hasOwnProperty("repeatMonthlyDayList") ||
+					this.hasOwnProperty("repeatYearlyMonthsList");
+		if (edit && modified) {
+			buffer[idx++] = " ";
+			buffer[idx++] = ZmAppt.MODIFIED;
+		}
+		buffer[idx++] = "\n";
+	}
+
+	buffer[idx++] = "\n";
+	buffer[idx++] = "Invitees: ";
+	var attendees = this.attendees.replace(/^\s*/,"").replace(/\s*$/,"").split(/;\s*/);
+	if (attendees.length > 10) {
+		attendees = attendees.slice(0, 10);
+		attendees.push("...");
+	}
+	buffer[idx++] = attendees.join(", ");
+	
+	//buffer[idx++] = "\n";
+	buffer[idx++] = ZmAppt.NOTES_SEPARATOR;
+	return idx;
+};
+
+
+// Private / Protected methods
+
+ZmAppt.prototype._resetCached =
+function() {
+	delete this._validAttachments;
+	delete this.tooltip;
+};
+
+ZmAppt.prototype._createRangeIfNecessary = 
+function() {
+ 	if (this._rangeObj == null) {
+		this._rangeObj = new Object();
+		this._rangeObj.startDate = new Date();
+		this._rangeObj.endDate = new Date();
+	}
+};
+
+// TODO: i18n/l10n
+ZmAppt.prototype._getTTDay =
+function(d) {
+	return (d.getMonth()+1)+"/"+d.getDate();
+};
+
+// Adds a row to the tool tip.
+ZmAppt.prototype._addEntryRow =
+function(field, data, html, idx, wrap, width) {
+	if (data != null && data != "") {
+		html[idx++] = "<tr valign='top'><td align='right' style='padding-right: 5px;'><b><div style='white-space:nowrap'>";
+		html[idx++] = AjxStringUtil.htmlEncode(field) + ":";
+		html[idx++] = "</div></b></td><td align='left'><div style='white-space:";
+		html[idx++] = wrap ? "wrap;" : "nowrap;";
+		if (width) html[idx++] = "width:"+width+"px;";
+		html[idx++] = "'>";
+		html[idx++] = AjxStringUtil.htmlEncode(data);
+		html[idx++] = "</div></td></tr>";
+	}
+	return idx;
+};
+
+ZmAppt.prototype._handleResponseGetDetails =
+function(args) {
+	var mode		= args.shift();
+	var message		= args.shift();
+	var callback	= args.shift();
+	var result		= args.shift();
+	
+	// msg content should be text, so no need to pass callback to setFromMessage()
+	this.setFromMessage(message, mode);
+	if (callback) callback.run(result);
 };
 
 ZmAppt.prototype._populateRecurrenceFields = 
@@ -933,7 +966,6 @@ function(freq, count) {
 	var plural = count > 1 ? 1 : 0;
 	return AjxDateUtil.FREQ_TO_DISPLAY[freq][plural];
 };
-
 
 //TODO : i18n
 ZmAppt.prototype.getRecurrenceDisplayString = 
@@ -1192,35 +1224,6 @@ function(rule, str, idx) {
 	return idx;
 };
 
-ZmAppt.prototype.getAttendeeAddrs = 
-function() {
-	return this._attAddresses ? this._attAddresses.getArray() : null;
-};
-
-ZmAppt.prototype.isReadOnly = 
-function() {
-	return !this.isOrganizer();
-};
-
-ZmAppt.prototype.editTimeRepeat = 
-function() {
-	if (this._editingUser == null )
-		this._editingUser = this._appCtxt.get(ZmSetting.USERNAME);
-
-	var u = this._editingUser;
-	var m = this._viewMode;
-	var isOrg = this.isOrganizer();
-	if ((m == ZmAppt.MODE_EDIT_SERIES && !isOrg)) {
-		return ZmAppt.EDIT_NO_REPEAT;
-	}
-
-	if (((m == ZmAppt.MODE_EDIT_SERIES || m == ZmAppt.MODE_EDIT) && isOrg) || m == ZmAppt.MODE_NEW) {
-		return ZmAppt.EDIT_TIME_REPEAT;
-	}
-
-	return ZmAppt.EDIT_TIME;
-};
-
 ZmAppt.prototype._addInviteAndCompNum = 
 function(soapDoc) {
 	if (this._viewMode == ZmAppt.MODE_EDIT_SERIES || this._viewMode == ZmAppt.MODE_DELETE_SERIES) {
@@ -1307,9 +1310,8 @@ function(soapDoc, method,  attachmentId) {
 
 	m.setAttribute("d", new Date().getTime());
 
-	if (this.folderId != ZmFolder.ID_CALENDAR) {
+	if (this.folderId != ZmFolder.ID_CALENDAR)
 		m.setAttribute("l", this.folderId);
-	}
 
 	var inv = soapDoc.set("inv", null, m);
 	switch (method) {
@@ -1319,29 +1321,25 @@ function(soapDoc, method,  attachmentId) {
 	
 	inv.setAttribute("type", "event");
 
-
-	if (this.isOrganizer()) {
+	if (this.isOrganizer())
 		this._addAttendeesToSoap(soapDoc, inv, m);
-	}
 
 	this._addNotesToSoap(soapDoc, m);
 
-	if (this.uid !== void 0 && this.uid != null && this.uid != -1) {
+	if (this.uid !== void 0 && this.uid != null && this.uid != -1)
 		inv.setAttribute("uid", this.uid);
-	}
 
 	inv.setAttribute("type", "event");
 
-    if (this.isAllDayEvent()) {
-        // for "all day" events, default them to "transparent" -- not counted towards free-busy --
-        // this is what outlook does.  Eventually, the UI will have a checkbox to choose this
-        inv.setAttribute("fb","F");
-        inv.setAttribute("transp", "T");
-    } else {
-        // for all other appointments, default to time as "busy"
-        inv.setAttribute("fb","B");
-        inv.setAttribute("transp", "O");
-    }
+	// XXX: fix this when old appointment dialog is depracated
+	var fb = this._appCtxt.get(ZmSetting.NEW_APPOINTMENT_VIEW) 
+		? this.freeBusy 
+		: (this.isAllDayEvent() ? "F" : "B");
+	inv.setAttribute("fb", fb);
+
+	var transp = this.isAllDayEvent() ? "T" : "O";
+	inv.setAttribute("transp", transp);
+
 	inv.setAttribute("status","CONF");
 	inv.setAttribute("allDay", this.allDayEvent);
 	var s = soapDoc.set("s", null, inv);
@@ -1359,10 +1357,8 @@ function(soapDoc, method,  attachmentId) {
 	soapDoc.set("su", this.name, m);
 	inv.setAttribute("name", this.name);
 
-	if (this.location != null) {
+	if (this.location != null)
 		inv.setAttribute("loc", this.location);
-	}
-
 	
 	var org = soapDoc.set("or", null, inv);
 	// TODO: make attendees list, a list of ZmEmailAddresses.
@@ -1370,11 +1366,11 @@ function(soapDoc, method,  attachmentId) {
 	org.setAttribute("a", this.organizer);
 
 	// handle attachments
-	if ( (attachmentId != null)|| (this._validAttachments != null && this._validAttachments.length)) {
+	if (attachmentId != null || (this._validAttachments != null && this._validAttachments.length)) {
 		var attachNode = soapDoc.set("attach", null, m);
-		if (attachmentId != null) {
+		if (attachmentId)
 			attachNode.setAttribute("aid", attachmentId);
-		}
+
 		if (this._validAttachments) {
 			for (var i = 0; i < this._validAttachments.length; i++) {
 				var msgPartNode = soapDoc.set("mp", null, attachNode);
@@ -1389,65 +1385,66 @@ function(soapDoc, method,  attachmentId) {
 
 ZmAppt.prototype._addRecurrenceRulesToSoap = 
 function(soapDoc, inv) {
-	if (this.repeatType != "NON"){
-		var recur = soapDoc.set("recur", null, inv);
-		var add = soapDoc.set("add", null, recur);
-		if (this.repeatType == "NON") {
-			var date = soapDoc.set("date", null, add);
-			date.setAttribute("d", this._getServerDateTime(this.startDate));
-			date.setAttribute("tz", this.timezone);
-		} else {
-			var rule = soapDoc.set("rule", null, add);
-			rule.setAttribute("freq", this.repeatType);
-			var interval = soapDoc.set("interval", null, rule);
-			interval.setAttribute("ival", this.repeatCustomCount);
-			if (this.repeatEndDate != null && this.repeatEndType == "D") {
-				var until = soapDoc.set("until", null, rule);
-				until.setAttribute("d", this._getServerDate(this.repeatEndDate));
-				until.setAttribute("tz", this.timezone);
-			} else if (this.repeatEndType == "A"){
-				var c = soapDoc.set("count",null, rule);
-				c.setAttribute("num", this.repeatEndCount);
-			}
-			if (this.repeatCustom == '1') {
-				if (this.repeatType == "WEE"){
-					var bwd = soapDoc.set("byday", null, rule);
-					var wkDay;
-					for (var i = 0; i < this.repeatWeeklyDays.length; ++i) {
-						wkDay = soapDoc.set("wkday", null, bwd);
-						wkDay.setAttribute("day", this.repeatWeeklyDays[i]);
-					}
-				} else if (this.repeatType == "MON"){
-					if (this.repeatCustomType == "S") {
-						var bmd = soapDoc.set("bymonthday", null, rule);
-						bmd.setAttribute("modaylist", this.repeatMonthlyDayList);
+	if (this.repeatType == "NON") return;
 
-					} else {
-						var bwd = soapDoc.set("byday", null, rule);
-						wkDay = soapDoc.set("wkday", null, bwd);
-						wkDay.setAttribute("ordwk", this.repeatCustomOrdinal);
-						wkDay.setAttribute("day", this.repeatCustomDayOfWeek);
-					}
-					var co = soapDoc.set('x-name', null, rule);
-					co.setAttribute('name', "repeatCustomType");
-					co.setAttribute('value', this.repeatCustomType);
-				} else if (this.repeatType == "YEA"){
-					var bm = soapDoc.set("bymonth", null, rule);
-					bm.setAttribute("molist", this.repeatYearlyMonthsList + 1);
-					var co = soapDoc.set('x-name', null, rule);
-					co.setAttribute('name', "repeatCustomType");
-					co.setAttribute('value', this.repeatCustomType);
-					if (this.repeatCustomType == "O") {
-						var bwd = soapDoc.set("byday", null, rule);
-						wkDay = soapDoc.set("wkday", null, bwd);
-						wkDay.setAttribute("ordwk", this.repeatCustomOrdinal);
-						wkDay.setAttribute("day", this.repeatCustomDayOfWeek);
-					} else {
-						var bmd = soapDoc.set("bymonthday", null, rule);
-						bmd.setAttribute("modaylist", this.repeatCustomMonthDay);						
-					}
-				}
-			}
+	var recur = soapDoc.set("recur", null, inv);
+	var add = soapDoc.set("add", null, recur);
+	var rule = soapDoc.set("rule", null, add);
+	rule.setAttribute("freq", this.repeatType);
+
+	var interval = soapDoc.set("interval", null, rule);
+	interval.setAttribute("ival", this.repeatCustomCount);
+
+	if (this.repeatEndDate != null && this.repeatEndType == "D") {
+		var until = soapDoc.set("until", null, rule);
+		until.setAttribute("d", this._getServerDate(this.repeatEndDate));
+		until.setAttribute("tz", this.timezone);
+	} else if (this.repeatEndType == "A"){
+		var c = soapDoc.set("count",null, rule);
+		c.setAttribute("num", this.repeatEndCount);
+	}
+
+	if (this.repeatCustom != '1')
+		return;
+
+	if (this.repeatType == "WEE")
+	{
+		var bwd = soapDoc.set("byday", null, rule);
+		for (var i = 0; i < this.repeatWeeklyDays.length; ++i) {
+			var wkDay = soapDoc.set("wkday", null, bwd);
+			wkDay.setAttribute("day", this.repeatWeeklyDays[i]);
+		}
+	} 
+	else if (this.repeatType == "MON") 
+	{
+		if (this.repeatCustomType == "S") {
+			var bmd = soapDoc.set("bymonthday", null, rule);
+			bmd.setAttribute("modaylist", this.repeatMonthlyDayList);
+		} else {
+			var bwd = soapDoc.set("byday", null, rule);
+			wkDay = soapDoc.set("wkday", null, bwd);
+			wkDay.setAttribute("ordwk", this.repeatCustomOrdinal);
+			wkDay.setAttribute("day", this.repeatCustomDayOfWeek);
+		}
+		var co = soapDoc.set('x-name', null, rule);
+		co.setAttribute('name', "repeatCustomType");
+		co.setAttribute('value', this.repeatCustomType);
+	}
+	else if (this.repeatType == "YEA") 
+	{
+		var bm = soapDoc.set("bymonth", null, rule);
+		bm.setAttribute("molist", this.repeatYearlyMonthsList + 1);
+		var co = soapDoc.set('x-name', null, rule);
+		co.setAttribute('name', "repeatCustomType");
+		co.setAttribute('value', this.repeatCustomType);
+		if (this.repeatCustomType == "O") {
+			var bwd = soapDoc.set("byday", null, rule);
+			wkDay = soapDoc.set("wkday", null, bwd);
+			wkDay.setAttribute("ordwk", this.repeatCustomOrdinal);
+			wkDay.setAttribute("day", this.repeatCustomDayOfWeek);
+		} else {
+			var bmd = soapDoc.set("bymonthday", null, rule);
+			bmd.setAttribute("modaylist", this.repeatCustomMonthDay);						
 		}
 	}
 };
@@ -1455,14 +1452,11 @@ function(soapDoc, inv) {
 ZmAppt.prototype._addAttendeesToSoap = 
 function(soapDoc, inv, m) {
 	if (this.attendees != null && this.attendees.length > 0) {
-
 		var addrArr = this.attendees.split(ZmAppt.ATTENDEES_SEPARATOR_REGEX);
 		var addrs = new Array();
 		for (var z = 0 ; z < addrArr.length; ++z) {
 			var e = ZmEmailAddress.parse(addrArr[z]);
-			if (e != null){
-				addrs.push(e);
-			}
+			if (e) addrs.push(e);
 		}
 
 		for (var i = 0; i < addrs.length; ++i) {
@@ -1470,52 +1464,47 @@ function(soapDoc, inv, m) {
 			var dispName = addrs[i].getDispName();
 			if (inv != null) {
 				at = soapDoc.set("at", null, inv);			
-				// for now make all attendees optional, until the UI has a way of setting this.
-				at.setAttribute("role", "OPT");
-				// not sure if it makes sense for status to be required on create.
-				at.setAttribute("ptst", "NE");
+				at.setAttribute("role", "OPT");		// for now make all attendees optional, until the UI has a way of setting this.
+				at.setAttribute("ptst", "NE"); 		// not sure if it makes sense for status to be required on create.
 				at.setAttribute("rsvp", "1");
 				at.setAttribute("a", address);
-				if (dispName) {
+				if (dispName)
 					at.setAttribute("d", dispName);
-				}
 			}
 
 			if (m != null) {
 				e = soapDoc.set("e", null, m);
 				e.setAttribute("a", address);
-				if (dispName){
+				if (dispName)
 					e.setAttribute("p", dispName);
-				}
 				e.setAttribute("t", ZmEmailAddress.toSoapType[addrs[i].getType()]);
 			}
 		}
 	}
 };
 
+// TODO: i18n!
 ZmAppt.prototype._getDefaultBlurb = 
 function(cancel) {
 	var buf = new Array();
 	var idx = 0;
 	var singleInstance = this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE	|| 
-						this._viewMode == ZmAppt.MODE_DELETE_INSTANCE;
+						 this._viewMode == ZmAppt.MODE_DELETE_INSTANCE;
 	if (cancel) {
-		if (singleInstance){
-			buf[idx++] = "A single instance of the following meeting has been cancelled:";
-		}
-		else {
-			buf[idx++] = "The following meeting has been cancelled:";
-		}
+		buf[idx++] = singleInstance
+			? "A single instance of the following meeting has been cancelled:"
+			: "The following meeting has been cancelled:";
 	} else {
-		if (( this._viewMode == ZmAppt.MODE_EDIT) || (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) ||
-			(this._viewMode == ZmAppt.MODE_EDIT_SERIES)) {
-			if (singleInstance) {
-				buf[idx++] = "A single instance of the following meeting has been modified:";
-			}
-			else {
-				buf[idx++] = "The following meeting has been modified:";
-			}
-		} else {
+		if (this._viewMode == ZmAppt.MODE_EDIT || 
+			this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE ||
+			this._viewMode == ZmAppt.MODE_EDIT_SERIES)
+		{
+			buf[idx++] = singleInstance
+				? "A single instance of the following meeting has been modified:"
+				: "The following meeting has been modified:";
+		} 
+		else 
+		{
 			buf[idx++] = "The following is a new meeting request:";
 		}
 	}
@@ -1525,397 +1514,167 @@ function(cancel) {
 	return buf.join("");
 };
 
-//TODO -- cleanup
-ZmAppt.MODIFIED = "[MODIFIED]";
-ZmAppt.prototype.getTextSummary = 
-function(cancel, buffer, idx) {
-	var edit = this._viewMode == ZmAppt.MODE_EDIT || 
-				this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE ||
-				this._viewMode == ZmAppt.MODE_EDIT_SERIES;
-	
-	// if there are attendees, then create a simple message
-	// describing the meeting invitation.
-	var showingTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
-	// instances of recurring meetings should send out information that looks very
-	// much like a simple appointment.
-	// simple meeting
-	buffer[idx++] = "Subject: "
-	buffer[idx++] = this.name;
-	if (edit && this.hasOwnProperty("name")) {
-		buffer[idx++] = " ";
-		buffer[idx++] = ZmAppt.MODIFIED;
-	}
-	buffer[idx++] = "\n";
-	
-	buffer[idx++] = "Organizer: "
-	buffer[idx++] = this.organizer;
-	buffer[idx++] = "\n\n";
-	
-	if (this.location != "") {
-		buffer[idx++] = "Location: ";
-		buffer[idx++] = this.location;
-		if (edit && this.hasOwnProperty("location")) {
-			buffer[idx++] = " ";
-			buffer[idx++] = ZmAppt.MODIFIED;
-		}
-		buffer[idx++] = "\n";
-	}
-
-	var s = this.startDate;
-	var e = this.endDate;
-	if (this._viewMode == ZmAppt.MODE_DELETE_INSTANCE){
-		s = this.getUniqueStartDate();
-		e = this.getUniqueEndDate();
-	}
-
-	var recurrence = this.repeatType != "NON" && 
-						this._viewMode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE &&
-						this._viewMode != ZmAppt.MODE_DELETE_INSTANCE;
-	if (recurrence) {
-		buffer[idx++] = "Time: ";
-		if (this.isAllDayEvent()) {
-			buffer[idx++] = "All day";
-		}
-		else {
-			buffer[idx++] = AjxDateUtil.getTimeStr(s, "%h:%m %P");
-			buffer[idx++] = " - ";
-			buffer[idx++] = AjxDateUtil.getTimeStr(e, "%h:%m %P");
-			if (showingTimezone){
-				buffer[idx++] = " ";
-				buffer[idx++] = ZmTimezones.valueToDisplay[this.timezone];
-			}
-		}
-		// NOTE: This relies on the fact that setModel creates a clone of the
-		//		 appointment object and that the original object is saved in 
-		//		 the clone as the _orig property.
-		if (edit && (this.hasOwnProperty("allDayEvent") ||
-			this._orig.startDate.getTime() != s.getTime() ||
-			this._orig.endDate.getTime() != e.getTime()) ) {
-			buffer[idx++] = " ";
-			buffer[idx++] = ZmAppt.MODIFIED;
-		}
-	}
-	else if (s.getFullYear() == e.getFullYear() && 
-			 s.getMonth() == e.getMonth() && s.getDate() == e.getDate()) {
-		buffer[idx++] = "Time: ";
-		buffer[idx++] = AjxDateUtil.longComputeDateStr(s);
-		buffer[idx++] = ", ";
-		if (this.isAllDayEvent()) {
-			buffer[idx++] = "All day";
-		}
-		else {
-			buffer[idx++] = AjxDateUtil.getTimeStr(s, "%h:%m %P");
-			buffer[idx++] = " - ";
-			buffer[idx++] = AjxDateUtil.getTimeStr(e, "%h:%m %P");
-			if (showingTimezone){
-				buffer[idx++] = " ";
-				buffer[idx++] = ZmTimezones.valueToDisplay[this.timezone];
-			}
-		}
-		// NOTE: This relies on the fact that setModel creates a clone of the
-		//		 appointment object and that the original object is saved in 
-		//		 the clone as the _orig property.
-		if (edit && (this.hasOwnProperty("allDayEvent") ||
-			this._orig.startDate.getTime() != this.startDate.getTime() ||
-			this._orig.endDate.getTime() != this.endDate.getTime()) ) {
-			buffer[idx++] = " ";
-			buffer[idx++] = ZmAppt.MODIFIED;
-		}
-	}
-	else {
-		buffer[idx++] = "Start: ";
-		buffer[idx++] = AjxDateUtil.longComputeDateStr(s);
-		buffer[idx++] = ", ";
-		if (this.isAllDayEvent()) {
-			buffer[idx++] = "All day";
-		}
-		else {
-			buffer[idx++] = AjxDateUtil.getTimeStr(s, "%h:%m %P");
-			if (showingTimezone){
-				buffer[idx++] = " ";
-				buffer[idx++] = ZmTimezones.valueToDisplay[this.timezone];
-			}
-		}
-		// NOTE: This relies on the fact that setModel creates a clone of the
-		//		 appointment object and that the original object is saved in 
-		//		 the clone as the _orig property.
-		if (edit && (this.hasOwnProperty("allDayEvent") ||
-			this._orig.startDate.getTime() != this.startDate.getTime()) ) {
-			buffer[idx++] = " ";
-			buffer[idx++] = ZmAppt.MODIFIED;
-		}
-		buffer[idx++] = "\n";
-		buffer[idx++] = "End: ";
-		buffer[idx++] = AjxDateUtil.longComputeDateStr(e);
-		buffer[idx++] = ", ";
-		if (this.isAllDayEvent()) {
-			buffer[idx++] = "All day";
-		}
-		else {
-			buffer[idx++] = AjxDateUtil.getTimeStr(e, "%h:%m %P");
-			if (showingTimezone){
-				buffer[idx++] = " ";
-				buffer[idx++] = ZmTimezones.valueToDisplay[this.timezone];
-			}
-		}
-		// NOTE: This relies on the fact that setModel creates a clone of the
-		//		 appointment object and that the original object is saved in 
-		//		 the clone as the _orig property.
-		if (edit && (this.hasOwnProperty("allDayEvent") ||
-			this._orig.endDate.getTime() != this.endDate.getTime()) ) {
-			buffer[idx++] = " ";
-			buffer[idx++] = ZmAppt.MODIFIED;
-		}
-	}
-	buffer[idx++] = "\n";
-
-	if (recurrence) {
-		buffer[idx++] = "Recurrence: ";
-		buffer[idx++] = this._getRecurrenceBlurbForSave();
-		var modified = this.hasOwnProperty("repeatType");
-		modified = modified || 
-					this.hasOwnProperty("repeatCustom") ||
-					this.hasOwnProperty("repeatCustomType") ||
-					this.hasOwnProperty("repeatCustomCount") ||
-					this.hasOwnProperty("repeatCustomOrdinal") ||
-					this.hasOwnProperty("repeatCustomDayOfWeek") ||
-					this.hasOwnProperty("repeatCustomMonthday");
-		modified = modified || 
-					this.hasOwnProperty("repeatEnd") ||
-					this.hasOwnProperty("repeatEndType") || 
-					this.hasOwnProperty("repeatEndCount") || 
-					this.hasOwnProperty("repeatEndDate") ||
-					this.hasOwnProperty("repeatWeeklyDays") ||
-					this.hasOwnProperty("repeatMonthlyDayList") ||
-					this.hasOwnProperty("repeatYearlyMonthsList");
-		if (edit && modified) {
-			buffer[idx++] = " ";
-			buffer[idx++] = ZmAppt.MODIFIED;
-		}
-		buffer[idx++] = "\n";
-	}
-
-	buffer[idx++] = "\n";
-	buffer[idx++] = "Invitees: ";
-	var attendees = this.attendees.replace(/^\s*/,"").replace(/\s*$/,"").split(/;\s*/);
-	if (attendees.length > 10) {
-		attendees = attendees.slice(0, 10);
-		attendees.push("...");
-	}
-	buffer[idx++] = attendees.join(", ");
-	
-	//buffer[idx++] = "\n";
-	buffer[idx++] = ZmAppt.NOTES_SEPARATOR;
-	return idx;
-};
-
-ZmAppt._SORTBY_VALUE = function(a, b) {
-	a = Number(a);
-	b = Number(b);
-	if (a < b) return -1;
-	if (a > b) return 1;
-	return 0;
-}
 ZmAppt.prototype._getRecurrenceBlurbForSave = 
 function() {
-	if (this.repeatType != "NON"){
-		var blurb = new Array();
-		var idx = 0;
-		blurb[idx++] = "Every ";
-		if (this.repeatCustomCount > 1) {
-			blurb[idx++] = this.repeatCustomCount;
-			blurb[idx++] = " ";
-		}
-		blurb[idx++] = this.frequencyToDisplayString(this.repeatType, this.repeatCustomCount);
+	if (this.repeatType == "NON") return;
 
-		var customRepeat = (this.repeatCustom == '1');
-		if (this.repeatType == "WEE"){
-			blurb[idx++] = " on ";
-			if (customRepeat) {
-				if (this.repeatWeeklyDays.length > 0) {
-					for (var i = 0; i < this.repeatWeeklyDays.length; ++i) {
-						blurb[idx++] = ZmAppt.SERVER_DAYS_TO_DISPLAY[this.repeatWeeklyDays[i]];
-						if (i == (this.repeatWeeklyDays.length - 2 )){
-							blurb[idx++] = " and ";
-						} else if (i < (this.repeatWeeklyDays.length - 1)){
-							blurb[idx++] = ", ";
-						}
-					}
-				}
-			} else {
-				blurb[idx++] = AjxDateUtil.WEEKDAY_LONG[this.startDate.getDay()];
-			}
-		} else if (this.repeatType == "MON"){
-			if (this.repeatCustomType == "S") {
-				blurb[idx++] = " on the ";
-				if (customRepeat) {
-					var nums = this.repeatMonthlyDayList;
-					nums = nums.sort(ZmAppt._SORTBY_VALUE);
-					for (var i = 0 ; i < nums.length; ++i ){
-						blurb[idx++] = nums[i];
-						if (i < nums.length - 1) {
-							blurb[idx++] = ", ";
-						}
-						else if (i == nums.length - 2) {
-							blurb[idx++] = " and ";
-						}
-					}
-				} else {
-					blurb[idx++] =  this.repeatCustomOrdinal;
-					blurb[idx++] = this.repeatCustomDayOfWeek;
-					blurb[idx++] = " of the month ";
-				}
-			} else {
-				blurb[idx++] = this.startDate.getDate();
-			}
-		} else if (this.repeatType == "YEA"){
-			if (customRepeat) {
-				blurb[idx++] = " in ";
-				var nums = this.repeatYearlyMonthsList.split(",");
-				for (var i = 0 ; i < nums.length; ++i ){
-					blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[nums[i]];
-					if (i < nums.length -1 ) {
-						blurb[idx++] = ",";
-					}
-				}
-				if (this.repeatCustomType == "O") {
-					blurb[idx++] = " on the ";
-					blurb[idx++] = this.repeatCustomOrdinal;
-					blurb[idx++] = this.repeatCustomDayOfWeek;
-					blurb[idx++] = " of the month ";
-				} else {
-					blurb[idx++] = " on the ";
-					this.repeatCustomMonthDay;
-				}
-			} else {
-				blurb[idx++] = " on ";
-				blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[this.startDate.getMonth()];
-				blurb[idx++] = " ";
-				blurb[idx++] = this.startDate.getDate();
-			}
-		}
+	var blurb = new Array();
+	var idx = 0;
 
-		if (this.repeatEndDate != null && this.repeatEndType == "D") {
-			blurb[idx++] = " until ";
-			blurb[idx++] = AjxDateUtil.simpleComputeDateStr(this.repeatEndDate);
-			if (this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE)){
-				blurb[idx++] = " ";
-				blurb[idx++] = ZmTimezones.valueToDisplay[this.timezone];
-			}
-
-		} else if (this.repeatEndType == "A"){
-			blurb[idx++] = " for ";
-			blurb[idx++] = this.repeatEndCount;
-			blurb[idx++] = " ";
-			blurb[idx++] = this.frequencyToDisplayString(this.repeatType, this.repeatEndCount);
-		}
-		blurb[idx++] = " effective ";
-		blurb[idx++] = AjxDateUtil.simpleComputeDateStr(this.startDate);
-		return blurb.join("");
+	blurb[idx++] = "Every ";
+	if (this.repeatCustomCount > 1) {
+		blurb[idx++] = this.repeatCustomCount;
+		blurb[idx++] = " ";
 	}
+	blurb[idx++] = this.frequencyToDisplayString(this.repeatType, this.repeatCustomCount);
+
+	var customRepeat = (this.repeatCustom == '1');
+	if (this.repeatType == "WEE") {
+		blurb[idx++] = " on ";
+		if (customRepeat) {
+			if (this.repeatWeeklyDays.length > 0) {
+				for (var i = 0; i < this.repeatWeeklyDays.length; ++i) {
+					blurb[idx++] = ZmAppt.SERVER_DAYS_TO_DISPLAY[this.repeatWeeklyDays[i]];
+					if (i == (this.repeatWeeklyDays.length - 2 )) {
+						blurb[idx++] = " and ";
+					} else if (i < (this.repeatWeeklyDays.length - 1)) {
+						blurb[idx++] = ", ";
+					}
+				}
+			}
+		} else {
+			blurb[idx++] = AjxDateUtil.WEEKDAY_LONG[this.startDate.getDay()];
+		}
+	} else if (this.repeatType == "MON"){
+		if (this.repeatCustomType == "S") {
+			blurb[idx++] = " on the ";
+			if (customRepeat) {
+				var nums = this.repeatMonthlyDayList;
+				nums = nums.sort(ZmAppt._SORTBY_VALUE);
+				for (var i = 0 ; i < nums.length; ++i ) {
+					blurb[idx++] = nums[i];
+					if (i < nums.length - 1) {
+						blurb[idx++] = ", ";
+					} else if (i == nums.length - 2) {
+						blurb[idx++] = " and ";
+					}
+				}
+			} else {
+				blurb[idx++] =  this.repeatCustomOrdinal;
+				blurb[idx++] = this.repeatCustomDayOfWeek;
+				blurb[idx++] = " of the month ";
+			}
+		} else {
+			blurb[idx++] = this.startDate.getDate();
+		}
+	} else if (this.repeatType == "YEA") {
+		if (customRepeat) {
+			blurb[idx++] = " in ";
+			var nums = this.repeatYearlyMonthsList.split(",");
+			for (var i = 0 ; i < nums.length; ++i ) {
+				blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[nums[i]];
+				if (i < nums.length -1 )
+					blurb[idx++] = ",";
+			}
+			if (this.repeatCustomType == "O") {
+				blurb[idx++] = " on the ";
+				blurb[idx++] = this.repeatCustomOrdinal;
+				blurb[idx++] = this.repeatCustomDayOfWeek;
+				blurb[idx++] = " of the month ";
+			} else {
+				blurb[idx++] = " on the ";
+				this.repeatCustomMonthDay;
+			}
+		} else {
+			blurb[idx++] = " on ";
+			blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[this.startDate.getMonth()];
+			blurb[idx++] = " ";
+			blurb[idx++] = this.startDate.getDate();
+		}
+	}
+
+	if (this.repeatEndDate != null && this.repeatEndType == "D") {
+		blurb[idx++] = " until ";
+		blurb[idx++] = AjxDateUtil.simpleComputeDateStr(this.repeatEndDate);
+		if (this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE)) {
+			blurb[idx++] = " ";
+			blurb[idx++] = ZmTimezones.valueToDisplay[this.timezone];
+		}
+
+	} else if (this.repeatEndType == "A") {
+		blurb[idx++] = " for ";
+		blurb[idx++] = this.repeatEndCount;
+		blurb[idx++] = " ";
+		blurb[idx++] = this.frequencyToDisplayString(this.repeatType, this.repeatEndCount);
+	}
+	blurb[idx++] = " effective ";
+	blurb[idx++] = AjxDateUtil.simpleComputeDateStr(this.startDate);
+	return blurb.join("");
 };
 
 ZmAppt.prototype._trimNotesSummary = 
 function() {
-	var notesArr;
-	if (this.notes != null){
-		notesArr = this.notes.split(ZmAppt.NOTES_SEPARATOR_REGEX);
-		if (notesArr.length > 1) {
-			this.notes = notesArr[1];
-		}
-	}
+	// XXX: this.notes is DEPRACATED
+	var notesArr = this.notes ? this.notes.split(ZmAppt.NOTES_SEPARATOR_REGEX) : null;
+	if (notesArr && notesArr.length > 1)
+		this.notes = notesArr[1];
 };
-
 
 ZmAppt.prototype._addNotesToSoap = 
 function(soapDoc, m, cancel) {	
-	var mp = soapDoc.set("mp", null, m);
-	mp.setAttribute("content-type", "text/plain");
-	this._trimNotesSummary();
-	var content = "";
-	if (this.attendees != null) {
-		content = this._getDefaultBlurb(cancel);
-	}
-	if (this.notes != null && this.notes.length > 0) {
-		content = AjxBuffer.concat(content, this.notes);
-	}
-	soapDoc.set("content", content, mp);
-};
-
-ZmAppt.prototype.save = 
-function(sender, attachmentId) {
-	var needsExceptionId = false;
-	switch (this._viewMode) {
-	case ZmAppt.MODE_NEW:
-		var soapDoc = AjxSoapDoc.create("CreateAppointmentRequest",
-									   "urn:zimbraMail");
-		break;
-	case ZmAppt.MODE_EDIT_SINGLE_INSTANCE:
-		if (!this.isException()) {
-			var soapDoc = AjxSoapDoc.create("CreateAppointmentExceptionRequest",
-										   "urn:zimbraMail");
-			this._addInviteAndCompNum(soapDoc);
-			soapDoc.setMethodAttribute("s", this.getOrigStartTime());
-			needsExceptionId = true;
-		} else {
-			var soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest",
-										   "urn:zimbraMail");
-			this._addInviteAndCompNum(soapDoc);
+	if (this._appCtxt.get(ZmSetting.NEW_APPOINTMENT_VIEW)) {
+		if (this.notesTopPart) {
+			var prefix = this.attendees ? this._getDefaultBlurb(cancel) : "";
+			var mp = soapDoc.set("mp", null, m);
+			mp.setAttribute("content-type", this.notesTopPart.getContentType());
+			// if top part has sub parts, add them as children
+			var numSubParts = this.notesTopPart.children.size();
+			if (numSubParts > 0) {
+				for (var i = 0; i < numSubParts; i++) {
+					var part = this.notesTopPart.children.get(i);
+					var partNode = soapDoc.set("mp", null, mp);
+					partNode.setAttribute("content-type", part.getContentType());
+					var content = AjxBuffer.concat(prefix, part.getContent());
+					soapDoc.set("content", content, partNode);
+				}
+			} else {
+				var content = AjxBuffer.concat(prefix, this.notesTopPart.getContent());
+				soapDoc.set("content", content, mp);
+			}
 		}
-		break;
-// 	case ZmAppt.MODE_EDIT_SERIES:
-// 		var soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest",
-// 									   "urn:zimbraMail");
-// 		this._addInviteAndCompNum(soapDoc);
-// 		soapDoc.setMethodAttribute("thisAndFuture",true);
-// 		break;
-	default:
-		var soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest",
-									   "urn:zimbraMail");
-		this._addInviteAndCompNum(soapDoc);
-		break;
+	} else {
+		var mp = soapDoc.set("mp", null, m);
+		mp.setAttribute("content-type", "text/plain");
+	
+		this._trimNotesSummary();
+	
+		// XXX: this.notes is DEPRACATED - use this.notesParts to set SOAP
+		var content = this.attendees ? this._getDefaultBlurb(cancel) : "";
+		if (this.notes != null && this.notes.length > 0)
+			content = AjxBuffer.concat(content, this.notes);
+	
+		soapDoc.set("content", content, mp);
 	}
-
-	var invAndM = this._prepareSoapForSave(soapDoc, attachmentId);
-
-	if (needsExceptionId) {
-		exceptId = soapDoc.set("exceptId", null, invAndM.inv);
-		if (this.allDayEvent != '1') {
-			exceptId.setAttribute("d", this._getServerDateTime(this.getOrigStartDate()));
-			exceptId.setAttribute("tz", this.timezone);
-		} else {
-			exceptId.setAttribute("d", this._getServerDate(this.getOrigStartDate()));
-		}
-	}
-	this._sendRequest(sender, soapDoc);
 };
 
 ZmAppt.prototype._sendRequest = 
 function(sender, soapDoc) {
 	var responseName = soapDoc.getMethod().nodeName.replace("Request", "Response");
 	var resp = sender.sendRequest(soapDoc);
+
 	// branch for different responses
 	var response = resp[responseName];
-	if (response.uid != null) {
+	if (response.uid != null)
 		this.uid = response.uid;
-	}
-	if (response.m != null){
+
+	if (response.m != null) {
 		var oldInvId = this.invId;
 		this.invId = response.m.id;
-		if (oldInvId != this.invId) {
+		if (oldInvId != this.invId)
 			this.clearDetailsCache();
-		}
 	}
 
 	this._messageNode = null;
-};
-
-ZmAppt.prototype.cancel = 
-function(sender, mode) {
-	this.setViewMode(mode);
-	// To get the attendees for this appointment, we have to get the message.
-	var respCallback = new AjxCallback(this, this._handleResponseCancel, [sender, mode]);
-	this.getDetails(null, respCallback);
 };
 
 ZmAppt.prototype._handleResponseCancel =
@@ -1923,34 +1682,67 @@ function(args) {
 	var sender	= args.shift();
 	var mode	= args.shift();
 	
-	switch (mode) {
-	case ZmAppt.MODE_DELETE:
-		// fall through
-	case ZmAppt.MODE_DELETE_SERIES:
+	if (mode == ZmAppt.MODE_DELETE || mode == ZmAppt.MODE_DELETE_SERIES || mode == ZmAppt.MODE_DELETE_INSTANCE) {
 		var soapDoc = AjxSoapDoc.create("CancelAppointmentRequest", "urn:zimbraMail");
 		this._addInviteAndCompNum(soapDoc);
-		var m = soapDoc.set("m");
-		if (this.isOrganizer()) {
-			this._addAttendeesToSoap(soapDoc, null, m);
+
+		if (mode == ZmAppt.MODE_DELETE_INSTANCE) {
+			soapDoc.setMethodAttribute("s", this.getOrigStartTime());
+			var inst = soapDoc.set("inst");
+			inst.setAttribute("d", this._getServerDateTime(this.getOrigStartDate()));
+			inst.setAttribute("tz", this.timezone);
 		}
-		soapDoc.set("su","Cancelled: " + this.name, m);
+
+		var m = soapDoc.set("m");
+		if (this.isOrganizer())
+			this._addAttendeesToSoap(soapDoc, null, m);
+		soapDoc.set("su", "Cancelled: " + this.name, m);
 		this._addNotesToSoap(soapDoc, m, true);
 		this._sendRequest(sender, soapDoc);
-		break;
-	case ZmAppt.MODE_DELETE_INSTANCE:
-		var soapDoc = AjxSoapDoc.create("CancelAppointmentRequest", "urn:zimbraMail");
-		soapDoc.setMethodAttribute("s", this.getOrigStartTime());
-		this._addInviteAndCompNum(soapDoc);
-		var inst = soapDoc.set("inst");
-		inst.setAttribute("d", this._getServerDateTime(this.getOrigStartDate()));
-		inst.setAttribute("tz", this.timezone);
-		var m = soapDoc.set("m");
-		if (this.isOrganizer()){
-			this._addAttendeesToSoap(soapDoc, null, m);
-		}
-		soapDoc.set("su","Cancelled: " + this.name, m);
-		this._addNotesToSoap(soapDoc, m, true);
-		this._sendRequest(sender, soapDoc);
-		break;
 	}
+};
+
+// Static methods
+
+/**
+* Compares two appts. sort by (starting date, duration)
+* sort methods.
+*
+* @param a		an appt
+* @param b		an appt
+*/
+ZmAppt.compareByTimeAndDuration =
+function(a, b) {
+	if (a.getStartTime() > b.getStartTime()) 	return 1;
+	if (a.getStartTime() < b.getStartTime()) 	return -1;
+	if (a.getDuration() < b.getDuration()) 		return 1;
+	if (a.getDuration() > b.getDuration()) 		return -1;
+	return 0;
+};
+
+ZmAppt._getTTHour =
+function(d) {
+	var h = d.getHours();
+	var m = d.getMinutes();	
+	var ampm = h < 12 ? "am" : "pm";
+	if (h < 13) {
+		if (h == 0)
+			h = 12;
+	} else {
+		h -= 12;
+	}
+
+	var ms = m;
+	if (m < 10) ms = "0"+ms;
+
+	return h+":"+ms+ampm;
+};
+
+ZmAppt._SORTBY_VALUE = 
+function(a, b) {
+	a = Number(a);
+	b = Number(b);
+	if (a < b) return -1;
+	if (a > b) return 1;
+	return 0;
 };

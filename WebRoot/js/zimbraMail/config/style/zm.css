@@ -1031,10 +1031,9 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .ZmFreeBusyView {
   top:0;
   left:0;
-  background-color:rgb(249,248,246);
+  background-color: #EEEEEE
   width:845px;
   overflow:hidden;
-  z-index:10000;
   height:420px;
 }
 

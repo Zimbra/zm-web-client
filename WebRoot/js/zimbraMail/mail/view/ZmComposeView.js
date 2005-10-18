@@ -580,23 +580,23 @@ function(attId, isDraft) {
 	// --------------------------------------------
 	
 	// set up message parts as necessary
-	var top = new ZmMimePart(this._appCtxt);
+	var top = new ZmMimePart();
 
 	if (this._composeMode == DwtHtmlEditor.HTML) {
 		top.setContentType(ZmMimeTable.MULTI_ALT);
 		
 		// create two more mp's for text and html content types
-		var textPart = new ZmMimePart(this._appCtxt);
+		var textPart = new ZmMimePart();
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		textPart.setContent(this._htmlEditor.getTextVersion());
 		top.children.add(textPart);
 		
-		var htmlPart = new ZmMimePart(this._appCtxt);
+		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
 		htmlPart.setContent(this._htmlEditor.getContent());
 		top.children.add(htmlPart);
 	} else {
-		var textPart = this._extraParts ? new ZmMimePart(this._appCtxt) : top;
+		var textPart = this._extraParts ? new ZmMimePart() : top;
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		textPart.setContent(this._htmlEditor.getContent());
 
