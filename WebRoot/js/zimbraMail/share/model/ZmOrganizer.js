@@ -287,7 +287,8 @@ function() {
 	if (this.id < ZmTree.CLASS[this.type].FIRST_USER_ID && !isEmptyOp)
 		return;
 	
-	this._organizerAction("delete");
+	var action = isEmptyOp ? "empty" : "delete";
+	this._organizerAction(action);
 }
 
 ZmOrganizer.prototype.markAllRead =
