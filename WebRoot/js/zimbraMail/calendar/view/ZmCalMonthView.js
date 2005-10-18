@@ -385,7 +385,7 @@ function(appt, apptEnd) {
 	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
 	div.className = div._styleClass;
 
-	ZmCalDayView._setApptOpacity(appt, div);
+	ZmCalColView._setApptOpacity(appt, div);
 
 
 	var bs = "";

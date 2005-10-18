@@ -25,10 +25,10 @@
 
 function ZmCalWeekView(parent, posStyle, dropTgt) {
 	if (arguments.length == 0) return;
-	ZmCalDayView.call(this, parent, posStyle, dropTgt, ZmController.CAL_WEEK_VIEW, 7);
+	ZmCalColView.call(this, parent, posStyle, dropTgt, ZmController.CAL_WEEK_VIEW, 7, false);
 }
 
-ZmCalWeekView.prototype = new ZmCalDayView;
+ZmCalWeekView.prototype = new ZmCalColView;
 ZmCalWeekView.prototype.constructor = ZmCalWeekView;
 
 ZmCalWeekView.prototype.toString = 

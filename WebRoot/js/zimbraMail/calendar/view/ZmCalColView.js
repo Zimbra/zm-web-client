@@ -309,16 +309,18 @@ function(rangeChanged) {
 
 ZmCalColView.prototype._selectDay =
 function(date) {
-	if (this._numDays == 1) return;
+	if (this._numDays == 1 || this._scheduleMode) return;
 	var day = this._getDayForDate(date);
 	if (day != null) {
+		var col = this._columns[day.index];
 		var doc = this.getDocument();
 		if (this._selectedDay) {
-	 		var te = Dwt.getDomObj(doc, this._selectedDay.titleId);
+	 		var te = Dwt.getDomObj(doc, this._selectedCol.titleId);
 	 		te.className = this._selectedDay.isToday ? 'calendar_heading_day_today' : 'calendar_heading_day';
 		}
 		this._selectedDay = day;
-		var te = Dwt.getDomObj(doc, day.titleId);
+		this._selectedCol = col;
+		var te = Dwt.getDomObj(doc, col.titleId);
  		te.className = day.isToday ? 'calendar_heading_day_today-selected' : 'calendar_heading_day-selected';
 	}
 }
@@ -523,6 +525,7 @@ function() {
 
 	for (var i=0; i < numDays; i++) {
 		var day = this._days[i] = {};
+		day.index = i;
 		day.date = new Date(d);
 		day.endDate = new Date(d);
 		day.endDate.setHours(23,59,59,999);
@@ -723,7 +726,7 @@ function(html) {
 ZmCalColView.prototype._createHtml =
 function(abook) {
 	this._days = new Object();
-	this._columns = new Object();	
+	this._columns = new Array();
 	this._hours = new Object();
 
 	this._layouts = new Array();
@@ -1031,7 +1034,7 @@ function() {
 					this._sizeAppt(div, cal.allDayWidth * slot.data.numDays - this._daySepWidth - 1,
 								 ZmCalColView._ALL_DAY_APPT_HEIGHT);
 				 } else {
-					this._positionAppt(div, this._coclumns[j].allDayX+0, rowY);
+					this._positionAppt(div, this._columns[j].allDayX+0, rowY);
 					this._sizeAppt(div, this._columns[j].allDayWidth * slot.data.numDays - this._daySepWidth - 1,
 								 ZmCalColView._ALL_DAY_APPT_HEIGHT);
 				 }
@@ -1151,7 +1154,10 @@ function(d, duration, col) {
 	var durationMinutes = duration / 1000 / 60;
 	var h = d.getHours();
 	var m = d.getMinutes();
-	if (col == null) col = this._getDayForDate(d);
+	if (col == null && !this._scheduleMode) {
+		var day = this._getDayForDate(d);
+		col = this._columns[day.index];
+	}
 	if (col == null) return null;
 	return new DwtRectangle(col.apptX, ((h+m/60) * ZmCalColView._HOUR_HEIGHT), 
 					col.apptWidth, (ZmCalColView._HOUR_HEIGHT / 60) * durationMinutes);
@@ -1334,13 +1340,11 @@ function() {
 		this._setBounds(this._unionGridSepDivId, unionSepX, bodyY, this._daySepWidth, this._apptBodyDivHeight);		
 	}
 
-	var numDays = this.getNumDays();
-	var dayWidth = Math.floor((this._apptBodyDivWidth-ZmCalColView._SCROLLBAR_WIDTH)/numDays);
-
 	var currentX = 0;
-	var dayWidth = Math.floor((this._apptBodyDivWidth-ZmCalColView._SCROLLBAR_WIDTH)/this._numCalendars);
+	var numCols = this._columns.length;
+	var dayWidth = Math.floor((this._apptBodyDivWidth-ZmCalColView._SCROLLBAR_WIDTH)/numCols);
 
-	for (var i = 0; i < this._numCalendars; i++) {
+	for (var i = 0; i < numCols; i++) {
 		var col = this._columns[i];
 			
 		// position day heading
@@ -1635,7 +1639,7 @@ function(ev) {
 		if (newDate != null && 
 			(!(data.view._scheduleMode && snap.col != data.snap.col)) && // don't allow col moves in sched view
 			newDate.getTime() != data.startDate.getTime()) {
-			var bounds = data.view._getBoundsForDate(newDate, data.appt._orig.getDuration(), data.snap.col);
+			var bounds = data.view._getBoundsForDate(newDate, data.appt._orig.getDuration(), snap.col);
 			data.view._layoutAppt(null, data.apptEl, bounds.x, bounds.y, bounds.width, bounds.height);
 			data.startDate = newDate;
 			data.snap = snap;
