@@ -55,7 +55,7 @@ ZmCalColView._HOURS_DIV_WIDTH_PAD = 0; // space between hours div and appts
 
 ZmCalColView._ALL_DAY_SEP_HEIGHT = 5; // height of separator between all day appts and body
 
-ZmCalColView._SCROLLBAR_WIDTH = 20;
+ZmCalColView._SCROLLBAR_WIDTH = 22;
 
 ZmCalColView._DAY_HEADING_HEIGHT = 20;
 ZmCalColView._ALL_DAY_APPT_HEIGHT = 20;
@@ -1342,8 +1342,9 @@ function() {
 
 	var currentX = 0;
 	var numCols = this._columns.length;
-	var dayWidth = Math.floor((this._apptBodyDivWidth-ZmCalColView._SCROLLBAR_WIDTH)/numCols);
-
+	var sbwfudge = AjxEnv.isIE ? 1 : 0;
+	var dayWidth = Math.floor((this._apptBodyDivWidth-ZmCalColView._SCROLLBAR_WIDTH-sbwfudge)/numCols) - (this._daySepWidth == 1 ? 0 : 1);
+	
 	for (var i = 0; i < numCols; i++) {
 		var col = this._columns[i];
 			
