@@ -37,12 +37,13 @@
 * @param contactPicker	[ZmContactPicker]	handle to a contact picker for selecting addresses
 * @param composeMode 	[constant]			passed in so detached window knows which mode to be in on startup
 */
-function ZmComposeView(parent, className, posStyle, mailApp, controller, contactPicker, composeMode) {
+function ZmComposeView(parent, className, posStyle, controller, contactPicker, composeMode) {
 
 	className = className || "ZmComposeView";
 	DwtComposite.call(this, parent, className, posStyle);
 	
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
+	this._controller = controller;
 	this._contactPicker = contactPicker;
 	
 	// part of bug fix #941 -- attaching an iframe which we'll use
