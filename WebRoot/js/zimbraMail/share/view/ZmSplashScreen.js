@@ -24,35 +24,24 @@
  */
 
 function ZmSplashScreen(shell, imageInfo, className) {
-
-	if (arguments.length == 0) return;
-	
-	if (!(shell instanceof DwtShell)) {
-		throw new AjxException("Parent must be a DwtShell", AjxException.INVALIDPARENT, "ZmSplashScreen");
-	}
-	
-	className = className || "ZmSplashScreen";
-	DwtControl.call(this, shell, className, Dwt.ABSOLUTE_STYLE);
-
-	this.setZIndex(Dwt.Z_SPLASH);
-	
-	var myTable = this.getDocument().createElement("table");
-	myTable.border = 0;
-	myTable.cellSpacing = 0;
-	myTable.cellPadding = 0;
-	Dwt.setSize(myTable, "100%", "100%");
-	
-	var row = myTable.insertRow(0);
-	var cell = row.insertCell(0);
-	cell.vAlign = "middle";
-	cell.align = "center";
-	AjxImg.setImage(cell, imageInfo);
-	
-	this.getHtmlElement().appendChild(myTable);
-    this.setBounds(0, 0, "100%", "100%")
-
-	this.setCursor("wait");
+ 	className = className || "ZmSplashScreen";
+ 	ZmBaseSplashScreen.call(this, shell, imageInfo, className);
 }
 
-ZmSplashScreen.prototype = new DwtControl;
+ZmSplashScreen.prototype = new ZmBaseSplashScreen;
 ZmSplashScreen.prototype.constructor = ZmSplashScreen;
+
+ZmSplashScreen.prototype.getDefaultSubstitutions = function (){
+	if (ZmSplashScreen._defaultSubstitutions == null) {
+		ZmSplashScreen._defaultSubstitutions = {
+			url:ZmMsg.splashScreenZimbraUrl,
+			shortVersion: "BETA",
+			appName: ZmMsg.splashScreenAppName,
+			// version is not used 
+			// version : "Some version",
+			contents: AjxBuffer.concat("<br>", ZmMsg.splashScreenLoading, "<br><br>", AjxImg.getImageHtml("BarberPole_216")),
+			license: ZmMsg.splashScreenCopyright	
+		}
+	}
+	return ZmSplashScreen._defaultSubstitutions;
+};
