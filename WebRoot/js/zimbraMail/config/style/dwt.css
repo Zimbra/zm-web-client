@@ -1161,3 +1161,4 @@ HTML>BODY .RadioGrouperLabel {
 	padding:4px;
 }
 END FROM ADMIN */
+.xform_error { color: red }
