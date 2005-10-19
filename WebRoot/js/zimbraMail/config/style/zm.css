@@ -724,6 +724,11 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .calendar_month_body {
 	position:relative;
 	overflow:hidden;
+/*  	overflow auto seems to work in firefox 1.5b2
+	overflow:-moz-scrollbars-vertical;
+  	overflow:auto;*/
+  	overflow-x:hidden;
+  	overflow-y:auto;
 }
 
 .calendar_grid_body_time_td {
@@ -783,18 +788,21 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	font-size:14px;
 }
 
+.calendar_month_day_label_today {
+	color: red;
+	overflow: hidden;
+	white-space: nowrap;
+	padding-top:2px;
+	padding-right:4px;
+	text-align:right;
+	font-size:14px;
+}
+
 .calendar_tooltip_month_day_label {
 	overflow: hidden;
 	white-space: nowrap;
 	text-align:center;
 	font-size:14px;
-}
-
-.calendar_month_day_holiday_label {
-	overflow: hidden;
-	white-space: nowrap;
-	padding:4px;
-	color:CC0000;
 }
 
 .calendar_month_day_label_off_month {
@@ -806,14 +814,13 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	color:#AAAAAA;
 }
 
-.calendar_month_day_today {
-	border:1px solid red;
+.calendar_month_day_label_off_month_today {
 	overflow: hidden;
 	white-space: nowrap;
-	padding-top:2px;
-	padding-right:4px;
+	padding:4px;
 	text-align:right;
 	font-size:14px;
+	color: red;
 }
 
 .calendar_month_day_allday {

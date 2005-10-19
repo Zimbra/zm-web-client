@@ -25,7 +25,8 @@
 
 function ZmCalMonthView(parent, posStyle, dropTgt) {
 	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, ZmController.CAL_MONTH_VIEW, dropTgt);	
-	this.getHtmlElement().style.overflow = "hidden";
+	//this.getHtmlElement().style.overflow = "hidden";
+	this.setScrollStyle(DwtControl.CLIP);
 	this._needFirstLayout = true;
 	this.setNumDays(42);
 };
@@ -61,11 +62,7 @@ function()  {
 ZmCalMonthView.prototype._clearSelectedDay =
 function() {
 	if (this._selectedData != null) {
-		var today = new Date();
-		today.setHours(0,0,0, 0);
-		
 		var te = Dwt.getDomObj(this.getDocument(),this._selectedData.tdId);
-		var isToday = this._selectedData.date.getTime() == today.getTime();
 		te.className = 'calendar_month_cells_td';			
 		this._selectedData = null;
 	}
@@ -565,8 +562,10 @@ function() {
 			this._dateToDayIndex[this._dayKey(day.date)] = day;
 			var thisMonth = day.date.getMonth() == this._month;
 	 		var te = Dwt.getDomObj(doc, day.titleId);
-			te.innerHTML = d.getTime() == today.getTime() ? ("<div class=calendar_month_day_today>" + this._dayTitle(d) + "</div>") : this._dayTitle(d);
-			te.className = thisMonth ? 'calendar_month_day_label' : 'calendar_month_day_label_off_month';
+	 		var isToday = d.getTime() == today.getTime();
+			//te.innerHTML = d.getTime() == today.getTime() ? ("<div class=calendar_month_day_today>" + this._dayTitle(d) + "</div>") : this._dayTitle(d);
+			te.innerHTML = this._dayTitle(d);			
+			te.className = (thisMonth ? 'calendar_month_day_label' : 'calendar_month_day_label_off_month') + (isToday ? "_today" : "");
 	 		var de = Dwt.getDomObj(doc, day.tdId);			
 			de.className = 'calendar_month_cells_td';	
 			de._loc = loc;
