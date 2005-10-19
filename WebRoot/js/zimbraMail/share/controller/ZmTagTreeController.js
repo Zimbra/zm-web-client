@@ -125,21 +125,6 @@ function() {
 // Actions
 
 /*
-* Changes a tag's color.
-*
-* @param tag	[ZmTag]		a tag
-* @param color	[constant]	its new color
-*/
-ZmTagTreeController.prototype._doColorTag =
-function(params) {
-	try {
-		params.tag.setColor(params.color);
-	} catch (ex) {
-		this._handleException(ex, this._doColorTag, params, false);
-	}
-}
-
-/*
 * Called when a left click occurs (by the tree view listener). A search for
 * the tag will be performed.
 *
@@ -180,7 +165,9 @@ function(ev) {
 */
 ZmTagTreeController.prototype._colorListener = 
 function(ev) {
-	this._schedule(this._doColorTag, {tag: this._getActionedOrganizer(ev), color: ev.item.getData(ZmOperation.MENUITEM_ID)});
+	var tag = this._getActionedOrganizer(ev);
+	if (tag)
+		tag.setColor(ev.item.getData(ZmOperation.MENUITEM_ID));
 }
 
 /*
@@ -242,7 +229,7 @@ function(ev, treeView) {
 */
 ZmTagTreeController.prototype._newCallback =
 function(args) {
-	this._schedule(this._doCreate, {name: args[0], color: args[1]});
+	this._doCreate(args[0], args[1]);
 	this._clearDialog(this._getNewDialog());
 }
 
@@ -255,17 +242,20 @@ function(args) {
 * @param color	[constant]	color of the new tag
 */
 ZmTagTreeController.prototype._doCreate =
-function(params) {
-	try {
-		var parent = this._dataTree.root;
-		parent.create(params.name, params.color);
-	} catch (ex) {
-		if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {
-			var msg = AjxStringUtil.resolve(ZmMsg.errorInvalidName, params.name);
-			this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-			this._msgDialog.popup();
-		} else {
-			this._handleException(ex, ZmTagTreeController.prototype._doCreate, params, false);
-		}
+function(name, color) {
+	var parent = this._dataTree.root;
+	var errorCallback = new AjxCallback(this, this._handleErrorDoCreate);
+	parent.create(name, color, null, errorCallback);
+}
+
+ZmTagTreeController.prototype._handleErrorDoCreate =
+function(ex) {
+	if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {
+		var msg = AjxStringUtil.resolve(ZmMsg.errorInvalidName, params.name);
+		this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+		this._msgDialog.popup();
+		return true;
+	} else {
+		return false;
 	}
 }

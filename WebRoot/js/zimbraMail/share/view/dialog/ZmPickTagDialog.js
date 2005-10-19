@@ -28,44 +28,26 @@ function ZmPickTagDialog(parent, msgDialog, className) {
 	if (arguments.length == 0) return;
 
 	var newButton = new DwtDialog_ButtonDescriptor(ZmPickTagDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
-	DwtDialog.call(this, parent, className, ZmMsg.pickATag, null, [newButton]);
+	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.pickATag, [newButton]);
 
-	this.render();
-	this._msgDialog = msgDialog;
-
-	var tree = this._tree = new DwtTree(parent, DwtTree.SINGLE_STYLE);
-	this._tree.setScrollStyle(DwtControl.SCROLL);
-	var appCtxt = this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-
-	this._tagTreeView = new ZmTagTreeView(appCtxt, this._tree, this._tree);
-	this._tagTreeView.set(appCtxt.getTree(ZmOrganizer.TAG));
-
-	var cell = 	Dwt.getDomObj(this.getDocument(), this._tagTreeCellId);
-	cell.appendChild(this._tree.getHtmlElement());
-    
-	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
+	this.setContent(this._contentHtml());
+	this._setOverview(ZmPickTagDialog._OVERVIEW_ID, this._tagTreeCellId, [ZmOrganizer.TAG]);
+	this._tagTreeView = this._treeView[ZmOrganizer.TAG];
+	this._tagTree = this._appCtxt.getTree(ZmOrganizer.TAG);
+	this._tagTree.addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
 	this.registerCallback(ZmPickTagDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._creatingTag = false;
 };
 
-ZmPickTagDialog.prototype = new DwtDialog;
+ZmPickTagDialog.prototype = new ZmDialog;
 ZmPickTagDialog.prototype.constructor = ZmPickTagDialog;
 
-ZmPickTagDialog.NEW_BUTTON = ++DwtDialog.LAST_BUTTON;
+ZmPickTagDialog.NEW_BUTTON = DwtDialog.LAST_BUTTON + 1;
+ZmPickTagDialog._OVERVIEW_ID = "ZmPickTagDialog";
 
 ZmPickTagDialog.prototype.toString = 
 function() {
 	return "ZmPickTagDialog";
-};
-
-ZmPickTagDialog.prototype.render = 
-function() {
-	this.setContent(this._contentHtml());
-};
-
-ZmPickTagDialog.prototype.popup = 
-function(loc) {
-	DwtDialog.prototype.popup.call(this, loc);
 };
 
 ZmPickTagDialog.prototype._contentHtml = 
@@ -94,7 +76,7 @@ function() {
 		this.popdown();
 		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._newCancelCallback, this);
 	}
-	dialog.popup(null, this);
+	dialog.popup(this._loc);
 };
 
 ZmPickTagDialog.prototype._newCallback = 
@@ -104,7 +86,7 @@ function(args) {
 
 	this._appCtxt.getNewTagDialog().popdown();
 	var ttc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.TAG);
-	ttc._schedule(ttc._doCreate, {name: args[0], color: args[1], parent: args[2]});
+	ttc._doCreate(args[0], args[1]);
 	this._creatingTag = true;
 };
 

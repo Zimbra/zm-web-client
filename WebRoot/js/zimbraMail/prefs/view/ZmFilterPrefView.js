@@ -81,18 +81,14 @@ function ZmFilterPrefView(parent, appCtxt) {
 								ZmOperation.SEP,
 								ZmOperation.MOVE_UP_FILTER_RULE,
 								ZmOperation.SEP,
-								ZmOperation.MOVE_DOWN_FILTER_RULE ];	
-	this._buttonListeners = new Object();
-	var id, funcName;
-	for (var i = 0; i < this._operationButtonIds.length; i++) {
-		id = this._operationButtonIds[i];
-		if (ZmOperation.SEP == id) {
-			continue;
-		}
+								ZmOperation.MOVE_DOWN_FILTER_RULE ];
 
-		funcName = '_'+ ZmOperation.MSG_KEY[id] + 'Listener';
-		this._buttonListeners[id] = new AjxListener(this, this[funcName] );
-	}
+	this._buttonListeners = new Object();
+	this._buttonListeners[ZmOperation.ADD_FILTER_RULE] = new AjxListener(this, this._filterAddListener);
+	this._buttonListeners[ZmOperation.EDIT_FILTER_RULE] = new AjxListener(this, this._filterEditListener);
+	this._buttonListeners[ZmOperation.REMOVE_FILTER_RULE] = new AjxListener(this, this._filterRemoveListener);
+	this._buttonListeners[ZmOperation.MOVE_UP_FILTER_RULE] = new AjxListener(this, this._filterMoveUpListener);
+	this._buttonListeners[ZmOperation.MOVE_DOWN_RULE] = new AjxListener(this, this._filterMoveDownListener);
 };
 
 ZmFilterPrefView.prototype = new DwtTabViewPage;

@@ -76,11 +76,6 @@ function(newView, noReset) {
 	}
 };
 
-ZmDialog.prototype.popup =
-function(tag, loc) {
-	DwtDialog.prototype.popup.call(this, loc);
-}
-
 ZmDialog.prototype.reset =
 function() {
 	if (this._nameField)

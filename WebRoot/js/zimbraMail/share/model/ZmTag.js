@@ -110,13 +110,13 @@ function(color) {
 }
 
 ZmTag.prototype.create =
-function(name, color) {
+function(name, color, callback, errorCallback) {
 	color = ZmOrganizer.checkColor(color);
 	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:zimbraMail");
 	var tagNode = soapDoc.set("tag");
 	tagNode.setAttribute("name", name);
 	tagNode.setAttribute("color", color);
-	this.tree._appCtxt.getAppController().sendRequest(soapDoc, true);
+	this.tree._appCtxt.getAppController().sendRequest(soapDoc, true, callback, errorCallback);
 }
 
 ZmTag.prototype.getName = 

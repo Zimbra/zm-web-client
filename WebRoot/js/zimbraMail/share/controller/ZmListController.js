@@ -604,7 +604,7 @@ ZmListController.prototype._newTagCallback =
 function(args) {
 	this._appCtxt.getNewTagDialog().popdown();
 	var ttc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.TAG);
-	this._schedule(ttc._doCreate, {name: args[1], color: args[2]});
+	ttc._doCreate(args[1], args[2]);
 	this._creatingTag = args[0];
 }
 
