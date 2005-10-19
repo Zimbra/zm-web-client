@@ -2,6 +2,33 @@
 // ZmShareInfo
 //
 
+/**
+ * Share information.
+ * <p>
+ * XML representation:
+ * <pre>
+ * &lt;!ELEMENT share (grantee,grantor,link)>
+ * &lt;!ATTLIST share xmlns CDATA #FIXED "urn:zimbraShare">
+ * &lt;!ATTLIST share version NMTOKEN #FIXED "0.1">
+ * &lt;!ATTLIST share action (new|edit|delete|accept|decline) #REQUIRED>
+ *
+ * &lt;!ELEMENT grantee EMPTY>
+ * &lt;!ATTLIST grantee id CDATA #REQUIRED>
+ * &lt;!ATTLIST grantee name CDATA #REQUIRED>
+ * &lt;!ATTLIST grantee email CDATA #REQUIRED>
+ *
+ * &lt;!ELEMENT grantor EMPTY>
+ * &lt;!ATTLIST grantor id CDATA #REQUIRED>
+ * &lt;!ATTLIST grantor name CDATA #REQUIRED>
+ * &lt;!ATTLIST grantor email CDATA #REQUIRED>
+ *
+ * &lt;!ELEMENT link EMPTY>
+ * &lt;!ATTLIST link id NMTOKEN #REQUIRED>
+ * &lt;!ATTLIST link name CDATA #REQUIRED>
+ * &lt;!ATTLIST link view (appointment|...) #REQUIRED>
+ * &lt;!ATTLISt link perm CDATA #REQUIRED>
+ * </pre>
+ */
 function ZmShareInfo() {
 	this.grantee = {};
 	this.grantor = {};
@@ -116,6 +143,7 @@ ZmShareInfo.createFromDom = function(doc) {
 		switch (child.nodeName) {
 			case "grantee": case "grantor": {
 				shareInfo[child.nodeName].id = child.getAttribute("id");
+				shareInfo[child.nodeName].email = child.getAttribute("email");
 				shareInfo[child.nodeName].name = child.getAttribute("name");
 				break;
 			}
@@ -220,7 +248,14 @@ ZmShareInfo._createMsg = function(appCtxt, action, shareInfo, compose) {
 	topPart.children.add(xmlPart);
 
 	var msg = new ZmMailMsg(appCtxt);
-	msg.setAddress(ZmEmailAddress.TO, new ZmEmailAddress(shareInfo.grantee.name));
+	var toEmail = shareInfo.grantee.email;
+	var fromEmail = shareInfo.grantor.email;
+	if (action == ZmShareInfo.ACCEPT || action == ZmShareInfo.DECLINE) {
+		toEmail = shareInfo.grantor.email;
+		fromEmail = shareInfo.grantee.email;
+	}
+	msg.setAddress(ZmEmailAddress.TO, new ZmEmailAddress(toEmail));
+	msg.setAddress(ZmEmailAddress.FROM, new ZmEmailAddress(fromEmail, ZmEmailAddress.FROM));
 	msg.setSubject(ZmShareInfo._SUBJECTS[action]);
 	msg.setTopPart(topPart);
 	return msg;
@@ -259,8 +294,10 @@ ZmShareInfo._createXmlPart = function(action, shareInfo) {
 		ZmShareInfo.VERSION, 
 		action,
 		shareInfo.grantee.id, 
+		shareInfo.grantee.email,
 		AjxStringUtil.xmlAttrEncode(shareInfo.grantee.name),
 		shareInfo.grantor.id, 
+		shareInfo.grantor.email,
 		AjxStringUtil.xmlAttrEncode(shareInfo.grantor.name),
 		shareInfo.link.id, 
 		AjxStringUtil.xmlAttrEncode(shareInfo.link.name), 
@@ -320,10 +357,10 @@ ZmShareInfo._init = function() {
 	// xml formatter
 	var pattern = [
 		'<share xmlns="{0}" version="{1}" action="{2}" >',
-		'  <grantee id="{3}" name="{4}" />',
-		'  <grantor id="{5}" name="{6}" />',
-		'  <link id="{7}" name="{8}" view="{9}" perm="{10}" />',
-		'  <notes>{11}</notes>',
+		'  <grantee id="{3}" email="{4}" name="{5}" />',
+		'  <grantor id="{6}" email="{7}" name="{8}" />',
+		'  <link id="{9}" name="{10}" view="{11}" perm="{12}" />',
+		'  <notes>{13}</notes>',
 		'</share>'
 	].join("\n");
 	ZmShareInfo._XML = new AjxMessageFormat(pattern);

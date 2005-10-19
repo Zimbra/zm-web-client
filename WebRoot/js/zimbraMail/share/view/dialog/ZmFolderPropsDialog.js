@@ -183,8 +183,10 @@ ZmFolderPropsDialog.prototype._handleResendShare = function(share) {
 	// create share info
 	var shareInfo = new ZmShareInfo();
 	shareInfo.grantee.id = share.grantee.id;
+	shareInfo.grantee.email = share.grantee.name;
 	shareInfo.grantee.name = share.grantee.name;
 	shareInfo.grantor.id = this._appCtxt.get(ZmSetting.USERID);
+	shareInfo.grantor.email = this._appCtxt.get(ZmSetting.USERNAME);
 	shareInfo.grantor.name = this._appCtxt.get(ZmSetting.DISPLAY_NAME);
 	shareInfo.link.id = share.organizer.id;
 	shareInfo.link.name = share.organizer.name;

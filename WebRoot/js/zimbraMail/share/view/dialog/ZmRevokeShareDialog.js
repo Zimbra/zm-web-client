@@ -116,7 +116,9 @@ ZmRevokeShareDialog.prototype._handleYesButton = function(event) {
 	// send message
 	if (instance.sendMail) {
 		// initialize rest of share information
+		share.grantee.email = share.grantee.name;
 		share.grantor.id = this._appCtxt.get(ZmSetting.USERID);
+		share.grantor.email = this._appCtxt.get(ZmSetting.USERNAME);
 		share.grantor.name = this._appCtxt.get(ZmSetting.DISPLAY_NAME);
 		share.link.id = share.organizer.id;
 		share.link.name = share.organizer.name;

@@ -90,10 +90,6 @@ ZmAcceptShareDialog._XMODEL_DEF = { items: [
 // Public methods
 
 ZmAcceptShareDialog.prototype.setShareInfo = function(shareInfo) { 
-	var settings = this._appCtxt.getSettings();
-	var userName = settings.get(ZmSetting.DISPLAY_NAME);
-	
-	// REVISIT: generation of details message
 	var params = [ shareInfo.grantor.name, shareInfo.link.name ];
 	var header = this._headerFormatter.format(params);
 
