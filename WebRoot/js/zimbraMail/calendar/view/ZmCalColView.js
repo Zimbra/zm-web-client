@@ -1253,7 +1253,8 @@ function(id, x, y, w, h) {
 
 ZmCalColView.prototype._calcColWidth = 
 function(bodyWidth, numCols, horzScroll) {
-	var sbwfudge = (AjxEnv.isIE ? 1 : 0) + (horzScroll ? 0 : ZmCalColView._SCROLLBAR_WIDTH);
+//	var sbwfudge = (AjxEnv.isIE ? 1 : 0) + (horzScroll ? 0 : ZmCalColView._SCROLLBAR_WIDTH);
+	var sbwfudge = 0;
 	return dayWidth = Math.floor((bodyWidth-sbwfudge)/numCols) - (this._daySepWidth == 1 ? 0 : 1);
 }
 
@@ -1299,9 +1300,8 @@ function() {
 	var needHorzScroll = this._apptBodyDivWidth > this._bodyDivWidth;
 	this._horizontalScrollbar(needHorzScroll);
 	var sbwfudge = AjxEnv.isIE ? 1 : 0;
-	var dayWidth = this._calcColWidth(this._apptBodyDivWidth, numCols, needHorzScroll);
+	var dayWidth = this._calcColWidth(this._apptBodyDivWidth - ZmCalColView._SCROLLBAR_WIDTH, numCols);
 
-	DBG.println("dayWidth = "+dayWidth);
 	var scrollFudge = 50; // need all day to be a little wider then grid
 
 	// year heading
