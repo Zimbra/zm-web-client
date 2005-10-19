@@ -28,11 +28,12 @@ function ZmDoublePaneView(parent, className, posStyle, mode, controller, dropTgt
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, parent, className, posStyle);
 
+	this._controller = controller;
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._initHeader();
 	this._msgListView = new ZmMailMsgListView(this, null, Dwt.ABSOLUTE_STYLE, mode, controller, dropTgt);
 	this._msgSash = new DwtSash(this, DwtSash.VERTICAL_STYLE, "AppSash-vert", ZmDoublePaneView.SASH_THRESHOLD, Dwt.ABSOLUTE_STYLE);
-	this._msgView = new ZmMailMsgView(this, null, posStyle, mode);
+	this._msgView = new ZmMailMsgView(this, null, posStyle, mode, controller);
 
 	this._msgSash.registerCallback(this._sashCallback, this);
 }

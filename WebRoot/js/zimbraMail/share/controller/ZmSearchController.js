@@ -173,10 +173,10 @@ function() {
 * @param sortBy			[constant]*			sort constraint
 * @param offset			[int]*				starting point in list of matching items
 * @param limit			[int]*				maximum number of items to return
-* @param callback		[AjxCallback]*		callback to run (rather than displaying results)
+* @param noRender		[boolean]*			if true, results will not be passed to controller
 * @param userText		[boolean]*			true if text was typed by user into search box
-* @param rpcCallback	[AjxCallback]*		(async) client callback
-* @param errorCallback	[AjxCallback]*		(async) callback to run if there is an exception
+* @param callback		[AjxCallback]*		async callback
+* @param errorCallback	[AjxCallback]*		async callback to run if there is an exception
 */
 ZmSearchController.prototype.search =
 function(params) {
@@ -188,14 +188,14 @@ function(params) {
 		return;
 	}
 
-	var respCallback = null;
-	if (params.rpcCallback)
-		var respCallback = new AjxCallback(this, this._handleResponseSearch, params.rpcCallback);
-	this._doSearch(params, respCallback, params.errorCallback);
+	var respCallback = new AjxCallback(this, this._handleResponseSearch, [params.callback]);
+	this._doSearch(params, params.noRender, respCallback, params.errorCallback);
 }
 
 ZmSearchController.prototype._handleResponseSearch =
-function(callback) {
+function(args) {
+	var callback	= args.shift();
+	var result		= args.shift();
 	if (callback) callback.run();
 }
 
@@ -204,27 +204,25 @@ function(callback) {
 * choices. Aside from re-executing a search, it can be used to perform a canned search.
 *
 * @param search			[ZmSearch]			search object
-* @param callback		[AjxCallback]*		callback to run (rather than displaying results)
+* @param noRender		[boolean]*			if true, results will not be passed to controller
 * @param changes		[Object]*			hash of changes to make to search
-* @param rpcCallback	[AjxCallback]*		(async) client callback
-* @param errorCallback	[AjxCallback]*		(async) callback to run if there is an exception
+* @param callback		[AjxCallback]*		async callback
+* @param errorCallback	[AjxCallback]*		async callback to run if there is an exception
 */
 ZmSearchController.prototype.redoSearch =
-function(search, callback, changes, rpcCallback, errorCallback) {
-	search.callback = callback;
-	var newSearch;
-	if (changes) {
-		newSearch = new ZmSearch(this._appCtxt, search.query, search.types, search.sortBy,
-								 search.offset, search.limit, search.contactSource);
-		newSearch.callback = callback;
-		newSearch.rpcCallback = rpcCallback;
-		newSearch.errorCallback = errorCallback;
+function(search, noRender, changes, callback, errorCallback) {
+	var params = {};
+	params.query = search.query;
+	params.types = search.types;
+	params.sortBy = search.sortBy;
+	params.offset = search.offset;
+	params.limit = search.limit;
+	
+	if (changes)
 		for (var key in changes) 
-			newSearch[key] = changes[key];
-	} else {
-		newSearch = search;
-	}
-	this._doSearch(newSearch);
+			params[key] = changes[key];
+
+	this._doSearch(params, noRender, callback, errorCallback);
 }
 
 /**
@@ -280,7 +278,7 @@ function(types) {
 * @param params	[Object]	a hash of arguments for the search (see search() method)
 */
 ZmSearchController.prototype._doSearch =
-function(params, rpcCallback, errorCallback) {
+function(params, noRender, callback, errorCallback) {
 
 	if (this._searchToolBar) {
 		var value = (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText) ? params.query : "";
@@ -289,7 +287,7 @@ function(params, rpcCallback, errorCallback) {
 	}
 
 	// get types from search menu if not passed in
-	var types = params.types || this.getTypes();
+	var types = params.types ? params.types : this.getTypes();
 	if (types instanceof Array) // convert array to AjxVector if necessary
 		types = AjxVector.fromArray(types);
 
@@ -297,28 +295,28 @@ function(params, rpcCallback, errorCallback) {
 	var contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmSearchToolBar.FOR_GAL_MI))
 		? this._contactSource : null;
 	// find suitable sort by value if not given one (and if applicable)
-	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
+	params.sortBy = params.sortBy ? params.sortBy : this._getSuitableSortBy(types);
 	
 	var search = new ZmSearch(this._appCtxt, params.query, types, params.sortBy, params.offset, params.limit, contactSource);
-	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, params.callback, rpcCallback]);
+	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, noRender, callback]);
 	if (!errorCallback) errorCallback = new AjxCallback(this, this._handleErrorDoSearch, params);
 	search.execute(respCallback, errorCallback);
 }
 
 /*
-* Takes the search result and hands it to the appropriate controller.
+* Takes the search result and hands it to the appropriate controller for display.
 *
 * @param search			[ZmSearch]
+* @param noRender		[boolean]
 * @param callback		[AjxCallback]*
-* @param rpcCallback	[AjxCallback]
 * @param result			[ZmCsfeResult]
 */
 ZmSearchController.prototype._handleResponseDoSearch =
 function(args) {
 
 	var search		= args.shift();
+	var noRender	= args.shift();
 	var callback	= args.shift();
-	var rpcCallback	= args.shift();
 	var result		= args.shift();
 
 	var results = result.getResponse();
@@ -330,38 +328,34 @@ function(args) {
 	if (!results.type)
 		results.type = search.types.get(0);
 	
-	if (callback) {
-		callback.run(results);
-		return;
-	} 
+	if (!noRender) {
+		// allow old results to dtor itself
+		if (this._results && (this._results.type == results.type))
+			this._results.dtor();
+		this._results = results;
 
-	// allow old results to dtor itself
-	if (this._results && (this._results.type == results.type))
-		this._results.dtor();
-	this._results = results;
-
-	DBG.timePt("handle search results");
-	if (results.type == ZmItem.CONV) {
-		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().show(results, search.query);
-	} else if (results.type == ZmItem.MSG) {
-		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController().show(results, search.query);
-	} else {
-		// determine if we need to default to mixed view
-		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-		var folder = folderTree ? folderTree.getById(search.folderId) : null;
-		var inTrash = folder && folder.isInTrash();
-
-		// only show contact view if search is not in Trash folder
-		if (results.type == ZmItem.CONTACT && !inTrash) {
-			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController().show(results, search.query, this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
+		DBG.timePt("handle search results");
+		if (results.type == ZmItem.CONV) {
+			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().show(results, search.query);
+		} else if (results.type == ZmItem.MSG) {
+			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController().show(results, search.query);
 		} else {
-			this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, search.query);
+			// determine if we need to default to mixed view
+			var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+			var folder = folderTree ? folderTree.getById(search.folderId) : null;
+			var inTrash = folder && folder.isInTrash();
+
+			// only show contact view if search is not in Trash folder
+			if (results.type == ZmItem.CONTACT && !inTrash) {
+				this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController().show(results, search.query, this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
+			} else {
+				this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, search.query);
+			}
 		}
 	}
 	DBG.timePt("render search results");
 	
-	if (rpcCallback)
-		rpcCallback.run();
+	if (callback) callback.run(result);
 }
 
 /*

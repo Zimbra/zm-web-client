@@ -32,6 +32,12 @@
 * on multiple items with just one CSFE call. For the sake of convenience, a hash 
 * matching item IDs to items is maintained. Items are assumed to have an 'id'
 * property.
+* <p>
+* The calls are made asynchronously. We are assuming that any action taken will result
+* in a notification, so the action methods generally do not have an async callback 
+* chain and thus are leaf nodes. An exception is moving conversations. We don't
+* know enough from the ensuing notifications (which only indicate that messages have
+* moved), we need to update the UI based on the response.</p>
 *
 * @author Conrad Damon
 * @param type			item type
@@ -352,10 +358,9 @@ function(items) {
 * @param items		[Array]			a list of items to move
 * @param folder		[ZmFolder]		destination folder
 * @param attrs		[Object]		additional attrs for SOAP command
-* @param callback	[AjxCallback]	async callback
 */
 ZmList.prototype.moveItems =
-function(items, folder, attrs, callback) {
+function(items, folder, attrs) {
 	if (this.type == ZmList.MIXED && !this._mixedType) {
 		this._mixedAction("moveItems", [items, folder, attrs]);
 		return;
@@ -375,7 +380,7 @@ function(items, folder, attrs, callback) {
 	attrs = attrs ? attrs : new Object();
 	attrs.l = folder.id;
 	
-	this._itemAction(items1, "move", attrs, callback);
+	this._itemAction(items1, "move", attrs);
 }
 
 
@@ -387,10 +392,9 @@ function(items, folder, attrs, callback) {
 * @param items			[Array]			list of items to delete
 * @param hardDelete		[boolean]		whether to force physical removal of items
 * @param attrs			[Object]		additional attrs for SOAP command
-* @param callback		[AjxCallback]	async callback
 */
 ZmList.prototype.deleteItems =
-function(items, hardDelete, attrs, callback) {
+function(items, hardDelete, attrs) {
 	if (this.type == ZmList.MIXED && !this._mixedType) {
 		this._mixedAction("deleteItems", [items, hardDelete, attrs]);
 		return;
@@ -416,11 +420,11 @@ function(items, hardDelete, attrs, callback) {
 
 	// soft delete - items moved to Trash
 	if (toMove.length)
-		this.moveItems(toMove, this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_TRASH), attrs, callback);
+		this.moveItems(toMove, this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_TRASH), attrs);
 
 	// hard delete - items actually deleted from data store
 	if (toDelete.length)
-		this._itemAction(toDelete, "delete", attrs, callback);
+		this._itemAction(toDelete, "delete", attrs);
 }
 
 /**
@@ -482,13 +486,25 @@ function(items, folderId) {
 		this.remove(items[i]);
 }
 
+/*
+* Performs an action on items via a SOAP request.
+*
+* @param items		[Array]			list of items to act upon
+* @param action		[string]		SOAP operation
+* @param attrs		[Object]		hash of additional attrs for SOAP request
+* @param callback	[AjxCallback]	async callback
+*/
 ZmList.prototype._itemAction =
 function(items, action, attrs, callback) {
 	var actionedItems = new Array();
 	var idHash = this._getIds(items);
 	var idStr = idHash.list.join(",");;
-	if (!(idStr && idStr.length))
-		return actionedItems;
+	if (!(idStr && idStr.length)) {
+		if (callback)
+			callback.run(new ZmCsfeResult(actionedItems));
+		else
+			return actionedItems;
+	}
 
 	var type = (this.type == ZmList.MIXED) ? this._mixedType : this.type;
 	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
@@ -510,21 +526,23 @@ function(args) {
 	var callback	= args.shift();
 	var result		= args.shift();
 
-	var response = result.getResponse();
-	var resp = response[ZmItem.SOAP_CMD[type] + "Response"]
-	if (!(resp && resp.action)) return;
-	
-	var actionedItems = new Array();
-	var ids = resp.action.id.split(",");
-	if (ids) {
-		for (var i = 0; i < ids.length; i++) {
-			var item = idHash[ids[i]];
-			if (item)
-				actionedItems.push(item);
+	if (callback) {
+		var response = result.getResponse();
+		var resp = response[ZmItem.SOAP_CMD[type] + "Response"]
+		var actionedItems = new Array();
+		if (resp && resp.action) {
+			var ids = resp.action.id.split(",");
+			if (ids) {
+				for (var i = 0; i < ids.length; i++) {
+					var item = idHash[ids[i]];
+					if (item)
+						actionedItems.push(item);
+				}
+			}
 		}
+		result.set(actionedItems);
+		callback.run(result);
 	}
-	if (callback)
-		callback.run([actionedItems]);
 }
 
 // Hack to support actions on a list of items of more than one type. Since some specialized

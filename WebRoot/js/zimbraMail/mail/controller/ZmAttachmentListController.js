@@ -108,7 +108,7 @@ function(view) {
 
 ZmAttachmentListController.prototype._createNewView = 
 function(view) {
-	return (new this._viewFactory[view](this._container, null, Dwt.ABSOLUTE_STYLE));
+	return (new this._viewFactory[view](this._container, null, Dwt.ABSOLUTE_STYLE, this));
 }
 
 // Create menu for View button and add listeners.

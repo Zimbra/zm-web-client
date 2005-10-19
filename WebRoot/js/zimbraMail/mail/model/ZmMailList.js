@@ -59,19 +59,20 @@ function() {
 	return "ZmMailList";
 };
 
-/*
+/**
 * Override so that we can specify "tcon" attribute for conv move - we don't want
-* to move messages in certain system folders as a side effect
+* to move messages in certain system folders as a side effect. Also, we need to
+* update the UI based on the response if we're moving convs, since the 
+* notifications only tell us about moved messages.
 *
 * @param items		[Array]			a list of items to move
 * @param folder		[ZmFolder]		destination folder
 * @param attrs		[Object]		additional attrs for SOAP command
-* @param callback	[AjxCallback]	async callback
 */
 ZmMailList.prototype.moveItems =
-function(items, folder, attrs, callback) {
+function(items, folder, attrs) {
 	if (this.type != ZmItem.CONV) {
-		ZmList.prototype.moveItems.call(this, items, folder, attrs, callback);
+		ZmList.prototype.moveItems.call(this, items, folder, attrs);
 		return;
 	}
 	
@@ -84,36 +85,34 @@ function(items, folder, attrs, callback) {
 	var attrs = new Object();
 	attrs.tcon = chars.join("");
 	attrs.l = folder.id;
-	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder, callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder]);
 	this._itemAction(items, "move", attrs, respCallback);
 };
 
 ZmMailList.prototype._handleResponseMoveItems =
 function(args) {
 	var folder		= args.shift();
-	var callback	= args.shift();
-	var movedItems	= args.shift();
-	
+	var result		= args.shift();
+
+	var movedItems = result.getResponse();	
 	if (movedItems && movedItems.length) {
 		this.moveLocal(movedItems, folder.id);
 		for (var i = 0; i < movedItems.length; i++)
 			movedItems[i].moveLocal(folder.id);
 		this._eventNotify(ZmEvent.E_MOVE, movedItems);
 	}
-	if (callback) callback.run();
 };
 
-/*
+/**
 * Override so that delete of a conv in Trash doesn't hard-delete its msgs in
 * other folders.
 *
 * @param items			[Array]			list of items to delete
 * @param hardDelete		[boolean]		whether to force physical removal of items
 * @param attrs			[Object]		additional attrs for SOAP command
-* @param callback		[AjxCallback]	async callback
 */
 ZmMailList.prototype.deleteItems =
-function(items, folder, attrs, callback) {
+function(items, folder, attrs) {
 	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
 		var searchFolder = this.search ? this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isInTrash()) {
@@ -121,7 +120,7 @@ function(items, folder, attrs, callback) {
 			attrs.tcon = ZmFolder.TCON_CODE[ZmFolder.ID_TRASH];
 		}
 	}
-	ZmList.prototype.deleteItems.call(this, items, folder, attrs, callback);
+	ZmList.prototype.deleteItems.call(this, items, folder, attrs);
 };
 
 ZmMailList.prototype.markRead =

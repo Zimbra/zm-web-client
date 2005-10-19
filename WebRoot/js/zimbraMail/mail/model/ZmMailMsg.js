@@ -1009,7 +1009,7 @@ function(anchorEl, msgId, msgPartId) {
 		msg._loaded = true;
 
 		// create temp msg view off current msg view
-		var tmpMsgView = new ZmMailMsgView(msgView, null, DwtControl.ABSOLUTE_STYLE, ZmController.MSG_NEW_WIN_VIEW);
+		var tmpMsgView = new ZmMailMsgView(msgView, null, DwtControl.ABSOLUTE_STYLE, ZmController.MSG_NEW_WIN_VIEW, msgView._controller);
 		Dwt.setVisible(tmpMsgView.getHtmlElement(), false);
 		tmpMsgView.set(msg, true);
 

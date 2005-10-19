@@ -232,12 +232,6 @@ ZmCalendarTreeController.prototype._editPropsListener = function(ev) {
 	folderPropsDialog.setFolder(folder);
 	folderPropsDialog.popup();
 }
-ZmCalendarTreeController.prototype._deleteListener = function(ev) {
-	this._pendingActionData = this._getActionedOrganizer(ev);
-	
-	var folder = this._pendingActionData;
-	folder.dispose();
-}
 
 ZmCalendarTreeController.prototype._notifyListeners =
 function(overviewId, type, items, detail, srcEv, destEv) {

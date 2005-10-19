@@ -23,10 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMailListView(parent, className, posStyle, view, type, headerList, dropTgt) {
+function ZmMailListView(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
 
 	if (arguments.length == 0) return;
-	ZmListView.call(this, parent, className, posStyle, view, type, headerList, dropTgt);
+	ZmListView.call(this, parent, className, posStyle, view, type, controller, headerList, dropTgt);
 	
 	// create a action menu for the header list
 	this._colHeaderActionMenu = new ZmPopupMenu(this);

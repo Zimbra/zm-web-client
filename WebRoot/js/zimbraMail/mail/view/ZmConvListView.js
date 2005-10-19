@@ -26,8 +26,7 @@
 function ZmConvListView(parent, className, posStyle, controller, dropTgt) {
 
 	var headerList = this._getHeaderList(parent);
-	ZmMailListView.call(this, parent, className, posStyle, ZmController.CONVLIST_VIEW, ZmItem.CONV, headerList, dropTgt);
-	this._controller = controller;
+	ZmMailListView.call(this, parent, className, posStyle, ZmController.CONVLIST_VIEW, ZmItem.CONV, controller, headerList, dropTgt);
 }
 
 ZmConvListView.prototype = new ZmMailListView;
@@ -218,7 +217,7 @@ function(columnItem, bSortAsc) {
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 	
 	if (this.getList().size() > 1 && this._sortByString) {
-		var searchString = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().getSearchString();
+		var searchString = this._controller.getSearchString();
 		var params = {query: searchString, types: [ZmItem.CONV], sortBy: this._sortByString, limit: this.getLimit()};
 		this._appCtxt.getSearchController().search(params);
 	}

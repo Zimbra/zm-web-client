@@ -209,24 +209,6 @@ function(tagId) {
 	searchController.search({query: query});
 }
 
-ZmConvController.prototype._doDelete =
-function(params) {
-	ZmDoublePaneController.prototype._doDelete.call(this, params);
-	this._checkConvLocation();
-}
-
-ZmConvController.prototype._doMove =
-function(params) {
-	ZmDoublePaneController.prototype._doMove.call(this, params);
-	this._checkConvLocation();
-}
-
-ZmConvController.prototype._doSpam =
-function(params) {
-	ZmDoublePaneController.prototype._doSpam.call(this, params);
-	this._checkConvLocation();
-}
-
 // Handle DnD tagging (can only add a tag to a single item) - if a tag got dropped onto
 // a msg, we need to update its conv
 ZmConvController.prototype._dropListener =
@@ -357,16 +339,6 @@ function(bDoubleForward) {
 	var clc = this._app.getConvListController();
 	if (clc)
 		clc.pageItemSilently(this._conv, bDoubleForward);
-}
-
-ZmConvController.prototype._paginateCallback = 
-function(args) {
-	ZmMailListController.prototype._paginateCallback.call(this, args);
-	
-	var msgIdx = args[1];
-	var newMsg = msgIdx ? this._list.getVector().get(msgIdx) : null;
-	if (newMsg)
-		this._listView[this._currentView].emulateDblClick(newMsg);
 }
 
 ZmConvController.prototype._getSearchFolderId = 

@@ -620,51 +620,43 @@ function(args) {
 // Flag/unflag an item
 ZmListController.prototype._doFlag =
 function(params) {
-	try {
-		this._list.flagItems(params.items, "flag", !params.items[0].isFlagged);
-	} catch (ex) {
-		this._handleException(ex, this._doFlag, params, false);
-	}
+	this._list.flagItems(params.items, "flag", !params.items[0].isFlagged);
 }
 
 // Tag/untag items
 ZmListController.prototype._doTag =
 function(params) {
-	try {
-		this._list.tagItems(params.items, params.tag.id, params.bTag);
-	} catch (ex) {
-		this._handleException(ex, this._doTag, params, false);
-	}
+	this._list.tagItems(params.items, params.tag.id, params.bTag);
 }
 
 // Remove all tags for given items
 ZmListController.prototype._doRemoveAllTags = 
 function(items) {
-	try {
-		this._list.removeAllTags(items);
-	} catch (ex) {
-		this._handleException(ex, this._doRemoveAllTags, items, false);
-	}
+	this._list.removeAllTags(items);
 }
 
-// Delete items - moves them to Trash unless hardDelete is set, in which case they are
-// physically deleted
+/*
+* Deletes one or more items from the list.
+*
+* @param items			[Array]			list of items to delete
+* @param hardDelete		[boolean]*		if true, physically delete items 
+* @param attrs			[Object]*		additional attrs for SOAP command
+*/
 ZmListController.prototype._doDelete =
 function(params) {
-	var respCallback = new AjxCallback(this, this._handleResponseDoDelete);
-	this._list.deleteItems(params.items, params.hardDelete, null, respCallback);
+	this._list.deleteItems(params.items, params.hardDelete, params.attrs);
 }
 
-ZmListController.prototype._handleResponseDoDelete =
-function(result) {
-	this._checkReplenish();
-}
-
-// Move items to a different folder
+/*
+* Moves a list of items to the given folder. Any item already in that folder is excluded.
+*
+* @param items		[Array]			a list of items to move
+* @param folder		[ZmFolder]		destination folder
+* @param attrs		[Object]		additional attrs for SOAP command
+*/
 ZmListController.prototype._doMove =
 function(params) {
-	var respCallback = new AjxCallback(this, this._handleResponseDoDelete);
-	this._list.moveItems(params.items, params.folder, null, respCallback);
+	this._list.moveItems(params.items, params.folder, params.attrs);
 }
 
 // Modify an item
@@ -798,57 +790,76 @@ function(view, offset, limit, callback, isCurrent) {
 	var search = new ZmSearch(this._appCtxt, this._searchString, types, sortBy, offset, limit);
 	if (isCurrent)
 		this._currentSearch = search;
-	var obj = {"searchFieldAction": ZmSearchController.LEAVE_SEARCH_TXT};
-	sc.redoSearch(search, callback, obj);
+	var mods = {"searchFieldAction": ZmSearchController.LEAVE_SEARCH_TXT};
+	sc.redoSearch(search, true, mods, callback);
 }
 
-// Get next or previous page of mail items, using last search as base.
-// loadIndex is the index'd item w/in the list that needs to be loaded - 
-// initiated only when user is in CV and pages a conversation that has not 
-// been loaded yet. Also added a return value indicating whether the page was 
-// cached or not to allow calling method to react accordingly.
+/*
+* Gets next or previous page of items. The set of items may come from the 
+* cached list, or from the server (using the current search as a base).
+* <p>
+* The loadIndex is the index'd item w/in the list that needs to be loaded - 
+* initiated only when user is in CV and pages a conversation that has not 
+* been loaded yet.</p>
+* <p>
+* Note that this method returns a value even though it may make an
+* asynchronous SOAP request. That's possible as long as no caller
+* depends on the results of that request. Currently, the only caller that
+* looks at the return value acts on it only if no request was made.</p>
+*
+* @param view		[constant]		current view
+* @param forward	[boolean]		if true, get next page rather than previous
+* @param loadIndex	[int]			index of item to show
+*/
 ZmListController.prototype._paginate = 
-function(view, bPageForward, loadIndex) {
-	var offset = this._listView[view].getNewOffset(bPageForward);
+function(view, forward, loadIndex) {
+	var offset = this._listView[view].getNewOffset(forward);
 	var limit = this._listView[view].getLimit();
-	bPageForward ? this.currentPage++ : this.currentPage--;
+	forward ? this.currentPage++ : this.currentPage--;
 	this.maxPage = Math.max(this.maxPage, this.currentPage);
 	DBG.println(AjxDebug.DBG2, "current page is now: " + this.currentPage);
 
 	this._listView[view].setOffset(offset);
 	
-	// if offset + limit has not been cached and more convs are available to d/l, 
+	// see if we're out of items and the server has more
 	if ((offset + limit > this._list.size() && this._list.hasMore()) || this.pageIsDirty[this.currentPage]) {
-
-		// attempt to fetch the remaining page that needs fetching 
-		// (i.e. if user deleted a conv on the previous page)
-		var delta = offset + limit - this._list.size();
-		// set max to fetch only up to what we need
+		// figure out how many items we need to fetch
+		var delta = (offset + limit) - this._list.size();
 		var max = delta < limit && delta > 0 ? delta : limit;
-		
 		if (max < limit)
 			offset = ((offset + limit) - max) + 1;
 
-		// get remainder convs from server
-		var callback = new AjxCallback(this, this._paginateCallback, [view, loadIndex, false]);
-		this._search(view, offset, max, callback, true);
-		return false; // means page was not cached
-	} 
-	
-	this._resetOperations(this._toolbar[view], 0);
-	this._resetNavToolBarButtons(view);
-	this._setViewContents(view);
-	this._resetSelection();
-	return true; // means page was cached
+		// get next page of items from server; note that callback may be overridden
+		var respCallback = new AjxCallback(this, this._handleResponsePaginate, [view, false, loadIndex]);
+		this._search(view, offset, max, respCallback, true);
+		return false;
+	} else {
+		this._resetOperations(this._toolbar[view], 0);
+		this._resetNavToolBarButtons(view);
+		this._setViewContents(view);
+		this._resetSelection();
+		return true;
+	}
 }
 
-ZmListController.prototype._paginateCallback = 
+/*
+* Updates the list and the view after a new page of items has been retrieved.
+*
+* @param view			[constant]		current view
+* @param saveSelection	[boolean]		if true, maintain current selection
+* @param loadIndex		[int]			index of item to show
+* @param result			[ZmCsfeResult]	result of SOAP request
+*/
+ZmListController.prototype._handleResponsePaginate =
 function(args) {
-	var view = args[0];
-	var bSaveSelection = args[2];
-	var searchResult = args[3];
+	var view			= args[0];
+	var saveSelection	= args[1];
+	var loadIndex		= args[2];
+	var result			= args[3];
 	
-	// update more flag
+	var searchResult = result.getResponse();
+	
+	// update "more" flag
 	this._list.setHasMore(searchResult.getAttribute("more"));
 	
 	// cache search results into internal list
@@ -857,8 +868,8 @@ function(args) {
 	this._resetOperations(this._toolbar[view], 0);
 	this._resetNavToolBarButtons(view);
 
-	// save selection if need be...
-	var selItem = bSaveSelection === true ? this._listView[this._currentView].getSelection()[0] : null;
+	// remember selected index if told to
+	var selItem = saveSelection ? this._listView[this._currentView].getSelection()[0] : null;
 	var selectedIdx = selItem ? this._listView[this._currentView]._getItemIndex(selItem) : -1;
 	
 	this._setViewContents(view);
@@ -868,19 +879,19 @@ function(args) {
 
 
 ZmListController.prototype._checkReplenish = 
-function() {
+function(callback) {
 	var view = this._listView[this._currentView];
 	var list = view.getList();
-	// dont bother if the view doesnt really have a list
+	// don't bother if the view doesnt really have a list
 	if (list) {
 		var replCount = view.getLimit() - view.size();
 		if (replCount > view.getReplenishThreshold())
-			this._replenishList(this._currentView, replCount);
+			this._replenishList(this._currentView, replCount, callback);
 	}
 }
 
 ZmListController.prototype._replenishList = 
-function(view, replCount) {
+function(view, replCount, callback) {
 	// determine if there are any more items to replenish with
 	var idxStart = this._listView[view].getOffset() + this._listView[view].size();
 	var totalCount = this._list.size();
@@ -896,7 +907,7 @@ function(view, replCount) {
 		this._listView[view].replenish(subVector);
 	} else {
 		// replenish from server request
-		this._getMoreToReplenish(view, replCount);
+		this._getMoreToReplenish(view, replCount, callback);
 	}
 }
 
@@ -910,28 +921,32 @@ function(idx) {
 	}
 }
 
-/**
+/*
 * Requests replCount items from the server to replenish current listview
 *
-* @param view		current view to replenish
-* @param replCount 	number of items to replenish
+* @param view		[constant]		current view to replenish
+* @param replCount 	[int]			number of items to replenish
+* @param callback	[AjxCallback]	async callback
 */
 ZmListController.prototype._getMoreToReplenish = 
-function(view, replCount) {
+function(view, replCount, callback) {
 	if (this._list.hasMore()) {
 		var offset = this._list.size();
-		var callback = new AjxCallback(this, this._replenishCallback, view);
-		this._search(view, offset, replCount, callback);
+		var respCallback = new AjxCallback(this, this._handleResponseGetMoreToReplenish, [view, callback]);
+		this._search(view, offset, replCount, respCallback);
 	} else {
 		if (this._listView[view].size() == 0)
 			this._listView[view]._setNoResultsHtml();
 	}
 }
 
-ZmListController.prototype._replenishCallback = 
+ZmListController.prototype._handleResponseGetMoreToReplenish = 
 function(args) {
-	var view = args[0];
-	var searchResult = args[1];
+	var view		= args.shift();
+	var callback	= args.shift();
+	var result		= args.shift();
+	
+	var searchResult = result.getResponse();
 	
 	// set updated has more flag
 	var more = searchResult.getAttribute("more");
@@ -946,6 +961,8 @@ function(args) {
 
 	// reset forward pagination button only
 	this._toolbar[view].enable(ZmOperation.PAGE_FORWARD, more);
+	
+	if (callback) callback.run(result);
 }
 
 ZmListController.prototype._setNavToolBar = 

@@ -259,7 +259,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 	}
 
 	if (!this._composeView) {
-		this._composeView = new ZmComposeView(this._container, null, this._app, Dwt.ABSOLUTE_STYLE, this._contactPicker, composeMode);
+		this._composeView = new ZmComposeView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._contactPicker, composeMode);
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
 		var elements = new Object();

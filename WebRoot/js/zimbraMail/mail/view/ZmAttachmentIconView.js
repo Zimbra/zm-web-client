@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAttachmentIconView(parent, className, posStyle) {
+function ZmAttachmentIconView(parent, className, posStyle, controller) {
 
-	ZmMailListView.call(this, parent, className, posStyle, ZmController.ATT_ICON_VIEW, ZmItem.ATT);
+	ZmMailListView.call(this, parent, className, posStyle, ZmController.ATT_ICON_VIEW, ZmItem.ATT, controller);
 
 	this.getHtmlElement().style.backgroundColor = "white";
 }

@@ -236,16 +236,6 @@ function(ev) {
 	}
 }
 
-ZmConvListController.prototype._paginateCallback = 
-function(args) {
-	ZmMailListController.prototype._paginateCallback.call(this, args);
-	
-	var convIdx = args[1];
-	var newConv = convIdx ? this._list.getVector().get(convIdx) : null;
-	if (newConv)
-		this._listView[this._currentView].emulateDblClick(newConv);
-}
-
 // Miscellaneous
 
 // If we're viewing the Trash folder, do a hard delete of the selected convs

@@ -23,13 +23,14 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmListView(parent, className, posStyle, view, type, headerList, dropTgt) {
+function ZmListView(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
 
 	if (arguments.length == 0) return;
 	DwtListView.call(this, parent, className, posStyle, headerList);
 
 	this.view = view;
 	this.type = type;
+	this._controller = controller;
 	this.setDropTarget(dropTgt);
 
 	// create listeners for changes to the list model, and to tags
@@ -126,16 +127,22 @@ function(ev) {
 		}
 	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: DELETE or MOVE");
+		var needReplenish = false;
 		for (var i = 0; i < items.length; i++) {
 			var row = Dwt.getDomObj(this.getDocument(), this._getItemId(items[i]));
 			if (row) {
 				this._parentEl.removeChild(row);
 				this._selectedItems.remove(row);
+				needReplenish = true;
 			}
 			this._list.remove(items[i]);
 		}
-		
-		this._setNextSelection();
+		if (needReplenish) {
+			var respCallback = new AjxCallback(this, this._handleResponseChangeListener);
+			this._controller._checkReplenish(respCallback);
+		} else {
+			this._setNextSelection();
+		}
 		
 	} else if (ev.event == ZmEvent.E_MODIFY && (ev.getDetail("action") == "set")) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: SET");
@@ -146,6 +153,11 @@ function(ev) {
 	} else {
 		DBG.println(AjxDebug.DBG1, "ZmListView: UNKNOWN event");
 	}
+}
+
+ZmListView.prototype._handleResponseChangeListener =
+function(args) {
+	this._setNextSelection();
 }
 
 ZmListView.prototype._tagChangeListener =

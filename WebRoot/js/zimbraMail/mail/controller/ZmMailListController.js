@@ -556,7 +556,7 @@ function(menu, bHasUnread, bHasRead) {
 // attempts to page conversations (from CV) or messages (from MV ala TV).
 // We want the underlying view (CLV or MLV) to update itself silently as it 
 // feeds the next/prev conv/msg to its respective controller.
-ZmMailListController.prototype.pageItemSilently = 
+ZmMailListController.prototype.pageItemSilentlyXXX = 
 function(currentItem, bNextItem) {
 	
 	// find the current item w/in its list - optimize?
@@ -598,6 +598,77 @@ function(currentItem, bNextItem) {
 	}
 }
 
+/**
+* This method is actually called by a pushed view's controller when a user 
+* attempts to page conversations (from CV) or messages (from MV ala TV).
+* We want the underlying view (CLV or MLV) to update itself silently as it 
+* feeds the next/prev conv/msg to its respective controller.
+*
+* @param currentItem	[ZmItem]	current item
+* @param forward		[boolean]	if true, get next item rather than previous
+*/
+ZmMailListController.prototype.pageItemSilently = 
+function(currentItem, forward) {
+	
+	// find the current item w/in its list - optimize?
+	var bFound = false;
+	var list = this._list.getArray();
+	for (var i = 0; i < list.length; i++) {
+		if (currentItem == list[i]) {
+			bFound = true;
+			break;
+		}
+	}
+	if (!bFound) return;
+		
+	var itemIdx = forward ? i + 1 : i - 1;
+	if (itemIdx < 0)
+		throw new DwtException("Bad index!", DwtException.INTERNAL_ERROR, "ZmMailListController.pageItemSilently");
+	
+//	var respCallback = new AjxCallback(this, this._handleResponsePageItemSilently, [itemIdx, list]);
+	var respCallback = null;
+	var pageWasCached = true;
+	if (itemIdx >= list.length) {
+		if (this._list.hasMore()) {
+			pageWasCached = this._paginate(this._currentView, true, itemIdx, respCallback);
+		} else {
+			// ERROR: no more conv's to retrieve!
+			throw new DwtException("Index has exceeded number of items in list!", DwtException.INTERNAL_ERROR, "ZmMailListController.pageItemSilently");
+		}
+	} else {
+		// this means the conv must be cached. Find out if we need to page back/forward.
+		var offset = this._listView[this._currentView].getOffset();
+		var limit = this._listView[this._currentView].getLimit();
+		if (itemIdx >= offset + limit) {
+			pageWasCached = this._paginate(this._currentView, true, null, respCallback);
+		} else if (itemIdx < offset) {
+			pageWasCached = this._paginate(this._currentView, false, null, respCallback);
+		}
+	}
+	if (pageWasCached) {
+		var newItem = list[itemIdx];
+		this._listView[this._currentView].emulateDblClick(newItem);
+	}
+}
+
+/*
+* Selects and displays an item that has been loaded into a page that's
+* not visible (eg getting the next conv from within the last conv on a page).
+*
+* @param view			[constant]		current view
+* @param saveSelection	[boolean]		if true, maintain current selection
+* @param loadIndex		[int]			index of item to show
+* @param result			[ZmCsfeResult]	result of SOAP request
+*/
+ZmMailListController.prototype._handleResponsePaginate =
+function(args) {
+	ZmListController.prototype._handleResponsePaginate.call(this, args);
+	
+	var itemIdx = args[2];
+	var newItem = itemIdx ? this._list.getVector().get(itemIdx) : null;
+	if (newItem)
+		this._listView[this._currentView].emulateDblClick(newItem);
+}
 
 ZmMailListController.prototype._setGroupMailBy =
 function(id) {

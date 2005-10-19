@@ -23,12 +23,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMailMsgView(parent, className, posStyle, mode) {
+function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 
 	className = className || "ZmMailMsgView";
 	DwtComposite.call(this, parent, className, posStyle);
 
 	this._mode = mode;
+	this._controller = controller;
 
 	this._displayImagesId = Dwt.getNextId();
 	this._tagRowId = Dwt.getNextId();

@@ -224,11 +224,7 @@ function(parent, menuItems) {
 */
 ZmTreeController.prototype._doCreate =
 function(params) {
-	try {
-		params.parent.create(params.name);
-	} catch (ex) {
-		this._handleException(ex, this._doCreate, params, false);
-	}
+	params.parent.create(params.name);
 }
 
 /*
@@ -238,11 +234,7 @@ function(params) {
 */
 ZmTreeController.prototype._doDelete =
 function(params) {
-	try {
-   		params.organizer._delete();
-	} catch (ex) {
-		this._handleException(ex, this._doDelete, params, false);
-	}
+	params.organizer._delete();
 }
 
 /*
@@ -253,11 +245,7 @@ function(params) {
 */
 ZmTreeController.prototype._doRename =
 function(params) {
-	try {
-		params.organizer.rename(params.name);
-	} catch (ex) {
-		this._handleException(ex, this._doRename, params, false);
-	}
+	params.organizer.rename(params.name);
 }
 
 /*
@@ -268,11 +256,7 @@ function(params) {
 */
 ZmTreeController.prototype._doMove =
 function(params) {
-	try {
-		params.organizer.move(params.tgtFolder);
-	} catch (ex) {
-		this._handleException(ex, this._doMove, params, false);
-	}
+	params.organizer.move(params.tgtFolder);
 }
 
 /*
@@ -282,11 +266,7 @@ function(params) {
 */
 ZmTreeController.prototype._doMarkAllRead =
 function(organizer) {
-	try {
-		organizer.markAllRead();
-	} catch (ex) {
-		this._handleException(ex, this._doMarkAllRead, organizer, false);
-	}
+	organizer.markAllRead();
 }
 
 // Listeners

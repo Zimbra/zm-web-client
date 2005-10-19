@@ -90,21 +90,15 @@ function(attrs, callback, errorCallback) {
 		}
 	}
 	
-	var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
+	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
 }
 
 ZmContactList.prototype._handleResponseLoad =
 function(args) {
-	var callback = null;
-	var result;
-	if (args instanceof Array) {
-		callback	= args.shift();
-		result		= args.shift();
-	} else {
-		result = args;
-	}
-	
+	callback	= args.shift();
+	result		= args.shift();
+
 	var response = result.getResponse();
 	var list = response.GetContactsResponse.cn;
 	if (list) {
@@ -148,15 +142,14 @@ function(address) {
 * @param items		[Array]			list of contacts to delete
 * @param hardDelete	[boolean]		whether to force physical removal of items
 * @param attrs		[Object]		hash of additional attrs for SOAP command
-* @param callback	[AjxCallback]	async callback
 */
 ZmContactList.prototype.deleteItems =
-function(items, hardDelete, attrs, callback) {
+function(items, hardDelete, attrs) {
 	if (this.isGal) {
 		DBG.println(AjxDebug.DBG1, "Cannot delete GAL contacts");
 		return;
 	}
-	ZmList.prototype.deleteItems.call(this, items, hardDelete, attrs, callback);
+	ZmList.prototype.deleteItems.call(this, items, hardDelete, attrs);
 }
 
 /**

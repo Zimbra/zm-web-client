@@ -27,13 +27,16 @@
 // ZmContactSplitView
 // - parent for the simple list view and xform view
 //////////////////////////////////////////////////////////////////////////////
-function ZmContactSplitView(parent, dropTgt, posStyle) {
+function ZmContactSplitView(parent, className, posStyle, controller, dropTgt) {
 
 	if (arguments.length == 0) return;
-	posStyle = posStyle || Dwt.ABSOLUTE_STYLE;
-	DwtComposite.call(this, parent, "ZmContactSplitView", posStyle);
+	className = className ? className : "ZmContactSplitView";
+	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
+	DwtComposite.call(this, parent, className, posStyle);
 
-	this._listPart = new ZmContactSimpleView(this, "ZmContactSimpleView", dropTgt, posStyle);
+	this._controller = controller;
+
+	this._listPart = new ZmContactSimpleView(this, null, posStyle, controller, dropTgt);
 	this._contactPart = new DwtComposite(this, "ZmContactInfoView", posStyle);
 
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
@@ -315,8 +318,9 @@ function(contact, isGal) {
 // ZmContactSimpleView
 // - a simple contact list view (contains only full name)
 //////////////////////////////////////////////////////////////////////////////
-function ZmContactSimpleView(parent, className, dropTgt, posStyle) {
-	ZmContactsBaseView.call(this, parent, className, ZmController.CONTACT_SIMPLE_VIEW, null, dropTgt, posStyle);
+function ZmContactSimpleView(parent, className, posStyle, controller, dropTgt) {
+	className = className ? className : "ZmContactSimpleView";
+	ZmContactsBaseView.call(this, parent, className, posStyle, ZmController.CONTACT_SIMPLE_VIEW, controller, null, dropTgt);
 };
 
 ZmContactSimpleView.prototype = new ZmContactsBaseView;

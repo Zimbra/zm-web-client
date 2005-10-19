@@ -23,10 +23,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmContactCardsView(parent, dropTgt, posStyle) {
+function ZmContactCardsView(parent, className, posStyle, controller, dropTgt) {
 
-	posStyle = posStyle || Dwt.ABSOLUTE_STYLE;
-	ZmContactsBaseView.call(this, parent, "ZmContactCardsView", ZmController.CONTACT_CARDS_VIEW, null, dropTgt, posStyle);
+	className = className ? className : "ZmContactCardsView";
+	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
+	ZmContactsBaseView.call(this, parent, className, posStyle, ZmController.CONTACT_CARDS_VIEW, controller, null, dropTgt);
 
 	this._setMouseEventHdlrs(); // needed by object manager
 	// this manages all the detected objects within the view

@@ -26,8 +26,7 @@
 function ZmMixedView(parent, className, posStyle, controller, dropTgt) {
 
 	var headerList = this._getHeaderList(parent);
-	ZmListView.call(this, parent, className, posStyle, ZmController.MIXED_VIEW, ZmList.MIXED, headerList, dropTgt);
-	this._controller = controller;
+	ZmListView.call(this, parent, className, posStyle, ZmController.MIXED_VIEW, ZmList.MIXED, controller, headerList, dropTgt);
 };
 
 ZmMixedView.prototype = new ZmListView;

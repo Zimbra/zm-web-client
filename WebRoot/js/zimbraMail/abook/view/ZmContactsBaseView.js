@@ -23,11 +23,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmContactsBaseView(parent, className, view, headerList, dropTgt, posStyle) {
+function ZmContactsBaseView(parent, className, posStyle, view, controller, headerList, dropTgt) {
 
 	if (arguments.length == 0) return;
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
-	ZmListView.call(this, parent, className, posStyle, view, ZmItem.CONTACT, headerList, dropTgt);
+	ZmListView.call(this, parent, className, posStyle, view, ZmItem.CONTACT, controller, headerList, dropTgt);
 };
 
 ZmContactsBaseView.CONTACTLIST_REPLENISH_THRESHOLD = 0;

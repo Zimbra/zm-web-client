@@ -38,7 +38,7 @@ function() {
 ZmMailApp.prototype.launch =
 function(callback, errorCallback) {
 	var respCallback = new AjxCallback(this, this._handleResponseLaunch, callback);
-	var params = {query: this._appCtxt.get(ZmSetting.INITIAL_SEARCH), rpcCallback: respCallback, errorCallback: errorCallback};
+	var params = {query: this._appCtxt.get(ZmSetting.INITIAL_SEARCH), callback: respCallback, errorCallback: errorCallback};
 	this._appCtxt.getSearchController().search(params);
 }
 

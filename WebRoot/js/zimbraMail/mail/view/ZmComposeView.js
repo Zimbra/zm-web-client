@@ -30,19 +30,19 @@
 * This class provides a form for composing a message.
 *
 * @author Conrad Damon
-* @param parent			the element that created this view
-* @param mailApp		a handle to the owning mail application
-* @param posStyle		positioning style (defaults to "absolute")
-* @param contactPicker	handle to a ZmContactPicker for selecting addresses
-* @param composeMode 	passed in so detached window knows which mode to be in on startup
+* @param parent			[DwtControl]		the element that created this view
+* @param className		[string]*			CSS class
+* @param posStyle		[constant]*			positioning style (defaults to "absolute")
+* @param controller		[ZmController]		controller managing this view
+* @param contactPicker	[ZmContactPicker]	handle to a contact picker for selecting addresses
+* @param composeMode 	[constant]			passed in so detached window knows which mode to be in on startup
 */
-function ZmComposeView(parent, className, mailApp, posStyle, contactPicker, composeMode) {
+function ZmComposeView(parent, className, posStyle, mailApp, controller, contactPicker, composeMode) {
 
 	className = className || "ZmComposeView";
 	DwtComposite.call(this, parent, className, posStyle);
 	
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	this._app = mailApp;
 	this._contactPicker = contactPicker;
 	
 	// part of bug fix #941 -- attaching an iframe which we'll use
@@ -485,7 +485,7 @@ function(bEnableInputs) {
 	this.enableInputs(bEnableInputs);
 
 	// reset state of the spell check button
-	this._app.getComposeController()._toolbar.getButton(ZmOperation.SPELL_CHECK).setToggled(false);
+	this._controller._toolbar.getButton(ZmOperation.SPELL_CHECK).setToggled(false);
 }
 
 /**
@@ -1266,7 +1266,7 @@ function() {
 ZmComposeView.prototype._okCallback =
 function() {
 	this._msgDialog.popdown();
-	this._app.getComposeController()._toolbar.enableAll(true);
+	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();
 }
 
@@ -1274,7 +1274,6 @@ function() {
 ZmComposeView.prototype._noSubjectOkCallback =
 function() {
 	this._noSubjectOkay = true;
-	var cc = this._app.getComposeController();
 	// not sure why: popdown (in FF) seems to create a race condition, 
 	// we can't get the attachments from the document anymore.
 	// W/in debugger, it looks fine, but remove the debugger and any
@@ -1288,11 +1287,11 @@ function() {
 	
 	// dont make any calls after sendMsg if child window since window gets destroyed
 	if (cc.isChildWindow && !AjxEnv.isNav) {
-		cc.sendMsg();
+		this._controller.sendMsg();
 	} else {
 		// bug fix #3251 - call popdown BEFORE sendMsg
 		this._confirmDialog.popdown();
-		cc.sendMsg();
+		this._controller.sendMsg();
 	}
 }
 
@@ -1302,7 +1301,7 @@ function() {
 	this.enableInputs(true);
 	this._confirmDialog.popdown();
 	this._subjectField.focus();
-	this._app.getComposeController()._toolbar.enableAll(true);
+	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();
 }
 
@@ -1312,7 +1311,7 @@ function() {
 	this.enableInputs(true);
 	this._badAddrsOkay = true;
 	this._confirmDialog.popdown();
-	this._app.getComposeController().sendMsg();
+	this._controller.sendMsg();
 }
 
 // User has declined to send message with bad addresses - set focus to bad field
@@ -1323,7 +1322,7 @@ function(type) {
 	this._confirmDialog.popdown();
 	if (this._using[type])
 		this._field[type].focus()
-	this._app.getComposeController()._toolbar.enableAll(true);
+	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();
 }
 
@@ -1339,7 +1338,7 @@ function(args) {
 	var status = args[1];
 	if (status == 200) {
 		var attId = args[2];
-		this._app.getComposeController().sendMsg({attId:attId, isDraft:args[0]});
+		this._controller.sendMsg({attId: attId, isDraft: args[0]});
 	} else {
 		DBG.println(AjxDebug.DBG1, "attachment error: " + status);
 	}

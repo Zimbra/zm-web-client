@@ -217,29 +217,6 @@ ZmOrganizer.prototype.getIcon = function() {};
 
 // Actions
 
-ZmOrganizer.prototype.dispose =
-function() {
-	DBG.println(AjxDebug.DBG1, "disposing: " + this.name + ", ID: " + this.id);
-	var isEmptyOp = (this.id == ZmOrganizer.ID_SPAM || this.id == ZmOrganizer.ID_TRASH);
-	// make sure we're not deleting a system folder (unless we're emptying SPAM or TRASH)
-	if (this.id < ZmOrganizer.FIRST_USER_ID && !isEmptyOp)
-		return;
-	
-	var action = isEmptyOp ? "empty" : "delete";
-	var success = this._organizerAction(action);
-
-	if (success) {
-		if (isEmptyOp) {
-			// emptied Trash or Spam will have no items
-			this.numUnread = this.numTotal = 0;
-			this._eventNotify(ZmEvent.E_DELETE);
-		} else {
-			this.tree.deleteLocal([this]);
-			this._eventNotify(ZmEvent.E_DELETE);
-		}
-	}
-}
-
 /**
 * Assigns the organizer a new name.
 */

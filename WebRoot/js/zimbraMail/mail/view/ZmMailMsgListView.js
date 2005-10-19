@@ -25,9 +25,8 @@
 
 function ZmMailMsgListView(parent, className, posStyle, mode, controller, dropTgt) {
 	this._mode = mode;
-	this._controller = controller;
 	var headerList = this._getHeaderList(parent);
-	ZmMailListView.call(this, parent, className, posStyle, mode, ZmItem.MSG, headerList, dropTgt);
+	ZmMailListView.call(this, parent, className, posStyle, mode, ZmItem.MSG, controller, headerList, dropTgt);
 }
 
 ZmMailMsgListView.prototype = new ZmMailListView;

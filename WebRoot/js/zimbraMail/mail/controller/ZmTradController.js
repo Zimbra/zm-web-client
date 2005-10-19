@@ -112,18 +112,8 @@ function(view) {
 
 ZmTradController.prototype._paginate = 
 function(view, bPageForward, convIdx) {
-	view = view || this._currentView;
+	view = view ? view : this._currentView;
 	return ZmDoublePaneController.prototype._paginate.call(this, view, bPageForward, convIdx);
-};
-
-ZmTradController.prototype._paginateCallback = 
-function(args) {
-	ZmDoublePaneController.prototype._paginateCallback.call(this, args);
-	
-	var convIdx = args[1];
-	var newConv = convIdx ? this._list.getVector().get(convIdx) : null;
-	if (newConv)
-		this._listView[this._currentView].emulateDblClick(newConv);
 };
 
 ZmTradController.prototype._doDelete = 

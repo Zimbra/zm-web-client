@@ -191,7 +191,7 @@ function() {
 
 ZmContactListController.prototype._createNewView = 
 function(view) {
-	this._parentView[view] = new this._viewFactory[view](this._container, this._dropTgt, Dwt.ABSOLUTE_STYLE, this);
+	this._parentView[view] = new this._viewFactory[view](this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
 	var listView = this._parentView[view].getListView();
 	listView.setDragSource(this._dragSrc);
 
