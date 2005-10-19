@@ -153,7 +153,7 @@ function() {
 	if (this._shareToolbar)
 		this._shareToolbar.dispose();
 
-	var buttonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE];
+	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
 	this._shareToolbar = new ZmButtonToolBar(this,	buttonIds,
 											  null, DwtControl.STATIC_STYLE,
 											  "ZmShareToolBar", "DwtButton");
@@ -220,24 +220,17 @@ function(msg) {
 			// We need an inviteComponentView. Ughhh.
 		}
 	}
-	else if (msg.share && msg.share.action == ZmShareInfo.NEW) {
-		/*** This prevents users from accepting shares to themselves...
-		// NOTE: If the grantor id is not current user, then the current
-		//		 user is most likely the intended recipient. In order for
-		//		 us to do this correctly, the share request would need to
-		//		 send the grantee's id which means that the backend would
-		//		 need to send the id back in the FolderActionRequest.
-		if (msg.share.grantor.id != this._appCtxt.get(ZmSetting.USERID)) {
-		/***/
+	else if (msg.share && msg.share.action == ZmShareInfo.NEW && msg.folderId != ZmFolder.ID_TRASH) {
+		// Note: Even if the share message is cc'd to someone else, the
+		//		 accept/decline buttons are only seen by the grantee.
+		if (msg.share.grantee.id == this._appCtxt.get(ZmSetting.USERID)) {
 			var topToolbar = this._getShareToolbar();
 			var tEl = topToolbar.getHtmlElement();
 			if (tEl && tEl.parentNode) {
 				tEl.parentNode.removeChild(tEl);
 			}
 			contentDiv.appendChild(tEl);
-		/***
 		}
-		/***/
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseSet, [msg, oldMsg]);
 	this._renderMessage(msg, contentDiv, respCallback);

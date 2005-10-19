@@ -27,15 +27,14 @@ function ZmRevokeShareDialog(appCtxt, parent, className) {
 	var xformDef = ZmRevokeShareDialog._XFORM_DEF;
 	var xmodelDef = ZmRevokeShareDialog._XMODEL_DEF;
 	className = className || "ZmRevokeShareDialog";
-	DwtXFormDialog.call(this, xformDef, xmodelDef, parent, className);
-	
-	this.setTitle(ZmMsg.revokeShare);
+	var title = ZmMsg.revokeShare;
+	var buttons = [ DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON ];
+	DwtXFormDialog.call(this, xformDef, xmodelDef, parent, className, title, buttons);
 	
 	this._appCtxt = appCtxt;
-	
+
 	// create formatters
-	this._textFormatter = new AjxMessageFormat(ZmMsg.shareRevokedText);
-	this._htmlFormatter = new AjxMessageFormat(ZmMsg.shareRevokedHtml);
+	this._formatter = new AjxMessageFormat(ZmMsg.revokeShareConfirm);
 }
 ZmRevokeShareDialog.prototype = new DwtXFormDialog;
 ZmRevokeShareDialog.prototype.constructor = ZmRevokeShareDialog;
@@ -76,15 +75,10 @@ ZmRevokeShareDialog._XMODEL_DEF = { items: [
 
 // Public methods
 
-ZmRevokeShareDialog.prototype.setShareInfo = function(shareInfo) { 
-	if (!this._formatter) {
-		this._formatter = new AjxMessageFormat(ZmMsg.revokeShareConfirm);
-	}
-	var message = "<b>" + this._formatter.format(shareInfo.granteeName) + "</b>";
-	
+ZmRevokeShareDialog.prototype.setShareInfo = function(organizerShare) { 
 	var instance = {
-		msg: message,
-		share: shareInfo,
+		msg: "<b>" + this._formatter.format(organizerShare.grantee.name) + "</b>",
+		share: organizerShare,
 		sendMail: true,
 		mailType: ZmRevokeShareDialog._MAIL_STANDARD,
 		quickReply: ''
@@ -94,12 +88,12 @@ ZmRevokeShareDialog.prototype.setShareInfo = function(shareInfo) {
 
 ZmRevokeShareDialog.prototype.popup = function(loc) {
 	DwtXFormDialog.prototype.popup.call(this, loc);
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
+	this.setButtonEnabled(DwtDialog.YES_BUTTON, true);
 }
 
 // Protected methods
 
-ZmRevokeShareDialog.prototype._handleOkButton = function(event) {
+ZmRevokeShareDialog.prototype._handleYesButton = function(event) {
 	var instance = this._xform.getInstance();
 	var share = instance.share;
 
@@ -108,7 +102,7 @@ ZmRevokeShareDialog.prototype._handleOkButton = function(event) {
 		share.revoke();
 	}
 	catch (ex) {
-		var message = Ajx.unknownError;
+		var message = ZmMsg.unknownError;
 		// TODO: handle specific error types
 		
 		var appController = this._appCtxt.getAppController();
@@ -119,123 +113,32 @@ ZmRevokeShareDialog.prototype._handleOkButton = function(event) {
 	// hide this dialog
 	this.popdown();
 
-	// is there anything to do?
-	if (!instance.sendMail) {
-		return;
-	}
-
-	// generate message
-	var textPart = this._generateTextPart(share);
-	var htmlPart = this._generateHtmlPart(share);
-	var xmlPart = this._generateXmlPart(share);
+	// send message
+	if (instance.sendMail) {
+		// initialize rest of share information
+		share.grantor.id = this._appCtxt.get(ZmSetting.USERID);
+		share.grantor.name = this._appCtxt.get(ZmSetting.DISPLAY_NAME);
+		share.link.id = share.organizer.id;
+		share.link.name = share.organizer.name;
+		share.link.view = ZmOrganizer.getViewName(share.organizer.type);
+		if (instance.mailType == ZmRevokeShareDialog._MAIL_QUICK) {
+			share.notes =  instance.quickReply;
+		}
 	
-	var top = new ZmMimePart();
-	top.setContentType(ZmMimeTable.MULTI_ALT);
-	top.children.add(textPart);
-	top.children.add(htmlPart);
-	top.children.add(xmlPart);
-	
-	var msg = new ZmMailMsg(this._appCtxt);
-	msg.setAddress(ZmEmailAddress.TO, new ZmEmailAddress(share.granteeName));
-	msg.setSubject(ZmMsg.shareRevokedSubject);
-
-	// compose in new window
-	if (instance.mailType == ZmRevokeShareDialog._MAIL_COMPOSE) {
-		// initialize compose message
-		var action = ZmOperation.SHARE;
-		var inNewWindow = true;
-		var toOverride = null;
-		var subjOverride = null;
-		var extraBodyText = null;
-	
-		var mailApp = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
-		var composeController = mailApp.getComposeController();
-
-		msg.setBodyParts([ textPart.node, htmlPart.node, xmlPart.node ]);
-		composeController.doAction(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText);
-	}
-	
-	// send email
-	else {
-		var contactsApp = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
-		var contactList = contactsApp.getContactList();
-
-		msg.setTopPart(top);
-		msg.send(contactList);
-	}
-}
-
-ZmRevokeShareDialog.prototype._generateContent = function(formatter, share) {
-	var folderType = share.organizer.view 
-					? "(" + ZmFolderPropsDialog.TYPE_CHOICES[share.organizer.view] + ")"
-					: "";
-	var userName = this._appCtxt.getSettings().get(ZmSetting.DISPLAY_NAME);
-
-	var params = [ share.organizer.name, folderType, userName, share.granteeName ];
-	var content = formatter.format(params);
-	
-	return content;
-}
-
-ZmRevokeShareDialog.prototype._generateTextPart = function(share) {
-	var content = this._generateContent(this._textFormatter, share);
-
-	var instance = this._xform.getInstance();
-	if (instance.mailType == ZmRevokeShareDialog._MAIL_COMPOSE ||
-		(instance.quickReply && !instance.quickReply.match(/^\s*$/))) {
-		content += ZmAppt.NOTES_SEPARATOR
-		if (instance.quickReply) {
-			content += instance.quickReply;
+		// compose in new window
+		if (instance.mailType == ZmRevokeShareDialog._MAIL_COMPOSE) {
+			ZmShareInfo.composeMessage(this._appCtxt, ZmShareInfo.DELETE, share);
+		}
+		// send email
+		else {
+			ZmShareInfo.sendMessage(this._appCtxt, ZmShareInfo.DELETE, share);
 		}
 	}
 
-	var mimePart = new ZmMimePart();
-	mimePart.setContentType(ZmMimeTable.TEXT_PLAIN);
-	mimePart.setContent(content);
-	return mimePart;
-}
-ZmRevokeShareDialog.prototype._generateHtmlPart = function(share) {
-	var content = this._generateContent(this._htmlFormatter, share);
-	
-	var instance = this._xform.getInstance();
-	if (instance.mailType == ZmRevokeShareDialog._MAIL_COMPOSE ||
-		(instance.quickReply && !instance.quickReply.match(/^\s*$/))) {
-		if (!this._htmlNoteFormatter) {
-			this._htmlNoteFormatter = new AjxMessageFormat(ZmMsg.shareNotesHtml);
-		}
-		content += this._htmlNoteFormatter.format(instance.quickReply);
-	}
-
-	var mimePart = new ZmMimePart();
-	mimePart.setContentType(ZmMimeTable.TEXT_HTML);
-	mimePart.setContent(content);
-	return mimePart;
-}
-ZmRevokeShareDialog.prototype._generateXmlPart = function(share) {
-	var settings = this._appCtxt.getSettings();
-	var granteeId = share.granteeId;
-	var granteeName = share.granteeName;
-	var grantorId = settings.get(ZmSetting.USERID);
-	var grantorName = AjxStringUtil.xmlAttrEncode(settings.get(ZmSetting.DISPLAY_NAME));
-	var remoteId = share.organizer.id;
-	var remoteName = AjxStringUtil.xmlAttrEncode(share.organizer.name);
-	var defaultType = ZmFolderPropsDialog.TYPE_NAMES[share.organizer.type];
-	
-	var content = [
-		"<share xmlns='"+ZmShareInfo.URI+"' version='"+ZmShareInfo.VERSION+"' action='"+ZmShareInfo.DELETE+"'>",
-		"  <grantee id='"+granteeId+"' name='"+granteeName+"' />",
-		"  <grantor id='"+grantorId+"' name='"+grantorName+"' />",
-		"  <link id='"+remoteId+"' name='"+remoteName+"' view='"+defaultType+"' />",
-		"</share>"
-	].join("\n");
-
-	var mimePart = new ZmMimePart();
-	mimePart.setContentType(ZmMimeTable.XML_ZIMBRA_SHARE);
-	mimePart.setContent(content);
-	return mimePart;
+	// default processing
+	DwtXFormDialog.prototype._handleYesButton.call(this, event);
 }
 
 ZmRevokeShareDialog.prototype._getSeparatorTemplate = function() {
 	return "";
 }
-

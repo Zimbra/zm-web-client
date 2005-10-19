@@ -130,12 +130,21 @@ for (var i = 0; i <= ZmOrganizer.MAX_COLOR; i++) {
 	ZmOrganizer.COLOR_CHOICES.push( { value: i, label: color } );
 }
 
+// views
+ZmOrganizer.VIEWS = new Object;
+ZmOrganizer.VIEWS[ZmOrganizer.FOLDER] = "conversation";
+ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] = "appointment";
+
 // Abstract methods
 
 ZmOrganizer.sortCompare = function(organizerA, organizerB) {}
 ZmOrganizer.prototype.create = function() {}
 
 // Static methods
+
+ZmOrganizer.getViewName = function(organizerType) {
+	return ZmOrganizer.VIEWS[organizerType];
+}
 
 /**
 * Checks an organizer (folder or tag) name for validity. Returns an error message if the
@@ -198,7 +207,7 @@ ZmOrganizer.prototype.getShareByGranteeId = function(granteeId) {
 	if (this.shares) {
 		for (var i = 0; i < this.shares.length; i++) {
 			var share = this.shares[i];
-			if (share.granteeId == granteeId) {
+			if (share.grantee.id == granteeId) {
 				return share;
 			}
 		}
@@ -321,7 +330,7 @@ function(obj) {
 			var grant = obj.acl.grant[i];
 			var share = this.getShareByGranteeId(grant.zid);
 			if (share) {
-				share.perm = grant.perm;
+				share.link.perm = grant.perm;
 			}
 			else {
 				share = ZmOrganizerShare.createFromJs(this, grant);
@@ -533,13 +542,16 @@ function(event, organizer, details) {
 //
 
 function ZmOrganizerShare(organizer, granteeType, granteeId, granteeName, perm, inherit) {
+	ZmShareInfo.call(this);
 	this.organizer = organizer;
-	this.granteeType = granteeType;
-	this.granteeId = granteeId;
-	this.granteeName = granteeName;
-	this.perm = perm;
-	this.inherit = inherit;
+	this.grantee.type = granteeType;
+	this.grantee.id = granteeId;
+	this.grantee.name = granteeName;
+	this.link.perm = perm;
+	this.link.inh = inherit;
 }
+ZmOrganizerShare.prototype = new ZmShareInfo;
+ZmOrganizerShare.prototype.constructor = ZmOrganizerShare;
 
 // Static methods
 
@@ -550,39 +562,20 @@ ZmOrganizerShare.createFromJs = function(parent, grant) {
 // Public methods
 
 ZmOrganizerShare.prototype.setPermissions = function(perm) {
-	if (this.perm == perm) return;
+	if (this.link.perm == perm) return;
 	var success = this._organizerShareAction("grant", null, {perm: perm});
 	if (success) {
-		this.perm = perm;
+		this.link.perm = perm;
 		var fields = new Object();
 		fields[ZmOrganizer.F_SHARES] = true;
 		this.organizer._eventNotify(ZmEvent.E_MODIFY, this.organizer, {fields: fields});
 	}
 }
 
-ZmOrganizerShare.prototype.isRead = function() {
-	return this.perm.indexOf('r') != -1;
-}
-ZmOrganizerShare.prototype.isWrite = function() {
-	return this.perm.indexOf('w') != -1;
-}
-ZmOrganizerShare.prototype.isInsert = function() {
-	return this.perm.indexOf('i') != -1;
-}
-ZmOrganizerShare.prototype.isDelete = function() {
-	return this.perm.indexOf('d') != -1;
-}
-ZmOrganizerShare.prototype.isAdminister = function() {
-	return this.perm.indexOf('a') != -1;
-}
-ZmOrganizerShare.prototype.isWorkflow = function() {
-	return this.perm.indexOf('x') != -1;
-}
-
 ZmOrganizerShare.prototype.revoke = function() {
-	var success = this._organizerShareAction("!grant", { zid: this.granteeId } );
+	var success = this._organizerShareAction("!grant", { zid: this.grantee.id } );
 	if (success) {
-		var index = this._indexOf(this.granteeName);
+		var index = this._indexOf(this.grantee.name);
 		this.organizer.shares.splice(index,1);
 	
 		var fields = new Object();
@@ -595,7 +588,7 @@ ZmOrganizerShare.prototype.revoke = function() {
 
 ZmOrganizerShare.prototype._indexOf = function(granteeName) {
 	for (var i = 0; i < this.organizer.shares.length; i++) {
-		if (this.organizer.shares[i].granteeName == granteeName) {
+		if (this.organizer.shares[i].grantee.name == granteeName) {
 			return i;
 		}
 	}
@@ -620,8 +613,8 @@ function(operation, actionAttrs, grantAttrs) {
 	}
 	
 	var shareNode = soapDoc.set("grant", null, actionNode);
-	shareNode.setAttribute("gt", this.granteeType);
-	shareNode.setAttribute("d", this.granteeName);
+	shareNode.setAttribute("gt", this.grantee.type);
+	shareNode.setAttribute("d", this.grantee.name);
 	for (var attr in grantAttrs) {
 		shareNode.setAttribute(attr, grantAttrs[attr]);
 	}

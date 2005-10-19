@@ -295,15 +295,17 @@ function (ev) {
 
 ZmMailListController.prototype._shareHandler =
 function(ev) {
-	if (ev._buttonId == ZmOperation.REPLY_ACCEPT) {
+	if (ev._buttonId == ZmOperation.SHARE_ACCEPT) {
 		var acceptDialog = this._appCtxt.getAcceptShareDialog();
 		acceptDialog.setShareInfo(ev._share);
 		acceptDialog.setAcceptListener(this._acceptShareListener);
-		acceptDialog.setDeclineListener(this._declineShareListener);
 		acceptDialog.popup();
 	}
-	else if (ev._buttonId == ZmOperation.REPLY_DECLINE) {
-		this._declineShareHandler(ev);
+	else if (ev._buttonId == ZmOperation.SHARE_DECLINE) {
+		var declineDialog = this._appCtxt.getDeclineShareDialog();
+		declineDialog.setShareInfo(ev._share);
+		declineDialog.setDeclineListener(this._declineShareListener);
+		declineDialog.popup();
 	}
 }
 

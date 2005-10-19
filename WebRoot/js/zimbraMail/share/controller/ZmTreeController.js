@@ -298,8 +298,10 @@ function(ev) {
 		// right click
 		if (this._opc.actionSupported(overviewId)) {
 			var actionMenu = (id == ZmOrganizer.ID_ROOT) ? this._headerActionMenu : this._actionMenu;
-			this.resetOperations(actionMenu, type, id);
-			actionMenu.popup(0, ev.docX, ev.docY);
+			if (actionMenu) {
+				this.resetOperations(actionMenu, type, id);
+				actionMenu.popup(0, ev.docX, ev.docY);
+			}
 		}
 	} else if ((ev.detail == DwtTree.ITEM_SELECTED) && item) {
 		// left click
