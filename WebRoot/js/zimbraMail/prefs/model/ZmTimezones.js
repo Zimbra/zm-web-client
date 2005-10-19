@@ -490,8 +490,14 @@ function() {
 	// set the default timezone
 };
 
+/**
+* Sets the user's time zone to that of his machine. If it has changed, saves the
+* new value to prefs.
+*
+* @param callback	[AjxCallback]	async callback
+*/
 ZmTimezones.initializeServerTimezone = 
-function() {
+function(callback) {
 	var machineTz = ZmTimezones.guessMachineTimezone();
 	var currentDefault = ZmTimezones.getDefault();
 	if (machineTz != currentDefault) {
@@ -505,4 +511,5 @@ function() {
 			}
 		}
 	}
+	if (callback) callback.run();
 };

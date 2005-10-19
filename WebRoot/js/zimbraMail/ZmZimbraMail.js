@@ -222,8 +222,6 @@ function(params) {
 		var respCallback = new AjxCallback(this, this._handleResponseStartup, params);
 		this._errorCallback = new AjxCallback(this, this._handleErrorStartup);
 		this._settings.loadUserSettings(respCallback, this._errorCallback); // load user prefs and COS data
-			
-		this.setSessionTimer(true);
 	} else {
 		this._killSplash();
 	}
@@ -239,7 +237,7 @@ function(ex) {
 * Startup: part 2
 * Creates components which have dependencies on the settings, including the overview.
 *
-* @param settings	[Object]
+* @param settings	[Object]		hash of overrides of user settings
 * @param app		[constant]		starting app
 */
 ZmZimbraMail.prototype._handleResponseStartup =
@@ -250,30 +248,43 @@ function(params) {
 			this._settings.getSetting(id).setValue(params.settings[id]);
 	}
 	this.setPollInterval();
-	ZmTimezones.initializeServerTimezone();
-	this._setUserInfo();
 	var opc = this._appCtxt.getOverviewController();
 	opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
 						selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true});
+	this._setUserInfo();
 	this._checkOverviewLayout();
 
 	if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED))
 		this._components[ZmAppViewMgr.C_SEARCH] = this._appCtxt.getSearchController().getSearchPanel();
 	this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._createAppChooser();
 	this._appViewMgr.addComponents(this._components, true);
-			
+
 	this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();		
 
-	var respCallback = new AjxCallback(this, this._handleResponseStartup1);
+	// reset the user's time zone (save to prefs) if it has changed
+	var respCallback = new AjxCallback(this, this._handleResponseStartup1, [params]);
+	ZmTimezones.initializeServerTimezone(respCallback);
+}
+
+/*
+* Startup: part 3
+* Launches the starting application.
+*
+* @param app		[constant]		starting app
+*/
+ZmZimbraMail.prototype._handleResponseStartup1 =
+function(args) {
+	var params = args[0];
+	var respCallback = new AjxCallback(this, this._handleResponseStartup2);
 	var startApp = (params && params.app) ? params.app : ZmZimbraMail.defaultStartApp;
 	this.activateApp(startApp, respCallback, this._errorCallback);
 }
 
 /*
-* Startup: part 3
+* Startup: part 4
 * Does a couple housecleaning tasks, then loads the contacts.
 */
-ZmZimbraMail.prototype._handleResponseStartup1 =
+ZmZimbraMail.prototype._handleResponseStartup2 =
 function() {
 	this.setSessionTimer(true);
 	this._killSplash();
