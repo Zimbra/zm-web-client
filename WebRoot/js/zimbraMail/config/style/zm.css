@@ -701,11 +701,18 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	overflow: hidden;
 }
 
+/* ths is used when we don't want horizontal scroll in the appt grid */
 .calendar_body {
 	position:absolute;
   	overflow:-moz-scrollbars-vertical;
   	overflow-x:hidden;
   	overflow-y:auto;
+}
+
+/* this is used when we want h/v scroll in the appt grid */
+.calendar_body_hscroll {
+	position:absolute;
+	overflow: auto;
 }
 
 .calendar_month_body {

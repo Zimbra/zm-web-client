@@ -44,6 +44,9 @@ ZmCalColView.prototype.constructor = ZmCalColView;
 
 ZmCalColView.DRAG_THRESHOLD = 5;
 
+// min width before we'll turn on horizontal scrollbars
+ZmCalColView.MIN_COLUMN_WIDTH = 1; 
+
 ZmCalColView._OPACITY_APPT_NORMAL = 100;
 ZmCalColView._OPACITY_APPT_DECLINED = 20;
 ZmCalColView._OPACITY_APPT_TENTATIVE = 60;
@@ -448,6 +451,13 @@ function()
 	hourElement.scrollTop = bodyElement.scrollTop;
 	alldayElement.scrollLeft = bodyElement.scrollLeft;
 	if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
+}
+
+ZmCalColView.prototype._horizontalScrollbar =
+function(enable)
+{
+	var bodyElement = Dwt.getDomObj(document, this._bodyDivId);
+	bodyElement.className = enable ? "calendar_body_hscroll" : "calendar_body";
 }
 
 ZmCalColView.prototype._scrollTo8AM =
@@ -1241,10 +1251,24 @@ function(id, x, y, w, h) {
 	}
 }
 
+ZmCalColView.prototype._calcColWidth = 
+function(bodyWidth, numCols, horzScroll) {
+	var sbwfudge = (AjxEnv.isIE ? 1 : 0) + (horzScroll ? 0 : ZmCalColView._SCROLLBAR_WIDTH);
+	return dayWidth = Math.floor((bodyWidth-sbwfudge)/numCols) - (this._daySepWidth == 1 ? 0 : 1);
+}
+
+ZmCalColView.prototype._calcMinBodyWidth = 
+function(width, numCols) {
+	//return minWidth = (ZmCalColView.MIN_COLUMN_WIDTH * numCols) + (this._daySepWidth == 1 ? 0 : 1);
+	return minWidth = (ZmCalColView.MIN_COLUMN_WIDTH  + (this._daySepWidth == 1 ? 0 : 1)) * numCols;	
+}
+
 ZmCalColView.prototype._layout =
 function() {
 	DBG.println("ZmCalColView in layout!");
 	var doc = this.getDocument();
+
+	var numCols = this._columns.length;
 
 	var sz = this.getSize();
 	var width = sz.x;
@@ -1266,15 +1290,26 @@ function() {
 		bodyX += ZmCalColView._UNION_DIV_WIDTH + this._daySepWidth;
 	}
 
-	var scrollTest = 0; //1000;
-	var scrollTest2 = scrollTest ? scrollTest-100 : 0;
+	// compute height for hours/grid
+	this._bodyDivWidth = width - bodyX;
+
+	// size appts divs
+	this._apptBodyDivHeight = ZmCalColView._DAY_HEIGHT + 1; // extra for midnight to show up
+	this._apptBodyDivWidth = Math.max(this._bodyDivWidth, this._calcMinBodyWidth(this._bodyDivWidth, numCols));
+	var needHorzScroll = this._apptBodyDivWidth > this._bodyDivWidth;
+	this._horizontalScrollbar(needHorzScroll);
+	var sbwfudge = AjxEnv.isIE ? 1 : 0;
+	var dayWidth = this._calcColWidth(this._apptBodyDivWidth, numCols, needHorzScroll);
+
+	DBG.println("dayWidth = "+dayWidth);
+	var scrollFudge = 50; // need all day to be a little wider then grid
 
 	// year heading
 	this._setBounds(this._yearHeadingDivId, 0, 0, hoursWidth, Dwt.DEFAULT);	
 		
 	// column headings
 	var allDayHeadingDiv = Dwt.getDomObj(doc, this._allDayHeadingDivId);
-	Dwt.setBounds(allDayHeadingDiv, 0, 0, width - bodyX + scrollTest, Dwt.DEFAULT);
+	Dwt.setBounds(allDayHeadingDiv, 0, 0, this._apptBodyDivWidth + scrollFudge, Dwt.DEFAULT);
 	var allDayHeadingDivHeight = Dwt.getSize(allDayHeadingDiv).y;
 	
 	// div for all day appts
@@ -1283,14 +1318,14 @@ function() {
 	if (this._allDayApptsList && this._allDayApptsList.length > 0) numRows++;
 	this._allDayDivHeight = (ZmCalColView._ALL_DAY_APPT_HEIGHT+ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD) * numRows + ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD;
 	var allDayDivY = allDayHeadingDivHeight;
-	this._setBounds(this._allDayDivId, 0, allDayDivY, width - bodyX + scrollTest, this._allDayDivHeight);
+	this._setBounds(this._allDayDivId, 0, allDayDivY, this._apptBodyDivWidth + scrollFudge, this._allDayDivHeight);
 	
 	// div under year
 	this._setBounds(this._yearAllDayDivId, 0, allDayDivY, hoursWidth, this._allDayDivHeight);	
 
 	// all day scroll
 	var allDayScrollHeight = allDayDivY + this._allDayDivHeight;
-	this._setBounds(this._allDayScrollDivId, bodyX, 0, width - bodyX, allDayScrollHeight);	
+	this._setBounds(this._allDayScrollDivId, bodyX, 0, this._bodyDivWidth, allDayScrollHeight);	
 
 	// vert sep between year and all day headings
 	this._setBounds(this._leftAllDaySepDivId, hoursWidth, 0, this._daySepWidth, allDayScrollHeight);		
@@ -1298,9 +1333,6 @@ function() {
 	// horiz separator between all day appts and grid
 	this._setBounds(this._allDaySepDivId, 0, allDayScrollHeight, width, ZmCalColView._ALL_DAY_SEP_HEIGHT);	
 
-	// compute height for hours/grid
-	this._bodyDivWidth = width - bodyX;
-	
 	var bodyY = allDayScrollHeight + ZmCalColView._ALL_DAY_SEP_HEIGHT +  (AjxEnv.isIE ? 0 : 2);
 
 	this._bodyDivHeight = height - bodyY;
@@ -1314,12 +1346,7 @@ function() {
 	// div for scrolling grid	
 	this._setBounds(this._bodyDivId, bodyX, bodyY, this._bodyDivWidth, this._bodyDivHeight);	
 
-	// size appts divs
-	var apptsDivX =  ZmCalColView._HOURS_DIV_WIDTH_PAD;
-	this._apptBodyDivHeight = ZmCalColView._DAY_HEIGHT + 1; // extra for midnight to show up
-	this._apptBodyDivWidth = this._bodyDivWidth - apptsDivX;
-
-	this._setBounds(this._apptBodyDivId, apptsDivX, -1, this._apptBodyDivWidth + scrollTest2, this._apptBodyDivHeight);	
+	this._setBounds(this._apptBodyDivId, 0, -1, this._apptBodyDivWidth, this._apptBodyDivHeight);
 
 	if (this._scheduleMode) {
 		//heading
@@ -1341,9 +1368,6 @@ function() {
 	}
 
 	var currentX = 0;
-	var numCols = this._columns.length;
-	var sbwfudge = AjxEnv.isIE ? 1 : 0;
-	var dayWidth = Math.floor((this._apptBodyDivWidth-ZmCalColView._SCROLLBAR_WIDTH-sbwfudge)/numCols) - (this._daySepWidth == 1 ? 0 : 1);
 	
 	for (var i = 0; i < numCols; i++) {
 		var col = this._columns[i];
@@ -1351,14 +1375,14 @@ function() {
 		// position day heading
 		var day = this._days[col.dayIndex];
 		var dayWfudge = (day.isToday && !AjxEnv.isIE) ? 1 : 0;
-		this._setBounds(col.titleId, apptsDivX+currentX+1, Dwt.DEFAULT, dayWidth-2 - dayWfudge, ZmCalColView._DAY_HEADING_HEIGHT-2);
+		this._setBounds(col.titleId, currentX+1, Dwt.DEFAULT, dayWidth-2 - dayWfudge, ZmCalColView._DAY_HEADING_HEIGHT-2);
 		col.apptX = currentX + 2 ; //ZZZ
 		col.apptWidth = dayWidth - this._daySepWidth - 3;  //ZZZZ
-		col.allDayX = apptsDivX + col.apptX;
+		col.allDayX = col.apptX;
 		col.allDayWidth = dayWidth; // doesn't include sep
 		currentX += dayWidth;
 
-		this._setBounds(col.headingDaySepDivId, apptsDivX+currentX, 0, this._daySepWidth, allDayHeadingDivHeight + this._allDayDivHeight);
+		this._setBounds(col.headingDaySepDivId, currentX, 0, this._daySepWidth, allDayHeadingDivHeight + this._allDayDivHeight);
 		this._setBounds(col.daySepDivId, currentX, 0, this._daySepWidth, this._apptBodyDivHeight);
 		currentX += this._daySepWidth;
 	}	
@@ -1367,6 +1391,8 @@ function() {
 	this._layoutAppts();
 
 	this._apptBodyDivOffset = Dwt.toWindow(Dwt.getDomObj(doc, this._apptBodyDivId), 0, 0, null);
+
+	this._syncScroll();
 
 	return;
 }
