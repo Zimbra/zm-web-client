@@ -942,9 +942,9 @@ function(view, replCount, callback) {
 
 ZmListController.prototype._handleResponseGetMoreToReplenish = 
 function(args) {
-	var view		= args.shift();
-	var callback	= args.shift();
-	var result		= args.shift();
+	var view		= args[0];
+	var callback	= args[1];
+	var result		= args[2];
 	
 	var searchResult = result.getResponse();
 	

@@ -121,7 +121,7 @@ function(view) {
 
 ZmDoublePaneController.prototype._handleResponseSwitchView = 
 function(args) {
-	var currentMsg = args.shift();
+	var currentMsg = args[0];
 	this._doublePaneView.setMsg(currentMsg);
 }
 
@@ -359,8 +359,8 @@ function(params) {
 
 ZmDoublePaneController.prototype._handleResponseLoadItem =
 function(args) {
-	var view	= args.shift();
-	var result	= args.shift();
+	var view	= args[0];
+	var result	= args[1];
 	
 	var results = result.getResponse();
 	if (results instanceof ZmList) {
@@ -399,7 +399,7 @@ function(params) {
 
 ZmDoublePaneController.prototype._handleResponseDoGetMsg =
 function(args) {
-	var msg = args.shift();
+	var msg = args[0];
 	this._doublePaneView.setMsg(msg);
 	this._appCtxt.getSearchController().setEnabled(true);
 }

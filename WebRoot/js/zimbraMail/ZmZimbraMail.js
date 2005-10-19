@@ -345,10 +345,10 @@ function(soapDoc, asyncMode, callback, errorCallback) {
 
 ZmZimbraMail.prototype._handleResponseSendRequest =
 function(args) {
-	var asyncMode		= args.shift();
-	var callback		= args.shift();
-	var errorCallback	= args.shift();
-	var result			= args.shift();
+	var asyncMode		= args[0];
+	var callback		= args[1];
+	var errorCallback	= args[2];
+	var result			= args[3];
 
 	// we just got activity, cancel current poll timer
 	if (this._pollActionId)

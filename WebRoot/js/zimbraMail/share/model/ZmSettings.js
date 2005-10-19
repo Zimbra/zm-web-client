@@ -132,8 +132,8 @@ function(callback, errorCallback) {
 ZmSettings.prototype._handleResponseLoadUserSettings =
 function(args) {
 
-	var callback	= args.shift();
-	var result		= args.shift();
+	var callback	= args[0];
+	var result		= args[1];
 	
 	var response = result.getResponse();
 	var obj = response.GetInfoResponse;

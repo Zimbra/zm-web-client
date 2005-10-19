@@ -105,9 +105,9 @@ function(callback, errorCallback) {
 */
 ZmSearch.prototype._handleResponseExecute = 
 function(args) {
-	var isGalSearch	= args.shift();
-	var callback	= args.shift();
-	var result		= args.shift();
+	var isGalSearch	= args[0];
+	var callback	= args[1];
+	var result		= args[2];
 	
 	var response = result.getResponse();
 	response = isGalSearch ? response.SearchGalResponse : response.SearchResponse;
@@ -140,8 +140,8 @@ function(cid, callback) {
 
 ZmSearch.prototype._handleResponseForConv = 
 function(args) {
-	var callback	= args.shift();
-	var result		= args.shift();
+	var callback	= args[0];
+	var result		= args[1];
 	
 	response = result.getResponse().SearchConvResponse;
 	var searchResult = new ZmSearchResult(this._appCtxt, this);

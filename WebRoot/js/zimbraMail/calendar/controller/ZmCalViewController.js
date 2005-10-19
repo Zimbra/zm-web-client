@@ -825,12 +825,12 @@ function(appt, startDate, endDate, changeSeries, callback, errorCallback) {
 
 ZmCalViewController.prototype._handleResponseUpdateApptDate =
 function(args) {
-	var appt		= args.shift();
-	var viewMode	= args.shift();
-	var startDate	= args.shift();
-	var endDate		= args.shift();
-	var callback	= args.shift();
-	var result		= args.shift();
+	var appt		= args[0];
+	var viewMode	= args[1];
+	var startDate	= args[2];
+	var endDate		= args[3];
+	var callback	= args[4];
+	var result		= args[5];
 	
 	try {
 		result.getResponse();
@@ -937,8 +937,8 @@ function(ev) {
 
 ZmCalViewController.prototype._handleResponseHandleApptRespondAction =
 function(args) {
-	var appt	= args.shift();
-	var ev		= args.shift();
+	var appt	= args[0];
+	var ev		= args[1];
 
 	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 	msgController.setMsg(appt.getMessage());
@@ -955,8 +955,8 @@ function(ev) {
 
 ZmCalViewController.prototype._handleResponseHandleApptEditRespondAction =
 function(args) {
-	var appt	= args.shift();
-	var ev		= args.shift();
+	var appt	= args[0];
+	var ev		= args[1];
 
 	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 	msgController.setMsg(appt.getMessage());

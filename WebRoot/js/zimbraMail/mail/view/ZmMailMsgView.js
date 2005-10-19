@@ -245,8 +245,8 @@ function(msg) {
 
 ZmMailMsgView.prototype._handleResponseSet =
 function(args) {
-	var msg		= args.shift();
-	var oldMsg	= args.shift().shift();	
+	var msg		= args[0];
+	var oldMsg	= args[1][0];	
 	if (this._mode == ZmController.MSG_VIEW) {
 		this._setTags(msg);
 		// Remove listener for current msg if it exists
@@ -782,10 +782,10 @@ function(msg, container, callback) {
 
 ZmMailMsgView.prototype._handleResponseRenderMessage =
 function(args) {
-	var el			= args.shift();
-	var bodyPart	= args.shift();
-	var callback	= args.shift();
-	var result		= args.shift();
+	var el			= args[0];
+	var bodyPart	= args[1];
+	var callback	= args[2];
+	var result		= args[3];
 	
 	var content = result.getResponse();
 	// if no text part, just dump the raw html

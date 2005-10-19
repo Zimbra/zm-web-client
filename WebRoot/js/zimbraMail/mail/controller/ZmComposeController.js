@@ -168,9 +168,9 @@ function(params) {
 
 ZmComposeController.prototype._handleResponseSendMsg =
 function(args) {
-	var isDraft	= args.shift();
-	var msg		= args.shift();
-	var result	= args.shift();
+	var isDraft	= args[0];
+	var msg		= args[1];
+	var result	= args[2];
 	
 	var resp = result.getResponse();
 	if (!isDraft) {

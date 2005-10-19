@@ -194,8 +194,8 @@ function(params) {
 
 ZmSearchController.prototype._handleResponseSearch =
 function(args) {
-	var callback	= args.shift();
-	var result		= args.shift();
+	var callback	= args[0];
+	var result		= args[1];
 	if (callback) callback.run();
 }
 
@@ -314,10 +314,10 @@ function(params, noRender, callback, errorCallback) {
 ZmSearchController.prototype._handleResponseDoSearch =
 function(args) {
 
-	var search		= args.shift();
-	var noRender	= args.shift();
-	var callback	= args.shift();
-	var result		= args.shift();
+	var search		= args[0];
+	var noRender	= args[1];
+	var callback	= args[2];
+	var result		= args[3];
 
 	var results = result.getResponse();
 
@@ -365,8 +365,8 @@ function(args) {
 */
 ZmSearchController.prototype._handleErrorDoSearch =
 function(args) {
-	var params	= args.shift();
-	var ex		= args.shift();
+	var params	= args[0];
+	var ex		= args[1];
 	
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER ||
 		ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||

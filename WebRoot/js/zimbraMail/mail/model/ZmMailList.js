@@ -91,8 +91,8 @@ function(items, folder, attrs) {
 
 ZmMailList.prototype._handleResponseMoveItems =
 function(args) {
-	var folder		= args.shift();
-	var result		= args.shift();
+	var folder		= args[0];
+	var result		= args[1];
 
 	var movedItems = result.getResponse();	
 	if (movedItems && movedItems.length) {

@@ -884,10 +884,10 @@ function(field, data, html, idx, wrap, width) {
 
 ZmAppt.prototype._handleResponseGetDetails =
 function(args) {
-	var mode		= args.shift();
-	var message		= args.shift();
-	var callback	= args.shift();
-	var result		= args.shift();
+	var mode		= args[0];
+	var message		= args[1];
+	var callback	= args[2];
+	var result		= args[3];
 	
 	// msg content should be text, so no need to pass callback to setFromMessage()
 	this.setFromMessage(message, mode);
@@ -1679,8 +1679,8 @@ function(sender, soapDoc) {
 
 ZmAppt.prototype._handleResponseCancel =
 function(args) {
-	var sender	= args.shift();
-	var mode	= args.shift();
+	var sender	= args[0];
+	var mode	= args[1];
 	
 	if (mode == ZmAppt.MODE_DELETE || mode == ZmAppt.MODE_DELETE_SERIES || mode == ZmAppt.MODE_DELETE_INSTANCE) {
 		var soapDoc = AjxSoapDoc.create("CancelAppointmentRequest", "urn:zimbraMail");

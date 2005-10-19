@@ -398,9 +398,9 @@ function(uname, pword) {
 
 ZmLogin._handleResponseSubmitAuthRequest =
 function(args) {
-	var uname	= args.shift();
-	var pword	= args.shift();
-	var result	= args.shift();
+	var uname	= args[0];
+	var pword	= args[1];
+	var result	= args[2];
 	
 	var response;
 	try {

@@ -2072,8 +2072,8 @@ function(ev) {
 
 ZmCalColView._handleError =
 function(args) {
-	var data	= args.shift();
-	var ex		= args.shift();
+	var data	= args[0];
+	var ex		= args[1];
 	
 	ZmCalColView._restoreLayout(data);
 	return false;

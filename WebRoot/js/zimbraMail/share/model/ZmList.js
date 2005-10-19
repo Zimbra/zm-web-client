@@ -521,10 +521,10 @@ function(items, action, attrs, callback) {
 
 ZmList.prototype._handleResponseItemAction =
 function(args) {
-	var type		= args.shift();
-	var idHash		= args.shift();
-	var callback	= args.shift();
-	var result		= args.shift();
+	var type		= args[0];
+	var idHash		= args[1];
+	var callback	= args[2];
+	var result		= args[3];
 
 	if (callback) {
 		var response = result.getResponse();

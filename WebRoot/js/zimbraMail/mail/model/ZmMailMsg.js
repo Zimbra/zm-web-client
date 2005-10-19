@@ -93,8 +93,8 @@ function(sender, msgId, getHtml, callback, errorCallback) {
 
 ZmMailMsg._handleResponseGetMsg =
 function(args) {
-	var callback	= args.shift();
-	var result		= args.shift();
+	var callback	= args[0];
+	var result		= args[1];
 	if (callback) callback.run(result);
 }
 
@@ -392,8 +392,8 @@ function(getHtml, forceLoad, callback, errorCallback) {
 ZmMailMsg.prototype._handleResponseLoad =
 function(args) {
 
-	var callback	= args.shift();
-	var result		= args.shift();
+	var callback	= args[0];
+	var result		= args[1];
 
 	var response = result.getResponse().GetMsgResponse;
 
@@ -462,8 +462,8 @@ function(callback) {
 
 ZmMailMsg.prototype._handleResponseGetTextPart =
 function(args) {
-	var callback	= args.shift();
-	var result		= args.shift();
+	var callback	= args[0];
+	var result		= args[1];
 	
 	var response = result.getResponse();
 	this._loadFromDom(response.m[0]);
@@ -600,9 +600,9 @@ function(contactList, isDraft, callback) {
 
 ZmMailMsg.prototype._handleResponseSend =
 function(args) {
-	var isDraft		= args.shift();
-	var callback	= args.shift();
-	var result		= args.shift();
+	var isDraft		= args[0];
+	var callback	= args[1];
+	var result		= args[2];
 	
 	var resp = result.getResponse().m[0];
 	// notify listeners of successful send message
@@ -705,10 +705,10 @@ function(soapDoc, bIsInvite, bIsDraft, callback) {
 
 ZmMailMsg.prototype._handleResponseSendMessage =
 function(args) {
-	var bIsInvite	= args.shift();
-	var bIsDraft	= args.shift();
-	var callback	= args.shift();
-	var result		= args.shift();
+	var bIsInvite	= args[0];
+	var bIsDraft	= args[1];
+	var callback	= args[2];
+	var result		= args[3];
 	
 	var response = result.getResponse();
 	if (bIsInvite)

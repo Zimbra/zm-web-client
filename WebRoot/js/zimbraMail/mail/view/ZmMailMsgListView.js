@@ -434,10 +434,10 @@ function(columnItem, bSortAsc) {
 
 ZmMailMsgListView.prototype._handleResponseSortColumn =
 function(args) {
-	var conv		= args.shift();
-	var columnItem	= args.shift();
-	var controller	= args.shift();
-	var result		= args.shift();
+	var conv		= args[0];
+	var columnItem	= args[1];
+	var controller	= args[2];
+	var result		= args[3];
 	
 	var list = result.getResponse();
 	controller.setList(list); // set the new list returned

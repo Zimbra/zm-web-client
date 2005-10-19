@@ -96,8 +96,8 @@ function(attrs, callback, errorCallback) {
 
 ZmContactList.prototype._handleResponseLoad =
 function(args) {
-	callback	= args.shift();
-	result		= args.shift();
+	var callback	= args[0];
+	var result		= args[1];
 
 	var response = result.getResponse();
 	var list = response.GetContactsResponse.cn;
