@@ -408,7 +408,7 @@ function() {
 		div.style.position = 'absolute';
 		div.className = "calendar_heading_day";
 		div.id = col.titleId;
-		div.innerHTML = "<div class='calendar_heading_day_text'>"+AjxStringUtil.htmlEncode(this._calendars[i].getName())+"</div>";
+		div.innerHTML = AjxStringUtil.htmlEncode(this._calendars[i].getName());
 		titleParentEl.appendChild(div);
 
 		div = doc.createElement("div");
@@ -548,7 +548,7 @@ function() {
 		this._dateToDayIndex[this._dayKey(day.date)] = day;
 		if (!this._scheduleMode) {
 	 		var te = Dwt.getDomObj(doc, this._columns[i].titleId);
-			te.firstChild.innerHTML = this._dayTitle(d);
+			te.innerHTML = this._dayTitle(d);
 			te._type = ZmCalBaseView.TYPE_DAY_HEADER;
 			te._dayIndex = i;
 			te.className = day.isToday ? 'calendar_heading_day_today' : 'calendar_heading_day';
@@ -827,7 +827,7 @@ function(abook) {
 	html.append("<div id='", this._allDayHeadingDivId, "' class=calendar_heading style='position:absolute'>");
 	if (!this._scheduleMode) {
 		for (var i =0; i < this.getNumDays(); i++) {
-			html.append("<div id='", this._columns[i].titleId, "' class=calendar_heading_day style='position:absolute;'><div class=calendar_heading_day_text></div></div>");
+			html.append("<div id='", this._columns[i].titleId, "' class=calendar_heading_day style='position:absolute;'></div>");
 		}
 	}
 	html.append("</div>");
@@ -1382,8 +1382,8 @@ function() {
 			
 		// position day heading
 		var day = this._days[col.dayIndex];
-		var dayWfudge = (day.isToday && !AjxEnv.isIE) ? 1 : 0;
-		this._setBounds(col.titleId, currentX+1, Dwt.DEFAULT, dayWidth-2 - dayWfudge, ZmCalColView._DAY_HEADING_HEIGHT-2);
+		//this._setBounds(col.titleId, currentX+1, Dwt.DEFAULT, dayWidth-2, ZmCalColView._DAY_HEADING_HEIGHT-2);
+		this._setBounds(col.titleId, currentX+1, Dwt.DEFAULT, dayWidth, ZmCalColView._DAY_HEADING_HEIGHT);
 		col.apptX = currentX + 2 ; //ZZZ
 		col.apptWidth = dayWidth - this._daySepWidth - 3;  //ZZZZ
 		col.allDayX = col.apptX;
@@ -1454,7 +1454,7 @@ ZmCalColView.prototype._mouseOverAction =
 function(ev, div) {
 	ZmCalBaseView.prototype._mouseOverAction.call(this, ev, div);
 	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER) {
-		div.firstChild.style.textDecoration = "underline";
+		div.style.textDecoration = "underline";
 	}
 }
 
@@ -1462,7 +1462,7 @@ ZmCalColView.prototype._mouseOutAction =
 function(ev, div) {
 	ZmCalBaseView.prototype._mouseOutAction.call(this, ev, div);
 	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER) {
-		div.firstChild.style.textDecoration = "none";
+		div.style.textDecoration = "none";
 	}
 }
 

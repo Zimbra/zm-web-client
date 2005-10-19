@@ -655,26 +655,37 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .calendar_heading_day {
-	overflow: hidden;
+	white-space: nowrap;
+	overflow:hidden;
+	text-align:center;
+	padding-top: 2px;
+	width: 100%;
+	height: 100%;
 }
 
 .calendar_heading_day-selected {
-	overflow: hidden;
 	background-color: #ADD6D6;
+	white-space: nowrap;
+	overflow:hidden;
+	text-align:center;
+	padding-top: 2px;
+	width: 100%;
+	height: 100%;
 }
 
 .calendar_heading_day_today {
-	overflow: hidden;
-	border: 1px solid red;
+	color: red;
+	white-space: nowrap;
+	overflow:hidden;
+	text-align:center;
+	padding-top: 2px;
+	width: 100%;
+	height: 100%;
 }
 
 .calendar_heading_day_today-selected {
-	overflow: hidden;
-	border: 1px solid red;
+	color: red;
 	background-color: #ADD6D6;
-}
-
-.calendar_heading_day_text {
 	white-space: nowrap;
 	overflow:hidden;
 	text-align:center;
