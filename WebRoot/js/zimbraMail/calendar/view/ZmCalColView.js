@@ -45,7 +45,7 @@ ZmCalColView.prototype.constructor = ZmCalColView;
 ZmCalColView.DRAG_THRESHOLD = 5;
 
 // min width before we'll turn on horizontal scrollbars
-ZmCalColView.MIN_COLUMN_WIDTH = 1; 
+ZmCalColView.MIN_COLUMN_WIDTH = 100; 
 
 ZmCalColView._OPACITY_APPT_NORMAL = 100;
 ZmCalColView._OPACITY_APPT_DECLINED = 20;
@@ -442,13 +442,14 @@ function() {
 }
 
 ZmCalColView.prototype._syncScroll =
-function()
+function(resetLeft)
 {
 	var bodyElement = Dwt.getDomObj(document, this._bodyDivId);
 	var hourElement = Dwt.getDomObj(document, this._hoursScrollDivId);
 	var alldayElement = Dwt.getDomObj(document, this._allDayScrollDivId);
 	var unionGridScrollElement = Dwt.getDomObj(document, this._unionGridScrollDivId);
 	hourElement.scrollTop = bodyElement.scrollTop;
+	if (resetLeft) bodyElement.scrollLeft = 0;
 	alldayElement.scrollLeft = bodyElement.scrollLeft;
 	if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
 }
@@ -458,6 +459,10 @@ function(enable)
 {
 	var bodyElement = Dwt.getDomObj(document, this._bodyDivId);
 	bodyElement.className = enable ? "calendar_body_hscroll" : "calendar_body";
+	if (enable != this._horzEnabled) {
+		this._horzEnabled = enable;
+		this._syncScroll(true);	
+	}
 }
 
 ZmCalColView.prototype._scrollTo8AM =
@@ -1298,11 +1303,14 @@ function() {
 	this._apptBodyDivHeight = ZmCalColView._DAY_HEIGHT + 1; // extra for midnight to show up
 	this._apptBodyDivWidth = Math.max(this._bodyDivWidth, this._calcMinBodyWidth(this._bodyDivWidth, numCols));
 	var needHorzScroll = this._apptBodyDivWidth > this._bodyDivWidth;
+	
+
 	this._horizontalScrollbar(needHorzScroll);
 	var sbwfudge = AjxEnv.isIE ? 1 : 0;
 	var dayWidth = this._calcColWidth(this._apptBodyDivWidth - ZmCalColView._SCROLLBAR_WIDTH, numCols);
 
-	var scrollFudge = 50; // need all day to be a little wider then grid
+	if (needHorzScroll) this._apptBodyDivWidth -= 18;
+	var scrollFudge = needHorzScroll ? 20 : 0; // need all day to be a little wider then grid
 
 	// year heading
 	this._setBounds(this._yearHeadingDivId, 0, 0, hoursWidth, Dwt.DEFAULT);	
@@ -1391,8 +1399,6 @@ function() {
 	this._layoutAppts();
 
 	this._apptBodyDivOffset = Dwt.toWindow(Dwt.getDomObj(doc, this._apptBodyDivId), 0, 0, null);
-
-	this._syncScroll();
 
 	return;
 }
