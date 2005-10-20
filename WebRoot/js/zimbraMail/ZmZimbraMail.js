@@ -342,6 +342,10 @@ function(soapDoc, asyncMode, callback, errorCallback) {
 	var command = new ZmCsfeCommand();
 	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken, 
 				  asyncMode: asyncMode, callback: asyncCallback, logRequest: this._logRequest};
+	
+	if (asyncMode)
+		this._shell.setBusy(true); // put up busy overlay to block user input
+	
 	try {
 		var response = command.invoke(params);
 	} catch (ex) {
@@ -360,6 +364,9 @@ function(args) {
 	var callback		= args[1];
 	var errorCallback	= args[2];
 	var result			= args[3];
+
+	if (asyncMode)
+		this._shell.setBusy(false); // remove busy overlay
 
 	// we just got activity, cancel current poll timer
 	if (this._pollActionId)
