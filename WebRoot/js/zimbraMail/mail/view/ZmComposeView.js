@@ -1339,7 +1339,7 @@ function(args) {
 	var status = args[1];
 	if (status == 200) {
 		var attId = args[2];
-		this._controller.sendMsg({attId: attId, isDraft: args[0]});
+		this._controller.sendMsg(attId, args[0]);
 	} else {
 		DBG.println(AjxDebug.DBG1, "attachment error: " + status);
 	}

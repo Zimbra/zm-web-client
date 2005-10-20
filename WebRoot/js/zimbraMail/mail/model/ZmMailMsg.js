@@ -493,20 +493,20 @@ function(content) {
 };
 
 ZmMailMsg.prototype.sendInviteReply = 
-function(contactList, edited, componentId) {
+function(contactList, edited, componentId, callback, errorCallback) {
 	var ed = edited || false;
 	if (!this._origMsg) {
 		this._origMsg = this;
 	}
 	if (!this._origMsg.invite.hasMultipleComponents()) {
-		return this._sendInviteReply(contactList, ed, 0);
+		return this._sendInviteReply(contactList, ed, 0, callback, errorCallback);
 	} else {
 		// TODO ... don't understand multiple invites too well yet.
 	}
 };
 
 ZmMailMsg.prototype._sendInviteReply = 
-function (contactList, edited, componentId) {
+function (contactList, edited, componentId, callback, errorCallback) {
 	var soapDoc = AjxSoapDoc.create("SendInviteReplyRequest", "urn:zimbraMail");
 
 	var id = this._origMsg.id;
@@ -529,29 +529,32 @@ function (contactList, edited, componentId) {
 		this.setAddress(ZmEmailAddress.TO, to);
 	}
 
-	//soapDoc.setMethodAttribute("updateOrganizer", (edited? "FALSE":"TRUE") );
 	soapDoc.setMethodAttribute("updateOrganizer", "TRUE" );
 	if (edited)
 		this._createMessageNode(soapDoc, contactList);
 
-	var resp = this._sendMessage(soapDoc, true);
+	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply);
+	var resp = this._sendMessage(soapDoc, true, respCallback, errorCallback);
+};
+
+ZmMailMsg.prototype._handleResponseSendInviteReply =
+function(result) {
+	var resp = result.getResponse();
+
 	var id = resp.id ? resp.id.split("-")[0] : null;
-	
+
 	if (id || resp.status == "OK") {
 		this._notifySendListeners();
 		this._origMsg.folderId = ZmFolder.ID_TRASH;
 		this._origMsg._listNotify(ZmEvent.E_MOVE);
 	}
-
-	// map this to an int?
-	return (id || status);
-};
+}
 
 /**
 * Sends the message out into the world.
 */
 ZmMailMsg.prototype.send =
-function(contactList, isDraft) {
+function(contactList, isDraft, callback, errorCallback) {
 	// TODO - allow invite replies when the server gets updated.
 	// if we have an invite reply, we have to send a different soap message
 
@@ -559,44 +562,15 @@ function(contactList, isDraft) {
 	// XXX: not sure how saving a invite draft works?!
 	////////////////////////////////////////////////////////////////////////////////////////
 	if (this.isInviteReply && !isDraft) {
-		return this.sendInviteReply(contactList, true, 0);
-	} else {
-		var request = isDraft ? "SaveDraftRequest" : "SendMsgRequest";
-		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
-		// TODO - return code and put up status message
-		this._createMessageNode(soapDoc, contactList, isDraft);
-		var resp = this._sendMessage(soapDoc, false, isDraft).m[0];
-		
-		// notify listeners of successful send message
-		if (!isDraft) {
-			if (resp.id || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT))
-				this._notifySendListeners();
-			return resp.id;
-		} else {
-			this._loadFromDom(resp);
-			return this;
-		}
-	}	
-};
-/*
-ZmMailMsg.prototype.send =
-function(contactList, isDraft, callback) {
-	// TODO - allow invite replies when the server gets updated.
-	// if we have an invite reply, we have to send a different soap message
-
-	////////////////////////////////////////////////////////////////////////////////////////
-	// XXX: not sure how saving a invite draft works?!
-	////////////////////////////////////////////////////////////////////////////////////////
-	if (this.isInviteReply && !isDraft) {
-		return this.sendInviteReply(contactList, true, 0);
+		this.sendInviteReply(contactList, true, 0, callback, errorCallback);
 	} else {
 		var request = isDraft ? "SaveDraftRequest" : "SendMsgRequest";
 		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
 		// TODO - return code and put up status message
 		this._createMessageNode(soapDoc, contactList, isDraft);
 		var respCallback = new AjxCallback(this, this._handleResponseSend, [isDraft, callback]);
-		this._sendMessage(soapDoc, false, isDraft, respCallback);
-	}
+		this._sendMessage(soapDoc, false, isDraft, respCallback, errorCallback);
+	}	
 };
 
 ZmMailMsg.prototype._handleResponseSend =
@@ -606,18 +580,17 @@ function(args) {
 	var result		= args[2];
 	
 	var resp = result.getResponse().m[0];
+		
 	// notify listeners of successful send message
 	if (!isDraft) {
 		if (resp.id || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT))
 			this._notifySendListeners();
-		result.set(resp.id);
 	} else {
 		this._loadFromDom(resp);
-		result.set(this);
 	}
+	
 	if (callback) callback.run(result);
-};
-*/
+}
 
 ZmMailMsg.prototype._createMessageNode = 
 function(soapDoc, contactList, isDraft) {
@@ -688,20 +661,9 @@ function(soapDoc, contactList, isDraft) {
 };
 
 ZmMailMsg.prototype._sendMessage = 
-function(soapDoc, bIsInvite, bIsDraft) {
-	var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
-	if (bIsInvite)
-		return resp.SendInviteReplyResponse;
-	else if (bIsDraft)
-		return resp.SaveDraftResponse;
-	else
-		return resp.SendMsgResponse;
-};
-/*
-ZmMailMsg.prototype._sendMessage = 
-function(soapDoc, bIsInvite, bIsDraft, callback) {
+function(soapDoc, bIsInvite, bIsDraft, callback, errorCallback) {
 	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [bIsInvite, bIsDraft, callback]);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
 };
 
 ZmMailMsg.prototype._handleResponseSendMessage =
@@ -713,15 +675,15 @@ function(args) {
 	
 	var response = result.getResponse();
 	if (bIsInvite)
-		result.set(resp.SendInviteReplyResponse);
+		result.set(response.SendInviteReplyResponse);
 	else if (bIsDraft)
-		result.set(resp.SaveDraftResponse);
+		result.set(response.SaveDraftResponse);
 	else
-		result.set(resp.SendMsgResponse);
+		result.set(response.SendMsgResponse);
 
 	if (callback) callback.run(result);
 };
-*/
+
 
 ZmMailMsg.prototype._notifySendListeners = 
 function() {

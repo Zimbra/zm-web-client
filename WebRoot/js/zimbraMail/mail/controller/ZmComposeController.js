@@ -93,91 +93,32 @@ function() {
 * Sends the message represented by the content of the compose view.
 */
 ZmComposeController.prototype.sendMsg =
-function(params) {
-	try {
-		var attId = params ? params.attId : null;
-		var isDraft = params ? params.isDraft : null;
-		
+function(attId, isDraft, callback) {
 		var msg = this._composeView.getMsg(attId, isDraft);
 		if (!msg) return;
 		
 		var contactList = !isDraft 
 			? this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList() : null;
 
-		var resp = msg.send(contactList, isDraft);
-		
-		if (!isDraft) {
-			if (resp || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
-				this._composeView.reset(false);
-				this._app.popView(true);
-				
-				// if the original message was a draft, we need to nuke it
-				var origMsg = msg._origMsg;
-				if (origMsg && origMsg.isDraft && origMsg.list) {
-					// if this is a child window, dont schedule!
-					if (this.isChildWindow)
-						this._deleteDraft(origMsg);
-					else
-						this._schedule(this._deleteDraft, origMsg);
-				}
-			}
-			if (this.isChildWindow && window.parentController) {
-				window.parentController.setStatusMsg(ZmMsg.messageSent);
-			} else {
-				this._appCtxt.getAppController().setStatusMsg(ZmMsg.messageSent);
-			}
-		} else {
-			// TODO - disable save draft button indicating a draft was saved
-			//        ** new UI will show in toaster section
-			if (this.isChildWindow && window.parentController) {
-				window.parentController.setStatusMsg(ZmMsg.draftSaved);
-			} else {
-				this._appCtxt.getAppController().setStatusMsg(ZmMsg.draftSaved);
-			}
-			this._composeView.reEnableDesignMode();
-
-			// save message draft so it can be reused if user saves draft again
-			this._composeView.processMsgDraft(resp);
-		}
-	} catch (ex) {
-		this._toolbar.enableAll(true);
-		this._handleException(ex, this.sendMsg, params, false);
-	}
-}
-/*
-ZmComposeController.prototype.sendMsg =
-function(params) {
-	try {
-		var attId = params ? params.attId : null;
-		var isDraft = params ? params.isDraft : null;
-		
-		var msg = this._composeView.getMsg(attId, isDraft);
-		if (!msg) return;
-		
-		var contactList = !isDraft 
-			? this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList() : null;
-
-		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg]);
-		msg.send(contactList, isDraft);
-		
-	} catch (ex) {
-		this._toolbar.enableAll(true);
-		this._handleException(ex, this.sendMsg, params, false);
-	}
+		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg, callback]);
+		var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
+		msg.send(contactList, isDraft, respCallback, errorCallback);
 }
 
 ZmComposeController.prototype._handleResponseSendMsg =
 function(args) {
-	var isDraft	= args[0];
-	var msg		= args[1];
-	var result	= args[2];
+	var isDraft		= args[0];
+	var msg			= args[1];
+	var callback	= args[2];
+	var result		= args[3];
 	
 	var resp = result.getResponse();
+
 	if (!isDraft) {
 		if (resp || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
 			this._composeView.reset(false);
 			this._app.popView(true);
-			
+				
 			// if the original message was a draft, we need to nuke it
 			var origMsg = msg._origMsg;
 			if (origMsg && origMsg.isDraft && origMsg.list) {
@@ -202,11 +143,18 @@ function(args) {
 			this._appCtxt.getAppController().setStatusMsg(ZmMsg.draftSaved);
 		}
 		this._composeView.reEnableDesignMode();
-			// save message draft so it can be reused if user saves draft again
-		this._composeView.processMsgDraft(resp);
+		// save message draft so it can be reused if user saves draft again
+		this._composeView.processMsgDraft(msg);
 	}
+
+	if (callback) callback.run(result);
 }
-*/
+
+ZmComposeController.prototype._handleErrorSendMsg =
+function(ex) {
+	this._toolbar.enableAll(true);
+	return false;
+}
 
 // Private methods
 
@@ -227,7 +175,6 @@ function(delMsg) {
 		actionNode.setAttribute("id", delMsg.id);
 		actionNode.setAttribute("op", "delete");
 		var ac = this._appCtxt.getAppController();
-//		ac.setActionedIds([delMsg.id]);
 		ac.sendRequest(soapDoc)[ZmItem.SOAP_CMD[ZmItem.MSG] + "Response"];
 		// force a redo Search to refresh the drafts folder
 		var search = this._appCtxt.getCurrentSearch();
@@ -495,7 +442,12 @@ function() {
 // Save Draft button was pressed
 ZmComposeController.prototype._saveDraftListener =
 function(ev) {
-	this.sendMsg({isDraft: true});
+	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener);
+	this.sendMsg(null, true, respCallback);
+}
+
+ZmComposeController.prototype._handleResponseSaveDraftListener =
+function(args) {
 	this._composeView.draftSaved();
 }
 
@@ -608,10 +560,20 @@ function() {
 ZmComposeController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
-	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED))
-		this.sendMsg({isDraft: true});
+	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
+		// save as draft
+		var respCallback = new AjxCallback(this, this._handleResponsePopShieldYesCallback);
+		this.sendMsg(null, true, respCallback);
+	} else {
+		// cancel
+		this._composeView.reset(false);
+	}
 	this._app.getAppViewMgr().showPendingView(true);
-	this._composeView.reset(false);
+}
+
+ZmComposeController.prototype._handleResponsePopShieldYesCallback =
+function(args) {
+	this._composeView.draftSaved();
 }
 
 // Called as: No, don't save as draft
