@@ -376,10 +376,11 @@ function(appt) {
 		this._updateUnionDataHash(48, appt.getFolderId());
 	} else {
 		var sd = appt.getStartDate();
-		var ed = appt.getEndDate();		
-		var em = ed.getMinutes();
+		var ed = appt.getEndDate();
+		var em = ed.getMinutes();	
+		var eh = ed.getHours();
 		var startIndex = (sd.getHours()*2) + (sd.getMinutes() < 30 ? 0 : 1);
-		var endIndex = (ed.getHours()*2) + (em == 0 ? 0 : (em <= 30 ? 1 : 2));
+		var endIndex = ((eh ? eh : 24) *2) + (em == 0 ? 0 : (em <= 30 ? 1 : 2));
 		var folderId = appt.getFolderId();
 		if (startIndex == endIndex) endIndex++;
 		for (var i=startIndex; i < endIndex; i++) {
