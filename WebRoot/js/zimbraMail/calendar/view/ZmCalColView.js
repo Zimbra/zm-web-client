@@ -1443,9 +1443,11 @@ function() {
 }
 
 ZmCalColView.prototype._layoutUnionDataDiv =
-function(doc, gridEl, allDayEl, i, enable) {
+function(doc, gridEl, allDayEl, i, data, numCols) {
+	var enable = data instanceof Object;
 	var id = this._unionBusyDivIds[i];
 	var divEl = null;
+
 //	DBG.println(i + ": "+enable);	
 	if (id == null) {
 //		DBG.println(i + ": done ID is null");
@@ -1464,8 +1466,9 @@ function(doc, gridEl, allDayEl, i, enable) {
 			allDayEl.appendChild(divEl);
 		} else {
 			// position/size once right here!		
-			Dwt.setBounds(divEl, 0, ZmCalColView._HALF_HOUR_HEIGHT * i, ZmCalColView._UNION_DIV_WIDTH, ZmCalColView._HALF_HOUR_HEIGHT);		
-			//Dwt.setBounds(divEl, 1, ZmCalColView._HALF_HOUR_HEIGHT * i + 1, ZmCalColView._UNION_DIV_WIDTH - 2 , ZmCalColView._HALF_HOUR_HEIGHT-2);
+			//Dwt.setBounds(divEl, 0, ZmCalColView._HALF_HOUR_HEIGHT * i, ZmCalColView._UNION_DIV_WIDTH, ZmCalColView._HALF_HOUR_HEIGHT);		
+			//Dwt.setBounds(divEl, 1, ZmCalColView._HALF_HOUR_HEIGHT*i+1, ZmCalColView._UNION_DIV_WIDTH-2 , ZmCalColView._HALF_HOUR_HEIGHT-2);
+			Dwt.setBounds(divEl, 2, ZmCalColView._HALF_HOUR_HEIGHT*i+1, ZmCalColView._UNION_DIV_WIDTH-4 , ZmCalColView._HALF_HOUR_HEIGHT-2);
 			gridEl.appendChild(divEl);			
 		}
 
@@ -1474,9 +1477,14 @@ function(doc, gridEl, allDayEl, i, enable) {
 	}
 //	DBG.println(i + ": done setting to "+enable);
 	// have to relayout each time
-	if (i == 48)	Dwt.setBounds(divEl, 0, 0, ZmCalColView._UNION_DIV_WIDTH, this._allDayDivHeight);
+	if (i == 48)	Dwt.setBounds(divEl, 1, 1, ZmCalColView._UNION_DIV_WIDTH-2, this._allDayDivHeight-2);
 	//divEl.innerHTML = i;
 
+	var num = 0;
+	for (var key in data) num++;
+	
+	ZmCalColView._setOpacity(divEl, 20 + (60 * (num/numCols)));
+		
 	Dwt.setVisibility(divEl, enable);
 }
 
@@ -1486,10 +1494,9 @@ function() {
 	var doc = this.getDocument();
 	var gridEl = Dwt.getDomObj(doc, this._unionGridDivId);
 	var allDayEl = Dwt.getDomObj(doc, this._unionAllDayDivId);	
-
+	var numCols = this._columns.length;
 	for (var i=0; i < 49; i++) {
-		var h = this._unionBusyData[i];
-		this._layoutUnionDataDiv(doc, gridEl, allDayEl, i, h instanceof Object);
+		this._layoutUnionDataDiv(doc, gridEl, allDayEl, i, this._unionBusyData[i], numCols);
 	}
 }
 
