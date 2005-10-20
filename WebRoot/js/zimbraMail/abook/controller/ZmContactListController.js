@@ -289,12 +289,14 @@ function(ev) {
 ZmContactListController.prototype._paginate =
 function(view, bPageForward) {
 	this._listView[view].paginate(this._list, bPageForward);
+	// XXX: async
 	this._resetNavToolBarButtons(view);
 }
 
 ZmContactListController.prototype._doDelete = 
-function(params) {
-	ZmListController.prototype._doDelete.call(this, params);
+function(items, hardDelete, attrs) {
+	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
+	// XXX: async
 	// if more contacts to show, 
 	var size = this._listView[this._currentView].getSelectedItems().size();
 	if (size == 0) {
@@ -308,7 +310,7 @@ function(params) {
 
 ZmContactListController.prototype._checkReplenish = 
 function() {
-	// lets not allow replenishment for contacts since they all get loaded at once
+	// let's not allow replenishment for contacts since they all get loaded at once
 }
 
 // Create menu for View button and add listeners.

@@ -271,6 +271,7 @@ function(code, params) {
 	return msg;
 }
 
+// XXX: async
 ZmController.prototype._doAuth = 
 function(params) {
 	ZmCsfeCommand.clearAuthToken();

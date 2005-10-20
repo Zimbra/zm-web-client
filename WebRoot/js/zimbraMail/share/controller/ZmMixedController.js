@@ -204,5 +204,5 @@ function(ev) {
 	}
 
 	if (folder)
-		this._schedule(this._doMove, {items: items, folder: folder});
+		this._doMove(items, folder);
 };

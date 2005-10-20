@@ -90,14 +90,16 @@ function() {
 
 ZmMailItem.prototype._clearParticipants =
 function() {
-	this.participants.removeAll();
-	this.participants = null;
-	if (this._participantHash) {
-		for (var i in this._participantHash)
-			this._participantHash[i] = null;
-		this._participantHash = null;
+	if (this.participants) {
+		this.participants.removeAll();
+		this.participants = null;
+		if (this._participantHash) {
+			for (var i in this._participantHash)
+				this._participantHash[i] = null;
+			this._participantHash = null;
+		}
+		this.participantsElided = false;
 	}
-	this.participantsElided = false;
 }
 
 ZmMailItem.prototype._getFlags =

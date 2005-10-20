@@ -105,7 +105,7 @@ function() {
 			msg = ZmMsg.folderOrSearchNameExists;
 	}
 
-	return (msg ? this._showError(msg) : [name, parentFolder, ZmOrganizer.FOLDER]);
+	return (msg ? this._showError(msg) : [parentFolder, name]);
 }
 
 ZmNewFolderDialog.prototype._enterListener =

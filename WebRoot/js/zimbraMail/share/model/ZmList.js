@@ -288,12 +288,6 @@ function(items, flagOp, on) {
 		return;
 	}
 
-	var itemMode = false;
-	if (items instanceof ZmItem) {
-		items = [items];
-		itemMode = true;
-	}
-	
 	var action = on ? flagOp : "!" + flagOp;
 	this._itemAction(items, action);
 }
@@ -312,13 +306,8 @@ function(items, tagId, doTag) {
 		this._mixedAction("tagItems", [items, tagId, doTag]);
 		return;
 	}
+	if (!(items instanceof Array)) items = [items];
 
-	var itemMode = false;
-	if (items instanceof ZmItem) {
-		items = [items];
-		itemMode = true;
-	}
-	
 	// only tag items that don't have the tag, and untag ones that do
 	var items1 = new Array();
 	for (var i = 0; i < items.length; i++)
@@ -336,12 +325,6 @@ function(items) {
 	if (this.type == ZmList.MIXED && !this._mixedType) {
 		this._mixedAction("removeAllTags", [items]);
 		return;
-	}
-
-	var itemMode = false;
-	if (items instanceof ZmItem) {
-		items = [items];
-		itemMode = true;
 	}
 
 	this._itemAction(items, "update", {t: ""});
@@ -365,13 +348,8 @@ function(items, folder, attrs) {
 		this._mixedAction("moveItems", [items, folder, attrs]);
 		return;
 	}
+	if (!(items instanceof Array)) items = [items];
 
-	var itemMode = false;
-	if (items instanceof ZmItem) {
-		items = [items];
-		itemMode = true;
-	}
-	
 	var items1 = new Array();
 	for (var i = 0; i < items.length; i++)
 		if (!items[i].folderId || (items[i].folderId != folder.id))
@@ -399,13 +377,8 @@ function(items, hardDelete, attrs) {
 		this._mixedAction("deleteItems", [items, hardDelete, attrs]);
 		return;
 	}
+	if (!(items instanceof Array)) items = [items];
 
-	var itemMode = false;
-	if (items instanceof ZmItem) {
-		items = [items];
-		itemMode = true;
-	}
-	
 	// figure out which items should be moved to Trash, and which should actually be deleted
 	var toMove = new Array();
 	var toDelete = new Array();	
@@ -596,8 +569,10 @@ function(event, items, details, itemMode) {
 ZmList.prototype._getIds =
 function(list) {
 	var idHash = new Object();
-	if (!(list && list.length))
-		return idHash;
+	if (list instanceof ZmItem) list = [list];
+	
+	if (!(list && list.length))	return idHash;
+	
 	var ids = new Array();
 	var extra = new Array();
 	for (var i = 0; i < list.length; i++) {

@@ -176,7 +176,7 @@ function(ev) {
 	if (ev.item.getData(ZmOperation.MENUITEM_ID) == ZmOperation.DELETE_CONV) {
 		// use conv list controller to delete conv
 		var clc = this._app.getConvListController();
-		clc._schedule(clc._doDelete, {items: [this._conv]});
+		clc._doDelete([this._conv]);
 		this._app.popView();
 	} else {
 		ZmDoublePaneController.prototype._deleteListener.call(this, ev);

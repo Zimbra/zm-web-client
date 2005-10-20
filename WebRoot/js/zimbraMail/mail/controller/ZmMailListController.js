@@ -444,7 +444,7 @@ ZmMailListController.prototype._spamListener =
 function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	var markAsSpam = this._getSearchFolderId() != ZmFolder.ID_SPAM;
-	this._schedule(this._doSpam, {items: items, markAsSpam: markAsSpam});
+	this._doSpam(items, markAsSpam);
 }
 
 // Miscellaneous
@@ -490,41 +490,44 @@ function(parent) {
 	}
 }
 
+/*
+* This override is here because some moves are actually "spam" or
+* "not spam" operations.
+*
+* @param items		[Array]			a list of items to move
+* @param folder		[ZmFolder]		destination folder
+* @param attrs		[Object]		additional attrs for SOAP command
+*/
 ZmMailListController.prototype._doMove = 
-function(params) {
-	// check to make sure user isnt actually trying to spam/unspam
-	if (params.folder.id == ZmFolder.ID_SPAM) {
-		params.markAsSpam = true;
-		this._doSpam(params);
+function(items, folder, attrs) {
+	// check to make sure user isn't actually trying to spam/unspam
+	if (folder.id == ZmFolder.ID_SPAM) {
+		this._doSpam(items, true);
 		return;
 	} 
 
 	// if we're already in the spam folder, and we're not moving spam to trash, unspam!
-	if (this._getSearchFolderId() == ZmFolder.ID_SPAM && params.folder.id != ZmFolder.ID_TRASH) {
-		params.markAsSpam = false;
-		this._doSpam(params);
+	if (this._getSearchFolderId() == ZmFolder.ID_SPAM && folder.id != ZmFolder.ID_TRASH) {
+		this._doSpam(items, false, folder);
 	} else {
-		if (this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM)) {
-			// TODO
-			// if searches incl. spam folder it is possible to get a listview w/ 
-			// both spam and not spam items in which case we (need to) weed them out
-		}
-
 		// otherwise just call base class
-		ZmListController.prototype._doMove.call(this, params);
+		ZmListController.prototype._doMove.call(this, items, folder, attrs);
 	}
 }
 
+/*
+* Marks the given items as "spam" or "not spam". Items marked as spam are moved to
+* the Junk folder. If items are being moved out of the Junk folder, they will be
+* marked "not spam", and the destination folder may be provided. It defaults to Inbox
+* if not present.
+*
+* @param items		[Array]			a list of items to move
+* @param folder		[ZmFolder]		destination folder
+* @param attrs		[Object]		additional attrs for SOAP command
+*/
 ZmMailListController.prototype._doSpam = 
-function(params) {
-	try {
-		var optFolderId = params.folder ? params.folder.id : null;
-		this._list.spamItems(params.items, params.markAsSpam, optFolderId);
-		this._checkReplenish();
-		this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectedItems().size());
-	} catch (ex) {
-		this._handleException(ex, this._doSpam, params, false);
-	}
+function(items, markAsSpam, folder) {
+	this._list.spamItems(items, markAsSpam, folder);
 }
 
 ZmMailListController.prototype._resetOperations = 

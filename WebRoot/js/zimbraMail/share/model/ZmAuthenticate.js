@@ -40,6 +40,7 @@ function() {
 	return "ZmAuthenticate";
 };
 
+// XXX: async
 ZmAuthenticate.prototype.execute =
 function(uname, pword) {
 	var command = new ZmCsfeCommand();

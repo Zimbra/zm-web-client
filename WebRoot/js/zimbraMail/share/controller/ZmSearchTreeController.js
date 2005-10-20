@@ -124,7 +124,7 @@ function(ev) {
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		var dropSearchFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
 		DBG.println(AjxDebug.DBG3, "DRAG_DROP: " + ev.srcData.name + " on to " + dropSearchFolder.name);
-		this._schedule(this._doMove, {organizer: ev.srcData, tgtFolder: dropSearchFolder});
+		this._doMove(ev.srcData, dropSearchFolder);
 	}
 }
 
@@ -171,14 +171,13 @@ function(ev, treeView) {
 * Called when a "New Search" dialog is submitted. This override is necessary because we
 * need to pass the search object to _doCreate().
 *
-* @param 0	[string]	name of the new saved search
-* @param 1	[ZmFolder]	folder (or search) that will contain it
-* @param 2	[constant]	always ZmOrganizer.SEARCH
-* @param 3	[ZmSearch]	search object with details of the search
+* @param 0	[ZmFolder]	folder (or search) that will contain it
+* @param 1	[string]	name of the new saved search
+* @param 2	[ZmSearch]	search object with details of the search
 */
 ZmSearchTreeController.prototype._newCallback =
 function(args) {
-	this._schedule(this._doCreate, {name: args[0], parent: args[1], type: args[2], search: args[3]});
+	this._doCreate(args[0], args[1], args[2]);
 	this._getNewDialog().popdown();
 }
 

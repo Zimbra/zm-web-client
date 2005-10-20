@@ -195,7 +195,7 @@ function(ev) {
 		var data = ev.srcData.data;
 		var ctlr = ev.srcData.controller;
 		var items = (data instanceof Array) ? data : [data];
-		ctlr._schedule(ctlr._doTag, {items: items, tag: ev.targetControl.getData(Dwt.KEY_OBJECT), bTag: true});
+		ctlr._doTag(items, ev.targetControl.getData(Dwt.KEY_OBJECT), true);
 	}
 }
 

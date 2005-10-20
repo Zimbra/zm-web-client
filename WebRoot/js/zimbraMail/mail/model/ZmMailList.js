@@ -83,7 +83,7 @@ function(items, folder, attrs) {
 		if (!(searchFolder && searchFolder.isUnder(folders[i])))
 			chars.push(ZmFolder.TCON_CODE[folders[i]]);
 	var attrs = new Object();
-	attrs.tcon = chars.join("");
+	attrs.tcon = this._getTcon();
 	attrs.l = folder.id;
 	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder]);
 	this._itemAction(items, "move", attrs, respCallback);
@@ -99,6 +99,43 @@ function(args) {
 		this.moveLocal(movedItems, folder.id);
 		for (var i = 0; i < movedItems.length; i++)
 			movedItems[i].moveLocal(folder.id);
+		this._eventNotify(ZmEvent.E_MOVE, movedItems);
+	}
+};
+
+/**
+* Marks items as "spam" or "not spam". If they're marked as "not spam", a target folder
+* may be provided.
+*
+* @param items			[Array]			a list of items to move
+* @param markAsSpam		[boolean]		if true, mark as "spam"
+* @param folder			[ZmFolder]*		destination folder
+*/
+ZmMailList.prototype.spamItems = 
+function(items, markAsSpam, folder) {
+
+	var action = markAsSpam ? "spam" : "!spam";
+
+	var attrs = new Object();
+	attrs.tcon = this._getTcon();
+	if (folder) attrs.l = folder.id;
+
+	var respCallback = new AjxCallback(this, this._handleResponseSpamItems, [markAsSpam, folder]);
+	this._itemAction(items, action, attrs, respCallback);
+};
+
+ZmMailList.prototype._handleResponseSpamItems =
+function(args) {
+	var markAsSpam	= args[0];
+	var folder		= args[1];
+	var result		= args[2];
+	
+	var movedItems = result.getResponse();
+	if (movedItems && movedItems.length) {
+		folderId = markAsSpam ? ZmFolder.ID_SPAM : (folder ? folder.id : ZmFolder.ID_INBOX);
+		this.moveLocal(movedItems, folderId);
+		for (var i = 0; i < movedItems.length; i++)
+			movedItems[i].moveLocal(folderId);
 		this._eventNotify(ZmEvent.E_MOVE, movedItems);
 	}
 };
@@ -253,34 +290,16 @@ function() {
 	ZmList.prototype.clear.call(this);
 };
 
-ZmMailList.prototype.spamItems = 
-function(items, markAsSpam, optFolderId) {
-	var itemMode = false;
-	if (items instanceof ZmItem) {
-		items = [items];
-		itemMode = true;
-	}
-	
-	// NOTE: there really isnt a way for us to know whether each item is 
-	//       already in spam or not (since we no longer have a isSpam flag) 
-	//       so always process all items regardless
-	
-	var action = markAsSpam ? "spam" : "!spam";
+ZmMailList.prototype._getTcon =
+function() {
+	var chars = ["-"];
+	var searchFolder = this.search ? this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(this.search.folderId) : null;
+	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
+	for (var i = 0; i < folders.length; i++)
+		if (!(searchFolder && searchFolder.isUnder(folders[i])))
+			chars.push(ZmFolder.TCON_CODE[folders[i]]);
 
-	if (items.length) {	
-		var respItems = optFolderId 
-			? this._itemAction(items, action, {l: optFolderId})
-			: this._itemAction(items, action);
-
-		if (respItems) {
-			var folderId = markAsSpam ? ZmFolder.ID_SPAM : (optFolderId || ZmFolder.ID_INBOX);
-
-			this.moveLocal(respItems, folderId);
-			for (var i = 0; i < respItems.length; i++)
-				respItems[i].moveLocal(folderId);
-			this._eventNotify(ZmEvent.E_MOVE, respItems, null, itemMode);
-		}
-	}
+	return chars.join("");
 };
 
 ZmMailList.prototype._folderTreeChangeListener = 

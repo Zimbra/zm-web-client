@@ -214,7 +214,7 @@ function() {
 		var msg = this._listView[this._currentView].getSelection()[0];
 		if (!msg.isLoaded()) {
 			this._appCtxt.getSearchController().setEnabled(false);
-			this._schedule(this._doGetMsg, {msg: msg});
+			this._doGetMsg(msg);
 		} else {
 			if (msg.isUnread)
 				this._markReadListener();
@@ -387,8 +387,7 @@ function(view) {
 // Loads and displays the given message. If the message was unread, it gets marked as
 // read, and the conversation may be marked as read as well.
 ZmDoublePaneController.prototype._doGetMsg =
-function(params) {
-	var msg = params.msg;
+function(msg) {
 	if (msg) {
 		var respCallback = new AjxCallback(this, this._handleResponseDoGetMsg, msg);
 		msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback);

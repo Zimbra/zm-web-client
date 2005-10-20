@@ -328,7 +328,7 @@ function(view, elements, isAppView, clear, pushOnly) {
 ZmListController.prototype._listSelectionListener = 
 function(ev) {
 	if (ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
-		this._schedule(this._doFlag, {items: [ev.item]});
+		this._doFlag([ev.item]);
 	} else {
 		this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectionCount());
 	}
@@ -392,22 +392,22 @@ function(item) {
 		var tagAdded = item.getData(ZmTagMenu.KEY_TAG_ADDED);
 		var items = this._listView[this._currentView].getSelection();
 		if (tagEvent == ZmEvent.E_TAGS && tagAdded) {
-			this._schedule(this._doTag, {items: items, tag: item.getData(Dwt.KEY_OBJECT), bTag: true});
+			this._doTag(items, item.getData(Dwt.KEY_OBJECT), true);
 		} else if (tagEvent == ZmEvent.E_CREATE) {
 			this._pendingActionData = this._listView[this._currentView].getSelection();
 			var newTagDialog = this._appCtxt.getNewTagDialog();
 			this._showDialog(newTagDialog, this._newTagCallback, null, null, true);
 			newTagDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newTagDialog);
 		} else if (tagEvent == ZmEvent.E_TAGS && !tagAdded) {
-			this._schedule(this._doTag, {items: items, tag: item.getData(Dwt.KEY_OBJECT), bTag: false});
+			this._doTag(items, item.getData(Dwt.KEY_OBJECT), false);
 		} else if (tagEvent == ZmEvent.E_REMOVE_ALL) {
 			// XXX: remove this once bug 607 is fixed
 			if (this instanceof ZmConvListController) {
 				var tagList = item.getData(Dwt.KEY_OBJECT);
 				for (var i = 0; i < tagList.length; i++)
-					this._schedule(this._doTag, {items: items, tag: this._tagList.getById(tagList[i]), bTag: false});
+					this._doTag(items, this._tagList.getById(tagList[i]), false);
 			} else {
-				this._schedule(this._doRemoveAllTags, items);
+				this._doRemoveAllTags(items);
 			}
 		}
 	}
@@ -431,8 +431,7 @@ function(ev) {
 // Delete one or more items.
 ZmListController.prototype._deleteListener = 
 function(ev) {
-	var items = this._listView[this._currentView].getSelection();
-	this._schedule(this._doDelete, {items: items});
+	this._doDelete(this._listView[this._currentView].getSelection());
 }
 
 // Move button has been pressed, show the dialog.
@@ -568,7 +567,7 @@ function(ev) {
 				items = sel;
 		}
 		var tag = ev.srcData;
-		this._schedule(this._doTag, {items: items, tag: tag, bTag: true});
+		this._doTag(items, tag, true);
 	} else if (ev.action == DwtDropEvent.DRAG_LEAVE) {
 		view.dragDeselect(div);
 	} else if (ev.action == DwtDropEvent.DRAG_OP_CHANGED) {
@@ -583,7 +582,7 @@ function(ev) {
 	// only process if current view is this view!
 	if (this._app.getAppViewMgr().getCurrentView() == this._getViewType()) {
 		if (ev.type == ZmEvent.S_TAG && ev.event == ZmEvent.E_CREATE && this._creatingTag) {
-			this._schedule(this._doTag, {items: this._pendingActionData, tag: ev.source, bTag: true});
+			this._doTag(this._pendingActionData, ev.source, true);
 			this._creatingTag = false;
 			this._pendingActionData = null;
 			this._popdownActionListener();
@@ -596,7 +595,7 @@ ZmListController.prototype._newFolderCallback =
 function(args) {
 	this._appCtxt.getNewFolderDialog().popdown();
 	var ftc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
-	this._schedule(ftc._doCreate, {name: args[0], parent: args[1]});
+	ftc._doCreate(args[0], args[1]);
 }
 
 // Create a tag.
@@ -611,7 +610,7 @@ function(args) {
 // Move stuff to a new folder.
 ZmListController.prototype._moveCallback =
 function(args) {
-	this._schedule(this._doMove, {items: this._pendingActionData, folder: args[0]});
+	this._doMove(this._pendingActionData, args[0]);
 	this._clearDialog(this._appCtxt.getMoveToDialog());
 }
 
@@ -619,14 +618,14 @@ function(args) {
 
 // Flag/unflag an item
 ZmListController.prototype._doFlag =
-function(params) {
-	this._list.flagItems(params.items, "flag", !params.items[0].isFlagged);
+function(items) {
+	this._list.flagItems(items, "flag", !items[0].isFlagged);
 }
 
 // Tag/untag items
 ZmListController.prototype._doTag =
-function(params) {
-	this._list.tagItems(params.items, params.tag.id, params.bTag);
+function(items, tag, doTag) {
+	this._list.tagItems(items, tag.id, doTag);
 }
 
 // Remove all tags for given items
@@ -643,8 +642,8 @@ function(items) {
 * @param attrs			[Object]*		additional attrs for SOAP command
 */
 ZmListController.prototype._doDelete =
-function(params) {
-	this._list.deleteItems(params.items, params.hardDelete, params.attrs);
+function(items, hardDelete, attrs) {
+	this._list.deleteItems(items, hardDelete, attrs);
 }
 
 /*
@@ -655,8 +654,8 @@ function(params) {
 * @param attrs		[Object]		additional attrs for SOAP command
 */
 ZmListController.prototype._doMove =
-function(params) {
-	this._list.moveItems(params.items, params.folder, params.attrs);
+function(items, folder, attrs) {
+	this._list.moveItems(items, folder, attrs);
 }
 
 // Modify an item
@@ -777,6 +776,12 @@ function(parent, num) {
 		parent.enableAll(false);
 		parent.enable([ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE], true);
 	}
+}
+
+// Resets the available options on the toolbar
+ZmListController.prototype._resetToolbarOperations = 
+function() {
+	this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectedItems().size());
 }
 
 // Pagination

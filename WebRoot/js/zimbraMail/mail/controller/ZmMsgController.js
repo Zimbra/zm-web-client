@@ -191,22 +191,25 @@ function(ev) {
 
 // Override so we can pop view
 ZmMsgController.prototype._doDelete = 
-function(params) {
-	ZmMailListController.prototype._doDelete.call(this, params);
+function(items, hardDelete, attrs) {
+	ZmMailListController.prototype._doDelete.call(this, items, hardDelete, attrs);
+	// XXX: async
 	this._app.popView();
 }
 
 // Override so we can pop view
 ZmMsgController.prototype._doMove = 
-function(params) {
-	ZmMailListController.prototype._doMove.call(this, params);
+function(items, folder, attrs) {
+	ZmMailListController.prototype._doMove.call(this, items, folder, attrs);
+	// XXX: async
 	this._app.popView();
 }
 
 // Override so we can pop view
 ZmMsgController.prototype._doSpam = 
-function(params) {
-	ZmMailListController.prototype._doSpam.call(this, params);
+function(items, markAsSpam, folder) {
+	ZmMailListController.prototype._doSpam.call(this, items, markAsSpam, folder);
+	// XXX: async
 	this._app.popView();
 }
 

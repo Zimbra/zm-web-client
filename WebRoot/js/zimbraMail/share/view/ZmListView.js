@@ -143,7 +143,7 @@ function(ev) {
 		} else {
 			this._setNextSelection();
 		}
-		
+		this._controller._resetToolbarOperations();		
 	} else if (ev.event == ZmEvent.E_MODIFY && (ev.getDetail("action") == "set")) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: SET");
 	} else if (ev.event == ZmEvent.E_MODIFY) {

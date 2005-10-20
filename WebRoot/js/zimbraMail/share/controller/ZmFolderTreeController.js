@@ -157,17 +157,13 @@ function(folder) {
 /*
 * Creates a new organizer and adds it to the tree of that type.
 *
-* @param parent		[ZmOrganizer]	parent of the new organizer
+* @param parent		[ZmFolder]		parent of the new organizer
 * @param name		[string]		name of the new organizer
 * @param search		[ZmSearch]		search object (saved search creation only)
 */
-ZmTreeController.prototype._doCreate =
-function(params) {
-	try {
-		params.parent.create(params.name, params.search);
-	} catch (ex) {
-		this._handleException(ex, this._doCreate, params, false);
-	}
+ZmFolderTreeController.prototype._doCreate =
+function(parent, name, search) {
+	parent.create(name, search);
 }
 
 // Listeners
@@ -183,7 +179,7 @@ ZmFolderTreeController.prototype._deleteListener =
 function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
 	if (organizer.isInTrash()) {
-		this._schedule(this._doDelete, {organizer: organizer});
+		this._doDelete(organizer);
 	} else if (organizer.id == ZmFolder.ID_SPAM) {
 		this._pendingActionData = organizer;
 		if (!this._deleteShield) {
@@ -194,8 +190,7 @@ function(ev) {
 		this._deleteShield.setMessage(ZmMsg.confirmEmptyJunk, DwtMessageDialog.WARNING_STYLE);
 		this._deleteShield.popup();
     } else {
-		var trash = this._dataTree.getById(ZmFolder.ID_TRASH);
-		this._schedule(this._doMove, {organizer: organizer, tgtFolder: trash});
+		this._doMove(organizer, this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_TRASH));
 	}
 }
 
@@ -245,12 +240,12 @@ function(ev) {
 		DBG.println(AjxDebug.DBG3, "DRAG_DROP: " + ev.srcData.name + " on to " + dropFolder.name);
 		var srcData = ev.srcData;
 		if (srcData instanceof ZmFolder) {
-			this._schedule(this._doMove, {organizer: srcData, tgtFolder: dropFolder});
+			this._doMove(srcData, dropFolder);
 		} else {
 			var data = srcData.data;
 			var ctlr = srcData.controller;
 			var items = (data instanceof Array) ? data : [data];
-			ctlr._schedule(ctlr._doMove, {items: items, folder: dropFolder});
+			ctlr._doMove(items, dropFolder);
 		}
 	}
 }

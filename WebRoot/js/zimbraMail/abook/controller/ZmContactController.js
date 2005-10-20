@@ -140,8 +140,9 @@ function(ev, bIsPopCallback) {
 };
 
 ZmContactController.prototype._doDelete = 
-function(params) {
-	ZmListController.prototype._doDelete.call(this, params);
+function(items, hardDelete, attrs) {
+	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
+	// XXX: async
 	// disable input fields (to prevent blinking cursor from bleeding through)
 	this._listView[this._currentView].enableInputs(false);
 	this._app.popView();

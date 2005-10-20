@@ -223,8 +223,8 @@ function(parent, menuItems) {
 * @param name		[string]		name of the new organizer
 */
 ZmTreeController.prototype._doCreate =
-function(params) {
-	params.parent.create(params.name);
+function(parent, name) {
+	parent.create(name);
 }
 
 /*
@@ -233,8 +233,8 @@ function(params) {
 * @param organizer		[ZmOrganizer]	organizer to delete
 */
 ZmTreeController.prototype._doDelete =
-function(params) {
-	params.organizer._delete();
+function(organizer) {
+	organizer._delete();
 }
 
 /*
@@ -244,19 +244,19 @@ function(params) {
 * @param name		[string]		new name of the organizer
 */
 ZmTreeController.prototype._doRename =
-function(params) {
-	params.organizer.rename(params.name);
+function(organizer, name) {
+	organizer.rename(name);
 }
 
 /*
 * Moves an organizer to a new folder.
 *
 * @param organizer	[ZmOrganizer]	organizer to move
-* @param tgtFolder	[ZmFolder]		target folder
+* @param folder		[ZmFolder]		target folder
 */
 ZmTreeController.prototype._doMove =
-function(params) {
-	params.organizer.move(params.tgtFolder);
+function(organizer, folder) {
+	organizer.move(folder);
 }
 
 /*
@@ -427,7 +427,7 @@ function(ev) {
 */
 ZmTreeController.prototype._deleteListener = 
 function(ev) {
-	this._schedule(this._doDelete, {organizer: this._getActionedOrganizer(ev)});
+	this._doDelete(this._getActionedOrganizer(ev));
 }
 
 /*
@@ -464,7 +464,7 @@ function(ev) {
 */
 ZmTreeController.prototype._markAllReadListener = 
 function(ev) {
-	this._schedule(this._doMarkAllRead, this._getActionedOrganizer(ev));
+	this._doMarkAllRead(this._getActionedOrganizer(ev));
 }
 
 /*
@@ -508,13 +508,12 @@ function() {
 /*
 * Called when a "New ..." dialog is submitted to create the organizer.
 *
-* @param 0		[string]		the name of the new organizer
-* @param 1		[ZmOrganizer]	its parent organizer
-* @param 2		[constant]		organizer type
+* @param 0		[ZmOrganizer]	parent organizer
+* @param 1		[string]		the name of the new organizer
 */
 ZmTreeController.prototype._newCallback =
 function(args) {
-	this._schedule(this._doCreate, {name: args[0], parent: args[1], type: args[2]});
+	this._doCreate(args[0], args[1]);
 	this._clearDialog(this._getNewDialog());
 }
 
@@ -526,7 +525,7 @@ function(args) {
 */
 ZmTreeController.prototype._renameCallback =
 function(args) {
-	this._schedule(this._doRename, {organizer: args[0], name: args[1]});
+	this._doRename(args[0], args[1]);
 	this._clearDialog(this._getRenameDialog());
 }
 
@@ -537,7 +536,7 @@ function(args) {
 */
 ZmTreeController.prototype._moveCallback =
 function(args) {
-	this._schedule(this._doMove, {organizer: this._pendingActionData, tgtFolder: args[0]});
+	this._doMove(this._pendingActionData, args[0]);
 	this._clearDialog(this._appCtxt.getMoveToDialog());
 }
 
@@ -548,7 +547,7 @@ function(args) {
 */
 ZmTreeController.prototype._deleteShieldYesCallback =
 function(organizer) {
-	this._schedule(this._doDelete, {organizer: organizer});
+	this._doDelete(organizer);
 	this._clearDialog(this._deleteShield);
 }
 

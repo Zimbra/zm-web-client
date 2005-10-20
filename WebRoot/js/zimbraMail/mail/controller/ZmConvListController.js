@@ -240,18 +240,9 @@ function(ev) {
 
 // If we're viewing the Trash folder, do a hard delete of the selected convs
 ZmConvListController.prototype._doDelete = 
-function(params) {
-	params.hardDelete = (this._list.search.folderId == ZmFolder.ID_TRASH);
-	ZmMailListController.prototype._doDelete.call(this, params);
-	this._resetOperations(this._toolbar[this._currentView], 
-						  this._listView[this._currentView].getSelectedItems().size());
-}
-
-ZmConvListController.prototype._doMove = 
-function(params) {
-	ZmMailListController.prototype._doMove.call(this, params);
-	this._resetOperations(this._toolbar[this._currentView], 
-						  this._listView[this._currentView].getSelectedItems().size());
+function(items, hardDelete, attrs) {
+	hardDelete = (this._list.search.folderId == ZmFolder.ID_TRASH);
+	ZmMailListController.prototype._doDelete.call(this, items, hardDelete, attrs);
 }
 
 ZmConvListController.prototype._cacheList = 

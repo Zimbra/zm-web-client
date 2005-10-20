@@ -116,20 +116,6 @@ function(view, bPageForward, convIdx) {
 	return ZmDoublePaneController.prototype._paginate.call(this, view, bPageForward, convIdx);
 };
 
-ZmTradController.prototype._doDelete = 
-function(params) {
-	ZmDoublePaneController.prototype._doDelete.call(this, params);
-	this._resetOperations(this._toolbar[this._currentView], 
-						  this._listView[this._currentView].getSelectedItems().size());
-};
-
-ZmTradController.prototype._doMove = 
-function(params) {
-	ZmDoublePaneController.prototype._doMove.call(this, params);
-	this._resetOperations(this._toolbar[this._currentView], 
-						  this._listView[this._currentView].getSelectedItems().size());
-};
-
 ZmTradController.prototype._resetNavToolBarButtons = 
 function(view) {
 	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
