@@ -51,8 +51,6 @@ function(a,b) {
 	return a-b;
 }
 
-
-// TODO: should we have yet another layer of caching, keyed on start/end/fanoutAllDay/folderIds?
 ZmApptCache.prototype._getCachedMergedKey =
 function(startTime, endTime, fanoutAllDay, folderIds) {
 	var sortedFolderIds = new Array();
@@ -61,7 +59,6 @@ function(startTime, endTime, fanoutAllDay, folderIds) {
 	return cacheKey = startTime + ":" + endTime + ":" + fanoutAllDay + ":" + sortedFolderIds.join(":");
 }
 
-// TODO: should we have yet another layer of caching, keyed on start/end/fanoutAllDay/folderIds?
 ZmApptCache.prototype._getCachedMergedVector =
 function(cacheKey) {
 	var vec = this._cachedMergedApptVectors[cacheKey];
@@ -173,8 +170,6 @@ function(start,end, fanoutAllDay, folderIds, callback) {
 		return newVec;
 	}
 	
-	// TODO: should we have yet another layer of caching, keyed on start/end/fanoutAllDay/folderIds?
-	// probably. Check that cache here.
 	var mergeKey = this._getCachedMergedKey(start, end, fanoutAllDay, folderIds);
 	list = this._getCachedMergedVector(mergeKey);
 	if (list != null) {
@@ -300,8 +295,6 @@ function(args) {
 	// merge all the data and return
 	var newList = ZmApptList.mergeVectors(context.resultList);
 
-	// TODO: should we have yet another layer of caching, keyed on start/end/fanoutAllDay/folderIds?
-	// probably. update that cache here.
 	this._cacheMergedVector(newList, context.mergeKey);
 		
 	if (callback) {
