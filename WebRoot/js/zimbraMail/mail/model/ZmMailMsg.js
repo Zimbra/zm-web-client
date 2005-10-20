@@ -404,7 +404,8 @@ function(args) {
 	}
 	
 	// clear all participants (since it'll get re-parsed w/ diff. ID's)
-	this.participants.removeAll();
+	if (this.participants)
+		this.participants.removeAll();
 	for (var i in this._participantHash)
 		delete this._participantHash[i];
 		
@@ -910,7 +911,7 @@ function(msgNode) {
 		}
 	}
 
-	if (msgNode.e && this.participants.size() == 0) {
+	if (msgNode.e && this.participants && this.participants.size() == 0) {
 		for (var i = 0; i < msgNode.e.length; i++)
 			this._parseParticipantNode(msgNode.e[i]);
 
