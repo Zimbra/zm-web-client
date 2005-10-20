@@ -33,6 +33,7 @@ function ZmCalColView(parent, posStyle, dropTgt, view, numDays, scheduleMode) {
 	this.setNumDays(numDays);
 	this._daySepWidth = scheduleMode ? 2 : 1; // width of separator between days
 	this._columns = [];
+	this._unionBusyDivIds = new Array(); //  div ids for layingout union
 	//this._numDays = numDays;
 	ZmCalBaseView.call(this, parent, className, posStyle, view);
 	this.setScrollStyle(DwtControl.CLIP);	
@@ -53,8 +54,7 @@ ZmCalColView._OPACITY_APPT_TENTATIVE = 60;
 ZmCalColView._OPACITY_APPT_DND = 70;
 
 ZmCalColView._HOURS_DIV_WIDTH = 40; // width of div holding hours text (1:00am, etc)
-ZmCalColView._UNION_DIV_WIDTH = 40; // width of div holding union in sched view
-ZmCalColView._HOURS_DIV_WIDTH_PAD = 0; // space between hours div and appts
+ZmCalColView._UNION_DIV_WIDTH = 30; // width of div holding union in sched view
 
 ZmCalColView._ALL_DAY_SEP_HEIGHT = 5; // height of separator between all day appts and body
 
@@ -69,6 +69,7 @@ ZmCalColView._APPT_WIDTH_FUDGE = (AjxEnv.isIE ? 0 : -3); // due to border stuff
 ZmCalColView._APPT_HEIGHT_FUDGE = (AjxEnv.isIE ? 0 : -4); // ditto
 
 ZmCalColView._HOUR_HEIGHT = 42;
+ZmCalColView._HALF_HOUR_HEIGHT = ZmCalColView._HOUR_HEIGHT/2;
 ZmCalColView._15_MINUTE_HEIGHT = ZmCalColView._HOUR_HEIGHT/4;
 ZmCalColView._DAY_HEIGHT = ZmCalColView._HOUR_HEIGHT*24;
 
@@ -362,6 +363,39 @@ function(doc, id) {
 	if (node) node.parentNode.removeChild(node);
 }
 
+ZmCalColView.prototype._updateUnionDataHash =
+function(index, folderId) {
+	var hash = this._unionBusyData[index];
+	if (!hash) hash = this._unionBusyData[index] = {};
+	hash[folderId] = 1;	
+}
+
+ZmCalColView.prototype._updateUnionData =
+function(appt) {
+	if (appt.isAllDayEvent()) {
+		this._updateUnionDataHash(48, appt.getFolderId());
+	} else {
+		var sd = appt.getStartDate();
+		var ed = appt.getEndDate();		
+		var em = ed.getMinutes();
+		var startIndex = (sd.getHours()*2) + (sd.getMinutes() < 30 ? 0 : 1);
+		var endIndex = (ed.getHours()*2) + (em == 0 ? 0 : (em <= 30 ? 1 : 2));
+		var folderId = appt.getFolderId();
+		if (startIndex == endIndex) endIndex++;
+		for (var i=startIndex; i < endIndex; i++) {
+			this._updateUnionDataHash(i, folderId);
+		}
+	}
+}
+
+ZmCalColView.prototype.addAppt = 
+function(appt) {
+	ZmCalBaseView.prototype.addAppt.call(this, appt);
+	if (this._scheduleMode) {
+		this._updateUnionData(appt);
+	}
+}
+
 ZmCalColView.prototype._resetCalendarData =
 function() {
 	// TODO: optimize: if calendar list is same, skip!
@@ -384,6 +418,8 @@ function() {
 	this._folderIdToColIndex = {};
 	this._columns = [];
 	this._numCalendars = this._calendars.length;
+
+	this._unionBusyData = new Array(); //  0-47, one slot per half hour, 48 all day
 
 	var titleParentEl = Dwt.getDomObj(doc, this._allDayHeadingDivId);
 	var headingParentEl = Dwt.getDomObj(doc, this._allDayScrollDivId);
@@ -810,7 +846,7 @@ function(abook) {
 	if (this._scheduleMode) {
 		// "All" heading
 		html.append("<div id='", this._unionHeadingDivId, "' class=calendar_heading style='position:absolute'>");
-		html.append("<div class=calendar_heading_year_text style='position:absolute; width:", ZmCalColView._HOURS_DIV_WIDTH,"px;'>",ZmMsg.all,"</div>");
+		html.append("<div class=calendar_heading_year_text style='position:absolute; width:", ZmCalColView._UNION_DIV_WIDTH,"px;'>",ZmMsg.all,"</div>");
 		html.append("</div>");
 
 		// div in all day space
@@ -1400,7 +1436,60 @@ function() {
 
 	this._apptBodyDivOffset = Dwt.toWindow(Dwt.getDomObj(doc, this._apptBodyDivId), 0, 0, null);
 
-	return;
+	if (this._scheduleMode) {
+		this._layoutUnionData();
+	}
+}
+
+ZmCalColView.prototype._layoutUnionDataDiv =
+function(doc, gridEl, allDayEl, i, enable) {
+	var id = this._unionBusyDivIds[i];
+	var divEl = null;
+//	DBG.println(i + ": "+enable);	
+	if (id == null) {
+//		DBG.println(i + ": done ID is null");
+		if (!enable) return;
+		id = this._unionBusyDivIds[i] = Dwt.getNextId();
+		var divEl = doc.createElement("div");
+		divEl.style.position = 'absolute';
+		divEl.className = "calendar_sched_union_div";
+		divEl.id = id;
+		//ZmCalColView._setOpacity(divEl, (i/48)*80);
+		ZmCalColView._setOpacity(divEl, 40);
+
+		if (i == 48) {
+			//have to resize every layout, since all day div height might change
+			//Dwt.setBounds(divEl, 0, 0, ZmCalColView._UNION_DIV_WIDTH, this._allDayDivHeight);
+			allDayEl.appendChild(divEl);
+		} else {
+			// position/size once right here!		
+			Dwt.setBounds(divEl, 0, ZmCalColView._HALF_HOUR_HEIGHT * i, ZmCalColView._UNION_DIV_WIDTH, ZmCalColView._HALF_HOUR_HEIGHT);		
+			//Dwt.setBounds(divEl, 1, ZmCalColView._HALF_HOUR_HEIGHT * i + 1, ZmCalColView._UNION_DIV_WIDTH - 2 , ZmCalColView._HALF_HOUR_HEIGHT-2);
+			gridEl.appendChild(divEl);			
+		}
+
+	} else {
+		divEl =  Dwt.getDomObj(doc, id);
+	}
+//	DBG.println(i + ": done setting to "+enable);
+	// have to relayout each time
+	if (i == 48)	Dwt.setBounds(divEl, 0, 0, ZmCalColView._UNION_DIV_WIDTH, this._allDayDivHeight);
+	//divEl.innerHTML = i;
+
+	Dwt.setVisibility(divEl, enable);
+}
+
+ZmCalColView.prototype._layoutUnionData =
+function() {
+	if (!this._unionBusyData) return;
+	var doc = this.getDocument();
+	var gridEl = Dwt.getDomObj(doc, this._unionGridDivId);
+	var allDayEl = Dwt.getDomObj(doc, this._unionAllDayDivId);	
+
+	for (var i=0; i < 49; i++) {
+		var h = this._unionBusyData[i];
+		this._layoutUnionDataDiv(doc, gridEl, allDayEl, i, h instanceof Object);
+	}
 }
 
 ZmCalColView.prototype._handleApptScrollRegion =

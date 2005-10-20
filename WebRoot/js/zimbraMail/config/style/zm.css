@@ -622,6 +622,12 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .calendar_view_table {
 	width: 100%;
 }
+.calendar_sched_union_div {
+	text-align:center;
+	background-color: red;
+	color:black;
+	overflow: hidden;
+}
 
 .calendar_grid_table {
 	table-layout:fixed;
