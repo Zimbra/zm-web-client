@@ -1858,8 +1858,6 @@ function(ev) {
 		var cc = data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 		var errorCallback = new AjxCallback(null, ZmCalColView._handleError, data);
 		cc.updateApptDate(data.appt._orig, startDate, endDate, false, null, errorCallback);
-	} else {
-		ZmCalColView._restoreLayout(data);
 	}
 }
 
