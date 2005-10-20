@@ -217,8 +217,7 @@ function(line, startIndex) {
 			
 	if (result[1].toLowerCase() == "next") {
 		addDays = ndow - dow;
-		if (ndow <= dow)
-			addDays += 7;
+		addDays += 7;
 	} else { // last
 		addDays = (-1 * (dow + 7 - ndow)) % 7;
 		if (addDays == 0)
