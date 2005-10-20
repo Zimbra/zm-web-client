@@ -136,7 +136,7 @@ function (listener) {
 };
 
 ZmMailMsgView.prototype._controlEventListener = function(ev) {
-	var iframe = this.getElementById(this._iframeI);
+	var iframe = this.getElementById(this._iframeId);
 	// we get here before we have a chance to initialize the IFRAME
 	if (iframe) {
 		var act = new AjxTimedAction();
