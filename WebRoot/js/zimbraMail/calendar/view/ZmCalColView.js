@@ -1445,6 +1445,7 @@ function() {
 
 ZmCalColView.prototype._getUnionToolTip =
 function(i) {
+	// cache it...
 	var tooltip = this._unionBusyDataToolTip[i];
 	if (tooltip) return tooltip;
 	
@@ -1452,7 +1453,7 @@ function(i) {
 	if (!data instanceof Object) return null;
 	
 	var html = new AjxBuffer();
-	html.append("<table cellpadding=5 cellspacing=0 border=0>");
+	html.append("<table cellpadding=2 cellspacing=0 border=0>");
 	var checkedCals = this._calController.getCheckedCalendarFolderIds();
 	for (var i=0; i < checkedCals.length; i++) {
 		var fid = checkedCals[i];
