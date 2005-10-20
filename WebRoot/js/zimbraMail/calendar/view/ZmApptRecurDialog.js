@@ -63,17 +63,17 @@ ZmApptRecurDialog.REPEAT_OPTIONS = [
 
 
 ZmApptRecurDialog.MONTHLY_DAY_OPTIONS = [
-	{ label: AjxMsg.first, 			value: 1, 		selected: true 	},
-	{ label: AjxMsg.second, 		value: 2, 		selected: false },
-	{ label: AjxMsg.third, 			value: 3, 		selected: false },
-	{ label: AjxMsg.fourth, 		value: 4, 		selected: false },
-	{ label: AjxMsg.last, 			value: 5, 		selected: false }];
+	{ label: AjxMsg.first, 			value: "1", 		selected: true 	},
+	{ label: AjxMsg.second, 		value: "2", 		selected: false },
+	{ label: AjxMsg.third, 			value: "3", 		selected: false },
+	{ label: AjxMsg.fourth, 		value: "4", 		selected: false },
+	{ label: AjxMsg.last, 			value: "-1", 		selected: false }];
 
 
 // Public methods
 
 ZmApptRecurDialog.prototype.initialize = 
-function(startDate, endDate, repeatType) {
+function(startDate, endDate, repeatType, appt) {
 	this._startDate = new Date(startDate);
 	this._endDate = new Date(endDate);
 	
@@ -89,21 +89,105 @@ function(startDate, endDate, repeatType) {
 	var startDay = this._startDate.getDay();
 	var startDate = this._startDate.getDate();
 	var startMonth = this._startDate.getMonth();
-	
+
 	// reset time based fields
 	this._endByField.value = AjxDateUtil.simpleComputeDateStr(new Date());
 	this._weeklySelect.setSelected(startDay);
+	this._weeklyCheckboxes[startDay].checked = true;
 	this._monthlyDayField.value = startDate;
 	this._monthlyWeekdaySelect.setSelected(startDay);
 	this._yearlyDayField.value = startDate;
 	this._yearlyMonthSelect.setSelected(startMonth);
 	this._yearlyWeekdaySelect.setSelected(startDay);
 	this._yearlyMonthSelectEx.setSelected(startMonth);
+
+	// if given appt object, means user is editing existing appointment's recur rules
+	if (appt) {
+		this._populateForEdit(appt);
+	}
 };
 
 ZmApptRecurDialog.prototype.getSelectedRepeatValue = 
 function() {
 	return this._repeatSelect.getValue();
+};
+
+ZmApptRecurDialog.prototype.setRepeatEndValues = 
+function(appt) {	
+	appt.repeatEndType = this._getRadioOptionValue(this._repeatEndName);
+
+	// add any details for the select option
+	if (appt.repeatEndType == "A")
+		appt.repeatEndCount = this._endIntervalField.value;
+	else if (appt.repeatEndType == "D")
+		appt.repeatEndDate = new Date(this._endByField.value);
+};
+
+ZmApptRecurDialog.prototype.setCustomDailyValues = 
+function(appt) {
+	var value = this._getRadioOptionValue(this._dailyRadioName);
+
+	if (value == "2") {
+		appt.repeatCustom = "1";
+		appt.repeatWeekday = true;
+	} else {
+		appt.repeatCustomCount = value == "3" ? (Number(this._dailyField.value)) : 1;
+	}
+};
+
+ZmApptRecurDialog.prototype.setCustomWeeklyValues = 
+function(appt) {
+	appt.repeatWeeklyDays = new Array();
+	appt.repeatCustom = "1";
+
+	var value = this._getRadioOptionValue(this._weeklyRadioName);
+	
+	if (value == "1") {
+		appt.repeatCustomCount = 1;
+		appt.repeatWeeklyDays.push(ZmAppt.SERVER_WEEK_DAYS[this._weeklySelect.getValue()]);
+	} else {
+		appt.repeatCustomCount = Number(this._weeklyField.value);
+		for (var i = 0; i < this._weeklyCheckboxes.length; i++) {
+			if (this._weeklyCheckboxes[i].checked)
+				appt.repeatWeeklyDays.push(ZmAppt.SERVER_WEEK_DAYS[i]);
+		}
+	}
+};
+
+ZmApptRecurDialog.prototype.setCustomMonthlyValues = 
+function(appt) {
+	appt.repeatCustom = "1";
+
+	var value = this._getRadioOptionValue(this._monthlyRadioName);
+	
+	if (value == "1") {
+		appt.repeatCustomType = "S";
+		appt.repeatCustomCount = this._monthlyMonthField.value;
+		appt.repeatMonthlyDayList = [this._monthlyDayField.value];
+	} else {
+		appt.repeatCustomType = "O";
+		appt.repeatCustomCount = this._monthlyMonthFieldEx.value;
+		appt.repeatCustomOrdinal = this._monthlyDaySelect.getValue();
+		appt.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[this._monthlyWeekdaySelect.getValue()];
+	}
+};
+
+ZmApptRecurDialog.prototype.setCustomYearlyValues = 
+function(appt) {
+	appt.repeatCustom = "1";
+
+	var value = this._getRadioOptionValue(this._yearlyRadioName);
+
+	if (value == "1") {
+		appt.repeatCustomType = "S";
+		appt.repeatCustomMonthDay = this._yearlyDayField.value;
+		appt.repeatYearlyMonthsList = this._yearlyMonthSelect.getValue();
+	} else {
+		appt.repeatCustomType = "O";
+		appt.repeatCustomOrdinal = this._yearlyDaySelect.getValue();
+		appt.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[this._yearlyWeekdaySelect.getValue()];
+		appt.repeatYearlyMonthsList = this._yearlyMonthSelectEx.getValue();
+	}
 };
 
 ZmApptRecurDialog.prototype.addSelectionListener = 
@@ -170,13 +254,13 @@ function() {
 	var i = 0;
 
 	html[i++] = "<table border=0>";
-	html[i++] = "<tr><td width=1%><input checked type='radio' name='";
+	html[i++] = "<tr><td width=1%><input checked value='N' type='radio' name='";
 	html[i++] = this._repeatEndName;
 	html[i++] = "' id='";
 	html[i++] = this._noEndDateRadioId;
 	html[i++] = "'></td><td colspan=2>";
 	html[i++] = ZmMsg.noEndDate;
-	html[i++] = "</td></tr><tr><td><input type='radio' name='";
+	html[i++] = "</td></tr><tr><td><input type='radio' value='A' name='";
 	html[i++] = this._repeatEndName;
 	html[i++] = "'></td><td colspan=2><nobr>";
 	html[i++] = ZmMsg.endAfter;
@@ -184,7 +268,7 @@ function() {
 	html[i++] = this._endIntervalFieldId;
 	html[i++] = "'>&nbsp;";
 	html[i++] = ZmMsg.meetings;
-	html[i++] = "</td></tr><tr><td><input type='radio' name='";
+	html[i++] = "</td></tr><tr><td><input type='radio' value='D' name='";
 	html[i++] = this._repeatEndName;
 	html[i++] = "' id='";
 	html[i++] = this._endByRadioId;
@@ -246,17 +330,17 @@ function() {
 	var i = 0;
 
 	html[i++] = "<table border=0>";
-	html[i++] = "<tr><td><input checked type='radio' name='";
+	html[i++] = "<tr><td><input checked value='1' type='radio' name='";
 	html[i++] = this._dailyRadioName;
 	html[i++] = "' id='";
 	html[i++] = this._dailyDefaultId;
 	html[i++] = "'></td><td colspan=3>";
 	html[i++] = ZmMsg.everyDay;
-	html[i++] = "</td></tr><tr><td><input type='radio' name='";
+	html[i++] = "</td></tr><tr><td><input value='2' type='radio' name='";
 	html[i++] = this._dailyRadioName;
 	html[i++] = "'></td><td colspan=3>";
 	html[i++] = ZmMsg.everyWeekday;
-	html[i++] = "</td></tr><tr><td><input type='radio' name='";
+	html[i++] = "</td></tr><tr><td><input value='3' type='radio' name='";
 	html[i++] = this._dailyRadioName;
 	html[i++] = "'></td><td>";
 	html[i++] = ZmMsg.every;
@@ -281,7 +365,7 @@ function() {
 	var i = 0;
 
 	html[i++] = "<table border=0>";
-	html[i++] = "<tr><td><input checked type='radio' name='";
+	html[i++] = "<tr><td><input checked value='1' type='radio' name='";
 	html[i++] = this._weeklyRadioName;
 	html[i++] = "' id='";
 	html[i++] = this._weeklyDefaultId;
@@ -289,7 +373,7 @@ function() {
 	html[i++] = ZmMsg.every;
 	html[i++] = "</td><td id='";
 	html[i++] = this._weeklySelectId;
-	html[i++] = "'></td></tr><tr><td><input type='radio' name='";
+	html[i++] = "'></td></tr><tr><td><input value='2' type='radio' name='";
 	html[i++] = this._weeklyRadioName;
 	html[i++] = "'></td><td width=1%>";
 	html[i++] = ZmMsg.every;
@@ -325,7 +409,7 @@ function() {
 	var i = 0;
 
 	html[i++] = "<table border=0>";
-	html[i++] = "<tr><td><input checked type='radio' name='";
+	html[i++] = "<tr><td><input checked value='1' type='radio' name='";
 	html[i++] = this._monthlyRadioName;
 	html[i++] = "' id='";
 	html[i++] = this._monthlyDefaultId;
@@ -339,7 +423,7 @@ function() {
 	html[i++] = this._monthlyMonthFieldId;
 	html[i++] = "'>&nbsp;";
 	html[i++] = ZmMsg.month_s;
-	html[i++] = "</td></tr><tr><td><input type='radio' name='";
+	html[i++] = "</td></tr><tr><td><input value='2' type='radio' name='";
 	html[i++] = this._monthlyRadioName;
 	html[i++] = "'></td><td>";
 	html[i++] = ZmMsg.the;
@@ -373,7 +457,7 @@ function() {
 	var i = 0;
 
 	html[i++] = "<table border=0>";
-	html[i++] = "<tr><td><input checked type='radio' name='";
+	html[i++] = "<tr><td><input checked value='1' type='radio' name='";
 	html[i++] = this._yearlyRadioName;
 	html[i++] = "' id='";
 	html[i++] = this._yearlyDefaultId;
@@ -383,7 +467,7 @@ function() {
 	html[i++] = this._yearlyMonthSelectId;
 	html[i++] = "'></td><td>&nbsp;</td><td><input value='1' type='text' size=2 maxlength=2 id='";
 	html[i++] = this._yearlyDayFieldId;
-	html[i++] = "'></td></tr></table></td></tr><tr><td><input type='radio' name='";
+	html[i++] = "'></td></tr></table></td></tr><tr><td><input value='2' type='radio' name='";
 	html[i++] = this._yearlyRadioName;
 	html[i++] = "'></td><td><table border=0 cellpadding=0 cellspacing=0><tr><td>";
 	html[i++] = ZmMsg.the;
@@ -558,6 +642,108 @@ function() {
 	this._yearlyDaySelect.setSelected(0);
 };
 
+ZmApptRecurDialog.prototype._getRadioOptionValue = 
+function(radioName) {	
+	var options = this.getDocument().getElementsByName(radioName);
+	if (options) {
+		for (var i = 0; i < options.length; i++) {
+			if (options[i].checked)
+				return options[i].value;
+		}
+	}
+	return null;
+};
+
+/**
+ * depending on the repeat type, populates repeat section as necessary
+*/
+ZmApptRecurDialog.prototype._populateForEdit = 
+function(appt) {
+	if (appt.repeatType == "NON") return;
+
+	var doc = this.getDocument();
+
+	if (appt.repeatType == "DAI") {
+		var dailyRadioOptions = doc.getElementsByName(this._dailyRadioName);
+		if (appt.repeatWeekday) {
+			dailyRadioOptions[1].checked = true;
+		} else if (appt.repeatCustomCount > 1) {
+			this._dailyField.value = appt.repeatCustomCount;
+			dailyRadioOptions[2].checked = true;
+		}
+	} else if (appt.repeatType == "WEE") {
+		var weeklyRadioOptions = doc.getElementsByName(this._weeklyRadioName);
+		if (appt.repeatCustomCount == 1 && appt.repeatWeeklyDays.length == 1) {
+			weeklyRadioOptions[0].checked = true;
+			for (var j = 0; j < ZmAppt.SERVER_WEEK_DAYS.length; j++) {
+				if (appt.repeatWeeklyDays[0] == ZmAppt.SERVER_WEEK_DAYS[j]) {
+					this._weeklySelect.setSelectedValue(j);
+					break;
+				}
+			}
+		} else {
+			weeklyRadioOptions[1].checked = true;
+			this._weeklyField.value = appt.repeatCustomCount;
+			// xxx: minor hack-- uncheck this since we init'd it earlier
+			this._weeklyCheckboxes[this._startDate.getDay()].checked = false;
+			for (var i = 0; i < appt.repeatWeeklyDays.length; i++) {
+				for (var j = 0; j < ZmAppt.SERVER_WEEK_DAYS.length; j++) {
+					if (appt.repeatWeeklyDays[i] == ZmAppt.SERVER_WEEK_DAYS[j]) {
+						this._weeklyCheckboxes[j].checked = true;
+						break;
+					}
+				}
+			}
+		}
+	} else if (appt.repeatType == "MON") {
+		var monthlyRadioOptions = doc.getElementsByName(this._monthlyRadioName);
+		if (appt.repeatMonthlyDayList) {
+			monthlyRadioOptions[0].checked = true;
+			this._monthlyDayField.value = appt.repeatMonthlyDayList[0];
+			this._monthlyMonthField.value = appt.repeatCustomCount;
+		} else {
+			monthlyRadioOptions[1].checked = true;
+			this._monthlyDaySelect.setSelectedValue(appt.repeatCustomOrdinal);
+			for (var i = 0; i < ZmAppt.SERVER_WEEK_DAYS.length; i++) {
+				if (ZmAppt.SERVER_WEEK_DAYS[i] == appt.repeatCustomDayOfWeek) {
+					this._monthlyWeekdaySelect.setSelectedValue(i);
+					break;
+				}
+			}
+			this._monthlyMonthFieldEx.value = appt.repeatCustomCount;
+		}
+	} else if (appt.repeatType == "YEA") {
+		var yearlyRadioOptions = doc.getElementsByName(this._yearlyRadioName);
+		if (appt.repeatCustomType == "S") {
+			yearlyRadioOptions[0].checked = true;
+			this._yearlyDayField.value = appt.repeatCustomMonthDay;
+			this._yearlyMonthSelect.setSelectedValue(Number(appt.repeatYearlyMonthsList)+1);
+		} else {
+			yearlyRadioOptions[1].checked = true;
+			this._yearlyDaySelect.setSelectedValue(appt.repeatCustomOrdinal);
+			for (var i = 0; i < ZmAppt.SERVER_WEEK_DAYS.length; i++) {
+				if (ZmAppt.SERVER_WEEK_DAYS[i] == appt.repeatCustomDayOfWeek) {
+					this._yearlyWeekdaySelect.setSelectedValue(i);
+					break;
+				}
+			}
+			this._yearlyMonthSelectEx.setSelectedValue(Number(appt.repeatYearlyMonthsList)-1);
+		}
+	}
+
+	// populate recurrence ending rules
+	if (appt.repeatEndType != "N") {
+		var endRadioOptions = doc.getElementsByName(this._repeatEndName);
+		if (appt.repeatEndType == "A") {
+			endRadioOptions[1].checked = true;
+			this._endIntervalField.value = appt.repeatEndCount;
+		} else {
+			endRadioOptions[2].checked = true;
+			this._endByField.value = AjxDateUtil.simpleComputeDateStr(appt.repeatEndDate);
+		}
+	}
+};
+
 
 // Listeners
 
@@ -601,7 +787,7 @@ function(ev) {
 			this._dateCalendar.setVisible(true);
 	}
 
-	// always reset the date to today's date
+	// always(?) reset the date to today's date
 	this._dateCalendar.setDate(new Date(), true);
 };
 

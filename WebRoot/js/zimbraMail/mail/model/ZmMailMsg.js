@@ -795,12 +795,12 @@ function(bFindHits, domain, partNameList) {
 	var attLinks = new Array();
 
 	if (this._attachments && this._attachments.length > 0) {
-		var csfeMsgFetchSvc = location.protocol+"//" + domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+		var csfeMsgFetchSvc = location.protocol+ "//" + domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
     	var hrefRoot = "href='" + csfeMsgFetchSvc + "id=" + this.getId() + "&amp;part=";
     	
     	for (var i = 0; i < this._attachments.length; i++) {
     		var attach = this._attachments[i];
-			type = attach.ct;
+			var type = attach.ct;
 			
 			if (!this.isRealAttachment(attach))
     			continue;
@@ -845,14 +845,14 @@ function(bFindHits, domain, partNameList) {
     		htmlArr[idx++] = "'><tr><td style='width:" + icon[1] + "'>";
 
 			// position:relative required to make this work in FF    		
-     		htmlArr[idx++] =  link + AjxImg.getImageHtml(icon, "position:relative;") + "</a>";
+     		htmlArr[idx++] = link + AjxImg.getImageHtml(icon, "position:relative;") + "</a>";
     		htmlArr[idx++] = "</td><td style='white-space:nowrap; width:" + labelWidth + "'>";
     		
     		// if this attachment is a match for the current search, set class name
     		if (bFindHits && this._isAttInHitList(attach)) {
 	    		htmlArr[idx++] = "<span class='AttName-matched'>" + link + encLabel + sizeText + "</a></span>";
 	    	} else {
-				htmlArr[idx++] = link + encLabel +  sizeText +  "</a>";
+				htmlArr[idx++] = link + encLabel + sizeText +  "</a>";
 		    }
 
     		htmlArr[idx++] = "</td></tr></table></td>";

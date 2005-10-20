@@ -69,12 +69,12 @@ function() {
 };
 
 ZmApptComposeView.prototype.set =
-function(appt) {
+function(appt, mode) {
 	// always switch to appointment tab
 	this._tabs.switchToTab(this._apptTabKey);
 
-	this._apptTab.initialize(appt);
-	this._scheduleTab.initialize(appt);
+	this._apptTab.initialize(appt, mode);
+	this._scheduleTab.initialize(appt, mode);
 };
 
 ZmApptComposeView.prototype.cleanup = 
@@ -257,7 +257,7 @@ function() {
 };
 
 ZmSchedTabViewPage.prototype.initialize = 
-function(appt) {
+function(appt, mode) {
 	this._appt = appt;
 
 	// TODO

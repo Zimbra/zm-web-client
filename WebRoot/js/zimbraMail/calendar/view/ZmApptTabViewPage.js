@@ -90,7 +90,6 @@ function(attId) {
 	}
 	appt.setStartDate(startDate);
 	appt.setEndDate(endDate);
-	this.repeatType = this._repeatSelect.getValue();
 
 	// set the notes parts (always add text part)
 	var top = new ZmMimePart();
@@ -98,12 +97,12 @@ function(attId) {
 		top.setContentType(ZmMimeTable.MULTI_ALT);
 
 		// create two more mp's for text and html content types
-		var textPart = new ZmMimePart(this._appCtxt);
+		var textPart = new ZmMimePart();
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		textPart.setContent(this._notesHtmlEditor.getTextVersion());
 		top.children.add(textPart);
 
-		var htmlPart = new ZmMimePart(this._appCtxt);
+		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
 		htmlPart.setContent(this._notesHtmlEditor.getContent());
 		top.children.add(htmlPart);
@@ -113,15 +112,17 @@ function(attId) {
 	}
 	appt.attendees = this._attendeesField.value;
 	appt.notesTopPart = top;
-	
-	// TODO: SET RECURRENCE!!!
+
+	// set any recurrence rules	
+	this._getRecurrence(appt);
 
 	return appt;
 };
 
 ZmApptTabViewPage.prototype.initialize =
-function(appt) {
+function(appt, mode) {
 	this._appt = appt;
+	this._mode = mode || ZmAppt.MODE_NEW;
 
 	if (!this._rendered) {
 		this._createHTML();
@@ -129,11 +130,10 @@ function(appt) {
 		this.setComposeMode();
 	}
 
-	if (appt.getViewMode() != ZmAppt.MODE_NEW) {
-		this._populate(appt);
-	}  else {
-		this._reset();
-	}
+	this._reset(appt);
+
+	// save the original form data in its initialized state
+	this._origFormValue = this._formValue();
 };
 
 ZmApptTabViewPage.prototype.cleanup = 
@@ -221,8 +221,13 @@ function() {
 		this._notesHtmlEditor.reEnableDesignMode();
 };
 
+/**
+ * Adds an attachment (file input field) to the appointment view. If none already
+ * exist, creates an IFRAME for a container. If @attach param provided, user is
+ * opening an existing appointment w/ an attachment and therefore display differently
+*/
 ZmApptTabViewPage.prototype.addAttachmentField =
-function() {
+function(attach) {
 	if (this._attachCount == 0) {
 		this._initAttachIframe(ZmApptTabViewPage.ATTACH_HEIGHT);
 	} else if (this._attachCount < 3) {
@@ -231,43 +236,51 @@ function() {
 	}
 	
 	this._attachCount++;
-	var attachRemoveId = "_att_" + Dwt.getNextId();
-	var attachInputId = "_att_" + Dwt.getNextId();
 
 	// add file input field w/in iframe
 	var idoc = Dwt.getIframeDoc(this._attachIframe);
 	var div = idoc.createElement("div");
 	div.style.height = ZmApptTabViewPage.ATTACH_HEIGHT;
 
-	var html = new Array();
-	var i = 0;
-	html[i++] = "<nobr>&nbsp;<input type='file' size=40 name='";
-	html[i++] = ZmApptTabViewPage.UPLOAD_FIELD_NAME;
-	html[i++] = "' id='";
-	html[i++] = attachInputId;
-	html[i++] = "'>&nbsp;<span onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;' id='";
-	html[i++] = attachRemoveId;
-	html[i++] = "'>";
-	html[i++] = ZmMsg.remove;
-	html[i++] = "</span></nobr>";
+	var attachRemoveId = "_att_" + Dwt.getNextId();
+	var attachInputId = "_att_" + Dwt.getNextId();
+	
+	if (attach) {
+		div.innerHTML = this._buildAttachList(attach);
+	} else {
+		var html = new Array();
+		var i = 0;
 
-	div.innerHTML = html.join("");
+		html[i++] = "<nobr>&nbsp;<input type='file' size=40 name='";
+		html[i++] = ZmApptTabViewPage.UPLOAD_FIELD_NAME;
+		html[i++] = "' id='";
+		html[i++] = attachInputId;
+		html[i++] = "'>&nbsp;<span onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;' id='";
+		html[i++] = attachRemoveId;
+		html[i++] = "'>";
+		html[i++] = ZmMsg.remove;
+		html[i++] = "</span></nobr>";
+
+		div.innerHTML = html.join("");
+	}
 
 	if (this._attachDiv == null)
 		this._attachDiv = Dwt.getDomObj(idoc, this._attachDivId);
 	this._attachDiv.style.height = this._attachIframe.style.height;
 	this._attachDiv.appendChild(div);
 
-	// add event handlers as necessary
-	var attachRemoveSpan = Dwt.getDomObj(idoc, attachRemoveId);
-	attachRemoveSpan._tabViewPage = this;
-	attachRemoveSpan._parentDiv = div;
-	Dwt.setHandler(attachRemoveSpan, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
-	// trap key presses in IE for input field so we can ignore ENTER key (bug 961)
-	if (AjxEnv.isIE) {
-		var attachInputEl = Dwt.getDomObj(idoc, attachInputId);
-		attachInputEl._tabViewPage = this;
-		Dwt.setHandler(attachInputEl, DwtEvent.ONKEYDOWN, ZmApptTabViewPage._onKeyDown);
+	if (attach == null) {
+		// add event handlers as necessary
+		var attachRemoveSpan = Dwt.getDomObj(idoc, attachRemoveId);
+		attachRemoveSpan._tabViewPage = this;
+		attachRemoveSpan._parentDiv = div;
+		Dwt.setHandler(attachRemoveSpan, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
+		// trap key presses in IE for input field so we can ignore ENTER key (bug 961)
+		if (AjxEnv.isIE) {
+			var attachInputEl = Dwt.getDomObj(idoc, attachInputId);
+			attachInputEl._tabViewPage = this;
+			Dwt.setHandler(attachInputEl, DwtEvent.ONKEYDOWN, ZmApptTabViewPage._onKeyDown);
+		}
 	}
 
 	this._resizeNotes();
@@ -293,25 +306,98 @@ function(newWidth, newHeight) {
 // Private / protected methods
 
 ZmApptTabViewPage.prototype._reset = 
-function() {
+function(appt) {
 	// reset the date/time values based on current time
-	this._startDateField.value = this._endDateField.value = AjxDateUtil.simpleComputeDateStr(new Date());
-	this._resetTimeSelect();
+	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getStartDate());
+	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getEndDate());
+	var isAllDayAppt = appt.isAllDayEvent();
+	if (isAllDayAppt) {
+		this._allDayCheckbox.checked = true;
+		this._showTimeFields(false);
+	}
+	// if all day appt, set time anyway in case user changes mind
+	this._resetTimeSelect(appt, isAllDayAppt);
 
 	// re-enable all input fields
 	this.enableInputs(true);
 
-	// reset compose view to html preference
-	this.setComposeMode(this._defaultComposeMode);
+	// if not creating new appt, pre-populate from given appt	
+	if (this._mode != ZmAppt.MODE_NEW) {
+		this._populateForEdit(appt);
+	} else {
+		// reset compose view to html preference
+		this.setComposeMode(this._defaultComposeMode);
+	}
 	
 	// set focus to first input element
 	this._subjectField.focus();
 };
 
-ZmApptTabViewPage.prototype._populate =
+/**
+ * sets any recurrence rules w/in given ZmAppt object
+*/
+ZmApptTabViewPage.prototype._getRecurrence = 
 function(appt) {
-	// TODO: populate fields w/ given ZmAppt.
-	DBG.println("TODO: populate fields w/ given ZmAppt.");
+	var repeatType = this._repeatSelect.getValue();
+
+	if (this._recurDialog && repeatType == "CUS") {
+		appt.repeatType = this._recurDialog.getSelectedRepeatValue();
+
+		switch (appt.repeatType) {
+			case "DAI": this._recurDialog.setCustomDailyValues(appt); break;
+			case "WEE": this._recurDialog.setCustomWeeklyValues(appt); break;
+			case "MON": this._recurDialog.setCustomMonthlyValues(appt); break;
+			case "YEA": this._recurDialog.setCustomYearlyValues(appt); break;
+		}
+
+		// set the end recur values
+		this._recurDialog.setRepeatEndValues(appt);
+	} else {
+		appt.repeatType = repeatType != "CUS" ? repeatType : "NON";
+	}
+};
+
+ZmApptTabViewPage.prototype._populateForEdit = 
+function(appt) {
+	// set subject/location
+	this._subjectField.value = appt.getName();
+	this._locationField.value = appt.getLocation();
+
+	// TODO: set calendar this appointment belongs to
+
+	// select objects
+	this._showAsSelect.setSelectedValue(appt.freeBusy);
+	this._repeatSelect.setSelectedValue(appt.repeatType);
+
+	// recurrence string
+	if (appt.isCustomRecurrence()) {
+		this._repeatDescField.innerHTML = appt._getRecurrenceBlurbForSave();
+	} else {
+		this._setSimpleRecurString(appt.repeatType);
+	}
+
+	// attendees
+	this._attendeesField.value = appt.getAttendees();
+
+	// attachments
+	var attachList = appt.getAttachments();
+	if (attachList) {
+		for (var i = 0; i < attachList.length; i++)
+			this.addAttachmentField(attachList[i]);
+	}
+
+	// set notes/content (based on compose mode per user prefs)
+	var hasHtmlPart = appt.notesTopPart && appt.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT;
+	if (hasHtmlPart && 
+		(this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT) ||
+		 this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML))
+	{
+		this.setComposeMode(DwtHtmlEditor.HTML);
+		this._notesHtmlEditor.setContent(appt.getNotesPart(ZmMimeTable.TEXT_HTML));
+	} else {
+		this.setComposeMode(DwtHtmlEditor.TEXT);
+		this._notesHtmlEditor.setContent(appt.getNotesPart(ZmMimeTable.TEXT_PLAIN));
+	}
 };
 
 ZmApptTabViewPage.prototype._createHTML = 
@@ -328,9 +414,6 @@ function() {
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
 	this._allDayCheckbox._tabViewPage = this._repeatDescField._tabViewPage = this;
-	
-	// save the original form data in its initialized state
-	this._origFormValue = this._formValue();
 };
 
 ZmApptTabViewPage.prototype._createApptHtml = 
@@ -354,8 +437,8 @@ function() {
 		html[i++] = " style='border: 1px dotted #555555'";
 	html[i++] = "><legend style='color:#555555'>";
 	html[i++] = ZmMsg.details;
-	html[i++] = "</legend><div style='height:";
-	html[i++] = AjxEnv.isIE ? "90px;'>" : "80px;'>";
+	html[i++] = "</legend><div style='overflow:hidden; height:";
+	html[i++] = AjxEnv.isIE ? "90px;'>" : "82px;'>";
 	html[i++] = this._getDetailsHtml();
 	html[i++] = "</div></fieldset></td>";
 	html[i++] = "<td valign=top><fieldset";
@@ -363,8 +446,8 @@ function() {
 		html[i++] = " style='border: 1px dotted #555555'";
 	html[i++] = "><legend style='color:#555555'>";
 	html[i++] = ZmMsg.time;
-	html[i++] = "</legend><div style='height:";
-	html[i++] = AjxEnv.isIE ? "90px;'>" : "80px;'>";
+	html[i++] = "</legend><div style='overflow:hidden; height:";
+	html[i++] = AjxEnv.isIE ? "90px;'>" : "82px;'>";
 	html[i++] = this._getTimeHtml();
 	html[i++] = "</div></fieldset>";
 	html[i++] = "</td></tr><tr style='height:30px;'><td colspan=2>";
@@ -541,7 +624,7 @@ function() {
 	var html = new Array();
 	var i = 0;
 	
-	html[i++] = "<table border=0 width=1%>";
+	html[i++] = "<table border=0>";
 	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.start;
 	html[i++] = ":</td><td>";
@@ -556,11 +639,11 @@ function() {
 	html[i++] = "</tr></table></td>";
 	html[i++] = "<td>@</td><td id='";
 	html[i++] = this._startTimeSelectId;
-	html[i++] = "'></td><td width=1%><input type='checkbox' id='";
+	html[i++] = "'></td><td><input type='checkbox' id='";
 	html[i++] = this._allDayCheckboxId;
 	html[i++] = "'></td><td><nobr>";
 	html[i++] = ZmMsg.allDayEvent;
-	html[i++] = "</td></tr><tr><td class='ZmApptTabViewPageField'>";
+	html[i++] = "</td><td width=100%></td></tr><tr><td class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.end;
 	html[i++] = ":</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
@@ -580,14 +663,15 @@ function() {
 		html[i++] = this._endTZoneSelectId;
 		html[i++] = "'></td>";
 	}
-	html[i++] = "</tr>";
-	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
+	html[i++] = "<td colspan=10></td></tr>";
+	html[i++] = "<tr><td valign=top class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.repeat;
-	html[i++] = ":</td><td colspan=2 id='";
+	html[i++] = ":</td><td valign=top colspan=2 id='";
 	html[i++] = this._repeatSelectId;
 	html[i++] = "'><td colspan=10><span id='";
 	html[i++] = this._repeatDescId;
-	html[i++] = "' onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;'";
+	html[i++] = "' onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"'";
+	html[i++] = " style='color:blue; text-decoration:underline;'";
 	html[i++] = "></span></td>";
 	html[i++] = "</tr>";
 	html[i++] = "</table>";
@@ -689,23 +773,27 @@ function() {
 };
 
 ZmApptTabViewPage.prototype._resetTimeSelect = 
-function() {
-	var now = new Date();
-	var nextHour = now.getMinutes() > 30;
-	var startIdx = now.getHours() * 2 + (now.getMinutes() >= 30 ? 2 : 1);
-	var endIdx = startIdx + 1;
-	// normalize
-	if (startIdx == this._timeOptions.length) {
-		startIdx = 0;
-		endIdx = 1;
-
-		// and reset the start/end dates to the next day
-		now.setDate(now.getDate()+1);
-		var tomString = AjxDateUtil.simpleComputeDateStr(now);
-		this._startDateField.value = this._endDateField.value = tomString;
-	}
+function(appt, useNowDate) {
+	var startIdx = 0;
+	var endIdx = 0;
 	
-	// get the start DwtSelect object
+	if (useNowDate) {
+		var now = new Date();
+		var nextHour = now.getMinutes() > 30;
+		startIdx = now.getHours() * 2 + (now.getMinutes() >= 30 ? 2 : 1);
+		endIdx = startIdx + 1;
+		// normalize
+		if (startIdx == this._timeOptions.length) {
+			startIdx = 0;
+			endIdx = 1;
+		}
+	} else {
+		var startDate = appt.getStartDate();
+		startIdx = (startDate.getHours() * 2) + (startDate.getMinutes() >= 30 ? 1 : 0);
+	
+		var endDate = appt.getEndDate();
+		endIdx = (endDate.getHours() * 2) + (endDate.getMinutes() >= 30 ? 1 : 0);
+	}
 	this._startTimeSelect.setSelected(startIdx);
 	this._endTimeSelect.setSelected(endIdx);
 };
@@ -746,7 +834,6 @@ function() {
 	this._uploadFormId = Dwt.getNextId();
 	this._attachDivId = Dwt.getNextId();
 	this._attachIframe = Dwt.getDomObj(doc, ZmApptTabViewPage.ATTACH_IFRAME_NAME);
-	//this._attachIframe.name = this._attachIframe.id = 
 	
 	var idoc = this._attachIframe ? Dwt.getIframeDoc(this._attachIframe) : null;
 	if (idoc) {
@@ -842,7 +929,7 @@ function(repeatType) {
 		this._recurDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._recurCancelListener));
 	}
 	var type = repeatType || this._recurDialogRepeatValue;
-	this._recurDialog.initialize(this._startDateField.value, this._endDateField.value, type);
+	this._recurDialog.initialize(this._startDateField.value, this._endDateField.value, type, this._appt);
 	this._recurDialog.popup();
 };
 
@@ -883,29 +970,54 @@ function() {
 	var um = this._appCtxt.getUploadManager();
 	window._uploadManager = um;
 	um.execute(this._attachIframe, callback, this._uploadFormId);
-	
-/*	var attCon = null;
-	if (AjxEnv.isIE) {
-		attCon = this._iframe;
-	} else {
-		var iframe = document.getElementById(this._navIframeId);
-		iframe.style.display = "block";
-		var uploadForm = document.getElementById(this._uploadFormId);
-		var idoc = Dwt.getIframeDoc(iframe);
-		idoc.body.appendChild(uploadForm);
-		attCon = iframe;
+};
+
+ZmApptTabViewPage.prototype._setSimpleRecurString = 
+function(repeatType) {
+	// per new select value, change the recur description
+	var recurDesc = null;
+	switch (repeatType) {
+		case "DAI": recurDesc = ZmMsg.everyDay;   break;
+		case "WEE": recurDesc = ZmMsg.everyWeek;  break;
+		case "MON": recurDesc = ZmMsg.everyMonth; break;
+		case "YEA": recurDesc = ZmMsg.everyYear;  break;
 	}
-*/
-/*
-	var iframe = document.getElementById(this._iframeId);
-	var callback = new AjxCallback(this, this._uploadDone);
-	var uploadManager = this._appCtxt.getUploadManager();
-	this._uploadFailedCallback = failedCb;
-	this._uploadSuccessCallback = successCb;
-	window._uploadManager = uploadManager;
-	this._attNeedRefresh = true;
-	uploadManager.execute(iframe, callback, this._uploadFormId);
-*/
+	this._repeatDescField.innerHTML = recurDesc ? (recurDesc + " (" + ZmMsg.noEndDate + ")") : "";
+};
+
+ZmApptTabViewPage.prototype._buildAttachList = 
+function(attach) {
+	var csfeMsgFetchSvc = location.protocol + "//" + this.getDocument().domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+	var hrefRoot = "href='" + csfeMsgFetchSvc + "id=" + this._appt.getInvId() + "&amp;part=";
+
+	// gather meta data for this attachment
+	var mimeInfo = ZmMimeTable.getInfo(attach.ct);
+	var icon = mimeInfo ? mimeInfo.image : "GenericDoc";
+	var size = attach.s;
+	var sizeText = "";
+	if (size != null) {
+	    if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
+        else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;"; 
+        else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;"; 
+	}
+
+	var html = new Array();
+	var i = 0;
+
+	// start building html for this attachment
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0>";
+	html[i++] = "<tr><td width=1%><input type='checkbox' checked value='";
+	html[i++] = attach.part;
+	html[i++] = "'></td><td><a target='_blank' class='AttLink' ";
+	html[i++] = hrefRoot;
+	html[i++] = attach.part;
+	html[i++] = "'>";
+	html[i++] = attach.filename;
+	html[i++] = sizeText;
+	html[i++] = "</a></td></tr>";
+	html[i++] = "</table>";
+
+	return html.join("");
 };
 
 
@@ -981,30 +1093,24 @@ function(ev) {
 		this._oldRepeatValue = ev._args.oldValue;
 		this._showRecurDialog();
 	} else {
-		// per new select value, change the recur description
-		var recurDesc = null;
-		switch (newSelectVal) {
-			case "DAI": recurDesc = ZmMsg.everyDay;   break;
-			case "WEE": recurDesc = ZmMsg.everyWeek;  break;
-			case "MON": recurDesc = ZmMsg.everyMonth; break;
-			case "YEA": recurDesc = ZmMsg.everyYear;  break;
-		}
-		this._repeatDescField.innerHTML = recurDesc ? (recurDesc + " (" + ZmMsg.noEndDate + ")") : "";
+		this._setSimpleRecurString(newSelectVal);
 	}
 };
 
 ZmApptTabViewPage.prototype._recurOkListener = 
 function(ev) {
-	// TODO
-	// - and get the recur rules to update the recur language
 	this._recurDialogRepeatValue = this._recurDialog.getSelectedRepeatValue();
 	if (this._recurDialogRepeatValue == "NON") {
 		this._repeatSelect.setSelectedValue(this._recurDialogRepeatValue);
 		this._repeatDescField.innerHTML = "";
 	} else {
 		this._repeatSelect.setSelectedValue("CUS");
+		// update the recur language
+		var tempAppt = ZmAppt.quickClone(this._appt);
+		this._getRecurrence(tempAppt);
+		this._repeatDescField.innerHTML = tempAppt._getRecurrenceBlurbForSave();
 	}
-	
+
 	this._recurDialog.popdown();
 };
 

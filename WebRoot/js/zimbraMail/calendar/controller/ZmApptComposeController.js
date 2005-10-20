@@ -50,7 +50,7 @@ function() {
 // Public methods
 
 ZmApptComposeController.prototype.show =
-function(appt) {
+function(appt, mode) {
 	if (!this._toolbar)
 		this._createToolBar();
 
@@ -67,7 +67,7 @@ function(appt) {
 	this._setFormatBtnItem(true);
 
 	this._app.pushView(ZmController.APPOINTMENT_VIEW, true);
-	this._apptView.set(appt);
+	this._apptView.set(appt, mode);
 	this._apptView.reEnableDesignMode();
 };
 
