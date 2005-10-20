@@ -569,7 +569,10 @@ ZmMailMsgView.prototype._makeIframeProxy = function(container, html, isTextMsg) 
 			this._makeHighlightObjectsDiv();
 	}
 
-	var ifw = new DwtIframe(this, "MsgBody", true, html, false, "static", callback);
+	// pass essential styles to avoid padding/font flickering
+	var inner_styles =
+		".MsgBody-text, .MsgBody-text * { font: 10pt monospace; } body.MsgBody { padding: 10px; }";
+	var ifw = new DwtIframe(this, "MsgBody", true, html, inner_styles, false, "static", callback);
 	this._iframeId = ifw.getIframe().id;
 
 	var idoc = ifw.getDocument();
