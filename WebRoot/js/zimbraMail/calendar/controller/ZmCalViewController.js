@@ -133,7 +133,7 @@ function(viewName) {
 		this._initializeViewActionMenu();
 		var newDate = new Date();
 		
-		this._viewMgr = new ZmCalViewMgr(this._container, null);
+		this._viewMgr = new ZmCalViewMgr(this._container, this);
 		this._viewMgr.setDate(newDate);
 		this._setup(viewName);
 		this._viewMgr.addTimeSelectionListener(new AjxListener(this, this._timeSelectionListener));

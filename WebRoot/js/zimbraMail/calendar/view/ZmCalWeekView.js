@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalWeekView(parent, posStyle, dropTgt) {
-	if (arguments.length == 0) return;
-	ZmCalColView.call(this, parent, posStyle, dropTgt, ZmController.CAL_WEEK_VIEW, 7, false);
+function ZmCalWeekView(parent, posStyle, controller, dropTgt) {
+	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmController.CAL_WEEK_VIEW, 7, false);
 }
 
 ZmCalWeekView.prototype = new ZmCalColView;

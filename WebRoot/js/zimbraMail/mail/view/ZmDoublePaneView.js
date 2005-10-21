@@ -54,6 +54,11 @@ ZmDoublePaneView._TAG_IMG = "TI";
 
 // public methods
 
+ZmDoublePaneView.prototype.getController =
+function() {
+	return this._controller;
+}
+
 ZmDoublePaneView.prototype.toggleView = 
 function() {
 	var bIsVisible = this._isMsgViewVisible();

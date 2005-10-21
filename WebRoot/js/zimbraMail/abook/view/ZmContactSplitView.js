@@ -60,6 +60,11 @@ function() {
 	return this._listPart;
 };
 
+ZmContactSplitView.prototype.getController =
+function() {
+	return this._controller;
+}
+
 ZmContactSplitView.prototype.setSize = 
 function(width, height) {
 	DwtComposite.prototype.setSize.call(this, width-10, height-10);

@@ -84,6 +84,11 @@ function() {
 	return "ZmMailMsgView";
 };
 
+ZmMailMsgView.prototype.getController =
+function() {
+	return this._controller;
+}
+
 ZmMailMsgView.prototype.reset =
 function() {
 	this._htmlBody = null;

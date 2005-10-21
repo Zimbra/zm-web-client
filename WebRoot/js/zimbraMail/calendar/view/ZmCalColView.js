@@ -23,8 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalColView(parent, posStyle, dropTgt, view, numDays, scheduleMode) {
+function ZmCalColView(parent, posStyle, controller, dropTgt, view, numDays, scheduleMode) {
 	if (arguments.length == 0) return;
+
 	if (numDays == null) numDays = 1;
 	if (view == null) view = ZmController.CAL_DAY_VIEW;
 	var className = "calendar_view";
@@ -35,7 +36,7 @@ function ZmCalColView(parent, posStyle, dropTgt, view, numDays, scheduleMode) {
 	this._columns = [];
 	this._unionBusyDivIds = new Array(); //  div ids for layingout union
 	//this._numDays = numDays;
-	ZmCalBaseView.call(this, parent, className, posStyle, view);
+	ZmCalBaseView.call(this, parent, className, posStyle, controller, view);
 	this.setScrollStyle(DwtControl.CLIP);	
 	this._needFirstLayout = true;
 }
@@ -414,7 +415,7 @@ function() {
 		}
 	}
 
-	this._calendars = this._calController.getCheckedCalendars();
+	this._calendars = this._controller.getCheckedCalendars();
 	this._calendars.sort(ZmCalendar.sortCompare);
 	this._folderIdToColIndex = {};
 	this._columns = [];
@@ -640,8 +641,8 @@ function(appt, div) {
 // for the new appt when drag selecting time grid
 ZmCalColView.prototype._populateNewApptHtml =
 function(div, allDay, folderId) {
-	if (folderId == null) folderId = this._calController.getDefaultCalendarFolderId();
-	var color = ZmCalBaseView.COLORS[this._calController.getCalendarColor(folderId)];
+	if (folderId == null) folderId = this._controller.getDefaultCalendarFolderId();
+	var color = ZmCalBaseView.COLORS[this._controller.getCalendarColor(folderId)];
 	var prop = allDay ? "_newAllDayApptColor" : "_newApptColor";
 	if (this[prop] && this[prop] == color) return div;
 	else this[prop] = color;
@@ -700,7 +701,7 @@ function(appt) {
 	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
 	var isAccepted = pstatus == ZmAppt.PSTATUS_ACCEPT;
 	var id = this._getItemId(appt);
-	var color = ZmCalBaseView.COLORS[this._calController.getCalendarColor(appt.getFolderId())];
+	var color = ZmCalBaseView.COLORS[this._controller.getCalendarColor(appt.getFolderId())];
 	//var color = "Blue";
 	var subs = {
 		id: id,
@@ -1454,11 +1455,11 @@ function(i) {
 	
 	var html = new AjxBuffer();
 	html.append("<table cellpadding=2 cellspacing=0 border=0>");
-	var checkedCals = this._calController.getCheckedCalendarFolderIds();
+	var checkedCals = this._controller.getCheckedCalendarFolderIds();
 	for (var i=0; i < checkedCals.length; i++) {
 		var fid = checkedCals[i];
 		if (data[fid]) {
-			var cal = this._calController.getCalendar(fid);
+			var cal = this._controller.getCalendar(fid);
 			if (cal) {
 				var color = ZmCalBaseView.COLORS[cal.color];
 				html.append("<tr valign='center' class='", color, "Bg'><td>", AjxImg.getImageHtml(cal.getIcon()), "</td>");
@@ -1601,7 +1602,7 @@ function(ev, div) {
 	ZmCalBaseView.prototype._mouseUpAction.call(this, ev, div);
 	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER && !this._scheduleMode) {
 		var date = this._days[div._dayIndex].date;
-		var cc = this._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
+		var cc = this._appCtxt.getCurrentController();
 
 		if (this.getNumDays() > 1) {
 			cc.setDate(date);
@@ -1832,7 +1833,7 @@ function(ev) {
 			// save before we muck with start/end dates
 			var origDuration = data.appt._orig.getDuration();
 			data.view._autoScrollDisabled = true;			
-			var cc = data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
+			var cc = data.view._appCtxt.getCurrentController();
 			var endDate = new Date(data.startDate.getTime() + origDuration);
 			var errorCallback = new AjxCallback(null, ZmCalColView._handleError, data);
 			cc.updateApptDate(data.appt._orig, data.startDate, endDate, false, null, errorCallback);
@@ -1985,7 +1986,7 @@ function(ev) {
 	}
 	if (needUpdate) {
 		data.view._autoScrollDisabled = true;
-		var cc = data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
+		var cc = data.view.getController();
 		var errorCallback = new AjxCallback(null, ZmCalColView._handleError, data);
 		cc.updateApptDate(data.appt._orig, startDate, endDate, false, null, errorCallback);
 	}
@@ -2135,11 +2136,11 @@ function(ev) {
 		data.gridEl.style.cursor = 'auto';
 		Dwt.setVisible(data.newApptDivEl, false);		
 		if (data.isAllDay) {
-			data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAllDayAppointmentHelper(data.startDate, data.endDate, data.folderId);		
+			data.view._appCtxt.getCurrentController().newAllDayAppointmentHelper(data.startDate, data.endDate, data.folderId);		
 		} else {
 			var duration = (data.endDate.getTime() - data.startDate.getTime());
 			if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;	
-			data.view._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController().newAppointmentHelper(data.startDate, duration, data.folderId);
+			data.view._appCtxt.getCurrentController().newAppointmentHelper(data.startDate, duration, data.folderId);
 		}
 	}
 

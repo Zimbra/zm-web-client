@@ -23,12 +23,12 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalViewMgr(parent, dropTgt) {
-	if (arguments.length == 0) return;
+function ZmCalViewMgr(parent, controller, dropTgt) {
 
 	DwtComposite.call(this, parent, "ZmCalViewMgr", Dwt.ABSOLUTE_STYLE);
 	this.addControlListener(new AjxListener(this, this._controlListener));
 
+	this._controller = controller;
 	this._dropTgt = dropTgt;	
 
 	// View array. Holds the various views e.g. day, month, week, etc...
@@ -56,6 +56,11 @@ ZmCalViewMgr._SEP = 5;
 ZmCalViewMgr.prototype.toString = 
 function() {
 	return "ZmCalViewMgr";
+}
+
+ZmCalViewMgr.prototype.getController =
+function() {
+	return this._controller;
 }
 
 // sets need refresh on all views
@@ -87,14 +92,12 @@ function() {
 }
 
 ZmCalViewMgr.prototype.getDate =
-function() 
-{
+function() {
 	return this._date;
 }
 
 ZmCalViewMgr.prototype.setDate =
-function(date, duration, roll)
-{
+function(date, duration, roll) {
 //DBG.println("ZmCalViewMgr.setDate = "+date);
 	this._date = new Date(date.getTime());
 	this._duration = duration;
@@ -107,7 +110,7 @@ function(date, duration, roll)
 ZmCalViewMgr.prototype.createView =
 function(viewName) {
 //DBG.println("ZmCalViewMgr.prototype.createView: " + viewName);
-	view = new this._viewFactory[viewName](this, DwtControl.ABSOLUTE_STYLE, this._dropTgt);
+	view = new this._viewFactory[viewName](this, DwtControl.ABSOLUTE_STYLE, this._controller, this._dropTgt);
 	view.setDragSource(this._dragSrc);
 	view.addTimeSelectionListener(new AjxListener(this, this._viewTimeSelectionListener));	
 	view.addDateRangeListener(new AjxListener(this, this._viewDateRangeListener));

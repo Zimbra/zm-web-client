@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalMonthView(parent, posStyle, dropTgt) {
-	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, ZmController.CAL_MONTH_VIEW, dropTgt);	
+function ZmCalMonthView(parent, posStyle, controller, dropTgt) {
+	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, ZmController.CAL_MONTH_VIEW, dropTgt);	
 	//this.getHtmlElement().style.overflow = "hidden";
 	this.setScrollStyle(DwtControl.CLIP);
 	this._needFirstLayout = true;
@@ -344,11 +344,11 @@ function() {
 };
 
 ZmCalMonthView._allDayItemHtml =
-function(appt,id, body_style, calController) {
+function(appt,id, body_style, controller) {
 	var pstatus = appt.getParticipationStatus();
 	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
 	var isAccepted = pstatus == ZmAppt.PSTATUS_ACCEPT;
-	var color = ZmCalBaseView.COLORS[calController.getCalendarColor(appt.getFolderId())];
+	var color = ZmCalBaseView.COLORS[controller.getCalendarColor(appt.getFolderId())];
 	//var color = "Blue";
 	var subs = {
 		id: id,
@@ -391,7 +391,7 @@ function(appt, apptEnd) {
 	var body_style = (bs != "") ? "style='"+bs+"'" : "";
 
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
-	div.innerHTML = ZmCalMonthView._allDayItemHtml(appt, this._getItemId(appt), body_style, this._calController);
+	div.innerHTML = ZmCalMonthView._allDayItemHtml(appt, this._getItemId(appt), body_style, this._controller);
 
 	return div;
 };
@@ -426,7 +426,7 @@ function(appt) {
 	/*includeDuration */
 	//var dur = appt.getDurationText(true, true);
 	var dur = appt.getShortStartHour();
-	var color = ZmCalBaseView.COLORS[this._calController.getCalendarColor(appt.getFolderId())];
+	var color = ZmCalBaseView.COLORS[this._controller.getCalendarColor(appt.getFolderId())];
 
 	var pstatus = appt.getParticipationStatus();
 	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
@@ -653,7 +653,7 @@ function() {
 };
 
 ZmCalMonthView.getDayToolTipText =
-function(date, list, calController) {
+function(date, list, controller) {
 	var html = new AjxBuffer();
 	
 	var title = AjxDateUtil.WEEKDAY_LONG[date.getDay()]+", "+AjxDateUtil.MONTH_LONG[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear();
@@ -676,7 +676,7 @@ function(date, list, calController) {
 			if (!ao._fanoutLast) bs += "border-right:none;";
 			var body_style = (bs != "") ? "style='"+bs+"'" : "";
 			html.append("<tr><td><div class=appt>");
-			html.append(ZmCalMonthView._allDayItemHtml(ao, Dwt.getNextId(), body_style, calController));
+			html.append(ZmCalMonthView._allDayItemHtml(ao, Dwt.getNextId(), body_style, controller));
 			html.append("</div></td></tr>");
 			html.append("<tr><td><div style='height=2px;'></div></td></tr>");
 		}
@@ -686,7 +686,7 @@ function(date, list, calController) {
 		var ao = list.get(i);
 		if (!ao.isAllDayEvent()) {
 		
-			var color = ZmCalBaseView.COLORS[calController.getCalendarColor(ao.getFolderId())];
+			var color = ZmCalBaseView.COLORS[controller.getCalendarColor(ao.getFolderId())];
 			var pstatus = ao.getParticipationStatus();
 			var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
 	

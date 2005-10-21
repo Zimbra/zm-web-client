@@ -316,12 +316,10 @@ function(viewId, force) {
 
 	DBG.println(AjxDebug.DBG1, "pushView: " + viewId);
 	DBG.println(AjxDebug.DBG1, "hidden size: " + this._hidden.length);
-	var viewController = this._controller.getControllerForView(viewId);
 	
 	if (viewId == ZmAppViewMgr.PENDING_VIEW) {
 		DBG.println(AjxDebug.DBG1, "push of pending view: " + this._pendingView);
 		viewId = this._pendingView;
-		viewController = this._controller.getControllerForView(viewId);
 		force = true;
 	}
 
@@ -344,7 +342,9 @@ function(viewId, force) {
 
 	this._layout(this._currentView);
 
-	viewController.setCurrentView(viewId);
+	var viewController = this._views[viewId][ZmAppViewMgr.C_APP_CONTENT].getController();
+	if (viewController && viewController.setCurrentView)
+		viewController.setCurrentView(viewId);
 	if (this._isAppView[viewId])
 		this.setAppView(this._viewApp[viewId], viewId);
 	return true;

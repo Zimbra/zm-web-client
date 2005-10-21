@@ -93,6 +93,11 @@ function() {
 	return "ZmComposeView";
 }
 
+ZmComposeView.prototype.getController =
+function() {
+	return this._controller;
+}
+
 /**
 * Sets the current view, based on the given action. The compose form is 
 * created and laid out and everything is set up for interaction with the user.

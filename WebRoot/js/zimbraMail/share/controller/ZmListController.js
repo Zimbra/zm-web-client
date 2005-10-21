@@ -367,9 +367,8 @@ function(ev) {
 		var contact = new ZmContact(this._appCtxt);
 		this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(contact);
 	} else if (id == ZmOperation.NEW_APPT) {
-		var app = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
-		var con = app.getCalController();
-		con.newAppointment();
+		var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
+		cc.newAppointment();
 	} else if (id == ZmOperation.NEW_FOLDER) {
 		this._showDialog(this._appCtxt.getNewFolderDialog(), this._newFolderCallback);
 	} else if (id == ZmOperation.NEW_TAG) {

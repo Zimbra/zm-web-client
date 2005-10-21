@@ -34,15 +34,17 @@
 * @param parent				the containing widget
 * @param app				the preferences app
 * @param posStyle			positioning style
+* @param controller			prefs controller
 * @param passwordDialog		a ZmChangePasswordDialog
 */
-function ZmPrefView(parent, app, posStyle, passwordDialog) {
+function ZmPrefView(parent, app, posStyle, controller, passwordDialog) {
 
     DwtTabView.call(this, parent, "ZmPrefView", posStyle);
 
 	this._parent = parent;
     this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._app = app;
+	this._controller = controller;
 	this._passwordDialog = passwordDialog;
 
     this.setScrollStyle(DwtControl.SCROLL);
@@ -81,6 +83,11 @@ ZmPrefView.TAB_NAME[ZmPrefView.CALENDAR]		= ZmMsg.calendar;
 ZmPrefView.prototype.toString =
 function () {
     return "ZmPrefView";
+}
+
+ZmPrefView.prototype.getController =
+function() {
+	return this._controller;
 }
 
 /**

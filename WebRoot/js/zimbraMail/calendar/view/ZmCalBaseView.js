@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalBaseView(parent, className, posStyle, view) {
+function ZmCalBaseView(parent, className, posStyle, controller, view) {
 	if (arguments.length == 0) return;
 
 	DwtComposite.call(this, parent, className, posStyle, view);
@@ -46,6 +46,7 @@ function ZmCalBaseView(parent, className, posStyle, view) {
 	this.addListener(DwtEvent.ONMOUSEMOVE, this._listenerMouseMove);
 	this.addListener(DwtEvent.ONDBLCLICK, this._listenerDoubleClick);
 	
+	this._controller = controller;
 	this.view = view;	
 	this._evtMgr = new AjxEventMgr();	 
 	this._selectedItems = new AjxVector();
@@ -53,7 +54,6 @@ function ZmCalBaseView(parent, className, posStyle, view) {
 	this._actionEv = new DwtListViewActionEvent(true);	
 	
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	this._calController = this._appCtxt.getAppController().getApp(ZmZimbraMail.CALENDAR_APP).getCalController();	
 
 	// END LIST-RELATED
 		
@@ -91,6 +91,11 @@ ZmCalBaseView.COLORS[ZmOrganizer.C_RED]	= "Red";
 ZmCalBaseView.COLORS[ZmOrganizer.C_YELLOW]	= "Yellow";
 ZmCalBaseView.COLORS[ZmOrganizer.C_PINK]	= "Pink";
 ZmCalBaseView.COLORS[ZmOrganizer.C_GRAY]	= "Gray";
+
+ZmCalBaseView.prototype.getController =
+function() {
+	return this._controller;
+}
 
 ZmCalBaseView.prototype.firstDayOfWeek =
 function() {
@@ -171,7 +176,7 @@ function(ev, div) {
 
 	var item = this.getItemFromElement(div);
 	if (item instanceof ZmAppt) {
-		this.setToolTipContent(item.getToolTip(this._calController));
+		this.setToolTipContent(item.getToolTip(this._controller));
 	} else {
 		this.setToolTipContent(null);
 	}

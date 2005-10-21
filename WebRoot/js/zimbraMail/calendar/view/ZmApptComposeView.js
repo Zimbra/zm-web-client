@@ -68,6 +68,11 @@ function() {
 	return "ZmApptComposeView";
 };
 
+ZmApptComposeView.prototype.getController =
+function() {
+	return this._controller;
+}
+
 ZmApptComposeView.prototype.set =
 function(appt, mode) {
 	// always switch to appointment tab

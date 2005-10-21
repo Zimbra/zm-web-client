@@ -83,7 +83,7 @@ function() {
 ZmContactController.prototype._initializeListView = 
 function(view) {
 	if (!this._listView[view])
-		this._listView[view] = new ZmContactView(this._container, this._appCtxt);
+		this._listView[view] = new ZmContactView(this._container, this._appCtxt, this);
 };
 
 ZmContactController.prototype._getTagMenuMsg = 
