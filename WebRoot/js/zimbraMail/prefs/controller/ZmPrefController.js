@@ -101,36 +101,67 @@ function () {
 	this._toolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
 }
 
-// Saves any options that have been changed.
+/*
+* Saves any options that have been changed.
+*
+* @param ev
+* @param callback	[AjxCallback]	async callback
+* @param noPop		[boolean]		if true, don't pop view after save
+*/
 ZmPrefController.prototype._saveListener = 
-function() {
+function(ev, callback, noPop) {
+	var list;
 	try {
-		var list = this._prefsView.getChangedPrefs();
-		try {
-			if (list.length)
-				this._appCtxt.getSettings().save(list);
-
-			var rulesToSave = false;
-			if (this._filtersEnabled) {
-				rulesToSave = ZmFilterRules.shouldSave();
-				if (rulesToSave)
-					ZmFilterRules.saveRules();
-			}
-			if (list.length || rulesToSave)
-				this._appCtxt.getAppController().setStatusMsg(ZmMsg.optionsSaved);
-			this._backListener();
-			return true;
-		} catch (ex) {
-			// TODO: let the user know that the preferences were not saved
-			this._handleException(ex, ZmPrefController.prototype._saveListener, null, false);
-		}
+		list = this._prefsView.getChangedPrefs();
 	} catch (e) {
 		// getChangedPrefs throws an AjxException if any of the values have not passed validation.
-		if (e instanceof AjxException) {
+		if (e instanceof AjxException)
 			this._appCtxt.getAppController().setStatusMsg(e.msg);
+		return;
+	}
+	if (list && list.length) {
+		var respCallback = new AjxCallback(this, this._handleResponseSaveListener, [list, callback, noPop]);
+		this._appCtxt.getSettings().save(list, respCallback);
+	} else {
+		this._handleResponseSaveListener([list, callback, noPop]);
+	}
+}
+
+ZmPrefController.prototype._handleResponseSaveListener = 
+function(args) {
+	var list		= args[0];
+	var callback	= args[1];
+	var noPop		= args[2];
+	var result		= args[3];
+
+	var rulesToSave = false;
+	if (this._filtersEnabled) {
+		rulesToSave = ZmFilterRules.shouldSave();
+		if (rulesToSave) {
+			var respCallback = new AjxCallback(this, this._handleResponseSaveListener1, [list, callback, noPop, rulesToSave]);
+			ZmFilterRules.saveRules(respCallback);
+		} else {
+			this._handleResponseSaveListener1([list, callback, noPop, rulesToSave]);
 		}
 	}
-	return false;
+
+	if (callback) callback.run(result);
+}
+
+ZmPrefController.prototype._handleResponseSaveListener1 = 
+function(args) {
+	var list		= args[0];
+	var callback	= args[1];
+	var noPop		= args[2];
+	var rulesToSave	= args[3];
+	var result		= args[4];
+
+	if (list.length || rulesToSave)
+		this._appCtxt.getAppController().setStatusMsg(ZmMsg.optionsSaved);
+	if (!noPop)
+		this._backListener();
+	
+	if (callback) callback.run(result);
 }
 
 ZmPrefController.prototype._backListener = 
@@ -185,9 +216,14 @@ function() {
 
 ZmPrefController.prototype._popShieldYesCallback =
 function() {
-	var saved = this._saveListener();
+	var respCallback = new AjxCallback(this, this._handleResponsePopShieldYesCallback);
+	this._saveListener(null, respCallback, true);
+}
+
+ZmPrefController.prototype._handleResponsePopShieldYesCallback =
+function(args) {
 	this._popShield.popdown();
-	this._app.getAppViewMgr().showPendingView(saved);
+	this._app.getAppViewMgr().showPendingView(true);
 }
 
 ZmPrefController.prototype._popShieldNoCallback =

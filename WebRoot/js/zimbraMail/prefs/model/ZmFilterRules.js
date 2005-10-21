@@ -389,7 +389,7 @@ function(force) {
 };
 
 ZmFilterRules.saveRules = 
-function() {
+function(callback) {
 
 	if (!ZmFilterRules._dirty)
 		return null;
@@ -457,7 +457,7 @@ function() {
 	}
 
 	ZmFilterRules._dirty = false;
-	return ZmFilterRules._sender.sendRequest(soapDoc).SaveRulesResponse;
+	ZmFilterRules._sender.sendRequest(soapDoc, true, callback);
 };
 
 

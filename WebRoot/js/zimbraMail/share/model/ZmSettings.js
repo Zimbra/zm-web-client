@@ -180,7 +180,7 @@ function() {
 * @param list	a list of settings (ZmSetting)
 */
 ZmSettings.prototype.save =
-function(list) {
+function(list, callback) {
     if (!(list && list.length)) return;
     
     var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
@@ -197,8 +197,17 @@ function(list) {
 		node.setAttribute("name", pref.name);
 	}
 
-	var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
+	var respCallback = new AjxCallback(this, this._handleResponseSave, [list, callback]);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+}
+
+ZmSettings.prototype._handleResponseSave =
+function(args) {
+	var list		= args[0];
+	var callback	= args[1];
+	var result		= args[2];
 	
+	var resp = result.getResponse();
 	if (resp.ModifyPrefsResponse) {
 		for (var i = 0; i < list.length; i++) {
 			var pref = list[i];
@@ -206,7 +215,9 @@ function(list) {
 			pref.notify(ZmEvent.E_MODIFY);
 		}
 	}
-}
+	
+	if (callback) callback.run(result);
+}	
 
 // Convenience method to convert "group mail by" between server and client versions
 ZmSettings.prototype.getGroupMailBy =
