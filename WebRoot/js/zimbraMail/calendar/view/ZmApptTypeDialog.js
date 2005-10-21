@@ -115,7 +115,7 @@ function() {
 	html[i++] = "'></td><td style='white-space:nowrap' id='";
 	html[i++] = this._instanceMsgId;
 	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td width=1%><input checked value='2' type='radio' name='";
+	html[i++] = "<tr><td width=1%><input value='2' type='radio' name='";
 	html[i++] = this._instSeriesRadioName;
 	html[i++] = "'></td><td style='white-space:nowrap' id='";
 	html[i++] = this._seriesMsgId;
