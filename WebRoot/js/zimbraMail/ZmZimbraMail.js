@@ -60,7 +60,6 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._pollActionId = null;
 	this._sessionTimer = new AjxTimedAction();
 	this._sessionTimer.method = ZmZimbraMail.logOff;
-	this._models = new AjxVector();
 	this._needOverviewLayout = false;
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);	
 	this._calendarListener = new AjxListener(this, this._calendarChangeListener);
@@ -308,12 +307,6 @@ function(settings) {
 	if (folderTree) folderTree.reset();
 	if (this._appCtxt.isPublicComputer())
 		this._appCtxt.getLoginDialog().clearAll();
-	var len = this._models.size();				// clear out known models
-	for (var i = 0; i < len; i++) {
-		var model = this._models.get(i);
-		model = null;
-	}		
-	this._models = new AjxVector();
 	this._actionedIds = null;
 	for (var app in this._apps)					// reset apps
 		this._apps[app] = null;
@@ -1008,12 +1001,9 @@ function(creates, modifies) {
 			var conv = convs[cid];
 			conv.folders = folders[cid] ? folders[cid] : null;
 		}
-		var numModels = this._models.size();
-		for (var i = 0; i < numModels; i++) {
-			var model = this._models.get(i);
-			if (model instanceof ZmMailList)
-				model.notifyCreate(convs, msgs);
-		}
+		var list = this._appCtxt.getCurrentList();
+		if (list && (list instanceof ZmMailList))
+			list.notifyCreate(convs, msgs);
 	}
 }
 
@@ -1097,18 +1087,18 @@ function(ev) {
 	}
 }
 
+/*
+* Changes the browser title if it's a folder or tag whose unread
+* count just changed.
+*/
 ZmZimbraMail.prototype._unreadChangeListener =
 function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY) {
 		var fields = ev.getDetail("fields");
 		if (fields && fields[ZmOrganizer.F_UNREAD]) {
-			var curView = this._appViewMgr.getCurrentView();
-			var ctlr = this.getControllerForView(curView);
-			if (ctlr._activeSearch && ctlr._activeSearch.search) {
-				var search = ctlr._activeSearch.search;
-				if (ev.source.id == search.folderId || ev.source.id == search.tagId)
-					Dwt.setTitle(search.getTitle());
-			}
+			var search = this._appCtxt.getCurrentSearch();
+			if (ev.source.id == search.folderId || ev.source.id == search.tagId)
+				Dwt.setTitle(search.getTitle());
 		}		
 	}
 }

@@ -307,8 +307,8 @@ function(ev) {
 	if (this.size() == 0) return;
 
 	var flag = ev.getDetail("flag");
-	var view = this._appCtxt.getAppViewMgr().getCurrentView();
-	var ctlr = this._appCtxt.getAppController().getControllerForView(view);
+	var view = this._appCtxt.getCurrentViewId();
+	var ctlr = this._appCtxt.getCurrentController();
 
 	if (ev.event == ZmEvent.E_FLAGS && (flag == ZmItem.FLAG_UNREAD)) {
 		if (this.type == ZmItem.CONV) {

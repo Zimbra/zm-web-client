@@ -286,16 +286,6 @@ function(uploadManager) {
 	this._uploadManager = uploadManager;
 }
 
-ZmAppCtxt.prototype.getCurrentSearch =
-function() { 
-	return this._currentSearch;
-}
-
-ZmAppCtxt.prototype.setCurrentSearch =
-function(search) {
-	this._currentSearch = search;
-}
-
 ZmAppCtxt.prototype.getCurrentAppToolbar =
 function() { 
 	return this._currentAppToolbar;
@@ -306,9 +296,36 @@ function(toolbar) {
 	this._currentAppToolbar = toolbar;
 }
 
+ZmAppCtxt.prototype.getCurrentSearch =
+function() { 
+	return this._currentSearch;
+}
+
+ZmAppCtxt.prototype.setCurrentSearch =
+function(search) {
+	this._currentSearch = search;
+}
+
+ZmAppCtxt.prototype.getCurrentViewId =
+function() {
+	return this.getAppViewMgr().getCurrentViewId();
+}
+
 ZmAppCtxt.prototype.getCurrentView =
 function() {
 	return this.getAppViewMgr().getCurrentView();
+}
+
+ZmAppCtxt.prototype.getCurrentController =
+function() {
+	var view = this.getCurrentView();
+	return view ? view._controller : null;
+}
+
+ZmAppCtxt.prototype.getCurrentList =
+function() {
+	var ctlr = this.getCurrentController();
+	return ctlr ? ctlr.getList() : null;
 }
 
 // XXX: this could potentially go away since we have a static class that does this

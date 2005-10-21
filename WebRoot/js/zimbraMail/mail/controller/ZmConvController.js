@@ -256,7 +256,7 @@ function() {
 	}
 	
 	// Don't pop unless we're currently visible!
-	popView = popView && (this._appCtxt.getCurrentView() == this._currentView);
+	popView = popView && (this._appCtxt.getCurrentViewId() == this._currentView);
 
 	if (popView) {
 		this._checkConvLocation();

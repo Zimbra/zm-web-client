@@ -238,11 +238,20 @@ function(visible) {
 }
 
 /**
-* Returns the name of the app view currently being displayed.
+* Returns the ID of the app view currently being displayed.
+*/
+ZmAppViewMgr.prototype.getCurrentViewId =
+function() {
+	return this._currentView;
+}
+
+/**
+* Returns the app view currently being displayed.
 */
 ZmAppViewMgr.prototype.getCurrentView =
 function() {
-	return this._currentView;
+	var curView = this._views[this._currentView];
+	return curView[ZmAppViewMgr.C_APP_CONTENT];
 }
 
 /**
