@@ -73,6 +73,7 @@ function(attId) {
 
 	// create a copy of the appointment so we dont muck w/ the original
 	var appt = ZmAppt.quickClone(this._appt);
+	appt.setViewMode(this._mode);
 
 	// save field values of this view w/in given appt
 	appt.setName(this._subjectField.value);
@@ -159,6 +160,8 @@ function() {
 	this._repeatSelect.setSelectedValue(ZmApptTabViewPage.REPEAT_OPTIONS[0].value);
 	this._allDayCheckbox.checked = false;
 	this._showTimeFields(true);
+	if (this._dateCalendar)
+		this._dateCalendar.setVisible(false);
 
 	// remove attachments if any were added
 	this._removeAllAttachments();
@@ -941,8 +944,13 @@ function() {
 
 	vals.push(this._subjectField.value);
 	vals.push(this._locationField.value);
+	vals.push(this._showAsSelect.getValue());
 	vals.push(this._startDateField.value);
 	vals.push(this._endDateField.value);
+	vals.push(this._startTimeSelect.getValue());
+	vals.push(this._endTimeSelect.getValue());
+	vals.push(""+this._allDayCheckbox.checked);
+	vals.push(this._repeatSelect.getValue());
 	vals.push(this._attendeesField.value);
 	vals.push(this._notesHtmlEditor.getContent());
 
@@ -1027,7 +1035,7 @@ ZmApptTabViewPage.prototype._dateButtonListener =
 function(ev) {
 	// init new DwtCalendar if not already created
 	if (!this._dateCalendar) {
-		this._dateCalendar = new DwtCalendar(this, null, DwtControl.ABSOLUTE_STYLE);
+		this._dateCalendar = new DwtCalendar(this.shell, null, DwtControl.ABSOLUTE_STYLE);
 
 		this._dateCalendar.skipNotifyOnPage();
 		this._dateCalendar.setSize("150");
@@ -1048,14 +1056,15 @@ function(ev) {
 		this._dateCalendar.setWorkingWeek(workingWeek);
 	} else {
 		// only toggle display if user clicked on same button calendar is being shown for
-		if (this._dateCalendar.getHtmlElement().parentNode == ev.dwtObj.getHtmlElement())
+		if (this._dateCalendar._currButton == ev.dwtObj)
 			this._dateCalendar.setVisible(!this._dateCalendar.getVisible());
 		else
 			this._dateCalendar.setVisible(true);
 	}
 	// reparent calendar based on which button was clicked
-	var calEl = this._dateCalendar.getHtmlElement();
-	ev.dwtObj.getHtmlElement().appendChild(calEl);
+	var buttonLoc = ev.dwtObj.getLocation();
+	this._dateCalendar.setLocation(buttonLoc.x, buttonLoc.y+22);
+	this._dateCalendar._currButton = ev.dwtObj;
 
 	// always reset the date to today's date
 	this._dateCalendar.setDate(new Date(), true);

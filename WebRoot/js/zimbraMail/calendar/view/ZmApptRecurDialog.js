@@ -62,15 +62,12 @@ ZmApptRecurDialog.REPEAT_OPTIONS = [
 	{ label: ZmMsg.yearly, 			value: "YEA", 	selected: false }];
 
 
-ZmApptRecurDialog.MONTHLY_DAY_OPTIONS = [
-	{ label: AjxMsg.first, 			value: "1", 		selected: true 	},
-	{ label: AjxMsg.second, 		value: "2", 		selected: false },
-	{ label: AjxMsg.third, 			value: "3", 		selected: false },
-	{ label: AjxMsg.fourth, 		value: "4", 		selected: false },
-	{ label: AjxMsg.last, 			value: "-1", 		selected: false }];
-
-
 // Public methods
+
+ZmApptRecurDialog.prototype.toString = 
+function() {
+	return "ZmApptRecurDialog";
+};
 
 ZmApptRecurDialog.prototype.initialize = 
 function(startDate, endDate, repeatType, appt) {
@@ -517,8 +514,8 @@ function() {
 	delete this._weeklySelectId;
 
 	this._monthlyDaySelect = new DwtSelect(this);
-	for (var i = 0; i < ZmApptRecurDialog.MONTHLY_DAY_OPTIONS.length; i++) {
-		var option = ZmApptRecurDialog.MONTHLY_DAY_OPTIONS[i];
+	for (var i = 0; i < ZmAppt.MONTHLY_DAY_OPTIONS.length; i++) {
+		var option = ZmAppt.MONTHLY_DAY_OPTIONS[i];
 		this._monthlyDaySelect.addOption(option.label, option.selected, option.value);
 	}
 	var monthlyDayCell = Dwt.getDomObj(doc, this._monthlyDaySelectId);
@@ -543,8 +540,8 @@ function() {
 	delete this._yearlyMonthSelectId;
 
 	this._yearlyDaySelect = new DwtSelect(this);
-	for (var i = 0; i < ZmApptRecurDialog.MONTHLY_DAY_OPTIONS.length; i++) {
-		var option = ZmApptRecurDialog.MONTHLY_DAY_OPTIONS[i];
+	for (var i = 0; i < ZmAppt.MONTHLY_DAY_OPTIONS.length; i++) {
+		var option = ZmAppt.MONTHLY_DAY_OPTIONS[i];
 		this._yearlyDaySelect.addOption(option.label, option.selected, option.value);
 	}
 	var yearlyDayCell = Dwt.getDomObj(doc, this._yearlyDaySelectId);

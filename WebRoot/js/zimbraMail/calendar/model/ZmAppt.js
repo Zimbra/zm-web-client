@@ -107,6 +107,13 @@ ZmAppt.SERVER_DAYS_TO_DISPLAY = {
 	SAT: "Saturday"
 };
 
+ZmAppt.MONTHLY_DAY_OPTIONS = [
+	{ label: AjxMsg.first, 			value: "1", 		selected: true 	},
+	{ label: AjxMsg.second, 		value: "2", 		selected: false },
+	{ label: AjxMsg.third, 			value: "3", 		selected: false },
+	{ label: AjxMsg.fourth, 		value: "4", 		selected: false },
+	{ label: AjxMsg.last, 			value: "-1", 		selected: false }];
+
 ZmAppt.SERVER_WEEK_DAYS = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 ZmAppt.NOTES_SEPARATOR = "\n\n*~*~*~*~*~*~*~*~*~*\n\n";
 ZmAppt.NOTES_SEPARATOR_REGEX = /\s*\*~\*~\*~\*~\*~\*~\*~\*~\*~\*\s*/;
@@ -128,20 +135,38 @@ ZmAppt._pstatusString = {
 
 ZmAppt.prototype.toString = 
 function() {
-	return "ZmAppt: name="+this.name+" sd="+this.getStartDate()+" ed="+this.getEndDate()+" id=" + this.id;
-}
+	return "ZmAppt: (" + this.name + ") sd=" + this.getStartDate() + " ed=" + this.getEndDate() + " id=" + this.id;
+};
 
 
 // Getters
 
-ZmAppt.prototype.getViewMode 					= function() { return this._viewMode; };
-ZmAppt.prototype.getStatus 						= function() { return this.status; };
-ZmAppt.prototype.getParticipationStatus 		= function() { return this.ptst; };
-ZmAppt.prototype.getStatusString 				= function() { return ZmAppt._statusString[this.status]; };
-ZmAppt.prototype.getParticipationStatusString 	= function() { return ZmAppt._pstatusString[this.ptst]; };
+ZmAppt.prototype.getAttendees 					= function() { return this.attendees || ""; };
+ZmAppt.prototype.getAttendeeAddrs 				= function() { return this._attAddresses ? this._attAddresses.getArray() : null; };
+ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
+ZmAppt.prototype.getEndDate 					= function() { return this.endDate; };
+ZmAppt.prototype.getEndTime 					= function() { return this.endDate.getTime(); }; 	// end time in ms
 ZmAppt.prototype.getFolderId 					= function() { return this.folderId || ZmFolder.ID_CALENDAR; };
 ZmAppt.prototype.getId 							= function() { return this.id; }; 					// mail item id on appt instance
 ZmAppt.prototype.getInvId 						= function() { return this.invId; }; 				// default mail item invite id on appt instance
+ZmAppt.prototype.getLocation 					= function() { return this.location; };
+ZmAppt.prototype.getMessage 					= function() { return this._message; };
+ZmAppt.prototype.getName 						= function() { return this.name; }; 				// name (aka Subject) of appt
+ZmAppt.prototype.getNotes 						= function() { return this.notes; }; 				// XXX: DEPRACATED
+ZmAppt.prototype.getOrganizer 					= function() { return this.organizer || ""; };
+ZmAppt.prototype.getOrigStartDate 				= function() { return this._origStartDate || this.startDate; };
+ZmAppt.prototype.getOrigStartTime 				= function() { return this.getOrigStartDate().getTime(); };
+ZmAppt.prototype.getParticipationStatus 		= function() { return this.ptst; };
+ZmAppt.prototype.getParticipationStatusString 	= function() { return ZmAppt._pstatusString[this.ptst]; };
+ZmAppt.prototype.getStartDate 					= function() { return this.startDate; };
+ZmAppt.prototype.getStartTime 					= function() { return this.startDate.getTime(); }; 	// start time in ms
+ZmAppt.prototype.getStatus 						= function() { return this.status; };
+ZmAppt.prototype.getStatusString 				= function() { return ZmAppt._statusString[this.status]; };
+ZmAppt.prototype.getViewMode 					= function() { return this._viewMode; };
+ZmAppt.prototype.getTransparency 				= function() { return this.transparency; }; 		// transparency (free|busy|oof|tent)
+ZmAppt.prototype.getType 						= function() { return this.type; };					// type of appt (event|todo)
+ZmAppt.prototype.getUid 						= function() { return this.uid; }; 					// iCal uid of appt
+ZmAppt.prototype.getUniqueStartTime 			= function() { return this._uniqStartTime; }; 		// returns unique start time for an instance of recurring appt
 ZmAppt.prototype.getUniqueId =
 function() {
 	// return unique (across recurrance) id, by using getUid()+"/"+getStartTime()
@@ -149,39 +174,25 @@ function() {
 		this._uniqId = Dwt.getNextId();
 	return (this.id + "_" + this._uniqId);
 };
-ZmAppt.prototype.getUniqueStartTime 			= function() { return this._uniqStartTime; }; 		// returns unique start time for an instance of recurring appt
-ZmAppt.prototype.getUid 						= function() { return this.uid; }; 					// iCal uid of appt
-ZmAppt.prototype.getType 						= function() { return this.type; };					// type of appt (event|todo)
-ZmAppt.prototype.getName 						= function() { return this.name; }; 				// name (aka Subject) of appt
-ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
-ZmAppt.prototype.getOrigStartDate 				= function() { return this._origStartDate || this.startDate; };
-ZmAppt.prototype.getOrigStartTime 				= function() { return this.getOrigStartDate().getTime(); };
-ZmAppt.prototype.getStartDate 					= function() { return this.startDate; };
-ZmAppt.prototype.getEndDate 					= function() { return this.endDate; };
-ZmAppt.prototype.getStartTime 					= function() { return this.startDate.getTime(); }; 	// start time in ms
-ZmAppt.prototype.getEndTime 					= function() { return this.endDate.getTime(); }; 	// end time in ms
-ZmAppt.prototype.getTransparency 				= function() { return this.transparency; }; 		// transparency (free|busy|oof|tent)
-ZmAppt.prototype.getLocation 					= function() { return this.location; };
-ZmAppt.prototype.getNotes 						= function() { return this.notes; }; 				// XXX: DEPRACATED
-ZmAppt.prototype.getOrganizer 					= function() { return this.organizer || ""; };
-ZmAppt.prototype.getAttendees 					= function() { return this.attendees || ""; };
-ZmAppt.prototype.getAttendeeAddrs 				= function() { return this._attAddresses ? this._attAddresses.getArray() : null; };
+
 ZmAppt.prototype.isAllDayEvent 					= function() { return this.allDayEvent == "1"; };
 ZmAppt.prototype.isCustomRecurrence 			= function() { return this.repeatCustom == "1" || this.repeatEndType != "N"; };
 ZmAppt.prototype.isException 					= function() { return this.exception; };
-ZmAppt.prototype.isRecurring 					= function() { return (this.recurring || (this._rawRecurrences != null)); };
 ZmAppt.prototype.isOrganizer 					= function() { return (typeof(this.isOrg) === 'undefined') || (this.isOrg == true); };
 ZmAppt.prototype.isReadOnly 					= function() { return !this.isOrganizer(); };
+ZmAppt.prototype.isRecurring 					= function() { return (this.recurring || (this._rawRecurrences != null)); };
 ZmAppt.prototype.hasAlarm 						= function() { return this.alarm; };
-ZmAppt.prototype.hasOtherAttendees 				= function() { return this.otherAttendees; };
 ZmAppt.prototype.hasAttachments 				= function() { return this.getAttachments() != null; };
 ZmAppt.prototype.hasDetails 					= function() { return this.getMessage() != null; };
+ZmAppt.prototype.hasOtherAttendees 				= function() { return this.otherAttendees; };
 
 // Setters
 
-ZmAppt.prototype.setFolderId 					= function(folderId) { this.folderId = folderId; };
-ZmAppt.prototype.setType 						= function(newType) { this.type = newType; };
-ZmAppt.prototype.setName 						= function(newName) { this.name = newName; };
+ZmAppt.prototype.setAllDayEvent 				= function(isAllDay) 	{ this.allDayEvent = isAllDay ? "1" : "0"; };
+ZmAppt.prototype.setEndDate 					= function(endDate) 	{ this.endDate = new Date(endDate); this._resetCached(); };
+ZmAppt.prototype.setFolderId 					= function(folderId) 	{ this.folderId = folderId; };
+ZmAppt.prototype.setMessage 					= function(message) 	{ this._message = message; };
+ZmAppt.prototype.setName 						= function(newName) 	{ this.name = newName; };
 ZmAppt.prototype.setStartDate =
 function(startDate) {
 	if (this._origStartDate == null && this.startDate != null) {
@@ -190,8 +201,7 @@ function(startDate) {
 	this.startDate = new Date(startDate);
 	this._resetCached();
 };
-ZmAppt.prototype.setEndDate 					= function(endDate) { this.endDate = new Date(endDate); this._resetCached(); };
-ZmAppt.prototype.setAllDayEvent 				= function(isAllDay) { this.allDayEvent = isAllDay ? "1" : "0"; };
+ZmAppt.prototype.setType 						= function(newType) 	{ this.type = newType; };
 
 
 // Public methods
@@ -426,17 +436,6 @@ function() {
 	this._message = null; // the series message should never change
 };
 
-ZmAppt.prototype.getMessage = 
-function() {
-	return this._viewMode == ZmAppt.MODE_EDIT_SERIES ? this._seriesMessage : this._message;
-};
-
-ZmAppt.prototype.setMessage = 
-function(message) {
-	if (this._viewMode != ZmAppt.MODE_EDIT_SERIES)
-		this._message = message;
-};
-
 ZmAppt.prototype.getUniqueStartDate = 
 function() {
 	if (this._uniqueStartDate == null) {
@@ -458,19 +457,17 @@ function() {
 ZmAppt.prototype.getDetails =
 function(viewMode, callback, errorCallback) {
 	var mode = viewMode || this._viewMode;
-	var message;
 	
-	var seriesMode = (mode == ZmAppt.MODE_EDIT_SERIES);
-	if ((seriesMode && !this._seriesMessage) || !this._message) {
+	var seriesMode = mode == ZmAppt.MODE_EDIT_SERIES;
+	if (this._message == null) {
 		var id = seriesMode ? this._seriesInvId : this.invId;
-		message = new ZmMailMsg(this._appCtxt, id);
-		seriesMode ? this._seriesMessage = message : this._message = message;
-		var respCallback = new AjxCallback(this, this._handleResponseGetDetails, [mode, message, callback]);
-		message.load(true, false, respCallback, errorCallback);
+		this._message = new ZmMailMsg(this._appCtxt, id);
+		var respCallback = new AjxCallback(this, this._handleResponseGetDetails, [mode, this._message, callback]);
+		this._message.load(true, false, respCallback, errorCallback);
 	} else {
-		message = seriesMode ? this._seriesMessage : this._message;
-		this.setFromMessage(message, mode);
-		if (callback) callback.run();
+		this.setFromMessage(this._message, mode);
+		if (callback)
+			callback.run();
 	}
 };
 
@@ -480,7 +477,7 @@ function(message, viewMode) {
 		this.isOrg = message.invite.isOrganizer(0);
 		this.organizer = message.getInviteOrganizer();
 		this.name = message.invite.getName(0);
-		this._isException = message.invite.isException(0);
+		this.exception = message.invite.isException(0);
 		// if this is an instance of a recurring appointment, 
 		// the start date is generated from the unique start time sent
 		// in the appointment summaries. The associated message will contain
@@ -642,32 +639,24 @@ ZmAppt.prototype.save =
 function(sender, attachmentId) {
 	var soapDoc = null;
 	var needsExceptionId = false;
+
 	if (this._viewMode == ZmAppt.MODE_NEW) 
 	{
 		soapDoc = AjxSoapDoc.create("CreateAppointmentRequest", "urn:zimbraMail");
 	} 
-	else if (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) 
+	else if (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE && !this.isException()) 
 	{
-		if (!this.isException()) {
-			soapDoc = AjxSoapDoc.create("CreateAppointmentExceptionRequest", "urn:zimbraMail");
-			this._addInviteAndCompNum(soapDoc);
-			soapDoc.setMethodAttribute("s", this.getOrigStartTime());
-			needsExceptionId = true;
-		} else {
-			soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest", "urn:zimbraMail");
-			this._addInviteAndCompNum(soapDoc);
-		}
-	}/*
-	else if (this._viewMode == ZmAppt.MODE_EDIT_SERIES) 
-	{
-		soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest", "urn:zimbraMail");
+		soapDoc = AjxSoapDoc.create("CreateAppointmentExceptionRequest", "urn:zimbraMail");
 		this._addInviteAndCompNum(soapDoc);
-		soapDoc.setMethodAttribute("thisAndFuture",true);
-	}*/
+		soapDoc.setMethodAttribute("s", this.getOrigStartTime());
+		needsExceptionId = true;
+	}
 	else 
 	{
 		soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest", "urn:zimbraMail");
 		this._addInviteAndCompNum(soapDoc);
+		//if (this._viewMode == ZmAppt.MODE_EDIT_SERIES)
+		//	soapDoc.setMethodAttribute("thisAndFuture",true);
 	}
 
 	var invAndM = this._prepareSoapForSave(soapDoc, attachmentId);
@@ -1401,7 +1390,7 @@ function(soapDoc, method,  attachmentId) {
 	
 	var org = soapDoc.set("or", null, inv);
 	// TODO: make attendees list, a list of ZmEmailAddresses.
-	// org.setAttribute("d",
+	// org.setAttribute("d", ...)
 	org.setAttribute("a", this.organizer);
 
 	// handle attachments
@@ -1413,7 +1402,7 @@ function(soapDoc, method,  attachmentId) {
 		if (this._validAttachments) {
 			for (var i = 0; i < this._validAttachments.length; i++) {
 				var msgPartNode = soapDoc.set("mp", null, attachNode);
-				msgPartNode.setAttribute("mid", this._message.id);
+				msgPartNode.setAttribute("mid", this._message.id); 				// shouldnt this be this.getInvId() ??
 				msgPartNode.setAttribute("part", this._validAttachments[i].part);
 			}
 		}
@@ -1620,21 +1609,30 @@ function() {
 		}
 	} else if (this.repeatType == "YEA") {
 		if (customRepeat) {
-			blurb[idx++] = " in ";
+			blurb[idx++] = " on ";
+			blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[Number(this.repeatYearlyMonthsList)];
+			/*
 			var nums = this.repeatYearlyMonthsList.split(",");
 			for (var i = 0 ; i < nums.length; ++i ) {
 				blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[nums[i]];
 				if (i < nums.length -1 )
 					blurb[idx++] = ",";
-			}
+			}*/
 			if (this.repeatCustomType == "O") {
 				blurb[idx++] = " on the ";
-				blurb[idx++] = this.repeatCustomOrdinal;
-				blurb[idx++] = this.repeatCustomDayOfWeek;
+				blurb[idx++] = ZmAppt.MONTHLY_DAY_OPTIONS[Number(this.repeatCustomOrdinal)-1].label;
+				var dayOfWeek = null;
+				for (var i = 0; i < ZmAppt.SERVER_WEEK_DAYS.length; i++) {
+					if (ZmAppt.SERVER_WEEK_DAYS[i] == this.repeatCustomDayOfWeek) {
+						dayOfWeek = AjxDateUtil.WEEKDAY_LONG[i];
+						break;
+					}
+				}
+				blurb[idx++] = dayOfWeek;
 				blurb[idx++] = " of the month ";
 			} else {
-				blurb[idx++] = " on the ";
-				this.repeatCustomMonthDay;
+				blurb[idx++] = " ";
+				blurb[idx++] = this.repeatCustomMonthDay;
 			}
 		} else {
 			blurb[idx++] = " on ";

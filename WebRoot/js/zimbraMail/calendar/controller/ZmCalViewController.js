@@ -580,11 +580,8 @@ function(items, hardDelete, attrs) {
 ZmCalViewController.prototype._deleteAppointment = 
 function(appt) {
 	if (appt == null) return;
-	if (appt.isRecurring()){
-		var m = AjxStringUtil.resolve(ZmMsg.showOccurrenceDeleteMessage,[appt.name]);
-		this._getInstanceSeriesDialog(m, ZmAppt.MODE_DELETE);
-		this._showSingleInstanceDialog.popup();
-		this._showSingleInstanceDialog.__appt = appt;
+	if (appt.isRecurring()) {
+		this._showTypeDialog(ZmAppt.MODE_DELETE, appt);
 	} else {
 		this._continueDelete(appt, ZmAppt.MODE_DELETE);
 	}
@@ -600,23 +597,15 @@ function(appt, mode) {
 	}
 };
 
-ZmCalViewController.prototype._getInstanceSeriesDialog = 
-function(message, mode) {
-	var t = (mode == ZmAppt.MODE_DELETE) ? ZmMsg.deleteRecurringItem : ZmMsg.openRecurringItem;
-	if (this._rView == null) {
-		this._recInstance = {message:message, operation:mode, title: t};
-		this._rView = new ZmEditInstanceSeriesView(this._shell, this._recInstance);
-		this._showSingleInstanceDialog = new DwtBaseDialog (this._shell, null, t, null, null, null, this._rView);
-		this._showSingleInstanceDialog._disableFFhack();
-		this._rView.addListener(DwtEvent.BUTTON_PRESSED, new AjxListener(this, this._handleSingleInstanceButton));
-	} else {
-		this._recInstance.message = message;
-		this._recInstance.operation = mode;
-		this._recInstance.title = t;
-		this._rView.setData(this._recInstance);
+ZmCalViewController.prototype._showTypeDialog = 
+function(mode, appt) {
+	if (this._typeDialog == null) {
+		this._typeDialog = new ZmApptTypeDialog(this._shell);
+		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener));
+		this._typeDialog._disableFFhack();
 	}
-
-	return this._showSingleInstanceDialog;
+	this._typeDialog.initialize(mode, appt);
+	this._typeDialog.popup();
 };
 
 ZmCalViewController.prototype.newAppointmentHelper = 
@@ -627,7 +616,8 @@ function(startDate, optionalDuration, folderId) {
 ZmCalViewController.prototype.newAllDayAppointmentHelper = 
 function(startDate, endDate, folderId) {
 	var appt = this._newApptObject(startDate, null, folderId);
-	if (endDate) appt.setEndDate(endDate);
+	if (endDate)
+		appt.setEndDate(endDate);
 	appt.setAllDayEvent(true);
 	this.newAppointment(appt);
 };
@@ -645,14 +635,6 @@ function(newAppt) {
 		this._apptDialog.setTitle(ZmMsg.appointmentNewTitle);
 		this._popupAppointmentDialog(appt, ZmAppt.MODE_NEW);
 	}
-};
-
-ZmCalViewController.prototype.editRecurringAppointment = 
-function(appt) {
-	var m = AjxStringUtil.resolve(ZmMsg.showOccurrenceMessage,[appt.name]);
-	this._getInstanceSeriesDialog(m, ZmAppt.MODE_EDIT);
-	this._showSingleInstanceDialog.__appt = appt;
-	this._showSingleInstanceDialog.popup();
 };
 
 ZmCalViewController.prototype.editAppointment = 
@@ -677,7 +659,7 @@ function(appt) {
 		if (!appt.__creating) {
 			// if appointment is recurring, prompt user to edit instance vs. series
 			if (appt.isRecurring()) {
-				this.editRecurringAppointment(appt);
+				this._showTypeDialog(ZmAppt.MODE_EDIT, appt);
 			} else {
 				// if simple appointment, no prompting necessary
 				this.editAppointment(appt, ZmAppt.MODE_EDIT);
@@ -690,23 +672,17 @@ function(appt) {
 	}
 };
 
-ZmCalViewController.prototype._handleSingleInstanceButton = 
-function(event) {
-	// find out what button was pushed.
-	var btn = event.item;
-	btn._setMouseOutClassName();
-	var text = btn.getText();
-	var appt = this._showSingleInstanceDialog.__appt;
-	delete this._showSingleInstanceDialog.__appt;
+ZmCalViewController.prototype._typeOkListener = 
+function(ev) {
+	var appt = this._typeDialog.getAppt();
 
-	switch (text) {
-		case ZmMsg.openSeries: 		this.editAppointment(appt, ZmAppt.MODE_EDIT_SERIES); break;
-		case ZmMsg.openInstance: 	this.editAppointment(appt, ZmAppt.MODE_EDIT_SINGLE_INSTANCE); break;
-		case ZmMsg.deleteInstance: 	this._continueDelete(appt, ZmAppt.MODE_DELETE_INSTANCE); break;
-		case ZmMsg.deleteSeries: 	this._continueDelete(appt, ZmAppt.MODE_DELETE_SERIES); break;
-		case ZmMsg.cancel: 			/* do nothing */ break;
+	if (this._typeDialog.getMode() == ZmAppt.MODE_DELETE) {
+		var mode = this._typeDialog.isInstance() ? ZmAppt.MODE_DELETE_INSTANCE : ZmAppt.MODE_DELETE_SERIES;
+		this._continueDelete(appt, mode);
+	} else {
+		var mode = this._typeDialog.isInstance() ? ZmAppt.MODE_EDIT_SINGLE_INSTANCE : ZmAppt.MODE_EDIT_SERIES;
+		this.editAppointment(appt, mode);
 	}
-	this._showSingleInstanceDialog.popdown();
 };
 
 ZmCalViewController.prototype._showApptView = 
