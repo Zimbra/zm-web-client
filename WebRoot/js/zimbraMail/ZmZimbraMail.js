@@ -54,6 +54,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._shell = appCtxt.getShell();
     this._splashScreen = new ZmSplashScreen(this._shell, "SplashScreen");
    
+ 	this._statusQueue = new Array();
 	this._apps = new Object();
 	this._activeApp = null;
 	
@@ -1168,18 +1169,25 @@ function() {
 
 ZmZimbraMail.prototype.setStatusMsg =
 function(msg) {
+	this._statusQueue.push(msg); // always push so we know one is active
+	if (this._statusQueue.length == 1) this._updateStatusMsg(msg);
+}
+
+ZmZimbraMail.prototype._updateStatusMsg =
+function(msg) {
 	this._statusBox.setText(msg);
-	if (msg) {
-		var act = new AjxTimedAction ();
-		act.method = ZmZimbraMail._clearStatus;
-		act.params.add(this._statusBox);
-		AjxTimedAction.scheduleAction(act, ZmZimbraMail.STATUS_LIFE);
-	}
+	var act = new AjxTimedAction ();
+	act.method = ZmZimbraMail._clearStatus;
+	act.params.add(this);
+	AjxTimedAction.scheduleAction(act, ZmZimbraMail.STATUS_LIFE);
 }
 
 ZmZimbraMail._clearStatus =
 function(args) {
-	args[0].setText("");
+	var zm = args[0];
+	zm._statusQueue.shift(); // FIFO
+	if (zm._statusQueue.length > 0) zm._updateStatusMsg(zm._statusQueue[0]);
+	else zm._statusBox.setText("");
 }
 
 ZmZimbraMail.prototype._appButtonListener =
