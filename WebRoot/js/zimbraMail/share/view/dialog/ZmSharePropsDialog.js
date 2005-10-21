@@ -27,12 +27,26 @@ function ZmSharePropsDialog(appCtxt, shell, className) {
 	var xformDef = ZmSharePropsDialog._XFORM_DEF;
 	var xmodelDef = ZmSharePropsDialog._XMODEL_DEF;
 	className = className || "ZmSharePropsDialog";
+	var title = ZmMsg.shareProperties;
+	DwtXFormDialog.call(this, xformDef, xmodelDef, shell, className, title);
 	
-	DwtXFormDialog.call(this, xformDef, xmodelDef, shell, className, ZmMsg.shareProperties);
 	this._xform.setController(this);
 	this._xform.itemChanged = ZmSharePropsDialog.__xformItemChanged;
 	
 	this._appCtxt = appCtxt;
+	
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		var parent = this;
+		var className = null;
+		var dataClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+		var dataLoader = dataClass.getContactList;
+		var matchValue = ZmContactList.AC_VALUE_EMAIL; // AC_VALUE_FULL
+		var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, this);
+		var compCallback = new AjxCallback(this, this._handleCompletionData, this);
+		
+		this._acAddrSelectList = new ZmAutocompleteListView(parent, className, dataClass, dataLoader,
+															matchValue, locCallback, compCallback);
+	}
 }
 ZmSharePropsDialog.prototype = new DwtXFormDialog;
 ZmSharePropsDialog.prototype.constructor = ZmSharePropsDialog;
@@ -46,18 +60,27 @@ ZmSharePropsDialog._MAIL_STANDARD = 'S';
 ZmSharePropsDialog._MAIL_QUICK = 'Q';
 ZmSharePropsDialog._MAIL_COMPOSE = 'C';
 
+ZmSharePropsDialog._INPUT_ID_SUFFIX = "_input";
+
 ZmSharePropsDialog._XFORM_DEF = { items: [
 	{type:_OUTPUT_, label: ZmMsg.folderLabel, ref:"folder_name", width:"100%", 
 		relevant:"get('folder_type') != ZmOrganizer.CALENDAR",relevantBehavior:_HIDE_
 	},
-	{type:_OUTPUT_, label: ZmMsg.calendarLabel, ref:"folder_name", width:"100%", 
+	{type:_OUTPUT_, label: ZmMsg.calendarLabel, ref:"folder_name", width:"100%",
 		relevant:"get('folder_type') == ZmOrganizer.CALENDAR",relevantBehavior:_HIDE_
 	},
 	{type:_GROUP_, label: ZmMsg.shareWithLabel, width:"100%", numCols:3, useParentTable: false, items:[
 			{type:_OUTPUT_, ref:"share_grantee_name", width:"250", relevant:"get('type')!=ZmSharePropsDialog.NEW",relevantBehavior:_HIDE_},
 			{type:_GROUP_, //useParentTable: false, 
 			relevant:"get('type') == ZmSharePropsDialog.NEW", relevantBehavior:_HIDE_, items:[
-				{type:_INPUT_, ref:"share_grantee_name", width:"250"}
+				{type:_INPUT_, ref:"share_grantee_name", width:"250",
+					elementChanged: function(elementValue, instanceValue, event) {
+						var formItem = this;
+						var form = formItem.getForm();
+						var controller = form.getController();
+						controller._handleFirstInput(formItem, elementValue, instanceValue, event);
+					}
+				}
 				/***
 				{type:_BUTTON_, label:"Search...", cssStyle:"margin-left:10px", 
 					relevant:"get('type') == ZmSharePropsDialog.NEW", relevantBehavior:_HIDE_,
@@ -94,6 +117,7 @@ ZmSharePropsDialog._XFORM_DEF = { items: [
 		]
 	}
 ]};
+
 ZmSharePropsDialog._XMODEL_DEF = { items: [
 	{ id: "folder_name", ref: "folder/name", type: _STRING_ },
 	{ id: "folder_type", ref: "folder/type", type: _STRING_ },
@@ -155,37 +179,38 @@ ZmSharePropsDialog.prototype.setShareInfo = function(shareInfo) {
 	this.setInstance(instance);
 }
 
-// Private methods
-
-ZmSharePropsDialog.__xformItemChanged = function(id, value, event) {
-	var item = this.getItemById(id);
-	if (item.refPath == "sendMail" || item.refPath == "mailType" || item.refPath == "quickReply") {
-		// HACK: This is done to avoid marking the form as "dirty"
-		item.setInstanceValue(value);
-		this.refresh();
+ZmSharePropsDialog.prototype.popdown = function() {
+	if (this._acAddrSelectList) {
+		this._acAddrSelectList.reset();
+		this._acAddrSelectList.show(false);
 	}
-	else {
-		XForm.prototype.itemChanged.call(this, id, value, event);
-	}
+	DwtXFormDialog.prototype.popdown.call(this);
 }
 
 // Protected methods
 
-ZmSharePropsDialog.prototype._popupUserPicker = function() {
-	this._userPicker.popup();
-}
-
 ZmSharePropsDialog.prototype._handleOkButton = function(event) {
-
-	// execute grant operation
 	var folder = this._folder;
 	var instance = this._xform.getInstance();
 	var share = instance.share;
+
+	// separate out name and email
+	/***
+	if (this._dialogType == ZmSharePropsDialog.NEW) {
+		var address = ZmEmailAddress.parse(share.grantee.name, false);
+		share.grantee.name = address.getDispName() || address.getName();
+		share.grantee.email = address.getAddress();
+	}
+	/***/
+	share.grantee.email = share.grantee.name;
+	/***/
+
+	// execute grant operation
 	try {
 		share.grantee.id = this._executeGrantAction(folder, share);
 	}
 	catch (ex) {
-		var message = Ajx.unknownError;
+		var message = ZmMsg.unknownError;
 		if (ex instanceof ZmCsfeException && ex.code == "account.NO_SUCH_ACCOUNT") {
 			if (!this._unknownUserFormatter) {
 				this._unknownUserFormatter = new AjxMessageFormat(ZmMsg.unknownUser);
@@ -203,7 +228,6 @@ ZmSharePropsDialog.prototype._handleOkButton = function(event) {
 	// send mail
 	if (instance.sendMail) {
 		// initialize rest of share information
-		share.grantee.email = share.grantee.name;
 		share.grantor.id = this._appCtxt.get(ZmSetting.USERID);
 		share.grantor.email = this._appCtxt.get(ZmSetting.USERNAME);
 		share.grantor.name = this._appCtxt.get(ZmSetting.DISPLAY_NAME);
@@ -239,7 +263,7 @@ ZmSharePropsDialog.prototype._executeGrantAction = function(folder, share) {
 	
 	var shareNode = soapDoc.set("grant", null, actionNode);
 	shareNode.setAttribute("gt", "usr");
-	shareNode.setAttribute("d", share.grantee.name);
+	shareNode.setAttribute("d", share.grantee.email);
 	shareNode.setAttribute("perm", share.link.perm);
 	
 	var appCtlr = this._appCtxt.getAppController();
@@ -248,6 +272,96 @@ ZmSharePropsDialog.prototype._executeGrantAction = function(folder, share) {
 	return resp.action.zid;
 }
 
+ZmSharePropsDialog.prototype._handleCompletionData = function (args) {
+	var text = args[1];
+	var element = args[2];
+	text = text.replace(/;\s*/, "");
+	element.value = text;
+	try {
+		if (element.fireEvent) {
+			element.fireEvent("onchange");
+		} else if (document.createEvent) {
+			var ev = document.createEvent("UIEvents");
+			ev.initUIEvent("change",false,window, 1);
+			element.dispatchEvent(ev);
+		}
+	}
+	catch (ex) {
+		// ignore -- TODO: what to do with this error?
+	}
+	
+	// HACK: save completed value to instance
+	var instance = this._xform.getInstance();
+	var share = instance.share;
+	share.grantee.name = text;
+};
+
+/** 
+ * <b>Note</b>
+ * This method is only called once because the auto-complete replaces the 
+ * onkeydown/up handlers on the element. Because of that, we need to add an
+ * extra handler on key press to update the value in the instance. That is
+ * done in the <code>_handleInput</code> method.
+ */
+ZmSharePropsDialog.prototype._handleFirstInput = function(formItem, elementValue, instanceValue, event) {
+	// attach autocomplete to element
+	var inputEl = DwtUiEvent.getTarget(event);
+	this._acAddrSelectList.handle(inputEl);		
+
+	// install handler so we can update instance
+	inputEl._formItem = formItem;
+	inputEl._onkeyup = inputEl[DwtEvent.ONKEYUP];
+	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, this._handleInput);
+
+	// send first key press event directly to autocomplete
+	ZmAutocompleteListView.onKeyDown(event);
+	ZmAutocompleteListView.onKeyUp(event);
+
+	// update instance
+	var form = formItem.getForm();
+	form.itemChanged(formItem, elementValue, event);
+}
+
+ZmSharePropsDialog.prototype._handleInput = function(event) {
+	event = event || window.event;
+
+	// pass to autocomplete handler
+	var inputEl = DwtUiEvent.getTarget(event);
+	inputEl._onkeyup(event);
+	
+	// update instance
+	var formItem = inputEl._formItem;
+	var form = formItem.getForm();
+	var elementValue = inputEl.value;
+	form.itemChanged(formItem, elementValue, event);
+}
+
+ZmSharePropsDialog.prototype._getNewAutocompleteLocation = function(args) {
+	var cv = args[0];
+	var ev = args[1];
+	var element = ev.element;
+	var id = element.id;
+	
+	var viewEl = this.getHtmlElement();
+	var location = Dwt.toWindow(element, 0, 0, viewEl);
+	var size = Dwt.getSize(element);
+	return new DwtPoint((location.x), (location.y + size.y) );
+}
+
 ZmSharePropsDialog.prototype._getSeparatorTemplate = function() {
 	return "";
+}
+
+// Private methods
+
+ZmSharePropsDialog.__xformItemChanged = function(id, value, event) {
+	var item = this.getItemById(id);
+	if (item.refPath == "sendMail" || item.refPath == "mailType" || item.refPath == "quickReply") {
+		// HACK: This is done to avoid marking the form as "dirty"
+		item.setInstanceValue(value);
+		this.refresh();
+	}
+	else {
+		XForm.prototype.itemChanged.call(this, id, value, event);
+	}
 }

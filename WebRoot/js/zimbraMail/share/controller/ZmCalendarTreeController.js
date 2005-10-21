@@ -119,20 +119,24 @@ function(overviewId, showUnread, omit) {
 
 ZmCalendarTreeController.prototype.resetOperations = 
 function(actionMenu, type, id) {
-	// can't delete personal calendar
 	if (actionMenu) {
+		var overviewController = this._appCtxt.getOverviewController();
+		var treeData = overviewController.getTreeData(ZmOrganizer.CALENDAR);
+		var calendar = treeData.getById(id);
+		actionMenu.enable(ZmOperation.SHARE_CALENDAR, !calendar.link);
+		
 		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_CALENDAR);
 	}
 }
 
 // Returns a list of desired header action menu operations
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps = function() {
-	return null;//[ ZmOperation.SHARE_CALENDAR, ZmOperation.MOUNT_CALENDAR ];
+	return null;//[ ZmOperation.MOUNT_CALENDAR ];
 }
 
 // Returns a list of desired action menu operations
 ZmCalendarTreeController.prototype._getActionMenuOps = function() {
-	return [ ZmOperation.EDIT_PROPS, ZmOperation.DELETE ];
+	return [ ZmOperation.SHARE_CALENDAR, ZmOperation.DELETE, ZmOperation.EDIT_PROPS ];
 }
 
 ZmCalendarTreeController.prototype.getTreeStyle = function() {
@@ -229,10 +233,9 @@ ZmCalendarTreeController.prototype._treeViewListener = function(ev) {
 }
 
 ZmCalendarTreeController.prototype._shareCalListener = function(ev) {
-	var overviewController = this._appCtxt.getOverviewController();
-	var treeData = overviewController.getTreeData(ZmOrganizer.CALENDAR);
+	this._pendingActionData = this._getActionedOrganizer(ev);
 	
-	var calendar = treeData.getById(ZmFolder.ID_CALENDAR);
+	var calendar = this._pendingActionData;
 	var share = null;
 	
 	var sharePropsDialog = this._appCtxt.getSharePropsDialog();
