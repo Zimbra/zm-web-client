@@ -66,6 +66,7 @@ ZmSetting.CAL_DAY			= "day";
 ZmSetting.CAL_MONTH			= "month";
 ZmSetting.CAL_WEEK			= "week";
 ZmSetting.CAL_WORK_WEEK		= "workWeek";
+ZmSetting.CAL_SCHEDULE		= "schedule";
 ZmSetting.COMPOSE_FONT_COLOR= "#000000";	 			// zimbraPrefHtmlEditorDefaultFontColor
 ZmSetting.COMPOSE_FONT_FAM 	= "Times"; 					// zimbraPrefHtmlEditorDefaultFontFamily
 ZmSetting.COMPOSE_FONT_SIZE = "12pt"; 					// zimbraPrefHtmlEditorDefaultFontSize

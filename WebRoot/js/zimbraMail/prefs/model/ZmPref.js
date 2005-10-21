@@ -285,8 +285,8 @@ ZmPref.SETUP[ZmSetting.CAL_SHOW_TIMEZONE] = {
 ZmPref.SETUP[ZmSetting.CALENDAR_INITIAL_VIEW] = {
  	displayName:		ZmMsg.calendarInitialView,
  	displayContainer:	"select",
-	displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth],
-	options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH],
+	displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.viewSchedule],
+	options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_SCHEDULE],
  	displaySeparator:	false};
 
 ZmPref.SETUP[ZmSetting.CAL_FIRST_DAY_OF_WEEK] = {
