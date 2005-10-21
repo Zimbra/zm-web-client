@@ -143,11 +143,11 @@ function(params) {
 }
 
 ZmNewWindow.prototype.sendRequest = 
-function(soapDoc, useXml) {
+function(soapDoc, asyncMode, callback, errorCallback) {
 
 	// defer all server requests to the parent window
 	var result = window.parentController
-		? window.parentController.sendRequest(soapDoc, useXml)
+		? window.parentController.sendRequest(soapDoc, asyncMode, callback, errorCallback)
 		: null;
 	
 	return result;

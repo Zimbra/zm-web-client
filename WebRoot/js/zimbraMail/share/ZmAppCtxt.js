@@ -322,10 +322,15 @@ function() {
 	return view ? view.getController() : null;
 }
 
+ZmAppCtxt.prototype.setCurrentList =
+function(list) {
+	this._list = list;
+}
+
 ZmAppCtxt.prototype.getCurrentList =
 function() {
 	var ctlr = this.getCurrentController();
-	return ctlr ? ctlr.getList() : null;
+	return (ctlr && ctlr.getList) ? ctlr.getList() : this._list ? this._list : null;
 }
 
 // XXX: this could potentially go away since we have a static class that does this

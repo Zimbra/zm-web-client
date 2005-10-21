@@ -352,6 +352,7 @@ function(args) {
 				this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, search.query);
 			}
 		}
+		this._appCtxt.setCurrentList(results.getResults(results.type));
 	}
 	DBG.timePt("render search results");
 	
