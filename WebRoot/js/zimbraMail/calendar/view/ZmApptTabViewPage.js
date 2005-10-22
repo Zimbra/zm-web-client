@@ -79,6 +79,7 @@ function(attId) {
 	appt.setName(this._subjectField.value);
 	appt.location = this._locationField.value;
 	appt.freeBusy = this._showAsSelect.getValue();
+	appt.setFolderId(this._calendarSelect.getValue());
 
 	// set the start date by aggregating start date/time fields
 	var startDate = this._startDateField.value;
@@ -155,7 +156,6 @@ function() {
 	this._notesHtmlEditor.clear();
 	
 	// reinit non-time sensitive selects option values
-	this._calendarSelect.setSelectedValue("personal");
 	this._showAsSelect.setSelectedValue(ZmApptTabViewPage.SHOWAS_OPTIONS[2].value);
 	this._repeatSelect.setSelectedValue(ZmApptTabViewPage.REPEAT_OPTIONS[0].value);
 	this._allDayCheckbox.checked = false;
@@ -320,6 +320,7 @@ function(appt) {
 	}
 	// if all day appt, set time anyway in case user changes mind
 	this._resetTimeSelect(appt, isAllDayAppt);
+	this._resetCalendarSelect();
 
 	// re-enable all input fields
 	this.enableInputs(true);
@@ -470,8 +471,6 @@ function() {
 
 	// create selects for details section
 	this._calendarSelect = new DwtSelect(this);
-	// TODO - get all folders/links w/ view set to "Appointment" we received from initial refresh block
-	this._calendarSelect.addOption("Personal Calendar", true, "personal");
 	var calCell = Dwt.getDomObj(doc, this._calSelectId);
 	if (calCell)
 		calCell.appendChild(this._calendarSelect.getHtmlElement());
@@ -579,6 +578,7 @@ ZmApptTabViewPage.prototype._getDetailsHtml =
 function() {
 	this._subjectFieldId 		= Dwt.getNextId();
 	this._locationFieldId 		= Dwt.getNextId();
+	this._calLabelId 			= Dwt.getNextId();
 	this._calSelectId 			= Dwt.getNextId();
 	this._showAsSelectId 		= Dwt.getNextId();
 
@@ -596,15 +596,20 @@ function() {
 	html[i++] = ":</td><td colspan=4><input style='width:100%; height:22px' type='text' id='";
 	html[i++] = this._locationFieldId;
 	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'>";
-	html[i++] = ZmMsg.calendar;
-	html[i++] = ":</td><td width=1% id='"
-	html[i++] = this._calSelectId;
-	html[i++] = "'></td><td width=1% class='ZmApptTabViewPageField'>";
+	html[i++] = "<tr>";
+	html[i++] = "<td width=1% class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.showAs;
 	html[i++] = "</td><td width=1% id='";
 	html[i++] = this._showAsSelectId;
-	html[i++] = "'></td></tr>";
+	html[i++] = "'></td>";
+	html[i++] = "<td width=1% class='ZmApptTabViewPageField' id='";
+	html[i++] = this._calLabelId;
+	html[i++] = "'>";
+	html[i++] = ZmMsg.calendar;
+	html[i++] = ":</td><td id='"
+	html[i++] = this._calSelectId;
+	html[i++] = "'></td>";
+	html[i++] = "</tr>";
 	html[i++] = "</td></tr></table>";
 	
 	return html.join("");
@@ -747,6 +752,7 @@ function() {
 	
 	this._subjectField 		= Dwt.getDomObj(doc, this._subjectFieldId); 		delete this._subjectFieldId;
 	this._locationField 	= Dwt.getDomObj(doc, this._locationFieldId); 		delete this._locationFieldId;
+	this._calLabelField 	= Dwt.getDomObj(doc, this._calLabelId); 			delete this._calLabelId;
 	this._startDateField 	= Dwt.getDomObj(doc, this._startDateFieldId); 		delete this._startDateFieldId;
 	this._endDateField 		= Dwt.getDomObj(doc, this._endDateFieldId);	 		delete this._endDateFieldId;
 	this._attendeesField 	= Dwt.getDomObj(doc, this._attendeesFieldId); 		delete this._attendeesFieldId;
@@ -799,6 +805,27 @@ function(appt, useNowDate) {
 	}
 	this._startTimeSelect.setSelected(startIdx);
 	this._endTimeSelect.setSelected(endIdx);
+};
+
+ZmApptTabViewPage.prototype._resetCalendarSelect = 
+function() {
+	// get all folders w/ view set to "Appointment" we received from initial refresh block
+	var calTreeData = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
+	if (calTreeData && calTreeData.root) {
+		this._calendarSelect.clearOptions();
+		var children = calTreeData.root.children.getArray();
+		var len = children.length;
+		Dwt.setVisibility(this._calendarSelect.getHtmlElement(), len>1);
+		Dwt.setVisibility(this._calLabelField, len>1);
+		if (len > 1) {
+			for (var i = 0; i < len; i++) {
+				var cal = children[i];
+				this._calendarSelect.addOption(cal.name, cal.id == ZmFolder.ID_CALENDAR, cal.id);
+			}
+		}
+	}
+	// always reset the width of this select widget
+	this._calendarSelect.setSize("140"); // XXX: hardcode?
 };
 
 ZmApptTabViewPage.prototype._initAttachIframe = 
@@ -1084,9 +1111,9 @@ function(ev) {
 ZmApptTabViewPage.prototype._dateCalSelectionListener = 
 function(ev) {
 	// get the parent node this calendar currently belongs to
-	var parentButton = this._dateCalendar.getHtmlElement().parentNode;
+	var parentButton = this._dateCalendar._currButton;
 	// and get reference to its respective text field
-	var textField = parentButton == this._startDateButton.getHtmlElement()
+	var textField = parentButton == this._startDateButton
 		? this._startDateField : this._endDateField;
 
 	if (textField)

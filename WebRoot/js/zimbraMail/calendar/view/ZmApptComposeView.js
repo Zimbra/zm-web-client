@@ -257,20 +257,22 @@ function() {
 
 ZmSchedTabViewPage.prototype.showMe = 
 function() {
-	DwtTabViewPage.prototype.showMe.call(this);
+	this.setZIndex(DwtTabView.Z_ACTIVE_TAB); // XXX: is this necessary?
+
+	if (!this._rendered) {
+		this._createHTML();
+		this._rendered = true;
+		var pSize = this.parent.getSize();
+		this.resize(pSize.x, pSize.y);
+	}
+
 	this.parent.tabSwitched(this._tabKey);
 };
 
 ZmSchedTabViewPage.prototype.initialize = 
 function(appt, mode) {
 	this._appt = appt;
-
-	// TODO
-	if (!this._rendered) {
-		DBG.println("TODO: schedule tab view page - initialize!");
-		this._createHTML();
-		this._rendered = true;
-	}
+	this._mode = mode;
 };
 
 ZmSchedTabViewPage.prototype.cleanup = 
@@ -302,8 +304,14 @@ function() {
 ZmSchedTabViewPage.prototype.resize = 
 function(newWidth, newHeight) {
 	if (!this._rendered) return;
-	// TODO
-	DBG.println("TODO: resize schedule tab as appropriate");
+
+	if (newWidth) {
+		this.setSize(newWidth);
+	}
+	
+	if (newHeight) {
+		this.setSize(Dwt.DEFAULT, newHeight - 30);
+	}
 };
 
 ZmSchedTabViewPage.prototype._createHTML = 
@@ -312,6 +320,7 @@ function() {
 	start.setSeconds(0);
 	start.setHours(0);
 	start.setMinutes(0);
+
 	var end = new Date(start.getTime() + (24*60*60*1000));
 	end.setHours(0);
 	end.setMinutes(0);
@@ -319,7 +328,4 @@ function() {
 
 	this._fbView = new ZmFreeBusyView(this, null, start, end, (new ZmAppt()));
 	this._fbView.enable();
-	var dims = this.parent.getSize();
-	this.setSize(Dwt.DEFAULT, dims.y-30);
-	this._fbView.setSize(Dwt.DEFAULT, dims.y-30);
 };
