@@ -40,6 +40,7 @@ ZmTree.prototype.constructor = ZmTree;
 ZmTree.CLASS = new Object();
 ZmTree.CLASS[ZmOrganizer.FOLDER] = ZmFolder;
 ZmTree.CLASS[ZmOrganizer.TAG] = ZmTag;
+ZmTree.CLASS[ZmOrganizer.CALENDAR] = ZmCalendar;
 
 ZmTree.prototype.toString = 
 function() {
