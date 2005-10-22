@@ -230,7 +230,7 @@ function() {
  * opening an existing appointment w/ an attachment and therefore display differently
 */
 ZmApptTabViewPage.prototype.addAttachmentField =
-function(attach) {
+function(appt, attach) {
 	if (this._attachCount == 0) {
 		this._initAttachIframe(ZmApptTabViewPage.ATTACH_HEIGHT);
 	} else if (this._attachCount < 3) {
@@ -249,7 +249,7 @@ function(attach) {
 	var attachInputId = "_att_" + Dwt.getNextId();
 	
 	if (attach) {
-		div.innerHTML = this._buildAttachList(attach);
+		div.innerHTML = appt.getAttachListHtml(attach, true);
 	} else {
 		var html = new Array();
 		var i = 0;
@@ -320,7 +320,7 @@ function(appt) {
 	}
 	// if all day appt, set time anyway in case user changes mind
 	this._resetTimeSelect(appt, isAllDayAppt);
-	this._resetCalendarSelect();
+	this._resetCalendarSelect(appt);
 
 	// re-enable all input fields
 	this.enableInputs(true);
@@ -387,7 +387,7 @@ function(appt) {
 	var attachList = appt.getAttachments();
 	if (attachList) {
 		for (var i = 0; i < attachList.length; i++)
-			this.addAttachmentField(attachList[i]);
+			this.addAttachmentField(appt, attachList[i]);
 	}
 
 	// set notes/content (based on compose mode per user prefs)
@@ -808,16 +808,17 @@ function(appt, useNowDate) {
 };
 
 ZmApptTabViewPage.prototype._resetCalendarSelect = 
-function() {
+function(appt) {
 	// get all folders w/ view set to "Appointment" we received from initial refresh block
 	var calTreeData = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
 	if (calTreeData && calTreeData.root) {
 		this._calendarSelect.clearOptions();
 		var children = calTreeData.root.children.getArray();
 		var len = children.length;
-		Dwt.setVisibility(this._calendarSelect.getHtmlElement(), len>1);
-		Dwt.setVisibility(this._calLabelField, len>1);
-		if (len > 1) {
+		var visible = (this._mode != ZmAppt.MODE_NEW && !appt.isReadOnly()) || (this._mode == ZmAppt.MODE_NEW && len>1);
+		Dwt.setVisibility(this._calendarSelect.getHtmlElement(), visible);
+		Dwt.setVisibility(this._calLabelField, visible);
+		if (visible) {
 			for (var i = 0; i < len; i++) {
 				var cal = children[i];
 				this._calendarSelect.addOption(cal.name, cal.id == ZmFolder.ID_CALENDAR, cal.id);
@@ -1018,41 +1019,6 @@ function(repeatType) {
 		case "YEA": recurDesc = ZmMsg.everyYear;  break;
 	}
 	this._repeatDescField.innerHTML = recurDesc ? (recurDesc + " (" + ZmMsg.noEndDate + ")") : "";
-};
-
-ZmApptTabViewPage.prototype._buildAttachList = 
-function(attach) {
-	var csfeMsgFetchSvc = location.protocol + "//" + this.getDocument().domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
-	var hrefRoot = "href='" + csfeMsgFetchSvc + "id=" + this._appt.getInvId() + "&amp;part=";
-
-	// gather meta data for this attachment
-	var mimeInfo = ZmMimeTable.getInfo(attach.ct);
-	var icon = mimeInfo ? mimeInfo.image : "GenericDoc";
-	var size = attach.s;
-	var sizeText = "";
-	if (size != null) {
-	    if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
-        else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;"; 
-        else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;"; 
-	}
-
-	var html = new Array();
-	var i = 0;
-
-	// start building html for this attachment
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0>";
-	html[i++] = "<tr><td width=1%><input type='checkbox' checked value='";
-	html[i++] = attach.part;
-	html[i++] = "'></td><td><a target='_blank' class='AttLink' ";
-	html[i++] = hrefRoot;
-	html[i++] = attach.part;
-	html[i++] = "'>";
-	html[i++] = attach.filename;
-	html[i++] = sizeText;
-	html[i++] = "</a></td></tr>";
-	html[i++] = "</table>";
-
-	return html.join("");
 };
 
 

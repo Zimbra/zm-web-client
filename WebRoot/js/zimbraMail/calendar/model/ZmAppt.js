@@ -1750,6 +1750,45 @@ function(args) {
 	}
 };
 
+ZmAppt.prototype.getAttachListHtml = 
+function(attach, hasCheckbox) {
+	var csfeMsgFetchSvc = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+	var hrefRoot = "href='" + csfeMsgFetchSvc + "id=" + this.getInvId() + "&amp;part=";
+
+	// gather meta data for this attachment
+	var mimeInfo = ZmMimeTable.getInfo(attach.ct);
+	var icon = mimeInfo ? mimeInfo.image : "GenericDoc";
+	var size = attach.s;
+	var sizeText = "";
+	if (size != null) {
+	    if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
+        else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;"; 
+        else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;"; 
+	}
+
+	var html = new Array();
+	var i = 0;
+
+	// start building html for this attachment
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
+	if (hasCheckbox) {
+		html[i++] = "<td width=1%><input type='checkbox' checked value='";
+		html[i++] = attach.part;
+		html[i++] = "'></td>";
+	}
+	html[i++] = "<td><a target='_blank' class='AttLink' ";
+	html[i++] = hrefRoot;
+	html[i++] = attach.part;
+	html[i++] = "'>";
+	html[i++] = attach.filename;
+	html[i++] = sizeText;
+	html[i++] = "</a></td></tr>";
+	html[i++] = "</table>";
+
+	return html.join("");
+};
+
+
 // Static methods
 
 /**

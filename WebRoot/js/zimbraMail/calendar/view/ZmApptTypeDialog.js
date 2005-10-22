@@ -30,7 +30,6 @@
 *
 * @author Parag Shah
 * @param parent			the element that created this view
-* @param className 		optional class name for this view
 */
 function ZmApptTypeDialog(parent) {
 

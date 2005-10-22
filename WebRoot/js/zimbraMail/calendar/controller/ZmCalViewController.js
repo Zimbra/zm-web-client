@@ -608,6 +608,19 @@ function(mode, appt) {
 	this._typeDialog.popup();
 };
 
+ZmCalViewController.prototype._showReadOnlyDialog = 
+function(args) {
+	var appt = args[0];
+
+	if (this._readOnlyDialog == null) {
+		this._readOnlyDialog = new ZmApptReadOnlyDialog(this._shell, this._appCtxt);
+		//this._readOnlyDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._readOnlyOkListener));
+		this._readOnlyDialog._disableFFhack();
+	}
+	this._readOnlyDialog.initialize(appt);
+	this._readOnlyDialog.popup();
+};
+
 ZmCalViewController.prototype.newAppointmentHelper = 
 function(startDate, optionalDuration, folderId) {
 	this.newAppointment(this._newApptObject(startDate, optionalDuration, folderId));
@@ -657,12 +670,16 @@ function(appt) {
 	try {
 		// if we have an appointment, go get all the details.
 		if (!appt.__creating) {
-			// if appointment is recurring, prompt user to edit instance vs. series
-			if (appt.isRecurring()) {
-				this._showTypeDialog(ZmAppt.MODE_EDIT, appt);
+			if (appt.isReadOnly()) {
+				appt.getDetails(ZmAppt.MODE_EDIT_SERIES, new AjxCallback(this, this._showReadOnlyDialog, [appt]));
 			} else {
-				// if simple appointment, no prompting necessary
-				this.editAppointment(appt, ZmAppt.MODE_EDIT);
+				// if appointment is recurring, prompt user to edit instance vs. series
+				if (appt.isRecurring()) {
+					this._showTypeDialog(ZmAppt.MODE_EDIT, appt);
+				} else {
+					// if simple appointment, no prompting necessary
+					this.editAppointment(appt, ZmAppt.MODE_EDIT);
+				}
 			}
 		} else {
 			this.newAppointment(appt);
