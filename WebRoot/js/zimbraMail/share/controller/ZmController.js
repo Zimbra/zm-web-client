@@ -123,7 +123,7 @@ function(method, params, delay) {
 }
 
 ZmController.prototype.popupErrorDialog = 
-function(msg, ex, noExecReset)  {
+function(msg, ex, noExecReset, hideReportButton)  {
 	if (!noExecReset)
 		this._execFrame = {method: null, params: null, restartOnError: false};
 	// popup alert
@@ -134,6 +134,7 @@ function(msg, ex, noExecReset)  {
 		detailStr = detailStr + prop + " - " + ex[prop] + "\n";				
 	}
 	this._errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
+	this._errorDialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, !hideReportButton);
 	this._errorDialog.popup();
 }
 

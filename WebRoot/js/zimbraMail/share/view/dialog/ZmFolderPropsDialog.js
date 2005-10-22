@@ -82,7 +82,7 @@ ZmFolderPropsDialog._XFORM_DEF = { items: [
 							return ZmShareInfo.getRoleName(value);
 						}
 					},
-					{type:_ANCHOR_, label: ZmMsg.editAction, labelLocation:_NONE_,
+					{type:_ANCHOR_, label: ZmMsg.edit, labelLocation:_NONE_,
 						showInNewWindow: false,
 						onActivate: function(event) {
 							var form = this.getForm();
@@ -92,7 +92,7 @@ ZmFolderPropsDialog._XFORM_DEF = { items: [
 						}
 					},
 					{type:_CELLSPACER_, width:5},
-					{type:_ANCHOR_, label: ZmMsg.remove, labelLocation:_NONE_,
+					{type:_ANCHOR_, label: ZmMsg.revoke, labelLocation:_NONE_,
 						showInNewWindow: false,
 						onActivate: function(event) {
 							var form = this.getForm();

@@ -221,7 +221,7 @@ ZmSharePropsDialog.prototype._handleOkButton = function(event) {
 		}
 		
 		var appController = this._appCtxt.getAppController();
-		appController.popupErrorDialog(message, ex);
+		appController.popupErrorDialog(message, ex, null, true);
 		return;
 	}
 

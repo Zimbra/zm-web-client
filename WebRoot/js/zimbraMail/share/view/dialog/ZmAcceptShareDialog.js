@@ -157,14 +157,14 @@ ZmAcceptShareDialog.prototype._handleYesButton = function(event) {
 		mountpointId = parseInt(resp.link[0].id);
 	}
 	catch (ex) {
-		var message = Ajx.unknownError;
+		var message = ZmMsg.unknownError;
 		if (ex instanceof ZmCsfeException && ex.code == "mail.ALREADY_EXISTS") {
-			message = Ajx.folderNameExists;
+			message = ZmMsg.folderNameExists;
 			// NOTE: This prevents details from being shown
 			ex = null;
 		}
 		
-		appCtlr.popupErrorDialog(message, ex);
+		appCtlr.popupErrorDialog(message, ex, null, true);
 		return;
 	}
 	
@@ -182,7 +182,7 @@ ZmAcceptShareDialog.prototype._handleYesButton = function(event) {
 	catch (ex) {
 		// TODO: handle error
 		var message = null;
-		appCtlr.popupErrorDialog(message, ex);
+		appCtlr.popupErrorDialog(message, ex, null, true);
 	}
 
 	// notify accept listener and clear
