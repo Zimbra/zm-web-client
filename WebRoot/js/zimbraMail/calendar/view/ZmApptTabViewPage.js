@@ -6,11 +6,10 @@
 * @author Parag Shah
 * @param parent			the element that created this view
 * @param appCtxt 		app context
-* @param className 		class name for this view
-* @param posStyle		positioning style
 */
-function ZmApptTabViewPage(parent, appCtxt, className, posStyle) {
-	DwtTabViewPage.call(this, parent, className, posStyle);
+function ZmApptTabViewPage(parent, appCtxt) {
+	DwtTabViewPage.call(this, parent);
+
 	this.setScrollStyle(DwtControl.CLIP);
 	this._appCtxt = appCtxt;
 	this._rendered = false;
@@ -61,6 +60,9 @@ ZmApptTabViewPage.prototype.showMe =
 function() {
 	if (this._rendered)
 		this.parent.tabSwitched(this._tabKey);
+
+	var pSize = this.parent.getSize();
+	this.resize(pSize.x, pSize.y);
 };
 
 ZmApptTabViewPage.prototype.getAppt = 
@@ -303,6 +305,28 @@ function(newWidth, newHeight) {
 		Dwt.setSize(this.getHtmlElement().firstChild, Dwt.DEFAULT, newHeight - 30);
 		this._resizeNotes();
 	}
+};
+
+ZmApptTabViewPage.prototype.getDateInfo = 
+function() {
+	var dateInfo = new Object();
+	dateInfo.startDate = this._startDateField.value;
+	dateInfo.endDate = this._endDateField.value;
+	if (!this._allDayCheckbox.checked) {
+		dateInfo.startTime = this._startTimeSelect.getValue();
+		dateInfo.endTime = this._endTimeSelect.getValue();
+	}
+	return dateInfo;
+};
+
+ZmApptTabViewPage.prototype.getAttendees = 
+function() {
+	return this._attendeesField.value;
+};
+
+ZmApptTabViewPage.prototype.getTimeOptionValues = 
+function() {
+	return this._timeOptions;
 };
 
 

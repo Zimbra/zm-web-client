@@ -171,7 +171,7 @@ function() {
 	this._tabs = new DwtTabView(this);
 
 	this._apptTab = new ZmApptTabViewPage(this, this._appCtxt);
-	this._scheduleTab = new ZmSchedTabViewPage(this, this._appCtxt);
+	this._scheduleTab = new ZmSchedTabViewPage(this, this._appCtxt, this._apptTab);
 
 	this._apptTabKey = this._tabs.addTab(ZmMsg.appointment, this._apptTab);
 	this._scheduleTabKey = this._tabs.addTab(ZmMsg.scheduleAttendees, this._scheduleTab);
@@ -221,111 +221,4 @@ function(ev) {
 	} else {
 		this._scheduleTab.resize(newWidth, newHeight);
 	}
-};
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-// TODO: MOVE TO NEW FILE
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-/**
-* Creates a new tab view that can be used to overload DwtTabView base class methods
-* @constructor
-* @class
-*
-* @author Parag Shah
-* @param parent			the element that created this view
-* @param appCtxt 		app context
-* @param className 		class name for this view
-* @param posStyle		positioning style
-*/
-function ZmSchedTabViewPage(parent, appCtxt, className, posStyle) {
-	DwtTabViewPage.call(this, parent, className, posStyle);
-	this.setScrollStyle(Dwt.SCROLL);
-	this._appCtxt = appCtxt;
-	this._rendered = false;
-};
-
-ZmSchedTabViewPage.prototype = new DwtTabViewPage;
-ZmSchedTabViewPage.prototype.constructor = ZmSchedTabViewPage;
-
-ZmSchedTabViewPage.prototype.toString = 
-function() {
-	return "ZmSchedTabViewPage";
-};
-
-ZmSchedTabViewPage.prototype.showMe = 
-function() {
-	this.setZIndex(DwtTabView.Z_ACTIVE_TAB); // XXX: is this necessary?
-
-	if (!this._rendered) {
-		this._createHTML();
-		this._rendered = true;
-		var pSize = this.parent.getSize();
-		this.resize(pSize.x, pSize.y);
-	}
-
-	this.parent.tabSwitched(this._tabKey);
-};
-
-ZmSchedTabViewPage.prototype.initialize = 
-function(appt, mode) {
-	this._appt = appt;
-	this._mode = mode;
-};
-
-ZmSchedTabViewPage.prototype.cleanup = 
-function() {
-	// TODO
-	DBG.println("TODO: cleanup schedule tab view");
-};
-
-ZmSchedTabViewPage.prototype.isDirty =
-function() {
-	// TODO
-	DBG.println("TODO: check if schedule tab view is dirty");
-	return false;
-};
-
-ZmSchedTabViewPage.prototype.isValid = 
-function() {
-	// TODO
-	DBG.println("TODO: check if schedule tab fields are all valid");
-	return true;
-};
-
-ZmSchedTabViewPage.prototype.enableInputs = 
-function() {
-	// TODO
-	DBG.println("TODO: enable inputs for schedule tab view");
-};
-
-ZmSchedTabViewPage.prototype.resize = 
-function(newWidth, newHeight) {
-	if (!this._rendered) return;
-
-	if (newWidth) {
-		this.setSize(newWidth);
-	}
-	
-	if (newHeight) {
-		this.setSize(Dwt.DEFAULT, newHeight - 30);
-	}
-};
-
-ZmSchedTabViewPage.prototype._createHTML = 
-function() {
-	var start = new Date(this._appt.getStartDate().getTime());
-	start.setSeconds(0);
-	start.setHours(0);
-	start.setMinutes(0);
-
-	var end = new Date(start.getTime() + (24*60*60*1000));
-	end.setHours(0);
-	end.setMinutes(0);
-	end.setSeconds(0);
-
-	this._fbView = new ZmFreeBusyView(this, null, start, end, (new ZmAppt()));
-	this._fbView.enable();
 };
