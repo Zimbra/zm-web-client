@@ -454,22 +454,15 @@ function(ev) {
 ZmListController.prototype._navBarListener = 
 function(ev) {
 	// skip listener for non-current views
-	if (this._appCtxt.getAppViewMgr().getCurrentView() != this._getViewType())
+	if (this._appCtxt.getAppViewMgr().getCurrentViewId() != this._getViewType())
 		return;
 	
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 	
-	try {
-		if (op == ZmOperation.PAGE_BACK || op == ZmOperation.PAGE_FORWARD) 
-		{
-			this._paginate(this._currentView, (op == ZmOperation.PAGE_FORWARD));
-		} 
-		else if (op == ZmOperation.PAGE_DBL_BACK || op == ZmOperation.PAGE_DBL_FORW) 
-		{
-			this._paginateDouble(op == ZmOperation.PAGE_DBL_FORW);
-		}
-	} catch (ex) {
-		this._handleException(ex, this._navBarListener, ev, false);
+	if (op == ZmOperation.PAGE_BACK || op == ZmOperation.PAGE_FORWARD) {
+		this._paginate(this._currentView, (op == ZmOperation.PAGE_FORWARD));
+	} else if (op == ZmOperation.PAGE_DBL_BACK || op == ZmOperation.PAGE_DBL_FORW) {
+		this._paginateDouble(op == ZmOperation.PAGE_DBL_FORW);
 	}
 }
 
