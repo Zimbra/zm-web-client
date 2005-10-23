@@ -574,7 +574,7 @@ function() {
 		}
 	}
 	
-	this._title = AjxDateUtil.MONTH_LONG[this._date.getMonth()]+" "+this._date.getFullYear();	
+	this._title = AjxDateUtil.MONTH_MEDIUM[this._date.getMonth()]+" "+this._date.getFullYear();	
 	var titleEl = Dwt.getDomObj(doc, this._titleId);
 	titleEl.innerHTML = this._title;
 };

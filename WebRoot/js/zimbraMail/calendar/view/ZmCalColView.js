@@ -47,7 +47,7 @@ ZmCalColView.prototype.constructor = ZmCalColView;
 ZmCalColView.DRAG_THRESHOLD = 5;
 
 // min width before we'll turn on horizontal scrollbars
-ZmCalColView.MIN_COLUMN_WIDTH = 100; 
+ZmCalColView.MIN_COLUMN_WIDTH = 120; 
 
 ZmCalColView._OPACITY_APPT_NORMAL = 100;
 ZmCalColView._OPACITY_APPT_DECLINED = 20;
@@ -522,13 +522,13 @@ function()
 	var numDays = this.getNumDays();
 	if (numDays == 1) {
 		var date = this._date;
-		this._title = ((this._scheduleMode) ? AjxDateUtil.WEEKDAY_LONG[date.getDay()]+", " : "") +
-							AjxDateUtil.MONTH_LONG[date.getMonth()] + " " + date.getDate();
+		this._title = ((this._scheduleMode) ? AjxDateUtil.WEEKDAY_MEDIUM[date.getDay()]+", " : "") +
+							AjxDateUtil.MONTH_MEDIUM[date.getMonth()] + " " + date.getDate();
 	} else {
 		var first = this._days[0].date;
 		var last = this._days[numDays-1].date;
-		this._title = AjxDateUtil.MONTH_LONG[first.getMonth()]+" "+first.getDate()+" - " +
-				 AjxDateUtil.MONTH_LONG[last.getMonth()]+" "+last.getDate(); //+", "+last.getFullYear();
+		this._title = AjxDateUtil.MONTH_MEDIUM[first.getMonth()]+" "+first.getDate()+" - " +
+				 AjxDateUtil.MONTH_MEDIUM[last.getMonth()]+" "+last.getDate(); //+", "+last.getFullYear();
 	}				 
 }
 
