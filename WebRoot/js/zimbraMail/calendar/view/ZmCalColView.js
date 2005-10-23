@@ -504,7 +504,7 @@ function(enable)
 	bodyElement.className = enable ? "calendar_body_hscroll" : "calendar_body";
 	if (enable != this._horzEnabled) {
 		this._horzEnabled = enable;
-		this._syncScroll(true);	
+		this._syncScroll(true);
 	}
 }
 
@@ -949,6 +949,11 @@ function(abook) {
 	Dwt.getDomObj(this.getDocument(), this._bodyDivId).onscroll = function() {
 		myView._syncScroll();
 	};
+
+	Dwt.getDomObj(this.getDocument(), this._allDayApptScrollDivId).onscroll = function() {
+		myView._syncScroll();
+	};
+	
 	Dwt.getDomObj(this.getDocument(), this._apptBodyDivId)._type = ZmCalBaseView.TYPE_APPTS_DAYGRID;
 	Dwt.getDomObj(this.getDocument(), this._bodyHourDivId)._type = ZmCalBaseView.TYPE_HOURS_COL;
 	Dwt.getDomObj(this.getDocument(), this._allDayDivId)._type = ZmCalBaseView.TYPE_ALL_DAY;
