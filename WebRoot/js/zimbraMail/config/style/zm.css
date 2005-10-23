@@ -739,6 +739,18 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	overflow: auto;
 }
 
+.calendar_allday_appt_vert {
+	position:absolute;
+  	overflow:-moz-scrollbars-vertical;
+  	overflow-x:hidden;
+  	overflow-y:auto;
+}
+
+.calendar_allday_appt {
+	position:absolute;
+	overflow: hidden;
+}
+
 .calendar_month_body {
 	position:relative;
 	overflow:hidden;

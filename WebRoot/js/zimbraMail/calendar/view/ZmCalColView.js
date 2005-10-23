@@ -48,6 +48,8 @@ ZmCalColView.DRAG_THRESHOLD = 5;
 
 // min width before we'll turn on horizontal scrollbars
 ZmCalColView.MIN_COLUMN_WIDTH = 120; 
+// max number of all day appts before we turn on vertical scrollbars
+ZmCalColView.MAX_ALLDAY_APPTS = 4;
 
 ZmCalColView._OPACITY_APPT_NORMAL = 100;
 ZmCalColView._OPACITY_APPT_DECLINED = 20;
@@ -487,9 +489,11 @@ function(resetLeft)
 	var hourElement = Dwt.getDomObj(document, this._hoursScrollDivId);
 	var alldayElement = Dwt.getDomObj(document, this._allDayScrollDivId);
 	var unionGridScrollElement = Dwt.getDomObj(document, this._unionGridScrollDivId);
+	var alldayApptElement = Dwt.getDomObj(document, this._allDayApptScrollDivId);
 	hourElement.scrollTop = bodyElement.scrollTop;
 	if (resetLeft) bodyElement.scrollLeft = 0;
 	alldayElement.scrollLeft = bodyElement.scrollLeft;
+	alldayApptElement.scrollLeft = bodyElement.scrollLeft;	
 	if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
 }
 
@@ -502,6 +506,24 @@ function(enable)
 		this._horzEnabled = enable;
 		this._syncScroll(true);	
 	}
+}
+
+ZmCalColView.prototype._allDayVerticalScrollbar =
+function(enable)
+{
+	var el = Dwt.getDomObj(document, this._allDayApptScrollDivId);
+	el.className = enable ? "calendar_allday_appt_vert" : "calendar_allday_appt";
+	if (enable != this._vertEnabled) {
+		this._vertEnabled = enable;
+		this._syncScroll(true);	
+	}
+}
+
+ZmCalColView.prototype._allDayScrollToBottom =
+function()
+{
+	var el = Dwt.getDomObj(document, this._allDayApptScrollDivId);
+	el.scrollTop = this._allDayFullDivHeight;
 }
 
 ZmCalColView.prototype._scrollTo8AM =
@@ -796,6 +818,7 @@ function(abook) {
 
 	this._allDayScrollDivId = Dwt.getNextId();
 	this._allDayHeadingDivId = Dwt.getNextId();
+	this._allDayApptScrollDivId = Dwt.getNextId();
 	this._allDayDivId = Dwt.getNextId();
 	this._hoursScrollDivId = Dwt.getNextId();
 	this._bodyHourDivId = Dwt.getNextId();
@@ -877,12 +900,15 @@ function(abook) {
 			html.append("<div id='", this._columns[i].headingDaySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
 		}
 	}
+	html.append("</div>");
+	// end of all day scroll ===========
+	
 	// div holding all day appts
+	html.append("<div id='", this._allDayApptScrollDivId, "' class='calendar_allday_appt' style='position:absolute'>");	
 	html.append("<div id='", this._allDayDivId, "' style='position:absolute'>");
 	html.append("<div id='", this._newAllDayApptDivId, "' class='appt-Selected' style='position:absolute; display:none;'></div>");	
-	html.append("</div>"); 	
-	html.append("</div>"); 
-	// end of all day scroll ===========
+	html.append("</div>");
+	html.append("</div>");
 	
 	// sep betwen all day and normal appts	
 	html.append("<div id='", this._allDaySepDivId, "' class=calendar_header_allday_separator style='overflow:hidden;position:absolute;'></div>");
@@ -1363,9 +1389,16 @@ function() {
 	//var allDayDiv = Dwt.getDomObj(doc, this._allDayDivId);
 	var numRows = this._allDayApptsRowLayouts ? (this._allDayApptsRowLayouts.length) : 1;	
 	if (this._allDayApptsList && this._allDayApptsList.length > 0) numRows++;
-	this._allDayDivHeight = (ZmCalColView._ALL_DAY_APPT_HEIGHT+ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD) * numRows + ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD;
+	this._allDayFullDivHeight = (ZmCalColView._ALL_DAY_APPT_HEIGHT+ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD) * numRows + ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD;	
+	
+	this._allDayDivHeight = numRows <= ZmCalColView.MAX_ALLDAY_APPTS ? this._allDayFullDivHeight : 
+		(ZmCalColView._ALL_DAY_APPT_HEIGHT+ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD) * ZmCalColView.MAX_ALLDAY_APPTS + ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD;
 	var allDayDivY = allDayHeadingDivHeight;
-	this._setBounds(this._allDayDivId, 0, allDayDivY, this._apptBodyDivWidth + scrollFudge, this._allDayDivHeight);
+
+	this._setBounds(this._allDayApptScrollDivId, bodyX, allDayDivY, this._bodyDivWidth, this._allDayDivHeight);
+	this._setBounds(this._allDayDivId, 0, 0, this._apptBodyDivWidth + scrollFudge, this._allDayFullDivHeight);
+
+	this._allDayVerticalScrollbar(this._allDayDivHeight != this._allDayFullDivHeight);
 	
 	// div under year
 	this._setBounds(this._yearAllDayDivId, 0, allDayDivY, hoursWidth, this._allDayDivHeight);	
@@ -2040,6 +2073,8 @@ function(data) {
 		data.newApptDivEl = Dwt.getDomObj(data.view.getDocument(), data.view._newAllDayApptDivId);
 		data.view._populateNewApptHtml(data.newApptDivEl, true, data.folderId);		
 		data.apptBodyEl = Dwt.getDomObj(data.view.getDocument(), data.newApptDivEl.id + "_body");	
+		data.view._allDayScrollToBottom();
+		//zzzzz
 	} else {
 		data.gridEl.style.cursor = 's-resize';	
 		data.newApptDivEl = Dwt.getDomObj(data.view.getDocument(), data.view._newApptDivId);
@@ -2207,7 +2242,7 @@ function(ev) {
 		var bounds = data.view._getBoundsForAllDayDate(data.start, data.end);
 		if (bounds == null) return false;
 		// blank row at the bottom
-		var y = data.view._allDayDivHeight - (ZmCalColView._ALL_DAY_APPT_HEIGHT+ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD);
+		var y = data.view._allDayFullDivHeight - (ZmCalColView._ALL_DAY_APPT_HEIGHT+ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD);
 		Dwt.setLocation(e, newStart.x, y);
 		Dwt.setSize(e, bounds.width, bounds.height);
 		Dwt.setSize(data.apptBodyEl, bounds.width, bounds.height);		
