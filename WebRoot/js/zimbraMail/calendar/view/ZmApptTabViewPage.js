@@ -196,8 +196,29 @@ function() {
 
 ZmApptTabViewPage.prototype.isValid = 
 function() {
-	DBG.println("TODO: check if all fields in appointment view tab are valid");
-	return true;
+
+	// check for required subject
+	var subj = AjxStringUtil.trim(this._subjectField.value);
+	var isValid = subj != null && subj.length > 0;
+
+	// check proper dates..
+	if (isValid) {
+		var sd = this._startDateField.value;
+		var ed = this._endDateField.value;
+		if (!this._allDayCheckbox.checked) {
+			sd += " " + this._startTimeSelect.getValue();
+			ed += " " + this._endTimeSelect.getValue();
+		}
+		var startDate = new Date(sd);
+		var endDate = new Date(ed);
+		isValid = startDate.valueOf() <= endDate.valueOf();
+	}
+
+	if (isValid) {
+		// TODO: check proper attendees
+	}
+
+	return isValid;
 };
 
 ZmApptTabViewPage.prototype.getComposeMode = 
@@ -510,8 +531,10 @@ function() {
 		showAsCell.appendChild(this._showAsSelect.getHtmlElement());
 	delete this._showAsSelectId;
 
+	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 	// create selects for Time section
 	this._startTimeSelect = new DwtSelect(this);
+	this._startTimeSelect.addChangeListener(timeSelectListener);
 	if (this._timeOptions) {
 		for (var i = 0; i < this._timeOptions.length; i++) {
 			var option = this._timeOptions[i];
@@ -524,6 +547,7 @@ function() {
 	delete this._startTimeSelectId;
 
 	this._endTimeSelect = new DwtSelect(this);
+	this._endTimeSelect.addChangeListener(timeSelectListener);
 	if (this._timeOptions) {
 		for (var i = 0; i < this._timeOptions.length; i++) {
 			var option = this._timeOptions[i];
@@ -1102,14 +1126,65 @@ ZmApptTabViewPage.prototype._dateCalSelectionListener =
 function(ev) {
 	// get the parent node this calendar currently belongs to
 	var parentButton = this._dateCalendar._currButton;
-	// and get reference to its respective text field
-	var textField = parentButton == this._startDateButton
-		? this._startDateField : this._endDateField;
 
-	if (textField)
-		textField.value = AjxDateUtil.simpleComputeDateStr(ev.detail);
-	
+	// do some error correction... maybe we can optimize this?
+	var sd = new Date(this._startDateField.value);
+	var ed = new Date(this._endDateField.value);
+	var newDate = AjxDateUtil.simpleComputeDateStr(ev.detail);
+
+	// change the start/end date if they mismatch
+	if (parentButton == this._startDateButton) {
+		if (ed.valueOf() < ev.detail.valueOf())
+			this._endDateField.value = newDate;
+		this._startDateField.value = newDate;
+	} else {
+		if (sd.valueOf() > ev.detail.valueOf())
+			this._startDateField.value = newDate;
+		this._endDateField.value = newDate;
+	}
+
 	this._dateCalendar.setVisible(false);
+};
+
+ZmApptTabViewPage.prototype._timeChangeListener = 
+function(ev) {
+	var selectedObj = ev._args.selectObj;
+
+	var sd = new Date(this._startDateField.value);
+	var ed = new Date(this._endDateField.value);
+
+	// only attempt to correct the times if dates are equal (otherwise all bets are off)
+	if (sd.valueOf() == ed.valueOf()) {
+		var numOptions = this._startTimeSelect.size();
+
+		if (selectedObj == this._startTimeSelect) {
+			var startIdx = this._startTimeSelect.getIndexForValue(selectedObj.getValue());
+			var endIdx = this._endTimeSelect.getIndexForValue(this._endTimeSelect.getValue());
+			if (endIdx < startIdx) {
+				var newIdx = startIdx+1;
+				if (newIdx == numOptions) {
+					newIdx = 0;
+					var ed = new Date(this._endDateField.value);
+					ed.setDate(ed.getDate()+1);
+					this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
+				}
+				var newIdx = ((startIdx+1) == numOptions) ? 0 : (startIdx+1);
+				this._endTimeSelect.setSelected(newIdx);
+			}
+		} else {
+			var startIdx = this._startTimeSelect.getIndexForValue(this._startTimeSelect.getValue());
+			var endIdx = this._endTimeSelect.getIndexForValue(selectedObj.getValue());
+			if (startIdx > endIdx) {
+				var newIdx = endIdx == 0 ? numOptions-1 : endIdx-1;
+				this._startTimeSelect.setSelected(newIdx);
+				if (newIdx == (numOptions-1)) {
+					var sd = new Date(this._startDateField.value);
+					sd.setDate(sd.getDate()-1);
+					this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
+				}
+			}
+		}
+	}
 };
 
 ZmApptTabViewPage.prototype._repeatChangeListener = 

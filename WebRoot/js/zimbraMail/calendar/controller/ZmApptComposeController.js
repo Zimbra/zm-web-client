@@ -152,6 +152,18 @@ function(skipNotify) {
 	formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, composeMode, skipNotify);
 };
 
+ZmApptComposeController.prototype._showErrorMessage = 
+function() {
+	if (this._apptErrorDialog == null) {
+		this._apptErrorDialog = new DwtMessageDialog(this._shell);
+	}
+
+	// XXX: temp error msg
+	var msg = "Cannot save appointment. You have errors that must be corrected. Please correct them and try again or contact your System Administrator.";
+	this._apptErrorDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+	this._apptErrorDialog.popup();
+};
+
 
 // Listeners
 
@@ -165,8 +177,8 @@ function(ev) {
 		if (this._apptView.isValid()) {
 			this.saveAppt();
 		} else {
-			// TODO: show error dialog for now? 
-			//       until we get proper error handling mechanism
+			// XXX: show error dialog for now (until we get proper error handling mechanism)
+			this._showErrorMessage();
 		}
 	}
 

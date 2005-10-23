@@ -128,7 +128,7 @@ function() {
 
 ZmApptComposeView.prototype.isValid = 
 function() {
-	return (this._apptTab.isValid() || this._scheduleTab.isValid());
+	return (this._apptTab.isValid() && this._scheduleTab.isValid());
 };
 
 /**
