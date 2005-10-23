@@ -262,11 +262,12 @@ function(ev) {
 ZmCalBaseView.prototype._mouseUpAction = 
 function(ev, div) {
 	if (div._type != ZmCalBaseView.TYPE_APPT) return true;
-	if (ev.button == DwtMouseEvent.LEFT) {
+/*	if (ev.button == DwtMouseEvent.LEFT) {
 		if (this._evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
 			this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
 		}
 	}
+	*/
 	return true;
 }
 
@@ -300,10 +301,14 @@ function(clickedEl, ev) {
 	// is this element currently in the selected items list?
 	var bContained = this._selectedItems.contains(clickedEl);
 
+	DwtUiEvent.copy(this._selEv, ev);
+	this._selEv.item = AjxCore.objectWithId(clickedEl._itemIndex);
+
 	if (ev.shiftKey && bContained) {
 		this._selectedItems.remove(clickedEl);
 		clickedEl.className = clickedEl._styleClass;
 		this._selEv.detail = DwtListView.ITEM_DESELECTED;
+		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
 	} else if (!bContained) {
 		// clear out old left click selection(s)
 		for (i = 0; i < numSelectedItems; i++)
@@ -314,11 +319,8 @@ function(clickedEl, ev) {
 		this._selectedItems.add(clickedEl);
 		clickedEl.className = clickedEl._selectedStyleClass;
 		this._selEv.detail = DwtListView.ITEM_SELECTED;
+		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
 	}
-
-	DwtUiEvent.copy(this._selEv, ev);
-	this._selEv.item = AjxCore.objectWithId(clickedEl._itemIndex);
-	this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
 
 	if (ev.button == DwtMouseEvent.RIGHT) {
 		DwtUiEvent.copy(this._actionEv, ev);
