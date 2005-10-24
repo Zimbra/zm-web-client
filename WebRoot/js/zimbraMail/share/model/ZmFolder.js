@@ -108,6 +108,9 @@ function(parent, obj, tree) {
 
 	// check ID - can't be lower than root, or in tag range
 	if (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID && obj.id < ZmFolder.FIRST_USER_ID)) return;
+	
+	// ignore calendar folders
+	if (obj.view == "appointment") return;
 
 	var name = ZmFolder.MSG_KEY[obj.id] ? ZmMsg[ZmFolder.MSG_KEY[obj.id]] : obj.name;
 	var folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n);

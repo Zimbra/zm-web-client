@@ -31,6 +31,7 @@ function ZmCalendarTreeController(appCtxt, type, dropTgt) {
 	
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 
+	this._listeners[ZmOperation.NEW_CALENDAR] = new AjxListener(this, this._newCalListener);
 	this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
 	this._listeners[ZmOperation.MOUNT_CALENDAR] = new AjxListener(this, this._mountCalListener);
 	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editPropsListener);
@@ -131,7 +132,7 @@ function(actionMenu, type, id) {
 
 // Returns a list of desired header action menu operations
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps = function() {
-	return null;//[ ZmOperation.MOUNT_CALENDAR ];
+	return [ ZmOperation.NEW_CALENDAR /*, ZmOperation.MOUNT_CALENDAR*/ ];
 }
 
 // Returns a list of desired action menu operations
@@ -231,6 +232,16 @@ ZmCalendarTreeController.prototype._treeViewListener = function(ev) {
 	// default processing
 	ZmTreeController.prototype._treeViewListener.call(this, ev);
 }
+
+ZmCalendarTreeController.prototype._newCalListener = function(ev) {
+	var overviewController = this._appCtxt.getOverviewController();
+	var treeData = overviewController.getTreeData(ZmOrganizer.CALENDAR);
+	var folder = treeData.root;
+
+	var newCalDialog = this._appCtxt.getNewCalendarDialog();
+	newCalDialog.setParentFolder(folder);
+	newCalDialog.popup();
+};
 
 ZmCalendarTreeController.prototype._shareCalListener = function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);

@@ -32,11 +32,31 @@ function ZmCalendar(id, name, parent, tree, color, link) {
 ZmCalendar.prototype = new ZmOrganizer;
 ZmCalendar.prototype.constructor = ZmCalendar;
 
+ZmCalendar.prototype.toString = 
+function() {
+	return "ZmCalendar";
+}
+
 // Constants
 
 ZmCalendar.ID_CALENDAR = ZmOrganizer.ID_CALENDAR;
 
-// Public methods
+// Static methods
+
+/** Caller is responsible to catch exception. */
+ZmCalendar.create =
+function(appCtxt, name, parentFolderId) {
+	parentFolderId = parentFolderId || ZmOrganizer.ID_ROOT;
+
+	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
+	var folderNode = soapDoc.set("folder");
+	folderNode.setAttribute("name", name);
+	folderNode.setAttribute("l", parentFolderId);
+	folderNode.setAttribute("view", "appointment");
+
+	var appController = appCtxt.getAppController();
+	return appController.sendRequest(soapDoc, false);
+}
 
 ZmCalendar.createFromJs =
 function(parent, obj, tree, link) {
@@ -84,22 +104,19 @@ function(calA, calB) {
 	return 0;
 }
 
+ZmCalendar.checkName =
+function(name) {
+	return ZmOrganizer.checkName(name);
+}
+
+// Public methods
+
 ZmCalendar.prototype.notifyCreate =
 function(obj, link) {
 	var calendar = ZmCalendar.createFromJs(this, obj, this.tree, link);
 	var index = ZmOrganizer.getSortIndex(calendar, ZmCalendar.sortCompare);
 	this.children.add(calendar, index);
 	this._eventNotify(ZmEvent.E_CREATE, calendar);
-}
-
-ZmCalendar.checkName =
-function(name) {
-	return ZmOrganizer.checkName(name);
-}
-
-ZmCalendar.prototype.toString = 
-function() {
-	return "ZmCalendar";
 }
 
 ZmCalendar.prototype.getName = 

@@ -373,6 +373,14 @@ function(ev) {
 		this._showDialog(this._appCtxt.getNewFolderDialog(), this._newFolderCallback);
 	} else if (id == ZmOperation.NEW_TAG) {
 		this._showDialog(this._appCtxt.getNewTagDialog(), this._newTagCallback, null, null, false);
+	} else if (id == ZmOperation.NEW_CALENDAR) {
+		var overviewController = this._appCtxt.getOverviewController();
+		var treeData = overviewController.getTreeData(ZmOrganizer.CALENDAR);
+		var folder = treeData.root;
+	
+		var newCalDialog = this._appCtxt.getNewCalendarDialog();
+		newCalDialog.setParentFolder(folder);
+		newCalDialog.popup();
 	}
 }
 

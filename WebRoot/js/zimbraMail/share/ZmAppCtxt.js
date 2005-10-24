@@ -184,6 +184,14 @@ function() {
 	return this._newFolderDialog;
 }
 
+ZmAppCtxt.prototype.getNewCalendarDialog =
+function() {
+	if (!this._newCalendarDialog) {
+		this._newCalendarDialog = new ZmNewCalendarDialog(this, this.getShell());
+	}
+	return this._newCalendarDialog;
+};
+
 ZmAppCtxt.prototype.getNewSearchDialog =
 function() {
 	if (!this._newSearchDialog)
@@ -239,15 +247,28 @@ ZmAppCtxt.prototype.getRevokeShareDialog = function() {
 	return this._revokeShareDialog;
 }
 
+ZmAppCtxt.prototype.clearAllDialogs =
+function() {
+	this.clearFolderDialogs();
+	this.clearCalendarDialogs();
+	this.clearShareDialogs();
+};
 ZmAppCtxt.prototype.clearFolderDialogs =
 function() {
 	this._newFolderDialog = this._newSearchDialog = this._renameFolderDialog = this._moveToFolderDialog = null;
 	this._folderPropsDialog = null;
+};
+ZmAppCtxt.prototype.clearCalendarDialogs =
+function() {
+	this._newCalendarDialog = null;
+};
+ZmAppCtxt.prototype.clearShareDialogs = 
+function() {
 	this._sharePropsDialog = null;
 	this._acceptShareDialog = null;
 	this._declineShareDialog = null;
 	this._revokeShareDialog = null;
-}
+};
 
 ZmAppCtxt.prototype.getShell =
 function() {

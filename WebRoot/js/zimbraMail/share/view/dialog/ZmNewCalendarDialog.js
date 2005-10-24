@@ -1,0 +1,155 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.1
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.1 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * The Original Code is: Zimbra Collaboration Suite.
+ * 
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
+ * All Rights Reserved.
+ * 
+ * Contributor(s):
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
+
+function ZmNewCalendarDialog(appCtxt, parent, className) {
+	var title = ZmMsg.createNewCalendar;
+	var buttons = [ DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON ];
+	DwtDialog.call(this, parent, className, title, buttons);
+	
+	this._appCtxt = appCtxt;
+	
+	var contentEl = this._createContentEl();
+	var contentDiv = this._getContentDiv();
+	contentDiv.appendChild(contentEl);
+	
+	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
+}
+
+ZmNewCalendarDialog.prototype = new DwtDialog;
+ZmNewCalendarDialog.prototype.constructor = ZmNewCalendarDialog;
+
+ZmNewCalendarDialog.prototype.toString = 
+function() {
+	return "ZmNewCalendarDialog";
+}
+
+// Data
+
+ZmNewCalendarDialog.prototype._nameFieldId;
+ZmNewCalendarDialog.prototype._parentFolder;
+
+// Public methods
+
+ZmNewCalendarDialog.prototype.setParentFolder =
+function(folder) {
+	this._parentFolder = folder;
+};
+
+ZmNewCalendarDialog.prototype.popup =
+function(loc) {
+	// reset input fields
+	this._nameInputEl.value = "";
+	
+	var color = (this._colorInput.getValue() + 1) % ZmOrganizer.COLOR_CHOICES.length;
+	var option = this._colorInput.getOptionWithValue(color);
+	this._colorInput.setSelectedOption(option);
+	
+	// show dialog
+	ZmDialog.prototype.popup.call(this, loc);
+}
+
+// Protected methods
+
+ZmNewCalendarDialog.prototype._handleOkButton = 
+function(event) {
+	// check name for presence and validity
+	var name = AjxStringUtil.trim(this._nameInputEl.value);
+	var msg = ZmFolder.checkName(name);
+	
+	// create folder
+	var ex = null;
+	var calendarId = null;
+	if (!msg) {
+		try {
+			var parentFolderId = this._parentFolder ? this._parentFolder.id : null;
+			var results = ZmCalendar.create(this._appCtxt, name, parentFolderId);
+			calendarId = results.CreateFolderResponse.folder[0].id;
+		}
+		catch (ex) {
+			msg = ZmMsg.unknownError;
+			if (ex instanceof ZmCsfeException && ex.code == "mail.ALREADY_EXISTS") {
+				msg = ZmMsg.folderNameExists;
+				ex = null;
+			}
+		}
+	}
+	
+	// color folder
+	if (!msg) {
+		try {
+			var calendar = this._appCtxt.cacheGet(calendarId);
+			var color = this._colorInput.getValue();
+			calendar.setColor(color);
+		}
+		catch (ex) {
+			// TODO: handle specific errors
+			msg = ZmMsg.unknownError;
+		}
+	}
+	
+	// display error message
+	if (msg) {
+		var appController = this._appCtxt.getAppController();
+		var errorDialog = appController.popupErrorDialog(msg, ex, null, true);
+		return;
+	}
+	
+	// default processing
+	this.popdown();
+};
+
+ZmNewCalendarDialog.prototype._createContentEl = 
+function() {
+	var document = this.getDocument();
+
+	this._nameInputEl = document.createElement("INPUT");
+	this._nameInputEl.autocomplete = "OFF";
+	this._nameInputEl.type = "text";
+	this._nameInputEl.className = "Field";
+	
+	this._colorInput = new DwtSelect(this);
+	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
+		var choice = ZmOrganizer.COLOR_CHOICES[i];
+		this._colorInput.addOption(choice.label, i == 0, choice.value);
+	}
+
+	var table = document.createElement("TABLE");
+
+	var nameRow = table.insertRow(table.rows.length);
+	var nameLabelCell = nameRow.insertCell(nameRow.cells.length);
+	nameLabelCell.className = "Label";
+	nameLabelCell.innerHTML = ZmMsg.nameLabel;
+	var nameInputCell = nameRow.insertCell(nameRow.cells.length);
+	nameInputCell.appendChild(this._nameInputEl);
+
+	var colorRow = table.insertRow(table.rows.length);
+	var colorLabelCell = colorRow.insertCell(colorRow.cells.length);
+	colorLabelCell.className = "Label";
+	colorLabelCell.innerHTML = ZmMsg.colorLabel;
+	var colorInputCell = colorRow.insertCell(colorRow.cells.length);
+	colorInputCell.appendChild(this._colorInput.getHtmlElement());	
+	
+	return table;
+};

@@ -82,6 +82,7 @@ ZmOperation.NEW_APPT				= i++;
 ZmOperation.NEW_ALLDAY_APPT		= i++;
 ZmOperation.NEW_CONTACT				= i++;
 ZmOperation.NEW_FOLDER				= i++;
+ZmOperation.NEW_CALENDAR			= i++;
 ZmOperation.NEW_MENU				= i++;
 ZmOperation.NEW_MESSAGE				= i++;
 ZmOperation.NEW_TAG					= i++;
@@ -169,6 +170,7 @@ ZmOperation.MSG_KEY[ZmOperation.NEW_APPT]				= "newAppt";
 ZmOperation.MSG_KEY[ZmOperation.NEW_ALLDAY_APPT]		= "newAllDayAppt";
 ZmOperation.MSG_KEY[ZmOperation.NEW_CONTACT]			= "newContact";
 ZmOperation.MSG_KEY[ZmOperation.NEW_FOLDER]				= "newFolder";
+ZmOperation.MSG_KEY[ZmOperation.NEW_CALENDAR]			= "newCalendar";
 ZmOperation.MSG_KEY[ZmOperation.NEW_MENU]				= "_new";
 ZmOperation.MSG_KEY[ZmOperation.NEW_MESSAGE]			= "newEmail";
 ZmOperation.MSG_KEY[ZmOperation.NEW_TAG]				= "newTag";
@@ -285,6 +287,7 @@ ZmOperation.IMAGE[ZmOperation.MOVE_DOWN_FILTER_RULE]	= "DownArrow";
 ZmOperation.IMAGE[ZmOperation.MOVE_UP_FILTER_RULE]		= "UpArrow";
 ZmOperation.IMAGE[ZmOperation.NEW_APPT]					= "NewAppointment";
 ZmOperation.IMAGE[ZmOperation.NEW_ALLDAY_APPT]			= "NewAppointment";
+ZmOperation.IMAGE[ZmOperation.NEW_CALENDAR]				= "NewAppointment";
 ZmOperation.IMAGE[ZmOperation.NEW_CONTACT]				= "NewContact";
 ZmOperation.IMAGE[ZmOperation.NEW_FOLDER]				= "NewFolder";
 ZmOperation.IMAGE[ZmOperation.NEW_MESSAGE]				= "NewMessage";
@@ -523,6 +526,8 @@ function(parent) {
 			list.push(new ZmOperation_Descriptor(ZmOperation.NEW_FOLDER, ZmMsg.folder, Dwt.DEFAULT, Dwt.DEFAULT));
 		if (appCtxt.get(ZmSetting.TAGGING_ENABLED))
 			list.push(new ZmOperation_Descriptor(ZmOperation.NEW_TAG, ZmMsg.tag, Dwt.DEFAULT, Dwt.DEFAULT));
+		if (appCtxt.get(ZmSetting.CALENDAR_ENABLED))
+			list.push(new ZmOperation_Descriptor(ZmOperation.NEW_CALENDAR, ZmMsg.calendar, Dwt.DEFAULT, Dwt.DEFAULT));
 	}
 	var menu = new ZmActionMenu(parent, ZmOperation.NONE, list);
 	parent.setMenu(menu);

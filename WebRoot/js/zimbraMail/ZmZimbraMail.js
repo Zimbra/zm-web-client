@@ -952,13 +952,18 @@ function(creates, modifies) {
 			var parent;
 			var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 			var searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
+			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
 			// parent could be a folder or a search
 			if (parentId == ZmOrganizer.ID_ROOT) {
-				parent = (name == "folder") ? folderTree.getById(parentId) : searchTree.getById(parentId);
+				parent = name == "folder"
+						? (create.view == "appointment" ? calendarTree.getById(parentId) : folderTree.getById(parentId))
+						: searchTree.getById(parentId);
 			} else {
 				parent = folderTree.getById(parentId);
 				if (!parent)
 					parent = searchTree.getById(parentId);
+				if (!parent)
+					parnet = calendarTree.getById(parentId);
 			}
 			if (parent)
 				parent.notifyCreate(create, (name == "search"));
