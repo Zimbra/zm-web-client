@@ -66,6 +66,10 @@ function(loc) {
 	var option = this._colorInput.getOptionWithValue(color);
 	this._colorInput.setSelectedOption(option);
 	
+	this._remoteCheckboxEl.checked = false;
+	this._remoteCheckboxEl._urlRow.style.display = "none";
+	this._urlInputEl.value = "";
+	
 	// show dialog
 	ZmDialog.prototype.popup.call(this, loc);
 }
@@ -76,7 +80,7 @@ ZmNewCalendarDialog.prototype._handleOkButton =
 function(event) {
 	// check name for presence and validity
 	var name = AjxStringUtil.trim(this._nameInputEl.value);
-	var msg = ZmFolder.checkName(name);
+	var msg = ZmFolder.checkName(name) || this._checkUrl();
 	
 	// create folder
 	var ex = null;
@@ -94,6 +98,18 @@ function(event) {
 				ex = null;
 			}
 		}
+	}
+
+	// add remote appointments
+	if (!msg && this._remoteCheckboxEl.checked) {
+		var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
+		var actionNode = soapDoc.set("action");
+		actionNode.setAttribute("op", "urlRefresh");
+		actionNode.setAttribute("id", calendarId);
+		actionNode.setAttribute("url", AjxStringUtil.trim(this._urlInputEl.value));
+		
+		var appCtlr = this._appCtxt.getAppController();
+		appCtlr.sendRequest(soapDoc, true);
 	}
 	
 	// color folder
@@ -124,6 +140,7 @@ ZmNewCalendarDialog.prototype._createContentEl =
 function() {
 	var document = this.getDocument();
 
+	// create controls
 	this._nameInputEl = document.createElement("INPUT");
 	this._nameInputEl.autocomplete = "OFF";
 	this._nameInputEl.type = "text";
@@ -135,7 +152,20 @@ function() {
 		this._colorInput.addOption(choice.label, i == 0, choice.value);
 	}
 
+	this._remoteCheckboxEl = document.createElement("INPUT");
+	this._remoteCheckboxEl.type = "checkbox";
+	this._remoteCheckboxEl.checked = false;
+	Dwt.setHandler(this._remoteCheckboxEl, DwtEvent.ONCLICK, this._handleCheckbox);
+	
+	this._urlInputEl = document.createElement("INPUT");
+	this._urlInputEl.type = "text";
+	this._urlInputEl.className = "Field";
+
+	// create HTML
 	var table = document.createElement("TABLE");
+	table.border = 0;
+	table.cellSpacing = 3;
+	table.cellPadding = 0;
 
 	var nameRow = table.insertRow(table.rows.length);
 	var nameLabelCell = nameRow.insertCell(nameRow.cells.length);
@@ -151,5 +181,37 @@ function() {
 	var colorInputCell = colorRow.insertCell(colorRow.cells.length);
 	colorInputCell.appendChild(this._colorInput.getHtmlElement());	
 	
+	var remoteRow = table.insertRow(table.rows.length);
+	var remoteLabelCell = remoteRow.insertCell(remoteRow.cells.length);
+	remoteLabelCell.colSpan = 2;
+	remoteLabelCell.className = "Label";
+	remoteLabelCell.appendChild(this._remoteCheckboxEl);
+	remoteLabelCell.appendChild(document.createTextNode(ZmMsg.addRemoteAppts));
+	
+	var urlRow = table.insertRow(table.rows.length);
+	urlRow.style.display = "none";
+	var urlLabelCell = urlRow.insertCell(urlRow.cells.length);
+	urlLabelCell.className = "Label";
+	urlLabelCell.innerHTML = ZmMsg.urlLabel;
+	var urlInputCell = urlRow.insertCell(urlRow.cells.length);
+	urlInputCell.className = "Field";
+	urlInputCell.appendChild(this._urlInputEl);
+	
+	this._remoteCheckboxEl._urlRow = urlRow;
+	this._remoteCheckboxEl._urlInputEl = this._urlInputEl;
+		
 	return table;
+};
+
+ZmNewCalendarDialog.prototype._handleCheckbox = function(event) {
+	event = event || window.event;
+	var target = DwtUiEvent.getTarget(event);
+	target._urlRow.style.display = target.checked ? "table-row" : "none";
+	target._urlInputEl.focus();
+};
+
+ZmNewCalendarDialog.prototype._checkUrl = function() {
+	if (this._remoteCheckboxEl.checked && this._urlInputEl.value.match(/^\s*$/)) {
+		return ZmMsg.errorUrlMissing;
+	}
 };
