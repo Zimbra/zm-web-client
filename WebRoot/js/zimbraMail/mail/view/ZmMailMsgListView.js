@@ -27,15 +27,11 @@ function ZmMailMsgListView(parent, className, posStyle, mode, controller, dropTg
 	this._mode = mode;
 	var headerList = this._getHeaderList(parent);
 	ZmMailListView.call(this, parent, className, posStyle, mode, ZmItem.MSG, controller, headerList, dropTgt);
-}
+};
 
 ZmMailMsgListView.prototype = new ZmMailListView;
 ZmMailMsgListView.prototype.constructor = ZmMailMsgListView;
 
-ZmMailMsgListView.prototype.toString = 
-function() {
-	return "ZmMailMsgListView";
-}
 
 // Consts
 
@@ -46,6 +42,14 @@ ZmMailMsgListView.MLV_COLWIDTH_FOLDER 			= 47;
 ZmMailMsgListView.MLV_COLWIDTH_SIZE 			= 45;
 ZmMailMsgListView.MLV_COLWIDTH_DATE 			= 75;
 
+
+// Public methods
+
+ZmMailMsgListView.prototype.toString = 
+function() {
+	return "ZmMailMsgListView";
+};
+
 ZmMailMsgListView.prototype.createHeaderHtml = 
 function(defaultColumnSort) {
 
@@ -53,38 +57,22 @@ function(defaultColumnSort) {
 	
 	// Show "From" or "To" depending on which folder we're looking at
 	if (this._mode == ZmController.TRAD_VIEW) {
-		var isSentFolder = this._folderId == ZmFolder.ID_SENT;
-		var isDraftsFolder = this._folderId == ZmFolder.ID_DRAFTS;
-
-		// if not in Sent/Drafts, deep dive into query to be certain		
-		if (!isSentFolder && !isDraftsFolder) {
-			// check for is:sent or is:draft w/in search query
-			var query = this._appCtxt.getCurrentSearch().query;
-			var idx = query.indexOf(":");
-			if (idx) {
-				var prefix = AjxStringUtil.trim(query.substring(0, idx));
-				if (prefix == "is") {
-					var folder = AjxStringUtil.trim(query.substring(idx+1));
-					isSentFolder = folder == ZmFolder.QUERY_NAME[ZmFolder.ID_SENT];
-					isDraftsFolder = folder == ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS];
-				}
-			}
-		}
+		var isFolder = this._isSentOrDraftsFolder();
 
 		// set the from column name based on query string
 		var fromColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_FROM]);
 		var fromColSpan = Dwt.getDomObj(this.getDocument(), DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
 		if (fromColSpan)
-			fromColSpan.innerHTML = "&nbsp;" + (isSentFolder || isDraftsFolder ? ZmMsg.to : ZmMsg.from);
+			fromColSpan.innerHTML = "&nbsp;" + (isFolder.sent || isFolder.drafts ? ZmMsg.to : ZmMsg.from);
 
 		// set the received column name based on query string
 		var recdColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]);
 		var recdColSpan = Dwt.getDomObj(this.getDocument(), DwtListView.HEADERITEM_LABEL + this._headerList[recdColIdx]._id);
 		if (recdColSpan) {
 			var html = "&nbsp;";
-			if (isSentFolder) {
+			if (isFolder.sent) {
 				html += ZmMsg.sent;
-			} else if (isDraftsFolder) {
+			} else if (isFolder.drafts) {
 				html += ZmMsg.lastSaved;
 			} else {
 				html += ZmMsg.received;
@@ -92,7 +80,65 @@ function(defaultColumnSort) {
 			recdColSpan.innerHTML = html;
 		}
 	}
-}
+};
+
+ZmMailMsgListView.prototype.markUIAsRead = 
+function(items, on) {
+	var doc = this.getDocument();
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		var row = Dwt.getDomObj(doc, this._getFieldId(item, ZmItem.F_ITEM_ROW));
+		if (row) {
+			var className =  on ? "" : "Unread";
+			// don't worry about unread/read trash if in trad. view
+			if (this._mode != ZmController.TRAD_VIEW) {
+				var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(item.folderId);
+				if (folder && folder.isInTrash())
+					className = (className ? (className + " ") : "") + "Trash";
+			}
+			if (item.isSent)
+				className = (className ? (className + " ") : "") + "Sent";
+
+			row.className = className;
+		}
+		var img = Dwt.getDomObj(doc, this._getFieldId(item, ZmItem.F_STATUS));
+		if (img && img.parentNode) {
+			if (on) {
+				var imageInfo;
+				if (item.isInvite())
+					imageInfo = "Appointment";
+				else if (item.isDraft)
+					imageInfo = "MsgStatusDraft";
+				else if (item.isReplied)
+					imageInfo = "MsgStatusReply";
+				else if (item.isForwarded)
+					imageInfo = "MsgStatusForward";
+				else if (item.isSent)
+					imageInfo = "MsgStatusSent";
+				else
+					imageInfo = "MsgStatusRead";
+			} else {
+				imageInfo = item.isInvite() ? "Appointment" : "MsgStatusUnread";
+			}
+			AjxImg.setImage(img.parentNode, imageInfo);
+		}
+	}
+};
+
+ZmMailMsgListView.prototype.resetHeight = 
+function(newHeight) {
+	this.setSize(Dwt.DEFAULT, newHeight);
+	Dwt.setSize(this._parentEl, Dwt.DEFAULT, newHeight-DwtListView.HEADERITEM_HEIGHT);
+};
+
+
+ZmMailMsgListView.prototype.getReplenishThreshold = 
+function() {
+	return ZmMailMsgListView.MSGLIST_REPLENISH_THRESHOLD;
+};
+
+
+// Private / protected methods
 
 ZmMailMsgListView.prototype._createItemHtml =
 function(msg, now, isDndIcon, isMixedView) {
@@ -255,50 +301,10 @@ function(msg, now, isDndIcon, isMixedView) {
 	
 	div.innerHTML = htmlArr.join("");
 	return div;
-}
+};
 
-ZmMailMsgListView.prototype.markUIAsRead = 
-function(items, on) {
-	var doc = this.getDocument();
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		var row = Dwt.getDomObj(doc, this._getFieldId(item, ZmItem.F_ITEM_ROW));
-		if (row) {
-			var className =  on ? "" : "Unread";
-			// don't worry about unread/read trash if in trad. view
-			if (this._mode != ZmController.TRAD_VIEW) {
-				var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(item.folderId);
-				if (folder && folder.isInTrash())
-					className = (className ? (className + " ") : "") + "Trash";
-			}
-			if (item.isSent)
-				className = (className ? (className + " ") : "") + "Sent";
 
-			row.className = className;
-		}
-		var img = Dwt.getDomObj(doc, this._getFieldId(item, ZmItem.F_STATUS));
-		if (img && img.parentNode) {
-			if (on) {
-				var imageInfo;
-				if (item.isInvite())
-					imageInfo = "Appointment";
-				else if (item.isDraft)
-					imageInfo = "MsgStatusDraft";
-				else if (item.isReplied)
-					imageInfo = "MsgStatusReply";
-				else if (item.isForwarded)
-					imageInfo = "MsgStatusForward";
-				else if (item.isSent)
-					imageInfo = "MsgStatusSent";
-				else
-					imageInfo = "MsgStatusRead";
-			} else {
-				imageInfo = item.isInvite() ? "Appointment" : "MsgStatusUnread";
-			}
-			AjxImg.setImage(img.parentNode, imageInfo);
-		}
-	}
-}
+// Listeners
 
 ZmMailMsgListView.prototype._changeListener =
 function(ev) {
@@ -337,13 +343,7 @@ function(ev) {
 			this._resetColWidth();
 		}
 	}
-}
-
-ZmMailMsgListView.prototype.resetHeight = 
-function(newHeight) {
-	this.setSize(Dwt.DEFAULT, newHeight);
-	Dwt.setSize(this._parentEl, Dwt.DEFAULT, newHeight-DwtListView.HEADERITEM_HEIGHT);
-}
+};
 
 ZmMailMsgListView.prototype._changeFolderName = 
 function(items) {
@@ -358,7 +358,7 @@ function(items) {
 				this._changeTrashStatus([items[i]]);
 		}
 	}
-}
+};
 
 ZmMailMsgListView.prototype._changeTrashStatus = 
 function(items) {
@@ -376,7 +376,7 @@ function(items) {
 			row.className = className;
 		}
 	}
-}
+};
 
 ZmMailMsgListView.prototype._getHeaderList =
 function(parent) {
@@ -404,7 +404,7 @@ function(parent) {
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.received, null, ZmMailMsgListView.MLV_COLWIDTH_DATE, ZmItem.F_DATE, true));
 
 	return headerList;
-}
+};
 
 ZmMailMsgListView.prototype._sortColumn = 
 function(columnItem, bSortAsc) {
@@ -430,7 +430,7 @@ function(columnItem, bSortAsc) {
 			this._appCtxt.getSearchController().search(params);
 		}
 	}
-}
+};
 
 ZmMailMsgListView.prototype._handleResponseSortColumn =
 function(args) {
@@ -444,20 +444,15 @@ function(args) {
 	this.setOffset(0);
 	this.set(conv.msgs, columnItem);
 	this.setSelection(conv.getHotMsg(this.getOffset(), this.getLimit()));
-}
+};
 
 ZmMailMsgListView.prototype._getDefaultSortbyForCol = 
 function(colHeader) {
 	// if not date field, sort asc by default
 	return colHeader._sortable != ZmItem.F_DATE;
-}
+};
 
 ZmMailMsgListView.prototype._getParentForColResize = 
 function() {
 	return this.parent;
-}
-
-ZmMailMsgListView.prototype.getReplenishThreshold = 
-function() {
-	return ZmMailMsgListView.MSGLIST_REPLENISH_THRESHOLD;
-}
+};

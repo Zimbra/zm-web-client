@@ -43,27 +43,32 @@ function ZmMailListView(parent, className, posStyle, view, type, controller, hea
 	}
 
 	this._folderId = null;
-}
+};
 
 ZmMailListView.prototype = new ZmListView;
 ZmMailListView.prototype.constructor = ZmMailListView;
 
 // Consts
+
 ZmMailListView.KEY_ID = "_keyId";
+
+
+// Public methods
 
 ZmMailListView.prototype.toString = 
 function() {
 	return "ZmMailListView";
-}
+};
 
-// abstract methods
-ZmMailListView.prototype.markUIAsRead = function(items, on) {}
+// abstract method
+ZmMailListView.prototype.markUIAsRead = 
+function(items, on) {}
 
 ZmMailListView.prototype.set =
 function(list, sortField) {
 	this._folderId = list.search ? list.search.folderId : null;
 	ZmListView.prototype.set.call(this, list, sortField);
-}
+};
 
 ZmMailListView.prototype.getTitle =
 function() {
@@ -71,83 +76,40 @@ function() {
 		? this._controller._activeSearch.search.getTitle() : null;
 };
 
-ZmMailListView.prototype._changeListener =
-function(ev) {
-	var items = ev.getDetail("items");
-	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" flag
-		DBG.println(AjxDebug.DBG2, "ZmMailListView: FLAGS");
-		var flags = ev.getDetail("flags");
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			for (var j = 0; j < flags.length; j++) {
-				var flag = flags[j];
-				if (flag == ZmItem.FLAG_UNREAD) {
-					var on = item[ZmItem.FLAG_PROP[flag]];
-					this.markUIAsRead([item], !on);
-				}
-			}
-		}
-		ZmListView.prototype._changeListener.call(this, ev); // handle other flags
-	} else if (ev.event == ZmEvent.E_CREATE) {
-		DBG.println(AjxDebug.DBG2, "ZmMailListView: CREATE");
-		var now = new Date();
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			DBG.println(AjxDebug.DBG3, "Item to add: " + item.id);
-			if (this._list && this._list.contains(item)) // skip if we already have it
-				continue;
-			// For now, we assume that the new conv/msg is the most recent one. If we're on the
-			// first page with date desc order, we insert it at the top. If we're on the last
-			// page with date asc order, we insert it at the bottom. Otherwise, we do nothing.
-			// TODO: put result of ZmMailList._sortIndex() in ev.details
-			if ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
-				// add new item at the beg. of list view's internal list
-				this.addItem(item, 0);
-	
-				// and remove the last one to maintain limit
-				if (this.size() > this.getLimit()) {
-					this.removeLastItem();
-				}
-			} else if ((this._controller.getList().hasMore() === false) && (!this._sortByString || this._sortByString == ZmSearch.DATE_ASC)) {
-				if (this.size() < this.getLimit()) {
-					// add new item at the end of list view's internal list
-					this.addItem(item);
-				} else {
-					// XXX: reset pagination buttons?
-				}
-			}
-		}
-	} else {
-		ZmListView.prototype._changeListener.call(this, ev);
-	}
-}
-
-ZmMailListView.prototype._colHeaderActionListener = 
-function(ev) {
-
-	var menuItemId = ev.item.getData(ZmMailListView.KEY_ID);
-
-	for (var i = 0; i < this._headerList.length; i++) {
-		var col = this._headerList[i];
-		if (col._id == menuItemId) {
-			col._visible = !col._visible;
-			break;
-		}
-	}
-	
-	this._relayout();
-}
-
 ZmMailListView.prototype.getLimit = 
 function() {
 	return this._appCtxt.get(ZmSetting.PAGE_SIZE);
-}
+};
 
 ZmMailListView.prototype.replenish = 
 function(list) {
 	DwtListView.prototype.replenish.call(this, list);
 	this._resetColWidth();
-}
+};
+
+// Private / protected methods
+
+ZmMailListView.prototype._isSentOrDraftsFolder = 
+function() {
+	var isSentFolder = this._folderId == ZmFolder.ID_SENT;
+	var isDraftsFolder = this._folderId == ZmFolder.ID_DRAFTS;
+
+	// if not in Sent/Drafts, deep dive into query to be certain		
+	if (!isSentFolder && !isDraftsFolder) {
+		// check for is:sent or is:draft w/in search query
+		var query = this._appCtxt.getCurrentSearch().query;
+		var idx = query.indexOf(":");
+		if (idx) {
+			var prefix = AjxStringUtil.trim(query.substring(0, idx));
+			if (prefix == "is") {
+				var folder = AjxStringUtil.trim(query.substring(idx+1));
+				isSentFolder = folder == ZmFolder.QUERY_NAME[ZmFolder.ID_SENT];
+				isDraftsFolder = folder == ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS];
+			}
+		}
+	}
+	return {sent:isSentFolder, drafts:isDraftsFolder};
+};
 
 // Figure out how many of the participants will fit into a given pixel width.
 // We always include the originator, and then as many of the most recent participants
@@ -210,9 +172,79 @@ function(participants, participantsElided, width) {
 			list.shift();
 	}
 	return [originator];
-}
+};
 
 ZmMailListView.prototype._getActionMenuForColHeader = 
 function() {
 	return this._colHeaderActionMenu;
-}
+};
+
+
+// Listeners
+
+ZmMailListView.prototype._changeListener =
+function(ev) {
+	var items = ev.getDetail("items");
+	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" flag
+		DBG.println(AjxDebug.DBG2, "ZmMailListView: FLAGS");
+		var flags = ev.getDetail("flags");
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			for (var j = 0; j < flags.length; j++) {
+				var flag = flags[j];
+				if (flag == ZmItem.FLAG_UNREAD) {
+					var on = item[ZmItem.FLAG_PROP[flag]];
+					this.markUIAsRead([item], !on);
+				}
+			}
+		}
+		ZmListView.prototype._changeListener.call(this, ev); // handle other flags
+	} else if (ev.event == ZmEvent.E_CREATE) {
+		DBG.println(AjxDebug.DBG2, "ZmMailListView: CREATE");
+		var now = new Date();
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			DBG.println(AjxDebug.DBG3, "Item to add: " + item.id);
+			if (this._list && this._list.contains(item)) // skip if we already have it
+				continue;
+			// For now, we assume that the new conv/msg is the most recent one. If we're on the
+			// first page with date desc order, we insert it at the top. If we're on the last
+			// page with date asc order, we insert it at the bottom. Otherwise, we do nothing.
+			// TODO: put result of ZmMailList._sortIndex() in ev.details
+			if ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
+				// add new item at the beg. of list view's internal list
+				this.addItem(item, 0);
+	
+				// and remove the last one to maintain limit
+				if (this.size() > this.getLimit()) {
+					this.removeLastItem();
+				}
+			} else if ((this._controller.getList().hasMore() === false) && (!this._sortByString || this._sortByString == ZmSearch.DATE_ASC)) {
+				if (this.size() < this.getLimit()) {
+					// add new item at the end of list view's internal list
+					this.addItem(item);
+				} else {
+					// XXX: reset pagination buttons?
+				}
+			}
+		}
+	} else {
+		ZmListView.prototype._changeListener.call(this, ev);
+	}
+};
+
+ZmMailListView.prototype._colHeaderActionListener = 
+function(ev) {
+
+	var menuItemId = ev.item.getData(ZmMailListView.KEY_ID);
+
+	for (var i = 0; i < this._headerList.length; i++) {
+		var col = this._headerList[i];
+		if (col._id == menuItemId) {
+			col._visible = !col._visible;
+			break;
+		}
+	}
+	
+	this._relayout();
+};
