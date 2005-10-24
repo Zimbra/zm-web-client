@@ -749,7 +749,7 @@ function() {
 		html[i++] = "'></td>";
 	}
 	html[i++] = "<td colspan=10></td></tr>";
-	html[i++] = "<tr><td valign=top class='ZmApptTabViewPageField'>";
+	html[i++] = "<tr><td valign=top class='ZmApptTabViewPageField' style='line-height:22px'>";
 	html[i++] = ZmMsg.repeat;
 	html[i++] = ":</td><td valign=top colspan=2 id='";
 	html[i++] = this._repeatSelectId;
