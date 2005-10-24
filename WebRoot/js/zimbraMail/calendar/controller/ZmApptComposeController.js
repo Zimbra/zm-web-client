@@ -101,6 +101,11 @@ function(attId) {
 		this._schedule(this._doSave, {appt: appt, attId: attId});
 };
 
+ZmApptComposeController.prototype.getFreeBusyInfo = 
+function(startTime, endTime, emailList, callback) {
+	this._schedule(this._doFreeBusyRequest, {startTime:startTime, endTime:endTime, emailList:emailList, callback:callback});
+};
+
 
 // Private / Protected methods
 
@@ -240,6 +245,21 @@ function(params) {
 		this._app.popView(true);	// force pop view
 	} catch(ex) {
 		this._handleException(ex, this._doSave, params, false);
+	}
+};
+
+ZmApptComposeController.prototype._doFreeBusyRequest = 
+function(params) {
+	try {
+		var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:zimbraMail");
+		soapDoc.setMethodAttribute("s", params.startTime);
+		soapDoc.setMethodAttribute("e", params.endTime);
+		soapDoc.setMethodAttribute("uid", params.emailList);
+
+		var resp = this._appCtxt.getAppController().sendRequest(soapDoc).GetFreeBusyResponse;
+		params.callback.run(resp.usr);
+	} catch (ex) {
+		this._handleException(ex, this._doFreeBusyRequest, params, false);
 	}
 };
 

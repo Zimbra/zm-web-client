@@ -1160,7 +1160,7 @@ function(ev) {
 		if (selectedObj == this._startTimeSelect) {
 			var startIdx = this._startTimeSelect.getIndexForValue(selectedObj.getValue());
 			var endIdx = this._endTimeSelect.getIndexForValue(this._endTimeSelect.getValue());
-			if (endIdx < startIdx) {
+			if (endIdx <= startIdx) {
 				var newIdx = startIdx+1;
 				if (newIdx == numOptions) {
 					newIdx = 0;

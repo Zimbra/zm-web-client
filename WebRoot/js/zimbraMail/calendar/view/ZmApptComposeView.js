@@ -171,7 +171,7 @@ function() {
 	this._tabs = new DwtTabView(this);
 
 	this._apptTab = new ZmApptTabViewPage(this, this._appCtxt);
-	this._scheduleTab = new ZmSchedTabViewPage(this, this._appCtxt, this._apptTab);
+	this._scheduleTab = new ZmSchedTabViewPage(this, this._appCtxt, this._apptTab, this._controller);
 
 	this._apptTabKey = this._tabs.addTab(ZmMsg.appointment, this._apptTab);
 	this._scheduleTabKey = this._tabs.addTab(ZmMsg.scheduleAttendees, this._scheduleTab);
