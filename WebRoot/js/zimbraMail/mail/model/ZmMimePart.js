@@ -51,6 +51,22 @@ function() {
 	return this.node.content;
 }
 
+ZmMimePart.prototype.getContentForType = 
+function(contentType) {
+	var topChildren = this.children.getArray();
+
+	if (topChildren.length) {
+		for (var i = 0; i < topChildren.length; i++) {
+			if (topChildren[i].getContentType() == contentType)
+				return topChildren[i].getContent();
+		}
+	} else {
+		if (this.getContentType() == contentType)
+			return this.getContent();
+	}
+	return null;
+}
+
 ZmMimePart.prototype.setContent = 
 function(content) {
 	this.node.content = content;

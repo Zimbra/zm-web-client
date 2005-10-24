@@ -76,7 +76,7 @@ function(resp) {
 			instanceStartTimes.add(startTime);
 			var appt = new ZmAppt(this._appCtxt, this);
 			appt.uid =  apptNode.uid;
-			appt.notes = apptNode.fr;	
+			appt.fragment = apptNode.fr;	
 			appt.folderId = apptNode.l || ZmFolder.ID_CALENDAR;
 			
 			var duration = parseInt(this._getAttr(apptNode, instNode, "d"));

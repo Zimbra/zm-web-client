@@ -31,6 +31,7 @@ function ZmAppt(appCtxt, list, noinit) {
 	this.id = this.uid = -1;
 	this.type = null;
 	this.name = "";
+	this.fragment = "";
 	this.startDate = new Date();
 	this.endDate = new Date(this.startDate.getTime() + (30*60*1000));
 	this.transparency = "FR";
@@ -146,6 +147,7 @@ ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this
 ZmAppt.prototype.getEndDate 					= function() { return this.endDate; };
 ZmAppt.prototype.getEndTime 					= function() { return this.endDate.getTime(); }; 	// end time in ms
 ZmAppt.prototype.getFolderId 					= function() { return this.folderId || ZmFolder.ID_CALENDAR; };
+ZmAppt.prototype.getFragment 					= function() { return this.fragment; };
 ZmAppt.prototype.getId 							= function() { return this.id; }; 					// mail item id on appt instance
 ZmAppt.prototype.getInvId 						= function() { return this.invId; }; 				// default mail item invite id on appt instance
 ZmAppt.prototype.getLocation 					= function() { return this.location; };
@@ -252,21 +254,18 @@ function(appt) {
 ZmAppt.prototype.getNotesPart = 
 function(contentType) {
 	if (this.notesTopPart) {
-		// default to text/html part if no content type given
 		var ct = contentType || ZmMimeTable.TEXT_PLAIN;
-		var topChildren = this.notesTopPart.children.getArray();
+		var content = this.notesTopPart.getContentForType(ct);
 
-		if (topChildren.length) {
-			for (var i = 0; i < topChildren.length; i++) {
-				if (topChildren[i].getContentType() == contentType)
-					return topChildren[i].getContent();
-			}
-		} else {
-			if (this.notesTopPart.getContentType() == ct)
-				return this.notesTopPart.getContent().content;
+		// if requesting text part but none found, request html part and convert to text
+		if (content == null && ct == ZmMimeTable.TEXT_PLAIN) {
+			var div = document.createElement("div");
+			div.innerHTML = this.notesTopPart.getContentForType(ZmMimeTable.TEXT_HTML);
+			return AjxStringUtil.convertHtml2Text(div);
 		}
+		return AjxUtil.isString(content) ? content : content.content;
 	} else {
-		return this.notes;
+		return this.getFragment();
 	}
 };
 
@@ -444,7 +443,7 @@ function(viewMode, callback, errorCallback) {
 		var id = seriesMode ? (this._seriesInvId || this.invId) : this.invId;
 		this._message = new ZmMailMsg(this._appCtxt, id);
 		var respCallback = new AjxCallback(this, this._handleResponseGetDetails, [mode, this._message, callback]);
-		this._message.load(true, false, respCallback, errorCallback);
+		this._message.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, errorCallback);
 	} else {
 		this.setFromMessage(this._message, mode);
 		if (callback)
@@ -532,10 +531,8 @@ function(calController) {
 		var html = new Array(20);
 		var idx = 0;
 		
-		var when = this.getDurationText(false, false);
-				
 		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 >";
-		html[idx++] = "<tr valign='center'><td colspan='2' align='left'>";
+		html[idx++] = "<tr valign='center'><td colspan=2 align='left'>";
 		html[idx++] = "<div style='border-bottom: 1px solid black;'>";
 		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
 		html[idx++] = "<tr valign='center'>";
@@ -556,23 +553,20 @@ function(calController) {
 
 		html[idx++] = "</tr></table>";
 		
-		html[idx++] = "&nbsp;"+AjxStringUtil.htmlEncode(this.getName());
+		html[idx++] = "&nbsp;";
+		html[idx++] = AjxStringUtil.htmlEncode(this.getName());
 		html[idx++] = "&nbsp;</div></b></td>";	
 		html[idx++] = "<td align='right'>";
 
-		var cal = null;
-		if ((this.getFolderId() != ZmOrganizer.ID_CALENDAR) && calController) {
-			var cal = calController.getCalendar(this.getFolderId());
-		}
+		var cal = this.getFolderId() != ZmOrganizer.ID_CALENDAR && calController
+			? calController.getCalendar(this.getFolderId()) : null;
 
-		if (cal && cal.link)
-			html[idx++] = AjxImg.getImageHtml("GroupSchedule");
-		else	
-			html[idx++] = AjxImg.getImageHtml("Appointment");
+		html[idx++] = cal && cal.link
+			? AjxImg.getImageHtml("GroupSchedule")
+			: AjxImg.getImageHtml("Appointment");
 					
 		html[idx++] = "</td>";
 		html[idx++] = "</table></div></td></tr>";
-		//idx = this._addEntryRow("Subject", this.getName(), html, idx);
 		//idx = this._addEntryRow(ZmMsg.meetingStatus, this.getStatusString(), html, idx, false);
 
 		if (cal)
@@ -581,9 +575,11 @@ function(calController) {
 		if (this.hasOtherAttendees())
 			idx = this._addEntryRow(ZmMsg.status, this.getParticipationStatusString(), html, idx, false);		
 
+		var when = this.getDurationText(false, false);
+				
 		idx = this._addEntryRow(ZmMsg.when, when, html, idx, false);		
 		idx = this._addEntryRow(ZmMsg.location, this.getLocation(), html, idx, false);
-		idx = this._addEntryRow(ZmMsg.notes, this.getNotesPart(), html, idx, true, "250");
+		idx = this._addEntryRow(ZmMsg.notes, this.getFragment(), html, idx, true, "250");
 
 		html[idx++] = "</table>";
 		this._toolTip = html.join("");
