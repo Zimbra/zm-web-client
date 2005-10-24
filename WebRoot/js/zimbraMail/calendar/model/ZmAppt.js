@@ -1309,7 +1309,7 @@ function(soapDoc, method,  attachmentId) {
 
 	m.setAttribute("d", new Date().getTime());
 
-	if (this.folderId != ZmFolder.ID_CALENDAR)
+	if (this.getFolderId() != ZmFolder.ID_CALENDAR)
 		m.setAttribute("l", this.folderId);
 
 	var inv = soapDoc.set("inv", null, m);
