@@ -724,6 +724,8 @@ function(appt) {
 	var isAccepted = pstatus == ZmAppt.PSTATUS_ACCEPT;
 	var id = this._getItemId(appt);
 	var color = ZmCalBaseView.COLORS[this._controller.getCalendarColor(appt.getFolderId())];
+	var location = appt.getLocation() ? "<i>"+AjxStringUtil.htmlEncode(appt.getLocation())+"</i>" : "";
+	
 	//var color = "Blue";
 	var subs = {
 		id: id,
@@ -735,7 +737,7 @@ function(appt) {
 //		tag: isNew ? "NEW" : "",		//  HACK: i18n
 		starttime: appt.getDurationText(true, true),
 		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmAppt._getTTHour(appt.getEndDate()),
-		location: AjxStringUtil.htmlEncode(appt.getLocation()),
+		location: location,
 		statusKey: appt.getParticipationStatus(),
 		status: appt.isOrganizer() ? "" : appt.getParticipationStatusString()
 	};	
