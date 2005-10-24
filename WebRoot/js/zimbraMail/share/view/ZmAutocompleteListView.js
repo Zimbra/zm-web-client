@@ -56,19 +56,21 @@
 * @param matchValue		name of field in match result to use for completion
 * @param locCallback	callback into client to get desired location of autocomplete list
 * @param compCallback	callback into client to notify it that completion happened
+* @param separator		separator (gets added to the end of a match)
 */
-function ZmAutocompleteListView(parent, className, dataClass, dataLoader, matchValue, locCallback, compCallback) {
+function ZmAutocompleteListView(params) {
 
-	className = className || "ZmAutocompleteListView";
-	DwtComposite.call(this, parent, className, DwtControl.ABSOLUTE_STYLE);
+	var className = params.className ? params.className : "ZmAutocompleteListView";
+	DwtComposite.call(this, params.parent, className, DwtControl.ABSOLUTE_STYLE);
 
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	this._dataClass = dataClass;
-	this._dataLoader = dataLoader;
+	this._dataClass = params.dataClass;
+	this._dataLoader = params.dataLoader;
 	this._dataLoaded = false;
-	this._matchValue = matchValue;
-	this._locCallback = locCallback;
-	this._compCallback = compCallback;
+	this._matchValue = params.matchValue;
+	this._locCallback = params.locCallback;
+	this._compCallback = params.compCallback;
+	this._separator = (params.separator != null) ? params.separator : ZmEmailAddress.SEPARATOR;
 
 	// mouse event handling
 	this._setMouseEventHdlrs();
@@ -417,10 +419,10 @@ function(text, hasDelim) {
 	var end = hasDelim ? this._end + 1 : this._end;
 	DBG.println(AjxDebug.DBG2, "update replace range: " + start + " - " + end);
 	var value = match[this._matchValue];
-	var newText = [text.substring(0, start), value, ZmEmailAddress.SEPARATOR, text.substring(end, text.length)].join("");
+	var newText = [text.substring(0, start), value, this._separator, text.substring(end, text.length)].join("");
 	this._done[value] = true;
 	DBG.display(AjxDebug.DBG2, newText);
-	return {text: newText, start: start + value.length + ZmEmailAddress.SEPARATOR.length};
+	return {text: newText, start: start + value.length + this._separator.length};
 }
 
 // Resets the value of an element to the given text.

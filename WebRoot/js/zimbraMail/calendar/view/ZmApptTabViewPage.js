@@ -814,11 +814,9 @@ function() {
 	var contactsApp = shell ? shell.getData(ZmAppCtxt.LABEL).getApp(ZmZimbraMail.CONTACTS_APP) : null;
 	var contactsList = contactsApp ? contactsApp.getContactList : null;
 	var locCallback = new AjxCallback(this, this._getAcListLoc, this);
-
-	this._autocomplete = new ZmAutocompleteListView(this._appCtxt.getShell(), null, 
-													contactsApp, contactsList, 
-													ZmContactList.AC_VALUE_EMAIL, 
-													locCallback);
+	var params = {parent: shell, dataClass: contactsApp, dataLoader: contactsList,
+				  matchValue: ZmContactList.AC_VALUE_EMAIL, locCallback: locCallback};
+	this._autocomplete = new ZmAutocompleteListView(params);
 	this._autocomplete.handle(this._attendeesField);
 };
 

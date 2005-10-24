@@ -883,8 +883,9 @@ function(composeMode) {
 		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		var contactsLoader = contactsClass.getContactList;
 		var locCallback = new AjxCallback(this, this._getAcListLoc, this);
-		this._acAddrSelectList = new ZmAutocompleteListView(this, null, contactsClass, contactsLoader,
-															ZmContactList.AC_VALUE_FULL, locCallback);
+		var params = {parent: this, dataClass: contactsClass, dataLoader: contactsLoader, 
+					  matchValue: ZmContactList.AC_VALUE_FULL, locCallback: locCallback};
+		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
 
 	// init To/CC/BCC buttons and their event handlers

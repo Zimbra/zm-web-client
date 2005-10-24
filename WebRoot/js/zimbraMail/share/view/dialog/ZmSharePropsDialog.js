@@ -36,16 +36,14 @@ function ZmSharePropsDialog(appCtxt, shell, className) {
 	this._appCtxt = appCtxt;
 	
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var parent = this;
-		var className = null;
 		var dataClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		var dataLoader = dataClass.getContactList;
-		var matchValue = ZmContactList.AC_VALUE_EMAIL; // AC_VALUE_FULL
 		var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, this);
 		var compCallback = new AjxCallback(this, this._handleCompletionData, this);
-		
-		this._acAddrSelectList = new ZmAutocompleteListView(parent, className, dataClass, dataLoader,
-															matchValue, locCallback, compCallback);
+		var params = {parent: this, dataClass: dataClass, dataLoader: dataLoader,
+					  matchValue: ZmContactList.AC_VALUE_EMAIL, locCallback: locCallback,
+					  compCallback: compCallback};
+		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
 }
 ZmSharePropsDialog.prototype = new DwtXFormDialog;
