@@ -52,7 +52,7 @@ function() {
 ZmApptTypeDialog.prototype.initialize = 
 function(mode, appt) {
 	this._appt = appt;
-	this._mode = mode;
+	this._apptMode = mode;
 	this._defaultRadio.checked = true;
 
 	var m = AjxStringUtil.resolve(ZmMsg.isRecurringAppt, [appt.getName()]);
@@ -84,9 +84,9 @@ function() {
 	return this._appt;
 };
 
-ZmApptTypeDialog.prototype.getMode = 
+ZmApptTypeDialog.prototype.getApptMode = 
 function() {
-	return this._mode;
+	return this._apptMode;
 };
 
 

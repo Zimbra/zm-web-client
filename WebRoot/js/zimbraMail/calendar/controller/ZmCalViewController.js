@@ -641,7 +641,7 @@ ZmCalViewController.prototype._typeOkListener =
 function(ev) {
 	var appt = this._typeDialog.getAppt();
 
-	if (this._typeDialog.getMode() == ZmAppt.MODE_DELETE) {
+	if (this._typeDialog.getApptMode() == ZmAppt.MODE_DELETE) {
 		var mode = this._typeDialog.isInstance() ? ZmAppt.MODE_DELETE_INSTANCE : ZmAppt.MODE_DELETE_SERIES;
 		this._continueDelete(appt, mode);
 	} else {
