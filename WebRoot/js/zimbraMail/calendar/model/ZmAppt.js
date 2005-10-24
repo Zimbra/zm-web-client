@@ -441,7 +441,7 @@ function(viewMode, callback, errorCallback) {
 	
 	var seriesMode = mode == ZmAppt.MODE_EDIT_SERIES;
 	if (this._message == null) {
-		var id = seriesMode ? this._seriesInvId : this.invId;
+		var id = seriesMode ? (this._seriesInvId || this.invId) : this.invId;
 		this._message = new ZmMailMsg(this._appCtxt, id);
 		var respCallback = new AjxCallback(this, this._handleResponseGetDetails, [mode, this._message, callback]);
 		this._message.load(true, false, respCallback, errorCallback);
