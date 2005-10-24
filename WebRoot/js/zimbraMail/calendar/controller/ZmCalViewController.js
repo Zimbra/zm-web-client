@@ -86,6 +86,8 @@ ZmCalViewController.VIEWS = [ZmCalViewMgr.DAY_VIEW, ZmCalViewMgr.WORK_WEEK_VIEW,
 ZmCalViewController.OPS = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, 
 							ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
 
+ZmCalViewController.DEFAULT_APPOINTMENT_DURATION = 3600000;
+
 // maintenance needed on views and/or minical
 ZmCalViewController.MAINT_NONE 		= 0x0; // no work todo
 ZmCalViewController.MAINT_MINICAL 	= 0x1; // minical needs refresh
@@ -492,7 +494,7 @@ function(startDate, duration, folderId) {
 	var newAppt = new ZmAppt(this._appCtxt);
 	newAppt.name = ZmMsg.newAppt;
 	newAppt.setStartDate(AjxDateUtil.roundTimeMins(startDate, 30));
-	newAppt.setEndDate(newAppt.getStartTime() + (duration ? duration : ZmAppointmentDialog.DEFAULT_APPOINTMENT_DURATION));
+	newAppt.setEndDate(newAppt.getStartTime() + (duration ? duration : ZmCalViewController.DEFAULT_APPOINTMENT_DURATION));
 	newAppt.resetRepeatWeeklyDays();
 	newAppt.resetRepeatMonthlyDayList();
 	newAppt.repeatYearlyMonthsList = startDate.getMonth();
@@ -503,7 +505,7 @@ function(startDate, duration, folderId) {
 
 ZmCalViewController.prototype._timeSelectionListener =
 function(ev) {
-	var view = 	this._viewMgr.getCurrentView();
+	var view = this._viewMgr.getCurrentView();
 	if (view.getSelectedItems().size() > 0) {
 		view.deselectAll();
 		this._resetOperations(this._toolbar[ZmCalViewMgr.DAY_VIEW], 0);
@@ -527,45 +529,6 @@ function(ev) {
 		this._printView = new ZmPrintView(this._appCtxt);
 	}
 	this._printView.render(viewMgr);
-};
-
-// =======================================================================
-// Appointment methods
-// =======================================================================
-ZmCalViewController.prototype._getAppointmentDialog = 
-function() {
-	if (this._apptView == null) {
-		ZmUserSchedule.setCommandSender(this);
-		this._apptView = new ZmAppointmentDialog(this._container, null, true);
-		this._apptDialog = new ZmDialog (this._shell, null, null, ZmMsg.appointmentNewTitle, null, this._apptView);
-		this._apptDialog._disableFFhack();
-		// create listeners for the save and cancel buttons
-		var sLis = new AjxListener(this, this._saveAppointment);
-		var enterLis = new AjxListener(this, this._apptEnterKeyHandler);
-		var cLis = new AjxListener(this, this._cancelAppointmentSave);
-		var stateChangeLis = new AjxListener(this, this._apptViewStateChange);
-		var focusLis = new AjxListener(this, this._apptDialogFocused);
-		this._apptView.addListener(DwtEvent.STATE_CHANGE, stateChangeLis);
-		this._apptDialog.setButtonListener(DwtDialog.OK_BUTTON, sLis);
-		this._apptDialog.setButtonListener(DwtDialog.CANCEL_BUTTON, cLis);
-		this._apptDialog.addEnterListener(enterLis);
-		this._apptDialog.addListener(DwtEvent.ONFOCUS, focusLis);
-	} else {
-		this._apptDialog.reset();
-	}
-	this._apptDialog.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-	return this._apptDialog;
-};
-
-ZmCalViewController.prototype._apptViewStateChange = 
-function(event) {
-	// details are whether or not the apptView has errors.
-	this._apptDialog.setButtonEnabled(DwtDialog.OK_BUTTON, !event.details);
-};
-
-ZmCalViewController.prototype._apptDialogFocused = 
-function() {
-	this._apptView.focus();
 };
 
 /** 
@@ -638,30 +601,15 @@ function(startDate, endDate, folderId) {
 ZmCalViewController.prototype.newAppointment = 
 function(newAppt) {
 	var appt = newAppt || this._newApptObject(new Date());
-
-	if (this._appCtxt.get(ZmSetting.NEW_APPOINTMENT_VIEW)) {
-		this._app.getApptComposeController().show(appt);
-	} else {
-		// Create a new appointment
-		appt.__creating = true;
-		this._getAppointmentDialog();
-		this._apptDialog.setTitle(ZmMsg.appointmentNewTitle);
-		this._popupAppointmentDialog(appt, ZmAppt.MODE_NEW);
-	}
+	this._app.getApptComposeController().show(appt);
 };
 
 ZmCalViewController.prototype.editAppointment = 
 function(appt, mode) {
-	if (this._appCtxt.get(ZmSetting.NEW_APPOINTMENT_VIEW)) {
-		if (mode != ZmAppt.MODE_NEW) {
-			appt.getDetails(mode, new AjxCallback(this, this._showApptView, [appt, mode]));
-		} else {
-			this._app.getApptComposeController().show(appt, mode);
-		}
+	if (mode != ZmAppt.MODE_NEW) {
+		appt.getDetails(mode, new AjxCallback(this, this._showApptView, [appt, mode]));
 	} else {
-		this._getAppointmentDialog();
-		this._apptDialog.setTitle(ZmMsg.appointmentEditTitle);
-		this._popupAppointmentDialog(appt, mode);
+		this._app.getApptComposeController().show(appt, mode);
 	}
 };
 
@@ -707,77 +655,6 @@ function(args) {
 	var appt = args[0];
 	var mode = args[1];
 	this._app.getApptComposeController().show(appt, mode);
-};
-
-ZmCalViewController.prototype._popupAppointmentDialog = 
-function(appt, mode) {
-	this._apptView.showDetail(appt, mode);
-	this._apptDialog.popup();
-	if (appt && !appt.isOrganizer()) {
-		this._apptDialog.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-	}
-};
-
-ZmCalViewController.prototype._apptEnterKeyHandler = 
-function(event) {
-	if (this._apptDialog.getButtonEnabled(DwtDialog.OK_BUTTON)){
-		this._saveAppointment(event);
-	}
-};
-
-ZmCalViewController.prototype._saveAppointment = 
-function(event) {
-	try{
-		if (!this._savingAppointment) {
-			this._savingAppointment = true;
-			// submit attachments if there are any.
-			if (this._apptView.hasAttachments()){
-				var sCb = new AjxCallback(this, this._continueSave);
-				var fCb = new AjxCallback(this, this._attachmentUploadFailed);
-				this._apptView.submitAttachments(sCb, fCb);
-				return;
-			} else {
-				var args = [200, null];
-				this._continueSave(args);
-			}
-		}
-	} catch (ex) {
-		this._handleException(ex, this._saveAppointment, args, false);
-	} finally {
-		this._savingAppointment = false;
-	}
-};
-
-ZmCalViewController.prototype._continueSave = 
-function(args) {
-	try{
-		// get the attachment id from the arguments
-		var attId = args[1];
-
-		// get the appointment from the appointmentView,
-		var appt = this._apptView.getAppt();
-		//var editMode = appt.getViewMode();
-
-		// save it to the server
-		appt.save(this._appCtxt.getAppController(), attId);
-		// let notifications cause the internal list to be updated
-		this._apptDialog.popdown();
-	} catch (ex) {
-		if (ex.code == ZmCsfeException.MAIL_SEND_FAILURE) {
- 			// This is probably an invalid email address
-			// var addresses = ex.msg.replace(/^.*addresses:/, "");
- 			this.popupErrorDialog(AjxStringUtil.resolve(ZmMsg.mailSendFailure,ex.msg));
- 		} else {
-			this._handleException(ex, this._saveAppointment, args, false);
- 		}
-	} finally {
-		this._savingAppointment = false;
-	}
-};
-
-ZmCalViewController.prototype._cancelAppointmentSave = 
-function(event) {
-	this._apptDialog.popdown();
 };
 
 /*

@@ -38,7 +38,6 @@ function ZmAppt(appCtxt, list, noinit) {
 	this.allDayEvent = "0";
 	this.exception = this.recurring = this.alarm = this.otherAttendees = false;
 	this.location = "";
-	this.notes = ""; 															// XXX: DEPRACATED
 	this.notesTopPart = null; 													// ZmMimePart containing children w/ different message parts
 	this.repeatType = "NON"; 													// maps to "freq" in the createAppt call.
 	this.repeatCustom = "0";  													// 1|0
@@ -152,7 +151,6 @@ ZmAppt.prototype.getInvId 						= function() { return this.invId; }; 				// defa
 ZmAppt.prototype.getLocation 					= function() { return this.location; };
 ZmAppt.prototype.getMessage 					= function() { return this._message; };
 ZmAppt.prototype.getName 						= function() { return this.name; }; 				// name (aka Subject) of appt
-ZmAppt.prototype.getNotes 						= function() { return this.notes; }; 				// XXX: DEPRACATED
 ZmAppt.prototype.getOrganizer 					= function() { return this.organizer || ""; };
 ZmAppt.prototype.getOrigStartDate 				= function() { return this._origStartDate || this.startDate; };
 ZmAppt.prototype.getOrigStartTime 				= function() { return this.getOrigStartDate().getTime(); };
@@ -247,24 +245,6 @@ function(appt) {
 	return newAppt;
 }
 
-/* XXX: DEPRECATED
-ZmAppt.prototype.clone = 
-function() {
-	var newAppt = new ZmAppt(this._appCtxt, this.list, true);
-	var key = null;
-	for (key in this) {
-		if (typeof (this[key] != 'function') && key != 'prototype') {
-			if (AjxUtil.isDate(this[key])) {
-				newAppt[key] = new Date(this[key].getTime());
-			} else {
-				newAppt[key] = this[key];
-			}
-		}
-	}
-	newAppt._resetCached();	
-	return newAppt;
-};*/
-
 /**
  * Walks the notesParts array looking for the first part that matches given 
  * content type - for now, returns the content (but we could just return the whole part?)
@@ -285,8 +265,9 @@ function(contentType) {
 			if (this.notesTopPart.getContentType() == ct)
 				return this.notesTopPart.getContent().content;
 		}
+	} else {
+		return this.notes;
 	}
-	return null;
 };
 
 ZmAppt.prototype.resetRepeatWeeklyDays = 
@@ -373,6 +354,23 @@ function(ids) {
 	}
 };
 
+ZmAppt.prototype.getAttachments = 
+function() {
+	var m = this.getMessage();	
+	if (this.hasDetails() && m._attachments != null) {
+		var attachs = m._attachments;
+		if (this._validAttachments == null) {
+			this._validAttachments = new Array();
+			for (var i = 0; i < attachs.length; ++i) {
+				if (m.isRealAttachment(attachs[i]))
+					this._validAttachments.push(attachs[i]);
+			}
+		}
+		return this._validAttachments.length > 0 ? this._validAttachments : null;
+	}
+	return null;
+};
+
 // TOOD: i18n
 ZmAppt.prototype.getDurationText =
 function(emptyAllDay,startOnly) {
@@ -412,23 +410,6 @@ function() {
 	var ms = m;
 	if (m < 10) ms = "0"+ms;
 	return h+":"+ms+ampm;
-};
-
-ZmAppt.prototype.getAttachments = 
-function() {
-	var m = this.getMessage();	
-	if (this.hasDetails() && m._attachments != null) {
-		var attachs = m._attachments;
-		if (this._validAttachments == null) {
-			this._validAttachments = new Array();
-			for (var i = 0; i < attachs.length; ++i) {
-				if (m.isRealAttachment(attachs[i]))
-					this._validAttachments.push(attachs[i]);
-			}
-		}
-		return this._validAttachments.length > 0 ? this._validAttachments : null;
-	}
-	return null;
 };
 
 ZmAppt.prototype.clearDetailsCache = 
@@ -516,31 +497,25 @@ function(message, viewMode) {
 		}
 		this._currentlyLoaded = message;
 
-		if (this._appCtxt.get(ZmSetting.NEW_APPOINTMENT_VIEW)) {
-			this.notesTopPart = new ZmMimePart();
-			var html = message.getBodyPart(ZmMimeTable.TEXT_HTML);
-			var text = message.getBodyPart(ZmMimeTable.TEXT_PLAIN);
-			if (html) {
-				this.notesTopPart.setContentType(ZmMimeTable.MULTI_ALT);
-		
-				// create two more mp's for text and html content types
-				var textPart = new ZmMimePart();
-				textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-				textPart.setContent(text);
-				this.notesTopPart.children.add(textPart);
-		
-				var htmlPart = new ZmMimePart();
-				htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
-				htmlPart.setContent(html.content);
-				this.notesTopPart.children.add(htmlPart);
-			} else {
-				this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-				this.notesTopPart.setContent(text);
-			}
+		this.notesTopPart = new ZmMimePart();
+		var html = message.getBodyPart(ZmMimeTable.TEXT_HTML);
+		var text = message.getBodyPart(ZmMimeTable.TEXT_PLAIN);
+		if (html) {
+			this.notesTopPart.setContentType(ZmMimeTable.MULTI_ALT);
+	
+			// create two more mp's for text and html content types
+			var textPart = new ZmMimePart();
+			textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
+			textPart.setContent(text);
+			this.notesTopPart.children.add(textPart);
+	
+			var htmlPart = new ZmMimePart();
+			htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
+			htmlPart.setContent(html.content);
+			this.notesTopPart.children.add(htmlPart);
 		} else {
-			// XXX: this.notes is DEPRACATED
-			this.notes = message.getTextPart();
-			this._trimNotesSummary();
+			this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
+			this.notesTopPart.setContent(text);
 		}
 	}
 };
@@ -608,7 +583,7 @@ function(calController) {
 
 		idx = this._addEntryRow(ZmMsg.when, when, html, idx, false);		
 		idx = this._addEntryRow(ZmMsg.location, this.getLocation(), html, idx, false);
-		idx = this._addEntryRow(ZmMsg.notes, this.getNotes(), html, idx, true, "250");
+		idx = this._addEntryRow(ZmMsg.notes, this.getNotesPart(), html, idx, true, "250");
 
 		html[idx++] = "</table>";
 		this._toolTip = html.join("");
@@ -1358,12 +1333,7 @@ function(soapDoc, method,  attachmentId) {
 		inv.setAttribute("uid", this.uid);
 
 	inv.setAttribute("type", "event");
-
-	// XXX: fix this when old appointment dialog is depracated
-	var fb = this._appCtxt.get(ZmSetting.NEW_APPOINTMENT_VIEW) 
-		? this.freeBusy 
-		: (this.isAllDayEvent() ? "F" : "B");
-	inv.setAttribute("fb", fb);
+	inv.setAttribute("fb", this.freeBusy);
 
 	var transp = this.isAllDayEvent() ? "T" : "O";
 	inv.setAttribute("transp", transp);
@@ -1611,13 +1581,6 @@ function() {
 		if (customRepeat) {
 			blurb[idx++] = " on ";
 			blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[Number(this.repeatYearlyMonthsList)];
-			/*
-			var nums = this.repeatYearlyMonthsList.split(",");
-			for (var i = 0 ; i < nums.length; ++i ) {
-				blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[nums[i]];
-				if (i < nums.length -1 )
-					blurb[idx++] = ",";
-			}*/
 			if (this.repeatCustomType == "O") {
 				blurb[idx++] = " on the ";
 				blurb[idx++] = ZmAppt.MONTHLY_DAY_OPTIONS[Number(this.repeatCustomOrdinal)-1].label;
@@ -1661,46 +1624,24 @@ function() {
 	return blurb.join("");
 };
 
-ZmAppt.prototype._trimNotesSummary = 
-function() {
-	// XXX: this.notes is DEPRACATED
-	var notesArr = this.notes ? this.notes.split(ZmAppt.NOTES_SEPARATOR_REGEX) : null;
-	if (notesArr && notesArr.length > 1)
-		this.notes = notesArr[1];
-};
-
 ZmAppt.prototype._addNotesToSoap = 
 function(soapDoc, m, cancel) {	
-	if (this._appCtxt.get(ZmSetting.NEW_APPOINTMENT_VIEW)) {
-		var prefix = this.attendees ? this._getDefaultBlurb(cancel) : "";
-		var mp = soapDoc.set("mp", null, m);
-		var ct = this.notesTopPart ? this.notesTopPart.getContentType() : ZmMimeTable.TEXT_PLAIN;
-		mp.setAttribute("ct", ct);
-		// if top part has sub parts, add them as children
-		var numSubParts = this.notesTopPart ? this.notesTopPart.children.size() : 0;
-		if (numSubParts > 0) {
-			for (var i = 0; i < numSubParts; i++) {
-				var part = this.notesTopPart.children.get(i);
-				var partNode = soapDoc.set("mp", null, mp);
-				partNode.setAttribute("ct", part.getContentType());
-				var content = AjxBuffer.concat(prefix, part.getContent());
-				soapDoc.set("content", content, partNode);
-			}
-		} else {
-			var content = this.notesTopPart ? AjxBuffer.concat(prefix, this.notesTopPart.getContent()) : "";
-			soapDoc.set("content", content, mp);
+	var prefix = this.attendees ? this._getDefaultBlurb(cancel) : "";
+	var mp = soapDoc.set("mp", null, m);
+	var ct = this.notesTopPart ? this.notesTopPart.getContentType() : ZmMimeTable.TEXT_PLAIN;
+	mp.setAttribute("ct", ct);
+	// if top part has sub parts, add them as children
+	var numSubParts = this.notesTopPart ? this.notesTopPart.children.size() : 0;
+	if (numSubParts > 0) {
+		for (var i = 0; i < numSubParts; i++) {
+			var part = this.notesTopPart.children.get(i);
+			var partNode = soapDoc.set("mp", null, mp);
+			partNode.setAttribute("ct", part.getContentType());
+			var content = AjxBuffer.concat(prefix, part.getContent());
+			soapDoc.set("content", content, partNode);
 		}
 	} else {
-		var mp = soapDoc.set("mp", null, m);
-		mp.setAttribute("ct", ZmMimeTable.TEXT_PLAIN);
-	
-		this._trimNotesSummary();
-	
-		// XXX: this.notes is DEPRACATED - use this.notesParts to set SOAP
-		var content = this.attendees ? this._getDefaultBlurb(cancel) : "";
-		if (this.notes != null && this.notes.length > 0)
-			content = AjxBuffer.concat(content, this.notes);
-	
+		var content = this.notesTopPart ? AjxBuffer.concat(prefix, this.notesTopPart.getContent()) : "";
 		soapDoc.set("content", content, mp);
 	}
 };
