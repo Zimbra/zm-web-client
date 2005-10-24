@@ -1102,6 +1102,8 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	height: 24px;
 	vertical-align: middle;
 	cursor: text;
+	line-height: 22px;
+	color: #AAAAAA;
 }
 
 .ZmSchedTabViewPageCell {

@@ -241,6 +241,30 @@ function(composeMode) {
 	this._resizeNotes();
 };
 
+// called by schedule tab view when user changes start date field
+ZmApptTabViewPage.prototype.updateDateField = 
+function(newStartDate, newEndDate) {
+	this._startDateField.value = newStartDate;
+	this._endDateField.value = newEndDate;
+};
+
+ZmApptTabViewPage.prototype.updateAllDayField = 
+function(isAllDay) {
+	this._allDayCheckbox.checked = isAllDay;
+	this._showTimeFields(!isAllDay);
+};
+
+ZmApptTabViewPage.prototype.updateTimeField = 
+function(newStartValue, newEndValue) {
+	this._startTimeSelect.setSelectedValue(newStartValue);
+	this._endTimeSelect.setSelectedValue(newEndValue);
+};
+
+ZmApptTabViewPage.prototype.updateAttendeesField = 
+function(attendees) {
+	this._attendeesField.value = attendees;
+};
+
 ZmApptTabViewPage.prototype.reEnableDesignMode = 
 function() {
 	if (this._composeMode == DwtHtmlEditor.HTML)
@@ -326,6 +350,11 @@ function(newWidth, newHeight) {
 		Dwt.setSize(this.getHtmlElement().firstChild, Dwt.DEFAULT, newHeight - 30);
 		this._resizeNotes();
 	}
+};
+
+ZmApptTabViewPage.prototype.getNotesHtmlEditor = 
+function() {
+	return this._notesHtmlEditor;
 };
 
 ZmApptTabViewPage.prototype.getDateInfo = 

@@ -163,6 +163,11 @@ function(attId) {
 	return this._apptTab.getAppt(attId);
 };
 
+ZmApptComposeView.prototype.getHtmlEditor = 
+function() {
+	return this._apptTab.getNotesHtmlEditor();
+};
+
 
 // Private / Protected methods
 

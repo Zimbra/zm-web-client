@@ -542,8 +542,10 @@ function(x, y, width, height) {
 
 ZmContactPickerListView.prototype._sizeChildren =
 function(width, height) {
-	Dwt.setSize(this._listDiv, Dwt.DEFAULT, this.getHtmlElement().clientHeight - DwtListView.HEADERITEM_HEIGHT);
-	this._listDiv.style.overflow = 'auto';
+	if (this._listDiv) {
+		Dwt.setSize(this._listDiv, Dwt.DEFAULT, this.getHtmlElement().clientHeight - DwtListView.HEADERITEM_HEIGHT);
+		this._listDiv.style.overflow = 'auto';
+	}
 }
 
 ZmContactPickerListView.prototype._setNoResultsHtml = 

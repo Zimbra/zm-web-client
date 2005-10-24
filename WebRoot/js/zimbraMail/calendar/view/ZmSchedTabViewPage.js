@@ -110,10 +110,9 @@ function(dateInfo, attendees) {
 		this._allDayCheckbox.checked = true;
 		this._showTimeFields(false);
 	}
-
 	this._resetFullDateField();
 
-	// TODO - parse the attendees string and populate free busy attendees column
+	this._setAttendees(attendees);
 };
 
 ZmSchedTabViewPage.prototype.cleanup = 
@@ -179,6 +178,7 @@ function() {
 	this._createHTML();
 	this._createDwtObjects();
 	this._cacheFields();
+	this._initAutocomplete();
 	this._addEventHandlers();
 	this._resetAttendeeCount();
 
@@ -301,7 +301,9 @@ function() {
 
 		html[i++] = "<tr>";
 		html[i++] = "<td><table border=0 width=100% cellpadding=0 cellspacing=0 class='ZmSchedTabViewPageTable'><tr>";
-		html[i++] = "<td><div class='ZmSchedTabViewPageName' id='";
+		html[i++] = "<td";
+		html[i++] = j == ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES-1 ? " style='border-bottom:1px solid #CCCCCC'>" : ">";
+		html[i++] = "<div class='ZmSchedTabViewPageName' id='";
 		html[i++] = attendee.dwtDivId;
 		html[i++] = "'>";
 		// make the first row the "All Attendees" row
@@ -314,10 +316,16 @@ function() {
 			html[i++] = attendee.dwtInputId;
 			html[i++] = "'>";
 		}
+		if (j > 0) {
+			html[i++] = "&nbsp;&nbsp;";
+			html[i++] = ZmMsg.clickHereToAddName;
+		}
 		html[i++] = "</div></td>";
 		html[i++] = "</tr></table>";
 		html[i++] = "</td>";
-		html[i++] = "<td><table border=0 cellpadding=0 cellspacing=0 class='ZmSchedTabViewPageTable' id='";
+		html[i++] = "<td";
+		html[i++] = j == ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES-1 ? " style='border-bottom:1px solid #CCCCCC'>" : ">";
+		html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmSchedTabViewPageTable' id='";
 		html[i++] = attendee.dwtTableId;
 		html[i++] = "'><tr";
 		html[i++] = j == 0 ? " style='background-color:#FFFFFF'>" : ">";
@@ -396,10 +404,32 @@ function() {
 	this._allAttendeesTable = Dwt.getDomObj(this._doc, this._allAttendeeSlot.dwtTableId); 
 };
 
+ZmSchedTabViewPage.prototype._initAutocomplete = 
+function() {
+	if (this._autocomplete || !this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
+		return;
+
+	var shell = this._appCtxt.getShell();
+	var contactsApp = shell ? shell.getData(ZmAppCtxt.LABEL).getApp(ZmZimbraMail.CONTACTS_APP) : null;
+	var contactsList = contactsApp ? contactsApp.getContactList : null;
+	var locCallback = new AjxCallback(this, this._getAcListLoc, this);
+
+	this._autocomplete = new ZmAutocompleteListView(this._appCtxt.getShell(), null, 
+													contactsApp, contactsList, 
+													ZmContactList.AC_VALUE_EMAIL, 
+													locCallback);
+};
+
 ZmSchedTabViewPage.prototype._addEventHandlers = 
 function() {
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
 	this._allDayCheckbox._schedViewPage = this; // XXX: this may cause mem leaks?
+
+	// add onchange handlers to the start/end date fields
+	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmSchedTabViewPage._onChange);
+	this._startDateField._schedViewPage = this;
+	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmSchedTabViewPage._onChange);
+	this._endDateField._schedViewPage = this;
 
 	for (var i = 0; i < this._schedTable.length; i++) {
 		var attendeeDiv = Dwt.getDomObj(this._doc, this._schedTable[i].dwtDivId);
@@ -413,6 +443,9 @@ function() {
 			Dwt.setHandler(attendeeInput, DwtEvent.ONBLUR, ZmSchedTabViewPage._onBlur);
 			attendeeInput._schedViewPage = this;
 			attendeeInput._schedTableIdx = i;
+			// while we're at it, add auto complete if supported
+			if (this._autocomplete)
+				this._autocomplete.handle(attendeeInput);
 		}
 	}
 };
@@ -448,6 +481,20 @@ function(inputEl) {
 			this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), email, this._fbCallback);
 	} else {
 		this._cleanRow(inputEl, sched);
+		this._colorAllAttendees();
+	}
+
+	// get all the emails and update the appointment view
+	// XXX: optimize later!!
+	var attendeeArr = new Array();
+	for (var i = 0; i < this._schedTable.length; i++) {
+		var inputEl = Dwt.getDomObj(this._doc, this._schedTable[i].dwtInputId);
+		if (inputEl && inputEl.value.length)
+			attendeeArr.push(inputEl.value);
+	}
+	if (attendeeArr.length) {
+		this._origAttendees = attendeeArr.join("; ");
+		this._apptTab.updateAttendeesField(this._origAttendees);
 	}
 };
 
@@ -461,7 +508,9 @@ function() {
 
 ZmSchedTabViewPage.prototype._getEndTime = 
 function() {
-	var ed = this._endDateField.value;
+	// XXX: always get start date field value since we dont support multiday yet
+	//var ed = this._endDateField.value;
+	var ed = this._startDateField.value;
 	if (!this._allDayCheckbox.checked)
 		ed += " 11:59 PM";
 	return ((new Date(ed)).getTime());
@@ -473,8 +522,9 @@ function() {
 
 	for (var i = 0; i < this._allAttendees.length; i++) {
 		if (this._allAttendees[i] > 0) {
-			
-			//this._coloredCells.push
+			// TODO: opacity...
+			row.cells[i].style.backgroundColor = this._getColorForStatus(ZmSchedTabViewPage.STATUS_BUSY);
+			this._allAttendeeSlot._coloredCells.push(row.cells[i]);
 		}
 	}
 };
@@ -492,8 +542,49 @@ function() {
 			uids.push(sched.uid);
 	}
 
+	this._resetAttendeeCount();
+
 	if (uids.length) {
 		var emails = uids.join(",");
+		this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), emails, this._fbCallback);
+	}
+};
+
+ZmSchedTabViewPage.prototype._setAttendees = 
+function(attendees) {
+	// update the attendees and free busy view if necessary
+	var updateFreeBusy = false;
+	if (this._origAttendees == null && attendees.length > 0) {
+		this._origAttendees = attendees;
+		updateFreeBusy = true;
+	} else {
+		if (this._origAttendees != attendees) {
+			this.cleanup();
+			this._origAttendees = attendees;
+			updateFreeBusy = true;
+		}
+	}
+
+	if (!updateFreeBusy) 
+		return;
+
+	var attendeeArr = attendees.split(ZmAppt.ATTENDEES_SEPARATOR_REGEX);
+	var newAttendeeArr = new Array();
+	for (var i = 0; i < attendeeArr.length; i++) {
+		var attendee = AjxStringUtil.trim(attendeeArr[i]);
+		if (attendee && attendee.length > 0) {
+			var inputEl = Dwt.getDomObj(this._doc, this._schedTable[i].dwtInputId);
+			if (inputEl) {
+				Dwt.setVisible(inputEl, true);
+				inputEl.value = attendee;
+			}
+			this._attendees[attendee] = i;
+			newAttendeeArr.push(attendee);
+		}
+	}
+
+	if (newAttendeeArr.length > 0) {
+		var emails = newAttendeeArr.join(",");
 		this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), emails, this._fbCallback);
 	}
 };
@@ -521,8 +612,19 @@ function(inputEl, sched) {
 ZmSchedTabViewPage.prototype._clearColoredCells = 
 function(sched) {
 	while (sched._coloredCells.length > 0) {
+		// decrement cell count in all attendees row
+		var idx = sched._coloredCells[0].cellIndex;
+		if (this._allAttendees[idx] > 0)
+			this._allAttendees[idx] = this._allAttendees[idx] - 1;
+
 		sched._coloredCells[0].style.backgroundColor = "";
 		sched._coloredCells.shift();
+	}
+
+	var allAttColors = this._allAttendeeSlot._coloredCells;
+	while (allAttColors.length > 0) {
+		allAttColors[0].style.backgroundColor = "";
+		allAttColors.shift();
 	}
 };
 
@@ -536,6 +638,39 @@ ZmSchedTabViewPage.prototype._resetFullDateField =
 function() {
 	// XXX: need i18n version!
 	this._fullDateField.innerHTML = AjxDateUtil.getTimeStr((new Date(this._startDateField.value)), "%t %D, %Y");
+};
+
+ZmSchedTabViewPage.prototype._handleDateChange = 
+function(isStartDate) {
+	var sd = new Date(this._startDateField.value);
+	var ed = new Date(this._endDateField.value);
+
+	// if start date changed, reset end date if necessary
+	if (isStartDate) {
+		if (ed.valueOf() < sd.valueOf())
+			this._endDateField.value = this._startDateField.value;
+		this._updateFreeBusy();
+	} else {
+		// otherwise, reset start date if necessary
+		if (sd.valueOf() > ed.valueOf()) {
+			this._startDateField.value = this._endDateField.value;
+			this._updateFreeBusy();
+		}
+	}
+
+	// finally, update the appt tab view page w/ new date(s)
+	this._apptTab.updateDateField(this._startDateField.value, this._endDateField.value);
+};
+
+ZmSchedTabViewPage.prototype._getAcListLoc =
+function(ev) {
+	var inputEl = ev[1].element;
+	if (inputEl) {
+		var loc = Dwt.getLocation(inputEl);
+		var height = Dwt.getSize(inputEl).y;
+		return (new DwtPoint(loc.x, loc.y+height));
+	}
+	return null;
 };
 
 
@@ -584,27 +719,14 @@ function(ev) {
 // XXX: refactor this code since ZmApptTabViewPage uses similar?
 ZmSchedTabViewPage.prototype._dateCalSelectionListener = 
 function(ev) {
-	// get the parent node this calendar currently belongs to
 	var parentButton = this._dateCalendar._currButton;
-
-	// do some error correction... maybe we can optimize this?
-	var sd = new Date(this._startDateField.value);
-	var ed = new Date(this._endDateField.value);
-	var newDate = AjxDateUtil.simpleComputeDateStr(ev.detail);
+	// update the appropriate field w/ the chosen date
+	var field = parentButton == this._startDateButton
+		? this._startDateField : this._endDateField;
+	field.value = AjxDateUtil.simpleComputeDateStr(ev.detail);
 
 	// change the start/end date if they mismatch
-	if (parentButton == this._startDateButton) {
-		if (ed.valueOf() < ev.detail.valueOf())
-			this._endDateField.value = newDate;
-		this._startDateField.value = newDate;
-		this._updateFreeBusy();
-	} else {
-		if (sd.valueOf() > ev.detail.valueOf()) {
-			this._startDateField.value = newDate;
-			this._updateFreeBusy();
-		}
-		this._endDateField.value = newDate;
-	}
+	this._handleDateChange(parentButton == this._startDateButton);
 
 	this._dateCalendar.setVisible(false);
 };
@@ -649,19 +771,15 @@ function(ev) {
 			}
 		}
 	}
+
+	// always update the appt tab view's time fields
+	this._apptTab.updateTimeField(this._startTimeSelect.getValue(), this._endTimeSelect.getValue());
 };
 
 ZmSchedTabViewPage.prototype._colorSchedule = 
 function(status, slots, table, sched) {
 	var row = table.rows[0];
-	var bgcolor = null;
-	switch (status) {
-		case ZmSchedTabViewPage.STATUS_FREE: 		bgcolor = "#FFFFFF"; break;
-		case ZmSchedTabViewPage.STATUS_BUSY: 		bgcolor = "#990000"; break;
-		case ZmSchedTabViewPage.STATUS_TENTATIVE:	bgcolor = "#FF3300"; break;
-		case ZmSchedTabViewPage.STATUS_OUT: 		bgcolor = "#FFCC00"; break;
-		case ZmSchedTabViewPage.STATUS_UNKNOWN: 	bgcolor = "#FFF5CC"; break;
-	}
+	var bgcolor = this._getColorForStatus(status);
 
 	if (row && bgcolor) {
 		// figure out the table cell that needs to be colored
@@ -689,6 +807,19 @@ function(status, slots, table, sched) {
 	}
 };
 
+ZmSchedTabViewPage.prototype._getColorForStatus = 
+function(status) {
+	var bgcolor = null;
+	switch (status) {
+		case ZmSchedTabViewPage.STATUS_FREE: 		bgcolor = "#FFFFFF"; break;
+		case ZmSchedTabViewPage.STATUS_BUSY: 		bgcolor = "#990000"; break;
+		case ZmSchedTabViewPage.STATUS_TENTATIVE:	bgcolor = "#FF3300"; break;
+		case ZmSchedTabViewPage.STATUS_OUT: 		bgcolor = "#FFCC00"; break;
+		case ZmSchedTabViewPage.STATUS_UNKNOWN: 	bgcolor = "#FFF5CC"; break;
+	}
+	return bgcolor;
+};
+
 
 // Callbacks
 
@@ -703,9 +834,7 @@ function(args) {
 		if (table) {
 			table.rows[0].style.backgroundColor = "#FFFFFF";
 
-			// clear out old sched if one exists
-			if (sched.uid)
-				this._clearColoredCells(sched);
+			this._clearColoredCells(sched);
 			sched.uid = usr.id;
 
 			// next, for each free/busy status, color the row for given start/end times
@@ -717,6 +846,10 @@ function(args) {
 				this._colorSchedule(ZmSchedTabViewPage.STATUS_BUSY, usr.b, table, sched);
 			if (usr.u)
 				this._colorSchedule(ZmSchedTabViewPage.STATUS_OUT, usr.u, table, sched);
+
+			// if all we got back was free and nothing else, repaint all attendees row
+			if (usr.f && usr.n == null && usr.t == null && usr.b == null && usr.u == null)
+				this._colorAllAttendees();
 		}
 	}
 };
@@ -732,6 +865,7 @@ function(ev) {
 	// figure out which object was clicked
 	if (el.id == svp._allDayCheckboxId) {
 		svp._showTimeFields(el.checked ? false : true);
+		svp._apptTab.updateAllDayField(el.checked);
 	} else {
 		// looks like user clicked on attendee field
 		svp._showAttendeeField(el);
@@ -744,4 +878,11 @@ function(ev) {
 	var svp = el._schedViewPage;
 
 	svp._handleAttendeeField(el);
+};
+
+ZmSchedTabViewPage._onChange = 
+function(ev) {
+	var el = DwtUiEvent.getTarget(ev);
+	var svp = el._schedViewPage;
+	svp._handleDateChange(el == svp._startDateField);
 };

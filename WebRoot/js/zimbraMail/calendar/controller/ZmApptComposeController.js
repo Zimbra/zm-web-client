@@ -123,6 +123,10 @@ function() {
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
 	this._toolbar.addSelectionListener(ZmOperation.ATTACHMENT, new AjxListener(this, this._attachmentListener));
 
+	// change default button style to toggle for spell check button
+	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
+	spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
+
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		var formatButton = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 		var m = new DwtMenu(formatButton);
@@ -230,10 +234,23 @@ function(ev) {
 
 ZmApptComposeController.prototype._spellCheckListener = 
 function(ev) {
-	// TODO
-	DBG.println("TODO! spell check");
+	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
+	if (spellCheckButton.isToggled()) {
+		if (this._apptView.getComposeMode() == DwtHtmlEditor.TEXT) {
+			alert("Spell Checking is not yet implemented for text emails.  Please switch to HTML first.");
+			spellCheckButton.setToggled(false);
+			return;
+		}
+		var text = this._apptView.getHtmlEditor().getTextVersion();
+		var soap = AjxSoapDoc.create("CheckSpellingRequest", "urn:zimbraMail");
+		soap.getMethod().appendChild(soap.getDoc().createTextNode(text));
+		var cmd = new ZmCsfeCommand();
+		var callback = new AjxCallback(this, this._spellCheckCallback);
+		cmd.invoke({soapDoc:soap, asyncMode:true, callback:callback});
+	} else {
+		this._apptView.getHtmlEditor().discardMisspelledWords();
+	}
 };
-
 
 // Callbacks
 
@@ -292,5 +309,25 @@ function(ev) {
 	// reset the radio button for the format button menu
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 	formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
-	this._apptViewView.reEnableDesignMode();
+	this._apptView.reEnableDesignMode();
+};
+
+ZmApptComposeController.prototype._spellCheckCallback = 
+function(args) {
+	if (args._isException) {
+		throw args;
+	}
+
+	var words = args._data.Body.CheckSpellingResponse;
+	if (!words.available) {
+		throw new AjxException("Server-side spell checker is not available.");
+	}
+
+	words = words.misspelled;
+	if (!words || words.length == 0) {
+		var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
+		spellCheckButton.setToggled(false);
+	} else {
+		this._apptView.getHtmlEditor().highlightMisspelledWords(words);
+	}
 };
