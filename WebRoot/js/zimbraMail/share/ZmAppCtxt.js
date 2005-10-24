@@ -159,7 +159,7 @@ function() {
 ZmAppCtxt.prototype.getErrorDialog = 
 function() {
 	if (!this._errorDialog)
-		this._errorDialog = new ZmErrorDialog(this.getShell(), this);
+		this._errorDialog = new ZmErrorDialog(this.getShell(), this, ZmMsg);
 	return this._errorDialog;
 }
 
