@@ -323,7 +323,7 @@ function(settings) {
 * refresh blocks that come in the response header are handled. Also handles
 * exceptions by default, though the caller can pass in a special callback to
 * run for exceptions. To ignore exceptions, pass in ZmZimbraMail.IGNORE_ERRORS
-* as the value for the error callback.
+* as the value for the error callback (currently done for polling).
 *
 * @param soapDoc		[AjxSoapDoc]	SOAP document that represents the request
 * @param asyncMode		[boolean]		if true, request will be made asynchronously
@@ -337,7 +337,7 @@ function(soapDoc, asyncMode, callback, errorCallback) {
 	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken, 
 				  asyncMode: asyncMode, callback: asyncCallback, logRequest: this._logRequest};
 	
-	if (asyncMode)
+	if (asyncMode && (errorCallback != ZmZimbraMail.IGNORE_ERRORS))
 		this._shell.setBusy(true); // put up busy overlay to block user input
 	
 	try {
@@ -359,7 +359,7 @@ function(args) {
 	var errorCallback	= args[2];
 	var result			= args[3];
 
-	if (asyncMode)
+	if (asyncMode && (errorCallback != ZmZimbraMail.IGNORE_ERRORS))
 		this._shell.setBusy(false); // remove busy overlay
 
 	// we just got activity, cancel current poll timer
@@ -955,7 +955,7 @@ function(creates, modifies) {
 			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
 			// parent could be a folder or a search
 			if (parentId == ZmOrganizer.ID_ROOT) {
-				parent = name == "folder"
+				parent = (name == "folder")
 						? (create.view == "appointment" ? calendarTree.getById(parentId) : folderTree.getById(parentId))
 						: searchTree.getById(parentId);
 			} else {
