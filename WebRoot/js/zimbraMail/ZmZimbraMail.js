@@ -426,12 +426,6 @@ function() {
 ZmZimbraMail.prototype.activateApp =
 function(appName, callback, errorCallback) {
     DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
-    if (this._activeApp) {
-		// some views are not stored in _apps collection, so check if it exists.
-		var app = this._apps[this._activeApp];
-		if (app)
-		    app.activate(false); // notify previously active app
-    }
 	    
     var view = this._appViewMgr.getAppView(appName);
     if (view) {
@@ -439,7 +433,6 @@ function(appName, callback, errorCallback) {
     	bActivated = true;
 	    DBG.println(AjxDebug.DBG3, "activateApp, current " + appName + " view: " + view);
 		if (this._appViewMgr.pushView(view)) {
-		    this._apps[appName].activate(true);
 		    this._appViewMgr.setAppView(appName, view);
 		}
     } else {
@@ -449,7 +442,6 @@ function(appName, callback, errorCallback) {
 		DBG.println(AjxDebug.DBG1, "Launching app " + appName);
 		var respCallback = new AjxCallback(this, this._handleResponseActivateApp, callback);
 		this._apps[appName].launch(respCallback, errorCallback);
-		this._apps[appName].activate(true);
     }
 }
 
@@ -470,10 +462,20 @@ function(appName, view) {
 	var toolbar = this._appCtxt.getCurrentAppToolbar();
 	toolbar.showViewMenu(view);
 	if (this._activeApp != appName) {
+		// deactivate previous app
+	    if (this._activeApp) {
+			// some views are not stored in _apps collection, so check if it exists.
+			var app = this._apps[this._activeApp];
+			if (app) app.activate(false);
+	    }
+	    // switch app
 		this._activeApp = appName;
 		toolbar.setCurrentApp(appName);
 		toolbar.setViewTooltip(view, ZmMsg[ZmZimbraMail.VIEW_TT_KEY[appName]]);
 		this._appCtxt.getSearchController().setDefaultSearchType(ZmZimbraMail.DEFAULT_SEARCH[appName], true);
+		// activate current app
+		var app = this._apps[this._activeApp];
+		if (app) app.activate(true);
 	}
 //	this._components[ZmAppViewMgr.C_APP_CHOOSER].setActiveApp(appName);
 }
