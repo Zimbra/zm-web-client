@@ -39,11 +39,11 @@ function ZmPicker(parent, id) {
 	this._picker.setScrollStyle(DwtControl.SCROLL);
 	this._pickerEvent = new ZmEvent(ZmEvent.S_PICKER);
 	this._pickerEvent.set(ZmEvent.E_MODIFY, this);
-	this._setupPicker(this._picker);
 	this.id = id;
     this.setTitle(ZmMsg[ZmPicker.T_MSG_KEY[id]]);
     this.setImage(ZmPicker.IMAGE[id]);
-}
+	this._setupPicker(this._picker);
+};
 
 ZmPicker.prototype = new DwtComposite;
 ZmPicker.prototype.constructor = ZmPicker;

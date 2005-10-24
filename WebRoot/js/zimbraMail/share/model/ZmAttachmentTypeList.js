@@ -53,19 +53,31 @@ function(a,b) {
 };
 
 ZmAttachmentTypeList.prototype.load =
-function() {
+function(callback) {
 	this._attachments = new Array();
 
 	var soapDoc = AjxSoapDoc.create("BrowseRequest", "urn:zimbraMail");
 	soapDoc.getMethod().setAttribute("browseBy", "attachments");
 
-	var att = this._appCtxt.getAppController().sendRequest(soapDoc).BrowseResponse.bd;
+	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+
+};
+
+ZmAttachmentTypeList.prototype._handleResponseLoad =
+function(args) {
+	var callback	= args[0];
+	var result		= args[1];
+	
+	var att = result.getResponse().BrowseResponse.bd;
 	if (att) {
-		for (var i=0; i<att.length; i++) {
+		for (var i = 0; i < att.length; i++) {
 			var type = att[i]._content;
 			if (!ZmMimeTable.isIgnored(type) && (type.indexOf("/") != -1 || type == "image"))
 				this._attachments.push(ZmMimeTable.getInfo(type, true));
 		}
 		this._attachments.sort(ZmAttachmentTypeList.compareEntry);
 	}
+	
+	if (callback) callback.run(result);
 };

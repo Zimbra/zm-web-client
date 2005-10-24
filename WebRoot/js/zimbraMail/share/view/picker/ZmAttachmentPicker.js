@@ -118,7 +118,16 @@ function(parent) {
 	var tree = this._tree = new DwtTree(picker, DwtTree.CHECKEDITEM_STYLE);
 	tree.addSelectionListener(new AjxListener(this, this._treeListener));	
 	var attachTypeList = new ZmAttachmentTypeList(this.shell.getData(ZmAppCtxt.LABEL));
-	attachTypeList.load();
+	var respCallback = new AjxCallback(this, this._handleResponseSetupPicker, [attachTypeList, tree, treeId]);
+	attachTypeList.load(respCallback);
+};
+
+ZmAttachmentPicker.prototype._handleResponseSetupPicker =
+function(args) {
+	var attachTypeList	= args[0];
+	var tree			= args[1];
+	var treeId			= args[2];
+
 	var attachments = attachTypeList.getAttachments();
 	this._attsByDesc = new Object();
 	var attDesc = new Array();
@@ -135,6 +144,7 @@ function(parent) {
 	for (var i = 0; i < attDesc.length; i++)
 		this._newType(tree, this._attsByDesc[attDesc[i]]);
 
+	var doc = this.getDocument();
 	this._treeDiv = Dwt.getDomObj(doc, treeId);
 	this._treeDiv.appendChild(tree.getHtmlElement());
 	Dwt.setVisible(this._treeDiv, false);

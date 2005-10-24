@@ -170,9 +170,15 @@ function(args) {
 ZmSettings.prototype.loadPrefs =
 function() {
     var soapDoc = AjxSoapDoc.create("GetPrefsRequest", "urn:zimbraAccount");
-    var resp = this._appCtxt.getAppController().sendRequest(soapDoc).firstChild;
+	var respCallback = new AjxCallback(this, this._handleResponseLoadPrefs);
+    this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+};
+
+ZmSettings.prototype._handleResponseLoadPrefs =
+function(result) {
+    var resp = result.getResponse().firstChild;
 	this.createFromDom(resp);
-}
+};
 
 /**
 * Saves one or more settings.

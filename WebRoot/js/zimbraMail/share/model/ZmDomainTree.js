@@ -42,16 +42,25 @@ function() {
 };
 
 ZmDomainTree.prototype.load =
-function() {
+function(callback) {
 	this._rootDomain = new ZmDomain(".", null, "");
 
 	var soapDoc = AjxSoapDoc.create("BrowseRequest", "urn:zimbraMail", null);
 	soapDoc.getMethod().setAttribute("browseBy", "domains");
 
-	var domains = this._appCtxt.getAppController().sendRequest(soapDoc).BrowseResponse.bd;
-	
-	if (domains) {
+	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+};
+
+ZmDomainTree.prototype._handleResponseLoad =
+function(args) {
+	var callback	= args[0];
+	var result		= args[1];
+
+	var domains = result.getResponse().BrowseResponse.bd;
+	if (domains)
 		for (var i = 0; i < domains.length; i++)
 			this._rootDomain.addSubDomain(domains[i]._content, domains[i].h);
-	}
+
+	if (callback) callback.run(result);
 };

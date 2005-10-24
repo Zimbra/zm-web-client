@@ -87,14 +87,6 @@ function(parent) {
     var html = new Array(100);
     var idx = 0;
 
-	// this probably doesn't belong here...
-	if (ZmDomainPicker.root == null) {
-		ZmDomainPicker.root = new ZmDomainTree(this.shell.getData(ZmAppCtxt.LABEL));
-		ZmDomainPicker.root.load();
-		var root = ZmDomainPicker.root.getRootDomain();
-		ZmDomainPicker.domains = root.getSortedSubDomains();
-	}
-    
 	html[idx++] = "<table cellpadding='3' cellspacing='0' border='0' style='width:100%;'>";
 	html[idx++] = "<tr align='center' valign='middle'>";
 	html[idx++] = "<td align='left'><input type='checkbox' checked id='" + fromId + "'/> " + ZmMsg.from + "</td>";
@@ -105,11 +97,45 @@ function(parent) {
 	html[idx++] = "</tr>";
 	html[idx++] = "</table>";
 	
+	// Note: should probably maintain canonical domain tree in app ctxt
+	if (ZmDomainPicker.root == null) {
+		ZmDomainPicker.root = new ZmDomainTree(this.shell.getData(ZmAppCtxt.LABEL));
+		var respCallback = new AjxCallback(this, this._handleResponseSetupPicker, [html, idx, picker, fromId, toId]);
+		ZmDomainPicker.root.load(respCallback);
+	} else {
+		this._showDomains(html, idx, picker, fromId, toId);
+	}
+    
+}
+
+ZmDomainPicker.prototype._handleResponseSetupPicker =
+function(args) {
+	var html	= args[0];
+	var idx		= args[1];
+	var picker	= args[2];
+	var fromId	= args[3];
+	var toId	= args[4];
+	
+	var root = ZmDomainPicker.root.getRootDomain();
+	ZmDomainPicker.domains = root.getSortedSubDomains();
+	this._showDomains(html, idx, picker, fromId, toId);
+};
+
+ZmDomainPicker.prototype._showDomains =
+function(html, idx, picker, fromId, toId) {
 	var domains = ZmDomainPicker.domains;
 	for (var i in domains) {
 		idx = this._domainHtml(domains[i].name, html, idx);
 	}
 	picker.getHtmlElement().innerHTML = html.join("");
+
+	var doc = this.getDocument();
+	var from = this._from = Dwt.getDomObj(doc, fromId);
+	Dwt.setHandler(from, DwtEvent.ONCHANGE, ZmDomainPicker._onChange);
+	from._picker = this;
+	var to = this._to = Dwt.getDomObj(doc, toId);
+	Dwt.setHandler(to, DwtEvent.ONCHANGE, ZmDomainPicker._onChange);
+	to._picker = this;
 
 	var doc = this.getDocument();
 	for (var i in domains) {
@@ -122,15 +148,8 @@ function(parent) {
 		this._elements[domain.name] = ip;
 	}	
 
-	var from = this._from = Dwt.getDomObj(doc, fromId);
-	Dwt.setHandler(from, DwtEvent.ONCHANGE, ZmDomainPicker._onChange);
-	from._picker = this;
-	var to = this._to = Dwt.getDomObj(doc, toId);
-	Dwt.setHandler(to, DwtEvent.ONCHANGE, ZmDomainPicker._onChange);
-	to._picker = this;
-
 	this._updateDomains();
-}
+};
 
 ZmDomainPicker.prototype._updateDomains = 
 function() {
