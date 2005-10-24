@@ -143,6 +143,16 @@ function(overviewId, treeIds, omit) {
 			this._controllers[treeId] = new ZmOverviewController.CONTROLLER[treeId](this._appCtxt);
 		this._controllers[treeId].show(overviewId, this._showUnread[overviewId], omit);
 	}
+	
+	// re-order visible panels
+	var overviewEl = this.getOverview(overviewId).getHtmlElement();
+	for (var i = treeIds.length - 1; i >= 0; i--) {
+		var treeId = treeIds[i];
+		var treeView = this.getTreeView(overviewId, treeId);
+		var treeEl = treeView.getHtmlElement();
+		overviewEl.removeChild(treeEl);
+		overviewEl.insertBefore(treeEl, overviewEl.firstChild);
+	}
 }
 
 /**

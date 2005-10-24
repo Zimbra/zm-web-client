@@ -48,7 +48,8 @@ function(active, view, date) {
 	var appController = this._appCtxt.getAppController();
 	if (active) {
 		this._oldPanels = appController.getOverviewPanels();
-		appController.setOverviewPanels( [ ZmOrganizer.CALENDAR ] );
+		var newPanels = [ ZmOrganizer.CALENDAR, ZmOrganizer.FOLDER, ZmOrganizer.SEARCH ];
+		appController.setOverviewPanels(newPanels);
 		this.getCalController().show(view);
 		if (date) this.getCalController().setDate(date);
 	}
