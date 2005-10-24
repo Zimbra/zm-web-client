@@ -206,7 +206,7 @@ function() {
 ZmNewCalendarDialog.prototype._handleCheckbox = function(event) {
 	event = event || window.event;
 	var target = DwtUiEvent.getTarget(event);
-	target._urlRow.style.display = target.checked ? "table-row" : "none";
+	target._urlRow.style.display = target.checked ? (AjxEnv.isIE ? "block" : "table-row") : "none";
 	target._urlInputEl.focus();
 };
 
