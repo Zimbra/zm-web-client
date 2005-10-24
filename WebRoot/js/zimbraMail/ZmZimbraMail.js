@@ -956,7 +956,7 @@ function(creates, modifies) {
 			// parent could be a folder or a search
 			if (parentId == ZmOrganizer.ID_ROOT) {
 				parent = (name == "folder")
-						? (create.view == "appointment" ? calendarTree.getById(parentId) : folderTree.getById(parentId))
+						? (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] ? calendarTree.getById(parentId) : folderTree.getById(parentId))
 						: searchTree.getById(parentId);
 			} else {
 				parent = folderTree.getById(parentId);

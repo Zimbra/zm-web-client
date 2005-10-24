@@ -52,7 +52,7 @@ function(appCtxt, name, parentFolderId) {
 	var folderNode = soapDoc.set("folder");
 	folderNode.setAttribute("name", name);
 	folderNode.setAttribute("l", parentFolderId);
-	folderNode.setAttribute("view", "appointment");
+	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]);
 
 	var appController = appCtxt.getAppController();
 	return appController.sendRequest(soapDoc, false);
@@ -67,7 +67,7 @@ function(parent, obj, tree, link) {
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];
-			if (folder.view == ZmItem.MSG_KEY[ZmItem.APPT]) {
+			if (folder.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) {
 				var childCalendar = ZmCalendar.createFromJs(calendar, folder, tree, false);
 				calendar.children.add(childCalendar);
 			}
@@ -76,7 +76,7 @@ function(parent, obj, tree, link) {
 	if (obj.link && obj.link.length) {
 		for (var i = 0; i < obj.link.length; i++) {
 			var link = obj.link[i];
-			if (link.view == ZmItem.MSG_KEY[ZmItem.APPT]) {
+			if (link.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) {
 				var childCalendar = ZmCalendar.createFromJs(calendar, link, tree, true);
 				calendar.children.add(childCalendar);
 			}
