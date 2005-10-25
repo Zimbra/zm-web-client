@@ -513,7 +513,7 @@ function(message, viewMode) {
 			this.notesTopPart.children.add(htmlPart);
 		} else {
 			this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-			this.notesTopPart.setContent(text);
+			this.notesTopPart.setContent(text.content);
 		}
 	}
 };
