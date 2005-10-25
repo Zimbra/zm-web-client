@@ -1517,3 +1517,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .OverviewTree {
 	margin-bottom: 10px;
 }
+
+.zimbraHide {
+	display: none;
+}
