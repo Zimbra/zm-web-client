@@ -1859,7 +1859,7 @@ function(ev) {
 
 ZmCalColView._apptMouseUpHdlr =
 function(ev) {
-//	DBG.println("ZmCalColView._sashMouseUpHdlr");
+	//DBG.println("ZmCalColView._apptMouseUpHdlr: "+ev.shiftKey);
 	var data = DwtMouseEventCapture.getTargetObj();
 	ZmCalColView._setApptOpacity(data.appt, data.apptEl);	
 	var mouseEv = DwtShell.mouseEvent;
@@ -1878,7 +1878,7 @@ function(ev) {
 			var errorCallback = new AjxCallback(null, ZmCalColView._handleError, data);
 			var sdOffset = data.startDate ? (data.startDate.getTime() - data.appt.getStartTime()) : null;
 			var edOffset = endDate ? (endDate.getTime() - data.appt.getEndTime() ) : null;		
-			cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback);
+			cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, ev);
 			//cc.dndUpdateApptDate(data.appt._orig, data.startDate, endDate, null, errorCallback);
 		} else {
 			ZmCalColView._restoreLayout(data);
@@ -2033,7 +2033,7 @@ function(ev) {
 		var errorCallback = new AjxCallback(null, ZmCalColView._handleError, data);
 		var sdOffset = startDate ? (startDate.getTime() - data.appt.getStartTime()) : null;
 		var edOffset = endDate ? (endDate.getTime() - data.appt.getEndTime()) : null;		
-		cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback);
+		cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, ev);
 	}
 }
 

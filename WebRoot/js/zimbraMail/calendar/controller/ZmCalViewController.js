@@ -683,7 +683,7 @@ function(args) {
 * TODO: change this to work with _handleException, and take callback so view can restore appt location/size on failure
 */
 ZmCalViewController.prototype.dndUpdateApptDate =
-function(appt, startDateOffset, endDateOffset, callback, errorCallback) {
+function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {
 /*	
 	var viewMode = !appt.isRecurring() 
 		? ZmAppt.MODE_EDIT 
@@ -697,8 +697,14 @@ function(appt, startDateOffset, endDateOffset, callback, errorCallback) {
 		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDateOffset, endDateOffset, callback]);
 		appt.getDetails(viewMode, respCallback, errorCallback);
 	} else {
-		this._updateApptDateState = {appt:appt, startDateOffset: startDateOffset, endDateOffset: endDateOffset, callback: callback, errorCallback: errorCallback };
-		this._showTypeDialog(ZmAppt.MODE_DRAG_OR_SASH, appt);;
+		if (ev.shiftKey || ev.altKey) {
+			var viewMode = ev.altKey ? ZmAppt.MODE_EDIT_SERIES : ZmAppt.MODE_EDIT_SINGLE_INSTANCE;
+			var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDateOffset, endDateOffset, callback]);
+			appt.getDetails(viewMode, respCallback, errorCallback);
+		} else {
+			this._updateApptDateState = {appt:appt, startDateOffset: startDateOffset, endDateOffset: endDateOffset, callback: callback, errorCallback: errorCallback };
+			this._showTypeDialog(ZmAppt.MODE_DRAG_OR_SASH, appt);;
+		}
 	}
 
 }
