@@ -565,6 +565,7 @@ function(mode, appt) {
 	if (this._typeDialog == null) {
 		this._typeDialog = new ZmApptTypeDialog(this._shell);
 		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener));
+		this._typeDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._typeCancelListener));
 		this._typeDialog._disableFFhack();
 	}
 	this._typeDialog.initialize(mode, appt);
@@ -655,6 +656,14 @@ function(ev) {
 	} else {
 		var mode = this._typeDialog.isInstance() ? ZmAppt.MODE_EDIT_SINGLE_INSTANCE : ZmAppt.MODE_EDIT_SERIES;
 		this.editAppointment(appt, mode);
+	}
+};
+
+ZmCalViewController.prototype._typeCancelListener = 
+function(ev) {
+	if (this._typeDialog.getApptMode() == ZmAppt.MODE_DRAG_OR_SASH) {
+		// we cancel the drag/sash, refresh view
+		this._refreshAction(true);
 	}
 };
 
