@@ -24,21 +24,21 @@
  */
 
 function ZmURLObjectHandler(appCtxt) {
-
 	ZmObjectHandler.call(this, appCtxt, ZmURLObjectHandler.TYPE);
-};
+}
 
 ZmURLObjectHandler.prototype = new ZmObjectHandler;
 ZmURLObjectHandler.prototype.constructor = ZmURLObjectHandler;
 
 ZmURLObjectHandler.TYPE = "url";
 ZmURLObjectHandler.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/ig;
+ZmURLObjectHandler.THUMB_URL = "http://pthumbnails.alexa.com/image_server.cgi?id=" + document.domain + "&url=";
 
 ZmURLObjectHandler.prototype.match =
 function(line, startIndex) {
 	ZmURLObjectHandler.URL_RE.lastIndex = startIndex;
 	var m = ZmURLObjectHandler.URL_RE.exec(line);
-	if (m == null) return null;
+	if (!m) {return null;}
 	
 	var last = m[0].charAt(m[0].length-1);
 	if (last == '.' || last == ",") {
@@ -62,11 +62,17 @@ function(html, idx, url) {
 	
 ZmURLObjectHandler.prototype.getToolTipText =
 function(url, context) {
-	var escapedUrl = url.replace(/\"/g, '\"');
-	if (escapedUrl.substr(0,4) == 'www.') {
-		escapedUrl = "http://"+escapedUrl+"/";
-	}
-	return '<div id="thumb" style="width: 205px; height: 150px"><img src="http://pthumbnails.alexa.com/image_server.cgi?id=' + document.domain + '&url=' + escapedUrl + '"/></div>';
+	// Pre-load the image
+	(new Image()).src =  ZmURLObjectHandler.THUMB_URL + url;
+	return '<div id="alexa_thumb" style="width: 205px; height: 150px; visibility: hidden;"> </div>';
+};
+
+ZmURLObjectHandler.prototype.populateToolTip =
+function(url, context) {
+	// Add image and show the div
+	var div = document.getElementById("alexa_thumb");
+	div.innerHTML = '<img src="' + ZmURLObjectHandler.THUMB_URL + url + '"/>';
+	div.style.visibility = "visible";
 };
 
 ZmURLObjectHandler.prototype.getActionMenu =
