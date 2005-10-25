@@ -1,6 +1,7 @@
 .TextSpellChecker { /* try to be as close as possible to the textarea */
+  background-color: #f8f8ff;
   position: relative;
-  border: 1px solid ButtonShadow;
+  border: 1px solid #000;
   padding: 2px 1px;
 }
 .SpellCheckInputField {
