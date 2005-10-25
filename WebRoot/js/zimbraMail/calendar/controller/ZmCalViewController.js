@@ -236,6 +236,10 @@ function(ev) {
 ZmCalViewController.prototype._calTreeChangeListener =
 function(ev) {
 	// TODO: check only for color/name changes?
+	if (ev.event == ZmEvent.E_DELETE) {
+		// TODO: diff between new and old...
+		this._checkedCalendars = this._updateCheckedCalendars();
+	}
 	this._refreshAction(true);
 }
 
