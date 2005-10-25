@@ -102,11 +102,13 @@ function(event) {
 
 	// add remote appointments
 	if (!msg && this._remoteCheckboxEl.checked) {
+		var url = AjxStringUtil.trim(this._urlInputEl.value);
+		if (url) url = url.replace(/^webcal/i, "http");
 		var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
 		var actionNode = soapDoc.set("action");
 		actionNode.setAttribute("op", "urlRefresh");
 		actionNode.setAttribute("id", calendarId);
-		actionNode.setAttribute("url", AjxStringUtil.trim(this._urlInputEl.value));
+		actionNode.setAttribute("url", url);
 		
 		var appCtlr = this._appCtxt.getAppController();
 		appCtlr.sendRequest(soapDoc, true);
