@@ -67,6 +67,7 @@ function() {
 
 ZmHtmlEditor.prototype.setMode =
 function(mode, convert) {
+	this.discardMisspelledWords();
 	DwtHtmlEditor.prototype.setMode.call(this, mode, convert);
 
 	// show/hide toolbars based on mode
@@ -108,39 +109,55 @@ ZmHtmlEditor.prototype.getContent = function() {
 ZmHtmlEditor.prototype.discardMisspelledWords = function() {
 	if (!this._spellCheck)
 		return;
-	var doc = this._getIframeDoc(),
-		spanIds = this._spellCheck.spanIds,
+	var doc, spanIds = this._spellCheck.spanIds,
 		i, span, p;
-	doc.body.style.display = "none";
-	for (i in spanIds) {
-		span = doc.getElementById(i);
-		if (!span)
-			continue;
-		p = span.parentNode;
-		while (span.firstChild)
-			p.insertBefore(span.firstChild, span);
-		p.removeChild(span);
+	if (this._mode == DwtHtmlEditor.HTML) {
+		doc = this._getIframeDoc();
+		doc.body.style.display = "none";
+		for (i in spanIds) {
+			span = doc.getElementById(i);
+			if (!span)
+				continue;
+			p = span.parentNode;
+			while (span.firstChild)
+				p.insertBefore(span.firstChild, span);
+			p.removeChild(span);
+		}
+		if (!AjxEnv.isIE)
+			// IE crashes here.
+			doc.body.normalize();
+		else
+			doc.body.innerHTML = doc.body.innerHTML;
+		// remove the spell check styles
+		p = doc.getElementById("ZM-SPELLCHECK-STYLE");
+		if (p)
+			p.parentNode.removeChild(p);
+		doc.body.style.display = "";
+	} else if (this._spellCheckDivId != null) {
+		var div = this.getElementById(this._spellCheckDivId);
+		var scrollTop = div.scrollTop;
+		var textArea = this.getElementById(this._textAreaId);
+		textArea.value = AjxUtil.getInnerText(div);
+		// avoid mem. leaks, hopefully
+		div.onclick = null;
+		div.onmousedown = null;
+		div.parentNode.removeChild(div);
+		textArea.style.display = "";
+		textArea.scrollTop = scrollTop;
 	}
-	if (!AjxEnv.isIE)
-		// IE crashes here.
-		doc.body.normalize();
+	this._spellCheckDivId = null;
 	this._spellCheck = null;
 	window.status = "";
-	// remove the spell check styles
-	p = doc.getElementById("ZM-SPELLCHECK-STYLE");
-	if (p)
-		p.parentNode.removeChild(p);
-	doc.body.style.display = "";
+	if (this.onExitSpellChecker)
+		this.onExitSpellChecker.run();
 };
 
 ZmHtmlEditor.prototype.highlightMisspelledWords = function(words) {
 	this.discardMisspelledWords();
 
-	var word, i, style,
+	var word, i, style, doc, body, self = this,
 		spanIds     = {},
 		wordIds     = {},
-		doc         = this._getIframeDoc(),
-		body        = doc.body,
 		regexp      = [ "\\b(" ],
 		suggestions = {};
 
@@ -159,91 +176,137 @@ ZmHtmlEditor.prototype.highlightMisspelledWords = function(words) {
 	regexp.push(")\\b");
 	regexp = new RegExp(regexp.join(""), "gm");
 
-	// load the spell check styles, if not already there.
-	style = doc.getElementById("ZM-SPELLCHECK-STYLE");
-	if (!style) {
-		style = doc.createElement("link");
-		style.id = "ZM-SPELLCHECK-STYLE";
-		style.rel = "stylesheet";
-		style.type = "text/css";
-		style.href = "/zimbra/js/zimbraMail/config/style/spellcheck.css";
-		var head = doc.getElementsByTagName("head")[0];
-		if (!head) {
-			head = doc.createElement("head");
-			doc.documentElement.insertBefore(head, doc.documentElement.firstChild);
-		}
-		head.appendChild(style);
-	}
+	function hiliteWords(text, textWhiteSpace) {
+		text = textWhiteSpace
+			? AjxStringUtil.convertToHtml(text)
+			: AjxStringUtil.htmlEncode(text);
+		return text.replace(regexp, function(str, word) {
+			// return suggestions[word];
+			var id = Dwt.getNextId();
+			spanIds[id] = word;
+			if (!wordIds[word])
+				wordIds[word] = [];
+			wordIds[word].push(id);
+			return [ '<span word="',
+				 word, '" id="', id, '" class="ZM-SPELLCHECK-MISSPELLED">',
+				 word, '</span>'].join("");
+		});
+	};
 
-	// having the data, this function will parse the DOM and replace
-	// occurrences of the misspelled words with <span
-	// class="ZM-SPELLCHECK-MISSPELLED">word</span>
-	function rec(node) {
-		switch (node.nodeType) {
-		    case 1: /* ELEMENT */
-			for (var i = node.firstChild; i; i = rec(i));
-			node = node.nextSibling;
-			break;
-		    case 3: /* TEXT */
-			if (!/\S/.test(node.data)) {
+	if (this._mode == DwtHtmlEditor.HTML) {
+		// HTML mode; See the "else" branch for the TEXT mode--code
+		// differs quite a lot.  We should probably implement separate
+		// functions as this already becomes long.
+
+		doc = this._getIframeDoc();
+		body = doc.body;
+
+		// load the spell check styles, if not already there.
+		style = doc.getElementById("ZM-SPELLCHECK-STYLE");
+		if (!style) {
+			style = doc.createElement("link");
+			style.id = "ZM-SPELLCHECK-STYLE";
+			style.rel = "stylesheet";
+			style.type = "text/css";
+			style.href = "/zimbra/js/zimbraMail/config/style/spellcheck.css";
+			var head = doc.getElementsByTagName("head")[0];
+			if (!head) {
+				head = doc.createElement("head");
+				doc.documentElement.insertBefore(head, doc.documentElement.firstChild);
+			}
+			head.appendChild(style);
+		}
+
+		// having the data, this function will parse the DOM and replace
+		// occurrences of the misspelled words with <span
+		// class="ZM-SPELLCHECK-MISSPELLED">word</span>
+		function rec(node) {
+			switch (node.nodeType) {
+			    case 1: /* ELEMENT */
+				for (var i = node.firstChild; i; i = rec(i));
 				node = node.nextSibling;
 				break;
-			}
-			// for correct handling of whitespace we should
-			// not mess ourselves with leading/trailing
-			// whitespace, thus we save it in 2 text nodes.
-			var a = null, b = null;
-			if (/^[\s\xA0]+/.test(node.data)) {
-				// a will contain the leading space
-				a = node;
-				node = node.splitText(RegExp.lastMatch.length);
-			}
-			if (/[\s\xA0]+$/.test(node.data)) {
-				// and b will contain the trailing space
-				b = node.splitText(RegExp.lastMatch.length);
-			}
+			    case 3: /* TEXT */
+				if (!/\S/.test(node.data)) {
+					node = node.nextSibling;
+					break;
+				}
+				// for correct handling of whitespace we should
+				// not mess ourselves with leading/trailing
+				// whitespace, thus we save it in 2 text nodes.
+				var a = null, b = null;
+				if (/^[\s\xA0]+/.test(node.data)) {
+					// a will contain the leading space
+					a = node;
+					node = node.splitText(RegExp.lastMatch.length);
+				}
+				if (/[\s\xA0]+$/.test(node.data)) {
+					// and b will contain the trailing space
+					b = node.splitText(RegExp.lastMatch.length);
+				}
 
-			// FIXME: I feel so sorry for Safari!
-			var text = AjxStringUtil.htmlEncode(node.data);
-			text = text.replace(regexp, function(str, word) {
-				// return suggestions[word];
-				var id = Dwt.getNextId();
-				spanIds[id] = word;
-				if (!wordIds[word])
-					wordIds[word] = [];
-				wordIds[word].push(id);
-				return '<span word="' + word + '" id="' + id + '" class="ZM-SPELLCHECK-MISSPELLED">' + word + '</span>';
-			});
-			text = text.replace(/^ +/, "&nbsp;").replace(/ +$/, "&nbsp;");
-			var div = doc.createElement("div");
-			div.innerHTML = text;
+				var text = hiliteWords(node.data, false);
+				text = text.replace(/^ +/, "&nbsp;").replace(/ +$/, "&nbsp;");
+				var div = doc.createElement("div");
+				div.innerHTML = text;
 
-			// restore whitespace now
-			if (a)
-				div.insertBefore(a, div.firstChild);
-			if (b)
-				div.appendChild(b);
+				// restore whitespace now
+				if (a)
+					div.insertBefore(a, div.firstChild);
+				if (b)
+					div.appendChild(b);
 
-			var p = node.parentNode;
-			while (div.firstChild)
-				p.insertBefore(div.firstChild, node);
-			div = node.nextSibling;
-			p.removeChild(node);
-			node = div;
-			break;
-		    default :
-			node = node.nextSibling;
+				var p = node.parentNode;
+				while (div.firstChild)
+					p.insertBefore(div.firstChild, node);
+				div = node.nextSibling;
+				p.removeChild(node);
+				node = div;
+				break;
+			    default :
+				node = node.nextSibling;
+			}
+			return node;
+		};
+		body.style.display = "none"; // seems to have a good impact on speed,
+		// since we may modify a lot of the DOM
+		if (!AjxEnv.isIE)
+			body.normalize();
+		else
+			body.innerHTML = body.innerHTML;
+		rec(body);
+		if (!AjxEnv.isIE)
+			body.normalize();
+		else
+			body.innerHTML = body.innerHTML;
+		body.style.display = ""; // redisplay the body
+
+	} else { // TEXT mode
+
+		doc = this.getDocument();
+		var textArea = this.getElementById(this._textAreaId);
+		var scrollTop = textArea.scrollTop;
+		var size = Dwt.getSize(textArea);
+		textArea.style.display = "none";
+		var div = doc.createElement("div");
+		div.className = "TextSpellChecker";
+		this._spellCheckDivId = div.id = Dwt.getNextId();
+		div.style.overflow = "auto";
+		if (!AjxEnv.isIE) {
+			// FIXME: we substract borders/padding here.  this sucks.
+			size.x -= 4;
+			size.y -= 6;
 		}
-		return node;
-	};
-	body.style.display = "none"; // seems to have a good impact on speed,
-	                             // since we may modify a lot of the DOM
-	if (!AjxEnv.isIE)
-		body.normalize();
-	rec(body);
-	if (!AjxEnv.isIE)
-		body.normalize();
-	body.style.display = ""; // redisplay the body
+		div.style.width = size.x + "px";
+		div.style.height = size.y + "px";
+
+		var text = hiliteWords(this.getTextVersion(), true);
+		div.innerHTML = text;
+
+		textArea.parentNode.insertBefore(div, textArea);
+		div.scrollTop = scrollTop;
+		div.onclick = function(ev) { self._handleSpellCheckerEvents(ev || window.event); };
+	}
 
 	// save the spell checker context
 	this._spellCheck = { suggestions : suggestions,
@@ -252,31 +315,93 @@ ZmHtmlEditor.prototype.highlightMisspelledWords = function(words) {
 };
 
 ZmHtmlEditor.prototype._spellCheckSuggestionListener = function(ev) {
+	var self = this;
 	var item = ev.item;
 	var orig = item.getData("orig");
 	if (!orig)
 		return;
 	var val = item.getData("value");
-	var spans = item.getData("fixall")
-		? this._spellCheck.wordIds[orig]
-		: [ item.getData("spanId") ];
-	var doc = this._getIframeDoc();
-	for (var i = spans.length; --i >= 0;) {
-		var span = doc.getElementById(spans[i]);
-		if (span)
-			span.innerHTML = val;
-	}
+	var plainText = this._mode == DwtHtmlEditor.TEXT;
+	var fixall = item.getData("fixall");
+	var doc = plainText ? this.getDocument() : this._getIframeDoc();
+	var span = doc.getElementById(item.getData("spanId"));
+	function fix(val) {
+		var spans = fixall
+			? self._spellCheck.wordIds[orig]
+			: [ item.getData("spanId") ];
+		for (var i = spans.length; --i >= 0;) {
+			var span = doc.getElementById(spans[i]);
+			if (span)
+				span.innerHTML = val;
+		}
+	};
+	if (plainText && !val) {
+		function inputListener(ev) {
+			ev || (ev = window.event);
+			// the event gets lost after 20 milliseconds so we need
+			// to save the following :(
+			var evType = ev.type;
+			var evKeyCode = ev.keyCode;
+			var evCtrlKey = ev.ctrlKey;
+			var input = this;
+			setTimeout(function() {
+				var keyEvent = /key/.test(evType);
+				var removeInput = true;
+				if (/blur/.test(evType) || (keyEvent && evKeyCode == 13)) {
+					if (evCtrlKey)
+						fixall =! fixall;
+					fix(input.value);
+				} else if (keyEvent && evKeyCode == 27 /* ESC */) {
+					fix(AjxUtil.getInnerText(span));
+				} else {
+					removeInput = false;
+				}
+				if (removeInput) {
+					input.onblur = null;
+					input.onkeydown = null;
+					input.parentNode.removeChild(input);
+				}
+				self._handleSpellCheckerEvents(null);
+			}, 20);
+		};
+		// protect variables
+		(function() {
+			// edit clicked
+			var input = doc.createElement("input");
+			input.type = "text";
+			input.value = AjxUtil.getInnerText(span);
+			input.className = "SpellCheckInputField";
+			input.style.left = span.offsetLeft - 2 + "px";
+			input.style.top = span.offsetTop - 2 + "px";
+			input.style.width = span.offsetWidth + 4 + "px";
+			var div = self.getElementById(self._spellCheckDivId);
+			var scrollTop = div.scrollTop;
+			div.appendChild(input);
+			div.scrollTop = scrollTop; // this gets resetted when we add an input field (at least Gecko)
+			input.setAttribute("autocomplete", "off");
+			input.focus();
+			if (!AjxEnv.isGeckoBased)
+				input.select();
+			else
+				input.setSelectionRange(0, input.value.length);
+			input.onblur = inputListener;
+			input.onkeydown = inputListener;
+		})();
+	} else
+		fix(val);
 	this._handleSpellCheckerEvents(null);
 };
 
 ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
-	var p = this._getParentElement(), span, ids, i, suggestions,
+	var plainText = this._mode == DwtHtmlEditor.TEXT;
+	var p = plainText ? (ev ? DwtUiEvent.getTarget(ev) : null) : this._getParentElement(),
+		span, ids, i, suggestions,
 		self = this,
 		sc = this._spellCheck,
-		doc = this._getIframeDoc(),
+		doc = plainText ? this.getDocument() : this._getIframeDoc(),
 		modified = false,
 		word = "";
-	if (/^span$/i.test(p.tagName) && /ZM-SPELLCHECK/.test(p.className)) {
+	if (ev && /^span$/i.test(p.tagName) && /ZM-SPELLCHECK/.test(p.className)) {
 		// stuff.
 		word = p.getAttribute("word");
 		// FIXME: not sure this is OK.
@@ -319,8 +444,10 @@ ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
 		sc.menu = null;
 		window.status = "";
 	}
-	if (ev && word && ev.type == "mouseup" &&
-	    (suggestions = sc.suggestions[word]).length > 0) {
+	// but that's even uglier:
+	if (ev && word && (suggestions = sc.suggestions[word]) && suggestions.length > 0 &&
+	    (/mouseup/i.test(ev.type) || (plainText && /(click|mousedown)/i.test(ev.type))))
+	{
 		function makeMenu(fixall, parent) {
 			var menu = new ZmPopupMenu(parent), item;
 			if (modified) {
@@ -333,8 +460,19 @@ ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
 				item.addSelectionListener(self._spellCheckSuggestionListener);
-				menu.createSeparator();
 			}
+			if (plainText) {
+				// in plain text mode we want to be able to edit misspelled words
+				var txt = fixall ? "Edit all" : "Edit";
+				item = menu.createMenuItem("edit", null, "<b style='color: #d62'>" + txt + "</b>",
+							   null, true, null, null);
+				item.setData("fixall", fixall);
+				item.setData("orig", word);
+				item.setData("spanId", p.id);
+				item.addSelectionListener(self._spellCheckSuggestionListener);
+			}
+			if (modified || plainText)
+				menu.createSeparator();
 			for (var i = 0; i < suggestions.length; ++i) {
 				item = menu.createMenuItem("sug-" + fixall + "" + i,
 							   null, suggestions[i],
@@ -356,14 +494,21 @@ ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
 				 null, true, null, null);
 			item.setMenu(makeMenu(1, item));
 		}
-		var pos = Dwt.getLocation(this.getElementById(this._iFrameId));
-		var pos2 = Dwt.getLocation(p);
-		var ws = this.shell.getSize();
-		var ms = sc.menu.getSize();
-		pos.x += pos2.x
-			- (doc.documentElement.scrollLeft || doc.body.scrollLeft);
-		pos.y += pos2.y + p.offsetHeight
-			- (doc.documentElement.scrollTop || doc.body.scrollTop);
+		var pos, ms = sc.menu.getSize(), ws = this.shell.getSize();
+		if (!plainText) {
+			pos = Dwt.getLocation(this.getElementById(this._iFrameId));
+			var pos2 = Dwt.getLocation(p);
+			pos.x += pos2.x
+				- (doc.documentElement.scrollLeft || doc.body.scrollLeft);
+			pos.y += pos2.y
+				- (doc.documentElement.scrollTop || doc.body.scrollTop);
+		} else {
+			pos = Dwt.getLocation(p);
+			var div = this.getElementById(this._spellCheckDivId);
+			pos.x -= div.scrollLeft;
+			pos.y -= div.scrollTop;
+		}
+		pos.y += p.offsetHeight;
 		// let's make sure we look nice, shall we.
 		if (pos.y + ms.y > ws.y)
 			pos.y -= ms.y + p.offsetHeight;

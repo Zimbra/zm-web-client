@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.1
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.1 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite.
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -54,11 +54,11 @@ function() {
 
 // Public methods
 
-ZmComposeController.prototype.doAction = 
+ZmComposeController.prototype.doAction =
 function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText) {
 	if (inNewWindow) {
 		var newWin = this._appCtxt.getNewWindow();
-		
+
 		// this is how child window knows what to do once loading:
 		newWin.command = "compose";
 		newWin.args = [action, msg, toOverride, subjOverride, extraBodyText];
@@ -75,7 +75,7 @@ function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText) {
 ZmComposeController.prototype.detach =
 function() {
 	var newWin = this._appCtxt.getNewWindow();
-	
+
 	// this is how child window knows what to do once loading:
 	newWin.command = "composeDetach";
 
@@ -96,8 +96,8 @@ ZmComposeController.prototype.sendMsg =
 function(attId, isDraft, callback) {
 		var msg = this._composeView.getMsg(attId, isDraft);
 		if (!msg) return;
-		
-		var contactList = !isDraft 
+
+		var contactList = !isDraft
 			? this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList() : null;
 
 		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg, callback]);
@@ -111,14 +111,14 @@ function(args) {
 	var msg			= args[1];
 	var callback	= args[2];
 	var result		= args[3];
-	
+
 	var resp = result.getResponse();
 
 	if (!isDraft) {
 		if (resp || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
 			this._composeView.reset(false);
 			this._app.popView(true);
-				
+
 			// if the original message was a draft, we need to nuke it
 			var origMsg = msg._origMsg;
 			if (origMsg && origMsg.isDraft && origMsg.list) {
@@ -158,17 +158,17 @@ function(ex) {
 
 // Private methods
 
-ZmComposeController.prototype._deleteDraft = 
+ZmComposeController.prototype._deleteDraft =
 function(delMsg) {
 
 	var list = delMsg.list;
-	var mailItem = list && list.type == ZmItem.CONV 
+	var mailItem = list && list.type == ZmItem.CONV
 		? list.getById(delMsg.getConvId()) : delMsg;
 
 	if (mailItem) {
 		list.deleteItems(mailItem, true);
 	} else if (delMsg.id) {
-		// do a manual delete of the "virtual" conv/msg that was created but 
+		// do a manual delete of the "virtual" conv/msg that was created but
 		// never added to our internal list model
 		var soapDoc = AjxSoapDoc.create("MsgActionRequest", "urn:zimbraMail");
 		var actionNode = soapDoc.set("action");
@@ -183,20 +183,20 @@ function(delMsg) {
 	}
 }
 
-// Creates the compose view based on the mode we're in. Lazily creates the 
+// Creates the compose view based on the mode we're in. Lazily creates the
 // compose toolbar, a contact picker, and the compose view itself.
 ZmComposeController.prototype._setView =
 function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 
 	this._action = action;
-	
+
 	if (!this._toolbar)
 		this._createToolBar();
 	this._toolbar.enableAll(true);
 
 	var needPicker = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) || this._appCtxt.get(ZmSetting.GAL_ENABLED);
 	if (!this._contactPicker && needPicker) {
-		var buttonInfo = [ 
+		var buttonInfo = [
 			{ id: ZmEmailAddress.TO, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.TO] },
 			{ id: ZmEmailAddress.CC, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.CC] },
 			{ id: ZmEmailAddress.BCC, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.BCC] }];
@@ -214,8 +214,8 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
 	    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks);
 	}
-	
-	// if a compose mode is already supplied, set it	
+
+	// if a compose mode is already supplied, set it
 	if (composeMode) {
 		this._setFormatBtnItem(composeMode);
 	} else {
@@ -243,9 +243,9 @@ function() {
 	if (addSig) {
 		buttons.push(ZmOperation.ADD_SIGNATURE);
 	}
-	
+
 	buttons.push(ZmOperation.SPELL_CHECK);
-	
+
 	if (!this.isChildWindow) {
 		buttons.push(ZmOperation.SEP);
 		buttons.push(ZmOperation.DETACH_COMPOSE);
@@ -265,18 +265,18 @@ function() {
 		var formatButton = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 		var m = new DwtMenu(formatButton);
 		formatButton.setMenu(m);
-	
+
 		var mi = new DwtMenuItem(m, DwtMenuItem.RADIO_STYLE);
 		mi.setImage("HtmlDoc");
 		mi.setText(ZmMsg.htmlDocument);
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
 		mi.addSelectionListener(new AjxListener(this, this._formatListener));
-		
+
 		mi = new DwtMenuItem(m, DwtMenuItem.RADIO_STYLE);
 		mi.setImage("GenericDoc");
 		mi.setText(ZmMsg.plainText);
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
-		mi.addSelectionListener(new AjxListener(this, this._formatListener));	
+		mi.addSelectionListener(new AjxListener(this, this._formatListener));
 	}
 
 	if (!this.isChildWindow)
@@ -287,41 +287,41 @@ function() {
 
 	if (addSig)
 	  	this._toolbar.addSelectionListener(ZmOperation.ADD_SIGNATURE, new AjxListener(this, this._addSignatureListener));
-	  
+
 	  this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
 }
 
-ZmComposeController.prototype._setComposeMode = 
+ZmComposeController.prototype._setComposeMode =
 function(msg) {
 	// depending on COS/user preference set compose format
 	var composeMode = DwtHtmlEditor.TEXT;
-	
+
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		var bComposeSameFormat = this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
 		var bComposeAsFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
-		
-		if (this._action == ZmOperation.REPLY || 
-			this._action == ZmOperation.REPLY_ALL || 
-			this._action == ZmOperation.FORWARD) 
+
+		if (this._action == ZmOperation.REPLY ||
+			this._action == ZmOperation.REPLY_ALL ||
+			this._action == ZmOperation.FORWARD)
 		{
 			if ((!bComposeSameFormat && bComposeAsFormat == ZmSetting.COMPOSE_HTML) ||
 			    (bComposeSameFormat && msg.isHtmlMail()))
 			{
 				composeMode = DwtHtmlEditor.HTML;
 			}
-		} 
-		else if (this._action == ZmOperation.NEW_MESSAGE) 
+		}
+		else if (this._action == ZmOperation.NEW_MESSAGE)
 		{
 			if (bComposeAsFormat == ZmSetting.COMPOSE_HTML)
 				composeMode = DwtHtmlEditor.HTML;
-		} 
-		else if (this._action == ZmOperation.DRAFT) 
+		}
+		else if (this._action == ZmOperation.DRAFT)
 		{
 			if (msg.isHtmlMail())
 				composeMode = DwtHtmlEditor.HTML;
 		}
 	}
-	
+
 	this._composeView.setComposeMode(composeMode);
 
 	// dont forget to set the checked format type per compose mode
@@ -329,7 +329,7 @@ function(msg) {
 }
 
 // sets the check mark for the appropriate menu item depending on the compose mode
-ZmComposeController.prototype._setFormatBtnItem = 
+ZmComposeController.prototype._setFormatBtnItem =
 function(composeMode) {
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
@@ -349,7 +349,7 @@ function(ev) {
 // Cancel button was pressed
 ZmComposeController.prototype._cancelListener =
 function(ev) {
-	
+
 	var dirty = this._composeView.isDirty();
 	if (!dirty) {
 		this._composeView.reset(true);
@@ -365,7 +365,7 @@ ZmComposeController.prototype._attachmentListener =
 function(ev) {
 
 	if (!this._detachOkCancel) {
-		// detach ok/cancel dialog is only necessary if user clicked on the add attachments button	
+		// detach ok/cancel dialog is only necessary if user clicked on the add attachments button
 		this._detachOkCancel = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
 		this._detachOkCancel.setMessage(ZmMsg.detachAnyway, DwtMessageDialog.WARNING_STYLE);
 		this._detachOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._detachCallback, this);
@@ -374,16 +374,16 @@ function(ev) {
 	this._composeView.addAttachmentField();
 }
 
-ZmComposeController.prototype._formatListener = 
+ZmComposeController.prototype._formatListener =
 function(ev) {
 
-	if (!ev.item.getChecked()) 
+	if (!ev.item.getChecked())
 		return;
-	
+
 	var mode = ev.item.getData(ZmHtmlEditor._VALUE);
 	if (mode == this._composeView.getComposeMode())
 		return;
-	
+
 	if (mode == DwtHtmlEditor.TEXT) {
 		// if formatting from html to text, confirm w/ user!
 		if (!this._textModeOkCancel) {
@@ -398,13 +398,13 @@ function(ev) {
 	}
 }
 
-ZmComposeController.prototype._textModeOkCallback = 
+ZmComposeController.prototype._textModeOkCallback =
 function(ev) {
 	this._textModeOkCancel.popdown();
 	this._composeView.setComposeMode(DwtHtmlEditor.TEXT);
 }
 
-ZmComposeController.prototype._textModeCancelCallback = 
+ZmComposeController.prototype._textModeCancelCallback =
 function(ev) {
 	this._textModeOkCancel.popdown();
 	// reset the radio button for the format button menu
@@ -413,13 +413,13 @@ function(ev) {
 	this._composeView.reEnableDesignMode();
 }
 
-ZmComposeController.prototype._draftSavedCallback = 
+ZmComposeController.prototype._draftSavedCallback =
 function(ev) {
 	this._draftSavedDialog.popdown();
 	this._composeView.reEnableDesignMode();
 }
 
-ZmComposeController.prototype._detachListener = 
+ZmComposeController.prototype._detachListener =
 function(ev) {
 	var atts = this._composeView.getAttFieldValues();
 	if (atts.length) {
@@ -431,7 +431,7 @@ function(ev) {
 	}
 }
 
-ZmComposeController.prototype._detachCallback = 
+ZmComposeController.prototype._detachCallback =
 function() {
 	this._detachOkCancel.popdown();
 	this.detach();
@@ -456,6 +456,11 @@ function(ev) {
 	this._composeView.addSignature();
 }
 
+ZmComposeController.prototype._resetSpellCheckButton = function() {
+	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
+	spellCheckButton.setToggled(false);
+};
+
 ZmComposeController.prototype._spellCheckCallback = function(args) {
 	if (args._isException)
 		throw args;
@@ -464,21 +469,19 @@ ZmComposeController.prototype._spellCheckCallback = function(args) {
 		throw new AjxException("Server-side spell checker is not available.");
 	words = words.misspelled;
 	if (!words || words.length == 0) {
-		// alert("Spell checking didn't found any misspelled words.");
-		var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
-		spellCheckButton.setToggled(false);
-	} else
-		this._composeView.getHtmlEditor().highlightMisspelledWords(words);
+		// alert("Spell checking didn't find any misspelled words.");
+		this._resetSpellCheckButton();
+	} else {
+		var editor = this._composeView.getHtmlEditor();
+		if (!editor.onExitSpellChecker)
+			editor.onExitSpellChecker = new AjxCallback(this, this._resetSpellCheckButton);
+		editor.highlightMisspelledWords(words);
+	}
 };
 
 ZmComposeController.prototype._spellCheckListener = function(ev) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	if (spellCheckButton.isToggled()) {
-		if (this._composeView.getComposeMode() == DwtHtmlEditor.TEXT) {
-			alert("Spell Checking is not yet implemented for text emails.  Please switch to HTML first.");
-			spellCheckButton.setToggled(false);
-			return;
-		}
 		var text = this._composeView.getHtmlEditor().getTextVersion();
 		var soap = AjxSoapDoc.create("CheckSpellingRequest", "urn:zimbraMail");
 		soap.getMethod().appendChild(soap.getDoc().createTextNode(text));
@@ -493,7 +496,7 @@ ZmComposeController.prototype._spellCheckListener = function(ev) {
 ZmComposeController.prototype._settingsChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
-	
+
 	var setting = ev.source;
 	if (setting.id != ZmSetting.SIGNATURE_ENABLED && setting.id != ZmSetting.SIGNATURE) return;
 
@@ -525,7 +528,7 @@ function(args) {
 	this._composeView.reEnableDesignMode();
 }
 
-ZmComposeController.prototype._contactPickerCancel = 
+ZmComposeController.prototype._contactPickerCancel =
 function(args) {
 	this._composeView.enableInputs(true);
 	this._composeView.reEnableDesignMode();

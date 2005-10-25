@@ -1,3 +1,17 @@
-.ZM-SPELLCHECK-MISSPELLED { border-bottom: 1px dashed #f88; background: #fc8; }
-.ZM-SPELLCHECK-MISSPELLED2 { border-bottom: 1px dashed red; background: #ff0; z-index: 10; }
-.ZM-SPELLCHECK-FIXED { background: #cfa; border-bottom: 1px dashed green; }
+.TextSpellChecker { /* try to be as close as possible to the textarea */
+  position: relative;
+  border: 1px solid ButtonShadow;
+  padding: 2px 1px;
+}
+.SpellCheckInputField {
+  border: 1px solid #c00;
+  background-color: #fff;
+  padding: 1px;
+  font: 10pt monospace;
+  position: absolute;
+}
+.TextSpellChecker, .TextSpellChecker * { font: 10pt monospace; }
+.ZM-SPELLCHECK-MISSPELLED { border-bottom: 1px dashed #f88; background: #fc8; cursor: help; }
+.ZM-SPELLCHECK-MISSPELLED2 { border-bottom: 1px dashed red; background: #ff0; z-index: 10; cursor: help; }
+.ZM-SPELLCHECK-FIXED { background: #cfa; border-bottom: 1px dashed green; cursor: help; }
+.ZM-SPELLCHECK-INPROGRESS { background: #caf; cursor: help; }
