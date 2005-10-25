@@ -34,3 +34,7 @@ body.MsgBody { padding: 10px; }
 .MsgBody .QuotedText0 { color: purple; }
 .MsgBody .QuotedText1 { color: green; }
 .MsgBody .QuotedText2 { color: red; }
+
+.zimbraHide {
+	display: none;
+}
