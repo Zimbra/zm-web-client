@@ -575,8 +575,13 @@ ZmMailMsgView.prototype._makeIframeProxy = function(container, html, isTextMsg) 
 	}
 
 	// pass essential styles to avoid padding/font flickering
-	var inner_styles =
-		".MsgBody-text, .MsgBody-text * { font: 10pt monospace; } body.MsgBody { padding: 10px; }";
+	var inner_styles = [ ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }",
+			     "body.MsgBody { padding: 10px; }",
+			     ".MsgHeader .Object { white-space: nowrap; }",
+			     ".Object a:link, .Object a:active, .Object a:visited { text-decoration: none; }",
+			     ".Object a:hover { text-decoration: underline; }",
+			     ".Object-activated { text-decoration:underline; }"
+		].join(" ");
 	var ifw = new DwtIframe(this, "MsgBody", true, html, inner_styles, false, "static", callback);
 	this._iframeId = ifw.getIframe().id;
 
