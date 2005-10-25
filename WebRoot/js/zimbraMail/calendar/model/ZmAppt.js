@@ -64,37 +64,37 @@ ZmAppt.prototype.constructor = ZmAppt;
 
 // Consts
 
-ZmAppt.MODE_NEW 					= 1;
-ZmAppt.MODE_EDIT 				= 2;
-ZmAppt.MODE_EDIT_SINGLE_INSTANCE 	= 3;
-ZmAppt.MODE_EDIT_SERIES 			= 4;
-ZmAppt.MODE_DELETE 				= 5;
-ZmAppt.MODE_DELETE_INSTANCE 		= 6;
-ZmAppt.MODE_DELETE_SERIES 			= 7;
-ZmAppt.MODE_DRAG_OR_SASH 			= 8;
+ZmAppt.MODE_NEW						= 1;
+ZmAppt.MODE_EDIT					= 2;
+ZmAppt.MODE_EDIT_SINGLE_INSTANCE	= 3;
+ZmAppt.MODE_EDIT_SERIES				= 4;
+ZmAppt.MODE_DELETE					= 5;
+ZmAppt.MODE_DELETE_INSTANCE			= 6;
+ZmAppt.MODE_DELETE_SERIES			= 7;
+ZmAppt.MODE_DRAG_OR_SASH			= 8;
 
-ZmAppt.EDIT_NO_REPEAT 				= 1;
-ZmAppt.EDIT_TIME 					= 2;
-ZmAppt.EDIT_TIME_REPEAT 			= 3;
+ZmAppt.EDIT_NO_REPEAT				= 1;
+ZmAppt.EDIT_TIME					= 2;
+ZmAppt.EDIT_TIME_REPEAT				= 3;
 
-ZmAppt.SOAP_METHOD_REQUEST 			= 1;
-ZmAppt.SOAP_METHOD_REPLY 			= 2;
-ZmAppt.SOAP_METHOD_CANCEL 			= 3;
+ZmAppt.SOAP_METHOD_REQUEST			= 1;
+ZmAppt.SOAP_METHOD_REPLY			= 2;
+ZmAppt.SOAP_METHOD_CANCEL			= 3;
 
-ZmAppt.ATTENDEES_SEPARATOR_REGEX 	= /[;,]/;
+ZmAppt.ATTENDEES_SEPARATOR_REGEX	= /[;,]/;
 ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE= "; ";
 
-ZmAppt.STATUS_TENTATIVE 			= "TENT";
-ZmAppt.STATUS_CONFIRMED 			= "CONF";
-ZmAppt.STATUS_CANCELLED 			= "CANC";
+ZmAppt.STATUS_TENTATIVE				= "TENT";
+ZmAppt.STATUS_CONFIRMED				= "CONF";
+ZmAppt.STATUS_CANCELLED				= "CANC";
 
-ZmAppt.PSTATUS_NEEDS_ACTION 		= "NE";
-ZmAppt.PSTATUS_TENTATIVE 			= "TE";
-ZmAppt.PSTATUS_ACCEPT 				= "AC";
-ZmAppt.PSTATUS_DECLINED 			= "DE";
-ZmAppt.PSTATUS_DELEGATED 			= "DG";
+ZmAppt.PSTATUS_NEEDS_ACTION			= "NE";
+ZmAppt.PSTATUS_TENTATIVE			= "TE";
+ZmAppt.PSTATUS_ACCEPT				= "AC";
+ZmAppt.PSTATUS_DECLINED				= "DE";
+ZmAppt.PSTATUS_DELEGATED			= "DG";
 
-ZmAppt.MODIFIED 					= "[MODIFIED]";
+ZmAppt.MODIFIED						= "[MODIFIED]";
 
 ZmAppt.SERVER_DAYS_TO_DISPLAY = {
 	SU: "Sunday",
@@ -113,9 +113,9 @@ ZmAppt.MONTHLY_DAY_OPTIONS = [
 	{ label: AjxMsg.fourth, 		value: "4", 		selected: false },
 	{ label: AjxMsg.last, 			value: "-1", 		selected: false }];
 
-ZmAppt.SERVER_WEEK_DAYS = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
-ZmAppt.NOTES_SEPARATOR = "\n\n*~*~*~*~*~*~*~*~*~*\n\n";
-ZmAppt.NOTES_SEPARATOR_REGEX = /\s*\*~\*~\*~\*~\*~\*~\*~\*~\*~\*\s*/;
+ZmAppt.SERVER_WEEK_DAYS				= ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
+ZmAppt.NOTES_SEPARATOR				= "\n\n*~*~*~*~*~*~*~*~*~*\n\n";
+ZmAppt.NOTES_SEPARATOR_REGEX		= /\s*\*~\*~\*~\*~\*~\*~\*~\*~\*~\*\s*/;
 
 ZmAppt._statusString = {
 	TE:   ZmMsg.tentative,

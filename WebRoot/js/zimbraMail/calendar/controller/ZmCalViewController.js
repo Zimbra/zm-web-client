@@ -492,14 +492,14 @@ function(ev) {
 ZmCalViewController.prototype._newApptObject = 
 function(startDate, duration, folderId) {
 	var newAppt = new ZmAppt(this._appCtxt);
-	newAppt.name = ZmMsg.newAppt;
 	newAppt.setStartDate(AjxDateUtil.roundTimeMins(startDate, 30));
 	newAppt.setEndDate(newAppt.getStartTime() + (duration ? duration : ZmCalViewController.DEFAULT_APPOINTMENT_DURATION));
 	newAppt.resetRepeatWeeklyDays();
 	newAppt.resetRepeatMonthlyDayList();
 	newAppt.repeatYearlyMonthsList = startDate.getMonth();
 	newAppt.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[startDate.getDay()];	
-	if (folderId) newAppt.setFolderId(folderId);
+	if (folderId)
+		newAppt.setFolderId(folderId);
 	return newAppt;
 }
 
