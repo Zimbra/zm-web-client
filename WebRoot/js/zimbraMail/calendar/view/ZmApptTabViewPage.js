@@ -20,6 +20,7 @@ function ZmApptTabViewPage(parent, appCtxt) {
 	this._composeMode = this._defaultComposeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	this._supportTimeZones = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
+	this._repeatSelectDisabled = false;
 
 	this._attachCount = 0;
 };
@@ -134,7 +135,7 @@ function(appt, mode) {
 		this.setComposeMode();
 	}
 
-	this._reset(appt);
+	this._reset(appt, mode);
 
 	// save the original form data in its initialized state
 	this._origFormValue = this._formValue();
@@ -383,7 +384,7 @@ function() {
 // Private / protected methods
 
 ZmApptTabViewPage.prototype._reset = 
-function(appt) {
+function(appt, mode) {
 	// reset the date/time values based on current time
 	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getStartDate());
 	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getEndDate());
@@ -400,12 +401,14 @@ function(appt) {
 	this.enableInputs(true);
 
 	// if not creating new appt, pre-populate from given appt	
-	if (this._mode != ZmAppt.MODE_NEW) {
+	if (mode != ZmAppt.MODE_NEW) {
 		this._populateForEdit(appt);
 	} else {
 		// reset compose view to html preference
 		this.setComposeMode(this._defaultComposeMode);
 	}
+	// disable the recurrence select object for editing single instance
+	this._enableRepeat(mode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
 	
 	// set focus to first input element
 	this._subjectField.focus();
@@ -478,6 +481,19 @@ function(appt) {
 	}
 };
 
+ZmApptTabViewPage.prototype._enableRepeat = 
+function(enable) {
+	if (enable) {
+		this._repeatSelect.enable();
+		this._repeatDescField.style.color = "#0000FF";
+	}  else {
+		this._repeatSelect.disable();
+		this._repeatDescField.style.color = "#999999";
+	}
+	this._repeatSelectDisabled = !enable;
+	this._repeatSelect.setAlign(DwtLabel.ALIGN_LEFT); // XXX: hack b/c bug w/ DwtSelect
+};
+
 ZmApptTabViewPage.prototype._createHTML = 
 function() {
 	this._calcTimeOptions();
@@ -491,6 +507,7 @@ function() {
 	// add event listeners where necessary
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmApptTabViewPage._onMouseOver);
 	this._allDayCheckbox._tabViewPage = this._repeatDescField._tabViewPage = this;
 };
 
@@ -755,8 +772,7 @@ function() {
 	html[i++] = this._repeatSelectId;
 	html[i++] = "'><td colspan=10><span id='";
 	html[i++] = this._repeatDescId;
-	html[i++] = "' onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"'";
-	html[i++] = " style='color:blue; text-decoration:underline;'";
+	html[i++] = "' onmouseout='this.style.cursor=\"default\"' style='text-decoration:underline;'";
 	html[i++] = "></span></td>";
 	html[i++] = "</tr>";
 	html[i++] = "</table>";
@@ -1029,14 +1045,16 @@ function(show) {
 
 ZmApptTabViewPage.prototype._showRecurDialog = 
 function(repeatType) {
-	if (!this._recurDialog) {
-		this._recurDialog = new ZmApptRecurDialog(this._appCtxt.getShell(), this._appCtxt);
-		this._recurDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._recurOkListener));
-		this._recurDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._recurCancelListener));
+	if (!this._repeatSelectDisabled) {
+		if (!this._recurDialog) {
+			this._recurDialog = new ZmApptRecurDialog(this._appCtxt.getShell(), this._appCtxt);
+			this._recurDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._recurOkListener));
+			this._recurDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._recurCancelListener));
+		}
+		var type = repeatType || this._recurDialogRepeatValue;
+		this._recurDialog.initialize(this._startDateField.value, this._endDateField.value, type, this._appt);
+		this._recurDialog.popup();
 	}
-	var type = repeatType || this._recurDialogRepeatValue;
-	this._recurDialog.initialize(this._startDateField.value, this._endDateField.value, type, this._appt);
-	this._recurDialog.popup();
 };
 
 // Returns a string representing the form content
@@ -1330,5 +1348,16 @@ function(ev) {
 		// ignore enter key press in IE otherwise it tries to send the attachment!
 		var key = DwtKeyEvent.getCharCode(ev);
 		return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
+	}
+};
+
+ZmApptTabViewPage._onMouseOver = 
+function(ev) {
+	var el = DwtUiEvent.getTarget(ev);
+	var tvp = el._tabViewPage;
+
+	if (el == tvp._repeatDescField) {
+		tvp._repeatDescField.style.cursor = tvp._repeatSelectDisabled
+			? "default" : "pointer";
 	}
 };

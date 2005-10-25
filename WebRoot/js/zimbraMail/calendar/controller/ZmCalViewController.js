@@ -622,9 +622,13 @@ function(appt) {
 			if (appt.isReadOnly()) {
 				appt.getDetails(ZmAppt.MODE_EDIT_SERIES, new AjxCallback(this, this._showReadOnlyDialog, [appt]));
 			} else {
-				// if appointment is recurring, prompt user to edit instance vs. series
 				if (appt.isRecurring()) {
-					this._showTypeDialog(ZmAppt.MODE_EDIT, appt);
+					// prompt user to edit instance vs. series if recurring but not exception
+					if (appt.isException()) {
+						this.editAppointment(appt, ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
+					} else {
+						this._showTypeDialog(ZmAppt.MODE_EDIT, appt);
+					}
 				} else {
 					// if simple appointment, no prompting necessary
 					this.editAppointment(appt, ZmAppt.MODE_EDIT);

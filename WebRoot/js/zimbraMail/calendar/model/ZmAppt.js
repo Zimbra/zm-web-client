@@ -176,7 +176,7 @@ function() {
 
 ZmAppt.prototype.isAllDayEvent 					= function() { return this.allDayEvent == "1"; };
 ZmAppt.prototype.isCustomRecurrence 			= function() { return this.repeatCustom == "1" || this.repeatEndType != "N"; };
-ZmAppt.prototype.isException 					= function() { return this.exception; };
+ZmAppt.prototype.isException 					= function() { return this.exception || false; };
 ZmAppt.prototype.isOrganizer 					= function() { return (typeof(this.isOrg) === 'undefined') || (this.isOrg == true); };
 ZmAppt.prototype.isReadOnly 					= function() { return !this.isOrganizer(); };
 ZmAppt.prototype.isRecurring 					= function() { return (this.recurring || (this._rawRecurrences != null)); };
