@@ -644,6 +644,14 @@ function(ev) {
 	if (this._typeDialog.getApptMode() == ZmAppt.MODE_DELETE) {
 		var mode = this._typeDialog.isInstance() ? ZmAppt.MODE_DELETE_INSTANCE : ZmAppt.MODE_DELETE_SERIES;
 		this._continueDelete(appt, mode);
+	} else if (this._typeDialog.getApptMode() == ZmAppt.MODE_DRAG_OR_SASH) {
+		// {appt:appt, startDate: startDate, endDate: endDate, callback: callback, errorCallback: errorCallback };		
+		var viewMode =  this._typeDialog.isInstance() ? ZmAppt.MODE_EDIT_SINGLE_INSTANCE : ZmAppt.MODE_EDIT_SERIES;
+		var state = this._updateApptDateState; 
+		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, 
+											[state.appt, viewMode, state.startDateOffset, state.endDateOffset, state.callback]);
+		delete this._updateApptDateState;
+		appt.getDetails(viewMode, respCallback, state.errorCallback);
 	} else {
 		var mode = this._typeDialog.isInstance() ? ZmAppt.MODE_EDIT_SINGLE_INSTANCE : ZmAppt.MODE_EDIT_SERIES;
 		this.editAppointment(appt, mode);
@@ -665,29 +673,41 @@ function(args) {
 *
 * TODO: change this to work with _handleException, and take callback so view can restore appt location/size on failure
 */
-ZmCalViewController.prototype.updateApptDate =
-function(appt, startDate, endDate, changeSeries, callback, errorCallback) {
+ZmCalViewController.prototype.dndUpdateApptDate =
+function(appt, startDateOffset, endDateOffset, callback, errorCallback) {
+/*	
 	var viewMode = !appt.isRecurring() 
 		? ZmAppt.MODE_EDIT 
 		: (changeSeries ? ZmAppt.MODE_EDIT_SERIES : ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
 	var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDate, endDate, callback]);
 	appt.getDetails(viewMode, respCallback, errorCallback);
+	*/	
+
+	if (!appt.isRecurring()) {
+		var viewMode = ZmAppt.MODE_EDIT;
+		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDateOffset, endDateOffset, callback]);
+		appt.getDetails(viewMode, respCallback, errorCallback);
+	} else {
+		this._updateApptDateState = {appt:appt, startDateOffset: startDateOffset, endDateOffset: endDateOffset, callback: callback, errorCallback: errorCallback };
+		this._showTypeDialog(ZmAppt.MODE_DRAG_OR_SASH, appt);;
+	}
+
 }
 
 ZmCalViewController.prototype._handleResponseUpdateApptDate =
 function(args) {
-	var appt		= args[0];
+	var appt	= args[0];
 	var viewMode	= args[1];
-	var startDate	= args[2];
-	var endDate		= args[3];
+	var startDateOffset = args[2];
+	var endDateOffset = args[3];
 	var callback	= args[4];
-	var result		= args[5];
+	var result = args[5];
 	
 	try {
 		result.getResponse();
 		appt.setViewMode(viewMode);
-		if (startDate) appt.setStartDate(startDate);
-		if (endDate) appt.setEndDate(endDate);
+		if (startDateOffset) appt.setStartDate(new Date(appt.getStartTime() + startDateOffset));
+		if (endDateOffset) appt.setEndDate(new Date(appt.getEndTime() + endDateOffset));		
 		appt.save(this._appCtxt.getAppController());
 	} catch (ex) {
 		this.popupErrorDialog(AjxStringUtil.resolve(ZmMsg.mailSendFailure, ex.msg));

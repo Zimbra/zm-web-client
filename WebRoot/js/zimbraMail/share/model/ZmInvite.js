@@ -149,7 +149,7 @@ ZmInvite.prototype.getRecurrenceRules = function (compNum) {
 
 ZmInvite.prototype.isException = function (compNum) {
 	if (this.components[compNum] != null){
-		return (this.components[compNum].exceptionId != null);
+		return (this.components[compNum].ex);
 	}
 	return false;
 };

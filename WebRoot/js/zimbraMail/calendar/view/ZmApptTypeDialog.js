@@ -61,6 +61,11 @@ function(mode, appt) {
 		this._questionCell.innerHTML = m + " " + ZmMsg.editApptQuestion;
 		this._instanceMsg.innerHTML = ZmMsg.openInstance;
 		this._seriesMsg.innerHTML = ZmMsg.openSeries;
+	} else if (mode == ZmAppt.MODE_DRAG_OR_SASH) {
+		this.setTitle(ZmMsg.modifyRecurringItem);
+		this._questionCell.innerHTML = m + " " + ZmMsg.modifyApptQuestion;
+		this._instanceMsg.innerHTML = ZmMsg.modifyInstance;
+		this._seriesMsg.innerHTML = ZmMsg.modifySeries;
 	} else {
 		this.setTitle(ZmMsg.deleteRecurringItem);
 		this._questionCell.innerHTML = m + " " + ZmMsg.deleteApptQuestion;

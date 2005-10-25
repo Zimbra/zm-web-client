@@ -1876,7 +1876,10 @@ function(ev) {
 			var cc = data.view._appCtxt.getCurrentController();
 			var endDate = new Date(data.startDate.getTime() + origDuration);
 			var errorCallback = new AjxCallback(null, ZmCalColView._handleError, data);
-			cc.updateApptDate(data.appt._orig, data.startDate, endDate, false, null, errorCallback);
+			var sdOffset = data.startDate ? (data.startDate.getTime() - data.appt.getStartTime()) : null;
+			var edOffset = endDate ? (endDate.getTime() - data.appt.getEndTime() ) : null;		
+			cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback);
+			//cc.dndUpdateApptDate(data.appt._orig, data.startDate, endDate, null, errorCallback);
 		} else {
 			ZmCalColView._restoreLayout(data);
 		}
@@ -2028,7 +2031,9 @@ function(ev) {
 		data.view._autoScrollDisabled = true;
 		var cc = data.view.getController();
 		var errorCallback = new AjxCallback(null, ZmCalColView._handleError, data);
-		cc.updateApptDate(data.appt._orig, startDate, endDate, false, null, errorCallback);
+		var sdOffset = startDate ? (startDate.getTime() - data.appt.getStartTime()) : null;
+		var edOffset = endDate ? (endDate.getTime() - data.appt.getEndTime()) : null;		
+		cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback);
 	}
 }
 

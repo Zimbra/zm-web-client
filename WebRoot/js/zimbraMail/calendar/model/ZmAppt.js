@@ -65,12 +65,13 @@ ZmAppt.prototype.constructor = ZmAppt;
 // Consts
 
 ZmAppt.MODE_NEW 					= 1;
-ZmAppt.MODE_EDIT 					= 2;
+ZmAppt.MODE_EDIT 				= 2;
 ZmAppt.MODE_EDIT_SINGLE_INSTANCE 	= 3;
 ZmAppt.MODE_EDIT_SERIES 			= 4;
-ZmAppt.MODE_DELETE 					= 5;
+ZmAppt.MODE_DELETE 				= 5;
 ZmAppt.MODE_DELETE_INSTANCE 		= 6;
 ZmAppt.MODE_DELETE_SERIES 			= 7;
+ZmAppt.MODE_DRAG_OR_SASH 			= 8;
 
 ZmAppt.EDIT_NO_REPEAT 				= 1;
 ZmAppt.EDIT_TIME 					= 2;
