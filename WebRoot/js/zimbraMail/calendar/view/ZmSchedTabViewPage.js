@@ -56,16 +56,16 @@ ZmSchedTabViewPage.prototype.constructor = ZmSchedTabViewPage;
 
 // Consts
 
-ZmSchedTabViewPage.FREEBUSY_ROW_HEIGHT = 25;
-ZmSchedTabViewPage.FREEBUSY_ATTENDEE_WIDTH = 150;
-ZmSchedTabViewPage.FREEBUSY_NEXTPREV_WIDTH = 21;
-ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES = 12;
+ZmSchedTabViewPage.FREEBUSY_ROW_HEIGHT		= 25;
+ZmSchedTabViewPage.FREEBUSY_ATTENDEE_WIDTH	= 150;
+ZmSchedTabViewPage.FREEBUSY_NEXTPREV_WIDTH	= 21;
+ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES	= 12;
 
-ZmSchedTabViewPage.STATUS_FREE 			= 1;
-ZmSchedTabViewPage.STATUS_BUSY 			= 2;
-ZmSchedTabViewPage.STATUS_TENTATIVE 	= 3;
-ZmSchedTabViewPage.STATUS_OUT 			= 4;
-ZmSchedTabViewPage.STATUS_UNKNOWN 		= 5;
+ZmSchedTabViewPage.STATUS_FREE				= 1;
+ZmSchedTabViewPage.STATUS_BUSY				= 2;
+ZmSchedTabViewPage.STATUS_TENTATIVE			= 3;
+ZmSchedTabViewPage.STATUS_OUT				= 4;
+ZmSchedTabViewPage.STATUS_UNKNOWN			= 5;
 
 
 // Public methods
@@ -255,19 +255,17 @@ function() {
 
 ZmSchedTabViewPage.prototype._getFreeBusyHtml =
 function() {
-	this._fullDateFieldId = Dwt.getNextId();
+	this._navToolbarId = Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
 
 	html[i++] = "<table border=0 cellpadding=2 cellspacing=3 width=100%><tr><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%><tr>";
-	html[i++] = "<td class='ZmSchedTabViewPageDate' id='";
-	html[i++] = this._fullDateFieldId;
-	html[i++] = "'";
-	if (AjxEnv.isIE)
-		html[i++] = " width=100%";
-	html[i++] = "></td>";
+	html[i++] = "<td id='";
+	html[i++] = this._navToolbarId;
+	html[i++] = AjxEnv.isIE ? "' width=100%>" : "'>";
+	html[i++] = "</td>";
 	html[i++] = "<td width=626>";
 	
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
@@ -393,6 +391,17 @@ function() {
 	if (endButtonCell)
 		endButtonCell.appendChild(this._endDateButton.getHtmlElement());
 	delete this._endMiniCalBtnId;
+
+	var navBarListener = new AjxListener(this, this._navBarListener);
+	this._navToolbar = new ZmNavToolBar(this, DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
+	this._navToolbar._textButton.getHtmlElement().className = "ZmSchedTabViewPageDate";
+	this._navToolbar.addSelectionListener(ZmOperation.PAGE_BACK, navBarListener);
+	this._navToolbar.addSelectionListener(ZmOperation.PAGE_FORWARD, navBarListener);
+	// reparent
+	var navbarCell = Dwt.getDomObj(this._doc, this._navToolbarId);
+	if (navbarCell)
+		navbarCell.appendChild(this._navToolbar.getHtmlElement());
+	delete this._navToolbarId;
 };
 
 ZmSchedTabViewPage.prototype._cacheFields = 
@@ -400,7 +409,6 @@ function() {
 	this._startDateField 	= Dwt.getDomObj(this._doc, this._startDateFieldId); delete this._startDateFieldId;
 	this._endDateField 		= Dwt.getDomObj(this._doc, this._endDateFieldId);	delete this._endDateFieldId;
 	this._allDayCheckbox 	= Dwt.getDomObj(this._doc, this._allDayCheckboxId);
-	this._fullDateField  	= Dwt.getDomObj(this._doc, this._fullDateFieldId); 	delete this._fullDateFieldId;
 	this._allAttendeesTable = Dwt.getDomObj(this._doc, this._allAttendeeSlot.dwtTableId); 
 };
 
@@ -635,7 +643,7 @@ function() {
 ZmSchedTabViewPage.prototype._resetFullDateField =
 function() {
 	// XXX: need i18n version!
-	this._fullDateField.innerHTML = AjxDateUtil.getTimeStr((new Date(this._startDateField.value)), "%t %D, %Y");
+	this._navToolbar.setText(AjxDateUtil.getTimeStr((new Date(this._startDateField.value)), "%t %D, %Y"));
 };
 
 ZmSchedTabViewPage.prototype._handleDateChange = 
@@ -727,6 +735,28 @@ function(ev) {
 	this._handleDateChange(parentButton == this._startDateButton);
 
 	this._dateCalendar.setVisible(false);
+};
+
+ZmSchedTabViewPage.prototype._navBarListener = 
+function(ev) {
+	var op = ev.item.getData(ZmOperation.KEY_ID);
+
+	var sd = new Date(this._startDateField.value);
+	var ed = new Date(this._endDateField.value);
+
+	var newSd = op == ZmOperation.PAGE_BACK ? sd.getDate()-1 : sd.getDate()+1;
+	var newEd = op == ZmOperation.PAGE_BACK ? ed.getDate()-1 : ed.getDate()+1;
+
+	sd.setDate(newSd);
+	ed.setDate(newEd);
+
+	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
+	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
+
+	this._updateFreeBusy();
+
+	// finally, update the appt tab view page w/ new date(s)
+	this._apptTab.updateDateField(this._startDateField.value, this._endDateField.value);
 };
 
 // XXX: refactor this code since ZmApptTabViewPage uses similar?
