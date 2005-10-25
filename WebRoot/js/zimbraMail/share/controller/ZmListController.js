@@ -394,7 +394,7 @@ function(ev) {
 // Tag/untag items.
 ZmListController.prototype._tagListener = 
 function(item) {
-	if (this._app.getAppViewMgr().getCurrentView() == this._getViewType()) {
+	if (this._app.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
 		var tagEvent = item.getData(ZmTagMenu.KEY_TAG_EVENT);
 		var tagAdded = item.getData(ZmTagMenu.KEY_TAG_ADDED);
 		var items = this._listView[this._currentView].getSelection();
@@ -580,7 +580,7 @@ function(ev) {
 ZmListController.prototype._tagChangeListener = 
 function(ev) {
 	// only process if current view is this view!
-	if (this._app.getAppViewMgr().getCurrentView() == this._getViewType()) {
+	if (this._app.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
 		if (ev.type == ZmEvent.S_TAG && ev.event == ZmEvent.E_CREATE && this._creatingTag) {
 			this._doTag(this._pendingActionData, ev.source, true);
 			this._creatingTag = false;
