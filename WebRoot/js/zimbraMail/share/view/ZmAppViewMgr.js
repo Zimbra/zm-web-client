@@ -406,6 +406,11 @@ function(viewId, force) {
 	return result;
 }
 
+ZmAppViewMgr.prototype.isAppView = 
+function(viewId) {
+	return this._isAppView[viewId];
+}
+
 /**
 * Shows the view that was waiting for return from a popped view's callback. Typically, the
 * popped view's callback will have put up some sort of dialog, and this function would be
