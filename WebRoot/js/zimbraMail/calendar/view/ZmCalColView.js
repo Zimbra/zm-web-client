@@ -1646,13 +1646,13 @@ function(ev, div) {
 
 		if (this.getNumDays() > 1) {
 			cc.setDate(date);
-			cc.show(ZmCalViewMgr.DAY_VIEW);
+			cc.show(ZmController.CAL_DAY_VIEW);
 		} else {
 			// TODO: use pref for work week
 			if (date.getDay() > 0 && date.getDay() < 6)
-				cc.show(ZmCalViewMgr.WORK_WEEK_VIEW);
+				cc.show(ZmController.CAL_WORK_WEEK_VIEW);
 			else
-				cc.show(ZmCalViewMgr.WEEK_VIEW);			
+				cc.show(ZmController.CAL_WEEK_VIEW);			
 		}
 	}	
 }

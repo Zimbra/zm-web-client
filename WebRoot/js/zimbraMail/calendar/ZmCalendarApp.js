@@ -45,20 +45,20 @@ function(callback) {
 
 ZmCalendarApp.prototype.activate =
 function(active, view, date) {
-
-//	if (!this._appCtxt.getAppViewMgr().isAppView(view))
-//		return;
-
-	var appController = this._appCtxt.getAppController();
+	var cc = this.getCalController();
+	cc.getMiniCalendar(); // make sure tree footer (mini-calendar) has been created
 	if (active) {
-		this._oldPanels = appController.getOverviewPanels();
-		var newPanels = [ ZmOrganizer.CALENDAR, ZmOrganizer.FOLDER, ZmOrganizer.SEARCH ];
-		appController.setOverviewPanels(newPanels);
-		this.getCalController().show(view);
-		if (date) this.getCalController().setDate(date);
-	}
-	else {
-		appController.setOverviewPanels(this._oldPanels);		
+		view = view ? view : this._appCtxt.getAppViewMgr().getCurrentViewId();
+		var isAppView = (view == ZmController.CAL_VIEW || view == ZmController.CAL_DAY_VIEW ||
+						 view == ZmController.CAL_WEEK_VIEW || view == ZmController.CAL_WORK_WEEK_VIEW ||
+						 view == ZmController.CAL_MONTH_VIEW || view == ZmController.CAL_SCHEDULE_VIEW);
+		if (isAppView) {
+			cc.show(view);
+			if (date) cc.setDate(date);
+		}
+		this._appCtxt.getAppViewMgr().showTreeFooter(true);
+	} else {
+		this._appCtxt.getAppViewMgr().showTreeFooter(false);
 	}
 };
 

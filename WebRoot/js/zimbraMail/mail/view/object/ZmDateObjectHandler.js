@@ -149,7 +149,7 @@ ZmDateObjectHandler.prototype._dayViewListener =
 function(ev) {
 	var obj = this._actionObject;
 	var calApp = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
-	calApp.activate(true, ZmCalViewMgr.DAY_VIEW, this._actionContext.date);
+	calApp.activate(true, ZmController.CAL_DAY_VIEW, this._actionContext.date);
 };
 
 ZmDateObjectHandler.prototype._newApptListener =

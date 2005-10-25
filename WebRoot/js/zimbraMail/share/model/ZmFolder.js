@@ -194,7 +194,7 @@ function(name, search) {
 			searchNode.setAttribute("sortBy", search.sortBy);
 		searchNode.setAttribute("l", this.id);
 	} else {
-		var soapDoc = AjxSoapDoc.create(search ? "CreateSearchFolderRequest" : "CreateFolderRequest", "urn:zimbraMail");
+		var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 		var folderNode = soapDoc.set("folder");
 		folderNode.setAttribute("name", name);
 		folderNode.setAttribute("l", this.id);

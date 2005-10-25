@@ -119,6 +119,11 @@ ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.MAIL_APP]		= "displayMail";
 ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CONTACTS_APP]	= "displayContacts";
 ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CALENDAR_APP]	= "displayCalendar";
 
+ZmZimbraMail.OVERVIEW_TREES = new Object();
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]	= [ZmOrganizer.CALENDAR];
+
 ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
 
 ZmZimbraMail.STATUS_LIFE = 5000; // status message duration
@@ -130,12 +135,6 @@ ZmZimbraMail._LOGOFF_ID	= 3;
 ZmZimbraMail._OVERVIEW_ID = "ZmZimbraMail";
 
 ZmZimbraMail.IGNORE_ERRORS = "_ignore_";
-
-ZmZimbraMail.DEFAULT_PANELS = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
-
-// Data
-
-ZmZimbraMail.prototype._panels = ZmZimbraMail.DEFAULT_PANELS;
 
 // Public methods
 
@@ -334,7 +333,9 @@ ZmZimbraMail.prototype.sendRequest =
 function(soapDoc, asyncMode, callback, errorCallback) {
 	var asyncCallback = asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [true, callback, errorCallback]) : null;
 	var command = new ZmCsfeCommand();
-	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken, 
+	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken,
+//	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken, timeout: 3000,
+//	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken, timeoutCallback: timeoutCallback,
 				  asyncMode: asyncMode, callback: asyncCallback, logRequest: this._logRequest};
 	
 	if (asyncMode && (errorCallback != ZmZimbraMail.IGNORE_ERRORS))
@@ -451,11 +452,12 @@ function(callback) {
 }
 
 /**
-* Sets the name of the currently active app. Done so we can figure out when an
-* app needs to be launched.
+* Handles a change in which app is current. The change will be reflected in the
+* current app toolbar and the overview. The previous and newly current apps are
+* notified of the change. This method is called after a new view is pushed.
 *
-* @param appName	the current app
-* @param view		the current view
+* @param appName	[constant]	the newly current app
+* @param view		[constant]	the newly current view
 */
 ZmZimbraMail.prototype.setActiveApp =
 function(appName, view) {
@@ -466,30 +468,18 @@ function(appName, view) {
 	    if (this._activeApp) {
 			// some views are not stored in _apps collection, so check if it exists.
 			var app = this._apps[this._activeApp];
-			if (app) app.activate(false);
+			if (app) app.activate(false, view);
 	    }
 	    // switch app
 		this._activeApp = appName;
 		toolbar.setCurrentApp(appName);
 		toolbar.setViewTooltip(view, ZmMsg[ZmZimbraMail.VIEW_TT_KEY[appName]]);
 		this._appCtxt.getSearchController().setDefaultSearchType(ZmZimbraMail.DEFAULT_SEARCH[appName], true);
+		this._checkOverviewLayout(true);
 		// activate current app
 		var app = this._apps[this._activeApp];
-		if (app) app.activate(true);
+		if (app) app.activate(true, view);
 	}
-//	this._components[ZmAppViewMgr.C_APP_CHOOSER].setActiveApp(appName);
-}
-
-ZmZimbraMail.prototype.setOverviewPanels = 
-function(panelIdArray) {
-	this._panels = panelIdArray;
-	this._needOverviewLayout = true;
-	this._checkOverviewLayout();
-}
-
-ZmZimbraMail.prototype.getOverviewPanels = 
-function() {
-	return this._panels;
 }
 
 // Private methods
@@ -519,12 +509,11 @@ function(appName) {
 }
 
 ZmZimbraMail.prototype._checkOverviewLayout =
-function() {
-	if (this._needOverviewLayout && this._settings.userSettingsLoaded) {
+function(force) {
+	if ((this._needOverviewLayout || force) && this._settings.userSettingsLoaded) {
 		DBG.println(AjxDebug.DBG1, "laying out overview panel");
 		var opc = this._appCtxt.getOverviewController();
-		var panels = this.getOverviewPanels();
-		opc.set(ZmZimbraMail._OVERVIEW_ID, panels);
+		opc.set(ZmZimbraMail._OVERVIEW_ID, ZmZimbraMail.OVERVIEW_TREES[this._activeApp]);
 		this._components[ZmAppViewMgr.C_TREE] = opc.getOverview(ZmZimbraMail._OVERVIEW_ID);
 		// clear shared folder dialogs so they'll be recreated with new folder tree
 		this._appCtxt.clearFolderDialogs();
