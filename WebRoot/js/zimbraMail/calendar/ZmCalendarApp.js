@@ -46,8 +46,8 @@ function(callback) {
 ZmCalendarApp.prototype.activate =
 function(active, view, date) {
 
-	if (!this._appCtxt.getAppViewMgr().isAppView(view))
-		return;
+//	if (!this._appCtxt.getAppViewMgr().isAppView(view))
+//		return;
 
 	var appController = this._appCtxt.getAppController();
 	if (active) {
