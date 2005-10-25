@@ -430,7 +430,7 @@ ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
 	//   - it's a KEY event AND there's no word under the caret, OR the word was modified.
 	// I know, it's ugly.
 	if (sc.menu &&
-	    (!ev || ( /mousedown|mouseup/.test(ev.type)
+	    (!ev || ( /click|mousedown|mouseup/.test(ev.type)
 		      || ( /key/.test(ev.type)
 			   && (!word || modified) )
 		    )))
