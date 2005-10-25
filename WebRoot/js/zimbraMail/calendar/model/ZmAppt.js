@@ -30,15 +30,13 @@ function ZmAppt(appCtxt, list, noinit) {
 	this._evt = new ZmEvent(ZmEvent.S_APPT);
 	this.id = this.uid = -1;
 	this.type = null;
-	this.name = "";
-	this.fragment = "";
+	this.name = this.location = this.fragment = "";
 	this.startDate = new Date();
 	this.endDate = new Date(this.startDate.getTime() + (30*60*1000));
 	this.transparency = "FR";
 	this.freeBusy = "B"; 														// Free/Busy status (F|B|T|O) (free/busy/tentative/outofoffice)
 	this.allDayEvent = "0";
 	this.exception = this.recurring = this.alarm = this.otherAttendees = false;
-	this.location = "";
 	this.notesTopPart = null; 													// ZmMimePart containing children w/ different message parts
 	this.repeatType = "NON"; 													// maps to "freq" in the createAppt call.
 	this.repeatCustom = "0";  													// 1|0
@@ -611,36 +609,39 @@ function(sender, attachmentId) {
 	var soapDoc = null;
 	var needsExceptionId = false;
 
-	if (this._viewMode == ZmAppt.MODE_NEW) 
-	{
+	if (this._viewMode == ZmAppt.MODE_NEW) {
 		soapDoc = AjxSoapDoc.create("CreateAppointmentRequest", "urn:zimbraMail");
-	} 
-	else if (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE && !this.isException()) 
-	{
+	} else if (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE && !this.isException()) {
 		soapDoc = AjxSoapDoc.create("CreateAppointmentExceptionRequest", "urn:zimbraMail");
 		this._addInviteAndCompNum(soapDoc);
 		soapDoc.setMethodAttribute("s", this.getOrigStartTime());
 		needsExceptionId = true;
-	}
-	else 
-	{
+	} else {
 		soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest", "urn:zimbraMail");
 		this._addInviteAndCompNum(soapDoc);
 		//if (this._viewMode == ZmAppt.MODE_EDIT_SERIES)
 		//	soapDoc.setMethodAttribute("thisAndFuture",true);
 	}
 
-	var invAndM = this._prepareSoapForSave(soapDoc, attachmentId);
+	var invAndMsg = this._setSimpleSoapAttributes(soapDoc, ZmAppt.SOAP_METHOD_REQUEST, attachmentId);
 
 	if (needsExceptionId) {
-		var exceptId = soapDoc.set("exceptId", null, invAndM.inv);
+		var exceptId = soapDoc.set("exceptId", null, invAndMsg.inv);
 		if (this.allDayEvent != "1") {
 			exceptId.setAttribute("d", this._getServerDateTime(this.getOrigStartDate()));
 			exceptId.setAttribute("tz", this.timezone);
 		} else {
 			exceptId.setAttribute("d", this._getServerDate(this.getOrigStartDate()));
 		}
+	} else {
+		// set recurrence rules for appointment (but not for exceptions!)
+		this._addRecurrenceRulesToSoap(soapDoc, invAndMsg.inv);
 	}
+
+	// TODO - alarm
+	// var alarm = soapDoc.set("alarm", null, inv);
+	// alarm.setAttribute("rel-start", /* some alarm start time */);
+
 	this._sendRequest(sender, soapDoc);
 };
 
@@ -1285,20 +1286,6 @@ function(serverStr) {
 	d.setDate(dd);
 	this._parseServerTime(serverStr, d);
 	return d;
-};
-
-ZmAppt.prototype._prepareSoapForSave = 
-function(soapDoc, attachmentId) {
-
-	var obj = this._setSimpleSoapAttributes(soapDoc, ZmAppt.SOAP_METHOD_REQUEST, attachmentId);
-
-	// TODO -- ALARM
-	// var alarm = soapDoc.set("alarm", null, inv);
-	// alarm.setAttribute("rel-start", /* some alarm start time */);
-
-	this._addRecurrenceRulesToSoap(soapDoc, obj.inv);
-	
-	return obj;
 };
 
 ZmAppt.prototype._setSimpleSoapAttributes = 
