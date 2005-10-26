@@ -88,7 +88,9 @@ function(event) {
 	if (!msg) {
 		try {
 			var parentFolderId = this._parentFolder ? this._parentFolder.id : null;
-			var results = ZmCalendar.create(this._appCtxt, name, parentFolderId);
+			var url = this._remoteCheckboxEl.checked ? AjxStringUtil.trim(this._urlInputEl.value) : null;
+			if (url) url = url.replace(/^webcal/i, "http");
+			var results = ZmCalendar.create(this._appCtxt, name, parentFolderId, url);
 			calendarId = results.CreateFolderResponse.folder[0].id;
 		}
 		catch (ex) {
@@ -98,20 +100,6 @@ function(event) {
 				ex = null;
 			}
 		}
-	}
-
-	// add remote appointments
-	if (!msg && this._remoteCheckboxEl.checked) {
-		var url = AjxStringUtil.trim(this._urlInputEl.value);
-		if (url) url = url.replace(/^webcal/i, "http");
-		var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
-		var actionNode = soapDoc.set("action");
-		actionNode.setAttribute("op", "urlRefresh");
-		actionNode.setAttribute("id", calendarId);
-		actionNode.setAttribute("url", url);
-		
-		var appCtlr = this._appCtxt.getAppController();
-		appCtlr.sendRequest(soapDoc, true);
 	}
 	
 	// color folder

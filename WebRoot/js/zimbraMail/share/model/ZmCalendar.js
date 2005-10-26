@@ -45,7 +45,7 @@ ZmCalendar.ID_CALENDAR = ZmOrganizer.ID_CALENDAR;
 
 /** Caller is responsible to catch exception. */
 ZmCalendar.create =
-function(appCtxt, name, parentFolderId) {
+function(appCtxt, name, parentFolderId, url) {
 	parentFolderId = parentFolderId || ZmOrganizer.ID_ROOT;
 
 	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
@@ -53,6 +53,7 @@ function(appCtxt, name, parentFolderId) {
 	folderNode.setAttribute("name", name);
 	folderNode.setAttribute("l", parentFolderId);
 	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]);
+	if (url) folderNode.setAttribute("url", url);
 
 	var appController = appCtxt.getAppController();
 	return appController.sendRequest(soapDoc, false);
