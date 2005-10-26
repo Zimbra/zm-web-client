@@ -964,7 +964,22 @@ HTML>BODY .RadioGrouperLabel {
 	margin-left:-5px;
 }
 
+.quotabar {
+	width: 100px;
+	border: 1px solid white;
+	background-color: white;
+}
 
+.quotaused {
+	height: 6px;
+	font-size: 6px; /* WEIRD IE QUIRK */
+}
+
+.percent {
+	white-space: nowrap;
+	font-size: 7pt;
+	color: black;
+}
 
 
 
