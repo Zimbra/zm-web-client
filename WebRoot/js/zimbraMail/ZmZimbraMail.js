@@ -123,9 +123,11 @@ ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CONTACTS_APP]	= "displayContacts";
 ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CALENDAR_APP]	= "displayCalendar";
 
 ZmZimbraMail.OVERVIEW_TREES = new Object();
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]	= [ZmOrganizer.CALENDAR];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]			= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]		= [ZmOrganizer.CALENDAR];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]	= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]			= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 
 ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
 
