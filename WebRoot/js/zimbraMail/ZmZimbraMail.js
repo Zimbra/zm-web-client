@@ -59,8 +59,11 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._activeApp = null;
 	
 	this._pollActionId = null;
-	this._sessionTimer = new AjxTimedAction();
-	this._sessionTimer.method = ZmZimbraMail.logOff;
+	this._sessionTimer = new AjxTimedAction(null, ZmZimbraMail.logOff);
+	this._sessionTimerId = -1;
+	this._cancelTimer = new AjxTimedAction(this, this._cancel);
+	this._cancelTimerId = -1;
+
 	this._needOverviewLayout = false;
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);	
 	this._calendarListener = new AjxListener(this, this._calendarChangeListener);
@@ -328,18 +331,22 @@ function(settings) {
 * @param asyncMode		[boolean]		if true, request will be made asynchronously
 * @param callback		[AjxCallback]	next callback in chain for async request
 * @param errorCallback	[Object]		callback to run if there is an exception
+* @param timeout		[int]*			timeout value (in milliseconds)
 */
 ZmZimbraMail.prototype.sendRequest = 
-function(soapDoc, asyncMode, callback, errorCallback) {
+function(soapDoc, asyncMode, callback, errorCallback, timeout) {
 	var asyncCallback = asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [true, callback, errorCallback]) : null;
 	var command = new ZmCsfeCommand();
-	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken,
-//	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken, timeout: 3000,
-//	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken, timeoutCallback: timeoutCallback,
+	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken, timeout: timeout,
 				  asyncMode: asyncMode, callback: asyncCallback, logRequest: this._logRequest};
 	
 	if (asyncMode && (errorCallback != ZmZimbraMail.IGNORE_ERRORS))
 		this._shell.setBusy(true); // put up busy overlay to block user input
+
+	if (timeout) {
+		DBG.println("ZmZimbraMail.sendRequest: timeout is " + timeout);
+		this._cancelTimerId = AjxTimedAction.scheduleAction(this._cancelTimer, timeout);
+	}
 	
 	try {
 		var response = command.invoke(params);
@@ -363,6 +370,11 @@ function(args) {
 	if (asyncMode && (errorCallback != ZmZimbraMail.IGNORE_ERRORS))
 		this._shell.setBusy(false); // remove busy overlay
 
+	if (this._cancelTimerId != -1) {
+		AjxTimedAction.cancelAction(this._cancelTimerId)
+		this._cancelTimerId = -1;
+	}
+	
 	// we just got activity, cancel current poll timer
 	if (this._pollActionId)
 		AjxTimedAction.cancelAction(this._pollActionId);
@@ -1059,16 +1071,13 @@ function() {
 
 ZmZimbraMail._userEventHdlr =
 function(ev) {
-	
-	var lm = window._zimbraMail;
-
-	if (lm) {
+	var zm = window._zimbraMail;
+	if (zm) {
 		// cancel old timer and start a new one
-		AjxTimedAction.cancelAction(lm._sessionTimerId);
-		lm._sessionTimerId = AjxTimedAction.scheduleAction(lm._sessionTimer, 
-														  lm._appCtxt.get(ZmSetting.IDLE_SESSION_TIMEOUT));
+		AjxTimedAction.cancelAction(zm._sessionTimerId);
+		var timeout = zm._appCtxt.get(ZmSetting.IDLE_SESSION_TIMEOUT);
+		zm._sessionTimerId = AjxTimedAction.scheduleAction(zm._sessionTimer, timeout);
 	}
-	
 	DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER RESET (" + (new Date()).toLocaleString() + ")");
 }
 
