@@ -433,9 +433,8 @@ function() {
 
 	// add onchange handlers to the start/end date fields
 	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmSchedTabViewPage._onChange);
-	this._startDateField._schedViewPage = this;
 	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmSchedTabViewPage._onChange);
-	this._endDateField._schedViewPage = this;
+	this._startDateField._schedViewPage = this._endDateField._schedViewPage = this;
 
 	for (var i = 0; i < this._schedTable.length; i++) {
 		var attendeeDiv = Dwt.getDomObj(this._doc, this._schedTable[i].dwtDivId);
@@ -646,17 +645,34 @@ function() {
 	this._navToolbar.setText(AjxDateUtil.getTimeStr((new Date(this._startDateField.value)), "%t %D, %Y"));
 };
 
+// XXX: refactor this code since ZmApptTabViewPage uses similar?
 ZmSchedTabViewPage.prototype._handleDateChange = 
-function(isStartDate) {
+function(isStartDate, wasUserInput) {
 	var sd = new Date(this._startDateField.value);
 	var ed = new Date(this._endDateField.value);
 
 	// if start date changed, reset end date if necessary
 	if (isStartDate) {
+		// if date was input by user and its foobar, reset to today's date
+		if (wasUserInput) {
+			if (isNaN(sd)) {
+				sd = new Date();
+			}
+			// always reset the field value in case user entered date in wront format
+			this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
+		}
 		if (ed.valueOf() < sd.valueOf())
 			this._endDateField.value = this._startDateField.value;
 		this._updateFreeBusy();
 	} else {
+		// if date was input by user and its foobar, reset to today's date
+		if (wasUserInput) {
+			if (isNaN(ed)) {
+				ed = new Date();
+			}
+			// always reset the field value in case user entered date in wront format
+			this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
+		}
 		// otherwise, reset start date if necessary
 		if (sd.valueOf() > ed.valueOf()) {
 			this._startDateField.value = this._endDateField.value;
@@ -718,8 +734,20 @@ function(ev) {
 	this._dateCalendar.setLocation(buttonLoc.x, buttonLoc.y+22);
 	this._dateCalendar._currButton = ev.dwtObj;
 
-	// always reset the date to today's date
-	this._dateCalendar.setDate(new Date(), true);
+	var calDate = this._dateCalendar._currButton == this._startDateButton
+		? new Date(this._startDateField.value)
+		: new Date(this._endDateField.value);
+
+	// if date was input by user and its foobar, reset to today's date
+	if (isNaN(calDate)) {
+		calDate = new Date();
+		var field = this._dateCalendar._currButton == this._startDateButton
+			? this._startDateField : this._endDateField;
+		field.value = AjxDateUtil.simpleComputeDateStr(calDate);
+	}
+
+	// always reset the date to current field's date
+	this._dateCalendar.setDate(calDate, true);
 };
 
 // XXX: refactor this code since ZmApptTabViewPage uses similar?
@@ -912,5 +940,5 @@ ZmSchedTabViewPage._onChange =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var svp = el._schedViewPage;
-	svp._handleDateChange(el == svp._startDateField);
+	svp._handleDateChange(el == svp._startDateField, true);
 };

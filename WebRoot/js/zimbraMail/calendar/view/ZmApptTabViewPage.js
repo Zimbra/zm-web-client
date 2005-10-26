@@ -503,12 +503,7 @@ function() {
 	this._cacheFields();
 	this._initNotesHtmlEditor();
 	this._initAutocomplete();
-	
-	// add event listeners where necessary
-	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
-	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
-	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmApptTabViewPage._onMouseOver);
-	this._allDayCheckbox._tabViewPage = this._repeatDescField._tabViewPage = this;
+	this._addEventHandlers();
 };
 
 ZmApptTabViewPage.prototype._createApptHtml = 
@@ -836,6 +831,18 @@ function() {
 	this._autocomplete.handle(this._attendeesField);
 };
 
+ZmApptTabViewPage.prototype._addEventHandlers = 
+function() {
+	// add event listeners where necessary
+	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmApptTabViewPage._onMouseOver);
+	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmApptTabViewPage._onChange);
+	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmApptTabViewPage._onChange);
+	this._allDayCheckbox._tabViewPage = this._repeatDescField._tabViewPage = this;
+	this._startDateField._schedViewPage = this._endDateField._schedViewPage =  this;
+};
+
 // cache all input fields so we dont waste time traversing DOM each time
 ZmApptTabViewPage.prototype._cacheFields = 
 function() {
@@ -1114,6 +1121,36 @@ function(repeatType) {
 	this._repeatDescField.innerHTML = recurDesc ? (recurDesc + " (" + ZmMsg.noEndDate + ")") : "";
 };
 
+ZmApptTabViewPage.prototype._handleDateChange = 
+function(isStartDate) {
+	var sd = new Date(this._startDateField.value);
+	var ed = new Date(this._endDateField.value);
+
+	// if start date changed, reset end date if necessary
+	if (isStartDate) {
+		// if date was input by user and its foobar, reset to today's date
+		if (isNaN(sd)) {
+			sd = new Date();
+		}
+		// always reset the field value in case user entered date in wront format
+		this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
+
+		if (ed.valueOf() < sd.valueOf())
+			this._endDateField.value = this._startDateField.value;
+	} else {
+		// if date was input by user and its foobar, reset to today's date
+		if (isNaN(ed)) {
+			ed = new Date();
+		}
+		// always reset the field value in case user entered date in wront format
+		this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
+
+		// otherwise, reset start date if necessary
+		if (sd.valueOf() > ed.valueOf())
+			this._startDateField.value = this._endDateField.value;
+	}
+};
+
 
 // Listeners
 
@@ -1152,8 +1189,20 @@ function(ev) {
 	this._dateCalendar.setLocation(buttonLoc.x, buttonLoc.y+22);
 	this._dateCalendar._currButton = ev.dwtObj;
 
-	// always reset the date to today's date
-	this._dateCalendar.setDate(new Date(), true);
+	var calDate = this._dateCalendar._currButton == this._startDateButton
+		? new Date(this._startDateField.value)
+		: new Date(this._endDateField.value);
+
+	// if date was input by user and its foobar, reset to today's date
+	if (isNaN(calDate)) {
+		calDate = new Date();
+		var field = this._dateCalendar._currButton == this._startDateButton
+			? this._startDateField : this._endDateField;
+		field.value = AjxDateUtil.simpleComputeDateStr(calDate);
+	}
+
+	// always reset the date to current field's date
+	this._dateCalendar.setDate(calDate, true);
 };
 
 ZmApptTabViewPage.prototype._attendeesButtonListener = 
@@ -1360,4 +1409,11 @@ function(ev) {
 		tvp._repeatDescField.style.cursor = tvp._repeatSelectDisabled
 			? "default" : "pointer";
 	}
+};
+
+ZmApptTabViewPage._onChange = 
+function(ev) {
+	var el = DwtUiEvent.getTarget(ev);
+	var svp = el._schedViewPage;
+	svp._handleDateChange(el == svp._startDateField);
 };
