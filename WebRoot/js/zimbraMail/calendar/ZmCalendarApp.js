@@ -48,8 +48,7 @@ function(active, view, date) {
 	var cc = this.getCalController();
 	cc.getMiniCalendar(); // make sure tree footer (mini-calendar) has been created
 	if (active) {
-		view = view ? view : this._appCtxt.getAppViewMgr().getCurrentViewId();
-		var isAppView = (view == ZmController.CAL_VIEW || view == ZmController.CAL_DAY_VIEW ||
+		var isAppView = (view == null || view == ZmController.CAL_VIEW || view == ZmController.CAL_DAY_VIEW ||
 						 view == ZmController.CAL_WEEK_VIEW || view == ZmController.CAL_WORK_WEEK_VIEW ||
 						 view == ZmController.CAL_MONTH_VIEW || view == ZmController.CAL_SCHEDULE_VIEW);
 		if (isAppView) {
