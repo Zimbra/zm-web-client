@@ -1516,3 +1516,9 @@ HTML>BODY .appt-selected .appt_allday_body
 .OverviewTree {
 	margin-bottom: 10px;
 }
+
+.ZmSharePropsDialog .GrouperLabel {
+	font-weight: normal;
+	font-size: 10pt;
+	color: #666;
+}

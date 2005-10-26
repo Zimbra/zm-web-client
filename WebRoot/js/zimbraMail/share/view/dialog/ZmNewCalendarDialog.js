@@ -132,7 +132,7 @@ function() {
 
 	// create controls
 	this._nameInputEl = document.createElement("INPUT");
-	this._nameInputEl.autocomplete = "OFF";
+	//this._nameInputEl.autocomplete = "OFF";
 	this._nameInputEl.type = "text";
 	this._nameInputEl.className = "Field";
 	
@@ -197,11 +197,17 @@ ZmNewCalendarDialog.prototype._handleCheckbox = function(event) {
 	event = event || window.event;
 	var target = DwtUiEvent.getTarget(event);
 	target._urlRow.style.display = target.checked ? (AjxEnv.isIE ? "block" : "table-row") : "none";
-	target._urlInputEl.focus();
+	if (target.checked) {
+		target._urlInputEl.focus();
+	}
 };
 
 ZmNewCalendarDialog.prototype._checkUrl = function() {
 	if (this._remoteCheckboxEl.checked && this._urlInputEl.value.match(/^\s*$/)) {
 		return ZmMsg.errorUrlMissing;
 	}
+};
+
+ZmNewCalendarDialog.prototype._getSeparatorTemplate = function() {
+	return "";
 };

@@ -503,6 +503,12 @@
 .DwtDialog .Label { font-size: 10pt; }
 .DwtDialog .Field { width: 290px; }
 
+.DwtPropertySheet .Label {
+  color: #666;
+  white-space: nowrap;
+  text-align: right;
+}
+
 .DialogBody 			{	background-color:#EEEEEE;		}
 .DialogTable			{	border-collapse:collapse;		}
 .DialogToolbar 			{	background-image:url(/zimbra/skins/steel/images/bg_pebble_dark.gif);	}

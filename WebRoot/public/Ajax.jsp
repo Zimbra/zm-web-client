@@ -136,6 +136,8 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtText.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtIframe.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtXFormDialog.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtPropertySheet.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtGrouper.js<%= ext %>?v=<%= vers %>"></script>
 
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/events/DwtXFormsEvent.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/xforms/XFormGlobal.js<%= ext %>?v=<%= vers %>"></script>
