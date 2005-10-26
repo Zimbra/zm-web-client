@@ -997,6 +997,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	text-align: right;
 	color: #555555;
 	white-space: nowrap;
+	overflow: hidden;
 	width: 1%;
 }
 

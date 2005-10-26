@@ -517,11 +517,11 @@ function(ev) {
 
 	// popup the edit dialog 
 	if (ev._isDblClick){
-		var p = new DwtPoint(ev.docX, ev.docY);
+		//var p = new DwtPoint(ev.docX, ev.docY);
 		this._apptFromView = view;
 		var appt = this._newApptObject(ev.detail);
 		appt.setAllDayEvent(ev.isAllDay);
-		this.newAppointment(appt);
+		this._showQuickAddDialog(appt);
 	}
 }
 
@@ -581,6 +581,7 @@ function(args) {
 
 	if (this._readOnlyDialog == null) {
 		this._readOnlyDialog = new ZmApptReadOnlyDialog(this._shell, this._appCtxt);
+		// TODO: enable this when we add mre functionality to read-only dialog (i.e. Accept/Decline buttons)
 		//this._readOnlyDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._readOnlyOkListener));
 		this._readOnlyDialog._disableFFhack();
 	}
@@ -588,9 +589,22 @@ function(args) {
 	this._readOnlyDialog.popup();
 };
 
+ZmCalViewController.prototype._showQuickAddDialog = 
+function(appt) {
+	if (this._quickAddDialog == null) {
+		this._quickAddDialog = new ZmApptQuickAddDialog(this._shell, this._appCtxt);
+		this._quickAddDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._quickAddOkListener));
+		this._quickAddDialog.addSelectionListener(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, new AjxListener(this, this._quickAddMoreListener));
+		//this._quickAddDialog._disableFFhack();
+	}
+	this._quickAddDialog.initialize(appt);
+	this._quickAddDialog.popup();
+};
+
 ZmCalViewController.prototype.newAppointmentHelper = 
 function(startDate, optionalDuration, folderId) {
-	this.newAppointment(this._newApptObject(startDate, optionalDuration, folderId));
+	var appt = this._newApptObject(startDate, optionalDuration, folderId)
+	this._showQuickAddDialog(appt);
 };
 
 ZmCalViewController.prototype.newAllDayAppointmentHelper = 
@@ -599,7 +613,7 @@ function(startDate, endDate, folderId) {
 	if (endDate)
 		appt.setEndDate(endDate);
 	appt.setAllDayEvent(true);
-	this.newAppointment(appt);
+	this._showQuickAddDialog(appt);
 };
 
 ZmCalViewController.prototype.newAppointment = 
@@ -671,6 +685,32 @@ function(ev) {
 	if (this._typeDialog.getApptMode() == ZmAppt.MODE_DRAG_OR_SASH) {
 		// we cancel the drag/sash, refresh view
 		this._refreshAction(true);
+	}
+};
+
+ZmCalViewController.prototype._quickAddOkListener = 
+function(ev) {
+	var appt = this._quickAddDialog.getAppt();
+	if (appt)
+		this._schedule(this._doSave, {appt: appt});
+};
+
+ZmCalViewController.prototype._quickAddMoreListener = 
+function(ev) {
+	var appt = this._quickAddDialog.getAppt();
+	if (appt) {
+		this._quickAddDialog.popdown();
+		this.newAppointment(appt);
+	}
+};
+
+// TODO: convert to async!
+ZmCalViewController.prototype._doSave = 
+function(params) {
+	try {
+		params.appt.save(this._appCtxt.getAppController());
+	} catch(ex) {
+		this._handleException(ex, this._doSave, params, false);
 	}
 };
 

@@ -46,14 +46,6 @@ ZmApptTabViewPage.SHOWAS_OPTIONS = [
 	{ label: ZmMsg.busy, 				value: "B", 	selected: true  },
 	{ label: ZmMsg.outOfOffice,			value: "O", 	selected: false }];
 
-ZmApptTabViewPage.REPEAT_OPTIONS = [
-	{ label: ZmMsg.none, 				value: "NON", 	selected: true 	},
-	{ label: ZmMsg.everyDay, 			value: "DAI", 	selected: false },
-	{ label: ZmMsg.everyWeek, 			value: "WEE", 	selected: false },
-	{ label: ZmMsg.everyMonth, 			value: "MON", 	selected: false },
-	{ label: ZmMsg.everyYear, 			value: "YEA", 	selected: false },
-	{ label: ZmMsg.custom, 				value: "CUS", 	selected: false }];
-
 
 // Public
 
@@ -160,7 +152,7 @@ function() {
 	
 	// reinit non-time sensitive selects option values
 	this._showAsSelect.setSelectedValue(ZmApptTabViewPage.SHOWAS_OPTIONS[2].value);
-	this._repeatSelect.setSelectedValue(ZmApptTabViewPage.REPEAT_OPTIONS[0].value);
+	this._repeatSelect.setSelectedValue(ZmApptViewHelper.REPEAT_OPTIONS[0].value);
 	this._allDayCheckbox.checked = false;
 	this._showTimeFields(true);
 	if (this._dateCalendar)
@@ -375,11 +367,6 @@ function() {
 	return this._attendeesField.value;
 };
 
-ZmApptTabViewPage.prototype.getTimeOptionValues = 
-function() {
-	return this._timeOptions;
-};
-
 
 // Private / protected methods
 
@@ -394,7 +381,7 @@ function(appt, mode) {
 		this._showTimeFields(false);
 	}
 	// if all day appt, set time anyway in case user changes mind
-	this._resetTimeSelect(appt, isAllDayAppt);
+	ZmApptViewHelper.resetTimeSelect(appt, this._startTimeSelect, this._endTimeSelect, isAllDayAppt);
 	this._resetCalendarSelect(appt);
 
 	// re-enable all input fields
@@ -454,7 +441,7 @@ function(appt) {
 	if (appt.isCustomRecurrence()) {
 		this._repeatDescField.innerHTML = appt._getRecurrenceBlurbForSave();
 	} else {
-		this._setSimpleRecurString(appt.repeatType);
+		this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(appt.repeatType);
 	}
 
 	// attendees
@@ -496,7 +483,6 @@ function(enable) {
 
 ZmApptTabViewPage.prototype._createHTML = 
 function() {
-	this._calcTimeOptions();
 	this._createApptHtml();
 	this._createSelects();
 	this._createButtons();
@@ -576,9 +562,10 @@ function() {
 	// create selects for Time section
 	this._startTimeSelect = new DwtSelect(this);
 	this._startTimeSelect.addChangeListener(timeSelectListener);
-	if (this._timeOptions) {
-		for (var i = 0; i < this._timeOptions.length; i++) {
-			var option = this._timeOptions[i];
+	var timeOptions = ZmApptViewHelper.getTimeOptionValues();
+	if (timeOptions) {
+		for (var i = 0; i < timeOptions.length; i++) {
+			var option = timeOptions[i];
 			this._startTimeSelect.addOption(option.label, option.selected, option.value);
 		}
 	}
@@ -589,9 +576,9 @@ function() {
 
 	this._endTimeSelect = new DwtSelect(this);
 	this._endTimeSelect.addChangeListener(timeSelectListener);
-	if (this._timeOptions) {
-		for (var i = 0; i < this._timeOptions.length; i++) {
-			var option = this._timeOptions[i];
+	if (timeOptions) {
+		for (var i = 0; i < timeOptions.length; i++) {
+			var option = timeOptions[i];
 			this._endTimeSelect.addOption(option.label, option.selected, option.value);
 		}
 	}
@@ -616,8 +603,8 @@ function() {
 	
 	this._repeatSelect = new DwtSelect(this);
 	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
-	for (var i = 0; i < ZmApptTabViewPage.REPEAT_OPTIONS.length; i++) {
-		var option = ZmApptTabViewPage.REPEAT_OPTIONS[i];
+	for (var i = 0; i < ZmApptViewHelper.REPEAT_OPTIONS.length; i++) {
+		var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
 		this._repeatSelect.addOption(option.label, option.selected, option.value);
 	}
 	var repeatCell = Dwt.getDomObj(doc, this._repeatSelectId);
@@ -833,14 +820,17 @@ function() {
 
 ZmApptTabViewPage.prototype._addEventHandlers = 
 function() {
+	var tvpId = AjxCore.assignId(this);
+
 	// add event listeners where necessary
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmApptTabViewPage._onMouseOver);
 	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmApptTabViewPage._onChange);
 	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmApptTabViewPage._onChange);
-	this._allDayCheckbox._tabViewPage = this._repeatDescField._tabViewPage = this;
-	this._startDateField._schedViewPage = this._endDateField._schedViewPage =  this;
+
+	this._allDayCheckbox._tabViewPageId = this._repeatDescField._tabViewPageId = tvpId;
+	this._startDateField._tabViewPageId = this._endDateField._tabViewPageId = tvpId;
 };
 
 // cache all input fields so we dont waste time traversing DOM each time
@@ -854,55 +844,8 @@ function() {
 	this._startDateField 	= Dwt.getDomObj(doc, this._startDateFieldId); 		delete this._startDateFieldId;
 	this._endDateField 		= Dwt.getDomObj(doc, this._endDateFieldId);	 		delete this._endDateFieldId;
 	this._attendeesField 	= Dwt.getDomObj(doc, this._attendeesFieldId); 		delete this._attendeesFieldId;
-	this._allDayCheckbox 	= Dwt.getDomObj(doc, this._allDayCheckboxId);
-	this._repeatDescField 	= Dwt.getDomObj(doc, this._repeatDescId);
-};
-
-ZmApptTabViewPage.prototype._calcTimeOptions = 
-function() {
-	if (this._timeOptions) return;
-
-	this._timeOptions = new Array();
-	
-	var today = new Date((new Date()).setHours(0,0,0,0));
-	var todayDate = today.getDate();
-
-	while (today.getDate() == todayDate) {
-		var props = new Object();
-		props["label"] = AjxDateUtil.computeTimeString(today);
-		props["value"] = today.UTC;
-		props["selected"] = false;
-		this._timeOptions.push(props);
-		
-		// increment date by 30 mins
-		today.setMinutes(today.getMinutes() + 30);
-	}
-};
-
-ZmApptTabViewPage.prototype._resetTimeSelect = 
-function(appt, useNowDate) {
-	var startIdx = 0;
-	var endIdx = 0;
-	
-	if (useNowDate) {
-		var now = new Date();
-		var nextHour = now.getMinutes() > 30;
-		startIdx = now.getHours() * 2 + (now.getMinutes() >= 30 ? 2 : 1);
-		endIdx = startIdx + 1;
-		// normalize
-		if (startIdx == this._timeOptions.length) {
-			startIdx = 0;
-			endIdx = 1;
-		}
-	} else {
-		var startDate = appt.getStartDate();
-		startIdx = (startDate.getHours() * 2) + (startDate.getMinutes() >= 30 ? 1 : 0);
-	
-		var endDate = appt.getEndDate();
-		endIdx = (endDate.getHours() * 2) + (endDate.getMinutes() >= 30 ? 1 : 0);
-	}
-	this._startTimeSelect.setSelected(startIdx);
-	this._endTimeSelect.setSelected(endIdx);
+	this._allDayCheckbox 	= Dwt.getDomObj(doc, this._allDayCheckboxId); 		// done delete!
+	this._repeatDescField 	= Dwt.getDomObj(doc, this._repeatDescId); 			// dont delete!
 };
 
 ZmApptTabViewPage.prototype._resetCalendarSelect = 
@@ -919,7 +862,7 @@ function(appt) {
 		if (visible) {
 			for (var i = 0; i < len; i++) {
 				var cal = children[i];
-				this._calendarSelect.addOption(cal.name, cal.id == ZmFolder.ID_CALENDAR, cal.id);
+				this._calendarSelect.addOption(cal.name, cal.id == appt.getFolderId(), cal.id);
 			}
 		}
 	}
@@ -1108,49 +1051,6 @@ function() {
 	um.execute(this._attachIframe, callback, this._uploadFormId);
 };
 
-ZmApptTabViewPage.prototype._setSimpleRecurString = 
-function(repeatType) {
-	// per new select value, change the recur description
-	var recurDesc = null;
-	switch (repeatType) {
-		case "DAI": recurDesc = ZmMsg.everyDay;   break;
-		case "WEE": recurDesc = ZmMsg.everyWeek;  break;
-		case "MON": recurDesc = ZmMsg.everyMonth; break;
-		case "YEA": recurDesc = ZmMsg.everyYear;  break;
-	}
-	this._repeatDescField.innerHTML = recurDesc ? (recurDesc + " (" + ZmMsg.noEndDate + ")") : "";
-};
-
-ZmApptTabViewPage.prototype._handleDateChange = 
-function(isStartDate) {
-	var sd = new Date(this._startDateField.value);
-	var ed = new Date(this._endDateField.value);
-
-	// if start date changed, reset end date if necessary
-	if (isStartDate) {
-		// if date was input by user and its foobar, reset to today's date
-		if (isNaN(sd)) {
-			sd = new Date();
-		}
-		// always reset the field value in case user entered date in wront format
-		this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
-
-		if (ed.valueOf() < sd.valueOf())
-			this._endDateField.value = this._startDateField.value;
-	} else {
-		// if date was input by user and its foobar, reset to today's date
-		if (isNaN(ed)) {
-			ed = new Date();
-		}
-		// always reset the field value in case user entered date in wront format
-		this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
-
-		// otherwise, reset start date if necessary
-		if (sd.valueOf() > ed.valueOf())
-			this._startDateField.value = this._endDateField.value;
-	}
-};
-
 
 // Listeners
 
@@ -1158,25 +1058,9 @@ ZmApptTabViewPage.prototype._dateButtonListener =
 function(ev) {
 	// init new DwtCalendar if not already created
 	if (!this._dateCalendar) {
-		this._dateCalendar = new DwtCalendar(this.shell, null, DwtControl.ABSOLUTE_STYLE);
-
-		this._dateCalendar.skipNotifyOnPage();
-		this._dateCalendar.setSize("150");
-		this._dateCalendar.setZIndex(Dwt.Z_VIEW);
-		var calEl = this._dateCalendar.getHtmlElement();
-		calEl.style.borderWidth = "2px";
-		calEl.style.borderStyle = "solid";
-		calEl.style.borderColor = "#B2B2B2 #000000 #000000 #B2B2B2";
-		calEl.style.backgroundImage = "url(/zimbra/skins/steel/images/bg_pebble.gif)";
-
-		this._dateCalendar.addSelectionListener(new AjxListener(this, this._dateCalSelectionListener));
-		var workingWeek = [];
+		var dateSelListener = new AjxListener(this, this._dateCalSelectionListener);
 		var fdow = this._appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
-		for (var i=0; i < 7; i++) {
-			var d = (i+fdow)%7;
-			workingWeek[i] = (d > 0 && d < 6);
-		}
-		this._dateCalendar.setWorkingWeek(workingWeek);
+		this._dateCalendar = ZmApptViewHelper.createMiniCal(this.shell, dateSelListener, fdow);
 	} else {
 		// only toggle display if user clicked on same button calendar is being shown for
 		if (this._dateCalendar._currButton == ev.dwtObj)
@@ -1288,7 +1172,7 @@ function(ev) {
 		this._oldRepeatValue = ev._args.oldValue;
 		this._showRecurDialog();
 	} else {
-		this._setSimpleRecurString(newSelectVal);
+		this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(newSelectVal);
 	}
 };
 
@@ -1372,7 +1256,7 @@ function(ev) {
 		ev = parent.window.frames[ZmApptTabViewPage.ATTACH_IFRAME_NAME].event;
 
 	var el = DwtUiEvent.getTarget(ev);
-	var tvp = el._tabViewPage;
+	var tvp = AjxCore.objectWithId(el._tabViewPageId);
 
 	// figure out which input field was clicked
 	if (el.id == tvp._allDayCheckboxId) {
@@ -1403,7 +1287,7 @@ function(ev) {
 ZmApptTabViewPage._onMouseOver = 
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
-	var tvp = el._tabViewPage;
+	var tvp = AjxCore.objectWithId(el._tabViewPageId);
 
 	if (el == tvp._repeatDescField) {
 		tvp._repeatDescField.style.cursor = tvp._repeatSelectDisabled
@@ -1414,6 +1298,6 @@ function(ev) {
 ZmApptTabViewPage._onChange = 
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
-	var svp = el._schedViewPage;
-	svp._handleDateChange(el == svp._startDateField);
+	var tvp = AjxCore.objectWithId(el._tabViewPageId);
+	ZmApptViewHelper.handleDateChange(tvp._startDateField, tvp._endDateField, el == tvp._startDateField);
 };

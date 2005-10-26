@@ -345,7 +345,7 @@ function() {
 	// create selects for Time section
 	this._startTimeSelect = new DwtSelect(this);
 	this._startTimeSelect.addChangeListener(timeSelectListener);
-	var timeOptions = this._apptTab.getTimeOptionValues();
+	var timeOptions = ZmApptViewHelper.getTimeOptionValues();
 	if (timeOptions) {
 		for (var i = 0; i < timeOptions.length; i++) {
 			var option = timeOptions[i];
@@ -428,25 +428,27 @@ function() {
 
 ZmSchedTabViewPage.prototype._addEventHandlers = 
 function() {
+	var svpId = AjxCore.assignId(this);
+
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
-	this._allDayCheckbox._schedViewPage = this; // XXX: this may cause mem leaks?
+	this._allDayCheckbox._schedViewPageId = svpId;
 
 	// add onchange handlers to the start/end date fields
 	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmSchedTabViewPage._onChange);
 	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmSchedTabViewPage._onChange);
-	this._startDateField._schedViewPage = this._endDateField._schedViewPage = this;
+	this._startDateField._schedViewPageId = this._endDateField._schedViewPageId = svpId;
 
 	for (var i = 0; i < this._schedTable.length; i++) {
 		var attendeeDiv = Dwt.getDomObj(this._doc, this._schedTable[i].dwtDivId);
 		if (attendeeDiv) {
 			Dwt.setHandler(attendeeDiv, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
-			attendeeDiv._schedViewPage = this;
+			attendeeDiv._schedViewPageId = svpId;
 		}
 		var attendeeInput = Dwt.getDomObj(this._doc, this._schedTable[i].dwtInputId);
 		if (attendeeInput) {
 			Dwt.setHandler(attendeeInput, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
 			Dwt.setHandler(attendeeInput, DwtEvent.ONBLUR, ZmSchedTabViewPage._onBlur);
-			attendeeInput._schedViewPage = this;
+			attendeeInput._schedViewPageId = svpId;
 			attendeeInput._schedTableIdx = i;
 			// while we're at it, add auto complete if supported
 			if (this._autocomplete)
@@ -645,41 +647,11 @@ function() {
 	this._navToolbar.setText(AjxDateUtil.getTimeStr((new Date(this._startDateField.value)), "%t %D, %Y"));
 };
 
-// XXX: refactor this code since ZmApptTabViewPage uses similar?
 ZmSchedTabViewPage.prototype._handleDateChange = 
-function(isStartDate, wasUserInput) {
-	var sd = new Date(this._startDateField.value);
-	var ed = new Date(this._endDateField.value);
-
-	// if start date changed, reset end date if necessary
-	if (isStartDate) {
-		// if date was input by user and its foobar, reset to today's date
-		if (wasUserInput) {
-			if (isNaN(sd)) {
-				sd = new Date();
-			}
-			// always reset the field value in case user entered date in wront format
-			this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
-		}
-		if (ed.valueOf() < sd.valueOf())
-			this._endDateField.value = this._startDateField.value;
+function(isStartDate, skipCheck) {
+	var needsUpdate = ZmApptViewHelper.handleDateChange(this._startDateField, this._endDateField, isStartDate, skipCheck);
+	if (needsUpdate)
 		this._updateFreeBusy();
-	} else {
-		// if date was input by user and its foobar, reset to today's date
-		if (wasUserInput) {
-			if (isNaN(ed)) {
-				ed = new Date();
-			}
-			// always reset the field value in case user entered date in wront format
-			this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
-		}
-		// otherwise, reset start date if necessary
-		if (sd.valueOf() > ed.valueOf()) {
-			this._startDateField.value = this._endDateField.value;
-			this._updateFreeBusy();
-		}
-	}
-
 	// finally, update the appt tab view page w/ new date(s)
 	this._apptTab.updateDateField(this._startDateField.value, this._endDateField.value);
 };
@@ -703,25 +675,9 @@ ZmSchedTabViewPage.prototype._dateButtonListener =
 function(ev) {
 	// init new DwtCalendar if not already created
 	if (!this._dateCalendar) {
-		this._dateCalendar = new DwtCalendar(this.shell, null, DwtControl.ABSOLUTE_STYLE);
-
-		this._dateCalendar.skipNotifyOnPage();
-		this._dateCalendar.setSize("150");
-		this._dateCalendar.setZIndex(Dwt.Z_VIEW);
-		var calEl = this._dateCalendar.getHtmlElement();
-		calEl.style.borderWidth = "2px";
-		calEl.style.borderStyle = "solid";
-		calEl.style.borderColor = "#B2B2B2 #000000 #000000 #B2B2B2";
-		calEl.style.backgroundImage = "url(/zimbra/skins/steel/images/bg_pebble.gif)";
-
-		this._dateCalendar.addSelectionListener(new AjxListener(this, this._dateCalSelectionListener));
-		var workingWeek = [];
+		var dateSelListener = new AjxListener(this, this._dateCalSelectionListener);
 		var fdow = this._appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
-		for (var i=0; i < 7; i++) {
-			var d = (i+fdow)%7;
-			workingWeek[i] = (d > 0 && d < 6);
-		}
-		this._dateCalendar.setWorkingWeek(workingWeek);
+		this._dateCalendar = ZmApptViewHelper.createMiniCal(this.shell, dateSelListener, fdow);
 	} else {
 		// only toggle display if user clicked on same button calendar is being shown for
 		if (this._dateCalendar._currButton == ev.dwtObj)
@@ -760,7 +716,7 @@ function(ev) {
 	field.value = AjxDateUtil.simpleComputeDateStr(ev.detail);
 
 	// change the start/end date if they mismatch
-	this._handleDateChange(parentButton == this._startDateButton);
+	this._handleDateChange(parentButton == this._startDateButton, true);
 
 	this._dateCalendar.setVisible(false);
 };
@@ -916,7 +872,7 @@ function(args) {
 ZmSchedTabViewPage._onClick = 
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
-	var svp = el._schedViewPage;
+	var svp = AjxCore.objectWithId(el._schedViewPageId);
 
 	// figure out which object was clicked
 	if (el.id == svp._allDayCheckboxId) {
@@ -931,7 +887,7 @@ function(ev) {
 ZmSchedTabViewPage._onBlur = 
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
-	var svp = el._schedViewPage;
+	var svp = AjxCore.objectWithId(el._schedViewPageId);
 
 	svp._handleAttendeeField(el);
 };
@@ -939,6 +895,7 @@ function(ev) {
 ZmSchedTabViewPage._onChange = 
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
-	var svp = el._schedViewPage;
-	svp._handleDateChange(el == svp._startDateField, true);
+	var svp = AjxCore.objectWithId(el._schedViewPageId);
+
+	svp._handleDateChange(el == svp._startDateField);
 };

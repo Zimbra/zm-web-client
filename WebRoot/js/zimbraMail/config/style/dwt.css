@@ -120,6 +120,7 @@
 .DwtStickyToolTipTitle {
 	font-weight: bold;
 	padding-bottom: 2px;
+	cursor: default;
 }
 
 .hover_frame_table { 
