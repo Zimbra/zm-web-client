@@ -283,6 +283,8 @@ ZmTreeController.prototype._treeViewListener =
 function(ev) {
 	if (ev.detail != DwtTree.ITEM_ACTIONED && ev.detail != DwtTree.ITEM_SELECTED) return;
 	
+	this._actionedTreeItem = ev.item;
+	
 	var type = ev.item.getData(ZmTreeView.KEY_TYPE);
 	if (!type) return;
 	
@@ -553,8 +555,11 @@ function(organizer) {
 
 // Miscellaneous private methods
 
-/* 
+/*
 * Returns the organizer that's currently selected for action (via right-click).
+* Note: going up the object tree to find the actioned organizer will only work 
+* for tree item events; it won't work for action menu item events, since action
+* menus are children of the shell.
 *
 * @param ev		[DwtUiEvent]	the UI event
 */
@@ -573,4 +578,4 @@ function(ev) {
 		obj = obj.parent;
 	}
 	return null;
-}
+};
