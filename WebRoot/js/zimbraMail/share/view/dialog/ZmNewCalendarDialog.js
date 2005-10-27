@@ -89,7 +89,6 @@ function(event) {
 		try {
 			var parentFolderId = this._parentFolder ? this._parentFolder.id : null;
 			var url = this._remoteCheckboxEl.checked ? AjxStringUtil.trim(this._urlInputEl.value) : null;
-			if (url) url = url.replace(/^webcal/i, "http");
 			var results = ZmCalendar.create(this._appCtxt, name, parentFolderId, url);
 			calendarId = results.CreateFolderResponse.folder[0].id;
 		}
