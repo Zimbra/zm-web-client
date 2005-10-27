@@ -369,13 +369,14 @@ function(args) {
 	var params	= args[0];
 	var ex		= args[1];
 	
+	if (this._searchToolBar)
+		this._searchToolBar.setEnabled(true);
+	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
+
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER ||
 		ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
 		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR) {
 
-		if (this._searchToolBar)
-			this._searchToolBar.setEnabled(true);
-		DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
 		var msg = this._getErrorMsg(ex.code);
 		this._appCtxt.getAppController().setStatusMsg(msg);
 		var results = new ZmSearchResult(this._appCtxt);
