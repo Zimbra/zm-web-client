@@ -95,18 +95,6 @@ function(ev) {
 	}
 };
 
-ZmChangePasswordDialog.leadingWhitespaceRegex = /\s+[^\s]*/g;
-ZmChangePasswordDialog.trailingWhitespaceRegex = /\s*[^\s]*\s+/g;
-
-ZmChangePasswordDialog.prototype._hasWhiteSpace = 
-function(field) {
-	if ((field.search(ZmChangePasswordDialog.trailingWhitespaceRegex) != -1) ||
-		(field.search(ZmChangePasswordDialog.leadingWhitespaceRegex) != -1) )
-	{
-		return true;
-	}
-};
-
 ZmChangePasswordDialog.prototype._getPasswordData =
 function() {
 	// Reset the msg dialog (it is a shared resource)
@@ -121,16 +109,10 @@ function() {
 		return null;
 	}
 	
-	if (this._hasWhiteSpace(oldPassword)){
-		this.showMessageDialog(ZmMsg.oldPasswordHasWhitespace);
-		return null;
-	}
-	if (this._hasWhiteSpace(newPassword)){
+	// passwords can't start or end with white space
+	var trimmed = AjxStringUtil.trim(newPassword);
+	if (newPassword.length != trimmed.length) {
 		this.showMessageDialog(ZmMsg.newPasswordHasWhitespace);
-		return null;
-	}
-	if (this._hasWhiteSpace(confirmPassword)){
-		this.showMessageDialog(ZmMsg.confirmPasswordHasWhitespace);
 		return null;
 	}
 
@@ -140,9 +122,9 @@ function() {
 		return null;
 	}
 
-	// check that the length is at least 6 characters
-	if (newPassword.length < 6) {
-		this.showMessageDialog(ZmMsg.newPasswordTooShort);
+	// check that the length is okay
+	if (newPassword.length < 6 || newPassword.length > 64) {
+		this.showMessageDialog(ZmMsg.newPasswordBadLength);
 		return null;
 	}
 
