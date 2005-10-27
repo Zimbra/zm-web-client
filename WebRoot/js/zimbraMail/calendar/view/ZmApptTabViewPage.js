@@ -19,7 +19,8 @@ function ZmApptTabViewPage(parent, appCtxt) {
 	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 	this._composeMode = this._defaultComposeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
-	this._supportTimeZones = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
+	// disable timzones completely until we figure out how to represent in UI
+	this._supportTimeZones = false/*this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);*/
 	this._repeatSelectDisabled = false;
 
 	this._attachCount = 0;
