@@ -513,7 +513,7 @@ function() {
 */
 ZmTreeController.prototype._newCallback =
 function(args) {
-	this._doCreate(args[0], args[1]);
+	this._doCreate(args[0], args[1], null, args[2]);
 	this._clearDialog(this._getNewDialog());
 }
 

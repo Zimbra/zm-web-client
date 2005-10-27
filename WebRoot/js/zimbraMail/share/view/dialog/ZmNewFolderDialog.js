@@ -153,6 +153,19 @@ function() {
 	Dwt.setHandler(this._remoteCheckboxField, DwtEvent.ONCLICK, this._handleCheckbox);	
 }
 
+
+ZmNewFolderDialog.prototype.reset =
+function() {
+	ZmDialog.prototype.reset.call(this);
+	if (this._urlField)
+		this._urlField.value = "";
+	if (this._remoteCheckboxField) {
+		this._remoteCheckboxField.checked = false;
+		var urlRow = Dwt.getDomObj(document, this._remoteCheckboxField.id+"URLrow");		
+		urlRow.style.display = "none";
+	}
+}
+
 ZmNewFolderDialog.prototype._handleCheckbox =
 function(event) {
 	event = event || window.event;
