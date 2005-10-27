@@ -81,5 +81,10 @@ function(argv) {
 		var pi = this._appCtxt.get(ZmSetting.POLLING_INTERVAL); // LDAP time format converted to seconds
 		alert("Set polling interval to " + pi + " seconds");
 		this._appCtxt.getAppController().setPollInterval();
+	} else if (arg0 == "feed") {
+		if (!argv[1]) return;	
+		var enabled = argv[1] == 1;
+		ZmNewFolderDialog._feedEnabled = enabled;
+		alert("Turning "+ (enabled ? "on" : "off") +" feed support in new folder dialog");
 	}
 }

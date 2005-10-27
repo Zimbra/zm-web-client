@@ -152,6 +152,7 @@ ZmSetting.USERID						= i++;
 // CLIENT SIDE FEATURE SUPPORT
 ZmSetting.ATT_VIEW_ENABLED				= i++;
 ZmSetting.EVAL_ENABLED 					= i++;
+ZmSetting.FEED_ENABLED				= i++;
 ZmSetting.HELP_ENABLED					= i++;
 ZmSetting.IM_ENABLED					= i++;
 ZmSetting.MIXED_VIEW_ENABLED			= i++;
@@ -291,6 +292,7 @@ ZmSetting.INIT[ZmSetting.USERID]						= ["zimbraId", ZmSetting.T_COS, ZmSetting.
 // CLIENT SIDE FEATURE SUPPORT
 ZmSetting.INIT[ZmSetting.ATT_VIEW_ENABLED]				= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.EVAL_ENABLED] 			 		= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.FEED_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.HELP_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.IM_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.MIXED_VIEW_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];

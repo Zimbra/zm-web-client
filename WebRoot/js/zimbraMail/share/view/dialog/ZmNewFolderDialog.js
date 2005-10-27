@@ -29,6 +29,7 @@ function ZmNewFolderDialog(parent, msgDialog, className) {
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
+	this._setupRemoteCheckboxField();
 	var omit = new Object();
 	omit[ZmFolder.ID_SPAM] = true;
 	omit[ZmFolder.ID_DRAFTS] = true;
@@ -39,6 +40,8 @@ function ZmNewFolderDialog(parent, msgDialog, className) {
 }
 
 ZmNewFolderDialog._OVERVIEW_ID = "ZmNewFolderDialog";
+
+ZmNewFolderDialog._feedEnabled = false;
 
 ZmNewFolderDialog.prototype = new ZmDialog;
 ZmNewFolderDialog.prototype.constructor = ZmNewFolderDialog;
@@ -56,19 +59,40 @@ function(folder, loc) {
 		var ti = this._folderTreeView.getTreeItemById(folder.id);
 		ti.setExpanded(true);
 	}
+
+	//var feedEnabled = this._appCtxt.get(ZmSetting.FEED_ENABLED);
+	var feedEnabled = ZmNewFolderDialog._feedEnabled;
+	if (this._feedEnabled != feedEnabled) {
+		this._feedEnabled = ZmNewFolderDialog._feedEnabled;
+		var cbField= Dwt.getDomObj(this._doc, this._checkboxRowId);
+		cbField.style.display = this._feedEnabled ? (AjxEnv.isIE ? "block" : "table-row") : "none";
+	}
+	
 	ZmDialog.prototype.popup.call(this, loc);
 }
 
 ZmNewFolderDialog.prototype._contentHtml = 
 function() {
 	this._nameFieldId = Dwt.getNextId();
-	this._folderTreeCellId = Dwt.getNextId();
+	this._remoteCheckboxFieldId = Dwt.getNextId();	
+	this._urlFieldId = Dwt.getNextId();		
+	this._checkboxRowId = Dwt.getNextId();
+	this._folderTreeCellId = Dwt.getNextId();	
 	var html = new Array();
 	var idx = 0;
-	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
-	html[idx++] = "<tr><td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>" + ZmMsg.folderName + ": </td></tr>";
-	html[idx++] = "<tr><td><input autocomplete=OFF type='text' class='Field' id='" + this._nameFieldId + "' /></td></tr>";
-	html[idx++] = "<tr><td>&nbsp;</td></tr>";
+	html[idx++] = "<table cellpadding='0' cellspacing='5' border='0'>";
+	html[idx++] = "<tr valign='center'><td class='Label' Xstyle='padding: 0px 0px 5px 0px;'>" + ZmMsg.nameLabel + "</td>";
+	html[idx++] = "<td><input autocomplete=OFF type='text' class='Field' id='" + this._nameFieldId + "' /></td></tr>";
+	
+	html[idx++] = "<tr id='"+this._checkboxRowId+"' style='display:none;'><td colspan=2>";
+	html[idx++] = "<table cellpadding='0' cellspacing='5' border='0'>";
+	html[idx++] = "<tr valign='center'><td class='Label'><input type='checkbox' id='" + this._remoteCheckboxFieldId + "'/></td><td>"+ZmMsg.subscribeToFeed+"</td></tr>";
+	html[idx++] = "</table>";	
+	html[idx++] = "</td></tr>";
+	
+	html[idx++] = "<tr style='display:none;' id='"+this._remoteCheckboxFieldId+"URLrow' valign='center'><td class='Label' Xstyle='padding: 0px 0px 5px 0px;'>" + ZmMsg.urlLabel + "</td>";
+	html[idx++] = "<td><input autocomplete=OFF type='text' class='Field' id='" +this._remoteCheckboxFieldId+"URLfield'/></td></tr>";
+
 	html[idx++] = "<tr><td class='Label' colspan=2>" + ZmMsg.newFolderParent + ":</td></tr>";
 	html[idx++] = "<tr><td colspan=2 id='" + this._folderTreeCellId + "'/></tr>";
 	html[idx++] = "</table>";
@@ -105,7 +129,14 @@ function() {
 			msg = ZmMsg.folderOrSearchNameExists;
 	}
 
-	return (msg ? this._showError(msg) : [parentFolder, name]);
+	var url = this._remoteCheckboxField.checked ? this._urlField.value : null;
+	if (!msg && (this._remoteCheckboxField.checked)) {
+		if (!url.match(/^[a-zA-Z]+:\/\/.*$/i)) {
+			msg = ZmMsg.errorUrlMissing;
+		}			
+	}
+
+	return (msg ? this._showError(msg) : [parentFolder, name, url]);
 }
 
 ZmNewFolderDialog.prototype._enterListener =
@@ -113,4 +144,23 @@ function(ev) {
 	var results = this._getFolderData();
 	if (results)
 		this._runEnterCallback(results);
+}
+
+ZmNewFolderDialog.prototype._setupRemoteCheckboxField =
+function() {
+	this._remoteCheckboxField = Dwt.getDomObj(this._doc, this._remoteCheckboxFieldId);
+	this._urlField = Dwt.getDomObj(this._doc, this._remoteCheckboxFieldId+"URLfield");	
+	Dwt.setHandler(this._remoteCheckboxField, DwtEvent.ONCLICK, this._handleCheckbox);	
+}
+
+ZmNewFolderDialog.prototype._handleCheckbox =
+function(event) {
+	event = event || window.event;
+	var target = DwtUiEvent.getTarget(event);
+	var urlRow = Dwt.getDomObj(document, target.id+"URLrow");
+	var urlField= Dwt.getDomObj(document, target.id+"URLfield");	
+	urlRow.style.display = target.checked ? (AjxEnv.isIE ? "block" : "table-row") : "none";
+	if (target.checked) {
+		urlField.focus();
+	}
 }

@@ -172,7 +172,7 @@ function() {
 // Searches created here since they may be created under a folder or
 // another search.
 ZmFolder.prototype.create =
-function(name, search) {
+function(name, search, url) {
 	if (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_DRAFTS)
 		throw new AjxException("Cannot create subfolder of Spam or Drafts");
 
@@ -198,6 +198,7 @@ function(name, search) {
 		var folderNode = soapDoc.set("folder");
 		folderNode.setAttribute("name", name);
 		folderNode.setAttribute("l", this.id);
+		if (url) folderNode.setAttribute("url", url);
 	}
 	this.tree._appCtxt.getAppController().sendRequest(soapDoc, true);
 }
