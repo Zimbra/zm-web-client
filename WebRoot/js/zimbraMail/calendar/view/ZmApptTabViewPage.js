@@ -1179,19 +1179,26 @@ function(ev) {
 
 ZmApptTabViewPage.prototype._recurOkListener = 
 function(ev) {
+	var popdown = true;
 	this._recurDialogRepeatValue = this._recurDialog.getSelectedRepeatValue();
 	if (this._recurDialogRepeatValue == "NON") {
 		this._repeatSelect.setSelectedValue(this._recurDialogRepeatValue);
 		this._repeatDescField.innerHTML = "";
 	} else {
-		this._repeatSelect.setSelectedValue("CUS");
-		// update the recur language
-		var tempAppt = ZmAppt.quickClone(this._appt);
-		this._getRecurrence(tempAppt);
-		this._repeatDescField.innerHTML = tempAppt._getRecurrenceBlurbForSave();
+		if (this._recurDialog.isValid()) {
+			this._repeatSelect.setSelectedValue("CUS");
+			// update the recur language
+			var tempAppt = ZmAppt.quickClone(this._appt);
+			this._getRecurrence(tempAppt);
+			this._repeatDescField.innerHTML = tempAppt._getRecurrenceBlurbForSave();
+		} else {
+			// TODO - give feedback to user about errors in recur dialog
+			popdown = false;
+		}
 	}
 
-	this._recurDialog.popdown();
+	if (popdown)
+		this._recurDialog.popdown();
 };
 
 ZmApptTabViewPage.prototype._recurCancelListener = 

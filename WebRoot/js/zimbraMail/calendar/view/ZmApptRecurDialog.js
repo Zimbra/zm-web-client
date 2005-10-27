@@ -198,6 +198,12 @@ function() {
 	this._cleanup();
 };
 
+ZmApptRecurDialog.prototype.isValid = 
+function() {
+	// TODO - return true/false based on proper values entered by user
+	return true;
+};
+
 
 // Private / protected methods
  
