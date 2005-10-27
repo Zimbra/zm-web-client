@@ -1564,11 +1564,12 @@ function() {
 	} else if (this.repeatType == "YEA") {
 		if (customRepeat) {
 			blurb[idx++] = " on ";
-			blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[Number(this.repeatYearlyMonthsList)];
+			blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[Number(this.repeatYearlyMonthsList)-1]; // 0-based
 			if (this.repeatCustomType == "O") {
 				blurb[idx++] = " on the ";
 				blurb[idx++] = ZmAppt.MONTHLY_DAY_OPTIONS[Number(this.repeatCustomOrdinal)-1].label;
 				var dayOfWeek = null;
+				blurb[idx++] = " ";
 				for (var i = 0; i < ZmAppt.SERVER_WEEK_DAYS.length; i++) {
 					if (ZmAppt.SERVER_WEEK_DAYS[i] == this.repeatCustomDayOfWeek) {
 						dayOfWeek = AjxDateUtil.WEEKDAY_LONG[i];
