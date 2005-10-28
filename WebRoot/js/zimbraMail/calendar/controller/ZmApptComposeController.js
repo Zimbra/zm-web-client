@@ -167,10 +167,37 @@ function() {
 		this._apptErrorDialog = new DwtMessageDialog(this._shell);
 	}
 
-	// XXX: temp error msg
+	// XXX: temp error msg (until we get proper error handling mechanism, ala tooltips)
 	var msg = "Cannot save appointment. You have errors that must be corrected. Please correct them and try again or contact your System Administrator.";
 	this._apptErrorDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	this._apptErrorDialog.popup();
+};
+
+// Spell check methods
+
+ZmApptComposeController.prototype._spellCheckAgain = 
+function() {
+	this._apptView.getHtmlEditor().discardMisspelledWords();
+	this._doSpellCheck();
+	return false;
+};
+
+ZmApptComposeController.prototype._exitSpellChecker =
+function() {
+	this._apptView.getHtmlEditor().discardMisspelledWords();
+	return false;
+};
+
+ZmApptComposeController.prototype._resetSpellCheckButton = 
+function() {
+	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
+	spellCheckButton.setToggled(false);
+	if (this._spellCheckModeDivId != null) {
+		var div = document.getElementById(this._spellCheckModeDivId);
+		if (div)
+			div.parentNode.removeChild(div);
+		this._spellCheckModeDivId = null;
+	}
 };
 
 
@@ -236,21 +263,12 @@ ZmApptComposeController.prototype._spellCheckListener =
 function(ev) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	if (spellCheckButton.isToggled()) {
-		if (this._apptView.getComposeMode() == DwtHtmlEditor.TEXT) {
-			alert("Spell Checking is not yet implemented for text emails.  Please switch to HTML first.");
-			spellCheckButton.setToggled(false);
-			return;
-		}
-		var text = this._apptView.getHtmlEditor().getTextVersion();
-		var soap = AjxSoapDoc.create("CheckSpellingRequest", "urn:zimbraMail");
-		soap.getMethod().appendChild(soap.getDoc().createTextNode(text));
-		var cmd = new ZmCsfeCommand();
-		var callback = new AjxCallback(this, this._spellCheckCallback);
-		cmd.invoke({soapDoc:soap, asyncMode:true, callback:callback});
+		this._doSpellCheck();
 	} else {
 		this._apptView.getHtmlEditor().discardMisspelledWords();
 	}
 };
+
 
 // Callbacks
 
@@ -278,6 +296,16 @@ function(params) {
 	} catch (ex) {
 		this._handleException(ex, this._doFreeBusyRequest, params, false);
 	}
+};
+
+ZmApptComposeController.prototype._doSpellCheck =  
+function() {
+	var text = this._apptView.getHtmlEditor().getTextVersion();
+	var soap = AjxSoapDoc.create("CheckSpellingRequest", "urn:zimbraMail");
+	soap.getMethod().appendChild(soap.getDoc().createTextNode(text));
+	var cmd = new ZmCsfeCommand();
+	var callback = new AjxCallback(this, this._spellCheckCallback);
+	cmd.invoke({soapDoc:soap, asyncMode:true, callback:callback});
 };
 
 // Called as: Yes, save as draft
@@ -324,10 +352,15 @@ function(args) {
 	}
 
 	words = words.misspelled;
+
 	if (!words || words.length == 0) {
-		var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
-		spellCheckButton.setToggled(false);
+		this._resetSpellCheckButton();
 	} else {
-		this._apptView.getHtmlEditor().highlightMisspelledWords(words);
+		this._toolbar.getButton(ZmOperation.SPELL_CHECK).setToggled(true);
+		var editor = this._apptView.getHtmlEditor();
+		if (!editor.onExitSpellChecker) {
+			editor.onExitSpellChecker = new AjxCallback(this, this._resetSpellCheckButton);
+		}
+		editor.highlightMisspelledWords(words);
 	}
 };
