@@ -69,6 +69,7 @@ function(parent, type, id) {
 	// user folder or Folders header
 	if (id == ZmOrganizer.ID_ROOT || (id >= ZmFolder.FIRST_USER_ID)) {
 		parent.enableAll(true);
+		parent.enable(ZmOperation.SYNC, (folder.url != null));
 	// system folder
 	} else {
 		parent.enableAll(false);
@@ -80,7 +81,6 @@ function(parent, type, id) {
 			deleteText = (id == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
 			parent.enable(ZmOperation.DELETE, true);
 		}
-		parent.enable(ZmOperation.SYNC, (folder.url != null));
 	}
 	parent.enable(ZmOperation.EXPAND_ALL, (folder.size() > 0));
 	if (id != ZmOrganizer.ID_ROOT)
