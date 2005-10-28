@@ -329,6 +329,7 @@ ZmOperation.IMAGE[ZmOperation.SHARE_DECLINE]			= "Cancel";
 ZmOperation.IMAGE[ZmOperation.SHOW_ORIG]				= "Message";
 ZmOperation.IMAGE[ZmOperation.SPAM] 					= "SpamFolder";
 ZmOperation.IMAGE[ZmOperation.SPELL_CHECK] 				= "SpellCheck";
+ZmOperation.IMAGE[ZmOperation.SYNC]		 				= "redo";
 ZmOperation.IMAGE[ZmOperation.TAG_MENU]					= "Tag";
 ZmOperation.IMAGE[ZmOperation.TODAY_GOTO]				= "Date";
 ZmOperation.IMAGE[ZmOperation.UNDELETE]					= "MoveToFolder"; 		// XXX: need new icon?
