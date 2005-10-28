@@ -23,9 +23,26 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmFolder(id, name, parent, tree, numUnread, numTotal) {
+/**
+* Creates a folder.
+* @constructor
+* @class
+* This class represents a folder, which may contain mail. At some point, folders may be
+* able to contain contacts and/or appointments.
+*
+* @author Conrad Damon
+*
+* @param id			[int]			numeric ID
+* @param name		[string]		name
+* @param parent		[ZmOrganizer]	parent folder
+* @param tree		[ZmTree]		tree model that contains this folder
+* @param numUnread	[int]*			number of unread items for this folder
+* @param numTotal	[int]*			number of items for this folder
+* @param url		[string]*		URL for this folder's feed
+*/
+function ZmFolder(id, name, parent, tree, numUnread, numTotal, url) {
 
-	ZmOrganizer.call(this, ZmOrganizer.FOLDER, id, name, parent, tree, numUnread, numTotal);
+	ZmOrganizer.call(this, ZmOrganizer.FOLDER, id, name, parent, tree, numUnread, numTotal, url);
 }
 
 ZmFolder.prototype = new ZmOrganizer;
@@ -113,7 +130,7 @@ function(parent, obj, tree) {
 	if (obj.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) return;
 
 	var name = ZmFolder.MSG_KEY[obj.id] ? ZmMsg[ZmFolder.MSG_KEY[obj.id]] : obj.name;
-	var folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n);
+	var folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n, obj.url);
 	folder._setSharesFromJs(obj);
 
 	// a folder may contain other folders or searches

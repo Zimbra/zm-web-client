@@ -33,15 +33,17 @@
 * can be nested.
 *
 * @author Conrad Damon
-* @param type		folder or tag
-* @param id			numeric ID
-* @param name		name
-* @param parent		parent organizer
-* @param tree		tree model that contains this organizer
-* @param numUnread	number of unread items for this organizer
-* @param numTotal	number of items for this organizer
+*
+* @param type		[constant]		folder or tag
+* @param id			[int]			numeric ID
+* @param name		[string]		name
+* @param parent		[ZmOrganizer]	parent organizer
+* @param tree		[ZmTree]		tree model that contains this organizer
+* @param numUnread	[int]*			number of unread items for this organizer
+* @param numTotal	[int]*			number of items for this organizer
+* @param url		[string]*		URL for this organizer's feed
 */
-function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal) {
+function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url) {
 
 	if (arguments.length == 0) return;
 	
@@ -52,6 +54,7 @@ function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal) {
 	this.tree = tree;
 	this.numUnread = numUnread || 0;
 	this.numTotal = numTotal || 0;
+	this.url = url;
 
 	if (id && tree)
 		tree._appCtxt.cacheSet(id, this);
@@ -280,6 +283,11 @@ function() {
 ZmOrganizer.prototype.markAllRead =
 function() {
 	this._organizerAction("read", {l: this.id});
+}
+
+ZmOrganizer.prototype.sync =
+function() {
+	this._organizerAction("sync");
 }
 
 // Notification handling

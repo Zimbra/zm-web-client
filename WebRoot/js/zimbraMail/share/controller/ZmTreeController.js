@@ -51,6 +51,7 @@ function ZmTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.MOVE] = new AjxListener(this, this._moveListener);
 	this._listeners[ZmOperation.EXPAND_ALL] = new AjxListener(this, this._expandAllListener);
 	this._listeners[ZmOperation.MARK_ALL_READ] = new AjxListener(this, this._markAllReadListener);
+	this._listeners[ZmOperation.SYNC] = new AjxListener(this, this._syncListener);
 	
 	// drag-and-drop
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -269,6 +270,16 @@ function(organizer) {
 	organizer.markAllRead();
 }
 
+/*
+* Syncs an organizer to its feed (URL).
+*
+* @param organizer	[ZmOrganizer]	organizer
+*/
+ZmTreeController.prototype._doSync =
+function(organizer) {
+	organizer.sync();
+}
+
 // Listeners
 
 /*
@@ -467,6 +478,16 @@ function(ev) {
 ZmTreeController.prototype._markAllReadListener = 
 function(ev) {
 	this._doMarkAllRead(this._getActionedOrganizer(ev));
+}
+
+/*
+* Syncs an organizer to its feed (URL).
+*
+* @param ev		[DwtUiEvent]	the UI event
+*/
+ZmTreeController.prototype._syncListener =
+function(ev) {
+	this._doSync(this._getActionedOrganizer(ev));
 }
 
 /*

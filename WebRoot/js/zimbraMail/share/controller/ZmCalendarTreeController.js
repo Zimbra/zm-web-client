@@ -128,6 +128,7 @@ function(actionMenu, type, id) {
 		var calendar = treeData.getById(id);
 		actionMenu.enable(ZmOperation.SHARE_CALENDAR, !calendar.link);
 		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_CALENDAR);
+		actionMenu.enable(ZmOperation.SYNC, (calendar.url != null));
 		if (id == ZmOrganizer.ID_ROOT) {
 			var items = this._getItems(this._actionedOverviewId);
 			var foundChecked = false;
@@ -150,7 +151,7 @@ function() {
 // Returns a list of desired action menu operations
 ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
-	return [ZmOperation.SHARE_CALENDAR, ZmOperation.DELETE, ZmOperation.EDIT_PROPS];
+	return [ZmOperation.SHARE_CALENDAR, ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.SYNC];
 }
 
 ZmCalendarTreeController.prototype.getTreeStyle =
