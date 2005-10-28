@@ -40,6 +40,7 @@ function() {
 ZmApptTabViewPage.ATTACH_HEIGHT = AjxEnv.isIE ? 24 : 22;
 ZmApptTabViewPage.UPLOAD_FIELD_NAME = "attUpload";
 ZmApptTabViewPage.ATTACH_IFRAME_NAME = Dwt.getNextId();
+ZmApptTabViewPage.CONTACT_PICKER_BID = ZmEmailAddress.TO;
 
 ZmApptTabViewPage.SHOWAS_OPTIONS = [
 	{ label: ZmMsg.free, 				value: "F", 	selected: false },
@@ -1093,12 +1094,12 @@ function(ev) {
 ZmApptTabViewPage.prototype._attendeesButtonListener = 
 function(ev) {
 	if (!this._contactPicker) {
-		var buttonInfo = [ { id: 1, value: ZmMsg.add.toLowerCase() } ];
+		var buttonInfo = [ { id:ZmApptTabViewPage.CONTACT_PICKER_BID, value:ZmMsg.add.toLowerCase() } ];
 		this._contactPicker = new ZmContactPicker(this, this._appCtxt.getShell(), this._appCtxt, buttonInfo);
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
 		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancel, this);
 	}
-	this._contactPicker.popup();
+	this._contactPicker.popup(ZmApptTabViewPage.CONTACT_PICKER_BID);
 };
 
 ZmApptTabViewPage.prototype._dateCalSelectionListener = 
@@ -1217,7 +1218,7 @@ function(args) {
 	var addrs = args[0];
 
 	// populate attendees field w/ chosen contacts from picker
-	var vec = addrs[1];
+	var vec = addrs[ZmApptTabViewPage.CONTACT_PICKER_BID];
 	var addr = vec.size() ? (vec.toString(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR) : "";
 	this._attendeesField.value += addr;
 	this._contactPicker.popdown();
