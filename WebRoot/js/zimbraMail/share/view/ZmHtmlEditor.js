@@ -242,7 +242,7 @@ ZmHtmlEditor.prototype.highlightMisspelledWords = function(words) {
 				}
 				if (/[\s\xA0]+$/.test(node.data)) {
 					// and b will contain the trailing space
-					b = node.splitText(RegExp.lastMatch.length);
+					b = node.splitText(node.data.length - RegExp.lastMatch.length);
 				}
 
 				var text = hiliteWords(node.data, false);
