@@ -468,8 +468,11 @@ ZmComposeController.prototype._resetSpellCheckButton = function() {
 };
 
 ZmComposeController.prototype._spellCheckCallback = function(args) {
-	if (args._isException)
-		throw args;
+	if (args._isException) {
+		// throw args;
+		alert(args._data);
+		return;
+	}
 	var
 		words = args._data.Body.CheckSpellingResponse,
 		self  = this;

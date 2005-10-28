@@ -1168,13 +1168,17 @@ function() {
 	if (size.x <= 0 || size.y <= 0)
 		return;
 	
-	// XXX: fudge factor. I hate you.
-	var fudge = this._composeMode == DwtHtmlEditor.HTML ? 64 : 16;
-	var remainder = size.y - Dwt.getSize(this.getHtmlElement().firstChild).y - fudge;
+	var height = size.y - Dwt.getSize(this.getHtmlElement().firstChild).y;
+	if (height < ZmComposeView.MIN_BODY_HEIGHT)
+		height = ZmComposeView.MIN_BODY_HEIGHT;
 	
-	this._bodyField.style.height = remainder > ZmComposeView.MIN_BODY_HEIGHT 
-		? remainder 
-		: ZmComposeView.MIN_BODY_HEIGHT;
+	this._htmlEditor.setSize(size.x, height);
+
+	// reset scrollbars (in FF sometimes they will stay on even if it's not the case)
+	var el = this.getHtmlElement();
+	el.style.overflow = "hidden";
+	if (height == ZmComposeView.MIN_BODY_HEIGHT)
+		el.style.overflow = "auto";
 }
 
 // Consistent spot to locate various dialogs

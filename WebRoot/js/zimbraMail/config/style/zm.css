@@ -422,15 +422,17 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .ZmHtmlEditor .DwtHtmlEditorTextArea {
 	font: 10pt monospace;
-	padding: 1px;
 	width: 100%;
 	overflow: auto;
+	padding: 1px;
 	border-width: 1px;
 	border-style: solid;
 	border-color: #000000 #AAAAAA #AAAAAA #000000;
 }
 
 .ZmHtmlEditor .DwtHtmlEditorIFrame {
+	border: 1px solid;
+	border-color: #000 #aaa #aaa #000;
 	background-color: white;
 	width: 100%;
 }

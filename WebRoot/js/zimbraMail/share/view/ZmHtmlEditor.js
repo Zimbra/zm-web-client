@@ -54,6 +54,20 @@ ZmHtmlEditor.prototype.constructor = ZmHtmlEditor;
 // Consts
 ZmHtmlEditor._VALUE = "value";
 
+ZmHtmlEditor.prototype.setSize = function(x, y) {
+	// window.status = ev.oldWidth + "x" + ev.oldHeight + " -> " + ev.newWidth + "x" + ev.newHeight;
+	var main = this.getElementById(this.getBodyFieldId());
+	main.style.display = "none";
+	var delta = 2 + 6;	// we must substract borders and paddings
+	if (this._mode == DwtHtmlEditor.HTML)
+		delta += 2;	// for some reason...
+	main.style.width = x - delta + "px";
+	main.style.height = y - delta
+		- this._toolbar1.getHtmlElement().offsetHeight
+		- this._toolbar2.getHtmlElement().offsetHeight + "px";
+	main.style.display = "";
+};
+
 ZmHtmlEditor.prototype.isHtmlEditingSupported =
 function() {
 	var isSupported = DwtHtmlEditor.prototype.isHtmlEditingSupported.call(this);
