@@ -42,6 +42,10 @@ function ZmChangePasswordDialog(parent, msgDialog, className) {
 
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this.setTabOrder([this._oldPasswordId, this._newPasswordId, this._confirmPasswordId]);
+	
+	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
+	this._minPwdLength = this._appCtxt.get(ZmSetting.PWD_MIN_LENGTH);
+	this._maxPwdLength = this._appCtxt.get(ZmSetting.PWD_MAX_LENGTH);
 };
 
 ZmChangePasswordDialog.prototype = new DwtDialog;
@@ -123,8 +127,8 @@ function() {
 	}
 
 	// check that the length is okay
-	if (newPassword.length < 6 || newPassword.length > 64) {
-		this.showMessageDialog(ZmMsg.newPasswordBadLength);
+	if (newPassword.length < this._minPwdLength || newPassword.length > this._maxPwdLength) {
+		this.showMessageDialog(AjxStringUtil.resolve(ZmMsg.newPasswordBadLength, [this._minPwdLength, this._maxPwdLength]));
 		return null;
 	}
 

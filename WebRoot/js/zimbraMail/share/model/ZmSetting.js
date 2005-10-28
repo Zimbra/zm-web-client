@@ -139,6 +139,8 @@ ZmSetting.IDLE_SESSION_TIMEOUT 			= i++;
 ZmSetting.INITIAL_SEARCH_ENABLED		= i++;
 ZmSetting.MAX_CONTACTS					= i++;
 ZmSetting.MIN_POLLING_INTERVAL			= i++;
+ZmSetting.PWD_MAX_LENGTH				= i++;
+ZmSetting.PWD_MIN_LENGTH				= i++;
 ZmSetting.QUOTA							= i++;
 ZmSetting.SAVED_SEARCHES_ENABLED		= i++;
 ZmSetting.TAGGING_ENABLED				= i++;
@@ -280,9 +282,12 @@ ZmSetting.INIT[ZmSetting.IDLE_SESSION_TIMEOUT] 			= ["zimbraMailIdleSessionTimeo
 ZmSetting.INIT[ZmSetting.INITIAL_SEARCH_ENABLED]		= ["zimbraFeatureInitialSearchPreferenceEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.MAX_CONTACTS]					= ["zimbraContactMaxNumEntries", ZmSetting.T_COS, ZmSetting.D_INT, 0];
 ZmSetting.INIT[ZmSetting.MIN_POLLING_INTERVAL]			= ["zimbraMailMinPollingInterval", ZmSetting.T_COS, ZmSetting.D_LDAP_TIME, 120];
+ZmSetting.INIT[ZmSetting.PWD_MAX_LENGTH]				= ["zimbraPasswordMaxLength", ZmSetting.T_COS, ZmSetting.D_INT, 64];
+ZmSetting.INIT[ZmSetting.PWD_MIN_LENGTH]				= ["zimbraPasswordMinLength", ZmSetting.T_COS, ZmSetting.D_INT, 6];
 ZmSetting.INIT[ZmSetting.QUOTA]							= ["zimbraMailQuota", ZmSetting.T_COS, ZmSetting.D_INT, 0];
 ZmSetting.INIT[ZmSetting.SAVED_SEARCHES_ENABLED]		= ["zimbraFeatureSavedSearchesEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.TAGGING_ENABLED]				= ["zimbraFeatureTaggingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+
 // user metadata (included with COS since the user can't change them)
 ZmSetting.INIT[ZmSetting.QUOTA_USED]					= [null, ZmSetting.T_COS, ZmSetting.D_INT];
 ZmSetting.INIT[ZmSetting.TOKEN_LIFETIME]				= [null, ZmSetting.T_COS, ZmSetting.D_INT];
