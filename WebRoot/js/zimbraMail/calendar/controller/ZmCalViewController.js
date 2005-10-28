@@ -556,7 +556,7 @@ function(appt) {
 ZmCalViewController.prototype._continueDelete = 
 function(appt, mode) {
 	try {
-		appt.cancel(this._appCtxt.getAppController(), mode);
+		appt.cancel(mode);
 	} catch (ex) {
 		var params = [appt, mode];
 		this._handleException(ex, this._continueDelete, params, false);		
@@ -708,7 +708,7 @@ function(ev) {
 ZmCalViewController.prototype._doSave = 
 function(params) {
 	try {
-		params.appt.save(this._appCtxt.getAppController());
+		params.appt.save();
 	} catch(ex) {
 		this._handleException(ex, this._doSave, params, false);
 	}
@@ -770,7 +770,7 @@ function(args) {
 		appt.setViewMode(viewMode);
 		if (startDateOffset) appt.setStartDate(new Date(appt.getStartTime() + startDateOffset));
 		if (endDateOffset) appt.setEndDate(new Date(appt.getEndTime() + endDateOffset));		
-		appt.save(this._appCtxt.getAppController());
+		appt.save();
 	} catch (ex) {
 		this.popupErrorDialog(AjxStringUtil.resolve(ZmMsg.mailSendFailure, ex.msg));
 	}

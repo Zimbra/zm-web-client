@@ -47,7 +47,7 @@ function ZmSchedTabViewPage(parent, appCtxt, apptTab, controller) {
 	this._allAttendees = new Array(48);
 	this._allAttendeeSlot = null;
 
-	this._fbCallback = new AjxCallback(this, this._fbResponseCallback);
+	this._fbCallback = new AjxCallback(this, this._handleResponseFreeBusy);
 };
 
 ZmSchedTabViewPage.prototype = new DwtTabViewPage;
@@ -485,23 +485,12 @@ function(inputEl) {
 		this._attendees[email] = inputEl._schedTableIdx;
 		// go get this attendee's free/busy info if we havent already
 		if (sched.uid != email)
+			this._updateAttendeesField = true;
 			this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), email, this._fbCallback);
 	} else {
 		this._cleanRow(inputEl, sched);
 		this._colorAllAttendees();
-	}
-
-	// get all the emails and update the appointment view
-	// XXX: optimize later!!
-	var attendeeArr = new Array();
-	for (var i = 0; i < this._schedTable.length; i++) {
-		var inputEl = Dwt.getDomObj(this._doc, this._schedTable[i].dwtInputId);
-		if (inputEl && inputEl.value.length)
-			attendeeArr.push(inputEl.value);
-	}
-	if (attendeeArr.length) {
-		this._origAttendees = attendeeArr.join("; ");
-		this._apptTab.updateAttendeesField(this._origAttendees);
+		this._updateAttendees();
 	}
 };
 
@@ -534,6 +523,24 @@ function() {
 			this._allAttendeeSlot._coloredCells.push(row.cells[i]);
 		}
 	}
+};
+
+ZmSchedTabViewPage.prototype._updateAttendees = 
+function() {
+	// get all the emails and update the appointment view
+	// XXX: optimize later!!
+	var attendeeArr = new Array();
+	for (var i = 0; i < this._schedTable.length; i++) {
+		var inputEl = Dwt.getDomObj(this._doc, this._schedTable[i].dwtInputId);
+		if (inputEl && inputEl.value.length)
+			attendeeArr.push(inputEl.value);
+	}
+	if (attendeeArr.length) {
+		this._origAttendees = attendeeArr.join("; ");
+		this._apptTab.updateAttendeesField(this._origAttendees);
+	}
+
+	this._updateAttendeesField = false;
 };
 
 ZmSchedTabViewPage.prototype._updateFreeBusy = 
@@ -835,8 +842,10 @@ function(status) {
 
 // Callbacks
 
-ZmSchedTabViewPage.prototype._fbResponseCallback =
-function(args) {
+ZmSchedTabViewPage.prototype._handleResponseFreeBusy =
+function(resp) {
+	var args = resp.getResponse().GetFreeBusyResponse.usr;
+
 	for (var i = 0; i < args.length; i++) {
 		var usr = args[i];
 
@@ -864,6 +873,9 @@ function(args) {
 				this._colorAllAttendees();
 		}
 	}
+
+	if (this._updateAttendeesField)
+		this._updateAttendees();
 };
 
 
