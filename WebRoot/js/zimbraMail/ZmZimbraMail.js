@@ -1105,7 +1105,7 @@ function(ev) {
 		var fields = ev.getDetail("fields");
 		if (fields && fields[ZmOrganizer.F_UNREAD]) {
 			var search = this._appCtxt.getCurrentSearch();
-			if (ev.source.id == search.folderId || ev.source.id == search.tagId)
+			if (search && (ev.source.id == search.folderId || ev.source.id == search.tagId))
 				Dwt.setTitle(search.getTitle());
 		}		
 	}
