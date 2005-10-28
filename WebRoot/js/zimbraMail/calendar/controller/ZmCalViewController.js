@@ -880,7 +880,7 @@ function(args) {
 ZmCalViewController.prototype._handleApptEditRespondAction = 
 function(ev) {
 	var appt = this._listView[this._currentView].getSelection()[0];
-	var respCallback = new AjxCallback(this, this._handleResponseHandleApptRespondAction, [appt, ev]);
+	var respCallback = new AjxCallback(this, this._handleResponseHandleApptEditRespondAction, [appt, ev]);
 	appt.getDetails(null, respCallback);
 };
 

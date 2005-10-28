@@ -363,25 +363,27 @@ function(ev) {
 	this._editInviteReply(action, compId);
 }
 
-ZmMailListController.prototype._getInviteReplyBody = function (type) {
+ZmMailListController.prototype._getInviteReplyBody = 
+function(type) {
 	var replyBody = null;
 	switch (type) {
-	case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyAcceptMessage; break;
-	case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyDeclineMessage; break;
-	case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyTentativeMessage; break;
-	case ZmOperation.REPLY_NEW_TIME: 	replyBody = ZmMsg.defaultInviteReplyNewTimeMessage;	break;
+		case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyAcceptMessage; break;
+		case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyDeclineMessage; break;
+		case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyTentativeMessage; break;
+		case ZmOperation.REPLY_NEW_TIME: 	replyBody = ZmMsg.defaultInviteReplyNewTimeMessage;	break;
 	}
 	
 	return replyBody;
 };
 
-ZmMailListController.prototype._getInviteReplySubject = function (type) {
+ZmMailListController.prototype._getInviteReplySubject = 
+function(type) {
 	var replySubject = null;
 	switch (type) {
-	case ZmOperation.REPLY_ACCEPT:		replySubject = ZmMsg.subjectAccept + ": "; break;
-	case ZmOperation.REPLY_DECLINE:		replySubject = ZmMsg.subjectDecline + ": "; break;
-	case ZmOperation.REPLY_TENTATIVE:	replySubject = ZmMsg.subjectTentative + ": "; break;
-	case ZmOperation.REPLY_NEW_TIME:	replySubject = ZmMsg.subjectNewTime + ": "; break;
+		case ZmOperation.REPLY_ACCEPT:		replySubject = ZmMsg.subjectAccept + ": "; break;
+		case ZmOperation.REPLY_DECLINE:		replySubject = ZmMsg.subjectDecline + ": "; break;
+		case ZmOperation.REPLY_TENTATIVE:	replySubject = ZmMsg.subjectTentative + ": "; break;
+		case ZmOperation.REPLY_NEW_TIME:	replySubject = ZmMsg.subjectNewTime + ": "; break;
 	}
 	return replySubject;
 };
@@ -555,52 +557,6 @@ function(menu, bHasUnread, bHasRead) {
 		menu.enable(ZmOperation.MARK_READ, false);
 	if (!bHasRead)
 		menu.enable(ZmOperation.MARK_UNREAD, false);
-}
-
-// This method is actually called by a pushed view's controller when a user 
-// attempts to page conversations (from CV) or messages (from MV ala TV).
-// We want the underlying view (CLV or MLV) to update itself silently as it 
-// feeds the next/prev conv/msg to its respective controller.
-ZmMailListController.prototype.pageItemSilentlyXXX = 
-function(currentItem, bNextItem) {
-	
-	// find the current item w/in its list - optimize?
-	var bFound = false;
-	var list = this._list.getArray();
-	for (var i = 0; i < list.length; i++) {
-		if (currentItem == list[i]) {
-			bFound = true;
-			break;
-		}
-	}
-	if (!bFound) return;
-		
-	var itemIdx = bNextItem ? i+1 : i-1;
-	if (itemIdx < 0)
-		throw new DwtException("Bad index!", DwtException.INTERNAL_ERROR, "ZmMailListController.pageItemSilently");
-	
-	var bPageWasCached = true;
-	if (itemIdx >= list.length) {
-		if (this._list.hasMore()) {
-			bPageWasCached = this._paginate(this._currentView, true, itemIdx);
-		} else {
-			// ERROR: no more conv's to retrieve!
-			throw new DwtException("Index has exceeded number of items in list!", DwtException.INTERNAL_ERROR, "ZmMailListController.pageItemSilently");
-		}
-	} else {
-		// this means the conv must be cached. Find out if we need to page back/forward.
-		var offset = this._listView[this._currentView].getOffset();
-		var limit = this._listView[this._currentView].getLimit();
-		if (itemIdx >= offset+limit)
-			bPageWasCached = this._paginate(this._currentView, true);
-		else if (itemIdx < offset)
-			bPageWasCached = this._paginate(this._currentView, false);
-	}	
-
-	if (bPageWasCached) {
-		var newItem = list[itemIdx];
-		this._listView[this._currentView].emulateDblClick(newItem);
-	}
 }
 
 /**
