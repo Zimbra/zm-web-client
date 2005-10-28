@@ -96,7 +96,7 @@ function(overviewId, listener) {
 
 ZmCalendarTreeController.prototype.show = 
 function(overviewId, showUnread, omit, forceCreate) {
-	var firstTime = !this._treeView[overviewId];
+	var firstTime = (!this._treeView[overviewId] || forceCreate);
 
 	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit, forceCreate);
 	

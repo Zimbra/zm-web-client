@@ -115,7 +115,7 @@ function() {
 */
 ZmTreeController.prototype.show = 
 function(overviewId, showUnread, omit, forceCreate) {
-	if (!this._treeView[overviewId]) {
+	if (!this._treeView[overviewId] || forceCreate) {
 		this._setup(overviewId, forceCreate);
 		this._treeView[overviewId].set(this._dataTree, showUnread, omit);
 	}
