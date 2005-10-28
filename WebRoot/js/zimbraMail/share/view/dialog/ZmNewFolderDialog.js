@@ -41,7 +41,7 @@ function ZmNewFolderDialog(parent, msgDialog, className) {
 
 ZmNewFolderDialog._OVERVIEW_ID = "ZmNewFolderDialog";
 
-ZmNewFolderDialog._feedEnabled = false;
+ZmNewFolderDialog._feedEnabled = true;
 
 ZmNewFolderDialog.prototype = new ZmDialog;
 ZmNewFolderDialog.prototype.constructor = ZmNewFolderDialog;
