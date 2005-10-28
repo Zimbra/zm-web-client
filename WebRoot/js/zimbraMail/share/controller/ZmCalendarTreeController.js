@@ -40,14 +40,14 @@ function ZmCalendarTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 
 	this._eventMgrs = {};
-}
+};
 
 ZmCalendarTreeController.prototype = new ZmTreeController;
 ZmCalendarTreeController.prototype.constructor = ZmCalendarTreeController;
 
 ZmCalendarTreeController.prototype.toString = function() {
 	return "ZmCalendarTreeController";
-}
+};
 
 // Constants
 
@@ -55,10 +55,6 @@ ZmCalendarTreeController.COLOR_CLASSNAMES = [
 	// NOTE: We use Gray instead of GrayBg so that it doesn't blend into background
 	"OrangeBg", "BlueBg", "CyanBg", "GreenBg", "PurpleBg", "RedBg", "YellowBg", "PinkBg", "Gray"
 ];
-
-// Data
-
-ZmCalendarTreeController.prototype._eventMgrs;
 
 // Public methods
 
@@ -75,7 +71,7 @@ function(overviewId) {
 	}
 
 	return calendars;
-}
+};
 
 ZmCalendarTreeController.prototype.addSelectionListener =
 function(overviewId, listener) {
@@ -87,22 +83,22 @@ function(overviewId, listener) {
 		this._eventMgrs[overviewId]._selEv = new DwtSelectionEvent(true);
 	}
 	this._eventMgrs[overviewId].addListener(DwtEvent.SELECTION, listener);
-}
+};
 
 ZmCalendarTreeController.prototype.removeSelectionListener =
 function(overviewId, listener) {
 	if (this._eventMgrs[overviewId]) {
 		this._eventMgrs[overviewId].removeListener(DwtEvent.SELECTION, listener);
 	}
-}
+};
 
 // Protected methods
 
 ZmCalendarTreeController.prototype.show = 
-function(overviewId, showUnread, omit) {
+function(overviewId, showUnread, omit, forceCreate) {
 	var firstTime = !this._treeView[overviewId];
 
-	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit);
+	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit, forceCreate);
 	
 	if (firstTime) {
 		var treeView = this.getTreeView(overviewId);
@@ -118,7 +114,7 @@ function(overviewId, showUnread, omit) {
 			}
 		}
 	}
-}
+};
 
 ZmCalendarTreeController.prototype.resetOperations = 
 function(actionMenu, type, id) {
@@ -140,36 +136,36 @@ function(actionMenu, type, id) {
 			actionMenu.enable(ZmOperation.CLEAR_ALL, foundChecked);
 		}
 	}
-}
+};
 
 // Returns a list of desired header action menu operations
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [ZmOperation.NEW_CALENDAR, ZmOperation.CHECK_ALL, ZmOperation.CLEAR_ALL];
-}
+};
 
 // Returns a list of desired action menu operations
 ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
 	return [ZmOperation.SHARE_CALENDAR, ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.SYNC];
-}
+};
 
 ZmCalendarTreeController.prototype.getTreeStyle =
 function() {
 	return DwtTree.CHECKEDITEM_STYLE;
-}
+};
 
 // Method that is run when a tree item is left-clicked
 ZmCalendarTreeController.prototype._itemClicked =
 function() {
 	// TODO
-}
+};
 
 // Handles a drop event
 ZmCalendarTreeController.prototype._dropListener =
 function() {
 	// TODO
-}
+};
 
 // Listener callbacks
 
@@ -198,7 +194,7 @@ function(ev, treeView) {
 			this._setTreeItemColor(node, object.color);
 		}
 	}
-}
+};
 
 ZmCalendarTreeController.prototype._treeViewListener =
 function(ev) {
@@ -206,40 +202,7 @@ function(ev) {
 	if (ev.detail == DwtTree.ITEM_CHECKED) { 
 		var overviewId = ev.item.getData(ZmTreeView.KEY_ID);
 		var calendar = ev.item.getData(Dwt.KEY_OBJECT);
-/*		if (calendar.id == ZmOrganizer.ID_ROOT) {
-			var item = ev.item;
 
-			var checked = item.getChecked(); // state already changed by this time
-			//item.setChecked(checked);
-			
-			var subitems = item.getItems();
-			var checkedItems = null;
-			for (var i = 0;  i < subitems.length; i++) {
-				var subitem = subitems[i];
-				if (subitem.getChecked() != checked) {
-					subitem.setChecked(checked);
-					if (checkedItems == null) checkedItems = [];
-					checkedItems.push(subitem);
-				}
-			}
-
-			// notify listeners of pseudo-selection
-			if (checkedItems && this._eventMgrs[overviewId]) {
-				this._notifyListeners(
-					overviewId, 
-					DwtEvent.SELECTION, checkedItems, DwtTree.ITEM_CHECKED, 
-					ev, this._eventMgrs[overviewId]._selEv
-				);
-			}
-			
-			// a root selection is never propagated
-			return;
-		}
-
-		// uncheck root
-		var root = ev.item._tree.getItems()[0];
-		root.setChecked(false);
-*/			
 		// notify listeners of selection
 		if (this._eventMgrs[overviewId]) {
 			this._eventMgrs[overviewId].notifyListeners(DwtEvent.SELECTION, ev);
@@ -249,7 +212,7 @@ function(ev) {
 
 	// default processing
 	ZmTreeController.prototype._treeViewListener.call(this, ev);
-}
+};
 
 ZmCalendarTreeController.prototype._newCalListener =
 function(ev) {
@@ -284,12 +247,12 @@ function(ev) {
 	sharePropsDialog.setFolder(calendar);
 	sharePropsDialog.setShareInfo(share);
 	sharePropsDialog.popup();
-}
+};
 
 ZmCalendarTreeController.prototype._mountCalListener =
 function(ev) {
 	alert("TODO: mount calendar dialog");
-}
+};
 
 ZmCalendarTreeController.prototype._editPropsListener =
 function(ev) {
@@ -299,7 +262,7 @@ function(ev) {
 	var folder = this._pendingActionData;
 	folderPropsDialog.setFolder(folder);
 	folderPropsDialog.popup();
-}
+};
 
 ZmCalendarTreeController.prototype._notifyListeners =
 function(overviewId, type, items, detail, srcEv, destEv) {
