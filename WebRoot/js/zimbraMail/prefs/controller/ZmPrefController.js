@@ -177,22 +177,27 @@ function(args) {
 	soapDoc.set("password", args[1]);
 	var accountNode = soapDoc.set("account", this._appCtxt.get(ZmSetting.USERNAME));
 	accountNode.setAttribute("by", "name");
-	try { 
-		var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
-		this._passwordDialog.popdown();
-		if (resp.ChangePasswordResponse) {
-			this._appCtxt.getAppController().setStatusMsg(ZmMsg.passwordChangeSucceeded);
-		} else {
-			throw new AjxException(ZmMsg.passwordChangeFailed + " " + ZmMsg.errorContact, ZmCsfeException.CSFE_SVC_ERROR, "changePassword");
-		}
-	} catch (ex) {
-		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED) {
-			this._appCtxt.getAppController().setStatusMsg(ZmMsg.oldPasswordIsIncorrect);
-		} else {
-			this._handleException(ex, this._passwordChangeListener, args, false);
-		}
-	}
+
+	var respCallback = new AjxCallback(this, this._handleResponseChangePassword);
+	var errorCallback = new AjxCallback(this, this._handleErrorChangePassword);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
 }
+
+ZmPrefController.prototype._handleResponseChangePassword =
+function(result) {
+	this._passwordDialog.popdown();
+	this._appCtxt.getAppController().setStatusMsg(ZmMsg.passwordChangeSucceeded);
+};
+
+ZmPrefController.prototype._handleErrorChangePassword =
+function(ex) {
+	if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED) {
+		this._appCtxt.getAppController().setStatusMsg(ZmMsg.oldPasswordIsIncorrect);
+		return true;
+	} else {
+		return false;
+	}
+};
 
 ZmPrefController.prototype.popShield =
 function() {
