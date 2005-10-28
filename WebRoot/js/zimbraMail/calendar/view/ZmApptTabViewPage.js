@@ -316,14 +316,15 @@ function(appt, attach) {
 
 	if (attach == null) {
 		// add event handlers as necessary
+		var tvpId = AjxCore.assignId(this);
 		var attachRemoveSpan = Dwt.getDomObj(idoc, attachRemoveId);
-		attachRemoveSpan._tabViewPage = this;
+		attachRemoveSpan._tabViewPageId = tvpId;
 		attachRemoveSpan._parentDiv = div;
 		Dwt.setHandler(attachRemoveSpan, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
 		// trap key presses in IE for input field so we can ignore ENTER key (bug 961)
 		if (AjxEnv.isIE) {
 			var attachInputEl = Dwt.getDomObj(idoc, attachInputId);
-			attachInputEl._tabViewPage = this;
+			attachInputEl._tabViewPageId = tvpId;
 			Dwt.setHandler(attachInputEl, DwtEvent.ONKEYDOWN, ZmApptTabViewPage._onKeyDown);
 		}
 	}
