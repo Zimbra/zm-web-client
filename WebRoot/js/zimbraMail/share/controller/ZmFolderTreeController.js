@@ -69,7 +69,7 @@ function(parent, type, id) {
 	// user folder or Folders header
 	if (id == ZmOrganizer.ID_ROOT || (!folder.isSystem())) {
 		parent.enableAll(true);
-		parent.enable(ZmOperation.SYNC, (folder.url != null));
+		parent.enable(ZmOperation.SYNC, folder.isFeed());
 	// system folder
 	} else {
 		parent.enableAll(false);

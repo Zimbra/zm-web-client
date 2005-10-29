@@ -470,6 +470,14 @@ function () {
 	return (this.id < ZmOrganizer.FIRST_USER_ID[this.type]);
 };
 
+/**
+* Returns true is this organizer gets its contents from an external feed.
+*/
+ZmOrganizer.prototype.isFeed =
+function () {
+	return (this.url != null);
+};
+
 ZmOrganizer.getSortIndex =
 function(child, sortFunction) {
 	if (!sortFunction) return null;

@@ -374,6 +374,7 @@ function(includeRoot) {
 ZmFolder.prototype.mayContain =
 function(what) {
 	if (!what) return true;
+	if (this.isFeed()) return false;
 
 	var invalid = false;
 	if (what instanceof ZmFolder) {

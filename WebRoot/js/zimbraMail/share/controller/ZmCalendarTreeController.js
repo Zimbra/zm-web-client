@@ -124,7 +124,7 @@ function(actionMenu, type, id) {
 		var calendar = treeData.getById(id);
 		actionMenu.enable(ZmOperation.SHARE_CALENDAR, !calendar.link);
 		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_CALENDAR);
-		actionMenu.enable(ZmOperation.SYNC, (calendar.url != null));
+		actionMenu.enable(ZmOperation.SYNC, calendar.isFeed());
 		if (id == ZmOrganizer.ID_ROOT) {
 			var items = this._getItems(this._actionedOverviewId);
 			var foundChecked = false;
