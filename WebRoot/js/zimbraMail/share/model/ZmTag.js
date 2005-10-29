@@ -28,7 +28,7 @@ function ZmTag(id, name, color, parent, tree, numUnread) {
 	ZmOrganizer.call(this, ZmOrganizer.TAG, id, name, parent, tree, numUnread);
 	color = color || ZmTag.DEFAULT_COLOR;
 	this.color = color;
-}
+};
 
 ZmTag.prototype = new ZmOrganizer;
 ZmTag.prototype.constructor = ZmTag;
@@ -36,7 +36,7 @@ ZmTag.prototype.constructor = ZmTag;
 ZmTag.prototype.toString = 
 function() {
 	return "ZmTag";
-}
+};
 
 // color icons
 ZmTag.COLOR_ICON = new Object();
@@ -66,7 +66,6 @@ ZmTag.ID_FROM_ME	= 34;
 ZmTag.ID_REPLIED	= 35;
 ZmTag.ID_FORWARDED	= 36;
 ZmTag.ID_ATTACHED	= 37;
-ZmTag.FIRST_USER_ID	= 64;
 
 ZmTag.DEFAULT_COLOR = ZmOrganizer.DEFAULT_COLOR;
 
@@ -77,21 +76,21 @@ ZmTag.DEFAULT_COLOR = ZmOrganizer.DEFAULT_COLOR;
 */
 ZmTag.createFromJs =
 function(parent, obj, tree, sorted) {
-	if (obj.id < ZmTag.FIRST_USER_ID)
+	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG])
 		return;
 	var tag = new ZmTag(obj.id, obj.name, ZmTag.checkColor(obj.color), parent, tree, obj.u);
 	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;
 	parent.children.add(tag, index);
 
 	return tag;
-}
+};
 
 ZmTag.sortCompare = 
 function(tagA, tagB) {
 	if (tagA.name.toLowerCase() > tagB.name.toLowerCase()) return 1;
 	if (tagA.name.toLowerCase() < tagB.name.toLowerCase()) return -1;
 	return 0;
-}
+};
 
 ZmTag.checkName =
 function(name) {
@@ -102,12 +101,12 @@ function(name) {
 		return AjxStringUtil.resolve(ZmMsg.errorInvalidName, name);
 
 	return null;
-}
+};
 
 ZmTag.checkColor =
 function(color) {
 	return ((color != null) && (color >= 0 && color <= ZmTag.MAX_COLOR)) ? color : ZmTag.DEFAULT_COLOR;
-}
+};
 
 ZmTag.prototype.create =
 function(name, color, callback, errorCallback) {
@@ -117,7 +116,7 @@ function(name, color, callback, errorCallback) {
 	tagNode.setAttribute("name", name);
 	tagNode.setAttribute("color", color);
 	this.tree._appCtxt.getAppController().sendRequest(soapDoc, true, callback, errorCallback);
-}
+};
 
 ZmTag.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
@@ -126,18 +125,18 @@ function(showUnread, maxLength, noMarkup) {
 	} else {
 		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
 	}
-}
+};
 
 ZmTag.prototype.getIcon = 
 function() {
 	return ZmTag.COLOR_ICON[this.color];
-}
+};
 
 ZmTag.prototype.notifyCreate =
 function(obj) {
 	var child = ZmTag.createFromJs(this, obj, this.tree, true);
 	this._eventNotify(ZmEvent.E_CREATE, child);
-}
+};
 
 /**
 * Tags come from back end as a flat list, and we manually create a root tag, so all tags
@@ -146,16 +145,16 @@ function(obj) {
 */
 ZmTag.createFromJs =
 function(parent, obj, tree, sorted) {
-	if (obj.id < ZmTag.FIRST_USER_ID)
+	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG])
 		return;
 	var tag = new ZmTag(obj.id, obj.name, ZmOrganizer.checkColor(obj.color), parent, tree, obj.u);
 	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;
 	parent.children.add(tag, index);
 
 	return tag;
-}
+};
 
 ZmTag.prototype.getIcon = 
 function() {
 	return ZmTag.COLOR_ICON[this.color];
-}
+};

@@ -58,7 +58,7 @@ function ZmItem(appCtxt, type, id, list) {
 	
 	if (id)
 		appCtxt.cacheSet(id, this);
-}
+};
 
 ZmItem.prototype = new ZmModel;
 ZmItem.prototype.constructor = ZmItem;
@@ -161,7 +161,7 @@ ZmItem.prototype.getById =
 function(id) {
 	if (id == this.id)
 		return this;
-}
+};
 
 ZmItem.prototype.clear =
 function() {
@@ -174,7 +174,7 @@ function() {
 	for (var i in this.tagHash)
 		this.tagHash[i] = null;
 	this.tagHash = new Object();
-}
+};
 
 /**
 * Returns true is this item has the given tag.
@@ -184,7 +184,7 @@ function() {
 ZmItem.prototype.hasTag =
 function(tagId) {
 	return (this.tagHash[tagId] == true);
-}
+};
 
 /**
 * Returns ID of the folder that contains this item, if available.
@@ -192,7 +192,7 @@ function(tagId) {
 ZmItem.prototype.getFolderId =
 function() {
 	return this.folderId;
-}
+};
 
 /**
 * Returns the ID of the appropriate tag image for this item.
@@ -212,7 +212,7 @@ function() {
 		tagImageInfo = "MiniTagStack";
 	}
 	return tagImageInfo;
-}
+};
 
 // Notification handling
 
@@ -225,7 +225,7 @@ function() {
 	if (this.list)
 		this.list.deleteLocal([this]);
 	this._notify(ZmEvent.E_DELETE);
-}
+};
 
 /**
 * Handles a modification notification.
@@ -260,7 +260,7 @@ function(obj) {
 			this.list.moveLocal([this], obj.l);
 		this._notify(ZmEvent.E_MOVE);
 	}
-}
+};
 
 // Local change handling
 
@@ -273,7 +273,7 @@ function(obj) {
 ZmItem.prototype.flagLocal =
 function(flag, on) {
 	this[ZmItem.FLAG_PROP[flag]] = on;
-}
+};
 
 /**
 * Adds or removes the given tag for this item.
@@ -302,7 +302,7 @@ function(tagId, doTag) {
 	}
 	
 	return bNotify;
-}
+};
 
 ZmItem.prototype.removeAllTagsLocal =
 function() {
@@ -310,12 +310,12 @@ function() {
 	for (var i in this.tagHash) {
 		delete this.tagHash[i];
 	}
-}
+};
 
 /**
 * Here for completeness, in case an item wants to do something while being deleted.
 */
-ZmItem.prototype.deleteLocal = function() {}
+ZmItem.prototype.deleteLocal = function() {};
 
 /**
 * Updates the folder for this item.
@@ -325,7 +325,7 @@ ZmItem.prototype.deleteLocal = function() {}
 ZmItem.prototype.moveLocal =
 function(folderId) {
 	this.folderId = folderId;
-}
+};
 
 // Takes a comma-separated list of tag IDs and applies the tags to this item.
 ZmItem.prototype._parseTags =
@@ -336,11 +336,11 @@ function(str) {
 		var tags = str.split(",");
 		for (var i = 0; i < tags.length; i++) {
 			var tagId = Number(tags[i]);
-			if (tagId >= ZmTag.FIRST_USER_ID)
+			if (tagId >= ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG])
 				this.tagLocal(tagId, true);
 		}
 	}
-}
+};
 
 // Takes a string of flag chars and applies them to this item.
 ZmItem.prototype._parseFlags =
@@ -350,7 +350,7 @@ function(str) {
 		var on = (str && (str.indexOf(flag) != -1)) ? true : false;
 		this.flagLocal(flag, on);
 	}
-}
+};
 
 // Listener notification
 
@@ -362,7 +362,7 @@ function(event, details) {
 		this._evt.setDetails(details);
 		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
 	}
-}
+};
 
 // Notifies listeners on this item's list
 ZmItem.prototype._listNotify =
@@ -372,14 +372,14 @@ function(event, details) {
 		this._evt.setDetails(details);
 		this.list._eventNotify(event, [this], details);
 	}
-}
+};
 
 ZmItem.prototype._notify =
 function(event, details) {
 	this._eventNotify(event, details);
 	if (this.list)
 		this._listNotify(event, details);
-}
+};
 
 /*
 * Returns a list of flags that apply to this type of item.
@@ -387,4 +387,4 @@ function(event, details) {
 ZmItem.prototype._getFlags =
 function() {
 	return [ZmItem.FLAG_FLAGGED, ZmItem.FLAG_ATTACH];
-}
+};

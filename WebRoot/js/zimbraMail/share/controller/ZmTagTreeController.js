@@ -40,7 +40,7 @@ function ZmTagTreeController(appCtxt) {
 	this._listeners[ZmOperation.NEW_TAG] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_TAG] = new AjxListener(this, this._renameListener);
 	this._listeners[ZmOperation.COLOR_MENU] = new AjxListener(this, this._colorListener);
-}
+};
 
 ZmTagTreeController.prototype = new ZmTreeController;
 ZmTagTreeController.prototype.constructor = ZmTagTreeController;
@@ -50,7 +50,7 @@ ZmTagTreeController.prototype.constructor = ZmTagTreeController;
 ZmTagTreeController.prototype.toString = 
 function() {
 	return "ZmTagTreeController";
-}
+};
 
 /*
 * Adds listeners for the color change menu items.
@@ -64,7 +64,7 @@ function() {
 		for (var i = 0; i < items.length; i++)
 			items[i].addSelectionListener(this._listeners[ZmOperation.COLOR_MENU]);
 	}
-}
+};
 
 /**
 * Enables/disables operations based on context.
@@ -76,11 +76,11 @@ ZmTagTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	var tag = this._dataTree.getById(id);
 	parent.enableAll(true);
-	if (id < ZmTag.FIRST_USER_ID) // system tag
+	if (tag.isSystem())
 		parent.enable([ZmOperation.RENAME_TAG, 
 					   ZmOperation.COLOR_MENU, ZmOperation.DELETE], false);
 	parent.enable(ZmOperation.MARK_ALL_READ, (tag && (tag.numUnread > 0)));
-}
+};
 
 // Private/protected methods
 
@@ -90,7 +90,7 @@ function(parent, type, id) {
 ZmTagTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [ZmOperation.NEW_TAG];
-}
+};
 
 /*
 * Returns ops available for tags.
@@ -104,7 +104,7 @@ function() {
 			  ZmOperation.DELETE,
 			  ZmOperation.COLOR_MENU);
 	return list;
-}
+};
 
 /*
 * Returns a "New Tag" dialog.
@@ -112,7 +112,7 @@ function() {
 ZmTagTreeController.prototype._getNewDialog =
 function() {
 	return this._appCtxt.getNewTagDialog();
-}
+};
 
 /*
 * Returns a "Rename Folder" dialog.
@@ -120,7 +120,7 @@ function() {
 ZmTagTreeController.prototype._getRenameDialog =
 function() {
 	return this._appCtxt.getRenameTagDialog();
-}
+};
 
 // Actions
 
@@ -135,7 +135,7 @@ function(tag) {
 	var searchController = this._appCtxt.getSearchController();
 	var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
 	searchController.search({query: 'tag:"' + tag.name + '"', types: types});
-}
+};
 
 // Listeners
 
@@ -156,7 +156,7 @@ function(ev) {
 	var msg = AjxStringUtil.resolve(ZmMsg.askDeleteTag, organizer.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
 	this._deleteShield.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 	this._deleteShield.popup();
-}
+};
 
 /*
 * Changes a tag's color.
@@ -168,7 +168,7 @@ function(ev) {
 	var tag = this._getActionedOrganizer(ev);
 	if (tag)
 		tag.setColor(ev.item.getData(ZmOperation.MENUITEM_ID));
-}
+};
 
 /*
 * Handles the potential drop of something onto a tag. Only items may be dropped.
@@ -197,7 +197,7 @@ function(ev) {
 		var items = (data instanceof Array) ? data : [data];
 		ctlr._doTag(items, ev.targetControl.getData(Dwt.KEY_OBJECT), true);
 	}
-}
+};
 
 /*
 * Handles a color change event.
@@ -216,7 +216,7 @@ function(ev, treeView) {
 	} else {
 		ZmTreeController.prototype._changeListener.call(this, ev, treeView);
 	}
-}
+};
 
 // Callbacks
 
@@ -231,7 +231,7 @@ ZmTagTreeController.prototype._newCallback =
 function(args) {
 	this._doCreate(args[0], args[1]);
 	this._clearDialog(this._getNewDialog());
-}
+};
 
 // Actions
 
@@ -246,7 +246,7 @@ function(name, color) {
 	var parent = this._dataTree.root;
 	var errorCallback = new AjxCallback(this, this._handleErrorDoCreate);
 	parent.create(name, color, null, errorCallback);
-}
+};
 
 ZmTagTreeController.prototype._handleErrorDoCreate =
 function(ex) {
@@ -258,4 +258,4 @@ function(ex) {
 	} else {
 		return false;
 	}
-}
+};

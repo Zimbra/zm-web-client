@@ -60,7 +60,7 @@ function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url) {
 		tree._appCtxt.cacheSet(id, this);
 
 	this.children = new AjxVector();
-}
+};
 
 // organizer types
 ZmOrganizer.FOLDER	= ZmEvent.S_FOLDER;
@@ -74,13 +74,17 @@ ZmOrganizer.ID_TRASH	= 3;
 ZmOrganizer.ID_SPAM		= 4;
 ZmOrganizer.ID_CALENDAR	= 10;
 
-ZmOrganizer.FIRST_USER_ID = 256;
-
-ZmOrganizer.SOAP_CMD = new Object();
+ZmOrganizer.SOAP_CMD = {};
 ZmOrganizer.SOAP_CMD[ZmOrganizer.FOLDER]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.TAG]		= "TagAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.SEARCH]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.CALENDAR]	= "FolderAction";
+
+ZmOrganizer.FIRST_USER_ID = {};
+ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]	= 256;
+ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]		= 64;
+ZmOrganizer.FIRST_USER_ID[ZmOrganizer.SEARCH]	= 256;
+ZmOrganizer.FIRST_USER_ID[ZmOrganizer.CALENDAR]	= 256;
 
 // fields that can be part of a displayed organizer
 var i = 1;
@@ -145,7 +149,8 @@ ZmOrganizer.prototype.create = function() {};
 
 // Static methods
 
-ZmOrganizer.getViewName = function(organizerType) {
+ZmOrganizer.getViewName =
+function(organizerType) {
 	return ZmOrganizer.VIEWS[organizerType];
 };
 
@@ -273,8 +278,7 @@ function() {
 	DBG.println(AjxDebug.DBG1, "deleting: " + this.name + ", ID: " + this.id);
 	var isEmptyOp = (this.type == ZmOrganizer.FOLDER && (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH));
 	// make sure we're not deleting a system object (unless we're emptying SPAM or TRASH)
-	if (this.id < ZmTree.CLASS[this.type].FIRST_USER_ID && !isEmptyOp)
-		return;
+	if (this.isSystem() && !isEmptyOp) return;
 	
 	var action = isEmptyOp ? "empty" : "delete";
 	this._organizerAction(action);
@@ -463,7 +467,7 @@ function(parentId) {
 */
 ZmOrganizer.prototype.isSystem =
 function () {
-	return (this.id < ZmTree.CLASS[this.type].FIRST_USER_ID);
+	return (this.id < ZmOrganizer.FIRST_USER_ID[this.type]);
 };
 
 ZmOrganizer.getSortIndex =

@@ -43,7 +43,7 @@
 function ZmFolder(id, name, parent, tree, numUnread, numTotal, url) {
 
 	ZmOrganizer.call(this, ZmOrganizer.FOLDER, id, name, parent, tree, numUnread, numTotal, url);
-}
+};
 
 ZmFolder.prototype = new ZmOrganizer;
 ZmFolder.prototype.constructor = ZmFolder;
@@ -64,7 +64,6 @@ ZmFolder.LAST_SYSTEM_ID		= 6;
 ZmFolder.ID_CONTACTS 		= 7;
 ZmFolder.ID_TAGS	 		= 8;
 ZmFolder.ID_CALENDAR		= ZmOrganizer.ID_CALENDAR;
-ZmFolder.FIRST_USER_ID		= ZmOrganizer.FIRST_USER_ID;
 
 // system folder names
 ZmFolder.MSG_KEY = new Object();
@@ -124,7 +123,8 @@ function(parent, obj, tree) {
 	if (!(obj && obj.id)) return;
 
 	// check ID - can't be lower than root, or in tag range
-	if (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID && obj.id < ZmFolder.FIRST_USER_ID)) return;
+	if (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID &&
+		obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER])) return;
 	
 	// ignore calendar folders
 	if (obj.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) return;
@@ -150,7 +150,7 @@ function(parent, obj, tree) {
 	}
 
 	return folder;
-}
+};
 
 /**
 * Comparison function for folders. Intended for use on a list of user folders through a call to Array.sort().
@@ -167,7 +167,7 @@ function(folderA, folderB) {
 	if (folderA.name.toLowerCase() > folderB.name.toLowerCase()) return 1;
 	if (folderA.name.toLowerCase() < folderB.name.toLowerCase()) return -1;
 	return 0;
-}
+};
 
 /**
 * Checks a folder name for validity. Returns an error message if the
@@ -179,12 +179,12 @@ function(folderA, folderB) {
 ZmFolder.checkName =
 function(name) {
 	return ZmOrganizer.checkName(name);
-}
+};
 
 ZmFolder.prototype.toString = 
 function() {
 	return "ZmFolder";
-}
+};
 
 // Searches created here since they may be created under a folder or
 // another search.
@@ -218,7 +218,7 @@ function(name, search, url) {
 		if (url) folderNode.setAttribute("url", url);
 	}
 	this.tree._appCtxt.getAppController().sendRequest(soapDoc, true);
-}
+};
 
 // User can move a folder to Trash even if there's already a folder there with the
 // same name. We find a new name for this folder and rename it before the move.
@@ -231,7 +231,7 @@ function(newParent) {
 	if (origName != name)
 		this.rename(name);
 	ZmOrganizer.prototype.move.call(this, newParent);
-}
+};
 
 ZmFolder.prototype.isUnder =
 function(id) {
@@ -245,12 +245,12 @@ function(id) {
 			parent = parent.parent;
 	}
 	return false;
-}
+};
 
 ZmFolder.prototype.isInTrash =
 function() {
 	return this.isUnder(ZmFolder.ID_TRASH);
-}
+};
 
 ZmFolder.prototype.hasSearch =
 function(id) {
@@ -264,7 +264,7 @@ function(id) {
 			return true;
 
 	return false;
-}
+};
 
 /**
 * Handles the creation of a folder or search folder. This folder is the parent
@@ -277,19 +277,19 @@ function(id) {
 ZmFolder.prototype.notifyCreate =
 function(obj, isSearch) {
 	// ignore creates of system folders
-	if (obj.id < ZmFolder.FIRST_USER_ID) return;
+	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]) return;
 
 	var folder = isSearch ? ZmSearchFolder.createFromJs(this, obj, this.tree) :
 							ZmFolder.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
 	this.children.add(folder, index);
 	this._eventNotify(ZmEvent.E_CREATE, folder);
-}
+};
 
 ZmFolder.prototype.createQuery =
 function(pathOnly) {
 	var query;
-	if (this.id < ZmFolder.FIRST_USER_ID) {
+	if (this.isSystem()) {
 		query = pathOnly ? ZmFolder.QUERY_NAME[this.id] : "in:" + ZmFolder.QUERY_NAME[this.id];
 		return query;
 	}
@@ -302,7 +302,7 @@ function(pathOnly) {
 	path = '"' + path + '"';
 	query = pathOnly ? path : "in:" + path;
 	return query;
-}
+};
 
 ZmFolder.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
@@ -319,7 +319,7 @@ function(showUnread, maxLength, noMarkup) {
 	} else {
 		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
 	}
-}
+};
 
 ZmFolder.prototype.getIcon = 
 function() {
@@ -330,7 +330,7 @@ function() {
 	} else {
 		return (this.type == ZmOrganizer.SEARCH) ? "SearchFolder": "Folder";
 	}
-}
+};
 
 /**
 * Returns the full folder path as a string.
@@ -347,7 +347,7 @@ function(includeRoot) {
 	}
 	
 	return path;
-}
+};
 
 /**
 * Returns true if the given object(s) may be placed in this folder.
@@ -424,7 +424,7 @@ function(what) {
 		}
 	}
 	return !invalid;
-}
+};
 
 /**
 * Returns the folder with the given path
@@ -434,7 +434,7 @@ function(what) {
 ZmFolder.prototype.getByPath =
 function(path) {
 	return this._getByPath(path.toLowerCase());
-}
+};
 
 // Test the path of this folder and then descendants against the given path, case insensitively
 ZmFolder.prototype._getByPath =
@@ -452,4 +452,4 @@ function(path) {
 			return organizer;
 	}
 	return null;	
-}
+};
