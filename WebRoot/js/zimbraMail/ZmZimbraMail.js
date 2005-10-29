@@ -54,15 +54,15 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._shell = appCtxt.getShell();
     this._splashScreen = new ZmSplashScreen(this._shell, "SplashScreen");
    
- 	this._statusQueue = new Array();
-	this._apps = new Object();
+ 	this._statusQueue = [];
+	this._apps = {};
 	this._activeApp = null;
 	
 	this._pollActionId = null;
 	this._sessionTimer = new AjxTimedAction(null, ZmZimbraMail.logOff);
 	this._sessionTimerId = -1;
-	this._cancelTimer = new AjxTimedAction(this, this._cancel);
-	this._cancelTimerId = -1;
+	this._shell.setBusyDialogText(ZmMsg.askCancel);
+	this._pendingRequests = {};
 
 	this._needOverviewLayout = false;
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);	
@@ -72,7 +72,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._logRequest = this._appCtxt.get(ZmSetting.LOG_REQUEST);
 
 	this._schedule(this.startup, {app: app});
-}
+};
 
 ZmZimbraMail.prototype = new ZmController;
 ZmZimbraMail.prototype.constructor = ZmZimbraMail;
@@ -83,46 +83,46 @@ ZmZimbraMail.CALENDAR_APP		= "calendar";
 ZmZimbraMail.PREFERENCES_APP	= "options";
 ZmZimbraMail.MIXED_APP			= "mixed";
 
-ZmZimbraMail.APP_CLASS = new Object();
+ZmZimbraMail.APP_CLASS = {};
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.MAIL_APP]			= ZmMailApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.CONTACTS_APP]		= ZmContactsApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.CALENDAR_APP]		= ZmCalendarApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.PREFERENCES_APP]	= ZmPreferencesApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.MIXED_APP]			= ZmMixedApp;
 
-ZmZimbraMail.MSG_KEY = new Object();
-ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]			= "email";
+ZmZimbraMail.MSG_KEY = {};
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]			= "mail";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CONTACTS_APP]		= "contacts";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CALENDAR_APP]		= "calendar";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.PREFERENCES_APP]	= "options";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MIXED_APP]		= "zimbraTitle";
 
-ZmZimbraMail.APP_ICON = new Object();
+ZmZimbraMail.APP_ICON = {};
 ZmZimbraMail.APP_ICON[ZmZimbraMail.MAIL_APP]		= "MailApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.CONTACTS_APP]	= "ContactsApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.CALENDAR_APP]	= "CalendarApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.PREFERENCES_APP]	= "Preferences";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.MIXED_APP]		= "Globe";
 
-ZmZimbraMail.APP_BUTTON = new Object();
+ZmZimbraMail.APP_BUTTON = {};
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.MAIL_APP]			= ZmAppChooser.B_EMAIL;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CONTACTS_APP]		= ZmAppChooser.B_CONTACTS;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CALENDAR_APP]		= ZmAppChooser.B_CALENDAR;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.PREFERENCES_APP]	= ZmAppChooser.B_OPTIONS;
 
-ZmZimbraMail.DEFAULT_SEARCH = new Object();
+ZmZimbraMail.DEFAULT_SEARCH = {};
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MAIL_APP]		= ZmSearchToolBar.FOR_MAIL_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CONTACTS_APP]	= ZmItem.CONTACT;
 //ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmItem.APPT;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmSearchToolBar.FOR_MAIL_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MIXED_APP]		= ZmSearchToolBar.FOR_ANY_MI;
 
-ZmZimbraMail.VIEW_TT_KEY = new Object();
+ZmZimbraMail.VIEW_TT_KEY = {};
 ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.MAIL_APP]		= "displayMail";
 ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CONTACTS_APP]	= "displayContacts";
 ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CALENDAR_APP]	= "displayCalendar";
 
-ZmZimbraMail.OVERVIEW_TREES = new Object();
+ZmZimbraMail.OVERVIEW_TREES = {};
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]			= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]		= [ZmOrganizer.CALENDAR];
@@ -141,12 +141,24 @@ ZmZimbraMail._OVERVIEW_ID = "ZmZimbraMail";
 
 ZmZimbraMail.IGNORE_ERRORS = "_ignore_";
 
+// request states
+ZmZimbraMail._SENT		= 1;
+ZmZimbraMail._RESPONSE	= 2;
+ZmZimbraMail._CANCEL	= 3;
+
+ZmZimbraMail._nextReqId = 1;
+
+ZmZimbraMail.getNextReqId =
+function() {
+	return "Req_" + ZmZimbraMail._nextReqId++;
+};
+
 // Public methods
 
 ZmZimbraMail.prototype.toString = 
 function() {
 	return "ZmZimbraMail";
-}
+};
 
 /**
 * Sets up ZimbraMail, and then starts it by calling its constructor. It is assumed that the
@@ -176,7 +188,7 @@ function(domain, app, userShellId) {
 	
     // Go!
 	new ZmZimbraMail(appCtxt, domain, app, userShell);
-}
+};
 
 /**
 * Allows parent window to walk list of open child windows and either nuke them 
@@ -195,7 +207,7 @@ function(ev) {
 		
 		window._zimbraMail = null;
 	}
-}
+};
 
 /**
 * Loads the app and presents the initial view. First, it gets the user's preferences.
@@ -212,7 +224,7 @@ function(params) {
 		}
 
 		skin.showSkin(true);
-		this._components = new Object();
+		this._components = {};
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash(this._shell, DwtSash.HORIZONTAL_STYLE,
 												 				"console_inset_app_l", 20);
 		this._components[ZmAppViewMgr.C_BANNER] = this._createBanner();
@@ -229,13 +241,13 @@ function(params) {
 	} else {
 		this._killSplash();
 	}
-}
+};
 
 ZmZimbraMail.prototype._handleErrorStartup =
 function(ex) {
 	this._killSplash();
 	return false;
-}
+};
 
 /*
 * Startup: part 2
@@ -251,6 +263,10 @@ function(params) {
 		for (var id in params.settings)
 			this._settings.getSetting(id).setValue(params.settings[id]);
 	}
+
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
+		this.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+
 	this.setPollInterval();
 	var opc = this._appCtxt.getOverviewController();
 	opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
@@ -268,7 +284,7 @@ function(params) {
 	// reset the user's time zone (save to prefs) if it has changed
 	var respCallback = new AjxCallback(this, this._handleResponseStartup1, [params]);
 	ZmTimezones.initializeServerTimezone(respCallback);
-}
+};
 
 /*
 * Startup: part 3
@@ -282,7 +298,7 @@ function(args) {
 	var respCallback = new AjxCallback(this, this._handleResponseStartup2);
 	var startApp = (params && params.app) ? params.app : ZmZimbraMail.defaultStartApp;
 	this.activateApp(startApp, respCallback, this._errorCallback);
-}
+};
 
 /*
 * Startup: part 4
@@ -292,9 +308,7 @@ ZmZimbraMail.prototype._handleResponseStartup2 =
 function() {
 	this.setSessionTimer(true);
 	this._killSplash();
-  	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
-		this.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
-}
+};
 
 /**
 * Performs a 'running restart' of the app by clearing state and calling the startup method.
@@ -320,7 +334,7 @@ function(settings) {
 	this._appViewMgr = null;
 	this._searchController = this._overviewController = null;
 	this._schedule(this.startup, {bIsRelogin: false, settings: settings});
-}
+};
 
 /**
 * Sends a request to the CSFE and processes the response. Notifications and
@@ -330,53 +344,63 @@ function(settings) {
 * as the value for the error callback (currently done for polling).
 *
 * @param soapDoc		[AjxSoapDoc]	SOAP document that represents the request
-* @param asyncMode		[boolean]		if true, request will be made asynchronously
-* @param callback		[AjxCallback]	next callback in chain for async request
-* @param errorCallback	[Object]		callback to run if there is an exception
+* @param asyncMode		[boolean]*		if true, request will be made asynchronously
+* @param callback		[AjxCallback]*	next callback in chain for async request
+* @param errorCallback	[Object]*		callback to run if there is an exception
 * @param timeout		[int]*			timeout value (in milliseconds)
 */
 ZmZimbraMail.prototype.sendRequest = 
 function(soapDoc, asyncMode, callback, errorCallback, timeout) {
-	var asyncCallback = asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [true, callback, errorCallback]) : null;
+	var reqId = ZmZimbraMail.getNextReqId();
+	var asyncCallback = asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [true, callback, errorCallback, reqId]) : null;
 	var command = new ZmCsfeCommand();
 	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken, timeout: timeout,
 				  asyncMode: asyncMode, callback: asyncCallback, logRequest: this._logRequest};
 	
-	if (asyncMode && (errorCallback != ZmZimbraMail.IGNORE_ERRORS))
-		this._shell.setBusy(true); // put up busy overlay to block user input
-
-	if (timeout) {
-		DBG.println("ZmZimbraMail.sendRequest: timeout is " + timeout);
-		this._cancelTimerId = AjxTimedAction.scheduleAction(this._cancelTimer, timeout);
+	if (asyncMode && (errorCallback != ZmZimbraMail.IGNORE_ERRORS)) {
+		var cancelCallback = null;
+		var showBusyDialog = false;
+		if (timeout) {
+			DBG.println(AjxDebug.DBG1, "ZmZimbraMail.sendRequest: timeout for " + reqId + " is " + timeout);
+			cancelCallback = new AjxCallback(this, this.cancelRequest, [reqId, errorCallback]);
+			showBusyDialog = true;
+		}
+		this._shell.setBusy(true, null, showBusyDialog, timeout, cancelCallback); // put up busy overlay to block user input
 	}
-	
+
+	this._pendingRequests[reqId] = command;
+
 	try {
 		var response = command.invoke(params);
+		command.state = ZmZimbraMail._SENT;
 	} catch (ex) {
 		if (asyncMode)
-			this._handleResponseSendRequest([asyncMode, asyncCallback, errorCallback, new ZmCsfeResult(ex, true)]);
+			this._handleResponseSendRequest([asyncMode, asyncCallback, errorCallback, reqId, new ZmCsfeResult(ex, true)]);
 		else
 			throw ex;
 	}
 	if (!asyncMode)
-		return this._handleResponseSendRequest([asyncMode, null, errorCallback, response]);
-}
+		return this._handleResponseSendRequest([asyncMode, null, errorCallback, reqId, response]);
+};
 
 ZmZimbraMail.prototype._handleResponseSendRequest =
 function(args) {
 	var asyncMode		= args[0];
 	var callback		= args[1];
 	var errorCallback	= args[2];
-	var result			= args[3];
+	var reqId			= args[3];
+	var result			= args[4];
 
-	if (asyncMode && (errorCallback != ZmZimbraMail.IGNORE_ERRORS))
-		this._shell.setBusy(false); // remove busy overlay
+	if (this._cancelDialog && this._cancelDialog.isPoppedUp())
+		this._cancelDialog.popdown();
 
-	if (this._cancelTimerId != -1) {
-		AjxTimedAction.cancelAction(this._cancelTimerId)
-		this._cancelTimerId = -1;
-	}
+	if (!this._pendingRequests[reqId]) return;
+	if (this._pendingRequests[reqId].state == ZmZimbraMail._CANCEL) return;
 	
+	this._pendingRequests[reqId].state = ZmZimbraMail._RESPONSE;
+	
+	this._shell.setBusy(false); // remove busy overlay
+
 	// we just got activity, cancel current poll timer
 	if (this._pollActionId)
 		AjxTimedAction.cancelAction(this._pollActionId);
@@ -415,7 +439,34 @@ function(args) {
 	} else {
 		return response.Body;
 	}
-}
+	
+	this._clearPendingRequest(reqId);
+};
+
+ZmZimbraMail.prototype.cancelRequest = 
+function(args) {
+	var reqId			= args[0];
+	var errorCallback	= args[1];
+
+	if (!this._pendingRequests[reqId]) return;
+	if (this._pendingRequests[reqId].state == ZmZimbraMail._RESPONSE) return;
+
+	this._pendingRequests[reqId].state = ZmZimbraMail._CANCEL;
+	this._shell.setBusy(false); // remove busy overlay
+	DBG.println(AjxDebug.DBG1, "ZmZimbraMail.cancelRequest: " + reqId);
+	this._pendingRequests[reqId].cancel();
+	if (errorCallback && (errorCallback != ZmZimbraMail.IGNORE_ERRORS)) {
+		var ex = new AjxException("Request canceled", AjxException.CANCELED, "ZmZimbraMail.prototype.cancelRequest");
+		errorCallback.run(ex);
+	}
+	this._clearPendingRequest(reqId);
+};
+
+ZmZimbraMail.prototype._clearPendingRequest =
+function(reqId) {
+	if (this._pendingRequests[reqId])
+		delete this._pendingRequests[reqId];
+};
 
 /**
 * Returns a handle to the given app.
@@ -427,7 +478,7 @@ function(appName) {
 	if (!this._apps[appName])
 		this._createApp(appName);
 	return this._apps[appName];
-}
+};
 
 /**
 * Returns a handle to the app view manager.
@@ -435,7 +486,7 @@ function(appName) {
 ZmZimbraMail.prototype.getAppViewMgr =
 function() {
 	return this._appViewMgr;
-}
+};
 
 
 ZmZimbraMail.prototype.activateApp =
@@ -458,12 +509,12 @@ function(appName, callback, errorCallback) {
 		var respCallback = new AjxCallback(this, this._handleResponseActivateApp, callback);
 		this._apps[appName].launch(respCallback, errorCallback);
     }
-}
+};
 
 ZmZimbraMail.prototype._handleResponseActivateApp =
 function(callback) {
 	if (callback) callback.run();
-}
+};
 
 /**
 * Handles a change in which app is current. The change will be reflected in the
@@ -475,8 +526,10 @@ function(callback) {
 */
 ZmZimbraMail.prototype.setActiveApp =
 function(appName, view) {
+	// update view menu
 	var toolbar = this._appCtxt.getCurrentAppToolbar();
 	toolbar.showViewMenu(view);
+
 	if (this._activeApp != appName) {
 		// deactivate previous app
 	    if (this._activeApp) {
@@ -494,14 +547,14 @@ function(appName, view) {
 		var app = this._apps[this._activeApp];
 		if (app) app.activate(true, view);
 	}
-}
+};
 
 // Private methods
 
 ZmZimbraMail.prototype._killSplash =
 function() {
 	this._splashScreen.setVisible(false);
-}
+};
 
 // Creates an app object, which doesn't necessarily do anything just yet.
 ZmZimbraMail.prototype._createApp =
@@ -509,7 +562,7 @@ function(appName) {
 	if (this._apps[appName]) return;
 	DBG.println(AjxDebug.DBG1, "Creating app " + appName);
 	this._apps[appName] = new ZmZimbraMail.APP_CLASS[appName](this._appCtxt, this._shell);	
-}
+};
 
 // Launching an app causes it to create a view (if necessary) and display it. The view that is created is up to the app.
 // Since most apps schedule an action as part of their launch, a call to this function should not be
@@ -520,7 +573,7 @@ function(appName) {
 		this._createApp(appName);
 	DBG.println(AjxDebug.DBG1, "Launching app " + appName);
 	this._apps[appName].launch();
-}
+};
 
 ZmZimbraMail.prototype._checkOverviewLayout =
 function(force) {
@@ -533,7 +586,7 @@ function(force) {
 		this._appCtxt.clearFolderDialogs();
 		this._needOverviewLayout = false;
 	}
-}
+};
 
 ZmZimbraMail.prototype._setUserInfo = 
 function() {
@@ -554,7 +607,7 @@ function() {
 	usedQuota = usedQuota ? usedQuota : 0;
 
 	var size = AjxUtil.formatSize(usedQuota);
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 	
 	var style = AjxEnv.isLinux ? " style='line-height: 13px'" : ""; 	// bug fix #3355
@@ -582,7 +635,7 @@ function() {
 	this._usedQuotaField.innerHTML = html.join("");
 
 	if (userTooltip || quotaTooltip) {
-		var tooltip = new Array();
+		var tooltip = [];
 		idx = 0;
 		tooltip[idx++] = "<table>";
 		if (userTooltip)
@@ -592,7 +645,7 @@ function() {
 		tooltip[idx++] = "</table>";
 		this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(tooltip.join(""));
 	}
-}
+};
 
 // Listeners
 
@@ -618,12 +671,12 @@ function() {
 	} else {
 		window.location = locationStr;
 	}
-}
+};
 
 ZmZimbraMail.redir =
 function(args){
 	window.location = args[0];
-}
+};
 
 ZmZimbraMail.prototype.setPollInterval =
 function(minutes) {
@@ -632,7 +685,7 @@ function(minutes) {
 	if (this._pollActionId)
 		AjxTimedAction.cancelAction(this._pollActionId);
 	this._pollActionId = this._schedule(this._doPoll, null, this._pollInterval);
-}
+};
 
 ZmZimbraMail.prototype.setSessionTimer =
 function(bStartTimer) {
@@ -668,7 +721,7 @@ function(bStartTimer) {
 		else
 			window.onkeydown = null;
 	}
-}
+};
 
 ZmZimbraMail.prototype.addChildWindow = 
 function(childWin) {
@@ -676,7 +729,7 @@ function(childWin) {
 		this._childWinList = new AjxVector();
 	
 	this._childWinList.add(childWin);
-}
+};
 
 ZmZimbraMail.prototype.removeChildWindow =
 function(childWin) {
@@ -688,7 +741,7 @@ function(childWin) {
 			}
 		}
 	}
-}
+};
 
 ZmZimbraMail.prototype._handleHeader =
 function(hdr) {
@@ -703,7 +756,7 @@ function(hdr) {
 	if (hdr.context.change) {
 		this._changeToken = hdr.context.change.token;
 	}
-}
+};
 
 // A <refresh> block is returned in a SOAP response any time the session ID has changed. It always happens
 // on the first SOAP command (eg gettings prefs). After that, it happens after a session timeout.
@@ -776,11 +829,11 @@ function(refresh) {
 
 	// need to tell calendar to refresh/relayout
 	if (this._calController) this._calController.refreshHandler();	
-}
+};
 
 ZmZimbraMail.prototype._checkUnread =
 function(tree, unread) {
-	var organizers = new Array();
+	var organizers = [];
 	var list = tree.asList();
 	for (var i = 0; i < list.length; i++) {
 		var organizer = list[i];
@@ -788,18 +841,18 @@ function(tree, unread) {
 			organizers.push(organizer);
 	}
 	if (organizers.length) {
-		var fields = new Object();
+		var fields = {};
 		fields[ZmOrganizer.F_UNREAD] = true;
 		tree._eventNotify(ZmEvent.E_MODIFY, organizers, {fields: fields});
 	}
-}
+};
 
 // This method is called by the window.onbeforeunload method.
 ZmZimbraMail._confirmExitMethod =
 function() {
 	DBG.println(AjxDebug.DBG1, "_confirmExitMethod, received unload event");
 	return ZmMsg.appExitWarning;
-}
+};
 
 // To handle notifications, we keep track of all the models in use. A model could
 // be an item, a list of items, or an organizer tree. Currently we never get an
@@ -819,7 +872,7 @@ function(notify) {
 	} catch (ex) {
 		this._handleException(ex, this._notifyHandler, notify, false);
 	}
-}
+};
 
 // Normalize the notifications that occur when a virtual conv gets promoted to a real conv.
 ZmZimbraMail.prototype._adjustNotifies =
@@ -828,8 +881,8 @@ function(notify) {
 	
 	var virtConvDeleted = false;
 	var deletedIds = notify.deleted.id.split(",");
-	var virtConv = new Object();
-	var newDeletedIds = new Array();
+	var virtConv = {};
+	var newDeletedIds = [];
 	for (var i = 0; i < deletedIds.length; i++) {
 		var id = deletedIds[i];
 		if (id < 0) {
@@ -843,8 +896,8 @@ function(notify) {
 
 	var gotNewConv = false;
 	var createList = this._getObjList(notify.created);
-	var createdMsgs = new Object();
-	var createdConvs = new Object();
+	var createdMsgs = {};
+	var createdConvs = {};
 	for (var i = 0; i < createList.length; i++) {
 		var create = createList[i];
 		var id = create.id;
@@ -859,9 +912,9 @@ function(notify) {
 	if (!gotNewConv) return notify;
 	
 	var msgMoved = false;
-	var newToOldCid = new Object();
+	var newToOldCid = {};
 	var modList = this._getObjList(notify.modified);
-	var movedMsgs = new Object();
+	var movedMsgs = {};
 	for (var i = 0; i < modList.length; i++) {
 		var mod = modList[i];
 		var id = mod.id;
@@ -895,7 +948,7 @@ function(notify) {
 	}
 
 	// Create modified notifs for the virtual convs that have been promoted.
-	var newMods = new Array();
+	var newMods = [];
 	for (var cid in newToOldCid) {
 		var node = createdConvs[cid];
 		node.id = newToOldCid[cid];
@@ -906,13 +959,13 @@ function(notify) {
 	// Go ahead and process these changes, which will change the ID of each promoted conv
 	// from its virtual (negative) ID to its real (positive) one.
 	if (newMods.length) {
-		var mods = new Object();
+		var mods = {};
 		mods.c = newMods;
 		this._handleModifies(mods);
 	}
 	
 	return notify;
-}
+};
 
 // Delete notification just gives us a list of IDs which could be anything.
 // Hand that list to each model and let it check.
@@ -927,7 +980,7 @@ function(deletes) {
 		if (item)
 			item.notifyDelete();
 	}
-}
+};
 
 // Create notification hands us the full XML node. For tags and folders, we 
 // should always have tag and folder trees, so let them handle the create.
@@ -939,10 +992,10 @@ function(deletes) {
 ZmZimbraMail.prototype._handleCreates =
 function(creates, modifies) {
 	var list = this._getObjList(creates);
-	var convs = new Object();
-	var msgs = new Object();
-	var folders = new Object();
-	var numMsgs = new Object();
+	var convs = {};
+	var msgs = {};
+	var folders = {};
+	var numMsgs = {};
 	var gotMail = false;
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
@@ -989,7 +1042,7 @@ function(creates, modifies) {
 			var folder = msg.folderId;
 			if (cid && folder) {
 				if (!folders[cid])
-					folders[cid] = new Object();
+					folders[cid] = {};
 				folders[cid][folder] = true;
 			}
 			numMsgs[cid] = numMsgs[cid] ? numMsgs[cid] + 1 : 1;
@@ -1016,7 +1069,7 @@ function(creates, modifies) {
 		if (list && (list instanceof ZmMailList))
 			list.notifyCreate(convs, msgs);
 	}
-}
+};
 
 // Change notifications are handled at the item/organizer level. The item or
 // organizer will notify its list/tree, if any.
@@ -1041,13 +1094,13 @@ function(modifies) {
 		if (item)
 			item.notifyModify(mod);
 	}
-}
+};
 
 // Returns a list of objects that have the given parent, flattening child
 // arrays in the process. It also saves each child's name into it.
 ZmZimbraMail.prototype._getObjList =
 function(parent) {
-	var list = new Array();
+	var list = [];
 	for (var name in parent) {
 		var obj = parent[name];
 		if (obj instanceof Array) {
@@ -1061,7 +1114,7 @@ function(parent) {
 		}
 	}
 	return list;
-}
+};
 
 // Sends a NoOpRequest to see if we get any notifications (eg new mail). Ignores exceptions.
 ZmZimbraMail.prototype._doPoll =
@@ -1069,7 +1122,7 @@ function() {
 	this._pollActionId = null; // so we don't try to cancel
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
 	this.sendRequest(soapDoc, true, null, ZmZimbraMail.IGNORE_ERRORS);
-}
+};
 
 ZmZimbraMail._userEventHdlr =
 function(ev) {
@@ -1081,7 +1134,7 @@ function(ev) {
 		zm._sessionTimerId = AjxTimedAction.scheduleAction(zm._sessionTimer, timeout);
 	}
 	DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER RESET (" + (new Date()).toLocaleString() + ")");
-}
+};
 
 ZmZimbraMail.prototype._settingsChangeListener =
 function(ev) {
@@ -1093,7 +1146,7 @@ function(ev) {
 	} else	if (setting.id == ZmSetting.POLLING_INTERVAL) {
 		this.setPollInterval();
 	}
-}
+};
 
 /*
 * Changes the browser title if it's a folder or tag whose unread
@@ -1109,25 +1162,25 @@ function(ev) {
 				Dwt.setTitle(search.getTitle());
 		}		
 	}
-}
+};
 
 ZmZimbraMail.prototype._calendarChangeListener =
 function(ev) {
 	// TODO
-}
+};
 
 ZmZimbraMail.prototype._createBanner =
 function() {
 	// The LogoContainer style centers the logo
 	var banner = new DwtComposite(this._shell, "LogoContainer", Dwt.ABSOLUTE_STYLE);
-	var html = new Array();
+	var html = [];
 	var i = 0;
 	html[i++] = "<a href='";
 	html[i++] = this._appCtxt.get(ZmSetting.LOGO_URI);
 	html[i++] = "' target='_blank'><div class='"+AjxImg.getClassForImage("AppBanner")+"'></div></a>";
 	banner.getHtmlElement().innerHTML = html.join("");
 	return banner;
-}
+};
 
 ZmZimbraMail.prototype._createUserInfo =
 function() {
@@ -1138,7 +1191,7 @@ function() {
 	var userNameId = Dwt.getNextId();
 	var usedQuotaId = Dwt.getNextId();
 
-	var html = new Array();
+	var html = [];
 	var i = 0;
 	html[i++] = "<table border=0 cellpadding=1 cellspacing=0 width=100%>";
 	html[i++] = "<tr><td><div class='BannerTextUser' id='" + userNameId + "'></div></td></tr>";
@@ -1151,7 +1204,7 @@ function() {
 	this._usedQuotaField = doc.getElementById(usedQuotaId);
 	
 	return userInfo;
-}
+};
 
 ZmZimbraMail.prototype._createAppChooser =
 function() {
@@ -1172,13 +1225,13 @@ function() {
 	}
 
 	return appChooser;
-}
+};
 
 ZmZimbraMail.prototype.setStatusMsg =
 function(msg) {
 	this._statusQueue.push(msg); // always push so we know one is active
 	if (this._statusQueue.length == 1) this._updateStatusMsg(msg);
-}
+};
 
 ZmZimbraMail.prototype._updateStatusMsg =
 function(msg) {
@@ -1187,7 +1240,7 @@ function(msg) {
 	act.method = ZmZimbraMail._clearStatus;
 	act.params.add(this);
 	AjxTimedAction.scheduleAction(act, ZmZimbraMail.STATUS_LIFE);
-}
+};
 
 ZmZimbraMail._clearStatus =
 function(args) {
@@ -1195,7 +1248,7 @@ function(args) {
 	zm._statusQueue.shift(); // FIFO
 	if (zm._statusQueue.length > 0) zm._updateStatusMsg(zm._statusQueue[0]);
 	else zm._statusBox.setText("");
-}
+};
 
 ZmZimbraMail.prototype._appButtonListener =
 function(ev) {
@@ -1219,4 +1272,4 @@ function(ev) {
 	} catch (ex) {
 		this._handleException(ex, this._appButtonListener, ev, false);
 	}
-}
+};
