@@ -57,15 +57,38 @@ ZmHtmlEditor._VALUE = "value";
 ZmHtmlEditor.prototype.setSize = function(x, y) {
 	// window.status = ev.oldWidth + "x" + ev.oldHeight + " -> " + ev.newWidth + "x" + ev.newHeight;
 	var main = this.getElementById(this.getBodyFieldId());
+	var div = null;
+	if (this._spellCheckDivId) {
+		div = this.getElementById(this._spellCheckDivId);
+		div.style.display = "none";
+	}
 	main.style.display = "none";
 	var delta = 2 + 6;	// we must substract borders and paddings
 	if (this._mode == DwtHtmlEditor.HTML)
 		delta += 2;	// for some reason...
-	main.style.width = x - delta + "px";
-	main.style.height = y - delta
-		- this._toolbar1.getHtmlElement().offsetHeight
-		- this._toolbar2.getHtmlElement().offsetHeight + "px";
-	main.style.display = "";
+	x -= delta;
+	if (this._spellCheckModeDivId)
+		y -= this.getElementById(this._spellCheckModeDivId).offsetHeight;
+	y -= delta
+		+ this._toolbar1.getHtmlElement().offsetHeight
+		+ this._toolbar2.getHtmlElement().offsetHeight;
+	main.style.width = x + "px";
+	main.style.height = y + "px";
+	if (div) {
+		if (!AjxEnv.isIE) {
+			x -= 4;
+			y -= 4;
+		} else {
+			y += 2;
+		}
+		div.style.width = x + "px";
+		div.style.height = y + "px";
+		div.style.display = "";
+	} else {
+		// when the DIV is present, "main" is the textarea which should
+		// actually remain hidden
+		main.style.display = "";
+	}
 };
 
 ZmHtmlEditor.prototype.isHtmlEditingSupported =
@@ -120,7 +143,7 @@ ZmHtmlEditor.prototype.getContent = function() {
 	return DwtHtmlEditor.prototype.getContent.call(this);
 };
 
-ZmHtmlEditor.prototype.discardMisspelledWords = function() {
+ZmHtmlEditor.prototype.discardMisspelledWords = function(keepModeDiv) {
 	if (!this._spellCheck)
 		return;
 	var doc, spanIds = this._spellCheck.spanIds,
@@ -162,12 +185,14 @@ ZmHtmlEditor.prototype.discardMisspelledWords = function() {
 	this._spellCheckDivId = null;
 	this._spellCheck = null;
 	window.status = "";
+	if (!keepModeDiv)
+		this._spellCheckHideModeDiv();
 	if (this.onExitSpellChecker)
 		this.onExitSpellChecker.run();
 };
 
-ZmHtmlEditor.prototype.highlightMisspelledWords = function(words) {
-	this.discardMisspelledWords();
+ZmHtmlEditor.prototype.highlightMisspelledWords = function(words, keepModeDiv) {
+	this.discardMisspelledWords(keepModeDiv);
 
 	var word, i, style, doc, body, self = this,
 		spanIds     = {},
@@ -322,10 +347,55 @@ ZmHtmlEditor.prototype.highlightMisspelledWords = function(words) {
 		div.onclick = function(ev) { self._handleSpellCheckerEvents(ev || window.event); };
 	}
 
+	this._spellCheckShowModeDiv();
+
 	// save the spell checker context
 	this._spellCheck = { suggestions : suggestions,
 			     spanIds     : spanIds,
 			     wordIds     : wordIds };
+};
+
+ZmHtmlEditor._spellCheckResumeEditing = function() {
+	var editor = Dwt.getObjectFromElement(this);
+	editor.discardMisspelledWords();
+};
+
+ZmHtmlEditor._spellCheckAgain = function() {
+	var editor = Dwt.getObjectFromElement(this);
+	// need to do SOAP here.
+	// this sucks.
+	alert("Not implemented");
+};
+
+ZmHtmlEditor.prototype._spellCheckShowModeDiv = function() {
+	var size = this.getSize();
+	if (!this._spellCheckModeDivId) {
+		var el,
+			doc       = this.getDocument(),
+			container = this.getHtmlElement(),
+			editable  = doc.getElementById(this._spellCheckDivId || this.getBodyFieldId()),
+			div       = doc.createElement("div");
+		div.className = "SpellCheckModeDiv";
+		div.id = this._spellCheckModeDivId = Dwt.getNextId();
+		// div.innerHTML = "Spell-Check Mode: [ <span class='SpellCheckFunc'>resume editing</span> | <span class='SpellCheckFunc'>check again</span> ]";
+		div.innerHTML = "Spell-Check Mode -- <span class='SpellCheckFunc'>resume editing</span>";
+		editable.parentNode.insertBefore(div, editable);
+		el = div.getElementsByTagName("span");
+		Dwt.associateElementWithObject(el[0], this);
+		Dwt.setHandler(el[0], "onclick", ZmHtmlEditor._spellCheckResumeEditing);
+		// Dwt.associateElementWithObject(el[1], this);
+		// Dwt.setHandler(el[1], "onclick", ZmHtmlEditor._spellCheckAgain);
+	} else
+		this.getElementById(this._spellCheckModeDivId).style.display = "";
+	// this.parent._resetBodySize();
+	this.setSize(size.x, size.y + (this._mode == DwtHtmlEditor.TEXT ? 1 : 2));
+};
+
+ZmHtmlEditor.prototype._spellCheckHideModeDiv = function() {
+	var size = this.getSize();
+	if (this._spellCheckModeDivId)
+		this.getElementById(this._spellCheckModeDivId).style.display = "none";
+	this.setSize(size.x, size.y + (this._mode == DwtHtmlEditor.TEXT ? 1 : 2));
 };
 
 ZmHtmlEditor.prototype._spellCheckSuggestionListener = function(ev) {

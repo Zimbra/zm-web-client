@@ -459,12 +459,6 @@ function(ev) {
 ZmComposeController.prototype._resetSpellCheckButton = function() {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	spellCheckButton.setToggled(false);
-	if (this._spellCheckModeDivId != null) {
-		var div = document.getElementById(this._spellCheckModeDivId);
-		if (div)
-			div.parentNode.removeChild(div);
-		this._spellCheckModeDivId = null;
-	}
 };
 
 ZmComposeController.prototype._spellCheckCallback = function(args) {
@@ -473,20 +467,7 @@ ZmComposeController.prototype._spellCheckCallback = function(args) {
 		alert(args._data);
 		return;
 	}
-	var
-		words = args._data.Body.CheckSpellingResponse,
-		self  = this;
-	// handlers for the links in the SpellCheckModeDiv
-	// hope they don't create a mem. leak (they don't directly "see" a reference to the link)
-	function checkAgain() {
-		self._composeView.getHtmlEditor().discardMisspelledWords();
-		self._doSpellCheck();
-		return false;
-	};
-	function exitSpellChecker() {
-		self._composeView.getHtmlEditor().discardMisspelledWords();
-		return false;
-	};
+	var words = args._data.Body.CheckSpellingResponse;
 	if (!words.available)
 		throw new AjxException("Server-side spell checker is not available.");
 	words = words.misspelled;
@@ -495,25 +476,10 @@ ZmComposeController.prototype._spellCheckCallback = function(args) {
 		this._resetSpellCheckButton();
 	} else {
 		this._toolbar.getButton(ZmOperation.SPELL_CHECK).setToggled(true);
-		(function() {
-			var editor = self._composeView.getHtmlEditor();
-			if (!editor.onExitSpellChecker)
-				editor.onExitSpellChecker = new AjxCallback(self, self._resetSpellCheckButton);
-			var div = document.createElement("div");
-			div.id = self._spellCheckModeDivId = Dwt.getNextId();
-			div.className = "SpellCheckModeDiv";
-			div.innerHTML = "<b>Spell-Check Mode</b><br /><a href='#'>resume editing</a> | <a href='#'>check again</a>";
-			var as = div.getElementsByTagName("a");
-			as[0].onclick = exitSpellChecker;
-			as[1].onclick = checkAgain;
-			var edel = self._composeView.getHtmlEditor().getHtmlElement();
-			edel.parentNode.insertBefore(div, edel);
-			div.style.top = edel.offsetTop - div.offsetHeight
-				+ editor._toolbar1.getHtmlElement().offsetHeight
-				+ editor._toolbar2.getHtmlElement().offsetHeight;
-			div.style.right = "3px";
-			editor.highlightMisspelledWords(words);
-		})();
+		var editor = this._composeView.getHtmlEditor();
+		if (!editor.onExitSpellChecker)
+			editor.onExitSpellChecker = new AjxCallback(this, this._resetSpellCheckButton);
+		editor.highlightMisspelledWords(words);
 	}
 };
 

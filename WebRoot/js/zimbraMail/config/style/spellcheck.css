@@ -12,15 +12,14 @@
   position: absolute;
 }
 .SpellCheckModeDiv {
+  margin-right: 2px;
   font-weight: bold;
-  position: absolute;
-  border: 1px solid #000;
+  border: 1px solid #aaa;
+  border-bottom: none;
   padding: 5px 10px;
-  text-align: center;
   background-color: #ff8;
-  font-size: 120%;
-  z-index: 100;
 }
+span.SpellCheckFunc { color: blue; text-decoration: underline; cursor: pointer; }
 .SpellCheckModeDiv a:link, .SpellCheckModeDiv a:visited { color: #00c; }
 .TextSpellChecker, .TextSpellChecker * { font: 10pt monospace; }
 .ZM-SPELLCHECK-MISSPELLED { border-bottom: 1px dashed #f88; background: #fc8; cursor: help; }
