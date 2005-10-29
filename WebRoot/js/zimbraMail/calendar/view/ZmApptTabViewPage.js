@@ -865,11 +865,12 @@ function(appt) {
 		if (visible) {
 			for (var i = 0; i < len; i++) {
 				var cal = children[i];
-				this._calendarSelect.addOption(cal.name, cal.id == appt.getFolderId(), cal.id);
+				this._calendarSelect.addOption(cal.name, false, cal.id);
 			}
 		}
 	}
 	// always reset the width of this select widget
+	this._calendarSelect.setSelectedValue(appt.getFolderId());
 	this._calendarSelect.setSize("140"); // XXX: hardcode?
 };
 

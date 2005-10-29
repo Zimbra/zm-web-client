@@ -308,9 +308,10 @@ function(appt) {
 		if (len>1) {
 			for (var i = 0; i < len; i++) {
 				var cal = children[i];
-				this._calendarSelect.addOption(cal.name, cal.id == appt.getFolderId(), cal.id);
+				this._calendarSelect.addOption(cal.name, false, cal.id);
 			}
 		}
+		this._calendarSelect.setSelectedValue(appt.getFolderId());
 	}
 };
 

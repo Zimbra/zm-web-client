@@ -1458,8 +1458,12 @@ function(soapDoc, method,  attachmentId) {
 
 	m.setAttribute("d", new Date().getTime());
 
-	if (this.getFolderId() != ZmFolder.ID_CALENDAR)
+	// do not set folderId if default folder or editing single instance
+	if (this.getFolderId() != ZmFolder.ID_CALENDAR && 
+		this._viewMode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE)
+	{
 		m.setAttribute("l", this.folderId);
+	}
 
 	var inv = soapDoc.set("inv", null, m);
 	switch (method) {
