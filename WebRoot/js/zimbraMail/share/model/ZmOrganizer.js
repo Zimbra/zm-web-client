@@ -97,9 +97,9 @@ ZmOrganizer.F_QUERY		= i++;
 ZmOrganizer.F_SHARES	= i++;
 
 // Following chars invalid in organizer names: " : / [anything less than " "]
-ZmOrganizer.VALID_NAME_CHARS = "[^/[\x00-\x1F\x7F:\/\"]";
-ZmOrganizer.VALID_PATH_CHARS = "[^/[\x00-\x1F\x7F:\"]"; // forward slash is OK in path
-ZmOrganizer.VALID_NAME_RE = new RegExp(ZmOrganizer.VALID_NAME_CHARS);
+ZmOrganizer.VALID_NAME_CHARS = "[^\\x00-\\x1F\\x7F:\\/\\\"]";
+ZmOrganizer.VALID_PATH_CHARS = "[^\\x00-\\x1F\\x7F:\\\"]"; // forward slash is OK in path
+ZmOrganizer.VALID_NAME_RE = new RegExp('^' + ZmOrganizer.VALID_NAME_CHARS + '+$');
 
 ZmOrganizer.MAX_NAME_LENGTH			= 128;	// max allowed by server
 ZmOrganizer.MAX_DISPLAY_NAME_LENGTH	= 30;	// max we will show
