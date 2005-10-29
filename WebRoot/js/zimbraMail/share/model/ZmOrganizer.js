@@ -88,14 +88,14 @@ ZmOrganizer.F_NAME		= i++;
 ZmOrganizer.F_UNREAD	= i++;
 ZmOrganizer.F_TOTAL		= i++;
 ZmOrganizer.F_PARENT	= i++;
-ZmOrganizer.F_COLOR		= i++; // tags only
-ZmOrganizer.F_QUERY		= i++; // saved search only
+ZmOrganizer.F_COLOR		= i++;
+ZmOrganizer.F_QUERY		= i++;
 ZmOrganizer.F_SHARES	= i++;
 
-// Following chars invalid in organizer names: " : /
-ZmOrganizer.VALID_NAME_CHARS = "[\\w ~`!@#\\$%\\^&\\*\\(\\)\\-\\+=\\{\\}\\[\\];<>,\\.\\?\\|\\\\']";
-ZmOrganizer.VALID_PATH_CHARS = "[\\w ~`!@#\\$%\\^&\\*\\(\\)\\-\\+=\\{\\}\\[\\];<>,\\.\\?\\|\\\\'\\/]"; // add /
-ZmOrganizer.VALID_NAME_RE = new RegExp("^" + ZmOrganizer.VALID_NAME_CHARS + "+$");
+// Following chars invalid in organizer names: " : / [anything less than " "]
+ZmOrganizer.VALID_NAME_CHARS = "[^/[\x00-\x1F\x7F:\/\"]";
+ZmOrganizer.VALID_PATH_CHARS = "[^/[\x00-\x1F\x7F:\"]"; // forward slash is OK in path
+ZmOrganizer.VALID_NAME_RE = new RegExp(ZmOrganizer.VALID_NAME_CHARS);
 
 ZmOrganizer.MAX_NAME_LENGTH			= 128;	// max allowed by server
 ZmOrganizer.MAX_DISPLAY_NAME_LENGTH	= 30;	// max we will show
@@ -140,14 +140,14 @@ ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] = "appointment";
 
 // Abstract methods
 
-ZmOrganizer.sortCompare = function(organizerA, organizerB) {}
-ZmOrganizer.prototype.create = function() {}
+ZmOrganizer.sortCompare = function(organizerA, organizerB) {};
+ZmOrganizer.prototype.create = function() {};
 
 // Static methods
 
 ZmOrganizer.getViewName = function(organizerType) {
 	return ZmOrganizer.VIEWS[organizerType];
-}
+};
 
 /**
 * Checks an organizer (folder or tag) name for validity. Returns an error message if the
@@ -168,19 +168,19 @@ function(name) {
 		return AjxStringUtil.resolve(ZmMsg.errorInvalidName, name);
 
 	return null;
-}
+};
 
 ZmOrganizer.checkColor =
 function(color) {
 	return ((color != null) && (color >= 0 && color <= ZmOrganizer.MAX_COLOR)) ? color : ZmOrganizer.DEFAULT_COLOR;
-}
+};
 
 // Public methods
 
 ZmOrganizer.prototype.toString = 
 function() {
 	return "ZmOrganizer";
-}
+};
 
 /**
 * Returns the name of this organizer.
@@ -200,11 +200,11 @@ function(showUnread, maxLength, noMarkup) {
 			name = ["<b>", name, "</b>"].join("");
 	}
 	return name;
-}
+};
 
 ZmOrganizer.prototype.setShares = function(shares) {
 	this.shares = shares;
-}
+};
 
 ZmOrganizer.prototype.getShareByGranteeId = function(granteeId) {
 	if (this.shares) {
@@ -216,14 +216,14 @@ ZmOrganizer.prototype.getShareByGranteeId = function(granteeId) {
 		}
 	}
 	return null;
-}
+};
 
 ZmOrganizer.prototype.addShare = function(share) {
 	if (!this.shares) {
 		this.shares = [];
 	}
 	this.shares.push(share);
-}
+};
 
 ZmOrganizer.prototype.getIcon = function() {};
 
@@ -236,14 +236,14 @@ ZmOrganizer.prototype.rename =
 function(name) {
 	if (name == this.name) return;
 	this._organizerAction("rename", {name: name});
-}
+};
 
 ZmOrganizer.prototype.setColor =
 function(color) {
 	var color = ZmOrganizer.checkColor(color);
 	if (this.color == color) return;
 	this._organizerAction("color", {color: color});
-}
+};
 
 /**
 * Assigns the organizer a new parent, moving it within its tree.
@@ -260,7 +260,7 @@ function(newParent) {
 	}
 
 	this._organizerAction("move", {l: newId});
-}
+};
 
 /**
 * Deletes an organizer. If it's a folder, the server deletes any contents and/or
@@ -278,17 +278,17 @@ function() {
 	
 	var action = isEmptyOp ? "empty" : "delete";
 	this._organizerAction(action);
-}
+};
 
 ZmOrganizer.prototype.markAllRead =
 function() {
 	this._organizerAction("read", {l: this.id});
-}
+};
 
 ZmOrganizer.prototype.sync =
 function() {
 	this._organizerAction("sync");
-}
+};
 
 // Notification handling
 
@@ -296,7 +296,7 @@ ZmOrganizer.prototype.notifyDelete =
 function() {
 	this.deleteLocal();
 	this._eventNotify(ZmEvent.E_DELETE);
-}
+};
 
 ZmOrganizer.prototype.notifyCreate = function() {};
 
@@ -360,7 +360,7 @@ function(obj) {
 		// it has the correct tree
 		this.tree = newParent.tree; 
 	}
-}
+};
 
 // Local change handling
 
@@ -368,7 +368,7 @@ ZmOrganizer.prototype.deleteLocal =
 function() {
 	this.children.removeAll();
 	this.parent.children.remove(this);
-}
+};
 
 /**
 * Returns true if this organizer has a child with the given name.
@@ -385,14 +385,14 @@ function(name) {
 			return true;
 
 	return false;
-}
+};
 
 ZmOrganizer.prototype.reparent =
 function(newParent) {
 	this.parent.children.remove(this);
 	newParent.children.add(this);
 	this.parent = newParent;
-}
+};
 
 /**
 * Returns the organizer with the given ID, wherever it is.
@@ -412,7 +412,7 @@ function(id) {
 			return organizer;
 	}
 	return null;	
-}
+};
 
 /**
 * Returns the first organizer found with the given name, starting from the root.
@@ -422,7 +422,7 @@ function(id) {
 ZmOrganizer.prototype.getByName =
 function(name) {
 	return this._getByName(name.toLowerCase());
-}
+};
 
 /**
 * Returns the number of children of this organizer.
@@ -430,7 +430,7 @@ function(name) {
 ZmOrganizer.prototype.size =
 function() {
 	return this.children.size();
-}
+};
 
 /**
 * Returns true if the given organizer is a descendant of this one.
@@ -446,7 +446,7 @@ function (organizer) {
 		parent = parent.parent;
 	}
 	return false;
-}
+};
 
 /*
 * Returns the organizer with the given ID. Looks in this organizer's tree.
@@ -456,7 +456,7 @@ function (organizer) {
 ZmOrganizer.prototype._getNewParent =
 function(parentId) {
 	return this.tree.getById(parentId);
-}
+};
 
 /**
 * Returns true is this is a system tag or folder.
@@ -464,7 +464,7 @@ function(parentId) {
 ZmOrganizer.prototype.isSystem =
 function () {
 	return (this.id < ZmTree.CLASS[this.type].FIRST_USER_ID);
-}
+};
 
 ZmOrganizer.getSortIndex =
 function(child, sortFunction) {
@@ -476,7 +476,7 @@ function(child, sortFunction) {
 			return i;
 	}
 	return i;
-}
+};
 
 /*
 * Sends a request to the server. Note that it's done asynchronously, but
@@ -498,7 +498,7 @@ function(action, attrs) {
 		actionNode.setAttribute(attr, attrs[attr]);
 	var appCtlr = this.tree._appCtxt.getAppController();
 	appCtlr.sendRequest(soapDoc, true);
-}
+};
 
 // Test the name of this organizer and then descendants against the given name, case insensitively
 ZmOrganizer.prototype._getByName =
@@ -514,16 +514,20 @@ function(name) {
 			return organizer;
 	}
 	return null;	
-}
+};
 
-ZmOrganizer.prototype.addChangeListener = function(listener) {
+ZmOrganizer.prototype.addChangeListener =
+function(listener) {
 	this.tree.addChangeListener(listener);
-}
-ZmOrganizer.prototype.removeChangeListener = function(listener) {
-	this.tree.removeChangeListener(listener);
-}
+};
 
-ZmOrganizer.prototype._setSharesFromJs = function(obj) {
+ZmOrganizer.prototype.removeChangeListener =
+function(listener) {
+	this.tree.removeChangeListener(listener);
+};
+
+ZmOrganizer.prototype._setSharesFromJs =
+function(obj) {
 	if (obj.acl && obj.acl.grant && obj.acl.grant.length > 0) {
 		var shares = new Array(obj.acl.grant.length);
 		for (var i = 0; i < obj.acl.grant.length; i++) {
@@ -532,7 +536,7 @@ ZmOrganizer.prototype._setSharesFromJs = function(obj) {
 		}
 		this.setShares(shares);
 	}
-}
+};
 
 // Notify our listeners.
 ZmOrganizer.prototype._eventNotify =
@@ -543,7 +547,7 @@ function(event, organizer, details) {
 		this.tree._evt.setDetails(details);
 		this.tree._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this.tree._evt);
 	}
-}
+};
 
 //
 // ZmOrganizerShare
@@ -557,19 +561,22 @@ function ZmOrganizerShare(organizer, granteeType, granteeId, granteeName, perm, 
 	this.grantee.name = granteeName;
 	this.link.perm = perm;
 	this.link.inh = inherit;
-}
+};
+
 ZmOrganizerShare.prototype = new ZmShareInfo;
 ZmOrganizerShare.prototype.constructor = ZmOrganizerShare;
 
 // Static methods
 
-ZmOrganizerShare.createFromJs = function(parent, grant) {
+ZmOrganizerShare.createFromJs =
+function(parent, grant) {
 	return new ZmOrganizerShare(parent, grant.gt, grant.zid, grant.d, grant.perm, grant.inh);
-}
+};
 
 // Public methods
 
-ZmOrganizerShare.prototype.setPermissions = function(perm) {
+ZmOrganizerShare.prototype.setPermissions =
+function(perm) {
 	if (this.link.perm == perm) return;
 	var success = this._organizerShareAction("grant", null, {perm: perm});
 	if (success) {
@@ -578,7 +585,7 @@ ZmOrganizerShare.prototype.setPermissions = function(perm) {
 		fields[ZmOrganizer.F_SHARES] = true;
 		this.organizer._eventNotify(ZmEvent.E_MODIFY, this.organizer, {fields: fields});
 	}
-}
+};
 
 ZmOrganizerShare.prototype.revoke = function() {
 	var success = this._organizerShareAction("!grant", { zid: this.grantee.id } );
@@ -590,7 +597,7 @@ ZmOrganizerShare.prototype.revoke = function() {
 		fields[ZmOrganizer.F_SHARES] = true;
 		this.organizer._eventNotify(ZmEvent.E_MODIFY, this.organizer, {fields: fields});
 	}
-}
+};
 
 // Protected methods
 
@@ -601,7 +608,7 @@ ZmOrganizerShare.prototype._indexOf = function(granteeName) {
 		}
 	}
 	return -1;
-}
+};
 
 /**
  * General method for handling the SOAP call. 
@@ -632,4 +639,4 @@ function(operation, actionAttrs, grantAttrs) {
 	
 	var id = parseInt(resp.action.id);
 	return (id == this.organizer.id);
-}
+};
