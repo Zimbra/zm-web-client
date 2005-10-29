@@ -94,15 +94,15 @@ function() {
 */
 ZmComposeController.prototype.sendMsg =
 function(attId, isDraft, callback) {
-		var msg = this._composeView.getMsg(attId, isDraft);
-		if (!msg) return;
+	var msg = this._composeView.getMsg(attId, isDraft);
+	if (!msg) return;
 
-		var contactList = !isDraft
-			? this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList() : null;
+	var contactList = !isDraft
+		? this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList() : null;
 
-		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg, callback]);
-		var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
-		msg.send(contactList, isDraft, respCallback, errorCallback);
+	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg, callback]);
+	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
+	msg.send(contactList, isDraft, respCallback, errorCallback);
 }
 
 ZmComposeController.prototype._handleResponseSendMsg =

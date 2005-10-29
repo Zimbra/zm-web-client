@@ -533,13 +533,14 @@ function (contactList, edited, componentId, callback, errorCallback) {
 	if (edited)
 		this._createMessageNode(soapDoc, contactList);
 
-	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply);
-	var resp = this._sendMessage(soapDoc, true, respCallback, errorCallback);
+	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply, [callback]);
+	var resp = this._sendMessage(soapDoc, true, false, respCallback, errorCallback);
 };
 
 ZmMailMsg.prototype._handleResponseSendInviteReply =
-function(result) {
-	var resp = result.getResponse();
+function(args) {
+	var callback = args[0];
+	var resp = args[1].getResponse();
 
 	var id = resp.id ? resp.id.split("-")[0] : null;
 
@@ -548,6 +549,9 @@ function(result) {
 		this._origMsg.folderId = ZmFolder.ID_TRASH;
 		this._origMsg._listNotify(ZmEvent.E_MOVE);
 	}
+
+	if (callback)
+		callback.run(args[1]);
 }
 
 /**
