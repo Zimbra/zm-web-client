@@ -317,7 +317,7 @@ function(viewId) {
 	// Set the other view toolbar entries to point to the Day view entry. I.e. this is a trick
 	// to fool the ZmListController into thinking there are multiple toolbars
 	this._toolbar[ZmController.CAL_SCHEDULE_VIEW] = this._toolbar[ZmController.CAL_WEEK_VIEW] = 
-			this._toolbar[ZmController.CAL_WORK_WEEK_VIEW] = this._toolbar[ZmController.CAL_MONTH_VIEW] = this._toolbar[ZmController.CAL_DAY_VIEW];
+		this._toolbar[ZmController.CAL_WORK_WEEK_VIEW] = this._toolbar[ZmController.CAL_MONTH_VIEW] = this._toolbar[ZmController.CAL_DAY_VIEW];
 	this._toolbar[ZmController.CAL_VIEW] = this._toolbar[ZmController.CAL_DAY_VIEW];
 
 	// Setup the toolbar stuff
@@ -521,6 +521,7 @@ function(ev) {
 		this._apptFromView = view;
 		var appt = this._newApptObject(ev.detail);
 		appt.setAllDayEvent(ev.isAllDay);
+		if (ev.folderId) appt.setFolderId(ev.folderId);
 		this._showQuickAddDialog(appt);
 	}
 }

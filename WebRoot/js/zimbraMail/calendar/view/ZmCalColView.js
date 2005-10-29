@@ -1671,23 +1671,27 @@ function(ev, div, dblclick) {
 	var date;
 	var 	duration = AjxDateUtil.MSEC_PER_HALF_HOUR;
 	var isAllDay = false;
+	var gridLoc;
+	var date;
 	switch (div._type) {
 		case ZmCalBaseView.TYPE_APPTS_DAYGRID:
-			var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
-			var date = this._getDateFromXY(gridLoc.x, gridLoc.y, 30);
-			if (date == null) return false;
+			gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
+			date = this._getDateFromXY(gridLoc.x, gridLoc.y, 30);
 			break;
 		case ZmCalBaseView.TYPE_ALL_DAY:
-			var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
-			var date = this._getAllDayDateFromXY(gridLoc.x, gridLoc.y);
-			if (date == null) return false;
+			gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
+			date = this._getAllDayDateFromXY(gridLoc.x, gridLoc.y);
 			isAllDay = true;
 			break;			
 		default:
 			return;
 	}
-	//this._timeSelectionEvent(date, (dblclick ? 60 : 30) * 60 * 1000, dblclick);	
-	this._timeSelectionEvent(date, duration, dblclick, isAllDay);
+
+	if (date == null) return false;
+	var col = this._getColFromX(gridLoc.x);
+	var folderId = col ? (col.cal ? col.cal.id : null) : null;
+
+	this._timeSelectionEvent(date, duration, dblclick, isAllDay, folderId);
 }
 
 ZmCalColView.prototype._mouseDownAction = 
