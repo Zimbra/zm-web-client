@@ -79,6 +79,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/ZmCurrentAppToolBar.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/ZmHtmlEditor.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/ZmShareReply.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/ZmStatusView.js<%= ext %>?v=<%= vers %>"></script>
 
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/dialog/ZmDialog.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/dialog/ZmLoginDialog.js<%= ext %>?v=<%= vers %>"></script>

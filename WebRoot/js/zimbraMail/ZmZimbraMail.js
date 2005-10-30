@@ -53,8 +53,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 
 	this._shell = appCtxt.getShell();
     this._splashScreen = new ZmSplashScreen(this._shell, "SplashScreen");
-   
- 	this._statusQueue = [];
+ 
 	this._apps = {};
 	this._activeApp = null;
 	
@@ -130,8 +129,6 @@ ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]	= [ZmOrganizer.FOLDER,
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]			= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 
 ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
-
-ZmZimbraMail.STATUS_LIFE = 5000; // status message duration
 
 ZmZimbraMail._PREFS_ID	= 1;
 ZmZimbraMail._HELP_ID	= 2;
@@ -232,8 +229,7 @@ function(params) {
 		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell);
 		this._appCtxt.setCurrentAppToolbar(currentAppToolbar);
 		this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
-		this._components[ZmAppViewMgr.C_STATUS] = this._statusBox = new DwtText(this._shell, "statusBox", Dwt.ABSOLUTE_STYLE);
-		this._statusBox.setScrollStyle(Dwt.CLIP);
+		this._components[ZmAppViewMgr.C_STATUS] = this._statusView = new ZmStatusView(this._shell, "statusBox", Dwt.ABSOLUTE_STYLE);
 
 		var respCallback = new AjxCallback(this, this._handleResponseStartup, params);
 		this._errorCallback = new AjxCallback(this, this._handleErrorStartup);
@@ -1228,26 +1224,8 @@ function() {
 };
 
 ZmZimbraMail.prototype.setStatusMsg =
-function(msg) {
-	this._statusQueue.push(msg); // always push so we know one is active
-	if (this._statusQueue.length == 1) this._updateStatusMsg(msg);
-};
-
-ZmZimbraMail.prototype._updateStatusMsg =
-function(msg) {
-	this._statusBox.setText(msg);
-	var act = new AjxTimedAction ();
-	act.method = ZmZimbraMail._clearStatus;
-	act.params.add(this);
-	AjxTimedAction.scheduleAction(act, ZmZimbraMail.STATUS_LIFE);
-};
-
-ZmZimbraMail._clearStatus =
-function(args) {
-	var zm = args[0];
-	zm._statusQueue.shift(); // FIFO
-	if (zm._statusQueue.length > 0) zm._updateStatusMsg(zm._statusQueue[0]);
-	else zm._statusBox.setText("");
+function(msg, level, detail, delay) {
+	this._statusView.setStatusMsg(msg, level, detail, delay);
 };
 
 ZmZimbraMail.prototype._appButtonListener =

@@ -28,6 +28,11 @@ function ZmClientCmdHandler(appCtxt) {
 	this._settings = new Object();
 }
 
+ZmClientCmdHandler.prototype._alert = 
+function(msg, level) {
+	this._appCtxt.setStatusMsg(msg, level);
+}		
+		
 ZmClientCmdHandler.prototype.execute =
 function(argv) {
 	if (!argv || !argv[0]) return ;
@@ -37,21 +42,21 @@ function(argv) {
 		if (argv[1] == "t") {
 			var on = DBG._showTiming;
 			var newState = on ? "off" : "on";
-			alert("Turning debug timing info " + newState);
+			this._alert("Turning debug timing info " + newState);
 			DBG.showTiming(!on);
 		} else {
 			var arg = Number(argv[1]);
 			var level = AjxDebug.DBG[arg];
 			if (level) {
-				alert("Setting Debug to level:" + level);
+				this._alert("Setting Debug to level:" + level);
 				DBG.setDebugLevel(level);
 			} else {
-				alert("Invalid debug level");
+				this._alert("Invalid debug level", ZmStatusView.LEVEL_WARN);
 			}
 		}
 	} else if (arg0 == "debug_use_div") {
 		if (!argv[1]) {
-			alert('enter true or false');
+			this._alert("enter true or false", ZmStatusView.LEVEL_WARN);
 			return;
 		}
 		var arg = argv[1].toLowerCase();
@@ -60,7 +65,7 @@ function(argv) {
 		} else {
 			DBG.setUseDiv(false);
 		}
-		alert('set use div to ' + ((arg == 'true')? 'true': 'false'));
+		this._alert('set use div to ' + ((arg == 'true')? 'true': 'false'));
 	} else if (arg0 == "support") {
 		if (!argv[1]) return;
 		var feature = argv[1].toUpperCase();
@@ -68,7 +73,7 @@ function(argv) {
 		var id = eval(setting);
 		var on = this._appCtxt.get(id);
 		if (on == undefined) {
-			alert("No such setting: " + setting);
+			this._alert("No such setting: " + setting);
 			return;
 		}
 		var newState = on ? "off" : "on";
@@ -79,12 +84,20 @@ function(argv) {
 		if (!argv[1]) return;
 		this._appCtxt.set(ZmSetting.POLLING_INTERVAL, argv[1]);
 		var pi = this._appCtxt.get(ZmSetting.POLLING_INTERVAL); // LDAP time format converted to seconds
-		alert("Set polling interval to " + pi + " seconds");
+		this._alert("Set polling interval to " + pi + " seconds");
 		this._appCtxt.getAppController().setPollInterval();
 	} else if (arg0 == "feed") {
 		if (!argv[1]) return;	
 		var enabled = argv[1] == 1;
 		ZmNewFolderDialog._feedEnabled = enabled;
-		alert("Turning "+ (enabled ? "on" : "off") +" feed support in new folder dialog");
+		this._alert("Turning "+ (enabled ? "on" : "off") +" feed support in new folder dialog");
+	} else if (arg0 == "toast") {
+		var delay = argv[1] ? argv[1] : null;
+		this._appCtxt.setStatusMsg("Your options have been saved.", null, null, delay);
+		this._appCtxt.setStatusMsg("Unable to save options.", ZmStatusView.LEVEL_WARNING, null, delay);
+		this._appCtxt.setStatusMsg("Message sent.", null, null, delay);
+		this._appCtxt.setStatusMsg("Message not sent.", ZmStatusView.LEVEL_CRITICAL, null, delay);
+		this._appCtxt.setStatusMsg("You have new mail.", null, null, delay);
+		this._appCtxt.setStatusMsg("This was fun.", null, null, delay);
 	}
 }

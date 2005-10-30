@@ -74,6 +74,11 @@ function() {
 	return this._appController;
 }
 
+ZmAppCtxt.prototype.setStatusMsg =
+function(msg, level, detail, delay) {
+	this._appController.setStatusMsg(msg, level, detail, delay);
+}
+
 ZmAppCtxt.prototype.getSettings =
 function() {
 	if (!this._settings)
