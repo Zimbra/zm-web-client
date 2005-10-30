@@ -356,7 +356,7 @@ function()
 
 	Dwt.setLocation(e, snap.x, snap.y);
 	Dwt.setSize(e, bounds.width, bounds.height);
-	ZmCalColView._setOpacity(e, 40);
+	Dwt.setOpacity(e, 40);
 	Dwt.setVisible(e, true);
 }
 
@@ -641,22 +641,15 @@ function(appt) {
 	return Dwt.getDomObj(this.getDocument(), appt.isAllDayEvent() ? this._allDayDivId : this._apptBodyDivId);		 
 }
 
-// move this to Dwt?
-ZmCalColView._setOpacity =
-function(el, opacity) {
-	if (AjxEnv.isIE) el.style.filter = "alpha(opacity="+opacity+")";
-	else el.style.opacity = opacity/100;
-}
-
 ZmCalColView._setApptOpacity =
 function(appt, div) {
 	var pstatus = appt.getParticipationStatus();
 	if (pstatus == ZmAppt.PSTATUS_DECLINED) {
-		ZmCalColView._setOpacity(div, ZmCalColView._OPACITY_APPT_DECLINED);
+		Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_DECLINED);
 	} else if (pstatus == ZmAppt.PSTATUS_TENTATIVE) {
-		ZmCalColView._setOpacity(div, ZmCalColView._OPACITY_APPT_TENTATIVE);
+		Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_TENTATIVE);
 	} else {
-		ZmCalColView._setOpacity(div, ZmCalColView._OPACITY_APPT_NORMAL);	
+		Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_NORMAL);	
 	}
 }
 
@@ -671,7 +664,7 @@ function(div, allDay, folderId) {
 	div.style.position = 'absolute';
 	Dwt.setSize(div, 10, 10);// will be resized
 	div.className = 	"appt-" + DwtCssStyle.SELECTED;
-	ZmCalColView._setOpacity(div, ZmCalColView._OPACITY_APPT_DND);
+	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_DND);
 	var subs = {
 		id: div.id,
 		newState: "",
@@ -1530,8 +1523,7 @@ function(doc, gridEl, allDayEl, i, data, numCols) {
 		divEl._type = ZmCalBaseView.TYPE_SCHED_FREEBUSY;
 		divEl._index = i;
 
-		//ZmCalColView._setOpacity(divEl, (i/48)*80);
-		ZmCalColView._setOpacity(divEl, 40);
+		Dwt.setOpacity(divEl, 40);
 
 		if (i == 48) {
 			//have to resize every layout, since all day div height might change
@@ -1553,8 +1545,7 @@ function(doc, gridEl, allDayEl, i, data, numCols) {
 	for (var key in data) num++;
 	//divEl.innerHTML = num;
 		
-	ZmCalColView._setOpacity(divEl, 20 + (60 * (num/numCols)));
-		
+	Dwt.setOpacity(divEl, 20 + (60 * (num/numCols)));
 	Dwt.setVisibility(divEl, enable);
 }
 
@@ -1807,7 +1798,7 @@ function(data) {
 	data.bodyDivEl.style.cursor = 'move';	
 	this.deselectAll();
 	this.setSelection(data.appt);
-	ZmCalColView._setOpacity(data.apptEl, ZmCalColView._OPACITY_APPT_DND);
+	Dwt.setOpacity(data.apptEl, ZmCalColView._OPACITY_APPT_DND);
 	data.dndStarted = true;
 	return true;
 }
@@ -1945,7 +1936,7 @@ function(ev, sash) {
 	capture.capture();
 	this.deselectAll();
 	this.setSelection(data.appt);
-	ZmCalColView._setOpacity(apptEl, ZmCalColView._OPACITY_APPT_DND);
+	Dwt.setOpacity(apptEl, ZmCalColView._OPACITY_APPT_DND);
 	return false;	
 }
 
