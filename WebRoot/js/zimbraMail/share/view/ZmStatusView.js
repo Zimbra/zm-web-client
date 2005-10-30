@@ -183,8 +183,9 @@ function(args) {
 
 ZmStatusView.prototype._updateClock =
 function() {
-	this._setMainText(AjxDateUtil.computeTimeString(new Date()));
-	AjxTimedAction.scheduleAction(this._updateClockTimedAction, 60 * 1000);
+	var now = new Date();
+	this._setMainText(AjxDateUtil.computeTimeString(now));
+	AjxTimedAction.scheduleAction(this._updateClockTimedAction, (60-now.getSeconds()+2) * 1000);
 };
 
 ZmStatusView.prototype._controlListener =
