@@ -463,22 +463,27 @@ ZmComposeController.prototype._resetSpellCheckButton = function() {
 
 ZmComposeController.prototype._spellCheckCallback = function(args) {
 	if (args._isException) {
+		this._appCtxt.setStatusMsg(ZmMsg.spellCheckUnavailable, ZmStatusView.LEVEL_CRITICAL);	
 		// throw args;
 		alert(args._data);
 		return;
 	}
 	var words = args._data.Body.CheckSpellingResponse;
-	if (!words.available)
+	if (!words.available) {
+		this._appCtxt.setStatusMsg(ZmMsg.spellCheckUnavailable, ZmStatusView.LEVEL_CRITICAL);
 		throw new AjxException("Server-side spell checker is not available.");
+}			
 	words = words.misspelled;
 	if (!words || words.length == 0) {
 		// alert("Spell checking didn't find any misspelled words.");
+		this._appCtxt.setStatusMsg(ZmMsg.noMisspellingsFound, ZmStatusView.LEVEL_INFO);
 		this._resetSpellCheckButton();
 	} else {
 		this._toolbar.getButton(ZmOperation.SPELL_CHECK).setToggled(true);
 		var editor = this._composeView.getHtmlEditor();
 		if (!editor.onExitSpellChecker)
 			editor.onExitSpellChecker = new AjxCallback(this, this._resetSpellCheckButton);
+		this._appCtxt.setStatusMsg(words.length + " "+ (words.length > 1 ? ZmMsg.misspellings : ZmMsg.misspelling), ZmStatusView.LEVEL_WARNING);			
 		editor.highlightMisspelledWords(words);
 	}
 };
