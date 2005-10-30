@@ -48,13 +48,14 @@ ZmStatusView.STATUS_LIFE = 5000; // status message duration
 ZmStatusView.LEVEL_INFO = 1; // informational
 ZmStatusView.LEVEL_WARNING = 2; // warning
 ZmStatusView.LEVEL_CRITICAL = 3; // critical
-ZmStatusView.LEVEL_SILENT = 4; // add to history, but don't display
 
 ZmStatusView.TRANSITION_SLIDE_UP = 1; 
 ZmStatusView.TRANSITION_SLIDE_DOWN = 2;
 ZmStatusView.TRANSITION_SLIDE_LEFT = 3;
 ZmStatusView.TRANSITION_SLIDE_RIGHT = 4;
 ZmStatusView.TRANSITION_FADE_IN = 5;
+ZmStatusView.TRANSITION_INVISIBLE = 6; // add to history, but don't display
+
 
 ZmStatusView.DEFAULT = { };
 ZmStatusView.DEFAULT[ZmStatusView.LEVEL_INFO] = { delay: ZmStatusView.STATUS_LIFE, transition: ZmStatusView.TRANSITION_SLIDE_UP };
@@ -113,11 +114,21 @@ function(msg, level, detail, delay, transition) {
 ZmStatusView.prototype._updateStatusMsg =
 function() {
 	var work = this._statusQueue[0];
+
+	while (work.transition == ZmStatusView.TRANSITION_INVISIBLE) {
+		// TODO: store in history
+		//DBG.println("HISTORY: "+work.when+" "+work.msg);
+		this._statusQueue.shift(); // FIFO
+		if (this._statusQueue.length == 0) return;
+		work = this._statusQueue[0];
+	}
 	
 	var toastEl = this._getToastEl();
+
 	this._setToastText(work.msg);
 
 	var state = {
+		transition: work.transition,
 		toastEl : toastEl,
 		num: ZmStatusView.ANIMATION_NUM_FRAMES,
 		showing: true,
@@ -212,7 +223,9 @@ function(state) {
 		} else {
 			Dwt.setLocation(state.toastEl, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 			if (state.opacityDelta) Dwt.setOpacity(state.toastEl, 100);
-			this._statusQueue.shift(); // FIFO
+			// TODO: store in history			
+			var work = this._statusQueue.shift(); // FIFO
+			//DBG.println("HISTORY: "+work.when+" "+work.msg);
 			if (this._statusQueue.length > 0) this._updateStatusMsg();
 			return;
 		}
