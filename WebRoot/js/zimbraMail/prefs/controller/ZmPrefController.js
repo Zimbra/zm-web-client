@@ -116,7 +116,7 @@ function(ev, callback, noPop) {
 	} catch (e) {
 		// getChangedPrefs throws an AjxException if any of the values have not passed validation.
 		if (e instanceof AjxException)
-			this._appCtxt.getAppController().setStatusMsg(e.msg);
+			this._appCtxt.setStatusMsg(e.msg, ZmStatusView.LEVEL_CRITICAL);
 		return;
 	}
 	if (list && list.length) {
@@ -157,7 +157,7 @@ function(args) {
 	var result		= args[4];
 
 	if (list.length || rulesToSave)
-		this._appCtxt.getAppController().setStatusMsg(ZmMsg.optionsSaved);
+		this._appCtxt.setStatusMsg(ZmMsg.optionsSaved);
 	if (!noPop)
 		this._backListener();
 	
@@ -186,13 +186,13 @@ function(args) {
 ZmPrefController.prototype._handleResponseChangePassword =
 function(result) {
 	this._passwordDialog.popdown();
-	this._appCtxt.getAppController().setStatusMsg(ZmMsg.passwordChangeSucceeded);
+	this._appCtxt.setStatusMsg(ZmMsg.passwordChangeSucceeded);
 };
 
 ZmPrefController.prototype._handleErrorChangePassword =
 function(ex) {
 	if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED) {
-		this._appCtxt.getAppController().setStatusMsg(ZmMsg.oldPasswordIsIncorrect);
+		this._appCtxt.setStatusMsg(ZmMsg.oldPasswordIsIncorrect, ZmStatusView.LEVEL_CRITICAL);
 		return true;
 	} else {
 		return false;

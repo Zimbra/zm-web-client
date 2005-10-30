@@ -132,7 +132,7 @@ function(args) {
 		if (this.isChildWindow && window.parentController) {
 			window.parentController.setStatusMsg(ZmMsg.messageSent);
 		} else {
-			this._appCtxt.getAppController().setStatusMsg(ZmMsg.messageSent);
+			this._appCtxt.setStatusMsg(ZmMsg.messageSent);
 		}
 	} else {
 		// TODO - disable save draft button indicating a draft was saved
@@ -140,7 +140,7 @@ function(args) {
 		if (this.isChildWindow && window.parentController) {
 			window.parentController.setStatusMsg(ZmMsg.draftSaved);
 		} else {
-			this._appCtxt.getAppController().setStatusMsg(ZmMsg.draftSaved);
+			this._appCtxt.setStatusMsg(ZmMsg.draftSaved);
 		}
 		this._composeView.reEnableDesignMode();
 		// save message draft so it can be reused if user saves draft again

@@ -76,7 +76,7 @@ function() {
 		if (window.print)
 			this._printWindow.print();
 	} else {
-		this._appCtxt.getAppController().setStatusMsg(ZmMsg.popupBlocker);
+		this._appCtxt.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
 	}
 	this._html = null;
 };

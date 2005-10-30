@@ -132,7 +132,7 @@ function(ev, bIsPopCallback) {
 			}
 		} else {
 			// print error message in toaster
-			this._appCtxt.getAppController().setStatusMsg(ZmMsg.emptyContact);
+			this._appCtxt.setStatusMsg(ZmMsg.emptyContact, ZmStatusView.LEVEL_WARNING);
 		}
 	} catch (ex) {
 		this._handleException(ex, this._saveListener, ev, false);

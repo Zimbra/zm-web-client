@@ -316,7 +316,7 @@ function(attr) {
 		ac.setStatusMsg(ZmMsg.contactCreated);
 	} else {
 		var msg = ZmMsg.errorCreateContact + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
-		ac.setStatusMsg(msg);
+		ac.setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
 	}
 }
 
@@ -373,7 +373,7 @@ function(attr) {
 		ac.setStatusMsg(ZmMsg.contactModify);
 	} else {
 		var msg = ZmMsg.errorModifyContact + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
-		ac.setStatusMsg(msg);
+		ac.setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
 	}
 	
 	return details;

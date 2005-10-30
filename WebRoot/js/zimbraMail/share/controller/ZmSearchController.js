@@ -378,7 +378,7 @@ function(args) {
 		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR) {
 
 		var msg = this._getErrorMsg(ex.code);
-		this._appCtxt.getAppController().setStatusMsg(msg);
+		this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 		var results = new ZmSearchResult(this._appCtxt);
 		results.type = params.types ? params.types[0] : null;
 		return true;

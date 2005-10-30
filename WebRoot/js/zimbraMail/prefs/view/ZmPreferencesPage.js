@@ -403,7 +403,7 @@ function(args) {
 		// we have to schedule the rest since it freezes the UI (and status never gets set)
 		appCtrlr._schedule(ZmPreferencesPage._finishImport, {aid: args[1], prefPage: this});
 	} else {
-		appCtrlr.setStatusMsg(ZmMsg.errorImporting + " (" + status + ")");
+		appCtrlr.setStatusMsg(ZmMsg.errorImporting + " (" + status + ")", ZmStatusView.LEVEL_CRITICAL);
 		// always re-render input file widget and its parent IFRAME
 		this._importDiv.innerHTML = "";
 		this._addImportWidgets(this._importDiv);
@@ -465,5 +465,5 @@ function(ev) {
 			}
 		}
 	}
-	this._appCtxt.getAppController().setStatusMsg(ZmMsg.defaultsRestored);
+	this._appCtxt.setStatusMsg(ZmMsg.defaultsRestored);
 }
