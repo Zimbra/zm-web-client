@@ -99,6 +99,10 @@ function(argv) {
 		this._appCtxt.setStatusMsg("Message sent.", null, null, delay);
 		this._appCtxt.setStatusMsg("Message not sent.", ZmStatusView.LEVEL_CRITICAL, null, delay);
 		this._appCtxt.setStatusMsg("You have new mail.", null, null, delay);
-		this._appCtxt.setStatusMsg("This was fun.", null, null, delay);
+		this._appCtxt.setStatusMsg("Fade In", null, null, delay, ZmStatusView.TRANSITION_FADE_IN);
+		this._appCtxt.setStatusMsg("Slide Left", null, null, delay, ZmStatusView.TRANSITION_SLIDE_LEFT);
+		this._appCtxt.setStatusMsg("Slide Right", null, null, delay, ZmStatusView.TRANSITION_SLIDE_RIGHT);
+		this._appCtxt.setStatusMsg("Slide Down", null, null, delay, ZmStatusView.TRANSITION_SLIDE_DOWN);
+		this._appCtxt.setStatusMsg("Slide Up", null, null, delay, ZmStatusView.TRANSITION_SLIDE_UP);
 	}
 }

@@ -41,7 +41,7 @@ function ZmStatusView(parent, className, posStyle) {
 ZmStatusView.prototype = new DwtControl;
 ZmStatusView.prototype.constructor = ZmStatusView;
 
-ZmStatusView.ANIMATION_DELAY = 25; // each frame of toast sliding
+ZmStatusView.ANIMATION_DELAY = 50; // each frame of toast sliding
 ZmStatusView.ANIMATION_NUM_FRAMES = 8; // each frame of toast sliding
 ZmStatusView.STATUS_LIFE = 5000; // status message duration
 
@@ -49,6 +49,17 @@ ZmStatusView.LEVEL_INFO = 1; // informational
 ZmStatusView.LEVEL_WARNING = 2; // warning
 ZmStatusView.LEVEL_CRITICAL = 3; // critical
 ZmStatusView.LEVEL_SILENT = 4; // add to history, but don't display
+
+ZmStatusView.TRANSITION_SLIDE_UP = 1; 
+ZmStatusView.TRANSITION_SLIDE_DOWN = 2;
+ZmStatusView.TRANSITION_SLIDE_LEFT = 3;
+ZmStatusView.TRANSITION_SLIDE_RIGHT = 4;
+ZmStatusView.TRANSITION_FADE_IN = 5;
+
+ZmStatusView.DEFAULT = { };
+ZmStatusView.DEFAULT[ZmStatusView.LEVEL_INFO] = { delay: ZmStatusView.STATUS_LIFE, transition: ZmStatusView.TRANSITION_SLIDE_UP };
+ZmStatusView.DEFAULT[	ZmStatusView.LEVEL_WARNING] = { delay: ZmStatusView.STATUS_LIFE, transition: ZmStatusView.TRANSITION_SLIDE_DOWN };
+ZmStatusView.DEFAULT[	ZmStatusView.LEVEL_CRITICAL] = { delay: ZmStatusView.STATUS_LIFE, transition: ZmStatusView.TRANSITION_SLIDE_DOWN };
 
 ZmStatusView.prototype.toString = 
 function() {
@@ -89,9 +100,12 @@ function(text) {
 }
 
 ZmStatusView.prototype.setStatusMsg =
-function(msg, level, detail, delay) {
-	if (!delay) delay = ZmStatusView.STATUS_LIFE;
-	var state = {msg: msg, detail: detail, level: level, delay: delay, when: new Date()};
+function(msg, level, detail, delay, transition) {
+	if (!level) level = ZmStatusView.LEVEL_INFO;
+	if (!delay) delay = ZmStatusView.DEFAULT[level].delay;
+	if (!transition) transition = ZmStatusView.DEFAULT[level].transition;
+	
+	var state = {msg: msg, detail: detail, level: level, delay: delay, when: new Date(), transition: transition};
 	this._statusQueue.push(state); // always push so we know one is active
 	if (this._statusQueue.length == 1) this._updateStatusMsg();
 };
@@ -105,10 +119,6 @@ function() {
 
 	var state = {
 		toastEl : toastEl,
-		x: 0,
-		y:  this._toastHeight,
-		xDelta: 0,
-		yDelta: this._toastHeight / ZmStatusView.ANIMATION_NUM_FRAMES,
 		num: ZmStatusView.ANIMATION_NUM_FRAMES,
 		showing: true,
 		delay: work.delay,
@@ -118,19 +128,57 @@ function() {
 	switch (work.level) {
 		case ZmStatusView.LEVEL_CRITICAL:
 			toastEl.className = "ZmStatusCriticalToast";
-			state.y =  -this._toastHeight;
-			state.yDelta = -state.yDelta;			
 			break;
 		case ZmStatusView.LEVEL_WARNING:
 			toastEl.className = "ZmStatusWarningToast";
-			state.y = 0;
-			state.yDelta = 0;
-			state.x =  -this._toastWidth;
-			state.xDelta = -(this._toastWidth / ZmStatusView.ANIMATION_NUM_FRAMES);
 			break;			
 		case ZmStatusView.LEVEL_INFO:
 		default:
 			toastEl.className = "ZmStatusInfoToast";
+			break;
+	}
+
+	switch (work.transition) {
+		case ZmStatusView.TRANSITION_FADE_IN:
+			state.y = 0;
+			state.yDelta = 0;
+			state.x =  0;
+			state.xDelta = 0;
+			state.opacityDelta = (100 / ZmStatusView.ANIMATION_NUM_FRAMES);
+			state.opacity = 0;
+			break;
+		case ZmStatusView.TRANSITION_SLIDE_RIGHT:
+			state.y = 0;
+			state.yDelta = 0;
+			state.x =  -this._toastWidth;
+			state.xDelta = -(this._toastWidth / ZmStatusView.ANIMATION_NUM_FRAMES);
+			state.opacityDelta = 0;
+			state.opacity = 100;
+			break;
+		case ZmStatusView.TRANSITION_SLIDE_LEFT:			
+			state.y = 0;
+			state.yDelta = 0;
+			state.x =  this._toastWidth;
+			state.xDelta = (this._toastWidth / ZmStatusView.ANIMATION_NUM_FRAMES);
+			state.opacityDelta = 0;
+			state.opacity = 100;			
+			break;
+		case ZmStatusView.TRANSITION_SLIDE_DOWN:
+			state.y = -this._toastHeight,
+			state.yDelta = -(this._toastHeight / ZmStatusView.ANIMATION_NUM_FRAMES),
+			state.x = 0;
+			state.xDelta = 0;			
+			state.opacityDelta = 0;
+			state.opacity = 100;
+			break;
+		case ZmStatusView.TRANSITION_SLIDE_UP:
+		default:
+			state.y = this._toastHeight,
+			state.yDelta = this._toastHeight / ZmStatusView.ANIMATION_NUM_FRAMES,
+			state.x = 0;
+			state.xDelta = 0;			
+			state.opacityDelta = 0;
+			state.opacity = 100;
 			break;
 	}
 	
@@ -143,6 +191,7 @@ function(state) {
 		
 	state.y -= state.yDelta;
 	state.x -= state.xDelta;	
+	state.opacity += state.opacityDelta;
 
 //DBG.println("state.y = "+state.y);	
 //DBG.println("state.yDelta = "+state.yDelta);	
@@ -153,13 +202,16 @@ function(state) {
 		if (state.showing) {
 			state.showing = false;
 			state.yDelta = -state.yDelta;
-			state.xDelta = -state.xDelta;			
+			state.xDelta = -state.xDelta;
+			state.opacityDelta = -state.opacityDelta;
 			state.x = 0;
 			state.y = 0;
+			state.opacity = 100;
 			state.num = ZmStatusView.ANIMATION_NUM_FRAMES;
 			delay = state.delay;
 		} else {
 			Dwt.setLocation(state.toastEl, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+			if (state.opacityDelta) Dwt.setOpacity(state.toastEl, 100);
 			this._statusQueue.shift(); // FIFO
 			if (this._statusQueue.length > 0) this._updateStatusMsg();
 			return;
@@ -168,6 +220,7 @@ function(state) {
 		delay = ZmStatusView.ANIMATION_DELAY;
 	}
 
+	if (state.opacityDelta) Dwt.setOpacity(state.toastEl, state.opacity);
 	Dwt.setLocation(state.toastEl, state.x, state.y);
 	var act = new AjxTimedAction();
 	act.method = ZmStatusView._toastAnimationAction;

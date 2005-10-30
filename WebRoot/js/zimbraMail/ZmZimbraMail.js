@@ -1224,8 +1224,8 @@ function() {
 };
 
 ZmZimbraMail.prototype.setStatusMsg =
-function(msg, level, detail, delay) {
-	this._statusView.setStatusMsg(msg, level, detail, delay);
+function(msg, level, detail, delay, transition) {
+	this._statusView.setStatusMsg(msg, level, detail, delay, transition);
 };
 
 ZmZimbraMail.prototype._appButtonListener =
