@@ -42,7 +42,7 @@ ZmStatusView.prototype = new DwtControl;
 ZmStatusView.prototype.constructor = ZmStatusView;
 
 ZmStatusView.ANIMATION_DELAY = 25; // each frame of toast sliding
-ZmStatusView.ANIMATION_NUM_FRAMES = 10; // each frame of toast sliding
+ZmStatusView.ANIMATION_NUM_FRAMES = 8; // each frame of toast sliding
 ZmStatusView.STATUS_LIFE = 5000; // status message duration
 
 ZmStatusView.LEVEL_INFO = 1; // informational
@@ -107,6 +107,7 @@ function() {
 		toastEl : toastEl,
 		x: 0,
 		y:  this._toastHeight,
+		xDelta: 0,
 		yDelta: this._toastHeight / ZmStatusView.ANIMATION_NUM_FRAMES,
 		num: ZmStatusView.ANIMATION_NUM_FRAMES,
 		showing: true,
@@ -122,8 +123,10 @@ function() {
 			break;
 		case ZmStatusView.LEVEL_WARNING:
 			toastEl.className = "ZmStatusWarningToast";
-			state.y =  -this._toastHeight;
-			state.yDelta = -state.yDelta;
+			state.y = 0;
+			state.yDelta = 0;
+			state.x =  -this._toastWidth;
+			state.xDelta = -(this._toastWidth / ZmStatusView.ANIMATION_NUM_FRAMES);
 			break;			
 		case ZmStatusView.LEVEL_INFO:
 		default:
@@ -139,6 +142,7 @@ function(state) {
 	var delay;
 		
 	state.y -= state.yDelta;
+	state.x -= state.xDelta;	
 
 //DBG.println("state.y = "+state.y);	
 //DBG.println("state.yDelta = "+state.yDelta);	
@@ -149,6 +153,7 @@ function(state) {
 		if (state.showing) {
 			state.showing = false;
 			state.yDelta = -state.yDelta;
+			state.xDelta = -state.xDelta;			
 			state.x = 0;
 			state.y = 0;
 			state.num = ZmStatusView.ANIMATION_NUM_FRAMES;

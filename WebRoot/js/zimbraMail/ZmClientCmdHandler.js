@@ -92,7 +92,8 @@ function(argv) {
 		ZmNewFolderDialog._feedEnabled = enabled;
 		this._alert("Turning "+ (enabled ? "on" : "off") +" feed support in new folder dialog");
 	} else if (arg0 == "toast") {
-		var delay = argv[1] ? argv[1] : null;
+		var delay = argv[1] ? argv[1] : null
+		if (argv[2]) ZmStatusView.ANIMATION_DELAY = argv[2];
 		this._appCtxt.setStatusMsg("Your options have been saved.", null, null, delay);
 		this._appCtxt.setStatusMsg("Unable to save options.", ZmStatusView.LEVEL_WARNING, null, delay);
 		this._appCtxt.setStatusMsg("Message sent.", null, null, delay);
