@@ -490,11 +490,14 @@ ZmComposeController.prototype._spellCheckCallback = function(args) {
 
 ZmComposeController.prototype._doSpellCheck = function() {
 	var text = this._composeView.getHtmlEditor().getTextVersion();
-	var soap = AjxSoapDoc.create("CheckSpellingRequest", "urn:zimbraMail");
-	soap.getMethod().appendChild(soap.getDoc().createTextNode(text));
-	var cmd = new ZmCsfeCommand();
-	var callback = new AjxCallback(this, this._spellCheckCallback);
-	cmd.invoke({ soapDoc : soap, asyncMode : true, callback : callback });
+	if (/\S/.test(text)) {
+		var soap = AjxSoapDoc.create("CheckSpellingRequest", "urn:zimbraMail");
+		soap.getMethod().appendChild(soap.getDoc().createTextNode(text));
+		var cmd = new ZmCsfeCommand();
+		var callback = new AjxCallback(this, this._spellCheckCallback);
+		cmd.invoke({ soapDoc : soap, asyncMode : true, callback : callback });
+	} else
+		this._resetSpellCheckButton();
 };
 
 ZmComposeController.prototype._spellCheckListener = function(ev) {
