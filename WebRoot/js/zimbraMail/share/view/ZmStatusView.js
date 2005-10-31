@@ -28,18 +28,32 @@ function ZmStatusView(parent, className, posStyle) {
 	if (arguments.length == 0) return;
 	className = className || "ZmStatus";
 	DwtControl.call(this, parent, className, posStyle);
+	this._setMouseEventHdlrs();
+	this._setKeyEventHdlrs();
+	this.setCursor("default");
+	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
+
+	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, ZmStatusView.prototype._mouseOverListener)); 
+	this.addListener(DwtEvent.ONMOUSEOUT,  new AjxListener(this, ZmStatusView.prototype._mouseOutListener));
+	this.addListener(DwtEvent.ONMOUSEDOWN,  new AjxListener(this, ZmStatusView.prototype._mouseDownListener));
+//	this.addListener(DwtEvent.ONDBLCLICK,  new AjxListener(this, ZmStatusView.prototype._doubleClickListener));	
+	
  	this._doc = this.getDocument();	
 	this._createHtml();
 	this.setScrollStyle(Dwt.CLIP);
  	this._statusQueue = [];
+ 	this._statusHistory = []; 	
 	this.addControlListener(new AjxListener(this, this._controlListener));	
 	
 	this._updateClockTimedAction = new AjxTimedAction(this, this._updateClock, null);
 	this._updateClock();
+	this._counter = 0;
 }
 
 ZmStatusView.prototype = new DwtControl;
 ZmStatusView.prototype.constructor = ZmStatusView;
+
+ZmStatusView.MAX_HISTORY = 50; // max items to store in history
 
 ZmStatusView.ANIMATION_DELAY = 50; // each frame of toast sliding
 ZmStatusView.ANIMATION_NUM_FRAMES = 8; // each frame of toast sliding
@@ -106,18 +120,47 @@ function(msg, level, detail, delay, transition) {
 	if (!delay) delay = ZmStatusView.DEFAULT[level].delay;
 	if (!transition) transition = ZmStatusView.DEFAULT[level].transition;
 	
-	var state = {msg: msg, detail: detail, level: level, delay: delay, when: new Date(), transition: transition};
-	this._statusQueue.push(state); // always push so we know one is active
+	var work = {msg: msg, detail: detail, level: level, delay: delay, date: new Date(), transition: transition};
+	this._updateHistory(work);
+	this._statusQueue.push(work); // always push so we know one is active
 	if (this._statusQueue.length == 1) this._updateStatusMsg();
 };
+
+ZmStatusView.prototype._replayHistory =
+function(index) {
+	if (index >= this._statusHistory.length) return;
+	var work = this._statusHistory[index];
+	this._statusQueue.push(work); // always push so we know one is active
+	if (this._statusQueue.length == 1) this._updateStatusMsg();
+}
+
+ZmStatusView.prototype._updateHistory =
+function(work) {
+	this._statusHistory.unshift(work);
+	if (this._statusHistory.length > ZmStatusView.MAX_HISTORY) this._statusHistory.pop();
+}
+
+ZmStatusView.getClass =
+function(work) {
+	switch (work.level) {
+		case ZmStatusView.LEVEL_CRITICAL:
+			return "ZmStatusCriticalToast";
+			break;
+		case ZmStatusView.LEVEL_WARNING:
+			return "ZmStatusWarningToast";
+			break;			
+		case ZmStatusView.LEVEL_INFO:
+		default:
+			return "ZmStatusInfoToast";
+			break;
+	}
+}
 
 ZmStatusView.prototype._updateStatusMsg =
 function() {
 	var work = this._statusQueue[0];
 
 	while (work.transition == ZmStatusView.TRANSITION_INVISIBLE) {
-		// TODO: store in history
-		//DBG.println("HISTORY: "+work.when+" "+work.msg);
 		this._statusQueue.shift(); // FIFO
 		if (this._statusQueue.length == 0) return;
 		work = this._statusQueue[0];
@@ -136,6 +179,8 @@ function() {
 		view: this
 	};
 	
+	toastEl.className = ZmStatusView.getClass(work);
+/*	
 	switch (work.level) {
 		case ZmStatusView.LEVEL_CRITICAL:
 			toastEl.className = "ZmStatusCriticalToast";
@@ -148,7 +193,7 @@ function() {
 			toastEl.className = "ZmStatusInfoToast";
 			break;
 	}
-
+*/
 	switch (work.transition) {
 		case ZmStatusView.TRANSITION_FADE_IN:
 			state.y = 0;
@@ -223,9 +268,8 @@ function(state) {
 		} else {
 			Dwt.setLocation(state.toastEl, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 			if (state.opacityDelta) Dwt.setOpacity(state.toastEl, 100);
-			// TODO: store in history			
-			var work = this._statusQueue.shift(); // FIFO
-			//DBG.println("HISTORY: "+work.when+" "+work.msg);
+			// TODO: store in history	
+			this._statusQueue.shift(); // FIFO
 			if (this._statusQueue.length > 0) this._updateStatusMsg();
 			return;
 		}
@@ -265,3 +309,37 @@ function(ev) {
 	this._toastHeight = ev.newHeight;
 	this._toastWidth = ev.newWidth;
 };
+
+ZmStatusView.prototype._mouseOverListener = 
+function(ev) {
+	this._mouseOver = true;
+	if (this._statusQueue.length == 0) this._replayHistory(0);
+	//DBG.println("over ====" +this._counter++);
+};
+
+ZmStatusView.prototype._mouseOutListener = 
+function(ev) {
+	this._mouseOver = false;
+	//DBG.println("out");
+};
+
+ZmStatusView.prototype._mouseDownListener = 
+function(ev) {
+	if (this._historyDialog == null) {
+		this._historyDialog = new ZmStatusHistoryDialog(this.shell, this._appCtxt);
+	}
+	this._historyDialog.initialize(AjxVector.fromArray(this._statusHistory).clone());
+	this._historyDialog.popup();
+};
+
+/*
+ZmStatusView.prototype._doubleClickListener =
+function(ev) {
+	DBG.println("double click");
+
+	if (this._statusQueue.length == 0) {
+		this._replayHistory(0);
+	}
+	
+};
+*/

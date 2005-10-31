@@ -229,7 +229,7 @@ function(params) {
 		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell);
 		this._appCtxt.setCurrentAppToolbar(currentAppToolbar);
 		this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
-		this._components[ZmAppViewMgr.C_STATUS] = this._statusView = new ZmStatusView(this._shell, "statusBox", Dwt.ABSOLUTE_STYLE);
+		this._components[ZmAppViewMgr.C_STATUS] = this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE);
 
 		var respCallback = new AjxCallback(this, this._handleResponseStartup, params);
 		this._errorCallback = new AjxCallback(this, this._handleErrorStartup);

@@ -1121,14 +1121,18 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .ZmNavToolBar .DwtText {white-space: nowrap;}
 
+.ZmStatusHistory { width: 400px; height: 285px; margin: 5 5 0 5; }
+
+/*.ZmStatus { background-color: yellow; }*/
 .ZmStatusMainText {	font-weight: bold; }
 
 .ZmStatusToastText { font-weight: bold; }
 
-.ZmStatusInfoToast {	background-color:#ADD6D6;	 border: 1px solid black; }
-.ZmStatusWarningToast {	background-color:#FFF6BF;	 border: 1px solid black; }
-.ZmStatusCriticalToast {	background-color:#F5BFBF;	 border: 1px solid black; }
-/*.ZmStatusCriticalToast {	background-color:#E34040;	 border: 1px solid black; }*/
+.ZmStatus .ZmStatusInfoToast, .ZmStatus .ZmStatusWarningToast, .ZmStatus .ZmStatusCriticalToast { border: 1px solid black; }
+
+.ZmStatusInfoToast {	background-color:#ADD6D6;	}
+.ZmStatusWarningToast {	background-color:#FFF6BF;	}
+.ZmStatusCriticalToast {	background-color:#F5BFBF;	}
 
 /*
  * Colors, for use in calendar and elsewhere.
