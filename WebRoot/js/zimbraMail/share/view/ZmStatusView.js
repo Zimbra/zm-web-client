@@ -35,8 +35,8 @@ function ZmStatusView(parent, className, posStyle) {
 
 //	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, ZmStatusView.prototype._mouseOverListener)); 
 //	this.addListener(DwtEvent.ONMOUSEOUT,  new AjxListener(this, ZmStatusView.prototype._mouseOutListener));
-	this.addListener(DwtEvent.ONMOUSEDOWN,  new AjxListener(this, ZmStatusView.prototype._mouseDownListener));
-//	this.addListener(DwtEvent.ONDBLCLICK,  new AjxListener(this, ZmStatusView.prototype._doubleClickListener));	
+//	this.addListener(DwtEvent.ONMOUSEDOWN,  new AjxListener(this, ZmStatusView.prototype._mouseDownListener));
+	this.addListener(DwtEvent.ONDBLCLICK,  new AjxListener(this, ZmStatusView.prototype._doubleClickListener));	
 	
  	this._doc = this.getDocument();	
 	this._createHtml();
@@ -325,21 +325,15 @@ function(ev) {
 
 ZmStatusView.prototype._mouseDownListener = 
 function(ev) {
+};
+
+
+ZmStatusView.prototype._doubleClickListener =
+function(ev) {
 	if (this._historyDialog == null) {
 		this._historyDialog = new ZmStatusHistoryDialog(this.shell, this._appCtxt);
 	}
 	this._historyDialog.initialize(AjxVector.fromArray(this._statusHistory).clone());
 	this._historyDialog.popup();
-};
-
-/*
-ZmStatusView.prototype._doubleClickListener =
-function(ev) {
 	DBG.println("double click");
-
-	if (this._statusQueue.length == 0) {
-		this._replayHistory(0);
-	}
-	
 };
-*/
