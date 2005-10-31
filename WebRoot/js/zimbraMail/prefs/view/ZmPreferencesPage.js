@@ -445,7 +445,7 @@ function(ev) {
 		var id = prefs[i];
 		var setup = ZmPref.SETUP[id];
 		var type = setup.displayContainer;
-		if (type.indexOf("x_") == 0) // ignore non-form elements			
+		if (type && type.indexOf("x_") == 0) // ignore non-form elements		
 			continue;
 		var pref = settings.getSetting(id);
 		var defValue = pref.defaultValue;
