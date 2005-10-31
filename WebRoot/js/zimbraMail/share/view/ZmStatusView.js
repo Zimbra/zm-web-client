@@ -33,8 +33,8 @@ function ZmStatusView(parent, className, posStyle) {
 	this.setCursor("default");
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
-	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, ZmStatusView.prototype._mouseOverListener)); 
-	this.addListener(DwtEvent.ONMOUSEOUT,  new AjxListener(this, ZmStatusView.prototype._mouseOutListener));
+//	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, ZmStatusView.prototype._mouseOverListener)); 
+//	this.addListener(DwtEvent.ONMOUSEOUT,  new AjxListener(this, ZmStatusView.prototype._mouseOutListener));
 	this.addListener(DwtEvent.ONMOUSEDOWN,  new AjxListener(this, ZmStatusView.prototype._mouseDownListener));
 //	this.addListener(DwtEvent.ONDBLCLICK,  new AjxListener(this, ZmStatusView.prototype._doubleClickListener));	
 	
