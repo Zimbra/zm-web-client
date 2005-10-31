@@ -796,7 +796,7 @@ function() {
 	var doc = this.getDocument();
 
 	// add notes html editor
-	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, null, this._composeMode, this._appCtxt);
+	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode, this._appCtxt);
 	var notesHtmlEditorDiv = Dwt.getDomObj(doc, this._notesHtmlEditorId);
 	if (notesHtmlEditorDiv)
 		notesHtmlEditorDiv.appendChild(this._notesHtmlEditor.getHtmlElement());

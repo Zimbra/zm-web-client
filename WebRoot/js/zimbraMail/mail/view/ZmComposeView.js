@@ -491,7 +491,7 @@ function(bEnableInputs) {
 	this.enableInputs(bEnableInputs);
 
 	// reset state of the spell check button
-	this._controller._toolbar.getButton(ZmOperation.SPELL_CHECK).setToggled(false);
+	this._controller.toggleSpellCheckButton(false);
 }
 
 /**
@@ -857,7 +857,7 @@ function(composeMode) {
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	this._composeMode = composeMode || defaultCompMode;
 	// init html editor
-	this._htmlEditor = new ZmHtmlEditor(this, null, DwtControl.RELATIVE_STYLE, null, this._composeMode, this._appCtxt);
+	this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode, this._appCtxt);
 	this._htmlEditor.addEventCallback(new AjxCallback(this, this._htmlEditorEventCallback));
 	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 	

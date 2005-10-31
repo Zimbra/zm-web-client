@@ -111,6 +111,12 @@ function(startTime, endTime, emailList, callback) {
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, callback);
 };
 
+ZmApptComposeController.prototype.toggleSpellCheckButton = 
+function(toggled) {
+	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
+	spellCheckButton.setToggled((toggled || false));
+};
+
 
 // Private / Protected methods
 
@@ -187,24 +193,6 @@ function() {
 	return false;
 };
 
-ZmApptComposeController.prototype._exitSpellChecker =
-function() {
-	this._apptView.getHtmlEditor().discardMisspelledWords();
-	return false;
-};
-
-ZmApptComposeController.prototype._resetSpellCheckButton = 
-function() {
-	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
-	spellCheckButton.setToggled(false);
-	if (this._spellCheckModeDivId != null) {
-		var div = document.getElementById(this._spellCheckModeDivId);
-		if (div)
-			div.parentNode.removeChild(div);
-		this._spellCheckModeDivId = null;
-	}
-};
-
 
 // Listeners
 
@@ -267,10 +255,14 @@ function(ev) {
 ZmApptComposeController.prototype._spellCheckListener = 
 function(ev) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
+	var htmlEditor = this._apptView.getHtmlEditor();
+
 	if (spellCheckButton.isToggled()) {
-		this._doSpellCheck();
+		var callback = new AjxCallback(this, this.toggleSpellCheckButton)
+		if (!htmlEditor.spellCheck(callback))
+			this.toggleSpellCheckButton(false);
 	} else {
-		this._apptView.getHtmlEditor().discardMisspelledWords();
+		htmlEditor.discardMisspelledWords();
 	}
 };
 
@@ -330,31 +322,3 @@ function(ev) {
 	this._apptView.reEnableDesignMode();
 };
 
-ZmApptComposeController.prototype._spellCheckCallback = 
-function(args) {
-	if (args._isException) {
-		this._appCtxt.setStatusMsg(ZmMsg.spellCheckUnavailable, ZmStatusView.LEVEL_CRITICAL);	
-		throw args;
-	}
-
-	var words = args._data.Body.CheckSpellingResponse;
-	if (!words.available) {
-		this._appCtxt.setStatusMsg(ZmMsg.spellCheckUnavailable, ZmStatusView.LEVEL_CRITICAL);
-		throw new AjxException("Server-side spell checker is not available.");
-	}
-
-	words = words.misspelled;
-
-	if (!words || words.length == 0) {
-		this._appCtxt.setStatusMsg(ZmMsg.noMisspellingsFound, ZmStatusView.LEVEL_INFO);	
-		this._resetSpellCheckButton();
-	} else {
-		this._toolbar.getButton(ZmOperation.SPELL_CHECK).setToggled(true);
-		this._appCtxt.setStatusMsg(words.length + " "+ (words.length > 1 ? ZmMsg.misspellings : ZmMsg.misspelling), ZmStatusView.LEVEL_WARNING);
-		var editor = this._apptView.getHtmlEditor();
-		if (!editor.onExitSpellChecker) {
-			editor.onExitSpellChecker = new AjxCallback(this, this._resetSpellCheckButton);
-		}
-		editor.highlightMisspelledWords(words);
-	}
-};

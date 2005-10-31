@@ -1,27 +1,43 @@
 .TextSpellChecker { /* try to be as close as possible to the textarea */
-  background-color: #f4f4f4;
-  position: relative;
-  border: 1px solid #000;
-  padding: 2px 1px;
+	background-color: #f4f4f4;
+	position: relative;
+	border: 1px solid #000;
+	padding: 2px 1px;
 }
+
 .SpellCheckInputField {
-  border: 1px solid #c00;
-  background-color: #fff;
-  padding: 1px;
-  font: 10pt monospace;
-  position: absolute;
+	border: 1px solid #c00;
+	background-color: #fff;
+	padding: 1px;
+	font: 10pt monospace;
+	position: absolute;
 }
+
 .SpellCheckModeDiv {
+	/*
   margin-right: 2px;
   font-weight: bold;
   border: 1px solid #aaa;
   border-bottom: none;
   padding: 5px 10px;
   background-color: #ff8;
+  */
+	cursor: pointer;
+	background-color: #FFFFCC;
+	padding: 6px;
+	font-size: 10pt;
+	border: 1px solid #777777;
 }
-span.SpellCheckFunc { color: blue; text-decoration: underline; cursor: pointer; }
+
+.SpellCheckLink {
+	color: blue; 
+	text-decoration: underline; 
+	cursor: pointer; 
+}
+
 .SpellCheckModeDiv a:link, .SpellCheckModeDiv a:visited { color: #00c; }
 .TextSpellChecker, .TextSpellChecker * { font: 10pt monospace; }
+
 .ZM-SPELLCHECK-MISSPELLED { border-bottom: 1px dashed #f88; background: #fc8; cursor: help; }
 .ZM-SPELLCHECK-MISSPELLED2 { border-bottom: 1px dashed red; background: #ff0; z-index: 10; cursor: help; }
 .ZM-SPELLCHECK-FIXED { background: #cfa; border-bottom: 1px dashed green; cursor: help; }
