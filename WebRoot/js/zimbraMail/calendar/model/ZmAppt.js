@@ -495,24 +495,29 @@ function(message, viewMode) {
 		this._currentlyLoaded = message;
 
 		this.notesTopPart = new ZmMimePart();
-		var html = message.getBodyPart(ZmMimeTable.TEXT_HTML);
+		// get text part and remove any previous canned text
 		var text = message.getBodyPart(ZmMimeTable.TEXT_PLAIN);
+		var notes = (text instanceof Object) ? (text.content ? text.content : "") : text;
+		notes = this._trimNotesSummary(notes);
+		// check if notes has html part
+		var html = message.getBodyPart(ZmMimeTable.TEXT_HTML);
+
 		if (html) {
 			this.notesTopPart.setContentType(ZmMimeTable.MULTI_ALT);
 	
 			// create two more mp's for text and html content types
 			var textPart = new ZmMimePart();
 			textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-			textPart.setContent(text);
+			textPart.setContent(notes);
 			this.notesTopPart.children.add(textPart);
 	
 			var htmlPart = new ZmMimePart();
 			htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
-			htmlPart.setContent(html.content);
+			htmlPart.setContent(this._trimNotesSummary(html.content));
 			this.notesTopPart.children.add(htmlPart);
 		} else {
 			this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-			this.notesTopPart.setContent((text instanceof Object) ? (text.content ? text.content : "") : text);
+			this.notesTopPart.setContent(notes);
 		}
 	}
 };
@@ -707,7 +712,8 @@ function() {
 		buf[i++] = this._getTextSummaryTime(isEdit, ZmMsg.time, null, s, e, hasTime);
 	}
 	else if (s.getFullYear() == e.getFullYear() && 
-			 s.getMonth() == e.getMonth() && s.getDate() == e.getDate()) 
+			 s.getMonth() == e.getMonth() && 
+			 s.getDate() == e.getDate()) 
 	{
 		var hasTime = (this._orig.startDate.getTime() != this.startDate.getTime()) || 
 					  (this._orig.endDate.getTime() != this.endDate.getTime());
@@ -840,6 +846,16 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 	buf[i++] = "\n";
 
 	return buf.join("");
+};
+
+ZmAppt.prototype._trimNotesSummary = 
+function(notes) {
+	if (notes) {
+		notesArr = notes.split(ZmAppt.NOTES_SEPARATOR_REGEX);
+		if (notesArr.length > 1)
+			notes = notesArr[1];
+	}
+	return notes;
 };
 
 ZmAppt.prototype._resetCached =
