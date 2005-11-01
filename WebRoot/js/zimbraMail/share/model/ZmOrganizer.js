@@ -43,7 +43,7 @@
 * @param numTotal	[int]*			number of items for this organizer
 * @param url		[string]*		URL for this organizer's feed
 */
-function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url) {
+function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, owner) {
 
 	if (arguments.length == 0) return;
 	
@@ -55,6 +55,7 @@ function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url) {
 	this.numUnread = numUnread || 0;
 	this.numTotal = numTotal || 0;
 	this.url = url;
+	this.owner = owner;
 
 	if (id && tree)
 		tree._appCtxt.cacheSet(id, this);
@@ -476,6 +477,11 @@ function () {
 ZmOrganizer.prototype.isFeed =
 function () {
 	return (this.url != null);
+};
+
+ZmOrganizer.prototype.getOwner =
+function() {
+	return this.owner;
 };
 
 ZmOrganizer.getSortIndex =

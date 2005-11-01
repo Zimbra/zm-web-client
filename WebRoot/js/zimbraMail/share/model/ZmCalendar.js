@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalendar(id, name, parent, tree, color, link, url) {
-	ZmOrganizer.call(this, ZmOrganizer.CALENDAR, id, name, parent, tree, null, null, url);
+function ZmCalendar(id, name, parent, tree, color, link, url, owner) {
+	ZmOrganizer.call(this, ZmOrganizer.CALENDAR, id, name, parent, tree, null, null, url, owner);
 	this.color = color || ZmOrganizer.DEFAULT_COLOR;
 	this.link = link;
 }
@@ -64,7 +64,7 @@ function(parent, obj, tree, link) {
 	if (!(obj && obj.id)) return;
 
 	// create calendar, populate, and return
-	var calendar = new ZmCalendar(obj.id, obj.name, parent, tree, obj.color, link, obj.url);
+	var calendar = new ZmCalendar(obj.id, obj.name, parent, tree, obj.color, link, obj.url, obj.d);
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];
