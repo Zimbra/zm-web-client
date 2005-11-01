@@ -61,6 +61,9 @@ ZmFolderPropsDialog._XFORM_DEF = { items: [
 			{type:_INPUT_, label: ZmMsg.nameLabel, ref:"folder_name", //width:"200",
 				relevant: "get('folder_id') != ZmCalendar.ID_CALENDAR", relevantBehavior: _HIDE_
 			},
+			{type:_OUTPUT_, label: ZmMsg.ownerLabel, ref:"folder_owner", //width:"200",
+				relevant: "get('folder_owner') != null", relevantBehavior: _HIDE_
+			},
 			{type: _OUTPUT_, ref:"folder_view", label: ZmMsg.typeLabel, 
 				choices: ZmFolderPropsDialog.TYPE_CHOICES
 			},
@@ -119,6 +122,7 @@ ZmFolderPropsDialog._XFORM_DEF = { items: [
 ZmFolderPropsDialog._XMODEL_DEF = { items: [
 	{ id: "folder_id", ref: "folder/id", type: _STRING_ },
 	{ id: "folder_name", ref: "folder/name", type: _STRING_ },
+	{ id: "folder_owner", ref: "folder/owner", type: _STRING_ },
 	{ id: "folder_view", ref: "folder/type", type: _ENUM_, choices: [ ZmOrganizer.FOLDER, ZmOrganizer.CALENDAR ] },
 	{ id: "folder_color", ref: "folder/color", type: _NUMBER_ },
 	{ id: "folder_acl_grant", ref: "folder/shares", type: _LIST_ }
