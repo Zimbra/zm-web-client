@@ -1121,7 +1121,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .ZmNavToolBar .DwtText {white-space: nowrap;}
 
-.ZmStatusHistory { width: 400px; height: 285px; margin: 5 5 0 5; }
+.ZmStatusHistory { width: 400px; height: 285px; margin: 5 5 0 5; overflow: auto;}
 
 /*.ZmStatus { background-color: yellow; }*/
 .ZmStatusMainText {	font-weight: bold; }
@@ -1129,6 +1129,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .ZmStatusToastText { font-weight: bold; }
 
 .ZmStatus .ZmStatusInfoToast, .ZmStatus .ZmStatusWarningToast, .ZmStatus .ZmStatusCriticalToast { border: 1px solid black; }
+.ZmStatusHistory .ZmStatusInfoToast, .ZmStatusHistory .ZmStatusWarningToast, .ZmStatusHistory .ZmStatusCriticalToast { border: 1px solid black; }
 
 .ZmStatusInfoToast {	background-color:#ADD6D6;	}
 .ZmStatusWarningToast {	background-color:#FFF6BF;	}

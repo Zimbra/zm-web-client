@@ -156,6 +156,22 @@ function(work) {
 	}
 }
 
+ZmStatusView.getImageHtml32 =
+function(work) {
+	switch (work.level) {
+		case ZmStatusView.LEVEL_CRITICAL:
+			return AjxImg.getImageHtml("Critical_32");
+			break;
+		case ZmStatusView.LEVEL_WARNING:
+			return AjxImg.getImageHtml("Warning_32");
+			break;			
+		case ZmStatusView.LEVEL_INFO:
+		default:
+			return AjxImg.getImageHtml("Information_32");
+			break;
+	}
+}
+
 ZmStatusView.prototype._updateStatusMsg =
 function() {
 	var work = this._statusQueue[0];

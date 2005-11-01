@@ -39,17 +39,12 @@ function ZmStatusHistoryDialog(parent, appCtxt) {
 ZmStatusHistoryDialog.prototype = new DwtDialog;
 ZmStatusHistoryDialog.prototype.constructor = ZmStatusHistoryDialog;
 
-
-ZmStatusHistoryDialog.ID_DATE		= "d--";
-ZmStatusHistoryDialog.ID_MESSAGE 	= "m--";
-
 // Public methods
 
 ZmStatusHistoryDialog.prototype.toString = 
 function() {
 	return "ZmStatusHistoryDialog";
 };
-
 
 ZmStatusHistoryDialog.prototype._contentHtml = 
 function() {
@@ -60,115 +55,19 @@ function() {
 	return html.toString();
 };
 
-ZmStatusHistoryDialog.prototype._createListView = 
-function(listViewId) {
-	var listView = new ZmStatusHistoryListView(this);
-	var listDiv = document.getElementById(listViewId);
- 	listDiv.appendChild(listView.getHtmlElement());
-	var size = Dwt.getSize(listDiv);
-	listView.setSize(size.x, size.y);
-//	var defaultSortCol = bExtendedHeader ? null : ZmItem.F_PARTICIPANT;
-//	listView.setUI(defaultSortCol);
-	listView._initialized = true;
-	return listView;
-};
-
 ZmStatusHistoryDialog.prototype.initialize = 
 function(historyVector) {
-	if (this._listView == null) {
-		this._listView = this._createListView(this._listId);
+	var html = new AjxBuffer();
+
+	var history = historyVector.getArray();
+	for (var i=0; i < history.length; i++) {
+		var work = history[i];
+		html.append("<div class='", ZmStatusView.getClass(work)+"'>");
+		html.append("<table><tr><td rowspan=2 align='center'>", ZmStatusView.getImageHtml32(work),"</td>");
+		html.append("<td>", ZmMsg.date, ": ", AjxDateUtil.getTimeStr(work.date,"%n/%d %H:%m:%s %P"), "</td></tr>");
+		html.append("<tr><td>", work.msg, "</td></tr></table>");
+		html.append("</div>");
 	}
-	this._listView.set(historyVector);
-};
-
-//-----------------------------------------
-
-function ZmStatusHistoryListView(parent) {
-	
-	DwtListView.call(this, parent, null, null, this._getHeaderList(parent));
-//	this.view = view;
-//	this.type = ZmItem.CONTACT;
-//	this._extHeader = bExtHeader || false;
-};
-
-ZmStatusHistoryListView.prototype = new DwtListView;
-ZmStatusHistoryListView.prototype.constructor = ZmStatusHistoryListView;
-
-ZmStatusHistoryListView.prototype.toString = 
-function() {
-	return "ZmStatusHistoryListView";
-};
-
-ZmStatusHistoryListView.prototype.setSize =
-function(width, height) {
-	DwtListView.prototype.setSize.call(this, width, height);
-	this._sizeChildren(width, height);
-};
-
-ZmStatusHistoryListView.prototype.setBounds =
-function(x, y, width, height) {
-	DwtListView.prototype.setBounds.call(this, x, y, width, height);
-	this._sizeChildren(width, height);
-};
-
-ZmStatusHistoryListView.prototype._sizeChildren =
-function(width, height) {
-	if (this._listDiv) {
-		Dwt.setSize(this._listDiv, Dwt.DEFAULT, this.getHtmlElement().clientHeight - DwtListView.HEADERITEM_HEIGHT);
-		this._listDiv.style.overflow = 'auto';
-	}
-};
-
-ZmStatusHistoryListView.prototype._setNoResultsHtml = 
-function() {
-/*
-	// ignore if target list view
-	if (this._initialized)
-		DwtListView.prototype._setNoResultsHtml.call(this);
-		*/
-};
-
-// The items are work objects from ZmStatusView
-ZmStatusHistoryListView.prototype._createItemHtml =
-function(item) {
-
-	var doc = this.getDocument();
-	var div = doc.createElement("div");
-	div._styleClass = "Row";
-	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
-	div.className = div._styleClass;
-			
-	var html = new Array();
-	var idx = 0;
-
-	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>";
-	
-	for (var i = 0; i < this._headerList.length; i++) {
-		var id = this._headerList[i]._id;
-		if (id.indexOf(ZmStatusHistoryDialog.ID_DATE) == 0) {
-			html[idx++] = "<td width=" + this._headerList[i]._width + ">&nbsp;" + AjxDateUtil.getTimeStr(item.date,"%n/%d %H:%m:%s %P") + "</td>";			
-		} else if (id.indexOf(ZmStatusHistoryDialog.ID_MESSAGE) == 0) {
-			html[idx++] = "<td class='"+ZmStatusView.getClass(item)+"'>&nbsp;" + item.msg + "</td>";			
-		}
-	}
-
-	html[idx++] = "</tr></table>";
-		
-	div.innerHTML = html.join("");
-		
-	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM, Dwt.getNextId());
-		
-	return div;
-};
-
-ZmStatusHistoryListView.prototype._getHeaderList = 
-function(parent) {
-
-	var headerList = new Array();
-
-	var sortBy = null;
-	headerList.push(new DwtListHeaderItem(ZmStatusHistoryDialog.ID_DATE, ZmMsg.date, null, 100, sortBy));
-	headerList.push(new DwtListHeaderItem(ZmStatusHistoryDialog.ID_MESSAGE, ZmMsg.message));
-	
-	return headerList;
+	var div = document.getElementById(this._listId);
+	div.innerHTML = html.toString();	
 };
