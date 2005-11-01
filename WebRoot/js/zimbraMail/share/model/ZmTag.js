@@ -129,7 +129,7 @@ function(showUnread, maxLength, noMarkup) {
 
 ZmTag.prototype.getIcon = 
 function() {
-	return ZmTag.COLOR_ICON[this.color];
+	return (this.id == ZmOrganizer.ID_ROOT) ? null : ZmTag.COLOR_ICON[this.color];
 };
 
 ZmTag.prototype.notifyCreate =
@@ -152,9 +152,4 @@ function(parent, obj, tree, sorted) {
 	parent.children.add(tag, index);
 
 	return tag;
-};
-
-ZmTag.prototype.getIcon = 
-function() {
-	return ZmTag.COLOR_ICON[this.color];
 };

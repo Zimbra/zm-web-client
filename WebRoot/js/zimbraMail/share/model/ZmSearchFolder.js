@@ -68,6 +68,11 @@ function(showUnread, maxLength, noMarkup) {
 	}
 };
 
+ZmSearchFolder.prototype.getIcon = 
+function() {
+	return (this.id == ZmOrganizer.ID_ROOT) ? null : "SearchFolder";
+};
+
 /*
 * Returns the organizer with the given ID. Looks in this organizer's tree first.
 * Since a search folder may have either a regular folder or another search folder

@@ -328,7 +328,7 @@ function() {
 	} else if (ZmFolder.IMAGE[this.id]) {
 		return ZmFolder.IMAGE[this.id];
 	} else {
-		return (this.type == ZmOrganizer.SEARCH) ? "SearchFolder": "Folder";
+		return "Folder";
 	}
 };
 
