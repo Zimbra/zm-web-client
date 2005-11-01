@@ -707,24 +707,26 @@ function() {
 						this._viewMode != ZmAppt.MODE_DELETE_INSTANCE;
 	if (recurrence)
 	{
-		var hasTime = (this._orig.startDate.getTime() != s.getTime()) || 
-					  (this._orig.endDate.getTime() != e.getTime());
+		var hasTime = isEdit 
+			? ((this._orig.startDate.getTime() != s.getTime()) || (this._orig.endDate.getTime() != e.getTime()))
+			: false;
 		buf[i++] = this._getTextSummaryTime(isEdit, ZmMsg.time, null, s, e, hasTime);
 	}
 	else if (s.getFullYear() == e.getFullYear() && 
 			 s.getMonth() == e.getMonth() && 
 			 s.getDate() == e.getDate()) 
 	{
-		var hasTime = (this._orig.startDate.getTime() != this.startDate.getTime()) || 
-					  (this._orig.endDate.getTime() != this.endDate.getTime());
+		var hasTime = isEdit 
+			? ((this._orig.startDate.getTime() != this.startDate.getTime()) || (this._orig.endDate.getTime() != this.endDate.getTime()))
+			: false;
 		buf[i++] = this._getTextSummaryTime(isEdit, ZmMsg.time, s, s, e, hasTime);
 	}
 	else 
 	{
-		var hasTime = this._orig.startDate.getTime() != this.startDate.getTime();
+		var hasTime = isEdit ? (this._orig.startDate.getTime() != this.startDate.getTime()) : false;
 		buf[i++] = this._getTextSummaryTime(isEdit, ZmMsg.start, s, s, null, hasTime);
 
-		hasTime = this._orig.endDate.getTime() != this.endDate.getTime();
+		hasTime = isEdit ? (this._orig.endDate.getTime() != this.endDate.getTime()) : false;
 		buf[i++] = this._getTextSummaryTime(isEdit, ZmMsg.end, e, null, e, hasTime);
 	}
 
