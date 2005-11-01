@@ -63,9 +63,16 @@ function(historyVector) {
 	for (var i=0; i < history.length; i++) {
 		var work = history[i];
 		html.append("<div class='", ZmStatusView.getClass(work)+"'", ((i > 0) ? " style='border-top:none;'": ""), ">");
+/*
 		html.append("<table><tr><td rowspan=2 align='center'>", ZmStatusView.getImageHtml32(work),"</td>");
 		html.append("<td>", ZmMsg.date, ": ", AjxDateUtil.getTimeStr(work.date,"%n/%d %H:%m:%s %P"), "</td></tr>");
 		html.append("<tr><td><b>", AjxStringUtil.htmlEncode(work.msg), "</b></td></tr></table>");
+	*/	
+		html.append("<table width=100%><tr><td style='width:40px;' align='center'>", ZmStatusView.getImageHtml32(work),"</td>");
+		html.append("<td align='left'><b>", AjxStringUtil.htmlEncode(work.msg), "</b></td>");
+		html.append("<td align='right' style='width:100px;' >",AjxDateUtil.getTimeStr(work.date,"%n/%d %H:%m:%s %P"), "</td>");
+		html.append("</tr></table>");
+		
 		html.append("</div>");
 	}
 	var div = document.getElementById(this._listId);
