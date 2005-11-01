@@ -504,11 +504,13 @@
     </copy>
     <copy verbose='true' todir='${deploy.dir}${deploy.path}/WEB-INF/classes'>
       <fileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
+      <fileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
       <fileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
     </copy>
     <dependset>
       <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
-      <srcfileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
+      <srcfileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
+	  <srcfileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
       <targetfilelist dir='${deploy.dir}${deploy.path}/WEB-INF' files='web.xml'/>
     </dependset>
     <copy todir="${deploy.dir}${deploy.path}/WEB-INF">  	
@@ -527,6 +529,7 @@
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
       <classes dir="${build.dir}/classes" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
+      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes="msgs/*.properties"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**,skins/**" excludes="js/zimbraAdmin/**,js/AjxAdmin_all.js,**/config/msgs/**"/>
@@ -552,6 +555,7 @@
       webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
+      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/classes" includes="**/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
@@ -601,10 +605,12 @@
     </copy>
     <copy verbose='true' todir='${deploy.dir}${deploy.admin.path}/WEB-INF/classes'>
       <fileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
+      <fileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
       <fileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
     </copy>
     <dependset>
       <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
+      <srcfileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
       <srcfileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
       <targetfilelist dir='${deploy.dir}${deploy.admin.path}/WEB-INF' files='web.xml'/>
     </dependset>
@@ -624,6 +630,7 @@
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
+      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/classes" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
@@ -641,6 +648,7 @@
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
+      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/classes" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>

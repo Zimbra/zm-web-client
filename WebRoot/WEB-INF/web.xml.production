@@ -97,6 +97,10 @@
   </servlet-mapping>
   <servlet-mapping>
   	<servlet-name>Properties2Javascript</servlet-name>
+  	<url-pattern>/js/zimbra/config/msgs/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>Properties2Javascript</servlet-name>
   	<url-pattern>/js/zimbraAdmin/config/msgs/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
