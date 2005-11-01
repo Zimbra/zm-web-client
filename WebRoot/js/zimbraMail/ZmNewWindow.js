@@ -44,7 +44,7 @@ function ZmNewWindow(appCtxt, domain) {
 	this._models = new AjxVector();
 	this._needOverviewLayout = false;
 	this._schedule(this.startup);
-}
+};
 
 ZmNewWindow.prototype = new ZmController;
 ZmNewWindow.prototype.constructor = ZmNewWindow;
@@ -66,7 +66,7 @@ ZmNewWindow.APP_CLASS[ZmNewWindow.MIXED_APP]		= ZmMixedApp;
 ZmNewWindow.prototype.toString = 
 function() {
 	return "ZmNewWindow";
-}
+};
 
 // Public methods
 
@@ -97,7 +97,7 @@ function(domain) {
 	
     // Go!
     var lm = new ZmNewWindow(appCtxt, domain);
-}
+};
 
 /**
 * Allows this child window to inform parent its going away
@@ -107,7 +107,7 @@ function(ev) {
 	if (window.parentController) {
 		window.parentController.removeChildWindow(window);
 	}
-}
+};
 
 /**
 * Starts up ZmNewWindow. Since it's a 
@@ -140,7 +140,7 @@ function(params) {
 		ex.code = ZmCsfeException.SVC_AUTH_EXPIRED;
 		this._handleException(ex, this.startup, null, true);
 	}
-}
+};
 
 ZmNewWindow.prototype.sendRequest = 
 function(soapDoc, asyncMode, callback, errorCallback) {
@@ -151,7 +151,14 @@ function(soapDoc, asyncMode, callback, errorCallback) {
 		: null;
 	
 	return result;
-}
+};
+
+ZmNewWindow.prototype.setStatusMsg = 
+function(msg, level, detail, delay, transition) {
+	if (window.parentController) {
+		window.parentController.setStatusMsg(msg, level, detail, delay, transition);
+	}
+};
 
 /**
 * Returns a handle to the given app.
@@ -163,7 +170,7 @@ function(appName) {
 	if (!this._apps[appName])
 		this._createApp(appName);
 	return this._apps[appName];
-}
+};
 
 /**
 * Returns a handle to the app view manager.
@@ -171,7 +178,7 @@ function(appName) {
 ZmNewWindow.prototype.getAppViewMgr =
 function() {
 	return this._appViewMgr;
-}
+};
 
 /**
 * Makes the given app the active (displayed) one. The stack of hidden views will be cleared.
@@ -202,7 +209,7 @@ function(appName) {
 			this._createApp(appName);
     }
     return bActivated;
-}
+};
 
 /**
 * Sets the name of the currently active app. Done so we can figure out when an
@@ -213,7 +220,7 @@ function(appName) {
 ZmNewWindow.prototype.setActiveApp =
 function(appName) {
 	this._activeApp = appName;
-}
+};
 
 // Private methods
 
@@ -222,5 +229,4 @@ ZmNewWindow.prototype._createApp =
 function(appName) {
 	if (this._apps[appName]) return;
 	this._apps[appName] = new ZmNewWindow.APP_CLASS[appName](this._appCtxt, this._shell, window.parentController);
-}
-
+};
