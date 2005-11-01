@@ -64,15 +64,7 @@ ZmURLObjectHandler.prototype.getToolTipText =
 function(url, context) {
 	// Pre-load the image
 	(new Image()).src =  ZmURLObjectHandler.THUMB_URL + url;
-	return '<div id="alexa_thumb" style="width: 205px; height: 150px; visibility: hidden;"> </div>';
-};
-
-ZmURLObjectHandler.prototype.populateToolTip =
-function(url, context) {
-	// Add image and show the div
-	var div = document.getElementById("alexa_thumb");
-	div.innerHTML = '<img src="' + ZmURLObjectHandler.THUMB_URL + url + '"/>';
-	div.style.visibility = "visible";
+	return '<iframe frameborder="0" width="205" height="150" src="' + ZmURLObjectHandler.THUMB_URL + url + '"></iframe>';
 };
 
 ZmURLObjectHandler.prototype.getActionMenu =
