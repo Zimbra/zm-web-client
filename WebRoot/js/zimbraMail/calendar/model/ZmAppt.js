@@ -56,7 +56,7 @@ function ZmAppt(appCtxt, list, noinit) {
 	this.attachments = null;
 	this.timezone = ZmTimezones.getDefault();
 	this._viewMode = ZmAppt.MODE_NEW;
-	this.folderId = ZmFolder.ID_CALENDAR;	
+	this.folderId = ZmFolder.ID_CALENDAR;
 }
 
 ZmAppt.prototype = new ZmItem;
@@ -190,6 +190,7 @@ ZmAppt.prototype.hasOtherAttendees 				= function() { return this.otherAttendees
 ZmAppt.prototype.setAllDayEvent 				= function(isAllDay) 	{ this.allDayEvent = isAllDay ? "1" : "0"; };
 ZmAppt.prototype.setEndDate 					= function(endDate) 	{ this.endDate = new Date(endDate); this._resetCached(); };
 ZmAppt.prototype.setFolderId 					= function(folderId) 	{ this.folderId = folderId; };
+ZmAppt.prototype.setOrganizer 					= function(organizer) 	{ this.organizer = organizer != "" ? organizer : null; };
 ZmAppt.prototype.setMessage 					= function(message) 	{ this._message = message; };
 ZmAppt.prototype.setName 						= function(newName) 	{ this.name = newName; };
 ZmAppt.prototype.setStartDate =
@@ -606,7 +607,7 @@ function() {
 };
 
 ZmAppt.prototype.save = 
-function(attachmentId) {
+function(attachmentId, callback) {
 	var soapDoc = null;
 	var needsExceptionId = false;
 
@@ -643,7 +644,7 @@ function(attachmentId) {
 	// var alarm = soapDoc.set("alarm", null, inv);
 	// alarm.setAttribute("rel-start", /* some alarm start time */);
 
-	this._sendRequest(soapDoc);
+	this._sendRequest(soapDoc, callback);
 };
 
 ZmAppt.prototype.cancel = 
@@ -1453,7 +1454,6 @@ function() {
 ZmAppt.prototype._setSimpleSoapAttributes = 
 function(soapDoc, method,  attachmentId) {
 
-	if (this.organizer == null) this.organizer = this._appCtxt.get(ZmSetting.USERNAME);
 	var m = this._messageNode = soapDoc.set('m');
 
 	m.setAttribute("d", new Date().getTime());
@@ -1506,11 +1506,10 @@ function(soapDoc, method,  attachmentId) {
 
 	if (this.location != null)
 		inv.setAttribute("loc", this.location);
-	
+
+	var organizer = this.organizer || this._appCtxt.get(ZmSetting.USERNAME);
 	var org = soapDoc.set("or", null, inv);
-	// TODO: make attendees list, a list of ZmEmailAddresses.
-	// org.setAttribute("d", ...)
-	org.setAttribute("a", this.organizer);
+	org.setAttribute("a", organizer);
 
 	// handle attachments
 	if (attachmentId != null || (this._validAttachments != null && this._validAttachments.length)) {
@@ -1665,10 +1664,10 @@ function(soapDoc, m, cancel) {
 };
 
 ZmAppt.prototype._sendRequest = 
-function(soapDoc) {
+function(soapDoc, callback) {
 	var responseName = soapDoc.getMethod().nodeName.replace("Request", "Response");
-	var callback = new AjxCallback(this, this._handleResponseSend, [responseName]);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, callback);
+	var respCallback = new AjxCallback(this, this._handleResponseSend, [responseName, callback]);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
 };
 
 
@@ -1677,7 +1676,8 @@ function(soapDoc) {
 ZmAppt.prototype._handleResponseSend = 
 function(args) {
 	var respName = args[0];
-	var resp = args[1].getResponse();
+	var callback = args[1];
+	var resp = args[2].getResponse();
 
 	// branch for different responses
 	var response = resp[respName];
@@ -1692,6 +1692,9 @@ function(args) {
 	}
 
 	this._messageNode = null;
+
+	if (callback)
+		callback.run();
 };
 
 ZmAppt.prototype._handleResponseCancel =

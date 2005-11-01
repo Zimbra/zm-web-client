@@ -97,8 +97,9 @@ function() {
 ZmApptComposeController.prototype.saveAppt = 
 function(attId) {
 	var appt = this._apptView.getAppt(attId);
-	if (appt)
-		this._schedule(this._doSave, {appt: appt, attId: attId});
+	if (appt) {
+		appt.save(attId, new AjxCallback(this, this._handleResponseSave));
+	}
 };
 
 ZmApptComposeController.prototype.getFreeBusyInfo = 
@@ -269,15 +270,10 @@ function(ev) {
 
 // Callbacks
 
-ZmApptComposeController.prototype._doSave = 
-function(params) {
-	try {
-		params.appt.save(params.attId);
-		this._apptView.cleanup();	// always cleanup the views
-		this._app.popView(true);	// force pop view
-	} catch(ex) {
-		this._handleException(ex, this._doSave, params, false);
-	}
+ZmApptComposeController.prototype._handleResponseSave = 
+function(args) {
+	this._apptView.cleanup();	// always cleanup the views
+	this._app.popView(true);	// force pop view
 };
 
 ZmApptComposeController.prototype._doSpellCheck =  

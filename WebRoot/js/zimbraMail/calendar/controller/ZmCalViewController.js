@@ -692,8 +692,9 @@ function(ev) {
 ZmCalViewController.prototype._quickAddOkListener = 
 function(ev) {
 	var appt = this._quickAddDialog.getAppt();
-	if (appt)
-		this._schedule(this._doSave, {appt: appt});
+	if (appt) {
+		appt.save();
+	}
 };
 
 ZmCalViewController.prototype._quickAddMoreListener = 
@@ -702,16 +703,6 @@ function(ev) {
 	if (appt) {
 		this._quickAddDialog.popdown();
 		this.newAppointment(appt);
-	}
-};
-
-// TODO: convert to async!
-ZmCalViewController.prototype._doSave = 
-function(params) {
-	try {
-		params.appt.save();
-	} catch(ex) {
-		this._handleException(ex, this._doSave, params, false);
 	}
 };
 

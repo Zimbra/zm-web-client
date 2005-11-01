@@ -108,7 +108,9 @@ function() {
 	// save field values of this view w/in given appt
 	appt.setName(this._subjectField.value);
 	appt.location = this._locationField.value;
-	appt.setFolderId(this._calendarSelect.getValue());
+	var calValue = this._calendarSelect.getValue().split(",");
+	appt.setFolderId(calValue[0]);
+	appt.setOrganizer(calValue[1]);
 
 	// set the start date by aggregating start date/time fields
 	var startDate = this._startDateField.value;
@@ -308,7 +310,8 @@ function(appt) {
 		if (len>1) {
 			for (var i = 0; i < len; i++) {
 				var cal = children[i];
-				this._calendarSelect.addOption(cal.name, false, cal.id);
+				var value = cal.id + "," + (cal.owner || "");
+				this._calendarSelect.addOption(cal.name, false, value);
 			}
 		}
 		this._calendarSelect.setSelectedValue(appt.getFolderId());
