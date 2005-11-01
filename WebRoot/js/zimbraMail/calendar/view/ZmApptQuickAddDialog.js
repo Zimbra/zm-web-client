@@ -198,7 +198,7 @@ function() {
 	html[i++] = ZmMsg.repeat;
 	html[i++] = ":</td><td id='";
 	html[i++] = this._repeatSelectId;
-	html[i++] = "'></td><td><span class='ZmApptTabViewPageField' id='";
+	html[i++] = "'></td><td><span class='ZmApptTabViewPageField' style='width:100%' id='";
 	html[i++] = this._repeatDescId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "</table>";
