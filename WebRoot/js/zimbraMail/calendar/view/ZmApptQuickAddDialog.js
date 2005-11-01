@@ -108,9 +108,10 @@ function() {
 	// save field values of this view w/in given appt
 	appt.setName(this._subjectField.value);
 	appt.location = this._locationField.value;
-	var calValue = this._calendarSelect.getValue().split(",");
-	appt.setFolderId(calValue[0]);
-	appt.setOrganizer(calValue[1]);
+
+	var calId = this._calendarSelect.getValue();
+	appt.setFolderId(calId);
+	appt.setOrganizer(this._calendarOrgs[calId]);
 
 	// set the start date by aggregating start date/time fields
 	var startDate = this._startDateField.value;
@@ -303,6 +304,7 @@ function(appt) {
 	var calTreeData = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
 	if (calTreeData && calTreeData.root) {
 		this._calendarSelect.clearOptions();
+		this._calendarOrgs = new Array();
 		var children = calTreeData.root.children.getArray();
 		var len = children.length;
 		Dwt.setVisibility(this._calendarSelect.getHtmlElement(), len>1);
@@ -310,8 +312,8 @@ function(appt) {
 		if (len>1) {
 			for (var i = 0; i < len; i++) {
 				var cal = children[i];
-				var value = cal.id + "," + (cal.owner || "");
-				this._calendarSelect.addOption(cal.name, false, value);
+				this._calendarOrgs[cal.id] = cal.owner;
+				this._calendarSelect.addOption(cal.name, false, cal.id);
 			}
 		}
 		this._calendarSelect.setSelectedValue(appt.getFolderId());

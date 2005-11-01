@@ -76,9 +76,9 @@ function(attId) {
 	appt.setName(this._subjectField.value);
 	appt.location = this._locationField.value;
 	appt.freeBusy = this._showAsSelect.getValue();
-	var calValue = this._calendarSelect.getValue().split(",");
-	appt.setFolderId(calValue[0]);
-	appt.setOrganizer(calValue[1]);
+	var calId = this._calendarSelect.getValue();
+	appt.setFolderId(calId);
+	appt.setOrganizer(this._calendarOrgs[calId]);
 
 	// set the start date by aggregating start date/time fields
 	var startDate = this._startDateField.value;
@@ -859,6 +859,7 @@ function(appt) {
 	var calTreeData = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
 	if (calTreeData && calTreeData.root) {
 		this._calendarSelect.clearOptions();
+		this._calendarOrgs = new Array();
 		var children = calTreeData.root.children.getArray();
 		var len = children.length;
 		var visible = (this._mode != ZmAppt.MODE_NEW && !appt.isReadOnly()) || (this._mode == ZmAppt.MODE_NEW && len>1);
@@ -867,8 +868,8 @@ function(appt) {
 		if (visible) {
 			for (var i = 0; i < len; i++) {
 				var cal = children[i];
-				var value = cal.id + "," + (cal.owner || "");
-				this._calendarSelect.addOption(cal.name, false, value);
+				this._calendarOrgs[cal.id] = cal.owner;
+				this._calendarSelect.addOption(cal.name, false, cal.id);
 			}
 		}
 	}
