@@ -194,6 +194,8 @@ function(composeMode) {
 		// dont forget to reset the body field Id and object ref
 		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 		this._bodyField = Dwt.getDomObj(this.getDocument(), this._bodyFieldId);
+		if (this._bodyField.disabled)
+			this._bodyField.disabled = false;
 		
 		// for now, always reset message body size
 		this._resetBodySize();
