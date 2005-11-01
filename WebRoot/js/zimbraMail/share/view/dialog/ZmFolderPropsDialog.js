@@ -67,6 +67,9 @@ ZmFolderPropsDialog._XFORM_DEF = { items: [
 			{type: _OUTPUT_, ref:"folder_view", label: ZmMsg.typeLabel, 
 				choices: ZmFolderPropsDialog.TYPE_CHOICES
 			},
+			{type:_OUTPUT_, label: ZmMsg.urlLabel, ref:"folder_url", //width:"200",
+				relevant: "get('folder_url') != null", relevantBehavior: _HIDE_
+			},
 			{type:_DWT_SELECT_, ref: "folder_color", label: ZmMsg.colorLabel,
 				choices: ZmOrganizer.COLOR_CHOICES
 			}
@@ -123,6 +126,7 @@ ZmFolderPropsDialog._XMODEL_DEF = { items: [
 	{ id: "folder_id", ref: "folder/id", type: _STRING_ },
 	{ id: "folder_name", ref: "folder/name", type: _STRING_ },
 	{ id: "folder_owner", ref: "folder/owner", type: _STRING_ },
+	{ id: "folder_url", ref: "folder/url", type: _STRING_ },	
 	{ id: "folder_view", ref: "folder/type", type: _ENUM_, choices: [ ZmOrganizer.FOLDER, ZmOrganizer.CALENDAR ] },
 	{ id: "folder_color", ref: "folder/color", type: _NUMBER_ },
 	{ id: "folder_acl_grant", ref: "folder/shares", type: _LIST_ }
