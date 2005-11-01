@@ -419,10 +419,7 @@ function(type, componentId) {
 			top.setContentType(ZmMimeTable.TEXT_PLAIN);
 			var dummyAppt = new ZmAppt(this._appCtxt);
 			dummyAppt.setFromMessage(msg._origMsg);
-			var buf = new Array();
-			var idx = 0;
-			dummyAppt.getTextSummary(false, buf, idx);
-			replyBody = replyBody + buf.join("");
+			replyBody = replyBody + dummyAppt.getTextSummary();
 			top.setContent(replyBody);	
 			msg.setTopPart(top);
 		}
