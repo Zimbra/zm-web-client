@@ -845,16 +845,22 @@ function(ev) {
 
 ZmCalViewController.prototype._handleMenuViewAction = 
 function(ev) {
-	var id = ev.item.getData(ZmOperation.KEY_ID);
 	var appt = this._actionMenu.__appt;
 	delete this._actionMenu.__appt;
-	var mode;
-	switch(id) {
-		case ZmOperation.VIEW_APPOINTMENT: 	mode = ZmAppt.MODE_EDIT; break;
-		case ZmOperation.VIEW_APPT_INSTANCE:mode = ZmAppt.MODE_EDIT_SINGLE_INSTANCE; break;
-		case ZmOperation.VIEW_APPT_SERIES: 	mode = ZmAppt.MODE_EDIT_SERIES; break;
+
+	if (appt.isReadOnly()) {
+		// always get details on appt as if we're editing series (since its read only)
+		appt.getDetails(ZmAppt.MODE_EDIT_SERIES, new AjxCallback(this, this._showReadOnlyDialog, [appt]));
+	} else {
+		var mode = null;
+		var id = ev.item.getData(ZmOperation.KEY_ID);
+		switch(id) {
+			case ZmOperation.VIEW_APPOINTMENT:		mode = ZmAppt.MODE_EDIT; break;
+			case ZmOperation.VIEW_APPT_INSTANCE:	mode = ZmAppt.MODE_EDIT_SINGLE_INSTANCE; break;
+			case ZmOperation.VIEW_APPT_SERIES:		mode = ZmAppt.MODE_EDIT_SERIES; break;
+		}
+		this.editAppointment(appt, mode);
 	}
-	this.editAppointment(appt, mode);
 };
 
 ZmCalViewController.prototype._handleApptRespondAction = 
