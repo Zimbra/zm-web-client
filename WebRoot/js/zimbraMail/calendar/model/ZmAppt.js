@@ -673,7 +673,7 @@ function() {
 	buf[i++] = ZmMsg.subject;
 	buf[i++] = ": ";
 	buf[i++] = this.name;
-	if (isEdit && this.hasOwnProperty("name")) {
+	if (isEdit && this._orig && this._orig.getName() != this.getName()) {
 		buf[i++] = " ";
 		buf[i++] = ZmMsg.apptModifiedStamp;
 	}
@@ -688,7 +688,7 @@ function() {
 		buf[i++] = ZmMsg.location;
 		buf[i++] = ": ";
 		buf[i++] = this.location;
-		if (isEdit && this.hasOwnProperty("location")) {
+		if (isEdit && this._orig && this._orig.getLocation() != this.getLocation()) {
 			buf[i++] = " ";
 			buf[i++] = ZmMsg.apptModifiedStamp;
 		}
@@ -734,23 +734,25 @@ function() {
 		buf[i++] = ZmMsg.recurrence;
 		buf[i++] = ": ";
 		buf[i++] = this._getRecurrenceBlurbForSave();
-		var modified = this.hasOwnProperty("repeatType") || 
-					   this.hasOwnProperty("repeatCustom") ||
-					   this.hasOwnProperty("repeatCustomType") ||
-					   this.hasOwnProperty("repeatCustomCount") ||
-					   this.hasOwnProperty("repeatCustomOrdinal") ||
-					   this.hasOwnProperty("repeatCustomDayOfWeek") ||
-					   this.hasOwnProperty("repeatCustomMonthday") ||
-					   this.hasOwnProperty("repeatEnd") ||
-					   this.hasOwnProperty("repeatEndType") || 
-					   this.hasOwnProperty("repeatEndCount") || 
-					   this.hasOwnProperty("repeatEndDate") ||
-					   this.hasOwnProperty("repeatWeeklyDays") ||
-					   this.hasOwnProperty("repeatMonthlyDayList") ||
-					   this.hasOwnProperty("repeatYearlyMonthsList");
-		if (isEdit && modified) {
-			buf[i++] = " ";
-			buf[i++] = ZmMsg.apptModifiedStamp;
+		if (isEdit) {
+			var modified = this._orig.repeatType != this.repeatType ||
+						   this._orig.repeatCustom != this.repeatCustom ||
+						   this._orig.repeatCustomType != this.repeatCustomType ||
+						   this._orig.repeatCustomCount != this.repeatCustomCount ||
+						   this._orig.repeatCustomOrdinal != this.repeatCustomOrdinal ||
+						   this._orig.repeatCustomDayOfWeek != this.repeatCustomDayOfWeek ||
+						   this._orig.repeatCustomMonthday != this.repeatCustomMonthday ||
+						   this._orig.repeatEnd != this.repeatEnd ||
+						   this._orig.repeatEndType != this.repeatEndType ||
+						   this._orig.repeatEndCount != this.repeatEndCount ||
+						   this._orig.repeatEndDate != this.repeatEndDate ||
+						   this._orig.repeatWeeklyDays != this.repeatWeeklyDays ||
+						   this._orig.repeatMonthlyDayList != this.repeatMonthlyDayList ||
+						   this._orig.repeatYearlyMonthsList != this.repeatYearlyMonthsList;
+			if (modified) {
+				buf[i++] = " ";
+				buf[i++] = ZmMsg.apptModifiedStamp;
+			}
 		}
 		buf[i++] = "\n";
 	}
@@ -841,7 +843,7 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 	// NOTE: This relies on the fact that setModel creates a clone of the
 	//		 appointment object and that the original object is saved in 
 	//		 the clone as the _orig property.
-	if (isEdit && (this.hasOwnProperty("allDayEvent") || hasTime)) {
+	if (isEdit && ((this._orig && this._orig.isAllDayEvent() != this.isAllDayEvent()) || hasTime)) {
 		buf[i++] = " ";
 		buf[i++] = ZmMsg.apptModifiedStamp;
 	}
