@@ -56,7 +56,7 @@ function ZmItem(appCtxt, type, id, list) {
 	this.folderId = 0;
 	this._evt = new ZmEvent(type);
 	
-	if (id)
+	if (id && appCtxt)
 		appCtxt.cacheSet(id, this);
 };
 
