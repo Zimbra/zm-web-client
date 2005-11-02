@@ -346,10 +346,12 @@ ZmMailMsgView.prototype._processHtmlDoc = function(doc) {
 			node.normalize();
 			tmp = node.tagName.toLowerCase();
 			if (/^(img|a)$/.test(tmp)) {
-				if (tmp == "a" && /^(https?|ftps?):\x2f\x2f/.test(node.href)) {
+				if (tmp == "a"
+				    && (/^((https?|ftps?):\x2f\x2f.+)$/.test(node.href)
+					|| /^mailto:(.+)$/.test(node.href))) {
 					// tricky.
 					tmp = doc.createElement("div");
-					tmp.innerHTML = objectManager.findObjects(node.href);
+					tmp.innerHTML = objectManager.findObjects(RegExp.$1);
 					tmp = tmp.firstChild;
 					// here, tmp is an object span, but it
 					// contains the URL (href) instead of
