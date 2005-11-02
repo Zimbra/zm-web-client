@@ -344,12 +344,23 @@ ZmMailMsgView.prototype._processHtmlDoc = function(doc) {
 		switch (node.nodeType) {
 		    case 1:	// ELEMENT_NODE
 			node.normalize();
-			tmp = node.tagName;
-			if (/^(img|a)$/i.test(tmp)) {
-				// make sure we don't generate any object handlers inside these elements.
-				// we still need to dive into them, otherwise one may hide a <script> there.
+			tmp = node.tagName.toLowerCase();
+			if (/^(img|a)$/.test(tmp)) {
+				if (tmp == "a" && /^(https?|ftps?):\x2f\x2f/.test(node.href)) {
+					// tricky.
+					tmp = doc.createElement("div");
+					tmp.innerHTML = objectManager.findObjects(node.href);
+					tmp = tmp.firstChild;
+					// here, tmp is an object span, but it
+					// contains the URL (href) instead of
+					// the original link text.
+					node.parentNode.insertBefore(tmp, node); // add it to DOM
+					tmp.innerHTML = "";
+					tmp.appendChild(node); // we have the original link now
+					return tmp.nextSibling;	// move on
+				}
 				handlers = false;
-			} else if (/^(script|link|object|iframe|applet)$/i.test(tmp)) {
+			} else if (/^(script|link|object|iframe|applet)$/.test(tmp)) {
 				tmp = node.nextSibling;
 				node.parentNode.removeChild(node);
 				return tmp;
