@@ -29,7 +29,7 @@ function ZmStatusView(parent, className, posStyle) {
 	className = className || "ZmStatus";
 	DwtControl.call(this, parent, className, posStyle);
 	this._setMouseEventHdlrs();
-	this._setKeyEventHdlrs();
+	//this._setKeyEventHdlrs();
 	this.setCursor("default");
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
