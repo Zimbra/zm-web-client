@@ -2182,7 +2182,7 @@ function(ev) {
 		} else {
 			var duration = (data.endDate.getTime() - data.startDate.getTime());
 			if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;	
-			data.view._appCtxt.getCurrentController().newAppointmentHelper(data.startDate, duration, data.folderId, ev.shiftKey);
+			data.view._appCtxt.getCurrentController().newAppointmentHelper(data.startDate, duration, data.folderId, mouseEv.shiftKey);
 		}
 	}
 
