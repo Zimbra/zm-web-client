@@ -62,7 +62,8 @@ ZmPref.ADDR_BOOK_PREFS = [ZmSetting.AUTO_ADD_ADDRESS,
 						  ZmSetting.CONTACTS_VIEW, ZmSetting.CONTACTS_PER_PAGE,
 						  ZmSetting.IMPORT, ZmSetting.EXPORT];
 						  
-ZmPref.CALENDAR_PREFS = [ZmSetting.CALENDAR_INITIAL_VIEW, ZmSetting.CAL_FIRST_DAY_OF_WEEK, ZmSetting.CAL_SHOW_TIMEZONE];
+ZmPref.CALENDAR_PREFS = [ZmSetting.CALENDAR_INITIAL_VIEW, ZmSetting.CAL_FIRST_DAY_OF_WEEK, 
+						 ZmSetting.CAL_SHOW_TIMEZONE, ZmSetting.CAL_USE_QUICK_ADD];
 
 ZmPref.validateEmail = 
 function(emailStr) {
@@ -277,20 +278,22 @@ ZmPref.SETUP[ZmSetting.SHOW_SEARCH_STRING] = {
 // 	choices:            ZmTimezones.getFullZoneChoices(),
 // 	displaySeparator:	true};
 
-ZmPref.SETUP[ZmSetting.CAL_SHOW_TIMEZONE] = {
- 	displayName:		ZmMsg.shouldShowTimezone,
- 	displayContainer:	"checkbox",
- 	displaySeparator:	false};
-
 ZmPref.SETUP[ZmSetting.CALENDAR_INITIAL_VIEW] = {
  	displayName:		ZmMsg.calendarInitialView,
  	displayContainer:	"select",
 	displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewSchedule],
-	options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_SCHEDULE],
- 	displaySeparator:	false};
+	options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_SCHEDULE]};
 
 ZmPref.SETUP[ZmSetting.CAL_FIRST_DAY_OF_WEEK] = {
  	displayName:		ZmMsg.calendarFirstDayOfWeek,
  	displayContainer:	"select",
 	displayOptions:		AjxDateUtil.WEEKDAY_LONG,
 	options:			[0,1,2,3,4,5,6]};
+
+ZmPref.SETUP[ZmSetting.CAL_SHOW_TIMEZONE] = {
+ 	displayName:		ZmMsg.shouldShowTimezone,
+ 	displayContainer:	"checkbox"};
+
+ZmPref.SETUP[ZmSetting.CAL_USE_QUICK_ADD] = {
+ 	displayName:		ZmMsg.useQuickAdd,
+ 	displayContainer:	"checkbox"};

@@ -154,9 +154,8 @@ function(ev) {
 
 ZmDateObjectHandler.prototype._newApptListener =
 function(ev) {
-	DBG.println(AjxDebug.DBG1, "new appt listener");
 	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
-	cc.newAppointmentHelper(this._actionContext.date);
+	cc.newAppointmentHelper(this._actionContext.date, null, null, ev.shiftKey);
 };
 
 ZmDateObjectHandler.prototype.selected =

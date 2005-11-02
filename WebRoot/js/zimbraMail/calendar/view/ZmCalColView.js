@@ -1682,7 +1682,7 @@ function(ev, div, dblclick) {
 	var col = this._getColFromX(gridLoc.x);
 	var folderId = col ? (col.cal ? col.cal.id : null) : null;
 
-	this._timeSelectionEvent(date, duration, dblclick, isAllDay, folderId);
+	this._timeSelectionEvent(date, duration, dblclick, isAllDay, folderId, ev.shiftKey);
 }
 
 ZmCalColView.prototype._mouseDownAction = 
@@ -2178,11 +2178,11 @@ function(ev) {
 		data.gridEl.style.cursor = 'auto';
 		Dwt.setVisible(data.newApptDivEl, false);		
 		if (data.isAllDay) {
-			data.view._appCtxt.getCurrentController().newAllDayAppointmentHelper(data.startDate, data.endDate, data.folderId);		
+			data.view._appCtxt.getCurrentController().newAllDayAppointmentHelper(data.startDate, data.endDate, data.folderId, ev.shiftKey);		
 		} else {
 			var duration = (data.endDate.getTime() - data.startDate.getTime());
 			if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;	
-			data.view._appCtxt.getCurrentController().newAppointmentHelper(data.startDate, duration, data.folderId);
+			data.view._appCtxt.getCurrentController().newAppointmentHelper(data.startDate, duration, data.folderId, ev.shiftKey);
 		}
 	}
 

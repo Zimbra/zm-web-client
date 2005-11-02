@@ -730,7 +730,7 @@ ZmCalBaseView.prototype._layout =
 function() {}
 
 ZmCalBaseView.prototype._timeSelectionEvent =
-function(date, duration, isDblClick, allDay, folderId) {
+function(date, duration, isDblClick, allDay, folderId, shiftKey) {
 	if (!this._selectionEvent) this._selectionEvent = new DwtSelectionEvent(true);
 	var sev = this._selectionEvent;
 	sev._isDblClick = isDblClick;
@@ -740,6 +740,7 @@ function(date, duration, isDblClick, allDay, folderId) {
 	sev.isAllDay = allDay;
 	sev.folderId = folderId;
 	sev.force = false;
+	sev.shiftKey = shiftKey;
 	this.notifyListeners(ZmCalBaseView.TIME_SELECTION, this._selectionEvent);
 	sev._isDblClick = false;
 }

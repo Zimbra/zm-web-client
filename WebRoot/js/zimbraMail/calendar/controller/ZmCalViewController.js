@@ -522,7 +522,7 @@ function(ev) {
 		var appt = this._newApptObject(ev.detail);
 		appt.setAllDayEvent(ev.isAllDay);
 		if (ev.folderId) appt.setFolderId(ev.folderId);
-		this._showQuickAddDialog(appt);
+		this._showQuickAddDialog(appt, ev.shiftKey);
 	}
 }
 
@@ -591,30 +591,36 @@ function(args) {
 };
 
 ZmCalViewController.prototype._showQuickAddDialog = 
-function(appt) {
-	if (this._quickAddDialog == null) {
-		this._quickAddDialog = new ZmApptQuickAddDialog(this._shell, this._appCtxt);
-		this._quickAddDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._quickAddOkListener));
-		this._quickAddDialog.addSelectionListener(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, new AjxListener(this, this._quickAddMoreListener));
-		this._quickAddDialog._disableFFhack();
+function(appt, shiftKey) {
+	// find out if we really should display the quick add dialog
+	var useQuickAdd = this._appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD);
+	if ((useQuickAdd && !shiftKey) || (!useQuickAdd && shiftKey)) {
+		if (this._quickAddDialog == null) {
+			this._quickAddDialog = new ZmApptQuickAddDialog(this._shell, this._appCtxt);
+			this._quickAddDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._quickAddOkListener));
+			this._quickAddDialog.addSelectionListener(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, new AjxListener(this, this._quickAddMoreListener));
+			this._quickAddDialog._disableFFhack();
+		}
+		this._quickAddDialog.initialize(appt);
+		this._quickAddDialog.popup();
+	} else {
+		this.newAppointment(appt);
 	}
-	this._quickAddDialog.initialize(appt);
-	this._quickAddDialog.popup();
 };
 
 ZmCalViewController.prototype.newAppointmentHelper = 
-function(startDate, optionalDuration, folderId) {
+function(startDate, optionalDuration, folderId, shiftKey) {
 	var appt = this._newApptObject(startDate, optionalDuration, folderId)
-	this._showQuickAddDialog(appt);
+	this._showQuickAddDialog(appt, shiftKey);
 };
 
 ZmCalViewController.prototype.newAllDayAppointmentHelper = 
-function(startDate, endDate, folderId) {
+function(startDate, endDate, folderId, shiftKey) {
 	var appt = this._newApptObject(startDate, null, folderId);
 	if (endDate)
 		appt.setEndDate(endDate);
 	appt.setAllDayEvent(true);
-	this._showQuickAddDialog(appt);
+	this._showQuickAddDialog(appt, shiftKey);
 };
 
 ZmCalViewController.prototype.newAppointment = 
