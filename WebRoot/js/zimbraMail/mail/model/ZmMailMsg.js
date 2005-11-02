@@ -766,6 +766,8 @@ function(bFindHits, domain, partNameList) {
     	var hrefRoot = "href='" + csfeMsgFetchSvc + "id=" + this.getId() + "&amp;part=";
     	
     	for (var i = 0; i < this._attachments.length; i++) {
+    		// flag used to tell us whether we should use content location instead of built href
+    		var useCL = false;
     		var attach = this._attachments[i];
 			var type = attach.ct;
 			
@@ -784,10 +786,12 @@ function(bFindHits, domain, partNameList) {
 			// get size info in any
 			var sizeText = "";
     		var size = attach.s;
-    		if (size != null) {
+    		if (size && size > 0) {
     		    if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
                 else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;"; 
                 else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;"; 
+    		} else {
+    			useCL = attach.cl && ZmURLObjectHandler.URL_RE.test(attach.cl);
     		}
 
 			// calc. widths of all data involved
@@ -799,9 +803,14 @@ function(bFindHits, domain, partNameList) {
     		var iconLabelWidth = 16 + labelWidth;
 
 			// set link
-		    var link = type == ZmMimeTable.MSG_RFC822
-		    	? "<a href='javascript:;' onclick='ZmMailMsg.rfc822Callback(this," + this.getId() + ",\"" + attach.part + "\")' class='AttLink'>"
-		    	: "<a target='att_view_win' class='AttLink' " + hrefRoot + attach.part + "'>";
+		    var link = "";
+		    if (type == ZmMimeTable.MSG_RFC822) {
+		    	link = "<a href='javascript:;' onclick='ZmMailMsg.rfc822Callback(this," + this.getId() + ",\"" + attach.part + "\")' class='AttLink'>";
+		    } else {
+		    	link = useCL
+		    		? ("<a target='att_view_win' class='AttLink' href='" + attach.cl + "'>")
+		    		: ("<a target='att_view_win' class='AttLink' " + hrefRoot + attach.part + "'>");
+		    }
 
     		htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 style='display:inline; width:";
     		htmlArr[idx++] = iconLabelWidth;
@@ -823,10 +832,6 @@ function(bFindHits, domain, partNameList) {
 		    }
 
     		htmlArr[idx++] = "</td></tr></table></td>";
-//    		if (sizeWidth > 0)
-//	    		htmlArr[idx++] = "<td style='width:" + sizeWidth + "'>" + sizeText + "&nbsp;</td>";
-//	    	else
-//	    		htmlArr[idx++] = "&nbsp;</td>";
 	    	htmlArr[idx++] = "</tr></table>";
     		
     		attProps.html = htmlArr.join("");
