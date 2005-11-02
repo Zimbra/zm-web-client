@@ -70,7 +70,6 @@ ZmStatusView.TRANSITION_SLIDE_RIGHT = 4;
 ZmStatusView.TRANSITION_FADE_IN = 5;
 ZmStatusView.TRANSITION_INVISIBLE = 6; // add to history, but don't display
 
-
 ZmStatusView.DEFAULT = { };
 ZmStatusView.DEFAULT[ZmStatusView.LEVEL_INFO] = { delay: ZmStatusView.STATUS_LIFE, transition: ZmStatusView.TRANSITION_SLIDE_UP };
 ZmStatusView.DEFAULT[	ZmStatusView.LEVEL_WARNING] = { delay: ZmStatusView.STATUS_LIFE, transition: ZmStatusView.TRANSITION_SLIDE_DOWN };

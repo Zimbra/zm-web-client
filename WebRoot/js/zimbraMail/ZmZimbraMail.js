@@ -295,6 +295,7 @@ function(args) {
 	var respCallback = new AjxCallback(this, this._handleResponseStartup2);
 	var startApp = (params && params.app) ? params.app : ZmZimbraMail.defaultStartApp;
 	this.activateApp(startApp, respCallback, this._errorCallback);
+	this.setStatusMsg(ZmMsg.initializationComplete, null, null, null, ZmStatusView.TRANSITION_INVISIBLE);
 };
 
 /*
