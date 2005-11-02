@@ -64,7 +64,7 @@ ZmURLObjectHandler.prototype.getToolTipText =
 function(url, context) {
 	// Pre-load the image
 	(new Image()).src =  ZmURLObjectHandler.THUMB_URL + url;
-	return '<iframe frameborder="0" width="205" height="150" src="' + ZmURLObjectHandler.THUMB_URL + url + '"></iframe>';
+	return '<iframe scrolling="no" frameborder="0" marginWidth="0" marginHeight="0" width="205" height="150" src="' + ZmURLObjectHandler.THUMB_URL + url + '"></iframe>';
 };
 
 ZmURLObjectHandler.prototype.getActionMenu =
