@@ -101,7 +101,7 @@ ZmAppt.SERVER_DAYS_TO_DISPLAY = {
 	WE: "Wednesday",
 	TH: "Thursday",
 	FR: "Friday",
-	SAT: "Saturday"
+	SA: "Saturday"
 };
 
 ZmAppt.MONTHLY_DAY_OPTIONS = [
