@@ -33,7 +33,4 @@ Contributor(s):
       ext = "";
    }
 %>
-<script type="text/javascript" src="<%= contextPath %>/js/ajax/config/msgs/AjxMsg.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbra/config/msgs/ZMsg.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/config/msgs/ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
-
+<script type="text/javascript" src="<%= contextPath %>/js/msgs/AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>

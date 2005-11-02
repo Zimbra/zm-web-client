@@ -107,9 +107,7 @@ Contributor(s):
     	DwtConfigPath = "<%= contextPath %>/js/dwt/config";
     </script>
     
-<script type="text/javascript" src="<%= contextPath %>/js/ajax/config/msgs/AjxMsg.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbra/config/msgs/ZMsg.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/config/msgs/ZaMsg.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/msgs/AjxMsg,ZMsg,ZaMsg.js<%= ext %>?v=<%= vers %>"></script>
 
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
    		<jsp:include page="/public/Ajax.jsp"/>
