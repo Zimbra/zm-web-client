@@ -416,6 +416,13 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	font: 10pt monospace;
 }
 
+.ZmComposeView .attachText {
+	width:60px;
+	text-align:right;
+	white-space:nowrap;
+	overflow:hidden; 
+}
+
 .ZmHtmlEditor {
 	padding: 3px;
 }
