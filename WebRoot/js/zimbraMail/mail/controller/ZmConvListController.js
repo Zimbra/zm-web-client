@@ -101,6 +101,12 @@ function(searchResult, searchString) {
 	this._resetNavToolBarButtons(this._currentView);
 }
 
+ZmConvListController.prototype.handleKeyPressEvent =
+function(ev) {
+	DBG.println("ZmConvListController.handleKeyPressEvent");
+}
+
+
 // Private and protected methods
 
 // Custom tooltips for Reply/Reply All/Forward

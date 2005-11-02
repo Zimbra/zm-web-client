@@ -143,6 +143,10 @@ function(view) {
 	this._currentView = view;
 }
 
+ZmController.prototype.handleKeyPressEvent =
+function(ev) {
+}
+
 ZmController.prototype._showLoginDialog =
 function(bReloginMode) {
 	this._authenticating = true;

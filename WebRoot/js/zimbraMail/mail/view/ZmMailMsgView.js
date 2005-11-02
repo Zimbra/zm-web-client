@@ -47,7 +47,6 @@ function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 		this._tagList.addChangeListener(new AjxListener(this, ZmMailMsgView.prototype._tagChangeListener));
 	}
 
-	this._setKeyEventHdlrs();
 	this._setMouseEventHdlrs(); // needed by object manager
 
 	// this manages all the detected objects within the view

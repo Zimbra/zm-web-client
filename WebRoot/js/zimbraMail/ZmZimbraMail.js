@@ -52,6 +52,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	appCtxt.setClientCmdHdlr(new ZmClientCmdHandler(appCtxt));
 
 	this._shell = appCtxt.getShell();
+	this._shell.addListener(DwtEvent.ONKEYPRESS, new AjxListener(this, this._keyPressListener));
     this._splashScreen = new ZmSplashScreen(this._shell, "SplashScreen");
  
 	this._apps = {};
@@ -1251,3 +1252,13 @@ function(ev) {
 		this._handleException(ex, this._appButtonListener, ev, false);
 	}
 };
+
+ZmZimbraMail.prototype._keyPressListener =
+function(ev) {
+	DBG.println("ZmZimbraMail.KeyPressListener");
+	var curView = this._appViewMgr.getCurrentView();
+	if (curView) {
+		DBG.println("DO IT!");
+		curView.getController().handleKeyPressEvent(ev);
+	}
+}

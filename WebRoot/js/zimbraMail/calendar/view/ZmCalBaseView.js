@@ -30,7 +30,6 @@ function ZmCalBaseView(parent, className, posStyle, controller, view) {
 
 	// BEGIN LIST-RELATED
 	this._setMouseEventHdlrs();
-	this._setKeyEventHdlrs();
 	this.setCursor("default");
 	
 	this._listenerMouseOver = new AjxListener(this, ZmCalBaseView.prototype._mouseOverListener);
