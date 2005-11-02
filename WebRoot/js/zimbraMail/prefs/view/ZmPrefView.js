@@ -49,7 +49,6 @@ function ZmPrefView(parent, app, posStyle, controller, passwordDialog) {
 
     this.setScrollStyle(DwtControl.SCROLL);
 	this.prefView = new Object();
-	this._filtersEnabled = this._appCtxt.get(ZmSetting.FILTERS_ENABLED);
 	this._rendered = false;
 };
 
@@ -96,20 +95,14 @@ function() {
 */
 ZmPrefView.prototype.show =
 function() {
-	if (this._rendered)
-		return;
+	if (this._rendered) return;
 
 	for (var i = 0; i < ZmPrefView.VIEWS.length; i++) {
 		var view = ZmPrefView.VIEWS[i];
 
-		if ((view == ZmPrefView.FILTER_RULES) && (!this._filtersEnabled))
-			continue;
-
-		if (view == ZmPrefView.ADDR_BOOK && (!this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)))
-			continue;
-
-		if (view == ZmPrefView.CALENDAR && (!this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)))
-			continue;
+		if ((view == ZmPrefView.FILTER_RULES) && (!this._appCtxt.get(ZmSetting.FILTERS_ENABLED))) continue;
+		if (view == ZmPrefView.ADDR_BOOK && (!this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))) continue;
+		if (view == ZmPrefView.CALENDAR && (!this._appCtxt.get(ZmSetting.CALENDAR_ENABLED))) continue;
 
 		var viewObj = null;
 		if (view != ZmPrefView.FILTER_RULES) {
@@ -139,7 +132,7 @@ function() {
 ZmPrefView.prototype.setBounds =
 function(x, y, width, height) {
 	DwtControl.prototype.setBounds.call(this, x, y, width, height);
-	if (this._filtersEnabled) {
+	if (this._appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
 		var filterRulesView = this.prefView[ZmPrefView.FILTER_RULES];
 		if (filterRulesView)
 			filterRulesView.setSize(width *.97, height *.93);
@@ -173,11 +166,15 @@ function(dirtyCheck, noValidation) {
 		// so we'll skip the rest of the checks
 		if (!viewPage.hasRendered()) continue;
 
-		var value;
 		var prefs = ZmPrefView.PREFS[view];
 		for (var j = 0; j < prefs.length; j++) {
 			var id = prefs[j];
 			var setup = ZmPref.SETUP[id];
+			var pre = setup.precondition;
+			if (pre && !(this._appCtxt.get(pre)))
+				continue;		
+			
+			var value = null;
 			var type = setup ? setup.displayContainer : null;
 			var validationFunc = setup ? setup.validationFunction : null;
 			if (type && type.indexOf("x_") == 0) // ignore non-form elements			
@@ -238,7 +235,7 @@ function(dirtyCheck, noValidation) {
 ZmPrefView.prototype.isDirty =
 function() {
 	var changed = this.getChangedPrefs(true, true);
-	return this._filtersEnabled
+	return this._appCtxt.get(ZmSetting.FILTERS_ENABLED)
 		? (changed || ZmFilterRules.shouldSave())
 		: changed;
 };

@@ -80,22 +80,21 @@ function() {
 		var id = prefs[i];
 		var pref = settings.getSetting(id);
 
-		// make sure editing the pref is supported
-		if ((id == ZmSetting.INITIAL_SEARCH && (!this._appCtxt.get(ZmSetting.INITIAL_SEARCH_ENABLED))) ||
-			(id == ZmSetting.PASSWORD && (!this._appCtxt.get(ZmSetting.CHANGE_PASSWORD_ENABLED))) ||
-			(id == ZmSetting.SEARCH_INCLUDES_SPAM && (!this._appCtxt.get(ZmSetting.SPAM_ENABLED)))) {
-			continue;
-		}
+		var setup = ZmPref.SETUP[id];
+		var pre = setup.precondition;
+		if (pre && !(this._appCtxt.get(pre)))
+			continue;		
 
 		// save the current value (for checking later if it changed)
 		var value = pref.origValue = pref.getValue();
 		if (id == ZmSetting.SIGNATURE_STYLE)
 			value = (value == ZmSetting.SIG_INTERNET);
 		if (id == ZmSetting.POLLING_INTERVAL)
-			value = parseInt(value / 60); // setting stored as seconds, display as minutes
+			value = parseInt(value / 60); // setting stored as seconds, displayed as minutes
+		if (id == ZmSetting.SHOW_FRAGMENTS && !this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED))
+			setup.displayName = ZmMsg.showFragmentsMsg;
 		DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
 
-		var setup = ZmPref.SETUP[id];
 		var type = setup ? setup.displayContainer : null;
 		if (type == "select") {
 			var div = this._setupSelect(id, setup, value);

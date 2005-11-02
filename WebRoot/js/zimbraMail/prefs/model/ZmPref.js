@@ -100,7 +100,8 @@ ZmPref.SETUP = new Object();
 
 ZmPref.SETUP[ZmSetting.SEARCH_INCLUDES_SPAM] = {
 	displayName:		ZmMsg.includeJunkFolder,
-	displayContainer:	"checkbox"};
+	displayContainer:	"checkbox",
+	precondition:		ZmSetting.SPAM_ENABLED};
 
 ZmPref.SETUP[ZmSetting.SEARCH_INCLUDES_TRASH] = {
 	displayName:		ZmMsg.includeTrashFolder,
@@ -110,13 +111,15 @@ ZmPref.SETUP[ZmSetting.SEARCH_INCLUDES_TRASH] = {
 ZmPref.SETUP[ZmSetting.PASSWORD] = {
 	displayName:		ZmMsg.changePassword,
 	displayContainer:	"x_password",
-	displaySeparator:	true};
+	displaySeparator:	true,
+	precondition:		ZmSetting.CHANGE_PASSWORD_ENABLED};
 
 ZmPref.SETUP[ZmSetting.GROUP_MAIL_BY] =	{ 
 	displayName:		ZmMsg.groupMailBy,
 	displayContainer:	"select",
 	displayOptions:		[ZmMsg.message, ZmMsg.conversation],
-	options:			[ZmSetting.GROUP_BY_MESSAGE, ZmSetting.GROUP_BY_CONV]};
+	options:			[ZmSetting.GROUP_BY_MESSAGE, ZmSetting.GROUP_BY_CONV],
+	precondition:		ZmSetting.CONVERSATIONS_ENABLED};
 
 ZmPref.SETUP[ZmSetting.PAGE_SIZE] = {
 	displayName:		ZmMsg.itemsPerPage,
@@ -130,7 +133,8 @@ ZmPref.SETUP[ZmSetting.SHOW_FRAGMENTS] = {
 ZmPref.SETUP[ZmSetting.INITIAL_SEARCH] = {
 	displayName:		ZmMsg.initialMailSearch,
 	displayContainer:	"input",
-	displaySeparator:	false};
+	displaySeparator:	false,
+	precondition:		ZmSetting.INITIAL_SEARCH_ENABLED};
 
 ZmPref.SETUP[ZmSetting.POLLING_INTERVAL] = {
 	displayName:		ZmMsg.pollingInterval,
@@ -209,7 +213,8 @@ ZmPref.SETUP[ZmSetting.COMPOSE_AS_FORMAT] = {
 	displayName:		ZmMsg.composeMailUsing,
 	displayContainer:	"select",
 	displayOptions: 	[ZmMsg.text, ZmMsg.htmlDocument],
-	options: 			[ZmSetting.COMPOSE_TEXT, ZmSetting.COMPOSE_HTML]};
+	options: 			[ZmSetting.COMPOSE_TEXT, ZmSetting.COMPOSE_HTML],
+	precondition:		ZmSetting.HTML_COMPOSE_ENABLED};
 
 ZmPref.SETUP[ZmSetting.COMPOSE_INIT_FONT_FAMILY] = {
 	displayName:		ZmMsg.defaultFontSettings,
