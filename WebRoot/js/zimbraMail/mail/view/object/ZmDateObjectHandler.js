@@ -55,7 +55,7 @@ ZmDateObjectHandler.MONTH = {
 
 var $RE_TODAY_TOMORROW_YESTERDAY = "(today|tomorrow|yesterday)";
 
-var $RE_NEXT_LAST = "(next|last)";
+var $RE_NEXT_THIS_LAST = "(next|this|last)";
 
 var $RE_COMMA_OR_SP = "(?:\\s+|\\s*,\\s*)";
 
@@ -201,7 +201,7 @@ function ZmDate2ObjectHandler(appCtxt) {
 ZmDate2ObjectHandler.prototype = new ZmDateObjectHandler;
 ZmDate2ObjectHandler.prototype.constructor = ZmDate2ObjectHandler;
 
-ZmDate2ObjectHandler.REGEX = new RegExp("\\b" + $RE_NEXT_LAST + $RE_SP + $RE_DOW + "\\b", "ig"),
+ZmDate2ObjectHandler.REGEX = new RegExp("\\b" + $RE_NEXT_THIS_LAST + $RE_SP + $RE_DOW + "\\b", "ig"),
 
 ZmDate2ObjectHandler.prototype.match =
 function(line, startIndex) {
@@ -217,6 +217,8 @@ function(line, startIndex) {
 	if (result[1].toLowerCase() == "next") {
 		addDays = ndow - dow;
 		addDays += 7;
+	} else if (result[1].toLowerCase() == "this") {
+		addDays = ndow - dow;			
 	} else { // last
 		addDays = (-1 * (dow + 7 - ndow)) % 7;
 		if (addDays == 0)
