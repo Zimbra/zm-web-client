@@ -24,20 +24,15 @@
  */
 
 /**
- * Class encompasing an invite to a calendar appt.
- * uid
- * type
- * name
- * duration
- * startTime
- * transparency
- * location
- * endTime
+* Class encompasing an invite to a calendar appt.
+* @constructor
+* @class
+* 
+* @author
 */
-
 function ZmInvite() {
 	ZmModel.call(this);
-}
+};
 
 ZmInvite.prototype = new ZmModel;
 ZmInvite.prototype.constructor = ZmInvite;
@@ -102,19 +97,18 @@ function() {
 	return (this.components.length > 1);
 };
 
-ZmInvite.prototype.getEventName = function (compNum) {
-	if (this.components[compNum] != null ){
-		return this.components[compNum].name;
-	}
-	return null;
+ZmInvite.prototype.getEventName = 
+function(compNum) {
+	return this.components[compNum] ? this.components[compNum].name : null;
 };
 
 ZmInvite.prototype.getOrganizerEmail = 
 function (compNum) {
 	if (this.components[compNum] != null &&
 		this.components[compNum].or != null &&
-		this.components[compNum].or.url != null){
-		return this.components[compNum].or.url.replace("MAILTO:","");
+		this.components[compNum].or.url != null) 
+	{
+		return this.components[compNum].or.url.replace("MAILTO:", "");
 	}
 	return null;
 };
@@ -122,117 +116,126 @@ function (compNum) {
 ZmInvite.prototype.getOrganizerName = 
 function (compNum) {
 	if (this.components[compNum] != null &&
-		this.components[compNum.org] != null) {
+		this.components[compNum.org] != null) 
+	{
 		return this.components[compNum].or.d;
 	}
 	return null;
 };
 
-ZmInvite.prototype.isOrganizer = function (compNum) {
+ZmInvite.prototype.isOrganizer = 
+function(compNum) {
 	if (this.components[compNum] != null) {
-		return ((this.components[compNum].isOrg != null)? this.components[compNum].isOrg: false);
+		return ((this.components[compNum].isOrg != null) ? this.components[compNum].isOrg : false);
 	}
 	return false;
 };
 
 ZmInvite.prototype.shouldRsvp =
 function (compNum){
-	if (this.components[compNum] != null) {
-		return this.components[compNum].rsvp;
-	}
-	return null;
+	return this.components[compNum] != null 
+		? this.components[compNum].rsvp 
+		: null;
 };
 
-ZmInvite.prototype.getRecurrenceRules = function (compNum) {
+ZmInvite.prototype.getRecurrenceRules = 
+function(compNum) {
 	return this.components[compNum].recur
 };
 
-ZmInvite.prototype.isException = function (compNum) {
-	if (this.components[compNum] != null){
-		return (this.components[compNum].ex);
-	}
-	return false;
+ZmInvite.prototype.isException = 
+function(compNum) {
+	return this.components[compNum] != null 
+		? this.components[compNum].ex 
+		: false;
 };
 
-ZmInvite.prototype.getServerEndTime = function (compNum) {
-	if (this.components[compNum] != null) {
-		if (this._serverEndTime == null) {
-			if (this.components[compNum].e != null ) {
-				this._serverEndTime = this.components[compNum].e[0].d;
-			} else {
-				// get the duration
-				var dd = this.components[compNum].dur[0].d || 0;
-				var weeks = this.components[compNum].dur[0].w || 0;
-				var hh = this.components[compNum].dur[0].h || 0;
-				var mm = this.components[compNum].dur[0].m || 0;
-				var ss = this.components[compNum].dur[0].s || 0;
-				var t = parseInt(ss) + (parseInt(mm) * 60) + (parseInt(hh) * 3600) + (parseInt(dd) * 24 * 3600) + (parseInt(weeks) * 7 * 24 * 3600);
-				// parse the start date
-				var start = this.components[compNum].s[0].d;
-				var yyyy = parseInt(start.substr(0,4), 10);
-				var MM = parseInt(start.substr(4,2), 10);
-				var dd = parseInt(start.substr(6,2), 10);
-				var d = new Date(yyyy, MM -1, dd);
-				if (start.charAt(8) == 'T') {
-					var hh = parseInt(start.substr(9,2), 10);
-					var mm = parseInt(start.substr(11,2), 10);
-					var ss = parseInt(start.substr(13,2), 10);
-					d.setHours(hh, mm, ss, 0);
-				}
-				// calculate the end date -- start + offset;
-				var endDate = new Date(d.getTime() + (t * 1000));
+ZmInvite.prototype.getServerEndTime = 
+function(compNum) {
+	if (this.components[compNum] == null) return;
 
-				// put the end date into server DURATION format.
-				MM = AjxDateUtil._pad(d.getMonth() + 1);
-				dd = AjxDateUtil._pad(d.getDate());
-				hh = AjxDateUtil._pad(d.getHours());
-				mm = AjxDateUtil._pad(d.getMinutes());
-				ss = AjxDateUtil._pad(d.getSeconds());
-				yyyy = d.getFullYear();
-				this._serverEndTime = StringBuffer.concat(yyyy,MM,dd,"T",hh,mm,ss);
+	if (this._serverEndTime == null) {
+		if (this.components[compNum].e != null ) {
+			this._serverEndTime = this.components[compNum].e[0].d;
+		} else {
+			// get the duration
+			var dd = this.components[compNum].dur[0].d || 0;
+			var weeks = this.components[compNum].dur[0].w || 0;
+			var hh = this.components[compNum].dur[0].h || 0;
+			var mm = this.components[compNum].dur[0].m || 0;
+			var ss = this.components[compNum].dur[0].s || 0;
+			var t = parseInt(ss) + (parseInt(mm) * 60) + (parseInt(hh) * 3600) + (parseInt(dd) * 24 * 3600) + (parseInt(weeks) * 7 * 24 * 3600);
+			// parse the start date
+			var start = this.components[compNum].s[0].d;
+			var yyyy = parseInt(start.substr(0,4), 10);
+			var MM = parseInt(start.substr(4,2), 10);
+			var dd = parseInt(start.substr(6,2), 10);
+			var d = new Date(yyyy, MM -1, dd);
+			if (start.charAt(8) == 'T') {
+				var hh = parseInt(start.substr(9,2), 10);
+				var mm = parseInt(start.substr(11,2), 10);
+				var ss = parseInt(start.substr(13,2), 10);
+				d.setHours(hh, mm, ss, 0);
 			}
+			// calculate the end date -- start + offset;
+			var endDate = new Date(d.getTime() + (t * 1000));
+
+			// put the end date into server DURATION format.
+			MM = AjxDateUtil._pad(d.getMonth() + 1);
+			dd = AjxDateUtil._pad(d.getDate());
+			hh = AjxDateUtil._pad(d.getHours());
+			mm = AjxDateUtil._pad(d.getMinutes());
+			ss = AjxDateUtil._pad(d.getSeconds());
+			yyyy = d.getFullYear();
+			this._serverEndTime = StringBuffer.concat(yyyy,MM,dd,"T",hh,mm,ss);
 		}
-		return this._serverEndTime;
 	}
+	return this._serverEndTime;
 };
 
-ZmInvite.prototype.getServerStartTime = function (compNum) {
-	if (this.components[compNum] != null) {
-		return this.components[compNum].s[0].d;
-	}
+ZmInvite.prototype.getServerStartTime = 
+function(compNum) {
+	return this.components[compNum] != null
+		? this.components[compNum].s[0].d
+		: null;
 };
 
-ZmInvite.prototype.getServerStartTimeTz = function (compNum) {
-	if (this.components[compNum] != null){
-		if (this._serverStartTimeZone == null) {
-			var startTime = this.getServerStartTime();
-			if (startTime && startTime.charAt(startTime.length -1) == 'Z') {
-				this._serverStartTimeZone = ZmTimezones.GMT;
-			} else {
-				this._serverStartTimeZone = this.components[compNum].s[0].tz;
-			}
-		}
-		return this._serverStartTimeZone;
+ZmInvite.prototype.getServerStartTimeTz = 
+function(compNum) {
+	if (this.components[compNum] == null) return;
+
+	if (this._serverStartTimeZone == null) {
+		var startTime = this.getServerStartTime();
+		this._serverStartTimeZone = startTime && startTime.charAt(startTime.length -1) == 'Z'
+			? ZmTimezones.GMT
+			: this.components[compNum].s[0].tz;
 	}
+	return this._serverStartTimeZone;
 };
 
-ZmInvite.prototype.getServerEndTimeTz = function (compNum) {
-	if (this.components[compNum] != null) {
-		if (this._serverEndTimeZone == null) {
-			var endTime = this.getServerEndTime();
-			if (endTime && startTime.charAt(endTime.length -1) == 'Z') {
-				this._serverEndTimeZone =  ZmTimezones.GMT;
-			} else {
-				this._serverEndTimeZone = this.components[compNum].e[0].tz;
-			}
-		}
-		return this._serverEndTimeZone;
+ZmInvite.prototype.getServerEndTimeTz = 
+function(compNum) {
+	if (this.components[compNum] == null) return;
+
+	if (this._serverEndTimeZone == null) {
+		var endTime = this.getServerEndTime();
+		this._serverEndTimeZone = endTime && startTime.charAt(endTime.length -1) == 'Z'
+			? ZmTimezones.GMT
+			: this.components[compNum].e[0].tz;
 	}
+	return this._serverEndTimeZone;
 };
 
-ZmInvite.prototype.getName = function (compNum) {
-	if (this.components[compNum] != null) {
-		return this.components[compNum].name;
-	}
+ZmInvite.prototype.getName = 
+function(compNum) {
+	return this.components[compNum] != null
+		? this.components[compNum].name
+		: null;
 };
 
+ZmInvite.prototype.getFreeBusy =
+function(compNum) {
+	return this.components[compNum] != null
+		? this.components[compNum].fb
+		: null;
+};
