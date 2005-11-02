@@ -57,6 +57,7 @@ ZmEvent.S_NOTE			= i++;
 ZmEvent.S_PICKER		= i++;
 ZmEvent.S_SEARCH		= i++;
 ZmEvent.S_SETTING		= i++;
+ZmEvent.S_ZIMLET		= i++;
 
 //Source types for admin
 ZmEvent.S_ACCOUNT		= i++;
@@ -78,6 +79,7 @@ ZmEvent.E_MOVE			= i++;
 ZmEvent.E_FLAGS			= i++;
 ZmEvent.E_TAGS			= i++;
 ZmEvent.E_CALENDARS		= i++;
+ZmEvent.E_ZIMLETS		= i++;
 
 // Public methods
 

@@ -128,6 +128,7 @@ ZmOperation.VIEW_APPT_INSTANCE		= i++;
 ZmOperation.VIEW_APPT_SERIES		= i++;
 ZmOperation.WEEK_VIEW				= i++;
 ZmOperation.WORK_WEEK_VIEW			= i++;
+ZmOperation.ZIMLET					= i++;
 
 // Labels
 // !! PLEASE ADD IN ALPHA ORDER !!
@@ -327,6 +328,7 @@ ZmOperation.IMAGE[ZmOperation.UNDELETE]					= "MoveToFolder"; 		// XXX: need new
 ZmOperation.IMAGE[ZmOperation.VIEW]						= "SplitView";
 ZmOperation.IMAGE[ZmOperation.WEEK_VIEW]				= "WeekView";
 ZmOperation.IMAGE[ZmOperation.WORK_WEEK_VIEW]			= "WorkWeekView";
+ZmOperation.IMAGE[ZmOperation.ZIMLET]					= "ZimbraIcon";
 
 // Icons (when disabled)
 // !! PLEASE ADD IN ALPHA ORDER !!

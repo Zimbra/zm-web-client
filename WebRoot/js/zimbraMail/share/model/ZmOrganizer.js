@@ -64,12 +64,14 @@ ZmOrganizer.FOLDER	= ZmEvent.S_FOLDER;
 ZmOrganizer.TAG		= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH	= ZmEvent.S_SEARCH;
 ZmOrganizer.CALENDAR = ZmEvent.S_APPT;
+ZmOrganizer.ZIMLET = ZmEvent.S_ZIMLET;
 
 // defined in com.zimbra.cs.mailbox.Mailbox
 ZmOrganizer.ID_ROOT		= 1;
 ZmOrganizer.ID_TRASH	= 3;
 ZmOrganizer.ID_SPAM		= 4;
 ZmOrganizer.ID_CALENDAR	= 10;
+ZmOrganizer.ID_ZIMLET	= -10;
 
 ZmOrganizer.FIRST_USER_ID = 256;
 

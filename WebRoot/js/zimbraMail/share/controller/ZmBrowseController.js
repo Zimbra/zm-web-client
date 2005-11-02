@@ -65,7 +65,7 @@ function() {
 	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED))
 		list.push(ZmPicker.SEARCH);
 	list.push(ZmPicker.SIZE);
-	list.push(ZmPicker.OBJECT);
+	list.push(ZmPicker.ZIMLET);
 	list.push(ZmPicker.FLAG);
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		list.push(ZmPicker.TAG);

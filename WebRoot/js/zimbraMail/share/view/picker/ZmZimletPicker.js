@@ -23,47 +23,47 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmObjectPicker(parent) {
+function ZmZimletPicker(parent) {
 
-	ZmPicker.call(this, parent, ZmPicker.OBJECT);
+	ZmPicker.call(this, parent, ZmPicker.ZIMLET);
 }
 
-ZmObjectPicker.prototype = new ZmPicker;
-ZmObjectPicker.prototype.constructor = ZmObjectPicker;
+ZmZimletPicker.prototype = new ZmPicker;
+ZmZimletPicker.prototype.constructor = ZmZimletPicker;
 
-ZmPicker.CTOR[ZmPicker.OBJECT] = ZmObjectPicker;
+ZmPicker.CTOR[ZmPicker.ZIMLET] = ZmZimletPicker;
 
-ZmObjectPicker.prototype.toString = 
+ZmZimletPicker.prototype.toString = 
 function() {
-	return "ZmObjectPicker";
+	return "ZmZimletPicker";
 }
 
-ZmObjectPicker.prototype._addObject =
+ZmZimletPicker.prototype._addZimlet =
 function(tree, text, imageInfo, type) {
-	var ti = this._objects[type] = new DwtTreeItem(tree);
+	var ti = this._zimlets[type] = new DwtTreeItem(tree);
 	ti.setText(text);
 	ti.setImage(imageInfo);
 }
 
-ZmObjectPicker.prototype._setupPicker =
+ZmZimletPicker.prototype._setupPicker =
 function(parent) {
-	this._objects = new Object();
+	this._zimlets = new Object();
 	
     var tti, ti;
 	var tree = this._tree = new DwtTree(parent, DwtTree.CHECKEDITEM_STYLE);
-	tree.addSelectionListener(new AjxListener(this, ZmObjectPicker.prototype._treeListener));
+	tree.addSelectionListener(new AjxListener(this, ZmZimletPicker.prototype._treeListener));
 	
-	this._addObject(tree, ZmMsg.tracking, "PurchaseOrder", "tracking");
-	this._addObject(tree, ZmMsg.phoneNumber, "Telephone", "phone");
-	this._addObject(tree, ZmMsg.po, "PurchaseOrder", "po");
-	this._addObject(tree, ZmMsg.url, "URL", "url");	
+	this._addZimlet(tree, ZmMsg.tracking, "PurchaseOrder", "tracking");
+	this._addZimlet(tree, ZmMsg.phoneNumber, "Telephone", "phone");
+	this._addZimlet(tree, ZmMsg.po, "PurchaseOrder", "po");
+	this._addZimlet(tree, ZmMsg.url, "URL", "url");	
 }
 
-ZmObjectPicker.prototype._updateQuery = 
+ZmZimletPicker.prototype._updateQuery = 
 function() {
 	var types = new Array();
-	for (var type in this._objects)
-		if (this._objects[type].getChecked())
+	for (var type in this._zimlets)
+		if (this._zimlets[type].getChecked())
 			types.push(type);
 	
 	if (types.length) {
@@ -77,7 +77,7 @@ function() {
 	this.execute();
 }
 
-ZmObjectPicker.prototype._treeListener =
+ZmZimletPicker.prototype._treeListener =
 function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED)
  		this._updateQuery();

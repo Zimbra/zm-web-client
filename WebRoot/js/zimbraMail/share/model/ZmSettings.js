@@ -156,6 +156,26 @@ function(args) {
 		this._settings[ZmSetting.BROWSE_ENABLED].setValue(false, null, true);
 	if (this.get(ZmSetting.FORCE_CAL_OFF))
 		this._settings[ZmSetting.CALENDAR_ENABLED].setValue(false, null, true);
+		
+	// load Zimlets
+	if(obj.zimlets) {
+		DBG.println(AjxDebug.DBG1, "Zimlets: Got some Zimlets");
+	 	
+		var zimletTree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
+	 	if (!zimletTree) {
+	 		zimletTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ZIMLET);
+	 		this._appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
+	 	}
+	 	var zimletString = zimletTree.asString();
+	 	zimletTree.reset();	
+	 	zimletTree.loadFromJs(obj.zimlets.zimlet);
+
+		// Add Zimlets to overview panel	 	
+	 	var appController = this._appCtxt.getAppController();
+ 		this._oldPanels = appController.getOverviewPanels();
+ 		var newPanels = [ ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.ZIMLET ];
+ 		appController.setOverviewPanels( newPanels );
+	 }
 
 	this.userSettingsLoaded = true;
 	
