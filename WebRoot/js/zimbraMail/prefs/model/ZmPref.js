@@ -63,7 +63,7 @@ ZmPref.ADDR_BOOK_PREFS = [ZmSetting.AUTO_ADD_ADDRESS,
 						  ZmSetting.IMPORT, ZmSetting.EXPORT];
 						  
 ZmPref.CALENDAR_PREFS = [ZmSetting.CALENDAR_INITIAL_VIEW, ZmSetting.CAL_FIRST_DAY_OF_WEEK, 
-						 ZmSetting.CAL_SHOW_TIMEZONE, ZmSetting.CAL_USE_QUICK_ADD];
+						 ZmSetting.CAL_SHOW_TIMEZONE, ZmSetting.CAL_USE_QUICK_ADD, ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL];
 
 ZmPref.validateEmail = 
 function(emailStr) {
@@ -302,3 +302,8 @@ ZmPref.SETUP[ZmSetting.CAL_SHOW_TIMEZONE] = {
 ZmPref.SETUP[ZmSetting.CAL_USE_QUICK_ADD] = {
  	displayName:		ZmMsg.useQuickAdd,
  	displayContainer:	"checkbox"};
+
+ZmPref.SETUP[ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL] = {
+ 	displayName:		ZmMsg.alwaysShowMiniCal,
+ 	displayContainer:	"checkbox"};
+ 	

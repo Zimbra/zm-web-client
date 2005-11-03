@@ -207,8 +207,10 @@ function() {
 
 ZmCalViewController.prototype.getCheckedCalendarFolderIds =
 function() {
-	if (this._checkedCalendarFolderIds == null)
+	if (this._checkedCalendarFolderIds == null) {
 		this.getCheckedCalendars();
+		if (this._checkedCalendarFolderIds == null) return [ZmOrganizer.ID_CALENDAR];
+	}
 	return this._checkedCalendarFolderIds;
 }
 
@@ -376,6 +378,7 @@ function(date) {
 	this._miniCalendar.setScrollStyle(Dwt.CLIP);
 	this._miniCalendar.addSelectionListener(new AjxListener(this, this._miniCalSelectionListener));
 	this._miniCalendar.addDateRangeListener(new AjxListener(this, this._miniCalDateRangeListener));
+	this._miniCalendar.setMouseOverDayCallback(new AjxCallback(this, this._miniCalMouseOverDayCallback));
 
 	var workingWeek = [];
 	var fdow = this.firstDayOfWeek();
@@ -473,12 +476,14 @@ function(date, duration, roll) {
 	// set mini-cal first so it will cache appts we might need	
 	if (this._miniCalendar.getDate() == null || this._miniCalendar.getDate().getTime() != date.getTime()) 
 		this._miniCalendar.setDate(date, true, roll);
-	this._viewMgr.setDate(date, duration, roll);
-	var title = this._viewMgr.getCurrentView().getCalTitle();
-	this._navToolBar.setText(title);
-	Dwt.setTitle(title);
-	if (!roll && this._currentView == ZmController.CAL_WORK_WEEK_VIEW && (date.getDay() == 0 || date.getDay() ==  6)) {
-		this.show(ZmController.CAL_WEEK_VIEW);
+	if (this._viewMgr != null) {		
+		this._viewMgr.setDate(date, duration, roll);
+		var title = this._viewMgr.getCurrentView().getCalTitle();
+		this._navToolBar.setText(title);
+		Dwt.setTitle(title);
+		if (!roll && this._currentView == ZmController.CAL_WORK_WEEK_VIEW && (date.getDay() == 0 || date.getDay() ==  6)) {
+			this.show(ZmController.CAL_WEEK_VIEW);
+		}
 	}
 }
 
@@ -799,6 +804,11 @@ function(ev) {
 	this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
 }
 
+ZmCalViewController.prototype._miniCalMouseOverDayCallback = 
+function(args) {
+	args[0].setToolTipContent(this.getDayToolTipText(args[1]));
+}
+	
 ZmCalViewController.prototype._getViewType = 
 function() {
 	return ZmController.CAL_VIEW;
@@ -1151,10 +1161,6 @@ ZmCalViewController.prototype._maintenanceAction =
 function() {
 	var work = this._pendingWork;
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
-
-	if (this._viewMgr == null)
-		return;
-
 	// do minical first, since it might load in a whole month worth of appts 
 	// the main view can use
 	if (work & ZmCalViewController.MAINT_MINICAL) {
@@ -1165,6 +1171,7 @@ function() {
 		// return. callback will check and see if MAINT_VIEW is nededed as well.
 		return;
 	} else if (work & ZmCalViewController.MAINT_VIEW) {
+		if (this._viewMgr == null) return;
 		var view = this.getCurrentView();
 		if (view && view.needsRefresh()) {
 			var rt = view.getTimeRange();

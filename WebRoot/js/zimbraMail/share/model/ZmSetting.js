@@ -180,6 +180,7 @@ ZmSetting.IMPORT 						= i++;
 ZmSetting.CAL_FIRST_DAY_OF_WEEK 		= i++;
 ZmSetting.CAL_SHOW_TIMEZONE				= i++;
 ZmSetting.CAL_USE_QUICK_ADD 			= i++;
+ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL		= i++;
 ZmSetting.CALENDAR_INITIAL_VIEW			= i++;
 ZmSetting.DEFAULT_CALENDAR_TIMEZONE		= i++;
 // general preferences
@@ -324,6 +325,7 @@ ZmSetting.INIT[ZmSetting.IMPORT] 						= [null, ZmSetting.T_PREF];
 ZmSetting.INIT[ZmSetting.CAL_FIRST_DAY_OF_WEEK] 		= ["zimbraPrefCalendarFirstDayOfWeek", ZmSetting.T_PREF, ZmSetting.D_INT, 0];
 ZmSetting.INIT[ZmSetting.CAL_SHOW_TIMEZONE]	 			= ["zimbraPrefUseTimeZoneListInCalendar", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.CAL_USE_QUICK_ADD] 			= ["zimbraPrefCalendarUseQuickAdd", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL]			= ["zimbraPrefCalendarAlwaysShowMiniCal", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.CALENDAR_INITIAL_VIEW]			= ["zimbraPrefCalendarInitialView", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.CAL_DAY];
 ZmSetting.INIT[ZmSetting.DEFAULT_CALENDAR_TIMEZONE]		= ["zimbraPrefTimeZoneId", ZmSetting.T_PREF, ZmSetting.D_STRING];
 // general preferences

@@ -46,7 +46,9 @@ function(callback) {
 ZmCalendarApp.prototype.activate =
 function(active, view, date) {
 	var cc = this.getCalController();
-	cc.getMiniCalendar(); // make sure tree footer (mini-calendar) has been created
+
+	this.showMiniCalendar(active || this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL));
+
 	if (active) {
 		var isAppView = (view == null || view == ZmController.CAL_VIEW || view == ZmController.CAL_DAY_VIEW ||
 						 view == ZmController.CAL_WEEK_VIEW || view == ZmController.CAL_WORK_WEEK_VIEW ||
@@ -55,6 +57,14 @@ function(active, view, date) {
 			cc.show(view);
 			if (date) cc.setDate(date);
 		}
+	}
+};
+
+ZmCalendarApp.prototype.showMiniCalendar =
+function(show) {
+	var cc = this.getCalController();
+	cc.getMiniCalendar(); // make sure tree footer (mini-calendar) has been created
+	if (show) {
 		this._appCtxt.getAppViewMgr().showTreeFooter(true);
 	} else {
 		this._appCtxt.getAppViewMgr().showTreeFooter(false);
