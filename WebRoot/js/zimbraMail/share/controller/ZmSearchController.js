@@ -426,8 +426,7 @@ function(ev) {
 
 	var id = ev.item.getData(ZmSearchToolBar.MENUITEM_ID);
 	this._searchFor = id;
-	if (id == ZmItem.CONTACT || id == ZmSearchToolBar.FOR_GAL_MI)
-		this._contactSource = id;
+	this._contactSource = (id == ZmSearchToolBar.FOR_GAL_MI) ? ZmSearchToolBar.FOR_GAL_MI : ZmItem.CONTACT;
 
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
 	var image = ZmSearchToolBar.ICON_KEY[id];
