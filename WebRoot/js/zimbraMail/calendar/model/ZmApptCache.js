@@ -278,7 +278,8 @@ function(args) {
 			var folderId = context.needToFetch[summaries[i].id];// id in response tied back to folder id
 
 			// TODO: no need to cache remote ids for now?
-			var isLink = this._calViewController.isCalendarLink(folderId)
+			var cal = this._calViewController.getCalendar(folderId);
+			var isLink = cal ? (cal.link ? true : false) : false;
 			if (!isLink) this._updateCachedIds(apptList);
 
 			// cache it 

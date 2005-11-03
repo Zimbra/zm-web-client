@@ -60,7 +60,6 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._maintTimedAction = new AjxTimedAction(this, ZmCalViewController.prototype._maintenanceAction);
 	this._pendingWork = ZmCalViewController.MAINT_NONE;	
 	this._apptCache = new ZmApptCache(this, appCtxt);
-	this._folderIdToCalendar = {};
 }
 
 ZmCalViewController.prototype = new ZmListController();
@@ -222,7 +221,6 @@ function() {
 	this._checkedCalendarFolderIds = [];
 	for (var i=0; i < cc.length; i++) {
 		var cal = cc[i];
-		this._folderIdToCalendar[cal.id] = cal;
 		this._checkedCalendarFolderIds.push(cal.id);
 	}
 	return cc;
@@ -249,7 +247,8 @@ function(ev) {
 
 ZmCalViewController.prototype.getCalendar =
 function(folderId) {
-	return this._folderIdToCalendar[folderId];
+	var ct = this._appCtxt.getTree(ZmOrganizer.CALENDAR);	
+	return ct ? ct.getById(folderId) : null;
 }
 
 // todo: change to currently "selected" calendar
@@ -261,16 +260,8 @@ function() {
 ZmCalViewController.prototype.getCalendarColor =
 function(folderId) {
 	if (!folderId) return ZmOrganizer.DEFAULT_COLOR;
-	var cal = this._folderIdToCalendar[folderId];
+	var cal = this.getCalendar(folderId);
 	return cal ? cal.color : ZmOrganizer.DEFAULT_COLOR;
-}
-
-ZmCalViewController.prototype.isCalendarLink =
-function(folderId) {
-	//shortcut that also helps when we are invoked before _folderIdToCalendar is init'd
-	if (folderId == ZmOrganizer.ID_CALENDAR) return false;
-	var cal = this._folderIdToCalendar[folderId];
-	return cal ? (cal.link ? true : false) : false;
 }
 
 ZmCalViewController.prototype._refreshButtonListener =
@@ -787,7 +778,7 @@ function(date) {
 	try {
 		var start = new Date(date.getTime());
 		start.setHours(0, 0, 0, 0);
-		var result = this.getApptSummaries(start.getTime(), start.getTime()+AjxDateUtil.MSEC_PER_DAY, true, ZmOrganizer.ID_CALENDAR	);
+		var result = this.getApptSummaries(start.getTime(), start.getTime()+AjxDateUtil.MSEC_PER_DAY, true, this.getCheckedCalendarFolderIds());
 		return ZmCalMonthView.getDayToolTipText(start,result, this);
 	} catch (ex) {
 		DBG.println(ex);
