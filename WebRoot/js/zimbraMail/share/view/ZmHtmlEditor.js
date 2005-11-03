@@ -686,33 +686,35 @@ function(ev) {
 	{
 		this._initialStyle = this._getInitialStyle(true);
 		var iframeDoc = this._getIframeDoc();
-		var initHtml = "<html><head>" + this._getInitialStyle(false) + "</head><body></body></html>";
-		iframeDoc.open();
-		iframeDoc.write(initHtml);
-		iframeDoc.close();
-
-		// update DwtSelect to reflect to new font size or family
-		if (setting.id == ZmSetting.COMPOSE_INIT_FONT_FAMILY) {
-			var fontfamily = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-			var selectedValue = null;
-			if (fontfamily == "Arial") 			selectedValue = DwtHtmlEditor.ARIAL;
-			else if (fontfamily == "Times") 	selectedValue = DwtHtmlEditor.TIMES;
-			else if (fontfamily == "Courier") 	selectedValue = DwtHtmlEditor.COURIER;
-			else if (fontfamily == "Verdana") 	selectedValue = DwtHtmlEditor.VERDANA;
-			if (selectedValue)
-				this._fontFamilySelect.setSelectedValue(selectedValue);
-		} else if (setting.id == ZmSetting.COMPOSE_INIT_FONT_SIZE) {
-			var fontsize = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
-			var selectedValue = null;
-			if (fontsize == "8pt") 		 selectedValue = 1;
-			else if (fontsize == "10pt") selectedValue = 2;
-			else if (fontsize == "12pt") selectedValue = 3;
-			else if (fontsize == "14pt") selectedValue = 4;
-			else if (fontsize == "18pt") selectedValue = 5;
-			else if (fontsize == "24pt") selectedValue = 6;
-			else if (fontsize == "36pt") selectedValue = 7;
-			if (selectedValue)
-				this._fontSizeSelect.setSelectedValue(selectedValue);
+		if (iframeDoc) {
+			var initHtml = "<html><head>" + this._getInitialStyle(false) + "</head><body></body></html>";
+			iframeDoc.open();
+			iframeDoc.write(initHtml);
+			iframeDoc.close();
+	
+			// update DwtSelect to reflect to new font size or family
+			if (setting.id == ZmSetting.COMPOSE_INIT_FONT_FAMILY) {
+				var fontfamily = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+				var selectedValue = null;
+				if (fontfamily == "Arial") 			selectedValue = DwtHtmlEditor.ARIAL;
+				else if (fontfamily == "Times") 	selectedValue = DwtHtmlEditor.TIMES;
+				else if (fontfamily == "Courier") 	selectedValue = DwtHtmlEditor.COURIER;
+				else if (fontfamily == "Verdana") 	selectedValue = DwtHtmlEditor.VERDANA;
+				if (selectedValue)
+					this._fontFamilySelect.setSelectedValue(selectedValue);
+			} else if (setting.id == ZmSetting.COMPOSE_INIT_FONT_SIZE) {
+				var fontsize = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+				var selectedValue = null;
+				if (fontsize == "8pt") 		 selectedValue = 1;
+				else if (fontsize == "10pt") selectedValue = 2;
+				else if (fontsize == "12pt") selectedValue = 3;
+				else if (fontsize == "14pt") selectedValue = 4;
+				else if (fontsize == "18pt") selectedValue = 5;
+				else if (fontsize == "24pt") selectedValue = 6;
+				else if (fontsize == "36pt") selectedValue = 7;
+				if (selectedValue)
+					this._fontSizeSelect.setSelectedValue(selectedValue);
+			}
 		}
 	}
 };
