@@ -45,7 +45,7 @@ function(folder, source, loc) {
 	ZmDialog.prototype.popup.call(this, loc);
 	var title = (folder.type == ZmOrganizer.SEARCH) ? ZmMsg.renameSearch : ZmMsg.renameFolder;
 	this.setTitle(title + ': ' + folder.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
-	this._nameField.value = folder.getName(false);
+	this._nameField.value = folder.getName(false, null, true);
 	this._folder = folder;
 }
 
