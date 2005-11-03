@@ -487,6 +487,8 @@ function(ev) {
 
 ZmCalViewController.prototype._miniCalSelectionListener =
 function(ev) {
+//zzz
+	if (!this._viewVisible) this.show();
 	this.setDate(ev.detail, 0, ev.item.getForceRollOver());
 }
 
