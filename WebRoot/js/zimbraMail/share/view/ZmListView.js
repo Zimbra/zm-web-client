@@ -360,7 +360,7 @@ function(ev, div) {
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER]) {
 				var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(item.folderId);
 				if (folder && folder.parent)
-					this.setToolTipContent(folder.getPath(true));
+					this.setToolTipContent(folder.getPath());
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE]) {
 				this.setToolTipContent(ZmMsg[ZmItem.MSG_KEY[item.type]]);
 			} else {
