@@ -220,6 +220,7 @@ ZmPref.SETUP[ZmSetting.COMPOSE_INIT_FONT_FAMILY] = {
 	displayName:		ZmMsg.defaultFontSettings,
 	displayContainer:	"font",
 	displayOptions: 	["Arial", "Times New Roman", "Courier New", "Verdana"],
+	options: 			["Arial", "Times", "Courier", "Verdana"],
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.COMPOSE_INIT_FONT_SIZE] = {

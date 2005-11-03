@@ -448,19 +448,28 @@ function(ev) {
 			continue;
 		var pref = settings.getSetting(id);
 		var defValue = pref.defaultValue;
-		if (type == "select") {
+		if (type == "select" || type == "font") {
 			var curValue = this.selects[id].getValue();
 			if (defValue != null && (curValue != defValue))
 				this.selects[id].setSelectedValue(defValue);
 		} else {
-			var prefId = ZmPref.KEY_ID + id;
-			var element = document.getElementById(prefId);
-			if (!element || element.value == defValue) continue;
+			var doc = this.getDocument();
+			var element = Dwt.getDomObj(doc, (ZmPref.KEY_ID + id));
+
+			if (!element || element.value == defValue)
+				continue;
+
 			if (type == "checkbox") {
 				element.checked = defValue ? true : false;
 			} else {
 				if (defValue == null) defValue = "";
 				element.value = defValue;
+				// XXX: nicer way to do this? do something special for font color
+				if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR) {
+					var colorBox = Dwt.getDomObj(doc, this._defaultFontColorId);
+					if (colorBox)
+						colorBox.style.backgroundColor = defValue;
+				}
 			}
 		}
 	}

@@ -695,10 +695,10 @@ function(ev) {
 		if (setting.id == ZmSetting.COMPOSE_INIT_FONT_FAMILY) {
 			var fontfamily = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
 			var selectedValue = null;
-			if (fontfamily == "Arial") 					selectedValue = DwtHtmlEditor.ARIAL;
-			else if (fontfamily == "Times New Roman") 	selectedValue = DwtHtmlEditor.TIMES;
-			else if (fontfamily == "Courier New") 		selectedValue = DwtHtmlEditor.COURIER;
-			else if (fontfamily == "Verdana") 			selectedValue = DwtHtmlEditor.VERDANA;
+			if (fontfamily == "Arial") 			selectedValue = DwtHtmlEditor.ARIAL;
+			else if (fontfamily == "Times") 	selectedValue = DwtHtmlEditor.TIMES;
+			else if (fontfamily == "Courier") 	selectedValue = DwtHtmlEditor.COURIER;
+			else if (fontfamily == "Verdana") 	selectedValue = DwtHtmlEditor.VERDANA;
 			if (selectedValue)
 				this._fontFamilySelect.setSelectedValue(selectedValue);
 		} else if (setting.id == ZmSetting.COMPOSE_INIT_FONT_SIZE) {
