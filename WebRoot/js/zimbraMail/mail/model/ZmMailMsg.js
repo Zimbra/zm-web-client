@@ -639,16 +639,16 @@ function(soapDoc, contactList, isDraft) {
 		soapDoc.set("content", this._topPart.getContent(), topNode);
 	}
 	
-	if (this.irtMessageId){
+	if (this.irtMessageId)
 		soapDoc.set("irt", this.irtMessageId, msgNode);
-	}
 	
 	if (this._attId || this._msgAttId || 
-		(this._forAttIds && this._forAttIds.length)) {
+		(this._forAttIds && this._forAttIds.length)) 
+	{
 		var attachNode = soapDoc.set("attach", null, msgNode);
-		if (this._attId){
+		if (this._attId)
 			attachNode.setAttribute("aid", this._attId);
-		}
+
 		if (this._msgAttId) {
 			var msgNode = soapDoc.set("m", null, attachNode);
 			msgNode.setAttribute("id", this._msgAttId);
@@ -656,7 +656,8 @@ function(soapDoc, contactList, isDraft) {
 		if (this._forAttIds) {
 			for (var i = 0; i < this._forAttIds.length; i++) {
 				var msgPartNode = soapDoc.set("mp", null, attachNode);
-				var id = isDraft ? (this.id || this.origId) : this.origId;
+				// XXX: this looks hacky but we cant send a null ID to the server!
+				var id = isDraft ? (this.id || this.origId) : (this.origId || this.id);
 				msgPartNode.setAttribute("mid", id);
 				msgPartNode.setAttribute("part", this._forAttIds[i]);
 			}
@@ -726,32 +727,32 @@ function(attachment) {
 
 // this is a helper method to get an attachment url for multipart/related content
 ZmMailMsg.prototype.getContentIdAttachUrl = 
-function(cid,domain) {
+function(cid, domain) {
 	if (this._attachments && this._attachments.length > 0) {
-	    	for (var i = 0; i < this._attachments.length; i++) {
-	    		var attach = this._attachments[i];
-	    		if (attach.ci == cid) {
-	    			return location.protocol+"//" + domain + 
-	    					this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) +
-	    					"id=" + this.getId() + "&part=" + attach.part;
-	    		}
+    	for (var i = 0; i < this._attachments.length; i++) {
+    		var attach = this._attachments[i];
+    		if (attach.ci == cid) {
+    			return location.protocol+"//" + domain + 
+    					this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) +
+    					"id=" + this.getId() + "&part=" + attach.part;
     		}
+		}
 	}
 	return null;
 }
 
 // this is a helper method to get an attachment url for multipart/related content
 ZmMailMsg.prototype.getContentLocationAttachUrl = 
-function(cl,domain) {
+function(cl, domain) {
 	if (this._attachments && this._attachments.length > 0) {
-	    	for (var i = 0; i < this._attachments.length; i++) {
-	    		var attach = this._attachments[i];
-	    		if (attach.cl == cl) {
-	    			return location.protocol+"//" + domain + 
-	    					this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) +
-	    					"id=" + this.getId() + "&part=" + attach.part;
-	    		}
+    	for (var i = 0; i < this._attachments.length; i++) {
+    		var attach = this._attachments[i];
+    		if (attach.cl == cl) {
+    			return location.protocol+"//" + domain + 
+    					this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) +
+    					"id=" + this.getId() + "&part=" + attach.part;
     		}
+		}
 	}
 	return null;
 }
