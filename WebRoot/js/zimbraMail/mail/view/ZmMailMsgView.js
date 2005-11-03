@@ -151,7 +151,7 @@ ZmMailMsgView.prototype._controlEventListener = function(ev) {
 	}
 };
 
-ZmMailMsgView.prototype._getShareToolbar = 
+ZmMailMsgView.prototype._getShareToolbar =
 function() {
 	// TODO: reuse the toolbar
 	if (this._shareToolbar)
@@ -179,7 +179,7 @@ function() {
 
 		this._shareToolbar.addSelectionListener(id, shareToolBarListener);
 	}
-	
+
 	return this._shareToolbar;
 }
 
@@ -243,7 +243,7 @@ function(msg) {
 ZmMailMsgView.prototype._handleResponseSet =
 function(args) {
 	var msg		= args[0];
-	var oldMsg	= args[1][0];	
+	var oldMsg	= args[1][0];
 	if (this._mode == ZmController.MSG_VIEW) {
 		this._setTags(msg);
 		// Remove listener for current msg if it exists
@@ -494,9 +494,10 @@ function(args) {
 	var self = args[0];
 	var iframe = args[1];
 	var h = self.getH() - 1;
-	function substract(id) {
-		if (id) {
-			var el = self.getElementById(id);
+	function substract(el) {
+		if (el) {
+			if (typeof el == "string")
+				el = self.getElementById(el);
 			if (el)
 				h -= Dwt.getSize(el, true).y;
 		}
@@ -504,6 +505,8 @@ function(args) {
 	substract(self._hdrTableId);
 	substract(self._displayImagesId);
 	substract(self._highlightObjectsId);
+	if (self._inviteToolbar)
+		substract(self._inviteToolbar.getHtmlElement());
 	iframe.style.height = h + "px";
 };
 
@@ -804,7 +807,7 @@ function(args) {
 	var bodyPart	= args[1];
 	var callback	= args[2];
 	var result		= args[3];
-	
+
 	var content = result.getResponse();
 	// if no text part, just dump the raw html
 	content = content ? content : bodyPart.content;
