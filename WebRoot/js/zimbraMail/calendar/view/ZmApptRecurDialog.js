@@ -764,7 +764,7 @@ function(ev) {
 	if (!this._dateCalendar) {
 		this._dateCalendar = new DwtCalendar(this, null, DwtControl.ABSOLUTE_STYLE);
 
-		this._dateCalendar.skipNotifyOnPage();
+		this._dateCalendar.setSkipNotifyOnPage(true);
 		this._dateCalendar.setSize("150");
 		this._dateCalendar.setZIndex(Dwt.Z_VIEW);
 		var calEl = this._dateCalendar.getHtmlElement();

@@ -91,7 +91,7 @@ ZmApptViewHelper.createMiniCal =
 function(parent, listener, fdow, isInDialog) {
 	var dateCalendar = new DwtCalendar(parent, null, DwtControl.ABSOLUTE_STYLE);
 
-	dateCalendar.skipNotifyOnPage();
+	dateCalendar.setSkipNotifyOnPage(true);
 	dateCalendar.setSize("150");
 	dateCalendar.setZIndex(isInDialog ? Dwt.Z_DIALOG : Dwt.Z_VIEW);
 	var calEl = dateCalendar.getHtmlElement();
