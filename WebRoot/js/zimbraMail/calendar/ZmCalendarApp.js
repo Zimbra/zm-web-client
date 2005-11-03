@@ -25,6 +25,8 @@
 
 function ZmCalendarApp(appCtxt, container) {
 	ZmApp.call(this, ZmZimbraMail.CALENDAR_APP, appCtxt, container);
+	this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._settingsChangeListener));
+	this._active = false;
 };
 
 ZmCalendarApp.prototype = new ZmApp;
@@ -48,6 +50,7 @@ function(active, view, date) {
 	var cc = this.getCalController();
 
 	this.showMiniCalendar(active || this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL));
+	this._active = active;
 
 	if (active) {
 		var isAppView = (view == null || view == ZmController.CAL_VIEW || view == ZmController.CAL_DAY_VIEW ||
@@ -83,4 +86,21 @@ function() {
 	if (!this._apptController)
 		this._apptController = new ZmApptComposeController(this._appCtxt, this._container, this);
 	return this._apptController;
+};
+
+
+ZmCalendarApp.prototype._settingsChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) return;
+	
+	var setting = ev.source;
+	if (setting.id == ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL) {
+		if (setting.getValue()) {
+			this.showMiniCalendar(true);
+		} else if (!this._active) {
+			this.showMiniCalendar(false);
+		}
+	} else if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK) {
+		this._appCtxt.setStatusMsg(ZmMsg.afterReload);
+	}
 };

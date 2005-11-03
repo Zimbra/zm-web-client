@@ -277,7 +277,7 @@ function(params) {
 	this._appViewMgr.addComponents(this._components, true);
 
 	this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();		
-	if (this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL))
+	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL))
 		this.getApp(ZmZimbraMail.CALENDAR_APP).showMiniCalendar(true);
 
 	// reset the user's time zone (save to prefs) if it has changed
@@ -1145,12 +1145,6 @@ function(ev) {
 		this._setUserInfo();
 	} else	if (setting.id == ZmSetting.POLLING_INTERVAL) {
 		this.setPollInterval();
-	} else if (setting.id == ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL) {
-		if (setting.getValue()) {
-			this.getApp(ZmZimbraMail.CALENDAR_APP).showMiniCalendar(true);
-		} else if (this._activeApp != ZmZimbraMail.CALENDAR_APP) {
-			this.getApp(ZmZimbraMail.CALENDAR_APP).showMiniCalendar(false);
-		}
 	}
 };
 
