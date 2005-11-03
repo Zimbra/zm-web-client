@@ -1024,6 +1024,7 @@ function() {
 	vals.push(this._subjectField.value);
 	vals.push(this._locationField.value);
 	vals.push(this._showAsSelect.getValue());
+	vals.push(this._calendarSelect.getValue());
 	vals.push(this._startDateField.value);
 	vals.push(this._endDateField.value);
 	vals.push(this._startTimeSelect.getValue());
