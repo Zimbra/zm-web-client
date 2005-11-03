@@ -134,8 +134,12 @@ function(viewId) {
 
 	if (this._viewMgr == null) {
 		this._initializeViewActionMenu();
-		var newDate = new Date();
+
+		var newDate = this._miniCalendar ? this._miniCalendar.getDate() : new Date();
 		
+		if (!this._miniCalendar)
+			this._createMiniCalendar(newDate);
+
 		this._viewMgr = new ZmCalViewMgr(this._container, this);
 		this._viewMgr.setDate(newDate);
 		this._setup(viewId);
@@ -143,8 +147,6 @@ function(viewId) {
 		this._viewMgr.addDateRangeListener(new AjxListener(this, this._dateRangeListener));
 		this._viewMgr.addViewActionListener(new AjxListener(this, this._viewActionListener));
 
-		if (!this._miniCalendar)
-			this._createMiniCalendar(newDate);
 	}
 
 	if (!this._viewMgr.getView(viewId))
