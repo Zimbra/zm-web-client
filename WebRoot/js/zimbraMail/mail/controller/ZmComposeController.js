@@ -42,7 +42,7 @@ function ZmComposeController(appCtxt, container, mailApp) {
 	// only add listener if this is not a child window
 	if (mailApp._parentController == null)
 		this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._settingsChangeListener));
-}
+};
 
 ZmComposeController.prototype = new ZmController();
 ZmComposeController.prototype.constructor = ZmComposeController;
@@ -50,7 +50,7 @@ ZmComposeController.prototype.constructor = ZmComposeController;
 ZmComposeController.prototype.toString =
 function() {
 	return "ZmComposeController";
-}
+};
 
 // Public methods
 
@@ -65,7 +65,13 @@ function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText) {
 	} else {
 		this._setView(action, msg, toOverride, subjOverride, extraBodyText);
 	}
-}
+};
+
+ZmComposeController.prototype.toggleSpellCheckButton = 
+function(toggled) {
+	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
+	spellCheckButton.setToggled((toggled || false));
+};
 
 /**
 * Detaches compose view to child window
@@ -87,7 +93,31 @@ function() {
 	var composeMode = this._composeView.getComposeMode();
 
 	newWin.args = {action: this._action, msg: msg, addrs: addrs, subj: subj, forwardHtml: forAttHtml, body: body, composeMode: composeMode };
-}
+};
+
+ZmComposeController.prototype.popShield =
+function() {
+	if (!this._composeView.isDirty())
+		return true;
+
+	if (!this._popShield) {
+		if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
+			this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
+			this._popShield.setMessage(ZmMsg.askSaveDraft, DwtMessageDialog.WARNING_STYLE);
+			this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
+			this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
+			this._popShield.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
+		} else {
+			this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
+			this._popShield.setMessage(ZmMsg.askLeaveCompose, DwtMessageDialog.WARNING_STYLE);
+			this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
+			this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
+		}
+	}
+    this._popShield.popup(this._composeView._getDialogXY());
+
+	return false;
+};
 
 /**
 * Sends the message represented by the content of the compose view.
@@ -103,64 +133,8 @@ function(attId, isDraft, callback) {
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
 	msg.send(contactList, isDraft, respCallback, errorCallback);
-}
-
-ZmComposeController.prototype.toggleSpellCheckButton = 
-function(toggled) {
-	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
-	spellCheckButton.setToggled((toggled || false));
 };
 
-ZmComposeController.prototype._handleResponseSendMsg =
-function(args) {
-	var isDraft		= args[0];
-	var msg			= args[1];
-	var callback	= args[2];
-	var result		= args[3];
-
-	var resp = result.getResponse();
-
-	if (!isDraft) {
-		if (resp || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
-			this._composeView.reset(false);
-			this._app.popView(true);
-
-			// if the original message was a draft, we need to nuke it
-			var origMsg = msg._origMsg;
-			if (origMsg && origMsg.isDraft && origMsg.list) {
-				// if this is a child window, dont schedule!
-				if (this.isChildWindow)
-					this._deleteDraft(origMsg);
-				else
-					this._schedule(this._deleteDraft, origMsg);
-			}
-		}
-		if (this.isChildWindow && window.parentController) {
-			window.parentController.setStatusMsg(ZmMsg.messageSent);
-		} else {
-			this._appCtxt.setStatusMsg(ZmMsg.messageSent);
-		}
-	} else {
-		// TODO - disable save draft button indicating a draft was saved
-		//        ** new UI will show in toaster section
-		if (this.isChildWindow && window.parentController) {
-			window.parentController.setStatusMsg(ZmMsg.draftSaved);
-		} else {
-			this._appCtxt.setStatusMsg(ZmMsg.draftSaved);
-		}
-		this._composeView.reEnableDesignMode();
-		// save message draft so it can be reused if user saves draft again
-		this._composeView.processMsgDraft(msg);
-	}
-
-	if (callback) callback.run(result);
-}
-
-ZmComposeController.prototype._handleErrorSendMsg =
-function(ex) {
-	this._toolbar.enableAll(true);
-	return false;
-}
 
 // Private methods
 
@@ -187,7 +161,7 @@ function(delMsg) {
 		if (search.folderId == ZmFolder.ID_DRAFTS)
 			this._appCtxt.getSearchController().redoSearch(search);
 	}
-}
+};
 
 // Creates the compose view based on the mode we're in. Lazily creates the
 // compose toolbar, a contact picker, and the compose view itself.
@@ -232,7 +206,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 	this._composeView.set(action, msg, toOverride, subjOverride, extraBodyText);
 	this._app.pushView(ZmController.COMPOSE_VIEW, true);
 	this._composeView.reEnableDesignMode();
-}
+};
 
 ZmComposeController.prototype._createToolBar =
 function() {
@@ -295,7 +269,7 @@ function() {
 	  	this._toolbar.addSelectionListener(ZmOperation.ADD_SIGNATURE, new AjxListener(this, this._addSignatureListener));
 
 	  this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
-}
+};
 
 ZmComposeController.prototype._setComposeMode =
 function(msg) {
@@ -332,7 +306,7 @@ function(msg) {
 
 	// dont forget to set the checked format type per compose mode
 	this._setFormatBtnItem(composeMode);
-}
+};
 
 // sets the check mark for the appropriate menu item depending on the compose mode
 ZmComposeController.prototype._setFormatBtnItem =
@@ -341,7 +315,7 @@ function(composeMode) {
 		var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, composeMode);
 	}
-}
+};
 
 // Listeners
 
@@ -350,7 +324,7 @@ ZmComposeController.prototype._sendListener =
 function(ev) {
 	this._toolbar.enableAll(false); // thwart multiple clicks on Send button
 	this.sendMsg();
-}
+};
 
 // Cancel button was pressed
 ZmComposeController.prototype._cancelListener =
@@ -364,7 +338,7 @@ function(ev) {
 	}
 	this._composeView.reEnableDesignMode();
 	this._app.popView(!dirty);
-}
+};
 
 // Attachment button was pressed
 ZmComposeController.prototype._attachmentListener =
@@ -378,7 +352,7 @@ function(ev) {
 	}
 
 	this._composeView.addAttachmentField();
-}
+};
 
 ZmComposeController.prototype._formatListener =
 function(ev) {
@@ -402,28 +376,7 @@ function(ev) {
 	} else {
 		this._composeView.setComposeMode(mode);
 	}
-}
-
-ZmComposeController.prototype._textModeOkCallback =
-function(ev) {
-	this._textModeOkCancel.popdown();
-	this._composeView.setComposeMode(DwtHtmlEditor.TEXT);
-}
-
-ZmComposeController.prototype._textModeCancelCallback =
-function(ev) {
-	this._textModeOkCancel.popdown();
-	// reset the radio button for the format button menu
-	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-	formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
-	this._composeView.reEnableDesignMode();
-}
-
-ZmComposeController.prototype._draftSavedCallback =
-function(ev) {
-	this._draftSavedDialog.popdown();
-	this._composeView.reEnableDesignMode();
-}
+};
 
 ZmComposeController.prototype._detachListener =
 function(ev) {
@@ -435,32 +388,24 @@ function(ev) {
 		this._composeView.reset(true);
 		this._app.popView(true);
 	}
-}
-
-ZmComposeController.prototype._detachCallback =
-function() {
-	this._detachOkCancel.popdown();
-	this.detach();
-	this._composeView.reset(true);
-	this._app.popView(true);
-}
+};
 
 // Save Draft button was pressed
 ZmComposeController.prototype._saveDraftListener =
 function(ev) {
 	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener);
 	this.sendMsg(null, true, respCallback);
-}
+};
 
 ZmComposeController.prototype._handleResponseSaveDraftListener =
 function(args) {
 	this._composeView.draftSaved();
-}
+};
 
 ZmComposeController.prototype._addSignatureListener =
 function(ev) {
 	this._composeView.addSignature();
-}
+};
 
 ZmComposeController.prototype._spellCheckListener = 
 function(ev) {
@@ -492,9 +437,90 @@ function(ev) {
 		this._toolbar.addOp(ZmOperation.ADD_SIGNATURE);
 	  	this._toolbar.addSelectionListener(ZmOperation.ADD_SIGNATURE, new AjxListener(this, this._addSignatureListener));
 	}
-}
+};
 
-// Miscellaneous methods
+
+// Callbacks
+
+ZmComposeController.prototype._handleResponseSendMsg =
+function(args) {
+	var isDraft		= args[0];
+	var msg			= args[1];
+	var callback	= args[2];
+	var result		= args[3];
+
+	var resp = result.getResponse();
+
+	if (!isDraft) {
+		if (resp || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
+			this._composeView.reset(false);
+			this._app.popView(true);
+
+			// if the original message was a draft, we need to nuke it
+			var origMsg = msg._origMsg;
+			if (origMsg && origMsg.isDraft && origMsg.list) {
+				// if this is a child window, dont schedule!
+				if (this.isChildWindow)
+					this._deleteDraft(origMsg);
+				else
+					this._schedule(this._deleteDraft, origMsg);
+			}
+		}
+		if (this.isChildWindow && window.parentController) {
+			window.parentController.setStatusMsg(ZmMsg.messageSent);
+		} else {
+			this._appCtxt.setStatusMsg(ZmMsg.messageSent);
+		}
+	} else {
+		// TODO - disable save draft button indicating a draft was saved
+		//        ** new UI will show in toaster section
+		if (this.isChildWindow && window.parentController) {
+			window.parentController.setStatusMsg(ZmMsg.draftSaved);
+		} else {
+			this._appCtxt.setStatusMsg(ZmMsg.draftSaved);
+		}
+		this._composeView.reEnableDesignMode();
+		// save message draft so it can be reused if user saves draft again
+		this._composeView.processMsgDraft(msg);
+	}
+
+	if (callback) callback.run(result);
+};
+
+ZmComposeController.prototype._handleErrorSendMsg =
+function(ex) {
+	this._toolbar.enableAll(true);
+	return false;
+};
+
+ZmComposeController.prototype._detachCallback =
+function() {
+	this._detachOkCancel.popdown();
+	this.detach();
+	this._composeView.reset(true);
+	this._app.popView(true);
+};
+
+ZmComposeController.prototype._textModeOkCallback =
+function(ev) {
+	this._textModeOkCancel.popdown();
+	this._composeView.setComposeMode(DwtHtmlEditor.TEXT);
+};
+
+ZmComposeController.prototype._textModeCancelCallback =
+function(ev) {
+	this._textModeOkCancel.popdown();
+	// reset the radio button for the format button menu
+	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+	formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
+	this._composeView.reEnableDesignMode();
+};
+
+ZmComposeController.prototype._draftSavedCallback =
+function(ev) {
+	this._draftSavedDialog.popdown();
+	this._composeView.reEnableDesignMode();
+};
 
 // Transfers addresses from the contact picker to the compose view.
 ZmComposeController.prototype._contactPickerCallback =
@@ -509,37 +535,13 @@ function(args) {
 	}
 	this._contactPicker.popdown();
 	this._composeView.reEnableDesignMode();
-}
+};
 
 ZmComposeController.prototype._contactPickerCancel =
 function(args) {
 	this._composeView.enableInputs(true);
 	this._composeView.reEnableDesignMode();
-}
-
-ZmComposeController.prototype.popShield =
-function() {
-	if (!this._composeView.isDirty())
-		return true;
-
-	if (!this._popShield) {
-		if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
-			this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
-			this._popShield.setMessage(ZmMsg.askSaveDraft, DwtMessageDialog.WARNING_STYLE);
-			this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
-			this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
-			this._popShield.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
-		} else {
-			this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
-			this._popShield.setMessage(ZmMsg.askLeaveCompose, DwtMessageDialog.WARNING_STYLE);
-			this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
-			this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
-		}
-	}
-    this._popShield.popup(this._composeView._getDialogXY());
-
-	return false;
-}
+};
 
 // Called as: Yes, save as draft
 //			  Yes, go ahead and cancel
@@ -555,12 +557,12 @@ function() {
 		this._composeView.reset(false);
 	}
 	this._app.getAppViewMgr().showPendingView(true);
-}
+};
 
 ZmComposeController.prototype._handleResponsePopShieldYesCallback =
 function(args) {
 	this._composeView.draftSaved();
-}
+};
 
 // Called as: No, don't save as draft
 //			  No, don't cancel
@@ -575,7 +577,7 @@ function() {
 		this._app.getAppViewMgr().showPendingView(false);
 		this._composeView.reEnableDesignMode();
 	}
-}
+};
 
 // Called as: Don't save as draft or cancel
 ZmComposeController.prototype._popShieldDismissCallback =
@@ -584,4 +586,4 @@ function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(false);
 	this._composeView.reEnableDesignMode();
-}
+};
