@@ -850,6 +850,7 @@ ZmMailMsg.prototype._loadFromDom =
 function(msgNode) {
 	// this method could potentially be called twice (SearchConvResponse and 
 	// GetMsgResponse) so always check param before setting!
+	if (msgNode.id)		this.id = msgNode.id;
 	if (msgNode.cid) 	this.cid = msgNode.cid;
 	if (msgNode.s) 		this.size = msgNode.s;
 	if (msgNode.d) 		this.date = msgNode.d;
