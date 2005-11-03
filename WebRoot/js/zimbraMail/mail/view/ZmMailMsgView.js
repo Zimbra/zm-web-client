@@ -1012,7 +1012,9 @@ function(msg, preferHtml) {
 			content = bodyPart.ct != ZmMimeTable.TEXT_PLAIN
 				? msg.getTextPart()
 				: bodyPart.content;
-			html[idx++] = AjxStringUtil.htmlEncodeSpace(content);
+			html[idx++] = "<span style='font-family: courier'>";
+			html[idx++] = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(content, true));
+			html[idx++] = "</span>";
 		}
 		html[idx++] = "</div>";
 	}

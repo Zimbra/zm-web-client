@@ -23,11 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPrintView (appCtxt, width, height) {
+function ZmPrintView (appCtxt) {
 	this._appCtxt = appCtxt;
-	this._width = width ? parseInt(width) : null;
-	this._height = height ? parseInt(height) : null;
-}
+};
 
 ZmPrintView.prototype.toString = 
 function () {
@@ -51,14 +49,7 @@ function(item) {
 		this._html = ZmCalViewMgr.getPrintHtml(item);
 	}
 	
-	var optionsStr = "menubar=yes,resizable=yes,scrollbars=yes";
-	if (this._width) {
-		optionsStr = optionsStr + ",width=" + this._width;
-	}
-	if (this._height) {
-		optionsStr = optionsStr + ",height=" + this._height;
-	}
-	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", optionsStr, this._render, this, true);
+	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
 };
 
 ZmPrintView.prototype._render = 
@@ -87,35 +78,23 @@ function() {
 	var html = new Array();
 	var idx = 0;
 	
-	html[idx++] = "<html><head><title>Zimbra: " + username + "</title>";
+	html[idx++] = "<html><head><title>Zimbra: ";
+	html[idx++] = username;
+	html[idx++] = "</title>";
 	html[idx++] = "<link rel='stylesheet' href='/zimbra/js/zimbraMail/config/style/zm.css' media='screen'></link>";
-	// EMC 9/8/05:
-	// If we want to print backgrounds, I think we may have to specify the media in the link, and the user may have 
-	// to turn on a browser setting which is off by default ....
-
-	// Also, we should figure out how to include the correct images file -- though I'm not sure if the user needs
-	// to change browser settings for printing images as well.
-	//html[idx++] = "<link rel='stylesheet' href='/zimbra/js/zimbraMail/config/style/zm.css' media='print'></link>";
-	//html[idx++] = "<style type='text/css'><!-- @import url(/zimbra/img/hiRes/imgs.css?v=1); --></style>";
-
-	// The onerror stuff would help if we were including innerHTML from the main window that might have functions which
-	// don't exist in the print window.
-	//html[idx++] = "</head><script>function errorHandler (ev) {ev=ev? ev: window.event; 	if (ev.stopPropagation != null) {ev.stopPropagation();ev.preventDefault();	} else { ev.returnValue = false; ev.cancelBubble = true;} alert(\"error\"); return false;}window.onerror=errorHandler</script><body>";
 	html[idx++] = "</head><body>";
 	html[idx++] = "<table border=0 width=100%><tr>";
 	html[idx++] = "<td class='ZmPrintView-company'><b>Zimbra</b> Collaboration Suite</td>";
-	html[idx++] = "<td class='ZmPrintView-username' align=right>" + username + "</td>";
-	html[idx++] = "</tr></table>";
+	html[idx++] = "<td class='ZmPrintView-username' align=right>";
+	html[idx++] = username;
+	html[idx++] = "</td></tr></table>";
 	html[idx++] = "<hr>";
 	html[idx++] = "<div style='padding: 10px'>";
+
 	return html.join("");
-}
+};
 
 ZmPrintView.prototype._getFooter = 
 function() {
-	var html = new Array();
-	var idx = 0;
-	
-	html[idx++] = "</div></body></html>";
-	return html.join("");
-}
+	return "</div></body></html>";
+};
