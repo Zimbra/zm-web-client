@@ -155,12 +155,17 @@ function(delMsg) {
 		actionNode.setAttribute("id", delMsg.id);
 		actionNode.setAttribute("op", "delete");
 		var ac = this._appCtxt.getAppController();
-		ac.sendRequest(soapDoc)[ZmItem.SOAP_CMD[ZmItem.MSG] + "Response"];
-		// force a redo Search to refresh the drafts folder
-		var search = this._appCtxt.getCurrentSearch();
-		if (search.folderId == ZmFolder.ID_DRAFTS)
-			this._appCtxt.getSearchController().redoSearch(search);
+		var respCallback = new AjxCallback(this, this._handleResponseDeleteDraft);
+		ac.sendRequest(soapDoc, true, respCallback);
 	}
+};
+
+ZmComposeController.prototype._handleResponseDeleteDraft =
+function(result) {
+	// force a redo Search to refresh the drafts folder
+	var search = this._appCtxt.getCurrentSearch();
+	if (search.folderId == ZmFolder.ID_DRAFTS)
+		this._appCtxt.getSearchController().redoSearch(search);
 };
 
 // Creates the compose view based on the mode we're in. Lazily creates the
@@ -458,13 +463,8 @@ function(args) {
 
 			// if the original message was a draft, we need to nuke it
 			var origMsg = msg._origMsg;
-			if (origMsg && origMsg.isDraft && origMsg.list) {
-				// if this is a child window, dont schedule!
-				if (this.isChildWindow)
-					this._deleteDraft(origMsg);
-				else
-					this._schedule(this._deleteDraft, origMsg);
-			}
+			if (origMsg && origMsg.isDraft && origMsg.list)
+				this._deleteDraft(origMsg);
 		}
 		if (this.isChildWindow && window.parentController) {
 			window.parentController.setStatusMsg(ZmMsg.messageSent);
