@@ -30,6 +30,8 @@ function ZmTimezones () {}
 
 ZmTimezones.GMT = "(GMT) Greenwich Mean Time - Dublin / Edinburgh / Lisbon / London";
 
+ZmTimezones._FALLBACK = "(GMT-08.00) Pacific Time (US & Canada) / Tijuana";
+
 ZmTimezones.valueToDisplay = {
 	"(GMT-12.00) International Date Line West":									ZmMsg.TZF_internationalDateLineWest,
 	"(GMT-11.00) Midway Island / Samoa":										ZmMsg.TZF_MidwayIsland,
@@ -324,13 +326,13 @@ ZmTimezones.ruleLists = {
 			stdOffset: -300, changeStd: [2005, 9, 30],
 			dstOffset: -240, changeD: [2005, 3, 3] },
 		{ name:"(GMT-04.00) Santiago", 
-			stdOffset: -240, changeStd: [2005, 2, 12],
-			dstOffset: -180, changeD: [2005, 9, 8] },
+			stdOffset: -240, changeStd: [2005, 2, 13],
+			dstOffset: -180, changeD: [2005, 9, 9] },
 		{ name:"(GMT-03.30) Newfoundland", 
 			stdOffset: -210, changeStd: [2005, 9, 30],
 			dstOffset: -150, changeD: [2005, 3, 3] },
 		{ name:"(GMT-03.00) Brasilia", 
-			stdOffset: -180, changeStd: [2005, 1, 13],
+			stdOffset: -180, changeStd: [2005, 1, 20],
 			dstOffset: -120, changeD: [2005, 9, 16] },
 		{ name:"(GMT-03.00) Greenland", 
 			stdOffset: -180, changeStd: [2005, 9, 30],
@@ -441,7 +443,7 @@ function() {
 			}
 		}
 	}
-	return tz.name;
+	return tz ? tz.name : ZmTimezones._FALLBACK;
 };
 
 ZmTimezones._compareRules = 
