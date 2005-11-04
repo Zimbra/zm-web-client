@@ -28,6 +28,7 @@ function ZmContactController(appCtxt, container, abApp) {
 	ZmListController.call(this, appCtxt, container, abApp);
 	
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
+	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
 };
 
 ZmContactController.prototype = new ZmListController();
@@ -59,14 +60,13 @@ function(contact) {
 ZmContactController.prototype._getToolBarOps = 
 function() {
 	var list = [ZmOperation.SAVE];
+	list.push(ZmOperation.CANCEL);
 	list.push(ZmOperation.SEP);
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		list.push(ZmOperation.TAG_MENU);
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
 		list.push(ZmOperation.PRINT);
 	list.push(ZmOperation.DELETE);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.CLOSE);
 	return list;
 };
 
@@ -84,6 +84,21 @@ ZmContactController.prototype._initializeListView =
 function(view) {
 	if (!this._listView[view])
 		this._listView[view] = new ZmContactView(this._container, this._appCtxt, this);
+};
+
+ZmContactController.prototype._initializeToolBar = 
+function(view) {
+	ZmListController.prototype._initializeToolBar.call(this, view);
+
+	// change the cancel button to "close" if editing existing contact
+	var cancelButton = this._toolbar[view].getButton(ZmOperation.CANCEL);
+	if (this._contact.id == undefined || this._contact.isGal) {
+		cancelButton.setText(ZmMsg.cancel);
+		cancelButton.setImage("Cancel");
+	} else {
+		cancelButton.setText(ZmMsg.close);
+		cancelButton.setImage("Close");
+	}
 };
 
 ZmContactController.prototype._getTagMenuMsg = 
@@ -106,9 +121,9 @@ ZmContactController.prototype._resetOperations =
 function(parent, num) {
 	if (!parent) return;
 	if (this._contact.id == undefined || this._contact.isGal) {
-		// disble all buttons except SAVE and CLOSE
+		// disble all buttons except SAVE and CANCEL
 		parent.enableAll(false);
-		parent.enable([ZmOperation.SAVE, ZmOperation.CLOSE], true);
+		parent.enable([ZmOperation.SAVE, ZmOperation.CANCEL], true);
 	} else {
 		ZmListController.prototype._resetOperations.call(this, parent, num);
 	}
@@ -139,6 +154,11 @@ function(ev, bIsPopCallback) {
 	}
 };
 
+ZmContactController.prototype._cancelListener = 
+function(ev) {
+	this._app.popView();
+};
+
 ZmContactController.prototype._doDelete = 
 function(items, hardDelete, attrs) {
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
@@ -156,10 +176,9 @@ function() {
 
 	if (!this._popShield) {
 		this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
-		this._popShield.setMessage(ZmMsg.askSaveContact, DwtMessageDialog.WARNING_STYLE);
+		this._popShield.setMessage(ZmMsg.askToSave, DwtMessageDialog.WARNING_STYLE);
 		this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 		this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
-		this._popShield.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldCancelCallback, this);
 	}
 
     this._popShield.popup(view._getDialogXY());
@@ -177,12 +196,6 @@ ZmContactController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(true);
-};
-
-ZmContactController.prototype._popShieldCancelCallback =
-function() {
-	this._popShield.popdown();
-	this._app.getAppViewMgr().showPendingView(false);
 };
 
 ZmContactController.prototype._popdownActionListener = 

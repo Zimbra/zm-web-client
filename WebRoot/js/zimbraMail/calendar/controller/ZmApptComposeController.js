@@ -51,8 +51,8 @@ function() {
 
 ZmApptComposeController.prototype.show =
 function(appt, mode) {
-	if (!this._toolbar)
-		this._createToolBar();
+
+	this._initToolbar(mode);
 
 	if (!this._apptView) {
 		this._apptView = new ZmApptComposeView(this._container, null, this._app, this);
@@ -79,8 +79,8 @@ function() {
 	}
 
 	if (!this._popShield) {
-		this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
-		this._popShield.setMessage(ZmMsg.askLeaveAppt, DwtMessageDialog.WARNING_STYLE);
+		this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
+		this._popShield.setMessage(ZmMsg.askToSave, DwtMessageDialog.WARNING_STYLE);
 		this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 		this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 	}
@@ -120,6 +120,21 @@ function(toggled) {
 
 
 // Private / Protected methods
+
+ZmApptComposeController.prototype._initToolbar = 
+function(mode) {
+	if (!this._toolbar)
+		this._createToolBar();
+
+	var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
+	if (mode == null || mode == ZmAppt.MODE_NEW) {
+		cancelButton.setText(ZmMsg.cancel);
+		cancelButton.setImage("Cancel");
+	} else {
+		cancelButton.setText(ZmMsg.close);
+		cancelButton.setImage("Close");
+	}
+};
 
 ZmApptComposeController.prototype._createToolBar =
 function() {
@@ -200,19 +215,7 @@ function() {
 // Save button was pressed
 ZmApptComposeController.prototype._saveListener =
 function(ev) {
-	var popView = true;
-	if (this._apptView.isDirty()) {
-		popView = false;
-		// check if all fields are populated w/ valid values
-		if (this._apptView.isValid()) {
-			this.saveAppt();
-		} else {
-			// XXX: show error dialog for now (until we get proper error handling mechanism)
-			this._showErrorMessage();
-		}
-	}
-
-	if (popView) {
+	if (this._doSave()) {
 		this._apptView.cleanup();	// always cleanup the views
 		this._app.popView(true);	// force pop view
 	}
@@ -276,6 +279,22 @@ function(args) {
 	this._app.popView(true);	// force pop view
 };
 
+ZmApptComposeController.prototype._doSave =
+function() {
+	var popView = true;
+	if (this._apptView.isDirty()) {
+		popView = false;
+		// check if all fields are populated w/ valid values
+		if (this._apptView.isValid()) {
+			this.saveAppt();
+		} else {
+			// XXX: show error dialog for now (until we get proper error handling mechanism)
+			this._showErrorMessage();
+		}
+	}
+	return popView;
+};
+
 ZmApptComposeController.prototype._doSpellCheck =  
 function() {
 	var text = this._apptView.getHtmlEditor().getTextVersion();
@@ -286,21 +305,20 @@ function() {
 	cmd.invoke({soapDoc:soap, asyncMode:true, callback:callback});
 };
 
-// Called as: Yes, save as draft
 ZmApptComposeController.prototype._popShieldYesCallback =
+function() {
+	this._popShield.popdown();
+	if (this._doSave()) {
+		this._app.getAppViewMgr().showPendingView(true);
+		this._apptView.cleanup();
+	}
+};
+
+ZmApptComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(true);
 	this._apptView.cleanup();
-};
-
-// Called as: No, don't cancel
-ZmApptComposeController.prototype._popShieldNoCallback =
-function() {
-	this._popShield.popdown();
-	this._apptView.enableInputs(true);
-	this._app.getAppViewMgr().showPendingView(false);
-	this._apptView.reEnableDesignMode();
 };
 
 ZmApptComposeController.prototype._textModeOkCallback = 
