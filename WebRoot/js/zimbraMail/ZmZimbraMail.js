@@ -827,6 +827,8 @@ function(refresh) {
 		this._checkUnread(folderTree, unread);
 	}
 
+	var inbox = folderTree.getById(ZmFolder.ID_INBOX);
+	if (inbox) this._statusView.setIconVisible(ZmStatusView.ICON_INBOX,  inbox.numUnread > 0);
 	// need to tell calendar to refresh/relayout
 	if (this._calController) this._calController.refreshHandler();	
 };
@@ -1160,6 +1162,9 @@ function(ev) {
 			var search = this._appCtxt.getCurrentSearch();
 			if (search && (ev.source.id == search.folderId || ev.source.id == search.tagId))
 				Dwt.setTitle(search.getTitle());
+			if (ev.source.id == ZmFolder.ID_INBOX) {
+				this._statusView.setIconVisible(ZmStatusView.ICON_INBOX,  ev.source.numUnread > 0);
+			}
 		}		
 	}
 };

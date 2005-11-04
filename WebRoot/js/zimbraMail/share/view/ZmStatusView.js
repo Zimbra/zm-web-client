@@ -48,6 +48,8 @@ function ZmStatusView(parent, className, posStyle) {
 	this._updateClockTimedAction = new AjxTimedAction(this, this._updateClock, null);
 	this._updateClock();
 	this._counter = 0;
+	this.setIconVisible(ZmStatusView.ICON_INBOX, false);
+	this.setIconVisible(ZmStatusView.ICON_BUSY, false);
 }
 
 ZmStatusView.prototype = new DwtControl;
@@ -70,6 +72,9 @@ ZmStatusView.TRANSITION_SLIDE_RIGHT = 4;
 ZmStatusView.TRANSITION_FADE_IN = 5;
 ZmStatusView.TRANSITION_INVISIBLE = 6; // add to history, but don't display
 
+ZmStatusView.ICON_INBOX = 1;
+ZmStatusView.ICON_BUSY = 2;
+
 ZmStatusView.DEFAULT = { };
 ZmStatusView.DEFAULT[ZmStatusView.LEVEL_INFO] = { delay: ZmStatusView.STATUS_LIFE, transition: ZmStatusView.TRANSITION_SLIDE_UP };
 ZmStatusView.DEFAULT[	ZmStatusView.LEVEL_WARNING] = { delay: ZmStatusView.STATUS_LIFE, transition: ZmStatusView.TRANSITION_SLIDE_DOWN };
@@ -80,16 +85,39 @@ function() {
 	return "ZmStatusView";
 }
 
+ZmStatusView.prototype.setIconVisible =
+function(icon, visible) {
+	var id = this._iconIds[icon];
+	if (!id) return;
+	var el = Dwt.getDomObj(this._doc, id);
+	if (el) Dwt.setVisible(el, visible);
+}
+
 ZmStatusView.prototype._createHtml =
 function() {
 	this._mainContentDivId = Dwt.getNextId();	
-	this._toastDivId = Dwt.getNextId();	
+	this._toastDivId = Dwt.getNextId();
+	this._iconIds = [];
+	var inboxId = this._iconIds[ZmStatusView.ICON_INBOX] = Dwt.getNextId();
+	var busyId = this._iconIds[ZmStatusView.ICON_BUSY] = Dwt.getNextId();
+	this._inboxtDivId = Dwt.getNextId();	
 	this._toastContentDivId = Dwt.getNextId();
 	
 	var html = new AjxBuffer();
+/*	
 	html.append("<table style='width:100%;height:100%;' align='center'><tr><td align=center>");
 	html.append("<div class='ZmStatusMainText' id='"+this._mainContentDivId+"'></div></td></tr></table>");
-	
+*/
+	html.append("<table vorder=0 cellpadding=0 cellspacing=0 style='width:100%;'> ");
+	html.append("<tr>");
+	html.append("<td style='width:20px;' align='center'><div id='",inboxId,"'", AjxImg.getImageHtml("Inbox"), "</div></td>");
+	html.append("<td style='height:16px' align='center'><div class='ZmStatusMainText' id='"+this._mainContentDivId+"'></div></td>");
+//	html.append("<td style='width:20px;' align='center'>", AjxImg.getImageHtml("Appointment"), "</td>");
+	html.append("<td style='width:20px;' align='center'><div id='", busyId, "' class='DwtWait16Icon'/></td>");
+//	html.append("<td style='width:20px;' align='center'>", AjxImg.getImageHtml("SendRecieve"), "</td>");
+
+	html.append("</tr></table>");
+
 	html.append("<div id='", this._toastDivId, "'>");
 	html.append("<table style='width:100%;height:100%;' align='center'><tr><td align=center>");
 	html.append("<div class='ZmStatusToastText' id='"+this._toastContentDivId+"'></div></td></tr></table></div>");
@@ -97,7 +125,6 @@ function() {
 	this.getHtmlElement().innerHTML = html.toString();
 	var toastEl = this._getToastEl();
 	toastEl.style.position = 'absolute';
-	this._setMainText("hello");
 }
 
 ZmStatusView.prototype._getMainContentEl = function () {	return Dwt.getDomObj(this._doc, this._mainContentDivId); };

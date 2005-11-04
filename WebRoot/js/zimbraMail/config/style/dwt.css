@@ -40,6 +40,22 @@
 	height:64px;
 }
 
+.DwtWait16Icon {
+	background-image:url("/zimbra/img/animated/wait_16.gif");
+	background-repeat:no-repeat;
+	background-position:center center;
+	width:16px;
+	height:16px;
+}
+
+.DwtWait32Icon {
+	background-image:url("/zimbra/img/animated/wait_32.gif");
+	background-repeat:no-repeat;
+	background-position:center center;
+	width:32px;
+	height:32px;
+}
+
 .DwtShellBusyDialog table td.MsgText {
 	font: 11pt Tahoma, Arial, Helvetica, sans-serif;
 	padding:5px;
