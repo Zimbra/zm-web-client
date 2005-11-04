@@ -296,7 +296,7 @@ function(args) {
 	var params = args[0];
 	var respCallback = new AjxCallback(this, this._handleResponseStartup2);
 	var startApp = (params && params.app) ? params.app : ZmZimbraMail.defaultStartApp;
-	this.activateApp(startApp, respCallback, this._errorCallback);
+	this.activateApp(startApp, false, respCallback, this._errorCallback);
 	this.setStatusMsg(ZmMsg.initializationComplete, null, null, null, ZmStatusView.TRANSITION_INVISIBLE);
 };
 
@@ -488,13 +488,20 @@ function() {
 	return this._appViewMgr;
 };
 
-
+/**
+* Activates the given app.
+*
+* @param appName		[constant]		application
+* @param force			[boolean]*		if true, launch the app
+* @param callback		[AjxCallback]*	callback
+* @param errorCallback	[AjxCallback]*	error callback
+*/
 ZmZimbraMail.prototype.activateApp =
-function(appName, callback, errorCallback) {
+function(appName, force, callback, errorCallback) {
     DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
 	    
     var view = this._appViewMgr.getAppView(appName);
-    if (view) {
+    if (view && !force) {
     	// if the app has been launched, make its view the current one
     	bActivated = true;
 	    DBG.println(AjxDebug.DBG3, "activateApp, current " + appName + " view: " + view);
@@ -1246,7 +1253,8 @@ function(ev) {
 		if (id == ZmAppChooser.B_EMAIL) {
 			this.activateApp(ZmZimbraMail.MAIL_APP);
 		} else if (id == ZmAppChooser.B_CONTACTS) {
-			this.activateApp(ZmZimbraMail.CONTACTS_APP);
+			// force launch to display all contacts
+			this.activateApp(ZmZimbraMail.CONTACTS_APP, true);
 		} else if (id == ZmAppChooser.B_CALENDAR) {
 			this.activateApp(ZmZimbraMail.CALENDAR_APP);
 		} else if (id == ZmAppChooser.B_HELP) {
