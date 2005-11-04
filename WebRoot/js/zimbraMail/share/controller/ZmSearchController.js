@@ -275,7 +275,10 @@ function(types) {
 /*
 * Performs the search.
 *
-* @param params	[Object]	a hash of arguments for the search (see search() method)
+* @param params			[Object]		a hash of arguments for the search (see search() method)
+* @param noRender		[boolean]*		if true, the search results will not be rendered
+* @param callback		[AjxCallback]*	callback
+* @param errorCallback	[AjxCallback]*	error callback
 */
 ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
@@ -290,6 +293,9 @@ function(params, noRender, callback, errorCallback) {
 	var types = params.types ? params.types : this.getTypes();
 	if (types instanceof Array) // convert array to AjxVector if necessary
 		types = AjxVector.fromArray(types);
+		
+	// if the user explicitly searched for all types, force mixed view
+	var isMixed = (this._searchFor == ZmSearchToolBar.FOR_ANY_MI);
 
 	// only set contact source if we are searching for contacts
 	var contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmSearchToolBar.FOR_GAL_MI))
@@ -298,7 +304,7 @@ function(params, noRender, callback, errorCallback) {
 	params.sortBy = params.sortBy ? params.sortBy : this._getSuitableSortBy(types);
 	
 	var search = new ZmSearch(this._appCtxt, params.query, types, params.sortBy, params.offset, params.limit, contactSource);
-	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, noRender, callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, noRender, isMixed, callback]);
 	if (!errorCallback) errorCallback = new AjxCallback(this, this._handleErrorDoSearch, params);
 	search.execute(respCallback, errorCallback);
 }
@@ -316,8 +322,9 @@ function(args) {
 
 	var search		= args[0];
 	var noRender	= args[1];
-	var callback	= args[2];
-	var result		= args[3];
+	var isMixed		= args[2];
+	var callback	= args[3];
+	var result		= args[4];
 
 	var results = result.getResponse();
 
@@ -335,7 +342,9 @@ function(args) {
 		this._results = results;
 
 		DBG.timePt("handle search results");
-		if (results.type == ZmItem.CONV) {
+		if (isMixed) {
+			this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, search.query);
+		} else if (results.type == ZmItem.CONV) {
 			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().show(results, search.query);
 		} else if (results.type == ZmItem.MSG) {
 			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController().show(results, search.query);
