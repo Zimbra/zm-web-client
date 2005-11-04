@@ -42,13 +42,15 @@ function ZmObjectManager(view, appCtxt) {
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		ZmDateObjectHandler.registerHandlers(this._objectHandlers, appCtxt);
 	}
-	// Check for Google map API before adding address handler
+	// Check for map API before adding address handler(s)
 	try {
 		new GPoint(217,10);
 		this._objectHandlers[ZmAddressObjectHandler.TYPE] = [new ZmAddressObjectHandler(appCtxt)];
-	} catch (e) {
-		;
-	}
+	} catch (e) {;}
+	try {
+		new YGeoPoint(217,10);
+		this._objectHandlers[ZmYAddressObjectHandler.TYPE] = [new ZmYAddressObjectHandler(appCtxt)];
+	} catch (e) {;}
 
 	// create additional handlers (see registerHandler below)
 	this._createHandlers();

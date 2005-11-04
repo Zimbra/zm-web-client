@@ -32,8 +32,7 @@ ZmAddressObjectHandler.prototype = new ZmObjectHandler;
 ZmAddressObjectHandler.prototype.constructor = ZmAddressObjectHandler;
 
 // Consts
-
-ZmAddressObjectHandler.TYPE = "address";
+ZmAddressObjectHandler.TYPE = "gaddress";
 // TODO This regex is very very simple.  It only matches single line simple addresses like:
 // 1234 Main St City CA 99999
 ZmAddressObjectHandler.ADDRESS_RE = /[\w]{3,}([A-Za-z]\.)?([ \w]*\#\d+)?(\r\n| )[ \w]{3,}\x20[A-Za-z]{2}\x20\d{5}(-\d{4})?/ig;
@@ -44,11 +43,6 @@ ZmAddressObjectHandler.encodeId = function(s) {
 };
 
 ZmAddressObjectHandler.CACHE = new Array();
-// Pre-load a couple addresses for off-line testing
-ZmAddressObjectHandler.CACHE["2510 Fairview Ave Seattle WA 98102"+"lng"] = "-122.328914";
-ZmAddressObjectHandler.CACHE["2510 Fairview Ave Seattle WA 98102"+"lat"] = "47.642286";
-ZmAddressObjectHandler.CACHE["1801 Varsity Dr Raleigh NC 27606"+"lng"] = "-78.683064";
-ZmAddressObjectHandler.CACHE["1801 Varsity Dr Raleigh NC 27606"+"lat"] = "35.777215";
 
 // Public methods
 
@@ -70,30 +64,29 @@ function(obj, context) {
 	return '<div class="AddressContent" id="'+ZmAddressObjectHandler.encodeId(obj)+'"> </div>';
 };
 
+ZmYAddressObjectHandler.prototype._geocodeCallback = 
+function(args) {
+	// Quick RDF parser
+	var r = args[1].text;
+	var lg_s = r.indexOf("<Longitude>");
+	var lg_e = r.indexOf("</Longitude>");
+	var lt_s = r.indexOf("<Latitude>");
+	var lt_e = r.indexOf("</Latitude>");
+	ZmAddressObjectHandler.displayMap(r.substring(lg_s+11,lg_e), r.substring(lt_s+10,lt_e), args[0]);
+};
+
 ZmAddressObjectHandler.prototype.populateToolTip =
 function(obj, context) {
-		if(ZmAddressObjectHandler.CACHE[obj+"lng"] && ZmAddressObjectHandler.CACHE[obj+"lat"]) {
-			DBG.println(AjxDebug.DBG2, "gMAPS: Using cache");
-			ZmAddressObjectHandler.displayMap(ZmAddressObjectHandler.CACHE[obj+"lng"], 
-			                                  ZmAddressObjectHandler.CACHE[obj+"lat"], obj);
-		} else {
-			DBG.println(AjxDebug.DBG2, "gMAPS: New Request");
-			var request = GXmlHttp.create();
-			var url = "/zimbra/zimlets/geocode.jsp?address="+AjxStringUtil.urlEncode(obj);
-			request.open("GET", url, true);
-			request.onreadystatechange = function() {
-		    	if (request.readyState == 4) {
-		    		var resp = request.responseText;
-					// Quick RDF parser
-					var lg_s = resp.indexOf("<geo:long>");
-					var lg_e = resp.indexOf("</geo:long>");
-					var lt_s = resp.indexOf("<geo:lat>");
-					var lt_e = resp.indexOf("</geo:lat>");
-				    ZmAddressObjectHandler.displayMap(resp.substring(lg_s+10,lg_e), resp.substring(lt_s+9,lt_e), obj);
-			  	}
-			};
-			request.send(null);
-		}
+	if(ZmAddressObjectHandler.CACHE[obj+"lng"] && ZmAddressObjectHandler.CACHE[obj+"lat"]) {
+		DBG.println(AjxDebug.DBG2, "gMAPS: Using cache");
+		ZmAddressObjectHandler.displayMap(ZmAddressObjectHandler.CACHE[obj+"lng"], 
+		                                  ZmAddressObjectHandler.CACHE[obj+"lat"], obj);
+	} else {
+		DBG.println(AjxDebug.DBG2, "gMAPS: New Request");
+		var request = new AjxRpcRequest("geocode");
+		var url = "/zimbra/zimlets/geocode.jsp?address=" + AjxStringUtil.urlEncode(obj);
+		request.invoke(null, url, null, new AjxCallback(this, this._geocodeCallback, obj), true);
+	}
 };
 
 ZmAddressObjectHandler.displayMap = function(lng, lat, obj) {
