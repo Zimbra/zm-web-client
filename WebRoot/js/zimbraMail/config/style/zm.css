@@ -1022,8 +1022,14 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .ZmSchedTabViewPageKey {
 	vertical-align: top;
 	text-align: right;
-	width: 1%;
-	white-space: nowrap;
+}
+
+.ZmSchedTabViewPageKeySquare {
+	width: 16px;
+	height: 16px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #555555 #C3C3C3 #C3C3C3 #555555;
 }
 
 .ZmSchedTabViewPageDate {

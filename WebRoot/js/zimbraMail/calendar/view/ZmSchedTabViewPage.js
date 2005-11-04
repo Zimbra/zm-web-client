@@ -190,10 +190,10 @@ function() {
 	var html = new Array();
 	var i = 0;
 
-	html[i++] = "<table border=0><tr><td>";
+	html[i++] = "<table border=0 width=100%><tr><td>";
 	html[i++] = this._getTimeHtml();
 	html[i++] = "</td><td class='ZmSchedTabViewPageKey'>";
-	html[i++] = AjxImg.getImageHtml("FreeBusyKey");
+	html[i++] = this._getKeyHtml();
 	html[i++] = "</td></tr></table><p>";
 	html[i++] = this._getFreeBusyHtml();
 
@@ -251,6 +251,48 @@ function() {
 	html[i++] = "</table>";
 
 	return html.join("");
+};
+
+ZmSchedTabViewPage.prototype._getKeyHtml = 
+function() {
+	var html = new Array();
+	var i = 0;
+
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 style='border:1px solid black'><tr>";
+	html[i++] = "<td style='padding:3px; background-color:#CCCCCC; font-weight:bold'>";
+	html[i++] = ZmMsg.key;
+	html[i++] = "</td></tr><tr><td style='padding:3px; background-color:#FFFFFF'>";
+	html[i++] = "<table border=0 cellpadding=3 cellspacing=3><tr>";
+	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#ADD6D6'></div></td>";
+	html[i++] = "<td class='nobreak'>";
+	html[i++] = ZmMsg.selected;
+	html[i++] = "</td>"
+	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#990000'></div></td>";
+	html[i++] = "<td class='nobreak'>";
+	html[i++] = ZmMsg.busy;
+	html[i++] = "</td>"
+	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#FFCC00'></div></td>";
+	html[i++] = "<td class='nobreak'>";
+	html[i++] = ZmMsg.outOfOffice;
+	html[i++] = "</td>"
+	html[i++] = "</tr><tr>";
+	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#FFFFFF'></div></td>";
+	html[i++] = "<td class='nobreak'>";
+	html[i++] = ZmMsg.free;
+	html[i++] = "</td>"
+	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#FF3300'></div></td>";
+	html[i++] = "<td class='nobreak'>";
+	html[i++] = ZmMsg.tentative;
+	html[i++] = "</td>"
+	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#FFF5CC'></div></td>";
+	html[i++] = "<td class='nobreak'>";
+	html[i++] = ZmMsg.unknown;
+	html[i++] = "</td>"
+	html[i++] = "</tr>";
+	html[i++] = "</table>";
+	html[i++] = "</td></tr></table>";
+	
+	return html.join("");	
 };
 
 ZmSchedTabViewPage.prototype._getFreeBusyHtml =
