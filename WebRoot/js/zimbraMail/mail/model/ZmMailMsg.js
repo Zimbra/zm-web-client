@@ -127,31 +127,28 @@ function() {
 /**
 * Returns a Reply-To address if there is one, otherwise the From address
 * unless this message was sent by the user, in which case, it is the To
-* field (but only in the case of a Reply All - phew!
+* field (but only in the case of Reply All). A list is returned, since
+* theoretically From and Reply To can have multiple addresses.
 */
 ZmMailMsg.prototype.getReplyAddresses =
 function(mode) {
-	var rtVec = this._addrs[ZmEmailAddress.REPLY_TO];
-	var addrs = null;
-	var address = null;
-	// TODO: when the server starts sending the organizer in the invite,
-	// we will have to check for it when responding to the reply address
-	// question.
-	if (this.isInvite() && this.needsRsvp()){
-		address = this.invite.getOrganizerEmail(0);
-	} 
-	// If the organizer email, for some reason, was null, use the email headers.
-	if (address == null ) {
-		if (rtVec.size()) {
-			addrs = rtVec;
-		} else {
-			addrs = this.isSent && mode == ZmOperation.REPLY_ALL
-			? this._addrs[ZmEmailAddress.TO]
-			: this._addrs[ZmEmailAddress.FROM];
-		}
-		address = addrs.toString(ZmEmailAddress.SEPARATOR);
+	var addrVec = this._addrs[ZmEmailAddress.REPLY_TO];
+	var invAddr = null;
+	if (this.isInvite() && this.needsRsvp()) {
+		var invEmail = this.invite.getOrganizerEmail(0);
+		if (invEmail)
+			invAddr = new ZmEmailAddress(invEmail);
 	}
-	return address;
+
+	if (invAddr) {
+		return AjxVector.fromArray([invAddr]);
+	} else {
+		if (!(addrVec && addrVec.size())) {
+			addrVec = (this.isSent && mode == ZmOperation.REPLY_ALL) ? this._addrs[ZmEmailAddress.TO] :
+																	   this._addrs[ZmEmailAddress.FROM];
+		}
+		return addrVec;
+	}
 };
 
 /**

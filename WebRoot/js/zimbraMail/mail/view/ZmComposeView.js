@@ -56,7 +56,7 @@ function ZmComposeView(parent, className, posStyle, controller, contactPicker, c
 	}
 
 	this._initialize(composeMode);
-}
+};
 
 ZmComposeView.prototype = new DwtComposite;
 ZmComposeView.prototype.constructor = ZmComposeView;
@@ -91,12 +91,12 @@ ZmComposeView.QUOTED_HDRS = [ZmMailMsg.HDR_FROM, ZmMailMsg.HDR_TO, ZmMailMsg.HDR
 ZmComposeView.prototype.toString = 
 function() {
 	return "ZmComposeView";
-}
+};
 
 ZmComposeView.prototype.getController =
 function() {
 	return this._controller;
-}
+};
 
 /**
 * Sets the current view, based on the given action. The compose form is 
@@ -157,7 +157,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 			this.addMimePart(mimePart);
 		}
 	}
-}
+};
 
 ZmComposeView.prototype.setDetach =
 function(params) {
@@ -175,12 +175,12 @@ function(params) {
 	
 	if (params.forwardHtml)
 		this._forwardDiv.innerHTML = params.forwardHtml;
-}
+};
 
 ZmComposeView.prototype.getComposeMode = 
 function() {
 	return this._composeMode;
-}
+};
 
 // Sets the mode ZmHtmlEditor should be in.
 ZmComposeView.prototype.setComposeMode = 
@@ -200,25 +200,25 @@ function(composeMode) {
 		// for now, always reset message body size
 		this._resetBodySize();
 	}
-}
+};
 
 ZmComposeView.prototype.getOrigMsg = 
 function() {
 	return this._msg;
-}
+};
 
 ZmComposeView.prototype.reEnableDesignMode = 
 function() {
 	if (this._composeMode == DwtHtmlEditor.HTML)
 		this._htmlEditor.reEnableDesignMode();
-}
+};
 
 // triggered every time user saves draft. Here, we reset "dirty-ness"
 ZmComposeView.prototype.draftSaved = 
 function() {
 	// save form state (to check for change later)
 	this._origFormValue = this._formValue();
-}
+};
 
 // user just saved draft, update compose view as necessary
 ZmComposeView.prototype.processMsgDraft = 
@@ -229,7 +229,7 @@ function(msgDraft) {
 	this._iframe = null; // XXX: force iframe to get recreated
 	this._showForwardField(msgDraft, ZmOperation.DRAFT);
 	this._resetBodySize();
-}
+};
 
 ZmComposeView.prototype._isInviteReply =
 function(action){
@@ -237,43 +237,37 @@ function(action){
 			action == ZmOperation.REPLY_DECLINE ||
 			action == ZmOperation.REPLY_TENTATIVE ||
 			action == ZmOperation.REPLY_NEW_TIME);
-}
+};
 
+/*
+* Set various address headers based on the original message and the mode we're in.
+* Make sure not to duplicate any addresses, even across fields.
+*/
 ZmComposeView.prototype._setAddresses =
 function(action, toOverride) {
-	if (this._action == ZmOperation.NEW_MESSAGE && toOverride)
-	{
+	if (this._action == ZmOperation.NEW_MESSAGE && toOverride) {
 		this.setAddress(ZmEmailAddress.TO, toOverride);
-	}
-	else if (this._action == ZmOperation.REPLY || 
-			 this._action == ZmOperation.REPLY_ALL ||
-			 this._isInviteReply(this._action))
-	{
-		if (!this._msg.isSent)
-			this.setAddress(ZmEmailAddress.TO, this._msg.getReplyAddresses(this._action));
+	} else if (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL ||
+			   this._isInviteReply(this._action)) {
 
-		// reply to all senders (except this account) if reply all (includes To: and Cc:)
+		var used = {};
+		used[this._appCtxt.get(ZmSetting.USERNAME)] = true; // don't add user addr to To: or Cc:
+		if (!this._msg.isSent) {
+			var addr = this._getAddrString(this._msg.getReplyAddresses(this._action), used);
+			this.setAddress(ZmEmailAddress.TO, addr);
+		}
+
+		// reply to all senders if reply all (includes To: and Cc:)
 		if (this._action == ZmOperation.REPLY_ALL) {
 			var addrs = this._msg.getAddresses(ZmEmailAddress.CC);
 			var toAddrs = this._msg.getAddresses(ZmEmailAddress.TO);
 			if (this._msg.isSent) {
-				this.setAddress(ZmEmailAddress.TO, toAddrs);
+				// sent msg replicates To: and Cc: (minus duplicates)
+				this.setAddress(ZmEmailAddress.TO, this._getAddrString(toAddrs, used));
 			} else {
 				addrs.addList(toAddrs);
 			}
-			var addrs1 = new Array();
-			var check = new Object(); // hash for tracking email addresses we've seen
-			check[this._appCtxt.get(ZmSetting.USERNAME)] = true;
-			var num = addrs.size();
-			for (var i = 0; i < num; i++) {
-				var addr = addrs.get(i);
-				var email = addr.getAddress();
-				if (!check[email]) {
-					addrs1.push(addr.toString());
-					check[email] = true;
-				}
-			}
-			this.setAddress(ZmEmailAddress.CC, addrs1.join(ZmEmailAddress.SEPARATOR));
+			this.setAddress(ZmEmailAddress.CC, this._getAddrString(addrs, used));
 		}
 	} else if (this._action == ZmOperation.DRAFT || this._action == ZmOperation.SHARE) {
 		for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
@@ -281,7 +275,28 @@ function(action, toOverride) {
 			this.setAddress(ZmComposeView.ADDRS[i], addrs.getArray().join(ZmEmailAddress.SEPARATOR));
 		}
 	}
-}
+};
+
+/*
+* Creates an address string from the given vector, excluding any that have
+* already been used.
+*
+* @param addrVec	[AjxVector]		vector of ZmEmailAddress
+* @param used		[Object]		hash of addresses that have been used
+*/
+ZmComposeView.prototype._getAddrString =
+function(addrVec, used) {
+	var a = addrVec.getArray();
+	var addrs = [];
+	for (var i = 0; i < a.length; i++) {
+		var addr = a[i];
+		var email = addr.getAddress();
+		if (!used[email])
+			addrs.push(addr);
+		used[email] = true;
+	}
+	return addrs.join(ZmEmailAddress.SEPARATOR); // calls implicit toString() on each addr object
+};
 
 ZmComposeView.prototype.getTitle =
 function() {
@@ -319,7 +334,7 @@ function(action, msg, subjOverride) {
 		case ZmOperation.REPLY_NEW_TIME:	prefix = ZmMsg.subjectNewTime + ": "; break;
 	}
 	this._subjectField.value = prefix + (subj || "");
-}
+};
 
 ZmComposeView.prototype._setBody =
 function(action, msg, extraBodyText) {
@@ -435,7 +450,7 @@ function(action, msg, extraBodyText) {
 		this.addSignature();
 
 	this._showForwardField(msg, action, pref);
-}
+};
 
 // returns the text part given a body part 
 // (if body part is HTML, converts it to text)
@@ -494,7 +509,7 @@ function(bEnableInputs) {
 
 	// reset state of the spell check button
 	this._controller.toggleSpellCheckButton(false);
-}
+};
 
 /**
 * Sets an address field.
@@ -517,7 +532,7 @@ function(type, addr, bDontClear) {
 	{
 		this._field[type].focus()
 	}
-}
+};
 
 /** 
  * Adds an extra MIME part to the message. The extra parts will be
@@ -529,7 +544,7 @@ ZmComposeView.prototype.addMimePart = function(mimePart) {
 		this._extraParts = [];
 	}
 	this._extraParts.push(mimePart);
-}
+};
 
 /**
 * Returns the message from the form, after some basic input validation.
@@ -664,7 +679,7 @@ function(attId, isDraft) {
 		msg.setMessageAttachmentId(this._msgAttId);
 
 	return msg;
-}
+};
 
 /**
 * Returns true if form contents have changed, or if they are empty.
@@ -686,25 +701,27 @@ function(incAddrs, incSubject) {
 		return false;
 	// subject or body has changed => dirty
 	return (curFormValue != this._origFormValue);
-}
+};
 
 ZmComposeView.prototype.addSignature =
 function() {
 	var sig = this._appCtxt.get(ZmSetting.SIGNATURE);
 	if (!sig) return;
-	
-	var newLine = this._composeMode == DwtHtmlEditor.HTML ? "<br>" : "\n";
+
+	var sigStyle = this._appCtxt.get(ZmSetting.SIGNATURE_STYLE);
+
+	var newLine = (this._composeMode == DwtHtmlEditor.HTML) ? "<br>" : "\n";
 
 	if (this._composeMode == DwtHtmlEditor.HTML)
 		sig = AjxStringUtil.htmlEncodeSpace(sig);
 	sig = sig + newLine;
 	
 	var sep = newLine + newLine;
-	if (this._appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET)
+	if (sigStyle == ZmSetting.SIG_INTERNET)
 		sep = sep + "-- " + newLine;
 
 	this._htmlEditor.setContent([this._htmlEditor.getContent(), sep, sig].join(""));
-}
+};
 
 // ------------------------------------------------------------------
 // attachment methods
@@ -809,12 +826,12 @@ function(bEnable) {
 		this._field[ZmComposeView.ADDRS[i]].disabled = !bEnable;
 	
 	this._subjectField.disabled = this._bodyField.disabled = !bEnable;
-}
+};
 
 ZmComposeView.prototype.getHtmlEditor = 
 function() {
 	return this._htmlEditor;
-}
+};
 
 // Private methods
 
@@ -919,7 +936,7 @@ function(composeMode) {
 	// init event handlers for add cc/bcc links
 	this._setEventHandler(this._addLinkId[ZmEmailAddress.CC], "onClick", ZmEmailAddress.CC);
 	this._setEventHandler(this._addLinkId[ZmEmailAddress.BCC], "onClick", ZmEmailAddress.BCC);
-}
+};
 
 // Listeners
 
@@ -929,7 +946,7 @@ function(ev) {
 	var obj = DwtUiEvent.getDwtObjFromEvent(ev);
 	this.enableInputs(false);
 	this._contactPicker.popup(obj.addrType);
-}
+};
 
 // Click event will either be on an add address link, or in an address textarea field.
 // If the former, show the address element. If the latter, hide the autocomplete list.
@@ -962,7 +979,7 @@ function(ev) {
 			cv._showField(element._addrType, !cv._using[element._addrType]);
 			return false; // disable following of link
 	}
-}
+};
 
 ZmComposeView._onKeyDown =
 function(ev) {
@@ -977,7 +994,7 @@ function(ev) {
 	// ignore return in attachment input field (bug 961)
 	if (id.indexOf("_att_") == 0) 
 		return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
-}
+};
 
 // this callback is triggered when an event occurs inside the html editor (when in HTML mode)
 // it is used to set focus to the To: field when user hits the TAB key
@@ -994,7 +1011,7 @@ function(args) {
 		}
 	}
 	return rv;
-}
+};
 
 ZmComposeView.prototype._createHtml =
 function() {
@@ -1048,7 +1065,7 @@ function() {
 	
 	div.innerHTML = html.join("");
 	this.getHtmlElement().appendChild(div);
-}
+};
 
 ZmComposeView.prototype._createAttachmentsContainer =
 function() {
@@ -1115,7 +1132,7 @@ function () {
 	} else {
 		return doc;
 	}
-}
+};
 
 ZmComposeView.prototype._showForwardField =
 function(msg, action, pref) {
@@ -1151,17 +1168,17 @@ function(msg, action, pref) {
 	}
 
 	this._forwardDiv.innerHTML = html.join("");
-}
+};
 
 ZmComposeView.prototype.getForwardLinkHtml = 
 function() {
 	return this._forwardDiv.innerHTML;
-}
+};
 
 ZmComposeView.prototype._controlListener = 
 function() {
 	this._resetBodySize();
-}
+};
 
 // Miscellaneous methods
 ZmComposeView.prototype._resetBodySize = 
@@ -1181,14 +1198,14 @@ function() {
 	el.style.overflow = "hidden";
 	if (height == ZmComposeView.MIN_BODY_HEIGHT)
 		el.style.overflow = "auto";
-}
+};
 
 // Consistent spot to locate various dialogs
 ZmComposeView.prototype._getDialogXY =
 function() {
 	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
 	return new DwtPoint(loc.x + ZmComposeView.DIALOG_X, loc.y + ZmComposeView.DIALOG_Y);
-}
+};
 
 ZmComposeView.prototype._getForwardAttIds = 
 function() {
@@ -1203,7 +1220,7 @@ function() {
 	}
 	
 	return forAttIds;
-}
+};
 
 // Show address field
 ZmComposeView.prototype._showField =
@@ -1222,7 +1239,7 @@ function(type, show) {
 			: "Add " + ZmEmailAddress.TYPE_STRING[type].toUpperCase();
 	}
 	this._resetBodySize();
-}
+};
 
 // Generic routine for attaching an event handler to a field. Since "this" for the handlers is
 // the incoming event, we need a way to get at ZmComposeView, so it's added to the event target.
@@ -1236,7 +1253,7 @@ function(id, event, addrType, isIframe) {
 		field._addrType = addrType;
 	var lcEvent = event.toLowerCase();
 	field[lcEvent] = ZmComposeView["_" + event];
-}
+};
 
 // Grab the addresses out of the form. Optionally, they can be returned broken out into good and 
 // bad addresses, with an aggregate list of the bad ones also returned. If the field is hidden,
@@ -1260,7 +1277,7 @@ function() {
 		}
 	}
 	return addrs;
-}
+};
 
 // returns the field values for each of the addr fields
 ZmComposeView.prototype.getRawAddrFields = 
@@ -1273,7 +1290,7 @@ function() {
 		addrs[type] = this._field[type].value;
 	}
 	return addrs;
-}
+};
 
 // needed to reset design mode when in html compose format for gecko
 ZmComposeView.prototype._okCallback =
@@ -1281,7 +1298,7 @@ function() {
 	this._msgDialog.popdown();
 	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();
-}
+};
 
 // User has agreed to send message without a subject
 ZmComposeView.prototype._noSubjectOkCallback =
@@ -1306,7 +1323,7 @@ function() {
 		this._confirmDialog.popdown();
 		this._controller.sendMsg();
 	}
-}
+};
 
 // User has canceled sending message without a subject
 ZmComposeView.prototype._noSubjectCancelCallback =
@@ -1316,7 +1333,7 @@ function() {
 	this._subjectField.focus();
 	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();
-}
+};
 
 // User has agreed to send message with bad addresses
 ZmComposeView.prototype._badAddrsOkCallback =
@@ -1325,7 +1342,7 @@ function() {
 	this._badAddrsOkay = true;
 	this._confirmDialog.popdown();
 	this._controller.sendMsg();
-}
+};
 
 // User has declined to send message with bad addresses - set focus to bad field
 ZmComposeView.prototype._badAddrsCancelCallback =
@@ -1337,7 +1354,7 @@ function(type) {
 		this._field[type].focus()
 	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();
-}
+};
 
 // Files have been uploaded, re-initiate the send with an attachment ID.
 // TODO: error handling
@@ -1355,7 +1372,7 @@ function(args) {
 	} else {
 		DBG.println(AjxDebug.DBG1, "attachment error: " + status);
 	}
-}
+};
 
 // Returns a string representing the form content
 ZmComposeView.prototype._formValue =
@@ -1374,14 +1391,14 @@ function(incAddrs, incSubject) {
 	var str = vals.join("|");
 	str = str.replace(/\|+/, "|");
 	return str;
-}
+};
 
 // Gets the iframe's document whether we're IE or Moz
 ZmComposeView.prototype._getIframeDocument =
 function() {
 	return Dwt.getIframeDoc(this._iframe);
 	// OLD: return AjxEnv.isIE ? this._iframe.Document : this._iframe.contentDocument;
-}
+};
 
 // Returns true if any of the attachment fields is populated
 ZmComposeView.prototype._gotAttachments =
@@ -1398,7 +1415,7 @@ function() {
 			return true;
 
 	return false;
-}
+};
 
 ZmComposeView.prototype._setBodyFieldFocus = 
 function(extraBodyText) {
@@ -1423,7 +1440,7 @@ function(extraBodyText) {
 	}
 
     this._bodyField.focus();
-}
+};
 
 // returns list of attachment field values (used by detachCompose)
 ZmComposeView.prototype.getAttFieldValues = 
@@ -1437,7 +1454,7 @@ function() {
 		attList.push(atts[i].value);
 	
 	return attList;
-}
+};
 
 // Returns the location where the autocomplete list should be positioned. Run as a callback.
 ZmComposeView.prototype._getAcListLoc =
@@ -1463,4 +1480,4 @@ function(args) {
 	// 70 = button width + 2 borders + 2 cell spacing
 	// 54 = textarea height + 1 cell spacing
 	return new DwtPoint(70, 54 + (num * size.y));
-}
+};
