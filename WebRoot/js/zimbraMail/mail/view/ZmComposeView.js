@@ -259,7 +259,8 @@ function(action, toOverride) {
 
 		// reply to all senders if reply all (includes To: and Cc:)
 		if (this._action == ZmOperation.REPLY_ALL) {
-			var addrs = this._msg.getAddresses(ZmEmailAddress.CC);
+			var addrs = new AjxVector();
+			addrs.addList(this._msg.getAddresses(ZmEmailAddress.CC));
 			var toAddrs = this._msg.getAddresses(ZmEmailAddress.TO);
 			if (this._msg.isSent) {
 				// sent msg replicates To: and Cc: (minus duplicates)
