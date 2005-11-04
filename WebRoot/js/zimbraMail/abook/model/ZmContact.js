@@ -338,7 +338,6 @@ function(attr) {
 	// change force to 0 and put up dialog if we get a MODIFY_CONFLICT fault?
 	soapDoc.getMethod().setAttribute("force", "1");
 	var cn = soapDoc.set("cn");
-	cn.setAttribute("md", this.modified);
 	cn.setAttribute("id", this.id);
 	
 	for (var name in attr) {
