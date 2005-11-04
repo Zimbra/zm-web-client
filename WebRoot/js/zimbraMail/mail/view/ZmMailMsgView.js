@@ -550,7 +550,8 @@ ZmMailMsgView.prototype._makeHighlightObjectsDiv = function() {
 	})();
 };
 
-ZmMailMsgView.prototype._makeIframeProxy = function(container, html, isTextMsg) {
+ZmMailMsgView.prototype._makeIframeProxy = 
+function(container, html, isTextMsg) {
 	var displayImages;
 	if (!isTextMsg && /<img/i.test(html)) {
 		displayImages = this.getDocument().createElement("div");
@@ -787,15 +788,13 @@ function(msg, container, callback) {
 		if (bodyPart.ct == ZmMimeTable.TEXT_HTML && this._appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
 			this._makeIframeProxy(el, bodyPart.content, false);
 		} else {
-			var content;
 			// otherwise, get the text part if necessary
 			if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
 				// try to go retrieve the text part
 				var respCallback = new AjxCallback(this, this._handleResponseRenderMessage, [el, bodyPart, callback]);
 				msg.getTextPart(respCallback);
 			} else {
-				content = bodyPart.content;
-				this._makeIframeProxy(el, content, true);
+				this._makeIframeProxy(el, bodyPart.content, true);
 			}
 		}
 	}
@@ -809,8 +808,8 @@ function(args) {
 	var result		= args[3];
 
 	var content = result.getResponse();
-	// if no text part, just dump the raw html
-	content = content ? content : bodyPart.content;
+	// if no text part, just dump the raw html if one exists
+	content = content || (bodyPart.ct == ZmMimeTable.TEXT_HTML ? bodyPart.content : "");
 	this._makeIframeProxy(el, content, true);
 }
 

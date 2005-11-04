@@ -462,10 +462,10 @@ ZmMailMsg.prototype._handleResponseGetTextPart =
 function(args) {
 	var callback	= args[0];
 	var result		= args[1];
-	
-	var response = result.getResponse();
+
+	var response = result.getResponse().GetMsgResponse;
 	this._loadFromDom(response.m[0]);
-	bodyPart = this.getBodyPart(ZmMimeTable.TEXT_PLAIN);
+	var bodyPart = this.getBodyPart(ZmMimeTable.TEXT_PLAIN);
 	result.set(bodyPart ? bodyPart.content : null);
 	if (callback) callback.run(result);
 };
