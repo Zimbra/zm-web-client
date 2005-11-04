@@ -147,6 +147,18 @@
     </delete>	
   </target>
 
+	<target name='i18n' depends='i18n-init,compile' unless='i18n-done'>
+		<taskdef name='i18n' 
+				 classname='com.zimbra.ajax.i18n.GenerateDataTask' 
+				 classpath='${build.dir}/classes'
+		/>
+		<mkdir dir='${build.dir}/i18n/msgs' />
+		<i18n destdir='${build.dir}/i18n/msgs' />
+	</target>
+	<target name='i18n-init'>
+		<available property='i18n-done' file='${build.dir}/i18n/msgs/I18nMsg.properties' />
+	</target>
+	
   <target name="jam-files" depends="compile">
     <taskdef name="jammer" classname="com.zimbra.webClient.build.JammerTask" classpath="${build.dir}/classes"/>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/Ajax_all.js">
@@ -521,13 +533,14 @@
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
   </target>
 
-  <target name="war" depends="copy-files-to-build-area, jam-files, generate-build-info, images">
+  <target name="war" depends="copy-files-to-build-area, jam-files, generate-build-info, images, i18n">
     <property file="${build.dir}/build.properties" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
       <classes dir="${build.dir}/classes" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
+  	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes="msgs/*.properties"/>
@@ -546,7 +559,7 @@
     </propertyfile>	
   </target>
 
-  <target name="prod-war" depends="compress-js-files, generate-build-info, images">
+  <target name="prod-war" depends="compress-js-files, generate-build-info, images, i18n">
     <property file="${build.dir}/build.properties" />
     <copy file="WebRoot/WEB-INF/web.xml.production" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="true"/>
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
@@ -554,6 +567,7 @@
     <war warfile="${warfile}"
       webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
+  	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes="msgs/*.properties"/>
@@ -623,12 +637,13 @@
   </target>
 
   <!-- this is the production war file target for the admin webapp -->
-  <target name="admin-war" depends="compress-js-files,generate-build-info, admin-images, copy-common-css-to-admin">
+  <target name="admin-war" depends="compress-js-files,generate-build-info, admin-images, copy-common-css-to-admin, i18n">
     <property file="${build.dir}/build.properties" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
+  	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes="msgs/*.properties"/>
@@ -641,12 +656,13 @@
     </war>
   </target>
 
-  <target name="admin-dev-war" depends="copy-files-to-build-area, jam-files, generate-build-info, admin-images, copy-common-css-to-admin">
+  <target name="admin-dev-war" depends="copy-files-to-build-area, jam-files, generate-build-info, admin-images, copy-common-css-to-admin, i18n">
     <property file="${build.dir}/build.properties" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
+   	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes="msgs/*.properties"/>

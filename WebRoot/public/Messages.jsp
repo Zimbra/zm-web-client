@@ -33,4 +33,4 @@ Contributor(s):
       ext = "";
    }
 %>
-<script type="text/javascript" src="<%= contextPath %>/js/msgs/AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>

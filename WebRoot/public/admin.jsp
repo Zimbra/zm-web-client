@@ -107,7 +107,7 @@ Contributor(s):
     	DwtConfigPath = "<%= contextPath %>/js/dwt/config";
     </script>
     
-<script type="text/javascript" src="<%= contextPath %>/js/msgs/AjxMsg,ZMsg,ZaMsg.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZaMsg.js<%= ext %>?v=<%= vers %>"></script>
 
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
    		<jsp:include page="/public/Ajax.jsp"/>
