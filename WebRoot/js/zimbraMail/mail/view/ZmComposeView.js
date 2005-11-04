@@ -82,6 +82,8 @@ ZmComposeView.FORWARD_ATT_NAME = "forAtt---" + Dwt.getNextId();
 // Reply/forward stuff
 ZmComposeView.EMPTY_FORM_RE = /^[\s\|]*$/;
 ZmComposeView.SUBJ_PREFIX_RE = new RegExp("^\\s*(" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
+ZmComposeView.QUOTED_CONTENT_RE = new RegExp("^----- ", "m");
+
 ZmComposeView.WRAP_LENGTH = 72;
 ZmComposeView.QUOTED_HDRS = [ZmMailMsg.HDR_FROM, ZmMailMsg.HDR_TO, ZmMailMsg.HDR_CC,
 							 ZmMailMsg.HDR_DATE, ZmMailMsg.HDR_SUBJECT];
@@ -704,6 +706,11 @@ function(incAddrs, incSubject) {
 	return (curFormValue != this._origFormValue);
 };
 
+/**
+* Adds the user's signature to the message body. An "internet" style signature
+* is prefixed by a special line and added to the bottom. An "outlook" style
+* signature is added before the quoted content.
+*/
 ZmComposeView.prototype.addSignature =
 function() {
 	var sig = this._appCtxt.get(ZmSetting.SIGNATURE);
@@ -721,7 +728,17 @@ function() {
 	if (sigStyle == ZmSetting.SIG_INTERNET)
 		sep = sep + "-- " + newLine;
 
-	this._htmlEditor.setContent([this._htmlEditor.getContent(), sep, sig].join(""));
+	var content = this._htmlEditor.getContent();
+	if (sigStyle == ZmSetting.SIG_OUTLOOK) {
+		if (content.match(ZmComposeView.QUOTED_CONTENT_RE))
+			content = content.replace(ZmComposeView.QUOTED_CONTENT_RE, [sep, sig, newLine, "----- "].join(""));
+		else
+			content = [content, sep, sig].join("");
+	} else {
+		content = [content, sep, sig].join("");
+	}
+
+	this._htmlEditor.setContent(content);
 };
 
 // ------------------------------------------------------------------
