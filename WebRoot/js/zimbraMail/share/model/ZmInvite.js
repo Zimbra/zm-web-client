@@ -103,7 +103,7 @@ function(compNum) {
 };
 
 ZmInvite.prototype.getOrganizerEmail = 
-function (compNum) {
+function(compNum) {
 	if (this.components[compNum] != null &&
 		this.components[compNum].or != null &&
 		this.components[compNum].or.url != null) 
@@ -114,13 +114,16 @@ function (compNum) {
 };
 
 ZmInvite.prototype.getOrganizerName = 
-function (compNum) {
+function(compNum) {
+	var org = null;
 	if (this.components[compNum] != null &&
-		this.components[compNum.org] != null) 
+		this.components[compNum].or != null) 
 	{
-		return this.components[compNum].or.d;
+		org = this.components[compNum].or.d;
+		if (org == null || org == "")
+			org = this.components[compNum].or.url;
 	}
-	return null;
+	return org;
 };
 
 ZmInvite.prototype.isOrganizer = 
@@ -238,4 +241,37 @@ function(compNum) {
 	return this.components[compNum] != null
 		? this.components[compNum].fb
 		: null;
+};
+
+ZmInvite.prototype.getLocation =
+function(compNum) {
+	return this.components[compNum] != null
+		? this.components[compNum].loc
+		: null;
+};
+
+ZmInvite.prototype.getCannedText = 
+function() {
+	var text = new Array();
+	var i = 0;
+
+	text[i++] = "\n";
+	text[i++] = ZmMsg.subject;
+	text[i++] = ": ";
+	text[i++] = this.getName(0);
+	text[i++] = "\n";
+	text[i++] = ZmMsg.organizer;
+	text[i++] = " ";
+	text[i++] = this.getOrganizerName(0);
+	text[i++] = "\n\n";
+	text[i++] = ZmMsg.location;
+	text[i++] = ": ";
+	text[i++] = this.getLocation(0);
+	text[i++] = "\n";
+	text[i++] = ZmMsg.time;
+	text[i++] = ": ";
+	text[i++] = AjxDateUtil.parseServerDateTime(this.getServerStartTime(0));
+	text[i++] = ZmAppt.NOTES_SEPARATOR;
+
+	return text.join("");
 };

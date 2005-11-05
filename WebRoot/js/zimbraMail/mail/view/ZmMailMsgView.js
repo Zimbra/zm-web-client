@@ -808,9 +808,17 @@ function(args) {
 	var result		= args[3];
 
 	var content = result.getResponse();
-	// if no text part, just dump the raw html if one exists
-	content = content || (bodyPart.ct == ZmMimeTable.TEXT_HTML ? bodyPart.content : "");
-	this._makeIframeProxy(el, content, true);
+
+	// if no text part, check if theres a calendar part and generate some canned 
+	// text, otherwise, get the html part if one exists
+	if (content == null) {
+		if (bodyPart.ct == ZmMimeTable.TEXT_CAL)
+			content = this._msg.isInvite() ? this._msg.getInvite().getCannedText() : null;
+		else if (bodyPart.ct == ZmMimeTable.TEXT_HTML)
+			content = bodyPart.content;
+	}
+
+	this._makeIframeProxy(el, (content || ""), true);
 }
 
 ZmMailMsgView.prototype._setTags =

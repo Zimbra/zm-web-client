@@ -464,8 +464,8 @@ function(message, viewMode) {
 			this.setStartDate(this.getUniqueStartDate());
 			this.setEndDate(this.getUniqueEndDate());
 		} else {
-			this.setEndDate(this._parseServerDateTime(message.invite.getServerEndTime(0), this.endDate));
-			this.setStartDate(this._parseServerDateTime(message.invite.getServerStartTime(0), this.startDate));
+			this.setStartDate(AjxDateUtil.parseServerDateTime(message.invite.getServerStartTime(0)));
+			this.setEndDate(AjxDateUtil.parseServerDateTime(message.invite.getServerEndTime(0)));
 		}
 		this.timezone = message.invite.getServerStartTimeTz(0);
 		this.repeatCustomMonthDay = this.startDate.getDate();
@@ -635,10 +635,10 @@ function(attachmentId, callback) {
 	if (needsExceptionId) {
 		var exceptId = soapDoc.set("exceptId", null, invAndMsg.inv);
 		if (this.allDayEvent != "1") {
-			exceptId.setAttribute("d", this._getServerDateTime(this.getOrigStartDate()));
+			exceptId.setAttribute("d", AjxDateUtil.getServerDateTime(this.getOrigStartDate()));
 			exceptId.setAttribute("tz", this.timezone);
 		} else {
-			exceptId.setAttribute("d", this._getServerDate(this.getOrigStartDate()));
+			exceptId.setAttribute("d", AjxDateUtil.getServerDate(this.getOrigStartDate()));
 		}
 	} else {
 		// set recurrence rules for appointment (but not for exceptions!)
@@ -955,7 +955,7 @@ function () {
 						}
 						if (rule.until) {
 							this.repeatEndType = "D";
-							this.repeatEndDate = this._parseServerDateTime(rule.until[0].d);
+							this.repeatEndDate = AjxDateUtil.parseServerDateTime(rule.until[0].d);
 						} else if (rule.count) {
 							this.repeatEndType = "A";
 							this.repeatEndCount = rule.count[0].num;
@@ -1252,55 +1252,6 @@ function(soapDoc) {
 	}
 };
 
-ZmAppt.prototype._getServerDate = 
-function(date) {
-	var yyyy = date.getFullYear();
-	var MM = AjxDateUtil._pad(date.getMonth() + 1);
-	var dd = AjxDateUtil._pad(date.getDate());
-	return AjxBuffer.concat(yyyy,MM,dd);
-};
-
-ZmAppt.prototype._getServerDateTime = 
-function(date) {
-	var yyyy = date.getFullYear();
-	var MM = AjxDateUtil._pad(date.getMonth() + 1);
-	var dd = AjxDateUtil._pad(date.getDate());
-	var hh = AjxDateUtil._pad(date.getHours());
-	var mm = AjxDateUtil._pad(date.getMinutes());
-	var ss = AjxDateUtil._pad(date.getSeconds());
-	return AjxBuffer.concat(yyyy, MM, dd,"T",hh, mm, ss);
-};
-
-ZmAppt.prototype._parseServerTime = 
-function(serverStr, date) {
-	if (serverStr.charAt(8) == 'T') {
-		var hh = parseInt(serverStr.substr(9,2), 10);
-		var mm = parseInt(serverStr.substr(11,2), 10);
-		var ss = parseInt(serverStr.substr(13,2), 10);
-		date.setHours(hh, mm, ss, 0);
-	}
-	return date;
-};
-
-ZmAppt.prototype._parseServerDateTime = 
-function(serverStr) {
-	if (serverStr == null) return null;
-	var d = new Date();
-	var yyyy = parseInt(serverStr.substr(0,4), 10);
-	var MM = parseInt(serverStr.substr(4,2), 10);
-	var dd = parseInt(serverStr.substr(6,2), 10);
-	d.setFullYear(yyyy);
-	// EMC 8/31/05 - fix for bug 3839. It looks like firefox needs to call setMonth twice for 
-	// dates starting sept 1. No good reason at this point, but I noticed that
-	// setting it twice seems to do the trick. Very odd.
-	d.setMonth(MM - 1);
-	d.setMonth(MM - 1);
-	// DON'T remove second call to setMonth
-	d.setDate(dd);
-	this._parseServerTime(serverStr, d);
-	return d;
-};
-
 ZmAppt.prototype._getDefaultBlurb = 
 function(cancel) {
 	var buf = new Array();
@@ -1470,13 +1421,13 @@ function(soapDoc, method,  attachmentId) {
 	var s = soapDoc.set("s", null, inv);
 	var e = soapDoc.set("e", null, inv);
 	if (this.allDayEvent != "1") {
-		s.setAttribute("d", this._getServerDateTime(this.startDate));
+		s.setAttribute("d", AjxDateUtil.getServerDateTime(this.startDate));
 		s.setAttribute("tz", this.timezone);
-		e.setAttribute("d", this._getServerDateTime(this.endDate));
+		e.setAttribute("d", AjxDateUtil.getServerDateTime(this.endDate));
 		e.setAttribute("tz", this.timezone);
 	} else {
-		s.setAttribute("d", this._getServerDate(this.startDate));
-		e.setAttribute("d", this._getServerDate(this.endDate));
+		s.setAttribute("d", AjxDateUtil.getServerDate(this.startDate));
+		e.setAttribute("d", AjxDateUtil.getServerDate(this.endDate));
 	}
 	
 	soapDoc.set("su", this.name, m);
@@ -1521,7 +1472,7 @@ function(soapDoc, inv) {
 
 	if (this.repeatEndDate != null && this.repeatEndType == "D") {
 		var until = soapDoc.set("until", null, rule);
-		until.setAttribute("d", this._getServerDate(this.repeatEndDate));
+		until.setAttribute("d", AjxDateUtil.getServerDate(this.repeatEndDate));
 		until.setAttribute("tz", this.timezone);
 	} else if (this.repeatEndType == "A"){
 		var c = soapDoc.set("count",null, rule);
@@ -1686,7 +1637,7 @@ function(args) {
 		if (mode == ZmAppt.MODE_DELETE_INSTANCE) {
 			soapDoc.setMethodAttribute("s", this.getOrigStartTime());
 			var inst = soapDoc.set("inst");
-			inst.setAttribute("d", this._getServerDateTime(this.getOrigStartDate()));
+			inst.setAttribute("d", AjxDateUtil.getServerDateTime(this.getOrigStartDate()));
 			inst.setAttribute("tz", this.timezone);
 		}
 
