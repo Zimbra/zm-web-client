@@ -131,7 +131,7 @@ function(appt, mode) {
 		this.setComposeMode();
 	}
 
-	this._reset(appt, mode);
+	this._reset(appt, this._mode);
 
 	// save the original form data in its initialized state
 	this._origFormValue = this._formValue();
