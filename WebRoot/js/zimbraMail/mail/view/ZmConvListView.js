@@ -278,6 +278,10 @@ function(conv, fieldId) {
 			html[idx++] = part2[j].name;
 			html[idx++] = "</span>";
 		}
+
+		// bug fix #724
+		if (part2.length == 1 && origLen > 1)
+			html[idx++] = AjxStringUtil.ELLIPSIS;
 	} else {
 		// XXX: possible import bug but we must take into account
 		html[idx++] = ZmMsg.noWhere;
