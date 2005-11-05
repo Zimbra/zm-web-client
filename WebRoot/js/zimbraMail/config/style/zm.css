@@ -1144,7 +1144,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .ZmStatus .ZmStatusInfoToast, .ZmStatus .ZmStatusWarningToast, .ZmStatus .ZmStatusCriticalToast { border: 1px solid black; }
 .ZmStatusHistory .ZmStatusInfoToast, .ZmStatusHistory .ZmStatusWarningToast, .ZmStatusHistory .ZmStatusCriticalToast { border: 1px solid black; }
 
-.ZmStatusInfoToast {	background-color:#ADD6D6;	}
+.ZmStatusInfoToast {	background-color:#BFDFCA;	}
 .ZmStatusWarningToast {	background-color:#FFF6BF;	}
 .ZmStatusCriticalToast {	background-color:#F5BFBF;	}
 
