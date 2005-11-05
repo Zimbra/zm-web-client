@@ -110,7 +110,7 @@ function(callback) {
 	this._eventCallback = callback;
 };
 
-ZmHtmlEditor.prototype.getContent = 
+ZmHtmlEditor.prototype.getContent =
 function() {
 	this.discardMisspelledWords();
 	return DwtHtmlEditor.prototype.getContent.call(this);
@@ -119,7 +119,7 @@ function() {
 ZmHtmlEditor.prototype.spellCheck =
 function(callback) {
 	var text = this.getTextVersion();
-	if (/\S/.test(text)) {	
+	if (/\S/.test(text)) {
 		if (!this.onExitSpellChecker)
 			this.onExitSpellChecker = callback;
 		this._spellChecker.check(text, new AjxCallback(this, this._spellCheckCallback));
@@ -129,7 +129,7 @@ function(callback) {
 	return false;
 };
 
-ZmHtmlEditor.prototype.discardMisspelledWords = 
+ZmHtmlEditor.prototype.discardMisspelledWords =
 function(keepModeDiv) {
 	if (!this._spellCheck) return;
 
@@ -184,7 +184,7 @@ function(keepModeDiv) {
 		this.onExitSpellChecker.run();
 };
 
-ZmHtmlEditor.prototype.highlightMisspelledWords = 
+ZmHtmlEditor.prototype.highlightMisspelledWords =
 function(words, keepModeDiv) {
 	this.discardMisspelledWords(keepModeDiv);
 
@@ -201,7 +201,10 @@ function(words, keepModeDiv) {
 		if (!suggestions[word]) {
 			i && regexp.push("|");
 			regexp.push(word);
-			suggestions[word] = words[i].suggestions.split(/\s*,\s*/);
+			var a = words[i].suggestions.split(/\s*,\s*/);
+			if (!a[a.length-1])
+				a.pop();
+			suggestions[word] = a;
 			if (suggestions[word].length > 5)
 				suggestions[word].length = 5;
 		}
@@ -349,7 +352,7 @@ function(words, keepModeDiv) {
 			     wordIds     : wordIds };
 };
 
-ZmHtmlEditor.prototype.setSize = 
+ZmHtmlEditor.prototype.setSize =
 function(x, y) {
 	// window.status = ev.oldWidth + "x" + ev.oldHeight + " -> " + ev.newWidth + "x" + ev.newHeight;
 	var div = null;
@@ -691,7 +694,7 @@ function(ev) {
 			iframeDoc.open();
 			iframeDoc.write(initHtml);
 			iframeDoc.close();
-	
+
 			// update DwtSelect to reflect to new font size or family
 			if (setting.id == ZmSetting.COMPOSE_INIT_FONT_FAMILY) {
 				var fontfamily = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
@@ -773,26 +776,26 @@ function() {
 
 // Spell checker methods
 
-ZmHtmlEditor._spellCheckResumeEditing = 
+ZmHtmlEditor._spellCheckResumeEditing =
 function() {
 	var editor = Dwt.getObjectFromElement(this);
 	editor.discardMisspelledWords();
 };
 
-ZmHtmlEditor._spellCheckAgain = 
+ZmHtmlEditor._spellCheckAgain =
 function() {
 	var editor = Dwt.getObjectFromElement(this);
 	editor.discardMisspelledWords();
 	editor.spellCheck();
 };
 
-ZmHtmlEditor.prototype._spellCheckShowModeDiv = 
+ZmHtmlEditor.prototype._spellCheckShowModeDiv =
 function() {
 	var size = this.getSize();
 	var doc = this.getDocument();
 
 	if (!this._spellCheckModeDivId) {
-			
+
 		var div = doc.createElement("div");
 		div.className = "SpellCheckModeDiv";
 		div.id = this._spellCheckModeDivId = Dwt.getNextId();
@@ -824,7 +827,7 @@ function() {
 	this.setSize(size.x, size.y + (this._mode == DwtHtmlEditor.TEXT ? 1 : 2));
 };
 
-ZmHtmlEditor.prototype._spellCheckHideModeDiv = 
+ZmHtmlEditor.prototype._spellCheckHideModeDiv =
 function() {
 	var size = this.getSize();
 	if (this._spellCheckModeDivId)
@@ -832,7 +835,7 @@ function() {
 	this.setSize(size.x, size.y + (this._mode == DwtHtmlEditor.TEXT ? 1 : 2));
 };
 
-ZmHtmlEditor.prototype._spellCheckSuggestionListener = 
+ZmHtmlEditor.prototype._spellCheckSuggestionListener =
 function(ev) {
 	var self = this;
 	var item = ev.item;
@@ -854,7 +857,7 @@ function(ev) {
 				span.innerHTML = val;
 		}
 	};
-	if (plainText && !val) {
+	if (plainText && val == null) {
 		function inputListener(ev) {
 			ev || (ev = window.event);
 			// the event gets lost after 20 milliseconds so we need
@@ -964,7 +967,7 @@ ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
 		window.status = "";
 	}
 	// but that's even uglier:
-	if (ev && word && (suggestions = sc.suggestions[word]) && suggestions.length > 0 &&
+	if (ev && word && (suggestions = sc.suggestions[word]) &&
 	    (/mouseup/i.test(ev.type) || (plainText && /(click|mousedown)/i.test(ev.type))))
 	{
 		function makeMenu(fixall, parent) {
@@ -992,12 +995,22 @@ ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
 			}
 			if (modified || plainText)
 				menu.createSeparator();
-			for (var i = 0; i < suggestions.length; ++i) {
-				item = menu.createMenuItem("sug-" + fixall + "" + i,
-							   null, suggestions[i],
+			if (suggestions.length > 0) {
+				for (var i = 0; i < suggestions.length; ++i) {
+					item = menu.createMenuItem("sug-" + fixall + "" + i,
+								   null, suggestions[i],
+								   null, true, null, null);
+					item.setData("fixall", fixall);
+					item.setData("value", suggestions[i]);
+					item.setData("orig", word);
+					item.setData("spanId", p.id);
+					item.addSelectionListener(self._spellCheckSuggestionListener);
+				}
+			} else {
+				item = menu.createMenuItem("clear", null, "<b style='color: red'>Clear text</b>",
 							   null, true, null, null);
 				item.setData("fixall", fixall);
-				item.setData("value", suggestions[i]);
+				item.setData("value", "");
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
 				item.addSelectionListener(self._spellCheckSuggestionListener);
@@ -1037,7 +1050,7 @@ ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
 	}
 };
 
-ZmHtmlEditor.prototype._spellCheckCallback = 
+ZmHtmlEditor.prototype._spellCheckCallback =
 function(words) {
 	var wordsFound = false;
 
@@ -1083,12 +1096,12 @@ function ZmSpellChecker(parent, appCtxt) {
 
 
 // Public methods
-ZmSpellChecker.prototype.toString = 
+ZmSpellChecker.prototype.toString =
 function() {
 	return "ZmSpellChecker";
 };
 
-ZmSpellChecker.prototype.check = 
+ZmSpellChecker.prototype.check =
 function(text, callback) {
 	var soapDoc = AjxSoapDoc.create("CheckSpellingRequest", "urn:zimbraMail");
 	soapDoc.getMethod().appendChild(soapDoc.getDoc().createTextNode(text));
@@ -1097,13 +1110,13 @@ function(text, callback) {
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, callback);
 };
 
-ZmSpellChecker.prototype._checkCallback = 
+ZmSpellChecker.prototype._checkCallback =
 function(args) {
 	var callback	= args[0];
 	var resp		= args[1];
 
 	var words = resp._isException ? null : resp.getResponse().CheckSpellingResponse;
-	
+
 	if (callback)
 		callback.run(words);
 };
