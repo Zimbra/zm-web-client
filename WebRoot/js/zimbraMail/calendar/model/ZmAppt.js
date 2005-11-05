@@ -1582,8 +1582,11 @@ function(soapDoc, m, cancel) {
 		for (var i = 0; i < numSubParts; i++) {
 			var part = this.notesTopPart.children.get(i);
 			var partNode = soapDoc.set("mp", null, mp);
-			partNode.setAttribute("ct", part.getContentType());
-			var content = AjxBuffer.concat(prefix, part.getContent());
+			var pct = part.getContentType();
+			var pprefix = pct == ZmMimeTable.TEXT_HTML
+						? AjxStringUtil.nl2br(prefix) : prefix;
+			partNode.setAttribute("ct", pct);
+			var content = AjxBuffer.concat(pprefix, part.getContent());
 			soapDoc.set("content", content, partNode);
 		}
 	} else {
