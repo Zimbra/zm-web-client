@@ -325,7 +325,7 @@ ZmMailMsgView._dangerousCSS = {
 // 	// not sure this is good
 // 	whiteSpace            : null
 
-};
+ };
 
 // Dives recursively into the given DOM node.  Creates ObjectHandlers in text
 // nodes and cleans the mess in element nodes.  Discards by default "script",
@@ -394,9 +394,23 @@ ZmMailMsgView.prototype._processHtmlDoc = function(doc) {
 		    case 4:	// CDATA_SECTION_NODE (just in case)
 			// generate ObjectHandler-s
 			if (handlers && /[^\s\xA0]/.test(node.data)) try {
+				var a = null, b = null;
+				if (/^[\s\xA0]+/.test(node.data)) {
+					a = node;
+					node = node.splitText(RegExp.lastMatch.length);
+				}
+				if (/[\s\xA0]+$/.test(node.data))
+					b = node.splitText(node.data.length - RegExp.lastMatch.length);
+
 				tmp = doc.createElement("div");
 				tmp.innerHTML = objectManager.findObjects(node.data, true);
-				var a = node.parentNode;
+
+				if (a)
+					tmp.insertBefore(a, tmp.firstChild);
+				if (b)
+					tmp.appendChild(b);
+
+				a = node.parentNode;
 				while (tmp.firstChild)
 					a.insertBefore(tmp.firstChild, node);
 				tmp = node.nextSibling;
@@ -550,7 +564,7 @@ ZmMailMsgView.prototype._makeHighlightObjectsDiv = function() {
 	})();
 };
 
-ZmMailMsgView.prototype._makeIframeProxy = 
+ZmMailMsgView.prototype._makeIframeProxy =
 function(container, html, isTextMsg) {
 	var displayImages;
 	if (!isTextMsg && /<img/i.test(html)) {
