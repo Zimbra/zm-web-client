@@ -162,13 +162,13 @@
   <target name="jam-files" depends="compile">
     <taskdef name="jammer" classname="com.zimbra.webClient.build.JammerTask" classpath="${build.dir}/classes"/>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/Ajax_all.js">
-      <filelist dir="${build.dir}/WebRoot/public" files="Ajax.jsp"/>
+      <filelist dir="${build.dir}/WebRoot/public" files="Ajax.jsp,Zimbra.jsp"/>
     </jammer>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraMail_all.js">
-      <filelist dir="${build.dir}/WebRoot/public" files="Zimbra.jsp,ZimbraMail.jsp"/>
+      <filelist dir="${build.dir}/WebRoot/public" files="ZimbraMail.jsp"/>
     </jammer>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebApp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraAdmin_all.js">
-      <filelist dir="${build.dir}/WebRoot/public" files="Zimbra.jsp,ZimbraAdmin.jsp"/>
+      <filelist dir="${build.dir}/WebRoot/public" files="ZimbraAdmin.jsp"/>
     </jammer> 
   </target>
 
@@ -210,7 +210,7 @@
 
 
   <target name="compress-js-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, jam-files">
-    <fileset id="js-includes" dir="${build.dir}/WebRoot" includes="js/*.js, js/zimbraMail/*.js,js/zimbraAdmin/*.js"/>
+    <fileset id="js-includes" dir="${build.dir}/WebRoot" includes="js/*.js"/>
     <concat destfile="zapl.txt">
       <header>/*</header>
       <footer>*/</footer>

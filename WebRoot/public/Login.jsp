@@ -216,12 +216,10 @@ body, form {
 </script>
 <jsp:include page="Messages.jsp"/>
 <script type="text/javascript" src="/zimbra/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
-<jsp:include page="Zimbra.jsp"/>
 <script type="text/javascript" src="/zimbra/js/ZmLogin.js<%= ext %>?v=<%= vers %>"></script>
 </head>
 <body>
 </body>
-
 <script language="javascript">
 	var initMode = "<%= initMode %>";
 	AjxWindowOpener.HELPER_URL = "/zimbra/public/frameOpenerHelper.jsp"
