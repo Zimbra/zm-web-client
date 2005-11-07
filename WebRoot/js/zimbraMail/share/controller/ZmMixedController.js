@@ -61,13 +61,33 @@ function(searchResults, searchString) {
 	this._setup(this._currentView);
 
 	this._list = searchResults.getResults(ZmList.MIXED);
+	if (this._activeSearch) {
+		if (this._list)
+			this._list.setHasMore(this._activeSearch.getAttribute("more"));
+
+		var newOffset = parseInt(this._activeSearch.getAttribute("offset"));
+		if (this._listView[this._currentView])
+			this._listView[this._currentView].setOffset(newOffset);
+	}
+
 	var elements = new Object();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements, true);
+	this._resetNavToolBarButtons(this._currentView);
 };
 
 // Private and protected methods
+
+ZmMixedController.prototype._initializeToolBar = 
+function(view) {
+	if (this._toolbar[view]) return;
+
+	ZmListController.prototype._initializeToolBar.call(this, view);
+	this._toolbar[view].addFiller();
+	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
+	this._setNavToolBar(tb);
+};
 
 ZmMixedController.prototype._initializeActionMenu = 
 function() {
@@ -101,6 +121,11 @@ function() {
 	return ZmController.MIXED_VIEW;
 };
 
+ZmMixedController.prototype._getItemType =
+function() {
+	return ZmList.MIXED;
+};
+
 ZmMixedController.prototype._defaultView =
 function() {
 	return ZmController.MIXED_VIEW;
@@ -126,6 +151,12 @@ function(num) {
 ZmMixedController.prototype._setViewContents =
 function(view) {
 	this._listView[view].set(this._list);
+};
+
+ZmMixedController.prototype._resetNavToolBarButtons = 
+function(view) {
+	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
+	this._showListRange(view);
 };
 
 // List listeners

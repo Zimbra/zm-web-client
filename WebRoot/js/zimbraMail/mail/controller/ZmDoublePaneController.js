@@ -417,18 +417,6 @@ function(ev) {
 		this._resetOperations(this._toolbar[this._currentView], this._doublePaneView.getSelection().length);
 }
 
-ZmDoublePaneController.prototype._cacheList = 
-function(search) {
-
-	if (this._list) {
-		var newList = search.getResults(ZmItem.MSG).getVector();
-		var offset = parseInt(search.getAttribute("offset"));
-		this._list.cache(offset, newList);
-	} else {
-		this._list = search.getResults(ZmItem.MSG);
-	}
-}
-
 ZmDoublePaneController.prototype._resetOperations = 
 function(parent, num) {
 	ZmMailListController.prototype._resetOperations.call(this, parent, num);

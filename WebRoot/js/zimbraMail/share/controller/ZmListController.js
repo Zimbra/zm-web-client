@@ -163,9 +163,6 @@ ZmListController.prototype._getActionMenuOps 	= function() {}
 // Attempts to process a nav toolbar up/down button click
 ZmListController.prototype._paginateDouble 		= function(bDoubleForward) {}
 
-// Saves search results so we only fetch them once
-ZmListController.prototype._cacheList			= function(search) {}
-
 // Returns the type of item in the underlying list
 ZmListController.prototype._getItemType			= function() {}
 
@@ -786,11 +783,22 @@ function() {
 
 // Pagination
 
+ZmListController.prototype._cacheList = 
+function(search) {
+	var type = this._getItemType();
+	if (this._list) {
+		var newList = search.getResults(type).getVector();
+		var offset = parseInt(search.getAttribute("offset"));
+		this._list.cache(offset, newList);
+	} else {
+		this._list = search.getResults(type);
+	}
+}
+
 ZmListController.prototype._search = 
 function(view, offset, limit, callback, isCurrent) {
 	var sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
-	var type = this._getItemType();
-	var types = AjxVector.fromArray([type]);
+	var types = this._activeSearch.search.types; // use types from original search
 	var sc = this._appCtxt.getSearchController();
 	var search = new ZmSearch(this._appCtxt, this._searchString, types, sortBy, offset, limit);
 	if (isCurrent)

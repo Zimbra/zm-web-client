@@ -251,17 +251,6 @@ function(items, hardDelete, attrs) {
 	ZmMailListController.prototype._doDelete.call(this, items, hardDelete, attrs);
 }
 
-ZmConvListController.prototype._cacheList = 
-function(search) {
-	if (this._list) {
-		var newList = search.getResults(ZmItem.CONV).getVector();
-		var offset = parseInt(search.getAttribute("offset"));
-		this._list.cache(offset, newList);
-	} else {
-		this._list = search.getResults(ZmItem.CONV);
-	}
-}
-
 ZmConvListController.prototype._resetNavToolBarButtons = 
 function(view) {
 	ZmMailListController.prototype._resetNavToolBarButtons.call(this, view);

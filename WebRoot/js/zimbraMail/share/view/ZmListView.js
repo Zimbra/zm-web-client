@@ -102,6 +102,11 @@ function(defaultColumnSort) {
 	this._resetColWidth();	// reset column width in case scrollbar is set
 }
 
+ZmListView.prototype.getLimit = 
+function() {
+	return this._appCtxt.get(ZmSetting.PAGE_SIZE);
+};
+
 ZmListView.prototype._changeListener =
 function(ev) {
 	if (ev.type != this.type)

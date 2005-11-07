@@ -129,7 +129,7 @@ function(view, arrowStyle) {
 		this._propagateMenuListeners(this._toolbar[view], ZmOperation.REPLY_MENU);
 		this._setReplyText(this._toolbar[view]);
 		this._toolbar[view].addFiller();
-		arrowStyle = arrowStyle || ZmNavToolBar.SINGLE_ARROWS;
+		arrowStyle = arrowStyle ? arrowStyle : ZmNavToolBar.SINGLE_ARROWS;
 		var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, arrowStyle, true);
 		this._setNavToolBar(tb);
 	}
@@ -583,12 +583,10 @@ function(currentItem, forward) {
 	if (itemIdx < 0)
 		throw new DwtException("Bad index!", DwtException.INTERNAL_ERROR, "ZmMailListController.pageItemSilently");
 	
-//	var respCallback = new AjxCallback(this, this._handleResponsePageItemSilently, [itemIdx, list]);
-	var respCallback = null;
 	var pageWasCached = true;
 	if (itemIdx >= list.length) {
 		if (this._list.hasMore()) {
-			pageWasCached = this._paginate(this._currentView, true, itemIdx, respCallback);
+			pageWasCached = this._paginate(this._currentView, true, itemIdx);
 		} else {
 			// ERROR: no more conv's to retrieve!
 			throw new DwtException("Index has exceeded number of items in list!", DwtException.INTERNAL_ERROR, "ZmMailListController.pageItemSilently");
@@ -598,9 +596,9 @@ function(currentItem, forward) {
 		var offset = this._listView[this._currentView].getOffset();
 		var limit = this._listView[this._currentView].getLimit();
 		if (itemIdx >= offset + limit) {
-			pageWasCached = this._paginate(this._currentView, true, null, respCallback);
+			pageWasCached = this._paginate(this._currentView, true);
 		} else if (itemIdx < offset) {
-			pageWasCached = this._paginate(this._currentView, false, null, respCallback);
+			pageWasCached = this._paginate(this._currentView, false);
 		}
 	}
 	if (pageWasCached) {

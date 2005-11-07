@@ -76,11 +76,6 @@ function() {
 		? this._controller._activeSearch.search.getTitle() : null;
 };
 
-ZmMailListView.prototype.getLimit = 
-function() {
-	return this._appCtxt.get(ZmSetting.PAGE_SIZE);
-};
-
 ZmMailListView.prototype.replenish = 
 function(list) {
 	DwtListView.prototype.replenish.call(this, list);
