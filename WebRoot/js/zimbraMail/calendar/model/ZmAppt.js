@@ -612,7 +612,7 @@ function() {
 };
 
 ZmAppt.prototype.save = 
-function(attachmentId, callback) {
+function(attachmentId, callback, errorCallback) {
 	var soapDoc = null;
 	var needsExceptionId = false;
 
@@ -649,7 +649,7 @@ function(attachmentId, callback) {
 	// var alarm = soapDoc.set("alarm", null, inv);
 	// alarm.setAttribute("rel-start", /* some alarm start time */);
 
-	this._sendRequest(soapDoc, callback);
+	this._sendRequest(soapDoc, callback, errorCallback);
 };
 
 ZmAppt.prototype.cancel = 
@@ -1596,10 +1596,10 @@ function(soapDoc, m, cancel) {
 };
 
 ZmAppt.prototype._sendRequest = 
-function(soapDoc, callback) {
+function(soapDoc, callback, errorCallback) {
 	var responseName = soapDoc.getMethod().nodeName.replace("Request", "Response");
 	var respCallback = new AjxCallback(this, this._handleResponseSend, [responseName, callback]);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
 };
 
 

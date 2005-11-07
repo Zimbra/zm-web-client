@@ -1876,7 +1876,8 @@ function(ev) {
 			cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, ev);
 			//cc.dndUpdateApptDate(data.appt._orig, data.startDate, endDate, null, errorCallback);
 		} else {
-			ZmCalColView._restoreLayout(data);
+			var lo = data.layout;
+			data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);
 		}
 	}
 
@@ -2276,14 +2277,6 @@ function(ev) {
 ZmCalColView._handleError =
 function(args) {
 	var data	= args[0];
-	var ex		= args[1];
-	
-	ZmCalColView._restoreLayout(data);
+	data.view.getController()._refreshAction(true);
 	return false;
-}
-
-ZmCalColView._restoreLayout =
-function(data) {
-	var lo = data.layout;
-	data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);
 }

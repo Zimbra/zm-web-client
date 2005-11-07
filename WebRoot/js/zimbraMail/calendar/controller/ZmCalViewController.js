@@ -678,7 +678,7 @@ function(ev) {
 		var viewMode =  this._typeDialog.isInstance() ? ZmAppt.MODE_EDIT_SINGLE_INSTANCE : ZmAppt.MODE_EDIT_SERIES;
 		var state = this._updateApptDateState; 
 		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, 
-											[state.appt, viewMode, state.startDateOffset, state.endDateOffset, state.callback]);
+								[state.appt, viewMode, state.startDateOffset, state.endDateOffset, state.callback, state.errorCallback]);
 		delete this._updateApptDateState;
 		appt.getDetails(viewMode, respCallback, state.errorCallback);
 	} else {
@@ -739,12 +739,12 @@ function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {
 
 	if (!appt.isRecurring()) {
 		var viewMode = ZmAppt.MODE_EDIT;
-		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDateOffset, endDateOffset, callback]);
+		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback]);
 		appt.getDetails(viewMode, respCallback, errorCallback);
 	} else {
 		if (ev.shiftKey || ev.altKey) {
 			var viewMode = ev.altKey ? ZmAppt.MODE_EDIT_SERIES : ZmAppt.MODE_EDIT_SINGLE_INSTANCE;
-			var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDateOffset, endDateOffset, callback]);
+			var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback]);
 			appt.getDetails(viewMode, respCallback, errorCallback);
 		} else {
 			this._updateApptDateState = {appt:appt, startDateOffset: startDateOffset, endDateOffset: endDateOffset, callback: callback, errorCallback: errorCallback };
@@ -761,16 +761,18 @@ function(args) {
 	var startDateOffset = args[2];
 	var endDateOffset = args[3];
 	var callback	= args[4];
-	var result = args[5];
+	var errorCallback = args[5];
+	var result = args[6];
 	
 	try {
 		result.getResponse();
 		appt.setViewMode(viewMode);
 		if (startDateOffset) appt.setStartDate(new Date(appt.getStartTime() + startDateOffset));
 		if (endDateOffset) appt.setEndDate(new Date(appt.getEndTime() + endDateOffset));		
-		appt.save();
+		appt.save(null, callback, errorCallback);
 	} catch (ex) {
 		this.popupErrorDialog(AjxStringUtil.resolve(ZmMsg.mailSendFailure, ex.msg));
+		if (errorCallback) errorCallback.run(ex);
 	}
 	if (callback) callback.run(result);
 }
