@@ -57,6 +57,7 @@ ZmPreferencesPage.prototype = new DwtTabViewPage;
 ZmPreferencesPage.prototype.constructor = ZmPreferencesPage;
 
 ZmPreferencesPage.IMPORT_FIELD_NAME = "importUpload";
+ZmPreferencesPage.IMPORT_TIMEOUT = 300;
 
 ZmPreferencesPage.prototype.hasRendered =
 function () {
@@ -392,46 +393,53 @@ function(ev) {
 ZmPreferencesPage.prototype._importDoneCallback = 
 function(args) {
 
-	var appCtrlr = this._appCtxt.getAppController();
+	var appCtlr = this._appCtxt.getAppController();
 	
 	var status = args[0];
 	if (status == 200) {
 		this._importBtn.setEnabled(false);
 		this._importIframe.style.visibility = "hidden";
-		appCtrlr.setStatusMsg(ZmMsg.importingContacts);
-		// we have to schedule the rest since it freezes the UI (and status never gets set)
-		appCtrlr._schedule(ZmPreferencesPage._finishImport, {aid: args[1], prefPage: this});
+		appCtlr.setStatusMsg(ZmMsg.importingContacts);
+		this._finishImport(args[1]);
 	} else {
-		appCtrlr.setStatusMsg(ZmMsg.errorImporting + " (" + status + ")", ZmStatusView.LEVEL_CRITICAL);
+		appCtlr.setStatusMsg(ZmMsg.errorImporting + " (" + status + ")", ZmStatusView.LEVEL_CRITICAL);
 		// always re-render input file widget and its parent IFRAME
 		this._importDiv.innerHTML = "";
 		this._addImportWidgets(this._importDiv);
 	}
 }
 
-ZmPreferencesPage._finishImport = 
-function(params) {
+ZmPreferencesPage.prototype._finishImport = 
+function(aid) {
 
-	var appCtrlr = this._appCtxt.getAppController();
+	var appCtlr = this._appCtxt.getAppController();
 
 	// send the import request w/ the att Id to the server
 	var soapDoc = AjxSoapDoc.create("ImportContactsRequest", "urn:zimbraMail");
 	var method = soapDoc.getMethod();
 	method.setAttribute("ct", "csv"); // always "csv" for now
 	var content = soapDoc.set("content", "");
-	content.setAttribute("aid", params.aid);
+	content.setAttribute("aid", aid);
 	
-	var resp = appCtrlr.sendRequest(soapDoc).ImportContactsResponse.cn[0];
+	var respCallback = new AjxCallback(this, this._handleResponseFinishImport, [aid]);
+	appCtlr.sendRequest(soapDoc, true, respCallback, null, ZmPreferencesPage.IMPORT_TIMEOUT);
+};
+
+ZmPreferencesPage.prototype._handleResponseFinishImport =
+function(args) {
+	var aid		 	= args[0];
+	var result		= args[1];
+	
+	var resp = result.getResponse().ImportContactsResponse.cn[0];
 	
 	var msg = resp.n + " " + ZmMsg.contactsImported;
-	var msgDlg = this._appCtxt.getMsgDialog();
-	msgDlg.setMessage(msg);
-	msgDlg.popup();
+	var appCtlr = this._appCtxt.getAppController();
+	appCtlr.setStatusMsg(msg);
 		
 	// always re-render input file widget and its parent IFRAME
-	params.prefPage._importDiv.innerHTML = "";
-	params.prefPage._addImportWidgets(params.prefPage._importDiv);
-}
+	this._importDiv.innerHTML = "";
+	this._addImportWidgets(this._importDiv);
+};
 
 // Reset the form values to the pref defaults. Note that the pref defaults aren't the
 // values that the user last had, they're the values that the prefs have before the
