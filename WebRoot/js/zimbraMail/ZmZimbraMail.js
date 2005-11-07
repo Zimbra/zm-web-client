@@ -70,8 +70,9 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 
 	this._useXml = this._appCtxt.get(ZmSetting.USE_XML);
 	this._logRequest = this._appCtxt.get(ZmSetting.LOG_REQUEST);
+	this._stdTimeout = this._appCtxt.get(ZmSetting.TIMEOUT);
 
-	this._schedule(this.startup, {app: app});
+	this.startup({app: app});
 };
 
 ZmZimbraMail.prototype = new ZmController;
@@ -333,7 +334,7 @@ function(settings) {
 	this._appViewMgr.dtor();
 	this._appViewMgr = null;
 	this._searchController = this._overviewController = null;
-	this._schedule(this.startup, {bIsRelogin: false, settings: settings});
+	this.startup({bIsRelogin: false, settings: settings});
 };
 
 /**
@@ -347,16 +348,19 @@ function(settings) {
 * @param asyncMode		[boolean]*		if true, request will be made asynchronously
 * @param callback		[AjxCallback]*	next callback in chain for async request
 * @param errorCallback	[Object]*		callback to run if there is an exception
-* @param timeout		[int]*			timeout value (in milliseconds)
+* @param timeout		[int]*			timeout value (in seconds)
 */
 ZmZimbraMail.prototype.sendRequest = 
 function(soapDoc, asyncMode, callback, errorCallback, timeout) {
 	var reqId = ZmZimbraMail.getNextReqId();
+	timeout = (timeout != null) ? timeout : this._stdTimeout;
+	if (timeout) timeout = timeout * 1000; // convert seconds to ms
 	var asyncCallback = asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [true, callback, errorCallback, reqId]) : null;
 	var command = new ZmCsfeCommand();
-	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken, timeout: timeout,
+	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken,
 				  asyncMode: asyncMode, callback: asyncCallback, logRequest: this._logRequest};
 	
+	DBG.println(AjxDebug.DBG2, "***** sendRequest: " + soapDoc._methodEl.nodeName);
 	if (asyncMode && (errorCallback != ZmZimbraMail.IGNORE_ERRORS)) {
 		var cancelCallback = null;
 		var showBusyDialog = false;
@@ -365,7 +369,7 @@ function(soapDoc, asyncMode, callback, errorCallback, timeout) {
 			cancelCallback = new AjxCallback(this, this.cancelRequest, [reqId, errorCallback]);
 			showBusyDialog = true;
 		}
-		this._shell.setBusy(true, null, showBusyDialog, timeout, cancelCallback); // put up busy overlay to block user input
+		this._shell.setBusy(true, reqId, showBusyDialog, timeout, cancelCallback); // put up busy overlay to block user input
 	}
 
 	this._pendingRequests[reqId] = command;
@@ -399,7 +403,7 @@ function(args) {
 	
 	this._pendingRequests[reqId].state = ZmZimbraMail._RESPONSE;
 	
-	this._shell.setBusy(false); // remove busy overlay
+	this._shell.setBusy(false, reqId); // remove busy overlay
 
 	// we just got activity, cancel current poll timer
 	if (this._pollActionId)

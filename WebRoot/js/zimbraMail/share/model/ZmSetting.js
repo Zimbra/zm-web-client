@@ -105,6 +105,7 @@ ZmSetting.FORCE_CAL_OFF					= i++;
 ZmSetting.HELP_URI						= i++;
 ZmSetting.LOGO_URI						= i++;
 ZmSetting.LOG_REQUEST					= i++;
+ZmSetting.TIMEOUT						= i++;
 ZmSetting.USE_XML						= i++;
 
 // IDs FOR HTML COMPONENTS IN THE SKIN
@@ -219,7 +220,7 @@ ZmSetting.VACATION_MSG_ENABLED			= i++;
 ZmSetting.VIEW_AS_HTML					= i++;
 
 
-ZmSetting.MAX_INDEX 	= i-1;
+ZmSetting.MAX_INDEX 	= i - 1;
 
 // setting types
 ZmSetting.T_CONFIG		= 1;
@@ -250,6 +251,7 @@ ZmSetting.INIT[ZmSetting.FORCE_CAL_OFF]					= [null, ZmSetting.T_CONFIG, ZmSetti
 ZmSetting.INIT[ZmSetting.HELP_URI]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "/zimbra/help/Zimbra_User_Help.htm"];
 ZmSetting.INIT[ZmSetting.LOG_REQUEST]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.LOGO_URI]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "http://www.zimbra.com"];
+ZmSetting.INIT[ZmSetting.TIMEOUT]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_INT, 60];
 ZmSetting.INIT[ZmSetting.USE_XML]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, false];
 
 // IDs FOR HTML COMPONENTS IN THE SKIN
