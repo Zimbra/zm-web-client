@@ -230,6 +230,10 @@ ZmCalViewController.prototype._calTreeSelectionListener =
 function(ev) {
 	if (ev.detail != DwtTree.ITEM_CHECKED) return;
 	var newCheckedCalendars = this._updateCheckedCalendars();
+	
+	// XXX: temporary... make sure we have the permissions for each checked calendar!
+	this._getFolderPermissions(newCheckedCalendars);
+
 	// TODO: diff between new and old...
 	this._checkedCalendars = newCheckedCalendars;
 	this._refreshAction(true);
@@ -453,6 +457,44 @@ function(viewId, forward) {
 	d = AjxDateUtil.roll(d, field, forward ? 1 : -1);
 	this.setDate(d, 0, true);	
 }
+
+ZmCalViewController.prototype._getFolderPermissions = 
+function(checkedCalendars) {
+	var needPermArr = new Array();
+	for (var i = 0; i < checkedCalendars.length; i++) {
+		if (checkedCalendars[i].link && checkedCalendars[i].shares == null)
+			needPermArr.push(checkedCalendars[i].id);
+	}
+
+	if (needPermArr.length > 0) {
+		var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
+		soapDoc.setMethodAttribute("onerror", "continue");
+
+		var doc = soapDoc.getDoc();
+		for (var j = 0; j < needPermArr.length; j++) {
+			var folderRequest = soapDoc.set("GetFolderRequest");
+			folderRequest.setAttribute("xmlns", "urn:zimbraMail");
+			var folderNode = doc.createElement("folder");
+			folderNode.setAttribute("l", needPermArr[j]);
+			folderRequest.appendChild(folderNode);
+		}
+		var respCallback = new AjxCallback(this, this._handleResponseGetShares);
+		
+		this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+	}
+};
+
+ZmCalViewController.prototype._handleResponseGetShares = 
+function(args) {
+	var resp = args.getResponse().BatchResponse.GetFolderResponse;
+	for (var i = 0; i < resp.length; i++) {
+		var link = resp[i].link ? resp[i].link[0] : null;
+		var cal = link ? this.getCalendar(link.id) : null;
+
+		if (cal)
+			cal.setPermissions(link.perm);
+	}
+};
 
 // attempts to process a nav toolbar up/down button click
 ZmCalViewController.prototype._paginateDouble = 

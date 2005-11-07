@@ -176,7 +176,6 @@ ZmAppt.prototype.isAllDayEvent 					= function() { return this.allDayEvent == "1
 ZmAppt.prototype.isCustomRecurrence 			= function() { return this.repeatCustom == "1" || this.repeatEndType != "N"; };
 ZmAppt.prototype.isException 					= function() { return this.exception || false; };
 ZmAppt.prototype.isOrganizer 					= function() { return (typeof(this.isOrg) === 'undefined') || (this.isOrg == true); };
-ZmAppt.prototype.isReadOnly 					= function() { return !this.isOrganizer(); };
 ZmAppt.prototype.isRecurring 					= function() { return (this.recurring || (this._rawRecurrences != null)); };
 ZmAppt.prototype.hasAlarm 						= function() { return this.alarm; };
 ZmAppt.prototype.hasAttachments 				= function() { return this.getAttachments() != null; };
@@ -266,6 +265,26 @@ function(contentType) {
 		return this.getFragment();
 	}
 };
+
+ZmAppt.prototype.getCalendar =
+function(folderId) {
+	var ct = this._appCtxt.getTree(ZmOrganizer.CALENDAR);	
+	return ct ? ct.getById(folderId) : null;
+};
+
+ZmAppt.prototype.isReadOnly = 
+function() { 
+	var isLinkAndReadOnly = false;
+	var cal = this.getCalendar(this.getFolderId());
+	// if we're dealing w/ a shared cal, find out if we have any write access
+	if (cal.link) {
+		var share = cal.getShares()[0];
+		isLinkAndReadOnly = share && share.link && (share.link.perm.indexOf("w") == -1);
+	}
+
+	return !this.isOrganizer() || isLinkAndReadOnly;
+};
+
 
 ZmAppt.prototype.resetRepeatWeeklyDays = 
 function() {

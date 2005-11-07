@@ -208,11 +208,18 @@ function(showUnread, maxLength, noMarkup) {
 	return name;
 };
 
-ZmOrganizer.prototype.setShares = function(shares) {
+ZmOrganizer.prototype.getShares =
+function() {
+	return this.shares;
+};
+
+ZmOrganizer.prototype.setShares = 
+function(shares) {
 	this.shares = shares;
 };
 
-ZmOrganizer.prototype.getShareByGranteeId = function(granteeId) {
+ZmOrganizer.prototype.getShareByGranteeId = 
+function(granteeId) {
 	if (this.shares) {
 		for (var i = 0; i < this.shares.length; i++) {
 			var share = this.shares[i];
@@ -224,7 +231,8 @@ ZmOrganizer.prototype.getShareByGranteeId = function(granteeId) {
 	return null;
 };
 
-ZmOrganizer.prototype.addShare = function(share) {
+ZmOrganizer.prototype.addShare = 
+function(share) {
 	if (!this.shares) {
 		this.shares = [];
 	}
@@ -567,10 +575,21 @@ function(event, organizer, details) {
 	}
 };
 
-//
-// ZmOrganizerShare
-//
 
+/**
+* ZmOrganizerShare
+* @constructor
+* @class
+*
+* @author Andy Clark
+*
+* @param organizer
+* @param granteeType
+* @param granteeId
+* @param granteeName
+* @param perm
+* @param inherit
+*/
 function ZmOrganizerShare(organizer, granteeType, granteeId, granteeName, perm, inherit) {
 	ZmShareInfo.call(this);
 	this.organizer = organizer;
@@ -605,7 +624,8 @@ function(perm) {
 	}
 };
 
-ZmOrganizerShare.prototype.revoke = function() {
+ZmOrganizerShare.prototype.revoke = 
+function() {
 	var success = this._organizerShareAction("!grant", { zid: this.grantee.id } );
 	if (success) {
 		var index = this._indexOf(this.grantee.name);
@@ -619,11 +639,11 @@ ZmOrganizerShare.prototype.revoke = function() {
 
 // Protected methods
 
-ZmOrganizerShare.prototype._indexOf = function(granteeName) {
+ZmOrganizerShare.prototype._indexOf = 
+function(granteeName) {
 	for (var i = 0; i < this.organizer.shares.length; i++) {
-		if (this.organizer.shares[i].grantee.name == granteeName) {
+		if (this.organizer.shares[i].grantee.name == granteeName)
 			return i;
-		}
 	}
 	return -1;
 };

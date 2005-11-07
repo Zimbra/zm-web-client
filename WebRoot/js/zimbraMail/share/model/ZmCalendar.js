@@ -23,6 +23,22 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+* 
+* @constructor
+* @class
+*
+* @author Andy Clark
+*
+* @param id			[int]			numeric ID
+* @param name		[string]		name
+* @param parent		[ZmOrganizer]	parent organizer
+* @param tree		[ZmTree]		tree model that contains this organizer
+* @param color
+* @param link
+* @param url		[string]*		URL for this organizer's feed
+* @param owner
+*/
 function ZmCalendar(id, name, parent, tree, color, link, url, owner) {
 	ZmOrganizer.call(this, ZmOrganizer.CALENDAR, id, name, parent, tree, null, null, url, owner);
 	this.color = color || ZmOrganizer.DEFAULT_COLOR;
@@ -32,14 +48,83 @@ function ZmCalendar(id, name, parent, tree, color, link, url, owner) {
 ZmCalendar.prototype = new ZmOrganizer;
 ZmCalendar.prototype.constructor = ZmCalendar;
 
+
+// Consts
+
+ZmCalendar.ID_CALENDAR = ZmOrganizer.ID_CALENDAR;
+
+
+// Public methods
+
 ZmCalendar.prototype.toString = 
 function() {
 	return "ZmCalendar";
-}
+};
 
-// Constants
+ZmCalendar.prototype.getName = 
+function() {
+	return this.id == ZmOrganizer.ID_ROOT ? ZmMsg.calendars : this.name;
+};
 
-ZmCalendar.ID_CALENDAR = ZmOrganizer.ID_CALENDAR;
+ZmCalendar.prototype.getIcon = 
+function() {
+	return this.id == ZmOrganizer.ID_ROOT 
+		? null
+		: (this.link ? "GroupSchedule" : "CalendarFolder");
+};
+
+ZmCalendar.prototype.setFreeBusy = 
+function(exclude) {
+	if (this.excludeFreeBusy == exclude) return;
+	// NOTE: Don't need to store the value since the response will
+	//       report that the object was modified.
+	this._organizerAction("fb", {excludeFreeBusy: exclude ? "1" : "0"});
+};
+
+// XXX: temp method until we get better server support post Birdseye!
+ZmCalendar.prototype.setPermissions = 
+function(permission) {
+	var share = null;
+	if (this.shares == null) {
+		share = new ZmOrganizerShare(this, null, null, null, permission, null);
+		this.addShare(share);
+	} else {
+		// lets just assume we're dealing w/ a link (which should only have one share)
+		this.shares[0].perm = permission;
+	}
+};
+
+
+// Callbacks
+
+ZmCalendar.prototype.notifyCreate =
+function(obj, link) {
+	var calendar = ZmCalendar.createFromJs(this, obj, this.tree, link);
+	var index = ZmOrganizer.getSortIndex(calendar, ZmCalendar.sortCompare);
+	this.children.add(calendar, index);
+	this._eventNotify(ZmEvent.E_CREATE, calendar);
+};
+
+ZmCalendar.prototype.notifyModify =
+function(obj) {
+	ZmOrganizer.prototype.notifyModify.call(this, obj);
+
+	var doNotify = false;
+	var fields = new Object();
+	if (obj.excludeFreeBusy != null && this.excludeFreeBusy != obj.excludeFreeBusy) {
+		this.excludeFreeBusy = obj.excludeFreeBusy;
+		// TODO: Should a F_EXCLUDE_FB property be added to ZmOrganizer?
+		//       It doesn't make sense to require the base class to know about
+		//       all the possible fields in sub-classes. So I'm just using the
+		//       modified property name as the key.
+		fields["excludeFreeBusy"] = true;
+		doNotify = true;
+	}
+	
+	if (doNotify)
+		this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
+};
+
 
 // Static methods
 
@@ -57,7 +142,7 @@ function(appCtxt, name, parentFolderId, url) {
 
 	var appController = appCtxt.getAppController();
 	return appController.sendRequest(soapDoc, false);
-}
+};
 
 ZmCalendar.createFromJs =
 function(parent, obj, tree, link) {
@@ -89,7 +174,12 @@ function(parent, obj, tree, link) {
 	calendar._setSharesFromJs(obj);
 	
 	return calendar;
-}
+};
+
+ZmCalendar.checkName =
+function(name) {
+	return ZmOrganizer.checkName(name);
+};
 
 ZmCalendar.sortCompare = 
 function(calA, calB) {
@@ -104,62 +194,4 @@ function(calA, calB) {
 	if (calAName < calBName) return -1;
 	if (calAName > calBName) return 1;
 	return 0;
-}
-
-ZmCalendar.checkName =
-function(name) {
-	return ZmOrganizer.checkName(name);
-}
-
-// Public methods
-
-ZmCalendar.prototype.notifyCreate =
-function(obj, link) {
-	var calendar = ZmCalendar.createFromJs(this, obj, this.tree, link);
-	var index = ZmOrganizer.getSortIndex(calendar, ZmCalendar.sortCompare);
-	this.children.add(calendar, index);
-	this._eventNotify(ZmEvent.E_CREATE, calendar);
-}
-
-ZmCalendar.prototype.notifyModify =
-function(obj) {
-	ZmOrganizer.prototype.notifyModify.call(this, obj);
-
-	var doNotify = false;
-	var fields = new Object();
-	if (obj.excludeFreeBusy != null && this.excludeFreeBusy != obj.excludeFreeBusy) {
-		this.excludeFreeBusy = obj.excludeFreeBusy;
-		// TODO: Should a F_EXCLUDE_FB property be added to ZmOrganizer?
-		//       It doesn't make sense to require the base class to know about
-		//       all the possible fields in sub-classes. So I'm just using the
-		//       modified property name as the key.
-		fields["excludeFreeBusy"] = true;
-		doNotify = true;
-	}
-	
-	if (doNotify)
-		this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
-};
-
-ZmCalendar.prototype.getName = 
-function() {
-	if (this.id == ZmOrganizer.ID_ROOT) {
-		return ZmMsg.calendars;
-	} 
-	return this.name;
-}
-
-ZmCalendar.prototype.getIcon = 
-function() {
-	if (this.id == ZmOrganizer.ID_ROOT) {
-		return null;
-	}
-	return this.link ? "GroupSchedule" : "CalendarFolder";
-}
-
-ZmCalendar.prototype.setFreeBusy = function(exclude) {
-	if (this.excludeFreeBusy == exclude) return;
-	// NOTE: Don't need to store the value since the response will
-	//       report that the object was modified.
-	this._organizerAction("fb", {excludeFreeBusy: exclude ? "1" : "0"});
 };
