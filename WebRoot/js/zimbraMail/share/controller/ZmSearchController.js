@@ -173,6 +173,8 @@ function() {
 * @param sortBy			[constant]*			sort constraint
 * @param offset			[int]*				starting point in list of matching items
 * @param limit			[int]*				maximum number of items to return
+* @param prevId			[int]*				ID of last items displayed (for pagination)
+* @param prevSortBy		[constant]*			previous sort order (for pagination)
 * @param noRender		[boolean]*			if true, results will not be passed to controller
 * @param userText		[boolean]*			true if text was typed by user into search box
 * @param callback		[AjxCallback]*		async callback
@@ -212,11 +214,13 @@ function(args) {
 ZmSearchController.prototype.redoSearch =
 function(search, noRender, changes, callback, errorCallback) {
 	var params = {};
-	params.query = search.query;
-	params.types = search.types;
-	params.sortBy = search.sortBy;
-	params.offset = search.offset;
-	params.limit = search.limit;
+	params.query		= search.query;
+	params.types		= search.types;
+	params.sortBy		= search.sortBy;
+	params.offset		= search.offset;
+	params.limit		= search.limit;
+	params.prevId		= search.prevId;
+	params.prevSortBy	= search.prevSortBy;
 	
 	if (changes)
 		for (var key in changes) 
@@ -298,12 +302,12 @@ function(params, noRender, callback, errorCallback) {
 	var isMixed = (this._searchFor == ZmSearchToolBar.FOR_ANY_MI);
 
 	// only set contact source if we are searching for contacts
-	var contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmSearchToolBar.FOR_GAL_MI))
+	params.contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmSearchToolBar.FOR_GAL_MI))
 		? this._contactSource : null;
 	// find suitable sort by value if not given one (and if applicable)
 	params.sortBy = params.sortBy ? params.sortBy : this._getSuitableSortBy(types);
-	
-	var search = new ZmSearch(this._appCtxt, params.query, types, params.sortBy, params.offset, params.limit, contactSource);
+	params.types = types;
+	var search = new ZmSearch(this._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, noRender, isMixed, callback]);
 	if (!errorCallback) errorCallback = new AjxCallback(this, this._handleErrorDoSearch, params);
 	search.execute(respCallback, errorCallback);

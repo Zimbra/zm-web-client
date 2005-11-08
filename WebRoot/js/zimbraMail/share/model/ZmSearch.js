@@ -23,27 +23,48 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmSearch(appCtxt, query, types, sortBy, offset, limit, contactSource) {
+/**
+* Creates a new search with the given properties.
+* @constructor
+* @class
+* This class represents a search to be performed on the server. It has properties for
+* the different search parameters that may be used. It can be used for a regular search,
+* or to search within a conv. The results are returned via a callback.
+*
+* @param appCtxt		[ZmAppCtxt]		the app context
+* @param query			[string]		query string
+* @param types			[AjxVector]		item types to search for
+* @param sortBy			[constant]*		sort order
+* @param offset			[int]*			starting point within result set
+* @param limit			[int]*			number of results to return
+* @param contactSource	[constant]*		where to search for contacts (GAL or personal)
+* @param prevId			[int]*			ID of last items displayed (for pagination)
+* @param prevSortBy		[constant]*		previous sort order (for pagination)
+*/
+function ZmSearch(appCtxt, params) {
 
 	this._appCtxt = appCtxt;
-	this.query = query;
-	this.types = types;
-	this.sortBy = sortBy;
-	this.offset = offset;
-	this.limit = limit;
-	this.contactSource = contactSource;
+
+	this.query			= params.query;
+	this.types			= params.types;
+	this.sortBy			= params.sortBy;
+	this.offset			= params.offset;
+	this.limit			= params.limit;
+	this.contactSource	= params.contactSource;
+	this.prevId			= params.prevId;
+	this.prevSortBy		= params.prevSortBy;
 	
 	this._parseQuery();
-}
+};
 
 // Search types
 ZmSearch.TYPE = new Object();
-ZmSearch.TYPE[ZmItem.CONV] = "conversation";
-ZmSearch.TYPE[ZmItem.MSG] = "message";
-ZmSearch.TYPE[ZmItem.CONTACT] = "contact";
-ZmSearch.TYPE[ZmItem.APPT] = "appointment";
-ZmSearch.TYPE[ZmItem.NOTE] = "note";
-ZmSearch.TYPE_ANY = "any";
+ZmSearch.TYPE[ZmItem.CONV]		= "conversation";
+ZmSearch.TYPE[ZmItem.MSG]		= "message";
+ZmSearch.TYPE[ZmItem.CONTACT]	= "contact";
+ZmSearch.TYPE[ZmItem.APPT]		= "appointment";
+ZmSearch.TYPE[ZmItem.NOTE]		= "note";
+ZmSearch.TYPE_ANY				= "any";
 
 // Sort By
 ZmSearch.DATE_DESC 	= "dateDesc";
@@ -61,7 +82,7 @@ ZmSearch.UNREAD_QUERY_RE = new RegExp('\\bis:\\s*(un)?read\\b', "i");
 ZmSearch.prototype.toString = 
 function() {
 	return "ZmSearch";
-}
+};
 
 /**
 * Creates a SOAP request that represents this search and sends it to the server.
@@ -98,7 +119,7 @@ function(callback, errorCallback) {
 	
 	var respCallback = new AjxCallback(this, this._handleResponseExecute, [isGalSearch, callback]);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
-}
+};
 
 /*
 * Convert the SOAP response into a ZmSearchResult and pass it along.
@@ -116,7 +137,7 @@ function(args) {
 	result.set(searchResult);
 	
 	callback.run(result);
-}
+};
 
 // searching w/in a conv (to get its messages) has its own special command
 // NOTE: exception handling should be responsibility of calling function!
@@ -136,7 +157,7 @@ function(cid, callback) {
 	//method.setAttribute("read", "1");
 	var respCallback = new AjxCallback(this, this._handleResponseForConv, callback);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
-}
+};
 
 ZmSearch.prototype._handleResponseForConv = 
 function(args) {
@@ -149,8 +170,7 @@ function(args) {
 	result.set(searchResult);
 	
 	callback.run(result);
-}
-
+};
 
 /**
 * Returns a title that summarizes this search.
@@ -173,20 +193,25 @@ function() {
 	var title = where ? [ZmMsg.zimbraTitle, where].join(": ") : 
 						[ZmMsg.zimbraTitle, ZmMsg.searchResults].join(": ");
 	return title;
-}
+};
 
 ZmSearch.prototype._getStandardMethod = 
 function(soapDoc) {
 
 	var method = soapDoc.getMethod();
 	
-	// only set sort by if given
 	if (this.sortBy)
 		method.setAttribute("sortBy", this.sortBy);
 
-	// always set offset (init to zero if not provided)
-	this.offset = this.offset ? this.offset : 0;
-	method.setAttribute("offset", this.offset);
+	if (this.prevId && this.prevSortBy) {
+		// cursor is used for paginated searches
+		var cursor = soapDoc.set("cursor");
+		cursor.setAttribute("id", this.prevId);
+		cursor.setAttribute("sortVal", this.prevSortBy);
+	} else {
+		this.offset = this.offset ? this.offset : 0;
+		method.setAttribute("offset", this.offset);
+	}
 
 	// always set limit (init to user pref for page size if not provided)
 	this.limit = this.limit ? this.limit : this._appCtxt.get(ZmSetting.PAGE_SIZE);
@@ -196,7 +221,7 @@ function(soapDoc) {
 	soapDoc.set("query", this.query);
 
 	return method;
-}
+};
 
 /**
 * Parse simple queries so we can do basic matching on new items (determine whether
@@ -231,4 +256,4 @@ function() {
 			this.tagId = tag.id;
 	}
 	this.hasUnreadTerm = ZmSearch.UNREAD_QUERY_RE.test(this.query);
-}
+};

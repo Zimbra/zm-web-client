@@ -784,11 +784,11 @@ function() {
 // Pagination
 
 ZmListController.prototype._cacheList = 
-function(search) {
+function(search, offset) {
 	var type = this._getItemType();
 	if (this._list) {
 		var newList = search.getResults(type).getVector();
-		var offset = parseInt(search.getAttribute("offset"));
+		offset = offset ? offset : parseInt(search.getAttribute("offset"));
 		this._list.cache(offset, newList);
 	} else {
 		this._list = search.getResults(type);
@@ -796,11 +796,13 @@ function(search) {
 }
 
 ZmListController.prototype._search = 
-function(view, offset, limit, callback, isCurrent) {
+function(view, offset, limit, callback, isCurrent, prevId, prevSortBy) {
 	var sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
 	var types = this._activeSearch.search.types; // use types from original search
 	var sc = this._appCtxt.getSearchController();
-	var search = new ZmSearch(this._appCtxt, this._searchString, types, sortBy, offset, limit);
+	var params = {query: this._searchString, types: types, sortBy: sortBy, offset: offset, limit: limit,
+				  prevId: prevId, prevSortBy: prevSortBy};
+	var search = new ZmSearch(this._appCtxt, params);
 	if (isCurrent)
 		this._currentSearch = search;
 	var mods = {"searchFieldAction": ZmSearchController.LEAVE_SEARCH_TXT};
@@ -826,6 +828,14 @@ function(view, offset, limit, callback, isCurrent) {
 */
 ZmListController.prototype._paginate = 
 function(view, forward, loadIndex) {
+	var list = this._listView[this._currentView].getList();
+	var lastItem = list.getLast();
+	var lastId, lastSortBy;
+	if (lastItem && lastItem.id) {
+		lastId = lastItem.id;
+		lastSortBy = this._activeSearch.search.sortBy;
+	}
+
 	var offset = this._listView[view].getNewOffset(forward);
 	var limit = this._listView[view].getLimit();
 	forward ? this.currentPage++ : this.currentPage--;
@@ -843,8 +853,8 @@ function(view, forward, loadIndex) {
 			offset = ((offset + limit) - max) + 1;
 
 		// get next page of items from server; note that callback may be overridden
-		var respCallback = new AjxCallback(this, this._handleResponsePaginate, [view, false, loadIndex]);
-		this._search(view, offset, max, respCallback, true);
+		var respCallback = new AjxCallback(this, this._handleResponsePaginate, [view, false, loadIndex, offset]);
+		this._search(view, offset, max, respCallback, true, lastId, lastSortBy);
 		return false;
 	} else {
 		this._resetOperations(this._toolbar[view], 0);
@@ -868,7 +878,8 @@ function(args) {
 	var view			= args[0];
 	var saveSelection	= args[1];
 	var loadIndex		= args[2];
-	var result			= args[3];
+	var offset			= args[3];
+	var result			= args[4];
 	
 	var searchResult = result.getResponse();
 	
@@ -876,7 +887,7 @@ function(args) {
 	this._list.setHasMore(searchResult.getAttribute("more"));
 	
 	// cache search results into internal list
-	this._cacheList(searchResult);
+	this._cacheList(searchResult, offset);
 	
 	this._resetOperations(this._toolbar[view], 0);
 	this._resetNavToolBarButtons(view);

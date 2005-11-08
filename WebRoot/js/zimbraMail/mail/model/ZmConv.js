@@ -88,7 +88,8 @@ function(searchString, sortBy, offset, limit, pagCallback, callback) {
 	}
 	
 	var types = AjxVector.fromArray([ZmItem.MSG]);
-	var search = new ZmSearch(this.list._appCtxt, searchString, types, sortBy, offset, limit);
+	var params = {query: searchString, types: types, sortBy: sortBy, offset: offset, limit: limit};
+	var search = new ZmSearch(this.list._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [pagCallback, callback]);
 	search.forConv(this.id, respCallback);
 }

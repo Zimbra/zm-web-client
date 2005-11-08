@@ -340,7 +340,8 @@ function(ev) {
 ZmContactPicker.prototype.search = 
 function(sortBy) {
 	var types = AjxVector.fromArray([ZmItem.CONTACT]);
-	var search = new ZmSearch(this._appCtxt, this._query, types, sortBy, 0, ZmContactPicker.SEARCHFOR_MAX, this._contactSource);
+	var params = {query: this._query, types: types, sortBy: sortBy, offset: 0, limit: ZmContactPicker.SEARCHFOR_MAX, contactSource: this._contactSource};
+	var search = new ZmSearch(this._appCtxt, params);
 	search.execute(new AjxCallback(this, this._handleResponseSearch));
 };
 
