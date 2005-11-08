@@ -60,6 +60,8 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._maintTimedAction = new AjxTimedAction(this, ZmCalViewController.prototype._maintenanceAction);
 	this._pendingWork = ZmCalViewController.MAINT_NONE;	
 	this._apptCache = new ZmApptCache(this, appCtxt);
+	
+	this._initializeViewActionMenu();	
 }
 
 ZmCalViewController.prototype = new ZmListController();
@@ -132,7 +134,7 @@ function(viewId) {
 	}
 
 	if (this._viewMgr == null) {
-		this._initializeViewActionMenu();
+		//this._initializeViewActionMenu();
 
 		var newDate = this._miniCalendar ? this._miniCalendar.getDate() : new Date();
 		
@@ -427,6 +429,11 @@ function(ev) {
 		case ZmOperation.MONTH_VIEW: 	this.show(ZmController.CAL_MONTH_VIEW); break;
 		case ZmOperation.SCHEDULE_VIEW: 	this.show(ZmController.CAL_SCHEDULE_VIEW); break;		
 	}
+	if (this._viewActionMenu.__detail) {
+		this.setDate(this._viewActionMenu.__detail);
+		delete this._viewActionMenu.__detail;
+	}
+	
 }
 
 ZmCalViewController.prototype._todayButtonListener =
@@ -436,14 +443,18 @@ function(ev) {
 
 ZmCalViewController.prototype._newApptAction =
 function(ev) {
-	var d = this._viewMgr ? this._viewMgr.getDate() : null;
+	var d = this._viewActionMenu.__detail;
+	if (d != null) delete this._viewActionMenu.__detail;
+	else d = this._viewMgr ? this._viewMgr.getDate() : null;
 	if (d == null) d = new Date();
 	this.newAppointment(this._newApptObject(d));
 }
 
 ZmCalViewController.prototype._newAllDayApptAction =
 function(ev) {
-	var d = this._viewMgr ? this._viewMgr.getDate() : null;
+	var d = this._viewActionMenu.__detail;
+	if (d != null) delete this._viewActionMenu.__detail;
+	else d = this._viewMgr ? this._viewMgr.getDate() : null;
 	if (d == null) d = new Date();
 	this.newAllDayAppointmentHelper(d);
 }
@@ -541,13 +552,12 @@ function(ev) {
 
 ZmCalViewController.prototype._miniCalActionListener =
 function(ev) {
-//zzz
-	alert("Mini-cal date actioned: " + ev.detail.toLocaleString() + "doc: " + ev.docX + ", " + ev.docY);
+	this._viewActionListener(ev, ev.detail);
+	//alert("Mini-cal date actioned: " + ev.detail.toLocaleString() + "doc: " + ev.docX + ", " + ev.docY);
 }
 
 ZmCalViewController.prototype._miniCalSelectionListener =
 function(ev) {
-//zzz
 	if (!this._viewVisible) this.show();
 	this.setDate(ev.detail, 0, ev.item.getForceRollOver());
 }
@@ -685,7 +695,7 @@ function(startDate, endDate, folderId, shiftKey) {
 
 ZmCalViewController.prototype.newAppointment = 
 function(newAppt, mode) {
-	var appt = newAppt || this._newApptObject(new Date());
+	var appt = newAppt || this._newApptObject(this._viewVisible ? this._viewMgr.getDate() : new Date());
 	this._app.getApptComposeController().show(appt, mode);
 };
 
@@ -1108,8 +1118,9 @@ function(ev) {
 };
 
 ZmCalViewController.prototype._viewActionListener = 
-function(ev) {
+function(ev, detail) {
 	this._viewActionMenu.__view = ev.item;
+	this._viewActionMenu.__detail = detail;
 	this._viewActionMenu.popup(0, ev.docX, ev.docY);
 };
 
