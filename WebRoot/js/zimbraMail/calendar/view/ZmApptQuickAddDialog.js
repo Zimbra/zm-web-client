@@ -130,7 +130,31 @@ function() {
 	return appt;
 };
 
+ZmApptQuickAddDialog.prototype.isValid = 
+function() {
+	var subj = AjxStringUtil.trim(this._subjectField.value);
+	var isValid = subj && subj.length > 0;
+
+	if (isValid) {
+		// check proper dates..
+		var sd = this._startDateField.value;
+		var ed = this._endDateField.value;
+		
+		if (!this._appt.isAllDayEvent()) {
+			sd += " " + this._startTimeSelect.getValue();
+			ed += " " + this._endTimeSelect.getValue();
+		}
+		var startDate = new Date(sd);
+		var endDate = new Date(ed);
+		isValid = startDate.valueOf() <= endDate.valueOf();
+	}
+
+	return isValid;
+};
+
+
 // Private / protected methods
+
 ZmApptQuickAddDialog.prototype._setHtml = 
 function() {
 	this._subjectFieldId	= Dwt.getNextId();
@@ -150,7 +174,7 @@ function() {
 	var i = 0;
 
 	html[i++] = "<table border=0 width=325>";
-	html[i++] = "<tr><td class='ZmApptTabViewPageField'><div style='width:75px'>";
+	html[i++] = "<tr><td class='ZmApptTabViewPageField'><div style='width:75px'><sup>*</sup>";
 	html[i++] = ZmMsg.subject;
 	html[i++] = ":</div></td><td colspan=2><input type='text' style='width:100%; height:22px' id='";
 	html[i++] = this._subjectFieldId;

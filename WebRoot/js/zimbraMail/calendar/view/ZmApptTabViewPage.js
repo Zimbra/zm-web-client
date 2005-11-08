@@ -1020,7 +1020,6 @@ function(repeatType) {
 // Returns a string representing the form content
 ZmApptTabViewPage.prototype._formValue =
 function() {
-	var doc = this.getDocument();
 	var vals = new Array();
 
 	vals.push(this._subjectField.value);

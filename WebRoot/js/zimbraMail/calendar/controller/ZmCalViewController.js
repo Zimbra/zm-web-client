@@ -639,7 +639,7 @@ function(appt, shiftKey) {
 	if ((useQuickAdd && !shiftKey) || (!useQuickAdd && shiftKey)) {
 		if (this._quickAddDialog == null) {
 			this._quickAddDialog = new ZmApptQuickAddDialog(this._shell, this._appCtxt);
-			this._quickAddDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._quickAddOkListener));
+			this._quickAddDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._quickAddOkListener));
 			this._quickAddDialog.addSelectionListener(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, new AjxListener(this, this._quickAddMoreListener));
 			this._quickAddDialog._disableFFhack();
 		}
@@ -739,9 +739,17 @@ function(ev) {
 
 ZmCalViewController.prototype._quickAddOkListener = 
 function(ev) {
-	var appt = this._quickAddDialog.getAppt();
-	if (appt) {
-		appt.save();
+	if (this._quickAddDialog.isValid()) {
+		this._quickAddDialog.popdown();
+		var appt = this._quickAddDialog.getAppt();
+		if (appt)
+			appt.save();
+	} else {
+		// XXX: temp error msg (until we get proper error handling mechanism, ala tooltips)
+		var errorDialog = new DwtMessageDialog(this._shell);
+		var msg = "Cannot save appointment. You have errors that must be corrected. Please correct them and try again or contact your System Administrator.";
+		errorDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+		errorDialog.popup();
 	}
 };
 
