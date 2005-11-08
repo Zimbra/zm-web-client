@@ -429,11 +429,6 @@ function(ev) {
 		case ZmOperation.MONTH_VIEW: 	this.show(ZmController.CAL_MONTH_VIEW); break;
 		case ZmOperation.SCHEDULE_VIEW: 	this.show(ZmController.CAL_SCHEDULE_VIEW); break;		
 	}
-	if (this._viewActionMenu.__detail) {
-		this.setDate(this._viewActionMenu.__detail);
-		delete this._viewActionMenu.__detail;
-	}
-	
 }
 
 ZmCalViewController.prototype._todayButtonListener =
@@ -443,8 +438,8 @@ function(ev) {
 
 ZmCalViewController.prototype._newApptAction =
 function(ev) {
-	var d = this._viewActionMenu.__detail;
-	if (d != null) delete this._viewActionMenu.__detail;
+	var d = this._minicalMenu.__detail;
+	if (d != null) delete this._minicalMenu.__detail;
 	else d = this._viewMgr ? this._viewMgr.getDate() : null;
 	if (d == null) d = new Date();
 	this.newAppointment(this._newApptObject(d));
@@ -452,8 +447,8 @@ function(ev) {
 
 ZmCalViewController.prototype._newAllDayApptAction =
 function(ev) {
-	var d = this._viewActionMenu.__detail;
-	if (d != null) delete this._viewActionMenu.__detail;
+	var d = this._minicalMenu.__detail;
+	if (d != null) delete this._minicalMenu.__detail;
 	else d = this._viewMgr ? this._viewMgr.getDate() : null;
 	if (d == null) d = new Date();
 	this.newAllDayAppointmentHelper(d);
@@ -552,9 +547,24 @@ function(ev) {
 
 ZmCalViewController.prototype._miniCalActionListener =
 function(ev) {
-	this._viewActionListener(ev, ev.detail);
+//	this._viewActionListener(ev, ev.detail);
 	//alert("Mini-cal date actioned: " + ev.detail.toLocaleString() + "doc: " + ev.docX + ", " + ev.docY);
+	var mm = this._getMiniCalActionMenu();
+	mm.__detail = ev.detail;
+	mm.popup(0, ev.docX, ev.docY);
 }
+
+// Create action menu if needed
+ZmCalViewController.prototype._getMiniCalActionMenu =
+function() {
+	if (this._minicalMenu == null) {
+		var list = [ZmOperation.NEW_APPT, ZmOperation.NEW_ALLDAY_APPT];
+		this._minicalMenu = new ZmActionMenu(this._appCtxt.getShell(), list);
+		this._minicalMenu.addSelectionListener(ZmOperation.NEW_APPT, this._listeners[ZmOperation.NEW_APPT]);
+		this._minicalMenu.addSelectionListener(ZmOperation.NEW_ALLDAY_APPT, this._listeners[ZmOperation.NEW_ALLDAY_APPT]);	
+	}
+	return this._minicalMenu;
+};
 
 ZmCalViewController.prototype._miniCalSelectionListener =
 function(ev) {
@@ -1118,9 +1128,8 @@ function(ev) {
 };
 
 ZmCalViewController.prototype._viewActionListener = 
-function(ev, detail) {
+function(ev) {
 	this._viewActionMenu.__view = ev.item;
-	this._viewActionMenu.__detail = detail;
 	this._viewActionMenu.popup(0, ev.docX, ev.docY);
 };
 
