@@ -77,8 +77,6 @@ Contributor(s):
 
 <% } %>
 
-<script type="text/javascript" src="/zimbra/js/zimbraMail/ZmNewWindow.js<%= ext %>?v=<%= vers %>"></script>
-
 <script language="JavaScript">  
 	function launch() {
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);

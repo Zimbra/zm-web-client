@@ -227,4 +227,6 @@ Contributor(s):
 
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/ZmClientCmdHandler.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/ZmZimbraMail.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/ZmNewWindow.js<%= ext %>?v=<%= vers %>"></script>
+
 <!-- END SCRIPT BLOCK -->
