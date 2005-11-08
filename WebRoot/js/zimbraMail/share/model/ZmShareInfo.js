@@ -198,16 +198,15 @@ ZmShareInfo.composeMessage = function(appCtxt, action, shareInfo) {
 /** @param perm A single permission attribute (e.g. "r") */
 ZmShareInfo.prototype.isPermAllowed = function(perm) {
 	if (this.link.perm) {
-		var regex = new RegExp("[^\\-]"+perm);
-		return this.link.perm.match(regex);
+		var positivePerms = this.link.perm.replace(/-./g,"");
+		return positivePerms.indexOf(perm) != -1;
 	}
 	return false;
 }
 /** @param perm A single permission attribute (e.g. "r") */
 ZmShareInfo.prototype.isPermRestricted = function(perm) {
 	if (this.link.perm) {
-		var regex = new RegExp("-"+perm);
-		return this.link.perm.match(regex);
+		return this.link.perm.indexOf("-"+perm) != -1;
 	}
 	return false;
 }

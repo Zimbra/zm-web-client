@@ -215,6 +215,17 @@ function() {
 	return this._checkedCalendarFolderIds;
 }
 
+ZmCalViewController.prototype.getCheckedCalendar = function(id) {
+	var calendars = this.getCheckedCalendars();
+	for (var i = 0; i < calendars.length; i++) {
+		var calendar = calendars[i];
+		if (calendar.id == id) {
+			return calendar;
+		}
+	}
+	return null;
+};
+
 ZmCalViewController.prototype._updateCheckedCalendars =
 function() {
 	var cc = this._calTreeController.getCheckedCalendars(ZmZimbraMail._OVERVIEW_ID);
@@ -1040,16 +1051,27 @@ function() {
 
 ZmCalViewController.prototype._enableActionMenuReplyOptions = 
 function (appt) {
+	var isOrganizer = appt.isOrganizer();
+	var calendar = this.getCheckedCalendar(appt.folderId);
+	var share = calendar.link ? calendar.shares[0] : null;
+
 	var accept = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_ACCEPT);
 	var decline = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_DECLINE);
 	var tent = this._actionMenu.getItemById(ZmOperation.KEY_ID,ZmOperation.REPLY_TENTATIVE);
 	var editReply = this._actionMenu.getItemById(ZmOperation.KEY_ID,ZmOperation.INVITE_REPLY_MENU);
 
-	var enabled = !appt.isOrganizer();
+	var workflow = share ? share.isWorkflow() : true;
+	var enabled = !isOrganizer && workflow;
 	accept.setEnabled(enabled);
 	decline.setEnabled(enabled);
 	tent.setEnabled(enabled);
 	editReply.setEnabled(enabled);
+	
+	var del = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.DELETE);
+
+	var write = share ? share.isWrite() : true;
+	var enabled = isOrganizer || write;
+	del.setEnabled(enabled);
 };
 
 ZmCalViewController.prototype._enableActionMenuOpenOptions = 
