@@ -19,10 +19,8 @@ function ZmApptTabViewPage(parent, appCtxt) {
 	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 	this._composeMode = this._defaultComposeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
-	// disable timzones completely until we figure out how to represent in UI
-	this._supportTimeZones = false/*this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);*/
-	this._repeatSelectDisabled = false;
 
+	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
 };
 
@@ -86,11 +84,14 @@ function(attId) {
 	if (this._allDayCheckbox.checked) {
 		appt.setAllDayEvent(true);
 	} else {
+		appt.setAllDayEvent(false);
 		startDate = startDate + " " + this._startTimeSelect.getValue();
 		endDate = endDate + " " + this._endTimeSelect.getValue();
 	}
 	appt.setStartDate(startDate);
 	appt.setEndDate(endDate);
+	if (Dwt.getVisibility(this._tzoneSelect.getHtmlElement()))
+		appt.setTimezone(this._tzoneSelect.getValue());
 
 	// set the notes parts (always add text part)
 	var top = new ZmMimePart();
@@ -389,6 +390,7 @@ function(appt, mode) {
 	}
 	// if all day appt, set time anyway in case user changes mind
 	ZmApptViewHelper.resetTimeSelect(appt, this._startTimeSelect, this._endTimeSelect, isAllDayAppt);
+	this._resetTimezoneSelect(appt, isAllDayAppt);
 	this._resetCalendarSelect(appt, mode);
 
 	// re-enable all input fields
@@ -563,6 +565,7 @@ function() {
 	var showAsCell = Dwt.getDomObj(doc, this._showAsSelectId);
 	if (showAsCell)
 		showAsCell.appendChild(this._showAsSelect.getHtmlElement());
+	this._showAsSelect.setSize("85"); 											// XXX: hardcode width for now
 	delete this._showAsSelectId;
 
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
@@ -594,19 +597,17 @@ function() {
 		endTimeCell.appendChild(this._endTimeSelect.getHtmlElement());
 	delete this._endTimeSelectId;
 
-	if (this._supportTimeZones) {
-		this._endTZoneSelect = new DwtSelect(this);
-		// XXX: this seems like overkill to list all 75 timezones!
-		var timezones = ZmTimezones.getAbbreviatedZoneChoices();
-		for (var i = 0; i < timezones.length; i++)
-			this._endTZoneSelect.addOption(timezones[i].label, false, timezones[i].value);
-		// init timezone to the local machine's time zone
-		this._endTZoneSelect.setSelectedValue(ZmTimezones.guessMachineTimezone());
-		var endTZoneCell = Dwt.getDomObj(doc, this._endTZoneSelectId);
-		if (endTZoneCell)
-			endTZoneCell.appendChild(this._endTZoneSelect.getHtmlElement());
-		delete this._endTZoneSelectId;
-	}
+	this._tzoneSelect = new DwtSelect(this);
+	var timezones = ZmTimezones.getAbbreviatedZoneChoices(); 					// XXX: this seems like overkill, list all 75 timezones!?
+	for (var i = 0; i < timezones.length; i++)
+		this._tzoneSelect.addOption(timezones[i].label, false, timezones[i].value);
+	// init timezone to the local machine's time zone
+	this._tzoneSelect.setSelectedValue(ZmTimezones.guessMachineTimezone());
+	var endTZoneCell = Dwt.getDomObj(doc, this._tzoneSelectId);
+	if (endTZoneCell)
+		endTZoneCell.appendChild(this._tzoneSelect.getHtmlElement());
+	this._tzoneSelect.setSize("100"); 											// XXX: hardcode width for now
+	delete this._tzoneSelectId;
 	
 	this._repeatSelect = new DwtSelect(this);
 	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
@@ -671,12 +672,12 @@ function() {
 	html[i++] = "<table border=0 width=100%>";
 	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'><sup>*</sup>";
 	html[i++] = ZmMsg.subject;
-	html[i++] = ":</td><td colspan=4><input style='width:100%; height:22px' type='text' id='";
+	html[i++] = ":</td><td colspan=5><input style='width:100%; height:22px' type='text' id='";
 	html[i++] = this._subjectFieldId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.location;
-	html[i++] = ":</td><td colspan=4><input style='width:100%; height:22px' type='text' id='";
+	html[i++] = ":</td><td colspan=5><input style='width:100%; height:22px' type='text' id='";
 	html[i++] = this._locationFieldId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr>";
@@ -684,7 +685,7 @@ function() {
 	html[i++] = ZmMsg.showAs;
 	html[i++] = "</td><td width=1% id='";
 	html[i++] = this._showAsSelectId;
-	html[i++] = "'></td>";
+	html[i++] = "'></td><td width=100%></td>";
 	html[i++] = "<td width=1% class='ZmApptTabViewPageField' id='";
 	html[i++] = this._calLabelId;
 	html[i++] = "'>";
@@ -708,7 +709,7 @@ function() {
 	this._endDateFieldId 		= Dwt.getNextId();
 	this._endMiniCalBtnId 		= Dwt.getNextId();
 	this._endTimeSelectId 		= Dwt.getNextId();
-	this._endTZoneSelectId 		= Dwt.getNextId();
+	this._tzoneSelectId 		= Dwt.getNextId();
 	this._repeatSelectId 		= Dwt.getNextId();
 	this._repeatDescId 			= Dwt.getNextId();
 
@@ -730,11 +731,11 @@ function() {
 	html[i++] = "</tr></table></td>";
 	html[i++] = "<td>@</td><td id='";
 	html[i++] = this._startTimeSelectId;
-	html[i++] = "'></td><td><input type='checkbox' id='";
-	html[i++] = this._allDayCheckboxId;
-	html[i++] = "'></td><td><nobr>";
-	html[i++] = ZmMsg.allDayEvent;
-	html[i++] = "</td><td width=100%></td></tr><tr><td class='ZmApptTabViewPageField'>";
+	html[i++] = "'></td>";
+	html[i++] = "<td colspan=3 id='";
+	html[i++] = this._tzoneSelectId;
+	html[i++] = "'></td>";
+	html[i++] = "</tr><tr><td class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.end;
 	html[i++] = ":</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
@@ -749,12 +750,11 @@ function() {
 	html[i++] = "<td>@</td><td id='";
 	html[i++] = this._endTimeSelectId;
 	html[i++] = "'></td>";
-	if (this._supportTimeZones) {
-		html[i++] = "<td colspan=2 id='";
-		html[i++] = this._endTZoneSelectId;
-		html[i++] = "'></td>";
-	}
-	html[i++] = "<td colspan=10></td></tr>";
+	html[i++] = "<td><input type='checkbox' id='";
+	html[i++] = this._allDayCheckboxId;
+	html[i++] = "'></td><td><nobr>";
+	html[i++] = ZmMsg.allDayEvent;
+	html[i++] = "</td><td width=100%></td></tr>";
 	html[i++] = "<tr><td valign=top class='ZmApptTabViewPageField' style='line-height:22px'>";
 	html[i++] = ZmMsg.repeat;
 	html[i++] = ":</td><td valign=top colspan=2 id='";
@@ -851,8 +851,15 @@ function() {
 	this._startDateField 	= Dwt.getDomObj(doc, this._startDateFieldId); 		delete this._startDateFieldId;
 	this._endDateField 		= Dwt.getDomObj(doc, this._endDateFieldId);	 		delete this._endDateFieldId;
 	this._attendeesField 	= Dwt.getDomObj(doc, this._attendeesFieldId); 		delete this._attendeesFieldId;
-	this._allDayCheckbox 	= Dwt.getDomObj(doc, this._allDayCheckboxId); 		// done delete!
+	this._allDayCheckbox 	= Dwt.getDomObj(doc, this._allDayCheckboxId); 		// dont delete!
 	this._repeatDescField 	= Dwt.getDomObj(doc, this._repeatDescId); 			// dont delete!
+};
+
+ZmApptTabViewPage.prototype._resetTimezoneSelect = 
+function(appt, isAllDayAppt) {
+	var showTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) && !isAllDayAppt;
+	Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), showTimezone);
+	this._tzoneSelect.setSelectedValue(appt.getTimezone());
 };
 
 ZmApptTabViewPage.prototype._resetCalendarSelect = 
@@ -876,8 +883,8 @@ function(appt, mode) {
 		}
 	}
 	// always reset the width of this select widget
+	this._calendarSelect.setSize("110");
 	this._calendarSelect.setSelectedValue(appt.getFolderId());
-	this._calendarSelect.setSize("140"); // XXX: hardcode?
 };
 
 ZmApptTabViewPage.prototype._initAttachIframe = 
@@ -996,8 +1003,8 @@ ZmApptTabViewPage.prototype._showTimeFields =
 function(show) {
 	Dwt.setVisibility(this._startTimeSelect.getHtmlElement(), show);
 	Dwt.setVisibility(this._endTimeSelect.getHtmlElement(), show);
-	if (this._supportTimeZones)
-		Dwt.setVisibility(this._endTZoneSelect.getHtmlElement(), show);
+	if (this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE))
+		Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), show);
 	// also show/hide the "@" text
 	Dwt.setVisibility(this._startTimeSelect.getHtmlElement().parentNode.previousSibling, show);
 	Dwt.setVisibility(this._endTimeSelect.getHtmlElement().parentNode.previousSibling, show);
@@ -1030,6 +1037,8 @@ function() {
 	vals.push(this._startTimeSelect.getValue());
 	vals.push(this._endTimeSelect.getValue());
 	vals.push(""+this._allDayCheckbox.checked);
+	if (Dwt.getVisibility(this._tzoneSelect.getHtmlElement()))
+		vals.push(this._tzoneSelect.getValue());
 	vals.push(this._repeatSelect.getValue());
 	vals.push(this._attendeesField.value);
 	vals.push(this._notesHtmlEditor.getContent());

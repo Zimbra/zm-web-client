@@ -161,6 +161,7 @@ ZmAppt.prototype.getStartTime 					= function() { return this.startDate.getTime(
 ZmAppt.prototype.getStatus 						= function() { return this.status; };
 ZmAppt.prototype.getStatusString 				= function() { return ZmAppt._statusString[this.status]; };
 ZmAppt.prototype.getViewMode 					= function() { return this._viewMode; };
+ZmAppt.prototype.getTimezone 					= function() { return this.timezone; };
 ZmAppt.prototype.getTransparency 				= function() { return this.transparency; }; 		// transparency (free|busy|oof|tent)
 ZmAppt.prototype.getType 						= function() { return this.type; };					// type of appt (event|todo)
 ZmAppt.prototype.getUid 						= function() { return this.uid; }; 					// iCal uid of appt
@@ -200,6 +201,7 @@ function(startDate) {
 	this._resetCached();
 };
 ZmAppt.prototype.setType 						= function(newType) 	{ this.type = newType; };
+ZmAppt.prototype.setTimezone 					= function(timezone) 	{ this.timezone = timezone; };
 
 
 // Public methods
