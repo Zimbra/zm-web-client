@@ -296,7 +296,8 @@ function(pathOnly) {
 	var path = this.name;
 	var f = this.parent;
 	while (f && f.id > ZmFolder.ID_ROOT && f.name.length) {
-		path = f.name + "/" + path;
+		var name = f.isSystem() ? ZmFolder.QUERY_NAME[f.id] : f.name;
+		path = name + "/" + path;
 		f = f.parent;
 	}
 	path = '"' + path + '"';
