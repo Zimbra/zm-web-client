@@ -96,9 +96,19 @@ function(event) {
 		}
 		catch (ex) {
 			msg = ZmMsg.unknownError;
-			if (ex instanceof ZmCsfeException && ex.code == "mail.ALREADY_EXISTS") {
-				msg = ZmMsg.folderNameExists;
-				ex = null;
+			switch (ex.code) {
+				case "mail.ALREADY_EXISTS": {
+					msg = ZmMsg.folderNameExists;
+					ex = null;
+					break;
+				}
+				case "service.PARSE_ERROR": {
+					msg = ZmMsg.errorCalendarParse;
+					break;
+				}
+				default: {
+					msg = ZmCsfeException.getErrorMsg(ex.code) || msg;
+				}
 			}
 		}
 	}
@@ -111,8 +121,7 @@ function(event) {
 			calendar.setColor(color);
 		}
 		catch (ex) {
-			// TODO: handle specific errors
-			msg = ZmMsg.unknownError;
+			msg = ZmMsg.errorCalendarSettingAfterCreate;
 		}
 	}
 	
@@ -124,8 +133,7 @@ function(event) {
 			calendar.setFreeBusy(exclude);
 		}
 		catch (ex) {
-			// TODO: handle specific errors
-			msg = ZmMsg.unknownError;
+			msg = ZmMsg.errorCalendarSettingAfterCreate;
 		}
 	}
 	
