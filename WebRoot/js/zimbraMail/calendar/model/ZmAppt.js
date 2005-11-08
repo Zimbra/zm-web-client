@@ -685,6 +685,8 @@ function(mode) {
 //   much like a simple appointment.
 ZmAppt.prototype.getTextSummary = 
 function() {
+	var orig = this._orig ? this._orig : this;
+
 	var isEdit = this._viewMode == ZmAppt.MODE_EDIT || 
 				 this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE ||
 				 this._viewMode == ZmAppt.MODE_EDIT_SERIES;
@@ -695,7 +697,7 @@ function() {
 	buf[i++] = ZmMsg.subject;
 	buf[i++] = ": ";
 	buf[i++] = this.name;
-	if (isEdit && this._orig && this._orig.getName() != this.getName()) {
+	if (isEdit && orig.getName() != this.getName()) {
 		buf[i++] = " ";
 		buf[i++] = ZmMsg.apptModifiedStamp;
 	}
@@ -710,7 +712,7 @@ function() {
 		buf[i++] = ZmMsg.location;
 		buf[i++] = ": ";
 		buf[i++] = this.location;
-		if (isEdit && this._orig && this._orig.getLocation() != this.getLocation()) {
+		if (isEdit && orig.getLocation() != this.getLocation()) {
 			buf[i++] = " ";
 			buf[i++] = ZmMsg.apptModifiedStamp;
 		}
@@ -730,7 +732,7 @@ function() {
 	if (recurrence)
 	{
 		var hasTime = isEdit 
-			? ((this._orig.startDate.getTime() != s.getTime()) || (this._orig.endDate.getTime() != e.getTime()))
+			? ((orig.startDate.getTime() != s.getTime()) || (orig.endDate.getTime() != e.getTime()))
 			: false;
 		buf[i++] = this._getTextSummaryTime(isEdit, ZmMsg.time, null, s, e, hasTime);
 	}
@@ -739,16 +741,16 @@ function() {
 			 s.getDate() == e.getDate()) 
 	{
 		var hasTime = isEdit 
-			? ((this._orig.startDate.getTime() != this.startDate.getTime()) || (this._orig.endDate.getTime() != this.endDate.getTime()))
+			? ((orig.startDate.getTime() != this.startDate.getTime()) || (orig.endDate.getTime() != this.endDate.getTime()))
 			: false;
 		buf[i++] = this._getTextSummaryTime(isEdit, ZmMsg.time, s, s, e, hasTime);
 	}
 	else 
 	{
-		var hasTime = isEdit ? (this._orig.startDate.getTime() != this.startDate.getTime()) : false;
+		var hasTime = isEdit ? (orig.startDate.getTime() != this.startDate.getTime()) : false;
 		buf[i++] = this._getTextSummaryTime(isEdit, ZmMsg.start, s, s, null, hasTime);
 
-		hasTime = isEdit ? (this._orig.endDate.getTime() != this.endDate.getTime()) : false;
+		hasTime = isEdit ? (orig.endDate.getTime() != this.endDate.getTime()) : false;
 		buf[i++] = this._getTextSummaryTime(isEdit, ZmMsg.end, e, null, e, hasTime);
 	}
 
@@ -757,20 +759,20 @@ function() {
 		buf[i++] = ": ";
 		buf[i++] = this._getRecurrenceBlurbForSave();
 		if (isEdit) {
-			var modified = this._orig.repeatType != this.repeatType ||
-						   this._orig.repeatCustom != this.repeatCustom ||
-						   this._orig.repeatCustomType != this.repeatCustomType ||
-						   this._orig.repeatCustomCount != this.repeatCustomCount ||
-						   this._orig.repeatCustomOrdinal != this.repeatCustomOrdinal ||
-						   this._orig.repeatCustomDayOfWeek != this.repeatCustomDayOfWeek ||
-						   this._orig.repeatCustomMonthday != this.repeatCustomMonthday ||
-						   this._orig.repeatEnd != this.repeatEnd ||
-						   this._orig.repeatEndType != this.repeatEndType ||
-						   this._orig.repeatEndCount != this.repeatEndCount ||
-						   this._orig.repeatEndDate != this.repeatEndDate ||
-						   this._orig.repeatWeeklyDays != this.repeatWeeklyDays ||
-						   this._orig.repeatMonthlyDayList != this.repeatMonthlyDayList ||
-						   this._orig.repeatYearlyMonthsList != this.repeatYearlyMonthsList;
+			var modified = orig.repeatType != this.repeatType ||
+						   orig.repeatCustom != this.repeatCustom ||
+						   orig.repeatCustomType != this.repeatCustomType ||
+						   orig.repeatCustomCount != this.repeatCustomCount ||
+						   orig.repeatCustomOrdinal != this.repeatCustomOrdinal ||
+						   orig.repeatCustomDayOfWeek != this.repeatCustomDayOfWeek ||
+						   orig.repeatCustomMonthday != this.repeatCustomMonthday ||
+						   orig.repeatEnd != this.repeatEnd ||
+						   orig.repeatEndType != this.repeatEndType ||
+						   orig.repeatEndCount != this.repeatEndCount ||
+						   orig.repeatEndDate != this.repeatEndDate ||
+						   orig.repeatWeeklyDays != this.repeatWeeklyDays ||
+						   orig.repeatMonthlyDayList != this.repeatMonthlyDayList ||
+						   orig.repeatYearlyMonthsList != this.repeatYearlyMonthsList;
 			if (modified) {
 				buf[i++] = " ";
 				buf[i++] = ZmMsg.apptModifiedStamp;
