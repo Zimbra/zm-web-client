@@ -796,12 +796,12 @@ function(search, offset) {
 }
 
 ZmListController.prototype._search = 
-function(view, offset, limit, callback, isCurrent, prevId, prevSortBy) {
+function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 	var sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
 	var types = this._activeSearch.search.types; // use types from original search
 	var sc = this._appCtxt.getSearchController();
 	var params = {query: this._searchString, types: types, sortBy: sortBy, offset: offset, limit: limit,
-				  prevId: prevId, prevSortBy: prevSortBy};
+				  lastId: lastId, lastSortVal: lastSortVal};
 	var search = new ZmSearch(this._appCtxt, params);
 	if (isCurrent)
 		this._currentSearch = search;
@@ -828,14 +828,15 @@ function(view, offset, limit, callback, isCurrent, prevId, prevSortBy) {
 */
 ZmListController.prototype._paginate = 
 function(view, forward, loadIndex) {
+/*
 	var list = this._listView[this._currentView].getList();
 	var lastItem = list.getLast();
-	var lastId, lastSortBy;
+	var lastId, lastSortVal;
 	if (lastItem && lastItem.id) {
 		lastId = lastItem.id;
-		lastSortBy = this._activeSearch.search.sortBy;
+//		lastSortVal = lastItem.getSortVal(this._activeSearch.search.sortBy);
 	}
-
+*/
 	var offset = this._listView[view].getNewOffset(forward);
 	var limit = this._listView[view].getLimit();
 	forward ? this.currentPage++ : this.currentPage--;
@@ -854,7 +855,8 @@ function(view, forward, loadIndex) {
 
 		// get next page of items from server; note that callback may be overridden
 		var respCallback = new AjxCallback(this, this._handleResponsePaginate, [view, false, loadIndex, offset]);
-		this._search(view, offset, max, respCallback, true, lastId, lastSortBy);
+//		this._search(view, offset, max, respCallback, true, lastId, lastSortVal);
+		this._search(view, offset, max, respCallback, true);
 		return false;
 	} else {
 		this._resetOperations(this._toolbar[view], 0);
