@@ -107,6 +107,9 @@ ZmSetting.LOGO_URI						= i++;
 ZmSetting.LOG_REQUEST					= i++;
 ZmSetting.TIMEOUT						= i++;
 ZmSetting.USE_XML						= i++;
+ZmSetting.CLIENT_VERSION				= i++;
+ZmSetting.CLIENT_RELEASE 				= i++;
+ZmSetting.CLIENT_DATETIME 				= i++;
 
 // IDs FOR HTML COMPONENTS IN THE SKIN
 ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID	= i++;
@@ -253,6 +256,9 @@ ZmSetting.INIT[ZmSetting.LOG_REQUEST]					= [null, ZmSetting.T_CONFIG, ZmSetting
 ZmSetting.INIT[ZmSetting.LOGO_URI]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "http://www.zimbra.com"];
 ZmSetting.INIT[ZmSetting.TIMEOUT]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_INT, 60];
 ZmSetting.INIT[ZmSetting.USE_XML]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.CLIENT_VERSION]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildVersion@"];  // this gets replaced during deploy
+ZmSetting.INIT[ZmSetting.CLIENT_RELEASE]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildRelease@"];  // this gets replaced during deploy
+ZmSetting.INIT[ZmSetting.CLIENT_DATETIME] 				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildDateTime@"]; // this gets replaced during deploy
 
 // IDs FOR HTML COMPONENTS IN THE SKIN
 ZmSetting.INIT[ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID]	= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_app_bottom_toolbar"];

@@ -499,6 +499,43 @@
     <delete dir="${build.dir}/WebRoot/tmp/adminhelp/html"/>
   </target>	
 
+  <target name="set-buildinfo-vars">
+	<tstamp />
+    <condition property="zimbra.buildinfo.version" value="2.0">
+      <not>
+        <isset property="${zimbra.buildinfo.version}" />
+      </not>
+    </condition>
+    <condition property="zimbra.buildinfo.release" value="${user.name}">
+      <not>
+        <isset property="${zimbra.buildinfo.release}" />
+      </not>
+    </condition>
+    <condition property="zimbra.buildinfo.date" value="${DSTAMP}-${TSTAMP}">
+      <not>
+        <isset property="${zimbra.buildinfo.date}" />
+      </not>
+    </condition>
+    <condition property="zimbra.buildinfo.host" value="${zimbra.server.hostname}">
+      <not>
+        <isset property="${zimbra.buildinfo.host}" />
+      </not>
+    </condition>
+  </target>
+
+  <target name="inject-build-info" depends="set-buildinfo-vars">
+    <propertyfile file="${build.dir}/build.properties" >
+      <entry  key="build.number" type="int" default="1" operation="+" pattern="00000"/>
+      <entry  key="build.date" type="date" value="now" pattern="yyyy-MM-dd HH:mm:ss" />
+      <entry  key="build.simpleDate" type="date" value="now" pattern="yyMMddHHmmss"/>
+      <entry  key="date.format" value="yyyyMMddHHmmss" />
+    </propertyfile>	
+  	<!-- inject build info into settings -->
+	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSetting.js" token="@buildVersion@" value="${zimbra.buildinfo.version}" />
+	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSetting.js" token="@buildRelease@" value="${zimbra.buildinfo.release}" />
+	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSetting.js" token="@buildDateTime@" value="${DSTAMP}-${TSTAMP}" />
+  </target>
+
   <!-- 
   This target is meant only to be run after a full deploy has
   been done once. It does not deal with the java code used by the
@@ -533,7 +570,7 @@
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
   </target>
 
-  <target name="war" depends="copy-files-to-build-area, jam-files, generate-build-info, images, i18n">
+  <target name="war" depends="copy-files-to-build-area, jam-files, generate-build-info, inject-build-info, images, i18n">
     <property file="${build.dir}/build.properties" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
@@ -559,7 +596,7 @@
     </propertyfile>	
   </target>
 
-  <target name="prod-war" depends="compress-js-files, generate-build-info, images, i18n">
+	<target name="prod-war" depends="compress-js-files, generate-build-info, inject-build-info, images, i18n">
     <property file="${build.dir}/build.properties" />
     <copy file="WebRoot/WEB-INF/web.xml.production" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="true"/>
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
