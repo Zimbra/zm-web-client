@@ -101,7 +101,7 @@ function(args) {
 
 	var results = result.getResponse();
 	if (pagCallback) {
-		pagCallback.run(results);	// user is paging...
+		pagCallback.run(result);	// user is paging...
 	} else {
 		this.msgs = results.getResults(ZmItem.MSG);
 		this.msgs.convId = this.id;
