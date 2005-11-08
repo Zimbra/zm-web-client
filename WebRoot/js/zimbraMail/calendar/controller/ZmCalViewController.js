@@ -817,13 +817,13 @@ function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {
 
 ZmCalViewController.prototype._handleResponseUpdateApptDate =
 function(args) {
-	var appt	= args[0];
-	var viewMode	= args[1];
-	var startDateOffset = args[2];
-	var endDateOffset = args[3];
-	var callback	= args[4];
-	var errorCallback = args[5];
-	var result = args[6];
+	var appt			= args[0];
+	var viewMode		= args[1];
+	var startDateOffset	= args[2];
+	var endDateOffset	= args[3];
+	var callback		= args[4];
+	var errorCallback	= args[5];
+	var result			= args[6];
 	
 	try {
 		result.getResponse();
@@ -832,7 +832,11 @@ function(args) {
 		if (endDateOffset) appt.setEndDate(new Date(appt.getEndTime() + endDateOffset));		
 		appt.save(null, callback, errorCallback);
 	} catch (ex) {
-		this.popupErrorDialog(AjxStringUtil.resolve(ZmMsg.mailSendFailure, ex.msg));
+		if (ex.msg) {
+			this.popupErrorDialog(AjxStringUtil.resolve(ZmMsg.mailSendFailure, ex.msg));
+		} else {
+			this.popupErrorDialog(ZmMsg.errorGeneric, ex);
+		}
 		if (errorCallback) errorCallback.run(ex);
 	}
 	if (callback) callback.run(result);
