@@ -385,6 +385,7 @@ function(date) {
 	this._miniCalendar.setDate(date);
 	this._miniCalendar.setScrollStyle(Dwt.CLIP);
 	this._miniCalendar.addSelectionListener(new AjxListener(this, this._miniCalSelectionListener));
+	this._miniCalendar.addActionListener(new AjxListener(this, this._miniCalActionListener));
 	this._miniCalendar.addDateRangeListener(new AjxListener(this, this._miniCalDateRangeListener));
 	this._miniCalendar.setMouseOverDayCallback(new AjxCallback(this, this._miniCalMouseOverDayCallback));
 
@@ -536,6 +537,12 @@ function(date, duration, roll) {
 ZmCalViewController.prototype._dateSelectionListener =
 function(ev) {
 	this.setDate(ev.detail, 0, ev.force);
+}
+
+ZmCalViewController.prototype._miniCalActionListener =
+function(ev) {
+//zzz
+	alert("Mini-cal date actioned: " + ev.detail.toLocaleString());
 }
 
 ZmCalViewController.prototype._miniCalSelectionListener =
