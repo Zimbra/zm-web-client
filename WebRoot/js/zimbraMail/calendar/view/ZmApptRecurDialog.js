@@ -270,7 +270,7 @@ function() {
 	html[i++] = "&nbsp;<input type='text' value='1' maxlength=3 size=3 id='";
 	html[i++] = this._endIntervalFieldId;
 	html[i++] = "'>&nbsp;";
-	html[i++] = ZmMsg.meetings;
+	html[i++] = ZmMsg.occurrences;
 	html[i++] = "</td></tr><tr><td><input type='radio' value='D' name='";
 	html[i++] = this._repeatEndName;
 	html[i++] = "' id='";
