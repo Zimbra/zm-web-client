@@ -33,6 +33,7 @@
   <property name="ajax.jars.dir" value="${ajax.dir}/jars"/>
   <property name="ajax.dwtimg.dir" value="${ajax.dir}/img"/>
   <property name='ajax.imagemerge.dir' location='${ajax.src.dir}/com/zimbra/ajax/imagemerge'/>
+  <property name='ajax.i18n.dir' location='${ajax.src.dir}/com/zimbra/ajax/i18n'/>
   
   <condition property="deploy.dir" value="${env.DEPLOY_DIR}">
     <isset property="env.DEPLOY_DIR" />
@@ -156,6 +157,10 @@
 		<i18n destdir='${build.dir}/i18n/msgs' />
 	</target>
 	<target name='i18n-init'>
+		<dependset>
+	      <srcfileset dir='${ajax.i18n.dir}' includes='**/*.java'/>
+	      <targetfilelist dir='${build.dir}/i18n' files='msgs/I18nMsg.properties'/>
+		</dependset>
 		<available property='i18n-done' file='${build.dir}/i18n/msgs/I18nMsg.properties' />
 	</target>
 	
@@ -552,11 +557,13 @@
       <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js" excludes="**/img/"/>
     </copy>
     <copy verbose='true' todir='${deploy.dir}${deploy.path}/WEB-INF/classes'>
+      <fileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
       <fileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
       <fileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
       <fileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
     </copy>
     <dependset>
+      <srcfileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
       <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
       <srcfileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
 	  <srcfileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
@@ -655,11 +662,13 @@
       <fileset dir="WebRoot/js/zimbraMail/config/style" includes="*.css" excludes="zm.css"/>
     </copy>
     <copy verbose='true' todir='${deploy.dir}${deploy.admin.path}/WEB-INF/classes'>
+      <fileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
       <fileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
       <fileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
       <fileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
     </copy>
     <dependset>
+      <srcfileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
       <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
       <srcfileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
       <srcfileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
