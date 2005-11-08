@@ -542,7 +542,7 @@ function(ev) {
 ZmCalViewController.prototype._miniCalActionListener =
 function(ev) {
 //zzz
-	alert("Mini-cal date actioned: " + ev.detail.toLocaleString());
+	alert("Mini-cal date actioned: " + ev.detail.toLocaleString() + "doc: " + ev.docX + ", " + ev.docY);
 }
 
 ZmCalViewController.prototype._miniCalSelectionListener =
