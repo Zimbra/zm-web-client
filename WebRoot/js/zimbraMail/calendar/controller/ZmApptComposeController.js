@@ -127,7 +127,7 @@ function(mode) {
 		this._createToolBar();
 
 	var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
-	if (mode == null || mode == ZmAppt.MODE_NEW) {
+	if (mode == null || mode == ZmAppt.MODE_NEW || mode == ZmAppt.MODE_NEW_FROM_QUICKADD) {
 		cancelButton.setText(ZmMsg.cancel);
 		cancelButton.setImage("Cancel");
 	} else {

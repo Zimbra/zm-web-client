@@ -123,7 +123,6 @@ function(attId) {
 ZmApptTabViewPage.prototype.initialize =
 function(appt, mode) {
 	this._appt = appt;
-	this._mode = mode || ZmAppt.MODE_NEW;
 
 	if (!this._rendered) {
 		this._createHTML();
@@ -131,7 +130,10 @@ function(appt, mode) {
 		this.setComposeMode();
 	}
 
-	this._reset(appt, this._mode);
+	this._reset(appt, (mode || ZmAppt.MODE_NEW));
+
+	this._mode = mode == ZmAppt.MODE_NEW_FROM_QUICKADD || mode == null
+		? ZmAppt.MODE_NEW : mode;
 
 	// save the original form data in its initialized state
 	this._origFormValue = this._formValue();
@@ -387,7 +389,7 @@ function(appt, mode) {
 	}
 	// if all day appt, set time anyway in case user changes mind
 	ZmApptViewHelper.resetTimeSelect(appt, this._startTimeSelect, this._endTimeSelect, isAllDayAppt);
-	this._resetCalendarSelect(appt);
+	this._resetCalendarSelect(appt, mode);
 
 	// re-enable all input fields
 	this.enableInputs(true);
@@ -854,7 +856,7 @@ function() {
 };
 
 ZmApptTabViewPage.prototype._resetCalendarSelect = 
-function(appt) {
+function(appt, mode) {
 	// get all folders w/ view set to "Appointment" we received from initial refresh block
 	var calTreeData = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
 	if (calTreeData && calTreeData.root) {
@@ -862,7 +864,7 @@ function(appt) {
 		this._calendarOrgs = new Array();
 		var children = calTreeData.root.children.getArray();
 		var len = children.length;
-		var visible = (this._mode != ZmAppt.MODE_NEW && !appt.isReadOnly()) || (this._mode == ZmAppt.MODE_NEW && len>1);
+		var visible = (mode != ZmAppt.MODE_NEW && !appt.isReadOnly()) || (mode == ZmAppt.MODE_NEW && len>1);
 		Dwt.setVisibility(this._calendarSelect.getHtmlElement(), visible);
 		Dwt.setVisibility(this._calLabelField, visible);
 		if (visible) {

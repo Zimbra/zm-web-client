@@ -666,9 +666,9 @@ function(startDate, endDate, folderId, shiftKey) {
 };
 
 ZmCalViewController.prototype.newAppointment = 
-function(newAppt) {
+function(newAppt, mode) {
 	var appt = newAppt || this._newApptObject(new Date());
-	this._app.getApptComposeController().show(appt);
+	this._app.getApptComposeController().show(appt, mode);
 };
 
 ZmCalViewController.prototype.editAppointment = 
@@ -750,7 +750,7 @@ function(ev) {
 	var appt = this._quickAddDialog.getAppt();
 	if (appt) {
 		this._quickAddDialog.popdown();
-		this.newAppointment(appt);
+		this.newAppointment(appt, ZmAppt.MODE_NEW_FROM_QUICKADD);
 	}
 };
 
