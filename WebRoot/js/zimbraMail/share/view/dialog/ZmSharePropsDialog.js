@@ -112,6 +112,8 @@ ZmSharePropsDialog.prototype.popup = function(loc) {
 	else if (this._managerRadioEl.value == perm) this._managerRadioEl.checked = true;
 
 	this._reply.setReply(true);
+	// Force a reply if new share
+	this._reply.setReplyRequired(this._dialogType == ZmSharePropsDialog.NEW);
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 

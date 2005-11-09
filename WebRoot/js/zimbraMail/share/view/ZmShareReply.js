@@ -45,9 +45,11 @@ ZmShareReply.COMPOSE = "compose";
 
 // Data
 
+ZmShareReply.prototype._replyEl;
 ZmShareReply.prototype._replyCheckboxEl;
 ZmShareReply.prototype._replyControlsEl;
 ZmShareReply.prototype._replyType;
+ZmShareReply.prototype._replyTypeEl;
 ZmShareReply.prototype._replyStandardMailNoteEl;
 ZmShareReply.prototype._replyNoteEl;
 
@@ -59,6 +61,13 @@ ZmShareReply.prototype.setReply = function(reply) {
 };
 ZmShareReply.prototype.getReply = function() {
 	return this._replyCheckboxEl.checked;
+};
+
+ZmShareReply.prototype.setReplyRequired = function(required) {
+	Dwt.setVisible(this._replyEl, required ? false : true);
+};
+ZmShareReply.prototype.getReplyRequired = function() {
+	return Dwt.getVisible(this._replyEl);
 };
 
 ZmShareReply.prototype.setReplyType = function(type) {
@@ -99,7 +108,7 @@ ZmShareReply.prototype._initControl = function() {
 	this._replyCheckboxEl.checked = true;
 	
 	this._replyEl = document.createElement("DIV");
-	this._replyEl.style.paddingBottom = "0.125em";
+	this._replyEl.style.paddingBottom = "0.25em";
 	this._replyEl.innerHTML = ZmMsg.sendMailAboutShare;
 	this._replyEl.insertBefore(this._replyCheckboxEl, this._replyEl.firstChild);
 	
