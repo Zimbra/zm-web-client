@@ -194,7 +194,8 @@ function(convs, msgs) {
 		for (var id in convs) {
 			var conv = convs[id];
 			if (conv.folders && conv.folders[searchFolder]) {
-				this.add(conv, 0); // add to beginning for now
+				var index = this._getSortIndex(conv, this.search.sortBy);
+				this.add(conv, index); // add to beginning for now
 				conv.list = this;
 				createdItems.push(conv);
 			}
@@ -210,7 +211,8 @@ function(convs, msgs) {
 					conv.msgs = new ZmMailList(ZmItem.MSG, this._appCtxt);
 					conv.msgs.addChangeListener(conv._listChangeListener);
 				}
-				conv.msgs.add(msg, 0);
+				var index = conv.msgs._getSortIndex(msg, conv._sortBy);
+				conv.msgs.add(msg, index);
 				msg.list = conv.msgs;
 				if (!msg.isSent) {
 					conv.isUnread = true;
@@ -288,6 +290,30 @@ function() {
 		this._appCtxt.getTree(ZmOrganizer.TAG).removeChangeListener(this._tagChangeListener);
 
 	ZmList.prototype.clear.call(this);
+};
+
+/*
+* Returns the insertion point for the given item into this list. If we're not sorting by
+* date, returns 0 (the item will be inserted at the top of the list).
+*
+* @param item		[ZmMailItem]	a mail item
+* @param sortBy		[constant]		sort order
+*/
+ZmMailList.prototype._getSortIndex =
+function(item, sortBy) {
+	if (!sortBy || (sortBy != ZmSearch.DATE_DESC && sortBy != ZmSearch.DATE_DESC))
+		return 0;
+	
+	var itemDate = parseInt(item.date);
+	var a = this.getArray();
+	for (var i = 0; i < a.length; i++) {
+		var date = parseInt(a[i].date);
+		if (this.search.sortBy == ZmSearch.DATE_DESC && (itemDate > date))
+			return i;
+		if (this.search.sortBy == ZmSearch.DATE_ASC && (itemDate < date))
+			return i;
+	}
+	return i;
 };
 
 ZmMailList.prototype._getTcon =
