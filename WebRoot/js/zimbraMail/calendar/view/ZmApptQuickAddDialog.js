@@ -337,7 +337,8 @@ function(appt) {
 			for (var i = 0; i < len; i++) {
 				var cal = children[i];
 				this._calendarOrgs[cal.id] = cal.owner;
-				this._calendarSelect.addOption(cal.name, false, cal.id);
+				if (!cal.link || (cal.link && cal.shares[0].isWrite()))
+					this._calendarSelect.addOption(cal.name, false, cal.id);
 			}
 		}
 		this._calendarSelect.setSelectedValue(appt.getFolderId());

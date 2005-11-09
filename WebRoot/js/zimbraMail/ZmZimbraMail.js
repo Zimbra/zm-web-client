@@ -840,8 +840,12 @@ function(refresh) {
 
 	var inbox = folderTree.getById(ZmFolder.ID_INBOX);
 	if (inbox) this._statusView.setIconVisible(ZmStatusView.ICON_INBOX,  inbox.numUnread > 0);
+
+	// XXX: temp, until we get better server support - see bug #4434
+	var calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
+	calController.refreshHandler();
 	// need to tell calendar to refresh/relayout
-	if (this._calController) this._calController.refreshHandler();	
+	//if (this._calController) this._calController.refreshHandler();	
 };
 
 ZmZimbraMail.prototype._checkUnread =

@@ -685,7 +685,8 @@ function() {
 	html[i++] = ZmMsg.showAs;
 	html[i++] = "</td><td width=1% id='";
 	html[i++] = this._showAsSelectId;
-	html[i++] = "'></td><td width=100%></td>";
+	html[i++] = "'></td>";
+	html[i++] = "<td width=100%></td>";
 	html[i++] = "<td width=1% class='ZmApptTabViewPageField' id='";
 	html[i++] = this._calLabelId;
 	html[i++] = "'>";
@@ -878,7 +879,8 @@ function(appt, mode) {
 			for (var i = 0; i < len; i++) {
 				var cal = children[i];
 				this._calendarOrgs[cal.id] = cal.owner;
-				this._calendarSelect.addOption(cal.name, false, cal.id);
+				if (!cal.link || (cal.link && cal.shares[0].isWrite()))
+					this._calendarSelect.addOption(cal.name, false, cal.id);
 			}
 		}
 	}

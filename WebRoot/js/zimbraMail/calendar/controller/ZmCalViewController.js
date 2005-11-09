@@ -125,7 +125,7 @@ function(viewId) {
 	if (this._calTreeController == null) {
 		this._calTreeController = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
 		if (this._calTreeController != null) {
-			this._calTreeController.addSelectionListener(ZmZimbraMail._OVERVIEW_ID,  new AjxListener(this, this._calTreeSelectionListener));
+			this._calTreeController.addSelectionListener(ZmZimbraMail._OVERVIEW_ID, new AjxListener(this, this._calTreeSelectionListener));
 			var calTree = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
 			if (calTree)
 				calTree.addChangeListener(new AjxListener(this, this._calTreeChangeListener));			
@@ -147,7 +147,6 @@ function(viewId) {
 		this._viewMgr.addTimeSelectionListener(new AjxListener(this, this._timeSelectionListener));
 		this._viewMgr.addDateRangeListener(new AjxListener(this, this._dateRangeListener));
 		this._viewMgr.addViewActionListener(new AjxListener(this, this._viewActionListener));
-
 	}
 
 	if (!this._viewMgr.getView(viewId))
@@ -217,13 +216,24 @@ function() {
 	return this._checkedCalendarFolderIds;
 }
 
-ZmCalViewController.prototype.getCheckedCalendar = function(id) {
+ZmCalViewController.prototype.getCheckedCalendar = 
+function(id) {
 	var calendars = this.getCheckedCalendars();
 	for (var i = 0; i < calendars.length; i++) {
 		var calendar = calendars[i];
 		if (calendar.id == id) {
 			return calendar;
 		}
+	}
+	return null;
+};
+
+// returns list of all calendars in overview (whether they're checked or not)
+ZmCalViewController.prototype.getAllCalendars = 
+function() {
+	var calTreeData = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
+	if (calTreeData && calTreeData.root) {
+		return calTreeData.root.children.getArray();
 	}
 	return null;
 };
@@ -244,9 +254,6 @@ function(ev) {
 	if (ev.detail != DwtTree.ITEM_CHECKED) return;
 	var newCheckedCalendars = this._updateCheckedCalendars();
 	
-	// XXX: temporary... make sure we have the permissions for each checked calendar!
-	this._getFolderPermissions(newCheckedCalendars);
-
 	// TODO: diff between new and old...
 	this._checkedCalendars = newCheckedCalendars;
 	this._refreshAction(true);
@@ -477,11 +484,11 @@ function(viewId, forward) {
 }
 
 ZmCalViewController.prototype._getFolderPermissions = 
-function(checkedCalendars) {
+function(calendars) {
 	var needPermArr = new Array();
-	for (var i = 0; i < checkedCalendars.length; i++) {
-		if (checkedCalendars[i].link && checkedCalendars[i].shares == null)
-			needPermArr.push(checkedCalendars[i].id);
+	for (var i = 0; i < calendars.length; i++) {
+		if (calendars[i].link && calendars[i].shares == null)
+			needPermArr.push(calendars[i].id);
 	}
 
 	if (needPermArr.length > 0) {
@@ -1209,6 +1216,10 @@ function(dontClearCache) {
 			this._needFullRefresh = true;
 		}
 	}
+
+	// XXX: temp, until we get better server support 
+	//      (automatically comes down w/ refresh block)
+	this._getFolderPermissions(this.getAllCalendars());
 }
 
 ZmCalViewController.prototype._maintErrorHandler =
