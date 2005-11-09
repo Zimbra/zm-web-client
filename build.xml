@@ -506,7 +506,7 @@
 
   <target name="set-buildinfo-vars">
 	<tstamp />
-    <condition property="zimbra.buildinfo.version" value="2.0">
+    <condition property="zimbra.buildinfo.version" value="0.0">
       <not>
         <isset property="${zimbra.buildinfo.version}" />
       </not>
@@ -527,15 +527,17 @@
       </not>
     </condition>
   </target>
-
-  <target name="inject-build-info" depends="set-buildinfo-vars">
+	
+  <target name="generate-build-info">
     <propertyfile file="${build.dir}/build.properties" >
       <entry  key="build.number" type="int" default="1" operation="+" pattern="00000"/>
       <entry  key="build.date" type="date" value="now" pattern="yyyy-MM-dd HH:mm:ss" />
       <entry  key="build.simpleDate" type="date" value="now" pattern="yyMMddHHmmss"/>
       <entry  key="date.format" value="yyyyMMddHHmmss" />
     </propertyfile>	
-  	<!-- inject build info into settings -->
+  </target>
+
+  <target name="inject-build-info" depends="set-buildinfo-vars,generate-build-info">
 	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSetting.js" token="@buildVersion@" value="${zimbra.buildinfo.version}" />
 	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSetting.js" token="@buildRelease@" value="${zimbra.buildinfo.release}" />
 	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSetting.js" token="@buildDateTime@" value="${DSTAMP}-${TSTAMP}" />
@@ -577,7 +579,7 @@
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
   </target>
 
-  <target name="war" depends="copy-files-to-build-area, jam-files, generate-build-info, inject-build-info, images, i18n">
+  <target name="war" depends="copy-files-to-build-area, jam-files, inject-build-info, images, i18n">
     <property file="${build.dir}/build.properties" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
@@ -594,22 +596,12 @@
     </war>
   </target>
 
-  <target name="generate-build-info">
-    <propertyfile file="${build.dir}/build.properties" >
-      <entry  key="build.number" type="int" default="1" operation="+" pattern="00000"/>
-      <entry  key="build.date" type="date" value="now" pattern="yyyy-MM-dd HH:mm:ss" />
-      <entry  key="build.simpleDate" type="date" value="now" pattern="yyMMddHHmmss"/>
-      <entry  key="date.format" value="yyyyMMddHHmmss" />
-    </propertyfile>	
-  </target>
-
-	<target name="prod-war" depends="compress-js-files, generate-build-info, inject-build-info, images, i18n">
+	<target name="prod-war" depends="copy-files-to-build-area, inject-build-info, compress-js-files, images, i18n">
     <property file="${build.dir}/build.properties" />
     <copy file="WebRoot/WEB-INF/web.xml.production" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="true"/>
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
-    <war warfile="${warfile}"
-      webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
+    <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar"/>
   	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
@@ -618,8 +610,7 @@
       <classes dir="${build.dir}/classes" includes="**/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="help/**"/>
-
-      <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,test/**/*,skins/**" excludes='**/config/msgs/**'/>
+      <fileset dir="${build.dir}/WebRoot" includes="img/**,js/**,skins/**" excludes='**/config/msgs/**'/>
       <fileset dir="${build.dir}/WebRoot" includes="js/ZmLogin.js,zimlets/**,public/**,**/*${gzipExtension}, **/*_all.*" excludes="public/admin.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**"/>
     </war>
   </target>
