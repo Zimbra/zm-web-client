@@ -1,9 +1,9 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * Version: ZAPL 1.1
+ * Version: ZPL 1.1
  * 
- * The contents of this file are subject to the Zimbra AJAX Public
- * License Version 1.1 ("License"); you may not use this file except in
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.1 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
  * 
@@ -22,7 +22,6 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-
 /**
 * Creates a generic quick add dialog (which basically mean it has different 
 * than regular dialogs). See "SemiModalDialog" in DwtBorder for cosmetics.
