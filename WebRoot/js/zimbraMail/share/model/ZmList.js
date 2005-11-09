@@ -358,8 +358,11 @@ function(items, folder, attrs) {
 	attrs = attrs ? attrs : new Object();
 	attrs.l = folder.id;
 	
-	this._itemAction(items1, "move", attrs);
-}
+	var respCallback = null;
+	if (this.type == ZmList.MIXED)
+		respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder]);
+	this._itemAction(items1, "move", attrs, respCallback);
+};
 
 
 /**
@@ -516,7 +519,23 @@ function(args) {
 		result.set(actionedItems);
 		callback.run(result);
 	}
-}
+};
+
+ZmList.prototype._handleResponseMoveItems =
+function(args) {
+debugger;
+	var folder		= args[0];
+	var result		= args[1];
+
+	var movedItems = result.getResponse();	
+	if (movedItems && movedItems.length) {
+		this.moveLocal(movedItems, folder.id);
+		for (var i = 0; i < movedItems.length; i++)
+			movedItems[i].moveLocal(folder.id);
+		this._eventNotify(ZmEvent.E_MOVE, movedItems);
+	}
+};
+
 
 // Hack to support actions on a list of items of more than one type. Since some specialized
 // lists (ZmMailList or ZmContactList, for example) override action methods (such as
