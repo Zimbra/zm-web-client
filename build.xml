@@ -195,7 +195,7 @@
 
   <target name="prepend-ZPL">
     <concat destfile="${var}${jsminExtension}${licenseExtension}">
-      <header filtering="no" file="zpl.txt"/>
+      <header filtering="no" file="${build.dir}/preamble-zpl.txt"/>
       <path>
 	<fileset file="${var}${jsminExtension}"/>
       </path>
@@ -203,31 +203,31 @@
     <echo>Prepend ZPL: ${var}</echo>
   </target>
 
-  <target name="prepend-ZAPL">
+  <target name="prepend-MPL">
     <concat destfile="${var}${jsminExtension}${licenseExtension}">
-      <header filtering="no" file="zapl.txt"/>
+      <header filtering="no" file="${build.dir}/preamble-mpl.txt"/>
       <path>
 	<fileset file="${var}${jsminExtension}"/>
       </path>
     </concat>
-    <echo>Prepend ZAPL: ${var}</echo>
+    <echo>Prepend MPL: ${var}</echo>
   </target>
 
 
   <target name="compress-js-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, jam-files">
     <fileset id="js-includes" dir="${build.dir}/WebRoot" includes="js/*.js"/>
-    <concat destfile="zapl.txt">
+    <concat destfile="${build.dir}/preamble-mpl.txt">
       <header>/*</header>
       <footer>*/</footer>
       <path>
-	<fileset file="../ZimbraLicenses/zimbra/zapl.txt"/>
+	<fileset file="../ZimbraLicenses/zimbra/preamble-MPL-Ajax.txt"/>
       </path>
     </concat>
-    <concat destfile="zpl.txt">
+    <concat destfile="${build.dir}/preamble-zpl.txt">
       <header>/*</header>
       <footer>*/</footer>
       <path>
-	<fileset file="../ZimbraLicenses/zimbra/zpl.txt"/>
+	<fileset file="../ZimbraLicenses/zimbra/preamble-ZPL-WebClient.txt"/>
       </path>
     </concat>
     <copy todir="${build.dir}/WebRoot">
@@ -251,7 +251,7 @@
 	</fileset>
       </path>
     </foreach>
-    <foreach target="prepend-ZAPL" param="var">
+    <foreach target="prepend-MPL" param="var">
       <path>
 	<fileset dir="${build.dir}/WebRoot/js/ajax/config/msgs" includes="*.js"/>
 	<fileset dir="${build.dir}/WebRoot/js">
@@ -269,11 +269,8 @@
 	<fileset refid="js-includes"/>
       </path>
     </foreach>	
-    <delete file="zpl.txt" />
-    <delete file="zapl.txt" />
   </target>
   
-
   <target name='images'>
     <antcall target='build-images'>
       <param name="csspathprefix" value="/zimbra/img/"/>
