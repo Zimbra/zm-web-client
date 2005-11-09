@@ -278,7 +278,7 @@ function(appt) {
 		html[idx++] = "</td></tr>";
 	}
 	
-	var notes = appt.getNotes();
+	var notes = appt.getNotesPart();
 	if (notes) {
 		style= "font-family:Arial; font-size:11px; vertical-align:top; margin-top:3px";
 		html[idx++] = "<tr><td colspan=2 style='" + style + "'>" + AjxStringUtil.nl2br(notes) + "</td></tr>";
