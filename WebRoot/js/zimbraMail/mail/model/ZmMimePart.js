@@ -107,7 +107,8 @@ function(partNode, attachments, bodyParts) {
 		
 		if (this.node.cd == "attachment" || 
 			this.node.ct == ZmMimeTable.MSG_RFC822 ||
-			this.node.filename != null)
+			this.node.filename != null || 
+			this.node.ci != null || this.node.cl != null)
 		{
 			attachments.push(this.node);
 		}
