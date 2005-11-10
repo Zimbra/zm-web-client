@@ -148,29 +148,31 @@ function(appt) {
 	var sd = appt.getStartDate();
 	var ed = appt.getEndDate();
 
+	var dateFormatter = AjxDateFormat.getDateInstance();
+	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
 	if (this._isOneDayAppt(sd, ed)) {
-		str[i++] = AjxDateUtil.simpleComputeDateStr(sd);
+		str[i++] = dateFormatter.format(sd);
 		if (!appt.isAllDayEvent()) {
 			str[i++] = " ";
 			str[i++] = ZmMsg.from.toLowerCase();
 			str[i++] = " ";
-			str[i++] = AjxDateUtil.computeTimeString(sd);
+			str[i++] = timeFormatter.format(sd);
 			str[i++] = " - ";
-			str[i++] = AjxDateUtil.computeTimeString(ed);
+			str[i++] = timeFormatter.format(ed);
 		}
 	} else {
 		str[i++] = ZmMsg.from;
 		str[i++] = " ";
-		str[i++] = AjxDateUtil.simpleComputeDateStr(sd);
+		str[i++] = dateFormatter.format(sd);
 		if (!appt.isAllDayEvent()) {
 			str[i++] = ", ";
-			str[i++] = AjxDateUtil.computeTimeString(sd);
+			str[i++] = timeFormatter.format(sd);
 		}
 		str[i++] = " - ";
-		str[i++] = AjxDateUtil.simpleComputeDateStr(ed);
+		str[i++] = dateFormatter.format(ed);
 		if (!appt.isAllDayEvent()) {
 			str[i++] = ", ";
-			str[i++] = AjxDateUtil.computeTimeString(ed);
+			str[i++] = timeFormatter.format(ed);
 		}
 	}
 

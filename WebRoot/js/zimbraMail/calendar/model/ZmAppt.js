@@ -862,7 +862,7 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 	if (this.isAllDayEvent()) {
 		buf[i++] = ZmMsg.allDay;
 	} else {
-		var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+		var formatter = AjxDateFormat.getTimeInstance();
 		if (start)
 			buf[i++] = formatter.format(start);
 		if (start && end)
@@ -1391,9 +1391,10 @@ function() {
 		}
 	}
 
+	var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
 	if (this.repeatEndDate != null && this.repeatEndType == "D") {
 		blurb[idx++] = " until ";
-		blurb[idx++] = AjxDateUtil.simpleComputeDateStr(this.repeatEndDate);
+		blurb[idx++] = dateFormatter.format(this.repeatEndDate);
 		if (this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE)) {
 			blurb[idx++] = " ";
 			blurb[idx++] = ZmTimezones.valueToDisplay[this.timezone];
@@ -1406,7 +1407,7 @@ function() {
 		blurb[idx++] = this._frequencyToDisplayString(this.repeatType, this.repeatEndCount);
 	}
 	blurb[idx++] = " effective ";
-	blurb[idx++] = AjxDateUtil.simpleComputeDateStr(this.startDate);
+	blurb[idx++] = dateFormatter.format(this.startDate);
 	return blurb.join("");
 };
 
