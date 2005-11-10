@@ -41,14 +41,14 @@ ZmZimlet.ID_ZIMLET = ZmOrganizer.ID_ZIMLET;
 // Static methods
 ZmZimlet.createFromJs =
 function(parent, obj, tree, link) {
-	if (!obj) {return;}
-	DBG.println(AjxDebug.DBG1, "Zimlets: Loading...");
+	if (!obj || obj.length) {return;}
+	DBG.println(AjxDebug.DBG1, "ZmZimlet.createFromJs() Loading...");
 
 	// create zimlet root
 	var zimletRoot = new ZmZimlet(ZmZimlet.ID_ZIMLET, ZmMsg.zimlets, parent, tree, null, null);
 	if (obj && obj.length) {
 		for (var i = 0; i < obj.length; i++) {
-			var desc = obj[i].zimbraZimletDescription;
+			var desc = obj[i].description;
 			DBG.println(AjxDebug.DBG1, "Zimlet Desc: " + desc);
 			var childZimlet = new ZmZimlet(i, desc, zimletRoot, tree, null, null);
 			zimletRoot.children.add(childZimlet);

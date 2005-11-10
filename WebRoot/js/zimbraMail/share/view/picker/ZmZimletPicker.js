@@ -26,6 +26,7 @@
 function ZmZimletPicker(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.ZIMLET);
+	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 }
 
 ZmZimletPicker.prototype = new ZmPicker;
@@ -52,11 +53,10 @@ function(parent) {
     var tti, ti;
 	var tree = this._tree = new DwtTree(parent, DwtTree.CHECKEDITEM_STYLE);
 	tree.addSelectionListener(new AjxListener(this, ZmZimletPicker.prototype._treeListener));
-	
-	this._addZimlet(tree, ZmMsg.tracking, "PurchaseOrder", "tracking");
-	this._addZimlet(tree, ZmMsg.phoneNumber, "Telephone", "phone");
-	this._addZimlet(tree, ZmMsg.po, "PurchaseOrder", "po");
-	this._addZimlet(tree, ZmMsg.url, "URL", "url");	
+	var idxZimlets = this._appCtxt._settings._zmm.getIndexedZimlets()
+	for(var i=0; i< idxZimlets.length; i += 1) {
+		this._addZimlet(tree, idxZimlets[i].description, idxZimlets[i].icon, idxZimlets[i].keyword);
+	}
 }
 
 ZmZimletPicker.prototype._updateQuery = 

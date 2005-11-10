@@ -44,6 +44,7 @@ function ZmSettings(appCtxt) {
 	this._setDefaults();
 	this.userSettingsLoaded = false;
 	this._evt = new ZmEvent(ZmEvent.S_SETTING);
+	this._zmm = new ZmZimletMgr();
 }
 
 ZmSettings.prototype = new ZmModel;
@@ -160,6 +161,7 @@ function(args) {
 	// load Zimlets
 	if(obj.zimlets) {
 		DBG.println(AjxDebug.DBG1, "Zimlets: Got some Zimlets");
+		this._zmm.loadZimlets(obj.zimlets.zimlet);
 	 	
 		var zimletTree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
 	 	if (!zimletTree) {
@@ -167,8 +169,8 @@ function(args) {
 	 		this._appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
 	 	}
 	 	var zimletString = zimletTree.asString();
-	 	zimletTree.reset();	
-	 	zimletTree.loadFromJs(obj.zimlets.zimlet);
+	 	zimletTree.reset();
+	 	zimletTree.loadFromJs(this._zmm.getPanelZimlets());
 
 		// Add Zimlets to overview panel	 	
 	 	var appController = this._appCtxt.getAppController();
