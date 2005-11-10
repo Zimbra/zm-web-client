@@ -39,6 +39,7 @@ function ZmObjectManager(view, appCtxt) {
 	this._objectHandlers[ZmEmailObjectHandler.TYPE] = [this._emailHandler];
 	this._objectHandlers[ZmPhoneObjectHandler.TYPE] = [new ZmPhoneObjectHandler(appCtxt)];
 	this._objectHandlers[ZmPOObjectHandler.TYPE] = [new ZmPOObjectHandler(appCtxt)];
+	this._objectHandlers[ZmBugzillaObjectHandler.TYPE] = [new ZmBugzillaObjectHandler(appCtxt)];
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		ZmDateObjectHandler.registerHandlers(this._objectHandlers, appCtxt);
 	}
