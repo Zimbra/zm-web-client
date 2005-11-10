@@ -151,6 +151,16 @@ function() {
 	return isValid;
 };
 
+ZmApptQuickAddDialog.prototype.popdown =
+function() {
+	DwtBaseDialog.prototype.popdown.call(this);
+
+	if (!this._poppedUp) {
+		if (this._dateCalendar)
+			this._dateCalendar.setVisible(false);
+	}
+};
+
 
 // Private / protected methods
 
