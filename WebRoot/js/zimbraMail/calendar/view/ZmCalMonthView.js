@@ -146,7 +146,7 @@ function() {
 	}
 	
 	currDate = new Date(startDate);
-	var monthHdrFormatter = ZmCalBaseView._getMonthHdrFormatter();
+	var dayFormatter = DwtCalendar.getDayFormatter();
 	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
 	while (currDate < endDate) {
 		// prevent printing extra week for next month
@@ -162,7 +162,7 @@ function() {
 			html[idx++] = "<div style='text-align:right; color:#AAAAAA; " + style + "'>";
 			
 			var dateHdr = (i == 0 && currDate.getMonth() != currMonth) || (currDate.getDate() == 1)
-				? monthHdrFormatter.format(currDate)
+				? dayFormatter.format(currDate)
 				: currDate.getDate();
 			
 			html[idx++] = "<b>" + dateHdr + "</b></div>";
@@ -219,7 +219,7 @@ function() {
 
 ZmCalMonthView.prototype._getDateHdrForPrintView = 
 function() {
-	var formatter = ZmCalBaseView._getMonthHdrFormatter();
+	var formatter = DwtCalendar.getMonthFormatter();
 	return formatter.format(this.getDate());
 };
 
@@ -227,7 +227,7 @@ ZmCalMonthView.prototype._dayTitle =
 function(date) {
 	if (this._shortMonInDay != date.getMonth()) {
 		this._shortMonInDay = date.getMonth();
-		var formatter = ZmCalBaseView._getCalDayHdrFormatter();
+		var formatter = DwtCalendar.getDayFormatter();
 		return formatter.format(date);
 	}
 	return date.getDate();
@@ -577,7 +577,7 @@ function() {
 		}
 	}
 	
-	var formatter = ZmCalBaseView._getMonthHdrFormatter();
+	var formatter = DwtCalendar.getMonthFormatter();
 	this._title = formatter.format(this._date);
 	var titleEl = Dwt.getDomObj(doc, this._titleId);
 	titleEl.innerHTML = this._title;
@@ -659,8 +659,9 @@ function() {
 ZmCalMonthView.getDayToolTipText =
 function(date, list, controller) {
 	var html = new AjxBuffer();
-	
-	var title = AjxDateUtil.WEEKDAY_LONG[date.getDay()]+", "+AjxDateUtil.MONTH_LONG[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear();
+
+	var formatter = DwtCalendar.getDateFullFormatter();	
+	var title = formatter.format(date);
 	
 	html.append("<div>");
 	html.append("<table cellpadding='0' cellspacing='0' border='0'>");

@@ -416,19 +416,8 @@ function(emptyAllDay,startOnly) {
 ZmAppt.prototype.getShortStartHour =
 function() {
 	var d = this.getStartDate();
-	var h = d.getHours();
-	var m = d.getMinutes();	
-	var ampm = h < 12 ? "am" : "pm";
-	if (h < 13) {
-		if (h == 0)
-			h = 12;
-	} else {
-		h -= 12;
-	}
-
-	var ms = m;
-	if (m < 10) ms = "0"+ms;
-	return h+":"+ms+ampm;
+	var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+	return formatter.format(d);
 };
 
 ZmAppt.prototype.clearDetailsCache = 
@@ -912,10 +901,10 @@ function() {
 	}
 };
 
-// TODO: i18n/l10n
 ZmAppt.prototype._getTTDay =
 function(d) {
-	return (d.getMonth()+1)+"/"+d.getDate();
+	var formatter = DwtCalendar.getDayFormatter();
+	return formatter.format(d);
 };
 
 // Adds a row to the tool tip.
@@ -1720,20 +1709,8 @@ function(a, b) {
 
 ZmAppt._getTTHour =
 function(d) {
-	var h = d.getHours();
-	var m = d.getMinutes();	
-	var ampm = h < 12 ? "am" : "pm";
-	if (h < 13) {
-		if (h == 0)
-			h = 12;
-	} else {
-		h -= 12;
-	}
-
-	var ms = m;
-	if (m < 10) ms = "0"+ms;
-
-	return h+":"+ms+ampm;
+	var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+	return formatter.format(d);
 };
 
 ZmAppt._SORTBY_VALUE = 

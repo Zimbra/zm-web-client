@@ -120,7 +120,7 @@ function() {
 		this._loadDetailsForAppts(list, numAppts);
 	}
 	
-	var columnFormatter = ZmCalBaseView._getCalColFormatter();
+	var columnFormatter = DwtCalendar.getDateFormatter();
 	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
 	for (var i = 0; i < numDays; i++) {
 		html[idx++] = "<tr><td width=100%>";
@@ -549,8 +549,8 @@ ZmCalColView.prototype._updateTitle =
 function() 
 {
 	var numDays = this.getNumDays();
-	var colFormatter = ZmCalBaseView._getCalColFormatter();
-	var dayFormatter = ZmCalBaseView._getCalDayHdrFormatter();
+	var colFormatter = DwtCalendar.getDateFormatter();
+	var dayFormatter = DwtCalendar.getDayFormatter();
 	if (numDays == 1) {
 		var date = this._date;
 		this._title = this._scheduleMode 
@@ -567,8 +567,8 @@ function()
 ZmCalColView.prototype._dayTitle =
 function(date) {
 	var formatter = this.getNumDays() == 1
-				? ZmCalBaseView._getCalColLongFormatter()
-				: ZmCalBaseView._getCalColFormatter();
+				? DwtCalendar.getDateLongFormatter()
+				: DwtCalendar.getDateFormatter();
 	return formatter.format(date);
 };
 
