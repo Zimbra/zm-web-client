@@ -244,7 +244,12 @@ function(words, keepModeDiv) {
 			style.id = "ZM-SPELLCHECK-STYLE";
 			style.rel = "stylesheet";
 			style.type = "text/css";
-			style.href = "/zimbra/js/zimbraMail/config/style/spellcheck.css";
+			var style_url = "/zimbra/js/zimbraMail/config/style/spellcheck.css";
+			if (AjxEnv.isGeckoBased) {
+				style_url = document.baseURI.replace(
+					/^(https?:\x2f\x2f[^\x2f]+).*$/, "$1") + style_url;
+			}
+			style.href = style_url;
 			var head = doc.getElementsByTagName("head")[0];
 			if (!head) {
 				head = doc.createElement("head");
