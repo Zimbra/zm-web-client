@@ -163,20 +163,23 @@ function(args) {
 		DBG.println(AjxDebug.DBG1, "Zimlets: Got some Zimlets");
 		this._zmm.loadZimlets(obj.zimlets.zimlet);
 	 	
-		var zimletTree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
-	 	if (!zimletTree) {
-	 		zimletTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ZIMLET);
-	 		this._appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
+	 	var panelZimlets = this._zmm.getPanelZimlets();
+	 	if(panelZimlets && panelZimlets.length > 0) {
+			var zimletTree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
+		 	if (!zimletTree) {
+		 		zimletTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ZIMLET);
+		 		this._appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
+		 	}
+		 	var zimletString = zimletTree.asString();
+		 	zimletTree.reset();
+		 	zimletTree.loadFromJs(panelZimlets);
+	
+			// Add Zimlets to overview panel	 	
+		 	var appController = this._appCtxt.getAppController();
+	 		this._oldPanels = appController.getOverviewPanels();
+	 		var newPanels = [ ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.ZIMLET ];
+	 		appController.setOverviewPanels( newPanels );
 	 	}
-	 	var zimletString = zimletTree.asString();
-	 	zimletTree.reset();
-	 	zimletTree.loadFromJs(this._zmm.getPanelZimlets());
-
-		// Add Zimlets to overview panel	 	
-	 	var appController = this._appCtxt.getAppController();
- 		this._oldPanels = appController.getOverviewPanels();
- 		var newPanels = [ ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.ZIMLET ];
- 		appController.setOverviewPanels( newPanels );
 	 }
 
 	this.userSettingsLoaded = true;

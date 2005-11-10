@@ -41,7 +41,7 @@ ZmZimlet.ID_ZIMLET = ZmOrganizer.ID_ZIMLET;
 // Static methods
 ZmZimlet.createFromJs =
 function(parent, obj, tree, link) {
-	if (!obj || obj.length) {return;}
+	if (!obj && obj.length < 1) {return null;}
 	DBG.println(AjxDebug.DBG1, "ZmZimlet.createFromJs() Loading...");
 
 	// create zimlet root
@@ -49,10 +49,10 @@ function(parent, obj, tree, link) {
 	if (obj && obj.length) {
 		for (var i = 0; i < obj.length; i++) {
 			var desc = obj[i].description;
-			DBG.println(AjxDebug.DBG1, "Zimlet Desc: " + desc);
+			DBG.println(AjxDebug.DBG2, "Zimlet Desc: " + desc);
 			var childZimlet = new ZmZimlet(i, desc, zimletRoot, tree, null, null);
 			zimletRoot.children.add(childZimlet);
-			}
+		}
 	}
 	return zimletRoot;
 };

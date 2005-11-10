@@ -35,8 +35,6 @@ function(zimletArray) {
 	if(!zimletArray || !zimletArray.length) {return;}
 	for(var i=0; i < zimletArray.length; i++) {
 		this._ZIMLETS[i] = new ZmZimletContext(i, zimletArray[i]);
-		DBG.println(AjxDebug.DBG2, "Zimlets: CONTEXT OPEN: " + i);
-		DBG.dumpObj(this._ZIMLETS[i]);
 	}
 }
 
