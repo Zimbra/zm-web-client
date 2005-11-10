@@ -137,7 +137,13 @@ function(attId, isDraft, callback) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
-	msg.send(contactList, isDraft, respCallback, errorCallback);
+	var resp = msg.send(contactList, isDraft, respCallback, errorCallback);
+
+	// XXX: temp bug fix #4325 - if resp returned, we're processing sync request
+	//      REVERT this bug fix once mozilla fixes bug #295422!
+	if (resp) {
+		this._processSendMsg(isDraft, msg, resp);
+	}
 };
 
 
@@ -328,6 +334,40 @@ function(composeMode) {
 	}
 };
 
+ZmComposeController.prototype._processSendMsg = 
+function(isDraft, msg, resp) {
+	if (!isDraft) {
+		if (this.isChildWindow && window.parentController) {
+			window.parentController.setStatusMsg(ZmMsg.messageSent);
+		} else {
+			this._appCtxt.setStatusMsg(ZmMsg.messageSent);
+		}
+
+		if (resp || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
+			this._composeView.reset(false);
+
+			// if the original message was a draft, we need to nuke it
+			var origMsg = msg._origMsg;
+			if (origMsg && origMsg.isDraft && origMsg.list)
+				this._deleteDraft(origMsg);
+
+			this._app.popView(true);
+		}
+	} else {
+		// TODO - disable save draft button indicating a draft was saved
+		//        ** new UI will show in toaster section
+		if (this.isChildWindow && window.parentController) {
+			window.parentController.setStatusMsg(ZmMsg.draftSaved);
+		} else {
+			this._appCtxt.setStatusMsg(ZmMsg.draftSaved);
+		}
+		this._composeView.reEnableDesignMode();
+		// save message draft so it can be reused if user saves draft again
+		this._composeView.processMsgDraft(msg);
+	}
+};
+
+
 // Listeners
 
 // Send button was pressed
@@ -461,34 +501,7 @@ function(args) {
 	var result		= args[3];
 
 	var resp = result.getResponse();
-
-	if (!isDraft) {
-		if (resp || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
-			this._composeView.reset(false);
-			this._app.popView(true);
-
-			// if the original message was a draft, we need to nuke it
-			var origMsg = msg._origMsg;
-			if (origMsg && origMsg.isDraft && origMsg.list)
-				this._deleteDraft(origMsg);
-		}
-		if (this.isChildWindow && window.parentController) {
-			window.parentController.setStatusMsg(ZmMsg.messageSent);
-		} else {
-			this._appCtxt.setStatusMsg(ZmMsg.messageSent);
-		}
-	} else {
-		// TODO - disable save draft button indicating a draft was saved
-		//        ** new UI will show in toaster section
-		if (this.isChildWindow && window.parentController) {
-			window.parentController.setStatusMsg(ZmMsg.draftSaved);
-		} else {
-			this._appCtxt.setStatusMsg(ZmMsg.draftSaved);
-		}
-		this._composeView.reEnableDesignMode();
-		// save message draft so it can be reused if user saves draft again
-		this._composeView.processMsgDraft(msg);
-	}
+	this._processSendMsg(isDraft, msg, resp);
 
 	if (callback) callback.run(result);
 };

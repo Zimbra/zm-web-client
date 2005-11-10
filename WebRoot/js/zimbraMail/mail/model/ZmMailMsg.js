@@ -570,7 +570,7 @@ function(contactList, isDraft, callback, errorCallback) {
 		// TODO - return code and put up status message
 		this._createMessageNode(soapDoc, contactList, isDraft);
 		var respCallback = new AjxCallback(this, this._handleResponseSend, [isDraft, callback]);
-		this._sendMessage(soapDoc, false, isDraft, respCallback, errorCallback);
+		return this._sendMessage(soapDoc, false, isDraft, respCallback, errorCallback);
 	}	
 };
 
@@ -665,7 +665,22 @@ function(soapDoc, contactList, isDraft) {
 ZmMailMsg.prototype._sendMessage = 
 function(soapDoc, bIsInvite, bIsDraft, callback, errorCallback) {
 	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [bIsInvite, bIsDraft, callback]);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
+
+	// XXX: temp bug fix #4325 (until mozilla bug #295422 gets fixed)
+	if (window.parentController && AjxEnv.isGeckoBased) {
+		var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
+		if (resp.SendInviteReplyResponse) {
+			return resp.SendInviteReplyResponse;
+		} else if (resp.SaveDraftResponse) {
+			resp = resp.SaveDraftResponse;
+			this._loadFromDom(resp.m[0]);
+			return resp;
+		} else if (resp.SendMsgResponse) {
+			return resp.SendMsgResponse;
+		}
+	} else {
+		this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
+	}
 };
 
 ZmMailMsg.prototype._handleResponseSendMessage =
