@@ -60,6 +60,7 @@ ZmStatusHistoryDialog.prototype.initialize =
 function(historyVector) {
 	var html = new AjxBuffer();
 
+	var formatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.SHORT, AjxDateFormat.MEDIUM);
 	var history = historyVector.getArray();
 	for (var i=0; i < history.length; i++) {
 		var work = history[i];
@@ -71,7 +72,7 @@ function(historyVector) {
 	*/	
 		html.append("<table width=100%><tr><td style='width:40px;' align='center'>", ZmStatusView.getImageHtml32(work),"</td>");
 		html.append("<td align='left'><b>", AjxStringUtil.htmlEncode(work.msg), "</b></td>");
-		html.append("<td align='right' style='width:100px;' >",AjxDateUtil.getTimeStr(work.date,"%n/%d %H:%m:%s %P"), "</td>");
+		html.append("<td align='right' style='width:100px;' >",formatter.format(work.date), "</td>");
 		html.append("</tr></table>");
 		
 		html.append("</div>");

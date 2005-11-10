@@ -120,13 +120,15 @@ function() {
 		this._loadDetailsForAppts(list, numAppts);
 	}
 	
+	var columnFormatter = ZmCalBaseView._getCalColFormatter();
+	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
 	for (var i = 0; i < numDays; i++) {
 		html[idx++] = "<tr><td width=100%>";
 		if (numDays > 1) {
 			// XXX: set the styles inline so we force the printer to acknowledge them!
 			var style = "background-color:#EEEEEE; text-align:center; font-family:Arial; font-size:14px; font-weight:bold; border:1px solid #EEEEEE;";
 			html[idx++] = "<div style='" + style + "'>";
-			html[idx++] = AjxDateUtil.getTimeStr(nextDay, "%w, %M %D");
+			html[idx++] = columnFormatter.format(nextDay);
 			html[idx++] = "</div>";
 		}
 		
@@ -155,8 +157,8 @@ function() {
 						inTable = true;
 						html[idx++] = "<table border=0>";
 					}
-					var startTime = AjxDateUtil.getTimeStr(appt.startDate, "%h:%m%p");
-					var endTime = AjxDateUtil.getTimeStr(appt.endDate, "%h:%m%p");
+					var startTime = timeFormatter.format(appt.startDate);
+					var endTime = timeFormatter.format(appt.endDate);
 					style = "font-family:Arial; font-size:13px; vertical-align:top;"
 					html[idx++] = "<tr>";
 					html[idx++] = "<td align=right style='" + style + "'><b>" + startTime + "</b></td>";
@@ -296,12 +298,17 @@ function() {
 	var startDate = new Date(timeRange.start);
 
 	if (this.getNumDays() > 1) {
+		var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.LONG);
 		var endDate = new Date(timeRange.end - AjxDateUtil.MSEC_PER_DAY);
-		var startWeek = AjxDateUtil.getTimeStr(startDate, "%t %D");
-		var endWeek = AjxDateUtil.getTimeStr(endDate, "%t %D");
+		var startWeek = formatter.format(startDate);
+		var endWeek = formatter.format(endDate);
 		header = startWeek + " - " + endWeek;
 	} else {
-		header = AjxDateUtil.getTimeStr(startDate, "%M %D, %Y<br><font size=-1>%w</font>");
+		var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.FULL);
+		header = [
+			formatter.format(startDate), 
+			"<br><font size=-1>", AjxDateUtil._getWeekday(startDate), "</font>"
+		].join("");
 	}
 
 	return header;
@@ -542,25 +549,28 @@ ZmCalColView.prototype._updateTitle =
 function() 
 {
 	var numDays = this.getNumDays();
+	var colFormatter = ZmCalBaseView._getCalColFormatter();
+	var dayFormatter = ZmCalBaseView._getCalDayHdrFormatter();
 	if (numDays == 1) {
 		var date = this._date;
-		this._title = ((this._scheduleMode) ? AjxDateUtil.WEEKDAY_MEDIUM[date.getDay()]+", " : "") +
-							AjxDateUtil.MONTH_MEDIUM[date.getMonth()] + " " + date.getDate();
+		this._title = this._scheduleMode 
+					? colFormatter.format(date) : dayFormatter.format(date);
 	} else {
 		var first = this._days[0].date;
 		var last = this._days[numDays-1].date;
-		this._title = AjxDateUtil.MONTH_MEDIUM[first.getMonth()]+" "+first.getDate()+" - " +
-				 AjxDateUtil.MONTH_MEDIUM[last.getMonth()]+" "+last.getDate(); //+", "+last.getFullYear();
+		this._title = [
+			dayFormatter.format(first), " - ", dayFormatter.format(last)
+		].join("");
 	}				 
 }
 
 ZmCalColView.prototype._dayTitle =
 function(date) {
-	var title = (this.getNumDays() == 1) ?
-		AjxDateUtil.WEEKDAY_LONG[date.getDay()]+", "+AjxDateUtil.MONTH_LONG[date.getMonth()]+" "+date.getDate() :
-		AjxDateUtil.WEEKDAY_MEDIUM[date.getDay()]+", "+AjxDateUtil.MONTH_MEDIUM[date.getMonth()]+" "+date.getDate();
-	return AjxStringUtil.htmlEncode(title);
-}
+	var formatter = this.getNumDays() == 1
+				? ZmCalBaseView._getCalColLongFormatter()
+				: ZmCalBaseView._getCalColFormatter();
+	return formatter.format(date);
+};
 
 ZmCalColView.prototype._updateDays =
 function() {
@@ -773,6 +783,7 @@ function(appt) {
 	return div;
 }
 
+// TODO: i18n
 ZmCalColView.prototype._createHoursHtml =
 function(html) {
 	html.append("<div style='position:absolute; top:-8; width:", ZmCalColView._HOURS_DIV_WIDTH, "px;' id='", this._bodyHourDivId, "'>");

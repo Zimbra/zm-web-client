@@ -91,6 +91,31 @@ ZmCalBaseView.COLORS[ZmOrganizer.C_YELLOW]	= "Yellow";
 ZmCalBaseView.COLORS[ZmOrganizer.C_PINK]	= "Pink";
 ZmCalBaseView.COLORS[ZmOrganizer.C_GRAY]	= "Gray";
 
+ZmCalBaseView._getCalColFormatter = function() {
+	if (!ZmCalBaseView._calColFormatter) {
+		ZmCalBaseView._calColFormatter = new AjxDateFormat(ZmMsg.formatCalCol);
+	}
+	return ZmCalBaseView._calColFormatter;
+};
+ZmCalBaseView._getCalColLongFormatter = function() {
+	if (!ZmCalBaseView._calColLongFormatter) {
+		ZmCalBaseView._calColLongFormatter = new AjxDateFormat(ZmMsg.formatCalColLong);
+	}
+	return ZmCalBaseView._calColLongFormatter;
+};
+ZmCalBaseView._getCalDayHdrFormatter = function() {
+	if (!ZmCalBaseView._calDayHdrFormatter) {
+		ZmCalBaseView._calDayHdrFormatter = new AjxDateFormat(ZmMsg.formatCalDayHdr);
+	}
+	return ZmCalBaseView._calDayHdrFormatter;
+};
+ZmCalBaseView._getMonthHdrFormatter = function() {
+	if (!ZmCalBaseView._monthHdrFormatter) {
+		ZmCalBaseView._monthHdrFormatter = new AjxDateFormat(ZmMsg.formatCalMonthHdr);
+	}
+	return ZmCalBaseView._monthHdrFormatter;
+};
+
 ZmCalBaseView.prototype.getController =
 function() {
 	return this._controller;

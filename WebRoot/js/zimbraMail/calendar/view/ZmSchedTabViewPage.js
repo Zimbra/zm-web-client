@@ -692,8 +692,8 @@ function() {
 
 ZmSchedTabViewPage.prototype._resetFullDateField =
 function() {
-	// XXX: need i18n version!
-	this._navToolbar.setText(AjxDateUtil.getTimeStr((new Date(this._startDateField.value)), "%t %D, %Y"));
+	var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.LONG);
+	this._navToolbar.setText(formatter.format(new Date(this._startDateField.value)));
 };
 
 ZmSchedTabViewPage.prototype._handleDateChange = 

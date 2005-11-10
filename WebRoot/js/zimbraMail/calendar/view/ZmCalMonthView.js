@@ -146,6 +146,8 @@ function() {
 	}
 	
 	currDate = new Date(startDate);
+	var monthHdrFormatter = ZmCalBaseView._getMonthHdrFormatter();
+	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
 	while (currDate < endDate) {
 		// prevent printing extra week for next month
 		if ((currDate.getMonth() > currMonth && currDate.getFullYear() == currYear) || currDate.getFullYear() > currYear)
@@ -160,7 +162,7 @@ function() {
 			html[idx++] = "<div style='text-align:right; color:#AAAAAA; " + style + "'>";
 			
 			var dateHdr = (i == 0 && currDate.getMonth() != currMonth) || (currDate.getDate() == 1)
-				? AjxDateUtil.getTimeStr(currDate, "%t %D")
+				? monthHdrFormatter.format(currDate)
 				: currDate.getDate();
 			
 			html[idx++] = "<b>" + dateHdr + "</b></div>";
@@ -179,7 +181,7 @@ function() {
 							html[idx++] = " (" + loc+ ")";
 						html[idx++] = "</div>";
 					} else {
-						var startTime = AjxDateUtil.getTimeStr(appt.startDate, "%H:%m%p");
+						var startTime = timeFormatter.format(appt.startDate);
 						html[idx++] = "<div style='" + style;
 						if (currDate.getMonth() != currMonth)
 							html[idx++] = " color:#AAAAAA;";
@@ -217,17 +219,18 @@ function() {
 
 ZmCalMonthView.prototype._getDateHdrForPrintView = 
 function() {
-	return AjxDateUtil.getTimeStr(this.getDate(), "%M %Y");
+	var formatter = ZmCalBaseView._getMonthHdrFormatter();
+	return formatter.format(this.getDate());
 };
 
 ZmCalMonthView.prototype._dayTitle =
 function(date) {
 	if (this._shortMonInDay != date.getMonth()) {
 		this._shortMonInDay = date.getMonth();
-		return AjxDateUtil.MONTH_MEDIUM[date.getMonth()]+" "+date.getDate();
-	} else {
-		return date.getDate();
+		var formatter = ZmCalBaseView._getCalDayHdrFormatter();
+		return formatter.format(date);
 	}
+	return date.getDate();
 };
 
 ZmCalMonthView.prototype._reserveRow = 
@@ -439,7 +442,7 @@ function(appt) {
 	}
 	html.append(AjxStringUtil.htmlEncode(appt.getName()));
 	html.append("</LI>");	
-	/**/
+	/* */
 
 	//html.append("<LI>"+AjxStringUtil.htmlEncode(appt.getName())+"</LI>";
 
@@ -574,7 +577,8 @@ function() {
 		}
 	}
 	
-	this._title = AjxDateUtil.MONTH_MEDIUM[this._date.getMonth()]+" "+this._date.getFullYear();	
+	var formatter = ZmCalBaseView._getMonthHdrFormatter();
+	this._title = formatter.format(this._date);
 	var titleEl = Dwt.getDomObj(doc, this._titleId);
 	titleEl.innerHTML = this._title;
 };

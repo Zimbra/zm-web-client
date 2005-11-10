@@ -862,12 +862,13 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 	if (this.isAllDayEvent()) {
 		buf[i++] = ZmMsg.allDay;
 	} else {
+		var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
 		if (start)
-			buf[i++] = AjxDateUtil.getTimeStr(start, "%h:%m %P");
+			buf[i++] = formatter.format(start);
 		if (start && end)
 			buf[i++] = " - ";
 		if (end)
-			buf[i++] = AjxDateUtil.getTimeStr(end, "%h:%m %P");
+			buf[i++] = formatter.format(end);
 
 		if (showingTimezone) {
 			buf[i++] = " ";
