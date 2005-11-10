@@ -798,7 +798,7 @@ function() {
 };
 
 ZmAppt.prototype.getAttachListHtml = 
-function(attach, hasCheckbox) {
+function(attach, hasCheckbox, skipIcon) {
 	var csfeMsgFetchSvc = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 	var hrefRoot = "href='" + csfeMsgFetchSvc + "id=" + this.getInvId() + "&amp;part=";
 
@@ -822,6 +822,14 @@ function(attach, hasCheckbox) {
 		html[i++] = "<td width=1%><input type='checkbox' checked value='";
 		html[i++] = attach.part;
 		html[i++] = "'></td>";
+	}
+	if (!skipIcon) {
+		html[i++] = "<td width=20><a target='_blank' class='AttLink' ";
+		html[i++] = hrefRoot;
+		html[i++] = attach.part;
+		html[i++] = "'>";
+		html[i++] = AjxImg.getImageHtml(icon);
+		html[i++] = "</a></td>";
 	}
 	html[i++] = "<td><a target='_blank' class='AttLink' ";
 	html[i++] = hrefRoot;

@@ -320,7 +320,8 @@ function(appt, attach) {
 	var attachInputId = "_att_" + Dwt.getNextId();
 	
 	if (attach) {
-		div.innerHTML = appt.getAttachListHtml(attach, true);
+		// skip setting the icon since the attachment field is inside an iframe
+		div.innerHTML = appt.getAttachListHtml(attach, true, true);
 	} else {
 		var html = new Array();
 		var i = 0;
