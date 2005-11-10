@@ -70,7 +70,6 @@ function(args) {
 		var val = "";
 		if (item_s > 0 && item_e > 0) {
 			val = "<b>"+ZmBugzillaObjectHandler.bug_items[i+1]+": </b>"+resp.substring(item_s+key.length+2, item_e);
-			DBG.println(AjxDebug.DBG, "val "+val);
 			document.getElementById(ZmBugzillaObjectHandler.encodeId(args[0], key)).innerHTML=val;
 		}
 	}
