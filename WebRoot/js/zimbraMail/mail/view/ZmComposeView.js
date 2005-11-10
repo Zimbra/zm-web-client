@@ -131,18 +131,6 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 	this._setAddresses(action, toOverride);
 	this._setSubject(action, msg, subjOverride);
 	this._setBody(action, msg, extraBodyText);
-	
-	// set the cursor to either to To address, or the body of the email.
-	// if there is text already in the email, we will move the cursor to 
-	// the end of the text ( not the end of the included message, but the 
-	// end of the extraBodyText ). If not extra text exists, we'll put the
-	// cursor at the beginning of the body.
-	if (action == ZmOperation.NEW_MESSAGE || action == ZmOperation.FORWARD) {
-		this._field[ZmEmailAddress.TO].focus();
-	} else {
-		// set cursor of textarea to the beginning of first line
-		this._setBodyFieldFocus(extraBodyText);
-	}
 
 	// save form state (to check for change later)
 	this._origFormValue = this._formValue();
@@ -182,6 +170,17 @@ function(params) {
 ZmComposeView.prototype.getComposeMode = 
 function() {
 	return this._composeMode;
+};
+
+ZmComposeView.prototype.setFocus = 
+function() {
+	// set the cursor to either to To address for new message or a forward
+	if (this._action == ZmOperation.NEW_MESSAGE || this._action == ZmOperation.FORWARD) {
+		this._field[ZmEmailAddress.TO].focus();
+	} else {
+		// otherwise set cursor to the beginning of first line
+		this._setBodyFieldFocus();
+	}
 };
 
 // Sets the mode ZmHtmlEditor should be in.
@@ -1437,8 +1436,10 @@ function() {
 
 ZmComposeView.prototype._setBodyFieldFocus = 
 function(extraBodyText) {
-	if (this._composeMode == DwtHtmlEditor.HTML)
+	if (this._composeMode == DwtHtmlEditor.HTML) {
+		this._htmlEditor.focus();
 		return;
+	}
 
 	// this code moves the cursor to the beginning of the body
 	if (AjxEnv.isIE) {
@@ -1450,10 +1451,7 @@ function(extraBodyText) {
 		}
 		tr.select();
 	} else if (!AjxEnv.isSafari) {
-		var index = 0;
-		if (extraBodyText) {
-			index = extraBodyText.length + 1;
-		}
+		var index = extraBodyText ? (extraBodyText.length + 1) : 0;
 		this._bodyField.setSelectionRange(index, index);
 	}
 
