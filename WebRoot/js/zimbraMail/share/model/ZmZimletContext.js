@@ -28,7 +28,6 @@ function ZmZimletContext(id, zimlet) {
 	this.icon = "ZimbraIcon";
 	this.name = zimlet.zimlet[0].name;
 	DBG.println(AjxDebug.DBG2, "Zimlets: Loading Context: " + this.name);
-	DBG.dumpObj(zimlet);
 	this.description = zimlet.zimlet[0].description;
 	this.version = zimlet.zimlet[0].version;
 	if(zimlet.zimlet[0].serverExtension[0] && zimlet.zimlet[0].serverExtension[0].hasKeyword){
