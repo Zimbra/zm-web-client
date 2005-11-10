@@ -125,6 +125,9 @@ function() {
 
 		// set all visible input elements to invisible
 		var inputEl = Dwt.getDomObj(this._doc, sched.dwtInputId);
+		// re-enable the first row (which is the "read-only" organizer row)
+		if (i == 0)
+			inputEl.disabled = false;
 		this._cleanRow(inputEl, sched);
 	}
 
@@ -572,7 +575,8 @@ function() {
 	// get all the emails and update the appointment view
 	// XXX: optimize later!!
 	var attendeeArr = new Array();
-	for (var i = 0; i < this._schedTable.length; i++) {
+	// always skip the first attendee since that should be the organizer
+	for (var i = 1; i < this._schedTable.length; i++) {
 		var inputEl = Dwt.getDomObj(this._doc, this._schedTable[i].dwtInputId);
 		if (inputEl && inputEl.value.length)
 			attendeeArr.push(inputEl.value);
@@ -608,21 +612,10 @@ function() {
 
 ZmSchedTabViewPage.prototype._setAttendees = 
 function(attendees) {
-	// update the attendees and free busy view if necessary
-	var updateFreeBusy = false;
-	if (this._origAttendees == null && attendees.length > 0) {
-		this._origAttendees = attendees;
-		updateFreeBusy = true;
-	} else {
-		if (this._origAttendees != attendees) {
-			this.cleanup();
-			this._origAttendees = attendees;
-			updateFreeBusy = true;
-		}
-	}
-
-	if (!updateFreeBusy) 
-		return;
+	// XXX: optimize later - currently we always update the f/b view :(
+	if (this._origAttendees != null)
+		this.cleanup();
+	this._origAttendees = attendees;
 
 	var attendeeArr = attendees.split(ZmAppt.ATTENDEES_SEPARATOR_REGEX);
 	var newAttendeeArr = new Array();
@@ -636,6 +629,10 @@ function(attendees) {
 			}
 			this._attendees[attendee] = i;
 			newAttendeeArr.push(attendee);
+
+			// always disable the first row since its the organizer
+			if (i == 0)
+				inputEl.disabled = true;
 		}
 	}
 

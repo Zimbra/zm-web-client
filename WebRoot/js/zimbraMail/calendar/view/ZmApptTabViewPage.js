@@ -397,7 +397,11 @@ function() {
 
 ZmApptTabViewPage.prototype.getAttendees = 
 function() {
-	return this._attendeesField.value;
+	// always prepend the organizer before returning the attendees field
+	var calId = this._calendarSelect.getValue();
+	// XXX: for now, lets assume no organizer means its the user :/
+	var organizer = this._calendarOrgs[calId] || this._appCtxt.get(ZmSetting.USERNAME);
+	return (organizer + "; " + this._attendeesField.value);
 };
 
 
