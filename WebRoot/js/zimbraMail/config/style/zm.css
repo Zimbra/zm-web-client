@@ -214,7 +214,11 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .ZmFilterDetailsView .DwtButton	.ZmFilterDetailsView .DwtButton-activated	.ZmFilterDetailsView .DwtButton-triggered
 { width: 60px; }
 
-.DwtDialog .ColorButton,		.DwtDialog .ColorButton-activated,			.DwtDialog .ColorButton-triggered,
+.DwtDialog .ColorButton,
+.DwtDialog .ColorButton-activated,
+.DwtDialog .ColorButton-triggered { 
+	width: 80px;
+}
 
 /* Login Panel */
 .ZmLoginDialog {
