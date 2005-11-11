@@ -544,7 +544,6 @@ function(args) {
 	if (id || resp.status == "OK") {
 		this._notifySendListeners();
 		this._origMsg.folderId = ZmFolder.ID_TRASH;
-		this._origMsg._listNotify(ZmEvent.E_MOVE);
 	}
 
 	if (callback)

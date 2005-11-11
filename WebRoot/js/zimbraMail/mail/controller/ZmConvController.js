@@ -256,7 +256,16 @@ function() {
 	}
 	
 	// Don't pop unless we're currently visible!
-	popView = popView && (this._appCtxt.getCurrentViewId() == this._currentView);
+	var currViewId = this._appCtxt.getCurrentViewId();
+
+	// bug fix #4356 - if currViewId is compose (among other restrictions) then still pop
+	var popAnyway = false;
+	if (currViewId == ZmController.COMPOSE_VIEW && this._conv.numMsgs == 1) {
+		var msg = this._conv.msgs.getArray()[0];
+		popAnyway = msg.isInvite() && msg.folderId == ZmFolder.ID_TRASH;
+	}
+
+	popView = popView && ((currViewId == this._currentView) || popAnyway);
 
 	if (popView) {
 		this._checkConvLocation();
@@ -271,6 +280,7 @@ function() {
 				break;
 			}
 		}
+
 		this._toolbar[this._currentView].getButton(ZmOperation.DELETE_MENU).setEnabled(!bAllDeleted);
 	}
 
