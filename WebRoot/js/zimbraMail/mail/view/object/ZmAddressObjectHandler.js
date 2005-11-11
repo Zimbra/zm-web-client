@@ -37,6 +37,9 @@ ZmAddressObjectHandler.TYPE = "gaddress";
 // 1234 Main St City CA 99999
 ZmAddressObjectHandler.ADDRESS_RE = /[\w]{3,}([A-Za-z]\.)?([ \w]*\#\d+)?(\r\n| )[ \w]{3,}\x20[A-Za-z]{2}\x20\d{5}(-\d{4})?/ig;
 
+// Y! maps geocoder, since Google doesn't have one.
+ZmAddressObjectHandler.URL = "http://api.local.yahoo.com/MapsService/V1/geocode?appid=ZimbraMail&location=";
+
 // Make DOM safe id's
 ZmAddressObjectHandler.encodeId = function(s) {
 	return s.replace(/[^A-Za-z0-9]/g, "");
@@ -64,7 +67,19 @@ function(obj, context) {
 	return '<div class="AddressContent" id="'+ZmAddressObjectHandler.encodeId(obj)+'"> </div>';
 };
 
-ZmYAddressObjectHandler.prototype._geocodeCallback = 
+ZmAddressObjectHandler.prototype.populateToolTip =
+function(obj, context) {
+	if(ZmAddressObjectHandler.CACHE[obj+"lng"] && ZmAddressObjectHandler.CACHE[obj+"lat"]) {
+		ZmAddressObjectHandler.displayMap(ZmAddressObjectHandler.CACHE[obj+"lng"], 
+		                                  ZmAddressObjectHandler.CACHE[obj+"lat"], obj);
+	} else {
+		var request = new AjxRpcRequest("geocode");
+		var url = "/service/proxy?target=" + AjxStringUtil.urlEncode(ZmAddressObjectHandler.URL + AjxStringUtil.htmlEncode(obj));
+		request.invoke(null, url, null, new AjxCallback(this, this._callback, obj), true);
+	}
+};
+
+ZmAddressObjectHandler.prototype._callback = 
 function(args) {
 	// Quick RDF parser
 	var r = args[1].text;
@@ -73,20 +88,6 @@ function(args) {
 	var lt_s = r.indexOf("<Latitude>");
 	var lt_e = r.indexOf("</Latitude>");
 	ZmAddressObjectHandler.displayMap(r.substring(lg_s+11,lg_e), r.substring(lt_s+10,lt_e), args[0]);
-};
-
-ZmAddressObjectHandler.prototype.populateToolTip =
-function(obj, context) {
-	if(ZmAddressObjectHandler.CACHE[obj+"lng"] && ZmAddressObjectHandler.CACHE[obj+"lat"]) {
-		DBG.println(AjxDebug.DBG2, "gMAPS: Using cache");
-		ZmAddressObjectHandler.displayMap(ZmAddressObjectHandler.CACHE[obj+"lng"], 
-		                                  ZmAddressObjectHandler.CACHE[obj+"lat"], obj);
-	} else {
-		DBG.println(AjxDebug.DBG2, "gMAPS: New Request");
-		var request = new AjxRpcRequest("geocode");
-		var url = "/zimbra/zimlets/geocode.jsp?address=" + AjxStringUtil.urlEncode(obj);
-		request.invoke(null, url, null, new AjxCallback(this, this._geocodeCallback, obj), true);
-	}
 };
 
 ZmAddressObjectHandler.displayMap = function(lng, lat, obj) {

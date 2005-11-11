@@ -24,7 +24,6 @@
  */
 
 function ZmBugzillaObjectHandler(appCtxt) {
-
 	ZmObjectHandler.call(this, appCtxt, ZmBugzillaObjectHandler.TYPE);
 };
 

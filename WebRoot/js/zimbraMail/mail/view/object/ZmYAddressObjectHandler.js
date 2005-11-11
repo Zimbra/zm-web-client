@@ -24,7 +24,6 @@
  */
 
 function ZmYAddressObjectHandler(appCtxt) {
-
 	ZmObjectHandler.call(this, appCtxt, ZmYAddressObjectHandler.TYPE);
 }
 
@@ -32,11 +31,13 @@ ZmYAddressObjectHandler.prototype = new ZmObjectHandler;
 ZmYAddressObjectHandler.prototype.constructor = ZmYAddressObjectHandler;
 
 // Consts
-
 ZmYAddressObjectHandler.TYPE = "yaddress";
 // TODO This regex is very very simple.  It only matches single line simple addresses like:
 // 1234 Main St City CA 99999
 ZmYAddressObjectHandler.ADDRESS_RE = /[\w]{3,}([A-Za-z]\.)?([ \w]*\#\d+)?(\r\n| )[ \w]{3,}\x20[A-Za-z]{2}\x20\d{5}(-\d{4})?/ig;
+
+// Y! Maps Service URL
+ZmYAddressObjectHandler.URL = "http://api.local.yahoo.com/MapsService/V1/mapImage?appid=ZimbraMail&zoom=4&image_height=245&image_width=345&location="
 
 // Make DOM safe id's
 ZmYAddressObjectHandler.encodeId = function(s) {
@@ -44,8 +45,6 @@ ZmYAddressObjectHandler.encodeId = function(s) {
 };
 
 ZmYAddressObjectHandler.CACHE = new Array();
-
-// Public methods
 
 ZmYAddressObjectHandler.prototype.match =
 function(line, startIndex) {
@@ -62,37 +61,33 @@ function(html, idx, address, context) {
 
 ZmYAddressObjectHandler.prototype.getToolTipText =
 function(obj, context) {
-	return '<iframe scrolling="no" frameborder="0" marginWidth="0" marginHeight="0" width="345" height="245" src="" id="'+ZmYAddressObjectHandler.encodeId(obj)+'"></iframe>';
-};
-
-ZmYAddressObjectHandler.prototype._geocodeCallback = 
-function(args) {
-	// Quick Y! image parser
-	var r = args[1].text;
-	ZmYAddressObjectHandler.displayImage(r.substring(r.indexOf("http://img"),r.indexOf("</Result>")), args[0]);
+	return '<iframe scrolling="no" frameborder="0" marginWidth="0" marginHeight="0" width="345" height="245" src="" id="'+ZmYAddressObjectHandler.encodeId(obj)+'">' + obj + '</iframe>';
 };
 
 ZmYAddressObjectHandler.prototype.populateToolTip =
 function(obj, context) {
 	if (ZmYAddressObjectHandler.CACHE[obj+"img"]) {
-		DBG.println(AjxDebug.DBG2, "MAPS: Using image cache");
 		ZmYAddressObjectHandler.displayImage(ZmYAddressObjectHandler.CACHE[obj+"img"], obj);
 	} else {
-		DBG.println(AjxDebug.DBG2, "MAPS: New Request");
-		var request = new AjxRpcRequest("geocode");
-		var url = "/zimbra/zimlets/ymapimg.jsp?address=" + AjxStringUtil.urlEncode(obj);
-		request.invoke(null, url, null, new AjxCallback(this, this._geocodeCallback, obj), true);
+		var request = new AjxRpcRequest("yahoomaps");
+		var url = "/service/proxy?target="+ AjxStringUtil.urlEncode(ZmYAddressObjectHandler.URL + obj);
+		request.invoke(null, url, null, new AjxCallback(this, this._callback, obj), true);
 	}
 };
 
 ZmYAddressObjectHandler.displayImage = 
 function(img_src, obj) {
-	DBG.println(AjxDebug.DBG2, "MAPS: img: " + img_src + " obj: '" + obj + "'");
 	var element = document.getElementById(ZmYAddressObjectHandler.encodeId(obj));
 	element.src = img_src;
 
     if(!ZmYAddressObjectHandler.CACHE[obj+"img"]) {
-		DBG.println(AjxDebug.DBG2, "MAPS: Adding image src to cache");
 		ZmYAddressObjectHandler.CACHE[obj+"img"] = img_src;
 	}
+};
+
+ZmYAddressObjectHandler.prototype._callback = 
+function(args) {
+	// Quick parser
+	var r = args[1].text;
+	ZmYAddressObjectHandler.displayImage(r.substring(r.indexOf("http://img"),r.indexOf("</Result>")), args[0]);
 };

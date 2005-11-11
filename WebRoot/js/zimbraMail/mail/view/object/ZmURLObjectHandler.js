@@ -32,7 +32,12 @@ ZmURLObjectHandler.prototype.constructor = ZmURLObjectHandler;
 
 ZmURLObjectHandler.TYPE = "url";
 ZmURLObjectHandler.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/ig;
-ZmURLObjectHandler.THUMB_URL = "http://pthumbnails.alexa.com/image_server.cgi?id=" + document.domain + "&url=";
+//ZmURLObjectHandler.THUMB_URL = "http://pthumbnails.alexa.com/image_server.cgi?id=" + document.domain + "&url=";
+//ZmURLObjectHandler.THUMB_SIZE = 'width="205" height="150"'
+
+// Better website coverage and more recent results, for now.
+ZmURLObjectHandler.THUMB_URL = "http://msnsearch.srv.girafa.com/srv/i?s=MSNSEARCH&r=";
+ZmURLObjectHandler.THUMB_SIZE = 'width="160" height="120"';
 
 ZmURLObjectHandler.prototype.match =
 function(line, startIndex) {
@@ -64,7 +69,7 @@ ZmURLObjectHandler.prototype.getToolTipText =
 function(url, context) {
 	// Pre-load the image
 	(new Image()).src =  ZmURLObjectHandler.THUMB_URL + url;
-	return '<iframe scrolling="no" frameborder="0" marginWidth="0" marginHeight="0" width="205" height="150" src="' + ZmURLObjectHandler.THUMB_URL + url + '"></iframe>';
+	return '<iframe scrolling="no" frameborder="0" marginWidth="0" marginHeight="0" ' + ZmURLObjectHandler.THUMB_SIZE + ' src="' + ZmURLObjectHandler.THUMB_URL + url + '"></iframe>';
 };
 
 ZmURLObjectHandler.prototype.getActionMenu =
