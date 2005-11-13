@@ -296,7 +296,7 @@ function() {
 	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value);
 	
 	// CSFE EXPORT URI
-	value = (noPort) ? "/service/user/~/contacts.csv" : ":" + location.port + "/service/user/~/contacts.csv";	
+	value = (noPort) ? "/service/user/~/?id=10&fmt=csv" : ":" + location.port + "/service/user/~/?id=10&fmt=csv";	
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value);
 	
 	// default sorting preferences
