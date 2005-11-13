@@ -781,7 +781,7 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "</td></tr>"
 
 	// Attachments
-	var attLinks = msg.buildAttachLinks(true, this.getDocument().domain);
+	var attLinks = msg.buildAttachLinks(true, this.getDocument().domain, this._objectManager);
 	if (attLinks.length > 0) {
 		htmlArr[idx++] = "<tr><td class='LabelColName'>";
 		htmlArr[idx++] = ZmMsg.attachments;

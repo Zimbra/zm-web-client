@@ -1170,7 +1170,7 @@ function(msg, action, pref) {
 			((msg.hasAttach && action == ZmOperation.FORWARD) || 
 			  action == ZmOperation.DRAFT)) 
 	{
-		var attLinks = msg.buildAttachLinks(false, this.getDocument().domain);
+		var attLinks = msg.buildAttachLinks(false, this.getDocument().domain, null);
 		if (attLinks.length > 0) {
 			html[idx++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%>";
 			for (var i = 0; i < attLinks.length; i++) {

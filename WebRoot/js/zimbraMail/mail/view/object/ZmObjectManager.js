@@ -40,6 +40,8 @@ function ZmObjectManager(view, appCtxt) {
 	this._objectHandlers[ZmPhoneObjectHandler.TYPE] = [new ZmPhoneObjectHandler(appCtxt)];
 	this._objectHandlers[ZmPOObjectHandler.TYPE] = [new ZmPOObjectHandler(appCtxt)];
 	this._objectHandlers[ZmBugzillaObjectHandler.TYPE] = [new ZmBugzillaObjectHandler(appCtxt)];
+	// don't include when looking for objects. only used to provide tool tips for images
+	this._imageAttachmentHandler = new ZmImageAttachmentObjectHandler(appCtxt);
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		ZmDateObjectHandler.registerHandlers(this._objectHandlers, appCtxt);
 	}
@@ -119,6 +121,11 @@ function() {
 ZmObjectManager.prototype.getEmailHandler =
 function() {
 	return this._emailHandler;
+}
+
+ZmObjectManager.prototype.getImageAttachmentHandler =
+function() {
+	return this._imageAttachmentHandler;
 }
 
 // type is optional.. if you know what type of content is being passed in, set the

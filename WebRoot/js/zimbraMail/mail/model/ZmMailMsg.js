@@ -770,12 +770,12 @@ function(cl, domain) {
 
 // this is a helper method to build a list of attachment links in html
 ZmMailMsg.prototype.buildAttachLinks = 
-function(bFindHits, domain, partNameList) {
+function(bFindHits, domain, objectManager) {
 	var attLinks = new Array();
 
 	if (this._attachments && this._attachments.length > 0) {
 		var csfeMsgFetchSvc = location.protocol+ "//" + domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
-    	var hrefRoot = "href='" + csfeMsgFetchSvc + "id=" + this.getId() + "&amp;part=";
+    		var hrefRoot = "href='" + csfeMsgFetchSvc + "id=" + this.getId() + "&amp;part=";
     	
     	for (var i = 0; i < this._attachments.length; i++) {
     		// flag used to tell us whether we should use content location instead of built href
@@ -814,15 +814,15 @@ function(bFindHits, domain, partNameList) {
     		labelWidth += sizeText ? Dwt.getHtmlExtent(sizeText).x + 5 : 0;
     		var iconLabelWidth = 16 + labelWidth;
 
-			// set link
-		    var link = "";
-		    if (type == ZmMimeTable.MSG_RFC822) {
-		    	link = "<a href='javascript:;' onclick='ZmMailMsg.rfc822Callback(this," + this.getId() + ",\"" + attach.part + "\")' class='AttLink'>";
-		    } else {
+		// set link
+	    var link = "";
+	    if (type == ZmMimeTable.MSG_RFC822) {
+	    	link = "<a href='javascript:;' onclick='ZmMailMsg.rfc822Callback(this," + this.getId() + ",\"" + attach.part + "\")' class='AttLink'>";
+	    } else {
 		    	link = useCL
-		    		? ("<a target='att_view_win' class='AttLink' href='" + attach.cl + "'>")
-		    		: ("<a target='att_view_win' class='AttLink' " + hrefRoot + attach.part + "'>");
-		    }
+	    		? ("<a target='att_view_win' class='AttLink' href='" + attach.cl + "'>")
+	    		: ("<a target='att_view_win' class='AttLink' " + hrefRoot + attach.part + "'>");
+	    }
 
     		htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 style='display:inline; width:";
     		htmlArr[idx++] = iconLabelWidth;
@@ -835,13 +835,20 @@ function(bFindHits, domain, partNameList) {
 			// position:relative required to make this work in FF    		
      		htmlArr[idx++] = link + AjxImg.getImageHtml(icon, "position:relative;") + "</a>";
     		htmlArr[idx++] = "</td><td style='white-space:nowrap; width:" + labelWidth + "'>";
-    		
-    		// if this attachment is a match for the current search, set class name
+
+   		// if this attachment is a match for the current search, set class name
+   		var theLink;
     		if (bFindHits && this._isAttInHitList(attach)) {
-	    		htmlArr[idx++] = "<span class='AttName-matched'>" + link + encLabel + sizeText + "</a></span>";
+	    		theLink = "<span class='AttName-matched'>" + link + encLabel + sizeText + "</a></span>";
 	    	} else {
-				htmlArr[idx++] = link + encLabel + sizeText +  "</a>";
-		    }
+			theLink = link + encLabel + sizeText +  "</a>";
+	    }
+    		if (objectManager && type && type.match(/^image/)) {
+			var theURL = csfeMsgFetchSvc + "id=" + this.getId() + "&part="+attach.part;
+	    		idx = objectManager.generateSpan(objectManager.getImageAttachmentHandler(), htmlArr, idx, theLink, {url: theURL});
+		} else {
+	    		htmlArr[idx++] = theLink;
+		}
 
     		htmlArr[idx++] = "</td></tr></table></td>";
 	    	htmlArr[idx++] = "</tr></table>";
