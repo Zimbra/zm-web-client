@@ -32,8 +32,7 @@ ZmPhoneObjectHandler.prototype = new ZmObjectHandler;
 ZmPhoneObjectHandler.prototype.constructor = ZmPhoneObjectHandler;
 
 ZmPhoneObjectHandler.TYPE = "phone";
-ZmPhoneObjectHandler.PHONE_RE = /(^|\W)(?:(?:\(\d{3}\)[-.\s]?|\d{3}[-.\s]))?\d{3}[-.\s]\d{4}(\W|$)/g;
-
+ZmPhoneObjectHandler.PHONE_RE = /(^|\W)(?:\+1\s+)?(?:(?:\(\d{3}\)[-.\s]?|\d{3}[-.\s]))?\d{3}[-.\s]\d{4}(\W|$)/g;
 
 ZmPhoneObjectHandler.prototype.getReString =
 function() {
