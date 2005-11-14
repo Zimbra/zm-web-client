@@ -348,7 +348,7 @@ ZmMailMsgView.prototype._processHtmlDoc = function(doc) {
 			if (/^(img|a)$/.test(tmp)) {
 				if (tmp == "a"
 				    && (/^((https?|ftps?):\x2f\x2f.+)$/.test(node.href)
-					|| /^mailto:(.+)$/.test(node.href))) {
+					|| /^mailto:([^@?&]+@[^@?&]+\.[^@?&]+)/.test(node.href))) {
 					// tricky.
 					tmp = doc.createElement("div");
 					tmp.innerHTML = objectManager.findObjects(RegExp.$1);
@@ -823,7 +823,7 @@ function(args) {
 
 	var content = result.getResponse();
 
-	// if no text part, check if theres a calendar part and generate some canned 
+	// if no text part, check if theres a calendar part and generate some canned
 	// text, otherwise, get the html part if one exists
 	if (content == null) {
 		if (bodyPart.ct == ZmMimeTable.TEXT_CAL)
