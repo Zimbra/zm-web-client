@@ -2190,7 +2190,7 @@ function(ev) {
 		data.gridEl.style.cursor = 'auto';
 		Dwt.setVisible(data.newApptDivEl, false);		
 		if (data.isAllDay) {
-			data.view._appCtxt.getCurrentController().newAllDayAppointmentHelper(data.startDate, data.endDate, data.folderId, ev.shiftKey);		
+			data.view._appCtxt.getCurrentController().newAllDayAppointmentHelper(data.startDate, data.endDate, data.folderId, mouseEv.shiftKey);		
 		} else {
 			var duration = (data.endDate.getTime() - data.startDate.getTime());
 			if (duration < AjxDateUtil.MSEC_PER_HALF_HOUR) duration = AjxDateUtil.MSEC_PER_HALF_HOUR;	
