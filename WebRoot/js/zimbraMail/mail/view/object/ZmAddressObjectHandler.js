@@ -35,7 +35,7 @@ ZmAddressObjectHandler.prototype.constructor = ZmAddressObjectHandler;
 ZmAddressObjectHandler.TYPE = "gaddress";
 // TODO This regex is very very simple.  It only matches single line simple addresses like:
 // 1234 Main St City CA 99999
-ZmAddressObjectHandler.ADDRESS_RE = /[\w]{3,}([A-Za-z]\.)?([ \w]*\#\d+)?(\r\n| )[ \w]{3,}\x20[A-Za-z]{2}\x20\d{5}(-\d{4})?/ig;
+ZmAddressObjectHandler.ADDRESS_RE = /[\w]{3,}([A-Za-z]\.)?([ \w]*\#\d+)?(\r\n| )[ \w]{3,}\x20[A-Za-z]{2}\x20\d{5}(-\d{4})?\b/ig;
 
 // Y! maps geocoder, since Google doesn't have one.
 ZmAddressObjectHandler.URL = "http://api.local.yahoo.com/MapsService/V1/geocode?appid=ZimbraMail&location=";

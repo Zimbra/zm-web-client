@@ -34,7 +34,7 @@ ZmYAddressObjectHandler.prototype.constructor = ZmYAddressObjectHandler;
 ZmYAddressObjectHandler.TYPE = "yaddress";
 // TODO This regex is very very simple.  It only matches single line simple addresses like:
 // 1234 Main St City CA 99999
-ZmYAddressObjectHandler.ADDRESS_RE = /[\w]{3,}([A-Za-z]\.)?([ \w]*\#\d+)?(\r\n| )[ \w]{3,}\x20[A-Za-z]{2}\x20\d{5}(-\d{4})?/ig;
+ZmYAddressObjectHandler.ADDRESS_RE = /[\w]{3,}([A-Za-z]\.)?([ \w]*\#\d+)?(\r\n| )[ \w]{3,}\x20[A-Za-z]{2}\x20\d{5}(-\d{4})?\b/ig;
 
 // Y! Maps Service URL
 ZmYAddressObjectHandler.URL = "http://api.local.yahoo.com/MapsService/V1/mapImage?appid=ZimbraMail&zoom=4&image_height=245&image_width=345&location="
