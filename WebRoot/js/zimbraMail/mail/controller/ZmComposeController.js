@@ -589,8 +589,8 @@ ZmComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
-		this._app.getAppViewMgr().showPendingView(true);
 		this._composeView.reset(false);
+		this._app.getAppViewMgr().showPendingView(true);
 	} else {
 		this._composeView.enableInputs(true);
 		this._app.getAppViewMgr().showPendingView(false);
