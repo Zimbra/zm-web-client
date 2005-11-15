@@ -198,6 +198,8 @@ function (listener) {
 
 ZmMailMsgView.prototype.set =
 function(msg) {
+	if (this._msg == msg) return;
+
 	this.reset();
 	var contentDiv = this.getHtmlElement();
 	var oldMsg = this._msg;
