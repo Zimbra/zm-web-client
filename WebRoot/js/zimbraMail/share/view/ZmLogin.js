@@ -384,9 +384,6 @@ function(uname, pword) {
 		return;
 	}
 
-	var unameField = document.getElementById("uname");
-	var pwordField = document.getElementById("pass");
-	
     var el = soapDoc.set("account", uname);
     el.setAttribute("by", "name");
     soapDoc.set("password", pword);
@@ -401,7 +398,7 @@ function(args) {
 	var uname	= args[0];
 	var pword	= args[1];
 	var result	= args[2];
-	
+
 	var response;
 	try {
 		response = result.getResponse();
@@ -413,6 +410,9 @@ function(args) {
 			var msg = ZmMsg.errorNetwork + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
 			ZmLogin.setErrorMessage(msg);
 		} else if (ex.code == ZmCsfeException.ACCT_CHANGE_PASSWORD)	{
+			var unameField = document.getElementById("uname");
+			var pwordField = document.getElementById("pass");
+
 			// disable username and password fields
 			unameField.disabled = pwordField.disabled = true;
 			ZmLogin.showChangePass(ex);
