@@ -122,19 +122,47 @@ Contributor(s):
    		function launch() {
    			AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
+		 	ACCESS_RIGHTS = new Object();
 		 	// figure out the debug level
 				if (location.search && (location.search.indexOf("debug=") != -1)) {
-			   	 var m = location.search.match(/debug=(\d+)/);
-			  	  if (m.length) {
-					var num = parseInt(m[1]);
-					var level = AjxDebug.DBG[num];
-					if (level) {
-					    DBG.setDebugLevel(level);
+			   		var m = location.search.match(/debug=(\d+)/);
+				  	if (m.length) {
+				  		var num = parseInt(m[1]);
+						var level = AjxDebug.DBG[num];
+						if (level) {
+						    DBG.setDebugLevel(level);
+						}
 					}
 			    }
-			}
+			    /**
+			    * temporary code - 
+			    * TODO: remove when server is ready
+			    **/
+			    if(location.search && (location.search.indexOf("domain=") != -1)) {
+			    	var m = location.search.match(/domain=([A-Za-z0-9\-]+)/);
+					if (m.length) {
+						var domain = m[1];
+						if (domain) {
+						    ZaSettings.myDomainIds.push(domain);
+						    ZaSettings.isDomainAdmin = true;
+						    ZaSettings.MONITORING_ENABLED = false;
+						    ZaSettings.SYSTEM_CONFIG_ENABLED = false;
 
-	    	ZaZimbraAdmin.run(document.domain);
+						    ZaSettings.SERVERS_ENABLED = false;
+						    ZaSettings.SERVER_STATS_ENABLED = false;
+
+						    ZaSettings.COSES_ENABLED= false;
+						    ZaSettings.DOMAINS_ENABLED= false;
+						    
+						    ZaSettings.ACCOUNTS_RESTORE_ENABLED = false;
+						    ZaSettings.ACCOUNTS_PREFS_ENABLED = false;
+						    ZaSettings.ACCOUNTS_REINDEX_ENABLED = false;
+						    ZaSettings.ACCOUNTS_ADVANCED_ENABLED = false;						    
+						    DBG.println("my domain = " + domain);
+						}			    	
+					}
+			    }
+		    	ZaZimbraAdmin.run(document.domain);
 	    }
 		AjxCore.addOnloadListener(launch);
     </script>
