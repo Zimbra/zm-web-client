@@ -28,15 +28,11 @@ function ZmClientCmdHandler(appCtxt) {
 	this._settings = new Object();
 }
 
-ZmClientCmdHandler.prototype._alert = 
-function(msg, level) {
-	this._appCtxt.setStatusMsg(msg, level);
-}		
-		
 ZmClientCmdHandler.prototype.execute =
 function(argv) {
 	if (!argv || !argv[0]) return ;
 	var arg0 = argv[0].toLowerCase();
+
 	if (arg0 == "debug") {
 		if (!argv[1]) return;
 		if (argv[1] == "t") {
@@ -54,18 +50,6 @@ function(argv) {
 				this._alert("Invalid debug level", ZmStatusView.LEVEL_WARN);
 			}
 		}
-	} else if (arg0 == "debug_use_div") {
-		if (!argv[1]) {
-			this._alert("enter true or false", ZmStatusView.LEVEL_WARN);
-			return;
-		}
-		var arg = argv[1].toLowerCase();
-		if (arg == 'true') {
-			DBG.setUseDiv(true);
-		} else {
-			DBG.setUseDiv(false);
-		}
-		this._alert('set use div to ' + ((arg == 'true')? 'true': 'false'));
 	} else if (arg0 == "support") {
 		if (!argv[1]) return;
 		var feature = argv[1].toUpperCase();
@@ -107,3 +91,8 @@ function(argv) {
 		this._appCtxt.setStatusMsg("Slide Up", null, null, delay, ZmStatusView.TRANSITION_SLIDE_UP);
 	}
 }
+
+ZmClientCmdHandler.prototype._alert = 
+function(msg, level) {
+	this._appCtxt.setStatusMsg(msg, level);
+}		
