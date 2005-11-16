@@ -190,19 +190,8 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 		this._createToolBar();
 	this._toolbar.enableAll(true);
 
-	var needPicker = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) || this._appCtxt.get(ZmSetting.GAL_ENABLED);
-	if (!this._contactPicker && needPicker) {
-		var buttonInfo = [
-			{ id: ZmEmailAddress.TO, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.TO] },
-			{ id: ZmEmailAddress.CC, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.CC] },
-			{ id: ZmEmailAddress.BCC, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.BCC] }];
-		this._contactPicker = new ZmContactPicker(this, this._shell, this._appCtxt, buttonInfo);
-		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerCallback, this);
-		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancel, this);
-	}
-
 	if (!this._composeView) {
-		this._composeView = new ZmComposeView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._contactPicker, composeMode);
+		this._composeView = new ZmComposeView(this._container, null, Dwt.ABSOLUTE_STYLE, this, composeMode);
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
@@ -538,27 +527,6 @@ function(ev) {
 ZmComposeController.prototype._draftSavedCallback =
 function(ev) {
 	this._draftSavedDialog.popdown();
-	this._composeView.reEnableDesignMode();
-};
-
-// Transfers addresses from the contact picker to the compose view.
-ZmComposeController.prototype._contactPickerCallback =
-function(args) {
-	var addrs = args[0];
-	this._composeView.enableInputs(true);
-	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
-		var type = ZmComposeView.ADDRS[i];
-		var vec = addrs[type];
-		var addr = vec.size() ? vec.toString(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
-		this._composeView.setAddress(type, addr, true);
-	}
-	this._contactPicker.popdown();
-	this._composeView.reEnableDesignMode();
-};
-
-ZmComposeController.prototype._contactPickerCancel =
-function(args) {
-	this._composeView.enableInputs(true);
 	this._composeView.reEnableDesignMode();
 };
 
