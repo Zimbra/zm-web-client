@@ -478,7 +478,15 @@ function(message, viewMode) {
 			this.setStartDate(AjxDateUtil.parseServerDateTime(message.invite.getServerStartTime(0)));
 			this.setEndDate(AjxDateUtil.parseServerDateTime(message.invite.getServerEndTime(0)));
 		}
-		this.timezone = message.invite.getServerStartTimeTz(0);
+		var timezone = message.invite.getServerStartTimeTz(0);
+		if (timezone) {
+			this.timezone = timezone;
+		} else {
+			var start = message.invite.getServerStartTime(0);
+			if (start.charAt(start.length-1) == "Z")
+				this.timezone = null;
+		}
+		
 		this.repeatCustomMonthDay = this.startDate.getDate();
 
 		// attendees should all be in the TO field??
@@ -646,8 +654,14 @@ function(attachmentId, callback, errorCallback) {
 	if (needsExceptionId) {
 		var exceptId = soapDoc.set("exceptId", null, invAndMsg.inv);
 		if (this.allDayEvent != "1") {
-			exceptId.setAttribute("d", AjxDateUtil.getServerDateTime(this.getOrigStartDate()));
-			exceptId.setAttribute("tz", this.timezone);
+			var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate());
+			// bug fix #4697 (part 2)
+			if (this.timezone) {
+				exceptId.setAttribute("tz", this.timezone);
+			} else {
+				if (sd.charAt(sd.length-1) != "Z") sd += "Z";
+			}
+			exceptId.setAttribute("d", sd);
 		} else {
 			exceptId.setAttribute("d", AjxDateUtil.getServerDate(this.getOrigStartDate()));
 		}
@@ -1444,10 +1458,21 @@ function(soapDoc, method,  attachmentId) {
 	var s = soapDoc.set("s", null, inv);
 	var e = soapDoc.set("e", null, inv);
 	if (this.allDayEvent != "1") {
-		s.setAttribute("d", AjxDateUtil.getServerDateTime(this.startDate));
-		s.setAttribute("tz", this.timezone);
-		e.setAttribute("d", AjxDateUtil.getServerDateTime(this.endDate));
-		e.setAttribute("tz", this.timezone);
+		var sd = AjxDateUtil.getServerDateTime(this.startDate);
+		var ed = AjxDateUtil.getServerDateTime(this.endDate);
+
+		// bug fix #4697 (part 1) - append "Z" @ end of start/end dates if no timezone found
+		if (this.timezone) {
+			s.setAttribute("tz", this.timezone);
+			e.setAttribute("tz", this.timezone);
+		} else {
+			// sanity check
+			if (sd.charAt(sd.length-1) != "Z") sd += "Z";
+			if (ed.charAt(ed.length-1) != "Z") ed += "Z";
+		}
+		s.setAttribute("d", sd);
+		e.setAttribute("d", ed);
+		
 	} else {
 		s.setAttribute("d", AjxDateUtil.getServerDate(this.startDate));
 		e.setAttribute("d", AjxDateUtil.getServerDate(this.endDate));
