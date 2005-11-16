@@ -146,6 +146,22 @@ function(attId, isDraft, callback) {
 	}
 };
 
+ZmComposeController.prototype.initComposeView = 
+function() {
+	if (this._composeView == null) {
+		this._composeView = new ZmComposeView(this._container, this);
+		var callbacks = new Object();
+		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
+		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
+		var elements = new Object();
+		if (!this._toolbar)
+			this._createToolBar();
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
+	    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks);
+	}
+};
+
 
 // Private methods
 
@@ -190,19 +206,10 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 		this._createToolBar();
 	this._toolbar.enableAll(true);
 
-	if (!this._composeView) {
-		this._composeView = new ZmComposeView(this._container, null, Dwt.ABSOLUTE_STYLE, this, composeMode);
-		var callbacks = new Object();
-		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
-		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
-		var elements = new Object();
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-	    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks);
-	}
+	this.initComposeView();
 
-	// if a compose mode is already supplied, set it
 	if (composeMode) {
+		// set compose mode if already supplied
 		this._setFormatBtnItem(composeMode);
 	} else {
 		// otherwise, figure it out based on the given msg and mode type

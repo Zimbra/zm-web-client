@@ -31,15 +31,12 @@
 *
 * @author Conrad Damon
 * @param parent			[DwtControl]		the element that created this view
-* @param className		[string]*			CSS class
-* @param posStyle		[constant]*			positioning style (defaults to "absolute")
 * @param controller		[ZmController]		controller managing this view
 * @param composeMode 	[constant]			passed in so detached window knows which mode to be in on startup
 */
-function ZmComposeView(parent, className, posStyle, controller, composeMode) {
+function ZmComposeView(parent, controller, composeMode) {
 
-	className = className || "ZmComposeView";
-	DwtComposite.call(this, parent, className, posStyle);
+	DwtComposite.call(this, parent, "ZmComposeView", Dwt.ABSOLUTE_STYLE);
 	
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._controller = controller;
