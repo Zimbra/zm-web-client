@@ -345,7 +345,7 @@ function() {
 		html[i++] = "<tr>";
 		html[i++] = "<td><table border=0 width=100% cellpadding=0 cellspacing=0 class='ZmSchedTabViewPageTable'><tr>";
 		html[i++] = "<td";
-		html[i++] = j == ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES-1 ? " style='border-bottom:1px solid #CCCCCC'>" : ">";
+		html[i++] = j == ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES-1 || j == 0 ? " style='border-bottom:1px solid #CCCCCC'>" : ">";
 		html[i++] = "<div class='ZmSchedTabViewPageName' id='";
 		html[i++] = attendee.dwtDivId;
 		html[i++] = "'>";
@@ -367,7 +367,7 @@ function() {
 		html[i++] = "</tr></table>";
 		html[i++] = "</td>";
 		html[i++] = "<td";
-		html[i++] = j == ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES-1 ? " style='border-bottom:1px solid #CCCCCC'>" : ">";
+		html[i++] = j == ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES-1 || j == 0 ? " style='border-bottom:1px solid #CCCCCC'>" : ">";
 		html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmSchedTabViewPageTable' id='";
 		html[i++] = attendee.dwtTableId;
 		html[i++] = "'><tr";
@@ -376,6 +376,11 @@ function() {
 			html[i++] = "<td><div class='ZmSchedTabViewPageGrid'></div></td>";
 		html[i++] = "</tr></table>";
 		html[i++] = "</td></tr>";
+
+		// add an empty row here to visually separate All Attendees
+		if (j == 0) {
+			html[i++] = "<tr><td style='height:5px'></td></tr>";
+		}
 	}
 	html[i++] = "</table>";
 	html[i++] = "</td></tr></table>";
