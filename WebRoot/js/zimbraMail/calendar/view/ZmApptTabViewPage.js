@@ -1143,7 +1143,7 @@ ZmApptTabViewPage.prototype._attendeesButtonListener =
 function(ev) {
 	if (!this._contactPicker) {
 		var buttonInfo = [ { id:ZmApptTabViewPage.CONTACT_PICKER_BID, value:ZmMsg.add.toLowerCase() } ];
-		this._contactPicker = new ZmContactPicker(this._appCtxt.getShell(), this._appCtxt, buttonInfo);
+		this._contactPicker = new ZmContactPicker(this, this._appCtxt.getShell(), this._appCtxt, buttonInfo);
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
 		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancel, this);
 	}

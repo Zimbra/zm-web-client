@@ -34,17 +34,17 @@
 * @param className		[string]*			CSS class
 * @param posStyle		[constant]*			positioning style (defaults to "absolute")
 * @param controller		[ZmController]		controller managing this view
+* @param contactPicker	[ZmContactPicker]	handle to a contact picker for selecting addresses
 * @param composeMode 	[constant]			passed in so detached window knows which mode to be in on startup
 */
-function ZmComposeView(parent, className, posStyle, controller, composeMode) {
+function ZmComposeView(parent, className, posStyle, controller, contactPicker, composeMode) {
 
 	className = className || "ZmComposeView";
 	DwtComposite.call(this, parent, className, posStyle);
 	
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._controller = controller;
-	this._contactPickerEnabled = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) || 
-								 this._appCtxt.get(ZmSetting.GAL_ENABLED);
+	this._contactPicker = contactPicker;
 	
 	// part of bug fix #941 -- attaching an iframe which we'll use
 	// to send any upload requests.
@@ -962,40 +962,7 @@ ZmComposeView.prototype._addressButtonListener =
 function(ev) {
 	var obj = DwtUiEvent.getDwtObjFromEvent(ev);
 	this.enableInputs(false);
-
-	if (!this._contactPicker) {
-		var buttonInfo = [
-			{ id: ZmEmailAddress.TO, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.TO] },
-			{ id: ZmEmailAddress.CC, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.CC] },
-			{ id: ZmEmailAddress.BCC, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.BCC] }];
-
-		this._contactPicker = new ZmContactPicker(this._shell, this._appCtxt, buttonInfo);
-		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOkCallback, this);
-		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancelCallback, this);
-	}
-
 	this._contactPicker.popup(obj.addrType);
-};
-
-// Transfers addresses from the contact picker to the compose view.
-ZmComposeView.prototype._contactPickerCallback =
-function(args) {
-	var addrs = args[0];
-	this.enableInputs(true);
-	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
-		var type = ZmComposeView.ADDRS[i];
-		var vec = addrs[type];
-		var addr = vec.size() ? vec.toString(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
-		this.setAddress(type, addr, true);
-	}
-	this._contactPicker.popdown();
-	this.reEnableDesignMode();
-};
-
-ZmComposeView.prototype._contactPickerCancelCallback =
-function(args) {
-	this.enableInputs(true);
-	this.reEnableDesignMode();
 };
 
 // Click event will either be on an add address link, or in an address textarea field.

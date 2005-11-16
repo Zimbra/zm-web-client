@@ -33,14 +33,16 @@
 * to shuffle addresses back and forth between the two lists.
 *
 * @author Conrad Damon
+* @param controller 	the controller associated w/ this picker (used to schedule requests to server)
 * @param shell			the enclosing shell (which we are displayed on)
 * @param appCtxt		app context
 * @param buttonInfo		table containing array of ID/VALUE pairs used to generate buttons
 */
-function ZmContactPicker(shell, appCtxt, buttonInfo) {
+function ZmContactPicker(controller, shell, appCtxt, buttonInfo) {
 
 	DwtDialog.call(this, shell, null, ZmMsg.selectAddresses);
 	
+	this._controller = controller;
 	this._appCtxt = appCtxt;
 	this._buttonInfo = buttonInfo;
 	this._initialize();
@@ -498,9 +500,11 @@ function(ev) {
 * addresses to email. 
 *
 * @author Parag Shah
-* @param parent			the parent
-* @param view			the view
-* @param bExtHeader		whether this list view should incl. icon column
+* @param parent		
+* @param className	
+* @param posStyle 	
+* @param controller 
+* @param dropTgt 	
 */
 function ZmContactPickerListView(parent, view, bExtHeader) {
 	
