@@ -730,6 +730,19 @@
 }
 
 /*
+ * DwtInputField
+ */
+.DwtInputField input {
+	color: black;
+	background-color: white;
+}
+
+.DwtInputField-Error input {
+	color: black;
+	background-color: red;
+}
+
+/*
  *  DwtWizardDialog
  */
 

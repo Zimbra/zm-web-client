@@ -54,7 +54,7 @@ ZmHtmlEditor.prototype.constructor = ZmHtmlEditor;
 
 // Consts
 ZmHtmlEditor._VALUE = "value";
-
+ZmHtmlEditor._INSERT_TABLE = "ZmHtmlEditor._INSERT_TABLE";
 
 // Public methods
 
@@ -436,7 +436,18 @@ function(ev) {
 
 ZmHtmlEditor.prototype._insElementListener =
 function(ev) {
-	this.insertElement(ev.item.getData(ZmHtmlEditor._VALUE));
+	var elType = ev.item.getData(ZmHtmlEditor._VALUE);
+	switch (elType) {
+		case ZmHtmlEditor._INSERT_TABLE:
+			if (this._createTableDialog)
+				this._resetCreateTableDialog();
+			else
+				this._createCreateTableDialog();
+				this._createTableDialog.popup();
+			break;
+		default:
+			this.insertElement(elType);
+	}
 };
 
 ZmHtmlEditor.prototype._justificationListener =
@@ -589,6 +600,12 @@ function(parent) {
 	b.setImage("HorizRule");
 	b.setToolTipContent(ZmMsg.horizRule);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
+	b.addSelectionListener(insElListener);
+	
+	b = this._horizRuleButton = new DwtButton(tb, null, "TBButton");
+	b.setImage("InsertTable");
+	b.setToolTipContent(ZmMsg.insertTable);
+	b.setData(ZmHtmlEditor._VALUE, ZmHtmlEditor._INSERT_TABLE);
 	b.addSelectionListener(insElListener);
 };
 
@@ -1124,4 +1141,73 @@ function(args) {
 
 	if (callback)
 		callback.run(words);
+};
+
+
+ZmHtmlEditor.prototype._createCreateTableDialog =
+function() {
+	this._createTableDialog = new DwtDialog(this.shell, null, ZmMsg.insertTable, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+	this._createTableDialog._disableFFhack();
+	this._createTableDialog.registerCallback(DwtDialog.OK_BUTTON, this._tableDialogOkCallback, this);
+
+	var numColsLabel = Dwt.getNextId();
+	var numColsId = Dwt.getNextId();
+	var numRowsId = Dwt.getNextId();
+	var tableWidthId = Dwt.getNextId(); 
+	var cellSpacingId = Dwt.getNextId();
+	var cellPaddingId = Dwt.getNextId();
+	var widthUnitId = Dwt.getNextId();
+     
+	var html = [
+         "<table><tr><td>",
+         "<fieldset style='margin-left:5px'><legend>Table Size</legend>",
+         "<div style='padding:2px;'></div>",
+         "<table><tr>",
+         "<td style='width:9em; float:left; padding:2px 5px; text-align:right;' id='", numColsLabel, "'>Number of Columns:</td>",
+         "<td colspan=2 id='", numColsId, "'></td></tr>",
+         "<tr><td style='width:9em; float:left; padding:2px 5px; text-align:right;'>Number of Rows:</td>",
+         "<td colspan=2><input type='text' id='", numRowsId, "' size='5' value='5'/></td></tr>",
+         "<tr><td style='width:9em; float:left; padding:2px 5px; text-align:right;'>Table Width:</td>",
+         "<td><input type='text' id='", tableWidthId, "' size='5' value='100'/></td>",
+         "<td style='padding-left;2px;' id='", widthUnitId, "'></td></tr></table></fieldset><p/>",
+         "<fieldset style='margin-left:5px'><legend>Spacing</legend>",
+         "<div style='padding:2px;'></div>",
+         "<table xborder=1><tr>",
+         "<td style='width:9em; float:left; padding:2px 5px; text-align:right;'>Cell Spacing:</td>",
+         "<td><input type='text' id='", cellSpacingId, "' size='5' value='1'/></td></tr>",
+         "<tr><td style='width:9em; float:left; padding:2px 5px; text-align:right;'>Cell Padding:</td>",
+         "<td><input type='text' id='", cellPaddingId, "' size='5' value='1'/></td></tr></table></fieldset>",
+         "</td></tr></table>"].join("");
+     
+	this._createTableDialog.setContent(html);
+    
+	this._tcdNumColsLabel = document.getElementById(numColsLabel);
+	//this._tcdNumColsField = document.getElementById(numColsId);
+	this._numColsField = new DwtInputField(this, DwtInputField.INTEGER, 2, 5, 5, null, DwtInputField.CONTINUAL_VALIDATION);
+	this._numColsField.reparentHtmlElement(numColsId);
+	
+	
+	this._tcdNumRowsField = document.getElementById(numRowsId);
+	this._tcdTableWidthField = document.getElementById(tableWidthId);
+	this._tcdcellSpacingField = document.getElementById(cellSpacingId);
+	this._tcdcellPaddingField = document.getElementById(cellPaddingId);
+ 
+	this._tcdWidthUnit = new DwtSelect(this.shell, ["Percent", "Pixels"]);
+	document.getElementById(widthUnitId).appendChild(this._tcdWidthUnit.getHtmlElement());
+};
+
+ZmHtmlEditor.prototype._tableDialogOkCallback =
+function(ev) {
+	/* Need to validate all the fields */
+	// ZmAppCtxt.getFromShell();
+	// getMsgDialog();
+	//  msgDialog = ZmAppCtxt.getFromShell().getMsgDialog();
+	//  msgDialog.setButtonListener(, this._msgDialogButtonListener);
+	//  msgDialog.set("HA HA HA", DwtMessageDialog.CRITICAL_STYLE, "Input Error");   var msgDialog;
+	var val = this._tcdNumColsField.value();
+	//if (!AjxUtil.isNonNegativeInteger(val)) {
+	//	this._tcdNumColsLabel.style.color = "red";
+	//	this._tcdNumColsFiled.style.background = "yellow";
+	//}
+	this.insertTable(rows, cols, width, alignment, border, cellSpacing, cellPadding) 
 };
