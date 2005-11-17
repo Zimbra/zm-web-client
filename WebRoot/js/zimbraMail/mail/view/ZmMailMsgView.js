@@ -975,7 +975,7 @@ function(ev) {
 };
 
 ZmMailMsgView.getPrintHtml =
-function(msg, preferHtml) {
+function(msg, preferHtml, callback) {
 	if (!(msg instanceof ZmMailMsg))
 		return;
 
@@ -985,11 +985,30 @@ function(msg, preferHtml) {
 		msgNode.setAttribute("id", msg.id);
 		if (preferHtml)
 			msgNode.setAttribute("html", "1");
-		var command = new ZmCsfeCommand();
-		var resp = command.invoke({soapDoc: soapDoc}).Body.GetMsgResponse;
-		msg._loadFromDom(resp.m[0]);
+		var respCallback = new AjxCallback(null, ZmMailMsgView._handleResponseGetPrintHtml, [msg, preferHtml, callback]);
+		var appCtlr = window._zimbraMail;
+		appCtlr.sendRequest(soapDoc, true, respCallback);
+	} else {
+		if (callback)
+			ZmMailMsgView._printMessage(msg, preferHtml, callback);
+		else
+			return ZmMailMsgView._printMessage(msg, preferHtml);
 	}
+};
 
+ZmMailMsgView._handleResponseGetPrintHtml =
+function(args) {
+	var msg			= args[0];
+	var callback	= args[1];
+	var result		= args[2];
+
+	var resp = result.getResponse().GetMsgResponse;
+	msg._loadFromDom(resp.m[0]);
+	ZmMailMsgView._printMessage(msg, preferHtml, callback);
+};
+
+ZmMailMsgView._printMessage =
+function(msg, preferHtml, callback) {
 	var html = new Array();
 	var idx = 0;
 
@@ -1045,5 +1064,10 @@ function(msg, preferHtml) {
 		html[idx++] = "</div>";
 	}
 
-	return html.join("");
+	if (callback) {
+		var result = new ZmCsfeResult(html.join(""));
+		callback.run(result);
+	} else {
+		return html.join("");
+	}
 };

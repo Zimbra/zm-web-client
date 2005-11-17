@@ -296,21 +296,39 @@ function(conv, fieldId) {
 // Static methods
 
 ZmConvListView.getPrintHtml = 
-function(conv, preferHtml) {
+function(conv, preferHtml, callback) {
 
 	// first, get list of all msg id's for this conversation
 	if (conv.msgIds == null) {
 		var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:zimbraMail");
 		var msgNode = soapDoc.set("c");
 		msgNode.setAttribute("id", conv.id);
-		var command = new ZmCsfeCommand();
-		var resp = command.invoke({soapDoc: soapDoc}).Body.GetConvResponse.c[0];
-		var msgIds = new Array();
-		for (var i = 0; i < resp.m.length; i++)
-			msgIds.push(resp.m[i].id);
-		conv.msgIds = msgIds;
+		
+		var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetPrintHtml, [conv, preferHtml, callback]);
+		var appCtlr = window._zimbraMail;
+		appCtlr.sendRequest(soapDoc, true, respCallback);
+	} else {
+		ZmConvListView._printMessages(conv, preferHtml, callback);
 	}
+};
+
+ZmConvListView._handleResponseGetPrintHtml =
+function(args) {
+	var conv		= args[0];
+	var preferHtml	= args[1];
+	var callback	= args[2];
+	var result		= args[3];
 	
+	var resp = result.getResponse().GetConvResponse.c[0];
+	var msgIds = new Array();
+	for (var i = 0; i < resp.m.length; i++)
+		msgIds.push(resp.m[i].id);
+	conv.msgIds = msgIds;
+	ZmConvListView._printMessages(conv, preferHtml, callback);
+};
+
+ZmConvListView._printMessages =
+function(conv, preferHtml, callback) {
 	// XXX: optimize? Once these msgs are d/l'ed should they be cached?
 	var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
 	soapDoc.setMethodAttribute("onerror", "continue");
@@ -327,9 +345,19 @@ function(conv, preferHtml) {
 			msgNode.setAttribute("html", "1");
 		msgRequest.appendChild(msgNode);
 	}
-	var command = new ZmCsfeCommand();
-	var resp = command.invoke({soapDoc: soapDoc}).Body.BatchResponse.GetMsgResponse;
-	
+	var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetMessages, [conv, preferHtml, callback]);
+	var appCtlr = window._zimbraMail;
+	appCtlr.sendRequest(soapDoc, true, respCallback);
+};
+
+ZmConvListView._handleResponseGetMessages =
+function(args) {
+	var conv		= args[0];
+	var preferHtml	= args[1];
+	var callback 	= args[2];
+	var result		= args[3];
+	var resp = result.getResponse().BatchResponse.GetMsgResponse;
+
 	var html = new Array();
 	var idx = 0;
 	
@@ -341,11 +369,11 @@ function(conv, preferHtml) {
 	for (var i = 0; i < resp.length; i++) {
 		var msgNode = resp[i].m[0];
 		var msg = ZmMailMsg.createFromDom(msgNode, {appCtxt: null, list: null});
-		
 		html[idx++] = ZmMailMsgView.getPrintHtml(msg, preferHtml);
-		if (i < resp.length-1)
+		if (i < resp.length - 1)
 			html[idx++] = "<hr>";
 	}
 	
-	return html.join("");
+	result.set(html.join(""));
+	if (callback) callback.run(result);
 };

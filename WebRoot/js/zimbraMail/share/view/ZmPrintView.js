@@ -38,9 +38,13 @@ function(item) {
 	var preferHtml = this._appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	
 	if (item instanceof ZmConv) {
-		this._html = ZmConvListView.getPrintHtml(item, preferHtml);
+		var respCallback = new AjxCallback(this, this._handleResponseRender);
+		ZmConvListView.getPrintHtml(item, preferHtml, respCallback);
+		return;
 	} else if (item instanceof ZmMailMsg) {
-		this._html = ZmMailMsgView.getPrintHtml(item, preferHtml);
+		var respCallback = new AjxCallback(this, this._handleResponseRender);
+		ZmMailMsgView.getPrintHtml(item, preferHtml, respCallback);
+		return;
 	} else if (item instanceof ZmContact) {
 		this._html = ZmContactView.getPrintHtml(item, false, this._appCtxt);
 	} else if (item instanceof ZmContactList) {
@@ -49,6 +53,12 @@ function(item) {
 		this._html = ZmCalViewMgr.getPrintHtml(item);
 	}
 	
+	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
+};
+
+ZmPrintView.prototype._handleResponseRender =
+function(result) {
+	this._html = result.getResponse();
 	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
 };
 
