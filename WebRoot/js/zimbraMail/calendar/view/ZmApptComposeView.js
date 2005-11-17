@@ -58,8 +58,6 @@ ZmApptComposeView.prototype.constructor = ZmApptComposeView;
 ZmApptComposeView.DIALOG_X = 50;
 ZmApptComposeView.DIALOG_Y = 100;
 
-ZmApptComposeView.EMPTY_FORM_RE = /^[\s\|]*$/;
-
 
 // Public methods
 

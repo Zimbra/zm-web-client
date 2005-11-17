@@ -206,14 +206,9 @@ function(bEnableInputs) {
 
 ZmApptTabViewPage.prototype.isDirty =
 function() {
-	// any attachment activity => dirty
-	if (this._gotAttachments())
-		return true;
-
-	var curFormValue = this._formValue();
-	return (curFormValue.match(ZmApptComposeView.EMPTY_FORM_RE))
-		? false
-		: (curFormValue != this._origFormValue);
+	return (this._gotAttachments()) || 
+		   (this._formValue() != this._origFormValue) || 
+		   (this._subjectField.value != "");
 };
 
 ZmApptTabViewPage.prototype.isValid = 
