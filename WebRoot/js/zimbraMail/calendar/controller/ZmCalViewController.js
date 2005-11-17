@@ -445,7 +445,7 @@ function(ev) {
 
 ZmCalViewController.prototype._newApptAction =
 function(ev) {
-	var d = this._minicalMenu.__detail;
+	var d = this._minicalMenu ? this._minicalMenu.__detail : null;
 	if (d != null) delete this._minicalMenu.__detail;
 	else d = this._viewMgr ? this._viewMgr.getDate() : null;
 	if (d == null) d = new Date();
@@ -454,7 +454,7 @@ function(ev) {
 
 ZmCalViewController.prototype._newAllDayApptAction =
 function(ev) {
-	var d = this._minicalMenu.__detail;
+	var d = this._minicalMenu ? this._minicalMenu.__detail : null;
 	if (d != null) delete this._minicalMenu.__detail;
 	else d = this._viewMgr ? this._viewMgr.getDate() : null;
 	if (d == null) d = new Date();
