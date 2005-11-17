@@ -153,7 +153,7 @@ Contributor(s):
 
 						    ZaSettings.SERVERS_ENABLED = false;
 						    ZaSettings.SERVER_STATS_ENABLED = false;
-
+							ZaSettings.STATUS_ENABLED = false;
 						    ZaSettings.COSES_ENABLED= false;
 						    ZaSettings.DOMAINS_ENABLED= false;
 						    ZaSettings.ACCOUNTS_FEATURES_ENABLED = false;
