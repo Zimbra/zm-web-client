@@ -523,7 +523,6 @@ function(args) {
 
 ZmList.prototype._handleResponseMoveItems =
 function(args) {
-debugger;
 	var folder		= args[0];
 	var result		= args[1];
 
