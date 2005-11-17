@@ -601,7 +601,7 @@ function (mailServer) {
 
 ZmLogin.getAuthUrl = 
 function (mailServer) {
-	var ms = mailServer? mailServer: location.hostname;
+	var ms = mailServer ? mailServer: location.hostname;
 	return (location.protocol + "//" + ms + ((location.port == 80) 
 		? "" 
 		: ":" + location.port) +"/zimbra/auth/" + window.location.search);

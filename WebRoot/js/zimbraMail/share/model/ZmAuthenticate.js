@@ -40,9 +40,8 @@ function() {
 	return "ZmAuthenticate";
 };
 
-// XXX: async
 ZmAuthenticate.prototype.execute =
-function(uname, pword) {
+function(uname, pword, callback) {
 	var command = new ZmCsfeCommand();
 	var soapDoc;
 	if (!ZmAuthenticate._isAdmin) {
@@ -54,8 +53,18 @@ function(uname, pword) {
 		soapDoc.set("name", uname);
 	}
 	soapDoc.set("password", pword);
-	var resp = command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true}).Body.AuthResponse;
+	var respCallback = new AjxCallback(this, this._handleResponseExecute, [callback]);
+	command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true, asyncMode: true, callback: respCallback})
+};
+
+ZmAuthenticate.prototype._handleResponseExecute =
+function(args) {
+	var callback	= args[0];
+	var result		= args[1];
+
+	var resp = result.getResponse().Body.AuthResponse;
 	this._setAuthToken(resp);
+	if (callback) callback.run(result);
 };
 
 ZmAuthenticate.prototype._setAuthToken =
