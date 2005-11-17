@@ -81,35 +81,38 @@ function() {
 };
 
 /**
- * creates a new DwtCalendar
- * @parent 		parent this DwtCalendar gets appended to (usually the shell)
- * @listener 	AjxListener to call when date is selected
- * @fdow 		first day of the week (different per i18n)
- * @isInDialog 	set to true if mini cal is to be inside a DwtDialog (otherwise z-index will be too low)
+ * creates a new button with a DwtCalendar as its menu
+ * @document 					the DOM document
+ * @parent						parent this DwtButton gets appended to
+ * @buttonId 					buttonId to fetch inside DOM and append DwtButton to
+ * @dateButtonListener			AjxListener to call when date button is pressed
+ * @dateCalSelectionListener	AjxListener to call when date is selected in DwtCalendar
+ * @isInDialog 					true if mini cal is inside a DwtDialog (otherwise z-index will be too low)
 */
-ZmApptViewHelper.createMiniCal = 
-function(parent, listener, fdow, isInDialog) {
-	var dateCalendar = new DwtCalendar(parent, null, DwtControl.ABSOLUTE_STYLE);
+ZmApptViewHelper.createMiniCalButton =
+function(document, parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDialog) {
+	// create button
+	var dateButton = new DwtButton(parent);
+	dateButton.addSelectionListener(dateButtonListener);
+	dateButton.addDropDownSelectionListener(dateButtonListener);
+	dateButton.setSize(20, 20);
 
-	dateCalendar.setSkipNotifyOnPage(true);
-	dateCalendar.setSize("150");
-	dateCalendar.setZIndex(isInDialog ? Dwt.Z_DIALOG : Dwt.Z_VIEW);
-	var calEl = dateCalendar.getHtmlElement();
-	calEl.style.borderWidth = "2px";
-	calEl.style.borderStyle = "solid";
-	calEl.style.borderColor = "#B2B2B2 #000000 #000000 #B2B2B2";
-	calEl.style.backgroundImage = "url(/zimbra/skins/steel/images/bg_pebble.gif)";
+	// create menu for button
+	var calMenu = new DwtMenu(dateButton, DwtMenu.CALENDAR_PICKER_STYLE, null, null, isInDialog);
+	dateButton.setMenu(calMenu, true);
 
-	dateCalendar.addSelectionListener(listener);
+	// create mini cal for menu for button
+	var cal = new DwtCalendar(calMenu);
+	cal.setSkipNotifyOnPage(true);
+	cal.addSelectionListener(dateCalSelectionListener);
 
-	var workingWeek = [];
-	for (var i=0; i < 7; i++) {
-		var d = (i+fdow)%7;
-		workingWeek[i] = (d > 0 && d < 6);
-	}
-	dateCalendar.setWorkingWeek(workingWeek);
-	
-	return dateCalendar;
+	// reparent and cleanup
+	var buttonCell = Dwt.getDomObj(document, buttonId);
+	if (buttonCell)
+		buttonCell.appendChild(dateButton.getHtmlElement());
+	delete buttonId;
+
+	return dateButton;
 };
 
 ZmApptViewHelper.resetTimeSelect = 

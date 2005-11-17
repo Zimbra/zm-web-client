@@ -501,15 +501,12 @@ function() {
 	if (repeatSelectDiv)
 		repeatSelectDiv.appendChild(this._repeatSelect.getHtmlElement());
 	delete this._repeatSelectId;
-	
-	this._endByButton = new DwtButton(this);
-	this._endByButton.setImage("SelectPullDownArrow");
-	this._endByButton.addSelectionListener(new AjxListener(this, this._endByButtonListener));
-	this._endByButton.setSize(20, 20);
-	var endByButtonCell = Dwt.getDomObj(doc, this._endByButtonId);
-	if (endByButtonCell)
-		endByButtonCell.appendChild(this._endByButton.getHtmlElement());
-	delete this._endByButtonId;
+
+	var dateButtonListener = new AjxListener(this, this._endByButtonListener);
+	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
+
+	this._endByButton = ZmApptViewHelper.createMiniCalButton(doc, this, this._endByButtonId, 
+															 dateButtonListener, dateCalSelectionListener, true);
 
 	this._weeklySelect = new DwtSelect(this);
 	for (var i = 0; i < AjxDateUtil.WEEKDAY_LONG.length; i++)
@@ -760,45 +757,17 @@ function(ev) {
 
 ZmApptRecurDialog.prototype._endByButtonListener = 
 function(ev) {
-	// init new DwtCalendar if not already created
-	if (!this._dateCalendar) {
-		this._dateCalendar = new DwtCalendar(this, null, DwtControl.ABSOLUTE_STYLE);
-
-		this._dateCalendar.setSkipNotifyOnPage(true);
-		this._dateCalendar.setSize("150");
-		this._dateCalendar.setZIndex(Dwt.Z_VIEW);
-		var calEl = this._dateCalendar.getHtmlElement();
-		calEl.style.borderWidth = "2px";
-		calEl.style.borderStyle = "solid";
-		calEl.style.borderColor = "#B2B2B2 #000000 #000000 #B2B2B2";
-		calEl.style.backgroundImage = "url(/zimbra/skins/steel/images/bg_pebble.gif)";
-
-		this._dateCalendar.addSelectionListener(new AjxListener(this, this._dateCalSelectionListener));
-		var workingWeek = [];
-		var fdow = this._appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
-		for (var i=0; i < 7; i++) {
-			var d = (i+fdow)%7;
-			workingWeek[i] = (d > 0 && d < 6);
-		}
-		this._dateCalendar.setWorkingWeek(workingWeek);
-		ev.dwtObj.getHtmlElement().appendChild(this._dateCalendar.getHtmlElement());
-	} else {
-		// only toggle display if user clicked on same button calendar is being shown for
-		if (this._dateCalendar.getHtmlElement().parentNode == ev.dwtObj.getHtmlElement())
-			this._dateCalendar.setVisible(!this._dateCalendar.getVisible());
-		else
-			this._dateCalendar.setVisible(true);
-	}
-
+	var menu = ev.item.getMenu();
+	var cal = menu.getItem(0);
 	// always(?) reset the date to today's date
-	this._dateCalendar.setDate(new Date(), true);
+	cal.setDate(new Date(), true);
+	menu.popup();
 };
 
 ZmApptRecurDialog.prototype._dateCalSelectionListener = 
 function(ev) {
 	this._endByField.value = AjxDateUtil.simpleComputeDateStr(ev.detail);
 	this._endByRadio.checked = true;
-	this._dateCalendar.setVisible(false);
 };
 
 ZmApptRecurDialog.prototype._okListener = 

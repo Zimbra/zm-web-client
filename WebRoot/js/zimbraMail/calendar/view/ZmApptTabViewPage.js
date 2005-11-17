@@ -186,8 +186,6 @@ function() {
 	this._repeatSelect.setSelectedValue(ZmApptViewHelper.REPEAT_OPTIONS[0].value);
 	this._allDayCheckbox.checked = false;
 	this._showTimeFields(true);
-	if (this._dateCalendar)
-		this._dateCalendar.setVisible(false);
 
 	// remove attachments if any were added
 	this._removeAllAttachments();
@@ -655,25 +653,13 @@ function() {
 	var doc = this.getDocument();
 
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
-	this._startDateButton = new DwtButton(this);
-	this._startDateButton.setImage("SelectPullDownArrow");
-	this._startDateButton.addSelectionListener(dateButtonListener);
-	this._startDateButton.setSize(20, 20);
-	// reparent
-	var startButtonCell = Dwt.getDomObj(doc, this._startMiniCalBtnId);
-	if (startButtonCell)
-		startButtonCell.appendChild(this._startDateButton.getHtmlElement());
-	delete this._startMiniCalBtnId;
-	
-	this._endDateButton = new DwtButton(this);
-	this._endDateButton.setImage("SelectPullDownArrow");
-	this._endDateButton.addSelectionListener(dateButtonListener);
-	this._endDateButton.setSize(20, 20);
-	// reparent
-	var endButtonCell = Dwt.getDomObj(doc, this._endMiniCalBtnId);
-	if (endButtonCell)
-		endButtonCell.appendChild(this._endDateButton.getHtmlElement());
-	delete this._endMiniCalBtnId;
+	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
+
+	this._startDateButton = ZmApptViewHelper.createMiniCalButton(doc, this, this._startMiniCalBtnId, 
+																 dateButtonListener, dateCalSelectionListener);
+
+	this._endDateButton = ZmApptViewHelper.createMiniCalButton(doc, this, this._endMiniCalBtnId, 
+															   dateButtonListener, dateCalSelectionListener);
 
 	this._attendeesBtnListener = new AjxListener(this, this._attendeesButtonListener);
 	this._attendeesButton = new DwtButton(this);
@@ -1106,37 +1092,23 @@ function() {
 
 ZmApptTabViewPage.prototype._dateButtonListener = 
 function(ev) {
-	// init new DwtCalendar if not already created
-	if (!this._dateCalendar) {
-		var dateSelListener = new AjxListener(this, this._dateCalSelectionListener);
-		var fdow = this._appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
-		this._dateCalendar = ZmApptViewHelper.createMiniCal(this.shell, dateSelListener, fdow);
-	} else {
-		// only toggle display if user clicked on same button calendar is being shown for
-		if (this._dateCalendar._currButton == ev.dwtObj)
-			this._dateCalendar.setVisible(!this._dateCalendar.getVisible());
-		else
-			this._dateCalendar.setVisible(true);
-	}
-	// reparent calendar based on which button was clicked
-	var buttonLoc = ev.dwtObj.getLocation();
-	this._dateCalendar.setLocation(buttonLoc.x, buttonLoc.y+22);
-	this._dateCalendar._currButton = ev.dwtObj;
-
-	var calDate = this._dateCalendar._currButton == this._startDateButton
+	var calDate = ev.item == this._startDateButton
 		? new Date(this._startDateField.value)
 		: new Date(this._endDateField.value);
 
 	// if date was input by user and its foobar, reset to today's date
 	if (isNaN(calDate)) {
 		calDate = new Date();
-		var field = this._dateCalendar._currButton == this._startDateButton
+		var field = ev.item == this._startDateButton
 			? this._startDateField : this._endDateField;
 		field.value = AjxDateUtil.simpleComputeDateStr(calDate);
 	}
 
 	// always reset the date to current field's date
-	this._dateCalendar.setDate(calDate, true);
+	var menu = ev.item.getMenu();
+	var cal = menu.getItem(0);
+	cal.setDate(calDate, true);
+	menu.popup();
 };
 
 ZmApptTabViewPage.prototype._attendeesButtonListener = 
@@ -1152,8 +1124,7 @@ function(ev) {
 
 ZmApptTabViewPage.prototype._dateCalSelectionListener = 
 function(ev) {
-	// get the parent node this calendar currently belongs to
-	var parentButton = this._dateCalendar._currButton;
+	var parentButton = ev.item.parent.parent;
 
 	// do some error correction... maybe we can optimize this?
 	var sd = new Date(this._startDateField.value);
@@ -1170,8 +1141,6 @@ function(ev) {
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
 	}
-
-	this._dateCalendar.setVisible(false);
 };
 
 ZmApptTabViewPage.prototype._timeChangeListener = 

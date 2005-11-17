@@ -420,28 +420,16 @@ function() {
 		endTimeCell.appendChild(this._endTimeSelect.getHtmlElement());
 	delete this._endTimeSelectId;
 
-	// create down arrow buttons for mini calendar
+	// create mini calendar buttons
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
-	this._startDateButton = new DwtButton(this);
-	this._startDateButton.setImage("SelectPullDownArrow");
-	this._startDateButton.addSelectionListener(dateButtonListener);
-	this._startDateButton.setSize(20, 20);
-	// reparent
-	var startButtonCell = Dwt.getDomObj(this._doc, this._startMiniCalBtnId);
-	if (startButtonCell)
-		startButtonCell.appendChild(this._startDateButton.getHtmlElement());
-	delete this._startMiniCalBtnId;
-	
-	this._endDateButton = new DwtButton(this);
-	this._endDateButton.setImage("SelectPullDownArrow");
-	this._endDateButton.addSelectionListener(dateButtonListener);
-	this._endDateButton.setSize(20, 20);
-	// reparent
-	var endButtonCell = Dwt.getDomObj(this._doc, this._endMiniCalBtnId);
-	if (endButtonCell)
-		endButtonCell.appendChild(this._endDateButton.getHtmlElement());
-	delete this._endMiniCalBtnId;
+	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
+	this._startDateButton = ZmApptViewHelper.createMiniCalButton(this._doc, this, this._startMiniCalBtnId, 
+																 dateButtonListener, dateCalSelectionListener);
+
+	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this._doc, this, this._endMiniCalBtnId, 
+															   dateButtonListener, dateCalSelectionListener);
+	
 	var navBarListener = new AjxListener(this, this._navBarListener);
 	this._navToolbar = new ZmNavToolBar(this, DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
 	this._navToolbar._textButton.getHtmlElement().className = "ZmSchedTabViewPageDate";
@@ -724,43 +712,30 @@ function(ev) {
 // XXX: refactor this code since ZmApptTabViewPage uses similar?
 ZmSchedTabViewPage.prototype._dateButtonListener = 
 function(ev) {
-	// init new DwtCalendar if not already created
-	if (!this._dateCalendar) {
-		var dateSelListener = new AjxListener(this, this._dateCalSelectionListener);
-		var fdow = this._appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
-		this._dateCalendar = ZmApptViewHelper.createMiniCal(this.shell, dateSelListener, fdow);
-	} else {
-		// only toggle display if user clicked on same button calendar is being shown for
-		if (this._dateCalendar._currButton == ev.dwtObj)
-			this._dateCalendar.setVisible(!this._dateCalendar.getVisible());
-		else
-			this._dateCalendar.setVisible(true);
-	}
-	// reparent calendar based on which button was clicked
-	var buttonLoc = ev.dwtObj.getLocation();
-	this._dateCalendar.setLocation(buttonLoc.x, buttonLoc.y+22);
-	this._dateCalendar._currButton = ev.dwtObj;
-
-	var calDate = this._dateCalendar._currButton == this._startDateButton
+	var calDate = ev.item == this._startDateButton
 		? new Date(this._startDateField.value)
 		: new Date(this._endDateField.value);
 
 	// if date was input by user and its foobar, reset to today's date
 	if (isNaN(calDate)) {
 		calDate = new Date();
-		var field = this._dateCalendar._currButton == this._startDateButton
+		var field = ev.item == this._startDateButton
 			? this._startDateField : this._endDateField;
 		field.value = AjxDateUtil.simpleComputeDateStr(calDate);
 	}
 
 	// always reset the date to current field's date
-	this._dateCalendar.setDate(calDate, true);
+	var menu = ev.item.getMenu();
+	var cal = menu.getItem(0);
+	cal.setDate(calDate, true);
+	menu.popup();
 };
 
 // XXX: refactor this code since ZmApptTabViewPage uses similar?
 ZmSchedTabViewPage.prototype._dateCalSelectionListener = 
 function(ev) {
-	var parentButton = this._dateCalendar._currButton;
+	var parentButton = ev.item.parent.parent;
+
 	// update the appropriate field w/ the chosen date
 	var field = parentButton == this._startDateButton
 		? this._startDateField : this._endDateField;
@@ -768,8 +743,6 @@ function(ev) {
 
 	// change the start/end date if they mismatch
 	this._handleDateChange(parentButton == this._startDateButton, true);
-
-	this._dateCalendar.setVisible(false);
 };
 
 ZmSchedTabViewPage.prototype._navBarListener = 
