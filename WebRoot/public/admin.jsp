@@ -125,8 +125,8 @@ Contributor(s):
 		 	ACCESS_RIGHTS = new Object();
 		 	// figure out the debug level
 				if (location.search && (location.search.indexOf("debug=") != -1)) {
-			   		var m = location.search.match(/debug=(\d+)/);
-				  	if (m.length) {
+			   		var m = location.search.match(/debug=([\d\-]+)/);
+				  	if (m && m.length) {
 				  		var num = parseInt(m[1]);
 						var level = AjxDebug.DBG[num];
 						if (level) {
@@ -143,6 +143,9 @@ Contributor(s):
 					if (m.length) {
 						var domain = m[1];
 						if (domain) {
+							if(!ZaSettings.myDomainIds)
+								ZaSettings.myDomainIds = new Array();
+								
 						    ZaSettings.myDomainIds.push(domain);
 						    ZaSettings.isDomainAdmin = true;
 						    ZaSettings.MONITORING_ENABLED = false;
@@ -153,7 +156,7 @@ Contributor(s):
 
 						    ZaSettings.COSES_ENABLED= false;
 						    ZaSettings.DOMAINS_ENABLED= false;
-						    
+						    ZaSettings.ACCOUNTS_FEATURES_ENABLED = false;
 						    ZaSettings.ACCOUNTS_RESTORE_ENABLED = false;
 						    ZaSettings.ACCOUNTS_PREFS_ENABLED = false;
 						    ZaSettings.ACCOUNTS_REINDEX_ENABLED = false;
