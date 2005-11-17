@@ -289,7 +289,7 @@ function(items, flagOp, on) {
 	}
 
 	var action = on ? flagOp : "!" + flagOp;
-	this._itemAction(items, action);
+	this._itemAction({items: items, action: action});
 }
 
 /**
@@ -316,7 +316,7 @@ function(items, tagId, doTag) {
 	
 	if (items1.length) {
 		var action = doTag ? "tag" : "!tag";
-		this._itemAction(items1, action, {tag: tagId});
+		this._itemAction({items: items1, action: action, attrs: {tag: tagId}});
 	}
 }
 
@@ -327,7 +327,7 @@ function(items) {
 		return;
 	}
 
-	this._itemAction(items, "update", {t: ""});
+	this._itemAction({items: items, action: "update", attrs: {t: ""}});
 }
 
 /**
@@ -361,9 +361,22 @@ function(items, folder, attrs) {
 	var respCallback = null;
 	if (this.type == ZmList.MIXED)
 		respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder]);
-	this._itemAction(items1, "move", attrs, respCallback);
+	this._itemAction({items: items1, action: "move", attrs: attrs, callback: respCallback});
 };
 
+ZmList.prototype._handleResponseMoveItems =
+function(args) {
+	var folder		= args[0];
+	var result		= args[1];
+
+	var movedItems = result.getResponse();	
+	if (movedItems && movedItems.length) {
+		this.moveLocal(movedItems, folder.id);
+		for (var i = 0; i < movedItems.length; i++)
+			movedItems[i].moveLocal(folder.id);
+		this._eventNotify(ZmEvent.E_MOVE, movedItems);
+	}
+};
 
 /**
 * Deletes one or more items from the list. Normally, deleting an item just
@@ -400,7 +413,7 @@ function(items, hardDelete, attrs) {
 
 	// hard delete - items actually deleted from data store
 	if (toDelete.length)
-		this._itemAction(toDelete, "delete", attrs);
+		this._itemAction({items: toDelete, action: "delete", attrs: attrs});
 }
 
 /**
@@ -471,13 +484,13 @@ function(items, folderId) {
 * @param callback	[AjxCallback]	async callback
 */
 ZmList.prototype._itemAction =
-function(items, action, attrs, callback) {
+function(params) {
 	var actionedItems = new Array();
-	var idHash = this._getIds(items);
+	var idHash = this._getIds(params.items);
 	var idStr = idHash.list.join(",");;
 	if (!(idStr && idStr.length)) {
-		if (callback)
-			callback.run(new ZmCsfeResult(actionedItems));
+		if (params.callback)
+			params.callback.run(new ZmCsfeResult(actionedItems));
 		else
 			return actionedItems;
 	}
@@ -487,12 +500,13 @@ function(items, action, attrs, callback) {
 	var soapDoc = AjxSoapDoc.create(soapCmd, "urn:zimbraMail");
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("id", idStr);
-	actionNode.setAttribute("op", action);
-	for (var attr in attrs)
-		actionNode.setAttribute(attr, attrs[attr]);
+	actionNode.setAttribute("op", params.action);
+	for (var attr in params.attrs)
+		actionNode.setAttribute(attr, params.attrs[attr]);
 	var appCtlr = this._appCtxt.getAppController();
-	var respCallback = callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, callback]) : null;
-	appCtlr.sendRequest(soapDoc, true, respCallback);
+	var respCallback = params.callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback]) : null;
+	var execFrame = new AjxCallback(this, this._itemAction, params);
+	appCtlr.sendRequest(soapDoc, true, respCallback, null, execFrame);
 }
 
 ZmList.prototype._handleResponseItemAction =
@@ -520,21 +534,6 @@ function(args) {
 		callback.run(result);
 	}
 };
-
-ZmList.prototype._handleResponseMoveItems =
-function(args) {
-	var folder		= args[0];
-	var result		= args[1];
-
-	var movedItems = result.getResponse();	
-	if (movedItems && movedItems.length) {
-		this.moveLocal(movedItems, folder.id);
-		for (var i = 0; i < movedItems.length; i++)
-			movedItems[i].moveLocal(folder.id);
-		this._eventNotify(ZmEvent.E_MOVE, movedItems);
-	}
-};
-
 
 // Hack to support actions on a list of items of more than one type. Since some specialized
 // lists (ZmMailList or ZmContactList, for example) override action methods (such as

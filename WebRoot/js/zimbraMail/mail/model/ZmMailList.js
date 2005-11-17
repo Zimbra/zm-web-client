@@ -86,7 +86,7 @@ function(items, folder, attrs) {
 	attrs.tcon = this._getTcon();
 	attrs.l = folder.id;
 	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder]);
-	this._itemAction(items, "move", attrs, respCallback);
+	this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback});
 };
 
 ZmMailList.prototype._handleResponseMoveItems =
@@ -121,7 +121,7 @@ function(items, markAsSpam, folder) {
 	if (folder) attrs.l = folder.id;
 
 	var respCallback = new AjxCallback(this, this._handleResponseSpamItems, [markAsSpam, folder]);
-	this._itemAction(items, action, attrs, respCallback);
+	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback});
 };
 
 ZmMailList.prototype._handleResponseSpamItems =

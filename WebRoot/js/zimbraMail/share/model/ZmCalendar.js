@@ -78,7 +78,7 @@ function(exclude) {
 	if (this.excludeFreeBusy == exclude) return;
 	// NOTE: Don't need to store the value since the response will
 	//       report that the object was modified.
-	this._organizerAction("fb", {excludeFreeBusy: exclude ? "1" : "0"});
+	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"}});
 };
 
 // XXX: temp method until we get better server support post Birdseye!

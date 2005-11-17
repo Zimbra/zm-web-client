@@ -59,7 +59,7 @@ function ZmMailListController(appCtxt, container, mailApp) {
 	
 	this._acceptShareListener = new AjxListener(this, this._acceptShareHandler);
 	this._declineShareListener = new AjxListener(this, this._declineShareHandler);
-}
+};
 
 ZmMailListController.prototype = new ZmListController;
 ZmMailListController.prototype.constructor = ZmMailListController;
@@ -80,16 +80,16 @@ ZmMailListController.GROUP_BY_VIEWS = [ZmController.CONVLIST_VIEW, ZmController.
 ZmMailListController.prototype.toString = 
 function() {
 	return "ZmMailListController";
-}
+};
 
 ZmMailListController.prototype.getSearchString = 
 function() {
 	return this._searchString;
-}
+};
 
 // Private and protected methods
 
-ZmMailListController.prototype._setupViewMenu = function(view) {}
+ZmMailListController.prototype._setupViewMenu = function(view) {};
 
 // Creates a participant menu in addition to standard initialization.
 ZmMailListController.prototype._initialize =
@@ -119,7 +119,7 @@ function(view) {
 		this._participantActionMenu.addPopdownListener(this._popdownListener);
 		this._setupTagMenu(this._participantActionMenu);
     }
-}
+};
 
 ZmMailListController.prototype._initializeToolBar = 
 function(view, arrowStyle) {
@@ -139,7 +139,7 @@ function(view, arrowStyle) {
 
 	// reset new button properties
 	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
-}
+};
 
 ZmMailListController.prototype._initializeActionMenu = 
 function() {
@@ -148,14 +148,14 @@ function() {
 	ZmListController.prototype._initializeActionMenu.call(this);
 	this._propagateMenuListeners(this._actionMenu, ZmOperation.REPLY_MENU);
 	this._setReplyText(this._actionMenu);
-}
+};
 
 // Groups of mail-related operations
 
 ZmMailListController.prototype._flagOps =
 function() {
 	return ([ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD]);
-}
+};
 
 ZmMailListController.prototype._msgOps =
 function() {
@@ -165,7 +165,7 @@ function() {
 	else
 		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD);
 	return list;
-}
+};
 
 // List listeners
 
@@ -206,27 +206,19 @@ function(ev) {
 		this._enableFlags(this._actionMenu, bHasUnread, bHasRead);
 		this._actionMenu.popup(0, ev.docX, ev.docY);
 	}
-}
+};
 
 // Operation listeners
 
 ZmMailListController.prototype._markReadListener = 
 function(ev) {
-	try {
-		this._list.markRead(this._listView[this._currentView].getSelection(), true);
-	} catch (ex) {
-		this._handleException(ex, this._markReadListener, ev, false);
-	}
-}
+	this._list.markRead(this._listView[this._currentView].getSelection(), true);
+};
 
 ZmMailListController.prototype._markUnreadListener = 
 function(ev) {
-	try {
-		this._list.markRead(this._listView[this._currentView].getSelection(), false);
-	} catch (ex) {
-		this._handleException(ex, this._markUnreadListener, ev, false);
-	}
-}
+	this._list.markRead(this._listView[this._currentView].getSelection(), false);
+};
 
 ZmMailListController.prototype._replyListener =
 function(ev) {
@@ -235,12 +227,12 @@ function(ev) {
 		action = ZmOperation.REPLY;
 
 	this._doAction(ev, action);
-}
+};
 
 ZmMailListController.prototype._forwardListener =
 function(ev) {
 	this._doAction(ev, ev.item.getData(ZmOperation.KEY_ID));
-}
+};
 
 ZmMailListController.prototype._doAction = 
 function(ev, action, extraBodyText) {
@@ -260,7 +252,7 @@ function(ev, action, extraBodyText) {
 	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText]);
 	msg.load(getHtml, action == ZmOperation.DRAFT, respCallback);
-}
+};
 
 ZmMailListController.prototype._handleResponseDoAction = 
 function(args) {
@@ -270,7 +262,7 @@ function(args) {
 	var extraBodyText	= args[3];
 
 	this._app.getComposeController().doAction(action, inNewWindow, msg, null, null, extraBodyText);
-}
+};
 
 ZmMailListController.prototype._inviteReplyHandler = 
 function (ev) {
@@ -307,7 +299,7 @@ function(ev) {
 		declineDialog.setDeclineListener(this._declineShareListener);
 		declineDialog.popup();
 	}
-}
+};
 
 ZmMailListController.prototype._acceptShareHandler = 
 function(ev) {
@@ -317,7 +309,7 @@ function(ev) {
 
 	var list = this.getList();
 	list.moveItems(msg, folder);
-}
+};
 
 ZmMailListController.prototype._declineShareHandler = ZmMailListController.prototype._acceptShareHandler;
 
@@ -347,13 +339,13 @@ function(view) {
 		spamButton.setText(inSpamFolder ? ZmMsg.notJunk : ZmMsg.junk);
 		spamButton.setToolTipContent(inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip);
 	}
-}
+};
 
 // this method gets overloaded if folder id is retrieved another way
 ZmMailListController.prototype._getSearchFolderId = 
 function() {
 	return this._activeSearch.search ? this._activeSearch.search.folderId : null;
-}
+};
 
 ZmMailListController.prototype._inviteReplyDialogYesCallback = 
 function(ev) {
@@ -361,7 +353,7 @@ function(ev) {
  	var action = ev._inviteReplyType;
 	var compId = ev._inviteComponentId;
 	this._editInviteReply(action, compId);
-}
+};
 
 ZmMailListController.prototype._getInviteReplyBody = 
 function(type) {
@@ -404,47 +396,43 @@ function (action , componentId) {
 
 ZmMailListController.prototype._sendInviteReply = 
 function(type, componentId) {
-	try {
-		var msg = new ZmMailMsg(this._appCtxt);
-		var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+	var msg = new ZmMailMsg(this._appCtxt);
+	var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 	
-		msg._origMsg = this._getMsg();
-		msg.inviteMode = type;
-		msg.isReplied = true;
-		msg.isForwarded = false;
-		msg.isInviteReply = true;
-		var replyBody = this._getInviteReplyBody(type);
-		if (replyBody != null) {
-			var top = new ZmMimePart();
-			top.setContentType(ZmMimeTable.TEXT_PLAIN);
-			var dummyAppt = new ZmAppt(this._appCtxt);
-			dummyAppt.setFromMessage(msg._origMsg);
-			replyBody = replyBody + dummyAppt.getTextSummary();
-			top.setContent(replyBody);	
-			msg.setTopPart(top);
-		}
-		var subject = this._getInviteReplySubject(type);
-		subject  = subject + msg._origMsg.getInvite().getEventName(0);
-		if (subject != null) {
-			msg.setSubject(subject);
-		}
-		msg.sendInviteReply(contactList, true, componentId);
-	} catch (ex) {
-		this._handleException(ex, this._sendInviteReply, [type, componentId], false);
+	msg._origMsg = this._getMsg();
+	msg.inviteMode = type;
+	msg.isReplied = true;
+	msg.isForwarded = false;
+	msg.isInviteReply = true;
+	var replyBody = this._getInviteReplyBody(type);
+	if (replyBody != null) {
+		var top = new ZmMimePart();
+		top.setContentType(ZmMimeTable.TEXT_PLAIN);
+		var dummyAppt = new ZmAppt(this._appCtxt);
+		dummyAppt.setFromMessage(msg._origMsg);
+		replyBody = replyBody + dummyAppt.getTextSummary();
+		top.setContent(replyBody);	
+		msg.setTopPart(top);
 	}
+	var subject = this._getInviteReplySubject(type);
+	subject  = subject + msg._origMsg.getInvite().getEventName(0);
+	if (subject != null) {
+		msg.setSubject(subject);
+	}
+	msg.sendInviteReply(contactList, true, componentId);
 };
 
 ZmMailListController.prototype._inviteReplyDialogCancelCallback = 
 function (args){
     this._inviteReplyDialog.popdown();
-}
+};
 
 ZmMailListController.prototype._spamListener = 
 function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	var markAsSpam = this._getSearchFolderId() != ZmFolder.ID_SPAM;
 	this._doSpam(items, markAsSpam);
-}
+};
 
 // Miscellaneous
 
@@ -466,7 +454,7 @@ function(view) {
 		}
 	}
 	return menu;
-}
+};
 
 // Handle participant menu.
 ZmMailListController.prototype._setContactText =
@@ -475,7 +463,7 @@ function(isContact) {
 	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
 	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
 	ZmOperation.setOperation(this._participantActionMenu, ZmOperation.CONTACT, newOp, newText);
-}
+};
 
 ZmMailListController.prototype._setReplyText =
 function(parent) {
@@ -487,7 +475,7 @@ function(parent) {
 			replyOp.setText(ZmMsg.replySender);
 		}
 	}
-}
+};
 
 /*
 * This override is here because some moves are actually "spam" or
@@ -512,7 +500,7 @@ function(items, folder, attrs) {
 		// otherwise just call base class
 		ZmListController.prototype._doMove.call(this, items, folder, attrs);
 	}
-}
+};
 
 /*
 * Marks the given items as "spam" or "not spam". Items marked as spam are moved to
@@ -527,7 +515,7 @@ function(items, folder, attrs) {
 ZmMailListController.prototype._doSpam = 
 function(items, markAsSpam, folder) {
 	this._list.spamItems(items, markAsSpam, folder);
-}
+};
 
 ZmMailListController.prototype._resetOperations = 
 function(parent, num) {
@@ -538,13 +526,13 @@ function(parent, num) {
 		parent.enable(ZmOperation.SPAM, !isDrafts && num > 0);
 		parent.enable(ZmOperation.MOVE, !isDrafts && num > 0);
 	}
-}
+};
 
 ZmMailListController.prototype._resetNavToolBarButtons = 
 function(view) {
 	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
 	this._showListRange(view);
-}
+};
 
 // Enable mark read/unread as appropriate.
 ZmMailListController.prototype._enableFlags =
@@ -554,7 +542,7 @@ function(menu, bHasUnread, bHasRead) {
 		menu.enable(ZmOperation.MARK_READ, false);
 	if (!bHasRead)
 		menu.enable(ZmOperation.MARK_UNREAD, false);
-}
+};
 
 /**
 * This method is actually called by a pushed view's controller when a user 
@@ -605,7 +593,7 @@ function(currentItem, forward) {
 		var newItem = list[itemIdx];
 		this._listView[this._currentView].emulateDblClick(newItem);
 	}
-}
+};
 
 /*
 * Selects and displays an item that has been loaded into a page that's
@@ -624,7 +612,7 @@ function(args) {
 	var newItem = itemIdx ? this._list.getVector().get(itemIdx) : null;
 	if (newItem)
 		this._listView[this._currentView].emulateDblClick(newItem);
-}
+};
 
 ZmMailListController.prototype._setGroupMailBy =
 function(id) {
@@ -632,4 +620,4 @@ function(id) {
 	var searchCtlr = this._appCtxt.getSearchController();
 	if (searchCtlr)
 		searchCtlr.setGroupMailBy(id);
-}
+};

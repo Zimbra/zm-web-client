@@ -310,7 +310,7 @@ function(params, noRender, callback, errorCallback) {
 	var search = new ZmSearch(this._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, noRender, isMixed, callback]);
 	if (!errorCallback) errorCallback = new AjxCallback(this, this._handleErrorDoSearch, params);
-	search.execute(respCallback, errorCallback);
+	search.execute({callback: respCallback, errorCallback: errorCallback});
 }
 
 /*

@@ -251,14 +251,14 @@ ZmOrganizer.prototype.getIcon = function() {};
 ZmOrganizer.prototype.rename =
 function(name) {
 	if (name == this.name) return;
-	this._organizerAction("rename", {name: name});
+	this._organizerAction({action: "rename", attrs: {name: name}});
 };
 
 ZmOrganizer.prototype.setColor =
 function(color) {
 	var color = ZmOrganizer.checkColor(color);
 	if (this.color == color) return;
-	this._organizerAction("color", {color: color});
+	this._organizerAction({action: "color", attrs: {color: color}});
 };
 
 /**
@@ -275,7 +275,7 @@ function(newParent) {
 		return;
 	}
 
-	this._organizerAction("move", {l: newId});
+	this._organizerAction({action: "move", attrs: {l: newId}});
 };
 
 /**
@@ -292,17 +292,17 @@ function() {
 	if (this.isSystem() && !isEmptyOp) return;
 	
 	var action = isEmptyOp ? "empty" : "delete";
-	this._organizerAction(action);
+	this._organizerAction({action: action});
 };
 
 ZmOrganizer.prototype.markAllRead =
 function() {
-	this._organizerAction("read", {l: this.id});
+	this._organizerAction({action: "read", attrs: {l: this.id}});
 };
 
 ZmOrganizer.prototype.sync =
 function() {
-	this._organizerAction("sync");
+	this._organizerAction({action: "sync"});
 };
 
 // Notification handling
@@ -516,16 +516,17 @@ function(child, sortFunction) {
 * @param attrs		[Object]	hash of additional attributes to set in the request
 */
 ZmOrganizer.prototype._organizerAction =
-function(action, attrs) {
+function(params) {
 	var cmd = ZmOrganizer.SOAP_CMD[this.type];
 	var soapDoc = AjxSoapDoc.create(cmd + "Request", "urn:zimbraMail");
 	var actionNode = soapDoc.set("action");
-	actionNode.setAttribute("op", action);
+	actionNode.setAttribute("op", params.action);
 	actionNode.setAttribute("id", this.id);
-	for (var attr in attrs)
-		actionNode.setAttribute(attr, attrs[attr]);
+	for (var attr in params.attrs)
+		actionNode.setAttribute(attr, params.attrs[attr]);
 	var appCtlr = this.tree._appCtxt.getAppController();
-	appCtlr.sendRequest(soapDoc, true);
+	var execFrame = new AjxCallback(this, this._itemAction, params);
+	appCtlr.sendRequest(soapDoc, true, null, null, execFrame);
 };
 
 // Test the name of this organizer and then descendants against the given name, case insensitively

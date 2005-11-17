@@ -38,8 +38,8 @@
 * @param offset			[int]*			starting point within result set
 * @param limit			[int]*			number of results to return
 * @param contactSource	[constant]*		where to search for contacts (GAL or personal)
-* @param prevId			[int]*			ID of last items displayed (for pagination)
-* @param prevSortBy		[constant]*		previous sort order (for pagination)
+* @param lastId			[int]*			ID of last item displayed (for pagination)
+* @param lastSortVal	[string]*		value of sort field for above item
 */
 function ZmSearch(appCtxt, params) {
 
@@ -51,8 +51,8 @@ function ZmSearch(appCtxt, params) {
 	this.offset			= params.offset;
 	this.limit			= params.limit;
 	this.contactSource	= params.contactSource;
-	this.prevId			= params.prevId;
-	this.prevSortBy		= params.prevSortBy;
+	this.lastId			= params.lastId;
+	this.lastSortVal	= params.lastSortVal;
 	
 	this._parseQuery();
 };
@@ -91,7 +91,7 @@ function() {
 * @param errorCallback	[AjxCallback]*		(async) callback to run if there is an exception
 */
 ZmSearch.prototype.execute =
-function(callback, errorCallback) {
+function(params) {
 
 	if (!this.query) return;
 	
@@ -117,8 +117,9 @@ function(callback, errorCallback) {
 		}
 	}
 	
-	var respCallback = new AjxCallback(this, this._handleResponseExecute, [isGalSearch, callback]);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
+	var respCallback = new AjxCallback(this, this._handleResponseExecute, [isGalSearch, params.callback]);
+	var execFrame = new AjxCallback(this, this.execute, params);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, params.errorCallback, execFrame);
 };
 
 /*
@@ -203,15 +204,15 @@ function(soapDoc) {
 	if (this.sortBy)
 		method.setAttribute("sortBy", this.sortBy);
 
-	if (this.prevId && this.prevSortBy) {
+	if (this.lastId && this.lastSortVal) {
 		// cursor is used for paginated searches
 		var cursor = soapDoc.set("cursor");
-		cursor.setAttribute("id", this.prevId);
-		cursor.setAttribute("sortVal", this.prevSortBy);
-	} else {
-		this.offset = this.offset ? this.offset : 0;
-		method.setAttribute("offset", this.offset);
+		cursor.setAttribute("id", this.lastId);
+		cursor.setAttribute("sortVal", this.lastSortVal);
 	}
+
+	this.offset = this.offset ? this.offset : 0;
+	method.setAttribute("offset", this.offset);
 
 	// always set limit (init to user pref for page size if not provided)
 	this.limit = this.limit ? this.limit : this._appCtxt.get(ZmSetting.PAGE_SIZE);

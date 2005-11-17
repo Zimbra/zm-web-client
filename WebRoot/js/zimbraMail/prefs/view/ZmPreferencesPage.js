@@ -422,7 +422,7 @@ function(aid) {
 	content.setAttribute("aid", aid);
 	
 	var respCallback = new AjxCallback(this, this._handleResponseFinishImport, [aid]);
-	appCtlr.sendRequest(soapDoc, true, respCallback, null, ZmPreferencesPage.IMPORT_TIMEOUT);
+	appCtlr.sendRequest(soapDoc, true, respCallback, null, null, ZmPreferencesPage.IMPORT_TIMEOUT);
 };
 
 ZmPreferencesPage.prototype._handleResponseFinishImport =

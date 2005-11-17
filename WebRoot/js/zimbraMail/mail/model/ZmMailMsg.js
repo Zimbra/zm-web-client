@@ -73,25 +73,29 @@ ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_DATE] = ZmMsg.sent;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT] = ZmMsg.subject;
 
 /**
- * static method which will fetch a message from the server.
- * @param sender - (Object) the object which has a method called sendRequest.
- * @param msgId - (int) the id to be fetched.
- * @param getHtml - whether to fetch html from the server ( if possible ).
- */
+* Fetches a message from the server.
+*
+* @param sender			[ZmZimbraMail]	provides access to sendRequest()
+* @param msgId			[int]			ID of the msg to be fetched.
+* @param getHtml		[boolean]		if true, try to fetch html from the server
+* @param callback		[AjxCallback]	async callback
+* @param errorCallback	[AjxCallback]	async error callback
+*/
 ZmMailMsg.fetchMsg = 
-function(sender, msgId, getHtml, callback, errorCallback) {
+function(params) {
 	var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail", null);
 	var msgNode = soapDoc.set("m");
-	msgNode.setAttribute("id", msgId);
+	msgNode.setAttribute("id", params.msgId);
 	msgNode.setAttribute("read", "1");
-	if (getHtml) {
+	if (params.getHtml) {
 		msgNode.setAttribute("html", "1");
 	}
-	var respCallback = new AjxCallback(null, ZmMailMsg._handleResponseGetMsg, callback);
-	sender.sendRequest(soapDoc, true, respCallback, errorCallback);
+	var respCallback = new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, params.callback);
+	var execFrame = new AjxCallback(null, ZmMailMsg.fetchMsg, params);
+	params.sender.sendRequest(soapDoc, true, respCallback, params.errorCallback, execFrame);
 };
 
-ZmMailMsg._handleResponseGetMsg =
+ZmMailMsg._handleResponseFetchMsg =
 function(args) {
 	var callback	= args[0];
 	var result		= args[1];
@@ -379,7 +383,8 @@ function(getHtml, forceLoad, callback, errorCallback) {
 	// If we are already loaded, then don't bother loading
 	if (!this._loaded || forceLoad) {
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
-		ZmMailMsg.fetchMsg(this._appCtxt.getAppController(), this.id, getHtml, respCallback, errorCallback);
+		ZmMailMsg.fetchMsg({sender: this._appCtxt.getAppController(), msgId: this.id, getHtml: getHtml,
+						  	callback: respCallback, errorCallback: errorCallback});
 	} else {
 		this._markReadLocal(true);
 		if (callback) callback.run(new ZmCsfeResult()); // return exceptionless result
@@ -454,7 +459,7 @@ function(callback) {
 		return bodyPart.content;
 	} else {
 		var respCallback = new AjxCallback(this, this._handleResponseGetTextPart, callback);
-		ZmMailMsg.fetchMsg(this._appCtxt.getAppController(), this.getId(), false, respCallback);
+		ZmMailMsg.fetchMsg({sender: this._appCtxt.getAppController(), msgId: this.getId(), getHtml: false, callback: respCallback});
 	}
 };
 
@@ -531,7 +536,8 @@ function (contactList, edited, componentId, callback, errorCallback) {
 		this._createMessageNode(soapDoc, contactList);
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply, [callback]);
-	var resp = this._sendMessage(soapDoc, true, false, respCallback, errorCallback);
+	var params = {soapDoc: soapDoc, isInvite: true, isDraft: false, callback: respCallback, errorCallback: errorCallback};
+	this._sendMessage(params);
 };
 
 ZmMailMsg.prototype._handleResponseSendInviteReply =
@@ -569,7 +575,8 @@ function(contactList, isDraft, callback, errorCallback) {
 		// TODO - return code and put up status message
 		this._createMessageNode(soapDoc, contactList, isDraft);
 		var respCallback = new AjxCallback(this, this._handleResponseSend, [isDraft, callback]);
-		return this._sendMessage(soapDoc, false, isDraft, respCallback, errorCallback);
+		var params = {soapDoc: soapDoc, isInvite: false, isDraft: isDraft, callback: respCallback, errorCallback: errorCallback};
+		this._sendMessage(params);
 	}	
 };
 
@@ -661,13 +668,23 @@ function(soapDoc, contactList, isDraft) {
 	}
 };
 
+/*
+* Sends this message to its recipients.
+*
+* @param soapDoc		[AjxSoapDoc]	SOAP document
+* @param isInvite		[boolean]		true if this message is an invite
+* @param isDraft		[boolean]		true if this message is a draft
+* @param callback		[AjxCallback]	async callback
+* @param errorCallback	[AjxCallback]	async error callback
+*/
 ZmMailMsg.prototype._sendMessage = 
-function(soapDoc, bIsInvite, bIsDraft, callback, errorCallback) {
-	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [bIsInvite, bIsDraft, callback]);
+function(params) {
+	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params.isInvite, params.isDraft, params.callback]);
+	var execFrame = new AjxCallback(this, this._sendMessage, params);
 
 	// XXX: temp bug fix #4325 (until mozilla bug #295422 gets fixed)
 	if (window.parentController && AjxEnv.isGeckoBased) {
-		var resp = this._appCtxt.getAppController().sendRequest(soapDoc);
+		var resp = this._appCtxt.getAppController().sendRequest(params.soapDoc);
 		if (resp.SendInviteReplyResponse) {
 			return resp.SendInviteReplyResponse;
 		} else if (resp.SaveDraftResponse) {
@@ -678,7 +695,7 @@ function(soapDoc, bIsInvite, bIsDraft, callback, errorCallback) {
 			return resp.SendMsgResponse;
 		}
 	} else {
-		this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
+		this._appCtxt.getAppController().sendRequest(params.soapDoc, true, respCallback, params.errorCallback, execFrame);
 	}
 };
 
@@ -970,8 +987,8 @@ function(attach) {
 // XXX: HACK HACK HACK
 // This hack allows a user to view rfc/822 messages (message which are forwarded as attachments)
 // W/o a proper windowing model, there is no nice way to catch exceptions or allow inter-window
-// communication. Additionally, since we cant get access to the app controller to invoke a server
-// request, we will lose any notifications that may come in as a result of an invoke().
+// communication. Additionally, since we can't get access to the app controller to invoke a server
+// request, we will lose any notifications that may come in.
 ZmMailMsg.rfc822Callback = 
 function(anchorEl, msgId, msgPartId) {
 

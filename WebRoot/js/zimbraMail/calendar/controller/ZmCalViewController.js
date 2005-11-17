@@ -972,38 +972,39 @@ function(ev) {
 ZmCalViewController.prototype._handleApptRespondAction = 
 function(ev) {
 	var appt = this._listView[this._currentView].getSelection()[0];
-	var respCallback = new AjxCallback(this, this._handleResponseHandleApptRespondAction, [appt, ev]);
+	var type = ev.item.getData(ZmOperation.KEY_ID);
+	var respCallback = new AjxCallback(this, this._handleResponseHandleApptRespondAction, [appt, type]);
 	appt.getDetails(null, respCallback);
 };
 
 ZmCalViewController.prototype._handleResponseHandleApptRespondAction =
 function(args) {
 	var appt	= args[0];
-	var ev		= args[1];
+	var type	= args[1];
 
 	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 	msgController.setMsg(appt.getMessage());
 	// poke the msgController
-	msgController._sendInviteReply(ev.item.getData(ZmOperation.KEY_ID), 0);
+	msgController._sendInviteReply(type, 0);
 };
 
 ZmCalViewController.prototype._handleApptEditRespondAction = 
 function(ev) {
 	var appt = this._listView[this._currentView].getSelection()[0];
-	var respCallback = new AjxCallback(this, this._handleResponseHandleApptEditRespondAction, [appt, ev]);
+	var id = ev.item.getData(ZmOperation.KEY_ID);
+	var respCallback = new AjxCallback(this, this._handleResponseHandleApptEditRespondAction, [appt, id]);
 	appt.getDetails(null, respCallback);
 };
 
 ZmCalViewController.prototype._handleResponseHandleApptEditRespondAction =
 function(args) {
 	var appt	= args[0];
-	var ev		= args[1];
+	var id		= args[1];
 
 	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 	msgController.setMsg(appt.getMessage());
 
 	// poke the msgController
-	var id = ev.item.getData(ZmOperation.KEY_ID);
 	switch (id) {
 		case ZmOperation.EDIT_REPLY_ACCEPT: 	id = ZmOperation.REPLY_ACCEPT; break;
 		case ZmOperation.EDIT_REPLY_DECLINE: 	id = ZmOperation.REPLY_DECLINE; break;
