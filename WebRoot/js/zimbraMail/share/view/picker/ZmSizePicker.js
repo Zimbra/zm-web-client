@@ -70,7 +70,6 @@ function(parent) {
 	html[i++] = "<option value='b'>" + ZmMsg.bytes + "</option>";
 	html[i++] = "<option value='kb' selected>" + ZmMsg.kb + "</option>";
 	html[i++] = "<option value='mb'>" + ZmMsg.mb + "</option>";
-	html[i++] = "<option value='gb'>" + ZmMsg.gb + "</option>";
 	html[i++] = "</select>";
 	html[i++] = "</td>";
 	html[i++] = "</tr>";
