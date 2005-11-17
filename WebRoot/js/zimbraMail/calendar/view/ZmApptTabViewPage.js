@@ -390,11 +390,19 @@ function() {
 
 ZmApptTabViewPage.prototype.getAttendees = 
 function() {
-	// always prepend the organizer before returning the attendees field
+	// always prepend organizer before returning attendees field
+	// XXX: for now, assume no organizer means its the user :/
 	var calId = this._calendarSelect.getValue();
-	// XXX: for now, lets assume no organizer means its the user :/
 	var organizer = this._calendarOrgs[calId] || this._appCtxt.get(ZmSetting.USERNAME);
-	return (organizer + "; " + this._attendeesField.value);
+
+	// bug fix #4719 - only grab the valid email addresses
+	var addrs = ZmEmailAddress.parseEmailString(this._attendeesField.value);
+	var addrsArr = addrs.all.getArray();
+	var allAddrs = new Array();
+	for (var i = 0; i < addrsArr.length; i++)
+		allAddrs.push(addrsArr[i].address);
+
+	return (organizer + "; " + allAddrs.join("; "));
 };
 
 
@@ -1231,8 +1239,17 @@ function(args) {
 
 	// populate attendees field w/ chosen contacts from picker
 	var vec = addrs[ZmApptTabViewPage.CONTACT_PICKER_BID];
-	var addr = vec.size() ? (vec.toString(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR) : "";
-	this._attendeesField.value += addr;
+
+	// bug fix #4719 - just display the email address (no display name)
+	var addrs = vec.getArray();
+	var addrsArr = new Array();
+	for (var i = 0; i < addrs.length; i++)
+		addrsArr.push(addrs[i].address);
+
+	this._attendeesField.value += addrsArr.length > 0
+		? ((addrsArr.join(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR))
+		: "";
+
 	this._contactPicker.popdown();
 
 	this.enableInputs(true);
