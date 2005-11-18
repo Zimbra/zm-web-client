@@ -107,11 +107,11 @@
   <target name="compile" depends="build-init" description="compile the filter source" >
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir='${build.dir}/classes'/>
-    <javac srcdir="${src.dir}" destdir="${build.dir}/classes" source="1.4" target="1.4" debug="on">
+    <javac srcdir="${src.dir}" destdir="${build.dir}/classes" debug="on">
       <classpath refid="class.path"/>
       <include name="**/*.java"/>
     </javac>
-    <javac srcdir="${ajax.src.dir}" destdir="${build.dir}/classes" source="1.4" target="1.4" debug="on">
+    <javac srcdir="${ajax.src.dir}" destdir="${build.dir}/classes" debug="on">
       <classpath refid="class.path"/>
       <include name="**/*.java"/>
     </javac>
