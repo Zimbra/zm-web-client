@@ -87,7 +87,7 @@ function() {
 
 ZmConvController.prototype._createDoublePaneView = 
 function() {
-	return new ZmConvView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
+	return new ZmConvView(this._container, this, this._dropTgt);
 }
 
 // Creates the conv view, which is not a standard list view (it's a two-pane sort of thing).

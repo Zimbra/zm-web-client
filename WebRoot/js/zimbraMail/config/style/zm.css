@@ -289,31 +289,26 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 /* Conversation */
-.ZmConvListFragment { color: gray; font-weight: normal; }
-.Row-Selected .ZmConvListFragment { color: #333333; 	font-weight: normal; }
+.ZmConvListFragment { 
+	color: gray; 
+	font-weight: normal; 
+}
+.Row-Selected .ZmConvListFragment { 
+	color: #333333; 
+	font-weight: normal; 
+}
 
-.ZmConvView {background-color: #2557AD;}
 .ZmConvView .DwtListView-ColHeader {
 	border-width: 1 0 0 0;
 	border-style: solid;
 	border-color: #777777;
 }
-.ZmConvView td, ZmConvView .Tags .TagTd { overflow: hidden; }
 .ZmConvView td { white-space: nowrap; }
+
 .ZmConvView .SubjectBar {
 	background-color: #CCCCCC;
 }
-.ZmConvView .Tags {
-	padding-left: 3px;
-	padding-right: 3px;
-	padding-bottom: 3px;
-}
-.ZmConvView .Tags .LabelTd {width: 5ex;}
-.ZmConvView .Tags .TagTd { white-space: normal; }
-.ZmConvView .Tags a { padding-left: 5px; }
-.ZmConvView .Subject, .ZmConvView .Tags, .ZmConvView .Tags table {
 
-}
 .ZmConvView .Subject {
 	font-size: 12pt;
 	font-weight: bold;
@@ -323,6 +318,14 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	text-overflow: ellipsis;
 }
 
+.ZmConvView .Tags {
+	padding-left: 3px;
+	padding-right: 3px;
+	padding-bottom: 3px;
+}
+
+.ZmConvView .Tags a { padding-left: 5px; }
+
 .ZmConvView .Tags a:link, .ZmConvView .Tags a:active, .ZmConvView .Tags a:visited {
 	text-decoration: none;
 	color: #2557AD;
@@ -331,7 +334,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	text-decoration: none;
 	color: #CC3333;
 }
-.ZmConvView .Tags img {border: none;}
 
 /* Mail message */
 .ZmMailMsgView {

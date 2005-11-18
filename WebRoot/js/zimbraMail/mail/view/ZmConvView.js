@@ -23,10 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmConvView(parent, className, posStyle, controller, dropTgt) {
+function ZmConvView(parent, controller, dropTgt) {
 
-	className = className ? className : "ZmConvView";
-	ZmDoublePaneView.call(this, parent, className, posStyle, ZmController.CONV_VIEW, controller, dropTgt);
+	ZmDoublePaneView.call(this, parent, "ZmConvView", Dwt.ABSOLUTE_STYLE, ZmController.CONV_VIEW, controller, dropTgt);
 
 	this._changeListener = new AjxListener(this, this._convChangeListener);
 	
@@ -232,45 +231,39 @@ function(conv) {
 	
 	if (!numTags) return;
 		
-	var htmlStr = new Array();
-	var idx = 0;
-	htmlStr[idx++] = "<table cellspacing=0 cellpadding=0><tr><td valign='top' class='LabelTd'>";
-	htmlStr[idx++] = ZmMsg.tags;
-	htmlStr[idx++] = ":</td><td class='TagTd'>";
-	
 	var ta = new Array();	
-	for (var i = 0; i < numTags; i++) {
-		var tag = this._tagList.getById(conv.tags[i]);
-		if (tag)
-			ta[i] = tag;
-		else
-			DBG.println(AjxDebug.DBG1, "Could not get tag with ID " + conv.tags[i]);
-	}
+	for (var j = 0; j < numTags; j++)
+		ta[j] = this._tagList.getById(conv.tags[j]);
+
 	if (ta.length == 0)	return;
 	ta.sort(ZmTag.sortCompare);
 
-	var tagWidth = ZmTag.COLOR_MINI_ICON[ta[0].color][1];
+	var html = new Array();
+	var i = 0;
+	html[i++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%>";
+	html[i++] = "<tr><td valign=middle style='width:1%; white-space:nowrap;'>";
+	html[i++] = ZmMsg.tags;
+	html[i++] = ":</td><td style='overflow:hidden'>";
+	
+	for (var j = 0; j < numTags; j++) {
+		var anchorId = [this._tagDiv.id, ZmConvView._TAG_ANCHOR, ta[j].id].join("");
+		var imageId = [this._tagDiv.id, ZmDoublePaneView._TAG_IMG, ta[j].id].join("");
 
-	for (var i = 0; i < numTags; i++) {
-		var txtWidth = Dwt.getHtmlExtent(ta[i].name).x;
-		htmlStr[idx++] = "<a href='javascript: void ZmConvView._tagClick(\"";
-		htmlStr[idx++] = this._htmlElId;
-		htmlStr[idx++] = '","';
-		htmlStr[idx++] = ta[i].id;
-		htmlStr[idx++] = "\")' id='";
-		htmlStr[idx++] = this._tagDiv.id + ZmConvView._TAG_ANCHOR + ta[i].id;
-		htmlStr[idx++] = "'>";
-		htmlStr[idx++] = "<table style='display:inline;' border=0 cellspacing=0 cellpadding=0 width=";
-		htmlStr[idx++] = tagWidth;
-		htmlStr[idx++] = "><tr><td width=";
-		htmlStr[idx++] = tagWidth;
-		htmlStr[idx++] = ">";
-		htmlStr[idx++] = AjxImg.getImageHtml(ZmTag.COLOR_MINI_ICON[ta[i].color], null, ["id='", this._tagDiv.id + ZmDoublePaneView._TAG_IMG + ta[i].id, "'"].join(""));
-		htmlStr[idx++] = "</td></tr></table>";
-		htmlStr[idx++] = AjxStringUtil.htmlEncodeSpace(ta[i].name) + "</a>";
+		html[i++] = "<a href='javascript:ZmConvView._tagClick(\"";
+		html[i++] = this._htmlElId;
+		html[i++] = '","';
+		html[i++] = ta[j].id;
+		html[i++] = "\")' id='";
+		html[i++] = anchorId;
+		html[i++] = "'>";
+		html[i++] = "<table style='display:inline; vertical-align:middle;' border=0 cellspacing=0 cellpadding=0><tr><td>";
+		html[i++] = AjxImg.getImageHtml(ZmTag.COLOR_MINI_ICON[ta[j].color], null, ["id='", imageId, "'"].join(""));
+		html[i++] = "</td></tr></table>";
+		html[i++] = AjxStringUtil.htmlEncodeSpace(ta[j].name);
+		html[i++] = "</a>";
 	}
-	htmlStr[idx++] = "</td></tr></table>";
-	this._tagDiv.innerHTML = htmlStr.join("");
+	html[i++] = "</td></tr></table>";
+	this._tagDiv.innerHTML = html.join("");
 }
 
 ZmConvView.prototype._convChangeListener =
