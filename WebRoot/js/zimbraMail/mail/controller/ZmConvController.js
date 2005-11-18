@@ -136,14 +136,19 @@ function() {
 	return list;
 }
 
+/*
+* Override to replace DELETE with DELETE_MENU
+*/
 ZmConvController.prototype._standardToolBarOps =
 function() {
 	var list = [ZmOperation.NEW_MENU];
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		list.push(ZmOperation.TAG_MENU);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.DELETE_MENU);
+	list.push(ZmOperation.MOVE);
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
 		list.push(ZmOperation.PRINT);
-	list.push(ZmOperation.DELETE_MENU, ZmOperation.MOVE);
 	return list;
 }
 
