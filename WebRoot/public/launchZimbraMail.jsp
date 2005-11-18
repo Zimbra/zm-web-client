@@ -29,7 +29,7 @@ Contributor(s):
 <head>
 
 <link rel="shortcut icon" href="/zimbra/img/hiRes/logo/favicon.gif" type="image/gif" />
-<link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/rss/index.rss" />
+<link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss" />
   
 <title>Zimbra</title>
 
