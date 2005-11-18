@@ -448,6 +448,24 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	width: 100%;
 }
 
+.TcdDialogTable .TcdLabel {
+	white-space:nowrap; 
+	padding:2px 5px; 
+	text-align:right;
+}
+
+.TcdDialogTable fieldset {
+	margin-left:5px;
+}
+
+.TcdDialogTable .BorderColorSwatch {
+	padding:2px;
+	border:1px outset;
+	width:21px;
+	height:21px;
+	background-color:black;
+}
+
 
 .ZmComposeTBButton {
 	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080);

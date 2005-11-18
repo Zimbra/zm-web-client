@@ -439,11 +439,9 @@ function(ev) {
 	var elType = ev.item.getData(ZmHtmlEditor._VALUE);
 	switch (elType) {
 		case ZmHtmlEditor._INSERT_TABLE:
-			if (this._createTableDialog)
-				this._resetCreateTableDialog();
-			else
+			if (!this._tcd)
 				this._createCreateTableDialog();
-				this._createTableDialog.popup();
+			this._tcd.popup();
 			break;
 		default:
 			this.insertElement(elType);
@@ -1143,71 +1141,140 @@ function(args) {
 		callback.run(words);
 };
 
+// Table width units. Used to specify width units in method below
+ZmHtmlEditor._PERCENT = 1;
+ZmHtmlEditor._PIXELS = 2;
 
 ZmHtmlEditor.prototype._createCreateTableDialog =
 function() {
-	this._createTableDialog = new DwtDialog(this.shell, null, ZmMsg.insertTable, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
-	this._createTableDialog._disableFFhack();
-	this._createTableDialog.registerCallback(DwtDialog.OK_BUTTON, this._tableDialogOkCallback, this);
+	this._tcd = new DwtDialog(this.shell, null, ZmMsg.insertTable, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+	this._tcd._disableFFhack();
+	this._tcd.registerCallback(DwtDialog.OK_BUTTON, this._tableDialogOkCallback, this);
 
-	var numColsLabel = Dwt.getNextId();
 	var numColsId = Dwt.getNextId();
 	var numRowsId = Dwt.getNextId();
 	var tableWidthId = Dwt.getNextId(); 
+	var widthUnitId = Dwt.getNextId();
 	var cellSpacingId = Dwt.getNextId();
 	var cellPaddingId = Dwt.getNextId();
-	var widthUnitId = Dwt.getNextId();
+	var borderThickId = Dwt.getNextId();
+ 	var borderColorId = Dwt.getNextId();
+ 	var borderColorSwatchId = Dwt.getNextId();
+ 	var tableAlignmentId = Dwt.getNextId();
      
 	var html = [
-         "<table><tr><td>",
-         "<fieldset style='margin-left:5px'><legend>Table Size</legend>",
+         "<table class='TcdDialogTable'><tr><td>",
+
+         "<fieldset><legend>", ZmMsg.tableSize, "</legend>",
          "<div style='padding:2px;'></div>",
          "<table><tr>",
-         "<td style='width:9em; float:left; padding:2px 5px; text-align:right;' id='", numColsLabel, "'>Number of Columns:</td>",
+         "<td class='TcdLabel'>", ZmMsg.numberOfCols,":</td>",
          "<td colspan=2 id='", numColsId, "'></td></tr>",
-         "<tr><td style='width:9em; float:left; padding:2px 5px; text-align:right;'>Number of Rows:</td>",
-         "<td colspan=2><input type='text' id='", numRowsId, "' size='5' value='5'/></td></tr>",
-         "<tr><td style='width:9em; float:left; padding:2px 5px; text-align:right;'>Table Width:</td>",
-         "<td><input type='text' id='", tableWidthId, "' size='5' value='100'/></td>",
+         "<tr><td class='TcdLabel'>", ZmMsg.numberOfRows, ":</td>",
+         "<td colspan=2 id='", numRowsId, "'></td></tr>",
+         "<tr><td class='TcdLabel'>", ZmMsg.tableWidth, ":</td>",
+         "<td id='", tableWidthId, "' size='5' value='100'/></td>",
          "<td style='padding-left;2px;' id='", widthUnitId, "'></td></tr></table></fieldset><p/>",
-         "<fieldset style='margin-left:5px'><legend>Spacing</legend>",
+ 
+         "<fieldset><legend>", ZmMsg.layout, "</legend>",
          "<div style='padding:2px;'></div>",
-         "<table xborder=1><tr>",
-         "<td style='width:9em; float:left; padding:2px 5px; text-align:right;'>Cell Spacing:</td>",
-         "<td><input type='text' id='", cellSpacingId, "' size='5' value='1'/></td></tr>",
-         "<tr><td style='width:9em; float:left; padding:2px 5px; text-align:right;'>Cell Padding:</td>",
-         "<td><input type='text' id='", cellPaddingId, "' size='5' value='1'/></td></tr></table></fieldset>",
+         "<table><tr>",
+         "<td class='TcdLabel'>", ZmMsg.cellSpacing, ":</td>",
+         "<td id='", cellSpacingId, "' size='5' value='1'/></td>",
+         "<td class='TcdLabel'>", ZmMsg.cellPadding, ":</td>",
+         "<td id='", cellPaddingId, "'></td></tr>",
+         "<tr><td class='TcdLabel'>", "Border Thickness", ":</td>",
+         "<td id='", borderThickId, "'></td>",
+         "<td colspan='2'><table width='100%'><tr><td id='", borderColorId, "'></td><td valign='middle'><div class='BorderColorSwatch' id='", borderColorSwatchId, "'></div></td></tr></table></tr>",
+         "<tr><td class='TcdLabel'>", ZmMsg.tableAlignment, ":</td>",
+         "<td id='", tableAlignmentId, "' size='5' value='1'/></td></tr>",
+         
+         "</table></fieldset>",
+          
          "</td></tr></table>"].join("");
      
-	this._createTableDialog.setContent(html);
+	this._tcd.setContent(html);
+	
+    var cb = new AjxCallback(this, this._tcdValidationCb);
     
-	this._tcdNumColsLabel = document.getElementById(numColsLabel);
-	//this._tcdNumColsField = document.getElementById(numColsId);
-	this._numColsField = new DwtInputField(this, DwtInputField.INTEGER, 2, 5, 5, null, DwtInputField.CONTINUAL_VALIDATION);
-	this._numColsField.reparentHtmlElement(numColsId);
+    // Table Size
+	this._tcdNumColsField = new DwtInputField(this, DwtInputField.INTEGER, 2, 5, 3, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+	this._tcdNumColsField.setValidNumberRange(1, 254);
+	this._tcdNumColsField.setValidationCallback(cb);
+	this._tcdNumColsField.reparentHtmlElement(numColsId);
 	
+	this._tcdNumRowsField = new DwtInputField(this, DwtInputField.INTEGER, 2, 5, 4, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+	this._tcdNumRowsField.setValidNumberRange(1, null);
+	this._tcdNumRowsField.setValidationCallback(cb);
+	this._tcdNumRowsField.reparentHtmlElement(numRowsId);
+
+	this._tcdWidthUnit = new DwtSelect(this.shell, [new DwtSelectOption(ZmHtmlEditor._PERCENT, true, ZmMsg.percent), 
+													new DwtSelectOption(ZmHtmlEditor._PIXELS, false, ZmMsg.pixels)]);
+	this._tcdWidthUnit.reparentHtmlElement(widthUnitId);
 	
-	this._tcdNumRowsField = document.getElementById(numRowsId);
-	this._tcdTableWidthField = document.getElementById(tableWidthId);
-	this._tcdcellSpacingField = document.getElementById(cellSpacingId);
-	this._tcdcellPaddingField = document.getElementById(cellPaddingId);
- 
-	this._tcdWidthUnit = new DwtSelect(this.shell, ["Percent", "Pixels"]);
-	document.getElementById(widthUnitId).appendChild(this._tcdWidthUnit.getHtmlElement());
+	this._tcdTableWidthField = new DwtInputField(this, DwtInputField.INTEGER, 100, 5, 5, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+	this._tcdTableWidthField.setValidatorFunction(this, this._tcdValidateTableWidth);
+	this._tcdTableWidthField.setValidationCallback(cb);
+	this._tcdTableWidthField.reparentHtmlElement(tableWidthId);
+
+	// Layout
+	this._tcdCellSpacingField = new DwtInputField(this, DwtInputField.INTEGER, 1, 5, 3, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+	this._tcdCellSpacingField.setValidNumberRange(0, null);
+	this._tcdCellSpacingField.setValidationCallback(cb);
+	this._tcdCellSpacingField.reparentHtmlElement(cellSpacingId);
+
+	this._tcdCellPaddingField = new DwtInputField(this, DwtInputField.INTEGER, 1, 5, 3, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+	this._tcdCellPaddingField.setValidNumberRange(0, null);
+	this._tcdCellPaddingField.setValidationCallback(cb);
+	this._tcdCellPaddingField.reparentHtmlElement(cellPaddingId);
+
+	this._tcdBorderThickField = new DwtInputField(this, DwtInputField.INTEGER, 1, 5, 3, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+	this._tcdBorderThickField.setValidNumberRange(0, null);
+	this._tcdBorderThickField.setValidationCallback(cb);
+	this._tcdBorderThickField.reparentHtmlElement(borderThickId);
+	
+	var b = new DwtButton(this.shell);
+	var m = new DwtMenu(b, DwtMenu.COLOR_PICKER_STYLE, null, null, this._tcd);
+	var c = new DwtColorPicker(m);
+	c.addSelectionListener(new AjxListener(this, this._tcdBorderColorPickerListener));
+	b.setText("Border Color");
+	b.setMenu(m);
+	b.reparentHtmlElement(borderColorId);
+	// Hack for FF
+	b.getHtmlElement().style.width="100%";
+	this._borderColorSwatch = document.getElementById(borderColorSwatchId);
+	
+	this._tcdTableAlignment = new DwtSelect(this.shell, ["Middle", "Top", "Bottom", "Left", "Right"]);
+	this._tcdTableAlignment.reparentHtmlElement(tableAlignmentId);
 };
+
+ZmHtmlEditor.prototype._tcdValidateTableWidth =
+function(value) {
+	alert("IMPLEMENT ZmHtmlEditor.prototype._tcdValidateTableWidth");
+}
+
+ZmHtmlEditor.prototype._tcdBorderColorPickerListener =
+function(ev) {
+	this._borderColorSwatch.style.backgroundColor = ev.detail;
+}
+
+ZmHtmlEditor.prototype._tcdValidationCb =
+function(args) {
+	if (!this._tcdNumColsField.isValid())
+ 		this._tcd.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+	else if (!this._tcdNumRowsField.isValid())
+ 		this._tcd.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+	else if (!this._tcdCellSpacingField.isValid())
+ 		this._tcd.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+	else if (!this._tcdCellPaddingField.isValid())
+ 		this._tcd.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+	else if (!this._tcdTableWidthField.isValid())
+ 		this._tcd.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+	else
+		this._tcd.setButtonEnabled(DwtDialog.OK_BUTTON, true);
+}
 
 ZmHtmlEditor.prototype._tableDialogOkCallback =
 function(ev) {
-	/* Need to validate all the fields */
-	// ZmAppCtxt.getFromShell();
-	// getMsgDialog();
-	//  msgDialog = ZmAppCtxt.getFromShell().getMsgDialog();
-	//  msgDialog.setButtonListener(, this._msgDialogButtonListener);
-	//  msgDialog.set("HA HA HA", DwtMessageDialog.CRITICAL_STYLE, "Input Error");   var msgDialog;
-	var val = this._tcdNumColsField.value();
-	//if (!AjxUtil.isNonNegativeInteger(val)) {
-	//	this._tcdNumColsLabel.style.color = "red";
-	//	this._tcdNumColsFiled.style.background = "yellow";
-	//}
 	this.insertTable(rows, cols, width, alignment, border, cellSpacing, cellPadding) 
 };
