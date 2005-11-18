@@ -600,12 +600,30 @@ function(force) {
 	if ((this._needOverviewLayout || force) && this._settings.userSettingsLoaded) {
 		DBG.println(AjxDebug.DBG1, "laying out overview panel");
 		var opc = this._appCtxt.getOverviewController();
-		opc.set(ZmZimbraMail._OVERVIEW_ID, ZmZimbraMail.OVERVIEW_TREES[this._activeApp]);
+		opc.set(ZmZimbraMail._OVERVIEW_ID, this._getOverviewTrees(this._activeApp));
 		this._components[ZmAppViewMgr.C_TREE] = opc.getOverview(ZmZimbraMail._OVERVIEW_ID);
 		// clear shared folder dialogs so they'll be recreated with new folder tree
 		this._appCtxt.clearFolderDialogs();
 		this._needOverviewLayout = false;
 	}
+};
+
+ZmZimbraMail.prototype._getOverviewTrees =
+function(app) {
+	var list = ZmZimbraMail.OVERVIEW_TREES[app];
+	if (!(list && list.length)) return null;
+	
+	var trees = [];
+	for (var i = 0; i < list.length; i++) {
+		var id = list[i];
+		if ((id == ZmOrganizer.SEARCH && !this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) ||
+			(id == ZmOrganizer.CALENDAR && !this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) ||
+			(id == ZmOrganizer.TAG && !this._appCtxt.get(ZmSetting.TAGGING_ENABLED))) {
+			continue;
+		}
+		trees.push(id);
+	}
+	return trees;
 };
 
 ZmZimbraMail.prototype._setUserInfo = 
