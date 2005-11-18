@@ -753,6 +753,9 @@ function(action, toOverride) {
 		if (!this._msg.isSent) {
 			var addr = this._getAddrString(this._msg.getReplyAddresses(this._action), used);
 			this.setAddress(ZmEmailAddress.TO, addr);
+		} else if (this._action == ZmOperation.REPLY) {
+			var toAddrs = this._msg.getAddresses(ZmEmailAddress.TO);
+			this.setAddress(ZmEmailAddress.TO, this._getAddrString(toAddrs, used));
 		}
 
 		// reply to all senders if reply all (includes To: and Cc:)
