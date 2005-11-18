@@ -139,14 +139,19 @@ Contributor(s):
 			    * TODO: remove when server is ready
 			    **/
 			    if(location.search && (location.search.indexOf("domain=") != -1)) {
-			    	var m = location.search.match(/domain=([A-Za-z0-9\-]+)/);
+			    	var m = location.search.match(/domain=([A-Za-z0-9\-\.]+)/);
 					if (m.length) {
 						var domain = m[1];
 						if (domain) {
-							if(!ZaSettings.myDomainIds)
-								ZaSettings.myDomainIds = new Array();
-								
-						    ZaSettings.myDomainIds.push(domain);
+							
+						    ZaSettings.myDomainName = domain;
+						    
+							var tmpDomain = new ZaDomain();
+							tmpDomain.name = domain;
+							EmailAddr_XFormItem.domainChoices.setChoices([tmpDomain]);
+							EmailAddr_XFormItem.domainChoices.dirtyChoices();							    
+							
+							
 						    ZaSettings.isDomainAdmin = true;
 						    ZaSettings.MONITORING_ENABLED = false;
 						    ZaSettings.SYSTEM_CONFIG_ENABLED = false;
@@ -159,8 +164,9 @@ Contributor(s):
 						    ZaSettings.ACCOUNTS_FEATURES_ENABLED = false;
 						    ZaSettings.ACCOUNTS_RESTORE_ENABLED = false;
 						    ZaSettings.ACCOUNTS_PREFS_ENABLED = false;
-						    ZaSettings.ACCOUNTS_REINDEX_ENABLED = false;
-						    ZaSettings.ACCOUNTS_ADVANCED_ENABLED = false;						    
+						    ZaSettings.ACCOUNTS_REINDEX_ENABLED = true;
+						    ZaSettings.ACCOUNTS_ADVANCED_ENABLED = false;	
+						    ZaSettings.ACCOUNTS_VIEW_MAIL_ENABLED = false;					    
 						    DBG.println("my domain = " + domain);
 						}			    	
 					}
