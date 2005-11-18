@@ -178,7 +178,15 @@ function(folderA, folderB) {
 */
 ZmFolder.checkName =
 function(name) {
-	return ZmOrganizer.checkName(name);
+	var error = ZmOrganizer.checkName(name);
+	if (error) return error;
+
+	// make sure name isn't a system folder (possibly not displayed)	
+	for (var id in ZmFolder.MSG_KEY) {
+		if (name == ZmMsg[ZmFolder.MSG_KEY[id]])
+			return ZmMsg.folderNameReserved;
+	}
+	return null;
 };
 
 ZmFolder.prototype.toString = 
