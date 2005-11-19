@@ -592,10 +592,9 @@ function(container, html, isTextMsg) {
 	var callback = null;
 	var msgSize = html.length / 1024;
 	if (isTextMsg) {
-		if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT && this._objectManager)
+		if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT && this._objectManager) {
 			// better process objects directly rather than scanning the DOM afterwards.
-			if (this._objectManager)
-				html = this._objectManager.findObjects(html, true);
+			html = this._objectManager.findObjects(html, true);
 		} else {
 			html = AjxStringUtil.convertToHtml(html);
 			this._makeHighlightObjectsDiv();
