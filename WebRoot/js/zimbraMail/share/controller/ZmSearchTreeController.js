@@ -148,7 +148,7 @@ function(ev, treeView) {
 		var node = treeView.getTreeItemById(id);
 		var parentNode = organizer.parent ? treeView.getTreeItemById(organizer.parent.id) : null;
 		if ((organizer.type == ZmOrganizer.SEARCH &&
-			(organizer.parent.tree.type == ZmOrganizer.FOLDER || id == ZmOrganizer.ID_ROOT)) &&
+			(id == ZmOrganizer.ID_ROOT || organizer.parent.tree.type == ZmOrganizer.FOLDER)) &&
 			(ev.event == ZmEvent.E_MOVE || (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_PARENT])))) {
 			DBG.println(AjxDebug.DBG3, "Moving search from Searches to Folders");
 			if (node)

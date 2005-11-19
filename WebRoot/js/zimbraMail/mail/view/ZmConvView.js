@@ -241,9 +241,7 @@ function(conv) {
 	var html = new Array();
 	var i = 0;
 	html[i++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%>";
-	html[i++] = "<tr><td valign=middle style='width:1%; white-space:nowrap;'>";
-	html[i++] = ZmMsg.tags;
-	html[i++] = ":</td><td style='overflow:hidden'>";
+	html[i++] = "<tr><td style='overflow:hidden'>";
 	
 	for (var j = 0; j < numTags; j++) {
 		var anchorId = [this._tagDiv.id, ZmConvView._TAG_ANCHOR, ta[j].id].join("");

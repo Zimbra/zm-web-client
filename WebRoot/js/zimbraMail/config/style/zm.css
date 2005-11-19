@@ -318,19 +318,14 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	text-overflow: ellipsis;
 }
 
-.ZmConvView .Tags {
-	padding-left: 3px;
-	padding-right: 3px;
-	padding-bottom: 3px;
-}
+.ZmConvView .Tags a, .ZmMailMsgView .Tags a { padding-right: 5px; }
 
-.ZmConvView .Tags a { padding-left: 5px; }
-
-.ZmConvView .Tags a:link, .ZmConvView .Tags a:active, .ZmConvView .Tags a:visited {
+.ZmConvView .Tags a:link, .ZmConvView .Tags a:active, .ZmConvView .Tags a:visited,
+.ZmMailMsgView .Tags a:link, .ZmMailMsgView .Tags a:active, .ZmMailMsgView .Tags a:visited {
 	text-decoration: none;
 	color: #2557AD;
 }
-.ZmConvView .Tags a:hover {
+.ZmConvView .Tags a:hover, .ZmMailMsgView .Tags a:hover {
 	text-decoration: none;
 	color: #CC3333;
 }
@@ -342,15 +337,11 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmMailMsgView .ZmToolBar {
-  background-color: #ffffff;
-  filter:progid:DXImageTransform.Microsoft.Gradient(enabled=false);
-  margin-left :12px;
-  height: auto;
-  width:auto;
-}
-
-.ZmMailMsgView .vertSep {
-  height:20px;
+	background-color: #ffffff;
+	filter:progid: DXImageTransform.Microsoft.Gradient(enabled=false);
+	margin-left: 12px;
+	height: auto;
+	width: auto;
 }
 
 .ZmMailMsgView .MsgHeader {
@@ -358,13 +349,12 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmMailMsgView .MsgHeader table {
-  table-layout: fixed;
-  width: 100%;
-  background-color: #EEEEEE;
+	table-layout: fixed;
+	background-color: #EEEEEE;
 }
 
 .ZmMailMsgView .MsgHeader .LabelColName {
-	overflow:hidden;
+	overflow: hidden;
 	width: 15ex;
 	white-space: nowrap;
 	font-weight: bold;
@@ -381,15 +371,15 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .ZmMailMsgView .AttName-matched { background-color: #FFFFBB; white-space: nowrap; }
 
 .ZmMailMsgView .Displayimages {
-  cursor: pointer;
-  background-color: #FFFFCC;
-  padding: 7px;
-  font-size: 10pt;
-  border-bottom: 1px solid #777777;
+	cursor: pointer;
+	background-color: #FFFFCC;
+	padding: 7px;
+	font-size: 10pt;
+	border-bottom: 1px solid #777777;
 }
 
 .ZmMailMsgView .Displayimages td {
-  font-size: 10pt;
+	font-size: 10pt;
 }
 
 /* Message compose */

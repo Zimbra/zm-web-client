@@ -39,13 +39,13 @@ function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 	this.setScrollStyle(DwtControl.CLIP);
 
 	// customize per "mode"
-	if (mode == ZmController.MSG_NEW_WIN_VIEW) {
+	if (mode == ZmController.MSG_NEW_WIN_VIEW)
 		return;
-	} else if (mode == ZmController.MSG_VIEW) {
-		// Add a change listener to taglist to track tag color changes
-		this._tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
-		this._tagList.addChangeListener(new AjxListener(this, ZmMailMsgView.prototype._tagChangeListener));
-	}
+
+	// Add change listener to taglist to track changes in tag color
+	this._tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
+	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
+	this.addListener(ZmMailMsgView._TAG_CLICK, new AjxListener(this, this._msgTagClicked));
 
 	this._setMouseEventHdlrs(); // needed by object manager
 
@@ -62,19 +62,22 @@ function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 ZmMailMsgView.prototype = new DwtComposite;
 ZmMailMsgView.prototype.constructor = ZmMailMsgView;
 
+
 // Consts
 
-ZmMailMsgView.HEADER_ID = "h--" + Dwt.getNextId();
-ZmMailMsgView.QUOTE_DEPTH_MOD = 3;
-ZmMailMsgView.MAX_SIG_LINES = 8;
-ZmMailMsgView.SIG_LINE = /^(- ?-+)|(__+)\r?$/;
-ZmMailMsgView._inited = false;
+ZmMailMsgView.HEADER_ID 		= "h--" + Dwt.getNextId();
+ZmMailMsgView.QUOTE_DEPTH_MOD 	= 3;
+ZmMailMsgView.MAX_SIG_LINES 	= 8;
+ZmMailMsgView.SIG_LINE 			= /^(- ?-+)|(__+)\r?$/;
+ZmMailMsgView._inited 			= false;
+ZmMailMsgView._TAG_CLICK 		= "ZmMailMsgView._TAG_CLICK";
+ZmMailMsgView._TAG_ANCHOR 		= "TA";
+ZmMailMsgView._TAG_IMG 			= "TI";
+ZmMailMsgView.OBJ_SIZE_TEXT 	= 50; // max. size of text emails that will automatically highlight objects
+ZmMailMsgView.OBJ_SIZE_HTML 	= 50; // similar for HTML emails.
+ZmMailMsgView.REPLY_INVITE_EVENT= "inviteReply";
+ZmMailMsgView.SHARE_EVENT 		= "share";
 
-ZmMailMsgView.OBJ_SIZE_TEXT = 50; // max. size of text emails that will automatically highlight objects
-ZmMailMsgView.OBJ_SIZE_HTML = 50; // similar for HTML emails.
-
-ZmMailMsgView.REPLY_INVITE_EVENT = "inviteReply";
-ZmMailMsgView.SHARE_EVENT = "share";
 
 // Public methods
 
@@ -86,7 +89,7 @@ function() {
 ZmMailMsgView.prototype.getController =
 function() {
 	return this._controller;
-}
+};
 
 ZmMailMsgView.prototype.reset =
 function() {
@@ -94,107 +97,35 @@ function() {
 	this.getHtmlElement().innerHTML = "";
 	if (this._objectManager)
 		this._objectManager.reset();
-}
+};
 
-ZmMailMsgView.prototype._getInviteToolbar =
+ZmMailMsgView.prototype.preventSelection =
 function() {
-	// TODO: reuse the toolbar
-	if (this._inviteToolbar)
-		this._inviteToolbar.dispose();
-
-	this._operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
-	this._inviteToolbar = new ZmButtonToolBar(this,	this._operationButtonIds,
-						  null, DwtControl.STATIC_STYLE,
-						  "ZmInviteToolBar", "DwtButton");
-	// get a little space between the buttons.
-	var toolbarHtmlEl = this._inviteToolbar.getHtmlElement();
-	toolbarHtmlEl.firstChild.cellPadding = "3";
-	var inviteToolBarListener = new AjxListener(this, this._inviteToolBarListener);
-
-	for (var i = 0; i < this._operationButtonIds.length; i++) {
-		var id = this._operationButtonIds[i];
-
-		// HACK for IE, which doesn't support multiple classnames. If I
-		// just change the styles, the activated class overrides the basic
-		// activated class definition, thus I have to change what the
-		// activated class name will be for the buttons in the toolbar.
-		var b = this._inviteToolbar.getButton(id);
-		b._activatedClassName = b._className + "-" + DwtCssStyle.ACTIVATED;
-		b._triggeredClassName = b._className + "-" + DwtCssStyle.TRIGGERED;
-
-		this._inviteToolbar.addSelectionListener(id, inviteToolBarListener);
-	}
-	return this._inviteToolbar;
+	return false;
 };
 
-ZmMailMsgView.prototype._inviteToolBarListener =
-function(ev) {
-	ev._inviteReplyType = ev.item.getData(ZmOperation.KEY_ID);;
-	ev._inviteComponentId = null;
-	this.notifyListeners(ZmMailMsgView.REPLY_INVITE_EVENT, ev);
-}
+ZmMailMsgView.prototype.preventContextMenu =
+function(target) {
+	if (AjxEnv.isSafari) {
+		// XXX: for some reason Safari is returning false on getSelection()
+		//      even when something is selected w/in msg view. Just return false
+		//      to allow copying text :(
+		return false;
+	} else {
+		var bObjFound = target.id.indexOf("OBJ_") == 0;
+		var bSelection = false;
 
-ZmMailMsgView.prototype.addInviteReplyListener =
-function (listener) {
-	this.addListener(ZmMailMsgView.REPLY_INVITE_EVENT, listener);
-};
-
-ZmMailMsgView.prototype._controlEventListener = function(ev) {
-	var iframe = this.getElementById(this._iframeId);
-	// we get here before we have a chance to initialize the IFRAME
-	if (iframe) {
-		var act = new AjxTimedAction();
-		act.method = ZmMailMsgView._resetIframeHeight;
-		act.params.add(this);
-		act.params.add(iframe);
-		AjxTimedAction.scheduleAction(act, 5);
+		// determine if anything has been selected (IE and mozilla do it differently)
+		if (this.getDocument().selection) { // IE
+			bSelection = this.getDocument().selection.type == "Text";
+		} else if (getSelection()) { 		// mozilla
+			if (getSelection().toString().length)
+				bSelection = true;
+		}
+		// if something has been selected and target is not a custom object,
+		return bSelection && !bObjFound ? false : true;
 	}
 };
-
-ZmMailMsgView.prototype._getShareToolbar =
-function() {
-	// TODO: reuse the toolbar
-	if (this._shareToolbar)
-		this._shareToolbar.dispose();
-
-	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
-	this._shareToolbar = new ZmButtonToolBar(this,	buttonIds,
-											  null, DwtControl.STATIC_STYLE,
-											  "ZmShareToolBar", "DwtButton");
-	// get a little space between the buttons.
-	var toolbarHtmlEl = this._shareToolbar.getHtmlElement();
-	toolbarHtmlEl.firstChild.cellPadding = "3";
-
-	var shareToolBarListener = new AjxListener(this, this._shareToolBarListener);
-	for (var i = 0; i < buttonIds.length; i++) {
-		var id = buttonIds[i];
-
-		// HACK for IE, which doesn't support multiple classnames. If I
-		// just change the styles, the activated class overrides the basic
-		// activated class definition, thus I have to change what the
-		// activated class name will be for the buttons in the toolbar.
-		var b = this._shareToolbar.getButton(id);
-		b._activatedClassName = b._className + "-" + DwtCssStyle.ACTIVATED;
-		b._triggeredClassName = b._className + "-" + DwtCssStyle.TRIGGERED;
-
-		this._shareToolbar.addSelectionListener(id, shareToolBarListener);
-	}
-
-	return this._shareToolbar;
-}
-
-ZmMailMsgView.prototype._shareToolBarListener =
-function(ev) {
-	ev._buttonId = ev.item.getData(ZmOperation.KEY_ID);
-	ev._share = this._msg.share;
-	this.notifyListeners(ZmMailMsgView.SHARE_EVENT, ev);
-}
-
-ZmMailMsgView.prototype.addShareListener =
-function (listener) {
-	this.addListener(ZmMailMsgView.SHARE_EVENT, listener);
-}
-
 
 ZmMailMsgView.prototype.set =
 function(msg) {
@@ -242,60 +173,177 @@ function(msg) {
 	this._renderMessage(msg, contentDiv, respCallback);
 };
 
+ZmMailMsgView.prototype.highlightObjects = 
+function() {
+	// This turns out to work fine for both HTML and Text emails.  For
+	// text, however, it's slower than if we were just calling findObjects
+	// on the whole text content, but has the advantage that it doesn't
+	// scroll the iframe to top.  If anyone thinks that hiliting objects in
+	// big text messages is too slow, lemme know.  -mihai@zimbra.com
+	var idoc = this.getElementById(this._iframeId).contentWindow.document;
+	this._processHtmlDoc(idoc);
+};
+
+ZmMailMsgView.prototype.resetMsg =
+function(newMsg) {
+	// Remove listener for current msg if it exists
+	if (this._msg != null)
+		this._msg.removeChangeListener(this._changeListener);
+	// don't want add change listener for new until shown
+	this._msg = newMsg;
+};
+
+ZmMailMsgView.prototype.isDisplayingMsg =
+function(msg) {
+	return (this._msg == msg);
+};
+
+ZmMailMsgView.prototype.getMsg =
+function() {
+	return this._msg;
+};
+
+// Following two overrides are a hack to allow this view to pretend it's a list view
+ZmMailMsgView.prototype.getSelection =
+function() {
+	return this._msg;
+};
+
+ZmMailMsgView.prototype.getSelectionCount =
+function() {
+	return 1;
+};
+
+ZmMailMsgView.prototype.getMinHeight =
+function() {
+	if (!this._headerHeight) {
+		var headerObj = Dwt.getDomObj(this.getDocument(), ZmMailMsgView.HEADER_ID);
+		this._headerHeight = headerObj ? Dwt.getSize(headerObj).y : 0;
+	}
+	return this._headerHeight;
+};
+
+ZmMailMsgView.prototype.getTitle =
+function() {
+	return [ZmMsg.zimbraTitle, ": ", this._msg.subject].join("");
+};
+
+// returns true if the current message was rendered in HTML
+ZmMailMsgView.prototype.hasHtmlBody =
+function() {
+	return this._htmlBody != null;
+};
+
+// returns the html body element w/in the IFRAME's document for html messages
+ZmMailMsgView.prototype.getHtmlBodyElement =
+function() {
+	var htmlBodyEl = null;
+
+	if (this._htmlBody) {
+		var iframe = Dwt.getDomObj(this.getDocument(), this._iframeId);
+		var idoc = iframe ? Dwt.getIframeDoc(iframe) : null;
+		htmlBodyEl = idoc ? idoc.body : null;
+	}
+
+	return htmlBodyEl;
+};
+
+ZmMailMsgView.prototype.addInviteReplyListener =
+function (listener) {
+	this.addListener(ZmMailMsgView.REPLY_INVITE_EVENT, listener);
+};
+
+ZmMailMsgView.prototype.addShareListener =
+function (listener) {
+	this.addListener(ZmMailMsgView.SHARE_EVENT, listener);
+};
+
+
+// Private / protected methods
+
+ZmMailMsgView.prototype._getInviteToolbar =
+function() {
+	// TODO: reuse the toolbar
+	if (this._inviteToolbar)
+		this._inviteToolbar.dispose();
+
+	this._operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
+	this._inviteToolbar = new ZmButtonToolBar(this,	this._operationButtonIds,
+						  null, DwtControl.STATIC_STYLE,
+						  "ZmInviteToolBar", "DwtButton");
+	// get a little space between the buttons.
+	var toolbarHtmlEl = this._inviteToolbar.getHtmlElement();
+	toolbarHtmlEl.firstChild.cellPadding = "3";
+	var inviteToolBarListener = new AjxListener(this, this._inviteToolBarListener);
+
+	for (var i = 0; i < this._operationButtonIds.length; i++) {
+		var id = this._operationButtonIds[i];
+
+		// HACK for IE, which doesn't support multiple classnames. If I
+		// just change the styles, the activated class overrides the basic
+		// activated class definition, thus I have to change what the
+		// activated class name will be for the buttons in the toolbar.
+		var b = this._inviteToolbar.getButton(id);
+		b._activatedClassName = b._className + "-" + DwtCssStyle.ACTIVATED;
+		b._triggeredClassName = b._className + "-" + DwtCssStyle.TRIGGERED;
+
+		this._inviteToolbar.addSelectionListener(id, inviteToolBarListener);
+	}
+	return this._inviteToolbar;
+};
+
+ZmMailMsgView.prototype._getShareToolbar =
+function() {
+	// TODO: reuse the toolbar
+	if (this._shareToolbar)
+		this._shareToolbar.dispose();
+
+	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
+	this._shareToolbar = new ZmButtonToolBar(this,	buttonIds,
+											  null, DwtControl.STATIC_STYLE,
+											  "ZmShareToolBar", "DwtButton");
+	// get a little space between the buttons.
+	var toolbarHtmlEl = this._shareToolbar.getHtmlElement();
+	toolbarHtmlEl.firstChild.cellPadding = "3";
+
+	var shareToolBarListener = new AjxListener(this, this._shareToolBarListener);
+	for (var i = 0; i < buttonIds.length; i++) {
+		var id = buttonIds[i];
+
+		// HACK for IE, which doesn't support multiple classnames. If I
+		// just change the styles, the activated class overrides the basic
+		// activated class definition, thus I have to change what the
+		// activated class name will be for the buttons in the toolbar.
+		var b = this._shareToolbar.getButton(id);
+		b._activatedClassName = b._className + "-" + DwtCssStyle.ACTIVATED;
+		b._triggeredClassName = b._className + "-" + DwtCssStyle.TRIGGERED;
+
+		this._shareToolbar.addSelectionListener(id, shareToolBarListener);
+	}
+
+	return this._shareToolbar;
+};
+
 ZmMailMsgView.prototype._handleResponseSet =
 function(args) {
 	var msg		= args[0];
-	var oldMsg	= args[1][0];
-	if (this._mode == ZmController.MSG_VIEW) {
+	var oldMsg	= args[1];
+
+	if (this._mode == ZmController.TRAD_VIEW) {
+		if (oldMsg != null)
+			oldMsg.list.removeChangeListener(this._listChangeListener);
+		msg.list.addChangeListener(new AjxListener(this, this._listChangeListener));
+	} else {
 		this._setTags(msg);
 		// Remove listener for current msg if it exists
 		if (oldMsg != null)
 			oldMsg.removeChangeListener(this._changeListener);
 		msg.addChangeListener(this._changeListener);
-	} else if (this._mode == ZmController.TRAD_VIEW) {
-		if (oldMsg != null)
-			oldMsg.list.removeChangeListener(this._listChangeListener);
-		msg.list.addChangeListener(new AjxListener(this, this._listChangeListener));
 	}
 
 	// reset scroll view to top most
 	this.getHtmlElement().scrollTop = 0;
 };
-
-// This looks for anchor tags first, to exclude them, and all other tags later.
-// ZmMailMsgView.htmlPreprocRegex = /(<[aA][^>]*>)([^<]*)(<\/[aA][^>]*>)|(<[^>]*>)([^<]*)|([^<>]+)/g;
-
-/**
- * This function trys to filter out all text in between tags, and pass it
- * through the object geneneration methods. What this will not catch is html
- * looks like a string, but is a string with markup in between:
- * <i>http://www.</i><b>yahoo.com</b>
- * This function will grab http://www., and yahoo.com seperately, thus not
- * finding that it's an url.
- */
-// Rewritten by mihai@zimbra.com below.
-//
-// ZmMailMsgView.prototype._preProcessHtml =
-// function(html) {
-// 	var results;
-// 	var resultingHtml = new Array();
-// 	var idx = 0;
-// 	while ( (results = ZmMailMsgView.htmlPreprocRegex.exec(html)) != null ) {
-// 		if (results[1] || results[2] || results[3]){
-// 			// we've matched an anchor tag
-// 			resultingHtml[idx++] = results[0];
-// 		} else {
-// 			if (results[5] && results[5] != "") {
-// 				resultingHtml[idx++] = results[4];
-// 				resultingHtml[idx++] = this._objectManager.findObjects(results[5], false);
-// 				resultingHtml[idx++] = results[6];
-// 			} else {
-// 				resultingHtml[idx++] = results[0];
-// 			}
-// 		}
-// 	}
-// 	return resultingHtml.join("");
-// };
 
 // Values in this hash MUST be null or RegExp.  If "null" is passed, then that
 // CSS rule will be dropped regardless the value.  If a RegExp is passed, then
@@ -334,7 +382,8 @@ ZmMailMsgView._dangerousCSS = {
 // "link", "object", "style", "applet" and "iframe" (most of them shouldn't
 // even be here since (1) they belong in the <head> and (2) are discarded on
 // the server-side, but we check, just in case..).
-ZmMailMsgView.prototype._processHtmlDoc = function(doc) {
+ZmMailMsgView.prototype._processHtmlDoc = 
+function(doc) {
 	// var T1 = new Date().getTime();
 	var objectManager = this._objectManager,
 		node = doc.body;
@@ -492,51 +541,8 @@ function(msg, idoc, id, iframe) {
 	return func;
 };
 
-ZmMailMsgView._swapIdAndSrc =
-function (args) {
-	var image = args[0];
-	var i = args[1];
-	var len = args[2];
-	var msg = args[3];
-	var idoc = args[4];
-	image.src = image.getAttribute("dfsrc");
-	if (i == len -1) {
-		msg.setHtmlContent(idoc.documentElement.innerHTML);
-	}
-};
-
-ZmMailMsgView._resetIframeHeight =
-function(args) {
-	var self = args[0];
-	var iframe = args[1];
-	var h = self.getH() - 1;
-	function substract(el) {
-		if (el) {
-			if (typeof el == "string")
-				el = self.getElementById(el);
-			if (el)
-				h -= Dwt.getSize(el, true).y;
-		}
-	};
-	substract(self._hdrTableId);
-	substract(self._displayImagesId);
-	substract(self._highlightObjectsId);
-	if (self._inviteToolbar)
-		substract(self._inviteToolbar.getHtmlElement());
-	iframe.style.height = h + "px";
-};
-
-ZmMailMsgView.prototype.highlightObjects = function() {
-	// This turns out to work fine for both HTML and Text emails.  For
-	// text, however, it's slower than if we were just calling findObjects
-	// on the whole text content, but has the advantage that it doesn't
-	// scroll the iframe to top.  If anyone thinks that hiliting objects in
-	// big text messages is too slow, lemme know.  -mihai@zimbra.com
-	var idoc = this.getElementById(this._iframeId).contentWindow.document;
-	this._processHtmlDoc(idoc);
-};
-
-ZmMailMsgView.prototype._makeHighlightObjectsDiv = function() {
+ZmMailMsgView.prototype._makeHighlightObjectsDiv = 
+function() {
 	var self = this;
 	function func() {
 		var div = self.getElementById(self._highlightObjectsId);
@@ -658,72 +664,6 @@ function(container, html, isTextMsg) {
 	AjxTimedAction.scheduleAction(act, 5);
 };
 
-ZmMailMsgView.prototype.resetMsg =
-function(newMsg) {
-	// Remove listener for current msg if it exists
-	if (this._msg != null)
-		this._msg.removeChangeListener(this._changeListener);
-	// don't want add change listener for new until shown
-	this._msg = newMsg;
-};
-
-ZmMailMsgView.prototype.isDisplayingMsg =
-function(msg) {
-	return (this._msg == msg);
-};
-
-ZmMailMsgView.prototype.getMsg =
-function() {
-	return this._msg;
-};
-
-// Following two overrides are a hack to allow this view to pretend it's a list view
-ZmMailMsgView.prototype.getSelection =
-function() {
-	return this._msg;
-};
-
-ZmMailMsgView.prototype.getSelectionCount =
-function() {
-	return 1;
-};
-
-ZmMailMsgView.prototype.getMinHeight =
-function() {
-	if (!this._headerHeight) {
-		var headerObj = Dwt.getDomObj(this.getDocument(), ZmMailMsgView.HEADER_ID);
-		this._headerHeight = headerObj ? Dwt.getSize(headerObj).y : 0;
-	}
-	return this._headerHeight;
-};
-
-ZmMailMsgView.prototype.getTitle =
-function() {
-	return [ZmMsg.zimbraTitle, ": ", this._msg.subject].join("");
-};
-
-// returns true if the current message was rendered in HTML
-ZmMailMsgView.prototype.hasHtmlBody =
-function() {
-	return this._htmlBody != null;
-};
-
-// returns the html body element w/in the IFRAME's document for html messages
-ZmMailMsgView.prototype.getHtmlBodyElement =
-function() {
-	var htmlBodyEl = null;
-
-	if (this._htmlBody) {
-		var iframe = Dwt.getDomObj(this.getDocument(), this._iframeId);
-		var idoc = iframe ? Dwt.getIframeDoc(iframe) : null;
-		htmlBodyEl = idoc ? idoc.body : null;
-	}
-
-	return htmlBodyEl;
-};
-
-// Private / Protected methods
-
 ZmMailMsgView.prototype._addAddressHeaderHtml =
 function(htmlArr, idx, addrs, prefix) {
 	htmlArr[idx++] = "<tr><td class='LabelColName'>";
@@ -753,8 +693,7 @@ function(msg, container, callback) {
 	var htmlArr = new Array();
 	this._hdrTableId = Dwt.getNextId();
 	htmlArr[idx++] = "<div id='" + ZmMailMsgView.HEADER_ID + "' class='MsgHeader'>";
-	var w = AjxEnv.isIE ? "style='width:auto'" : "";
-	htmlArr[idx++] = "<table id='" + this._hdrTableId + "' cellspacing=2 cellpadding=2 border=0 " + w + " >";
+	htmlArr[idx++] = "<table id='" + this._hdrTableId + "' cellspacing=2 cellpadding=2 border=0 width=100%>";
 
 	// Date
 	htmlArr[idx++] = "<tr><td class='LabelColName'>";
@@ -793,8 +732,6 @@ function(msg, container, callback) {
 		htmlArr[idx++] = "</td></tr>";
 	}
 
-	// Tags are handled in _setTags()
-
 	htmlArr[idx++] = "</table></div>";
 	var el = container ? container : this.getHtmlElement();
 	el.appendChild(Dwt.parseHtmlFragment(htmlArr.join("")));
@@ -803,6 +740,8 @@ function(msg, container, callback) {
 	if (bodyPart) {
 		if (bodyPart.ct == ZmMimeTable.TEXT_HTML && this._appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
 			this._makeIframeProxy(el, bodyPart.content, false);
+			if (callback)
+				callback.run();
 		} else {
 			// otherwise, get the text part if necessary
 			if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
@@ -811,6 +750,8 @@ function(msg, container, callback) {
 				msg.getTextPart(respCallback);
 			} else {
 				this._makeIframeProxy(el, bodyPart.content, true);
+				if (callback)
+					callback.run();
 			}
 		}
 	}
@@ -839,27 +780,32 @@ function(args) {
 
 ZmMailMsgView.prototype._setTags =
 function(msg) {
-	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED) || (this._mode != ZmController.MSG_VIEW)) return;
+	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) return;
 
+	var numTags = msg.tags.length;
 	var table = Dwt.getDomObj(this.getDocument(), this._hdrTableId);
 	var tagRow = Dwt.getDomObj(this.getDocument(), this._tagRowId);
-	var hadTags = (tagRow != null);
-	var numTags = msg.tags.length;
-	var hasTags = (numTags > 0);
-	if (!hadTags && hasTags) {
-		tagRow = table.insertRow(-1);
-		tagRow.id = this._tagRowId;
-		var tagCell = tagRow.insertCell(-1);
-		tagCell.className = "LabelColName";
-		tagCell.innerHTML = ZmMsg.tags + ": ";
-		tagCell = tagRow.insertCell(-1);
-		tagCell.className = "LabelColValue";
-		tagCell.id = this._tagCellId;
-	} else if (hadTags && !hasTags) {
-		table.deleteRow(-1);
-		return;
-	} else if (!hasTags) {
-		return;
+	var tagCell = null;
+
+	if (tagRow != null && table.rows[table.rows.length-1] == tagRow) {
+		if (numTags > 0) {
+			tagCell = tagRow.cells[1];
+		} else {
+			table.deleteRow(-1);
+			return;
+		}
+	} else {
+		if (numTags > 0) {
+			tagRow = table.insertRow(-1);
+			tagRow.id = this._tagRowId;
+			var tagLabelCell = tagRow.insertCell(-1);
+			tagLabelCell.className = "LabelColName";
+			tagLabelCell.innerHTML = ZmMsg.tags + ":";
+			tagLabelCell.style.verticalAlign = "middle";
+			tagCell = tagRow.insertCell(-1);
+		} else {
+			return;
+		}
 	}
 
 	// get sorted list of tags for this msg
@@ -868,28 +814,76 @@ function(msg) {
 		ta[i] = this._tagList.getById(msg.tags[i]);
 	ta.sort(ZmTag.sortCompare);
 
-	if (numTags > 0) {
-		var html = new Array();
-		var idx = 0;
-		for (var i = 0; i < numTags; i++) {
-			var colorInfo = ZmTag.COLOR_MINI_ICON[ta[i].color];
-			var txtWidth = Dwt.getHtmlExtent(ta[i].name).x;
-			html[idx++] = "<table cellpadding=0 cellspacing=0 style='display:inline; width:";
-			html[idx++] = txtWidth + colorInfo[1];
-			html[idx++] = "'><tr><td style='width:";
-			html[idx++] = colorInfo[1];
-			html[idx++] = "'>";
-			var fieldId = this._tagCellId + ZmDoublePaneView._TAG_IMG + ta[i].id;
-			html[idx++] = AjxImg.getImageHtml(colorInfo, null, ["id='", fieldId, "'"].join(""), true);
-			html[idx++] = "</td><td style='cursor:default;width:'";
-			html[idx++] = txtWidth;
-			html[idx++] = "'>"
-			html[idx++] = AjxStringUtil.htmlEncode(ta[i].name);
-			html[idx++] = "</td></tr></table>";
+	var html = new Array();
+	var i = 0;
+
+	html[i++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%><tr>";
+	html[i++] = "<td style='overflow:hidden; id='";
+	html[i++] = this._tagCellId;
+	html[i++] = AjxEnv.isIE ? "' class='Tags'>" : "'>";
+
+	if (AjxEnv.isGeckoBased)	
+		html[i++] = "<table border=0 cellspacing=0 cellpadding=0><tr>";
+	for (var j = 0; j < numTags; j++) {
+		var anchorId = [this._tagCellId, ZmMailMsgView._TAG_ANCHOR, ta[j].id].join("");
+		var imageId = [this._tagCellId, ZmMailMsgView._TAG_IMG, ta[j].id].join("");
+
+		if (AjxEnv.isGeckoBased) {
+			html[i++] = "<td width=16>";
+			html[i++] = AjxImg.getImageHtml(ZmTag.COLOR_MINI_ICON[ta[j].color], null, ["id='", imageId, "'"].join(""));
+			html[i++] = "</td><td class='Tags' style='white-space:nowrap;'>";
 		}
+		html[i++] = "<a href='javascript:ZmMailMsgView._tagClick(\"";
+		html[i++] = this._htmlElId;
+		html[i++] = '","';
+		html[i++] = ta[j].id;
+		html[i++] = "\")' id='";
+		html[i++] = anchorId;
+		html[i++] = "'>";
+		if (AjxEnv.isIE) {
+			html[i++] = "<table style='display:inline; vertical-align:middle; width:16px' border=0 cellspacing=0 cellpadding=0><tr><td>";
+			html[i++] = AjxImg.getImageHtml(ZmTag.COLOR_MINI_ICON[ta[j].color], null, ["id='", imageId, "'"].join(""));
+			html[i++] = "</td></tr></table>";
+		}
+		html[i++] = AjxStringUtil.htmlEncodeSpace(ta[j].name);
+		html[i++] = "</a>";
+		if (AjxEnv.isGeckoBased)
+			html[i++] = "</td>";
 	}
-	var tagCell = Dwt.getDomObj(this.getDocument(), this._tagCellId);
+	if (AjxEnv.isGeckoBased)
+		html[i++] = "</tr></table>";
+	html[i++] = "</td></tr></table>";
 	tagCell.innerHTML = html.join("");
+};
+
+
+// Listeners
+
+ZmMailMsgView.prototype._inviteToolBarListener =
+function(ev) {
+	ev._inviteReplyType = ev.item.getData(ZmOperation.KEY_ID);;
+	ev._inviteComponentId = null;
+	this.notifyListeners(ZmMailMsgView.REPLY_INVITE_EVENT, ev);
+};
+
+ZmMailMsgView.prototype._controlEventListener = 
+function(ev) {
+	var iframe = this.getElementById(this._iframeId);
+	// we get here before we have a chance to initialize the IFRAME
+	if (iframe) {
+		var act = new AjxTimedAction();
+		act.method = ZmMailMsgView._resetIframeHeight;
+		act.params.add(this);
+		act.params.add(iframe);
+		AjxTimedAction.scheduleAction(act, 5);
+	}
+};
+
+ZmMailMsgView.prototype._shareToolBarListener =
+function(ev) {
+	ev._buttonId = ev.item.getData(ZmOperation.KEY_ID);
+	ev._share = this._msg.share;
+	this.notifyListeners(ZmMailMsgView.SHARE_EVENT, ev);
 };
 
 ZmMailMsgView.prototype._msgChangeListener =
@@ -930,34 +924,6 @@ function(ev) {
 	ev._returnValue = true;
 };
 
-ZmMailMsgView.prototype.preventSelection =
-function() {
-	return false;
-};
-
-ZmMailMsgView.prototype.preventContextMenu =
-function(target) {
-	if (AjxEnv.isSafari) {
-		// XXX: for some reason Safari is returning false on getSelection()
-		//      even when something is selected w/in msg view. Just return false
-		//      to allow copying text :(
-		return false;
-	} else {
-		var bObjFound = target.id.indexOf("OBJ_") == 0;
-		var bSelection = false;
-
-		// determine if anything has been selected (IE and mozilla do it differently)
-		if (this.getDocument().selection) { // IE
-			bSelection = this.getDocument().selection.type == "Text";
-		} else if (getSelection()) { 		// mozilla
-			if (getSelection().toString().length)
-				bSelection = true;
-		}
-		// if something has been selected and target is not a custom object,
-		return bSelection && !bObjFound ? false : true;
-	}
-};
-
 ZmMailMsgView.prototype._tagChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_TAG)
@@ -973,6 +939,20 @@ function(ev) {
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY)
 		this._setTags(this._msg);
 };
+
+
+// Callbacks
+
+ZmMailMsgView.prototype._msgTagClicked = 
+function(tagId) {
+	var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getById(tagId);
+	var query = 'tag:"' + tag.name + '"';
+	var searchController = this._appCtxt.getSearchController();
+	searchController.search({query: query});
+};
+
+
+// Static methods
 
 ZmMailMsgView.getPrintHtml =
 function(msg, preferHtml, callback) {
@@ -1070,4 +1050,44 @@ function(msg, preferHtml, callback) {
 	} else {
 		return html.join("");
 	}
+};
+
+ZmMailMsgView._swapIdAndSrc =
+function (args) {
+	var image = args[0];
+	var i = args[1];
+	var len = args[2];
+	var msg = args[3];
+	var idoc = args[4];
+	image.src = image.getAttribute("dfsrc");
+	if (i == len -1) {
+		msg.setHtmlContent(idoc.documentElement.innerHTML);
+	}
+};
+
+ZmMailMsgView._resetIframeHeight =
+function(args) {
+	var self = args[0];
+	var iframe = args[1];
+	var h = self.getH() - 1;
+	function substract(el) {
+		if (el) {
+			if (typeof el == "string")
+				el = self.getElementById(el);
+			if (el)
+				h -= Dwt.getSize(el, true).y;
+		}
+	};
+	substract(self._hdrTableId);
+	substract(self._displayImagesId);
+	substract(self._highlightObjectsId);
+	if (self._inviteToolbar)
+		substract(self._inviteToolbar.getHtmlElement());
+	iframe.style.height = h + "px";
+};
+
+ZmMailMsgView._tagClick =
+function(myId, tagId) {
+	var dwtObj = Dwt.getObjectFromElement(Dwt.getDomObj(document, myId));
+	dwtObj.notifyListeners(ZmMailMsgView._TAG_CLICK, tagId);
 };
