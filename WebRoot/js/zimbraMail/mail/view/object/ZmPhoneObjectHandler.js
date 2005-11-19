@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPhoneObjectHandler(appCtxt) {
 
+function ZmPhoneObjectHandler(appCtxt) {
 	ZmObjectHandler.call(this, appCtxt, ZmPhoneObjectHandler.TYPE);
 };
 
@@ -139,3 +139,5 @@ function() {
 	this._timerObj.method = ZmPhoneObjectHandler.resetOnbeforeunload;	
 	AjxTimedAction.scheduleAction(this._timerObj,3000);
 };
+
+ZmObjectManager.registerHandler("ZmPhoneObjectHandler");

@@ -97,3 +97,5 @@ ZmBugzillaObjectHandler.encodeId =
 function(obj, key) {
 	return "bugz"+obj+"_"+key;
 };
+
+ZmObjectManager.registerHandler("ZmBugzillaObjectHandler");

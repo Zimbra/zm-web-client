@@ -90,3 +90,5 @@ ZmTrackingObjectHandler.prototype.getActionMenu =
 function(obj, span, context) {
 	return null;
 };
+
+ZmObjectManager.registerHandler("ZmTrackingObjectHandler");

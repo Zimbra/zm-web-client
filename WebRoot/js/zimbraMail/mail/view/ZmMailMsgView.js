@@ -675,7 +675,7 @@ function(htmlArr, idx, addrs, prefix) {
 
 		var addr = addrs.get(i);
 		if (this._objectManager && addr.address) {
-			idx = this._objectManager.generateSpan(this._objectManager.getEmailHandler(), htmlArr, idx, addr, null);
+			htmlArr[idx++] = this._objectManager.findObjects(addr, true, ZmEmailObjectHandler.TYPE);
 		} else {
 			htmlArr[idx++] = addr.address ? addr.address : (AjxStringUtil.htmlEncode(addr.name));
 		}

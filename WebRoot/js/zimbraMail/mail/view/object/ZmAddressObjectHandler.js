@@ -120,3 +120,4 @@ ZmAddressObjectHandler.prototype.hoverOut = function(object, context) {
 	// no-op
 }
 */
+//ZmObjectManager.registerHandler("ZmAddressObjectHandler");

@@ -37,7 +37,7 @@ ZmYAddressObjectHandler.TYPE = "yaddress";
 ZmYAddressObjectHandler.ADDRESS_RE = /[\w]{3,}([A-Za-z]\.)?([ \w]*\#\d+)?(\r\n| )[ \w]{3,}\x20[A-Za-z]{2}\x20\d{5}(-\d{4})?\b/ig;
 
 // Y! Maps Service URL
-ZmYAddressObjectHandler.URL = "http://api.local.yahoo.com/MapsService/V1/mapImage?appid=ZimbraMail&zoom=4&image_height=245&image_width=345&location="
+ZmYAddressObjectHandler.URL = "http://api.local.yahoo.com/MapsService/V1/mapImage?appid=ZimbraMail&zoom=4&image_height=245&image_width=345&location=";
 
 // Make DOM safe id's
 ZmYAddressObjectHandler.encodeId = function(s) {
@@ -71,6 +71,7 @@ function(obj, context) {
 	} else {
 		var request = new AjxRpcRequest("yahoomaps");
 		var url = "/service/proxy?target="+ AjxStringUtil.urlEncode(ZmYAddressObjectHandler.URL + obj);
+		DBG.println(AjxDebug.DBG2, "ZmYAddressObjectHandler url " + url);
 		request.invoke(null, url, null, new AjxCallback(this, this._callback, obj), true);
 	}
 };
@@ -91,3 +92,12 @@ function(args) {
 	var r = args[1].text;
 	ZmYAddressObjectHandler.displayImage(r.substring(r.indexOf("http://img"),r.indexOf("</Result>")), args[0]);
 };
+
+
+var head = document.getElementsByTagName("head")[0];
+script = document.createElement('script');
+script.id = 'yahooMaps';
+script.type = 'text/javascript';
+script.src = "http://api.maps.yahoo.com/ajaxymap?v=2.0&appid=ZimbraMail";
+head.appendChild(script)
+ZmObjectManager.registerHandler("ZmYAddressObjectHandler");

@@ -31,31 +31,11 @@ function ZmObjectManager(view, appCtxt) {
 	this._appCtxt = appCtxt;
 	this._uuid = Dwt.getNextId();
 	this._objectIdPrefix = "OBJ_" + this._uuid + "_";
-	// TODO: make this dynamic, have handlers register a factory method...
-	this._emailHandler = new ZmEmailObjectHandler(appCtxt);
-	// URL should be first, to handle email addresses embedded in URL's
 	this._objectHandlers = new Object();
-	this._objectHandlers[ZmURLObjectHandler.TYPE] = [new ZmURLObjectHandler(appCtxt), new ZmTrackingObjectHandler(appCtxt)/*, new ZmEmoticonObjectHandler(appCtxt)*/ ];
-	this._objectHandlers[ZmEmailObjectHandler.TYPE] = [this._emailHandler];
-	this._objectHandlers[ZmPhoneObjectHandler.TYPE] = [new ZmPhoneObjectHandler(appCtxt)];
-	this._objectHandlers[ZmPOObjectHandler.TYPE] = [new ZmPOObjectHandler(appCtxt)];
-	this._objectHandlers[ZmBugzillaObjectHandler.TYPE] = [new ZmBugzillaObjectHandler(appCtxt)];
 	// don't include when looking for objects. only used to provide tool tips for images
 	this._imageAttachmentHandler = new ZmImageAttachmentObjectHandler(appCtxt);
-	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-		ZmDateObjectHandler.registerHandlers(this._objectHandlers, appCtxt);
-	}
-	// Check for map API before adding address handler(s)
-	try {
-		new GPoint(217,10);
-		this._objectHandlers[ZmAddressObjectHandler.TYPE] = [new ZmAddressObjectHandler(appCtxt)];
-	} catch (e) {;}
-	try {
-		new YGeoPoint(217,10);
-		this._objectHandlers[ZmYAddressObjectHandler.TYPE] = [new ZmYAddressObjectHandler(appCtxt)];
-	} catch (e) {;}
 
-	// create additional handlers (see registerHandler below)
+	// create handlers (see registerHandler below)
 	this._createHandlers();
 
 	this.reset();
@@ -72,12 +52,16 @@ function ZmObjectManager(view, appCtxt) {
 }
 
 ZmObjectManager._autohandlers = [];
-ZmObjectManager.registerHandler = function(obj) {
+ZmObjectManager.registerHandler = function(obj, type) {
 	if (typeof obj == "string")
 		obj = eval(obj);
 	var c = ZmObjectManager._autohandlers;
 	if (!obj.__registered) {
-		c.push(obj);
+		var id = c.push(obj);
+		var i = id - 1;
+		if(type) {
+			c[i].useType = type;
+		}
 		obj.__registered = true;
 	}
 };
@@ -100,9 +84,13 @@ ZmObjectManager.prototype._createHandlers = function() {
 		oh = this._objectHandlers;
 	for (i = 0; i < c.length; ++i) {
 		obj = c[i];
-		if (!oh[obj.TYPE])
-			oh[obj.TYPE] = [];
-		oh[obj.TYPE].push(new obj(this._appCtxt));
+		if (obj.useType) {
+			if (!oh[obj.useType]) {oh[obj.useType] = [];}
+			oh[obj.useType].push(new obj(this._appCtxt));
+		} else {
+			if (!oh[obj.TYPE]) {oh[obj.TYPE] = [];}
+			oh[obj.TYPE].push(new obj(this._appCtxt));
+		}
 	}
 };
 
@@ -118,11 +106,6 @@ function() {
 	this._objects = new Object();
 }
 
-ZmObjectManager.prototype.getEmailHandler =
-function() {
-	return this._emailHandler;
-}
-
 ZmObjectManager.prototype.getImageAttachmentHandler =
 function() {
 	return this._imageAttachmentHandler;
@@ -133,7 +116,6 @@ function() {
 ZmObjectManager.prototype.findObjects =
 function(content, htmlEncode, type) {
 	if  (content == null) return "";
-
 	var html = new Array();
 	var idx = 0;
 
@@ -164,6 +146,11 @@ function(content, htmlEncode, type) {
 					lowestHandler = handlers[i];
 				}
 			}
+			// If it's an email address just handle it and return the result.
+			if (content instanceof ZmEmailAddress) {
+				this.generateSpan(lowestHandler, html, idx, content, null);
+				return html.join("");
+			}	
 		} else {
 			for (var i in this._objectHandlers) {
 				var handlers = this._objectHandlers[i];

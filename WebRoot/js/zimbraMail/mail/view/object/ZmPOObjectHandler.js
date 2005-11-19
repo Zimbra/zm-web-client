@@ -144,3 +144,5 @@ function(ev) {
 	po.state = ZmPOObjectHandler.REJECTED;	
 	this._actionSpan.className = this.getClassName(obj);
 };
+
+ZmObjectManager.registerHandler("ZmPOObjectHandler");

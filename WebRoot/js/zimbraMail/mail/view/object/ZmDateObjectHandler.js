@@ -88,18 +88,6 @@ $RE_DOW + $RE_COMMA_OR_SP + RE_MONTH + $RE_SP + $RE_DOM +
                  $RE_OP_TIME + $RE_OP_YEAR42  // {Friday, March 2nd}, {Mon Mar 22}, {Tue May 24 10:11:26 2005}
 */
 
-ZmDateObjectHandler.registerHandlers =
-function(handlers, appCtxt) {
-	handlers[ZmDateObjectHandler.TYPE] = [new ZmDate1ObjectHandler(appCtxt), 
-					 					new ZmDate2ObjectHandler(appCtxt),
-							 			new ZmDate3ObjectHandler(appCtxt),
-							 			new ZmDate4ObjectHandler(appCtxt),
-							 			new ZmDate5ObjectHandler(appCtxt),
-							 			new ZmDate6ObjectHandler(appCtxt),
-							 			new ZmDate7ObjectHandler(appCtxt),
-							 			new ZmDate8ObjectHandler(appCtxt)];
-};
-
 ZmDateObjectHandler._currentDate = new Date();
 
 ZmDateObjectHandler.setCurrentDate =
@@ -415,3 +403,12 @@ function(line, startIndex) {
 	result.context = {date: d, monthOnly: 0};
 	return result;
 };
+
+ZmObjectManager.registerHandler("ZmDate1ObjectHandler", ZmDateObjectHandler.TYPE);
+ZmObjectManager.registerHandler("ZmDate2ObjectHandler", ZmDateObjectHandler.TYPE);
+ZmObjectManager.registerHandler("ZmDate3ObjectHandler", ZmDateObjectHandler.TYPE);
+ZmObjectManager.registerHandler("ZmDate4ObjectHandler", ZmDateObjectHandler.TYPE);
+ZmObjectManager.registerHandler("ZmDate5ObjectHandler", ZmDateObjectHandler.TYPE);
+ZmObjectManager.registerHandler("ZmDate6ObjectHandler", ZmDateObjectHandler.TYPE);
+ZmObjectManager.registerHandler("ZmDate7ObjectHandler", ZmDateObjectHandler.TYPE);
+ZmObjectManager.registerHandler("ZmDate8ObjectHandler", ZmDateObjectHandler.TYPE);

@@ -174,3 +174,5 @@ function(ev) {
 	if (this._actionUrl)
 		window.open(this._actionUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 };
+
+ZmObjectManager.registerHandler("ZmEmailObjectHandler");

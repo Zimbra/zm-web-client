@@ -136,8 +136,6 @@ static final private String LOGIN_PAGE = "/zimbra/";
 	AjxCore.addOnloadListener(launch);
 	AjxCore.addOnunloadListener(ZmZimbraMail.unload);
 </script>
-<!-- Yahoo Maps -->
-<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=2.0&appid=ZimbraMail"></script>
 </head>
 <body>
 <jsp:include page="../skins/steel/skin.html"/>
