@@ -1025,7 +1025,7 @@ function(anchorEl, msgId, msgPartId) {
 		// create temp msg view off current msg view
 		var tmpMsgView = new ZmMailMsgView(msgView, null, DwtControl.ABSOLUTE_STYLE, ZmController.MSG_NEW_WIN_VIEW, msgView._controller);
 		Dwt.setVisible(tmpMsgView.getHtmlElement(), false);
-		tmpMsgView.set(msg, true);
+		tmpMsgView.set(msg);
 
 		// generate html document for new window
 		var html = new Array();

@@ -594,8 +594,9 @@ function(container, html, isTextMsg) {
 	if (isTextMsg) {
 		if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT && this._objectManager)
 			// better process objects directly rather than scanning the DOM afterwards.
-			html = this._objectManager.findObjects(html, true);
-		else {
+			if (this._objectManager)
+				html = this._objectManager.findObjects(html, true);
+		} else {
 			html = AjxStringUtil.convertToHtml(html);
 			this._makeHighlightObjectsDiv();
 		}
