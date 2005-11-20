@@ -428,13 +428,33 @@ function(ev, div) {
 	} else if (ev.button == DwtMouseEvent.RIGHT) {
 		if (this._evtMgr.isListenerRegistered(DwtEvent.ACTION)) {
 			this._actionEv.field = m ? m.field : null;
-			if (m && (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT])) {
-				var item = this.getItemFromElement(div);
-				this._actionEv.detail = item.participants.get(m.participant);
+			if (m && m.field) {
+				if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
+					ev.target.className = "ImgBlank_16";
+				} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) {
+					var item = this.getItemFromElement(div);
+					this._actionEv.detail = item.participants.get(m.participant);
+				}
 			}
 			this._evtMgr.notifyListeners(DwtEvent.ACTION, this._actionEv);
 		}
 	}
+	return true;
+}
+
+ZmListView.prototype._allowLeftSelection =
+function(clickedEl, ev, button) {
+	if (button == DwtMouseEvent.LEFT) {
+		var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) 
+			? ev.target.id : div.id;
+
+		if (id && clickedEl._type && clickedEl._type == DwtListView.TYPE_LIST_ITEM) {
+			var m = this._parseId(id);
+			if (m && m.field)
+				return m.field != ZmListView.FIELD_PREFIX[ZmItem.F_FLAG];
+		}
+	}
+
 	return true;
 }
 
