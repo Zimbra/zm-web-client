@@ -93,6 +93,7 @@ function() {
 
 ZmMailMsgView.prototype.reset =
 function() {
+	this._msg = null;
 	this._htmlBody = null;
 	this.getHtmlElement().innerHTML = "";
 	if (this._objectManager)

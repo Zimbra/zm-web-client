@@ -268,18 +268,23 @@ function(ev, action, extraBodyText) {
 };
 
 /*
-* Displays a list of messages. If passed a conv, loads it to the the message
+* Displays a list of messages. If passed a conv, loads its message
 * list. If passed a list, simply displays it. The first message will be 
 * selected, which will trigger a message load/display.
 *
-* @param item	[ZmConv or ZmList]		conv or list of msgs
-* @param view	[constant]				owning view type
+* @param item	[ZmConv or ZmMailList]		conv or list of msgs
+* @param view	[constant]					owning view type
 */
 ZmDoublePaneController.prototype._loadItem =
 function(item, view) {
-	if (item.load) { // conv
-		var respCallback = new AjxCallback(this, this._handleResponseLoadItem, view);
-		item.load(this.getSearchString(), null, null, null, null, respCallback);
+	if (item instanceof ZmMailItem) { // conv
+DBG.timePt(AjxDebug.PERF, "***** CONV: load");
+		if (!item.isLoaded()) {
+			var respCallback = new AjxCallback(this, this._handleResponseLoadItem, view);
+			item.load(this.getSearchString(), null, null, null, null, respCallback);
+		} else {
+			this._handleResponseLoadItem([view, new ZmCsfeResult(item.msgs)]);
+		}
 	} else { // msg list
 		this._displayResults(view);
 	}
@@ -419,6 +424,7 @@ function(args) {
 		this._list = results;
 		this._activeSearch = results;
 	}
+DBG.timePt(AjxDebug.PERF, "***** CONV: render");
 	this._displayResults(view);
 };
 

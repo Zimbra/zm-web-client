@@ -37,7 +37,6 @@ function ZmMailMsg(appCtxt, id, list) {
 	
 	ZmMailItem.call(this, appCtxt, ZmItem.MSG, id, list);
 
-	this._loaded = false;
 	this._inHitList = false;
 	this._attHitList = new Array();
 	this._attachments = new Array();
@@ -232,14 +231,6 @@ function() {
 ZmMailMsg.prototype.isHtmlMail = 
 function() {
 	return this.getBodyPart(ZmMimeTable.TEXT_HTML) != null;
-};
-
-/**
-* Returns true if this message's properties have been filled in
-*/
-ZmMailMsg.prototype.isLoaded =
-function() {
-	return this._loaded;
 };
 
 // Setters

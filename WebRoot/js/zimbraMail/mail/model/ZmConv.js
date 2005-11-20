@@ -37,6 +37,7 @@
 function ZmConv(appCtxt, id, list) {
 
 	ZmMailItem.call(this, appCtxt, ZmItem.CONV, id, list);
+	
 	// conversations are always sorted by date desc initially
 	this._sortBy = ZmSearch.DATE_DESC; 
 	this._listChangeListener = new AjxListener(this, this._msgListChangeListener);
@@ -82,7 +83,7 @@ function(searchString, sortBy, offset, limit, pagCallback, callback) {
 				// i.e. new msgs that are in the hit list wont be marked hot this way!
 				// dont bother searching for more msgs if all have been loaded	
 				if (!this.msgs.hasMore() || offset + limit <= size)
-					callback.run(new ZmCsfeResult(this.msgs));
+					if (callback) callback.run(new ZmCsfeResult(this.msgs));
 			}
 		}
 	}
@@ -108,6 +109,7 @@ function(args) {
 		this.msgs.convId = this.id;
 		this.msgs.addChangeListener(this._listChangeListener);
 		this.msgs.setHasMore(results.getAttribute("more"));
+		this._loaded = true;
 		
 		// nuke the cached msg if exist since its useless now
 		if (this.tempMsg) {

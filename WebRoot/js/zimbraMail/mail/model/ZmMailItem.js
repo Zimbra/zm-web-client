@@ -40,6 +40,7 @@ function ZmMailItem(appCtxt, type, id, list) {
 	if (arguments.length == 0) return;
 	ZmItem.call(this, appCtxt, type, id, list);
 
+	this._loaded = false;
 	this._initializeParticipants();
 }
 
@@ -51,9 +52,18 @@ function() {
 	return "ZmMailItem";
 }
 
+/**
+* Returns true if this item's content has been populated via a server call.
+*/
+ZmMailItem.prototype.isLoaded =
+function() {
+	return this._loaded;
+};
+
 ZmMailItem.prototype.clear =
 function() {
-	this._clearParticipants();	
+	this._clearParticipants();
+	this._loaded = false;
 	ZmItem.prototype.clear.call(this);
 }
 
