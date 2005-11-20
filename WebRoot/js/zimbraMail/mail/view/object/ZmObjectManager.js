@@ -49,10 +49,14 @@ function ZmObjectManager(view, appCtxt) {
 
     this._hoverOverListener = new AjxListener(this, this._handleHoverOver);
     this._hoverOutListener = new AjxListener(this, this._handleHoverOut);
-}
+};
+
+ZmObjectManager._TOOLTIP_DELAY = 275;
 
 ZmObjectManager._autohandlers = [];
-ZmObjectManager.registerHandler = function(obj, type) {
+
+ZmObjectManager.registerHandler =
+function(obj, type) {
 	if (typeof obj == "string")
 		obj = eval(obj);
 	var c = ZmObjectManager._autohandlers;
@@ -67,7 +71,8 @@ ZmObjectManager.registerHandler = function(obj, type) {
 };
 
 // not sure this function is useful.
-ZmObjectManager.unregisterHandler = function(obj) {
+ZmObjectManager.unregisterHandler =
+function(obj) {
 	if (typeof obj == "string")
 		obj = eval(obj);
  	var c = ZmObjectManager._autohandlers, i;
@@ -79,7 +84,8 @@ ZmObjectManager.unregisterHandler = function(obj) {
 	}
 };
 
-ZmObjectManager.prototype._createHandlers = function() {
+ZmObjectManager.prototype._createHandlers =
+function() {
 	var c = ZmObjectManager._autohandlers, i, obj,
 		oh = this._objectHandlers;
 	for (i = 0; i < c.length; ++i) {
@@ -94,22 +100,20 @@ ZmObjectManager.prototype._createHandlers = function() {
 	}
 };
 
-ZmObjectManager._TOOLTIP_DELAY = 275;
-
 ZmObjectManager.prototype.toString =
 function() {
 	return "ZmObjectManager";
-}
+};
 
 ZmObjectManager.prototype.reset =
 function() {
 	this._objects = new Object();
-}
+};
 
 ZmObjectManager.prototype.getImageAttachmentHandler =
 function() {
 	return this._imageAttachmentHandler;
-}
+};
 
 // type is optional.. if you know what type of content is being passed in, set the
 // type param so we dont have to figure out what kind of content we're dealing with
@@ -193,14 +197,14 @@ function(content, htmlEncode, type) {
 	}
 
 	return html.join("");
-}
+};
 
 ZmObjectManager.prototype.generateSpan =
 function(handler, html, idx, obj, context) {
 	var id = this._objectIdPrefix + Dwt.getNextId();
 	this._objects[id] = {object: obj, handler: handler, id: id, context: context };
 	return handler.generateSpan(html, idx, obj, id, context);
-}
+};
 
 ZmObjectManager.prototype._findObjectSpan =
 function(e) {
@@ -208,7 +212,7 @@ function(e) {
 		e = e.parentNode;
 	}
 	return e;
-}
+};
 
 ZmObjectManager.prototype._mouseOverListener =
 function(ev) {
@@ -230,7 +234,7 @@ function(ev) {
 		}
 	}
 	return false;
-}
+};
 
 ZmObjectManager.prototype._mouseOutListener =
 function(ev) {
@@ -248,7 +252,7 @@ function(ev) {
 	}
 
 	return false;
-}
+};
 
 ZmObjectManager.prototype._mouseMoveListener =
 function(ev) {
@@ -265,7 +269,7 @@ function(ev) {
 	}
 
 	return false;
-}
+};
 
 ZmObjectManager.prototype._mouseDownListener =
 function(ev) {
@@ -292,7 +296,7 @@ function(ev) {
 		return true;
 	}
 	return false;
-}
+};
 
 ZmObjectManager.prototype._mouseUpListener =
 function(ev) {
@@ -303,9 +307,11 @@ function(ev) {
 
 	span.className = object.handler.getActivatedClassName(object.object, object.context);
 	return false;
-}
+};
 
 ZmObjectManager.prototype._handleHoverOver = function(event) {
+	if (!(event && event.object)) return;
+
 	var handler = event.object.handler;
 	var object = event.object.object;
 	var context = event.object.context;
@@ -313,11 +319,14 @@ ZmObjectManager.prototype._handleHoverOver = function(event) {
 	var y = event.y;
 
 	handler.hoverOver(object, context, x, y);
-}
+};
+
 ZmObjectManager.prototype._handleHoverOut = function(event) {
+	if (!(event && event.object)) return;
+
 	var handler = event.object.handler;
 	var object = event.object.object;
 	var context = event.object.context;
 
 	handler.hoverOut(object, context);
-}
+};
