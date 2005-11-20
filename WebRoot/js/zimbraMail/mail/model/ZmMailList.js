@@ -191,10 +191,11 @@ function(convs, msgs) {
 	var fields = new Object();
 	if (this.type == ZmItem.CONV && searchFolder) {
 		// handle new convs first so we can set their fragments from new msgs
+		var sortBy = this.search ? this.search.sortBy : null;
 		for (var id in convs) {
 			var conv = convs[id];
 			if (conv.folders && conv.folders[searchFolder]) {
-				var index = this._getSortIndex(conv, this.search.sortBy);
+				var index = this._getSortIndex(conv, sortBy);
 				this.add(conv, index); // add to beginning for now
 				conv.list = this;
 				createdItems.push(conv);
@@ -308,9 +309,9 @@ function(item, sortBy) {
 	var a = this.getArray();
 	for (var i = 0; i < a.length; i++) {
 		var date = parseInt(a[i].date);
-		if (this.search.sortBy == ZmSearch.DATE_DESC && (itemDate > date))
+		if (sortBy == ZmSearch.DATE_DESC && (itemDate > date))
 			return i;
-		if (this.search.sortBy == ZmSearch.DATE_ASC && (itemDate < date))
+		if (sortBy == ZmSearch.DATE_ASC && (itemDate < date))
 			return i;
 	}
 	return i;
