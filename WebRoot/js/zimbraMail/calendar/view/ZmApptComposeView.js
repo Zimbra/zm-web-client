@@ -189,25 +189,6 @@ function() {
 	return new DwtPoint(loc.x + ZmComposeView.DIALOG_X, loc.y + ZmComposeView.DIALOG_Y);
 };
 
-ZmApptComposeView.prototype._submitAttachments =
-function(isDraft) {
-	var callback = new AjxCallback(this, this._attsDoneCallback, [isDraft]);
-	var um = this._appCtxt.getUploadManager();
-	window._uploadManager = um;
-	var attCon = null;
-	if (AjxEnv.isIE) {
-		attCon = this._iframe;
-	} else {
-		var iframe = document.getElementById(this._navIframeId);
-		iframe.style.display = "block";
-		var uploadForm = document.getElementById(this._uploadFormId);
-		var idoc = Dwt.getIframeDoc(iframe);
-		idoc.body.appendChild(uploadForm);
-		attCon = iframe;
-	}
-	um.execute(attCon, callback, this._uploadFormId);
-};
-
 
 // Listeners
 
