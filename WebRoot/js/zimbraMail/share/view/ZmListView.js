@@ -345,7 +345,10 @@ function(ev, div) {
 		var m = this._parseId(id);
 		if (m && m.field) {
 			var item = this.getItemFromElement(div);
-			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) {
+			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
+				if (!item.isFlagged)
+					ev.target.className = "ImgFlagDis";
+			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) {
 				this._setTagToolTip(div);
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) {
 				this._setStatusToolTip(item);
@@ -375,6 +378,27 @@ function(ev, div) {
 			this.setToolTipContent(null);
 		}
 	}
+	return true;
+}
+
+ZmListView.prototype._mouseOutAction = 
+function(ev, div) {
+	DwtListView.prototype._mouseOutAction.call(this, ev, div);
+
+	var id = ev.target.id || div.id;
+	if (!id) return true;
+	
+	if (div._type && div._type == DwtListView.TYPE_LIST_ITEM) {
+		var m = this._parseId(id);
+		if (m && m.field) {
+			var item = this.getItemFromElement(div);
+			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
+				if (!item.isFlagged)
+					ev.target.className = "ImgBlank_16";
+			}
+		}
+	}
+
 	return true;
 }
 
