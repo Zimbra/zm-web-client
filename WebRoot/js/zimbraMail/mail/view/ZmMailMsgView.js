@@ -38,19 +38,20 @@ function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 
 	this.setScrollStyle(DwtControl.CLIP);
 
-	// customize per "mode"
-	if (mode == ZmController.MSG_NEW_WIN_VIEW)
-		return;
-
-	// Add change listener to taglist to track changes in tag color
-	this._tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
-	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
-	this.addListener(ZmMailMsgView._TAG_CLICK, new AjxListener(this, this._msgTagClicked));
+	if (!controller.isChildWindow) {
+		// Add change listener to taglist to track changes in tag color
+		this._tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
+		this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
+		this.addListener(ZmMailMsgView._TAG_CLICK, new AjxListener(this, this._msgTagClicked));
+	}
 
 	this._setMouseEventHdlrs(); // needed by object manager
 
-	// this manages all the detected objects within the view
-	this._objectManager = new ZmObjectManager(this, this._appCtxt);
+	// XXX: for now, turn off object handling :(
+	if (!controller.isChildWindow) {
+		// this manages all the detected objects within the view
+		this._objectManager = new ZmObjectManager(this, this._appCtxt);
+	}
 
 	this._changeListener = new AjxListener(this, this._msgChangeListener);
 	this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
@@ -257,6 +258,25 @@ function (listener) {
 ZmMailMsgView.prototype.addShareListener =
 function (listener) {
 	this.addListener(ZmMailMsgView.SHARE_EVENT, listener);
+};
+
+ZmMailMsgView.prototype.detach = 
+function(msgId, msgPartId) {
+	var getHtml = this._appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	var sender = this._appCtxt.getAppController();
+	var callback = new AjxCallback(this, this._detachCallback);
+	ZmMailMsg.fetchMsg({sender:sender, msgId: msgId, partId:msgPartId, getHtml:getHtml, callback:callback});
+};
+
+ZmMailMsgView.prototype._detachCallback = 
+function(args) {
+	var resp = args.getResponse().GetMsgResponse;
+	var msg = new ZmMailMsg(this._appCtxt, resp.m[0].id);
+	msg._loadFromDom(resp.m[0]);
+
+	var newWin = this._appCtxt.getNewWindow();
+	newWin.command = "msgViewDetach";
+	newWin.args = {msg: msg};
 };
 
 
@@ -957,7 +977,7 @@ function(tagId) {
 
 ZmMailMsgView.getPrintHtml =
 function(msg, preferHtml, callback) {
-	if (!(msg instanceof ZmMailMsg))
+	if (!(msg.toString() == "ZmMailMsg"))
 		return;
 
 	if (!msg.isLoaded()) {
@@ -1091,4 +1111,16 @@ ZmMailMsgView._tagClick =
 function(myId, tagId) {
 	var dwtObj = Dwt.getObjectFromElement(Dwt.getDomObj(document, myId));
 	dwtObj.notifyListeners(ZmMailMsgView._TAG_CLICK, tagId);
+};
+
+ZmMailMsgView.rfc822Callback = 
+function(anchorEl, msgId, msgPartId) {
+	// get the reference to ZmMailMsgView from the anchor element
+	var msgView = anchorEl;
+	while (msgView != null && (Dwt.getObjectFromElement(msgView) instanceof ZmMailMsgView == false))
+		msgView = msgView.parentNode;
+
+	if (msgView) msgView = Dwt.getObjectFromElement(msgView);
+	if (msgView)
+		msgView.detach(msgId, msgPartId);
 };

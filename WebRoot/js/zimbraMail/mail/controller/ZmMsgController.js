@@ -83,21 +83,40 @@ function() {
 	var elements = new Object();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
-	this._setView(this._currentView, elements);
+	this._setView(this._currentView, elements, null, this.isChildWindow);
 }
 
 // Private methods (mostly overrides of ZmListController protected methods)
 
 ZmMsgController.prototype._getToolBarOps = 
 function() {
-	var list = this._standardToolBarOps();
-	list.push(ZmOperation.SEP);
-	list = list.concat(this._msgOps());
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.SPAM);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.CLOSE);
-	return list;
+	if (this.isChildWindow) {
+		return [ZmOperation.PRINT, ZmOperation.CLOSE];
+	} else {
+		var list = this._standardToolBarOps();
+		list.push(ZmOperation.SEP);
+		list = list.concat(this._msgOps());
+		list.push(ZmOperation.SEP);
+		list.push(ZmOperation.SPAM);
+		list.push(ZmOperation.SEP);
+		list.push(ZmOperation.CLOSE);
+		return list;
+	}
+}
+
+ZmMsgController.prototype._initializeToolBar = 
+function(view, arrowStyle) {
+	if (!this.isChildWindow) {
+		ZmMailListController.prototype._initializeToolBar.call(this, view, arrowStyle);
+	} else {
+		var buttons = this._getToolBarOps();
+		if (!buttons) return;
+		this._toolbar[view] = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmMsgViewToolBar_cw");
+
+		for (var i = 0; i < buttons.length; i++)
+			if (buttons[i] > 0 && this._listeners[buttons[i]])
+				this._toolbar[view].addSelectionListener(buttons[i], this._listeners[buttons[i]]);
+	}
 }
 
 ZmMsgController.prototype._getActionMenuOps =
@@ -131,7 +150,7 @@ function () {
 
 ZmMsgController.prototype._getSearchFolderId = 
 function() {
-	return this._msg.list.search.folderId;
+	return this._msg.list ? this._msg.list.search.folderId : null;
 }
 
 ZmMsgController.prototype._getTagMenuMsg = 
@@ -152,16 +171,17 @@ function(view) {
 ZmMsgController.prototype._resetNavToolBarButtons = 
 function(view) {
 	// NOTE: we purposely do not call base class here!
-	
-	var list = this._msg.list.getVector();
-	
-	this._navToolBar.enable(ZmOperation.PAGE_BACK, list.get(0) != this._msg);
-	
-	var bEnableForw = this._msg.list.hasMore() || (list.getLast() != this._msg);
-	this._navToolBar.enable(ZmOperation.PAGE_FORWARD, bEnableForw);
-	
-	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.message);	
-	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.message);
+	if (!this.isChildWindow) {
+		var list = this._msg.list.getVector();
+		
+		this._navToolBar.enable(ZmOperation.PAGE_BACK, list.get(0) != this._msg);
+		
+		var bEnableForw = this._msg.list.hasMore() || (list.getLast() != this._msg);
+		this._navToolBar.enable(ZmOperation.PAGE_FORWARD, bEnableForw);
+		
+		this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.message);	
+		this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.message);
+	}
 }
 
 ZmMsgController.prototype._paginate = 

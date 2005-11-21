@@ -135,6 +135,11 @@ function(params) {
 				cc._setView(ZmOperation.NEW_MESSAGE, window.args.msg, null, null, null, window.args.composeMode);
 				cc._composeView.setDetach(window.args);
 			}
+		} else if (window.command == "msgViewDetach") {
+			this.activateApp(ZmNewWindow.MAIL_APP);
+			var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
+			msgController.isChildWindow = true;
+			msgController.show(window.args.msg);
 		}
 	} catch (ex) {
 		ex.code = ZmCsfeException.SVC_AUTH_EXPIRED;

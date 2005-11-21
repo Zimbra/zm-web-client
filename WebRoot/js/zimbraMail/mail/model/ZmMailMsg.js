@@ -76,6 +76,7 @@ ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT] = ZmMsg.subject;
 *
 * @param sender			[ZmZimbraMail]	provides access to sendRequest()
 * @param msgId			[int]			ID of the msg to be fetched.
+* @param partId 		[int] 			msg part ID (if retrieving attachment part, i.e. rfc/822)
 * @param getHtml		[boolean]		if true, try to fetch html from the server
 * @param callback		[AjxCallback]	async callback
 * @param errorCallback	[AjxCallback]	async error callback
@@ -85,6 +86,8 @@ function(params) {
 	var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail", null);
 	var msgNode = soapDoc.set("m");
 	msgNode.setAttribute("id", params.msgId);
+	if (params.partId)
+		msgNode.setAttribute("part", params.partId);
 	msgNode.setAttribute("read", "1");
 	if (params.getHtml) {
 		msgNode.setAttribute("html", "1");
@@ -825,11 +828,11 @@ function(bFindHits, domain, objectManager) {
 		// set link
 	    var link = "";
 	    if (type == ZmMimeTable.MSG_RFC822) {
-	    	link = "<a href='javascript:;' onclick='ZmMailMsg.rfc822Callback(this," + this.getId() + ",\"" + attach.part + "\")' class='AttLink'>";
+	    	link = "<a href='javascript:;' onclick='ZmMailMsgView.rfc822Callback(this," + this.getId() + ",\"" + attach.part + "\")' class='AttLink'>";
 	    } else {
-		    	link = useCL
-	    		? ("<a target='att_view_win' class='AttLink' href='" + attach.cl + "'>")
-	    		: ("<a target='att_view_win' class='AttLink' " + hrefRoot + attach.part + "'>");
+	    	link = useCL
+    		? ("<a target='att_view_win' class='AttLink' href='" + attach.cl + "'>")
+    		: ("<a target='att_view_win' class='AttLink' " + hrefRoot + attach.part + "'>");
 	    }
 
     		htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 style='display:inline; width:";
@@ -973,75 +976,4 @@ function(attach) {
 	}
 	
 	return false;
-};
-
-// XXX: HACK HACK HACK
-// This hack allows a user to view rfc/822 messages (message which are forwarded as attachments)
-// W/o a proper windowing model, there is no nice way to catch exceptions or allow inter-window
-// communication. Additionally, since we can't get access to the app controller to invoke a server
-// request, we will lose any notifications that may come in.
-ZmMailMsg.rfc822Callback = 
-function(anchorEl, msgId, msgPartId) {
-
-	// get the reference to ZmMailMsgView from the anchor element
-	var msgView = anchorEl;
-	while (msgView != null && (Dwt.getObjectFromElement(msgView) instanceof ZmMailMsgView == false))
-		msgView = msgView.parentNode;
-
-	if (msgView) msgView = Dwt.getObjectFromElement(msgView);
-	if (!msgView) return;
-	
-	var controller = msgView._appCtxt.getAppController();
-	if (!controller) return;
-
-	try {
-		var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail");
-		var msgNode = soapDoc.set("m");
-		msgNode.setAttribute("id", msgId);
-		msgNode.setAttribute("part", msgPartId);
-		var resp = controller.sendRequest(soapDoc).GetMsgResponse;
-
-		// validate response
-		if (resp == null || resp.m == null || resp.m[0] == null ||
-			resp.m[0].id != msgId || resp.m[0].part != msgPartId)
-		{
-			return;
-		}
-
-		// parse rfc/822 into ZmMailMsg
-		var msg = new ZmMailMsg(msgView._appCtxt, msgId);
-		msg._loadFromDom(resp.m[0]);
-		msg._loaded = true;
-
-		// create temp msg view off current msg view
-		var tmpMsgView = new ZmMailMsgView(msgView, null, DwtControl.ABSOLUTE_STYLE, ZmController.MSG_NEW_WIN_VIEW, msgView._controller);
-		Dwt.setVisible(tmpMsgView.getHtmlElement(), false);
-		tmpMsgView.set(msg);
-
-		// generate html document for new window
-		var html = new Array();
-		var idx = 0;
-		html[idx++] = "<html><head>";
-		html[idx++] = "<style type='text/css'>";
-		html[idx++] = "<!-- @import url(/zimbra/js/zimbraMail/config/style/common.css); -->";
-		html[idx++] = "<!-- @import url(/zimbra/js/zimbraMail/config/style/dwt.css); -->";
-		html[idx++] = "<!-- @import url(/zimbra/js/zimbraMail/config/style/msgview.css); -->";
-		html[idx++] = "<!-- @import url(/zimbra/js/zimbraMail/config/style/zm.css); -->";
-		html[idx++] = "</style></head>";
-		html[idx++] = "<body style='margin: 0px;' oncontextmenu='return false'>";
-		html[idx++] = "<div style='height: 100%; overflow: auto' class='ZmMailMsgView'>";
-		html[idx++] = tmpMsgView.getHtmlElement().innerHTML;
-		html[idx++] = "</div>";
-		html[idx++] = "</body></html>";
-
-		// create new popup window and set content
-		var winName = "win" + Dwt.getNextId();
-		var win = window.open("", winName, "location=no,resizable=yes,menubar=no,scrollbar=yes,status=yes,toolbar=no,width=550,height=500");
-		win.document.open();
-		win.document.writeln(html.join(""));
-		win.document.close();
-	} catch (ex) {
-		var params = {anchorEl: anchorEl, msgId: msgId, msgPartId: msgPartId};
-		controller._handleException(ex, ZmMailMsg.rfc822Callback, params, false);
-	}
 };

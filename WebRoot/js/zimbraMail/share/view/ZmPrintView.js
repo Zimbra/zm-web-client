@@ -41,7 +41,9 @@ function(item) {
 		var respCallback = new AjxCallback(this, this._handleResponseRender);
 		ZmConvListView.getPrintHtml(item, preferHtml, respCallback);
 		return;
-	} else if (item instanceof ZmMailMsg) {
+	//} else if (item instanceof ZmMailMsg) {
+	// XXX: fix this when opening a new window doesnt nuke type info!
+	} else if (item.toString() == "ZmMailMsg") {
 		var respCallback = new AjxCallback(this, this._handleResponseRender);
 		ZmMailMsgView.getPrintHtml(item, preferHtml, respCallback);
 		return;

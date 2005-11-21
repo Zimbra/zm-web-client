@@ -167,28 +167,35 @@
 	width: 100%;
 	Xfilter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
 }
+
 .ZmBrowseToolBar {
 	height: 100%;
 	width: 100%;
 }
+
 .ZmAppToolBar {
 	height: 100%;
 	width: 100%;
 }
+
 /* toolbar in child window */
 .ZmAppToolBar_cw {
 	width: 100%;
 	background-color: #EEEEEE;
 }
+
+/* toolbar in child window for message view */
+.ZmMsgViewToolBar_cw {
+	width: 100%;
+	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
+}
+
 .ZmNavToolBar {background-color: transparent;}
 .ZmInviteToolBar, .ZmShareToolBar {
 	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
 	padding: 2px;
 	border-bottom: 1px solid #777777;
 }
-
-
-
 
 
 td.DDSepVisible div {background-color:black; width:1px;overflow:hidden;}
@@ -345,6 +352,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmMailMsgView .MsgHeader {
+	border-top: 1px solid #777777;
 	border-bottom: 1px solid #777777;
 }
 
