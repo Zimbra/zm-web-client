@@ -448,17 +448,18 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	width: 100%;
 }
 
-.TcdDialogTable .TcdLabel {
+.NtdDialogTable .NtdLabel {
 	white-space:nowrap; 
 	padding:2px 5px; 
 	text-align:right;
 }
 
-.TcdDialogTable fieldset {
+.NtdDialogTable fieldset {
 	margin-left:5px;
+	margin-right:5px;
 }
 
-.TcdDialogTable .BorderColorSwatch {
+.TpdDialogTable .BorderColorSwatch {
 	padding:2px;
 	border:1px outset;
 	width:21px;

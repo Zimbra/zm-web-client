@@ -439,9 +439,11 @@ function(ev) {
 	var elType = ev.item.getData(ZmHtmlEditor._VALUE);
 	switch (elType) {
 		case ZmHtmlEditor._INSERT_TABLE:
-			if (!this._tcd)
-				this._createCreateTableDialog();
-			this._tcd.popup();
+			if (!this._ntd) {
+				this._ntd = new ZmHENewTableDialog(this.shell);
+				this._ntd.registerCallback(DwtDialog.OK_BUTTON, this._tableDialogOkCallback, this);
+			}	
+			this._ntd.popup();
 			break;
 		default:
 			this.insertElement(elType);
@@ -1094,187 +1096,9 @@ function(words) {
 		this.onExitSpellChecker.run(wordsFound);
 };
 
-
-
-
-/**
-* Makes server request to check spelling of given text.
-* @constructor
-* @class
-* Use this class to check spelling of any text via check() method.
-*
-* TODO: we may want to move this class out into its own file later...
-*
-* @author Mihai Bazon
-* @param parent			the parent needing spell checking
-* @param appCtxt		the application context
-*/
-function ZmSpellChecker(parent, appCtxt) {
-	this._parent = parent;
-	this._appCtxt = appCtxt;
-};
-
-
-// Public methods
-ZmSpellChecker.prototype.toString =
-function() {
-	return "ZmSpellChecker";
-};
-
-ZmSpellChecker.prototype.check =
-function(text, callback) {
-	var soapDoc = AjxSoapDoc.create("CheckSpellingRequest", "urn:zimbraMail");
-	soapDoc.getMethod().appendChild(soapDoc.getDoc().createTextNode(text));
-
-	var callback = new AjxCallback(this, this._checkCallback, [callback]);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, callback);
-};
-
-ZmSpellChecker.prototype._checkCallback =
-function(args) {
-	var callback	= args[0];
-	var resp		= args[1];
-
-	var words = resp._isException ? null : resp.getResponse().CheckSpellingResponse;
-
-	if (callback)
-		callback.run(words);
-};
-
-// Table width units. Used to specify width units in method below
-ZmHtmlEditor._PERCENT = 1;
-ZmHtmlEditor._PIXELS = 2;
-
-ZmHtmlEditor.prototype._createCreateTableDialog =
-function() {
-	this._tcd = new DwtDialog(this.shell, null, ZmMsg.insertTable, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
-	this._tcd._disableFFhack();
-	this._tcd.registerCallback(DwtDialog.OK_BUTTON, this._tableDialogOkCallback, this);
-
-	var numColsId = Dwt.getNextId();
-	var numRowsId = Dwt.getNextId();
-	var tableWidthId = Dwt.getNextId(); 
-	var widthUnitId = Dwt.getNextId();
-	var cellSpacingId = Dwt.getNextId();
-	var cellPaddingId = Dwt.getNextId();
-	var borderThickId = Dwt.getNextId();
- 	var borderColorId = Dwt.getNextId();
- 	var borderColorSwatchId = Dwt.getNextId();
- 	var tableAlignmentId = Dwt.getNextId();
-     
-	var html = [
-         "<table class='TcdDialogTable'><tr><td>",
-
-         "<fieldset><legend>", ZmMsg.tableSize, "</legend>",
-         "<div style='padding:2px;'></div>",
-         "<table><tr>",
-         "<td class='TcdLabel'>", ZmMsg.numberOfCols,":</td>",
-         "<td colspan=2 id='", numColsId, "'></td></tr>",
-         "<tr><td class='TcdLabel'>", ZmMsg.numberOfRows, ":</td>",
-         "<td colspan=2 id='", numRowsId, "'></td></tr>",
-         "<tr><td class='TcdLabel'>", ZmMsg.tableWidth, ":</td>",
-         "<td id='", tableWidthId, "' size='5' value='100'/></td>",
-         "<td style='padding-left;2px;' id='", widthUnitId, "'></td></tr></table></fieldset><p/>",
- 
-         "<fieldset><legend>", ZmMsg.layout, "</legend>",
-         "<div style='padding:2px;'></div>",
-         "<table><tr>",
-         "<td class='TcdLabel'>", ZmMsg.cellSpacing, ":</td>",
-         "<td id='", cellSpacingId, "' size='5' value='1'/></td>",
-         "<td class='TcdLabel'>", ZmMsg.cellPadding, ":</td>",
-         "<td id='", cellPaddingId, "'></td></tr>",
-         "<tr><td class='TcdLabel'>", "Border Thickness", ":</td>",
-         "<td id='", borderThickId, "'></td>",
-         "<td colspan='2'><table width='100%'><tr><td id='", borderColorId, "'></td><td valign='middle'><div class='BorderColorSwatch' id='", borderColorSwatchId, "'></div></td></tr></table></tr>",
-         "<tr><td class='TcdLabel'>", ZmMsg.tableAlignment, ":</td>",
-         "<td id='", tableAlignmentId, "' size='5' value='1'/></td></tr>",
-         
-         "</table></fieldset>",
-          
-         "</td></tr></table>"].join("");
-     
-	this._tcd.setContent(html);
-	
-    var cb = new AjxCallback(this, this._tcdValidationCb);
-    
-    // Table Size
-	this._tcdNumColsField = new DwtInputField(this, DwtInputField.INTEGER, 2, 5, 3, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
-	this._tcdNumColsField.setValidNumberRange(1, 254);
-	this._tcdNumColsField.setValidationCallback(cb);
-	this._tcdNumColsField.reparentHtmlElement(numColsId);
-	
-	this._tcdNumRowsField = new DwtInputField(this, DwtInputField.INTEGER, 2, 5, 4, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
-	this._tcdNumRowsField.setValidNumberRange(1, null);
-	this._tcdNumRowsField.setValidationCallback(cb);
-	this._tcdNumRowsField.reparentHtmlElement(numRowsId);
-
-	this._tcdWidthUnit = new DwtSelect(this.shell, [new DwtSelectOption(ZmHtmlEditor._PERCENT, true, ZmMsg.percent), 
-													new DwtSelectOption(ZmHtmlEditor._PIXELS, false, ZmMsg.pixels)]);
-	this._tcdWidthUnit.reparentHtmlElement(widthUnitId);
-	
-	this._tcdTableWidthField = new DwtInputField(this, DwtInputField.INTEGER, 100, 5, 5, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
-	this._tcdTableWidthField.setValidatorFunction(this, this._tcdValidateTableWidth);
-	this._tcdTableWidthField.setValidationCallback(cb);
-	this._tcdTableWidthField.reparentHtmlElement(tableWidthId);
-
-	// Layout
-	this._tcdCellSpacingField = new DwtInputField(this, DwtInputField.INTEGER, 1, 5, 3, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
-	this._tcdCellSpacingField.setValidNumberRange(0, null);
-	this._tcdCellSpacingField.setValidationCallback(cb);
-	this._tcdCellSpacingField.reparentHtmlElement(cellSpacingId);
-
-	this._tcdCellPaddingField = new DwtInputField(this, DwtInputField.INTEGER, 1, 5, 3, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
-	this._tcdCellPaddingField.setValidNumberRange(0, null);
-	this._tcdCellPaddingField.setValidationCallback(cb);
-	this._tcdCellPaddingField.reparentHtmlElement(cellPaddingId);
-
-	this._tcdBorderThickField = new DwtInputField(this, DwtInputField.INTEGER, 1, 5, 3, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
-	this._tcdBorderThickField.setValidNumberRange(0, null);
-	this._tcdBorderThickField.setValidationCallback(cb);
-	this._tcdBorderThickField.reparentHtmlElement(borderThickId);
-	
-	var b = new DwtButton(this.shell);
-	var m = new DwtMenu(b, DwtMenu.COLOR_PICKER_STYLE, null, null, this._tcd);
-	var c = new DwtColorPicker(m);
-	c.addSelectionListener(new AjxListener(this, this._tcdBorderColorPickerListener));
-	b.setText("Border Color");
-	b.setMenu(m);
-	b.reparentHtmlElement(borderColorId);
-	// Hack for FF
-	b.getHtmlElement().style.width="100%";
-	this._borderColorSwatch = document.getElementById(borderColorSwatchId);
-	
-	this._tcdTableAlignment = new DwtSelect(this.shell, ["Middle", "Top", "Bottom", "Left", "Right"]);
-	this._tcdTableAlignment.reparentHtmlElement(tableAlignmentId);
-};
-
-ZmHtmlEditor.prototype._tcdValidateTableWidth =
-function(value) {
-	alert("IMPLEMENT ZmHtmlEditor.prototype._tcdValidateTableWidth");
-}
-
-ZmHtmlEditor.prototype._tcdBorderColorPickerListener =
-function(ev) {
-	this._borderColorSwatch.style.backgroundColor = ev.detail;
-}
-
-ZmHtmlEditor.prototype._tcdValidationCb =
-function(args) {
-	if (!this._tcdNumColsField.isValid())
- 		this._tcd.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-	else if (!this._tcdNumRowsField.isValid())
- 		this._tcd.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-	else if (!this._tcdCellSpacingField.isValid())
- 		this._tcd.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-	else if (!this._tcdCellPaddingField.isValid())
- 		this._tcd.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-	else if (!this._tcdTableWidthField.isValid())
- 		this._tcd.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-	else
-		this._tcd.setButtonEnabled(DwtDialog.OK_BUTTON, true);
-}
-
 ZmHtmlEditor.prototype._tableDialogOkCallback =
 function(ev) {
-	this.insertTable(rows, cols, width, alignment, border, cellSpacing, cellPadding) 
+	var vals = this._ntd.getValues();
+	this.insertTable(vals.numRows, vals.numCols, vals.width, vals.cellSpacing, vals.cellPadding, vals.alignment);
+	this._ntd.popdown();
 };
