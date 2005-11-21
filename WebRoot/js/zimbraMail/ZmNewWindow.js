@@ -90,13 +90,13 @@ function(domain) {
 	}
 
 	var shell = new DwtShell("MainShell", false);
-    appCtxt.setShell(shell);
-    
+	appCtxt.setShell(shell);
+
 	// Create upload manager (for sending attachments)
-	appCtxt.setUploadManager(new AjxPost());
+	appCtxt.setUploadManager(new AjxPost(appCtxt.getUploadFrameId()));
 	
-    // Go!
-    var lm = new ZmNewWindow(appCtxt, domain);
+	// Go!
+	var lm = new ZmNewWindow(appCtxt, domain);
 };
 
 /**

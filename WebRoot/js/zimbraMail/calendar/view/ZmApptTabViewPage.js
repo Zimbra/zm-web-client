@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.1
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.1 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 /**
@@ -51,7 +51,7 @@ function ZmApptTabViewPage(parent, appCtxt) {
 ZmApptTabViewPage.prototype = new DwtTabViewPage;
 ZmApptTabViewPage.prototype.constructor = ZmApptTabViewPage;
 
-ZmApptTabViewPage.prototype.toString = 
+ZmApptTabViewPage.prototype.toString =
 function() {
 	return "ZmApptTabViewPage";
 };
@@ -59,9 +59,7 @@ function() {
 
 // Consts
 
-ZmApptTabViewPage.ATTACH_HEIGHT = AjxEnv.isIE ? 24 : 22;
 ZmApptTabViewPage.UPLOAD_FIELD_NAME = "attUpload";
-ZmApptTabViewPage.ATTACH_IFRAME_NAME = Dwt.getNextId();
 ZmApptTabViewPage.CONTACT_PICKER_BID = ZmEmailAddress.TO;
 
 ZmApptTabViewPage.SHOWAS_OPTIONS = [
@@ -73,7 +71,7 @@ ZmApptTabViewPage.SHOWAS_OPTIONS = [
 
 // Public
 
-ZmApptTabViewPage.prototype.showMe = 
+ZmApptTabViewPage.prototype.showMe =
 function() {
 	if (this._rendered)
 		this.parent.tabSwitched(this._tabKey);
@@ -82,7 +80,7 @@ function() {
 	this.resize(pSize.x, pSize.y);
 };
 
-ZmApptTabViewPage.prototype.getAppt = 
+ZmApptTabViewPage.prototype.getAppt =
 function(attId) {
 	// attempt to submit attachments first!
 	if (!attId && this._gotAttachments()) {
@@ -139,7 +137,7 @@ function(attId) {
 	appt.attendees = this._attendeesField.value;
 	appt.notesTopPart = top;
 
-	// set any recurrence rules	
+	// set any recurrence rules
 	this._getRecurrence(appt);
 
 	return appt;
@@ -164,13 +162,13 @@ function(appt, mode) {
 	this._origFormValue = this._formValue();
 };
 
-ZmApptTabViewPage.prototype.cleanup = 
+ZmApptTabViewPage.prototype.cleanup =
 function() {
 	if (this._recurDialog) {
 		this._recurDialog.clearState();
 		this._recurDialogRepeatValue = null;
 	}
-	
+
 	delete this._appt;
 	this._appt = null;
 
@@ -180,7 +178,7 @@ function() {
 	this._attendeesField.value = "";
 	this._repeatDescField.innerHTML = "";
 	this._notesHtmlEditor.clear();
-	
+
 	// reinit non-time sensitive selects option values
 	this._showAsSelect.setSelectedValue(ZmApptTabViewPage.SHOWAS_OPTIONS[2].value);
 	this._repeatSelect.setSelectedValue(ZmApptViewHelper.REPEAT_OPTIONS[0].value);
@@ -195,7 +193,7 @@ function() {
 };
 
 // Acceptable hack needed to prevent cursor from bleeding thru higher z-index'd views
-ZmApptTabViewPage.prototype.enableInputs = 
+ZmApptTabViewPage.prototype.enableInputs =
 function(bEnableInputs) {
 	this._subjectField.disabled = !bEnableInputs;
 	this._locationField.disabled = !bEnableInputs;
@@ -206,12 +204,12 @@ function(bEnableInputs) {
 
 ZmApptTabViewPage.prototype.isDirty =
 function() {
-	return (this._gotAttachments()) || 
-		   (this._formValue() != this._origFormValue) || 
+	return (this._gotAttachments()) ||
+		   (this._formValue() != this._origFormValue) ||
 		   (this._subjectField.value != "");
 };
 
-ZmApptTabViewPage.prototype.isValid = 
+ZmApptTabViewPage.prototype.isValid =
 function() {
 
 	// check for required subject
@@ -238,16 +236,16 @@ function() {
 	return isValid;
 };
 
-ZmApptTabViewPage.prototype.getComposeMode = 
+ZmApptTabViewPage.prototype.getComposeMode =
 function() {
 	return this._composeMode;
 };
 
-ZmApptTabViewPage.prototype.setComposeMode = 
+ZmApptTabViewPage.prototype.setComposeMode =
 function(composeMode) {
 	this._composeMode = composeMode || this._composeMode;
 	this._notesHtmlEditor.setMode(this._composeMode, true);
-	
+
 	// dont forget to reset the body field Id and object ref
 	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
 	if (this._bodyFieldId != bodyFieldId) {
@@ -259,62 +257,59 @@ function(composeMode) {
 };
 
 // called by schedule tab view when user changes start date field
-ZmApptTabViewPage.prototype.updateDateField = 
+ZmApptTabViewPage.prototype.updateDateField =
 function(newStartDate, newEndDate) {
 	this._startDateField.value = newStartDate;
 	this._endDateField.value = newEndDate;
 };
 
-ZmApptTabViewPage.prototype.updateAllDayField = 
+ZmApptTabViewPage.prototype.updateAllDayField =
 function(isAllDay) {
 	this._allDayCheckbox.checked = isAllDay;
 	this._showTimeFields(!isAllDay);
 };
 
-ZmApptTabViewPage.prototype.updateTimeField = 
+ZmApptTabViewPage.prototype.updateTimeField =
 function(newStartValue, newEndValue) {
 	this._startTimeSelect.setSelectedValue(newStartValue);
 	this._endTimeSelect.setSelectedValue(newEndValue);
 };
 
-ZmApptTabViewPage.prototype.updateAttendeesField = 
+ZmApptTabViewPage.prototype.updateAttendeesField =
 function(attendees) {
 	this._attendeesField.value = attendees;
 };
 
-ZmApptTabViewPage.prototype.reEnableDesignMode = 
+ZmApptTabViewPage.prototype.reEnableDesignMode =
 function() {
 	if (this._composeMode == DwtHtmlEditor.HTML)
 		this._notesHtmlEditor.reEnableDesignMode();
 };
 
 /**
- * Adds an attachment (file input field) to the appointment view. If none already
- * exist, creates an IFRAME for a container. If @attach param provided, user is
- * opening an existing appointment w/ an attachment and therefore display differently
-*/
+ * Adds an attachment (file input field) to the appointment view. If none
+ * already exist, creates the attachments container. If @attach param provided,
+ * user is opening an existing appointment w/ an attachment and therefore
+ * display differently
+ */
 ZmApptTabViewPage.prototype.addAttachmentField =
 function(appt, attach) {
 	if (this._attachCount == 0) {
-		this._initAttachIframe(ZmApptTabViewPage.ATTACH_HEIGHT);
-	} else if (this._attachCount < 3) {
-		this._attachmentRow.style.height = parseInt(this._attachmentRow.style.height) + ZmApptTabViewPage.ATTACH_HEIGHT;
-		this._attachIframe.style.height = parseInt(this._attachIframe.style.height) + ZmApptTabViewPage.ATTACH_HEIGHT;
+		this._initAttachIframe();
 	}
-	
+
 	this._attachCount++;
 
-	// add file input field w/in iframe
-	var idoc = Dwt.getIframeDoc(this._attachIframe);
-	var div = idoc.createElement("div");
-	div.style.height = ZmApptTabViewPage.ATTACH_HEIGHT;
+	// add file input field
+	var doc = this.getDocument();
+	var div = doc.createElement("div");
 
 	var attachRemoveId = "_att_" + Dwt.getNextId();
 	var attachInputId = "_att_" + Dwt.getNextId();
-	
+
 	if (attach) {
 		// skip setting the icon since the attachment field is inside an iframe
-		div.innerHTML = appt.getAttachListHtml(attach, true, true);
+		div.innerHTML = appt.getAttachListHtml(attach, true, false);
 	} else {
 		var html = new Array();
 		var i = 0;
@@ -323,7 +318,7 @@ function(appt, attach) {
 		html[i++] = ZmApptTabViewPage.UPLOAD_FIELD_NAME;
 		html[i++] = "' id='";
 		html[i++] = attachInputId;
-		html[i++] = "'>&nbsp;<span onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;' id='";
+		html[i++] = "'>&nbsp;<span style='cursor:pointer;color:blue;text-decoration:underline;' id='";
 		html[i++] = attachRemoveId;
 		html[i++] = "'>";
 		html[i++] = ZmMsg.remove;
@@ -333,20 +328,19 @@ function(appt, attach) {
 	}
 
 	if (this._attachDiv == null)
-		this._attachDiv = Dwt.getDomObj(idoc, this._attachDivId);
-	this._attachDiv.style.height = this._attachIframe.style.height;
+		this._attachDiv = Dwt.getDomObj(doc, this._attachDivId);
 	this._attachDiv.appendChild(div);
 
 	if (attach == null) {
 		// add event handlers as necessary
 		var tvpId = AjxCore.assignId(this);
-		var attachRemoveSpan = Dwt.getDomObj(idoc, attachRemoveId);
+		var attachRemoveSpan = Dwt.getDomObj(doc, attachRemoveId);
 		attachRemoveSpan._tabViewPageId = tvpId;
 		attachRemoveSpan._parentDiv = div;
 		Dwt.setHandler(attachRemoveSpan, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
 		// trap key presses in IE for input field so we can ignore ENTER key (bug 961)
 		if (AjxEnv.isIE) {
-			var attachInputEl = Dwt.getDomObj(idoc, attachInputId);
+			var attachInputEl = Dwt.getDomObj(doc, attachInputId);
 			attachInputEl._tabViewPageId = tvpId;
 			Dwt.setHandler(attachInputEl, DwtEvent.ONKEYDOWN, ZmApptTabViewPage._onKeyDown);
 		}
@@ -355,7 +349,7 @@ function(appt, attach) {
 	this._resizeNotes();
 };
 
-ZmApptTabViewPage.prototype.resize = 
+ZmApptTabViewPage.prototype.resize =
 function(newWidth, newHeight) {
 	if (!this._rendered) return;
 
@@ -371,12 +365,12 @@ function(newWidth, newHeight) {
 	}
 };
 
-ZmApptTabViewPage.prototype.getNotesHtmlEditor = 
+ZmApptTabViewPage.prototype.getNotesHtmlEditor =
 function() {
 	return this._notesHtmlEditor;
 };
 
-ZmApptTabViewPage.prototype.getDateInfo = 
+ZmApptTabViewPage.prototype.getDateInfo =
 function() {
 	var dateInfo = new Object();
 	dateInfo.startDate = this._startDateField.value;
@@ -388,7 +382,7 @@ function() {
 	return dateInfo;
 };
 
-ZmApptTabViewPage.prototype.getAttendees = 
+ZmApptTabViewPage.prototype.getAttendees =
 function() {
 	// always prepend organizer before returning attendees field
 	// XXX: for now, assume no organizer means its the user :/
@@ -408,7 +402,7 @@ function() {
 
 // Private / protected methods
 
-ZmApptTabViewPage.prototype._reset = 
+ZmApptTabViewPage.prototype._reset =
 function(appt, mode) {
 	// reset the date/time values based on current time
 	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getStartDate());
@@ -426,7 +420,7 @@ function(appt, mode) {
 	// re-enable all input fields
 	this.enableInputs(true);
 
-	// if not creating new appt, pre-populate from given appt	
+	// if not creating new appt, pre-populate from given appt
 	if (mode != ZmAppt.MODE_NEW) {
 		this._populateForEdit(appt);
 	} else {
@@ -435,7 +429,7 @@ function(appt, mode) {
 	}
 	// disable the recurrence select object for editing single instance
 	this._enableRepeat(mode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
-	
+
 	// set focus to first input element
 	this._subjectField.focus();
 };
@@ -443,7 +437,7 @@ function(appt, mode) {
 /**
  * sets any recurrence rules w/in given ZmAppt object
 */
-ZmApptTabViewPage.prototype._getRecurrence = 
+ZmApptTabViewPage.prototype._getRecurrence =
 function(appt) {
 	var repeatType = this._repeatSelect.getValue();
 
@@ -464,7 +458,7 @@ function(appt) {
 	}
 };
 
-ZmApptTabViewPage.prototype._populateForEdit = 
+ZmApptTabViewPage.prototype._populateForEdit =
 function(appt) {
 	// set subject/location
 	this._subjectField.value = appt.getName();
@@ -495,7 +489,7 @@ function(appt) {
 
 	// set notes/content (based on compose mode per user prefs)
 	var hasHtmlPart = appt.notesTopPart && appt.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT;
-	if (hasHtmlPart && 
+	if (hasHtmlPart &&
 		(this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT) ||
 		 this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML))
 	{
@@ -507,7 +501,7 @@ function(appt) {
 	}
 };
 
-ZmApptTabViewPage.prototype._enableRepeat = 
+ZmApptTabViewPage.prototype._enableRepeat =
 function(enable) {
 	if (enable) {
 		this._repeatSelect.enable();
@@ -520,7 +514,7 @@ function(enable) {
 	this._repeatSelect.setAlign(DwtLabel.ALIGN_LEFT); // XXX: hack b/c bug w/ DwtSelect
 };
 
-ZmApptTabViewPage.prototype._createHTML = 
+ZmApptTabViewPage.prototype._createHTML =
 function() {
 	this._createApptHtml();
 	this._createSelects();
@@ -531,7 +525,7 @@ function() {
 	this._addEventHandlers();
 };
 
-ZmApptTabViewPage.prototype._createApptHtml = 
+ZmApptTabViewPage.prototype._createApptHtml =
 function() {
 	var dims = this.parent.getSize();
 	var half = (dims.x / 2) - 5;
@@ -572,11 +566,11 @@ function() {
 	html[i++] = "'>";
 	html[i++] = "</td></tr>";
 	html[i++] = "</table>";
-	
+
 	this.getHtmlElement().innerHTML = html.join("");
 };
 
-ZmApptTabViewPage.prototype._createSelects = 
+ZmApptTabViewPage.prototype._createSelects =
 function() {
 	var doc = this.getDocument();
 
@@ -638,7 +632,7 @@ function() {
 		endTZoneCell.appendChild(this._tzoneSelect.getHtmlElement());
 	this._tzoneSelect.setSize("100"); 											// XXX: hardcode width for now
 	delete this._tzoneSelectId;
-	
+
 	this._repeatSelect = new DwtSelect(this);
 	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
 	for (var i = 0; i < ZmApptViewHelper.REPEAT_OPTIONS.length; i++) {
@@ -651,17 +645,17 @@ function() {
 	delete this._repeatSelectId;
 };
 
-ZmApptTabViewPage.prototype._createButtons = 
+ZmApptTabViewPage.prototype._createButtons =
 function() {
 	var doc = this.getDocument();
 
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
-	this._startDateButton = ZmApptViewHelper.createMiniCalButton(doc, this, this._startMiniCalBtnId, 
+	this._startDateButton = ZmApptViewHelper.createMiniCalButton(doc, this, this._startMiniCalBtnId,
 																 dateButtonListener, dateCalSelectionListener);
 
-	this._endDateButton = ZmApptViewHelper.createMiniCalButton(doc, this, this._endMiniCalBtnId, 
+	this._endDateButton = ZmApptViewHelper.createMiniCalButton(doc, this, this._endMiniCalBtnId,
 															   dateButtonListener, dateCalSelectionListener);
 
 	this._attendeesBtnListener = new AjxListener(this, this._attendeesButtonListener);
@@ -676,7 +670,7 @@ function() {
 	delete this._attendeesBtnId;
 };
 
-ZmApptTabViewPage.prototype._getDetailsHtml = 
+ZmApptTabViewPage.prototype._getDetailsHtml =
 function() {
 	this._subjectFieldId 		= Dwt.getNextId();
 	this._locationFieldId 		= Dwt.getNextId();
@@ -686,7 +680,7 @@ function() {
 
 	var html = new Array();
 	var i = 0;
-	
+
 	html[i++] = "<table border=0 width=100%>";
 	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'><sup>*</sup>";
 	html[i++] = ZmMsg.subject;
@@ -714,11 +708,11 @@ function() {
 	html[i++] = "'></td>";
 	html[i++] = "</tr>";
 	html[i++] = "</td></tr></table>";
-	
+
 	return html.join("");
 };
 
-ZmApptTabViewPage.prototype._getTimeHtml = 
+ZmApptTabViewPage.prototype._getTimeHtml =
 function() {
 	var currDate = AjxDateUtil.simpleComputeDateStr(new Date());
 	this._startDateFieldId 		= Dwt.getNextId();
@@ -734,7 +728,7 @@ function() {
 
 	var html = new Array();
 	var i = 0;
-	
+
 	html[i++] = "<table border=0>";
 	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.start;
@@ -788,14 +782,14 @@ function() {
 	return html.join("");
 };
 
-ZmApptTabViewPage.prototype._getSchedulingHtml = 
+ZmApptTabViewPage.prototype._getSchedulingHtml =
 function() {
 	this._attendeesBtnId = Dwt.getNextId();
 	this._attendeesFieldId = Dwt.getNextId();
-	
+
 	var html = new Array();
 	var i = 0;
-	
+
 	html[i++] = "<table border=0 width=100%><tr>";
 	if (this._contactsSupported) {
 		html[i++] = "<td width=1% id='";
@@ -810,11 +804,11 @@ function() {
 	html[i++] = this._attendeesFieldId;
 	html[i++] = "'></td>";
 	html[i++] = "</tr></table>";
-	
+
 	return html.join("");
 };
 
-ZmApptTabViewPage.prototype._initNotesHtmlEditor = 
+ZmApptTabViewPage.prototype._initNotesHtmlEditor =
 function() {
 	var doc = this.getDocument();
 
@@ -829,7 +823,7 @@ function() {
 	this._resizeNotes();
 };
 
-ZmApptTabViewPage.prototype._initAutocomplete = 
+ZmApptTabViewPage.prototype._initAutocomplete =
 function() {
 	if (this._autocomplete || !this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
 		return;
@@ -844,7 +838,7 @@ function() {
 	this._autocomplete.handle(this._attendeesField);
 };
 
-ZmApptTabViewPage.prototype._addEventHandlers = 
+ZmApptTabViewPage.prototype._addEventHandlers =
 function() {
 	var tvpId = AjxCore.assignId(this);
 
@@ -860,10 +854,10 @@ function() {
 };
 
 // cache all input fields so we dont waste time traversing DOM each time
-ZmApptTabViewPage.prototype._cacheFields = 
+ZmApptTabViewPage.prototype._cacheFields =
 function() {
 	var doc = this.getDocument();
-	
+
 	this._subjectField 		= Dwt.getDomObj(doc, this._subjectFieldId); 		delete this._subjectFieldId;
 	this._locationField 	= Dwt.getDomObj(doc, this._locationFieldId); 		delete this._locationFieldId;
 	this._calLabelField 	= Dwt.getDomObj(doc, this._calLabelId); 			delete this._calLabelId;
@@ -874,14 +868,14 @@ function() {
 	this._repeatDescField 	= Dwt.getDomObj(doc, this._repeatDescId); 			// dont delete!
 };
 
-ZmApptTabViewPage.prototype._resetTimezoneSelect = 
+ZmApptTabViewPage.prototype._resetTimezoneSelect =
 function(appt, isAllDayAppt) {
 	var showTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) && !isAllDayAppt;
 	Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), showTimezone);
 	this._tzoneSelect.setSelectedValue(appt.getTimezone());
 };
 
-ZmApptTabViewPage.prototype._resetCalendarSelect = 
+ZmApptTabViewPage.prototype._resetCalendarSelect =
 function(appt, mode) {
 	// get all folders w/ view set to "Appointment" we received from initial refresh block
 	var calTreeData = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
@@ -897,7 +891,7 @@ function(appt, mode) {
 			for (var i = 0; i < len; i++) {
 				var cal = children[i];
 				this._calendarOrgs[cal.id] = cal.owner;
-				// if for some reason, we dont have share info, show all shares 
+				// if for some reason, we dont have share info, show all shares
 				if (!cal.link || (cal.link && (cal.shares == null || cal.shares[0].isWrite())))
 					this._calendarSelect.addOption(cal.name, false, cal.id);
 			}
@@ -908,7 +902,7 @@ function(appt, mode) {
 	this._calendarSelect.setSelectedValue(appt.getFolderId());
 };
 
-ZmApptTabViewPage.prototype._initAttachIframe = 
+ZmApptTabViewPage.prototype._initAttachIframe =
 function() {
 	// create new table row which will contain parent fieldset
 	var table = this.getHtmlElement().firstChild;
@@ -917,9 +911,7 @@ function() {
 	var cell = this._attachmentRow.insertCell(-1);
 	cell.colSpan = 2;
 
-	var src = AjxEnv.isIE && location.protocol == "https:" ? "'/zimbra/public/blank.html'" : null;
-
-	// create fieldset and containing IFRAME and append to given table cell
+	// create fieldset and append to given table cell
 	var html = new Array();
 	var i = 0;
 	html[i++] = "<fieldset";
@@ -928,48 +920,27 @@ function() {
 	html[i++] = "><legend style='color:#555555'>";
 	html[i++] = ZmMsg.attachments;
 	html[i++] = "</legend>";
-	html[i++] = "<iframe frameborder=0 vspace=0 hspace=0 marginwidth=0 marginheight=0 width=100% scrolling=no tabindex=-1 ";
-	html[i++] = "style='overflow-x:visible; overflow-y:visible; height:";
-	html[i++] = ZmApptTabViewPage.ATTACH_HEIGHT;
-	html[i++] = "' name='";
-	html[i++] = ZmApptTabViewPage.ATTACH_IFRAME_NAME;
-	html[i++] = "' id='";
-	html[i++] = ZmApptTabViewPage.ATTACH_IFRAME_NAME;
-	html[i++] = src ? ("' src='" + src + "'>") : "'>";
-	html[i++] = "</iframe></fieldset>";
-	cell.innerHTML = html.join("");
 
-	// populate iframe document w/ empty form and DIV which will hold file input fields
 	var doc = this.getDocument();
 	this._uploadFormId = Dwt.getNextId();
 	this._attachDivId = Dwt.getNextId();
-	this._attachIframe = Dwt.getDomObj(doc, ZmApptTabViewPage.ATTACH_IFRAME_NAME);
-	
-	var idoc = this._attachIframe ? Dwt.getIframeDoc(this._attachIframe) : null;
-	if (idoc) {
-		var html = new Array();
-		var i = 0;
-		html[i++] = "<html><head><style type='text/css'>";
-		html[i++] = "P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON { font-family: Tahoma, Arial, Helvetica, sans-serif;	font-size:11px; }";
-		html[i++] = "</style></head><body scroll=no bgcolor='#EEEEEE'><form style='margin:0;padding:0' method='POST' action='";
-		html[i++] = (location.protocol + "//" + doc.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI));
-		html[i++] = "' id='";
-		html[i++] = this._uploadFormId;
-		html[i++] = "' enctype='multipart/form-data'><div id='";
-		html[i++] = this._attachDivId;
-		html[i++] = "' style='overflow:auto'></div></form></body></html>";
-		idoc.write(html.join(""));
-		idoc.close();
-	}
+
+	html[i++] = "<form style='margin:0;padding:0' method='POST' action='";
+	html[i++] = (location.protocol + "//" + doc.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI));
+	html[i++] = "' id='";
+	html[i++] = this._uploadFormId;
+	html[i++] = "' enctype='multipart/form-data'><div id='";
+	html[i++] = this._attachDivId;
+	html[i++] = "' style='overflow:auto'></div></form>";
+
+	html[i++] = "</fieldset>";
+	cell.innerHTML = html.join("");
 };
 
 // Returns true if any of the attachment fields are populated
 ZmApptTabViewPage.prototype._gotAttachments =
 function() {
-	if (this._attachIframe == null)
-		this._attachIframe = Dwt.getDomObj(this.getDocument(), ZmApptTabViewPage.ATTACH_IFRAME_NAME);
-	var idoc = this._attachIframe ? Dwt.getIframeDoc(this._attachIframe) : null;
-	var atts = idoc ? idoc.getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME) : [];
+	var atts = this.getDocument().getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME);
 
 	for (var i = 0; i < atts.length; i++)
 		if (atts[i].value.length)
@@ -978,29 +949,21 @@ function() {
 	return false;
 };
 
-ZmApptTabViewPage.prototype._removeAttachment = 
+ZmApptTabViewPage.prototype._removeAttachment =
 function(removeId) {
 	// get document of attachment's iframe
-	var idoc = Dwt.getIframeDoc(this._attachIframe);
-	var removeSpan = idoc ? Dwt.getDomObj(idoc, removeId) : null;
+	var removeSpan = this.getElementById(removeId);
 	if (removeSpan) {
 		// have my parent kill me
 		removeSpan._parentDiv.parentNode.removeChild(removeSpan._parentDiv);
 		if ((this._attachCount-1) == 0) {
 			this._removeAllAttachments();
-		} else {
-			if (--this._attachCount < 3) {
-				// reset the iframe/etc heights - yuck
-				this._attachmentRow.style.height = parseInt(this._attachmentRow.style.height) - ZmApptTabViewPage.ATTACH_HEIGHT;
-				this._attachIframe.style.height = parseInt(this._attachIframe.style.height) - ZmApptTabViewPage.ATTACH_HEIGHT;
-				this._attachDiv.style.height = this._attachIframe.style.height;
-			}
 		}
 		this._resizeNotes();
 	}
 };
 
-ZmApptTabViewPage.prototype._removeAllAttachments = 
+ZmApptTabViewPage.prototype._removeAllAttachments =
 function() {
 	if (this._attachCount == 0) return;
 
@@ -1009,8 +972,7 @@ function() {
 	delete this._attachDivId;
 	delete this._attachRemoveId;
 	delete this._attachDiv;
-	delete this._attachIframe;
-	this._attachIframe = this._attachDiv = this._attachRemoveId = this._attachDivId = this._uploadFormId = null;
+	this._attachDiv = this._attachRemoveId = this._attachDivId = this._uploadFormId = null;
 	// finally, nuke the whole table row
 	var table = this.getHtmlElement().firstChild;
 	table.deleteRow(2);
@@ -1020,7 +982,7 @@ function() {
 	this._attachCount = 0;
 };
 
-ZmApptTabViewPage.prototype._showTimeFields = 
+ZmApptTabViewPage.prototype._showTimeFields =
 function(show) {
 	Dwt.setVisibility(this._startTimeSelect.getHtmlElement(), show);
 	Dwt.setVisibility(this._endTimeSelect.getHtmlElement(), show);
@@ -1031,7 +993,7 @@ function(show) {
 	Dwt.setVisibility(this._endTimeSelect.getHtmlElement().parentNode.previousSibling, show);
 };
 
-ZmApptTabViewPage.prototype._showRecurDialog = 
+ZmApptTabViewPage.prototype._showRecurDialog =
 function(repeatType) {
 	if (!this._repeatSelectDisabled) {
 		if (!this._recurDialog) {
@@ -1069,7 +1031,7 @@ function() {
 	return str;
 };
 
-ZmApptTabViewPage.prototype._resizeNotes = 
+ZmApptTabViewPage.prototype._resizeNotes =
 function() {
 	// init html editor heights
 	var rows = this.getHtmlElement().firstChild.rows;
@@ -1087,13 +1049,13 @@ function() {
 	var callback = new AjxCallback(this, this._attsDoneCallback);
 	var um = this._appCtxt.getUploadManager();
 	window._uploadManager = um;
-	um.execute(this._attachIframe, callback, this._uploadFormId);
+	um.execute(callback, this.getElementById(this._uploadFormId));
 };
 
 
 // Listeners
 
-ZmApptTabViewPage.prototype._dateButtonListener = 
+ZmApptTabViewPage.prototype._dateButtonListener =
 function(ev) {
 	var calDate = ev.item == this._startDateButton
 		? new Date(this._startDateField.value)
@@ -1114,7 +1076,7 @@ function(ev) {
 	menu.popup();
 };
 
-ZmApptTabViewPage.prototype._attendeesButtonListener = 
+ZmApptTabViewPage.prototype._attendeesButtonListener =
 function(ev) {
 	if (!this._contactPicker) {
 		var buttonInfo = [ { id:ZmApptTabViewPage.CONTACT_PICKER_BID, value:ZmMsg.add.toLowerCase() } ];
@@ -1125,7 +1087,7 @@ function(ev) {
 	this._contactPicker.popup(ZmApptTabViewPage.CONTACT_PICKER_BID);
 };
 
-ZmApptTabViewPage.prototype._dateCalSelectionListener = 
+ZmApptTabViewPage.prototype._dateCalSelectionListener =
 function(ev) {
 	var parentButton = ev.item.parent.parent;
 
@@ -1146,7 +1108,7 @@ function(ev) {
 	}
 };
 
-ZmApptTabViewPage.prototype._timeChangeListener = 
+ZmApptTabViewPage.prototype._timeChangeListener =
 function(ev) {
 	var selectedObj = ev._args.selectObj;
 
@@ -1187,8 +1149,8 @@ function(ev) {
 	}
 };
 
-ZmApptTabViewPage.prototype._repeatChangeListener = 
-function(ev) {	
+ZmApptTabViewPage.prototype._repeatChangeListener =
+function(ev) {
 	var newSelectVal = ev._args.newValue;
 	if (newSelectVal == "CUS") {
 		this._oldRepeatValue = ev._args.oldValue;
@@ -1198,7 +1160,7 @@ function(ev) {
 	}
 };
 
-ZmApptTabViewPage.prototype._recurOkListener = 
+ZmApptTabViewPage.prototype._recurOkListener =
 function(ev) {
 	var popdown = true;
 	this._recurDialogRepeatValue = this._recurDialog.getSelectedRepeatValue();
@@ -1222,7 +1184,7 @@ function(ev) {
 		this._recurDialog.popdown();
 };
 
-ZmApptTabViewPage.prototype._recurCancelListener = 
+ZmApptTabViewPage.prototype._recurCancelListener =
 function(ev) {
 	// reset the selected option to whatever it was before user canceled
 	this._repeatSelect.setSelectedValue(this._oldRepeatValue);
@@ -1256,13 +1218,13 @@ function(args) {
 	this.reEnableDesignMode();
 };
 
-ZmApptTabViewPage.prototype._contactPickerCancel = 
+ZmApptTabViewPage.prototype._contactPickerCancel =
 function(args) {
 	this.enableInputs(true);
 	this.reEnableDesignMode();
 };
 
-ZmApptTabViewPage.prototype._getAcListLoc = 
+ZmApptTabViewPage.prototype._getAcListLoc =
 function(ev) {
 	if (this._attendeesField) {
 		var loc = Dwt.getLocation(this._attendeesField);
@@ -1287,11 +1249,9 @@ function(args) {
 
 // Static methods
 
-ZmApptTabViewPage._onClick = 
+ZmApptTabViewPage._onClick =
 function(ev) {
-	// IE doesn't pass events from IFRAMES, might have to go fishing for it
-	if (AjxEnv.isIE && !window.event)
-		ev = parent.window.frames[ZmApptTabViewPage.ATTACH_IFRAME_NAME].event;
+	ev || (ev = window.event);
 
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = AjxCore.objectWithId(el._tabViewPageId);
@@ -1307,11 +1267,9 @@ function(ev) {
 	}
 };
 
-ZmApptTabViewPage._onKeyDown = 
+ZmApptTabViewPage._onKeyDown =
 function(ev) {
-	// IE doesn't pass events from IFRAMES, might have to go fishing for it
-	if (AjxEnv.isIE && !window.event)
-		ev = parent.window.frames[ZmApptTabViewPage.ATTACH_IFRAME_NAME].event;
+	ev || (ev = window.event);
 
 	var el = DwtUiEvent.getTarget(ev);
 
@@ -1322,7 +1280,7 @@ function(ev) {
 	}
 };
 
-ZmApptTabViewPage._onMouseOver = 
+ZmApptTabViewPage._onMouseOver =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = AjxCore.objectWithId(el._tabViewPageId);
@@ -1333,7 +1291,7 @@ function(ev) {
 	}
 };
 
-ZmApptTabViewPage._onChange = 
+ZmApptTabViewPage._onChange =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = AjxCore.objectWithId(el._tabViewPageId);

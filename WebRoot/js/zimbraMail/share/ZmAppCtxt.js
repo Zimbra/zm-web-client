@@ -302,6 +302,22 @@ function() {
 	return AjxCookie.getCookie(document, "ls_last_username");
 }
 
+ZmAppCtxt.prototype.getUploadFrameId =
+function() {
+	if (!this._uploadManagerIframeId) {
+		var doc = this.getShell().getDocument();
+		var iframeId = Dwt.getNextId();
+		var html = [ "<iframe name='", iframeId, "' id='", iframeId,
+			     "' src='", (AjxEnv.isIE && location.protocol == "https:") ? "/zimbra/public/blank.html" : "javascript:\"\"",
+			     "' style='position: absolute; top: 0; left: 0; visibility: hidden'></iframe>" ];
+		var div = doc.createElement("div");
+		div.innerHTML = html.join("");
+		doc.body.appendChild(div.firstChild);
+		this._uploadManagerIframeId = iframeId;
+	}
+	return this._uploadManagerIframeId;
+}
+
 ZmAppCtxt.prototype.getUploadManager = 
 function() { 
 	return this._uploadManager;

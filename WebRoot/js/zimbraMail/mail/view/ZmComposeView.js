@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.1
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.1 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -37,21 +37,11 @@
 function ZmComposeView(parent, controller, composeMode) {
 
 	DwtComposite.call(this, parent, "ZmComposeView", Dwt.ABSOLUTE_STYLE);
-	
+
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._controller = controller;
-	this._contactPickerEnabled = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) || 
+	this._contactPickerEnabled = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
 								 this._appCtxt.get(ZmSetting.GAL_ENABLED);
-	
-	// part of bug fix #941 -- attaching an iframe which we'll use
-	// to send any upload requests.
-	if (AjxEnv.isNav) {
-		var iframe = document.createElement('iframe');
-		iframe.style.display = 'none';
-		this._navIframeId = iframe.id = Dwt.getNextId();
-		document.body.appendChild(iframe);
-	}
-
 	this._initialize(composeMode);
 };
 
@@ -91,13 +81,13 @@ ZmComposeView.QUOTED_HDRS = [ZmMailMsg.HDR_FROM, ZmMailMsg.HDR_TO, ZmMailMsg.HDR
 
 // Public methods
 
-ZmComposeView.prototype.toString = 
+ZmComposeView.prototype.toString =
 function() {
 	return "ZmComposeView";
 };
 
 /**
-* Sets the current view, based on the given action. The compose form is 
+* Sets the current view, based on the given action. The compose form is
 * created and laid out and everything is set up for interaction with the user.
 *
 * @param action			new message, reply, forward, or some variation thereof
@@ -112,12 +102,12 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 
 	this._action = action;
 	this._msg = msg;
-	
+
 	this.reset(true);
 
-	// create iframe EVERY time
-	this._iframe = this._createAttachmentsContainer();
-	
+	// create attc. table EVERY time
+	this._createAttachmentsContainer();
+
 	// reset To/Cc/Bcc fields
 	this._showField(ZmEmailAddress.TO, true);
 	this._showField(ZmEmailAddress.CC, false);
@@ -145,7 +135,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 	}
 };
 
-ZmComposeView.prototype.getComposeMode = 
+ZmComposeView.prototype.getComposeMode =
 function() {
 	return this._composeMode;
 };
@@ -155,17 +145,17 @@ function() {
 	return this._controller;
 };
 
-ZmComposeView.prototype.getForwardLinkHtml = 
+ZmComposeView.prototype.getForwardLinkHtml =
 function() {
 	return this._forwardDiv.innerHTML;
 };
 
-ZmComposeView.prototype.getHtmlEditor = 
+ZmComposeView.prototype.getHtmlEditor =
 function() {
 	return this._htmlEditor;
 };
 
-ZmComposeView.prototype.getOrigMsg = 
+ZmComposeView.prototype.getOrigMsg =
 function() {
 	return this._msg;
 };
@@ -184,7 +174,7 @@ function() {
 };
 
 // returns the field values for each of the addr fields
-ZmComposeView.prototype.getRawAddrFields = 
+ZmComposeView.prototype.getRawAddrFields =
 function() {
 	var addrs = new Object();
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
@@ -197,16 +187,14 @@ function() {
 };
 
 // returns list of attachment field values (used by detachCompose)
-ZmComposeView.prototype.getAttFieldValues = 
+ZmComposeView.prototype.getAttFieldValues =
 function() {
 	var attList = new Array();
-	var atts = AjxEnv.isIE
-		? this._getIframeDocument().getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME)
-		: document.getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME);
+	var atts = document.getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME);
 
 	for (var i = 0; i < atts.length; i++)
 		attList.push(atts[i].value);
-	
+
 	return attList;
 };
 
@@ -252,32 +240,32 @@ function(attId, isDraft) {
 	} else {
 		this._badAddrsOkay = false;
 	}
-	
+
 	// Handle any attachments
 	if (!attId && this._gotAttachments()) {
 		this._submitAttachments(isDraft);
 		return;
 	}
-	
+
 	// get list of message part id's for any forwarded attachements
 	var forwardAttIds = this._getForwardAttIds();
-	
+
 	// --------------------------------------------
 	// Passed validation checks, message ok to send
 	// --------------------------------------------
-	
+
 	// set up message parts as necessary
 	var top = new ZmMimePart();
 
 	if (this._composeMode == DwtHtmlEditor.HTML) {
 		top.setContentType(ZmMimeTable.MULTI_ALT);
-		
+
 		// create two more mp's for text and html content types
 		var textPart = new ZmMimePart();
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		textPart.setContent(this._htmlEditor.getTextVersion());
 		top.children.add(textPart);
-		
+
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
 		htmlPart.setContent(this._htmlEditor.getContent());
@@ -292,7 +280,7 @@ function(attId, isDraft) {
 			top.children.add(textPart);
 		}
 	}
-	
+
 	// add extra message parts
 	if (this._extraParts) {
 		for (var i = 0; i < this._extraParts.length; i++) {
@@ -300,7 +288,7 @@ function(attId, isDraft) {
 			top.children.add(mimePart);
 		}
 	}
-	
+
 	var msg = new ZmMailMsg(this._appCtxt);
 	msg.setTopPart(top);
 	msg.setSubject(subject);
@@ -310,7 +298,7 @@ function(attId, isDraft) {
 		if (addrs[type] && addrs[type].all.size() > 0)
 			msg.setAddresses(type, addrs[type].all);
 	}
-	
+
 	// save a reference to the original message
 	msg._origMsg = this._msg;
 
@@ -335,10 +323,10 @@ function(attId, isDraft) {
 		msg.inviteMode = isInviteReply ? this._action : null;
 		msg.irtMessageId = this._msg.messageId;
 	}
-	
+
 	if (attId)
 		msg.setAttachmentId(attId);
-	
+
 	if (this._msgAttId)
 		msg.setMessageAttachmentId(this._msgAttId);
 
@@ -358,10 +346,10 @@ function(type, addr, bDontClear) {
 		this._using[type] = true;
 		this._showField(type, true);
 	}
-	
+
 	this._field[type].value = bDontClear ? this._field[type].value + addr : addr;
-	if (this._using[type] && 
-		this._action != ZmOperation.REPLY && 
+	if (this._using[type] &&
+		this._action != ZmOperation.REPLY &&
 		this._action != ZmOperation.REPLY_ALL)
 	{
 		this._field[type].focus()
@@ -369,20 +357,20 @@ function(type, addr, bDontClear) {
 };
 
 // Sets the mode ZmHtmlEditor should be in.
-ZmComposeView.prototype.setComposeMode = 
+ZmComposeView.prototype.setComposeMode =
 function(composeMode) {
-	if (composeMode == DwtHtmlEditor.TEXT || 
+	if (composeMode == DwtHtmlEditor.TEXT ||
 		(composeMode == DwtHtmlEditor.HTML && this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)))
 	{
 		this._composeMode = composeMode;
-	
+
 		this._htmlEditor.setMode(composeMode, true);
 		// dont forget to reset the body field Id and object ref
 		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 		this._bodyField = Dwt.getDomObj(this.getDocument(), this._bodyFieldId);
 		if (this._bodyField.disabled)
 			this._bodyField.disabled = false;
-		
+
 		// for now, always reset message body size
 		this._resetBodySize();
 	}
@@ -398,15 +386,15 @@ function(params) {
 	for (var i in params.addrs) {
 		this.setAddress(i, params.addrs[i]);
 	}
-	
+
 	this._subjectField.value = params.subj || "";
 	this._htmlEditor.setContent(params.body || "");
-	
+
 	if (params.forwardHtml)
 		this._forwardDiv.innerHTML = params.forwardHtml;
 };
 
-ZmComposeView.prototype.setFocus = 
+ZmComposeView.prototype.setFocus =
 function() {
 	// set the cursor to either to To address for new message or a forward
 	if (this._action == ZmOperation.NEW_MESSAGE || this._action == ZmOperation.FORWARD) {
@@ -417,26 +405,27 @@ function() {
 	}
 };
 
-ZmComposeView.prototype.reEnableDesignMode = 
+ZmComposeView.prototype.reEnableDesignMode =
 function() {
 	if (this._composeMode == DwtHtmlEditor.HTML)
 		this._htmlEditor.reEnableDesignMode();
 };
 
 // triggered every time user saves draft. Here, we reset "dirty-ness"
-ZmComposeView.prototype.draftSaved = 
+ZmComposeView.prototype.draftSaved =
 function() {
 	// save form state (to check for change later)
 	this._origFormValue = this._formValue();
 };
 
 // user just saved draft, update compose view as necessary
-ZmComposeView.prototype.processMsgDraft = 
+ZmComposeView.prototype.processMsgDraft =
 function(msgDraft) {
 	this._action = ZmOperation.DRAFT;
 	this._msg = msgDraft;
 	// always redo att links since user couldve removed att before saving draft
-	this._iframe = null; // XXX: force iframe to get recreated
+	this._hasAttcDiv = false;
+	this._attcDiv.innerHTML = "";
 	this._showForwardField(msgDraft, ZmOperation.DRAFT);
 	this._resetBodySize();
 };
@@ -451,11 +440,11 @@ function(bEnableInputs) {
 		this._acAddrSelectList.reset();
 		this._acAddrSelectList.show(false);
 	}
-	
+
 	// reset To/CC/BCC fields
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++)
 		this._field[ZmComposeView.ADDRS[i]].value = "";
-		
+
 	// reset subject / body fields
 	this._subjectField.value = "";
 	if (this._initHtmlEditor) {
@@ -463,26 +452,26 @@ function(bEnableInputs) {
 	} else {
 		this._initHtmlEditor = true;
 	}
-	
-	// the div that holds the iframe and null out innerHTML
-	this._iframe = null;
-	this._iframeDiv.innerHTML = "";
-	
+
+	// the div that holds the attc.table and null out innerHTML
+	this._hasAttcDiv = false;
+	this._attcDiv.innerHTML = "";
+
 	this._resetBodySize();
-	
+
 	// remove any forward att rows...
 	this._forwardDiv.innerHTML = "";
 	this._msgAttId = null;
-	
+
 	// reset form value
 	this._origFormValue = null;
 
-	// reset dirty shields	
+	// reset dirty shields
 	this._noSubjectOkay = this._badAddrsOkay = false;
-	
+
 	// remove extra mime parts
 	this._extraParts = null;
-	
+
 	// enable/disable input fields
 	this.enableInputs(bEnableInputs);
 
@@ -496,13 +485,12 @@ function(bEnableInputs) {
 ZmComposeView.prototype.addAttachmentField =
 function() {
 
-	// just in case... iframes are tempermental
 	var attTable = this._getAttachmentTable();
 
 	if (!attTable) return;
-	
+
 	// add new row
-	var	row = attTable.insertRow(-1);
+	var row = attTable.insertRow(-1);
 	var attId = "_att_" + Dwt.getNextId();
 	var attRemoveId = attId + "_r";
 	var attInputId = attId + "_i";
@@ -522,30 +510,29 @@ function() {
 	html[idx++] = ">" + ZmMsg.remove + "</span>";
 	html[idx++] = "</td></tr></table>";
 	cell.innerHTML = html.join("");
-	
-	this._setEventHandler(attRemoveId, "onClick", null, !AjxEnv.isNav);
+
+	this._setEventHandler(attRemoveId, "onClick", null);
 	// trap key presses in IE for input field so we can ignore ENTER key (bug 961)
 	if (AjxEnv.isIE)
-		this._setEventHandler(attInputId, "onKeyDown", null, !AjxEnv.isNav);
-	this._setAttachmentsContainerHeight(true);
+		this._setEventHandler(attInputId, "onKeyDown", null);
 	this._resetBodySize();
 };
 
-ZmComposeView.prototype.enableInputs = 
+ZmComposeView.prototype.enableInputs =
 function(bEnable) {
 	// disable input elements so they dont bleed into top zindex'd view
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++)
 		this._field[ZmComposeView.ADDRS[i]].disabled = !bEnable;
-	
+
 	this._subjectField.disabled = this._bodyField.disabled = !bEnable;
 };
 
-/** 
+/**
  * Adds an extra MIME part to the message. The extra parts will be
  * added, in order, to the end of the parts after the primary message
  * part.
  */
-ZmComposeView.prototype.addMimePart = 
+ZmComposeView.prototype.addMimePart =
 function(mimePart) {
 	if (!this._extraParts) {
 		this._extraParts = [];
@@ -570,7 +557,7 @@ function() {
 	if (this._composeMode == DwtHtmlEditor.HTML)
 		sig = AjxStringUtil.htmlEncodeSpace(sig);
 	sig = sig + newLine;
-	
+
 	var sep = newLine + newLine;
 	if (sigStyle == ZmSetting.SIG_INTERNET)
 		sep = sep + "-- " + newLine;
@@ -615,7 +602,7 @@ function(incAddrs, incSubject) {
 
 ZmComposeView.prototype._isInviteReply =
 function(action){
-	return (action == ZmOperation.REPLY_ACCEPT || 
+	return (action == ZmOperation.REPLY_ACCEPT ||
 			action == ZmOperation.REPLY_DECLINE ||
 			action == ZmOperation.REPLY_TENTATIVE ||
 			action == ZmOperation.REPLY_NEW_TIME);
@@ -655,31 +642,11 @@ ZmComposeView.prototype._getAttachmentTable =
 function() {
 	var attTable = null;
 
-	if (!this._iframe)
-		this._iframe = this._createAttachmentsContainer();
+	if (!this._hasAttcDiv)
+		this._createAttachmentsContainer();
 
-	if (AjxEnv.isIE) {
-		// get iframe doc (if doesnt exist, create new iframe)
-		var iframeDoc = this._getIframeDocument();
-		if (!iframeDoc)	return;
-	
-		attTable = Dwt.getDomObj(iframeDoc, this._attachmentTableId);
-
-	} else {
-		attTable = Dwt.getDomObj(document, this._attachmentTableId);
-	}
+	attTable = Dwt.getDomObj(document, this._attachmentTableId);
 	return attTable;
-};
-
-ZmComposeView.prototype._getAttachmentsDocument =
-function () {
-	var doc = this.getDocument();
-	if (AjxEnv.isIE){
-		var iframe = doc.getElementById(this._iframeId);
-		return Dwt.getIframeDoc(iframe);
-	} else {
-		return doc;
-	}
 };
 
 // Consistent spot to locate various dialogs
@@ -689,26 +656,19 @@ function() {
 	return new DwtPoint(loc.x + ZmComposeView.DIALOG_X, loc.y + ZmComposeView.DIALOG_Y);
 };
 
-ZmComposeView.prototype._getForwardAttIds = 
+ZmComposeView.prototype._getForwardAttIds =
 function() {
 	var forAttIds = new Array();
 	// XXX: should getElementsByName be added to dwt?
 	var forAttList = this.getDocument().getElementsByName(ZmComposeView.FORWARD_ATT_NAME);
-	
+
 	// walk collection of input elements
 	for (var i = 0; i < forAttList.length; i++) {
 		if (forAttList[i].checked)
 			forAttIds.push(forAttList[i].id);
 	}
-	
-	return forAttIds;
-};
 
-// Gets the iframe's document whether we're IE or Moz
-ZmComposeView.prototype._getIframeDocument =
-function() {
-	return Dwt.getIframeDoc(this._iframe);
-	// OLD: return AjxEnv.isIE ? this._iframe.Document : this._iframe.contentDocument;
+	return forAttIds;
 };
 
 // Returns the location where the autocomplete list should be positioned. Run as a callback.
@@ -791,7 +751,7 @@ function(action, msg, subjOverride) {
 			subj = subj.replace(regex, "");
 	}
 
-	var prefix = "";	
+	var prefix = "";
 	switch (action) {
 		case ZmOperation.REPLY:
 		case ZmOperation.REPLY_ALL: 		prefix = ZmMsg.re + ": "; break;
@@ -806,7 +766,7 @@ function(action, msg, subjOverride) {
 
 ZmComposeView.prototype._setBody =
 function(action, msg, extraBodyText) {
-	
+
 	if (action == ZmOperation.NEW_MESSAGE) {
 		if (this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED))
 			this.addSignature();
@@ -814,13 +774,13 @@ function(action, msg, extraBodyText) {
 	}
 
 	var composingHtml = this._composeMode == DwtHtmlEditor.HTML;
-	
+
 	// XXX: consolidate this code later.
 	if (action == ZmOperation.DRAFT || action == ZmOperation.SHARE) {
 		var body = "";
 		if (composingHtml) {
 			body = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
-			// if no html part exists, just grab the text 
+			// if no html part exists, just grab the text
 			// (but make sure to preserve whitespace and newlines!)
 			if (body) {
 				body = body.content;
@@ -861,7 +821,7 @@ function(action, msg, extraBodyText) {
 			if (body) {
 				body = body.content;
 			} else {
-				// if no html part exists, just grab the text 
+				// if no html part exists, just grab the text
 				var bodyPart = msg.getBodyPart();
 				body = bodyPart ? this._getTextPart(bodyPart, true) : null;
 			}
@@ -870,9 +830,9 @@ function(action, msg, extraBodyText) {
 			var bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
 			body = bodyPart ? this._getTextPart(bodyPart) : null;
 		}
-		
+
 		body = body || ""; // prevent from printing "null" if no body found
-		
+
 		// bug fix# 3215 - dont allow prefixing for html msgs
 		if (pref == ZmSetting.INCLUDE || composingHtml) {
 			var msgText = (action == ZmOperation.FORWARD) ? ZmMsg.forwardedMessage : ZmMsg.origMsg;
@@ -907,47 +867,32 @@ function(action, msg, extraBodyText) {
 			}
 		}
 	}
-	
+
 	// bug fix #2684 - if we inserted a signature, lets preserve it!
 	var sig = this._htmlEditor.getContent();
 	value = sig ? (sig + value) : value;
 
 	this._htmlEditor.setContent(value);
-	
+
 	if (sigStyle == ZmSetting.SIG_INTERNET)
 		this.addSignature();
 
 	this._showForwardField(msg, action, pref);
 };
 
-ZmComposeView.prototype._setAttachmentsContainerHeight =
-function(add) {
-	if (AjxEnv.isIE) {
-		var height = parseInt(this._iframe.style.height);
-		if (add) {
-			height += ZmComposeView.IFRAME_HEIGHT;
-		} else {
-			height -= ZmComposeView.IFRAME_HEIGHT;
-		}
-		this._iframe.style.height = height
-	}
-};
-
 // Generic routine for attaching an event handler to a field. Since "this" for the handlers is
 // the incoming event, we need a way to get at ZmComposeView, so it's added to the event target.
-ZmComposeView.prototype._setEventHandler = 
-function(id, event, addrType, isIframe) {
-	var doc = isIframe ? this._getIframeDocument() : this.getDocument();
-	var field = Dwt.getDomObj(doc, id);
+ZmComposeView.prototype._setEventHandler =
+function(id, event, addrType) {
+	var field = this.getElementById(id);
 	field._composeView = this._internalId;
-	if (isIframe) field._iframeId = this._iframeId;
 	if (addrType)
 		field._addrType = addrType;
 	var lcEvent = event.toLowerCase();
 	field[lcEvent] = ZmComposeView["_" + event];
 };
 
-ZmComposeView.prototype._setBodyFieldFocus = 
+ZmComposeView.prototype._setBodyFieldFocus =
 function(extraBodyText) {
 	if (this._composeMode == DwtHtmlEditor.HTML) {
 		this._htmlEditor.focus();
@@ -974,7 +919,7 @@ function(extraBodyText) {
 /**
 * This should be called only once for when compose view loads first time around
 */
-ZmComposeView.prototype._initialize = 
+ZmComposeView.prototype._initialize =
 function(composeMode) {
 	// init address field objects
 	this._divId = new Object();
@@ -998,14 +943,13 @@ function(composeMode) {
 	this._subjectFieldId = Dwt.getNextId();
 	this._forwardDivId = Dwt.getNextId();
 	this._attachmentTableId = Dwt.getNextId();
-	this._iframeDivId = Dwt.getNextId();
-	this._iframeId = Dwt.getNextId();
+	this._attcDivId = Dwt.getNextId();
 	this._uploadFormId = Dwt.getNextId();
 
 	// init html
 	this._createHtml();
 
-	// init compose view w/ based on user prefs 
+	// init compose view w/ based on user prefs
 	var bComposeEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 	var defaultCompMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
@@ -1015,20 +959,20 @@ function(composeMode) {
 	this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode, this._appCtxt);
 	this._htmlEditor.addEventCallback(new AjxCallback(this, this._htmlEditorEventCallback));
 	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
-	
+
 	var doc = this.getDocument();
 
 	// save references to dom objects per Ids.
 	this._subjectField = Dwt.getDomObj(doc, this._subjectFieldId);
 	this._bodyField = Dwt.getDomObj(doc, this._bodyFieldId);
 	this._forwardDiv = Dwt.getDomObj(doc, this._forwardDivId);
-	this._iframeDiv = Dwt.getDomObj(doc, this._iframeDivId);
+	this._attcDiv = Dwt.getDomObj(doc, this._attcDivId);
 
 	// misc. inits
 	this._confirmDialog = new DwtMessageDialog(this.shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
 	this._msgDialog = this._appCtxt.getMsgDialog();
 	this.setScrollStyle(DwtControl.SCROLL);
-	
+
 	// init listeners
 	this.addControlListener(new AjxListener(this, ZmComposeView.prototype._controlListener));
 
@@ -1038,7 +982,7 @@ function(composeMode) {
 		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		var contactsLoader = contactsClass.getContactList;
 		var locCallback = new AjxCallback(this, this._getAcListLoc, this);
-		var params = {parent: this, dataClass: contactsClass, dataLoader: contactsLoader, 
+		var params = {parent: this, dataClass: contactsClass, dataLoader: contactsLoader,
 					  matchValue: ZmContactList.AC_VALUE_FULL, locCallback: locCallback};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
@@ -1050,18 +994,18 @@ function(composeMode) {
 			this._button[type] = new DwtButton(this);
 			var typeStr = ZmEmailAddress.TYPE_STRING[type];
 			this._button[type].setText(ZmMsg[typeStr] + ":");
-		
+
 			var buttonTd = Dwt.getDomObj(doc, this._buttonTdId[type]);
 			buttonTd.appendChild(this._button[type].getHtmlElement());
 			buttonTd.addrType = type;
-		
+
 			this._button[type].addSelectionListener(new AjxListener(this, this._addressButtonListener));
 			this._button[type].addrType = type;
 		}
-		
+
 		this._field[type] = Dwt.getDomObj(doc, this._fieldId[type]);
 		this._field[type].addrType = type;
-		
+
 		// autocomplete-related handlers
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._acAddrSelectList.handle(this._field[type]);
@@ -1081,7 +1025,7 @@ function() {
 
 	var html = new Array();
 	var idx = 0;
-	
+
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%>";
 
 	// create address elements
@@ -1118,12 +1062,12 @@ function() {
 
 	// create area to show forwarded attachment(s)
 	html[idx++] = "<tr><td><div id='" + this._forwardDivId + "' /></td></tr>";
-	
+
 	// create element for adding attachments
-	html[idx++] = "<tr><td><div id='" + this._iframeDivId + "' /></td></tr>";
-	
+	html[idx++] = "<tr><td><div id='" + this._attcDivId + "' /></td></tr>";
+
 	html[idx++] = "</table>";
-	
+
 	div.innerHTML = html.join("");
 	this.getHtmlElement().appendChild(div);
 };
@@ -1133,18 +1077,7 @@ function(isDraft) {
 	var callback = new AjxCallback(this, this._attsDoneCallback, [isDraft]);
 	var um = this._appCtxt.getUploadManager();
 	window._uploadManager = um;
-	var attCon = null;
-	if (AjxEnv.isIE) {
-		attCon = this._iframe;
-	} else {
-		var iframe = document.getElementById(this._navIframeId);
-		iframe.style.display = "block";
-		var uploadForm = document.getElementById(this._uploadFormId);
-		var idoc = Dwt.getIframeDoc(iframe);
-		idoc.body.appendChild(uploadForm);
-		attCon = iframe;
-	}
-	um.execute(attCon, callback, this._uploadFormId);
+	um.execute(callback, this.getElementById(this._uploadFormId));
 };
 
 ZmComposeView.prototype._createAttachmentsContainer =
@@ -1152,55 +1085,16 @@ function() {
 	var container = null;
 	var doc = this.getDocument();
 	var uri = location.protocol + "//" + doc.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
-	if (AjxEnv.isIE) {
-	
-		// remove old iframe if it exists
-		this._iframeDiv = Dwt.getDomObj(doc, this._iframeDivId);
-		this._iframeDiv.innerHTML = "";
-		
-		// create a brand new iframe
-		var iframe = container = doc.createElement("iframe");
-		iframe.id = this._iframeId;
- 		if (AjxEnv.isIE && location.protocol == "https:") {
-			iframe.src = "'/zimbra/public/blank.html'";
-		}
-		iframe.name = this._iframeId;
-		iframe.frameBorder = iframe.vspace = iframe.hspace = iframe.marginWidth = iframe.marginHeight = 0;
-		iframe.width = "100%";
-		iframe.scrolling = "no";
-		iframe.style.overflowX = iframe.style.overflowY = "visible";
-		iframe.style.height = "0px";
-		iframe.tabIndex = -1; // dont let iframe get focus
-		this._iframeDiv.appendChild(iframe);
-		
-		var idoc = Dwt.getIframeDoc(iframe);
-		idoc.open();
-		var html = new Array();
-		var idx = 0;
-		html[idx++] = "<html><head><style type='text/css'>";
-		html[idx++] = "P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON { font-family: Tahoma, Arial, Helvetica, sans-serif;	font-size:11px; }";
-		html[idx++] = ".attachText { width:60px; text-align:right; white-space:nowrap; overflow:hidden; }";
-		html[idx++] = "</style></head>";
-		html[idx++] = "<body scroll=no bgcolor='#EEEEEE'>";
-		html[idx++] = "<form method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
-		html[idx++] = "<table id='" + this._attachmentTableId + "' cellspacing=0 cellpadding=0 border=0 class='iframeTable'></table>";
-		html[idx++] = "</form>";
-		html[idx++] = "</body></html>";
-		idoc.write(html.join(""));
-		idoc.close();
-	} else {
-		var html = new Array();
-		var idx = 0;
-		html[idx++] = "<div style='overflow:visible'>";
-		html[idx++] = "<form method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
-		html[idx++] = "<table id='" + this._attachmentTableId + "' cellspacing=0 cellpadding=0 border=0 class='iframeTable'></table>";
-		html[idx++] = "</form>";
-		html[idx++] = "</div>";
-		this._iframeDiv = Dwt.getDomObj(document, this._iframeDivId);
-		this._iframeDiv.innerHTML = html.join("");
-		container = this._iframeDiv.firstChild;
-	}
-	return container;
+	var html = new Array();
+	var idx = 0;
+	html[idx++] = "<div style='overflow:visible'>";
+	html[idx++] = "<form method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
+	html[idx++] = "<table id='" + this._attachmentTableId + "' cellspacing=0 cellpadding=0 border=0 class='iframeTable'></table>";
+	html[idx++] = "</form>";
+	html[idx++] = "</div>";
+	this._attcDiv = Dwt.getDomObj(document, this._attcDivId);
+	this._attcDiv.innerHTML = html.join("");
+	this._hasAttcDiv = true;
 };
 
 ZmComposeView.prototype._showForwardField =
@@ -1208,8 +1102,8 @@ function(msg, action, pref) {
 	var subj = msg.getSubject() || AjxStringUtil.htmlEncode(ZmMsg.noSubject);
 	var html = new Array();
 	var idx = 0;
-	
-	if (pref == ZmSetting.INCLUDE_ATTACH) 
+
+	if (pref == ZmSetting.INCLUDE_ATTACH)
 	{
 		html[idx++] = "<table cellspacing=4 cellpadding=0 border=0 width=100%><tr>";
 		html[idx++] = "<td width=60 align=right>";
@@ -1217,10 +1111,10 @@ function(msg, action, pref) {
 		html[idx++] = "</td>";
 		html[idx++] = "<td><b>" + subj + "</b></td>";
 		html[idx++] = "</tr></table>";
-	} 
-	else if (msg && 
-			((msg.hasAttach && action == ZmOperation.FORWARD) || 
-			  action == ZmOperation.DRAFT)) 
+	}
+	else if (msg &&
+			((msg.hasAttach && action == ZmOperation.FORWARD) ||
+			  action == ZmOperation.DRAFT))
 	{
 		var attLinks = msg.buildAttachLinks(false, this.getDocument().domain, null);
 		if (attLinks.length > 0) {
@@ -1240,16 +1134,16 @@ function(msg, action, pref) {
 };
 
 // Miscellaneous methods
-ZmComposeView.prototype._resetBodySize = 
+ZmComposeView.prototype._resetBodySize =
 function() {
 	var size = this.getSize();
 	if (size.x <= 0 || size.y <= 0)
 		return;
-	
+
 	var height = size.y - Dwt.getSize(this.getHtmlElement().firstChild).y;
 	if (height < ZmComposeView.MIN_BODY_HEIGHT)
 		height = ZmComposeView.MIN_BODY_HEIGHT;
-	
+
 	this._htmlEditor.setSize(size.x, height);
 
 	// reset scrollbars (in FF sometimes they will stay on even if it's not the case)
@@ -1263,7 +1157,7 @@ function() {
 ZmComposeView.prototype._showField =
 function(type, show) {
 	var doc = this.getDocument();
-	
+
 	this._using[type] = show;
 	Dwt.setVisible(Dwt.getDomObj(doc, this._divId[type]), show);
 	this._field[type].value = ""; // bug fix #750 and #3680
@@ -1271,14 +1165,14 @@ function(type, show) {
 		this._field[type].focus();
 	var link = Dwt.getDomObj(doc, this._addLinkId[type]);
 	if (link) {
-		link.innerHTML = show 
-			? ZmMsg.remove + " " + ZmEmailAddress.TYPE_STRING[type].toUpperCase() 
+		link.innerHTML = show
+			? ZmMsg.remove + " " + ZmEmailAddress.TYPE_STRING[type].toUpperCase()
 			: "Add " + ZmEmailAddress.TYPE_STRING[type].toUpperCase();
 	}
 	this._resetBodySize();
 };
 
-// Grab the addresses out of the form. Optionally, they can be returned broken out into good and 
+// Grab the addresses out of the form. Optionally, they can be returned broken out into good and
 // bad addresses, with an aggregate list of the bad ones also returned. If the field is hidden,
 // its contents are ignored.
 ZmComposeView.prototype._collectAddrs =
@@ -1324,17 +1218,10 @@ function(incAddrs, incSubject) {
 // Returns true if any of the attachment fields is populated
 ZmComposeView.prototype._gotAttachments =
 function() {
-	var atts;
-	if (AjxEnv.isIE) {
-		var iframeDoc = this._getIframeDocument();
-		atts = iframeDoc ? iframeDoc.getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME) : [];
-	} else {
-		atts = document.getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME);
-	}
+	var atts = document.getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME);
 	for (var i = 0; i < atts.length; i++)
 		if (atts[i].value.length)
 			return true;
-
 	return false;
 };
 
@@ -1361,7 +1248,7 @@ function(ev) {
 	this._contactPicker.popup(obj.addrType);
 };
 
-ZmComposeView.prototype._controlListener = 
+ZmComposeView.prototype._controlListener =
 function() {
 	this._resetBodySize();
 };
@@ -1392,9 +1279,9 @@ function(args) {
 
 // this callback is triggered when an event occurs inside the html editor (when in HTML mode)
 // it is used to set focus to the To: field when user hits the TAB key
-ZmComposeView.prototype._htmlEditorEventCallback = 
+ZmComposeView.prototype._htmlEditorEventCallback =
 function(args) {
-	var rv = true;	
+	var rv = true;
 	if (args.type == "keydown") {
 		var key = DwtKeyEvent.getCharCode(args);
 		if (key == DwtKeyEvent.KEY_TAB) {
@@ -1419,17 +1306,17 @@ function() {
 ZmComposeView.prototype._noSubjectOkCallback =
 function() {
 	this._noSubjectOkay = true;
-	// not sure why: popdown (in FF) seems to create a race condition, 
+	// not sure why: popdown (in FF) seems to create a race condition,
 	// we can't get the attachments from the document anymore.
 	// W/in debugger, it looks fine, but remove the debugger and any
 	// alerts, and gotAttachments will return false after the popdown call.
  	if (AjxEnv.isIE)
 		this._confirmDialog.popdown();
-	// bug fix# 3209 
+	// bug fix# 3209
 	// - hide the dialog instead of popdown (since window will go away anyway)
 	if (AjxEnv.isNav && this._controller.isChildWindow)
 		this._confirmDialog.setVisible(false);
-	
+
 	// dont make any calls after sendMsg if child window since window gets destroyed
 	if (this._controller.isChildWindow && !AjxEnv.isNav) {
 		this._controller.sendMsg();
@@ -1475,10 +1362,6 @@ function(type) {
 // TODO: error handling
 ZmComposeView.prototype._attsDoneCallback =
 function(args) {
-	if (AjxEnv.isNav){
-		var iframe = top.document.getElementById(this._navIframeId);
-		iframe.style.display = 'none';
-	}
 	DBG.println(AjxDebug.DBG1, "Attachments: isDraft = " + args[0] + ", status = " + args[1] + ", attId = " + args[2]);
 	var status = args[1];
 	if (status == 200) {
@@ -1486,6 +1369,7 @@ function(args) {
 		this._controller.sendMsg(attId, args[0]);
 	} else {
 		DBG.println(AjxDebug.DBG1, "attachment error: " + status);
+		this._controller.popupErrorDialog("Attachment error: " + status + "<br />Probably a file is too big.<br /><br />Cannot continue.", null, null, true);
 	}
 };
 
@@ -1496,9 +1380,7 @@ function(args) {
 // If the former, show the address element. If the latter, hide the autocomplete list.
 ZmComposeView._onClick =
 function(ev) {
-	// IE doesn't pass event, might have to go fishing in iframe for it
-	if (AjxEnv.isIE && !window.event)
-		ev = parent.window.frames[this._iframeId].event;
+	ev || (ev = window.event);
 
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
 	var id = element.id;
@@ -1507,11 +1389,10 @@ function(ev) {
 	if (id.indexOf("_att_") == 0) {
 		// click on attachment remove link, get att div id
 		var attId = id.slice(0, -2);
-		var doc = cv._getAttachmentsDocument();
+		var doc = cv.getDocument();
 		var row = Dwt.getDomObj(doc, attId);
 		var table = Dwt.getDomObj(doc, cv._attachmentTableId);
 		table.deleteRow(row.rowIndex);
-		cv._setAttachmentsContainerHeight(false);
 		cv._resetBodySize();
 		return false; // disable following of link
 	}
@@ -1527,15 +1408,12 @@ function(ev) {
 
 ZmComposeView._onKeyDown =
 function(ev) {
-	DBG.println(AjxDebug.DBG3, "onKeyDown");
+	ev || (ev = window.event);
 
-	// IE doesn't pass event, might have to go fishing in iframe for it
-	if (AjxEnv.isIE && !window.event)
-		ev = parent.window.frames[this._iframeId].event;
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
 	var id = element.id;
 	var key = DwtKeyEvent.getCharCode(ev);
 	// ignore return in attachment input field (bug 961)
-	if (id.indexOf("_att_") == 0) 
+	if (id.indexOf("_att_") == 0)
 		return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
 };

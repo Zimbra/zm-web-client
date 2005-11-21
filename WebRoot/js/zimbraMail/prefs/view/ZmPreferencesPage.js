@@ -259,33 +259,19 @@ function(buttonDiv) {
 
 	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	
-	// set up iframe
-	var iframe = this._importIframe = document.createElement('iframe');
-	iframe.id = this._iframeId = iframe.name = Dwt.getNextId();
-	iframe.frameBorder = iframe.vspace = iframe.hspace = iframe.marginWidth = iframe.marginHeight = 0;
-	iframe.width = "100%";
-	iframe.scrolling = "no";
-	iframe.style.overflowX = iframe.style.overflowY = "visible";
-	iframe.style.height = "20px";
-	buttonDiv.appendChild(iframe);
+	var html = new Array();
+	var idx = 0;
+	html[idx++] = "<form style='margin: 0px; padding: 0px;' method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
+	html[idx++] = "<input style='font-family:Tahoma; font-size:10px' name='" + ZmPreferencesPage.IMPORT_FIELD_NAME + "' type='file' id='" + this._attInputId + "'>";
+	html[idx++] = "</form>";
+
+	var div = document.createElement("div");
+	div.innerHTML = html.join("");
+
+	buttonDiv.appendChild(div);
 	
 	// set up import button
 	this._importBtn = this._addButton(buttonDiv.id, ZmMsg._import, 65, new AjxListener(this, this._importContactsListener));
-
-	// XXX: for some reason idoc is null in Safari :(
-	var idoc = Dwt.getIframeDoc(iframe);
-	if (idoc) {
-		idoc.open();
-		var html = new Array();
-		var idx = 0;
-		html[idx++] = "<html><head></head><body scroll=no bgcolor='#EEEEEE'>";
-		html[idx++] = "<form style='margin: 0px; padding: 0px;' method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
-		html[idx++] = "<input style='font-family:Tahoma; font-size:10px' name='" + ZmPreferencesPage.IMPORT_FIELD_NAME + "' type='file' id='" + this._attInputId + "'>";
-		html[idx++] = "</form>";
-		html[idx++] = "</body></html>";
-		idoc.write(html.join(""));
-		idoc.close();
-	}
 }
 
 ZmPreferencesPage.prototype._addFontPrefs = 
@@ -374,8 +360,7 @@ function(ev) {
 
 ZmPreferencesPage.prototype._importContactsListener =
 function(ev) {
-	var idoc = Dwt.getIframeDoc(this._importIframe);
-	var fileInput = idoc.getElementById(this._attInputId);
+	var fileInput = this.getElementById(this._attInputId);
 	var val = fileInput ? AjxStringUtil.trim(fileInput.value) : null;
 	
 	// TODO - test val against regex for valid .csv filename
@@ -384,7 +369,7 @@ function(ev) {
 		var callback = new AjxCallback(this, this._importDoneCallback);
 		var um = this._appCtxt.getUploadManager();
 		window._uploadManager = um;
-		um.execute(this._importIframe, callback, this._uploadFormId);
+		um.execute(callback, this.getElementById(this._uploadFormId));
 	} else {
 		// TODO - show error message in app controller's status window
 	}
@@ -398,7 +383,7 @@ function(args) {
 	var status = args[0];
 	if (status == 200) {
 		this._importBtn.setEnabled(false);
-		this._importIframe.style.visibility = "hidden";
+		//this._importIframe.style.visibility = "hidden";
 		appCtlr.setStatusMsg(ZmMsg.importingContacts);
 		this._finishImport(args[1]);
 	} else {

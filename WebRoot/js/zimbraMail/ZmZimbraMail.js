@@ -186,14 +186,14 @@ function(domain, app, userShellId) {
 	var settings = appCtxt.getSettings();
 	var userShell = window.document.getElementById(settings.get(ZmSetting.SKIN_SHELL_ID));
 	var shell = new DwtShell(null, false, ZmZimbraMail._confirmExitMethod, userShell);
-    appCtxt.setShell(shell);
+	appCtxt.setShell(shell);
     
-    appCtxt.setItemCache(new AjxCache());
-    
+	appCtxt.setItemCache(new AjxCache());
+
 	// Create upload manager (for sending attachments)
-	appCtxt.setUploadManager(new AjxPost());
+	appCtxt.setUploadManager(new AjxPost(appCtxt.getUploadFrameId()));
 	
-    // Go!
+	// Go!
 	new ZmZimbraMail(appCtxt, domain, app, userShell);
 };
 
