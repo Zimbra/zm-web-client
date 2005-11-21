@@ -248,6 +248,14 @@ function(code, params) {
 	return msg;
 };
 
+/*
+* User is logging in after an auth exception. If it was AUTH_EXPIRED, we try to complete what the
+* user was doing at the time (if the caller passed us the data we need to resume it).
+*
+* @param username	[string]	user name
+* @param password	[string]	user password
+* @param pubComp	[boolean]
+*/
 ZmController.prototype._doAuth = 
 function(username, password, pubComp) {
 	ZmCsfeCommand.clearAuthToken();
@@ -266,10 +274,15 @@ function(args) {
 	   	this._authenticating = false;
 	   	this._appCtxt.setIsPublicComputer(pubComp);
 	   	if (this._execFrame instanceof AjxCallback) {
+		   	// exec frame for an async call is a callback
 	   		this._execFrame.run();
 	   		this._execFrame = null;
 	   	} else if (this._execFrame) {
+			// old-style exec frame is obj
 	   		this._doLastSearch();
+	   	} else {
+	   		// if no exec frame, start over
+		   	this._appCtxt.getAppController().startup(); // restart application
 	   	}
 	   	this._hideLoginDialog();
 	} catch (ex) {
