@@ -51,8 +51,8 @@ ZmController.CONVLIST_VIEW 			= i++;
 ZmController.CONV_VIEW 				= i++;
 ZmController.TRAD_VIEW 				= i++;
 ZmController.MSG_VIEW 				= i++;
-ZmController.MSG_NEW_WIN_VIEW 		= i++; // needed for HACK (see ZmMailMsg)
-ZmController.CONTACT_CARDS_VIEW 	= i++;
+ZmController.MSG_NEW_WIN_VIEW        = i++; // needed for HACK (see ZmMailMsg)
+ZmController.CONTACT_CARDS_VIEW      = i++;
 ZmController.CONTACT_SIMPLE_VIEW 	= i++;
 ZmController.CONTACT_VIEW			= i++;
 ZmController.READING_PANE_VIEW 		= i++;
@@ -71,6 +71,8 @@ ZmController.CAL_WORK_WEEK_VIEW		= i++;
 ZmController.APPT_DETAIL_VIEW		= i++;
 ZmController.APPOINTMENT_VIEW 		= i++;
 ZmController.MIXED_VIEW				= i++;
+ZmController.IM_CHAT_TAB_VIEW         = i++;
+ZmController.IM_CHAT_MULTI_WINDOW_VIEW      = i++;
 
 // Abstract methods
 

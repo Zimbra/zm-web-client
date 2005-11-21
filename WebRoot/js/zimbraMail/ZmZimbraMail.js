@@ -81,6 +81,7 @@ ZmZimbraMail.prototype.constructor = ZmZimbraMail;
 ZmZimbraMail.MAIL_APP			= "mail";
 ZmZimbraMail.CONTACTS_APP		= "contacts";
 ZmZimbraMail.CALENDAR_APP		= "calendar";
+ZmZimbraMail.IM_APP		    = "im";
 ZmZimbraMail.PREFERENCES_APP	= "options";
 ZmZimbraMail.MIXED_APP			= "mixed";
 
@@ -88,6 +89,7 @@ ZmZimbraMail.APP_CLASS = {};
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.MAIL_APP]			= ZmMailApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.CONTACTS_APP]		= ZmContactsApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.CALENDAR_APP]		= ZmCalendarApp;
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.IM_APP]    	    = ZmImApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.PREFERENCES_APP]	= ZmPreferencesApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.MIXED_APP]			= ZmMixedApp;
 
@@ -95,6 +97,7 @@ ZmZimbraMail.MSG_KEY = {};
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]			= "mail";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CONTACTS_APP]		= "contacts";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CALENDAR_APP]		= "calendar";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.IM_APP]		        = "imAppTitle";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.PREFERENCES_APP]	= "options";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MIXED_APP]		= "zimbraTitle";
 
@@ -102,6 +105,7 @@ ZmZimbraMail.APP_ICON = {};
 ZmZimbraMail.APP_ICON[ZmZimbraMail.MAIL_APP]		= "MailApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.CONTACTS_APP]	= "ContactsApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.CALENDAR_APP]	= "CalendarApp";
+ZmZimbraMail.APP_ICON[ZmZimbraMail.IM_APP]	         = "ImStartChat";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.PREFERENCES_APP]	= "Preferences";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.MIXED_APP]		= "Globe";
 
@@ -109,6 +113,7 @@ ZmZimbraMail.APP_BUTTON = {};
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.MAIL_APP]			= ZmAppChooser.B_EMAIL;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CONTACTS_APP]		= ZmAppChooser.B_CONTACTS;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CALENDAR_APP]		= ZmAppChooser.B_CALENDAR;
+ZmZimbraMail.APP_BUTTON[ZmZimbraMail.IM_APP]	        	= ZmAppChooser.B_IM;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.PREFERENCES_APP]	= ZmAppChooser.B_OPTIONS;
 
 ZmZimbraMail.DEFAULT_SEARCH = {};
@@ -116,19 +121,22 @@ ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MAIL_APP]		= ZmSearchToolBar.FOR_MAIL_M
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CONTACTS_APP]	= ZmItem.CONTACT;
 //ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmItem.APPT;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmSearchToolBar.FOR_MAIL_MI;
+ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.IM_APP]    	= ZmSearchToolBar.FOR_MAIL_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MIXED_APP]		= ZmSearchToolBar.FOR_ANY_MI;
 
 ZmZimbraMail.VIEW_TT_KEY = {};
 ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.MAIL_APP]		= "displayMail";
 ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CONTACTS_APP]	= "displayContacts";
 ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CALENDAR_APP]	= "displayCalendar";
+ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.IM_APP]	        = "displayIM";
 
 ZmZimbraMail.OVERVIEW_TREES = {};
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]			= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]		= [ZmOrganizer.CALENDAR];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]	        	= [ZmOrganizer.BUDDY];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]	= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]			= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 
 ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
 
@@ -618,6 +626,7 @@ function(app) {
 		var id = list[i];
 		if ((id == ZmOrganizer.SEARCH && !this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) ||
 			(id == ZmOrganizer.CALENDAR && !this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) ||
+			(id == ZmOrganizer.BUDDY && !this._appCtxt.get(ZmSetting.IM_ENABLED)) ||			
 			(id == ZmOrganizer.TAG && !this._appCtxt.get(ZmSetting.TAGGING_ENABLED))) {
 			continue;
 		}
@@ -827,6 +836,16 @@ function(refresh) {
 	}
 	var calendarString = calendarTree.asString();
 	calendarTree.reset();
+
+    // TODO: move this
+	var buddyTree = this._appCtxt.getTree(ZmOrganizer.BUDDY);
+	if (!buddyTree) {
+		buddyTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.BUDDY);
+		//buddyTree.addChangeListener(this._calendarListener);
+		this._appCtxt.setTree(ZmOrganizer.BUDDY, buddyTree);
+	}
+	buddyTree.reset();
+	ZmBuddyTree.loadDummyData(buddyTree);
 
 	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 	if (!folderTree) {
@@ -1260,6 +1279,8 @@ function() {
 		buttons.push(ZmAppChooser.B_CONTACTS);
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED))
 		buttons.push(ZmAppChooser.B_CALENDAR);
+	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
+		buttons.push(ZmAppChooser.B_IM);
 	buttons.push(ZmAppChooser.SEP, ZmAppChooser.B_HELP, ZmAppChooser.B_OPTIONS, ZmAppChooser.B_LOGOUT);
 	var appChooser = new ZmAppChooser(this._shell, null, buttons);
 	
@@ -1292,6 +1313,8 @@ function(ev) {
 			this.activateApp(ZmZimbraMail.CONTACTS_APP, true);
 		} else if (id == ZmAppChooser.B_CALENDAR) {
 			this.activateApp(ZmZimbraMail.CALENDAR_APP);
+		} else if (id == ZmAppChooser.B_IM) {
+			this.activateApp(ZmZimbraMail.IM_APP);			
 		} else if (id == ZmAppChooser.B_HELP) {
 			window.open(this._appCtxt.get(ZmSetting.HELP_URI));
 		} else if (id == ZmAppChooser.B_OPTIONS) {

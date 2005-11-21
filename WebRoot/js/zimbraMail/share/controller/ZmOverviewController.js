@@ -60,6 +60,7 @@ ZmOverviewController.CONTROLLER[ZmOrganizer.SEARCH]	= ZmSearchTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.TAG]		= ZmTagTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.CALENDAR]	= ZmCalendarTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]	= ZmZimletTreeController;
+ZmOverviewController.CONTROLLER[ZmOrganizer.BUDDY]    	= ZmBuddyTreeController;
 
 ZmOverviewController.DEFAULT_FOLDER_ID = ZmFolder.ID_INBOX;
 

@@ -1137,6 +1137,11 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	width: 100%;
 }
 
+.ZmChatMultiWindowView, .ZmChatTabbedView {
+	background-color: #EEEEEE;
+	height: 100%;
+	width: 100%;
+}
 
 .ZmAppChooser {
 	margin-left:2px;
