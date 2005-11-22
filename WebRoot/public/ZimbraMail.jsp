@@ -158,7 +158,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mail/view/object/ZmImageAttachmentObjectHandler.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mail/view/object/ZmURLObjectHandler.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mail/view/object/ZmTrackingObjectHandler.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mail/view/object/ZmYAddressObjectHandler.js<%= ext %>?v=<%= vers %>"></script> 
+<!-- script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mail/view/object/ZmYAddressObjectHandler.js<%= ext %>?v=<%= vers %>"></script --> 
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mail/view/object/ZmBugzillaObjectHandler.js<%= ext %>?v=<%= vers %>"></script> 
 
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mail/view/ZmMailListView.js<%= ext %>?v=<%= vers %>"></script>
