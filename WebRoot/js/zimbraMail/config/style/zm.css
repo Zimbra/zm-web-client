@@ -1183,7 +1183,27 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	height:24px;
 }
 
+/*	background-color: #ADD6D6;*/
+
 .ZmChatWindow .DwtToolBar .TBButton {
+	border: 1px solid #CCCCCC;
+}
+
+.ZmChatWindow-selected {
+	background-color:#EEEEEE;
+	border: 1px solid #999999;
+	/*width: 400px;*/
+}
+
+.ZmChatWindow-selected .DwtToolBar {
+	/* background-color:#CCCCCC;*/
+	background-color: #ADD6D6;
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+	height:24px;
+}
+
+.ZmChatWindow-selected .DwtToolBar .TBButton {
 	border: 1px solid #CCCCCC;
 }
 

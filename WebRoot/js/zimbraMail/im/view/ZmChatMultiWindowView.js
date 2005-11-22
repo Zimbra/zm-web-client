@@ -39,11 +39,11 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	var cw = new ZmChatWindow(this);
 	cw.setBuddy(bt.getByName("Ross"));
 	cw.setBounds(50, 50, 400,300);
-	cw.setZIndex(1);
+//	cw.setZIndex(1);
 	cw = new ZmChatWindow(this);
 	cw.setBuddy(bt.getByName("Satish"));
 	cw.setBounds(200,200, 400,400);	
-	cw.setZIndex(2);	
+//	cw.setZIndex(2);	
 }
 
 ZmChatMultiWindowView.prototype = new ZmChatBaseView;

@@ -30,13 +30,15 @@ function ZmChatWindow(parent) {
     this._doc = this.getDocument();
 	this.setScrollStyle(DwtControl.CLIP);
     	this.addControlListener(new AjxListener(this, this._controlListener));
-    		
-    this._init();	
+    this._init();
+    this.setZIndex(ZmChatWindow._nextZ++);
 };
 
 ZmChatWindow.SASH_THRESHHOLD = 1;
 ZmChatWindow.MIN_CONTENT_HEIGHT = 50;
 ZmChatWindow.MIN_INPUT_HEIGHT = 50;
+
+ZmChatWindow._nextZ = 1;
     
 ZmChatWindow.prototype = new DwtComposite;
 ZmChatWindow.prototype.constructor = ZmChatWindow;
@@ -47,6 +49,38 @@ ZmChatWindow.prototype.toString =
 function() {
 	return "ZmChatWindow";
 };
+
+
+ZmChatWindow._selected = null;
+
+ZmChatWindow.prototype.dispose =
+function() {
+    DwtControl.prototype.dispose.call(this);
+    if (ZmChatWindow._selected == this) ZmChatWindow._selected = null;
+}
+
+ZmChatWindow.prototype.select =
+function() {
+   if (ZmChatWindow._selected && ZmChatWindow._selected != this) ZmChatWindow._selected.getHtmlElement().className = "ZmChatWindow";
+   ZmChatWindow._selected = this;
+   this.getHtmlElement().className = "ZmChatWindow-selected";
+}
+
+ZmChatWindow.prototype.raise =
+function() {
+    if (this.getZIndex() != ZmChatWindow._nextZ-1) {
+        if (!this._origZ)
+            this._origZ = this.getZIndex();
+        this.setZIndex(ZmChatWindow._nextZ++);
+    }
+}
+
+ZmChatWindow.prototype.lower =
+function() {
+    if (this._origZ) {
+        this.setZIndex(this._origZ);
+    }
+}
 
 ZmChatWindow.prototype.setBuddy =
 function(buddy) {
@@ -74,7 +108,7 @@ function() {
     this._input.getHtmlElement().innerHTML = 	"<textarea wrap='hard' style='width:100%; height:100%;' id='" + this._inputFieldId + "'></textarea>";
     Dwt.setHandler(Dwt.getDomObj(this._doc, this._inputFieldId), DwtEvent.ONKEYUP, ZmChatWindow._inputOnKeyUp);
     this._sash.registerCallback(this._sashCallback, this);
-    DwtMovable.init(this._toolbar, this, 1, 1, this._movableCallback, this);    
+    DwtMovable.init(this._toolbar, this, 4, 4, this._movableCallback, this);    
 }
 
 ZmChatWindow.prototype.sendInput =
@@ -138,22 +172,27 @@ function(delta) {
 
 ZmChatWindow.prototype._movableCallback =
 function(data) {
+
     switch (data.state) {
     case DwtMovable.STATE_MOVE_START:
-    		Dwt.setOpacity(this.getHtmlElement(), 70);
+    		this.raise();
+    		this.select();
     		break;
     case DwtMovable.STATE_MOVING:
+        if (this._lastMovableState == DwtMovable.STATE_MOVE_START)
+        		Dwt.setOpacity(this.getHtmlElement(), 70);
         var newX = data.start.x + data.delta.x;
         var newY = data.start.y + data.delta.y;
         if (newX < 0 || newY < 0) {
             data.delta.x = data.delta.y = 0;
         }
-        return data;
         break;
     case DwtMovable.STATE_MOVE_END:
     		Dwt.setOpacity(this.getHtmlElement(), 100);
     		break;
 	}
+    this._lastMovableState = data.state;
+	return data;
 }
 
 ZmChatWindow.prototype._controlListener =
