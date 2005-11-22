@@ -141,7 +141,6 @@ function(args) {
 };
 
 // searching w/in a conv (to get its messages) has its own special command
-// NOTE: exception handling should be responsibility of calling function!
 ZmSearch.prototype.forConv = 
 function(cid, callback) {
 	if (!this.query || !cid) return;
@@ -149,13 +148,10 @@ function(cid, callback) {
 	var soapDoc = AjxSoapDoc.create("SearchConvRequest", "urn:zimbraMail");
 	var method = this._getStandardMethod(soapDoc);
 	method.setAttribute("cid", cid);
-	method.setAttribute("fetch", "1");
+	method.setAttribute("fetch", "1");	// fetch content of first msg
+	method.setAttribute("read", "1");	// mark that msg read
 	if (this._appCtxt.get(ZmSetting.VIEW_AS_HTML))
 		method.setAttribute("html", "1");
-	// XXX: we dont want to set read flag yet since it does us no good
-	// the modify notification handling gets called before the model (msg list)
-	// is even created so it ends up being completely ignored
-	//method.setAttribute("read", "1");
 	var respCallback = new AjxCallback(this, this._handleResponseForConv, callback);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
 };

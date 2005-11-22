@@ -442,10 +442,14 @@ function(args) {
 		return;
 	}
 	
-	if (response.Header) {
-		this._handleHeader(response.Header);
+	// refresh block needs to be handled before we finish handling response, so
+	// that the overview panel gets updated/displayed
+	var hdr = response.Header;
+	if (hdr.context && hdr.context.refresh) {
+		this._refreshHandler(hdr.context.refresh);
 		this._checkOverviewLayout();
 	}
+
 	if (asyncMode)
 		result.set(response.Body);
 
@@ -462,6 +466,15 @@ function(args) {
 	}
 	
 	this._clearPendingRequest(reqId);
+
+	// handle notifications after the response, so that item state is current
+	if (hdr.context && hdr.context.notify) {
+		this._notifyHandler(hdr.context.notify);
+	}
+	// update change token if we get one
+	if (hdr.context && hdr.context.change) {
+		this._changeToken = hdr.context.change.token;
+	}
 };
 
 ZmZimbraMail.prototype.cancelRequest = 
@@ -790,21 +803,6 @@ function(childWin) {
 	}
 };
 
-ZmZimbraMail.prototype._handleHeader =
-function(hdr) {
-	if (!hdr.context) return;
-	
-	if (hdr.context.refresh) {
-		this._refreshHandler(hdr.context.refresh);
-	}
-	if (hdr.context.notify) {
-		this._notifyHandler(hdr.context.notify);
-	}
-	if (hdr.context.change) {
-		this._changeToken = hdr.context.change.token;
-	}
-};
-
 // A <refresh> block is returned in a SOAP response any time the session ID has changed. It always happens
 // on the first SOAP command (eg gettings prefs). After that, it happens after a session timeout.
 // We'll always get a <folder> element back, but we might not get back a <tags>, so we
@@ -1031,7 +1029,7 @@ function(notify) {
 };
 
 // Delete notification just gives us a list of IDs which could be anything.
-// Hand that list to each model and let it check.
+// Check the item cache for each ID.
 ZmZimbraMail.prototype._handleDeletes =
 function(deletes) {
 	var ids = deletes.id.split(",");

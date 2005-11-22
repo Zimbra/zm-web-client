@@ -215,8 +215,6 @@ function() {
 			this._appCtxt.getSearchController().setEnabled(false);
 			this._doGetMsg(msg);
 		} else {
-			if (msg.isUnread)
-				this._markReadListener();
 			this._doublePaneView.setMsg(msg);
 		}
 	}
@@ -367,6 +365,7 @@ function(ev) {
 				this._doublePaneView.resetMsg(msg);
 	    }
     }
+DBG.timePt(AjxDebug.PERF, "***** CONV: msg selection");
 };
 
 ZmDoublePaneController.prototype._listActionListener =
