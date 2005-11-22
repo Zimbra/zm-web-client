@@ -36,13 +36,14 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
 	var bt = this._appCtxt.getTree(ZmOrganizer.BUDDY);
-	var cw = new ZmChatWindow(this, bt.getByName("Ross"));
-
+	var cw = new ZmChatWindow(this);
+	cw.setBuddy(bt.getByName("Ross"));
 	cw.setBounds(50, 50, 400,300);
-	cw.setZIndex(100000);
-	cw = new ZmChatWindow(this, bt.getByName("Satish"));
-	cw.setBounds(100,100, 400,400);	
-	cw.setZIndex(200000);	
+	cw.setZIndex(1);
+	cw = new ZmChatWindow(this);
+	cw.setBuddy(bt.getByName("Satish"));
+	cw.setBounds(200,200, 400,400);	
+	cw.setZIndex(2);	
 }
 
 ZmChatMultiWindowView.prototype = new ZmChatBaseView;

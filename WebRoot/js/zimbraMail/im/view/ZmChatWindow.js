@@ -23,33 +23,15 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmChatWindow(parent, buddy) {
+function ZmChatWindow(parent) {
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, parent, "ZmChatWindow", DwtControl.ABSOLUTE_STYLE);
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-
+    this._doc = this.getDocument();
 	this.setScrollStyle(DwtControl.CLIP);
-	
-	this._toolbar = new DwtToolBar(this);
-	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
-	this._toolbar.addFiller();
-	this._close = new DwtButton(this._toolbar, DwtLabel.IMAGE_LEFT, "TBButton");
-	this._close.setImage("Close");
-	this._close.setToolTipContent(ZmMsg.close);
-	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
-	this._content.setScrollStyle(DwtControl.CLIP);
-	this._sash = new DwtSash(this, DwtSash.VERTICAL_STYLE, "AppSash-vert", ZmChatWindow.SASH_THRESHHOLD, Dwt.ABSOLUTE_STYLE);
-	this._input = new DwtComposite(this, "ZmChatWindowInput", Dwt.ABSOLUTE_STYLE);
-	this._input.setScrollStyle(DwtControl.CLIP);
-	this._inputFieldId = Dwt.getNextId();
-    this._input.getHtmlElement().innerHTML = 	"<textarea wrap='hard' style='width:100%; height:100%;' id='" + this._inputFieldId + "'></textarea>";
-//    this._input.getHtmlElement().innerHTML = 	"<div><input id='" + this._inputFieldId + "'>hello</input></div>";    
-    
-    this._sash.registerCallback(this._sashCallback, this);
-    
-    this.setTitle(buddy.getName());
-    this.setImage(buddy.getIcon());
     	this.addControlListener(new AjxListener(this, this._controlListener));
+    		
+    this._init();	
 };
 
 ZmChatWindow.SASH_THRESHHOLD = 5;
@@ -59,10 +41,70 @@ ZmChatWindow.MIN_INPUT_HEIGHT = 50;
 ZmChatWindow.prototype = new DwtComposite;
 ZmChatWindow.prototype.constructor = ZmChatWindow;
 
+ZmChatWindow._idToChatWindow = {};
+
 ZmChatWindow.prototype.toString = 
 function() {
 	return "ZmChatWindow";
 };
+
+ZmChatWindow.prototype.setBuddy =
+function(buddy) {
+    this.buddy = buddy;
+    this.setTitle(buddy.getName());
+    this.setImage(buddy.getIcon());    
+}
+
+ZmChatWindow.prototype._init =
+function() {
+	this._toolbar = new DwtToolBar(this);
+	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
+	this._toolbar.addFiller();
+	this._close = new DwtButton(this._toolbar, DwtLabel.IMAGE_LEFT, "TBButton");
+	this._close.setImage("Close");
+	this._close.setToolTipContent(ZmMsg.close);
+	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
+	this._content.setScrollStyle(DwtControl.SCROLL);
+	this._content.getHtmlElement().innerHTML = "<div/>";
+	this._sash = new DwtSash(this, DwtSash.VERTICAL_STYLE, "AppSash-vert", ZmChatWindow.SASH_THRESHHOLD, Dwt.ABSOLUTE_STYLE);
+	this._input = new DwtComposite(this, "ZmChatWindowInput", Dwt.ABSOLUTE_STYLE);
+	this._input.setScrollStyle(DwtControl.CLIP);
+	this._inputFieldId = Dwt.getNextId();
+	ZmChatWindow._idToChatWindow[this._inputFieldId] = this;
+    this._input.getHtmlElement().innerHTML = 	"<textarea wrap='hard' style='width:100%; height:100%;' id='" + this._inputFieldId + "'></textarea>";
+    Dwt.setHandler(Dwt.getDomObj(this._doc, this._inputFieldId), DwtEvent.ONKEYUP, ZmChatWindow._inputOnKeyUp);
+    this._sash.registerCallback(this._sashCallback, this);
+}
+
+ZmChatWindow.prototype.sendInput =
+function(text) {
+    var content = this._content.getHtmlElement().firstChild;
+    var div = this._doc.createElement("div");
+    div.className = "ZmChatWindowChatEntryMe";
+    div.innerHTML = "<b>user1: </b>" + AjxStringUtil.htmlEncode(text, true);
+    content.appendChild(div);
+    
+    div = this._doc.createElement("div");
+    div.className = "ZmChatWindowChatEntryThem";
+    div.innerHTML = "<b>"+AjxStringUtil.htmlEncode(this.buddy.getName())+": </b>" + AjxStringUtil.htmlEncode("whatever", true);
+    content.appendChild(div);
+    content.parentNode.scrollTop = Dwt.getSize(content).y;
+}
+
+ZmChatWindow._inputOnKeyUp =
+function(ev) {
+	var element = DwtUiEvent.getTarget(ev);
+	var chatWindow = ZmChatWindow._idToChatWindow[element.id];
+
+	var charCode = DwtKeyEvent.getCharCode(ev);
+	if (charCode == 13 || charCode == 3) {
+	    chatWindow.sendInput(element.value);
+		element.value = "";
+	    return false;
+	} else {
+		return true;
+	}
+}
 
 ZmChatWindow.prototype.setTitle =
 function(text) {
