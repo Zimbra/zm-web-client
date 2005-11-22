@@ -184,14 +184,15 @@ ZmFolderPropsDialog.prototype._handleFolderChange = function(event) {
 	this._props.setPropertyVisible(this._ownerId, this._folder.owner != null);
 	this._props.setPropertyVisible(this._urlId, this._folder.url != null);
 
-	Dwt.setVisible(this._excludeFbEl, this._folder.type == ZmOrganizer.CALENDAR);
+	Dwt.setVisible(this._excludeFbEl, !this._folder.link && this._folder.type == ZmOrganizer.CALENDAR);
 };
 
 ZmFolderPropsDialog.prototype._populateShares = function() {
 	this._sharesGroup.setContent("");
 
+	var link = this._folder.link;
 	var shares = this._folder.shares;
-	var visible = shares && shares.length > 0;
+	var visible = !link && shares && shares.length > 0;
 	if (visible) {
 		var document = this.getDocument();
 		var table = document.createElement("TABLE");
