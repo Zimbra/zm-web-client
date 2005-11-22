@@ -1138,9 +1138,36 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmChatMultiWindowView, .ZmChatTabbedView {
-	background-color: #EEEEEE;
+/*	background-color: #EEEEEE; */
+	background-color: white;
 	height: 100%;
 	width: 100%;
+}
+
+
+.ZmChatWindowOverview {overflow: hidden;}
+
+.ZmChatWindowInput {background-color: white;}
+
+.ZmChatWindow {
+	background-color:#EEEEEE;
+	border: 1px solid #999999;
+	width: 400px;
+}
+
+.ZmChatWindow .DwtToolBar {
+	background-color:#CCCCCC;
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+	height:24px;
+}
+
+.ZmChatWindow .DwtToolBar .TBButton {
+	border: 1px solid #CCCCCC;
+}
+
+.ZmChatWindowLabel {
+	Xfilter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
 }
 
 .ZmAppChooser {

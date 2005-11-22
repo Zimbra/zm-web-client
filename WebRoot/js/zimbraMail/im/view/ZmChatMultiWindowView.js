@@ -30,6 +30,19 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
 	
 	ZmChatBaseView.call(this, parent, className, posStyle, ZmController.IM_CHAT_TAB_VIEW);
+	
+	this.setScrollStyle(DwtControl.CLIP);	
+		
+	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
+
+	var bt = this._appCtxt.getTree(ZmOrganizer.BUDDY);
+	var cw = new ZmChatWindow(this, bt.getByName("Ross"));
+
+	cw.setBounds(50, 50, 400,300);
+	cw.setZIndex(100000);
+	cw = new ZmChatWindow(this, bt.getByName("Satish"));
+	cw.setBounds(100,100, 400,400);	
+	cw.setZIndex(200000);	
 }
 
 ZmChatMultiWindowView.prototype = new ZmChatBaseView;
@@ -37,5 +50,6 @@ ZmChatMultiWindowView.prototype.constructor = ZmChatMultiWindowView;
 
 ZmChatMultiWindowView.prototype._createHtml =
 function() {
-    this.getHtmlElement().innerHTML = "<b>this is multi-window view</b>";
+   // this._content = new DwtComposite(this, "ZmChatMultiWindow", Dwt.RELATIVE_STYLE);
+    //this.getHtmlElement().innerHTML = "<div id='"+this._contentId+"'></div>";
 }

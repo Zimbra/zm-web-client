@@ -83,11 +83,11 @@ function() {
     		return "ImAvailable";
         break;
     case ZmBuddy.STATUS_UNAVAILABLE:
-    	    return "ImUnavailable";
+    	    return "ImDnd"; //"ImUnavailable";
     	    break;        
     case ZmBuddy.STATUS_OFFLINE:
     default:
-        return "Blank_16";
+        return "RoundMinusDis"; //"Blank_16";
         break;
     	}
 };
