@@ -39,23 +39,27 @@
 * @param appCtxt 			singleton appCtxt
 */
 function ZmApptQuickAddDialog(parent, appCtxt) {
-
+	DBG.showTiming(true, AjxDebug.PERF, "ZmApptQuickAddDialog");
 	// create extra "more details" button to be added at the footer of DwtDialog
 	var moreDetailsButton = new DwtDialog_ButtonDescriptor(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, 
 														   ZmMsg.moreDetails, DwtDialog.ALIGN_LEFT);
 
 	ZmQuickAddDialog.call(this, parent, null, null, [moreDetailsButton]);
+	DBG.timePt(AjxDebug.PERF, "ZmQuickAddDialog constructor");
 
 	this._appCtxt = appCtxt;
 	this._doc = this.getDocument();
 
 	this.setContent(this._setHtml());
 	this.setTitle(ZmMsg.quickAddAppt);
+	DBG.timePt(AjxDebug.PERF, "create content");
 
 	this._createDwtObjects();
 	this._cacheFields();
 	this._addEventHandlers();
 	this._button[ZmApptQuickAddDialog.MORE_DETAILS_BUTTON].setSize("100");
+	DBG.timePt(AjxDebug.PERF, "create dwt controls, fields; register handlers");
+	DBG.showTiming(false);
 };
 
 ZmApptQuickAddDialog.prototype = new ZmQuickAddDialog;
@@ -149,6 +153,14 @@ function() {
 	}
 
 	return isValid;
+};
+
+ZmApptQuickAddDialog.prototype.popup =
+function(loc) {
+	DBG.showTiming(true, AjxDebug.PERF, "ZmApptQuickAddDialog#popup");
+	ZmQuickAddDialog.prototype.popup.call(this, loc);
+	DBG.timePt(AjxDebug.PERF, "ZmQuickAddDialog#popup");
+	DBG.showTiming(false);
 };
 
 

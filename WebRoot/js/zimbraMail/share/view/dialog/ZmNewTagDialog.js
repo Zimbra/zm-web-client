@@ -24,12 +24,14 @@
  */
 
 function ZmNewTagDialog(parent, msgDialog, className) {
-
+	DBG.showTiming(true, AjxDebug.PERF, "ZmNewTagDialog");
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.createNewTag);
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
 	this._setTagColorMenu(this._tagColorButtonCellId);
+	DBG.timePt(AjxDebug.PERF, "set content");
+	DBG.showTiming(false);
 }
 
 ZmNewTagDialog.prototype = new ZmDialog;

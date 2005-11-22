@@ -122,6 +122,7 @@ function(viewId) {
 	if (!viewId || viewId == ZmController.CAL_VIEW)
 		viewId = this._currentView ? this._currentView : this._defaultView();
 
+	DBG.showTiming(true, AjxDebug.PERF, "ZmCalViewController#show("+viewId+")");
 	if (this._calTreeController == null) {
 		this._calTreeController = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
 		if (this._calTreeController != null) {
@@ -131,6 +132,7 @@ function(viewId) {
 				calTree.addChangeListener(new AjxListener(this, this._calTreeChangeListener));			
 			// add change listener
 		}
+		DBG.timePt(AjxDebug.PERF, "getting tree controller");
 	}
 
 	if (this._viewMgr == null) {
@@ -147,12 +149,14 @@ function(viewId) {
 		this._viewMgr.addTimeSelectionListener(new AjxListener(this, this._timeSelectionListener));
 		this._viewMgr.addDateRangeListener(new AjxListener(this, this._dateRangeListener));
 		this._viewMgr.addViewActionListener(new AjxListener(this, this._viewActionListener));
+		DBG.timePt(AjxDebug.PERF, "created view manager");
 	}
 
 	if (!this._viewMgr.getView(viewId))
 		this._setup(viewId);
 
 	this._viewMgr.setView(viewId);
+	DBG.timePt(AjxDebug.PERF, "setup and set view");
 
 	var elements = new Object();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[ZmController.CAL_VIEW];
@@ -191,11 +195,14 @@ function(viewId) {
 			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.month);
 			break;
 	}
+	DBG.timePt(AjxDebug.PERF, "switching selection mode and tooltips");
 
 	var cv = this._viewMgr.getCurrentView();
 	this._navToolBar.setText(cv.getCalTitle());
 	
 	this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
+	DBG.timePt(AjxDebug.PERF, "scheduling maintenance");
+	DBG.showTiming(false);
 }
 
 ZmCalViewController.prototype.getCheckedCalendars =

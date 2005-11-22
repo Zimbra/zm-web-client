@@ -41,8 +41,10 @@ function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 
 	if (arguments.length == 0) return;
 	DwtDialog.call(this, parent, className, title, null, extraButtons);
+	DBG.timePt(AjxDebug.PERF, "DwtDialog constructor");
 	if (!view) {
 		this.setContent(this._contentHtml());
+		DBG.timePt(AjxDebug.PERF, "setContent(_contentHtml())");
 	} else {
 		this.setView(view);
 	}
@@ -57,6 +59,7 @@ function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 	
 	this._treeView = new Object();
 	this._opc = this._appCtxt.getOverviewController();
+	DBG.timePt(AjxDebug.PERF, "ZmDialog constructor");
 }
 
 ZmDialog.prototype = new DwtDialog;
@@ -78,7 +81,11 @@ function(newView, noReset) {
 
 ZmDialog.prototype.popup =
 function(data, loc) {
+	var showTiming = DBG.isShowTiming();
+	if (!showTiming) DBG.showTiming(true, AjxDebug.PERF, "ZmDialog#popup");
 	DwtDialog.prototype.popup.call(this, loc);
+	DBG.timePt(AjxDebug.PERF, "ZmDialog popup");
+	if (!showTiming) DBG.showTiming(false);
 }
 
 ZmDialog.prototype.reset =

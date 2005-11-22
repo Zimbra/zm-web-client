@@ -24,7 +24,7 @@
  */
 
 function ZmNewFolderDialog(parent, msgDialog, className) {
-
+	DBG.showTiming(true, AjxDebug.PERF, "ZmNewFolderDialog");
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.createNewFolder);
 
 	this.setContent(this._contentHtml());
@@ -33,10 +33,13 @@ function ZmNewFolderDialog(parent, msgDialog, className) {
 	var omit = new Object();
 	omit[ZmFolder.ID_SPAM] = true;
 	omit[ZmFolder.ID_DRAFTS] = true;
+	DBG.timePt(AjxDebug.PERF, "setup content");
 	
 	this._setOverview(ZmNewFolderDialog._OVERVIEW_ID, this._folderTreeCellId, [ZmOrganizer.FOLDER], omit);
 	this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
 	this._folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+	DBG.timePt(AjxDebug.PERF, "set overview");
+	DBG.showTiming(false);
 }
 
 ZmNewFolderDialog._OVERVIEW_ID = "ZmNewFolderDialog";
@@ -53,12 +56,14 @@ function() {
 
 ZmNewFolderDialog.prototype.popup =
 function(folder, loc) {
+	DBG.showTiming(true, AjxDebug.PERF, "ZmNewFolderDialog#popup");
 	folder = folder ? folder : this._folderTree.root;
 	this._folderTreeView.setSelected(folder);
 	if (folder.id == ZmOrganizer.ID_ROOT) {
 		var ti = this._folderTreeView.getTreeItemById(folder.id);
 		ti.setExpanded(true);
 	}
+	DBG.timePt(AjxDebug.PERF, "selected folder");
 
 	//var feedEnabled = this._appCtxt.get(ZmSetting.FEED_ENABLED);
 	var feedEnabled = ZmNewFolderDialog._feedEnabled;
@@ -67,8 +72,11 @@ function(folder, loc) {
 		var cbField= Dwt.getDomObj(this._doc, this._checkboxRowId);
 		cbField.style.display = this._feedEnabled ? (AjxEnv.isIE ? "block" : "table-row") : "none";
 	}
+	DBG.timePt(AjxDebug.PERF, "feed enabled");
 	
 	ZmDialog.prototype.popup.call(this, loc);
+	DBG.timePt(AjxDebug.PERF, "ZmDialog#popup");
+	DBG.showTiming(false);
 }
 
 ZmNewFolderDialog.prototype._contentHtml = 
