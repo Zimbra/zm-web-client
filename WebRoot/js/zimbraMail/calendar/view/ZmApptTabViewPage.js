@@ -298,6 +298,9 @@ function(appt, attach) {
 		this._initAttachIframe();
 	}
 
+	if (this._attachCount == 3)
+		this._attachDiv.style.height = Dwt.getSize(this._attachDiv).y + "px";
+
 	this._attachCount++;
 
 	// add file input field
@@ -330,6 +333,9 @@ function(appt, attach) {
 	if (this._attachDiv == null)
 		this._attachDiv = Dwt.getDomObj(doc, this._attachDivId);
 	this._attachDiv.appendChild(div);
+
+	// scroll to the new attachment if needed
+	this._attachDiv.scrollTop = div.offsetTop;
 
 	if (attach == null) {
 		// add event handlers as necessary
@@ -958,7 +964,11 @@ function(removeId) {
 		removeSpan._parentDiv.parentNode.removeChild(removeSpan._parentDiv);
 		if ((this._attachCount-1) == 0) {
 			this._removeAllAttachments();
+		} else {
+			this._attachCount--;
 		}
+		if (this._attachCount == 3)
+			this._attachDiv.style.height = "";
 		this._resizeNotes();
 	}
 };
