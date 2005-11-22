@@ -612,25 +612,27 @@ function(container, html, isTextMsg) {
 
 	var callback = null;
 	var msgSize = html.length / 1024;
-	if (isTextMsg) {
-		if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT && this._objectManager) {
-			// better process objects directly rather than scanning the DOM afterwards.
-			html = this._objectManager.findObjects(html, true);
+	if (this._objectManager) {
+		if (isTextMsg) {
+			if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT && this._objectManager) {
+				// better process objects directly rather than scanning the DOM afterwards.
+				html = this._objectManager.findObjects(html, true);
+			} else {
+				html = AjxStringUtil.convertToHtml(html);
+				this._makeHighlightObjectsDiv();
+			}
+			html = html.replace(/^ /mg, "&nbsp;")
+				.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
+				.replace(/\n/g, "<br>");
 		} else {
-			html = AjxStringUtil.convertToHtml(html);
-			this._makeHighlightObjectsDiv();
+			html = html.replace(/<!--(.*?)-->/g, ""); // remove comments
+			// html = html.replace(/<style>/, "<style type='text/css'>");
+			// this callback will post-process the HTML after the IFRAME is created
+			if (msgSize <= ZmMailMsgView.OBJ_SIZE_HTML)
+				callback = new AjxCallback(this, this._processHtmlDoc);
+			else
+				this._makeHighlightObjectsDiv();
 		}
-		html = html.replace(/^ /mg, "&nbsp;")
-			.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
-			.replace(/\n/g, "<br>");
-	} else {
-		html = html.replace(/<!--(.*?)-->/g, ""); // remove comments
-		// html = html.replace(/<style>/, "<style type='text/css'>");
-		// this callback will post-process the HTML after the IFRAME is created
-		if (msgSize <= ZmMailMsgView.OBJ_SIZE_HTML)
-			callback = new AjxCallback(this, this._processHtmlDoc);
-		else
-			this._makeHighlightObjectsDiv();
 	}
 
 	// pass essential styles to avoid padding/font flickering
