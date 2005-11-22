@@ -29,7 +29,7 @@ function ZmChatTabbedView(parent, className, posStyle, controller) {
 	className = className ? className : "ZmChatTabbedView";
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
 	
-	ZmChatBaseView.call(this, parent, className, posStyle, ZmController.IM_CHAT_TAB_VIEW);
+	ZmChatBaseView.call(this, parent, className, posStyle, controller, ZmController.IM_CHAT_TAB_VIEW);
 }
 
 ZmChatTabbedView.prototype = new ZmChatBaseView;

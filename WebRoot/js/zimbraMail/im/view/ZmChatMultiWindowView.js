@@ -29,7 +29,7 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	className = className ? className : "ZmChatMultiWindowView";
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
 	
-	ZmChatBaseView.call(this, parent, className, posStyle, ZmController.IM_CHAT_TAB_VIEW);
+	ZmChatBaseView.call(this, parent, className, posStyle, controller, ZmController.IM_CHAT_TAB_VIEW);
 	
 	this.setScrollStyle(DwtControl.CLIP);	
 		

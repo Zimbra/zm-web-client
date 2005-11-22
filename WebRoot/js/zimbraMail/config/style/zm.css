@@ -1138,21 +1138,33 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmChatMultiWindowView, .ZmChatTabbedView {
-/*	background-color: #EEEEEE; */
-	background-color: white;
+	background-color: #EEEEEE; 
+/*	background-color: white;*/
 	height: 100%;
 	width: 100%;
 }
 
 
-.ZmChatWindowOverview {overflow: hidden;}
+.ZmChatWindowChat {
+	overflow: hidden;
+	background-color: white;
+	border: 1px solid #999999;	
+}
 
-.ZmChatWindowInput {background-color: white;}
+.ZmChatWindowInput {
+	background-color: white;
+	border: 1px solid #999999;
+}
+
+.ZmChatWindowInput textarea {
+	border-style: hidden;
+	padding-left: 2px;
+}
 
 .ZmChatWindow {
 	background-color:#EEEEEE;
 	border: 1px solid #999999;
-	width: 400px;
+	/*width: 400px;*/
 }
 
 .ZmChatWindow .DwtToolBar {

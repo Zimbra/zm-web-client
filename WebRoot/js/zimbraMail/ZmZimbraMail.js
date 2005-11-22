@@ -1329,8 +1329,9 @@ ZmZimbraMail.prototype._keyPressListener =
 function(ev) {
 //	DBG.println("ZmZimbraMail.KeyPressListener");
 	var curView = this._appViewMgr.getCurrentView();
-	if (curView) {
-//		DBG.println("DO IT!");
-		curView.getController().handleKeyPressEvent(ev);
+	if (curView && curView.getController) {
+		//DBG.println("DO IT!");
+		var c = curView.getController();
+		if (c && c.handleKeyPressEvent) c.handleKeyPressEvent(ev);
 	}
 }
