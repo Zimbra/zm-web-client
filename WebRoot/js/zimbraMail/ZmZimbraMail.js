@@ -445,7 +445,7 @@ function(args) {
 	// refresh block needs to be handled before we finish handling response, so
 	// that the overview panel gets updated/displayed
 	var hdr = response.Header;
-	if (hdr.context && hdr.context.refresh) {
+	if (hdr && hdr.context && hdr.context.refresh) {
 		this._refreshHandler(hdr.context.refresh);
 		this._checkOverviewLayout();
 	}
@@ -468,11 +468,11 @@ function(args) {
 	this._clearPendingRequest(reqId);
 
 	// handle notifications after the response, so that item state is current
-	if (hdr.context && hdr.context.notify) {
+	if (hdr && hdr.context && hdr.context.notify) {
 		this._notifyHandler(hdr.context.notify);
 	}
 	// update change token if we get one
-	if (hdr.context && hdr.context.change) {
+	if (hdr && hdr.context && hdr.context.change) {
 		this._changeToken = hdr.context.change.token;
 	}
 };
