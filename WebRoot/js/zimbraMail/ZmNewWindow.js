@@ -142,7 +142,7 @@ function(params) {
 			msgController.show(window.args.msg);
 		}
 	} catch (ex) {
-		ex.code = ZmCsfeException.SVC_AUTH_EXPIRED;
+		//ex.code = ZmCsfeException.SVC_AUTH_EXPIRED;
 		this._handleException(ex, this.startup, null, true);
 	}
 };
