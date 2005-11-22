@@ -124,14 +124,6 @@ function() {
 	return this._close;
 };
 
-ZmChatWindow.prototype.setEnabled =
-function(enabled) {
-   DwtControl.prototype.setEnabled(this, enabled);
-    this._label.setEnabled(enabled);
-    if (this._picker.setEnabled)
-	    this._picker.setEnabled(enabled);
-};
-
 ZmChatWindow.prototype._sashCallback =
 function(delta) {
     if (this._contentH + delta < ZmChatWindow.MIN_CONTENT_HEIGHT || this._inputH - delta < ZmChatWindow.MIN_INPUT_HEIGHT) return 0;
@@ -146,12 +138,22 @@ function(delta) {
 
 ZmChatWindow.prototype._movableCallback =
 function(data) {
-    var newX = data.start.x + data.delta.x;
-    var newY = data.start.y + data.delta.y;
-    if (newX < 0 || newY < 0) {
-        data.delta.x = data.delta.y = 0;
-    }
-    return data;
+    switch (data.state) {
+    case DwtMovable.STATE_MOVE_START:
+    		Dwt.setOpacity(this.getHtmlElement(), 70);
+    		break;
+    case DwtMovable.STATE_MOVING:
+        var newX = data.start.x + data.delta.x;
+        var newY = data.start.y + data.delta.y;
+        if (newX < 0 || newY < 0) {
+            data.delta.x = data.delta.y = 0;
+        }
+        return data;
+        break;
+    case DwtMovable.STATE_MOVE_END:
+    		Dwt.setOpacity(this.getHtmlElement(), 100);
+    		break;
+	}
 }
 
 ZmChatWindow.prototype._controlListener =
