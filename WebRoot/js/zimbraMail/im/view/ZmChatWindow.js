@@ -145,18 +145,13 @@ function(delta) {
 }
 
 ZmChatWindow.prototype._movableCallback =
-function(delta) {
-    return delta;
-    /*
-    if (this._contentH + delta < ZmChatWindow.MIN_CONTENT_HEIGHT || this._inputH - delta < ZmChatWindow.MIN_INPUT_HEIGHT) return 0;
-    
-    this._contentH += delta;
-    this._content.setSize(Dwt.DEFAULT, this._contentH);
-    this._inputY += delta;
-    this._inputH -= delta;
-    this._input.setBounds(Dwt.DEFAULT, this._inputY, Dwt.DEFAULT, this._inputH);
-    return delta;
-    */
+function(data) {
+    var newX = data.start.x + data.delta.x;
+    var newY = data.start.y + data.delta.y;
+    if (newX < 0 || newY < 0) {
+        data.delta.x = data.delta.y = 0;
+    }
+    return data;
 }
 
 ZmChatWindow.prototype._controlListener =
