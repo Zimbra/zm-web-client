@@ -34,7 +34,7 @@ function ZmChatWindow(parent) {
     this._init();	
 };
 
-ZmChatWindow.SASH_THRESHHOLD = 5;
+ZmChatWindow.SASH_THRESHHOLD = 1;
 ZmChatWindow.MIN_CONTENT_HEIGHT = 50;
 ZmChatWindow.MIN_INPUT_HEIGHT = 50;
     
@@ -74,6 +74,7 @@ function() {
     this._input.getHtmlElement().innerHTML = 	"<textarea wrap='hard' style='width:100%; height:100%;' id='" + this._inputFieldId + "'></textarea>";
     Dwt.setHandler(Dwt.getDomObj(this._doc, this._inputFieldId), DwtEvent.ONKEYUP, ZmChatWindow._inputOnKeyUp);
     this._sash.registerCallback(this._sashCallback, this);
+    DwtMovable.init(this._toolbar, this, 1, 1, this._movableCallback, this);    
 }
 
 ZmChatWindow.prototype.sendInput =
@@ -94,12 +95,14 @@ function(text) {
 ZmChatWindow._inputOnKeyUp =
 function(ev) {
 	var element = DwtUiEvent.getTarget(ev);
-	var chatWindow = ZmChatWindow._idToChatWindow[element.id];
 
 	var charCode = DwtKeyEvent.getCharCode(ev);
 	if (charCode == 13 || charCode == 3) {
-	    chatWindow.sendInput(element.value);
-		element.value = "";
+        	var chatWindow = ZmChatWindow._idToChatWindow[element.id];	
+        	if (chatWindow) {
+    	        chatWindow.sendInput(element.value);
+        		element.value = "";
+   		}
 	    return false;
 	} else {
 		return true;
@@ -141,8 +144,25 @@ function(delta) {
     return delta;
 }
 
+ZmChatWindow.prototype._movableCallback =
+function(delta) {
+    return delta;
+    /*
+    if (this._contentH + delta < ZmChatWindow.MIN_CONTENT_HEIGHT || this._inputH - delta < ZmChatWindow.MIN_INPUT_HEIGHT) return 0;
+    
+    this._contentH += delta;
+    this._content.setSize(Dwt.DEFAULT, this._contentH);
+    this._inputY += delta;
+    this._inputH -= delta;
+    this._input.setBounds(Dwt.DEFAULT, this._inputY, Dwt.DEFAULT, this._inputH);
+    return delta;
+    */
+}
+
 ZmChatWindow.prototype._controlListener =
 function(ev) {
+    if (ev.newHeight == Dwt.DEFAULT || ev.newWidth == Dwt.DEFAULT) return;
+    
 //	this._toolbar.setSize(ev.newWidth, Dwt.DEFAULT);
     var tbH = this._toolbar.getH();
     var sashH = this._sash.getH();
