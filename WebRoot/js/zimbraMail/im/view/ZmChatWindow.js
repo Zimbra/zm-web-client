@@ -250,5 +250,5 @@ function(ev) {
     	this._inputY = inpY + yFudge;
     	this._inputH = inpH - hFudge;
     	this._input.setBounds(xFudge, this._inputY, ev.newWidth - wFudge, this._inputH);
-    this._gripper.setLocation(ev.newWidth-16, ev.newHeight-16);
+    this._gripper.setLocation(ev.newWidth-15, ev.newHeight-15);
 };
