@@ -32,6 +32,7 @@ function ZmChatWindow(parent) {
     	this.addControlListener(new AjxListener(this, this._controlListener));
     this._init();
     this.setZIndex(ZmChatWindow._nextZ++);
+
 };
 
 ZmChatWindow.SASH_THRESHHOLD = 1;
@@ -100,6 +101,8 @@ function() {
 	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
 	this._content.setScrollStyle(DwtControl.SCROLL);
 	this._content.getHtmlElement().innerHTML = "<div/>";
+	this._content._setMouseEventHdlrs();    
+    	this._objectManager = new ZmObjectManager(this._content, this._appCtxt);
 	this._sash = new DwtSash(this, DwtSash.VERTICAL_STYLE, "AppSash-vert", ZmChatWindow.SASH_THRESHHOLD, Dwt.ABSOLUTE_STYLE);
 	this._input = new DwtComposite(this, "ZmChatWindowInput", Dwt.ABSOLUTE_STYLE);
 	this._input.setScrollStyle(DwtControl.CLIP);
@@ -118,12 +121,13 @@ function(text) {
     var content = this._content.getHtmlElement().firstChild;
     var div = this._doc.createElement("div");
     div.className = "ZmChatWindowChatEntryMe";
-    div.innerHTML = "<b>user1: </b>" + AjxStringUtil.htmlEncode(text, true);
+//    div.innerHTML = "<b>user1: </b>" + AjxStringUtil.htmlEncode(text, true);
+    div.innerHTML = "<b>user1: </b>" + this._objectManager.findObjects(text, true);    
     content.appendChild(div);
     
     div = this._doc.createElement("div");
-    div.className = "ZmChatWindowChatEntryThem";
-    div.innerHTML = "<b>"+AjxStringUtil.htmlEncode(this.buddy.getName())+": </b>" + AjxStringUtil.htmlEncode("whatever", true);
+    // div.className = "ZmChatWindowChatEntryThem";
+    div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+AjxStringUtil.htmlEncode(this.buddy.getName())+": </b></span>" + AjxStringUtil.htmlEncode("whatever", true);
     content.appendChild(div);
     content.parentNode.scrollTop = Dwt.getSize(content).y;
 }

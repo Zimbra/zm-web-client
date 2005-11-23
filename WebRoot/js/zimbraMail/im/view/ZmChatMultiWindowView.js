@@ -32,8 +32,6 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	ZmChatBaseView.call(this, parent, className, posStyle, controller, ZmController.IM_CHAT_TAB_VIEW);
 	
 	this.setScrollStyle(DwtControl.CLIP);	
-		
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
 	var bt = this._appCtxt.getTree(ZmOrganizer.BUDDY);
 	var cw = new ZmChatWindow(this);
