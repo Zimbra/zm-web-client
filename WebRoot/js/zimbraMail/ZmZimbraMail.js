@@ -342,7 +342,6 @@ function(settings) {
 	if (folderTree) folderTree.reset();
 	if (this._appCtxt.isPublicComputer())
 		this._appCtxt.getLoginDialog().clearAll();
-	this._actionedIds = null;
 	for (var app in this._apps)					// reset apps
 		this._apps[app] = null;
 	this._activeApp = null;
@@ -453,17 +452,12 @@ function(args) {
 	if (asyncMode)
 		result.set(response.Body);
 
-	this._actionedIds = null; // reset for next request
-
 	// start poll timer if we didn't get an exception
 	if (this._pollInterval)
 		this._pollActionId = this._schedule(this._doPoll, null, this._pollInterval);
 
-	if (asyncMode) {
+	if (asyncMode)
 		if (callback) callback.run(result);
-	} else {
-		return response.Body;
-	}
 	
 	this._clearPendingRequest(reqId);
 
@@ -475,6 +469,9 @@ function(args) {
 	if (hdr && hdr.context && hdr.context.change) {
 		this._changeToken = hdr.context.change.token;
 	}
+
+	if (!asyncMode)
+		return response.Body;
 };
 
 ZmZimbraMail.prototype.cancelRequest = 
