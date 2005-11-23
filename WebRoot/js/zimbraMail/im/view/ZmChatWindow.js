@@ -108,7 +108,9 @@ function() {
     this._input.getHtmlElement().innerHTML = 	"<textarea wrap='hard' style='width:100%; height:100%;' id='" + this._inputFieldId + "'></textarea>";
     Dwt.setHandler(Dwt.getDomObj(this._doc, this._inputFieldId), DwtEvent.ONKEYUP, ZmChatWindow._inputOnKeyUp);
     this._sash.registerCallback(this._sashCallback, this);
-    DwtMovable.init(this._toolbar, this, 4, 4, this._movableCallback, this);    
+    this._gripper = new DwtComposite(this, "DwtResizeGripper", Dwt.ABSOLUTE_STYLE);
+    DwtMovable.init(this._toolbar, this, 4, 4, this._movableCallback, this);
+    DwtSizable.init(this._gripper, this, 4, 4, this._sizableCallback, this);    
 }
 
 ZmChatWindow.prototype.sendInput =
@@ -195,10 +197,36 @@ function(data) {
 	return data;
 }
 
+ZmChatWindow.prototype._sizableCallback =
+function(data) {
+
+    switch (data.state) {
+    case DwtSizable.STATE_SIZE_START:
+    		this.raise();
+    		this.select();
+    		break;
+    case DwtSizable.STATE_SIZING:
+        if (this._lastMovableState == DwtMovable.STATE_MOVE_START)
+        		Dwt.setOpacity(this.getHtmlElement(), 70);
+        var newW = data.start.x + data.delta.x;
+        var newH = data.start.y + data.delta.y;
+        if (newW < 200 || newH < 150) {
+            data.delta.x = data.delta.y = 0;
+        }
+        break;
+    case DwtSizable.STATE_SIZE_END:
+    		Dwt.setOpacity(this.getHtmlElement(), 100);
+    		break;
+	}
+    this._lastMovableState = data.state;
+	return data;
+}
+
+
 ZmChatWindow.prototype._controlListener =
 function(ev) {
     if (ev.newHeight == Dwt.DEFAULT || ev.newWidth == Dwt.DEFAULT) return;
-    
+
 //	this._toolbar.setSize(ev.newWidth, Dwt.DEFAULT);
     var tbH = this._toolbar.getH();
     var sashH = this._sash.getH();
@@ -209,12 +237,18 @@ function(ev) {
     var ctY = tbH;
     var sashY = ctY + ctH;
     var inpY = sashY + sashH;
-    
-    this._contentY = ctY+4;
-    this._contentH = ctH-10;
-    	this._content.setBounds(3, this._contentY, ev.newWidth-10, this._contentH);
+
+    var yFudge = 8;
+    var hFudge = 16;
+    var wFudge = 16;    
+    var xFudge = 5;
+
+    this._contentY = ctY + yFudge;
+    this._contentH = ctH - hFudge;
+    	this._content.setBounds(xFudge, this._contentY, ev.newWidth - wFudge, this._contentH);
     	this._sash.setBounds(0, sashY, ev.newWidth, sashH);
-    	this._inputY = inpY+4;
-    	this._inputH = inpH-10;
-    	this._input.setBounds(3, this._inputY, ev.newWidth-10, this._inputH);
+    	this._inputY = inpY + yFudge;
+    	this._inputH = inpH - hFudge;
+    	this._input.setBounds(xFudge, this._inputY, ev.newWidth - wFudge, this._inputH);
+    this._gripper.setLocation(ev.newWidth-16, ev.newHeight-16);
 };

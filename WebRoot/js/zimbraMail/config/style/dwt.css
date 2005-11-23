@@ -641,6 +641,13 @@
 .DwtColorPicker { border: 1px solid #999999; }
 .DwtColorPicker table td img { border: 1px none black; }
 
+.DwtResizeGripper {
+	background-image:url(/zimbra/img/hiRes/dwt/ResizeGripper.gif);
+	border: none;
+	width:16px;
+	height:16px;
+}
+
 /* 
  * Calendar
  */
