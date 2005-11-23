@@ -81,7 +81,7 @@ ZmZimbraMail.prototype.constructor = ZmZimbraMail;
 ZmZimbraMail.MAIL_APP			= "mail";
 ZmZimbraMail.CONTACTS_APP		= "contacts";
 ZmZimbraMail.CALENDAR_APP		= "calendar";
-ZmZimbraMail.IM_APP		    = "im";
+ZmZimbraMail.IM_APP				= "im";
 ZmZimbraMail.PREFERENCES_APP	= "options";
 ZmZimbraMail.MIXED_APP			= "mixed";
 
@@ -89,31 +89,31 @@ ZmZimbraMail.APP_CLASS = {};
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.MAIL_APP]			= ZmMailApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.CONTACTS_APP]		= ZmContactsApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.CALENDAR_APP]		= ZmCalendarApp;
-ZmZimbraMail.APP_CLASS[ZmZimbraMail.IM_APP]    	    = ZmImApp;
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.IM_APP]				= ZmImApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.PREFERENCES_APP]	= ZmPreferencesApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.MIXED_APP]			= ZmMixedApp;
 
 ZmZimbraMail.MSG_KEY = {};
-ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]			= "mail";
-ZmZimbraMail.MSG_KEY[ZmZimbraMail.CONTACTS_APP]		= "contacts";
-ZmZimbraMail.MSG_KEY[ZmZimbraMail.CALENDAR_APP]		= "calendar";
-ZmZimbraMail.MSG_KEY[ZmZimbraMail.IM_APP]		        = "imAppTitle";
-ZmZimbraMail.MSG_KEY[ZmZimbraMail.PREFERENCES_APP]	= "options";
-ZmZimbraMail.MSG_KEY[ZmZimbraMail.MIXED_APP]		= "zimbraTitle";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]				= "mail";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.CONTACTS_APP]			= "contacts";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.CALENDAR_APP]			= "calendar";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.IM_APP]				= "imAppTitle";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.PREFERENCES_APP]		= "options";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.MIXED_APP]			= "zimbraTitle";
 
 ZmZimbraMail.APP_ICON = {};
-ZmZimbraMail.APP_ICON[ZmZimbraMail.MAIL_APP]		= "MailApp";
-ZmZimbraMail.APP_ICON[ZmZimbraMail.CONTACTS_APP]	= "ContactsApp";
-ZmZimbraMail.APP_ICON[ZmZimbraMail.CALENDAR_APP]	= "CalendarApp";
-ZmZimbraMail.APP_ICON[ZmZimbraMail.IM_APP]	         = "ImStartChat";
-ZmZimbraMail.APP_ICON[ZmZimbraMail.PREFERENCES_APP]	= "Preferences";
-ZmZimbraMail.APP_ICON[ZmZimbraMail.MIXED_APP]		= "Globe";
+ZmZimbraMail.APP_ICON[ZmZimbraMail.MAIL_APP]			= "MailApp";
+ZmZimbraMail.APP_ICON[ZmZimbraMail.CONTACTS_APP]		= "ContactsApp";
+ZmZimbraMail.APP_ICON[ZmZimbraMail.CALENDAR_APP]		= "CalendarApp";
+ZmZimbraMail.APP_ICON[ZmZimbraMail.IM_APP]				= "ImStartChat";
+ZmZimbraMail.APP_ICON[ZmZimbraMail.PREFERENCES_APP]		= "Preferences";
+ZmZimbraMail.APP_ICON[ZmZimbraMail.MIXED_APP]			= "Globe";
 
 ZmZimbraMail.APP_BUTTON = {};
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.MAIL_APP]			= ZmAppChooser.B_EMAIL;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CONTACTS_APP]		= ZmAppChooser.B_CONTACTS;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CALENDAR_APP]		= ZmAppChooser.B_CALENDAR;
-ZmZimbraMail.APP_BUTTON[ZmZimbraMail.IM_APP]	        	= ZmAppChooser.B_IM;
+ZmZimbraMail.APP_BUTTON[ZmZimbraMail.IM_APP]			= ZmAppChooser.B_IM;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.PREFERENCES_APP]	= ZmAppChooser.B_OPTIONS;
 
 ZmZimbraMail.DEFAULT_SEARCH = {};
@@ -125,17 +125,17 @@ ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.IM_APP]    	= ZmSearchToolBar.FOR_MAIL_
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MIXED_APP]		= ZmSearchToolBar.FOR_ANY_MI;
 
 ZmZimbraMail.VIEW_TT_KEY = {};
-ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.MAIL_APP]		= "displayMail";
-ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CONTACTS_APP]	= "displayContacts";
-ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CALENDAR_APP]	= "displayCalendar";
+ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.MAIL_APP]			= "displayMail";
+ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CONTACTS_APP]		= "displayContacts";
+ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CALENDAR_APP]		= "displayCalendar";
 ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.IM_APP]	        = "displayIM";
 
 ZmZimbraMail.OVERVIEW_TREES = {};
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]			= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]		= [ZmOrganizer.CALENDAR];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]	        	= [ZmOrganizer.BUDDY];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]	= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]	= [ZmOrganizer.CALENDAR];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.BUDDY];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 
 ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
