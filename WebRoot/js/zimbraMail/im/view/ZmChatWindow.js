@@ -44,6 +44,9 @@ ZmChatWindow._nextZ = 1;
 ZmChatWindow.prototype = new DwtComposite;
 ZmChatWindow.prototype.constructor = ZmChatWindow;
 
+ZmChatWindow._TRACKER_RESIZE = 1;
+ZmChatWindow._TRACKER_DRAG = 2;
+
 ZmChatWindow._idToChatWindow = {};
 
 ZmChatWindow.prototype.toString = 
@@ -112,8 +115,8 @@ function() {
     Dwt.setHandler(Dwt.getDomObj(this._doc, this._inputFieldId), DwtEvent.ONKEYUP, ZmChatWindow._inputOnKeyUp);
     this._sash.registerCallback(this._sashCallback, this);
     this._gripper = new DwtComposite(this, "DwtResizeGripper", Dwt.ABSOLUTE_STYLE);
-    DwtMovable.init(this._toolbar, this, 4, 4, this._movableCallback, this);
-    DwtSizable.init(this._gripper, this, 4, 4, this._sizableCallback, this);    
+    DwtDragTracker.init(this._toolbar, DwtDragTracker.STYLE_MOVE, 1, 1, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_DRAG);
+    DwtDragTracker.init(this._gripper, DwtDragTracker.STYLE_RESIZE_SOUTHEAST, 1, 1, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_RESIZE);
 }
 
 ZmChatWindow.prototype.sendInput =
@@ -176,56 +179,32 @@ function(delta) {
     return delta;
 }
 
-ZmChatWindow.prototype._movableCallback =
+ZmChatWindow.prototype._dragTrackerCallback =
 function(data) {
-
     switch (data.state) {
-    case DwtMovable.STATE_MOVE_START:
+    case DwtDragTracker.STATE_START:
     		this.raise();
     		this.select();
+    		data.start = (data.userData == ZmChatWindow._TRACKER_RESIZE) ? this.getSize() : this.getLocation();
     		break;
-    case DwtMovable.STATE_MOVING:
-        if (this._lastMovableState == DwtMovable.STATE_MOVE_START)
+    case DwtDragTracker.STATE_DRAGGING:
+        if (data.prevState == DwtDragTracker.STATE_START)
         		Dwt.setOpacity(this.getHtmlElement(), 70);
         var newX = data.start.x + data.delta.x;
-        var newY = data.start.y + data.delta.y;
-        if (newX < 0 || newY < 0) {
-            data.delta.x = data.delta.y = 0;
+        var newY = data.start.y + data.delta.y;        		
+        if (data.userData == ZmChatWindow._TRACKER_RESIZE) {
+            if (newX >= 200 && newY >= 150)
+                this.setSize(newX, newY);
+        } else {
+            if (newX >= 0 && newY >= 0)
+                this.setLocation(newX, newY);
         }
         break;
-    case DwtMovable.STATE_MOVE_END:
+    case DwtDragTracker.STATE_END:
     		Dwt.setOpacity(this.getHtmlElement(), 100);
     		break;
 	}
-    this._lastMovableState = data.state;
-	return data;
 }
-
-ZmChatWindow.prototype._sizableCallback =
-function(data) {
-
-    switch (data.state) {
-    case DwtSizable.STATE_SIZE_START:
-    		this.raise();
-    		this.select();
-    		break;
-    case DwtSizable.STATE_SIZING:
-        if (this._lastMovableState == DwtMovable.STATE_MOVE_START)
-        		Dwt.setOpacity(this.getHtmlElement(), 70);
-        var newW = data.start.x + data.delta.x;
-        var newH = data.start.y + data.delta.y;
-        if (newW < 200 || newH < 150) {
-            data.delta.x = data.delta.y = 0;
-        }
-        break;
-    case DwtSizable.STATE_SIZE_END:
-    		Dwt.setOpacity(this.getHtmlElement(), 100);
-    		break;
-	}
-    this._lastMovableState = data.state;
-	return data;
-}
-
 
 ZmChatWindow.prototype._controlListener =
 function(ev) {
