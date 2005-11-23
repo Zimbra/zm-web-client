@@ -111,6 +111,7 @@ Contributor(s):
 
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
    		<jsp:include page="/public/Ajax.jsp"/>
+   		<jsp:include page="/public/XForms.jsp"/>
     	<jsp:include page="/public/Zimbra.jsp"/>
 	    <jsp:include page="/public/ZimbraAdmin.jsp"/>
 <% } else { %>
