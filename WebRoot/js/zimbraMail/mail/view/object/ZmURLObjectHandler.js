@@ -46,7 +46,7 @@ function(line, startIndex) {
 	if (!m) {return null;}
 	
 	var last = m[0].charAt(m[0].length-1);
-	if (last == '.' || last == ",") {
+	if (last == '.' || last == "," || last == '!') {
 		var m2 = {index: m.index };
 		m2[0] = m[0].substring(0, m[0].length-1);
 		return m2;
