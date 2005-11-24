@@ -58,7 +58,6 @@ function() {
 	return "ZmChatWindow";
 };
 
-
 ZmChatWindow._selected = null;
 
 ZmChatWindow.prototype._init =
@@ -174,11 +173,17 @@ function() {
 
 ZmChatWindow.prototype._sashCallback =
 function(data) {
-    if (data.state != DwtDragTracker.STATE_DRAGGING) return;
-    var delta = data.incDelta.y;
-    if (this._contentH + delta < ZmChatWindow.MIN_CONTENT_HEIGHT || this._inputH - delta < ZmChatWindow.MIN_INPUT_HEIGHT) return;
-    this._sashY += delta;
-    this._controlListener();
+    switch (data.state) {
+    case DwtDragTracker.STATE_START:
+        data.start = this._sashY;
+    	break;
+    case DwtDragTracker.STATE_DRAGGING:
+	var newY = data.start + data.delta.y;
+	if (newY < this._minSashY || newY > this._maxSashY) return;
+        this._sashY = newY;
+        this._controlListener();
+        break;
+     }
 }
 
 ZmChatWindow.prototype._dragTrackerCallback =
@@ -249,10 +254,12 @@ function(ev) {
 
     this._contentY = ctY + yFudge;
     this._contentH = ctH - hFudge;
-    	this._content.setBounds(xFudge, this._contentY, size.x - wFudge, this._contentH);
-    	this._sash.setBounds(0, this._sashY, size.x, sashH);
-    	this._inputY = inpY;
-    	this._inputH = inpH - yFudge - hFudge;
-    	this._input.setBounds(xFudge, this._inputY, size.x - wFudge, this._inputH);
+    this._content.setBounds(xFudge, this._contentY, size.x - wFudge, this._contentH);
+    this._sash.setBounds(0, this._sashY, size.x, sashH);
+    this._inputY = inpY;
+    this._inputH = inpH - yFudge - hFudge;
+    this._input.setBounds(xFudge, this._inputY, size.x - wFudge, this._inputH);
     this._gripper.setLocation(size.x-15, size.y-15);
+    this._minSashY = this._contentY + ZmChatWindow.MIN_CONTENT_HEIGHT;
+    this._maxSashY = size.y - ZmChatWindow.MIN_INPUT_HEIGHT;
 };
