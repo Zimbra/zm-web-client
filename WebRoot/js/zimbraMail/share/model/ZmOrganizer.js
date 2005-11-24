@@ -342,7 +342,7 @@ function(obj) {
 		fields[ZmOrganizer.F_TOTAL] = true;
 		doNotify = true;
 	}
-	if (obj.color) {
+	if (obj.color != null) {
 		var color = ZmOrganizer.checkColor(obj.color);
 		if (this.color != color) {
 			this.color = color;
