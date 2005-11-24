@@ -710,7 +710,8 @@ function() {
 	
 	buf[i++] = ZmMsg.organizer;
 	buf[i++] = " ";
-	buf[i++] = this.organizer;
+	var organizer = this.organizer || this._appCtxt.get(ZmSetting.USERNAME);
+	buf[i++] = organizer;
 	buf[i++] = "\n\n";
 	
 	if (this.location != "") {
