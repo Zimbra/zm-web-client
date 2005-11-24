@@ -175,10 +175,10 @@ function(args) {
 		 	zimletTree.loadFromJs(panelZimlets);
 	
 			// Add Zimlets to overview panel	 	
-		 	var appController = this._appCtxt.getAppController();
-	 		this._oldPanels = appController.getOverviewPanels();
-	 		var newPanels = [ ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.ZIMLET ];
-	 		appController.setOverviewPanels( newPanels );
+		 	//var appController = this._appCtxt.getAppController();
+	 		//this._oldPanels = appController.getOverviewPanels();
+	 		//var newPanels = [ ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.ZIMLET ];
+	 		//appController.setOverviewPanels( newPanels );
 	 	}
 	 }
 

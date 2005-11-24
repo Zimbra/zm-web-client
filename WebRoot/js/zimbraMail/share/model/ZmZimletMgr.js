@@ -43,7 +43,7 @@ function() {
 	var panelZimlets = new Array();
 	var j=0;
 	for(var i=0; i < this._ZIMLETS.length; i++) {
-		if(this._ZIMLETS[i].panelObject) {
+		if(this._ZIMLETS[i].zimletPanelItem) {
 			DBG.println(AjxDebug.DBG2, "Zimlets: Panel " + this._ZIMLETS[i].name);
 			panelZimlets[j++] = this._ZIMLETS[i];
 		}
