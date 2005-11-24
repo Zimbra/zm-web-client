@@ -35,8 +35,11 @@ function ZmOperation() {
 }
 
 // Operations
-ZmOperation.NONE 					= -2;		// no operations or menu items
-ZmOperation.SEP 					= -1;		// separator
+ZmOperation.NONE 					= -1;		// no operations or menu items
+ZmOperation.SEP 					= -2;		// separator
+ZmOperation.SPACER 					= -3;		// spacer (toolbar)
+ZmOperation.FILLER 					= -4;		// filler (toolbar)
+
 var i = 1;
 // !! PLEASE ADD IN ALPHA ORDER !!
 ZmOperation.ADD_FILTER_RULE			= i++;
@@ -136,7 +139,7 @@ ZmOperation.ZIMLET					= i++;
 // Labels
 // !! PLEASE ADD IN ALPHA ORDER !!
 ZmOperation.MSG_KEY = new Object();
-ZmOperation.MSG_KEY[ZmOperation.ADD_FILTER_RULE]		= "add";
+ZmOperation.MSG_KEY[ZmOperation.ADD_FILTER_RULE]		= "newFilter";
 ZmOperation.MSG_KEY[ZmOperation.ADD_SIGNATURE]			= "addSignature";
 ZmOperation.MSG_KEY[ZmOperation.ATTACHMENT]				= "addAttachment";
 ZmOperation.MSG_KEY[ZmOperation.BROWSE]					= "advancedSearch";
@@ -148,18 +151,18 @@ ZmOperation.MSG_KEY[ZmOperation.CLEAR_ALL]				= "clearAll";
 ZmOperation.MSG_KEY[ZmOperation.CLOSE]					= "close";
 ZmOperation.MSG_KEY[ZmOperation.COLOR_MENU]				= "tagColor";
 ZmOperation.MSG_KEY[ZmOperation.COMPOSE_FORMAT] 		= "format";
+ZmOperation.MSG_KEY[ZmOperation.DAY_VIEW]				= "viewDay";
+ZmOperation.MSG_KEY[ZmOperation.DELETE]					= "del";
+ZmOperation.MSG_KEY[ZmOperation.DELETE_CONV]			= "delConv";
 ZmOperation.MSG_KEY[ZmOperation.DETACH_COMPOSE] 		= "detach";
 ZmOperation.MSG_KEY[ZmOperation.EDIT] 					= "edit";
+ZmOperation.MSG_KEY[ZmOperation.EDIT_CONTACT]			= "AB_EDIT_CONTACT";
+ZmOperation.MSG_KEY[ZmOperation.EDIT_FILTER_RULE]		= "filterEdit";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_PROPS]				= "editProperties";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_ACCEPT]		= "replyAccept";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_DECLINE]		= "replyDecline";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_TENTATIVE]   = "replyTentative";
-ZmOperation.MSG_KEY[ZmOperation.EDIT_CONTACT]			= "AB_EDIT_CONTACT";
 ZmOperation.MSG_KEY[ZmOperation.EXPAND_ALL]				= "expandAll";
-ZmOperation.MSG_KEY[ZmOperation.DAY_VIEW]				= "viewDay";
-ZmOperation.MSG_KEY[ZmOperation.DELETE]					= "del";
-ZmOperation.MSG_KEY[ZmOperation.DELETE_CONV]			= "delConv";
-ZmOperation.MSG_KEY[ZmOperation.EDIT_FILTER_RULE]		= "filterEdit";
 ZmOperation.MSG_KEY[ZmOperation.FORWARD]				= "forward";
 ZmOperation.MSG_KEY[ZmOperation.IM]						= "newIM";
 ZmOperation.MSG_KEY[ZmOperation.INVITE_REPLY_MENU]		= "editReply";
@@ -466,6 +469,10 @@ function(parent, id, opHash) {
 		ZmOperation._operationDesc[id] = ZmOperation._createOperationDesc(id);
 	if (id == ZmOperation.SEP) {
 		parent.createSeparator();
+	} else if (id == ZmOperation.SPACER) {
+		parent.addSpacer();
+	} else if (id == ZmOperation.FILLER) {
+		parent.addFiller();
 	} else {
 		var label = ZmOperation._operationDesc[id].label;
 		var image = ZmOperation._operationDesc[id].image;

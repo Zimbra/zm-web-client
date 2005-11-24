@@ -33,8 +33,8 @@ function ZmAppChooser(parent, className, buttons) {
 	this._buttons = new Object();
 	for (var i = 0; i < buttons.length; i++) {
 		var id = buttons[i];
-		if (id == ZmAppChooser.SEP) {
-			this.addSpacer(ZmAppChooser.SEP_HEIGHT);
+		if (id == ZmAppChooser.SPACER) {
+			this.addSpacer(ZmAppChooser.SPACER_HEIGHT);
 		} else {
 			this._createButton(id);
 		}
@@ -79,7 +79,7 @@ ZmAppChooser.TOOLTIP[ZmAppChooser.B_HELP]		= ZmMsg.goToHelp;
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_OPTIONS]	= ZmMsg.goToOptions;
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_LOGOUT]		= ZmMsg.logOff;
 
-ZmAppChooser.SEP_HEIGHT = 10;
+ZmAppChooser.SPACER_HEIGHT = 10;
 
 ZmAppChooser.prototype = new DwtToolBar;
 ZmAppChooser.prototype.constructor = ZmAppChooser;

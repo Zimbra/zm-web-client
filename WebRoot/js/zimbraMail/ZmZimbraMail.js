@@ -1276,7 +1276,7 @@ function() {
 		buttons.push(ZmAppChooser.B_CALENDAR);
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
 		buttons.push(ZmAppChooser.B_IM);
-	buttons.push(ZmAppChooser.SEP, ZmAppChooser.B_HELP, ZmAppChooser.B_OPTIONS, ZmAppChooser.B_LOGOUT);
+	buttons.push(ZmAppChooser.SPACER, ZmAppChooser.B_HELP, ZmAppChooser.B_OPTIONS, ZmAppChooser.B_LOGOUT);
 	var appChooser = new ZmAppChooser(this._shell, null, buttons);
 	
 	var buttonListener = new AjxListener(this, this._appButtonListener);
