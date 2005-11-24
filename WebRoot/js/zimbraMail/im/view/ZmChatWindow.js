@@ -83,8 +83,8 @@ function() {
 
     this._gripper = new DwtComposite(this, "DwtResizeGripper", Dwt.ABSOLUTE_STYLE);
     DwtDragTracker.init(this._sash, DwtDragTracker.STYLE_RESIZE_NORTH, 1, 1, this._sashCallback, this, ZmChatWindow._TRACKER_SASH);
-    DwtDragTracker.init(this._toolbar, DwtDragTracker.STYLE_MOVE, 1, 1, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_DRAG);
-    DwtDragTracker.init(this._gripper, DwtDragTracker.STYLE_RESIZE_SOUTHEAST, 1, 1, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_RESIZE);
+    DwtDragTracker.init(this._toolbar, DwtDragTracker.STYLE_MOVE, 5, 5, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_DRAG);
+    DwtDragTracker.init(this._gripper, DwtDragTracker.STYLE_RESIZE_SOUTHEAST, 5, 5, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_RESIZE);
     
     this.setHandler(DwtEvent.ONCLICK, ZmChatWindow._onClickHdlr);
     Dwt.associateElementWithObject(this.getHtmlElement(), this);
