@@ -1282,7 +1282,7 @@ function() {
 	var buttonListener = new AjxListener(this, this._appButtonListener);
 	for (var i = 0; i < buttons.length; i++) {
 		var id = buttons[i];
-		if (id == ZmAppChooser.SEP) continue;
+		if (id == ZmAppChooser.SPACER) continue;
 		var b = appChooser.getButton(id);
 		b.addSelectionListener(buttonListener);
 	}
