@@ -46,8 +46,12 @@ ZmChatWindow.prototype.constructor = ZmChatWindow;
 
 ZmChatWindow._TRACKER_RESIZE = 1;
 ZmChatWindow._TRACKER_DRAG = 2;
+ZmChatWindow._TRACKER_SASH = 3;
 
 ZmChatWindow._idToChatWindow = {};
+
+ZmChatWindow._DEFAULT_INPUT_HEIGHT = 70;
+ZmChatWindow._SASH_HEIGHT = 10;
 
 ZmChatWindow.prototype.toString = 
 function() {
@@ -56,6 +60,33 @@ function() {
 
 
 ZmChatWindow._selected = null;
+
+ZmChatWindow.prototype._init =
+function() {
+	this._toolbar = new DwtToolBar(this);
+	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
+	this._toolbar.addFiller();
+	this._close = new DwtButton(this._toolbar, DwtLabel.IMAGE_LEFT, "TBButton");
+	this._close.setImage("Close");
+	this._close.setToolTipContent(ZmMsg.close);
+	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
+	this._content.setScrollStyle(DwtControl.SCROLL);
+	this._content.getHtmlElement().innerHTML = "<div/>";
+	this._content._setMouseEventHdlrs();    
+    	this._objectManager = new ZmObjectManager(this._content, this._appCtxt);
+	this._sash = new DwtComposite(this, null, Dwt.ABSOLUTE_STYLE);
+	this._input = new DwtComposite(this, "ZmChatWindowInput", Dwt.ABSOLUTE_STYLE);
+	this._input.setScrollStyle(DwtControl.CLIP);
+	this._inputFieldId = Dwt.getNextId();
+	ZmChatWindow._idToChatWindow[this._inputFieldId] = this;
+    this._input.getHtmlElement().innerHTML = 	"<textarea wrap='hard' style='width:100%; height:100%;' id='" + this._inputFieldId + "'></textarea>";
+    Dwt.setHandler(Dwt.getDomObj(this._doc, this._inputFieldId), DwtEvent.ONKEYUP, ZmChatWindow._inputOnKeyUp);
+
+    this._gripper = new DwtComposite(this, "DwtResizeGripper", Dwt.ABSOLUTE_STYLE);
+    DwtDragTracker.init(this._sash, DwtDragTracker.STYLE_RESIZE_NORTH, 1, 1, this._sashCallback, this, ZmChatWindow._TRACKER_SASH);
+    DwtDragTracker.init(this._toolbar, DwtDragTracker.STYLE_MOVE, 1, 1, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_DRAG);
+    DwtDragTracker.init(this._gripper, DwtDragTracker.STYLE_RESIZE_SOUTHEAST, 1, 1, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_RESIZE);
+}
 
 ZmChatWindow.prototype.dispose =
 function() {
@@ -91,32 +122,6 @@ function(buddy) {
     this.buddy = buddy;
     this.setTitle(buddy.getName());
     this.setImage(buddy.getIcon());    
-}
-
-ZmChatWindow.prototype._init =
-function() {
-	this._toolbar = new DwtToolBar(this);
-	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
-	this._toolbar.addFiller();
-	this._close = new DwtButton(this._toolbar, DwtLabel.IMAGE_LEFT, "TBButton");
-	this._close.setImage("Close");
-	this._close.setToolTipContent(ZmMsg.close);
-	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
-	this._content.setScrollStyle(DwtControl.SCROLL);
-	this._content.getHtmlElement().innerHTML = "<div/>";
-	this._content._setMouseEventHdlrs();    
-    	this._objectManager = new ZmObjectManager(this._content, this._appCtxt);
-	this._sash = new DwtSash(this, DwtSash.VERTICAL_STYLE, "AppSash-vert", ZmChatWindow.SASH_THRESHHOLD, Dwt.ABSOLUTE_STYLE);
-	this._input = new DwtComposite(this, "ZmChatWindowInput", Dwt.ABSOLUTE_STYLE);
-	this._input.setScrollStyle(DwtControl.CLIP);
-	this._inputFieldId = Dwt.getNextId();
-	ZmChatWindow._idToChatWindow[this._inputFieldId] = this;
-    this._input.getHtmlElement().innerHTML = 	"<textarea wrap='hard' style='width:100%; height:100%;' id='" + this._inputFieldId + "'></textarea>";
-    Dwt.setHandler(Dwt.getDomObj(this._doc, this._inputFieldId), DwtEvent.ONKEYUP, ZmChatWindow._inputOnKeyUp);
-    this._sash.registerCallback(this._sashCallback, this);
-    this._gripper = new DwtComposite(this, "DwtResizeGripper", Dwt.ABSOLUTE_STYLE);
-    DwtDragTracker.init(this._toolbar, DwtDragTracker.STYLE_MOVE, 1, 1, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_DRAG);
-    DwtDragTracker.init(this._gripper, DwtDragTracker.STYLE_RESIZE_SOUTHEAST, 1, 1, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_RESIZE);
 }
 
 ZmChatWindow.prototype.sendInput =
@@ -168,15 +173,12 @@ function() {
 };
 
 ZmChatWindow.prototype._sashCallback =
-function(delta) {
-    if (this._contentH + delta < ZmChatWindow.MIN_CONTENT_HEIGHT || this._inputH - delta < ZmChatWindow.MIN_INPUT_HEIGHT) return 0;
-    
-    this._contentH += delta;
-    this._content.setSize(Dwt.DEFAULT, this._contentH);
-    this._inputY += delta;
-    this._inputH -= delta;
-    this._input.setBounds(Dwt.DEFAULT, this._inputY, Dwt.DEFAULT, this._inputH);
-    return delta;
+function(data) {
+    if (data.state != DwtDragTracker.STATE_DRAGGING) return;
+    var delta = data.incDelta.y;
+    if (this._contentH + delta < ZmChatWindow.MIN_CONTENT_HEIGHT || this._inputH - delta < ZmChatWindow.MIN_INPUT_HEIGHT) return;
+    this._sashY += delta;
+    this._controlListener();
 }
 
 ZmChatWindow.prototype._dragTrackerCallback =
@@ -208,30 +210,49 @@ function(data) {
 
 ZmChatWindow.prototype._controlListener =
 function(ev) {
-    if (ev.newHeight == Dwt.DEFAULT || ev.newWidth == Dwt.DEFAULT) return;
 
-//	this._toolbar.setSize(ev.newWidth, Dwt.DEFAULT);
+    if (ev) {
+        if (ev.newHeight == Dwt.DEFAULT && ev.newWidth == Dwt.DEFAULT) return;
+        if (this._sashY) {
+            if (ev.newHeight != Dwt.DEFAULT && ev.oldHeight != Dwt.DEFAULT && ev.newHeight != ev.oldHeight) {
+                this._sashY += (ev.newHeight - ev.oldHeight);
+            }
+        }
+    }
+   
+    var size = this.getSize();
+
     var tbH = this._toolbar.getH();
-    var sashH = this._sash.getH();
-    var height = ev.newHeight - tbH - sashH;
-    var inpH = Math.min(80, Math.floor(height * 0.25));
-    var ctH = height - inpH;    
+
+    var sashH = ZmChatWindow._SASH_HEIGHT;
+    if (this._sashY == null) {
+        this._sashY = (size.y - ZmChatWindow._DEFAULT_INPUT_HEIGHT - sashH);
+    }
+
+    var inpH = size.y - (this._sashY + sashH);
+    
+    var ctH = size.y - inpH - tbH - sashH;
+    if (ctH < ZmChatWindow.MIN_CONTENT_HEIGHT) {
+        var diff = ZmChatWindow.MIN_CONTENT_HEIGHT - ctH;
+        inpH -= diff;
+        this._sashY += diff;
+        ctH += diff;
+    }
 
     var ctY = tbH;
-    var sashY = ctY + ctH;
-    var inpY = sashY + sashH;
+    var inpY = this._sashY + sashH;
 
     var yFudge = 8;
-    var hFudge = 16;
+    var hFudge = 8;
     var wFudge = 16;    
     var xFudge = 5;
 
     this._contentY = ctY + yFudge;
     this._contentH = ctH - hFudge;
-    	this._content.setBounds(xFudge, this._contentY, ev.newWidth - wFudge, this._contentH);
-    	this._sash.setBounds(0, sashY, ev.newWidth, sashH);
-    	this._inputY = inpY + yFudge;
-    	this._inputH = inpH - hFudge;
-    	this._input.setBounds(xFudge, this._inputY, ev.newWidth - wFudge, this._inputH);
-    this._gripper.setLocation(ev.newWidth-15, ev.newHeight-15);
+    	this._content.setBounds(xFudge, this._contentY, size.x - wFudge, this._contentH);
+    	this._sash.setBounds(0, this._sashY, size.x, sashH);
+    	this._inputY = inpY;
+    	this._inputH = inpH - yFudge - hFudge;
+    	this._input.setBounds(xFudge, this._inputY, size.x - wFudge, this._inputH);
+    this._gripper.setLocation(size.x-15, size.y-15);
 };
