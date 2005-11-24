@@ -55,7 +55,7 @@ function ZmContactListController(appCtxt, container, contactsApp) {
 	this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._changeListener));
 	this._isGalSearch = false;
 	this._parentView = new Object();
-}
+};
 
 ZmContactListController.prototype = new ZmListController;
 ZmContactListController.prototype.constructor = ZmContactListController;
@@ -73,7 +73,7 @@ ZmContactListController.VIEWS = [ZmController.CONTACT_SIMPLE_VIEW, ZmController.
 ZmContactListController.prototype.toString = 
 function() {
 	return "ZmContactListController";
-}
+};
 
 // Public methods
 
@@ -106,7 +106,7 @@ function(search, searchString, bIsGalSearch) {
 	} catch (ex) {
 		this._handleException(ex, this.show, {search:search, searchString:searchString, bIsGalSearch:bIsGalSearch}, false);
 	}
-}
+};
 
 ZmContactListController.prototype.switchView = 
 function(view, force) {
@@ -136,18 +136,8 @@ function(view, force) {
 		if (item)
 			this._listView[view].setSelection(item);
 	}
-}
+};
 
-ZmContactListController.prototype._preShowCallback =
-function(view) {
-	if (this._isNewSearch) {
-		this._isNewSearch = false;
-	} else {
-		this._resetNavToolBarButtons(view);
-	}
-
-	return true;
-}
 
 // Private and protected methods
 
@@ -157,11 +147,11 @@ function() {
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		list.push(ZmOperation.TAG_MENU);
 	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.DELETE, ZmOperation.MOVE);
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
 		list.push(ZmOperation.PRINT_MENU);
-	list.push(ZmOperation.DELETE, ZmOperation.MOVE);
 	return list;
-}
+};
 
 ZmContactListController.prototype._getToolBarOps =
 function() {
@@ -169,7 +159,7 @@ function() {
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.EDIT);
 	return list;
-}
+};
 
 ZmContactListController.prototype._getActionMenuOps =
 function() {
@@ -177,17 +167,17 @@ function() {
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;
-}
+};
 
 ZmContactListController.prototype._getViewType = 
 function() {
 	return this._currentView;
-}
+};
 
 ZmContactListController.prototype._defaultView =
 function() {
 	return (this._appCtxt.get(ZmSetting.CONTACTS_VIEW) == "cards") ? ZmController.CONTACT_CARDS_VIEW : ZmController.CONTACT_SIMPLE_VIEW;
-}
+};
 
 ZmContactListController.prototype._createNewView = 
 function(view) {
@@ -196,17 +186,17 @@ function(view) {
 	listView.setDragSource(this._dragSrc);
 
 	return listView;
-}
+};
 
 ZmContactListController.prototype._getTagMenuMsg = 
 function(num) {
 	return (num == 1) ? ZmMsg.AB_TAG_CONTACT : ZmMsg.AB_TAG_CONTACTS;
-}
+};
 
 ZmContactListController.prototype._getMoveDialogTitle = 
 function(num) {
 	return (num == 1) ? ZmMsg.AB_MOVE_CONTACT : ZmMsg.AB_MOVE_CONTACTS;
-}
+};
 
 ZmContactListController.prototype._initializeToolBar = 
 function(view) {
@@ -219,7 +209,7 @@ function(view) {
 	this._toolbar[view].addFiller();
 	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
 	this._setNavToolBar(tb);
-}
+};
 
 ZmContactListController.prototype._initializeActionMenu = 
 function(view) {
@@ -227,91 +217,13 @@ function(view) {
 
 	ZmListController.prototype._initializeActionMenu.call(this);
 	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT);
-}
+};
 
 // Load contacts into the given view and perform layout.
 ZmContactListController.prototype._setViewContents =
 function(view) {
 	this._listView[view].set(this._list);
-}
-
-// List listeners
-
-// Double click displays a contact.
-ZmContactListController.prototype._listSelectionListener =
-function(ev) {
-	ZmListController.prototype._listSelectionListener.call(this, ev);
-	
-	if (ev.detail == DwtListView.ITEM_SELECTED && 
-		this._currentView == ZmController.CONTACT_SIMPLE_VIEW)
-	{
-		this._resetNavToolBarButtons(this._currentView);
-		this._parentView[this._currentView].setContact(ev.item, this._isGalSearch);
-	} 
-	else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) 
-	{
-		if (!this._isGalSearch)
-			this._app.getContactController().show(ev.item);
-	}
-}
-
-// Get info on selected contact to provide context for action menu.
-ZmContactListController.prototype._listActionListener =
-function(ev) {
-	ZmListController.prototype._listActionListener.call(this, ev);
-	this._actionEv.contact = ev.item;
-	var email = ev.item.getAttr([ZmContact.F_email]) || ev.item.getAttr([ZmContact.F_email2]) || ev.item.getAttr([ZmContact.F_email3]);
-	this._actionEv.address = new ZmEmailAddress(email);
-	// enable/disable New Email menu item per valid email found for this contact
-	var enableNewEmail = email != null && this._listView[this._currentView].getSelectionCount() == 1;
-	this._actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MESSAGE], enableNewEmail);
-	this._setContactText(!this._isGalSearch);
-	this._actionMenu.popup(0, ev.docX, ev.docY);
-}
-
-ZmContactListController.prototype._editListener =
-function(ev) {
-	var contact = this._listView[this._currentView].getSelection()[0];
-	this._app.getContactController().show(contact, false);
-}
-
-ZmContactListController.prototype._changeListener = 
-function(ev) {
-	if (ev.type != ZmEvent.S_SETTING) return;
-	
-	var setting = ev.source;
-	if (setting.id == ZmSetting.CONTACTS_PER_PAGE)
-		this._isNewSearch = true; // mark flag for relayout
-}
-
-// Miscellaneous
-
-ZmContactListController.prototype._paginate =
-function(view, bPageForward) {
-	this._listView[view].paginate(this._list, bPageForward);
-	// XXX: async
-	this._resetNavToolBarButtons(view);
-}
-
-ZmContactListController.prototype._doDelete = 
-function(items, hardDelete, attrs) {
-	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
-	// XXX: async
-	// if more contacts to show, 
-	var size = this._listView[this._currentView].getSelectedItems().size();
-	if (size == 0) {
-		// and if in split view allow split view to clear
-		if (this._currentView == ZmController.CONTACT_SIMPLE_VIEW)
-			this._listView[this._currentView].parent.clear();
-
-		this._resetOperations(this._toolbar[this._currentView], 0);
-	}
-}
-
-ZmContactListController.prototype._checkReplenish = 
-function() {
-	// let's not allow replenishment for contacts since they all get loaded at once
-}
+};
 
 // Create menu for View button and add listeners.
 ZmContactListController.prototype._setupViewMenu =
@@ -331,7 +243,7 @@ function(view) {
 		appToolbar.setViewMenu(view, menu);
 	}
 	return menu;
-}
+};
 
 ZmContactListController.prototype._setupPrintMenu = 
 function(view) {
@@ -342,7 +254,7 @@ function(view) {
 	var mi = menu.createMenuItem(ZmOperation.PRINT_CONTACTLIST, ZmOperation.IMAGE[ZmOperation.PRINT_CONTACTLIST], ZmMsg[ZmOperation.MSG_KEY[ZmOperation.PRINT_CONTACTLIST]]);
 	mi.setData(ZmOperation.MENUITEM_ID, ZmOperation.PRINT_CONTACTLIST);
 	mi.addSelectionListener(this._listeners[ZmOperation.PRINT]);
-}
+};
 
 // Resets the available options on a toolbar or action menu.
 ZmContactListController.prototype._resetOperations = 
@@ -356,7 +268,7 @@ function(parent, num) {
 		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW], true);
 		parent.enable([ZmOperation.CONTACT, ZmOperation.NEW_MESSAGE, ZmOperation.PRINT], num>0);
 	}
-}
+};
 
 ZmContactListController.prototype._resetNavToolBarButtons = 
 function(view) {
@@ -372,7 +284,57 @@ function(view) {
 	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
 
 	this._showListRange(view);
-}
+};
+
+
+// List listeners
+
+// Double click displays a contact.
+ZmContactListController.prototype._listSelectionListener =
+function(ev) {
+	ZmListController.prototype._listSelectionListener.call(this, ev);
+	
+	if (ev.detail == DwtListView.ITEM_SELECTED && 
+		this._currentView == ZmController.CONTACT_SIMPLE_VIEW)
+	{
+		this._resetNavToolBarButtons(this._currentView);
+		this._parentView[this._currentView].setContact(ev.item, this._isGalSearch);
+	} 
+	else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) 
+	{
+		if (!this._isGalSearch)
+			this._app.getContactController().show(ev.item);
+	}
+};
+
+// Get info on selected contact to provide context for action menu.
+ZmContactListController.prototype._listActionListener =
+function(ev) {
+	ZmListController.prototype._listActionListener.call(this, ev);
+	this._actionEv.contact = ev.item;
+	var email = ev.item.getAttr([ZmContact.F_email]) || ev.item.getAttr([ZmContact.F_email2]) || ev.item.getAttr([ZmContact.F_email3]);
+	this._actionEv.address = new ZmEmailAddress(email);
+	// enable/disable New Email menu item per valid email found for this contact
+	var enableNewEmail = email != null && this._listView[this._currentView].getSelectionCount() == 1;
+	this._actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MESSAGE], enableNewEmail);
+	this._setContactText(!this._isGalSearch);
+	this._actionMenu.popup(0, ev.docX, ev.docY);
+};
+
+ZmContactListController.prototype._editListener =
+function(ev) {
+	var contact = this._listView[this._currentView].getSelection()[0];
+	this._app.getContactController().show(contact, false);
+};
+
+ZmContactListController.prototype._changeListener = 
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) return;
+	
+	var setting = ev.source;
+	if (setting.id == ZmSetting.CONTACTS_PER_PAGE)
+		this._isNewSearch = true; // mark flag for relayout
+};
 
 ZmContactListController.prototype._printListener = 
 function(ev) {
@@ -380,7 +342,7 @@ function(ev) {
 		this._printView = new ZmPrintView(this._appCtxt);
 	
 	this._printView.render(this._list);
-}
+};
 
 ZmContactListController.prototype._printContactListener = 
 function(ev) {
@@ -390,4 +352,45 @@ function(ev) {
 	var contact = this._listView[this._currentView].getSelection()[0];
 	if (contact)
 		this._printView.render(contact);
-}
+};
+
+
+// Callbacks
+
+ZmContactListController.prototype._preShowCallback =
+function(view) {
+	if (this._isNewSearch) {
+		this._isNewSearch = false;
+	} else {
+		this._resetNavToolBarButtons(view);
+	}
+
+	return true;
+};
+
+ZmContactListController.prototype._paginate =
+function(view, bPageForward) {
+	this._listView[view].paginate(this._list, bPageForward);
+	// XXX: async
+	this._resetNavToolBarButtons(view);
+};
+
+ZmContactListController.prototype._doDelete = 
+function(items, hardDelete, attrs) {
+	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
+	// XXX: async
+	// if more contacts to show, 
+	var size = this._listView[this._currentView].getSelectedItems().size();
+	if (size == 0) {
+		// and if in split view allow split view to clear
+		if (this._currentView == ZmController.CONTACT_SIMPLE_VIEW)
+			this._listView[this._currentView].parent.clear();
+
+		this._resetOperations(this._toolbar[this._currentView], 0);
+	}
+};
+
+ZmContactListController.prototype._checkReplenish = 
+function() {
+	// let's not allow replenishment for contacts since they all get loaded at once
+};
