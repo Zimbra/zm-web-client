@@ -92,6 +92,9 @@ ZmTreeController.prototype._getRenameDialog = function() {};
 // Method that is run when a tree item is left-clicked
 ZmTreeController.prototype._itemClicked = function() {};
 
+// Method that is run when a tree item is dbl-clicked
+ZmTreeController.prototype._itemDblClicked = function() {};
+
 // Handles a drop event
 ZmTreeController.prototype._dropListener = function() {};
 
@@ -294,7 +297,7 @@ function(organizer) {
 */
 ZmTreeController.prototype._treeViewListener =
 function(ev) {
-	if (ev.detail != DwtTree.ITEM_ACTIONED && ev.detail != DwtTree.ITEM_SELECTED) return;
+	if (ev.detail != DwtTree.ITEM_ACTIONED && ev.detail != DwtTree.ITEM_SELECTED && ev.detail != DwtTree.ITEM_DBL_CLICKED) return;
 	
 	this._actionedTreeItem = ev.item;
 	
@@ -323,6 +326,11 @@ function(ev) {
 		this._opc.itemSelected(overviewId, type);
 		if (this._opc.selectionSupported(overviewId))
 			this._itemClicked(item);
+	} else if ((ev.detail == DwtTree.ITEM_DBL_CLICKED) && item) {
+		// dbl click
+		//this._opc.itemSelected(overviewId, type);
+		//if (this._opc.selectionSupported(overviewId))
+		this._itemDblClicked(item);
 	}
 };
 
