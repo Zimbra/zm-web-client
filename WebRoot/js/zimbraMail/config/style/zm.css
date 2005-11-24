@@ -1153,11 +1153,13 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .ZmChatWindowChatEntryMe {
 	color: black;
 	padding: 1px;
+	padding-left: 2px;
 }
 
 .ZmChatWindowChatEntryThem {
 	color: blue;
-	padding: 1px;	
+	padding: 1px;
+	padding-left: 2px;
 }
 
 .ZmChatWindowInput {

@@ -94,6 +94,10 @@ ZmBuddyTreeController.prototype.getTreeStyle = function() {
 ZmBuddyTreeController.prototype._itemClicked = function() {
 };
 
+ZmBuddyTreeController.prototype._itemDblClicked = function(item) {
+    
+};
+
 // Handles a drop event
 ZmBuddyTreeController.prototype._dropListener = function() {
 };

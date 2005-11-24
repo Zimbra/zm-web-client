@@ -59,6 +59,7 @@ ZmEvent.S_SEARCH		= i++;
 ZmEvent.S_SETTING		= i++;
 ZmEvent.S_ZIMLET		= i++;
 ZmEvent.S_BUDDY        = i++;
+ZmEvent.S_CHAT        = i++;
 
 //Source types for admin
 ZmEvent.S_ACCOUNT		= i++;

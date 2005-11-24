@@ -40,13 +40,13 @@ function ZmChatListController(appCtxt, container, imApp) {
 	this._toolbar = new Object;		// ZmButtonToolbar (one per view)
 	this._listView = new Object;	// ZmListView (one per view)
 	this._list = null;				// ZmList (the data)
-	
+
     	this._listeners = new Object();
 	this._listeners[ZmOperation.VIEW] = new AjxListener(this, this._viewButtonListener);
 	this._listeners[ZmOperation.NEW_MENU] = new AjxListener(this, this._newListener);
 			
 	this._viewFactory = new Object();
-	this._viewFactory[ZmController.IM_CHAT_TAB_VIEW] = ZmChatTabbedView;
+//	this._viewFactory[ZmController.IM_CHAT_TAB_VIEW] = ZmChatTabbedView;
 	this._viewFactory[ZmController.IM_CHAT_MULTI_WINDOW_VIEW] = ZmChatMultiWindowView;
 	
 	this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._changeListener));
@@ -57,14 +57,15 @@ ZmChatListController.prototype = new ZmController;
 ZmChatListController.prototype.constructor = ZmChatListController;
 
 ZmChatListController.ICON = new Object();
-ZmChatListController.ICON[ZmController.IM_CHAT_TAB_VIEW]		= "SinglePane"; // TODO: get real icon
+//ZmChatListController.ICON[ZmController.IM_CHAT_TAB_VIEW]		= "SinglePane"; // TODO: get real icon
 ZmChatListController.ICON[ZmController.IM_CHAT_MULTI_WINDOW_VIEW]	= "OpenInNewWindow"; // TODO: get real icon
 
 ZmChatListController.MSG_KEY = new Object();
-ZmChatListController.MSG_KEY[ZmController.IM_CHAT_TAB_VIEW]	= "imChatTabbed";
+//ZmChatListController.MSG_KEY[ZmController.IM_CHAT_TAB_VIEW]	= "imChatTabbed";
 ZmChatListController.MSG_KEY[ZmController.IM_CHAT_MULTI_WINDOW_VIEW]= "imChatMultiWindow";
 
-ZmChatListController.VIEWS = [ZmController.IM_CHAT_TAB_VIEW, ZmController.IM_CHAT_MULTI_WINDOW_VIEW];
+//ZmChatListController.VIEWS = [ZmController.IM_CHAT_TAB_VIEW, ZmController.IM_CHAT_MULTI_WINDOW_VIEW];
+ZmChatListController.VIEWS = [ZmController.IM_CHAT_MULTI_WINDOW_VIEW];
 
 ZmChatListController.prototype.toString = 
 function() {

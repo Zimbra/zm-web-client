@@ -70,7 +70,8 @@ ZmItem.ATT		= ZmEvent.S_ATT;
 ZmItem.CONTACT	= ZmEvent.S_CONTACT;
 ZmItem.APPT		= ZmEvent.S_APPT;
 ZmItem.NOTE		= ZmEvent.S_NOTE;
-ZmItem.MAX		= ZmItem.NOTE;
+ZmItem.CHAT		= ZmEvent.S_CHAT;
+ZmItem.MAX		= ZmItem.CHAT;
 
 // Type names
 ZmItem.MSG_KEY = new Object();
@@ -81,6 +82,7 @@ ZmItem.MSG_KEY[ZmItem.ATT]		= "attachment";
 ZmItem.MSG_KEY[ZmItem.CONTACT]	= "contact";
 ZmItem.MSG_KEY[ZmItem.APPT]		= "appointment";
 ZmItem.MSG_KEY[ZmItem.NOTE]		= "note";
+ZmItem.MSG_KEY[ZmItem.CHAT]		= "chat";
 
 // Representative icons
 ZmItem.ICON = new Object();
@@ -90,6 +92,7 @@ ZmItem.ICON[ZmItem.ATT]		= "Attachment";
 ZmItem.ICON[ZmItem.CONTACT]	= "Contact";
 ZmItem.ICON[ZmItem.APPT]	= "Appointment";
 ZmItem.ICON[ZmItem.NOTE]	= "Note";
+ZmItem.ICON[ZmItem.CHAT]	= "ImStartChat";
 
 // fields that can be part of a displayed item
 var i = 1;

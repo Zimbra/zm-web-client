@@ -85,12 +85,26 @@ function() {
     DwtDragTracker.init(this._sash, DwtDragTracker.STYLE_RESIZE_NORTH, 1, 1, this._sashCallback, this, ZmChatWindow._TRACKER_SASH);
     DwtDragTracker.init(this._toolbar, DwtDragTracker.STYLE_MOVE, 1, 1, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_DRAG);
     DwtDragTracker.init(this._gripper, DwtDragTracker.STYLE_RESIZE_SOUTHEAST, 1, 1, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_RESIZE);
+    
+    this.setHandler(DwtEvent.ONCLICK, ZmChatWindow._onClickHdlr);
+    Dwt.associateElementWithObject(this.getHtmlElement(), this);
+    this.getHtmlElement().__zmchatwindow = 1;
 }
 
 ZmChatWindow.prototype.dispose =
 function() {
     DwtControl.prototype.dispose.call(this);
+    Dwt.disassociateElementFromObject(this.getHtmlElement(), this);
     if (ZmChatWindow._selected == this) ZmChatWindow._selected = null;
+}
+
+ZmChatWindow._onClickHdlr =
+function(ev) {
+    var cw = DwtUiEvent.getDwtObjWithProp(ev, "__zmchatwindow");
+    if (cw) {
+        cw.raise();
+        cw.select();
+    }
 }
 
 ZmChatWindow.prototype.select =
