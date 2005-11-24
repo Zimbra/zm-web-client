@@ -1147,7 +1147,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .ZmChatWindowChat {
 	overflow: hidden;
 	background-color: white;
-	border: 1px inset #999999;
+	border: 1px solid #999999;
 }
 
 .ZmChatWindowChatEntryMe {
@@ -1162,18 +1162,21 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .ZmChatWindowInput {
 	background-color: white;
-	border: 1px solid #999999;
+	bordor: none;
+/*	border: 1px solid #999999;*/
 }
 
 .ZmChatWindowInput textarea {
-	border-style: hidden;
+/*	border-style: hidden;*/
+	border:1px inset gray;
 	padding-left: 2px;
 }
 
 .ZmChatWindow {
 	background-color:#CCCCCC;
-	border-color: #E0E0E0 #555555 #555555 #E0E0E0;	
-	border: 1px solid;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #B2B2B2 #000000 #000000 #B2B2B2;
 }
 
 .ZmChatWindow .DwtToolBar {
@@ -1189,8 +1192,10 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .ZmChatWindow-selected {
 	background-color:#CCCCCC;
-	border-color: #E0E0E0 #555555 #555555 #E0E0E0;	
-	border: 1px solid;
+	border-left:2px solid #339999;
+	border-top:2px solid #339999;
+	border-right:2px solid #003030;
+	border-bottom:2px solid #003030;
 }
 
 .ZmChatWindow-selected .DwtToolBar {
@@ -1204,8 +1209,8 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	border: 1px solid #CCCCCC;
 }
 
-.ZmChatWindowLabel {
-	Xfilter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+.ZmChatWindowLabel TD {
+	font-weight: bold;
 }
 
 .ZmAppChooser {

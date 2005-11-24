@@ -259,7 +259,7 @@ function(ev) {
     this._inputY = inpY;
     this._inputH = inpH - yFudge - hFudge;
     this._input.setBounds(xFudge, this._inputY, size.x - wFudge, this._inputH);
-    this._gripper.setLocation(size.x-15, size.y-15);
+    this._gripper.setLocation(size.x-20, size.y-20);
     this._minSashY = this._contentY + ZmChatWindow.MIN_CONTENT_HEIGHT;
     this._maxSashY = size.y - ZmChatWindow.MIN_INPUT_HEIGHT;
 };
