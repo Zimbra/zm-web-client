@@ -382,3 +382,8 @@ function(buddy) {
     // select chat window in current view or all?    
     this._parentView[this._currentView].selectChat(chat);
 };
+
+ZmChatListController.prototype.endChat =
+function(chat) {
+    this._list.removeChat(chat);
+};

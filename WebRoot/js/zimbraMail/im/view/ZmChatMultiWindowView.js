@@ -31,6 +31,7 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	this.setScrollStyle(DwtControl.CLIP);
 	this._chatWindows = {};
 	this._chatIdToChatWindow = {};
+	this._windowCloseButtonListener = new AjxListener(this, this._windowCloseListener);
 };
 
 ZmChatMultiWindowView.prototype = new ZmChatBaseView;
@@ -42,6 +43,9 @@ function() {
     //this.getHtmlElement().innerHTML = "<div id='"+this._contentId+"'></div>";
 };
 
+/**
+* change listener for the chat list
+*/
 ZmChatMultiWindowView.prototype._changeListener =
 function(ev) {
     if (ev.event == ZmEvent.E_CREATE) {
@@ -50,6 +54,13 @@ function(ev) {
         	cw.setBounds(50, 50, 400,300);
         this._addChatWindow(cw, chat);
         cw.select();
+    } else if (ev.event == ZmEvent.E_DELETE) {
+        var chat = ev._details.items[0];    
+        var cw = this._getChatWindowForChat(chat);
+        if (cw) {
+            this._removeChatWindow(cw);
+            cw.dispose();
+        }
     }
 };
 
@@ -64,14 +75,28 @@ function(chat) {
     return this._chatIdToChatWindow[chat.id];
 };
 
+ZmChatMultiWindowView.KEY_CHAT = "zcmwv_chat";
+
 ZmChatMultiWindowView.prototype._addChatWindow =
 function(chatWindow, chat) {
     	this._chatWindows[chatWindow.id] = chatWindow;
     	this._chatIdToChatWindow[chat.id] = chatWindow;
+    	var cb = chatWindow.getCloseButton();
+    	cb.setData(ZmChatMultiWindowView.KEY_CHAT, chat);
+    cb.addSelectionListener(this._windowCloseButtonListener);
 };
 
 ZmChatMultiWindowView.prototype._removeChatWindow =
 function(chatWindow) {
+    	var cb = chatWindow.getCloseButton();
+    cb.removeSelectionListener(this._windowCloseButtonListener);
     delete this._chatIdToChatWindow[chatWindow.chat.id];    
     delete this._chatWindows[chatWindow.id];
+};
+
+ZmChatMultiWindowView.prototype._windowCloseListener =
+function(ev) {
+    var b = ev.item;
+    var chat = b.getData(ZmChatMultiWindowView.KEY_CHAT);
+    this._controller.endChat(chat);
 };

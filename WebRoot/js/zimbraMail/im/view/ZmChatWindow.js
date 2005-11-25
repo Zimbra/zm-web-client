@@ -62,26 +62,28 @@ ZmChatWindow._selected = null;
 
 ZmChatWindow.prototype._init =
 function() {
-	this._toolbar = new DwtToolBar(this);
+	var c = this._container = new DwtComposite(this, "ZmChatWindowContainer");
+	c.setScrollStyle(Dwt.SCROLL);
+	this._toolbar = new DwtToolBar(c);
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
 	this._toolbar.addFiller();
 	this._close = new DwtButton(this._toolbar, DwtLabel.IMAGE_LEFT, "TBButton");
 	this._close.setImage("Close");
 	this._close.setToolTipContent(ZmMsg.close);
-	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
+	this._content = new DwtComposite(c, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
 	this._content.setScrollStyle(DwtControl.SCROLL);
 	this._content.getHtmlElement().innerHTML = "<div/>";
 	this._content._setMouseEventHdlrs();    
     	this._objectManager = new ZmObjectManager(this._content, this._appCtxt);
-	this._sash = new DwtComposite(this, null, Dwt.ABSOLUTE_STYLE);
-	this._input = new DwtComposite(this, "ZmChatWindowInput", Dwt.ABSOLUTE_STYLE);
+	this._sash = new DwtComposite(c, null, Dwt.ABSOLUTE_STYLE);
+	this._input = new DwtComposite(c, "ZmChatWindowInput", Dwt.ABSOLUTE_STYLE);
 	this._input.setScrollStyle(DwtControl.CLIP);
 	this._inputFieldId = Dwt.getNextId();
 	ZmChatWindow._idToChatWindow[this._inputFieldId] = this;
     this._input.getHtmlElement().innerHTML = 	"<textarea wrap='hard' style='width:100%; height:100%;' id='" + this._inputFieldId + "'></textarea>";
     Dwt.setHandler(Dwt.getDomObj(this._doc, this._inputFieldId), DwtEvent.ONKEYUP, ZmChatWindow._inputOnKeyUp);
 
-    this._gripper = new DwtComposite(this, "DwtResizeGripper", Dwt.ABSOLUTE_STYLE);
+    this._gripper = new DwtComposite(c, "DwtResizeGripper", Dwt.ABSOLUTE_STYLE);
     DwtDragTracker.init(this._sash, DwtDragTracker.STYLE_RESIZE_NORTH, 1, 1, this._sashCallback, this, ZmChatWindow._TRACKER_SASH);
     DwtDragTracker.init(this._toolbar, DwtDragTracker.STYLE_MOVE, 5, 5, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_DRAG);
     DwtDragTracker.init(this._gripper, DwtDragTracker.STYLE_RESIZE_SOUTHEAST, 5, 5, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_RESIZE);

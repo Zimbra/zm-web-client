@@ -43,6 +43,12 @@ function(chat) {
 	this._eventNotify(ZmEvent.E_CREATE, [chat]);
 };
 
+ZmChatList.prototype.removeChat =
+function(chat) {
+	this.remove(chat); // , this._sortIndex(item));
+	this._eventNotify(ZmEvent.E_DELETE, [chat]);
+};
+
 ZmChatList.prototype.getChatByBuddy =
 function(buddy) {
     return this.getById(ZmChat.idFromBuddy(buddy));

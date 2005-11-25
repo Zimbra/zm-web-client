@@ -1130,7 +1130,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   font-weight:bold;
 }
 
-
 .ZmContactCardsView, .ZmCalViewMgr {
 	background-color: #EEEEEE;
 	height: 100%;
@@ -1144,34 +1143,10 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	width: 100%;
 }
 
-.ZmChatWindowChat {
-	overflow: hidden;
-	background-color: white;
-	border: 1px solid #999999;
-}
-
-.ZmChatWindowChatEntryMe {
-	color: black;
-	padding: 1px;
-	padding-left: 2px;
-}
-
-.ZmChatWindowChatEntryThem {
-	color: blue;
-	padding: 1px;
-	padding-left: 2px;
-}
-
-.ZmChatWindowInput {
-	background-color: white;
-	bordor: none;
-/*	border: 1px solid #999999;*/
-}
-
-.ZmChatWindowInput textarea {
-/*	border-style: hidden;*/
-	border:1px inset gray;
-	padding-left: 2px;
+.ZmChatWindowContainer {
+	width: 100%;
+	height: 100%;
+	overflow: auto;
 }
 
 .ZmChatWindow {
@@ -1213,6 +1188,36 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .ZmChatWindowLabel TD {
 	font-weight: bold;
+}
+
+.ZmChatWindowChat {
+	overflow: hidden;
+	background-color: white;
+	border: 1px solid #999999;
+}
+
+.ZmChatWindowChatEntryMe {
+	color: black;
+	padding: 1px;
+	padding-left: 2px;
+}
+
+.ZmChatWindowChatEntryThem {
+	color: blue;
+	padding: 1px;
+	padding-left: 2px;
+}
+
+.ZmChatWindowInput {
+	background-color: white;
+	bordor: none;
+/*	border: 1px solid #999999;*/
+}
+
+.ZmChatWindowInput textarea {
+/*	border-style: hidden;*/
+	border:1px inset gray;
+	padding-left: 2px;
 }
 
 .ZmAppChooser {
