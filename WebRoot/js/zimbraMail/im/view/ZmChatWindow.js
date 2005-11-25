@@ -110,6 +110,8 @@ function() {
    ZmChatWindow._selected = this;
    this.getHtmlElement().className = "ZmChatWindow-selected";
    this.raise();
+   var field = Dwt.getDomObj(this.getDocument(), this._inputFieldId);
+   if (field) field.focus();
 };
 
 ZmChatWindow.prototype.raise =
