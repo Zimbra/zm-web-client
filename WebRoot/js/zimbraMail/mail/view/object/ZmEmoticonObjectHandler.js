@@ -85,8 +85,7 @@ function(smiley) {
 ZmEmoticonObjectHandler.prototype._getHtmlContent =
 function(html, idx, smiley) {
 	var sd = this._getEmoticon(smiley);
-//	html[idx++] = AjxImg.tag(sd.image, {alt: sd.smiley});
-	html[idx++] = AjxImg.getImageHtml(sd.image, null, {alt: sd.smiley});
+	html[idx++] = AjxImg.getImageHtml(sd.image);
 	return idx;
 };
 	
