@@ -39,6 +39,11 @@ function() {
 	return "ZmObjectHandler: type(" + this._typeName + ") class(" + this._className + ")";
 }
 
+ZmObjectHandler.prototype.getTypeName =
+function() {
+	return this._typeName;
+}
+
 // OVERRIDE if need be
 ZmObjectHandler.prototype.getClassName =
 function(obj, context) {

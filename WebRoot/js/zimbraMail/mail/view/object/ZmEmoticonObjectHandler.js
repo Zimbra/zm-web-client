@@ -26,7 +26,7 @@
 // This class is currently not being used and has been removed from the build
 function ZmEmoticonObjectHandler(appCtxt) {
 
-	ZmObjectHandler.call(this, appCtxt, ZmURLObjectHandler.TYPE);
+	ZmObjectHandler.call(this, appCtxt, ZmEmoticonObjectHandler.TYPE);
 
 	this._emoticons = [
 	   { smiley: ">:)", image: "DevilEmoticon", tooltip: ZmMsg.devil },
@@ -53,17 +53,20 @@ function ZmEmoticonObjectHandler(appCtxt) {
 			regex[idx++] = emot.smiley.replace(ZmEmoticonObjectHandler.RE_ESCAPE_RE, "\\$1");
 		regex[idx++] =")";		
 	}
-	this._EMOTICONS_RE = new RegExp(regex.join(""));
+	this._EMOTICONS_RE = new RegExp(regex.join(""), "g");
 };
 
 ZmEmoticonObjectHandler.prototype = new ZmObjectHandler;
 ZmEmoticonObjectHandler.prototype.constructor = ZmEmoticonObjectHandler;
 
+ZmEmoticonObjectHandler.TYPE = "emoticon";
+
 ZmEmoticonObjectHandler.RE_ESCAPE_RE = /([\(\)\-\$])/g;
 
 ZmEmoticonObjectHandler.prototype.match =
-function(line) {
-	return line.match(this._EMOTICONS_RE);
+function(line, startIndex) {
+    this._EMOTICONS_RE.lastIndex = startIndex;
+    return this._EMOTICONS_RE.exec(line);
 };
 
 ZmEmoticonObjectHandler.prototype._getEmoticon =
@@ -82,7 +85,8 @@ function(smiley) {
 ZmEmoticonObjectHandler.prototype._getHtmlContent =
 function(html, idx, smiley) {
 	var sd = this._getEmoticon(smiley);
-	html[idx++] = AjxImg.tag(sd.image, {alt: sd.smiley});
+//	html[idx++] = AjxImg.tag(sd.image, {alt: sd.smiley});
+	html[idx++] = AjxImg.getImageHtml(sd.image, null, {alt: sd.smiley});
 	return idx;
 };
 	

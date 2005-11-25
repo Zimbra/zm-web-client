@@ -84,6 +84,11 @@ function(obj) {
 	}
 };
 
+ZmObjectManager.prototype.addHandler =
+function(h, type) {
+    this._objectHandlers[type ? type : h.getTypeName()] = [h];
+};
+
 ZmObjectManager.prototype._createHandlers =
 function() {
 	var c = ZmObjectManager._autohandlers, i, obj,

@@ -75,6 +75,7 @@ function() {
 	this._content.getHtmlElement().innerHTML = "<div/>";
 	this._content._setMouseEventHdlrs();    
     	this._objectManager = new ZmObjectManager(this._content, this._appCtxt);
+    	this._objectManager.addHandler(new ZmEmoticonObjectHandler(this._appCtxt));
 	this._sash = new DwtComposite(c, null, Dwt.ABSOLUTE_STYLE);
 	this._input = new DwtComposite(c, "ZmChatWindowInput", Dwt.ABSOLUTE_STYLE);
 	this._input.setScrollStyle(DwtControl.CLIP);
