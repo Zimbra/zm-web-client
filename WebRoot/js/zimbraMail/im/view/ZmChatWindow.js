@@ -245,6 +245,8 @@ function(ev) {
     this._container.setSize(size.x+100, size.y, 100);
 
     var tbH = this._toolbar.getH();
+    
+    this._toolbar.setSize(size.x - 2, Dwt.DEFAULT);
 
     var sashH = ZmChatWindow._SASH_HEIGHT;
     if (this._sashY == null) {
@@ -271,6 +273,9 @@ function(ev) {
 
     this._contentY = ctY + yFudge;
     this._contentH = ctH - hFudge;
+
+
+        
     this._content.setBounds(xFudge, this._contentY, size.x - wFudge, this._contentH);
     this._sash.setBounds(0, this._sashY, size.x, sashH);
     this._inputY = inpY;
