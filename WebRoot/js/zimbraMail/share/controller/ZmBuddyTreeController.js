@@ -28,6 +28,7 @@ function ZmBuddyTreeController(appCtxt, type, dropTgt) {
 	type = type ? type : ZmOrganizer.BUDDY;
 //	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(ZmAppt, ZmConv, ZmMailMsg, ZmContact);
 	ZmTreeController.call(this, appCtxt, type, null);
+    this._imApp = appCtxt.getApp(ZmZimbraMail.IM_APP);
 	this._eventMgrs = {};
 }
 
@@ -91,11 +92,14 @@ ZmBuddyTreeController.prototype.getTreeStyle = function() {
 };
 
 // Method that is run when a tree item is left-clicked
-ZmBuddyTreeController.prototype._itemClicked = function() {
+ZmBuddyTreeController.prototype._itemClicked = function(buddy) {
+    var clc = this._imApp.getChatListController();
+    clc.selectChatForBuddy(buddy);
 };
 
-ZmBuddyTreeController.prototype._itemDblClicked = function(item) {
-    
+ZmBuddyTreeController.prototype._itemDblClicked = function(buddy) {
+    var clc = this._imApp.getChatListController();
+    clc.chatWithBuddy(buddy);
 };
 
 // Handles a drop event

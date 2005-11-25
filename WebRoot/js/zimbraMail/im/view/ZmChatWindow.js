@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmChatWindow(parent) {
+function ZmChatWindow(parent, chat) {
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, parent, "ZmChatWindow", DwtControl.ABSOLUTE_STYLE);
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
@@ -32,7 +32,7 @@ function ZmChatWindow(parent) {
     	this.addControlListener(new AjxListener(this, this._controlListener));
     this._init();
     this.setZIndex(ZmChatWindow._nextZ++);
-
+    this._setChat(chat);
 };
 
 ZmChatWindow.SASH_THRESHHOLD = 1;
@@ -96,46 +96,44 @@ function() {
     DwtControl.prototype.dispose.call(this);
     Dwt.disassociateElementFromObject(this.getHtmlElement(), this);
     if (ZmChatWindow._selected == this) ZmChatWindow._selected = null;
-}
+};
 
 ZmChatWindow._onClickHdlr =
 function(ev) {
     var cw = DwtUiEvent.getDwtObjWithProp(ev, "__zmchatwindow");
-    if (cw) {
-        cw.raise();
-        cw.select();
-    }
-}
+    if (cw) cw.select();
+};
 
 ZmChatWindow.prototype.select =
 function() {
    if (ZmChatWindow._selected && ZmChatWindow._selected != this) ZmChatWindow._selected.getHtmlElement().className = "ZmChatWindow";
    ZmChatWindow._selected = this;
    this.getHtmlElement().className = "ZmChatWindow-selected";
-}
+   this.raise();
+};
 
 ZmChatWindow.prototype.raise =
 function() {
     if (this.getZIndex() != ZmChatWindow._nextZ-1) {
-        if (!this._origZ)
-            this._origZ = this.getZIndex();
+        if (!this._origZ) this._origZ = this.getZIndex();
         this.setZIndex(ZmChatWindow._nextZ++);
     }
-}
+};
 
 ZmChatWindow.prototype.lower =
 function() {
     if (this._origZ) {
         this.setZIndex(this._origZ);
     }
-}
+};
 
-ZmChatWindow.prototype.setBuddy =
-function(buddy) {
-    this.buddy = buddy;
+ZmChatWindow.prototype._setChat =
+function(chat) {
+    this.chat = chat;
+    var buddy = chat.getBuddy();
     this.setTitle(buddy.getName());
     this.setImage(buddy.getIcon());    
-}
+};
 
 ZmChatWindow.prototype.sendInput =
 function(text) {
@@ -148,7 +146,7 @@ function(text) {
     
     div = this._doc.createElement("div");
     // div.className = "ZmChatWindowChatEntryThem";
-    div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+AjxStringUtil.htmlEncode(this.buddy.getName())+": </b></span>" + AjxStringUtil.htmlEncode("whatever", true);
+    div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+AjxStringUtil.htmlEncode(this.chat.getBuddy().getName())+": </b></span>" + AjxStringUtil.htmlEncode("whatever", true);
     content.appendChild(div);
     content.parentNode.scrollTop = Dwt.getSize(content).y;
 }

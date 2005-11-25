@@ -35,6 +35,7 @@ function ZmChatBaseView(parent, className, posStyle, controller, view) {
 	this.view = view;	
 	this._evtMgr = new AjxEventMgr();	 
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
+	this._listChangeListener = new AjxListener(this, this._changeListener);	
 	this._createHtml();
 }
 
@@ -54,6 +55,9 @@ function() {
 ZmChatBaseView.prototype.set = 
 function(list) {
 	this._list = list;
+	if (list instanceof ZmList) {
+		list.addChangeListener(this._listChangeListener);
+	}
 }
 
 ZmChatBaseView.prototype.associateItemWithElement =
@@ -72,3 +76,10 @@ function() {
 ZmChatBaseView.prototype._createHtml =
 function() {}
 
+// override
+ZmChatBaseView.prototype._changeListener =
+function(ev) {}
+
+// override
+ZmChatBaseView.prototype.selectChat =
+function(chat) {}

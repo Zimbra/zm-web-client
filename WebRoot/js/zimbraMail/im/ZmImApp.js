@@ -57,3 +57,10 @@ function() {
 		this._chatListController = new ZmChatListController(this._appCtxt, this._container, this);
 	return this._chatListController;
 };
+
+ZmImApp.prototype.getChatList =
+function() {
+	if (!this._chatList)
+		this._chatList = new ZmChatList(this._appCtxt);
+	return this._chatList;
+};

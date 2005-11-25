@@ -25,24 +25,13 @@
 
 function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	if (arguments.length == 0) return;
-
 	className = className ? className : "ZmChatMultiWindowView";
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
-	
 	ZmChatBaseView.call(this, parent, className, posStyle, controller, ZmController.IM_CHAT_TAB_VIEW);
-	
-	this.setScrollStyle(DwtControl.CLIP);	
-
-	var bt = this._appCtxt.getTree(ZmOrganizer.BUDDY);
-	var cw = new ZmChatWindow(this);
-	cw.setBuddy(bt.getByName("Ross"));
-	cw.setBounds(50, 50, 400,300);
-//	cw.setZIndex(1);
-	cw = new ZmChatWindow(this);
-	cw.setBuddy(bt.getByName("Satish"));
-	cw.setBounds(200,200, 400,400);	
-//	cw.setZIndex(2);	
-}
+	this.setScrollStyle(DwtControl.CLIP);
+	this._chatWindows = {};
+	this._chatIdToChatWindow = {};
+};
 
 ZmChatMultiWindowView.prototype = new ZmChatBaseView;
 ZmChatMultiWindowView.prototype.constructor = ZmChatMultiWindowView;
@@ -51,4 +40,38 @@ ZmChatMultiWindowView.prototype._createHtml =
 function() {
    // this._content = new DwtComposite(this, "ZmChatMultiWindow", Dwt.RELATIVE_STYLE);
     //this.getHtmlElement().innerHTML = "<div id='"+this._contentId+"'></div>";
-}
+};
+
+ZmChatMultiWindowView.prototype._changeListener =
+function(ev) {
+    if (ev.event == ZmEvent.E_CREATE) {
+        var chat = ev._details.items[0];
+        	var cw = new ZmChatWindow(this, chat);
+        	cw.setBounds(50, 50, 400,300);
+        this._addChatWindow(cw, chat);
+        cw.select();
+    }
+};
+
+ZmChatMultiWindowView.prototype.selectChat =
+function(chat) {
+    var cw = this._getChatWindowForChat(chat);
+    if (cw) cw.select();
+};
+
+ZmChatMultiWindowView.prototype._getChatWindowForChat =
+function(chat) {
+    return this._chatIdToChatWindow[chat.id];
+};
+
+ZmChatMultiWindowView.prototype._addChatWindow =
+function(chatWindow, chat) {
+    	this._chatWindows[chatWindow.id] = chatWindow;
+    	this._chatIdToChatWindow[chat.id] = chatWindow;
+};
+
+ZmChatMultiWindowView.prototype._removeChatWindow =
+function(chatWindow) {
+    delete this._chatIdToChatWindow[chatWindow.chat.id];    
+    delete this._chatWindows[chatWindow.id];
+};

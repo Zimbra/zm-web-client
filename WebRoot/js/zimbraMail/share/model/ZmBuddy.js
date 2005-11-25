@@ -68,6 +68,8 @@ function(name) {
 };
 
 // Public methods
+ZmBuddy.prototype.getId = function() { return this.id; }
+
 ZmBuddy.prototype.getName = 
 function() {
 	if (this.id == ZmBuddy.ID_BUDDY) {

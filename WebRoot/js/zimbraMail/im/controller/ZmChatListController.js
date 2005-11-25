@@ -39,7 +39,7 @@ function ZmChatListController(appCtxt, container, imApp) {
 
 	this._toolbar = new Object;		// ZmButtonToolbar (one per view)
 	this._listView = new Object;	// ZmListView (one per view)
-	this._list = null;				// ZmList (the data)
+	this._list = imApp.getChatList();		// ZmChatList (the data)
 
     	this._listeners = new Object();
 	this._listeners[ZmOperation.VIEW] = new AjxListener(this, this._viewButtonListener);
@@ -49,7 +49,7 @@ function ZmChatListController(appCtxt, container, imApp) {
 //	this._viewFactory[ZmController.IM_CHAT_TAB_VIEW] = ZmChatTabbedView;
 	this._viewFactory[ZmController.IM_CHAT_MULTI_WINDOW_VIEW] = ZmChatMultiWindowView;
 	
-	this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._changeListener));
+//	this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._changeListener));
 	this._parentView = new Object();
 }
 
@@ -213,10 +213,10 @@ function(view) {
 	this._listView[view].set(this._list);
 }
 
-
 ZmChatListController.prototype._createNewView = 
 function(view) {
 	var view = this._parentView[view] = new this._viewFactory[view](this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
+	view.set(this._list);
 	//view.setDragSource(this._dragSrc);
 	return view;
 }
@@ -349,7 +349,7 @@ function(parent, op, listener) {
 		for (var i = 0; i < cnt; i++)
 			items[i].addSelectionListener(listener);
 	}
-}
+};
 
 // Set up the New button based on the current app.
 ZmChatListController.prototype._setNewButtonProps =
@@ -361,4 +361,24 @@ function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
 		newButton.setDisabledImage(disabledIconId);
 		this._defaultNewId = defaultId;
 	}
-}
+};
+
+ZmChatListController.prototype.selectChatForBuddy =
+function(buddy) {
+    var chat = this._list.getChatByBuddy(buddy);
+    if (chat != null) {
+        this._parentView[this._currentView].selectChat(chat);
+    }
+};
+
+ZmChatListController.prototype.chatWithBuddy =
+function(buddy) {
+    var chat = this._list.getChatByBuddy(buddy);
+    if (chat == null) {
+        chat = new ZmChat(buddy, this._appCtxt);
+        // listeners take care of rest...
+        this._list.addChat(chat);
+    }
+    // select chat window in current view or all?    
+    this._parentView[this._currentView].selectChat(chat);
+};

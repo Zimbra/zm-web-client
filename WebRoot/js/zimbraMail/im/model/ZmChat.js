@@ -26,15 +26,15 @@
 /**
 *
 */
-function ZmChat(appCtxt, id, list) {
-	if (id == null) id = "ZmChat"+ZmChat._nextId++;
+function ZmChat(buddy, appCtxt, id, list) {
+	if (id == null) id = buddy.getId() + "_chat";
 	var chatList = appCtxt.getApp(ZmZimbraMail.IM_APP).getChatList();
 	list = list ? list : chatList;
 	ZmItem.call(this, appCtxt, ZmItem.CHAT, id, list);
 	this._evt = new ZmEvent(ZmEvent.S_CHAT);
+	this._chatEntries = [];
+	this.buddy = buddy;
 }
-
-ZmChat._nextId = "1";
 
 ZmChat.prototype = new ZmItem;
 ZmChat.prototype.constructor = ZmChat;
@@ -44,4 +44,13 @@ function() {
 	return "ZmChat: id = " + this.id;
 }
 
+ZmChat.idFromBuddy =
+function(buddy) {
+    return buddy.id + "_chat";
+}
+
 // Public methods
+ZmChat.prototype.getBuddy =
+function() {
+    return this.buddy;
+}

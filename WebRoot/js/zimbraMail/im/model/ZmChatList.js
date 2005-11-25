@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 function ZmChatList(appCtxt) {
-	
 	ZmList.call(this, ZmItem.CHAT, appCtxt);
-}
+};
 
 ZmChatList.prototype = new ZmList;
 ZmChatList.prototype.constructor = ZmChatList;
@@ -33,4 +32,18 @@ ZmChatList.prototype.constructor = ZmChatList;
 ZmChatList.prototype.toString = 
 function() {
 	return "ZmChatList";
-}
+};
+
+// ZmList.prototype.add(chat);
+// ZmList.prototype.remove(chat);
+
+ZmChatList.prototype.addChat =
+function(chat) {
+	this.add(chat); // , this._sortIndex(item));
+	this._eventNotify(ZmEvent.E_CREATE, [chat]);
+};
+
+ZmChatList.prototype.getChatByBuddy =
+function(buddy) {
+    return this.getById(ZmChat.idFromBuddy(buddy));
+};
