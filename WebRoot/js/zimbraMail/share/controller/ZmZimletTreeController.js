@@ -66,9 +66,11 @@ function(overviewId, showUnread, omit, forceCreate) {
 	if (firstTime) {
 		var treeView = this.getTreeView(overviewId);
 		var root = treeView.getItems()[0];
-		var items = root.getItems();
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
+		if (root) {
+			var items = root.getItems();
+			for (var i = 0; i < items.length; i++) {
+				var item = items[i];
+			}
 		}
 	}
 };

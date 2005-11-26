@@ -62,8 +62,10 @@ function ZmTreeController(appCtxt, type, dropTgt) {
 
 	// change listening
 	this._dataTree = appCtxt.getTree(type);
-	this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
-	this._dataTree.addChangeListener(this._dataChangeListener);
+	if (this._dataTree) {
+		this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
+		this._dataTree.addChangeListener(this._dataChangeListener);
+	}
 	
 	// hash of tree views of this type, by overview ID
 	this._treeView = new Object();
@@ -120,7 +122,8 @@ ZmTreeController.prototype.show =
 function(overviewId, showUnread, omit, forceCreate) {
 	if (!this._treeView[overviewId] || forceCreate)
 		this._setup(overviewId, forceCreate);
-	this._treeView[overviewId].set(this._dataTree, showUnread, omit);
+	if (this._dataTree)
+		this._treeView[overviewId].set(this._dataTree, showUnread, omit);
 	this._treeView[overviewId].setVisible(true);
 };
 
