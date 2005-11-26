@@ -67,7 +67,7 @@ function(ev, treeView) {
             var fields = ev.getDetail("fields");
             var status = fields[ZmBuddy.F_STATUS];
             if (status != null) {
-                this._appCtxt.setStatusMsg(buddy.getName()+" "+buddy.getStatusText());
+                this._appCtxt.setStatusMsg(buddy.getName()+" ("+buddy.getStatusText()+")");
                 var ti = treeView.getTreeItemById(buddy.id);
                 if (ti) ti.setImage(buddy.getIcon());
             }

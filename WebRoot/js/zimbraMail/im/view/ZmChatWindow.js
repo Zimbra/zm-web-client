@@ -62,8 +62,9 @@ ZmChatWindow._selected = null;
 
 ZmChatWindow.prototype._init =
 function() {
-	var c = this._container = new DwtComposite(this, "ZmChatWindowContainer");
-	c.setScrollStyle(Dwt.SCROLL);
+//	var c = this._container = new DwtComposite(this, "ZmChatWindowContainer");
+//	c.setScrollStyle(Dwt.SCROLL);
+    var c = this;
 	this._toolbar = new DwtToolBar(c);
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
 	this._toolbar.addFiller();
@@ -150,6 +151,8 @@ ZmChatWindow.prototype.sendInput =
 function(text) {
     if (text.substring(0, 2) == "$a") {
         this.chat.getBuddy().setStatus(ZmBuddy.STATUS_AVAILABLE);
+    } else if (text.substring(0, 2) == "$u") {
+        this.chat.getBuddy().setStatus(ZmBuddy.STATUS_UNAVAILABLE);
     } else if (text.substring(0, 2) == "$o") {
         this.chat.getBuddy().setStatus(ZmBuddy.STATUS_OFFLINE);
     }
@@ -255,7 +258,7 @@ function(ev) {
     }
    
     var size = this.getSize();
-    this._container.setSize(size.x+100, size.y, 100);
+//   this._container.setSize(size.x+100, size.y, 100);
 
     var tbH = this._toolbar.getH();
     
