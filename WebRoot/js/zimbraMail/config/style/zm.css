@@ -1209,12 +1209,13 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmChatWindowInput {
-	background-color: white;
 	bordor: none;
+	overflow: auto;
 /*	border: 1px solid #999999;*/
 }
 
 .ZmChatWindowInput textarea {
+	background-color: white;
 /*	border-style: hidden;*/
 	border:1px inset gray;
 	padding-left: 2px;

@@ -23,6 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
+
 function ZmChatWindow(parent, chat) {
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, parent, "ZmChatWindow", DwtControl.ABSOLUTE_STYLE);
@@ -62,9 +63,9 @@ ZmChatWindow._selected = null;
 
 ZmChatWindow.prototype._init =
 function() {
-//	var c = this._container = new DwtComposite(this, "ZmChatWindowContainer");
-//	c.setScrollStyle(Dwt.SCROLL);
-    var c = this;
+	var c = this._container = new DwtComposite(this, "ZmChatWindowContainer");
+	c.setScrollStyle(Dwt.SCROLL);
+//    var c = this;
 	this._toolbar = new DwtToolBar(c);
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
 	this._toolbar.addFiller();
@@ -79,7 +80,7 @@ function() {
     	this._objectManager.addHandler(new ZmEmoticonObjectHandler(this._appCtxt));
 	this._sash = new DwtComposite(c, null, Dwt.ABSOLUTE_STYLE);
 	this._input = new DwtComposite(c, "ZmChatWindowInput", Dwt.ABSOLUTE_STYLE);
-	this._input.setScrollStyle(DwtControl.CLIP);
+	this._input.setScrollStyle(DwtControl.SCROLL);	
 	this._inputFieldId = Dwt.getNextId();
 	ZmChatWindow._idToChatWindow[this._inputFieldId] = this;
     this._input.getHtmlElement().innerHTML = 	"<textarea wrap='hard' style='width:100%; height:100%;' id='" + this._inputFieldId + "'></textarea>";
@@ -258,7 +259,7 @@ function(ev) {
     }
    
     var size = this.getSize();
-//   this._container.setSize(size.x+100, size.y, 100);
+   this._container.setSize(size.x+100, size.y+100);
 
     var tbH = this._toolbar.getH();
     
@@ -297,6 +298,9 @@ function(ev) {
     this._inputY = inpY;
     this._inputH = inpH - yFudge - hFudge;
     this._input.setBounds(xFudge, this._inputY, size.x - wFudge, this._inputH);
+    var field = Dwt.getDomObj(this.getDocument(), this._inputFieldId);
+    Dwt.setSize(field, size.x - wFudge - 2 , this._inputH - 2);
+        
     this._gripper.setLocation(size.x-20, size.y-20);
     this._minSashY = this._contentY + ZmChatWindow.MIN_CONTENT_HEIGHT;
     this._maxSashY = size.y - ZmChatWindow.MIN_INPUT_HEIGHT;
