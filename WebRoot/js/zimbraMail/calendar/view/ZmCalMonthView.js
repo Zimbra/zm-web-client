@@ -668,7 +668,7 @@ function(date, list, controller) {
 	html.append("<tr><td><div class='calendar_tooltip_month_day_label'>", title, "</div></td></tr>");
 		
 	html.append("<tr><td>");
-	html.append("<table cellpadding='0' cellspacing='0' border='0'>");
+	html.append("<table cellpadding='0' cellspacing='0' border='0' width=100%>");
 	
 	var size = list ? list.size() : 0;
 
