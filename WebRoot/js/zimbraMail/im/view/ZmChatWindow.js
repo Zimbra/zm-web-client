@@ -68,6 +68,7 @@ function() {
 //    var c = this;
 	this._toolbar = new DwtToolBar(c);
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
+	this._statusLabel = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowStatusLabel");	
 	this._toolbar.addFiller();
 	this._close = new DwtButton(this._toolbar, DwtLabel.IMAGE_LEFT, "TBButton");
 	this._close.setImage("Close");
@@ -89,6 +90,8 @@ function() {
     this._gripper = new DwtComposite(c, "DwtResizeGripper", Dwt.ABSOLUTE_STYLE);
     DwtDragTracker.init(this._sash, DwtDragTracker.STYLE_RESIZE_NORTH, 1, 1, this._sashCallback, this, ZmChatWindow._TRACKER_SASH);
     DwtDragTracker.init(this._toolbar, DwtDragTracker.STYLE_MOVE, 5, 5, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_DRAG);
+    DwtDragTracker.init(this._label, DwtDragTracker.STYLE_MOVE, 5, 5, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_DRAG);
+    DwtDragTracker.init(this._statusLabel, DwtDragTracker.STYLE_MOVE, 5, 5, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_DRAG);        
     DwtDragTracker.init(this._gripper, DwtDragTracker.STYLE_RESIZE_SOUTHEAST, 5, 5, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_RESIZE);
     
     this.setHandler(DwtEvent.ONCLICK, ZmChatWindow._onClickHdlr);
@@ -138,14 +141,20 @@ ZmChatWindow.prototype._setChat =
 function(chat) {
     this.chat = chat;
     var buddy = chat.getBuddy();
-    this.setTitle(buddy.getName());
-    this.setImage(buddy.getIcon());    
+    this._buddyChangeListener(buddy, null, true);
+//    this.setTitle(buddy.getName());
+//    this.setImage(buddy.getIcon());    
 };
 
 ZmChatWindow.prototype._buddyChangeListener =
-function(buddy, fields) {
-    if (fields[ZmBuddy.F_STATUS] != null) this.setImage(buddy.getIcon());
-    if (fields[ZmBuddy.F_NAME] != null) this.setTitle(buddy.getName());
+function(buddy, fields, setAll) {
+    if (setAll || fields[ZmBuddy.F_STATUS] != null) {
+        this.setImage(buddy.getIcon());
+        this.setStatusTitle("("+buddy.getStatusText()+")");
+    }
+    if (setAll || fields[ZmBuddy.F_NAME] != null) {
+        this.setTitle(buddy.getName());
+    }
 };
 
 ZmChatWindow.prototype.sendInput =
@@ -192,6 +201,11 @@ function(ev) {
 ZmChatWindow.prototype.setTitle =
 function(text) {
     this._label.setText(text);
+};
+
+ZmChatWindow.prototype.setStatusTitle =
+function(text) {
+    this._statusLabel.setText(text);
 };
 
 ZmChatWindow.prototype.setImage =
