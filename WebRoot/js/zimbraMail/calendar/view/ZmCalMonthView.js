@@ -668,7 +668,7 @@ function(date, list, controller) {
 	html.append("<tr><td><div class='calendar_tooltip_month_day_label'>", title, "</div></td></tr>");
 		
 	html.append("<tr><td>");
-	html.append("<table cellpadding='0' cellspacing='0' border='0' width=100%>");
+	html.append("<table cellpadding='1' cellspacing='0' border='0' width=100%>");
 	
 	var size = list ? list.size() : 0;
 
@@ -683,7 +683,6 @@ function(date, list, controller) {
 			html.append("<tr><td><div class=appt>");
 			html.append(ZmCalMonthView._allDayItemHtml(ao, Dwt.getNextId(), body_style, controller));
 			html.append("</div></td></tr>");
-			html.append("<tr><td><div style='height=2px;'></div></td></tr>");
 		}
 	}
 
