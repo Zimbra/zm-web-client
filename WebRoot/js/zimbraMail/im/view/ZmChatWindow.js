@@ -273,7 +273,7 @@ function(ev) {
     }
    
     var size = this.getSize();
-   this._container.setSize(size.x+100, size.y+100);
+   this._container.setSize(size.x+10, size.y+10);
 
     var tbH = this._toolbar.getH();
     
