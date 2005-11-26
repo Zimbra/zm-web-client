@@ -31,9 +31,12 @@ function ZmBuddy(id, name, parent, tree, status) {
 ZmBuddy.prototype = new ZmOrganizer;
 ZmBuddy.prototype.constructor = ZmBuddy;
 
-ZmBuddy.STATUS_OFFLINE = 0;
-ZmBuddy.STATUS_AVAILABLE = 1;
-ZmBuddy.STATUS_UNAVAILABLE = 2;
+ZmBuddy.STATUS_OFFLINE = 1;
+ZmBuddy.STATUS_AVAILABLE = 2;
+ZmBuddy.STATUS_UNAVAILABLE = 3;
+
+ZmBuddy.F_STATUS = "ZmBuddy.status";
+ZmBuddy.F_NAME = ZmOrganizer.F_NAME;
 
 ZmBuddy.prototype.toString = 
 function() {
@@ -77,6 +80,35 @@ function() {
 	} 
 	return this.name;
 };
+
+ZmBuddy.prototype.getStatus = 
+function() {
+    return this.stauts;
+}
+
+ZmBuddy.prototype.getStatusText = 
+function() {
+    switch (this.status) {
+    case ZmBuddy.STATUS_AVAILABLE:
+    		return ZmMsg.imStatusAvailable;
+        break;
+    case ZmBuddy.STATUS_UNAVAILABLE:
+    		return ZmMsg.imStatusUnavailable;    
+    	    break;        
+    case ZmBuddy.STATUS_OFFLINE:
+    default:
+        return ZmMsg.imStatusOffline;
+        break;
+    	}
+};
+
+ZmBuddy.prototype.setStatus = 
+function(status) {
+    this.status = status;
+    var fields = {};
+    fields[ZmBuddy.F_STATUS] = status;
+    this.tree._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
+}
 
 ZmBuddy.prototype.getIcon = 
 function() {

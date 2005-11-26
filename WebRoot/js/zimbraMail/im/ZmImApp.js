@@ -25,7 +25,7 @@
 
 function ZmImApp(appCtxt, container) {
 	ZmApp.call(this, ZmZimbraMail.IM_APP, appCtxt, container);
-	this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._settingsChangeListener));
+	//this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._settingsChangeListener));
 	this._active = false;
 };
 

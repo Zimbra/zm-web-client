@@ -59,6 +59,23 @@ function(overviewId, listener) {
 	}
 };
 
+ZmBuddyTreeController.prototype._changeListener = 
+function(ev, treeView) {
+    if (ev.event == ZmEvent.E_MODIFY) {
+        var buddy = ev.getDetail("organizers");
+        if (buddy instanceof ZmBuddy) {
+            var fields = ev.getDetail("fields");
+            var status = fields[ZmBuddy.F_STATUS];
+            if (status != null) {
+                this._appCtxt.setStatusMsg(buddy.getName()+" "+buddy.getStatusText());
+                var ti = treeView.getTreeItemById(buddy.id);
+                if (ti) ti.setImage(buddy.getIcon());
+            }
+        }
+    }
+    ZmTreeController.prototype._changeListener.call(this, ev, treeView);
+};
+
 // Protected methods
 ZmBuddyTreeController.prototype.show = 
 function(overviewId, showUnread, omit, forceCreate) {

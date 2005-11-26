@@ -32,6 +32,10 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	this._chatWindows = {};
 	this._chatIdToChatWindow = {};
 	this._windowCloseButtonListener = new AjxListener(this, this._windowCloseListener);
+	this._initX = 20;
+	this._initY = 20;	
+	this._incrX = 20;
+	this._incrY = 20;	
 };
 
 ZmChatMultiWindowView.prototype = new ZmChatBaseView;
@@ -51,7 +55,15 @@ function(ev) {
     if (ev.event == ZmEvent.E_CREATE) {
         var chat = ev._details.items[0];
         	var cw = new ZmChatWindow(this, chat);
-        	cw.setBounds(50, 50, 400,300);
+
+        var size = this.getSize();
+
+        	if (this._initX > size.x - 50) this._initX = 20;
+        	if (this._initY > size.y - 50) this._initY = 20;
+        	
+      	cw.setBounds(this._initX, this._initY, 400,300);
+       	this._initX += this._incrX;
+        	this._initY += this._incrY;        	
         this._addChatWindow(cw, chat);
         cw.select();
     } else if (ev.event == ZmEvent.E_DELETE) {
@@ -69,6 +81,12 @@ function(chat) {
     var cw = this._getChatWindowForChat(chat);
     if (cw) cw.select();
 };
+
+ZmChatMultiWindowView.prototype._buddyChangeListener =
+function(chat, buddy, fields) {
+    var cw = this._getChatWindowForChat(chat);
+    if (cw) cw._buddyChangeListener(buddy, fields);
+}
 
 ZmChatMultiWindowView.prototype._getChatWindowForChat =
 function(chat) {

@@ -51,6 +51,13 @@ function ZmChatListController(appCtxt, container, imApp) {
 	
 //	this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._changeListener));
 	this._parentView = new Object();
+	
+	// listen for buddy changes
+	this._buddyTreeListener = new AjxListener(this, this._buddyTreeChangeListener);
+	
+	var buddyTree = this._appCtxt.getTree(ZmOrganizer.BUDDY);
+	buddyTree.addChangeListener(this._buddyTreeListener);
+    	
 }
 
 ZmChatListController.prototype = new ZmController;
@@ -379,11 +386,24 @@ function(buddy) {
         // listeners take care of rest...
         this._list.addChat(chat);
     }
-    // select chat window in current view or all?    
+    // currentview or all? probably all...    
     this._parentView[this._currentView].selectChat(chat);
 };
 
 ZmChatListController.prototype.endChat =
 function(chat) {
     this._list.removeChat(chat);
+};
+
+ZmChatListController.prototype._buddyTreeChangeListener = 
+function(ev, treeView) {
+    if (ev.event == ZmEvent.E_MODIFY) {
+        var buddy = ev.getDetail("organizers");
+        if (buddy instanceof ZmBuddy) {
+            var fields = ev.getDetail("fields");
+            var chat = this._list.getChatByBuddy(buddy);
+            // currentview or all? probably all...
+            this._parentView[this._currentView]._buddyChangeListener(chat, buddy, fields);
+        }
+    }
 };

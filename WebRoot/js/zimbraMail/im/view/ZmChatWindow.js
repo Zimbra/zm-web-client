@@ -140,8 +140,20 @@ function(chat) {
     this.setImage(buddy.getIcon());    
 };
 
+ZmChatWindow.prototype._buddyChangeListener =
+function(buddy, fields) {
+    if (fields[ZmBuddy.F_STATUS] != null) this.setImage(buddy.getIcon());
+    if (fields[ZmBuddy.F_NAME] != null) this.setTitle(buddy.getName());
+};
+
 ZmChatWindow.prototype.sendInput =
 function(text) {
+    if (text.substring(0, 2) == "$a") {
+        this.chat.getBuddy().setStatus(ZmBuddy.STATUS_AVAILABLE);
+    } else if (text.substring(0, 2) == "$o") {
+        this.chat.getBuddy().setStatus(ZmBuddy.STATUS_OFFLINE);
+    }
+    
     var content = this._content.getHtmlElement().firstChild;
     var div = this._doc.createElement("div");
     div.className = "ZmChatWindowChatEntryMe";
