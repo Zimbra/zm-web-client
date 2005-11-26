@@ -37,13 +37,16 @@ function ZmEmoticonObjectHandler(appCtxt) {
 	   { smiley: "<:-P", image: "PartyEmoticon", tooltip: ZmMsg.party },
 	   { smiley: ":O)", image: "ClownEmoticon", tooltip: ZmMsg.clown }
    ];
-	
+
+	this._smileyToSD = {};
+		
 	var regex = new Array(10);
 	var idx = 0;
 	var n = 0;
 	// create regex to handle all the emoticons
 	for (var i in this._emoticons) {
 	    var emot = this._emoticons[i];
+        	this._smileyToSD[emot.smiley] = emot;
 		if (n++ > 0)
 			regex[idx++] = "|";
 		regex[idx++] ="(";
@@ -54,6 +57,7 @@ function ZmEmoticonObjectHandler(appCtxt) {
 		regex[idx++] =")";		
 	}
 	this._EMOTICONS_RE = new RegExp(regex.join(""), "g");
+
 };
 
 ZmEmoticonObjectHandler.prototype = new ZmObjectHandler;
@@ -66,35 +70,39 @@ ZmEmoticonObjectHandler.RE_ESCAPE_RE = /([\(\)\-\$])/g;
 ZmEmoticonObjectHandler.prototype.match =
 function(line, startIndex) {
     this._EMOTICONS_RE.lastIndex = startIndex;
-    return this._EMOTICONS_RE.exec(line);
-};
-
-ZmEmoticonObjectHandler.prototype._getEmoticon =
-function(smiley) {
-	smiley = smiley.replace(/^\s+/, "");
-	smiley = smiley.replace(/\s+$/, "");
-
-	for (var i in this._emoticons) {
-	    var emot = this._emoticons[i];
-		if (emot.smiley == smiley)
-			return emot;
-	}
-	return null;
+    var m = this._EMOTICONS_RE.exec(line);
+    if (m) m.context = {};
+    return m;
 };
 
 ZmEmoticonObjectHandler.prototype._getHtmlContent =
-function(html, idx, smiley) {
-	var sd = this._getEmoticon(smiley);
-	html[idx++] = "<table style='display:inline' cellpadding=0 cellspacing=0 border=0><tr><td align=center valign=bottom>";
-	html[idx++] = AjxImg.getImageHtml(sd.image);
-	html[idx++] = "</td></tr></table>";
+function(html, idx, smiley, context) {
+	context.sd = this._smileyToSD[smiley];
+	if (context.sd) {
+        	html[idx++] = "<table style='display:inline' cellpadding=0 cellspacing=0 border=0><tr><td align=center valign=bottom>";
+        	html[idx++] = AjxImg.getImageHtml(context.sd.image);
+        	html[idx++] = "</td></tr></table>";
+   	} else {
+   	    return AjxStringUtil.htmlEncode(smiley);
+   	}
 	return idx;
 };
 	
+ZmEmoticonObjectHandler.prototype.selected =
+function(obj, span, ev, context) {
+    if (context.isRaw) {
+        span.innerHTML = context.html;
+        context.isRaw = false;
+    } else {
+        context.html = span.innerHTML;
+        context.isRaw = true;
+        span.innerHTML = AjxStringUtil.htmlEncode(context.sd.smiley);
+    }
+};
+
 ZmEmoticonObjectHandler.prototype.getToolTipText =
-function(smiley) {
-	var sd = this._getEmoticon(smiley);
-	return "<b>" + sd.tooltip + "</b>";
+function(smiley, context) {
+	return "<b>" + context.sd.tooltip + "</b>";
 };
 
 ZmEmoticonObjectHandler.prototype.getActionMenu =
