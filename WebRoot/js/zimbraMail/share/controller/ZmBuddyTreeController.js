@@ -30,6 +30,7 @@ function ZmBuddyTreeController(appCtxt, type, dropTgt) {
 	ZmTreeController.call(this, appCtxt, type, null);
     this._imApp = appCtxt.getApp(ZmZimbraMail.IM_APP);
 	this._eventMgrs = {};
+	this._toastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
 }
 
 ZmBuddyTreeController.prototype = new ZmTreeController;
@@ -67,7 +68,8 @@ function(ev, treeView) {
             var fields = ev.getDetail("fields");
             var status = fields[ZmBuddy.F_STATUS];
             if (status != null) {
-                this._appCtxt.setStatusMsg(buddy.getName()+" ("+buddy.getStatusText()+")");
+                var toast = this._toastFormatter.format([buddy.getName(), buddy.getStatusText()]);
+                this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
                 var ti = treeView.getTreeItemById(buddy.id);
                 if (ti) ti.setImage(buddy.getIcon());
             }
