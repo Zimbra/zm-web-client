@@ -159,12 +159,16 @@ function(buddy, fields, setAll) {
 
 ZmChatWindow.prototype.sendInput =
 function(text) {
-    if (text.substring(0, 2) == "$a") {
-        this.chat.getBuddy().setStatus(ZmBuddy.STATUS_AVAILABLE);
-    } else if (text.substring(0, 2) == "$u") {
-        this.chat.getBuddy().setStatus(ZmBuddy.STATUS_UNAVAILABLE);
-    } else if (text.substring(0, 2) == "$o") {
-        this.chat.getBuddy().setStatus(ZmBuddy.STATUS_OFFLINE);
+    if (text.substring(0,1) == "$") {
+        if (text.substring(1, 2) == "a") {
+            this.chat.getBuddy().setStatus(ZmBuddy.STATUS_AVAILABLE);
+        } else if (text.substring(1, 2) == "u") {
+            this.chat.getBuddy().setStatus(ZmBuddy.STATUS_UNAVAILABLE);
+        } else if (text.substring(1, 2) == "o") {
+            this.chat.getBuddy().setStatus(ZmBuddy.STATUS_OFFLINE);
+        } else if (text.substring(1, 3) == "st") {
+            text = ">:) :) =)) =(( :(( <:-P :O)";
+        }
     }
     
     var content = this._content.getHtmlElement().firstChild;
