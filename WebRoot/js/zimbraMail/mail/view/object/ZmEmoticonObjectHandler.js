@@ -85,7 +85,9 @@ function(smiley) {
 ZmEmoticonObjectHandler.prototype._getHtmlContent =
 function(html, idx, smiley) {
 	var sd = this._getEmoticon(smiley);
+	html[idx++] = "<table style='display:inline' cellpadding=0 cellspacing=0 border=0><tr><td align=center valign=bottom>";
 	html[idx++] = AjxImg.getImageHtml(sd.image);
+	html[idx++] = "</td></tr></table>";
 	return idx;
 };
 	
