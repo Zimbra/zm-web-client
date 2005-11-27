@@ -343,6 +343,23 @@ function(ev) {
 	}
 }
 
+// Create a folder.
+ZmChatListController.prototype._newFolderCallback =
+function(args) {
+	this._appCtxt.getNewFolderDialog().popdown();
+	var ftc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
+	ftc._doCreate(args[0], args[1], null, args[2]);
+}
+
+// Create a tag.
+ZmChatListController.prototype._newTagCallback =
+function(args) {
+	this._appCtxt.getNewTagDialog().popdown();
+	var ttc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.TAG);
+	ttc._doCreate(args[1], args[2]);
+	this._creatingTag = args[0];
+}
+
 // Adds the same listener to all of a menu's items
 ZmChatListController.prototype._propagateMenuListeners =
 function(parent, op, listener) {
