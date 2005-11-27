@@ -204,6 +204,16 @@ function(content, htmlEncode, type) {
 	return html.join("");
 };
 
+ZmObjectManager.prototype.setHandlerAttr =
+function(type, name, value) {
+    var handlers = this._objectHandlers[type];
+	if (handlers) {
+		for (var i = 0; i < handlers.length; i++) {
+			handlers[i][name] = value;
+		}
+	}
+};
+
 ZmObjectManager.prototype.generateSpan =
 function(handler, html, idx, obj, context) {
 	var id = this._objectIdPrefix + Dwt.getNextId();

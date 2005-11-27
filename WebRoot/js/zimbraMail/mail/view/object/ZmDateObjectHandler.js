@@ -31,8 +31,9 @@ function ZmDateObjectHandler(appCtxt) {
 ZmDateObjectHandler.prototype = new ZmObjectHandler;
 ZmDateObjectHandler.prototype.constructor = ZmDateObjectHandler;
 
-
 ZmDateObjectHandler.TYPE = "date";
+
+ZmDateObjectHandler.ATTR_CURRENT_DATE = "currentDate";
 
 // needs to be kept in sync with ZmDateObjectHandler.DOW
 var $RE_DOW = "(Mon(?:day)?|Tue(?:s(?:day)?)?|Wed(?:nesday)?|Thu(?:rs(?:day)?)?|Fri(?:day)?|Sat(?:urday)?|Sun(?:day)?)";
@@ -90,14 +91,10 @@ $RE_DOW + $RE_COMMA_OR_SP + RE_MONTH + $RE_SP + $RE_DOM +
 
 ZmDateObjectHandler._currentDate = new Date();
 
-ZmDateObjectHandler.setCurrentDate =
+ZmDateObjectHandler.prototype.getCurrentDate =
 function(date) {
-	ZmDateObjectHandler._currentDate = new Date(date);
-};
-
-ZmDateObjectHandler.getCurrentDate =
-function(date) {
-	return ZmDateObjectHandler._currentDate;
+    var d = this[ZmDateObjectHandler.ATTR_CURRENT_DATE];
+	return d ? d : new Date();
 };
 
 ZmDateObjectHandler.prototype.getToolTipText =
@@ -169,7 +166,7 @@ function(line, startIndex) {
 	var result = ZmDate1ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 	
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var when = result[1].toLowerCase();
 	if (when == "yesterday") {
 		d.setDate(d.getDate()-1);
@@ -197,7 +194,7 @@ function(line, startIndex) {
 	var result = ZmDate2ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var dow = d.getDay();
 	var ndow = ZmDateObjectHandler.DOW[result[2].toLowerCase()];
 	var addDays;
@@ -234,7 +231,7 @@ function(line, startIndex) {
 	var result = ZmDate3ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var dom = parseInt(result[1], 10);;
 	var month = ZmDateObjectHandler.MONTH[result[2].toLowerCase()];
 	d.setMonth(month, dom);
@@ -267,7 +264,7 @@ function(line, startIndex) {
 	var result = ZmDate4ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var month = ZmDateObjectHandler.MONTH[result[1].toLowerCase()];
 	var dom = parseInt(result[2], 10);;
 	d.setMonth(month, dom);
@@ -300,7 +297,7 @@ function(line, startIndex) {
 	var result = ZmDate5ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var month = parseInt(result[1], 10) - 1;
 	var dom = parseInt(result[2], 10);
 	d.setMonth(month, dom);
@@ -332,7 +329,7 @@ function(line, startIndex) {
 	var result = ZmDate6ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var year = parseInt(result[1], 10);
 	var month = parseInt(result[2], 10) - 1;
 	var dom = parseInt(result[3], 10);
@@ -361,7 +358,7 @@ function(line, startIndex) {
 	var result = ZmDate7ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var month = parseInt(result[1], 10) - 1;
 	var dom = parseInt(result[2], 10);
 	d.setMonth(month, dom);
@@ -393,7 +390,7 @@ function(line, startIndex) {
 	var result = ZmDate8ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var year = parseInt(result[1], 10);
 	var month = parseInt(result[2], 10) - 1;
 	var dom = parseInt(result[3], 10);
