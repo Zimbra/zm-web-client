@@ -96,9 +96,11 @@ function(tree) {
 	tree.loadFromJs({ 
 	    buddy: [
             {id: "b0", name: "Dan", status:ZmBuddy.STATUS_AVAILABLE},	    
-            {id: "b1", name: "Ross", status:ZmBuddy.STATUS_AVAILABLE},
-            {id: "b2", name: "Satish", status:ZmBuddy.STATUS_UNAVAILABLE},
-            {id: "b3", name: "Tim", status:ZmBuddy.STATUS_OFFLINE}
+            {id: "b1", name: "Ross", status:ZmBuddy.STATUS_DND},
+            {id: "b2", name: "Satish", status:ZmBuddy.STATUS_AWAY, statusText:"out to lunch"},
+            {id: "b3", name: "Tim", status:ZmBuddy.STATUS_OFFLINE},
+            {id: "b4", name: "Anand", status:ZmBuddy.STATUS_EXT_AWAY},
+            {id: "b5", name: "Andy", status:ZmBuddy.STATUS_CHAT}
 	    ]
     });
 }

@@ -23,17 +23,21 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmBuddy(id, name, parent, tree, status) {
+function ZmBuddy(id, name, parent, tree, status, statusText) {
 	ZmOrganizer.call(this, ZmOrganizer.BUDDY, id, name, parent, tree);
 	this.status = status || ZmBuddy.STATUS_OFFLINE;
+	this.statusText = statusText;
 }
 
 ZmBuddy.prototype = new ZmOrganizer;
 ZmBuddy.prototype.constructor = ZmBuddy;
 
-ZmBuddy.STATUS_OFFLINE = 1;
-ZmBuddy.STATUS_AVAILABLE = 2;
-ZmBuddy.STATUS_UNAVAILABLE = 3;
+ZmBuddy.STATUS_OFFLINE = 0;
+ZmBuddy.STATUS_AVAILABLE = 1;     // jabber normal
+ZmBuddy.STATUS_CHAT = 2;          // jabber <show> chat
+ZmBuddy.STATUS_AWAY = 3;          // jabber <show> away
+ZmBuddy.STATUS_EXT_AWAY = 4;     // jabber <show> xa (extended away)
+ZmBuddy.STATUS_DND = 5;           // jabber <show>> dnd (do not disturb)
 
 ZmBuddy.F_STATUS = "ZmBuddy.status";
 ZmBuddy.F_NAME = ZmOrganizer.F_NAME;
@@ -50,9 +54,57 @@ ZmBuddy.ID_BUDDY = ZmOrganizer.ID_BUDDY;
 ZmBuddy.createFromJs =
 function(parent, obj, tree) {
 	DBG.println(AjxDebug.DBG1, "ZmBuddy.createFromJs() Loading...");
-    var buddy = new ZmBuddy(obj.id, obj.name, parent, tree, obj.status);
+    var buddy = new ZmBuddy(obj.id, obj.name, parent, tree, obj.status, obj.statusText);
     parent.children.add(buddy);
     return buddy;
+};
+
+ZmBuddy.prototype.getStatusText = 
+function() {
+    if (this.statusText) return this.statusText;
+    switch (this.status) {
+    case ZmBuddy.STATUS_AVAILABLE:
+        return ZmMsg.imStatusAvailable;
+    case ZmBuddy.STATUS_CHAT:
+        return ZmMsg.imStatusChat;
+    case ZmBuddy.STATUS_AWAY:
+        return ZmMsg.imStatusAway;
+    case ZmBuddy.STATUS_EXT_AWAY:
+        return ZmMsg.imStatusExtAway;
+    case ZmBuddy.STATUS_DND:
+        return ZmMsg.imStatusDND;
+    case ZmBuddy.STATUS_OFFLINE:
+    default:
+        return ZmMsg.imStatusOffline;
+        break;
+    	}
+};
+
+ZmBuddy.prototype.setStatus = 
+function(status) {
+    this.status = status;
+    var fields = {};
+    fields[ZmBuddy.F_STATUS] = status;
+    this.tree._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
+}
+
+ZmBuddy.prototype.getIcon = 
+function() {
+    switch (this.status) {
+    case ZmBuddy.STATUS_AVAILABLE:
+        return "ImAvailable";
+    case ZmBuddy.STATUS_CHAT:
+        return "ImFree2Chat";
+    case ZmBuddy.STATUS_AWAY:
+        return "ImAway";
+    case ZmBuddy.STATUS_EXT_AWAY:
+        return "ImExtendedAway";
+    case ZmBuddy.STATUS_DND:
+        return "ImDnd";
+    case ZmBuddy.STATUS_OFFLINE:
+    default:
+        return "RoundMinusDis"; //"Blank_16";
+    	}
 };
 
 ZmBuddy.sortCompare = 
@@ -85,43 +137,3 @@ ZmBuddy.prototype.getStatus =
 function() {
     return this.stauts;
 }
-
-ZmBuddy.prototype.getStatusText = 
-function() {
-    switch (this.status) {
-    case ZmBuddy.STATUS_AVAILABLE:
-    		return ZmMsg.imStatusAvailable;
-        break;
-    case ZmBuddy.STATUS_UNAVAILABLE:
-    		return ZmMsg.imStatusUnavailable;    
-    	    break;        
-    case ZmBuddy.STATUS_OFFLINE:
-    default:
-        return ZmMsg.imStatusOffline;
-        break;
-    	}
-};
-
-ZmBuddy.prototype.setStatus = 
-function(status) {
-    this.status = status;
-    var fields = {};
-    fields[ZmBuddy.F_STATUS] = status;
-    this.tree._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
-}
-
-ZmBuddy.prototype.getIcon = 
-function() {
-    switch (this.status) {
-    case ZmBuddy.STATUS_AVAILABLE:
-    		return "ImAvailable";
-        break;
-    case ZmBuddy.STATUS_UNAVAILABLE:
-    	    return "ImDnd"; //"ImUnavailable";
-    	    break;        
-    case ZmBuddy.STATUS_OFFLINE:
-    default:
-        return "RoundMinusDis"; //"Blank_16";
-        break;
-    	}
-};
