@@ -115,7 +115,7 @@ function(tree) {
             {id: "b3", name: "Tim", status:ZmBuddy.STATUS_OFFLINE, group: "Work"},
             {id: "b4", name: "Anand", status:ZmBuddy.STATUS_EXT_AWAY, group: "Friends"},
             {id: "b5", name: "Andy", status:ZmBuddy.STATUS_CHAT, group: "Work"},
-            {id: "b5", name: "Matt", status:ZmBuddy.STATUS_AVAILABLE, group: "Family"}
+            {id: "b6", name: "Matt", status:ZmBuddy.STATUS_AVAILABLE, group: "Family"}
 	    ]
     });
 }
