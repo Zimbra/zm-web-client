@@ -26,8 +26,8 @@
 function ZmBuddyTreeController(appCtxt, type, dropTgt) {
 	if (arguments.length === 0) {return;}
 	type = type ? type : ZmOrganizer.BUDDY;
-//	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(ZmAppt, ZmConv, ZmMailMsg, ZmContact);
-	ZmTreeController.call(this, appCtxt, type, null);
+	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(ZmBuddy);
+	ZmTreeController.call(this, appCtxt, type, dropTgt);
     this._imApp = appCtxt.getApp(ZmZimbraMail.IM_APP);
 	this._eventMgrs = {};
 	this._toastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
@@ -86,12 +86,12 @@ function(overviewId, showUnread, omit, forceCreate) {
     	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit, forceCreate);
 
 	if (firstTime) {
-
 		var treeView = this.getTreeView(overviewId);
 		var root = treeView.getItems()[0];
 		var items = root.getItems();
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
+			item.setExpanded(true);
 		}
 	}
 };
@@ -112,19 +112,54 @@ ZmBuddyTreeController.prototype.getTreeStyle = function() {
 
 // Method that is run when a tree item is left-clicked
 ZmBuddyTreeController.prototype._itemClicked = function(buddy) {
-    var clc = this._imApp.getChatListController();
-    clc.selectChatForBuddy(buddy);
+    if ((buddy instanceof ZmBuddy) && buddy.getStatus() != ZmBuddy.STATUS_GROUP) {
+        var clc = this._imApp.getChatListController();
+        clc.selectChatForBuddy(buddy);
+    }
 };
 
 ZmBuddyTreeController.prototype._itemDblClicked = function(buddy) {
-    var clc = this._imApp.getChatListController();
-    clc.chatWithBuddy(buddy);
+    if ((buddy instanceof ZmBuddy) && buddy.getStatus() != ZmBuddy.STATUS_GROUP) {
+        var clc = this._imApp.getChatListController();
+        clc.chatWithBuddy(buddy);
+    }
 };
 
-// Handles a drop event
-ZmBuddyTreeController.prototype._dropListener = function() {
+/*
+* Don't allow dragging of buddy groups
+*
+* @param ev		[DwtDragEvent]		the drag event
+*/
+ZmBuddyTreeController.prototype._dragListener =
+function(ev) {
+	if (ev.action == DwtDragEvent.DRAG_START) {
+		var item = ev.srcData = ev.srcControl.getData(Dwt.KEY_OBJECT);
+		if (!(item instanceof ZmBuddy))
+			ev.operation = Dwt.DND_DROP_NONE;
+	}
 };
 
-// Handles a drag event
-ZmBuddyTreeController.prototype._dragListener = function() {
+/*
+* Handles the potential drop of something onto a buddy group. When something is dragged over
+* a buddy group, returns true if a drop would be allowed. When something is actually dropped,
+* performs the move. If items are being dropped, the source data is not the items
+* themselves, but an object with the items (data) and their controller, so they can be
+* moved appropriately.
+*
+* @param ev		[DwtDropEvent]		the drop event
+*/
+ZmBuddyTreeController.prototype._dropListener =
+function(ev) {
+	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		var srcData = ev.srcData;
+		var dropTarget = ev.targetControl.getData(Dwt.KEY_OBJECT);
+		if (!(srcData instanceof ZmBuddy) || !(dropTarget instanceof ZmBuddyGroup)) {
+			ev.doIt = false;
+			return;
+		}
+		// don't allow drop onto current group
+        	ev.doIt = (srcData.getGroup() != dropTarget.getName());
+	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
+
+	}
 };

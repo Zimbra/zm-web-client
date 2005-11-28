@@ -23,10 +23,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmBuddy(id, name, parent, tree, status, statusText) {
+function ZmBuddy(id, name, parent, tree, status, statusText, group) {
 	ZmOrganizer.call(this, ZmOrganizer.BUDDY, id, name, parent, tree);
 	this.status = status || ZmBuddy.STATUS_OFFLINE;
 	this.statusText = statusText;
+	this.group = group || ZmMsg.buddies;
 }
 
 ZmBuddy.prototype = new ZmOrganizer;
@@ -54,7 +55,7 @@ ZmBuddy.ID_BUDDY = ZmOrganizer.ID_BUDDY;
 ZmBuddy.createFromJs =
 function(parent, obj, tree) {
 	DBG.println(AjxDebug.DBG1, "ZmBuddy.createFromJs() Loading...");
-    var buddy = new ZmBuddy(obj.id, obj.name, parent, tree, obj.status, obj.statusText);
+    var buddy = new ZmBuddy(obj.id, obj.name, parent, tree, obj.status, obj.statusText, obj.group);
     parent.children.add(buddy);
     return buddy;
 };
@@ -125,15 +126,17 @@ function(name) {
 // Public methods
 ZmBuddy.prototype.getId = function() { return this.id; }
 
+ZmBuddy.prototype.getGroup = function() { return this.group }
+
 ZmBuddy.prototype.getName = 
 function() {
 	if (this.id == ZmBuddy.ID_BUDDY) {
-		return ZmMsg.buddies;
+		return ZmMsg.buddyList;
 	} 
 	return this.name;
 };
 
 ZmBuddy.prototype.getStatus = 
 function() {
-    return this.stauts;
+    return this.status;
 }

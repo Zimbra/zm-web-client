@@ -25,6 +25,7 @@
 
 function ZmBuddyTree(id, name, parent, tree) {
     this._appCtxt = tree._appCtxt;
+    this._prefixId = Dwt.getNextId();
 	ZmOrganizer.call(this, ZmOrganizer.BUDDY, id, name, parent, tree);
 }
 
@@ -44,10 +45,23 @@ ZmBuddyTree.createFromJs =
 function(parent, obj, tree, link) {
 //	if (!obj && obj.length < 1) {return null;}
 	DBG.println(AjxDebug.DBG1, "ZmBuddyTree.createFromJs() Loading...");
-	var root = new ZmBuddyTree(ZmBuddyTree.ID_BUDDY, ZmMsg.buddies, parent, tree);
+	var root = new ZmBuddyTree(ZmBuddyTree.ID_BUDDY, ZmMsg.buddyList, parent, tree);
 	if (obj && obj.buddy && obj.buddy.length) {
 		for (var i = 0; i < obj.buddy.length; i++) {
-		    ZmBuddy.createFromJs(root, obj.buddy[i], tree);
+		    var buddy = obj.buddy[i];
+		    var buddyParent = root;
+		    if (buddy.group == null) buddy.group = ZmMsg.buddies;
+		    if (buddy.group) {
+                var groupId = root._prefixId+"_group_"+buddy.group;
+                var group = root.getById(groupId);
+                if (group == null) {
+                    group = new ZmBuddyGroup(groupId, buddy.group, root, tree);
+                    root.children.add(group);
+                }
+                buddyParent = group;
+		    }
+		    var b = ZmBuddy.createFromJs(buddyParent, buddy, tree);
+		    
 		}
 		var children = root.children.getArray();
 		if (children.length)
@@ -75,7 +89,7 @@ function(name) {
 ZmBuddyTree.prototype.getName = 
 function() {
 	if (this.id == ZmBuddyTree.ID_BUDDY) {
-		return ZmMsg.buddies;
+		return ZmMsg.buddyList;
 	} 
 	return this.name;
 };
@@ -95,12 +109,13 @@ ZmBuddyTree.loadDummyData =
 function(tree) {
 	tree.loadFromJs({ 
 	    buddy: [
-            {id: "b0", name: "Dan", status:ZmBuddy.STATUS_AVAILABLE},	    
-            {id: "b1", name: "Ross", status:ZmBuddy.STATUS_DND},
-            {id: "b2", name: "Satish", status:ZmBuddy.STATUS_AWAY, statusText:"out to lunch"},
-            {id: "b3", name: "Tim", status:ZmBuddy.STATUS_OFFLINE},
-            {id: "b4", name: "Anand", status:ZmBuddy.STATUS_EXT_AWAY},
-            {id: "b5", name: "Andy", status:ZmBuddy.STATUS_CHAT}
+            {id: "b0", name: "Dan", status:ZmBuddy.STATUS_AVAILABLE, group: "Friends"},
+            {id: "b1", name: "Ross", status:ZmBuddy.STATUS_DND, group: "Zimbra"},
+            {id: "b2", name: "Satish", status:ZmBuddy.STATUS_AWAY, statusText:"out to lunch", group: "Zimbra"},
+            {id: "b3", name: "Tim", status:ZmBuddy.STATUS_OFFLINE, group: "Zimbra"},
+            {id: "b4", name: "Anand", status:ZmBuddy.STATUS_EXT_AWAY, group: "Friends"},
+            {id: "b5", name: "Andy", status:ZmBuddy.STATUS_CHAT, group: "Zimbra"},
+            {id: "b5", name: "Matt", status:ZmBuddy.STATUS_AVAILABLE, group: "Family"}
 	    ]
     });
 }
