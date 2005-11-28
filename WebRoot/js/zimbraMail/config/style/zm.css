@@ -1154,6 +1154,8 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	border-width: 1px;
 	border-style: solid;
 	border-color: #B2B2B2 #000000 #000000 #B2B2B2;
+	width: 400px;
+	height: 300px;
 }
 
 .ZmChatWindow .DwtToolBar {
@@ -1173,6 +1175,8 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	border-top:2px solid #339999;
 	border-right:2px solid #003030;
 	border-bottom:2px solid #003030;
+	width: 400px;
+	height: 300px;	
 }
 
 .ZmChatWindow-selected .DwtToolBar {

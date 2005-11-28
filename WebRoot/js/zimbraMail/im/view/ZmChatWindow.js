@@ -34,6 +34,7 @@ function ZmChatWindow(parent, chat) {
     this._init();
     this.setZIndex(ZmChatWindow._nextZ++);
     this._setChat(chat);
+    this.id = Dwt.getNextId();
 };
 
 ZmChatWindow.SASH_THRESHHOLD = 1;
@@ -101,6 +102,7 @@ function() {
 
 ZmChatWindow.prototype.dispose =
 function() {
+	this._close.setToolTipContent(null);
     DwtControl.prototype.dispose.call(this);
     Dwt.disassociateElementFromObject(this.getHtmlElement(), this);
     if (ZmChatWindow._selected == this) ZmChatWindow._selected = null;

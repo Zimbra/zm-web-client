@@ -34,9 +34,7 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	this._windowCloseButtonListener = new AjxListener(this, this._windowCloseListener);
 	this._initX = 20;
 	this._initY = 20;	
-	this._incrX = 20;
-	this._incrY = 20;	
-};
+};    
 
 ZmChatMultiWindowView.prototype = new ZmChatBaseView;
 ZmChatMultiWindowView.prototype.constructor = ZmChatMultiWindowView;
@@ -55,15 +53,6 @@ function(ev) {
     if (ev.event == ZmEvent.E_CREATE) {
         var chat = ev._details.items[0];
         	var cw = new ZmChatWindow(this, chat);
-
-        var size = this.getSize();
-
-        	if (this._initX > size.x - 50) this._initX = 20;
-        	if (this._initY > size.y - 50) this._initY = 20;
-        	
-      	cw.setBounds(this._initX, this._initY, 400,300);
-       	this._initX += this._incrX;
-        	this._initY += this._incrY;        	
         this._addChatWindow(cw, chat);
         cw.select();
     } else if (ev.event == ZmEvent.E_DELETE) {
@@ -95,6 +84,32 @@ function(chat) {
 
 ZmChatMultiWindowView.KEY_CHAT = "zcmwv_chat";
 
+ZmChatMultiWindowView.prototype._initialWindowPlacement =
+function(chatWindow) {
+    var windows = {};
+    for (var id in this._chatWindows) {
+        var cw = this._chatWindows[id];
+        var loc = cw.getLocation();
+        windows[loc.x+","+loc.y] = true;
+    }
+
+    var size = this.getSize();
+
+    var initX = 20, initY = 20;
+    var incr = 20;
+    var x = initX, y = initY;
+    while(windows[x+","+y]) {
+        x += incr;
+        y += incr;
+        	if ((x > (size.x - 50)) || (y > (size.y - 50))) {
+        	    initX += incr;
+        	    x = initX;
+        	    y = initY;
+    	    }
+    }        	
+    chatWindow.setBounds(x, y, Dwt.DEAFULT, Dwt.DEFAULT);
+};
+
 ZmChatMultiWindowView.prototype._addChatWindow =
 function(chatWindow, chat) {
     	this._chatWindows[chatWindow.id] = chatWindow;
@@ -102,6 +117,7 @@ function(chatWindow, chat) {
     	var cb = chatWindow.getCloseButton();
     	cb.setData(ZmChatMultiWindowView.KEY_CHAT, chat);
     cb.addSelectionListener(this._windowCloseButtonListener);
+    this._initialWindowPlacement(chatWindow);    
 };
 
 ZmChatMultiWindowView.prototype._removeChatWindow =
