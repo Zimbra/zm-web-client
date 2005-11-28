@@ -150,6 +150,7 @@ function(ev) {
 */
 ZmBuddyTreeController.prototype._dropListener =
 function(ev) {
+
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		var srcData = ev.srcData;
 		var dropTarget = ev.targetControl.getData(Dwt.KEY_OBJECT);
@@ -160,6 +161,11 @@ function(ev) {
 		// don't allow drop onto current group
         	ev.doIt = (srcData.getGroup() != dropTarget.getName());
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
-
+        	var srcData = ev.srcData;
+		var dropTarget = ev.targetControl.getData(Dwt.KEY_OBJECT);
+        // TODOO: normally taken care of by notification listener
+		if ((srcData instanceof ZmBuddy) && (dropTarget instanceof ZmBuddyGroup)) {        
+            srcData.setGroup(dropTarget);
+        }
 	}
 };

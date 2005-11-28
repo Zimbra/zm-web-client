@@ -110,11 +110,11 @@ function(tree) {
 	tree.loadFromJs({ 
 	    buddy: [
             {id: "b0", name: "Dan", status:ZmBuddy.STATUS_AVAILABLE, group: "Friends"},
-            {id: "b1", name: "Ross", status:ZmBuddy.STATUS_DND, group: "Zimbra"},
-            {id: "b2", name: "Satish", status:ZmBuddy.STATUS_AWAY, statusText:"out to lunch", group: "Zimbra"},
-            {id: "b3", name: "Tim", status:ZmBuddy.STATUS_OFFLINE, group: "Zimbra"},
+            {id: "b1", name: "Ross", status:ZmBuddy.STATUS_DND, group: "Work"},
+            {id: "b2", name: "Satish", status:ZmBuddy.STATUS_AWAY, statusText:"out to lunch", group: "Work"},
+            {id: "b3", name: "Tim", status:ZmBuddy.STATUS_OFFLINE, group: "Work"},
             {id: "b4", name: "Anand", status:ZmBuddy.STATUS_EXT_AWAY, group: "Friends"},
-            {id: "b5", name: "Andy", status:ZmBuddy.STATUS_CHAT, group: "Zimbra"},
+            {id: "b5", name: "Andy", status:ZmBuddy.STATUS_CHAT, group: "Work"},
             {id: "b5", name: "Matt", status:ZmBuddy.STATUS_AVAILABLE, group: "Family"}
 	    ]
     });

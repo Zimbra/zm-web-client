@@ -87,7 +87,14 @@ function(status) {
     var fields = {};
     fields[ZmBuddy.F_STATUS] = status;
     this.tree._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
-}
+};
+
+ZmBuddy.prototype.setGroup = 
+function(newGroup) {
+    this.group = newGroup.getName();
+    this.reparent(newGroup);
+    this._eventNotify(ZmEvent.E_MOVE);
+};
 
 ZmBuddy.prototype.getIcon = 
 function() {
