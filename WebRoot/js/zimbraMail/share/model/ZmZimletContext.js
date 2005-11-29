@@ -116,8 +116,6 @@ function() {
 			script[evt] = loadNextScript;
 			script.type = "text/javascript";
 			script.src = fullurl;
-
-			dump("Loading " + fullurl + "\n");
 			head.appendChild(script);
 		} else if (includes.length == 0) {
 			// finished loading all scripts.
