@@ -93,11 +93,4 @@ function(args) {
 	ZmYAddressObjectHandler.displayImage(r.substring(r.indexOf("http://img"),r.indexOf("</Result>")), args[0]);
 };
 
-
-var head = document.getElementsByTagName("head")[0];
-script = document.createElement('script');
-script.id = 'yahooMaps';
-script.type = 'text/javascript';
-script.src = "http://api.maps.yahoo.com/ajaxymap?v=2.0&appid=ZimbraMail";
-head.appendChild(script)
 ZmObjectManager.registerHandler("ZmYAddressObjectHandler");
