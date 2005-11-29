@@ -31,7 +31,7 @@ function ZmZimletContext(id, zimlet) {
 	this.description = zimlet.zimlet[0].description;
 	this.version = zimlet.zimlet[0].version;
 	this.includes = zimlet.zimlet[0].include;
-	if(zimlet.zimlet[0].serverExtension[0] && zimlet.zimlet[0].serverExtension[0].hasKeyword){
+	if(zimlet.zimlet[0].serverExtension && zimlet.zimlet[0].serverExtension[0].hasKeyword){
 		this.keyword = zimlet.zimlet[0].serverExtension[0].hasKeyword;
 	}
 	if(zimlet.zimlet[0].contentObject){
