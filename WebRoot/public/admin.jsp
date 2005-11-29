@@ -146,6 +146,13 @@ Contributor(s):
     </script>
   </head>
   <body onload="javascript:void launch()">
+  <% if (loRes == null) { %>
+  		<jsp:include page='CacheHiRes.html' />
+  		<jsp:include page='../skins/steel/CacheHiRes.html' />
+  <% } else { %>
+  		<jsp:include page='CacheLoRes.html' />
+  		<jsp:include page='../skins/steel/CacheLoRes.html' />
+  <% } %>
 		<jsp:include page="../skins/steel/skin.html"/>  
 <script language=Javascript>
 	skin.hideQuota();

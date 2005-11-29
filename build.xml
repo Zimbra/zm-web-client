@@ -295,37 +295,42 @@
     <copy todir="${images.animated.destDir}">
       <fileset dir="${ajax.dwtimg.dir}/animated"  includes="*"/>
     </copy>
+  	
+  	<property name='dir.imgcache' value='../../public'/>
 
     <!-- copy hiRes images -->
     <mkdir dir="${images.hiRes.destDir}"/>
     <delete file='${images.hiRes.destDir}/${images.cssFile}'/>
+    <delete file='${images.hiRes.destDir}/${dir.imgcache}/CacheHiRes.html'/>
     <echo/>
     <echo message='Copying high resolution images'/>
-    <echo/>
     <imagemerge destdir='${images.hiRes.destDir}' copy='true'
-      cssfile='${images.cssFile}' csspath='${csspathprefix}hiRes/'>
+      cssfile='${images.cssFile}' csspath='${csspathprefix}hiRes/'
+      divfile='${dir.imgcache}/CacheHiRes.html'>
       <dirset dir='img/hiRes' includes='*'/>
-      <dirset dir='${ajax.dwtimg.dir}/hiRes' 
-	includes='*'/>
+      <dirset dir='${ajax.dwtimg.dir}/hiRes' includes='*'/>
     </imagemerge>
     <echo/>
 
     <!-- merge loRes images -->
     <mkdir dir="${images.loRes.destDir}"/>
     <delete file='${images.loRes.destDir}/${images.cssFile}'/>
+    <delete file='${images.loRes.destDir}/${dir.imgcache}/CacheLoRes.html'/>
     <echo/>
 
     <echo message='Merging low resolution dwt images'/>
     <echo/>
     <imagemerge destdir='${images.loRes.destDir}' 
-      cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'>
+      cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'
+      divfile='${dir.imgcache}/CacheLoRes.html'>
       <dirset dir='${ajax.dwtimg.dir}/loRes' includes='*' excludes='**/examples,**/shadow_border'/>
     </imagemerge>
 
     <echo message='Copying non-mergeable low resolution dwt images'/>
     <echo/>
     <imagemerge destdir='${images.loRes.destDir}' copy='true'
-      cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'>
+      cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'
+      divfile='${dir.imgcache}/CacheLoRes.html'>
       <dirset dir='${ajax.dwtimg.dir}/loRes' includes='**/examples,**/shadow_border'/>
     </imagemerge>
 
@@ -333,7 +338,8 @@
     <echo message='Merging low resolution app images (-logo, -translate)'/>
     <echo/>
     <imagemerge destdir='${images.loRes.destDir}' 
-      cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'>
+      cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'
+      divfile='${dir.imgcache}/CacheLoRes.html'>
       <dirset dir='img/loRes' 
 	includes='*'  excludes="**/logo,**/translate"/>
     </imagemerge>
@@ -342,7 +348,8 @@
     <echo message='Copying non-mergeable low resolution app images (logo, translate)'/>
     <echo/>
     <imagemerge destdir='${images.loRes.destDir}' copy='true'
-      cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'>
+      cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'
+      divfile='${dir.imgcache}/CacheLoRes.html'>
       <dirset dir='img/loRes' includes='**/logo,**/translate'/>
     </imagemerge>
     <echo/>
@@ -361,14 +368,18 @@
   </target>
 
   <target name='build-skin-images' depends='compile' unless='imagesdone'>
+	<property name='dir.skincache' value='../../../../skins/${skindir}' />
+  	
     <!-- copy hiRes skin images -->
     <mkdir dir="${images.hiRes.destDir}/skins/${skindir}"/>
     <delete file='${images.hiRes.destDir}/skins/${skindir}/skin.css'/>
+    <delete file='${images.hiRes.destDir}/skins/${skindir}/${dir.skincache}/CacheHiRes.html'/>
     <echo/>
     <echo message='Copying hiRes images for skin ${skindir}'/>
     <echo/>
     <imagemerge destdir='${images.hiRes.destDir}/skins/${skindir}' copy='true'
-      cssfile='skin.css' csspath='${csspathprefix}hiRes/skins/${skindir}/'>
+      cssfile='skin.css' csspath='${csspathprefix}hiRes/skins/${skindir}/'
+      divfile='${dir.skincache}/CacheHiRes.html'>
       <dirset dir='WebRoot/skins/${skindir}' includes='**/img'/>
     </imagemerge>
     <echo/>
@@ -377,11 +388,13 @@
     <!-- merge loRes skin images -->
     <mkdir dir="${images.loRes.destDir}/skins/${skindir}"/>
     <delete file='${images.loRes.destDir}/skins/${skindir}/skin.css'/>
+    <delete file='${images.loRes.destDir}/skins/${skindir}/${dir.skincache}/CacheLoRes.html'/>
     <echo/>
     <echo message='Merging loRes images for skin ${skindir}'/>
     <echo/>
     <imagemerge destdir='${images.loRes.destDir}/skins/${skindir}'
-      cssfile='skin.css' csspath='${csspathprefix}loRes/skins/${skindir}/'>
+      cssfile='skin.css' csspath='${csspathprefix}loRes/skins/${skindir}/'
+      divfile='${dir.skincache}/CacheLoRes.html'>
       <dirset dir='WebRoot/skins/${skindir}' includes='**/img'/>
     </imagemerge>
     <echo/>

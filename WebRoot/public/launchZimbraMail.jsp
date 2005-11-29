@@ -138,6 +138,13 @@ static final private String LOGIN_PAGE = "/zimbra/";
 </script>
 </head>
 <body>
-<jsp:include page="../skins/steel/skin.html"/>
+  <% if (hiRes != null) { %>
+  		<jsp:include page='CacheHiRes.html' />
+  		<jsp:include page='../skins/steel/CacheHiRes.html' />
+  <% } else { %>
+  		<jsp:include page='CacheLoRes.html' />
+  		<jsp:include page='../skins/steel/CacheLoRes.html' />
+  <% } %>
+		<jsp:include page="../skins/steel/skin.html"/>
 </body>
 </html>
