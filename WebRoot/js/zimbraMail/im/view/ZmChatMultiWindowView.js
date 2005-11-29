@@ -71,10 +71,10 @@ function(chat) {
     if (cw) cw.select();
 };
 
-ZmChatMultiWindowView.prototype._buddyChangeListener =
-function(chat, buddy, fields) {
+ZmChatMultiWindowView.prototype._rosterItemChangeListener =
+function(chat, item, fields) {
     var cw = this._getChatWindowForChat(chat);
-    if (cw) cw._buddyChangeListener(buddy, fields);
+    if (cw) cw._rosterItemChangeListener(item, fields);
 }
 
 ZmChatMultiWindowView.prototype._getChatWindowForChat =

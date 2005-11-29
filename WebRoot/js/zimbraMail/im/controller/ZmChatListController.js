@@ -52,11 +52,11 @@ function ZmChatListController(appCtxt, container, imApp) {
 //	this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._changeListener));
 	this._parentView = new Object();
 	
-	// listen for buddy changes
-	this._buddyTreeListener = new AjxListener(this, this._buddyTreeChangeListener);
+	// listen for roster list changes
+	this._rosterListListener = new AjxListener(this, this._rosterListChangeListener);
 	
-	var buddyTree = this._appCtxt.getTree(ZmOrganizer.BUDDY);
-	buddyTree.addChangeListener(this._buddyTreeListener);
+	var rosterList = imApp.getRosterItemList();
+	rosterList.addChangeListener(this._rosterListListener);
     	
 }
 
@@ -387,19 +387,19 @@ function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
 	}
 };
 
-ZmChatListController.prototype.selectChatForBuddy =
-function(buddy) {
-    var chat = this._list.getChatByBuddy(buddy);
+ZmChatListController.prototype.selectChatForRosterItem =
+function(item) {
+    var chat = this._list.getChatByRosterItem(item);
     if (chat != null) {
         this._parentView[this._currentView].selectChat(chat);
     }
 };
 
-ZmChatListController.prototype.chatWithBuddy =
-function(buddy) {
-    var chat = this._list.getChatByBuddy(buddy);
+ZmChatListController.prototype.chatWithRosterItem =
+function(item) {
+    var chat = this._list.getChatByRosterItem(item);
     if (chat == null) {
-        chat = new ZmChat(buddy, this._appCtxt);
+        chat = new ZmChat(item, this._appCtxt);
         // listeners take care of rest...
         this._list.addChat(chat);
     }
@@ -412,15 +412,18 @@ function(chat) {
     this._list.removeChat(chat);
 };
 
-ZmChatListController.prototype._buddyTreeChangeListener = 
+ZmChatListController.prototype._rosterListChangeListener = 
 function(ev, treeView) {
     if (ev.event == ZmEvent.E_MODIFY) {
-        var buddy = ev.getDetail("organizers");
-        if (buddy instanceof ZmBuddy) {
-            var fields = ev.getDetail("fields");
-            var chat = this._list.getChatByBuddy(buddy);
-            // currentview or all? probably all...
-            this._parentView[this._currentView]._buddyChangeListener(chat, buddy, fields);
+        var items = ev.getItems();
+        for (var i=0; i < items.length; i++) {
+             var item = items[i];
+             if (item instanceof ZmRosterItem) {
+                var fields = ev.getDetail("fields");
+                var chat = this._list.getChatByRosterItem(item);
+                // currentview or all? probably all...
+                this._parentView[this._currentView]._rosterItemChangeListener(chat, item, fields);
+             }
         }
     }
 };

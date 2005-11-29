@@ -134,7 +134,7 @@ ZmZimbraMail.OVERVIEW_TREES = {};
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]	= [ZmOrganizer.CALENDAR];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.BUDDY];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.ROSTER_TREE_ITEM];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 
@@ -636,7 +636,7 @@ function(app) {
 		var id = list[i];
 		if ((id == ZmOrganizer.SEARCH && !this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) ||
 			(id == ZmOrganizer.CALENDAR && !this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) ||
-			(id == ZmOrganizer.BUDDY && !this._appCtxt.get(ZmSetting.IM_ENABLED)) ||			
+			(id == ZmOrganizer.ROSTER_TREE_ITEM && !this._appCtxt.get(ZmSetting.IM_ENABLED)) ||			
 			(id == ZmOrganizer.TAG && !this._appCtxt.get(ZmSetting.TAGGING_ENABLED))) {
 			continue;
 		}
@@ -832,15 +832,15 @@ function(refresh) {
 	var calendarString = calendarTree.asString();
 	calendarTree.reset();
 
-    // TODO: move this
-	var buddyTree = this._appCtxt.getTree(ZmOrganizer.BUDDY);
-	if (!buddyTree) {
-		buddyTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.BUDDY);
-		//buddyTree.addChangeListener(this._calendarListener);
-		this._appCtxt.setTree(ZmOrganizer.BUDDY, buddyTree);
+    // TODO: move this or get the roster returned via refresh
+	var rosterTree = this._appCtxt.getTree(ZmOrganizer.ROSTER_TREE_ITEM);
+	if (!rosterTree) {
+		rosterTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ROSTER_TREE_ITEM);
+		this._appCtxt.setTree(ZmOrganizer.ROSTER_TREE_ITEM, rosterTree);
 	}
-	buddyTree.reset();
-	ZmBuddyTree.loadDummyData(buddyTree);
+	//rosterTree.reset();
+	this.getApp(ZmZimbraMail.IM_APP).getRosterItemList().reload();
+	//ZmRosterTree.loadDummyData(rosterTree);
 
 	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 	if (!folderTree) {

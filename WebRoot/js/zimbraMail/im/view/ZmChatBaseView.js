@@ -85,5 +85,5 @@ ZmChatBaseView.prototype.selectChat =
 function(chat) {}
 
 // override
-ZmChatBaseView.prototype._buddyChangeListener =
-function(chat, buddy, fields) {}
+ZmChatBaseView.prototype._rosterItemChangeListener =
+function(chat, item, fields) {}

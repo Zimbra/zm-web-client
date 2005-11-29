@@ -48,8 +48,8 @@ function(rootFolderObj) {
 		this.root = ZmCalendar.createFromJs(null, rootFolderObj, this);
 	else if (this.type == ZmOrganizer.ZIMLET)
 		this.root = ZmZimlet.createFromJs(null, rootFolderObj, this);
-	else if (this.type == ZmOrganizer.BUDDY)
-		this.root = ZmBuddyTree.createFromJs(null, rootFolderObj, this);		
+	else if (this.type == ZmOrganizer.ROSTER_TREE_ITEM)
+		this.root = ZmRosterTree.createFromJs(null, rootFolderObj, this);
 }
 
 ZmFolderTree.prototype.getByPath =

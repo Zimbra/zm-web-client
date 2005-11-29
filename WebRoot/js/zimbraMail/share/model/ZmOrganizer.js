@@ -68,8 +68,8 @@ ZmOrganizer.FOLDER	= ZmEvent.S_FOLDER;
 ZmOrganizer.TAG		= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH	= ZmEvent.S_SEARCH;
 ZmOrganizer.CALENDAR = ZmEvent.S_APPT;
-ZmOrganizer.BUDDY    = ZmEvent.S_BUDDY;
-ZmOrganizer.BUDDY_GROUP = ZmEvent.S_BUDDY_GROUP;
+ZmOrganizer.ROSTER_TREE_ITEM = ZmEvent.S_ROSTER_TREE_ITEM;
+ZmOrganizer.ROSTER_TREE_GROUP = ZmEvent.S_ROSTER_TREE_GROUP;
 ZmOrganizer.ZIMLET = ZmEvent.S_ZIMLET;
 
 // defined in com.zimbra.cs.mailbox.Mailbox
@@ -78,8 +78,10 @@ ZmOrganizer.ID_TRASH	= 3;
 ZmOrganizer.ID_SPAM		= 4;
 ZmOrganizer.ID_CALENDAR	= 10;
 ZmOrganizer.ID_ZIMLET	= -10;
-ZmOrganizer.ID_BUDDY	= -11;
-ZmOrganizer.ID_BUDDY_GROUP = -12;
+ZmOrganizer.ID_ROSTER_LIST = -11;
+ZmOrganizer.ID_ROSTER_TREE = -12;
+ZmOrganizer.ID_ROSTER_TREE_ITEM = -13;
+ZmOrganizer.ID_ROSTER_GROUP= -14;
 
 ZmOrganizer.SOAP_CMD = {};
 ZmOrganizer.SOAP_CMD[ZmOrganizer.FOLDER]	= "FolderAction";

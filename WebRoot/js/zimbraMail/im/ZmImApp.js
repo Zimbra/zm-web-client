@@ -64,3 +64,12 @@ function() {
 		this._chatList = new ZmChatList(this._appCtxt);
 	return this._chatList;
 };
+
+ZmImApp.prototype.getRosterItemList =
+function() {
+	if (!this._rosterItemList) {
+		this._rosterItemList = new ZmRosterItemList(this._appCtxt);
+        	//TODO: load dummy data
+	}
+	return this._rosterItemList;
+};

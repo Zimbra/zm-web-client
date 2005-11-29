@@ -23,47 +23,47 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmBuddyGroup(id, name, parent, tree) {
-	ZmOrganizer.call(this, ZmOrganizer.BUDDY_GROUP, id, name, parent, tree);
+function ZmRosterTreeGroup(id, name, parent, tree) {
+	ZmOrganizer.call(this, ZmOrganizer.ROSTER_TREE_GROUP, id, name, parent, tree);
 }
 
-ZmBuddyGroup.prototype = new ZmOrganizer;
-ZmBuddyGroup.prototype.constructor = ZmBuddyGroup;
+ZmRosterTreeGroup.prototype = new ZmOrganizer;
+ZmRosterTreeGroup.prototype.constructor = ZmRosterTreeGroup;
 
-ZmBuddyGroup.F_NAME = ZmOrganizer.F_NAME;
+ZmRosterTreeGroup.F_NAME = ZmOrganizer.F_NAME;
 
-ZmBuddyGroup.prototype.toString = 
+ZmRosterTreeGroup.prototype.toString = 
 function() {
-	return "ZmBuddyGroup - " + this.name;
+	return "ZmRosterTreeGroup - " + this.name;
 };
 
 // Constants
-ZmBuddyGroup.ID_BUDDY_GROUP = ZmOrganizer.ID_BUDDY_GROUP;
+ZmRosterTreeGroup.ID_ROSTER_TREE_GROUP = ZmOrganizer.ID_ROSTER_TREE_GROUP;
 
-ZmBuddyGroup.prototype.getIcon = 
+ZmRosterTreeGroup.prototype.getIcon = 
 function() {
-    return null; //"Group"; //null;
+    return null; //"Group";
 };
 
-ZmBuddyGroup.sortCompare = 
-function(buddyA, buddyB) {
+ZmRosterTreeGroup.sortCompare = 
+function(groupA, groupB) {
 	// sort by name
-	var buddyAName = buddyA.name.toLowerCase();
-	var buddyBName = buddyB.name.toLowerCase();
-	if (buddyAName < buddyBName) {return -1;}
-	if (buddyAName > buddyBName) {return 1;}
+	var groupAName = groupA.getName().toLowerCase();
+	var groupBName = groupB.getName().toLowerCase();
+	if (groupAName < groupBName) {return -1;}
+	if (groupAName > groupBName) {return 1;}
 	return 0;
 };
 
-ZmBuddyGroup.checkName =
+ZmRosterTreeGroup.checkName =
 function(name) {
 	return ZmOrganizer.checkName(name);
 };
 
 // Public methods
-ZmBuddyGroup.prototype.getId = function() { return this.id; }
+ZmRosterTreeGroup.prototype.getId = function() { return this.id; }
 
-ZmBuddyGroup.prototype.getName = 
+ZmRosterTreeGroup.prototype.getName = 
 function() {
 	return this.name;
 };

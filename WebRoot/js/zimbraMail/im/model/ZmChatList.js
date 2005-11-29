@@ -49,7 +49,7 @@ function(chat) {
 	this._eventNotify(ZmEvent.E_DELETE, [chat]);
 };
 
-ZmChatList.prototype.getChatByBuddy =
-function(buddy) {
-    return this.getById(ZmChat.idFromBuddy(buddy));
+ZmChatList.prototype.getChatByRosterItem =
+function(item) {
+    return this.getById(ZmChat.idFromRosterItem(item));
 };

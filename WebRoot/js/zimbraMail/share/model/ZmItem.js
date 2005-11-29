@@ -71,7 +71,8 @@ ZmItem.CONTACT	= ZmEvent.S_CONTACT;
 ZmItem.APPT		= ZmEvent.S_APPT;
 ZmItem.NOTE		= ZmEvent.S_NOTE;
 ZmItem.CHAT		= ZmEvent.S_CHAT;
-ZmItem.MAX		= ZmItem.CHAT;
+ZmItem.ROSTER_ITEM = ZmEvent.S_ROSTER_ITEM;
+ZmItem.MAX		= ZmEvent.S_MAX;
 
 // Type names
 ZmItem.MSG_KEY = new Object();

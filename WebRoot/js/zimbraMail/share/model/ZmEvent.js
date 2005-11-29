@@ -58,9 +58,10 @@ ZmEvent.S_PICKER		= i++;
 ZmEvent.S_SEARCH		= i++;
 ZmEvent.S_SETTING		= i++;
 ZmEvent.S_ZIMLET		= i++;
-ZmEvent.S_BUDDY        = i++;
-ZmEvent.S_BUDDY_GROUP = i++;
 ZmEvent.S_CHAT        = i++;
+ZmEvent.S_ROSTER_ITEM = i++;
+ZmEvent.S_ROSTER_TREE_ITEM = i++;
+ZmEvent.S_ROSTER_TREE_GROUP = i++;
 
 //Source types for admin
 ZmEvent.S_ACCOUNT		= i++;
@@ -69,6 +70,8 @@ ZmEvent.S_DOMAIN		= i++;
 ZmEvent.S_SERVER		= i++;
 ZmEvent.S_GLOBALCONFIG	= i++;
 ZmEvent.S_STATUS		= i++;
+
+ZmEvent.S_MAX		= i-1;
 
 // Event types
 i = 1;
@@ -122,6 +125,19 @@ function(field, value) {
 ZmEvent.prototype.getDetail =
 function(field) {
 	return this._details[field];
+}
+
+
+/**
+* looks for a detail with a name of "items", and returns it, or an
+* empty array if it doesn't exist.
+*
+* @param field		the detail's name
+*/
+ZmEvent.prototype.getItems =
+function() {
+    var items = this._details["items"];
+    return items ? items : [];
 }
 
 /**

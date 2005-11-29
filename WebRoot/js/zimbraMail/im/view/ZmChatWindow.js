@@ -142,20 +142,18 @@ function() {
 ZmChatWindow.prototype._setChat =
 function(chat) {
     this.chat = chat;
-    var buddy = chat.getBuddy();
-    this._buddyChangeListener(buddy, null, true);
-//    this.setTitle(buddy.getName());
-//    this.setImage(buddy.getIcon());    
+    var item = chat.getRosterItem();
+    this._rosterItemChangeListener(item, null, true);
 };
 
-ZmChatWindow.prototype._buddyChangeListener =
-function(buddy, fields, setAll) {
-    if (setAll || fields[ZmBuddy.F_STATUS] != null) {
-        this.setImage(buddy.getIcon());
-        this.setStatusTitle("("+buddy.getStatusText()+")");
+ZmChatWindow.prototype._rosterItemChangeListener =
+function(item, fields, setAll) {
+    if (setAll || fields[ZmRosterItem.F_SHOW] != null) {
+        this.setImage(item.getIcon());
+        this.setStatusTitle("("+item.getShowText()+")");
     }
-    if (setAll || fields[ZmBuddy.F_NAME] != null) {
-        this.setTitle(buddy.getName());
+    if (setAll || fields[ZmRosterItem.F_NAME] != null) {
+        this.setTitle(item.getName());
     }
 };
 
@@ -163,7 +161,7 @@ ZmChatWindow.prototype.sendInput =
 function(text) {
     if (text.substring(0,1) == "$") {
         if (text.substring(1, 2) == "s") {
-            this.chat.getBuddy().setStatus(parseInt(text.substring(2,3)));
+            this.chat.getRosterItem().setShow(parseInt(text.substring(2,3)));
         } else if (text.substring(1, 3) == "et") {
             text = ">:) :) =)) =(( :(( <:-P :O)";
         }
@@ -178,7 +176,7 @@ function(text) {
     
     div = this._doc.createElement("div");
     // div.className = "ZmChatWindowChatEntryThem";
-    div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+AjxStringUtil.htmlEncode(this.chat.getBuddy().getName())+": </b></span>" + AjxStringUtil.htmlEncode("whatever", true);
+    div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+AjxStringUtil.htmlEncode(this.chat.getRosterItem().getName())+": </b></span>" + AjxStringUtil.htmlEncode("whatever", true);
     content.appendChild(div);
     content.parentNode.scrollTop = Dwt.getSize(content).y;
 }
