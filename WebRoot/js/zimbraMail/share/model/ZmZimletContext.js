@@ -31,6 +31,10 @@ function ZmZimletContext(id, zimlet) {
 	this.description = zimlet.zimlet[0].description;
 	this.version = zimlet.zimlet[0].version;
 	this.includes = zimlet.zimlet[0].include;
+	if (this.includes) {
+		for (var i = this.includes.length; --i >= 0;)
+			this.includes[i] = this.includes[i]._content;
+	}
 	if(zimlet.zimlet[0].serverExtension && zimlet.zimlet[0].serverExtension[0].hasKeyword){
 		this.keyword = zimlet.zimlet[0].serverExtension[0].hasKeyword;
 	}
@@ -40,6 +44,10 @@ function ZmZimletContext(id, zimlet) {
 	if(zimlet.zimlet[0].zimletPanelItem){
 		this.zimletPanelItem = zimlet.zimlet[0].zimletPanelItem[0];
 	}
+	if(zimlet.zimlet[0].handlerObject){
+		this.handlerObject = zimlet.zimlet[0].handlerObject[0]._content;
+	}
+	this._url = "/service/zimlet/" + this.name + "/";
 	this._loadIncludes();
 }
 
@@ -50,50 +58,93 @@ function() {
 	return "ZmZimletContext - " + this.name;
 };
 
-// This function will load scripts defined in the includes array.  I'm not sure
-// if this shouldn't be better off done on the server-side, but anyway, here
-// goes.  I first used such wizardry in HTMLArea and it works very good.  Here
-// it's even smarter.  ;-)
+// The document.write hack.  If files are present in this array, they will be
+// favored by _loadIncludes (see inner function loadNextScript).  I originally
+// tried to make the function below an inner function too, but this doesn't
+// work because the whole mess is asynchronous (think multiple Zimlets loading
+// external files that call document.write).
+ZmZimletContext.dwhack_scripts = [];
+document.write = document.writeln = function() {
+	// let's assume there may be more arguments
+	var a = [];
+	for (var i = 0; i < arguments.length; ++i)
+		a[i] = arguments[i];
+	var str = a.join("");
+	if (/<script[^>]+src=([\x22\x27])(.*?)\1/i.test(str)) {
+		// we have a <script>, let's add it to our includes list. :-)
+		ZmZimletContext.dwhack_scripts.push(RegExp.$2);
+	}
+	// If it's not a script, we can't do anything...  The idea is that the
+	// original document.write would mess all our HTML anyway, so we can't
+	// call it.  If scripts rely on it to insert elements, well, that's too
+	// bad--they won't work.  For this reason we don't even care to save
+	// the original functions.
+};
+
+// Asynchronously loads scripts in a synchronized fashion. ;-)
 //
-// So what happens is that it will load scripts defined by the <include> tags,
-// but sequentially.  That's because some script may use variables/functions
-// defined in a previously <include>-ed script, and since loading is
-// asynchronous, if we simply create <script> elements and append them to the
-// <head> we risk having JS errors.  Therefore, we load scripts one by one,
-// waiting for each <script> to finish loading.
+// Note that this function returns immediately; there are no guarantees that
+// the scripts are loaded by that time.
+//
+// Calls to document.write(ln) are trapped in order to fix things with Yahoo,
+// Google and potentially others who are too lazy to implement a proper way of
+// loading scripts.  *grin*
 ZmZimletContext.prototype._loadIncludes =
 function() {
 	var includes = this.includes;
 	if (!includes)
 		return;
 	var self = this;
-	var zimlet_url = "/service/zimlet/" + this.name + "/";
-	var current = 0;
+	var zimlet_url = this._url;
 	var evt = AjxEnv.isIE ? "onreadystatechange" : "onload";
 	var head = document.getElementsByTagName("head")[0];
 
 	function loadNextScript() {
-		if (current > 0 && AjxEnv.isIE &&
+		if (AjxEnv.isIE &&
 		    !/loaded|complete/.test(window.event.srcElement.readyState))
 			return;
 		if (this) // this is cool
 			this[evt] = null; // clear the event handler so IE won't leak
-		if (current < includes.length) {
-			var fullurl = includes[current]._content;
+		var scripts = ZmZimletContext.dwhack_scripts.length > 0
+			? ZmZimletContext.dwhack_scripts
+			: includes;
+		if (scripts.length > 0) {
+			var fullurl = scripts.shift();
 			if (!/^((https?|ftps?):\x2f\x2f|\x2f)/.test(fullurl))
 				fullurl = zimlet_url + fullurl;
 			var script = document.createElement("script");
 			script[evt] = loadNextScript;
 			script.type = "text/javascript";
 			script.src = fullurl;
-			current++;
+
+			dump("Loading " + fullurl + "\n");
 			head.appendChild(script);
-		} else {
+		} else if (includes.length == 0) {
 			// finished loading all scripts.
 			// we don't allow this function to be called a second time.
 			self.includes = null;
+
+			// instantiate the handler object if present
+			if (self.handlerObject) {
+				var CTOR = eval(self.handlerObject);
+				self.handlerObject = new CTOR;
+				self.handlerObject.constructor = CTOR;
+			}
 		}
 	};
 
 	loadNextScript();
+};
+
+ZmZimletContext.prototype.getUrl = function() { return this._url; };
+
+ZmZimletContext.prototype.callHandler = function(funcname, args) {
+	if (this.handlerObject) {
+		var f = this.handlerObject[funcname];
+		if (typeof f == "function") {
+			if (!(args instanceof Array))
+				args = [ args ];
+			f.apply(this.handlerObject, args);
+		}
+	}
 };
