@@ -100,9 +100,9 @@ function() {
 	var head = document.getElementsByTagName("head")[0];
 
 	function loadNextScript() {
-		if (AjxEnv.isIE &&
-		    !/loaded|complete/.test(window.event.srcElement.readyState))
-			return;
+// 		if (AjxEnv.isIE && window.event && window.event.srcElement && window.event.srcElement.readyState &&
+// 		    !/complete/.test(window.event.srcElement.readyState))
+// 			return;
 		if (this) // this is cool
 			this[evt] = null; // clear the event handler so IE won't leak
 		var scripts = ZmZimletContext.dwhack_scripts.length > 0
@@ -127,6 +127,7 @@ function() {
 				var CTOR = eval(self.handlerObject);
 				self.handlerObject = new CTOR;
 				self.handlerObject.constructor = CTOR;
+				self.handlerObject.init(self);
 			}
 		}
 	};
