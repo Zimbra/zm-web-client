@@ -49,20 +49,10 @@ function(parent, obj, tree, link) {
 	if (obj && obj.buddy && obj.buddy.length) {
 		for (var i = 0; i < obj.buddy.length; i++) {
 		    var buddy = obj.buddy[i];
-		    var buddyParent = root;
-		    if (buddy.group == null) buddy.group = ZmMsg.buddies;
-		    if (buddy.group) {
-                var groupId = root._prefixId+"_group_"+buddy.group;
-                var group = root.getById(groupId);
-                if (group == null) {
-                    group = new ZmBuddyGroup(groupId, buddy.group, root, tree);
-                    root.children.add(group);
-                }
-                buddyParent = group;
-		    }
-		    var b = ZmBuddy.createFromJs(buddyParent, buddy, tree);
-		    
-		}
+            if (buddy.group == null) buddy.group = ZmMsg.buddies;
+            var buddyGroup = root._getGroup(buddy.group, tree);
+		    var b = ZmBuddy.createFromJs(buddyGroup, buddy, tree);
+        	}
 		var children = root.children.getArray();
 		if (children.length)
 		    children.sort(ZmBuddy.sortCompare);
@@ -83,6 +73,18 @@ function(buddyA, buddyB) {
 ZmBuddyTree.checkName =
 function(name) {
 	return ZmOrganizer.checkName(name);
+};
+
+// used to get (auto-create) a group from the root
+ZmBuddyTree.prototype._getGroup =
+function(name, tree) {
+    var groupId = this._prefixId+"_group_"+name;
+    var group = this.getById(groupId);
+    if (group == null) {
+       group = new ZmBuddyGroup(groupId, name, this, tree);
+       this.children.add(group);
+    }
+    return group;
 };
 
 // Public methods
