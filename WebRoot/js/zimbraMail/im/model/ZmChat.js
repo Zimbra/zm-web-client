@@ -27,7 +27,7 @@
 *
 */
 function ZmChat(buddy, appCtxt, id, list) {
-	if (id == null) id = buddy.getId() + "_chat";
+	if (id == null) id = buddy.getAddress() + "_chat";
 	var chatList = appCtxt.getApp(ZmZimbraMail.IM_APP).getChatList();
 	list = list ? list : chatList;
 	ZmItem.call(this, appCtxt, ZmItem.CHAT, id, list);
@@ -46,7 +46,7 @@ function() {
 
 ZmChat.idFromBuddy =
 function(buddy) {
-    return buddy.id + "_chat";
+    return buddy.getAddress() + "_chat";
 }
 
 // Public methods

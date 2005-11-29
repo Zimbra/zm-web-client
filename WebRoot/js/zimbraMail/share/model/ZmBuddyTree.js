@@ -26,6 +26,7 @@
 function ZmBuddyTree(id, name, parent, tree) {
     this._appCtxt = tree._appCtxt;
     this._prefixId = Dwt.getNextId();
+    this._addr2Buddies = {}; // hash from buddy.addr to ZmBuddy for each group buddy is in
 	ZmOrganizer.call(this, ZmOrganizer.BUDDY, id, name, parent, tree);
 }
 
@@ -50,12 +51,21 @@ function(parent, obj, tree, link) {
 		for (var i = 0; i < obj.buddy.length; i++) {
 		    var buddy = obj.buddy[i];
             if (buddy.group == null) buddy.group = ZmMsg.buddies;
-            var buddyGroup = root._getGroup(buddy.group, tree);
-		    var b = ZmBuddy.createFromJs(buddyGroup, buddy, tree);
+            var groups = buddy.group.split(/,/);
+            var buddies = [];
+            for (var j=0; j < groups.length; j++) {
+                var groupName = groups[j];
+                var buddyGroup = root._getGroup(groupName, tree);
+                var id = buddy.addr + ":"+ groupName;
+                var b = new ZmBuddy(id, buddy.addr, buddy.name, buddyGroup, tree, buddy.status, buddy.statusText, groups, j);
+	        	   buddyGroup.children.add(b);
+	        	   buddies.push(b);
+            }
+            root._addr2Buddies[buddy.addr] = buddies;
         	}
 		var children = root.children.getArray();
 		if (children.length)
-		    children.sort(ZmBuddy.sortCompare);
+		    children.sort(ZmBuddyGroup.sortCompare);
 	}
 	return root;
 };
@@ -73,6 +83,13 @@ function(buddyA, buddyB) {
 ZmBuddyTree.checkName =
 function(name) {
 	return ZmOrganizer.checkName(name);
+};
+
+// return all buddy instances with given addr
+ZmBuddyTree.prototype.getAllBuddiesByAddr =
+function(addr) {
+    var b = this._addr2Buddies[addr]; 
+    return b ? b : [];
 };
 
 // used to get (auto-create) a group from the root
@@ -111,13 +128,13 @@ ZmBuddyTree.loadDummyData =
 function(tree) {
 	tree.loadFromJs({ 
 	    buddy: [
-            {id: "b0", name: "Dan", status:ZmBuddy.STATUS_AVAILABLE, group: "Friends"},
-            {id: "b1", name: "Ross", status:ZmBuddy.STATUS_DND, group: "Work"},
-            {id: "b2", name: "Satish", status:ZmBuddy.STATUS_AWAY, statusText:"out to lunch", group: "Work"},
-            {id: "b3", name: "Tim", status:ZmBuddy.STATUS_OFFLINE, group: "Work"},
-            {id: "b4", name: "Anand", status:ZmBuddy.STATUS_EXT_AWAY, group: "Friends"},
-            {id: "b5", name: "Andy", status:ZmBuddy.STATUS_CHAT, group: "Work"},
-            {id: "b6", name: "Matt", status:ZmBuddy.STATUS_AVAILABLE, group: "Family"}
+            {id: "b0", addr: "dkarp@zimbra.com", name: "Dan", status:ZmBuddy.STATUS_AVAILABLE, group: "Friends"},
+            {id: "b1", addr: "ross@zimbra.com", name: "Ross", status:ZmBuddy.STATUS_DND, group: "Work"},
+            {id: "b2", addr: "satish@zimbra.com", name: "Satish", status:ZmBuddy.STATUS_AWAY, statusText:"out to lunch", group: "Work"},
+            {id: "b3", addr: "tim@zimbra.com", name: "Tim", status:ZmBuddy.STATUS_OFFLINE, group: "Work"},
+            {id: "b4", addr: "anand@zimbra.com", name: "Anand", status:ZmBuddy.STATUS_EXT_AWAY, group: "Friends,Work"},
+            {id: "b5", addr: "andy@zibra.com", name: "Andy", status:ZmBuddy.STATUS_CHAT, group: "Work"},
+            {id: "b6", addr: "matt@gmail.com", name: "Matt", status:ZmBuddy.STATUS_AVAILABLE, group: "Family"}
 	    ]
     });
 }

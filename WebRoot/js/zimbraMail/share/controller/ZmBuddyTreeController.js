@@ -70,8 +70,13 @@ function(ev, treeView) {
             if (status != null) {
                 var toast = this._toastFormatter.format([buddy.getName(), buddy.getStatusText()]);
                 this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
-                var ti = treeView.getTreeItemById(buddy.id);
-                if (ti) ti.setImage(buddy.getIcon());
+                var buddies = buddy.tree.root.getAllBuddiesByAddr(buddy.getAddress());
+                for (var b in buddies) {
+                    var bb = buddies[b];
+                    bb.status = buddy.status;
+                    var ti = treeView.getTreeItemById(bb.id);
+                    if (ti) ti.setImage(bb.getIcon());
+                }
             }
         }
     }
