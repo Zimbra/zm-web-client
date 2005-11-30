@@ -79,9 +79,7 @@ ZmEmoticonObjectHandler.prototype._getHtmlContent =
 function(html, idx, smiley, context) {
 	context.sd = this._smileyToSD[smiley];
 	if (context.sd) {
-        	html[idx++] = "<table style='display:inline' cellpadding=0 cellspacing=0 border=0><tr><td align=center valign=bottom>";
-        	html[idx++] = AjxImg.getImageHtml(context.sd.image);
-        	html[idx++] = "</td></tr></table>";
+        	html[idx++] = AjxImg.getImageHtml(context.sd.image, null, null, true);
    	} else {
    	    return AjxStringUtil.htmlEncode(smiley);
    	}

@@ -220,8 +220,10 @@ function() {
 	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED))
 		list.push(ZmOperation.BROWSE);
 	list.push(ZmOperation.NEW_MESSAGE);
+	/*
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
 		list.push(ZmOperation.IM);
+    */
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
 		list.push(ZmOperation.CONTACT);
 	return list;
