@@ -28,6 +28,10 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	className = className ? className : "ZmChatMultiWindowView";
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
 	ZmChatBaseView.call(this, parent, className, posStyle, controller, ZmController.IM_CHAT_TAB_VIEW);
+	var dropTgt = new DwtDropTarget(ZmRosterTreeItem);
+	this.setDropTarget(dropTgt);
+	dropTgt.addDropListener(new AjxListener(this, this._dropListener));
+	
 	this.setScrollStyle(DwtControl.CLIP);
 	this._chatWindows = {};
 	this._chatIdToChatWindow = {};
@@ -133,4 +137,20 @@ function(ev) {
     var b = ev.item;
     var chat = b.getData(ZmChatMultiWindowView.KEY_CHAT);
     this._controller.endChat(chat);
+};
+
+ZmChatMultiWindowView.prototype._dropListener =
+function(ev) {
+	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		var srcData = ev.srcData;
+		if (!(srcData instanceof ZmRosterTreeItem)) {
+			ev.doIt = false;
+			return;
+		}
+	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
+        	var srcData = ev.srcData;
+		if ((srcData instanceof ZmRosterTreeItem)) {
+		    this._controller.chatWithRosterItem(srcData.getRosterItem());
+        }
+	}
 };
