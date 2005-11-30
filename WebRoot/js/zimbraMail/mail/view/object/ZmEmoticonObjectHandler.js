@@ -105,6 +105,11 @@ function(smiley, context) {
 	return "<b>" + context.sd.tooltip + "</b>";
 };
 
+ZmEmoticonObjectHandler.prototype.getActivatedClassName =
+function(object, context) {
+    return this._className;
+}
+
 ZmEmoticonObjectHandler.prototype.getActionMenu =
 function(obj) {
 	return null;
