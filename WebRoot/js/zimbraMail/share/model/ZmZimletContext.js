@@ -98,13 +98,13 @@ function() {
 	var zimlet_url = this._url;
 	var evt = AjxEnv.isIE ? "onreadystatechange" : "onload";
 	var head = document.getElementsByTagName("head")[0];
+	var current_script = null;
 
 	function loadNextScript() {
-// 		if (AjxEnv.isIE && window.event && window.event.srcElement && window.event.srcElement.readyState &&
-// 		    !/complete/.test(window.event.srcElement.readyState))
-// 			return;
-		if (this) // this is cool
-			this[evt] = null; // clear the event handler so IE won't leak
+		if (AjxEnv.isIE && current_script && current_script.readyState != "complete")
+			return;
+		if (current_script) // this is cool
+			current_script[evt] = null; // clear the event handler so IE won't leak
 		var scripts = ZmZimletContext.dwhack_scripts.length > 0
 			? ZmZimletContext.dwhack_scripts
 			: includes;
@@ -116,11 +116,13 @@ function() {
 			script[evt] = loadNextScript;
 			script.type = "text/javascript";
 			script.src = fullurl;
+			current_script = script;
 			head.appendChild(script);
 		} else if (includes.length == 0) {
 			// finished loading all scripts.
 			// we don't allow this function to be called a second time.
 			self.includes = null;
+			current_script = null;
 
 			// instantiate the handler object if present
 			if (self.handlerObject) {
