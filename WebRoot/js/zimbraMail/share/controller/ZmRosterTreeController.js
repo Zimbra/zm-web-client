@@ -79,7 +79,7 @@ function(ev) {
         var items= ev.getItems();
         for (var n=0; n < items.length; n++) {
             var item = items[n];
-            if (item instanceof ZmRosterItem) this._handleRosterItemModify(item, ev.getDetail("fields"));
+            if (item instanceof ZmRosterItem) this._handleRosterItemModify(item, ev.getDetail("fields"), treeView);
         }
     } else if (ev.event == ZmEvent.E_CREATE) {
         var item = ev.getDetail("organizers");
@@ -89,7 +89,7 @@ function(ev) {
 };
 
 ZmRosterTreeController.prototype._handleRosterItemModify =
-function(item, fields) {
+function(item, fields, treeView) {
     var show = fields[ZmRosterItem.F_SHOW];
     if (show != null) {
         var toast = this._toastFormatter.format([item.getName(), item.getShowText()]);
