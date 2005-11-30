@@ -361,8 +361,13 @@ function(ev, div) {
 				}
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) {
 				this._setParticipantToolTip(item.getAddress(ZmEmailAddress.FROM));
-			} else if ((m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) && item.fragment) {
-				this.setToolTipContent(AjxStringUtil.htmlEncode(item.fragment));
+			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) {
+				if (item.invite) {
+					this.setToolTipContent(item.invite.getToolTip());
+				}
+				else if (item.fragment) {
+					this.setToolTipContent(AjxStringUtil.htmlEncode(item.fragment));
+				}
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) {
 				this._setDateToolTip(item, div);
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER]) {

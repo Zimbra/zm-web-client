@@ -97,6 +97,12 @@ function() {
 	return (this.components.length > 1);
 };
 
+ZmInvite.prototype.hasOtherAttendees =
+function(compNum) {
+	var component = this.components[compNum];
+	return component.at && component.at.length > 0;
+};
+
 ZmInvite.prototype.getEventName = 
 function(compNum) {
 	return this.components[compNum] ? this.components[compNum].name : null;
@@ -153,6 +159,25 @@ function(compNum) {
 		: false;
 };
 
+ZmInvite.prototype.isRecurring =
+function(compNum) {
+	var component = this.components[compNum];
+	return component.recur;
+};
+
+ZmInvite.prototype.isAllDayEvent = 
+function(compNum) { 
+	var component = this.components[compNum];
+	return component.allDay == "1"; 
+};
+
+ZmInvite.prototype.isMultiDay =
+function(compNum) {
+	var sd = this.getServerStartDate(compNum);
+	var ed = this.getServerEndDate(compNum);
+	return (sd.getDate() != ed.getDate()) || (sd.getMonth() != ed.getMonth()) || (sd.getFullYear() != ed.getFullYear());
+};
+
 ZmInvite.prototype.getServerEndTime = 
 function(compNum) {
 	if (this.components[compNum] == null) return;
@@ -195,12 +220,28 @@ function(compNum) {
 	}
 	return this._serverEndTime;
 };
+ZmInvite.prototype.getServerEndDate =
+function(compNum) {
+	if (this._serverEndDate == null) {
+		var time = this.getServerEndTime(compNum);
+		this._serverEndDate = AjxDateUtil.parseServerDateTime(time);
+	}
+	return this._serverEndDate;
+};
 
 ZmInvite.prototype.getServerStartTime = 
 function(compNum) {
 	return this.components[compNum] != null
 		? this.components[compNum].s[0].d
 		: null;
+};
+ZmInvite.prototype.getServerStartDate =
+function(compNum) {
+	if (this._serverStartDate == null) {
+		var time = this.getServerStartTime(compNum);
+		this._serverStartDate = AjxDateUtil.parseServerDateTime(time);
+	}
+	return this._serverStartDate;
 };
 
 ZmInvite.prototype.getServerStartTimeTz = 
@@ -227,6 +268,58 @@ function(compNum) {
 			: this.components[compNum].e[0].tz;
 	}
 	return this._serverEndTimeZone;
+};
+
+ZmInvite.prototype.getDurationText =
+function(compNum, emptyAllDay,startOnly) {
+	var component = this.components[compNum];
+	if (this.isAllDayEvent(compNum)) {
+		if (emptyAllDay) {
+			return "";
+		}
+
+		var sd = this.getServerStartDate(compNum);
+		if (this.isMultiDay(compNum)) {
+			var ed = this.getServerEndDate(compNum);
+			
+			var dateFormatter = AjxDateFormat.getDateInstance();
+			var startDay = dateFormatter.format(sd);
+			var endDay = dateFormatter.format(ed);
+			
+			if (!ZmInvite._daysFormatter) {
+				ZmInvite._daysFormatter = new AjxMessageFormat(ZmMsg.durationDays);
+			}
+			return ZmInvite._daysFormatter.format( [ startDay, endDay ] );
+		} 
+		else {
+			var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.FULL);
+			return dateFormatter.format(sd);
+		}
+
+	} 
+	else {
+		var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.FULL);
+		var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+
+		var sd = this.getServerStartDate(compNum);
+
+		var a = [ dateFormatter.format(sd), "<br>" ];
+		if (startOnly) {
+			a.push(timeFormatter.format(sd));
+		} 
+		else {
+			var ed = this.getServerEndDate(compNum);
+		
+			var startHour = timeFormatter.format(sd);
+			var endHour = timeFormatter.format(ed);
+			
+			if (!ZmInvite._hoursFormatter) {
+				ZmInvite._hoursFormatter = new AjxMessageFormat(ZmMsg.durationHours);
+			}
+			a.push(ZmInvite._hoursFormatter.format( [ startHour, endHour ] ));
+		}
+		return a.join("");
+	}
 };
 
 ZmInvite.prototype.getName = 
@@ -274,4 +367,107 @@ function() {
 	text[i++] = ZmAppt.NOTES_SEPARATOR;
 
 	return text.join("");
+};
+
+/** 
+ * Returns HTML for a tool tip for this invite. 
+ * <p>
+ * <strong>Note:</strong>
+ * This method assumes that there are currently one and only one
+ * component object on the invite.
+ */
+ZmInvite.prototype.getToolTip =
+function(/*calController*/) {
+	if (!this._toolTip) {
+		var compNum = 0;
+		
+		var html = new Array(20);
+		var idx = 0;
+		
+		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 >";
+		html[idx++] = "<tr valign='center'><td colspan=2 align='left'>";
+		html[idx++] = "<div style='border-bottom: 1px solid black;'>";
+		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
+		html[idx++] = "<tr valign='center'>";
+		html[idx++] = "<td><b>";
+		
+		// IMGHACK - added outer table for new image changes...
+		html[idx++] = "<div style='white-space:nowrap'><table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
+		if (this.hasOtherAttendees(compNum)) {
+			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptMeeting") + "</td>";
+		}
+		
+		if (this.isException(compNum)) {
+			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptException") + "</td>";
+		}
+		else if (this.isRecurring(compNum)) {
+			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptRecur") + "</td>";
+		}
+			
+//		if (this.hasAlarm()) 
+//			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptReminder") + "</td>";
+
+		html[idx++] = "</tr></table>";
+		
+		html[idx++] = "&nbsp;";
+		html[idx++] = AjxStringUtil.htmlEncode(this.getName(compNum));
+		html[idx++] = "&nbsp;</div></b></td>";	
+		html[idx++] = "<td align='right'>";
+
+		/***
+		var cal = this.getFolderId() != ZmOrganizer.ID_CALENDAR && calController
+			? calController.getCalendar(this.getFolderId()) : null;
+		/***/
+		var cal = null;
+		/***/
+
+		html[idx++] = cal && cal.link
+			? AjxImg.getImageHtml("GroupSchedule")
+			: AjxImg.getImageHtml("Appointment");
+					
+		html[idx++] = "</td>";
+		html[idx++] = "</table>";
+		html[idx++] = "</div></td></tr>";
+		//idx = this._addEntryRow(ZmMsg.meetingStatus, this.getStatusString(), html, idx, false);
+
+		if (cal) {
+			idx = this._addEntryRow(ZmMsg.calendar, cal.getName(compNum), html, idx, false);
+		}
+
+		/***
+		if (this.hasOtherAttendees())
+			idx = this._addEntryRow(ZmMsg.status, this.getParticipationStatusString(), html, idx, false);		
+		/***/
+
+		var when = this.getDurationText(compNum, false, false);
+		idx = this._addEntryRow(ZmMsg.when, when, html, idx, false, null, true);		
+		if (this.isRecurring(compNum)) {
+			var recurrences = this.getRecurrenceRules(compNum);
+			var startDate = this.getServerStartDate(compNum);
+			var repeats = ZmApptViewHelper.getRecurrenceDisplayString(recurrences, startDate);
+			idx = this._addEntryRow(ZmMsg.repeats, repeats, html, idx, false, null, true);		
+		}
+		idx = this._addEntryRow(ZmMsg.location, this.getLocation(compNum), html, idx, false);
+		//idx = this._addEntryRow(ZmMsg.notes, this.getFragment(), html, idx, true, "250");
+
+		html[idx++] = "</table>";
+		this._toolTip = html.join("");
+	}
+	return this._toolTip;
+};
+
+/** Adds a row to the tool tip. */
+ZmInvite.prototype._addEntryRow =
+function(field, data, html, idx, wrap, width, asIs) {
+	if (data != null && data != "") {
+		html[idx++] = "<tr valign='top'><td align='right' style='padding-right: 5px;'><b><div style='white-space:nowrap'>";
+		html[idx++] = AjxStringUtil.htmlEncode(field) + ":";
+		html[idx++] = "</div></b></td><td align='left'><div style='white-space:";
+		html[idx++] = wrap ? "wrap;" : "nowrap;";
+		if (width) html[idx++] = "width:"+width+"px;";
+		html[idx++] = "'>";
+		html[idx++] = asIs ? data : AjxStringUtil.htmlEncode(data);
+		html[idx++] = "</div></td></tr>";
+	}
+	return idx;
 };

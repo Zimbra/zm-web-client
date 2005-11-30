@@ -390,7 +390,6 @@ function() {
 	return null;
 };
 
-// TOOD: i18n
 ZmAppt.prototype.getDurationText =
 function(emptyAllDay,startOnly) {
 	if (this.isAllDayEvent()) {
@@ -399,7 +398,14 @@ function(emptyAllDay,startOnly) {
 		if (this.isMultiDay()) {
 			var endDate = new Date(this.getEndDate());
 			endDate.setDate(endDate.getDate()-1);
-			return this._getTTDay(this.getStartDate()) + " - " + this._getTTDay(endDate);
+
+			var startDay = this._getTTDay(this.getStartDate());
+			var endDay = this._getTTDay(endDate);
+
+			if (!ZmAppt._daysFormatter) {
+				ZmAppt._daysFormatter = new AjxMessageFormat(ZmMsg.durationDays);
+			}
+			return ZmAppt._daysFormatter.format( [ startDay, endDay ] );
 		} else {
 			return this._getTTDay(this.getStartDate());
 		}
@@ -408,7 +414,13 @@ function(emptyAllDay,startOnly) {
 		if (startOnly) {
 			return ZmAppt._getTTHour(this.getStartDate());
 		} else {
-			return ZmAppt._getTTHour(this.getStartDate())+" - "+ZmAppt._getTTHour(this.getEndDate());
+			var startHour = ZmAppt._getTTHour(this.getStartDate());
+			var endHour = ZmAppt._getTTHour(this.getEndDate());
+		
+			if (!ZmAppt._hoursFormatter) {
+				ZmAppt._hoursFormatter = new AjxMessageFormat(ZmMsg.durationHours);
+			}
+			return ZmAppt._hoursFormatter.format( [ startHour, endHour ] );
 		}			
 	}
 };
@@ -1021,257 +1033,11 @@ function(freq, count) {
 ZmAppt.prototype._getRecurrenceDisplayString = 
 function() {
 	if (this._recDispStr == null) {
-		// grab our saved recurrences
-		var list, arr, t, ord, i, j, k, x, y, z;
 		var recurrences = this._rawRecurrences;
-		var str = new Array();
-		var idx = 0;
-		// iterate through the whole thing, and see if we can't come up
-		// with a gramatically correct interpretation.
-		for (k = 0; k < recurrences.length ; ++k) {
-			adds = recurrences[k].add;
-			excludes = recurrences[k].excludes;
-			excepts = recurrences[k].except;
-			if (adds != null) {
-				str[idx++] = "Every ";
-				for (i = 0; i < adds.length; ++i){
-					rules = adds[i].rule;
-					if (rules) {
-						for (j =0; j < rules.length; ++j){
-							rule = rules[j];
-							idx = this._ruleToString(rule, str, idx);
-						}
-					}
-				}
-			}
-			if (excludes != null) {
-				if (idx > 0) {
-					str[idx++] = " except for every ";
-				} else {
-					str[idx++] = "Except every ";
-				}
-				for (i = 0; i < excludes.length; ++i){
-					rules = excludes[i].rule;
-					if (rules) {
-						for (j =0; j < rules.length; ++j){
-							rule = rules[j];
-							idx = this._ruleToString(rule, str, idx);
-						}
-					}
-				}
-			}
-		}
-		this._recDispStr = str.join("");
+		var startDate = this.startDate;
+		this._recDispStr = ZmApptViewHelper.getRecurrenceDisplayString(recurrences, startDate);
 	}
 	return this._recDispStr;
-};
-
-ZmAppt.prototype._ruleToString = 
-function(rule, str, idx) {
-	idx = this._getFreqString(rule, str, idx);
-	idx = this._getByMonthString(rule, str, idx);
-	idx = this._getByWeeknoString(rule, str, idx);
-	idx = this._getByYearDayString(rule, str, idx);
-	idx = this._getMonthDayString(rule, str, idx);
-	idx = this._getByDayString(rule, str, idx);
-	idx = this._getRecurrenceTimeString(rule, str, idx);
-	return idx;
-};
-
-ZmAppt.prototype._getFreqString = 
-function(rule, str, idx) {
-	if (rule.freq) {
-		var count = 0;
-		if (rule.interval && rule.interval[0].ival) 
-			count = rule.interval[0].ival;
-		if (count > 1 ) {
-			str[idx++] = count; 
-			str[idx++] = " ";
-		}
-		freq = rule.freq.substring(0,3);
-		str[idx++] = this._frequencyToDisplayString(freq, count);
-	}
-	return idx;
-};
-
-ZmAppt.prototype._getByMonthString = 
-function(rule, str, idx) {
-	if (rule.bymonth) {
-		list = rule.bymonth[0].molist;
-		arr = list.split(',');
-		if (arr && arr.length > 0) 
-			str[idx++] = " in ";
-		var ord;
-		for (t = 0; t < arr.length; ++t) {
-			ord = parseInt(arr[t]);
-			str[idx++] = AjxDateUtil.MONTH_MEDIUM[ord];
-			if (t < arr.length -1) {
-				str[idx++] = " and ";
-			}
-		}
-	}
-	return idx;
-};
-
-ZmAppt.prototype._getByWeeknoString = 
-function(rule, str, idx) {
-	var list, arr, t, ord;
-	if (rule.byweekno) {
-		list = rule.bymonth[0].molist;
-		arr = list.split(',');
-		if (arr && arr.length > 0) str[idx++] = " weeks ";
-		for (t = 0; t < arr.length; ++t) {
-			ord = parseInt(arr[t]);
-			if (ord == -1 ){
-				str[idx++] = " the last week of the year ";
-			} else {
-				str[idx++] = " the ";
-				str[idx++] = ( ord * -1);
-				str[idx++] = " from the last week of the year ";
-			}
-			str[idx++] = arr[t];
-			if (t < arr.length -1) {
-				str[idx++] = " and ";
-			}
-		}
-	}
-	return idx;
-};
-
-ZmAppt.prototype._getMonthDayString = 
-function(rule, str, idx) {
-	var arr, list, t;
-	if (rule.monthday) {
-		list = rule.bymonthday[0].modaylist;
-		arr = list.split(',');
-		for (t = 0; t < arr.length; ++t) {
-			ord = parseInt(arr[t]);
-			if (ord == -1 ){
-				str[idx++] = " the last day of the month ";
-			} else {
-				str[idx++] = " the ";
-				str[idx++] = ( ord * -1);
-				str[idx++] = " from the last day of the month ";
-			}
-			str[idx++] = arr[t];
-			if (t < arr.length -1) {
-				str[idx++] = " and ";
-			}
-		}
-	}
-	return idx;
-};
-
-ZmAppt.prototype._getByDayString = 
-function(rule, str, idx) {
-	var x;
-	if (rule.byday) {
-		for (x = 0; x < rule.byday.length; ++x) {
-			str[idx++] = " on ";
-			str[idx++] = ZmAppt.SERVER_DAYS_TO_DISPLAY[rule.byday[x].wkday[0].day];
-			var serverOrd = rule.byday[x].wkday[0].ordwk;
-			if (serverOrd != null) {
-				var fChar = serverOrd.charAt(0);
-				var num;
-				if (serverOrd == "-1") {
-					str[idx++] = " the last week of the";
-				} else if ( fChar == '-') {
-					num = parseInt(serverOrd.substring(1,serverOrd.length - 1));
-					str[idx++] = " the ";
-					str[idx++] = num;
-					str[idx++] = " from the last week of the ";
-				} else {
-					if (fChar == '+') {
-						num = parseInt(serverOrd.substring(1,serverOrd.length - 1));
-					} else {
-						num = parseInt(serverOrd);
-					}
-					str[idx++] = " the ";
-					str[idx++] = num;
-					str[idx++] = " week of the ";
-				}
-				str[idx++] = freq;
-				str[idx++] = " ";
-			}
-		}
-	}
-	return idx;
-};
-
-ZmAppt.prototype._getRecurrenceTimeString = 
-function(rule, str, idx) {
-	var hours;
-	if (rule.byhour) {
-		list = rule.byhour[0].hrlist;
-		hours = list.split(',');
-	} else {
-		hours = [this.startDate.getHours()];
-	}
-
-	var minutes;
-	if (rule.byminute) {
-		list = rule.byminute[0].minlist;
-		minutes = list.split(',');
-	} else {
-		minutes = [this.startDate.getMinutes()];
-	}
-
-	var seconds;
-	if (rule.bysecond) {
-		list = rule.bysecond[0].seclist;
-		seconds = list.split(',');
-	} else {
-		seconds = [this.startDate.getSeconds()];
-	}
-							
-	str[idx++] = " at ";
-	for (x=0; x < hours.length; ++x){ 
-		for (y=0; y < minutes.length; ++y) {
-			for (z = 0; z < seconds.length; ++z){
-										
-				var h = parseInt(hours[x]);
-				var ampm = " AM";
-				if (h >= 12) ampm = " PM";
-				str[idx++] = (h != 12)? (h % 12): h;
-				str[idx++] = ":";
-				str[idx++] = AjxDateUtil._pad(minutes[y]);
-// 				if (seconds[z] == '0' || seconds[z] == '00') {
-// 				} else {
-// 					str[idx++] = ":";
-// 					str[idx++] = AjxDateUtil._pad(seconds[z]);
-// 				}
-				str[idx++] = ampm;
-				if (z < seconds.length - 1 || y < seconds.length - 1 || x < hours.length -1){
-					str[idx++] = ", and ";
-				}
-			}
-		}
-	}
-	return idx;
-};
-
-ZmAppt.prototype._getByYearDayString = 
-function(rule, str, idx) {
-	var list, arr, t, ord;
-	if (rule.byyearday) {
-		list = rule.byyearday[0].yrdaylist;
-		arr = list.split(',');
-		for (t = 0; t < arr.length; ++t) {
-			ord = parseInt(arr[t]);
-			if (ord == -1 ){
-				str[idx++] = " the last day of the year ";
-			} else {
-				str[idx++] = " the ";
-				str[idx++] = ( ord * -1);
-				str[idx++] = " from the last day of the year ";
-			}
-			str[idx++] = arr[t];
-			if (t < arr.length -1) {
-				str[idx++] = " and ";
-			}
-		}
-	}
-	return idx;
 };
 
 ZmAppt.prototype._addInviteAndCompNum = 
