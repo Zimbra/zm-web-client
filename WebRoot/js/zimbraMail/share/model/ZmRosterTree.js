@@ -25,8 +25,6 @@
 
 function ZmRosterTree(id, name, parent, tree) {
     this._appCtxt = tree._appCtxt;
-    this._prefixId = Dwt.getNextId();
-    this._addr2Items = {}; // hash from  roster tree item addr to ZmRosterItem for each group item is in
 	ZmOrganizer.call(this, ZmOrganizer.ROSTER_TREE_ITEM, id, name, parent, tree);
 }
 
@@ -54,61 +52,6 @@ function(itemA, itemB) {
 ZmRosterTree.checkName =
 function(name) {
 	return ZmOrganizer.checkName(name);
-};
-
-// return all item instances with given addr
-ZmRosterTree.prototype.getAllItemsByAddr =
-function(addr) {
-    var b = this._addr2Items[addr]; 
-    return b ? b : [];
-};
-
-ZmRosterTree.prototype._addRosterItem =
-function(rosterItem, tree) {
-    var groups = rosterItem.getGroups();
-    if (groups.length == 0) groups = [ZmMsg.buddies];
-    var items = [];
-    for (var j=0; j < groups.length; j++) {
-        var groupName = groups[j];
-        var rosterGroup = this._getGroup(groupName, tree);
-        var id = rosterItem.getAddress() + ":"+ groupName;
-        var item = new ZmRosterTreeItem(id, rosterItem, rosterGroup, tree);
-	    this._eventNotify(ZmEvent.E_CREATE, item);
-	    rosterGroup.children.add(item);
-	    items.push(item);
-    }
-    this._addr2Items[rosterItem.getAddress()] = items;
-}
-
-ZmRosterTree.prototype._removeRosterItem =
-function(rosterItem) {
-    var items = this.getAllItemsByAddr(rosterItem.getAddress());
-    for (var i in items) {
-        var rti = items[i];
-        //rti.notifyDelete();
-        rti.deleteLocal();
-        rti._eventNotify(ZmEvent.E_DELETE);
-   }
-   delete this._addr2Items[rosterItem.getAddress()];
-};
-
-ZmRosterTree.prototype._updateRosterItemGroups =
-function(rosterItem, tree) {
-    this._removeRosterItem(rosterItem);
-    this._addRosterItem(rosterItem, tree);
-};
-
-// used to get (auto-create) a group from the root
-ZmRosterTree.prototype._getGroup =
-function(name, tree) {
-    var groupId = this._prefixId+"_group_"+name;
-    var group = this.getById(groupId);
-    if (group == null) {
-       group = new ZmRosterTreeGroup(groupId, name, this, tree);
-       this._eventNotify(ZmEvent.E_CREATE, group);
-       this.children.add(group);
-    }
-    return group;
 };
 
 // Public methods

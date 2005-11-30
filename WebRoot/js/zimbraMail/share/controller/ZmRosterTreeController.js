@@ -31,6 +31,8 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
     this._imApp = appCtxt.getApp(ZmZimbraMail.IM_APP);
 	this._eventMgrs = {};
 	this._toastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
+    this._addr2Items = {}; // hash from  roster tree item addr to ZmRosterItem for each group item is in
+    this._prefixId = Dwt.getNextId();	
 	// initialze tree data from roster item list
 	var list = this._imApp.getRosterItemList();
 	list.addChangeListener(new AjxListener(this, this._rosterListChangeListener));
@@ -39,7 +41,8 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
 	}
 	var listArray = list.getArray();
 	for (var i=0; i < listArray.length; i++) {
-	    this._dataTree.root._addRosterItem(listArray[i], this._dataTree);
+	    this._addRosterItem(listArray[i]);
+//	    this._dataTree.root._addRosterItem(listArray[i], this._dataTree);
 	}
 }
 
@@ -83,7 +86,7 @@ function(ev) {
         }
     } else if (ev.event == ZmEvent.E_CREATE) {
         var item = ev.getDetail("organizers");
-        if (item instanceof ZmRosterItem) this._dataTree._addRosterItem(item);
+        if (item instanceof ZmRosterItem) this._addRosterItem(item);
     }
     ZmTreeController.prototype._changeListener.call(this, ev, treeView);
 };
@@ -94,7 +97,7 @@ function(item, fields, treeView) {
     if (show != null) {
         var toast = this._toastFormatter.format([item.getName(), item.getShowText()]);
         this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
-        var items = this._dataTree.root.getAllItemsByAddr(item.getAddress());
+        var items = this.getAllItemsByAddr(item.getAddress());
         // update all tree items with this address
         for (var i in items) {
              var rti = items[i];
@@ -104,7 +107,9 @@ function(item, fields, treeView) {
    }
    var groups = fields[ZmRosterItem.F_GROUPS];
    if (groups != null) {
-       this._dataTree.root._updateRosterItemGroups(item, this._dataTree);
+       // easier to remove/add it
+       this._removeRosterItem(item);
+       this._addRosterItem(item);
    }
 };
 
@@ -201,4 +206,53 @@ function(ev) {
             srcData.getRosterItem().renameGroup(srcGroup, dstGroup);
         }
 	}
+};
+
+// return all item instances with given addr
+ZmRosterTreeController.prototype.getAllItemsByAddr =
+function(addr) {
+    var b = this._addr2Items[addr]; 
+    return b ? b : [];
+};
+
+ZmRosterTreeController.prototype._addRosterItem =
+function(rosterItem) {
+    var groups = rosterItem.getGroups();
+    if (groups.length == 0) groups = [ZmMsg.buddies];
+    var items = [];
+    for (var j=0; j < groups.length; j++) {
+        var groupName = groups[j];
+        var rosterGroup = this._getGroup(groupName);
+        var id = rosterItem.getAddress() + ":"+ groupName;
+        var item = new ZmRosterTreeItem(id, rosterItem, rosterGroup, this._dataTree);
+	    this._dataTree.root._eventNotify(ZmEvent.E_CREATE, item);
+	    rosterGroup.children.add(item);
+	    items.push(item);
+    }
+    this._addr2Items[rosterItem.getAddress()] = items;
+}
+
+ZmRosterTreeController.prototype._removeRosterItem =
+function(rosterItem) {
+    var items = this.getAllItemsByAddr(rosterItem.getAddress());
+    for (var i in items) {
+        var rti = items[i];
+        //rti.notifyDelete();
+        rti.deleteLocal();
+        rti._eventNotify(ZmEvent.E_DELETE);
+   }
+   delete this._addr2Items[rosterItem.getAddress()];
+};
+
+// used to get (auto-create) a group from the root
+ZmRosterTreeController.prototype._getGroup =
+function(name) {
+    var groupId = this._prefixId+"_group_"+name;
+    var group = this._dataTree.root.getById(groupId);
+    if (group == null) {
+       group = new ZmRosterTreeGroup(groupId, name, this._dataTree.root, this._dataTree);
+       this._dataTree.root._eventNotify(ZmEvent.E_CREATE, group);
+       this._dataTree.root.children.add(group);
+    }
+    return group;
 };

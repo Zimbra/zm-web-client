@@ -90,6 +90,13 @@ ZmChatMultiWindowView.KEY_CHAT = "zcmwv_chat";
 
 ZmChatMultiWindowView.prototype._initialWindowPlacement =
 function(chatWindow) {
+    if (this._nextInitX || this._nextInitY) {
+        chatWindow.setBounds(this._nextInitX, this._nextInitY, Dwt.DEAFULT, Dwt.DEFAULT);
+	    delete this._nextInitX;
+	    delete this._nextInitY;
+	    return;
+    }
+
     var windows = {};
     for (var id in this._chatWindows) {
         var cw = this._chatWindows[id];
@@ -150,6 +157,10 @@ function(ev) {
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
         	var srcData = ev.srcData;
 		if ((srcData instanceof ZmRosterTreeItem)) {
+			var mouseEv = DwtShell.mouseEvent;
+            	mouseEv.setFromDhtmlEvent(ev.uiEvent);
+            	this._nextInitX = mouseEv.elementX;
+            	this._nextInitY = mouseEv.elementY;
 		    this._controller.chatWithRosterItem(srcData.getRosterItem());
         }
 	}
