@@ -58,83 +58,24 @@ function() {
 	return "ZmZimletContext - " + this.name;
 };
 
-// The document.write hack.  If files are present in this array, they will be
-// favored by _loadIncludes (see inner function loadNextScript).  I originally
-// tried to make the function below an inner function too, but this doesn't
-// work because the whole mess is asynchronous (think multiple Zimlets loading
-// external files that call document.write).
-ZmZimletContext.dwhack_scripts = [];
-document.write = document.writeln = function() {
-	// let's assume there may be more arguments
-	var a = [];
-	for (var i = 0; i < arguments.length; ++i)
-		a[i] = arguments[i];
-	var str = a.join("");
-	if (/<script[^>]+src=([\x22\x27])(.*?)\1/i.test(str)) {
-		// we have a <script>, let's add it to our includes list. :-)
-		ZmZimletContext.dwhack_scripts.push(RegExp.$2);
-	}
-	// If it's not a script, we can't do anything...  The idea is that the
-	// original document.write would mess all our HTML anyway, so we can't
-	// call it.  If scripts rely on it to insert elements, well, that's too
-	// bad--they won't work.  For this reason we don't even care to save
-	// the original functions.
-};
-
-// Asynchronously loads scripts in a synchronized fashion. ;-)
-//
-// Note that this function returns immediately; there are no guarantees that
-// the scripts are loaded by that time.
-//
-// Calls to document.write(ln) are trapped in order to fix things with Yahoo,
-// Google and potentially others who are too lazy to implement a proper way of
-// loading scripts.  *grin*
 ZmZimletContext.prototype._loadIncludes =
 function() {
-	var includes = this.includes;
-	if (!includes)
+	if (!this.includes)
 		return;
-	var self = this;
-	var zimlet_url = this._url;
-	var evt = AjxEnv.isIE ? "onreadystatechange" : "onload";
-	var head = document.getElementsByTagName("head")[0];
-	var current_script = null;
+	AjxInclude(this.includes, this._url,
+		   new AjxCallback(this, this._finished_loadIncludes));
+};
 
-	function loadNextScript() {
-		if (AjxEnv.isIE && current_script && current_script.readyState != "complete")
-			return;
-		if (current_script) // this is cool
-			current_script[evt] = null; // clear the event handler so IE won't leak
-		var scripts = ZmZimletContext.dwhack_scripts.length > 0
-			? ZmZimletContext.dwhack_scripts
-			: includes;
-		if (scripts.length > 0) {
-			var fullurl = scripts.shift();
-			if (!/^((https?|ftps?):\x2f\x2f|\x2f)/.test(fullurl))
-				fullurl = zimlet_url + fullurl;
-			var script = document.createElement("script");
-			script[evt] = loadNextScript;
-			script.type = "text/javascript";
-			script.src = fullurl;
-			current_script = script;
-			head.appendChild(script);
-		} else if (includes.length == 0) {
-			// finished loading all scripts.
-			// we don't allow this function to be called a second time.
-			self.includes = null;
-			current_script = null;
-
-			// instantiate the handler object if present
-			if (self.handlerObject) {
-				var CTOR = eval(self.handlerObject);
-				self.handlerObject = new CTOR;
-				self.handlerObject.constructor = CTOR;
-				self.handlerObject.init(self);
-			}
-		}
-	};
-
-	loadNextScript();
+ZmZimletContext.prototype._finished_loadIncludes = function() {
+	// we don't allow _loadIncludes a second time
+	this.includes = null;
+	// instantiate the handler object if present
+	if (this.handlerObject) {
+		var CTOR = eval(this.handlerObject);
+		this.handlerObject = new CTOR;
+		this.handlerObject.constructor = CTOR;
+		this.handlerObject.init(this);
+	}
 };
 
 ZmZimletContext.prototype.getUrl = function() { return this._url; };
