@@ -29,6 +29,7 @@ function ZmRosterItem(id, list, appCtxt, addr, name, show, status, groupNames) {
 	this.show = show || ZmRosterItem.SHOW_OFFLINE;
 	this.status = status;
 	this.groupNames = groupNames;
+    this.groups = groupNames ? groupNames.split(/,/) : [];
 }
 
 ZmRosterItem.prototype = new ZmItem;
@@ -43,6 +44,7 @@ ZmRosterItem.SHOW_DND = 5; //'dnd';           // jabber <show>> dnd (do not dist
 
 ZmRosterItem.F_SHOW = "ZmRosterItem.show";
 ZmRosterItem.F_STATUS = "ZmRosterItem.status";
+ZmRosterItem.F_GROUPS = "ZmRosterItem.groups";
 ZmRosterItem.F_NAME = ZmOrganizer.F_NAME;
 
 ZmRosterItem.prototype.toString = 
@@ -84,14 +86,25 @@ function(show, status) {
     this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
 };
 
-/*
-ZmRosterItem.prototype.setGroup = 
-function(newGroup) {
-    this.group = newGroup.getName();
-    this.reparent(newGroup);
-    this._eventNotify(ZmEvent.E_MOVE);
+ZmRosterItem.prototype.renameGroup = 
+function(oldGroup, newGroup) {
+    var oldI = -1;
+    var newI = -1;
+    for (var i in this.groups) {
+        if (this.groups[i] == oldGroup) oldI = i;
+        if (this.groups[i] == newGroup) newI = i;
+    }
+    if (newI !=-1 || oldI == -1) return;
+    this.groups[oldI] = newGroup;
+    this.groupNames = this.groups.join(",");
+    
+    var fields = {};
+    fields[ZmRosterItem.F_GROUPS] = this.groupNames;
+    this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
+//    this.group = newGroup.getName();
+//    this.reparent(newGroup);
+//    this._eventNotify(ZmEvent.E_MOVE);
 };
-*/
 
 ZmRosterItem.prototype.getIcon = 
 function() {
@@ -123,14 +136,24 @@ function(itemA, itemB) {
 };
 
 // Public methods
-ZmRosterItem.prototype.getId = function() { return this.id; }
+ZmRosterItem.prototype.getId = function() { return this.id; };
 
-ZmRosterItem.prototype.getAddress= function() { return this.addr; }
+ZmRosterItem.prototype.getAddress= function() { return this.addr; };
 
-ZmRosterItem.prototype.getGroupNames = function() { return this.groupNames; }
+ZmRosterItem.prototype.getGroups = function() { return this.groups; };
+
+ZmRosterItem.prototype.getGroupNames = function() { return this.groupNames; };
 
 ZmRosterItem.prototype.getName = function() {	return this.name ? this.name : this.addr;};
 
-ZmRosterItem.prototype.getShow = function() { return this.show; }
+ZmRosterItem.prototype.getShow = function() { return this.show; };
 
-ZmRosterItem.prototype.getStatus = function() { return this.status; }
+ZmRosterItem.prototype.getStatus = function() { return this.status; };
+
+ZmRosterItem.prototype.inGroup = 
+function(name) { 
+    for (var i in this.groups) {
+        if (this.groups[i] == name) return true;
+    }
+    return false;
+};

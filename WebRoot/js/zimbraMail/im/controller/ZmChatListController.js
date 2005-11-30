@@ -422,7 +422,8 @@ function(ev, treeView) {
                 var fields = ev.getDetail("fields");
                 var chat = this._list.getChatByRosterItem(item);
                 // currentview or all? probably all...
-                this._parentView[this._currentView]._rosterItemChangeListener(chat, item, fields);
+                if (chat)
+                    this._parentView[this._currentView]._rosterItemChangeListener(chat, item, fields);
              }
         }
     }

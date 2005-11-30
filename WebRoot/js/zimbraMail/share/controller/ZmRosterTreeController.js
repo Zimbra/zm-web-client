@@ -39,7 +39,7 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
 	}
 	var listArray = list.getArray();
 	for (var i=0; i < listArray.length; i++) {
-	    this._dataTree.root._addRosterItem(listArray[i]);
+	    this._dataTree.root._addRosterItem(listArray[i], this._dataTree);
 	}
 }
 
@@ -56,8 +56,6 @@ function(overviewId, listener) {
 	// Each overview gets its own event manager
 	if (!this._eventMgrs[overviewId]) {
 		this._eventMgrs[overviewId] = new AjxEventMgr;
-		// Each event manager has its own selection event to avoid
-		// multi-threaded collisions
 		this._eventMgrs[overviewId]._selEv = new DwtSelectionEvent(true);
 	}
 	this._eventMgrs[overviewId].addListener(DwtEvent.SELECTION, listener);
@@ -81,27 +79,33 @@ function(ev) {
         var items= ev.getItems();
         for (var n=0; n < items.length; n++) {
             var item = items[n];
-            if (item instanceof ZmRosterItem) {
-                var fields = ev.getDetail("fields");
-                var show = fields[ZmRosterItem.F_SHOW];
-                if (show != null) {
-                    var toast = this._toastFormatter.format([item.getName(), item.getShowText()]);
-                    this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
-                    var items = this._dataTree.root.getAllItemsByAddr(item.getAddress());
-                    // update all tree items with this address
-                    for (var i in items) {
-                        var rti = items[i];
-                        var ti = treeView.getTreeItemById(rti.id);
-                        if (ti) ti.setImage(rti.getIcon());
-                    }
-                }
-            }
-       }
+            if (item instanceof ZmRosterItem) this._handleRosterItemModify(item, ev.getDetail("fields"));
+        }
     } else if (ev.event == ZmEvent.E_CREATE) {
         var item = ev.getDetail("organizers");
         if (item instanceof ZmRosterItem) this._dataTree._addRosterItem(item);
     }
     ZmTreeController.prototype._changeListener.call(this, ev, treeView);
+};
+
+ZmRosterTreeController.prototype._handleRosterItemModify =
+function(item, fields) {
+    var show = fields[ZmRosterItem.F_SHOW];
+    if (show != null) {
+        var toast = this._toastFormatter.format([item.getName(), item.getShowText()]);
+        this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
+        var items = this._dataTree.root.getAllItemsByAddr(item.getAddress());
+        // update all tree items with this address
+        for (var i in items) {
+             var rti = items[i];
+             var ti = treeView.getTreeItemById(rti.id);
+             if (ti) ti.setImage(rti.getIcon());
+        }
+   }
+   var groups = fields[ZmRosterItem.F_GROUPS];
+   if (groups != null) {
+       this._dataTree.root._updateRosterItemGroups(item, this._dataTree);
+   }
 };
 
 // Protected methods
@@ -161,7 +165,7 @@ ZmRosterTreeController.prototype._dragListener =
 function(ev) {
 	if (ev.action == DwtDragEvent.DRAG_START) {
 		var item = ev.srcData = ev.srcControl.getData(Dwt.KEY_OBJECT);
-		if (!(item instanceof ZmRosterItem))
+		if (!(item instanceof ZmRosterTreeItem))
 			ev.operation = Dwt.DND_DROP_NONE;
 	}
 };
@@ -181,18 +185,20 @@ function(ev) {
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		var srcData = ev.srcData;
 		var dropTarget = ev.targetControl.getData(Dwt.KEY_OBJECT);
-		if (!(srcData instanceof ZmRosterItem) || !(dropTarget instanceof ZmRosterTreeGroup)) {
+		if (!(srcData instanceof ZmRosterTreeItem) || !(dropTarget instanceof ZmRosterTreeGroup)) {
 			ev.doIt = false;
 			return;
 		}
 		// don't allow drop onto current group. TODO: or group that already contains roster item
-        	ev.doIt = (srcData.getGroupName() != dropTarget.getName());
+        	ev.doIt = !srcData.getRosterItem().inGroup(dropTarget.getName());
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
         	var srcData = ev.srcData;
 		var dropTarget = ev.targetControl.getData(Dwt.KEY_OBJECT);
         // TODOO: normally taken care of by notification listener
 		if ((srcData instanceof ZmRosterTreeItem) && (dropTarget instanceof ZmRosterTreeGroup)) {
-            srcData.setGroup(dropTarget);
+		    var srcGroup = srcData.getGroupName();
+		    var dstGroup = dropTarget.getName();
+            srcData.getRosterItem().renameGroup(srcGroup, dstGroup);
         }
 	}
 };
