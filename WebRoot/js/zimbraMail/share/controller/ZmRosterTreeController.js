@@ -42,7 +42,6 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
 	var listArray = list.getArray();
 	for (var i=0; i < listArray.length; i++) {
 	    this._addRosterItem(listArray[i]);
-//	    this._dataTree.root._addRosterItem(listArray[i], this._dataTree);
 	}
 }
 
@@ -120,11 +119,10 @@ function(overviewId, showUnread, omit, forceCreate) {
 
     	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit, forceCreate);
 
-	if (firstTime) {
+	if (firstTime || forceCreate) {
 		var treeView = this.getTreeView(overviewId);
-//		var root = treeView.getItems()[0];
-//		var items = root.getItems();		
-		var items = treeView.getItems();
+    		var root = treeView.getItems()[0];
+		var items = root.getItems();		
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			item.setExpanded(true);
@@ -250,9 +248,16 @@ function(name) {
     var groupId = this._prefixId+"_group_"+name;
     var group = this._dataTree.root.getById(groupId);
     if (group == null) {
-       group = new ZmRosterTreeGroup(groupId, name, this._dataTree.root, this._dataTree);
-       this._dataTree.root._eventNotify(ZmEvent.E_CREATE, group);
-       this._dataTree.root.children.add(group);
+        group = new ZmRosterTreeGroup(groupId, name, this._dataTree.root, this._dataTree);
+        this._dataTree.root._eventNotify(ZmEvent.E_CREATE, group);
+        this._dataTree.root.children.add(group);
+        
+        // expand groups if tree is created
+        var treeView = this.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+        if (treeView) {
+            var ti = treeView.getTreeItemById(group.id);
+            if (ti) ti.setExpanded(true);
+        }
     }
     return group;
 };
