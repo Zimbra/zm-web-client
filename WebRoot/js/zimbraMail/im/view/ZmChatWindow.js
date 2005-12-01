@@ -253,19 +253,27 @@ function(data) {
     case DwtDragTracker.STATE_START:
     		this.raise();
     		this.select();
-    		data.start = (data.userData == ZmChatWindow._TRACKER_RESIZE) ? this.getSize() : this.getLocation();
+    		data.startLoc = this.getLocation();    		
+    		data.startSize = this.getSize();    		
+    		data.parentSize = this.parent.getSize();
     		break;
     case DwtDragTracker.STATE_DRAGGING:
         if (data.prevState == DwtDragTracker.STATE_START)
         		Dwt.setOpacity(this.getHtmlElement(), 70);
-        var newX = data.start.x + data.delta.x;
-        var newY = data.start.y + data.delta.y;        		
         if (data.userData == ZmChatWindow._TRACKER_RESIZE) {
+            var newX = data.startSize.x + data.delta.x;
+            var newY = data.startSize.y + data.delta.y;        		
             if (newX >= 200 && newY >= 150)
                 this.setSize(newX, newY);
         } else {
-            if (newX >= 0 && newY >= 0)
-                this.setLocation(newX, newY);
+            var newX = data.startLoc.x + data.delta.x;
+            var newY = data.startLoc.y + data.delta.y;
+            if (newX >= 0 &&
+                newY >= 0 && 
+                newY < (data.parentSize.y - data.startSize.y) && 
+                newX < (data.parentSize.x - data.startSize.x)) {
+                    this.setLocation(newX, newY);
+            }
         }
         break;
     case DwtDragTracker.STATE_END:
