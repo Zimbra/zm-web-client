@@ -27,10 +27,13 @@ function ZmURLObjectHandler(appCtxt) {
 	ZmObjectHandler.call(this, appCtxt, ZmURLObjectHandler.TYPE);
 }
 
-ZmURLObjectHandler.prototype = new ZmObjectHandler;
+ZmURLObjectHandler.prototype = new ZmObjectHandler();
 ZmURLObjectHandler.prototype.constructor = ZmURLObjectHandler;
 
 ZmURLObjectHandler.TYPE = "url";
+// Blank GIF
+ZmURLObjectHandler.BLANKGIF = "/service/zimlet/com_zimbra_url/blank_pixel.gif";
+
 ZmURLObjectHandler.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/ig;
 //ZmURLObjectHandler.THUMB_URL = "http://pthumbnails.alexa.com/image_server.cgi?id=" + document.domain + "&url=";
 //ZmURLObjectHandler.THUMB_SIZE = 'width="205" height="150"'
@@ -57,6 +60,7 @@ function(line, startIndex) {
 
 ZmURLObjectHandler.prototype._getHtmlContent =
 function(html, idx, url) {
+	(new Image()).src = ZmURLObjectHandler.BLANKGIF;
 	var escapedUrl = url.replace(/\"/g, '\"');
 	if (escapedUrl.substr(0,4) == 'www.') {
 		escapedUrl = "http://"+escapedUrl+"/";
@@ -67,14 +71,7 @@ function(html, idx, url) {
 	
 ZmURLObjectHandler.prototype.getToolTipText =
 function(url, context) {
-	// Pre-load the image
-	(new Image()).src =  ZmURLObjectHandler.THUMB_URL + url;
-	return '<iframe scrolling="no" frameborder="0" marginWidth="0" marginHeight="0" ' + ZmURLObjectHandler.THUMB_SIZE + ' src="' + ZmURLObjectHandler.THUMB_URL + url + '"></iframe>';
-};
-
-ZmURLObjectHandler.prototype.getActionMenu =
-function(obj) {
-	return null;
+	return '<img src="'+ZmURLObjectHandler.BLANKGIF+'" ' + ZmURLObjectHandler.THUMB_SIZE + ' style="background: url(' + ZmURLObjectHandler.THUMB_URL + url + ')"/>';
 };
 
 ZmObjectManager.registerHandler("ZmURLObjectHandler");
