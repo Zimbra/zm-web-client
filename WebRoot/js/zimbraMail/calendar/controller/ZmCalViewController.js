@@ -865,6 +865,9 @@ function(args) {
 	var callback		= args[4];
 	var errorCallback	= args[5];
 	var result			= args[6];
+
+    // see 4789 
+	if (result == null) return;
 	
 	try {
 		result.getResponse();
