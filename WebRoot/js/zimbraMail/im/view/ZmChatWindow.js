@@ -294,11 +294,11 @@ function(ev) {
     }
    
     var size = this.getSize();
-   this._container.setSize(size.x+10, size.y+10);
+    this._container.setSize(size.x+10, size.y+10);
 
     var tbH = this._toolbar.getH();
     
-    this._toolbar.setSize(size.x, Dwt.DEFAULT);
+    this._toolbar.setSize(size.x - 5, Dwt.DEFAULT);
 
     var sashH = ZmChatWindow._SASH_HEIGHT;
     if (this._sashY == null) {
