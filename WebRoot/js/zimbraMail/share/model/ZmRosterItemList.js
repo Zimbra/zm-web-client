@@ -103,7 +103,7 @@ function() {
             {id: "r3", addr: "tim@zimbra.com", name: "Tim", show: ZmRosterItem.SHOW_OFFLINE, group: "Work"},
             {id: "r4", addr: "anand@zimbra.com", name: "Anand", show: ZmRosterItem.SHOW_EXT_AWAY, group: "Friends,Work"},
             {id: "r5", addr: "andy@zibra.com", name: "Andy", show: ZmRosterItem.SHOW_CHAT, group: "Work"},
-            {id: "r6", addr: "matt@gmail.com", name: "Matt", show:ZmRosterItem.SHOW_ONLINE, group: "Family"}
+            {id: "r6", addr: "matt@gmail.com", show:ZmRosterItem.SHOW_ONLINE, group: "Family"}
 	    ]
     });
 };

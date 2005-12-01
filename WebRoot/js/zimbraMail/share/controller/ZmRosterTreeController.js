@@ -92,20 +92,32 @@ function(ev) {
 
 ZmRosterTreeController.prototype._handleRosterItemModify =
 function(item, fields, treeView) {
-    var show = fields[ZmRosterItem.F_SHOW];
-    if (show != null) {
+    var doShow = ZmRosterItem.F_SHOW in fields;
+    var doUnread = ZmRosterItem.F_UNREAD in fields;
+    var doGroups = ZmRosterItem.F_GROUPS in fields;
+
+    var items = (doShow != null) || (doUnread != null) ? this.getAllItemsByAddr(item.getAddress()) : null;
+    
+    if (doShow) {
         var toast = this._toastFormatter.format([item.getName(), item.getShowText()]);
         this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
-        var items = this.getAllItemsByAddr(item.getAddress());
-        // update all tree items with this address
-        for (var i in items) {
-             var rti = items[i];
-             var ti = treeView.getTreeItemById(rti.id);
-             if (ti) ti.setImage(rti.getIcon());
+    }
+
+    
+    var numUnread = item.getUnread();  
+    var newName = !doUnread ? null : 
+            (numUnread == 0 ? item.getName() : AjxBuffer.concat("<b>",item.getName(), " (", numUnread, ")</b>"));
+                        
+    if (items) for (var i in items) {
+        var rti = items[i];
+        var ti = treeView.getTreeItemById(rti.id);
+        if (ti) {
+            if (doShow) ti.setImage(rti.getIcon());
+            if (doUnread) ti.setText(newName);
         }
    }
-   var groups = fields[ZmRosterItem.F_GROUPS];
-   if (groups != null) {
+
+   if (ZmRosterItem.F_GROUPS in fields) {
        // easier to remove/add it
        this._removeRosterItem(item);
        this._addRosterItem(item);

@@ -122,6 +122,8 @@ function() {
    this.raise();
    var field = Dwt.getDomObj(this.getDocument(), this._inputFieldId);
    if (field) field.focus();
+   var item = this.chat.getRosterItem();   
+   if (item.getUnread()) item.setUnread(0);
 };
 
 ZmChatWindow.prototype.raise =
@@ -148,11 +150,21 @@ function(chat) {
 
 ZmChatWindow.prototype._rosterItemChangeListener =
 function(item, fields, setAll) {
-    if (setAll || fields[ZmRosterItem.F_SHOW] != null) {
-        this.setImage(item.getIcon());
-        this.setStatusTitle("("+item.getShowText()+")");
+    var doShow = setAll || (ZmRosterItem.F_SHOW in fields);
+    var doUnread = setAll || (ZmRosterItem.F_UNREAD in fields);
+    var doName = setAll || (ZmRosterItem.F_NAME in fields);
+
+    if (doShow) this.setImage(item.getIcon());
+    if (doShow || doUnread) {
+        var title = new AjxBuffer();
+        title.append("(", item.getShowText());
+        if (item.getUnread()) {
+            title.append(", ", item.getUnread(), " ", ZmMsg.unread.toLowerCase());        
+        }
+        title.append(")");
+        this.setStatusTitle(title.toString());
     }
-    if (setAll || fields[ZmRosterItem.F_NAME] != null) {
+    if (doName) {
         this.setTitle(item.getName());
     }
 };
@@ -164,6 +176,8 @@ function(text) {
             this.chat.getRosterItem().setShow(parseInt(text.substring(2,3)));
         } else if (text.substring(1, 3) == "et") {
             text = ">:) :) =)) =(( :(( <:-P :O)";
+        } else if (text.substring(1, 2) == "u") {
+            this.chat.getRosterItem().setUnread(parseInt(text.substring(2)));
         }
     }
     

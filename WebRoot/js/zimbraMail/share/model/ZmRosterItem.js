@@ -30,6 +30,7 @@ function ZmRosterItem(id, list, appCtxt, addr, name, show, status, groupNames) {
 	this.status = status;
 	this.groupNames = groupNames;
     this.groups = groupNames ? groupNames.split(/,/) : [];
+    this.numUnreadIMs = 0; // num unread IMs from this buddy
 }
 
 ZmRosterItem.prototype = new ZmItem;
@@ -45,7 +46,8 @@ ZmRosterItem.SHOW_DND = 5; //'dnd';           // jabber <show>> dnd (do not dist
 ZmRosterItem.F_SHOW = "ZmRosterItem.show";
 ZmRosterItem.F_STATUS = "ZmRosterItem.status";
 ZmRosterItem.F_GROUPS = "ZmRosterItem.groups";
-ZmRosterItem.F_NAME = ZmOrganizer.F_NAME;
+ZmRosterItem.F_NAME = "ZmRosterItem.name";
+ZmRosterItem.F_UNREAD = "ZmRosterItem.unread";
 
 ZmRosterItem.prototype.toString = 
 function() {
@@ -83,6 +85,14 @@ function(show, status) {
     var fields = {};
     fields[ZmRosterItem.F_SHOW] = show;
     fields[ZmRosterItem.F_STATUS] = status;
+    this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
+};
+
+ZmRosterItem.prototype.setUnread  = 
+function(num, addToTotal) {
+    this.numUnreadIMs = addToTotal ? this.numUnreadIMs + num : num;
+    var fields = {};
+    fields[ZmRosterItem.F_UNREAD] = this.numUnreadIMs;
     this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
 };
 
@@ -149,6 +159,8 @@ ZmRosterItem.prototype.getName = function() {	return this.name ? this.name : thi
 ZmRosterItem.prototype.getShow = function() { return this.show; };
 
 ZmRosterItem.prototype.getStatus = function() { return this.status; };
+
+ZmRosterItem.prototype.getUnread = function() { return this.numUnreadIMs; }
 
 ZmRosterItem.prototype.inGroup = 
 function(name) { 
