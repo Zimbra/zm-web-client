@@ -268,11 +268,10 @@ function(data) {
         } else {
             var newX = data.startLoc.x + data.delta.x;
             var newY = data.startLoc.y + data.delta.y;
-            if (newX >= 0 &&
-                newY >= 0 && 
-                newY < (data.parentSize.y - data.startSize.y) && 
-                newX < (data.parentSize.x - data.startSize.x)) {
-                    this.setLocation(newX, newY);
+            if (newX >= 0 && newY >= 0) {
+                //newY < (data.parentSize.y - data.startSize.y) && 
+                //newX < (data.parentSize.x - data.startSize.x)) {
+                this.setLocation(newX, newY);
             }
         }
         break;

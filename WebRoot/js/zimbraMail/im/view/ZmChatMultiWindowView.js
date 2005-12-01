@@ -32,7 +32,8 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	this.setDropTarget(dropTgt);
 	dropTgt.addDropListener(new AjxListener(this, this._dropListener));
 	
-	this.setScrollStyle(DwtControl.CLIP);
+//	this.setScrollStyle(DwtControl.CLIP);
+	this.setScrollStyle(DwtControl.SCROLL);
 	this._chatWindows = {};
 	this._chatIdToChatWindow = {};
 	this._windowCloseButtonListener = new AjxListener(this, this._windowCloseListener);
