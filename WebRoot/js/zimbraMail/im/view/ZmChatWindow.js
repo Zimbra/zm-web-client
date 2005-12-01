@@ -53,7 +53,7 @@ ZmChatWindow._TRACKER_SASH = 3;
 ZmChatWindow._idToChatWindow = {};
 
 ZmChatWindow._DEFAULT_INPUT_HEIGHT = 70;
-ZmChatWindow._SASH_HEIGHT = 10;
+ZmChatWindow._SASH_HEIGHT = 8;
 
 ZmChatWindow.prototype.toString = 
 function() {
@@ -291,7 +291,7 @@ function(ev) {
 
     var tbH = this._toolbar.getH();
     
-    this._toolbar.setSize(size.x - 2, Dwt.DEFAULT);
+    this._toolbar.setSize(size.x, Dwt.DEFAULT);
 
     var sashH = ZmChatWindow._SASH_HEIGHT;
     if (this._sashY == null) {
@@ -311,17 +311,15 @@ function(ev) {
     var ctY = tbH;
     var inpY = this._sashY + sashH;
 
-    var yFudge = 8;
-    var hFudge = 8;
-    var wFudge = 16;    
+    var yFudge = 4;
+    var hFudge = 4;
+    var wFudge = 12;    
     var xFudge = 5;
 
     this._contentY = ctY + yFudge;
     this._contentH = ctH - hFudge;
 
-
-        
-    this._content.setBounds(xFudge, this._contentY, size.x - wFudge, this._contentH);
+    this._content.setBounds(xFudge, this._contentY, size.x - wFudge-4, this._contentH);
     this._sash.setBounds(0, this._sashY, size.x, sashH);
     this._inputY = inpY;
     this._inputH = inpH - yFudge - hFudge;
@@ -329,7 +327,7 @@ function(ev) {
     var field = Dwt.getDomObj(this.getDocument(), this._inputFieldId);
     Dwt.setSize(field, size.x - wFudge - 2 , this._inputH - 2);
         
-    this._gripper.setLocation(size.x-20, size.y-20);
+    this._gripper.setLocation(size.x-18, size.y-18);
     this._minSashY = this._contentY + ZmChatWindow.MIN_CONTENT_HEIGHT;
     this._maxSashY = size.y - ZmChatWindow.MIN_INPUT_HEIGHT;
 };
