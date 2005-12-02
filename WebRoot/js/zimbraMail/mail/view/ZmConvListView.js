@@ -56,20 +56,19 @@ function(defaultColumnSort) {
 
 	// set the from column name based on query string
 	var fromColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]);
-	var fromColSpan = Dwt.getDomObj(this.getDocument(), DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
+	var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
 	if (fromColSpan)
 		fromColSpan.innerHTML = "&nbsp;" + (isFolder.sent || isFolder.drafts ? ZmMsg.to : ZmMsg.from);
 };
 
 ZmConvListView.prototype.markUIAsRead = 
 function(items, on) {
-	var doc = this.getDocument();
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		var row = Dwt.getDomObj(doc, this._getFieldId(item, ZmItem.F_ITEM_ROW));
+		var row = document.getElementById(this._getFieldId(item, ZmItem.F_ITEM_ROW));
 		if (row)
 			row.className = on ? "" : "Unread";
-		var img = Dwt.getDomObj(doc, this._getFieldId(item, ZmItem.F_STATUS));
+		var img = document.getElementById(this._getFieldId(item, ZmItem.F_STATUS));
 		if (img && img.parentNode)
 			AjxImg.setImage(img.parentNode, on ? "MsgStatusRead" : "MsgStatusUnread");
 	}
@@ -227,7 +226,7 @@ function(ev) {
 	var items = ev.getDetail("items");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_COUNT])) {
 		for (var i = 0; i < items.length; i++) {
-			var countField = Dwt.getDomObj(this.getDocument(), this._getFieldId(items[i], ZmItem.F_COUNT));
+			var countField = document.getElementById(this._getFieldId(items[i], ZmItem.F_COUNT));
 			if (countField)
 				countField.innerHTML = items[i].numMsgs > 1 ? "(" + items[i].numMsgs + ")" : "";
 		}
@@ -235,7 +234,7 @@ function(ev) {
 		// a virtual conv has become real, and changed its ID
 		for (var i = 0; i < items.length; i++) {
 			var conv = items[i];
-			var div = Dwt.getDomObj(this.getDocument(), this._getItemId({id: conv._oldId}));
+			var div = document.getElementById(this._getItemId({id: conv._oldId}));
 			if (div) {
 				this._createItemHtml(conv, this._now, false, false, div);
 				this.associateItemWithElement(conv, div, DwtListView.TYPE_LIST_ITEM);
@@ -245,7 +244,7 @@ function(ev) {
 	} else if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_PARTICIPANT])) {
 		for (var i = 0; i < items.length; i++) {
 			var fieldId = this._getFieldId(items[i], ZmItem.F_PARTICIPANT);
-			var participantField = Dwt.getDomObj(this.getDocument(), fieldId);
+			var participantField = document.getElementById(fieldId);
 			if (participantField)
 				participantField.innerHTML = this._getParticipantHtml(items[i], fieldId);
 		}

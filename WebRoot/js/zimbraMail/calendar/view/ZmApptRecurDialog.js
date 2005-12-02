@@ -290,31 +290,30 @@ function() {
 
 ZmApptRecurDialog.prototype._createRepeatSections = 
 function() {
-	var doc = this.getDocument();
-	var sectionDiv = Dwt.getDomObj(doc, this._repeatSectionId);
+	var sectionDiv = document.getElementById(this._repeatSectionId);
 	if (sectionDiv) {
-		var div = doc.createElement("div");
+		var div = document.createElement("div");
 		div.style.position = "relative";
 		div.style.display = "none";
 		div.id = this._repeatDailyId = Dwt.getNextId();
 		div.innerHTML = this._createRepeatDaily();
 		sectionDiv.appendChild(div);
 		
-		var div = doc.createElement("div");
+		var div = document.createElement("div");
 		div.style.position = "relative";
 		div.style.display = "none";
 		div.id = this._repeatWeeklyId = Dwt.getNextId();
 		div.innerHTML = this._createRepeatWeekly();;
 		sectionDiv.appendChild(div);
 	
-		var div = doc.createElement("div");
+		var div = document.createElement("div");
 		div.style.position = "relative";
 		div.style.display = "none";
 		div.id = this._repeatMonthlyId = Dwt.getNextId();
 		div.innerHTML = this._createRepeatMonthly();
 		sectionDiv.appendChild(div);
 	
-		var div = doc.createElement("div");
+		var div = document.createElement("div");
 		div.style.position = "relative";
 		div.style.display = "none";
 		div.id = this._repeatYearlyId = Dwt.getNextId();
@@ -489,15 +488,13 @@ function() {
 
 ZmApptRecurDialog.prototype._createDwtObjects = 
 function() {
-	var doc = this.getDocument();
-	
 	this._repeatSelect = new DwtSelect(this);
 	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
 	for (var i = 0; i < ZmApptRecurDialog.REPEAT_OPTIONS.length; i++) {
 		var option = ZmApptRecurDialog.REPEAT_OPTIONS[i];
 		this._repeatSelect.addOption(option.label, option.selected, option.value);
 	}
-	var repeatSelectDiv = Dwt.getDomObj(doc, this._repeatSelectId);
+	var repeatSelectDiv = document.getElementById(this._repeatSelectId);
 	if (repeatSelectDiv)
 		repeatSelectDiv.appendChild(this._repeatSelect.getHtmlElement());
 	delete this._repeatSelectId;
@@ -505,13 +502,12 @@ function() {
 	var dateButtonListener = new AjxListener(this, this._endByButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
-	this._endByButton = ZmApptViewHelper.createMiniCalButton(doc, this, this._endByButtonId, 
-															 dateButtonListener, dateCalSelectionListener, true);
+	this._endByButton = ZmApptViewHelper.createMiniCalButton(this, this._endByButtonId, dateButtonListener, dateCalSelectionListener, true);
 
 	this._weeklySelect = new DwtSelect(this);
 	for (var i = 0; i < AjxDateUtil.WEEKDAY_LONG.length; i++)
 		this._weeklySelect.addOption(AjxDateUtil.WEEKDAY_LONG[i], false, i);
-	var weeklySelectCell = Dwt.getDomObj(doc, this._weeklySelectId);
+	var weeklySelectCell = document.getElementById(this._weeklySelectId);
 	if (weeklySelectCell)
 		weeklySelectCell.appendChild(this._weeklySelect.getHtmlElement());
 	delete this._weeklySelectId;
@@ -521,7 +517,7 @@ function() {
 		var option = ZmAppt.MONTHLY_DAY_OPTIONS[i];
 		this._monthlyDaySelect.addOption(option.label, option.selected, option.value);
 	}
-	var monthlyDayCell = Dwt.getDomObj(doc, this._monthlyDaySelectId);
+	var monthlyDayCell = document.getElementById(this._monthlyDaySelectId);
 	if (monthlyDayCell)
 		monthlyDayCell.appendChild(this._monthlyDaySelect.getHtmlElement());
 	delete this._monthlyDaySelectId;
@@ -529,7 +525,7 @@ function() {
 	this._monthlyWeekdaySelect = new DwtSelect(this);
 	for (var i = 0; i < AjxDateUtil.WEEKDAY_LONG.length; i++)
 		this._monthlyWeekdaySelect.addOption(AjxDateUtil.WEEKDAY_LONG[i], false, i);
-	var monthlyWeekdayCell = Dwt.getDomObj(doc, this._monthlyWeekdaySelectId);
+	var monthlyWeekdayCell = document.getElementById(this._monthlyWeekdaySelectId);
 	if (monthlyWeekdayCell)
 		monthlyWeekdayCell.appendChild(this._monthlyWeekdaySelect.getHtmlElement());
 	delete this._monthlyWeekdaySelectId;
@@ -537,7 +533,7 @@ function() {
 	this._yearlyMonthSelect = new DwtSelect(this);
 	for (var i = 0; i < AjxDateUtil.MONTH_LONG.length; i++)
 		this._yearlyMonthSelect.addOption(AjxDateUtil.MONTH_LONG[i], false, i);
-	var yearlyMonthCell = Dwt.getDomObj(doc, this._yearlyMonthSelectId);
+	var yearlyMonthCell = document.getElementById(this._yearlyMonthSelectId);
 	if (yearlyMonthCell)
 		yearlyMonthCell.appendChild(this._yearlyMonthSelect.getHtmlElement());
 	delete this._yearlyMonthSelectId;
@@ -547,7 +543,7 @@ function() {
 		var option = ZmAppt.MONTHLY_DAY_OPTIONS[i];
 		this._yearlyDaySelect.addOption(option.label, option.selected, option.value);
 	}
-	var yearlyDayCell = Dwt.getDomObj(doc, this._yearlyDaySelectId);
+	var yearlyDayCell = document.getElementById(this._yearlyDaySelectId);
 	if (yearlyDayCell)
 		yearlyDayCell.appendChild(this._yearlyDaySelect.getHtmlElement());
 	delete this._yearlyDaySelectId;
@@ -555,7 +551,7 @@ function() {
 	this._yearlyWeekdaySelect = new DwtSelect(this);
 	for (var i = 0; i < AjxDateUtil.WEEKDAY_LONG.length; i++)
 		this._yearlyWeekdaySelect.addOption(AjxDateUtil.WEEKDAY_LONG[i], false, i);
-	var yearlyWeekdayCell = Dwt.getDomObj(doc, this._yearlyWeekdaySelectId);
+	var yearlyWeekdayCell = document.getElementById(this._yearlyWeekdaySelectId);
 	if (yearlyWeekdayCell)
 		yearlyWeekdayCell.appendChild(this._yearlyWeekdaySelect.getHtmlElement());
 	delete this._yearlyWeekdaySelectId;
@@ -563,7 +559,7 @@ function() {
 	this._yearlyMonthSelectEx = new DwtSelect(this);
 	for (var i = 0; i < AjxDateUtil.MONTH_LONG.length; i++)
 		this._yearlyMonthSelectEx.addOption(AjxDateUtil.MONTH_LONG[i], false, i);
-	var yearlyMonthCellEx = Dwt.getDomObj(doc, this._yearlyMonthSelectExId);
+	var yearlyMonthCellEx = document.getElementById(this._yearlyMonthSelectExId);
 	if (yearlyMonthCellEx)
 		yearlyMonthCellEx.appendChild(this._yearlyMonthSelectEx.getHtmlElement());
 	delete this._yearlyMonthSelectExId;
@@ -571,29 +567,27 @@ function() {
 
 ZmApptRecurDialog.prototype._cacheFields = 
 function() {
-	var doc = this.getDocument();
-
-	this._noEndDateRadio = Dwt.getDomObj(doc, this._noEndDateRadioId);			delete this._noEndDateRadioId;
-	this._endByRadio = Dwt.getDomObj(doc, this._endByRadioId); 					delete this._endByRadioId;
-	this._repeatSectionDiv = Dwt.getDomObj(doc, this._repeatSectionId); 		delete this._repeatSectionId;
-	this._repeatEndDiv = Dwt.getDomObj(doc, this._repeatEndDivId);				delete this._repeatEndDivId;
-	this._repeatDailyDiv = Dwt.getDomObj(doc, this._repeatDailyId); 			delete this._repeatDailyId;
-	this._repeatWeeklyDiv = Dwt.getDomObj(doc, this._repeatWeeklyId); 			delete this._repeatWeeklyId;
-	this._repeatMonthlyDiv = Dwt.getDomObj(doc, this._repeatMonthlyId); 		delete this._repeatMonthlyId;
-	this._repeatYearlyDiv = Dwt.getDomObj(doc, this._repeatYearlyId); 			delete this._repeatYearlyId;
-	this._endIntervalField = Dwt.getDomObj(doc, this._endIntervalFieldId); 		delete this._endIntervalFieldId;
-	this._endByField = Dwt.getDomObj(doc, this._endByFieldId); 					delete this._endByFieldId;
-	this._dailyDefaultRadio = Dwt.getDomObj(doc, this._dailyDefaultId); 		delete this._dailyDefaultId;
-	this._dailyField = Dwt.getDomObj(doc, this._dailyFieldId); 					delete this._dailyFieldId;
-	this._weeklyDefaultRadio = Dwt.getDomObj(doc, this._weeklyDefaultId); 		delete this._weeklyDefaultId;
-	this._weeklyField = Dwt.getDomObj(doc, this._weeklyFieldId); 				delete this._weeklyFieldId;
-	this._weeklyCheckboxes = doc.getElementsByName(this._weeklyCheckboxName);
-	this._monthlyDefaultRadio = Dwt.getDomObj(doc, this._monthlyDefaultId); 	delete this._monthlyDefaultId;
-	this._monthlyDayField = Dwt.getDomObj(doc, this._monthlyDayFieldId); 		delete this._monthlyDayFieldId;
-	this._monthlyMonthField = Dwt.getDomObj(doc, this._monthlyMonthFieldId); 	delete this._monthlyMonthFieldId;
-	this._monthlyMonthFieldEx = Dwt.getDomObj(doc, this._monthlyMonthFieldExId);delete this._monthlyMonthFieldExId;
-	this._yearlyDefaultRadio = Dwt.getDomObj(doc, this._yearlyDefaultId); 		delete this._yearlyDefaultId;
-	this._yearlyDayField = Dwt.getDomObj(doc, this._yearlyDayFieldId); 			delete this._yearlyDayFieldId;
+	this._noEndDateRadio = document.getElementById(this._noEndDateRadioId);			delete this._noEndDateRadioId;
+	this._endByRadio = document.getElementById(this._endByRadioId); 				delete this._endByRadioId;
+	this._repeatSectionDiv = document.getElementById(this._repeatSectionId); 		delete this._repeatSectionId;
+	this._repeatEndDiv = document.getElementById(this._repeatEndDivId);				delete this._repeatEndDivId;
+	this._repeatDailyDiv = document.getElementById(this._repeatDailyId); 			delete this._repeatDailyId;
+	this._repeatWeeklyDiv = document.getElementById(this._repeatWeeklyId); 			delete this._repeatWeeklyId;
+	this._repeatMonthlyDiv = document.getElementById(this._repeatMonthlyId); 		delete this._repeatMonthlyId;
+	this._repeatYearlyDiv = document.getElementById(this._repeatYearlyId); 			delete this._repeatYearlyId;
+	this._endIntervalField = document.getElementById(this._endIntervalFieldId); 	delete this._endIntervalFieldId;
+	this._endByField = document.getElementById(this._endByFieldId); 				delete this._endByFieldId;
+	this._dailyDefaultRadio = document.getElementById(this._dailyDefaultId); 		delete this._dailyDefaultId;
+	this._dailyField = document.getElementById(this._dailyFieldId); 				delete this._dailyFieldId;
+	this._weeklyDefaultRadio = document.getElementById(this._weeklyDefaultId); 		delete this._weeklyDefaultId;
+	this._weeklyField = document.getElementById(this._weeklyFieldId); 				delete this._weeklyFieldId;
+	this._weeklyCheckboxes = document.getElementsByName(this._weeklyCheckboxName);
+	this._monthlyDefaultRadio = document.getElementById(this._monthlyDefaultId); 	delete this._monthlyDefaultId;
+	this._monthlyDayField = document.getElementById(this._monthlyDayFieldId); 		delete this._monthlyDayFieldId;
+	this._monthlyMonthField = document.getElementById(this._monthlyMonthFieldId); 	delete this._monthlyMonthFieldId;
+	this._monthlyMonthFieldEx = document.getElementById(this._monthlyMonthFieldExId);delete this._monthlyMonthFieldExId;
+	this._yearlyDefaultRadio = document.getElementById(this._yearlyDefaultId); 		delete this._yearlyDefaultId;
+	this._yearlyDayField = document.getElementById(this._yearlyDayFieldId); 		delete this._yearlyDayFieldId;
 };
 
 ZmApptRecurDialog.prototype._setRepeatSection = 
@@ -644,7 +638,7 @@ function() {
 
 ZmApptRecurDialog.prototype._getRadioOptionValue = 
 function(radioName) {	
-	var options = this.getDocument().getElementsByName(radioName);
+	var options = document.getElementsByName(radioName);
 	if (options) {
 		for (var i = 0; i < options.length; i++) {
 			if (options[i].checked)
@@ -661,10 +655,8 @@ ZmApptRecurDialog.prototype._populateForEdit =
 function(appt) {
 	if (appt.repeatType == "NON") return;
 
-	var doc = this.getDocument();
-
 	if (appt.repeatType == "DAI") {
-		var dailyRadioOptions = doc.getElementsByName(this._dailyRadioName);
+		var dailyRadioOptions = document.getElementsByName(this._dailyRadioName);
 		if (appt.repeatWeekday) {
 			dailyRadioOptions[1].checked = true;
 		} else if (appt.repeatCustomCount > 1) {
@@ -672,7 +664,7 @@ function(appt) {
 			dailyRadioOptions[2].checked = true;
 		}
 	} else if (appt.repeatType == "WEE") {
-		var weeklyRadioOptions = doc.getElementsByName(this._weeklyRadioName);
+		var weeklyRadioOptions = document.getElementsByName(this._weeklyRadioName);
 		if (appt.repeatCustomCount == 1 && appt.repeatWeeklyDays.length == 1) {
 			weeklyRadioOptions[0].checked = true;
 			for (var j = 0; j < ZmAppt.SERVER_WEEK_DAYS.length; j++) {
@@ -696,7 +688,7 @@ function(appt) {
 			}
 		}
 	} else if (appt.repeatType == "MON") {
-		var monthlyRadioOptions = doc.getElementsByName(this._monthlyRadioName);
+		var monthlyRadioOptions = document.getElementsByName(this._monthlyRadioName);
 		if (appt.repeatMonthlyDayList) {
 			monthlyRadioOptions[0].checked = true;
 			this._monthlyDayField.value = appt.repeatMonthlyDayList[0];
@@ -713,7 +705,7 @@ function(appt) {
 			this._monthlyMonthFieldEx.value = appt.repeatCustomCount;
 		}
 	} else if (appt.repeatType == "YEA") {
-		var yearlyRadioOptions = doc.getElementsByName(this._yearlyRadioName);
+		var yearlyRadioOptions = document.getElementsByName(this._yearlyRadioName);
 		if (appt.repeatCustomType == "S") {
 			yearlyRadioOptions[0].checked = true;
 			this._yearlyDayField.value = appt.repeatCustomMonthDay;
@@ -733,7 +725,7 @@ function(appt) {
 
 	// populate recurrence ending rules
 	if (appt.repeatEndType != "N") {
-		var endRadioOptions = doc.getElementsByName(this._repeatEndName);
+		var endRadioOptions = document.getElementsByName(this._repeatEndName);
 		if (appt.repeatEndType == "A") {
 			endRadioOptions[1].checked = true;
 			this._endIntervalField.value = appt.repeatEndCount;

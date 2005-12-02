@@ -553,7 +553,7 @@ ZmFilterListView.prototype._setNoResultsHtml =
 function() {
 
 	var htmlArr = new Array(5);
-	var	div = this.getDocument().createElement("div");
+	var	div = document.createElement("div");
 	var idx = 0;
 
 	htmlArr[idx++] = "<table width='100%' cellspacing='0' cellpadding='1' style='table-layout:fixed'>";

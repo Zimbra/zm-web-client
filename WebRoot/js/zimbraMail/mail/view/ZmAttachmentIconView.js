@@ -45,7 +45,7 @@ function(attachment, now) {
 	var idx = 0;
 	var id = attachment.getMessageId();
 	var msg = attachment.getMessage();
-	div = this.getDocument().createElement("div");
+	div = document.createElement("div");
 	div.style.display = "inline";
 	this.associateItemWithElement(attachment, div, DwtListView.TYPE_LIST_ITEM);
 		

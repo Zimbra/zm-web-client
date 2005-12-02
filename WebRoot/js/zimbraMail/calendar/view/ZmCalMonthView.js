@@ -62,7 +62,7 @@ function()  {
 ZmCalMonthView.prototype._clearSelectedDay =
 function() {
 	if (this._selectedData != null) {
-		var te = Dwt.getDomObj(this.getDocument(),this._selectedData.tdId);
+		var te = document.getElementById(this._selectedData.tdId);
 		te.className = 'calendar_month_cells_td';			
 		this._selectedData = null;
 	}
@@ -71,7 +71,7 @@ function() {
 ZmCalMonthView.prototype._updateSelectedDay =
 function() {
 	var day = this._dateToDayIndex[this._dayKey(this._date)];
-	var te = Dwt.getDomObj(this.getDocument(), day.tdId);	
+	var te = document.getElementById( day.tdId);	
 	te.className = 'calendar_month_cells_td-Selected';	
 	this._selectedData = day;	
 };
@@ -95,7 +95,7 @@ function(appt) {
 ZmCalMonthView.prototype._getDivForAppt =
 function(appt) {
 	var day = this._getDayForAppt(appt);
-	return day ? Dwt.getDomObj(this.getDocument(), day.dayId) : null;
+	return day ? document.getElementById( day.dayId) : null;
 };
 
 ZmCalMonthView.prototype._getStartDate = 
@@ -297,7 +297,7 @@ function(appt) {
 ZmCalMonthView.prototype._postSet = 
 function() {
 	// now go through each day and create appts in correct order to line things up
-	var allDayParent = Dwt.getDomObj(this.getDocument(), this._daysId); 
+	var allDayParent = document.getElementById( this._daysId); 
 	var day;
 	for (var i=0; i < 6; i++)	 {
 		var week = this._weeks[i];
@@ -376,8 +376,7 @@ function(appt, apptEnd) {
 	//DBG.println("---- createItem ---- "+appt);
 	
 	// set up DIV
-	var doc = this.getDocument();
-	var div = doc.createElement("div");	
+	var div = document.createElement("div");	
 
 	div.style.position = 'absolute';
 	Dwt.setSize(div, 10, 10);
@@ -401,7 +400,7 @@ function(appt, apptEnd) {
 
 ZmCalMonthView.prototype._createAllDayFillerHtml =
 function(day) {
-	var dayTable = Dwt.getDomObj(this.getDocument(), day.dayId);
+	var dayTable = document.getElementById( day.dayId);
 	var	result = dayTable.insertRow(-1);
 	result._styleClass = "allday";
 	result._selectedStyleClass = result._styleClass + '-' + DwtCssStyle.SELECTED;
@@ -550,8 +549,6 @@ function() {
 		d.setDate(d.getDate()-((dow+(7-fdow))%7));
 	}
 
-	var doc = this.getDocument();
-
 	this._dateToDayIndex = new Object();
 
 	var today = new Date();
@@ -564,12 +561,12 @@ function() {
 			day.date = new Date(d);
 			this._dateToDayIndex[this._dayKey(day.date)] = day;
 			var thisMonth = day.date.getMonth() == this._month;
-	 		var te = Dwt.getDomObj(doc, day.titleId);
+	 		var te = document.getElementById(day.titleId);
 	 		var isToday = d.getTime() == today.getTime();
 			//te.innerHTML = d.getTime() == today.getTime() ? ("<div class=calendar_month_day_today>" + this._dayTitle(d) + "</div>") : this._dayTitle(d);
 			te.innerHTML = this._dayTitle(d);			
 			te.className = (thisMonth ? 'calendar_month_day_label' : 'calendar_month_day_label_off_month') + (isToday ? "_today" : "");
-	 		var de = Dwt.getDomObj(doc, day.tdId);			
+	 		var de = document.getElementById(day.tdId);			
 			de.className = 'calendar_month_cells_td';	
 			de._loc = loc;
 			de._type = ZmCalBaseView.TYPE_MONTH_DAY;
@@ -579,7 +576,7 @@ function() {
 	
 	var formatter = DwtCalendar.getMonthFormatter();
 	this._title = formatter.format(this._date);
-	var titleEl = Dwt.getDomObj(doc, this._titleId);
+	var titleEl = document.getElementById(this._titleId);
 	titleEl.innerHTML = this._title;
 };
 
@@ -590,7 +587,7 @@ function() {
 	var sum = 0;
 	for (var i=0; i < 6; i++)  {
 		dayY[i] = sum;
-		var sz = Dwt.getSize(Dwt.getDomObj(this.getDocument(), this._days[7*i].tdId));
+		var sz = Dwt.getSize(document.getElementById( this._days[7*i].tdId));
 		if (i == 0)
 			dayWidth = sz.x;
 		sum += sz.y;
@@ -601,14 +598,14 @@ function() {
 		for (var key in week.appts) {
 			var data = week.appts[key];
 			var appt = data.first;
-			var ae = Dwt.getDomObj(this.getDocument(), this._getItemId(appt));
+			var ae = document.getElementById( this._getItemId(appt));
 			if (ae) {
 				var apptWidth = (dayWidth * data.num) - 8;
 				var apptX = dayWidth*data.dow + 3;
 				var apptY = dayY[i] + (21*data.row) + 18 + 3; //first 17, each appt + 1, second 17, day heading
 				Dwt.setLocation(ae, apptX, apptY);
 				Dwt.setSize(ae, apptWidth, 16); //Dwt.DEFAULT);
-				var apptBodyDiv = Dwt.getDomObj(this.getDocument(), ae.id + "_body");
+				var apptBodyDiv = document.getElementById(ae.id + "_body");
 				Dwt.setSize(apptBodyDiv, apptWidth, 16); //Dwt.DEFAULT);
 			}
 		}
@@ -630,26 +627,24 @@ function() {
 
 	this._needFirstLayout = false;
 		
-	var doc = this.getDocument();
-
-	var he = Dwt.getDomObj(doc, this._headerId);
+	var he = document.getElementById(this._headerId);
 	var headingHeight = Dwt.getSize(he).y;
 
 	var w = width - 5;
 	var h = height - headingHeight - 10;
 	
-	var de = Dwt.getDomObj(doc, this._daysId);
+	var de = document.getElementById(this._daysId);
 	Dwt.setSize(de, w, h);
 
-	var be = Dwt.getDomObj(doc, this._bodyId);
+	var be = document.getElementById(this._bodyId);
 	Dwt.setSize(be, w, h);
 
 	var colWidth = Math.floor(w/7) - 1;
 
 	for (var i=0; i < 7; i++) {
-		var col = Dwt.getDomObj(doc, this._headerColId[i]);
+		var col = document.getElementById(this._headerColId[i]);
 		Dwt.setSize(col, colWidth, Dwt.DEFAULT);
-		col = Dwt.getDomObj(doc, this._bodyColId[i]);
+		col = document.getElementById(this._bodyColId[i]);
 		Dwt.setSize(col, colWidth, Dwt.DEFAULT);		
 	}
 

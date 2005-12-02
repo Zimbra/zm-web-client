@@ -69,7 +69,7 @@ function(folder, loc) {
 	var feedEnabled = ZmNewFolderDialog._feedEnabled;
 	if (this._feedEnabled != feedEnabled) {
 		this._feedEnabled = ZmNewFolderDialog._feedEnabled;
-		var cbField= Dwt.getDomObj(this._doc, this._checkboxRowId);
+		var cbField= document.getElementById(this._checkboxRowId);
 		cbField.style.display = this._feedEnabled ? (AjxEnv.isIE ? "block" : "table-row") : "none";
 	}
 	DBG.timePt(AjxDebug.PERF, "feed enabled");
@@ -156,8 +156,8 @@ function(ev) {
 
 ZmNewFolderDialog.prototype._setupRemoteCheckboxField =
 function() {
-	this._remoteCheckboxField = Dwt.getDomObj(this._doc, this._remoteCheckboxFieldId);
-	this._urlField = Dwt.getDomObj(this._doc, this._remoteCheckboxFieldId+"URLfield");	
+	this._remoteCheckboxField = document.getElementById(this._remoteCheckboxFieldId);
+	this._urlField = document.getElementById(this._remoteCheckboxFieldId+"URLfield");	
 	Dwt.setHandler(this._remoteCheckboxField, DwtEvent.ONCLICK, this._handleCheckbox);	
 }
 
@@ -169,7 +169,7 @@ function() {
 		this._urlField.value = "";
 	if (this._remoteCheckboxField) {
 		this._remoteCheckboxField.checked = false;
-		var urlRow = Dwt.getDomObj(document, this._remoteCheckboxField.id+"URLrow");		
+		var urlRow = document.getElementById(this._remoteCheckboxField.id+"URLrow");		
 		urlRow.style.display = "none";
 	}
 }
@@ -178,8 +178,8 @@ ZmNewFolderDialog.prototype._handleCheckbox =
 function(event) {
 	event = event || window.event;
 	var target = DwtUiEvent.getTarget(event);
-	var urlRow = Dwt.getDomObj(document, target.id+"URLrow");
-	var urlField= Dwt.getDomObj(document, target.id+"URLfield");	
+	var urlRow = document.getElementById(target.id+"URLrow");
+	var urlField= document.getElementById(target.id+"URLfield");	
 	urlRow.style.display = target.checked ? (AjxEnv.isIE ? "block" : "table-row") : "none";
 	if (target.checked) {
 		urlField.focus();

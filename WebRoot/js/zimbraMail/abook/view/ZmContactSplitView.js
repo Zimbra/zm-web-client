@@ -127,7 +127,7 @@ function(width, height) {
 	this._contactPartHeight = childHeight;
 	
 	if (this._htmlInitialized) {
-		var bodyDiv = Dwt.getDomObj(this.getDocument(), this._contactBodyId);
+		var bodyDiv = document.getElementById(this._contactBodyId);
 		bodyDiv.style.width = this._contactPartWidth;
 		bodyDiv.style.height = this._contactPartHeight - 40;
 	}	
@@ -171,13 +171,12 @@ function(contact, isGal) {
 	if (!this._htmlInitialized)
 		this._createHtml();
 
-	var doc = this.getDocument();
 	// set contact header (file as)
-	var contactHdr = Dwt.getDomObj(doc, this._contactHeaderId);
+	var contactHdr = document.getElementById(this._contactHeaderId);
 	contactHdr.innerHTML = contact.getFileAs();
 	
 	// set body
-	var contactBodyDiv = Dwt.getDomObj(doc, this._contactBodyId);
+	var contactBodyDiv = document.getElementById(this._contactBodyId);
 	
 	var html = new Array();
 	var idx = 0;

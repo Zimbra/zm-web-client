@@ -89,7 +89,6 @@ function() {
 
 	this.getHtmlElement().innerHTML = html.join("");
 
-	var doc = this.getDocument();
-	this._contentDiv = Dwt.getDomObj(doc, this._contentId);
+	this._contentDiv = document.getElementById(this._contentId);
 	this._titleCellId = this._titleId + "_title";
 };

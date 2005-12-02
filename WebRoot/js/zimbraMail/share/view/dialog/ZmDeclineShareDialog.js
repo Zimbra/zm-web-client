@@ -33,7 +33,6 @@ function ZmDeclineShareDialog(appCtxt, parent, className) {
 	this._appCtxt = appCtxt;
 	
 	// create controls
-	var document = this.getDocument();
 	this._confirmMsgEl = document.createElement("DIV");
 	this._confirmMsgEl.style.fontWeight = "bold";
 	this._confirmMsgEl.style.marginBottom = "0.25em";

@@ -608,19 +608,18 @@ function(appt, html, idx) {
 
 ZmCalBaseView.prototype._getElFromItem = 
 function(item) {
-	return Dwt.getDomObj(this.getDocument(), this._getItemId(item));
+	return document.getElementById(this._getItemId(item));
 }
 
 ZmCalBaseView.prototype._resetList =
 function() {
-	var doc = this.getDocument();
 	var list = this.getList();
 	var size = list ? list.size() : 0;
 	if (size == 0) return;
 
 	for (var i=0; i < size; i++) {
 		var ao = list.get(i);
-		var appt = Dwt.getDomObj(doc, this._getItemId(ao));
+		var appt = document.getElementById(this._getItemId(ao));
 		if (appt) {
 			appt.parentNode.removeChild(appt);
 			AjxCore.unassignId(appt._itemIndex);

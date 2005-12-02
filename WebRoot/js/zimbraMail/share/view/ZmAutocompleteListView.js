@@ -491,7 +491,7 @@ function(sel) {
 	thisHtmlElement.innerHTML = "";
 	var len = this._matches.size();
 	for (var i = 0; i < len; i++) {
-		var div = this.getDocument().createElement("div");
+		var div = document.createElement("div");
 		var match = this._matches.get(i);
 		div._item = match;
 		div._pos = i;

@@ -48,7 +48,6 @@ function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 	} else {
 		this.setView(view);
 	}
-	this._doc = this.getDocument();
 
 	this._msgDialog = msgDialog;
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
@@ -97,7 +96,7 @@ function() {
 
 ZmDialog.prototype._setNameField =
 function(fieldId) {
-	this._nameField = Dwt.getDomObj(this._doc, fieldId);
+	this._nameField = document.getElementById(fieldId);
 	if (this._nameField) this._focusElementId = fieldId;
 	this.setTabOrder([fieldId]);
 	this.addEnterListener(new AjxListener(this, this._enterListener));
@@ -113,7 +112,7 @@ ZmDialog.prototype._createOverview =
 function(overviewId, fieldId) {
 	var overview = this._opc.createOverview({overviewId: overviewId, overviewClass: "dialogOverview",
 											 headerClass: "DwtTreeItem"});
-	Dwt.getDomObj(this._doc, fieldId).appendChild(overview.getHtmlElement());
+	document.getElementById(fieldId).appendChild(overview.getHtmlElement());
 }
 
 ZmDialog.prototype._renderOverview =

@@ -250,7 +250,7 @@ function(composeMode) {
 	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
 	if (this._bodyFieldId != bodyFieldId) {
 		this._bodyFieldId = bodyFieldId;
-		this._bodyField = Dwt.getDomObj(this.getDocument(), this._bodyFieldId);
+		this._bodyField = document.getElementById(this._bodyFieldId);
 	}
 
 	this._resizeNotes();
@@ -304,8 +304,7 @@ function(appt, attach) {
 	this._attachCount++;
 
 	// add file input field
-	var doc = this.getDocument();
-	var div = doc.createElement("div");
+	var div = document.createElement("div");
 
 	var attachRemoveId = "_att_" + Dwt.getNextId();
 	var attachInputId = "_att_" + Dwt.getNextId();
@@ -331,7 +330,7 @@ function(appt, attach) {
 	}
 
 	if (this._attachDiv == null)
-		this._attachDiv = Dwt.getDomObj(doc, this._attachDivId);
+		this._attachDiv = document.getElementById(this._attachDivId);
 	this._attachDiv.appendChild(div);
 
 	// scroll to the new attachment if needed
@@ -340,13 +339,13 @@ function(appt, attach) {
 	if (attach == null) {
 		// add event handlers as necessary
 		var tvpId = AjxCore.assignId(this);
-		var attachRemoveSpan = Dwt.getDomObj(doc, attachRemoveId);
+		var attachRemoveSpan = document.getElementById(attachRemoveId);
 		attachRemoveSpan._tabViewPageId = tvpId;
 		attachRemoveSpan._parentDiv = div;
 		Dwt.setHandler(attachRemoveSpan, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
 		// trap key presses in IE for input field so we can ignore ENTER key (bug 961)
 		if (AjxEnv.isIE) {
-			var attachInputEl = Dwt.getDomObj(doc, attachInputId);
+			var attachInputEl = document.getElementById(attachInputId);
 			attachInputEl._tabViewPageId = tvpId;
 			Dwt.setHandler(attachInputEl, DwtEvent.ONKEYDOWN, ZmApptTabViewPage._onKeyDown);
 		}
@@ -578,11 +577,9 @@ function() {
 
 ZmApptTabViewPage.prototype._createSelects =
 function() {
-	var doc = this.getDocument();
-
 	// create selects for details section
 	this._calendarSelect = new DwtSelect(this);
-	var calCell = Dwt.getDomObj(doc, this._calSelectId);
+	var calCell = document.getElementById(this._calSelectId);
 	if (calCell)
 		calCell.appendChild(this._calendarSelect.getHtmlElement());
 	delete this._calSelectId;
@@ -592,7 +589,7 @@ function() {
 		var option = ZmApptTabViewPage.SHOWAS_OPTIONS[i];
 		this._showAsSelect.addOption(option.label, option.selected, option.value);
 	}
-	var showAsCell = Dwt.getDomObj(doc, this._showAsSelectId);
+	var showAsCell = document.getElementById(this._showAsSelectId);
 	if (showAsCell)
 		showAsCell.appendChild(this._showAsSelect.getHtmlElement());
 	this._showAsSelect.setSize("85"); 											// XXX: hardcode width for now
@@ -609,7 +606,7 @@ function() {
 			this._startTimeSelect.addOption(option.label, option.selected, option.value);
 		}
 	}
-	var startTimeCell = Dwt.getDomObj(doc, this._startTimeSelectId);
+	var startTimeCell = document.getElementById(this._startTimeSelectId);
 	if (startTimeCell)
 		startTimeCell.appendChild(this._startTimeSelect.getHtmlElement());
 	delete this._startTimeSelectId;
@@ -622,7 +619,7 @@ function() {
 			this._endTimeSelect.addOption(option.label, option.selected, option.value);
 		}
 	}
-	var endTimeCell = Dwt.getDomObj(doc, this._endTimeSelectId);
+	var endTimeCell = document.getElementById(this._endTimeSelectId);
 	if (endTimeCell)
 		endTimeCell.appendChild(this._endTimeSelect.getHtmlElement());
 	delete this._endTimeSelectId;
@@ -633,7 +630,7 @@ function() {
 		this._tzoneSelect.addOption(timezones[i].label, false, timezones[i].value);
 	// init timezone to the local machine's time zone
 	this._tzoneSelect.setSelectedValue(ZmTimezones.guessMachineTimezone());
-	var endTZoneCell = Dwt.getDomObj(doc, this._tzoneSelectId);
+	var endTZoneCell = document.getElementById(this._tzoneSelectId);
 	if (endTZoneCell)
 		endTZoneCell.appendChild(this._tzoneSelect.getHtmlElement());
 	this._tzoneSelect.setSize("100"); 											// XXX: hardcode width for now
@@ -645,7 +642,7 @@ function() {
 		var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
 		this._repeatSelect.addOption(option.label, option.selected, option.value);
 	}
-	var repeatCell = Dwt.getDomObj(doc, this._repeatSelectId);
+	var repeatCell = document.getElementById(this._repeatSelectId);
 	if (repeatCell)
 		repeatCell.appendChild(this._repeatSelect.getHtmlElement());
 	delete this._repeatSelectId;
@@ -653,16 +650,11 @@ function() {
 
 ZmApptTabViewPage.prototype._createButtons =
 function() {
-	var doc = this.getDocument();
-
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
-	this._startDateButton = ZmApptViewHelper.createMiniCalButton(doc, this, this._startMiniCalBtnId,
-																 dateButtonListener, dateCalSelectionListener);
-
-	this._endDateButton = ZmApptViewHelper.createMiniCalButton(doc, this, this._endMiniCalBtnId,
-															   dateButtonListener, dateCalSelectionListener);
+	this._startDateButton = ZmApptViewHelper.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener);
+	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener);
 
 	this._attendeesBtnListener = new AjxListener(this, this._attendeesButtonListener);
 	this._attendeesButton = new DwtButton(this);
@@ -670,7 +662,7 @@ function() {
 	this._attendeesButton.setSize(80);
 	this._attendeesButton.addSelectionListener(this._attendeesBtnListener);
 	// reparent
-	var attendeesButtonCell = Dwt.getDomObj(doc, this._attendeesBtnId);
+	var attendeesButtonCell = document.getElementById(this._attendeesBtnId);
 	if (attendeesButtonCell)
 		attendeesButtonCell.appendChild(this._attendeesButton.getHtmlElement());
 	delete this._attendeesBtnId;
@@ -816,16 +808,14 @@ function() {
 
 ZmApptTabViewPage.prototype._initNotesHtmlEditor =
 function() {
-	var doc = this.getDocument();
-
 	// add notes html editor
 	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode, this._appCtxt);
-	var notesHtmlEditorDiv = Dwt.getDomObj(doc, this._notesHtmlEditorId);
+	var notesHtmlEditorDiv = document.getElementById(this._notesHtmlEditorId);
 	if (notesHtmlEditorDiv)
 		notesHtmlEditorDiv.appendChild(this._notesHtmlEditor.getHtmlElement());
 	delete this._notesHtmlEditorId;
 
-	this._bodyField = Dwt.getDomObj(doc, this._notesHtmlEditor.getBodyFieldId());
+	this._bodyField = document.getElementById(this._notesHtmlEditor.getBodyFieldId());
 	this._resizeNotes();
 };
 
@@ -862,16 +852,14 @@ function() {
 // cache all input fields so we dont waste time traversing DOM each time
 ZmApptTabViewPage.prototype._cacheFields =
 function() {
-	var doc = this.getDocument();
-
-	this._subjectField 		= Dwt.getDomObj(doc, this._subjectFieldId); 		delete this._subjectFieldId;
-	this._locationField 	= Dwt.getDomObj(doc, this._locationFieldId); 		delete this._locationFieldId;
-	this._calLabelField 	= Dwt.getDomObj(doc, this._calLabelId); 			delete this._calLabelId;
-	this._startDateField 	= Dwt.getDomObj(doc, this._startDateFieldId); 		delete this._startDateFieldId;
-	this._endDateField 		= Dwt.getDomObj(doc, this._endDateFieldId);	 		delete this._endDateFieldId;
-	this._attendeesField 	= Dwt.getDomObj(doc, this._attendeesFieldId); 		delete this._attendeesFieldId;
-	this._allDayCheckbox 	= Dwt.getDomObj(doc, this._allDayCheckboxId); 		// dont delete!
-	this._repeatDescField 	= Dwt.getDomObj(doc, this._repeatDescId); 			// dont delete!
+	this._subjectField 		= document.getElementById(this._subjectFieldId); 		delete this._subjectFieldId;
+	this._locationField 	= document.getElementById(this._locationFieldId); 		delete this._locationFieldId;
+	this._calLabelField 	= document.getElementById(this._calLabelId); 			delete this._calLabelId;
+	this._startDateField 	= document.getElementById(this._startDateFieldId); 		delete this._startDateFieldId;
+	this._endDateField 		= document.getElementById(this._endDateFieldId);	 	delete this._endDateFieldId;
+	this._attendeesField 	= document.getElementById(this._attendeesFieldId); 		delete this._attendeesFieldId;
+	this._allDayCheckbox 	= document.getElementById(this._allDayCheckboxId); 		// dont delete!
+	this._repeatDescField 	= document.getElementById(this._repeatDescId); 			// dont delete!
 };
 
 ZmApptTabViewPage.prototype._resetTimezoneSelect =
@@ -927,12 +915,11 @@ function() {
 	html[i++] = ZmMsg.attachments;
 	html[i++] = "</legend>";
 
-	var doc = this.getDocument();
 	this._uploadFormId = Dwt.getNextId();
 	this._attachDivId = Dwt.getNextId();
 
 	html[i++] = "<form style='margin:0;padding:0' method='POST' action='";
-	html[i++] = (location.protocol + "//" + doc.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI));
+	html[i++] = (location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI));
 	html[i++] = "' id='";
 	html[i++] = this._uploadFormId;
 	html[i++] = "' enctype='multipart/form-data'><div id='";
@@ -946,7 +933,7 @@ function() {
 // Returns true if any of the attachment fields are populated
 ZmApptTabViewPage.prototype._gotAttachments =
 function() {
-	var atts = this.getDocument().getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME);
+	var atts = document.getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME);
 
 	for (var i = 0; i < atts.length; i++)
 		if (atts[i].value.length)
@@ -958,7 +945,7 @@ function() {
 ZmApptTabViewPage.prototype._removeAttachment =
 function(removeId) {
 	// get document of attachment's iframe
-	var removeSpan = this.getElementById(removeId);
+	var removeSpan = document.getElementById(removeId);
 	if (removeSpan) {
 		// have my parent kill me
 		removeSpan._parentDiv.parentNode.removeChild(removeSpan._parentDiv);
@@ -1059,7 +1046,7 @@ function() {
 	var callback = new AjxCallback(this, this._attsDoneCallback);
 	var um = this._appCtxt.getUploadManager();
 	window._uploadManager = um;
-	um.execute(callback, this.getElementById(this._uploadFormId));
+	um.execute(callback, document.getElementById(this._uploadFormId));
 };
 
 

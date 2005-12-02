@@ -276,8 +276,7 @@ function(buttonDiv) {
 
 ZmPreferencesPage.prototype._addFontPrefs = 
 function(fontDiv, id, setup, value, fontSizeValue) {
-	var doc = this.getDocument();
-	var table = doc.createElement("table");
+	var table = document.createElement("table");
 	table.border = table.cellPadding = table.cellSpacing = 0;
 	var row = table.insertRow(-1);
 	
@@ -342,11 +341,11 @@ function(ev) {
 
 ZmPreferencesPage.prototype._fontColorListener = 
 function(ev) {
-	var colorBox = Dwt.getDomObj(this.getDocument(), this._defaultFontColorId);
+	var colorBox = document.getElementById(this._defaultFontColorId);
 	if (colorBox) {
 		colorBox.style.backgroundColor = ev.detail;
 		var fontColorInputId = ZmPref.KEY_ID + ZmSetting.COMPOSE_INIT_FONT_COLOR;
-		var input = Dwt.getDomObj(this.getDocument(), fontColorInputId);
+		var input = document.getElementById(fontColorInputId);
 		if (input)
 			input.value = ev.detail;
 	}
@@ -360,7 +359,7 @@ function(ev) {
 
 ZmPreferencesPage.prototype._importContactsListener =
 function(ev) {
-	var fileInput = this.getElementById(this._attInputId);
+	var fileInput = document.getElementById(this._attInputId);
 	var val = fileInput ? AjxStringUtil.trim(fileInput.value) : null;
 	
 	// TODO - test val against regex for valid .csv filename
@@ -369,7 +368,7 @@ function(ev) {
 		var callback = new AjxCallback(this, this._importDoneCallback);
 		var um = this._appCtxt.getUploadManager();
 		window._uploadManager = um;
-		um.execute(callback, this.getElementById(this._uploadFormId));
+		um.execute(callback, document.getElementById(this._uploadFormId));
 	} else {
 		// TODO - show error message in app controller's status window
 	}
@@ -446,8 +445,7 @@ function(ev) {
 			if (defValue != null && (curValue != defValue))
 				this.selects[id].setSelectedValue(defValue);
 		} else {
-			var doc = this.getDocument();
-			var element = Dwt.getDomObj(doc, (ZmPref.KEY_ID + id));
+			var element = document.getElementById((ZmPref.KEY_ID + id));
 
 			if (!element || element.value == defValue)
 				continue;
@@ -459,7 +457,7 @@ function(ev) {
 				element.value = defValue;
 				// XXX: nicer way to do this? do something special for font color
 				if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR) {
-					var colorBox = Dwt.getDomObj(doc, this._defaultFontColorId);
+					var colorBox = document.getElementById(this._defaultFontColorId);
 					if (colorBox)
 						colorBox.style.backgroundColor = defValue;
 				}

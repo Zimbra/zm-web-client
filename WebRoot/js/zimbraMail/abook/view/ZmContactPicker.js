@@ -97,7 +97,7 @@ function(addrType) {
 	this._enableButtons(true, false);
 	
 	// reset search field
-	var searchField = Dwt.getDomObj(this.getDocument(), this._searchFieldId);
+	var searchField = document.getElementById(this._searchFieldId);
 	searchField.disabled = false;
 	searchField.focus();
 	searchField.value = "";
@@ -120,7 +120,7 @@ function() {
 		this._list.clear();
 
 	// disabled search field (hack to fix bleeding cursor)
-	var searchField = Dwt.getDomObj(this.getDocument(), this._searchFieldId);
+	var searchField = document.getElementById(this._searchFieldId);
 	searchField.disabled = true;
 	this._query = null;
 	this._contactSource = null;
@@ -133,8 +133,6 @@ function() {
 // called only when ZmContactPicker is first created. Sets up initial layout.
 ZmContactPicker.prototype._initialize = 
 function() {
-
-	var doc = this.getDocument();
 
 	// init To/CC/BCC buttons
 	this._addrButtonId = new Array();
@@ -149,7 +147,7 @@ function() {
 	this.setContent(this._contentHtml());
 	
 	// add search button
-	var searchSpan = Dwt.getDomObj(doc, this._listSearchId);
+	var searchSpan = document.getElementById(this._listSearchId);
 	var searchButton = new DwtButton(this);
 	searchButton.setText(ZmMsg.search);
 	searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
@@ -163,7 +161,7 @@ function() {
 		var typeStr = this._buttonInfo[i].value;
 		this._addrButton[type] = this._setupButton(this._addrButtonId[type], typeStr, type);
 		this._addrButton[type].addSelectionListener(new AjxListener(this, this._addressButtonListener));
-		var addrDiv = Dwt.getDomObj(doc, this._addrDivId[type]);
+		var addrDiv = document.getElementById(this._addrDivId[type]);
 		addrDiv.appendChild(this._addrButton[type].getHtmlElement());
 		this._vecs[type] = new AjxVector();
 	}
@@ -172,7 +170,7 @@ function() {
 	this._removeButtonId = Dwt.getNextId();
 	this._removeButton = this._setupButton(this._removeButtonId, "remove");
 	this._removeButton.addSelectionListener(new AjxListener(this, this._removeButtonListener));
-	var removeDiv = Dwt.getDomObj(doc, this._removeDivId);
+	var removeDiv = document.getElementById(this._removeDivId);
 	removeDiv.appendChild(this._removeButton.getHtmlElement());
 
 	// add select menu
@@ -188,7 +186,7 @@ function() {
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 	
-	var searchField = Dwt.getDomObj(doc, this._searchFieldId);
+	var searchField = document.getElementById(this._searchFieldId);
 	Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmContactPicker._keyPressHdlr);
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
 };
@@ -322,7 +320,7 @@ function(ev) {
 
 ZmContactPicker.prototype._searchButtonListener = 
 function(ev) {
-	this._query = AjxStringUtil.trim(Dwt.getDomObj(this.getDocument(), this._searchFieldId).value);
+	this._query = AjxStringUtil.trim(document.getElementById(this._searchFieldId).value);
 	if (this._query.length) {
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			var searchFor = this._selectDiv.getSelectedOption().getValue();
@@ -421,15 +419,14 @@ function(items) {
 // "_origClassName" so that activation/triggering still work.
 ZmContactPicker.prototype._setActiveButton =
 function(id, addrType) {
-	var doc = this.getDocument();
 	id = id || this._addrButtonId[addrType];
 	if (id != this._activeButtonId) {
 		if (this._activeButtonId) {
-			var oldButton = Dwt.getObjectFromElement(Dwt.getDomObj(doc, this._activeButtonId));
+			var oldButton = Dwt.getObjectFromElement(document.getElementById(this._activeButtonId));
 			oldButton._origClassName = oldButton._nonActiveClassName;
 			oldButton.setClassName(oldButton._origClassName);
 		}
-		var button = Dwt.getObjectFromElement(Dwt.getDomObj(doc, id));
+		var button = Dwt.getObjectFromElement(document.getElementById(id));
 		button._origClassName = button._activeClassName;
 		button.setClassName(button._origClassName);
 		this._activeButtonId = id;
@@ -549,8 +546,7 @@ function() {
 ZmContactPickerListView.prototype._createItemHtml =
 function(item) {
 
-	var doc = this.getDocument();
-	var div = doc.createElement("div");
+	var div = document.createElement("div");
 	div._styleClass = "Row";
 	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
 	div.className = div._styleClass;

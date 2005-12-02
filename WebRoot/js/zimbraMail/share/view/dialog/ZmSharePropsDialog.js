@@ -265,8 +265,6 @@ ZmSharePropsDialog.prototype._getNewAutocompleteLocation = function(args) {
 };
 
 ZmSharePropsDialog.prototype._createView = function() {
-	var document = this.getDocument();
-	
 	this._nameEl = document.createElement("SPAN");
 	
 	this._typeEl = document.createElement("SPAN");

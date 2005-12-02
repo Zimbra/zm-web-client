@@ -1260,9 +1260,8 @@ function() {
 	html[i++] = "</table>";
 	userInfo.getHtmlElement().innerHTML = html.join("");
 
-	var doc = userInfo.getDocument();
-	this._userNameField = doc.getElementById(userNameId);
-	this._usedQuotaField = doc.getElementById(usedQuotaId);
+	this._userNameField = document.getElementById(userNameId);
+	this._usedQuotaField = document.getElementById(usedQuotaId);
 	
 	return userInfo;
 };

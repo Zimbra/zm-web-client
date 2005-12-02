@@ -104,7 +104,7 @@ function(delta) {
 			var list = this._msgListView.getList();
 			if (list && list.size()) {
 				var item = list.get(0);
-				var div = Dwt.getDomObj(this.getDocument(), this._msgListView._getItemId(item));
+				var div = document.getElementById(this._msgListView._getItemId(item));
 				this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT + (Dwt.getSize(div).y * 2);
 			} else {
 				this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT;

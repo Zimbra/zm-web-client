@@ -161,9 +161,9 @@ function(keepModeDiv) {
 
 		doc.body.style.display = "";
 	} else if (this._spellCheckDivId != null) {
-		var div = this.getElementById(this._spellCheckDivId);
+		var div = document.getElementById(this._spellCheckDivId);
 		var scrollTop = div.scrollTop;
-		var textArea = this.getElementById(this._textAreaId);
+		var textArea = document.getElementById(this._textAreaId);
 		textArea.value = AjxUtil.getInnerText(div);
 
 		// avoid mem. leaks, hopefully
@@ -324,12 +324,11 @@ function(words, keepModeDiv) {
 
 	} else { // TEXT mode
 
-		doc = this.getDocument();
-		var textArea = this.getElementById(this._textAreaId);
+		var textArea = document.getElementById(this._textAreaId);
 		var scrollTop = textArea.scrollTop;
 		var size = Dwt.getSize(textArea);
 		textArea.style.display = "none";
-		var div = doc.createElement("div");
+		var div = document.createElement("div");
 		div.className = "TextSpellChecker";
 		this._spellCheckDivId = div.id = Dwt.getNextId();
 		div.style.overflow = "auto";
@@ -362,11 +361,11 @@ function(x, y) {
 	// window.status = ev.oldWidth + "x" + ev.oldHeight + " -> " + ev.newWidth + "x" + ev.newHeight;
 	var div = null;
 	if (this._spellCheckDivId) {
-		div = this.getElementById(this._spellCheckDivId);
+		div = document.getElementById(this._spellCheckDivId);
 		div.style.display = "none";
 	}
 
-	var main = this.getElementById(this.getBodyFieldId());
+	var main = document.getElementById(this.getBodyFieldId());
 	main.style.display = "none";
 
 	var delta = 2 + 6;	// we must substract borders and paddings
@@ -375,7 +374,7 @@ function(x, y) {
 	x -= delta;
 
 	if (this._spellCheckModeDivId)
-		y -= this.getElementById(this._spellCheckModeDivId).offsetHeight;
+		y -= document.getElementById(this._spellCheckModeDivId).offsetHeight;
 	y -= delta
 		+ this._toolbar1.getHtmlElement().offsetHeight
 		+ this._toolbar2.getHtmlElement().offsetHeight;
@@ -814,11 +813,10 @@ function() {
 ZmHtmlEditor.prototype._spellCheckShowModeDiv =
 function() {
 	var size = this.getSize();
-	var doc = this.getDocument();
 
 	if (!this._spellCheckModeDivId) {
 
-		var div = doc.createElement("div");
+		var div = document.createElement("div");
 		div.className = "SpellCheckModeDiv";
 		div.id = this._spellCheckModeDivId = Dwt.getNextId();
 		var html = new Array();
@@ -834,7 +832,7 @@ function() {
 		html[i++] = "</tr></table>";
 		div.innerHTML = html.join("");
 
-		var editable = Dwt.getDomObj(doc, (this._spellCheckDivId || this.getBodyFieldId()));
+		var editable = document.getElementById((this._spellCheckDivId || this.getBodyFieldId()));
 		editable.parentNode.insertBefore(div, editable);
 
 		var el = div.getElementsByTagName("span");
@@ -843,7 +841,7 @@ function() {
 		Dwt.associateElementWithObject(el[1], this);
 		Dwt.setHandler(el[1], "onclick", ZmHtmlEditor._spellCheckAgain);
 	} else {
-		Dwt.getDomObj(doc, this._spellCheckModeDivId).style.display = "";
+		document.getElementById(this._spellCheckModeDivId).style.display = "";
 	}
 	// this.parent._resetBodySize();
 	this.setSize(size.x, size.y + (this._mode == DwtHtmlEditor.TEXT ? 1 : 2));
@@ -853,7 +851,7 @@ ZmHtmlEditor.prototype._spellCheckHideModeDiv =
 function() {
 	var size = this.getSize();
 	if (this._spellCheckModeDivId)
-		this.getElementById(this._spellCheckModeDivId).style.display = "none";
+		document.getElementById(this._spellCheckModeDivId).style.display = "none";
 	this.setSize(size.x, size.y + (this._mode == DwtHtmlEditor.TEXT ? 1 : 2));
 };
 
@@ -867,7 +865,7 @@ function(ev) {
 	var val = item.getData("value");
 	var plainText = this._mode == DwtHtmlEditor.TEXT;
 	var fixall = item.getData("fixall");
-	var doc = plainText ? this.getDocument() : this._getIframeDoc();
+	var doc = plainText ? document : this._getIframeDoc();
 	var span = doc.getElementById(item.getData("spanId"));
 	function fix(val) {
 		var spans = fixall
@@ -918,7 +916,7 @@ function(ev) {
 			input.style.left = span.offsetLeft - 2 + "px";
 			input.style.top = span.offsetTop - 2 + "px";
 			input.style.width = span.offsetWidth + 4 + "px";
-			var div = self.getElementById(self._spellCheckDivId);
+			var div = doc.getElementById(self._spellCheckDivId);
 			var scrollTop = div.scrollTop;
 			div.appendChild(input);
 			div.scrollTop = scrollTop; // this gets resetted when we add an input field (at least Gecko)
@@ -942,7 +940,7 @@ ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
 		span, ids, i, suggestions,
 		self = this,
 		sc = this._spellCheck,
-		doc = plainText ? this.getDocument() : this._getIframeDoc(),
+		doc = plainText ? document : this._getIframeDoc(),
 		modified = false,
 		word = "";
 	if (ev && /^span$/i.test(p.tagName) && /ZM-SPELLCHECK/.test(p.className)) {
@@ -1050,7 +1048,7 @@ ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
 		}
 		var pos, ms = sc.menu.getSize(), ws = this.shell.getSize();
 		if (!plainText) {
-			pos = Dwt.getLocation(this.getElementById(this._iFrameId));
+			pos = Dwt.getLocation(document.getElementById(this._iFrameId));
 			var pos2 = Dwt.getLocation(p);
 			pos.x += pos2.x
 				- (doc.documentElement.scrollLeft || doc.body.scrollLeft);
@@ -1058,7 +1056,7 @@ ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
 				- (doc.documentElement.scrollTop || doc.body.scrollTop);
 		} else {
 			pos = Dwt.getLocation(p);
-			var div = this.getElementById(this._spellCheckDivId);
+			var div = document.getElementById(this._spellCheckDivId);
 			pos.x -= div.scrollLeft;
 			pos.y -= div.scrollTop;
 		}
@@ -1089,7 +1087,6 @@ function(words) {
 		}
 	} else {
 		this._appCtxt.setStatusMsg(ZmMsg.spellCheckUnavailable, ZmStatusView.LEVEL_CRITICAL);
-		DBG.println(args._data);
 	}
 
 	if (this.onExitSpellChecker)

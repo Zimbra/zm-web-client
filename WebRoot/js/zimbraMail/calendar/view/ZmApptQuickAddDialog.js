@@ -48,7 +48,6 @@ function ZmApptQuickAddDialog(parent, appCtxt) {
 	DBG.timePt(AjxDebug.PERF, "ZmQuickAddDialog constructor");
 
 	this._appCtxt = appCtxt;
-	this._doc = this.getDocument();
 
 	this.setContent(this._setHtml());
 	this.setTitle(ZmMsg.quickAddAppt);
@@ -246,7 +245,7 @@ ZmApptQuickAddDialog.prototype._createDwtObjects =
 function() {
 	// create selects for details section
 	this._calendarSelect = new DwtSelect(this);
-	var calCell = Dwt.getDomObj(this._doc, this._calSelectId);
+	var calCell = document.getElementById(this._calSelectId);
 	if (calCell)
 		calCell.appendChild(this._calendarSelect.getHtmlElement());
 	delete this._calSelectId;
@@ -254,11 +253,8 @@ function() {
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
-	this._startDateButton = ZmApptViewHelper.createMiniCalButton(this._doc, this, this._startMiniCalBtnId, 
-																 dateButtonListener, dateCalSelectionListener, true);
-	
-	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this._doc, this, this._endMiniCalBtnId, 
-															   dateButtonListener, dateCalSelectionListener, true);
+	this._startDateButton = ZmApptViewHelper.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener, true);
+	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener, true);
 
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 	// create selects for Time section
@@ -271,7 +267,7 @@ function() {
 			this._startTimeSelect.addOption(option.label, option.selected, option.value);
 		}
 	}
-	var startTimeCell = Dwt.getDomObj(this._doc, this._startTimeSelectId);
+	var startTimeCell = document.getElementById(this._startTimeSelectId);
 	if (startTimeCell)
 		startTimeCell.appendChild(this._startTimeSelect.getHtmlElement());
 	delete this._startTimeSelectId;
@@ -284,7 +280,7 @@ function() {
 			this._endTimeSelect.addOption(option.label, option.selected, option.value);
 		}
 	}
-	var endTimeCell = Dwt.getDomObj(this._doc, this._endTimeSelectId);
+	var endTimeCell = document.getElementById(this._endTimeSelectId);
 	if (endTimeCell)
 		endTimeCell.appendChild(this._endTimeSelect.getHtmlElement());
 	delete this._endTimeSelectId;
@@ -295,7 +291,7 @@ function() {
 		var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
 		this._repeatSelect.addOption(option.label, option.selected, option.value);
 	}
-	var repeatCell = Dwt.getDomObj(this._doc, this._repeatSelectId);
+	var repeatCell = document.getElementById(this._repeatSelectId);
 	if (repeatCell)
 		repeatCell.appendChild(this._repeatSelect.getHtmlElement());
 	delete this._repeatSelectId;
@@ -303,12 +299,12 @@ function() {
 
 ZmApptQuickAddDialog.prototype._cacheFields = 
 function() {
-	this._subjectField 		= Dwt.getDomObj(this._doc, this._subjectFieldId); 	delete this._subjectFieldId;
-	this._locationField 	= Dwt.getDomObj(this._doc, this._locationFieldId); 	delete this._locationFieldId;
-	this._calLabelField 	= Dwt.getDomObj(this._doc, this._calLabelId); 		delete this._calLabelId;
-	this._startDateField 	= Dwt.getDomObj(this._doc, this._startDateFieldId); delete this._startDateFieldId;
-	this._endDateField 		= Dwt.getDomObj(this._doc, this._endDateFieldId);	delete this._endDateFieldId;
-	this._repeatDescField 	= Dwt.getDomObj(this._doc, this._repeatDescId); 	delete this._repeatDescId;
+	this._subjectField 		= document.getElementById(this._subjectFieldId); 	delete this._subjectFieldId;
+	this._locationField 	= document.getElementById(this._locationFieldId); 	delete this._locationFieldId;
+	this._calLabelField 	= document.getElementById(this._calLabelId); 		delete this._calLabelId;
+	this._startDateField 	= document.getElementById(this._startDateFieldId);	delete this._startDateFieldId;
+	this._endDateField 		= document.getElementById(this._endDateFieldId);	delete this._endDateFieldId;
+	this._repeatDescField 	= document.getElementById(this._repeatDescId);		delete this._repeatDescId;
 };
 
 ZmApptQuickAddDialog.prototype._addEventHandlers = 

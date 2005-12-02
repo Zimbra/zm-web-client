@@ -183,7 +183,6 @@ ZmAcceptShareDialog.prototype._getSeparatorTemplate = function() {
 ZmAcceptShareDialog.prototype._createView = function() {
 	var view = new DwtComposite(this);
 	
-	var document = this.getDocument();
 	this._headerEl = document.createElement("DIV");
 	this._headerEl.style.marginBottom = "0.5em";
 	this._detailsEl = document.createElement("DIV");

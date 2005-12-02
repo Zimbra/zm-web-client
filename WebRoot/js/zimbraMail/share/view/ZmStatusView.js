@@ -37,7 +37,6 @@ function ZmStatusView(parent, className, posStyle) {
 //	this.addListener(DwtEvent.ONMOUSEDOWN,  new AjxListener(this, ZmStatusView.prototype._mouseDownListener));
 	this.addListener(DwtEvent.ONDBLCLICK,  new AjxListener(this, ZmStatusView.prototype._doubleClickListener));	
 	
- 	this._doc = this.getDocument();	
 	this._createHtml();
 	this.setScrollStyle(Dwt.CLIP);
  	this._statusQueue = [];
@@ -88,7 +87,7 @@ ZmStatusView.prototype.setIconVisible =
 function(icon, visible) {
 	var id = this._iconIds[icon];
 	if (!id) return;
-	var el = Dwt.getDomObj(this._doc, id);
+	var el = document.getElementById(id);
 	if (el) Dwt.setVisible(el, visible);
 }
 
@@ -126,9 +125,9 @@ function() {
 	toastEl.style.position = 'absolute';
 }
 
-ZmStatusView.prototype._getMainContentEl = function () {	return Dwt.getDomObj(this._doc, this._mainContentDivId); };
-ZmStatusView.prototype._getToastEl = function () {	return Dwt.getDomObj(this._doc, this._toastDivId); };
-ZmStatusView.prototype._getToastContentEl = function () {	return Dwt.getDomObj(this._doc, this._toastContentDivId); };
+ZmStatusView.prototype._getMainContentEl = function () {	return document.getElementById(this._mainContentDivId); };
+ZmStatusView.prototype._getToastEl = function () {	return document.getElementById(this._toastDivId); };
+ZmStatusView.prototype._getToastContentEl = function () {	return document.getElementById(this._toastContentDivId); };
 
 ZmStatusView.prototype._setMainText = function(text) {
 	 this._getMainContentEl().innerHTML = AjxStringUtil.htmlEncode(text);

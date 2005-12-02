@@ -367,7 +367,7 @@ function(composeMode) {
 		this._htmlEditor.setMode(composeMode, true);
 		// dont forget to reset the body field Id and object ref
 		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
-		this._bodyField = Dwt.getDomObj(this.getDocument(), this._bodyFieldId);
+		this._bodyField = document.getElementById(this._bodyFieldId);
 		if (this._bodyField.disabled)
 			this._bodyField.disabled = false;
 
@@ -645,7 +645,7 @@ function() {
 	if (!this._hasAttcDiv)
 		this._createAttachmentsContainer();
 
-	attTable = Dwt.getDomObj(document, this._attachmentTableId);
+	attTable = document.getElementById(this._attachmentTableId);
 	return attTable;
 };
 
@@ -660,7 +660,7 @@ ZmComposeView.prototype._getForwardAttIds =
 function() {
 	var forAttIds = new Array();
 	// XXX: should getElementsByName be added to dwt?
-	var forAttList = this.getDocument().getElementsByName(ZmComposeView.FORWARD_ATT_NAME);
+	var forAttList = document.getElementsByName(ZmComposeView.FORWARD_ATT_NAME);
 
 	// walk collection of input elements
 	for (var i = 0; i < forAttList.length; i++) {
@@ -682,7 +682,7 @@ function(args) {
 	// Figure out proper location for autocomplete list. A bit hacky since the address fields are
 	// statically positioned within tables (Dwt.getLocation() returns offset from window).
 	var type = element.addrType;
-	var field = Dwt.getDomObj(cv.getDocument(), cv._divId[type]);
+	var field = document.getElementById(cv._divId[type]);
 
 	// find out how many address fields visible above this one
 	var num = 0;
@@ -884,7 +884,7 @@ function(action, msg, extraBodyText) {
 // the incoming event, we need a way to get at ZmComposeView, so it's added to the event target.
 ZmComposeView.prototype._setEventHandler =
 function(id, event, addrType) {
-	var field = this.getElementById(id);
+	var field = document.getElementById(id);
 	field._composeView = this._internalId;
 	if (addrType)
 		field._addrType = addrType;
@@ -960,13 +960,11 @@ function(composeMode) {
 	this._htmlEditor.addEventCallback(new AjxCallback(this, this._htmlEditorEventCallback));
 	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 
-	var doc = this.getDocument();
-
 	// save references to dom objects per Ids.
-	this._subjectField = Dwt.getDomObj(doc, this._subjectFieldId);
-	this._bodyField = Dwt.getDomObj(doc, this._bodyFieldId);
-	this._forwardDiv = Dwt.getDomObj(doc, this._forwardDivId);
-	this._attcDiv = Dwt.getDomObj(doc, this._attcDivId);
+	this._subjectField = document.getElementById(this._subjectFieldId);
+	this._bodyField = document.getElementById(this._bodyFieldId);
+	this._forwardDiv = document.getElementById(this._forwardDivId);
+	this._attcDiv = document.getElementById(this._attcDivId);
 
 	// misc. inits
 	this._confirmDialog = new DwtMessageDialog(this.shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
@@ -995,7 +993,7 @@ function(composeMode) {
 			var typeStr = ZmEmailAddress.TYPE_STRING[type];
 			this._button[type].setText(ZmMsg[typeStr] + ":");
 
-			var buttonTd = Dwt.getDomObj(doc, this._buttonTdId[type]);
+			var buttonTd = document.getElementById(this._buttonTdId[type]);
 			buttonTd.appendChild(this._button[type].getHtmlElement());
 			buttonTd.addrType = type;
 
@@ -1003,7 +1001,7 @@ function(composeMode) {
 			this._button[type].addrType = type;
 		}
 
-		this._field[type] = Dwt.getDomObj(doc, this._fieldId[type]);
+		this._field[type] = document.getElementById(this._fieldId[type]);
 		this._field[type].addrType = type;
 
 		// autocomplete-related handlers
@@ -1021,7 +1019,7 @@ function(composeMode) {
 ZmComposeView.prototype._createHtml =
 function() {
 
-	var div = this.getDocument().createElement("div");
+	var div = document.createElement("div");
 
 	var html = new Array();
 	var idx = 0;
@@ -1077,14 +1075,13 @@ function(isDraft) {
 	var callback = new AjxCallback(this, this._attsDoneCallback, [isDraft]);
 	var um = this._appCtxt.getUploadManager();
 	window._uploadManager = um;
-	um.execute(callback, this.getElementById(this._uploadFormId));
+	um.execute(callback, document.getElementById(this._uploadFormId));
 };
 
 ZmComposeView.prototype._createAttachmentsContainer =
 function() {
 	var container = null;
-	var doc = this.getDocument();
-	var uri = location.protocol + "//" + doc.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	var html = new Array();
 	var idx = 0;
 	html[idx++] = "<div style='overflow:visible'>";
@@ -1092,7 +1089,7 @@ function() {
 	html[idx++] = "<table id='" + this._attachmentTableId + "' cellspacing=0 cellpadding=0 border=0 class='iframeTable'></table>";
 	html[idx++] = "</form>";
 	html[idx++] = "</div>";
-	this._attcDiv = Dwt.getDomObj(document, this._attcDivId);
+	this._attcDiv = document.getElementById(this._attcDivId);
 	this._attcDiv.innerHTML = html.join("");
 	this._hasAttcDiv = true;
 };
@@ -1116,7 +1113,7 @@ function(msg, action, pref) {
 			((msg.hasAttach && action == ZmOperation.FORWARD) ||
 			  action == ZmOperation.DRAFT))
 	{
-		var attLinks = msg.buildAttachLinks(false, this.getDocument().domain, null);
+		var attLinks = msg.buildAttachLinks(false, document.domain, null);
 		if (attLinks.length > 0) {
 			html[idx++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%>";
 			for (var i = 0; i < attLinks.length; i++) {
@@ -1156,14 +1153,12 @@ function() {
 // Show address field
 ZmComposeView.prototype._showField =
 function(type, show) {
-	var doc = this.getDocument();
-
 	this._using[type] = show;
-	Dwt.setVisible(Dwt.getDomObj(doc, this._divId[type]), show);
+	Dwt.setVisible(document.getElementById(this._divId[type]), show);
 	this._field[type].value = ""; // bug fix #750 and #3680
 	if (show)
 		this._field[type].focus();
-	var link = Dwt.getDomObj(doc, this._addLinkId[type]);
+	var link = document.getElementById(this._addLinkId[type]);
 	if (link) {
 		link.innerHTML = show
 			? ZmMsg.remove + " " + ZmEmailAddress.TYPE_STRING[type].toUpperCase()
@@ -1285,7 +1280,7 @@ function(args) {
 	if (args.type == "keydown") {
 		var key = DwtKeyEvent.getCharCode(args);
 		if (key == DwtKeyEvent.KEY_TAB) {
-			var toField = Dwt.getDomObj(this.getDocument(), this._fieldId[ZmEmailAddress.TO]);
+			var toField = document.getElementById(this._fieldId[ZmEmailAddress.TO]);
 			if (toField)
 				toField.focus();
 			rv = false;
@@ -1389,9 +1384,8 @@ function(ev) {
 	if (id.indexOf("_att_") == 0) {
 		// click on attachment remove link, get att div id
 		var attId = id.slice(0, -2);
-		var doc = cv.getDocument();
-		var row = Dwt.getDomObj(doc, attId);
-		var table = Dwt.getDomObj(doc, cv._attachmentTableId);
+		var row = document.getElementById(attId);
+		var table = document.getElementById(cv._attachmentTableId);
 		table.deleteRow(row.rowIndex);
 		cv._resetBodySize();
 		return false; // disable following of link

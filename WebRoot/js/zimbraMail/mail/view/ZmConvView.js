@@ -116,7 +116,7 @@ function(newWidth, newHeight) {
 			var list = this._msgListView.getList();
 			if (list && list.size() > 0) {
 				var threshold = Math.min(list.size() + 1, 6);
-				var div = Dwt.getDomObj(this.getDocument(), this._msgListView._getItemId(list.get(0)));
+				var div = document.getElementById(this._msgListView._getItemId(list.get(0)));
 				var maxHeight = Dwt.getSize(div).y * threshold;
 				this._summaryTotalHeight = summaryHeight + maxHeight + DwtListView.HEADERITEM_HEIGHT;
 				var sashHeight = this._msgSash.getSize().y;
@@ -186,8 +186,7 @@ function() {
 
 	var subjDivId = Dwt.getNextId();
 	var tagDivId = Dwt.getNextId();
-	var doc = this.getDocument();
-	this._subjectBar = doc.createElement("div");
+	this._subjectBar = document.createElement("div");
 	this._subjectBar.className = "SubjectBar";
 	var html = new Array(2);
 	var idx = 0;
@@ -197,9 +196,9 @@ function() {
 	this._subjectBar.innerHTML = html.join("");
 	this._summary.getHtmlElement().appendChild(this._subjectBar);
 
-	this._subjectDiv = Dwt.getDomObj(doc, subjDivId);
+	this._subjectDiv = document.getElementById(subjDivId);
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		this._tagDiv = Dwt.getDomObj(doc, tagDivId);
+		this._tagDiv = document.getElementById(tagDivId);
 		Dwt.setSize(this._tagDiv, Dwt.DEFAULT, ZmConvView._TAGLIST_HEIGHT);
 		Dwt.setVisible(this._tagDiv, false);
 	}
@@ -321,7 +320,7 @@ function(ev) {
 
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
-		var img = Dwt.getDomObj(this.getDocument(), this._tagDiv.id +  ZmDoublePaneView._TAG_IMG + ev.source.id);
+		var img = document.getElementById(this._tagDiv.id +  ZmDoublePaneView._TAG_IMG + ev.source.id);
 		if (img)
 			AjxImg.setImage(img, ZmTag.COLOR_MINI_ICON[ev.source.color]);
 	}
@@ -332,6 +331,6 @@ function(ev) {
 
 ZmConvView._tagClick =
 function(myId, tagId) {
-	var dwtObj = Dwt.getObjectFromElement(Dwt.getDomObj(document, myId));
+	var dwtObj = Dwt.getObjectFromElement(document.getElementById(myId));
 	dwtObj.notifyListeners(ZmConvView._TAG_CLICK, tagId);
 }

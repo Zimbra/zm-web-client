@@ -28,7 +28,6 @@ function ZmLoginDialog(parent, zIndex, className) {
     className = className || "ZmLoginDialog";
     DwtComposite.call(this, parent, className, DwtControl.ABSOLUTE_STYLE);
 
-	var doc = this.getDocument();
     this._origClassName = className;
     this._xparentClassName = className + "-Transparent";
     this.setBounds(0, 0, "100%", "100%");
@@ -41,27 +40,27 @@ function ZmLoginDialog(parent, zIndex, className) {
 	var okCellId = Dwt.getNextId();
 	var errorCellId = Dwt.getNextId();
 	var reloginModeId = Dwt.getNextId();
-    var form = doc.createElement("form");
+    var form = document.createElement("form");
     form.innerHTML = this._createHtml(unameId, pwordId, okCellId, errorCellId, reloginModeId);
     htmlElement.appendChild(form);
-    this._errorCell = Dwt.getDomObj(doc, errorCellId);
+    this._errorCell = document.getElementById(errorCellId);
     
-    this._unameField = Dwt.getDomObj(doc, unameId);
+    this._unameField = document.getElementById(unameId);
 	Dwt.setHandler(this._unameField, DwtEvent.ONKEYPRESS, ZmLoginDialog._keyPressHdlr);
     this._unameField._parentId = this._htmlElId;
     
-    this._pwordField = Dwt.getDomObj(doc, pwordId);
+    this._pwordField = document.getElementById(pwordId);
     this._pwordField._parentId = this._htmlElId;
 	Dwt.setHandler(this._pwordField, DwtEvent.ONKEYPRESS, ZmLoginDialog._keyPressHdlr);
     
-    this._reloginModeField = Dwt.getDomObj(doc, reloginModeId);
+    this._reloginModeField = document.getElementById(reloginModeId);
     this.setReloginMode(false);
     
     this._loginButton = new DwtButton(this, null, "DwtButton contrast");
     this._loginButton.setText(ZmMsg.login);
     this._loginButton.setData("me", this);
     this._loginButton.addSelectionListener(new AjxListener(this, this._loginSelListener));
-    Dwt.getDomObj(doc, okCellId).appendChild(this._loginButton.getHtmlElement());
+    document.getElementById(okCellId).appendChild(this._loginButton.getHtmlElement());
 }
 
 ZmLoginDialog.prototype = new DwtComposite;
@@ -187,7 +186,7 @@ function(bReloginMode, app, obj) {
 	
 	if (bReloginMode) {
 		this._reloginModeField.innerHTML =  "<a id='" + modeId + "' href='javascript:;'>" + ZmMsg.loginAsDiff + "</a>";
-		var anchor = Dwt.getDomObj(this.getDocument(), modeId);
+		var anchor = document.getElementById(modeId);
 		Dwt.setHandler(anchor, DwtEvent.ONCLICK, ZmLoginDialog._loginDiffListener);
 		anchor._app = app;
 		anchor._obj = obj;
@@ -200,7 +199,7 @@ function(bReloginMode, app, obj) {
 		html[i++] = "<td valign=middle>" + ZmMsg.publicComputer + "</td></tr></table>";
 		this._reloginModeField.innerHTML = html.join("");
 
-	    this._pubCompField = Dwt.getDomObj(this.getDocument(), modeId);
+	    this._pubCompField = document.getElementById(modeId);
 	    this._pubCompField._parentId = this._htmlElId;
 	}
 }
@@ -224,7 +223,7 @@ function(ev) {
 	if (charCode == 13 || charCode == 3) {
 		var obj = DwtUiEvent.getTarget(ev);
 		var doc = obj.document ? obj.document : ((obj.ownerDocument)? obj.ownerDocument : window.document);
-		var parent = Dwt.getObjectFromElement(Dwt.getDomObj(doc, obj._parentId));
+		var parent = Dwt.getObjectFromElement(document.getElementById(obj._parentId));
 		if (obj == parent._unameField) {
 			parent._pwordField.focus();
 		} else {

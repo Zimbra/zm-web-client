@@ -105,7 +105,7 @@ function(parent) {
 
 ZmTimePicker.prototype._installOnClick =
 function(id, query) {
-	var box = Dwt.getDomObj(this.getDocument(), id);
+	var box = document.getElementById(id);
 	Dwt.setHandler(box, DwtEvent.ONCLICK, ZmTimePicker._onClick);
 	box._query = query;
 	box._picker = this;

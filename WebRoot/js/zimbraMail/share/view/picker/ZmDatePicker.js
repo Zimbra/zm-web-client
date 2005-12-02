@@ -67,9 +67,8 @@ function(parent) {
 	cal.setDate(new Date());
 	cal.addSelectionListener(new AjxListener(this, this._calSelectionListener));
 	
-	var doc = this.getDocument();
-	Dwt.getDomObj(doc, calId).appendChild(cal.getHtmlElement());
-	var select = this._select = Dwt.getDomObj(doc, selectId);
+	document.getElementById(calId).appendChild(cal.getHtmlElement());
+	var select = this._select = document.getElementById(selectId);
 	Dwt.setHandler(select, DwtEvent.ONCHANGE, ZmDatePicker._onChange);
 	select._picker = this;
 	this._updateQuery();

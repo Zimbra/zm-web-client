@@ -40,7 +40,7 @@ function ZmListView(parent, className, posStyle, view, type, controller, headerL
 	if (tagList)
 		tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 
-	this._csfeMsgFetchSvc = location.protocol + "//" + this.getDocument().domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+	this._csfeMsgFetchSvc = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 }
 
 ZmListView.prototype = new DwtListView;
@@ -125,11 +125,11 @@ function(ev) {
 				var flag = flags[j];
 				var on = item[ZmItem.FLAG_PROP[flag]];
 				if (flag == ZmItem.FLAG_FLAGGED) {
-					var img = Dwt.getDomObj(this.getDocument(), this._getFieldId(item, ZmItem.F_FLAG));
+					var img = document.getElementById(this._getFieldId(item, ZmItem.F_FLAG));
 					if (img && img.parentNode)
 						AjxImg.setImage(img.parentNode, on ? "FlagRed" : "Blank_16");
 				} else if (flag == ZmItem.FLAG_ATTACH) {
-					var img = Dwt.getDomObj(this.getDocument(), this._getFieldId(item, ZmItem.F_ATTACHMENT));
+					var img = document.getElementById(this._getFieldId(item, ZmItem.F_ATTACHMENT));
 					if (img && img.parentNode)
 						AjxImg.setImage(img.parentNode, on ? "Attachment" : "Blank_16");
 				}
@@ -139,7 +139,7 @@ function(ev) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: DELETE or MOVE");
 		var needReplenish = false;
 		for (var i = 0; i < items.length; i++) {
-			var row = Dwt.getDomObj(this.getDocument(), this._getItemId(items[i]));
+			var row = document.getElementById(this._getItemId(items[i]));
 			if (row) {
 				this._parentEl.removeChild(row);
 				this._selectedItems.remove(row);
@@ -197,7 +197,7 @@ function() {
 // The enclosing div and its styles
 ZmListView.prototype._getDiv =
 function(item, isDndIcon, isMatched) {
-	var	div = this.getDocument().createElement("div");
+	var	div = document.createElement("div");
 
 	var base = "Row";
 	div._styleClass = base;
@@ -288,7 +288,7 @@ function(item, id) {
 // Find the tag cell and reset its HTML depending on the item's tags.
 ZmListView.prototype._setTagImg =
 function(item) {
-	var tagCell = Dwt.getDomObj(this.getDocument(), this._getFieldId(item, ZmItem.F_TAG_CELL));
+	var tagCell = document.getElementById(this._getFieldId(item, ZmItem.F_TAG_CELL));
 	if (!tagCell) return;
 	tagCell.innerHTML = this._getTagImgHtml(item, this._getFieldId(item, ZmItem.F_TAG));
 }
@@ -610,9 +610,8 @@ function(dragOp) {
 		icon = this._createItemHtml(item, new Date(), true);
 		icon._origClassName = icon.className;
 	} else {
-		var doc = this.getDocument();
 		// Create multi one
-		icon = doc.createElement("div");
+		icon = document.createElement("div");
 		icon.className = "DndIcon";
 		Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE); 
 		
@@ -620,7 +619,7 @@ function(dragOp) {
 		AjxImg.setImage(icon, "DndMultiYes_48");
 		this._dndImg = icon;
 								
-		div = doc.createElement("div");
+		div = document.createElement("div");
 		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
 		div.innerHTML = "<table><tr><td class='MailMultiSelectText'>" 
 						+ dndSelection.length + "</td></tr></table>";

@@ -35,10 +35,9 @@ function ZmChangePasswordDialog(parent, msgDialog, className) {
 
 	this.setContent(this._contentHtml());
 
-	var doc = this.getDocument();
-	this._oldPasswordField = Dwt.getDomObj(doc, this._oldPasswordId);
-	this._newPasswordField = Dwt.getDomObj(doc, this._newPasswordId);
-	this._confirmPasswordField = Dwt.getDomObj(doc, this._confirmPasswordId);
+	this._oldPasswordField = document.getElementById(this._oldPasswordId);
+	this._newPasswordField = document.getElementById(this._newPasswordId);
+	this._confirmPasswordField = document.getElementById(this._confirmPasswordId);
 
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this.setTabOrder([this._oldPasswordId, this._newPasswordId, this._confirmPasswordId]);

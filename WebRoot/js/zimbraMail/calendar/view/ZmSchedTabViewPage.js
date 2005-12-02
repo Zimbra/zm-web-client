@@ -40,7 +40,6 @@ function ZmSchedTabViewPage(parent, appCtxt, apptTab, controller) {
 	this._controller = controller;
 
 	this.setScrollStyle(Dwt.SCROLL);
-	this._doc = this.getDocument();
 	this._rendered = false;
 	this._attendees = new Object();
 	this._schedTable = new Array();
@@ -124,7 +123,7 @@ function() {
 		var sched = this._schedTable[i];
 
 		// set all visible input elements to invisible
-		var inputEl = Dwt.getDomObj(this._doc, sched.dwtInputId);
+		var inputEl = document.getElementById(sched.dwtInputId);
 		// re-enable the first row (which is the "read-only" organizer row)
 		if (i == 0)
 			inputEl.disabled = false;
@@ -402,7 +401,7 @@ function() {
 			this._startTimeSelect.addOption(option.label, option.selected, option.value);
 		}
 	}
-	var startTimeCell = Dwt.getDomObj(this._doc, this._startTimeSelectId);
+	var startTimeCell = document.getElementById(this._startTimeSelectId);
 	if (startTimeCell)
 		startTimeCell.appendChild(this._startTimeSelect.getHtmlElement());
 	delete this._startTimeSelectId;
@@ -415,7 +414,7 @@ function() {
 			this._endTimeSelect.addOption(option.label, option.selected, option.value);
 		}
 	}
-	var endTimeCell = Dwt.getDomObj(this._doc, this._endTimeSelectId);
+	var endTimeCell = document.getElementById(this._endTimeSelectId);
 	if (endTimeCell)
 		endTimeCell.appendChild(this._endTimeSelect.getHtmlElement());
 	delete this._endTimeSelectId;
@@ -424,11 +423,8 @@ function() {
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
-	this._startDateButton = ZmApptViewHelper.createMiniCalButton(this._doc, this, this._startMiniCalBtnId, 
-																 dateButtonListener, dateCalSelectionListener);
-
-	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this._doc, this, this._endMiniCalBtnId, 
-															   dateButtonListener, dateCalSelectionListener);
+	this._startDateButton = ZmApptViewHelper.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener);
+	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener);
 	
 	var navBarListener = new AjxListener(this, this._navBarListener);
 	this._navToolbar = new ZmNavToolBar(this, DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
@@ -436,7 +432,7 @@ function() {
 	this._navToolbar.addSelectionListener(ZmOperation.PAGE_BACK, navBarListener);
 	this._navToolbar.addSelectionListener(ZmOperation.PAGE_FORWARD, navBarListener);
 	// reparent
-	var navbarCell = Dwt.getDomObj(this._doc, this._navToolbarId);
+	var navbarCell = document.getElementById(this._navToolbarId);
 	if (navbarCell)
 		navbarCell.appendChild(this._navToolbar.getHtmlElement());
 	delete this._navToolbarId;
@@ -444,10 +440,10 @@ function() {
 
 ZmSchedTabViewPage.prototype._cacheFields = 
 function() {
-	this._startDateField 	= Dwt.getDomObj(this._doc, this._startDateFieldId); delete this._startDateFieldId;
-	this._endDateField 		= Dwt.getDomObj(this._doc, this._endDateFieldId);	delete this._endDateFieldId;
-	this._allDayCheckbox 	= Dwt.getDomObj(this._doc, this._allDayCheckboxId);
-	this._allAttendeesTable = Dwt.getDomObj(this._doc, this._allAttendeeSlot.dwtTableId); 
+	this._startDateField 	= document.getElementById(this._startDateFieldId); delete this._startDateFieldId;
+	this._endDateField 		= document.getElementById(this._endDateFieldId);	delete this._endDateFieldId;
+	this._allDayCheckbox 	= document.getElementById(this._allDayCheckboxId);
+	this._allAttendeesTable = document.getElementById(this._allAttendeeSlot.dwtTableId); 
 };
 
 ZmSchedTabViewPage.prototype._initAutocomplete = 
@@ -477,12 +473,12 @@ function() {
 	this._startDateField._schedViewPageId = this._endDateField._schedViewPageId = svpId;
 
 	for (var i = 0; i < this._schedTable.length; i++) {
-		var attendeeDiv = Dwt.getDomObj(this._doc, this._schedTable[i].dwtDivId);
+		var attendeeDiv = document.getElementById(this._schedTable[i].dwtDivId);
 		if (attendeeDiv) {
 			Dwt.setHandler(attendeeDiv, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
 			attendeeDiv._schedViewPageId = svpId;
 		}
-		var attendeeInput = Dwt.getDomObj(this._doc, this._schedTable[i].dwtInputId);
+		var attendeeInput = document.getElementById(this._schedTable[i].dwtInputId);
 		if (attendeeInput) {
 			Dwt.setHandler(attendeeInput, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
 			Dwt.setHandler(attendeeInput, DwtEvent.ONBLUR, ZmSchedTabViewPage._onBlur);
@@ -570,7 +566,7 @@ function() {
 	var attendeeArr = new Array();
 	// always skip the first attendee since that should be the organizer
 	for (var i = 1; i < this._schedTable.length; i++) {
-		var inputEl = Dwt.getDomObj(this._doc, this._schedTable[i].dwtInputId);
+		var inputEl = document.getElementById(this._schedTable[i].dwtInputId);
 		if (inputEl && inputEl.value.length)
 			attendeeArr.push(inputEl.value);
 	}
@@ -615,7 +611,7 @@ function(attendees) {
 	for (var i = 0; i < attendeeArr.length; i++) {
 		var attendee = AjxStringUtil.trim(attendeeArr[i]);
 		if (attendee && attendee.length > 0) {
-			var inputEl = Dwt.getDomObj(this._doc, this._schedTable[i].dwtInputId);
+			var inputEl = document.getElementById(this._schedTable[i].dwtInputId);
 			if (inputEl) {
 				Dwt.setVisible(inputEl, true);
 				inputEl.value = attendee;
@@ -645,7 +641,7 @@ function(inputEl, sched) {
 	}
 
 	// reset the row color to non-white
-	var table = Dwt.getDomObj(this.getDocument(), sched.dwtTableId);
+	var table = document.getElementById(sched.dwtTableId);
 	if (table)
 		table.rows[0].style.backgroundColor = "#F4F4F4";
 
@@ -868,7 +864,7 @@ function(resp) {
 
 		// first clear out the whole row for this email id
 		var sched = this._schedTable[this._attendees[usr.id]];
-		var table = sched ? Dwt.getDomObj(this._doc, sched.dwtTableId) : null;
+		var table = sched ? document.getElementById(sched.dwtTableId) : null;
 		if (table) {
 			table.rows[0].style.backgroundColor = "#FFFFFF";
 

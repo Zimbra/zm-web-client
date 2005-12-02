@@ -124,7 +124,7 @@ function(content) {
 
 ZmBasicPicker.prototype._setupField = 
 function(id) {
-	var f = Dwt.getDomObj(this.getDocument(), id);
+	var f = document.getElementById(id);
 	Dwt.setHandler(f, DwtEvent.ONKEYUP, ZmBasicPicker._onChange);
 	f._picker = this;
 	return f;
@@ -132,7 +132,7 @@ function(id) {
 
 ZmBasicPicker.prototype._setupSearch = 
 function(id) {
-	var f = Dwt.getDomObj(this.getDocument(), id);
+	var f = document.getElementById(id);
 	Dwt.setHandler(f, DwtEvent.ONCHANGE, ZmBasicPicker._onChange);
 	f._picker = this;
 	return f;

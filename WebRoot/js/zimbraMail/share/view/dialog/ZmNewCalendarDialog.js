@@ -150,8 +150,6 @@ function(event) {
 
 ZmNewCalendarDialog.prototype._createContentEl = 
 function() {
-	var document = this.getDocument();
-
 	// create controls
 	this._nameInputEl = document.createElement("INPUT");
 	//this._nameInputEl.autocomplete = "OFF";

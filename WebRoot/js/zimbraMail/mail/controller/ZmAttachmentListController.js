@@ -47,7 +47,7 @@ function ZmAttachmentListController(appCtxt, container, mailApp) {
 	this._toolbar = new Object();
 	this._contentView = new Object();
 
-	this._csfeMsgFetchSvc = location.protocol + "//" + this._container.getDocument().domain + appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+	this._csfeMsgFetchSvc = location.protocol + "//" + document.domain + appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 }
 
 ZmAttachmentListController.prototype = new ZmMailListController;

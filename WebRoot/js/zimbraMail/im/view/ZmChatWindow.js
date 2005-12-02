@@ -27,7 +27,6 @@ function ZmChatWindow(parent, chat) {
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, parent, "ZmChatWindow", DwtControl.ABSOLUTE_STYLE);
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-    this._doc = this.getDocument();
 	this.setScrollStyle(DwtControl.CLIP);
     	this.addControlListener(new AjxListener(this, this._controlListener));
     this._init();
@@ -86,7 +85,7 @@ function() {
 	this._inputFieldId = Dwt.getNextId();
 	ZmChatWindow._idToChatWindow[this._inputFieldId] = this;
     this._input.getHtmlElement().innerHTML = 	"<textarea wrap='hard' style='width:100%; height:100%;' id='" + this._inputFieldId + "'></textarea>";
-    Dwt.setHandler(Dwt.getDomObj(this._doc, this._inputFieldId), DwtEvent.ONKEYUP, ZmChatWindow._inputOnKeyUp);
+    Dwt.setHandler(document.getElementById(this._inputFieldId), DwtEvent.ONKEYUP, ZmChatWindow._inputOnKeyUp);
 
     this._gripper = new DwtComposite(c, "DwtResizeGripper", Dwt.ABSOLUTE_STYLE);
     DwtDragTracker.init(this._sash, DwtDragTracker.STYLE_RESIZE_NORTH, 1, 1, this._sashCallback, this, ZmChatWindow._TRACKER_SASH);
@@ -125,7 +124,7 @@ function() {
    ZmChatWindow._selected = this;
    this.getHtmlElement().className = "ZmChatWindow-selected";
    this.raise();
-   var field = Dwt.getDomObj(this.getDocument(), this._inputFieldId);
+   var field = document.getElementById(this._inputFieldId);
    if (field) field.focus();
    var item = this.chat.getRosterItem();   
    if (item.getUnread()) item.setUnread(0);
@@ -187,13 +186,13 @@ function(text) {
     }
     
     var content = this._content.getHtmlElement().firstChild;
-    var div = this._doc.createElement("div");
+    var div = document.createElement("div");
     div.className = "ZmChatWindowChatEntryMe";
 //    div.innerHTML = "<b>user1: </b>" + AjxStringUtil.htmlEncode(text, true);
     div.innerHTML = "<b>user1: </b>" + this._objectManager.findObjects(text, true);    
     content.appendChild(div);
     
-    div = this._doc.createElement("div");
+    div = document.createElement("div");
     // div.className = "ZmChatWindowChatEntryThem";
     div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+
                 AjxStringUtil.htmlEncode(this.chat.getRosterItem().getName())+
@@ -354,7 +353,7 @@ function(ev) {
     this._inputY = inpY;
     this._inputH = inpH - yFudge - hFudge;
     this._input.setBounds(xFudge, this._inputY, size.x - wFudge, this._inputH);
-    var field = Dwt.getDomObj(this.getDocument(), this._inputFieldId);
+    var field = document.getElementById(this._inputFieldId);
     Dwt.setSize(field, size.x - wFudge - 2 , this._inputH - 2);
         
     this._gripper.setLocation(size.x-18, size.y-18);

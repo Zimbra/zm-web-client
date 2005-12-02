@@ -40,7 +40,7 @@ function ZmChicletButton(parent, outerClass, innerClass) {
 	if (arguments.length == 0) return;
 	DwtControl.call(this, parent, outerClass, DwtControl.RELATIVE_STYLE);
 
-	this._innerDiv = this.getDocument().createElement("div");
+	this._innerDiv = document.createElement("div");
 	this._innerDiv.className = AjxImg.getClassForImage(innerClass);
 	this._innerDiv.style.position = DwtControl.ABSOLUTE_STYLE;
 	this.getHtmlElement().appendChild(this._innerDiv);

@@ -90,7 +90,7 @@ function() {
  * @isInDialog 					true if mini cal is inside a DwtDialog (otherwise z-index will be too low)
 */
 ZmApptViewHelper.createMiniCalButton =
-function(document, parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDialog) {
+function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDialog) {
 	// create button
 	var dateButton = new DwtButton(parent);
 	dateButton.addSelectionListener(dateButtonListener);
@@ -107,7 +107,7 @@ function(document, parent, buttonId, dateButtonListener, dateCalSelectionListene
 	cal.addSelectionListener(dateCalSelectionListener);
 
 	// reparent and cleanup
-	var buttonCell = Dwt.getDomObj(document, buttonId);
+	var buttonCell = document.getElementById(buttonId);
 	if (buttonCell)
 		buttonCell.appendChild(dateButton.getHtmlElement());
 	delete buttonId;

@@ -57,7 +57,7 @@ function(parent) {
 	html[i++] = "</table></center>";
 	picker.getHtmlElement().innerHTML = html.join("");
 
-	var field = this._field = Dwt.getDomObj(this.getDocument(), fieldId);
+	var field = this._field = document.getElementById(fieldId);
 	Dwt.setHandler(field, DwtEvent.ONCHANGE, ZmCustomPicker._onChange);
 	field._picker = this;
 }

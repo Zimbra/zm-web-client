@@ -59,7 +59,7 @@ ZmNewTagDialog.prototype._setTagColorMenu =
 function(fieldId) {
     this._colorButton = new DwtButton(this, null, "ColorButton");
     this._colorButton.noMenuBar = true;
- 	Dwt.getDomObj(this._doc, fieldId).appendChild(this._colorButton.getHtmlElement());
+ 	document.getElementById(fieldId).appendChild(this._colorButton.getHtmlElement());
 	ZmOperation.addColorMenu(this._colorButton, this);
     this._tagColorListener = new AjxListener(this, this._colorListener);
     var color = ZmTag.DEFAULT_COLOR;

@@ -61,13 +61,13 @@ function(defaultColumnSort) {
 
 		// set the from column name based on query string
 		var fromColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_FROM]);
-		var fromColSpan = Dwt.getDomObj(this.getDocument(), DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
+		var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
 		if (fromColSpan)
 			fromColSpan.innerHTML = "&nbsp;" + (isFolder.sent || isFolder.drafts ? ZmMsg.to : ZmMsg.from);
 
 		// set the received column name based on query string
 		var recdColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]);
-		var recdColSpan = Dwt.getDomObj(this.getDocument(), DwtListView.HEADERITEM_LABEL + this._headerList[recdColIdx]._id);
+		var recdColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[recdColIdx]._id);
 		if (recdColSpan) {
 			var html = "&nbsp;";
 			if (isFolder.sent) {
@@ -84,10 +84,9 @@ function(defaultColumnSort) {
 
 ZmMailMsgListView.prototype.markUIAsRead = 
 function(items, on) {
-	var doc = this.getDocument();
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		var row = Dwt.getDomObj(doc, this._getFieldId(item, ZmItem.F_ITEM_ROW));
+		var row = document.getElementById(this._getFieldId(item, ZmItem.F_ITEM_ROW));
 		if (row) {
 			var className =  on ? "" : "Unread";
 			// don't worry about unread/read trash if in trad. view
@@ -101,7 +100,7 @@ function(items, on) {
 
 			row.className = className;
 		}
-		var img = Dwt.getDomObj(doc, this._getFieldId(item, ZmItem.F_STATUS));
+		var img = document.getElementById(this._getFieldId(item, ZmItem.F_STATUS));
 		if (img && img.parentNode) {
 			if (on) {
 				var imageInfo;
@@ -325,7 +324,7 @@ function(ev) {
 		var flags = ev.getDetail("flags");
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			var img = Dwt.getDomObj(this.getDocument(), this._getFieldId(item, ZmItem.F_STATUS));
+			var img = document.getElementById(this._getFieldId(item, ZmItem.F_STATUS));
 			if (img && img.parentNode) {
 				for (var j = 0; j < flags.length; j++) {
 					var flag = flags[j];
@@ -350,7 +349,7 @@ ZmMailMsgListView.prototype._changeFolderName =
 function(items) {
 
 	for (var i = 0; i < items.length; i++) {
-		var folderCell = Dwt.getDomObj(this.getDocument(), this._getFieldId(items[i], ZmItem.F_FOLDER));
+		var folderCell = document.getElementById(this._getFieldId(items[i], ZmItem.F_FOLDER));
 		if (folderCell) {
 			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(items[i].folderId);
 			if (folder)
@@ -364,7 +363,7 @@ function(items) {
 ZmMailMsgListView.prototype._changeTrashStatus = 
 function(items) {
 	for (var i = 0; i < items.length; i++) {
-		var row = Dwt.getDomObj(this.getDocument(), this._getFieldId(items[i], ZmItem.F_ITEM_ROW));
+		var row = document.getElementById(this._getFieldId(items[i], ZmItem.F_ITEM_ROW));
 		if (row) {
 			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(items[i].folderId);
 			var className = null;

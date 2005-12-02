@@ -194,7 +194,6 @@ ZmFolderPropsDialog.prototype._populateShares = function() {
 	var shares = this._folder.shares;
 	var visible = !link && shares && shares.length > 0;
 	if (visible) {
-		var document = this.getDocument();
 		var table = document.createElement("TABLE");
 		table.border = 0;
 		table.cellSpacing = 0;
@@ -222,7 +221,6 @@ ZmFolderPropsDialog.prototype._populateShares = function() {
 };
 
 ZmFolderPropsDialog.prototype.__createCmdLinks = function(parent, share) {
-	var document = this.getDocument();
 	var labels = [ ZmMsg.edit, ZmMsg.revoke, ZmMsg.resend ];
 	var actions = [ 
 		this._handleEditShare, this._handleRevokeShare, this._handleResendShare
@@ -241,7 +239,6 @@ ZmFolderPropsDialog.prototype.__createCmdLinks = function(parent, share) {
 };
 
 ZmFolderPropsDialog.prototype._createView = function() {
-	var document = this.getDocument();
 	var view = new DwtComposite(this);
 
 	// create html elements

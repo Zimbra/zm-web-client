@@ -118,8 +118,8 @@ function(target) {
 		var bSelection = false;
 
 		// determine if anything has been selected (IE and mozilla do it differently)
-		if (this.getDocument().selection) { // IE
-			bSelection = this.getDocument().selection.type == "Text";
+		if (document.selection) { // IE
+			bSelection = document.selection.type == "Text";
 		} else if (getSelection()) { 		// mozilla
 			if (getSelection().toString().length)
 				bSelection = true;
@@ -182,7 +182,7 @@ function() {
 	// on the whole text content, but has the advantage that it doesn't
 	// scroll the iframe to top.  If anyone thinks that hiliting objects in
 	// big text messages is too slow, lemme know.  -mihai@zimbra.com
-	var idoc = this.getElementById(this._iframeId).contentWindow.document;
+	var idoc = document.getElementById(this._iframeId).contentWindow.document;
 	this._processHtmlDoc(idoc);
 };
 
@@ -219,7 +219,7 @@ function() {
 ZmMailMsgView.prototype.getMinHeight =
 function() {
 	if (!this._headerHeight) {
-		var headerObj = Dwt.getDomObj(this.getDocument(), ZmMailMsgView.HEADER_ID);
+		var headerObj = document.getElementById(ZmMailMsgView.HEADER_ID);
 		this._headerHeight = headerObj ? Dwt.getSize(headerObj).y : 0;
 	}
 	return this._headerHeight;
@@ -242,7 +242,7 @@ function() {
 	var htmlBodyEl = null;
 
 	if (this._htmlBody) {
-		var iframe = Dwt.getDomObj(this.getDocument(), this._iframeId);
+		var iframe = document.getElementById(this._iframeId);
 		var idoc = iframe ? Dwt.getIframeDoc(iframe) : null;
 		htmlBodyEl = idoc ? idoc.body : null;
 	}
@@ -553,7 +553,7 @@ function(msg, idoc, id, iframe) {
 				}
 			}
 		}
-		diEl = Dwt.getDomObj(document, id);
+		diEl = document.getElementById(id);
 		diEl.style.display = "none";
 		this._htmlBody = idoc.documentElement.innerHTML;
 		ZmMailMsgView._resetIframeHeight([ self, iframe ]);
@@ -566,19 +566,19 @@ ZmMailMsgView.prototype._makeHighlightObjectsDiv =
 function() {
 	var self = this;
 	function func() {
-		var div = self.getElementById(self._highlightObjectsId);
+		var div = document.getElementById(self._highlightObjectsId);
 		div.innerHTML = ZmMsg.pleaseWaitHilitingObjects;
 		setTimeout(function() {
 			self.highlightObjects();
 			div.style.display = "none";
-			ZmMailMsgView._resetIframeHeight([ self, self.getElementById(self._iframeId) ]);
+			ZmMailMsgView._resetIframeHeight([ self, document.getElementById(self._iframeId) ]);
 		}, 3);
 		return false;
 	};
 	// avoid closure memory leaks
 	(function() {
 		self._highlightObjectsId = Dwt.getNextId();
-		var div = self.getDocument().createElement("div");
+		var div = document.createElement("div");
 		div.className = "DisplayImages";
 		div.id = self._highlightObjectsId;
 		div.innerHTML =
@@ -597,7 +597,7 @@ ZmMailMsgView.prototype._makeIframeProxy =
 function(container, html, isTextMsg) {
 	var displayImages;
 	if (!isTextMsg && /<img/i.test(html)) {
-		displayImages = this.getDocument().createElement("div");
+		displayImages = document.createElement("div");
 		displayImages.className = "DisplayImages";
 		displayImages.id = this._displayImagesId;
 		displayImages.innerHTML =
@@ -666,7 +666,7 @@ function(container, html, isTextMsg) {
 		this._htmlBody = idoc.body.innerHTML;
 
 		// TODO: only call this if top-level is multipart/related?
-		var didAllImages = this._fixMultipartRelatedImages(this._msg, idoc, this.getDocument().domain);
+		var didAllImages = this._fixMultipartRelatedImages(this._msg, idoc, document.domain);
 
 		// setup the click handler for the images
 		if (displayImages) {
@@ -745,7 +745,7 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "</td></tr>"
 
 	// Attachments
-	var attLinks = msg.buildAttachLinks(true, this.getDocument().domain, this._objectManager);
+	var attLinks = msg.buildAttachLinks(true, document.domain, this._objectManager);
 	if (attLinks.length > 0) {
 		htmlArr[idx++] = "<tr><td class='LabelColName'>";
 		htmlArr[idx++] = ZmMsg.attachments;
@@ -806,8 +806,8 @@ function(msg) {
 	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) return;
 
 	var numTags = msg.tags.length;
-	var table = Dwt.getDomObj(this.getDocument(), this._hdrTableId);
-	var tagRow = Dwt.getDomObj(this.getDocument(), this._tagRowId);
+	var table = document.getElementById(this._hdrTableId);
+	var tagRow = document.getElementById(this._tagRowId);
 	var tagCell = null;
 
 	if (tagRow != null && table.rows[table.rows.length-1] == tagRow) {
@@ -891,7 +891,7 @@ function(ev) {
 
 ZmMailMsgView.prototype._controlEventListener = 
 function(ev) {
-	var iframe = this.getElementById(this._iframeId);
+	var iframe = document.getElementById(this._iframeId);
 	// we get here before we have a chance to initialize the IFRAME
 	if (iframe) {
 		var act = new AjxTimedAction();
@@ -954,7 +954,7 @@ function(ev) {
 
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
-		var img = Dwt.getDomObj(this.getDocument(), this._tagCellId +  ZmDoublePaneView._TAG_IMG + ev.source.id);
+		var img = document.getElementById(this._tagCellId +  ZmDoublePaneView._TAG_IMG + ev.source.id);
 		if (img)
 			AjxImg.setImage(img, ZmTag.COLOR_MINI_ICON[ev.source.color]);
 	}
@@ -1096,7 +1096,7 @@ function(args) {
 	function substract(el) {
 		if (el) {
 			if (typeof el == "string")
-				el = self.getElementById(el);
+				el = document.getElementById(el);
 			if (el)
 				h -= Dwt.getSize(el, true).y;
 		}
@@ -1111,7 +1111,7 @@ function(args) {
 
 ZmMailMsgView._tagClick =
 function(myId, tagId) {
-	var dwtObj = Dwt.getObjectFromElement(Dwt.getDomObj(document, myId));
+	var dwtObj = Dwt.getObjectFromElement(document.getElementById(myId));
 	dwtObj.notifyListeners(ZmMailMsgView._TAG_CLICK, tagId);
 };
 

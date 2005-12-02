@@ -122,9 +122,8 @@ ZmFilterDetailsView.prototype.show = function(rule, referenceRule) {
 		this._rule = rule? rule : ZmFilterRule.DUMMY_RULE;
 		this._referenceRule = referenceRule? referenceRule: null;	
 		var rule = this._rule;
-		var doc = this.getDocument();
 		// fill in rule name
-		var ruleNameInput = Dwt.getDomObj(doc, this._ruleNameId);
+		var ruleNameInput = document.getElementById(this._ruleNameId);
 		if (rule.name != null) {
 			ruleNameInput.value = rule.name;
 		} else {
@@ -132,7 +131,7 @@ ZmFilterDetailsView.prototype.show = function(rule, referenceRule) {
 		}
 
 		// reset the groupOpSelect
-		//var groupOpSelect = Dwt.getDomObj(doc, this._dwtObjects[0]);
+		//var groupOpSelect = document.getElementById(this._dwtObjects[0]);
 		var groupOpSelect =	this._dwtObjects[0].obj;
 		if (rule.groupOp == "allof") {
 			groupOpSelect.setSelectedValue("allof");
@@ -143,10 +142,9 @@ ZmFilterDetailsView.prototype.show = function(rule, referenceRule) {
 		this._renderConditions(rule);
 		this._renderActions(rule);
 		this._addDwtObjects();
-		var doc = this.getDocument();
-		var outerTable = Dwt.getDomObj( doc, this._outerTableId);
+		var outerTable = document.getElementById(this._outerTableId);
 		if (!this._rendered){
-			var okButtonCell = Dwt.getDomObj( doc, this._okButtonCellId);
+			var okButtonCell = document.getElementById(this._okButtonCellId);
 			var okButton = new DwtButton(this);
 			okButton.setText("Ok");
 			okButton.addSelectionListener(new AjxListener(this, 
@@ -157,8 +155,7 @@ ZmFilterDetailsView.prototype.show = function(rule, referenceRule) {
 			}
 			okButtonCell.appendChild(okButtonEl);
 			
-			var cancelButtonCell = Dwt.getDomObj( doc, 
-												  this._cancelButtonCellId);
+			var cancelButtonCell = document.getElementById(this._cancelButtonCellId);
 			var cancelButton = new DwtButton(this);
 			var cancelButtonEl = cancelButton.getHtmlElement();
 			cancelButton.setText("Cancel");
@@ -197,8 +194,7 @@ ZmFilterDetailsView.prototype._addDwtObjects = function () {
 // ----------------------------------------------------------------------
 ZmFilterDetailsView.prototype._renderConditions = function(rule) {
 	// select the condition grouping op
-	var doc = this.getDocument();
-	var conditionTable = Dwt.getDomObj(doc, this._conditionTableId);
+	var conditionTable = document.getElementById(this._conditionTableId);
 
 	var row, cell;
 	var conditions = rule.conditions;
@@ -219,8 +215,7 @@ ZmFilterDetailsView.prototype._renderConditions = function(rule) {
 };
 
 ZmFilterDetailsView.prototype._renderActions = function(rule) {
-	var doc = this.getDocument();
-	var actionTable = Dwt.getDomObj(doc, this._actionTableId);
+	var actionTable = document.getElementById(this._actionTableId);
 	var html, row, cell;
 	for (var i=0; i < rule.actions.length; i++) {
 
@@ -691,11 +686,10 @@ function ( configAction, action, nextId){
 // + - button construction methods
 // ----------------------------------------------------------------------
 ZmFilterDetailsView.prototype._plusMinusHtml = function(cell, isActionRow) {
-	var doc = this.getDocument();
 	cell.align = "right";
 	cell.width = "80";
 	// create a table for the +/- buttons
-	var buttonsTable = doc.createElement("table");
+	var buttonsTable = document.createElement("table");
 	buttonsTable.cellpadding = 0;
 	buttonsTable.cellspacing = "5";
 	buttonsTable.width = "100%";
@@ -748,7 +742,7 @@ ZmFilterDetailsView.prototype._getRowFromButtonEvent = function(ev){
 ZmFilterDetailsView.prototype._deleteRow = function (tableOrId, row){
 	var table = null;
 	if (typeof(tableOrId) == 'string'){
-		table = Dwt.getDomObj(this.getDocument(), tableId);
+		table = document.getElementById(tableId);
 	} else {
 		table = tableOrId;
 	}
@@ -1075,14 +1069,13 @@ ZmFilterDetailsView.prototype._cancelButtonListener = function(evt) {
 // ----------------------------------------------------------------------
 
 ZmFilterDetailsView.prototype._resetTables = function() {
-	var doc = this.getDocument();
-	var conditionTable = Dwt.getDomObj(doc, this._conditionTableId);
+	var conditionTable = document.getElementById(this._conditionTableId);
 	var tbody = conditionTable.tBodies[0];
 	while ( tbody.firstChild!= null) {
 		this._cleanUpConditionRow(tbody.firstChild);
 		tbody.removeChild(tbody.firstChild);
 	}
-	var actionTable = Dwt.getDomObj(doc, this._actionTableId);
+	var actionTable = document.getElementById(this._actionTableId);
 	tbody = actionTable.tBodies[0];
 	while (tbody.firstChild != null) {
 		this._cleanUpActionRow(tbody.firstChild);

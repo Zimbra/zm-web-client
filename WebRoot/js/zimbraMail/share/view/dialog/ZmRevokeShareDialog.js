@@ -114,8 +114,6 @@ ZmRevokeShareDialog.prototype._handleYesButton = function(event) {
 };
 
 ZmRevokeShareDialog.prototype._createView = function() {
-	var document = this.getDocument();
-	
 	this._confirmMsgEl = document.createElement("DIV");
 	this._confirmMsgEl.style.fontWeight = "bold";
 	this._confirmMsgEl.style.marginBottom = "0.25em";

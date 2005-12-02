@@ -129,22 +129,20 @@ function(html, idx, picker, fromId, toId) {
 	}
 	picker.getHtmlElement().innerHTML = html.join("");
 
-	var doc = this.getDocument();
-	var from = this._from = Dwt.getDomObj(doc, fromId);
+	var from = this._from = document.getElementById(fromId);
 	Dwt.setHandler(from, DwtEvent.ONCHANGE, ZmDomainPicker._onChange);
 	from._picker = this;
-	var to = this._to = Dwt.getDomObj(doc, toId);
+	var to = this._to = document.getElementById(toId);
 	Dwt.setHandler(to, DwtEvent.ONCHANGE, ZmDomainPicker._onChange);
 	to._picker = this;
 
-	var doc = this.getDocument();
 	for (var i in domains) {
 		var domain = domains[i];
-		var ip = Dwt.getDomObj(doc, this._inputIds[domain.name]);
+		var ip = document.getElementById(this._inputIds[domain.name]);
 		Dwt.setHandler(ip, DwtEvent.ONCLICK, ZmDomainPicker._onClick);
 		ip.value = domain.name;
 		ip._picker = this;
-		ip._div = Dwt.getDomObj(doc, this._divIds[domain.name]);
+		ip._div = document.getElementById(this._divIds[domain.name]);
 		this._elements[domain.name] = ip;
 	}	
 

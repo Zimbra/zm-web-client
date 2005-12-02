@@ -100,8 +100,6 @@ ZmShareReply.prototype._handleCheckbox = function(event) {
 };
 
 ZmShareReply.prototype._initControl = function() {
-	var document = this.getDocument();
-
 	// create controls
 	this._replyCheckboxEl = document.createElement("INPUT");
 	this._replyCheckboxEl.type = "checkbox";

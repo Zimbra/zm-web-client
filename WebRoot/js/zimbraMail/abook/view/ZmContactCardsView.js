@@ -84,7 +84,7 @@ function(contact, now, isDndIcon) {
 		return null;
 	
 	// create div to add
-	var div = this.getDocument().createElement("div");
+	var div = document.createElement("div");
 	if (!isDndIcon) {
 		div._styleClass = "ZmContactCard";
 		div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
@@ -189,7 +189,7 @@ function() {
 		var len = this._list.size();
 		
 		// dynamically add the table and its contents to improve rendering speed
-		var table = this.getDocument().createElement("table");
+		var table = document.createElement("table");
 		table.cellPadding = table.cellSpacing = "5";
 		this.getHtmlElement().appendChild(table);
 		var row = null;
