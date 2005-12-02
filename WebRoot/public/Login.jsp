@@ -239,6 +239,9 @@ body, form {
 		}
 	}
 	window.onload = ZmLogin.handleOnload;
+
+	// XXX: DO NOT REMOVE - THIS PREVENTS MEM LEAK IN IE
+	window.onunload = function() { window.onload = window.onunload = null; }
 </script>
 <script type="text/javascript" src="/zimbra/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
 <jsp:include page="/public/pre-cache.jsp"/>  
