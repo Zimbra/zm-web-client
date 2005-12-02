@@ -143,7 +143,9 @@ Contributor(s):
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<link rel="shortcut icon" href="/zimbra/img/hiRes/logo/favicon.gif" type="image/gif" />
+<link rel="ICON" type="image/gif" href="/zimbra/img/loRes/logo/favicon.gif"/>
+<link rel="SHORTCUT ICON" href="/zimbra/img/loRes/logo/favicon.ico"/>
+
 <title>Zimbra Login</title>
 <style>
 
@@ -153,7 +155,7 @@ body, p, td, div, span, input {
 
 body {
 	background-color: #b7b7b7; 
-	background-image:url(/zimbra/skins/steel/images/bg_steel.gif);
+	background-image:url(/zimbra/img/loRes/skins/steel/Steel__BG.gif);
 	overflow:hidden;
 }
 
@@ -163,7 +165,7 @@ body, form {
 }
 
 .mainPanel {
-	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
+	background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);
 }
 
 .banner {
@@ -172,7 +174,7 @@ body, form {
 	/* the following are the dims of the login banner: */
 	width:447px; 
 	height:115px; 
-	background-image:url("/zimbra/img/hiRes/logo/LoginBanner.gif");
+	background-image:url(/zimbra/img/loRes/logo/LoginBanner.gif);
 }
 
 .error {  
@@ -239,4 +241,5 @@ body, form {
 	window.onload = ZmLogin.handleOnload;
 </script>
 <script type="text/javascript" src="/zimbra/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
+<jsp:include page="/public/pre-cache.jsp"/>  
 </html>

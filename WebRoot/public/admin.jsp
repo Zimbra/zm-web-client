@@ -22,9 +22,6 @@ Contributor(s):
 
 ***** END LICENSE BLOCK *****
 -->
-
-<%@ page language="java" 
-         import="java.lang.*, java.util.*" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%
    	String portsCSV = application.getInitParameter("admin.allowed.ports");
@@ -85,11 +82,13 @@ Contributor(s):
 <html>
   <head>
     <title>Zimbra Admin</title>
+    <link rel="ICON" type="image/gif" href="/zimbra/img/loRes/logo/favicon.gif"/>
+    <link rel="SHORTCUT ICON" href="/zimbra/img/loRes/logo/favicon.ico"/>
     <style type="text/css">
       <!--
 <%
-  String loRes = (String) request.getAttribute("loRes");
-  	if (loRes == null) {
+String hiRes = (String) request.getParameter("hiRes");
+if (hiRes != null) {
 %>
         @import url(<%= contextPath %>/img/hiRes/imgs.css?v=<%= vers %>);
         @import url(<%= contextPath %>/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
@@ -109,13 +108,12 @@ Contributor(s):
     
 <script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZaMsg.js<%= ext %>?v=<%= vers %>"></script>
 
-<% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
+<% if ( (mode != "") && (mode.equalsIgnoreCase("mjsf")) ) { %>
    		<jsp:include page="/public/Ajax.jsp"/>
    		<jsp:include page="/public/XForms.jsp"/>
     	<jsp:include page="/public/Zimbra.jsp"/>
 	    <jsp:include page="/public/ZimbraAdmin.jsp"/>
 <% } else { %>
-
 		<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
 		<script type="text/javascript" src="<%= contextPath %>/js/ZimbraAdmin_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>
@@ -146,14 +144,8 @@ Contributor(s):
     </script>
   </head>
   <body onload="javascript:void launch()">
-  <% if (loRes == null) { %>
-  		<jsp:include page='CacheHiRes.html' />
-  		<jsp:include page='../skins/steel/CacheHiRes.html' />
-  <% } else { %>
-  		<jsp:include page='CacheLoRes.html' />
-  		<jsp:include page='../skins/steel/CacheLoRes.html' />
-  <% } %>
-		<jsp:include page="../skins/steel/skin.html"/>  
+  <jsp:include page="/public/pre-cache.jsp"/>  
+  <jsp:include page="../skins/steel/skin.html"/>  
 <script language=Javascript>
 	skin.hideQuota();
 </script>

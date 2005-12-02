@@ -57,7 +57,7 @@
 }
 
 .DwtShellBusyDialog td.WaitIcon {
-	background-image:url("/zimbra/img/animated/wait_64.gif");
+	background-image:url(/zimbra/img/animated/wait_64.gif);
 	background-repeat:no-repeat;
 	background-position:center center;
 	width:64px;
@@ -65,7 +65,7 @@
 }
 
 .DwtWait16Icon {
-	background-image:url("/zimbra/img/animated/wait_16.gif");
+	background-image:url(/zimbra/img/animated/wait_16.gif);
 	background-repeat:no-repeat;
 	background-position:center center;
 	width:16px;
@@ -73,7 +73,7 @@
 }
 
 .DwtWait32Icon {
-	background-image:url("/zimbra/img/animated/wait_32.gif");
+	background-image:url(/zimbra/img/animated/wait_32.gif);
 	background-repeat:no-repeat;
 	background-position:center center;
 	width:32px;
@@ -493,7 +493,7 @@
 */
 
 .DwtMenu, .ActionMenu {
-	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
+	background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);
 	border: 2px solid;
 	border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;
 }
@@ -565,7 +565,7 @@
 
 .DialogBody 			{	background-color:#EEEEEE;		}
 .DialogTable			{	border-collapse:collapse;		}
-.DialogToolbar 			{	background-image:url(/zimbra/skins/steel/images/bg_pebble_dark.gif);	}
+.DialogToolbar 			{	background-image:url(/zimbra/img/loRes/skins/steel/PebbleDark__BG.gif);	}
 
 .DialogTitle {
 	background-color:#3d3d3d; 

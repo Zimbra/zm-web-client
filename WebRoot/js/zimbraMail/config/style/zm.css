@@ -69,7 +69,7 @@
 }
 .MainShell {
 	background-color: #B7B7B7;
-	background-image:url(/zimbra/skins/steel/images/bg_steel.gif);
+	background-image:url(/zimbra/img/loRes/skins/steel/Steel__BG.gif);
 }
 
 .CurtainOverlay table {
@@ -90,7 +90,7 @@
 }
 .ZmSplashScreen, .ZmSplashScreen table {
 	background-color: #B7B7B7;
-	background-image:url(/zimbra/skins/steel/images/bg_steel.gif);
+	background-image:url(/zimbra/img/loRes/skins/steel/Steel__BG.gif);
 }
 
 
@@ -187,12 +187,12 @@
 /* toolbar in child window for message view */
 .ZmMsgViewToolBar_cw {
 	width: 100%;
-	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
+	background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);
 }
 
 .ZmNavToolBar {background-color: transparent;}
 .ZmInviteToolBar, .ZmShareToolBar {
-	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
+	background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);
 	padding: 2px;
 	border-bottom: 1px solid #777777;
 }
@@ -230,7 +230,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 /* Login Panel */
 .ZmLoginDialog {
 	background-color: #b7b7b7;
-	background-image:url(/zimbra/skins/steel/images/bg_steel.gif);
+	background-image:url(/zimbra/img/loRes/skins/steel/Steel__BG.gif);
 	overflow:hidden;
 }
 .ZmLoginDialog-Transparent {background-color: transparent;}
@@ -238,7 +238,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	margin-top:10px;
 	margin-bottom:10px;
 	height:115px;
-	background-image:url("/zimbra/img/hiRes/logo/LoginBanner.gif");
+	background-image:url(/zimbra/img/loRes/logo/LoginBanner.gif);
 }
 .ZmLoginDialog-HeaderText, .ZmLoginDialog-SubHeaderText {
 	color: white;
@@ -249,7 +249,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 .ZmLoginDialog-MainPanel {
 	width:460px;
-	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
+	background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);
 }
 .ZmLoginDialog-SubHeaderText { font-size: 12pt; }
 .ZmLoginDialog-Field { width: 290px; }

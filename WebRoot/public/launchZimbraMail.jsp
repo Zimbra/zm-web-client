@@ -27,8 +27,8 @@ Contributor(s):
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-
-<link rel="shortcut icon" href="/zimbra/img/hiRes/logo/favicon.gif" type="image/gif" />
+<link rel="ICON" type="image/gif" href="/zimbra/img/loRes/logo/favicon.gif"/>
+<link rel="SHORTCUT ICON" href="/zimbra/img/loRes/logo/favicon.ico"/>
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss" />
   
 <title>Zimbra</title>
@@ -138,13 +138,7 @@ static final private String LOGIN_PAGE = "/zimbra/";
 </script>
 </head>
 <body>
-  <% if (hiRes != null) { %>
-  		<jsp:include page='CacheHiRes.html' />
-  		<jsp:include page='../skins/steel/CacheHiRes.html' />
-  <% } else { %>
-  		<jsp:include page='CacheLoRes.html' />
-  		<jsp:include page='../skins/steel/CacheLoRes.html' />
-  <% } %>
-		<jsp:include page="../skins/steel/skin.html"/>
+<jsp:include page="/public/pre-cache.jsp"/>  
+<jsp:include page="../skins/steel/skin.html"/>
 </body>
 </html>
