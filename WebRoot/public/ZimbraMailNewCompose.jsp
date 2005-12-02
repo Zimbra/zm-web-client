@@ -26,24 +26,30 @@ Contributor(s):
 <html>
 <head>
 <title>Zimbra</title>
-
 <style type="text/css">
 <!--
-<%String loRes = (String) request.getAttribute("loRes");
-  if (loRes == null) {
+<%
+  String mode = (String) request.getAttribute("mode");
+  String ext = (String) request.getAttribute("fileExtension");
+  if (ext == null) ext = "";
+  String vers = (String) request.getAttribute("version");
+  if (vers == null) vers = "";
+  String hiRes = (String) request.getParameter("hiRes");
+  if (hiRes != null) {
 %>
-        @import url(/zimbra/img/hiRes/imgs.css);
+        @import url(/zimbra/img/hiRes/imgs.css?v=<%= vers %>);
+        @import url(/zimbra/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
 <% } else { %>
-        @import url(/zimbra/img/loRes/imgs.css);
+        @import url(/zimbra/img/loRes/imgs.css?v=<%= vers %>);
+        @import url(/zimbra/img/loRes/skins/steel/skin.css?v=<%= vers %>);
 <% } %>
-        @import url(/zimbra/js/zimbraMail/config/style/dwt.css);
-        @import url(/zimbra/js/zimbraMail/config/style/common.css);
-        @import url(/zimbra/js/zimbraMail/config/style/zm.css);
-        @import url(/zimbra/js/zimbraMail/config/style/spellcheck.css);
-        @import url(/zimbra/ui/skin.css);
+        @import url(/zimbra/js/zimbraMail/config/style/dwt.css?v=<%= vers %>);
+        @import url(/zimbra/js/zimbraMail/config/style/common.css?v=<%= vers %>);
+        @import url(/zimbra/js/zimbraMail/config/style/zm.css?v=<%= vers %>);
+        @import url(/zimbra/js/zimbraMail/config/style/spellcheck.css?v=<%= vers %>);
+        @import url(/zimbra/skins/steel/skin.css?v=<%= vers %>);
 -->
 </style>
-
 <% 
 	final String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
 	Cookie[] cookies = request.getCookies();
@@ -54,27 +60,16 @@ Contributor(s):
 				authToken = cookies[idx].getValue();
 		}
 	}
-	
-	String mode = (String) request.getAttribute("mode");
-	String vers = (String) request.getAttribute("version");
-	String ext = (String) request.getAttribute("fileExtension");
-	if (vers == null) vers = "";
-	if (ext == null) ext = "";
+
 %>
-
 <jsp:include page="Messages.jsp"/>
-
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
-
 	<jsp:include page="Ajax.jsp"/>
 	<jsp:include page="Zimbra.jsp"/>
 	<jsp:include page="ZimbraMail.jsp"/>
-
 <% } else { %>
-
 	<script type="text/javascript" src="/zimbra/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
 	<script type="text/javascript" src="/zimbra/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
-
 <% } %>
 
 <script language="JavaScript">  
@@ -85,7 +80,6 @@ Contributor(s):
 	AjxCore.addOnloadListener(launch);
 	AjxCore.addOnunloadListener(ZmNewWindow.unload);
 </script>
-
 </head>
 <body>
 </body>

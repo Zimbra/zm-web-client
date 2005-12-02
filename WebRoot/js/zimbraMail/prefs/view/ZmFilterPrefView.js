@@ -31,7 +31,7 @@
  * summary table.
  *
  * TODO:
- * - remove styles to zm.css
+ * - remove styles to external css
  */
 function ZmFilterPrefView(parent, appCtxt) {
 
