@@ -57,3 +57,14 @@ function(item) {
 	    if (chat.getRosterSize() == 1 && chat.hasRosterItem(item)) return chat;
 	}
 };
+
+ZmChatList.prototype.getChatsByRosterItem =
+function(item) {
+    var results = [];
+    var list = this.getArray();
+	for (var i=0; i < list.length; i++) {
+	    var chat = list[i];
+	    if (chat.hasRosterItem(item)) results.push(chat);
+	}
+	return results;
+};

@@ -30,6 +30,7 @@ function ZmChat(id, appCtxt, chatList) {
 	this._evt = new ZmEvent(ZmEvent.S_CHAT);
 	this._chatEntries = [];
 	this._rosterItemList = new ZmRosterItemList(appCtxt);
+	this._isGroupChat = false;
 }
 
 ZmChat.prototype = new ZmItem;
@@ -40,14 +41,29 @@ function() {
 	return "ZmChat: id = " + this.id;
 }
 
-ZmChat.prototype.getRosterItemList =
+ZmChat.prototype._getRosterItemList =
 function() {
     return this._rosterItemList;
+};
+
+ZmChat.prototype.addRosterItem =
+function(item) {
+    this._rosterItemList.addItem(item);
 };
 
 ZmChat.prototype.getRosterSize = 
 function() {
     return this._rosterItemList.size();
+};
+
+ZmChat.prototype.isGroupChat =
+function() {
+    return this._isGroupChat;
+};
+
+ZmChat.prototype.setGroupChat =
+function(groupChat) {
+    this._isGroupChat = groupChat;
 };
 
 ZmChat.prototype.hasRosterItem = 
@@ -59,4 +75,19 @@ function(item) {
 ZmChat.prototype.getRosterItem = 
 function() {
     return this._rosterItemList.getArray()[0];
+};
+
+ZmChat.prototype.getIcon =
+function() {
+    
+};
+
+ZmChat.prototype.getTitle =
+function() {
+    
+};
+
+ZmChat.prototype.getStatusTitle =
+function() {
+    
 };

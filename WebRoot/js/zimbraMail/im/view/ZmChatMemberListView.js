@@ -23,9 +23,13 @@
  * ***** END LICENSE BLOCK *****
  */
  
-function ZmChatMemberListView(parent, bExtHeader) {
-	DwtListView.call(this, parent, null, null, this._getHeaderList(parent, bExtHeader));
+function ZmChatMemberListView(parent, rosterList) {
+	DwtListView.call(this, parent, "ZmChatMemberList", DwtControl.ABSOLUTE_STYLE, this._getHeaderList());
 	this.type = ZmItem.ROSTER_ITEM;
+	this.rosterList = rosterList;
+	this.rosterList.addChangeListener(new AjxListener(this, this._rosterListChangeListener));
+    this._viewPrefix = Dwt.getNextId() + "_";
+    this.set(rosterList.getVector());
 };
 
 ZmChatMemberListView.prototype = new DwtListView;
@@ -59,6 +63,11 @@ function(width, height) {
 	}
 };
 
+ZmChatMemberListView.prototype._getFieldId =
+function(item, id) {
+	return this._getViewPrefix() + id + item.id;
+};
+
 ZmChatMemberListView.prototype._setNoResultsHtml = 
 function() {
 	// ignore if target list view
@@ -70,8 +79,7 @@ function() {
 ZmChatMemberListView.prototype._createItemHtml =
 function(item) {
 
-	var doc = this.getDocument();
-	var div = doc.createElement("div");
+	var div = document.createElement("div");
 	div._styleClass = "Row";
 	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
 	div.className = div._styleClass;
@@ -79,14 +87,8 @@ function(item) {
 	var html = new AjxBuffer();
 
 	html.append("<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>");
-	for (var i = 0; i < this._headerList.length; i++) {
-		var id = this._headerList[i]._id;
-		if (id.indexOf(ZmChatMemberListView.ID_SHOW_ICON) == 0) {
-			html.append("<td width=", this._headerList[i]._width, ">", AjxImg.getImageHtml(item.getIcon()), "</td>");
-		} else if (id.indexOf(ZmChatMemberListView.ID_NAME) == 0) {
-			html.append("<td>&nbsp;", item.getName(), "</td>");
-		}
-	}
+    html.append("<td width=20 id='", this._getFieldId(item, ZmChatMemberListView.ID_SHOW_ICON),"'>", AjxImg.getImageHtml(item.getIcon()), "</td>");
+	html.append("<td id='",this._getFieldId(item, ZmChatMemberListView.ID_NAME),"'>&nbsp;", AjxStringUtil.htmlEncode(item.getName()), "</td>");
 	html.append("</tr></table>");
 	div.innerHTML = html.toString();
 	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
@@ -94,7 +96,8 @@ function(item) {
 };
 
 ZmChatMemberListView.prototype._getHeaderList = 
-function(parent) {
+function() {
+    return null;
 	var headerList = new Array();
     headerList.push(new DwtListHeaderItem(ZmChatMemberListView.ID_SHOW_ICON, null, "ImStartChat", 20, false, false, true));
 	headerList.push(new DwtListHeaderItem(ZmChatMemberListView.ID_NAME, ZmMsg.buddy));
@@ -141,4 +144,40 @@ ZmChatMemberListView.prototype._sortColumn =
 function(columnItem, bSortAsc) {
 //	var sortBy = bSortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC;
 //	this.parent.search(sortBy);
+};
+
+ZmChatMemberListView.prototype._rosterListChangeListener = 
+function(ev) {
+    var items= ev.getItems();
+    for (var n=0; n < items.length; n++) {
+        var item = items[n];
+        if (!(item instanceof ZmRosterItem)) continue;
+        switch(ev.event) {
+        //case ZmEvent.E_MODIFY: modifies are forwarded from ZmChatWindow._rosterItemChangeListener
+        case ZmEvent.E_CREATE:
+            this.addItem(item);
+            break;
+        }
+   }
+};
+
+ZmChatMemberListView.prototype._getViewPrefix = 
+function() {
+	return this._viewPrefix;
+};
+
+ZmChatMemberListView.prototype._rosterItemChangeListener =
+function(item, fields) {
+    var doShow = (ZmRosterItem.F_SHOW in fields);
+    var doUnread = (ZmRosterItem.F_UNREAD in fields);
+    var doName = (ZmRosterItem.F_NAME in fields);
+
+    if (doShow)  {
+        var el = document.getElementById(this._getFieldId(item, ZmChatMemberListView.ID_SHOW_ICON));
+        if (el) el.innerHTML = AjxImg.getImageHtml(item.getIcon());
+    }
+    if (doName) {
+        var el = document.getElementById(this._getFieldId(item, ZmChatMemberListView.ID_NAME));
+        if (el) el.innerHTML = AjxStringUtil.htmlEncode(item.getName());
+    }
 };

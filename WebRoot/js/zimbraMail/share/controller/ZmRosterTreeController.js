@@ -76,17 +76,24 @@ function(overviewId, listener) {
 ZmRosterTreeController.prototype._rosterListChangeListener = 
 function(ev) {
     var treeView = this.getTreeView(ZmZimbraMail._OVERVIEW_ID);
-    
-    if (ev.event == ZmEvent.E_MODIFY) {
-        var items= ev.getItems();
-        for (var n=0; n < items.length; n++) {
-            var item = items[n];
-            if (item instanceof ZmRosterItem) this._handleRosterItemModify(item, ev.getDetail("fields"), treeView);
-        }
-    } else if (ev.event == ZmEvent.E_CREATE) {
-        var item = ev.getDetail("organizers");
-        if (item instanceof ZmRosterItem) this._addRosterItem(item);
+
+    var items= ev.getItems();
+    for (var n=0; n < items.length; n++) {
+       var item = items[n];
+       if (!(item instanceof ZmRosterItem)) continue;
+       switch (ev.event) {
+       case ZmEvent.E_MODIFY:
+           this._handleRosterItemModify(item, ev.getDetail("fields"), treeView);
+           break;
+       case ev.event == ZmEvent.E_CREATE:
+           this._addRosterItem(item);
+           break;
+       case ev.event == ZmEvent.E_REMOVE:
+           this._removeRosterItem(item);
+           break;
+       }
     }
+    
     ZmTreeController.prototype._changeListener.call(this, ev, treeView);
 };
 
@@ -106,7 +113,7 @@ function(item, fields, treeView) {
     
     var numUnread = item.getUnread();  
     var newName = !doUnread ? null : 
-            (numUnread == 0 ? item.getName() : AjxBuffer.concat("<b>",item.getName(), " (", numUnread, ")</b>"));
+            (numUnread == 0 ? item.getName() : AjxBuffer.concat("<b>",AjxStringUtil.htmlEncode(item.getName()), " (", numUnread, ")</b>"));
                         
     if (items) for (var i in items) {
         var rti = items[i];

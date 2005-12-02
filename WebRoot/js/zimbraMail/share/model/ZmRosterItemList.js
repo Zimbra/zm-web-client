@@ -48,7 +48,7 @@ function(item, skipNotify) {
     this.add(item);
     this._addrHash[item.addr] = item;
     if (!skipNotify) {
-        this._eventNotify(ZmEvent.E_CREATE, item);
+        this._eventNotify(ZmEvent.E_CREATE, [item]);
     }
 };
 
@@ -57,7 +57,7 @@ function(item, skipNotify) {
     this.remove(item);
     delete this._addrHash[item.addr];
     if (!skipNotify) {
-        this._eventNotify(ZmEvent.E_REMOVE, item);
+        this._eventNotify(ZmEvent.E_REMOVE, [item]);
     }    
 };
 

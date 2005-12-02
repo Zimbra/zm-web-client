@@ -52,6 +52,7 @@ ZmChatWindow._idToChatWindow = {};
 
 ZmChatWindow._DEFAULT_INPUT_HEIGHT = 70;
 ZmChatWindow._SASH_HEIGHT = 8;
+ZmChatWindow._LIST_WIDTH = 100;
 
 ZmChatWindow.prototype.toString = 
 function() {
@@ -171,6 +172,8 @@ function(item, fields, setAll) {
     if (doName) {
         this.setTitle(item.getName());
     }
+    if (this._memberListView && fields) this._memberListView._rosterItemChangeListener(item, fields);
+
 };
 
 ZmChatWindow.prototype.sendInput =
@@ -238,18 +241,25 @@ function() {
 	return this._close;
 };
 
+ZmChatWindow.prototype.addRosterItem =
+function(item) {
+    if (this.chat.getRosterSize() > 0 && this._memberListView == null) {
+        this._memberListView = new ZmChatMemberListView(this, this.chat._getRosterItemList());
+        this._controlListener();
+   }
+   this.chat.addRosterItem(item);
+   if (this.chat.getRosterSize() > 1) this.chat.setGroupChat(true);
+};
+
 ZmChatWindow.prototype._dropListener =
 function(ev) {
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		var srcData = ev.srcData;
-		if (!(srcData instanceof ZmRosterTreeItem)) {
-			ev.doIt = false;
-			return;
-		}
+        	ev.doIt = (srcData instanceof ZmRosterTreeItem) && !this.chat.hasRosterItem(srcData.getRosterItem());
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
         	var srcData = ev.srcData;
 		if ((srcData instanceof ZmRosterTreeItem)) {
-            this.sendInput(srcData.getName());
+		     this.addRosterItem(srcData.getRosterItem());
         }
 	}
 };
@@ -348,7 +358,17 @@ function(ev) {
     this._contentY = ctY + yFudge;
     this._contentH = ctH - hFudge;
 
-    this._content.setBounds(xFudge, this._contentY, size.x - wFudge-4, this._contentH);
+    var contentW = size.x - wFudge - 4;
+    
+    if (this._memberListView != null) {
+        contentW -= ZmChatWindow._LIST_WIDTH;
+        this._memberListView.setBounds(xFudge + contentW, this._contentY, ZmChatWindow._LIST_WIDTH, this._contentH);
+        contentW -= 5;
+        
+    }
+
+    this._content.setBounds(xFudge, this._contentY, contentW, this._contentH);
+
     this._sash.setBounds(0, this._sashY, size.x, sashH);
     this._inputY = inpY;
     this._inputH = inpH - yFudge - hFudge;

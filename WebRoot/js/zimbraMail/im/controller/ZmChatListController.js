@@ -389,10 +389,20 @@ function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
 
 ZmChatListController.prototype.selectChatForRosterItem =
 function(item) {
-    var chat = this._list.getChatByRosterItem(item);
-    if (chat != null) {
-        this._parentView[this._currentView].selectChat(chat);
+    var chats = this._list.getChatsByRosterItem(item);
+    var chat = null;
+    for (var c in chats) {
+        // TODO: !chat.groupChat()?
+        if (chats[c].getRosterSize() == 1) { 
+            chat = chats[c];
+            break;
+        }
     }
+    // select first chat if not found in solo chat...
+    // TODO: change this to select most recently active chat?
+    if (chat == null && chats.length > 0) chat = chats[0];
+
+    if (chat != null) this._parentView[this._currentView].selectChat(chat);
 };
 
 ZmChatListController.prototype.chatWithRosterItem =
@@ -400,7 +410,7 @@ function(item) {
     var chat = this._list.getChatByRosterItem(item);
     if (chat == null) {
         chat = new ZmChat(Dwt.getNextId(), this._appCtxt, this);
-        chat.getRosterItemList().addItem(item);
+        chat.addRosterItem(item);
         // listeners take care of rest...
         this._list.addChat(chat);
     }
@@ -421,10 +431,12 @@ function(ev, treeView) {
              var item = items[i];
              if (item instanceof ZmRosterItem) {
                 var fields = ev.getDetail("fields");
-                var chat = this._list.getChatByRosterItem(item);
+                var chats = this._list.getChatsByRosterItem(item);
                 // currentview or all? probably all...
-                if (chat)
+                for (var c in chats) {
+                    var chat = chats[c];
                     this._parentView[this._currentView]._rosterItemChangeListener(chat, item, fields);
+                }
              }
         }
     }

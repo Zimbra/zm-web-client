@@ -1204,6 +1204,12 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	border: 1px solid #999999;
 }
 
+.ZmChatMemberList {
+	/*overflow: hidden;*/
+	background-color: white;
+	border: 1px solid #999999;
+}
+
 .ZmChatWindowChatEntryMe {
 	color: black;
 	padding: 1px;
