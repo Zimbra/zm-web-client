@@ -51,5 +51,9 @@ function(chat) {
 
 ZmChatList.prototype.getChatByRosterItem =
 function(item) {
-    return this.getById(ZmChat.idFromRosterItem(item));
+    var list = this.getArray();
+	for (var i=0; i < list.length; i++) {
+	    var chat = list[i];
+	    if (chat.getRosterSize() == 1 && chat.hasRosterItem(item)) return chat;
+	}
 };

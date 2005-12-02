@@ -23,17 +23,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-/**
-*
-*/
-function ZmChat(rosterItem, appCtxt, id, list) {
-	if (id == null) id = rosterItem.getAddress() + "_chat";
-	var chatList = appCtxt.getApp(ZmZimbraMail.IM_APP).getChatList();
-	list = list ? list : chatList;
-	ZmItem.call(this, appCtxt, ZmItem.CHAT, id, list);
+function ZmChat(id, appCtxt, chatList) {
+//	if (id == null) id = rosterItem.getAddress() + "_chat";
+	if (chatList == null) chatList = appCtxt.getApp(ZmZimbraMail.IM_APP).getChatList();
+	ZmItem.call(this, appCtxt, ZmItem.CHAT, id, chatList);
 	this._evt = new ZmEvent(ZmEvent.S_CHAT);
 	this._chatEntries = [];
-	this.rosterItem = rosterItem;
+	this._rosterItemList = new ZmRosterItemList(appCtxt);
 }
 
 ZmChat.prototype = new ZmItem;
@@ -44,10 +40,23 @@ function() {
 	return "ZmChat: id = " + this.id;
 }
 
-ZmChat.idFromRosterItem =
-function(item) {
-    return item.getAddress() + "_chat";
-}
+ZmChat.prototype.getRosterItemList =
+function() {
+    return this._rosterItemList;
+};
 
-// Public methods
-ZmChat.prototype.getRosterItem = function() { return this.rosterItem; };
+ZmChat.prototype.getRosterSize = 
+function() {
+    return this._rosterItemList.size();
+};
+
+ZmChat.prototype.hasRosterItem = 
+function(item) {
+    return this._rosterItemList.getByAddr(item.getAddress());
+};
+
+// TODO: remove!
+ZmChat.prototype.getRosterItem = 
+function() {
+    return this._rosterItemList.getArray()[0];
+};

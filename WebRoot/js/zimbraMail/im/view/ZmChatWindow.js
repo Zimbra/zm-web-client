@@ -23,7 +23,6 @@
  * ***** END LICENSE BLOCK *****
  */
 
-
 function ZmChatWindow(parent, chat) {
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, parent, "ZmChatWindow", DwtControl.ABSOLUTE_STYLE);
@@ -67,6 +66,7 @@ function() {
 	var c = this._container = new DwtComposite(this, "ZmChatWindowContainer");
 	c.setScrollStyle(Dwt.SCROLL);
 //    var c = this;
+
 	this._toolbar = new DwtToolBar(c);
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
 	this._statusLabel = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowStatusLabel");	
@@ -94,6 +94,11 @@ function() {
     DwtDragTracker.init(this._label, DwtDragTracker.STYLE_MOVE, 5, 5, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_DRAG);
     DwtDragTracker.init(this._statusLabel, DwtDragTracker.STYLE_MOVE, 5, 5, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_DRAG);        
     DwtDragTracker.init(this._gripper, DwtDragTracker.STYLE_RESIZE_SOUTHEAST, 5, 5, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_RESIZE);
+
+	var dropTgt = new DwtDropTarget(ZmRosterTreeItem);
+	this._input.setDropTarget(dropTgt);
+	this._content.setDropTarget(dropTgt);
+	dropTgt.addDropListener(new AjxListener(this, this._dropListener));
     
     this.setHandler(DwtEvent.ONCLICK, ZmChatWindow._onClickHdlr);
     Dwt.associateElementWithObject(this.getHtmlElement(), this);
@@ -190,7 +195,9 @@ function(text) {
     
     div = this._doc.createElement("div");
     // div.className = "ZmChatWindowChatEntryThem";
-    div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+AjxStringUtil.htmlEncode(this.chat.getRosterItem().getName())+": </b></span>" + AjxStringUtil.htmlEncode("whatever", true);
+    div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+
+                AjxStringUtil.htmlEncode(this.chat.getRosterItem().getName())+
+                ": </b></span>" + AjxStringUtil.htmlEncode("ok", true);
     content.appendChild(div);
     content.parentNode.scrollTop = Dwt.getSize(content).y;
 }
@@ -230,6 +237,22 @@ function(imageInfo) {
 ZmChatWindow.prototype.getCloseButton = 
 function() {
 	return this._close;
+};
+
+ZmChatWindow.prototype._dropListener =
+function(ev) {
+	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		var srcData = ev.srcData;
+		if (!(srcData instanceof ZmRosterTreeItem)) {
+			ev.doIt = false;
+			return;
+		}
+	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
+        	var srcData = ev.srcData;
+		if ((srcData instanceof ZmRosterTreeItem)) {
+            this.sendInput(srcData.getName());
+        }
+	}
 };
 
 ZmChatWindow.prototype._sashCallback =
@@ -338,3 +361,5 @@ function(ev) {
     this._minSashY = this._contentY + ZmChatWindow.MIN_CONTENT_HEIGHT;
     this._maxSashY = size.y - ZmChatWindow.MIN_INPUT_HEIGHT;
 };
+
+

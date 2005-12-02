@@ -35,7 +35,6 @@ function ZmRosterItemList(appCtxt) {
 	this._addrHash = {};
 }
 
-
 ZmRosterItemList.prototype = new ZmList;
 ZmRosterItemList.prototype.constructor = ZmRosterItemList;
 
