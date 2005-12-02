@@ -381,7 +381,6 @@ ZmOperation.DIS_IMAGE[ZmOperation.WEEK_VIEW]			= "WeekViewDis";
 ZmOperation.DIS_IMAGE[ZmOperation.WORK_WEEK_VIEW]		= "WorkWeekViewDis";
 
 ZmOperation.KEY_ID = "_opId";
-ZmOperation.KEY_TAG_MENU = "_tagMenu";
 
 function ZmOperation_Descriptor(id, label, image, disImage, enabled, toolTip) {
 	this.id = id;
@@ -482,20 +481,25 @@ function(parent, id, opHash) {
 		opHash[id] = parent.createOp(id, label, image, disImage, enabled, toolTip);
 	}
 	if (id == ZmOperation.NEW_MENU) {
-		ZmOperation.addNewMenu(opHash[id]);
+		ZmOperation.addDeferredMenu(ZmOperation.addNewMenu, opHash[id]);
 	} else if (id == ZmOperation.TAG_MENU) {
-		ZmOperation.addTagMenu(opHash[id]);
+		ZmOperation.addDeferredMenu(ZmOperation.addTagMenu, opHash[id]);
 	} else if (id == ZmOperation.COLOR_MENU) {
-		ZmOperation.addColorMenu(opHash[id]);
+		ZmOperation.addDeferredMenu(ZmOperation.addColorMenu, opHash[id]);
 	} else if (id == ZmOperation.REPLY_MENU) {
-		ZmOperation.addReplyMenu(opHash[id]);
+		ZmOperation.addDeferredMenu(ZmOperation.addReplyMenu, opHash[id]);
 	} else if (id == ZmOperation.INVITE_REPLY_MENU) {
-		ZmOperation.addInviteReplyMenu(opHash[id]);
+		ZmOperation.addDeferredMenu(ZmOperation.addInviteReplyMenu, opHash[id]);
 	} else if (id == ZmOperation.CAL_VIEW_MENU) {
-		ZmOperation.addCalViewMenu(opHash[id]);
+		ZmOperation.addDeferredMenu(ZmOperation.addCalViewMenu, opHash[id]);
 	}
+};
 
-}
+ZmOperation.addDeferredMenu =
+function(addMenuFunc, parent) {
+	var callback = new AjxCallback(null, addMenuFunc, parent);
+	parent.setMenu(callback);
+};
 
 ZmOperation.removeOperation =
 function(parent, id, opHash) {
@@ -538,7 +542,7 @@ function(parent) {
 		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_CONTACT, ZmMsg.contact, Dwt.DEFAULT, Dwt.DEFAULT));
 	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED))
 		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_APPT, ZmMsg.appointment, Dwt.DEFAULT, Dwt.DEFAULT));
-	if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED) || appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED) || appCtxt.get(ZmSetting.TAGGING_ENABLED) || appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		list.push(new ZmOperation_Descriptor(ZmOperation.SEP, Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT));
 		if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED))
 			list.push(new ZmOperation_Descriptor(ZmOperation.NEW_FOLDER, ZmMsg.folder, Dwt.DEFAULT, Dwt.DEFAULT));
@@ -549,6 +553,7 @@ function(parent) {
 	}
 	var menu = new ZmActionMenu(parent, ZmOperation.NONE, list);
 	parent.setMenu(menu);
+	return menu;
 }
 
 /**
@@ -559,7 +564,8 @@ function(parent) {
 ZmOperation.addTagMenu =
 function(parent) {
 	var tagMenu = new ZmTagMenu(parent, null);
-	parent.setData(ZmOperation.KEY_TAG_MENU, tagMenu);
+	parent.setMenu(tagMenu);
+	return tagMenu;
 }
 
 /**
@@ -578,6 +584,7 @@ function(parent, dialog) {
 		var mi = menu.createMenuItem(color, ZmTag.COLOR_ICON[color], ZmOrganizer.COLOR_TEXT[color]);
 		mi.setData(ZmOperation.MENUITEM_ID, color);
 	}
+	return menu;
 }
 
 /**
@@ -590,6 +597,7 @@ function(parent) {
 	var list = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
 	var menu = new ZmActionMenu(parent, list, null);
 	parent.setMenu(menu);
+	return menu;
 }
 
 /**
@@ -602,6 +610,7 @@ function(parent) {
 	var list = [ZmOperation.EDIT_REPLY_ACCEPT, ZmOperation.EDIT_REPLY_DECLINE, ZmOperation.EDIT_REPLY_TENTATIVE];
 	var menu = new ZmActionMenu(parent, list, null);
 	parent.setMenu(menu);
+	return menu;
 };
 
 
@@ -615,4 +624,5 @@ function(parent) {
 	var list = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
 	var menu = new ZmActionMenu(parent, list, null);
 	parent.setMenu(menu);
+	return menu;
 };

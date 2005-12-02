@@ -55,15 +55,20 @@ function() {
 /*
 * Adds listeners for the color change menu items.
 */
-ZmTagTreeController.prototype._initializeActionMenus = 
+ZmTagTreeController.prototype._getActionMenu =
 function() {
-	ZmTreeController.prototype._initializeActionMenus.call(this);
-	var mi = this._actionMenu.getMenuItem(ZmOperation.COLOR_MENU);
-	if (mi) {
-		var items = mi.getMenu().getItems();
-		for (var i = 0; i < items.length; i++)
-			items[i].addSelectionListener(this._listeners[ZmOperation.COLOR_MENU]);
+	var menu = ZmTreeController.prototype._getActionMenu.call(this);
+	if (menu && !menu._initialized) {
+		var mi = menu.getMenuItem(ZmOperation.COLOR_MENU);
+		if (mi) {
+			var items = mi.getMenu().getItems();
+			for (var i = 0; i < items.length; i++) {
+				items[i].addSelectionListener(this._listeners[ZmOperation.COLOR_MENU]);
+			}
+		}
+		menu._initialized = true;
 	}
+	return menu;
 };
 
 /**

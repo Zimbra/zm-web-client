@@ -121,8 +121,9 @@ function(id) {
 ZmButtonToolBar.prototype.getTagMenu =
 function() {
 	var button = this.getButton(ZmOperation.TAG_MENU);
-	if (button)
-		return button.getData(ZmOperation.KEY_TAG_MENU);
+	if (button) {
+		return button.getMenu();
+	}
 }
 
 // Private methods

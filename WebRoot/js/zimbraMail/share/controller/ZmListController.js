@@ -247,7 +247,14 @@ function(view) {
 	for (var i = 0; i < buttons.length; i++)
 		if (buttons[i] > 0 && this._listeners[buttons[i]])
 			this._toolbar[view].addSelectionListener(buttons[i], this._listeners[buttons[i]]);
-	this._propagateMenuListeners(this._toolbar[view], ZmOperation.NEW_MENU);
+	
+	var toolbar = this._toolbar[view];
+	var button = toolbar.getButton(ZmOperation.NEW_MENU);
+	var listener = new AjxListener(toolbar, ZmListController._newDropDownListener);
+	button.addDropDownSelectionListener(listener);
+	toolbar._ZmListController_this = this;
+	toolbar._ZmListController_newDropDownListener = listener;
+	
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		var tagMenuButton = this._toolbar[view].getButton(ZmOperation.TAG_MENU);
 		if (tagMenuButton) {
@@ -279,8 +286,9 @@ function() {
 		if (menuItems[i] > 0)
 			this._actionMenu.addSelectionListener(menuItems[i], this._listeners[menuItems[i]]);
 	this._actionMenu.addPopdownListener(this._popdownListener);
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		this._setupTagMenu(this._actionMenu);
+	}
 }
 
 /**
@@ -1048,3 +1056,18 @@ function(view, viewPushed) {
 	this._resetNavToolBarButtons(view);
 	return true;
 }
+
+ZmListController._newDropDownListener = 
+function(event) {
+	var toolbar = this;
+
+	var controller = toolbar._ZmListController_this;
+	controller._propagateMenuListeners(toolbar, ZmOperation.NEW_MENU);
+
+	var button = toolbar.getButton(ZmOperation.NEW_MENU);
+	var listener = toolbar._ZmListController_newDropDownListener;
+	button.removeDropDownSelectionListener(listener);
+
+	delete toolbar._ZmListController_this;
+	delete toolbar._ZmListController_newDropDownListener;
+};

@@ -114,8 +114,9 @@ function(id) {
 ZmActionMenu.prototype.getTagMenu =
 function() {
 	var menuItem = this.getMenuItem(ZmOperation.TAG_MENU);
-	if (menuItem)
-		return menuItem.getData(ZmOperation.KEY_TAG_MENU);
+	if (menuItem) {
+		return menuItem.getMenu();
+	}
 }
 
 // Private methods

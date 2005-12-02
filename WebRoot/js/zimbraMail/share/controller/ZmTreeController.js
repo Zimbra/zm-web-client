@@ -196,22 +196,55 @@ ZmTreeController.prototype.getTreeStyle = function() {};
 */
 ZmTreeController.prototype._initializeActionMenus =
 function() {
+	var obj = this;
+	var func = this._createActionMenu;
+
 	var ops = this._getHeaderActionMenuOps();
-	if (!this._headerActionMenu && ops)
-		this._headerActionMenu = this._createActionMenu(this._shell, ops);
-	ops = this._getActionMenuOps();
-	if (!this._actionMenu && ops)
-		this._actionMenu = this._createActionMenu(this._shell, ops);
+	if (!this._headerActionMenu && ops) {
+		var args = [ this._shell, ops ];
+		this._headerActionMenu = new AjxCallback(obj, func, args);
+	}
+	var ops = this._getActionMenuOps();
+	if (!this._actionMenu && ops) {
+		var args = [ this._shell, ops ];
+		this._actionMenu = new AjxCallback(obj, func, args);
+	}
+};
+
+ZmTreeController.prototype._getHeaderActionMenu =
+function() {
+	if (this._headerActionMenu instanceof AjxCallback) {
+		var callback = this._headerActionMenu;
+		this._headerActionMenu = callback.run();
+	}
+	return this._headerActionMenu;
+};
+ZmTreeController.prototype._getActionMenu =
+function() {
+	if (this._actionMenu instanceof AjxCallback) {
+		var callback = this._actionMenu;
+		this._actionMenu = callback.run();
+	}
+	return this._actionMenu;
 };
 
 /*
 * Creates and returns an action menu, and sets its listeners.
+* <p>
+* <strong>Note:</strong>
+* This method is the target of an AjxCallback and as such the first
+* parameter to the method is an array containing the actual arguments.
+* This is necessary because AjxCallback currently uses <code>call</code>
+* instead of <code>apply</code> when invoking the method.
 *
 * @param parent			[DwtControl]	menu's parent widget
 * @param menuItems		[Array]*		list of menu items
 */
 ZmTreeController.prototype._createActionMenu = 
-function(parent, menuItems) {
+function(args) {
+	var parent = args[0];
+	var menuItems = args[1];
+	
 	if (!menuItems) return;
 	
 	var actionMenu = new ZmActionMenu(parent, menuItems);
@@ -318,7 +351,7 @@ function(ev) {
 	if (ev.detail == DwtTree.ITEM_ACTIONED) {
 		// right click
 		if (this._opc.actionSupported(overviewId)) {
-			var actionMenu = (id == ZmOrganizer.ID_ROOT) ? this._headerActionMenu : this._actionMenu;
+			var actionMenu = (id == ZmOrganizer.ID_ROOT) ? this._getHeaderActionMenu() : this._getActionMenu();
 			if (actionMenu) {
 				this.resetOperations(actionMenu, type, id);
 				actionMenu.popup(0, ev.docX, ev.docY);
