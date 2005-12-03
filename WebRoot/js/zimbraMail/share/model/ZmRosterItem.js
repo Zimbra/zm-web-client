@@ -62,7 +62,7 @@ function() {
     if (this.status) return this.status;
     switch (this.show) {
     case ZmRosterItem.SHOW_ONLINE:
-        return ZmMsg.imStatusAvailable;
+        return ZmMsg.imStatusOnline;
     case ZmRosterItem.SHOW_CHAT:
         return ZmMsg.imStatusChat;
     case ZmRosterItem.SHOW_AWAY:

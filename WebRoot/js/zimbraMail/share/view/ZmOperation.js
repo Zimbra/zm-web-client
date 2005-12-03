@@ -73,6 +73,14 @@ ZmOperation.EXPAND_ALL				= i++;
 ZmOperation.FORWARD					= i++;
 ZmOperation.GO_TO_URL				= i++;
 ZmOperation.IM						= i++;
+ZmOperation.IM_PRESENCE_AWAY    	= i++;
+ZmOperation.IM_PRESENCE_CHAT    	= i++;
+ZmOperation.IM_PRESENCE_DND    	= i++;
+ZmOperation.IM_PRESENCE_INVISIBLE	= i++;
+ZmOperation.IM_PRESENCE_MENU		= i++;
+ZmOperation.IM_PRESENCE_OFFLINE  	= i++;
+ZmOperation.IM_PRESENCE_ONLINE   	= i++;
+ZmOperation.IM_PRESENCE_XA    	= i++;
 ZmOperation.INVITE_REPLY_MENU		= i++;
 ZmOperation.MARK_ALL_READ			= i++;
 ZmOperation.MARK_READ				= i++;
@@ -165,6 +173,14 @@ ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_TENTATIVE]   = "replyTentative";
 ZmOperation.MSG_KEY[ZmOperation.EXPAND_ALL]				= "expandAll";
 ZmOperation.MSG_KEY[ZmOperation.FORWARD]				= "forward";
 ZmOperation.MSG_KEY[ZmOperation.IM]						= "newIM";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_AWAY]        = "imStatusAway";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_CHAT]        = "imStatusChat";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_DND]         = "imStatusDND";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_INVISIBLE]   = "imStatusInvisible";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_MENU]		  = "imPresence";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_OFFLINE]     = "imStatusOffline";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_ONLINE]      = "imStatusOnline";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_XA]          = "imStatusExtAway";
 ZmOperation.MSG_KEY[ZmOperation.INVITE_REPLY_MENU]		= "editReply";
 ZmOperation.MSG_KEY[ZmOperation.MARK_ALL_READ]			= "markAllRead";
 ZmOperation.MSG_KEY[ZmOperation.MARK_READ]				= "markAsRead";
@@ -287,6 +303,13 @@ ZmOperation.IMAGE[ZmOperation.EXPAND_ALL]				= "Plus";
 ZmOperation.IMAGE[ZmOperation.FORWARD]					= "Forward";
 ZmOperation.IMAGE[ZmOperation.GO_TO_URL]				= "URL";
 ZmOperation.IMAGE[ZmOperation.IM]						= "ImStartChat";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_AWAY]        = "ImAway";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_CHAT]        = "ImFree2Chat";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_DND]         = "ImDnd";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_INVISIBLE]   = "ImInvisible";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_OFFLINE]     = "RoundMinusDis"; // need new one
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_ONLINE]      = "ImAvailable";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_XA]          = "ImExtendedAway";
 ZmOperation.IMAGE[ZmOperation.INVITE_REPLY_MENU]		= "Reply";
 ZmOperation.IMAGE[ZmOperation.MARK_ALL_READ]			= "ReadMessage";
 ZmOperation.IMAGE[ZmOperation.MARK_READ]				= "ReadMessage";
@@ -486,6 +509,8 @@ function(parent, id, opHash) {
 		ZmOperation.addDeferredMenu(ZmOperation.addTagMenu, opHash[id]);
 	} else if (id == ZmOperation.COLOR_MENU) {
 		ZmOperation.addDeferredMenu(ZmOperation.addColorMenu, opHash[id]);
+	} else if (id == ZmOperation.IM_PRESENCE_MENU) {
+		ZmOperation.addImPresenceMenu(parent, opHash);
 	} else if (id == ZmOperation.REPLY_MENU) {
 		ZmOperation.addDeferredMenu(ZmOperation.addReplyMenu, opHash[id]);
 	} else if (id == ZmOperation.INVITE_REPLY_MENU) {
@@ -624,5 +649,24 @@ function(parent) {
 	var list = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
 	var menu = new ZmActionMenu(parent, list, null);
 	parent.setMenu(menu);
+	return menu;
+};
+
+ZmOperation.addImPresenceMenu =
+function(parent, opHash) {
+	var list = [ZmOperation.IM_PRESENCE_OFFLINE, ZmOperation.IM_PRESENCE_ONLINE, ZmOperation.IM_PRESENCE_CHAT,
+                ZmOperation.IM_PRESENCE_DND, ZmOperation.IM_PRESENCE_AWAY, ZmOperation.IM_PRESENCE_XA,
+                ZmOperation.IM_PRESENCE_INVISIBLE];
+    var button = opHash[ZmOperation.IM_PRESENCE_MENU];
+	var menu = new ZmPopupMenu(button, null, null);
+	
+	for (var i = 0; i < list.length; i++) {
+		var op = list[i];
+		var mi = menu.createMenuItem(op, ZmOperation.IMAGE[op], ZmMsg[ZmOperation.MSG_KEY[op]], null, true, DwtMenuItem.RADIO_STYLE);
+		mi.setData(ZmOperation.MENUITEM_ID, op);
+		mi.setData(ZmOperation.KEY_ID, op);		
+		if (op == ZmOperation.IM_PRESENCE_OFFLINE) mi.setChecked(true, true);
+	}
+	button.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 	return menu;
 };

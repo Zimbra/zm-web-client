@@ -140,7 +140,8 @@ ZmChatListController.prototype._getToolBarOps =
 function() {
 	var list = this._standardToolBarOps();
 	list.push(ZmOperation.SEP);
-	//list.push(ZmOperation.EDIT);
+	list.push(ZmOperation.IM_PRESENCE_MENU);
+	list.push(ZmOperation.SEP);	
 	return list;
 }
 
@@ -194,6 +195,22 @@ function(view) {
 	for (var i = 0; i < buttons.length; i++)
 		if (buttons[i] > 0 && this._listeners[buttons[i]])
 			this._toolbar[view].addSelectionListener(buttons[i], this._listeners[buttons[i]]);
+
+    // init presence menu			
+    var presenceButton = this._toolbar[view].getButton(ZmOperation.IM_PRESENCE_MENU);
+    presenceButton.setImage(ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_OFFLINE]);    
+    presenceButton.setText(ZmMsg[ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_OFFLINE]]);
+    var presenceMenu = presenceButton.getMenu();
+    
+    	var list = [ZmOperation.IM_PRESENCE_OFFLINE, ZmOperation.IM_PRESENCE_ONLINE, ZmOperation.IM_PRESENCE_CHAT,
+                ZmOperation.IM_PRESENCE_DND, ZmOperation.IM_PRESENCE_AWAY, ZmOperation.IM_PRESENCE_XA,
+                ZmOperation.IM_PRESENCE_INVISIBLE];
+
+    for (var i=0; i < list.length; i++) {
+        var mi = presenceMenu.getItemById(ZmOperation.MENUITEM_ID, list[i]);
+        mi.addSelectionListener(new AjxListener(this, this._presenceItemListener));
+    }
+			
 	this._propagateMenuListeners(this._toolbar[view], ZmOperation.NEW_MENU);
 	this._setupViewMenu(view);
 	
@@ -248,13 +265,13 @@ function(parent, num) {
 	if (!parent) return;
 	if (num == 0) {
 		parent.enableAll(false);
-		parent.enable(ZmOperation.NEW_MENU, true);
+		parent.enable([ZmOperation.NEW_MENU,ZmOperation.IM_PRESENCE_MENU], true);
 	} else if (num == 1) {
 		parent.enableAll(true);
 	} else if (num > 1) {
 		// enable only the tag and delete operations
 		parent.enableAll(false);
-		parent.enable([ZmOperation.NEW_MENU], true);
+		parent.enable([ZmOperation.NEW_MENU,ZmOperation.IM_PRESENCE_MENU], true);		
 	}
 }
 
@@ -342,6 +359,13 @@ function(ev) {
 		newCalDialog.popup();
 	}
 }
+
+ZmChatListController.prototype._presenceItemListener = 
+function(ev) {
+	var id = ev.item.getData(ZmOperation.KEY_ID);
+	ev.item.parent.parent.setText(ev.item.getText());
+}
+
 
 // Create a folder.
 ZmChatListController.prototype._newFolderCallback =
