@@ -73,3 +73,8 @@ function() {
 	}
 	return this._rosterItemList;
 };
+
+ZmImApp.prototype.getAutoCompleteGroups =
+function() {
+    return this.getRosterItemList().getAutoCompleteGroups();
+};

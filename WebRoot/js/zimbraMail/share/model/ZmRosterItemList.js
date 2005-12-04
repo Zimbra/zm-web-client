@@ -71,6 +71,34 @@ function(id) {
     return this.getById(id);
 };
 
+ZmRosterItemList.prototype.getAutoCompleteGroups =
+function() {
+    return new ZmRosterItemListGroups(this.getGroupsArray());
+};
+
+/**
+ * return an array of all groups (uniqified)
+ */
+
+ZmRosterItemList.prototype.getGroupsArray =
+function() {
+// TODO: cache. only used to auto-complete groups for now
+    var hash = {};
+    var result = [];
+	var listArray = this.getArray();
+	for (var i=0; i < listArray.length; i++) {
+	    var groups = listArray[i].getGroups();
+        for (var g in groups) {
+            var name = groups[g];
+            if (!(name in hash)) {
+                hash[name] = true;
+                result.push(name);
+            }
+        }
+	}
+	return result;
+};
+
 ZmRosterItemList.prototype.removeAllItems =
 function() {
 	var listArray = this.getArray();
@@ -106,3 +134,32 @@ function() {
 	    ]
     });
 };
+
+/**
+* groups should be an array of groups
+*/
+function ZmRosterItemListGroups(groups) {
+    this._groups = groups.sort();
+};
+
+ZmRosterItemListGroups.prototype.constructor = ZmRosterItemListGroups;
+
+/**
+* Returns a list of matching groups for a given string
+*/
+ZmRosterItemListGroups.prototype.autocompleteMatch =
+function(str) {
+    str = str.toLowerCase();
+    var result = [];
+    for (var i in this._groups) {
+        var g = this._groups[i];
+        if (g.toLowerCase().indexOf(str) == 0) result.push({data: g, text: g });
+    }
+    return result;
+};
+
+ZmRosterItemListGroups.prototype.isUniqueValue =
+function(str) {
+	return false;
+};
+

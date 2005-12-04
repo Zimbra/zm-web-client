@@ -1157,6 +1157,14 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	height: 300px;
 }
 
+.ZmChatDialogField {
+	text-align: right;
+	color: #555555;
+	white-space: nowrap;
+	overflow: hidden;
+	width: 1%;
+}
+
 .ZmChatWindow .DwtToolBar {
 	background-color:#CCCCCC;
 	border: 1px solid;

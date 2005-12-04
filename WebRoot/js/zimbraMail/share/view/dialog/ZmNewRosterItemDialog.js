@@ -23,17 +23,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewRosterItemDialog(parent, msgDialog, className) {
-    var title = ZmMsg.createNewRosterItem;
-	var buttons = [ DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON ];
-	DwtDialog.call(this, parent, null, title, buttons);
+function ZmNewRosterItemDialog(parent, appCtxt) {
+	ZmQuickAddDialog.call(this, parent);
+	this._appCtxt = appCtxt;
 	this.setContent(this._contentHtml());
+	this.setTitle(ZmMsg.createNewRosterItem);
 	this.setTabOrder([this._addressFieldId, this._nameFieldId, this._groupsFieldId]);
+    this._initGroupAutocomplete();
 }
 
 ZmNewRosterItemDialog._OVERVIEW_ID = "ZmNewRosterItemDialog";
 
-ZmNewRosterItemDialog.prototype = new DwtDialog;
+ZmNewRosterItemDialog.prototype = new ZmQuickAddDialog;
 ZmNewRosterItemDialog.prototype.constructor = ZmNewRosterItemDialog;
 
 ZmNewRosterItemDialog.prototype.toString = 
@@ -48,16 +49,17 @@ function() {
 	this._groupsFieldId = Dwt.getNextId();	
 
 	var html = new AjxBuffer();
-	html.append("<table cellpadding='0' cellspacing='5' border='0'>");
+//	html.append("<table cellpadding='0' cellspacing='5' border='0'>");
+	html.append("<table border='0' width=325>");
 
-	html.append("<tr valign='center'><td class='Label' Xstyle='padding: 0px 0px 5px 0px;'>", ZmMsg.addressLabel, "</td>");
-	html.append("<td><input autocomplete=OFF type='text' class='Field' id='", this._addressFieldId, "' /></td></tr>");
+	html.append("<tr valign='center'><td class='ZmChatDialogField'>", ZmMsg.addressLabel, "</td>");
+	html.append("<td><input autocomplete=OFF type='text' style='width:100%; height:22px' id='", this._addressFieldId, "' /></td></tr>");
 
-	html.append("<tr valign='center'><td class='Label' Xstyle='padding: 0px 0px 5px 0px;'>", ZmMsg.nameLabel, "</td>");
-	html.append("<td><input autocomplete=OFF type='text' class='Field' id='", this._nameFieldId, "' /></td></tr>");
+	html.append("<tr valign='center'><td class='ZmChatDialogField'>", ZmMsg.nameLabel, "</td>");
+	html.append("<td><input autocomplete=OFF type='text' style='width:100%; height:22px' id='", this._nameFieldId, "' /></td></tr>");
 	
-	html.append("<tr valign='center'><td class='Label' Xstyle='padding: 0px 0px 5px 0px;'>", ZmMsg.groupsLabel, "</td>");
-	html.append("<td><input autocomplete=OFF type='text' class='Field' id='", this._groupsFieldId, "' /></td></tr>");		
+	html.append("<tr valign='center'><td class='ZmChatDialogField'>", ZmMsg.groupsLabel, "</td>");
+	html.append("<td><input autocomplete=OFF type='text' style='width:100%; height:22px' id='", this._groupsFieldId, "' /></td></tr>");		
 	html.append("</table>");
 	
 	return html.toString();
@@ -98,4 +100,29 @@ function() {
 	document.getElementById(this._nameFieldId).value = "";	
 	document.getElementById(this._addressFieldId).value = "";
 	document.getElementById(this._groupsFieldId).value = "";	
+};
+
+ZmNewRosterItemDialog.prototype._initGroupAutocomplete =
+function() {
+	if (this._groupAutocomplete) return;
+
+	var shell = this._appCtxt.getShell();
+	var imApp = shell ? shell.getData(ZmAppCtxt.LABEL).getApp(ZmZimbraMail.IM_APP) : null;
+	var groupList = imApp ? imApp.getAutoCompleteGroups : null;
+	var locCallback = new AjxCallback(this, this._getGroupAcListLoc, this);
+	var params = {parent: shell, dataClass: imApp, dataLoader: groupList,
+				  matchValue: "text", locCallback: locCallback, separator: ','};
+	this._groupAutocomplete = new ZmAutocompleteListView(params);
+	this._groupAutocomplete.handle(document.getElementById(this._groupsFieldId));
+};
+
+ZmNewRosterItemDialog.prototype._getGroupAcListLoc =
+function(ev) {
+    var field = document.getElementById(this._groupsFieldId);
+	if (field) {
+		var loc = Dwt.getLocation(field);
+		var height = Dwt.getSize(field).y;
+		return (new DwtPoint(loc.x, loc.y+height));
+	}
+	return null;
 };
