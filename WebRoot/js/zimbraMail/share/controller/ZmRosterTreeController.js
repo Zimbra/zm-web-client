@@ -88,10 +88,10 @@ function(ev) {
        case ZmEvent.E_MODIFY:
            this._handleRosterItemModify(item, ev.getDetail("fields"), treeView);
            break;
-       case ev.event == ZmEvent.E_CREATE:
+       case ZmEvent.E_CREATE:
            this._addRosterItem(item);
            break;
-       case ev.event == ZmEvent.E_REMOVE:
+       case ZmEvent.E_REMOVE:
            this._removeRosterItem(item);
            break;
        }
@@ -286,6 +286,15 @@ function(name) {
 
 ZmRosterTreeController.prototype._newRosterItemListener =
 function(ev) {
-	var newDialog = this._appCtxt.getNewRosterItemDialog();
-	newDialog.popup();
+//	var newDialog = this._appCtxt.getNewRosterItemDialog();
+//	newDialog.popup();
+	this._showDialog(this._appCtxt.getNewRosterItemDialog(), this._newRosterItemCallback);
+};
+
+
+// Create a roster item
+ZmRosterTreeController.prototype._newRosterItemCallback =
+function(args) {
+	this._appCtxt.getNewRosterItemDialog().popdown();
+	this._imApp.getRosterItemList().createRosterItem(args[0], args[1], args[2]);
 };

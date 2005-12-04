@@ -23,14 +23,16 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewRosterItemDialog(parent, appCtxt) {
-	ZmQuickAddDialog.call(this, parent);
+function ZmNewRosterItemDialog(parent, appCtxt, msgDialog) {
+	ZmQuickAddDialog.call(this, parent, null, null);
 	this._appCtxt = appCtxt;
+	this._msgDialog = msgDialog;
 	this.setContent(this._contentHtml());
 	this.setTitle(ZmMsg.createNewRosterItem);
 	this.setTabOrder([this._addressFieldId, this._nameFieldId, this._groupsFieldId]);
     this._initAddressAutocomplete();
     this._initGroupAutocomplete();
+    	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 }
 
 ZmNewRosterItemDialog._OVERVIEW_ID = "ZmNewRosterItemDialog";
@@ -68,11 +70,10 @@ function() {
 
 ZmNewRosterItemDialog.prototype.popup =
 function(loc) {
-	// reset input fields
-	this.reset();
-	// show dialog
 	DwtDialog.prototype.popup.call(this, loc);
+	document.getElementById(this._addressFieldId).focus();
 };
+
 
 ZmNewRosterItemDialog.prototype._okButtonListener =
 function(ev) {
@@ -87,9 +88,11 @@ function() {
 	var msg = ZmRosterItem.checkName(name);
 
 	var address = AjxStringUtil.trim(document.getElementById(this._addressFieldId).value);
+	if (address) address = address.replace(/;$/, "");
 	if (!msg) msg = ZmRosterItem.checkAddress(address);
 
 	var groups = AjxStringUtil.trim(document.getElementById(this._groupsFieldId).value);
+	if (groups) groups = groups.replace(/,$/, "");
 	if (!msg) msg = ZmRosterItem.checkGroups(groups);
 
 	return (msg ? this._showError(msg) : [address, name, groups]);
@@ -98,8 +101,8 @@ function() {
 ZmNewRosterItemDialog.prototype.reset =
 function() {
 	ZmDialog.prototype.reset.call(this);
+	document.getElementById(this._addressFieldId).value = "";	
 	document.getElementById(this._nameFieldId).value = "";	
-	document.getElementById(this._addressFieldId).value = "";
 	document.getElementById(this._groupsFieldId).value = "";	
 };
 
@@ -121,14 +124,6 @@ function() {
 ZmNewRosterItemDialog.prototype._getAddressAcListLoc =
 function(ev) {
     return this._getAcListLoc(ev, this._addressFieldId);
-/*    var field = document.getElementById(this._addressFieldId);
-	if (field) {
-		var loc = Dwt.getLocation(field);
-		var height = Dwt.getSize(field).y;
-		return (new DwtPoint(loc.x, loc.y+height));
-	}
-	return null;
-	*/
 };
 
 ZmNewRosterItemDialog.prototype._initGroupAutocomplete =
@@ -148,15 +143,6 @@ function() {
 ZmNewRosterItemDialog.prototype._getGroupAcListLoc =
 function(ev) {
     return this._getAcListLoc(ev, this._groupsFieldId);
-/*    
-    var field = document.getElementById(this._groupsFieldId);
-	if (field) {
-		var loc = Dwt.getLocation(field);
-		var height = Dwt.getSize(field).y;
-		return (new DwtPoint(loc.x, loc.y+height));
-	}
-	return null;
-	*/
 };
 
 ZmNewRosterItemDialog.prototype._getAcListLoc =
@@ -169,3 +155,13 @@ function(ev, id) {
 	}
 	return null;
 };
+
+ZmNewRosterItemDialog.prototype._showError =
+function(msg, loc) {
+	this._msgDialog.reset();
+	loc = loc ? loc : new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100);
+    this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+    this._msgDialog.popup(loc);
+    return null;
+};
+

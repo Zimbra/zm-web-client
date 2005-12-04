@@ -200,7 +200,7 @@ function() {
 ZmAppCtxt.prototype.getNewRosterItemDialog =
 function() {
 	if (!this._newRosterItemDialog) {
-		this._newRosterItemDialog = new ZmNewRosterItemDialog(this.getShell(), this);
+		this._newRosterItemDialog = new ZmNewRosterItemDialog(this.getShell(), this, this.getMsgDialog());
 	}
 	return this._newRosterItemDialog;
 };

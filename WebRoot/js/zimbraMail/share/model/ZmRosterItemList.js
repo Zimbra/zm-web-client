@@ -136,6 +136,24 @@ function() {
 };
 
 /**
+ * create item on server.
+ */
+ZmRosterItemList.prototype.createRosterItem =
+function(addr, name, groups) {
+    var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraMail");
+    var method = soapDoc.getMethod();
+	method.setAttribute("addr", addr);    
+	if (name) method.setAttribute("name", name);
+	if (groups) method.setAttribute("group", groups); // soap attr is "group", not "groups"
+	method.setAttribute("op", "add");
+	this._appCtxt.getAppController().sendRequest(soapDoc, true);
+};
+
+//------------------------------------------
+// for autocomplete 
+//------------------------------------------
+
+/**
 * groups should be an array of groups
 */
 function ZmRosterItemListGroups(groups) {

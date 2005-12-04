@@ -96,6 +96,23 @@ function(num, addToTotal) {
     this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
 };
 
+ZmRosterItem.prototype.setGroups = 
+function(newGroups) {
+    this.groupNames = newGroups;
+    this.groups = this.groupNames ? this.groupNames.split(/,/) : [];
+    var fields = {};
+    fields[ZmRosterItem.F_GROUPS] = this.groupNames;
+    this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
+};
+
+ZmRosterItem.prototype.setName = 
+function(newName) {
+    this.names = newName;
+    var fields = {};
+    fields[ZmRosterItem.F_NAME] = this.name;
+    this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
+};
+
 ZmRosterItem.prototype.renameGroup = 
 function(oldGroup, newGroup) {
     var oldI = -1;
@@ -111,9 +128,6 @@ function(oldGroup, newGroup) {
     var fields = {};
     fields[ZmRosterItem.F_GROUPS] = this.groupNames;
     this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
-//    this.group = newGroup.getName();
-//    this.reparent(newGroup);
-//    this._eventNotify(ZmEvent.E_MOVE);
 };
 
 ZmRosterItem.prototype.getIcon = 
