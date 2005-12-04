@@ -250,10 +250,12 @@ function(view) {
 	
 	var toolbar = this._toolbar[view];
 	var button = toolbar.getButton(ZmOperation.NEW_MENU);
-	var listener = new AjxListener(toolbar, ZmListController._newDropDownListener);
-	button.addDropDownSelectionListener(listener);
-	toolbar._ZmListController_this = this;
-	toolbar._ZmListController_newDropDownListener = listener;
+	if (button) {
+        	var listener = new AjxListener(toolbar, ZmListController._newDropDownListener);
+        	button.addDropDownSelectionListener(listener);
+        	toolbar._ZmListController_this = this;
+        	toolbar._ZmListController_newDropDownListener = listener;
+    	}
 	
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		var tagMenuButton = this._toolbar[view].getButton(ZmOperation.TAG_MENU);
