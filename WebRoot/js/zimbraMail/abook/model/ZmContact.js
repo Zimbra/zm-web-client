@@ -125,7 +125,8 @@ ZmContact.F_EMAIL_FIELDS = [ZmContact.F_email, ZmContact.F_email2, ZmContact.F_e
 
 ZmContact.prototype.toString = 
 function() {
-	return "ZmContact: id = " + this.id + " fullName = " + this.getFullName();
+	// return "ZmContact: id = " + this.id + " fullName = " + this.getFullName();
+	return "ZmContact";
 }
 
 // Class methods

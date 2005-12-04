@@ -351,7 +351,7 @@ function(ev) {
 	if (ev.detail == DwtTree.ITEM_ACTIONED) {
 		// right click
 		if (this._opc.actionSupported(overviewId)) {
-			var actionMenu = (id == ZmOrganizer.ID_ROOT) ? this._getHeaderActionMenu() : this._getActionMenu();
+			var actionMenu = (id == ZmOrganizer.ID_ROOT) ? this._getHeaderActionMenu(ev) : this._getActionMenu(ev);
 			if (actionMenu) {
 				this.resetOperations(actionMenu, type, id);
 				actionMenu.popup(0, ev.docX, ev.docY);

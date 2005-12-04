@@ -161,7 +161,7 @@ function(args) {
 	// load Zimlets
 	if(obj.zimlets) {
 		DBG.println(AjxDebug.DBG1, "Zimlets: Got some Zimlets");
-		this._zmm.loadZimlets(obj.zimlets.zimlet);
+		this._zmm.loadZimlets(obj.zimlets.zimlet, obj.props.prop);
 	 	
 	 	var panelZimlets = this._zmm.getPanelZimlets();
 	 	if(panelZimlets && panelZimlets.length > 0) {
@@ -186,7 +186,7 @@ function(args) {
 	
 	if (callback)
 		callback.run();
-}
+};
 
 /**
 * Retrieves the preferences for the current user. No COS settings or user metadata is

@@ -34,6 +34,7 @@ Contributor(s):
    }
 %>
 <!-- BEGIN SCRIPT BLOCK -->
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmZimletBase.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmZimletContext.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmZimletMgr.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmEvent.js<%= ext %>?v=<%= vers %>"></script>

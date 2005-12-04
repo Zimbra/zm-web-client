@@ -133,7 +133,8 @@ ZmAppt._pstatusString = {
 
 ZmAppt.prototype.toString = 
 function() {
-	return "ZmAppt: (" + this.name + ") sd=" + this.getStartDate() + " ed=" + this.getEndDate() + " id=" + this.id;
+	// return "ZmAppt: (" + this.name + ") sd=" + this.getStartDate() + " ed=" + this.getEndDate() + " id=" + this.id;
+	return "ZmAppt";
 };
 
 
