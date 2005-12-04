@@ -24,13 +24,11 @@
  */
 
 /**
-* Creates an empty contact list controller.
 * @constructor
 * @class
 *
 * @param appCtxt		app context
 * @param container		containing shell
-* @param contactsApp	containing app
 */
 function ZmChatListController(appCtxt, container, imApp) {
     if (arguments.length == 0) return;

@@ -29,6 +29,7 @@ function ZmNewRosterItemDialog(parent, appCtxt) {
 	this.setContent(this._contentHtml());
 	this.setTitle(ZmMsg.createNewRosterItem);
 	this.setTabOrder([this._addressFieldId, this._nameFieldId, this._groupsFieldId]);
+    this._initAddressAutocomplete();
     this._initGroupAutocomplete();
 }
 
@@ -52,13 +53,13 @@ function() {
 //	html.append("<table cellpadding='0' cellspacing='5' border='0'>");
 	html.append("<table border='0' width=325>");
 
-	html.append("<tr valign='center'><td class='ZmChatDialogField'>", ZmMsg.addressLabel, "</td>");
+	html.append("<tr valign='center'><td class='ZmChatDialogField'>", ZmMsg.imAddressLabel, "</td>");
 	html.append("<td><input autocomplete=OFF type='text' style='width:100%; height:22px' id='", this._addressFieldId, "' /></td></tr>");
 
-	html.append("<tr valign='center'><td class='ZmChatDialogField'>", ZmMsg.nameLabel, "</td>");
+	html.append("<tr valign='center'><td class='ZmChatDialogField'>", ZmMsg.imNameLabel, "</td>");
 	html.append("<td><input autocomplete=OFF type='text' style='width:100%; height:22px' id='", this._nameFieldId, "' /></td></tr>");
 	
-	html.append("<tr valign='center'><td class='ZmChatDialogField'>", ZmMsg.groupsLabel, "</td>");
+	html.append("<tr valign='center'><td class='ZmChatDialogField'>", ZmMsg.imGroupsLabel, "</td>");
 	html.append("<td><input autocomplete=OFF type='text' style='width:100%; height:22px' id='", this._groupsFieldId, "' /></td></tr>");		
 	html.append("</table>");
 	
@@ -102,6 +103,34 @@ function() {
 	document.getElementById(this._groupsFieldId).value = "";	
 };
 
+ZmNewRosterItemDialog.prototype._initAddressAutocomplete =
+function() {
+	if (this._addressAutocomplete || !this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
+		return;
+
+	var shell = this._appCtxt.getShell();
+	var contactsApp = shell ? shell.getData(ZmAppCtxt.LABEL).getApp(ZmZimbraMail.CONTACTS_APP) : null;
+	var contactsList = contactsApp ? contactsApp.getContactList : null;
+	var locCallback = new AjxCallback(this, this._getAddressAcListLoc, this);
+	var params = {parent: shell, dataClass: contactsApp, dataLoader: contactsList,
+				  matchValue: ZmContactList.AC_VALUE_EMAIL, locCallback: locCallback};
+	this._addressAutocomplete = new ZmAutocompleteListView(params);
+	this._addressAutocomplete.handle(document.getElementById(this._addressFieldId));
+};
+
+ZmNewRosterItemDialog.prototype._getAddressAcListLoc =
+function(ev) {
+    return this._getAcListLoc(ev, this._addressFieldId);
+/*    var field = document.getElementById(this._addressFieldId);
+	if (field) {
+		var loc = Dwt.getLocation(field);
+		var height = Dwt.getSize(field).y;
+		return (new DwtPoint(loc.x, loc.y+height));
+	}
+	return null;
+	*/
+};
+
 ZmNewRosterItemDialog.prototype._initGroupAutocomplete =
 function() {
 	if (this._groupAutocomplete) return;
@@ -118,7 +147,21 @@ function() {
 
 ZmNewRosterItemDialog.prototype._getGroupAcListLoc =
 function(ev) {
+    return this._getAcListLoc(ev, this._groupsFieldId);
+/*    
     var field = document.getElementById(this._groupsFieldId);
+	if (field) {
+		var loc = Dwt.getLocation(field);
+		var height = Dwt.getSize(field).y;
+		return (new DwtPoint(loc.x, loc.y+height));
+	}
+	return null;
+	*/
+};
+
+ZmNewRosterItemDialog.prototype._getAcListLoc =
+function(ev, id) {
+    var field = document.getElementById(id);
 	if (field) {
 		var loc = Dwt.getLocation(field);
 		var height = Dwt.getSize(field).y;
