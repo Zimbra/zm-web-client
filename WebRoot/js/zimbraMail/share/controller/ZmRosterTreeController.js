@@ -43,6 +43,9 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
 	for (var i=0; i < listArray.length; i++) {
 	    this._addRosterItem(listArray[i]);
 	}
+	
+	this._listeners[ZmOperation.NEW_ROSTER_ITEM] = new AjxListener(this, this._newRosterItemListener);
+		
 }
 
 ZmRosterTreeController.prototype = new ZmTreeController;
@@ -151,7 +154,7 @@ function(overviewId, showUnread, omit, forceCreate) {
 
 // Returns a list of desired header action menu operations
 ZmRosterTreeController.prototype._getHeaderActionMenuOps = function() {
-	return null;
+	return [ZmOperation.NEW_ROSTER_ITEM];
 };
 
 // Returns a list of desired action menu operations
@@ -279,4 +282,10 @@ function(name) {
         }
     }
     return group;
+};
+
+ZmRosterTreeController.prototype._newRosterItemListener =
+function(ev) {
+	var newDialog = this._appCtxt.getNewRosterItemDialog();
+	newDialog.popup();
 };

@@ -36,9 +36,6 @@ function() {
 	return "ZmRosterTree - " + this.name;
 };
 
-// Constants
-ZmRosterTree.ID_ROSTER_TREE_ITEM = ZmOrganizer.ID_ROSTER_TREE_ITEM;
-
 ZmRosterTree.sortCompare = 
 function(itemA, itemB) {
 	// sort by name>
@@ -61,7 +58,7 @@ ZmRosterTree.prototype.getIcon = function() {    return null; };
 
 ZmRosterTree.createRoot = 
 function(tree) {
-    var root = new ZmRosterTree(ZmRosterTree.ID_ROSTER_TREE_ITEM, ZmMsg.buddyList, null, tree);
+    var root = new ZmRosterTree(ZmOrganizer.ID_ROOT, ZmMsg.buddyList, null, tree);
     // TODO: nothing for now...    
     return root;
 };

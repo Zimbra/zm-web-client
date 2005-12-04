@@ -37,9 +37,6 @@ function() {
 	return "ZmRosterTreeGroup - " + this.name;
 };
 
-// Constants
-ZmRosterTreeGroup.ID_ROSTER_TREE_GROUP = ZmOrganizer.ID_ROSTER_TREE_GROUP;
-
 ZmRosterTreeGroup.prototype.getIcon = 
 function() {
     return null; //"Group";

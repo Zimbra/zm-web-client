@@ -169,3 +169,33 @@ function(name) {
     }
     return false;
 };
+
+/**
+* Checks a roster name for validity. Returns an error message if the
+* name is invalid and null if the name is valid.
+*
+* @param name
+*/
+ZmRosterItem.checkName =
+function(name) {
+	return null;
+};
+
+/**
+* Checks a roster address for validity. Returns an error message if the
+* addres is invalid and null if the address is valid.
+*
+* @param address
+*/
+ZmRosterItem.checkAddress =
+function(address) {
+    if (address == null || address == "")
+        return ZmMsg.rosterItemAddressNoValue;
+    else
+        	return null;
+};
+
+ZmRosterItem.checkGroups =
+function(groups) {
+    return null;
+};

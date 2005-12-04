@@ -79,9 +79,7 @@ ZmOrganizer.ID_SPAM		= 4;
 ZmOrganizer.ID_CALENDAR	= 10;
 ZmOrganizer.ID_ZIMLET	= -10;
 ZmOrganizer.ID_ROSTER_LIST = -11;
-ZmOrganizer.ID_ROSTER_TREE = -12;
 ZmOrganizer.ID_ROSTER_TREE_ITEM = -13;
-ZmOrganizer.ID_ROSTER_GROUP= -14;
 
 ZmOrganizer.SOAP_CMD = {};
 ZmOrganizer.SOAP_CMD[ZmOrganizer.FOLDER]	= "FolderAction";
