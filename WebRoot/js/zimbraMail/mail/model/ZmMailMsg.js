@@ -570,7 +570,7 @@ function(contactList, isDraft, callback, errorCallback) {
 		this._createMessageNode(soapDoc, contactList, isDraft);
 		var respCallback = new AjxCallback(this, this._handleResponseSend, [isDraft, callback]);
 		var params = {soapDoc: soapDoc, isInvite: false, isDraft: isDraft, callback: respCallback, errorCallback: errorCallback};
-		this._sendMessage(params);
+		return this._sendMessage(params);
 	}	
 };
 
