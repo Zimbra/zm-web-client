@@ -72,3 +72,35 @@ ZmRosterTree.loadDummyData =
 function(tree) {
 	tree.loadFromJs({}); 
 };
+
+//------------------------------------------
+// for autocomplete 
+//------------------------------------------
+
+function ZmRosterTreeGroups(tree) {
+    this._root = tree.root;
+};
+
+ZmRosterTreeGroups.prototype.constructor = ZmRosterTreeGroups;
+
+/**
+* Returns a list of matching groups for a given string
+*/
+ZmRosterTreeGroups.prototype.autocompleteMatch =
+function(str) {
+    str = str.toLowerCase();
+    var result = [];
+
+    var a = this._root.children.getArray();
+    var sz = this._root.children.size();
+    for (var i =0; i < sz; i++) {
+        var g = a[i].getName();
+        if (g.toLowerCase().indexOf(str) == 0) result.push({data: g, text: g });
+    }
+    return result;
+};
+
+ZmRosterTreeGroups.prototype.isUniqueValue =
+function(str) {
+	return false;
+};

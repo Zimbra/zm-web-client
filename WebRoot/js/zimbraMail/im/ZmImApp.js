@@ -28,6 +28,7 @@ function ZmImApp(appCtxt, container) {
 	//this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._settingsChangeListener));
 	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);	
 	this._active = false;
+	this.getRosterItemTree(); // pre-create
 };
 
 ZmImApp.prototype = new ZmApp;
@@ -66,6 +67,18 @@ function() {
 	return this._chatList;
 };
 
+ZmImApp.prototype.getRosterItemTree =
+function() {
+	if (!this._rosterItemTree) {
+//	    this._rosterItemTree = this._appCtxt.getTree(ZmOrganizer.ROSTER_TREE_ITEM);
+//        	if (!this._rosterItemTree) {	    
+   		this._rosterItemTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ROSTER_TREE_ITEM);
+    		this._appCtxt.setTree(ZmOrganizer.ROSTER_TREE_ITEM, this._rosterItemTree);
+//        	}
+	}
+	return this._rosterItemTree;
+};
+
 ZmImApp.prototype.getRosterItemList =
 function() {
 	if (!this._rosterItemList) {
@@ -77,7 +90,7 @@ function() {
 
 ZmImApp.prototype.getAutoCompleteGroups =
 function() {
-    return this.getRosterItemList().getAutoCompleteGroups();
+    return new ZmRosterTreeGroups(this.getRosterItemTree());
 };
 
 /**

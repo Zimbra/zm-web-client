@@ -834,11 +834,6 @@ function(refresh) {
 
     // TODO: move this or get the roster returned via refresh
 	//if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {    
-    var rosterTree = this._appCtxt.getTree(ZmOrganizer.ROSTER_TREE_ITEM);
-    	if (!rosterTree) {
-    		rosterTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ROSTER_TREE_ITEM);
-    		this._appCtxt.setTree(ZmOrganizer.ROSTER_TREE_ITEM, rosterTree);
-    	}
     	this.getApp(ZmZimbraMail.IM_APP).getRosterItemList().reload();
     //}
     
