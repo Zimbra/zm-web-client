@@ -130,10 +130,14 @@ function(msg, ex, noExecReset, hideReportButton)  {
 		this._execFrame = {method: null, params: null, restartOnError: false};
 	// popup alert
 	var detailStr = "";
-	for (var prop in ex) {
-		// Skip any functions on the exception
-		if(typeof ex[prop] == "function") {continue;}
-		detailStr = detailStr + prop + " - " + ex[prop] + "\n";				
+	if (typeof ex == "string") {
+		// in case an Error makes it here
+		detailStr = ex;
+	} else if (ex instanceof Object) {
+		for (var prop in ex) {
+			if (typeof ex[prop] == "function") continue; // skip functions
+			detailStr = detailStr + prop + " - " + ex[prop] + "\n";				
+		}
 	}
 	this._errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
 	this._errorDialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, !hideReportButton);
@@ -345,3 +349,5 @@ function(dialog) {
 	this._pendingActionData = null;
 	this._popdownActionListener();
 };
+
+ZmController.prototype._popdownActionListener = function() {};
