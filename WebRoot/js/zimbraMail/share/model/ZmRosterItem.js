@@ -25,7 +25,7 @@
 function ZmRosterItem(id, list, appCtxt, name, show, status, groupNames) {
 	ZmItem.call(this, appCtxt, ZmOrganizer.ROSTER_ITEM, id, list);
 	this.name = name;
-	this.show = show || ZmRosterItem.SHOW_OFFLINE;
+	this.show = show || ZmRosterItem.SHOW_ONLINE;
 	this.status = status;
 	this.groupNames = groupNames;
     this.groups = groupNames ? groupNames.split(/,/) : [];
