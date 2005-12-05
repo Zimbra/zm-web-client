@@ -94,8 +94,8 @@ function(im) {
                 var list = this.getRosterItemList();
                 var item = list.getByAddr(sub.to);
                 if (item) {
-                    if (sub.groups) item.setGroups(sub.groups); // should optimize
-                    if (sub.name && sub.name != item.getName()) item.setName(sub.name);
+                    if (sub.groups) item._notifySetGroups(sub.groups); // should optimize
+                    if (sub.name && sub.name != item.getName()) item._notifySetName(sub.name);
                     // mod
                 } else {
                     // create

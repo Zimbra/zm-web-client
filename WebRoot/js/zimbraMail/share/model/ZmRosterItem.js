@@ -58,12 +58,23 @@ function() {
  */
 ZmRosterItem.prototype._delete =
 function() {
+    this._modify(this.id, this.name, this.groupNames, true);
+};
+
+/**
+ * modify item on server. notification will remove us from list
+ */
+ZmRosterItem.prototype._modify =
+function(id, name, groupNames, doDelete) {
     var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraMail");
     var method = soapDoc.getMethod();
-	method.setAttribute("addr", this.id);
-	method.setAttribute("op", "remove");
+	method.setAttribute("addr", id);
+	if (name) method.setAttribute("name", name);
+	if (groupNames) method.setAttribute("group", groupNames);
+	method.setAttribute("op", doDelete ? "remove" : "add");
 	this._appCtxt.getAppController().sendRequest(soapDoc, true);
 };
+
 
 // Constants
 //ZmRosterItem.ID_ROSTER_ITEM = ZmOrganizer.ID_ROSTER_ITEM;
@@ -109,7 +120,7 @@ function(num, addToTotal) {
     delete this._toolTip;    
 };
 
-ZmRosterItem.prototype.setGroups = 
+ZmRosterItem.prototype._notifySetGroups = 
 function(newGroups) {
     this.groupNames = newGroups;
     this.groups = this.groupNames ? this.groupNames.split(/,/) : [];
@@ -119,7 +130,7 @@ function(newGroups) {
     delete this._toolTip;    
 };
 
-ZmRosterItem.prototype.setName = 
+ZmRosterItem.prototype._notifySetName = 
 function(newName) {
     this.names = newName;
     var fields = {};
@@ -128,7 +139,10 @@ function(newName) {
     delete this._toolTip;    
 };
 
-ZmRosterItem.prototype.renameGroup = 
+/**
+ * sends updated group list to server
+ */
+ZmRosterItem.prototype.doRenameGroup = 
 function(oldGroup, newGroup) {
     var oldI = -1;
     var newI = -1;
@@ -137,13 +151,13 @@ function(oldGroup, newGroup) {
         if (this.groups[i] == newGroup) newI = i;
     }
     if (newI !=-1 || oldI == -1) return;
-    this.groups[oldI] = newGroup;
-    this.groupNames = this.groups.join(",");
-    
-    var fields = {};
-    fields[ZmRosterItem.F_GROUPS] = this.groupNames;
-    this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
-    delete this._toolTip;    
+    var newGroups = [];
+    for (var i in this.groups) {
+        if (i != oldI) newGroups.push(this.groups[i]);
+    }
+    newGroups.push(newGroup);
+    var newGroupNames = newGroups.join(",");
+    this._modify(this.id, this.name, newGroupNames, false);    
 };
 
 ZmRosterItem.prototype.getIcon = 

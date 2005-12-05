@@ -267,7 +267,7 @@ function(ev) {
 		if ((srcData instanceof ZmRosterTreeItem) && (dropTarget instanceof ZmRosterTreeGroup)) {
 		    var srcGroup = srcData.getGroupName();
 		    var dstGroup = dropTarget.getName();
-            srcData.getRosterItem().renameGroup(srcGroup, dstGroup);
+            srcData.getRosterItem().doRenameGroup(srcGroup, dstGroup);
         }
 	}
 };
