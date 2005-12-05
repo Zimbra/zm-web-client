@@ -833,15 +833,15 @@ function(refresh) {
 	calendarTree.reset();
 
     // TODO: move this or get the roster returned via refresh
-	var rosterTree = this._appCtxt.getTree(ZmOrganizer.ROSTER_TREE_ITEM);
-	if (!rosterTree) {
-		rosterTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ROSTER_TREE_ITEM);
-		this._appCtxt.setTree(ZmOrganizer.ROSTER_TREE_ITEM, rosterTree);
-	}
-	//rosterTree.reset();
-	this.getApp(ZmZimbraMail.IM_APP).getRosterItemList().reload();
-	//ZmRosterTree.loadDummyData(rosterTree);
-
+	//if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {    
+    var rosterTree = this._appCtxt.getTree(ZmOrganizer.ROSTER_TREE_ITEM);
+    	if (!rosterTree) {
+    		rosterTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ROSTER_TREE_ITEM);
+    		this._appCtxt.setTree(ZmOrganizer.ROSTER_TREE_ITEM, rosterTree);
+    	}
+    	this.getApp(ZmZimbraMail.IM_APP).getRosterItemList().reload();
+    //}
+    
 	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 	if (!folderTree) {
 		folderTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.FOLDER);
@@ -926,7 +926,7 @@ function(notify) {
 			this._handleCreates(notify.created, notify.modified);
 		if (notify.modified)
 			this._handleModifies(notify.modified);
-		if (notify.im)
+		if (notify.im && this._appCtxt.get(ZmSetting.IM_ENABLED))
 			this.getApp(ZmZimbraMail.IM_APP).handleNotification(notify.im);
 		if (this._calController) this._calController.notifyComplete();
 	} catch (ex) {

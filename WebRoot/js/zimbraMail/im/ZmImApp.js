@@ -99,7 +99,7 @@ function(im) {
                     // mod
                 } else {
                     // create
-                    var item = new ZmRosterItem(sub.to, list, this._appCtxt, sub.to, sub.name, null, null, sub.groups);
+                    var item = new ZmRosterItem(sub.to, list, this._appCtxt, sub.name, null, null, sub.groups);
                     list.addItem(item);
                     var toast = this._newRosterItemtoastFormatter.format([item.getName()]);
                     this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);

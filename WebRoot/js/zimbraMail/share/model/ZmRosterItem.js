@@ -22,10 +22,9 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-function ZmRosterItem(id, list, appCtxt, addr, name, show, status, groupNames) {
+function ZmRosterItem(id, list, appCtxt, name, show, status, groupNames) {
 	ZmItem.call(this, appCtxt, ZmOrganizer.ROSTER_ITEM, id, list);
 	this.name = name;
-	this	.addr = addr;
 	this.show = show || ZmRosterItem.SHOW_OFFLINE;
 	this.status = status;
 	this.groupNames = groupNames;
@@ -162,13 +161,13 @@ function(itemA, itemB) {
 // Public methods
 ZmRosterItem.prototype.getId = function() { return this.id; };
 
-ZmRosterItem.prototype.getAddress= function() { return this.addr; };
+ZmRosterItem.prototype.getAddress= function() { return this.id; };
 
 ZmRosterItem.prototype.getGroups = function() { return this.groups; };
 
 ZmRosterItem.prototype.getGroupNames = function() { return this.groupNames; };
 
-ZmRosterItem.prototype.getName = function() {	return this.name ? this.name : this.addr;};
+ZmRosterItem.prototype.getName = function() {	return this.name ? this.name : this.id;};
 
 ZmRosterItem.prototype.getShow = function() { return this.show; };
 

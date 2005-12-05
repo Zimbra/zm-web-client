@@ -32,7 +32,6 @@
 */
 function ZmRosterItemList(appCtxt) {
 	ZmList.call(this, ZmItem.ROSTER_ITEM, appCtxt);
-	this._addrHash = {};
 }
 
 ZmRosterItemList.prototype = new ZmList;
@@ -46,7 +45,6 @@ function() {
 ZmRosterItemList.prototype.addItem =
 function(item, skipNotify) {
     this.add(item);
-    this._addrHash[item.addr] = item;
     if (!skipNotify) {
         this._eventNotify(ZmEvent.E_CREATE, [item]);
     }
@@ -55,7 +53,6 @@ function(item, skipNotify) {
 ZmRosterItemList.prototype.removeItem = 
 function(item, skipNotify) {
     this.remove(item);
-    delete this._addrHash[item.addr];
     if (!skipNotify) {
         this._eventNotify(ZmEvent.E_REMOVE, [item]);
     }    
@@ -63,12 +60,7 @@ function(item, skipNotify) {
 
 ZmRosterItemList.prototype.getByAddr =
 function(addr) {
-    return this._addrHash[addr];
-};
-
-ZmRosterItemList.prototype.getById =
-function(id) {
-    return this.getById(id);
+    return this.getById(addr);
 };
 
 ZmRosterItemList.prototype.getAutoCompleteGroups =
@@ -119,7 +111,55 @@ function(obj) {
 	}
 };
 
+ZmRosterItemList.prototype._getGroups =
+function(groups, groupDict) {
+    if (groups == null || groups == "") return "";
+    var g = groups.split(/,/);
+    var result = [];
+    for (var i=0; i < g.length; i++) {
+        if (g[i] in groupDict) result.push(groupDict[g[i]]);
+    }
+    return result.join(",");
+};
+
+ZmRosterItemList.prototype._handleGetRosterResponse =
+function(args) {
+    var resp = args.getResponse()
+    if (!resp || !resp.IMGetRosterResponse) return;
+    var roster = resp.IMGetRosterResponse;
+    var groupDict = {};
+    debugger;
+    if (roster.groups && roster.groups.group) {
+        var groups = roster.groups.group;
+        for (var i=0; i < groups.length; i++) {
+            var group = groups[i];
+            groupDict[group.num] = group.name;
+        }        
+    }
+    if (roster.items && roster.items.item) {
+        var items = roster.items.item;
+        for (var i=0; i < items.length; i++) {
+            var item = items[i];
+            if (item.subscription == "TO") {
+                // TODO: handle item.presence
+                var groups = this._getGroups(item.group, groupDict);
+                var rosterItem = new ZmRosterItem(item.addr, this, this._appCtxt, item.name, null, null, groups);
+                this.addItem(rosterItem);
+            }
+        }        
+    }
+};
+
+
 ZmRosterItemList.prototype.reload =
+function() {
+    this.removeAllItems();
+    var soapDoc = AjxSoapDoc.create("IMGetRosterRequest", "urn:zimbraMail");
+    var callback = new AjxCallback(this, this._handleGetRosterResponse);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, callback);
+};
+
+ZmRosterItemList.prototype.reloadDummy =
 function() {
     this.removeAllItems();
 	this.loadFromJs({ 
