@@ -43,6 +43,9 @@
 * <tr><td>[keyN]</td><td>a string that may be used to replace the typed text<td></tr>
 * </table>
 * </p><p>
+* The data class will also need a method isUniqueValue(str), which returns true if the given string
+* maps to a single match.
+* </p><p>
 * The calling client also specifies the key in the match result for the string that will be used
 * to replace the typed text (also called the "completion string"). For example, the completion 
 * string for matching contacts could be a full address, or just the email.
