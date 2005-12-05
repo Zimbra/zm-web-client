@@ -50,7 +50,7 @@ function() {
 ZmChat.prototype.addRosterItem =
 function(item) {
     this._rosterItemList.addItem(item);
-    this._isGroupChat = this.getRosterSize();
+    this._isGroupChat = this._isGroupChat || (this.getRosterSize() > 1);
 };
 
 ZmChat.prototype.getRosterSize = 
@@ -62,6 +62,13 @@ ZmChat.prototype.getName =
 function() {
     return this._chatName;
 };
+
+// TODO: listeners
+ZmChat.prototype.setName = 
+function(chatName) {
+    this._chatName = chatName;
+};
+
 
 ZmChat.prototype.isGroupChat =
 function() {

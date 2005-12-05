@@ -160,17 +160,22 @@ function(chat) {
 
 ZmChatWindow.prototype.addRosterItem =
 function(item) {
+    var forceTitle = false;
     if (this.chat.getRosterSize() > 0 && this._memberListView == null) {
+        if (!this.chat.isGroupChat()) {
+            this.chat.setName(ZmMsg.imGroupChat);
+            forceTitle = true;
+        }
         this._memberListView = new ZmChatMemberListView(this, this.chat._getRosterItemList());
         this._controlListener();
    }
    this.chat.addRosterItem(item);
-   this._updateGroupChatTitle();   
+   this._updateGroupChatTitle(forceTitle);
 };
 
 ZmChatWindow.prototype._updateGroupChatTitle =
-function() {
-    if (!this._groupStaticTitle) {
+function(force) {
+    if (!this._groupStaticTitle || force) {
         this.setTitle(this.chat.getName());
         this.setImage("ImGroup");
         this._groupStaticTitle = true;
