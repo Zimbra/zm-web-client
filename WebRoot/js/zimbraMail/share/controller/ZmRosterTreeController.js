@@ -182,8 +182,28 @@ ZmRosterTreeController.prototype._getHeaderActionMenuOps = function() {
 };
 
 // Returns a list of desired action menu operations
-ZmRosterTreeController.prototype._getActionMenuOps = function() {
-	return null;
+ZmRosterTreeController.prototype._getItemActionMenuOps = function() {
+	return [ZmOperation.DELETE];
+};
+
+ZmRosterTreeController.prototype._deleteListener = 
+function(ev) {
+	var org = this._getActionedOrganizer(ev);
+	if (org instanceof ZmRosterTreeItem) {
+	    org.getRosterItem()._delete();
+	};
+};
+
+ZmRosterTreeController.prototype._getActionMenu =
+function(ev) {
+    var org = this._getActionedOrganizer(ev);
+    if (org instanceof ZmRosterTreeItem) {
+        if (this._itemActionMenu == null) {
+            this._itemActionMenu = this._createActionMenu([this._shell, this._getItemActionMenuOps()]);
+        }
+        return this._itemActionMenu;
+    }
+    return null;
 };
 
 ZmRosterTreeController.prototype.getTreeStyle = function() {

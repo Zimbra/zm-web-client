@@ -53,6 +53,18 @@ function() {
 	return "ZmRosterItem - " + this.name;
 };
 
+/**
+ * delete item on server. notification will remove us from list
+ */
+ZmRosterItem.prototype._delete =
+function() {
+    var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraMail");
+    var method = soapDoc.getMethod();
+	method.setAttribute("addr", this.id);
+	method.setAttribute("op", "remove");
+	this._appCtxt.getAppController().sendRequest(soapDoc, true);
+};
+
 // Constants
 //ZmRosterItem.ID_ROSTER_ITEM = ZmOrganizer.ID_ROSTER_ITEM;
 
@@ -257,7 +269,7 @@ function() {
 		html[idx++] = "</tr></table>";
 		
 		html[idx++] = "&nbsp;";
-		html[idx++] = AjxStringUtil.htmlEncode(this.getName());
+		html[idx++] = AjxStringUtil.htmlEncode(this.getName() + "(" + this.getShowText() + ")");
 		html[idx++] = "&nbsp;</div></b></td>";	
 		html[idx++] = "<td align='right'>";
 
@@ -269,7 +281,6 @@ function() {
 		idx = this._addEntryRow(ZmMsg.imAddress, this.getAddress(), html, idx, false); //true, "250");		
 		idx = this._addEntryRow(ZmMsg.imName, this.name, html, idx, false);  // use this.name
 		idx = this._addEntryRow(ZmMsg.imGroups, this.getGroups().join(", "), html, idx, false);
-		idx = this._addEntryRow(ZmMsg.imPresence, this.getShowText(), html, idx, false);
 		html[idx++] = "</table>";
 		this._toolTip = html.join("");
 	}

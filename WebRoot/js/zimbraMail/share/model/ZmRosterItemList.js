@@ -93,7 +93,8 @@ function() {
 
 ZmRosterItemList.prototype.removeAllItems =
 function() {
-	var listArray = this.getArray();
+    // get a clone, since we are removing while iterating...
+	var listArray = this.getVector().clone().getArray();
 	for (var i=0; i < listArray.length; i++) {
 	    this.removeItem(listArray[i]);
 	}

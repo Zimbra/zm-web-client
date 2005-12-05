@@ -107,6 +107,16 @@ function(im) {
             } else if (sub.from) {
                 // toast, should we user if they want to add user if they aren't in buddy list?
             }
-        };    
+        }
+    }
+    if (im.unsubscribed) {
+        for (var i=0; i < im.unsubscribed.length; i++) {
+            var unsub = im.unsubscribed[i];
+            if (unsub.to) {
+                var list = this.getRosterItemList();
+                var item = list.getByAddr(unsub.to);
+                if (item) list.removeItem(item);
+            }
+        }
     }
 };
