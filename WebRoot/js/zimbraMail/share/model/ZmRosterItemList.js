@@ -105,7 +105,7 @@ function(obj) {
 		for (var i = 0; i < obj.item.length; i++) {
 		    var item = obj.item[i];
             //if (item.group == null) item.group = ZmMsg.buddies;
-            var item = new ZmRosterItem(item.id, this, this._appCtxt, item.addr, item.name, item.show, item.status, item.group);
+            var item = new ZmRosterItem(item.addr, this, this._appCtxt, item.name, item.show, item.status, item.group);
             this.addItem(item);
         	}
 	}
@@ -128,7 +128,6 @@ function(args) {
     if (!resp || !resp.IMGetRosterResponse) return;
     var roster = resp.IMGetRosterResponse;
     var groupDict = {};
-    debugger;
     if (roster.groups && roster.groups.group) {
         var groups = roster.groups.group;
         for (var i=0; i < groups.length; i++) {
@@ -164,13 +163,13 @@ function() {
     this.removeAllItems();
 	this.loadFromJs({ 
 	    item: [
-            {id: "r0", addr: "dkarp@zimbra.com", name: "Dan", show: ZmRosterItem.SHOW_ONLINE, group: "Friends"},
-            {id: "r1", addr: "ross@zimbra.com", name: "Ross", show: ZmRosterItem.SHOW_DND, group: "Work"},
-            {id: "r2", addr: "satish@zimbra.com", name: "Satish", show: ZmRosterItem.SHOW_AWAY, status:"out to lunch", group: "Work"},
-            {id: "r3", addr: "tim@zimbra.com", name: "Tim", show: ZmRosterItem.SHOW_OFFLINE, group: "Work"},
-            {id: "r4", addr: "anand@zimbra.com", name: "Anand", show: ZmRosterItem.SHOW_EXT_AWAY, group: "Friends,Work"},
-            {id: "r5", addr: "andy@zibra.com", name: "Andy", show: ZmRosterItem.SHOW_CHAT, group: "Work"},
-            {id: "r6", addr: "matt@gmail.com", show:ZmRosterItem.SHOW_ONLINE, group: "Family"}
+            {addr: "dkarp@zimbra.com", name: "Dan", show: ZmRosterItem.SHOW_ONLINE, group: "Friends"},
+            {addr: "ross@zimbra.com", name: "Ross", show: ZmRosterItem.SHOW_DND, group: "Work"},
+            {addr: "satish@zimbra.com", name: "Satish", show: ZmRosterItem.SHOW_AWAY, status:"out to lunch", group: "Work"},
+            {addr: "tim@zimbra.com", name: "Tim", show: ZmRosterItem.SHOW_OFFLINE, group: "Work"},
+            {addr: "anand@zimbra.com", name: "Anand", show: ZmRosterItem.SHOW_EXT_AWAY, group: "Friends,Work"},
+            {addr: "andy@zibra.com", name: "Andy", show: ZmRosterItem.SHOW_CHAT, group: "Work"},
+            {addr: "matt@gmail.com", show:ZmRosterItem.SHOW_ONLINE, group: "Family"}
 	    ]
     });
 };

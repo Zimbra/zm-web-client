@@ -45,8 +45,9 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
 	}
 	
 	this._listeners[ZmOperation.NEW_ROSTER_ITEM] = new AjxListener(this, this._newRosterItemListener);
-		
-}
+	
+	this._treeItemHoverListenerListener = new AjxListener(this, this._treeItemHoverListener);
+};
 
 ZmRosterTreeController.prototype = new ZmTreeController;
 ZmRosterTreeController.prototype.constructor = ZmRosterTreeController;
@@ -112,7 +113,6 @@ function(item, fields, treeView) {
         var toast = this._toastFormatter.format([item.getName(), item.getShowText()]);
         this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
     }
-
     
     var numUnread = item.getUnread();  
     var newName = !doUnread ? null : 
@@ -144,12 +144,36 @@ function(overviewId, showUnread, omit, forceCreate) {
 	if (firstTime || forceCreate) {
 		var treeView = this.getTreeView(overviewId);
     		var root = treeView.getItems()[0];
-		var items = root.getItems();		
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			item.setExpanded(true);
+		var groups = root.getItems();		
+		for (var i = 0; i < groups.length; i++) {
+			var group = groups[i];
+			group.setExpanded(true);
+			var treeItems = group.getItems();
+			for (var j=0; j < treeItems.length; j++) {
+			    var treeItem = treeItems[j];
+			    treeItem.setToolTipContent("");
+			    treeItem.addListener(DwtEvent.HOVEROVER, this._treeItemHoverListenerListener);
+			}
 		}
 	}
+};
+
+ZmRosterTreeController.prototype._treeItemHoverListener =
+function(ev) {
+    this._foobar = this._foobar != null ? this._foobar+1 : 1;
+    if (ev.object) {
+        var ti = ev.object;
+        var rti = ti.getData(Dwt.KEY_OBJECT);
+        if (rti) ti.setToolTipContent(rti.getRosterItem().getToolTip());
+    }
+    /*
+	var shell = DwtShell.getShell(window);
+	var manager = shell.getHoverMgr();
+	var el = manager.getHoverObject();
+	var treeItem = Dwt.getObjectFromElement(el);
+	treeItem.setToolTipContent(this._foobar);	
+	*/
+
 };
 
 // Returns a list of desired header action menu operations
@@ -250,6 +274,15 @@ function(rosterItem) {
 	    items.push(item);
     }
     this._addr2Items[rosterItem.getAddress()] = items;
+    var treeView = this.getTreeView(ZmZimbraMail._OVERVIEW_ID);    
+    if (treeView) for (var i in items) {
+        rti = items[i];
+        var ti = treeView.getTreeItemById(rti.id);
+        if (ti) {
+            ti.setToolTipContent(rosterItem.getAddress());
+		    ti.addListener(DwtEvent.HOVEROVER, this._treeItemHoverListenerListener);
+        }
+    }
 }
 
 ZmRosterTreeController.prototype._removeRosterItem =

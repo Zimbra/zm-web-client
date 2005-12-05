@@ -85,6 +85,7 @@ function(show, status) {
     fields[ZmRosterItem.F_SHOW] = show;
     fields[ZmRosterItem.F_STATUS] = status;
     this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
+    delete this._toolTip;
 };
 
 ZmRosterItem.prototype.setUnread  = 
@@ -93,6 +94,7 @@ function(num, addToTotal) {
     var fields = {};
     fields[ZmRosterItem.F_UNREAD] = this.numUnreadIMs;
     this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
+    delete this._toolTip;    
 };
 
 ZmRosterItem.prototype.setGroups = 
@@ -102,6 +104,7 @@ function(newGroups) {
     var fields = {};
     fields[ZmRosterItem.F_GROUPS] = this.groupNames;
     this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
+    delete this._toolTip;    
 };
 
 ZmRosterItem.prototype.setName = 
@@ -110,6 +113,7 @@ function(newName) {
     var fields = {};
     fields[ZmRosterItem.F_NAME] = this.name;
     this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
+    delete this._toolTip;    
 };
 
 ZmRosterItem.prototype.renameGroup = 
@@ -127,6 +131,7 @@ function(oldGroup, newGroup) {
     var fields = {};
     fields[ZmRosterItem.F_GROUPS] = this.groupNames;
     this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
+    delete this._toolTip;    
 };
 
 ZmRosterItem.prototype.getIcon = 
@@ -211,4 +216,62 @@ function(address) {
 ZmRosterItem.checkGroups =
 function(groups) {
     return null;
+};
+
+
+// Adds a row to the tool tip.
+ZmRosterItem.prototype._addEntryRow =
+function(field, data, html, idx, wrap, width) {
+	if (data != null && data != "") {
+		html[idx++] = "<tr valign='top'><td align='right' style='padding-right: 5px;'><b><div style='white-space:nowrap'>";
+		html[idx++] = AjxStringUtil.htmlEncode(field) + ":";
+		html[idx++] = "</div></b></td><td align='left'><div style='white-space:";
+		html[idx++] = wrap ? "wrap;" : "nowrap;";
+		if (width) html[idx++] = "width:"+width+"px;";
+		html[idx++] = "'>";
+		html[idx++] = AjxStringUtil.htmlEncode(data);
+		html[idx++] = "</div></td></tr>";
+	}
+	return idx;
+};
+
+/**
+* Returns HTML for a tool tip for this appt.
+*/
+ZmRosterItem.prototype.getToolTip =
+function() {
+	if (!this._toolTip) {
+		var html = new Array(20);
+		var idx = 0;
+		
+		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 >";
+		html[idx++] = "<tr valign='center'><td colspan=2 align='left'>";
+		html[idx++] = "<div style='border-bottom: 1px solid black;'>";
+		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
+		html[idx++] = "<tr valign='center'>";
+		html[idx++] = "<td><b>";
+		
+		// IMGHACK - added outer table for new image changes...
+		html[idx++] = "<div style='white-space:nowrap'><table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
+		html[idx++] = "<td>" + AjxImg.getImageHtml(this.getIcon()) + "</td>";
+		html[idx++] = "</tr></table>";
+		
+		html[idx++] = "&nbsp;";
+		html[idx++] = AjxStringUtil.htmlEncode(this.getName());
+		html[idx++] = "&nbsp;</div></b></td>";	
+		html[idx++] = "<td align='right'>";
+
+		html[idx++] = AjxImg.getImageHtml("HappyEmoticon");
+		html[idx++] = "</td>";
+		html[idx++] = "</table></div></td></tr>";
+		//idx = this._addEntryRow(ZmMsg.meetingStatus, this.getStatusString(), html, idx, false);
+				
+		idx = this._addEntryRow(ZmMsg.imAddress, this.getAddress(), html, idx, false); //true, "250");		
+		idx = this._addEntryRow(ZmMsg.imName, this.name, html, idx, false);  // use this.name
+		idx = this._addEntryRow(ZmMsg.imGroups, this.getGroups().join(", "), html, idx, false);
+		idx = this._addEntryRow(ZmMsg.imPresence, this.getShowText(), html, idx, false);
+		html[idx++] = "</table>";
+		this._toolTip = html.join("");
+	}
+	return this._toolTip;
 };
