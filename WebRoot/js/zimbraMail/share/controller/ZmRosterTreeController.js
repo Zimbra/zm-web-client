@@ -313,6 +313,10 @@ function(rosterItem) {
         //rti.notifyDelete();
         rti.deleteLocal();
         rti._eventNotify(ZmEvent.E_DELETE);
+        if (rti.parent.children.size() == 0) {
+            rti.parent.deleteLocal();
+            rti.parent._eventNotify(ZmEvent.E_DELETE);
+        }
    }
    delete this._addr2Items[rosterItem.getAddress()];
 };

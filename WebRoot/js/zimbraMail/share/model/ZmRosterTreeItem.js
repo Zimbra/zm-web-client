@@ -38,15 +38,6 @@ function() {
 // Constants
 ZmRosterTreeItem.ID_ROSTER_TREE_ITEM = ZmOrganizer.ID_ROSTER_TREE_ITEM;
 
-/*
-ZmRosterTreeItem.prototype._changeGroup = 
-function(newGroup) {
-    this.group = newGroup.getName();
-    this.reparent(newGroup);
-    this._eventNotify(ZmEvent.E_MOVE);
-};
-*/
-
 ZmRosterTreeItem.sortCompare = 
 function(itemA, itemB) {
 	// sort by name
