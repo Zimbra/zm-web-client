@@ -55,6 +55,7 @@ ZmMimeTable.MSG_RFC822			= "message/rfc822";
 ZmMimeTable.MULTI_ALT			= "multipart/alternative"; 		// IGNORE
 ZmMimeTable.MULTI_MIXED			= "multipart/mixed"; 			// IGNORE
 ZmMimeTable.MULTI_RELATED		= "multipart/related"; 			// IGNORE
+ZmMimeTable.MULTI_APPLE_DBL 	= "multipart/appledouble"; 		// IGNORE
 ZmMimeTable.TEXT				= "text";
 ZmMimeTable.TEXT_RTF			= "text/enriched";
 ZmMimeTable.TEXT_HTML			= "text/html";
@@ -122,13 +123,14 @@ ZmMimeTable.isIgnored =
 function(type) {
 	if (type == ZmMimeTable.MULTI_ALT || 
 		type == ZmMimeTable.MULTI_MIXED || 
-		type == ZmMimeTable.TEXT_CAL || 
 		type == ZmMimeTable.MULTI_RELATED || 
+		type == ZmMimeTable.MULTI_APPLE_DBL ||
+		type == ZmMimeTable.APP_APPLE_DOUBLE ||
+		type == ZmMimeTable.TEXT_CAL)
 		/* XXX: we have licensing issues so gotta show these for now
 		type == ZmMimeTable.APP_MS_TNEF ||
-		type == ZmMimeTable.APP_MS_TNEF2 || 
+		type == ZmMimeTable.APP_MS_TNEF2)
 		*/
-		type == ZmMimeTable.APP_APPLE_DOUBLE)
 	{
 		return true;
 	}
