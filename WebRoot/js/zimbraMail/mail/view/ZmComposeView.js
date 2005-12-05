@@ -216,14 +216,16 @@ function(attId, isDraft) {
 	    return;
 	}
 
+	var confirmDialog = this._getConfirmDialog();
+
 	// Is there a subject? If not, ask the user if they want to send anyway.
 	var subject = AjxStringUtil.trim(this._subjectField.value);
 	if (!isDraft && subject.length == 0 && !this._noSubjectOkay) {
 		this.enableInputs(false);
-    	this._confirmDialog.setMessage(ZmMsg.compSubjectMissing, DwtMessageDialog.WARNING_STYLE);
-		this._confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this);
-		this._confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this);
-	    this._confirmDialog.popup(this._getDialogXY());
+    	confirmDialog.setMessage(ZmMsg.compSubjectMissing, DwtMessageDialog.WARNING_STYLE);
+		confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this);
+		confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this);
+	    confirmDialog.popup(this._getDialogXY());
 		return;
 	}
 
@@ -232,10 +234,10 @@ function(attId, isDraft) {
 		this.enableInputs(false);
 	    var bad = AjxStringUtil.htmlEncode(addrs[ZmComposeView.BAD].toString(ZmEmailAddress.SEPARATOR));
 	    var msg = AjxStringUtil.resolve(ZmMsg.compBadAddresses, bad);
-    	this._confirmDialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-		this._confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this);
-		this._confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, addrs.badType);
-	    this._confirmDialog.popup(this._getDialogXY());
+    	confirmDialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+		confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this);
+		confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, addrs.badType);
+	    confirmDialog.popup(this._getDialogXY());
 		return;
 	} else {
 		this._badAddrsOkay = false;
@@ -967,7 +969,6 @@ function(composeMode) {
 	this._attcDiv = document.getElementById(this._attcDivId);
 
 	// misc. inits
-	this._confirmDialog = new DwtMessageDialog(this.shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
 	this._msgDialog = this._appCtxt.getMsgDialog();
 	this.setScrollStyle(DwtControl.SCROLL);
 
@@ -1029,17 +1030,27 @@ function() {
 	// create address elements
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
 		var type = ZmComposeView.ADDRS[i];
-		html[idx++] = "<tr><td><div id='" + this._divId[type] + "'";
+		html[idx++] = "<tr><td><div id='";
+		html[idx++] = this._divId[type];
+		html[idx++] = "'";
 		html[idx++] = (type != ZmEmailAddress.TO) ? " style='display: none;'>" : ">";
 		html[idx++] = "<table cellspacing=4 cellpadding=0 border=0 width=100%><tr>";
 		if (this._contactPickerEnabled) {
-			html[idx++] = "<td valign=top width=60 id='" + this._buttonTdId[type] + "'></td>";
+			html[idx++] = "<td valign=top width=60 id='";
+			html[idx++] = this._buttonTdId[type];
+			html[idx++] = "'></td>";
 		} else {
 			var typeStr = ZmEmailAddress.TYPE_STRING[type];
 			var addrStr = ZmMsg[typeStr] + ":";
-			html[idx++] = "<td width=60 align='right' valign='top' id='" + this._buttonTdId[type] + "'>" + addrStr + "</td>";
+			html[idx++] = "<td width=60 align='right' valign='top' id='";
+			html[idx++] = this._buttonTdId[type];
+			html[idx++] = "'>";
+			html[idx++] = addrStr;
+			html[idx++] = "</td>";
 		}
-		html[idx++] = "<td><textarea id='" + this._fieldId[type] + "' rows=2 class='addresses'></textarea></td>";
+		html[idx++] = "<td><textarea id='";
+		html[idx++] = this._fieldId[type];
+		html[idx++] = "' rows=2 class='addresses'></textarea></td>";
 		html[idx++] = "</tr></table></div></td></tr>";
 	}
 
@@ -1048,21 +1059,41 @@ function() {
 	html[idx++] = "<td width=60></td><td class='nobreak'>";
 	// create a fake link so they dont get focus when tabbing..
 	var fakeLinkStyle = "onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;'";
-	html[idx++] = "<span " + fakeLinkStyle + " id='" + this._addLinkId[ZmEmailAddress.CC] + "'>" + ZmMsg.addCc + "</span>";
-	html[idx++] = " | <span " + fakeLinkStyle + " id='" + this._addLinkId[ZmEmailAddress.BCC] + "'>" + ZmMsg.addBcc + "</span></td>";
+	html[idx++] = "<span "
+	html[idx++] = fakeLinkStyle;
+	html[idx++] = " id='";
+	html[idx++] = this._addLinkId[ZmEmailAddress.CC];
+	html[idx++] = "'>";
+	html[idx++] = ZmMsg.addCc;
+	html[idx++] = "</span>";
+	html[idx++] = " | <span ";
+	html[idx++] = fakeLinkStyle;
+	html[idx++] = " id='";
+	html[idx++] = this._addLinkId[ZmEmailAddress.BCC];
+	html[idx++] = "'>";
+	html[idx++] = ZmMsg.addBcc;
+	html[idx++] = "</span></td>";
 	html[idx++] = "</tr></table></td></tr>";
 
 	// create subject field
 	html[idx++] = "<tr><td><table cellspacing=4 cellpadding=0 border=0 width=100%><tr>";
-	html[idx++] = "<td width=60 align='right'>" + ZmMsg.subject + ":</td>";
-	html[idx++] = "<td><input type='text' id='" + this._subjectFieldId + "' class='subjectField'></td>";
+	html[idx++] = "<td width=60 align='right'>";
+	html[idx++] = ZmMsg.subject;
+	html[idx++] = ":</td>";
+	html[idx++] = "<td><input type='text' id='";
+	html[idx++] = this._subjectFieldId;
+	html[idx++] = "' class='subjectField'></td>";
 	html[idx++] = "</tr></table></td></tr>";
 
 	// create area to show forwarded attachment(s)
-	html[idx++] = "<tr><td><div id='" + this._forwardDivId + "' /></td></tr>";
+	html[idx++] = "<tr><td><div id='";
+	html[idx++] = this._forwardDivId;
+	html[idx++] = "' /></td></tr>";
 
 	// create element for adding attachments
-	html[idx++] = "<tr><td><div id='" + this._attcDivId + "' /></td></tr>";
+	html[idx++] = "<tr><td><div id='";
+	html[idx++] = this._attcDivId;
+	html[idx++] = "' /></td></tr>";
 
 	html[idx++] = "</table>";
 
@@ -1080,13 +1111,18 @@ function(isDraft) {
 
 ZmComposeView.prototype._createAttachmentsContainer =
 function() {
-	var container = null;
 	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	var html = new Array();
 	var idx = 0;
 	html[idx++] = "<div style='overflow:visible'>";
-	html[idx++] = "<form method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
-	html[idx++] = "<table id='" + this._attachmentTableId + "' cellspacing=0 cellpadding=0 border=0 class='iframeTable'></table>";
+	html[idx++] = "<form method='POST' action='";
+	html[idx++] = uri;
+	html[idx++] = "' id='";
+	html[idx++] = this._uploadFormId;
+	html[idx++] = "' enctype='multipart/form-data'>";
+	html[idx++] = "<table id='";
+	html[idx++] = this._attachmentTableId;
+	html[idx++] = "' cellspacing=0 cellpadding=0 border=0 class='iframeTable'></table>";
 	html[idx++] = "</form>";
 	html[idx++] = "</div>";
 	this._attcDiv = document.getElementById(this._attcDivId);
@@ -1106,7 +1142,9 @@ function(msg, action, pref) {
 		html[idx++] = "<td width=60 align=right>";
 		html[idx++] = AjxImg.getImageHtml("Attachment");
 		html[idx++] = "</td>";
-		html[idx++] = "<td><b>" + subj + "</b></td>";
+		html[idx++] = "<td><b>";
+		html[idx++] = subj;
+		html[idx++] = "</b></td>";
 		html[idx++] = "</tr></table>";
 	}
 	else if (msg &&
@@ -1120,8 +1158,14 @@ function(msg, action, pref) {
 				html[idx++] = "<tr><td width=65 align=right>";
 				if (i == 0) // only add icon for first attachment(?)
 					html[idx++] = AjxImg.getImageHtml("Attachment");
-				html[idx++] = "</td><td width=1%><input name='" + ZmComposeView.FORWARD_ATT_NAME + "' type='checkbox' id='" + attLinks[i].mpId + "' CHECKED></td>";
-				html[idx++] = "<td valign=top class='nobreak'>" + attLinks[i].html + "</td></tr>";
+				html[idx++] = "</td><td width=1%><input name='";
+				html[idx++] = ZmComposeView.FORWARD_ATT_NAME;
+				html[idx++] = "' type='checkbox' id='";
+				html[idx++] = attLinks[i].mpId;
+				html[idx++] = "' CHECKED></td>";
+				html[idx++] = "<td valign=top class='nobreak'>";
+				html[idx++] = attLinks[i].html;
+				html[idx++] = "</td></tr>";
 			}
 			html[idx++] = "</table>";
 		}
@@ -1220,6 +1264,16 @@ function() {
 	return false;
 };
 
+// OPTIMIZATION: helper method creates confirm dialog only when its first needed
+ZmComposeView.prototype._getConfirmDialog = 
+function() {
+	if (!this._confirmDialog) {
+		this._confirmDialog = new DwtMessageDialog(this.shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+	}
+
+	return this._confirmDialog;
+};	
+
 
 // Listeners
 
@@ -1305,19 +1359,21 @@ function() {
 	// we can't get the attachments from the document anymore.
 	// W/in debugger, it looks fine, but remove the debugger and any
 	// alerts, and gotAttachments will return false after the popdown call.
+	var confirmDialog = this._getConfirmDialog();
+
  	if (AjxEnv.isIE)
-		this._confirmDialog.popdown();
+		confirmDialog.popdown();
 	// bug fix# 3209
 	// - hide the dialog instead of popdown (since window will go away anyway)
 	if (AjxEnv.isNav && this._controller.isChildWindow)
-		this._confirmDialog.setVisible(false);
+		confirmDialog.setVisible(false);
 
 	// dont make any calls after sendMsg if child window since window gets destroyed
 	if (this._controller.isChildWindow && !AjxEnv.isNav) {
 		this._controller.sendMsg();
 	} else {
 		// bug fix #3251 - call popdown BEFORE sendMsg
-		this._confirmDialog.popdown();
+		confirmDialog.popdown();
 		this._controller.sendMsg();
 	}
 };
@@ -1326,7 +1382,7 @@ function() {
 ZmComposeView.prototype._noSubjectCancelCallback =
 function() {
 	this.enableInputs(true);
-	this._confirmDialog.popdown();
+	this._getConfirmDialog().popdown();
 	this._subjectField.focus();
 	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();
@@ -1337,7 +1393,7 @@ ZmComposeView.prototype._badAddrsOkCallback =
 function() {
 	this.enableInputs(true);
 	this._badAddrsOkay = true;
-	this._confirmDialog.popdown();
+	this._getConfirmDialog.popdown();
 	this._controller.sendMsg();
 };
 
@@ -1346,7 +1402,7 @@ ZmComposeView.prototype._badAddrsCancelCallback =
 function(type) {
 	this.enableInputs(true);
 	this._badAddrsOkay = false;
-	this._confirmDialog.popdown();
+	this._getConfirmDialog.popdown();
 	if (this._using[type])
 		this._field[type].focus()
 	this._controller._toolbar.enableAll(true);

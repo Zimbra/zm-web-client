@@ -77,11 +77,18 @@ function() {
 ZmHtmlEditor.prototype.setMode =
 function(mode, convert) {
 	this.discardMisspelledWords();
+
+	// make sure we have toolbars for html mode
+	if (mode == DwtHtmlEditor.HTML)
+		this._createToolbars();
+
 	DwtHtmlEditor.prototype.setMode.call(this, mode, convert);
 
 	// show/hide toolbars based on mode
-	this._toolbar1.setVisible(mode == DwtHtmlEditor.HTML);
-	this._toolbar2.setVisible(mode == DwtHtmlEditor.HTML);
+	if (this._toolbar1)
+		this._toolbar1.setVisible(mode == DwtHtmlEditor.HTML);
+	if (this._toolbar2)
+		this._toolbar2.setVisible(mode == DwtHtmlEditor.HTML);
 };
 
 ZmHtmlEditor.prototype.getBodyFieldId =
@@ -375,9 +382,11 @@ function(x, y) {
 
 	if (this._spellCheckModeDivId)
 		y -= document.getElementById(this._spellCheckModeDivId).offsetHeight;
-	y -= delta
-		+ this._toolbar1.getHtmlElement().offsetHeight
-		+ this._toolbar2.getHtmlElement().offsetHeight;
+	if (this._toolbar1 && this._toolbar2) {
+		y -= delta
+			+ this._toolbar1.getHtmlElement().offsetHeight
+			+ this._toolbar2.getHtmlElement().offsetHeight;
+	}
 	main.style.width = x + "px";
 	main.style.height = y + "px";
 	if (div) {
@@ -402,8 +411,10 @@ function(x, y) {
 
 ZmHtmlEditor.prototype._initialize =
 function() {
-	this._createToolBar1(this);
-	this._createToolBar2(this);
+	// OPTIMIZATION - only create toolbars if in HTML mode
+	if (this._mode == DwtHtmlEditor.HTML) {
+		this._createToolbars();
+	}
 
 	DwtHtmlEditor.prototype._initialize.call(this);
 };
@@ -467,6 +478,14 @@ function(ev) {
 ZmHtmlEditor.prototype._fontHiliteListener =
 function(ev) {
 	this.setFont(null, null, null, null, ev.detail);
+};
+
+ZmHtmlEditor.prototype._createToolbars =
+function() {
+	if (!this._toolbar1)
+		this._createToolBar1(this);
+	if (!this._toolbar2)
+		this._createToolBar2(this);
 };
 
 ZmHtmlEditor.prototype._createToolBar1 =
@@ -601,7 +620,7 @@ function(parent) {
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
 	b.addSelectionListener(insElListener);
 	
-	b = this._horizRuleButton = new DwtButton(tb, null, "TBButton");
+	b = this._insertTableButton = new DwtButton(tb, null, "TBButton");
 	b.setImage("InsertTable");
 	b.setToolTipContent(ZmMsg.insertTable);
 	b.setData(ZmHtmlEditor._VALUE, ZmHtmlEditor._INSERT_TABLE);
