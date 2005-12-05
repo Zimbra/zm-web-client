@@ -106,6 +106,11 @@ function() {
 	document.getElementById(this._groupsFieldId).value = "";	
 };
 
+ZmNewRosterItemDialog.prototype.setGroups =
+function(groups) {
+	document.getElementById(this._groupsFieldId).value = groups;
+};
+
 ZmNewRosterItemDialog.prototype._initAddressAutocomplete =
 function() {
 	if (this._addressAutocomplete || !this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))

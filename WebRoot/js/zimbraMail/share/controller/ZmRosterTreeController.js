@@ -186,6 +186,12 @@ ZmRosterTreeController.prototype._getItemActionMenuOps = function() {
 	return [ZmOperation.DELETE];
 };
 
+// Returns a list of desired action menu operations
+ZmRosterTreeController.prototype._getGroupActionMenuOps = function() {
+	return [ZmOperation.NEW_ROSTER_ITEM];
+};
+
+
 ZmRosterTreeController.prototype._deleteListener = 
 function(ev) {
 	var org = this._getActionedOrganizer(ev);
@@ -202,6 +208,11 @@ function(ev) {
             this._itemActionMenu = this._createActionMenu([this._shell, this._getItemActionMenuOps()]);
         }
         return this._itemActionMenu;
+    } else if (org instanceof ZmRosterTreeGroup) {
+        if (this._groupActionMenu == null) {
+            this._groupActionMenu = this._createActionMenu([this._shell, this._getGroupActionMenuOps()]);
+        }
+        return this._groupActionMenu;
     }
     return null;
 };
@@ -343,9 +354,12 @@ function(name) {
 
 ZmRosterTreeController.prototype._newRosterItemListener =
 function(ev) {
-//	var newDialog = this._appCtxt.getNewRosterItemDialog();
-//	newDialog.popup();
-	this._showDialog(this._appCtxt.getNewRosterItemDialog(), this._newRosterItemCallback);
+	var newDialog = this._appCtxt.getNewRosterItemDialog();
+    this._showDialog(newDialog, this._newRosterItemCallback);	
+	var org = this._getActionedOrganizer(ev);
+	if (org instanceof ZmRosterTreeGroup) {
+        newDialog.setGroups(org.getName());
+	};
 };
 
 
