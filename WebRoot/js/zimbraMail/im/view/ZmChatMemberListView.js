@@ -29,7 +29,7 @@ function ZmChatMemberListView(parent, rosterList) {
 	this.rosterList = rosterList;
 	this.rosterList.addChangeListener(new AjxListener(this, this._rosterListChangeListener));
     this._viewPrefix = Dwt.getNextId() + "_";
-    this.set(rosterList.getVector());
+    this.set(rosterList.getVector().clone());
 };
 
 ZmChatMemberListView.prototype = new DwtListView;

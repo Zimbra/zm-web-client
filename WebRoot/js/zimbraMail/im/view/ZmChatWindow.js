@@ -150,7 +150,32 @@ ZmChatWindow.prototype._setChat =
 function(chat) {
     this.chat = chat;
     var item = chat.getRosterItem();
-    this._rosterItemChangeListener(item, null, true);
+    if (this.chat.getRosterSize() > 1 && this._memberListView == null) {
+        this._memberListView = new ZmChatMemberListView(this, this.chat._getRosterItemList());
+        this._controlListener();
+        this._updateGroupChatTitle();
+   }    
+   this._rosterItemChangeListener(item, null, true);
+};
+
+ZmChatWindow.prototype.addRosterItem =
+function(item) {
+    if (this.chat.getRosterSize() > 0 && this._memberListView == null) {
+        this._memberListView = new ZmChatMemberListView(this, this.chat._getRosterItemList());
+        this._controlListener();
+   }
+   this.chat.addRosterItem(item);
+   this._updateGroupChatTitle();   
+};
+
+ZmChatWindow.prototype._updateGroupChatTitle =
+function() {
+    if (!this._groupStaticTitle) {
+        this.setTitle(this.chat.getName());
+        this.setImage("ImGroup");
+        this._groupStaticTitle = true;
+    }
+    this.setStatusTitle("("+this.chat.getRosterSize()+")");
 };
 
 ZmChatWindow.prototype._rosterItemChangeListener =
@@ -159,21 +184,23 @@ function(item, fields, setAll) {
     var doUnread = setAll || (ZmRosterItem.F_UNREAD in fields);
     var doName = setAll || (ZmRosterItem.F_NAME in fields);
 
-    if (doShow) this.setImage(item.getIcon());
-    if (doShow || doUnread) {
-        var title = new AjxBuffer();
-        title.append("(", item.getShowText());
-        if (item.getUnread()) {
-            title.append(", ", item.getUnread(), " ", ZmMsg.unread.toLowerCase());        
-        }
-        title.append(")");
-        this.setStatusTitle(title.toString());
-    }
-    if (doName) {
-        this.setTitle(item.getName());
-    }
     if (this._memberListView && fields) this._memberListView._rosterItemChangeListener(item, fields);
 
+    if (this.chat.getRosterSize() == 1) {
+        if (doShow) this.setImage(item.getIcon());
+        if (doShow || doUnread) {
+            var title = new AjxBuffer();
+            title.append("(", item.getShowText());
+            if (item.getUnread()) {
+                title.append(", ", item.getUnread(), " ", ZmMsg.unread.toLowerCase());        
+            }
+            title.append(")");
+            this.setStatusTitle(title.toString());
+        }
+        if (doName) {
+            this.setTitle(item.getName());
+        }
+    }        
 };
 
 ZmChatWindow.prototype.sendInput =
@@ -239,16 +266,6 @@ function(imageInfo) {
 ZmChatWindow.prototype.getCloseButton = 
 function() {
 	return this._close;
-};
-
-ZmChatWindow.prototype.addRosterItem =
-function(item) {
-    if (this.chat.getRosterSize() > 0 && this._memberListView == null) {
-        this._memberListView = new ZmChatMemberListView(this, this.chat._getRosterItemList());
-        this._controlListener();
-   }
-   this.chat.addRosterItem(item);
-   if (this.chat.getRosterSize() > 1) this.chat.setGroupChat(true);
 };
 
 ZmChatWindow.prototype._dropListener =

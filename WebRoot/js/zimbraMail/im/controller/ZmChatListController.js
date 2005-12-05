@@ -431,11 +431,23 @@ ZmChatListController.prototype.chatWithRosterItem =
 function(item) {
     var chat = this._list.getChatByRosterItem(item);
     if (chat == null) {
-        chat = new ZmChat(Dwt.getNextId(), this._appCtxt, this);
+        chat = new ZmChat(Dwt.getNextId(), item.getName(), this._appCtxt, this);
         chat.addRosterItem(item);
         // listeners take care of rest...
         this._list.addChat(chat);
     }
+    // currentview or all? probably all...    
+    this._parentView[this._currentView].selectChat(chat);
+};
+
+ZmChatListController.prototype.chatWithRosterItems =
+function(items, chatName) {
+    chat = new ZmChat(Dwt.getNextId(), chatName, this._appCtxt, this);
+    for (var i=0; i < items.length; i++) {
+        chat.addRosterItem(items[i]);
+    }
+    // listeners take care of rest...
+    this._list.addChat(chat);
     // currentview or all? probably all...    
     this._parentView[this._currentView].selectChat(chat);
 };

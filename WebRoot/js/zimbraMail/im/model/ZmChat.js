@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmChat(id, appCtxt, chatList) {
+function ZmChat(id, chatName, appCtxt, chatList) {
 //	if (id == null) id = rosterItem.getAddress() + "_chat";
 	if (chatList == null) chatList = appCtxt.getApp(ZmZimbraMail.IM_APP).getChatList();
 	ZmItem.call(this, appCtxt, ZmItem.CHAT, id, chatList);
@@ -31,6 +31,7 @@ function ZmChat(id, appCtxt, chatList) {
 	this._chatEntries = [];
 	this._rosterItemList = new ZmRosterItemList(appCtxt);
 	this._isGroupChat = false;
+	this._chatName = chatName;
 }
 
 ZmChat.prototype = new ZmItem;
@@ -49,6 +50,7 @@ function() {
 ZmChat.prototype.addRosterItem =
 function(item) {
     this._rosterItemList.addItem(item);
+    this._isGroupChat = this.getRosterSize();
 };
 
 ZmChat.prototype.getRosterSize = 
@@ -56,14 +58,14 @@ function() {
     return this._rosterItemList.size();
 };
 
+ZmChat.prototype.getName = 
+function() {
+    return this._chatName;
+};
+
 ZmChat.prototype.isGroupChat =
 function() {
     return this._isGroupChat;
-};
-
-ZmChat.prototype.setGroupChat =
-function(groupChat) {
-    this._isGroupChat = groupChat;
 };
 
 ZmChat.prototype.hasRosterItem = 
@@ -71,10 +73,11 @@ function(item) {
     return this._rosterItemList.getByAddr(item.getAddress());
 };
 
-// TODO: remove!
+// TODO: remove suport for index being null!
 ZmChat.prototype.getRosterItem = 
-function() {
-    return this._rosterItemList.getArray()[0];
+function(index) {
+    if (index == null) index = 0;
+    return this._rosterItemList.getArray()[index];
 };
 
 ZmChat.prototype.getIcon =

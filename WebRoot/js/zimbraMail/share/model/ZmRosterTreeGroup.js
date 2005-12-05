@@ -39,7 +39,7 @@ function() {
 
 ZmRosterTreeGroup.prototype.getIcon = 
 function() {
-    return null; //"Group";
+    return "ImGroup";
 };
 
 ZmRosterTreeGroup.sortCompare = 
@@ -63,4 +63,15 @@ ZmRosterTreeGroup.prototype.getId = function() { return this.id; }
 ZmRosterTreeGroup.prototype.getName = 
 function() {
 	return this.name;
+};
+
+ZmRosterTreeGroup.prototype.getRosterItems = 
+function() {
+    var a = this.children.getArray();
+    var sz = this.children.size();
+    var result = [];
+    for (var i =0; i < sz; i++) {
+        result.push(a[i].getRosterItem());
+    }
+    return result;
 };

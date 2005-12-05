@@ -245,7 +245,7 @@ ZmRosterTreeController.prototype._dragListener =
 function(ev) {
 	if (ev.action == DwtDragEvent.DRAG_START) {
 		var item = ev.srcData = ev.srcControl.getData(Dwt.KEY_OBJECT);
-		if (!(item instanceof ZmRosterTreeItem))
+		if (!((item instanceof ZmRosterTreeItem) || (item instanceof ZmRosterTreeGroup)))
 			ev.operation = Dwt.DND_DROP_NONE;
 	}
 };
@@ -269,7 +269,7 @@ function(ev) {
 			ev.doIt = false;
 			return;
 		}
-		// don't allow drop onto current group. TODO: or group that already contains roster item
+		// don't allow drop onto group item is currently in
         	ev.doIt = !srcData.getRosterItem().inGroup(dropTarget.getName());
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
         	var srcData = ev.srcData;
