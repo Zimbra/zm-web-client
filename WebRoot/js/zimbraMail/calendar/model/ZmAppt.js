@@ -676,7 +676,7 @@ function(attachmentId, callback, errorCallback) {
 			}
 			exceptId.setAttribute("d", sd);
 		} else {
-			exceptId.setAttribute("d", AjxDateUtil.getServerDate(this.getOrigStartDate()));
+			exceptId.setAttribute("d", AjxDateUtil.getServerDateTime(this.getOrigStartDate()));
 		}
 	} else {
 		// set recurrence rules for appointment (but not for exceptions!)
