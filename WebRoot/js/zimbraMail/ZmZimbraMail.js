@@ -833,7 +833,7 @@ function(refresh) {
 
     // TODO: move this or get the roster returned via refresh
 	//if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {    
-    	this.getApp(ZmZimbraMail.IM_APP).getRosterItemList().reload();
+    	this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
     //}
     
 	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
@@ -920,8 +920,8 @@ function(notify) {
 			this._handleCreates(notify.created, notify.modified);
 		if (notify.modified)
 			this._handleModifies(notify.modified);
-		if (notify.im && this._appCtxt.get(ZmSetting.IM_ENABLED))
-			this.getApp(ZmZimbraMail.IM_APP).handleNotification(notify.im);
+		if (notify.im)
+			this.getApp(ZmZimbraMail.IM_APP).getRoster().handleNotification(notify.im);
 		if (this._calController) this._calController.notifyComplete();
 	} catch (ex) {
 		this._handleException(ex, this._notifyHandler, notify, false);

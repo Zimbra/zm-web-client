@@ -76,7 +76,6 @@ ZmItem.MAX		= ZmEvent.S_MAX;
 
 // Type names
 ZmItem.MSG_KEY = new Object();
-ZmItem.MSG_KEY = new Object();
 ZmItem.MSG_KEY[ZmItem.CONV]		= "conversation";
 ZmItem.MSG_KEY[ZmItem.MSG]		= "message";
 ZmItem.MSG_KEY[ZmItem.ATT]		= "attachment";

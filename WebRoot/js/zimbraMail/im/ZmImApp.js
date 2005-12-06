@@ -26,9 +26,8 @@
 function ZmImApp(appCtxt, container) {
 	ZmApp.call(this, ZmZimbraMail.IM_APP, appCtxt, container);
 	//this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._settingsChangeListener));
-	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);	
 	this._active = false;
-	this.getRosterItemTree(); // pre-create
+	this.getRoster(); // pre-create
 };
 
 ZmImApp.prototype = new ZmApp;
@@ -60,76 +59,14 @@ function() {
 	return this._chatListController;
 };
 
-ZmImApp.prototype.getChatList =
+ZmImApp.prototype.getRoster =
 function() {
-	if (!this._chatList)
-		this._chatList = new ZmChatList(this._appCtxt);
-	return this._chatList;
-};
-
-ZmImApp.prototype.getRosterItemTree =
-function() {
-	if (!this._rosterItemTree) {
-//	    this._rosterItemTree = this._appCtxt.getTree(ZmOrganizer.ROSTER_TREE_ITEM);
-//        	if (!this._rosterItemTree) {	    
-   		this._rosterItemTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ROSTER_TREE_ITEM);
-    		this._appCtxt.setTree(ZmOrganizer.ROSTER_TREE_ITEM, this._rosterItemTree);
-//        	}
-	}
-	return this._rosterItemTree;
-};
-
-ZmImApp.prototype.getRosterItemList =
-function() {
-	if (!this._rosterItemList) {
-		this._rosterItemList = new ZmRosterItemList(this._appCtxt);
-        	//TODO: load dummy data
-	}
-	return this._rosterItemList;
+	if (!this._roster)
+		this._roster = new ZmRoster(this._appCtxt);
+	return this._roster;
 };
 
 ZmImApp.prototype.getAutoCompleteGroups =
 function() {
-    return new ZmRosterTreeGroups(this.getRosterItemTree());
-};
-
-/**
- * handle async notifications. we might need to queue this with timed action and return
- * immediately, since this is happening as a result of a notify header in a response, and
- * we probably don't want to trigger more requests while handling a response.
- */
-ZmImApp.prototype.handleNotification =
-function(im) {
-    if (im.subscribed) {
-        for (var i=0; i < im.subscribed.length; i++) {
-            var sub = im.subscribed[i];
-            if (sub.to) {
-                var list = this.getRosterItemList();
-                var item = list.getByAddr(sub.to);
-                if (item) {
-                    if (sub.groups) item._notifySetGroups(sub.groups); // should optimize
-                    if (sub.name && sub.name != item.getName()) item._notifySetName(sub.name);
-                    // mod
-                } else {
-                    // create
-                    var item = new ZmRosterItem(sub.to, list, this._appCtxt, sub.name, null, null, sub.groups);
-                    list.addItem(item);
-                    var toast = this._newRosterItemtoastFormatter.format([item.getName()]);
-                    this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
-                }
-            } else if (sub.from) {
-                // toast, should we user if they want to add user if they aren't in buddy list?
-            }
-        }
-    }
-    if (im.unsubscribed) {
-        for (var i=0; i < im.unsubscribed.length; i++) {
-            var unsub = im.unsubscribed[i];
-            if (unsub.to) {
-                var list = this.getRosterItemList();
-                var item = list.getByAddr(unsub.to);
-                if (item) list.removeItem(item);
-            }
-        }
-    }
+    return new ZmRosterTreeGroups(this.getRoster().getRosterItemTree());
 };

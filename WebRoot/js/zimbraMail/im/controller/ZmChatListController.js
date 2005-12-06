@@ -37,7 +37,7 @@ function ZmChatListController(appCtxt, container, imApp) {
 
 	this._toolbar = new Object;		// ZmButtonToolbar (one per view)
 	this._listView = new Object;	// ZmListView (one per view)
-	this._list = imApp.getChatList();		// ZmChatList (the data)
+	this._list = imApp.getRoster().getChatList();		// ZmChatList (the data)
 
     	this._listeners = new Object();
 	this._listeners[ZmOperation.VIEW] = new AjxListener(this, this._viewButtonListener);
@@ -53,7 +53,7 @@ function ZmChatListController(appCtxt, container, imApp) {
 	// listen for roster list changes
 	this._rosterListListener = new AjxListener(this, this._rosterListChangeListener);
 	
-	var rosterList = imApp.getRosterItemList();
+	var rosterList = imApp.getRoster().getRosterItemList();
 	rosterList.addChangeListener(this._rosterListListener);
     	
 }

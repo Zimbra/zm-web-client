@@ -35,7 +35,7 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
     this._addr2Items = {}; // hash from  roster tree item addr to ZmRosterItem for each group item is in
     this._prefixId = Dwt.getNextId();	
 	// initialze tree data from roster item list
-	var list = this._imApp.getRosterItemList();
+	var list = this._imApp.getRoster().getRosterItemList();
 	list.addChangeListener(new AjxListener(this, this._rosterListChangeListener));
 	if (this._dataTree.root == null) {
 	    this._dataTree.root = ZmRosterTree.createRoot(this._dataTree);
@@ -396,5 +396,5 @@ function(ev) {
 ZmRosterTreeController.prototype._newRosterItemCallback =
 function(args) {
 	this._appCtxt.getNewRosterItemDialog().popdown();
-	this._imApp.getRosterItemList().createRosterItem(args[0], args[1], args[2]);
+	this._imApp.getRoster().createRosterItem(args[0], args[1], args[2]);
 };

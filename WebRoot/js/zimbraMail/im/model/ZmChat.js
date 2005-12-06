@@ -25,7 +25,7 @@
 
 function ZmChat(id, chatName, appCtxt, chatList) {
 //	if (id == null) id = rosterItem.getAddress() + "_chat";
-	if (chatList == null) chatList = appCtxt.getApp(ZmZimbraMail.IM_APP).getChatList();
+	if (chatList == null) chatList = appCtxt.getApp(ZmZimbraMail.IM_APP).getRoster().getChatList();
 	ZmItem.call(this, appCtxt, ZmItem.CHAT, id, chatList);
 	this._evt = new ZmEvent(ZmEvent.S_CHAT);
 	this._chatEntries = [];
