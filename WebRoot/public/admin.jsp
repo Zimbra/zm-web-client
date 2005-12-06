@@ -63,7 +63,7 @@ Contributor(s):
 	String mode = (String) request.getAttribute("mode");
 	String vers = (String) request.getAttribute("version");
 	String ext = (String) request.getAttribute("fileExtension");
-
+	String hiRes = (String) request.getParameter("hiRes");
 	if (vers == null){
 	   vers = "";
 	}
@@ -84,39 +84,41 @@ Contributor(s):
     <title>Zimbra Admin</title>
     <link rel="ICON" type="image/gif" href="/zimbra/img/loRes/logo/favicon.gif"/>
     <link rel="SHORTCUT ICON" href="/zimbra/img/loRes/logo/favicon.ico"/>
-    <style type="text/css">
-      <!--
-<%
-String hiRes = (String) request.getParameter("hiRes");
-if (hiRes != null) {
-%>
-        @import url(<%= contextPath %>/img/hiRes/imgs.css?v=<%= vers %>);
-        @import url(<%= contextPath %>/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
-<% } else { %>
-        @import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-        @import url(<%= contextPath %>/img/loRes/skins/steel/skin.css?v=<%= vers %>);
-<% } %>
-   @import url(<%= contextPath %>/js/zimbraAdmin/config/style/dwt.css?v=<%= vers %>);
-   @import url(<%= contextPath %>/js/zimbraAdmin/config/style/common.css?v=<%= vers %>);
-   @import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css?v=<%= vers %>);
-   @import url(/zimbraAdmin/skins/steel/skin.css?v=<%= vers %>);   
-     -->
-    </style>
-	<script language="JavaScript">
-    	DwtConfigPath = "<%= contextPath %>/js/dwt/config";
-    </script>
     
 <script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZaMsg.js<%= ext %>?v=<%= vers %>"></script>
-
-<% if ( (mode != "") && (mode.equalsIgnoreCase("mjsf")) ) { %>
-   		<jsp:include page="/public/Ajax.jsp"/>
-   		<jsp:include page="/public/XForms.jsp"/>
-    	<jsp:include page="/public/Zimbra.jsp"/>
-	    <jsp:include page="/public/ZimbraAdmin.jsp"/>
+<% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
+	<style type="text/css">
+	<!--
+	<%if (hiRes != null) {%>
+	@import url(<%= contextPath %>/img/hiRes/imgs.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
+	<% } else { %>
+	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/img/loRes/skins/steel/skin.css?v=<%= vers %>);
+	<% } %>
+	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/dwt.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/common.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/skins/steel/skin.css?v=<%= vers %>);  
+	-->
+	</style>
+	<jsp:include page="/public/Ajax.jsp"/>
+	<jsp:include page="/public/XForms.jsp"/>
+   	<jsp:include page="/public/Zimbra.jsp"/>
+    <jsp:include page="/public/ZimbraAdmin.jsp"/>
 <% } else { %>
-		<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
-		<script type="text/javascript" src="<%= contextPath %>/js/ZimbraAdmin_all.js<%= ext %>?v=<%= vers %>"></script>
-<% } %>
+	<style type="text/css">
+	<!--
+	<%if (hiRes != null) {%>
+	        @import url(<%= contextPath %>/js/ZimbraAdmin_hiRes_all.cgz?v=<%= vers %>);
+	<% } else { %>
+	        @import url(<%= contextPath %>/js/ZimbraAdmin_loRes_all.cgz?v=<%= vers %>);
+	<% } %>
+	-->
+	</style>
+	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="<%= contextPath %>/js/ZimbraAdmin_all.js<%= ext %>?v=<%= vers %>"></script>
+<% } %>    
     <script language="JavaScript">   	
    		function launch() {
    			AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"

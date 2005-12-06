@@ -23,22 +23,14 @@ Contributor(s):
 ***** END LICENSE BLOCK *****
 -->
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<link rel="ICON" type="image/gif" href="/zimbra/img/loRes/logo/favicon.gif"/>
-<link rel="SHORTCUT ICON" href="/zimbra/img/loRes/logo/favicon.ico"/>
-<link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss" />
-  
-<title>Zimbra</title>
-
-<%! 
+<%!
 static final private String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
 static final private String LOGIN_PAGE = "/zimbra/";
 %>
-
-<% 
+<%
         String authToken = request.getParameter("auth");
         if (authToken != null && authToken.equals("")){
             authToken = null;
@@ -61,55 +53,55 @@ static final private String LOGIN_PAGE = "/zimbra/";
             c.setMaxAge(-1);                
             response.addCookie(c);
         }
-
+        String contextPath = (String)request.getContextPath(); 
         String mode = (String) request.getAttribute("mode");
         String vers = (String) request.getAttribute("version");
         String ext = (String) request.getAttribute("fileExtension");
+        String hiRes = (String) request.getParameter("hiRes");
         if (vers == null) vers = "";
         if (ext == null) ext = "";
 %>
-
-<style type="text/css">
-<!--
-<%String hiRes = (String) request.getParameter("hiRes");
-  if (hiRes != null) {
-%>
-        @import url(/zimbra/img/hiRes/imgs.css?v=<%= vers %>);
-        @import url(/zimbra/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
-<% } else { %>
-        @import url(/zimbra/img/loRes/imgs.css?v=<%= vers %>);
-        @import url(/zimbra/img/loRes/skins/steel/skin.css?v=<%= vers %>);
-<% } %>
-        @import url(/zimbra/js/zimbraMail/config/style/dwt.css?v=<%= vers %>);
-        @import url(/zimbra/js/zimbraMail/config/style/common.css?v=<%= vers %>);
-        @import url(/zimbra/js/zimbraMail/config/style/zm.css?v=<%= vers %>);
-        @import url(/zimbra/js/zimbraMail/config/style/spellcheck.css?v=<%= vers %>);
-        @import url(/zimbra/skins/steel/skin.css?v=<%= vers %>);
--->
-</style>
-
-<script language="JavaScript">
-	DwtConfigPath = "js/dwt/config";
-</script>
-   	
-<jsp:include page="Messages.jsp"/>
-
+<link rel="ICON" type="image/gif" href="<%= contextPath %>/img/loRes/logo/favicon.gif"/>
+<link rel="SHORTCUT ICON" href="<%= contextPath %>/img/loRes/logo/favicon.ico"/>
+<link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss" />
+<title>Zimbra</title>
+<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
-
+	<style type="text/css">
+	<!--
+	<%if (hiRes != null) {%>
+	        @import url(/zimbra/img/hiRes/imgs.css?v=<%= vers %>);
+	        @import url(/zimbra/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
+	<% } else { %>
+	        @import url(/zimbra/img/loRes/imgs.css?v=<%= vers %>);
+	        @import url(/zimbra/img/loRes/skins/steel/skin.css?v=<%= vers %>);
+	<% } %>
+	        @import url(/zimbra/js/zimbraMail/config/style/dwt.css?v=<%= vers %>);
+	        @import url(/zimbra/js/zimbraMail/config/style/common.css?v=<%= vers %>);
+	        @import url(/zimbra/js/zimbraMail/config/style/zm.css?v=<%= vers %>);
+	        @import url(/zimbra/js/zimbraMail/config/style/spellcheck.css?v=<%= vers %>);
+	        @import url(/zimbra/skins/steel/skin.css?v=<%= vers %>);
+	-->
+	</style>
 	<jsp:include page="Ajax.jsp"/>
 	<jsp:include page="Zimbra.jsp"/>
 	<jsp:include page="ZimbraMail.jsp"/>
-
 <% } else { %>
-
-	<script type="text/javascript" src="/zimbra/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
-	<script type="text/javascript" src="/zimbra/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
-
+	<style type="text/css">
+	<!--
+	<%if (hiRes != null) {%>
+	        @import url(<%= contextPath %>/js/ZimbraMail_hiRes_all.cgz?v=<%= vers %>);
+	<% } else { %>
+	        @import url(<%= contextPath %>/js/ZimbraMail_loRes_all.cgz?v=<%= vers %>);
+	<% } %>
+	-->
+	</style>
+	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="<%= contextPath %>/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>
-
 <script language="JavaScript">  
 	function launch() {
-   		AjxWindowOpener.HELPER_URL = "/zimbra/public/frameOpenerHelper.jsp"
+   		AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		 	// figure out the debug level
 			if (location.search && (location.search.indexOf("debug=") != -1)) {
