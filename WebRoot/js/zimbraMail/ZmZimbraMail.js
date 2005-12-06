@@ -211,9 +211,8 @@ function(ev) {
 			childWin.parentController = null;
 			childWin.close();
 		}
-		
-		window._zimbraMail = null;
 	}
+	window._zimbraMail = window.onload = window.onresize = window.document.onkeypress = null;
 };
 
 /**
