@@ -75,6 +75,11 @@ ZmMailListController.MSG_KEY[ZmController.TRAD_VIEW]		= "byMessage";
 
 ZmMailListController.GROUP_BY_VIEWS = [ZmController.CONVLIST_VIEW, ZmController.TRAD_VIEW];
 
+ZmMailListController.INVITE_REPLY_MAP = {};
+ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_ACCEPT] = ZmOperation.REPLY_ACCEPT;
+ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_DECLINE] = ZmOperation.REPLY_DECLINE;
+ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_TENTATIVE] = ZmOperation.REPLY_TENTATIVE;
+
 // Public methods
 
 ZmMailListController.prototype.toString = 
@@ -266,22 +271,17 @@ function(args) {
 
 ZmMailListController.prototype._inviteReplyHandler = 
 function (ev) {
-	if (!this._inviteReplyDialog) {
-		var d = this._inviteReplyDialog = new DwtMessageDialog(this._shell, null, 
-															   [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
-		d.setMessage(ZmMsg.editInviteReply, DwtMessageDialog.INFO_STYLE);
-		d.registerCallback(DwtDialog.YES_BUTTON, this._inviteReplyDialogYesCallback, this, ev);
-		d.registerCallback(DwtDialog.NO_BUTTON, this._inviteReplyDialogNoCallback, this, ev);
-		d.registerCallback(DwtDialog.CANCEL_BUTTON, this._inviteReplyDialogCancelCallback, this, ev);
+	var type = ev._inviteReplyType;
+	var compId = ev._inviteComponentId;
+	if (type == ZmOperation.INVITE_REPLY_ACCEPT || 
+		type == ZmOperation.INVITE_REPLY_DECLINE ||
+		type == ZmOperation.INVITE_REPLY_TENTATIVE) {
+		type = ZmMailListController.INVITE_REPLY_MAP[type];
+		this._editInviteReply(type, compId);
 	}
-	var refView = this.getReferenceView();
-	var refEl = refView? refView.getHtmlElement(): null;
-	var point = null;
-	if (refEl) {
-		var loc = Dwt.toWindow(refEl, 0, 0);
-		point = new DwtPoint(loc.x + 50, loc.y + 100);
+	else {
+		this._sendInviteReply(type, compId);
 	}
-	this._inviteReplyDialog.popup(point);
 	return false;
 };
 
@@ -347,14 +347,6 @@ function() {
 	return this._activeSearch.search ? this._activeSearch.search.folderId : null;
 };
 
-ZmMailListController.prototype._inviteReplyDialogYesCallback = 
-function(ev) {
-    this._inviteReplyDialog.popdown();
- 	var action = ev._inviteReplyType;
-	var compId = ev._inviteComponentId;
-	this._editInviteReply(action, compId);
-};
-
 ZmMailListController.prototype._getInviteReplyBody = 
 function(type) {
 	var replyBody = null;
@@ -378,14 +370,6 @@ function(type) {
 		case ZmOperation.REPLY_NEW_TIME:	replySubject = ZmMsg.subjectNewTime + ": "; break;
 	}
 	return replySubject;
-};
-
-ZmMailListController.prototype._inviteReplyDialogNoCallback = 
-function(ev) {
-	var type = ev._inviteReplyType;
-	var compId = ev._inviteComponentId;	
-	this._inviteReplyDialog.popdown();
-	this._sendInviteReply(type, compId);
 };
 
 ZmMailListController.prototype._editInviteReply =
@@ -420,11 +404,6 @@ function(type, componentId) {
 		msg.setSubject(subject);
 	}
 	msg.sendInviteReply(contactList, true, componentId);
-};
-
-ZmMailListController.prototype._inviteReplyDialogCancelCallback = 
-function (args){
-    this._inviteReplyDialog.popdown();
 };
 
 ZmMailListController.prototype._spamListener = 

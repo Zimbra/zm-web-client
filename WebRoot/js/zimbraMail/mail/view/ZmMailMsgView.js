@@ -288,28 +288,38 @@ function() {
 	if (this._inviteToolbar)
 		this._inviteToolbar.dispose();
 
-	this._operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
-	this._inviteToolbar = new ZmButtonToolBar(this,	this._operationButtonIds,
+	var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
+	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
+	this._inviteToolbar = new ZmButtonToolBar(this,	operationButtonIds,
 						  null, DwtControl.STATIC_STYLE,
 						  "ZmInviteToolBar", "DwtButton");
 	// get a little space between the buttons.
 	var toolbarHtmlEl = this._inviteToolbar.getHtmlElement();
 	toolbarHtmlEl.firstChild.cellPadding = "3";
+	
 	var inviteToolBarListener = new AjxListener(this, this._inviteToolBarListener);
-
-	for (var i = 0; i < this._operationButtonIds.length; i++) {
-		var id = this._operationButtonIds[i];
+	for (var i = 0; i < operationButtonIds.length; i++) {
+		var id = operationButtonIds[i];
 
 		// HACK for IE, which doesn't support multiple classnames. If I
 		// just change the styles, the activated class overrides the basic
 		// activated class definition, thus I have to change what the
 		// activated class name will be for the buttons in the toolbar.
-		var b = this._inviteToolbar.getButton(id);
-		b._activatedClassName = b._className + "-" + DwtCssStyle.ACTIVATED;
-		b._triggeredClassName = b._className + "-" + DwtCssStyle.TRIGGERED;
+		var button = this._inviteToolbar.getButton(id);
+		button._activatedClassName = button._className + "-" + DwtCssStyle.ACTIVATED;
+		button._triggeredClassName = button._className + "-" + DwtCssStyle.TRIGGERED;
 
 		this._inviteToolbar.addSelectionListener(id, inviteToolBarListener);
+		
+		var standardItems = [id, replyButtonIds[i]];
+		var menu = new ZmActionMenu(button, standardItems);
+		for (var j = 0; j < standardItems.length; j++) {
+			var menuItem = menu.getItem(j);
+			menuItem.addSelectionListener(inviteToolBarListener);
+		}
+		button.setMenu(menu);
 	}
+	
 	return this._inviteToolbar;
 };
 
@@ -884,7 +894,7 @@ function(msg) {
 
 ZmMailMsgView.prototype._inviteToolBarListener =
 function(ev) {
-	ev._inviteReplyType = ev.item.getData(ZmOperation.KEY_ID);;
+	ev._inviteReplyType = ev.item.getData(ZmOperation.KEY_ID);
 	ev._inviteComponentId = null;
 	this.notifyListeners(ZmMailMsgView.REPLY_INVITE_EVENT, ev);
 };
