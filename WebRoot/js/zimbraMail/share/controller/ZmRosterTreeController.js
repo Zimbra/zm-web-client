@@ -31,6 +31,7 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
     this._imApp = appCtxt.getApp(ZmZimbraMail.IM_APP);
 	this._eventMgrs = {};
 	this._toastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
+	this._confirmDeleteRosterItemFormatter = new AjxMessageFormat(ZmMsg.imConfirmDeleteRosterItem);	
     this._addr2Items = {}; // hash from  roster tree item addr to ZmRosterItem for each group item is in
     this._prefixId = Dwt.getNextId();	
 	// initialze tree data from roster item list
@@ -203,7 +204,9 @@ function(ev) {
 		this._deleteItemShield.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
 		this._deleteItemShield.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteItemShield);
 	}
-	this._deleteItemShield.setMessage(ZmMsg.confirmDeleteRosterItem, DwtMessageDialog.WARNING_STYLE);
+	var msg = this._confirmDeleteRosterItemFormatter.format([organizer.getRosterItem().getAddress()]);
+	this._deleteItemShield.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	
 	this._deleteItemShield.popup();
 };
 
