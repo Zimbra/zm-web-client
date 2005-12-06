@@ -217,29 +217,23 @@ function() {
 	if (!this._toolTip) {
 		var html = new Array(20);
 		var idx = 0;
-		
 		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 >";
-		html[idx++] = "<tr valign='center'><td colspan=2 align='left'>";
+		html[idx++] = "<tr valign='middle'><td colspan=2 align='left'>";
 		html[idx++] = "<div style='border-bottom: 1px solid black;'>";
 		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
-		html[idx++] = "<tr valign='center'>";
-		html[idx++] = "<td><b>";
-		
-		// IMGHACK - added outer table for new image changes...
-		html[idx++] = "<div style='white-space:nowrap'><table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
-		html[idx++] = "<td>" + AjxImg.getImageHtml(this.getPresence().getIcon()) + "</td>";
-		html[idx++] = "</tr></table>";
-		
-		html[idx++] = "&nbsp;";
+		html[idx++] = "<tr valign='middle'>";
+		html[idx++] = "<td valign='middle'><b>";
+		html[idx++] = "<td valign='middle'>" + AjxImg.getImageHtml(this.getPresence().getIcon()) + "</td>";
+		html[idx++] = "<td valign='middle' align='center'><b>";
 		html[idx++] = AjxStringUtil.htmlEncode(this.getName() + " (" + this.getPresence().getShowText() + ")");
-		html[idx++] = "&nbsp;</div></b></td>";	
-		html[idx++] = "<td align='right'>";
-
+		html[idx++] = "</td></b>";	
+		html[idx++] = "<td align='right' valign='middle'>";
 		html[idx++] = AjxImg.getImageHtml("HappyEmoticon");
 		html[idx++] = "</td>";
-		html[idx++] = "</table></div></td></tr>";
-		//idx = this._addEntryRow(ZmMsg.meetingStatus, this.getStatusString(), html, idx, false);
-				
+		html[idx++] = "</tr>";		
+		html[idx++] = "</table>";
+		html[idx++] = "</div>";
+		html[idx++] = "</td></tr>";				
 		idx = this._addEntryRow(ZmMsg.imAddress, this.getAddress(), html, idx, false); //true, "250");		
 		idx = this._addEntryRow(ZmMsg.imName, this.name, html, idx, false);  // use this.name
 		idx = this._addEntryRow(ZmMsg.imGroups, this.getGroups().join(", "), html, idx, false);
