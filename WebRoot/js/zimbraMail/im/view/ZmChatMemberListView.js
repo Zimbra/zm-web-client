@@ -87,7 +87,7 @@ function(item) {
 	var html = new AjxBuffer();
 
 	html.append("<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>");
-    html.append("<td width=20 id='", this._getFieldId(item, ZmChatMemberListView.ID_SHOW_ICON),"'>", AjxImg.getImageHtml(item.getIcon()), "</td>");
+    html.append("<td width=20 id='", this._getFieldId(item, ZmChatMemberListView.ID_SHOW_ICON),"'>", AjxImg.getImageHtml(item.getPresence().getIcon()), "</td>");
 	html.append("<td id='",this._getFieldId(item, ZmChatMemberListView.ID_NAME),"'>&nbsp;", AjxStringUtil.htmlEncode(item.getName()), "</td>");
 	html.append("</tr></table>");
 	div.innerHTML = html.toString();
@@ -174,7 +174,7 @@ function(item, fields) {
 
     if (doShow)  {
         var el = document.getElementById(this._getFieldId(item, ZmChatMemberListView.ID_SHOW_ICON));
-        if (el) el.innerHTML = AjxImg.getImageHtml(item.getIcon());
+        if (el) el.innerHTML = AjxImg.getImageHtml(item.getPresence().getIcon());
     }
     if (doName) {
         var el = document.getElementById(this._getFieldId(item, ZmChatMemberListView.ID_NAME));

@@ -22,11 +22,10 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-function ZmRosterItem(id, list, appCtxt, name, show, status, groupNames) {
+function ZmRosterItem(id, list, appCtxt, name, presence, groupNames) {
 	ZmItem.call(this, appCtxt, ZmOrganizer.ROSTER_ITEM, id, list);
 	this.name = name;
-	this.show = show || ZmRosterItem.SHOW_ONLINE;
-	this.status = status;
+	this.presence = presence || new ZmRosterPresence();
 	this.groupNames = groupNames;
     this.groups = groupNames ? groupNames.split(/,/) : [];
     this.numUnreadIMs = 0; // num unread IMs from this buddy
@@ -34,13 +33,6 @@ function ZmRosterItem(id, list, appCtxt, name, show, status, groupNames) {
 
 ZmRosterItem.prototype = new ZmItem;
 ZmRosterItem.prototype.constructor = ZmRosterItem;
-
-ZmRosterItem.SHOW_OFFLINE = 'offline';
-ZmRosterItem.SHOW_ONLINE = 'online';     // jabber online
-ZmRosterItem.SHOW_CHAT = 'chat';         // jabber <show> chat
-ZmRosterItem.SHOW_AWAY = 'away';         // jabber <show> away
-ZmRosterItem.SHOW_EXT_AWAY = 'xa';       // jabber <show> xa (extended away)
-ZmRosterItem.SHOW_DND = 'dnd';           // jabber <show>> dnd (do not disturb)
 
 ZmRosterItem.F_SHOW = "ZmRosterItem.show";
 ZmRosterItem.F_STATUS = "ZmRosterItem.status";
@@ -75,35 +67,14 @@ function(id, name, groupNames, doDelete) {
 	this._appCtxt.getAppController().sendRequest(soapDoc, true);
 };
 
-
-// Constants
-//ZmRosterItem.ID_ROSTER_ITEM = ZmOrganizer.ID_ROSTER_ITEM;
-
-ZmRosterItem.prototype.getShowText = 
+ZmRosterItem.prototype.getPresence =
 function() {
-    if (this.status) return this.status;
-    switch (this.show) {
-    case ZmRosterItem.SHOW_ONLINE:
-        return ZmMsg.imStatusOnline;
-    case ZmRosterItem.SHOW_CHAT:
-        return ZmMsg.imStatusChat;
-    case ZmRosterItem.SHOW_AWAY:
-        return ZmMsg.imStatusAway;
-    case ZmRosterItem.SHOW_EXT_AWAY:
-        return ZmMsg.imStatusExtAway;
-    case ZmRosterItem.SHOW_DND:
-        return ZmMsg.imStatusDND;
-    case ZmRosterItem.SHOW_OFFLINE:
-    default:
-        return ZmMsg.imStatusOffline;
-        break;
-    	}
+    return this.presence;
 };
 
 ZmRosterItem.prototype.setShow  = 
 function(show, status) {
-    this.show = show;
-    this.status = status;
+    this.presence.setShow(show).setStatus(status);
     var fields = {};
     fields[ZmRosterItem.F_SHOW] = show;
     fields[ZmRosterItem.F_STATUS] = status;
@@ -160,25 +131,6 @@ function(oldGroup, newGroup) {
     this._modify(this.id, this.name, newGroupNames, false);    
 };
 
-ZmRosterItem.prototype.getIcon = 
-function() {
-    switch (this.show) {
-    case ZmRosterItem.SHOW_ONLINE:
-        return "ImAvailable";
-    case ZmRosterItem.SHOW_CHAT:
-        return "ImFree2Chat";
-    case ZmRosterItem.SHOW_AWAY:
-        return "ImAway";
-    case ZmRosterItem.SHOW_EXT_AWAY:
-        return "ImExtendedAway";
-    case ZmRosterItem.SHOW_DND:
-        return "ImDnd";
-    case ZmRosterItem.SHOW_OFFLINE:
-    default:
-        return "RoundMinusDis"; //"Blank_16";
-    	}
-};
-
 ZmRosterItem.sortCompare = 
 function(itemA, itemB) {
 	// sort by name
@@ -200,11 +152,7 @@ ZmRosterItem.prototype.getGroupNames = function() { return this.groupNames; };
 
 ZmRosterItem.prototype.getName = function() {	return this.name ? this.name : this.id;};
 
-ZmRosterItem.prototype.getShow = function() { return this.show; };
-
-ZmRosterItem.prototype.getStatus = function() { return this.status; };
-
-ZmRosterItem.prototype.getUnread = function() { return this.numUnreadIMs; }
+ZmRosterItem.prototype.getUnread = function() { return this.numUnreadIMs; };
 
 ZmRosterItem.prototype.inGroup = 
 function(name) { 

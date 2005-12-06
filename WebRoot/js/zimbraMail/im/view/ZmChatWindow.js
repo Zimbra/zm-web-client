@@ -192,10 +192,10 @@ function(item, fields, setAll) {
     if (this._memberListView && fields) this._memberListView._rosterItemChangeListener(item, fields);
 
     if (this.chat.getRosterSize() == 1) {
-        if (doShow) this.setImage(item.getIcon());
+        if (doShow) this.setImage(item.getPresence().getIcon());
         if (doShow || doUnread) {
             var title = new AjxBuffer();
-            title.append("(", item.getShowText());
+            title.append("(", item.getPresence().getShowText());
             if (item.getUnread()) {
                 title.append(", ", item.getUnread(), " ", ZmMsg.unread.toLowerCase());        
             }

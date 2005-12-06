@@ -113,7 +113,7 @@ function(item, fields, treeView) {
     var items = (doShow != null) || (doUnread != null) ? this.getAllItemsByAddr(item.getAddress()) : null;
     
     if (doShow) {
-        var toast = this._toastFormatter.format([item.getName(), item.getShowText()]);
+        var toast = this._toastFormatter.format([item.getName(), item.getPresence().getShowText()]);
         this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
     }
     

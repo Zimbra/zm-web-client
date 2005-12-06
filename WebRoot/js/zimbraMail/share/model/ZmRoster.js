@@ -82,7 +82,7 @@ function(args) {
             var item = items[i];
             if (item.subscription == "TO") {
                 // TODO: handle item.presence
-                var rosterItem = new ZmRosterItem(item.addr, list, this._appCtxt, item.name, null, null, item.groups);
+                var rosterItem = new ZmRosterItem(item.addr, list, this._appCtxt, item.name, null, item.groups);
                 list.addItem(rosterItem);
             }
         }        
@@ -130,7 +130,7 @@ function(im) {
                     // mod
                 } else {
                     // create
-                    var item = new ZmRosterItem(sub.to, list, this._appCtxt, sub.name, null, null, sub.groups);
+                    var item = new ZmRosterItem(sub.to, list, this._appCtxt, sub.name, null, sub.groups);
                     list.addItem(item);
                     var toast = this._newRosterItemtoastFormatter.format([item.getName()]);
                     this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);

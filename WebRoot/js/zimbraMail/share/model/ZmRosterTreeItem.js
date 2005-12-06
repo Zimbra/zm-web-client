@@ -54,9 +54,7 @@ function(name) {
 };
 
 // Public methods
-ZmRosterTreeItem.prototype.getStatus = function() { return this.rosterItem.getStatus(); }
-
-ZmRosterTreeItem.prototype.getIcon = function() { return this.rosterItem.getIcon(); };
+ZmRosterTreeItem.prototype.getIcon = function() { return this.rosterItem.getPresence().getIcon(); };
 
 ZmRosterTreeItem.prototype.getId = function() { return this.id; }
 
