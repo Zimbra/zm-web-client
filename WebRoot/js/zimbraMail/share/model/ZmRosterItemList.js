@@ -129,7 +129,7 @@ function(args) {
 ZmRosterItemList.prototype.reload =
 function() {
     this.removeAllItems();
-    var soapDoc = AjxSoapDoc.create("IMGetRosterRequest", "urn:zimbraMail");
+    var soapDoc = AjxSoapDoc.create("IMGetRosterRequest", "urn:zimbraIM");
     var callback = new AjxCallback(this, this._handleGetRosterResponse);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, callback);
 };
@@ -155,7 +155,7 @@ function() {
  */
 ZmRosterItemList.prototype.createRosterItem =
 function(addr, name, groups) {
-    var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraMail");
+    var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraIM");
     var method = soapDoc.getMethod();
 	method.setAttribute("addr", addr);    
 	if (name) method.setAttribute("name", name);

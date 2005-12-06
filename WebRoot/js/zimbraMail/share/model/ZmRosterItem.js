@@ -66,7 +66,7 @@ function() {
  */
 ZmRosterItem.prototype._modify =
 function(id, name, groupNames, doDelete) {
-    var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraMail");
+    var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraIM");
     var method = soapDoc.getMethod();
 	method.setAttribute("addr", id);
 	if (name) method.setAttribute("name", name);
