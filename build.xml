@@ -495,9 +495,6 @@
     <copy todir="${build.dir}/WebRoot/public/" overwrite="${isProduction}" >
       <fileset dir="WebRoot/public" includes="**/*"/>
     </copy>
-    <copy todir="${build.dir}/WebRoot/zimlets/" overwrite="${isProduction}" >
-      <fileset dir="WebRoot/zimlets" includes="**/*"/>
-    </copy>
     <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" >
       <fileset dir="WebRoot/" excludes="**/help/**,**/adminhelp/**"/>
     </copy>
@@ -647,16 +644,16 @@
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
-      <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar"/>
+      <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar,gifencoder.jar,commons-cli-1.0.jar"/>
   	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes="msgs/*.properties"/>
-      <classes dir="${build.dir}/classes" includes="**/*.class"/>
+      <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="help/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,test/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="zimlets/**,public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/xforms/**,**/test/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**"/>
     </war>
   </target>
   
@@ -724,12 +721,12 @@
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
-      <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar"/>
+      <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar,gifencoder.jar,commons-cli-1.0.jar"/>
   	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes="msgs/*.properties"/>
-      <classes dir="${build.dir}/classes" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
+      <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,skins/**" excludes="js/ZimbraMail*all.*,js/ZmLogin.js,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
       <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheHiRes.html,public/CacheLoRes.html,public/pre-cache.jsp"/>
