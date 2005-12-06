@@ -245,14 +245,6 @@ ZmApptTabViewPage.prototype.setComposeMode =
 function(composeMode) {
 	this._composeMode = composeMode || this._composeMode;
 	this._notesHtmlEditor.setMode(this._composeMode, true);
-
-	// dont forget to reset the body field Id and object ref
-	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
-	if (this._bodyFieldId != bodyFieldId) {
-		this._bodyFieldId = bodyFieldId;
-		this._bodyField = document.getElementById(this._bodyFieldId);
-	}
-
 	this._resizeNotes();
 };
 
@@ -815,7 +807,6 @@ function() {
 		notesHtmlEditorDiv.appendChild(this._notesHtmlEditor.getHtmlElement());
 	delete this._notesHtmlEditorId;
 
-	this._bodyField = document.getElementById(this._notesHtmlEditor.getBodyFieldId());
 	this._resizeNotes();
 };
 
@@ -1030,6 +1021,12 @@ function() {
 
 ZmApptTabViewPage.prototype._resizeNotes =
 function() {
+	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
+	if (this._bodyFieldId != bodyFieldId) {
+		this._bodyFieldId = bodyFieldId;
+		this._bodyField = document.getElementById(this._bodyFieldId);
+	}
+
 	// init html editor heights
 	var rows = this.getHtmlElement().firstChild.rows;
 	var lastRowIdx = rows.length-1;
