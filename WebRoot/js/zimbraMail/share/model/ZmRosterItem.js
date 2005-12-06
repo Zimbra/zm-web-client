@@ -70,7 +70,7 @@ function(id, name, groupNames, doDelete) {
     var method = soapDoc.getMethod();
 	method.setAttribute("addr", id);
 	if (name) method.setAttribute("name", name);
-	if (groupNames) method.setAttribute("group", groupNames);
+	if (groupNames) method.setAttribute("groups", groupNames);
 	method.setAttribute("op", doDelete ? "remove" : "add");
 	this._appCtxt.getAppController().sendRequest(soapDoc, true);
 };
@@ -283,7 +283,7 @@ function() {
 		html[idx++] = "</tr></table>";
 		
 		html[idx++] = "&nbsp;";
-		html[idx++] = AjxStringUtil.htmlEncode(this.getName() + "(" + this.getShowText() + ")");
+		html[idx++] = AjxStringUtil.htmlEncode(this.getName() + " (" + this.getShowText() + ")");
 		html[idx++] = "&nbsp;</div></b></td>";	
 		html[idx++] = "<td align='right'>";
 

@@ -45,6 +45,8 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
 	}
 	
 	this._listeners[ZmOperation.NEW_ROSTER_ITEM] = new AjxListener(this, this._newRosterItemListener);
+	this._listeners[ZmOperation.IM_NEW_CHAT] = new AjxListener(this, this._imNewChatListener);
+	this._listeners[ZmOperation.IM_NEW_GROUP_CHAT] = new AjxListener(this, this._imNewGroupChatListener);
 	
 	this._treeItemHoverListenerListener = new AjxListener(this, this._treeItemHoverListener);
 };
@@ -183,21 +185,32 @@ ZmRosterTreeController.prototype._getHeaderActionMenuOps = function() {
 
 // Returns a list of desired action menu operations
 ZmRosterTreeController.prototype._getItemActionMenuOps = function() {
-	return [ZmOperation.DELETE];
+	return [ZmOperation.IM_NEW_CHAT, ZmOperation.SEP, ZmOperation.DELETE];	
 };
 
 // Returns a list of desired action menu operations
 ZmRosterTreeController.prototype._getGroupActionMenuOps = function() {
-	return [ZmOperation.NEW_ROSTER_ITEM];
+    	return [ZmOperation.IM_NEW_GROUP_CHAT, ZmOperation.SEP, ZmOperation.NEW_ROSTER_ITEM];
 };
 
 
 ZmRosterTreeController.prototype._deleteListener = 
 function(ev) {
-	var org = this._getActionedOrganizer(ev);
-	if (org instanceof ZmRosterTreeItem) {
-	    org.getRosterItem()._delete();
-	};
+	var organizer = this._getActionedOrganizer(ev);
+	if (!(organizer instanceof ZmRosterTreeItem)) return;
+	if (!this._deleteItemShield) {
+		this._deleteItemShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
+		this._deleteItemShield.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
+		this._deleteItemShield.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteItemShield);
+	}
+	this._deleteItemShield.setMessage(ZmMsg.confirmDeleteRosterItem, DwtMessageDialog.WARNING_STYLE);
+	this._deleteItemShield.popup();
+};
+
+ZmRosterTreeController.prototype._deleteShieldYesCallback =
+function(organizer) {
+	organizer.getRosterItem()._delete();
+	this._clearDialog(this._deleteItemShield);
 };
 
 ZmRosterTreeController.prototype._getActionMenu =
@@ -359,9 +372,22 @@ function(ev) {
 	var org = this._getActionedOrganizer(ev);
 	if (org instanceof ZmRosterTreeGroup) {
         newDialog.setGroups(org.getName());
-	};
+	}
 };
 
+ZmRosterTreeController.prototype._imNewChatListener =
+function(ev) {
+	var org = this._getActionedOrganizer(ev);
+    var clc = this._imApp.getChatListController();
+    clc.chatWithRosterItem(org.getRosterItem());
+};
+
+ZmRosterTreeController.prototype._imNewGroupChatListener =
+function(ev) {
+	var org = this._getActionedOrganizer(ev);
+    var clc = this._imApp.getChatListController();
+    clc.chatWithRosterItems(org.getRosterItems(), org.getName()+" "+ZmMsg.imGroupChat);        
+};
 
 // Create a roster item
 ZmRosterTreeController.prototype._newRosterItemCallback =

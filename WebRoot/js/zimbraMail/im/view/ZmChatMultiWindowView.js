@@ -169,7 +169,7 @@ function(ev) {
             	mouseEv.setFromDhtmlEvent(ev.uiEvent);
             	this._nextInitX = mouseEv.elementX;
             	this._nextInitY = mouseEv.elementY;
-		    this._controller.chatWithRosterItems(srcData.getRosterItems(), srcData.getName());
+		    this._controller.chatWithRosterItems(srcData.getRosterItems(), srcData.getName()+" "+ZmMsg.imGroupChat);
         }
         
 	}

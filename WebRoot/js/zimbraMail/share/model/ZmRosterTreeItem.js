@@ -24,7 +24,7 @@
  */
 function ZmRosterTreeItem(id, rosterItem, parent, tree) {
 	ZmOrganizer.call(this, ZmOrganizer.ROSTER_TREE_ITEM, id, rosterItem.getName(), parent, tree);
-	this	.rosterItem = rosterItem;
+	this.rosterItem = rosterItem;
 }
 
 ZmRosterTreeItem.prototype = new ZmOrganizer;

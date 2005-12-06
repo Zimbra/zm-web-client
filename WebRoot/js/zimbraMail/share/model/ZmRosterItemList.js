@@ -107,38 +107,18 @@ function(obj) {
 	}
 };
 
-ZmRosterItemList.prototype._getGroups =
-function(groups, groupDict) {
-    if (groups == null || groups == "") return "";
-    var g = groups.split(/,/);
-    var result = [];
-    for (var i=0; i < g.length; i++) {
-        if (g[i] in groupDict) result.push(groupDict[g[i]]);
-    }
-    return result.join(",");
-};
-
 ZmRosterItemList.prototype._handleGetRosterResponse =
 function(args) {
     var resp = args.getResponse()
     if (!resp || !resp.IMGetRosterResponse) return;
     var roster = resp.IMGetRosterResponse;
-    var groupDict = {};
-    if (roster.groups && roster.groups.group) {
-        var groups = roster.groups.group;
-        for (var i=0; i < groups.length; i++) {
-            var group = groups[i];
-            groupDict[group.num] = group.name;
-        }        
-    }
     if (roster.items && roster.items.item) {
         var items = roster.items.item;
         for (var i=0; i < items.length; i++) {
             var item = items[i];
             if (item.subscription == "TO") {
                 // TODO: handle item.presence
-                var groups = this._getGroups(item.group, groupDict);
-                var rosterItem = new ZmRosterItem(item.addr, this, this._appCtxt, item.name, null, null, groups);
+                var rosterItem = new ZmRosterItem(item.addr, this, this._appCtxt, item.name, null, null, item.groups);
                 this.addItem(rosterItem);
             }
         }        
@@ -179,7 +159,7 @@ function(addr, name, groups) {
     var method = soapDoc.getMethod();
 	method.setAttribute("addr", addr);    
 	if (name) method.setAttribute("name", name);
-	if (groups) method.setAttribute("group", groups); // soap attr is "group", not "groups"
+	if (groups) method.setAttribute("groups", groups);
 	method.setAttribute("op", "add");
 	this._appCtxt.getAppController().sendRequest(soapDoc, true);
 };
