@@ -227,11 +227,11 @@ function() {
 		
 		// IMGHACK - added outer table for new image changes...
 		html[idx++] = "<div style='white-space:nowrap'><table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
-		html[idx++] = "<td>" + AjxImg.getImageHtml(this.getIcon()) + "</td>";
+		html[idx++] = "<td>" + AjxImg.getImageHtml(this.getPresence().getIcon()) + "</td>";
 		html[idx++] = "</tr></table>";
 		
 		html[idx++] = "&nbsp;";
-		html[idx++] = AjxStringUtil.htmlEncode(this.getName() + " (" + this.getShowText() + ")");
+		html[idx++] = AjxStringUtil.htmlEncode(this.getName() + " (" + this.getPresence().getShowText() + ")");
 		html[idx++] = "&nbsp;</div></b></td>";	
 		html[idx++] = "<td align='right'>";
 
