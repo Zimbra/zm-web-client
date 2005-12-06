@@ -869,17 +869,33 @@ function(appt, mode) {
 		this._calendarOrgs = new Array();
 		var children = calTreeData.root.children.getArray();
 		var len = children.length;
-		var visible = (mode != ZmAppt.MODE_NEW && !appt.isReadOnly()) || (mode == ZmAppt.MODE_NEW && len>1);
-		Dwt.setVisibility(this._calendarSelect.getHtmlElement(), visible);
-		Dwt.setVisibility(this._calLabelField, visible);
+		var apptCal;
+		for (var i = 0; i < len; i++) {
+			var cal = children[i];
+			if (cal.id == appt.folderId) {
+				apptCal = cal;
+				break;
+			}
+		}
+		var visible = len > 1;
+		var enabled = mode == ZmAppt.MODE_NEW || !apptCal.link;
 		if (visible) {
 			for (var i = 0; i < len; i++) {
 				var cal = children[i];
 				this._calendarOrgs[cal.id] = cal.owner;
 				// if for some reason, we dont have share info, show all shares
-				if (!cal.link || (cal.link && (cal.shares == null || cal.shares[0].isWrite())))
+				// Note: can't move appts to/from shared calendars
+				if (!enabled || !cal.link || (mode == ZmAppt.MODE_NEW && cal.link && (cal.shares == null || cal.shares[0].isWrite())))
 					this._calendarSelect.addOption(cal.name, false, cal.id);
 			}
+		}
+		Dwt.setVisibility(this._calendarSelect.getHtmlElement(), visible);
+		Dwt.setVisibility(this._calLabelField, visible);
+		if (enabled) {
+			this._calendarSelect.enable();
+		}
+		else {
+			this._calendarSelect.disable();
 		}
 	}
 	// always reset the width of this select widget

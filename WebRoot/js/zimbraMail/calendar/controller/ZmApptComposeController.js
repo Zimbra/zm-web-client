@@ -280,8 +280,8 @@ function(ev) {
 
 ZmApptComposeController.prototype._handleResponseSave = 
 function(args) {
-	var appt = args[0];
-	var folderId = args[1];
+	var appt = args ? args[0] : null;
+	var folderId = args ? args[1] : null;
 	if (appt && folderId) {
 		var callback = new AjxCallback(this, this._handleResponseCleanup);
 		appt.move(folderId, callback);
