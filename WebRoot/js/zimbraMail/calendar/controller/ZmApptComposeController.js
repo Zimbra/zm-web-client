@@ -98,7 +98,12 @@ ZmApptComposeController.prototype.saveAppt =
 function(attId) {
 	var appt = this._apptView.getAppt(attId);
 	if (appt) {
-		appt.save(attId, new AjxCallback(this, this._handleResponseSave));
+		var args;
+		if (appt._orig && appt._orig.folderId != appt.folderId) {
+			// pass along appt and folderId for appt move
+			args = [ appt, appt.folderId ];
+		}
+		appt.save(attId, new AjxCallback(this, this._handleResponseSave, args));
 	}
 };
 
@@ -275,6 +280,19 @@ function(ev) {
 
 ZmApptComposeController.prototype._handleResponseSave = 
 function(args) {
+	var appt = args[0];
+	var folderId = args[1];
+	if (appt && folderId) {
+		var callback = new AjxCallback(this, this._handleResponseCleanup);
+		appt.move(folderId, callback);
+	}
+	else {
+		this._handleResponseCleanup();
+	}
+};
+
+ZmApptComposeController.prototype._handleResponseCleanup = 
+function() {
 	this._apptView.cleanup();	// always cleanup the views
 	this._app.popView(true);	// force pop view
 };
