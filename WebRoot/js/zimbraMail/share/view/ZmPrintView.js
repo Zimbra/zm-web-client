@@ -89,11 +89,11 @@ function() {
 	var username = this._appCtxt.get(ZmSetting.USERNAME);
 	var html = new Array();
 	var idx = 0;
-	
 	html[idx++] = "<html><head><title>Zimbra: ";
 	html[idx++] = username;
 	html[idx++] = "</title>";
-	html[idx++] = "<link rel='stylesheet' href='/zimbra/js/zimbraMail/config/style/zm.css' media='screen'></link>";
+	html[idx++] = "<link rel='stylesheet' href='/zimbra/js/zimbraMail/config/style/msgview.css?v="+cacheKillerVersion+"' media='screen'></link>";
+	html[idx++] = "<link rel='stylesheet' href='/zimbra/js/zimbraMail/config/style/zm.css?v="+cacheKillerVersion+"' media='screen'></link>";
 	html[idx++] = "</head><body>";
 	html[idx++] = "<table border=0 width=100%><tr>";
 	html[idx++] = "<td class='ZmPrintView-company'><b>Zimbra</b> Collaboration Suite</td>";

@@ -243,7 +243,6 @@ function(words, keepModeDiv) {
 
 		doc = this._getIframeDoc();
 		body = doc.body;
-
 		// load the spell check styles, if not already there.
 		style = doc.getElementById("ZM-SPELLCHECK-STYLE");
 		if (!style) {
@@ -251,7 +250,7 @@ function(words, keepModeDiv) {
 			style.id = "ZM-SPELLCHECK-STYLE";
 			style.rel = "stylesheet";
 			style.type = "text/css";
-			var style_url = "/zimbra/js/zimbraMail/config/style/spellcheck.css";
+			var style_url = "/zimbra/js/zimbraMail/config/style/spellcheck.css?v="+cacheKillerVersion;
 			if (AjxEnv.isGeckoBased) {
 				style_url = document.baseURI.replace(
 					/^(https?:\x2f\x2f[^\x2f]+).*$/, "$1") + style_url;
