@@ -35,12 +35,12 @@ function ZmRosterItem(id, list, appCtxt, name, show, status, groupNames) {
 ZmRosterItem.prototype = new ZmItem;
 ZmRosterItem.prototype.constructor = ZmRosterItem;
 
-ZmRosterItem.SHOW_OFFLINE = 0; //'offline';
-ZmRosterItem.SHOW_ONLINE = 1; //'online';     // jabber online
-ZmRosterItem.SHOW_CHAT = 2; //'chat';         // jabber <show> chat
-ZmRosterItem.SHOW_AWAY = 3; //'away';         // jabber <show> away
-ZmRosterItem.SHOW_EXT_AWAY = 4; //'xa';       // jabber <show> xa (extended away)
-ZmRosterItem.SHOW_DND = 5; //'dnd';           // jabber <show>> dnd (do not disturb)
+ZmRosterItem.SHOW_OFFLINE = 'offline';
+ZmRosterItem.SHOW_ONLINE = 'online';     // jabber online
+ZmRosterItem.SHOW_CHAT = 'chat';         // jabber <show> chat
+ZmRosterItem.SHOW_AWAY = 'away';         // jabber <show> away
+ZmRosterItem.SHOW_EXT_AWAY = 'xa';       // jabber <show> xa (extended away)
+ZmRosterItem.SHOW_DND = 'dnd';           // jabber <show>> dnd (do not disturb)
 
 ZmRosterItem.F_SHOW = "ZmRosterItem.show";
 ZmRosterItem.F_STATUS = "ZmRosterItem.status";

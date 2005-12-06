@@ -211,8 +211,8 @@ function(item, fields, setAll) {
 ZmChatWindow.prototype.sendInput =
 function(text) {
     if (text.substring(0,1) == "$") {
-        if (text.substring(1, 2) == "s") {
-            this.chat.getRosterItem().setShow(parseInt(text.substring(2,3)));
+        if (text.substring(1, 2) == "p") {
+            this.chat.getRosterItem().setShow(AjxStringUtil.trim(text.substring(3)));
         } else if (text.substring(1, 3) == "et") {
             text = ">:) :) =)) =(( :(( <:-P :O)";
         } else if (text.substring(1, 2) == "u") {
