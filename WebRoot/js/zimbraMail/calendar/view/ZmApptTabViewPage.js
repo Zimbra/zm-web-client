@@ -150,16 +150,19 @@ function(appt, mode) {
 	if (!this._rendered) {
 		this._createHTML();
 		this._rendered = true;
-		this.setComposeMode();
 	}
-
-	this._reset(appt, (mode || ZmAppt.MODE_NEW));
 
 	this._mode = mode == ZmAppt.MODE_NEW_FROM_QUICKADD || mode == null
 		? ZmAppt.MODE_NEW : mode;
 
-	// save the original form data in its initialized state
-	this._origFormValue = this._formValue();
+	// OPTIMIZATION: create timed action to reset the view
+	var ta = new AjxTimedAction();
+	ta.params = new AjxVector();
+	ta.params.add(appt);
+	ta.params.add(mode || ZmAppt.MODE_NEW);
+	ta.obj = this;
+	ta.method = this._reset;
+	AjxTimedAction.scheduleAction(ta);
 };
 
 ZmApptTabViewPage.prototype.cleanup =
@@ -429,6 +432,9 @@ function(appt, mode) {
 
 	// set focus to first input element
 	this._subjectField.focus();
+
+	// save the original form data in its initialized state
+	this._origFormValue = this._formValue();
 };
 
 /**
@@ -806,8 +812,6 @@ function() {
 	if (notesHtmlEditorDiv)
 		notesHtmlEditorDiv.appendChild(this._notesHtmlEditor.getHtmlElement());
 	delete this._notesHtmlEditorId;
-
-	this._resizeNotes();
 };
 
 ZmApptTabViewPage.prototype._initAutocomplete =
