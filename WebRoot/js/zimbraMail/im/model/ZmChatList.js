@@ -50,12 +50,19 @@ function(chat) {
 };
 
 ZmChatList.prototype.getChatByRosterItem =
-function(item) {
+function(item, autoCreate) {
     var list = this.getArray();
 	for (var i=0; i < list.length; i++) {
 	    var chat = list[i];
 	    if (chat.getRosterSize() == 1 && chat.hasRosterItem(item)) return chat;
 	}
+	if (!autoCreate)	return null;
+
+     chat = new ZmChat(Dwt.getNextId(), item.getDisplayName(), this._appCtxt, this);
+     chat.addRosterItem(item);
+     // listeners take care of rest...
+     this.addChat(chat);
+     return chat;
 };
 
 ZmChatList.prototype.getChatsByRosterItem =
@@ -67,4 +74,14 @@ function(item) {
 	    if (chat.hasRosterItem(item)) results.push(chat);
 	}
 	return results;
+};
+
+ZmChatList.prototype.getChatByThread =
+function(thread) {
+    var list = this.getArray();
+	for (var i=0; i < list.length; i++) {
+	    var chat = list[i];
+	    if (chat.getThread() == thread) return chat;
+	}
+	return null;
 };

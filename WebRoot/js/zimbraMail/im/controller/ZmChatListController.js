@@ -436,13 +436,7 @@ function(item) {
 
 ZmChatListController.prototype.chatWithRosterItem =
 function(item) {
-    var chat = this._list.getChatByRosterItem(item);
-    if (chat == null) {
-        chat = new ZmChat(Dwt.getNextId(), item.getDisplayName(), this._appCtxt, this);
-        chat.addRosterItem(item);
-        // listeners take care of rest...
-        this._list.addChat(chat);
-    }
+    var chat = this._list.getChatByRosterItem(item, true);
     // currentview or all? probably all...    
     this._parentView[this._currentView].selectChat(chat);
 };

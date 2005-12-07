@@ -31,8 +31,10 @@ function ZmChatWindow(parent, chat) {
     	this.addControlListener(new AjxListener(this, this._controlListener));
     this._init();
     this.setZIndex(ZmChatWindow._nextZ++);
+	this._chatChangeListenerListener = new AjxListener(this, this._chatChangeListener);
     this._setChat(chat);
     this.id = Dwt.getNextId();
+
 };
 
 ZmChatWindow.SASH_THRESHHOLD = 1;
@@ -154,8 +156,22 @@ function(chat) {
         this._memberListView = new ZmChatMemberListView(this, this.chat._getRosterItemList());
         this._controlListener();
         this._updateGroupChatTitle();
-   }    
+   }
+
+   chat.addChangeListener(this._chatChangeListenerListener);
    this._rosterItemChangeListener(item, null, true);
+};
+
+ZmChatWindow.prototype._chatChangeListener = 
+function(ev, treeView) {
+    if (ev.event == ZmEvent.E_MODIFY) {
+        var fields = ev.getDetail("fields");
+        var doMsg = ZmChat.F_MESSAGE in fields;
+        if (doMsg) {
+            var msg = fields[ZmChat.F_MESSAGE];
+            this.handleMessage(msg);
+        }
+    }
 };
 
 ZmChatWindow.prototype.addRosterItem =
@@ -208,6 +224,20 @@ function(item, fields, setAll) {
     }        
 };
 
+ZmChatWindow.prototype.handleMessage =
+function(msg) {
+    var message = msg.body[0]._content;
+    var addr = msg.from; // item.getDisplayName()
+    var content = this._content.getHtmlElement().firstChild;
+    div = document.createElement("div");
+    // div.className = "ZmChatWindowChatEntryThem";
+    div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+
+                AjxStringUtil.htmlEncode(addr) +
+                ": </b></span>" + this._objectManager.findObjects(message, true);
+    content.appendChild(div);
+    content.parentNode.scrollTop = Dwt.getSize(content).y;
+};
+
 ZmChatWindow.prototype.sendInput =
 function(text) {
     if (text.substring(0,1) == "$") {
@@ -224,17 +254,20 @@ function(text) {
     var div = document.createElement("div");
     div.className = "ZmChatWindowChatEntryMe";
 //    div.innerHTML = "<b>user1: </b>" + AjxStringUtil.htmlEncode(text, true);
-    div.innerHTML = "<b>user1: </b>" + this._objectManager.findObjects(text, true);    
+    div.innerHTML = "<b>me: </b>" + this._objectManager.findObjects(text, true);
     content.appendChild(div);
     
+//    this.chat.sendMessage(text);
+
     div = document.createElement("div");
     // div.className = "ZmChatWindowChatEntryThem";
     div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+
                 AjxStringUtil.htmlEncode(this.chat.getRosterItem().getDisplayName())+
                 ": </b></span>" + AjxStringUtil.htmlEncode("ok", true);
     content.appendChild(div);
+
     content.parentNode.scrollTop = Dwt.getSize(content).y;
-}
+};
 
 ZmChatWindow._inputOnKeyUp =
 function(ev) {

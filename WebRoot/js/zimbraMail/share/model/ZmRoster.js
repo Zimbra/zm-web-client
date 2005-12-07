@@ -56,6 +56,13 @@ function() {
 	return this._chatList;
 };
 
+ZmRoster.prototype.getMyAddress =
+function() {
+    if (this._myAddress == null)
+        this._myAddress = this._appCtxt.get(ZmSetting.USERNAME);
+    return this._myAddress;
+};
+    
 ZmRoster.prototype.getRosterItemTree =
 function() {
 	if (!this._rosterItemTree) {
@@ -188,10 +195,9 @@ function(im) {
         }
     }
     if (im.presence) {
-        var me = this._appCtxt.get(ZmSetting.USERNAME);
         for (var i=0; i < im.presence.length; i++) {
             var p = im.presence[i];
-            if (p.from == me) {
+            if (p.from == this.getMyAddress()) {
                 if (this.getPresence().setFromJS(p)) this._notifyPresence();            
             } else {
                 var ri = this.getRosterItemList().getByAddr(p.from);
@@ -202,6 +208,25 @@ function(im) {
                         this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
                     }
                 }
+            }
+        }
+    }
+    if (im.message) {
+        for (var i=0; i < im.message.length; i++) {
+            var msg = im.message[i];
+            var ri = this.getRosterItemList().getByAddr(msg.from);
+            if (msg.from == this.getMyAddress()) {
+                // need msg.to to correctly handle...                
+            } else {
+                var cl = this.getChatList();
+                var chat = cl.getChatByThread(msg.thread);
+                if (chat == null) {
+                    if (ri != null) {
+                        chat = cl.getChatByRosterItem(ri, true);
+                        chat.setThread(msg.thread);
+                    }
+                }
+                if (chat) chat.addMessage(msg);
             }
         }
     }

@@ -28,14 +28,17 @@ function ZmChat(id, chatName, appCtxt, chatList) {
 	if (chatList == null) chatList = appCtxt.getApp(ZmZimbraMail.IM_APP).getRoster().getChatList();
 	ZmItem.call(this, appCtxt, ZmItem.CHAT, id, chatList);
 	this._evt = new ZmEvent(ZmEvent.S_CHAT);
-	this._chatEntries = [];
+	this._messages = [];
 	this._rosterItemList = new ZmRosterItemList(appCtxt);
 	this._isGroupChat = false;
 	this._chatName = chatName;
+	this._thread = null;
 }
 
 ZmChat.prototype = new ZmItem;
 ZmChat.prototype.constructor = ZmChat;
+
+ZmChat.F_MESSAGE = "ZmChat.message";
 
 ZmChat.prototype.toString = 
 function() {
@@ -61,6 +64,16 @@ function() {
 ZmChat.prototype.getName = 
 function() {
     return this._chatName;
+};
+
+ZmChat.prototype.getThread = 
+function() {
+    return this._thread;
+};
+
+ZmChat.prototype.setThread = 
+function(thread) {
+    this._thread = thread;
 };
 
 // TODO: listeners
@@ -100,4 +113,28 @@ function() {
 ZmChat.prototype.getStatusTitle =
 function() {
     
+};
+
+// add message from notification...
+ZmChat.prototype.addMessage =
+function(msg) {
+    this._messages.push(msg);
+    var fields = {};
+    fields[ZmChat.F_MESSAGE] = msg;
+    this._eventNotify(ZmEvent.E_MODIFY, {fields: fields});
+    // list notify as well?
+};
+
+/**
+ * create item on server.
+ */
+ZmChat.prototype.sendMessage =
+function(text) {
+    var soapDoc = AjxSoapDoc.create("IMSendMessageRequest", "urn:zimbraIM");
+    var method = soapDoc.getMethod();
+    var message = soapDoc.set("message");
+	message.setAttribute("addr", this.getRosterItem(0).getAddress());
+    var body = soapDoc.set("body", text, message);
+    // TODO: error handling
+	this._appCtxt.getAppController().sendRequest(soapDoc, true);
 };
