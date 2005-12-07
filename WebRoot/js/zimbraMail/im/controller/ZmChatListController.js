@@ -55,7 +55,7 @@ function ZmChatListController(appCtxt, container, imApp) {
 	
 	var rosterList = imApp.getRoster().getRosterItemList();
 	rosterList.addChangeListener(this._rosterListListener);
-    	
+	this._imApp = imApp;
 }
 
 ZmChatListController.prototype = new ZmController;
@@ -203,10 +203,14 @@ function(view) {
     	var list = [ZmOperation.IM_PRESENCE_OFFLINE, ZmOperation.IM_PRESENCE_ONLINE, ZmOperation.IM_PRESENCE_CHAT,
                 ZmOperation.IM_PRESENCE_DND, ZmOperation.IM_PRESENCE_AWAY, ZmOperation.IM_PRESENCE_XA,
                 ZmOperation.IM_PRESENCE_INVISIBLE];
-
+    var currentShowOp = this._imApp.getRoster().getPresence().getShowOperation();
     for (var i=0; i < list.length; i++) {
         var mi = presenceMenu.getItemById(ZmOperation.MENUITEM_ID, list[i]);
         mi.addSelectionListener(new AjxListener(this, this._presenceItemListener));
+        if (list[i] == currentShowOp) {
+            mi.setChecked(true, true);
+            mi.parent.parent.setText(mi.getText());            
+        }
     }
 			
 	this._propagateMenuListeners(this._toolbar[view], ZmOperation.NEW_MENU);
@@ -360,8 +364,11 @@ function(ev) {
 
 ZmChatListController.prototype._presenceItemListener = 
 function(ev) {
+    if (ev.detail != DwtMenuItem.CHECKED) return;
 	var id = ev.item.getData(ZmOperation.KEY_ID);
 	ev.item.parent.parent.setText(ev.item.getText());
+	var show = ZmRosterPresence.operationToShow(id);
+	this._imApp.getRoster().setPresence(show, 0, null);
 }
 
 

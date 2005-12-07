@@ -59,6 +59,7 @@ ZmEvent.S_SEARCH		= i++;
 ZmEvent.S_SETTING		= i++;
 ZmEvent.S_ZIMLET		= i++;
 ZmEvent.S_CHAT        = i++;
+ZmEvent.S_ROSTER = i++;
 ZmEvent.S_ROSTER_ITEM = i++;
 ZmEvent.S_ROSTER_TREE_ITEM = i++;
 ZmEvent.S_ROSTER_TREE_GROUP = i++;

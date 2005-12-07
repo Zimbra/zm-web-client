@@ -168,11 +168,11 @@ function() {
 
 ZmChatMemberListView.prototype._rosterItemChangeListener =
 function(item, fields) {
-    var doShow = (ZmRosterItem.F_SHOW in fields);
+    var doPresence = (ZmRosterItem.F_PRESENCE in fields);
     var doUnread = (ZmRosterItem.F_UNREAD in fields);
     var doName = (ZmRosterItem.F_NAME in fields);
 
-    if (doShow)  {
+    if (doPresence)  {
         var el = document.getElementById(this._getFieldId(item, ZmChatMemberListView.ID_SHOW_ICON));
         if (el) el.innerHTML = AjxImg.getImageHtml(item.getPresence().getIcon());
     }

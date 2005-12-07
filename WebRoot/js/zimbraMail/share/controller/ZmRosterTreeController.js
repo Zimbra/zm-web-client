@@ -30,7 +30,6 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
     this._imApp = appCtxt.getApp(ZmZimbraMail.IM_APP);
 	this._eventMgrs = {};
-	this._toastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
 	this._confirmDeleteRosterItemFormatter = new AjxMessageFormat(ZmMsg.imConfirmDeleteRosterItem);	
     this._addr2Items = {}; // hash from  roster tree item addr to ZmRosterItem for each group item is in
     this._prefixId = Dwt.getNextId();	
@@ -106,16 +105,11 @@ function(ev) {
 
 ZmRosterTreeController.prototype._handleRosterItemModify =
 function(item, fields, treeView) {
-    var doShow = ZmRosterItem.F_SHOW in fields;
+    var doShow = ZmRosterItem.F_PRESENCE in fields;
     var doUnread = ZmRosterItem.F_UNREAD in fields;
     var doGroups = ZmRosterItem.F_GROUPS in fields;
 
     var items = (doShow != null) || (doUnread != null) ? this.getAllItemsByAddr(item.getAddress()) : null;
-    
-    if (doShow) {
-        var toast = this._toastFormatter.format([item.getName(), item.getPresence().getShowText()]);
-        this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
-    }
     
     var numUnread = item.getUnread();  
     var newName = !doUnread ? null : 

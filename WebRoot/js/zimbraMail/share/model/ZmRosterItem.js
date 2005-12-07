@@ -34,8 +34,7 @@ function ZmRosterItem(id, list, appCtxt, name, presence, groupNames) {
 ZmRosterItem.prototype = new ZmItem;
 ZmRosterItem.prototype.constructor = ZmRosterItem;
 
-ZmRosterItem.F_SHOW = "ZmRosterItem.show";
-ZmRosterItem.F_STATUS = "ZmRosterItem.status";
+ZmRosterItem.F_PRESENCE = "ZmRosterItem.presence";
 ZmRosterItem.F_GROUPS = "ZmRosterItem.groups";
 ZmRosterItem.F_NAME = "ZmRosterItem.name";
 ZmRosterItem.F_UNREAD = "ZmRosterItem.unread";
@@ -72,12 +71,17 @@ function() {
     return this.presence;
 };
 
-ZmRosterItem.prototype.setShow  = 
+// debugging hack, to be removed
+ZmRosterItem.prototype.__setShow  = 
 function(show, status) {
     this.presence.setShow(show).setStatus(status);
+    this._notifyPresence();
+};
+
+ZmRosterItem.prototype._notifyPresence =
+function() {
     var fields = {};
-    fields[ZmRosterItem.F_SHOW] = show;
-    fields[ZmRosterItem.F_STATUS] = status;
+    fields[ZmRosterItem.F_PRESENCE] = this.getPresence();
     this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
     delete this._toolTip;
 };

@@ -35,16 +35,19 @@ function ZmRoster(appCtxt) {
     this._appCtxt = appCtxt;
     this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);	
     this.getRosterItemTree(); // pre-create
+   	this._evt = new ZmEvent(ZmEvent.S_ROSTER);
+	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);   	
 }
 
 ZmRoster.prototype = new ZmModel;
 ZmRoster.prototype.constructor = ZmRoster;
 
+ZmRoster.F_PRESENCE = "ZmRoster.presence";
+
 ZmRoster.prototype.toString = 
 function() {
 	return "ZmRoster";
 }
-
 
 ZmRoster.prototype.getChatList =
 function() {
@@ -70,6 +73,14 @@ function() {
 	return this._rosterItemList;
 };
 
+ZmRoster.prototype.getPresence =
+function() {
+	if (!this._rosterPresence) {
+   		this._rosterPresence = new ZmRosterPresence();
+	}
+	return this._rosterPresence;
+};
+
 ZmRoster.prototype._handleGetRosterResponse =
 function(args) {
     var resp = args.getResponse()
@@ -80,13 +91,26 @@ function(args) {
         var items = roster.items.item;
         for (var i=0; i < items.length; i++) {
             var item = items[i];
-            if (item.subscription == "TO") {
+            if (item.subscription == "TO" || item.subscription == "BOTH") {
                 // TODO: handle item.presence
-                var rosterItem = new ZmRosterItem(item.addr, list, this._appCtxt, item.name, null, item.groups);
+                var rp = new ZmRosterPresence();
+                rp.setFromJS(item.presence);
+                var rosterItem = new ZmRosterItem(item.addr, list, this._appCtxt, item.name, rp, item.groups);
                 list.addItem(rosterItem);
             }
         }        
     }
+    if (roster.presence) {
+        this.getPresence().setFromJS(roster.presence);
+        this._notifyPresence();
+    }
+};
+
+ZmRoster.prototype._notifyPresence =
+function() {
+    var fields = {};
+    fields[ZmRoster.F_PRESENCE] = this.getPresence();
+    this._eventNotify(ZmEvent.E_MODIFY, {fields: fields});
 };
 
 ZmRoster.prototype.reload =
@@ -112,12 +136,26 @@ function(addr, name, groups) {
 };
 
 /**
+ * set presence on the server
+ */
+ZmRoster.prototype.setPresence =
+function(show, priority, showStatus) {
+    var soapDoc = AjxSoapDoc.create("IMSetPresenceRequest", "urn:zimbraIM");
+    var presence = soapDoc.set("presence");
+	presence.setAttribute("show", show);
+	if (priority) presence.setAttribute("priority", priority);
+	if (showStatus) soapDoc.set("status", showStatus, presence);	
+	this._appCtxt.getAppController().sendRequest(soapDoc, true);
+};
+
+/**
  * handle async notifications. we might need to queue this with timed action and return
  * immediately, since this is happening as a result of a notify header in a response, and
  * we probably don't want to trigger more requests while handling a response.
  */
 ZmRoster.prototype.handleNotification =
 function(im) {
+    // do subscribes/unsubscribes before presence...
     if (im.subscribed) {
         for (var i=0; i < im.subscribed.length; i++) {
             var sub = im.subscribed[i];
@@ -150,4 +188,31 @@ function(im) {
             }
         }
     }
+    if (im.presence) {
+        var me = this._appCtxt.get(ZmSetting.USERNAME);
+        for (var i=0; i < im.presence.length; i++) {
+            var p = im.presence[i];
+            if (p.from == me) {
+                this.getPresence().setFromJS(p);
+                this._notifyPresence();            
+            } else {
+                var ri = this.getRosterItemList().getByAddr(p.from);
+                if (ri) {
+                    ri.getPresence().setFromJS(p);
+                    ri._notifyPresence();
+                    var toast = this._presenceToastFormatter.format([ri.getName(), ri.getPresence().getShowText()]);
+                    this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
+                }
+            }
+        }
+    }
+};
+
+ZmRoster.prototype._eventNotify =
+function(event, details) {
+	if (this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
+		this._evt.set(event, this);
+		this._evt.setDetails(details);
+		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
+	}
 };

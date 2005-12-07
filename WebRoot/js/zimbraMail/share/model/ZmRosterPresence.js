@@ -27,7 +27,7 @@
 *
 */
 function ZmRosterPresence(show, priority, showStatus) {
-    this._show = show || ZmRosterPresence.SHOW_ONLINE;
+    this._show = show || ZmRosterPresence.SHOW_OFFLINE;
     this._priority = priority;
     this._showStatus = showStatus;
 };
@@ -35,18 +35,26 @@ function ZmRosterPresence(show, priority, showStatus) {
 //ZmRoster.prototype = new ZmModel;
 ZmRoster.prototype.constructor = ZmRoster;
 
-ZmRosterPresence.SHOW_OFFLINE = 'offline';
-ZmRosterPresence.SHOW_ONLINE = 'online';     // jabber online
-ZmRosterPresence.SHOW_CHAT = 'chat';         // jabber <show> chat
-ZmRosterPresence.SHOW_AWAY = 'away';         // jabber <show> away
-ZmRosterPresence.SHOW_EXT_AWAY = 'xa';       // jabber <show> xa (extended away)
-ZmRosterPresence.SHOW_DND = 'dnd';           // jabber <show>> dnd (do not disturb)
+ZmRosterPresence.SHOW_OFFLINE = 'OFFLINE';
+ZmRosterPresence.SHOW_ONLINE = 'ONLINE';     // jabber online
+ZmRosterPresence.SHOW_CHAT = 'CHAT';         // jabber <show> chat
+ZmRosterPresence.SHOW_AWAY = 'AWAY';         // jabber <show> away
+ZmRosterPresence.SHOW_EXT_AWAY = 'XA';       // jabber <show> xa (extended away)
+ZmRosterPresence.SHOW_DND = 'DND';           // jabber <show>> dnd (do not disturb)
 
 ZmRosterPresence.prototype.setShow = function(show) { this._show = show; return this; }
 
 ZmRosterPresence.prototype.setStatus = function(showStatus) { this._showStatus = showStatus; return this; }
 
 ZmRosterPresence.prototype.setPriority = function(priority) { this._priority = priority; return this; }
+
+// set from notification and/or roster presence
+ZmRosterPresence.prototype.setFromJS = 
+function(js) {
+    this._show = js.show || ZmRosterPresence.SHOW_OFFLINE;
+    this._priority = js.priority;
+    this._showStatus = js.status;
+};
 
 ZmRosterPresence.prototype.getShow = function() { return this._show; }
 
@@ -93,3 +101,49 @@ function() {
         return "RoundMinusDis"; //"Blank_16";
     	}
 };
+
+ZmRosterPresence.operationToShow = 
+function(op) {
+    switch (op) {
+    case ZmOperation.IM_PRESENCE_ONLINE:
+        return ZmRosterPresence.SHOW_ONLINE;
+    case ZmOperation.IM_PRESENCE_CHAT:
+        return ZmRosterPresence.SHOW_CHAT;
+    case ZmOperation.IM_PRESENCE_AWAY:
+        return ZmRosterPresence.SHOW_AWAY;
+    case ZmOperation.IM_PRESENCE_XA:
+        return ZmRosterPresence.SHOW_EXT_AWAY;
+    case ZmOperation.IM_PRESENCE_DND:
+        return ZmRosterPresence.SHOW_DND;
+    case ZmOperation.IM_PRESENCE_OFFLINE:
+    default:
+        return ZmRosterPresence.SHOW_OFFLINE;
+        break;
+    	}
+};
+
+ZmRosterPresence.prototype.getShowOperation = 
+function() {
+    return ZmRosterPresence.showToOperation(this.getShow());
+};
+
+ZmRosterPresence.showToOperation = 
+function(op) {
+    switch (op) {
+    case ZmRosterPresence.SHOW_ONLINE:
+        return ZmOperation.IM_PRESENCE_ONLINE;
+    case ZmRosterPresence.SHOW_CHAT:
+        return ZmOperation.IM_PRESENCE_CHAT;
+    case ZmRosterPresence.SHOW_AWAY:
+        return ZmOperation.IM_PRESENCE_AWAY;
+    case ZmRosterPresence.SHOW_EXT_AWAY:
+        return ZmOperation.IM_PRESENCE_XA;
+    case ZmRosterPresence.SHOW_DND:
+        return ZmOperation.IM_PRESENCE_DND;
+    case ZmRosterPresence.SHOW_OFFLINE:
+    default:
+        return ZmOperation.IM_PRESENCE_OFFLINE;
+        break;
+    	}
+};
+

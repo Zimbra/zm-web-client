@@ -185,7 +185,7 @@ function(force) {
 
 ZmChatWindow.prototype._rosterItemChangeListener =
 function(item, fields, setAll) {
-    var doShow = setAll || (ZmRosterItem.F_SHOW in fields);
+    var doShow = setAll || (ZmRosterItem.F_PRESENCE in fields);
     var doUnread = setAll || (ZmRosterItem.F_UNREAD in fields);
     var doName = setAll || (ZmRosterItem.F_NAME in fields);
 
@@ -212,7 +212,7 @@ ZmChatWindow.prototype.sendInput =
 function(text) {
     if (text.substring(0,1) == "$") {
         if (text.substring(1, 2) == "p") {
-            this.chat.getRosterItem().setShow(AjxStringUtil.trim(text.substring(3)));
+            this.chat.getRosterItem().__setShow(AjxStringUtil.trim(text.substring(3)));
         } else if (text.substring(1, 3) == "et") {
             text = ">:) :) =)) =(( :(( <:-P :O)";
         } else if (text.substring(1, 2) == "u") {
