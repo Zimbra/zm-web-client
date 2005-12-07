@@ -215,7 +215,7 @@ function(compNum) {
 			mm = AjxDateUtil._pad(d.getMinutes());
 			ss = AjxDateUtil._pad(d.getSeconds());
 			yyyy = d.getFullYear();
-			this._serverEndTime = StringBuffer.concat(yyyy,MM,dd,"T",hh,mm,ss);
+			this._serverEndTime = [yyyy,MM,dd,"T",hh,mm,ss].join("");
 		}
 	}
 	return this._serverEndTime;
