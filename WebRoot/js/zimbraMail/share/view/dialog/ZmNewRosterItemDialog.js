@@ -101,15 +101,32 @@ function() {
 ZmNewRosterItemDialog.prototype.reset =
 function() {
 	ZmDialog.prototype.reset.call(this);
-	document.getElementById(this._addressFieldId).value = "";	
+	var field = document.getElementById(this._addressFieldId);
+	field.value = "";
+	//field.readOnly = false;
+	field.disabled = false;	
 	document.getElementById(this._nameFieldId).value = "";	
 	document.getElementById(this._groupsFieldId).value = "";	
 };
 
 ZmNewRosterItemDialog.prototype.setGroups =
-function(groups) {
-	document.getElementById(this._groupsFieldId).value = groups;
+function(newGroups) {
+	document.getElementById(this._groupsFieldId).value = newGroups || "";
 };
+
+ZmNewRosterItemDialog.prototype.setName =
+function(newName) {
+	document.getElementById(this._nameFieldId).value = newName || "";
+};
+
+ZmNewRosterItemDialog.prototype.setAddress =
+function(newAddress, readonly) {
+	var field = document.getElementById(this._addressFieldId);
+	field.value = newAddress;
+	//if (readonly) field.readOnly = true;
+	if (readonly) field.disabled = true;	
+};
+
 
 ZmNewRosterItemDialog.prototype._initAddressAutocomplete =
 function() {

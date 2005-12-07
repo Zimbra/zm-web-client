@@ -92,7 +92,6 @@ function(args) {
         for (var i=0; i < items.length; i++) {
             var item = items[i];
             if (item.subscription == "TO" || item.subscription == "BOTH") {
-                // TODO: handle item.presence
                 var rp = new ZmRosterPresence();
                 rp.setFromJS(item.presence);
                 var rosterItem = new ZmRosterItem(item.addr, list, this._appCtxt, item.name, rp, item.groups);
@@ -170,7 +169,7 @@ function(im) {
                     // create
                     var item = new ZmRosterItem(sub.to, list, this._appCtxt, sub.name, null, sub.groups);
                     list.addItem(item);
-                    var toast = this._newRosterItemtoastFormatter.format([item.getName()]);
+                    var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
                     this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
                 }
             } else if (sub.from) {
@@ -193,15 +192,15 @@ function(im) {
         for (var i=0; i < im.presence.length; i++) {
             var p = im.presence[i];
             if (p.from == me) {
-                this.getPresence().setFromJS(p);
-                this._notifyPresence();            
+                if (this.getPresence().setFromJS(p)) this._notifyPresence();            
             } else {
                 var ri = this.getRosterItemList().getByAddr(p.from);
                 if (ri) {
-                    ri.getPresence().setFromJS(p);
-                    ri._notifyPresence();
-                    var toast = this._presenceToastFormatter.format([ri.getName(), ri.getPresence().getShowText()]);
-                    this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
+                    if (ri.getPresence().setFromJS(p)) {
+                        ri._notifyPresence();
+                        var toast = this._presenceToastFormatter.format([ri.getDisplayName(), ri.getPresence().getShowText()]);
+                        this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
+                    }
                 }
             }
         }

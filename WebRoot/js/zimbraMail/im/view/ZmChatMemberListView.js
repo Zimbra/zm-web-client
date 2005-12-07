@@ -88,7 +88,7 @@ function(item) {
 
 	html.append("<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>");
     html.append("<td width=20 id='", this._getFieldId(item, ZmChatMemberListView.ID_SHOW_ICON),"'>", AjxImg.getImageHtml(item.getPresence().getIcon()), "</td>");
-	html.append("<td id='",this._getFieldId(item, ZmChatMemberListView.ID_NAME),"'>&nbsp;", AjxStringUtil.htmlEncode(item.getName()), "</td>");
+	html.append("<td id='",this._getFieldId(item, ZmChatMemberListView.ID_NAME),"'>&nbsp;", AjxStringUtil.htmlEncode(item.getDisplayName()), "</td>");
 	html.append("</tr></table>");
 	div.innerHTML = html.toString();
 	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
@@ -178,6 +178,6 @@ function(item, fields) {
     }
     if (doName) {
         var el = document.getElementById(this._getFieldId(item, ZmChatMemberListView.ID_NAME));
-        if (el) el.innerHTML = AjxStringUtil.htmlEncode(item.getName());
+        if (el) el.innerHTML = AjxStringUtil.htmlEncode(item.getDisplayName());
     }
 };

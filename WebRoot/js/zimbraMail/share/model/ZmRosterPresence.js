@@ -48,12 +48,16 @@ ZmRosterPresence.prototype.setStatus = function(showStatus) { this._showStatus =
 
 ZmRosterPresence.prototype.setPriority = function(priority) { this._priority = priority; return this; }
 
-// set from notification and/or roster presence
+// set from notification and/or roster presence. returns true if presence was diff
 ZmRosterPresence.prototype.setFromJS = 
 function(js) {
-    this._show = js.show || ZmRosterPresence.SHOW_OFFLINE;
-    this._priority = js.priority;
-    this._showStatus = js.status;
+    var same = (this._show == js.show) && (this._priority == js.priority) && (this._showStatus == js.status);
+    if (!same) {
+        this._show = js.show || ZmRosterPresence.SHOW_OFFLINE;
+        this._priority = js.priority;
+        this._showStatus = js.status;
+    }
+    return !same;
 };
 
 ZmRosterPresence.prototype.getShow = function() { return this._show; }

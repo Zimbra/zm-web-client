@@ -438,7 +438,7 @@ ZmChatListController.prototype.chatWithRosterItem =
 function(item) {
     var chat = this._list.getChatByRosterItem(item);
     if (chat == null) {
-        chat = new ZmChat(Dwt.getNextId(), item.getName(), this._appCtxt, this);
+        chat = new ZmChat(Dwt.getNextId(), item.getDisplayName(), this._appCtxt, this);
         chat.addRosterItem(item);
         // listeners take care of rest...
         this._list.addChat(chat);

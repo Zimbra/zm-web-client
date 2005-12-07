@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 function ZmRosterTreeItem(id, rosterItem, parent, tree) {
-	ZmOrganizer.call(this, ZmOrganizer.ROSTER_TREE_ITEM, id, rosterItem.getName(), parent, tree);
+	ZmOrganizer.call(this, ZmOrganizer.ROSTER_TREE_ITEM, id, rosterItem.getDisplayName(), parent, tree);
 	this.rosterItem = rosterItem;
 }
 
@@ -62,4 +62,4 @@ ZmRosterTreeItem.prototype.getRosterItem = function() { return this.rosterItem; 
 
 ZmRosterTreeItem.prototype.getGroupName = function() { return this.parent.getName(); }
 
-ZmRosterTreeItem.prototype.getName = function() { return this.rosterItem.getName(); }
+ZmRosterTreeItem.prototype.getName = function() { return this.rosterItem.getDisplayName(); }

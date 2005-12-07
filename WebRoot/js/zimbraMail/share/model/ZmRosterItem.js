@@ -107,7 +107,7 @@ function(newGroups) {
 
 ZmRosterItem.prototype._notifySetName = 
 function(newName) {
-    this.names = newName;
+    this.name = newName;
     var fields = {};
     fields[ZmRosterItem.F_NAME] = this.name;
     this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
@@ -138,8 +138,8 @@ function(oldGroup, newGroup) {
 ZmRosterItem.sortCompare = 
 function(itemA, itemB) {
 	// sort by name
-	var itemAName = itemA.getName().toLowerCase();
-	var itemBName = itemB.getName().toLowerCase();
+	var itemAName = itemA.getDisplayName().toLowerCase();
+	var itemBName = itemB.getDisplayName().toLowerCase();
 	if (itemAName < itemBName) {return -1;}
 	if (itemAName > itemBName) {return 1;}
 	return 0;
@@ -154,7 +154,9 @@ ZmRosterItem.prototype.getGroups = function() { return this.groups; };
 
 ZmRosterItem.prototype.getGroupNames = function() { return this.groupNames; };
 
-ZmRosterItem.prototype.getName = function() {	return this.name ? this.name : this.id;};
+ZmRosterItem.prototype.getName = function() {	return this.name; }
+
+ZmRosterItem.prototype.getDisplayName = function() {	return this.name ? this.name : this.id;};
 
 ZmRosterItem.prototype.getUnread = function() { return this.numUnreadIMs; };
 
@@ -229,7 +231,7 @@ function() {
 		html[idx++] = "<td valign='middle'><b>";
 		html[idx++] = "<td valign='middle'>" + AjxImg.getImageHtml(this.getPresence().getIcon()) + "</td>";
 		html[idx++] = "<td valign='middle' align='center'><b>";
-		html[idx++] = AjxStringUtil.htmlEncode(this.getName() + " (" + this.getPresence().getShowText() + ")");
+		html[idx++] = AjxStringUtil.htmlEncode(this.getDisplayName() + " (" + this.getPresence().getShowText() + ")");
 		html[idx++] = "</td></b>";	
 		html[idx++] = "<td align='right' valign='middle'>";
 		html[idx++] = AjxImg.getImageHtml("HappyEmoticon");

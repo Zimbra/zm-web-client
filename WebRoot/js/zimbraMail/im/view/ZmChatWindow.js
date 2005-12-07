@@ -203,7 +203,7 @@ function(item, fields, setAll) {
             this.setStatusTitle(title.toString());
         }
         if (doName) {
-            this.setTitle(item.getName());
+            this.setTitle(item.getDisplayName());
         }
     }        
 };
@@ -230,7 +230,7 @@ function(text) {
     div = document.createElement("div");
     // div.className = "ZmChatWindowChatEntryThem";
     div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+
-                AjxStringUtil.htmlEncode(this.chat.getRosterItem().getName())+
+                AjxStringUtil.htmlEncode(this.chat.getRosterItem().getDisplayName())+
                 ": </b></span>" + AjxStringUtil.htmlEncode("ok", true);
     content.appendChild(div);
     content.parentNode.scrollTop = Dwt.getSize(content).y;

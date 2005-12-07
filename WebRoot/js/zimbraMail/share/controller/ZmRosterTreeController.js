@@ -47,6 +47,7 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.NEW_ROSTER_ITEM] = new AjxListener(this, this._newRosterItemListener);
 	this._listeners[ZmOperation.IM_NEW_CHAT] = new AjxListener(this, this._imNewChatListener);
 	this._listeners[ZmOperation.IM_NEW_GROUP_CHAT] = new AjxListener(this, this._imNewGroupChatListener);
+	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editRosterItemListener);
 	
 	this._treeItemHoverListenerListener = new AjxListener(this, this._treeItemHoverListener);
 };
@@ -108,12 +109,19 @@ function(item, fields, treeView) {
     var doShow = ZmRosterItem.F_PRESENCE in fields;
     var doUnread = ZmRosterItem.F_UNREAD in fields;
     var doGroups = ZmRosterItem.F_GROUPS in fields;
+    var doName = ZmRosterItem.F_NAME in fields;
+
+    if (doGroups || doName) {
+        // easier to remove/add it
+        this._removeRosterItem(item);
+        this._addRosterItem(item);
+    }
 
     var items = (doShow != null) || (doUnread != null) ? this.getAllItemsByAddr(item.getAddress()) : null;
     
     var numUnread = item.getUnread();  
     var newName = !doUnread ? null : 
-            (numUnread == 0 ? item.getName() : AjxBuffer.concat("<b>",AjxStringUtil.htmlEncode(item.getName()), " (", numUnread, ")</b>"));
+            (numUnread == 0 ? item.getDisplayName() : AjxBuffer.concat("<b>",AjxStringUtil.htmlEncode(item.getDisplayName()), " (", numUnread, ")</b>"));
                         
     if (items) for (var i in items) {
         var rti = items[i];
@@ -124,11 +132,6 @@ function(item, fields, treeView) {
         }
    }
 
-   if (ZmRosterItem.F_GROUPS in fields) {
-       // easier to remove/add it
-       this._removeRosterItem(item);
-       this._addRosterItem(item);
-   }
 };
 
 // Protected methods
@@ -180,7 +183,7 @@ ZmRosterTreeController.prototype._getHeaderActionMenuOps = function() {
 
 // Returns a list of desired action menu operations
 ZmRosterTreeController.prototype._getItemActionMenuOps = function() {
-	return [ZmOperation.IM_NEW_CHAT, ZmOperation.SEP, ZmOperation.DELETE];	
+	return [ZmOperation.IM_NEW_CHAT, ZmOperation.SEP, ZmOperation.EDIT_PROPS, ZmOperation.DELETE];
 };
 
 // Returns a list of desired action menu operations
@@ -365,12 +368,26 @@ function(name) {
 ZmRosterTreeController.prototype._newRosterItemListener =
 function(ev) {
 	var newDialog = this._appCtxt.getNewRosterItemDialog();
+	newDialog.setTitle(ZmMsg.createNewRosterItem);	
     this._showDialog(newDialog, this._newRosterItemCallback);	
 	var org = this._getActionedOrganizer(ev);
 	if (org instanceof ZmRosterTreeGroup) {
         newDialog.setGroups(org.getName());
 	}
 };
+
+ZmRosterTreeController.prototype._editRosterItemListener =
+function(ev) {
+	var newDialog = this._appCtxt.getNewRosterItemDialog();
+	newDialog.setTitle(ZmMsg.editRosterItem);	
+    this._showDialog(newDialog, this._newRosterItemCallback);	
+	var org = this._getActionedOrganizer(ev);
+    var ri = org.getRosterItem();	
+    newDialog.setAddress(ri.getAddress(), true);
+    newDialog.setName(ri.getName());
+    newDialog.setGroups(ri.getGroups());
+};
+
 
 ZmRosterTreeController.prototype._imNewChatListener =
 function(ev) {
