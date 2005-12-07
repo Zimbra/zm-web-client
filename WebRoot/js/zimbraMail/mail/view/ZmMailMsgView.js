@@ -720,7 +720,9 @@ function(htmlArr, idx, addrs, prefix) {
 
 ZmMailMsgView.prototype._renderMessage =
 function(msg, container, callback) {
-    this._objectManager.setHandlerAttr(ZmDateObjectHandler.TYPE, ZmDateObjectHandler.ATTR_CURRENT_DATE, this._dateObjectHandlerDate);
+	if(this._objectManager) {
+	    this._objectManager.setHandlerAttr(ZmDateObjectHandler.TYPE, ZmDateObjectHandler.ATTR_CURRENT_DATE, this._dateObjectHandlerDate);
+	}
 
 	var idx = 0;
 	var htmlArr = new Array();

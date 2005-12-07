@@ -81,6 +81,7 @@ Contributor(s):
 	<script type="text/javascript" src="<%= contextPath %>/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>
 <script language="JavaScript">  
+    var cacheKillerVersion = "<%= vers %>";
 	function launch() {
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		ZmNewWindow.run(document.domain);
