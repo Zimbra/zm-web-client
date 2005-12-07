@@ -116,7 +116,7 @@ function() {
 				html[j++] = "<input id='";
 				html[j++] = prefId;
 				html[j++] = "' ";
-				html[j++] = "type='text' value='";
+				html[j++] = "type='text' autocomplete='off' value='";
 				html[j++] = value;
 				html[j++] = "' size=30></input>";
 			} else if (type == "textarea") {

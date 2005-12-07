@@ -47,7 +47,7 @@ function(text, id) {
     var i = 0;
     html[i++] = "<tr valign='middle'>";
     html[i++] = "<td align='right' nowrap>" + text + ":</td>";
-    html[i++] = "<td align='left' nowrap><input type='text' nowrap size='" + size + "' id='" + id + "'/></td>";
+    html[i++] = "<td align='left' nowrap><input type='text' autocomplete='off' nowrap size='" + size + "' id='" + id + "'/></td>";
     html[i++] = "</tr>";
 
 	return html.join("");		

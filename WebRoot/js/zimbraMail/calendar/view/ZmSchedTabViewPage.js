@@ -224,7 +224,7 @@ function() {
 	html[i++] = ZmMsg.meetingStart;
 	html[i++] = "</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = "<input style='height:22px;' type='text' size=11 maxlength=10 id='";
+	html[i++] = "<input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='";
 	html[i++] = this._startDateFieldId;
 	html[i++] = "' value=''></td><td id='";
 	html[i++] = this._startMiniCalBtnId;
@@ -240,7 +240,7 @@ function() {
 	html[i++] = ZmMsg.meetingEnd;
 	html[i++] = "</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = "<input style='height:22px;' type='text' size=11 maxlength=10 id='";
+	html[i++] = "<input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='";
 	html[i++] = this._endDateFieldId;
 	html[i++] = "' value=''></td><td id='";
 	html[i++] = this._endMiniCalBtnId;
@@ -354,7 +354,7 @@ function() {
 			html[i++] = ZmMsg.allAttendees;
 			html[i++] = "</td></tr></table>";
 		} else {
-			html[i++] = "<input type='text' class='ZmSchedTabViewPageInput' maxlength=256 id='";
+			html[i++] = "<input autocomplete='off' type='text' class='ZmSchedTabViewPageInput' maxlength=256 id='";
 			html[i++] = attendee.dwtInputId;
 			html[i++] = "'>";
 		}

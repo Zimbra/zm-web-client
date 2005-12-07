@@ -193,7 +193,7 @@ function(fieldId, searchColId, browseColId, saveColId, navColId, searchMenuColId
 	html[i++] = "<table style='height:auto;width:100%;height:100%;border-collapse:collapse;'><tr>";
 	html[i++] = "<td id='" + searchMenuColId + "'></td>";
 	html[i++] = "<td width='100%'>";
-	html[i++] = "<input type='text' nowrap id='" + fieldId + "' class='search_input'></td>";
+	html[i++] = "<input type='text' autocomplete='off' nowrap id='" + fieldId + "' class='search_input'></td>";
 	html[i++] = "<td id='" + searchColId + "'></td>";
 	html[i++] = "<td id='" + saveColId + "'></td>";
 	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {

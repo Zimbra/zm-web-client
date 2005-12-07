@@ -208,7 +208,7 @@ function() {
 	// add search input field and search button
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td width=20 valign=middle>";
 	html[idx++] = AjxImg.getImageHtml("Search");
-	html[idx++] = "</td><td><input type='text' size=30 nowrap id='";
+	html[idx++] = "</td><td><input type='text' autocomplete='off' size=30 nowrap id='";
 	html[idx++] = this._searchFieldId;
 	html[idx++] = "'>&nbsp;</td><td id='";
 	html[idx++] = this._listSearchId;

@@ -267,7 +267,7 @@ function() {
 	html[i++] = this._repeatEndName;
 	html[i++] = "'></td><td colspan=2><nobr>";
 	html[i++] = ZmMsg.endAfter;
-	html[i++] = "&nbsp;<input type='text' value='1' maxlength=3 size=3 id='";
+	html[i++] = "&nbsp;<input type='text' autocomplete='off' value='1' maxlength=3 size=3 id='";
 	html[i++] = this._endIntervalFieldId;
 	html[i++] = "'>&nbsp;";
 	html[i++] = ZmMsg.occurrences;
@@ -277,7 +277,7 @@ function() {
 	html[i++] = this._endByRadioId;
 	html[i++] = "'></td><td><table border=0 cellpadding=0 cellspacing=0><tr><td>";
 	html[i++] = ZmMsg.endBy;
-	html[i++] = "</td><td>&nbsp;</td><td><input style='height:22px;' type='text' maxlength=10 size=10 id='";
+	html[i++] = "</td><td>&nbsp;</td><td><input autocomplete='off' style='height:22px;' type='text' maxlength=10 size=10 id='";
 	html[i++] = this._endByFieldId;
 	html[i++] = "' value='";
 	html[i++] = AjxDateUtil.simpleComputeDateStr(new Date(this._endDate));
@@ -346,7 +346,7 @@ function() {
 	html[i++] = this._dailyRadioName;
 	html[i++] = "'></td><td>";
 	html[i++] = ZmMsg.every;
-	html[i++] = "</td><td><input type='text' size=3 maxlength=3 value='2' id='";
+	html[i++] = "</td><td><input type='text' autocomplete='off' size=3 maxlength=3 value='2' id='";
 	html[i++] = this._dailyFieldId;
 	html[i++] = "'></td><td>";
 	html[i++] = ZmMsg.day_s;
@@ -379,7 +379,7 @@ function() {
 	html[i++] = this._weeklyRadioName;
 	html[i++] = "'></td><td width=1%>";
 	html[i++] = ZmMsg.every;
-	html[i++] = "</td><td><input type='text' value='2' size=2 maxlength=2 id='";
+	html[i++] = "</td><td><input type='text' autocomplete='off' value='2' size=2 maxlength=2 id='";
 	html[i++] = this._weeklyFieldId;
 	html[i++] = "'>&nbsp;";
 	html[i++] = ZmMsg.weeksOn;
@@ -417,11 +417,11 @@ function() {
 	html[i++] = this._monthlyDefaultId;
 	html[i++] = "'></td><td>";
 	html[i++] = ZmMsg.day
-	html[i++] = "</td><td><nobr><input value='1' type='text' size=2 maxlength=2 id='";
+	html[i++] = "</td><td><nobr><input value='1' autocomplete='off' type='text' size=2 maxlength=2 id='";
 	html[i++] = this._monthlyDayFieldId;
 	html[i++] = "'>&nbsp;";
 	html[i++] = ZmMsg.ofEvery;
-	html[i++] = "&nbsp;<input value='1' type='text' size=2 maxlength=2 id='";
+	html[i++] = "&nbsp;<input value='1' autocomplete='off' type='text' size=2 maxlength=2 id='";
 	html[i++] = this._monthlyMonthFieldId;
 	html[i++] = "'>&nbsp;";
 	html[i++] = ZmMsg.month_s;
@@ -435,7 +435,7 @@ function() {
 	html[i++] = this._monthlyWeekdaySelectId;
 	html[i++] = "'></td><td>&nbsp;</td><td>";
 	html[i++] = ZmMsg.ofEvery;
-	html[i++] = "</td><td>&nbsp;</td><td><input value='1' type='text' size=2 maxlength=2 id='";
+	html[i++] = "</td><td>&nbsp;</td><td><input autocomplete='off' value='1' type='text' size=2 maxlength=2 id='";
 	html[i++] = this._monthlyMonthFieldExId;
 	html[i++] = "'></td><td>&nbsp;</td><td>";
 	html[i++] = ZmMsg.month_s;
@@ -467,7 +467,7 @@ function() {
 	html[i++] = ZmMsg.everyYearOn;
 	html[i++] = "</td><td>&nbsp;</td><td id='";
 	html[i++] = this._yearlyMonthSelectId;
-	html[i++] = "'></td><td>&nbsp;</td><td><input value='1' type='text' size=2 maxlength=2 id='";
+	html[i++] = "'></td><td>&nbsp;</td><td><input value='1' autocomplete='off' type='text' size=2 maxlength=2 id='";
 	html[i++] = this._yearlyDayFieldId;
 	html[i++] = "'></td></tr></table></td></tr><tr><td><input value='2' type='radio' name='";
 	html[i++] = this._yearlyRadioName;

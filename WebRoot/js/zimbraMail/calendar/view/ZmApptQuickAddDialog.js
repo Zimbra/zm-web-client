@@ -186,12 +186,12 @@ function() {
 	html[i++] = "<table border=0 width=325>";
 	html[i++] = "<tr><td class='ZmApptTabViewPageField'><div style='width:75px'><sup>*</sup>";
 	html[i++] = ZmMsg.subject;
-	html[i++] = ":</div></td><td colspan=2><input type='text' style='width:100%; height:22px' id='";
+	html[i++] = ":</div></td><td colspan=2><input type='text' autocomplete='off' style='width:100%; height:22px' id='";
 	html[i++] = this._subjectFieldId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.location;
-	html[i++] = ":</td><td colspan=2><input type='text' style='width:100%; height:22px' id='";
+	html[i++] = ":</td><td colspan=2><input type='text' autocomplete='off' style='width:100%; height:22px' id='";
 	html[i++] = this._locationFieldId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr><td class='ZmApptTabViewPageField' id='";
@@ -207,7 +207,7 @@ function() {
 	html[i++] = ":</td><td colspan=2>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
 	html[i++] = "<td>";
-	html[i++] = "<input style='height:22px;' type='text' size=11 maxlength=10 id='";
+	html[i++] = "<input style='height:22px;' type='text' autocomplete='off' size=11 maxlength=10 id='";
 	html[i++] = this._startDateFieldId;
 	html[i++] = "'></td><td id='";
 	html[i++] = this._startMiniCalBtnId;
@@ -220,7 +220,7 @@ function() {
 	html[i++] = ":</td><td colspan=2>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
 	html[i++] = "<td>";
-	html[i++] = "<input style='height:22px;' type='text' size=11 maxlength=10 id='";
+	html[i++] = "<input style='height:22px;' type='text' autocomplete='off' size=11 maxlength=10 id='";
 	html[i++] = this._endDateFieldId;
 	html[i++] = "'></td><td id='";
 	html[i++] = this._endMiniCalBtnId;

@@ -90,7 +90,7 @@ function() {
 	var idx = 0;
 	html[idx++] = "<table cellpadding='0' cellspacing='5' border='0'>";
 	html[idx++] = "<tr valign='center'><td class='Label' Xstyle='padding: 0px 0px 5px 0px;'>" + ZmMsg.nameLabel + "</td>";
-	html[idx++] = "<td><input autocomplete=OFF type='text' class='Field' id='" + this._nameFieldId + "' /></td></tr>";
+	html[idx++] = "<td><input autocomplete='off' type='text' class='Field' id='" + this._nameFieldId + "' /></td></tr>";
 	
 	html[idx++] = "<tr id='"+this._checkboxRowId+"' style='display:none;'><td colspan=2>";
 	html[idx++] = "<table cellpadding='0' cellspacing='5' border='0'>";
@@ -99,7 +99,7 @@ function() {
 	html[idx++] = "</td></tr>";
 	
 	html[idx++] = "<tr style='display:none;' id='"+this._remoteCheckboxFieldId+"URLrow' valign='center'><td class='Label' Xstyle='padding: 0px 0px 5px 0px;'>" + ZmMsg.urlLabel + "</td>";
-	html[idx++] = "<td><input autocomplete=OFF type='text' class='Field' id='" +this._remoteCheckboxFieldId+"URLfield'/></td></tr>";
+	html[idx++] = "<td><input autocomplete='off' type='text' class='Field' id='" +this._remoteCheckboxFieldId+"URLfield'/></td></tr>";
 
 	html[idx++] = "<tr><td class='Label' colspan=2>" + ZmMsg.newFolderParent + ":</td></tr>";
 	html[idx++] = "<tr><td colspan=2 id='" + this._folderTreeCellId + "'/></tr>";

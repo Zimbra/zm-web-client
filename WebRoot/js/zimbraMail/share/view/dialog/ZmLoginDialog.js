@@ -156,7 +156,7 @@ function(unameId, pwordId, okCellId, errorCellId, reloginModeId) {
 	html[i++] = "<table border=0 width=100% class='ZmLoginDialog-MainPanel'>";
 	html[i++] = "<tr><td colspan=3 id='" + errorCellId + "'>&nbsp;</td></tr>";
 	html[i++] = "<tr height=40><td width=100 align=right>" + ZmMsg.username + ":</td>";
-	html[i++] = "<td colspan=2><input type=text tabIndex=1 class='ZmLoginDialog-Field' id='" + unameId + "'></td>";
+	html[i++] = "<td colspan=2><input type=text autocomplete='off' tabIndex=1 class='ZmLoginDialog-Field' id='" + unameId + "'></td>";
 	html[i++] = "</tr><tr height=30>";
 	html[i++] = "<td align=right width=100>" + ZmMsg.password + ":</td>";
 	html[i++] = "<td colspan=2><input type=password tabIndex=2 class='ZmLoginDialog-Field' id='" + pwordId + "'></td>";

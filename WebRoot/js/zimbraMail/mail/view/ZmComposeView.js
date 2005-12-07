@@ -1080,7 +1080,7 @@ function() {
 	html[idx++] = "<td width=60 align='right'>";
 	html[idx++] = ZmMsg.subject;
 	html[idx++] = ":</td>";
-	html[idx++] = "<td><input type='text' id='";
+	html[idx++] = "<td><input autocomplete='off' type='text' id='";
 	html[idx++] = this._subjectFieldId;
 	html[idx++] = "' class='subjectField'></td>";
 	html[idx++] = "</tr></table></td></tr>";

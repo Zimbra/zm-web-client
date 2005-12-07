@@ -680,12 +680,12 @@ function() {
 	html[i++] = "<table border=0 width=100%>";
 	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'><sup>*</sup>";
 	html[i++] = ZmMsg.subject;
-	html[i++] = ":</td><td colspan=5><input style='width:100%; height:22px' type='text' id='";
+	html[i++] = ":</td><td colspan=5><input autocomplete='off' style='width:100%; height:22px' type='text' id='";
 	html[i++] = this._subjectFieldId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.location;
-	html[i++] = ":</td><td colspan=5><input style='width:100%; height:22px' type='text' id='";
+	html[i++] = ":</td><td colspan=5><input autocomplete='off' style='width:100%; height:22px' type='text' id='";
 	html[i++] = this._locationFieldId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr>";
@@ -730,7 +730,7 @@ function() {
 	html[i++] = ZmMsg.start;
 	html[i++] = ":</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = "<input style='height:22px;' type='text' size=11 maxlength=10 id='";
+	html[i++] = "<input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='";
 	html[i++] = this._startDateFieldId;
 	html[i++] = "' value='";
 	html[i++] = currDate;
@@ -748,7 +748,7 @@ function() {
 	html[i++] = ZmMsg.end;
 	html[i++] = ":</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = "<input style='height:22px;' type='text' size=11 maxlength=10 id='";
+	html[i++] = "<input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='";
 	html[i++] = this._endDateFieldId;
 	html[i++] = "' value='";
 	html[i++] = currDate;
@@ -796,7 +796,7 @@ function() {
 		html[i++] = ZmMsg.attendees;
 		html[i++] = ":</td>";
 	}
-	html[i++] = "<td><input style='width:100%; height:22px' type='text' id='";
+	html[i++] = "<td><input autocomplete='off' style='width:100%; height:22px' type='text' id='";
 	html[i++] = this._attendeesFieldId;
 	html[i++] = "'></td>";
 	html[i++] = "</tr></table>";

@@ -61,7 +61,7 @@ function(parent) {
 	html[i++] = "</tr>";
 	html[i++] = "<tr valign='middle'>";
 	html[i++] = "<td align='right' nowrap>" + ZmMsg.value + ":</td>";
-	html[i++] = "<td align='left' nowrap><input type='text' nowrap size='" + size + "' id='" + fieldId + "'/></td>";
+	html[i++] = "<td align='left' nowrap><input type='text' autocomplete='off' nowrap size='" + size + "' id='" + fieldId + "'/></td>";
 	html[i++] = "</tr>";
 	html[i++] = "<tr valign='middle'>";
 	html[i++] = "<td align='right' nowrap>" + ZmMsg.units + ":</td>";

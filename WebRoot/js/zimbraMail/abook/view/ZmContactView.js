@@ -234,7 +234,7 @@ function(field, html, idx) {
 	html[idx++] = "<td style='width:18ex;'>" + AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]) + ":" + "</td>";
 	if (!this._isReadOnly) {
 		var id = this._fieldIds[field] = Dwt.getNextId();
-		html[idx++] = "<td><input type='text' size=35 id='" + id + "'></td>";
+		html[idx++] = "<td><input type='text' autocomplete='off' size=35 id='" + id + "'></td>";
 	} else {
 		html[idx++] = "<td>" + (this._attr[field] || "") + "</td>";
 	}

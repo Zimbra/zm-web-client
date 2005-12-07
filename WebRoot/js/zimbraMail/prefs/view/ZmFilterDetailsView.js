@@ -263,7 +263,7 @@ ZmFilterDetailsView.prototype._contentHtml = function() {
 	var w = 100;
 	html[idx++] = "<tr><td colspan=2><table cellSpacing=0 cellPadding=0 style='width:700px; table-layout:fixed'><colgroup><col style='width:75px'></col><col></col></colgroup><tr><td><div style='margin-top:4px; margin-left:5px'>Rule Name: </div></td><td><input id='"
 	html[idx++] = this._ruleNameId;
-	html[idx++] = "' type='text' name='name' size='80' style='width:100%";
+	html[idx++] = "' type='text' autocomplete='off' name='name' size='80' style='width:100%";
 	html[idx++] = "'></td></tr></table></td></tr>";
 	html[idx++] = "<tr><td colspan=2><div style='margin-top:5px'><table cellpadding=0 cellspacing=0 style='table-layout:fixed; width:600px' border=0><colgroup> <col style='width:5px'></col> <col style='width:15px'></col> <col style='width:100px'></col></colgroup><tr><td style='vertical-align:middle;'><div style='margin-left:5px'>If</div><td style='vertical-align:midlle' id=\"";
 	html[idx++] = this._dwtObjects[0].id;
@@ -476,9 +476,9 @@ function (configCond, condition) {
 	return {html: htmlStr, id: nextId};
 };
 
-ZmFilterDetailsView._cell3Template = "<td id='$0' valign='center' class='paddedTableCell' style='visibility:$1'><input type='text' size='25' value='$2' style='width:100%'></td>";
+ZmFilterDetailsView._cell3Template = "<td id='$0' valign='center' class='paddedTableCell' style='visibility:$1'><input type='text' autocomplete='off' size='25' value='$2' style='width:100%'></td>";
 ZmFilterDetailsView._cell1Template =
-		"<td id='$0' valign='center' class='paddedTableCell' style='visibility: $1'><input type='text' size='10' value='$2' style='width:100%'></td>";
+		"<td id='$0' valign='center' class='paddedTableCell' style='visibility: $1'><input type='text' autocomplete='off' size='10' value='$2' style='width:100%'></td>";
 
 ZmFilterDetailsView.prototype._getConditionsCell1Html = 
 function (configCond, cond){
@@ -656,7 +656,7 @@ function ( configAction, action, nextId){
 	var value = action.arg? action.arg: "";
 	switch(configAction.param) {
 	case ZmFilterRules.TYPE_INPUT:
-		htmlStr = "<input type='text' size='25' value='" + value + "'>";
+		htmlStr = "<input type='text' autocomplete='off' size='25' value='" + value + "'>";
 		break;
 	case ZmFilterRules.TYPE_SELECT:
 		htmlStr = "";
