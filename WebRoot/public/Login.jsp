@@ -215,8 +215,12 @@ body, form {
 
 </style>
 <script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
+<% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
+	<jsp:include page="Ajax.jsp"/>
+	<jsp:include page="Zimbra.jsp"/>
+<% } else { %>
 <script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/ZmLogin.js<%= ext %>?v=<%= vers %>"></script>
+<% } %>
 </head>
 <body>
 </body>
@@ -241,6 +245,10 @@ body, form {
 	// XXX: DO NOT REMOVE - THIS PREVENTS MEM LEAK IN IE
 	window.onunload = function() { window.onload = window.onunload = null; }
 </script>
+<% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
+	<jsp:include page="ZimbraMail.jsp"/>
+<% } else { %>
 <script type="text/javascript" src="/zimbra/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
+<% } %>
 <jsp:include page="/public/pre-cache.jsp"/>  
 </html>

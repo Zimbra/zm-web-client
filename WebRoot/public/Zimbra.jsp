@@ -40,4 +40,5 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbra/csfe/ZmCsfeResult.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbra/common/ZmBaseSplashScreen.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbra/common/ZmErrorDialog.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/ZmLogin.js<%= ext %>?v=<%= vers %>"></script>
 <!-- END SCRIPT BLOCK -->

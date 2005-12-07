@@ -242,7 +242,6 @@
 				<fileset dir="${build.dir}/WebRoot/js">
 					<include name="ZimbraAdmin_all.js" />
 					<include name="ZimbraMail_all.js" />
-					<include name="ZmLogin.js" />
 				</fileset>
 			</path>
 		</foreach>
@@ -491,7 +490,6 @@
   
   <target name="copy-files-to-build-area" depends="check4zimbraajax">
     <copy file="WebRoot/WEB-INF/web.xml" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="${isProduction}"/>
-    <copy file="WebRoot/js/zimbraMail/share/view/ZmLogin.js" tofile="${build.dir}/WebRoot/js/ZmLogin.js" overwrite="${isProduction}"/>
     <copy todir="${build.dir}/WebRoot/public/" overwrite="${isProduction}" >
       <fileset dir="WebRoot/public" includes="**/*"/>
     </copy>
@@ -592,9 +590,8 @@
   deploy will have to be run.
   -->
   <target name="dev-sync">
-    <copy verbose="true" file="WebRoot/js/zimbraMail/share/view/ZmLogin.js" tofile="${deploy.dir}${deploy.path}/js/ZmLogin.js"/>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
-      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="js/zimbraMail/share/view/ZmLogin.js"/>
+      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**"/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}/js/ajax">
@@ -728,7 +725,7 @@
       <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,skins/**" excludes="js/ZimbraMail*all.*,js/ZmLogin.js,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
+      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
       <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheHiRes.html,public/CacheLoRes.html,public/pre-cache.jsp"/>
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
@@ -747,7 +744,7 @@
       <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/classes" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,skins/**" excludes="js/ZimbraMail*all.*,js/ZmLogin.js,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
+      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
       <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheHiRes.html,public/CacheLoRes.html,public/pre-cache.jsp"/>
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
