@@ -114,7 +114,7 @@ ZmZimletTreeController.prototype._itemClicked = function(z) {
 	}
 };
 
-ZmTreeController.prototype._itemDblClicked = function(z) {
+ZmZimletTreeController.prototype._itemDblClicked = function(z) {
 	if (z.id == ZmZimlet.ID_ZIMLET)
 		return;
 	if (z.__dbl_click_timeout) {
