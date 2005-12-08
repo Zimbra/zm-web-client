@@ -58,7 +58,11 @@ function(list) {
 	if (list instanceof ZmList) {
 		list.addChangeListener(this._listChangeListener);
 	}
+	this._postSet();
 }
+
+//override
+ZmChatBaseView.prototype._postSet = function() { }
 
 ZmChatBaseView.prototype.associateItemWithElement =
 function (item, element, type, optionalId) {

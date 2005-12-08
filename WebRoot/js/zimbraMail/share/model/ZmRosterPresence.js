@@ -104,7 +104,7 @@ function() {
     case ZmRosterPresence.SHOW_DND:
         return "ImDnd";
     case ZmRosterPresence.SHOW_UNKNOWN:
-    return "Blank_16";    
+    return "ImBuddy"; //Blank_16";    
     case ZmRosterPresence.SHOW_OFFLINE:
     default:
         return "RoundMinusDis"; //"Blank_16";

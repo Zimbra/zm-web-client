@@ -44,6 +44,17 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 ZmChatMultiWindowView.prototype = new ZmChatBaseView;
 ZmChatMultiWindowView.prototype.constructor = ZmChatMultiWindowView;
 
+ZmChatMultiWindowView.prototype._postSet = 
+function() {
+	// create chat windows for any pending chats
+	var list = this.getChatList().getArray();
+	for (var i=0; i < list.length; i++) {
+    	    var chat = list[i];
+        	var cw = new ZmChatWindow(this, chat);
+        this._addChatWindow(cw, chat);
+	}
+};
+
 ZmChatMultiWindowView.prototype._createHtml =
 function() {
    // this._content = new DwtComposite(this, "ZmChatMultiWindow", Dwt.RELATIVE_STYLE);

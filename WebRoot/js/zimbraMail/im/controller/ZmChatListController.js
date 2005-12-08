@@ -238,7 +238,7 @@ function(view) {
 // Load chats into the given view and perform layout.
 ZmChatListController.prototype._setViewContents =
 function(view) {
-	this._listView[view].set(this._list);
+//	this._listView[view].set(this._list);
 }
 
 ZmChatListController.prototype._createNewView = 
@@ -328,8 +328,8 @@ function(view, elements, isAppView, clear, pushOnly) {
 	}
 
 	// populate the view
-	if (!pushOnly)
-		this._setViewContents(view);
+//	if (!pushOnly)
+//		this._setViewContents(view);
 
 	// push the view
 	 return (clear ? this._app.setView(view) : this._app.pushView(view));

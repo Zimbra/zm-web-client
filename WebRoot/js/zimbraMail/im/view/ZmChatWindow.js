@@ -156,9 +156,12 @@ function(chat) {
         this._controlListener();
         this._updateGroupChatTitle();
    }
-
    chat.addChangeListener(this._chatChangeListenerListener);
    this._rosterItemChangeListener(item, null, true);
+    // TODO: clean up this interface!
+    for (var i=0; i < chat._messages.length; i++) {
+        this.handleMessage(this.chat._messages[i]);
+    }
 };
 
 ZmChatWindow.prototype._chatChangeListener = 
