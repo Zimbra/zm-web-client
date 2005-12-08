@@ -198,12 +198,11 @@ function(ev) {
 	if (!(organizer instanceof ZmRosterTreeItem)) return;
 	if (!this._deleteItemShield) {
 		this._deleteItemShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
-		this._deleteItemShield.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
-		this._deleteItemShield.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteItemShield);
+        	this._deleteItemShield.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteItemShield);	
 	}
+	this._deleteItemShield.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
 	var msg = this._confirmDeleteRosterItemFormatter.format([organizer.getRosterItem().getAddress()]);
 	this._deleteItemShield.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-	
 	this._deleteItemShield.popup();
 };
 
