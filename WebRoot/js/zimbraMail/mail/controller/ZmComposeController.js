@@ -146,8 +146,14 @@ function(attId, isDraft, callback) {
 	}
 };
 
+/**
+* Creates a new ZmComposeView if one does not already exist
+*
+* @param initHide	Set to true if compose view should be initially rendered 
+*					off screen (used as an optimization to preload this view)
+*/
 ZmComposeController.prototype.initComposeView = 
-function() {
+function(initHide) {
 	if (this._composeView == null) {
 		this._composeView = new ZmComposeView(this._container, this);
 		var callbacks = new Object();
@@ -159,6 +165,10 @@ function() {
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
 	    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks);
+	    if (initHide) {
+		    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+		    this._composeView.enableInputs(false);
+		}
 	}
 };
 

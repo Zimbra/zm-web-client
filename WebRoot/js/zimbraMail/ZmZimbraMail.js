@@ -291,13 +291,12 @@ function(params) {
 	// reset the user's time zone (save to prefs) if it has changed
 	var respCallback = new AjxCallback(this, this._handleResponseStartup1, [params]);
 	ZmTimezones.initializeServerTimezone(respCallback);
-/*
+
 	// preload the compose view - XXX: not sure this is the right place for it
 	var cc = this.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
 	if (cc) {
-		cc.initComposeView();
+		cc.initComposeView(true);
 	}
-*/
 };
 
 /*

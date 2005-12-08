@@ -449,11 +449,7 @@ function(bEnableInputs) {
 
 	// reset subject / body fields
 	this._subjectField.value = "";
-	if (this._initHtmlEditor) {
-		this._htmlEditor.clear();
-	} else {
-		this._initHtmlEditor = true;
-	}
+	this._htmlEditor.clear();
 
 	// the div that holds the attc.table and null out innerHTML
 	this._hasAttcDiv = false;
