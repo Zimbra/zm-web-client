@@ -29,13 +29,15 @@
  *
  * @author Mihai Bazon
  */
-function ZmZimletBase() {};
+function ZmZimletBase() {
+	this._passRpcErrors = false;
+};
 
 ZmZimletBase.PANEL_MENU = 1;
 ZmZimletBase.CONTENTOBJECT_MENU = 2;
 
-//ZmZimletBase.PROXY = "/service/proxy?target=";
-ZmZimletBase.PROXY = "/zimbra/dangerous-proxy.jsp?address=";
+ZmZimletBase.PROXY = "/service/proxy?target=";
+//ZmZimletBase.PROXY = "/zimbra/dangerous-proxy.jsp?address=";
 
 ZmZimletBase.prototype.init =
 function(zimletContext, shell) {
@@ -203,11 +205,12 @@ function() {
 /**
  * Displays the given error message in the standard error dialog.
  */
-ZmZimletBase.prototype.displayErrorMessage = function(msg, data) {
+ZmZimletBase.prototype.displayErrorMessage = function(msg, data, title) {
+	if (title == null)
+		title = this.xmlObj("description") + " error";
 	var dlg = this.getAppCtxt().getErrorDialog();
 	dlg.reset();
-	dlg.setMessage(msg, data, DwtMessageDialog.WARNING_STYLE,
-		       this.xmlObj("description") + " error");
+	dlg.setMessage(msg, data, DwtMessageDialog.WARNING_STYLE, title);
 	dlg.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
 	dlg.popup();
 };
@@ -220,8 +223,8 @@ ZmZimletBase.prototype.requestFinished = function(param) {
 	this.resetIcon();
 	var callback = param[0];
 	var xmlargs = param[1];
-	if (!xmlargs.success) {
-		this.displayErrorMessage("We could not connect to the remote server.<br />Error code: " + xmlargs.status, xmlargs.text);
+	if (!this._passRpcErrors && !xmlargs.success) {
+		this.displayErrorMessage("We could not connect to the remote server, or an error was returned.<br />Error code: " + xmlargs.status, xmlargs.text);
 	} else if (callback)
 		// Since we don't know for sure if we got an XML in return, it
 		// wouldn't be too wise to create an AjxXmlDoc here.  Let's
@@ -309,6 +312,10 @@ function() {
 		return;
 	if (typeof check == "string")
 		return this.displayErrorMessage(check);
+
+	if (this._propertyEditor)
+		if (!this._propertyEditor.validateData())
+			return;
 
 	// note that DwtPropertyEditor actually works on the original
 	// properties object, which means that we already have the edited data

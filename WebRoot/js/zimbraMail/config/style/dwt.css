@@ -835,6 +835,7 @@
 
 .DwtPropertyEditor table tr.readonly td.field { color: #888; cursor: default; }
 .DwtPropertyEditor table tr.dirty td { color: #42c; }
+.DwtPropertyEditor table tr.invisible { display: none; }
 
 /*
 .DwtPropertyEditor table tr.number td.field,

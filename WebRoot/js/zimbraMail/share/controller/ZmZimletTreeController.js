@@ -130,7 +130,11 @@ ZmZimletTreeController.prototype._dropListener = function(ev) {
 	var z = ev.targetControl.getData(Dwt.KEY_OBJECT);
 	if (z.id == ZmZimlet.ID_ZIMLET)
 		return;
-	z = z.getZimletContext();
+	try {
+		z = z.getZimletContext();
+	} catch(ex) {
+		return;
+	}
 	var srcData = ev.srcData.data;
 	if (!z || !srcData) {
 		ev.doIt = false;
@@ -148,13 +152,14 @@ ZmZimletTreeController.prototype._dropListener = function(ev) {
 					break;
 				}
 			}
-			if (doIt)
-				doIt = z.callHandler("doDrag", [ srcData ]);
-			ev.doIt = doIt;
-		} else {
-			if (ev.action == DwtDropEvent.DRAG_DROP) {
-				z.callHandler("doDrop", [ srcData ]);
+			if (doIt) {
+				doIt = z.callHandler(
+					"doDrag", [ ZmZimletContext._translateZMObject(srcData) ]);
 			}
+			ev.doIt = doIt;
+		} else if (ev.action == DwtDropEvent.DRAG_DROP) {
+			z.callHandler(
+				"doDrop", [ ZmZimletContext._translateZMObject(srcData) ]);
 		}
  	}
 };

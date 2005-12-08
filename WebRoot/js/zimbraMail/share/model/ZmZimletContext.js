@@ -89,7 +89,9 @@ function() {
 	if (!this.includes)
 		return;
 	AjxInclude(this.includes, this._url,
-		   new AjxCallback(this, this._finished_loadIncludes));
+		   new AjxCallback(this, this._finished_loadIncludes)
+		   // ,"/service/proxy?target="
+		);
 };
 
 ZmZimletContext.prototype._finished_loadIncludes = function() {
@@ -232,4 +234,148 @@ ZmZimletContext.prototype._handleActionUrl = function(actionUrl) {
 		url = [ url, "?", param.join("&") ].join("");
 	}
 	window.open(url, "_blank");
+};
+
+ZmZimletContext._translateZMObject = function(obj) {
+	if (ZmZimletContext._zmObjectTransformers[obj.toString()])
+		return ZmZimletContext._zmObjectTransformers[obj.toString()](obj);
+	else
+		return obj;
+};
+
+ZmZimletContext._zmObjectTransformers = {
+
+	"ZmMailMsg" : function(o) {
+		if (o[0])
+			o = o[0];
+		var ret = { TYPE: "ZmMailMsg" };
+		ret.id           = o.getId();
+		ret.convId       = o.getConvId();
+		ret.from         = o.getAddresses(ZmEmailAddress.FROM);
+		ret.to           = o.getAddresses(ZmEmailAddress.TO);
+		ret.cc           = o.getAddresses(ZmEmailAddress.CC);
+		ret.subject      = o.getSubject();
+		ret.date         = o.getDate();
+		ret.size         = o.getSize();
+		ret.fragment     = o.fragment;
+		// FIXME: figure out how to get these
+		// ret.tags         = o.getTags();
+		// ret.flagged      = o.getFlagged();
+		ret.unread       = o.isUnread;
+		ret.attachment   = o._attachments.length > 0;
+		ret.sent         = o.isSent;
+		ret.replied      = o.isReplied;
+		ret.draft        = o.isDraft;
+		return ret;
+	},
+
+	"ZmConv" : function(o) {
+		if (o[0])
+			o = o[0];
+		var ret = { TYPE: "ZmConv" };
+		ret.id           = o.id;
+		ret.subject      = o.getSubject();
+		ret.date         = o.date;
+		ret.fragment     = o.fragment;
+		ret.participants = o.participants.getArray();
+		ret.numMsgs      = o.numMsgs;
+		// FIXME: figure out how to get these
+		// ret.tags         = o.getTags();
+		// ret.flagged      = o.getFlagged();
+		ret.unread       = o.isUnread;
+		// ret.attachment   = o._attachments ?;
+		// ret.sent         = o.isSent;
+		return ret;
+	},
+
+	ZmContact_fields : function() {
+		return [
+			ZmContact.F_assistantPhone,
+			ZmContact.F_callbackPhone,
+			ZmContact.F_carPhone,
+			ZmContact.F_company,
+			ZmContact.F_companyPhone,
+			ZmContact.F_email,
+			ZmContact.F_email2,
+			ZmContact.F_email3,
+			ZmContact.F_fileAs,
+			ZmContact.F_firstName,
+			ZmContact.F_homeCity,
+			ZmContact.F_homeCountry,
+			ZmContact.F_homeFax,
+			ZmContact.F_homePhone,
+			ZmContact.F_homePhone2,
+			ZmContact.F_homePostalCode,
+			ZmContact.F_homeState,
+			ZmContact.F_homeStreet,
+			ZmContact.F_homeURL,
+			ZmContact.F_jobTitle,
+			ZmContact.F_lastName,
+			ZmContact.F_middleName,
+			ZmContact.F_mobilePhone,
+			ZmContact.F_namePrefix,
+			ZmContact.F_nameSuffix,
+			ZmContact.F_notes,
+			ZmContact.F_otherCity,
+			ZmContact.F_otherCountry,
+			ZmContact.F_otherFax,
+			ZmContact.F_otherPhone,
+			ZmContact.F_otherPostalCode,
+			ZmContact.F_otherState,
+			ZmContact.F_otherStreet,
+			ZmContact.F_otherURL,
+			ZmContact.F_pager,
+			ZmContact.F_workCity,
+			ZmContact.F_workCountry,
+			ZmContact.F_workFax,
+			ZmContact.F_workPhone,
+			ZmContact.F_workPhone2,
+			ZmContact.F_workPostalCode,
+			ZmContact.F_workState,
+			ZmContact.F_workStreet,
+			ZmContact.F_workURL
+			];
+	},
+
+	"ZmContact" : function(o) {
+		// can't even remotely understand why, after a contact has been
+		// displayed once, we need to check it's "0" property and
+		// retrieve the actual object from there.  x-( So, object in an
+		// object.  Could it be because of our current JSON format?
+		if (o[0])
+			o = o[0];
+		var ret = { TYPE: "ZmContact" };
+		var a = this.ZmContact_fields;
+		if (typeof a == "function")
+			a = this.ZmContact_fields = a();
+		var attr;
+		var attr = o.getAttrs();
+		for (var i = 0; i < a.length; ++i)
+			ret[a[i]] = attr[a[i]];
+		return ret;
+	},
+
+	"ZmAppt" : function(o) {
+		if (o[0])
+			o = o[0];
+		var ret = { TYPE: "ZmAppt" };
+		ret.id             = o.getId();
+		ret.uid            = o.getUid();
+		ret.type           = o.getType();
+		ret.subject        = o.getName();
+		ret.startDate      = o.getStartDate();
+		ret.endDate        = o.getEndDate();
+		ret.allDayEvent    = o.isAllDayEvent();
+		ret.exception      = o.isException();
+		ret.recurring      = o.isRecurring();
+		ret.alarm          = o.hasAlarm();
+		ret.otherAttendees = o.hasOtherAttendees();
+		ret.attendees      = o.getAttendees();
+		ret.location       = o.getLocation();
+		ret.notes          = o.getNotesPart();
+		ret.isRecurring    = ret.recurring; // WARNING: duplicate
+		ret.timeZone       = o.getTimezone();
+		return ret;
+	}
+
 };
