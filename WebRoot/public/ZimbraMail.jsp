@@ -224,6 +224,7 @@ Contributor(s):
 
 <!-- IM Application -->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/im/model/ZmChat.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/im/model/ZmChatMessage.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/im/view/ZmChatWindow.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/im/view/ZmChatMemberListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/im/view/ZmChatBaseView.js<%= ext %>?v=<%= vers %>"></script>

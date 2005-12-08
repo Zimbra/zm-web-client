@@ -37,6 +37,7 @@ function ZmRoster(appCtxt) {
     this.getRosterItemTree(); // pre-create
    	this._evt = new ZmEvent(ZmEvent.S_ROSTER);
 	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);   	
+	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
 }
 
 ZmRoster.prototype = new ZmModel;
@@ -219,15 +220,26 @@ function(im) {
     if (im.message) {
         for (var i=0; i < im.message.length; i++) {
             var msg = im.message[i];
-            msg._isMe = msg.from == this.getMyAddress();
+            var chatMessage = new ZmChatMessage(msg, msg.from == this.getMyAddress());
             var cl = this.getChatList();
-            var chat = cl.getChatByThread(msg.thread);
-            if (chat == null && !msg._isMe) {
-                chat = cl.getChatByRosterAddr(msg.from, true);
-                if (chat) chat.setThread(msg.thread);
+            var chat = cl.getChatByThread(chatMessage.thread);
+            if (chat == null && !chatMessage.fromMe) {
+                chat = cl.getChatByRosterAddr(chatMessage.from, true);
+                if (chat) chat.setThread(chatMessage.thread);
             }
-            if (chat) chat.addMessage(msg);            
+            if (chat) chat.addMessage(chatMessage);
         }
+    }
+    if (im.leftchat) {
+        for (var i=0; i < im.leftchat.length; i++) {
+            var lc = im.leftchat[i];
+            var chat = this.getChatList().getChatByThread(lc.thread);
+            if (chat) {
+                chat.addMessage(ZmChatMessage.system(this._leftChatFormatter.format([lc.addr])));
+                chat.setThread(null);
+            }
+        }
+    
     }
 };
 

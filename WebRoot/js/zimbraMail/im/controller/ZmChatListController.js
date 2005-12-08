@@ -465,6 +465,7 @@ function(items, chatName) {
 
 ZmChatListController.prototype.endChat =
 function(chat) {
+    chat.sendClose();
     this._list.removeChat(chat);
 };
 

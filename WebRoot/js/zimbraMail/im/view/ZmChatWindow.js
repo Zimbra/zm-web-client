@@ -74,7 +74,7 @@ function() {
 	this._toolbar.addFiller();
 	this._close = new DwtButton(this._toolbar, DwtLabel.IMAGE_LEFT, "TBButton");
 	this._close.setImage("Close");
-	this._close.setToolTipContent(ZmMsg.close);
+	this._close.setToolTipContent(ZmMsg.imEndChat);
 	this._content = new DwtComposite(c, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
 	this._content.setScrollStyle(DwtControl.SCROLL);
 	this._content.getHtmlElement().innerHTML = "<div/>";
@@ -228,19 +228,20 @@ function(item, fields, setAll) {
 
 ZmChatWindow.prototype.handleMessage =
 function(msg) {
-    var message = msg.body[0]._content;
-    var addr = msg.from; // item.getDisplayName()
     var content = this._content.getHtmlElement().firstChild;
-    div = document.createElement("div");    
-    if (msg._isMe) {
+    div = document.createElement("div");   
+    /* 
+    if (msg.fromMe) {
         div.className = "ZmChatWindowChatEntryMe";
-        div.innerHTML = "<b>me: </b>" + this._objectManager.findObjects(message, true);
+        div.innerHTML = "<b>me: </b>" + this._objectManager.findObjects(msg.body, true);
     } else {
         // div.className = "ZmChatWindowChatEntryThem";
         div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+
-                    AjxStringUtil.htmlEncode(this.chat.getDisplayName(addr)) +
-                    ": </b></span>" + this._objectManager.findObjects(message, true);
+                    AjxStringUtil.htmlEncode(this.chat.getDisplayName(msg.from)) +
+                    ": </b></span>" + this._objectManager.findObjects(msg.body, true);
     }
+    */
+    div.innerHTML = msg.toHtml(this._objectManager, this.chat);
     content.appendChild(div);
     content.parentNode.scrollTop = Dwt.getSize(content).y;
 };

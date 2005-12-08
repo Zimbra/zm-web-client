@@ -728,7 +728,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .calendar_day_separator {
-	ZZZborder-left: 1px solid #666666;
 	background-color: #666666;	
 	padding: 0px;
 }
@@ -1217,12 +1216,22 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .ZmChatWindowChatEntryMe {
 	color: black;
+	font-weight: bold;
+	padding: 1px;
+	padding-left: 2px;
+}
+
+.ZmChatWindowChatEntrySystem {
+	color: gray;
+	/*font-weight: bold;*/
+	font-style: italic;
 	padding: 1px;
 	padding-left: 2px;
 }
 
 .ZmChatWindowChatEntryThem {
 	color: blue;
+	font-weight: bold;	
 	padding: 1px;
 	padding-left: 2px;
 }

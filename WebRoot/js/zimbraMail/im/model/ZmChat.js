@@ -85,9 +85,14 @@ function(chatName) {
 
 // get the display name for a roster item on the list
 ZmChat.prototype.getDisplayName =
-function(addr) {
-    var ri = this._rosterItemList.getByAddr(addr);
-    return ri ? ri.getDisplayName() : addr;
+function(addr, isMe) {
+    var ri = isMe ? null : this._rosterItemList.getByAddr(addr);
+    var dname = ri ? ri.getDisplayName() : addr;
+    if (isMe || this._rosterItemList.size() == 1) {
+        var i = dname.indexOf("@");
+        if (i != -1) dname = dname.substring(0, i);
+    }
+    return dname;
 };
 
 ZmChat.prototype.isGroupChat =
@@ -130,6 +135,21 @@ function(msg) {
     fields[ZmChat.F_MESSAGE] = msg;
     this._eventNotify(ZmEvent.E_MODIFY, {fields: fields});
     // list notify as well?
+};
+
+/**
+ * notify server of a chat close
+ */
+ZmChat.prototype.sendClose =
+function(text) {
+    var thread = this.getThread();
+    if (!thread) return;
+    var soapDoc = AjxSoapDoc.create("IMModifyChatRequest", "urn:zimbraIM");
+    var method = soapDoc.getMethod();
+    method.setAttribute("thread", thread);
+    method.setAttribute("op", "close");
+    // TODO: error handling
+	this._appCtxt.getAppController().sendRequest(soapDoc, true);
 };
 
 /**
