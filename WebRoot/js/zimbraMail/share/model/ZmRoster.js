@@ -52,7 +52,7 @@ function() {
 ZmRoster.prototype.getChatList =
 function() {
 	if (!this._chatList)
-		this._chatList = new ZmChatList(this._appCtxt);
+		this._chatList = new ZmChatList(this._appCtxt, this);
 	return this._chatList;
 };
 
@@ -71,6 +71,11 @@ function() {
 	}
 	return this._rosterItemTree;
 };
+
+ZmRoster.prototype.getRosterItem =
+function(addr) {
+    return this.getRosterItemList().getByAddr(addr);
+}
 
 ZmRoster.prototype.getRosterItemList =
 function() {
@@ -214,20 +219,14 @@ function(im) {
     if (im.message) {
         for (var i=0; i < im.message.length; i++) {
             var msg = im.message[i];
-            var ri = this.getRosterItemList().getByAddr(msg.from);
-            if (msg.from == this.getMyAddress()) {
-                // need msg.to to correctly handle...                
-            } else {
-                var cl = this.getChatList();
-                var chat = cl.getChatByThread(msg.thread);
-                if (chat == null) {
-                    if (ri != null) {
-                        chat = cl.getChatByRosterItem(ri, true);
-                        chat.setThread(msg.thread);
-                    }
-                }
-                if (chat) chat.addMessage(msg);
+            msg._isMe = msg.from == this.getMyAddress();
+            var cl = this.getChatList();
+            var chat = cl.getChatByThread(msg.thread);
+            if (chat == null && !msg._isMe) {
+                chat = cl.getChatByRosterAddr(msg.from, true);
+                if (chat) chat.setThread(msg.thread);
             }
+            if (chat) chat.addMessage(msg);            
         }
     }
 };

@@ -34,7 +34,6 @@ function ZmChatWindow(parent, chat) {
 	this._chatChangeListenerListener = new AjxListener(this, this._chatChangeListener);
     this._setChat(chat);
     this.id = Dwt.getNextId();
-
 };
 
 ZmChatWindow.SASH_THRESHHOLD = 1;
@@ -229,11 +228,16 @@ function(msg) {
     var message = msg.body[0]._content;
     var addr = msg.from; // item.getDisplayName()
     var content = this._content.getHtmlElement().firstChild;
-    div = document.createElement("div");
-    // div.className = "ZmChatWindowChatEntryThem";
-    div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+
-                AjxStringUtil.htmlEncode(addr) +
-                ": </b></span>" + this._objectManager.findObjects(message, true);
+    div = document.createElement("div");    
+    if (msg._isMe) {
+        div.className = "ZmChatWindowChatEntryMe";
+        div.innerHTML = "<b>me: </b>" + this._objectManager.findObjects(message, true);
+    } else {
+        // div.className = "ZmChatWindowChatEntryThem";
+        div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+
+                    AjxStringUtil.htmlEncode(this.chat.getDisplayName(addr)) +
+                    ": </b></span>" + this._objectManager.findObjects(message, true);
+    }
     content.appendChild(div);
     content.parentNode.scrollTop = Dwt.getSize(content).y;
 };
@@ -249,24 +253,7 @@ function(text) {
             this.chat.getRosterItem().setUnread(parseInt(text.substring(2)));
         }
     }
-    
-    var content = this._content.getHtmlElement().firstChild;
-    var div = document.createElement("div");
-    div.className = "ZmChatWindowChatEntryMe";
-//    div.innerHTML = "<b>user1: </b>" + AjxStringUtil.htmlEncode(text, true);
-    div.innerHTML = "<b>me: </b>" + this._objectManager.findObjects(text, true);
-    content.appendChild(div);
-    
-//    this.chat.sendMessage(text);
-
-    div = document.createElement("div");
-    // div.className = "ZmChatWindowChatEntryThem";
-    div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+
-                AjxStringUtil.htmlEncode(this.chat.getRosterItem().getDisplayName())+
-                ": </b></span>" + AjxStringUtil.htmlEncode("ok", true);
-    content.appendChild(div);
-
-    content.parentNode.scrollTop = Dwt.getSize(content).y;
+    this.chat.sendMessage(text);
 };
 
 ZmChatWindow._inputOnKeyUp =
@@ -310,7 +297,7 @@ ZmChatWindow.prototype._dropListener =
 function(ev) {
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		var srcData = ev.srcData;
-        	ev.doIt = (srcData instanceof ZmRosterTreeItem) && !this.chat.hasRosterItem(srcData.getRosterItem());
+        	ev.doIt = (srcData instanceof ZmRosterTreeItem) && !this.chat.hasRosterAddr(srcData.getRosterItem().getAddress());
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
         	var srcData = ev.srcData;
 		if ((srcData instanceof ZmRosterTreeItem)) {

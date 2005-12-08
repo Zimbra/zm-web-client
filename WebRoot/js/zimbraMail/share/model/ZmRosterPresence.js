@@ -35,7 +35,8 @@ function ZmRosterPresence(show, priority, showStatus) {
 //ZmRoster.prototype = new ZmModel;
 ZmRoster.prototype.constructor = ZmRoster;
 
-ZmRosterPresence.SHOW_OFFLINE = 'OFFLINE';
+ZmRosterPresence.SHOW_UNKNOWN = 'UNKNOWN';   // local client, unknown presence state
+ZmRosterPresence.SHOW_OFFLINE = 'OFFLINE';   // our offline
 ZmRosterPresence.SHOW_ONLINE = 'ONLINE';     // jabber online
 ZmRosterPresence.SHOW_CHAT = 'CHAT';         // jabber <show> chat
 ZmRosterPresence.SHOW_AWAY = 'AWAY';         // jabber <show> away
@@ -80,6 +81,8 @@ function() {
         return ZmMsg.imStatusExtAway;
     case ZmRosterPresence.SHOW_DND:
         return ZmMsg.imStatusDND;
+    case ZmRosterPresence.SHOW_UNKNOWN:
+        return ZmMsg.imStatusUnknown;
     case ZmRosterPresence.SHOW_OFFLINE:
     default:
         return ZmMsg.imStatusOffline;
@@ -100,6 +103,8 @@ function() {
         return "ImExtendedAway";
     case ZmRosterPresence.SHOW_DND:
         return "ImDnd";
+    case ZmRosterPresence.SHOW_UNKNOWN:
+    return "Blank_16";    
     case ZmRosterPresence.SHOW_OFFLINE:
     default:
         return "RoundMinusDis"; //"Blank_16";
@@ -150,4 +155,3 @@ function(op) {
         break;
     	}
 };
-

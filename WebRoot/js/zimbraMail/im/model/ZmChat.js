@@ -27,6 +27,7 @@ function ZmChat(id, chatName, appCtxt, chatList) {
 //	if (id == null) id = rosterItem.getAddress() + "_chat";
 	if (chatList == null) chatList = appCtxt.getApp(ZmZimbraMail.IM_APP).getRoster().getChatList();
 	ZmItem.call(this, appCtxt, ZmItem.CHAT, id, chatList);
+	this._sendMessageCallbackObj = new AjxCallback(this, this._sendMessageCallback);
 	this._evt = new ZmEvent(ZmEvent.S_CHAT);
 	this._messages = [];
 	this._rosterItemList = new ZmRosterItemList(appCtxt);
@@ -82,15 +83,21 @@ function(chatName) {
     this._chatName = chatName;
 };
 
+// get the display name for a roster item on the list
+ZmChat.prototype.getDisplayName =
+function(addr) {
+    var ri = this._rosterItemList.getByAddr(addr);
+    return ri ? ri.getDisplayName() : addr;
+};
 
 ZmChat.prototype.isGroupChat =
 function() {
     return this._isGroupChat;
 };
 
-ZmChat.prototype.hasRosterItem = 
-function(item) {
-    return this._rosterItemList.getByAddr(item.getAddress());
+ZmChat.prototype.hasRosterAddr = 
+function(addr) {
+    return this._rosterItemList.getByAddr(addr);
 };
 
 // TODO: remove suport for index being null!
@@ -133,8 +140,22 @@ function(text) {
     var soapDoc = AjxSoapDoc.create("IMSendMessageRequest", "urn:zimbraIM");
     var method = soapDoc.getMethod();
     var message = soapDoc.set("message");
+    var thread = this.getThread();
+    if (thread) 	message.setAttribute("thread", thread);
 	message.setAttribute("addr", this.getRosterItem(0).getAddress());
     var body = soapDoc.set("body", text, message);
     // TODO: error handling
-	this._appCtxt.getAppController().sendRequest(soapDoc, true);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, this._sendMessageCallbackObj);
+};
+
+// stash the thread
+ZmChat.prototype._sendMessageCallback =
+function(result) {
+    try {
+        var response = result.getResponse();
+        this.setThread(response.IMSendMessageResponse.thread);
+    } catch (ex) {
+        // TODO: better handling
+        this._appCtxt.setStatusMsg(ex, ZmStatusView.LEVEL_CRITICAL, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);    
+    }
 };

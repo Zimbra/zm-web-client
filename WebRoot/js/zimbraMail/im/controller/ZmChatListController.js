@@ -42,7 +42,8 @@ function ZmChatListController(appCtxt, container, imApp) {
     	this._listeners = new Object();
 	this._listeners[ZmOperation.VIEW] = new AjxListener(this, this._viewButtonListener);
 	this._listeners[ZmOperation.NEW_MENU] = new AjxListener(this, this._newListener);
-			
+	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
+				
 	this._viewFactory = new Object();
 //	this._viewFactory[ZmController.IM_CHAT_TAB_VIEW] = ZmChatTabbedView;
 	this._viewFactory[ZmController.IM_CHAT_MULTI_WINDOW_VIEW] = ZmChatMultiWindowView;
@@ -140,6 +141,7 @@ function() {
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.IM_PRESENCE_MENU);
 	list.push(ZmOperation.SEP);	
+	list.push(ZmOperation.REFRESH);
 	return list;
 }
 
@@ -266,14 +268,16 @@ ZmChatListController.prototype._resetOperations =
 function(parent, num) {
 	if (!parent) return;
 	if (num == 0) {
-		parent.enableAll(false);
-		parent.enable([ZmOperation.NEW_MENU,ZmOperation.IM_PRESENCE_MENU], true);
+		parent.enableAll(true);	
+//		parent.enableAll(false);
+//		parent.enable([ZmOperation.NEW_MENU,ZmOperation.IM_PRESENCE_MENU, ZmOperation.REFRESH], true);
 	} else if (num == 1) {
 		parent.enableAll(true);
 	} else if (num > 1) {
 		// enable only the tag and delete operations
-		parent.enableAll(false);
-		parent.enable([ZmOperation.NEW_MENU,ZmOperation.IM_PRESENCE_MENU], true);		
+		parent.enableAll(true);		
+//		parent.enableAll(false);
+//		parent.enable([ZmOperation.NEW_MENU,ZmOperation.IM_PRESENCE_MENU, ZmOperation.REFRESH], true);
 	}
 }
 
@@ -330,6 +334,12 @@ function(view, elements, isAppView, clear, pushOnly) {
 	// push the view
 	 return (clear ? this._app.setView(view) : this._app.pushView(view));
 }
+
+ZmChatListController.prototype._refreshListener = 
+function(ev) {
+    var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
+	this._appCtxt.getAppController().sendRequest(soapDoc, true);
+};
 
 // Create some new thing, via a dialog. If just the button has been pressed (rather than
 // a menu item), the action taken depends on the app.
@@ -418,7 +428,7 @@ function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
 
 ZmChatListController.prototype.selectChatForRosterItem =
 function(item) {
-    var chats = this._list.getChatsByRosterItem(item);
+    var chats = this._list.getChatsByRosterAddr(item.getAddress());
     var chat = null;
     for (var c in chats) {
         // TODO: !chat.groupChat()?
@@ -436,7 +446,7 @@ function(item) {
 
 ZmChatListController.prototype.chatWithRosterItem =
 function(item) {
-    var chat = this._list.getChatByRosterItem(item, true);
+    var chat = this._list.getChatByRosterAddr(item.getAddress(), true);
     // currentview or all? probably all...    
     this._parentView[this._currentView].selectChat(chat);
 };
@@ -466,7 +476,7 @@ function(ev, treeView) {
              var item = items[i];
              if (item instanceof ZmRosterItem) {
                 var fields = ev.getDetail("fields");
-                var chats = this._list.getChatsByRosterItem(item);
+                var chats = this._list.getChatsByRosterAddr(item.getAddress());
                 // currentview or all? probably all...
                 for (var c in chats) {
                     var chat = chats[c];
