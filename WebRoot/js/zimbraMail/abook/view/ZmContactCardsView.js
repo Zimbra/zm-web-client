@@ -77,31 +77,34 @@ function(data, type) {
 };
 
 ZmContactCardsView.prototype._createItemHtml =
-function(contact, now, isDndIcon) {
-
-	// in canonical view, don't show contacts in the Trash
-	if (contact.list.isCanonical && (contact.folderId == ZmFolder.ID_TRASH))
-		return null;
-	
-	// create div to add
-	var div = document.createElement("div");
-	if (!isDndIcon) {
-		div._styleClass = "ZmContactCard";
-		div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
-	} else {
-		div._styleClass = "ZmContactCard-dnd";
-		// bug fix #3654 - yuck
-		if (AjxEnv.isMozilla)
-			div.style.overflow = "visible";
-		div.style.position = "absolute";
-	}
-	div.className = div._styleClass;
-	
-	this.associateItemWithElement(contact, div, DwtListView.TYPE_LIST_ITEM);
+function(contact, now, isDndIcon, getHtml) {
 
 	var style = AjxEnv.isLinux ? " style='line-height:13px'" : "";
 	var html = new Array();
 	var idx = 0;
+	var div = null;
+
+	if (getHtml) {
+		html[idx++] = "<div class='ZmContactCard' _styleClass='ZmContactCard' _selectedStyleClass='ZmContactCard-";
+		html[idx++] = DwtCssStyle.SELECTED;
+		// manually associate item with element :(
+		html[idx++] = "' id='";
+		html[idx++] = this._getItemId(contact);
+		html[idx++] = "' _itemIndex='";
+		html[idx++] = AjxCore.assignId(contact);
+		html[idx++] = "' _type='";
+		html[idx++] = DwtListView.TYPE_LIST_ITEM;
+		html[idx++] = "'>";
+	} else {
+		// create div for DnD
+		div = document.createElement("div");
+		div._styleClass = "ZmContactCard-dnd";
+		// bug fix #3654 - yuck
+		if (AjxEnv.isMozilla) div.style.overflow = "visible";
+		div.style.position = "absolute";
+		div.className = div._styleClass;
+		this.associateItemWithElement(contact, div, DwtListView.TYPE_LIST_ITEM);
+	}
 
 	html[idx++] = "<table border=0 width=100% cellpadding=0 cellspacing=0>";
 	html[idx++] = "<tr style='padding:0' class='contactHeader'><td valign=top><div class='contactHeader' style='font-size:16px;";
@@ -160,10 +163,14 @@ function(contact, now, isDndIcon) {
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</td></tr></table>";
-	
-	div.innerHTML = html.join("");
-	
-	return div;
+
+	if (div) {
+		div.innerHTML = html.join("");
+		return div;
+	} else {
+		html[idx++] = "</div>";
+		return html.join("");
+	}
 };
 
 ZmContactCardsView.prototype._getField = 
@@ -183,31 +190,35 @@ ZmContactCardsView.prototype._layout =
 function() {
 	this.removeAll();
 	if (this._list instanceof AjxVector && this._list.size()) {
+		var list = this._list.getArray();
 		var html = new Array();
-		var idx = 0;
-		var size = Dwt.getSize(this._parentEl);
-		var len = this._list.size();
-		
-		// dynamically add the table and its contents to improve rendering speed
-		var table = document.createElement("table");
-		table.cellPadding = table.cellSpacing = "5";
-		this.getHtmlElement().appendChild(table);
-		var row = null;
-		var div = null;
+		var i = 0;
 		var count = 0;
-		
-		for (var i = 0; i < len; i++) {
+
+		// OPTIMIZE: dont use appendChild to add to DOM - slows down IE
+		html[i++] = "<table border=0 cellpadding=5 cellspacing=5>";
+		for (var j = 0; j < list.length; j++) {
+			var contact = list[j];
+			
+			// in canonical view, don't show contacts in the Trash
+			if (contact.list.isCanonical && (contact.folderId == ZmFolder.ID_TRASH))
+				continue;
+
 			if (count%2 == 0)
-				row = table.insertRow(-1);
-			if (div = this._createItemHtml(this._list.get(i))) {
-				var cell = row.insertCell(-1);
-				cell.valign = "top";
-				cell.appendChild(div);
-			} else {
-				count--;
-			}
+				html[i++] = "<tr>";
+
 			count++;
+
+			html[i++] = "<td valign=top>";
+			html[i++] = this._createItemHtml(contact, null, null, true);
+			html[i++] = "</td>";
+
+			if (count%2 == 0)
+				html[i++] = "</tr>";
 		}
+		html[i++] = "</table>";
+
+		this.getHtmlElement().innerHTML = html.join("");
 	} else {
 		this._setNoResultsHtml();
 	}

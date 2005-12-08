@@ -318,8 +318,10 @@ function(ev, div) {
 	if (!id) return true;
 	
 	// check if we're hovering over a column header
-	if (div._type && div._type == DwtListView.TYPE_HEADER_ITEM) {
-		var id = this._headerList[div._itemIndex]._id;
+	var type = Dwt.getAttr(div, "_type");
+	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
+		var itemIdx = Dwt.getAttr(div, "_itemIndex");
+		var id = this._headerList[itemIdx]._id;
 		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) == 0) {
 			this.setToolTipContent(ZmMsg.flag);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) == 0) {
@@ -327,12 +329,12 @@ function(ev, div) {
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0) {
 			this.setToolTipContent(ZmMsg.attachment);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
-			if (this._headerList[div._itemIndex]._sortable)
+			if (this._headerList[itemIdx]._sortable)
 				this.setToolTipContent(ZmMsg.sortBySubject);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT]) == 0) {
 			this.setToolTipContent(ZmMsg.convCountTooltip);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
-			if (this._headerList[div._itemIndex]._sortable)
+			if (this._headerList[itemIdx]._sortable)
 				this.setToolTipContent(ZmMsg.sortByReceived);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) == 0) {
 			this.setToolTipContent(ZmMsg.messageStatus);
@@ -392,8 +394,9 @@ function(ev, div) {
 
 	var id = ev.target.id || div.id;
 	if (!id) return true;
-	
-	if (div._type && div._type == DwtListView.TYPE_LIST_ITEM) {
+
+	var type = Dwt.getAttr(div, "_type");
+	if (type && type == DwtListView.TYPE_LIST_ITEM) {
 		var m = this._parseId(id);
 		if (m && m.field) {
 			var item = this.getItemFromElement(div);
@@ -453,7 +456,8 @@ function(clickedEl, ev, button) {
 		var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) 
 			? ev.target.id : clickedEl.id;
 
-		if (id && clickedEl._type && clickedEl._type == DwtListView.TYPE_LIST_ITEM) {
+		var type = Dwt.getAttr(clickedEl, "_type");
+		if (id && type && type == DwtListView.TYPE_LIST_ITEM) {
 			var m = this._parseId(id);
 			if (m && m.field)
 				return m.field != ZmListView.FIELD_PREFIX[ZmItem.F_FLAG];

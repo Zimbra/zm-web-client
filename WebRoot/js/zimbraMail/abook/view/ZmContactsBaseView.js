@@ -138,7 +138,7 @@ function() {
 		// reset first sel index
 		if (item) {
 			var div = document.getElementById(this._getItemId(item));
-			this._firstSelIndex = div ? this._list.indexOf(AjxCore.objectWithId(div._itemIndex)) : -1;
+			this._firstSelIndex = div ? this._list.indexOf(AjxCore.objectWithId(Dwt.getAttr(div, "_itemIndex"))) : -1;
 		}
 	}
 	
