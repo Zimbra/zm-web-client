@@ -89,7 +89,8 @@ function(attId) {
 	var appt = this._apptView.getAppt(attId);
 	if (appt) {
 		var args;
-		if (appt._orig && appt._orig.folderId != appt.folderId) {
+		var mode = appt.getViewMode();
+		if (mode != ZmAppt.MODE_NEW && appt._orig && appt._orig.folderId != appt.folderId) {
 			// pass along appt and folderId for appt move
 			args = [ appt, appt.folderId ];
 		}
