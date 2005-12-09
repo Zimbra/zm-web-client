@@ -288,6 +288,8 @@ function(params) {
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL))
 		this.getApp(ZmZimbraMail.CALENDAR_APP).showMiniCalendar(true);
 
+	this._preloadViews();
+
 	// reset the user's time zone (save to prefs) if it has changed
 	var respCallback = new AjxCallback(this, this._handleResponseStartup1, [params]);
 	ZmTimezones.initializeServerTimezone(respCallback);
@@ -305,6 +307,7 @@ function(args) {
 	var respCallback = new AjxCallback(this, this._handleResponseStartup2);
 	var startApp = (params && params.app) ? params.app : ZmZimbraMail.defaultStartApp;
 	this.activateApp(startApp, false, respCallback, this._errorCallback);
+	this.setStatusMsg(ZmMsg.initializationComplete, null, null, null, ZmStatusView.TRANSITION_INVISIBLE);
 };
 
 /*
@@ -314,9 +317,7 @@ function(args) {
 ZmZimbraMail.prototype._handleResponseStartup2 =
 function() {
 	this.setSessionTimer(true);
-	this._preloadViews();
 	this._killSplash();
-	this.setStatusMsg(ZmMsg.initializationComplete, null, null, null, ZmStatusView.TRANSITION_INVISIBLE);
 };
 
 /**
@@ -589,10 +590,13 @@ function() {
 	if (cc) {
 		cc.initComposeView(true);
 	}
+
 	// preload the appointment compose view
-	var acc = this.getApp(ZmZimbraMail.CALENDAR_APP).getApptComposeController();
-	if (acc) {
-		acc.initApptComposeView(true);
+	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+		var acc = this.getApp(ZmZimbraMail.CALENDAR_APP).getApptComposeController();
+		if (acc) {
+			acc.initApptComposeView(true);
+		}
 	}
 };
 
