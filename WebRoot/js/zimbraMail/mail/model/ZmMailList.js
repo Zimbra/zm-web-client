@@ -193,6 +193,7 @@ function(convs, msgs) {
 		// handle new convs first so we can set their fragments from new msgs
 		var sortBy = this.search ? this.search.sortBy : null;
 		for (var id in convs) {
+			if (this.getById(id)) continue;
 			var conv = convs[id];
 			if (conv.folders && conv.folders[searchFolder]) {
 				var index = this._getSortIndex(conv, sortBy);
@@ -205,7 +206,7 @@ function(convs, msgs) {
 			var msg = msgs[id];
 			var cid = msg.cid;
 			var conv = this.getById(cid);
-			if (conv) {
+			if (conv && !(conv.msgs && conv.msgs.getById(id))) {
 				// got a new msg for a conv that has no msg list - happens when virt conv
 				// becomes real (on its second msg) - create a msg list
 				if (!conv.msgs) {
@@ -228,6 +229,7 @@ function(convs, msgs) {
 		}
 	} else if (this.type == ZmItem.MSG) {
 		for (var id in msgs) {
+			if (this.getById(id)) continue;
 			var msg = msgs[id];
 			if (this.convId) { // MLV within conv
 				if (msg.cid == this.convId && !this.getById(msg.id)) {
