@@ -41,7 +41,7 @@ function ZmApptTabViewPage(parent, appCtxt) {
 
 	var bComposeEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
-	this._composeMode = this._defaultComposeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
+	this._composeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 
 	this._repeatSelectDisabled = false;
@@ -147,10 +147,7 @@ ZmApptTabViewPage.prototype.initialize =
 function(appt, mode) {
 	this._appt = appt;
 
-	if (!this._rendered) {
-		this._createHTML();
-		this._rendered = true;
-	}
+	this.createHtml();
 
 	this._mode = mode == ZmAppt.MODE_NEW_FROM_QUICKADD || mode == null
 		? ZmAppt.MODE_NEW : mode;
@@ -279,6 +276,14 @@ ZmApptTabViewPage.prototype.reEnableDesignMode =
 function() {
 	if (this._composeMode == DwtHtmlEditor.HTML)
 		this._notesHtmlEditor.reEnableDesignMode();
+};
+
+ZmApptTabViewPage.prototype.createHtml =
+function() {
+	if (!this._rendered) {
+		this._createHTML();
+		this._rendered = true;
+	}
 };
 
 /**
@@ -424,8 +429,10 @@ function(appt, mode) {
 	if (mode != ZmAppt.MODE_NEW) {
 		this._populateForEdit(appt);
 	} else {
-		// reset compose view to html preference
-		this.setComposeMode(this._defaultComposeMode);
+		// reset compose view to html preference since it couldve changed
+		var cm = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML
+			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+		this.setComposeMode(cm);
 	}
 	// disable the recurrence select object for editing single instance
 	this._enableRepeat(mode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE);

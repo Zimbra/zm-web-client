@@ -87,6 +87,13 @@ function() {
 	this._scheduleTab.cleanup();
 };
 
+ZmApptComposeView.prototype.preload = 
+function() {
+    this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+    this.enableInputs(false);
+    this._apptTab.createHtml();
+};
+
 ZmApptComposeView.prototype.getComposeMode = 
 function() {
 	return this._apptTab.getComposeMode();

@@ -291,12 +291,6 @@ function(params) {
 	// reset the user's time zone (save to prefs) if it has changed
 	var respCallback = new AjxCallback(this, this._handleResponseStartup1, [params]);
 	ZmTimezones.initializeServerTimezone(respCallback);
-
-	// preload the compose view - XXX: not sure this is the right place for it
-	var cc = this.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
-	if (cc) {
-		cc.initComposeView(true);
-	}
 };
 
 /*
@@ -311,7 +305,6 @@ function(args) {
 	var respCallback = new AjxCallback(this, this._handleResponseStartup2);
 	var startApp = (params && params.app) ? params.app : ZmZimbraMail.defaultStartApp;
 	this.activateApp(startApp, false, respCallback, this._errorCallback);
-	this.setStatusMsg(ZmMsg.initializationComplete, null, null, null, ZmStatusView.TRANSITION_INVISIBLE);
 };
 
 /*
@@ -321,7 +314,9 @@ function(args) {
 ZmZimbraMail.prototype._handleResponseStartup2 =
 function() {
 	this.setSessionTimer(true);
+	this._preloadViews();
 	this._killSplash();
+	this.setStatusMsg(ZmMsg.initializationComplete, null, null, null, ZmStatusView.TRANSITION_INVISIBLE);
 };
 
 /**
@@ -587,6 +582,20 @@ function(appName, view) {
 
 // Private methods
 
+ZmZimbraMail.prototype._preloadViews =
+function() {
+	// preload the compose view
+	var cc = this.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
+	if (cc) {
+		cc.initComposeView(true);
+	}
+	// preload the appointment compose view
+	var acc = this.getApp(ZmZimbraMail.CALENDAR_APP).getApptComposeController();
+	if (acc) {
+		acc.initApptComposeView(true);
+	}
+};
+
 ZmZimbraMail.prototype._killSplash =
 function() {
 	this._splashScreen.setVisible(false);
@@ -718,7 +727,7 @@ function() {
 	var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80')? "" : ":" + location.port) + "/zimbra/" + window.location.search;
 	// not sure why IE doesn't allow this to process immediately, but since
 	// it does not, we'll set up a timed action.
-	if (AjxEnv.isIE){
+	if (AjxEnv.isIE) {
 		var act = new AjxTimedAction();
 		act.method = ZmZimbraMail.redir;
 		act.params.add(locationStr);

@@ -53,17 +53,7 @@ ZmApptComposeController.prototype.show =
 function(appt, mode) {
 
 	this._initToolbar(mode);
-
-	if (!this._apptView) {
-		this._apptView = new ZmApptComposeView(this._container, null, this._app, this);
-		var callbacks = new Object();
-		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
-		var elements = new Object();
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._apptView;
-	    this._app.createView(ZmController.APPOINTMENT_VIEW, elements, callbacks);
-	}
-
+	this.initApptComposeView();
 	this._setFormatBtnItem(true);
 
 	this._app.pushView(ZmController.APPOINTMENT_VIEW, true);
@@ -121,6 +111,24 @@ ZmApptComposeController.prototype.toggleSpellCheckButton =
 function(toggled) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	spellCheckButton.setToggled((toggled || false));
+};
+
+ZmApptComposeController.prototype.initApptComposeView = 
+function(initHide) {
+	if (this._apptView == null) {
+		this._apptView = new ZmApptComposeView(this._container, null, this._app, this);
+		var callbacks = new Object();
+		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
+		var elements = new Object();
+		if (!this._toolbar)
+			this._createToolBar();
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._apptView;
+	    this._app.createView(ZmController.APPOINTMENT_VIEW, elements, callbacks);
+	    if (initHide) {
+	    	this._apptView.preload();
+	    }
+	}
 };
 
 
