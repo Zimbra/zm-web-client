@@ -272,6 +272,10 @@ function(params) {
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
 		this.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 
+    // trigger roster load/reload
+	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
+        	this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
+
 	this.setPollInterval();
 	var opc = this._appCtxt.getOverviewController();
 	opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
@@ -843,10 +847,8 @@ function(refresh) {
 	var calendarString = calendarTree.asString();
 	calendarTree.reset();
 
-    // TODO: move this or get the roster returned via refresh
-	//if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {    
-    	this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
-    //}
+	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
+        	this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
     
 	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 	if (!folderTree) {
