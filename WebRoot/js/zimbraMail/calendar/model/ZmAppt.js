@@ -189,7 +189,7 @@ ZmAppt.prototype.hasOtherAttendees 				= function() { return this.otherAttendees
 
 ZmAppt.prototype.setAllDayEvent 				= function(isAllDay) 	{ this.allDayEvent = isAllDay ? "1" : "0"; };
 ZmAppt.prototype.setEndDate 					= function(endDate) 	{ this.endDate = new Date(endDate); this._resetCached(); };
-ZmAppt.prototype.setFolderId 					= function(folderId) 	{ this.folderId = folderId; };
+ZmAppt.prototype.setFolderId 					= function(folderId) 	{ this.folderId = folderId || ZmFolder.ID_CALENDAR; };
 ZmAppt.prototype.setOrganizer 					= function(organizer) 	{ this.organizer = organizer != "" ? organizer : null; };
 ZmAppt.prototype.setMessage 					= function(message) 	{ this._message = message; };
 ZmAppt.prototype.setName 						= function(newName) 	{ this.name = newName; };
