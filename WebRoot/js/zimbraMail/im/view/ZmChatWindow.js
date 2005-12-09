@@ -230,17 +230,6 @@ ZmChatWindow.prototype.handleMessage =
 function(msg) {
     var content = this._content.getHtmlElement().firstChild;
     div = document.createElement("div");   
-    /* 
-    if (msg.fromMe) {
-        div.className = "ZmChatWindowChatEntryMe";
-        div.innerHTML = "<b>me: </b>" + this._objectManager.findObjects(msg.body, true);
-    } else {
-        // div.className = "ZmChatWindowChatEntryThem";
-        div.innerHTML = "<span class='ZmChatWindowChatEntryThem'><b>"+
-                    AjxStringUtil.htmlEncode(this.chat.getDisplayName(msg.from)) +
-                    ": </b></span>" + this._objectManager.findObjects(msg.body, true);
-    }
-    */
     div.innerHTML = msg.toHtml(this._objectManager, this.chat);
     content.appendChild(div);
     content.parentNode.scrollTop = Dwt.getSize(content).y;

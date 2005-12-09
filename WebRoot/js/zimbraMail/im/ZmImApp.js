@@ -49,7 +49,13 @@ function(callback) {
 
 ZmImApp.prototype.activate =
 function(active) {
-//    alert("wheee!");
+    this._active = active;
+    if (active) this._appCtxt.setStatusIconVisible(ZmStatusView.ICON_IM, false);
+};
+
+ZmImApp.prototype.isActive =
+function() {
+    return this._active;
 };
 
 ZmImApp.prototype.getChatListController =
@@ -62,7 +68,7 @@ function() {
 ZmImApp.prototype.getRoster =
 function() {
 	if (!this._roster)
-		this._roster = new ZmRoster(this._appCtxt);
+		this._roster = new ZmRoster(this._appCtxt, this);
 	return this._roster;
 };
 

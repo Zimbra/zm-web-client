@@ -30,7 +30,7 @@
 * This class represents a list of appts.
 *
 */
-function ZmRoster(appCtxt) {
+function ZmRoster(appCtxt, imApp) {
     ZmModel.call(this, true);
     this._appCtxt = appCtxt;
     this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);	
@@ -38,6 +38,7 @@ function ZmRoster(appCtxt) {
    	this._evt = new ZmEvent(ZmEvent.S_ROSTER);
 	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);   	
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
+	this._imApp = imApp;
 }
 
 ZmRoster.prototype = new ZmModel;
@@ -227,7 +228,10 @@ function(im) {
                 chat = cl.getChatByRosterAddr(chatMessage.from, true);
                 if (chat) chat.setThread(chatMessage.thread);
             }
-            if (chat) chat.addMessage(chatMessage);
+            if (chat) {
+                chat.addMessage(chatMessage);
+                if (!this._imApp.isActive()) this._appCtxt.setStatusIconVisible(ZmStatusView.ICON_IM, true);
+            }
         }
     }
     if (im.leftchat) {

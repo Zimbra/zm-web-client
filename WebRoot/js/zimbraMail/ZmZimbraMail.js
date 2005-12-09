@@ -1304,6 +1304,11 @@ function(msg, level, detail, delay, transition) {
 	this._statusView.setStatusMsg(msg, level, detail, delay, transition);
 };
 
+ZmZimbraMail.prototype.setStatusIconVisible =
+function(icon, visible) {
+	this._statusView.setIconVisible(icon, visible);
+};
+
 ZmZimbraMail.prototype._appButtonListener =
 function(ev) {
 	try {

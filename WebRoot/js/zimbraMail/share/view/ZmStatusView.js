@@ -47,6 +47,7 @@ function ZmStatusView(parent, className, posStyle) {
 	this._updateClock();
 	this._counter = 0;
 	this.setIconVisible(ZmStatusView.ICON_INBOX, false);
+	this.setIconVisible(ZmStatusView.ICON_IM, false);	
 	this.setIconVisible(ZmStatusView.ICON_BUSY, false);
 }
 
@@ -71,7 +72,8 @@ ZmStatusView.TRANSITION_FADE_IN = 5;
 ZmStatusView.TRANSITION_INVISIBLE = 6; // add to history, but don't display
 
 ZmStatusView.ICON_INBOX = 1;
-ZmStatusView.ICON_BUSY = 2;
+ZmStatusView.ICON_IM = 2;
+ZmStatusView.ICON_BUSY = 3;
 
 ZmStatusView.DEFAULT = { };
 ZmStatusView.DEFAULT[ZmStatusView.LEVEL_INFO] = { delay: ZmStatusView.STATUS_LIFE, transition: ZmStatusView.TRANSITION_SLIDE_UP };
@@ -97,8 +99,9 @@ function() {
 	this._toastDivId = Dwt.getNextId();
 	this._iconIds = [];
 	var inboxId = this._iconIds[ZmStatusView.ICON_INBOX] = Dwt.getNextId();
+	var imId = this._iconIds[ZmStatusView.ICON_IM] = Dwt.getNextId();	
 	var busyId = this._iconIds[ZmStatusView.ICON_BUSY] = Dwt.getNextId();
-	this._inboxtDivId = Dwt.getNextId();	
+	var blankId = Dwt.getNextId();
 	this._toastContentDivId = Dwt.getNextId();
 	
 	var html = new AjxBuffer();
@@ -109,9 +112,11 @@ function() {
 	html.append("<table vorder=0 cellpadding=0 cellspacing=0 style='width:100%;'> ");
 	html.append("<tr>");
 	html.append("<td style='width:20px;' align='center'><div id='",inboxId,"'", AjxImg.getImageHtml("Inbox"), "</div></td>");
+	html.append("<td style='width:20px;' align='center'><div id='",imId,"'", AjxImg.getImageHtml("ImStartChat"), "</div></td>");	
 	html.append("<td style='height:16px' align='center'><div class='ZmStatusMainText' id='"+this._mainContentDivId+"'></div></td>");
 //	html.append("<td style='width:20px;' align='center'>", AjxImg.getImageHtml("Appointment"), "</td>");
 	html.append("<td style='width:20px;' align='center'><div id='", busyId, "' class='DwtWait16Icon'/></td>");
+	html.append("<td style='width:20px;' align='center'><div id='", blankId, "' class='Blank_16'/></td>");	
 //	html.append("<td style='width:20px;' align='center'>", AjxImg.getImageHtml("SendRecieve"), "</td>");
 
 	html.append("</tr></table>");
