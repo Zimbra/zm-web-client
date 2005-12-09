@@ -175,7 +175,7 @@ function(contextMenu, menuItemId, spanElement, contentObjText, canvas) {};
 // property editor for set of properties defined in the <userProperties>
 // element.
 ZmZimletBase.prototype.createPropertyEditor =
-function() {
+function(callback) {
 	var userprop = this.xmlObj("userProperties");
 
 	if (!userprop)
@@ -193,7 +193,9 @@ function() {
 		pe.setFixedLabelWidth();
 		pe.setFixedFieldWidth();
 		dlg.setButtonListener(DwtDialog.OK_BUTTON,
-				      new AjxListener(this, this.saveUserProperties));
+				      new AjxListener(this, function() {
+					      this.saveUserProperties(callback);
+				      }));
 	}
 	this._dlg_propertyEditor.popup();
 };
@@ -222,8 +224,9 @@ ZmZimletBase.prototype.displayStatusMessage = function(msg) {
 ZmZimletBase.prototype.requestFinished = function(param) {
 	this.resetIcon();
 	var callback = param[0];
-	var xmlargs = param[1];
-	if (!this._passRpcErrors && !xmlargs.success) {
+	var passErrors = param[1];
+	var xmlargs = param[2];
+	if (!(passErrors || this._passRpcErrors) && !xmlargs.success) {
 		this.displayErrorMessage("We could not connect to the remote server, or an error was returned.<br />Error code: " + xmlargs.status, xmlargs.text);
 	} else if (callback)
 		// Since we don't know for sure if we got an XML in return, it
@@ -233,13 +236,15 @@ ZmZimletBase.prototype.requestFinished = function(param) {
 };
 
 ZmZimletBase.prototype.sendRequest =
-function(requestStr, serverURL, requestHeaders, callback, useGet) {
+function(requestStr, serverURL, requestHeaders, callback, useGet, passErrors) {
+	if (passErrors == null)
+		passErrors = false;
 	if (requestStr instanceof AjxSoapDoc)
 		requestStr = [ '<?xml version="1.0" encoding="utf-8" ?>',
 			       requestStr.getXml() ].join("");
 	this.setBusyIcon();
 	serverURL = ZmZimletBase.PROXY + AjxStringUtil.urlEncode(serverURL);
-	var our_callback = new AjxCallback(this, this.requestFinished, callback);
+	var our_callback = new AjxCallback(this, this.requestFinished, [ callback, passErrors ]);
 	return AjxRpc.invoke(requestStr, serverURL, requestHeaders, our_callback, useGet);
 };
 
@@ -302,7 +307,7 @@ ZmZimletBase.prototype.resetIcon = function() {
 };
 
 ZmZimletBase.prototype.saveUserProperties =
-function() {
+function(callback) {
 	var soapDoc = AjxSoapDoc.create("ModifyPropertiesRequest", "urn:zimbraAccount");
 
 	var props = this.xmlObj("userProperties");
@@ -327,9 +332,12 @@ function() {
 		p.setAttribute("name", props[i].name);
 	}
 
-	// TODO: make asynchronous, handle errors
 	var cmd = new ZmCsfeCommand();
-	cmd.invoke({ soapDoc: soapDoc });
+	ajxcallback = new AjxCallback(this, function(result) {
+		// TODO: handle errors
+		callback.run();
+	});
+	cmd.invoke({ soapDoc: soapDoc, callback: ajxcallback, asyncMode: true });
 
 	if (this._dlg_propertyEditor) {
 		this._dlg_propertyEditor.popdown();

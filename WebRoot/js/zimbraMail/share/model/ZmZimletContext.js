@@ -251,9 +251,9 @@ ZmZimletContext._zmObjectTransformers = {
 		var ret = { TYPE: "ZmMailMsg" };
 		ret.id           = o.getId();
 		ret.convId       = o.getConvId();
-		ret.from         = o.getAddresses(ZmEmailAddress.FROM);
-		ret.to           = o.getAddresses(ZmEmailAddress.TO);
-		ret.cc           = o.getAddresses(ZmEmailAddress.CC);
+		ret.from         = o.getAddresses(ZmEmailAddress.FROM).getArray();
+		ret.to           = o.getAddresses(ZmEmailAddress.TO).getArray();
+		ret.cc           = o.getAddresses(ZmEmailAddress.CC).getArray();
 		ret.subject      = o.getSubject();
 		ret.date         = o.getDate();
 		ret.size         = o.getSize();
@@ -266,6 +266,17 @@ ZmZimletContext._zmObjectTransformers = {
 		ret.sent         = o.isSent;
 		ret.replied      = o.isReplied;
 		ret.draft        = o.isDraft;
+		ret.body         = o.getTextPart();
+		if (!ret.body) {
+// 			ret.body = AjxStringUtil.convertHtml2Text(
+// 				Dwt.parseHtmlFragment(
+// 					"<div>" +
+// 					o.getBodyPart(ZmMimeTable.TEXT_HTML).content +
+// 					"</div>"));
+//  			ret.body = o.getBodyPart(ZmMimeTable.TEXT_HTML).content;
+			// FIXME: figure out how to properly translate it to text
+			ret.body = ret.fragment;
+		}
 		return ret;
 	},
 
@@ -285,6 +296,9 @@ ZmZimletContext._zmObjectTransformers = {
 		ret.unread       = o.isUnread;
 		// ret.attachment   = o._attachments ?;
 		// ret.sent         = o.isSent;
+
+		// FIXME: perhaps we should get the body of the most recent message?
+		ret.body         = ret.fragment;
 		return ret;
 	},
 
