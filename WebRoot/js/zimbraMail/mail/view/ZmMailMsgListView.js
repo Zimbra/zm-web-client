@@ -308,6 +308,9 @@ function(msg, now, isDndIcon, isMixedView) {
 
 ZmMailMsgListView.prototype._changeListener =
 function(ev) {
+	// only update if we're currently visible
+	if (this._mode != this._appCtxt.getCurrentViewId()) return;
+
 	var items = ev.getDetail("items");
 	if ((ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) && this._mode == ZmController.CONV_VIEW) {
 		if (!this._controller.handleDelete()) {
