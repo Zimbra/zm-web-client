@@ -27,13 +27,13 @@ function ZmEmailObjectHandler(appCtxt) {
 
 	ZmObjectHandler.call(this, appCtxt, ZmEmailObjectHandler.TYPE);
 	this._contacts = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
-};
+}
 
-ZmEmailObjectHandler.prototype = new ZmObjectHandler;
+ZmEmailObjectHandler.prototype = new ZmObjectHandler();
 ZmEmailObjectHandler.prototype.constructor = ZmEmailObjectHandler;
 
 ZmEmailObjectHandler.TYPE = "email";
-ZmEmailObjectHandler.EMAIL_RE = /[\w.\-]+@[\w.\-]+/g;
+ZmEmailObjectHandler.EMAIL_RE = /\b([0-9a-zA-Z]+[-._+&])*[0-9a-zA-Z]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,6}\b/g;
 
 ZmEmailObjectHandler.prototype.match =
 function(content, startIndex) {
@@ -57,11 +57,13 @@ function(html, idx, obj) {
 	if (obj instanceof ZmEmailAddress) {
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			var contact = this._contacts.getContactByEmail(obj.address);
-			if (contact)
+			if (contact) {
 				content = contact.getFullName();
+			}
 		}
-		if (!content)
+		if (!content) {
 			content = obj.toString();
+		}
 	} else {
 		content = obj;
 	}
@@ -84,32 +86,38 @@ function(obj) {
 
 ZmEmailObjectHandler.prototype.getActionMenu =
 function(obj) {
-	if (this._menu == null) {
+	if (this._menu === null) {
 		var list = new Array();
-		if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED))
+		if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 			list.push(ZmOperation.SEARCH);
-		if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED))
+		}
+		if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
 			list.push(ZmOperation.BROWSE);
+		}
 		list.push(ZmOperation.NEW_MESSAGE);
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			list.push(ZmOperation.CONTACT);
+		}
 		list.push(ZmOperation.GO_TO_URL);
 		this._menu = new ZmActionMenu(this._appCtxt.getShell(), list);
 	
-		if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED))
+		if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 			this._menu.addSelectionListener(ZmOperation.SEARCH, new AjxListener(this, this._searchListener));
-		if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED))
+		}
+		if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
 			this._menu.addSelectionListener(ZmOperation.BROWSE, new AjxListener(this, this._browseListener));
+		}
 		this._menu.addSelectionListener(ZmOperation.NEW_MESSAGE, new AjxListener(this, this._composeListener));
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._menu.addSelectionListener(ZmOperation.CONTACT, new AjxListener(this, this._contactListener));
+		}
 		this._menu.addSelectionListener(ZmOperation.GO_TO_URL, new AjxListener(this, this._goToUrlListener));
 	}
 	this._actionObject = obj;
 	this._actionAddress = this._getAddress(this._actionObject);	
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		this._actionContact = this._contacts.getContactByEmail(this._actionAddress);
-		var isContact = (this._actionContact != null);
+		var isContact = (this._actionContact !== null);
 		var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
 		var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
 		ZmOperation.setOperation(this._menu, ZmOperation.CONTACT, newOp, newText);
@@ -171,8 +179,9 @@ function(ev) {
 
 ZmEmailObjectHandler.prototype._goToUrlListener =
 function(ev) {
-	if (this._actionUrl)
+	if (this._actionUrl) {
 		window.open(this._actionUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
+	}
 };
 
 ZmObjectManager.registerHandler("ZmEmailObjectHandler");
