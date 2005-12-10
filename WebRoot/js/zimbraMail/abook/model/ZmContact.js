@@ -465,7 +465,9 @@ function(email) {
 		idx = this._addEntryRow("fullName", null, html, idx);
 		idx = this._addEntryRow("jobTitle", null, html, idx);
 		idx = this._addEntryRow("company", null, html, idx);
+		idx = this._addEntryRow("mobilePhone", null, html, idx);			
 		idx = this._addEntryRow("workPhone", null, html, idx);	
+		idx = this._addEntryRow("homePhone", null, html, idx);			
 		idx = this._addEntryRow("email", email, html, idx);
 		html[idx++] = "</table>";
 		this._toolTip = html.join("");
