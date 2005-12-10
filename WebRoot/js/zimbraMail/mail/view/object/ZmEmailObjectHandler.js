@@ -86,7 +86,7 @@ function(obj) {
 
 ZmEmailObjectHandler.prototype.getActionMenu =
 function(obj) {
-	if (this._menu === null) {
+	if (this._menu == null) {
 		var list = new Array();
 		if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 			list.push(ZmOperation.SEARCH);
