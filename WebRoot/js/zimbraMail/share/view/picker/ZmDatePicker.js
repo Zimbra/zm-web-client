@@ -26,7 +26,7 @@
 function ZmDatePicker(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.DATE);
-}
+};
 
 ZmDatePicker.prototype = new ZmPicker;
 ZmDatePicker.prototype.constructor = ZmDatePicker;
@@ -36,7 +36,7 @@ ZmPicker.CTOR[ZmPicker.DATE] = ZmDatePicker;
 ZmDatePicker.prototype.toString = 
 function() {
 	return "ZmDatePicker";
-}
+};
 
 ZmDatePicker.prototype._setupPicker =
 function(parent) {
@@ -63,7 +63,8 @@ function(parent) {
     html[i++] = "</table>";
 	picker.getHtmlElement().innerHTML = html.join("");
 
-	var cal = this._cal = new DwtCalendar(picker);
+	var firstDay = this._appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
+	var cal = this._cal = new DwtCalendar(picker, null, null, firstDay);
 	cal.setDate(new Date());
 	cal.addSelectionListener(new AjxListener(this, this._calSelectionListener));
 	
@@ -72,7 +73,7 @@ function(parent) {
 	Dwt.setHandler(select, DwtEvent.ONCHANGE, ZmDatePicker._onChange);
 	select._picker = this;
 	this._updateQuery();
-}
+};
 
 // Set date for second instance of date picker to 3 months back, select "after"
 ZmDatePicker.prototype.secondDate =
@@ -82,7 +83,7 @@ function() {
 	AjxDateUtil.roll(date, AjxDateUtil.MONTH, -3);
 	this._cal.setDate(date);
 	this._updateQuery();
-}
+};
 
 ZmDatePicker.prototype._updateQuery = 
 function() {
@@ -94,7 +95,7 @@ function() {
 		this.setQuery("");
 	}
 	this.execute();
-}
+};
 
 ZmDatePicker._onChange = 
 function(ev) {
@@ -106,4 +107,4 @@ function(ev) {
 ZmDatePicker.prototype._calSelectionListener =
 function(ev) {
 	this._updateQuery();
-}
+};
