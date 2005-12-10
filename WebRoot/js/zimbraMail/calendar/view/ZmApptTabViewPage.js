@@ -538,7 +538,9 @@ function() {
 ZmApptTabViewPage.prototype._createApptHtml =
 function() {
 	var dims = this.parent.getSize();
-	var half = (dims.x / 2) - 5;
+	// XXX: this seems to screw up the view when preloading
+	//var half = (dims.x / 2) - 5; 
+	var half = "50%";
 	this.setSize(dims.x-2, dims.y-30);
 	this._notesHtmlEditorId = Dwt.getNextId();
 
