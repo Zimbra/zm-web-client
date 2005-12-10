@@ -309,9 +309,10 @@ function(items, tagId, doTag) {
 	if (!(items instanceof Array)) items = [items];
 
 	// only tag items that don't have the tag, and untag ones that do
+	// always tag a conv, because we don't know if all items in the conv have the tag yet
 	var items1 = new Array();
 	for (var i = 0; i < items.length; i++)
-		if ((doTag && !items[i].hasTag(tagId)) || (!doTag && items[i].hasTag(tagId)))
+		if ((doTag && (!items[i].hasTag(tagId) || items[i].type == ZmItem.CONV)) || (!doTag && items[i].hasTag(tagId)))
 			items1.push(items[i]);
 	
 	if (items1.length) {
