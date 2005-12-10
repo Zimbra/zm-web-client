@@ -40,9 +40,10 @@ function() {
 };
 
 ZmContactController.prototype.show = 
-function(contact) {
+function(contact, isDirty) {
 	this._currentView = this._getViewType();
 	this._contact = contact;
+	if (isDirty) this._contactDirty = true;
 	this._list = contact.list;
 	// re-enable input fields if list view exists
 	if (this._listView[this._currentView])
@@ -108,7 +109,8 @@ function() {
 
 ZmContactController.prototype._setViewContents =
 function(view) {
-	this._listView[view].set(this._contact);
+	this._listView[view].set(this._contact, this._contactDirty);
+	if (this._contactDirty) delete this._contactDirty;
 };
 
 ZmContactController.prototype._paginate = 

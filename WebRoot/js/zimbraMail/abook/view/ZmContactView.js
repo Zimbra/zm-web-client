@@ -90,7 +90,7 @@ function() {
 }
 
 ZmContactView.prototype.set =
-function(contact) {
+function(contact, isDirty) {
 
 	this._attr = new Object();
 	for (var a in contact.getAttrs())
@@ -115,7 +115,7 @@ function(contact) {
 	var lastNameInput = document.getElementById(this._fieldIds[ZmContact.F_lastName]);
 	lastNameInput.focus(); // bug fix #937
 	
-	this._isDirty = false;
+	this._isDirty = isDirty || false;
 }
 
 ZmContactView.prototype.getModifiedAttrs =

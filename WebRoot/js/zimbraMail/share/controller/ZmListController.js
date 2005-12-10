@@ -530,7 +530,7 @@ function(ev) {
 	} else {
 		var contact = new ZmContact(this._appCtxt);
 		contact.initFromEmail(this._actionEv.address);
-		cc.show(contact);
+		cc.show(contact, true);
 	}
 }
 
