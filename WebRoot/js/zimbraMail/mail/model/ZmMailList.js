@@ -99,7 +99,7 @@ function(args) {
 		this.moveLocal(movedItems, folder.id);
 		for (var i = 0; i < movedItems.length; i++)
 			movedItems[i].moveLocal(folder.id);
-		this._eventNotify(ZmEvent.E_MOVE, movedItems);
+		this._eventNotify(ZmEvent.E_MOVE, movedItems, {replenish: true});
 	}
 };
 
@@ -136,7 +136,7 @@ function(args) {
 		this.moveLocal(movedItems, folderId);
 		for (var i = 0; i < movedItems.length; i++)
 			movedItems[i].moveLocal(folderId);
-		this._eventNotify(ZmEvent.E_MOVE, movedItems);
+		this._eventNotify(ZmEvent.E_MOVE, movedItems, {replenish: true});
 	}
 };
 

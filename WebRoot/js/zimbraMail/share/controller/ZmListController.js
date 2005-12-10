@@ -540,8 +540,6 @@ ZmListController.prototype._dragListener =
 function(ev) {
 	if (ev.action == DwtDragEvent.SET_DATA) {
 		ev.srcData = {data: ev.srcControl.getDnDSelection(), controller: this};
-	} else if (ev.action == DwtDragEvent.DRAG_END) {
-		this._checkReplenish();
 	}
 }
 
@@ -920,12 +918,17 @@ ZmListController.prototype._checkReplenish =
 function(callback) {
 	var view = this._listView[this._currentView];
 	var list = view.getList();
-	// don't bother if the view doesnt really have a list
+	// don't bother if the view doesn't really have a list
+	var replenishmentDone = false;
 	if (list) {
 		var replCount = view.getLimit() - view.size();
-		if (replCount > view.getReplenishThreshold())
+		if (replCount > view.getReplenishThreshold()) {
 			this._replenishList(this._currentView, replCount, callback);
+			replenishmentDone = true;
+		}
 	}
+	if (callback && !replenishmentDone)
+		callback.run();
 }
 
 ZmListController.prototype._replenishList = 
@@ -943,6 +946,7 @@ function(view, replCount, callback) {
 		var sublist = list.slice(idxStart, idxEnd);
 		var subVector = AjxVector.fromArray(sublist);
 		this._listView[view].replenish(subVector);
+		if (callback) callback.run();
 	} else {
 		// replenish from server request
 		this._getMoreToReplenish(view, replCount, callback);
@@ -969,12 +973,14 @@ function(idx) {
 ZmListController.prototype._getMoreToReplenish = 
 function(view, replCount, callback) {
 	if (this._list.hasMore()) {
+DBG.println("****** need to replenish: " + replCount);
 		var offset = this._list.size();
 		var respCallback = new AjxCallback(this, this._handleResponseGetMoreToReplenish, [view, callback]);
 		this._search(view, offset, replCount, respCallback);
 	} else {
 		if (this._listView[view].size() == 0)
 			this._listView[view]._setNoResultsHtml();
+		if (callback) callback.run();
 	}
 }
 

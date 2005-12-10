@@ -1146,6 +1146,14 @@ function(modifies) {
 	var list = this._getObjList(modifies);
 	// always notify cal controller
 	if (this._calController) this._calController.notifyModify(list);
+
+	var lastMove = null;
+	for (var i = 0; i < list.length; i++)
+		if (list[i].l)
+			lastMove = i;
+	if (lastMove != null)
+		list[lastMove].lastModify = true;
+	
 	for (var i = 0; i < list.length; i++) {
 		var mod = list[i];
 		var id = mod.id;
