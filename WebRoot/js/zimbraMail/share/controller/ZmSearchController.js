@@ -317,7 +317,7 @@ function(params, noRender, callback, errorCallback) {
 	params.types = types;
 	var search = new ZmSearch(this._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, noRender, isMixed, callback]);
-	if (!errorCallback) errorCallback = new AjxCallback(this, this._handleErrorDoSearch, params);
+	if (!errorCallback) errorCallback = new AjxCallback(this, this._handleErrorDoSearch, [search, isMixed]);
 	search.execute({callback: respCallback, errorCallback: errorCallback});
 }
 
@@ -348,37 +348,42 @@ function(args) {
 		results.type = search.types.get(0);
 	
 	if (!noRender) {
-		// allow old results to dtor itself
-		if (this._results && (this._results.type == results.type))
-			this._results.dtor();
-		this._results = results;
-
-		DBG.timePt("handle search results");
-		if (isMixed) {
-			this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, search.query);
-		} else if (results.type == ZmItem.CONV) {
-			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().show(results, search.query);
-		} else if (results.type == ZmItem.MSG) {
-			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController().show(results, search.query);
-		} else {
-			// determine if we need to default to mixed view
-			var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-			var folder = folderTree ? folderTree.getById(search.folderId) : null;
-			var inTrash = folder && folder.isInTrash();
-
-			// only show contact view if search is not in Trash folder
-			if (results.type == ZmItem.CONTACT && !inTrash) {
-				this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController().show(results, search.query, this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
-			} else {
-				this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, search.query);
-			}
-		}
-		this._appCtxt.setCurrentList(results.getResults(results.type));
+		this._showResults(results, search, isMixed);		
 	}
-	DBG.timePt("render search results");
 	
 	if (callback) callback.run(result);
-}
+};
+
+ZmSearchController.prototype._showResults =
+function(results, search, isMixed) {
+	// allow old results to dtor itself
+	if (this._results && (this._results.type == results.type))
+		this._results.dtor();
+	this._results = results;
+
+	DBG.timePt("handle search results");
+	if (isMixed) {
+		this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, search.query);
+	} else if (results.type == ZmItem.CONV) {
+		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().show(results, search.query);
+	} else if (results.type == ZmItem.MSG) {
+		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController().show(results, search.query);
+	} else {
+		// determine if we need to default to mixed view
+		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+		var folder = folderTree ? folderTree.getById(search.folderId) : null;
+		var inTrash = folder && folder.isInTrash();
+
+		// only show contact view if search is not in Trash folder
+		if (results.type == ZmItem.CONTACT && !inTrash) {
+			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController().show(results, search.query, this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
+		} else {
+			this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, search.query);
+		}
+	}
+	this._appCtxt.setCurrentList(results.getResults(results.type));
+	DBG.timePt("render search results");
+};
 
 /*
 * Handle a few minor errors where we show an empty result set and issue a 
@@ -387,8 +392,9 @@ function(args) {
 */
 ZmSearchController.prototype._handleErrorDoSearch =
 function(args) {
-	var params	= args[0];
-	var ex		= args[1];
+	var search	= args[0];
+	var isMixed	= args[1];
+	var ex		= args[2];
 	
 	if (this._searchToolBar)
 		this._searchToolBar.setEnabled(true);
@@ -401,7 +407,8 @@ function(args) {
 		var msg = this._getErrorMsg(ex.code);
 		this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 		var results = new ZmSearchResult(this._appCtxt);
-		results.type = params.types ? params.types[0] : null;
+		results.type = search.types ? search.types.get(0) : null;
+		this._showResults(results, search, isMixed);
 		return true;
 	} else {
 		return false;
