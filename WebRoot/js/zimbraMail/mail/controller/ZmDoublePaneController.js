@@ -157,6 +157,8 @@ function() {
 	var list = this._standardToolBarOps();
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
+    	list.push(ZmOperation.SEP);
+    	list.push(ZmOperation.CHECK_MAIL);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.SPAM);
 	return list;

@@ -51,6 +51,8 @@ function ZmMailListController(appCtxt, container, mailApp) {
 	}
 	this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
 	
+	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._checkMailListener);
+			
 	if (this._appCtxt.get(ZmSetting.SPAM_ENABLED))
 		this._listeners[ZmOperation.SPAM] = new AjxListener(this, this._spamListener);
 
@@ -413,6 +415,13 @@ function(ev) {
 	this._doSpam(items, markAsSpam);
 };
 
+ZmMailListController.prototype._checkMailListener = 
+function(ev) {
+    var searchController = this._appCtxt.getSearchController();
+    var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
+    searchController.search({query: "in:"+ ZmFolder.QUERY_NAME[ZmFolder.ID_INBOX], types: types});
+};
+
 // Miscellaneous
 
 // Adds "By Conversation" and "By Message" to a view menu
@@ -504,6 +513,7 @@ function(parent, num) {
 		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD], !isDrafts && num == 1);
 		parent.enable(ZmOperation.SPAM, !isDrafts && num > 0);
 		parent.enable(ZmOperation.MOVE, !isDrafts && num > 0);
+		parent.enable([ZmOperation.CHECK_MAIL], true);
 	}
 };
 
