@@ -35,12 +35,8 @@ ZmURLObjectHandler.TYPE = "url";
 ZmURLObjectHandler.BLANKGIF = "/service/zimlet/com_zimbra_url/blank_pixel.gif";
 
 ZmURLObjectHandler.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/ig;
-//ZmURLObjectHandler.THUMB_URL = "http://pthumbnails.alexa.com/image_server.cgi?id=" + document.domain + "&url=";
-//ZmURLObjectHandler.THUMB_SIZE = 'width="205" height="150"'
-
-// Better website coverage and more recent thumbnail.
-ZmURLObjectHandler.THUMB_URL = "http://msnsearch.srv.girafa.com/srv/i?s=MSNSEARCH&r=";
-ZmURLObjectHandler.THUMB_SIZE = 'width="160" height="120"';
+ZmURLObjectHandler.THUMB_URL = "http://pthumbnails.alexa.com/image_server.cgi?id=" + document.domain + "&url=";
+ZmURLObjectHandler.THUMB_SIZE = 'width="205" height="150"';
 
 ZmURLObjectHandler.prototype.match =
 function(line, startIndex) {
