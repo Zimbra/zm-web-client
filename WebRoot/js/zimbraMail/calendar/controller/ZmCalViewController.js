@@ -56,6 +56,7 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._listeners[ZmOperation.SCHEDULE_VIEW] = new AjxListener(this, this._calViewButtonListener);	
 	this._listeners[ZmOperation.NEW_APPT] = new AjxListener(this, this._newApptAction);
 	this._listeners[ZmOperation.NEW_ALLDAY_APPT] = new AjxListener(this, this._newAllDayApptAction);	
+	this._listeners[ZmOperation.SEARCH_MAIL] = new AjxListener(this, this._searchMailAction);	
 
 	this._maintTimedAction = new AjxTimedAction(this, ZmCalViewController.prototype._maintenanceAction);
 	this._pendingWork = ZmCalViewController.MAINT_NONE;	
@@ -459,6 +460,15 @@ function(ev) {
 	this.newAppointment(this._newApptObject(d));
 }
 
+ZmCalViewController.prototype._searchMailAction =
+function(ev) {
+	var d = this._minicalMenu ? this._minicalMenu.__detail : null;
+	if (d != null) {
+	    delete this._minicalMenu.__detail;
+	    this._appCtxt.getSearchController().dateSearch(d);
+    }
+}
+
 ZmCalViewController.prototype._newAllDayApptAction =
 function(ev) {
 	var d = this._minicalMenu ? this._minicalMenu.__detail : null;
@@ -572,10 +582,11 @@ function(ev) {
 ZmCalViewController.prototype._getMiniCalActionMenu =
 function() {
 	if (this._minicalMenu == null) {
-		var list = [ZmOperation.NEW_APPT, ZmOperation.NEW_ALLDAY_APPT];
+		var list = [ZmOperation.NEW_APPT, ZmOperation.NEW_ALLDAY_APPT, ZmOperation.SEP, ZmOperation.SEARCH_MAIL];
 		this._minicalMenu = new ZmActionMenu(this._appCtxt.getShell(), list);
 		this._minicalMenu.addSelectionListener(ZmOperation.NEW_APPT, this._listeners[ZmOperation.NEW_APPT]);
 		this._minicalMenu.addSelectionListener(ZmOperation.NEW_ALLDAY_APPT, this._listeners[ZmOperation.NEW_ALLDAY_APPT]);	
+		this._minicalMenu.addSelectionListener(ZmOperation.SEARCH_MAIL, this._listeners[ZmOperation.SEARCH_MAIL]);
 	}
 	return this._minicalMenu;
 };

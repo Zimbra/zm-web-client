@@ -56,6 +56,14 @@ function() {
 	return this._searchToolBar;
 }
 
+ZmSearchController.prototype.dateSearch = 
+function(d) {
+    if (d == null) d = new Date();
+    var date = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
+	var groupBy = this._appCtxt.getSettings().getGroupMailBy();
+	this.search({query: "date:"+date, types: [groupBy]});
+}
+
 ZmSearchController.prototype.fromSearch = 
 function(address) {
 	// always search for mail when doing a "from: <address>" search

@@ -110,10 +110,11 @@ function(obj, span, context) {
 	//var isMonthYear = obj.match(ZmDateObjectHandler.MonthYear_RE);
 	//var calOp = isMonthYear ? ZmOperation.MONTH_VIEW : ZmOperation.DAY_VIEW;
 	var calOp = ZmOperation.DAY_VIEW;
-	var list = [calOp, ZmOperation.NEW_APPT];
+	var list = [calOp, ZmOperation.NEW_APPT, ZmOperation.SEP, ZmOperation.SEARCH_MAIL];
 	this._menu = new ZmActionMenu(this._appCtxt.getShell(), list);
 	this._menu.addSelectionListener(calOp, new AjxListener(this, this._dayViewListener));
 	this._menu.addSelectionListener(ZmOperation.NEW_APPT, new AjxListener(this, this._newApptListener));
+	this._menu.addSelectionListener(ZmOperation.SEARCH_MAIL, new AjxListener(this, this._searchMailListener));	
 	this._actionObject = obj;
 	this._actionContext = context;
 	return this._menu;
@@ -141,6 +142,11 @@ ZmDateObjectHandler.prototype._newApptListener =
 function(ev) {
 	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	cc.newAppointmentHelper(this._actionContext.date, null, null, ev.shiftKey);
+};
+
+ZmDateObjectHandler.prototype._searchMailListener =
+function(ev) {
+   this._appCtxt.getSearchController().dateSearch(this._actionContext.date);
 };
 
 ZmDateObjectHandler.prototype.selected =
