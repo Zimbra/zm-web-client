@@ -1183,7 +1183,7 @@ function(start,end, fanoutAllDay, folderIds, callback) {
 // TODO: appt is null for now. we are just clearing our caches...
 ZmCalViewController.prototype.notifyCreate =
 function(appt) {
-	//DBG.println("ZmCalViewController: notifyCreate! 1 "+this._clearCache);
+	DBG.println("ZmCalViewController: notifyCreate! 1 "+this._clearCache);
 	if (!this._clearCache) {
 		this._clearCache = true;
 	}
@@ -1207,7 +1207,7 @@ function(items) {
 // this gets called afer all the above notify* methods get called
 ZmCalViewController.prototype.notifyComplete =
 function(ids) {
-	//DBG.println("ZmCalViewController: notifyComplete: "+this._clearCache);
+	DBG.println("ZmCalViewController: notifyComplete: "+this._clearCache);
 	if (this._clearCache) {
 		var act = new AjxTimedAction(this, ZmCalViewController.prototype._refreshAction);
 		AjxTimedAction.scheduleAction(act, 0);
@@ -1226,9 +1226,10 @@ function() {
 
 ZmCalViewController.prototype._refreshAction =
 function(dontClearCache) {
+	// reset cache
+	if (!dontClearCache) this._apptCache.clearCache();
+
 	if (this._viewMgr != null) {
-		// reset cache
-		if (!dontClearCache) this._apptCache.clearCache();
 		// mark all views as dirty
 		this._viewMgr.setNeedsRefresh(true);
 		if (this._viewVisible) {
