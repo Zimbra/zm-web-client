@@ -159,7 +159,7 @@ function(appt, mode) {
 	ta.params.add(mode || ZmAppt.MODE_NEW);
 	ta.obj = this;
 	ta.method = this._reset;
-	AjxTimedAction.scheduleAction(ta);
+	AjxTimedAction.scheduleAction(ta, 0);
 };
 
 ZmApptTabViewPage.prototype.cleanup =
