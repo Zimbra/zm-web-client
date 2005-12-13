@@ -144,7 +144,7 @@ Contributor(s):
 <!--script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/hsm.js<%= ext %>?v=<%= vers %>"></script-->
 <!--<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/servers/view/HSMProgressXDialog.js<%= ext %>?v=<%= vers %>"></script>-->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/domainadmin.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/convertd.js<%= ext %>?v=<%= vers %>"></script>
+<!--script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/convertd.js<%= ext %>?v=<%= vers %>"></script-->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/ZaBackup.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/ZaRestore.js<%= ext %>?v=<%= vers %>"></script>
 
