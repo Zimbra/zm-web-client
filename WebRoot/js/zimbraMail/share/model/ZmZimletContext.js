@@ -26,11 +26,12 @@
 function ZmZimletContext(id, zimlet) {
 	this.id = id;
 	this.icon = "ZimbraIcon";
+	this.ctxt = zimlet.zimletContext;
 	this.config = zimlet.zimletConfig;
 	zimlet = zimlet.zimlet[0];
 	this.name = zimlet.name;
-	this._url = "/service/zimlet/" + this.name + "/";
-	DBG.println(AjxDebug.DBG2, "Zimlets: Loading Context: " + this.name);
+	this._url = this.ctxt[0].baseUrl;
+	DBG.println(AjxDebug.DBG2, "Zimlets: Loading Context: " + this.name + " base: " + this._url);
 	this.description = zimlet.description;
 	this.version = zimlet.version;
 	this.includes = zimlet.include;
