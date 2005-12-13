@@ -113,7 +113,6 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/accounts/view/ReindexMailboxXDialog.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/servers/view/ZaServerListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/servers/view/ZaServerXFormView.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/servers/view/HSMProgressXDialog.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/domains/view/ZaDomainListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/domains/view/ZaDomainXFormView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/domains/view/ZaNewDomainXWizard.js<%= ext %>?v=<%= vers %>"></script>
@@ -142,7 +141,8 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/helpdesk/view/ZaHelpView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/helpdesk/view/ZaMWizView.js<%= ext %>?v=<%= vers %>"></script>
 
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/hsm.js<%= ext %>?v=<%= vers %>"></script>
+<!--script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/hsm.js<%= ext %>?v=<%= vers %>"></script-->
+<!--<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/servers/view/HSMProgressXDialog.js<%= ext %>?v=<%= vers %>"></script>-->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/domainadmin.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/convertd.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/ZaBackup.js<%= ext %>?v=<%= vers %>"></script>
