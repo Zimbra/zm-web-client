@@ -38,14 +38,10 @@ function ZmApptRecurDialog(parent, appCtxt, className) {
 
 	DwtDialog.call(this, parent, className, ZmMsg.customRepeat);
 	this._appCtxt = appCtxt;
-DBG.timePt(AjxDebug.PERF, "creating html");
 	// set html content once (hence, in ctor)
 	this.setContent(this._setHtml());
-DBG.timePt(AjxDebug.PERF, "creating repeat sections");
 	this._createRepeatSections();
-DBG.timePt(AjxDebug.PERF, "creating dwt objects");
 	this._createDwtObjects();
-DBG.timePt(AjxDebug.PERF, "caching fields");
 	this._cacheFields();
 	this._addEventHandlers();
 
