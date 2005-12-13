@@ -1198,7 +1198,7 @@ function(ev) {
 			this._getRecurrence(tempAppt);
 			this._repeatDescField.innerHTML = tempAppt._getRecurrenceBlurbForSave();
 		} else {
-			// TODO - give feedback to user about errors in recur dialog
+			// give feedback to user about errors in recur dialog
 			popdown = false;
 		}
 	}
