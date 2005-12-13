@@ -113,9 +113,9 @@ ZmPOObjectHandler.REJECT_ITEM = 2;
 ZmPOObjectHandler.SHOWFULL_ITEM = 3;
 
 ZmPOObjectHandler.prototype.getActionMenu =
-function(obj, span) {
+function(obj, span, context, isDialog) {
 	if (this._menu == null) {
-		this._menu =  new ZmPopupMenu(this._appCtxt.getShell(), "ActionMenu");
+		this._menu =  new ZmPopupMenu(this._appCtxt.getShell(), "ActionMenu", isDialog);
 		this._menu.createMenuItem(ZmPOObjectHandler.APPROVE_ITEM, "Check", "Approve", null, true);
 		this._menu.createMenuItem(ZmPOObjectHandler.REJECT_ITEM, "Cancel", "Reject", null, true);
 		this._menu.createSeparator();

@@ -36,6 +36,9 @@ function ZmApptReadOnlyDialog(parent, appCtxt) {
 
 	DwtDialog.call(this, parent, null, null, [DwtDialog.OK_BUTTON]);
 
+	this._setMouseEventHdlrs(); 
+	this._objectManager = new ZmObjectManager(this, appCtxt, new AjxCallback(this, this._objectSelectCallback)); 
+
 	this._appCtxt = appCtxt;
 };
 
@@ -52,6 +55,7 @@ function() {
 ZmApptReadOnlyDialog.prototype.initialize = 
 function(appt) {
 	this._appt = appt;
+	this._objectManager.reset();
 
 	var name = appt.getName();
 	var attendees = appt.getAttendees();
@@ -70,7 +74,7 @@ function(appt) {
 	html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
 	html[i++] = ZmMsg.subject;
 	html[i++] = ":</td><td>";
-	html[i++] = name;
+	html[i++] = this._objectManager.findObjects(name, true);
 	html[i++] = "</td></tr>";
 
 	var location = appt.getLocation();
@@ -78,14 +82,14 @@ function(appt) {
 		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
 		html[i++] = ZmMsg.location;
 		html[i++] = ":</td><td>";
-		html[i++] = location;
+		html[i++] = this._objectManager.findObjects(location, true);
 		html[i++] = "</td></tr>";
 	}
 
 	html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
 	html[i++] = ZmMsg.time;
 	html[i++] = ":</td><td>";
-	html[i++] = this._getTimeString(appt);
+	html[i++] = this._objectManager.findObjects(this._getTimeString(appt), true);
 	html[i++] = "</td></tr>";
 
 	if (attendees && attendees.length > 0) {
@@ -94,14 +98,14 @@ function(appt) {
 			html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
 			html[i++] = ZmMsg.organizer;
 			html[i++] = "</td><td>";
-			html[i++] = organizer;
+			html[i++] = this._objectManager.findObjects(organizer, true);
 			html[i++] = "</td></tr>";
 		}
 
 		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
 		html[i++] = ZmMsg.attendees;
 		html[i++] = ":</td><td>";
-		html[i++] = attendees;
+		html[i++] = this._objectManager.findObjects(attendees, true);
 		html[i++] = "</td></tr>";
 	}
 
@@ -128,7 +132,7 @@ function(appt) {
 		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
 		html[i++] = ZmMsg.notes;
 		html[i++] = ":</td><td><div style='height:75px; overflow:auto'>";
-		html[i++] = AjxStringUtil.nl2br(notesStr);
+		html[i++] = notesStr;
 		html[i++] = "</div></td></tr>";
 	}
 
@@ -197,13 +201,14 @@ ZmApptReadOnlyDialog.prototype._getNotesString =
 function(appt) {
 	// set notes/content (based on compose mode per user prefs)
 	var hasHtmlPart = appt.notesTopPart && appt.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT;
-	var mode = (hasHtmlPart && 
-				(this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT) ||
-				 this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML))
+	var mode = (hasHtmlPart && this._appCtxt.get(ZmSetting.VIEW_AS_HTML))
 		? ZmMimeTable.TEXT_HTML
 		: ZmMimeTable.TEXT_PLAIN;
 
-	return appt.getNotesPart(mode);
+	var notesPart = appt.getNotesPart(mode);
+	return mode == ZmMimeTable.TEXT_HTML
+		? this._objectManager.findObjects(notesPart)
+		: AjxStringUtil.nl2br(this._objectManager.findObjects(notesPart, true));
 };
 
 // returns true if given dates are w/in a single day
@@ -221,4 +226,12 @@ function(sd, ed) {
 	end.setSeconds(0);
 
 	return start.valueOf() == end.valueOf();
+};
+
+
+// Callbacks
+
+ZmApptReadOnlyDialog.prototype._objectSelectCallback =
+function(args) {
+	this.popdown();
 };

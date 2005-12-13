@@ -80,7 +80,7 @@ function(obj) {
 };
 
 ZmPhoneObjectHandler.prototype.getActionMenu =
-function(obj) {
+function(obj, span, context, isDialog) {
 	if (!this._menu) {
 		var list = [ZmOperation.SEARCH];
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
@@ -89,7 +89,7 @@ function(obj) {
 		
 		// Call option for SkypeOut (If you don't have Skype, Windows will default to NetMeeting)
 		list.push(ZmOperation.CALL);
-		this._menu = new ZmActionMenu(this._appCtxt.getShell(), list);
+		this._menu = new ZmActionMenu(this._appCtxt.getShell(), list, null, isDialog);
 		this._menu.addSelectionListener(ZmOperation.SEARCH, new AjxListener(this, this._searchListener));
 
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {

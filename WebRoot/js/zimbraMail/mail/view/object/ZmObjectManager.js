@@ -23,12 +23,25 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmObjectManager(view, appCtxt) {
+/**
+* Object mananger class - use this class to hilite objects w/in a given view
+* @constructor
+* @class
+*
+* @author
+* @param view			the view this manager is going to hilite for
+* @param appCtxt 		the global ZmAppCtxt
+* @param selectCallback AjxCallback triggered when user clicks on hilited object 
+* 						(provide if you want to do something before the clicked 
+* 						on object opens its corresponding view)
+*/
+function ZmObjectManager(view, appCtxt, selectCallback) {
 
 	if (arguments.length == 0) return;
 
 	this._view = view;
 	this._appCtxt = appCtxt;
+	this._selectCallback = selectCallback;
 	this._uuid = Dwt.getNextId();
 	this._objectIdPrefix = "OBJ_" + this._uuid + "_";
 	this._objectHandlers = new Object();
@@ -302,11 +315,16 @@ function(ev) {
 
 	span.className = object.handler.getTriggeredClassName(object.object, object.context);
 	if (ev.button == DwtMouseEvent.RIGHT) {
-		var menu = object.handler.getActionMenu(object.object, span, object.context);
+		// NOTE: we need to know if the current view is a dialog since action 
+		//       menu needs to be a higher z-index
+		var isDialog = (this._view instanceof DwtDialog);
+		var menu = object.handler.getActionMenu(object.object, span, object.context, isDialog);
 		if (menu)
 			menu.popup(0, ev.docX, ev.docY);
 		return true;
 	} else if (ev.button == DwtMouseEvent.LEFT) {
+		if (this._selectCallback)
+			this._selectCallback.run();
 		object.handler.selected(object.object, span, ev, object.context);
 		return true;
 	}

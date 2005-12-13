@@ -85,7 +85,7 @@ function(obj) {
 };
 
 ZmEmailObjectHandler.prototype.getActionMenu =
-function(obj) {
+function(obj, span, context, isDialog) {
 	if (this._menu == null) {
 		var list = new Array();
 		if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
@@ -99,7 +99,7 @@ function(obj) {
 			list.push(ZmOperation.CONTACT);
 		}
 		list.push(ZmOperation.GO_TO_URL);
-		this._menu = new ZmActionMenu(this._appCtxt.getShell(), list);
+		this._menu = new ZmActionMenu(this._appCtxt.getShell(), list, null, isDialog);
 	
 		if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 			this._menu.addSelectionListener(ZmOperation.SEARCH, new AjxListener(this, this._searchListener));

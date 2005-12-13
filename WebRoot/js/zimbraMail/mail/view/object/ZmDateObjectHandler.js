@@ -106,12 +106,12 @@ function(obj, context) {
 
 // Create action menu if needed
 ZmDateObjectHandler.prototype.getActionMenu =
-function(obj, span, context) {
+function(obj, span, context, isDialog) {
 	//var isMonthYear = obj.match(ZmDateObjectHandler.MonthYear_RE);
 	//var calOp = isMonthYear ? ZmOperation.MONTH_VIEW : ZmOperation.DAY_VIEW;
 	var calOp = ZmOperation.DAY_VIEW;
 	var list = [calOp, ZmOperation.NEW_APPT, ZmOperation.SEP, ZmOperation.SEARCH_MAIL];
-	this._menu = new ZmActionMenu(this._appCtxt.getShell(), list);
+	this._menu = new ZmActionMenu(this._appCtxt.getShell(), list, null, isDialog);
 	this._menu.addSelectionListener(calOp, new AjxListener(this, this._dayViewListener));
 	this._menu.addSelectionListener(ZmOperation.NEW_APPT, new AjxListener(this, this._newApptListener));
 	this._menu.addSelectionListener(ZmOperation.SEARCH_MAIL, new AjxListener(this, this._searchMailListener));	
