@@ -29,7 +29,8 @@
  *
  * @author Mihai Bazon
  */
-function ZmZimletBase() {
+function ZmZimletBase(appCtxt, type, name) {
+	ZmObjectHandler.call(this, appCtxt, type, name);
 	this._passRpcErrors = false;
 };
 
