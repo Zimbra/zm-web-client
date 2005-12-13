@@ -141,18 +141,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/helpdesk/view/ZaHelpView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/helpdesk/view/ZaMWizView.js<%= ext %>?v=<%= vers %>"></script>
 
-<!--script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/hsm.js<%= ext %>?v=<%= vers %>"></script-->
-<!--<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/servers/view/HSMProgressXDialog.js<%= ext %>?v=<%= vers %>"></script>-->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/domainadmin.js<%= ext %>?v=<%= vers %>"></script>
-<!--script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/convertd.js<%= ext %>?v=<%= vers %>"></script-->
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/ZaBackup.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/ZaRestore.js<%= ext %>?v=<%= vers %>"></script>
-
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/SingleAccountRestoreXWizard.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/hotbackup.js<%= ext %>?v=<%= vers %>"></script>
-
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/cluster.js<%= ext %>?v=<%= vers %>"></script>
 
-<!--script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/status/model/ZaClusterStatus.js<%= ext %>?v=<%= vers %>"></script>-->
-<!--<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/status/view/ZaClusteredServicesListView.js<%= ext %>?v=<%= vers %>"></script>-->
 <!-- END SCRIPT BLOCK -->
