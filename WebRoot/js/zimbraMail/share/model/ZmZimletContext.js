@@ -26,6 +26,7 @@
 function ZmZimletContext(id, zimlet) {
 	this.id = id;
 	this.icon = "ZimbraIcon";
+	this.config = zimlet.zimletConfig;
 	zimlet = zimlet.zimlet[0];
 	this.name = zimlet.name;
 	this._url = "/service/zimlet/" + this.name + "/";
@@ -70,6 +71,10 @@ function ZmZimletContext(id, zimlet) {
 		this.userProperties = zimlet.userProperties[0];
 		this._translateUserProp();
 	}
+	if(this.config){
+		this.config = this.config[0];
+		this._translateConfig();
+	}
 
 	this._loadIncludes();
 	this._loadStyles();
@@ -103,6 +108,7 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 		this.handlerObject = new CTOR;
 		this.handlerObject.constructor = CTOR;
 		this.handlerObject.init(this, DwtShell.getShell(window));
+		ZmObjectManager.registerHandler(this.handlerObject);
 	}
 };
 
@@ -181,6 +187,29 @@ ZmZimletContext.prototype.getPropValue = function(name) {
 
 ZmZimletContext.prototype.getProp = function(name) {
 	return this._propsById[name];
+};
+
+ZmZimletContext.prototype._translateConfig = function() {
+	if (this.config.global) {
+		var prop = this.config.global[0].property;
+		this.config.global = {};
+		for (var i = 0; i < prop.length; i++)
+			this.config.global[prop[i].name] = prop[i]._content;
+	}
+	if (this.config.local) {
+		var prop = this.config.local[0].property;
+		this.config.local = {};
+		for (var i = 0; i < prop.length; i++)
+			this.config.local[prop[i].name] = prop[i]._content;
+	}
+};
+
+ZmZimletContext.prototype.getConfig = function(name) {
+	if (this.config.local && this.config.local[name])
+		return this.config.local[name];
+	if (this.config.global && this.config.global[name])
+		return this.config.global[name];
+	return undef;
 };
 
 ZmZimletContext.prototype.getPanelActionMenu = function() {

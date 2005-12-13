@@ -37,7 +37,9 @@ ZmZimletBase.PANEL_MENU = 1;
 ZmZimletBase.CONTENTOBJECT_MENU = 2;
 
 ZmZimletBase.PROXY = "/service/proxy?target=";
-//ZmZimletBase.PROXY = "/zimbra/dangerous-proxy.jsp?address=";
+//ZmZimletBase.PROXY = "/zimbra/proxy.jsp?address=";
+
+ZmZimletBase.prototype = new ZmObjectHandler;
 
 ZmZimletBase.prototype.init =
 function(zimletContext, shell) {
@@ -351,6 +353,11 @@ function(callback) {
 ZmZimletBase.prototype.getUserPropertyInfo =
 function(propertyName) {
 	return this.xmlObj().getProp(propertyName);
+};
+
+ZmZimletBase.prototype.getConfig =
+function(configName) {
+	return this.xmlObj().getConfig(configName);
 };
 
 ZmZimletBase.prototype.getUsername =

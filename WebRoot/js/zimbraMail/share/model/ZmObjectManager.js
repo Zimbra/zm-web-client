@@ -108,13 +108,15 @@ function() {
 		oh = this._objectHandlers;
 	for (i = 0; i < c.length; ++i) {
 		obj = c[i];
-		if (obj.useType) {
-			if (!oh[obj.useType]) {oh[obj.useType] = [];}
-			oh[obj.useType].push(new obj(this._appCtxt));
-		} else {
-			if (!oh[obj.TYPE]) {oh[obj.TYPE] = [];}
-			oh[obj.TYPE].push(new obj(this._appCtxt));
+		var	zim = obj;
+		var type = obj.TYPE;
+		if (!(obj instanceof ZmZimletBase)) {
+			zim = new obj(this._appCtxt);
 		}
+		if (obj.useType)
+			type = obj.useType;
+		if (!oh[type]) {oh[type] = [];}
+		oh[type].push(zim);
 	}
 };
 
