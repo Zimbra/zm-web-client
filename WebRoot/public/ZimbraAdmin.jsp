@@ -142,6 +142,5 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/helpdesk/view/ZaMWizView.js<%= ext %>?v=<%= vers %>"></script>
 
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/domainadmin.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/cluster.js<%= ext %>?v=<%= vers %>"></script>
 
 <!-- END SCRIPT BLOCK -->
