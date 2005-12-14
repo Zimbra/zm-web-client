@@ -47,6 +47,14 @@ function(zimletContext, shell) {
 	this._dwtShell = shell;
 	this._appCtxt = shell.getData(ZmAppCtxt.LABEL);
 	this._origIcon = this.xmlObj().icon;
+	this._url = zimletContext._url;
+	if(this.xmlObj().contentObject && this.xmlObj().contentObject.matchOn[0]) {
+		var regExInfo = this.xmlObj().contentObject.matchOn[0].regex[0];
+		this.RE = new RegExp(regExInfo._content, regExInfo.attrs);
+		if(this.xmlObj().contentObject.type) {
+			this.type = this.xmlObj().contentObject.type;
+		}
+	}
 };
 
 ZmZimletBase.prototype.toString = 
@@ -135,7 +143,11 @@ function(canvas) {};
 //
 // Return the first content object match in the content starting from startIndex
 ZmZimletBase.prototype.match =
-function(content, startIndex) {};
+function(content, startIndex) {
+	if(!this.RE) {return;}
+	this.RE.lastIndex = startIndex;
+	return this.RE.exec(content);
+};
 
 // The clicked method is called when a Zimlet content object is clicked on by
 // the user. This method defines the following formal parameters
@@ -244,6 +256,16 @@ ZmZimletBase.prototype.displayErrorMessage = function(msg, data, title) {
 
 ZmZimletBase.prototype.displayStatusMessage = function(msg) {
 	this.getAppCtxt().setStatusMsg(msg);
+};
+
+ZmZimletBase.prototype.getResource = 
+function(resourceName) {
+	return this._url + resourceName;
+};
+
+ZmZimletBase.prototype.getType = 
+function() {
+	return this.type;
 };
 
 ZmZimletBase.prototype.requestFinished = function(param) {
