@@ -303,6 +303,9 @@ function(attId, isDraft) {
 
 	// save a reference to the original message
 	msg._origMsg = this._msg;
+	if (this._msg && this._msg._instanceDate) {
+		msg._instanceDate = this._msg._instanceDate; 
+	}
 
 	if (this._action != ZmOperation.NEW_MESSAGE) {
 		var isInviteReply = this._isInviteReply(this._action);
