@@ -37,7 +37,7 @@
 */
 function ZmObjectManager(view, appCtxt, selectCallback) {
 
-	if (arguments.length == 0) return;
+	if (arguments.length < 1) {return;}
 
 	this._view = view;
 	this._appCtxt = appCtxt;
@@ -62,7 +62,7 @@ function ZmObjectManager(view, appCtxt, selectCallback) {
 
     this._hoverOverListener = new AjxListener(this, this._handleHoverOver);
     this._hoverOutListener = new AjxListener(this, this._handleHoverOut);
-};
+}
 
 ZmObjectManager._TOOLTIP_DELAY = 275;
 
@@ -70,8 +70,9 @@ ZmObjectManager._autohandlers = [];
 
 ZmObjectManager.registerHandler =
 function(obj, type) {
-	if (typeof obj == "string")
+	if (typeof obj == "string") {
 		obj = eval(obj);
+	}
 	var c = ZmObjectManager._autohandlers;
 	if (!obj.__registered) {
 		var id = c.push(obj);
@@ -86,8 +87,9 @@ function(obj, type) {
 // not sure this function is useful.
 ZmObjectManager.unregisterHandler =
 function(obj) {
-	if (typeof obj == "string")
+	if (typeof obj == "string") {
 		obj = eval(obj);
+	}
  	var c = ZmObjectManager._autohandlers, i;
 	for (i = c.length; --i >= 0;) {
 		if (c[i] === obj) {
@@ -113,8 +115,9 @@ function() {
 		if (!(obj instanceof ZmZimletBase)) {
 			zim = new obj(this._appCtxt);
 		}
-		if (obj.useType)
+		if (obj.useType) {
 			type = obj.useType;
+		}
 		if (!oh[type]) {oh[type] = [];}
 		oh[type].push(zim);
 	}
@@ -139,7 +142,7 @@ function() {
 // type param so we dont have to figure out what kind of content we're dealing with
 ZmObjectManager.prototype.findObjects =
 function(content, htmlEncode, type) {
-	if  (content == null) return "";
+	if  (!content) {return "";}
 	var html = new Array();
 	var idx = 0;
 
@@ -347,21 +350,23 @@ function(ev) {
 ZmObjectManager.prototype._handleHoverOver = function(event) {
 	if (!(event && event.object)) return;
 
+	var span = this._findObjectSpan(event.target);
 	var handler = event.object.handler;
 	var object = event.object.object;
 	var context = event.object.context;
 	var x = event.x;
 	var y = event.y;
 
-	handler.hoverOver(object, context, x, y);
+	handler.hoverOver(object, context, x, y, span);
 };
 
 ZmObjectManager.prototype._handleHoverOut = function(event) {
 	if (!(event && event.object)) return;
 
+	var span = this._findObjectSpan(event.target);
 	var handler = event.object.handler;
 	var object = event.object.object;
 	var context = event.object.context;
 
-	handler.hoverOut(object, context);
+	handler.hoverOut(object, context, span);
 };

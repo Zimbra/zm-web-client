@@ -118,6 +118,18 @@ function(canvas) {};
 // content and should apply whatever pattern matching is required to identify
 // objects in the content. This method defines the following formal parameters
 //
+// Returns non-null result in the format of String.match if text on the line matched this
+// handlers regular expression.
+// i.e: var result = zimlet.match(line);
+// result[0] should be matched string
+// result.index should be location within line match occured
+// Zimlets can also set result.context which will be passed back to them during the
+//  various method calls (toolTipPoppedUp, clicked, etc)
+//
+// Zimlets should set regex.lastIndex to startIndex and then use regex.exec(content).
+// they should also use the "g" option when constructing their regex.
+
+//
 // - content - The content against which to perform a match
 // - startIndex - Index in the content at which to begin the search
 //
@@ -130,9 +142,10 @@ function(content, startIndex) {};
 //
 // - spanElement
 // - contentObjText
+// - matchContext
 // - canvas
 ZmZimletBase.prototype.clicked =
-function(spanElement, contentObjText, canvas) {
+function(spanElement, contentObjText, matchContext, canvas) {
 };
 
 // This method is called when the tool tip is being popped up. This method
@@ -140,9 +153,10 @@ function(spanElement, contentObjText, canvas) {
 //
 // - spanElement
 // - contentObjText
+// - matchContext
 // - canvas
 ZmZimletBase.prototype.toolTipPoppedUp =
-function(spanElement, contentObjText, canvas) {
+function(spanElement, contentObjText, matchContext, canvas) {
 };
 
 // This method is called when the user is popping down a sticky tool tip. It
@@ -150,12 +164,13 @@ function(spanElement, contentObjText, canvas) {
 //
 // - spanElement
 // - contentObjText
+// - matchContext
 // - canvas
 //
 // Returns null if the tool tip may be popped down, else return a string
 // indicating why the tool tip should not be popped down
 ZmZimletBase.prototype.toolTipPoppedDown =
-function(spanElement, contentObjText, canvas) {
+function(spanElement, contentObjText, matchContext, canvas) {
 };
 
 ZmZimletBase.prototype.getActionMenu = 
@@ -393,9 +408,13 @@ ZmZimletBase.prototype._createDialog = function(args) {
 ZmZimletBase.prototype._getHtmlContent = 
 function(html, idx, obj, context) {
 	var contentObj = this.xmlObj().getVal('contentObject');
-	html[idx++] = '<a target="_blank" href="';
-	html[idx++] = (contentObj.onClick[0].actionUrl[0].target).replace('${objectContent}', AjxStringUtil.htmlEncode(obj));
-	html[idx++] = '">'+AjxStringUtil.htmlEncode(obj)+'</a>';
+	if(contentObj) {
+		html[idx++] = '<a target="_blank" href="';
+		html[idx++] = (contentObj.onClick[0].actionUrl[0].target).replace('${objectContent}', AjxStringUtil.htmlEncode(obj));
+		html[idx++] = '">'+AjxStringUtil.htmlEncode(obj)+'</a>';
+	} else {
+		html[idx++] = AjxStringUtil.htmlEncode(obj, true);
+	}
 	return idx;
 };
 
@@ -404,7 +423,7 @@ function(object, context, x, y, span) {
 	var shell = DwtShell.getShell(window);
 	var tooltip = shell.getToolTip();
 	tooltip.setContent('<div id="zimletTooltipDiv"/>', true);
-	this.toolTipPoppedUp(span, object, document.getElementById("zimletTooltipDiv"));
+	this.toolTipPoppedUp(span, object, context, document.getElementById("zimletTooltipDiv"));
 	tooltip.popup(x, y, true);
 };
 
@@ -413,5 +432,5 @@ function(object, context, span) {
 	var shell = DwtShell.getShell(window);
 	var tooltip = shell.getToolTip();
 	tooltip.popdown();
-	this.toolTipPoppedDown(span, object, document.getElementById("zimletTooltipDiv"));
+	this.toolTipPoppedDown(span, object, context, document.getElementById("zimletTooltipDiv"));
 };
