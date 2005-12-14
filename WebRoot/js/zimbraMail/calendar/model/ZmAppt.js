@@ -258,11 +258,15 @@ function(contentType) {
 		var ct = contentType || ZmMimeTable.TEXT_PLAIN;
 		var content = this.notesTopPart.getContentForType(ct);
 
-		// if requesting text part but none found, request html part and convert to text
-		if (content == null && ct == ZmMimeTable.TEXT_PLAIN) {
-			var div = document.createElement("div");
-			div.innerHTML = this.notesTopPart.getContentForType(ZmMimeTable.TEXT_HTML);
-			return AjxStringUtil.convertHtml2Text(div);
+		// if requested content type not found, try the other
+		if (content == null) {
+			if (ct == ZmMimeTable.TEXT_PLAIN) {
+				var div = document.createElement("div");
+				div.innerHTML = this.notesTopPart.getContentForType(ZmMimeTable.TEXT_HTML);
+				return AjxStringUtil.convertHtml2Text(div);
+			} else if (ct == ZmMimeTable.TEXT_HTML) {
+				content = this.notesTopPart.getContentForType(ZmMimeTable.TEXT_PLAIN);
+			}
 		}
 		return AjxUtil.isString(content) ? content : content.content;
 	} else {

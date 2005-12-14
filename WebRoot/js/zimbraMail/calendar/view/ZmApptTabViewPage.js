@@ -425,15 +425,9 @@ function(appt, mode) {
 	// re-enable all input fields
 	this.enableInputs(true);
 
-	// if not creating new appt, pre-populate from given appt
-	if (mode != ZmAppt.MODE_NEW) {
-		this._populateForEdit(appt);
-	} else {
-		// reset compose view to html preference since it couldve changed
-		var cm = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML
-			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
-		this.setComposeMode(cm);
-	}
+	// lets always attempt to populate even if we're dealing w/ a "new" appt
+	this._populateForEdit(appt, mode);
+
 	// disable the recurrence select object for editing single instance
 	this._enableRepeat(mode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
 
@@ -469,7 +463,7 @@ function(appt) {
 };
 
 ZmApptTabViewPage.prototype._populateForEdit =
-function(appt) {
+function(appt, mode) {
 	// set subject/location
 	this._subjectField.value = appt.getName();
 	this._locationField.value = appt.getLocation();
@@ -498,10 +492,8 @@ function(appt) {
 	}
 
 	// set notes/content (based on compose mode per user prefs)
-	var hasHtmlPart = appt.notesTopPart && appt.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT;
-	if (hasHtmlPart &&
-		(this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT) ||
-		 this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML))
+	if (this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT) ||
+		 this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML)
 	{
 		this.setComposeMode(DwtHtmlEditor.HTML);
 		this._notesHtmlEditor.setContent(appt.getNotesPart(ZmMimeTable.TEXT_HTML));
