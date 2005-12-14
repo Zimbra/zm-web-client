@@ -47,10 +47,11 @@ function(parent, obj, tree, link) {
 	// create zimlet root
 	var zimletRoot = new ZmZimlet(ZmZimlet.ID_ZIMLET, ZmMsg.zimlets, parent, tree, null, null);
 	if (obj && obj.length) {
+		var id = ZmZimlet.ID_ZIMLET;
 		for (var i = 0; i < obj.length; i++) {
 			var desc = obj[i].zimletPanelItem.label;
 			DBG.println(AjxDebug.DBG2, "Zimlet Desc: " + desc);
-			var childZimlet = new ZmZimlet(i, desc, zimletRoot, tree, null, null);
+			var childZimlet = new ZmZimlet(++id, desc, zimletRoot, tree, null, null);
 			zimletRoot.children.add(childZimlet);
 			// WARNING: it's a bit unorthodox to do this linkage
 			// here, but we really do need these objects know about
