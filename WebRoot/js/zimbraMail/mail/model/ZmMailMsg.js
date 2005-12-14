@@ -489,20 +489,20 @@ function(content) {
 };
 
 ZmMailMsg.prototype.sendInviteReply = 
-function(contactList, edited, componentId, callback, errorCallback) {
+function(contactList, edited, componentId, callback, errorCallback, instanceDate) {
 	var ed = edited || false;
 	if (!this._origMsg) {
 		this._origMsg = this;
 	}
 	if (!this._origMsg.invite.hasMultipleComponents()) {
-		return this._sendInviteReply(contactList, ed, 0, callback, errorCallback);
+		return this._sendInviteReply(contactList, ed, 0, callback, errorCallback, instanceDate);
 	} else {
 		// TODO ... don't understand multiple invites too well yet.
 	}
 };
 
 ZmMailMsg.prototype._sendInviteReply = 
-function (contactList, edited, componentId, callback, errorCallback) {
+function (contactList, edited, componentId, callback, errorCallback, instanceDate) {
 	var soapDoc = AjxSoapDoc.create("SendInviteReplyRequest", "urn:zimbraMail");
 
 	var id = this._origMsg.id;
@@ -526,6 +526,13 @@ function (contactList, edited, componentId, callback, errorCallback) {
 	}
 
 	soapDoc.setMethodAttribute("updateOrganizer", "TRUE" );
+	if (instanceDate) {
+		var exceptIdNode = soapDoc.set("exceptId");
+		var serverDateTime = AjxDateUtil.getServerDateTime(instanceDate);
+		var timeZone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+		exceptIdNode.setAttribute("d", serverDateTime);
+		exceptIdNode.setAttribute("tz", timeZone);
+	}
 	if (edited)
 		this._createMessageNode(soapDoc, contactList);
 
@@ -562,7 +569,7 @@ function(contactList, isDraft, callback, errorCallback) {
 	// XXX: not sure how saving a invite draft works?!
 	////////////////////////////////////////////////////////////////////////////////////////
 	if (this.isInviteReply && !isDraft) {
-		this.sendInviteReply(contactList, true, 0, callback, errorCallback);
+		this.sendInviteReply(contactList, true, 0, callback, errorCallback, this._instanceDate);
 	} else {
 		var request = isDraft ? "SaveDraftRequest" : "SendMsgRequest";
 		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");

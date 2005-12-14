@@ -46,8 +46,6 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._listeners[ZmOperation.EDIT_REPLY_DECLINE] = new AjxListener(this, this._handleApptEditRespondAction);
 	this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE] = new AjxListener(this, this._handleApptEditRespondAction);
 	this._listeners[ZmOperation.VIEW_APPOINTMENT] = new AjxListener(this, this._handleMenuViewAction);
-	this._listeners[ZmOperation.VIEW_APPT_INSTANCE] = new AjxListener(this, this._handleMenuViewAction);
-	this._listeners[ZmOperation.VIEW_APPT_SERIES] = new AjxListener(this, this._handleMenuViewAction);
 	this._listeners[ZmOperation.TODAY_GOTO] = new AjxListener(this, this._todayButtonListener);	
 	this._listeners[ZmOperation.DAY_VIEW] = new AjxListener(this, this._calViewButtonListener);
 	this._listeners[ZmOperation.WEEK_VIEW] = new AjxListener(this, this._calViewButtonListener);
@@ -640,13 +638,31 @@ function(ev) {
 	this._printView.render(viewMgr);
 };
 
+ZmCalViewController.prototype._deleteListener = 
+function(ev) {
+	var op;
+	if (ev.item instanceof DwtMenuItem) {
+		op = ev.item.parent.getData(ZmOperation.KEY_ID);
+	}
+	this._doDelete(this._listView[this._currentView].getSelection(),null,null,op);
+}
+
 /** 
  * Override the ZmListController method.
  */
 ZmCalViewController.prototype._doDelete =
-function(items, hardDelete, attrs) {
-	// since base view has multiple selection turned off, always select first item
-	this._deleteAppointment(items[0]);
+function(items, hardDelete, attrs, op) {
+	var appt = items[0];
+	if (op == ZmOperation.VIEW_APPT_INSTANCE) {
+		this._continueDelete(appt, ZmAppt.MODE_DELETE_INSTANCE);
+	}
+	else if (op == ZmOperation.VIEW_APPT_SERIES) {
+		this._continueDelete(appt, ZmAppt.MODE_DELETE_SERIES);
+	}
+	else {
+		// since base view has multiple selection turned off, always select first item
+		this._deleteAppointment(appt);
+	}
 };
 
 ZmCalViewController.prototype._deleteAppointment = 
@@ -979,10 +995,11 @@ function(ev) {
 		// always get details on appt as if we're editing series (since its read only)
 		appt.getDetails(ZmAppt.MODE_EDIT_SERIES, new AjxCallback(this, this._showReadOnlyDialog, [appt]));
 	} else {
-		var mode = null;
-		var id = ev.item.getData(ZmOperation.KEY_ID);
+		var mode = ZmAppt.MODE_EDIT;
+		var menuItem = ev.item;
+		var menu = menuItem.parent;
+		var id = menu.getData(ZmOperation.KEY_ID);
 		switch(id) {
-			case ZmOperation.VIEW_APPOINTMENT:		mode = ZmAppt.MODE_EDIT; break;
 			case ZmOperation.VIEW_APPT_INSTANCE:	mode = ZmAppt.MODE_EDIT_SINGLE_INSTANCE; break;
 			case ZmOperation.VIEW_APPT_SERIES:		mode = ZmAppt.MODE_EDIT_SERIES; break;
 		}
@@ -994,7 +1011,8 @@ ZmCalViewController.prototype._handleApptRespondAction =
 function(ev) {
 	var appt = this._listView[this._currentView].getSelection()[0];
 	var type = ev.item.getData(ZmOperation.KEY_ID);
-	var respCallback = new AjxCallback(this, this._handleResponseHandleApptRespondAction, [appt, type]);
+	var op = ev.item.parent.getData(ZmOperation.KEY_ID);
+	var respCallback = new AjxCallback(this, this._handleResponseHandleApptRespondAction, [appt, type, op]);
 	appt.getDetails(null, respCallback);
 };
 
@@ -1002,18 +1020,21 @@ ZmCalViewController.prototype._handleResponseHandleApptRespondAction =
 function(args) {
 	var appt	= args[0];
 	var type	= args[1];
+	var op		= args[2];
 
 	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 	msgController.setMsg(appt.getMessage());
 	// poke the msgController
-	msgController._sendInviteReply(type, 0);
+	var instanceDate = op == ZmOperation.VIEW_APPT_INSTANCE ? new Date(appt._uniqStartTime) : null;
+	msgController._sendInviteReply(type, 0, instanceDate);
 };
 
 ZmCalViewController.prototype._handleApptEditRespondAction = 
 function(ev) {
 	var appt = this._listView[this._currentView].getSelection()[0];
 	var id = ev.item.getData(ZmOperation.KEY_ID);
-	var respCallback = new AjxCallback(this, this._handleResponseHandleApptEditRespondAction, [appt, id]);
+	var op = ev.item.parent.parent.parent.getData(ZmOperation.KEY_ID);
+	var respCallback = new AjxCallback(this, this._handleResponseHandleApptEditRespondAction, [appt, id, op]);
 	appt.getDetails(null, respCallback);
 };
 
@@ -1021,6 +1042,7 @@ ZmCalViewController.prototype._handleResponseHandleApptEditRespondAction =
 function(args) {
 	var appt	= args[0];
 	var id		= args[1];
+	var op		= args[2];
 
 	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 	msgController.setMsg(appt.getMessage());
@@ -1031,7 +1053,8 @@ function(args) {
 		case ZmOperation.EDIT_REPLY_DECLINE: 	id = ZmOperation.REPLY_DECLINE; break;
 		case ZmOperation.EDIT_REPLY_TENTATIVE: 	id = ZmOperation.REPLY_TENTATIVE; break;
 	}
-	msgController._editInviteReply(id, 0);
+	var instanceDate = op == ZmOperation.VIEW_APPT_INSTANCE ? new Date(appt._uniqStartTime) : null;
+	msgController._editInviteReply(id, 0, instanceDate);
 };
 
 /**
@@ -1080,23 +1103,34 @@ function() {
 	if (this._actionMenu) return;
 
 	var menuItems = this._getActionMenuOps();
-	if (!menuItems) return;
-	this._actionMenu = new ZmActionMenu(this._shell, menuItems);
-	for (var i = 0; i < menuItems.length; i++){
-		if (menuItems[i] > 0) {
-			if (menuItems[i] == ZmOperation.INVITE_REPLY_MENU) {
-				var menu = this._actionMenu.getOp(ZmOperation.INVITE_REPLY_MENU).getMenu();
-				menu.addSelectionListener(ZmOperation.EDIT_REPLY_ACCEPT, this._listeners[ZmOperation.EDIT_REPLY_ACCEPT]);
-				menu.addSelectionListener(ZmOperation.EDIT_REPLY_DECLINE, this._listeners[ZmOperation.EDIT_REPLY_DECLINE]);
-				menu.addSelectionListener(ZmOperation.EDIT_REPLY_TENTATIVE, this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE]);
-			} else if (menuItems[i] == ZmOperation.CAL_VIEW_MENU) {
-				var menu = this._actionMenu.getOp(ZmOperation.CAL_VIEW_MENU).getMenu();			
-				this._initCalViewMenu(menu);
+	if (menuItems && menuItems.length > 0) {
+		this._actionMenu = new ZmActionMenu(this._shell, menuItems);
+		for (var i = 0; i < menuItems.length; i++) {
+			if (menuItems[i] > 0) {
+				if (menuItems[i] == ZmOperation.INVITE_REPLY_MENU) {
+					var menu = this._actionMenu.getOp(ZmOperation.INVITE_REPLY_MENU).getMenu();
+					menu.addSelectionListener(ZmOperation.EDIT_REPLY_ACCEPT, this._listeners[ZmOperation.EDIT_REPLY_ACCEPT]);
+					menu.addSelectionListener(ZmOperation.EDIT_REPLY_DECLINE, this._listeners[ZmOperation.EDIT_REPLY_DECLINE]);
+					menu.addSelectionListener(ZmOperation.EDIT_REPLY_TENTATIVE, this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE]);
+				} else if (menuItems[i] == ZmOperation.CAL_VIEW_MENU) {
+					var menu = this._actionMenu.getOp(ZmOperation.CAL_VIEW_MENU).getMenu();			
+					this._initCalViewMenu(menu);
+				}
+				this._actionMenu.addSelectionListener(menuItems[i],this._listeners[menuItems[i]]);
 			}
-			this._actionMenu.addSelectionListener(menuItems[i],this._listeners[menuItems[i]]);
+		}
+		this._actionMenu.addPopdownListener(this._popdownListener);
+
+		var menuItems = this._getRecurringActionMenuOps();
+		if (menuItems && menuItems.length > 0) {
+			this._recurringActionMenu = new ZmActionMenu(this._shell, menuItems);
+			for (var i = 0; i < menuItems.length; i++) {
+				var item = this._recurringActionMenu.getMenuItem(menuItems[i]);
+				item.setMenu(this._actionMenu);
+			}
+			this._recurringActionMenu.addPopdownListener(this._popdownListener);
 		}
 	}
-	this._actionMenu.addPopdownListener(this._popdownListener);
 };
 
 /**
@@ -1104,9 +1138,18 @@ function() {
  */
 ZmCalViewController.prototype._getActionMenuOps = 
 function() {
-	return [ZmOperation.VIEW_APPOINTMENT, ZmOperation.VIEW_APPT_INSTANCE, ZmOperation.VIEW_APPT_SERIES, ZmOperation.SEP, 
-			ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE, 
-			ZmOperation.INVITE_REPLY_MENU, ZmOperation.SEP, ZmOperation.DELETE, ZmOperation.SEP, ZmOperation.TODAY_GOTO, ZmOperation.CAL_VIEW_MENU];
+	return [
+		ZmOperation.VIEW_APPOINTMENT,
+		ZmOperation.SEP, 
+		ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE, ZmOperation.INVITE_REPLY_MENU, 
+		ZmOperation.SEP, 
+		ZmOperation.DELETE
+	];
+};
+
+ZmCalViewController.prototype._getRecurringActionMenuOps =
+function() {
+	return [ZmOperation.VIEW_APPT_INSTANCE, ZmOperation.VIEW_APPT_SERIES];
 };
 
 ZmCalViewController.prototype._enableActionMenuReplyOptions = 
@@ -1134,26 +1177,15 @@ function (appt) {
 	del.setEnabled(enabled);
 };
 
-ZmCalViewController.prototype._enableActionMenuOpenOptions = 
-function (appt) {
-	if (appt == null) return;
-
-	var open = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.VIEW_APPOINTMENT);
-	var openInstance = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.VIEW_APPT_INSTANCE);
-	var openSeries = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.VIEW_APPT_SERIES);
-	var recur = appt.isRecurring();
-	open.setEnabled(!recur);
-	openInstance.setEnabled(recur);
-	openSeries.setEnabled(recur);
-};
-
 ZmCalViewController.prototype._listActionListener = 
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
-	this._enableActionMenuOpenOptions(ev.item);
-	this._enableActionMenuReplyOptions(ev.item);
-	this._actionMenu.__appt = ev.item;
-	this._actionMenu.popup(0, ev.docX, ev.docY);
+	var appt = ev.item;
+	this._enableActionMenuReplyOptions(appt);
+	var menu = appt.isRecurring() ? this._recurringActionMenu : this._actionMenu;
+	this._actionMenu.__appt = appt;
+	menu.setData(ZmOperation.KEY_ID, null);
+	menu.popup(0, ev.docX, ev.docY);
 };
 
 ZmCalViewController.prototype._viewActionListener = 

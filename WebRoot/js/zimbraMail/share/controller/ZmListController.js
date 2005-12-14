@@ -730,8 +730,9 @@ function(parent) {
 		tagMenu.set(items, this._tagList);
 		if (parent instanceof ZmActionMenu)
 			tagOp.setText(this._getTagMenuMsg(items.length));
-		else
-			tagMenu.popup();
+		else {
+			tagMenu.parent._popupMenu();
+		}
 	}
 }
 

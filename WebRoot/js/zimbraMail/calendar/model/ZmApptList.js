@@ -43,6 +43,12 @@ function() {
 	return "ZmApptList";
 }
 
+ZmApptList._fba2ptst = {
+	B: ZmAppt.PSTATUS_ACCEPT,
+	F: ZmAppt.PSTATUS_DECLINED,
+	T: ZmAppt.PSTATUS_TENTATIVE
+};
+			
 ZmApptList.prototype._getAttr =
 function(appt, inst, name)
 {
@@ -102,6 +108,10 @@ function(resp) {
 			appt.location = this._getAttr(apptNode, instNode, "loc");
 			appt.startDate = new Date(startTime);
 			appt._uniqStartTime = appt.startDate.getTime(); // neede to construct uniq id later
+			if (instNode.fba && ZmApptList._fba2ptst[instNode.fba]) {
+				// override appt.ptst for this instance
+				appt.ptst = ZmApptList._fba2ptst[instNode.fba];
+			}
 			//appt.exception = this._getAttr(apptNode, instNode, "exception");
 			var endTime = startTime + duration;
 			appt.endDate = new Date(endTime);

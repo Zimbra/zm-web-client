@@ -242,10 +242,11 @@ function(ev) {
 };
 
 ZmMailListController.prototype._doAction = 
-function(ev, action, extraBodyText) {
+function(ev, action, extraBodyText, instanceDate) {
 	// retrieve msg and make sure its loaded
 	var msg = this._getMsg();
 	if (!msg) return;
+	msg._instanceDate = instanceDate;
 
 	// if html compose is allowed, 
 	//   then if opening draft always request html 
@@ -350,8 +351,19 @@ function() {
 };
 
 ZmMailListController.prototype._getInviteReplyBody = 
-function(type) {
-	var replyBody = null;
+function(type, instanceDate) {
+	var replyBody;
+
+	if (instanceDate) {
+		switch (type) {
+			case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyAcceptInstanceMessage; break;
+			case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyDeclineInstanceMessage; break;
+			case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyTentativeInstanceMessage; break;
+		}
+		if (replyBody) {
+			return AjxMessageFormat.format(replyBody, instanceDate);
+		}
+	}
 	switch (type) {
 		case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyAcceptMessage; break;
 		case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyDeclineMessage; break;
@@ -375,13 +387,13 @@ function(type) {
 };
 
 ZmMailListController.prototype._editInviteReply =
-function (action , componentId) {
-	var replyBody = this._getInviteReplyBody(action);
-	this._doAction({}, action, replyBody);
+function (action , componentId, instanceDate) {
+	var replyBody = this._getInviteReplyBody(action, instanceDate);
+	this._doAction({}, action, replyBody, instanceDate);
 };
 
 ZmMailListController.prototype._sendInviteReply = 
-function(type, componentId) {
+function(type, componentId, instanceDate) {
 	var msg = new ZmMailMsg(this._appCtxt);
 	var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 	
@@ -390,7 +402,7 @@ function(type, componentId) {
 	msg.isReplied = true;
 	msg.isForwarded = false;
 	msg.isInviteReply = true;
-	var replyBody = this._getInviteReplyBody(type);
+	var replyBody = this._getInviteReplyBody(type, instanceDate);
 	if (replyBody != null) {
 		var top = new ZmMimePart();
 		top.setContentType(ZmMimeTable.TEXT_PLAIN);
@@ -405,7 +417,7 @@ function(type, componentId) {
 	if (subject != null) {
 		msg.setSubject(subject);
 	}
-	msg.sendInviteReply(contactList, true, componentId);
+	msg.sendInviteReply(contactList, true, componentId, null, null, instanceDate);
 };
 
 ZmMailListController.prototype._spamListener = 
