@@ -42,7 +42,8 @@ function(zimletArray, userProps) {
 		for (var i = 0; i < userProps.length; ++i) {
 			var p = userProps[i];
 			var z = this._ZIMLETS_BY_ID[p.zimlet];
-			z.setPropValue(p.name, p._content);
+			if (z)
+				z.setPropValue(p.name, p._content);
 		}
 	}
 };
