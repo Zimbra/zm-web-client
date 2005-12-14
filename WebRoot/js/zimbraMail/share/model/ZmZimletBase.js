@@ -32,15 +32,14 @@
 function ZmZimletBase(appCtxt, type, name) {
 	ZmObjectHandler.call(this, appCtxt, type, name);
 	this._passRpcErrors = false;
-};
+}
 
 ZmZimletBase.PANEL_MENU = 1;
 ZmZimletBase.CONTENTOBJECT_MENU = 2;
 
 ZmZimletBase.PROXY = "/service/proxy?target=";
-//ZmZimletBase.PROXY = "/zimbra/proxy.jsp?address=";
 
-ZmZimletBase.prototype = new ZmObjectHandler;
+ZmZimletBase.prototype = new ZmObjectHandler();
 
 ZmZimletBase.prototype.init =
 function(zimletContext, shell) {
@@ -48,6 +47,11 @@ function(zimletContext, shell) {
 	this._dwtShell = shell;
 	this._appCtxt = shell.getData(ZmAppCtxt.LABEL);
 	this._origIcon = this.xmlObj().icon;
+};
+
+ZmZimletBase.prototype.toString = 
+function() {
+	return this.xmlObj().name;
 };
 
 ZmZimletBase.prototype.getShell = function() {
@@ -128,7 +132,8 @@ function(content, startIndex) {};
 // - contentObjText
 // - canvas
 ZmZimletBase.prototype.clicked =
-function(spanElement, contentObjText, canvas) {};
+function(spanElement, contentObjText, canvas) {
+};
 
 // This method is called when the tool tip is being popped up. This method
 // defines the following formal parameters:
@@ -137,7 +142,8 @@ function(spanElement, contentObjText, canvas) {};
 // - contentObjText
 // - canvas
 ZmZimletBase.prototype.toolTipPoppedUp =
-function(spanElement, contentObjText, canvas) {};
+function(spanElement, contentObjText, canvas) {
+};
 
 // This method is called when the user is popping down a sticky tool tip. It
 // defines the following formal parameters:
@@ -149,10 +155,11 @@ function(spanElement, contentObjText, canvas) {};
 // Returns null if the tool tip may be popped down, else return a string
 // indicating why the tool tip should not be popped down
 ZmZimletBase.prototype.toolTipPoppedDown =
-function(spanElement, contentObjText, canvas) {};
+function(spanElement, contentObjText, canvas) {
+};
 
-ZmZimletBase.prototype.getActionMenu = function() {
-	alert("here");
+ZmZimletBase.prototype.getActionMenu = 
+function() {
 	return null;
 };
 
@@ -366,9 +373,12 @@ function() {
 	return this.getAppCtxt().getUsername();
 };
 
+// Make DOM safe id's
+ZmZimletBase.encodeId = function(s) {
+	return s.replace(/[^A-Za-z0-9]/g, "");
+};
 
 /* Internal functions -- overriding is not recommended */
-
 
 ZmZimletBase.prototype._createDialog = function(args) {
 	return new ZmDialog(this.getShell(),
@@ -377,4 +387,31 @@ ZmZimletBase.prototype._createDialog = function(args) {
 			    args.title,
 			    args.extraButtons,
 			    args.view);
+};
+
+/* Overrides default ZmObjectHandler methods for Zimlet API compat */
+ZmZimletBase.prototype._getHtmlContent = 
+function(html, idx, obj, context) {
+	var contentObj = this.xmlObj().getVal('contentObject');
+	html[idx++] = '<a target="_blank" href="';
+	html[idx++] = (contentObj.onClick[0].actionUrl[0].target).replace('${objectContent}', AjxStringUtil.htmlEncode(obj));
+	html[idx++] = '">'+AjxStringUtil.htmlEncode(obj)+'</a>';
+	return idx;
+};
+
+ZmZimletBase.prototype.hoverOver = 
+function(object, context, x, y, span) {
+	var shell = DwtShell.getShell(window);
+	var tooltip = shell.getToolTip();
+	tooltip.setContent('<div id="zimletTooltipDiv"/>', true);
+	this.toolTipPoppedUp(span, object, document.getElementById("zimletTooltipDiv"));
+	tooltip.popup(x, y, true);
+};
+
+ZmZimletBase.prototype.hoverOut = 
+function(object, context, span) {
+	var shell = DwtShell.getShell(window);
+	var tooltip = shell.getToolTip();
+	tooltip.popdown();
+	this.toolTipPoppedDown(span, object, document.getElementById("zimletTooltipDiv"));
 };
