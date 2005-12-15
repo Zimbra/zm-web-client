@@ -25,7 +25,7 @@
 
 function ZmTrackingObjectHandler(appCtxt) {
 
-	ZmObjectHandler.call(this, appCtxt, ZmURLObjectHandler.TYPE);
+	ZmObjectHandler.call(this, appCtxt, ZmTrackingObjectHandler.TYPE);
 };
 
 ZmTrackingObjectHandler.prototype = new ZmObjectHandler;
@@ -33,6 +33,8 @@ ZmTrackingObjectHandler.prototype.constructor = ZmTrackingObjectHandler;
 
 ZmTrackingObjectHandler.UPS = "1[zZ]\\s?\\w{3}\\s?\\w{3}\\s?\\w{2}\\s?\\w{4}\\s?\\w{3}\\s?\\w{1}";
 ZmTrackingObjectHandler.FEDEX = "(\\d{12}|\\d{22})";
+
+ZmTrackingObjectHandler.TYPE = "tracking";
 
 ZmTrackingObjectHandler.TRACKING = "\\b(?:"+ZmTrackingObjectHandler.UPS+"|"+ZmTrackingObjectHandler.FEDEX+")\\b";
 
