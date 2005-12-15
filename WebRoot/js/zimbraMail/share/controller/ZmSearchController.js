@@ -193,8 +193,8 @@ function(params) {
 	if (!(params.query && params.query.length)) return;
 	
 	// if the search string starts with "$set:" then it is a command to the client 
-	if (params.query.indexOf("$set:") == 0) {
-		this._appCtxt.getClientCmdHdlr().execute((params.query.substr(5)).split(" "));
+	if (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0) {
+		this._appCtxt.getClientCmdHdlr().execute((params.query.substr(5)));
 		return;
 	}
 

@@ -29,9 +29,17 @@ function ZmClientCmdHandler(appCtxt) {
 }
 
 ZmClientCmdHandler.prototype.execute =
-function(argv) {
-	if (!argv || !argv[0]) return ;
-	var arg0 = argv[0].toLowerCase();
+function(cmdStr) {
+
+	if (!cmdStr) return;
+
+	cmdStr = AjxStringUtil.trim(cmdStr, true);
+	
+	if (cmdStr == "") return;
+	
+	cmdStr = cmdStr.toLowerCase();
+	var argv = cmdStr.split(/\s/);
+	var arg0 = argv[0];
 
 	if (arg0 == "debug") {
 		if (!argv[1]) return;
@@ -89,6 +97,15 @@ function(argv) {
 		this._appCtxt.setStatusMsg("Slide Right", null, null, delay, ZmStatusView.TRANSITION_SLIDE_RIGHT);
 		this._appCtxt.setStatusMsg("Slide Down", null, null, delay, ZmStatusView.TRANSITION_SLIDE_DOWN);
 		this._appCtxt.setStatusMsg("Slide Up", null, null, delay, ZmStatusView.TRANSITION_SLIDE_UP);
+	} else if (arg0 == "get") {
+		if (!argv[1]) return;
+		var item = argv[1];
+		if (item == "version") {		
+			alert("Client Information\n\n" +
+			      "Client Version: " + this._appCtxt.get(ZmSetting.CLIENT_VERSION) + "\n" +
+			      "Client Release: " + this._appCtxt.get(ZmSetting.CLIENT_RELEASE) + "\n" +
+			      "    Build Date: " + this._appCtxt.get(ZmSetting.CLIENT_DATETIME));
+		}
 	}
 }
 
