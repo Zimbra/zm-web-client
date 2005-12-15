@@ -116,6 +116,11 @@
 	</servlet-mapping>
 
 	<servlet-mapping>
+		<servlet-name>UserRedirectServlet</servlet-name>
+		<url-pattern>/home/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
 		<servlet-name>SetCookieServlet</servlet-name>
 		<url-pattern>/auth/</url-pattern>
 	</servlet-mapping>

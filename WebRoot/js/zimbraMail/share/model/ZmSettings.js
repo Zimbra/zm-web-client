@@ -275,22 +275,24 @@ function() {
 	var value;
 
 	var noPort = (location.port == "" || location.port == "80");
+    var portPrefix = noPort ? "" : ":" + location.port;
+
 	// CSFE_SERVER_URI
-	value = (noPort)? "/service/soap/" : ":" + location.port + "/service/soap/";
+	value = portPrefix + "/service/soap/";
 	if (location.search && location.search.indexOf("host=") != -1)
 		value += location.search;
 	this._settings[ZmSetting.CSFE_SERVER_URI].setValue(value);
 
 	// CSFE_MSG_FETCHER_URI
-	value = (noPort) ? "/service/content/get?" : ":" + location.port + "/service/content/get?";
+	value = portPrefix + "/service/home/~/?";
 	this._settings[ZmSetting.CSFE_MSG_FETCHER_URI].setValue(value);
 	
 	// CSFE_UPLOAD_URI
-	value = (noPort) ? "/service/upload" : ":" + location.port + "/service/upload";
+	value = portPrefix + "/service/upload";
 	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value);
 	
 	// CSFE EXPORT URI
-	value = (noPort) ? "/service/user/~/?id=7&fmt=csv" : ":" + location.port + "/service/user/~/?id=7&fmt=csv";	
+	value = portPrefix + "/service/home/~/?id=7&fmt=csv";
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value);
 	
 	// default sorting preferences
