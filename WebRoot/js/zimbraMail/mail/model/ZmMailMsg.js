@@ -802,6 +802,7 @@ function(cl, domain) {
 	return null;
 }
 
+ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/ig;
 // this is a helper method to build a list of attachment links in html
 ZmMailMsg.prototype.buildAttachLinks = 
 function(bFindHits, domain, objectManager) {
@@ -837,7 +838,7 @@ function(bFindHits, domain, objectManager) {
                 else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;"; 
                 else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;"; 
     		} else {
-    			useCL = attach.cl && ZmURLObjectHandler.URL_RE.test(attach.cl);
+    			useCL = attach.cl && ZmMailMsg.URL_RE.test(attach.cl);
     		}
 
 			// calc. widths of all data involved

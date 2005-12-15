@@ -259,7 +259,7 @@ function(contact, isGal) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Home</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (homeField) 	html[idx++] = homeField + "<br>";
-		if (homeURL) 	html[idx++] = this._generateObject(homeURL, ZmURLObjectHandler.TYPE);
+		if (homeURL) 	html[idx++] = this._generateObject(homeURL, "url");
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
@@ -289,7 +289,7 @@ function(contact, isGal) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Other</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (otherField) html[idx++] = otherField + "<br>";
-		if (otherURL) 	html[idx++] = this._generateObject(otherURL, ZmURLObjectHandler.TYPE);
+		if (otherURL) 	html[idx++] = this._generateObject(otherURL, "url");
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
