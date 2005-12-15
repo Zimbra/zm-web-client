@@ -265,7 +265,7 @@ function(contentType) {
 				div.innerHTML = this.notesTopPart.getContentForType(ZmMimeTable.TEXT_HTML);
 				return AjxStringUtil.convertHtml2Text(div);
 			} else if (ct == ZmMimeTable.TEXT_HTML) {
-				content = this.notesTopPart.getContentForType(ZmMimeTable.TEXT_PLAIN);
+				content = AjxStringUtil.convertToHtml(this.notesTopPart.getContentForType(ZmMimeTable.TEXT_PLAIN));
 			}
 		}
 		return AjxUtil.isString(content) ? content : content.content;
