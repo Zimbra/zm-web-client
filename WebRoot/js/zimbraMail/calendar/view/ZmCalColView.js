@@ -1573,7 +1573,10 @@ function(docX, docY, incr) {
 				offset = spaceLeft  > incr ?incr : spaceLeft;
 			}
 		}
-		if (offset != 0)	div.scrollTop += offset;
+		if (offset != 0)	{
+		    div.scrollTop += offset;
+    		    this._syncScroll();		    
+	    }
 	}
 	return offset;
 }
