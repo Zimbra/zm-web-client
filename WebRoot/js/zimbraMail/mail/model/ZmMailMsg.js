@@ -117,10 +117,26 @@ function() {
 * Returns a vector of addresses of the given type
 *
 * @param type		an email address type
+* @param used		array of addressed that have been used. If not null,
+*		then this method will omit those addresses from the returned vector and
+*		will populate used with the additional new addresses
 */
 ZmMailMsg.prototype.getAddresses =
-function(type) {
-	return this._addrs[type];
+function(type, used) {
+	if (!used) {
+		return this._addrs[type];
+	} else {
+		var a = this._addrs[type].getArray();
+		var addrs = [];
+		for (var i = 0; i < a.length; i++) {
+			var addr = a[i];
+			var email = addr.getAddress();
+			if (!used[email])
+				addrs.push(addr);
+			used[email] = true;
+		}
+		return AjxVector.fromArray(addrs);
+	}
 };
 
 ZmMailMsg.prototype.getInviteOrganizer =

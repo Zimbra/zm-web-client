@@ -203,22 +203,8 @@ function() {
 
 	// get the currently selected conversation
 	var conv = this._listView[this._currentView].getSelection()[0];
-	if (conv) {
-		// has this conv been loaded yet?
-		if (conv.msgs) {
-			// then always return the first msg in the list
-			msg = conv.msgs.getVector().get(0);
-		} else if (conv.tempMsg) {
-			msg = conv.tempMsg;
-		} else {
-			// otherwise, create a temp msg w/ the msg op Id
-			msg = new ZmMailMsg(this._appCtxt, conv.msgOpId);
-			conv.tempMsg = msg; 	// cache it.
-		}
-		
-		// set the conv's list w/in msg
-		msg.list = conv.list;
-	}
+	if (conv)
+		msg = conv.getFirstMsg();
 	
 	return msg;
 };

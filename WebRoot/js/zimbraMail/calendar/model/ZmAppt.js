@@ -531,7 +531,29 @@ function(message, viewMode) {
 		}
 
 		this._currentlyLoaded = message;
+		this._setNotes(message);
+	}
+};
 
+ZmAppt.prototype.setFromMailMessage = 
+function(message) {
+	this.name = (message.subject) ? message.subject : "";
+	
+	// Only unique names in the attendee list, plus omit our own name
+	var used = {};
+	used[this._appCtxt.get(ZmSetting.USERNAME)] = true;
+	var addrs = message.getAddresses(ZmEmailAddress.FROM, used);
+	addrs.addList(message.getAddresses(ZmEmailAddress.CC, used));
+	addrs.addList(message.getAddresses(ZmEmailAddress.TO, used));
+	this._attAddresses = addrs;
+	this.attendees = addrs.toString(ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE, true);
+	
+	this._setNotes(message);
+}
+
+
+ZmAppt.prototype._setNotes = 
+function(message) {
 		this.notesTopPart = new ZmMimePart();
 		// get text part and remove any previous canned text
 		var text = message.getBodyPart(ZmMimeTable.TEXT_PLAIN);
@@ -557,8 +579,7 @@ function(message, viewMode) {
 			this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 			this.notesTopPart.setContent(notes);
 		}
-	}
-};
+}
 
 /**
 * Returns HTML for a tool tip for this appt.

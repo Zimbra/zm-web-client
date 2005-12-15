@@ -552,7 +552,8 @@ function(ev) {
 ZmListController.prototype._dropListener =
 function(ev) {
 	var div, item;
-	div = DwtUiEvent.getTargetWithProp(ev.uiEvent, "_itemIndex");
+
+	div = Dwt.getAttr(ev.uiEvent.target, "_itemIndex", true);
 	var view = this._listView[this._currentView];
 	if (div) {
 		item = view.getItemFromElement(div);

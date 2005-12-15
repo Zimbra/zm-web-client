@@ -316,6 +316,27 @@ function(offset, limit) {
 	return msg;
 }
 
+ZmConv.prototype.getFirstMsg = 
+function() {
+	// has this conv been loaded yet?
+	if (this.msgs) {
+		// then always return the first msg in the list
+		msg = this.msgs.getVector().get(0);
+	} else if (this.tempMsg) {
+		msg = this.tempMsg;
+	} else {
+		// otherwise, create a temp msg w/ the msg op Id
+		msg = new ZmMailMsg(this._appCtxt, this.msgOpId);
+		this.tempMsg = msg; 	// cache it.
+	}
+	
+	// set the conv's list w/in msg
+	msg.list = this.list;
+	
+	return msg;
+}
+
+
 ZmConv.prototype.getSubject = 
 function (){
 	return this.subject;

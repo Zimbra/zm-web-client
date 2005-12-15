@@ -404,6 +404,10 @@ function(date) {
 	this._miniCalendar.addDateRangeListener(new AjxListener(this, this._miniCalDateRangeListener));
 	this._miniCalendar.setMouseOverDayCallback(new AjxCallback(this, this._miniCalMouseOverDayCallback));
 
+	this._miniCalDropTarget = new DwtDropTarget(ZmConv, ZmMailMsg, ZmContact);
+	this._miniCalDropTarget.addDropListener(new AjxListener(this, this._miniCalDropTargetListener));
+	this._miniCalendar.setDropTarget(this._miniCalDropTarget);
+
 	var workingWeek = [];
 	var fdow = this.firstDayOfWeek();
 	for (var i=0; i < 7; i++) {
@@ -417,6 +421,93 @@ function(date) {
 	var components = new Object();
 	components[ZmAppViewMgr.C_TREE_FOOTER] = this._miniCalendar;
 	this._appCtxt.getAppViewMgr().addComponents(components, true);
+}
+
+ZmCalViewController.prototype._miniCalDropTargetListener =
+function(ev) {
+	var data = ev.srcData.data;
+	// This code is a hack because of the fact that in some instances ZmMailMsg is reported as being
+	// an Array of length 1 (as well as a ZmMailMsg) under FF1.5
+	if (data instanceof Array) {
+		if (data.length > 1) {
+			ev.doIt = false;
+			return;
+		}
+		data = data[0];
+	}
+	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		if (!this._miniCalDropTarget.isValidTarget(data)) {
+			ev.doIt = false;
+			return;
+		}
+
+		// If we are dealing with a contact make sure it has a valid email address
+		if (data instanceof ZmContact) {
+			var emailAddr = data.getAttr(ZmContact.F_email);
+			if (!emailAddr || emailAddr == "") {
+				emailAddr = data.getAttr(ZmContact.F_email1);
+				if (!emailAddr || emailAddr == "") {
+					emailAddr = data.getAttr(ZmContact.F_email2);
+					if (!emailAddr || emailAddr == "")
+						ev.doIt = false;
+				}
+			}
+		}
+	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
+		var dropDate = this._miniCalendar.getDndDate();
+		if (dropDate) {
+			if (!(data instanceof ZmContact))
+				this.newApptFromMailItem(data, dropDate);
+			else
+				this.newApptFromContact(data, dropDate);
+		}
+	}
+}
+
+/*
+ * This method will create a new appointment from a conversation/mail message. In the case
+ * of a conversation, the appointment will be populated by the first message in the 
+ * conversation (or matched msg in the case of a search). This method is asynchronous and 
+ * will return immediately if the mail message must load in the background.
+ *
+ * @param mailItem This may either be a ZmConv or a ZmMailMsg.
+ * @param date The date/time for the appointment
+ */ 
+ZmCalViewController.prototype.newApptFromMailItem =
+function(mailItem, date) {
+	if (mailItem instanceof ZmConv)
+		mailItem = mailItem.getFirstMsg();
+	mailItem.load(false, false, new AjxCallback(this, this._msgLoadedCallback, [mailItem, date]));
+}
+
+ZmCalViewController.prototype._msgLoadedCallback =
+function(args) {
+	var newAppt = this._newApptObject(args[1]);
+	newAppt.setFromMailMessage(args[0]);
+	this.newAppointment(newAppt, ZmAppt.MODE_NEW);
+}
+
+/*
+ * This method will create a new appointment from a contact. 
+ *
+ * @param contact ZmContact
+ * @param date The date/time for the appointment
+ */ 
+ZmCalViewController.prototype.newApptFromContact =
+function(contact, date) {
+	var emailAddr = contact.getAttr(ZmContact.F_email);
+	if (!emailAddr || emailAddr == "") {
+		emailAddr = contact.getAttr(ZmContact.F_email1);
+		if (!emailAddr || emailAddr == "") {
+			emailAddr = contact.getAttr(ZmContact.F_email2);
+			if (!emailAddr || emailAddr == "")
+				return;
+		}
+	}
+		
+	var newAppt = this._newApptObject(date);
+	newAppt.attendees = emailAddr;
+	this.newAppointment(newAppt, ZmAppt.MODE_NEW);
 }
 
 ZmCalViewController.prototype.getMiniCalendar =
