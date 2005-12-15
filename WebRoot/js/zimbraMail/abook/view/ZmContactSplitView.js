@@ -225,7 +225,7 @@ function(contact, isGal) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Work</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (workField) 	html[idx++] = workField + "<br>";
-		if (workURL) 	html[idx++] = this._generateObject(workURL, ZmURLObjectHandler.TYPE);
+		if (workURL) 	html[idx++] = this._generateObject(workURL, "url");
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
