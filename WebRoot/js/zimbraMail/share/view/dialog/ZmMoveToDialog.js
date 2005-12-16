@@ -113,9 +113,9 @@ function() {
 }
 
 ZmMoveToDialog.prototype._newCallback =
-function(args) {
+function(parent, name) {
 	var ftc = this._opc.getTreeController(ZmOrganizer.FOLDER);
-	ftc._doCreate(args[0], args[1]);
+	ftc._doCreate(parent, name);
 	this._appCtxt.getNewFolderDialog().popdown();
 	this._creatingFolder = true;
 }

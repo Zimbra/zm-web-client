@@ -90,10 +90,7 @@ function(items, folder, attrs) {
 };
 
 ZmMailList.prototype._handleResponseMoveItems =
-function(args) {
-	var folder		= args[0];
-	var result		= args[1];
-
+function(folder, result) {
 	var movedItems = result.getResponse();	
 	if (movedItems && movedItems.length) {
 		this.moveLocal(movedItems, folder.id);
@@ -125,11 +122,7 @@ function(items, markAsSpam, folder) {
 };
 
 ZmMailList.prototype._handleResponseSpamItems =
-function(args) {
-	var markAsSpam	= args[0];
-	var folder		= args[1];
-	var result		= args[2];
-	
+function(markAsSpam, folder, result) {
 	var movedItems = result.getResponse();
 	if (movedItems && movedItems.length) {
 		folderId = markAsSpam ? ZmFolder.ID_SPAM : (folder ? folder.id : ZmFolder.ID_INBOX);

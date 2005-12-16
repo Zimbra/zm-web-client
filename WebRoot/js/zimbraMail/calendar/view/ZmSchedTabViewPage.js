@@ -692,8 +692,8 @@ function(isStartDate, skipCheck) {
 };
 
 ZmSchedTabViewPage.prototype._getAcListLoc =
-function(ev) {
-	var inputEl = ev[1].element;
+function(ev0, ev1) {
+	var inputEl = ev1.element;
 	if (inputEl) {
 		var loc = Dwt.getLocation(inputEl);
 		var height = Dwt.getSize(inputEl).y;
@@ -856,8 +856,8 @@ function(status) {
 // Callbacks
 
 ZmSchedTabViewPage.prototype._handleResponseFreeBusy =
-function(resp) {
-	var args = resp.getResponse().GetFreeBusyResponse.usr;
+function(result) {
+	var args = result.getResponse().GetFreeBusyResponse.usr;
 
 	for (var i = 0; i < args.length; i++) {
 		var usr = args[i];

@@ -105,13 +105,7 @@ function(method, params, delay, asyncMode) {
 		if (delay == 0) {
 			this._shell.setBusy(true);
 		}
-		this._action = new AjxTimedAction();
-		this._action.obj = this;
-		this._action.method = ZmController._exec;
-		this._action.params.removeAll();
-		this._action.params.add(method);
-		this._action.params.add(params);
-		this._action.params.add(delay);
+		this._action = new AjxTimedAction(this, ZmController._exec, [method, params, delay]);
 		return AjxTimedAction.scheduleAction(this._action, delay);
 	}
 };
@@ -127,7 +121,7 @@ function(method, params, delay) {
 ZmController.prototype.popupErrorDialog = 
 function(msg, ex, noExecReset, hideReportButton)  {
 	if (!noExecReset)
-		this._execFrame = {method: null, params: null, restartOnError: false};
+		this._execFrame = {func: null, args: null, restartOnError: false};
 	// popup alert
 	var detailStr = "";
 	if (typeof ex == "string") {
@@ -187,7 +181,7 @@ function(ex, method, params, restartOnError, obj) {
 		if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED) {
 			// remember the last operation attempted ONLY for expired auth token exception
 			if (method)
-				this._execFrame = (method instanceof AjxCallback) ? method : {obj: obj, method: method, params: params, restartOnError: restartOnError};
+				this._execFrame = (method instanceof AjxCallback) ? method : {obj: obj, func: method, args: params, restartOnError: restartOnError};
 			this._loginDialog.registerCallback(this._loginCallback, this);
 			this._loginDialog.setError(ZmMsg.sessionExpired);
 		} else if (ex.code == ZmCsfeException.SVC_AUTH_REQUIRED) {
@@ -202,7 +196,7 @@ function(ex, method, params, restartOnError, obj) {
 		this._showLoginDialog(bReloginMode);
 	} else {
 		// remember the last search attempted for all other exceptions
-		this._execFrame = (method instanceof AjxCallback) ? method : {obj: obj, method: method, params: params, restartOnError: restartOnError};
+		this._execFrame = (method instanceof AjxCallback) ? method : {obj: obj, func: method, args: params, restartOnError: restartOnError};
 		this._errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
 		var msg = this._getErrorMsg(ex.code, params);
 		this.popupErrorDialog(msg, ex, true);
@@ -264,15 +258,12 @@ ZmController.prototype._doAuth =
 function(username, password, pubComp) {
 	ZmCsfeCommand.clearAuthToken();
 	var auth = new ZmAuthenticate(this._appCtxt);
-	var respCallback = new AjxCallback(this, this._handleResponseDoAuth, [pubComp]);
+	var respCallback = new AjxCallback(this, this._handleResponseDoAuth, pubComp);
 	auth.execute(username, password, respCallback);
 };
 
 ZmController.prototype._handleResponseDoAuth =
-function(args) {
-	var pubComp	= args[0];
-	var result	= args[1];
-	
+function(pubComp, result) {
 	try {
 		result.getResponse();
 	   	this._authenticating = false;
@@ -308,14 +299,14 @@ function() {
 /*********** Login dialog Callbacks */
 
 ZmController.prototype._loginCallback =
-function(args) {
-	this._doAuth(args[0], args[1], args[2]);
+function(username, password, pubComp) {
+	this._doAuth(username, password, pubComp);
 };
 
 ZmController.prototype._doLastSearch = 
 function() {
 	var obj = this._execFrame.obj ? this._execFrame.obj : this;
-	this._execFrame.method.call(obj, this._execFrame.params);
+	this._execFrame.func.apply(obj, this._execFrame.args);
 	this._execFrame = null;
 };
 
@@ -326,7 +317,7 @@ function() {
 	this._errorDialog.popdown();
 	if (this._execFrame) {
 		if (this._execFrame.restartOnError && !this._authenticating)
-			this._execFrame.method.call(this, this._execFrame.params);
+			this._execFrame.func.apply(this, this._execFrame.args);
 		this._execFrame = null;
 	}
 };

@@ -123,17 +123,12 @@ function(ev, callback, noPop) {
 		var respCallback = new AjxCallback(this, this._handleResponseSaveListener, [list, callback, noPop]);
 		this._appCtxt.getSettings().save(list, respCallback);
 	} else {
-		this._handleResponseSaveListener([list, callback, noPop]);
+		this._handleResponseSaveListener(list, callback, noPop);
 	}
 }
 
 ZmPrefController.prototype._handleResponseSaveListener = 
-function(args) {
-	var list		= args[0];
-	var callback	= args[1];
-	var noPop		= args[2];
-	var result		= args[3];
-
+function(list, callback, noPop, result) {
 	var rulesToSave = false;
 	if (this._filtersEnabled) {
 		rulesToSave = ZmFilterRules.shouldSave();
@@ -141,7 +136,7 @@ function(args) {
 			var respCallback = new AjxCallback(this, this._handleResponseSaveListener1, [list, callback, noPop, rulesToSave]);
 			ZmFilterRules.saveRules(respCallback);
 		} else {
-			this._handleResponseSaveListener1([list, callback, noPop, rulesToSave]);
+			this._handleResponseSaveListener1(list, callback, noPop, rulesToSave);
 		}
 	}
 
@@ -149,13 +144,7 @@ function(args) {
 }
 
 ZmPrefController.prototype._handleResponseSaveListener1 = 
-function(args) {
-	var list		= args[0];
-	var callback	= args[1];
-	var noPop		= args[2];
-	var rulesToSave	= args[3];
-	var result		= args[4];
-
+function(list, callback, noPop, rulesToSave, result) {
 	if (list.length || rulesToSave)
 		this._appCtxt.setStatusMsg(ZmMsg.optionsSaved);
 	if (!noPop)
@@ -171,10 +160,10 @@ function() {
 }
 
 ZmPrefController.prototype._changePassword =
-function(args) {
+function(oldPassword, newPassword) {
 	var soapDoc = AjxSoapDoc.create("ChangePasswordRequest", "urn:zimbraAccount");
-	soapDoc.set("oldPassword", args[0]);
-	soapDoc.set("password", args[1]);
+	soapDoc.set("oldPassword", oldPassword);
+	soapDoc.set("password", newPassword);
 	var accountNode = soapDoc.set("account", this._appCtxt.get(ZmSetting.USERNAME));
 	accountNode.setAttribute("by", "name");
 

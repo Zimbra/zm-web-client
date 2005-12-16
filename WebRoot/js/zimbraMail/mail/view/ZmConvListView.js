@@ -312,12 +312,7 @@ function(conv, preferHtml, callback) {
 };
 
 ZmConvListView._handleResponseGetPrintHtml =
-function(args) {
-	var conv		= args[0];
-	var preferHtml	= args[1];
-	var callback	= args[2];
-	var result		= args[3];
-	
+function(conv, preferHtml, callback, result) {
 	var resp = result.getResponse().GetConvResponse.c[0];
 	var msgIds = new Array();
 	for (var i = 0; i < resp.m.length; i++)
@@ -350,11 +345,7 @@ function(conv, preferHtml, callback) {
 };
 
 ZmConvListView._handleResponseGetMessages =
-function(args) {
-	var conv		= args[0];
-	var preferHtml	= args[1];
-	var callback 	= args[2];
-	var result		= args[3];
+function(conv, preferHtml, callback, result) {
 	var resp = result.getResponse().BatchResponse.GetMsgResponse;
 
 	var html = new Array();

@@ -263,12 +263,7 @@ function(ev, action, extraBodyText, instanceDate) {
 };
 
 ZmMailListController.prototype._handleResponseDoAction = 
-function(args) {
-	var action			= args[0];
-	var inNewWindow		= args[1];
-	var msg				= args[2];
-	var extraBodyText	= args[3];
-
+function(action, inNewWindow, msg, extraBodyText) {
 	this._app.getComposeController().doAction(action, inNewWindow, msg, null, null, extraBodyText);
 };
 

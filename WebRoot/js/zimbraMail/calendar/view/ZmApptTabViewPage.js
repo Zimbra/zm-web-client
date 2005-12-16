@@ -153,12 +153,7 @@ function(appt, mode) {
 		? ZmAppt.MODE_NEW : mode;
 
 	// OPTIMIZATION: create timed action to reset the view
-	var ta = new AjxTimedAction();
-	ta.params = new AjxVector();
-	ta.params.add(appt);
-	ta.params.add(mode || ZmAppt.MODE_NEW);
-	ta.obj = this;
-	ta.method = this._reset;
+	var ta = new AjxTimedAction(this, this._reset, [appt, mode || ZmAppt.MODE_NEW]);
 	AjxTimedAction.scheduleAction(ta, 0);
 };
 
@@ -1211,9 +1206,7 @@ function(ev) {
 
 // Transfers addresses from the contact picker to the compose view.
 ZmApptTabViewPage.prototype._contactPickerOk =
-function(args) {
-	var addrs = args[0];
-
+function(addrs) {
 	// populate attendees field w/ chosen contacts from picker
 	var vec = addrs[ZmApptTabViewPage.CONTACT_PICKER_BID];
 
@@ -1250,14 +1243,14 @@ function(ev) {
 };
 
 ZmApptTabViewPage.prototype._attsDoneCallback =
-function(args) {
-	DBG.println(AjxDebug.DBG1, "Attachments: status = " + args[0] + ", attId = " + args[1]);
-	if (args[0] == 200) {
+function(status, attId) {
+	DBG.println(AjxDebug.DBG1, "Attachments: status = " + status + ", attId = " + attId);
+	if (status == 200) {
 		this._removeAllAttachments();
 		var acc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getApptComposeController();
-		acc.saveAppt(args[1]);
+		acc.saveAppt(attId);
 	} else {
-		DBG.println(AjxDebug.DBG1, "attachment error: " + args[0]);
+		DBG.println(AjxDebug.DBG1, "attachment error: " + status);
 	}
 };
 

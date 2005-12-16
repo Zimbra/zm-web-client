@@ -500,12 +500,7 @@ function(ev) {
 // Callbacks
 
 ZmComposeController.prototype._handleResponseSendMsg =
-function(args) {
-	var isDraft		= args[0];
-	var msg			= args[1];
-	var callback	= args[2];
-	var result		= args[3];
-
+function(isDraft, msg, callback, result) {
 	var resp = result.getResponse();
 	this._processSendMsg(isDraft, msg, resp);
 

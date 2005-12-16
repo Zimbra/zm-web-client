@@ -233,9 +233,8 @@ ZmSharePropsDialog.prototype._executeGrantAction = function(folder, share) {
 	return resp.FolderActionResponse.action.zid;
 }
 
-ZmSharePropsDialog.prototype._handleCompletionData = function (args) {
-	var text = args[1];
-	var element = args[2];
+ZmSharePropsDialog.prototype._handleCompletionData = 
+function (text, element) {
 	text = text.replace(/;\s*/, "");
 	element.value = text;
 	try {
@@ -252,9 +251,8 @@ ZmSharePropsDialog.prototype._handleCompletionData = function (args) {
 	}
 };
 
-ZmSharePropsDialog.prototype._getNewAutocompleteLocation = function(args) {
-	var cv = args[0];
-	var ev = args[1];
+ZmSharePropsDialog.prototype._getNewAutocompleteLocation = 
+function(cv, ev) {
 	var element = ev.element;
 	var id = element.id;
 	

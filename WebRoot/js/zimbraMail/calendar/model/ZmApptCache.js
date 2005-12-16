@@ -236,15 +236,12 @@ function(start,end, fanoutAllDay, folderIds, callback) {
 	} else {
 		var response = this._appCtxt.getAppController().sendRequest(soapDoc);
 		var csfeResult = new ZmCsfeResult(response, false);
-		return this._getApptSummariesResponse([context, csfeResult]);
+		return this._getApptSummariesResponse(context, csfeResult);
 	}
 }
 
 ZmApptCache.prototype._getApptSummariesResponse =
-function(args) {
-	var context = args[0];
-	var result = args[1];
-	
+function(context, result) {
 	var callback = context.callback;
 	var start = context.start;
 	var end = context.end;

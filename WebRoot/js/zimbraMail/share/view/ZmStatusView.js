@@ -324,15 +324,12 @@ function(state) {
 
 	if (state.opacityDelta) Dwt.setOpacity(state.toastEl, state.opacity);
 	Dwt.setLocation(state.toastEl, state.x, state.y);
-	var act = new AjxTimedAction();
-	act.method = ZmStatusView._toastAnimationAction;
-	act.params.add(state);
+	var act = new AjxTimedAction(null, ZmStatusView._toastAnimationAction, state);
 	AjxTimedAction.scheduleAction(act,delay);
 };
 
 ZmStatusView._toastAnimationAction =
-function(args) {
-	var state = args[0];
+function(state) {
 	state.view._toastAnimation(state);
 };
 

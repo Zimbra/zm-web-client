@@ -92,15 +92,13 @@ function(params) {
 	if (params.getHtml) {
 		msgNode.setAttribute("html", "1");
 	}
-	var respCallback = new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, params.callback);
-	var execFrame = new AjxCallback(null, ZmMailMsg.fetchMsg, params);
+	var respCallback = new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback]);
+	var execFrame = new AjxCallback(null, ZmMailMsg.fetchMsg, [params]);
 	params.sender.sendRequest(soapDoc, true, respCallback, params.errorCallback, execFrame);
 };
 
 ZmMailMsg._handleResponseFetchMsg =
-function(args) {
-	var callback	= args[0];
-	var result		= args[1];
+function(callback, result) {
 	if (callback) callback.run(result);
 }
 
@@ -392,7 +390,7 @@ ZmMailMsg.prototype.load =
 function(getHtml, forceLoad, callback, errorCallback) {
 	// If we are already loaded, then don't bother loading
 	if (!this._loaded || forceLoad) {
-		var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
+		var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
 		ZmMailMsg.fetchMsg({sender: this._appCtxt.getAppController(), msgId: this.id, getHtml: getHtml,
 						  	callback: respCallback, errorCallback: errorCallback});
 	} else {
@@ -402,11 +400,7 @@ function(getHtml, forceLoad, callback, errorCallback) {
 };
 
 ZmMailMsg.prototype._handleResponseLoad =
-function(args) {
-
-	var callback	= args[0];
-	var result		= args[1];
-
+function(callback, result) {
 	var response = result.getResponse().GetMsgResponse;
 
 	// clear address vectors
@@ -468,16 +462,13 @@ function(callback) {
 	if (bodyPart && bodyPart.ct == ZmMimeTable.TEXT_PLAIN) {
 		return bodyPart.content;
 	} else {
-		var respCallback = new AjxCallback(this, this._handleResponseGetTextPart, callback);
+		var respCallback = new AjxCallback(this, this._handleResponseGetTextPart, [callback]);
 		ZmMailMsg.fetchMsg({sender: this._appCtxt.getAppController(), msgId: this.getId(), getHtml: false, callback: respCallback});
 	}
 };
 
 ZmMailMsg.prototype._handleResponseGetTextPart =
-function(args) {
-	var callback	= args[0];
-	var result		= args[1];
-
+function(callback, result) {
 	var response = result.getResponse().GetMsgResponse;
 	this._loadFromDom(response.m[0]);
 	var bodyPart = this.getBodyPart(ZmMimeTable.TEXT_PLAIN);
@@ -558,9 +549,8 @@ function (contactList, edited, componentId, callback, errorCallback, instanceDat
 };
 
 ZmMailMsg.prototype._handleResponseSendInviteReply =
-function(args) {
-	var callback = args[0];
-	var resp = args[1].getResponse();
+function(callback, result) {
+	var resp = result.getResponse();
 
 	var id = resp.id ? resp.id.split("-")[0] : null;
 
@@ -570,7 +560,7 @@ function(args) {
 	}
 
 	if (callback)
-		callback.run(args[1]);
+		callback.run(result);
 }
 
 /**
@@ -598,11 +588,7 @@ function(contactList, isDraft, callback, errorCallback) {
 };
 
 ZmMailMsg.prototype._handleResponseSend =
-function(args) {
-	var isDraft		= args[0];
-	var callback	= args[1];
-	var result		= args[2];
-	
+function(isDraft, callback, result) {
 	var resp = result.getResponse().m[0];
 		
 	// notify listeners of successful send message
@@ -697,7 +683,7 @@ function(soapDoc, contactList, isDraft) {
 ZmMailMsg.prototype._sendMessage = 
 function(params) {
 	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params.isInvite, params.isDraft, params.callback]);
-	var execFrame = new AjxCallback(this, this._sendMessage, params);
+	var execFrame = new AjxCallback(this, this._sendMessage, [params]);
 
 	// XXX: temp bug fix #4325 (until mozilla bug #295422 gets fixed)
 	if (window.parentController && AjxEnv.isGeckoBased) {
@@ -717,12 +703,7 @@ function(params) {
 };
 
 ZmMailMsg.prototype._handleResponseSendMessage =
-function(args) {
-	var bIsInvite	= args[0];
-	var bIsDraft	= args[1];
-	var callback	= args[2];
-	var result		= args[3];
-	
+function(bIsInvite, bIsDraft, callback, result) {
 	var response = result.getResponse();
 	if (bIsInvite)
 		result.set(response.SendInviteReplyResponse);

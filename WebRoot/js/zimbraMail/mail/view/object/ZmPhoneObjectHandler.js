@@ -134,8 +134,7 @@ function() {
 ZmPhoneObjectHandler.unsetOnbeforeunload = 
 function() {
 	window.onbeforeunload = null;
-	this._timerObj = new AjxTimedAction();
-	this._timerObj.method = ZmPhoneObjectHandler.resetOnbeforeunload;	
+	this._timerObj = new AjxTimedAction(null, ZmPhoneObjectHandler.resetOnbeforeunload);
 	AjxTimedAction.scheduleAction(this._timerObj,3000);
 };
 

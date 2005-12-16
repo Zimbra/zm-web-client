@@ -240,7 +240,7 @@ function(params) {
 		this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
 		this._components[ZmAppViewMgr.C_STATUS] = this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE);
 
-		var respCallback = new AjxCallback(this, this._handleResponseStartup, params);
+		var respCallback = new AjxCallback(this, this._handleResponseStartup, [params]);
 		this._errorCallback = new AjxCallback(this, this._handleErrorStartup);
 		this._settings.loadUserSettings(respCallback, this._errorCallback); // load user prefs and COS data
 	} else {
@@ -306,8 +306,7 @@ function(params) {
 * @param app		[constant]		starting app
 */
 ZmZimbraMail.prototype._handleResponseStartup1 =
-function(args) {
-	var params = args[0];
+function(params) {
 	var respCallback = new AjxCallback(this, this._handleResponseStartup2);
 	var startApp = (params && params.app) ? params.app : ZmZimbraMail.defaultStartApp;
 	this.activateApp(startApp, false, respCallback, this._errorCallback);
@@ -392,23 +391,16 @@ function(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout) {
 		command.state = ZmZimbraMail._SENT;
 	} catch (ex) {
 		if (asyncMode)
-			this._handleResponseSendRequest([asyncMode, asyncCallback, errorCallback, execFrame, reqId, new ZmCsfeResult(ex, true)]);
+			this._handleResponseSendRequest(asyncMode, asyncCallback, errorCallback, execFrame, reqId, new ZmCsfeResult(ex, true));
 		else
 			throw ex;
 	}
 	if (!asyncMode)
-		return this._handleResponseSendRequest([asyncMode, null, errorCallback, execFrame, reqId, response]);
+		return this._handleResponseSendRequest(asyncMode, null, errorCallback, execFrame, reqId, response);
 };
 
 ZmZimbraMail.prototype._handleResponseSendRequest =
-function(args) {
-	var asyncMode		= args[0];
-	var callback		= args[1];
-	var errorCallback	= args[2];
-	var execFrame		= args[3];
-	var reqId			= args[4];
-	var result			= args[5];
-
+function(asyncMode, callback, errorCallback, execFrame, reqId, result) {
 	if (this._cancelDialog && this._cancelDialog.isPoppedUp())
 		this._cancelDialog.popdown();
 
@@ -473,10 +465,7 @@ function(args) {
 };
 
 ZmZimbraMail.prototype.cancelRequest = 
-function(args) {
-	var reqId			= args[0];
-	var errorCallback	= args[1];
-
+function(reqId, errorCallback) {
 	if (!this._pendingRequests[reqId]) return;
 	if (this._pendingRequests[reqId].state == ZmZimbraMail._RESPONSE) return;
 
@@ -542,7 +531,7 @@ function(appName, force, callback, errorCallback) {
     	if (!this._apps[appName])
 			this._createApp(appName);
 		DBG.println(AjxDebug.DBG1, "Launching app " + appName);
-		var respCallback = new AjxCallback(this, this._handleResponseActivateApp, callback);
+		var respCallback = new AjxCallback(this, this._handleResponseActivateApp, [callback]);
 		this._apps[appName].launch(respCallback, errorCallback);
     }
 };
@@ -736,9 +725,7 @@ function() {
 	// not sure why IE doesn't allow this to process immediately, but since
 	// it does not, we'll set up a timed action.
 	if (AjxEnv.isIE) {
-		var act = new AjxTimedAction();
-		act.method = ZmZimbraMail.redir;
-		act.params.add(locationStr);
+		var act = new AjxTimedAction(null, ZmZimbraMail.redir, [locationStr]);
 		AjxTimedAction.scheduleAction(act, 1);
 	} else {
 		window.location = locationStr;
@@ -746,8 +733,8 @@ function() {
 };
 
 ZmZimbraMail.redir =
-function(args){
-	window.location = args[0];
+function(locationStr){
+	window.location = locationStr;
 };
 
 ZmZimbraMail.prototype.setPollInterval =

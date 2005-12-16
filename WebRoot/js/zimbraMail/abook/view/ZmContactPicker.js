@@ -341,13 +341,13 @@ function(sortBy) {
 };
 
 ZmContactPicker.prototype._handleResponseSearch = 
-function(args) {
-	var result = args.getResponse();
+function(result) {
+	var resp = result.getResponse();
 
 	if (this._list && this._list.size())
 		this._list.clear();
 	
-	this._list = result.getResults(ZmItem.CONTACT);
+	this._list = resp.getResults(ZmItem.CONTACT);
 	
 	// Take the contacts and create a list of their email addresses (a contact may have more than one)
 	var list = new Array();

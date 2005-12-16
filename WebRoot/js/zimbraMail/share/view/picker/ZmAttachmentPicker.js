@@ -122,11 +122,7 @@ function(parent) {
 };
 
 ZmAttachmentPicker.prototype._handleResponseSetupPicker =
-function(args) {
-	var attachTypeList	= args[0];
-	var tree			= args[1];
-	var treeId			= args[2];
-
+function(attachTypeList, tree, treeId) {
 	var attachments = attachTypeList.getAttachments();
 	this._attsByDesc = new Object();
 	var attDesc = new Array();

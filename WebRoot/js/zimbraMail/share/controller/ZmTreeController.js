@@ -241,10 +241,7 @@ function() {
 * @param menuItems		[Array]*		list of menu items
 */
 ZmTreeController.prototype._createActionMenu = 
-function(args) {
-	var parent = args[0];
-	var menuItems = args[1];
-	
+function(parent, menuItems) {
 	if (!menuItems) return;
 	
 	var actionMenu = new ZmActionMenu(parent, menuItems);
@@ -581,8 +578,8 @@ function() {
 * @param 1		[string]		the name of the new organizer
 */
 ZmTreeController.prototype._newCallback =
-function(args) {
-	this._doCreate(args[0], args[1], null, args[2]);
+function(parent, name, url) {
+	this._doCreate(parent, name, null, url);
 	this._clearDialog(this._getNewDialog());
 };
 
@@ -593,8 +590,8 @@ function(args) {
 * @param 1		[string]		the new name of the organizer
 */
 ZmTreeController.prototype._renameCallback =
-function(args) {
-	this._doRename(args[0], args[1]);
+function(organizer, name) {
+	this._doRename(organizer, name);
 	this._clearDialog(this._getRenameDialog());
 };
 
@@ -604,8 +601,8 @@ function(args) {
 * @param 0		[ZmFolder]		the target folder
 */
 ZmTreeController.prototype._moveCallback =
-function(args) {
-	this._doMove(this._pendingActionData, args[0]);
+function(folder) {
+	this._doMove(this._pendingActionData, folder);
 	this._clearDialog(this._appCtxt.getMoveToDialog());
 };
 

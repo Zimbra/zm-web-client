@@ -80,13 +80,13 @@ function() {
 };
 
 ZmPickTagDialog.prototype._newCallback = 
-function(args) {
+function(parent, name) {
 	if (AjxEnv.isNav)
 		this.popup();
 
 	this._appCtxt.getNewTagDialog().popdown();
 	var ttc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.TAG);
-	ttc._doCreate(args[0], args[1]);
+	ttc._doCreate(parent, name);
 	this._creatingTag = true;
 };
 

@@ -1185,15 +1185,14 @@ ZmFilterDetailsView.prototype._setupActionDialogButton = function (el, button,
 	var ctxt = ZmFilterDetailsView.contextMap[actionName];
 	button.removeSelectionListeners();
 	var ls = new AjxListener(this, this._showContextDialog);
-	ls._args = [ctxt, destInput];
+	ls.args = [ctxt, destInput];
 	button.addSelectionListener(ls);
 };
 
-ZmFilterDetailsView.prototype._showContextDialog = function(args) {
+ZmFilterDetailsView.prototype._showContextDialog = 
+function(ctxt, input) {
 	var dialog = null;
 	var callback = null;
-	var ctxt = args[0];
-	var input = args[1];
 	switch (ctxt){
 	case ZmFilterDetailsView.FOLDER_CONTEXT:
 		dialog = this._appCtxt.getMoveToDialog();
@@ -1215,18 +1214,16 @@ ZmFilterDetailsView.prototype._showContextDialog = function(args) {
 };
 
 
-ZmFilterDetailsView.prototype._handleFolderSelection = function(args) {
+ZmFilterDetailsView.prototype._handleFolderSelection = 
+function(destInput, folder) {
 	this._appCtxt.getMoveToDialog().popdown();
-	var destInput = args[0];
-	var folder = args[1];
 	var fullPath = '/' +  folder.getPath();
 	destInput.value = fullPath;
 };
 
-ZmFilterDetailsView.prototype._handleTagSelection = function(args) {
+ZmFilterDetailsView.prototype._handleTagSelection = 
+function(destInput, tag) {
 	this._tagDialog.popdown();
-	var destInput = args[0];
-	var tag = args[1];
 	destInput.value = tag.getName();
 };
 

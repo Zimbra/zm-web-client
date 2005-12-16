@@ -214,7 +214,7 @@ function(selEvt) {
 	}
 	
 	if (this._callback)
-		this._callback.run([username, this._pwordField.value, this._pubCompField.checked]);
+		this._callback.run(username, this._pwordField.value, this._pubCompField.checked);
 }
 
 ZmLoginDialog._keyPressHdlr =
@@ -229,7 +229,7 @@ function(ev) {
 		} else {
 			if (parent._callback) {
 				parent.setCursor("wait");
-				parent._callback.run([parent._unameField.value, parent._pwordField.value, parent._pubCompField.checked]);
+				parent._callback.run(parent._unameField.value, parent._pwordField.value, parent._pubCompField.checked);
 			}
 		}
 		return false;

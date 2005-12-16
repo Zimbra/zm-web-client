@@ -236,8 +236,8 @@ function(ev, treeView) {
 * @param 1	[constant]	color of the new tag
 */
 ZmTagTreeController.prototype._newCallback =
-function(args) {
-	this._doCreate(args[0], args[1]);
+function(parent, name) {
+	this._doCreate(parent, name);
 	this._clearDialog(this._getNewDialog());
 };
 

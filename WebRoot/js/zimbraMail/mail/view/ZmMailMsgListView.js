@@ -428,12 +428,7 @@ function(columnItem, bSortAsc) {
 };
 
 ZmMailMsgListView.prototype._handleResponseSortColumn =
-function(args) {
-	var conv		= args[0];
-	var columnItem	= args[1];
-	var controller	= args[2];
-	var result		= args[3];
-	
+function(conv, columnItem, controller, result) {
 	var list = result.getResponse();
 	controller.setList(list); // set the new list returned
 	this.setOffset(0);

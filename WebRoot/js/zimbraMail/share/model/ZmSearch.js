@@ -126,11 +126,7 @@ function(params) {
 * Convert the SOAP response into a ZmSearchResult and pass it along.
 */
 ZmSearch.prototype._handleResponseExecute = 
-function(args) {
-	var isGalSearch	= args[0];
-	var callback	= args[1];
-	var result		= args[2];
-	
+function(isGalSearch, callback, result) {
 	var response = result.getResponse();
 	response = isGalSearch ? response.SearchGalResponse : response.SearchResponse;
 	var searchResult = new ZmSearchResult(this._appCtxt, this);
@@ -157,10 +153,7 @@ function(cid, callback) {
 };
 
 ZmSearch.prototype._handleResponseForConv = 
-function(args) {
-	var callback	= args[0];
-	var result		= args[1];
-	
+function(callback, result) {
 	response = result.getResponse().SearchConvResponse;
 	var searchResult = new ZmSearchResult(this._appCtxt, this);
 	searchResult.set(response, null, true);

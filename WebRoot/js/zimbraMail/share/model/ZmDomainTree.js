@@ -48,15 +48,12 @@ function(callback) {
 	var soapDoc = AjxSoapDoc.create("BrowseRequest", "urn:zimbraMail", null);
 	soapDoc.getMethod().setAttribute("browseBy", "domains");
 
-	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
 };
 
 ZmDomainTree.prototype._handleResponseLoad =
-function(args) {
-	var callback	= args[0];
-	var result		= args[1];
-
+function(callback, result) {
 	var domains = result.getResponse().BrowseResponse.bd;
 	if (domains)
 		for (var i = 0; i < domains.length; i++)

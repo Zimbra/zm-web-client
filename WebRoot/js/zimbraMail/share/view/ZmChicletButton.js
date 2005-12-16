@@ -62,9 +62,7 @@ function ZmChicletButton(parent, outerClass, innerClass) {
 	this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
 	this.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._mouseUpListener));
 
-	this._mouseOutAction = new AjxTimedAction();
-	this._mouseOutAction.method = this._setMouseOutClassName;
-	this._mouseOutAction.obj = this;
+	this._mouseOutAction = new AjxTimedAction(this, this._setMouseOutClassName);
 	this._mouseOutActionId = -1;
 }
 

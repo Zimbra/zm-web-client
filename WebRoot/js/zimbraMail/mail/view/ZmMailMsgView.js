@@ -269,8 +269,8 @@ function(msgId, msgPartId) {
 };
 
 ZmMailMsgView.prototype._detachCallback = 
-function(args) {
-	var resp = args.getResponse().GetMsgResponse;
+function(result) {
+	var resp = result.getResponse().GetMsgResponse;
 	var msg = new ZmMailMsg(this._appCtxt, resp.m[0].id);
 	msg._loadFromDom(resp.m[0]);
 
@@ -356,10 +356,7 @@ function() {
 };
 
 ZmMailMsgView.prototype._handleResponseSet =
-function(args) {
-	var msg		= args[0];
-	var oldMsg	= args[1];
-
+function(msg, oldMsg) {
 	if (this._mode == ZmController.TRAD_VIEW) {
 		if (oldMsg != null)
 			oldMsg.list.removeChangeListener(this._listChangeListener);
@@ -550,13 +547,8 @@ function(msg, idoc, id, iframe) {
 				// doesn't fetch the image. By launching them off in the
 				// background we seem to kick IE's engine a bit.
 				if (AjxEnv.isIE) {
-					var act = new AjxTimedAction();
-					act.method = ZmMailMsgView._swapIdAndSrc;
-					act.params.add(images[i]);
-					act.params.add(i);
-					act.params.add(images.length);
-					act.params.add(msg);
-					act.params.add(idoc);
+					var args = [images[i], i, images.length, msg, idoc];
+					var act = new AjxTimedAction(null, ZmMailMsgView._swapIdAndSrc, args);
 					AjxTimedAction.scheduleAction(act, 0);
 				} else {
 					images[i].src = images[i].getAttribute("dfsrc");
@@ -566,7 +558,7 @@ function(msg, idoc, id, iframe) {
 		diEl = document.getElementById(id);
 		diEl.style.display = "none";
 		this._htmlBody = idoc.documentElement.innerHTML;
-		ZmMailMsgView._resetIframeHeight([ self, iframe ]);
+		ZmMailMsgView._resetIframeHeight(self, iframe);
 		msg.setHtmlContent(this._htmlBody);
 	};
 	return func;
@@ -581,7 +573,7 @@ function() {
 		setTimeout(function() {
 			self.highlightObjects();
 			div.style.display = "none";
-			ZmMailMsgView._resetIframeHeight([ self, document.getElementById(self._iframeId) ]);
+			ZmMailMsgView._resetIframeHeight(self, document.getElementById(self._iframeId));
 		}, 3);
 		return false;
 	};
@@ -690,10 +682,8 @@ function(container, html, isTextMsg) {
 	}
 
 	// set height of view according to height of iframe on timer
-	var act = new AjxTimedAction();
-	act.method = ZmMailMsgView._resetIframeHeight;
-	act.params.add(this);
-	act.params.add(ifw.getIframe());
+	var args = [this, ifw.getIframe()];
+	var act = new AjxTimedAction(null, ZmMailMsgView._resetIframeHeight, args);
 	AjxTimedAction.scheduleAction(act, 5);
 };
 
@@ -793,12 +783,7 @@ function(msg, container, callback) {
 };
 
 ZmMailMsgView.prototype._handleResponseRenderMessage =
-function(args) {
-	var el			= args[0];
-	var bodyPart	= args[1];
-	var callback	= args[2];
-	var result		= args[3];
-
+function(el, bodyPart, callback, result) {
 	var content = result.getResponse();
 
 	// if no text part, check if theres a calendar part and generate some canned
@@ -906,10 +891,8 @@ function(ev) {
 	var iframe = document.getElementById(this._iframeId);
 	// we get here before we have a chance to initialize the IFRAME
 	if (iframe) {
-		var act = new AjxTimedAction();
-		act.method = ZmMailMsgView._resetIframeHeight;
-		act.params.add(this);
-		act.params.add(iframe);
+		var args = [this, iframe];
+		var act = new AjxTimedAction(null, ZmMailMsgView._resetIframeHeight, args);
 		AjxTimedAction.scheduleAction(act, 5);
 	}
 };
@@ -1013,11 +996,7 @@ function(msg, preferHtml, callback) {
 };
 
 ZmMailMsgView._handleResponseGetPrintHtml =
-function(args) {
-	var msg			= args[0];
-	var callback	= args[1];
-	var result		= args[2];
-
+function(msg, callback, result) {
 	var resp = result.getResponse().GetMsgResponse;
 	msg._loadFromDom(resp.m[0]);
 	ZmMailMsgView._printMessage(msg, preferHtml, callback);
@@ -1089,12 +1068,7 @@ function(msg, preferHtml, callback) {
 };
 
 ZmMailMsgView._swapIdAndSrc =
-function (args) {
-	var image = args[0];
-	var i = args[1];
-	var len = args[2];
-	var msg = args[3];
-	var idoc = args[4];
+function (image, i, len, msg, idoc) {
 	image.src = image.getAttribute("dfsrc");
 	if (i == len -1) {
 		msg.setHtmlContent(idoc.documentElement.innerHTML);
@@ -1102,9 +1076,7 @@ function (args) {
 };
 
 ZmMailMsgView._resetIframeHeight =
-function(args) {
-	var self = args[0];
-	var iframe = args[1];
+function(self, iframe) {
 	var h = self.getH() - 1;
 	function substract(el) {
 		if (el) {

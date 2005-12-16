@@ -130,11 +130,7 @@ function(callback, errorCallback) {
 }
 
 ZmSettings.prototype._handleResponseLoadUserSettings =
-function(args) {
-
-	var callback	= args[0];
-	var result		= args[1];
-	
+function(callback, result) {
 	var response = result.getResponse();
 	var obj = response.GetInfoResponse;
 	if (obj.name)
@@ -226,11 +222,7 @@ function(list, callback) {
 }
 
 ZmSettings.prototype._handleResponseSave =
-function(args) {
-	var list		= args[0];
-	var callback	= args[1];
-	var result		= args[2];
-	
+function(list, callback, result) {
 	var resp = result.getResponse();
 	if (resp.ModifyPrefsResponse) {
 		for (var i = 0; i < list.length; i++) {

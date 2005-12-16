@@ -80,14 +80,14 @@ function(obj, context) {
 };
 
 ZmAddressObjectHandler.prototype._callback = 
-function(args) {
+function(arg0, arg1) {
 	// Quick RDF parser
-	var r = args[1].text;
+	var r = arg1.text;
 	var lg_s = r.indexOf("<Longitude>");
 	var lg_e = r.indexOf("</Longitude>");
 	var lt_s = r.indexOf("<Latitude>");
 	var lt_e = r.indexOf("</Latitude>");
-	ZmAddressObjectHandler.displayMap(r.substring(lg_s+11,lg_e), r.substring(lt_s+10,lt_e), args[0]);
+	ZmAddressObjectHandler.displayMap(r.substring(lg_s+11,lg_e), r.substring(lt_s+10,lt_e), arg0);
 };
 
 ZmAddressObjectHandler.displayMap = function(lng, lat, obj) {

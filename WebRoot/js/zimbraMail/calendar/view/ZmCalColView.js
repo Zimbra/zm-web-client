@@ -2270,8 +2270,7 @@ function(ev) {
 }
 
 ZmCalColView._handleError =
-function(args) {
-	var data	= args[0];
+function(data) {
 	data.view.getController()._refreshAction(true);
 	return false;
 }

@@ -601,25 +601,25 @@ function(ev) {
 
 // Create a folder.
 ZmListController.prototype._newFolderCallback =
-function(args) {
+function(parent, name, url) {
 	this._appCtxt.getNewFolderDialog().popdown();
 	var ftc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
-	ftc._doCreate(args[0], args[1], null, args[2]);
+	ftc._doCreate(parent, parent, null, url);
 }
 
 // Create a tag.
 ZmListController.prototype._newTagCallback =
-function(args) {
+function(creatingTag, name, color) {
 	this._appCtxt.getNewTagDialog().popdown();
 	var ttc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.TAG);
-	ttc._doCreate(args[1], args[2]);
-	this._creatingTag = args[0];
+	ttc._doCreate(name, color);
+	this._creatingTag = creatingTag;
 }
 
 // Move stuff to a new folder.
 ZmListController.prototype._moveCallback =
-function(args) {
-	this._doMove(this._pendingActionData, args[0]);
+function(folder) {
+	this._doMove(this._pendingActionData, folder);
 	this._clearDialog(this._appCtxt.getMoveToDialog());
 }
 
@@ -889,13 +889,7 @@ function(view, forward, loadIndex) {
 * @param result			[ZmCsfeResult]	result of SOAP request
 */
 ZmListController.prototype._handleResponsePaginate =
-function(args) {
-	var view			= args[0];
-	var saveSelection	= args[1];
-	var loadIndex		= args[2];
-	var offset			= args[3];
-	var result			= args[4];
-	
+function(view, saveSelection, loadIndex, offset, result) {
 	var searchResult = result.getResponse();
 	
 	// update "more" flag
@@ -914,7 +908,7 @@ function(args) {
 	this._setViewContents(view);
 	this.pageIsDirty[this.currentPage] = false;
 	this._resetSelection(selectedIdx);
-}
+};
 
 
 ZmListController.prototype._checkReplenish = 
@@ -988,11 +982,7 @@ DBG.println("****** need to replenish: " + replCount);
 }
 
 ZmListController.prototype._handleResponseGetMoreToReplenish = 
-function(args) {
-	var view		= args[0];
-	var callback	= args[1];
-	var result		= args[2];
-	
+function(view, callback, result) {
 	var searchResult = result.getResponse();
 	
 	// set updated has more flag
@@ -1010,7 +1000,7 @@ function(args) {
 	this._toolbar[view].enable(ZmOperation.PAGE_FORWARD, more);
 	
 	if (callback) callback.run(result);
-}
+};
 
 ZmListController.prototype._setNavToolBar = 
 function(toolbar) {

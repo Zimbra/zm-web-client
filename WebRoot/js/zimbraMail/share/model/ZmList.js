@@ -360,15 +360,12 @@ function(items, folder, attrs) {
 	
 	var respCallback = null;
 	if (this.type == ZmList.MIXED)
-		respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder]);
+		respCallback = new AjxCallback(this, this._handleResponseMoveItems, folder);
 	this._itemAction({items: items1, action: "move", attrs: attrs, callback: respCallback});
 };
 
 ZmList.prototype._handleResponseMoveItems =
-function(args) {
-	var folder		= args[0];
-	var result		= args[1];
-
+function(folder, result) {
 	var movedItems = result.getResponse();	
 	if (movedItems && movedItems.length) {
 		this.moveLocal(movedItems, folder.id);
@@ -504,12 +501,7 @@ function(params) {
 }
 
 ZmList.prototype._handleResponseItemAction =
-function(args) {
-	var type		= args[0];
-	var idHash		= args[1];
-	var callback	= args[2];
-	var result		= args[3];
-
+function(type, idHash, callback, result) {
 	if (callback) {
 		var response = result.getResponse();
 		var resp = response[ZmItem.SOAP_CMD[type] + "Response"]

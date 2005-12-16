@@ -109,13 +109,7 @@ function(parent) {
 }
 
 ZmDomainPicker.prototype._handleResponseSetupPicker =
-function(args) {
-	var html	= args[0];
-	var idx		= args[1];
-	var picker	= args[2];
-	var fromId	= args[3];
-	var toId	= args[4];
-	
+function(html, idx, picker, fromId, toId) {
 	var root = ZmDomainPicker.root.getRootDomain();
 	ZmDomainPicker.domains = root.getSortedSubDomains();
 	this._showDomains(html, idx, picker, fromId, toId);

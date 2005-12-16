@@ -59,16 +59,13 @@ function(callback) {
 	var soapDoc = AjxSoapDoc.create("BrowseRequest", "urn:zimbraMail");
 	soapDoc.getMethod().setAttribute("browseBy", "attachments");
 
-	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
 
 };
 
 ZmAttachmentTypeList.prototype._handleResponseLoad =
-function(args) {
-	var callback	= args[0];
-	var result		= args[1];
-	
+function(callback, result) {
 	var att = result.getResponse().BrowseResponse.bd;
 	if (att) {
 		for (var i = 0; i < att.length; i++) {

@@ -84,14 +84,12 @@ function ZmAutocompleteListView(params) {
 
 	// only trigger matching after a sufficient pause
 	this._acInterval = this._appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
-	this._acAction = new AjxTimedAction();
-	this._acAction.method = this._autocompleteAction;
+	this._acAction = new AjxTimedAction(null, this._autocompleteAction);
 	this._acActionId = -1;
 
 	// for managing focus on Tab in Firefox
 	if (AjxEnv.isFirefox) {
-		this._focusAction = new AjxTimedAction();
-		this._focusAction.method = this._focus;
+		this._focusAction = new AjxTimedAction(null, this._focus);
 	}
 
 	this._internalId = AjxCore.assignId(this);
@@ -188,7 +186,7 @@ function(ev) {
 		// In Firefox, focus shifts on Tab even if we return false (and stop propagation and prevent default),
 		// so make sure the focus stays in this element.
 		if (AjxEnv.isFirefox && key == 9) {
-			aclv._focusAction.params.add(element);
+			aclv._focusAction.args = [ element ];
 			AjxTimedAction.scheduleAction(aclv._focusAction, 0);
 		}
 		DwtUiEvent.setBehaviour(ev, true, false);
@@ -205,9 +203,8 @@ function(ev) {
 	DwtKeyEvent.copy(ev1, ev);
 	ev1.aclv = aclv;
 	ev1.element = element;
-	aclv._acAction.params.removeAll();
-	aclv._acAction.params.add(ev1);
 	aclv._acAction.obj = aclv;
+	aclv._acAction.args = [ ev1 ];
 	DBG.println(AjxDebug.DBG2, "scheduling autocomplete");
 	aclv._acActionId = AjxTimedAction.scheduleAction(aclv._acAction, aclv._acInterval);
 	
@@ -436,7 +433,7 @@ function(text) {
 	el.focus();
 	this.reset();
 	if (this._compCallback)
-		this._compCallback.run([text, el]);
+		this._compCallback.run(text, el);
 }
 
 // Updates the element with the currently selected match.
@@ -597,10 +594,10 @@ function(str) {
 	return this._data.autocompleteMatch(str);
 }
 
-// Force the focus to the element in args[0]
+// Force the focus to the element
 ZmAutocompleteListView.prototype._focus =
-function(args) {
-	args[0].focus();
+function(htmlEl) {
+	htmlEl.focus();
 }
 
 ZmAutocompleteListView._outsideMouseDownListener =

@@ -56,7 +56,7 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._listeners[ZmOperation.NEW_ALLDAY_APPT] = new AjxListener(this, this._newAllDayApptAction);	
 	this._listeners[ZmOperation.SEARCH_MAIL] = new AjxListener(this, this._searchMailAction);	
 
-	this._maintTimedAction = new AjxTimedAction(this, ZmCalViewController.prototype._maintenanceAction);
+	this._maintTimedAction = new AjxTimedAction(this, this._maintenanceAction);
 	this._pendingWork = ZmCalViewController.MAINT_NONE;	
 	this._apptCache = new ZmApptCache(this, appCtxt);
 	
@@ -616,8 +616,8 @@ function(calendars) {
 };
 
 ZmCalViewController.prototype._handleResponseGetShares = 
-function(args) {
-	var resp = args.getResponse().BatchResponse.GetFolderResponse;
+function(result) {
+	var resp = result.getResponse().BatchResponse.GetFolderResponse;
 	for (var i = 0; i < resp.length; i++) {
 		var link = resp[i].link ? resp[i].link[0] : null;
 		var cal = link ? this.getCalendar(link.id) : null;
@@ -789,9 +789,7 @@ function(mode, appt) {
 };
 
 ZmCalViewController.prototype._showReadOnlyDialog = 
-function(args) {
-	var appt = args[0];
-
+function(appt) {
 	if (this._readOnlyDialog == null) {
 		this._readOnlyDialog = new ZmApptReadOnlyDialog(this._shell, this._appCtxt);
 		// TODO: enable this when we add mre functionality to read-only dialog (i.e. Accept/Decline buttons)
@@ -933,9 +931,7 @@ function(ev) {
 };
 
 ZmCalViewController.prototype._showApptView = 
-function(args) {
-	var appt = args[0];
-	var mode = args[1];
+function(appt, mode) {
 	this._app.getApptComposeController().show(appt, mode);
 };
 
@@ -975,15 +971,7 @@ function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {
 }
 
 ZmCalViewController.prototype._handleResponseUpdateApptDate =
-function(args) {
-	var appt			= args[0];
-	var viewMode		= args[1];
-	var startDateOffset	= args[2];
-	var endDateOffset	= args[3];
-	var callback		= args[4];
-	var errorCallback	= args[5];
-	var result			= args[6];
-
+function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result) {
     // see 4789 
 	if (result == null) return;
 	
@@ -1029,8 +1017,8 @@ function(ev) {
 }
 
 ZmCalViewController.prototype._miniCalMouseOverDayCallback = 
-function(args) {
-	args[0].setToolTipContent(this.getDayToolTipText(args[1]));
+function(control, day) {
+	control.setToolTipContent(this.getDayToolTipText(day));
 }
 	
 ZmCalViewController.prototype._getViewType = 
@@ -1108,11 +1096,7 @@ function(ev) {
 };
 
 ZmCalViewController.prototype._handleResponseHandleApptRespondAction =
-function(args) {
-	var appt	= args[0];
-	var type	= args[1];
-	var op		= args[2];
-
+function(appt, type, op) {
 	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 	msgController.setMsg(appt.getMessage());
 	// poke the msgController
@@ -1130,11 +1114,7 @@ function(ev) {
 };
 
 ZmCalViewController.prototype._handleResponseHandleApptEditRespondAction =
-function(args) {
-	var appt	= args[0];
-	var id		= args[1];
-	var op		= args[2];
-
+function(appt, id, op) {
 	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 	msgController.setMsg(appt.getMessage());
 
@@ -1332,7 +1312,7 @@ ZmCalViewController.prototype.notifyComplete =
 function(ids) {
 	DBG.println("ZmCalViewController: notifyComplete: "+this._clearCache);
 	if (this._clearCache) {
-		var act = new AjxTimedAction(this, ZmCalViewController.prototype._refreshAction);
+		var act = new AjxTimedAction(this, this._refreshAction);
 		AjxTimedAction.scheduleAction(act, 0);
 		this._clearCache = false;			
 	}
@@ -1341,9 +1321,7 @@ function(ids) {
 // this gets called when we get a refresh block from the server
 ZmCalViewController.prototype.refreshHandler =
 function() {
-	var act = new AjxTimedAction();
-	act.obj = this;
-	act.method = ZmCalViewController.prototype._refreshAction;
+	var act = new AjxTimedAction(this, this._refreshAction);
 	AjxTimedAction.scheduleAction(act, 0);
 }
 
@@ -1374,11 +1352,7 @@ function(params) {
 }
 
 ZmCalViewController.prototype._maintGetApptCallback =
-function(args) {
-	var work = args[0];
-	var view = args[1];
-	var list = args[2];
-
+function(work, view, list) {
 	// TODO: turn off shell busy
 	
 	if (list instanceof ZmCsfeException) {	

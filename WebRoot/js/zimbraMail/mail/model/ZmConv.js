@@ -96,11 +96,7 @@ function(searchString, sortBy, offset, limit, pagCallback, callback) {
 }
 
 ZmConv.prototype._handleResponseLoad =
-function(args) {
-	var pagCallback	= args[0];
-	var callback	= args[1];
-	var result		= args[2];
-
+function(pagCallback, callback, result) {
 	var results = result.getResponse();
 	if (pagCallback) {
 		pagCallback.run(result);	// user is paging...
@@ -134,10 +130,7 @@ function(callback) {
 }
 
 ZmConv.prototype._handleResponseLoadMsgIds =
-function(args) {
-	var callback	= args[0];
-	var result		= args[1];
-	
+function(callback, result) {
 	var response = result.getResponse();
 	var resp = response.GetConvResponse.c[0];
 	var msgIds = new Array();

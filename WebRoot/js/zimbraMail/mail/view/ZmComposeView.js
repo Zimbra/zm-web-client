@@ -674,9 +674,7 @@ function() {
 
 // Returns the location where the autocomplete list should be positioned. Run as a callback.
 ZmComposeView.prototype._getAcListLoc =
-function(args) {
-	var cv = args[0];
-	var ev = args[1];
+function(cv, ev) {
 	var element = ev.element;
 	var id = element.id;
 
@@ -979,7 +977,7 @@ function(composeMode) {
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		var contactsLoader = contactsClass.getContactList;
-		var locCallback = new AjxCallback(this, this._getAcListLoc, this);
+		var locCallback = new AjxCallback(this, this._getAcListLoc, [this]);
 		var params = {parent: this, dataClass: contactsClass, dataLoader: contactsLoader,
 					  matchValue: ZmContactList.AC_VALUE_FULL, locCallback: locCallback};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
@@ -1306,8 +1304,7 @@ function() {
 
 // Transfers addresses from the contact picker to the compose view.
 ZmComposeView.prototype._contactPickerOkCallback =
-function(args) {
-	var addrs = args[0];
+function(addrs) {
 	this.enableInputs(true);
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
 		var type = ZmComposeView.ADDRS[i];
@@ -1411,12 +1408,10 @@ function(type) {
 // Files have been uploaded, re-initiate the send with an attachment ID.
 // TODO: error handling
 ZmComposeView.prototype._attsDoneCallback =
-function(args) {
-	DBG.println(AjxDebug.DBG1, "Attachments: isDraft = " + args[0] + ", status = " + args[1] + ", attId = " + args[2]);
-	var status = args[1];
+function(isDraft, status, attId) {
+	DBG.println(AjxDebug.DBG1, "Attachments: isDraft = " + isDraft + ", status = " + status + ", attId = " + attId);
 	if (status == 200) {
-		var attId = args[2];
-		this._controller.sendMsg(attId, args[0]);
+		this._controller.sendMsg(attId, isDraft);
 	} else {
 		DBG.println(AjxDebug.DBG1, "attachment error: " + status);
 		this._controller.popupErrorDialog("Attachment error: " + status + "<br />Probably a file is too big.<br /><br />Cannot continue.", null, null, true);

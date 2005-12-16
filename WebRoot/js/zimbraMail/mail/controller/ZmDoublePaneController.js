@@ -118,8 +118,7 @@ function(view) {
 };
 
 ZmDoublePaneController.prototype._handleResponseSwitchView = 
-function(args) {
-	var currentMsg = args[0];
+function(currentMsg) {
 	this._doublePaneView.setMsg(currentMsg);
 };
 
@@ -283,7 +282,7 @@ DBG.timePt(AjxDebug.PERF, "***** CONV: load");
 			var respCallback = new AjxCallback(this, this._handleResponseLoadItem, view);
 			item.load(this.getSearchString(), null, null, null, null, respCallback);
 		} else {
-			this._handleResponseLoadItem([view, new ZmCsfeResult(item.msgs)]);
+			this._handleResponseLoadItem(view, new ZmCsfeResult(item.msgs));
 		}
 	} else { // msg list
 		this._displayResults(view);
@@ -416,22 +415,18 @@ function(ev) {
 // Callbacks
 
 ZmDoublePaneController.prototype._handleResponseLoadItem =
-function(args) {
-	var view	= args[0];
-	var result	= args[1];
-	
-	var results = result.getResponse();
-	if (results instanceof ZmList) {
-		this._list = results;
-		this._activeSearch = results;
+function(view, result) {
+	var response = result.getResponse();
+	if (response instanceof ZmList) {
+		this._list = response;
+		this._activeSearch = response;
 	}
 DBG.timePt(AjxDebug.PERF, "***** CONV: render");
 	this._displayResults(view);
 };
 
 ZmDoublePaneController.prototype._handleResponseDoGetMsg =
-function(args) {
-	var msg = args[0];
+function(msg) {
 	this._doublePaneView.setMsg(msg);
 	this._appCtxt.getSearchController().setEnabled(true);
 };

@@ -176,8 +176,8 @@ function(ev, treeView) {
 * @param 2	[ZmSearch]	search object with details of the search
 */
 ZmSearchTreeController.prototype._newCallback =
-function(args) {
-	this._doCreate(args[0], args[1], args[2]);
+function(parent, name, search) {
+	this._doCreate(parent, name, search);
 	this._getNewDialog().popdown();
 }
 

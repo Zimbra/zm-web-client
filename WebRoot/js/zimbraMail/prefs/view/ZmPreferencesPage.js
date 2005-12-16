@@ -375,23 +375,22 @@ function(ev) {
 }
 
 ZmPreferencesPage.prototype._importDoneCallback = 
-function(args) {
+function(status, arg1) {
 
 	var appCtlr = this._appCtxt.getAppController();
 	
-	var status = args[0];
 	if (status == 200) {
 		this._importBtn.setEnabled(false);
 		//this._importIframe.style.visibility = "hidden";
 		appCtlr.setStatusMsg(ZmMsg.importingContacts);
-		this._finishImport(args[1]);
+		this._finishImport(arg1);
 	} else {
 		appCtlr.setStatusMsg(ZmMsg.errorImporting + " (" + status + ")", ZmStatusView.LEVEL_CRITICAL);
 		// always re-render input file widget and its parent IFRAME
 		this._importDiv.innerHTML = "";
 		this._addImportWidgets(this._importDiv);
 	}
-}
+};
 
 ZmPreferencesPage.prototype._finishImport = 
 function(aid) {
@@ -410,10 +409,7 @@ function(aid) {
 };
 
 ZmPreferencesPage.prototype._handleResponseFinishImport =
-function(args) {
-	var aid		 	= args[0];
-	var result		= args[1];
-	
+function(aid, result) {
 	var resp = result.getResponse().ImportContactsResponse.cn[0];
 	
 	var msg = resp.n + " " + ZmMsg.contactsImported;

@@ -268,11 +268,9 @@ function() {
 	return this.type;
 };
 
-ZmZimletBase.prototype.requestFinished = function(param) {
+ZmZimletBase.prototype.requestFinished = 
+function(callback, passErrors, xmlargs) {
 	this.resetIcon();
-	var callback = param[0];
-	var passErrors = param[1];
-	var xmlargs = param[2];
 	if (!(passErrors || this._passRpcErrors) && !xmlargs.success) {
 		this.displayErrorMessage("We could not connect to the remote server, or an error was returned.<br />Error code: " + xmlargs.status, xmlargs.text);
 	} else if (callback)

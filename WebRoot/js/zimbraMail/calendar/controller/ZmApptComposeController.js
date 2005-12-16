@@ -288,9 +288,7 @@ function(ev) {
 // Callbacks
 
 ZmApptComposeController.prototype._handleResponseSave = 
-function(args) {
-	var appt = args ? args[0] : null;
-	var folderId = args ? args[1] : null;
+function(appt, folderId) {
 	if (appt && folderId) {
 		var callback = new AjxCallback(this, this._handleResponseCleanup);
 		appt.move(folderId, callback);

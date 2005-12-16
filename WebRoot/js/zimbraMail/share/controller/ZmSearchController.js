@@ -203,11 +203,9 @@ function(params) {
 }
 
 ZmSearchController.prototype._handleResponseSearch =
-function(args) {
-	var callback	= args[0];
-	var result		= args[1];
+function(callback, result) {
 	if (callback) callback.run();
-}
+};
 
 /**
 * Performs the given search. It takes a ZmSearch, rather than constructing one out of the currently selected menu
@@ -330,14 +328,7 @@ function(params, noRender, callback, errorCallback) {
 * @param result			[ZmCsfeResult]
 */
 ZmSearchController.prototype._handleResponseDoSearch =
-function(args) {
-
-	var search		= args[0];
-	var noRender	= args[1];
-	var isMixed		= args[2];
-	var callback	= args[3];
-	var result		= args[4];
-
+function(search, noRender, isMixed, callback, result) {
 	var results = result.getResponse();
 
 	this._appCtxt.setCurrentSearch(search);
@@ -391,11 +382,7 @@ function(results, search, isMixed) {
 * folder, no such tag, and bad query.
 */
 ZmSearchController.prototype._handleErrorDoSearch =
-function(args) {
-	var search	= args[0];
-	var isMixed	= args[1];
-	var ex		= args[2];
-	
+function(search, isMixed, ex) {
 	if (this._searchToolBar)
 		this._searchToolBar.setEnabled(true);
 	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);

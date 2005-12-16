@@ -53,15 +53,12 @@ function(uname, pword, callback) {
 		soapDoc.set("name", uname);
 	}
 	soapDoc.set("password", pword);
-	var respCallback = new AjxCallback(this, this._handleResponseExecute, [callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseExecute, callback);
 	command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true, asyncMode: true, callback: respCallback})
 };
 
 ZmAuthenticate.prototype._handleResponseExecute =
-function(args) {
-	var callback	= args[0];
-	var result		= args[1];
-
+function(callback, result) {
 	var resp = result.getResponse().Body.AuthResponse;
 	this._setAuthToken(resp);
 	if (callback) callback.run(result);
