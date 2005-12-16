@@ -724,7 +724,7 @@ function(ev) {
 	var menu = ev.item.getMenu();
 	var cal = menu.getItem(0);
 	cal.setDate(calDate, true);
-	menu.popup();
+	ev.item.popup();
 };
 
 // XXX: refactor this code since ZmApptTabViewPage uses similar?

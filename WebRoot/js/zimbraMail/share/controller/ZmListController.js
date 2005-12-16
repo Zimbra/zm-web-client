@@ -733,7 +733,7 @@ function(parent) {
 		if (parent instanceof ZmActionMenu)
 			tagOp.setText(this._getTagMenuMsg(items.length));
 		else {
-			tagMenu.parent._popupMenu();
+			tagMenu.parent.popup();
 		}
 	}
 }

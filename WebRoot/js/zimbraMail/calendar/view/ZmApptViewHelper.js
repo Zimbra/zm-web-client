@@ -93,7 +93,6 @@ ZmApptViewHelper.createMiniCalButton =
 function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDialog) {
 	// create button
 	var dateButton = new DwtButton(parent);
-	dateButton.addSelectionListener(dateButtonListener);
 	dateButton.addDropDownSelectionListener(dateButtonListener);
 	dateButton.setSize(20, 20);
 
