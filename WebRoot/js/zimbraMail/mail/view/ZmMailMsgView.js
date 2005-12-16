@@ -433,7 +433,7 @@ function(doc) {
 					|| /^mailto:([^@?&]+@[^@?&]+\.[^@?&]+)/.test(node.href))) {
 					// tricky.
 					tmp = doc.createElement("div");
-					tmp.innerHTML = objectManager.findObjects(RegExp.$1);
+					tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(RegExp.$1));
 					tmp = tmp.firstChild;
 					// here, tmp is an object span, but it
 					// contains the URL (href) instead of
