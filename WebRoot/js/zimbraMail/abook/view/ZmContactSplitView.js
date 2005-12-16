@@ -376,7 +376,7 @@ function(contact, now, isDndIcon) {
 	// in canonical view, don't show contacts in the Trash
 	if (contact.list.isCanonical && (contact.folderId == ZmFolder.ID_TRASH))
 		return null;
-	
+
 	var div = this._getDiv(contact, isDndIcon);
 	
 	if (isDndIcon) {
@@ -453,10 +453,6 @@ function(contact, now, isDndIcon) {
 			htmlArr[idx++] = "<td width=" + width;
 			htmlArr[idx++] = " id='" + this._getFieldId(contact, ZmItem.F_PARTICIPANT) + "'>";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
-			/*
-			if (this._appCtxt.get(ZmSetting.IM_ENABLED) && contact.hasIMProfile())
-				htmlArr[idx++] = AjxImg.getImageHtml(contact.isIMAvailable() ? "ImAvailable" : "ImUnavailable", null, null, true);
-			*/
 			if (AjxEnv.isNav)
 				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";

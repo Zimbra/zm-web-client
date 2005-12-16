@@ -234,14 +234,6 @@ function(msg, now, isDndIcon, isMixedView) {
 			   		htmlArr[idx++] = "<span style='white-space: nowrap' id='" + this._getFieldId(msg, ZmItem.F_FROM) + "'>";
 			   		var name = fromAddr.getName() || fromAddr.getDispName();
 					htmlArr[idx++] = AjxStringUtil.htmlEncode(name);
-					/*
-					if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
-				   		var contacts = ZmAppCtxt.getFromShell(this.shell).getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
-						var contact = contacts.getContactByEmail(fromAddr.getAddress());
-						if (contact && contact.hasIMProfile())
-							htmlArr[idx++] = AjxImg.getImageHtml(contact.isIMAvailable() ? "ImAvailable" : "ImUnavailable", null, null, true);
-					}
-					*/
 			   		htmlArr[idx++] = "</span>";
 					if (AjxEnv.isNav)
 						htmlArr[idx++] = ZmListView._fillerString;

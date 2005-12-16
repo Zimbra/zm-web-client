@@ -124,8 +124,7 @@ ZmContact.F_EMAIL_FIELDS = [ZmContact.F_email, ZmContact.F_email2, ZmContact.F_e
 
 ZmContact.prototype.toString = 
 function() {
-	// return "ZmContact: id = " + this.id + " fullName = " + this.getFullName();
-	return "ZmContact";
+	return "ZmContact: id = " + this.id + " fullName = " + this.getFullName();
 }
 
 // Class methods
@@ -346,7 +345,6 @@ function(attr) {
 	}		
 	
 	var ac = this._appCtxt.getAppController();
-//	ac.setActionedIds([this.id]);
 	var resp = ac.sendRequest(soapDoc).ModifyContactResponse;
 	cn = resp ? resp.cn[0] : null;
 	var id = cn ? cn.id : null;
@@ -594,18 +592,6 @@ function(street, city, state, zipcode, country) {
 		html[idx++] = "\n" + country;
 
 	return html.join("");
-}
-
-// IM presence
-ZmContact.prototype.hasIMProfile =
-function() {
-	return (this.id % 3) > 0;
-}
-
-// IM presence
-ZmContact.prototype.isIMAvailable =
-function() {
-	return (this.id % 3) == 2;
 }
 
 // Sets the full name based on an email address.
