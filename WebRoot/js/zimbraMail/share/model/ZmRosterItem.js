@@ -82,7 +82,7 @@ ZmRosterItem.prototype._notifyPresence =
 function() {
     var fields = {};
     fields[ZmRosterItem.F_PRESENCE] = this.getPresence();
-    this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
+    this.list._notify(ZmEvent.E_MODIFY, {fields: fields});
     delete this._toolTip;
 };
 
@@ -91,7 +91,7 @@ function(num, addToTotal) {
     this.numUnreadIMs = addToTotal ? this.numUnreadIMs + num : num;
     var fields = {};
     fields[ZmRosterItem.F_UNREAD] = this.numUnreadIMs;
-    this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
+    this.list._notify(ZmEvent.E_MODIFY, {fields: fields});
     delete this._toolTip;    
 };
 
@@ -101,7 +101,7 @@ function(newGroups) {
     this.groups = this.groupNames ? this.groupNames.split(/,/) : [];
     var fields = {};
     fields[ZmRosterItem.F_GROUPS] = this.groupNames;
-    this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
+    this.list._notify(ZmEvent.E_MODIFY, {fields: fields});
     delete this._toolTip;    
 };
 
@@ -110,7 +110,7 @@ function(newName) {
     this.name = newName;
     var fields = {};
     fields[ZmRosterItem.F_NAME] = this.name;
-    this._listNotify(ZmEvent.E_MODIFY, {fields: fields});
+    this.list._notify(ZmEvent.E_MODIFY, {fields: fields});
     delete this._toolTip;    
 };
 
