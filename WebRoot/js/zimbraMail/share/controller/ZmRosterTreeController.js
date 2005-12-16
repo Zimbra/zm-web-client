@@ -217,12 +217,12 @@ function(ev) {
     var org = this._getActionedOrganizer(ev);
     if (org instanceof ZmRosterTreeItem) {
         if (this._itemActionMenu == null) {
-            this._itemActionMenu = this._createActionMenu([this._shell, this._getItemActionMenuOps()]);
+            this._itemActionMenu = this._createActionMenu(this._shell, this._getItemActionMenuOps());
         }
         return this._itemActionMenu;
     } else if (org instanceof ZmRosterTreeGroup) {
         if (this._groupActionMenu == null) {
-            this._groupActionMenu = this._createActionMenu([this._shell, this._getGroupActionMenuOps()]);
+            this._groupActionMenu = this._createActionMenu(this._shell, this._getGroupActionMenuOps());
         }
         return this._groupActionMenu;
     }
