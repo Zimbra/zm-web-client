@@ -231,10 +231,10 @@ function(msg, now, isDndIcon, isMixedView) {
 			} else {
 				var fromAddr = msg.getAddress(ZmEmailAddress.FROM);
 				if (fromAddr) {
-			   		htmlArr[idx++] = "<span style='white-space: nowrap' id='" + this._getFieldId(msg, ZmItem.F_FROM) + "'>";
-			   		var name = fromAddr.getName() || fromAddr.getDispName();
+					htmlArr[idx++] = "<span style='white-space:nowrap' id='" + this._getFieldId(msg, ZmItem.F_FROM) + "'>";
+					var name = fromAddr.getName() || fromAddr.getDispName();
 					htmlArr[idx++] = AjxStringUtil.htmlEncode(name);
-			   		htmlArr[idx++] = "</span>";
+					htmlArr[idx++] = "</span>";
 					if (AjxEnv.isNav)
 						htmlArr[idx++] = ZmListView._fillerString;
 				}
