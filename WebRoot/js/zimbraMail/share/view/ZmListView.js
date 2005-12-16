@@ -628,7 +628,7 @@ function(dragOp) {
 		icon.appendChild(div);
 
 		// The size of the Icon is envelopeImg.width + sealImg.width - 20, ditto for height
-		Dwt.setSize(icon, 43 + 32 - 16, 36 + 32 - 20);
+		Dwt.setBounds(icon, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE, 43 + 32 - 16, 36 + 32 - 20);
 	}
 	
 	this.shell.getHtmlElement().appendChild(icon);
