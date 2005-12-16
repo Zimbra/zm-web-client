@@ -99,7 +99,7 @@ function(args) {
 		this.moveLocal(movedItems, folder.id);
 		for (var i = 0; i < movedItems.length; i++)
 			movedItems[i].moveLocal(folder.id);
-		this._eventNotify(ZmEvent.E_MOVE, movedItems, {replenish: true});
+		this._notify(ZmEvent.E_MOVE, {items: movedItems, replenish: true});
 	}
 };
 
@@ -136,7 +136,7 @@ function(args) {
 		this.moveLocal(movedItems, folderId);
 		for (var i = 0; i < movedItems.length; i++)
 			movedItems[i].moveLocal(folderId);
-		this._eventNotify(ZmEvent.E_MOVE, movedItems, {replenish: true});
+		this._notify(ZmEvent.E_MOVE, {items: movedItems, replenish: true});
 	}
 };
 
@@ -179,7 +179,7 @@ function(items, folderId) {
 		}
 	}
 	if (flaggedItems.length)
-		this._eventNotify(ZmEvent.E_FLAGS, flaggedItems, {flags: [ZmItem.FLAG_UNREAD]});
+		this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [ZmItem.FLAG_UNREAD]});
 };
 
 ZmMailList.prototype.notifyCreate = 
@@ -247,11 +247,11 @@ function(convs, msgs) {
 		}
 	}
 	if (createdItems.length)
-		this._eventNotify(ZmEvent.E_CREATE, createdItems);
+		this._notify(ZmEvent.E_CREATE, {items: createdItems});
 	if (flaggedItems.length)
-		this._eventNotify(ZmEvent.E_FLAGS, flaggedItems, {flags: [ZmItem.FLAG_UNREAD]});
+		this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [ZmItem.FLAG_UNREAD]});
 	if (modifiedItems.length)
-		this._eventNotify(ZmEvent.E_MODIFY, modifiedItems, {fields: fields});
+		this._notify(ZmEvent.E_MODIFY, {items: modifiedItems, fields: fields});
 };
 
 /**
@@ -273,7 +273,7 @@ function(msgs) {
 		}
 	}
 	if (addedMsgs.length)
-		this._eventNotify(ZmEvent.E_CREATE, addedMsgs);
+		this._notify(ZmEvent.E_CREATE, {items: addedMsgs});
 };
 
 ZmMailList.prototype.remove = 
@@ -362,7 +362,7 @@ function(ev) {
 					}
 				}
 				if (flaggedItems.length)
-					this._eventNotify(ZmEvent.E_FLAGS, flaggedItems, {flags: [flag]});
+					this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [flag]});
 			}
 		}
 	} else if (ev.event == ZmEvent.E_DELETE &&

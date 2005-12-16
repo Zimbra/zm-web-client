@@ -438,19 +438,10 @@ function(value, key, setDefault) {
 	}
 };
 
-ZmSetting.prototype.notify =
-function(event, details) {
-	if (this.settings._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
-		this.settings._evt.set(event, this);
-		this.settings._evt.setDetails(details);
-		this.settings._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this.settings._evt);
-	}
-};
-
 ZmSetting.prototype.notifyModify = 
 function(obj) {
 	if (this.id == ZmSetting.QUOTA_USED && obj._name == "mbx") {
 		this.setValue(obj.s);
-		this.notify(ZmEvent.E_MODIFY);
+		this._notify(ZmEvent.E_MODIFY);
 	}
 };

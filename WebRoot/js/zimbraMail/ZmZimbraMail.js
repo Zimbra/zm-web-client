@@ -909,7 +909,7 @@ function(tree, unread) {
 	if (organizers.length) {
 		var fields = {};
 		fields[ZmOrganizer.F_UNREAD] = true;
-		tree._eventNotify(ZmEvent.E_MODIFY, organizers, {fields: fields});
+		tree._notify(ZmEvent.E_MODIFY, {organizers: organizers, fields: fields});
 	}
 };
 

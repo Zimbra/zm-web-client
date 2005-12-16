@@ -102,7 +102,7 @@ function(obj, link) {
 	var calendar = ZmCalendar.createFromJs(this, obj, this.tree, link);
 	var index = ZmOrganizer.getSortIndex(calendar, ZmCalendar.sortCompare);
 	this.children.add(calendar, index);
-	this._eventNotify(ZmEvent.E_CREATE, calendar);
+	calendar._notify(ZmEvent.E_CREATE);
 };
 
 ZmCalendar.prototype.notifyModify =
@@ -122,7 +122,7 @@ function(obj) {
 	}
 	
 	if (doNotify)
-		this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
+		this._notify(ZmEvent.E_MODIFY, {fields: fields});
 };
 
 

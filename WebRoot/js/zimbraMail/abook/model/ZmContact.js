@@ -55,7 +55,6 @@ function ZmContact(appCtxt, id, list) {
 	this.isGal = this.list.isGal;
 
 	this.participants = new AjxVector(); // XXX: need to populate this guy (see ZmConv)
-	this._evt = new ZmEvent(ZmEvent.S_CONTACT);
 }
 
 ZmContact.prototype = new ZmItem;

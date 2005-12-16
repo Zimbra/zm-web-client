@@ -27,7 +27,6 @@ function ZmAppt(appCtxt, list, noinit) {
 
 	if (noinit) return;
 
-	this._evt = new ZmEvent(ZmEvent.S_APPT);
 	this.id = this.uid = -1;
 	this.type = null;
 	this.name = this.location = this.fragment = "";

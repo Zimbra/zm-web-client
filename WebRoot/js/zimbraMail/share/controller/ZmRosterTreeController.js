@@ -312,7 +312,7 @@ function(rosterItem) {
         var rosterGroup = this._getGroup(groupName);
         var id = rosterItem.getAddress() + ":"+ groupName;
         var item = new ZmRosterTreeItem(id, rosterItem, rosterGroup, this._dataTree);
-	    this._dataTree.root._eventNotify(ZmEvent.E_CREATE, item);
+        item._notify(ZmEvent.E_CREATE);
 	    rosterGroup.children.add(item);
 	    items.push(item);
     }
@@ -335,10 +335,10 @@ function(rosterItem) {
         var rti = items[i];
         //rti.notifyDelete();
         rti.deleteLocal();
-        rti._eventNotify(ZmEvent.E_DELETE);
+        rti._notify(ZmEvent.E_DELETE);
         if (rti.parent.children.size() == 0) {
             rti.parent.deleteLocal();
-            rti.parent._eventNotify(ZmEvent.E_DELETE);
+            rti.parent._notify(ZmEvent.E_DELETE);
         }
    }
    delete this._addr2Items[rosterItem.getAddress()];
@@ -351,7 +351,7 @@ function(name) {
     var group = this._dataTree.root.getById(groupId);
     if (group == null) {
         group = new ZmRosterTreeGroup(groupId, name, this._dataTree.root, this._dataTree);
-        this._dataTree.root._eventNotify(ZmEvent.E_CREATE, group);
+        group._notify(ZmEvent.E_CREATE);
         this._dataTree.root.children.add(group);
         
         // expand groups if tree is created

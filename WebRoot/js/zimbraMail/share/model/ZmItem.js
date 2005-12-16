@@ -44,7 +44,7 @@
 function ZmItem(appCtxt, type, id, list) {
 
 	if (arguments.length == 0) return;
-	ZmModel.call(this, true);
+	ZmModel.call(this, type);
 
 	this._appCtxt = appCtxt;
 	this.type = type;
@@ -54,7 +54,6 @@ function ZmItem(appCtxt, type, id, list) {
 	this.tags = new Array();
 	this.tagHash = new Object();
 	this.folderId = 0;
-	this._evt = new ZmEvent(type);
 	
 	if (id && appCtxt)
 		appCtxt.cacheSet(id, this);
@@ -359,31 +358,17 @@ function(str) {
 
 // Listener notification
 
-// Notifies listeners on this item
-ZmItem.prototype._eventNotify =
-function(event, details) {
-	if (this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
-		this._evt.set(event, this);
-		this._evt.setDetails(details);
-		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
-	}
-};
-
-// Notifies listeners on this item's list
-ZmItem.prototype._listNotify =
-function(event, details) {
-	if (this.list) {
-		this._evt.set(event, this);
-		this._evt.setDetails(details);
-		this.list._eventNotify(event, [this], details);
-	}
-};
-
+// notify the list as well as this item
 ZmItem.prototype._notify =
 function(event, details) {
-	this._eventNotify(event, details);
-	if (this.list)
-		this._listNotify(event, details);
+	ZmModel.prototype._notify.call(this, event, details);
+	if (this.list) {
+		if (details)
+			details.items = [this];
+		else
+			details = {items: [this]};
+		this.list._notify(event, details);
+	}
 };
 
 /*

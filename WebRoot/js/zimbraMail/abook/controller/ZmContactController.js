@@ -145,7 +145,7 @@ function(ev, bIsPopCallback) {
 				var list = this._app.getContactList();
 				this._schedule(this._doCreate, {list: list, args: mods});
 			} else {
-				this._schedule(this._doModify, {items: contact, mods: mods});
+				this._schedule(this._doModify, {item: contact, mods: mods});
 			}
 		} else {
 			// print error message in toaster

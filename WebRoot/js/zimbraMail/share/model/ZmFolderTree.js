@@ -26,9 +26,7 @@
 function ZmFolderTree(appCtxt, type) {
 	
 	ZmTree.call(this, type, appCtxt);
-	
-	this._evt = new ZmEvent(type);
-}
+};
 
 ZmFolderTree.prototype = new ZmTree;
 ZmFolderTree.prototype.constructor = ZmFolderTree;
@@ -36,7 +34,7 @@ ZmFolderTree.prototype.constructor = ZmFolderTree;
 ZmFolderTree.prototype.toString = 
 function() {
 	return "ZmFolderTree";
-}
+};
 
 ZmFolderTree.prototype.loadFromJs =
 function(rootFolderObj) {
@@ -50,12 +48,12 @@ function(rootFolderObj) {
 		this.root = ZmZimlet.createFromJs(null, rootFolderObj, this);
 	else if (this.type == ZmOrganizer.ROSTER_TREE_ITEM)
 		this.root = ZmRosterTree.createFromJs(null, rootFolderObj, this);
-}
+};
 
 ZmFolderTree.prototype.getByPath =
 function(path) {
 	return this.root ? this.root.getByPath(path) : null;
-}
+};
 
 ZmFolderTree.prototype._sortFolder =
 function(folder) {
@@ -65,4 +63,4 @@ function(folder) {
 		for (var i = 0; i < children.length; i++)
 			this._sortFolder(children[i]);
 	}
-}
+};

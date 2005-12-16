@@ -23,10 +23,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
-// ZmModel is data with a change listener.
-function ZmModel(init) {
+/**
+* Creates a data model.
+* @constructor
+* @class
+* This class represents a data model which can process change events.
+*
+* @author Conrad Damon
+*
+* @param type	[constant]		event source type (see ZmEvent)
+*/
+function ZmModel(type) {
  	if (arguments.length == 0) return;
 
+	this._evt = new ZmEvent(type);
 	this._evtMgr = new AjxEventMgr();
 }
 
@@ -35,15 +45,37 @@ function() {
 	return "ZmModel";
 }
 
+/**
+* Adds a change listener.
+*
+* @param listener	[AjxListener]	a listener
+*/
 ZmModel.prototype.addChangeListener = 
 function(listener) {
 	return this._evtMgr.addListener(ZmEvent.L_MODIFY, listener);
 }
 
+/**
+* Removes the given change listener.
+*
+* @param listener	[AjxListener]	a listener
+*/
 ZmModel.prototype.removeChangeListener = 
 function(listener) {
 	return this._evtMgr.removeListener(ZmEvent.L_MODIFY, listener);    	
 }
 
-
-
+/**
+* Notifies listeners of the given change event.
+*
+* @param event		[constant]		event type (see ZmEvent)
+* @param details	[hash]*			additional information
+*/
+ZmModel.prototype._notify =
+function(event, details) {
+	if (this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
+		this._evt.set(event, this);
+		this._evt.setDetails(details);
+		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
+	}
+};

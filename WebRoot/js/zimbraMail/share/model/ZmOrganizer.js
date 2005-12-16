@@ -64,13 +64,13 @@ function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, own
 };
 
 // organizer types
-ZmOrganizer.FOLDER	= ZmEvent.S_FOLDER;
-ZmOrganizer.TAG		= ZmEvent.S_TAG;
-ZmOrganizer.SEARCH	= ZmEvent.S_SEARCH;
-ZmOrganizer.CALENDAR = ZmEvent.S_APPT;
-ZmOrganizer.ROSTER_TREE_ITEM = ZmEvent.S_ROSTER_TREE_ITEM;
-ZmOrganizer.ROSTER_TREE_GROUP = ZmEvent.S_ROSTER_TREE_GROUP;
-ZmOrganizer.ZIMLET = ZmEvent.S_ZIMLET;
+ZmOrganizer.FOLDER				= ZmEvent.S_FOLDER;
+ZmOrganizer.TAG					= ZmEvent.S_TAG;
+ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
+ZmOrganizer.CALENDAR			= ZmEvent.S_APPT;
+ZmOrganizer.ROSTER_TREE_ITEM	= ZmEvent.S_ROSTER_TREE_ITEM;
+ZmOrganizer.ROSTER_TREE_GROUP	= ZmEvent.S_ROSTER_TREE_GROUP;
+ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
 
 // defined in com.zimbra.cs.mailbox.Mailbox
 ZmOrganizer.ID_ROOT		= 1;
@@ -314,7 +314,7 @@ function() {
 ZmOrganizer.prototype.notifyDelete =
 function() {
 	this.deleteLocal();
-	this._eventNotify(ZmEvent.E_DELETE);
+	this._notify(ZmEvent.E_DELETE);
 };
 
 ZmOrganizer.prototype.notifyCreate = function() {};
@@ -369,12 +369,12 @@ function(obj) {
 	}
 	
 	if (doNotify)
-		this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
+		this._notify(ZmEvent.E_MODIFY, {fields: fields});
 
 	if (obj.l != null && obj.l != this.parent.id) {
 		var newParent = this._getNewParent(obj.l);
 		this.reparent(newParent);
-		this._eventNotify(ZmEvent.E_MOVE);
+		this._notify(ZmEvent.E_MOVE);
 		// could be moving search between Folders and Searches - make sure
 		// it has the correct tree
 		this.tree = newParent.tree; 
@@ -571,15 +571,14 @@ function(obj) {
 	}
 };
 
-// Notify our listeners.
-ZmOrganizer.prototype._eventNotify =
-function(event, organizer, details) {
-	organizer = organizer || this;
-	if (this.tree._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
-		this.tree._evt.set(event, organizer);
-		this.tree._evt.setDetails(details);
-		this.tree._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this.tree._evt);
-	}
+// Handle notifications through the tree
+ZmOrganizer.prototype._notify =
+function(event, details) {
+	if (details)
+		details.organizers = [this];
+	else
+		details = {organizers: [this]};
+	this.tree._notify(event, details);
 };
 
 
@@ -627,7 +626,7 @@ function(perm) {
 		this.link.perm = perm;
 		var fields = new Object();
 		fields[ZmOrganizer.F_SHARES] = true;
-		this.organizer._eventNotify(ZmEvent.E_MODIFY, this.organizer, {fields: fields});
+		this.organizer._notify(ZmEvent.E_MODIFY, {fields: fields});
 	}
 };
 
@@ -640,7 +639,7 @@ function() {
 	
 		var fields = new Object();
 		fields[ZmOrganizer.F_SHARES] = true;
-		this.organizer._eventNotify(ZmEvent.E_MODIFY, this.organizer, {fields: fields});
+		this.organizer._notify(ZmEvent.E_MODIFY, {fields: fields});
 	}
 };
 

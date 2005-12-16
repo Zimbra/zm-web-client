@@ -31,11 +31,12 @@
 *
 */
 function ZmRoster(appCtxt, imApp) {
-    ZmModel.call(this, true);
+
+    ZmModel.call(this, ZmEvent.S_ROSTER);
+
     this._appCtxt = appCtxt;
-    this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);	
     this.getRosterItemTree(); // pre-create
-   	this._evt = new ZmEvent(ZmEvent.S_ROSTER);
+    this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);	
 	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);   	
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
 	this._imApp = imApp;
@@ -123,7 +124,7 @@ ZmRoster.prototype._notifyPresence =
 function() {
     var fields = {};
     fields[ZmRoster.F_PRESENCE] = this.getPresence();
-    this._eventNotify(ZmEvent.E_MODIFY, {fields: fields});
+    this._notify(ZmEvent.E_MODIFY, {fields: fields});
 };
 
 ZmRoster.prototype.reload =
@@ -245,13 +246,4 @@ function(im) {
         }
     
     }
-};
-
-ZmRoster.prototype._eventNotify =
-function(event, details) {
-	if (this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
-		this._evt.set(event, this);
-		this._evt.setDetails(details);
-		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
-	}
 };

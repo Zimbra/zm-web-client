@@ -35,7 +35,7 @@
 */
 function ZmSettings(appCtxt) {
 
-	ZmModel.call(this, true);
+	ZmModel.call(this, ZmEvent.S_SETTING);
 
 	this._appCtxt = appCtxt;
 	this._settings = new Object(); // settings by ID
@@ -43,7 +43,6 @@ function ZmSettings(appCtxt) {
 	this._initialize();
 	this._setDefaults();
 	this.userSettingsLoaded = false;
-	this._evt = new ZmEvent(ZmEvent.S_SETTING);
 	this._zmm = new ZmZimletMgr();
 }
 
@@ -237,7 +236,7 @@ function(args) {
 		for (var i = 0; i < list.length; i++) {
 			var pref = list[i];
 			pref.origValue = pref.value;
-			pref.notify(ZmEvent.E_MODIFY);
+			pref._notify(ZmEvent.E_MODIFY);
 		}
 	}
 	

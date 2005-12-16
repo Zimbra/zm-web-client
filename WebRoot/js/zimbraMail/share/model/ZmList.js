@@ -47,7 +47,7 @@
 function ZmList(type, appCtxt, search) {
 
 	if (arguments.length == 0) return;
-	ZmModel.call(this, true);
+	ZmModel.call(this, type);
 
 	this.type = type;
 	this._appCtxt = appCtxt;
@@ -56,7 +56,6 @@ function ZmList(type, appCtxt, search) {
 	this._vector = new AjxVector();
 	this._hasMore = false;
 	this._idHash = new Object();
-	this._evt = new ZmEvent(type);
 
 	var tagList = appCtxt.getTree(ZmOrganizer.TAG);
 	if (tagList) {
@@ -129,7 +128,7 @@ function(item) {
 * will be added at the end.
 *
 * The item will invoke a SOAP call, which generates a create notification from the
-* server. That will be handled by notifyCreate(), which will call eventNotify()
+* server. That will be handled by notifyCreate(), which will call _notify()
 * so that views can be updated.
 *
 * @param args	arbitrary hash of args to pass along
@@ -375,7 +374,7 @@ function(args) {
 		this.moveLocal(movedItems, folder.id);
 		for (var i = 0; i < movedItems.length; i++)
 			movedItems[i].moveLocal(folder.id);
-		this._eventNotify(ZmEvent.E_MOVE, movedItems);
+		this._notify(ZmEvent.E_MOVE, {items: movedItems});
 	}
 };
 
@@ -418,26 +417,20 @@ function(items, hardDelete, attrs) {
 }
 
 /**
-* Applies the given list of modifications to the items. Currently, we can only
-* modify one item at a time. A SOAP request is not made.
+* Applies the given list of modifications to the item.
 *
-* @param items			list of items to modify
+* @param item			item to modify
 * @param mods			hash of new properties
 */
-ZmList.prototype.modifyItems =
-function(items, mods) {
-	var itemMode = false;
-	if (items instanceof ZmItem) {
-		items = [items];
-		itemMode = true;
-	}
-	
-	for (var i = 0; i < items.length; i++) {
-		var details = items[i].modify(mods);
-		if (details) {
-			this._eventNotify(ZmEvent.E_MODIFY, items, details, itemMode);
-			this.modifyLocal(items[i], details);
-		}
+ZmList.prototype.modifyItem =
+function(item, mods) {
+	var details = item.modify(mods);
+	if (details) {
+		// notify item and its list
+		item._notify(ZmEvent.E_MODIFY, details);
+		details.items = [item];
+		this._notify(ZmEvent.E_MODIFY, details);
+		this.modifyLocal(item, details);
 	}
 }
 
@@ -448,7 +441,7 @@ function(node) {
 	var item = ZmList.ITEM_CLASS[this.type].createFromDom(node, {appCtxt: this._appCtxt, list: this});
 	this.add(item, this._sortIndex(item));
 	this.createLocal(item);
-	this._eventNotify(ZmEvent.E_CREATE, [item]);
+	this._notify(ZmEvent.E_CREATE, {items: [item]});
 }
 
 // Local change handling
@@ -569,20 +562,6 @@ function(items) {
 	return typedItems;
 }
 
-// Notify listeners on this list of a model change.
-ZmList.prototype._eventNotify =
-function(event, items, details, itemMode) {
-	if (itemMode)
-		items[0]._eventNotify(event, details);
-
-	if (items.length && this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
-		this._evt.set(event, this);
-		this._evt.setDetails(details);
-		this._evt.setDetail("items", items);
-		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
-	}
-}
-
 // Grab the IDs out of a list of items, and return them as both a string and a hash.
 ZmList.prototype._getIds =
 function(list) {
@@ -623,7 +602,7 @@ function(ev) {
 
 	if (ev.event == ZmEvent.E_DELETE) {
 		// Remove tag from any items that have it
-		var tag = ev.source;
+		var tag = ev.getDetail("organizers")[0];
 		var a = this.getArray();
 		var taggedItems = new Array();
 		for (var i = 0; i < a.length; i++) {
@@ -635,7 +614,7 @@ function(ev) {
 		}
 		// Send listeners a tag event so they'll notice it's gone
 		if (taggedItems.length && this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
-			this._eventNotify(ZmEvent.E_TAGS, taggedItems);
+			this._notify(ZmEvent.E_TAGS, {items: taggedItems});
 		}
 	}
 }

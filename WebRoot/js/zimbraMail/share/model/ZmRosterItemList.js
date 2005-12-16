@@ -46,7 +46,7 @@ ZmRosterItemList.prototype.addItem =
 function(item, skipNotify) {
     this.add(item);
     if (!skipNotify) {
-        this._eventNotify(ZmEvent.E_CREATE, [item]);
+        this._notify(ZmEvent.E_CREATE, {items: [item]});
     }
 };
 
@@ -54,7 +54,7 @@ ZmRosterItemList.prototype.removeItem =
 function(item, skipNotify) {
     this.remove(item);
     if (!skipNotify) {
-        this._eventNotify(ZmEvent.E_REMOVE, [item]);
+        this._notify(ZmEvent.E_REMOVE, {items: [item]});
     }    
 };
 

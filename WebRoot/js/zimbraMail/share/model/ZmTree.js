@@ -26,7 +26,7 @@
 function ZmTree(type, appCtxt) {
 
 	if (arguments.length == 0) return;
-	ZmModel.call(this, true);
+	ZmModel.call(this, type);
 
 	this.type = type;
 	this._appCtxt = appCtxt;
@@ -117,16 +117,4 @@ function(organizer, unread) {
 		this._getUnreadHash(children[i], unread)
 
 	return unread;
-};
-
-// Notify our listeners.
-ZmTree.prototype._eventNotify =
-function(event, organizers, details) {
-	organizers = organizers || this;
-	if (this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
-		this._evt.set(event, this);
-		this._evt.setDetails(details);
-		this._evt.setDetail("organizers", organizers);
-		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
-	}
 };

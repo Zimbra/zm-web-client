@@ -175,7 +175,7 @@ function(ev) {
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
 		var divs = this._getChildren();
-		var tag = ev.source;
+		var tag = ev.getDetail("organizers")[0];
 		for (var i = 0; i < divs.length; i++) {
 			var item = this.getItemFromElement(divs[i]);
 			if (item && item.tags && (item.tags.length == 1) && (item.tags[0] == tag.id))

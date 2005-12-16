@@ -590,7 +590,8 @@ function(ev) {
 	// only process if current view is this view!
 	if (this._app.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
 		if (ev.type == ZmEvent.S_TAG && ev.event == ZmEvent.E_CREATE && this._creatingTag) {
-			this._doTag(this._pendingActionData, ev.source, true);
+			var tag = ev.getDetail("organizers")[0];
+			this._doTag(this._pendingActionData, tag, true);
 			this._creatingTag = false;
 			this._pendingActionData = null;
 			this._popdownActionListener();
@@ -670,7 +671,7 @@ function(items, folder, attrs) {
 ZmListController.prototype._doModify =
 function(params) {
 	try {
-		this._list.modifyItems(params.items, params.mods);
+		this._list.modifyItem(params.item, params.mods);
 	} catch (ex) {
 		this._handleException(ex, this._doModify, params, false);
 	}

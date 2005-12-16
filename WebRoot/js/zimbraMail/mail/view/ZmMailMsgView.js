@@ -966,9 +966,10 @@ function(ev) {
 
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
-		var img = document.getElementById(this._tagCellId +  ZmDoublePaneView._TAG_IMG + ev.source.id);
+		var tag = ev.getDetail("organizers")[0];
+		var img = document.getElementById(this._tagCellId +  ZmDoublePaneView._TAG_IMG + tag.id);
 		if (img)
-			AjxImg.setImage(img, ZmTag.COLOR_MINI_ICON[ev.source.color]);
+			AjxImg.setImage(img, ZmTag.COLOR_MINI_ICON[tag.color]);
 	}
 
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY)

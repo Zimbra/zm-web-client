@@ -135,7 +135,7 @@ function() {
 ZmTag.prototype.notifyCreate =
 function(obj) {
 	var child = ZmTag.createFromJs(this, obj, this.tree, true);
-	this._eventNotify(ZmEvent.E_CREATE, child);
+	child._notify(ZmEvent.E_CREATE);
 };
 
 /**

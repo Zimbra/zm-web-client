@@ -291,7 +291,7 @@ function(obj, isSearch) {
 							ZmFolder.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
 	this.children.add(folder, index);
-	this._eventNotify(ZmEvent.E_CREATE, folder);
+	folder._notify(ZmEvent.E_CREATE);
 };
 
 ZmFolder.prototype.createQuery =

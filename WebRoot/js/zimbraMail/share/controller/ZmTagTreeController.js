@@ -213,13 +213,16 @@ function(ev) {
 ZmTagTreeController.prototype._changeListener =
 function(ev, treeView) {
 	var fields = ev.getDetail("fields");
-	if (ev.event == ZmEvent.E_MODIFY && ((fields && fields[ZmOrganizer.F_COLOR]))) {
-		var tag = ev.source;
-		var node = treeView.getTreeItemById(tag.id);
-		if (node)
-			node.setImage(ZmTag.COLOR_ICON[tag.color]);
-	} else {
-		ZmTreeController.prototype._changeListener.call(this, ev, treeView);
+	var organizers = ev.getDetail("organizers");
+	for (var i = 0; i < organizers.length; i++) {
+		var tag = organizers[i];
+		if (ev.event == ZmEvent.E_MODIFY && ((fields && fields[ZmOrganizer.F_COLOR]))) {
+			var node = treeView.getTreeItemById(tag.id);
+			if (node)
+				node.setImage(ZmTag.COLOR_ICON[tag.color]);
+		} else {
+			ZmTreeController.prototype._changeListener.call(this, ev, treeView);
+		}
 	}
 };
 

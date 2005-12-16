@@ -41,13 +41,13 @@ function() {
 ZmChatList.prototype.addChat =
 function(chat) {
 	this.add(chat); // , this._sortIndex(item));
-	this._eventNotify(ZmEvent.E_CREATE, [chat]);
+	this._notify(ZmEvent.E_CREATE, {items: [chat]});
 };
 
 ZmChatList.prototype.removeChat =
 function(chat) {
 	this.remove(chat); // , this._sortIndex(item));
-	this._eventNotify(ZmEvent.E_DELETE, [chat]);
+	this._notify(ZmEvent.E_DELETE, {items: [chat]});
 };
 
 ZmChatList.prototype.getChatByRosterAddr =

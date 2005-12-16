@@ -28,7 +28,6 @@ function ZmChat(id, chatName, appCtxt, chatList) {
 	if (chatList == null) chatList = appCtxt.getApp(ZmZimbraMail.IM_APP).getRoster().getChatList();
 	ZmItem.call(this, appCtxt, ZmItem.CHAT, id, chatList);
 	this._sendMessageCallbackObj = new AjxCallback(this, this._sendMessageCallback);
-	this._evt = new ZmEvent(ZmEvent.S_CHAT);
 	this._messages = [];
 	this._rosterItemList = new ZmRosterItemList(appCtxt);
 	this._isGroupChat = false;
@@ -133,7 +132,7 @@ function(msg) {
     this._messages.push(msg);
     var fields = {};
     fields[ZmChat.F_MESSAGE] = msg;
-    this._eventNotify(ZmEvent.E_MODIFY, {fields: fields});
+    this._notify(ZmEvent.E_MODIFY, {fields: fields});
     // list notify as well?
 };
 
