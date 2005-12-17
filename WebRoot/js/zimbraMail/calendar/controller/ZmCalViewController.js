@@ -455,6 +455,7 @@ function(ev) {
 		}
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		var dropDate = this._miniCalendar.getDndDate();
+
 		if (dropDate) {
 			if (!(data instanceof ZmContact))
 				this.newApptFromMailItem(data, dropDate);
@@ -481,9 +482,9 @@ function(mailItem, date) {
 }
 
 ZmCalViewController.prototype._msgLoadedCallback =
-function(args) {
-	var newAppt = this._newApptObject(args[1]);
-	newAppt.setFromMailMessage(args[0]);
+function(mailItem, date) {
+	var newAppt = this._newApptObject(date);
+	newAppt.setFromMailMessage(mailItem);
 	this.newAppointment(newAppt, ZmAppt.MODE_NEW);
 }
 
@@ -495,20 +496,29 @@ function(args) {
  */ 
 ZmCalViewController.prototype.newApptFromContact =
 function(contact, date) {
-	var emailAddr = contact.getAttr(ZmContact.F_email);
-	if (!emailAddr || emailAddr == "") {
-		emailAddr = contact.getAttr(ZmContact.F_email1);
-		if (!emailAddr || emailAddr == "") {
-			emailAddr = contact.getAttr(ZmContact.F_email2);
-			if (!emailAddr || emailAddr == "")
-				return;
-		}
-	}
-		
+	var emailAddr = contact.getAttr([ZmContact.F_email]) || contact.getAttr([ZmContact.F_email2]) || contact.getAttr([ZmContact.F_email3]);
+	if (!emailAddr || emailAddr == "")
+		return;		
 	var newAppt = this._newApptObject(date);
 	newAppt.attendees = emailAddr;
 	this.newAppointment(newAppt, ZmAppt.MODE_NEW);
 }
+
+/*
+ * This method will create a new appointment from an email address. 
+ *
+ * @param emailAddr	email address
+ * @param date The date/time for the appointment
+ */ 
+ZmCalViewController.prototype.newApptFromEmailAddr =
+function(emailAddr, date) {
+	if (!emailAddr || emailAddr == "")
+		return;		
+	var newAppt = this._newApptObject(date);
+	newAppt.attendees = emailAddr;
+	this.newAppointment(newAppt, ZmAppt.MODE_NEW);
+}
+
 
 ZmCalViewController.prototype.getMiniCalendar =
 function() {

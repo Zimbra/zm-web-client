@@ -1762,13 +1762,14 @@ function(ev, apptEl) {
 		docY: ev.docY
 	};
 
-	var capture = new DwtMouseEventCapture	(data,
+	var capture = new DwtMouseEventCapture	(data, null,
 			ZmCalColView._emptyHdlr, // mouse over
 			ZmCalColView._emptyHdlr, // mouse down (already handled by action)
 			ZmCalColView._apptMouseMoveHdlr, 
 			ZmCalColView._apptMouseUpHdlr, 
 			ZmCalColView._emptyHdlr, // mouse out
 			true);
+			
 	capture.capture();
 	return false;	
 }
@@ -1922,7 +1923,7 @@ function(ev, sash) {
 	else data.endDate = new Date(appt.getEndTime());
 	
 	//TODO: only create one of these and change data each time...
-	var capture = new DwtMouseEventCapture	(data,
+	var capture = new DwtMouseEventCapture	(data, null,
 			ZmCalColView._emptyHdlr, // mouse over
 			ZmCalColView._emptyHdlr, // mouse down (already handled by action)
 			ZmCalColView._sashMouseMoveHdlr, 
@@ -2054,7 +2055,7 @@ function(ev, gridEl, gridLoc, isAllDay) {
 		isAllDay: isAllDay
 	};
 
-	var capture = new DwtMouseEventCapture	(data,
+	var capture = new DwtMouseEventCapture	(data, null,
 			ZmCalColView._emptyHdlr, // mouse over
 			ZmCalColView._emptyHdlr, // mouse down (already handled by action)
 			isAllDay? ZmCalColView._gridAllDayMouseMoveHdlr : ZmCalColView._gridMouseMoveHdlr,
