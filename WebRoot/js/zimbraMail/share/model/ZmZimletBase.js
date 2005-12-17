@@ -29,10 +29,11 @@
  *
  * @author Mihai Bazon
  */
-function ZmZimletBase(appCtxt, type, name) {
-	ZmObjectHandler.call(this, appCtxt, type, name);
-	this._passRpcErrors = false;
-}
+function ZmZimletBase() {
+	// For Zimlets, the ZmObjectHandler constructor is a no-op.  Zimlets
+	// don't receive any arguments in constructor.  In the init() function
+	// below we call ZmObjectHandler.init() in order to set some arguments.
+};
 
 ZmZimletBase.PANEL_MENU = 1;
 ZmZimletBase.CONTENTOBJECT_MENU = 2;
@@ -41,22 +42,31 @@ ZmZimletBase.PROXY = "/service/proxy?target=";
 
 ZmZimletBase.prototype = new ZmObjectHandler();
 
-ZmZimletBase.prototype.init =
+ZmZimletBase.prototype._init =
 function(zimletContext, shell) {
+	this._passRpcErrors = false;
 	this._zimletContext = zimletContext;
 	this._dwtShell = shell;
 	this._appCtxt = shell.getData(ZmAppCtxt.LABEL);
 	this._origIcon = this.xmlObj().icon;
-	if(this.xmlObj().contentObject && this.xmlObj().contentObject.matchOn[0]) {
-		var regExInfo = this.xmlObj().contentObject.matchOn[0].regex[0];
+
+	var contentObj = this.xmlObj().contentObject;
+	if (contentObj && contentObj.matchOn[0]) {
+		var regExInfo = contentObj.matchOn[0].regex[0];
 		this.RE = new RegExp(regExInfo._content, regExInfo.attrs);
-		if(this.xmlObj().contentObject.type) {
+		if (contentObj.type) {
 			this.type = this.xmlObj().contentObject.type;
 		}
+		// note the _appCtxt is already initialized above
+		ZmObjectHandler.prototype.init.call(this, this.type, contentObj["class"]);
 	}
 };
 
-ZmZimletBase.prototype.toString = 
+/// Override this function in order to initialize Zimlet internals.  The base
+/// class function should stay no-op.
+ZmZimletBase.prototype.init = function(){};
+
+ZmZimletBase.prototype.toString =
 function() {
 	return this.xmlObj().name;
 };
@@ -184,7 +194,7 @@ ZmZimletBase.prototype.toolTipPoppedDown =
 function(spanElement, contentObjText, matchContext, canvas) {
 };
 
-ZmZimletBase.prototype.getActionMenu = 
+ZmZimletBase.prototype.getActionMenu =
 function() {
 	return null;
 };
@@ -257,17 +267,17 @@ ZmZimletBase.prototype.displayStatusMessage = function(msg) {
 	this.getAppCtxt().setStatusMsg(msg);
 };
 
-ZmZimletBase.prototype.getResource = 
+ZmZimletBase.prototype.getResource =
 function(resourceName) {
 	return this.xmlObj().getUrl() + resourceName;
 };
 
-ZmZimletBase.prototype.getType = 
+ZmZimletBase.prototype.getType =
 function() {
 	return this.type;
 };
 
-ZmZimletBase.prototype.requestFinished = 
+ZmZimletBase.prototype.requestFinished =
 function(callback, passErrors, xmlargs) {
 	this.resetIcon();
 	if (!(passErrors || this._passRpcErrors) && !xmlargs.success) {
@@ -377,10 +387,12 @@ function(callback) {
 	}
 
 	var cmd = new ZmCsfeCommand();
-	ajxcallback = new AjxCallback(this, function(result) {
-		// TODO: handle errors
-		callback.run();
-	});
+	var ajxcallback = null;
+	if (callback)
+		ajxcallback = new AjxCallback(this, function(result) {
+			// TODO: handle errors
+			callback.run();
+		});
 	cmd.invoke({ soapDoc: soapDoc, callback: ajxcallback, asyncMode: true });
 
 	if (this._dlg_propertyEditor) {
@@ -412,6 +424,64 @@ ZmZimletBase.encodeId = function(s) {
 	return s.replace(/[^A-Za-z0-9]/g, "");
 };
 
+ZmZimletBase.prototype.hoverOver =
+function(object, context, x, y, span) {
+	var shell = DwtShell.getShell(window);
+	var tooltip = shell.getToolTip();
+	tooltip.setContent('<div id="zimletTooltipDiv"/>', true);
+	this.toolTipPoppedUp(span, object, context, document.getElementById("zimletTooltipDiv"));
+	tooltip.popup(x, y, true);
+};
+
+ZmZimletBase.prototype.hoverOut =
+function(object, context, span) {
+	var shell = DwtShell.getShell(window);
+	var tooltip = shell.getToolTip();
+	tooltip.popdown();
+	this.toolTipPoppedDown(span, object, context, document.getElementById("zimletTooltipDiv"));
+};
+
+ZmZimletBase.prototype.makeCanvas = function(canvasData, url) {
+	var canvas = null;
+	switch (canvasData.type) {
+	    case "window":
+		var props = [];
+		if (canvasData.width)
+			props.push("width=", canvasData.width);
+		if (canvasData.height)
+			props.push("height=", canvasData.height);
+		props = props.join(",");
+		canvas = window.open(url, this.xmlObj("name"), props);
+		break;
+
+	    case "dialog":
+		var view = new DwtComposite(this.getShell());
+		if (canvasData.width)
+			view.setSize(canvasData.width, Dwt.DEFAULT);
+		if (canvasData.height)
+			view.setSize(Dwt.DEFAULT, canvasData.height);
+		canvas = this._createDialog({ view: view, title: "Zimlet dialog (" + this.xmlObj("description") + ")" });
+		canvas.view = view;
+		if (url) {
+			// create an IFRAME here to open the given URL
+			var el = document.createElement("iframe");
+			el.src = url;
+			var sz = view.getSize();
+			if (!AjxEnv.isIE) {
+				// substract default frame borders
+				sz.x -= 4;
+				sz.y -= 4;
+			}
+			el.style.width = sz.x + "px";
+			el.style.height = sz.y + "px";
+			view.getHtmlElement().appendChild(el);
+		}
+		canvas.popup();
+		break;
+	}
+	return canvas;
+};
+
 /* Internal functions -- overriding is not recommended */
 
 ZmZimletBase.prototype._createDialog = function(args) {
@@ -424,10 +494,10 @@ ZmZimletBase.prototype._createDialog = function(args) {
 };
 
 /* Overrides default ZmObjectHandler methods for Zimlet API compat */
-ZmZimletBase.prototype._getHtmlContent = 
+ZmZimletBase.prototype._getHtmlContent =
 function(html, idx, obj, context) {
 	var contentObj = this.xmlObj().getVal('contentObject');
-	if(contentObj) {
+	if(contentObj && contentObj.onClick) {
 		html[idx++] = '<a target="_blank" href="';
 		html[idx++] = (contentObj.onClick[0].actionUrl[0].target).replace('${objectContent}', AjxStringUtil.htmlEncode(obj));
 		html[idx++] = '">'+AjxStringUtil.htmlEncode(obj)+'</a>';
@@ -435,21 +505,4 @@ function(html, idx, obj, context) {
 		html[idx++] = AjxStringUtil.htmlEncode(obj, true);
 	}
 	return idx;
-};
-
-ZmZimletBase.prototype.hoverOver = 
-function(object, context, x, y, span) {
-	var shell = DwtShell.getShell(window);
-	var tooltip = shell.getToolTip();
-	tooltip.setContent('<div id="zimletTooltipDiv"/>', true);
-	this.toolTipPoppedUp(span, object, context, document.getElementById("zimletTooltipDiv"));
-	tooltip.popup(x, y, true);
-};
-
-ZmZimletBase.prototype.hoverOut = 
-function(object, context, span) {
-	var shell = DwtShell.getShell(window);
-	var tooltip = shell.getToolTip();
-	tooltip.popdown();
-	this.toolTipPoppedDown(span, object, context, document.getElementById("zimletTooltipDiv"));
 };

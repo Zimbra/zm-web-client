@@ -62,7 +62,7 @@ function ZmZimletContext(id, zimlet) {
 			this.zimletPanelItem.contextMenu = this.zimletPanelItem.contextMenu[0];
 			this._panelActionMenu = new AjxCallback(
 				this, this._makeMenu,
-				this.zimletPanelItem.contextMenu.menuItem);
+				[ this.zimletPanelItem.contextMenu.menuItem ]);
 		}
 	}
 	if(zimlet.handlerObject){
@@ -92,8 +92,10 @@ function() {
 
 ZmZimletContext.prototype._loadIncludes =
 function() {
-	if (!this.includes)
+	if (!this.includes) {
+		this._finished_loadIncludes();
 		return;
+	}
 	AjxInclude(this.includes, this._url,
 		   new AjxCallback(this, this._finished_loadIncludes)
 		   // ,"/service/proxy?target="
@@ -104,13 +106,21 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	// we don't allow _loadIncludes a second time
 	this.includes = null;
 	// instantiate the handler object if present
-	if (this.handlerObject) {
-		var CTOR = eval(this.handlerObject);
-		this.handlerObject = new CTOR(this);
-		this.handlerObject.constructor = CTOR;
-		this.handlerObject.init(this, DwtShell.getShell(window));
-		ZmObjectManager.registerHandler(this.handlerObject);
+	var obj = this.handlerObject;
+	if (obj) {
+		var CTOR = eval(obj);
+		obj = new CTOR;
+		obj.constructor = CTOR;
+	} else {
+		// well, go figure. :-) We need a handler object, so let's
+		// initialize the base one.
+		obj = new ZmZimletBase();
 	}
+	this.handlerObject = obj;
+	obj._init(this, DwtShell.getShell(window));
+	if (this.contentObject)
+		ZmObjectManager.registerHandler(obj);
+	obj.init();
 };
 
 ZmZimletContext.prototype._loadStyles = function() {
@@ -129,6 +139,7 @@ ZmZimletContext.prototype._loadStyles = function() {
 		style.title = this.name + " " + this.includeCSS[i];
 		head.appendChild(style);
 	}
+	this.includeCSS = null;
 };
 
 ZmZimletContext.prototype.getOrganizer = function() {
@@ -240,13 +251,13 @@ ZmZimletContext.prototype._makeMenu = function(obj) {
 ZmZimletContext.prototype._handleMenuItemSelected = function(ev) {
 	var data = ev.item.getData("xmlMenuItem");
 	if (data.actionUrl) {
-		this._handleActionUrl(data.actionUrl[0]);
+		this._handleActionUrl(data.actionUrl[0], data.canvas);
 	} else {
 		this.callHandler("menuItemSelected", [ data.id, data ]);
 	}
 };
 
-ZmZimletContext.prototype._handleActionUrl = function(actionUrl) {
+ZmZimletContext.prototype._handleActionUrl = function(actionUrl, canvas) {
 	var url = actionUrl.target;
 	var param = [];
 	if (actionUrl.param) {
@@ -263,7 +274,11 @@ ZmZimletContext.prototype._handleActionUrl = function(actionUrl) {
 		}
 		url = [ url, "?", param.join("&") ].join("");
 	}
-	window.open(url, "_blank");
+	if (canvas) {
+		canvas = this.handlerObject.makeCanvas(canvas[0], url);
+	} else {
+		window.open(url, this.name);
+	}
 };
 
 ZmZimletContext._translateZMObject = function(obj) {

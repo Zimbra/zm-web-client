@@ -24,15 +24,19 @@
  */
 
 function ZmObjectHandler(appCtxt, typeName, className) {
-
-	if (arguments.length == 0) return;
-
-	this._appCtxt = appCtxt;
-	this._typeName = typeName;
-	this._className = className != null ? className : "Object";
+	if (arguments.length > 0) {
+		this._appCtxt = appCtxt;
+		this.init(typeName, className);
+	}
 }
 
 ZmObjectHandler.prototype.constructor = ZmObjectHandler;
+
+ZmObjectHandler.prototype.init =
+function(typeName, className) {
+	this._typeName = typeName;
+	this._className = className != null ? className : "Object";
+};
 
 ZmObjectHandler.prototype.toString = 
 function() {
