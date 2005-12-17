@@ -404,7 +404,7 @@ function(ev) {
 
 // Create a roster item
 ZmRosterTreeController.prototype._newRosterItemCallback =
-function(addr, name, groups) {
+function(args) {
 	this._appCtxt.getNewRosterItemDialog().popdown();
-	this._imApp.getRoster().createRosterItem(addr, name, groups);
+	this._imApp.getRoster().createRosterItem(args[0], args[1], args[2]);
 };

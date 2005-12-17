@@ -78,18 +78,8 @@ function(loc) {
 ZmNewRosterItemDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getRosterItemData();
-	if (results) {
-		var args = [ev];
-		if (results) {
-			if (results instanceof Array) {
-				args = args.concat(results);
-			}
-			else {
-				args.push(results);
-			}
-		}
-		DwtDialog.prototype._buttonListener.apply(this, args);
-	}
+	if (results)
+		DwtDialog.prototype._buttonListener.call(this, ev, results);
 };
 
 ZmNewRosterItemDialog.prototype._getRosterItemData =
