@@ -47,7 +47,6 @@ function(zimletContext, shell) {
 	this._dwtShell = shell;
 	this._appCtxt = shell.getData(ZmAppCtxt.LABEL);
 	this._origIcon = this.xmlObj().icon;
-	this._url = zimletContext._url;
 	if(this.xmlObj().contentObject && this.xmlObj().contentObject.matchOn[0]) {
 		var regExInfo = this.xmlObj().contentObject.matchOn[0].regex[0];
 		this.RE = new RegExp(regExInfo._content, regExInfo.attrs);
@@ -260,7 +259,7 @@ ZmZimletBase.prototype.displayStatusMessage = function(msg) {
 
 ZmZimletBase.prototype.getResource = 
 function(resourceName) {
-	return this._url + resourceName;
+	return this.xmlObj().getUrl() + resourceName;
 };
 
 ZmZimletBase.prototype.getType = 

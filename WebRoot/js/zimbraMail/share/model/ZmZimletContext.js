@@ -106,7 +106,7 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	// instantiate the handler object if present
 	if (this.handlerObject) {
 		var CTOR = eval(this.handlerObject);
-		this.handlerObject = new CTOR;
+		this.handlerObject = new CTOR(this);
 		this.handlerObject.constructor = CTOR;
 		this.handlerObject.init(this, DwtShell.getShell(window));
 		ZmObjectManager.registerHandler(this.handlerObject);
