@@ -36,6 +36,8 @@ function ZmPickTagDialog(parent, msgDialog, className) {
 	this._tagTree = this._appCtxt.getTree(ZmOrganizer.TAG);
 	this._tagTree.addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
 	this.registerCallback(ZmPickTagDialog.NEW_BUTTON, this._showNewDialog, this);
+	var root = this._tagTreeView.getTreeItemById(ZmOrganizer.ID_ROOT);
+	root.enableSelection(false);
 	this._creatingTag = false;
 };
 
@@ -102,7 +104,8 @@ ZmPickTagDialog.prototype._tagTreeChangeListener =
 function(ev) {
 	// TODO - listener for changing tags
 	if (ev.event == ZmEvent.E_CREATE && this._creatingTag) {
-		this._tagTreeView.setSelected(ev.source, true);
+		var tag = ev.getDetail("organizers")[0];
+		this._tagTreeView.setSelected(tag, true);
 		this._creatingTag = false;
 	}
 };
