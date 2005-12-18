@@ -306,7 +306,7 @@ function(ev) {
 			// allow CLV to update its msg count if its been changed
 			var fields = new Object();
 			fields[ZmItem.F_COUNT] = true;
-			this._conv.list._notify(ZmEvent.E_MODIFY, {fields: fields});
+			this._conv.list._notify(ZmEvent.E_MODIFY, {items: [this._conv], fields: fields});
 			// reset selection to first msg
 			this._msgListView.setSelection(this._conv.msgs.getVector().get(0));
 		}
