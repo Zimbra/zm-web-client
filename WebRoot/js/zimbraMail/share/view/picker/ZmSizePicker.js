@@ -68,8 +68,8 @@ function(parent) {
 	html[i++] = "<td align='left' nowrap>";
 	html[i++] = "<select id='" + unitsId + "'>";
 	html[i++] = "<option value='b'>" + ZmMsg.bytes + "</option>";
-	html[i++] = "<option value='kb' selected>" + ZmMsg.kb + "</option>";
-	html[i++] = "<option value='mb'>" + ZmMsg.mb + "</option>";
+	html[i++] = "<option value='kb' selected>" + ZmMsg.kilobytes + "</option>";
+	html[i++] = "<option value='mb'>" + ZmMsg.megabytes + "</option>";
 	html[i++] = "</select>";
 	html[i++] = "</td>";
 	html[i++] = "</tr>";

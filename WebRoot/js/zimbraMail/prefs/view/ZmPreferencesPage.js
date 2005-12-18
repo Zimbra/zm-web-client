@@ -31,16 +31,14 @@
 * preference tabs. During construction, skeletal HTML is created. The preferences
 * aren't added until the page becomes visible.
 *
-* @author Enrique Del Campo
 * @author Conrad Damon
-* @param parent				the containing widget
-* @param app				the preferences app
-* @param view				which page we are (eg mail or contacts)
-* @param passwordDialog		a ZmChangePasswordDialog
+* @param parent				[DwtControl]				the containing widget
+* @param app				[ZmPrefsApp]				the preferences app
+* @param view				[constant]					which page we are
+* @param passwordDialog		[ZmChangePasswordDialog]	change password dialog
 */
 function ZmPreferencesPage(parent, app, view, passwordDialog) {
 
-	if (arguments.length == 0) return;
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
 	
 	this._appCtxt = app._appCtxt;
@@ -51,6 +49,7 @@ function ZmPreferencesPage(parent, app, view, passwordDialog) {
 	this.selects = new Object();
 	this._createHtml();
 	this._rendered = false;
+	this._hasRendered = false;
 };
 
 ZmPreferencesPage.prototype = new DwtTabViewPage;
@@ -61,7 +60,7 @@ ZmPreferencesPage.IMPORT_TIMEOUT = 300;
 
 ZmPreferencesPage.prototype.hasRendered =
 function () {
-	return this._rendered;
+	return this._hasRendered;
 };
 
 /**
@@ -72,7 +71,8 @@ function () {
 ZmPreferencesPage.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
-	if (this._rendered) return;
+	if (this._hasRendered) return;
+
 	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._view);
 
 	var prefs = ZmPrefView.PREFS[this._view];
@@ -152,7 +152,7 @@ function() {
 		}
 	}
 	this._addButton(this._resetId, ZmMsg.restoreDefaults, 100, new AjxListener(this, this._resetListener));
-	this._rendered = true;
+	this._hasRendered = true;
 };
 
 ZmPreferencesPage.prototype.getTitle =
@@ -375,7 +375,7 @@ function(ev) {
 }
 
 ZmPreferencesPage.prototype._importDoneCallback = 
-function(status, arg1) {
+function(status, aid) {
 
 	var appCtlr = this._appCtxt.getAppController();
 	
@@ -383,7 +383,7 @@ function(status, arg1) {
 		this._importBtn.setEnabled(false);
 		//this._importIframe.style.visibility = "hidden";
 		appCtlr.setStatusMsg(ZmMsg.importingContacts);
-		this._finishImport(arg1);
+		this._finishImport(aid);
 	} else {
 		appCtlr.setStatusMsg(ZmMsg.errorImporting + " (" + status + ")", ZmStatusView.LEVEL_CRITICAL);
 		// always re-render input file widget and its parent IFRAME

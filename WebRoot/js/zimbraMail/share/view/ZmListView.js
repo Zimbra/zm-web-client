@@ -450,18 +450,13 @@ function(ev, div) {
 
 ZmListView.prototype._allowLeftSelection =
 function(clickedEl, ev, button) {
-	if (button == DwtMouseEvent.LEFT) {
-		var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) 
-			? ev.target.id : clickedEl.id;
-
-		var type = Dwt.getAttr(clickedEl, "_type");
-		if (id && type && type == DwtListView.TYPE_LIST_ITEM) {
-			var m = this._parseId(id);
-			if (m && m.field)
-				return m.field != ZmListView.FIELD_PREFIX[ZmItem.F_FLAG];
-		}
+	var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : clickedEl.id;
+	var type = Dwt.getAttr(clickedEl, "_type");
+	if (id && type && type == DwtListView.TYPE_LIST_ITEM) {
+		var m = this._parseId(id);
+		if (m && m.field)
+			return (m.field != ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]);
 	}
-
 	return true;
 }
 

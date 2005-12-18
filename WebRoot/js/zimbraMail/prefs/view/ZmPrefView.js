@@ -29,8 +29,8 @@
 * @class
 * This class represents a tabbed view of the preference pages.
 *
-* @author Enrique Del Campo
 * @author Conrad Damon
+*
 * @param parent				the containing widget
 * @param app				the preferences app
 * @param posStyle			positioning style
@@ -49,7 +49,7 @@ function ZmPrefView(parent, app, posStyle, controller, passwordDialog) {
 
     this.setScrollStyle(DwtControl.SCROLL);
 	this.prefView = new Object();
-	this._rendered = false;
+	this._hasRendered = false;
 };
 
 ZmPrefView.prototype = new DwtTabView;
@@ -95,7 +95,7 @@ function() {
 */
 ZmPrefView.prototype.show =
 function() {
-	if (this._rendered) return;
+	if (this._hasRendered) return;
 
 	for (var i = 0; i < ZmPrefView.VIEWS.length; i++) {
 		var view = ZmPrefView.VIEWS[i];
@@ -105,38 +105,26 @@ function() {
 		if (view == ZmPrefView.CALENDAR && (!this._appCtxt.get(ZmSetting.CALENDAR_ENABLED))) continue;
 
 		var viewObj = null;
-		if (view != ZmPrefView.FILTER_RULES) {
-			viewObj = new ZmPreferencesPage(this._parent, this._app, view, this._passwordDialog);
+		if (view == ZmPrefView.FILTER_RULES) {
+			viewObj = this._controller.getFilterRulesController().getFilterRulesView();
 		} else {
-			viewObj = new ZmFilterPrefView(this._parent, this._app._appCtxt);
-			var size = this.getSize();
-			viewObj.setSize((size.x *.97), (size.y *.97));
+			viewObj = new ZmPreferencesPage(this._parent, this._app, view, this._passwordDialog);
 		}
 
 		this.prefView[view] = viewObj;
 		this.addTab(ZmPrefView.TAB_NAME[view], this.prefView[view]);
 	}
-	this._rendered = true;
+	this._hasRendered = true;
 };
 
 ZmPrefView.prototype.getTitle =
 function() {
-	return this._rendered ? this.getActiveView().getTitle() : null;
+	return this._hasRendered ? this.getActiveView().getTitle() : null;
 };
 
-/**
- * For some reason, the filter page, when rendered, resets the height of the
- * pref view div. By intercepting the setBounds call, we will can set the 
- * height of the filter rules view as well.
- */
-ZmPrefView.prototype.setBounds =
-function(x, y, width, height) {
-	DwtControl.prototype.setBounds.call(this, x, y, width, height);
-	if (this._appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
-		var filterRulesView = this.prefView[ZmPrefView.FILTER_RULES];
-		if (filterRulesView)
-			filterRulesView.setSize(width *.97, height *.93);
-	}
+ZmPrefView.prototype.getView =
+function(view) {
+	return this.prefView[view];
 };
 
 /**
@@ -234,8 +222,5 @@ function(dirtyCheck, noValidation) {
 */
 ZmPrefView.prototype.isDirty =
 function() {
-	var changed = this.getChangedPrefs(true, true);
-	return this._appCtxt.get(ZmSetting.FILTERS_ENABLED)
-		? (changed || ZmFilterRules.shouldSave())
-		: changed;
+	return this.getChangedPrefs(true, true);
 };

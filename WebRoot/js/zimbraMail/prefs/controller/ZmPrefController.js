@@ -43,7 +43,7 @@ function ZmPrefController(appCtxt, container, prefsApp) {
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._backListener);
 	this._filtersEnabled = appCtxt.get(ZmSetting.FILTERS_ENABLED);
-}
+};
 
 ZmPrefController.prototype = new ZmController();
 ZmPrefController.prototype.constructor = ZmPrefController;
@@ -56,7 +56,14 @@ function() {
 	this._setView();
 	this._prefsView.show();
 	this._app.pushView(ZmController.PREF_VIEW);
-}
+};
+
+ZmPrefController.prototype.getFilterRulesController =
+function() {
+	if (!this._filterRulesController)
+		this._filterRulesController = new ZmFilterRulesController(this._appCtxt, this._container, this._app, this._prefsView);
+	return this._filterRulesController;
+};
 
 // Creates the prefs view, with a tab for each preferences page.
 ZmPrefController.prototype._setView = 
@@ -68,15 +75,6 @@ function() {
 
 	if (!this._prefsView) {
 		this._initializeToolBar();
-		if (this._filtersEnabled) {
-			ZmFilterRules.setRequestSender(this._appCtxt.getAppController());
-			try {
-				ZmFilterRules.getRules();
-			} catch (ex) {
-				// TODO: let the user know that the preferences were not saved
-				this._handleException(ex, ZmPrefController.prototype._setView, null, false);
-			}
-		}
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
 		this._prefsView = new ZmPrefView(this._container, this._app, Dwt.ABSOLUTE_STYLE, this, this._passwordDialog);
@@ -85,7 +83,7 @@ function() {
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
 		this._app.createView(ZmController.PREF_VIEW, elements, callbacks, true);
 	}
-}
+};
 
 // Initializes the toolbar and sets up the listeners
 ZmPrefController.prototype._initializeToolBar = 
@@ -99,7 +97,7 @@ function () {
 			this._toolbar.addSelectionListener(buttons[i], this._listeners[buttons[i]]);
 	}
 	this._toolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
-}
+};
 
 /*
 * Saves any options that have been changed.
@@ -125,39 +123,23 @@ function(ev, callback, noPop) {
 	} else {
 		this._handleResponseSaveListener(list, callback, noPop);
 	}
-}
+};
 
 ZmPrefController.prototype._handleResponseSaveListener = 
 function(list, callback, noPop, result) {
-	var rulesToSave = false;
-	if (this._filtersEnabled) {
-		rulesToSave = ZmFilterRules.shouldSave();
-		if (rulesToSave) {
-			var respCallback = new AjxCallback(this, this._handleResponseSaveListener1, [list, callback, noPop, rulesToSave]);
-			ZmFilterRules.saveRules(respCallback);
-		} else {
-			this._handleResponseSaveListener1(list, callback, noPop, rulesToSave);
-		}
-	}
-
-	if (callback) callback.run(result);
-}
-
-ZmPrefController.prototype._handleResponseSaveListener1 = 
-function(list, callback, noPop, rulesToSave, result) {
-	if (list.length || rulesToSave)
+	if (list.length)
 		this._appCtxt.setStatusMsg(ZmMsg.optionsSaved);
 	if (!noPop)
 		this._backListener();
 	
 	if (callback) callback.run(result);
-}
+};
 
 ZmPrefController.prototype._backListener = 
 function() {
 	this._reallyWantToExitWithoutDialog = true;
 	this._app.getAppViewMgr().popView();
-}
+};
 
 ZmPrefController.prototype._changePassword =
 function(oldPassword, newPassword) {
@@ -170,7 +152,7 @@ function(oldPassword, newPassword) {
 	var respCallback = new AjxCallback(this, this._handleResponseChangePassword);
 	var errorCallback = new AjxCallback(this, this._handleErrorChangePassword);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
-}
+};
 
 ZmPrefController.prototype._handleResponseChangePassword =
 function(result) {
@@ -206,25 +188,25 @@ function() {
 	var point = new DwtPoint(loc.x + 50, loc.y + 100);
     this._popShield.popup(point);
 	return false;
-}
+};
 
 ZmPrefController.prototype._popShieldYesCallback =
 function() {
 	var respCallback = new AjxCallback(this, this._handleResponsePopShieldYesCallback);
 	this._saveListener(null, respCallback, true);
-}
+};
 
 ZmPrefController.prototype._handleResponsePopShieldYesCallback =
-function(args) {
+function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(true);
-}
+};
 
 ZmPrefController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(true);
-}
+};
 
 ZmPrefController.prototype._popShieldCancelCallback =
 function() {
