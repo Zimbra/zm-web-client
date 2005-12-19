@@ -328,7 +328,7 @@ function() {
 	for (var j = 0; j < ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES; j++) {
 		// store some meta data about this table row
 		var attendee = new Object();
-		var dwtId = Dwt.getNextId();
+		var dwtId = attendee.dwtId = Dwt.getNextId();
 		attendee.dwtDivId = dwtId + "_DIV_";
 		attendee.dwtInputId = dwtId + "_INPUT_";
 		attendee.dwtTableId = dwtId + "_TABLE_";
@@ -354,9 +354,9 @@ function() {
 			html[i++] = ZmMsg.allAttendees;
 			html[i++] = "</td></tr></table>";
 		} else {
-			html[i++] = "<input autocomplete='off' type='text' class='ZmSchedTabViewPageInput' maxlength=256 id='";
-			html[i++] = attendee.dwtInputId;
-			html[i++] = "'>";
+			html[i++] = "<div id='";
+			html[i++] = attendee.dwtId;
+			html[i++] = "'></div>";
 		}
 		if (j > 0) {
 			html[i++] = "&nbsp;&nbsp;";
@@ -436,11 +436,29 @@ function() {
 	if (navbarCell)
 		navbarCell.appendChild(this._navToolbar.getHtmlElement());
 	delete this._navToolbarId;
+
+	// create DwtInputField's
+	for (var i = 0; i < this._schedTable.length; i++) {
+		var inputFieldId = this._schedTable[i].dwtId;
+		var inputField = document.getElementById(inputFieldId);
+		if (inputField) {
+			var dwtInputField = new DwtInputField(this, DwtInputField.STRING, null, null, 256, 
+														   DwtInputField.ERROR_ICON_NONE, 
+														   DwtInputField.ONEXIT_VALIDATION, 
+														   this._emailValidator, this);
+			dwtInputField.setDisplay(Dwt.DISPLAY_INLINE);
+			dwtInputField.reparentHtmlElement(inputFieldId);
+			var inputEl = dwtInputField.getInputElement();
+			dwtInputField.getInputElement().className = "ZmSchedTabViewPageInput";
+			dwtInputField.getInputElement().id = this._schedTable[i].dwtInputId;
+			AjxCore.assignId(dwtInputField);
+		}
+	}
 };
 
 ZmSchedTabViewPage.prototype._cacheFields = 
 function() {
-	this._startDateField 	= document.getElementById(this._startDateFieldId); delete this._startDateFieldId;
+	this._startDateField 	= document.getElementById(this._startDateFieldId); 	delete this._startDateFieldId;
 	this._endDateField 		= document.getElementById(this._endDateFieldId);	delete this._endDateFieldId;
 	this._allDayCheckbox 	= document.getElementById(this._allDayCheckboxId);
 	this._allAttendeesTable = document.getElementById(this._allAttendeeSlot.dwtTableId); 
@@ -505,26 +523,30 @@ function(show) {
 ZmSchedTabViewPage.prototype._showAttendeeField =
 function(el) {
 	if (el.tagName.toLowerCase() == "div") {
-		Dwt.setVisible(el.firstChild, true);
-		el.firstChild.focus();
+		var inputEl = el.firstChild.firstChild.firstChild; // yuck
+		Dwt.setVisible(inputEl, true);
+		inputEl.focus();
 	}
 };
 
 ZmSchedTabViewPage.prototype._handleAttendeeField = 
 function(inputEl) {
+	var dwtInput = Dwt.getObjectFromElement(inputEl);
+	var isValid = dwtInput.validate();
 	var email = AjxStringUtil.trim(inputEl.value);
 	var sched = this._schedTable[inputEl._schedTableIdx];
 
-	if (email && email.length > 0) {
+	if (isValid && email && email.length > 0) {
 		this._attendees[email] = inputEl._schedTableIdx;
 		// go get this attendee's free/busy info if we havent already
 		if (sched.uid != email)
 			this._updateAttendeesField = true;
 			this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), email, this._fbCallback);
 	} else {
-		this._cleanRow(inputEl, sched);
+		this._cleanRow(inputEl, sched, !isValid);
 		this._colorAllAttendees();
-		this._updateAttendees();
+		if (isValid)
+			this._updateAttendees();
 	}
 };
 
@@ -632,9 +654,9 @@ function(attendees) {
 };
 
 ZmSchedTabViewPage.prototype._cleanRow = 
-function(inputEl, sched) {
+function(inputEl, sched, isInvalid) {
 	// clear input element value and make invisible
-	if (inputEl) {
+	if (inputEl && !isInvalid) {
 		inputEl.value = "";
 		if (Dwt.getVisible(inputEl))
 			Dwt.setVisible(inputEl, false);
@@ -889,6 +911,16 @@ function(result) {
 
 	if (this._updateAttendeesField)
 		this._updateAttendees();
+};
+
+ZmSchedTabViewPage.prototype._emailValidator =
+function(value) {
+	var str = AjxStringUtil.trim(value);
+	if (str.length > 0 && !ZmEmailAddress.isValid(value)) {
+		throw ZmMsg.errorInvalidEmail;
+	}
+
+	return value;
 };
 
 
