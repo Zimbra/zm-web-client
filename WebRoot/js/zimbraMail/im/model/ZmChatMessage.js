@@ -50,6 +50,12 @@ function(body) {
     return zcm;
 };
 
+ZmChatMessage.prototype.getShortTime =
+function() {
+	var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+	return formatter.format(new Date(this.ts));
+};
+
 ZmChatMessage.prototype.toHtml = 
 function(objectManager, chat) {
     var html = new AjxBuffer();
@@ -57,10 +63,12 @@ function(objectManager, chat) {
         html.append("<span class='ZmChatWindowChatEntrySystem'>");
         //if (objectManager) html.append(objectManager.findObjects(this.body, true));
         //else 
+        html.append("[",AjxStringUtil.htmlEncode(this.getShortTime()), "]&nbsp;");        
         html.append(AjxStringUtil.htmlEncode(this.body));        
         html.append("</span>");
     } else {
         html.append("<span class='", this.fromMe ? "ZmChatWindowChatEntryMe" : "ZmChatWindowChatEntryThem","'>");
+        html.append("[",AjxStringUtil.htmlEncode(this.getShortTime()), "]&nbsp;");
         html.append(AjxStringUtil.htmlEncode(chat.getDisplayName(this.from, this.fromMe)), ": </span>");
         if (objectManager) html.append(objectManager.findObjects(this.body, true));
         else html.append(AjxStringUtil.htmlEncode(this.body));
