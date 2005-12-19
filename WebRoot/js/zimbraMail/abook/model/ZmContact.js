@@ -140,7 +140,6 @@ function(node, args) {
 	var contact = new ZmContact(args.appCtxt, node.id, args.list);
 	contact._loadFromDom(node);
 	contact._resetCachedFields();
-	args.list._updateEmailHash(contact, true);
 
 	return contact;
 }
@@ -154,8 +153,11 @@ function(node, args) {
 */
 ZmContact.compareByFileAs =
 function(a, b) {
-	if (a.getFileAs(true) > b.getFileAs(true)) return 1;
-	if (a.getFileAs(true) < b.getFileAs(true)) return -1;
+	var aFileAs = a.getFileAs(true);
+	var bFileAs = b.getFileAs(true);
+
+	if (aFileAs > bFileAs) return 1;
+	if (aFileAs < bFileAs) return -1;
 	return 0;
 }
 

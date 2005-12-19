@@ -274,7 +274,7 @@ function(params) {
 
     // trigger roster load/reload
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
-        	this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
+		this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
 
 	this.setPollInterval();
 	var opc = this._appCtxt.getOverviewController();
