@@ -909,7 +909,7 @@ function() {
 	// create new table row which will contain parent fieldset
 	var table = this.getHtmlElement().firstChild;
 	this._attachmentRow = table.insertRow(2);
-	this._attachmentRow.style.height = AjxEnv.isIE ? 44 : 22;
+	this._attachmentRow.style.height = AjxEnv.isIE ? "auto" : 22;
 	var cell = this._attachmentRow.insertCell(-1);
 	cell.colSpan = 2;
 
