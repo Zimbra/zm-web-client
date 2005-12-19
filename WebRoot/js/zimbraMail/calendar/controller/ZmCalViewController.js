@@ -1208,10 +1208,21 @@ function() {
 			for (var i = 0; i < menuItems.length; i++) {
 				var item = this._recurringActionMenu.getMenuItem(menuItems[i]);
 				item.setMenu(this._actionMenu);
+				// NOTE: Target object for listener is menu item
+				var menuItemListener = new AjxListener(item, this._recurringMenuPopup);
+				item.addListener(DwtEvent.ONMOUSEOVER, menuItemListener);
 			}
 			this._recurringActionMenu.addPopdownListener(this._popdownListener);
 		}
 	}
+};
+
+/** The <code>this</code> in this method is the menu item. */
+ZmCalViewController.prototype._recurringMenuPopup =
+function(ev) {
+	var menu = this.getMenu();
+	var opId = this.getData(ZmOperation.KEY_ID);
+	menu.setData(ZmOperation.KEY_ID, opId);
 };
 
 /**
