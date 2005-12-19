@@ -921,7 +921,7 @@ function(notify) {
 			this._handleCreates(notify.created, notify.modified);
 		if (notify.modified)
 			this._handleModifies(notify.modified);
-		if (notify.im)
+		if (notify.im && this._appCtxt.get(ZmSetting.IM_ENABLED))
 			this.getApp(ZmZimbraMail.IM_APP).getRoster().handleNotification(notify.im);
 		if (this._calController) this._calController.notifyComplete();
 	} catch (ex) {
