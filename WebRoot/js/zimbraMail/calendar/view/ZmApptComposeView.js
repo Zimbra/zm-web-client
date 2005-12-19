@@ -72,11 +72,11 @@ function() {
 }
 
 ZmApptComposeView.prototype.set =
-function(appt, mode) {
+function(appt, mode, isDirty) {
 	// always switch to appointment tab
 	this._tabs.switchToTab(this._apptTabKey);
 
-	this._apptTab.initialize(appt, mode);
+	this._apptTab.initialize(appt, mode, isDirty);
 	this._scheduleTab.initialize(appt, mode);
 };
 

@@ -50,14 +50,14 @@ function() {
 // Public methods
 
 ZmApptComposeController.prototype.show =
-function(appt, mode) {
+function(appt, mode, isDirty) {
 
 	this._initToolbar(mode);
 	this.initApptComposeView();
 	this._setFormatBtnItem(true);
 
 	this._app.pushView(ZmController.APPOINTMENT_VIEW, true);
-	this._apptView.set(appt, mode);
+	this._apptView.set(appt, mode, isDirty);
 	this._apptView.reEnableDesignMode();
 };
 

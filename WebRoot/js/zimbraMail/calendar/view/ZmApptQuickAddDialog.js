@@ -99,6 +99,8 @@ function(appt) {
 	this._resetCalendarSelect(appt);
 	this._repeatSelect.setSelectedValue("NON");
 	this._repeatDescField.innerHTML = "";
+
+	this._origFormValue = this._formValue();
 };
 
 ZmApptQuickAddDialog.prototype.getAppt = 
@@ -152,6 +154,11 @@ function() {
 	}
 
 	return isValid;
+};
+
+ZmApptQuickAddDialog.prototype.isDirty = 
+function() {
+	return this._formValue() != this._origFormValue;
 };
 
 ZmApptQuickAddDialog.prototype.popup =
@@ -350,6 +357,25 @@ function(show) {
 	// also show/hide the "@" text
 	Dwt.setVisibility(this._startTimeSelect.getHtmlElement().parentNode.previousSibling.previousSibling, show);
 	Dwt.setVisibility(this._endTimeSelect.getHtmlElement().parentNode.previousSibling.previousSibling, show);
+};
+
+ZmApptQuickAddDialog.prototype._formValue =
+function() {
+	var vals = new Array();
+
+	vals.push(this._subjectField.value);
+	vals.push(this._locationField.value);
+	vals.push(this._startDateField.value);
+	vals.push(this._endDateField.value);
+	if (!this._appt.isAllDayEvent()) {
+		vals.push(this._startTimeSelect.getValue());
+		vals.push(this._endTimeSelect.getValue());
+	}
+	vals.push(this._repeatSelect.getValue());
+
+	var str = vals.join("|");
+	str = str.replace(/\|+/, "|");
+	return str;
 };
 
 

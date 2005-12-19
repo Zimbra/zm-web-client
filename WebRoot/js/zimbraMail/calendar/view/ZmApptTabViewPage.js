@@ -144,8 +144,9 @@ function(attId) {
 };
 
 ZmApptTabViewPage.prototype.initialize =
-function(appt, mode) {
+function(appt, mode, isDirty) {
 	this._appt = appt;
+	this._isDirty = isDirty;
 
 	this.createHtml();
 
@@ -199,9 +200,9 @@ function(bEnableInputs) {
 
 ZmApptTabViewPage.prototype.isDirty =
 function() {
-	return (this._gotAttachments()) ||
-		   (this._formValue() != this._origFormValue) ||
-		   (this._subjectField.value != "");
+	return (this._gotAttachments()) || 
+			this._isDirty ||
+		   (this._formValue() != this._origFormValue);
 };
 
 ZmApptTabViewPage.prototype.isValid =
@@ -1083,7 +1084,7 @@ function(ev) {
 	var menu = ev.item.getMenu();
 	var cal = menu.getItem(0);
 	cal.setDate(calDate, true);
-	menu.popup();
+	ev.item.popup();
 };
 
 ZmApptTabViewPage.prototype._attendeesButtonListener =

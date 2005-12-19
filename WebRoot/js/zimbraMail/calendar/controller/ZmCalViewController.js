@@ -844,9 +844,9 @@ function(startDate, endDate, folderId, shiftKey) {
 };
 
 ZmCalViewController.prototype.newAppointment = 
-function(newAppt, mode) {
+function(newAppt, mode, isDirty) {
 	var appt = newAppt || this._newApptObject(this._viewVisible ? this._viewMgr.getDate() : new Date());
-	this._app.getApptComposeController().show(appt, mode);
+	this._app.getApptComposeController().show(appt, mode, isDirty);
 };
 
 ZmCalViewController.prototype.editAppointment = 
@@ -936,7 +936,7 @@ function(ev) {
 	var appt = this._quickAddDialog.getAppt();
 	if (appt) {
 		this._quickAddDialog.popdown();
-		this.newAppointment(appt, ZmAppt.MODE_NEW_FROM_QUICKADD);
+		this.newAppointment(appt, ZmAppt.MODE_NEW_FROM_QUICKADD, this._quickAddDialog.isDirty());
 	}
 };
 
