@@ -386,7 +386,7 @@ function(conf, field, options, dataValue, rowId, config) {
 		var cal = new DwtCalendar(calMenu);
 		cal.setSkipNotifyOnPage(true);
 		cal.addSelectionListener(this._dateLstnr);
-		cal.setDate(new Date(dataValue));
+		cal.setDate(dataValue ? new Date(dataValue) : new Date());
 		cal._dateButton = dateButton;
 		this._inputs[rowId][field] = {id: id, dwtObj: dateButton};
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
