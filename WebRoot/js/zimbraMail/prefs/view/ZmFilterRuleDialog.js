@@ -464,16 +464,25 @@ function(isCondition) {
 */
 ZmFilterRuleDialog.prototype._rowChangeListener =
 function(ev) {
-	var value = ev._args.newValue;
+	var newValue = ev._args.newValue;
+	var oldValue = ev._args.oldValue;
 	var rowId = ev._args.selectObj.getData(ZmFilterRuleDialog.ROW_ID);
 	var isCondition = ev._args.selectObj.getData(ZmFilterRuleDialog.IS_CONDITION);
+
+	// preserve op and value between header fields
+	var comparator = null, dataValue = null;
+	if (isCondition && (ZmFilterRule.IS_HEADER[oldValue] && ZmFilterRule.IS_HEADER[newValue])) {
+		comparator = this._getInputValue(this._inputs[rowId], ZmFilterRule.CONDITIONS[oldValue], "ops");
+		dataValue = this._getInputValue(this._inputs[rowId], ZmFilterRule.CONDITIONS[oldValue], "value");
+	}
+	
 	var row = document.getElementById(rowId);
 	var index = this._getIndexForRow(row, isCondition);
 	var table = document.getElementById(isCondition ? this._conditionsTableId : this._actionsTableId);
 	table.deleteRow(index);
 	
 	var newIndex = (index >= table.rows.length) ? null : index;
-	var data = isCondition ? new ZmCondition(value) : new ZmAction(value);
+	var data = isCondition ? new ZmCondition(newValue, comparator, dataValue) : new ZmAction(newValue);
 	row = Dwt.parseHtmlFragment(this._getRowHtml(data, isCondition), true);
 	table.tBodies[0].insertBefore(row, newIndex);
 

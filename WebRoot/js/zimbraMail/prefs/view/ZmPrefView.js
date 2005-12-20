@@ -61,7 +61,6 @@ ZmPrefView.FILTER_RULES	= 3;
 ZmPrefView.ADDR_BOOK	= 4;
 ZmPrefView.CALENDAR		= 5;
 ZmPrefView.VIEWS = [ZmPrefView.GENERAL, ZmPrefView.MAIL, 
-//					ZmPrefView.FILTER_RULES, ZmPrefView.ADDR_BOOK, ZmPrefView.CALENDAR];
 					ZmPrefView.ADDR_BOOK, ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES];
 
 // list of prefs for each page
@@ -116,8 +115,6 @@ function() {
 
 		this.prefView[view] = viewObj;
 
-//		if (view == ZmPrefView.FILTER_RULES)
-//			this.addFiller();
 		this.addTab(ZmPrefView.TAB_NAME[view], this.prefView[view]);
 	}
 	this._hasRendered = true;
