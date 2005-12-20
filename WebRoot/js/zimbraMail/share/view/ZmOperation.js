@@ -72,22 +72,25 @@ ZmOperation.EDIT_REPLY_DECLINE		= i++;
 ZmOperation.EDIT_REPLY_TENTATIVE	= i++;
 ZmOperation.EXPAND_ALL				= i++;
 ZmOperation.FORWARD					= i++;
+ZmOperation.FORWARD_ATT 			= i++;
+ZmOperation.FORWARD_INLINE			= i++;
+ZmOperation.FORWARD_MENU 			= i++;
 ZmOperation.GO_TO_URL				= i++;
 ZmOperation.IM						= i++;
 ZmOperation.IM_NEW_CHAT  			= i++;
 ZmOperation.IM_NEW_GROUP_CHAT		= i++;
 ZmOperation.IM_PRESENCE_AWAY    	= i++;
 ZmOperation.IM_PRESENCE_CHAT    	= i++;
-ZmOperation.IM_PRESENCE_DND    	= i++;
+ZmOperation.IM_PRESENCE_DND			= i++;
 ZmOperation.IM_PRESENCE_INVISIBLE	= i++;
 ZmOperation.IM_PRESENCE_MENU		= i++;
 ZmOperation.IM_PRESENCE_OFFLINE  	= i++;
 ZmOperation.IM_PRESENCE_ONLINE   	= i++;
-ZmOperation.IM_PRESENCE_XA    	= i++;
+ZmOperation.IM_PRESENCE_XA			= i++;
 ZmOperation.INVITE_REPLY_MENU		= i++;
-ZmOperation.INVITE_REPLY_ACCEPT = i++;
-ZmOperation.INVITE_REPLY_DECLINE = i++;
-ZmOperation.INVITE_REPLY_TENTATIVE = i++;
+ZmOperation.INVITE_REPLY_ACCEPT		= i++;
+ZmOperation.INVITE_REPLY_DECLINE	= i++;
+ZmOperation.INVITE_REPLY_TENTATIVE	= i++;
 ZmOperation.MARK_ALL_READ			= i++;
 ZmOperation.MARK_READ				= i++;
 ZmOperation.MARK_UNREAD				= i++;
@@ -113,7 +116,7 @@ ZmOperation.PAGE_FORWARD			= i++;
 ZmOperation.PRINT					= i++;
 ZmOperation.PRINT_CONTACTLIST 		= i++;
 ZmOperation.PRINT_MENU 				= i++;
-ZmOperation.REFRESH		        		= i++;
+ZmOperation.REFRESH					= i++;
 ZmOperation.REMOVE_FILTER_RULE		= i++;
 ZmOperation.RENAME_FOLDER			= i++;
 ZmOperation.RENAME_SEARCH			= i++;
@@ -164,7 +167,7 @@ ZmOperation.MSG_KEY[ZmOperation.CAL_REFRESH]			= "refresh";
 ZmOperation.MSG_KEY[ZmOperation.CAL_VIEW_MENU]			= "view";
 ZmOperation.MSG_KEY[ZmOperation.CANCEL]					= "cancel";
 ZmOperation.MSG_KEY[ZmOperation.CHECK_ALL]				= "checkAll";
-ZmOperation.MSG_KEY[ZmOperation.CHECK_MAIL]			= "checkMail";
+ZmOperation.MSG_KEY[ZmOperation.CHECK_MAIL]				= "checkMail";
 ZmOperation.MSG_KEY[ZmOperation.CLEAR_ALL]				= "clearAll";
 ZmOperation.MSG_KEY[ZmOperation.CLOSE]					= "close";
 ZmOperation.MSG_KEY[ZmOperation.COLOR_MENU]				= "tagColor";
@@ -182,17 +185,20 @@ ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_DECLINE]		= "replyDecline";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_TENTATIVE]   = "replyTentative";
 ZmOperation.MSG_KEY[ZmOperation.EXPAND_ALL]				= "expandAll";
 ZmOperation.MSG_KEY[ZmOperation.FORWARD]				= "forward";
+ZmOperation.MSG_KEY[ZmOperation.FORWARD_ATT] 			= "forwardAtt";
+ZmOperation.MSG_KEY[ZmOperation.FORWARD_INLINE] 		= "forwardInline";
+ZmOperation.MSG_KEY[ZmOperation.FORWARD_MENU] 			= "forward";
 ZmOperation.MSG_KEY[ZmOperation.IM]						= "newIM";
 ZmOperation.MSG_KEY[ZmOperation.IM_NEW_CHAT]			= "imNewChat";
-ZmOperation.MSG_KEY[ZmOperation.IM_NEW_GROUP_CHAT]       = "imNewGroupChat";
-ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_AWAY]        = "imStatusAway";
-ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_CHAT]        = "imStatusChat";
-ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_DND]         = "imStatusDND";
-ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_INVISIBLE]   = "imStatusInvisible";
-ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_MENU]		  = "imPresence";
-ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_OFFLINE]     = "imStatusOffline";
-ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_ONLINE]      = "imStatusOnline";
-ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_XA]          = "imStatusExtAway";
+ZmOperation.MSG_KEY[ZmOperation.IM_NEW_GROUP_CHAT]		= "imNewGroupChat";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_AWAY]		= "imStatusAway";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_CHAT]		= "imStatusChat";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_DND]		= "imStatusDND";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_INVISIBLE]	= "imStatusInvisible";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_MENU]		= "imPresence";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_OFFLINE]	= "imStatusOffline";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_ONLINE]		= "imStatusOnline";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_XA]			= "imStatusExtAway";
 ZmOperation.MSG_KEY[ZmOperation.INVITE_REPLY_MENU]		= "editReply";
 ZmOperation.MSG_KEY[ZmOperation.INVITE_REPLY_ACCEPT]	= "editReply";
 ZmOperation.MSG_KEY[ZmOperation.INVITE_REPLY_DECLINE]	= "editReply";
@@ -270,6 +276,9 @@ ZmOperation.MSG_KEY_TT[ZmOperation.DETACH_COMPOSE] 		= "detachTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.EDIT]				= "editTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.EDIT_PROPS]			= "editPropertiesTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.FORWARD]				= "forwardTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.FORWARD_ATT]			= "forwardAtt";
+ZmOperation.MSG_KEY_TT[ZmOperation.FORWARD_INLINE]		= "forwardTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.FORWARD_MENU]		= "forwardTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.MONTH_VIEW]			= "viewMonthTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.MOVE]				= "moveTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.NEW_APPT]			= "newApptTooltip";
@@ -321,17 +330,20 @@ ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_DECLINE]		= "Cancel";
 ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_TENTATIVE]		= "QuestionMark";
 ZmOperation.IMAGE[ZmOperation.EXPAND_ALL]				= "Plus";
 ZmOperation.IMAGE[ZmOperation.FORWARD]					= "Forward";
+ZmOperation.IMAGE[ZmOperation.FORWARD_ATT]				= "Forward";
+ZmOperation.IMAGE[ZmOperation.FORWARD_INLINE] 			= "Forward";
+ZmOperation.IMAGE[ZmOperation.FORWARD_MENU]				= "Forward";
 ZmOperation.IMAGE[ZmOperation.GO_TO_URL]				= "URL";
 ZmOperation.IMAGE[ZmOperation.IM]						= "ImStartChat";
-ZmOperation.IMAGE[ZmOperation.IM_NEW_CHAT]            = "ImFree2Chat";
-ZmOperation.IMAGE[ZmOperation.IM_NEW_GROUP_CHAT]            = "ImFree2Chat";
-ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_AWAY]        = "ImAway";
-ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_CHAT]        = "ImFree2Chat";
-ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_DND]         = "ImDnd";
-ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_INVISIBLE]   = "ImInvisible";
-ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_OFFLINE]     = "RoundMinusDis"; // need new one
-ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_ONLINE]      = "ImAvailable";
-ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_XA]          = "ImExtendedAway";
+ZmOperation.IMAGE[ZmOperation.IM_NEW_CHAT]				= "ImFree2Chat";
+ZmOperation.IMAGE[ZmOperation.IM_NEW_GROUP_CHAT]		= "ImFree2Chat";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_AWAY]			= "ImAway";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_CHAT]			= "ImFree2Chat";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_DND]			= "ImDnd";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_INVISIBLE]	= "ImInvisible";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_OFFLINE]		= "RoundMinusDis"; // need new one
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_ONLINE]		= "ImAvailable";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_XA]			= "ImExtendedAway";
 ZmOperation.IMAGE[ZmOperation.INVITE_REPLY_MENU]		= "Reply";
 ZmOperation.IMAGE[ZmOperation.INVITE_REPLY_ACCEPT]		= "Check";
 ZmOperation.IMAGE[ZmOperation.INVITE_REPLY_DECLINE]		= "Cancel";
@@ -375,7 +387,7 @@ ZmOperation.IMAGE[ZmOperation.SAVE]						= "Save";
 ZmOperation.IMAGE[ZmOperation.SAVE_DRAFT]				= "DraftFolder";
 ZmOperation.IMAGE[ZmOperation.SCHEDULE_VIEW]			= "GroupSchedule";
 ZmOperation.IMAGE[ZmOperation.SEARCH]					= "Search";
-ZmOperation.IMAGE[ZmOperation.SEARCH_MAIL]					= "SearchMail";
+ZmOperation.IMAGE[ZmOperation.SEARCH_MAIL]				= "SearchMail";
 ZmOperation.IMAGE[ZmOperation.SEND]						= "Send";
 ZmOperation.IMAGE[ZmOperation.SHARE_ACCEPT]			    = "Check";
 ZmOperation.IMAGE[ZmOperation.SHARE_CALENDAR]			= "CalendarFolder";
@@ -408,6 +420,9 @@ ZmOperation.DIS_IMAGE[ZmOperation.EDIT] 				= "EditDis";
 ZmOperation.DIS_IMAGE[ZmOperation.EDIT_FILTER_RULE] 	= "EditDis";
 ZmOperation.DIS_IMAGE[ZmOperation.EDIT_PROPS]			= "PropertiesDis";
 ZmOperation.DIS_IMAGE[ZmOperation.FORWARD]				= "ForwardDis";
+ZmOperation.DIS_IMAGE[ZmOperation.FORWARD_ATT]			= "ForwardDis";
+ZmOperation.DIS_IMAGE[ZmOperation.FORWARD_INLINE]		= "ForwardDis";
+ZmOperation.DIS_IMAGE[ZmOperation.FORWARD_MENU]			= "ForwardDis";
 ZmOperation.DIS_IMAGE[ZmOperation.IM]					= "ImStartChatDis";
 ZmOperation.DIS_IMAGE[ZmOperation.MONTH_VIEW]			= "MonthViewDis";
 ZmOperation.DIS_IMAGE[ZmOperation.MOVE]					= "MoveToFolderDis";
@@ -543,6 +558,8 @@ function(parent, id, opHash) {
 		ZmOperation.addImPresenceMenu(parent, opHash);
 	} else if (id == ZmOperation.REPLY_MENU) {
 		ZmOperation.addDeferredMenu(ZmOperation.addReplyMenu, opHash[id]);
+	} else if (id == ZmOperation.FORWARD_MENU) {
+		ZmOperation.addDeferredMenu(ZmOperation.addForwardMenu, opHash[id]);
 	} else if (id == ZmOperation.INVITE_REPLY_MENU) {
 		ZmOperation.addDeferredMenu(ZmOperation.addInviteReplyMenu, opHash[id]);
 	} else if (id == ZmOperation.CAL_VIEW_MENU) {
@@ -650,6 +667,19 @@ function(parent, dialog) {
 ZmOperation.addReplyMenu =
 function(parent) {
 	var list = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
+	var menu = new ZmActionMenu(parent, list, null);
+	parent.setMenu(menu);
+	return menu;
+}
+
+/**
+* Adds a "Forward" submenu for forwarding inline or as attachment
+*
+* @param parent		parent widget (a toolbar or action menu)
+*/
+ZmOperation.addForwardMenu =
+function(parent) {
+	var list = [ZmOperation.FORWARD_INLINE, ZmOperation.FORWARD_ATT];
 	var menu = new ZmActionMenu(parent, list, null);
 	parent.setMenu(menu);
 	return menu;

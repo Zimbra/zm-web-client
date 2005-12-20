@@ -42,15 +42,22 @@ function ZmMailListController(appCtxt, container, mailApp) {
 
 	this._listeners[ZmOperation.MARK_READ] = new AjxListener(this, this._markReadListener);
 	this._listeners[ZmOperation.MARK_UNREAD] = new AjxListener(this, this._markUnreadListener);
+
 	var replyLis = new AjxListener(this, this._replyListener);
-	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED))
+	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
 		this._listeners[ZmOperation.REPLY_MENU] = replyLis;
-	else {
+	} else {
 		this._listeners[ZmOperation.REPLY] = replyLis;
 		this._listeners[ZmOperation.REPLY_ALL] = replyLis;
 	}
-	this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
-	
+
+	var forwardLis = new AjxListener(this, this._forwardListener);
+	if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
+		this._listeners[ZmOperation.FORWARD_MENU] = forwardLis;
+	} else {
+		this._listeners[ZmOperation.FORWARD] = forwardLis;
+	}
+
 	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._checkMailListener);
 			
 	if (this._appCtxt.get(ZmSetting.SPAM_ENABLED))
@@ -58,7 +65,7 @@ function ZmMailListController(appCtxt, container, mailApp) {
 
 	this._inviteReplyListener = new AjxListener(this, this._inviteReplyHandler);
 	this._shareListener = new AjxListener(this, this._shareHandler);
-	
+
 	this._acceptShareListener = new AjxListener(this, this._acceptShareHandler);
 	this._declineShareListener = new AjxListener(this, this._declineShareHandler);
 };
@@ -134,6 +141,7 @@ function(view, arrowStyle) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 		this._setupViewMenu(view);
 		this._propagateMenuListeners(this._toolbar[view], ZmOperation.REPLY_MENU);
+		this._propagateMenuListeners(this._toolbar[view], ZmOperation.FORWARD_MENU);
 		this._setReplyText(this._toolbar[view]);
 		this._toolbar[view].addFiller();
 		arrowStyle = arrowStyle ? arrowStyle : ZmNavToolBar.SINGLE_ARROWS;
@@ -154,6 +162,7 @@ function() {
 	
 	ZmListController.prototype._initializeActionMenu.call(this);
 	this._propagateMenuListeners(this._actionMenu, ZmOperation.REPLY_MENU);
+	this._propagateMenuListeners(this._actionMenu, ZmOperation.FORWARD_MENU);
 	this._setReplyText(this._actionMenu);
 };
 
@@ -168,9 +177,15 @@ ZmMailListController.prototype._msgOps =
 function() {
 	var list = new Array();
 	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED))
-		list.push(ZmOperation.REPLY_MENU, ZmOperation.FORWARD);
+		list.push(ZmOperation.REPLY_MENU);
 	else
-		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD);
+		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+
+	if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED))
+		list.push(ZmOperation.FORWARD_MENU);
+	else
+		list.push(ZmOperation.FORWARD);
+	
 	return list;
 };
 
@@ -238,7 +253,14 @@ function(ev) {
 
 ZmMailListController.prototype._forwardListener =
 function(ev) {
-	this._doAction(ev, ev.item.getData(ZmOperation.KEY_ID));
+	var action = ev.item.getData(ZmOperation.KEY_ID);
+	// always re-resolve forward action if forward toolbar button is clicked
+	if (!action || action == ZmOperation.FORWARD_MENU || action == ZmOperation.FORWARD) {
+		action = this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) == ZmSetting.INCLUDE_ATTACH 
+			? ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
+	}
+
+	this._doAction(ev, action);
 };
 
 ZmMailListController.prototype._doAction = 

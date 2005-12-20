@@ -804,11 +804,17 @@ function(action, msg, extraBodyText) {
 		this.addSignature();
 
 	var value = "";
-	var pref = this._appCtxt.get((action == ZmOperation.FORWARD) ? ZmSetting.FORWARD_INCLUDE_ORIG : ZmSetting.REPLY_INCLUDE_ORIG);
-	if (pref == ZmSetting.INCLUDE_NONE) {
+
+	// get reply/forward prefs as necessary
+	var replyPref = action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL 
+		? this._appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG) : null;
+	var forwPref = action == ZmOperation.FORWARD_INLINE 
+		? this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) : null;
+
+	if (replyPref == ZmSetting.INCLUDE_NONE) {
 		if (extraBodyText)
 			value += extraBodyText;
-	} else if (pref == ZmSetting.INCLUDE_ATTACH) {
+	} else if (replyPref == ZmSetting.INCLUDE_ATTACH || action == ZmOperation.FORWARD_ATT) {
 		this._msgAttId = this._msg.id;
 	} else {
 		var crlf = composingHtml ? "<br>" : ZmMsg.CRLF;
@@ -833,8 +839,10 @@ function(action, msg, extraBodyText) {
 		body = body || ""; // prevent from printing "null" if no body found
 
 		// bug fix# 3215 - dont allow prefixing for html msgs
-		if (pref == ZmSetting.INCLUDE || composingHtml) {
-			var msgText = (action == ZmOperation.FORWARD) ? ZmMsg.forwardedMessage : ZmMsg.origMsg;
+		if ((action == ZmOperation.FORWARD_INLINE && forwPref != ZmSetting.INCLUDE_PREFIX) || 
+			 replyPref == ZmSetting.INCLUDE || composingHtml) 
+		{
+			var msgText = (action == ZmOperation.FORWARD_INLINE) ? ZmMsg.forwardedMessage : ZmMsg.origMsg;
 			var text = ZmMsg.DASHES + " " + msgText + " " + ZmMsg.DASHES + crlf;
 			for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
 				var hdr = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
@@ -847,7 +855,9 @@ function(action, msg, extraBodyText) {
 			}
 			body = text + crlf + body;
 			value += leadingText + body;
-		} else {
+		} 
+		else 
+		{
 			var from = msg.getAddress(ZmEmailAddress.FROM);
 			if (!from && msg.isSent)
 				from = this._appCtxt.get(ZmSetting.USERNAME);
@@ -855,9 +865,9 @@ function(action, msg, extraBodyText) {
 			if (from)
 				preface = ZmMsg.DASHES + " " + from.toString() + " " + ZmMsg.wrote + ":" + crlf;
 			var prefix = this._appCtxt.get(ZmSetting.REPLY_PREFIX);
-			if (pref == ZmSetting.INCLUDE_PREFIX) {
+			if (forwPref == ZmSetting.INCLUDE_PREFIX || replyPref == ZmSetting.INCLUDE_PREFIX) {
 				value += leadingText + preface + AjxStringUtil.wordWrap(body, ZmComposeView.WRAP_LENGTH, prefix + " ");
-			} else if (pref == ZmSetting.INCLUDE_SMART) {
+			} else if (replyPref == ZmSetting.INCLUDE_SMART) {
 				var chunks = AjxStringUtil.getTopLevel(body);
 				for (var i = 0; i < chunks.length; i++)
 					chunks[i] = AjxStringUtil.wordWrap(chunks[i], ZmComposeView.WRAP_LENGTH, prefix + " ");
@@ -876,7 +886,7 @@ function(action, msg, extraBodyText) {
 	if (sigStyle == ZmSetting.SIG_INTERNET)
 		this.addSignature();
 
-	this._showForwardField(msg, action, pref);
+	this._showForwardField(msg, action, replyPref);
 };
 
 // Generic routine for attaching an event handler to a field. Since "this" for the handlers is
@@ -1128,12 +1138,12 @@ function() {
 };
 
 ZmComposeView.prototype._showForwardField =
-function(msg, action, pref) {
+function(msg, action, replyPref) {
 	var subj = msg.getSubject() || AjxStringUtil.htmlEncode(ZmMsg.noSubject);
 	var html = new Array();
 	var idx = 0;
 
-	if (pref == ZmSetting.INCLUDE_ATTACH)
+	if (replyPref == ZmSetting.INCLUDE_ATTACH || action == ZmOperation.FORWARD_ATT)
 	{
 		html[idx++] = "<table cellspacing=4 cellpadding=0 border=0 width=100%><tr>";
 		html[idx++] = "<td width=60 align=right>";
@@ -1145,8 +1155,10 @@ function(msg, action, pref) {
 		html[idx++] = "</tr></table>";
 	}
 	else if (msg &&
-			((msg.hasAttach && action == ZmOperation.FORWARD) ||
-			  action == ZmOperation.DRAFT))
+			((msg.hasAttach && 
+			 (action == ZmOperation.FORWARD_INLINE || 
+			  action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL)) ||
+			 action == ZmOperation.DRAFT))
 	{
 		var attLinks = msg.buildAttachLinks(false, document.domain, null);
 		if (attLinks.length > 0) {
@@ -1157,9 +1169,16 @@ function(msg, action, pref) {
 					html[idx++] = AjxImg.getImageHtml("Attachment");
 				html[idx++] = "</td><td width=1%><input name='";
 				html[idx++] = ZmComposeView.FORWARD_ATT_NAME;
-				html[idx++] = "' type='checkbox' id='";
+				html[idx++] = "' type='checkbox'";
+				if (action == ZmOperation.FORWARD || 
+					action == ZmOperation.FORWARD_INLINE || 
+					action == ZmOperation.DRAFT)
+				{
+					html[idx++] = " CHECKED";
+				}
+				html[idx++] = " id='";
 				html[idx++] = attLinks[i].mpId;
-				html[idx++] = "' CHECKED></td>";
+				html[idx++] = "'></td>";
 				html[idx++] = "<td valign=top class='nobreak'>";
 				html[idx++] = attLinks[i].html;
 				html[idx++] = "</td></tr>";
