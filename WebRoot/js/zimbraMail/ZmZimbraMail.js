@@ -1219,12 +1219,15 @@ ZmZimbraMail.prototype._unreadChangeListener =
 function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY) {
 		var fields = ev.getDetail("fields");
+		var organizers = ev.getDetail("organizers");
+		var organizer = organizers ? organizers[0] : null;
+		var id = organizer ? organizer.id : null;
 		if (fields && fields[ZmOrganizer.F_UNREAD]) {
 			var search = this._appCtxt.getCurrentSearch();
-			if (search && (ev.source.id == search.folderId || ev.source.id == search.tagId))
+			if (search && id && (id == search.folderId || id == search.tagId))
 				Dwt.setTitle(search.getTitle());
-			if (ev.source.id == ZmFolder.ID_INBOX) {
-				this._statusView.setIconVisible(ZmStatusView.ICON_INBOX,  ev.source.numUnread > 0);
+			if (id == ZmFolder.ID_INBOX) {
+				this._statusView.setIconVisible(ZmStatusView.ICON_INBOX,  organizer.numUnread > 0);
 			}
 		}		
 	}
