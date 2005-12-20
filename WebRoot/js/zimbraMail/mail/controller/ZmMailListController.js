@@ -623,11 +623,10 @@ function(currentItem, forward) {
 * @param result			[ZmCsfeResult]	result of SOAP request
 */
 ZmMailListController.prototype._handleResponsePaginate =
-function(args) {
-	ZmListController.prototype._handleResponsePaginate.call(this, args);
+function(view, saveSelection, loadIndex, offset, result) {
+	ZmListController.prototype._handleResponsePaginate.apply(this, arguments);
 	
-	var itemIdx = args[2];
-	var newItem = itemIdx ? this._list.getVector().get(itemIdx) : null;
+	var newItem = loadIndex ? this._list.getVector().get(loadIndex) : null;
 	if (newItem)
 		this._listView[this._currentView].emulateDblClick(newItem);
 };
