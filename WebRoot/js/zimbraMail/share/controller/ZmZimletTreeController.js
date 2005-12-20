@@ -26,7 +26,6 @@
 function ZmZimletTreeController(appCtxt, type, dropTgt) {
 	if (arguments.length === 0) {return;}
 	type = type ? type : ZmOrganizer.ZIMLET;
-	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(ZmAppt, ZmConv, ZmMailMsg, ZmContact);
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 	this._eventMgrs = {};
 }
