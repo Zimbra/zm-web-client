@@ -1026,7 +1026,7 @@ function(msg, preferHtml, callback) {
 		var len = addrs.size();
 		if (len > 0) {
 			html[idx++] = "<tr>";
-			html[idx++] = "<td valign=top style='font-size: 14px'>";
+			html[idx++] = "<td valign=top style='text-align:right; font-size:14px'>";
 			html[idx++] = ZmMsg[ZmEmailAddress.TYPE_STRING[ZmMailMsg.ADDRS[j]]];
 			html[idx++] = ": </td><td width=100% style='font-size: 14px'>";
 			for (var i = 0; i < len; i++) {
@@ -1037,6 +1037,37 @@ function(msg, preferHtml, callback) {
 			html[idx++] = "</tr>";
 		}
 	}
+
+	// bug fix# 3928
+	var attachments = msg.getAttachments();
+	for (var i = 0; i < attachments.length; i++) {
+		var attach = attachments[i];
+		if (!msg.isRealAttachment(attach))
+			continue;
+
+		var label = attach.name || attach.filename || (ZmMsg.unknown + " <" + type + ">");
+
+		// get size info in any
+		var sizeText = "";
+		var size = attach.s;
+		if (size && size > 0) {
+		    if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
+            else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;"; 
+            else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;"; 
+		}
+
+		html[idx++] = "<tr><td style='font-size:14px'>";
+		if (i == 0) {
+			html[idx++] = ZmMsg.attachments;
+			html[idx++] = ":";
+		}
+		html[idx++] = "</td><td valign=top style='font-size:13px'>";
+		html[idx++] = AjxStringUtil.htmlEncode(label);
+		html[idx++] = "&nbsp;";
+		html[idx++] = sizeText;
+		html[idx++] = "</td></tr>";
+	}
+
 	html[idx++] = "</table>";
 	html[idx++] = "</div>";
 

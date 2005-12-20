@@ -137,6 +137,11 @@ function(type, used) {
 	}
 };
 
+ZmMailMsg.prototype.getAttachments = 
+function() {
+	return this._attachments;
+}
+
 ZmMailMsg.prototype.getInviteOrganizer =
 function() {
 	return this.isInvite()
@@ -830,15 +835,15 @@ function(bFindHits, domain, objectManager) {
     		labelWidth += sizeText ? Dwt.getHtmlExtent(sizeText).x + 5 : 0;
     		var iconLabelWidth = 16 + labelWidth;
 
-		// set link
-	    var link = "";
-	    if (type == ZmMimeTable.MSG_RFC822) {
-	    	link = "<a href='javascript:;' onclick='ZmMailMsgView.rfc822Callback(this," + this.getId() + ",\"" + attach.part + "\")' class='AttLink'>";
-	    } else {
-	    	link = useCL
-    		? ("<a target='att_view_win' class='AttLink' href='" + attach.cl + "'>")
-    		: ("<a target='att_view_win' class='AttLink' " + hrefRoot + attach.part + "'>");
-	    }
+			// set link
+			var link = "";
+			if (type == ZmMimeTable.MSG_RFC822) {
+				link = "<a href='javascript:;' onclick='ZmMailMsgView.rfc822Callback(this," + this.getId() + ",\"" + attach.part + "\")' class='AttLink'>";
+			} else {
+				link = useCL
+					? ("<a target='att_view_win' class='AttLink' href='" + attach.cl + "'>")
+					: ("<a target='att_view_win' class='AttLink' " + hrefRoot + attach.part + "'>");
+			}
 
     		htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 style='display:inline; width:";
     		htmlArr[idx++] = iconLabelWidth;
@@ -852,19 +857,20 @@ function(bFindHits, domain, objectManager) {
      		htmlArr[idx++] = link + AjxImg.getImageHtml(icon, "position:relative;") + "</a>";
     		htmlArr[idx++] = "</td><td style='white-space:nowrap; width:" + labelWidth + "'>";
 
-   		// if this attachment is a match for the current search, set class name
-   		var theLink;
-    		if (bFindHits && this._isAttInHitList(attach)) {
-	    		theLink = "<span class='AttName-matched'>" + link + encLabel + sizeText + "</a></span>";
-	    	} else {
-			theLink = link + encLabel + sizeText +  "</a>";
-	    }
-    		if (objectManager && type && type.match(/^image/)) {
-			var theURL = csfeMsgFetchSvc + "id=" + this.getId() + "&part="+attach.part;
-	    		idx = objectManager.generateSpan(objectManager.getImageAttachmentHandler(), htmlArr, idx, theLink, {url: theURL});
-		} else {
-	    		htmlArr[idx++] = theLink;
-		}
+			// if this attachment is a match for the current search, set class name
+			var theLink;
+			if (bFindHits && this._isAttInHitList(attach)) {
+				theLink = "<span class='AttName-matched'>" + link + encLabel + sizeText + "</a></span>";
+			} else {
+				theLink = link + encLabel + sizeText +  "</a>";
+			}
+
+			if (objectManager && type && type.match(/^image/)) {
+				var theURL = csfeMsgFetchSvc + "id=" + this.getId() + "&part="+attach.part;
+				idx = objectManager.generateSpan(objectManager.getImageAttachmentHandler(), htmlArr, idx, theLink, {url: theURL});
+			} else {
+				htmlArr[idx++] = theLink;
+			}
 
     		htmlArr[idx++] = "</td></tr></table></td>";
 	    	htmlArr[idx++] = "</tr></table>";
