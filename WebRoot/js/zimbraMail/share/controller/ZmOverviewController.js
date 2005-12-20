@@ -100,7 +100,7 @@ function(params) {
 	this._headerClass[overviewId] = params.headerClass;
 	this._showUnread[overviewId] = params.showUnread;
 	this._treeStyle[overviewId] = params.treeStyle;
-	
+
 	return overview;
 };
 
@@ -119,7 +119,9 @@ function(overviewId) {
 };
 
 /**
-* Displays the given list of tree views, applying the given overview's options.
+* Displays the given list of tree views, applying the given overview's options. If a tree
+* view has already been created, its HTML element will be added to the overview, so that
+* its state is preserved.
 *
 * @param overviewId		[constant]	overview ID
 * @param treeIds		[Array]		list of organizer types
@@ -130,26 +132,35 @@ function(overviewId, treeIds, omit) {
 	if (!overviewId) return;
 	if (!(treeIds && treeIds.length)) return;
 	
-	// if the set of trees changed for this overview, start from scratch
-	var treeString = treeIds.join(",");
-	var forceCreate = (this._treeString[overviewId] && (this._treeString[overviewId] != treeString));
-	this._treeString[overviewId] = treeString;
-	if (forceCreate) {
-		for (var treeId in this._controllers) {
+	// clear current tree views out of the overview
+	var curTreeIds = this._treeIds[overviewId];
+	var overview = this.getOverview(overviewId);
+	if (curTreeIds && curTreeIds.length) {
+		for (var i = 0; i < curTreeIds.length; i++) {
+			var treeId = curTreeIds[i];
 			var treeView = this.getTreeView(overviewId, treeId);
-			if (treeView) treeView.dispose();
+			if (treeView)
+				// remember to preserve a ref to the element so we can add it later
+				overview.removeChild(treeView, true);
 		}
 	}
-	
-	// show tree views for the specified overview	
-	this._treeIds[overviewId] = treeIds;
+
+	// add tree views to the overview
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];
 		// lazily create appropriate tree controller
 		if (!this._controllers[treeId])
 			this._controllers[treeId] = new ZmOverviewController.CONTROLLER[treeId](this._appCtxt);
-		this._controllers[treeId].show(overviewId, this._showUnread[overviewId], omit, forceCreate);
+		var treeView = this.getTreeView(overviewId, treeIds[i]);
+		if (treeView) {
+			// add the tree view's HTML element back to the overview
+			overview.addChild(treeView);
+		} else {
+			// create the tree view as a child of the overview
+			this._controllers[treeId].show(overviewId, this._showUnread[overviewId], omit);
+		}
 	}
+	this._treeIds[overviewId] = treeIds;
 };
 
 /**

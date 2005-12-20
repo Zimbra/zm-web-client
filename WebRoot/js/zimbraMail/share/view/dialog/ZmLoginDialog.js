@@ -176,7 +176,7 @@ function(unameId, pwordId, okCellId, errorCellId, reloginModeId) {
 	return html.join("");
 }
 
-ZmLoginDialog.prototype._addChild =
+ZmLoginDialog.prototype.addChild =
 function(child, childHtmlElement) {
     this._children.add(child);
 }
