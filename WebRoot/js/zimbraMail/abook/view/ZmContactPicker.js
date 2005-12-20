@@ -605,7 +605,7 @@ function(parent, bExtHeader) {
 ZmContactPickerListView.prototype._itemClicked = 
 function(clickedEl, ev) {
 
-	// dont allow right clicks since it doesnt make sense here...
+	// dont allow right clicks since it doesn't make sense here...
 	if (!ev.shiftKey && !ev.ctrlKey && ev.button == DwtMouseEvent.RIGHT) {
 		return;
 	} else {
@@ -614,18 +614,19 @@ function(clickedEl, ev) {
 };
 
 // NOTE: this is taken from ZmListView but we no longer derive from it
-ZmContactPickerListView.prototype._mouseUpAction =
-function(ev, div) {
-	var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : div.id;
-	if (!id) return true;
+ZmContactPickerListView.prototype._setListEvent =
+function (ev, listEv, clickedEl) {
 
-	if (ev.button == DwtMouseEvent.LEFT &&
-		this._evtMgr.isListenerRegistered(DwtEvent.SELECTION))
-	{
+	DwtListView.prototype._setListEvent.call(this, ev, listEv, clickedEl);
+
+	var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : clickedEl.id;
+	if (!id) return false;
+
+	if (ev.button == DwtMouseEvent.LEFT) {
 		var m = this._parseId(id);
-		this._selEv.field = m ? m.field : null;
-		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
+		listEv.field = m ? m.field : null;
 	}
+	return true;
 };
 
 // NOTE: this is taken from ZmListView but we no longer derive from it

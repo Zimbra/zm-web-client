@@ -420,33 +420,33 @@ function(ev, div) {
 	return true;
 }
 
-ZmListView.prototype._mouseUpAction =
-function(ev, div) {
-	var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : div.id;
-	if (!id) return true;
+/*
+* Add a few properties to the list event for the listener to pick up.
+*/
+ZmListView.prototype._setListEvent =
+function (ev, listEv, clickedEl) {
+
+	DwtListView.prototype._setListEvent.call(this, ev, listEv, clickedEl);
+
+	var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : clickedEl.id;
+	if (!id) return false; // don't notify listeners
 
 	var m = this._parseId(id);
 	if (ev.button == DwtMouseEvent.LEFT) {
-		if (this._evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
 			this._selEv.field = m ? m.field : null;
-			this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
-		}
 	} else if (ev.button == DwtMouseEvent.RIGHT) {
-		if (this._evtMgr.isListenerRegistered(DwtEvent.ACTION)) {
-			this._actionEv.field = m ? m.field : null;
-			if (m && m.field) {
-				if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
-					ev.target.className = "ImgBlank_16";
-				} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) {
-					var item = this.getItemFromElement(div);
-					this._actionEv.detail = item.participants.get(m.participant);
-				}
+		this._actionEv.field = m ? m.field : null;
+		if (m && m.field) {
+			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
+				ev.target.className = "ImgBlank_16";
+			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) {
+				var item = this.getItemFromElement(clickedEl);
+				this._actionEv.detail = item.participants.get(m.participant);
 			}
-			this._evtMgr.notifyListeners(DwtEvent.ACTION, this._actionEv);
 		}
 	}
 	return true;
-}
+};
 
 ZmListView.prototype._allowLeftSelection =
 function(clickedEl, ev, button) {
