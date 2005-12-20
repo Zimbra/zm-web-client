@@ -33,16 +33,18 @@
 *
 * @author Conrad Damon
 * @param parent				[DwtControl]				the containing widget
-* @param app				[ZmPrefsApp]				the preferences app
+* @param appCtxt			[ZmAppCtxt]					the app context
 * @param view				[constant]					which page we are
+* @param controller			[ZmPrefController]			prefs controller
 * @param passwordDialog		[ZmChangePasswordDialog]	change password dialog
 */
-function ZmPreferencesPage(parent, app, view, passwordDialog) {
+function ZmPreferencesPage(parent, appCtxt, view, controller, passwordDialog) {
 
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
 	
-	this._appCtxt = app._appCtxt;
+	this._appCtxt = appCtxt;
 	this._view = view; // which preferences page we are
+	this._controller = controller;
 	this._passwordDialog = passwordDialog;
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[view]].join(": ");
 
@@ -71,6 +73,7 @@ function () {
 ZmPreferencesPage.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
+	this._controller._resetOperations(this._controller._toolbar, this._view);
 	if (this._hasRendered) return;
 
 	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._view);
@@ -158,7 +161,7 @@ function() {
 ZmPreferencesPage.prototype.getTitle =
 function() {
 	return this._title;
-}
+};
 
 // Creates a table that we can later add preference rows to, and a placeholder DIV for
 // the reset button.
@@ -207,7 +210,7 @@ function(label, content, addSep) {
 	}
 
 	return tr;
-}
+};
 
 // Add a button to the preferences page
 ZmPreferencesPage.prototype._addButton =
@@ -221,7 +224,7 @@ function(parentId, text, width, listener) {
 	var parent = document.getElementById(parentId);
 	parent.appendChild(element);
 	return button;
-}
+};
 
 ZmPreferencesPage.prototype._setupSelect = 
 function(id, setup, value) {
@@ -250,7 +253,7 @@ function(id, setup, value) {
 	div.appendChild(selObj.getHtmlElement());
 	
 	return div;
-}
+};
 
 ZmPreferencesPage.prototype._addImportWidgets = 
 function(buttonDiv) {
@@ -272,7 +275,7 @@ function(buttonDiv) {
 	
 	// set up import button
 	this._importBtn = this._addButton(buttonDiv.id, ZmMsg._import, 65, new AjxListener(this, this._importContactsListener));
-}
+};
 
 ZmPreferencesPage.prototype._addFontPrefs = 
 function(fontDiv, id, setup, value, fontSizeValue) {
@@ -331,13 +334,13 @@ function(fontDiv, id, setup, value, fontSizeValue) {
 	sepCell1.innerHTML = sepCell2.innerHTML = sepCell3.innerHTML = "&nbsp;";
 
 	fontDiv.appendChild(table);	
-}
+};
 
 // Popup the change password dialog.
 ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
 	this._passwordDialog.popup();
-}
+};
 
 ZmPreferencesPage.prototype._fontColorListener = 
 function(ev) {
@@ -349,13 +352,13 @@ function(ev) {
 		if (input)
 			input.value = ev.detail;
 	}
-}
+};
 
 ZmPreferencesPage.prototype._exportContactsListener = 
 function(ev) {
 	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_EXPORT_URI);
 	window.open(uri, "_blank");
-}
+};
 
 ZmPreferencesPage.prototype._importContactsListener =
 function(ev) {
@@ -372,7 +375,7 @@ function(ev) {
 	} else {
 		// TODO - show error message in app controller's status window
 	}
-}
+};
 
 ZmPreferencesPage.prototype._importDoneCallback = 
 function(status, aid) {
@@ -461,4 +464,4 @@ function(ev) {
 		}
 	}
 	this._appCtxt.setStatusMsg(ZmMsg.defaultsRestored);
-}
+};

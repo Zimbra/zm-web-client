@@ -29,6 +29,8 @@ function ZmFilterRulesView(parent, appCtxt, controller) {
 
 	this._appCtxt = appCtxt;
 	this._controller = controller;
+	this._prefsController = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
+	
 	this._rules = this._controller._rules;
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]].join(": ");
 
@@ -47,6 +49,9 @@ function() {
 ZmFilterRulesView.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
+	this._prefsController._resetOperations(this._prefsController._toolbar, ZmPrefView.FILTER_RULES);
+	if (this._hasRendered) return;
+
 	this._controller._setup();
 	this._hasRendered = true;
 };

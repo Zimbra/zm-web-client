@@ -31,9 +31,9 @@
 *
 * @author Conrad Damon
 *
-* @param appCtxt		the app context
-* @param container		the shell
-* @param prefsApp		the preferences app
+* @param appCtxt		[ZmAppCtxt]			the app context
+* @param container		[DwtShell]			the shell
+* @param prefsApp		[ZmPreferencesApp]	the preferences app
 */
 function ZmFilterRulesController(appCtxt, container, prefsApp, prefsView) {
 

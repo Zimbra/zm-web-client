@@ -65,6 +65,12 @@ function() {
 	return this._filterRulesController;
 };
 
+ZmPrefController.prototype._resetOperations =
+function(parent, view) {
+	parent.enable(ZmOperation.SAVE, view != ZmPrefView.FILTER_RULES);
+	parent.enable(ZmOperation.CANCEL, true);
+};
+
 // Creates the prefs view, with a tab for each preferences page.
 ZmPrefController.prototype._setView = 
 function() {
@@ -77,7 +83,7 @@ function() {
 		this._initializeToolBar();
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
-		this._prefsView = new ZmPrefView(this._container, this._app, Dwt.ABSOLUTE_STYLE, this, this._passwordDialog);
+		this._prefsView = new ZmPrefView(this._container, this._appCtxt, Dwt.ABSOLUTE_STYLE, this, this._passwordDialog);
 		var elements = new Object();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;

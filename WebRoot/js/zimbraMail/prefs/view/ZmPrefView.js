@@ -31,19 +31,18 @@
 *
 * @author Conrad Damon
 *
-* @param parent				the containing widget
-* @param app				the preferences app
-* @param posStyle			positioning style
-* @param controller			prefs controller
-* @param passwordDialog		a ZmChangePasswordDialog
+* @param parent				[DwtControl]				the containing widget
+* @param appCtxt			[ZmAppCtxt]					the app context
+* @param posStyle			[constant]					positioning style
+* @param controller			[ZmPrefController]			prefs controller
+* @param passwordDialog		[ZmChangePasswordDialog]	password change dialog
 */
-function ZmPrefView(parent, app, posStyle, controller, passwordDialog) {
+function ZmPrefView(parent, appCtxt, posStyle, controller, passwordDialog) {
 
     DwtTabView.call(this, parent, "ZmPrefView", posStyle);
 
 	this._parent = parent;
-    this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	this._app = app;
+    this._appCtxt = appCtxt;
 	this._controller = controller;
 	this._passwordDialog = passwordDialog;
 
@@ -62,7 +61,8 @@ ZmPrefView.FILTER_RULES	= 3;
 ZmPrefView.ADDR_BOOK	= 4;
 ZmPrefView.CALENDAR		= 5;
 ZmPrefView.VIEWS = [ZmPrefView.GENERAL, ZmPrefView.MAIL, 
-					ZmPrefView.FILTER_RULES, ZmPrefView.ADDR_BOOK, ZmPrefView.CALENDAR];
+//					ZmPrefView.FILTER_RULES, ZmPrefView.ADDR_BOOK, ZmPrefView.CALENDAR];
+					ZmPrefView.ADDR_BOOK, ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES];
 
 // list of prefs for each page
 ZmPrefView.PREFS = new Object();
@@ -82,12 +82,15 @@ ZmPrefView.TAB_NAME[ZmPrefView.CALENDAR]		= ZmMsg.calendar;
 ZmPrefView.prototype.toString =
 function () {
     return "ZmPrefView";
-}
+};
 
+/**
+* Returns this view's controller.
+*/
 ZmPrefView.prototype.getController =
 function() {
 	return this._controller;
-}
+};
 
 /**
 * Displays a set of tabs, one for each preferences page. The first tab will have its
@@ -108,10 +111,13 @@ function() {
 		if (view == ZmPrefView.FILTER_RULES) {
 			viewObj = this._controller.getFilterRulesController().getFilterRulesView();
 		} else {
-			viewObj = new ZmPreferencesPage(this._parent, this._app, view, this._passwordDialog);
+			viewObj = new ZmPreferencesPage(this._parent, this._appCtxt, view, this._controller, this._passwordDialog);
 		}
 
 		this.prefView[view] = viewObj;
+
+//		if (view == ZmPrefView.FILTER_RULES)
+//			this.addFiller();
 		this.addTab(ZmPrefView.TAB_NAME[view], this.prefView[view]);
 	}
 	this._hasRendered = true;
