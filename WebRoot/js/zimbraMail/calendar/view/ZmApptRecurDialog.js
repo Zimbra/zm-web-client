@@ -297,7 +297,7 @@ function() {
 	html[i++] = "</legend>";
 	html[i++] = this._getEndHtml();
 	html[i++] = "</fieldset></div></td></tr>";
-	html[i++] = "</html>";
+	html[i++] = "</table>";
 	
 	return html.join("");
 };
