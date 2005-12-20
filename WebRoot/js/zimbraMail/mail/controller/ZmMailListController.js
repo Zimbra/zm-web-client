@@ -127,9 +127,12 @@ function(view) {
 		menuItems.push(ZmOperation.SEP);
 		menuItems = menuItems.concat(this._getActionMenuOps());
     	this._participantActionMenu = new ZmActionMenu(this._shell, menuItems);
-		for (var i = 0; i < menuItems.length; i++)
+		for (var i = 0; i < menuItems.length; i++) {
 			if (menuItems[i] > 0)
 				this._participantActionMenu.addSelectionListener(menuItems[i], this._listeners[menuItems[i]]);
+		}
+		this._propagateMenuListeners(this._participantActionMenu, ZmOperation.REPLY_MENU);
+		this._propagateMenuListeners(this._participantActionMenu, ZmOperation.FORWARD_MENU);
 		this._participantActionMenu.addPopdownListener(this._popdownListener);
 		this._setupTagMenu(this._participantActionMenu);
     }
