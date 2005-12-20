@@ -484,7 +484,7 @@ function(isContact) {
 
 ZmMailListController.prototype._setReplyText =
 function(parent) {
-	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
+	if (parent && this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
 		var op = parent.getOp(ZmOperation.REPLY_MENU);
 		if (op) {
 			var menu = op.getMenu();
