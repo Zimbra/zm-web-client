@@ -46,8 +46,8 @@ function ZmFilterRule(name, active) {
 
 ZmFilterRule._nextId = 1;
 
-ZmFilterRule.GROUP_ANY = 1;
-ZmFilterRule.GROUP_ALL = 2;
+ZmFilterRule.GROUP_ANY = "anyof";
+ZmFilterRule.GROUP_ALL = "allof";
 
 // Display widgets for various rule properties
 var i = 1;

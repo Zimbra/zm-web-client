@@ -117,7 +117,6 @@ function(rule, referenceRule) {
 	var anyRadioField = document.getElementById(this._anyRadioId);
 	var allRadioField = document.getElementById(this._allRadioId);
 	var checkAll = (rule && (rule.getGroupOp() == ZmFilterRule.GROUP_ALL));
-	checkAll = true;
 	anyRadioField.checked = !checkAll;
 	allRadioField.checked = checkAll;
 
