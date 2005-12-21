@@ -282,11 +282,22 @@ function(data, isCondition) {
 * Adds a new condition or action row to its table.
 *
 * @param isCondition	[boolean]	true if we're adding a condition row
+* @param rowId			[int]*		ID of row to clone
 */
 ZmFilterRuleDialog.prototype._addRow =
-function(isCondition) {
-	var rowId = this._renderTable(ZmFilterRule.DUMMY_RULE, isCondition);
-	this._addDwtObjects(rowId);
+function(isCondition, rowId) {
+	var rule = ZmFilterRule.DUMMY_RULE;
+	if (rowId) {
+		if (isCondition) {
+			rule.clearConditions();
+			rule.addCondition(this._getConditionFromRow(rowId));
+		} else {
+			rule.clearActions();
+			rule.addAction(this._getActionFromRow(rowId));
+		}
+	}
+	var newRowId = this._renderTable(rule, isCondition);
+	this._addDwtObjects(newRowId);
 };
 
 /*
@@ -516,10 +527,11 @@ function(ev) {
 	var rowId = button.getData(ZmFilterRuleDialog.ROW_ID);
 	var isCondition = button.getData(ZmFilterRuleDialog.IS_CONDITION);
 	var doAdd = button.getData(ZmFilterRuleDialog.DO_ADD);
-	if (doAdd)
-		this._addRow(isCondition);
-	else
+	if (doAdd) {
+		this._addRow(isCondition, rowId);
+	} else {
 		this._removeRow(rowId, isCondition);
+	}
 	this._resetOperations(isCondition);
 };
 
@@ -648,14 +660,7 @@ function(ev) {
 	var table = document.getElementById(this._conditionsTableId);
 	var rows = table.rows;
 	for (var i = 0; i < rows.length; i++) {
-		var inputs = this._inputs[rows[i].id];
-		var subject = inputs.subject.dwtObj.getValue();
-		var conf = ZmFilterRule.CONDITIONS[subject];
-		var comparator = this._getInputValue(inputs, conf, "ops");
-		var value = this._getInputValue(inputs, conf, "value");
-		var subjectMod = this._getInputValue(inputs, conf, "subjectMod");
-		var valueMod = this._getInputValue(inputs, conf, "valueMod");
-		var condition = new ZmCondition(subject, comparator, value, subjectMod, valueMod);
+		var condition = this._getConditionFromRow(rows[i].id);
 		if (msg = this._checkCondition(condition))
 			break;
 		else
@@ -665,11 +670,7 @@ function(ev) {
 		table = document.getElementById(this._actionsTableId);
 		rows = table.rows;
 		for (var i = 0; i < rows.length; i++) {
-			var inputs = this._inputs[rows[i].id];
-			var name = inputs.name.dwtObj.getValue();
-			var conf = ZmFilterRule.ACTIONS[name];
-			var arg = this._getInputValue(inputs, conf, "param");
-			var action = new ZmAction(name, arg);
+			var action = this._getActionFromRow(rows[i].id);
 			if (msg = this._checkAction(action))
 				break;
 			else
@@ -693,6 +694,39 @@ function(ev) {
 ZmFilterRuleDialog.prototype._handleResponseOkButtonListener =
 function() {
 	this.popdown();
+};
+
+/*
+* Creates a ZmCondition based on the values of a condition row.
+*
+* @param rowId	[string]	row ID
+*/
+ZmFilterRuleDialog.prototype._getConditionFromRow =
+function(rowId) {
+	var inputs = this._inputs[rowId];
+	var subject = inputs.subject.dwtObj.getValue();
+	var conf = ZmFilterRule.CONDITIONS[subject];
+	var comparator = this._getInputValue(inputs, conf, "ops");
+	var value = this._getInputValue(inputs, conf, "value");
+	var subjectMod = this._getInputValue(inputs, conf, "subjectMod");
+	var valueMod = this._getInputValue(inputs, conf, "valueMod");
+
+	return new ZmCondition(subject, comparator, value, subjectMod, valueMod);
+};
+
+/*
+* Creates a ZmAction based on the values of an action row.
+*
+* @param rowId	[string]	row ID
+*/
+ZmFilterRuleDialog.prototype._getActionFromRow =
+function(rowId) {
+	var inputs = this._inputs[rowId];
+	var name = inputs.name.dwtObj.getValue();
+	var conf = ZmFilterRule.ACTIONS[name];
+	var arg = this._getInputValue(inputs, conf, "param");
+
+	return new ZmAction(name, arg);
 };
 
 /*
