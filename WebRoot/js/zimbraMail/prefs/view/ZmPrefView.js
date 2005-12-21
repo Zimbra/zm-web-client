@@ -136,10 +136,8 @@ function(view) {
 * simply whether _any_ prefs have changed, in which case it short-circuits as
 * soon as it finds one that has changed.
 *
-* @param dirtyCheck		only check if any prefs have changed
-* @param noValidation   true if the caller doesn't want to perform any validation
-* @returns				a list of changed prefs, or, optionally, true if any
-*						pref has changed
+* @param dirtyCheck		[boolean]* 		if true, only check if any prefs have changed
+* @param noValidation	[boolean]*		if true, don't perform any validation
 */
 ZmPrefView.prototype.getChangedPrefs =
 function(dirtyCheck, noValidation) {

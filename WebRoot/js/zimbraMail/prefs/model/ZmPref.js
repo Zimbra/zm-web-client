@@ -29,7 +29,7 @@ function ZmPref(id, name, dataType) {
 	
 	this.origValue = null;
 	this.isDirty = false;
-}
+};
 
 ZmPref.prototype = ZmSetting;
 ZmPref.prototype.constructor = ZmPref;
@@ -72,7 +72,7 @@ function(emailStr) {
 		return (match != null);
 	}
 	return true;
-}
+};
 
 ZmPref.validatePollingInterval = 
 function(interval) {
@@ -81,10 +81,22 @@ function(interval) {
 		return true;
 	} else {
 		var min = minimum / 60;
-		ZmPref.SETUP[ZmSetting.POLLING_INTERVAL].errorMessage = AjxStringUtil.resolve(ZmMsg.invalidPollingInterval, min);
+		ZmPref.SETUP[ZmSetting.POLLING_INTERVAL].errorMessage = AjxMessageFormat.format(ZmMsg.invalidPollingInterval, min);
 		return false;
 	}
-}
+};
+
+ZmPref.SIGNATURE_MAX_LENGTH = 1024;
+ZmPref.validateSignature = 
+function(signature) {
+	return (signature.length <= ZmPref.SIGNATURE_MAX_LENGTH);
+};
+
+ZmPref.AWAY_MESSAGE_MAX_LENGTH = 8192;
+ZmPref.validateAwayMessage = 
+function(away) {
+	return (away.length <= ZmPref.AWAY_MESSAGE_MAX_LENGTH);
+};
 
 // The SETUP object for a pref gets translated into a form input. Available properties are:
 //
@@ -183,6 +195,8 @@ ZmPref.SETUP[ZmSetting.SIGNATURE_STYLE] = {
 ZmPref.SETUP[ZmSetting.SIGNATURE] = {
 	displayName:		ZmMsg.signature,
 	displayContainer:	"textarea",
+	validationFunction: ZmPref.validateSignature,
+	errorMessage:       AjxMessageFormat.format(ZmMsg.invalidSignature, ZmPref.SIGNATURE_MAX_LENGTH),
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.VACATION_MSG_ENABLED] = {
@@ -192,6 +206,8 @@ ZmPref.SETUP[ZmSetting.VACATION_MSG_ENABLED] = {
 ZmPref.SETUP[ZmSetting.VACATION_MSG] = {
 	displayName:		ZmMsg.awayMessage,
 	displayContainer:	"textarea",
+	validationFunction: ZmPref.validateSignature,
+	errorMessage:       AjxMessageFormat.format(ZmMsg.invalidAwayMessage, ZmPref.AWAY_MESSAGE_MAX_LENGTH),
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.NOTIF_ENABLED] = {
@@ -307,4 +323,4 @@ ZmPref.SETUP[ZmSetting.CAL_USE_QUICK_ADD] = {
 ZmPref.SETUP[ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL] = {
  	displayName:		ZmMsg.alwaysShowMiniCal,
  	displayContainer:	"checkbox"};
- 	
+	
