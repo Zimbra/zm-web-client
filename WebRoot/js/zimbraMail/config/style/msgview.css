@@ -45,7 +45,7 @@
 .POObject {color: blue;}
 .POObjectApproved {color: green;}
 .POObjectRejected {color: red;}
-.MsgHeader .Object {
+.MsgHeader .Object, .MsgHeader .Object-activated {
 	color: black;
 	white-space: nowrap;
 }
