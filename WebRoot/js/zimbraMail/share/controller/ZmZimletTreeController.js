@@ -26,6 +26,7 @@
 function ZmZimletTreeController(appCtxt, type, dropTgt) {
 	if (arguments.length === 0) {return;}
 	type = type ? type : ZmOrganizer.ZIMLET;
+	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(ZmAppt, ZmConv, ZmMailMsg, ZmContact);
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 	this._eventMgrs = {};
 }
@@ -85,12 +86,12 @@ ZmZimletTreeController.prototype._getActionMenuOps = function() {
 };
 
 ZmZimletTreeController.prototype._getActionMenu = function(ev) {
-	// alert(ev.item.getData(ZmTreeView.KEY_ID)); // ==> e.g. ZimbraMail
-	// alert(ev.item.getData(Dwt.KEY_ID));
 	var z = ev.item.getData(Dwt.KEY_OBJECT);
 	// z is here a ZmZimlet
 	z = z.getZimletContext();
-	return z.getPanelActionMenu();
+	if(z) {
+		return z.getPanelActionMenu();
+	}
 };
 
 ZmZimletTreeController.prototype.getTreeStyle = function() {
@@ -128,10 +129,12 @@ ZmZimletTreeController.prototype._itemDblClicked = function(z) {
 ZmZimletTreeController.prototype._dropListener = function(ev) {
 	var z = ev.targetControl.getData(Dwt.KEY_OBJECT);
 	if (z.id == ZmZimlet.ID_ZIMLET)
+		ev.doIt = false;
 		return;
 	try {
 		z = z.getZimletContext();
 	} catch(ex) {
+		ev.doIt = false;
 		return;
 	}
 	var srcData = ev.srcData.data;
