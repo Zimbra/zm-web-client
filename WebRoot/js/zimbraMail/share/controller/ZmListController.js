@@ -669,23 +669,15 @@ function(items, folder, attrs) {
 
 // Modify an item
 ZmListController.prototype._doModify =
-function(params) {
-	try {
-		this._list.modifyItem(params.item, params.mods);
-	} catch (ex) {
-		this._handleException(ex, this._doModify, params, false);
-	}
-}
+function(item, mods) {
+	this._list.modifyItem(item, mods);
+};
 
 // Create an item. We need to be passed a list since we may not have one.
 ZmListController.prototype._doCreate =
-function(params) {
-	try {
-		params.list.create(params.args);
-	} catch (ex) {
-		this._handleException(ex, this._doCreate, params, false);
-	}
-}
+function(list, args) {
+	list.create(args);
+};
 
 // Miscellaneous
 
@@ -702,7 +694,7 @@ function(parent, op, listener) {
 		for (var i = 0; i < cnt; i++)
 			items[i].addSelectionListener(listener);
 	}
-}
+};
 
 // Add listener to tag menu
 ZmListController.prototype._setupTagMenu =
@@ -716,7 +708,7 @@ function(parent) {
 		if (tagButton)
 			tagButton.addDropDownSelectionListener(this._listeners[ZmOperation.TAG_MENU]);
 	}
-}
+};
 
 // Dynamically build the tag menu based on selected items and their tags.
 ZmListController.prototype._setTagMenu =
@@ -736,7 +728,7 @@ function(parent) {
 			tagMenu.parent.popup();
 		}
 	}
-}
+};
 
 // Set the view menu's icon, and make sure the appropriate list item is checked
 ZmListController.prototype._setViewMenu =
@@ -749,7 +741,7 @@ function(view) {
 		if (mi)
 			mi.setChecked(true, true);
 	}
-}
+};
 
 // Set up the New button based on the current app.
 ZmListController.prototype._setNewButtonProps =
@@ -761,7 +753,7 @@ function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
 		newButton.setDisabledImage(disabledIconId);
 		this._defaultNewId = defaultId;
 	}
-}
+};
 
 // Sets text to "add" or "edit" based on whether a participant is a contact or not.
 ZmListController.prototype._setContactText =
@@ -770,7 +762,7 @@ function(isContact) {
 	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
 	ZmOperation.setOperation(this._toolbar[this._currentView], ZmOperation.CONTACT, newOp, ZmMsg.AB_ADD_CONTACT);
 	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, newOp, newText);
-}
+};
 
 // Resets the available options on a toolbar or action menu.
 ZmListController.prototype._resetOperations = 
@@ -786,13 +778,13 @@ function(parent, num) {
 		parent.enableAll(false);
 		parent.enable([ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE], true);
 	}
-}
+};
 
 // Resets the available options on the toolbar
 ZmListController.prototype._resetToolbarOperations = 
 function() {
 	this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectedItems().size());
-}
+};
 
 // Pagination
 
@@ -806,7 +798,7 @@ function(search, offset) {
 	} else {
 		this._list = search.getResults(type);
 	}
-}
+};
 
 ZmListController.prototype._search = 
 function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
@@ -820,7 +812,7 @@ function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 		this._currentSearch = search;
 	var mods = {"searchFieldAction": ZmSearchController.LEAVE_SEARCH_TXT};
 	sc.redoSearch(search, true, mods, callback);
-}
+};
 
 /*
 * Gets next or previous page of items. The set of items may come from the 
@@ -878,7 +870,7 @@ function(view, forward, loadIndex) {
 		this._resetSelection();
 		return true;
 	}
-}
+};
 
 /*
 * Updates the list and the view after a new page of items has been retrieved.
@@ -926,7 +918,7 @@ function(callback) {
 	}
 	if (callback && !replenishmentDone)
 		callback.run();
-}
+};
 
 ZmListController.prototype._replenishList = 
 function(view, replCount, callback) {
@@ -948,7 +940,7 @@ function(view, replCount, callback) {
 		// replenish from server request
 		this._getMoreToReplenish(view, replCount, callback);
 	}
-}
+};
 
 ZmListController.prototype._resetSelection = 
 function(idx) {
@@ -958,7 +950,7 @@ function(idx) {
 		var first = list.get(selIdx);
 		this._listView[this._currentView].setSelection(first, false, true);
 	}
-}
+};
 
 /*
 * Requests replCount items from the server to replenish current listview
@@ -979,7 +971,7 @@ DBG.println("****** need to replenish: " + replCount);
 			this._listView[view]._setNoResultsHtml();
 		if (callback) callback.run();
 	}
-}
+};
 
 ZmListController.prototype._handleResponseGetMoreToReplenish = 
 function(view, callback, result) {
@@ -1016,7 +1008,7 @@ function(toolbar) {
 			this._navToolBar.addSelectionListener(ZmOperation.PAGE_DBL_FORW, navBarListener);
 		}
 	}
-}
+};
 
 ZmListController.prototype._resetNavToolBarButtons = 
 function(view) {
@@ -1035,7 +1027,7 @@ function(view) {
 	
 		this._navToolBar.enable(ZmOperation.PAGE_FORWARD, (hasMore || evenMore));
 	}
-}
+};
 
 ZmListController.prototype._showListRange = 
 function(view) {
@@ -1049,14 +1041,14 @@ function(view) {
 		text = start + " - " + end;
 	}
 	this._navToolBar.setText(text);
-}
+};
 
 // default callback before a view is shown - enable/disable nav buttons
 ZmListController.prototype._preShowCallback =
 function(view, viewPushed) {
 	this._resetNavToolBarButtons(view);
 	return true;
-}
+};
 
 ZmListController._newDropDownListener = 
 function(event) {

@@ -143,9 +143,9 @@ function(ev, bIsPopCallback) {
 			var contact = this._listView[view].getContact();
 			if (contact.id == undefined || contact.isGal) {
 				var list = this._app.getContactList();
-				this._schedule(this._doCreate, {list: list, args: mods});
+				this._doCreate(list, mods);
 			} else {
-				this._schedule(this._doModify, {item: contact, mods: mods});
+				this._doModify(contact, mods);
 			}
 		} else {
 			// print error message in toaster

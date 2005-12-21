@@ -55,7 +55,7 @@ function ZmContact(appCtxt, id, list) {
 	this.isGal = this.list.isGal;
 
 	this.participants = new AjxVector(); // XXX: need to populate this guy (see ZmConv)
-}
+};
 
 ZmContact.prototype = new ZmItem;
 ZmContact.prototype.constructor = ZmContact;
@@ -125,7 +125,7 @@ ZmContact.F_EMAIL_FIELDS = [ZmContact.F_email, ZmContact.F_email2, ZmContact.F_e
 ZmContact.prototype.toString = 
 function() {
 	return "ZmContact: id = " + this.id + " fullName = " + this.getFullName();
-}
+};
 
 // Class methods
 
@@ -142,7 +142,7 @@ function(node, args) {
 	contact._resetCachedFields();
 
 	return contact;
-}
+};
 
 /**
 * Compares two contacts based on how they are filed. Intended for use by
@@ -159,7 +159,7 @@ function(a, b) {
 	if (aFileAs > bFileAs) return 1;
 	if (aFileAs < bFileAs) return -1;
 	return 0;
-}
+};
 
 /**
 * Figures out the filing string for the contact according to the chosen method.
@@ -236,7 +236,7 @@ function(contact) {
 			break;
 	}
 	return fa.join("");
-}
+};
 
 // Public methods
 
@@ -249,7 +249,7 @@ function(name) {
 	} else {
 		return this.canonicalList.getById(this.id).attr[name];
 	}
-}
+};
 
 ZmContact.prototype.setAttr =
 function(name, value) {
@@ -260,7 +260,7 @@ function(name, value) {
 	} else {
 		this.canonicalList.getById(this.id).attr[name] = value;
 	}
-}
+};
 
 ZmContact.prototype.removeAttr =
 function(name) {
@@ -271,7 +271,7 @@ function(name) {
 	} else {
 		delete this.canonicalList.getById(this.id).attr[name];
 	}
-}
+};
 
 ZmContact.prototype.getAttrs =
 function() {
@@ -282,10 +282,10 @@ function() {
 * Creates a contact from the given set of attributes. Used to create contacts on
 * the fly (rather than by loading them). This method is called by a list's create()
 * method; in our case that list is the canonical list of contacts.
+* <p>
+* If this is a GAL contact, we assume it is being added to the contact list.</p>
 *
-* If this is a GAL contact, we assume it is being added to the contact list.
-*
-* @param attr		attr/value pairs for this contact
+* @param attr	[hash]		attr/value pairs for this contact
 */
 ZmContact.prototype.create =
 function(attr) {
@@ -299,8 +299,14 @@ function(attr) {
 		a.setAttribute("n", name);
 	}
 	
-	var ac = this._appCtxt.getAppController();
-	var resp = ac.sendRequest(soapDoc).CreateContactResponse;
+	var respCallback = new AjxCallback(this, this._handleResponseCreate, [attr]);
+	var execFrame = new AjxCallback(this, this.create, [attr]);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, null, execFrame);
+};
+
+ZmContact.prototype._handleResponseCreate =
+function(attr, result) {
+	var resp = result.getResponse().CreateContactResponse;
 	cn = resp ? resp.cn[0] : null;
 	var id = cn ? cn.id : null;
 	if (id) {
@@ -313,21 +319,21 @@ function(attr) {
 			if (!(attr[a] == undefined || attr[a] == ''))
 				this.setAttr(a, attr[a]);
 		}
-		
-		ac.setStatusMsg(ZmMsg.contactCreated);
+		this._appCtxt.getAppController().setStatusMsg(ZmMsg.contactCreated);
 	} else {
 		var msg = ZmMsg.errorCreateContact + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
-		ac.setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
+		this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
 	}
-}
+};
 
 /**
 * Updates contact attributes.
 *
-* @param attr		set of attributes and their new values
+* @param attr		[hash]			set of attributes and their new values
+* @param callback	[AjxCallback]	callback
 */
 ZmContact.prototype.modify =
-function(attr) {
+function(attr, callback) {
 	DBG.println(AjxDebug.DBG1, "ZmContact.modify");
 	if (this.list.isGal) {
 		DBG.println(AjxDebug.DBG1, "Cannot modify GAL contact");
@@ -346,8 +352,14 @@ function(attr) {
 		a.setAttribute("n", name);
 	}		
 	
-	var ac = this._appCtxt.getAppController();
-	var resp = ac.sendRequest(soapDoc).ModifyContactResponse;
+	var respCallback = new AjxCallback(this, this._handleResponseModify, [attr, callback]);
+	var execFrame = new AjxCallback(this, this.modify, [attr]);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, null, execFrame);
+};
+
+ZmContact.prototype._handleResponseModify =
+function(attr, callback, result) {
+	var resp = result.getResponse().ModifyContactResponse;
 	cn = resp ? resp.cn[0] : null;
 	var id = cn ? cn.id : null;
 	var details = null;
@@ -367,16 +379,19 @@ function(attr) {
 			}
 		}
 		details = {attr: attr, oldAttr: oldAttr, fullNameChanged: this.getFullName() != oldFullName,
-					   fileAsChanged: this.getFileAs() != oldFileAs, contact: this};
+				   fileAsChanged: this.getFileAs() != oldFileAs, contact: this};
 
-		ac.setStatusMsg(ZmMsg.contactModify);
+		this._appCtxt.getAppController().setStatusMsg(ZmMsg.contactModify);
 	} else {
 		var msg = ZmMsg.errorModifyContact + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
-		ac.setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
+		this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
 	}
 	
-	return details;
-}
+	if (callback) {
+		result.set(details);
+		callback.run(result);
+	}
+};
 
 /**
 * Sets this contacts email address.
@@ -391,12 +406,12 @@ function(email) {
 	} else {
 		this.setAttr(ZmContact.F_email, email);
 	}
-}
+};
 
 ZmContact.prototype.initFromPhone = 
 function(phone) {
 	this.setAttr(ZmContact.F_companyPhone, phone);
-}
+};
 
 ZmContact.prototype.getEmail =
 function() {
@@ -406,7 +421,7 @@ function() {
 			return value;
 	}
 	return null;
-}
+};
 
 // returns a list (array) of all valid emails for this contact
 ZmContact.prototype.getEmails = 
@@ -418,7 +433,7 @@ function() {
 			emails.push(value);
 	}
 	return emails;
-}
+};
 
 /**
 * Returns the full name.
@@ -438,7 +453,7 @@ function() {
 		this._fullName = fn.join(" ");
 	}
 	return this._fullName;
-}
+};
 
 /**
 * Returns HTML for a tool tip for this contact.
@@ -473,7 +488,7 @@ function(email) {
 		this._toolTipEmail = email;
 	}
 	return this._toolTip;
-}
+};
 
 /**
 * Returns the filing string for this contact, computing it if necessary.
@@ -542,25 +557,25 @@ function() {
 	}
 	if (val.length == 0) return null;	
 	return val.join("");
-}
+};
 
 ZmContact.prototype.getWorkAddrField = 
 function(instance) {
 	var attrs = this.getAttrs();
 	return this._getAddressField(attrs.workStreet, attrs.workCity, attrs.workState, attrs.workPostalCode, attrs.workCountry);
-}
+};
 
 ZmContact.prototype.getHomeAddrField = 
 function(instance) {
 	var attrs = this.getAttrs();
 	return this._getAddressField(attrs.homeStreet, attrs.homeCity, attrs.homeState, attrs.homePostalCode, attrs.homeCountry);
-}
+};
 
 ZmContact.prototype.getOtherAddrField = 
 function(instance) {
 	var attrs = this.getAttrs();
 	return this._getAddressField(attrs.otherStreet, attrs.otherCity, attrs.otherState, attrs.otherPostalCode, attrs.otherCountry);
-}
+};
 
 ZmContact.prototype._getAddressField = 
 function(street, city, state, zipcode, country) {
@@ -594,7 +609,7 @@ function(street, city, state, zipcode, country) {
 		html[idx++] = "\n" + country;
 
 	return html.join("");
-}
+};
 
 // Sets the full name based on an email address.
 ZmContact.prototype._initFullName =
@@ -611,7 +626,7 @@ function(email) {
 			this._setFullName(name, [".", "_"]);
 		}
 	}
-}
+};
 
 // Tries to extract a set of name components from the given text, with the
 // given list of possible delimiters. The first delimiter contained in the
@@ -634,7 +649,7 @@ function(text, delims) {
 		this.setAttr(ZmContact.F_middleName, parts[1]);
 		this.setAttr(ZmContact.F_lastName, parts[2]);
 	}
-}
+};
 
 // Adds a row to the tool tip.
 ZmContact.prototype._addEntryRow =
@@ -653,7 +668,7 @@ function(field, data, html, idx) {
 		html[idx++] = "</tr>";
 	}
 	return idx;
-}
+};
 
 // Reset computed fields.
 ZmContact.prototype._resetCachedFields =
@@ -661,7 +676,7 @@ function() {
 	this._fileAs = null;
 	this._fullName = null;
 	this._toolTip = null;
-}
+};
 
 // Parse a contact node. A contact will only have attribute values if it is in the canonical list.
 ZmContact.prototype._loadFromDom =
@@ -672,7 +687,7 @@ function(node) {
 	this._parseFlags(node.f);
 	this._parseTags(node.t);
 	this.attr = node._attrs;
-}
+};
 
 // these need to be kept in sync with ZmContact.F_*
 ZmContact._AB_FIELD = {

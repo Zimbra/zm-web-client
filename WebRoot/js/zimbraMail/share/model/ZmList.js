@@ -421,7 +421,13 @@ function(items, hardDelete, attrs) {
 */
 ZmList.prototype.modifyItem =
 function(item, mods) {
-	var details = item.modify(mods);
+	var respCallback = new AjxCallback(this, this._handleResponseModifyItem, [item]);
+	item.modify(mods, respCallback);
+};
+
+ZmList.prototype._handleResponseModifyItem =
+function(item, result) {
+	var details = result.getResponse();
 	if (details) {
 		// notify item and its list
 		item._notify(ZmEvent.E_MODIFY, details);
@@ -429,7 +435,7 @@ function(item, mods) {
 		this._notify(ZmEvent.E_MODIFY, details);
 		this.modifyLocal(item, details);
 	}
-}
+};
 
 // Notification handling
 
@@ -439,7 +445,7 @@ function(node) {
 	this.add(item, this._sortIndex(item));
 	this.createLocal(item);
 	this._notify(ZmEvent.E_CREATE, {items: [item]});
-}
+};
 
 // Local change handling
 
@@ -457,14 +463,14 @@ ZmList.prototype.deleteLocal =
 function(items) {
 	for (var i = 0; i < items.length; i++)
 		this.remove(items[i]);
-}
+};
 
 // default action is to remove each moved item from this list
 ZmList.prototype.moveLocal = 
 function(items, folderId) {
 	for (var i = 0; i < items.length; i++)
 		this.remove(items[i]);
-}
+};
 
 /*
 * Performs an action on items via a SOAP request.
@@ -494,11 +500,10 @@ function(params) {
 	actionNode.setAttribute("op", params.action);
 	for (var attr in params.attrs)
 		actionNode.setAttribute(attr, params.attrs[attr]);
-	var appCtlr = this._appCtxt.getAppController();
 	var respCallback = params.callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback]) : null;
 	var execFrame = new AjxCallback(this, this._itemAction, params);
-	appCtlr.sendRequest(soapDoc, true, respCallback, null, execFrame);
-}
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, null, execFrame);
+};
 
 ZmList.prototype._handleResponseItemAction =
 function(type, idHash, callback, result) {
@@ -540,7 +545,7 @@ function(method, args) {
 			ZmMailList.prototype[method].call(this, typedItems[type], args[1], args[2]);
 		this._mixedType = null;
 	}
-}
+};
 
 ZmList.prototype._getTypedItems =
 function(items) {
@@ -552,7 +557,7 @@ function(items) {
 		typedItems[type].push(items[i]);
 	}
 	return typedItems;
-}
+};
 
 // Grab the IDs out of a list of items, and return them as both a string and a hash.
 ZmList.prototype._getIds =
@@ -579,14 +584,14 @@ function(list) {
 	idHash.extra = extra;
 
 	return idHash;
-}
+};
 
 // Returns the index at which the given item should be inserted into this list.
 // Subclasses should override to return a meaningful value.
 ZmList.prototype._sortIndex = 
 function(item) {
 	return 0;
-}
+};
 
 ZmList.prototype._tagTreeChangeListener = 
 function(ev) {
@@ -609,4 +614,4 @@ function(ev) {
 			this._notify(ZmEvent.E_TAGS, {items: taggedItems});
 		}
 	}
-}
+};
