@@ -87,7 +87,7 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	}
 
 	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
-		this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, "Save", null, "SaveDis", ZmMsg.saveCurrentSearch, this._appCtxt.get(ZmSetting.BROWSE_ENABLED), "TBButtonWhite");
+		this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, "Save", null, "SaveDis", ZmMsg.saveCurrentSearch, true, "TBButtonWhite");
 	    document.getElementById(saveColId).appendChild(this._saveButton.getHtmlElement());
 	}
 }
