@@ -151,11 +151,10 @@ function(unameId, pwordId, okCellId, errorCellId, reloginModeId) {
 
 	html[i++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td>";
 	html[i++] = "<table align=center border=0 cellspacing=0 cellpadding=0 style='width:447px; border: 2px solid; border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;'>";
-	html[i++] = "<tr><td colspan=10 bgcolor='#FFFFFF'><div class='ZmLoginDialog-HeaderPanel'>";
-	html[i++] = "<div style='font-size:9px; text-align:center; top:112; color:#999999; position:relative;'>";
+	html[i++] = "<tr><td colspan=10 bgcolor='#FFFFFF'><div class='ZmLoginDialog-HeaderPanel'></div></td></tr>";
+	html[i++] = "<td><td colspan=10 bgcolor='#FFFFFF' style='font-size:9px; text-align:center; color:#999999;'>";
 	html[i++] = ZmMsg.splashScreenCopyright;
-	html[i++] = "</div></div></td></tr>";
-	html[i++] = "<tr><td>";
+	html[i++] = "</td></tr><tr><td>";
 	html[i++] = "<table border=0 width=100% class='ZmLoginDialog-MainPanel'>";
 	html[i++] = "<tr><td colspan=3 id='" + errorCellId + "'>&nbsp;</td></tr>";
 	html[i++] = "<tr height=40><td width=100 align=right>" + ZmMsg.username + ":</td>";

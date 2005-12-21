@@ -98,10 +98,10 @@ function() {
 	
 	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td>";
 	html[idx++] = "<table width=450 align=center border=0 cellspacing=0 cellpadding=0 style='border: 2px solid; border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;'>";
-	html[idx++] = "<tr><td bgcolor='#FFFFFF'><div class='banner'>";
-	html[idx++] = "<div style='font-size:9px; text-align:center; top:112; color:#999999; position:relative;'>";
+	html[idx++] = "<tr><td bgcolor='#FFFFFF'><div class='banner'></div></td></tr>";
+	html[idx++] = "<tr><td bgcolor='#FFFFFF' style='font-size:9px; text-align:center; color:#999999;'>";
 	html[idx++] = ZmMsg.splashScreenCopyright;
-	html[idx++] = "</div></div></td></tr>";
+	html[idx++] = "</td></tr>";
 	html[idx++] = "<tr><td class='mainPanel' align=center><div class='error'>";
 	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2><tr>";
 	html[idx++] = "<td valign=top width=40><img src='/zimbra/img/hiRes/dwt/Critical_32.gif' width=32 height=32></td>";
@@ -147,10 +147,10 @@ function() {
 	
 	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td>";
 	html[idx++] = "<table width=450 align=center border=0 cellspacing=0 cellpadding=0 style='border: 2px solid; border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;'>";
-	html[idx++] = "<tr><td bgcolor='#FFFFFF'><div class='banner'>";
-	html[idx++] = "<div style='font-size:9px; text-align:center; top:112; color:#999999; position:relative;'>";
+	html[idx++] = "<tr><td bgcolor='#FFFFFF'><div class='banner'></div></td></tr>";
+	html[idx++] = "<tr><td bgcolor='#FFFFFF' style='font-size:9px; text-align:center; color:#999999;'>";
 	html[idx++] = ZmMsg.splashScreenCopyright;
-	html[idx++] = "</div></div></td></tr>";
+	html[idx++] = "</td></tr>";
 	html[idx++] = "<tr><td id='loginPanel' class='mainPanel'>";
 	// error message div
 	html[idx++] = "<center><div class='error' style='display:none' id='errorMessageContainer'>";
