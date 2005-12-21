@@ -112,7 +112,11 @@ function(ev) {
 ZmConvListController.prototype._initializeToolBar = 
 function(view, arrowStyle) {
 	ZmMailListController.prototype._initializeToolBar.call(this, view, arrowStyle);
-	var buttons = [ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD];
+	var buttons = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
+	if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED))
+		buttons.push(ZmOperation.FORWARD_MENU);
+	else
+		buttons.push(ZmOperation.FORWARD);
 	for (var i = 0; i < buttons.length; i++) {
 		var b = this._toolbar[view].getButton(buttons[i]);
 		var key = ZmOperation.MSG_KEY_TT[buttons[i]] + "Conv";

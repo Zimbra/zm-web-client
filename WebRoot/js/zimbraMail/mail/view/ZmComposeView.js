@@ -165,7 +165,7 @@ function() {
 	var text;
 	if (this._action == ZmOperation.REPLY)
 		text = ZmMsg.reply;
-	else if (this._action == ZmOperation.FORWARD)
+	else if (this._action == ZmOperation.FORWARD_INLINE || this._action == ZmOperation.FORWARD_ATT)
 		text = ZmMsg.forward;
 	else
 		text = ZmMsg.compose;
@@ -321,7 +321,7 @@ function(attId, isDraft) {
 			}
 		} else {
 			msg.isReplied = this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL || isInviteReply;
-			msg.isForwarded = this._action == ZmOperation.FORWARD;
+			msg.isForwarded = this._action == ZmOperation.FORWARD_INLINE || this._action == ZmOperation.FORWARD_ATT;
 			msg.origId = this._msg.id;
 		}
 		msg.isInviteReply = isInviteReply;
@@ -402,9 +402,14 @@ function(params) {
 ZmComposeView.prototype.setFocus =
 function() {
 	// set the cursor to either to To address for new message or a forward
-	if (this._action == ZmOperation.NEW_MESSAGE || this._action == ZmOperation.FORWARD) {
+	if (this._action == ZmOperation.NEW_MESSAGE || 
+		this._action == ZmOperation.FORWARD_INLINE || 
+		this._action == ZmOperation.FORWARD_ATT) 
+	{
 		this._field[ZmEmailAddress.TO].focus();
-	} else {
+	} 
+	else 
+	{
 		// otherwise set cursor to the beginning of first line
 		this._setBodyFieldFocus();
 	}
@@ -754,7 +759,8 @@ function(action, msg, subjOverride) {
 	switch (action) {
 		case ZmOperation.REPLY:
 		case ZmOperation.REPLY_ALL: 		prefix = ZmMsg.re + ": "; break;
-		case ZmOperation.FORWARD: 			prefix = ZmMsg.fwd + ": "; break;
+		case ZmOperation.FORWARD_INLINE:
+		case ZmOperation.FORWARD_ATT: 		prefix = ZmMsg.fwd + ": "; break;
 		case ZmOperation.REPLY_ACCEPT:		prefix = ZmMsg.subjectAccept + ": "; break;
 		case ZmOperation.REPLY_DECLINE:		prefix = ZmMsg.subjectDecline + ": "; break;
 		case ZmOperation.REPLY_TENTATIVE:	prefix = ZmMsg.subjectTentative + ": "; break;

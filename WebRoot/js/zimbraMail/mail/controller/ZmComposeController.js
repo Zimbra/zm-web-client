@@ -305,7 +305,7 @@ function(msg) {
 
 		if (this._action == ZmOperation.REPLY ||
 			this._action == ZmOperation.REPLY_ALL ||
-			this._action == ZmOperation.FORWARD)
+			this._action == ZmOperation.FORWARD_INLINE)
 		{
 			if ((!bComposeSameFormat && bComposeAsFormat == ZmSetting.COMPOSE_HTML) ||
 			    (bComposeSameFormat && msg.isHtmlMail()))
