@@ -31,9 +31,9 @@
 * This class is the "ubercontroller", as it manages all the apps as well as bootstrapping
 * the ZimbraMail application.
 *
-* @param appCtxt		the app context (global storage)
-* @param domain			current domain
-* @param app			starting app
+* @param appCtxt	[ZmAppCtxt]		the app context (global storage)
+* @param domain		[string]		current domain
+* @param app		[constant]		starting app
 */
 function ZmZimbraMail(appCtxt, domain, app, userShell) {
 
@@ -171,8 +171,9 @@ function() {
 * Sets up ZimbraMail, and then starts it by calling its constructor. It is assumed that the
 * CSFE is on the same host.
 *
-* @param domain		the host that we're running on
-* @param app		starting app
+* @param domain			[string]	the host that we're running on
+* @param app			[constant]*	starting app
+* @param userShellId	[string]*	DOM ID of containing skin
 */
 ZmZimbraMail.run =
 function(domain, app, userShellId) {
@@ -199,10 +200,10 @@ function(domain, app, userShellId) {
 
 /**
 * Allows parent window to walk list of open child windows and either nuke them 
-* or "disable" them
+* or "disable" them.
 */
 ZmZimbraMail.unload = 
-function(ev) {
+function() {
 	var childWinList = window._zimbraMail ? window._zimbraMail._childWinList : null;
 	if (childWinList) {
 		// close all child windows
@@ -220,7 +221,9 @@ function(ev) {
 * Next, it launches the start app (which defaults to mail) and shows the results to
 * the user. Finally, we load contacts in the background.
 *
-* @param isRelogin		[boolean]	if true, app is already loaded/started
+* @param isRelogin		[boolean]*		if true, app is already loaded/started
+* @param app			[constant]*		starting app
+* @param settings		[hash]*			settings overrides
 */
 ZmZimbraMail.prototype.startup =
 function(params) {
