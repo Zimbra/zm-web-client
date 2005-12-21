@@ -732,7 +732,8 @@ function() {
 	
 	if (flag) {
 		this._origMsg[ZmItem.FLAG_PROP[flag]] = true;
-		this._origMsg.list._notify(ZmEvent.E_FLAGS, {items: [this._origMsg], flags: [flag]});
+		if (this._origMsg.list)
+        		this._origMsg.list._notify(ZmEvent.E_FLAGS, {items: [this._origMsg], flags: [flag]});
 	}
 };
 
