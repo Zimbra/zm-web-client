@@ -97,24 +97,21 @@ function() {
 * results of the scheduled action.
 */
 ZmController.prototype._schedule =
-function(method, params, delay, asyncMode) {
+function(method, params, delay) {
 	delay = delay ? delay : 0;
-	if (asyncMode) {
-		method.call(this, params);
-	} else {
-		if (delay == 0) {
-			this._shell.setBusy(true);
-		}
-		this._action = new AjxTimedAction(this, ZmController._exec, [method, params, delay]);
-		return AjxTimedAction.scheduleAction(this._action, delay);
+	if (delay == 0) {
+		params._reqId = ZmZimbraMail.getNextReqId();
+		this._shell.setBusy(true, params._reqId);
 	}
+	this._action = new AjxTimedAction(this, ZmController._exec, [method, params, delay]);
+	return AjxTimedAction.scheduleAction(this._action, delay);
 };
 
 ZmController._exec =
 function(method, params, delay) {
 	method.call(this, params);
 	if (!delay) {
-		this._shell.setBusy(false);
+		this._shell.setBusy(false, params._reqId);
 	}
 };
 

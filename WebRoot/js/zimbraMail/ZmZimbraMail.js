@@ -470,7 +470,7 @@ function(reqId, errorCallback) {
 	if (this._pendingRequests[reqId].state == ZmZimbraMail._RESPONSE) return;
 
 	this._pendingRequests[reqId].state = ZmZimbraMail._CANCEL;
-	this._shell.setBusy(false); // remove busy overlay
+	this._shell.setBusy(false, reqId); // remove busy overlay
 	DBG.println(AjxDebug.DBG1, "ZmZimbraMail.cancelRequest: " + reqId);
 	this._pendingRequests[reqId].cancel();
 	if (errorCallback && (errorCallback != ZmZimbraMail.IGNORE_ERRORS)) {
