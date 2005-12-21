@@ -251,13 +251,28 @@ ZmZimletContext.prototype._makeMenu = function(obj) {
 ZmZimletContext.prototype._handleMenuItemSelected = function(ev) {
 	var data = ev.item.getData("xmlMenuItem");
 	if (data.actionUrl) {
-		this._handleActionUrl(data.actionUrl[0], data.canvas);
+		this.handleActionUrl(data.actionUrl[0], data.canvas);
 	} else {
 		this.callHandler("menuItemSelected", [ data.id, data ]);
 	}
 };
 
-ZmZimletContext.prototype._handleActionUrl = function(actionUrl, canvas) {
+ZmZimletContext.RE_SCAN_OBJ = /(^|[^\\])\$\{(obj|src)\.([\$a-zA-Z0-9_]+)\}/g;
+
+ZmZimletContext.prototype.processString = function(str, obj) {
+	return str.replace(ZmZimletContext.RE_SCAN_OBJ,
+			   function(str, p1, p2, prop) {
+				   var txt = p1;
+				   if (typeof obj[prop] != "undefined") {
+					   txt += obj[prop];
+				   } else {
+					   txt += "(UNDEFINED: obj." + prop + ")";
+				   }
+				   return txt;
+			   });
+};
+
+ZmZimletContext.prototype.makeURL = function(actionUrl, obj) {
 	var url = actionUrl.target;
 	var param = [];
 	if (actionUrl.param) {
@@ -265,15 +280,23 @@ ZmZimletContext.prototype._handleActionUrl = function(actionUrl, canvas) {
 		for (var i = 0; i < a.length; ++i) {
 			// trim whitespace as it's almost certain that the
 			// developer didn't intend it.
-			var val = a[i]._content
-				.replace(/^\s+/, "")
-				.replace(/\s+$/, "");
+			var val = AjxStringUtil.trim(a[i]._content);
+			if (obj != null)
+				val = this.processString(val, obj);
 			param.push([ AjxStringUtil.urlEncode(a[i].name),
 				     "=",
 				     AjxStringUtil.urlEncode(val) ].join(""));
 		}
-		url = [ url, "?", param.join("&") ].join("");
+		var startChar = actionUrl.paramStart || '?';
+		var joinChar = actionUrl.paramJoin || '&';
+		url = [ url, startChar, param.join(joinChar) ].join("");
 	}
+	return url;
+};
+
+ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj) {
+	var url = this.makeURL(actionUrl, obj);
+
 	if (canvas) {
 		canvas = this.handlerObject.makeCanvas(canvas[0], url);
 	} else {

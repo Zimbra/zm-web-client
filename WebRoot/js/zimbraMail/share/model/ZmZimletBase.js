@@ -155,7 +155,10 @@ ZmZimletBase.prototype.match =
 function(content, startIndex) {
 	if(!this.RE) {return;}
 	this.RE.lastIndex = startIndex;
-	return this.RE.exec(content);
+	var ret = this.RE.exec(content);
+	if (ret)
+		ret.context = ret;
+	return ret;
 };
 
 // The clicked method is called when a Zimlet content object is clicked on by
@@ -167,6 +170,15 @@ function(content, startIndex) {
 // - canvas
 ZmZimletBase.prototype.clicked =
 function(spanElement, contentObjText, matchContext, canvas) {
+	var c = this.xmlObj("contentObject").onClick[0];
+	if (c && c.actionUrl) {
+		var obj = { objectContent: contentObjText };
+		if (matchContext && (matchContext instanceof Array)) {
+			for (var i = 0; i < matchContext.length; ++i)
+				obj["$"+i] = matchContext[i];
+		}
+		this.xmlObj().handleActionUrl(c.actionUrl[0], c.canvas, obj);
+	}
 };
 
 // This method is called when the tool tip is being popped up. This method
@@ -178,6 +190,17 @@ function(spanElement, contentObjText, matchContext, canvas) {
 // - canvas
 ZmZimletBase.prototype.toolTipPoppedUp =
 function(spanElement, contentObjText, matchContext, canvas) {
+	var c = this.xmlObj("contentObject");
+	if (c && c.toolTip) {
+		// FIXME: only plain tooltips support for now
+		var obj = { objectContent: contentObjText };
+		if (matchContext) {
+			for (var i = 0; i < matchContext.length; ++i)
+				obj["$"+i] = matchContext[i];
+		}
+		var txt = this.xmlObj().processString(c.toolTip[0]._content, obj);
+		canvas.innerHTML = txt;
+	}
 };
 
 // This method is called when the user is popping down a sticky tool tip. It
@@ -445,11 +468,11 @@ ZmZimletBase.prototype.makeCanvas = function(canvasData, url) {
 	var canvas = null;
 	switch (canvasData.type) {
 	    case "window":
-		var props = [];
+		var props = [ "toolbar=yes,location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes" ];
 		if (canvasData.width)
-			props.push("width=", canvasData.width);
+			props.push("width=" + canvasData.width);
 		if (canvasData.height)
-			props.push("height=", canvasData.height);
+			props.push("height=" + canvasData.height);
 		props = props.join(",");
 		canvas = window.open(url, this.xmlObj("name"), props);
 		break;
@@ -460,7 +483,8 @@ ZmZimletBase.prototype.makeCanvas = function(canvasData, url) {
 			view.setSize(canvasData.width, Dwt.DEFAULT);
 		if (canvasData.height)
 			view.setSize(Dwt.DEFAULT, canvasData.height);
-		canvas = this._createDialog({ view: view, title: "Zimlet dialog (" + this.xmlObj("description") + ")" });
+		var title = canvasData.title || ("Zimlet dialog (" + this.xmlObj("description") + ")");
+		canvas = this._createDialog({ view: view, title: title });
 		canvas.view = view;
 		if (url) {
 			// create an IFRAME here to open the given URL
@@ -498,9 +522,11 @@ ZmZimletBase.prototype._getHtmlContent =
 function(html, idx, obj, context) {
 	var contentObj = this.xmlObj().getVal('contentObject');
 	if(contentObj && contentObj.onClick) {
-		html[idx++] = '<a target="_blank" href="';
-		html[idx++] = (contentObj.onClick[0].actionUrl[0].target).replace('${objectContent}', AjxStringUtil.htmlEncode(obj));
-		html[idx++] = '">'+AjxStringUtil.htmlEncode(obj)+'</a>';
+// 		html[idx++] = '<a target="_blank" href="';
+// 		html[idx++] = (contentObj.onClick[0].actionUrl[0].target).replace('${objectContent}', AjxStringUtil.htmlEncode(obj));
+// 		html[idx++] = '">'+AjxStringUtil.htmlEncode(obj)+'</a>';
+
+		html[idx++] = AjxStringUtil.htmlEncode(obj);
 	} else {
 		html[idx++] = AjxStringUtil.htmlEncode(obj, true);
 	}

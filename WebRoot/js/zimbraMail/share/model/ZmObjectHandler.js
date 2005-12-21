@@ -149,7 +149,11 @@ function(obj, span, context) {
 
 ZmObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
-	return;
+	return this.clicked(span, obj, context, ev);
+}
+
+ZmObjectHandler.prototype.clicked =
+function(span, obj, context, ev) {
 }
 
 ZmObjectHandler.prototype.hoverOver = function(object, context, x, y) {
