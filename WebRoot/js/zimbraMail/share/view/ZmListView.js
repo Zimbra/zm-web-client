@@ -541,7 +541,17 @@ function(item, div) {
 			date = item.date;
 		}
 		if (date) {
-			div._dateStr = prefix + (new Date(date)).toLocaleString() + " <span style='white-space:nowrap'>(" + AjxDateUtil.computeDateDelta(date) + ")</span>";
+			var dateStr = new Array()
+			var i = 0;
+			dateStr[i++] = prefix;
+			dateStr[i++] = (new Date(date)).toLocaleString();
+			var delta = AjxDateUtil.computeDateDelta(date);
+			if (delta) {
+				dateStr[i++] = " <span style='white-space:nowrap'>(";
+				dateStr[i++] = delta;
+				dateStr[i++] = ")</span>";
+			}
+			div._dateStr = dateStr.join("");
 		} else {
 			div._dateStr = "";
 		}
