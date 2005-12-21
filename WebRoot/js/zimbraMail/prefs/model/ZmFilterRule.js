@@ -32,15 +32,15 @@
 *
 * @author Conrad Damon
 *
-* @param name	[string]	rule name
-* @param active	[boolean]	true if the rule is enabled
+* @param name	[string]*	rule name
+* @param active	[boolean]*	true if the rule is enabled
 */
 function ZmFilterRule(name, active) {
 	this.name = name;
 	this.groupOp = ZmFilterRule.GROUP_ANY;
 	this.actions = [];
 	this.conditions = [];
-	this.active = active;
+	this.active = (active !== false);
 	this.id = ZmFilterRule._nextId++;
 }
 

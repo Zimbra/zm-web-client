@@ -184,7 +184,7 @@ function(name) {
 * @param force			[boolean]*			if true, get rules from server
 * @param callback		[AjxCallback]*		callback
 */
-ZmFilterRules.prototype.getRules = 
+ZmFilterRules.prototype.loadRules = 
 function(force, callback) {
 	if (this._initialized && !force) {
 		if (callback) {
@@ -195,13 +195,13 @@ function(force, callback) {
 		}
 	}
 
-	DBG.println(AjxDebug.DBG3, "FILTER RULES: get rules");
+	DBG.println(AjxDebug.DBG3, "FILTER RULES: load rules");
 	var soapDoc = AjxSoapDoc.create("GetRulesRequest", "urn:zimbraMail");
-	var respCallback = new AjxCallback(this, this._handleResponseGetRules, [callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseLoadRules, [callback]);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
 };
 	
-ZmFilterRules.prototype._handleResponseGetRules = 
+ZmFilterRules.prototype._handleResponseLoadRules = 
 function(callback, result) {
 	
 	this._vector.removeAll();
@@ -352,15 +352,18 @@ function(ex) {
 		msgDialog.setMessage(ZmMsg.filterError, DwtMessageDialog.CRITICAL_STYLE);
 		msgDialog.popup();
 	    var respCallback = new AjxCallback(this, this._handleResponseHandleErrorSaveRules);
-	    this.getRules(true, respCallback);
+	    this.loadRules(true, respCallback);
 	}
 	return true;
 };
 
+// XXX: the caller should probably be the one doing this
 ZmFilterRules.prototype._handleResponseHandleErrorSaveRules =
 function() {
-	var filterRulesCtlr = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController().getFilterRulesController();
-	filterRulesCtlr._setListView();
+	var prefController = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
+	var prefsView = prefController.getPrefsView();
+	if (prefsView && prefsView.get(ZmPrefView.FILTER_RULES))
+		prefController.getFilterRulesController()._setListView();
 };
 
 /*

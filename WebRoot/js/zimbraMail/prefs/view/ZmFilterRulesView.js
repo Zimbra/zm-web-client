@@ -31,7 +31,8 @@ function ZmFilterRulesView(parent, appCtxt, controller) {
 	this._controller = controller;
 	this._prefsController = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
 	
-	this._rules = this._controller._rules;
+	this._rules = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getFilterRules();
+
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]].join(": ");
 
 	this._rendered = false;
@@ -69,11 +70,12 @@ function() {
 /*
 * ZmFilterListView
 */
-function ZmFilterListView(parent, rules, controller) {
+function ZmFilterListView(parent, appCtxt, controller) {
 	var headerList = this._getHeaderList();
 	DwtListView.call(this, parent, "ZmFilterListView", null, headerList);	
 
-	this._rules = rules;
+	this._rules = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getFilterRules();
+	
 	this._controller = controller;
 	this._rules.addChangeListener(new AjxListener(this, this._changeListener));
 	this.setMultiSelect(false);	// single selection only

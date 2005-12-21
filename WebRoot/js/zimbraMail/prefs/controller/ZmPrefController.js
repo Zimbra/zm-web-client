@@ -29,8 +29,8 @@
 * @class
 * Manages the options pages.
 *
-* @author Enrique Del Campo
 * @author Conrad Damon
+*
 * @param appCtxt		the app context
 * @param container		the shell
 * @param prefsApp		the preferences app
@@ -58,6 +58,17 @@ function() {
 	this._app.pushView(ZmController.PREF_VIEW);
 };
 
+/**
+* Returns the prefs view (a view with tabs).
+*/
+ZmPrefController.prototype.getPrefsView =
+function() {
+	return this._prefsView;
+};
+
+/**
+* Returns the filter rules controller.
+*/
 ZmPrefController.prototype.getFilterRulesController =
 function() {
 	if (!this._filterRulesController)
@@ -65,13 +76,21 @@ function() {
 	return this._filterRulesController;
 };
 
+/*
+* Enables/disables toolbar buttons.
+*
+* @param parent		[ZmButtonToolBar]	the toolbar
+* @param view		[constant]			current view (tab)
+*/
 ZmPrefController.prototype._resetOperations =
 function(parent, view) {
 	parent.enable(ZmOperation.SAVE, view != ZmPrefView.FILTER_RULES);
 	parent.enable(ZmOperation.CANCEL, true);
 };
 
-// Creates the prefs view, with a tab for each preferences page.
+/*
+* Creates the prefs view, with a tab for each preferences page.
+*/
 ZmPrefController.prototype._setView = 
 function() {
 	if (!this._passwordDialog) {
@@ -91,7 +110,9 @@ function() {
 	}
 };
 
-// Initializes the toolbar and sets up the listeners
+/*
+* Initializes the toolbar and sets up the listeners.
+*/
 ZmPrefController.prototype._initializeToolBar = 
 function () {
 	if (this._toolbar) return;
@@ -108,7 +129,7 @@ function () {
 /*
 * Saves any options that have been changed.
 *
-* @param ev
+* @param ev			[DwtEvent]		click event
 * @param callback	[AjxCallback]	async callback
 * @param noPop		[boolean]		if true, don't pop view after save
 */

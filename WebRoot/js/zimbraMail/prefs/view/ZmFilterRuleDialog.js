@@ -38,14 +38,13 @@
 * @author Conrad Damon
 *
 * @param appCtxt	[ZmAppCtxt]			the app context
-* @param rules		[ZmFilterRules]		the current set of filter rules
 */
-function ZmFilterRuleDialog(appCtxt, rules) {
+function ZmFilterRuleDialog(appCtxt) {
 
 	DwtDialog.call(this, appCtxt.getShell(), "ZmFilterRuleDialog", ZmMsg.selectAddresses);
 
 	this._appCtxt = appCtxt;
-	this._rules = rules;
+	this._rules = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getFilterRules();
 
 	this.setContent(this._contentHtml());
 
@@ -99,20 +98,23 @@ ZmFilterRuleDialog.COL_WIDTH["param"]		= ZmFilterRuleDialog.CHOOSER_BUTTON_WIDTH
 * that is the base for adding a new rule.
 *
 * @param rule			[ZmFilterRule]*		rule to edit
-* @param referenceRule	[ZmFilterRule]		rule after which to add new rule
+* @param editMode		[boolean]*			if true, we are editing a rule
+* @param referenceRule	[ZmFilterRule]*		rule after which to add new rule
 */
 ZmFilterRuleDialog.prototype.popup =
-function(rule, referenceRule) {
+function(rule, editMode, referenceRule) {
 	this._inputs = {};
 	this._rule = rule;
+	this._editMode = editMode;
 	this._referenceRule = referenceRule;
 	this.setTitle(rule ? ZmMsg.editFilter : ZmMsg.addFilter);
 
 	var nameField = document.getElementById(this._nameInputId);
-	nameField.value = rule ? rule.getName() : "";
+	var name = rule ? rule.getName() : null;
+	nameField.value = name ? name : "";
 
 	var activeField = document.getElementById(this._activeCheckboxId);
-	activeField.checked = (!rule || rule.isActive);
+	activeField.checked = (!rule || rule.isActive());
 
 	var anyRadioField = document.getElementById(this._anyRadioId);
 	var allRadioField = document.getElementById(this._allRadioId);
@@ -628,7 +630,6 @@ ZmFilterRuleDialog.prototype._okButtonListener =
 function(ev) {
 
 	var rule = this._rule;
-	var editMode = (rule != ZmFilterRule.DUMMY_RULE);
 	var msg = null;
 	var name = document.getElementById(this._nameInputId).value;
 	if (!name)
@@ -641,11 +642,11 @@ function(ev) {
 	    this._msgDialog.popup();
 	    return;
 	}
-	var active = document.getElementById(this._activeCheckboxId).value ? true : false;
+	var active = document.getElementById(this._activeCheckboxId).checked;
 	var anyAll = document.getElementById(this._anyRadioId).checked ? "anyof" : "allof";
 
 	// adding a rule always starts with dummy
-	if (editMode) {
+	if (this._editMode) {
 		rule.setName(name);
 		rule.setGroupOp(anyAll);
 		rule.clearConditions();
@@ -685,8 +686,8 @@ function(ev) {
 	}
 	
 	var respCallback = new AjxCallback(this, this._handleResponseOkButtonListener);
-	if (editMode)
-		this._rules._saveRules(rule, null, respCallback);
+	if (this._editMode)
+		this._rules._saveRules(this._rules.getIndexOfRule(rule), true, respCallback);
 	else
 		this._rules.addRule(rule, this._referenceRule, respCallback);
 };

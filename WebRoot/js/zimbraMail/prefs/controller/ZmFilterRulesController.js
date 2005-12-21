@@ -39,9 +39,8 @@ function ZmFilterRulesController(appCtxt, container, prefsApp, prefsView) {
 
 	ZmController.call(this, appCtxt, container, prefsApp);
 
-	this._rules = new ZmFilterRules(appCtxt, this);
-
 	this._prefsView = prefsView;
+	this._rules = prefsApp.getFilterRules();
 	this._filterRulesView = new ZmFilterRulesView(this._prefsView._parent, appCtxt, this);
 	
 	this._buttonListeners = new Object();
@@ -61,16 +60,6 @@ ZmFilterRulesController.prototype.constructor = ZmFilterRulesController;
 ZmFilterRulesController.prototype.getFilterRulesView =
 function() {
 	return this._filterRulesView;
-};
-
-/**
-* Returns the dialog used to add or edit a filter rule.
-*/
-ZmFilterRulesController.prototype.getFilterRuleDialog =
-function() {
-	if (!this._filterRuleDialog)
-		this._filterRuleDialog = new ZmFilterRuleDialog(this._appCtxt, this._rules);
-	return this._filterRuleDialog;
 };
 
 /*
@@ -103,7 +92,7 @@ function() {
 
 	// add listeners
 	var id;
-	for (var i = 0; i < buttons.length; ++i) {
+	for (var i = 0; i < buttons.length; i++) {
 		id = buttons[i];
 		if (id > 0)
 			this._toolbar.addSelectionListener(id, this._buttonListeners[id]);
@@ -116,7 +105,7 @@ function() {
 */
 ZmFilterRulesController.prototype._initializeListView =
 function() {
-	this._listView = new ZmFilterListView(this._filterRulesView, this._rules, this);
+	this._listView = new ZmFilterListView(this._filterRulesView, this._appCtxt, this);
 	this._listView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
 	this._setListView();
 };
@@ -135,7 +124,7 @@ function(list, index) {
 		this._listView.set(list);
 	} else {
 		var respCallback = new AjxCallback(this, this._handleResponseSetListView, [list, index]);
-		this._rules.getRules(false, respCallback);
+		this._rules.loadRules(false, respCallback);
 	}
 };
 
@@ -172,7 +161,7 @@ ZmFilterRulesController.prototype._addListener =
 function(ev) {
 	var sel = this._listView.getSelection();
 	var refRule = sel.length ? sel[sel.length - 1] : null;
-	this.getFilterRuleDialog().popup(null, refRule);
+	this._appCtxt.getFilterRuleDialog().popup(null, false, refRule);
 };
 
 /*
@@ -183,7 +172,7 @@ function(ev) {
 ZmFilterRulesController.prototype._editListener =
 function(ev) {
 	var sel = this._listView.getSelection();
-	this.getFilterRuleDialog().popup(sel[0]);
+	this._appCtxt.getFilterRuleDialog().popup(sel[0], true);
 };
 
 /*

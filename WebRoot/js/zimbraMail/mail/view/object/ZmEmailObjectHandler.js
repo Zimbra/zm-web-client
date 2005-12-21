@@ -86,36 +86,35 @@ function(obj) {
 
 ZmEmailObjectHandler.prototype.getActionMenu =
 function(obj, span, context, isDialog) {
+	var appCtxt = this._appCtxt;
 	if (this._menu == null) {
 		var list = new Array();
-		if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+		if (appCtxt.get(ZmSetting.SEARCH_ENABLED))
 			list.push(ZmOperation.SEARCH);
-		}
-		if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
+		if (appCtxt.get(ZmSetting.BROWSE_ENABLED))
 			list.push(ZmOperation.BROWSE);
-		}
 		list.push(ZmOperation.NEW_MESSAGE);
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED))
 			list.push(ZmOperation.CONTACT);
-		}
+		if (appCtxt.get(ZmSetting.FILTERS_ENABLED))
+			list.push(ZmOperation.ADD_FILTER_RULE);
 		list.push(ZmOperation.GO_TO_URL);
-		this._menu = new ZmActionMenu(this._appCtxt.getShell(), list, null, isDialog);
+		this._menu = new ZmActionMenu(appCtxt.getShell(), list, null, isDialog);
 	
-		if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+		if (appCtxt.get(ZmSetting.SEARCH_ENABLED))
 			this._menu.addSelectionListener(ZmOperation.SEARCH, new AjxListener(this, this._searchListener));
-		}
-		if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
+		if (appCtxt.get(ZmSetting.BROWSE_ENABLED))
 			this._menu.addSelectionListener(ZmOperation.BROWSE, new AjxListener(this, this._browseListener));
-		}
 		this._menu.addSelectionListener(ZmOperation.NEW_MESSAGE, new AjxListener(this, this._composeListener));
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED))
 			this._menu.addSelectionListener(ZmOperation.CONTACT, new AjxListener(this, this._contactListener));
-		}
+		if (appCtxt.get(ZmSetting.FILTERS_ENABLED))
+			this._menu.addSelectionListener(ZmOperation.ADD_FILTER_RULE, new AjxListener(this, this._filterListener));
 		this._menu.addSelectionListener(ZmOperation.GO_TO_URL, new AjxListener(this, this._goToUrlListener));
 	}
 	this._actionObject = obj;
 	this._actionAddress = this._getAddress(this._actionObject);	
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		this._actionContact = this._contacts.getContactByEmail(this._actionAddress);
 		var isContact = (this._actionContact !== null);
 		var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
@@ -175,6 +174,15 @@ ZmEmailObjectHandler.prototype._searchListener =
 function(ev) {
 	// TODO: use fullname if email empty? What if there are multiple emails?
 	this._appCtxt.getSearchController().fromSearch(this._actionAddress);
+};
+
+ZmEmailObjectHandler.prototype._filterListener =
+function(ev) {
+	var rule = new ZmFilterRule();
+	rule.addCondition(new ZmCondition("from", ":is", this._actionAddress));
+	rule.addAction(new ZmAction("keep"));
+	var dialog = this._appCtxt.getFilterRuleDialog();
+	dialog.popup(rule);
 };
 
 ZmEmailObjectHandler.prototype._goToUrlListener =
