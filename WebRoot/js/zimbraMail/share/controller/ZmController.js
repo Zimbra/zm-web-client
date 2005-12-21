@@ -100,6 +100,7 @@ ZmController.prototype._schedule =
 function(method, params, delay) {
 	delay = delay ? delay : 0;
 	if (delay == 0) {
+		params = params ? params : {};
 		params._reqId = ZmZimbraMail.getNextReqId();
 		this._shell.setBusy(true, params._reqId);
 	}
