@@ -267,12 +267,13 @@ ZmContactListController.prototype._resetOperations =
 function(parent, num) {
 	if (!this._isGalSearch) {
 		ZmListController.prototype._resetOperations.call(this, parent, num);
-		parent.enable(ZmOperation.EDIT, num==1);
+		parent.enable(ZmOperation.EDIT, num == 1);
+		parent.enable(ZmOperation.MOVE, false);
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
 		parent.enableAll(false);
 		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW], true);
-		parent.enable([ZmOperation.CONTACT, ZmOperation.NEW_MESSAGE, ZmOperation.PRINT], num>0);
+		parent.enable([ZmOperation.CONTACT, ZmOperation.NEW_MESSAGE, ZmOperation.PRINT], num > 0);
 	}
 };
 
