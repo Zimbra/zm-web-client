@@ -38,6 +38,11 @@ function ZmHETablePropsDialog(parent) {
 	var floatId = Dwt.getNextId();
 	var textHAlignId = Dwt.getNextId(); 
 	var textVAlignId = Dwt.getNextId(); 
+	var numColsId = Dwt.getNextId();
+	var numRowsId = Dwt.getNextId();
+	var tableWidthId = Dwt.getNextId(); 
+	var widthUnitId = Dwt.getNextId();
+	
 	var cellSpacingId = Dwt.getNextId();
 	var cellPaddingId = Dwt.getNextId();
 	
@@ -55,12 +60,23 @@ function ZmHETablePropsDialog(parent) {
 	var html = [
          "<table class='ZmHEDialog'><tr><td>",
 
+         "<fieldset><legend>", ZmMsg.tableSize, "</legend>",
+         "<div style='padding:2px;'></div>",
+         "<table><tr>",
+         "<td class='Label'>", ZmMsg.numberOfCols,":</td>",
+         "<td colspan=2 id='", numColsId, "'></td></tr>",
+         "<tr><td class='Label'>", ZmMsg.numberOfRows, ":</td>",
+         "<td colspan=2 id='", numRowsId, "'></td></tr>",
+         "<tr><td class='Label'>", ZmMsg.tableWidth, ":</td>",
+         "<td id='", tableWidthId, "' size='5' value='100'/></td>",
+         "<td style='padding-left;2px;' id='", widthUnitId, "'></td></tr></table></fieldset><p/>",
+ 
          "<fieldset><legend>", ZmMsg.layout, "</legend>",
          "<div style='padding:2px;'></div>",
          "<table><tr>",
          "<td class='Label'>", ZmMsg.tableAlignment, ":</td>",
          "<td id='", tableAlignmentId, "'></td>",
-         "<td id='", tableFloatId, 
+         "<td id='", floatId, 
          "<td class='Label'>", ZmMsg.cellSpacing, ":</td>",
          "<td id='", cellSpacingId, "' size='5' value='1'/></td>",
          "<td class='Label'>", ZmMsg.cellSpacing, ":</td>",
@@ -69,7 +85,9 @@ function ZmHETablePropsDialog(parent) {
          "<td id='", cellPaddingId, "'></td></tr>",
          "<tr><td class='Label'>", "Border Thickness", ":</td>",
          "<td id='", borderWidthId, "'></td>",
-         "<td colspan='2'><table width='100%'><tr><td id='", borderColorId, "'></td><td valign='middle'><div class='BorderColorSwatch' id='", borderColorSwatchId, "'></div></td></tr></table></tr>",
+         "<td colspan='2'><table width='100%'><tr><td id='", borderColorId,
+         "'></td><td valign='middle'><div class='BorderColorSwatch' id='", 
+         borderColorSwatchId, "'></div></td></tr></table></tr>",
          
          "</table></fieldset>",
           
@@ -78,6 +96,26 @@ function ZmHETablePropsDialog(parent) {
 	this.setContent(html);
 	
     var cb = new AjxCallback(this, this._validationCb);
+
+    // Table Size
+	this._numColsField = new DwtInputField(this, DwtInputField.INTEGER, 2, 5, 3, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+	this._numColsField.setValidNumberRange(1, 254);
+	this._numColsField.setValidationCallback(cb);
+	this._numColsField.reparentHtmlElement(numColsId);
+	
+	this._numRowsField = new DwtInputField(this, DwtInputField.INTEGER, 2, 5, 4, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+	this._numRowsField.setValidNumberRange(1, null);
+	this._numRowsField.setValidationCallback(cb);
+	this._numRowsField.reparentHtmlElement(numRowsId);
+
+	this._widthUnit = new DwtSelect(this.shell, [new DwtSelectOption(ZmHtmlEditor._PERCENT, true, ZmMsg.percent), 
+													new DwtSelectOption(ZmHtmlEditor._PIXELS, false, ZmMsg.pixels)]);
+	this._widthUnit.reparentHtmlElement(widthUnitId);
+	
+	this._tableWidthField = new DwtInputField(this, DwtInputField.INTEGER, 100, 5, 5, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+	this._tableWidthField.setValidatorFunction(this, this._tcdValidateTableWidth);
+	this._tableWidthField.setValidationCallback(cb);
+	this._tableWidthField.reparentHtmlElement(tableWidthId);
     
 	// Layout
 	this._tableAlignment = new DwtSelect(this.shell, ["Center", "Left", "Right"]);

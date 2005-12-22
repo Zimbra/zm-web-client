@@ -449,7 +449,7 @@ function(ev) {
 	switch (elType) {
 		case ZmHtmlEditor._INSERT_TABLE:
 			if (!this._ntd) {
-				this._ntd = new ZmHENewTableDialog(this.shell);
+				this._ntd = new ZmHETablePropsDialog(this.shell);
 				this._ntd.registerCallback(DwtDialog.OK_BUTTON, this._tableDialogOkCallback, this);
 			}	
 			this._ntd.popup();
