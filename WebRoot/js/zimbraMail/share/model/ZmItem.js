@@ -202,13 +202,14 @@ function() {
 ZmItem.prototype.getTagImageInfo =
 function() {
 	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
-	if (!tagList) return ZmTag.DEFAULT_COLOR;
+	if (!tagList) return ZmTag.COLOR_MINI_ICON[ZmTag.DEFAULT_COLOR];
 	
 	var tagImageInfo;
 	if (!this.tags.length) {
 		tagImageInfo = "Blank_16";
 	} else if (this.tags.length == 1) {
-		var color = tagList.getById(this.tags[0]).color;
+		var tag = tagList.getById(this.tags[0]);
+		var color = tag ? tag.color : ZmTag.DEFAULT_COLOR;
 		tagImageInfo = ZmTag.COLOR_MINI_ICON[color];
 	} else {
 		tagImageInfo = "MiniTagStack";
