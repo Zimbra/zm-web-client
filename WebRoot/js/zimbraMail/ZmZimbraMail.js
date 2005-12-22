@@ -422,6 +422,7 @@ function(asyncMode, callback, errorCallback, execFrame, reqId, result) {
 	try {
 		response = asyncMode ? result.getResponse() : result;
 	} catch (ex) {
+		DBG.println(AjxDebug.DBG2, "Request " + reqId + " got an exception");
 		if (errorCallback) {
 			if (errorCallback != ZmZimbraMail.IGNORE_ERRORS) {
 				var handled = errorCallback.run(ex);
@@ -447,7 +448,7 @@ function(asyncMode, callback, errorCallback, execFrame, reqId, result) {
 
 	// start poll timer if we didn't get an exception
 	if (this._pollInterval)
-		this._pollActionId = this._schedule(this._doPoll, null, this._pollInterval);
+		this._pollActionId = this._doPoll();
 
 	if (asyncMode)
 		if (callback) callback.run(result);
@@ -740,13 +741,17 @@ function(locationStr){
 	window.location = locationStr;
 };
 
+/**
+* Resets the interval between poll requests, based on what's in the settings.
+*/
 ZmZimbraMail.prototype.setPollInterval =
-function(minutes) {
-	this._pollInterval = minutes ? minutes : this._appCtxt.get(ZmSetting.POLLING_INTERVAL) * 1000;
+function() {
+	this._pollInterval = this._appCtxt.get(ZmSetting.POLLING_INTERVAL) * 1000;
 	DBG.println(AjxDebug.DBG1, "poll interval = " + this._pollInterval + "ms");
 	if (this._pollActionId)
 		AjxTimedAction.cancelAction(this._pollActionId);
-	this._pollActionId = this._schedule(this._doPoll, null, this._pollInterval);
+	if (this._pollInterval)
+		this._pollActionId = this._doPoll();
 };
 
 ZmZimbraMail.prototype.setSessionTimer =
@@ -1182,12 +1187,13 @@ function(parent) {
 	return list;
 };
 
-// Sends a NoOpRequest to see if we get any notifications (eg new mail). Ignores exceptions.
+// Sends a delayed NoOpRequest to see if we get any notifications (eg new mail). Ignores exceptions.
 ZmZimbraMail.prototype._doPoll =
 function() {
 	this._pollActionId = null; // so we don't try to cancel
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-	this.sendRequest(soapDoc, true, null, ZmZimbraMail.IGNORE_ERRORS);
+	var action = new AjxTimedAction(this, this.sendRequest, [soapDoc, true, null, ZmZimbraMail.IGNORE_ERRORS]);
+	return AjxTimedAction.scheduleAction(action, this._pollInterval);
 };
 
 ZmZimbraMail._userEventHdlr =

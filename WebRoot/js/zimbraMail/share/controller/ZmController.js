@@ -87,35 +87,6 @@ function() {
 	return "ZmController";
 };
 
-/*
-* We do the whole schedule/execute thing to give the shell the opportunity to popup its "busy" 
-* overlay so that user input is blocked. For example, if a search takes a while to complete, 
-* we don't want the user's clicking on the search button to cause it to re-execute repeatedly 
-* when the events arrive from the UI. Since the action is executed via win.setTimeout(), it
-* must be a leaf action (scheduled actions are executed after the calling code returns to the
-* UI loop). You can't schedule something, and then have subsequent code that depends on the 
-* results of the scheduled action.
-*/
-ZmController.prototype._schedule =
-function(method, params, delay) {
-	delay = delay ? delay : 0;
-	if (delay == 0) {
-		params = params ? params : {};
-		params._reqId = ZmZimbraMail.getNextReqId();
-		this._shell.setBusy(true, params._reqId);
-	}
-	this._action = new AjxTimedAction(this, ZmController._exec, [method, params, delay]);
-	return AjxTimedAction.scheduleAction(this._action, delay);
-};
-
-ZmController._exec =
-function(method, params, delay) {
-	method.call(this, params);
-	if (!delay) {
-		this._shell.setBusy(false, params._reqId);
-	}
-};
-
 ZmController.prototype.popupErrorDialog = 
 function(msg, ex, noExecReset, hideReportButton)  {
 	if (!noExecReset)
