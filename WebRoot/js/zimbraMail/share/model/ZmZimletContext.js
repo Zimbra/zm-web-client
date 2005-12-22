@@ -305,8 +305,11 @@ ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj) {
 };
 
 ZmZimletContext._translateZMObject = function(obj) {
-	if (ZmZimletContext._zmObjectTransformers[obj.toString()])
-		return ZmZimletContext._zmObjectTransformers[obj.toString()](obj);
+	var type = obj.toString();
+	if (/^([a-z0-9_$]+)/i.test(type))
+		type = RegExp.$1;
+	if (ZmZimletContext._zmObjectTransformers[type])
+		return ZmZimletContext._zmObjectTransformers[type](obj);
 	else
 		return obj;
 };

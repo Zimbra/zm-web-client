@@ -150,7 +150,7 @@ ZmZimletTreeController.prototype._dropListener = function(ev) {
 		if (ev.action == DwtDropEvent.DRAG_ENTER) {
 			var doIt = false;
 			for (var i = dragSrc.length; --i >= 0;) {
-				if (srcData.toString() == dragSrc[i].type) {
+				if (srcData.toString().indexOf(dragSrc[i].type) == 0) {
 					doIt = true;
 					break;
 				}
