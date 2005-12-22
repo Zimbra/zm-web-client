@@ -128,9 +128,10 @@ ZmZimletTreeController.prototype._itemDblClicked = function(z) {
 // Handles a drop event
 ZmZimletTreeController.prototype._dropListener = function(ev) {
 	var z = ev.targetControl.getData(Dwt.KEY_OBJECT);
-	if (z.id == ZmZimlet.ID_ZIMLET)
+	if (z.id == ZmZimlet.ID_ZIMLET) {
 		ev.doIt = false;
 		return;
+	}
 	try {
 		z = z.getZimletContext();
 	} catch(ex) {
