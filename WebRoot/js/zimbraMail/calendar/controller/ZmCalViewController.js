@@ -840,6 +840,7 @@ function(startDate, endDate, folderId, shiftKey) {
 	if (endDate)
 		appt.setEndDate(endDate);
 	appt.setAllDayEvent(true);
+	appt.setFreeBusy("F");
 	this._showQuickAddDialog(appt, shiftKey);
 };
 

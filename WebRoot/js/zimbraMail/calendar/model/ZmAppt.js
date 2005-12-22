@@ -189,6 +189,7 @@ ZmAppt.prototype.hasOtherAttendees 				= function() { return this.otherAttendees
 ZmAppt.prototype.setAllDayEvent 				= function(isAllDay) 	{ this.allDayEvent = isAllDay ? "1" : "0"; };
 ZmAppt.prototype.setEndDate 					= function(endDate) 	{ this.endDate = new Date(endDate); this._resetCached(); };
 ZmAppt.prototype.setFolderId 					= function(folderId) 	{ this.folderId = folderId || ZmFolder.ID_CALENDAR; };
+ZmAppt.prototype.setFreeBusy 					= function(fb) 			{ this.freeBusy = fb || "B"; };
 ZmAppt.prototype.setOrganizer 					= function(organizer) 	{ this.organizer = organizer != "" ? organizer : null; };
 ZmAppt.prototype.setMessage 					= function(message) 	{ this._message = message; };
 ZmAppt.prototype.setName 						= function(newName) 	{ this.name = newName; };
@@ -1253,12 +1254,10 @@ function(soapDoc, method,  attachmentId) {
 
 	inv.setAttribute("type", "event");
 	inv.setAttribute("fb", this.freeBusy);
-
-	var transp = this.isAllDayEvent() ? "T" : "O";
-	inv.setAttribute("transp", transp);
-
+	inv.setAttribute("transp", "O");
 	inv.setAttribute("status","CONF");
 	inv.setAttribute("allDay", this.allDayEvent);
+
 	var s = soapDoc.set("s", null, inv);
 	var e = soapDoc.set("e", null, inv);
 	if (this.allDayEvent != "1") {

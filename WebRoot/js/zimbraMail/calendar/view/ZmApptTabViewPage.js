@@ -176,7 +176,6 @@ function() {
 	this._notesHtmlEditor.clear();
 
 	// reinit non-time sensitive selects option values
-	this._showAsSelect.setSelectedValue(ZmApptTabViewPage.SHOWAS_OPTIONS[2].value);
 	this._repeatSelect.setSelectedValue(ZmApptViewHelper.REPEAT_OPTIONS[0].value);
 	this._allDayCheckbox.checked = false;
 	this._showTimeFields(true);
@@ -413,6 +412,7 @@ function(appt, mode) {
 		this._allDayCheckbox.checked = true;
 		this._showTimeFields(false);
 	}
+
 	// if all day appt, set time anyway in case user changes mind
 	ZmApptViewHelper.resetTimeSelect(appt, this._startTimeSelect, this._endTimeSelect, isAllDayAppt);
 	this._resetTimezoneSelect(appt, isAllDayAppt);
