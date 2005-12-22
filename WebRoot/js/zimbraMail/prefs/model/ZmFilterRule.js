@@ -329,7 +329,7 @@ function() {
 // placeholder rule used for adding a new rule
 ZmFilterRule.DUMMY_RULE = new ZmFilterRule;
 ZmFilterRule.DUMMY_RULE.conditions = [new ZmCondition("subject", ":contains")];
-ZmFilterRule.DUMMY_RULE.actions = [new ZmAction("keep")];
+ZmFilterRule.DUMMY_RULE.actions = [new ZmAction("keep"), new ZmAction("stop")];
 
 /**
 * Creates a ZmCondition.
