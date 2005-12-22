@@ -267,7 +267,7 @@ ZmFolderPropsDialog.prototype._createView = function() {
 
 	// setup properties group
 	var propsGroup = new DwtGrouper(view);
-	propsGroup.setLabel(ZmMsg.properties)
+	propsGroup.setLabel(ZmMsg.properties);
 
 	this._props = new DwtPropertySheet(propsGroup);
 	this._color = new DwtSelect(this._props);
