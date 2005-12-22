@@ -120,18 +120,22 @@ function ZmHETablePropsDialog(parent) {
 	// Layout
 	this._tableAlignment = new DwtSelect(this.shell, ["Center", "Left", "Right"]);
 	this._tableAlignment.reparentHtmlElement(tableAlignmentId);
-	
-	this._cellSpacingField = new DwtInputField(this, DwtInputField.INTEGER, 1, 5, 3, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+
+	var inputFieldParams = {parent: this, type: DwtInputField.INTEGER,
+							initialValue: 1, size: 5, maxLen: 3,
+							errorIconStyle: DwtInputField.ERROR_ICON_RIGHT,
+							validationStyle: DwtInputField.CONTINUAL_VALIDATION};
+	this._cellSpacingField = new DwtInputField(inputFieldParams);
 	this._cellSpacingField.setValidNumberRange(0, null);
 	this._cellSpacingField.setValidationCallback(cb);
 	this._cellSpacingField.reparentHtmlElement(cellSpacingId);
 
-	this._cellPaddingField = new DwtInputField(this, DwtInputField.INTEGER, 1, 5, 3, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+	this._cellPaddingField = new DwtInputField(inputFieldParams);
 	this._cellPaddingField.setValidNumberRange(0, null);
 	this._cellPaddingField.setValidationCallback(cb);
 	this._cellPaddingField.reparentHtmlElement(cellPaddingId);
 
-	this._borderWidthField = new DwtInputField(this, DwtInputField.INTEGER, 1, 5, 3, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+	this._borderWidthField = new DwtInputField(inputFieldParams);
 	this._borderWidthField.setValidNumberRange(0, null);
 	this._borderWidthField.setValidationCallback(cb);
 	this._borderWidthField.reparentHtmlElement(borderWidthId);

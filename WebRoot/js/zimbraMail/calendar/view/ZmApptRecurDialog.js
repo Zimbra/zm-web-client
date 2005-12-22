@@ -659,72 +659,85 @@ function() {
 ZmApptRecurDialog.prototype._createInputs = 
 function() {
 	// create inputs for end fields
-	this._endIntervalField = new DwtInputField(this, DwtInputField.INTEGER, "1", 3, 3, 
-											   DwtInputField.ERROR_ICON_NONE, 
-											   DwtInputField.ONEXIT_VALIDATION, 
-											   this._positiveIntValidator, this);
+	this._endIntervalField = new DwtInputField({parent: this, type: DwtInputField.INTEGER,
+												initialValue: "1", size: 3, maxLen: 3,
+												errorIconStyle: DwtInputField.ERROR_ICON_NONE, 
+												validationStyle: DwtInputField.ONEXIT_VALIDATION, 
+												validator: this._positiveIntValidator, 
+												validatorCtxtObj: this});
 	this._endIntervalField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._endIntervalField.reparentHtmlElement(this._endIntervalFieldId);
 	delete this._endIntervalFieldId;
 
-	this._endByField = new DwtInputField(this, DwtInputField.DATE, null, 10, 10, 
-											   DwtInputField.ERROR_ICON_NONE, 
-											   DwtInputField.ONEXIT_VALIDATION, 
-											   null, this);
+	this._endByField = new DwtInputField({parent: this, type: DwtInputField.DATE,
+										  size: 10, maxLen: 10,
+										  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
+										  validationStyle: DwtInputField.ONEXIT_VALIDATION,
+										  validatorCtxtObj: this});
 	this._endByField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._endByField.reparentHtmlElement(this._endByFieldId);
 	Dwt.setSize(this._endByField.getInputElement(), Dwt.DEFAULT, "22");
 	delete this._endByFieldId;
 
 	// create inputs for day fields
-	this._dailyField = new DwtInputField(this, DwtInputField.INTEGER, "1", 3, 2, 
-											   DwtInputField.ERROR_ICON_NONE, 
-											   DwtInputField.ONEXIT_VALIDATION, 
-											   this._positiveIntValidator, this);
+	this._dailyField = new DwtInputField({parent: this, type: DwtInputField.INTEGER,
+										  initialValue: "1", size: 3, maxLen: 2,
+										  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
+										  validationStyle: DwtInputField.ONEXIT_VALIDATION,
+										  validator: this._positiveIntValidator,
+										  validatorCtxtObj: this});
 	this._dailyField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._dailyField.reparentHtmlElement(this._dailyFieldId);
 	delete this._dailyFieldId;
 
 	// create inputs for week fields
-	this._weeklyField = new DwtInputField(this, DwtInputField.INTEGER, "2", 2, 2, 
-											   DwtInputField.ERROR_ICON_NONE, 
-											   DwtInputField.ONEXIT_VALIDATION, 
-											   this._weeklyValidator, this);
+	this._weeklyField = new DwtInputField({parent: this, type: DwtInputField.INTEGER,
+										   initialValue: "2", size: 2, maxLen: 2,
+										   errorIconStyle: DwtInputField.ERROR_ICON_NONE,
+										   validationStyle: DwtInputField.ONEXIT_VALIDATION,
+										   validator: this._weeklyValidator,
+										   validatorCtxtObj: this});
 	this._weeklyField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._weeklyField.reparentHtmlElement(this._weeklyFieldId);
 	delete this._weeklyFieldId;
 
 	// create inputs for month fields
-	this._monthlyDayField = new DwtInputField(this, DwtInputField.INTEGER, "1", 2, 2, 
-											   DwtInputField.ERROR_ICON_NONE, 
-											   DwtInputField.ONEXIT_VALIDATION, 
-											   null, this);
+	this._monthlyDayField = new DwtInputField({parent: this, type: DwtInputField.INTEGER,
+											   initialValue: "1", size: 2, maxLen: 2,
+											   errorIconStyle: DwtInputField.ERROR_ICON_NONE,
+											   validationStyle: DwtInputField.ONEXIT_VALIDATION,
+											   validatorCtxtObj: this});
 	this._monthlyDayField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._monthlyDayField.reparentHtmlElement(this._monthlyDayFieldId);
 	this._monthlyDayField.setValidNumberRange(1, 31);
 	delete this._monthlyDayFieldId;
 
-	this._monthlyMonthField = new DwtInputField(this, DwtInputField.INTEGER, "1", 2, 2, 
-											   DwtInputField.ERROR_ICON_NONE, 
-											   DwtInputField.ONEXIT_VALIDATION, 
-											   this._positiveIntValidator, this);
+	this._monthlyMonthField = new DwtInputField({parent: this, type: DwtInputField.INTEGER,
+											   initialValue: "1", size: 2, maxLen: 2,
+											   errorIconStyle: DwtInputField.ERROR_ICON_NONE,
+											   validationStyle: DwtInputField.ONEXIT_VALIDATION,
+											   validator: this._positiveIntValidator,
+											   validatorCtxtObj: this});
 	this._monthlyMonthField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._monthlyMonthField.reparentHtmlElement(this._monthlyMonthFieldId);
 	delete this._monthlyMonthFieldId;
 
-	this._monthlyMonthFieldEx = new DwtInputField(this, DwtInputField.INTEGER, "1", 2, 2, 
-											   DwtInputField.ERROR_ICON_NONE, 
-											   DwtInputField.ONEXIT_VALIDATION, 
-											   this._positiveIntValidator, this);
+	this._monthlyMonthFieldEx = new DwtInputField({parent: this, type: DwtInputField.INTEGER,
+												   initialValue: "1", size: 2, maxLen: 2,
+												   errorIconStyle: DwtInputField.ERROR_ICON_NONE,
+												   validationStyle: DwtInputField.ONEXIT_VALIDATION,
+												   validator: this._positiveIntValidator,
+												   validatorCtxtObj: this});
 	this._monthlyMonthFieldEx.setDisplay(Dwt.DISPLAY_INLINE);
 	this._monthlyMonthFieldEx.reparentHtmlElement(this._monthlyMonthFieldExId);
 	delete this._monthlyMonthFieldExId;
 
 	// create inputs for year fields
-	this._yearlyDayField = new DwtInputField(this, DwtInputField.INTEGER, "1", 2, 2, 
-											   DwtInputField.ERROR_ICON_NONE, 
-											   DwtInputField.ONEXIT_VALIDATION, 
-											   null, this);
+	this._yearlyDayField = new DwtInputField({parent: this, type: DwtInputField.INTEGER,
+											  initialValue: "1", size: 2, maxLen: 2,
+											  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
+											  validationStyle: DwtInputField.ONEXIT_VALIDATION,
+											  validatorCtxtObj: this});
 	this._yearlyDayField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._yearlyDayField.reparentHtmlElement(this._yearlyDayFieldId);
 	this._yearlyDayField.setValidNumberRange(1, 31);

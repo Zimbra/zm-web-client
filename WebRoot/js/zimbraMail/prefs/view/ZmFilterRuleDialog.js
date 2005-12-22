@@ -357,19 +357,17 @@ function(conf, field, options, dataValue, rowId, config) {
 	
 	var id = Dwt.getNextId();
 	if (type == ZmFilterRule.TYPE_INPUT) {
-		// text input (will convert to DwtInputField)
-		this._inputs[rowId][field] = {id: id};
-		var valueText = dataValue ? " value='" + dataValue + "'" : "";
-		var html = [], i = 0;
-		html[i++] = "<td id='" + id + "' valign='center' class='paddedTableCell'>";
-		html[i++] = "<input type='text' size='" + ZmFilterRuleDialog.INPUT_NUM_CHARS + "'" + valueText + "></td>";
-		return html.join("");
+		var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: dataValue, size: 20});
+		input.setData(ZmFilterRuleDialog.ROW_ID, rowId);
+		this._inputs[rowId][field] = {id: id, dwtObj: input};
+		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
+
 	} else if (type == ZmFilterRule.TYPE_SELECT) {
 		var select = new DwtSelect(this);
 		var width = ZmFilterRuleDialog.COL_WIDTH[field];
 		if (width)
 			select.setWidth(width);
-		select.setData(ZmFilterRuleDialog.ROW_ID = "_rowid_", rowId);
+		select.setData(ZmFilterRuleDialog.ROW_ID, rowId);
 		this._inputs[rowId][field] = {id: id, dwtObj: select};
 		if (isMainSelect) {
 			select.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
@@ -744,9 +742,7 @@ function(inputs, conf, field) {
 	if (!type) return null;
 	
 	if (type == ZmFilterRule.TYPE_INPUT) {
-		var cell = document.getElementById(inputs[field].id);
-		if (cell && cell.firstChild)
-			return cell.firstChild.value;
+		return inputs[field].dwtObj.getValue();
 	} else if (type == ZmFilterRule.TYPE_SELECT) {
 		return inputs[field].dwtObj.getValue();
 	} else if (type == ZmFilterRule.TYPE_CALENDAR) {

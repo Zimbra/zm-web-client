@@ -442,10 +442,11 @@ function() {
 		var inputFieldId = this._schedTable[i].dwtId;
 		var inputField = document.getElementById(inputFieldId);
 		if (inputField) {
-			var dwtInputField = new DwtInputField(this, DwtInputField.STRING, null, null, 256, 
-														   DwtInputField.ERROR_ICON_NONE, 
-														   DwtInputField.ONEXIT_VALIDATION, 
-														   this._emailValidator, this);
+			var dwtInputField = new DwtInputField({parent: this, type: DwtInputField.STRING, maxLen: 256, 
+												   errorIconStyle: DwtInputField.ERROR_ICON_NONE, 
+												   validationStyle: DwtInputField.ONEXIT_VALIDATION, 
+												   validator: this._emailValidator,
+												   validatorCtxtObj: this});
 			dwtInputField.setDisplay(Dwt.DISPLAY_INLINE);
 			dwtInputField.reparentHtmlElement(inputFieldId);
 			var inputEl = dwtInputField.getInputElement();
