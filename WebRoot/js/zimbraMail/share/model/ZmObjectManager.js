@@ -38,7 +38,7 @@
 function ZmObjectManager(view, appCtxt, selectCallback) {
 
 	if (arguments.length < 1) {return;}
-
+	DBG.println(AjxDebug.DBG2, "ZmObjectManager created by: " + view);
 	this._view = view;
 	this._appCtxt = appCtxt;
 	this._selectCallback = selectCallback;

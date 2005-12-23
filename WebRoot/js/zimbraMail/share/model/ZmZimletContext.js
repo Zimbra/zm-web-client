@@ -98,7 +98,7 @@ function() {
 	}
 	AjxInclude(this.includes, this._url,
 		   new AjxCallback(this, this._finished_loadIncludes)
-		   // ,"/service/proxy?target="
+		   ,ZmZimletBase.PROXY
 		);
 };
 
@@ -118,8 +118,10 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	}
 	this.handlerObject = obj;
 	obj._init(this, DwtShell.getShell(window));
-	if (this.contentObject)
+	if (this.contentObject) {
+		DBG.println(AjxDebug.DBG2, "Zimlets: registerHandler: " + this.name);
 		ZmObjectManager.registerHandler(obj);
+	}
 	obj.init();
 };
 
