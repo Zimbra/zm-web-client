@@ -109,7 +109,7 @@ ZmZimletTreeController.prototype._itemClicked = function(z) {
 	if (!z.__dbl_click_timeout) {
 		z.__dbl_click_timeout = setTimeout(function() {
 			z.__dbl_click_timeout = null;
-			z.getZimletContext().callHandler("panelItemClicked");
+			z.getZimletContext().callHandler("singleClicked");
 		}, 350);
 	}
 };

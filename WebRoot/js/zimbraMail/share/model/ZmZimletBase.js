@@ -125,7 +125,7 @@ function(canvas) {
 
 // Similar to doubleClicked, but called upon a single click.  Note that this
 // might be called once or twice in the case of a dbl. click too.
-ZmZimletBase.prototype.panelItemClicked =
+ZmZimletBase.prototype.singleClicked =
 function(canvas) {};
 
 /* Content Object methods */
