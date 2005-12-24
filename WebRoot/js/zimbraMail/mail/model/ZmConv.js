@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -37,6 +37,7 @@
 function ZmConv(appCtxt, id, list) {
 
 	ZmMailItem.call(this, appCtxt, ZmItem.CONV, id, list);
+	
 	// conversations are always sorted by date desc initially
 	this._sortBy = ZmSearch.DATE_DESC; 
 	this._listChangeListener = new AjxListener(this, this._msgListChangeListener);
@@ -82,31 +83,29 @@ function(searchString, sortBy, offset, limit, pagCallback, callback) {
 				// i.e. new msgs that are in the hit list wont be marked hot this way!
 				// dont bother searching for more msgs if all have been loaded	
 				if (!this.msgs.hasMore() || offset + limit <= size)
-					callback.run(new ZmCsfeResult(this.msgs));
+					if (callback) callback.run(new ZmCsfeResult(this.msgs));
 			}
 		}
 	}
 	
 	var types = AjxVector.fromArray([ZmItem.MSG]);
-	var search = new ZmSearch(this.list._appCtxt, searchString, types, sortBy, offset, limit);
+	var params = {query: searchString, types: types, sortBy: sortBy, offset: offset, limit: limit};
+	var search = new ZmSearch(this.list._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [pagCallback, callback]);
 	search.forConv(this.id, respCallback);
 }
 
 ZmConv.prototype._handleResponseLoad =
-function(args) {
-	var pagCallback	= args[0];
-	var callback	= args[1];
-	var result		= args[2];
-
+function(pagCallback, callback, result) {
 	var results = result.getResponse();
 	if (pagCallback) {
-		pagCallback.run(results);	// user is paging...
+		pagCallback.run(result);	// user is paging...
 	} else {
 		this.msgs = results.getResults(ZmItem.MSG);
 		this.msgs.convId = this.id;
 		this.msgs.addChangeListener(this._listChangeListener);
 		this.msgs.setHasMore(results.getAttribute("more"));
+		this._loaded = true;
 		
 		// nuke the cached msg if exist since its useless now
 		if (this.tempMsg) {
@@ -131,10 +130,7 @@ function(callback) {
 }
 
 ZmConv.prototype._handleResponseLoadMsgIds =
-function(args) {
-	var callback	= args[0];
-	var result		= args[1];
-	
+function(callback, result) {
 	var response = result.getResponse();
 	var resp = response.GetConvResponse.c[0];
 	var msgIds = new Array();
@@ -312,6 +308,27 @@ function(offset, limit) {
 	
 	return msg;
 }
+
+ZmConv.prototype.getFirstMsg = 
+function() {
+	// has this conv been loaded yet?
+	if (this.msgs) {
+		// then always return the first msg in the list
+		msg = this.msgs.getVector().get(0);
+	} else if (this.tempMsg) {
+		msg = this.tempMsg;
+	} else {
+		// otherwise, create a temp msg w/ the msg op Id
+		msg = new ZmMailMsg(this._appCtxt, this.msgOpId);
+		this.tempMsg = msg; 	// cache it.
+	}
+	
+	// set the conv's list w/in msg
+	msg.list = this.list;
+	
+	return msg;
+}
+
 
 ZmConv.prototype.getSubject = 
 function (){

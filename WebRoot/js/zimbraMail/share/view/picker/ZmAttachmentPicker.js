@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -80,9 +80,9 @@ function(radioId) {
 };
 
 ZmAttachmentPicker.prototype._setupRadio =
-function(radioId, doc) {
+function(radioId) {
 	var id = this._radioId[radioId];
-	var rb = this._radio[radioId] = Dwt.getDomObj(doc, id);
+	var rb = this._radio[radioId] = document.getElementById(id);
 	Dwt.setHandler(rb, DwtEvent.ONCLICK, ZmAttachmentPicker._radioChange);
 	rb._picker = this;
 	rb._radioId = radioId;
@@ -105,14 +105,13 @@ function(parent) {
 	var idx = 0;
 	html[idx++] = "<table cellpadding='2' cellspacing='0' border='0'>";
 	for (var i = 0; i < ZmAttachmentPicker.RADIO_BUTTONS.length; i++)
-		html[idx++] = this._newRadio(ZmAttachmentPicker.RADIO_BUTTONS[i], doc);
+		html[idx++] = this._newRadio(ZmAttachmentPicker.RADIO_BUTTONS[i]);
 	html[idx++] = "</table>";
 	html[idx++] = "<div id='" + treeId + "'><hr /></div>";
 	picker.getHtmlElement().innerHTML = html.join("");
 
-	var doc = this.getDocument();
 	for (var i = 0; i < ZmAttachmentPicker.RADIO_BUTTONS.length; i++)
-		this._setupRadio(ZmAttachmentPicker.RADIO_BUTTONS[i], doc);
+		this._setupRadio(ZmAttachmentPicker.RADIO_BUTTONS[i]);
 	
     var tti, ti;
 	var tree = this._tree = new DwtTree(picker, DwtTree.CHECKEDITEM_STYLE);
@@ -123,11 +122,7 @@ function(parent) {
 };
 
 ZmAttachmentPicker.prototype._handleResponseSetupPicker =
-function(args) {
-	var attachTypeList	= args[0];
-	var tree			= args[1];
-	var treeId			= args[2];
-
+function(attachTypeList, tree, treeId) {
 	var attachments = attachTypeList.getAttachments();
 	this._attsByDesc = new Object();
 	var attDesc = new Array();
@@ -144,8 +139,7 @@ function(args) {
 	for (var i = 0; i < attDesc.length; i++)
 		this._newType(tree, this._attsByDesc[attDesc[i]]);
 
-	var doc = this.getDocument();
-	this._treeDiv = Dwt.getDomObj(doc, treeId);
+	this._treeDiv = document.getElementById(treeId);
 	this._treeDiv.appendChild(tree.getHtmlElement());
 	Dwt.setVisible(this._treeDiv, false);
 	

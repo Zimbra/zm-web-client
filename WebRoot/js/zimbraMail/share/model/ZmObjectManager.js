@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  *
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -23,35 +23,32 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmObjectManager(view, appCtxt) {
+/**
+* Object mananger class - use this class to hilite objects w/in a given view
+* @constructor
+* @class
+*
+* @author
+* @param view			the view this manager is going to hilite for
+* @param appCtxt 		the global ZmAppCtxt
+* @param selectCallback AjxCallback triggered when user clicks on hilited object 
+* 						(provide if you want to do something before the clicked 
+* 						on object opens its corresponding view)
+*/
+function ZmObjectManager(view, appCtxt, selectCallback) {
 
-	if (arguments.length == 0) return;
-
+	if (arguments.length < 1) {return;}
+	DBG.println(AjxDebug.DBG2, "ZmObjectManager created by: " + view);
 	this._view = view;
 	this._appCtxt = appCtxt;
+	this._selectCallback = selectCallback;
 	this._uuid = Dwt.getNextId();
 	this._objectIdPrefix = "OBJ_" + this._uuid + "_";
-	// TODO: make this dynamic, have handlers register a factory method...
-	this._emailHandler = new ZmEmailObjectHandler(appCtxt);
-	// URL should be first, to handle email addresses embedded in URL's
 	this._objectHandlers = new Object();
-	this._objectHandlers[ZmURLObjectHandler.TYPE] = [new ZmURLObjectHandler(appCtxt), new ZmTrackingObjectHandler(appCtxt)/*, new ZmEmoticonObjectHandler(appCtxt)*/ ];
-	this._objectHandlers[ZmEmailObjectHandler.TYPE] = [this._emailHandler];
-	this._objectHandlers[ZmPhoneObjectHandler.TYPE] = [new ZmPhoneObjectHandler(appCtxt)];
-	this._objectHandlers[ZmPOObjectHandler.TYPE] = [new ZmPOObjectHandler(appCtxt)];
-	this._objectHandlers[ZmBugzillaObjectHandler.TYPE] = [new ZmBugzillaObjectHandler(appCtxt)];
-	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-		ZmDateObjectHandler.registerHandlers(this._objectHandlers, appCtxt);
-	}
-	// Check for Google map API before adding address handler
-	try {
-		new GPoint(217,10);
-		this._objectHandlers[ZmAddressObjectHandler.TYPE] = [new ZmAddressObjectHandler(appCtxt)];
-	} catch (e) {
-		;
-	}
+	// don't include when looking for objects. only used to provide tool tips for images
+	this._imageAttachmentHandler = new ZmImageAttachmentObjectHandler(appCtxt);
 
-	// create additional handlers (see registerHandler below)
+	// create handlers (see registerHandler below)
 	this._createHandlers();
 
 	this.reset();
@@ -67,21 +64,32 @@ function ZmObjectManager(view, appCtxt) {
     this._hoverOutListener = new AjxListener(this, this._handleHoverOut);
 }
 
+ZmObjectManager._TOOLTIP_DELAY = 275;
+
 ZmObjectManager._autohandlers = [];
-ZmObjectManager.registerHandler = function(obj) {
-	if (typeof obj == "string")
+
+ZmObjectManager.registerHandler =
+function(obj, type) {
+	if (typeof obj == "string") {
 		obj = eval(obj);
+	}
 	var c = ZmObjectManager._autohandlers;
 	if (!obj.__registered) {
-		c.push(obj);
+		var id = c.push(obj);
+		var i = id - 1;
+		if(type) {
+			c[i].useType = type;
+		}
 		obj.__registered = true;
 	}
 };
 
 // not sure this function is useful.
-ZmObjectManager.unregisterHandler = function(obj) {
-	if (typeof obj == "string")
+ZmObjectManager.unregisterHandler =
+function(obj) {
+	if (typeof obj == "string") {
 		obj = eval(obj);
+	}
  	var c = ZmObjectManager._autohandlers, i;
 	for (i = c.length; --i >= 0;) {
 		if (c[i] === obj) {
@@ -91,40 +99,50 @@ ZmObjectManager.unregisterHandler = function(obj) {
 	}
 };
 
-ZmObjectManager.prototype._createHandlers = function() {
+ZmObjectManager.prototype.addHandler =
+function(h, type) {
+    this._objectHandlers[type ? type : h.getTypeName()] = [h];
+};
+
+ZmObjectManager.prototype._createHandlers =
+function() {
 	var c = ZmObjectManager._autohandlers, i, obj,
 		oh = this._objectHandlers;
 	for (i = 0; i < c.length; ++i) {
 		obj = c[i];
-		if (!oh[obj.TYPE])
-			oh[obj.TYPE] = [];
-		oh[obj.TYPE].push(new obj(this._appCtxt));
+		var	zim = obj;
+		var type = obj.TYPE;
+		if (!(obj instanceof ZmZimletBase)) {
+			zim = new obj(this._appCtxt);
+		}
+		if (obj.useType) {
+			type = obj.useType;
+		}
+		if (!oh[type]) {oh[type] = [];}
+		oh[type].push(zim);
 	}
 };
-
-ZmObjectManager._TOOLTIP_DELAY = 275;
 
 ZmObjectManager.prototype.toString =
 function() {
 	return "ZmObjectManager";
-}
+};
 
 ZmObjectManager.prototype.reset =
 function() {
 	this._objects = new Object();
-}
+};
 
-ZmObjectManager.prototype.getEmailHandler =
+ZmObjectManager.prototype.getImageAttachmentHandler =
 function() {
-	return this._emailHandler;
-}
+	return this._imageAttachmentHandler;
+};
 
 // type is optional.. if you know what type of content is being passed in, set the
 // type param so we dont have to figure out what kind of content we're dealing with
 ZmObjectManager.prototype.findObjects =
 function(content, htmlEncode, type) {
-	if  (content == null) return "";
-
+	if  (!content) {return "";}
 	var html = new Array();
 	var idx = 0;
 
@@ -155,6 +173,11 @@ function(content, htmlEncode, type) {
 					lowestHandler = handlers[i];
 				}
 			}
+			// If it's an email address just handle it and return the result.
+			if (content instanceof ZmEmailAddress) {
+				this.generateSpan(lowestHandler, html, idx, content, null);
+				return html.join("");
+			}	
 		} else {
 			for (var i in this._objectHandlers) {
 				var handlers = this._objectHandlers[i];
@@ -197,14 +220,24 @@ function(content, htmlEncode, type) {
 	}
 
 	return html.join("");
-}
+};
+
+ZmObjectManager.prototype.setHandlerAttr =
+function(type, name, value) {
+    var handlers = this._objectHandlers[type];
+	if (handlers) {
+		for (var i = 0; i < handlers.length; i++) {
+			handlers[i][name] = value;
+		}
+	}
+};
 
 ZmObjectManager.prototype.generateSpan =
 function(handler, html, idx, obj, context) {
 	var id = this._objectIdPrefix + Dwt.getNextId();
 	this._objects[id] = {object: obj, handler: handler, id: id, context: context };
 	return handler.generateSpan(html, idx, obj, id, context);
-}
+};
 
 ZmObjectManager.prototype._findObjectSpan =
 function(e) {
@@ -212,7 +245,7 @@ function(e) {
 		e = e.parentNode;
 	}
 	return e;
-}
+};
 
 ZmObjectManager.prototype._mouseOverListener =
 function(ev) {
@@ -234,7 +267,7 @@ function(ev) {
 		}
 	}
 	return false;
-}
+};
 
 ZmObjectManager.prototype._mouseOutListener =
 function(ev) {
@@ -252,7 +285,7 @@ function(ev) {
 	}
 
 	return false;
-}
+};
 
 ZmObjectManager.prototype._mouseMoveListener =
 function(ev) {
@@ -269,7 +302,7 @@ function(ev) {
 	}
 
 	return false;
-}
+};
 
 ZmObjectManager.prototype._mouseDownListener =
 function(ev) {
@@ -287,16 +320,21 @@ function(ev) {
 
 	span.className = object.handler.getTriggeredClassName(object.object, object.context);
 	if (ev.button == DwtMouseEvent.RIGHT) {
-		var menu = object.handler.getActionMenu(object.object, span, object.context);
+		// NOTE: we need to know if the current view is a dialog since action 
+		//       menu needs to be a higher z-index
+		var isDialog = (this._view instanceof DwtDialog);
+		var menu = object.handler.getActionMenu(object.object, span, object.context, isDialog);
 		if (menu)
 			menu.popup(0, ev.docX, ev.docY);
 		return true;
 	} else if (ev.button == DwtMouseEvent.LEFT) {
+		if (this._selectCallback)
+			this._selectCallback.run();
 		object.handler.selected(object.object, span, ev, object.context);
 		return true;
 	}
 	return false;
-}
+};
 
 ZmObjectManager.prototype._mouseUpListener =
 function(ev) {
@@ -307,21 +345,28 @@ function(ev) {
 
 	span.className = object.handler.getActivatedClassName(object.object, object.context);
 	return false;
-}
+};
 
 ZmObjectManager.prototype._handleHoverOver = function(event) {
+	if (!(event && event.object)) return;
+
+	var span = this._findObjectSpan(event.target);
 	var handler = event.object.handler;
 	var object = event.object.object;
 	var context = event.object.context;
 	var x = event.x;
 	var y = event.y;
 
-	handler.hoverOver(object, context, x, y);
-}
+	handler.hoverOver(object, context, x, y, span);
+};
+
 ZmObjectManager.prototype._handleHoverOut = function(event) {
+	if (!(event && event.object)) return;
+
+	var span = this._findObjectSpan(event.target);
 	var handler = event.object.handler;
 	var object = event.object.object;
 	var context = event.object.context;
 
-	handler.hoverOut(object, context);
-}
+	handler.hoverOut(object, context, span);
+};

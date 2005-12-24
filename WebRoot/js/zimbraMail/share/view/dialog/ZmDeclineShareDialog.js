@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -24,108 +24,87 @@
  */
 
 function ZmDeclineShareDialog(appCtxt, parent, className) {
-	var xformDef = ZmDeclineShareDialog._XFORM_DEF;
-	var xmodelDef = ZmDeclineShareDialog._XMODEL_DEF;
 	className = className || "ZmDeclineShareDialog";
 	var title = ZmMsg.declineShare;
 	var buttons = [ DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON ];
-	DwtXFormDialog.call(this, xformDef, xmodelDef, parent, className, title, buttons);
+	DwtDialog.call(this, parent, className, title, buttons);
+	this.setButtonListener(DwtDialog.YES_BUTTON, new AjxListener(this, this._handleYesButton));
 
 	this._appCtxt = appCtxt;
 	
+	// create controls
+	this._confirmMsgEl = document.createElement("DIV");
+	this._confirmMsgEl.style.fontWeight = "bold";
+	this._confirmMsgEl.style.marginBottom = "0.25em";
+	this._reply = new ZmShareReply(this);
+	
+	// create view
+	var view = new DwtComposite(this);
+	var element = view.getHtmlElement();
+	element.appendChild(this._confirmMsgEl);
+	element.appendChild(this._reply.getHtmlElement());
+	this.setView(view);
+
 	// create formatters
 	this._formatter = new AjxMessageFormat(ZmMsg.declineShareConfirm);
 }
-ZmDeclineShareDialog.prototype = new DwtXFormDialog;
+ZmDeclineShareDialog.prototype = new DwtDialog;
 ZmDeclineShareDialog.prototype.constructor = ZmDeclineShareDialog;
 
-// Constants
+// Data
 
-ZmDeclineShareDialog.DECLINE = "decline";
-
-ZmDeclineShareDialog._MAIL_STANDARD = 'S';
-ZmDeclineShareDialog._MAIL_QUICK = 'Q';
-ZmDeclineShareDialog._MAIL_COMPOSE = 'C';
-
-ZmDeclineShareDialog._XFORM_DEF = { items: [
-	{ type: _OUTPUT_, labelLocation: _NONE_, ref: "msg", numCols: 2, colSpan: "*" },
-	{ type: _SEPARATOR_ },
-	{type:_GROUP_, colSpan:'*', width:"100%", numCols:2, colSizes:[35,'*'], items:[
-			{type:_CHECKBOX_, ref:"sendMail", trueValue:true, falseValue:false, label: ZmMsg.sendMailAboutShareDecline },
-			{type:_SPACER_, height:3, relevant:"get('sendMail')"},
-			{type:_DWT_SELECT_, ref:"mailType", relevant:"get('sendMail')", label:"", choices: [
-				{value: ZmDeclineShareDialog._MAIL_STANDARD, label: ZmMsg.sendStandardMailAboutShare },
-				{value: ZmDeclineShareDialog._MAIL_QUICK, label: ZmMsg.sendStandardMailAboutSharePlusNote },
-				{value: ZmDeclineShareDialog._MAIL_COMPOSE, label: ZmMsg.sendComposedMailAboutShare }
-			]},
-			{type:_OUTPUT_, label: "", //width: "250",
-				value: ZmMsg.sendMailAboutShareNote,
-				relevant: "get('sendMail') && (get('mailType') == ZmRevokeShareDialog._MAIL_STANDARD || get('mailType') == ZmRevokeShareDialog._MAIL_QUICK)", revelantBehavior: _HIDE_
-			},
-			{type:_TEXTAREA_, ref:"quickReply", relevant:"get('sendMail') && get('mailType') == ZmDeclineShareDialog._MAIL_QUICK", width:"95%", height:50, label:""}
-		]
-	}
-]};
-ZmDeclineShareDialog._XMODEL_DEF = { items: [
-	{ id: "msg", ref: "msg", type: _STRING_ },
-	{ id: "sendMail", ref: "sendMail", type: _ENUM_, choices: [ true, false ] },
-	{ id: "mailType", ref: "mailType", type: _ENUM_, choices: [ 
-		ZmDeclineShareDialog._MAIL_STANDARD, ZmDeclineShareDialog._MAIL_QUICK, ZmDeclineShareDialog._MAIL_COMPOSE
-	] },
-	{ id: "quickReply", ref: "quickReply", type: _STRING_ }
-]};
+ZmDeclineShareDialog.prototype._confirmMsgEl;
+ZmDeclineShareDialog.prototype._reply;
 
 // Public methods
 
-ZmDeclineShareDialog.prototype.setShareInfo = function(shareInfo) { 
-	var params = [ shareInfo.grantee.name, shareInfo.link.name ];
-	var message = "<b>" + this._formatter.format(params) + "</b>";
-	
-	var instance = {
-		msg: message,
-		share: shareInfo,
-		sendMail: true,
-		mailType: ZmRevokeShareDialog._MAIL_STANDARD,
-		quickReply: ''
-	};
-	this.setInstance(instance);
+ZmDeclineShareDialog.prototype.setShareInfo = function(shareInfo) {
+	this._shareInfo = shareInfo;
 }
 
 ZmDeclineShareDialog.prototype.popup = function(loc) {
-	DwtXFormDialog.prototype.popup.call(this, loc);
-	this.setButtonEnabled(DwtDialog.YES_BUTTON, true);
+	var params = [ this._shareInfo.grantee.name, this._shareInfo.link.name ];
+	var message = this._formatter.format(params);
+	this._confirmMsgEl.innerHTML = AjxStringUtil.htmlEncode(message);
+	
+	this._reply.setReply(true);
+	this._reply.setReplyType(ZmShareReply.STANDARD);
+	this._reply.setReplyNote("");
+	
+	DwtDialog.prototype.popup.call(this, loc);
 }
 
 ZmDeclineShareDialog.prototype.setDeclineListener = function(listener) {
-	this.removeAllListeners(ZmDeclineShareDialog.DECLINE);
-	if (listener) this.addListener(ZmDeclineShareDialog.DECLINE, listener);
+	this.removeAllListeners(ZmShareInfo.DECLINE);
+	if (listener) this.addListener(ZmShareInfo.DECLINE, listener);
 }
 
 // Protected methods
 
 ZmDeclineShareDialog.prototype._handleYesButton = function(event) {
-	var instance = this._xform.getInstance();
-
 	// send mail
-	if (instance.sendMail) {
-		var share = instance.share;
+	if (this._reply.getReply()) {
+		var replyType = this._reply.getReplyType();
+
+		// create share info proxy
+		var proxy = AjxUtil.createProxy(this._shareInfo);
+		proxy.notes = replyType == ZmShareReply.QUICK ? this._reply.getReplyNote(): "";
 
 		// compose in new window
-		if (instance.mailType == ZmDeclineShareDialog._MAIL_COMPOSE) {
-			ZmShareInfo.composeMessage(this._appCtxt, ZmShareInfo.DECLINE, share);
+		if (replyType == ZmShareReply.COMPOSE) {
+			ZmShareInfo.composeMessage(this._appCtxt, ZmShareInfo.DECLINE, proxy);
 		}
 		// send email
 		else {
-			ZmShareInfo.sendMessage(this._appCtxt, ZmShareInfo.DECLINE, share);
+			ZmShareInfo.sendMessage(this._appCtxt, ZmShareInfo.DECLINE, proxy);
 		}
 	}
 	
 	// notify decline listener and clear
-	this.notifyListeners(ZmDeclineShareDialog.DECLINE, event);
+	this.notifyListeners(ZmShareInfo.DECLINE, event);
 	this.setDeclineListener(null);
 
-	// default processing
-	DwtXFormDialog.prototype._handleYesButton.call(this, event);
+	this.popdown();
 }
 
 ZmDeclineShareDialog.prototype._getSeparatorTemplate = function() {

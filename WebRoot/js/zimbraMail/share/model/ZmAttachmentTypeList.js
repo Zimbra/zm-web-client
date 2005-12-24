@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -59,16 +59,13 @@ function(callback) {
 	var soapDoc = AjxSoapDoc.create("BrowseRequest", "urn:zimbraMail");
 	soapDoc.getMethod().setAttribute("browseBy", "attachments");
 
-	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
 
 };
 
 ZmAttachmentTypeList.prototype._handleResponseLoad =
-function(args) {
-	var callback	= args[0];
-	var result		= args[1];
-	
+function(callback, result) {
 	var att = result.getResponse().BrowseResponse.bd;
 	if (att) {
 		for (var i = 0; i < att.length; i++) {

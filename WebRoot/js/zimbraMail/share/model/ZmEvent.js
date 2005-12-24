@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -46,18 +46,24 @@ ZmEvent.L_PICKER = 2;
 
 // Source types (note: there are not separate types for list models)
 var i = 1;
-ZmEvent.S_FOLDER		= i++;
-ZmEvent.S_TAG			= i++;
-ZmEvent.S_CONV			= i++;
-ZmEvent.S_MSG			= i++;
-ZmEvent.S_ATT			= i++;
-ZmEvent.S_CONTACT		= i++;
-ZmEvent.S_APPT			= i++;
-ZmEvent.S_NOTE			= i++;
-ZmEvent.S_PICKER		= i++;
-ZmEvent.S_SEARCH		= i++;
-ZmEvent.S_SETTING		= i++;
-ZmEvent.S_ZIMLET		= i++;
+ZmEvent.S_FOLDER			= i++;
+ZmEvent.S_TAG				= i++;
+ZmEvent.S_CONV				= i++;
+ZmEvent.S_MSG				= i++;
+ZmEvent.S_ATT				= i++;
+ZmEvent.S_CONTACT			= i++;
+ZmEvent.S_APPT				= i++;
+ZmEvent.S_NOTE				= i++;
+ZmEvent.S_PICKER			= i++;
+ZmEvent.S_SEARCH			= i++;
+ZmEvent.S_SETTING			= i++;
+ZmEvent.S_ZIMLET			= i++;
+ZmEvent.S_FILTER			= i++;
+ZmEvent.S_CHAT        		= i++;
+ZmEvent.S_ROSTER			= i++;
+ZmEvent.S_ROSTER_ITEM		= i++;
+ZmEvent.S_ROSTER_TREE_ITEM	= i++;
+ZmEvent.S_ROSTER_TREE_GROUP	= i++;
 
 //Source types for admin
 ZmEvent.S_ACCOUNT		= i++;
@@ -66,6 +72,8 @@ ZmEvent.S_DOMAIN		= i++;
 ZmEvent.S_SERVER		= i++;
 ZmEvent.S_GLOBALCONFIG	= i++;
 ZmEvent.S_STATUS		= i++;
+
+ZmEvent.S_MAX			= i - 1;
 
 // Event types
 i = 1;
@@ -119,6 +127,18 @@ function(field, value) {
 ZmEvent.prototype.getDetail =
 function(field) {
 	return this._details[field];
+}
+
+/**
+* looks for a detail with a name of "items", and returns it, or an
+* empty array if it doesn't exist.
+*
+* @param field		the detail's name
+*/
+ZmEvent.prototype.getItems =
+function() {
+    var items = this._details["items"];
+    return items ? items : [];
 }
 
 /**

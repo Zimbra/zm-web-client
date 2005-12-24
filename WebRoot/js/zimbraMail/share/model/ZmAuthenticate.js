@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -40,9 +40,8 @@ function() {
 	return "ZmAuthenticate";
 };
 
-// XXX: async
 ZmAuthenticate.prototype.execute =
-function(uname, pword) {
+function(uname, pword, callback) {
 	var command = new ZmCsfeCommand();
 	var soapDoc;
 	if (!ZmAuthenticate._isAdmin) {
@@ -54,8 +53,15 @@ function(uname, pword) {
 		soapDoc.set("name", uname);
 	}
 	soapDoc.set("password", pword);
-	var resp = command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true}).Body.AuthResponse;
+	var respCallback = new AjxCallback(this, this._handleResponseExecute, callback);
+	command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true, asyncMode: true, callback: respCallback})
+};
+
+ZmAuthenticate.prototype._handleResponseExecute =
+function(callback, result) {
+	var resp = result.getResponse().Body.AuthResponse;
 	this._setAuthToken(resp);
+	if (callback) callback.run(result);
 };
 
 ZmAuthenticate.prototype._setAuthToken =

@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -107,6 +107,9 @@ function() {
 	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</div><p>";
 	html[idx++] = "<div style='text-align:left; width:85%'>" + tip + "</div><br>";
+	html[idx++] = "<div style='font-size:9px; text-align:center; color:#999999;'>";
+	html[idx++] = ZmMsg.splashScreenCopyright;
+	html[idx++] = "</div>";
 	html[idx++] = "</td></tr>";
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr></table>";
@@ -186,7 +189,11 @@ function() {
 	html[idx++] = "</div></td>";
 	
 	html[idx++] = "</tr></table>";
-	html[idx++] = "</td></tr></table><br><br>";
+	html[idx++] = "</td></tr>";
+	html[idx++] = "<tr><td colspan=10 style='font-size:9px; text-align:center; color:#999999;'><br><br>";
+	html[idx++] = ZmMsg.splashScreenCopyright;
+	html[idx++] = "</td></tr>";
+	html[idx++] = "</table>";
 	html[idx++] = "</td></tr>";
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr></table>";
@@ -384,9 +391,6 @@ function(uname, pword) {
 		return;
 	}
 
-	var unameField = document.getElementById("uname");
-	var pwordField = document.getElementById("pass");
-	
     var el = soapDoc.set("account", uname);
     el.setAttribute("by", "name");
     soapDoc.set("password", pword);
@@ -397,11 +401,7 @@ function(uname, pword) {
 }
 
 ZmLogin._handleResponseSubmitAuthRequest =
-function(args) {
-	var uname	= args[0];
-	var pword	= args[1];
-	var result	= args[2];
-	
+function(uname, pword, result) {
 	var response;
 	try {
 		response = result.getResponse();
@@ -413,6 +413,9 @@ function(args) {
 			var msg = ZmMsg.errorNetwork + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
 			ZmLogin.setErrorMessage(msg);
 		} else if (ex.code == ZmCsfeException.ACCT_CHANGE_PASSWORD)	{
+			var unameField = document.getElementById("uname");
+			var pwordField = document.getElementById("pass");
+
 			// disable username and password fields
 			unameField.disabled = pwordField.disabled = true;
 			ZmLogin.showChangePass(ex);
@@ -601,7 +604,7 @@ function (mailServer) {
 
 ZmLogin.getAuthUrl = 
 function (mailServer) {
-	var ms = mailServer? mailServer: location.hostname;
+	var ms = mailServer ? mailServer: location.hostname;
 	return (location.protocol + "//" + ms + ((location.port == 80) 
 		? "" 
 		: ":" + location.port) +"/zimbra/auth/" + window.location.search);

@@ -1,4 +1,4 @@
-<!-- 
+<!--
 ***** BEGIN LICENSE BLOCK *****
 Version: ZPL 1.1
 
@@ -12,7 +12,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
 the License for the specific language governing rights and limitations
 under the License.
 
-The Original Code is: Zimbra Collaboration Suite.
+The Original Code is: Zimbra Collaboration Suite Web Client
 
 The Initial Developer of the Original Code is Zimbra, Inc.
 Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -32,7 +32,4 @@ Contributor(s):
    if (ext == null){
       ext = "";
    }
-%>
-<script type="text/javascript" src="<%= contextPath %>/js/ajax/config/msgs/AjxMsg.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/config/msgs/ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
-
+%><script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>

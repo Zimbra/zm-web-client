@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -61,13 +61,13 @@ function(defaultColumnSort) {
 
 		// set the from column name based on query string
 		var fromColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_FROM]);
-		var fromColSpan = Dwt.getDomObj(this.getDocument(), DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
+		var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
 		if (fromColSpan)
 			fromColSpan.innerHTML = "&nbsp;" + (isFolder.sent || isFolder.drafts ? ZmMsg.to : ZmMsg.from);
 
 		// set the received column name based on query string
 		var recdColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]);
-		var recdColSpan = Dwt.getDomObj(this.getDocument(), DwtListView.HEADERITEM_LABEL + this._headerList[recdColIdx]._id);
+		var recdColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[recdColIdx]._id);
 		if (recdColSpan) {
 			var html = "&nbsp;";
 			if (isFolder.sent) {
@@ -84,10 +84,9 @@ function(defaultColumnSort) {
 
 ZmMailMsgListView.prototype.markUIAsRead = 
 function(items, on) {
-	var doc = this.getDocument();
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		var row = Dwt.getDomObj(doc, this._getFieldId(item, ZmItem.F_ITEM_ROW));
+		var row = document.getElementById(this._getFieldId(item, ZmItem.F_ITEM_ROW));
 		if (row) {
 			var className =  on ? "" : "Unread";
 			// don't worry about unread/read trash if in trad. view
@@ -101,7 +100,7 @@ function(items, on) {
 
 			row.className = className;
 		}
-		var img = Dwt.getDomObj(doc, this._getFieldId(item, ZmItem.F_STATUS));
+		var img = document.getElementById(this._getFieldId(item, ZmItem.F_STATUS));
 		if (img && img.parentNode) {
 			if (on) {
 				var imageInfo;
@@ -232,17 +231,10 @@ function(msg, now, isDndIcon, isMixedView) {
 			} else {
 				var fromAddr = msg.getAddress(ZmEmailAddress.FROM);
 				if (fromAddr) {
-			   		htmlArr[idx++] = "<span style='white-space: nowrap' id='" + this._getFieldId(msg, ZmItem.F_FROM) + "'>";
-			   		var name = fromAddr.getName() || fromAddr.getDispName();
+					htmlArr[idx++] = "<span style='white-space:nowrap' id='" + this._getFieldId(msg, ZmItem.F_FROM) + "'>";
+					var name = fromAddr.getName() || fromAddr.getDispName();
 					htmlArr[idx++] = AjxStringUtil.htmlEncode(name);
-					// XXX: IM HACK
-					if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
-				   		var contacts = ZmAppCtxt.getFromShell(this.shell).getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
-						var contact = contacts.getContactByEmail(fromAddr.getAddress());
-						if (contact && contact.hasIMProfile())
-							htmlArr[idx++] = AjxImg.getImageHtml(contact.isIMAvailable() ? "ImAvailable" : "ImUnavailable");
-					}
-			   		htmlArr[idx++] = "</span>";
+					htmlArr[idx++] = "</span>";
 					if (AjxEnv.isNav)
 						htmlArr[idx++] = ZmListView._fillerString;
 				}
@@ -308,6 +300,9 @@ function(msg, now, isDndIcon, isMixedView) {
 
 ZmMailMsgListView.prototype._changeListener =
 function(ev) {
+	// only update if we're currently visible
+	if (this._mode != this._appCtxt.getCurrentViewId()) return;
+
 	var items = ev.getDetail("items");
 	if ((ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) && this._mode == ZmController.CONV_VIEW) {
 		if (!this._controller.handleDelete()) {
@@ -324,7 +319,7 @@ function(ev) {
 		var flags = ev.getDetail("flags");
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			var img = Dwt.getDomObj(this.getDocument(), this._getFieldId(item, ZmItem.F_STATUS));
+			var img = document.getElementById(this._getFieldId(item, ZmItem.F_STATUS));
 			if (img && img.parentNode) {
 				for (var j = 0; j < flags.length; j++) {
 					var flag = flags[j];
@@ -349,7 +344,7 @@ ZmMailMsgListView.prototype._changeFolderName =
 function(items) {
 
 	for (var i = 0; i < items.length; i++) {
-		var folderCell = Dwt.getDomObj(this.getDocument(), this._getFieldId(items[i], ZmItem.F_FOLDER));
+		var folderCell = document.getElementById(this._getFieldId(items[i], ZmItem.F_FOLDER));
 		if (folderCell) {
 			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(items[i].folderId);
 			if (folder)
@@ -363,7 +358,7 @@ function(items) {
 ZmMailMsgListView.prototype._changeTrashStatus = 
 function(items) {
 	for (var i = 0; i < items.length; i++) {
-		var row = Dwt.getDomObj(this.getDocument(), this._getFieldId(items[i], ZmItem.F_ITEM_ROW));
+		var row = document.getElementById(this._getFieldId(items[i], ZmItem.F_ITEM_ROW));
 		if (row) {
 			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(items[i].folderId);
 			var className = null;
@@ -433,12 +428,7 @@ function(columnItem, bSortAsc) {
 };
 
 ZmMailMsgListView.prototype._handleResponseSortColumn =
-function(args) {
-	var conv		= args[0];
-	var columnItem	= args[1];
-	var controller	= args[2];
-	var result		= args[3];
-	
+function(conv, columnItem, controller, result) {
 	var list = result.getResponse();
 	controller.setList(list); // set the new list returned
 	this.setOffset(0);

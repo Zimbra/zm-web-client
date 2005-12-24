@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -74,11 +74,6 @@ ZmMailListView.prototype.getTitle =
 function() {
 	return this._controller._activeSearch && this._controller._activeSearch.search 
 		? this._controller._activeSearch.search.getTitle() : null;
-};
-
-ZmMailListView.prototype.getLimit = 
-function() {
-	return this._appCtxt.get(ZmSetting.PAGE_SIZE);
 };
 
 ZmMailListView.prototype.replenish = 

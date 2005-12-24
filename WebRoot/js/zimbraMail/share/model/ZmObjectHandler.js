@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -24,19 +24,28 @@
  */
 
 function ZmObjectHandler(appCtxt, typeName, className) {
-
-	if (arguments.length == 0) return;
-
-	this._appCtxt = appCtxt;
-	this._typeName = typeName;
-	this._className = className != null ? className : "Object";
+	if (arguments.length > 0) {
+		this._appCtxt = appCtxt;
+		this.init(typeName, className);
+	}
 }
 
 ZmObjectHandler.prototype.constructor = ZmObjectHandler;
 
+ZmObjectHandler.prototype.init =
+function(typeName, className) {
+	this._typeName = typeName;
+	this._className = className != null ? className : "Object";
+};
+
 ZmObjectHandler.prototype.toString = 
 function() {
 	return "ZmObjectHandler: type(" + this._typeName + ") class(" + this._className + ")";
+}
+
+ZmObjectHandler.prototype.getTypeName =
+function() {
+	return this._typeName;
 }
 
 // OVERRIDE if need be
@@ -140,7 +149,11 @@ function(obj, span, context) {
 
 ZmObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
-	return;
+	return this.clicked(span, obj, context, ev);
+}
+
+ZmObjectHandler.prototype.clicked =
+function(span, obj, context, ev) {
 }
 
 ZmObjectHandler.prototype.hoverOver = function(object, context, x, y) {

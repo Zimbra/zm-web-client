@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -104,7 +104,7 @@ function(delta) {
 			var list = this._msgListView.getList();
 			if (list && list.size()) {
 				var item = list.get(0);
-				var div = Dwt.getDomObj(this.getDocument(), this._msgListView._getItemId(item));
+				var div = document.getElementById(this._msgListView._getItemId(item));
 				this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT + (Dwt.getSize(div).y * 2);
 			} else {
 				this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT;

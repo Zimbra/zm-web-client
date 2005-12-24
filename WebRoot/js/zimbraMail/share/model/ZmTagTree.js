@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -26,9 +26,7 @@
 function ZmTagTree(appCtxt) {
 
 	ZmTree.call(this, ZmOrganizer.TAG, appCtxt);
-
-	this._evt = new ZmEvent(ZmEvent.S_TAG);
-}
+};
 
 ZmTagTree.prototype = new ZmTree;
 ZmTagTree.prototype.constructor = ZmTagTree;
@@ -40,7 +38,7 @@ ZmTagTree.COLOR_LIST = [ZmOrganizer.C_CYAN, ZmOrganizer.C_BLUE, ZmOrganizer.C_PU
 ZmTagTree.prototype.toString = 
 function() {
 	return "ZmTagTree";
-}
+};
 
 ZmTagTree.prototype.loadFromJs =
 function(tagsObj) {
@@ -52,10 +50,10 @@ function(tagsObj) {
 	var children = this.root.children.getArray();
 	if (children.length)
 		children.sort(ZmTag.sortCompare);
-}
+};
 
 ZmTagTree.prototype.createRoot =
 function() {
 	if (!this.root)
 		this.root = new ZmTag(ZmTag.ID_ROOT, null, null, null, this);
-}
+};

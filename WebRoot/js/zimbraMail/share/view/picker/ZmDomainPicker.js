@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -109,13 +109,7 @@ function(parent) {
 }
 
 ZmDomainPicker.prototype._handleResponseSetupPicker =
-function(args) {
-	var html	= args[0];
-	var idx		= args[1];
-	var picker	= args[2];
-	var fromId	= args[3];
-	var toId	= args[4];
-	
+function(html, idx, picker, fromId, toId) {
 	var root = ZmDomainPicker.root.getRootDomain();
 	ZmDomainPicker.domains = root.getSortedSubDomains();
 	this._showDomains(html, idx, picker, fromId, toId);
@@ -129,22 +123,20 @@ function(html, idx, picker, fromId, toId) {
 	}
 	picker.getHtmlElement().innerHTML = html.join("");
 
-	var doc = this.getDocument();
-	var from = this._from = Dwt.getDomObj(doc, fromId);
+	var from = this._from = document.getElementById(fromId);
 	Dwt.setHandler(from, DwtEvent.ONCHANGE, ZmDomainPicker._onChange);
 	from._picker = this;
-	var to = this._to = Dwt.getDomObj(doc, toId);
+	var to = this._to = document.getElementById(toId);
 	Dwt.setHandler(to, DwtEvent.ONCHANGE, ZmDomainPicker._onChange);
 	to._picker = this;
 
-	var doc = this.getDocument();
 	for (var i in domains) {
 		var domain = domains[i];
-		var ip = Dwt.getDomObj(doc, this._inputIds[domain.name]);
+		var ip = document.getElementById(this._inputIds[domain.name]);
 		Dwt.setHandler(ip, DwtEvent.ONCLICK, ZmDomainPicker._onClick);
 		ip.value = domain.name;
 		ip._picker = this;
-		ip._div = Dwt.getDomObj(doc, this._divIds[domain.name]);
+		ip._div = document.getElementById(this._divIds[domain.name]);
 		this._elements[domain.name] = ip;
 	}	
 

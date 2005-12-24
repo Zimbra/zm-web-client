@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -23,10 +23,27 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmFolder(id, name, parent, tree, numUnread, numTotal) {
+/**
+* Creates a folder.
+* @constructor
+* @class
+* This class represents a folder, which may contain mail. At some point, folders may be
+* able to contain contacts and/or appointments.
+*
+* @author Conrad Damon
+*
+* @param id			[int]			numeric ID
+* @param name		[string]		name
+* @param parent		[ZmOrganizer]	parent folder
+* @param tree		[ZmTree]		tree model that contains this folder
+* @param numUnread	[int]*			number of unread items for this folder
+* @param numTotal	[int]*			number of items for this folder
+* @param url		[string]*		URL for this folder's feed
+*/
+function ZmFolder(id, name, parent, tree, numUnread, numTotal, url) {
 
-	ZmOrganizer.call(this, ZmOrganizer.FOLDER, id, name, parent, tree, numUnread, numTotal);
-}
+	ZmOrganizer.call(this, ZmOrganizer.FOLDER, id, name, parent, tree, numUnread, numTotal, url);
+};
 
 ZmFolder.prototype = new ZmOrganizer;
 ZmFolder.prototype.constructor = ZmFolder;
@@ -47,7 +64,6 @@ ZmFolder.LAST_SYSTEM_ID		= 6;
 ZmFolder.ID_CONTACTS 		= 7;
 ZmFolder.ID_TAGS	 		= 8;
 ZmFolder.ID_CALENDAR		= ZmOrganizer.ID_CALENDAR;
-ZmFolder.FIRST_USER_ID		= ZmOrganizer.FIRST_USER_ID;
 
 // system folder names
 ZmFolder.MSG_KEY = new Object();
@@ -107,13 +123,14 @@ function(parent, obj, tree) {
 	if (!(obj && obj.id)) return;
 
 	// check ID - can't be lower than root, or in tag range
-	if (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID && obj.id < ZmFolder.FIRST_USER_ID)) return;
+	if (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID &&
+		obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER])) return;
 	
 	// ignore calendar folders
 	if (obj.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) return;
 
 	var name = ZmFolder.MSG_KEY[obj.id] ? ZmMsg[ZmFolder.MSG_KEY[obj.id]] : obj.name;
-	var folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n);
+	var folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n, obj.url);
 	folder._setSharesFromJs(obj);
 
 	// a folder may contain other folders or searches
@@ -133,7 +150,7 @@ function(parent, obj, tree) {
 	}
 
 	return folder;
-}
+};
 
 /**
 * Comparison function for folders. Intended for use on a list of user folders through a call to Array.sort().
@@ -150,7 +167,7 @@ function(folderA, folderB) {
 	if (folderA.name.toLowerCase() > folderB.name.toLowerCase()) return 1;
 	if (folderA.name.toLowerCase() < folderB.name.toLowerCase()) return -1;
 	return 0;
-}
+};
 
 /**
 * Checks a folder name for validity. Returns an error message if the
@@ -161,18 +178,26 @@ function(folderA, folderB) {
 */
 ZmFolder.checkName =
 function(name) {
-	return ZmOrganizer.checkName(name);
-}
+	var error = ZmOrganizer.checkName(name);
+	if (error) return error;
+
+	// make sure name isn't a system folder (possibly not displayed)	
+	for (var id in ZmFolder.MSG_KEY) {
+		if (name == ZmMsg[ZmFolder.MSG_KEY[id]])
+			return ZmMsg.folderNameReserved;
+	}
+	return null;
+};
 
 ZmFolder.prototype.toString = 
 function() {
 	return "ZmFolder";
-}
+};
 
 // Searches created here since they may be created under a folder or
 // another search.
 ZmFolder.prototype.create =
-function(name, search) {
+function(name, search, url) {
 	if (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_DRAFTS)
 		throw new AjxException("Cannot create subfolder of Spam or Drafts");
 
@@ -194,13 +219,14 @@ function(name, search) {
 			searchNode.setAttribute("sortBy", search.sortBy);
 		searchNode.setAttribute("l", this.id);
 	} else {
-		var soapDoc = AjxSoapDoc.create(search ? "CreateSearchFolderRequest" : "CreateFolderRequest", "urn:zimbraMail");
+		var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 		var folderNode = soapDoc.set("folder");
 		folderNode.setAttribute("name", name);
 		folderNode.setAttribute("l", this.id);
+		if (url) folderNode.setAttribute("url", url);
 	}
 	this.tree._appCtxt.getAppController().sendRequest(soapDoc, true);
-}
+};
 
 // User can move a folder to Trash even if there's already a folder there with the
 // same name. We find a new name for this folder and rename it before the move.
@@ -213,7 +239,7 @@ function(newParent) {
 	if (origName != name)
 		this.rename(name);
 	ZmOrganizer.prototype.move.call(this, newParent);
-}
+};
 
 ZmFolder.prototype.isUnder =
 function(id) {
@@ -227,12 +253,12 @@ function(id) {
 			parent = parent.parent;
 	}
 	return false;
-}
+};
 
 ZmFolder.prototype.isInTrash =
 function() {
 	return this.isUnder(ZmFolder.ID_TRASH);
-}
+};
 
 ZmFolder.prototype.hasSearch =
 function(id) {
@@ -246,7 +272,7 @@ function(id) {
 			return true;
 
 	return false;
-}
+};
 
 /**
 * Handles the creation of a folder or search folder. This folder is the parent
@@ -259,32 +285,33 @@ function(id) {
 ZmFolder.prototype.notifyCreate =
 function(obj, isSearch) {
 	// ignore creates of system folders
-	if (obj.id < ZmFolder.FIRST_USER_ID) return;
+	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]) return;
 
 	var folder = isSearch ? ZmSearchFolder.createFromJs(this, obj, this.tree) :
 							ZmFolder.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
 	this.children.add(folder, index);
-	this._eventNotify(ZmEvent.E_CREATE, folder);
-}
+	folder._notify(ZmEvent.E_CREATE);
+};
 
 ZmFolder.prototype.createQuery =
 function(pathOnly) {
 	var query;
-	if (this.id < ZmFolder.FIRST_USER_ID) {
+	if (this.isSystem()) {
 		query = pathOnly ? ZmFolder.QUERY_NAME[this.id] : "in:" + ZmFolder.QUERY_NAME[this.id];
 		return query;
 	}
 	var path = this.name;
 	var f = this.parent;
 	while (f && f.id > ZmFolder.ID_ROOT && f.name.length) {
-		path = f.name + "/" + path;
+		var name = f.isSystem() ? ZmFolder.QUERY_NAME[f.id] : f.name;
+		path = name + "/" + path;
 		f = f.parent;
 	}
 	path = '"' + path + '"';
 	query = pathOnly ? path : "in:" + path;
 	return query;
-}
+};
 
 ZmFolder.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
@@ -301,7 +328,7 @@ function(showUnread, maxLength, noMarkup) {
 	} else {
 		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
 	}
-}
+};
 
 ZmFolder.prototype.getIcon = 
 function() {
@@ -310,9 +337,9 @@ function() {
 	} else if (ZmFolder.IMAGE[this.id]) {
 		return ZmFolder.IMAGE[this.id];
 	} else {
-		return (this.type == ZmOrganizer.SEARCH) ? "SearchFolder": "Folder";
+		return "Folder";
 	}
-}
+};
 
 /**
 * Returns the full folder path as a string.
@@ -329,7 +356,7 @@ function(includeRoot) {
 	}
 	
 	return path;
-}
+};
 
 /**
 * Returns true if the given object(s) may be placed in this folder.
@@ -356,6 +383,7 @@ function(includeRoot) {
 ZmFolder.prototype.mayContain =
 function(what) {
 	if (!what) return true;
+	if (this.isFeed()) return false;
 
 	var invalid = false;
 	if (what instanceof ZmFolder) {
@@ -406,7 +434,7 @@ function(what) {
 		}
 	}
 	return !invalid;
-}
+};
 
 /**
 * Returns the folder with the given path
@@ -416,7 +444,7 @@ function(what) {
 ZmFolder.prototype.getByPath =
 function(path) {
 	return this._getByPath(path.toLowerCase());
-}
+};
 
 // Test the path of this folder and then descendants against the given path, case insensitively
 ZmFolder.prototype._getByPath =
@@ -434,4 +462,4 @@ function(path) {
 			return organizer;
 	}
 	return null;	
-}
+};

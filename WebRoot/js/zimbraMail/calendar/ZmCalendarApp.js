@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -25,6 +25,8 @@
 
 function ZmCalendarApp(appCtxt, container) {
 	ZmApp.call(this, ZmZimbraMail.CALENDAR_APP, appCtxt, container);
+	this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._settingsChangeListener));
+	this._active = false;
 };
 
 ZmCalendarApp.prototype = new ZmApp;
@@ -45,21 +47,29 @@ function(callback) {
 
 ZmCalendarApp.prototype.activate =
 function(active, view, date) {
+	this._active = active;
 
-	if (!this._appCtxt.getAppViewMgr().isAppView(view))
-		return;
+	var cc = this.getCalController();
+	this.showMiniCalendar(active || this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL));
 
-	var appController = this._appCtxt.getAppController();
+//	cc.getMiniCalendar().setSkipNotifyOnPage(!active);
 	if (active) {
-		this._oldPanels = appController.getOverviewPanels();
-		var newPanels = [ ZmOrganizer.CALENDAR, ZmOrganizer.FOLDER, ZmOrganizer.SEARCH ];
-		appController.setOverviewPanels(newPanels);
-		this.getCalController().show(view);
-		if (date) this.getCalController().setDate(date);
-	}
-	else {
-		appController.setOverviewPanels(this._oldPanels);		
-	}
+		var isAppView = (view == null || view == ZmController.CAL_VIEW || view == ZmController.CAL_DAY_VIEW ||
+						 view == ZmController.CAL_WEEK_VIEW || view == ZmController.CAL_WORK_WEEK_VIEW ||
+						 view == ZmController.CAL_MONTH_VIEW || view == ZmController.CAL_SCHEDULE_VIEW);
+		if (isAppView) {
+			cc.show(view);
+			if (date) cc.setDate(date);
+		}
+	} 
+};
+
+ZmCalendarApp.prototype.showMiniCalendar =
+function(show) {
+	var mc = this.getCalController().getMiniCalendar();
+	mc.setSkipNotifyOnPage(show && !this._active);	
+	if (!this._active) mc.setSelectionMode(DwtCalendar.DAY);
+	this._appCtxt.getAppViewMgr().showTreeFooter(show);
 };
 
 ZmCalendarApp.prototype.getCalController =
@@ -74,4 +84,21 @@ function() {
 	if (!this._apptController)
 		this._apptController = new ZmApptComposeController(this._appCtxt, this._container, this);
 	return this._apptController;
+};
+
+
+ZmCalendarApp.prototype._settingsChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) return;
+	
+	var setting = ev.source;
+	if (setting.id == ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL) {
+		if (setting.getValue()) {
+			this.showMiniCalendar(true);
+		} else if (!this._active) {
+			this.showMiniCalendar(false);
+		}
+	} else if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK) {
+		this._appCtxt.setStatusMsg(ZmMsg.afterReload);
+	}
 };

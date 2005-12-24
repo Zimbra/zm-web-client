@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -47,7 +47,7 @@ function ZmAttachmentListController(appCtxt, container, mailApp) {
 	this._toolbar = new Object();
 	this._contentView = new Object();
 
-	this._csfeMsgFetchSvc = location.protocol + "//" + this._container.getDocument().domain + appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+	this._csfeMsgFetchSvc = location.protocol + "//" + document.domain + appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 }
 
 ZmAttachmentListController.prototype = new ZmMailListController;

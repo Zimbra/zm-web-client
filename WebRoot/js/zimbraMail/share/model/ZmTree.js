@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -26,64 +26,58 @@
 function ZmTree(type, appCtxt) {
 
 	if (arguments.length == 0) return;
-	ZmModel.call(this, true);
+	ZmModel.call(this, type);
 
 	this.type = type;
 	this._appCtxt = appCtxt;
 	this.root = null;
-}
+};
 
 ZmTree.prototype = new ZmModel;
 ZmTree.prototype.constructor = ZmTree;
 
-// organizer class
-ZmTree.CLASS = new Object();
-ZmTree.CLASS[ZmOrganizer.FOLDER] = ZmFolder;
-ZmTree.CLASS[ZmOrganizer.TAG] = ZmTag;
-ZmTree.CLASS[ZmOrganizer.CALENDAR] = ZmCalendar;
-
 ZmTree.prototype.toString = 
 function() {
 	return "ZmTree";
-}
+};
 
 ZmTree.prototype.asString = 
 function() {
 	return this.root ? this._asString(this.root, "") : "";
-}
+};
 
 ZmTree.prototype.getById =
 function(id) {
 	return this.root ? this.root.getById(id) : null;
-}
+};
 
 ZmTree.prototype.getByName =
 function(name) {
 	return this.root ? this.root.getByName(name) : null;
-}
+};
 
 ZmTree.prototype.size =
 function() {
 	return this.root ? this.root.size() : 0;
-}
+};
 
 ZmTree.prototype.reset =
 function() {
 	this.root = null;
-}
+};
 
 ZmTree.prototype.asList =
 function() {
 	var list = new Array();
 	return this.root ? this._addToList(this.root, list) : list;
-}
+};
 
 ZmTree.prototype.getUnreadHash =
 function(unread) {
 	if (!unread)
 		unread = new Object();
 	return this.root ? this._getUnreadHash(this.root, unread) : unread;
-}
+};
 
 ZmTree.prototype._addToList =
 function(organizer, list) {
@@ -93,7 +87,7 @@ function(organizer, list) {
 		this._addToList(children[i], list)
 
 	return list;
-}
+};
 
 ZmTree.prototype._asString =
 function(organizer, str) {
@@ -113,7 +107,7 @@ function(organizer, str) {
 		str = str + "]";
 	}
 	return str;
-}
+};
 
 ZmTree.prototype._getUnreadHash =
 function(organizer, unread) {
@@ -123,16 +117,4 @@ function(organizer, unread) {
 		this._getUnreadHash(children[i], unread)
 
 	return unread;
-}
-
-// Notify our listeners.
-ZmTree.prototype._eventNotify =
-function(event, organizers, details) {
-	organizers = organizers || this;
-	if (this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
-		this._evt.set(event, this);
-		this._evt.setDetails(details);
-		this._evt.setDetail("organizers", organizers);
-		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
-	}
-}
+};

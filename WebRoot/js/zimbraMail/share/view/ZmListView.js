@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -40,7 +40,7 @@ function ZmListView(parent, className, posStyle, view, type, controller, headerL
 	if (tagList)
 		tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 
-	this._csfeMsgFetchSvc = location.protocol + "//" + this.getDocument().domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+	this._csfeMsgFetchSvc = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 }
 
 ZmListView.prototype = new DwtListView;
@@ -102,6 +102,11 @@ function(defaultColumnSort) {
 	this._resetColWidth();	// reset column width in case scrollbar is set
 }
 
+ZmListView.prototype.getLimit = 
+function() {
+	return this._appCtxt.get(ZmSetting.PAGE_SIZE);
+};
+
 ZmListView.prototype._changeListener =
 function(ev) {
 	if (ev.type != this.type)
@@ -120,11 +125,11 @@ function(ev) {
 				var flag = flags[j];
 				var on = item[ZmItem.FLAG_PROP[flag]];
 				if (flag == ZmItem.FLAG_FLAGGED) {
-					var img = Dwt.getDomObj(this.getDocument(), this._getFieldId(item, ZmItem.F_FLAG));
+					var img = document.getElementById(this._getFieldId(item, ZmItem.F_FLAG));
 					if (img && img.parentNode)
 						AjxImg.setImage(img.parentNode, on ? "FlagRed" : "Blank_16");
 				} else if (flag == ZmItem.FLAG_ATTACH) {
-					var img = Dwt.getDomObj(this.getDocument(), this._getFieldId(item, ZmItem.F_ATTACHMENT));
+					var img = document.getElementById(this._getFieldId(item, ZmItem.F_ATTACHMENT));
 					if (img && img.parentNode)
 						AjxImg.setImage(img.parentNode, on ? "Attachment" : "Blank_16");
 				}
@@ -134,19 +139,17 @@ function(ev) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: DELETE or MOVE");
 		var needReplenish = false;
 		for (var i = 0; i < items.length; i++) {
-			var row = Dwt.getDomObj(this.getDocument(), this._getItemId(items[i]));
+			needReplenish = needReplenish || ev.getDetail("replenish");
+			var row = document.getElementById(this._getItemId(items[i]));
 			if (row) {
 				this._parentEl.removeChild(row);
 				this._selectedItems.remove(row);
-				needReplenish = true;
 			}
 			this._list.remove(items[i]);
 		}
 		if (needReplenish) {
 			var respCallback = new AjxCallback(this, this._handleResponseChangeListener);
 			this._controller._checkReplenish(respCallback);
-		} else {
-			this._setNextSelection();
 		}
 		this._controller._resetToolbarOperations();		
 	} else if (ev.event == ZmEvent.E_MODIFY && (ev.getDetail("action") == "set")) {
@@ -172,7 +175,7 @@ function(ev) {
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
 		var divs = this._getChildren();
-		var tag = ev.source;
+		var tag = ev.getDetail("organizers")[0];
 		for (var i = 0; i < divs.length; i++) {
 			var item = this.getItemFromElement(divs[i]);
 			if (item && item.tags && (item.tags.length == 1) && (item.tags[0] == tag.id))
@@ -192,7 +195,7 @@ function() {
 // The enclosing div and its styles
 ZmListView.prototype._getDiv =
 function(item, isDndIcon, isMatched) {
-	var	div = this.getDocument().createElement("div");
+	var	div = document.createElement("div");
 
 	var base = "Row";
 	div._styleClass = base;
@@ -283,7 +286,7 @@ function(item, id) {
 // Find the tag cell and reset its HTML depending on the item's tags.
 ZmListView.prototype._setTagImg =
 function(item) {
-	var tagCell = Dwt.getDomObj(this.getDocument(), this._getFieldId(item, ZmItem.F_TAG_CELL));
+	var tagCell = document.getElementById(this._getFieldId(item, ZmItem.F_TAG_CELL));
 	if (!tagCell) return;
 	tagCell.innerHTML = this._getTagImgHtml(item, this._getFieldId(item, ZmItem.F_TAG));
 }
@@ -313,8 +316,10 @@ function(ev, div) {
 	if (!id) return true;
 	
 	// check if we're hovering over a column header
-	if (div._type && div._type == DwtListView.TYPE_HEADER_ITEM) {
-		var id = this._headerList[div._itemIndex]._id;
+	var type = Dwt.getAttr(div, "_type");
+	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
+		var itemIdx = Dwt.getAttr(div, "_itemIndex");
+		var id = this._headerList[itemIdx]._id;
 		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) == 0) {
 			this.setToolTipContent(ZmMsg.flag);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) == 0) {
@@ -322,12 +327,12 @@ function(ev, div) {
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0) {
 			this.setToolTipContent(ZmMsg.attachment);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
-			if (this._headerList[div._itemIndex]._sortable)
+			if (this._headerList[itemIdx]._sortable)
 				this.setToolTipContent(ZmMsg.sortBySubject);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT]) == 0) {
 			this.setToolTipContent(ZmMsg.convCountTooltip);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
-			if (this._headerList[div._itemIndex]._sortable)
+			if (this._headerList[itemIdx]._sortable)
 				this.setToolTipContent(ZmMsg.sortByReceived);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) == 0) {
 			this.setToolTipContent(ZmMsg.messageStatus);
@@ -340,7 +345,10 @@ function(ev, div) {
 		var m = this._parseId(id);
 		if (m && m.field) {
 			var item = this.getItemFromElement(div);
-			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) {
+			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
+				if (!item.isFlagged)
+					ev.target.className = "ImgFlagDis";
+			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) {
 				this._setTagToolTip(div);
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) {
 				this._setStatusToolTip(item);
@@ -353,14 +361,19 @@ function(ev, div) {
 				}
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) {
 				this._setParticipantToolTip(item.getAddress(ZmEmailAddress.FROM));
-			} else if ((m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) && item.fragment) {
-				this.setToolTipContent(AjxStringUtil.htmlEncode(item.fragment));
+			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) {
+				if (item.invite) {
+					this.setToolTipContent(item.invite.getToolTip());
+				} else {
+				    var frag = item.fragment != "" ? item.fragment : ZmMsg.fragmentIsEmpty;
+					this.setToolTipContent(AjxStringUtil.htmlEncode(frag));
+				}
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) {
 				this._setDateToolTip(item, div);
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER]) {
 				var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(item.folderId);
 				if (folder && folder.parent)
-					this.setToolTipContent(folder.getPath(true));
+					this.setToolTipContent(folder.getPath());
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE]) {
 				this.setToolTipContent(ZmMsg[ZmItem.MSG_KEY[item.type]]);
 			} else {
@@ -370,6 +383,28 @@ function(ev, div) {
 			this.setToolTipContent(null);
 		}
 	}
+	return true;
+}
+
+ZmListView.prototype._mouseOutAction = 
+function(ev, div) {
+	DwtListView.prototype._mouseOutAction.call(this, ev, div);
+
+	var id = ev.target.id || div.id;
+	if (!id) return true;
+
+	var type = Dwt.getAttr(div, "_type");
+	if (type && type == DwtListView.TYPE_LIST_ITEM) {
+		var m = this._parseId(id);
+		if (m && m.field) {
+			var item = this.getItemFromElement(div);
+			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
+				if (!item.isFlagged)
+					ev.target.className = "ImgBlank_16";
+			}
+		}
+	}
+
 	return true;
 }
 
@@ -385,26 +420,42 @@ function(ev, div) {
 	return true;
 }
 
-ZmListView.prototype._mouseUpAction =
-function(ev, div) {
-	var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : div.id;
-	if (!id) return true;
+/*
+* Add a few properties to the list event for the listener to pick up.
+*/
+ZmListView.prototype._setListEvent =
+function (ev, listEv, clickedEl) {
+
+	DwtListView.prototype._setListEvent.call(this, ev, listEv, clickedEl);
+
+	var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : clickedEl.id;
+	if (!id) return false; // don't notify listeners
 
 	var m = this._parseId(id);
 	if (ev.button == DwtMouseEvent.LEFT) {
-		if (this._evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
 			this._selEv.field = m ? m.field : null;
-			this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
-		}
 	} else if (ev.button == DwtMouseEvent.RIGHT) {
-		if (this._evtMgr.isListenerRegistered(DwtEvent.ACTION)) {
-			this._actionEv.field = m ? m.field : null;
-			if (m && (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT])) {
-				var item = this.getItemFromElement(div);
+		this._actionEv.field = m ? m.field : null;
+		if (m && m.field) {
+			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
+				ev.target.className = "ImgBlank_16";
+			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) {
+				var item = this.getItemFromElement(clickedEl);
 				this._actionEv.detail = item.participants.get(m.participant);
 			}
-			this._evtMgr.notifyListeners(DwtEvent.ACTION, this._actionEv);
 		}
+	}
+	return true;
+};
+
+ZmListView.prototype._allowLeftSelection =
+function(clickedEl, ev, button) {
+	var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : clickedEl.id;
+	var type = Dwt.getAttr(clickedEl, "_type");
+	if (id && type && type == DwtListView.TYPE_LIST_ITEM) {
+		var m = this._parseId(id);
+		if (m && m.field)
+			return (m.field != ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]);
 	}
 	return true;
 }
@@ -490,7 +541,17 @@ function(item, div) {
 			date = item.date;
 		}
 		if (date) {
-			div._dateStr = prefix + (new Date(date)).toLocaleString() + " <span style='white-space:nowrap'>(" + AjxDateUtil.computeDateDelta(date) + ")</span>";
+			var dateStr = new Array()
+			var i = 0;
+			dateStr[i++] = prefix;
+			dateStr[i++] = (new Date(date)).toLocaleString();
+			var delta = AjxDateUtil.computeDateDelta(date);
+			if (delta) {
+				dateStr[i++] = " <span style='white-space:nowrap'>(";
+				dateStr[i++] = delta;
+				dateStr[i++] = ")</span>";
+			}
+			div._dateStr = dateStr.join("");
 		} else {
 			div._dateStr = "";
 		}
@@ -556,9 +617,8 @@ function(dragOp) {
 		icon = this._createItemHtml(item, new Date(), true);
 		icon._origClassName = icon.className;
 	} else {
-		var doc = this.getDocument();
 		// Create multi one
-		icon = doc.createElement("div");
+		icon = document.createElement("div");
 		icon.className = "DndIcon";
 		Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE); 
 		
@@ -566,14 +626,14 @@ function(dragOp) {
 		AjxImg.setImage(icon, "DndMultiYes_48");
 		this._dndImg = icon;
 								
-		div = doc.createElement("div");
+		div = document.createElement("div");
 		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
 		div.innerHTML = "<table><tr><td class='MailMultiSelectText'>" 
 						+ dndSelection.length + "</td></tr></table>";
 		icon.appendChild(div);
 
 		// The size of the Icon is envelopeImg.width + sealImg.width - 20, ditto for height
-		Dwt.setSize(icon, 43 + 32 - 16, 36 + 32 - 20);
+		Dwt.setBounds(icon, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE, 43 + 32 - 16, 36 + 32 - 20);
 	}
 	
 	this.shell.getHtmlElement().appendChild(icon);

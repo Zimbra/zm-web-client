@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -23,11 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPrintView (appCtxt, width, height) {
+function ZmPrintView (appCtxt) {
 	this._appCtxt = appCtxt;
-	this._width = width ? parseInt(width) : null;
-	this._height = height ? parseInt(height) : null;
-}
+};
 
 ZmPrintView.prototype.toString = 
 function () {
@@ -40,9 +38,15 @@ function(item) {
 	var preferHtml = this._appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	
 	if (item instanceof ZmConv) {
-		this._html = ZmConvListView.getPrintHtml(item, preferHtml);
-	} else if (item instanceof ZmMailMsg) {
-		this._html = ZmMailMsgView.getPrintHtml(item, preferHtml);
+		var respCallback = new AjxCallback(this, this._handleResponseRender);
+		ZmConvListView.getPrintHtml(item, preferHtml, respCallback);
+		return;
+	//} else if (item instanceof ZmMailMsg) {
+	// XXX: fix this when opening a new window doesnt nuke type info!
+	} else if (item.toString() == "ZmMailMsg") {
+		var respCallback = new AjxCallback(this, this._handleResponseRender);
+		ZmMailMsgView.getPrintHtml(item, preferHtml, respCallback);
+		return;
 	} else if (item instanceof ZmContact) {
 		this._html = ZmContactView.getPrintHtml(item, false, this._appCtxt);
 	} else if (item instanceof ZmContactList) {
@@ -51,14 +55,13 @@ function(item) {
 		this._html = ZmCalViewMgr.getPrintHtml(item);
 	}
 	
-	var optionsStr = "menubar=yes,resizable=yes,scrollbars=yes";
-	if (this._width) {
-		optionsStr = optionsStr + ",width=" + this._width;
-	}
-	if (this._height) {
-		optionsStr = optionsStr + ",height=" + this._height;
-	}
-	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", optionsStr, this._render, this, true);
+	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
+};
+
+ZmPrintView.prototype._handleResponseRender =
+function(result) {
+	this._html = result.getResponse();
+	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
 };
 
 ZmPrintView.prototype._render = 
@@ -76,7 +79,7 @@ function() {
 		if (window.print)
 			this._printWindow.print();
 	} else {
-		this._appCtxt.getAppController().setStatusMsg(ZmMsg.popupBlocker);
+		this._appCtxt.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
 	}
 	this._html = null;
 };
@@ -86,36 +89,24 @@ function() {
 	var username = this._appCtxt.get(ZmSetting.USERNAME);
 	var html = new Array();
 	var idx = 0;
-	
-	html[idx++] = "<html><head><title>Zimbra: " + username + "</title>";
-	html[idx++] = "<link rel='stylesheet' href='/zimbra/js/zimbraMail/config/style/zm.css' media='screen'></link>";
-	// EMC 9/8/05:
-	// If we want to print backgrounds, I think we may have to specify the media in the link, and the user may have 
-	// to turn on a browser setting which is off by default ....
-
-	// Also, we should figure out how to include the correct images file -- though I'm not sure if the user needs
-	// to change browser settings for printing images as well.
-	//html[idx++] = "<link rel='stylesheet' href='/zimbra/js/zimbraMail/config/style/zm.css' media='print'></link>";
-	//html[idx++] = "<style type='text/css'><!-- @import url(/zimbra/img/hiRes/imgs.css?v=1); --></style>";
-
-	// The onerror stuff would help if we were including innerHTML from the main window that might have functions which
-	// don't exist in the print window.
-	//html[idx++] = "</head><script>function errorHandler (ev) {ev=ev? ev: window.event; 	if (ev.stopPropagation != null) {ev.stopPropagation();ev.preventDefault();	} else { ev.returnValue = false; ev.cancelBubble = true;} alert(\"error\"); return false;}window.onerror=errorHandler</script><body>";
+	html[idx++] = "<html><head><title>Zimbra: ";
+	html[idx++] = username;
+	html[idx++] = "</title>";
+	html[idx++] = "<link rel='stylesheet' href='/zimbra/js/zimbraMail/config/style/msgview.css?v="+cacheKillerVersion+"' media='screen'></link>";
+	html[idx++] = "<link rel='stylesheet' href='/zimbra/js/zimbraMail/config/style/zm.css?v="+cacheKillerVersion+"' media='screen'></link>";
 	html[idx++] = "</head><body>";
 	html[idx++] = "<table border=0 width=100%><tr>";
 	html[idx++] = "<td class='ZmPrintView-company'><b>Zimbra</b> Collaboration Suite</td>";
-	html[idx++] = "<td class='ZmPrintView-username' align=right>" + username + "</td>";
-	html[idx++] = "</tr></table>";
+	html[idx++] = "<td class='ZmPrintView-username' align=right>";
+	html[idx++] = username;
+	html[idx++] = "</td></tr></table>";
 	html[idx++] = "<hr>";
 	html[idx++] = "<div style='padding: 10px'>";
+
 	return html.join("");
-}
+};
 
 ZmPrintView.prototype._getFooter = 
 function() {
-	var html = new Array();
-	var idx = 0;
-	
-	html[idx++] = "</div></body></html>";
-	return html.join("");
-}
+	return "</div></body></html>";
+};

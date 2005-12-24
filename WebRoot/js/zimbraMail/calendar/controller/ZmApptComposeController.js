@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  *
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -50,24 +50,14 @@ function() {
 // Public methods
 
 ZmApptComposeController.prototype.show =
-function(appt, mode) {
-	if (!this._toolbar)
-		this._createToolBar();
+function(appt, mode, isDirty) {
 
-	if (!this._apptView) {
-		this._apptView = new ZmApptComposeView(this._container, null, this._app, this);
-		var callbacks = new Object();
-		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
-		var elements = new Object();
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._apptView;
-	    this._app.createView(ZmController.APPOINTMENT_VIEW, elements, callbacks);
-	}
-
+	this._initToolbar(mode);
+	this.initApptComposeView();
 	this._setFormatBtnItem(true);
 
 	this._app.pushView(ZmController.APPOINTMENT_VIEW, true);
-	this._apptView.set(appt, mode);
+	this._apptView.set(appt, mode, isDirty);
 	this._apptView.reEnableDesignMode();
 };
 
@@ -79,8 +69,8 @@ function() {
 	}
 
 	if (!this._popShield) {
-		this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
-		this._popShield.setMessage(ZmMsg.askLeaveAppt, DwtMessageDialog.WARNING_STYLE);
+		this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
+		this._popShield.setMessage(ZmMsg.askToSave, DwtMessageDialog.WARNING_STYLE);
 		this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 		this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 	}
@@ -97,17 +87,68 @@ function() {
 ZmApptComposeController.prototype.saveAppt = 
 function(attId) {
 	var appt = this._apptView.getAppt(attId);
-	if (appt)
-		this._schedule(this._doSave, {appt: appt, attId: attId});
+	if (appt) {
+		var args;
+		var mode = appt.getViewMode();
+		if (mode != ZmAppt.MODE_NEW && appt._orig && appt._orig.folderId != appt.folderId) {
+			// pass along appt and folderId for appt move
+			args = [ appt, appt.folderId ];
+		}
+		appt.save(attId, new AjxCallback(this, this._handleResponseSave, args));
+	}
 };
 
 ZmApptComposeController.prototype.getFreeBusyInfo = 
 function(startTime, endTime, emailList, callback) {
-	this._schedule(this._doFreeBusyRequest, {startTime:startTime, endTime:endTime, emailList:emailList, callback:callback});
+	var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:zimbraMail");
+	soapDoc.setMethodAttribute("s", startTime);
+	soapDoc.setMethodAttribute("e", endTime);
+	soapDoc.setMethodAttribute("uid", emailList);
+
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, callback);
+};
+
+ZmApptComposeController.prototype.toggleSpellCheckButton = 
+function(toggled) {
+	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
+	spellCheckButton.setToggled((toggled || false));
+};
+
+ZmApptComposeController.prototype.initApptComposeView = 
+function(initHide) {
+	if (this._apptView == null) {
+		this._apptView = new ZmApptComposeView(this._container, null, this._app, this);
+		var callbacks = new Object();
+		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
+		var elements = new Object();
+		if (!this._toolbar)
+			this._createToolBar();
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._apptView;
+	    this._app.createView(ZmController.APPOINTMENT_VIEW, elements, callbacks);
+	    if (initHide) {
+	    	this._apptView.preload();
+	    }
+	}
 };
 
 
 // Private / Protected methods
+
+ZmApptComposeController.prototype._initToolbar = 
+function(mode) {
+	if (!this._toolbar)
+		this._createToolBar();
+
+	var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
+	if (mode == null || mode == ZmAppt.MODE_NEW || mode == ZmAppt.MODE_NEW_FROM_QUICKADD) {
+		cancelButton.setText(ZmMsg.cancel);
+		cancelButton.setImage("Cancel");
+	} else {
+		cancelButton.setText(ZmMsg.close);
+		cancelButton.setImage("Close");
+	}
+};
 
 ZmApptComposeController.prototype._createToolBar =
 function() {
@@ -167,10 +208,19 @@ function() {
 		this._apptErrorDialog = new DwtMessageDialog(this._shell);
 	}
 
-	// XXX: temp error msg
+	// XXX: temp error msg (until we get proper error handling mechanism, ala tooltips)
 	var msg = "Cannot save appointment. You have errors that must be corrected. Please correct them and try again or contact your System Administrator.";
 	this._apptErrorDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	this._apptErrorDialog.popup();
+};
+
+// Spell check methods
+
+ZmApptComposeController.prototype._spellCheckAgain = 
+function() {
+	this._apptView.getHtmlEditor().discardMisspelledWords();
+	this._doSpellCheck();
+	return false;
 };
 
 
@@ -179,19 +229,7 @@ function() {
 // Save button was pressed
 ZmApptComposeController.prototype._saveListener =
 function(ev) {
-	var popView = true;
-	if (this._apptView.isDirty()) {
-		popView = false;
-		// check if all fields are populated w/ valid values
-		if (this._apptView.isValid()) {
-			this.saveAppt();
-		} else {
-			// XXX: show error dialog for now (until we get proper error handling mechanism)
-			this._showErrorMessage();
-		}
-	}
-
-	if (popView) {
+	if (this._doSave()) {
 		this._apptView.cleanup();	// always cleanup the views
 		this._app.popView(true);	// force pop view
 	}
@@ -235,66 +273,77 @@ function(ev) {
 ZmApptComposeController.prototype._spellCheckListener = 
 function(ev) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
+	var htmlEditor = this._apptView.getHtmlEditor();
+
 	if (spellCheckButton.isToggled()) {
-		if (this._apptView.getComposeMode() == DwtHtmlEditor.TEXT) {
-			alert("Spell Checking is not yet implemented for text emails.  Please switch to HTML first.");
-			spellCheckButton.setToggled(false);
-			return;
-		}
-		var text = this._apptView.getHtmlEditor().getTextVersion();
-		var soap = AjxSoapDoc.create("CheckSpellingRequest", "urn:zimbraMail");
-		soap.getMethod().appendChild(soap.getDoc().createTextNode(text));
-		var cmd = new ZmCsfeCommand();
-		var callback = new AjxCallback(this, this._spellCheckCallback);
-		cmd.invoke({soapDoc:soap, asyncMode:true, callback:callback});
+		var callback = new AjxCallback(this, this.toggleSpellCheckButton)
+		if (!htmlEditor.spellCheck(callback))
+			this.toggleSpellCheckButton(false);
 	} else {
-		this._apptView.getHtmlEditor().discardMisspelledWords();
+		htmlEditor.discardMisspelledWords();
 	}
 };
+
 
 // Callbacks
 
-ZmApptComposeController.prototype._doSave = 
-function(params) {
-	try {
-		params.appt.save(this._appCtxt.getAppController(), params.attId);
-		this._apptView.cleanup();	// always cleanup the views
-		this._app.popView(true);	// force pop view
-	} catch(ex) {
-		this._handleException(ex, this._doSave, params, false);
+ZmApptComposeController.prototype._handleResponseSave = 
+function(appt, folderId) {
+	if (appt && folderId) {
+		var callback = new AjxCallback(this, this._handleResponseCleanup);
+		appt.move(folderId, callback);
+	}
+	else {
+		this._handleResponseCleanup();
 	}
 };
 
-ZmApptComposeController.prototype._doFreeBusyRequest = 
-function(params) {
-	try {
-		var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:zimbraMail");
-		soapDoc.setMethodAttribute("s", params.startTime);
-		soapDoc.setMethodAttribute("e", params.endTime);
-		soapDoc.setMethodAttribute("uid", params.emailList);
-
-		var resp = this._appCtxt.getAppController().sendRequest(soapDoc).GetFreeBusyResponse;
-		params.callback.run(resp.usr);
-	} catch (ex) {
-		this._handleException(ex, this._doFreeBusyRequest, params, false);
-	}
+ZmApptComposeController.prototype._handleResponseCleanup = 
+function() {
+	this._apptView.cleanup();	// always cleanup the views
+	this._app.popView(true);	// force pop view
 };
 
-// Called as: Yes, save as draft
+ZmApptComposeController.prototype._doSave =
+function() {
+	var popView = true;
+	if (this._apptView.isDirty()) {
+		popView = false;
+		// check if all fields are populated w/ valid values
+		if (this._apptView.isValid()) {
+			this.saveAppt();
+		} else {
+			// XXX: show error dialog for now (until we get proper error handling mechanism)
+			this._showErrorMessage();
+		}
+	}
+	return popView;
+};
+
+ZmApptComposeController.prototype._doSpellCheck =  
+function() {
+	var text = this._apptView.getHtmlEditor().getTextVersion();
+	var soap = AjxSoapDoc.create("CheckSpellingRequest", "urn:zimbraMail");
+	soap.getMethod().appendChild(soap.getDoc().createTextNode(text));
+	var cmd = new ZmCsfeCommand();
+	var callback = new AjxCallback(this, this._spellCheckCallback);
+	cmd.invoke({soapDoc:soap, asyncMode:true, callback:callback});
+};
+
 ZmApptComposeController.prototype._popShieldYesCallback =
+function() {
+	this._popShield.popdown();
+	if (this._doSave()) {
+		this._app.getAppViewMgr().showPendingView(true);
+		this._apptView.cleanup();
+	}
+};
+
+ZmApptComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(true);
 	this._apptView.cleanup();
-};
-
-// Called as: No, don't cancel
-ZmApptComposeController.prototype._popShieldNoCallback =
-function() {
-	this._popShield.popdown();
-	this._apptView.enableInputs(true);
-	this._app.getAppViewMgr().showPendingView(false);
-	this._apptView.reEnableDesignMode();
 };
 
 ZmApptComposeController.prototype._textModeOkCallback = 
@@ -312,22 +361,3 @@ function(ev) {
 	this._apptView.reEnableDesignMode();
 };
 
-ZmApptComposeController.prototype._spellCheckCallback = 
-function(args) {
-	if (args._isException) {
-		throw args;
-	}
-
-	var words = args._data.Body.CheckSpellingResponse;
-	if (!words.available) {
-		throw new AjxException("Server-side spell checker is not available.");
-	}
-
-	words = words.misspelled;
-	if (!words || words.length == 0) {
-		var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
-		spellCheckButton.setToggled(false);
-	} else {
-		this._apptView.getHtmlEditor().highlightMisspelledWords(words);
-	}
-};

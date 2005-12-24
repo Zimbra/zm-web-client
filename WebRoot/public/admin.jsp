@@ -12,7 +12,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
 the License for the specific language governing rights and limitations
 under the License.
 
-The Original Code is: Zimbra Collaboration Suite.
+The Original Code is: Zimbra Collaboration Suite Web Client
 
 The Initial Developer of the Original Code is Zimbra, Inc.
 Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -22,9 +22,6 @@ Contributor(s):
 
 ***** END LICENSE BLOCK *****
 -->
-
-<%@ page language="java" 
-         import="java.lang.*, java.util.*" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%
    	String portsCSV = application.getInitParameter("admin.allowed.ports");
@@ -66,7 +63,7 @@ Contributor(s):
 	String mode = (String) request.getAttribute("mode");
 	String vers = (String) request.getAttribute("version");
 	String ext = (String) request.getAttribute("fileExtension");
-
+	String hiRes = (String) request.getParameter("hiRes");
 	if (vers == null){
 	   vers = "";
 	}
@@ -85,63 +82,72 @@ Contributor(s):
 <html>
   <head>
     <title>Zimbra Admin</title>
-    <style type="text/css">
-      <!--
-<%
-  String loRes = (String) request.getAttribute("loRes");
-  	if (loRes == null) {
-%>
-        @import url(<%= contextPath %>/img/hiRes/imgs.css?v=<%= vers %>);
-        @import url(<%= contextPath %>/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
-<% } else { %>
-        @import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-        @import url(<%= contextPath %>/img/loRes/skins/steel/skin.css?v=<%= vers %>);
-<% } %>
-   @import url(<%= contextPath %>/js/zimbraAdmin/config/style/dwt.css?v=<%= vers %>);
-   @import url(<%= contextPath %>/js/zimbraAdmin/config/style/common.css?v=<%= vers %>);
-   @import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css?v=<%= vers %>);
-   @import url(/zimbraAdmin/skins/steel/skin.css?v=<%= vers %>);   
-     -->
-    </style>
-	<script language="JavaScript">
-    	DwtConfigPath = "<%= contextPath %>/js/dwt/config";
-    </script>
+    <link rel="ICON" type="image/gif" href="/zimbra/img/loRes/logo/favicon.gif"/>
+    <link rel="SHORTCUT ICON" href="/zimbra/img/loRes/logo/favicon.ico"/>
     
-<script type="text/javascript" src="<%= contextPath %>/js/ajax/config/msgs/AjxMsg.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/config/msgs/ZaMsg.js<%= ext %>?v=<%= vers %>"></script>
-
+<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZaMsg.js<%= ext %>?v=<%= vers %>"></script>
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
-   		<jsp:include page="/public/Ajax.jsp"/>
-    	<jsp:include page="/public/Zimbra.jsp"/>
-	    <jsp:include page="/public/ZimbraAdmin.jsp"/>
+	<style type="text/css">
+	<!--
+	<%if (hiRes != null) {%>
+	@import url(<%= contextPath %>/img/hiRes/imgs.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
+	<% } else { %>
+	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/img/loRes/skins/steel/skin.css?v=<%= vers %>);
+	<% } %>
+	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/dwt.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/common.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/skins/steel/skin.css?v=<%= vers %>);  
+	-->
+	</style>
+	<jsp:include page="/public/Ajax.jsp"/>
+	<jsp:include page="/public/XForms.jsp"/>
+   	<jsp:include page="/public/Zimbra.jsp"/>
+    <jsp:include page="/public/ZimbraAdmin.jsp"/>
 <% } else { %>
-
-		<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
-		<script type="text/javascript" src="<%= contextPath %>/js/ZimbraAdmin_all.js<%= ext %>?v=<%= vers %>"></script>
-<% } %>
+	<style type="text/css">
+	<!--
+	<%if (hiRes != null) {%>
+	        @import url(<%= contextPath %>/js/ZimbraAdmin_hiRes_all.cgz?v=<%= vers %>);
+	<% } else { %>
+	        @import url(<%= contextPath %>/js/ZimbraAdmin_loRes_all.cgz?v=<%= vers %>);
+	<% } %>
+	-->
+	</style>
+	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="<%= contextPath %>/js/ZimbraAdmin_all.js<%= ext %>?v=<%= vers %>"></script>
+<% } %>    
     <script language="JavaScript">   	
    		function launch() {
    			AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
+		 	ACCESS_RIGHTS = new Object();
 		 	// figure out the debug level
 				if (location.search && (location.search.indexOf("debug=") != -1)) {
-			   	 var m = location.search.match(/debug=(\d+)/);
-			  	  if (m.length) {
-					var num = parseInt(m[1]);
-					var level = AjxDebug.DBG[num];
-					if (level) {
-					    DBG.setDebugLevel(level);
+			   		var m = location.search.match(/debug=([\d\-]+)/);
+				  	if (m && m.length) {
+				  		var num = parseInt(m[1]);
+						var level = AjxDebug.DBG[num];
+						if (level) {
+						    DBG.setDebugLevel(level);
+						}
 					}
 			    }
-			}
-
-	    	ZaZimbraAdmin.run(document.domain);
+			    /**
+			    * temporary code - 
+			    * TODO: remove when server is ready
+			    **/
+			    
+		    	ZaZimbraAdmin.run(document.domain);
 	    }
 		AjxCore.addOnloadListener(launch);
     </script>
   </head>
   <body onload="javascript:void launch()">
-		<jsp:include page="../skins/steel/skin.html"/>  
+  <jsp:include page="/public/pre-cache.jsp"/>  
+  <jsp:include page="../skins/steel/skin.html"/>  
 <script language=Javascript>
 	skin.hideQuota();
 </script>

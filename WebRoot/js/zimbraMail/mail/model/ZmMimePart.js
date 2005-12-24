@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -29,7 +29,7 @@ function ZmMimePart() {
 	
 	this.children = new AjxVector();
 	this.node = new Object();
-}
+};
 
 ZmMimePart.prototype = new ZmModel;
 ZmMimePart.prototype.constructor = ZmMimePart;
@@ -37,19 +37,19 @@ ZmMimePart.prototype.constructor = ZmMimePart;
 ZmMimePart.prototype.toString = 
 function() {
 	return "ZmMimePart";
-}
+};
 
 ZmMimePart.createFromDom =
 function(node, args) {
 	var mimePart = new ZmMimePart();
 	mimePart._loadFromDom(node, args.attachments, args.bodyParts);
 	return mimePart;
-}
+};
 
 ZmMimePart.prototype.getContent = 
 function() {
 	return this.node.content;
-}
+};
 
 ZmMimePart.prototype.getContentForType = 
 function(contentType) {
@@ -65,59 +65,61 @@ function(contentType) {
 			return this.getContent();
 	}
 	return null;
-}
+};
 
 ZmMimePart.prototype.setContent = 
 function(content) {
 	this.node.content = content;
-}
+};
 
 ZmMimePart.prototype.getContentDisposition =
 function() {
 	return this.node.cd;
-}
+};
 
 ZmMimePart.prototype.getContentType =
 function() {
 	return this.node.ct;
-}
+};
 
 ZmMimePart.prototype.setContentType =
 function(ct) {
 	this.node.ct = ct;
-}
+};
 
 ZmMimePart.prototype.setIsBody = 
 function(isBody) {
 	this.node.body = isBody;
-}
+};
 
 ZmMimePart.prototype.getFilename =
 function() {
 	return this.node.filename;
-}
+};
 
 ZmMimePart.prototype._loadFromDom =
 function(partNode, attachments, bodyParts) {
 	for (var i = 0; i < partNode.length; i++) {
 		this.node = partNode[i];
-		
+
 		if (this.node.content)
 			this._loaded = true;
-		
+
 		if (this.node.cd == "attachment" || 
 			this.node.ct == ZmMimeTable.MSG_RFC822 ||
-			this.node.filename != null)
+			this.node.filename != null || 
+			this.node.ci != null || this.node.cl != null)
 		{
 			attachments.push(this.node);
 		}
-		
+
 		if (this.node.body)
 			bodyParts.push(this.node);
-		
-		if (this.node.mp) {
+
+		// bug fix #4616 - dont add attachments part of a rfc822 msg part
+		if (this.node.mp && this.node.ct != ZmMimeTable.MSG_RFC822) {
 			var params = {attachments: attachments, bodyParts: bodyParts};
 			this.children.add(ZmMimePart.createFromDom(this.node.mp, params));
 		}
 	}
-}
+};

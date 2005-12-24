@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -61,16 +61,15 @@ function(parent) {
 	html[i++] = "</tr>";
 	html[i++] = "<tr valign='middle'>";
 	html[i++] = "<td align='right' nowrap>" + ZmMsg.value + ":</td>";
-	html[i++] = "<td align='left' nowrap><input type='text' nowrap size='" + size + "' id='" + fieldId + "'/></td>";
+	html[i++] = "<td align='left' nowrap><input type='text' autocomplete='off' nowrap size='" + size + "' id='" + fieldId + "'/></td>";
 	html[i++] = "</tr>";
 	html[i++] = "<tr valign='middle'>";
 	html[i++] = "<td align='right' nowrap>" + ZmMsg.units + ":</td>";
 	html[i++] = "<td align='left' nowrap>";
 	html[i++] = "<select id='" + unitsId + "'>";
 	html[i++] = "<option value='b'>" + ZmMsg.bytes + "</option>";
-	html[i++] = "<option value='kb' selected>" + ZmMsg.kb + "</option>";
-	html[i++] = "<option value='mb'>" + ZmMsg.mb + "</option>";
-	html[i++] = "<option value='gb'>" + ZmMsg.gb + "</option>";
+	html[i++] = "<option value='kb' selected>" + ZmMsg.kilobytes + "</option>";
+	html[i++] = "<option value='mb'>" + ZmMsg.megabytes + "</option>";
 	html[i++] = "</select>";
 	html[i++] = "</td>";
 	html[i++] = "</tr>";
@@ -84,7 +83,7 @@ function(parent) {
 
 ZmSizePicker.prototype._setupField = 
 function(id) {
-	var f = Dwt.getDomObj(this.getDocument(), id);
+	var f = document.getElementById(id);
 	Dwt.setHandler(f, DwtEvent.ONCHANGE, ZmSizePicker._onChange);
 	f._picker = this;
 	return f;
@@ -92,7 +91,7 @@ function(id) {
 
 ZmSizePicker.prototype._setupSizeField = 
 function(id) {
-	var f = Dwt.getDomObj(this.getDocument(), id);
+	var f = document.getElementById(id);
 	Dwt.setHandler(f, DwtEvent.ONKEYUP, ZmSizePicker._onKeyUp);
 	f._picker = this;
 	return f;

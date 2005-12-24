@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -42,23 +42,23 @@ function ZmContactList(appCtxt, search, isGal) {
 
 	this.isGal = isGal;
 	this.isCanonical = false;
+
 	this._emailToContact = new Object();
+	this._acContacts = new Array();
 }
 
 ZmContactList.prototype = new ZmList;
 ZmContactList.prototype.constructor = ZmContactList;
 
+
+// Consts
+
 // fields used for autocomplete matching
-ZmContactList.AC_FIELDS = new Array();
-ZmContactList.AC_FIELDS.push(ZmContact.F_firstName, ZmContact.F_lastName);
-ZmContactList.AC_FIELDS.push(ZmContact.X_fullName, ZmContact.X_firstLast);
-
-ZmContactList.AC_NAME_FIELDS = [ZmContact.F_firstName, ZmContact.F_lastName];
-
-ZmContactList.AC_VALUE_FULL =	"fullAddress";
-ZmContactList.AC_VALUE_EMAIL =	"email";
-
-ZmContactList.AC_MAX = 20; // max number of autocomplete matches to return
+ZmContactList.AC_FIELDS 	= [ZmContact.F_firstName, ZmContact.F_lastName, ZmContact.X_fullName, ZmContact.X_firstLast];
+ZmContactList.AC_NAME_FIELDS= [ZmContact.F_firstName, ZmContact.F_lastName];
+ZmContactList.AC_VALUE_FULL = "fullAddress";
+ZmContactList.AC_VALUE_EMAIL= "email";
+ZmContactList.AC_MAX 		= 20; // max # of autocomplete matches to return
 
 ZmContactList.prototype.toString = 
 function() {
@@ -80,6 +80,9 @@ function(attrs, callback, errorCallback) {
 	// only the canonical list gets loaded
 	this.isCanonical = true;
 	var soapDoc = AjxSoapDoc.create("GetContactsRequest", "urn:zimbraMail");
+	// set sorting pref (or now, always sort by name asc)
+	var method = soapDoc.getMethod();
+	method.setAttribute("sortBy", "nameAsc");
 
 	if (attrs) {
 		// load only the given attributes
@@ -91,36 +94,33 @@ function(attrs, callback, errorCallback) {
 	}
 	
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
+DBG.showTiming(true, AjxDebug.PERF, "[PROFILING CONTACT LIST]");
+DBG.timePt(AjxDebug.PERF, "requesting contact list");
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
 }
 
 ZmContactList.prototype._handleResponseLoad =
-function(args) {
-	var callback	= args[0];
-	var result		= args[1];
-
+function(callback, result) {
 	var response = result.getResponse();
 	var list = response.GetContactsResponse.cn;
 	if (list) {
-		var _st = new Date();
 		this.set(list);
-		DBG.println(AjxDebug.DBG3, this.size() + " contacts parsed (time: " + (new Date() - _st.getTime()) + "ms)");
-		_st = new Date();
-		this.getArray().sort(ZmContact.compareByFileAs); // sort in place
-		DBG.println(AjxDebug.DBG3, "------ TOTAL time to SORT contacts list: " + (new Date() - _st.getTime()) + "ms");
 	}
-	this._acContacts = this._getAcContacts(this.getArray());
 	
 	if (callback) callback.run();
 }
 
 ZmContactList.prototype.set = 
-function(resp) {
+function(list) {
 	this.clear();
-	var args = {appCtxt: this._appCtxt, addressHash: new Object(), list: this};
-	for (var i = 0; i < resp.length; i++) {
-		var node = resp[i];
-		this.add(ZmList.ITEM_CLASS[this.type].createFromDom(node, args, true));
+	
+	for (var i = 0; i < list.length; i++) {
+		var args = {appCtxt:this._appCtxt, addressHash:new Object(), list:this};
+		var contact = ZmList.ITEM_CLASS[this.type].createFromDom(list[i], args);
+
+		this._updateEmailHash(contact, true);
+		this._acContacts.push(this._setAcContact(contact));
+		this.add(contact);
 	}
 }
 
@@ -298,8 +298,7 @@ function(item) {
 ZmContactList.prototype._updateEmailHash =
 function(contact, doAdd) {
 	for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
-		var f = ZmContact.F_EMAIL_FIELDS[i];
-		var email = contact.getAttr(f);
+		var email = contact.getAttr(ZmContact.F_EMAIL_FIELDS[i]);
 		if (email) {
 			if (doAdd)
 				this._emailToContact[email.toLowerCase()] = contact;
@@ -347,37 +346,43 @@ function(contact, doAdd) {
 	}
 }
 
-// A contact may have more than one email address that we want to match against. To make the
-// matching process simpler, we create multiple "contacts" for any contact that has more than
-// one email address, one for each address, and then match against those.
+// A contact may have more than one email address that we want to match against. 
+// To make the matching process simpler, we create multiple "contacts" for any 
+// contact that has more than one email address, one for each address, and then 
+// match against those.
 ZmContactList.prototype._getAcContacts =
 function(contacts) {
 	var acContacts = new Array();
 	for (var i = 0; i < contacts.length; i++) {
-		var contact = contacts[i];
-		if (contact.folderId == ZmFolder.ID_TRASH)
-			continue;
-		var emails = contact.getEmails();
-		if (!emails) continue;
-		for (var j = 0; j < emails.length; j++) {
-			var acContact = new Object();
-			acContact.id = contact.id;
-			acContact[ZmContact.F_email] = emails[j];
-			for (var k = 0; k < ZmContactList.AC_FIELDS.length; k++) {
-				var field = ZmContactList.AC_FIELDS[k];
-				if (field == ZmContact.X_fullName)
-					value = contact.getFullName();
-				else if (field == ZmContact.X_firstLast)
-					value = [contact.getAttr(ZmContact.F_firstName), contact.getAttr(ZmContact.F_lastName)].join(" ");
-				else
-					value = contact.getAttr(field);
-				acContact[field] = value;
-			}
+		var acContact = this._setAcContact(contacts[i]);
+		if (acContact)
 			acContacts.push(acContact);
-		}
 	}
 	return acContacts;
 }
+
+ZmContactList.prototype._setAcContact =
+function(contact) {
+	var emails = contact.getEmails();
+
+	var acContact = new Object();
+	for (var j = 0; j < emails.length; j++) {
+		acContact.id = contact.id;
+		acContact[ZmContact.F_email] = emails[j];
+		for (var k = 0; k < ZmContactList.AC_FIELDS.length; k++) {
+			var field = ZmContactList.AC_FIELDS[k];
+			if (field == ZmContact.X_fullName)
+				value = contact.getFullName();
+			else if (field == ZmContact.X_firstLast)
+				value = [contact.getAttr(ZmContact.F_firstName), contact.getAttr(ZmContact.F_lastName)].join(" ");
+			else
+				value = contact.getAttr(field);
+			acContact[field] = value;
+		}
+	}
+	return acContact;
+}
+
 
 // Returns a match object if the string matches any of the contact's autocomplete fields.
 ZmContactList.prototype._acMatch =

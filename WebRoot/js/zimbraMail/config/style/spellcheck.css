@@ -1,3 +1,68 @@
-.ZM-SPELLCHECK-MISSPELLED { border-bottom: 1px dashed #f88; background: #fc8; }
-.ZM-SPELLCHECK-MISSPELLED2 { border-bottom: 1px dashed red; background: #ff0; z-index: 10; }
-.ZM-SPELLCHECK-FIXED { background: #cfa; border-bottom: 1px dashed green; }
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.1
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.1 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ * 
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
+ * All Rights Reserved.
+ * 
+ * Contributor(s):
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
+.TextSpellChecker { /* try to be as close as possible to the textarea */
+	background-color: #f4f4f4;
+	position: relative;
+	border: 1px solid #000;
+	padding: 2px 1px;
+}
+
+.SpellCheckInputField {
+	border: 1px solid #c00;
+	background-color: #fff;
+	padding: 1px;
+	font: 10pt monospace;
+	position: absolute;
+}
+
+.SpellCheckModeDiv {
+	/*
+  margin-right: 2px;
+  font-weight: bold;
+  border: 1px solid #aaa;
+  border-bottom: none;
+  padding: 5px 10px;
+  background-color: #ff8;
+  */
+	cursor: pointer;
+	background-color: #FFFFCC;
+	padding: 6px;
+	font-size: 10pt;
+	border: 1px solid #777777;
+}
+
+.SpellCheckLink {
+	color: blue; 
+	text-decoration: underline; 
+	cursor: pointer; 
+}
+
+.SpellCheckModeDiv a:link, .SpellCheckModeDiv a:visited { color: #00c; }
+.TextSpellChecker, .TextSpellChecker * { font: 10pt monospace; }
+
+.ZM-SPELLCHECK-MISSPELLED { border-bottom: 1px dashed #f88; background: #fc8; cursor: help; }
+.ZM-SPELLCHECK-MISSPELLED2 { border-bottom: 1px dashed red; background: #ff0; z-index: 10; cursor: help; }
+.ZM-SPELLCHECK-FIXED { background: #cfa; border-bottom: 1px dashed green; cursor: help; }
+.ZM-SPELLCHECK-INPROGRESS { background: #caf; cursor: help; }

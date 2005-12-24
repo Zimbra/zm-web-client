@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -51,6 +51,7 @@ function ZmTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.MOVE] = new AjxListener(this, this._moveListener);
 	this._listeners[ZmOperation.EXPAND_ALL] = new AjxListener(this, this._expandAllListener);
 	this._listeners[ZmOperation.MARK_ALL_READ] = new AjxListener(this, this._markAllReadListener);
+	this._listeners[ZmOperation.SYNC] = new AjxListener(this, this._syncListener);
 	
 	// drag-and-drop
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -61,12 +62,14 @@ function ZmTreeController(appCtxt, type, dropTgt) {
 
 	// change listening
 	this._dataTree = appCtxt.getTree(type);
-	this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
-	this._dataTree.addChangeListener(this._dataChangeListener);
+	if (this._dataTree) {
+		this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
+		this._dataTree.addChangeListener(this._dataChangeListener);
+	}
 	
 	// hash of tree views of this type, by overview ID
 	this._treeView = new Object();
-}
+};
 
 ZmTreeController.prototype = new ZmController;
 ZmTreeController.prototype.constructor = ZmTreeController;
@@ -74,51 +77,55 @@ ZmTreeController.prototype.constructor = ZmTreeController;
 // Abstract protected methods
 
 // Enables/disables operations based on the given organizer ID
-ZmTreeController.prototype.resetOperations = function() {}
+ZmTreeController.prototype.resetOperations = function() {};
 
 // Returns a list of desired header action menu operations
-ZmTreeController.prototype._getHeaderActionMenuOps = function() {}
+ZmTreeController.prototype._getHeaderActionMenuOps = function() {};
 
 // Returns a list of desired action menu operations
-ZmTreeController.prototype._getActionMenuOps = function() {}
+ZmTreeController.prototype._getActionMenuOps = function() {};
 
 // Returns the dialog for organizer creation
-ZmTreeController.prototype._getNewDialog = function() {}
+ZmTreeController.prototype._getNewDialog = function() {};
 
 // Returns the dialog for renaming an organizer
-ZmTreeController.prototype._getRenameDialog = function() {}
+ZmTreeController.prototype._getRenameDialog = function() {};
 
 // Method that is run when a tree item is left-clicked
-ZmTreeController.prototype._itemClicked = function() {}
+ZmTreeController.prototype._itemClicked = function() {};
+
+// Method that is run when a tree item is dbl-clicked
+ZmTreeController.prototype._itemDblClicked = function() {};
 
 // Handles a drop event
-ZmTreeController.prototype._dropListener = function() {}
+ZmTreeController.prototype._dropListener = function() {};
 
 // Returns an appropriate title for the "Move To" dialog
-ZmTreeController.prototype._getMoveDialogTitle = function() {}
+ZmTreeController.prototype._getMoveDialogTitle = function() {};
 
 // Public methods
 
 ZmTreeController.prototype.toString = 
 function() {
 	return "ZmTreeController";
-}
+};
 
 /**
 * Displays the tree of this type.
 *
 * @param overviewId		[constant]	overview ID
-* @param showUnread		[boolean]	if true, unread counts will be shown
-* @param omit			[Object]	hash of organizer IDs to ignore
+* @param showUnread		[boolean]*	if true, unread counts will be shown
+* @param omit			[Object]*	hash of organizer IDs to ignore
+* @param forceCreate	[boolean]*	if true, tree view will be created
 */
 ZmTreeController.prototype.show = 
-function(overviewId, showUnread, omit) {
-	if (!this._treeView[overviewId]) {
-		this._setup(overviewId);
+function(overviewId, showUnread, omit, forceCreate) {
+	if (!this._treeView[overviewId] || forceCreate)
+		this._setup(overviewId, forceCreate);
+	if (this._dataTree)
 		this._treeView[overviewId].set(this._dataTree, showUnread, omit);
-	}
 	this._treeView[overviewId].setVisible(true);
-}
+};
 
 /**
 * Returns the tree view for the given overview.
@@ -128,7 +135,7 @@ function(overviewId, showUnread, omit) {
 ZmTreeController.prototype.getTreeView =
 function(overviewId) {
 	return this._treeView[overviewId];
-}
+};
 
 /**
 * Clears the tree view for the given overview.
@@ -140,7 +147,7 @@ function(overviewId) {
 ZmTreeController.prototype.clearTreeView =
 function(overviewId) {
 	delete this._treeView[overviewId];
-}
+};
 
 // Private and protected methods
 
@@ -148,22 +155,24 @@ function(overviewId) {
 * Performs initialization.
 *
 * @param overviewId		[constant]	overview ID
+* @param forceCreate	[boolean]*	if true, tree view will be created
 */
 ZmTreeController.prototype._setup = 
-function(overviewId) {
-	this._initializeTreeView(overviewId);
+function(overviewId, forceCreate) {
+	this._initializeTreeView(overviewId, forceCreate);
 	if (this._opc.actionSupported(overviewId))
 		this._initializeActionMenus();
-}
+};
 
 /*
 * Lazily creates a tree view of this type, using options from the overview.
 *
 * @param overviewId		[constant]	overview ID
+* @param forceCreate	[boolean]*	if true, tree view will be created
 */
 ZmTreeController.prototype._initializeTreeView =
-function(overviewId) {
-	if (!this._treeView[overviewId]) {
+function(overviewId, forceCreate) {
+	if (!this._treeView[overviewId] || forceCreate) {
 		var dragSrc = this._opc.dndSupported(overviewId) ? this._dragSrc : null;
 		var dropTgt = this._opc.dndSupported(overviewId) ? this._dropTgt : null;
 		var params = {parent: this._opc.getOverview(overviewId), overviewId: overviewId, type: this.type,
@@ -172,13 +181,13 @@ function(overviewId) {
 		this._treeView[overviewId] = new ZmTreeView(params);
 		this._treeView[overviewId].addSelectionListener(new AjxListener(this, this._treeViewListener));
 	}
-}
+};
 
 /** 
  * This allows a tree controller to override the default tree style
  * specified by the overview controller.
  */
-ZmTreeController.prototype.getTreeStyle = function() {}
+ZmTreeController.prototype.getTreeStyle = function() {};
 
 /*
 * Creates up to two action menus, one for the tree view's header item, and
@@ -187,16 +196,46 @@ ZmTreeController.prototype.getTreeStyle = function() {}
 */
 ZmTreeController.prototype._initializeActionMenus =
 function() {
+	var obj = this;
+	var func = this._createActionMenu;
+
 	var ops = this._getHeaderActionMenuOps();
-	if (!this._headerActionMenu && ops)
-		this._headerActionMenu = this._createActionMenu(this._shell, ops);
-	ops = this._getActionMenuOps();
-	if (!this._actionMenu && ops)
-		this._actionMenu = this._createActionMenu(this._shell, ops);
-}
+	if (!this._headerActionMenu && ops) {
+		var args = [ this._shell, ops ];
+		this._headerActionMenu = new AjxCallback(obj, func, args);
+	}
+	var ops = this._getActionMenuOps();
+	if (!this._actionMenu && ops) {
+		var args = [ this._shell, ops ];
+		this._actionMenu = new AjxCallback(obj, func, args);
+	}
+};
+
+ZmTreeController.prototype._getHeaderActionMenu =
+function() {
+	if (this._headerActionMenu instanceof AjxCallback) {
+		var callback = this._headerActionMenu;
+		this._headerActionMenu = callback.run();
+	}
+	return this._headerActionMenu;
+};
+ZmTreeController.prototype._getActionMenu =
+function() {
+	if (this._actionMenu instanceof AjxCallback) {
+		var callback = this._actionMenu;
+		this._actionMenu = callback.run();
+	}
+	return this._actionMenu;
+};
 
 /*
 * Creates and returns an action menu, and sets its listeners.
+* <p>
+* <strong>Note:</strong>
+* This method is the target of an AjxCallback and as such the first
+* parameter to the method is an array containing the actual arguments.
+* This is necessary because AjxCallback currently uses <code>call</code>
+* instead of <code>apply</code> when invoking the method.
 *
 * @param parent			[DwtControl]	menu's parent widget
 * @param menuItems		[Array]*		list of menu items
@@ -212,7 +251,7 @@ function(parent, menuItems) {
 	actionMenu.addPopdownListener(new AjxListener(this, this._popdownActionListener));
 
 	return actionMenu;
-}
+};
 
 // Actions
 
@@ -225,7 +264,7 @@ function(parent, menuItems) {
 ZmTreeController.prototype._doCreate =
 function(parent, name) {
 	parent.create(name);
-}
+};
 
 /*
 * Deletes an organizer and removes it from the tree.
@@ -235,7 +274,7 @@ function(parent, name) {
 ZmTreeController.prototype._doDelete =
 function(organizer) {
 	organizer._delete();
-}
+};
 
 /*
 * Renames an organizer.
@@ -246,7 +285,7 @@ function(organizer) {
 ZmTreeController.prototype._doRename =
 function(organizer, name) {
 	organizer.rename(name);
-}
+};
 
 /*
 * Moves an organizer to a new folder.
@@ -257,7 +296,7 @@ function(organizer, name) {
 ZmTreeController.prototype._doMove =
 function(organizer, folder) {
 	organizer.move(folder);
-}
+};
 
 /*
 * Marks an organizer's items as read.
@@ -267,7 +306,17 @@ function(organizer, folder) {
 ZmTreeController.prototype._doMarkAllRead =
 function(organizer) {
 	organizer.markAllRead();
-}
+};
+
+/*
+* Syncs an organizer to its feed (URL).
+*
+* @param organizer	[ZmOrganizer]	organizer
+*/
+ZmTreeController.prototype._doSync =
+function(organizer) {
+	organizer.sync();
+};
 
 // Listeners
 
@@ -281,7 +330,9 @@ function(organizer) {
 */
 ZmTreeController.prototype._treeViewListener =
 function(ev) {
-	if (ev.detail != DwtTree.ITEM_ACTIONED && ev.detail != DwtTree.ITEM_SELECTED) return;
+	if (ev.detail != DwtTree.ITEM_ACTIONED && ev.detail != DwtTree.ITEM_SELECTED && ev.detail != DwtTree.ITEM_DBL_CLICKED) return;
+	
+	this._actionedTreeItem = ev.item;
 	
 	var type = ev.item.getData(ZmTreeView.KEY_TYPE);
 	if (!type) return;
@@ -297,7 +348,7 @@ function(ev) {
 	if (ev.detail == DwtTree.ITEM_ACTIONED) {
 		// right click
 		if (this._opc.actionSupported(overviewId)) {
-			var actionMenu = (id == ZmOrganizer.ID_ROOT) ? this._headerActionMenu : this._actionMenu;
+			var actionMenu = (id == ZmOrganizer.ID_ROOT) ? this._getHeaderActionMenu(ev) : this._getActionMenu(ev);
 			if (actionMenu) {
 				this.resetOperations(actionMenu, type, id);
 				actionMenu.popup(0, ev.docX, ev.docY);
@@ -308,8 +359,13 @@ function(ev) {
 		this._opc.itemSelected(overviewId, type);
 		if (this._opc.selectionSupported(overviewId))
 			this._itemClicked(item);
+	} else if ((ev.detail == DwtTree.ITEM_DBL_CLICKED) && item) {
+		// dbl click
+		//this._opc.itemSelected(overviewId, type);
+		//if (this._opc.selectionSupported(overviewId))
+		this._itemDblClicked(item);
 	}
-}
+};
 
 /*
 * Handles changes to the underlying model. The change is propagated to
@@ -321,7 +377,7 @@ ZmTreeController.prototype._treeChangeListener =
 function(ev) {
 	for (var overviewId in this._treeView)
 		this._changeListener(ev, this._treeView[overviewId]);
-}
+};
 
 /*
 * Handles a change event for one tree view.
@@ -392,7 +448,7 @@ function(ev, treeView) {
 			}
 		}
 	}
-}
+};
 
 /*
 * Pops up the appropriate "New ..." dialog.
@@ -405,7 +461,7 @@ function(ev) {
 	var newDialog = this._getNewDialog();
 	this._showDialog(newDialog, this._newCallback, this._pendingActionData);
 	newDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newDialog);
-}
+};
 
 /*
 * Pops up the appropriate "Rename ..." dialog.
@@ -418,7 +474,7 @@ function(ev) {
 	var renameDialog = this._getRenameDialog();
 	this._showDialog(renameDialog, this._renameCallback, this._pendingActionData);
 	renameDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, renameDialog);
-}
+};
 
 /*
 * Deletes an organizer.
@@ -428,7 +484,7 @@ function(ev) {
 ZmTreeController.prototype._deleteListener = 
 function(ev) {
 	this._doDelete(this._getActionedOrganizer(ev));
-}
+};
 
 /*
 * Moves an organizer into another folder.
@@ -442,7 +498,7 @@ function(ev) {
 	this._showDialog(moveToDialog, this._moveCallback, this._pendingActionData);
 	moveToDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, moveToDialog);
 	moveToDialog.setTitle(this._getMoveDialogTitle());
-}
+};
 
 /*
 * Expands the tree below the actioned node.
@@ -455,7 +511,7 @@ function(ev) {
 	var treeView = this.getTreeView(this._actionedOverviewId);
 	var ti = treeView.getTreeItemById(organizer.id);
 	ti.setExpanded(true, true);
-}
+};
 
 /*
 * Mark's an organizer's contents as read.
@@ -465,7 +521,17 @@ function(ev) {
 ZmTreeController.prototype._markAllReadListener = 
 function(ev) {
 	this._doMarkAllRead(this._getActionedOrganizer(ev));
-}
+};
+
+/*
+* Syncs an organizer to its feed (URL).
+*
+* @param ev		[DwtUiEvent]	the UI event
+*/
+ZmTreeController.prototype._syncListener =
+function(ev) {
+	this._doSync(this._getActionedOrganizer(ev));
+};
 
 /*
 * Handles a drag event by setting the source data.
@@ -483,7 +549,7 @@ function(ev) {
 		default:
 			break;		
 	}
-}
+};
 
 /*
 * Called when a dialog we opened is closed. Sets the style of the actioned
@@ -501,7 +567,7 @@ function() {
 	}
 	this._actionedOrganizer = null;
 	this._actionedOverviewId = null;
-}
+};
 
 // Callbacks
 
@@ -512,10 +578,10 @@ function() {
 * @param 1		[string]		the name of the new organizer
 */
 ZmTreeController.prototype._newCallback =
-function(args) {
-	this._doCreate(args[0], args[1]);
+function(parent, name, url) {
+	this._doCreate(parent, name, null, url);
 	this._clearDialog(this._getNewDialog());
-}
+};
 
 /*
 * Called when a "Rename ..." dialog is submitted to rename the organizer.
@@ -524,10 +590,10 @@ function(args) {
 * @param 1		[string]		the new name of the organizer
 */
 ZmTreeController.prototype._renameCallback =
-function(args) {
-	this._doRename(args[0], args[1]);
+function(organizer, name) {
+	this._doRename(organizer, name);
 	this._clearDialog(this._getRenameDialog());
-}
+};
 
 /*
 * Called when a "Move To ..." dialog is submitted to move the organizer.
@@ -535,10 +601,10 @@ function(args) {
 * @param 0		[ZmFolder]		the target folder
 */
 ZmTreeController.prototype._moveCallback =
-function(args) {
-	this._doMove(this._pendingActionData, args[0]);
+function(folder) {
+	this._doMove(this._pendingActionData, folder);
 	this._clearDialog(this._appCtxt.getMoveToDialog());
-}
+};
 
 /*
 * Called if a user has agreed to go ahead and delete an organizer.
@@ -549,12 +615,15 @@ ZmTreeController.prototype._deleteShieldYesCallback =
 function(organizer) {
 	this._doDelete(organizer);
 	this._clearDialog(this._deleteShield);
-}
+};
 
 // Miscellaneous private methods
 
-/* 
+/*
 * Returns the organizer that's currently selected for action (via right-click).
+* Note: going up the object tree to find the actioned organizer will only work 
+* for tree item events; it won't work for action menu item events, since action
+* menus are children of the shell.
 *
 * @param ev		[DwtUiEvent]	the UI event
 */
@@ -573,4 +642,4 @@ function(ev) {
 		obj = obj.parent;
 	}
 	return null;
-}
+};

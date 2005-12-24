@@ -12,7 +12,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
 the License for the specific language governing rights and limitations
 under the License.
 
-The Original Code is: Zimbra Collaboration Suite.
+The Original Code is: Zimbra Collaboration Suite Web Client
 
 The Initial Developer of the Original Code is Zimbra, Inc.
 Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -26,25 +26,16 @@ Contributor(s):
 <html>
 <head>
 <title>Zimbra</title>
-
-<style type="text/css">
-<!--
-<%String loRes = (String) request.getAttribute("loRes");
-  if (loRes == null) {
-%>
-        @import url(/zimbra/img/hiRes/imgs.css);
-<% } else { %>
-        @import url(/zimbra/img/loRes/imgs.css);
-<% } %>
-        @import url(/zimbra/js/zimbraMail/config/style/dwt.css);
-        @import url(/zimbra/js/zimbraMail/config/style/common.css);
-        @import url(/zimbra/js/zimbraMail/config/style/zm.css);
-        @import url(/zimbra/ui/skin.css);
--->
-</style>
-
-<% 
-	final String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
+<%
+  String contextPath = (String)request.getContextPath(); 
+  String mode = (String) request.getAttribute("mode");
+  String ext = (String) request.getAttribute("fileExtension");
+  if (ext == null) ext = "";
+  String vers = (String) request.getAttribute("version");
+  if (vers == null) vers = "";
+  String hiRes = (String) request.getParameter("hiRes");
+  
+    final String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
 	Cookie[] cookies = request.getCookies();
 	String authToken = null;
 	if (cookies != null) {
@@ -53,32 +44,44 @@ Contributor(s):
 				authToken = cookies[idx].getValue();
 		}
 	}
-	
-	String mode = (String) request.getAttribute("mode");
-	String vers = (String) request.getAttribute("version");
-	String ext = (String) request.getAttribute("fileExtension");
-	if (vers == null) vers = "";
-	if (ext == null) ext = "";
+
 %>
-
-<jsp:include page="Messages.jsp"/>
-
+<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
-
+	<style type="text/css">
+	<!--
+	<%if (hiRes != null) {%>
+	@import url(/zimbra/img/hiRes/imgs.css?v=<%= vers %>);
+	@import url(/zimbra/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
+	<% } else { %>
+	@import url(/zimbra/img/loRes/imgs.css?v=<%= vers %>);
+	@import url(/zimbra/img/loRes/skins/steel/skin.css?v=<%= vers %>);
+	<% } %>
+	@import url(/zimbra/js/zimbraMail/config/style/dwt.css?v=<%= vers %>);
+	@import url(/zimbra/js/zimbraMail/config/style/common.css?v=<%= vers %>);
+	@import url(/zimbra/js/zimbraMail/config/style/zm.css?v=<%= vers %>);
+	@import url(/zimbra/js/zimbraMail/config/style/spellcheck.css?v=<%= vers %>);
+	@import url(/zimbra/skins/steel/skin.css?v=<%= vers %>);
+	-->
+	</style>
 	<jsp:include page="Ajax.jsp"/>
 	<jsp:include page="Zimbra.jsp"/>
 	<jsp:include page="ZimbraMail.jsp"/>
-
 <% } else { %>
-
-	<script type="text/javascript" src="/zimbra/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
-	<script type="text/javascript" src="/zimbra/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
-
+	<style type="text/css">
+	<!--
+	<%if (hiRes != null) {%>
+	        @import url(<%= contextPath %>/js/ZimbraMail_hiRes_all.cgz?v=<%= vers %>);
+	<% } else { %>
+	        @import url(<%= contextPath %>/js/ZimbraMail_loRes_all.cgz?v=<%= vers %>);
+	<% } %>
+	-->
+	</style>
+	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="<%= contextPath %>/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>
-
-<script type="text/javascript" src="/zimbra/js/zimbraMail/ZmNewWindow.js<%= ext %>?v=<%= vers %>"></script>
-
 <script language="JavaScript">  
+    var cacheKillerVersion = "<%= vers %>";
 	function launch() {
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		ZmNewWindow.run(document.domain);
@@ -86,7 +89,6 @@ Contributor(s):
 	AjxCore.addOnloadListener(launch);
 	AjxCore.addOnunloadListener(ZmNewWindow.unload);
 </script>
-
 </head>
 <body>
 </body>

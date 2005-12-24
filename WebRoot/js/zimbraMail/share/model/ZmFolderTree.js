@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -26,9 +26,7 @@
 function ZmFolderTree(appCtxt, type) {
 	
 	ZmTree.call(this, type, appCtxt);
-	
-	this._evt = new ZmEvent(type);
-}
+};
 
 ZmFolderTree.prototype = new ZmTree;
 ZmFolderTree.prototype.constructor = ZmFolderTree;
@@ -36,7 +34,7 @@ ZmFolderTree.prototype.constructor = ZmFolderTree;
 ZmFolderTree.prototype.toString = 
 function() {
 	return "ZmFolderTree";
-}
+};
 
 ZmFolderTree.prototype.loadFromJs =
 function(rootFolderObj) {
@@ -48,12 +46,14 @@ function(rootFolderObj) {
 		this.root = ZmCalendar.createFromJs(null, rootFolderObj, this);
 	else if (this.type == ZmOrganizer.ZIMLET)
 		this.root = ZmZimlet.createFromJs(null, rootFolderObj, this);
-}
+	else if (this.type == ZmOrganizer.ROSTER_TREE_ITEM)
+		this.root = ZmRosterTree.createFromJs(null, rootFolderObj, this);
+};
 
 ZmFolderTree.prototype.getByPath =
 function(path) {
 	return this.root ? this.root.getByPath(path) : null;
-}
+};
 
 ZmFolderTree.prototype._sortFolder =
 function(folder) {
@@ -63,4 +63,4 @@ function(folder) {
 		for (var i = 0; i < children.length; i++)
 			this._sortFolder(children[i]);
 	}
-}
+};

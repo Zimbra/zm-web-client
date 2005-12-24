@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -44,15 +44,15 @@ function ZmController(appCtxt, container, app) {
 	
 	this._errorDialog = appCtxt.getErrorDialog();
     this._errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
-}
+};
 
 var i = 1;
 ZmController.CONVLIST_VIEW 			= i++;
 ZmController.CONV_VIEW 				= i++;
 ZmController.TRAD_VIEW 				= i++;
 ZmController.MSG_VIEW 				= i++;
-ZmController.MSG_NEW_WIN_VIEW 		= i++; // needed for HACK (see ZmMailMsg)
-ZmController.CONTACT_CARDS_VIEW 	= i++;
+ZmController.MSG_NEW_WIN_VIEW        = i++; // needed for HACK (see ZmMailMsg)
+ZmController.CONTACT_CARDS_VIEW      = i++;
 ZmController.CONTACT_SIMPLE_VIEW 	= i++;
 ZmController.CONTACT_VIEW			= i++;
 ZmController.READING_PANE_VIEW 		= i++;
@@ -71,77 +71,50 @@ ZmController.CAL_WORK_WEEK_VIEW		= i++;
 ZmController.APPT_DETAIL_VIEW		= i++;
 ZmController.APPOINTMENT_VIEW 		= i++;
 ZmController.MIXED_VIEW				= i++;
+ZmController.IM_CHAT_TAB_VIEW         = i++;
+ZmController.IM_CHAT_MULTI_WINDOW_VIEW      = i++;
 
 // Abstract methods
 
 ZmController.prototype._setView =
 function() {
-}
+};
 
 // Public methods
 
 ZmController.prototype.toString = 
 function() {
 	return "ZmController";
-}
-
-/*
-* We do the whole schedule/execute thing to give the shell the opportunity to popup its "busy" 
-* overlay so that user input is blocked. For example, if a search takes a while to complete, 
-* we don't want the user's clicking on the search button to cause it to re-execute repeatedly 
-* when the events arrive from the UI. Since the action is executed via win.setTimeout(), it
-* must be a leaf action (scheduled actions are executed after the calling code returns to the
-* UI loop). You can't schedule something, and then have subsequent code that depends on the 
-* results of the scheduled action.
-*/
-ZmController.prototype._schedule =
-function(method, params, delay, asyncMode) {
-	delay = delay ? delay : 0;
-	if (asyncMode) {
-		method.call(this, params);
-	} else {
-		if (delay == 0) {
-			this._shell.setBusy(true);
-		}
-		this._action = new AjxTimedAction();
-		this._action.obj = this;
-		this._action.method = ZmController._exec;
-		this._action.params.removeAll();
-		this._action.params.add(method);
-		this._action.params.add(params);
-		this._action.params.add(delay);
-		return AjxTimedAction.scheduleAction(this._action, delay);
-	}
-}
-
-ZmController._exec =
-function(method, params, delay) {
-	method.call(this, params);
-	if (!delay) {
-		this._shell.setBusy(false);
-	}
-}
+};
 
 ZmController.prototype.popupErrorDialog = 
 function(msg, ex, noExecReset, hideReportButton)  {
 	if (!noExecReset)
-		this._execFrame = {method: null, params: null, restartOnError: false};
+		this._execFrame = {func: null, args: null, restartOnError: false};
 	// popup alert
 	var detailStr = "";
-	for (var prop in ex) {
-		// Skip any functions on the exception
-		if(typeof ex[prop] == "function") {continue;}
-		detailStr = detailStr + prop + " - " + ex[prop] + "\n";				
+	if (typeof ex == "string") {
+		// in case an Error makes it here
+		detailStr = ex;
+	} else if (ex instanceof Object) {
+		for (var prop in ex) {
+			if (typeof ex[prop] == "function") continue; // skip functions
+			detailStr = detailStr + prop + " - " + ex[prop] + "\n";				
+		}
 	}
 	this._errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
 	this._errorDialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, !hideReportButton);
 	this._errorDialog.popup();
-}
+};
 
 ZmController.prototype.setCurrentView =
 function(view) {
 	this._currentView = view;
-}
+};
+
+ZmController.prototype.handleKeyPressEvent =
+function(ev) {
+};
 
 ZmController.prototype._showLoginDialog =
 function(bReloginMode) {
@@ -152,12 +125,12 @@ function(bReloginMode) {
 	} catch (ex) {
 		// do nothing. just catch and hope for the best.
 	}
-}
+};
 
 ZmController.prototype._processPrePopView = 
 function(view) {
 	// overload me
-}
+};
 
 /*
 * Common exception handling entry point for sync and async commands.
@@ -165,7 +138,7 @@ function(view) {
 ZmController.prototype._handleError =
 function(ex, method, params) {
 	this._handleException(ex, method, params, false);
-}
+};
 
 ZmController.prototype._handleException =
 function(ex, method, params, restartOnError, obj) {
@@ -177,7 +150,7 @@ function(ex, method, params, restartOnError, obj) {
 		if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED) {
 			// remember the last operation attempted ONLY for expired auth token exception
 			if (method)
-				this._execFrame = {obj: obj, method: method, params: params, restartOnError: restartOnError};
+				this._execFrame = (method instanceof AjxCallback) ? method : {obj: obj, func: method, args: params, restartOnError: restartOnError};
 			this._loginDialog.registerCallback(this._loginCallback, this);
 			this._loginDialog.setError(ZmMsg.sessionExpired);
 		} else if (ex.code == ZmCsfeException.SVC_AUTH_REQUIRED) {
@@ -192,12 +165,12 @@ function(ex, method, params, restartOnError, obj) {
 		this._showLoginDialog(bReloginMode);
 	} else {
 		// remember the last search attempted for all other exceptions
-		this._execFrame = {obj: obj, method: method, params: params, restartOnError: restartOnError};
+		this._execFrame = (method instanceof AjxCallback) ? method : {obj: obj, func: method, args: params, restartOnError: restartOnError};
 		this._errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
 		var msg = this._getErrorMsg(ex.code, params);
 		this.popupErrorDialog(msg, ex, true);
 	}
-}
+};
 
 // Map error code to error message. Optional params can be substituted.
 ZmController.prototype._getErrorMsg =
@@ -240,54 +213,71 @@ function(code, params) {
 	}
 	
 	return msg;
-}
+};
 
-// XXX: async
+/*
+* User is logging in after an auth exception. If it was AUTH_EXPIRED, we try to complete what the
+* user was doing at the time (if the caller passed us the data we need to resume it).
+*
+* @param username	[string]	user name
+* @param password	[string]	user password
+* @param pubComp	[boolean]
+*/
 ZmController.prototype._doAuth = 
-function(params) {
+function(username, password, pubComp) {
 	ZmCsfeCommand.clearAuthToken();
 	var auth = new ZmAuthenticate(this._appCtxt);
+	var respCallback = new AjxCallback(this, this._handleResponseDoAuth, pubComp);
+	auth.execute(username, password, respCallback);
+};
+
+ZmController.prototype._handleResponseDoAuth =
+function(pubComp, result) {
 	try {
-		auth.execute(params.username, params.password);
-    	this._authenticating = false;
-    	this._appCtxt.setIsPublicComputer(params.pubComp);
-		this._appCtxt.getAppController().startup({isRelogin: this._execFrame != null}); // restart application after login
-		// Schedule this since we want to make sure the app is built up before we actually hide the login dialog
-		this._schedule(this._hideLoginDialog);
-		if (this._execFrame)
-			this._schedule(this._doLastSearch);
+		result.getResponse();
+	   	this._authenticating = false;
+	   	this._appCtxt.setIsPublicComputer(pubComp);
+	   	if (this._execFrame instanceof AjxCallback) {
+		   	// exec frame for an async call is a callback
+	   		this._execFrame.run();
+	   		this._execFrame = null;
+	   	} else if (this._execFrame) {
+			// old-style exec frame is obj
+	   		this._doLastSearch();
+	   	} else {
+	   		// if no exec frame, start over
+		   	this._appCtxt.getAppController().startup(); // restart application
+	   	}
+	   	this._hideLoginDialog();
 	} catch (ex) {
-		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || 
-			ex.code == ZmCsfeException.SVC_INVALID_REQUEST) 
-		{
+		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || ex.code == ZmCsfeException.SVC_INVALID_REQUEST) {
 			this._loginDialog.setError(ZmMsg.loginError);
-			return;
 		} else {
 			this.popupErrorDialog(ZmMsg.errorGeneric, ex); 
 		}
-	}
-}
+	}	
+};
 
 ZmController.prototype._hideLoginDialog =
 function() {
 	this._loginDialog.setVisible(false);
 	this._loginDialog.setError(null);
 	this._loginDialog.clearPassword();
-}
+};
 
 /*********** Login dialog Callbacks */
 
 ZmController.prototype._loginCallback =
-function(args) {
-	this._schedule(this._doAuth, {username: args[0], password: args[1], pubComp: args[2]});
-}
+function(username, password, pubComp) {
+	this._doAuth(username, password, pubComp);
+};
 
 ZmController.prototype._doLastSearch = 
 function() {
 	var obj = this._execFrame.obj ? this._execFrame.obj : this;
-	this._execFrame.method.call(obj, this._execFrame.params);
+	this._execFrame.func.apply(obj, this._execFrame.args);
 	this._execFrame = null;
-}
+};
 
 /*********** Msg dialog Callbacks */
 
@@ -296,10 +286,10 @@ function() {
 	this._errorDialog.popdown();
 	if (this._execFrame) {
 		if (this._execFrame.restartOnError && !this._authenticating)
-			this._execFrame.method.call(this, this._execFrame.params);
+			this._execFrame.func.apply(this, this._execFrame.args);
 		this._execFrame = null;
 	}
-}
+};
 
 
 // Pop up a dialog. Since it's a shared resource, we need to reset first.
@@ -308,7 +298,7 @@ function(dialog, callback, data, loc, args) {
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, callback, this, args);
 	dialog.popup(data, loc);
-}
+};
 
 // Pop down the dialog and clear any pending actions (initiated from an action menu).
 // The action menu's popdown listener got deferred when the dialog popped up, so
@@ -318,4 +308,6 @@ function(dialog) {
 	dialog.popdown();
 	this._pendingActionData = null;
 	this._popdownActionListener();
-}
+};
+
+ZmController.prototype._popdownActionListener = function() {};

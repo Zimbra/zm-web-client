@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -35,18 +35,24 @@ function ZmOperation() {
 }
 
 // Operations
-ZmOperation.NONE 					= -2;		// no operations or menu items
-ZmOperation.SEP 					= -1;		// separator
+ZmOperation.NONE 					= -1;		// no operations or menu items
+ZmOperation.SEP 					= -2;		// separator
+ZmOperation.SPACER 					= -3;		// spacer (toolbar)
+ZmOperation.FILLER 					= -4;		// filler (toolbar)
+
 var i = 1;
 // !! PLEASE ADD IN ALPHA ORDER !!
 ZmOperation.ADD_FILTER_RULE			= i++;
 ZmOperation.ADD_SIGNATURE			= i++;
 ZmOperation.ATTACHMENT				= i++;
 ZmOperation.BROWSE					= i++;
-ZmOperation.CAL_REFRESH			= i++;
+ZmOperation.CAL_REFRESH				= i++;
 ZmOperation.CAL_VIEW_MENU			= i++;
 ZmOperation.CALL					= i++;
 ZmOperation.CANCEL					= i++;
+ZmOperation.CHECK_ALL				= i++;
+ZmOperation.CHECK_MAIL				= i++;
+ZmOperation.CLEAR_ALL				= i++;
 ZmOperation.CLOSE					= i++;
 ZmOperation.COLOR_MENU				= i++;
 ZmOperation.COMPOSE_FORMAT 			= i++;
@@ -66,9 +72,25 @@ ZmOperation.EDIT_REPLY_DECLINE		= i++;
 ZmOperation.EDIT_REPLY_TENTATIVE	= i++;
 ZmOperation.EXPAND_ALL				= i++;
 ZmOperation.FORWARD					= i++;
+ZmOperation.FORWARD_ATT 			= i++;
+ZmOperation.FORWARD_INLINE			= i++;
+ZmOperation.FORWARD_MENU 			= i++;
 ZmOperation.GO_TO_URL				= i++;
 ZmOperation.IM						= i++;
+ZmOperation.IM_NEW_CHAT  			= i++;
+ZmOperation.IM_NEW_GROUP_CHAT		= i++;
+ZmOperation.IM_PRESENCE_AWAY    	= i++;
+ZmOperation.IM_PRESENCE_CHAT    	= i++;
+ZmOperation.IM_PRESENCE_DND			= i++;
+ZmOperation.IM_PRESENCE_INVISIBLE	= i++;
+ZmOperation.IM_PRESENCE_MENU		= i++;
+ZmOperation.IM_PRESENCE_OFFLINE  	= i++;
+ZmOperation.IM_PRESENCE_ONLINE   	= i++;
+ZmOperation.IM_PRESENCE_XA			= i++;
 ZmOperation.INVITE_REPLY_MENU		= i++;
+ZmOperation.INVITE_REPLY_ACCEPT		= i++;
+ZmOperation.INVITE_REPLY_DECLINE	= i++;
+ZmOperation.INVITE_REPLY_TENTATIVE	= i++;
 ZmOperation.MARK_ALL_READ			= i++;
 ZmOperation.MARK_READ				= i++;
 ZmOperation.MARK_UNREAD				= i++;
@@ -79,12 +101,13 @@ ZmOperation.MOVE					= i++;
 ZmOperation.MOVE_UP_FILTER_RULE		= i++;
 ZmOperation.MOVE_DOWN_FILTER_RULE	= i++;
 ZmOperation.NEW_APPT				= i++;
-ZmOperation.NEW_ALLDAY_APPT		= i++;
+ZmOperation.NEW_ALLDAY_APPT			= i++;
 ZmOperation.NEW_CONTACT				= i++;
 ZmOperation.NEW_FOLDER				= i++;
 ZmOperation.NEW_CALENDAR			= i++;
 ZmOperation.NEW_MENU				= i++;
 ZmOperation.NEW_MESSAGE				= i++;
+ZmOperation.NEW_ROSTER_ITEM			= i++;
 ZmOperation.NEW_TAG					= i++;
 ZmOperation.PAGE_BACK				= i++;
 ZmOperation.PAGE_DBL_BACK 			= i++;
@@ -93,6 +116,7 @@ ZmOperation.PAGE_FORWARD			= i++;
 ZmOperation.PRINT					= i++;
 ZmOperation.PRINT_CONTACTLIST 		= i++;
 ZmOperation.PRINT_MENU 				= i++;
+ZmOperation.REFRESH					= i++;
 ZmOperation.REMOVE_FILTER_RULE		= i++;
 ZmOperation.RENAME_FOLDER			= i++;
 ZmOperation.RENAME_SEARCH			= i++;
@@ -108,6 +132,7 @@ ZmOperation.SAVE					= i++;
 ZmOperation.SAVE_DRAFT				= i++;
 ZmOperation.SCHEDULE_VIEW			= i++;
 ZmOperation.SEARCH					= i++;
+ZmOperation.SEARCH_MAIL    			= i++;
 ZmOperation.SEND					= i++;
 ZmOperation.SHARE					= i++;
 ZmOperation.SHARE_CALENDAR			= i++;
@@ -116,6 +141,7 @@ ZmOperation.SHARE_DECLINE			= i++;
 ZmOperation.SHOW_ORIG				= i++;
 ZmOperation.SPAM 					= i++;
 ZmOperation.SPELL_CHECK 			= i++;
+ZmOperation.SYNC	 				= i++;
 ZmOperation.TAG_MENU				= i++;
 ZmOperation.TAG						= i++;
 ZmOperation.TEXT 					= i++;
@@ -133,31 +159,50 @@ ZmOperation.ZIMLET					= i++;
 // Labels
 // !! PLEASE ADD IN ALPHA ORDER !!
 ZmOperation.MSG_KEY = new Object();
-ZmOperation.MSG_KEY[ZmOperation.ADD_FILTER_RULE]		= "add";
+ZmOperation.MSG_KEY[ZmOperation.ADD_FILTER_RULE]		= "newFilter";
 ZmOperation.MSG_KEY[ZmOperation.ADD_SIGNATURE]			= "addSignature";
 ZmOperation.MSG_KEY[ZmOperation.ATTACHMENT]				= "addAttachment";
 ZmOperation.MSG_KEY[ZmOperation.BROWSE]					= "advancedSearch";
 ZmOperation.MSG_KEY[ZmOperation.CAL_REFRESH]			= "refresh";
 ZmOperation.MSG_KEY[ZmOperation.CAL_VIEW_MENU]			= "view";
 ZmOperation.MSG_KEY[ZmOperation.CANCEL]					= "cancel";
+ZmOperation.MSG_KEY[ZmOperation.CHECK_ALL]				= "checkAll";
+ZmOperation.MSG_KEY[ZmOperation.CHECK_MAIL]				= "checkMail";
+ZmOperation.MSG_KEY[ZmOperation.CLEAR_ALL]				= "clearAll";
+ZmOperation.MSG_KEY[ZmOperation.CLOSE]					= "close";
 ZmOperation.MSG_KEY[ZmOperation.COLOR_MENU]				= "tagColor";
 ZmOperation.MSG_KEY[ZmOperation.COMPOSE_FORMAT] 		= "format";
-ZmOperation.MSG_KEY[ZmOperation.CLOSE]					= "close";
+ZmOperation.MSG_KEY[ZmOperation.DAY_VIEW]				= "viewDay";
+ZmOperation.MSG_KEY[ZmOperation.DELETE]					= "del";
+ZmOperation.MSG_KEY[ZmOperation.DELETE_CONV]			= "delConv";
 ZmOperation.MSG_KEY[ZmOperation.DETACH_COMPOSE] 		= "detach";
 ZmOperation.MSG_KEY[ZmOperation.EDIT] 					= "edit";
+ZmOperation.MSG_KEY[ZmOperation.EDIT_CONTACT]			= "AB_EDIT_CONTACT";
+ZmOperation.MSG_KEY[ZmOperation.EDIT_FILTER_RULE]		= "filterEdit";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_PROPS]				= "editProperties";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_ACCEPT]		= "replyAccept";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_DECLINE]		= "replyDecline";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_TENTATIVE]   = "replyTentative";
-ZmOperation.MSG_KEY[ZmOperation.EDIT_CONTACT]			= "AB_EDIT_CONTACT";
 ZmOperation.MSG_KEY[ZmOperation.EXPAND_ALL]				= "expandAll";
-ZmOperation.MSG_KEY[ZmOperation.DAY_VIEW]				= "viewDay";
-ZmOperation.MSG_KEY[ZmOperation.DELETE]					= "del";
-ZmOperation.MSG_KEY[ZmOperation.DELETE_CONV]			= "delConv";
-ZmOperation.MSG_KEY[ZmOperation.EDIT_FILTER_RULE]		= "filterEdit";
 ZmOperation.MSG_KEY[ZmOperation.FORWARD]				= "forward";
+ZmOperation.MSG_KEY[ZmOperation.FORWARD_ATT] 			= "forwardAtt";
+ZmOperation.MSG_KEY[ZmOperation.FORWARD_INLINE] 		= "forwardInline";
+ZmOperation.MSG_KEY[ZmOperation.FORWARD_MENU] 			= "forward";
 ZmOperation.MSG_KEY[ZmOperation.IM]						= "newIM";
+ZmOperation.MSG_KEY[ZmOperation.IM_NEW_CHAT]			= "imNewChat";
+ZmOperation.MSG_KEY[ZmOperation.IM_NEW_GROUP_CHAT]		= "imNewGroupChat";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_AWAY]		= "imStatusAway";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_CHAT]		= "imStatusChat";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_DND]		= "imStatusDND";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_INVISIBLE]	= "imStatusInvisible";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_MENU]		= "imPresence";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_OFFLINE]	= "imStatusOffline";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_ONLINE]		= "imStatusOnline";
+ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_XA]			= "imStatusExtAway";
 ZmOperation.MSG_KEY[ZmOperation.INVITE_REPLY_MENU]		= "editReply";
+ZmOperation.MSG_KEY[ZmOperation.INVITE_REPLY_ACCEPT]	= "editReply";
+ZmOperation.MSG_KEY[ZmOperation.INVITE_REPLY_DECLINE]	= "editReply";
+ZmOperation.MSG_KEY[ZmOperation.INVITE_REPLY_TENTATIVE]	= "editReply";
 ZmOperation.MSG_KEY[ZmOperation.MARK_ALL_READ]			= "markAllRead";
 ZmOperation.MSG_KEY[ZmOperation.MARK_READ]				= "markAsRead";
 ZmOperation.MSG_KEY[ZmOperation.MARK_UNREAD]			= "markAsUnread";
@@ -174,9 +219,11 @@ ZmOperation.MSG_KEY[ZmOperation.NEW_FOLDER]				= "newFolder";
 ZmOperation.MSG_KEY[ZmOperation.NEW_CALENDAR]			= "newCalendar";
 ZmOperation.MSG_KEY[ZmOperation.NEW_MENU]				= "_new";
 ZmOperation.MSG_KEY[ZmOperation.NEW_MESSAGE]			= "newEmail";
+ZmOperation.MSG_KEY[ZmOperation.NEW_ROSTER_ITEM]		= "newRosterItem";
 ZmOperation.MSG_KEY[ZmOperation.NEW_TAG]				= "newTag";
 ZmOperation.MSG_KEY[ZmOperation.PRINT]					= "print";
 ZmOperation.MSG_KEY[ZmOperation.PRINT_CONTACTLIST] 		= "printContactListTooltip";
+ZmOperation.MSG_KEY[ZmOperation.REFRESH]			    = "refresh";
 ZmOperation.MSG_KEY[ZmOperation.REMOVE_FILTER_RULE]		= "filterRemove";
 ZmOperation.MSG_KEY[ZmOperation.RENAME_FOLDER]			= "renameFolder";
 ZmOperation.MSG_KEY[ZmOperation.RENAME_SEARCH]			= "renameSearch";
@@ -192,6 +239,7 @@ ZmOperation.MSG_KEY[ZmOperation.SAVE]					= "save";
 ZmOperation.MSG_KEY[ZmOperation.SAVE_DRAFT]				= "saveDraft";
 ZmOperation.MSG_KEY[ZmOperation.SCHEDULE_VIEW]			= "viewSchedule";
 ZmOperation.MSG_KEY[ZmOperation.SEARCH]					= "search";
+ZmOperation.MSG_KEY[ZmOperation.SEARCH_MAIL]				= "searchMail";
 ZmOperation.MSG_KEY[ZmOperation.SEND]					= "send";
 ZmOperation.MSG_KEY[ZmOperation.SHARE]					= "share";
 ZmOperation.MSG_KEY[ZmOperation.SHARE_ACCEPT]			= "acceptShare";
@@ -200,14 +248,15 @@ ZmOperation.MSG_KEY[ZmOperation.SHARE_DECLINE]			= "declineShare";
 ZmOperation.MSG_KEY[ZmOperation.SHOW_ORIG]				= "showOrig";
 ZmOperation.MSG_KEY[ZmOperation.SPAM] 					= "junk";
 ZmOperation.MSG_KEY[ZmOperation.SPELL_CHECK] 			= "spellCheck";
+ZmOperation.MSG_KEY[ZmOperation.SYNC]		 			= "reload";
 ZmOperation.MSG_KEY[ZmOperation.TAG_MENU]				= "tag";
 ZmOperation.MSG_KEY[ZmOperation.TODAY]					= "today";
 ZmOperation.MSG_KEY[ZmOperation.TODAY_GOTO]				= "todayGoto";
 ZmOperation.MSG_KEY[ZmOperation.UNDELETE] 				= "undelete";
 ZmOperation.MSG_KEY[ZmOperation.VIEW]					= "view";
 ZmOperation.MSG_KEY[ZmOperation.VIEW_APPOINTMENT]		= "viewAppointment";
-ZmOperation.MSG_KEY[ZmOperation.VIEW_APPT_INSTANCE]		= "viewAppointmentInstance";
-ZmOperation.MSG_KEY[ZmOperation.VIEW_APPT_SERIES]		= "viewAppointmentSeries";
+ZmOperation.MSG_KEY[ZmOperation.VIEW_APPT_INSTANCE]		= "apptInstance";
+ZmOperation.MSG_KEY[ZmOperation.VIEW_APPT_SERIES]		= "apptSeries";
 ZmOperation.MSG_KEY[ZmOperation.WEEK_VIEW]				= "viewWeek";
 ZmOperation.MSG_KEY[ZmOperation.WORK_WEEK_VIEW]			= "viewWorkWeek";
 
@@ -216,6 +265,7 @@ ZmOperation.MSG_KEY_TT = new Object();
 ZmOperation.MSG_KEY_TT[ZmOperation.ATTACHMENT]			= "attachmentTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.CANCEL]				= "cancelTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.CAL_REFRESH]			= "calRefreshTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.CHECK_MAIL]			= "checkMailTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.CLOSE]				= "closeTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.COMPOSE]				= "newMessageTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.COMPOSE_FORMAT] 		= "formatTooltip";
@@ -226,6 +276,9 @@ ZmOperation.MSG_KEY_TT[ZmOperation.DETACH_COMPOSE] 		= "detachTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.EDIT]				= "editTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.EDIT_PROPS]			= "editPropertiesTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.FORWARD]				= "forwardTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.FORWARD_ATT]			= "forwardAtt";
+ZmOperation.MSG_KEY_TT[ZmOperation.FORWARD_INLINE]		= "forwardTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.FORWARD_MENU]		= "forwardTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.MONTH_VIEW]			= "viewMonthTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.MOVE]				= "moveTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.NEW_APPT]			= "newApptTooltip";
@@ -258,6 +311,9 @@ ZmOperation.IMAGE[ZmOperation.BROWSE]					= "SearchBuilder";
 ZmOperation.IMAGE[ZmOperation.CAL_VIEW_MENU]			= "Appointment";
 ZmOperation.IMAGE[ZmOperation.CALL]						= "Telephone";
 ZmOperation.IMAGE[ZmOperation.CANCEL]					= "Cancel";
+ZmOperation.IMAGE[ZmOperation.CHECK_ALL]				= "Check";
+ZmOperation.IMAGE[ZmOperation.CHECK_MAIL]				= "SendRecieve"; //SIC!
+ZmOperation.IMAGE[ZmOperation.CLEAR_ALL]				= "Cancel";
 ZmOperation.IMAGE[ZmOperation.CLOSE]					= "Close";
 ZmOperation.IMAGE[ZmOperation.COMPOSE_FORMAT] 			= "SwitchFormat";
 ZmOperation.IMAGE[ZmOperation.DAY_VIEW]					= "DayView";
@@ -274,9 +330,24 @@ ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_DECLINE]		= "Cancel";
 ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_TENTATIVE]		= "QuestionMark";
 ZmOperation.IMAGE[ZmOperation.EXPAND_ALL]				= "Plus";
 ZmOperation.IMAGE[ZmOperation.FORWARD]					= "Forward";
+ZmOperation.IMAGE[ZmOperation.FORWARD_ATT]				= "Forward";
+ZmOperation.IMAGE[ZmOperation.FORWARD_INLINE] 			= "Forward";
+ZmOperation.IMAGE[ZmOperation.FORWARD_MENU]				= "Forward";
 ZmOperation.IMAGE[ZmOperation.GO_TO_URL]				= "URL";
 ZmOperation.IMAGE[ZmOperation.IM]						= "ImStartChat";
+ZmOperation.IMAGE[ZmOperation.IM_NEW_CHAT]				= "ImFree2Chat";
+ZmOperation.IMAGE[ZmOperation.IM_NEW_GROUP_CHAT]		= "ImFree2Chat";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_AWAY]			= "ImAway";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_CHAT]			= "ImFree2Chat";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_DND]			= "ImDnd";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_INVISIBLE]	= "ImInvisible";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_OFFLINE]		= "RoundMinusDis"; // need new one
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_ONLINE]		= "ImAvailable";
+ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_XA]			= "ImExtendedAway";
 ZmOperation.IMAGE[ZmOperation.INVITE_REPLY_MENU]		= "Reply";
+ZmOperation.IMAGE[ZmOperation.INVITE_REPLY_ACCEPT]		= "Check";
+ZmOperation.IMAGE[ZmOperation.INVITE_REPLY_DECLINE]		= "Cancel";
+ZmOperation.IMAGE[ZmOperation.INVITE_REPLY_TENTATIVE]	= "QuestionMark";
 ZmOperation.IMAGE[ZmOperation.MARK_ALL_READ]			= "ReadMessage";
 ZmOperation.IMAGE[ZmOperation.MARK_READ]				= "ReadMessage";
 ZmOperation.IMAGE[ZmOperation.MARK_UNREAD]				= "UnreadMessage";
@@ -292,6 +363,7 @@ ZmOperation.IMAGE[ZmOperation.NEW_CALENDAR]				= "NewAppointment";
 ZmOperation.IMAGE[ZmOperation.NEW_CONTACT]				= "NewContact";
 ZmOperation.IMAGE[ZmOperation.NEW_FOLDER]				= "NewFolder";
 ZmOperation.IMAGE[ZmOperation.NEW_MESSAGE]				= "NewMessage";
+ZmOperation.IMAGE[ZmOperation.NEW_ROSTER_ITEM]			= "ImBuddy"; //"HappyEmoticon";
 ZmOperation.IMAGE[ZmOperation.NEW_TAG]					= "NewTag";
 ZmOperation.IMAGE[ZmOperation.PAGE_BACK]				= "LeftArrow";
 ZmOperation.IMAGE[ZmOperation.PAGE_DBL_BACK]			= "LeftDoubleArrow";
@@ -315,6 +387,7 @@ ZmOperation.IMAGE[ZmOperation.SAVE]						= "Save";
 ZmOperation.IMAGE[ZmOperation.SAVE_DRAFT]				= "DraftFolder";
 ZmOperation.IMAGE[ZmOperation.SCHEDULE_VIEW]			= "GroupSchedule";
 ZmOperation.IMAGE[ZmOperation.SEARCH]					= "Search";
+ZmOperation.IMAGE[ZmOperation.SEARCH_MAIL]				= "SearchMail";
 ZmOperation.IMAGE[ZmOperation.SEND]						= "Send";
 ZmOperation.IMAGE[ZmOperation.SHARE_ACCEPT]			    = "Check";
 ZmOperation.IMAGE[ZmOperation.SHARE_CALENDAR]			= "CalendarFolder";
@@ -322,10 +395,14 @@ ZmOperation.IMAGE[ZmOperation.SHARE_DECLINE]			= "Cancel";
 ZmOperation.IMAGE[ZmOperation.SHOW_ORIG]				= "Message";
 ZmOperation.IMAGE[ZmOperation.SPAM] 					= "SpamFolder";
 ZmOperation.IMAGE[ZmOperation.SPELL_CHECK] 				= "SpellCheck";
+ZmOperation.IMAGE[ZmOperation.SYNC]		 				= "redo";
 ZmOperation.IMAGE[ZmOperation.TAG_MENU]					= "Tag";
 ZmOperation.IMAGE[ZmOperation.TODAY_GOTO]				= "Date";
 ZmOperation.IMAGE[ZmOperation.UNDELETE]					= "MoveToFolder"; 		// XXX: need new icon?
 ZmOperation.IMAGE[ZmOperation.VIEW]						= "SplitView";
+ZmOperation.IMAGE[ZmOperation.VIEW_APPOINTMENT]			= "Appointment";
+ZmOperation.IMAGE[ZmOperation.VIEW_APPT_INSTANCE]		= "Appointment";
+ZmOperation.IMAGE[ZmOperation.VIEW_APPT_SERIES]			= "ApptRecur";
 ZmOperation.IMAGE[ZmOperation.WEEK_VIEW]				= "WeekView";
 ZmOperation.IMAGE[ZmOperation.WORK_WEEK_VIEW]			= "WorkWeekView";
 ZmOperation.IMAGE[ZmOperation.ZIMLET]					= "ZimbraIcon";
@@ -343,6 +420,9 @@ ZmOperation.DIS_IMAGE[ZmOperation.EDIT] 				= "EditDis";
 ZmOperation.DIS_IMAGE[ZmOperation.EDIT_FILTER_RULE] 	= "EditDis";
 ZmOperation.DIS_IMAGE[ZmOperation.EDIT_PROPS]			= "PropertiesDis";
 ZmOperation.DIS_IMAGE[ZmOperation.FORWARD]				= "ForwardDis";
+ZmOperation.DIS_IMAGE[ZmOperation.FORWARD_ATT]			= "ForwardDis";
+ZmOperation.DIS_IMAGE[ZmOperation.FORWARD_INLINE]		= "ForwardDis";
+ZmOperation.DIS_IMAGE[ZmOperation.FORWARD_MENU]			= "ForwardDis";
 ZmOperation.DIS_IMAGE[ZmOperation.IM]					= "ImStartChatDis";
 ZmOperation.DIS_IMAGE[ZmOperation.MONTH_VIEW]			= "MonthViewDis";
 ZmOperation.DIS_IMAGE[ZmOperation.MOVE]					= "MoveToFolderDis";
@@ -369,7 +449,6 @@ ZmOperation.DIS_IMAGE[ZmOperation.WEEK_VIEW]			= "WeekViewDis";
 ZmOperation.DIS_IMAGE[ZmOperation.WORK_WEEK_VIEW]		= "WorkWeekViewDis";
 
 ZmOperation.KEY_ID = "_opId";
-ZmOperation.KEY_TAG_MENU = "_tagMenu";
 
 function ZmOperation_Descriptor(id, label, image, disImage, enabled, toolTip) {
 	this.id = id;
@@ -457,6 +536,10 @@ function(parent, id, opHash) {
 		ZmOperation._operationDesc[id] = ZmOperation._createOperationDesc(id);
 	if (id == ZmOperation.SEP) {
 		parent.createSeparator();
+	} else if (id == ZmOperation.SPACER) {
+		parent.addSpacer();
+	} else if (id == ZmOperation.FILLER) {
+		parent.addFiller();
 	} else {
 		var label = ZmOperation._operationDesc[id].label;
 		var image = ZmOperation._operationDesc[id].image;
@@ -466,20 +549,29 @@ function(parent, id, opHash) {
 		opHash[id] = parent.createOp(id, label, image, disImage, enabled, toolTip);
 	}
 	if (id == ZmOperation.NEW_MENU) {
-		ZmOperation.addNewMenu(opHash[id]);
+		ZmOperation.addDeferredMenu(ZmOperation.addNewMenu, opHash[id]);
 	} else if (id == ZmOperation.TAG_MENU) {
-		ZmOperation.addTagMenu(opHash[id]);
+		ZmOperation.addDeferredMenu(ZmOperation.addTagMenu, opHash[id]);
 	} else if (id == ZmOperation.COLOR_MENU) {
-		ZmOperation.addColorMenu(opHash[id]);
+		ZmOperation.addDeferredMenu(ZmOperation.addColorMenu, opHash[id]);
+	} else if (id == ZmOperation.IM_PRESENCE_MENU) {
+		ZmOperation.addImPresenceMenu(parent, opHash);
 	} else if (id == ZmOperation.REPLY_MENU) {
-		ZmOperation.addReplyMenu(opHash[id]);
+		ZmOperation.addDeferredMenu(ZmOperation.addReplyMenu, opHash[id]);
+	} else if (id == ZmOperation.FORWARD_MENU) {
+		ZmOperation.addDeferredMenu(ZmOperation.addForwardMenu, opHash[id]);
 	} else if (id == ZmOperation.INVITE_REPLY_MENU) {
-		ZmOperation.addInviteReplyMenu(opHash[id]);
+		ZmOperation.addDeferredMenu(ZmOperation.addInviteReplyMenu, opHash[id]);
 	} else if (id == ZmOperation.CAL_VIEW_MENU) {
-		ZmOperation.addCalViewMenu(opHash[id]);
+		ZmOperation.addDeferredMenu(ZmOperation.addCalViewMenu, opHash[id]);
 	}
+};
 
-}
+ZmOperation.addDeferredMenu =
+function(addMenuFunc, parent) {
+	var callback = new AjxCallback(null, addMenuFunc, parent);
+	parent.setMenu(callback);
+};
 
 ZmOperation.removeOperation =
 function(parent, id, opHash) {
@@ -522,7 +614,7 @@ function(parent) {
 		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_CONTACT, ZmMsg.contact, Dwt.DEFAULT, Dwt.DEFAULT));
 	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED))
 		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_APPT, ZmMsg.appointment, Dwt.DEFAULT, Dwt.DEFAULT));
-	if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED) || appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED) || appCtxt.get(ZmSetting.TAGGING_ENABLED) || appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		list.push(new ZmOperation_Descriptor(ZmOperation.SEP, Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT));
 		if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED))
 			list.push(new ZmOperation_Descriptor(ZmOperation.NEW_FOLDER, ZmMsg.folder, Dwt.DEFAULT, Dwt.DEFAULT));
@@ -533,6 +625,7 @@ function(parent) {
 	}
 	var menu = new ZmActionMenu(parent, ZmOperation.NONE, list);
 	parent.setMenu(menu);
+	return menu;
 }
 
 /**
@@ -543,7 +636,8 @@ function(parent) {
 ZmOperation.addTagMenu =
 function(parent) {
 	var tagMenu = new ZmTagMenu(parent, null);
-	parent.setData(ZmOperation.KEY_TAG_MENU, tagMenu);
+	parent.setMenu(tagMenu);
+	return tagMenu;
 }
 
 /**
@@ -562,6 +656,7 @@ function(parent, dialog) {
 		var mi = menu.createMenuItem(color, ZmTag.COLOR_ICON[color], ZmOrganizer.COLOR_TEXT[color]);
 		mi.setData(ZmOperation.MENUITEM_ID, color);
 	}
+	return menu;
 }
 
 /**
@@ -574,6 +669,20 @@ function(parent) {
 	var list = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
 	var menu = new ZmActionMenu(parent, list, null);
 	parent.setMenu(menu);
+	return menu;
+}
+
+/**
+* Adds a "Forward" submenu for forwarding inline or as attachment
+*
+* @param parent		parent widget (a toolbar or action menu)
+*/
+ZmOperation.addForwardMenu =
+function(parent) {
+	var list = [ZmOperation.FORWARD_INLINE, ZmOperation.FORWARD_ATT];
+	var menu = new ZmActionMenu(parent, list, null);
+	parent.setMenu(menu);
+	return menu;
 }
 
 /**
@@ -586,6 +695,7 @@ function(parent) {
 	var list = [ZmOperation.EDIT_REPLY_ACCEPT, ZmOperation.EDIT_REPLY_DECLINE, ZmOperation.EDIT_REPLY_TENTATIVE];
 	var menu = new ZmActionMenu(parent, list, null);
 	parent.setMenu(menu);
+	return menu;
 };
 
 
@@ -599,4 +709,24 @@ function(parent) {
 	var list = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
 	var menu = new ZmActionMenu(parent, list, null);
 	parent.setMenu(menu);
+	return menu;
+};
+
+ZmOperation.addImPresenceMenu =
+function(parent, opHash) {
+	var list = [ZmOperation.IM_PRESENCE_OFFLINE, ZmOperation.IM_PRESENCE_ONLINE, ZmOperation.IM_PRESENCE_CHAT,
+                ZmOperation.IM_PRESENCE_DND, ZmOperation.IM_PRESENCE_AWAY, ZmOperation.IM_PRESENCE_XA,
+                ZmOperation.IM_PRESENCE_INVISIBLE];
+    var button = opHash[ZmOperation.IM_PRESENCE_MENU];
+	var menu = new ZmPopupMenu(button, null, null);
+	
+	for (var i = 0; i < list.length; i++) {
+		var op = list[i];
+		var mi = menu.createMenuItem(op, ZmOperation.IMAGE[op], ZmMsg[ZmOperation.MSG_KEY[op]], null, true, DwtMenuItem.RADIO_STYLE);
+		mi.setData(ZmOperation.MENUITEM_ID, op);
+		mi.setData(ZmOperation.KEY_ID, op);		
+		if (op == ZmOperation.IM_PRESENCE_OFFLINE) mi.setChecked(true, true);
+	}
+	button.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
+	return menu;
 };

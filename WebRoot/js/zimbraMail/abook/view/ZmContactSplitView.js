@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -108,7 +108,7 @@ function() {
 
 ZmContactSplitView.prototype._sizeChildren = 
 function(width, height) {
-	var padding = 4;		// css padding value (see ZmContactSplitView class in zm.css)
+	var padding = 4;		// css padding value (see ZmContactSplitView css class)
 	var listWidth = 200;	// fixed width size of list view
 	
 	// calc. height for children of this view
@@ -127,7 +127,7 @@ function(width, height) {
 	this._contactPartHeight = childHeight;
 	
 	if (this._htmlInitialized) {
-		var bodyDiv = Dwt.getDomObj(this.getDocument(), this._contactBodyId);
+		var bodyDiv = document.getElementById(this._contactBodyId);
 		bodyDiv.style.width = this._contactPartWidth;
 		bodyDiv.style.height = this._contactPartHeight - 40;
 	}	
@@ -171,13 +171,12 @@ function(contact, isGal) {
 	if (!this._htmlInitialized)
 		this._createHtml();
 
-	var doc = this.getDocument();
 	// set contact header (file as)
-	var contactHdr = Dwt.getDomObj(doc, this._contactHeaderId);
+	var contactHdr = document.getElementById(this._contactHeaderId);
 	contactHdr.innerHTML = contact.getFileAs();
 	
 	// set body
-	var contactBodyDiv = Dwt.getDomObj(doc, this._contactBodyId);
+	var contactBodyDiv = document.getElementById(this._contactBodyId);
 	
 	var html = new Array();
 	var idx = 0;
@@ -226,7 +225,7 @@ function(contact, isGal) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Work</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (workField) 	html[idx++] = workField + "<br>";
-		if (workURL) 	html[idx++] = this._generateObject(workURL, ZmURLObjectHandler.TYPE);
+		if (workURL) 	html[idx++] = this._generateObject(workURL, "url");
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
@@ -260,7 +259,7 @@ function(contact, isGal) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Home</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (homeField) 	html[idx++] = homeField + "<br>";
-		if (homeURL) 	html[idx++] = this._generateObject(homeURL, ZmURLObjectHandler.TYPE);
+		if (homeURL) 	html[idx++] = this._generateObject(homeURL, "url");
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
@@ -290,7 +289,7 @@ function(contact, isGal) {
 		html[idx++] = "<tr><td valign=top class='contactLabel'>Other</td>";
 		html[idx++] = "<td valign=top class='contactOutput'>";
 		if (otherField) html[idx++] = otherField + "<br>";
-		if (otherURL) 	html[idx++] = this._generateObject(otherURL, ZmURLObjectHandler.TYPE);
+		if (otherURL) 	html[idx++] = this._generateObject(otherURL, "url");
 		html[idx++] = "</td></tr>";
 	}
 	html[idx++] = "</table>";
@@ -377,7 +376,7 @@ function(contact, now, isDndIcon) {
 	// in canonical view, don't show contacts in the Trash
 	if (contact.list.isCanonical && (contact.folderId == ZmFolder.ID_TRASH))
 		return null;
-	
+
 	var div = this._getDiv(contact, isDndIcon);
 	
 	if (isDndIcon) {
@@ -454,8 +453,6 @@ function(contact, now, isDndIcon) {
 			htmlArr[idx++] = "<td width=" + width;
 			htmlArr[idx++] = " id='" + this._getFieldId(contact, ZmItem.F_PARTICIPANT) + "'>";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
-			if (this._appCtxt.get(ZmSetting.IM_ENABLED) && contact.hasIMProfile())
-				htmlArr[idx++] = AjxImg.getImageHtml(contact.isIMAvailable() ? "ImAvailable" : "ImUnavailable");
 			if (AjxEnv.isNav)
 				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";

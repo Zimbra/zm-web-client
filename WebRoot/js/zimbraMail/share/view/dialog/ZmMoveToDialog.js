@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -24,17 +24,20 @@
  */
 
 function ZmMoveToDialog(parent, msgDialog, className) {
-
+	DBG.showTiming(true, AjxDebug.PERF, "ZmMoveToDialog");
 	var newButton = new DwtDialog_ButtonDescriptor(ZmMoveToDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.move, [newButton]);
 
 	this.setContent(this._contentHtml());
 	this._createOverview(ZmMoveToDialog._OVERVIEW_ID, this._folderTreeCellId);
+	DBG.timePt(AjxDebug.PERF, "setting content");
 
 	this.registerCallback(ZmMoveToDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._changeListener = new AjxListener(this, this._folderTreeChangeListener);
 
 	this._creatingFolder = false;
+	DBG.timePt(AjxDebug.PERF, "done");
+	DBG.showTiming(false);
 }
 
 ZmMoveToDialog._OVERVIEW_ID = "ZmMoveToFolderDialog";
@@ -51,6 +54,7 @@ function() {
 
 ZmMoveToDialog.prototype.popup =
 function(data, loc) {
+	DBG.showTiming(true, AjxDebug.PERF, "ZmMoveToDialog#popup");
 	var omit = new Object();
 	omit[ZmFolder.ID_DRAFTS] = true;
 	var treeIds = [ZmOrganizer.FOLDER];
@@ -71,6 +75,7 @@ function(data, loc) {
 	// this listener has to be added after folder tree view is set
 	// (so that it comes after the view's standard change listener)
 	folderTree.addChangeListener(this._changeListener);
+	DBG.timePt(AjxDebug.PERF, "render and register listeners");
 
 	ZmDialog.prototype.popup.call(this, loc);
 	for (var i = 0; i < treeIds.length; i++) {
@@ -82,6 +87,8 @@ function(data, loc) {
 		if (this._folder && treeId == this._folder.type)
 			treeView.setSelected(tree.root);
 	}
+	DBG.timePt(AjxDebug.PERF, "expanded and selected");
+	DBG.showTiming(false);
 }
 
 ZmMoveToDialog.prototype._contentHtml = 
@@ -106,9 +113,9 @@ function() {
 }
 
 ZmMoveToDialog.prototype._newCallback =
-function(args) {
+function(parent, name) {
 	var ftc = this._opc.getTreeController(ZmOrganizer.FOLDER);
-	ftc._doCreate(args[0], args[1]);
+	ftc._doCreate(parent, name);
 	this._appCtxt.getNewFolderDialog().popdown();
 	this._creatingFolder = true;
 }

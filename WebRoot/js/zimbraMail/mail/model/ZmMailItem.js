@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -40,6 +40,7 @@ function ZmMailItem(appCtxt, type, id, list) {
 	if (arguments.length == 0) return;
 	ZmItem.call(this, appCtxt, type, id, list);
 
+	this._loaded = false;
 	this._initializeParticipants();
 }
 
@@ -51,9 +52,18 @@ function() {
 	return "ZmMailItem";
 }
 
+/**
+* Returns true if this item's content has been populated via a server call.
+*/
+ZmMailItem.prototype.isLoaded =
+function() {
+	return this._loaded;
+};
+
 ZmMailItem.prototype.clear =
 function() {
-	this._clearParticipants();	
+	this._clearParticipants();
+	this._loaded = false;
 	ZmItem.prototype.clear.call(this);
 }
 

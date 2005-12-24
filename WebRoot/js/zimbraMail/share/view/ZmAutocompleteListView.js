@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -42,6 +42,9 @@
 * <tr><td>[key1]</td><td>a string that may be used to replace the typed text<td></tr>
 * <tr><td>[keyN]</td><td>a string that may be used to replace the typed text<td></tr>
 * </table>
+* </p><p>
+* The data class will also need a method isUniqueValue(str), which returns true if the given string
+* maps to a single match.
 * </p><p>
 * The calling client also specifies the key in the match result for the string that will be used
 * to replace the typed text (also called the "completion string"). For example, the completion 
@@ -81,14 +84,12 @@ function ZmAutocompleteListView(params) {
 
 	// only trigger matching after a sufficient pause
 	this._acInterval = this._appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
-	this._acAction = new AjxTimedAction();
-	this._acAction.method = this._autocompleteAction;
+	this._acAction = new AjxTimedAction(null, this._autocompleteAction);
 	this._acActionId = -1;
 
 	// for managing focus on Tab in Firefox
 	if (AjxEnv.isFirefox) {
-		this._focusAction = new AjxTimedAction();
-		this._focusAction.method = this._focus;
+		this._focusAction = new AjxTimedAction(null, this._focus);
 	}
 
 	this._internalId = AjxCore.assignId(this);
@@ -185,7 +186,7 @@ function(ev) {
 		// In Firefox, focus shifts on Tab even if we return false (and stop propagation and prevent default),
 		// so make sure the focus stays in this element.
 		if (AjxEnv.isFirefox && key == 9) {
-			aclv._focusAction.params.add(element);
+			aclv._focusAction.args = [ element ];
 			AjxTimedAction.scheduleAction(aclv._focusAction, 0);
 		}
 		DwtUiEvent.setBehaviour(ev, true, false);
@@ -202,9 +203,8 @@ function(ev) {
 	DwtKeyEvent.copy(ev1, ev);
 	ev1.aclv = aclv;
 	ev1.element = element;
-	aclv._acAction.params.removeAll();
-	aclv._acAction.params.add(ev1);
 	aclv._acAction.obj = aclv;
+	aclv._acAction.args = [ ev1 ];
 	DBG.println(AjxDebug.DBG2, "scheduling autocomplete");
 	aclv._acActionId = AjxTimedAction.scheduleAction(aclv._acAction, aclv._acInterval);
 	
@@ -433,7 +433,7 @@ function(text) {
 	el.focus();
 	this.reset();
 	if (this._compCallback)
-		this._compCallback.run([text, el]);
+		this._compCallback.run(text, el);
 }
 
 // Updates the element with the currently selected match.
@@ -491,7 +491,7 @@ function(sel) {
 	thisHtmlElement.innerHTML = "";
 	var len = this._matches.size();
 	for (var i = 0; i < len; i++) {
-		var div = this.getDocument().createElement("div");
+		var div = document.createElement("div");
 		var match = this._matches.get(i);
 		div._item = match;
 		div._pos = i;
@@ -594,10 +594,10 @@ function(str) {
 	return this._data.autocompleteMatch(str);
 }
 
-// Force the focus to the element in args[0]
+// Force the focus to the element
 ZmAutocompleteListView.prototype._focus =
-function(args) {
-	args[0].focus();
+function(htmlEl) {
+	htmlEl.focus();
 }
 
 ZmAutocompleteListView._outsideMouseDownListener =

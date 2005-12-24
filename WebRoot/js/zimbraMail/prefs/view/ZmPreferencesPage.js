@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -31,36 +31,38 @@
 * preference tabs. During construction, skeletal HTML is created. The preferences
 * aren't added until the page becomes visible.
 *
-* @author Enrique Del Campo
 * @author Conrad Damon
-* @param parent				the containing widget
-* @param app				the preferences app
-* @param view				which page we are (eg mail or contacts)
-* @param passwordDialog		a ZmChangePasswordDialog
+* @param parent				[DwtControl]				the containing widget
+* @param appCtxt			[ZmAppCtxt]					the app context
+* @param view				[constant]					which page we are
+* @param controller			[ZmPrefController]			prefs controller
+* @param passwordDialog		[ZmChangePasswordDialog]	change password dialog
 */
-function ZmPreferencesPage(parent, app, view, passwordDialog) {
+function ZmPreferencesPage(parent, appCtxt, view, controller, passwordDialog) {
 
-	if (arguments.length == 0) return;
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
 	
-	this._appCtxt = app._appCtxt;
+	this._appCtxt = appCtxt;
 	this._view = view; // which preferences page we are
+	this._controller = controller;
 	this._passwordDialog = passwordDialog;
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[view]].join(": ");
 
 	this.selects = new Object();
 	this._createHtml();
 	this._rendered = false;
+	this._hasRendered = false;
 };
 
 ZmPreferencesPage.prototype = new DwtTabViewPage;
 ZmPreferencesPage.prototype.constructor = ZmPreferencesPage;
 
 ZmPreferencesPage.IMPORT_FIELD_NAME = "importUpload";
+ZmPreferencesPage.IMPORT_TIMEOUT = 300;
 
 ZmPreferencesPage.prototype.hasRendered =
 function () {
-	return this._rendered;
+	return this._hasRendered;
 };
 
 /**
@@ -71,7 +73,9 @@ function () {
 ZmPreferencesPage.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
-	if (this._rendered) return;
+	this._controller._resetOperations(this._controller._toolbar, this._view);
+	if (this._hasRendered) return;
+
 	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._view);
 
 	var prefs = ZmPrefView.PREFS[this._view];
@@ -80,22 +84,21 @@ function() {
 		var id = prefs[i];
 		var pref = settings.getSetting(id);
 
-		// make sure editing the pref is supported
-		if ((id == ZmSetting.INITIAL_SEARCH && (!this._appCtxt.get(ZmSetting.INITIAL_SEARCH_ENABLED))) ||
-			(id == ZmSetting.PASSWORD && (!this._appCtxt.get(ZmSetting.CHANGE_PASSWORD_ENABLED))) ||
-			(id == ZmSetting.SEARCH_INCLUDES_SPAM && (!this._appCtxt.get(ZmSetting.SPAM_ENABLED)))) {
-			continue;
-		}
+		var setup = ZmPref.SETUP[id];
+		var pre = setup.precondition;
+		if (pre && !(this._appCtxt.get(pre)))
+			continue;		
 
 		// save the current value (for checking later if it changed)
 		var value = pref.origValue = pref.getValue();
 		if (id == ZmSetting.SIGNATURE_STYLE)
 			value = (value == ZmSetting.SIG_INTERNET);
 		if (id == ZmSetting.POLLING_INTERVAL)
-			value = parseInt(value / 60); // setting stored as seconds, display as minutes
+			value = parseInt(value / 60); // setting stored as seconds, displayed as minutes
+		if (id == ZmSetting.SHOW_FRAGMENTS && !this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED))
+			setup.displayName = ZmMsg.showFragmentsMsg;
 		DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
 
-		var setup = ZmPref.SETUP[id];
 		var type = setup ? setup.displayContainer : null;
 		if (type == "select") {
 			var div = this._setupSelect(id, setup, value);
@@ -116,7 +119,7 @@ function() {
 				html[j++] = "<input id='";
 				html[j++] = prefId;
 				html[j++] = "' ";
-				html[j++] = "type='text' value='";
+				html[j++] = "type='text' autocomplete='off' value='";
 				html[j++] = value;
 				html[j++] = "' size=30></input>";
 			} else if (type == "textarea") {
@@ -152,13 +155,13 @@ function() {
 		}
 	}
 	this._addButton(this._resetId, ZmMsg.restoreDefaults, 100, new AjxListener(this, this._resetListener));
-	this._rendered = true;
+	this._hasRendered = true;
 };
 
 ZmPreferencesPage.prototype.getTitle =
 function() {
 	return this._title;
-}
+};
 
 // Creates a table that we can later add preference rows to, and a placeholder DIV for
 // the reset button.
@@ -207,7 +210,7 @@ function(label, content, addSep) {
 	}
 
 	return tr;
-}
+};
 
 // Add a button to the preferences page
 ZmPreferencesPage.prototype._addButton =
@@ -221,7 +224,7 @@ function(parentId, text, width, listener) {
 	var parent = document.getElementById(parentId);
 	parent.appendChild(element);
 	return button;
-}
+};
 
 ZmPreferencesPage.prototype._setupSelect = 
 function(id, setup, value) {
@@ -250,7 +253,7 @@ function(id, setup, value) {
 	div.appendChild(selObj.getHtmlElement());
 	
 	return div;
-}
+};
 
 ZmPreferencesPage.prototype._addImportWidgets = 
 function(buttonDiv) {
@@ -259,39 +262,24 @@ function(buttonDiv) {
 
 	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	
-	// set up iframe
-	var iframe = this._importIframe = document.createElement('iframe');
-	iframe.id = this._iframeId = iframe.name = Dwt.getNextId();
-	iframe.frameBorder = iframe.vspace = iframe.hspace = iframe.marginWidth = iframe.marginHeight = 0;
-	iframe.width = "100%";
-	iframe.scrolling = "no";
-	iframe.style.overflowX = iframe.style.overflowY = "visible";
-	iframe.style.height = "20px";
-	buttonDiv.appendChild(iframe);
+	var html = new Array();
+	var idx = 0;
+	html[idx++] = "<form style='margin: 0px; padding: 0px;' method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
+	html[idx++] = "<input style='font-family:Tahoma; font-size:10px' name='" + ZmPreferencesPage.IMPORT_FIELD_NAME + "' type='file' id='" + this._attInputId + "'>";
+	html[idx++] = "</form>";
+
+	var div = document.createElement("div");
+	div.innerHTML = html.join("");
+
+	buttonDiv.appendChild(div);
 	
 	// set up import button
 	this._importBtn = this._addButton(buttonDiv.id, ZmMsg._import, 65, new AjxListener(this, this._importContactsListener));
-
-	// XXX: for some reason idoc is null in Safari :(
-	var idoc = Dwt.getIframeDoc(iframe);
-	if (idoc) {
-		idoc.open();
-		var html = new Array();
-		var idx = 0;
-		html[idx++] = "<html><head></head><body scroll=no bgcolor='#EEEEEE'>";
-		html[idx++] = "<form style='margin: 0px; padding: 0px;' method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
-		html[idx++] = "<input style='font-family:Tahoma; font-size:10px' name='" + ZmPreferencesPage.IMPORT_FIELD_NAME + "' type='file' id='" + this._attInputId + "'>";
-		html[idx++] = "</form>";
-		html[idx++] = "</body></html>";
-		idoc.write(html.join(""));
-		idoc.close();
-	}
-}
+};
 
 ZmPreferencesPage.prototype._addFontPrefs = 
 function(fontDiv, id, setup, value, fontSizeValue) {
-	var doc = this.getDocument();
-	var table = doc.createElement("table");
+	var table = document.createElement("table");
 	table.border = table.cellPadding = table.cellSpacing = 0;
 	var row = table.insertRow(-1);
 	
@@ -346,36 +334,35 @@ function(fontDiv, id, setup, value, fontSizeValue) {
 	sepCell1.innerHTML = sepCell2.innerHTML = sepCell3.innerHTML = "&nbsp;";
 
 	fontDiv.appendChild(table);	
-}
+};
 
 // Popup the change password dialog.
 ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
 	this._passwordDialog.popup();
-}
+};
 
 ZmPreferencesPage.prototype._fontColorListener = 
 function(ev) {
-	var colorBox = Dwt.getDomObj(this.getDocument(), this._defaultFontColorId);
+	var colorBox = document.getElementById(this._defaultFontColorId);
 	if (colorBox) {
 		colorBox.style.backgroundColor = ev.detail;
 		var fontColorInputId = ZmPref.KEY_ID + ZmSetting.COMPOSE_INIT_FONT_COLOR;
-		var input = Dwt.getDomObj(this.getDocument(), fontColorInputId);
+		var input = document.getElementById(fontColorInputId);
 		if (input)
 			input.value = ev.detail;
 	}
-}
+};
 
 ZmPreferencesPage.prototype._exportContactsListener = 
 function(ev) {
 	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_EXPORT_URI);
 	window.open(uri, "_blank");
-}
+};
 
 ZmPreferencesPage.prototype._importContactsListener =
 function(ev) {
-	var idoc = Dwt.getIframeDoc(this._importIframe);
-	var fileInput = idoc.getElementById(this._attInputId);
+	var fileInput = document.getElementById(this._attInputId);
 	var val = fileInput ? AjxStringUtil.trim(fileInput.value) : null;
 	
 	// TODO - test val against regex for valid .csv filename
@@ -384,55 +371,58 @@ function(ev) {
 		var callback = new AjxCallback(this, this._importDoneCallback);
 		var um = this._appCtxt.getUploadManager();
 		window._uploadManager = um;
-		um.execute(this._importIframe, callback, this._uploadFormId);
+		um.execute(callback, document.getElementById(this._uploadFormId));
 	} else {
 		// TODO - show error message in app controller's status window
 	}
-}
+};
 
 ZmPreferencesPage.prototype._importDoneCallback = 
-function(args) {
+function(status, aid) {
 
-	var appCtrlr = this._appCtxt.getAppController();
+	var appCtlr = this._appCtxt.getAppController();
 	
-	var status = args[0];
 	if (status == 200) {
 		this._importBtn.setEnabled(false);
-		this._importIframe.style.visibility = "hidden";
-		appCtrlr.setStatusMsg(ZmMsg.importingContacts);
-		// we have to schedule the rest since it freezes the UI (and status never gets set)
-		appCtrlr._schedule(ZmPreferencesPage._finishImport, {aid: args[1], prefPage: this});
+		//this._importIframe.style.visibility = "hidden";
+		appCtlr.setStatusMsg(ZmMsg.importingContacts);
+		this._finishImport(aid);
 	} else {
-		appCtrlr.setStatusMsg(ZmMsg.errorImporting + " (" + status + ")");
+		appCtlr.setStatusMsg(ZmMsg.errorImporting + " (" + status + ")", ZmStatusView.LEVEL_CRITICAL);
 		// always re-render input file widget and its parent IFRAME
 		this._importDiv.innerHTML = "";
 		this._addImportWidgets(this._importDiv);
 	}
-}
+};
 
-ZmPreferencesPage._finishImport = 
-function(params) {
+ZmPreferencesPage.prototype._finishImport = 
+function(aid) {
 
-	var appCtrlr = this._appCtxt.getAppController();
+	var appCtlr = this._appCtxt.getAppController();
 
 	// send the import request w/ the att Id to the server
 	var soapDoc = AjxSoapDoc.create("ImportContactsRequest", "urn:zimbraMail");
 	var method = soapDoc.getMethod();
 	method.setAttribute("ct", "csv"); // always "csv" for now
 	var content = soapDoc.set("content", "");
-	content.setAttribute("aid", params.aid);
+	content.setAttribute("aid", aid);
 	
-	var resp = appCtrlr.sendRequest(soapDoc).ImportContactsResponse.cn[0];
+	var respCallback = new AjxCallback(this, this._handleResponseFinishImport, [aid]);
+	appCtlr.sendRequest(soapDoc, true, respCallback, null, null, ZmPreferencesPage.IMPORT_TIMEOUT);
+};
+
+ZmPreferencesPage.prototype._handleResponseFinishImport =
+function(aid, result) {
+	var resp = result.getResponse().ImportContactsResponse.cn[0];
 	
 	var msg = resp.n + " " + ZmMsg.contactsImported;
-	var msgDlg = this._appCtxt.getMsgDialog();
-	msgDlg.setMessage(msg);
-	msgDlg.popup();
+	var appCtlr = this._appCtxt.getAppController();
+	appCtlr.setStatusMsg(msg);
 		
 	// always re-render input file widget and its parent IFRAME
-	params.prefPage._importDiv.innerHTML = "";
-	params.prefPage._addImportWidgets(params.prefPage._importDiv);
-}
+	this._importDiv.innerHTML = "";
+	this._addImportWidgets(this._importDiv);
+};
 
 // Reset the form values to the pref defaults. Note that the pref defaults aren't the
 // values that the user last had, they're the values that the prefs have before the
@@ -445,25 +435,33 @@ function(ev) {
 		var id = prefs[i];
 		var setup = ZmPref.SETUP[id];
 		var type = setup.displayContainer;
-		if (type.indexOf("x_") == 0) // ignore non-form elements			
+		if (type && type.indexOf("x_") == 0) // ignore non-form elements		
 			continue;
 		var pref = settings.getSetting(id);
 		var defValue = pref.defaultValue;
-		if (type == "select") {
+		if (type == "select" || type == "font") {
 			var curValue = this.selects[id].getValue();
 			if (defValue != null && (curValue != defValue))
 				this.selects[id].setSelectedValue(defValue);
 		} else {
-			var prefId = ZmPref.KEY_ID + id;
-			var element = document.getElementById(prefId);
-			if (!element || element.value == defValue) continue;
+			var element = document.getElementById((ZmPref.KEY_ID + id));
+
+			if (!element || element.value == defValue)
+				continue;
+
 			if (type == "checkbox") {
 				element.checked = defValue ? true : false;
 			} else {
 				if (defValue == null) defValue = "";
 				element.value = defValue;
+				// XXX: nicer way to do this? do something special for font color
+				if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR) {
+					var colorBox = document.getElementById(this._defaultFontColorId);
+					if (colorBox)
+						colorBox.style.backgroundColor = defValue;
+				}
 			}
 		}
 	}
-	this._appCtxt.getAppController().setStatusMsg(ZmMsg.defaultsRestored);
-}
+	this._appCtxt.setStatusMsg(ZmMsg.defaultsRestored);
+};

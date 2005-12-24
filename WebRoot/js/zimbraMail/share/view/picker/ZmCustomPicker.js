@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -52,12 +52,12 @@ function(parent) {
 	html[i++] = "<center><table cellpadding='2' cellspacing='0' border='0'>";
 	html[i++] = "<tr valign='middle'>";
 	html[i++] = "<td align='right' nowrap>" + ZmMsg.search + ":</td>";
-	html[i++] = "<td align='left' nowrap><input type='text' nowrap size='" + size + "' id='" + fieldId + "'/></td>";
+	html[i++] = "<td align='left' nowrap><input type='text' autocomplete='off' nowrap size='" + size + "' id='" + fieldId + "'/></td>";
 	html[i++] = "</tr>";
 	html[i++] = "</table></center>";
 	picker.getHtmlElement().innerHTML = html.join("");
 
-	var field = this._field = Dwt.getDomObj(this.getDocument(), fieldId);
+	var field = this._field = document.getElementById(fieldId);
 	Dwt.setHandler(field, DwtEvent.ONCHANGE, ZmCustomPicker._onChange);
 	field._picker = this;
 }

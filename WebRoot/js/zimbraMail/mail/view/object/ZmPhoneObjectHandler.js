@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -23,17 +23,16 @@
  * ***** END LICENSE BLOCK *****
  */
 
+
 function ZmPhoneObjectHandler(appCtxt) {
-
 	ZmObjectHandler.call(this, appCtxt, ZmPhoneObjectHandler.TYPE);
-};
+}
 
-ZmPhoneObjectHandler.prototype = new ZmObjectHandler;
+ZmPhoneObjectHandler.prototype = new ZmObjectHandler();
 ZmPhoneObjectHandler.prototype.constructor = ZmPhoneObjectHandler;
 
 ZmPhoneObjectHandler.TYPE = "phone";
-ZmPhoneObjectHandler.PHONE_RE = /(^|\W)(?:(?:\(\d{3}\)[-.\s]?|\d{3}[-.\s]))?\d{3}[-.\s]\d{4}(\W|$)/g;
-
+ZmPhoneObjectHandler.PHONE_RE = /(^|\W)(?:\+1\s+)?(?:(?:\(\d{3}\)[-.\s]?|\d{3}[-.\s]))?\d{3}[-.\s]\d{4}(\W|$)/g;
 
 ZmPhoneObjectHandler.prototype.getReString =
 function() {
@@ -45,12 +44,12 @@ function(line, startIndex) {
 	ZmPhoneObjectHandler.PHONE_RE.lastIndex = startIndex;
 
 	var m = ZmPhoneObjectHandler.PHONE_RE.exec(line);
-	if (m != null) {
-		if (m[1] != "" || m[2] != "") {
+	if (m) {
+		if (m[1] !== "" || m[2] !== "") {
 			var from = 0;
 			var to = m[0].length;
-			if (m[1] != "") from++;
-			if (m[2] != "") to--;
+			if (m[1] !== "") {from++;}
+			if (m[2] !== "") {to--;}
 			var m2 = {index: m.index+from};
 			m2[0] =  m[0].substring(from, to);
 			m = m2;			
@@ -61,7 +60,7 @@ function(line, startIndex) {
 
 ZmPhoneObjectHandler.prototype._getHtmlContent =
 function(html, idx, phone, context) {
-	var call = 'callto:+1' + AjxStringUtil.trim(phone);
+	var call = ZmPhoneObjectHandler.getCallToLink(phone);
 	html[idx++] = '<a href="' + call + '" onclick="window.top.ZmPhoneObjectHandler.unsetOnbeforeunload()">'+AjxStringUtil.htmlEncode(phone)+'</a>';	
 	return idx;
 };
@@ -81,15 +80,16 @@ function(obj) {
 };
 
 ZmPhoneObjectHandler.prototype.getActionMenu =
-function(obj) {
-	if (this._menu == null) {
+function(obj, span, context, isDialog) {
+	if (!this._menu) {
 		var list = [ZmOperation.SEARCH];
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			list.push(ZmOperation.CONTACT);
+		}
 		
-		// Call option for SkypeOut (If you don't have Skype Windows will default to NetMeeting)
+		// Call option for SkypeOut (If you don't have Skype, Windows will default to NetMeeting)
 		list.push(ZmOperation.CALL);
-		this._menu = new ZmActionMenu(this._appCtxt.getShell(), list);
+		this._menu = new ZmActionMenu(this._appCtxt.getShell(), list, null, isDialog);
 		this._menu.addSelectionListener(ZmOperation.SEARCH, new AjxListener(this, this._searchListener));
 
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
@@ -113,7 +113,7 @@ function(ev) {
 
 ZmPhoneObjectHandler.prototype._contactListener = 
 function(ev) {
-	// always create new contact (at least until someone complains)
+	// always create new contact
 	var contact = new ZmContact(this._appCtxt);
 	contact.initFromPhone(this._actionObject);
 	this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(contact);
@@ -121,9 +121,7 @@ function(ev) {
 
 ZmPhoneObjectHandler.prototype._callListener = 
 function(ev) {
-    var phone = AjxStringUtil.trim(this._actionObject.toString())
-    // XXX: Regex assumes 10 digit US number.  Need to support intl numbers.
-	phone = "callto:+1" + phone;
+	var phone = ZmPhoneObjectHandler.getCallToLink(this._actionObject.toString());
 	ZmPhoneObjectHandler.unsetOnbeforeunload();
 	window.location=phone;
 };
@@ -136,7 +134,16 @@ function() {
 ZmPhoneObjectHandler.unsetOnbeforeunload = 
 function() {
 	window.onbeforeunload = null;
-	this._timerObj = new AjxTimedAction();
-	this._timerObj.method = ZmPhoneObjectHandler.resetOnbeforeunload;	
+	this._timerObj = new AjxTimedAction(null, ZmPhoneObjectHandler.resetOnbeforeunload);
 	AjxTimedAction.scheduleAction(this._timerObj,3000);
 };
+
+// XXX: Regex assumes 10 or 11 digit US number.  Need to support intl numbers.
+ZmPhoneObjectHandler.getCallToLink = 
+function(phoneIn) {
+	if(!phoneIn) {return "";}
+	var phone = AjxStringUtil.trim(phoneIn, true);
+	return 'callto:+1' + phone.replace('+1', '');
+};
+
+ZmObjectManager.registerHandler("ZmPhoneObjectHandler");

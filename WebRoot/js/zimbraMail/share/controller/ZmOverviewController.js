@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -42,23 +42,25 @@ function ZmOverviewController(appCtxt, container) {
 	ZmController.call(this, appCtxt, container);
 	
 	// hashes that are keyed by overview ID
-	this._overview = new Object();
-	this._controllers = new Object();
-	this._treeIds = new Object();
-	this._selectionSupported = new Object();
-	this._actionSupported = new Object();
-	this._dndSupported = new Object();
-	this._headerClass = new Object();
-	this._showUnread = new Object();
-	this._treeStyle = new Object();
-}
+	this._overview = {};
+	this._controllers = {};
+	this._treeIds = {};
+	this._selectionSupported = {};
+	this._actionSupported = {};
+	this._dndSupported = {};
+	this._headerClass = {};
+	this._showUnread = {};
+	this._treeStyle = {};
+	this._treeString = {};
+};
 
-ZmOverviewController.CONTROLLER = new Object();
+ZmOverviewController.CONTROLLER = {};
 ZmOverviewController.CONTROLLER[ZmOrganizer.FOLDER]	= ZmFolderTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.SEARCH]	= ZmSearchTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.TAG]		= ZmTagTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.CALENDAR]	= ZmCalendarTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]	= ZmZimletTreeController;
+ZmOverviewController.CONTROLLER[ZmOrganizer.ROSTER_TREE_ITEM] = ZmRosterTreeController;
 
 ZmOverviewController.DEFAULT_FOLDER_ID = ZmFolder.ID_INBOX;
 
@@ -68,7 +70,7 @@ ZmOverviewController.prototype.constructor = ZmOverviewController;
 ZmOverviewController.prototype.toString = 
 function() {
 	return "ZmOverviewController";
-}
+};
 
 /**
 * Creates a new overview with the given options.
@@ -98,9 +100,9 @@ function(params) {
 	this._headerClass[overviewId] = params.headerClass;
 	this._showUnread[overviewId] = params.showUnread;
 	this._treeStyle[overviewId] = params.treeStyle;
-	
+
 	return overview;
-}
+};
 
 /**
 * Clears the given overview's tree views.
@@ -114,10 +116,12 @@ function(overviewId) {
 		for (var i = 0; i < treeIds.length; i++)
 			this._controllers[treeIds[i]].clearTreeView(overviewId);
 	}
-}
+};
 
 /**
-* Displays the given list of tree views, applying the given overview's options.
+* Displays the given list of tree views, applying the given overview's options. If a tree
+* view has already been created, its HTML element will be added to the overview, so that
+* its state is preserved.
 *
 * @param overviewId		[constant]	overview ID
 * @param treeIds		[Array]		list of organizer types
@@ -126,35 +130,38 @@ function(overviewId) {
 ZmOverviewController.prototype.set =
 function(overviewId, treeIds, omit) {
 	if (!overviewId) return;
-
-	// hide the current tree views for the specified overview
-	for (var treeId in this._controllers) {
-		var treeView = this.getTreeView(overviewId, treeId);
-		if (treeView) treeView.setVisible(false);
+	if (!(treeIds && treeIds.length)) return;
+	
+	// clear current tree views out of the overview
+	var curTreeIds = this._treeIds[overviewId];
+	var overview = this.getOverview(overviewId);
+	if (curTreeIds && curTreeIds.length) {
+		for (var i = 0; i < curTreeIds.length; i++) {
+			var treeId = curTreeIds[i];
+			var treeView = this.getTreeView(overviewId, treeId);
+			if (treeView)
+				// remember to preserve a ref to the element so we can add it later
+				overview.removeChild(treeView, true);
+		}
 	}
 
-	if (!treeIds || !treeIds.length) return;
-	
-	// show tree views for the specified overview	
-	this._treeIds[overviewId] = treeIds;
+	// add tree views to the overview
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];
 		// lazily create appropriate tree controller
 		if (!this._controllers[treeId])
 			this._controllers[treeId] = new ZmOverviewController.CONTROLLER[treeId](this._appCtxt);
-		this._controllers[treeId].show(overviewId, this._showUnread[overviewId], omit);
+		var treeView = this.getTreeView(overviewId, treeIds[i]);
+		if (treeView) {
+			// add the tree view's HTML element back to the overview
+			overview.addChild(treeView);
+		} else {
+			// create the tree view as a child of the overview
+			this._controllers[treeId].show(overviewId, this._showUnread[overviewId], omit);
+		}
 	}
-	
-	// re-order visible panels
-	var overviewEl = this.getOverview(overviewId).getHtmlElement();
-	for (var i = treeIds.length - 1; i >= 0; i--) {
-		var treeId = treeIds[i];
-		var treeView = this.getTreeView(overviewId, treeId);
-		var treeEl = treeView.getHtmlElement();
-		overviewEl.removeChild(treeEl);
-		overviewEl.insertBefore(treeEl, overviewEl.firstChild);
-	}
-}
+	this._treeIds[overviewId] = treeIds;
+};
 
 /**
 * Returns the given tree controller.
@@ -164,7 +171,7 @@ function(overviewId, treeIds, omit) {
 ZmOverviewController.prototype.getTreeController =
 function(treeId) {
 	return this._controllers[treeId];
-}
+};
 
 /**
 * Returns the given tree controller.
@@ -174,7 +181,7 @@ function(treeId) {
 ZmOverviewController.prototype.getTreeData =
 function(treeId) {
 	return this._appCtxt.getTree(treeId);
-}
+};
 
 /**
 * Returns the given overview.
@@ -184,7 +191,7 @@ function(treeId) {
 ZmOverviewController.prototype.getOverview =
 function(overviewId) {
 	return this._overview[overviewId];
-}
+};
 
 /**
 * Returns true if left-click selection is supported for the given overview.
@@ -194,7 +201,7 @@ function(overviewId) {
 ZmOverviewController.prototype.selectionSupported =
 function(overviewId) {
 	return this._selectionSupported[overviewId];
-}
+};
 
 /**
 * Returns true if right-click action menus are supported for the given overview.
@@ -204,7 +211,7 @@ function(overviewId) {
 ZmOverviewController.prototype.actionSupported =
 function(overviewId) {
 	return this._actionSupported[overviewId];
-}
+};
 
 /**
 * Returns true if drag-and-drop is supported for the given overview.
@@ -214,7 +221,7 @@ function(overviewId) {
 ZmOverviewController.prototype.dndSupported =
 function(overviewId) {
 	return this._dndSupported[overviewId];
-}
+};
 
 /**
 * Returns the custom CSS class for this overview's header items.
@@ -224,7 +231,7 @@ function(overviewId) {
 ZmOverviewController.prototype.getHeaderClass =
 function(overviewId) {
 	return this._headerClass[overviewId];
-}
+};
 
 /**
 * Returns the style of tree views in the given overview.
@@ -234,7 +241,7 @@ function(overviewId) {
 ZmOverviewController.prototype.getTreeStyle =
 function(overviewId) {
 	return this._treeStyle[overviewId];
-}
+};
 
 /**
 * Returns the given tree view in the given overview.
@@ -245,7 +252,7 @@ function(overviewId) {
 ZmOverviewController.prototype.getTreeView =
 function(overviewId, treeId) {
 	return this.getTreeController(treeId).getTreeView(overviewId);
-}
+};
 
 /**
 * Returns the first selected item within this overview.
@@ -261,7 +268,7 @@ function(overviewId) {
 			return item;
 	}
 	return null;
-}
+};
 
 /**
 * Given a tree view within an overview, deselects all items in the overview's
@@ -277,7 +284,7 @@ function(overviewId, treeId) {
 		if (treeIds[i] != treeId)
 			this.getTreeView(overviewId, treeIds[i]).deselectAll();
 	}
-}
+};
 
 /*
 * Adds a small amount of vertical space. Intended for use between tree views.
@@ -289,4 +296,4 @@ function(overviewId) {
 	var div = document.createElement("div");
 	div.className = "vSpace";
 	this._overview[overviewId].getHtmlElement().appendChild(div);
-}
+};

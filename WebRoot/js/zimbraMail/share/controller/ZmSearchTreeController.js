@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -148,7 +148,7 @@ function(ev, treeView) {
 		var node = treeView.getTreeItemById(id);
 		var parentNode = organizer.parent ? treeView.getTreeItemById(organizer.parent.id) : null;
 		if ((organizer.type == ZmOrganizer.SEARCH &&
-			(organizer.parent.tree.type == ZmOrganizer.FOLDER || id == ZmOrganizer.ID_ROOT)) &&
+			(id == ZmOrganizer.ID_ROOT || organizer.parent.tree.type == ZmOrganizer.FOLDER)) &&
 			(ev.event == ZmEvent.E_MOVE || (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_PARENT])))) {
 			DBG.println(AjxDebug.DBG3, "Moving search from Searches to Folders");
 			if (node)
@@ -176,8 +176,8 @@ function(ev, treeView) {
 * @param 2	[ZmSearch]	search object with details of the search
 */
 ZmSearchTreeController.prototype._newCallback =
-function(args) {
-	this._doCreate(args[0], args[1], args[2]);
+function(parent, name, search) {
+	this._doCreate(parent, name, search);
 	this._getNewDialog().popdown();
 }
 

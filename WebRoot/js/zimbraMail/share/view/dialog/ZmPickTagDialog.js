@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -36,6 +36,8 @@ function ZmPickTagDialog(parent, msgDialog, className) {
 	this._tagTree = this._appCtxt.getTree(ZmOrganizer.TAG);
 	this._tagTree.addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
 	this.registerCallback(ZmPickTagDialog.NEW_BUTTON, this._showNewDialog, this);
+	var root = this._tagTreeView.getTreeItemById(ZmOrganizer.ID_ROOT);
+	root.enableSelection(false);
 	this._creatingTag = false;
 };
 
@@ -80,13 +82,13 @@ function() {
 };
 
 ZmPickTagDialog.prototype._newCallback = 
-function(args) {
+function(parent, name) {
 	if (AjxEnv.isNav)
 		this.popup();
 
 	this._appCtxt.getNewTagDialog().popdown();
 	var ttc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.TAG);
-	ttc._doCreate(args[0], args[1]);
+	ttc._doCreate(parent, name);
 	this._creatingTag = true;
 };
 
@@ -102,7 +104,8 @@ ZmPickTagDialog.prototype._tagTreeChangeListener =
 function(ev) {
 	// TODO - listener for changing tags
 	if (ev.event == ZmEvent.E_CREATE && this._creatingTag) {
-		this._tagTreeView.setSelected(ev.source, true);
+		var tag = ev.getDetail("organizers")[0];
+		this._tagTreeView.setSelected(tag, true);
 		this._creatingTag = false;
 	}
 };

@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -89,12 +89,16 @@ function(visible) {
 	if (this._browseViewVisible == visible) return;
 
 	this._appCtxt.getAppViewMgr().showSearchBuilder(visible);
+	
+	var searchCtlr = this._appCtxt.getSearchController();
 	this._browseViewVisible = visible;
 	if (visible) {
 		if (this._browseView.getPickers().size() == 0)
 			this.addPicker(ZmPicker.DEFAULT_PICKER);
+		if (this._query)
+			searchCtlr.setSearchField(this._query);
 	}
-	var browseButton = this._appCtxt.getSearchController().getSearchToolbar().getButton(ZmSearchToolBar.BROWSE_BUTTON);
+	var browseButton = searchCtlr.getSearchToolbar().getButton(ZmSearchToolBar.BROWSE_BUTTON);
 	browseButton.setToolTipContent(visible ? ZmMsg.closeSearchBuilder : ZmMsg.openSearchBuilder);
 }
 

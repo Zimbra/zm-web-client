@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  *
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -58,8 +58,6 @@ ZmApptComposeView.prototype.constructor = ZmApptComposeView;
 ZmApptComposeView.DIALOG_X = 50;
 ZmApptComposeView.DIALOG_Y = 100;
 
-ZmApptComposeView.EMPTY_FORM_RE = /^[\s\|]*$/;
-
 
 // Public methods
 
@@ -74,11 +72,11 @@ function() {
 }
 
 ZmApptComposeView.prototype.set =
-function(appt, mode) {
+function(appt, mode, isDirty) {
 	// always switch to appointment tab
 	this._tabs.switchToTab(this._apptTabKey);
 
-	this._apptTab.initialize(appt, mode);
+	this._apptTab.initialize(appt, mode, isDirty);
 	this._scheduleTab.initialize(appt, mode);
 };
 
@@ -87,6 +85,13 @@ function() {
 	// allow both tabs to cleanup
 	this._apptTab.cleanup();
 	this._scheduleTab.cleanup();
+};
+
+ZmApptComposeView.prototype.preload = 
+function() {
+    this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+    this.enableInputs(false);
+    this._apptTab.createHtml();
 };
 
 ZmApptComposeView.prototype.getComposeMode = 
@@ -189,25 +194,6 @@ ZmApptComposeView.prototype._getDialogXY =
 function() {
 	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
 	return new DwtPoint(loc.x + ZmComposeView.DIALOG_X, loc.y + ZmComposeView.DIALOG_Y);
-};
-
-ZmApptComposeView.prototype._submitAttachments =
-function(isDraft) {
-	var callback = new AjxCallback(this, this._attsDoneCallback, [isDraft]);
-	var um = this._appCtxt.getUploadManager();
-	window._uploadManager = um;
-	var attCon = null;
-	if (AjxEnv.isIE) {
-		attCon = this._iframe;
-	} else {
-		var iframe = document.getElementById(this._navIframeId);
-		iframe.style.display = "block";
-		var uploadForm = document.getElementById(this._uploadFormId);
-		var idoc = Dwt.getIframeDoc(iframe);
-		idoc.body.appendChild(uploadForm);
-		attCon = iframe;
-	}
-	um.execute(attCon, callback, this._uploadFormId);
 };
 
 

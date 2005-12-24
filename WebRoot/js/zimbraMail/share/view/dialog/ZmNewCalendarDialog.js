@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -66,6 +66,8 @@ function(loc) {
 	var option = this._colorInput.getOptionWithValue(color);
 	this._colorInput.setSelectedOption(option);
 	
+	this._excludeFbCheckbox.checked = false;
+	
 	this._remoteCheckboxEl.checked = false;
 	this._remoteCheckboxEl._urlRow.style.display = "none";
 	this._urlInputEl.value = "";
@@ -88,28 +90,27 @@ function(event) {
 	if (!msg) {
 		try {
 			var parentFolderId = this._parentFolder ? this._parentFolder.id : null;
-			var results = ZmCalendar.create(this._appCtxt, name, parentFolderId);
+			var url = this._remoteCheckboxEl.checked ? AjxStringUtil.trim(this._urlInputEl.value) : null;
+			var results = ZmCalendar.create(this._appCtxt, name, parentFolderId, url);
 			calendarId = results.CreateFolderResponse.folder[0].id;
 		}
 		catch (ex) {
 			msg = ZmMsg.unknownError;
-			if (ex instanceof ZmCsfeException && ex.code == "mail.ALREADY_EXISTS") {
-				msg = ZmMsg.folderNameExists;
-				ex = null;
+			switch (ex.code) {
+				case "mail.ALREADY_EXISTS": {
+					msg = ZmMsg.folderNameExists;
+					ex = null;
+					break;
+				}
+				case "service.PARSE_ERROR": {
+					msg = ZmMsg.errorCalendarParse;
+					break;
+				}
+				default: {
+					msg = ZmCsfeException.getErrorMsg(ex.code) || msg;
+				}
 			}
 		}
-	}
-
-	// add remote appointments
-	if (!msg && this._remoteCheckboxEl.checked) {
-		var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
-		var actionNode = soapDoc.set("action");
-		actionNode.setAttribute("op", "urlRefresh");
-		actionNode.setAttribute("id", calendarId);
-		actionNode.setAttribute("url", AjxStringUtil.trim(this._urlInputEl.value));
-		
-		var appCtlr = this._appCtxt.getAppController();
-		appCtlr.sendRequest(soapDoc, true);
 	}
 	
 	// color folder
@@ -120,8 +121,19 @@ function(event) {
 			calendar.setColor(color);
 		}
 		catch (ex) {
-			// TODO: handle specific errors
-			msg = ZmMsg.unknownError;
+			msg = ZmMsg.errorCalendarSettingAfterCreate;
+		}
+	}
+	
+	// exclude from f/b
+	if (!msg && this._excludeFbCheckbox.checked) {
+		try {
+			var calendar = this._appCtxt.cacheGet(calendarId);
+			var exclude = true;
+			calendar.setFreeBusy(exclude);
+		}
+		catch (ex) {
+			msg = ZmMsg.errorCalendarSettingAfterCreate;
 		}
 	}
 	
@@ -138,11 +150,9 @@ function(event) {
 
 ZmNewCalendarDialog.prototype._createContentEl = 
 function() {
-	var document = this.getDocument();
-
 	// create controls
 	this._nameInputEl = document.createElement("INPUT");
-	this._nameInputEl.autocomplete = "OFF";
+	//this._nameInputEl.autocomplete = "OFF";
 	this._nameInputEl.type = "text";
 	this._nameInputEl.className = "Field";
 	
@@ -151,6 +161,10 @@ function() {
 		var choice = ZmOrganizer.COLOR_CHOICES[i];
 		this._colorInput.addOption(choice.label, i == 0, choice.value);
 	}
+
+	this._excludeFbCheckbox = document.createElement("INPUT");
+	this._excludeFbCheckbox.type = "checkbox";
+	this._excludeFbCheckbox.checked = false;
 
 	this._remoteCheckboxEl = document.createElement("INPUT");
 	this._remoteCheckboxEl.type = "checkbox";
@@ -181,6 +195,13 @@ function() {
 	var colorInputCell = colorRow.insertCell(colorRow.cells.length);
 	colorInputCell.appendChild(this._colorInput.getHtmlElement());	
 	
+	var excludeFbRow = table.insertRow(table.rows.length);
+	var excludeFbCell = excludeFbRow.insertCell(excludeFbRow.cells.length);
+	excludeFbCell.colSpan = 2;
+	excludeFbCell.className = "Label";
+	excludeFbCell.appendChild(this._excludeFbCheckbox);
+	excludeFbCell.appendChild(document.createTextNode(ZmMsg.excludeFromFreeBusy));
+	
 	var remoteRow = table.insertRow(table.rows.length);
 	var remoteLabelCell = remoteRow.insertCell(remoteRow.cells.length);
 	remoteLabelCell.colSpan = 2;
@@ -207,11 +228,17 @@ ZmNewCalendarDialog.prototype._handleCheckbox = function(event) {
 	event = event || window.event;
 	var target = DwtUiEvent.getTarget(event);
 	target._urlRow.style.display = target.checked ? (AjxEnv.isIE ? "block" : "table-row") : "none";
-	target._urlInputEl.focus();
+	if (target.checked) {
+		target._urlInputEl.focus();
+	}
 };
 
 ZmNewCalendarDialog.prototype._checkUrl = function() {
 	if (this._remoteCheckboxEl.checked && this._urlInputEl.value.match(/^\s*$/)) {
 		return ZmMsg.errorUrlMissing;
 	}
+};
+
+ZmNewCalendarDialog.prototype._getSeparatorTemplate = function() {
+	return "";
 };

@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -86,20 +86,17 @@ function(items, folder, attrs) {
 	attrs.tcon = this._getTcon();
 	attrs.l = folder.id;
 	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder]);
-	this._itemAction(items, "move", attrs, respCallback);
+	this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback});
 };
 
 ZmMailList.prototype._handleResponseMoveItems =
-function(args) {
-	var folder		= args[0];
-	var result		= args[1];
-
+function(folder, result) {
 	var movedItems = result.getResponse();	
 	if (movedItems && movedItems.length) {
 		this.moveLocal(movedItems, folder.id);
 		for (var i = 0; i < movedItems.length; i++)
 			movedItems[i].moveLocal(folder.id);
-		this._eventNotify(ZmEvent.E_MOVE, movedItems);
+		this._notify(ZmEvent.E_MOVE, {items: movedItems, replenish: true});
 	}
 };
 
@@ -121,22 +118,18 @@ function(items, markAsSpam, folder) {
 	if (folder) attrs.l = folder.id;
 
 	var respCallback = new AjxCallback(this, this._handleResponseSpamItems, [markAsSpam, folder]);
-	this._itemAction(items, action, attrs, respCallback);
+	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback});
 };
 
 ZmMailList.prototype._handleResponseSpamItems =
-function(args) {
-	var markAsSpam	= args[0];
-	var folder		= args[1];
-	var result		= args[2];
-	
+function(markAsSpam, folder, result) {
 	var movedItems = result.getResponse();
 	if (movedItems && movedItems.length) {
 		folderId = markAsSpam ? ZmFolder.ID_SPAM : (folder ? folder.id : ZmFolder.ID_INBOX);
 		this.moveLocal(movedItems, folderId);
 		for (var i = 0; i < movedItems.length; i++)
 			movedItems[i].moveLocal(folderId);
-		this._eventNotify(ZmEvent.E_MOVE, movedItems);
+		this._notify(ZmEvent.E_MOVE, {items: movedItems, replenish: true});
 	}
 };
 
@@ -179,7 +172,7 @@ function(items, folderId) {
 		}
 	}
 	if (flaggedItems.length)
-		this._eventNotify(ZmEvent.E_FLAGS, flaggedItems, {flags: [ZmItem.FLAG_UNREAD]});
+		this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [ZmItem.FLAG_UNREAD]});
 };
 
 ZmMailList.prototype.notifyCreate = 
@@ -191,10 +184,13 @@ function(convs, msgs) {
 	var fields = new Object();
 	if (this.type == ZmItem.CONV && searchFolder) {
 		// handle new convs first so we can set their fragments from new msgs
+		var sortBy = this.search ? this.search.sortBy : null;
 		for (var id in convs) {
+			if (this.getById(id)) continue;
 			var conv = convs[id];
 			if (conv.folders && conv.folders[searchFolder]) {
-				this.add(conv, 0); // add to beginning for now
+				var index = this._getSortIndex(conv, sortBy);
+				this.add(conv, index); // add to beginning for now
 				conv.list = this;
 				createdItems.push(conv);
 			}
@@ -203,14 +199,15 @@ function(convs, msgs) {
 			var msg = msgs[id];
 			var cid = msg.cid;
 			var conv = this.getById(cid);
-			if (conv) {
+			if (conv && !(conv.msgs && conv.msgs.getById(id))) {
 				// got a new msg for a conv that has no msg list - happens when virt conv
 				// becomes real (on its second msg) - create a msg list
 				if (!conv.msgs) {
 					conv.msgs = new ZmMailList(ZmItem.MSG, this._appCtxt);
 					conv.msgs.addChangeListener(conv._listChangeListener);
 				}
-				conv.msgs.add(msg, 0);
+				var index = conv.msgs._getSortIndex(msg, conv._sortBy);
+				conv.msgs.add(msg, index);
 				msg.list = conv.msgs;
 				if (!msg.isSent) {
 					conv.isUnread = true;
@@ -225,6 +222,7 @@ function(convs, msgs) {
 		}
 	} else if (this.type == ZmItem.MSG) {
 		for (var id in msgs) {
+			if (this.getById(id)) continue;
 			var msg = msgs[id];
 			if (this.convId) { // MLV within conv
 				if (msg.cid == this.convId && !this.getById(msg.id)) {
@@ -242,11 +240,11 @@ function(convs, msgs) {
 		}
 	}
 	if (createdItems.length)
-		this._eventNotify(ZmEvent.E_CREATE, createdItems);
+		this._notify(ZmEvent.E_CREATE, {items: createdItems});
 	if (flaggedItems.length)
-		this._eventNotify(ZmEvent.E_FLAGS, flaggedItems, {flags: [ZmItem.FLAG_UNREAD]});
+		this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [ZmItem.FLAG_UNREAD]});
 	if (modifiedItems.length)
-		this._eventNotify(ZmEvent.E_MODIFY, modifiedItems, {fields: fields});
+		this._notify(ZmEvent.E_MODIFY, {items: modifiedItems, fields: fields});
 };
 
 /**
@@ -268,7 +266,7 @@ function(msgs) {
 		}
 	}
 	if (addedMsgs.length)
-		this._eventNotify(ZmEvent.E_CREATE, addedMsgs);
+		this._notify(ZmEvent.E_CREATE, {items: addedMsgs});
 };
 
 ZmMailList.prototype.remove = 
@@ -288,6 +286,30 @@ function() {
 		this._appCtxt.getTree(ZmOrganizer.TAG).removeChangeListener(this._tagChangeListener);
 
 	ZmList.prototype.clear.call(this);
+};
+
+/*
+* Returns the insertion point for the given item into this list. If we're not sorting by
+* date, returns 0 (the item will be inserted at the top of the list).
+*
+* @param item		[ZmMailItem]	a mail item
+* @param sortBy		[constant]		sort order
+*/
+ZmMailList.prototype._getSortIndex =
+function(item, sortBy) {
+	if (!sortBy || (sortBy != ZmSearch.DATE_DESC && sortBy != ZmSearch.DATE_DESC))
+		return 0;
+	
+	var itemDate = parseInt(item.date);
+	var a = this.getArray();
+	for (var i = 0; i < a.length; i++) {
+		var date = parseInt(a[i].date);
+		if (sortBy == ZmSearch.DATE_DESC && (itemDate > date))
+			return i;
+		if (sortBy == ZmSearch.DATE_ASC && (itemDate < date))
+			return i;
+	}
+	return i;
 };
 
 ZmMailList.prototype._getTcon =
@@ -333,7 +355,7 @@ function(ev) {
 					}
 				}
 				if (flaggedItems.length)
-					this._eventNotify(ZmEvent.E_FLAGS, flaggedItems, {flags: [flag]});
+					this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [flag]});
 			}
 		}
 	} else if (ev.event == ZmEvent.E_DELETE &&

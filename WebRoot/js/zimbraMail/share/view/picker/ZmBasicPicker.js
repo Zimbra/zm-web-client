@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -47,7 +47,7 @@ function(text, id) {
     var i = 0;
     html[i++] = "<tr valign='middle'>";
     html[i++] = "<td align='right' nowrap>" + text + ":</td>";
-    html[i++] = "<td align='left' nowrap><input type='text' nowrap size='" + size + "' id='" + id + "'/></td>";
+    html[i++] = "<td align='left' nowrap><input type='text' autocomplete='off' nowrap size='" + size + "' id='" + id + "'/></td>";
     html[i++] = "</tr>";
 
 	return html.join("");		
@@ -124,7 +124,7 @@ function(content) {
 
 ZmBasicPicker.prototype._setupField = 
 function(id) {
-	var f = Dwt.getDomObj(this.getDocument(), id);
+	var f = document.getElementById(id);
 	Dwt.setHandler(f, DwtEvent.ONKEYUP, ZmBasicPicker._onChange);
 	f._picker = this;
 	return f;
@@ -132,7 +132,7 @@ function(id) {
 
 ZmBasicPicker.prototype._setupSearch = 
 function(id) {
-	var f = Dwt.getDomObj(this.getDocument(), id);
+	var f = document.getElementById(id);
 	Dwt.setHandler(f, DwtEvent.ONCHANGE, ZmBasicPicker._onChange);
 	f._picker = this;
 	return f;

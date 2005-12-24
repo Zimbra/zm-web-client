@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -236,15 +236,12 @@ function(start,end, fanoutAllDay, folderIds, callback) {
 	} else {
 		var response = this._appCtxt.getAppController().sendRequest(soapDoc);
 		var csfeResult = new ZmCsfeResult(response, false);
-		return this._getApptSummariesResponse([context, csfeResult]);
+		return this._getApptSummariesResponse(context, csfeResult);
 	}
 }
 
 ZmApptCache.prototype._getApptSummariesResponse =
-function(args) {
-	var context = args[0];
-	var result = args[1];
-	
+function(context, result) {
 	var callback = context.callback;
 	var start = context.start;
 	var end = context.end;
@@ -278,7 +275,8 @@ function(args) {
 			var folderId = context.needToFetch[summaries[i].id];// id in response tied back to folder id
 
 			// TODO: no need to cache remote ids for now?
-			var isLink = this._calViewController.isCalendarLink(folderId)
+			var cal = this._calViewController.getCalendar(folderId);
+			var isLink = cal ? (cal.link ? true : false) : false;
 			if (!isLink) this._updateCachedIds(apptList);
 
 			// cache it 

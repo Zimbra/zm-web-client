@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -29,7 +29,7 @@ function ZmPref(id, name, dataType) {
 	
 	this.origValue = null;
 	this.isDirty = false;
-}
+};
 
 ZmPref.prototype = ZmSetting;
 ZmPref.prototype.constructor = ZmPref;
@@ -62,7 +62,8 @@ ZmPref.ADDR_BOOK_PREFS = [ZmSetting.AUTO_ADD_ADDRESS,
 						  ZmSetting.CONTACTS_VIEW, ZmSetting.CONTACTS_PER_PAGE,
 						  ZmSetting.IMPORT, ZmSetting.EXPORT];
 						  
-ZmPref.CALENDAR_PREFS = [ZmSetting.CALENDAR_INITIAL_VIEW, ZmSetting.CAL_FIRST_DAY_OF_WEEK, ZmSetting.CAL_SHOW_TIMEZONE];
+ZmPref.CALENDAR_PREFS = [ZmSetting.CALENDAR_INITIAL_VIEW, ZmSetting.CAL_FIRST_DAY_OF_WEEK, 
+						 ZmSetting.CAL_SHOW_TIMEZONE, ZmSetting.CAL_USE_QUICK_ADD, ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL];
 
 ZmPref.validateEmail = 
 function(emailStr) {
@@ -71,7 +72,7 @@ function(emailStr) {
 		return (match != null);
 	}
 	return true;
-}
+};
 
 ZmPref.validatePollingInterval = 
 function(interval) {
@@ -80,10 +81,22 @@ function(interval) {
 		return true;
 	} else {
 		var min = minimum / 60;
-		ZmPref.SETUP[ZmSetting.POLLING_INTERVAL].errorMessage = AjxStringUtil.resolve(ZmMsg.invalidPollingInterval, min);
+		ZmPref.SETUP[ZmSetting.POLLING_INTERVAL].errorMessage = AjxMessageFormat.format(ZmMsg.invalidPollingInterval, min);
 		return false;
 	}
-}
+};
+
+ZmPref.SIGNATURE_MAX_LENGTH = 1024;
+ZmPref.validateSignature = 
+function(signature) {
+	return (signature.length <= ZmPref.SIGNATURE_MAX_LENGTH);
+};
+
+ZmPref.AWAY_MESSAGE_MAX_LENGTH = 8192;
+ZmPref.validateAwayMessage = 
+function(away) {
+	return (away.length <= ZmPref.AWAY_MESSAGE_MAX_LENGTH);
+};
 
 // The SETUP object for a pref gets translated into a form input. Available properties are:
 //
@@ -99,7 +112,8 @@ ZmPref.SETUP = new Object();
 
 ZmPref.SETUP[ZmSetting.SEARCH_INCLUDES_SPAM] = {
 	displayName:		ZmMsg.includeJunkFolder,
-	displayContainer:	"checkbox"};
+	displayContainer:	"checkbox",
+	precondition:		ZmSetting.SPAM_ENABLED};
 
 ZmPref.SETUP[ZmSetting.SEARCH_INCLUDES_TRASH] = {
 	displayName:		ZmMsg.includeTrashFolder,
@@ -109,13 +123,15 @@ ZmPref.SETUP[ZmSetting.SEARCH_INCLUDES_TRASH] = {
 ZmPref.SETUP[ZmSetting.PASSWORD] = {
 	displayName:		ZmMsg.changePassword,
 	displayContainer:	"x_password",
-	displaySeparator:	true};
+	displaySeparator:	true,
+	precondition:		ZmSetting.CHANGE_PASSWORD_ENABLED};
 
 ZmPref.SETUP[ZmSetting.GROUP_MAIL_BY] =	{ 
 	displayName:		ZmMsg.groupMailBy,
 	displayContainer:	"select",
 	displayOptions:		[ZmMsg.message, ZmMsg.conversation],
-	options:			[ZmSetting.GROUP_BY_MESSAGE, ZmSetting.GROUP_BY_CONV]};
+	options:			[ZmSetting.GROUP_BY_MESSAGE, ZmSetting.GROUP_BY_CONV],
+	precondition:		ZmSetting.CONVERSATIONS_ENABLED};
 
 ZmPref.SETUP[ZmSetting.PAGE_SIZE] = {
 	displayName:		ZmMsg.itemsPerPage,
@@ -129,7 +145,8 @@ ZmPref.SETUP[ZmSetting.SHOW_FRAGMENTS] = {
 ZmPref.SETUP[ZmSetting.INITIAL_SEARCH] = {
 	displayName:		ZmMsg.initialMailSearch,
 	displayContainer:	"input",
-	displaySeparator:	false};
+	displaySeparator:	false,
+	precondition:		ZmSetting.INITIAL_SEARCH_ENABLED};
 
 ZmPref.SETUP[ZmSetting.POLLING_INTERVAL] = {
 	displayName:		ZmMsg.pollingInterval,
@@ -178,6 +195,8 @@ ZmPref.SETUP[ZmSetting.SIGNATURE_STYLE] = {
 ZmPref.SETUP[ZmSetting.SIGNATURE] = {
 	displayName:		ZmMsg.signature,
 	displayContainer:	"textarea",
+	validationFunction: ZmPref.validateSignature,
+	errorMessage:       AjxMessageFormat.format(ZmMsg.invalidSignature, ZmPref.SIGNATURE_MAX_LENGTH),
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.VACATION_MSG_ENABLED] = {
@@ -187,6 +206,8 @@ ZmPref.SETUP[ZmSetting.VACATION_MSG_ENABLED] = {
 ZmPref.SETUP[ZmSetting.VACATION_MSG] = {
 	displayName:		ZmMsg.awayMessage,
 	displayContainer:	"textarea",
+	validationFunction: ZmPref.validateSignature,
+	errorMessage:       AjxMessageFormat.format(ZmMsg.invalidAwayMessage, ZmPref.AWAY_MESSAGE_MAX_LENGTH),
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.NOTIF_ENABLED] = {
@@ -208,12 +229,14 @@ ZmPref.SETUP[ZmSetting.COMPOSE_AS_FORMAT] = {
 	displayName:		ZmMsg.composeMailUsing,
 	displayContainer:	"select",
 	displayOptions: 	[ZmMsg.text, ZmMsg.htmlDocument],
-	options: 			[ZmSetting.COMPOSE_TEXT, ZmSetting.COMPOSE_HTML]};
+	options: 			[ZmSetting.COMPOSE_TEXT, ZmSetting.COMPOSE_HTML],
+	precondition:		ZmSetting.HTML_COMPOSE_ENABLED};
 
 ZmPref.SETUP[ZmSetting.COMPOSE_INIT_FONT_FAMILY] = {
 	displayName:		ZmMsg.defaultFontSettings,
 	displayContainer:	"font",
 	displayOptions: 	["Arial", "Times New Roman", "Courier New", "Verdana"],
+	options: 			["Arial", "Times", "Courier", "Verdana"],
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.COMPOSE_INIT_FONT_SIZE] = {
@@ -277,20 +300,27 @@ ZmPref.SETUP[ZmSetting.SHOW_SEARCH_STRING] = {
 // 	choices:            ZmTimezones.getFullZoneChoices(),
 // 	displaySeparator:	true};
 
-ZmPref.SETUP[ZmSetting.CAL_SHOW_TIMEZONE] = {
- 	displayName:		ZmMsg.shouldShowTimezone,
- 	displayContainer:	"checkbox",
- 	displaySeparator:	false};
-
 ZmPref.SETUP[ZmSetting.CALENDAR_INITIAL_VIEW] = {
  	displayName:		ZmMsg.calendarInitialView,
  	displayContainer:	"select",
 	displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewSchedule],
-	options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_SCHEDULE],
- 	displaySeparator:	false};
+	options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_SCHEDULE]};
 
 ZmPref.SETUP[ZmSetting.CAL_FIRST_DAY_OF_WEEK] = {
  	displayName:		ZmMsg.calendarFirstDayOfWeek,
  	displayContainer:	"select",
 	displayOptions:		AjxDateUtil.WEEKDAY_LONG,
 	options:			[0,1,2,3,4,5,6]};
+
+ZmPref.SETUP[ZmSetting.CAL_SHOW_TIMEZONE] = {
+ 	displayName:		ZmMsg.shouldShowTimezone,
+ 	displayContainer:	"checkbox"};
+
+ZmPref.SETUP[ZmSetting.CAL_USE_QUICK_ADD] = {
+ 	displayName:		ZmMsg.useQuickAdd,
+ 	displayContainer:	"checkbox"};
+
+ZmPref.SETUP[ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL] = {
+ 	displayName:		ZmMsg.alwaysShowMiniCal,
+ 	displayContainer:	"checkbox"};
+	

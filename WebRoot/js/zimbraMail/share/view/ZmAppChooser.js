@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -33,8 +33,8 @@ function ZmAppChooser(parent, className, buttons) {
 	this._buttons = new Object();
 	for (var i = 0; i < buttons.length; i++) {
 		var id = buttons[i];
-		if (id == ZmAppChooser.SEP) {
-			this.addSpacer(ZmAppChooser.SEP_HEIGHT);
+		if (id == ZmAppChooser.SPACER) {
+			this.addSpacer(ZmAppChooser.SPACER_HEIGHT);
 		} else {
 			this._createButton(id);
 		}
@@ -52,6 +52,7 @@ ZmAppChooser.SEP		= i++;
 ZmAppChooser.B_EMAIL	= i++;
 ZmAppChooser.B_CONTACTS	= i++;
 ZmAppChooser.B_CALENDAR	= i++;
+ZmAppChooser.B_IM	    = i++;
 ZmAppChooser.B_HELP		= i++;
 ZmAppChooser.B_OPTIONS	= i++;
 ZmAppChooser.B_LOGOUT	= i++;
@@ -61,10 +62,11 @@ ZmAppChooser.IMAGE[ZmAppChooser.OUTER]		= "ImgAppChiclet";
 ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]	= "ImgAppChicletHover";
 ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]	= "ImgAppChicletSel";
 
-ZmAppChooser.IMAGE[ZmAppChooser.B_EMAIL]	= "MailApp";
-ZmAppChooser.IMAGE[ZmAppChooser.B_CONTACTS]	= "ContactsApp";
-ZmAppChooser.IMAGE[ZmAppChooser.B_CALENDAR]	= "CalendarApp";
-ZmAppChooser.IMAGE[ZmAppChooser.B_HELP]		= "Help";
+ZmAppChooser.IMAGE[ZmAppChooser.B_EMAIL]    = "MailApp";
+ZmAppChooser.IMAGE[ZmAppChooser.B_CONTACTS] = "ContactsApp";
+ZmAppChooser.IMAGE[ZmAppChooser.B_CALENDAR] = "CalendarApp";
+ZmAppChooser.IMAGE[ZmAppChooser.B_IM]	      = "ImStartChat";
+ZmAppChooser.IMAGE[ZmAppChooser.B_HELP]     = "Help";
 ZmAppChooser.IMAGE[ZmAppChooser.B_OPTIONS]	= "Preferences";
 ZmAppChooser.IMAGE[ZmAppChooser.B_LOGOUT]	= "Logoff";
 
@@ -72,11 +74,12 @@ ZmAppChooser.TOOLTIP = new Object();
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_EMAIL]		= ZmMsg.goToMail;
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_CONTACTS]	= ZmMsg.goToContacts;
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_CALENDAR]	= ZmMsg.goToCalendar;
+ZmAppChooser.TOOLTIP[ZmAppChooser.B_IM]	     = ZmMsg.goToIm;
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_HELP]		= ZmMsg.goToHelp;
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_OPTIONS]	= ZmMsg.goToOptions;
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_LOGOUT]		= ZmMsg.logOff;
 
-ZmAppChooser.SEP_HEIGHT = 10;
+ZmAppChooser.SPACER_HEIGHT = 10;
 
 ZmAppChooser.prototype = new DwtToolBar;
 ZmAppChooser.prototype.constructor = ZmAppChooser;

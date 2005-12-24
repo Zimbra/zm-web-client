@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -163,9 +163,6 @@ ZmListController.prototype._getActionMenuOps 	= function() {}
 // Attempts to process a nav toolbar up/down button click
 ZmListController.prototype._paginateDouble 		= function(bDoubleForward) {}
 
-// Saves search results so we only fetch them once
-ZmListController.prototype._cacheList			= function(search) {}
-
 // Returns the type of item in the underlying list
 ZmListController.prototype._getItemType			= function() {}
 
@@ -196,10 +193,10 @@ function() {
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		list.push(ZmOperation.TAG_MENU);
 	list.push(ZmOperation.SEP);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT);
 	list.push(ZmOperation.DELETE);
 	list.push(ZmOperation.MOVE);
+	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
+		list.push(ZmOperation.PRINT);
 	return list;
 }
 
@@ -209,9 +206,9 @@ function() {
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		list.push(ZmOperation.TAG_MENU);
 	list.push(ZmOperation.DELETE);
+	list.push(ZmOperation.MOVE);
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
 		list.push(ZmOperation.PRINT);
-	list.push(ZmOperation.MOVE);
 	return list;
 }
 
@@ -223,8 +220,10 @@ function() {
 	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED))
 		list.push(ZmOperation.BROWSE);
 	list.push(ZmOperation.NEW_MESSAGE);
+	/*
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
 		list.push(ZmOperation.IM);
+    */
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
 		list.push(ZmOperation.CONTACT);
 	return list;
@@ -248,7 +247,16 @@ function(view) {
 	for (var i = 0; i < buttons.length; i++)
 		if (buttons[i] > 0 && this._listeners[buttons[i]])
 			this._toolbar[view].addSelectionListener(buttons[i], this._listeners[buttons[i]]);
-	this._propagateMenuListeners(this._toolbar[view], ZmOperation.NEW_MENU);
+	
+	var toolbar = this._toolbar[view];
+	var button = toolbar.getButton(ZmOperation.NEW_MENU);
+	if (button) {
+        	var listener = new AjxListener(toolbar, ZmListController._newDropDownListener);
+        	button.addDropDownSelectionListener(listener);
+        	toolbar._ZmListController_this = this;
+        	toolbar._ZmListController_newDropDownListener = listener;
+    	}
+	
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		var tagMenuButton = this._toolbar[view].getButton(ZmOperation.TAG_MENU);
 		if (tagMenuButton) {
@@ -280,8 +288,9 @@ function() {
 		if (menuItems[i] > 0)
 			this._actionMenu.addSelectionListener(menuItems[i], this._listeners[menuItems[i]]);
 	this._actionMenu.addPopdownListener(this._popdownListener);
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		this._setupTagMenu(this._actionMenu);
+	}
 }
 
 /**
@@ -394,7 +403,7 @@ function(ev) {
 // Tag/untag items.
 ZmListController.prototype._tagListener = 
 function(item) {
-	if (this._app.getAppViewMgr().getCurrentView() == this._getViewType()) {
+	if (this._app.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
 		var tagEvent = item.getData(ZmTagMenu.KEY_TAG_EVENT);
 		var tagAdded = item.getData(ZmTagMenu.KEY_TAG_ADDED);
 		var items = this._listView[this._currentView].getSelection();
@@ -521,7 +530,7 @@ function(ev) {
 	} else {
 		var contact = new ZmContact(this._appCtxt);
 		contact.initFromEmail(this._actionEv.address);
-		cc.show(contact);
+		cc.show(contact, true);
 	}
 }
 
@@ -531,8 +540,6 @@ ZmListController.prototype._dragListener =
 function(ev) {
 	if (ev.action == DwtDragEvent.SET_DATA) {
 		ev.srcData = {data: ev.srcControl.getDnDSelection(), controller: this};
-	} else if (ev.action == DwtDragEvent.DRAG_END) {
-		this._checkReplenish();
 	}
 }
 
@@ -545,7 +552,8 @@ function(ev) {
 ZmListController.prototype._dropListener =
 function(ev) {
 	var div, item;
-	div = DwtUiEvent.getTargetWithProp(ev.uiEvent, "_itemIndex");
+
+	div = Dwt.getAttr(ev.uiEvent.target, "_itemIndex", true);
 	var view = this._listView[this._currentView];
 	if (div) {
 		item = view.getItemFromElement(div);
@@ -580,9 +588,10 @@ function(ev) {
 ZmListController.prototype._tagChangeListener = 
 function(ev) {
 	// only process if current view is this view!
-	if (this._app.getAppViewMgr().getCurrentView() == this._getViewType()) {
+	if (this._app.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
 		if (ev.type == ZmEvent.S_TAG && ev.event == ZmEvent.E_CREATE && this._creatingTag) {
-			this._doTag(this._pendingActionData, ev.source, true);
+			var tag = ev.getDetail("organizers")[0];
+			this._doTag(this._pendingActionData, tag, true);
 			this._creatingTag = false;
 			this._pendingActionData = null;
 			this._popdownActionListener();
@@ -592,25 +601,25 @@ function(ev) {
 
 // Create a folder.
 ZmListController.prototype._newFolderCallback =
-function(args) {
+function(parent, name, url) {
 	this._appCtxt.getNewFolderDialog().popdown();
 	var ftc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
-	ftc._doCreate(args[0], args[1]);
+	ftc._doCreate(parent, parent, null, url);
 }
 
 // Create a tag.
 ZmListController.prototype._newTagCallback =
-function(args) {
+function(creatingTag, name, color) {
 	this._appCtxt.getNewTagDialog().popdown();
 	var ttc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.TAG);
-	ttc._doCreate(args[1], args[2]);
-	this._creatingTag = args[0];
+	ttc._doCreate(name, color);
+	this._creatingTag = creatingTag;
 }
 
 // Move stuff to a new folder.
 ZmListController.prototype._moveCallback =
-function(args) {
-	this._doMove(this._pendingActionData, args[0]);
+function(folder) {
+	this._doMove(this._pendingActionData, folder);
 	this._clearDialog(this._appCtxt.getMoveToDialog());
 }
 
@@ -660,23 +669,15 @@ function(items, folder, attrs) {
 
 // Modify an item
 ZmListController.prototype._doModify =
-function(params) {
-	try {
-		this._list.modifyItems(params.items, params.mods);
-	} catch (ex) {
-		this._handleException(ex, this._doModify, params, false);
-	}
-}
+function(item, mods) {
+	this._list.modifyItem(item, mods);
+};
 
 // Create an item. We need to be passed a list since we may not have one.
 ZmListController.prototype._doCreate =
-function(params) {
-	try {
-		params.list.create(params.args);
-	} catch (ex) {
-		this._handleException(ex, this._doCreate, params, false);
-	}
-}
+function(list, args) {
+	list.create(args);
+};
 
 // Miscellaneous
 
@@ -693,7 +694,7 @@ function(parent, op, listener) {
 		for (var i = 0; i < cnt; i++)
 			items[i].addSelectionListener(listener);
 	}
-}
+};
 
 // Add listener to tag menu
 ZmListController.prototype._setupTagMenu =
@@ -707,7 +708,7 @@ function(parent) {
 		if (tagButton)
 			tagButton.addDropDownSelectionListener(this._listeners[ZmOperation.TAG_MENU]);
 	}
-}
+};
 
 // Dynamically build the tag menu based on selected items and their tags.
 ZmListController.prototype._setTagMenu =
@@ -723,10 +724,11 @@ function(parent) {
 		tagMenu.set(items, this._tagList);
 		if (parent instanceof ZmActionMenu)
 			tagOp.setText(this._getTagMenuMsg(items.length));
-		else
-			tagMenu.popup();
+		else {
+			tagMenu.parent.popup();
+		}
 	}
-}
+};
 
 // Set the view menu's icon, and make sure the appropriate list item is checked
 ZmListController.prototype._setViewMenu =
@@ -739,7 +741,7 @@ function(view) {
 		if (mi)
 			mi.setChecked(true, true);
 	}
-}
+};
 
 // Set up the New button based on the current app.
 ZmListController.prototype._setNewButtonProps =
@@ -751,7 +753,7 @@ function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
 		newButton.setDisabledImage(disabledIconId);
 		this._defaultNewId = defaultId;
 	}
-}
+};
 
 // Sets text to "add" or "edit" based on whether a participant is a contact or not.
 ZmListController.prototype._setContactText =
@@ -760,7 +762,7 @@ function(isContact) {
 	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
 	ZmOperation.setOperation(this._toolbar[this._currentView], ZmOperation.CONTACT, newOp, ZmMsg.AB_ADD_CONTACT);
 	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, newOp, newText);
-}
+};
 
 // Resets the available options on a toolbar or action menu.
 ZmListController.prototype._resetOperations = 
@@ -776,28 +778,41 @@ function(parent, num) {
 		parent.enableAll(false);
 		parent.enable([ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE], true);
 	}
-}
+};
 
 // Resets the available options on the toolbar
 ZmListController.prototype._resetToolbarOperations = 
 function() {
 	this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectedItems().size());
-}
+};
 
 // Pagination
 
-ZmListController.prototype._search = 
-function(view, offset, limit, callback, isCurrent) {
-	var sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
+ZmListController.prototype._cacheList = 
+function(search, offset) {
 	var type = this._getItemType();
-	var types = AjxVector.fromArray([type]);
+	if (this._list) {
+		var newList = search.getResults(type).getVector();
+		offset = offset ? offset : parseInt(search.getAttribute("offset"));
+		this._list.cache(offset, newList);
+	} else {
+		this._list = search.getResults(type);
+	}
+};
+
+ZmListController.prototype._search = 
+function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
+	var sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
+	var types = this._activeSearch.search.types; // use types from original search
 	var sc = this._appCtxt.getSearchController();
-	var search = new ZmSearch(this._appCtxt, this._searchString, types, sortBy, offset, limit);
+	var params = {query: this._searchString, types: types, sortBy: sortBy, offset: offset, limit: limit,
+				  lastId: lastId, lastSortVal: lastSortVal};
+	var search = new ZmSearch(this._appCtxt, params);
 	if (isCurrent)
 		this._currentSearch = search;
 	var mods = {"searchFieldAction": ZmSearchController.LEAVE_SEARCH_TXT};
 	sc.redoSearch(search, true, mods, callback);
-}
+};
 
 /*
 * Gets next or previous page of items. The set of items may come from the 
@@ -818,6 +833,15 @@ function(view, offset, limit, callback, isCurrent) {
 */
 ZmListController.prototype._paginate = 
 function(view, forward, loadIndex) {
+/*
+	var list = this._listView[this._currentView].getList();
+	var lastItem = list.getLast();
+	var lastId, lastSortVal;
+	if (lastItem && lastItem.id) {
+		lastId = lastItem.id;
+//		lastSortVal = lastItem.getSortVal(this._activeSearch.search.sortBy);
+	}
+*/
 	var offset = this._listView[view].getNewOffset(forward);
 	var limit = this._listView[view].getLimit();
 	forward ? this.currentPage++ : this.currentPage--;
@@ -835,7 +859,8 @@ function(view, forward, loadIndex) {
 			offset = ((offset + limit) - max) + 1;
 
 		// get next page of items from server; note that callback may be overridden
-		var respCallback = new AjxCallback(this, this._handleResponsePaginate, [view, false, loadIndex]);
+		var respCallback = new AjxCallback(this, this._handleResponsePaginate, [view, false, loadIndex, offset]);
+//		this._search(view, offset, max, respCallback, true, lastId, lastSortVal);
 		this._search(view, offset, max, respCallback, true);
 		return false;
 	} else {
@@ -845,7 +870,7 @@ function(view, forward, loadIndex) {
 		this._resetSelection();
 		return true;
 	}
-}
+};
 
 /*
 * Updates the list and the view after a new page of items has been retrieved.
@@ -856,19 +881,14 @@ function(view, forward, loadIndex) {
 * @param result			[ZmCsfeResult]	result of SOAP request
 */
 ZmListController.prototype._handleResponsePaginate =
-function(args) {
-	var view			= args[0];
-	var saveSelection	= args[1];
-	var loadIndex		= args[2];
-	var result			= args[3];
-	
+function(view, saveSelection, loadIndex, offset, result) {
 	var searchResult = result.getResponse();
 	
 	// update "more" flag
 	this._list.setHasMore(searchResult.getAttribute("more"));
 	
 	// cache search results into internal list
-	this._cacheList(searchResult);
+	this._cacheList(searchResult, offset);
 	
 	this._resetOperations(this._toolbar[view], 0);
 	this._resetNavToolBarButtons(view);
@@ -880,20 +900,25 @@ function(args) {
 	this._setViewContents(view);
 	this.pageIsDirty[this.currentPage] = false;
 	this._resetSelection(selectedIdx);
-}
+};
 
 
 ZmListController.prototype._checkReplenish = 
 function(callback) {
 	var view = this._listView[this._currentView];
 	var list = view.getList();
-	// don't bother if the view doesnt really have a list
+	// don't bother if the view doesn't really have a list
+	var replenishmentDone = false;
 	if (list) {
 		var replCount = view.getLimit() - view.size();
-		if (replCount > view.getReplenishThreshold())
+		if (replCount > view.getReplenishThreshold()) {
 			this._replenishList(this._currentView, replCount, callback);
+			replenishmentDone = true;
+		}
 	}
-}
+	if (callback && !replenishmentDone)
+		callback.run();
+};
 
 ZmListController.prototype._replenishList = 
 function(view, replCount, callback) {
@@ -910,11 +935,12 @@ function(view, replCount, callback) {
 		var sublist = list.slice(idxStart, idxEnd);
 		var subVector = AjxVector.fromArray(sublist);
 		this._listView[view].replenish(subVector);
+		if (callback) callback.run();
 	} else {
 		// replenish from server request
 		this._getMoreToReplenish(view, replCount, callback);
 	}
-}
+};
 
 ZmListController.prototype._resetSelection = 
 function(idx) {
@@ -924,7 +950,7 @@ function(idx) {
 		var first = list.get(selIdx);
 		this._listView[this._currentView].setSelection(first, false, true);
 	}
-}
+};
 
 /*
 * Requests replCount items from the server to replenish current listview
@@ -936,21 +962,19 @@ function(idx) {
 ZmListController.prototype._getMoreToReplenish = 
 function(view, replCount, callback) {
 	if (this._list.hasMore()) {
+DBG.println("****** need to replenish: " + replCount);
 		var offset = this._list.size();
 		var respCallback = new AjxCallback(this, this._handleResponseGetMoreToReplenish, [view, callback]);
 		this._search(view, offset, replCount, respCallback);
 	} else {
 		if (this._listView[view].size() == 0)
 			this._listView[view]._setNoResultsHtml();
+		if (callback) callback.run();
 	}
-}
+};
 
 ZmListController.prototype._handleResponseGetMoreToReplenish = 
-function(args) {
-	var view		= args[0];
-	var callback	= args[1];
-	var result		= args[2];
-	
+function(view, callback, result) {
 	var searchResult = result.getResponse();
 	
 	// set updated has more flag
@@ -968,7 +992,7 @@ function(args) {
 	this._toolbar[view].enable(ZmOperation.PAGE_FORWARD, more);
 	
 	if (callback) callback.run(result);
-}
+};
 
 ZmListController.prototype._setNavToolBar = 
 function(toolbar) {
@@ -984,7 +1008,7 @@ function(toolbar) {
 			this._navToolBar.addSelectionListener(ZmOperation.PAGE_DBL_FORW, navBarListener);
 		}
 	}
-}
+};
 
 ZmListController.prototype._resetNavToolBarButtons = 
 function(view) {
@@ -1003,7 +1027,7 @@ function(view) {
 	
 		this._navToolBar.enable(ZmOperation.PAGE_FORWARD, (hasMore || evenMore));
 	}
-}
+};
 
 ZmListController.prototype._showListRange = 
 function(view) {
@@ -1017,11 +1041,26 @@ function(view) {
 		text = start + " - " + end;
 	}
 	this._navToolBar.setText(text);
-}
+};
 
 // default callback before a view is shown - enable/disable nav buttons
 ZmListController.prototype._preShowCallback =
 function(view, viewPushed) {
 	this._resetNavToolBarButtons(view);
 	return true;
-}
+};
+
+ZmListController._newDropDownListener = 
+function(event) {
+	var toolbar = this;
+
+	var controller = toolbar._ZmListController_this;
+	controller._propagateMenuListeners(toolbar, ZmOperation.NEW_MENU);
+
+	var button = toolbar.getButton(ZmOperation.NEW_MENU);
+	var listener = toolbar._ZmListController_newDropDownListener;
+	button.removeDropDownSelectionListener(listener);
+
+	delete toolbar._ZmListController_this;
+	delete toolbar._ZmListController_newDropDownListener;
+};

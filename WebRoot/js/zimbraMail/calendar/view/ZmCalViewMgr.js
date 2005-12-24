@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -35,21 +35,15 @@ function ZmCalViewMgr(parent, controller, dropTgt) {
 	this._views = new Object();
 	this._date = new Date();
 	this._viewFactory = new Object();
-	this._viewFactory[ZmCalViewMgr.DAY_VIEW] = ZmCalDayView;
-	this._viewFactory[ZmCalViewMgr.WORK_WEEK_VIEW] = ZmCalWorkWeekView;
-	this._viewFactory[ZmCalViewMgr.WEEK_VIEW] = ZmCalWeekView;
-	this._viewFactory[ZmCalViewMgr.MONTH_VIEW] = ZmCalMonthView;
-	this._viewFactory[ZmCalViewMgr.SCHEDULE_VIEW] = ZmCalScheduleView;	
+	this._viewFactory[ZmController.CAL_DAY_VIEW] = ZmCalDayView;
+	this._viewFactory[ZmController.CAL_WORK_WEEK_VIEW] = ZmCalWorkWeekView;
+	this._viewFactory[ZmController.CAL_WEEK_VIEW] = ZmCalWeekView;
+	this._viewFactory[ZmController.CAL_MONTH_VIEW] = ZmCalMonthView;
+	this._viewFactory[ZmController.CAL_SCHEDULE_VIEW] = ZmCalScheduleView;	
 }
 
 ZmCalViewMgr.prototype = new DwtComposite;
 ZmCalViewMgr.prototype.constructor = ZmCalViewMgr;
-
-ZmCalViewMgr.DAY_VIEW = "DayView";
-ZmCalViewMgr.WORK_WEEK_VIEW = "WorkWeekView";
-ZmCalViewMgr.WEEK_VIEW = "WeekView";
-ZmCalViewMgr.MONTH_VIEW = "MonthView";
-ZmCalViewMgr.SCHEDULE_VIEW = "ScheduleView";
 
 ZmCalViewMgr._SEP = 5;
 

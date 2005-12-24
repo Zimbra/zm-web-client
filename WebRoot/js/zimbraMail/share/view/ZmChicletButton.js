@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -40,7 +40,7 @@ function ZmChicletButton(parent, outerClass, innerClass) {
 	if (arguments.length == 0) return;
 	DwtControl.call(this, parent, outerClass, DwtControl.RELATIVE_STYLE);
 
-	this._innerDiv = this.getDocument().createElement("div");
+	this._innerDiv = document.createElement("div");
 	this._innerDiv.className = AjxImg.getClassForImage(innerClass);
 	this._innerDiv.style.position = DwtControl.ABSOLUTE_STYLE;
 	this.getHtmlElement().appendChild(this._innerDiv);
@@ -57,15 +57,12 @@ function ZmChicletButton(parent, outerClass, innerClass) {
 	
 	// add custom mouse handlers to standard ones
 	this._setMouseEventHdlrs();
-	this._setKeyEventHdlrs();
 	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
 	this.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this._mouseOutListener));
 	this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
 	this.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._mouseUpListener));
 
-	this._mouseOutAction = new AjxTimedAction();
-	this._mouseOutAction.method = this._setMouseOutClassName;
-	this._mouseOutAction.obj = this;
+	this._mouseOutAction = new AjxTimedAction(this, this._setMouseOutClassName);
 	this._mouseOutActionId = -1;
 }
 

@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -69,6 +69,7 @@ ZmTreeView.COMPARE_FUNC[ZmOrganizer.TAG] = ZmTag.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.SEARCH] = ZmFolder.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.CALENDAR] = ZmCalendar.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.ZIMLET] = ZmZimlet.sortCompare;
+ZmTreeView.COMPARE_FUNC[ZmOrganizer.ROSTER_TREE_ITEM] = ZmRosterTreeItem.sortCompare;
 
 // add space after the following items
 ZmTreeView.ADD_SEP = new Object();

@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -31,8 +31,9 @@ function ZmDateObjectHandler(appCtxt) {
 ZmDateObjectHandler.prototype = new ZmObjectHandler;
 ZmDateObjectHandler.prototype.constructor = ZmDateObjectHandler;
 
-
 ZmDateObjectHandler.TYPE = "date";
+
+ZmDateObjectHandler.ATTR_CURRENT_DATE = "currentDate";
 
 // needs to be kept in sync with ZmDateObjectHandler.DOW
 var $RE_DOW = "(Mon(?:day)?|Tue(?:s(?:day)?)?|Wed(?:nesday)?|Thu(?:rs(?:day)?)?|Fri(?:day)?|Sat(?:urday)?|Sun(?:day)?)";
@@ -55,7 +56,7 @@ ZmDateObjectHandler.MONTH = {
 
 var $RE_TODAY_TOMORROW_YESTERDAY = "(today|tomorrow|yesterday)";
 
-var $RE_NEXT_LAST = "(next|last)";
+var $RE_NEXT_THIS_LAST = "(next|this|last)";
 
 var $RE_COMMA_OR_SP = "(?:\\s+|\\s*,\\s*)";
 
@@ -88,28 +89,12 @@ $RE_DOW + $RE_COMMA_OR_SP + RE_MONTH + $RE_SP + $RE_DOM +
                  $RE_OP_TIME + $RE_OP_YEAR42  // {Friday, March 2nd}, {Mon Mar 22}, {Tue May 24 10:11:26 2005}
 */
 
-ZmDateObjectHandler.registerHandlers =
-function(handlers, appCtxt) {
-	handlers[ZmDateObjectHandler.TYPE] = [new ZmDate1ObjectHandler(appCtxt), 
-					 					new ZmDate2ObjectHandler(appCtxt),
-							 			new ZmDate3ObjectHandler(appCtxt),
-							 			new ZmDate4ObjectHandler(appCtxt),
-							 			new ZmDate5ObjectHandler(appCtxt),
-							 			new ZmDate6ObjectHandler(appCtxt),
-							 			new ZmDate7ObjectHandler(appCtxt),
-							 			new ZmDate8ObjectHandler(appCtxt)];
-};
-
 ZmDateObjectHandler._currentDate = new Date();
 
-ZmDateObjectHandler.setCurrentDate =
+ZmDateObjectHandler.prototype.getCurrentDate =
 function(date) {
-	ZmDateObjectHandler._currentDate = new Date(date);
-};
-
-ZmDateObjectHandler.getCurrentDate =
-function(date) {
-	return ZmDateObjectHandler._currentDate;
+    var d = this[ZmDateObjectHandler.ATTR_CURRENT_DATE];
+	return d ? d : new Date();
 };
 
 ZmDateObjectHandler.prototype.getToolTipText =
@@ -121,14 +106,15 @@ function(obj, context) {
 
 // Create action menu if needed
 ZmDateObjectHandler.prototype.getActionMenu =
-function(obj, span, context) {
+function(obj, span, context, isDialog) {
 	//var isMonthYear = obj.match(ZmDateObjectHandler.MonthYear_RE);
 	//var calOp = isMonthYear ? ZmOperation.MONTH_VIEW : ZmOperation.DAY_VIEW;
 	var calOp = ZmOperation.DAY_VIEW;
-	var list = [calOp, ZmOperation.NEW_APPT];
-	this._menu = new ZmActionMenu(this._appCtxt.getShell(), list);
+	var list = [calOp, ZmOperation.NEW_APPT, ZmOperation.SEP, ZmOperation.SEARCH_MAIL];
+	this._menu = new ZmActionMenu(this._appCtxt.getShell(), list, null, isDialog);
 	this._menu.addSelectionListener(calOp, new AjxListener(this, this._dayViewListener));
 	this._menu.addSelectionListener(ZmOperation.NEW_APPT, new AjxListener(this, this._newApptListener));
+	this._menu.addSelectionListener(ZmOperation.SEARCH_MAIL, new AjxListener(this, this._searchMailListener));	
 	this._actionObject = obj;
 	this._actionContext = context;
 	return this._menu;
@@ -149,14 +135,18 @@ ZmDateObjectHandler.prototype._dayViewListener =
 function(ev) {
 	var obj = this._actionObject;
 	var calApp = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
-	calApp.activate(true, ZmCalViewMgr.DAY_VIEW, this._actionContext.date);
+	calApp.activate(true, ZmController.CAL_DAY_VIEW, this._actionContext.date);
 };
 
 ZmDateObjectHandler.prototype._newApptListener =
 function(ev) {
-	DBG.println(AjxDebug.DBG1, "new appt listener");
 	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
-	cc.newAppointmentHelper(this._actionContext.date);
+	cc.newAppointmentHelper(this._actionContext.date, null, null, ev.shiftKey);
+};
+
+ZmDateObjectHandler.prototype._searchMailListener =
+function(ev) {
+   this._appCtxt.getSearchController().dateSearch(this._actionContext.date);
 };
 
 ZmDateObjectHandler.prototype.selected =
@@ -182,7 +172,7 @@ function(line, startIndex) {
 	var result = ZmDate1ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 	
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var when = result[1].toLowerCase();
 	if (when == "yesterday") {
 		d.setDate(d.getDate()-1);
@@ -202,7 +192,7 @@ function ZmDate2ObjectHandler(appCtxt) {
 ZmDate2ObjectHandler.prototype = new ZmDateObjectHandler;
 ZmDate2ObjectHandler.prototype.constructor = ZmDate2ObjectHandler;
 
-ZmDate2ObjectHandler.REGEX = new RegExp("\\b" + $RE_NEXT_LAST + $RE_SP + $RE_DOW + "\\b", "ig"),
+ZmDate2ObjectHandler.REGEX = new RegExp("\\b" + $RE_NEXT_THIS_LAST + $RE_SP + $RE_DOW + "\\b", "ig"),
 
 ZmDate2ObjectHandler.prototype.match =
 function(line, startIndex) {
@@ -210,7 +200,7 @@ function(line, startIndex) {
 	var result = ZmDate2ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var dow = d.getDay();
 	var ndow = ZmDateObjectHandler.DOW[result[2].toLowerCase()];
 	var addDays;
@@ -218,6 +208,8 @@ function(line, startIndex) {
 	if (result[1].toLowerCase() == "next") {
 		addDays = ndow - dow;
 		addDays += 7;
+	} else if (result[1].toLowerCase() == "this") {
+		addDays = ndow - dow;			
 	} else { // last
 		addDays = (-1 * (dow + 7 - ndow)) % 7;
 		if (addDays == 0)
@@ -245,7 +237,7 @@ function(line, startIndex) {
 	var result = ZmDate3ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var dom = parseInt(result[1], 10);;
 	var month = ZmDateObjectHandler.MONTH[result[2].toLowerCase()];
 	d.setMonth(month, dom);
@@ -278,7 +270,7 @@ function(line, startIndex) {
 	var result = ZmDate4ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var month = ZmDateObjectHandler.MONTH[result[1].toLowerCase()];
 	var dom = parseInt(result[2], 10);;
 	d.setMonth(month, dom);
@@ -311,7 +303,7 @@ function(line, startIndex) {
 	var result = ZmDate5ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var month = parseInt(result[1], 10) - 1;
 	var dom = parseInt(result[2], 10);
 	d.setMonth(month, dom);
@@ -343,7 +335,7 @@ function(line, startIndex) {
 	var result = ZmDate6ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var year = parseInt(result[1], 10);
 	var month = parseInt(result[2], 10) - 1;
 	var dom = parseInt(result[3], 10);
@@ -372,7 +364,7 @@ function(line, startIndex) {
 	var result = ZmDate7ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var month = parseInt(result[1], 10) - 1;
 	var dom = parseInt(result[2], 10);
 	d.setMonth(month, dom);
@@ -404,7 +396,7 @@ function(line, startIndex) {
 	var result = ZmDate8ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(ZmDateObjectHandler.getCurrentDate());
+	var d = new Date(this.getCurrentDate());
 	var year = parseInt(result[1], 10);
 	var month = parseInt(result[2], 10) - 1;
 	var dom = parseInt(result[3], 10);
@@ -414,3 +406,12 @@ function(line, startIndex) {
 	result.context = {date: d, monthOnly: 0};
 	return result;
 };
+
+ZmObjectManager.registerHandler("ZmDate1ObjectHandler", ZmDateObjectHandler.TYPE);
+ZmObjectManager.registerHandler("ZmDate2ObjectHandler", ZmDateObjectHandler.TYPE);
+ZmObjectManager.registerHandler("ZmDate3ObjectHandler", ZmDateObjectHandler.TYPE);
+ZmObjectManager.registerHandler("ZmDate4ObjectHandler", ZmDateObjectHandler.TYPE);
+ZmObjectManager.registerHandler("ZmDate5ObjectHandler", ZmDateObjectHandler.TYPE);
+ZmObjectManager.registerHandler("ZmDate6ObjectHandler", ZmDateObjectHandler.TYPE);
+ZmObjectManager.registerHandler("ZmDate7ObjectHandler", ZmDateObjectHandler.TYPE);
+ZmObjectManager.registerHandler("ZmDate8ObjectHandler", ZmDateObjectHandler.TYPE);

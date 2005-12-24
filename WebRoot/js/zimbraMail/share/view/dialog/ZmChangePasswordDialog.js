@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -35,13 +35,16 @@ function ZmChangePasswordDialog(parent, msgDialog, className) {
 
 	this.setContent(this._contentHtml());
 
-	var doc = this.getDocument();
-	this._oldPasswordField = Dwt.getDomObj(doc, this._oldPasswordId);
-	this._newPasswordField = Dwt.getDomObj(doc, this._newPasswordId);
-	this._confirmPasswordField = Dwt.getDomObj(doc, this._confirmPasswordId);
+	this._oldPasswordField = document.getElementById(this._oldPasswordId);
+	this._newPasswordField = document.getElementById(this._newPasswordId);
+	this._confirmPasswordField = document.getElementById(this._confirmPasswordId);
 
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this.setTabOrder([this._oldPasswordId, this._newPasswordId, this._confirmPasswordId]);
+	
+	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
+	this._minPwdLength = this._appCtxt.get(ZmSetting.PWD_MIN_LENGTH);
+	this._maxPwdLength = this._appCtxt.get(ZmSetting.PWD_MAX_LENGTH);
 };
 
 ZmChangePasswordDialog.prototype = new DwtDialog;
@@ -95,18 +98,6 @@ function(ev) {
 	}
 };
 
-ZmChangePasswordDialog.leadingWhitespaceRegex = /\s+[^\s]*/g;
-ZmChangePasswordDialog.trailingWhitespaceRegex = /\s*[^\s]*\s+/g;
-
-ZmChangePasswordDialog.prototype._hasWhiteSpace = 
-function(field) {
-	if ((field.search(ZmChangePasswordDialog.trailingWhitespaceRegex) != -1) ||
-		(field.search(ZmChangePasswordDialog.leadingWhitespaceRegex) != -1) )
-	{
-		return true;
-	}
-};
-
 ZmChangePasswordDialog.prototype._getPasswordData =
 function() {
 	// Reset the msg dialog (it is a shared resource)
@@ -121,16 +112,10 @@ function() {
 		return null;
 	}
 	
-	if (this._hasWhiteSpace(oldPassword)){
-		this.showMessageDialog(ZmMsg.oldPasswordHasWhitespace);
-		return null;
-	}
-	if (this._hasWhiteSpace(newPassword)){
+	// passwords can't start or end with white space
+	var trimmed = AjxStringUtil.trim(newPassword);
+	if (newPassword.length != trimmed.length) {
 		this.showMessageDialog(ZmMsg.newPasswordHasWhitespace);
-		return null;
-	}
-	if (this._hasWhiteSpace(confirmPassword)){
-		this.showMessageDialog(ZmMsg.confirmPasswordHasWhitespace);
 		return null;
 	}
 
@@ -140,9 +125,9 @@ function() {
 		return null;
 	}
 
-	// check that the length is at least 6 characters
-	if (newPassword.length < 6) {
-		this.showMessageDialog(ZmMsg.newPasswordTooShort);
+	// check that the length is okay
+	if (newPassword.length < this._minPwdLength || newPassword.length > this._maxPwdLength) {
+		this.showMessageDialog(AjxStringUtil.resolve(ZmMsg.newPasswordBadLength, [this._minPwdLength, this._maxPwdLength]));
 		return null;
 	}
 

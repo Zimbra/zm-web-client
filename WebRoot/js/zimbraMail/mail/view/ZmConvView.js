@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -23,10 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmConvView(parent, className, posStyle, controller, dropTgt) {
+function ZmConvView(parent, controller, dropTgt) {
 
-	className = className ? className : "ZmConvView";
-	ZmDoublePaneView.call(this, parent, className, posStyle, ZmController.CONV_VIEW, controller, dropTgt);
+	ZmDoublePaneView.call(this, parent, "ZmConvView", Dwt.ABSOLUTE_STYLE, ZmController.CONV_VIEW, controller, dropTgt);
 
 	this._changeListener = new AjxListener(this, this._convChangeListener);
 	
@@ -117,7 +116,7 @@ function(newWidth, newHeight) {
 			var list = this._msgListView.getList();
 			if (list && list.size() > 0) {
 				var threshold = Math.min(list.size() + 1, 6);
-				var div = Dwt.getDomObj(this.getDocument(), this._msgListView._getItemId(list.get(0)));
+				var div = document.getElementById(this._msgListView._getItemId(list.get(0)));
 				var maxHeight = Dwt.getSize(div).y * threshold;
 				this._summaryTotalHeight = summaryHeight + maxHeight + DwtListView.HEADERITEM_HEIGHT;
 				var sashHeight = this._msgSash.getSize().y;
@@ -187,8 +186,7 @@ function() {
 
 	var subjDivId = Dwt.getNextId();
 	var tagDivId = Dwt.getNextId();
-	var doc = this.getDocument();
-	this._subjectBar = doc.createElement("div");
+	this._subjectBar = document.createElement("div");
 	this._subjectBar.className = "SubjectBar";
 	var html = new Array(2);
 	var idx = 0;
@@ -198,9 +196,9 @@ function() {
 	this._subjectBar.innerHTML = html.join("");
 	this._summary.getHtmlElement().appendChild(this._subjectBar);
 
-	this._subjectDiv = Dwt.getDomObj(doc, subjDivId);
+	this._subjectDiv = document.getElementById(subjDivId);
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		this._tagDiv = Dwt.getDomObj(doc, tagDivId);
+		this._tagDiv = document.getElementById(tagDivId);
 		Dwt.setSize(this._tagDiv, Dwt.DEFAULT, ZmConvView._TAGLIST_HEIGHT);
 		Dwt.setVisible(this._tagDiv, false);
 	}
@@ -232,45 +230,37 @@ function(conv) {
 	
 	if (!numTags) return;
 		
-	var htmlStr = new Array();
-	var idx = 0;
-	htmlStr[idx++] = "<table cellspacing=0 cellpadding=0><tr><td valign='top' class='LabelTd'>";
-	htmlStr[idx++] = ZmMsg.tags;
-	htmlStr[idx++] = ":</td><td class='TagTd'>";
-	
 	var ta = new Array();	
-	for (var i = 0; i < numTags; i++) {
-		var tag = this._tagList.getById(conv.tags[i]);
-		if (tag)
-			ta[i] = tag;
-		else
-			DBG.println(AjxDebug.DBG1, "Could not get tag with ID " + conv.tags[i]);
-	}
+	for (var j = 0; j < numTags; j++)
+		ta[j] = this._tagList.getById(conv.tags[j]);
+
 	if (ta.length == 0)	return;
 	ta.sort(ZmTag.sortCompare);
 
-	var tagWidth = ZmTag.COLOR_MINI_ICON[ta[0].color][1];
+	var html = new Array();
+	var i = 0;
+	html[i++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%>";
+	html[i++] = "<tr><td style='overflow:hidden'>";
+	
+	for (var j = 0; j < numTags; j++) {
+		var anchorId = [this._tagDiv.id, ZmConvView._TAG_ANCHOR, ta[j].id].join("");
+		var imageId = [this._tagDiv.id, ZmDoublePaneView._TAG_IMG, ta[j].id].join("");
 
-	for (var i = 0; i < numTags; i++) {
-		var txtWidth = Dwt.getHtmlExtent(ta[i].name).x;
-		htmlStr[idx++] = "<a href='javascript: void ZmConvView._tagClick(\"";
-		htmlStr[idx++] = this._htmlElId;
-		htmlStr[idx++] = '","';
-		htmlStr[idx++] = ta[i].id;
-		htmlStr[idx++] = "\")' id='";
-		htmlStr[idx++] = this._tagDiv.id + ZmConvView._TAG_ANCHOR + ta[i].id;
-		htmlStr[idx++] = "'>";
-		htmlStr[idx++] = "<table style='display:inline;' border=0 cellspacing=0 cellpadding=0 width=";
-		htmlStr[idx++] = tagWidth;
-		htmlStr[idx++] = "><tr><td width=";
-		htmlStr[idx++] = tagWidth;
-		htmlStr[idx++] = ">";
-		htmlStr[idx++] = AjxImg.getImageHtml(ZmTag.COLOR_MINI_ICON[ta[i].color], null, ["id='", this._tagDiv.id + ZmDoublePaneView._TAG_IMG + ta[i].id, "'"].join(""));
-		htmlStr[idx++] = "</td></tr></table>";
-		htmlStr[idx++] = AjxStringUtil.htmlEncodeSpace(ta[i].name) + "</a>";
+		html[i++] = "<a href='javascript:ZmConvView._tagClick(\"";
+		html[i++] = this._htmlElId;
+		html[i++] = '","';
+		html[i++] = ta[j].id;
+		html[i++] = "\")' id='";
+		html[i++] = anchorId;
+		html[i++] = "'>";
+		html[i++] = "<table style='display:inline; vertical-align:middle;' border=0 cellspacing=0 cellpadding=0><tr><td>";
+		html[i++] = AjxImg.getImageHtml(ZmTag.COLOR_MINI_ICON[ta[j].color], null, ["id='", imageId, "'"].join(""));
+		html[i++] = "</td></tr></table>";
+		html[i++] = AjxStringUtil.htmlEncodeSpace(ta[j].name);
+		html[i++] = "</a>";
 	}
-	htmlStr[idx++] = "</td></tr></table>";
-	this._tagDiv.innerHTML = htmlStr.join("");
+	html[i++] = "</td></tr></table>";
+	this._tagDiv.innerHTML = html.join("");
 }
 
 ZmConvView.prototype._convChangeListener =
@@ -316,7 +306,7 @@ function(ev) {
 			// allow CLV to update its msg count if its been changed
 			var fields = new Object();
 			fields[ZmItem.F_COUNT] = true;
-			this._conv._listNotify(ZmEvent.E_MODIFY, {fields: fields});
+			this._conv.list._notify(ZmEvent.E_MODIFY, {items: [this._conv], fields: fields});
 			// reset selection to first msg
 			this._msgListView.setSelection(this._conv.msgs.getVector().get(0));
 		}
@@ -330,9 +320,10 @@ function(ev) {
 
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
-		var img = Dwt.getDomObj(this.getDocument(), this._tagDiv.id +  ZmDoublePaneView._TAG_IMG + ev.source.id);
+		var tag = ev.getDetail("organizers")[0];
+		var img = document.getElementById(this._tagDiv.id +  ZmDoublePaneView._TAG_IMG + tag.id);
 		if (img)
-			AjxImg.setImage(img, ZmTag.COLOR_MINI_ICON[ev.source.color]);
+			AjxImg.setImage(img, ZmTag.COLOR_MINI_ICON[tag.color]);
 	}
 	
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY)
@@ -341,6 +332,6 @@ function(ev) {
 
 ZmConvView._tagClick =
 function(myId, tagId) {
-	var dwtObj = Dwt.getObjectFromElement(Dwt.getDomObj(document, myId));
+	var dwtObj = Dwt.getObjectFromElement(document.getElementById(myId));
 	dwtObj.notifyListeners(ZmConvView._TAG_CLICK, tagId);
 }

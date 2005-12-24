@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -39,8 +39,8 @@ function ZmNewImDialog(parent, className, screenName) {
     this._cancelButton.setText("Cancel");
     this._cancelButton.addSelectionListener(new AjxListener(this, ZmNewImDialog.prototype._cancelButtonListener));
 
- 	Dwt.getDomObj(this.getDocument(), this._sendButtonId).appendChild(this._sendButton.getHtmlElement());
- 	Dwt.getDomObj(this.getDocument(), this._cancelButtonId).appendChild(this._cancelButton.getHtmlElement());
+ 	document.getElementById(this._sendButtonId).appendChild(this._sendButton.getHtmlElement());
+ 	document.getElementById(this._cancelButtonId).appendChild(this._cancelButton.getHtmlElement());
  	
  	// setup array of return IM's
  	this._replies = new Array (
@@ -98,11 +98,11 @@ ZmNewImDialog.prototype._sendButtonListener =
 function(ev) {
 
 	var prefix = ZmNewImDialog.IMUSER + ": ";
-	var imin = Dwt.getDomObj(this.getDocument(), ZmNewImDialog.IMIN_ID);
+	var imin = document.getElementById(ZmNewImDialog.IMIN_ID);
 	var msg = imin.value;
 	
 	if (msg.length > 0) {
-		var imout = Dwt.getDomObj(this.getDocument(), ZmNewImDialog.IMOUT_ID);
+		var imout = document.getElementById(ZmNewImDialog.IMOUT_ID);
 		
 		imout.readOnly = false;
 		imout.value += prefix + msg + ZmMsg.CRLF;
@@ -118,8 +118,8 @@ function(ev) {
 ZmNewImDialog.prototype._cancelButtonListener =
 function(ev) {
 
-	Dwt.getDomObj(this.getDocument(), ZmNewImDialog.IMIN_ID).value = "";
-	Dwt.getDomObj(this.getDocument(), ZmNewImDialog.IMOUT_ID).value = "";
+	document.getElementById(ZmNewImDialog.IMIN_ID).value = "";
+	document.getElementById(ZmNewImDialog.IMOUT_ID).value = "";
 
 	this.popdown();
 }

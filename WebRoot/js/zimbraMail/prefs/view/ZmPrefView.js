@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -29,28 +29,26 @@
 * @class
 * This class represents a tabbed view of the preference pages.
 *
-* @author Enrique Del Campo
 * @author Conrad Damon
-* @param parent				the containing widget
-* @param app				the preferences app
-* @param posStyle			positioning style
-* @param controller			prefs controller
-* @param passwordDialog		a ZmChangePasswordDialog
+*
+* @param parent				[DwtControl]				the containing widget
+* @param appCtxt			[ZmAppCtxt]					the app context
+* @param posStyle			[constant]					positioning style
+* @param controller			[ZmPrefController]			prefs controller
+* @param passwordDialog		[ZmChangePasswordDialog]	password change dialog
 */
-function ZmPrefView(parent, app, posStyle, controller, passwordDialog) {
+function ZmPrefView(parent, appCtxt, posStyle, controller, passwordDialog) {
 
     DwtTabView.call(this, parent, "ZmPrefView", posStyle);
 
 	this._parent = parent;
-    this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	this._app = app;
+    this._appCtxt = appCtxt;
 	this._controller = controller;
 	this._passwordDialog = passwordDialog;
 
     this.setScrollStyle(DwtControl.SCROLL);
 	this.prefView = new Object();
-	this._filtersEnabled = this._appCtxt.get(ZmSetting.FILTERS_ENABLED);
-	this._rendered = false;
+	this._hasRendered = false;
 };
 
 ZmPrefView.prototype = new DwtTabView;
@@ -63,7 +61,7 @@ ZmPrefView.FILTER_RULES	= 3;
 ZmPrefView.ADDR_BOOK	= 4;
 ZmPrefView.CALENDAR		= 5;
 ZmPrefView.VIEWS = [ZmPrefView.GENERAL, ZmPrefView.MAIL, 
-					ZmPrefView.FILTER_RULES, ZmPrefView.ADDR_BOOK, ZmPrefView.CALENDAR];
+					ZmPrefView.ADDR_BOOK, ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES];
 
 // list of prefs for each page
 ZmPrefView.PREFS = new Object();
@@ -83,12 +81,15 @@ ZmPrefView.TAB_NAME[ZmPrefView.CALENDAR]		= ZmMsg.calendar;
 ZmPrefView.prototype.toString =
 function () {
     return "ZmPrefView";
-}
+};
 
+/**
+* Returns this view's controller.
+*/
 ZmPrefView.prototype.getController =
 function() {
 	return this._controller;
-}
+};
 
 /**
 * Displays a set of tabs, one for each preferences page. The first tab will have its
@@ -96,54 +97,37 @@ function() {
 */
 ZmPrefView.prototype.show =
 function() {
-	if (this._rendered)
-		return;
+	if (this._hasRendered) return;
 
 	for (var i = 0; i < ZmPrefView.VIEWS.length; i++) {
 		var view = ZmPrefView.VIEWS[i];
 
-		if ((view == ZmPrefView.FILTER_RULES) && (!this._filtersEnabled))
-			continue;
-
-		if (view == ZmPrefView.ADDR_BOOK && (!this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)))
-			continue;
-
-		if (view == ZmPrefView.CALENDAR && (!this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)))
-			continue;
+		if ((view == ZmPrefView.FILTER_RULES) && (!this._appCtxt.get(ZmSetting.FILTERS_ENABLED))) continue;
+		if (view == ZmPrefView.ADDR_BOOK && (!this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))) continue;
+		if (view == ZmPrefView.CALENDAR && (!this._appCtxt.get(ZmSetting.CALENDAR_ENABLED))) continue;
 
 		var viewObj = null;
-		if (view != ZmPrefView.FILTER_RULES) {
-			viewObj = new ZmPreferencesPage(this._parent, this._app, view, this._passwordDialog);
+		if (view == ZmPrefView.FILTER_RULES) {
+			viewObj = this._controller.getFilterRulesController().getFilterRulesView();
 		} else {
-			viewObj = new ZmFilterPrefView(this._parent, this._app._appCtxt);
-			var size = this.getSize();
-			viewObj.setSize((size.x *.97), (size.y *.97));
+			viewObj = new ZmPreferencesPage(this._parent, this._appCtxt, view, this._controller, this._passwordDialog);
 		}
 
 		this.prefView[view] = viewObj;
+
 		this.addTab(ZmPrefView.TAB_NAME[view], this.prefView[view]);
 	}
-	this._rendered = true;
+	this._hasRendered = true;
 };
 
 ZmPrefView.prototype.getTitle =
 function() {
-	return this._rendered ? this.getActiveView().getTitle() : null;
+	return this._hasRendered ? this.getActiveView().getTitle() : null;
 };
 
-/**
- * For some reason, the filter page, when rendered, resets the height of the
- * pref view div. By intercepting the setBounds call, we will can set the 
- * height of the filter rules view as well.
- */
-ZmPrefView.prototype.setBounds =
-function(x, y, width, height) {
-	DwtControl.prototype.setBounds.call(this, x, y, width, height);
-	if (this._filtersEnabled) {
-		var filterRulesView = this.prefView[ZmPrefView.FILTER_RULES];
-		if (filterRulesView)
-			filterRulesView.setSize(width *.97, height *.93);
-	}
+ZmPrefView.prototype.getView =
+function(view) {
+	return this.prefView[view];
 };
 
 /**
@@ -152,10 +136,8 @@ function(x, y, width, height) {
 * simply whether _any_ prefs have changed, in which case it short-circuits as
 * soon as it finds one that has changed.
 *
-* @param dirtyCheck		only check if any prefs have changed
-* @param noValidation   true if the caller doesn't want to perform any validation
-* @returns				a list of changed prefs, or, optionally, true if any
-*						pref has changed
+* @param dirtyCheck		[boolean]* 		if true, only check if any prefs have changed
+* @param noValidation	[boolean]*		if true, don't perform any validation
 */
 ZmPrefView.prototype.getChangedPrefs =
 function(dirtyCheck, noValidation) {
@@ -173,11 +155,15 @@ function(dirtyCheck, noValidation) {
 		// so we'll skip the rest of the checks
 		if (!viewPage.hasRendered()) continue;
 
-		var value;
 		var prefs = ZmPrefView.PREFS[view];
 		for (var j = 0; j < prefs.length; j++) {
 			var id = prefs[j];
 			var setup = ZmPref.SETUP[id];
+			var pre = setup.precondition;
+			if (pre && !(this._appCtxt.get(pre)))
+				continue;		
+			
+			var value = null;
 			var type = setup ? setup.displayContainer : null;
 			var validationFunc = setup ? setup.validationFunction : null;
 			if (type && type.indexOf("x_") == 0) // ignore non-form elements			
@@ -237,8 +223,5 @@ function(dirtyCheck, noValidation) {
 */
 ZmPrefView.prototype.isDirty =
 function() {
-	var changed = this.getChangedPrefs(true, true);
-	return this._filtersEnabled
-		? (changed || ZmFilterRules.shouldSave())
-		: changed;
+	return this.getChangedPrefs(true, true);
 };

@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -87,7 +87,7 @@ function() {
 
 ZmConvController.prototype._createDoublePaneView = 
 function() {
-	return new ZmConvView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
+	return new ZmConvView(this._container, this, this._dropTgt);
 }
 
 // Creates the conv view, which is not a standard list view (it's a two-pane sort of thing).
@@ -136,14 +136,19 @@ function() {
 	return list;
 }
 
+/*
+* Override to replace DELETE with DELETE_MENU
+*/
 ZmConvController.prototype._standardToolBarOps =
 function() {
 	var list = [ZmOperation.NEW_MENU];
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		list.push(ZmOperation.TAG_MENU);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.DELETE_MENU);
+	list.push(ZmOperation.MOVE);
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
 		list.push(ZmOperation.PRINT);
-	list.push(ZmOperation.DELETE_MENU, ZmOperation.MOVE);
 	return list;
 }
 
@@ -216,7 +221,7 @@ function(ev) {
 	ZmListController.prototype._dropListener.call(this, ev);
 	// need to check to make sure tagging actually happened
 	if (ev.action == DwtDropEvent.DRAG_DROP) {
-		var div = DwtUiEvent.getTargetWithProp(ev.uiEvent, "_itemIndex");
+		var div = Dwt.getAttr(ev.uiEvent.target, "_itemIndex", true);
 		if (div) {
 			var tag = ev.srcData;
 			if (!this._conv.hasTag(tag.id)) {
@@ -256,7 +261,16 @@ function() {
 	}
 	
 	// Don't pop unless we're currently visible!
-	popView = popView && (this._appCtxt.getCurrentViewId() == this._currentView);
+	var currViewId = this._appCtxt.getCurrentViewId();
+
+	// bug fix #4356 - if currViewId is compose (among other restrictions) then still pop
+	var popAnyway = false;
+	if (currViewId == ZmController.COMPOSE_VIEW && this._conv.numMsgs == 1) {
+		var msg = this._conv.msgs.getArray()[0];
+		popAnyway = msg.isInvite() && msg.folderId == ZmFolder.ID_TRASH;
+	}
+
+	popView = popView && ((currViewId == this._currentView) || popAnyway);
 
 	if (popView) {
 		this._checkConvLocation();
@@ -271,6 +285,7 @@ function() {
 				break;
 			}
 		}
+
 		this._toolbar[this._currentView].getButton(ZmOperation.DELETE_MENU).setEnabled(!bAllDeleted);
 	}
 
@@ -322,16 +337,7 @@ ZmConvController.prototype._search =
 function(view, offset, limit, callback) {
 
 	var sortby = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
-	this._schedule(this._doSearch, {sortby: sortby, offset: offset, limit: limit, callback: callback});
-}
-
-ZmConvController.prototype._doSearch = 
-function(params) {
-	try {
-		this._conv.load(this._searchString, params.sortby, params.offset, params.limit, params.callback);
-	} catch (ex) {
-		this._handleException(ex, this._doSearch, params, false);
-	}
+	this._conv.load(this._searchString, sortby, offset, limit, callback);
 }
 
 ZmConvController.prototype._paginateDouble = 

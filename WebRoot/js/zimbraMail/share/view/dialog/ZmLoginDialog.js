@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -28,7 +28,6 @@ function ZmLoginDialog(parent, zIndex, className) {
     className = className || "ZmLoginDialog";
     DwtComposite.call(this, parent, className, DwtControl.ABSOLUTE_STYLE);
 
-	var doc = this.getDocument();
     this._origClassName = className;
     this._xparentClassName = className + "-Transparent";
     this.setBounds(0, 0, "100%", "100%");
@@ -41,27 +40,27 @@ function ZmLoginDialog(parent, zIndex, className) {
 	var okCellId = Dwt.getNextId();
 	var errorCellId = Dwt.getNextId();
 	var reloginModeId = Dwt.getNextId();
-    var form = doc.createElement("form");
+    var form = document.createElement("form");
     form.innerHTML = this._createHtml(unameId, pwordId, okCellId, errorCellId, reloginModeId);
     htmlElement.appendChild(form);
-    this._errorCell = Dwt.getDomObj(doc, errorCellId);
+    this._errorCell = document.getElementById(errorCellId);
     
-    this._unameField = Dwt.getDomObj(doc, unameId);
+    this._unameField = document.getElementById(unameId);
 	Dwt.setHandler(this._unameField, DwtEvent.ONKEYPRESS, ZmLoginDialog._keyPressHdlr);
     this._unameField._parentId = this._htmlElId;
     
-    this._pwordField = Dwt.getDomObj(doc, pwordId);
+    this._pwordField = document.getElementById(pwordId);
     this._pwordField._parentId = this._htmlElId;
 	Dwt.setHandler(this._pwordField, DwtEvent.ONKEYPRESS, ZmLoginDialog._keyPressHdlr);
     
-    this._reloginModeField = Dwt.getDomObj(doc, reloginModeId);
+    this._reloginModeField = document.getElementById(reloginModeId);
     this.setReloginMode(false);
     
     this._loginButton = new DwtButton(this, null, "DwtButton contrast");
     this._loginButton.setText(ZmMsg.login);
     this._loginButton.setData("me", this);
     this._loginButton.addSelectionListener(new AjxListener(this, this._loginSelListener));
-    Dwt.getDomObj(doc, okCellId).appendChild(this._loginButton.getHtmlElement());
+    document.getElementById(okCellId).appendChild(this._loginButton.getHtmlElement());
 }
 
 ZmLoginDialog.prototype = new DwtComposite;
@@ -157,7 +156,7 @@ function(unameId, pwordId, okCellId, errorCellId, reloginModeId) {
 	html[i++] = "<table border=0 width=100% class='ZmLoginDialog-MainPanel'>";
 	html[i++] = "<tr><td colspan=3 id='" + errorCellId + "'>&nbsp;</td></tr>";
 	html[i++] = "<tr height=40><td width=100 align=right>" + ZmMsg.username + ":</td>";
-	html[i++] = "<td colspan=2><input type=text tabIndex=1 class='ZmLoginDialog-Field' id='" + unameId + "'></td>";
+	html[i++] = "<td colspan=2><input type=text autocomplete='off' tabIndex=1 class='ZmLoginDialog-Field' id='" + unameId + "'></td>";
 	html[i++] = "</tr><tr height=30>";
 	html[i++] = "<td align=right width=100>" + ZmMsg.password + ":</td>";
 	html[i++] = "<td colspan=2><input type=password tabIndex=2 class='ZmLoginDialog-Field' id='" + pwordId + "'></td>";
@@ -167,14 +166,18 @@ function(unameId, pwordId, okCellId, errorCellId, reloginModeId) {
 	html[i++] = "<td width=100% id='" + reloginModeId + "'></td>";
 	html[i++] = "<td id='" + okCellId + "'></td>";
 	html[i++] = "</tr></table>";
-	html[i++] = "</td></tr></table>";
+	html[i++] = "</td></tr>";
+	html[i++] = "<tr><td colspan=10 style='font-size:9px; text-align:center; color:#999999;'>";
+	html[i++] = ZmMsg.splashScreenCopyright;
+	html[i++] = "</td></tr>";
+	html[i++] = "</table>";
 	html[i++] = "</td></tr></table>";
 	html[i++] = "</td></tr></table>";
 
 	return html.join("");
 }
 
-ZmLoginDialog.prototype._addChild =
+ZmLoginDialog.prototype.addChild =
 function(child, childHtmlElement) {
     this._children.add(child);
 }
@@ -187,7 +190,7 @@ function(bReloginMode, app, obj) {
 	
 	if (bReloginMode) {
 		this._reloginModeField.innerHTML =  "<a id='" + modeId + "' href='javascript:;'>" + ZmMsg.loginAsDiff + "</a>";
-		var anchor = Dwt.getDomObj(this.getDocument(), modeId);
+		var anchor = document.getElementById(modeId);
 		Dwt.setHandler(anchor, DwtEvent.ONCLICK, ZmLoginDialog._loginDiffListener);
 		anchor._app = app;
 		anchor._obj = obj;
@@ -200,7 +203,7 @@ function(bReloginMode, app, obj) {
 		html[i++] = "<td valign=middle>" + ZmMsg.publicComputer + "</td></tr></table>";
 		this._reloginModeField.innerHTML = html.join("");
 
-	    this._pubCompField = Dwt.getDomObj(this.getDocument(), modeId);
+	    this._pubCompField = document.getElementById(modeId);
 	    this._pubCompField._parentId = this._htmlElId;
 	}
 }
@@ -215,7 +218,7 @@ function(selEvt) {
 	}
 	
 	if (this._callback)
-		this._callback.run([username, this._pwordField.value, this._pubCompField.checked]);
+		this._callback.run(username, this._pwordField.value, this._pubCompField.checked);
 }
 
 ZmLoginDialog._keyPressHdlr =
@@ -224,13 +227,13 @@ function(ev) {
 	if (charCode == 13 || charCode == 3) {
 		var obj = DwtUiEvent.getTarget(ev);
 		var doc = obj.document ? obj.document : ((obj.ownerDocument)? obj.ownerDocument : window.document);
-		var parent = Dwt.getObjectFromElement(Dwt.getDomObj(doc, obj._parentId));
+		var parent = Dwt.getObjectFromElement(document.getElementById(obj._parentId));
 		if (obj == parent._unameField) {
 			parent._pwordField.focus();
 		} else {
 			if (parent._callback) {
 				parent.setCursor("wait");
-				parent._callback.run([parent._unameField.value, parent._pwordField.value, parent._pubCompField.checked]);
+				parent._callback.run(parent._unameField.value, parent._pwordField.value, parent._pubCompField.checked);
 			}
 		}
 		return false;

@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -54,6 +54,14 @@ function() {
 ZmSearchController.prototype.getSearchToolbar = 
 function() {
 	return this._searchToolBar;
+}
+
+ZmSearchController.prototype.dateSearch = 
+function(d) {
+    if (d == null) d = new Date();
+    var date = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
+	var groupBy = this._appCtxt.getSettings().getGroupMailBy();
+	this.search({query: "date:"+date, types: [groupBy]});
 }
 
 ZmSearchController.prototype.fromSearch = 
@@ -173,6 +181,8 @@ function() {
 * @param sortBy			[constant]*			sort constraint
 * @param offset			[int]*				starting point in list of matching items
 * @param limit			[int]*				maximum number of items to return
+* @param prevId			[int]*				ID of last items displayed (for pagination)
+* @param prevSortBy		[constant]*			previous sort order (for pagination)
 * @param noRender		[boolean]*			if true, results will not be passed to controller
 * @param userText		[boolean]*			true if text was typed by user into search box
 * @param callback		[AjxCallback]*		async callback
@@ -183,8 +193,8 @@ function(params) {
 	if (!(params.query && params.query.length)) return;
 	
 	// if the search string starts with "$set:" then it is a command to the client 
-	if (params.query.indexOf("$set:") == 0) {
-		this._appCtxt.getClientCmdHdlr().execute((params.query.substr(5)).split(" "));
+	if (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0) {
+		this._appCtxt.getClientCmdHdlr().execute((params.query.substr(5)));
 		return;
 	}
 
@@ -193,11 +203,9 @@ function(params) {
 }
 
 ZmSearchController.prototype._handleResponseSearch =
-function(args) {
-	var callback	= args[0];
-	var result		= args[1];
+function(callback, result) {
 	if (callback) callback.run();
-}
+};
 
 /**
 * Performs the given search. It takes a ZmSearch, rather than constructing one out of the currently selected menu
@@ -212,11 +220,13 @@ function(args) {
 ZmSearchController.prototype.redoSearch =
 function(search, noRender, changes, callback, errorCallback) {
 	var params = {};
-	params.query = search.query;
-	params.types = search.types;
-	params.sortBy = search.sortBy;
-	params.offset = search.offset;
-	params.limit = search.limit;
+	params.query		= search.query;
+	params.types		= search.types;
+	params.sortBy		= search.sortBy;
+	params.offset		= search.offset;
+	params.limit		= search.limit;
+	params.prevId		= search.prevId;
+	params.prevSortBy	= search.prevSortBy;
 	
 	if (changes)
 		for (var key in changes) 
@@ -275,7 +285,10 @@ function(types) {
 /*
 * Performs the search.
 *
-* @param params	[Object]	a hash of arguments for the search (see search() method)
+* @param params			[Object]		a hash of arguments for the search (see search() method)
+* @param noRender		[boolean]*		if true, the search results will not be rendered
+* @param callback		[AjxCallback]*	callback
+* @param errorCallback	[AjxCallback]*	error callback
 */
 ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
@@ -290,17 +303,20 @@ function(params, noRender, callback, errorCallback) {
 	var types = params.types ? params.types : this.getTypes();
 	if (types instanceof Array) // convert array to AjxVector if necessary
 		types = AjxVector.fromArray(types);
+		
+	// if the user explicitly searched for all types, force mixed view
+	var isMixed = (this._searchFor == ZmSearchToolBar.FOR_ANY_MI);
 
 	// only set contact source if we are searching for contacts
-	var contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmSearchToolBar.FOR_GAL_MI))
+	params.contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmSearchToolBar.FOR_GAL_MI))
 		? this._contactSource : null;
 	// find suitable sort by value if not given one (and if applicable)
 	params.sortBy = params.sortBy ? params.sortBy : this._getSuitableSortBy(types);
-	
-	var search = new ZmSearch(this._appCtxt, params.query, types, params.sortBy, params.offset, params.limit, contactSource);
-	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, noRender, callback]);
-	if (!errorCallback) errorCallback = new AjxCallback(this, this._handleErrorDoSearch, params);
-	search.execute(respCallback, errorCallback);
+	params.types = types;
+	var search = new ZmSearch(this._appCtxt, params);
+	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, noRender, isMixed, callback]);
+	if (!errorCallback) errorCallback = new AjxCallback(this, this._handleErrorDoSearch, [search, isMixed]);
+	search.execute({callback: respCallback, errorCallback: errorCallback});
 }
 
 /*
@@ -312,13 +328,7 @@ function(params, noRender, callback, errorCallback) {
 * @param result			[ZmCsfeResult]
 */
 ZmSearchController.prototype._handleResponseDoSearch =
-function(args) {
-
-	var search		= args[0];
-	var noRender	= args[1];
-	var callback	= args[2];
-	var result		= args[3];
-
+function(search, noRender, isMixed, callback, result) {
 	var results = result.getResponse();
 
 	this._appCtxt.setCurrentSearch(search);
@@ -329,35 +339,42 @@ function(args) {
 		results.type = search.types.get(0);
 	
 	if (!noRender) {
-		// allow old results to dtor itself
-		if (this._results && (this._results.type == results.type))
-			this._results.dtor();
-		this._results = results;
-
-		DBG.timePt("handle search results");
-		if (results.type == ZmItem.CONV) {
-			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().show(results, search.query);
-		} else if (results.type == ZmItem.MSG) {
-			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController().show(results, search.query);
-		} else {
-			// determine if we need to default to mixed view
-			var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-			var folder = folderTree ? folderTree.getById(search.folderId) : null;
-			var inTrash = folder && folder.isInTrash();
-
-			// only show contact view if search is not in Trash folder
-			if (results.type == ZmItem.CONTACT && !inTrash) {
-				this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController().show(results, search.query, this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
-			} else {
-				this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, search.query);
-			}
-		}
-		this._appCtxt.setCurrentList(results.getResults(results.type));
+		this._showResults(results, search, isMixed);		
 	}
-	DBG.timePt("render search results");
 	
 	if (callback) callback.run(result);
-}
+};
+
+ZmSearchController.prototype._showResults =
+function(results, search, isMixed) {
+	// allow old results to dtor itself
+	if (this._results && (this._results.type == results.type))
+		this._results.dtor();
+	this._results = results;
+
+	DBG.timePt("handle search results");
+	if (isMixed) {
+		this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, search.query);
+	} else if (results.type == ZmItem.CONV) {
+		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().show(results, search.query);
+	} else if (results.type == ZmItem.MSG) {
+		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController().show(results, search.query);
+	} else {
+		// determine if we need to default to mixed view
+		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+		var folder = folderTree ? folderTree.getById(search.folderId) : null;
+		var inTrash = folder && folder.isInTrash();
+
+		// only show contact view if search is not in Trash folder
+		if (results.type == ZmItem.CONTACT && !inTrash) {
+			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController().show(results, search.query, this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
+		} else {
+			this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results, search.query);
+		}
+	}
+	this._appCtxt.setCurrentList(results.getResults(results.type));
+	DBG.timePt("render search results");
+};
 
 /*
 * Handle a few minor errors where we show an empty result set and issue a 
@@ -365,21 +382,20 @@ function(args) {
 * folder, no such tag, and bad query.
 */
 ZmSearchController.prototype._handleErrorDoSearch =
-function(args) {
-	var params	= args[0];
-	var ex		= args[1];
-	
+function(search, isMixed, ex) {
+	if (this._searchToolBar)
+		this._searchToolBar.setEnabled(true);
+	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
+
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER ||
 		ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
 		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR) {
 
-		if (this._searchToolBar)
-			this._searchToolBar.setEnabled(true);
-		DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
 		var msg = this._getErrorMsg(ex.code);
-		this._appCtxt.getAppController().setStatusMsg(msg);
+		this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 		var results = new ZmSearchResult(this._appCtxt);
-		results.type = params.types ? params.types[0] : null;
+		results.type = search.types ? search.types.get(0) : null;
+		this._showResults(results, search, isMixed);
 		return true;
 	} else {
 		return false;
@@ -425,8 +441,7 @@ function(ev) {
 
 	var id = ev.item.getData(ZmSearchToolBar.MENUITEM_ID);
 	this._searchFor = id;
-	if (id == ZmItem.CONTACT || id == ZmSearchToolBar.FOR_GAL_MI)
-		this._contactSource = id;
+	this._contactSource = (id == ZmSearchToolBar.FOR_GAL_MI) ? ZmSearchToolBar.FOR_GAL_MI : ZmItem.CONTACT;
 
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
 	var image = ZmSearchToolBar.ICON_KEY[id];

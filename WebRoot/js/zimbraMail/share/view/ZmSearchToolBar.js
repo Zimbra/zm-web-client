@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -37,18 +37,17 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 
 	this._createHtml(fieldId, searchColId, browseColId, saveColId, navColId, searchMenuColId);
 
-	var doc = this.getDocument();
-	this._searchField = Dwt.getDomObj(doc, fieldId);
+	this._searchField = document.getElementById(fieldId);
 	Dwt.setHandler(this._searchField, DwtEvent.ONKEYPRESS, ZmSearchToolBar._keyPressHdlr);
 	
 	var groupBy = this._appCtxt.getSettings().getGroupMailBy();
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
     this._searchButton = this._createButton(ZmSearchToolBar.SEARCH_BUTTON, null, ZmMsg.search, null, tooltip, true, "TBButtonWhite");
-    Dwt.getDomObj(doc, searchColId).appendChild(this._searchButton.getHtmlElement());
+    document.getElementById(searchColId).appendChild(this._searchButton.getHtmlElement());
 
 	this._searchMenuButton = this._createButton(ZmSearchToolBar.SEARCH_MENU_BUTTON, "MailFolder", null, null, ZmMsg.chooseSearchType, true, "TBButtonWhite");
 	this._searchMenuButton.noMenuBar = true;
-    Dwt.getDomObj(doc, searchMenuColId).appendChild(this._searchMenuButton.getHtmlElement());
+    document.getElementById(searchMenuColId).appendChild(this._searchMenuButton.getHtmlElement());
 	var menuParent = this._searchMenuButton;
     var menu = new DwtMenu(menuParent, null, "ActionMenu");
     menuParent.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
@@ -84,12 +83,12 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	
 	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
 		this._browseButton = this._createButton(ZmSearchToolBar.BROWSE_BUTTON, null, ZmMsg.searchBuilder, null, ZmMsg.openSearchBuilder, true, "TBButtonWhite");
-	    Dwt.getDomObj(doc, browseColId).appendChild(this._browseButton.getHtmlElement());
+	    document.getElementById(browseColId).appendChild(this._browseButton.getHtmlElement());
 	}
 
 	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
-		this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, "Save", null, "SaveDis", ZmMsg.saveCurrentSearch, this._appCtxt.get(ZmSetting.BROWSE_ENABLED), "TBButtonWhite");
-	    Dwt.getDomObj(doc, saveColId).appendChild(this._saveButton.getHtmlElement());
+		this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, "Save", null, "SaveDis", ZmMsg.saveCurrentSearch, true, "TBButtonWhite");
+	    document.getElementById(saveColId).appendChild(this._saveButton.getHtmlElement());
 	}
 }
 
@@ -194,7 +193,7 @@ function(fieldId, searchColId, browseColId, saveColId, navColId, searchMenuColId
 	html[i++] = "<table style='height:auto;width:100%;height:100%;border-collapse:collapse;'><tr>";
 	html[i++] = "<td id='" + searchMenuColId + "'></td>";
 	html[i++] = "<td width='100%'>";
-	html[i++] = "<input type='text' nowrap id='" + fieldId + "' class='search_input'></td>";
+	html[i++] = "<input type='text' autocomplete='off' nowrap id='" + fieldId + "' class='search_input'></td>";
 	html[i++] = "<td id='" + searchColId + "'></td>";
 	html[i++] = "<td id='" + saveColId + "'></td>";
 	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {

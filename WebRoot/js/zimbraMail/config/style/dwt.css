@@ -1,4 +1,28 @@
 /*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.1
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.1 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ * 
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
+ * All Rights Reserved.
+ * 
+ * Contributor(s):
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
+/*
 * Modifiers
 *
 * Modifiers were found to not work reliably in IE and have been removed.  
@@ -33,11 +57,27 @@
 }
 
 .DwtShellBusyDialog td.WaitIcon {
-	background-image:url("/zimbra/img/animated/wait_64.gif");
+	background-image:url(/zimbra/img/animated/wait_64.gif);
 	background-repeat:no-repeat;
 	background-position:center center;
 	width:64px;
 	height:64px;
+}
+
+.DwtWait16Icon {
+	background-image:url(/zimbra/img/animated/wait_16.gif);
+	background-repeat:no-repeat;
+	background-position:center center;
+	width:16px;
+	height:16px;
+}
+
+.DwtWait32Icon {
+	background-image:url(/zimbra/img/animated/wait_32.gif);
+	background-repeat:no-repeat;
+	background-position:center center;
+	width:32px;
+	height:32px;
 }
 
 .DwtShellBusyDialog table td.MsgText {
@@ -120,6 +160,7 @@
 .DwtStickyToolTipTitle {
 	font-weight: bold;
 	padding-bottom: 2px;
+	cursor: default;
 }
 
 .hover_frame_table { 
@@ -452,7 +493,7 @@
 */
 
 .DwtMenu, .ActionMenu {
-	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
+	background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);
 	border: 2px solid;
 	border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;
 }
@@ -475,8 +516,21 @@
 }
 
 .DwtMenuItem-IconArea, .DwtMenuItem-CheckedArea {}
+
 .DwtMenuItem-Separator {
 	background-color: #999999;
+	padding-left: 5px;
+	white-space:noWrap;
+	width:100%;
+	height:1px;
+}
+
+.DwtMenuItem .Text, .DwtMenuItem .DisabledText,
+.DwtMenuItem-triggered .Text,
+.DwtMenuItem-selected .Text {
+	white-space:nowrap;
+	padding-right:2px;
+	padding-left:5px;
 }
 
 /*
@@ -503,9 +557,15 @@
 .DwtDialog .Label { font-size: 10pt; }
 .DwtDialog .Field { width: 290px; }
 
+.DwtPropertySheet .Label {
+  color: #666;
+  white-space: nowrap;
+  text-align: right;
+}
+
 .DialogBody 			{	background-color:#EEEEEE;		}
 .DialogTable			{	border-collapse:collapse;		}
-.DialogToolbar 			{	background-image:url(/zimbra/skins/steel/images/bg_pebble_dark.gif);	}
+.DialogToolbar 			{	background-image:url(/zimbra/img/loRes/skins/steel/PebbleDark__BG.gif);	}
 
 .DialogTitle {
 	background-color:#3d3d3d; 
@@ -593,6 +653,13 @@
  */
 .DwtColorPicker { border: 1px solid #999999; }
 .DwtColorPicker table td img { border: 1px none black; }
+
+.DwtResizeGripper {
+	background-image:url(/zimbra/img/hiRes/dwt/ResizeGripper.gif);
+	border: none;
+	width:16px;
+	height:16px;
+}
 
 /* 
  * Calendar
@@ -683,6 +750,19 @@
 }
 
 /*
+ * DwtInputField
+ */
+.DwtInputField input {
+	color: black;
+	background-color: white;
+}
+
+.DwtInputField-Error input {
+	color: black;
+	background-color: #F4FB7F;
+}
+
+/*
  *  DwtWizardDialog
  */
 
@@ -706,6 +786,84 @@
 	padding-right: 2px;
 	padding-left: 2px;	
 }
+
+/* <DwtPropertyEditor> */
+
+.DwtPropertyEditor table {
+  border-collapse: collapse;
+/*  border: 1px solid #777; background-color: #f5f5f5; color: #000; */
+}
+.DwtPropertyEditor * { font-size: 11px !important; font-family: Tahoma,Verdana,sans-serif !important; }
+.DwtPropertyEditor table td {
+/*
+  border-bottom: 1px solid #999;
+  border-top: 1px solid #999;
+*/
+  padding: 1px 5px;
+}
+.DwtPropertyEditor table td.label {
+/*
+  border-right: 1px dotted #ddd;
+*/
+  cursor: default; text-align: right;
+  font-weight: bold;
+}
+.DwtPropertyEditor table td.label:after { content: ":"; }
+.DwtPropertyEditor table td.field { cursor: text; }
+
+.DwtPropertyEditor table tr.expander-collapsed td { cursor: pointer; background-color: #e5e5e5; }
+.DwtPropertyEditor table tr.expander-collapsed td div {
+  background: url("/zimbra/img/hiRes/dwt/Expand.gif") no-repeat 100% 50%;
+  padding-right: 15px;
+}
+
+.DwtPropertyEditor table tr.expander-expanded td { cursor: pointer; background-color: #e5e5e5; }
+.DwtPropertyEditor table tr.expander-expanded td div {
+  background: url("/zimbra/img/hiRes/dwt/Collapse.gif") no-repeat 100% 50%;
+  padding-right: 15px;
+}
+
+.DwtPropertyEditor table tr.level-1 td.label { padding-left: 20px; }
+.DwtPropertyEditor table tr.level-2 td.label { padding-left: 35px; }
+.DwtPropertyEditor table tr.level-3 td.label { padding-left: 50px; }
+.DwtPropertyEditor table tr.level-4 td.label { padding-left: 65px; }
+.DwtPropertyEditor table tr.level-5 td.label { padding-left: 80px; }
+.DwtPropertyEditor table tr.level-6 td.label { padding-left: 95px; }
+.DwtPropertyEditor table tr.level-7 td.label { padding-left: 110px; }
+.DwtPropertyEditor table tr.level-8 td.label { padding-left: 125px; }
+.DwtPropertyEditor table tr.level-9 td.label { padding-left: 140px; }
+
+.DwtPropertyEditor table tr.readonly td.field { color: #888; cursor: default; }
+.DwtPropertyEditor table tr.dirty td { color: #42c; }
+.DwtPropertyEditor table tr.invisible { display: none; }
+
+/*
+.DwtPropertyEditor table tr.number td.field,
+.DwtPropertyEditor table tr.integer td.field,
+.DwtPropertyEditor input.number,
+.DwtPropertyEditor input.integer { text-align: right; }
+*/
+
+.DwtPropertyEditor input.DwtPropertyEditor-input {
+  position: absolute;
+  border: 2px solid #000;
+  padding: 0 4px;
+}
+.DwtPropertyEditor input.DwtPropertyEditor-input-error { background-color: #fca; border-color: red; }
+
+.DwtPropertyEditor .DwtPropertyEditor-ErrorMsg {
+  position: absolute;
+  border: 1px solid red;
+  padding: 5px;
+  font-size: 90%;
+  font-weight: bold;
+  background-color: #ffffcd;
+  color: red;
+}
+
+.DwtPropertyEditor span.DwtPropertyEditor-required { font-size: 80%; color: red; }
+
+/* </DwtPropertyEditor> */
 
 /*
  *	Border stuff
@@ -795,7 +953,6 @@
 .xform_label,
 .xform_label_left {
   color:#666666;
-  width:80px;
   padding-left:4px;
   padding-right:2px;
   white-space:nowrap;
@@ -958,7 +1115,22 @@ HTML>BODY .RadioGrouperLabel {
 	margin-left:-5px;
 }
 
+.quotabar {
+	width: 100px;
+	border: 1px solid white;
+	background-color: white;
+}
 
+.quotaused {
+	height: 6px;
+	font-size: 6px; /* WEIRD IE QUIRK */
+}
+
+.percent {
+	white-space: nowrap;
+	font-size: 7pt;
+	color: black;
+}
 
 
 

@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -47,7 +47,7 @@
 function ZmList(type, appCtxt, search) {
 
 	if (arguments.length == 0) return;
-	ZmModel.call(this, true);
+	ZmModel.call(this, type);
 
 	this.type = type;
 	this._appCtxt = appCtxt;
@@ -56,7 +56,6 @@ function ZmList(type, appCtxt, search) {
 	this._vector = new AjxVector();
 	this._hasMore = false;
 	this._idHash = new Object();
-	this._evt = new ZmEvent(type);
 
 	var tagList = appCtxt.getTree(ZmOrganizer.TAG);
 	if (tagList) {
@@ -129,7 +128,7 @@ function(item) {
 * will be added at the end.
 *
 * The item will invoke a SOAP call, which generates a create notification from the
-* server. That will be handled by notifyCreate(), which will call eventNotify()
+* server. That will be handled by notifyCreate(), which will call _notify()
 * so that views can be updated.
 *
 * @param args	arbitrary hash of args to pass along
@@ -289,7 +288,7 @@ function(items, flagOp, on) {
 	}
 
 	var action = on ? flagOp : "!" + flagOp;
-	this._itemAction(items, action);
+	this._itemAction({items: items, action: action});
 }
 
 /**
@@ -309,14 +308,15 @@ function(items, tagId, doTag) {
 	if (!(items instanceof Array)) items = [items];
 
 	// only tag items that don't have the tag, and untag ones that do
+	// always tag a conv, because we don't know if all items in the conv have the tag yet
 	var items1 = new Array();
 	for (var i = 0; i < items.length; i++)
-		if ((doTag && !items[i].hasTag(tagId)) || (!doTag && items[i].hasTag(tagId)))
+		if ((doTag && (!items[i].hasTag(tagId) || items[i].type == ZmItem.CONV)) || (!doTag && items[i].hasTag(tagId)))
 			items1.push(items[i]);
 	
 	if (items1.length) {
 		var action = doTag ? "tag" : "!tag";
-		this._itemAction(items1, action, {tag: tagId});
+		this._itemAction({items: items1, action: action, attrs: {tag: tagId}});
 	}
 }
 
@@ -327,7 +327,7 @@ function(items) {
 		return;
 	}
 
-	this._itemAction(items, "update", {t: ""});
+	this._itemAction({items: items, action: "update", attrs: {t: ""}});
 }
 
 /**
@@ -358,9 +358,22 @@ function(items, folder, attrs) {
 	attrs = attrs ? attrs : new Object();
 	attrs.l = folder.id;
 	
-	this._itemAction(items1, "move", attrs);
-}
+	var respCallback = null;
+	if (this.type == ZmList.MIXED)
+		respCallback = new AjxCallback(this, this._handleResponseMoveItems, folder);
+	this._itemAction({items: items1, action: "move", attrs: attrs, callback: respCallback});
+};
 
+ZmList.prototype._handleResponseMoveItems =
+function(folder, result) {
+	var movedItems = result.getResponse();	
+	if (movedItems && movedItems.length) {
+		this.moveLocal(movedItems, folder.id);
+		for (var i = 0; i < movedItems.length; i++)
+			movedItems[i].moveLocal(folder.id);
+		this._notify(ZmEvent.E_MOVE, {items: movedItems});
+	}
+};
 
 /**
 * Deletes one or more items from the list. Normally, deleting an item just
@@ -397,32 +410,32 @@ function(items, hardDelete, attrs) {
 
 	// hard delete - items actually deleted from data store
 	if (toDelete.length)
-		this._itemAction(toDelete, "delete", attrs);
+		this._itemAction({items: toDelete, action: "delete", attrs: attrs});
 }
 
 /**
-* Applies the given list of modifications to the items. Currently, we can only
-* modify one item at a time. A SOAP request is not made.
+* Applies the given list of modifications to the item.
 *
-* @param items			list of items to modify
+* @param item			item to modify
 * @param mods			hash of new properties
 */
-ZmList.prototype.modifyItems =
-function(items, mods) {
-	var itemMode = false;
-	if (items instanceof ZmItem) {
-		items = [items];
-		itemMode = true;
+ZmList.prototype.modifyItem =
+function(item, mods) {
+	var respCallback = new AjxCallback(this, this._handleResponseModifyItem, [item]);
+	item.modify(mods, respCallback);
+};
+
+ZmList.prototype._handleResponseModifyItem =
+function(item, result) {
+	var details = result.getResponse();
+	if (details) {
+		// notify item and its list
+		item._notify(ZmEvent.E_MODIFY, details);
+		details.items = [item];
+		this._notify(ZmEvent.E_MODIFY, details);
+		this.modifyLocal(item, details);
 	}
-	
-	for (var i = 0; i < items.length; i++) {
-		var details = items[i].modify(mods);
-		if (details) {
-			this._eventNotify(ZmEvent.E_MODIFY, items, details, itemMode);
-			this.modifyLocal(items[i], details);
-		}
-	}
-}
+};
 
 // Notification handling
 
@@ -431,8 +444,8 @@ function(node) {
 	var item = ZmList.ITEM_CLASS[this.type].createFromDom(node, {appCtxt: this._appCtxt, list: this});
 	this.add(item, this._sortIndex(item));
 	this.createLocal(item);
-	this._eventNotify(ZmEvent.E_CREATE, [item]);
-}
+	this._notify(ZmEvent.E_CREATE, {items: [item]});
+};
 
 // Local change handling
 
@@ -450,14 +463,14 @@ ZmList.prototype.deleteLocal =
 function(items) {
 	for (var i = 0; i < items.length; i++)
 		this.remove(items[i]);
-}
+};
 
 // default action is to remove each moved item from this list
 ZmList.prototype.moveLocal = 
 function(items, folderId) {
 	for (var i = 0; i < items.length; i++)
 		this.remove(items[i]);
-}
+};
 
 /*
 * Performs an action on items via a SOAP request.
@@ -468,13 +481,13 @@ function(items, folderId) {
 * @param callback	[AjxCallback]	async callback
 */
 ZmList.prototype._itemAction =
-function(items, action, attrs, callback) {
+function(params) {
 	var actionedItems = new Array();
-	var idHash = this._getIds(items);
+	var idHash = this._getIds(params.items);
 	var idStr = idHash.list.join(",");;
 	if (!(idStr && idStr.length)) {
-		if (callback)
-			callback.run(new ZmCsfeResult(actionedItems));
+		if (params.callback)
+			params.callback.run(new ZmCsfeResult(actionedItems));
 		else
 			return actionedItems;
 	}
@@ -484,21 +497,16 @@ function(items, action, attrs, callback) {
 	var soapDoc = AjxSoapDoc.create(soapCmd, "urn:zimbraMail");
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("id", idStr);
-	actionNode.setAttribute("op", action);
-	for (var attr in attrs)
-		actionNode.setAttribute(attr, attrs[attr]);
-	var appCtlr = this._appCtxt.getAppController();
-	var respCallback = callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, callback]) : null;
-	appCtlr.sendRequest(soapDoc, true, respCallback);
-}
+	actionNode.setAttribute("op", params.action);
+	for (var attr in params.attrs)
+		actionNode.setAttribute(attr, params.attrs[attr]);
+	var respCallback = params.callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback]) : null;
+	var execFrame = new AjxCallback(this, this._itemAction, params);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, null, execFrame);
+};
 
 ZmList.prototype._handleResponseItemAction =
-function(args) {
-	var type		= args[0];
-	var idHash		= args[1];
-	var callback	= args[2];
-	var result		= args[3];
-
+function(type, idHash, callback, result) {
 	if (callback) {
 		var response = result.getResponse();
 		var resp = response[ZmItem.SOAP_CMD[type] + "Response"]
@@ -516,7 +524,7 @@ function(args) {
 		result.set(actionedItems);
 		callback.run(result);
 	}
-}
+};
 
 // Hack to support actions on a list of items of more than one type. Since some specialized
 // lists (ZmMailList or ZmContactList, for example) override action methods (such as
@@ -537,7 +545,7 @@ function(method, args) {
 			ZmMailList.prototype[method].call(this, typedItems[type], args[1], args[2]);
 		this._mixedType = null;
 	}
-}
+};
 
 ZmList.prototype._getTypedItems =
 function(items) {
@@ -549,21 +557,7 @@ function(items) {
 		typedItems[type].push(items[i]);
 	}
 	return typedItems;
-}
-
-// Notify listeners on this list of a model change.
-ZmList.prototype._eventNotify =
-function(event, items, details, itemMode) {
-	if (itemMode)
-		items[0]._eventNotify(event, details);
-
-	if (items.length && this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
-		this._evt.set(event, this);
-		this._evt.setDetails(details);
-		this._evt.setDetail("items", items);
-		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
-	}
-}
+};
 
 // Grab the IDs out of a list of items, and return them as both a string and a hash.
 ZmList.prototype._getIds =
@@ -590,14 +584,14 @@ function(list) {
 	idHash.extra = extra;
 
 	return idHash;
-}
+};
 
 // Returns the index at which the given item should be inserted into this list.
 // Subclasses should override to return a meaningful value.
 ZmList.prototype._sortIndex = 
 function(item) {
 	return 0;
-}
+};
 
 ZmList.prototype._tagTreeChangeListener = 
 function(ev) {
@@ -605,7 +599,7 @@ function(ev) {
 
 	if (ev.event == ZmEvent.E_DELETE) {
 		// Remove tag from any items that have it
-		var tag = ev.source;
+		var tag = ev.getDetail("organizers")[0];
 		var a = this.getArray();
 		var taggedItems = new Array();
 		for (var i = 0; i < a.length; i++) {
@@ -617,7 +611,7 @@ function(ev) {
 		}
 		// Send listeners a tag event so they'll notice it's gone
 		if (taggedItems.length && this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
-			this._eventNotify(ZmEvent.E_TAGS, taggedItems);
+			this._notify(ZmEvent.E_TAGS, {items: taggedItems});
 		}
 	}
-}
+};

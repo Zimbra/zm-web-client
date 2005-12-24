@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -90,7 +90,7 @@ function() {
 }
 
 ZmContactView.prototype.set =
-function(contact) {
+function(contact, isDirty) {
 
 	this._attr = new Object();
 	for (var a in contact.getAttrs())
@@ -108,14 +108,14 @@ function(contact) {
 
 	this._setFields();
 
-	var contentDiv = Dwt.getDomObj(this.getDocument(), this._contentId);
+	var contentDiv = document.getElementById(this._contentId);
 	Dwt.setVisibility(contentDiv, true);
 	contentDiv.scrollTop = 0; // bug fix #3362
 	
-	var lastNameInput = Dwt.getDomObj(this.getDocument(), this._fieldIds[ZmContact.F_lastName]);
+	var lastNameInput = document.getElementById(this._fieldIds[ZmContact.F_lastName]);
 	lastNameInput.focus(); // bug fix #937
 	
-	this._isDirty = false;
+	this._isDirty = isDirty || false;
 }
 
 ZmContactView.prototype.getModifiedAttrs =
@@ -164,7 +164,7 @@ function() {
 ZmContactView.prototype.enableInputs = 
 function(bEnable) {
 	for (var i in this._fieldIds) {
-		var field = Dwt.getDomObj(this.getDocument(), this._fieldIds[i]);
+		var field = document.getElementById(this._fieldIds[i]);
 		if (field)
 			field.disabled = !bEnable;
 	}
@@ -207,17 +207,15 @@ function(x, y, width, height) {
 
 ZmContactView.prototype._sizeChildren = 
 function(width, height) {
-	var doc = this.getDocument();
-	
-	var contentDiv = Dwt.getDomObj(doc, this._contentId);
+	var contentDiv = document.getElementById(this._contentId);
 	if (contentDiv)
 		Dwt.setSize(contentDiv, width, (height-45));
 
-	var contactHeader = Dwt.getDomObj(doc, this._contactHeaderId);
+	var contactHeader = document.getElementById(this._contactHeaderId);
 	if (contactHeader)
 		Dwt.setSize(contactHeader, width);
 
-	var contactHeaderDiv = Dwt.getDomObj(doc, this._fieldIds[ZmContactView.F_contactTitle]);
+	var contactHeaderDiv = document.getElementById(this._fieldIds[ZmContactView.F_contactTitle]);
 	if (contactHeaderDiv)
 		Dwt.setSize(contactHeaderDiv, width-50); // offet by 50px to allow tag icon!
 }
@@ -236,7 +234,7 @@ function(field, html, idx) {
 	html[idx++] = "<td style='width:18ex;'>" + AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]) + ":" + "</td>";
 	if (!this._isReadOnly) {
 		var id = this._fieldIds[field] = Dwt.getNextId();
-		html[idx++] = "<td><input type='text' size=35 id='" + id + "'></td>";
+		html[idx++] = "<td><input type='text' autocomplete='off' size=35 id='" + id + "'></td>";
 	} else {
 		html[idx++] = "<td>" + (this._attr[field] || "") + "</td>";
 	}
@@ -280,7 +278,7 @@ function() {
 		for (var i in fileAsSelectOptions) {
 			this._fileAsSelect.addOption(fileAsSelectOptions[i].name, fileAsSelectOptions[i].selected, ++count);
 		}
-		var selectCell = Dwt.getDomObj(this.getDocument(), this._fileAsSelectCellId);
+		var selectCell = document.getElementById(this._fileAsSelectCellId);
 		selectCell.appendChild(this._fileAsSelect.getHtmlElement());
 		
 		// add change listener for this select
@@ -355,7 +353,7 @@ function(html, idx) {
 
 ZmContactView.prototype._installOnKeyUpHandler = 
 function(field) {
-	var e = Dwt.getDomObj(this.getDocument(), this._fieldIds[field]);
+	var e = document.getElementById(this._fieldIds[field]);
 	if (e) {
 		// only add onkeyup handlers to input/textarea's
 		var tagName = e.tagName.toLowerCase();
@@ -404,28 +402,28 @@ function(ev) {
 ZmContactView.prototype._setValue =
 function(field) {
 	var value = this._attr[field];
-	var e = Dwt.getDomObj(this.getDocument(), this._fieldIds[field]);
+	var e = document.getElementById(this._fieldIds[field]);
 	if (e != null)
 		e.value = value || "";
 }
 
 ZmContactView.prototype._getValue =
 function(field) {
-	var e =  Dwt.getDomObj(this.getDocument(), this._fieldIds[field]);
+	var e =  document.getElementById(this._fieldIds[field]);
 	if (e && e.value != undefined)
 		this._attr[field] = e.value != "" ? e.value : undefined;
 }
 
 ZmContactView.prototype._setTitle =
 function(title) {
-	var div =  Dwt.getDomObj(this.getDocument(), this._fieldIds[ZmContactView.F_contactTitle]);
+	var div =  document.getElementById(this._fieldIds[ZmContactView.F_contactTitle]);
 	var fileAs = title != null ? title : this._contact.getFileAs();
 	div.innerHTML = fileAs ? fileAs : this._contact.id ? "&nbsp;" : ZmMsg.newContact;
 }
 
 ZmContactView.prototype._setTags =
 function() {
-	var img =  Dwt.getDomObj(this.getDocument(), this._fieldIds[ZmContactView.F_contactTags]);
+	var img =  document.getElementById(this._fieldIds[ZmContactView.F_contactTags]);
 	AjxImg.setImage(img, this._contact.getTagImageInfo());
 }
 

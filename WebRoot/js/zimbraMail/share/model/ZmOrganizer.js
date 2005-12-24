@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -33,15 +33,17 @@
 * can be nested.
 *
 * @author Conrad Damon
-* @param type		folder or tag
-* @param id			numeric ID
-* @param name		name
-* @param parent		parent organizer
-* @param tree		tree model that contains this organizer
-* @param numUnread	number of unread items for this organizer
-* @param numTotal	number of items for this organizer
+*
+* @param type		[constant]		folder or tag
+* @param id			[int]			numeric ID
+* @param name		[string]		name
+* @param parent		[ZmOrganizer]	parent organizer
+* @param tree		[ZmTree]		tree model that contains this organizer
+* @param numUnread	[int]*			number of unread items for this organizer
+* @param numTotal	[int]*			number of items for this organizer
+* @param url		[string]*		URL for this organizer's feed
 */
-function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal) {
+function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, owner) {
 
 	if (arguments.length == 0) return;
 	
@@ -52,34 +54,44 @@ function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal) {
 	this.tree = tree;
 	this.numUnread = numUnread || 0;
 	this.numTotal = numTotal || 0;
+	this.url = url;
+	this.owner = owner;
 
 	if (id && tree)
 		tree._appCtxt.cacheSet(id, this);
 
 	this.children = new AjxVector();
-}
+};
 
 // organizer types
-ZmOrganizer.FOLDER	= ZmEvent.S_FOLDER;
-ZmOrganizer.TAG		= ZmEvent.S_TAG;
-ZmOrganizer.SEARCH	= ZmEvent.S_SEARCH;
-ZmOrganizer.CALENDAR = ZmEvent.S_APPT;
-ZmOrganizer.ZIMLET = ZmEvent.S_ZIMLET;
+ZmOrganizer.FOLDER				= ZmEvent.S_FOLDER;
+ZmOrganizer.TAG					= ZmEvent.S_TAG;
+ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
+ZmOrganizer.CALENDAR			= ZmEvent.S_APPT;
+ZmOrganizer.ROSTER_TREE_ITEM	= ZmEvent.S_ROSTER_TREE_ITEM;
+ZmOrganizer.ROSTER_TREE_GROUP	= ZmEvent.S_ROSTER_TREE_GROUP;
+ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
 
 // defined in com.zimbra.cs.mailbox.Mailbox
 ZmOrganizer.ID_ROOT		= 1;
 ZmOrganizer.ID_TRASH	= 3;
 ZmOrganizer.ID_SPAM		= 4;
 ZmOrganizer.ID_CALENDAR	= 10;
-ZmOrganizer.ID_ZIMLET	= -10;
+ZmOrganizer.ID_ZIMLET	= -1000;  // zimlets need a range.  start from -1000 incrementing up.
+ZmOrganizer.ID_ROSTER_LIST = -11;
+ZmOrganizer.ID_ROSTER_TREE_ITEM = -13;
 
-ZmOrganizer.FIRST_USER_ID = 256;
-
-ZmOrganizer.SOAP_CMD = new Object();
+ZmOrganizer.SOAP_CMD = {};
 ZmOrganizer.SOAP_CMD[ZmOrganizer.FOLDER]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.TAG]		= "TagAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.SEARCH]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.CALENDAR]	= "FolderAction";
+
+ZmOrganizer.FIRST_USER_ID = {};
+ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]	= 256;
+ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]		= 64;
+ZmOrganizer.FIRST_USER_ID[ZmOrganizer.SEARCH]	= 256;
+ZmOrganizer.FIRST_USER_ID[ZmOrganizer.CALENDAR]	= 256;
 
 // fields that can be part of a displayed organizer
 var i = 1;
@@ -87,14 +99,14 @@ ZmOrganizer.F_NAME		= i++;
 ZmOrganizer.F_UNREAD	= i++;
 ZmOrganizer.F_TOTAL		= i++;
 ZmOrganizer.F_PARENT	= i++;
-ZmOrganizer.F_COLOR		= i++; // tags only
-ZmOrganizer.F_QUERY		= i++; // saved search only
+ZmOrganizer.F_COLOR		= i++;
+ZmOrganizer.F_QUERY		= i++;
 ZmOrganizer.F_SHARES	= i++;
 
-// Following chars invalid in organizer names: " : /
-ZmOrganizer.VALID_NAME_CHARS = "[\\w ~`!@#\\$%\\^&\\*\\(\\)\\-\\+=\\{\\}\\[\\];<>,\\.\\?\\|\\\\']";
-ZmOrganizer.VALID_PATH_CHARS = "[\\w ~`!@#\\$%\\^&\\*\\(\\)\\-\\+=\\{\\}\\[\\];<>,\\.\\?\\|\\\\'\\/]"; // add /
-ZmOrganizer.VALID_NAME_RE = new RegExp("^" + ZmOrganizer.VALID_NAME_CHARS + "+$");
+// Following chars invalid in organizer names: " : / [anything less than " "]
+ZmOrganizer.VALID_NAME_CHARS = "[^\\x00-\\x1F\\x7F:\\/\\\"]";
+ZmOrganizer.VALID_PATH_CHARS = "[^\\x00-\\x1F\\x7F:\\\"]"; // forward slash is OK in path
+ZmOrganizer.VALID_NAME_RE = new RegExp('^' + ZmOrganizer.VALID_NAME_CHARS + '+$');
 
 ZmOrganizer.MAX_NAME_LENGTH			= 128;	// max allowed by server
 ZmOrganizer.MAX_DISPLAY_NAME_LENGTH	= 30;	// max we will show
@@ -139,14 +151,15 @@ ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] = "appointment";
 
 // Abstract methods
 
-ZmOrganizer.sortCompare = function(organizerA, organizerB) {}
-ZmOrganizer.prototype.create = function() {}
+ZmOrganizer.sortCompare = function(organizerA, organizerB) {};
+ZmOrganizer.prototype.create = function() {};
 
 // Static methods
 
-ZmOrganizer.getViewName = function(organizerType) {
+ZmOrganizer.getViewName =
+function(organizerType) {
 	return ZmOrganizer.VIEWS[organizerType];
-}
+};
 
 /**
 * Checks an organizer (folder or tag) name for validity. Returns an error message if the
@@ -167,19 +180,19 @@ function(name) {
 		return AjxStringUtil.resolve(ZmMsg.errorInvalidName, name);
 
 	return null;
-}
+};
 
 ZmOrganizer.checkColor =
 function(color) {
 	return ((color != null) && (color >= 0 && color <= ZmOrganizer.MAX_COLOR)) ? color : ZmOrganizer.DEFAULT_COLOR;
-}
+};
 
 // Public methods
 
 ZmOrganizer.prototype.toString = 
 function() {
 	return "ZmOrganizer";
-}
+};
 
 /**
 * Returns the name of this organizer.
@@ -199,13 +212,20 @@ function(showUnread, maxLength, noMarkup) {
 			name = ["<b>", name, "</b>"].join("");
 	}
 	return name;
-}
+};
 
-ZmOrganizer.prototype.setShares = function(shares) {
+ZmOrganizer.prototype.getShares =
+function() {
+	return this.shares;
+};
+
+ZmOrganizer.prototype.setShares = 
+function(shares) {
 	this.shares = shares;
-}
+};
 
-ZmOrganizer.prototype.getShareByGranteeId = function(granteeId) {
+ZmOrganizer.prototype.getShareByGranteeId = 
+function(granteeId) {
 	if (this.shares) {
 		for (var i = 0; i < this.shares.length; i++) {
 			var share = this.shares[i];
@@ -215,14 +235,15 @@ ZmOrganizer.prototype.getShareByGranteeId = function(granteeId) {
 		}
 	}
 	return null;
-}
+};
 
-ZmOrganizer.prototype.addShare = function(share) {
+ZmOrganizer.prototype.addShare = 
+function(share) {
 	if (!this.shares) {
 		this.shares = [];
 	}
 	this.shares.push(share);
-}
+};
 
 ZmOrganizer.prototype.getIcon = function() {};
 
@@ -234,15 +255,15 @@ ZmOrganizer.prototype.getIcon = function() {};
 ZmOrganizer.prototype.rename =
 function(name) {
 	if (name == this.name) return;
-	this._organizerAction("rename", {name: name});
-}
+	this._organizerAction({action: "rename", attrs: {name: name}});
+};
 
 ZmOrganizer.prototype.setColor =
 function(color) {
 	var color = ZmOrganizer.checkColor(color);
 	if (this.color == color) return;
-	this._organizerAction("color", {color: color});
-}
+	this._organizerAction({action: "color", attrs: {color: color}});
+};
 
 /**
 * Assigns the organizer a new parent, moving it within its tree.
@@ -258,8 +279,8 @@ function(newParent) {
 		return;
 	}
 
-	this._organizerAction("move", {l: newId});
-}
+	this._organizerAction({action: "move", attrs: {l: newId}});
+};
 
 /**
 * Deletes an organizer. If it's a folder, the server deletes any contents and/or
@@ -272,25 +293,29 @@ function() {
 	DBG.println(AjxDebug.DBG1, "deleting: " + this.name + ", ID: " + this.id);
 	var isEmptyOp = (this.type == ZmOrganizer.FOLDER && (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH));
 	// make sure we're not deleting a system object (unless we're emptying SPAM or TRASH)
-	if (this.id < ZmTree.CLASS[this.type].FIRST_USER_ID && !isEmptyOp)
-		return;
+	if (this.isSystem() && !isEmptyOp) return;
 	
 	var action = isEmptyOp ? "empty" : "delete";
-	this._organizerAction(action);
-}
+	this._organizerAction({action: action});
+};
 
 ZmOrganizer.prototype.markAllRead =
 function() {
-	this._organizerAction("read", {l: this.id});
-}
+	this._organizerAction({action: "read", attrs: {l: this.id}});
+};
+
+ZmOrganizer.prototype.sync =
+function() {
+	this._organizerAction({action: "sync"});
+};
 
 // Notification handling
 
 ZmOrganizer.prototype.notifyDelete =
 function() {
 	this.deleteLocal();
-	this._eventNotify(ZmEvent.E_DELETE);
-}
+	this._notify(ZmEvent.E_DELETE);
+};
 
 ZmOrganizer.prototype.notifyCreate = function() {};
 
@@ -319,7 +344,7 @@ function(obj) {
 		fields[ZmOrganizer.F_TOTAL] = true;
 		doNotify = true;
 	}
-	if (obj.color) {
+	if (obj.color != null) {
 		var color = ZmOrganizer.checkColor(obj.color);
 		if (this.color != color) {
 			this.color = color;
@@ -344,17 +369,17 @@ function(obj) {
 	}
 	
 	if (doNotify)
-		this._eventNotify(ZmEvent.E_MODIFY, this, {fields: fields});
+		this._notify(ZmEvent.E_MODIFY, {fields: fields});
 
 	if (obj.l != null && obj.l != this.parent.id) {
 		var newParent = this._getNewParent(obj.l);
 		this.reparent(newParent);
-		this._eventNotify(ZmEvent.E_MOVE);
+		this._notify(ZmEvent.E_MOVE);
 		// could be moving search between Folders and Searches - make sure
 		// it has the correct tree
 		this.tree = newParent.tree; 
 	}
-}
+};
 
 // Local change handling
 
@@ -362,7 +387,7 @@ ZmOrganizer.prototype.deleteLocal =
 function() {
 	this.children.removeAll();
 	this.parent.children.remove(this);
-}
+};
 
 /**
 * Returns true if this organizer has a child with the given name.
@@ -379,14 +404,14 @@ function(name) {
 			return true;
 
 	return false;
-}
+};
 
 ZmOrganizer.prototype.reparent =
 function(newParent) {
 	this.parent.children.remove(this);
 	newParent.children.add(this);
 	this.parent = newParent;
-}
+};
 
 /**
 * Returns the organizer with the given ID, wherever it is.
@@ -406,7 +431,7 @@ function(id) {
 			return organizer;
 	}
 	return null;	
-}
+};
 
 /**
 * Returns the first organizer found with the given name, starting from the root.
@@ -416,7 +441,7 @@ function(id) {
 ZmOrganizer.prototype.getByName =
 function(name) {
 	return this._getByName(name.toLowerCase());
-}
+};
 
 /**
 * Returns the number of children of this organizer.
@@ -424,7 +449,7 @@ function(name) {
 ZmOrganizer.prototype.size =
 function() {
 	return this.children.size();
-}
+};
 
 /**
 * Returns true if the given organizer is a descendant of this one.
@@ -440,7 +465,7 @@ function (organizer) {
 		parent = parent.parent;
 	}
 	return false;
-}
+};
 
 /*
 * Returns the organizer with the given ID. Looks in this organizer's tree.
@@ -450,15 +475,28 @@ function (organizer) {
 ZmOrganizer.prototype._getNewParent =
 function(parentId) {
 	return this.tree.getById(parentId);
-}
+};
 
 /**
 * Returns true is this is a system tag or folder.
 */
 ZmOrganizer.prototype.isSystem =
 function () {
-	return (this.id < ZmTree.CLASS[this.type].FIRST_USER_ID);
-}
+	return (this.id < ZmOrganizer.FIRST_USER_ID[this.type]);
+};
+
+/**
+* Returns true is this organizer gets its contents from an external feed.
+*/
+ZmOrganizer.prototype.isFeed =
+function () {
+	return (this.url != null);
+};
+
+ZmOrganizer.prototype.getOwner =
+function() {
+	return this.owner;
+};
 
 ZmOrganizer.getSortIndex =
 function(child, sortFunction) {
@@ -470,7 +508,7 @@ function(child, sortFunction) {
 			return i;
 	}
 	return i;
-}
+};
 
 /*
 * Sends a request to the server. Note that it's done asynchronously, but
@@ -482,17 +520,18 @@ function(child, sortFunction) {
 * @param attrs		[Object]	hash of additional attributes to set in the request
 */
 ZmOrganizer.prototype._organizerAction =
-function(action, attrs) {
+function(params) {
 	var cmd = ZmOrganizer.SOAP_CMD[this.type];
 	var soapDoc = AjxSoapDoc.create(cmd + "Request", "urn:zimbraMail");
 	var actionNode = soapDoc.set("action");
-	actionNode.setAttribute("op", action);
+	actionNode.setAttribute("op", params.action);
 	actionNode.setAttribute("id", this.id);
-	for (var attr in attrs)
-		actionNode.setAttribute(attr, attrs[attr]);
+	for (var attr in params.attrs)
+		actionNode.setAttribute(attr, params.attrs[attr]);
 	var appCtlr = this.tree._appCtxt.getAppController();
-	appCtlr.sendRequest(soapDoc, true);
-}
+	var execFrame = new AjxCallback(this, this._itemAction, params);
+	appCtlr.sendRequest(soapDoc, true, null, null, execFrame);
+};
 
 // Test the name of this organizer and then descendants against the given name, case insensitively
 ZmOrganizer.prototype._getByName =
@@ -508,16 +547,20 @@ function(name) {
 			return organizer;
 	}
 	return null;	
-}
+};
 
-ZmOrganizer.prototype.addChangeListener = function(listener) {
+ZmOrganizer.prototype.addChangeListener =
+function(listener) {
 	this.tree.addChangeListener(listener);
-}
-ZmOrganizer.prototype.removeChangeListener = function(listener) {
-	this.tree.removeChangeListener(listener);
-}
+};
 
-ZmOrganizer.prototype._setSharesFromJs = function(obj) {
+ZmOrganizer.prototype.removeChangeListener =
+function(listener) {
+	this.tree.removeChangeListener(listener);
+};
+
+ZmOrganizer.prototype._setSharesFromJs =
+function(obj) {
 	if (obj.acl && obj.acl.grant && obj.acl.grant.length > 0) {
 		var shares = new Array(obj.acl.grant.length);
 		for (var i = 0; i < obj.acl.grant.length; i++) {
@@ -526,23 +569,33 @@ ZmOrganizer.prototype._setSharesFromJs = function(obj) {
 		}
 		this.setShares(shares);
 	}
-}
+};
 
-// Notify our listeners.
-ZmOrganizer.prototype._eventNotify =
-function(event, organizer, details) {
-	organizer = organizer || this;
-	if (this.tree._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
-		this.tree._evt.set(event, organizer);
-		this.tree._evt.setDetails(details);
-		this.tree._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this.tree._evt);
-	}
-}
+// Handle notifications through the tree
+ZmOrganizer.prototype._notify =
+function(event, details) {
+	if (details)
+		details.organizers = [this];
+	else
+		details = {organizers: [this]};
+	this.tree._notify(event, details);
+};
 
-//
-// ZmOrganizerShare
-//
 
+/**
+* ZmOrganizerShare
+* @constructor
+* @class
+*
+* @author Andy Clark
+*
+* @param organizer
+* @param granteeType
+* @param granteeId
+* @param granteeName
+* @param perm
+* @param inherit
+*/
 function ZmOrganizerShare(organizer, granteeType, granteeId, granteeName, perm, inherit) {
 	ZmShareInfo.call(this);
 	this.organizer = organizer;
@@ -551,30 +604,34 @@ function ZmOrganizerShare(organizer, granteeType, granteeId, granteeName, perm, 
 	this.grantee.name = granteeName;
 	this.link.perm = perm;
 	this.link.inh = inherit;
-}
+};
+
 ZmOrganizerShare.prototype = new ZmShareInfo;
 ZmOrganizerShare.prototype.constructor = ZmOrganizerShare;
 
 // Static methods
 
-ZmOrganizerShare.createFromJs = function(parent, grant) {
+ZmOrganizerShare.createFromJs =
+function(parent, grant) {
 	return new ZmOrganizerShare(parent, grant.gt, grant.zid, grant.d, grant.perm, grant.inh);
-}
+};
 
 // Public methods
 
-ZmOrganizerShare.prototype.setPermissions = function(perm) {
+ZmOrganizerShare.prototype.setPermissions =
+function(perm) {
 	if (this.link.perm == perm) return;
 	var success = this._organizerShareAction("grant", null, {perm: perm});
 	if (success) {
 		this.link.perm = perm;
 		var fields = new Object();
 		fields[ZmOrganizer.F_SHARES] = true;
-		this.organizer._eventNotify(ZmEvent.E_MODIFY, this.organizer, {fields: fields});
+		this.organizer._notify(ZmEvent.E_MODIFY, {fields: fields});
 	}
-}
+};
 
-ZmOrganizerShare.prototype.revoke = function() {
+ZmOrganizerShare.prototype.revoke = 
+function() {
 	var success = this._organizerShareAction("!grant", { zid: this.grantee.id } );
 	if (success) {
 		var index = this._indexOf(this.grantee.name);
@@ -582,20 +639,20 @@ ZmOrganizerShare.prototype.revoke = function() {
 	
 		var fields = new Object();
 		fields[ZmOrganizer.F_SHARES] = true;
-		this.organizer._eventNotify(ZmEvent.E_MODIFY, this.organizer, {fields: fields});
+		this.organizer._notify(ZmEvent.E_MODIFY, {fields: fields});
 	}
-}
+};
 
 // Protected methods
 
-ZmOrganizerShare.prototype._indexOf = function(granteeName) {
+ZmOrganizerShare.prototype._indexOf = 
+function(granteeName) {
 	for (var i = 0; i < this.organizer.shares.length; i++) {
-		if (this.organizer.shares[i].grantee.name == granteeName) {
+		if (this.organizer.shares[i].grantee.name == granteeName)
 			return i;
-		}
 	}
 	return -1;
-}
+};
 
 /**
  * General method for handling the SOAP call. 
@@ -626,4 +683,4 @@ function(operation, actionAttrs, grantAttrs) {
 	
 	var id = parseInt(resp.action.id);
 	return (id == this.organizer.id);
-}
+};

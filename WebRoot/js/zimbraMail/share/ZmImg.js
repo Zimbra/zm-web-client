@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -41,7 +41,7 @@ ZmImg.I_TMP  			= ["ImgTMPIcon", 100, 100];
 // Icons
 ZmImg.I_APPT 			= ["CalendarApp", 16, 16];			// ---
 ZmImg.I_APPT_EXCEPTION  = ["ApptException", 16, 13];		// ---
-ZmImg.I_APPT_MEETING  	= ["ApptMeeting", 16, 13];			//PLAGARIZED
+ZmImg.I_APPT_MEETING  	= ["ApptMeeting", 16, 13];			//
 ZmImg.I_APPT_RECUR 		= ["ApptRecur", 16, 13];			// ---
 ZmImg.I_APPT_REMINDER 	= ["ApptReminder", 16, 13];			// ---
 ZmImg.I_ATTACHMENT 		= ["Attachment", 16, 16];			// ---
@@ -93,7 +93,7 @@ ZmImg.I_HELP 			= ["Help", 16, 16];					// ---
 ZmImg.I_HORIZ_RULE 		= ["HorizRule", 16, 16];			// ---
 ZmImg.I_HTML 			= ["HtmlDoc", 16, 16];				// ---
 ZmImg.I_ICON 			= ["Icon", 16, 16];					// UNUSED?
-ZmImg.I_IM 				= ["ImStartChar", 11, 15];			// (using a different chat icon)
+ZmImg.I_IM 				= ["ImStartChat", 11, 15];			// (using a different chat icon)
 ZmImg.I_IMAGE 			= ["ImageDoc", 16, 16];				// ---
 ZmImg.I_INDENT 			= ["Indent", 16, 16];				// ---
 ZmImg.I_INSERT_TABLE 	= ["InsertTable", 16, 16];			// UNUSED
@@ -194,7 +194,7 @@ ZmImg.I_ZIP 			= ["ZipDoc", 16, 16];				// ---
 ZmImg.ID_ATTACHMENT 	= ["AttachmentDis", 16, 16];		// ---
 ZmImg.ID_BACK_ARROW 	= ["LeftArrowDis", 16, 16];		// ---
 ZmImg.ID_BROWSE 		= ["SearchBuilderDis", 16, 16];	// ---
-ZmImg.ID_COLOR_WHEEL 	= ["ColorWheelDis", 16, 16];		// UNUSED?  PLAGARIZED
+ZmImg.ID_COLOR_WHEEL 	= ["ColorWheelDis", 16, 16];		// UNUSED? 
 ZmImg.ID_CONV 			= ["ConversationDis", 16, 16];		// UNUSED
 ZmImg.ID_DAY_VIEW 		= ["DayViewDis", 16, 16];			// ---
 ZmImg.ID_DBL_BACK_ARROW = ["LeftDoubleArrowDis", 16, 16];	// ---

@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -56,20 +56,19 @@ function(defaultColumnSort) {
 
 	// set the from column name based on query string
 	var fromColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]);
-	var fromColSpan = Dwt.getDomObj(this.getDocument(), DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
+	var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
 	if (fromColSpan)
 		fromColSpan.innerHTML = "&nbsp;" + (isFolder.sent || isFolder.drafts ? ZmMsg.to : ZmMsg.from);
 };
 
 ZmConvListView.prototype.markUIAsRead = 
 function(items, on) {
-	var doc = this.getDocument();
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		var row = Dwt.getDomObj(doc, this._getFieldId(item, ZmItem.F_ITEM_ROW));
+		var row = document.getElementById(this._getFieldId(item, ZmItem.F_ITEM_ROW));
 		if (row)
 			row.className = on ? "" : "Unread";
-		var img = Dwt.getDomObj(doc, this._getFieldId(item, ZmItem.F_STATUS));
+		var img = document.getElementById(this._getFieldId(item, ZmItem.F_STATUS));
 		if (img && img.parentNode)
 			AjxImg.setImage(img.parentNode, on ? "MsgStatusRead" : "MsgStatusUnread");
 	}
@@ -227,7 +226,7 @@ function(ev) {
 	var items = ev.getDetail("items");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_COUNT])) {
 		for (var i = 0; i < items.length; i++) {
-			var countField = Dwt.getDomObj(this.getDocument(), this._getFieldId(items[i], ZmItem.F_COUNT));
+			var countField = document.getElementById(this._getFieldId(items[i], ZmItem.F_COUNT));
 			if (countField)
 				countField.innerHTML = items[i].numMsgs > 1 ? "(" + items[i].numMsgs + ")" : "";
 		}
@@ -235,7 +234,7 @@ function(ev) {
 		// a virtual conv has become real, and changed its ID
 		for (var i = 0; i < items.length; i++) {
 			var conv = items[i];
-			var div = Dwt.getDomObj(this.getDocument(), this._getItemId({id: conv._oldId}));
+			var div = document.getElementById(this._getItemId({id: conv._oldId}));
 			if (div) {
 				this._createItemHtml(conv, this._now, false, false, div);
 				this.associateItemWithElement(conv, div, DwtListView.TYPE_LIST_ITEM);
@@ -245,7 +244,7 @@ function(ev) {
 	} else if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_PARTICIPANT])) {
 		for (var i = 0; i < items.length; i++) {
 			var fieldId = this._getFieldId(items[i], ZmItem.F_PARTICIPANT);
-			var participantField = Dwt.getDomObj(this.getDocument(), fieldId);
+			var participantField = document.getElementById(fieldId);
 			if (participantField)
 				participantField.innerHTML = this._getParticipantHtml(items[i], fieldId);
 		}
@@ -278,6 +277,10 @@ function(conv, fieldId) {
 			html[idx++] = part2[j].name;
 			html[idx++] = "</span>";
 		}
+
+		// bug fix #724
+		if (part2.length == 1 && origLen > 1)
+			html[idx++] = AjxStringUtil.ELLIPSIS;
 	} else {
 		// XXX: possible import bug but we must take into account
 		html[idx++] = ZmMsg.noWhere;
@@ -292,21 +295,34 @@ function(conv, fieldId) {
 // Static methods
 
 ZmConvListView.getPrintHtml = 
-function(conv, preferHtml) {
+function(conv, preferHtml, callback) {
 
 	// first, get list of all msg id's for this conversation
 	if (conv.msgIds == null) {
 		var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:zimbraMail");
 		var msgNode = soapDoc.set("c");
 		msgNode.setAttribute("id", conv.id);
-		var command = new ZmCsfeCommand();
-		var resp = command.invoke({soapDoc: soapDoc}).Body.GetConvResponse.c[0];
-		var msgIds = new Array();
-		for (var i = 0; i < resp.m.length; i++)
-			msgIds.push(resp.m[i].id);
-		conv.msgIds = msgIds;
+		
+		var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetPrintHtml, [conv, preferHtml, callback]);
+		var appCtlr = window._zimbraMail;
+		appCtlr.sendRequest(soapDoc, true, respCallback);
+	} else {
+		ZmConvListView._printMessages(conv, preferHtml, callback);
 	}
-	
+};
+
+ZmConvListView._handleResponseGetPrintHtml =
+function(conv, preferHtml, callback, result) {
+	var resp = result.getResponse().GetConvResponse.c[0];
+	var msgIds = new Array();
+	for (var i = 0; i < resp.m.length; i++)
+		msgIds.push(resp.m[i].id);
+	conv.msgIds = msgIds;
+	ZmConvListView._printMessages(conv, preferHtml, callback);
+};
+
+ZmConvListView._printMessages =
+function(conv, preferHtml, callback) {
 	// XXX: optimize? Once these msgs are d/l'ed should they be cached?
 	var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
 	soapDoc.setMethodAttribute("onerror", "continue");
@@ -323,9 +339,15 @@ function(conv, preferHtml) {
 			msgNode.setAttribute("html", "1");
 		msgRequest.appendChild(msgNode);
 	}
-	var command = new ZmCsfeCommand();
-	var resp = command.invoke({soapDoc: soapDoc}).Body.BatchResponse.GetMsgResponse;
-	
+	var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetMessages, [conv, preferHtml, callback]);
+	var appCtlr = window._zimbraMail;
+	appCtlr.sendRequest(soapDoc, true, respCallback);
+};
+
+ZmConvListView._handleResponseGetMessages =
+function(conv, preferHtml, callback, result) {
+	var resp = result.getResponse().BatchResponse.GetMsgResponse;
+
 	var html = new Array();
 	var idx = 0;
 	
@@ -337,11 +359,11 @@ function(conv, preferHtml) {
 	for (var i = 0; i < resp.length; i++) {
 		var msgNode = resp[i].m[0];
 		var msg = ZmMailMsg.createFromDom(msgNode, {appCtxt: null, list: null});
-		
 		html[idx++] = ZmMailMsgView.getPrintHtml(msg, preferHtml);
-		if (i < resp.length-1)
+		if (i < resp.length - 1)
 			html[idx++] = "<hr>";
 	}
 	
-	return html.join("");
+	result.set(html.join(""));
+	if (callback) callback.run(result);
 };

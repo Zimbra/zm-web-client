@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -35,7 +35,7 @@
 */
 function ZmSettings(appCtxt) {
 
-	ZmModel.call(this, true);
+	ZmModel.call(this, ZmEvent.S_SETTING);
 
 	this._appCtxt = appCtxt;
 	this._settings = new Object(); // settings by ID
@@ -43,7 +43,6 @@ function ZmSettings(appCtxt) {
 	this._initialize();
 	this._setDefaults();
 	this.userSettingsLoaded = false;
-	this._evt = new ZmEvent(ZmEvent.S_SETTING);
 	this._zmm = new ZmZimletMgr();
 }
 
@@ -131,11 +130,7 @@ function(callback, errorCallback) {
 }
 
 ZmSettings.prototype._handleResponseLoadUserSettings =
-function(args) {
-
-	var callback	= args[0];
-	var result		= args[1];
-	
+function(callback, result) {
 	var response = result.getResponse();
 	var obj = response.GetInfoResponse;
 	if (obj.name)
@@ -161,7 +156,7 @@ function(args) {
 	// load Zimlets
 	if(obj.zimlets) {
 		DBG.println(AjxDebug.DBG1, "Zimlets: Got some Zimlets");
-		this._zmm.loadZimlets(obj.zimlets.zimlet);
+		this._zmm.loadZimlets(obj.zimlets.zimlet, obj.props.prop);
 	 	
 	 	var panelZimlets = this._zmm.getPanelZimlets();
 	 	if(panelZimlets && panelZimlets.length > 0) {
@@ -173,12 +168,6 @@ function(args) {
 		 	var zimletString = zimletTree.asString();
 		 	zimletTree.reset();
 		 	zimletTree.loadFromJs(panelZimlets);
-	
-			// Add Zimlets to overview panel	 	
-		 	var appController = this._appCtxt.getAppController();
-	 		this._oldPanels = appController.getOverviewPanels();
-	 		var newPanels = [ ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.ZIMLET ];
-	 		appController.setOverviewPanels( newPanels );
 	 	}
 	 }
 
@@ -186,7 +175,7 @@ function(args) {
 	
 	if (callback)
 		callback.run();
-}
+};
 
 /**
 * Retrieves the preferences for the current user. No COS settings or user metadata is
@@ -233,17 +222,13 @@ function(list, callback) {
 }
 
 ZmSettings.prototype._handleResponseSave =
-function(args) {
-	var list		= args[0];
-	var callback	= args[1];
-	var result		= args[2];
-	
+function(list, callback, result) {
 	var resp = result.getResponse();
 	if (resp.ModifyPrefsResponse) {
 		for (var i = 0; i < list.length; i++) {
 			var pref = list[i];
 			pref.origValue = pref.value;
-			pref.notify(ZmEvent.E_MODIFY);
+			pref._notify(ZmEvent.E_MODIFY);
 		}
 	}
 	
@@ -281,22 +266,24 @@ function() {
 	var value;
 
 	var noPort = (location.port == "" || location.port == "80");
+    var portPrefix = noPort ? "" : ":" + location.port;
+
 	// CSFE_SERVER_URI
-	value = (noPort)? "/service/soap/" : ":" + location.port + "/service/soap/";
+	value = portPrefix + "/service/soap/";
 	if (location.search && location.search.indexOf("host=") != -1)
 		value += location.search;
 	this._settings[ZmSetting.CSFE_SERVER_URI].setValue(value);
 
 	// CSFE_MSG_FETCHER_URI
-	value = (noPort) ? "/service/content/get?" : ":" + location.port + "/service/content/get?";
+	value = portPrefix + "/service/home/~/?";
 	this._settings[ZmSetting.CSFE_MSG_FETCHER_URI].setValue(value);
 	
 	// CSFE_UPLOAD_URI
-	value = (noPort) ? "/service/upload" : ":" + location.port + "/service/upload";
+	value = portPrefix + "/service/upload";
 	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value);
 	
 	// CSFE EXPORT URI
-	value = (noPort) ? "/service/csv/contacts.csv" : ":" + location.port + "/service/csv/contacts.csv";
+	value = portPrefix + "/service/home/~/?id=7&fmt=csv";
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value);
 	
 	// default sorting preferences

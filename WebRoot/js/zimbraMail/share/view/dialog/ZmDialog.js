@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -41,12 +41,13 @@ function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 
 	if (arguments.length == 0) return;
 	DwtDialog.call(this, parent, className, title, null, extraButtons);
+	DBG.timePt(AjxDebug.PERF, "DwtDialog constructor");
 	if (!view) {
 		this.setContent(this._contentHtml());
+		DBG.timePt(AjxDebug.PERF, "setContent(_contentHtml())");
 	} else {
 		this.setView(view);
 	}
-	this._doc = this.getDocument();
 
 	this._msgDialog = msgDialog;
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
@@ -57,6 +58,7 @@ function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 	
 	this._treeView = new Object();
 	this._opc = this._appCtxt.getOverviewController();
+	DBG.timePt(AjxDebug.PERF, "ZmDialog constructor");
 }
 
 ZmDialog.prototype = new DwtDialog;
@@ -78,7 +80,11 @@ function(newView, noReset) {
 
 ZmDialog.prototype.popup =
 function(data, loc) {
+	var showTiming = DBG.isShowTiming();
+	if (!showTiming) DBG.showTiming(true, AjxDebug.PERF, "ZmDialog#popup");
 	DwtDialog.prototype.popup.call(this, loc);
+	DBG.timePt(AjxDebug.PERF, "ZmDialog popup");
+	if (!showTiming) DBG.showTiming(false);
 }
 
 ZmDialog.prototype.reset =
@@ -90,7 +96,7 @@ function() {
 
 ZmDialog.prototype._setNameField =
 function(fieldId) {
-	this._nameField = Dwt.getDomObj(this._doc, fieldId);
+	this._nameField = document.getElementById(fieldId);
 	if (this._nameField) this._focusElementId = fieldId;
 	this.setTabOrder([fieldId]);
 	this.addEnterListener(new AjxListener(this, this._enterListener));
@@ -106,7 +112,7 @@ ZmDialog.prototype._createOverview =
 function(overviewId, fieldId) {
 	var overview = this._opc.createOverview({overviewId: overviewId, overviewClass: "dialogOverview",
 											 headerClass: "DwtTreeItem"});
-	Dwt.getDomObj(this._doc, fieldId).appendChild(overview.getHtmlElement());
+	document.getElementById(fieldId).appendChild(overview.getHtmlElement());
 }
 
 ZmDialog.prototype._renderOverview =

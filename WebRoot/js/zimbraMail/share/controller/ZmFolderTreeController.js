@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -44,7 +44,7 @@ function ZmFolderTreeController(appCtxt, type, dropTgt) {
 
 	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
-}
+};
 
 ZmFolderTreeController.prototype = new ZmTreeController;
 ZmFolderTreeController.prototype.constructor = ZmFolderTreeController;
@@ -54,7 +54,7 @@ ZmFolderTreeController.prototype.constructor = ZmFolderTreeController;
 ZmFolderTreeController.prototype.toString = 
 function() {
 	return "ZmFolderTreeController";
-}
+};
 
 /**
 * Enables/disables operations based on context.
@@ -65,9 +65,11 @@ function() {
 ZmFolderTreeController.prototype.resetOperations = 
 function(parent, type, id) {
 	var deleteText = ZmMsg.del;
+	var folder = this._dataTree.getById(id);
 	// user folder or Folders header
-	if (id == ZmOrganizer.ID_ROOT || (id >= ZmFolder.FIRST_USER_ID)) {
+	if (id == ZmOrganizer.ID_ROOT || (!folder.isSystem())) {
 		parent.enableAll(true);
+		parent.enable(ZmOperation.SYNC, folder.isFeed());
 	// system folder
 	} else {
 		parent.enableAll(false);
@@ -80,7 +82,6 @@ function(parent, type, id) {
 			parent.enable(ZmOperation.DELETE, true);
 		}
 	}
-	var folder = this._dataTree.getById(id);
 	parent.enable(ZmOperation.EXPAND_ALL, (folder.size() > 0));
 	if (id != ZmOrganizer.ID_ROOT)
 		parent.enable(ZmOperation.MARK_ALL_READ, (folder.numUnread > 0));
@@ -88,7 +89,7 @@ function(parent, type, id) {
 	var op = parent.getOp(ZmOperation.DELETE);
 	if (op)
 		op.setText(deleteText);
-}
+};
 
 // Private methods
 
@@ -98,7 +99,7 @@ function(parent, type, id) {
 ZmFolderTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [ZmOperation.NEW_FOLDER, ZmOperation.EXPAND_ALL];
-}
+};
 
 /*
 * Returns ops available for folder items.
@@ -111,9 +112,10 @@ function() {
 			  ZmOperation.DELETE,
 			  ZmOperation.RENAME_FOLDER,
 			  ZmOperation.MOVE,
-			  ZmOperation.EXPAND_ALL);
+			  ZmOperation.EXPAND_ALL,
+			  ZmOperation.SYNC);
 	return list;
-}
+};
 
 /*
 * Returns a "New Folder" dialog.
@@ -121,7 +123,7 @@ function() {
 ZmFolderTreeController.prototype._getNewDialog =
 function() {
 	return this._appCtxt.getNewFolderDialog();
-}
+};
 
 /*
 * Returns a "Rename Folder" dialog.
@@ -129,7 +131,7 @@ function() {
 ZmFolderTreeController.prototype._getRenameDialog =
 function() {
 	return this._appCtxt.getRenameFolderDialog();
-}
+};
 
 /*
 * Called when a left click occurs (by the tree view listener). The folder that
@@ -150,7 +152,7 @@ function(folder) {
 		var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
 		searchController.search({query: folder.createQuery(), types: types});
 	}
-}
+};
 
 // Actions
 
@@ -162,9 +164,9 @@ function(folder) {
 * @param search		[ZmSearch]		search object (saved search creation only)
 */
 ZmFolderTreeController.prototype._doCreate =
-function(parent, name, search) {
-	parent.create(name, search);
-}
+function(parent, name, search, url) {
+	parent.create(name, search, url);
+};
 
 // Listeners
 
@@ -192,7 +194,7 @@ function(ev) {
     } else {
 		this._doMove(organizer, this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_TRASH));
 	}
-}
+};
 
 /*
 * Don't allow dragging of system folders.
@@ -203,10 +205,10 @@ ZmFolderTreeController.prototype._dragListener =
 function(ev) {
 	if (ev.action == DwtDragEvent.DRAG_START) {
 		var folder = ev.srcData = ev.srcControl.getData(Dwt.KEY_OBJECT);
-		if (!((folder instanceof ZmFolder) && (folder.id >= ZmFolder.FIRST_USER_ID)))
+		if (!(folder instanceof ZmFolder) || folder.isSystem())
 			ev.operation = Dwt.DND_DROP_NONE;
 	}
-}
+};
 
 /*
 * Handles the potential drop of something onto a folder. When something is dragged over
@@ -248,7 +250,7 @@ function(ev) {
 			ctlr._doMove(items, dropFolder);
 		}
 	}
-}
+};
 
 /*
 * Handles a search folder being moved from Folders to Searches.
@@ -285,7 +287,7 @@ function(ev, treeView) {
 			ZmTreeController.prototype._changeListener.call(this, ev, treeView);
 		}
 	}
-}
+};
 
 // Miscellaneous
 
@@ -295,4 +297,4 @@ function(ev, treeView) {
 ZmFolderTreeController.prototype._getMoveDialogTitle =
 function() {
 	return AjxStringUtil.resolve(ZmMsg.moveFolder, this._pendingActionData.name);
-}
+};

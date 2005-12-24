@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -29,7 +29,7 @@ function ZmSearchFolder(id, name, parent, tree, numUnread, query, types, sortBy)
 	
 	this.type = ZmOrganizer.SEARCH;
 	this.query = query;
-}
+};
 
 ZmSearchFolder.prototype = new ZmFolder;
 ZmSearchFolder.prototype.constructor = ZmSearchFolder;
@@ -41,7 +41,8 @@ function(parent, obj, tree) {
 	if (!(obj && obj.id)) return;
 	
 	// check ID - can't be lower than root, or in tag range
-	if (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID && obj.id < ZmFolder.FIRST_USER_ID)) return;
+	if (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID &&
+		obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.SEARCH])) return;
 
 	var types = obj.types ? obj.types.split(",") : null;
 	var folder = new ZmSearchFolder(obj.id, obj.name, parent, tree, obj.u, obj.query, types, obj.sortBy);
@@ -56,7 +57,7 @@ function(parent, obj, tree) {
 	}
 
 	return folder;
-}
+};
 
 ZmSearchFolder.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
@@ -65,7 +66,12 @@ function(showUnread, maxLength, noMarkup) {
 	} else {
 		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
 	}
-}
+};
+
+ZmSearchFolder.prototype.getIcon = 
+function() {
+	return (this.id == ZmOrganizer.ID_ROOT) ? null : "SearchFolder";
+};
 
 /*
 * Returns the organizer with the given ID. Looks in this organizer's tree first.
@@ -82,4 +88,4 @@ function(parentId) {
 	var type = (this.parent.type == ZmOrganizer.SEARCH) ? ZmOrganizer.FOLDER : ZmOrganizer.SEARCH;
 	var tree = this.tree._appCtxt.getTree(type);
 	return tree.getById(parentId); 
-}
+};

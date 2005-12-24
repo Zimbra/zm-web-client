@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -40,7 +40,7 @@ function ZmConvListController(appCtxt, container, mailApp) {
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
-}
+};
 
 ZmConvListController.prototype = new ZmMailListController;
 ZmConvListController.prototype.constructor = ZmConvListController;
@@ -50,7 +50,7 @@ ZmConvListController.prototype.constructor = ZmConvListController;
 ZmConvListController.prototype.toString = 
 function() {
 	return "ZmConvListController";
-}
+};
 
 /**
 * Displays the given search results as a list of conversations.
@@ -99,7 +99,12 @@ function(searchResult, searchString) {
 	}
 	
 	this._resetNavToolBarButtons(this._currentView);
-}
+};
+
+ZmConvListController.prototype.handleKeyPressEvent =
+function(ev) {
+	DBG.println("ZmConvListController.handleKeyPressEvent");
+};
 
 // Private and protected methods
 
@@ -107,14 +112,18 @@ function(searchResult, searchString) {
 ZmConvListController.prototype._initializeToolBar = 
 function(view, arrowStyle) {
 	ZmMailListController.prototype._initializeToolBar.call(this, view, arrowStyle);
-	var buttons = [ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD];
+	var buttons = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
+	if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED))
+		buttons.push(ZmOperation.FORWARD_MENU);
+	else
+		buttons.push(ZmOperation.FORWARD);
 	for (var i = 0; i < buttons.length; i++) {
 		var b = this._toolbar[view].getButton(buttons[i]);
 		var key = ZmOperation.MSG_KEY_TT[buttons[i]] + "Conv";
 		if (b)
 			b.setToolTipContent(ZmMsg[key]);
 	}
-}
+};
 
 ZmConvListController.prototype._getToolBarOps =
 function() {
@@ -122,9 +131,11 @@ function() {
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
 	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.CHECK_MAIL);
+	list.push(ZmOperation.SEP);	
 	list.push(ZmOperation.SPAM);
 	return list;
-}
+};
 
 ZmConvListController.prototype._getActionMenuOps =
 function() {
@@ -134,34 +145,34 @@ function() {
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;
-}
+};
 
 ZmConvListController.prototype._getViewType = 
 function() {
 	return ZmController.CONVLIST_VIEW;
-}
+};
 
 ZmConvListController.prototype._getItemType =
 function() {
 	return ZmItem.CONV;
-}
+};
 
 ZmConvListController.prototype._defaultView = 
 function() {
 	return ZmController.CONVLIST_VIEW;
-}
+};
 
 ZmConvListController.prototype._createNewView = 
 function(view) {
 	var clv = new ZmConvListView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
 	clv.setDragSource(this._dragSrc);
 	return clv;
-}
+};
 
 ZmConvListController.prototype._setupViewMenu =
 function(view) {
 	ZmMailListController.prototype._setupGroupByMenuItems.call(this, view);
-}
+};
 
 ZmConvListController.prototype.switchView =
 function(view) {
@@ -171,22 +182,22 @@ function(view) {
 		var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE); // bug fix #3365
 		sc.redoSearch(this._appCtxt.getCurrentSearch(), null, {types: [ZmItem.MSG], offset: 0, sortBy: sortBy, limit: limit});
 	}
-}
+};
 
 ZmConvListController.prototype._getTagMenuMsg = 
 function(num) {
 	return (num == 1) ? ZmMsg.tagConversation : ZmMsg.tagConversations;
-}
+};
 
 ZmConvListController.prototype._getMoveDialogTitle = 
 function(num) {
 	return (num == 1) ? ZmMsg.moveConversation : ZmMsg.moveConversations;
-}
+};
 
 ZmConvListController.prototype._setViewContents =
 function(view) {
 	this._listView[view].set(this._list, ZmItem.F_DATE);
-}
+};
 
 // Returns the message currently being displayed.
 ZmConvListController.prototype._getMsg =
@@ -196,45 +207,27 @@ function() {
 
 	// get the currently selected conversation
 	var conv = this._listView[this._currentView].getSelection()[0];
-	if (conv) {
-		// has this conv been loaded yet?
-		if (conv.msgs) {
-			// then always return the first msg in the list
-			msg = conv.msgs.getVector().get(0);
-		} else if (conv.tempMsg) {
-			msg = conv.tempMsg;
-		} else {
-			// otherwise, create a temp msg w/ the msg op Id
-			msg = new ZmMailMsg(this._appCtxt, conv.msgOpId);
-			conv.tempMsg = msg; 	// cache it.
-		}
-		
-		// set the conv's list w/in msg
-		msg.list = conv.list;
-	}
+	if (conv)
+		msg = conv.getFirstMsg();
 	
 	return msg;
-}
-
+};
 
 // List listeners
 
 // Show conversation on double-click
 ZmConvListController.prototype._listSelectionListener =
 function(ev) {
-	try {
-		ZmMailListController.prototype._listSelectionListener.call(this, ev);
-		if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-			if (ev.item.isDraft) {
-				this._doAction(ev, ZmOperation.DRAFT);
-			} else {
-				this._app.getConvController().show(null, this._searchString, ev.item);
-			}
+	ZmMailListController.prototype._listSelectionListener.call(this, ev);
+	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
+		if (ev.item.isDraft) {
+			this._doAction(ev, ZmOperation.DRAFT);
+		} else {
+DBG.showTiming(true, AjxDebug.PERF, "***** CONV: start");
+			this._app.getConvController().show(null, this._searchString, ev.item);
 		}
-	} catch (ex) {
-		this._handleException(ex, this._listSelectionListener, ev, false);
 	}
-}
+};
 
 // Miscellaneous
 
@@ -243,27 +236,16 @@ ZmConvListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
 	hardDelete = (this._list.search.folderId == ZmFolder.ID_TRASH);
 	ZmMailListController.prototype._doDelete.call(this, items, hardDelete, attrs);
-}
-
-ZmConvListController.prototype._cacheList = 
-function(search) {
-	if (this._list) {
-		var newList = search.getResults(ZmItem.CONV).getVector();
-		var offset = parseInt(search.getAttribute("offset"));
-		this._list.cache(offset, newList);
-	} else {
-		this._list = search.getResults(ZmItem.CONV);
-	}
-}
+};
 
 ZmConvListController.prototype._resetNavToolBarButtons = 
 function(view) {
 	ZmMailListController.prototype._resetNavToolBarButtons.call(this, view);
 	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);
 	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
-}
+};
 
 ZmConvListController.prototype._processPrePopView = 
 function(view) {
 	this._resetNavToolBarButtons(view);
-}
+};

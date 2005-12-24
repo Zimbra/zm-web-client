@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -25,7 +25,7 @@
 
 function ZmTrackingObjectHandler(appCtxt) {
 
-	ZmObjectHandler.call(this, appCtxt, ZmURLObjectHandler.TYPE);
+	ZmObjectHandler.call(this, appCtxt, ZmTrackingObjectHandler.TYPE);
 };
 
 ZmTrackingObjectHandler.prototype = new ZmObjectHandler;
@@ -33,6 +33,8 @@ ZmTrackingObjectHandler.prototype.constructor = ZmTrackingObjectHandler;
 
 ZmTrackingObjectHandler.UPS = "1[zZ]\\s?\\w{3}\\s?\\w{3}\\s?\\w{2}\\s?\\w{4}\\s?\\w{3}\\s?\\w{1}";
 ZmTrackingObjectHandler.FEDEX = "(\\d{12}|\\d{22})";
+
+ZmTrackingObjectHandler.TYPE = "tracking";
 
 ZmTrackingObjectHandler.TRACKING = "\\b(?:"+ZmTrackingObjectHandler.UPS+"|"+ZmTrackingObjectHandler.FEDEX+")\\b";
 
@@ -90,3 +92,5 @@ ZmTrackingObjectHandler.prototype.getActionMenu =
 function(obj, span, context) {
 	return null;
 };
+
+ZmObjectManager.registerHandler("ZmTrackingObjectHandler");

@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -113,9 +113,9 @@ ZmPOObjectHandler.REJECT_ITEM = 2;
 ZmPOObjectHandler.SHOWFULL_ITEM = 3;
 
 ZmPOObjectHandler.prototype.getActionMenu =
-function(obj, span) {
+function(obj, span, context, isDialog) {
 	if (this._menu == null) {
-		this._menu =  new ZmPopupMenu(this._appCtxt.getShell(), "ActionMenu");
+		this._menu =  new ZmPopupMenu(this._appCtxt.getShell(), "ActionMenu", isDialog);
 		this._menu.createMenuItem(ZmPOObjectHandler.APPROVE_ITEM, "Check", "Approve", null, true);
 		this._menu.createMenuItem(ZmPOObjectHandler.REJECT_ITEM, "Cancel", "Reject", null, true);
 		this._menu.createSeparator();
@@ -144,3 +144,5 @@ function(ev) {
 	po.state = ZmPOObjectHandler.REJECTED;	
 	this._actionSpan.className = this.getClassName(obj);
 };
+
+ZmObjectManager.registerHandler("ZmPOObjectHandler");

@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -30,7 +30,6 @@ function ZmCalBaseView(parent, className, posStyle, controller, view) {
 
 	// BEGIN LIST-RELATED
 	this._setMouseEventHdlrs();
-	this._setKeyEventHdlrs();
 	this.setCursor("default");
 	
 	this._listenerMouseOver = new AjxListener(this, ZmCalBaseView.prototype._mouseOverListener);
@@ -609,19 +608,18 @@ function(appt, html, idx) {
 
 ZmCalBaseView.prototype._getElFromItem = 
 function(item) {
-	return Dwt.getDomObj(this.getDocument(), this._getItemId(item));
+	return document.getElementById(this._getItemId(item));
 }
 
 ZmCalBaseView.prototype._resetList =
 function() {
-	var doc = this.getDocument();
 	var list = this.getList();
 	var size = list ? list.size() : 0;
 	if (size == 0) return;
 
 	for (var i=0; i < size; i++) {
 		var ao = list.get(i);
-		var appt = Dwt.getDomObj(doc, this._getItemId(ao));
+		var appt = document.getElementById(this._getItemId(ao));
 		if (appt) {
 			appt.parentNode.removeChild(appt);
 			AjxCore.unassignId(appt._itemIndex);
@@ -731,7 +729,7 @@ ZmCalBaseView.prototype._layout =
 function() {}
 
 ZmCalBaseView.prototype._timeSelectionEvent =
-function(date, duration, isDblClick, allDay) {
+function(date, duration, isDblClick, allDay, folderId, shiftKey) {
 	if (!this._selectionEvent) this._selectionEvent = new DwtSelectionEvent(true);
 	var sev = this._selectionEvent;
 	sev._isDblClick = isDblClick;
@@ -739,7 +737,9 @@ function(date, duration, isDblClick, allDay) {
 	sev.detail = date;
 	sev.duration = duration;
 	sev.isAllDay = allDay;
+	sev.folderId = folderId;
 	sev.force = false;
+	sev.shiftKey = shiftKey;
 	this.notifyListeners(ZmCalBaseView.TIME_SELECTION, this._selectionEvent);
 	sev._isDblClick = false;
 }

@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -121,8 +121,9 @@ function(id) {
 ZmButtonToolBar.prototype.getTagMenu =
 function() {
 	var button = this.getButton(ZmOperation.TAG_MENU);
-	if (button)
-		return button.getData(ZmOperation.KEY_TAG_MENU);
+	if (button) {
+		return button.getMenu();
+	}
 }
 
 // Private methods

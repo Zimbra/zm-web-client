@@ -12,7 +12,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
 the License for the specific language governing rights and limitations
 under the License.
 
-The Original Code is: Zimbra Collaboration Suite.
+The Original Code is: Zimbra Collaboration Suite Web Client
 
 The Initial Developer of the Original Code is Zimbra, Inc.
 Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -128,6 +128,7 @@ Contributor(s):
 	if (uname == null) {
 		uname = "";
 	}
+    String contextPath = (String)request.getContextPath(); 
 	String mode = (String) request.getAttribute("mode");
 	String vers = (String)request.getAttribute("version");
 	String ext = (String)request.getAttribute("fileExtension");
@@ -143,7 +144,9 @@ Contributor(s):
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<link rel="shortcut icon" href="/zimbra/img/hiRes/logo/favicon.gif" type="image/gif" />
+<link rel="ICON" type="image/gif" href="/zimbra/img/loRes/logo/favicon.gif"/>
+<link rel="SHORTCUT ICON" href="/zimbra/img/loRes/logo/favicon.ico"/>
+
 <title>Zimbra Login</title>
 <style>
 
@@ -153,7 +156,7 @@ body, p, td, div, span, input {
 
 body {
 	background-color: #b7b7b7; 
-	background-image:url(/zimbra/skins/steel/images/bg_steel.gif);
+	background-image:url(/zimbra/img/loRes/skins/steel/Steel__BG.gif);
 	overflow:hidden;
 }
 
@@ -163,7 +166,7 @@ body, form {
 }
 
 .mainPanel {
-	background-image:url(/zimbra/skins/steel/images/bg_pebble.gif);
+	background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);
 }
 
 .banner {
@@ -172,7 +175,7 @@ body, form {
 	/* the following are the dims of the login banner: */
 	width:447px; 
 	height:115px; 
-	background-image:url("/zimbra/img/hiRes/logo/LoginBanner.gif");
+	background-image:url(/zimbra/img/loRes/logo/LoginBanner.gif);
 }
 
 .error {  
@@ -211,17 +214,16 @@ body, form {
 }
 
 </style>
-<script>
-	DwtConfigPath = "js/dwt/config";
-</script>
-<jsp:include page="Messages.jsp"/>
-<script type="text/javascript" src="/zimbra/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
-<jsp:include page="Zimbra.jsp"/>
-<script type="text/javascript" src="/zimbra/js/ZmLogin.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
+<% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
+	<jsp:include page="Ajax.jsp"/>
+	<jsp:include page="Zimbra.jsp"/>
+<% } else { %>
+<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
+<% } %>
 </head>
 <body>
 </body>
-
 <script language="javascript">
 	var initMode = "<%= initMode %>";
 	AjxWindowOpener.HELPER_URL = "/zimbra/public/frameOpenerHelper.jsp"
@@ -239,6 +241,14 @@ body, form {
 		}
 	}
 	window.onload = ZmLogin.handleOnload;
+
+	// XXX: DO NOT REMOVE - THIS PREVENTS MEM LEAK IN IE
+	window.onunload = function() { window.onload = window.onunload = null; }
 </script>
+<% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
+	<jsp:include page="ZimbraMail.jsp"/>
+<% } else { %>
 <script type="text/javascript" src="/zimbra/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
+<% } %>
+<jsp:include page="/public/pre-cache.jsp"/>  
 </html>

@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -24,12 +24,14 @@
  */
 
 function ZmNewTagDialog(parent, msgDialog, className) {
-
+	DBG.showTiming(true, AjxDebug.PERF, "ZmNewTagDialog");
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.createNewTag);
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
 	this._setTagColorMenu(this._tagColorButtonCellId);
+	DBG.timePt(AjxDebug.PERF, "set content");
+	DBG.showTiming(false);
 }
 
 ZmNewTagDialog.prototype = new ZmDialog;
@@ -57,7 +59,7 @@ ZmNewTagDialog.prototype._setTagColorMenu =
 function(fieldId) {
     this._colorButton = new DwtButton(this, null, "ColorButton");
     this._colorButton.noMenuBar = true;
- 	Dwt.getDomObj(this._doc, fieldId).appendChild(this._colorButton.getHtmlElement());
+ 	document.getElementById(fieldId).appendChild(this._colorButton.getHtmlElement());
 	ZmOperation.addColorMenu(this._colorButton, this);
     this._tagColorListener = new AjxListener(this, this._colorListener);
     var color = ZmTag.DEFAULT_COLOR;

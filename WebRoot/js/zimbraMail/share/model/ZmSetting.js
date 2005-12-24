@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -105,7 +105,11 @@ ZmSetting.FORCE_CAL_OFF					= i++;
 ZmSetting.HELP_URI						= i++;
 ZmSetting.LOGO_URI						= i++;
 ZmSetting.LOG_REQUEST					= i++;
+ZmSetting.TIMEOUT						= i++;
 ZmSetting.USE_XML						= i++;
+ZmSetting.CLIENT_VERSION				= i++;
+ZmSetting.CLIENT_RELEASE 				= i++;
+ZmSetting.CLIENT_DATETIME 				= i++;
 
 // IDs FOR HTML COMPONENTS IN THE SKIN
 ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID	= i++;
@@ -136,9 +140,12 @@ ZmSetting.FILTERS_ENABLED				= i++;
 ZmSetting.GAL_ENABLED					= i++;
 ZmSetting.HTML_COMPOSE_ENABLED 			= i++;
 ZmSetting.IDLE_SESSION_TIMEOUT 			= i++;
+ZmSetting.IM_ENABLED					= i++;
 ZmSetting.INITIAL_SEARCH_ENABLED		= i++;
 ZmSetting.MAX_CONTACTS					= i++;
 ZmSetting.MIN_POLLING_INTERVAL			= i++;
+ZmSetting.PWD_MAX_LENGTH				= i++;
+ZmSetting.PWD_MIN_LENGTH				= i++;
 ZmSetting.QUOTA							= i++;
 ZmSetting.SAVED_SEARCHES_ENABLED		= i++;
 ZmSetting.TAGGING_ENABLED				= i++;
@@ -152,13 +159,14 @@ ZmSetting.USERID						= i++;
 // CLIENT SIDE FEATURE SUPPORT
 ZmSetting.ATT_VIEW_ENABLED				= i++;
 ZmSetting.EVAL_ENABLED 					= i++;
+ZmSetting.FEED_ENABLED					= i++;
 ZmSetting.HELP_ENABLED					= i++;
-ZmSetting.IM_ENABLED					= i++;
 ZmSetting.MIXED_VIEW_ENABLED			= i++;
 ZmSetting.NOTES_ENABLED					= i++;
 ZmSetting.PREFS_ENABLED					= i++;
 ZmSetting.PRINT_ENABLED					= i++;
 ZmSetting.REPLY_MENU_ENABLED			= i++;
+ZmSetting.FORWARD_MENU_ENABLED 			= i++;
 ZmSetting.SAVE_DRAFT_ENABLED			= i++;
 ZmSetting.SEARCH_ENABLED				= i++;
 ZmSetting.SKI_HACK_ENABLED				= i++;
@@ -176,6 +184,8 @@ ZmSetting.IMPORT 						= i++;
 // calendar preferences
 ZmSetting.CAL_FIRST_DAY_OF_WEEK 		= i++;
 ZmSetting.CAL_SHOW_TIMEZONE				= i++;
+ZmSetting.CAL_USE_QUICK_ADD 			= i++;
+ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL		= i++;
 ZmSetting.CALENDAR_INITIAL_VIEW			= i++;
 ZmSetting.DEFAULT_CALENDAR_TIMEZONE		= i++;
 // general preferences
@@ -214,7 +224,7 @@ ZmSetting.VACATION_MSG_ENABLED			= i++;
 ZmSetting.VIEW_AS_HTML					= i++;
 
 
-ZmSetting.MAX_INDEX 	= i-1;
+ZmSetting.MAX_INDEX 	= i - 1;
 
 // setting types
 ZmSetting.T_CONFIG		= 1;
@@ -245,7 +255,11 @@ ZmSetting.INIT[ZmSetting.FORCE_CAL_OFF]					= [null, ZmSetting.T_CONFIG, ZmSetti
 ZmSetting.INIT[ZmSetting.HELP_URI]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "/zimbra/help/Zimbra_User_Help.htm"];
 ZmSetting.INIT[ZmSetting.LOG_REQUEST]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.LOGO_URI]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "http://www.zimbra.com"];
+ZmSetting.INIT[ZmSetting.TIMEOUT]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_INT, 15];
 ZmSetting.INIT[ZmSetting.USE_XML]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.CLIENT_VERSION]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildVersion@"];  // this gets replaced during deploy
+ZmSetting.INIT[ZmSetting.CLIENT_RELEASE]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildRelease@"];  // this gets replaced during deploy
+ZmSetting.INIT[ZmSetting.CLIENT_DATETIME] 				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildDateTime@"]; // this gets replaced during deploy
 
 // IDs FOR HTML COMPONENTS IN THE SKIN
 ZmSetting.INIT[ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID]	= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_app_bottom_toolbar"];
@@ -275,13 +289,17 @@ ZmSetting.INIT[ZmSetting.DISPLAY_NAME]					= ["displayName", ZmSetting.T_COS, Zm
 ZmSetting.INIT[ZmSetting.FILTERS_ENABLED]				= ["zimbraFeatureFiltersEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.GAL_ENABLED]					= ["zimbraFeatureGalEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.HTML_COMPOSE_ENABLED] 			= ["zimbraFeatureHtmlComposeEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.IM_ENABLED]					= ["zimbraFeatureIMEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.IDLE_SESSION_TIMEOUT] 			= ["zimbraMailIdleSessionTimeout", ZmSetting.T_COS, ZmSetting.D_LDAP_TIME, 0];
 ZmSetting.INIT[ZmSetting.INITIAL_SEARCH_ENABLED]		= ["zimbraFeatureInitialSearchPreferenceEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.MAX_CONTACTS]					= ["zimbraContactMaxNumEntries", ZmSetting.T_COS, ZmSetting.D_INT, 0];
 ZmSetting.INIT[ZmSetting.MIN_POLLING_INTERVAL]			= ["zimbraMailMinPollingInterval", ZmSetting.T_COS, ZmSetting.D_LDAP_TIME, 120];
+ZmSetting.INIT[ZmSetting.PWD_MAX_LENGTH]				= ["zimbraPasswordMaxLength", ZmSetting.T_COS, ZmSetting.D_INT, 64];
+ZmSetting.INIT[ZmSetting.PWD_MIN_LENGTH]				= ["zimbraPasswordMinLength", ZmSetting.T_COS, ZmSetting.D_INT, 6];
 ZmSetting.INIT[ZmSetting.QUOTA]							= ["zimbraMailQuota", ZmSetting.T_COS, ZmSetting.D_INT, 0];
 ZmSetting.INIT[ZmSetting.SAVED_SEARCHES_ENABLED]		= ["zimbraFeatureSavedSearchesEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.TAGGING_ENABLED]				= ["zimbraFeatureTaggingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+
 // user metadata (included with COS since the user can't change them)
 ZmSetting.INIT[ZmSetting.QUOTA_USED]					= [null, ZmSetting.T_COS, ZmSetting.D_INT];
 ZmSetting.INIT[ZmSetting.TOKEN_LIFETIME]				= [null, ZmSetting.T_COS, ZmSetting.D_INT];
@@ -291,13 +309,14 @@ ZmSetting.INIT[ZmSetting.USERID]						= ["zimbraId", ZmSetting.T_COS, ZmSetting.
 // CLIENT SIDE FEATURE SUPPORT
 ZmSetting.INIT[ZmSetting.ATT_VIEW_ENABLED]				= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.EVAL_ENABLED] 			 		= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.FEED_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.HELP_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
-ZmSetting.INIT[ZmSetting.IM_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.MIXED_VIEW_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.NOTES_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.PREFS_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.PRINT_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
-ZmSetting.INIT[ZmSetting.REPLY_MENU_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.REPLY_MENU_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.FORWARD_MENU_ENABLED] 			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.SAVE_DRAFT_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.SEARCH_ENABLED]				= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.SKI_HACK_ENABLED]				= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
@@ -315,6 +334,8 @@ ZmSetting.INIT[ZmSetting.IMPORT] 						= [null, ZmSetting.T_PREF];
 // calendar preferences
 ZmSetting.INIT[ZmSetting.CAL_FIRST_DAY_OF_WEEK] 		= ["zimbraPrefCalendarFirstDayOfWeek", ZmSetting.T_PREF, ZmSetting.D_INT, 0];
 ZmSetting.INIT[ZmSetting.CAL_SHOW_TIMEZONE]	 			= ["zimbraPrefUseTimeZoneListInCalendar", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.CAL_USE_QUICK_ADD] 			= ["zimbraPrefCalendarUseQuickAdd", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL]		= ["zimbraPrefCalendarAlwaysShowMiniCal", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.CALENDAR_INITIAL_VIEW]			= ["zimbraPrefCalendarInitialView", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.CAL_DAY];
 ZmSetting.INIT[ZmSetting.DEFAULT_CALENDAR_TIMEZONE]		= ["zimbraPrefTimeZoneId", ZmSetting.T_PREF, ZmSetting.D_STRING];
 // general preferences
@@ -419,19 +440,10 @@ function(value, key, setDefault) {
 	}
 };
 
-ZmSetting.prototype.notify =
-function(event, details) {
-	if (this.settings._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
-		this.settings._evt.set(event, this);
-		this.settings._evt.setDetails(details);
-		this.settings._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this.settings._evt);
-	}
-};
-
 ZmSetting.prototype.notifyModify = 
 function(obj) {
 	if (this.id == ZmSetting.QUOTA_USED && obj._name == "mbx") {
 		this.setValue(obj.s);
-		this.notify(ZmEvent.E_MODIFY);
+		this._notify(ZmEvent.E_MODIFY);
 	}
 };

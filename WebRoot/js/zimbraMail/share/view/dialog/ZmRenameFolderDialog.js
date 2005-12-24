@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -45,7 +45,7 @@ function(folder, source, loc) {
 	ZmDialog.prototype.popup.call(this, loc);
 	var title = (folder.type == ZmOrganizer.SEARCH) ? ZmMsg.renameSearch : ZmMsg.renameFolder;
 	this.setTitle(title + ': ' + folder.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
-	this._nameField.value = folder.getName(false);
+	this._nameField.value = folder.getName(false, null, true);
 	this._folder = folder;
 }
 
@@ -56,7 +56,7 @@ function() {
 	var idx = 0;
 	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
 	html[idx++] = "<tr><td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>" + ZmMsg.newName + ": </td></tr>";
-	html[idx++] = "<tr><td><input type='text' class='Field' id='" + this._nameFieldId + "' /></td></tr>";
+	html[idx++] = "<tr><td><input type='text' autocomplete='off' class='Field' id='" + this._nameFieldId + "' /></td></tr>";
 	html[idx++] = "</table>";
 	
 	return html.join("");

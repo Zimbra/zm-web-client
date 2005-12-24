@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -30,7 +30,7 @@
 */
 function ZmPreferencesApp(appCtxt, container) {
 	ZmApp.call(this, ZmZimbraMail.PREFERENCES_APP, appCtxt, container);
-}
+};
 
 ZmPreferencesApp.prototype = new ZmApp;
 ZmPreferencesApp.prototype.constructor = ZmPreferencesApp;
@@ -38,24 +38,30 @@ ZmPreferencesApp.prototype.constructor = ZmPreferencesApp;
 ZmPreferencesApp.prototype.toString =
 function() {
 	return "ZmPreferencesApp";
-}
+};
 
 ZmPreferencesApp.prototype.launch =
 function(appCtxt) {
 	this.getPrefController().show();
-}
+};
 
 ZmPreferencesApp.prototype.getPrefController =
 function() {
-	if (!this._prefController) {
+	if (!this._prefController)
 		this._prefController = new ZmPrefController(this._appCtxt, this._container, this);
-	}
 	return this._prefController;
-}
+};
 
-ZmPreferencesApp.prototype.getFilterController = function() {
-	if (!this._filterController) {
+ZmPreferencesApp.prototype.getFilterController =
+function() {
+	if (!this._filterController)
 		this._filterController = new ZmFilterController(this._appCtxt, this._container, this);
-	}
 	return this._filterController;
-}
+};
+
+ZmPreferencesApp.prototype.getFilterRules =
+function() {
+	if (!this._filterRules)
+		this._filterRules = new ZmFilterRules(this._appCtxt);
+	return this._filterRules;
+};

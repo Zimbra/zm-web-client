@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  *
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -131,10 +131,8 @@ function() {
 
 ZmApptTypeDialog.prototype._cacheFields = 
 function() {
-	var doc = this.getDocument();
-
-	this._defaultRadio = Dwt.getDomObj(doc, this._defaultRadioId); 				delete this._defaultRadioId;
-	this._questionCell = Dwt.getDomObj(doc, this._questionId); 					delete this._questionId;
-	this._instanceMsg = Dwt.getDomObj(doc, this._instanceMsgId); 				delete this._instanceMsgId;
-	this._seriesMsg = Dwt.getDomObj(doc, this._seriesMsgId); 					delete this._seriesMsgId;
+	this._defaultRadio = document.getElementById(this._defaultRadioId); 		delete this._defaultRadioId;
+	this._questionCell = document.getElementById(this._questionId); 			delete this._questionId;
+	this._instanceMsg = document.getElementById(this._instanceMsgId); 			delete this._instanceMsgId;
+	this._seriesMsg = document.getElementById(this._seriesMsgId); 				delete this._seriesMsgId;
 };

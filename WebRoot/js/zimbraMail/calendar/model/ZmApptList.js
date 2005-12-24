@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -43,6 +43,12 @@ function() {
 	return "ZmApptList";
 }
 
+ZmApptList._fba2ptst = {
+	B: ZmAppt.PSTATUS_ACCEPT,
+	F: ZmAppt.PSTATUS_DECLINED,
+	T: ZmAppt.PSTATUS_TENTATIVE
+};
+			
 ZmApptList.prototype._getAttr =
 function(appt, inst, name)
 {
@@ -76,9 +82,9 @@ function(resp) {
 			instanceStartTimes.add(startTime);
 			var appt = new ZmAppt(this._appCtxt, this);
 			appt.uid =  apptNode.uid;
-			appt.fragment = apptNode.fr;	
 			appt.folderId = apptNode.l || ZmFolder.ID_CALENDAR;
-			
+
+			appt.fragment = this._getAttr(apptNode, instNode, "fr");			
 			var duration = parseInt(this._getAttr(apptNode, instNode, "d"));
 			appt.type = this._getAttr(apptNode, instNode, "type");
 			appt.isOrg = this._getAttr(apptNode, instNode, "isOrg");
@@ -102,6 +108,10 @@ function(resp) {
 			appt.location = this._getAttr(apptNode, instNode, "loc");
 			appt.startDate = new Date(startTime);
 			appt._uniqStartTime = appt.startDate.getTime(); // neede to construct uniq id later
+			if (instNode.fba && ZmApptList._fba2ptst[instNode.fba]) {
+				// override appt.ptst for this instance
+				appt.ptst = ZmApptList._fba2ptst[instNode.fba];
+			}
 			//appt.exception = this._getAttr(apptNode, instNode, "exception");
 			var endTime = startTime + duration;
 			appt.endDate = new Date(endTime);

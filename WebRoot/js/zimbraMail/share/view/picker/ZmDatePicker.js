@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -26,7 +26,7 @@
 function ZmDatePicker(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.DATE);
-}
+};
 
 ZmDatePicker.prototype = new ZmPicker;
 ZmDatePicker.prototype.constructor = ZmDatePicker;
@@ -36,7 +36,7 @@ ZmPicker.CTOR[ZmPicker.DATE] = ZmDatePicker;
 ZmDatePicker.prototype.toString = 
 function() {
 	return "ZmDatePicker";
-}
+};
 
 ZmDatePicker.prototype._setupPicker =
 function(parent) {
@@ -63,17 +63,17 @@ function(parent) {
     html[i++] = "</table>";
 	picker.getHtmlElement().innerHTML = html.join("");
 
-	var cal = this._cal = new DwtCalendar(picker);
+	var firstDay = this._appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
+	var cal = this._cal = new DwtCalendar(picker, null, null, firstDay);
 	cal.setDate(new Date());
 	cal.addSelectionListener(new AjxListener(this, this._calSelectionListener));
 	
-	var doc = this.getDocument();
-	Dwt.getDomObj(doc, calId).appendChild(cal.getHtmlElement());
-	var select = this._select = Dwt.getDomObj(doc, selectId);
+	document.getElementById(calId).appendChild(cal.getHtmlElement());
+	var select = this._select = document.getElementById(selectId);
 	Dwt.setHandler(select, DwtEvent.ONCHANGE, ZmDatePicker._onChange);
 	select._picker = this;
 	this._updateQuery();
-}
+};
 
 // Set date for second instance of date picker to 3 months back, select "after"
 ZmDatePicker.prototype.secondDate =
@@ -83,7 +83,7 @@ function() {
 	AjxDateUtil.roll(date, AjxDateUtil.MONTH, -3);
 	this._cal.setDate(date);
 	this._updateQuery();
-}
+};
 
 ZmDatePicker.prototype._updateQuery = 
 function() {
@@ -95,7 +95,7 @@ function() {
 		this.setQuery("");
 	}
 	this.execute();
-}
+};
 
 ZmDatePicker._onChange = 
 function(ev) {
@@ -107,4 +107,4 @@ function(ev) {
 ZmDatePicker.prototype._calSelectionListener =
 function(ev) {
 	this._updateQuery();
-}
+};

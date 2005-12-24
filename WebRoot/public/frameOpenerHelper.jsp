@@ -12,7 +12,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
 the License for the specific language governing rights and limitations
 under the License.
 
-The Original Code is: Zimbra Collaboration Suite.
+The Original Code is: Zimbra Collaboration Suite Web Client
 
 The Initial Developer of the Original Code is Zimbra, Inc.
 Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -22,12 +22,17 @@ Contributor(s):
 
 ***** END LICENSE BLOCK *****
 -->
+<%
+String vers = (String) request.getAttribute("version");
+if (vers == null) vers = "";
+%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
     <title></title>
     <script>
+var cacheKillerVersion = "<%= vers %>";
 paramMap = new Object();
 paramsInited = false;
 getParam = function (name) {

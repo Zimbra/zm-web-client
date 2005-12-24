@@ -12,7 +12,7 @@
  * the License for the specific language governing rights and limitations
  * under the License.
  * 
- * The Original Code is: Zimbra Collaboration Suite.
+ * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
@@ -44,7 +44,7 @@
 function ZmItem(appCtxt, type, id, list) {
 
 	if (arguments.length == 0) return;
-	ZmModel.call(this, true);
+	ZmModel.call(this, type);
 
 	this._appCtxt = appCtxt;
 	this.type = type;
@@ -54,11 +54,10 @@ function ZmItem(appCtxt, type, id, list) {
 	this.tags = new Array();
 	this.tagHash = new Object();
 	this.folderId = 0;
-	this._evt = new ZmEvent(type);
 	
-	if (id)
+	if (id && appCtxt)
 		appCtxt.cacheSet(id, this);
-}
+};
 
 ZmItem.prototype = new ZmModel;
 ZmItem.prototype.constructor = ZmItem;
@@ -70,10 +69,11 @@ ZmItem.ATT		= ZmEvent.S_ATT;
 ZmItem.CONTACT	= ZmEvent.S_CONTACT;
 ZmItem.APPT		= ZmEvent.S_APPT;
 ZmItem.NOTE		= ZmEvent.S_NOTE;
-ZmItem.MAX		= ZmItem.NOTE;
+ZmItem.CHAT		= ZmEvent.S_CHAT;
+ZmItem.ROSTER_ITEM = ZmEvent.S_ROSTER_ITEM;
+ZmItem.MAX		= ZmEvent.S_MAX;
 
 // Type names
-ZmItem.MSG_KEY = new Object();
 ZmItem.MSG_KEY = new Object();
 ZmItem.MSG_KEY[ZmItem.CONV]		= "conversation";
 ZmItem.MSG_KEY[ZmItem.MSG]		= "message";
@@ -81,6 +81,7 @@ ZmItem.MSG_KEY[ZmItem.ATT]		= "attachment";
 ZmItem.MSG_KEY[ZmItem.CONTACT]	= "contact";
 ZmItem.MSG_KEY[ZmItem.APPT]		= "appointment";
 ZmItem.MSG_KEY[ZmItem.NOTE]		= "note";
+ZmItem.MSG_KEY[ZmItem.CHAT]		= "chat";
 
 // Representative icons
 ZmItem.ICON = new Object();
@@ -90,6 +91,7 @@ ZmItem.ICON[ZmItem.ATT]		= "Attachment";
 ZmItem.ICON[ZmItem.CONTACT]	= "Contact";
 ZmItem.ICON[ZmItem.APPT]	= "Appointment";
 ZmItem.ICON[ZmItem.NOTE]	= "Note";
+ZmItem.ICON[ZmItem.CHAT]	= "ImStartChat";
 
 // fields that can be part of a displayed item
 var i = 1;
@@ -161,7 +163,7 @@ ZmItem.prototype.getById =
 function(id) {
 	if (id == this.id)
 		return this;
-}
+};
 
 ZmItem.prototype.clear =
 function() {
@@ -174,7 +176,7 @@ function() {
 	for (var i in this.tagHash)
 		this.tagHash[i] = null;
 	this.tagHash = new Object();
-}
+};
 
 /**
 * Returns true is this item has the given tag.
@@ -184,7 +186,7 @@ function() {
 ZmItem.prototype.hasTag =
 function(tagId) {
 	return (this.tagHash[tagId] == true);
-}
+};
 
 /**
 * Returns ID of the folder that contains this item, if available.
@@ -192,7 +194,7 @@ function(tagId) {
 ZmItem.prototype.getFolderId =
 function() {
 	return this.folderId;
-}
+};
 
 /**
 * Returns the ID of the appropriate tag image for this item.
@@ -200,19 +202,20 @@ function() {
 ZmItem.prototype.getTagImageInfo =
 function() {
 	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
-	if (!tagList) return ZmTag.DEFAULT_COLOR;
+	if (!tagList) return ZmTag.COLOR_MINI_ICON[ZmTag.DEFAULT_COLOR];
 	
 	var tagImageInfo;
 	if (!this.tags.length) {
 		tagImageInfo = "Blank_16";
 	} else if (this.tags.length == 1) {
-		var color = tagList.getById(this.tags[0]).color;
+		var tag = tagList.getById(this.tags[0]);
+		var color = tag ? tag.color : ZmTag.DEFAULT_COLOR;
 		tagImageInfo = ZmTag.COLOR_MINI_ICON[color];
 	} else {
 		tagImageInfo = "MiniTagStack";
 	}
 	return tagImageInfo;
-}
+};
 
 // Notification handling
 
@@ -225,7 +228,7 @@ function() {
 	if (this.list)
 		this.list.deleteLocal([this]);
 	this._notify(ZmEvent.E_DELETE);
-}
+};
 
 /**
 * Handles a modification notification.
@@ -258,9 +261,11 @@ function(obj) {
 		this.moveLocal(obj.l);
 		if (this.list)
 			this.list.moveLocal([this], obj.l);
-		this._notify(ZmEvent.E_MOVE);
+		// if this was the last item in a list of items that moved,
+		// it's safe to do replenishment now
+		this._notify(ZmEvent.E_MOVE, {replenish: obj.lastModify});
 	}
-}
+};
 
 // Local change handling
 
@@ -273,7 +278,7 @@ function(obj) {
 ZmItem.prototype.flagLocal =
 function(flag, on) {
 	this[ZmItem.FLAG_PROP[flag]] = on;
-}
+};
 
 /**
 * Adds or removes the given tag for this item.
@@ -302,7 +307,7 @@ function(tagId, doTag) {
 	}
 	
 	return bNotify;
-}
+};
 
 ZmItem.prototype.removeAllTagsLocal =
 function() {
@@ -310,12 +315,12 @@ function() {
 	for (var i in this.tagHash) {
 		delete this.tagHash[i];
 	}
-}
+};
 
 /**
 * Here for completeness, in case an item wants to do something while being deleted.
 */
-ZmItem.prototype.deleteLocal = function() {}
+ZmItem.prototype.deleteLocal = function() {};
 
 /**
 * Updates the folder for this item.
@@ -325,7 +330,7 @@ ZmItem.prototype.deleteLocal = function() {}
 ZmItem.prototype.moveLocal =
 function(folderId) {
 	this.folderId = folderId;
-}
+};
 
 // Takes a comma-separated list of tag IDs and applies the tags to this item.
 ZmItem.prototype._parseTags =
@@ -336,11 +341,11 @@ function(str) {
 		var tags = str.split(",");
 		for (var i = 0; i < tags.length; i++) {
 			var tagId = Number(tags[i]);
-			if (tagId >= ZmTag.FIRST_USER_ID)
+			if (tagId >= ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG])
 				this.tagLocal(tagId, true);
 		}
 	}
-}
+};
 
 // Takes a string of flag chars and applies them to this item.
 ZmItem.prototype._parseFlags =
@@ -350,36 +355,22 @@ function(str) {
 		var on = (str && (str.indexOf(flag) != -1)) ? true : false;
 		this.flagLocal(flag, on);
 	}
-}
+};
 
 // Listener notification
 
-// Notifies listeners on this item
-ZmItem.prototype._eventNotify =
-function(event, details) {
-	if (this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
-		this._evt.set(event, this);
-		this._evt.setDetails(details);
-		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
-	}
-}
-
-// Notifies listeners on this item's list
-ZmItem.prototype._listNotify =
-function(event, details) {
-	if (this.list) {
-		this._evt.set(event, this);
-		this._evt.setDetails(details);
-		this.list._eventNotify(event, [this], details);
-	}
-}
-
+// notify the list as well as this item
 ZmItem.prototype._notify =
 function(event, details) {
-	this._eventNotify(event, details);
-	if (this.list)
-		this._listNotify(event, details);
-}
+	ZmModel.prototype._notify.call(this, event, details);
+	if (this.list) {
+		if (details)
+			details.items = [this];
+		else
+			details = {items: [this]};
+		this.list._notify(event, details);
+	}
+};
 
 /*
 * Returns a list of flags that apply to this type of item.
@@ -387,4 +378,4 @@ function(event, details) {
 ZmItem.prototype._getFlags =
 function() {
 	return [ZmItem.FLAG_FLAGGED, ZmItem.FLAG_ATTACH];
-}
+};
