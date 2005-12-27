@@ -140,6 +140,8 @@ ZmZimletContext.prototype._loadStyles = function() {
 		style.href = fullurl;
 		style.title = this.name + " " + this.includeCSS[i];
 		head.appendChild(style);
+		style.disabled = true;
+		style.disabled = false;
 	}
 	this.includeCSS = null;
 };
