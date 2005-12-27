@@ -154,10 +154,9 @@ function(callback, result) {
 		this._settings[ZmSetting.CALENDAR_ENABLED].setValue(false, null, true);
 		
 	// load Zimlets
-	if(obj.zimlets) {
-		DBG.println(AjxDebug.DBG1, "Zimlets: Got some Zimlets");
+	if(obj.zimlets && obj.zimlets.zimlet) {
+		DBG.println(AjxDebug.DBG1, "Zimlets - Got " + (obj.zimlets.zimlet.length+1) + " Zimlets");
 		this._zmm.loadZimlets(obj.zimlets.zimlet, obj.props.prop);
-	 	
 	 	var panelZimlets = this._zmm.getPanelZimlets();
 	 	if(panelZimlets && panelZimlets.length > 0) {
 			var zimletTree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);

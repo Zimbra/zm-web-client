@@ -34,7 +34,7 @@ function ZmZimletContext(id, zimlet) {
 	zimlet = zimlet.zimlet[0];
 	this.name = zimlet.name;
 	this._url = this.ctxt[0].baseUrl;
-	DBG.println(AjxDebug.DBG2, "Zimlets: Loading Context: " + this.name + " base: " + this._url);
+	DBG.println(AjxDebug.DBG2, "Zimlets - context: " + this.name + " base: " + this._url);
 	this.description = zimlet.description;
 	this.version = zimlet.version;
 	this.includes = this.json.zimlet.include;
@@ -162,10 +162,11 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	this.handlerObject = obj;
 	obj._init(this, DwtShell.getShell(window));
 	if (this.contentObject) {
-		DBG.println(AjxDebug.DBG2, "Zimlets: registerHandler: " + this.name);
+		DBG.println(AjxDebug.DBG2, "Zimlets - registerHandler(): " + this.name);
 		ZmObjectManager.registerHandler(obj);
 	}
 	obj.init();
+	DBG.println(AjxDebug.DBG2, "Zimlets - init(): " + this.name);
 };
 
 ZmZimletContext.prototype._loadStyles = function() {
@@ -174,14 +175,15 @@ ZmZimletContext.prototype._loadStyles = function() {
 	var head = document.getElementsByTagName("head")[0];
 	for (var i = 0; i < this.includeCSS.length; ++i) {
 		var fullurl = this.includeCSS[i];
-		if (!/^((https?|ftps?):\x2f\x2f|\x2f)/.test(fullurl))
-			// relative URL
+		if (!/^((https?|ftps?):\x2f\x2f|\x2f)/.test(fullurl)) {
 			fullurl = this._url + fullurl;
+		}
 		var style = document.createElement("link");
 		style.type = "text/css";
 		style.rel = "stylesheet";
 		style.href = fullurl;
 		style.title = this.name + " " + this.includeCSS[i];
+		DBG.println(AjxDebug.DBG2, "Zimlets - CSS: " + style.href);
 		head.appendChild(style);
 		style.disabled = true;
 		style.disabled = false;
