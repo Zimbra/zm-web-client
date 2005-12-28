@@ -229,10 +229,7 @@ function() {
 // Save button was pressed
 ZmApptComposeController.prototype._saveListener =
 function(ev) {
-	if (this._doSave()) {
-		this._apptView.cleanup();	// always cleanup the views
-		this._app.popView(true);	// force pop view
-	}
+	this._doSave();
 };
 
 // Cancel button was pressed
@@ -306,18 +303,12 @@ function() {
 
 ZmApptComposeController.prototype._doSave =
 function() {
-	var popView = true;
-	if (this._apptView.isDirty()) {
-		popView = false;
-		// check if all fields are populated w/ valid values
-		if (this._apptView.isValid()) {
-			this.saveAppt();
-		} else {
-			// XXX: show error dialog for now (until we get proper error handling mechanism)
-			this._showErrorMessage();
-		}
+	// check if all fields are populated w/ valid values
+	if (this._apptView.isValid()) {
+		this.saveAppt();
+	} else {
+		this._showErrorMessage();
 	}
-	return popView;
 };
 
 ZmApptComposeController.prototype._doSpellCheck =  
@@ -333,10 +324,7 @@ function() {
 ZmApptComposeController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
-	if (this._doSave()) {
-		this._app.getAppViewMgr().showPendingView(true);
-		this._apptView.cleanup();
-	}
+	this._doSave();
 };
 
 ZmApptComposeController.prototype._popShieldNoCallback =

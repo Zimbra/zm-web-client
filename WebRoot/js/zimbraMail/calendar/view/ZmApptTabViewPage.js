@@ -93,8 +93,8 @@ function(attId) {
 	appt.setViewMode(this._mode);
 
 	// save field values of this view w/in given appt
-	appt.setName(this._subjectField.value);
-	appt.location = this._locationField.value;
+	appt.setName(this._subjectField.getValue());
+	appt.location = this._locationField.getValue();
 	appt.freeBusy = this._showAsSelect.getValue();
 	var calId = this._calendarSelect.getValue();
 	appt.setFolderId(calId);
@@ -169,8 +169,8 @@ function() {
 	this._appt = null;
 
 	// clear out all input fields
-	this._subjectField.value = "";
-	this._locationField.value = "";
+	this._subjectField.setValue("");
+	this._locationField.setValue("");
 	this._attendeesField.value = "";
 	this._repeatDescField.innerHTML = "";
 	this._notesHtmlEditor.clear();
@@ -190,8 +190,8 @@ function() {
 // Acceptable hack needed to prevent cursor from bleeding thru higher z-index'd views
 ZmApptTabViewPage.prototype.enableInputs =
 function(bEnableInputs) {
-	this._subjectField.disabled = !bEnableInputs;
-	this._locationField.disabled = !bEnableInputs;
+	this._subjectField.disabled(!bEnableInputs);
+	this._locationField.disabled(!bEnableInputs);
 	this._attendeesField.disabled = !bEnableInputs;
 	this._startDateField.disabled = !bEnableInputs;
 	this._endDateField.disabled = !bEnableInputs;
@@ -208,7 +208,7 @@ ZmApptTabViewPage.prototype.isValid =
 function() {
 
 	// check for required subject
-	var subj = AjxStringUtil.trim(this._subjectField.value);
+	var subj = AjxStringUtil.trim(this._subjectField.getValue());
 	var isValid = subj != null && subj.length > 0;
 
 	// check proper dates..
@@ -461,8 +461,8 @@ function(appt) {
 ZmApptTabViewPage.prototype._populateForEdit =
 function(appt, mode) {
 	// set subject/location
-	this._subjectField.value = appt.getName();
-	this._locationField.value = appt.getLocation();
+	this._subjectField.setValue(appt.getName());
+	this._locationField.setValue(appt.getLocation());
 
 	// TODO: set calendar this appointment belongs to
 
@@ -515,6 +515,7 @@ function(enable) {
 ZmApptTabViewPage.prototype._createHTML =
 function() {
 	this._createApptHtml();
+	this._createInputs();
 	this._createSelects();
 	this._createButtons();
 	this._cacheFields();
@@ -526,8 +527,6 @@ function() {
 ZmApptTabViewPage.prototype._createApptHtml =
 function() {
 	var dims = this.parent.getSize();
-	// XXX: this seems to screw up the view when preloading
-	//var half = (dims.x / 2) - 5; 
 	var half = "50%";
 	this.setSize(dims.x-2, dims.y-30);
 	this._notesHtmlEditorId = Dwt.getNextId();
@@ -568,6 +567,26 @@ function() {
 	html[i++] = "</table>";
 
 	this.getHtmlElement().innerHTML = html.join("");
+};
+
+ZmApptTabViewPage.prototype._createInputs = 
+function() {
+	this._subjectField = new DwtInputField({parent:this, type:DwtInputField.STRING,
+											initialValue:null, size:null, maxLen:null,
+											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
+											validationStyle:DwtInputField.ONEXIT_VALIDATION});
+	this._subjectField.setRequired();
+	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
+	this._subjectField.reparentHtmlElement(this._subjectFieldId);
+	delete this._subjectFieldId;
+
+	this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
+											initialValue:null, size:null, maxLen:null,
+											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
+											validationStyle:DwtInputField.ONEXIT_VALIDATION});
+	Dwt.setSize(this._locationField.getInputElement(), "100%", "22px");
+	this._locationField.reparentHtmlElement(this._locationFieldId);
+	delete this._locationFieldId;
 };
 
 ZmApptTabViewPage.prototype._createSelects =
@@ -677,12 +696,12 @@ function() {
 	html[i++] = "<table border=0 width=100%>";
 	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'><sup>*</sup>";
 	html[i++] = ZmMsg.subject;
-	html[i++] = ":</td><td colspan=5><input autocomplete='off' style='width:100%; height:22px' type='text' id='";
+	html[i++] = ":</td><td colspan=5 id='";
 	html[i++] = this._subjectFieldId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.location;
-	html[i++] = ":</td><td colspan=5><input autocomplete='off' style='width:100%; height:22px' type='text' id='";
+	html[i++] = ":</td><td colspan=5 id='";
 	html[i++] = this._locationFieldId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr>";
@@ -844,8 +863,6 @@ function() {
 // cache all input fields so we dont waste time traversing DOM each time
 ZmApptTabViewPage.prototype._cacheFields =
 function() {
-	this._subjectField 		= document.getElementById(this._subjectFieldId); 		delete this._subjectFieldId;
-	this._locationField 	= document.getElementById(this._locationFieldId); 		delete this._locationFieldId;
 	this._calLabelField 	= document.getElementById(this._calLabelId); 			delete this._calLabelId;
 	this._startDateField 	= document.getElementById(this._startDateFieldId); 		delete this._startDateFieldId;
 	this._endDateField 		= document.getElementById(this._endDateFieldId);	 	delete this._endDateFieldId;
@@ -1017,8 +1034,8 @@ ZmApptTabViewPage.prototype._formValue =
 function() {
 	var vals = new Array();
 
-	vals.push(this._subjectField.value);
-	vals.push(this._locationField.value);
+	vals.push(this._subjectField.getValue());
+	vals.push(this._locationField.getValue());
 	vals.push(this._showAsSelect.getValue());
 	vals.push(this._startDateField.value);
 	vals.push(this._endDateField.value);
