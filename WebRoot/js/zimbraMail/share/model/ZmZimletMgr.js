@@ -54,7 +54,7 @@ function() {
 	var j=0;
 	for(var i=0; i < this._ZIMLETS.length; i++) {
 		if(this._ZIMLETS[i].zimletPanelItem) {
-			DBG.println(AjxDebug.DBG2, "Zimlets: Panel " + this._ZIMLETS[i].name);
+			DBG.println(AjxDebug.DBG2, "Zimlets - add to panel " + this._ZIMLETS[i].name);
 			panelZimlets[j++] = this._ZIMLETS[i];
 		}
 	}
@@ -67,7 +67,7 @@ function() {
 	var j=0;
 	for(var i=0; i < this._ZIMLETS.length; i++) {
 		if(this._ZIMLETS[i].keyword) {
-			DBG.println(AjxDebug.DBG2, "Zimlets: Indexed " + this._ZIMLETS[i].name);
+			DBG.println(AjxDebug.DBG2, "Zimlets - add to indexed " + this._ZIMLETS[i].name);
 			indexedZimlets[j++] = this._ZIMLETS[i];
 		}
 	}

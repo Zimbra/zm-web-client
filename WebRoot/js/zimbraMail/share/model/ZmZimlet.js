@@ -42,7 +42,6 @@ ZmZimlet.ID_ZIMLET = ZmOrganizer.ID_ZIMLET;
 ZmZimlet.createFromJs =
 function(parent, obj, tree, link) {
 	if (!obj && obj.length < 1) {return null;}
-	DBG.println(AjxDebug.DBG1, "ZmZimlet.createFromJs() Loading...");
 
 	// create zimlet root
 	var zimletRoot = new ZmZimlet(ZmZimlet.ID_ZIMLET, ZmMsg.zimlets, parent, tree, null, null);
@@ -50,12 +49,12 @@ function(parent, obj, tree, link) {
 		var id = ZmZimlet.ID_ZIMLET;
 		for (var i = 0; i < obj.length; i++) {
 			var desc = obj[i].zimletPanelItem.label;
-			DBG.println(AjxDebug.DBG2, "Zimlet Desc: " + desc);
 			var childZimlet = new ZmZimlet(++id, desc, zimletRoot, tree, null, null);
 			zimletRoot.children.add(childZimlet);
 			// WARNING: it's a bit unorthodox to do this linkage
 			// here, but we really do need these objects know about
 			// each other.
+			DBG.println(AjxDebug.DBG2, "Zimlets - loading tree: n " + obj[i].name + " i " + obj[i].icon);
 			childZimlet._zimletContext = obj[i];
 			obj[i]._organizer = childZimlet;
 		}
@@ -90,8 +89,10 @@ function() {
 ZmZimlet.prototype.getIcon =
 function() {
 	if (this.id == ZmZimlet.ID_ZIMLET) {
+		DBG.println(AjxDebug.DBG2, "*************** NULL ****");
 		return null;
 	}
+	DBG.println(AjxDebug.DBG2, "*************** " + this._zimletContext.icon + "..." + this);
 	return this._zimletContext.icon;
 };
 
