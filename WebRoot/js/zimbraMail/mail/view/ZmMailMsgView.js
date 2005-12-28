@@ -597,6 +597,9 @@ function() {
 
 ZmMailMsgView.prototype._makeIframeProxy =
 function(container, html, isTextMsg) {
+	// bug fix #4943
+	if (html == null) html = "";
+
 	var displayImages;
 	if (!isTextMsg && /<img/i.test(html)) {
 		displayImages = document.createElement("div");
