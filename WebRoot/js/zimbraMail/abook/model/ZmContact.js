@@ -178,7 +178,8 @@ function(contact) {
 		case ZmContact.FA_LAST_C_FIRST: /* Last, First */
 		default:
 			// if full name is provided (i.e. GAL contacts) then use it 
-			if (attr.fullName)
+			// bug fix #4850 - check for GAL contact using fileAs attr instead
+			if (attr.fileAs == null)
 				return attr.fullName;
 			if (attr.lastName) fa[idx++] = attr.lastName;
 			if (attr.lastName && attr.firstName) fa[idx++] = ", ";
