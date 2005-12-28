@@ -181,35 +181,36 @@ function(code, params) {
 		// network errors
 		case AjxException.NETWORK_ERROR:				msg = ZmMsg.errorNetwork; break;
 		case ZmCsfeException.NETWORK_ERROR:				msg = ZmMsg.errorNetwork; break;
-		case ZmCsfeException.SOAP_ERROR: 				msg = ZmMsg.errorNetwork; break;
-		case ZmCsfeException.CSFE_SVC_ERROR: 			msg = ZmMsg.errorService; break;
-		
+		case ZmCsfeException.SOAP_ERROR:				msg = ZmMsg.errorNetwork; break;
+		case ZmCsfeException.CSFE_SVC_ERROR:			msg = ZmMsg.errorService; break;
+
 		// CSFE errors
-		case ZmCsfeException.SVC_FAILURE: 				msg = ZmMsg.errorService; break;
-		case ZmCsfeException.SVC_UNKNOWN_DOCUMENT: 		msg = ZmMsg.errorUnknownDoc; break;
-		case ZmCsfeException.SVC_PARSE_ERROR: 			msg = ZmMsg.errorParse; break;
-		case ZmCsfeException.SVC_PERM_DENIED: 			msg = ZmMsg.errorPermission; break;
-		
+		case ZmCsfeException.SVC_FAILURE:				msg = ZmMsg.errorService; break;
+		case ZmCsfeException.SVC_UNKNOWN_DOCUMENT:		msg = ZmMsg.errorUnknownDoc; break;
+		case ZmCsfeException.SVC_PARSE_ERROR:			msg = ZmMsg.errorParse; break;
+		case ZmCsfeException.SVC_PERM_DENIED:			msg = ZmMsg.errorPermission; break;
+
 		// account errors
-		case ZmCsfeException.ACCT_NO_SUCH_ACCOUNT: 		msg = ZmMsg.errorNoSuchAcct; break;
-		case ZmCsfeException.ACCT_INVALID_PASSWORD: 	msg = ZmMsg.errorInvalidPass; break;
+		case ZmCsfeException.ACCT_NO_SUCH_ACCOUNT:		msg = ZmMsg.errorNoSuchAcct; break;
+		case ZmCsfeException.ACCT_INVALID_PASSWORD:		msg = ZmMsg.errorInvalidPass; break;
 		case ZmCsfeException.ACCT_INVALID_PREF_NAME:	msg = ZmMsg.errorInvalidPrefName; break;
-		case ZmCsfeException.ACCT_INVALID_PREF_VALUE: 	msg = ZmMsg.errorInvalidPrefValue; break;
-		case ZmCsfeException.ACCT_NO_SUCH_SAVED_SEARCH: msg = ZmMsg.errorNoSuchSavedSearch; break;
-		case ZmCsfeException.ACCT_NO_SUCH_TAG:  		msg = ZmMsg.errorNoSuchTag; break;
+		case ZmCsfeException.ACCT_INVALID_PREF_VALUE:	msg = ZmMsg.errorInvalidPrefValue; break;
+		case ZmCsfeException.ACCT_NO_SUCH_SAVED_SEARCH:	msg = ZmMsg.errorNoSuchSavedSearch; break;
+		case ZmCsfeException.ACCT_NO_SUCH_TAG:			msg = ZmMsg.errorNoSuchTag; break;
 
 		// mail errors
-		case ZmCsfeException.MAIL_INVALID_NAME: 		msg = AjxStringUtil.resolve(ZmMsg.errorInvalidName, params.name); break;
-		case ZmCsfeException.MAIL_NO_SUCH_FOLDER: 		msg = ZmMsg.errorNoSuchFolder; break;
-		case ZmCsfeException.MAIL_NO_SUCH_TAG:	 		msg = ZmMsg.errorNoSuchTag; break;
-		case ZmCsfeException.MAIL_NO_SUCH_CONV:  		msg = ZmMsg.errorNoSuchConv; break;
-		case ZmCsfeException.MAIL_NO_SUCH_MSG: 			msg = ZmMsg.errorNoSuchMsg; break;
-		case ZmCsfeException.MAIL_NO_SUCH_PART: 		msg = ZmMsg.errorNoSuchPart; break;
+		case ZmCsfeException.MAIL_INVALID_NAME:			msg = AjxStringUtil.resolve(ZmMsg.errorInvalidName, params.name); break;
+		case ZmCsfeException.MAIL_NO_SUCH_FOLDER:		msg = ZmMsg.errorNoSuchFolder; break;
+		case ZmCsfeException.MAIL_NO_SUCH_TAG:			msg = ZmMsg.errorNoSuchTag; break;
+		case ZmCsfeException.MAIL_NO_SUCH_CONV:			msg = ZmMsg.errorNoSuchConv; break;
+		case ZmCsfeException.MAIL_NO_SUCH_MSG:			msg = ZmMsg.errorNoSuchMsg; break;
+		case ZmCsfeException.MAIL_NO_SUCH_PART:			msg = ZmMsg.errorNoSuchPart; break;
 		case ZmCsfeException.MAIL_QUERY_PARSE_ERROR:	msg = ZmMsg.errorQueryParse; break;
-		case ZmCsfeException.MAIL_QUOTA_EXCEEDED: 		msg = ZmMsg.errorQuotaExceeded; break;
+		case ZmCsfeException.MAIL_QUOTA_EXCEEDED:		msg = ZmMsg.errorQuotaExceeded; break;
+		case ZmCsfeException.MAIL_TOO_MANY_CONTACTS:	msg = ZmMsg.errorTooManyContacts; break;
 
 		// general errors
-		default: 									msg = ZmMsg.errorGeneric; break;
+		default:										msg = ZmMsg.errorGeneric; break;
 	}
 	
 	return msg;
