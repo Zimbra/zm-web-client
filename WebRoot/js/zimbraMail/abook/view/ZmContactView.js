@@ -123,7 +123,18 @@ function() {
 	this._getFields();
 	var mods = new Object();
 	var foundOne = false;
-	
+
+	// bug fix #648 - always re-compute the full name and add to mods list
+	var fn = new Array();
+	var idx = 0;
+	var first = this._attr[ZmContact.F_firstName];
+	var middle = this._attr[ZmContact.F_middleName];
+	var last = this._attr[ZmContact.F_lastName];
+	if (first) fn[idx++] = first;
+	if (middle) fn[idx++] = middle;
+	if (last) fn[idx++] = last;
+	var fullName = fn.join(" ");
+
 	// creating new contact (possibly some fields - but not ID - prepopulated)
 	if (this._contact.id == null || this._contact.isGal) {
 		for (var a in this._attr) {		
@@ -140,8 +151,10 @@ function() {
 				}
 			}
 		}
-	// modifying existing contact
+		// always set the full name for new contacts
+		mods[ZmContact.X_fullName] = fullName;
 	} else {
+		// modifying existing contact
 		for (var a in this._attr) {	
 			var val = this._contact.getAttr(a);
 			// do some normalizing
@@ -157,7 +170,12 @@ function() {
 				DBG.println(AjxDebug.DBG2, "DIFF: " + a + " = " + mods[a]);
 			}
 		}
+
+		// only set the full name if changed
+		if (this._contact.getFullName() != fullName)
+			mods[ZmContact.X_fullName] = fullName;
 	}
+
 	return foundOne ? mods : null;
 }
 
