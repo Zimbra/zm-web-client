@@ -50,7 +50,14 @@ function ZmObjectManager(view, appCtxt, selectCallback) {
 
 	// create handlers (see registerHandler below)
 	this._createHandlers();
-
+	
+	// get Zimlet handler's
+	var zimlets = this._appCtxt._settings._zmm.getContentZimlets();
+	for (i = 0; i < zimlets.length; i++) {
+		DBG.println(AjxDebug.DBG2, "ZmObjectManager: addHandler " + zimlets[i]);
+		this.addHandler(zimlets[i]);
+	}
+	
 	this.reset();
 
 	// install handlers
@@ -160,14 +167,15 @@ function(content, htmlEncode, type) {
 		// use (because we found a closer match) will simply return that match again.
 		//
 		// when we are done, we take the handler with the lowest index.
+		var i;
+		var handlers;
+		var result = null;
 		if (type) {
-			var handlers = this._objectHandlers[type];
+			handlers = this._objectHandlers[type];
 			if (handlers) {
-				var result = null;
-				for (var i = 0; i < handlers.length; i++) {
+				for (i = 0; i < handlers.length; i++) {
 					result = handlers[i].findObject(content, lastIndex);
-					if (result == null || result.index >= lowestIndex)
-						break;
+					if (!result || result.index >= lowestIndex) {break;}
 					lowestResult = result;
 					lowestIndex = result.index;
 					lowestHandler = handlers[i];
@@ -179,11 +187,11 @@ function(content, htmlEncode, type) {
 				return html.join("");
 			}	
 		} else {
-			for (var i in this._objectHandlers) {
-				var handlers = this._objectHandlers[i];
+			for (i in this._objectHandlers) {
+				handlers = this._objectHandlers[i];
 				for (var j = 0; j < handlers.length; j++) {
-					var result = handlers[j].findObject(content, lastIndex);
-					if (result != null && result.index < lowestIndex) {
+					result = handlers[j].findObject(content, lastIndex);
+					if (result && result.index < lowestIndex) {
 						lowestResult = result;
 						lowestIndex = result.index;
 						lowestHandler = handlers[j];
@@ -192,24 +200,26 @@ function(content, htmlEncode, type) {
 			}
 		}
 
-		if (lowestResult == null) {
+		if (!lowestResult) {
 			// all done
 			// do last chunk
 			var chunk = content.substring(lastIndex, maxIndex);
-			if (htmlEncode)
+			if (htmlEncode) {
 				html[idx++] = AjxStringUtil.htmlEncode(chunk, true);
-			else
+			} else {
 				html[idx++] = chunk;
+			}
 			break;
 		}
 
 		//  add anything before the match
 		if (lowestIndex > lastIndex) {
 			var chunk = content.substring(lastIndex, lowestIndex);
-			if (htmlEncode)
-				html[idx++] = AjxStringUtil.htmlEncode(chunk, true);
-			else
+			if (htmlEncode) {
+				html[idx++] = AjxStringUtil.htmlEncode(chunk, true); 
+			} else {
 				html[idx++] = chunk;
+			}
 		}
 
 		// add the match

@@ -23,9 +23,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmZimletMgr() {
+function ZmZimletMgr(appCtxt) {
+	this._appCtxt = appCtxt;
 	this._ZIMLETS = [];
 	this._ZIMLETS_BY_ID = {};
+	this._CONTENT_ZIMLETS = [];
 }
 
 ZmZimletMgr.prototype.constructor = ZmZimletMgr;
@@ -35,15 +37,16 @@ ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps) {
 	if(!zimletArray || !zimletArray.length) {return;}
 	for(var i=0; i < zimletArray.length; i++) {
-		var z = new ZmZimletContext(i, zimletArray[i]);
+		var z = new ZmZimletContext(i, zimletArray[i], this._appCtxt);
 		this._ZIMLETS[i] = this._ZIMLETS_BY_ID[z.name] = z;
 	}
 	if (userProps) {
-		for (var i = 0; i < userProps.length; ++i) {
+		for (i = 0; i < userProps.length; ++i) {
 			var p = userProps[i];
-			var z = this._ZIMLETS_BY_ID[p.zimlet];
-			if (z)
+			z = this._ZIMLETS_BY_ID[p.zimlet];
+			if (z) {
 				z.setPropValue(p.name, p._content);
+			}
 		}
 	}
 };
@@ -72,6 +75,18 @@ function() {
 		}
 	}
 	return indexedZimlets;
+};
+
+ZmZimletMgr.prototype.registerContentZimlet =
+function(zimletObj) {
+	var i = this._CONTENT_ZIMLETS.length;
+	DBG.println(AjxDebug.DBG2, "Zimlets - add to content "+ i +" "+ zimletObj);
+	this._CONTENT_ZIMLETS[i] = zimletObj;
+};
+
+ZmZimletMgr.prototype.getContentZimlets =
+function() {
+	return this._CONTENT_ZIMLETS;
 };
 
 ZmZimletMgr.prototype.toString =

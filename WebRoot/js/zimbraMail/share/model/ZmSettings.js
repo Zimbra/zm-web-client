@@ -43,7 +43,7 @@ function ZmSettings(appCtxt) {
 	this._initialize();
 	this._setDefaults();
 	this.userSettingsLoaded = false;
-	this._zmm = new ZmZimletMgr();
+	this._zmm = new ZmZimletMgr(appCtxt);
 }
 
 ZmSettings.prototype = new ZmModel;
