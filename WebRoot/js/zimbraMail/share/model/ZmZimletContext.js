@@ -23,7 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmZimletContext(id, zimlet) {
+function ZmZimletContext(id, zimlet, appCtxt) {
+	this._appCtxt = appCtxt;
 	// sane JSON here
 	this.json = ZmZimletContext.sanitize(zimlet, "zimlet", ZmZimletContext.RE_ARRAY_ELEMENTS);
 
@@ -51,8 +52,9 @@ function ZmZimletContext(id, zimlet) {
 	this._panelActionMenu = null;
 	if(zimlet.zimletPanelItem){
 		this.zimletPanelItem = zimlet.zimletPanelItem[0];
-		if (this.zimletPanelItem.icon)
+		if (this.zimletPanelItem.icon) {
 			this.icon = this.zimletPanelItem.icon;
+		}
 		if (this.zimletPanelItem.contextMenu) {
 			this.zimletPanelItem.contextMenu = this.zimletPanelItem.contextMenu[0];
 			this._panelActionMenu = new AjxCallback(
@@ -80,7 +82,7 @@ function ZmZimletContext(id, zimlet) {
 	this._loadStyles();
 
 	this._handleMenuItemSelected = new AjxListener(this, this._handleMenuItemSelected);
-};
+}
 
 ZmZimletContext.RE_ARRAY_ELEMENTS = /^(dragSource|include|includeCSS|menuItem|param|property|resource)$/;
 
@@ -139,10 +141,7 @@ function() {
 		this._finished_loadIncludes();
 		return;
 	}
-	AjxInclude(this.includes, this._url,
-		   new AjxCallback(this, this._finished_loadIncludes)
-		   ,ZmZimletBase.PROXY
-		);
+	AjxInclude(this.includes, this._url, new AjxCallback(this, this._finished_loadIncludes) ,ZmZimletBase.PROXY);
 };
 
 ZmZimletContext.prototype._finished_loadIncludes = function() {
@@ -162,8 +161,8 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	this.handlerObject = obj;
 	obj._init(this, DwtShell.getShell(window));
 	if (this.contentObject) {
-		DBG.println(AjxDebug.DBG2, "Zimlets - registerHandler(): " + this.name);
-		ZmObjectManager.registerHandler(obj);
+		this._appCtxt._settings._zmm.registerContentZimlet(obj);
+		DBG.println(AjxDebug.DBG2, "Zimlets - registerContentZimlet(): " + this.name);
 	}
 	obj.init();
 	DBG.println(AjxDebug.DBG2, "Zimlets - init(): " + this.name);
