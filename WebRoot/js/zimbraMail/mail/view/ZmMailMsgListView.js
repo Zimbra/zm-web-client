@@ -220,7 +220,8 @@ function(msg, now, isDndIcon, isMixedView) {
 						} else if (parts.length > 1 && j > 0) {
 							htmlArr[idx++] = ", ";
 						}
-						var partId = fieldId + "_" + parts[j].index;
+						// bug fix #3001 - always add one to the index value (to take FROM: address into account)
+						var partId = fieldId + "_" + (parts[j].index+1);
 						htmlArr[idx++] = "<span style='white-space: nowrap' id='" + partId + "'>";
 						htmlArr[idx++] = parts[j].name;
 						htmlArr[idx++] = "</span>";
