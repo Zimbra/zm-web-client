@@ -38,7 +38,12 @@
 */
 function ZmEmailAddress(address, type, name, dispName) {
 	this.address = address;
-	this.name = name;
+
+	// bug fix #1932 - remove wrapping single quotes from name if exists
+	this.name = (name && name.charAt(0) == "'" && name.charAt(name.length-1) == "'")
+		? (name.substring(1, name.length-1))
+		: name;
+
 	this.dispName = dispName;
 	this.type = type || ZmEmailAddress.TO;
 }
