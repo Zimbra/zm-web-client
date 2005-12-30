@@ -605,15 +605,23 @@ function(contact, abridged, appCtxt) {
 		var fields = [ZmContact.F_jobTitle, ZmContact.F_company, ZmContact.F_workPhone, ZmContact.F_mobilePhone, ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
 
 		html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100%>";
-		html[idx++] = "<tr><td colspan=2 class='ZmContactField' style='font-weight: bold; background-color: #DDDDDD'>" + contact.getFileAs() + "</td></tr>";
-		html[idx++] = "<tr><td valign=top>Full Name:</td><td style='overflow: hidden'>" + contact.getFullName() + "</td></tr>";
+		html[idx++] = "<tr><td colspan=2 style='font-family:Arial; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:bold; background-color:#DDDDDD'>";
+		html[idx++] = contact.getFileAs();
+		html[idx++] = "</td></tr>";
+		html[idx++] = "<tr><td valign=top style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden;'>Full Name:</td>";
+		html[idx++] = "<td style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>";
+		html[idx++] = contact.getFullName();
+		html[idx++] = "</td></tr>";
 		
 		for (var i = 0; i < fields.length; i++) {
 			var value = AjxStringUtil.htmlEncode(contact.getAttr(fields[i]));
 			if (value) {
-				html[idx++] = "<tr><td valign=top>" + AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[fields[i]]) + ":</td>";
-				html[idx++] = "<td valign=top style='overflow: hidden'>" + AjxStringUtil.htmlEncode(value) + "</td>";
-				html[idx++] = "</tr>";
+				html[idx++] = "<tr><td valign=top style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>";
+				html[idx++] = AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[fields[i]]);
+				html[idx++] = ":</td>";
+				html[idx++] = "<td valign=top style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>";
+				html[idx++] = AjxStringUtil.htmlEncode(value);
+				html[idx++] = "</td></tr>";
 			}
 		}
 		html[idx++] = "</table>";
