@@ -137,15 +137,31 @@ function(ev, bIsPopCallback) {
 		var view = this._currentView;
 		var mods = this._listView[view].getModifiedAttrs();
 		this._listView[view].enableInputs(false);
+
 		if (!bIsPopCallback)
 			this._app.popView(true);
+
 		if (mods) {
+			// bug fix #1891 - make sure all mods have values (otherwise, delete)
+			var doDelete = true;
+			for (var i in mods) {
+				if (i != ZmContact.F_fileAs && i != ZmContact.X_fullName && mods[i] != null && mods[i] != "") {
+					doDelete = false;
+					break;
+				}
+			}
+
 			var contact = this._listView[view].getContact();
-			if (contact.id == undefined || contact.isGal) {
-				var list = this._app.getContactList();
-				this._doCreate(list, mods);
+
+			if (doDelete) {
+				this._doDelete([contact], null, null, true);
 			} else {
-				this._doModify(contact, mods);
+				if (contact.id == undefined || contact.isGal) {
+					var list = this._app.getContactList();
+					this._doCreate(list, mods);
+				} else {
+					this._doModify(contact, mods);
+				}
 			}
 		} else {
 			// print error message in toaster
@@ -162,12 +178,15 @@ function(ev) {
 };
 
 ZmContactController.prototype._doDelete = 
-function(items, hardDelete, attrs) {
+function(items, hardDelete, attrs, skipPostProcessing) {
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
-	// XXX: async
-	// disable input fields (to prevent blinking cursor from bleeding through)
-	this._listView[this._currentView].enableInputs(false);
-	this._app.popView();
+
+	if (!skipPostProcessing) {
+		// XXX: async
+		// disable input fields (to prevent blinking cursor from bleeding through)
+		this._listView[this._currentView].enableInputs(false);
+		this._app.popView();
+	}
 };
 
 ZmContactController.prototype._preHideCallback =
