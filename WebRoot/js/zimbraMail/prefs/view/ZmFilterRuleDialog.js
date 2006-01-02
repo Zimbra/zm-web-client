@@ -45,6 +45,7 @@ function ZmFilterRuleDialog(appCtxt) {
 
 	this._appCtxt = appCtxt;
 	this._rules = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getFilterRules();
+	this._rules.loadRules(); // make sure rules are loaded (for when we save)
 
 	this.setContent(this._contentHtml());
 
