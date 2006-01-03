@@ -164,7 +164,6 @@ function(list, callback, noPop, result) {
 
 ZmPrefController.prototype._backListener = 
 function() {
-	this._reallyWantToExitWithoutDialog = true;
 	this._app.getAppViewMgr().popView();
 };
 
@@ -199,10 +198,7 @@ function(ex) {
 
 ZmPrefController.prototype.popShield =
 function() {
-	if (this._reallyWantToExitWithoutDialog || !this._prefsView.isDirty()) {
-		delete this._reallyWantToExitWithoutDialog;
-		return true;
-	}
+	if (!this._prefsView.isDirty()) return true;
 
 	if (!this._popShield) {
 		this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
