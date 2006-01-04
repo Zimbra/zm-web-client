@@ -24,8 +24,14 @@
  */
 
 function ZmCalendarApp(appCtxt, container) {
+
 	ZmApp.call(this, ZmZimbraMail.CALENDAR_APP, appCtxt, container);
-	this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._settingsChangeListener));
+
+	var settings = this._appCtxt.getSettings();
+	var listener = new AjxListener(this, this._settingsChangeListener);
+	settings.getSetting(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL).addChangeListener(listener);
+	settings.getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK).addChangeListener(listener);
+
 	this._active = false;
 };
 

@@ -25,7 +25,7 @@
 
 function ZmMimePart() {
 	
-	ZmModel.call(this, true);
+	ZmModel.call(this, ZmEvent.S_ATT);
 	
 	this.children = new AjxVector();
 	this.node = new Object();

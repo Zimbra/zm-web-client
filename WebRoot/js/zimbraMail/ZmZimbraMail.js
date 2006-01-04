@@ -44,7 +44,9 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	// settings structure and defaults
 	this._settings = appCtxt.getSettings();
 	DBG.println(AjxDebug.DBG1, "Branch: " + appCtxt.get(ZmSetting.BRANCH));
-	this._settings.addChangeListener(new AjxListener(this, this._settingsChangeListener));
+	var listener = new AjxListener(this, this._settingsChangeListener);
+	this._settings.getSetting(ZmSetting.QUOTA_USED).addChangeListener(listener);
+	this._settings.getSetting(ZmSetting.POLLING_INTERVAL).addChangeListener(listener);
 
 	ZmCsfeCommand.setServerUri(location.protocol + "//" + domain + appCtxt.get(ZmSetting.CSFE_SERVER_URI));
 
@@ -1215,7 +1217,7 @@ function(ev) {
 	var setting = ev.source;
 	if (setting.id == ZmSetting.QUOTA_USED) {
 		this._setUserInfo();
-	} else	if (setting.id == ZmSetting.POLLING_INTERVAL) {
+	} else if (setting.id == ZmSetting.POLLING_INTERVAL) {
 		this.setPollInterval();
 	}
 };

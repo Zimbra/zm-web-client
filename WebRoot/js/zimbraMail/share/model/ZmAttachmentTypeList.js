@@ -25,7 +25,8 @@
 
 function ZmAttachmentTypeList(appCtxt) {
 	if (arguments.length == 0) return;
-	ZmModel.call(this, true);
+	ZmModel.call(this, ZmEvent.S_ATT);
+
 	this._appCtxt = appCtxt;
 };
 
