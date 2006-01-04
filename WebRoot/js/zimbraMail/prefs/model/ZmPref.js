@@ -206,7 +206,7 @@ ZmPref.SETUP[ZmSetting.VACATION_MSG_ENABLED] = {
 ZmPref.SETUP[ZmSetting.VACATION_MSG] = {
 	displayName:		ZmMsg.awayMessage,
 	displayContainer:	"textarea",
-	validationFunction: ZmPref.validateSignature,
+	validationFunction: ZmPref.validateAwayMessage,
 	errorMessage:       AjxMessageFormat.format(ZmMsg.invalidAwayMessage, ZmPref.AWAY_MESSAGE_MAX_LENGTH),
 	displaySeparator:	true};
 
