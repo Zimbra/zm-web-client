@@ -79,8 +79,8 @@ function(mode, convert) {
 	this.discardMisspelledWords();
 
 	// make sure we have toolbars for html mode
-	if (mode == DwtHtmlEditor.HTML)
-		this._createToolbars();
+// 	if (mode == DwtHtmlEditor.HTML)
+// 		this._createToolbars();
 
 	DwtHtmlEditor.prototype.setMode.call(this, mode, convert);
 
@@ -411,9 +411,13 @@ function(x, y) {
 ZmHtmlEditor.prototype._initialize =
 function() {
 	// OPTIMIZATION - only create toolbars if in HTML mode
-	if (this._mode == DwtHtmlEditor.HTML) {
-		this._createToolbars();
-	}
+// 	if (this._mode == DwtHtmlEditor.HTML) {
+//		this._createToolbars();
+// 	}
+
+	// Bug #4920: optimization breaks height computation.  Let's always
+	// create toolbars for now.
+	this._createToolbars();
 
 	DwtHtmlEditor.prototype._initialize.call(this);
 };

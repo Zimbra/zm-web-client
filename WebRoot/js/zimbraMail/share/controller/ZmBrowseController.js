@@ -100,7 +100,6 @@ function(visible) {
 	}
 	var browseButton = searchCtlr.getSearchToolbar().getButton(ZmSearchToolBar.BROWSE_BUTTON);
 	browseButton.setToolTipContent(visible ? ZmMsg.closeSearchBuilder : ZmMsg.openSearchBuilder);
-	browseButton.setToggled(visible);
 }
 
 /*
