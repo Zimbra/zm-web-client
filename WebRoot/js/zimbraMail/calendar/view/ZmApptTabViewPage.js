@@ -853,6 +853,7 @@ function() {
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmApptTabViewPage._onClick);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmApptTabViewPage._onMouseOver);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmApptTabViewPage._onMouseOut);
 	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmApptTabViewPage._onChange);
 	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmApptTabViewPage._onChange);
 
@@ -1078,6 +1079,26 @@ function() {
 	var um = this._appCtxt.getUploadManager();
 	window._uploadManager = um;
 	um.execute(callback, document.getElementById(this._uploadFormId));
+};
+
+ZmApptTabViewPage.prototype._handleRepeatDescFieldHover =
+function(ev, isHover) {
+	if (isHover) {
+		this._repeatDescField.style.cursor = this._repeatSelectDisabled
+			? "default" : "pointer";
+
+		if (this._rdfTooltip == null) {
+			this._rdfTooltip = new DwtToolTip(this._appCtxt.getShell());
+		}
+
+		var content = "<div style='width:300px'>" + this._repeatDescField.innerHTML + "</div>";
+		this._rdfTooltip.setContent(content);
+		this._rdfTooltip.popup((ev.pageX || ev.clientX), (ev.pageY || ev.clientY));
+	} else {
+		if (this._rdfTooltip) {
+			this._rdfTooltip.popdown();
+		}
+	}
 };
 
 
@@ -1308,14 +1329,27 @@ function(ev) {
 
 ZmApptTabViewPage._onMouseOver =
 function(ev) {
+	ev || (ev = window.event);
+
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = AjxCore.objectWithId(el._tabViewPageId);
 
 	if (el == tvp._repeatDescField) {
-		tvp._repeatDescField.style.cursor = tvp._repeatSelectDisabled
-			? "default" : "pointer";
+		tvp._handleRepeatDescFieldHover(ev, true);
 	}
 };
+
+ZmApptTabViewPage._onMouseOut = 
+function(ev) {
+	ev || (ev = window.event);
+
+	var el = DwtUiEvent.getTarget(ev);
+	var tvp = AjxCore.objectWithId(el._tabViewPageId);
+
+	if (el == tvp._repeatDescField) {
+		tvp._handleRepeatDescFieldHover(ev, false);
+	}
+}
 
 ZmApptTabViewPage._onChange =
 function(ev) {
