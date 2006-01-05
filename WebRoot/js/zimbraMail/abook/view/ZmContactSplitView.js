@@ -399,18 +399,24 @@ function(contact, now, isDndIcon) {
 	// tags
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		var cellId = this._getFieldId(contact, ZmItem.F_TAG_CELL);
-		htmlArr[idx++] = "<td style='vertical-align:middle; height:24px' width=16 class='Tag' id='" + cellId + "'>";
+		htmlArr[idx++] = "<td style='vertical-align:middle; height:24px' width=16 class='Tag' id='";
+		htmlArr[idx++] = cellId;
+		htmlArr[idx++] = "'>";
 		htmlArr[idx++] = this._getTagImgHtml(contact, ZmItem.F_TAG);
 		htmlArr[idx++] = "</td>";
 	}
-		
+	
 	// file as
-	htmlArr[idx++] = "<td style='vertical-align: middle'>&nbsp;" + AjxStringUtil.htmlEncode(contact.getFileAs()) + "&nbsp;</td>";
-	
+	htmlArr[idx++] = "<td style='vertical-align: middle'>&nbsp;";
+	htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
+	//htmlArr[idx++] = "&nbsp;</td>";
+	htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
+	htmlArr[idx++] = "</td>";
+
 	htmlArr[idx++] = "</tr></table>";
-	
+
 	div.innerHTML = htmlArr.join("");
-	
+
 	return div;
 };
 
