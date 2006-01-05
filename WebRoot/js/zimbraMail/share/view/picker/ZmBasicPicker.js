@@ -172,15 +172,26 @@ function() {
 	if (content.length)
 		query1.push("content:(" + content + ")");
 	
+	// Sort out "Check Trash/Spam" pref vs checkbox
 	var query2 = new Array();
-	var checkSpam = (this._inSpam && this._inSpam.checked);
-	var checkTrash = (this._inTrash && this._inTrash.checked);
-	if (checkSpam && checkTrash)
+	var checkSpamPref = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM);
+	var checkTrashPref = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH);
+	var checkSpamCheckbox = (this._inSpam && this._inSpam.checked);
+	var checkTrashCheckbox = (this._inTrash && this._inTrash.checked);
+	
+	if ((!checkSpamPref && checkSpamCheckbox) && (!checkTrashPref && checkTrashCheckbox)) {
 		query2.push("is:anywhere");
-	else if (checkSpam)
-		query2.push("is:anywhere not in:trash");
-	else if (checkTrash)
-		query2.push("is:anywhere not in:junk");
+	} else {
+		if (!checkSpamPref && checkSpamCheckbox)
+			query2.push("is:anywhere not in:trash");
+		else if (checkTrashPref && !checkTrashCheckbox)
+			query2.push("not in:trash");
+		if (!checkTrashPref && checkTrashCheckbox)
+			query2.push("is:anywhere not in:junk");
+		else if (checkSpamPref && !checkSpamCheckbox)
+			query2.push("not in:junk");
+	}
+	
 	var cbQuery = query2.length ? query2.join(" ") : null;
 
 	// if the "search Trash/Spam" checkboxes changed, run the query
