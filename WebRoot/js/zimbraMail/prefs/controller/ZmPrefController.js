@@ -106,7 +106,7 @@ function() {
 		var elements = new Object();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
-		this._app.createView(ZmController.PREF_VIEW, elements, callbacks, true);
+		this._app.createView(ZmController.PREF_VIEW, elements, callbacks, true, true);
 	}
 };
 

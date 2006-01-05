@@ -167,7 +167,7 @@ function(initHide) {
 			this._createToolBar();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-	    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks);
+	    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks, null, true);
 	    if (initHide) {
 		    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 		    this._composeView.enableInputs(false);
@@ -570,6 +570,13 @@ function() {
 	this._popShield.popdown();
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 		this._composeView.reset(false);
+
+		// bug fix #5282
+		// check if the pending view is poppable - if so, force-pop this view first!
+		var avm = this._app.getAppViewMgr();
+		if (avm.isPoppable(avm.getPendingViewId()))
+			this._app.popView(true);
+
 		this._app.getAppViewMgr().showPendingView(true);
 	} else {
 		this._composeView.enableInputs(true);

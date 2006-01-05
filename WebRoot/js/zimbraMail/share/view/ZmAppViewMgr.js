@@ -105,6 +105,7 @@ function ZmAppViewMgr(shell, controller, isNewWindow, hasSkin) {
 	this._callbacks = new Object();		// view callbacks for when its state changes between hidden and shown
 	this._viewApp = new Object();		// hash matching view names to their owning apps
 	this._isAppView = new Object();		// names of top-level app views
+	this._isPoppable = new Object(); 	// hash of viewId's and whether they are "poppable"
 
 	this._compList = new Array();		// list of component IDs
 	this._components = new Object();	// component objects (widgets)
@@ -284,15 +285,17 @@ function(app, viewId) {
 * @param elements		a hash of elements
 * @param callbacks 		functions to call before/after this view is shown/hidden
 * @param isAppView 		whether this view is an app-level view
+* @param isPoppable 	whether this view is allowed to get popped (i.e. Options, Compose, etc)
 */
 ZmAppViewMgr.prototype.createView =
-function(viewId, appName, elements, callbacks, isAppView) {
+function(viewId, appName, elements, callbacks, isAppView, isPoppable) {
 	DBG.println(AjxDebug.DBG1, "createView: " + viewId);
 
 	this._views[viewId] = elements;
 	this._callbacks[viewId] = callbacks ? callbacks : new Object();
 	this._viewApp[viewId] = appName;
 	this._isAppView[viewId] = isAppView;
+	this._isPoppable[viewId] = isPoppable;
 	this.addComponents(elements, false, true);
 }
 
@@ -426,6 +429,19 @@ function(show) {
 		}
 	}
 	this._pendingAction = this._pendingView = null;
+}
+
+/**
+* Returns the currently pending view waiting to get pushed
+*/
+ZmAppViewMgr.prototype.getPendingViewId = 
+function() {
+	return this._pendingView;
+}
+
+ZmAppViewMgr.prototype.isPoppable = 
+function(viewId) {
+	return this._isPoppable[viewId] === true;
 }
 
 /**

@@ -125,7 +125,7 @@ function(initHide) {
 			this._createToolBar();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._apptView;
-	    this._app.createView(ZmController.APPOINTMENT_VIEW, elements, callbacks);
+	    this._app.createView(ZmController.APPOINTMENT_VIEW, elements, callbacks, null, true);
 	    if (initHide) {
 	    	this._apptView.preload();
 	    }
@@ -230,6 +230,7 @@ function() {
 ZmApptComposeController.prototype._saveListener =
 function(ev) {
 	this._doSave();
+	this._app.popView(true);
 };
 
 // Cancel button was pressed
@@ -297,8 +298,7 @@ function(appt, folderId) {
 
 ZmApptComposeController.prototype._handleResponseCleanup = 
 function() {
-	this._apptView.cleanup();	// always cleanup the views
-	this._app.popView(true);	// force pop view
+	this._apptView.cleanup();
 };
 
 ZmApptComposeController.prototype._doSave =
@@ -325,11 +325,26 @@ ZmApptComposeController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
 	this._doSave();
+
+	// bug fix #5282
+	// check if the pending view is poppable - if so, force-pop this view first!
+	var avm = this._app.getAppViewMgr();
+	if (avm.isPoppable(avm.getPendingViewId()))
+		this._app.popView(true);
+
+	this._app.getAppViewMgr().showPendingView(true);
 };
 
 ZmApptComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
+
+	// bug fix #5282
+	// check if the pending view is poppable - if so, force-pop this view first!
+	var avm = this._app.getAppViewMgr();
+	if (avm.isPoppable(avm.getPendingViewId()))
+		this._app.popView(true);
+
 	this._app.getAppViewMgr().showPendingView(true);
 	this._apptView.cleanup();
 };
