@@ -107,10 +107,14 @@ function(contact, now, isDndIcon, getHtml) {
 	}
 
 	html[idx++] = "<table border=0 width=100% cellpadding=0 cellspacing=0>";
-	html[idx++] = "<tr style='padding:0' class='contactHeader'><td valign=top><div class='contactHeader' style='font-size:16px;";
+	html[idx++] = "<tr style='padding:0' class='contactHeader'>";
+	html[idx++] = "<td valign=top><div class='contactHeader' style='font-size:16px;";
 	if (AjxEnv.isIE)
 		html[idx++] = " width:280;";
-	html[idx++] = "'>" + contact.getFileAs() + "</div></td>";
+	html[idx++] = "'>";
+	html[idx++] = contact.getFileAs();
+	html[idx++] = "</div></td>";
+
 	// Tag
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		var cellId = this._getFieldId(contact, ZmItem.F_TAG_CELL);
@@ -119,7 +123,9 @@ function(contact, now, isDndIcon, getHtml) {
 		html[idx++] = AjxImg.getImageHtml(contact.getTagImageInfo(), null, ["id='", fieldId, "'"].join(""));
 		html[idx++] = "</td>";
 	}
-	html[idx++] = "</tr><tr" + style + ">"
+	html[idx++] = "</tr><tr";
+	html[idx++] = style;
+	html[idx++] = ">";
 	
 	html[idx++] = "<td valign=top width=100% style='font-weight:bold; padding-left: 2px'>";
 	var value = contact.getCompanyField() || "&nbsp;";
@@ -129,7 +135,9 @@ function(contact, now, isDndIcon, getHtml) {
 
 	html[idx++] = "<table border=0 cellpadding=1 cellspacing=1>";
 	html[idx++] = "<tr><td valign=top>";
-	html[idx++] = "<table border=0><tr" + style + ">";
+	html[idx++] = "<table border=0><tr";
+	html[idx++] = style;
+	html[idx++] = ">";
 	// add first column of work info here
 	if (value = contact.getWorkAddrField())
 		html[idx++] = this._getField("W", value, isDndIcon);
@@ -137,28 +145,68 @@ function(contact, now, isDndIcon, getHtml) {
 		html[idx++] = this._getField("H", value, isDndIcon);
 	html[idx++] = "</tr>";
 	
-	if (value = contact.getAttr("email"))
-		html[idx++] = "<tr" + style + ">" + this._getField("E", value, isDndIcon, ZmEmailObjectHandler.TYPE) + "</tr>";
-	if (value = contact.getAttr("email2"))
-		html[idx++] = "<tr" + style + ">" + this._getField("E2", value, isDndIcon, ZmEmailObjectHandler.TYPE) + "</tr>";
-	else if (value = contact.getAttr("email3"))
-		html[idx++] = "<tr" + style + ">" + this._getField("E3", value, isDndIcon, ZmEmailObjectHandler.TYPE) + "</tr>";
+	if (value = contact.getAttr("email")) {
+		html[idx++] = "<tr";
+		html[idx++] = style;
+		html[idx++] = ">";
+		html[idx++] = this._getField("E", value, isDndIcon, ZmEmailObjectHandler.TYPE);
+		html[idx++] = "</tr>";
+	}
+
+	if (value = contact.getAttr("email2")) {
+		html[idx++] = "<tr";
+		html[idx++] = style;
+		html[idx++] = ">";
+		html[idx++] = this._getField("E2", value, isDndIcon, ZmEmailObjectHandler.TYPE);
+		html[idx++] = "</tr>";
+	} else if (value = contact.getAttr("email3")) {
+		html[idx++] = "<tr";
+		html[idx++] = style;
+		html[idx++] = ">";
+		html[idx++] = this._getField("E3", value, isDndIcon, ZmEmailObjectHandler.TYPE);
+		html[idx++] = "</tr>";
+	}
 	
 	html[idx++] = "</table>";
 	
 	html[idx++] = "</td><td valign=top>";
 	html[idx++] = "<table border=0>";
 	// add second column of home info here
-	if (value = contact.getAttr("workPhone"))
-		html[idx++] = "<tr" + style + ">" + this._getField("W", value, isDndIcon, ZmPhoneObjectHandler.TYPE) + "</tr>";
-	if (value = contact.getAttr("workPhone2"))
-		html[idx++] = "<tr" + style + ">" + this._getField("W2", value, isDndIcon, ZmPhoneObjectHandler.TYPE) + "</tr>";
-	if (value = contact.getAttr("workFax"))
-		html[idx++] = "<tr" + style + ">" + this._getField("F", value, isDndIcon, ZmPhoneObjectHandler.TYPE) + "</tr>";
-	if (value = contact.getAttr("mobilePhone"))
-		html[idx++] = "<tr" + style + ">" + this._getField("M", value, isDndIcon, ZmPhoneObjectHandler.TYPE) + "</tr>";
-	if (value = contact.getAttr("homePhone"))
-		html[idx++] = "<tr" + style + ">" + this._getField("H", value, isDndIcon, ZmPhoneObjectHandler.TYPE) + "</tr>";
+	if (value = contact.getAttr("workPhone")) {
+		html[idx++] = "<tr";
+		html[idx++] = style;
+		html[idx++] = ">";
+		html[idx++] = this._getField("W", value, isDndIcon, ZmPhoneObjectHandler.TYPE);
+		html[idx++] = "</tr>";
+	}
+	if (value = contact.getAttr("workPhone2")) {
+		html[idx++] = "<tr";
+		html[idx++] = style;
+		html[idx++] = ">";
+		html[idx++] = this._getField("W2", value, isDndIcon, ZmPhoneObjectHandler.TYPE);
+		html[idx++] = "</tr>";
+	}
+	if (value = contact.getAttr("workFax")) {
+		html[idx++] = "<tr";
+		html[idx++] = style;
+		html[idx++] = ">";
+		html[idx++] = this._getField("F", value, isDndIcon, ZmPhoneObjectHandler.TYPE);
+		html[idx++] = "</tr>";
+	}
+	if (value = contact.getAttr("mobilePhone")) {
+		html[idx++] = "<tr";
+		html[idx++] = style;
+		html[idx++] = ">";
+		html[idx++] = this._getField("M", value, isDndIcon, ZmPhoneObjectHandler.TYPE);
+		html[idx++] = "</tr>";
+	}
+	if (value = contact.getAttr("homePhone")) {
+		html[idx++] = "<tr";
+		html[idx++] = style;
+		html[idx++] = ">";
+		html[idx++] = this._getField("H", value, isDndIcon, ZmPhoneObjectHandler.TYPE);
+		html[idx++] = "</tr>";
+	}
 	
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr></table>";
@@ -176,7 +224,16 @@ function(contact, now, isDndIcon, getHtml) {
 ZmContactCardsView.prototype._getField = 
 function(fname, value, skipObjectify, type) {
 	var newValue = skipObjectify ? value : this._generateObject(value, type);
-	return "<td valign=top class='ZmContactFieldValue'>" + fname + " </td><td valign=top class='ZmContactField'>" + AjxStringUtil.nl2br(newValue) + "</td>";
+	var html = new Array();
+	var i = 0;
+
+	html[i++] = "<td valign=top class='ZmContactFieldValue'>";
+	html[i++] = fname;
+	html[i++] = " </td><td valign=top class='ZmContactField'>";
+	html[i++] = AjxStringUtil.nl2br(newValue);
+	html[i++] = "</td>";
+
+	return html.join("");
 };
 
 // override so that we don't get back ZmListView._fillerString
