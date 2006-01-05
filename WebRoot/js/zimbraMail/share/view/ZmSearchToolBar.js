@@ -82,7 +82,8 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	}
 	
 	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
-		this._browseButton = this._createButton(ZmSearchToolBar.BROWSE_BUTTON, null, ZmMsg.searchBuilder, null, ZmMsg.openSearchBuilder, true, "TBButtonWhite");
+		var buttonStyle = DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_CENTER | DwtButton.TOGGLE_STYLE;
+		this._browseButton = this._createButton(ZmSearchToolBar.BROWSE_BUTTON, null, ZmMsg.searchBuilder, null, ZmMsg.openSearchBuilder, true, "TBButtonWhite", buttonStyle);
 	    document.getElementById(browseColId).appendChild(this._browseButton.getHtmlElement());
 	}
 
