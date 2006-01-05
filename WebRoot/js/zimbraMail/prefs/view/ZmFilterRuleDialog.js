@@ -493,10 +493,14 @@ function(ev) {
 	var table = document.getElementById(isCondition ? this._conditionsTableId : this._actionsTableId);
 	table.deleteRow(index);
 	
-	var newIndex = (index >= table.rows.length) ? null : index;
+	var newIndex = (index >= table.rows.length) ? table.rows.length - 1 : index;
 	var data = isCondition ? new ZmCondition(newValue, comparator, dataValue) : new ZmAction(newValue);
 	row = Dwt.parseHtmlFragment(this._getRowHtml(data, isCondition), true);
-	table.tBodies[0].insertBefore(row, newIndex);
+	if (!row) {
+		DBG.println(AjxDebug.DBG1, "Filter rule dialog: no row created!");
+		return;
+	}
+	table.tBodies[0].insertBefore(row, table.rows[newIndex]);
 
 	this._addDwtObjects(row.id);
 };
