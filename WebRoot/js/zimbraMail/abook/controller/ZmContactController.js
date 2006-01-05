@@ -53,7 +53,7 @@ function(contact, isDirty) {
 	var elements = new Object();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
-	this._setView(this._currentView, elements);
+	this._setView(this._currentView, elements, null, null, null, true);
 };
 
 // Private methods (mostly overrides of ZmListController protected methods)
@@ -210,12 +210,26 @@ ZmContactController.prototype._popShieldYesCallback =
 function() {
 	this._saveListener(null, true);
 	this._popShield.popdown();
+
+	// bug fix #5282
+	// check if the pending view is poppable - if so, force-pop this view first!
+	var avm = this._app.getAppViewMgr();
+	if (avm.isPoppable(avm.getPendingViewId()))
+		this._app.popView(true);
+
 	this._app.getAppViewMgr().showPendingView(true);
 };
 
 ZmContactController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
+
+	// bug fix #5282
+	// check if the pending view is poppable - if so, force-pop this view first!
+	var avm = this._app.getAppViewMgr();
+	if (avm.isPoppable(avm.getPendingViewId()))
+		this._app.popView(true);
+
 	this._app.getAppViewMgr().showPendingView(true);
 };
 
