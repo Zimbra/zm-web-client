@@ -39,7 +39,10 @@ function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt) {
 	// only add listener if this is not a child window
 	if (window.parentController == null) {
 		var settings = this._appCtxt.getSettings();
-		settings.addChangeListener(new AjxListener(this, this._settingsChangeListener));
+		var listener = new AjxListener(this, this._settingsChangeListener);
+		settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_COLOR).addChangeListener(listener);
+		settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_FAMILY).addChangeListener(listener);
+		settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).addChangeListener(listener);
 	}
 
 	// spell checker init

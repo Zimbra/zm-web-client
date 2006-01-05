@@ -204,16 +204,16 @@ function(list, callback) {
     
     var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
 	for (var i = 0; i < list.length; i++) {
-		var pref = list[i];
-		if (pref.type != ZmSetting.T_PREF) {
-			DBG.println(AjxDebug.DBG1, "*** Attempt to modify non-pref: " + pref.id + " / " + pref.name);
+		var setting = list[i];
+		if (setting.type != ZmSetting.T_PREF) {
+			DBG.println(AjxDebug.DBG1, "*** Attempt to modify non-pref: " + setting.id + " / " + setting.name);
 			continue;
 		}
-		var value = pref.getValue();
-		if (pref.dataType == ZmSetting.D_BOOLEAN)
+		var value = setting.getValue();
+		if (setting.dataType == ZmSetting.D_BOOLEAN)
 			value = value ? "TRUE" : "FALSE";
 		var node = soapDoc.set("pref", value);
-		node.setAttribute("name", pref.name);
+		node.setAttribute("name", setting.name);
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSave, [list, callback]);
@@ -224,10 +224,11 @@ ZmSettings.prototype._handleResponseSave =
 function(list, callback, result) {
 	var resp = result.getResponse();
 	if (resp.ModifyPrefsResponse) {
+		// notify each changed setting's listeners
 		for (var i = 0; i < list.length; i++) {
-			var pref = list[i];
-			pref.origValue = pref.value;
-			pref._notify(ZmEvent.E_MODIFY);
+			var setting = list[i];
+			setting.origValue = setting.value;
+			setting._notify(ZmEvent.E_MODIFY);
 		}
 	}
 	

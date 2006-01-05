@@ -42,7 +42,7 @@
 function ZmSetting(id, name, type, dataType, defaultValue, settings) {
 
 	if (arguments.length == 0) return;
-	ZmModel.call(this, true);
+	ZmModel.call(this, ZmEvent.S_SETTING);
 	
 	this.id = id;
 	this.name = name;

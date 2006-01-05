@@ -24,7 +24,7 @@
  */
 
 function ZmDomainTree(appCtxt) {
-	ZmModel.call(this, true);
+	ZmModel.call(this);
 	this._appCtxt = appCtxt;
 };
 

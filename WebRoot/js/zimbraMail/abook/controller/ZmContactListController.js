@@ -52,7 +52,7 @@ function ZmContactListController(appCtxt, container, contactsApp) {
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
 	this._listeners[ZmOperation.PRINT_MENU] = new AjxListener(this, this._printContactListener);
 
-	this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._changeListener));
+	this._appCtxt.getSettings().getSetting(ZmSetting.CONTACTS_PER_PAGE).addChangeListener(new AjxListener(this, this._settingsChangeListener));
 	this._isGalSearch = false;
 	this._parentView = new Object();
 };
@@ -334,7 +334,7 @@ function(ev) {
 	this._app.getContactController().show(contact, false);
 };
 
-ZmContactListController.prototype._changeListener = 
+ZmContactListController.prototype._settingsChangeListener = 
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 	

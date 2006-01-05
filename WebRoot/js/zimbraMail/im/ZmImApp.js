@@ -24,8 +24,9 @@
  */
 
 function ZmImApp(appCtxt, container) {
+
 	ZmApp.call(this, ZmZimbraMail.IM_APP, appCtxt, container);
-	//this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._settingsChangeListener));
+
 	this._active = false;
 	this.getRoster(); // pre-create
 };
@@ -44,7 +45,6 @@ function(callback) {
     clc.show();
 	if (callback)
 		callback.run();
-//    alert("lauunched!");		
 };
 
 ZmImApp.prototype.activate =

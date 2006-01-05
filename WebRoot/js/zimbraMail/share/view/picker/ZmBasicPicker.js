@@ -27,8 +27,11 @@ function ZmBasicPicker(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.BASIC);
 	
-	this._cbQuery = null;
-}
+	var settings = this._appCtxt.getSettings();
+	var listener = new AjxListener(this, this._settingsChangeListener);
+	settings.getSetting(ZmSetting.SEARCH_INCLUDES_SPAM).addChangeListener(listener);
+	settings.getSetting(ZmSetting.SEARCH_INCLUDES_TRASH).addChangeListener(listener);
+};
 
 ZmBasicPicker.prototype = new ZmPicker;
 ZmBasicPicker.prototype.constructor = ZmBasicPicker;
@@ -38,7 +41,7 @@ ZmPicker.CTOR[ZmPicker.BASIC] = ZmBasicPicker;
 ZmBasicPicker.prototype.toString = 
 function() {
 	return "ZmBasicPicker";
-}
+};
 
 ZmBasicPicker.prototype._makeRow =
 function(text, id) {
@@ -51,7 +54,7 @@ function(text, id) {
     html[i++] = "</tr>";
 
 	return html.join("");		
-}
+};
 
 // TODO: if we really wanted, we could add a prefs listener to update the "also search" checkboxes
 ZmBasicPicker.prototype._setupPicker =
@@ -96,31 +99,31 @@ function(parent) {
 	if (this._appCtxt.get(ZmSetting.SPAM_ENABLED))
 		this._inSpam = this._setupSearch(inSpamId);
 	this._inTrash = this._setupSearch(inTrashId);
-}
+};
 
 ZmBasicPicker.prototype.setFrom =
 function(from) {
 	this._from.value = from;
 	this._updateQuery();
-}
+};
 
 ZmBasicPicker.prototype.setTo =
 function(to) {
 	this._to.value = to;
 	this._updateQuery();
-}
+};
 
 ZmBasicPicker.prototype.setSubject =
 function(subject) {
 	this._subject.value = subject;
 	this._updateQuery();
-}
+};
 
 ZmBasicPicker.prototype.setContent =
 function(content) {
 	this._content.value = content;
 	this._updateQuery();
-}
+};
 
 ZmBasicPicker.prototype._setupField = 
 function(id) {
@@ -128,7 +131,7 @@ function(id) {
 	Dwt.setHandler(f, DwtEvent.ONKEYUP, ZmBasicPicker._onChange);
 	f._picker = this;
 	return f;
-}
+};
 
 ZmBasicPicker.prototype._setupSearch = 
 function(id) {
@@ -136,7 +139,7 @@ function(id) {
 	Dwt.setHandler(f, DwtEvent.ONCHANGE, ZmBasicPicker._onChange);
 	f._picker = this;
 	return f;
-}
+};
 
 ZmBasicPicker._onChange =
 function(ev) {
@@ -151,7 +154,7 @@ function(ev) {
 		picker._updateQuery();
 		return true;
 	}
-}
+};
 
 ZmBasicPicker.prototype._updateQuery = 
 function() {
@@ -187,4 +190,18 @@ function() {
 	if (cbChange)
 		this.execute();
 	this._cbQuery = cbQuery;
-}
+};
+
+ZmBasicPicker.prototype._settingsChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) return;
+	
+	var setting = ev.source;
+	if (setting.id == ZmSetting.SEARCH_INCLUDES_SPAM) {
+		this._inSpam.checked = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM);
+		this._updateQuery();
+	} else	if (setting.id == ZmSetting.SEARCH_INCLUDES_TRASH) {
+		this._inTrash.checked = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH);
+		this._updateQuery();
+	}
+};

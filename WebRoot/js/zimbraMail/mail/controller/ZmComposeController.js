@@ -40,8 +40,11 @@ function ZmComposeController(appCtxt, container, mailApp) {
 
 	this._action = null;
 	// only add listener if this is not a child window
-	if (mailApp._parentController == null)
-		this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._settingsChangeListener));
+	if (mailApp._parentController == null) {
+		var settings = this._appCtxt.getSettings();
+		settings.getSetting(ZmSetting.SIGNATURE_ENABLED).addChangeListener(new AjxListener(this, this._settingsChangeListener));
+		settings.getSetting(ZmSetting.SIGNATURE).addChangeListener(new AjxListener(this, this._settingsChangeListener));
+	}
 };
 
 ZmComposeController.prototype = new ZmController();
@@ -481,9 +484,6 @@ function(ev) {
 ZmComposeController.prototype._settingsChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
-
-	var setting = ev.source;
-	if (setting.id != ZmSetting.SIGNATURE_ENABLED && setting.id != ZmSetting.SIGNATURE) return;
 
 	var sigButton = this._toolbar.getOp(ZmOperation.ADD_SIGNATURE);
 	var haveSigButton = (sigButton != null);

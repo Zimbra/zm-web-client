@@ -25,7 +25,7 @@
 
 function ZmDomain(name, parent, headerFlags) {
 	
-	ZmModel.call(this, true);
+	ZmModel.call(this);
 
 	this.name = name.toLowerCase();
 	this.parent = parent;
