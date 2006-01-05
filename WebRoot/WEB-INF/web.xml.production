@@ -151,4 +151,10 @@
 		<env-entry-value>80</env-entry-value>
 		<env-entry-type>java.lang.String</env-entry-type>
 	</env-entry>
+
+	<mime-mapping>
+		<extension>msi</extension>
+		<mime-type>application/x-msi</mime-type>
+	</mime-mapping>
+
 </web-app>
