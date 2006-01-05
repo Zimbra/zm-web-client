@@ -107,7 +107,7 @@ function() {
 	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</div><p>";
 	html[idx++] = "<div style='text-align:left; width:85%'>" + tip + "</div><br>";
-	html[idx++] = "<div style='font-size:9px; text-align:center; color:#999999;'>";
+	html[idx++] = "<div style='font-size:9px; text-align:center; color:#999999; padding-bottom:3px; white-space:nowrap;'>";
 	html[idx++] = ZmMsg.splashScreenCopyright;
 	html[idx++] = "</div>";
 	html[idx++] = "</td></tr>";
@@ -189,11 +189,10 @@ function() {
 	html[idx++] = "</div></td>";
 	
 	html[idx++] = "</tr></table>";
+	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</td></tr>";
-	html[idx++] = "<tr><td colspan=10 style='font-size:9px; text-align:center; color:#999999;'><br><br>";
+	html[idx++] = "<tr><td colspan=50 class='mainPanel' style='font-size:9px; text-align:center; color:#999999; padding-bottom:3px; white-space:nowrap;'><br>";
 	html[idx++] = ZmMsg.splashScreenCopyright;
-	html[idx++] = "</td></tr>";
-	html[idx++] = "</table>";
 	html[idx++] = "</td></tr>";
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr></table>";
