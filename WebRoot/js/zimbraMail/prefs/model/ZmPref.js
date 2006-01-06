@@ -37,10 +37,10 @@ ZmPref.prototype.constructor = ZmPref;
 ZmPref.KEY_ID = "prefId_";
 
 // convert between server values for "group mail by" and item types
-ZmPref.GROUP_MAIL_BY_ITEM = new Object();
+ZmPref.GROUP_MAIL_BY_ITEM = {};
 ZmPref.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_CONV] = ZmItem.CONV;
 ZmPref.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_MESSAGE] = ZmItem.MSG;
-ZmPref.GROUP_MAIL_BY_VALUE = new Object();
+ZmPref.GROUP_MAIL_BY_VALUE = {};
 ZmPref.GROUP_MAIL_BY_VALUE[ZmItem.CONV] = ZmSetting.GROUP_BY_CONV;
 ZmPref.GROUP_MAIL_BY_VALUE[ZmItem.MSG] = ZmSetting.GROUP_BY_MESSAGE;
 
@@ -48,7 +48,7 @@ ZmPref.GENERAL_PREFS = [ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDE
 						ZmSetting.SHOW_SEARCH_STRING, 
 						ZmSetting.COMPOSE_INIT_FONT_FAMILY, ZmSetting.COMPOSE_INIT_FONT_SIZE, ZmSetting.COMPOSE_INIT_FONT_COLOR];
 
-ZmPref.MAIL_PREFS = [ZmSetting.GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSetting.SHOW_FRAGMENTS,
+ZmPref.MAIL_PREFS = [ZmSetting.INITIAL_GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSetting.SHOW_FRAGMENTS,
 					 ZmSetting.INITIAL_SEARCH, ZmSetting.POLLING_INTERVAL,
 					 ZmSetting.SAVE_TO_SENT, ZmSetting.REPLY_TO_ADDRESS, ZmSetting.REPLY_INCLUDE_ORIG, 
 					 ZmSetting.FORWARD_INCLUDE_ORIG, ZmSetting.REPLY_PREFIX,
@@ -136,7 +136,7 @@ ZmPref.SETUP[ZmSetting.PASSWORD] = {
 	displaySeparator:	true,
 	precondition:		ZmSetting.CHANGE_PASSWORD_ENABLED};
 
-ZmPref.SETUP[ZmSetting.GROUP_MAIL_BY] =	{ 
+ZmPref.SETUP[ZmSetting.INITIAL_GROUP_MAIL_BY] =	{ 
 	displayName:		ZmMsg.groupMailBy,
 	displayContainer:	ZmPref.TYPE_SELECT,
 	displayOptions:		[ZmMsg.message, ZmMsg.conversation],

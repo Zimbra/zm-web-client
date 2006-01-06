@@ -44,7 +44,7 @@ function ZmSettings(appCtxt) {
 	this._setDefaults();
 	this.userSettingsLoaded = false;
 	this._zmm = new ZmZimletMgr(appCtxt);
-}
+};
 
 ZmSettings.prototype = new ZmModel;
 ZmSettings.prototype.constructor = ZmSettings;
@@ -58,7 +58,7 @@ ZmSettings.get =
 function(id) {
 	var args = ZmSetting.INIT[id];
 	return args ? args[3] : null;
-}
+};
 
 /**
 * Returns the value of the given setting.
@@ -72,7 +72,7 @@ function(id, key) {
 		return null;
 	}
 	return this._settings[id].getValue(key);
-}
+};
 
 /**
 * Returns the ZmSetting object for the given setting.
@@ -82,7 +82,7 @@ function(id, key) {
 ZmSettings.prototype.getSetting =
 function(id) {
 	return this._settings[id];
-}
+};
 
 ZmSettings.prototype.createFromDom = 
 function(node) {
@@ -97,7 +97,7 @@ function(node) {
 		else
 			DBG.println(AjxDebug.DBG1, "*** Unrecognized setting: " + name);
 	}
-}
+};
 
 /**
 * Populates settings values.
@@ -114,7 +114,7 @@ function(list) {
 		else
 			DBG.println(AjxDebug.DBG1, "*** Unrecognized setting: " + obj.name);
 	}
-}
+};
 
 /**
 * Retrieves the preferences, COS settings, and metadata for the current user.
@@ -127,7 +127,7 @@ function(callback, errorCallback) {
     var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
     var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, callback);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
-}
+};
 
 ZmSettings.prototype._handleResponseLoadUserSettings =
 function(callback, result) {
@@ -145,8 +145,9 @@ function(callback, result) {
 		this.createFromJs(obj.attrs.attr);
 
 	// handle settings whose values may depend on other settings
-	if ((this.get(ZmSetting.GROUP_MAIL_BY) == "conversation") && !this.get(ZmSetting.CONVERSATIONS_ENABLED))
-		this._settings[ZmSetting.GROUP_MAIL_BY].setValue("message", null, true);
+	this._settings[ZmSetting.GROUP_MAIL_BY].setValue(this.get(ZmSetting.INITIAL_GROUP_MAIL_BY), null, true);
+	if ((this.get(ZmSetting.GROUP_MAIL_BY) == ZmSetting.GROUP_BY_CONV) && !this.get(ZmSetting.CONVERSATIONS_ENABLED))
+		this._settings[ZmSetting.GROUP_MAIL_BY].setValue(ZmSetting.GROUP_BY_MESSAGE, null, true);
 	this._settings[ZmSetting.REPLY_TO_ADDRESS].defaultValue = this.get(ZmSetting.USERNAME);
 	if (!this.get(ZmSetting.SEARCH_ENABLED))
 		this._settings[ZmSetting.BROWSE_ENABLED].setValue(false, null, true);
@@ -155,7 +156,7 @@ function(callback, result) {
 		
 	// load Zimlets
 	if(obj.zimlets && obj.zimlets.zimlet) {
-		DBG.println(AjxDebug.DBG1, "Zimlets - Got " + (obj.zimlets.zimlet.length+1) + " Zimlets");
+		DBG.println(AjxDebug.DBG1, "Zimlets - Got " + (obj.zimlets.zimlet.length + 1) + " Zimlets");
 		this._zmm.loadZimlets(obj.zimlets.zimlet, obj.props.prop);
 	 	var panelZimlets = this._zmm.getPanelZimlets();
 	 	if(panelZimlets && panelZimlets.length > 0) {
@@ -218,7 +219,7 @@ function(list, callback) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseSave, [list, callback]);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
-}
+};
 
 ZmSettings.prototype._handleResponseSave =
 function(list, callback, result) {
@@ -233,9 +234,12 @@ function(list, callback, result) {
 	}
 	
 	if (callback) callback.run(result);
-}	
+};
 
-// Convenience method to convert "group mail by" between server and client versions
+/**
+* Convenience method to convert "group mail by" between server (string)
+* and client (int constant) versions.
+*/
 ZmSettings.prototype.getGroupMailBy =
 function() {
 	var setting = this.get(ZmSetting.GROUP_MAIL_BY);
@@ -258,7 +262,7 @@ function() {
 		if (args[0])
 			this._nameToId[args[0]] = id;
 	}
-}
+};
 
 // Set defaults which are determined dynamically (which can't be set in static code).
 ZmSettings.prototype._setDefaults =
@@ -292,4 +296,4 @@ function() {
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.TRAD_VIEW, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SRC_VIEW, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_TGT_VIEW, true);
-}
+};
