@@ -48,7 +48,7 @@ function ZmPreferencesPage(parent, appCtxt, view, controller, passwordDialog) {
 	this._passwordDialog = passwordDialog;
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[view]].join(": ");
 
-	this.selects = new Object();
+	this._dwtObjects = {};
 	this._createHtml();
 	this._rendered = false;
 	this._hasRendered = false;
@@ -86,15 +86,10 @@ function() {
 
 		var setup = ZmPref.SETUP[id];
 		var pre = setup.precondition;
-		if (pre && !(this._appCtxt.get(pre)))
-			continue;
+		if (pre && !(this._appCtxt.get(pre))) continue;		
 
 		// save the current value (for checking later if it changed)
-		var value = pref.origValue = pref.getValue();
-		if (id == ZmSetting.SIGNATURE_STYLE)
-			value = (value == ZmSetting.SIG_INTERNET);
-		if (id == ZmSetting.POLLING_INTERVAL)
-			value = parseInt(value / 60); // setting stored as seconds, displayed as minutes
+		var value = pref.origValue = this._getPrefValue(id);
 		if (id == ZmSetting.SHOW_FRAGMENTS && !this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED))
 			setup.displayName = ZmMsg.showFragmentsMsg;
 		// bug fix #4519 - only show html font settings if html compose is enabled
@@ -103,36 +98,33 @@ function() {
 		DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
 
 		var type = setup ? setup.displayContainer : null;
-		if (type == "select") {
+		if (type == ZmPref.TYPE_SELECT) {
 			var div = this._setupSelect(id, setup, value);
+			this._createRow(setup.displayName, div, setup.displaySeparator);
+		} else if (type == ZmPref.TYPE_INPUT) {
+			var div = this._setupInput(id, setup, value);
 			this._createRow(setup.displayName, div, setup.displaySeparator);
 		} else {
 			var html = new Array();
 			var j = 0;
 			var buttonId;
 			var prefId = ZmPref.KEY_ID + id;
-			if (type == "checkbox") {
+			if (type == ZmPref.TYPE_CHECKBOX) {
 				var checked = value ? "checked " : "";
 				html[j++] = "<input id='";
 				html[j++] = prefId;
 				html[j++] = "' ";
 				html[j++] = checked;
 				html[j++] = "type='checkbox'/>";
-			} else if (type == "input") {
-				html[j++] = "<input id='";
-				html[j++] = prefId;
-				html[j++] = "' ";
-				html[j++] = "type='text' autocomplete='off' value='";
-				html[j++] = value;
-				html[j++] = "' size=30></input>";
-			} else if (type == "textarea") {
+			} else if (type == ZmPref.TYPE_TEXTAREA) {
 				html[j++] = "<textarea id='";
 				html[j++] = prefId;
 				html[j++] = "' ";
 				html[j++] = "wrap='on' style='width:402' rows='4' cols='60'>";
 				html[j++] = value;
 				html[j++] = "</textarea>";
-			} else if (type == "x_password" || type == "import" || type == "export" || type == "font") {
+			} else if (type == ZmPref.TYPE_PASSWORD || type == ZmPref.TYPE_FONT ||
+					   type == ZmPref.TYPE_IMPORT || type == ZmPref.TYPE_EXPORT) {
 				if (id == ZmSetting.COMPOSE_INIT_FONT_SIZE)
 					continue;
 				buttonId = Dwt.getNextId();
@@ -143,14 +135,14 @@ function() {
 				continue;
 			}
 			this._createRow(setup.displayName, html.join(""), setup.displaySeparator);
-			if (type == "x_password") {
+			if (type == ZmPref.TYPE_PASSWORD) {
 				this._addButton(buttonId, ZmMsg.change, 50,	new AjxListener(this, this._changePasswordListener));
-			} else if (type == "import") {
+			} else if (type == ZmPref.TYPE_IMPORT) {
 				this._importDiv = document.getElementById(buttonId);
 				this._addImportWidgets(this._importDiv);
-			} else if (type == "export") {
+			} else if (type == ZmPref.TYPE_EXPORT) {
 				this._addButton(buttonId, ZmMsg._export, 65, new AjxListener(this, this._exportContactsListener));
-			} else if (type == "font" && this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+			} else if (type == ZmPref.TYPE_FONT && this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) {	
 				this._fontDiv = document.getElementById(buttonId);
 				var fontSizeValue = settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).getValue();
 				this._addFontPrefs(this._fontDiv, id, setup, value, fontSizeValue);
@@ -161,9 +153,100 @@ function() {
 	this._hasRendered = true;
 };
 
+ZmPreferencesPage.prototype.getFormValue =
+function(id) {
+	var value = null;
+	var setup = ZmPref.SETUP[id];
+	var type = setup ? setup.displayContainer : null;
+	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_FONT) {
+		var object = this._dwtObjects[id];
+		if (object)
+			value = object.getValue();
+		if (id == ZmSetting.POLLING_INTERVAL)
+			value = value * 60; // convert minutes to seconds
+	} else {
+		var prefId = ZmPref.KEY_ID + id;
+		var element = document.getElementById(prefId);
+		if (!element) return null;
+		if (type == ZmPref.TYPE_CHECKBOX) {
+			value = element.checked;
+			if (id == ZmSetting.SIGNATURE_STYLE)
+				value = value ? ZmSetting.SIG_INTERNET : ZmSetting.SIG_OUTLOOK;
+		} else {
+			value = element.value;
+		}
+	}
+	return value;
+};
+
 ZmPreferencesPage.prototype.getTitle =
 function() {
 	return this._title;
+};
+
+/**
+* Resets the form fields to the prefs' current values.
+*
+* @param useDefaults	[boolean]	if true, fields are reset to prefs' default values
+*/
+ZmPreferencesPage.prototype.reset =
+function(useDefaults) {
+	var settings = this._appCtxt.getSettings();
+	var prefs = ZmPrefView.PREFS[this._view];
+	for (var i = 0; i < prefs.length; i++) {
+		var id = prefs[i];
+		var setup = ZmPref.SETUP[id];
+		var type = setup.displayContainer;
+		if (type == ZmPref.TYPE_PASSWORD) continue; // ignore non-form elements
+		var pref = settings.getSetting(id);
+		var newValue = this._getPrefValue(id, useDefaults);
+		if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_FONT) {
+			var curValue = this._dwtObjects[id].getValue();
+			if (newValue != null && (curValue != newValue))
+				this._dwtObjects[id].setSelectedValue(newValue);
+		} else if (type == ZmPref.TYPE_INPUT) {
+			var curValue = this._dwtObjects[id].getValue();
+			if (newValue != null && (curValue != newValue))
+				this._dwtObjects[id].setValue(newValue);
+		} else {
+			var element = document.getElementById((ZmPref.KEY_ID + id));
+
+			if (!element || element.value == newValue)
+				continue;
+
+			if (type == ZmPref.TYPE_CHECKBOX) {
+				element.checked = newValue ? true : false;
+			} else {
+				if (newValue == null) newValue = "";
+				element.value = newValue;
+				// XXX: nicer way to do this? do something special for font color
+				if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR) {
+					var colorBox = document.getElementById(this._defaultFontColorId);
+					if (colorBox)
+						colorBox.style.backgroundColor = newValue;
+				}
+			}
+		}
+	}
+};
+
+/*
+* Returns the value of the specified pref, massaging it if necessary.
+*
+* @param id			[constant]		pref ID
+* @param useDefault	[boolean]		if true, use pref's default value
+*/
+ZmPreferencesPage.prototype._getPrefValue =
+function(id, useDefault) {
+	var value = null;
+	var pref = this._appCtxt.getSettings().getSetting(id);
+	var value = useDefault ? pref.getDefaultValue() : pref.getValue();
+	if (id == ZmSetting.SIGNATURE_STYLE)
+		value = (value == ZmSetting.SIG_INTERNET);
+	if (id == ZmSetting.POLLING_INTERVAL)
+		value = parseInt(value / 60); // setting stored as seconds, displayed as minutes
+
+	return value;
 };
 
 // Creates a table that we can later add preference rows to, and a placeholder DIV for
@@ -232,7 +315,7 @@ function(parentId, text, width, listener) {
 ZmPreferencesPage.prototype._setupSelect = 
 function(id, setup, value) {
 	var selObj = new DwtSelect(this);
-	this.selects[id] = selObj;
+	this._dwtObjects[id] = selObj;
 
 	var options;
 	if (setup.options || setup.displayOptions) {
@@ -254,6 +337,17 @@ function(id, setup, value) {
 	
 	var div = document.createElement("div");
 	div.appendChild(selObj.getHtmlElement());
+	
+	return div;
+};
+
+ZmPreferencesPage.prototype._setupInput = 
+function(id, setup, value) {
+	var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: value, size: 40});
+	this._dwtObjects[id] = input;
+
+	var div = document.createElement("div");
+	div.appendChild(input.getHtmlElement());
 	
 	return div;
 };
@@ -432,39 +526,6 @@ function(aid, result) {
 // user ever touches them.
 ZmPreferencesPage.prototype._resetListener =
 function(ev) {
-	var settings = this._appCtxt.getSettings();
-	var prefs = ZmPrefView.PREFS[this._view];
-	for (var i = 0; i < prefs.length; i++) {
-		var id = prefs[i];
-		var setup = ZmPref.SETUP[id];
-		var type = setup.displayContainer;
-		if (type && type.indexOf("x_") == 0) // ignore non-form elements		
-			continue;
-		var pref = settings.getSetting(id);
-		var defValue = pref.defaultValue;
-		if (type == "select" || type == "font") {
-			var curValue = this.selects[id].getValue();
-			if (defValue != null && (curValue != defValue))
-				this.selects[id].setSelectedValue(defValue);
-		} else {
-			var element = document.getElementById((ZmPref.KEY_ID + id));
-
-			if (!element || element.value == defValue)
-				continue;
-
-			if (type == "checkbox") {
-				element.checked = defValue ? true : false;
-			} else {
-				if (defValue == null) defValue = "";
-				element.value = defValue;
-				// XXX: nicer way to do this? do something special for font color
-				if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR) {
-					var colorBox = document.getElementById(this._defaultFontColorId);
-					if (colorBox)
-						colorBox.style.backgroundColor = defValue;
-				}
-			}
-		}
-	}
+	this.reset(true);
 	this._appCtxt.setStatusMsg(ZmMsg.defaultsRestored);
 };

@@ -394,6 +394,16 @@ function(key) {
 };
 
 /**
+* Returns the default value of this setting.
+*
+* @param key 			optional key for use by hash table data type
+*/
+ZmSetting.prototype.getDefaultValue =
+function(key) {
+	return key ? this.defaultValue[key] : this.defaultValue;
+};
+
+/**
 * Sets the current value of this setting, performing any necessary data type conversion.
 *
 * @param value			the new value for the setting
