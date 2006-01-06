@@ -60,11 +60,15 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._apps = {};
 	this._activeApp = null;
 	
-	this._pollActionId = null;
 	this._sessionTimer = new AjxTimedAction(null, ZmZimbraMail.logOff);
 	this._sessionTimerId = -1;
 	this._shell.setBusyDialogText(ZmMsg.askCancel);
 	this._pendingRequests = {};
+
+	this._pollActionId = null;
+	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
+	var errorCallback = new AjxCallback(this, this._handleErrorDoPoll);
+	this._pollAction = new AjxTimedAction(this, this.sendRequest, [soapDoc, true, null, errorCallback, null, null, true]);
 
 	this._needOverviewLayout = false;
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);	
@@ -147,8 +151,6 @@ ZmZimbraMail._HELP_ID	= 2;
 ZmZimbraMail._LOGOFF_ID	= 3;
 
 ZmZimbraMail._OVERVIEW_ID = "ZmZimbraMail";
-
-ZmZimbraMail.IGNORE_ERRORS = "_ignore_";
 
 // request states
 ZmZimbraMail._SENT		= 1;
@@ -357,8 +359,9 @@ function(settings) {
 * Sends a request to the CSFE and processes the response. Notifications and
 * refresh blocks that come in the response header are handled. Also handles
 * exceptions by default, though the caller can pass in a special callback to
-* run for exceptions. To ignore exceptions, pass in ZmZimbraMail.IGNORE_ERRORS
-* as the value for the error callback (currently done for polling).
+* run for exceptions. The error callback should return true if it has
+* handled the exception, and false if standard exception handling should still
+* be performed.
 *
 * @param soapDoc		[AjxSoapDoc]	SOAP document that represents the request
 * @param asyncMode		[boolean]*		if true, request will be made asynchronously
@@ -366,19 +369,21 @@ function(settings) {
 * @param errorCallback	[Object]*		callback to run if there is an exception
 * @param execFrame		[AjxCallback]*	the calling method, object, and args
 * @param timeout		[int]*			timeout value (in seconds)
+* @param noBusyOverlay	[boolean]*		if true, don't use the busy overlay
 */
 ZmZimbraMail.prototype.sendRequest = 
-function(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout) {
+function(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout, noBusyOverlay) {
 	var reqId = ZmZimbraMail.getNextReqId();
 	timeout = (timeout != null) ? timeout : this._stdTimeout;
 	if (timeout) timeout = timeout * 1000; // convert seconds to ms
-	var asyncCallback = asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [true, callback, errorCallback, execFrame, reqId]) : null;
+	var asyncCallback = asyncMode ? new AjxCallback(this, this._handleResponseSendRequest,
+													[true, callback, errorCallback, noBusyOverlay, execFrame, reqId]) : null;
 	var command = new ZmCsfeCommand();
 	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken,
 				  asyncMode: asyncMode, callback: asyncCallback, logRequest: this._logRequest};
 	
 	DBG.println(AjxDebug.DBG2, "sendRequest: " + soapDoc._methodEl.nodeName);
-	if (asyncMode && (errorCallback != ZmZimbraMail.IGNORE_ERRORS)) {
+	if (asyncMode && !noBusyOverlay) {
 		var cancelCallback = null;
 		var showBusyDialog = false;
 		if (timeout) {
@@ -396,16 +401,18 @@ function(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout) {
 		command.state = ZmZimbraMail._SENT;
 	} catch (ex) {
 		if (asyncMode)
-			this._handleResponseSendRequest(asyncMode, asyncCallback, errorCallback, execFrame, reqId, new ZmCsfeResult(ex, true));
+			this._handleResponseSendRequest(asyncMode, asyncCallback, errorCallback, noBusyOverlay,
+											execFrame, reqId, new ZmCsfeResult(ex, true));
 		else
 			throw ex;
 	}
 	if (!asyncMode)
-		return this._handleResponseSendRequest(asyncMode, null, errorCallback, execFrame, reqId, response);
+		return this._handleResponseSendRequest(asyncMode, null, errorCallback, noBusyOverlay,
+											   execFrame, reqId, response);
 };
 
 ZmZimbraMail.prototype._handleResponseSendRequest =
-function(asyncMode, callback, errorCallback, execFrame, reqId, result) {
+function(asyncMode, callback, errorCallback, noBusyOverlay, execFrame, reqId, result) {
 	if (this._cancelDialog && this._cancelDialog.isPoppedUp())
 		this._cancelDialog.popdown();
 
@@ -414,7 +421,8 @@ function(asyncMode, callback, errorCallback, execFrame, reqId, result) {
 	
 	this._pendingRequests[reqId].state = ZmZimbraMail._RESPONSE;
 	
-	this._shell.setBusy(false, reqId); // remove busy overlay
+	if (!noBusyOverlay)
+		this._shell.setBusy(false, reqId); // remove busy overlay
 
 	// we just got activity, cancel current poll timer
 	if (this._pollActionId)
@@ -426,11 +434,9 @@ function(asyncMode, callback, errorCallback, execFrame, reqId, result) {
 	} catch (ex) {
 		DBG.println(AjxDebug.DBG2, "Request " + reqId + " got an exception");
 		if (errorCallback) {
-			if (errorCallback != ZmZimbraMail.IGNORE_ERRORS) {
-				var handled = errorCallback.run(ex);
-				if (!handled)
-					this._handleException(ex, execFrame);
-			}
+			var handled = errorCallback.run(ex);
+			if (!handled)
+				this._handleException(ex, execFrame);
 		} else {
 			this._handleException(ex, execFrame);
 		}
@@ -479,7 +485,7 @@ function(reqId, errorCallback) {
 	this._shell.setBusy(false, reqId); // remove busy overlay
 	DBG.println(AjxDebug.DBG1, "ZmZimbraMail.cancelRequest: " + reqId);
 	this._pendingRequests[reqId].cancel();
-	if (errorCallback && (errorCallback != ZmZimbraMail.IGNORE_ERRORS)) {
+	if (errorCallback) {
 		var ex = new AjxException("Request canceled", AjxException.CANCELED, "ZmZimbraMail.prototype.cancelRequest");
 		errorCallback.run(ex);
 	}
@@ -1189,13 +1195,21 @@ function(parent) {
 	return list;
 };
 
-// Sends a delayed NoOpRequest to see if we get any notifications (eg new mail). Ignores exceptions.
+/*
+* Sends a delayed NoOpRequest to see if we get any notifications (eg new mail). Ignores
+* exceptions unless they're auth-related.
+*/
 ZmZimbraMail.prototype._doPoll =
 function() {
 	this._pollActionId = null; // so we don't try to cancel
-	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-	var action = new AjxTimedAction(this, this.sendRequest, [soapDoc, true, null, ZmZimbraMail.IGNORE_ERRORS]);
-	return AjxTimedAction.scheduleAction(action, this._pollInterval);
+	return AjxTimedAction.scheduleAction(this._pollAction, this._pollInterval);
+};
+
+ZmZimbraMail.prototype._handleErrorDoPoll =
+function(ex) {
+	return (ex.code != ZmCsfeException.SVC_AUTH_EXPIRED &&
+			ex.code != ZmCsfeException.SVC_AUTH_REQUIRED &&
+			ex.code != ZmCsfeException.NO_AUTH_TOKEN);
 };
 
 ZmZimbraMail._userEventHdlr =
