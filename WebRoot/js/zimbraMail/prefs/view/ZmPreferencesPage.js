@@ -142,7 +142,7 @@ function() {
 				this._addImportWidgets(this._importDiv);
 			} else if (type == ZmPref.TYPE_EXPORT) {
 				this._addButton(buttonId, ZmMsg._export, 65, new AjxListener(this, this._exportContactsListener));
-			} else if (type == ZmPref.TYPE_FONT && this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) {	
+			} else if (type == ZmPref.TYPE_FONT && this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {	
 				this._fontDiv = document.getElementById(buttonId);
 				var fontSizeValue = settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).getValue();
 				this._addFontPrefs(this._fontDiv, id, setup, value, fontSizeValue);
