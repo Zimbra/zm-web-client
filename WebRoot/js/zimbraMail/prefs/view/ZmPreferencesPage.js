@@ -87,7 +87,7 @@ function() {
 		var setup = ZmPref.SETUP[id];
 		var pre = setup.precondition;
 		if (pre && !(this._appCtxt.get(pre)))
-			continue;		
+			continue;
 
 		// save the current value (for checking later if it changed)
 		var value = pref.origValue = pref.getValue();
@@ -97,6 +97,9 @@ function() {
 			value = parseInt(value / 60); // setting stored as seconds, displayed as minutes
 		if (id == ZmSetting.SHOW_FRAGMENTS && !this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED))
 			setup.displayName = ZmMsg.showFragmentsMsg;
+		// bug fix #4519 - only show html font settings if html compose is enabled
+		if (id == ZmSetting.COMPOSE_INIT_FONT_FAMILY && !this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))
+			continue;
 		DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
 
 		var type = setup ? setup.displayContainer : null;
@@ -147,7 +150,7 @@ function() {
 				this._addImportWidgets(this._importDiv);
 			} else if (type == "export") {
 				this._addButton(buttonId, ZmMsg._export, 65, new AjxListener(this, this._exportContactsListener));
-			} else if (type == "font") {	
+			} else if (type == "font" && this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 				this._fontDiv = document.getElementById(buttonId);
 				var fontSizeValue = settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).getValue();
 				this._addFontPrefs(this._fontDiv, id, setup, value, fontSizeValue);
