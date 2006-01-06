@@ -358,12 +358,10 @@ function(ev) {
 					this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [flag]});
 			}
 		}
-	} else if (ev.event == ZmEvent.E_DELETE &&
-			   ev.source instanceof ZmFolder && 
-			   ev.source.id == ZmFolder.ID_TRASH) 
-	{
+	} else if (ev.event == ZmEvent.E_DELETE && ev.source instanceof ZmFolder && ev.source.id == ZmFolder.ID_TRASH) {
 		// user emptied trash - reset a bunch of stuff w/o having to redo the search
-		ctlr.getCurrentView().setOffset(0);
+		var curView = ctlr.getCurrentView();
+		if (curView) curView.setOffset(0);
 		ctlr._resetNavToolBarButtons(view);
 		ctlr._showListRange(view);
 	}
