@@ -120,6 +120,16 @@ function() {
 	this._hasRendered = true;
 };
 
+ZmPrefView.prototype.reset =
+function() {
+	for (var i = 0; i < ZmPrefView.VIEWS.length; i++) {
+		var viewPage = this.prefView[ZmPrefView.VIEWS[i]];
+		if (!viewPage) continue; // if feature is disabled, may not have a view page
+		if (!viewPage.hasRendered()) continue; // if page hasn't rendered, nothing has changed
+		viewPage.reset();
+	}
+};
+
 ZmPrefView.prototype.getTitle =
 function() {
 	return this._hasRendered ? this.getActiveView().getTitle() : null;
@@ -149,44 +159,22 @@ function(dirtyCheck, noValidation) {
 		if (view == ZmPrefView.FILTER_RULES) continue;
 
 		var viewPage = this.prefView[view];
-		if (!viewPage) continue; 
-		// if feature is disabled, may not have a view page
-		// if the page hasn't rendered, then nothing could have been changed
-		// so we'll skip the rest of the checks
-		if (!viewPage.hasRendered()) continue;
+		if (!viewPage) continue; // if feature is disabled, may not have a view page
+		if (!viewPage.hasRendered()) continue; // if page hasn't rendered, nothing has changed
 
 		var prefs = ZmPrefView.PREFS[view];
 		for (var j = 0; j < prefs.length; j++) {
 			var id = prefs[j];
 			var setup = ZmPref.SETUP[id];
 			var pre = setup.precondition;
-			if (pre && !(this._appCtxt.get(pre)))
-				continue;		
+			if (pre && !(this._appCtxt.get(pre))) continue;		
 			
-			var value = null;
 			var type = setup ? setup.displayContainer : null;
 			var validationFunc = setup ? setup.validationFunction : null;
-			if (type && type.indexOf("x_") == 0) // ignore non-form elements			
-				continue;
-			if (type == "select" || type == "font") {
-				var select = viewPage.selects[id];
-				if (select)
-					value = select.getValue();
-			} else {
-				var prefId = ZmPref.KEY_ID + id;
-				var element = document.getElementById(prefId);
-				if (!element) continue;
-				if (type == "checkbox") {
-					value = element.checked;
-					if (id == ZmSetting.SIGNATURE_STYLE)
-						value = value ? ZmSetting.SIG_INTERNET : ZmSetting.SIG_OUTLOOK;
-				} else if (id == ZmSetting.POLLING_INTERVAL) {
-					value = parseInt(element.value) * 60; // convert minutes to seconds
-				} else {
-					value = element.value;
-				}
-			}
-			// validate 
+			if (type == ZmPref.TYPE_PASSWORD) continue; // ignore non-form elements
+				
+			// check if value has changed
+			var value = viewPage.getFormValue(id);
 			var pref = settings.getSetting(id);
 			var unchanged = (value == pref.origValue);
 			// null and "" are the same string for our purposes
