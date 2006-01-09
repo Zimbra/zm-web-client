@@ -692,8 +692,10 @@ function() {
 
 ZmCalViewController.prototype._miniCalSelectionListener =
 function(ev) {
-	if (!this._viewVisible) this.show();
-	this.setDate(ev.detail, 0, ev.item.getForceRollOver());
+	if (ev.item instanceof DwtCalendar) {
+		this.setDate(ev.detail, 0, ev.item.getForceRollOver());
+		if (!this._viewVisible) this.show();
+	}
 }
 
 ZmCalViewController.prototype._newApptObject = 
