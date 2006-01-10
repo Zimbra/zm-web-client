@@ -142,10 +142,13 @@ function(ev, bIsPopCallback) {
 			this._app.popView(true);
 
 		if (mods) {
-			// bug fix #1891 - make sure all mods have values (otherwise, delete)
+			// Make sure at least one form field has a value (otherwise, delete the contact). The call
+			// to getModifiedAttrs() above populates _attrs with form field values.
 			var doDelete = true;
-			for (var i in mods) {
-				if (i != ZmContact.F_fileAs && i != ZmContact.X_fullName && mods[i] != null && mods[i] != "") {
+			var formAttrs = this._listView[view]._attr;
+			for (var i in formAttrs) {
+				if (i == ZmContact.F_fileAs || i == ZmContact.X_fullName) continue;
+				if (formAttrs[i]) {
 					doDelete = false;
 					break;
 				}
