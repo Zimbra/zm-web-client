@@ -142,13 +142,13 @@
 			redirects.
 		</description>
 		<env-entry-name>httpsPort</env-entry-name>
-		<env-entry-value>443</env-entry-value>
+		<env-entry-value>%%zimbraMailSSLPort%%</env-entry-value>
 		<env-entry-type>java.lang.String</env-entry-type>
 	</env-entry>
 
 	<env-entry>
 		<env-entry-name>httpPort</env-entry-name>
-		<env-entry-value>80</env-entry-value>
+		<env-entry-value>%%zimbraMailPort%%</env-entry-value>
 		<env-entry-type>java.lang.String</env-entry-type>
 	</env-entry>
 
