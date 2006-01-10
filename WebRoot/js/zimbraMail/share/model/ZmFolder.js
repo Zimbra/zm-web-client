@@ -294,6 +294,36 @@ function(obj, isSearch) {
 	folder._notify(ZmEvent.E_CREATE);
 };
 
+/*
+* Handle modifications to fields that organizers have in general. This override
+* provides the former path in the event.
+*
+* @param obj	[Object]	a "modified" notification
+*/
+ZmFolder.prototype.notifyModify =
+function(obj) {
+	var details = {};
+	var fields = {};
+	if (obj.name != null && this.name != obj.name) {
+		details.oldPath = this.getPath();
+		this.name = obj.name;
+		fields[ZmOrganizer.F_NAME] = true;
+		this.parent.children.sort(ZmTreeView.COMPARE_FUNC[this.type]);
+		details.fields = fields;
+		this._notify(ZmEvent.E_MODIFY, details);
+	} else if (obj.l != null && obj.l != this.parent.id) {
+		details.oldPath = this.getPath();
+		var newParent = this._getNewParent(obj.l);
+		this.reparent(newParent);
+		this._notify(ZmEvent.E_MOVE, details);
+		// could be moving search between Folders and Searches - make sure
+		// it has the correct tree
+		this.tree = newParent.tree; 
+	} else {
+		ZmOrganizer.prototype.notifyModify.apply(this, [obj]);
+	}
+};
+
 ZmFolder.prototype.createQuery =
 function(pathOnly) {
 	var query;

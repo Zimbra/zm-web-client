@@ -58,7 +58,7 @@ function() {
 * @param search		search results (which should contain a list of conversations)
 */
 ZmConvListController.prototype.show =
-function(searchResult, searchString) {
+function(searchResult) {
 	
 	// save previous offset and folder Id
 	var oldOffset = this._listView[this._currentView] ? this._listView[this._currentView].getOffset() : 0;
@@ -66,7 +66,7 @@ function(searchResult, searchString) {
 	if (this._activeSearch && this._activeSearch.search)
 		oldFolderId = this._activeSearch.search.folderId;
 
-	ZmMailListController.prototype.show.call(this, searchResult, searchString);
+	ZmMailListController.prototype.show.call(this, searchResult);
 	
 	this._list = searchResult.getResults(ZmItem.CONV);
 	this._setup(this._currentView);
@@ -224,7 +224,7 @@ function(ev) {
 			this._doAction(ev, ZmOperation.DRAFT);
 		} else {
 DBG.showTiming(true, AjxDebug.PERF, "***** CONV: start");
-			this._app.getConvController().show(null, this._searchString, ev.item);
+			this._app.getConvController().show(this._activeSearch, ev.item);
 		}
 	}
 };

@@ -593,13 +593,57 @@ function(item) {
 	return 0;
 };
 
+ZmList.prototype._redoSearch = 
+function(ctlr) {
+	var sc = this._appCtxt.getSearchController();
+	sc.redoSearch(ctlr._currentSearch);
+};
+
+ZmList.prototype._folderTreeChangeListener = 
+function(ev) {
+	if (ev.type != ZmEvent.S_FOLDER) return;
+
+	var folder = ev.getDetail("organizers")[0];
+	var fields = ev.getDetail("fields");
+	var ctlr = this._appCtxt.getCurrentController();
+	var isCurrentList = (this._appCtxt.getCurrentList() == this);
+
+	if (ev.event == ZmEvent.E_DELETE && ev.source instanceof ZmFolder && ev.source.id == ZmFolder.ID_TRASH) {
+		// user emptied trash - reset a bunch of stuff w/o having to redo the search
+		var curView = ctlr.getCurrentView();
+		if (curView) curView.setOffset(0);
+		ctlr._resetNavToolBarButtons(view);
+		ctlr._showListRange(view);
+	} else if (isCurrentList && (ev.event == ZmEvent.E_MOVE ||
+			   (ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME])) {
+		// on folder rename or move, update current query if folder is part of query
+		var oldPath = ev.getDetail("oldPath");
+		if (ctlr._currentSearch.hasFolderTerm(oldPath)) {
+			ctlr._currentSearch.replaceFolderTerm(oldPath, folder.getPath());
+			this._appCtxt.getSearchController().setSearchField(ctlr._currentSearch.query);
+		}
+	}
+};
+	
 ZmList.prototype._tagTreeChangeListener = 
 function(ev) {
 	if (ev.type != ZmEvent.S_TAG) return;
 
-	if (ev.event == ZmEvent.E_DELETE) {
+	var tag = ev.getDetail("organizers")[0];
+	var fields = ev.getDetail("fields");
+	var ctlr = this._appCtxt.getCurrentController();
+	var isCurrentList = (this._appCtxt.getCurrentList() == this);
+	if (!isCurrentList) return;
+	
+	if ((ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME]) {
+		// on tag rename, update current query if tag is part of query
+		var oldName = ev.getDetail("oldName");
+		if (ctlr._currentSearch.hasTagTerm(oldName)) {
+			ctlr._currentSearch.replaceTagTerm(oldName, tag.getName());
+			this._appCtxt.getSearchController().setSearchField(ctlr._currentSearch.query);
+		}
+	} else if (ev.event == ZmEvent.E_DELETE) {
 		// Remove tag from any items that have it
-		var tag = ev.getDetail("organizers")[0];
 		var a = this.getArray();
 		var taggedItems = new Array();
 		for (var i = 0; i < a.length; i++) {
@@ -612,6 +656,20 @@ function(ev) {
 		// Send listeners a tag event so they'll notice it's gone
 		if (taggedItems.length && this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
 			this._notify(ZmEvent.E_TAGS, {items: taggedItems});
+		}
+		// If search results are based on this tag, keep them around so that user can still
+		// view msgs or open convs, but disable pagination and sorting since they're based
+		// on the current query.
+		if (ctlr._currentSearch.hasTagTerm(tag.getName())) {
+			var viewId = this._appCtxt.getCurrentViewId();
+			ctlr.enablePagination(false, viewId);
+			var view = ctlr.getCurrentView();
+			if (view && view.enableSorting)
+				view.enableSorting(false);
+			if (viewId == ZmController.CONVLIST_VIEW)
+				ctlr._currentSearch.query = "is:read is:unread";
+			ctlr._currentSearch.tagId = null;
+			this._appCtxt.getSearchController().setSearchField("");
 		}
 	}
 };

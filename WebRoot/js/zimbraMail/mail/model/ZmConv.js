@@ -41,7 +41,7 @@ function ZmConv(appCtxt, id, list) {
 	// conversations are always sorted by date desc initially
 	this._sortBy = ZmSearch.DATE_DESC; 
 	this._listChangeListener = new AjxListener(this, this._msgListChangeListener);
-}
+};
 
 ZmConv.prototype = new ZmMailItem;
 ZmConv.prototype.constructor = ZmConv;
@@ -49,7 +49,7 @@ ZmConv.prototype.constructor = ZmConv;
 ZmConv.prototype.toString = 
 function() {
 	return "ZmConv";
-}
+};
 
 // Public methods
 
@@ -59,7 +59,7 @@ function(node, args) {
 	conv._participantHash = args.addressHash ? args.addressHash : new Object();
 	conv._loadFromDom(node);
 	return conv;
-}
+};
 
 ZmConv.prototype.load =
 function(searchString, sortBy, offset, limit, pagCallback, callback) {
@@ -92,8 +92,8 @@ function(searchString, sortBy, offset, limit, pagCallback, callback) {
 	var params = {query: searchString, types: types, sortBy: sortBy, offset: offset, limit: limit};
 	var search = new ZmSearch(this.list._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [pagCallback, callback]);
-	search.forConv(this.id, respCallback);
-}
+	search.getConv(this.id, respCallback);
+};
 
 ZmConv.prototype._handleResponseLoad =
 function(pagCallback, callback, result) {
@@ -118,7 +118,7 @@ function(pagCallback, callback, result) {
 			callback.run(result);
 		}
 	}
-}
+};
 
 ZmConv.prototype.loadMsgIds =
 function(callback) {
@@ -127,7 +127,7 @@ function(callback) {
 	msgNode.setAttribute("id", conv.id);
 	var respCallback = new AjxCallback(this, this._handleResponseLoadMsgIds, callback);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback)
-}
+};
 
 ZmConv.prototype._handleResponseLoadMsgIds =
 function(callback, result) {
@@ -139,7 +139,7 @@ function(callback, result) {
 	this.msgIds = msgIds;
 	
 	if (callback) callback.run(result);
-}
+};
 
 ZmConv.prototype.clear =
 function() {
@@ -149,7 +149,7 @@ function() {
 	}
 	
 	ZmMailItem.prototype.clear.call(this);
-}
+};
 
 /**
 * Handles a modification notification.
@@ -180,7 +180,7 @@ function(obj) {
 	}
 
 	ZmMailItem.prototype.notifyModify.call(this, obj);
-}
+};
 
 ZmConv.prototype._checkFlags = 
 function(flags) {
@@ -213,7 +213,7 @@ function(flags) {
 
 	if (doNotify)
 		this._notify(ZmEvent.E_FLAGS, {flags: flags});
-}
+};
 
 /**
 * Figure out if any tags have been added or removed by comparing what we have now with what
@@ -248,7 +248,7 @@ function() {
 
 	if (notify)
 		this._notify(ZmEvent.E_TAGS);
-}
+};
 
 ZmConv.prototype.checkMoved = 
 function(folderId) {
@@ -264,7 +264,7 @@ function(folderId) {
 		this._notify(ZmEvent.E_MOVE);
 	
 	return bNotify;
-}
+};
 
 ZmConv.prototype.moveLocal =
 function(folderId) {
@@ -272,7 +272,7 @@ function(folderId) {
 		delete this.folders;
 	this.folders = new Object();
 	this.folders[folderId] = true;
-}
+};
 
 /* First see if there are any hot messages which will always be the case in a 
  * search scenario; however if this is not a search (i.e. we are playing 
@@ -307,7 +307,7 @@ function(offset, limit) {
 	}
 	
 	return msg;
-}
+};
 
 ZmConv.prototype.getFirstMsg = 
 function() {
@@ -327,7 +327,7 @@ function() {
 	msg.list = this.list;
 	
 	return msg;
-}
+};
 
 
 ZmConv.prototype.getSubject = 
@@ -352,7 +352,7 @@ function(convNode) {
 	// reply/forward w/o having loaded the conv.
 	if (convNode.m)
 		this.msgOpId = convNode.m[0].id;
-}
+};
 
 ZmConv.prototype._loadMsgs = 
 function(convNode) {
@@ -362,7 +362,7 @@ function(convNode) {
 		if (childNodes[i].nodeName == "m")
 			this.msgs.addFromDom(childNodes[i], {addressHash: this._participantHash});
 	}	
-}
+};
 
 ZmConv.prototype._msgListChangeListener =
 function(ev) {
@@ -373,4 +373,4 @@ function(ev) {
 	} else if (ev.event == ZmEvent.E_FLAGS) {
 		this._checkFlags(ev.getDetail("flags"));
 	}
-}
+};
