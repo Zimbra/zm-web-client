@@ -291,7 +291,8 @@ ZmMailListController.prototype._inviteReplyHandler =
 function (ev) {
 	var type = ev._inviteReplyType;
 	var compId = ev._inviteComponentId;
-	if (type == ZmOperation.INVITE_REPLY_ACCEPT || 
+	if (type == ZmOperation.INVITE_REPLY_ACCEPT ||
+		type == ZmOperation.EDIT_REPLY_CANCEL || 
 		type == ZmOperation.INVITE_REPLY_DECLINE ||
 		type == ZmOperation.INVITE_REPLY_TENTATIVE) {
 		type = ZmMailListController.INVITE_REPLY_MAP[type];
@@ -372,6 +373,7 @@ function(type, instanceDate) {
 	if (instanceDate) {
 		switch (type) {
 			case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyAcceptInstanceMessage; break;
+			case ZmOperation.REPLY_CANCEL:		replyBody = ZmMsg.apptInstanceCanceled; break;
 			case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyDeclineInstanceMessage; break;
 			case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyTentativeInstanceMessage; break;
 		}
@@ -381,6 +383,7 @@ function(type, instanceDate) {
 	}
 	switch (type) {
 		case ZmOperation.REPLY_ACCEPT:		replyBody = ZmMsg.defaultInviteReplyAcceptMessage; break;
+		case ZmOperation.REPLY_CANCEL:		replyBody = ZmMsg.apptCanceled; break;
 		case ZmOperation.REPLY_DECLINE:		replyBody = ZmMsg.defaultInviteReplyDeclineMessage; break;
 		case ZmOperation.REPLY_TENTATIVE: 	replyBody = ZmMsg.defaultInviteReplyTentativeMessage; break;
 		case ZmOperation.REPLY_NEW_TIME: 	replyBody = ZmMsg.defaultInviteReplyNewTimeMessage;	break;
