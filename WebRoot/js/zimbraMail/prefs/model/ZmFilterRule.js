@@ -42,7 +42,7 @@ function ZmFilterRule(name, active) {
 	this.conditions = [];
 	this.active = (active !== false);
 	this.id = ZmFilterRule._nextId++;
-}
+};
 
 ZmFilterRule._nextId = 1;
 
@@ -57,10 +57,116 @@ ZmFilterRule.TYPE_CALENDAR		= i++;
 ZmFilterRule.TYPE_FOLDER_PICKER	= i++;
 ZmFilterRule.TYPE_TAG_PICKER	= i++;
 
+// Conditions (subjects)
+var i = 1;
+ZmFilterRule.C_FROM		= i++;
+ZmFilterRule.C_TO		= i++;
+ZmFilterRule.C_CC		= i++;
+ZmFilterRule.C_SUBJECT	= i++;
+ZmFilterRule.C_HEADER	= i++;
+ZmFilterRule.C_SIZE		= i++;
+ZmFilterRule.C_DATE		= i++;
+ZmFilterRule.C_BODY		= i++;
+ZmFilterRule.C_ATT		= i++;
+ZmFilterRule.C_ADDRBOOK	= i++;
+
+ZmFilterRule.C_VALUE = {};
+ZmFilterRule.C_VALUE[ZmFilterRule.C_FROM]		= "from";
+ZmFilterRule.C_VALUE[ZmFilterRule.C_TO]			= "to";
+ZmFilterRule.C_VALUE[ZmFilterRule.C_CC]			= "cc";
+ZmFilterRule.C_VALUE[ZmFilterRule.C_SUBJECT]	= "subject";
+ZmFilterRule.C_VALUE[ZmFilterRule.C_HEADER]		= "header";
+ZmFilterRule.C_VALUE[ZmFilterRule.C_SIZE]		= "size";
+ZmFilterRule.C_VALUE[ZmFilterRule.C_DATE]		= "date";
+ZmFilterRule.C_VALUE[ZmFilterRule.C_BODY]		= "body";
+ZmFilterRule.C_VALUE[ZmFilterRule.C_ATT]		= "attachment";
+ZmFilterRule.C_VALUE[ZmFilterRule.C_ADDRBOOK]	= "addressbook";
+
+ZmFilterRule.C_VALUE_MAP = {};
+for (var i in ZmFilterRule.C_VALUE)
+	ZmFilterRule.C_VALUE_MAP[ZmFilterRule.C_VALUE[i]] = i;
+
+ZmFilterRule.C_LABEL = {};
+ZmFilterRule.C_LABEL[ZmFilterRule.C_FROM]		= ZmMsg.from;
+ZmFilterRule.C_LABEL[ZmFilterRule.C_TO]			= ZmMsg.to;
+ZmFilterRule.C_LABEL[ZmFilterRule.C_CC]			= ZmMsg.cc;
+ZmFilterRule.C_LABEL[ZmFilterRule.C_SUBJECT]	= ZmMsg.subject;
+ZmFilterRule.C_LABEL[ZmFilterRule.C_HEADER]		= ZmMsg.headerNamed;
+ZmFilterRule.C_LABEL[ZmFilterRule.C_SIZE]		= ZmMsg.size;
+ZmFilterRule.C_LABEL[ZmFilterRule.C_DATE]		= ZmMsg.date;
+ZmFilterRule.C_LABEL[ZmFilterRule.C_BODY]		= ZmMsg.body;
+ZmFilterRule.C_LABEL[ZmFilterRule.C_ATT]		= ZmMsg.attachment;
+ZmFilterRule.C_LABEL[ZmFilterRule.C_ADDRBOOK]	= ZmMsg.addressIn;
+
+// Operations (verbs)
+var i = 1;
+ZmFilterRule.OP_IS				= i++;
+ZmFilterRule.OP_NOT_IS			= i++;
+ZmFilterRule.OP_CONTAINS		= i++;
+ZmFilterRule.OP_NOT_CONTAINS	= i++;
+ZmFilterRule.OP_MATCHES			= i++;
+ZmFilterRule.OP_NOT_MATCHES		= i++;
+ZmFilterRule.OP_EXISTS			= i++;
+ZmFilterRule.OP_NOT_EXISTS		= i++;
+ZmFilterRule.OP_UNDER			= i++;
+ZmFilterRule.OP_NOT_UNDER		= i++;
+ZmFilterRule.OP_OVER			= i++;
+ZmFilterRule.OP_NOT_OVER		= i++;
+ZmFilterRule.OP_BEFORE			= i++;
+ZmFilterRule.OP_NOT_BEFORE		= i++;
+ZmFilterRule.OP_AFTER			= i++;
+ZmFilterRule.OP_NOT_AFTER		= i++;
+ZmFilterRule.OP_IN				= i++;
+ZmFilterRule.OP_NOT_IN			= i++;
+
+ZmFilterRule.OP_VALUE = {};
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS]			= ":is";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_IS]		= "not :is";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_CONTAINS]		= ":contains";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_CONTAINS]	= "not :contains";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_MATCHES]		= ":matches";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_MATCHES]	= "not :matches";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_EXISTS]		= ":exists";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_EXISTS]	= "not :exists";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_UNDER]		= ":under";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_UNDER]	= "not :under";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_OVER]			= ":over";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_OVER]		= "not :over";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_BEFORE]		= ":before";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_BEFORE]	= "not :before";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_AFTER]		= ":after";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_AFTER]	= "not :after";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IN]			= ":in";
+ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_IN]		= "not :in";
+
+ZmFilterRule.OP_VALUE_MAP = {};
+for (var i in ZmFilterRule.OP_VALUE)
+	ZmFilterRule.OP_VALUE_MAP[ZmFilterRule.OP_VALUE[i]] = i;
+
+ZmFilterRule.OP_LABEL = {};
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS]			= ZmMsg.is;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_IS]		= ZmMsg.notIs;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_CONTAINS]		= ZmMsg.contains;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_CONTAINS]	= ZmMsg.notContain;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_MATCHES]		= ZmMsg.matches;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_MATCHES]	= ZmMsg.notMatch;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_EXISTS]		= ZmMsg.exists;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_EXISTS]	= ZmMsg.notExist;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_UNDER]		= ZmMsg.under;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_UNDER]	= ZmMsg.notUnder;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_OVER]			= ZmMsg.over;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_OVER]		= ZmMsg.notOver;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_BEFORE]		= ZmMsg.beforeLc;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_BEFORE]	= ZmMsg.notBefore;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_AFTER]		= ZmMsg.afterLc;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_AFTER]	= ZmMsg.notAfter;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IN]			= ZmMsg.isIn;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_IN]		= ZmMsg.notIn;
+
 // commonly used lists
-ZmFilterRule.MATCHING_OPS = [{label: ZmMsg.is, value: ":is"}, {label: ZmMsg.notIs, value: "not :is"},
-							 {label: ZmMsg.contains, value: ":contains"}, {label: ZmMsg.notContain, value: "not :contains"},
-							 {label: ZmMsg.matches, value: ":matches"}, {label: ZmMsg.notMatch, value: "not :matches"}];
+ZmFilterRule.MATCHING_OPS = [ZmFilterRule.OP_IS, ZmFilterRule.OP_NOT_IS, ZmFilterRule.OP_CONTAINS,
+							 ZmFilterRule.OP_NOT_CONTAINS, ZmFilterRule.OP_MATCHES, ZmFilterRule.OP_NOT_MATCHES];
+
 ZmFilterRule.ADDR_OPTIONS = [{label: ZmMsg.entireAddress, value: ":all"}, {label: ZmMsg.localPart, value: ":localpart"},
 							 {label: ZmMsg.domainPart, value: ":domain"}];
 							  
@@ -70,7 +176,6 @@ ZmFilterRule.ADDR_OPTIONS = [{label: ZmMsg.entireAddress, value: ":all"}, {label
 * The key is also known as the condition's "subject". It is the field of an email message that 
 * the condition is tested against.
 *
-* label			Text to show in dialog for the condition's subject
 * subjectMod	Type of input widget for the subjectModifier, which is a specifier or 
 *				modifier for the subject (such as which address to look at)
 * smOptions		List of possible values for the subjectModifier (SELECT type)
@@ -82,128 +187,143 @@ ZmFilterRule.ADDR_OPTIONS = [{label: ZmMsg.entireAddress, value: ":all"}, {label
 *				modifier for the value (such as units for size)
 * vmOptions		List of possible values for the valueModifier (SELECT type)
 */
-ZmFilterRule.CONDITIONS = {
-	from: { 
-		label:		ZmMsg.from,
+ZmFilterRule.CONDITIONS = {};
+ZmFilterRule.CONDITIONS[ZmFilterRule.C_FROM] = {
 //		subjectMod:	ZmFilterRule.TYPE_SELECT,
 		smOptions:	ZmFilterRule.ADDR_OPTIONS,
 		ops:		ZmFilterRule.TYPE_SELECT,
 		opsOptions:	ZmFilterRule.MATCHING_OPS,
 		value:		ZmFilterRule.TYPE_INPUT
-	},
-	to: {
-		label:		ZmMsg.to,
+};
+ZmFilterRule.CONDITIONS[ZmFilterRule.C_TO] = {
 //		subjectMod:	ZmFilterRule.TYPE_SELECT,
 		smOptions:	ZmFilterRule.ADDR_OPTIONS,
 		ops:		ZmFilterRule.TYPE_SELECT,
 		opsOptions:	ZmFilterRule.MATCHING_OPS,
 		value:		ZmFilterRule.TYPE_INPUT
-	},
-	cc: {
-		label:		ZmMsg.cc,
+};
+ZmFilterRule.CONDITIONS[ZmFilterRule.C_CC] = {
 //		subjectMod:	ZmFilterRule.TYPE_SELECT,
 		smOptions:	ZmFilterRule.ADDR_OPTIONS,
 		ops:		ZmFilterRule.TYPE_SELECT,
 		opsOptions:	ZmFilterRule.MATCHING_OPS,
 		value:		ZmFilterRule.TYPE_INPUT
-	},
-	subject: {
-		label:		ZmMsg.subject,
+};
+ZmFilterRule.CONDITIONS[ZmFilterRule.C_SUBJECT] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
 		opsOptions:	ZmFilterRule.MATCHING_OPS,
 		value:		ZmFilterRule.TYPE_INPUT
-	},
-	header: {
-		label:		ZmMsg.headerNamed,
+};
+ZmFilterRule.CONDITIONS[ZmFilterRule.C_HEADER] = {
 		subjectMod:	ZmFilterRule.TYPE_INPUT,
 		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	ZmFilterRule.MATCHING_OPS.concat([{label: ZmMsg.exists, value: ":exists"},
-													  {label: ZmMsg.notExist, value: "not :exists"}]),
+		opsOptions:	ZmFilterRule.MATCHING_OPS.concat([ZmFilterRule.OP_EXISTS, ZmFilterRule.OP_NOT_EXISTS]),
 		value:		ZmFilterRule.TYPE_INPUT
-	},
-	size: {
-		label:		ZmMsg.size,
+};
+ZmFilterRule.CONDITIONS[ZmFilterRule.C_SIZE] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	[{label: ZmMsg.under, value: ":under"}, {label: ZmMsg.notUnder, value: "not :under"},
-					 {label: ZmMsg.over, value: ":over"}, {label: ZmMsg.notOver, value: "not :over"}],
+		opsOptions:	[ZmFilterRule.OP_UNDER, ZmFilterRule.OP_NOT_UNDER, ZmFilterRule.OP_OVER, ZmFilterRule.OP_NOT_OVER],
 		value:		ZmFilterRule.TYPE_INPUT,
 		valueMod:	ZmFilterRule.TYPE_SELECT,
 		vmOptions:	[{label: ZmMsg.b, value: "B"}, {label: ZmMsg.kb, value: "K"}, {label: ZmMsg.mb, value: "M"}]
-	},
-	date: {
-		label:		ZmMsg.date,
+};
+ZmFilterRule.CONDITIONS[ZmFilterRule.C_DATE] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	[{label: ZmMsg.beforeLc, value: ":before"}, {label: ZmMsg.notBefore, value: "not :before"},
-					 {label: ZmMsg.afterLc, value: ":after"}, {label: ZmMsg.notAfter, value: "not :after"}],
+		opsOptions:	[ZmFilterRule.OP_BEFORE, ZmFilterRule.OP_NOT_BEFORE, ZmFilterRule.OP_AFTER, ZmFilterRule.OP_NOT_AFTER],
 		value:		ZmFilterRule.TYPE_CALENDAR
-	},
-	body: {
-		label:		ZmMsg.body,
+};
+ZmFilterRule.CONDITIONS[ZmFilterRule.C_BODY] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	[{label: ZmMsg.contains, value: ":contains"}, {label: ZmMsg.notContain, value: "not :contains"}],
+		opsOptions:	[ZmFilterRule.OP_CONTAINS, ZmFilterRule.OP_NOT_CONTAINS],
 		value:		ZmFilterRule.TYPE_INPUT
-	},
-	attachment: {
-		label:		ZmMsg.attachment,
+};
+ZmFilterRule.CONDITIONS[ZmFilterRule.C_ATT] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	[{label: ZmMsg.exists, value: ":exists"}, {label: ZmMsg.notExist, value: "not :exists"}]
-	},
-	addressbook: {
-		label:		ZmMsg.addressIn,
+		opsOptions:	[ZmFilterRule.OP_EXISTS, ZmFilterRule.OP_NOT_EXISTS]
+};
+ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRBOOK] = {
 		subjectMod:	ZmFilterRule.TYPE_SELECT,
 		smOptions:	[{label: ZmMsg.from, value: "from"}, {label: ZmMsg.to, value: "to"},
 					 {label: ZmMsg.cc, value: "cc"}, {label: ZmMsg.bcc, value: "bcc"}],
 		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	[{label: ZmMsg.isIn, value: ":in"}, {label: ZmMsg.notIn, value: "not :in"}],
+		opsOptions:	[ZmFilterRule.OP_IN, ZmFilterRule.OP_NOT_IN],
 		value:		ZmFilterRule.TYPE_SELECT,
 		vOptions:	[{label: ZmMsg.myContacts, value: "contacts"}]
-	}
 };
 
 // listed in order we want to display them in the SELECT
-ZmFilterRule.CONDITIONS_LIST = ["from", "to", "cc", "subject", "header", "size",
-								"date", "body", "attachment", "addressbook"];
+ZmFilterRule.CONDITIONS_LIST = [ZmFilterRule.C_FROM, ZmFilterRule.C_TO, ZmFilterRule.C_CC,
+								ZmFilterRule.C_SUBJECT, ZmFilterRule.C_HEADER, ZmFilterRule.C_SIZE,
+								ZmFilterRule.C_DATE, ZmFilterRule.C_BODY, ZmFilterRule.C_ATT,
+								ZmFilterRule.C_ADDRBOOK];
 
 // map config keys to fields in a ZmCondition
 ZmFilterRule.CONDITIONS_KEY = {"subjectMod": "subjectModifier", "ops": "comparator",
 							   "value": "value", "valueMod": "valueModifier"};
 
-ZmFilterRule.IS_HEADER = {"from": true, "to": true, "cc": true, "subject": true};
+// mark certain conditions as headers
+ZmFilterRule.IS_HEADER = {};
+ZmFilterRule.IS_HEADER[ZmFilterRule.C_FROM]		= true;
+ZmFilterRule.IS_HEADER[ZmFilterRule.C_TO]		= true;
+ZmFilterRule.IS_HEADER[ZmFilterRule.C_CC]		= true;
+ZmFilterRule.IS_HEADER[ZmFilterRule.C_SUBJECT]	= true;
+
+// Actions
+var i = 1;
+ZmFilterRule.A_KEEP		= i++;
+ZmFilterRule.A_FOLDER	= i++;
+ZmFilterRule.A_DISCARD	= i++;
+ZmFilterRule.A_STOP		= i++;
+ZmFilterRule.A_FLAG		= i++;
+ZmFilterRule.A_TAG		= i++;
+
+ZmFilterRule.A_VALUE = {};
+ZmFilterRule.A_VALUE[ZmFilterRule.A_KEEP]		= "keep";
+ZmFilterRule.A_VALUE[ZmFilterRule.A_FOLDER]		= "fileinto";
+ZmFilterRule.A_VALUE[ZmFilterRule.A_DISCARD]	= "discard";
+ZmFilterRule.A_VALUE[ZmFilterRule.A_STOP]		= "stop";
+ZmFilterRule.A_VALUE[ZmFilterRule.A_FLAG]		= "flag";
+ZmFilterRule.A_VALUE[ZmFilterRule.A_TAG]		= "tag";
+
+ZmFilterRule.A_VALUE_MAP = {};
+for (var i in ZmFilterRule.A_VALUE)
+	ZmFilterRule.A_VALUE_MAP[ZmFilterRule.A_VALUE[i]] = i;
+
+ZmFilterRule.A_LABEL = {};
+ZmFilterRule.A_LABEL[ZmFilterRule.A_KEEP]		= ZmMsg.keepInInbox;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_FOLDER]		= ZmMsg.fileIntoFolder;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_DISCARD]	= ZmMsg.discard;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_STOP]		= ZmMsg.stopEvaluation;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_FLAG]		= ZmMsg.mark;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_TAG]		= ZmMsg.tagWith;
 
 /*
 * Actions
 *
 * The key is known as the action's "name". It may or may not take an argument.
 *
-* label		text to show in dialog for the action's name
-* param		type of input widget for the action's argument
+* param		[constant]		type of input widget for the action's argument
 */
-ZmFilterRule.ACTIONS = { 
-	keep: { 
-		label:		ZmMsg.keepInInbox
-	}, 
-	fileinto: {
-		label:		ZmMsg.fileIntoFolder, 
+ZmFilterRule.ACTIONS = {};
+ZmFilterRule.ACTIONS[ZmFilterRule.A_KEEP] = {
+};
+ZmFilterRule.ACTIONS[ZmFilterRule.A_FOLDER] = {
 		param:		ZmFilterRule.TYPE_FOLDER_PICKER
-	},
-	discard: {
-		label:		ZmMsg.discard
-	},
-	stop: {
-		label:		ZmMsg.stopEvaluation
-	},
-	flag: {
-		label:		ZmMsg.mark,
+};
+ZmFilterRule.ACTIONS[ZmFilterRule.A_DISCARD] = {
+};
+ZmFilterRule.ACTIONS[ZmFilterRule.A_STOP] = {
+};
+ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG] = {
 		param:		ZmFilterRule.TYPE_SELECT,
 		pOptions:	[{label: ZmMsg.asRead, value: "read"}, {label: ZmMsg.asFlagged, value: "flagged"}]
-	},
-	tag: {
-		label:		ZmMsg.tagWith, 
+};
+ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG] = {
 		param:		ZmFilterRule.TYPE_TAG_PICKER
-	}
 };
 
-ZmFilterRule.ACTIONS_LIST = ["keep", "fileinto", "discard", "stop", "flag", "tag"];
+ZmFilterRule.ACTIONS_LIST = [ZmFilterRule.A_KEEP, ZmFilterRule.A_DISCARD, ZmFilterRule.A_FOLDER,
+							 ZmFilterRule.A_TAG, ZmFilterRule.A_FLAG];
 
 ZmFilterRule.prototype.toString =
 function() {
@@ -328,8 +448,8 @@ function() {
 
 // placeholder rule used for adding a new rule
 ZmFilterRule.DUMMY_RULE = new ZmFilterRule;
-ZmFilterRule.DUMMY_RULE.conditions = [new ZmCondition("subject", ":contains")];
-ZmFilterRule.DUMMY_RULE.actions = [new ZmAction("keep"), new ZmAction("stop")];
+ZmFilterRule.DUMMY_RULE.conditions = [new ZmCondition(ZmFilterRule.C_SUBJECT, ":contains")];
+ZmFilterRule.DUMMY_RULE.actions = [new ZmAction(ZmFilterRule.A_KEEP)];
 
 /**
 * Creates a ZmCondition.
@@ -337,8 +457,8 @@ ZmFilterRule.DUMMY_RULE.actions = [new ZmAction("keep"), new ZmAction("stop")];
 * @class
 * ZmCondition represents a rule condition.
 *
-* @param subject			[string]	term to compare (subject)
-* @param comparator			[string]	type of comparison to make (verb)
+* @param subject			[constant]	term to compare (subject)
+* @param comparator			[constant]	type of comparison to make (verb)
 * @param value				[string]	value to compare against (object)
 * @param subjectModifier	[string]*	further detail for the subject
 * @param valueModifier		[string]*	further detail for the value
@@ -357,7 +477,7 @@ function ZmCondition(subject, comparator, value, subjectModifier, valueModifier)
 * @class
 * ZmAction represents a rule action.
 *
-* @param name	[string]	action name
+* @param name	[constant]	action name
 * @param arg	[string]*	optional argument
 */
 function ZmAction(name, arg) {

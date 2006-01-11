@@ -205,6 +205,9 @@ ZmFilterRules.prototype._handleResponseLoadRules =
 function(callback, result) {
 	
 	this._vector.removeAll();
+	this._ruleIdHash = {};
+	this._ruleNameHash = {};
+
 	var resp = result.getResponse().GetRulesResponse;
 
 	var rulesNode = resp.rules;
@@ -228,7 +231,7 @@ function(callback, result) {
 				
 			if (ruleNode.action) {
 				for (var j = 0; j < ruleNode.action.length; j++) {
-					var name = ruleNode.action[j].name;
+					var name = ZmFilterRule.A_VALUE_MAP[ruleNode.action[j].name];
 					var argNodes = ruleNode.action[j].arg;
 					var arg = null;
 					if (argNodes && argNodes.length > 0) {
@@ -285,21 +288,21 @@ function(index, notify, callback, errorCallback) {
 			var condition = conditions[c];
 			// condition element "c"
 			node = soapDoc.set("c", null, gNode);
-			var subject = condition.subject;
+			var subject = ZmFilterRule.C_VALUE[condition.subject];
 			var subjectMod = condition.subjectModifier;
-			var comp = condition.comparator;
+			var comp = ZmFilterRule.OP_VALUE[condition.comparator];
 			var value = condition.value;
 			var valueMod = condition.valueModifier;
 			// convert convenience headers
-			if (ZmFilterRule.IS_HEADER[subject]) {
+			if (ZmFilterRule.IS_HEADER[condition.subject]) {
 				// suppport address mod if present
 				if (subjectMod == ":localpart" || subjectMod == ":domain")
 					node.setAttribute("mod", subjectMod);
 				subjectMod = subject;
-				subject = "header";
-			} else if (subject == "attachment") {
+				subject = ZmFilterRule.C_VALUE[ZmFilterRule.C_HEADER];
+			} else if (condition.subject == ZmFilterRule.C_ATT) {
 				// attachment is weird, doesn't take an op
-				if (comp == "not :exists")
+				if (condition.comparator == ZmFilterRule.OP_NOT_EXISTS)
 					subject = "not attachment";
 				comp = "";
 			}
@@ -319,7 +322,7 @@ function(index, notify, callback, errorCallback) {
 		for (var a = 0; a < actions.length; a++) {
 			var action = actions[a];
 			node = soapDoc.set("action", null, ruleNode);
-			node.setAttribute("name", action.name);
+			node.setAttribute("name", ZmFilterRule.A_VALUE[action.name]);
 			if (action.arg)
 				soapDoc.set("arg", action.arg, node);
 		}
@@ -362,7 +365,7 @@ ZmFilterRules.prototype._handleResponseHandleErrorSaveRules =
 function() {
 	var prefController = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
 	var prefsView = prefController.getPrefsView();
-	if (prefsView && prefsView.get(ZmPrefView.FILTER_RULES))
+	if (prefsView && prefsView.getView(ZmPrefView.FILTER_RULES))
 		prefController.getFilterRulesController()._setListView();
 };
 
@@ -388,22 +391,24 @@ function(rule, index) {
 ZmFilterRules.prototype._createConditionFromNode = 
 function(node, rule) {
 	var name = node.name;
+	var subject = ZmFilterRule.C_VALUE_MAP[name];
 	var subjectMod = node.k0 ? node.k0.substring(2, node.k0.length - 2) : null;
+	var subjectModKey = ZmFilterRule.C_VALUE_MAP[subjectMod];
 	// convert convenience headers
-	if (name == "header" && ZmFilterRule.IS_HEADER[subjectMod]) {
-		name = subjectMod;
+	if (subjectModKey && (subject == ZmFilterRule.C_HEADER) && (ZmFilterRule.IS_HEADER[subjectMod])) {
+		subject = subjectModKey;
 		subjectMod = null;
 	}
-	var comparator = node.op;
+	var comparator = ZmFilterRule.OP_VALUE_MAP[node.op];
 	if (node.mod)
 		subjectMod = node.mod.substring(1, node.mod.length);
 	var value = node.k1 ? node.k1.substring(2, node.k1.length - 2) : null;
 	var valueMod = null;
-	if (name == "size" && value.match(/(K|M)$/)) {
+	if (subject == ZmFilterRule.C_SIZE && value.match(/(K|M)$/)) {
 		valueMod = value.substring(value.length - 2, 1);
 		value = value.substring(0, value.length - 2);
 	}
 
-	var condition = new ZmCondition(name, comparator, value, subjectMod);
+	var condition = new ZmCondition(subject, comparator, value, subjectMod);
 	rule.addCondition(condition);
 };
