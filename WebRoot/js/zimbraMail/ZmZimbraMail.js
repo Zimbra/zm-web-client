@@ -578,7 +578,8 @@ function(appName, view) {
 		this._activeApp = appName;
 		toolbar.setCurrentApp(appName);
 		toolbar.setViewTooltip(view, ZmMsg[ZmZimbraMail.VIEW_TT_KEY[appName]]);
-		this._appCtxt.getSearchController().setDefaultSearchType(ZmZimbraMail.DEFAULT_SEARCH[appName], true);
+		if (appName != ZmZimbraMail.MIXED_APP)
+			this._appCtxt.getSearchController().setDefaultSearchType(ZmZimbraMail.DEFAULT_SEARCH[appName], true);
 		this._checkOverviewLayout(true);
 		// activate current app
 		var app = this._apps[this._activeApp];
