@@ -100,11 +100,11 @@ ZmSchedTabViewPage.prototype.set =
 function(dateInfo, attendees) {
 	this._startDateField.value = dateInfo.startDate;
 	this._endDateField.value = dateInfo.endDate;
-	if (dateInfo.startTime && dateInfo.endTime) {
+	if (dateInfo.showTime) {
 		this._allDayCheckbox.checked = false;
 		this._showTimeFields(true);
-		this._startTimeSelect.setSelectedValue(dateInfo.startTime);
-		this._endTimeSelect.setSelectedValue(dateInfo.endTime);
+		this._startTimeSelect.setSelected(dateInfo.startHourIdx, dateInfo.startMinuteIdx, dateInfo.startAmPmIdx);
+		this._endTimeSelect.setSelected(dateInfo.endHourIdx, dateInfo.endMinuteIdx, dateInfo.endAmPmIdx);
 	} else {
 		this._allDayCheckbox.checked = true;
 		this._showTimeFields(false);
@@ -387,36 +387,18 @@ function() {
 	return html.join("");
 };
 
-// XXX: refactor this code since ZmApptTabViewPage uses similar?
 ZmSchedTabViewPage.prototype._createDwtObjects = 
 function() {
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
-	// create selects for Time section
-	this._startTimeSelect = new DwtSelect(this);
+
+	this._startTimeSelect = new ZmTimeSelect(this);
+	this._startTimeSelect.reparentHtmlElement(this._startTimeSelectId);
 	this._startTimeSelect.addChangeListener(timeSelectListener);
-	var timeOptions = ZmApptViewHelper.getTimeOptionValues();
-	if (timeOptions) {
-		for (var i = 0; i < timeOptions.length; i++) {
-			var option = timeOptions[i];
-			this._startTimeSelect.addOption(option.label, option.selected, option.value);
-		}
-	}
-	var startTimeCell = document.getElementById(this._startTimeSelectId);
-	if (startTimeCell)
-		startTimeCell.appendChild(this._startTimeSelect.getHtmlElement());
 	delete this._startTimeSelectId;
 
-	this._endTimeSelect = new DwtSelect(this);
+	this._endTimeSelect = new ZmTimeSelect(this);
 	this._endTimeSelect.addChangeListener(timeSelectListener);
-	if (timeOptions) {
-		for (var i = 0; i < timeOptions.length; i++) {
-			var option = timeOptions[i];
-			this._endTimeSelect.addOption(option.label, option.selected, option.value);
-		}
-	}
-	var endTimeCell = document.getElementById(this._endTimeSelectId);
-	if (endTimeCell)
-		endTimeCell.appendChild(this._endTimeSelect.getHtmlElement());
+	this._endTimeSelect.reparentHtmlElement(this._endTimeSelectId);
 	delete this._endTimeSelectId;
 
 	// create mini calendar buttons
@@ -431,10 +413,7 @@ function() {
 	this._navToolbar._textButton.getHtmlElement().className = "ZmSchedTabViewPageDate";
 	this._navToolbar.addSelectionListener(ZmOperation.PAGE_BACK, navBarListener);
 	this._navToolbar.addSelectionListener(ZmOperation.PAGE_FORWARD, navBarListener);
-	// reparent
-	var navbarCell = document.getElementById(this._navToolbarId);
-	if (navbarCell)
-		navbarCell.appendChild(this._navToolbar.getHtmlElement());
+	this._navToolbar.reparentHtmlElement(this._navToolbarId);
 	delete this._navToolbarId;
 
 	// create DwtInputField's
@@ -786,49 +765,15 @@ function(ev) {
 	this._apptTab.updateDateField(this._startDateField.value, this._endDateField.value);
 };
 
-// XXX: refactor this code since ZmApptTabViewPage uses similar?
 ZmSchedTabViewPage.prototype._timeChangeListener =
 function(ev) {
-	var selectedObj = ev._args.selectObj;
-
-	var sd = new Date(this._startDateField.value);
-	var ed = new Date(this._endDateField.value);
-
-	// only attempt to correct the times if dates are equal (otherwise all bets are off)
-	if (sd.valueOf() == ed.valueOf()) {
-		var numOptions = this._startTimeSelect.size();
-
-		if (selectedObj == this._startTimeSelect) {
-			var startIdx = this._startTimeSelect.getIndexForValue(selectedObj.getValue());
-			var endIdx = this._endTimeSelect.getIndexForValue(this._endTimeSelect.getValue());
-			if (endIdx <= startIdx) {
-				var newIdx = startIdx+1;
-				if (newIdx == numOptions) {
-					newIdx = 0;
-					var ed = new Date(this._endDateField.value);
-					ed.setDate(ed.getDate()+1);
-					this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
-				}
-				var newIdx = ((startIdx+1) == numOptions) ? 0 : (startIdx+1);
-				this._endTimeSelect.setSelected(newIdx);
-			}
-		} else {
-			var startIdx = this._startTimeSelect.getIndexForValue(this._startTimeSelect.getValue());
-			var endIdx = this._endTimeSelect.getIndexForValue(selectedObj.getValue());
-			if (startIdx > endIdx) {
-				var newIdx = endIdx == 0 ? numOptions-1 : endIdx-1;
-				this._startTimeSelect.setSelected(newIdx);
-				if (newIdx == (numOptions-1)) {
-					var sd = new Date(this._startDateField.value);
-					sd.setDate(sd.getDate()-1);
-					this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
-				}
-			}
-		}
-	}
-
 	// always update the appt tab view's time fields
-	this._apptTab.updateTimeField(this._startTimeSelect.getValue(), this._endTimeSelect.getValue());
+	this._apptTab.updateTimeField(this._startTimeSelect.getSelectedHourIdx(), 
+								  this._startTimeSelect.getSelectedMinuteIdx(), 
+								  this._startTimeSelect.getSelectedAmPmIdx(), 
+								  this._endTimeSelect.getSelectedHourIdx(),
+								  this._endTimeSelect.getSelectedMinuteIdx(),
+								  this._endTimeSelect.getSelectedAmPmIdx());
 };
 
 ZmSchedTabViewPage.prototype._colorSchedule = 
@@ -842,10 +787,10 @@ function(status, slots, table, sched) {
 			var sd = new Date(slots[i].s);
 			var ed = new Date(slots[i].e);
 			var startIdx = sd.getHours() * 2;
-			if (sd.getMinutes() == "30")
+			if (sd.getMinutes() >= 30)
 				startIdx++;
 			var endIdx = ed.getHours() * 2;
-			if (ed.getMinutes() == "30" || ed.getMinutes() == "59")
+			if (ed.getMinutes() >= 30)
 				endIdx++;
 
 			for (j = startIdx; j <= endIdx; j++) {
@@ -895,14 +840,10 @@ function(result) {
 			sched.uid = usr.id;
 
 			// next, for each free/busy status, color the row for given start/end times
-			if (usr.n)
-				this._colorSchedule(ZmSchedTabViewPage.STATUS_UNKNOWN, usr.n, table, sched);
-			if (usr.t)
-				this._colorSchedule(ZmSchedTabViewPage.STATUS_TENTATIVE, usr.t, table, sched);
-			if (usr.b)
-				this._colorSchedule(ZmSchedTabViewPage.STATUS_BUSY, usr.b, table, sched);
-			if (usr.u)
-				this._colorSchedule(ZmSchedTabViewPage.STATUS_OUT, usr.u, table, sched);
+			if (usr.n) this._colorSchedule(ZmSchedTabViewPage.STATUS_UNKNOWN, usr.n, table, sched);
+			if (usr.t) this._colorSchedule(ZmSchedTabViewPage.STATUS_TENTATIVE, usr.t, table, sched);
+			if (usr.b) this._colorSchedule(ZmSchedTabViewPage.STATUS_BUSY, usr.b, table, sched);
+			if (usr.u) this._colorSchedule(ZmSchedTabViewPage.STATUS_OUT, usr.u, table, sched);
 
 			// if all we got back was free and nothing else, repaint all attendees row
 			if (usr.f && usr.n == null && usr.t == null && usr.b == null && usr.u == null)

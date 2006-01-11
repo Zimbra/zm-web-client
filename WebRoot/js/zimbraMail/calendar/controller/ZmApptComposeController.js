@@ -203,13 +203,12 @@ function(skipNotify) {
 };
 
 ZmApptComposeController.prototype._showErrorMessage = 
-function() {
+function(errorMsg) {
 	if (this._apptErrorDialog == null) {
 		this._apptErrorDialog = new DwtMessageDialog(this._shell);
 	}
 
-	// XXX: temp error msg (until we get proper error handling mechanism, ala tooltips)
-	var msg = "Cannot save appointment. You have errors that must be corrected. Please correct them and try again or contact your System Administrator.";
+	var msg = ZmMsg.errorSavingAppt + (errorMsg ? (":<p>" + errorMsg) : ".");
 	this._apptErrorDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	this._apptErrorDialog.popup();
 };
@@ -229,7 +228,8 @@ function() {
 // Save button was pressed
 ZmApptComposeController.prototype._saveListener =
 function(ev) {
-	this._doSave();
+	if (this._doSave() === false)
+		return;
 	this._app.popView(true);
 };
 
@@ -304,10 +304,15 @@ function() {
 ZmApptComposeController.prototype._doSave =
 function() {
 	// check if all fields are populated w/ valid values
-	if (this._apptView.isValid()) {
-		this.saveAppt();
-	} else {
-		this._showErrorMessage();
+	try {
+		if (this._apptView.isValid()) {
+			this.saveAppt();
+		}
+	} catch(ex) {
+		if (typeof ex == "string") {
+			this._showErrorMessage(ex);
+		}
+		return false;
 	}
 };
 

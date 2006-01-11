@@ -381,7 +381,7 @@ function(ev) {
 		this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(contact);
 	} else if (id == ZmOperation.NEW_APPT) {
 		var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
-		cc.newAppointment();
+		cc.newAppointment(null, null, null, new Date());
 	} else if (id == ZmOperation.NEW_FOLDER) {
 		this._showDialog(this._appCtxt.getNewFolderDialog(), this._newFolderCallback);
 	} else if (id == ZmOperation.NEW_TAG) {
