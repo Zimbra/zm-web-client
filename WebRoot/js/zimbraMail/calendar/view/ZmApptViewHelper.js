@@ -55,31 +55,6 @@ ZmApptViewHelper.REPEAT_OPTIONS = [
 	{ label: ZmMsg.everyYear, 			value: "YEA", 	selected: false },
 	{ label: ZmMsg.custom, 				value: "CUS", 	selected: false }];
 
-// singleton options value
-ZmApptViewHelper.TIME_OPTION_VALUES = null;
-ZmApptViewHelper.getTimeOptionValues = 
-function() {	
-	if (ZmApptViewHelper.TIME_OPTION_VALUES)
-		return ZmApptViewHelper.TIME_OPTION_VALUES;
-
-	ZmApptViewHelper.TIME_OPTION_VALUES = new Array();
-	
-	var today = new Date((new Date()).setHours(0,0,0,0));
-	var todayDate = today.getDate();
-
-	while (today.getDate() == todayDate) {
-		var props = new Object();
-		props["label"] = AjxDateUtil.computeTimeString(today);
-		props["value"] = today.UTC;
-		props["selected"] = false;
-		ZmApptViewHelper.TIME_OPTION_VALUES.push(props);
-		
-		// increment date by 30 mins
-		today.setMinutes(today.getMinutes() + 30);
-	}
-	return ZmApptViewHelper.TIME_OPTION_VALUES;
-};
-
 /**
  * creates a new button with a DwtCalendar as its menu
  * @document 					the DOM document
@@ -115,30 +90,49 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 };
 
 ZmApptViewHelper.resetTimeSelect = 
-function(appt, startTimeSelect, endTimeSelect, useNowDate) {
-	var startIdx = 0;
-	var endIdx = 0;
-	
-	if (useNowDate) {
-		var now = new Date();
-		var nextHour = now.getMinutes() > 30;
-		startIdx = now.getHours() * 2 + (now.getMinutes() >= 30 ? 2 : 1);
-		endIdx = startIdx + 1;
-		// normalize
-		var timeOptions = ZmApptViewHelper.getTimeOptionValues();
-		if (startIdx == timeOptions.length) {
-			startIdx = 0;
-			endIdx = 1;
-		}
-	} else {
-		var startDate = appt.getStartDate();
-		startIdx = (startDate.getHours() * 2) + (startDate.getMinutes() >= 30 ? 1 : 0);
-	
-		var endDate = appt.getEndDate();
-		endIdx = (endDate.getHours() * 2) + (endDate.getMinutes() >= 30 ? 1 : 0);
+function(appt, startTimeSelect, endTimeSelect) {
+	var startHourIdx = 0;
+	var startMinuteIdx = 0;
+	var startAmPmIdx = 0;
+
+	var endHourIdx = 0;
+	var endMinuteIdx = 0;
+	var endAmPmIdx = 0;
+
+	var isLocale24Hour = startTimeSelect.isLocale24Hour();
+
+	var sd = appt.getStartDate();
+	var ed = appt.getEndDate();
+
+	// calc. the hours index for both start/end times
+	var startHours = sd.getHours();
+	if (!isLocale24Hour && startHours > 12)
+		startHourIdx = startHours - 13;
+	else if (!isLocale24Hour && startHours == 0)
+		startHourIdx = startTimeSelect.getHourSelectSize()-1;
+	else
+		startHourIdx = isLocale24Hour ? startHours : startHours-1;
+
+	var endHours = ed.getHours();
+	if (!isLocale24Hour && endHours > 12)
+		endHourIdx = endHours - 13;
+	else if (!isLocale24Hour && endHours == 0)
+		endHourIdx = endTimeSelect.getHourSelectSize()-1;
+	else
+		endHourIdx = isLocale24Hour ? endHours : endHours-1;
+
+	// calc. the minutes index for both start/end times
+	startMinuteIdx = sd.getMinutes() / 5;
+	endMinuteIdx = ed.getMinutes() / 5;
+
+	// calc. the am/pm index for both start end times if applicable
+	if (!isLocale24Hour) {
+		startAmPmIdx = sd.getHours() >= 12 ? 1 : 0;
+		endAmPmIdx = ed.getHours() >= 12 ? 1 : 0;
 	}
-	startTimeSelect.setSelected(startIdx);
-	endTimeSelect.setSelected(endIdx);
+
+	startTimeSelect.setSelected(startHourIdx, startMinuteIdx, startAmPmIdx);
+	endTimeSelect.setSelected(endHourIdx, endMinuteIdx, endAmPmIdx);
 };
 
 ZmApptViewHelper.handleDateChange = 
@@ -237,6 +231,15 @@ function(recurrences, startDate) {
 		}
 	}
 	return str.join("");
+};
+
+ZmApptViewHelper._buildTimeFromSelect = 
+function(hourSelectObj, minSelectObj, amPmSelectObj) {
+	var timeStr = hourSelectObj.getValue() + ":" + minSelectObj.getValue();
+	if (amPmSelectObj) {
+		timeStr += (" " + amPmSelectObj.getValue());
+	}
+	return timeStr;
 };
 
 ZmApptViewHelper._ruleToString = 
@@ -484,4 +487,161 @@ function(recurrences) {
 		}
 	}
 	return repeatWeekday;
+};
+
+
+/**
+* Creates up to three separate DwtSelects for the time (hour, minute, am|pm)
+* Showing the AM|PM select widget is dependent on the user's locale
+* 
+* XXX: NOT SURE IF THIS SHOULD BE SPLIT INTO A NEW FILE JUST YET
+*
+* @author Parag Shah
+* @param parent		the parent widget
+*/
+function ZmTimeSelect(parent) {
+	DwtComposite.call(this, parent);
+
+	this._isLocale24Hour = true;
+	this._createSelects();
+};
+
+ZmTimeSelect.prototype = new DwtComposite;
+ZmTimeSelect.prototype.constructor = ZmTimeSelect;
+
+ZmTimeSelect.prototype.getValue =
+function() {
+	return ZmApptViewHelper._buildTimeFromSelect(this._hourSelect, this._minuteSelect, this._amPmSelect);
+};
+
+ZmTimeSelect.prototype.setSelected = 
+function(hourIdx, minuteIdx, amPmIdx) {
+	this._hourSelect.setSelected(hourIdx);
+	this._minuteSelect.setSelected(minuteIdx);
+	if (!this._isLocale24Hour) {
+		this._amPmSelect.setSelected(amPmIdx);
+	}
+};
+
+ZmTimeSelect.prototype.addChangeListener = 
+function(listener) {
+	this._hourSelect.addChangeListener(listener);
+	this._minuteSelect.addChangeListener(listener);
+	if (this._amPmSelect)
+		this._amPmSelect.addChangeListener(listener);
+};
+
+ZmTimeSelect.prototype.isLocale24Hour = 
+function() {
+	return this._isLocale24Hour;
+};
+
+ZmTimeSelect.prototype.getHourSelectSize = 
+function() {	
+	return this._hourSelect.size();
+};
+
+ZmTimeSelect.prototype.getMinuteSelectSize = 
+function() {	
+	return this._minuteSelect.size();
+};
+
+ZmTimeSelect.prototype.getSelectedHourIdx = 
+function() {
+	return this._hourSelect.getSelectedIndex();
+};
+
+ZmTimeSelect.prototype.getSelectedMinuteIdx = 
+function() {
+	return this._minuteSelect.getSelectedIndex();
+};
+
+ZmTimeSelect.prototype.getSelectedAmPmIdx = 
+function() {
+	return this._amPmSelect ? this._amPmSelect.getSelectedIndex() : 0;
+};
+
+ZmTimeSelect.prototype._createSelects =
+function() {
+	this._hourSelectId = Dwt.getNextId();
+	this._minuteSelectId = Dwt.getNextId();
+	this._amPmSelectId = Dwt.getNextId();
+
+	// get the time formatter for the user's locale
+	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+	var hourSegmentIdx = 0;
+	var minuteSegmentIdx = 0;
+
+	var html = new Array();
+	var i = 0;
+
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
+
+	// walk time formatter's segments array to render each segment part in the right order
+	for (var j = 0; j < timeFormatter._segments.length; j++) {
+		var segmentStr = timeFormatter._segments[j]._s;
+
+		if (timeFormatter._segments[j] instanceof AjxFormat.TextSegment) {
+			var trimStr = AjxStringUtil.trim(segmentStr);
+			if (trimStr.length) {
+				html[i++] = "<td>"
+				html[i++] = segmentStr;
+				html[i++] = "</td>";
+			}
+		} else if (segmentStr.charAt(0) == "h" || segmentStr.charAt(0) == "H") {
+			hourSegmentIdx = j;
+			html[i++] = "<td id='"
+			html[i++] = this._hourSelectId;
+			html[i++] = "'></td>";
+		} else if (segmentStr.charAt(0) == "m") {
+			minuteSegmentIdx = j;
+			html[i++] = "<td id='"
+			html[i++] = this._minuteSelectId;
+			html[i++] = "'></td>";
+		} else if (segmentStr == "a") {	
+			this._isLocale24Hour = false;
+			html[i++] = "<td id='"
+			html[i++] = this._amPmSelectId;
+			html[i++] = "'></td>";
+		}
+	}
+	
+	html[i++] = "</tr></table>";
+
+	// append html template to DOM
+	this.getHtmlElement().innerHTML = html.join("");
+
+	// init vars for adding hour DwtSelect
+	var now = new Date();
+	var start = this._isLocale24Hour ? 0 : 1;
+	var limit = this._isLocale24Hour ? 24 : 13;
+
+	// create new DwtSelect for hour slot
+	this._hourSelect = new DwtSelect(this);
+	for (var i = start; i < limit; i++) {
+		now.setHours(i);
+		var label = timeFormatter._segments[hourSegmentIdx].format(now);
+		this._hourSelect.addOption(label, false, i);
+	}
+	this._hourSelect.reparentHtmlElement(this._hourSelectId);
+	delete this._hourSelectId;
+
+	// create new DwtSelect for minute slot
+	this._minuteSelect = new DwtSelect(this);
+	for (var i = 0; i < 60; i+=5) {
+		now.setMinutes(i);
+		var label = timeFormatter._segments[minuteSegmentIdx].format(now);
+		this._minuteSelect.addOption(label, false, i);
+	}
+	this._minuteSelect.reparentHtmlElement(this._minuteSelectId);
+	delete this._minuteSelectId;
+
+	// if locale is 12-hour time, add AM|PM DwtSelect
+	if (!this._isLocale24Hour) {
+		this._amPmSelect = new DwtSelect(this);
+		this._amPmSelect.addOption(I18nMsg["periodAm"], false, "AM");
+		this._amPmSelect.addOption(I18nMsg["periodPm"], false, "PM");
+		this._amPmSelect.reparentHtmlElement(this._amPmSelectId);
+		delete this._amPmSelectId;
+	}
 };

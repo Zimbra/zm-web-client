@@ -206,13 +206,13 @@ function() {
 
 ZmApptTabViewPage.prototype.isValid =
 function() {
+	var errorMsg = null;
 
 	// check for required subject
 	var subj = AjxStringUtil.trim(this._subjectField.getValue());
-	var isValid = subj != null && subj.length > 0;
 
-	// check proper dates..
-	if (isValid) {
+	if (subj != null && subj.length > 0) {
+		// check proper dates..
 		var sd = this._startDateField.value;
 		var ed = this._endDateField.value;
 		if (!this._allDayCheckbox.checked) {
@@ -221,14 +221,21 @@ function() {
 		}
 		var startDate = new Date(sd);
 		var endDate = new Date(ed);
-		isValid = startDate.valueOf() <= endDate.valueOf();
+
+		if (startDate.valueOf() > endDate.valueOf()) {
+			errorMsg = ZmMsg.errorInvalidDates;
+		} else {
+			// TODO: check proper attendees
+		}
+	} else {
+		errorMsg = ZmMsg.errorMissingSubject;
 	}
 
-	if (isValid) {
-		// TODO: check proper attendees
+	if (errorMsg) {
+		throw errorMsg;
 	}
 
-	return isValid;
+	return true;
 };
 
 ZmApptTabViewPage.prototype.getComposeMode =
@@ -257,9 +264,9 @@ function(isAllDay) {
 };
 
 ZmApptTabViewPage.prototype.updateTimeField =
-function(newStartValue, newEndValue) {
-	this._startTimeSelect.setSelectedValue(newStartValue);
-	this._endTimeSelect.setSelectedValue(newEndValue);
+function(startHourIdx, startMinuteIdx, startAmPmIdx, endHourIdx, endMinuteIdx, endAmPmIdx) {
+	this._startTimeSelect.setSelected(startHourIdx, startMinuteIdx, startAmPmIdx);
+	this._endTimeSelect.setSelected(endHourIdx, endMinuteIdx, endAmPmIdx);
 };
 
 ZmApptTabViewPage.prototype.updateAttendeesField =
@@ -376,8 +383,14 @@ function() {
 	dateInfo.startDate = this._startDateField.value;
 	dateInfo.endDate = this._endDateField.value;
 	if (!this._allDayCheckbox.checked) {
-		dateInfo.startTime = this._startTimeSelect.getValue();
-		dateInfo.endTime = this._endTimeSelect.getValue();
+		dateInfo.showTime = true;
+
+		dateInfo.startHourIdx = this._startTimeSelect.getSelectedHourIdx();
+		dateInfo.startMinuteIdx = this._startTimeSelect.getSelectedMinuteIdx();
+		dateInfo.startAmPmIdx = this._startTimeSelect.getSelectedAmPmIdx();
+		dateInfo.endHourIdx = this._endTimeSelect.getSelectedHourIdx();
+		dateInfo.endMinuteIdx = this._endTimeSelect.getSelectedMinuteIdx();
+		dateInfo.endAmPmIdx = this._endTimeSelect.getSelectedAmPmIdx();
 	}
 	return dateInfo;
 };
@@ -414,7 +427,8 @@ function(appt, mode) {
 	}
 
 	// if all day appt, set time anyway in case user changes mind
-	ZmApptViewHelper.resetTimeSelect(appt, this._startTimeSelect, this._endTimeSelect, isAllDayAppt);
+	ZmApptViewHelper.resetTimeSelect(appt, this._startTimeSelect, this._endTimeSelect);
+
 	this._resetTimezoneSelect(appt, isAllDayAppt);
 	this._resetCalendarSelect(appt, mode);
 
@@ -527,7 +541,6 @@ function() {
 ZmApptTabViewPage.prototype._createApptHtml =
 function() {
 	var dims = this.parent.getSize();
-	var half = "50%";
 	this.setSize(dims.x-2, dims.y-30);
 	this._notesHtmlEditorId = Dwt.getNextId();
 
@@ -536,11 +549,8 @@ function() {
 
 	html[i++] = "<table border=0 style='table-layout:fixed; height:";
 	html[i++] = dims.y-30;
-	html[i++] = "px'><colgroup><col width=";
-	html[i++] = half;
-	html[i++] = "><col width=";
-	html[i++] = half;
-	html[i++] = "></colgroup><tr style='height:110px'><td valign=top><fieldset";
+	html[i++] = "px'><colgroup><col width='315'><col></colgroup>";
+	html[i++] = "<tr style='height:110px'><td valign=top><fieldset";
 	if (AjxEnv.isMozilla)
 		html[i++] = " style='border: 1px dotted #555555'";
 	html[i++] = "><legend style='color:#555555'>";
@@ -576,7 +586,7 @@ function() {
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.ONEXIT_VALIDATION});
 	this._subjectField.setRequired();
-	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
+	Dwt.setSize(this._subjectField.getInputElement(), "235", "22px");
 	this._subjectField.reparentHtmlElement(this._subjectFieldId);
 	delete this._subjectFieldId;
 
@@ -584,7 +594,7 @@ function() {
 											initialValue:null, size:null, maxLen:null,
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.ONEXIT_VALIDATION});
-	Dwt.setSize(this._locationField.getInputElement(), "100%", "22px");
+	Dwt.setSize(this._locationField.getInputElement(), "235", "22px");
 	this._locationField.reparentHtmlElement(this._locationFieldId);
 	delete this._locationFieldId;
 };
@@ -593,9 +603,7 @@ ZmApptTabViewPage.prototype._createSelects =
 function() {
 	// create selects for details section
 	this._calendarSelect = new DwtSelect(this);
-	var calCell = document.getElementById(this._calSelectId);
-	if (calCell)
-		calCell.appendChild(this._calendarSelect.getHtmlElement());
+	this._calendarSelect.reparentHtmlElement(this._calSelectId);
 	delete this._calSelectId;
 
 	this._showAsSelect = new DwtSelect(this);
@@ -603,39 +611,15 @@ function() {
 		var option = ZmApptTabViewPage.SHOWAS_OPTIONS[i];
 		this._showAsSelect.addOption(option.label, option.selected, option.value);
 	}
-	var showAsCell = document.getElementById(this._showAsSelectId);
-	if (showAsCell)
-		showAsCell.appendChild(this._showAsSelect.getHtmlElement());
-	this._showAsSelect.setSize("85"); 											// XXX: hardcode width for now
+	this._showAsSelect.reparentHtmlElement(this._showAsSelectId);
 	delete this._showAsSelectId;
 
-	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
-	// create selects for Time section
-	this._startTimeSelect = new DwtSelect(this);
-	this._startTimeSelect.addChangeListener(timeSelectListener);
-	var timeOptions = ZmApptViewHelper.getTimeOptionValues();
-	if (timeOptions) {
-		for (var i = 0; i < timeOptions.length; i++) {
-			var option = timeOptions[i];
-			this._startTimeSelect.addOption(option.label, option.selected, option.value);
-		}
-	}
-	var startTimeCell = document.getElementById(this._startTimeSelectId);
-	if (startTimeCell)
-		startTimeCell.appendChild(this._startTimeSelect.getHtmlElement());
+	this._startTimeSelect = new ZmTimeSelect(this);
+	this._startTimeSelect.reparentHtmlElement(this._startTimeSelectId);
 	delete this._startTimeSelectId;
 
-	this._endTimeSelect = new DwtSelect(this);
-	this._endTimeSelect.addChangeListener(timeSelectListener);
-	if (timeOptions) {
-		for (var i = 0; i < timeOptions.length; i++) {
-			var option = timeOptions[i];
-			this._endTimeSelect.addOption(option.label, option.selected, option.value);
-		}
-	}
-	var endTimeCell = document.getElementById(this._endTimeSelectId);
-	if (endTimeCell)
-		endTimeCell.appendChild(this._endTimeSelect.getHtmlElement());
+	this._endTimeSelect = new ZmTimeSelect(this);
+	this._endTimeSelect.reparentHtmlElement(this._endTimeSelectId);
 	delete this._endTimeSelectId;
 
 	this._tzoneSelect = new DwtSelect(this);
@@ -644,9 +628,7 @@ function() {
 		this._tzoneSelect.addOption(timezones[i].label, false, timezones[i].value);
 	// init timezone to the local machine's time zone
 	this._tzoneSelect.setSelectedValue(ZmTimezones.guessMachineTimezone());
-	var endTZoneCell = document.getElementById(this._tzoneSelectId);
-	if (endTZoneCell)
-		endTZoneCell.appendChild(this._tzoneSelect.getHtmlElement());
+	this._tzoneSelect.reparentHtmlElement(this._tzoneSelectId);
 	this._tzoneSelect.setSize("100"); 											// XXX: hardcode width for now
 	delete this._tzoneSelectId;
 
@@ -656,9 +638,7 @@ function() {
 		var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
 		this._repeatSelect.addOption(option.label, option.selected, option.value);
 	}
-	var repeatCell = document.getElementById(this._repeatSelectId);
-	if (repeatCell)
-		repeatCell.appendChild(this._repeatSelect.getHtmlElement());
+	this._repeatSelect.reparentHtmlElement(this._repeatSelectId);
 	delete this._repeatSelectId;
 };
 
@@ -675,10 +655,8 @@ function() {
 	this._attendeesButton.setText(ZmMsg.attendees + "...");
 	this._attendeesButton.setSize(80);
 	this._attendeesButton.addSelectionListener(this._attendeesBtnListener);
-	// reparent
-	var attendeesButtonCell = document.getElementById(this._attendeesBtnId);
-	if (attendeesButtonCell)
-		attendeesButtonCell.appendChild(this._attendeesButton.getHtmlElement());
+	// cleanup...
+	this._attendeesButton.reparentHtmlElement(this._attendeesBtnId);
 	delete this._attendeesBtnId;
 };
 
@@ -824,9 +802,7 @@ ZmApptTabViewPage.prototype._initNotesHtmlEditor =
 function() {
 	// add notes html editor
 	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode, this._appCtxt);
-	var notesHtmlEditorDiv = document.getElementById(this._notesHtmlEditorId);
-	if (notesHtmlEditorDiv)
-		notesHtmlEditorDiv.appendChild(this._notesHtmlEditor.getHtmlElement());
+	this._notesHtmlEditor.reparentHtmlElement(this._notesHtmlEditorId);
 	delete this._notesHtmlEditorId;
 };
 
@@ -1154,47 +1130,6 @@ function(ev) {
 		if (sd.valueOf() > ev.detail.valueOf())
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
-	}
-};
-
-ZmApptTabViewPage.prototype._timeChangeListener =
-function(ev) {
-	var selectedObj = ev._args.selectObj;
-
-	var sd = new Date(this._startDateField.value);
-	var ed = new Date(this._endDateField.value);
-
-	// only attempt to correct the times if dates are equal (otherwise all bets are off)
-	if (sd.valueOf() == ed.valueOf()) {
-		var numOptions = this._startTimeSelect.size();
-
-		if (selectedObj == this._startTimeSelect) {
-			var startIdx = this._startTimeSelect.getIndexForValue(selectedObj.getValue());
-			var endIdx = this._endTimeSelect.getIndexForValue(this._endTimeSelect.getValue());
-			if (endIdx <= startIdx) {
-				var newIdx = startIdx+1;
-				if (newIdx == numOptions) {
-					newIdx = 0;
-					var ed = new Date(this._endDateField.value);
-					ed.setDate(ed.getDate()+1);
-					this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
-				}
-				var newIdx = ((startIdx+1) == numOptions) ? 0 : (startIdx+1);
-				this._endTimeSelect.setSelected(newIdx);
-			}
-		} else {
-			var startIdx = this._startTimeSelect.getIndexForValue(this._startTimeSelect.getValue());
-			var endIdx = this._endTimeSelect.getIndexForValue(selectedObj.getValue());
-			if (startIdx > endIdx) {
-				var newIdx = endIdx == 0 ? numOptions-1 : endIdx-1;
-				this._startTimeSelect.setSelected(newIdx);
-				if (newIdx == (numOptions-1)) {
-					var sd = new Date(this._startDateField.value);
-					sd.setDate(sd.getDate()-1);
-					this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
-				}
-			}
-		}
 	}
 };
 

@@ -95,7 +95,7 @@ function(appt) {
 	var isAllDay = appt.isAllDayEvent();
 	this._showTimeFields(!isAllDay);
 	if (!isAllDay)
-		ZmApptViewHelper.resetTimeSelect(appt, this._startTimeSelect, this._endTimeSelect, false);
+		ZmApptViewHelper.resetTimeSelect(appt, this._startTimeSelect, this._endTimeSelect);
 	this._resetCalendarSelect(appt);
 	this._repeatSelect.setSelectedValue("NON");
 	this._repeatDescField.innerHTML = "";
@@ -137,9 +137,9 @@ function() {
 ZmApptQuickAddDialog.prototype.isValid = 
 function() {
 	var subj = AjxStringUtil.trim(this._subjectField.getValue());
-	var isValid = subj && subj.length > 0;
+	var errorMsg = null;
 
-	if (isValid) {
+	if (subj && subj.length > 0) {
 		// check proper dates..
 		var sd = this._startDateField.value;
 		var ed = this._endDateField.value;
@@ -150,10 +150,19 @@ function() {
 		}
 		var startDate = new Date(sd);
 		var endDate = new Date(ed);
-		isValid = startDate.valueOf() <= endDate.valueOf();
+
+		if (startDate.valueOf() > endDate.valueOf()) {
+			errorMsg = ZmMsg.errorInvalidDates;
+		}
+	} else {
+		errorMsg = ZmMsg.errorMissingSubject;
 	}
 
-	return isValid;
+	if (errorMsg) {
+		throw errorMsg;
+	}
+
+	return true;
 };
 
 ZmApptQuickAddDialog.prototype.isDirty = 
@@ -282,33 +291,13 @@ function() {
 	this._startDateButton = ZmApptViewHelper.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener, true);
 	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener, true);
 
-	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 	// create selects for Time section
-	this._startTimeSelect = new DwtSelect(this);
-	this._startTimeSelect.addChangeListener(timeSelectListener);
-	var timeOptions = ZmApptViewHelper.getTimeOptionValues();
-	if (timeOptions) {
-		for (var i = 0; i < timeOptions.length; i++) {
-			var option = timeOptions[i];
-			this._startTimeSelect.addOption(option.label, option.selected, option.value);
-		}
-	}
-	var startTimeCell = document.getElementById(this._startTimeSelectId);
-	if (startTimeCell)
-		startTimeCell.appendChild(this._startTimeSelect.getHtmlElement());
+	this._startTimeSelect = new ZmTimeSelect(this);
+	this._startTimeSelect.reparentHtmlElement(this._startTimeSelectId);
 	delete this._startTimeSelectId;
 
-	this._endTimeSelect = new DwtSelect(this);
-	this._endTimeSelect.addChangeListener(timeSelectListener);
-	if (timeOptions) {
-		for (var i = 0; i < timeOptions.length; i++) {
-			var option = timeOptions[i];
-			this._endTimeSelect.addOption(option.label, option.selected, option.value);
-		}
-	}
-	var endTimeCell = document.getElementById(this._endTimeSelectId);
-	if (endTimeCell)
-		endTimeCell.appendChild(this._endTimeSelect.getHtmlElement());
+	this._endTimeSelect = new ZmTimeSelect(this);
+	this._endTimeSelect.reparentHtmlElement(this._endTimeSelectId);
 	delete this._endTimeSelectId;
 
 	this._repeatSelect = new DwtSelect(this);
@@ -437,47 +426,6 @@ function(ev) {
 		if (sd.valueOf() > ev.detail.valueOf())
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
-	}
-};
-
-ZmApptQuickAddDialog.prototype._timeChangeListener = 
-function(ev) {
-	var selectedObj = ev._args.selectObj;
-
-	var sd = new Date(this._startDateField.value);
-	var ed = new Date(this._endDateField.value);
-
-	// only attempt to correct the times if dates are equal (otherwise all bets are off)
-	if (sd.valueOf() == ed.valueOf()) {
-		var numOptions = this._startTimeSelect.size();
-
-		if (selectedObj == this._startTimeSelect) {
-			var startIdx = this._startTimeSelect.getIndexForValue(selectedObj.getValue());
-			var endIdx = this._endTimeSelect.getIndexForValue(this._endTimeSelect.getValue());
-			if (endIdx <= startIdx) {
-				var newIdx = startIdx+1;
-				if (newIdx == numOptions) {
-					newIdx = 0;
-					var ed = new Date(this._endDateField.value);
-					ed.setDate(ed.getDate()+1);
-					this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
-				}
-				var newIdx = ((startIdx+1) == numOptions) ? 0 : (startIdx+1);
-				this._endTimeSelect.setSelected(newIdx);
-			}
-		} else {
-			var startIdx = this._startTimeSelect.getIndexForValue(this._startTimeSelect.getValue());
-			var endIdx = this._endTimeSelect.getIndexForValue(selectedObj.getValue());
-			if (startIdx > endIdx) {
-				var newIdx = endIdx == 0 ? numOptions-1 : endIdx-1;
-				this._startTimeSelect.setSelected(newIdx);
-				if (newIdx == (numOptions-1)) {
-					var sd = new Date(this._startDateField.value);
-					sd.setDate(sd.getDate()-1);
-					this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
-				}
-			}
-		}
 	}
 };
 
