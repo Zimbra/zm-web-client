@@ -421,14 +421,8 @@ function(item) {
 		} else if (tagEvent == ZmEvent.E_TAGS && !tagAdded) {
 			this._doTag(items, item.getData(Dwt.KEY_OBJECT), false);
 		} else if (tagEvent == ZmEvent.E_REMOVE_ALL) {
-			// XXX: remove this once bug 607 is fixed
-			if (this instanceof ZmConvListController) {
-				var tagList = item.getData(Dwt.KEY_OBJECT);
-				for (var i = 0; i < tagList.length; i++)
-					this._doTag(items, this._tagList.getById(tagList[i]), false);
-			} else {
-				this._doRemoveAllTags(items);
-			}
+			// bug fix #607
+			this._doRemoveAllTags(items);
 		}
 	}
 }
