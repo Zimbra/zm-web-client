@@ -55,8 +55,8 @@ function() {
 // Public methods
 
 ZmMixedController.prototype.show =
-function(searchResults, searchString) {
-	ZmListController.prototype.show.call(this, searchResults, searchString);
+function(searchResults) {
+	ZmListController.prototype.show.call(this, searchResults);
 	
 	this._setup(this._currentView);
 
@@ -169,7 +169,7 @@ function(ev) {
 		if (ev.item.type == ZmItem.CONTACT)
 			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(ev.item, this._isGalSearch);
 		else if (ev.item.type == ZmItem.CONV)
-			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController().show(null, this._searchString, ev.item);
+			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController().show(this._activeSearch, ev.item);
 		else if (ev.item.type == ZmItem.MSG)
 			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController().show(ev.item);
 	}

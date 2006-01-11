@@ -327,8 +327,10 @@ ZmOrganizer.prototype.notifyCreate = function() {};
 ZmOrganizer.prototype.notifyModify =
 function(obj) {
 	var doNotify = false;
-	var fields = new Object();
+	var details = {};
+	var fields = {};
 	if (obj.name != null && this.name != obj.name) {
+		details.oldName = this.name;
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
 		this.parent.children.sort(ZmTreeView.COMPARE_FUNC[this.type]);
@@ -367,9 +369,11 @@ function(obj) {
 		fields[ZmOrganizer.F_SHARES] = true;
 		doNotify = true;
 	}
-	
-	if (doNotify)
-		this._notify(ZmEvent.E_MODIFY, {fields: fields});
+
+	if (doNotify) {
+		details.fields = fields;
+		this._notify(ZmEvent.E_MODIFY, details);
+	}
 
 	if (obj.l != null && obj.l != this.parent.id) {
 		var newParent = this._getNewParent(obj.l);

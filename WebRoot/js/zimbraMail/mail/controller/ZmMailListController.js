@@ -96,11 +96,6 @@ function() {
 	return "ZmMailListController";
 };
 
-ZmMailListController.prototype.getSearchString = 
-function() {
-	return this._searchString;
-};
-
 // Private and protected methods
 
 ZmMailListController.prototype._setupViewMenu = function(view) {};

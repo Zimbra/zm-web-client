@@ -61,14 +61,13 @@ function() {
 * Displays the given item in a two-pane view. The view is actually
 * created in _loadItem(), since it must execute last.
 *
-* @param activeSearch	the current search results
-* @param searchString	the current search query string
-* @param item			a generic item (ZmItem)
+* @param search		[ZmSearch]	the current search results
+* @param item		[ZmItem]	a generic item
 */
 ZmDoublePaneController.prototype.show =
-function(search, searchString, item) {
+function(search, item) {
 
-	ZmMailListController.prototype.show.call(this, search, searchString);
+	ZmMailListController.prototype.show.call(this, search);
 	this.reset();
 	this._item = item;
 	this._setup(this._currentView);

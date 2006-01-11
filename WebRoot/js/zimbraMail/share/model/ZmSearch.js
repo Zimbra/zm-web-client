@@ -137,7 +137,7 @@ function(isGalSearch, callback, result) {
 };
 
 // searching w/in a conv (to get its messages) has its own special command
-ZmSearch.prototype.forConv = 
+ZmSearch.prototype.getConv = 
 function(cid, callback) {
 	if (!this.query || !cid) return;
 
@@ -148,11 +148,11 @@ function(cid, callback) {
 	method.setAttribute("read", "1");	// mark that msg read
 	if (this._appCtxt.get(ZmSetting.VIEW_AS_HTML))
 		method.setAttribute("html", "1");
-	var respCallback = new AjxCallback(this, this._handleResponseForConv, callback);
+	var respCallback = new AjxCallback(this, this._handleResponseGetConv, callback);
 	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
 };
 
-ZmSearch.prototype._handleResponseForConv = 
+ZmSearch.prototype._handleResponseGetConv = 
 function(callback, result) {
 	response = result.getResponse().SearchConvResponse;
 	var searchResult = new ZmSearchResult(this._appCtxt, this);
@@ -246,4 +246,32 @@ function() {
 			this.tagId = tag.id;
 	}
 	this.hasUnreadTerm = ZmSearch.UNREAD_QUERY_RE.test(this.query);
+};
+
+ZmSearch.prototype.hasFolderTerm =
+function(path) {
+	if (!path) return false;
+	var regEx = new RegExp('\\s*in:\\s*"?(' + AjxStringUtil.regExEscape(path) + ')"?\\s*', "i");
+	return regEx.test(this.query);
+};
+
+ZmSearch.prototype.replaceFolderTerm =
+function(oldPath, newPath) {
+	if (!(oldPath && newPath)) return;
+	var regEx = new RegExp('(\\s*in:\\s*"?)(' + AjxStringUtil.regExEscape(oldPath) + ')("?\\s*)', "gi");
+	this.query = this.query.replace(regEx, "$1" + newPath + "$3");
+};
+
+ZmSearch.prototype.hasTagTerm =
+function(name) {
+	if (!name) return false;
+	var regEx = new RegExp('\s*tag:\\s*"?(' + AjxStringUtil.regExEscape(name) + ')"?\\s*', "i");
+	return regEx.test(this.query);
+};
+
+ZmSearch.prototype.replaceTagTerm =
+function(oldName, newName) {
+	if (!(oldName && newName)) return;
+	var regEx = new RegExp('(\\s*tag:\\s*"?)(' + AjxStringUtil.regExEscape(oldName) + ')("?\\s*)', "gi");
+	this.query = this.query.replace(regEx, "$1" + newName + "$3");
 };

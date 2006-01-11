@@ -55,15 +55,14 @@ function() {
 * created in _loadItem(), since it is a scheduled method and must execute
 * last.
 *
-* @param searchString	the current search query string
-* @param activeSearch	the current search results
+* @param search		[ZmSearchResult]	the current search results
 */
 ZmTradController.prototype.show =
-function(search, searchString) {
+function(search) {
 	this._list = search.getResults(ZmItem.MSG);
 
 	// call base class
-	ZmDoublePaneController.prototype.show.call(this, search, searchString, this._list);
+	ZmDoublePaneController.prototype.show.call(this, search, this._list);
 	this._setViewMenu(ZmController.TRAD_VIEW);
 	this._setGroupMailBy(ZmItem.MSG);
 	this._resetNavToolBarButtons(ZmController.TRAD_VIEW);

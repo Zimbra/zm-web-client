@@ -59,7 +59,6 @@ function ZmListController(appCtxt, container, app) {
 		this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	this._creatingTag = false;
 	this._activeSearch = null;
-	this._searchString = null;
 
 	// create a listener for each operation
 	this._listeners = new Object();
@@ -101,14 +100,12 @@ function() {
 * to do the actual display work, typically by calling the list view's set() method.
 *
 * @param searchResults		a ZmSearchResult
-* @param searchString		the query string
 * @param view				view type to use
 */
 ZmListController.prototype.show	=
-function(searchResults, searchString, view) {
+function(searchResults, view) {
 	this._currentView = view ? view : this._defaultView();
 	this._activeSearch = searchResults;
-	this._searchString = searchString;
 	// save current search for use by replenishment
 	if (searchResults)
 		this._currentSearch = searchResults.search;
@@ -116,6 +113,11 @@ function(searchResults, searchString, view) {
 	this.maxPage = 1;
 	this.pageIsDirty = new Object();
 }
+
+ZmListController.prototype.getSearchString = 
+function() {
+	return this._currentSearch.query;
+};
 
 ZmListController.prototype.getCurrentView = 
 function() {
@@ -310,6 +312,7 @@ function(view, elements, isAppView, clear, pushOnly, isPoppable) {
 	if (!this._appViews[view]) {
 		// view management callbacks
 		var callbacks = new Object();
+		
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] =
 			this._preHideCallback ? new AjxCallback(this, this._preHideCallback) : null;
 		callbacks[ZmAppViewMgr.CB_POST_HIDE] =
@@ -318,7 +321,7 @@ function(view, elements, isAppView, clear, pushOnly, isPoppable) {
 			this._preShowCallback ? new AjxCallback(this, this._preShowCallback) : null;
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] =
 			this._postShowCallback ? new AjxCallback(this, this._postShowCallback) : null;
-	
+		
 		this._app.createView(view, elements, callbacks, isAppView, isPoppable);
 		this._appViews[view] = 1;
 	}
@@ -806,12 +809,12 @@ function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 	var sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
 	var types = this._activeSearch.search.types; // use types from original search
 	var sc = this._appCtxt.getSearchController();
-	var params = {query: this._searchString, types: types, sortBy: sortBy, offset: offset, limit: limit,
+	var params = {query: this.getSearchString(), types: types, sortBy: sortBy, offset: offset, limit: limit,
 				  lastId: lastId, lastSortVal: lastSortVal};
 	var search = new ZmSearch(this._appCtxt, params);
 	if (isCurrent)
 		this._currentSearch = search;
-	var mods = {"searchFieldAction": ZmSearchController.LEAVE_SEARCH_TXT};
+	var mods = {searchFieldAction: ZmSearchController.LEAVE_SEARCH_TXT};
 	sc.redoSearch(search, true, mods, callback);
 };
 
@@ -1027,6 +1030,20 @@ function(view) {
 		var evenMore = this._list ? (offset + this._listView[view].getLimit()) < this._list.size() : false;
 	
 		this._navToolBar.enable(ZmOperation.PAGE_FORWARD, (hasMore || evenMore));
+	}
+};
+
+ZmListController.prototype.enablePagination =
+function(enabled, view) {
+	if (!this._navToolBar) return;
+
+	if (enabled) {
+		this._resetNavToolBarButtons(view);
+	} else {	
+		if (this._navToolBar.hasDoubleArrows)
+			this._navToolBar.enable([ZmOperation.PAGE_DBL_BACK, ZmOperation.PAGE_DBL_FORW], false);
+		if (this._navToolBar.hasSingleArrows)
+			this._navToolBar.enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], false);
 	}
 };
 

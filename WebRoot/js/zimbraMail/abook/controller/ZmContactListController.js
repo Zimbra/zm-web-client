@@ -78,34 +78,30 @@ function() {
 // Public methods
 
 ZmContactListController.prototype.show =
-function(search, searchString, bIsGalSearch) {
-	try {
-		this._isGalSearch = bIsGalSearch;
-		var bForce = false;
+function(search, bIsGalSearch) {
+	this._isGalSearch = bIsGalSearch;
+	var bForce = false;
 		
-		if (search instanceof ZmList) {
-			// show canonical list of contacts
-			this._list = search;
-			bForce = true; // always force display
-		} else if (search instanceof ZmSearchResult) {
-			this._isNewSearch = bForce = true;
-			this._list = search.getResults(ZmItem.CONTACT);
-			if (bIsGalSearch && (this._list == null))
-				this._list = new ZmContactList(this._appCtxt, search.search, bIsGalSearch);
-			this._activeSearch = search;
-			this._searchString = searchString;
-		}
-		
-		var view = this._currentView || this._defaultView();
-		
-		// reset offset if list view has been created
-		if (this._listView[view])
-			this._listView[view].setOffset(0);
-
-		this.switchView(view, bForce);
-	} catch (ex) {
-		this._handleException(ex, this.show, {search:search, searchString:searchString, bIsGalSearch:bIsGalSearch}, false);
+	if (search instanceof ZmList) {
+		// show canonical list of contacts
+		this._list = search;
+		bForce = true; // always force display
+		if (!this._currentView)
+			this._currentView = this._defaultView();
+	} else if (search instanceof ZmSearchResult) {
+		this._isNewSearch = bForce = true;
+		this._list = search.getResults(ZmItem.CONTACT);
+		if (bIsGalSearch && (this._list == null))
+			this._list = new ZmContactList(this._appCtxt, search.search, bIsGalSearch);
+		ZmListController.prototype.show.apply(this, [search, this._currentView]);
 	}
+		
+	// reset offset if list view has been created
+	var view = this._currentView;
+	if (this._listView[view])
+		this._listView[view].setOffset(0);
+
+	this.switchView(view, bForce);
 };
 
 ZmContactListController.prototype.switchView = 

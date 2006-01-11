@@ -61,11 +61,10 @@ function() {
 * last.
 *
 * @param activeSearch	the current search results
-* @param searchString	the current search query string
 * @param conv			a conversation (ZmConv)
 */
 ZmConvController.prototype.show =
-function(activeSearch, searchString, conv) {
+function(activeSearch, conv) {
 	this._conv = conv;
 	// always reset offset & sortby to asc.
 	if (this._listView[this._currentView]) {
@@ -75,7 +74,7 @@ function(activeSearch, searchString, conv) {
 	this._setViewMenu(ZmController.CONV_VIEW);
 
 	// this._list will be set when conv is loaded
-	ZmDoublePaneController.prototype.show.call(this, activeSearch, searchString, conv);
+	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv);
 }
 
 ZmConvController.prototype.getConv = 
@@ -337,7 +336,7 @@ ZmConvController.prototype._search =
 function(view, offset, limit, callback) {
 
 	var sortby = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
-	this._conv.load(this._searchString, sortby, offset, limit, callback);
+	this._conv.load(this.getSearchString(), sortby, offset, limit, callback);
 }
 
 ZmConvController.prototype._paginateDouble = 

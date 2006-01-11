@@ -272,7 +272,7 @@ function(msgs) {
 ZmMailList.prototype.remove = 
 function(item, bForce) {
 	// Don't really remove an item if this is a list of msgs of a conv b/c a
-	// msg is always going to be part of a conv unless its a hard delete!
+	// msg is always going to be part of a conv unless it's a hard delete!
 	if (!this.convId || bForce)
 		ZmList.prototype.remove.call(this, item);
 };
@@ -335,12 +335,10 @@ function(ev) {
 	if (ev.event == ZmEvent.E_FLAGS && (flag == ZmItem.FLAG_UNREAD)) {
 		if (this.type == ZmItem.CONV) {
 			if (view == ZmController.CONVLIST_VIEW && ctlr._currentSearch.hasUnreadTerm)
-				this._redoSearch(ctlr, view);
-			return false;
+				this._redoSearch(ctlr);
 		} else if (this.type == ZmItem.MSG) {
 			if (view == ZmController.TRAD_VIEW && ctlr._currentSearch.hasUnreadTerm) {
-				this._redoSearch(ctlr, view);
-				return false;
+				this._redoSearch(ctlr);
 			} else {
 				var on = ev.getDetail("state");
 				var organizer = ev.getDetail("item");
@@ -358,14 +356,8 @@ function(ev) {
 					this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [flag]});
 			}
 		}
-	} else if (ev.event == ZmEvent.E_DELETE &&
-			   ev.source instanceof ZmFolder && 
-			   ev.source.id == ZmFolder.ID_TRASH) 
-	{
-		// user emptied trash - reset a bunch of stuff w/o having to redo the search
-		ctlr.getCurrentView().setOffset(0);
-		ctlr._resetNavToolBarButtons(view);
-		ctlr._showListRange(view);
+	} else {
+		ZmList.prototype._folderTreeChangeListener.call(this, ev);
 	}
 };
 
@@ -375,14 +367,8 @@ function(ev) {
 
 	var flag = ev.getDetail("flag");
 	if (ev.event == ZmEvent.E_FLAGS && (flag == ZmItem.FLAG_UNREAD)) {
-		return this._folderTreeChangeListener(ev);
+		this._folderTreeChangeListener(ev);
 	} else {
-		return ZmList.prototype._tagTreeChangeListener.call(this, ev);
+		ZmList.prototype._tagTreeChangeListener.call(this, ev);
 	}
-};
-
-ZmMailList.prototype._redoSearch = 
-function(ctlr, view) {
-	var sc = this._appCtxt.getSearchController();
-	sc.redoSearch(ctlr._currentSearch);
 };
