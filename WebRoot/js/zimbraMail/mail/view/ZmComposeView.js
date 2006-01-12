@@ -1415,7 +1415,7 @@ ZmComposeView.prototype._badAddrsOkCallback =
 function() {
 	this.enableInputs(true);
 	this._badAddrsOkay = true;
-	this._getConfirmDialog.popdown();
+	this._getConfirmDialog().popdown();
 	this._controller.sendMsg();
 };
 
@@ -1424,7 +1424,7 @@ ZmComposeView.prototype._badAddrsCancelCallback =
 function(type) {
 	this.enableInputs(true);
 	this._badAddrsOkay = false;
-	this._getConfirmDialog.popdown();
+	this._getConfirmDialog().popdown();
 	if (this._using[type])
 		this._field[type].focus()
 	this._controller._toolbar.enableAll(true);
