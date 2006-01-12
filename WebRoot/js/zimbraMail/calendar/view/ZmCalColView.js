@@ -44,7 +44,7 @@ function ZmCalColView(parent, posStyle, controller, dropTgt, view, numDays, sche
 ZmCalColView.prototype = new ZmCalBaseView;
 ZmCalColView.prototype.constructor = ZmCalColView;
 
-ZmCalColView.DRAG_THRESHOLD = 5;
+ZmCalColView.DRAG_THRESHOLD = 4;
 
 // min width before we'll turn on horizontal scrollbars
 ZmCalColView.MIN_COLUMN_WIDTH = 120; 
@@ -1831,7 +1831,7 @@ function(data) {
 	data.apptsDiv = document.getElementById(this._apptBodyDivId);
 	data.bodyDivEl = document.getElementById(this._bodyDivId);
 	data.apptBodyEl = document.getElementById(data.apptEl.id + "_body");	
-	data.snap = this._snapXY(data.apptX + data.apptOffset.x, data.apptY, 30); 	// get orig grid snap	
+	data.snap = this._snapXY(data.apptX + data.apptOffset.x, data.apptY, 15); 	// get orig grid snap	
 	if (data.snap == null) return false;
 	data.startDate = new Date(data.appt.getStartTime());
 	data.startTimeEl = document.getElementById(data.apptEl.id +"_st");
@@ -1882,9 +1882,9 @@ function(ev) {
         	Dwt.setLocation(data.icon, mouseEv.docX+5, mouseEv.docY+5);
         	var destDwtObj = mouseEv.dwtObj;
         	var obj = data.dndObj;
+        //DBG.println("dwtObj = "+destDwtObj);        	
         	if (destDwtObj && destDwtObj._dropTarget) {
         	    if (destDwtObj != obj._lastDestDwtObj || destDwtObj._dropTarget.hasMultipleTargets()) {
-       	        //DBG.println("dwtObj = "+destDwtObj);
             	    //DBG.println("dwtObj = "+destDwtObj._dropTarget);
         			if (destDwtObj._dropTarget._dragEnter(	Dwt.DND_DROP_MOVE, destDwtObj, {data: data.appt}, mouseEv)) {
 	        			//obj._setDnDIconState(true);
@@ -1896,7 +1896,7 @@ function(ev) {
 	        			data.icon.className = 'DropNotAllowed';
         				obj._dropAllowed = false;
         			}
-        			DBG.println(" dropAllowed = "+obj._dropAllowed);
+        			//DBG.println(" dropAllowed = "+obj._dropAllowed);
         		} else if (obj._dropAllowed) {
         			destDwtObj._dragOver(mouseEv);
         		}
@@ -1923,10 +1923,10 @@ function(ev) {
         	}
 
         	// snap new location to grid
-        	var snap = data.view._snapXY(data.apptX + data.apptOffset.x + deltaX, data.apptY + deltaY, 30);
+        	var snap = data.view._snapXY(data.apptX + data.apptOffset.x + deltaX, data.apptY + deltaY, 15);
         	//DBG.println("mouseMove new snap: "+snap.x+","+snap.y+ " data snap: "+data.snap.x+","+data.snap.y);
         	if (snap != null && ((snap.x != data.snap.x || snap.y != data.snap.y))) {
-        		var newDate = data.view._getDateFromXY(snap.x, snap.y, 30);
+        		var newDate = data.view._getDateFromXY(snap.x, snap.y, 15);
         		if (newDate != null && 
         			(!(data.view._scheduleMode && snap.col != data.snap.col)) && // don't allow col moves in sched view
         			(newDate.getTime() != data.startDate.getTime())) {
