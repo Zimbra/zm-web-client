@@ -225,7 +225,21 @@ function(name, search, url) {
 		folderNode.setAttribute("l", this.id);
 		if (url) folderNode.setAttribute("url", url);
 	}
-	this.tree._appCtxt.getAppController().sendRequest(soapDoc, true);
+	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [url]);
+	this.tree._appCtxt.getAppController().sendRequest(soapDoc, true, null, errorCallback);
+};
+
+ZmFolder.prototype._handleErrorCreate =
+function(url, ex) {
+	if (!url) return false;
+	
+	var msgDialog = this.tree._appCtxt.getMsgDialog();
+	msgDialog.reset();
+	var msg = (ex.code == ZmCsfeException.SVC_RESOURCE_UNREACHABLE) ? ZmMsg.feedUnreachable : ZmMsg.feedInvalid;
+	msg = AjxMessageFormat.format(msg, url);
+	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+	msgDialog.popup();
+	return true;
 };
 
 // User can move a folder to Trash even if there's already a folder there with the
