@@ -26,7 +26,7 @@
 function ZmCalendarTreeController(appCtxt, type, dropTgt) {
 	
 	type = type ? type : ZmOrganizer.CALENDAR;
-	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(ZmAppt);
+	dropTgt = dropTgt ? dropTgt : null; //new DwtDropTarget(ZmAppt);
 	
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 
