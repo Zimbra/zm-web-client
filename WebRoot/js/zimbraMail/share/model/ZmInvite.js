@@ -343,32 +343,6 @@ function(compNum) {
 		: null;
 };
 
-ZmInvite.prototype.getCannedText = 
-function() {
-	var text = new Array();
-	var i = 0;
-
-	text[i++] = "\n";
-	text[i++] = ZmMsg.subject;
-	text[i++] = ": ";
-	text[i++] = this.getName(0);
-	text[i++] = "\n";
-	text[i++] = ZmMsg.organizer;
-	text[i++] = " ";
-	text[i++] = this.getOrganizerName(0);
-	text[i++] = "\n\n";
-	text[i++] = ZmMsg.location;
-	text[i++] = ": ";
-	text[i++] = this.getLocation(0);
-	text[i++] = "\n";
-	text[i++] = ZmMsg.time;
-	text[i++] = ": ";
-	text[i++] = AjxDateUtil.parseServerDateTime(this.getServerStartTime(0));
-	text[i++] = ZmAppt.NOTES_SEPARATOR;
-
-	return text.join("");
-};
-
 /** 
  * Returns HTML for a tool tip for this invite. 
  * <p>
