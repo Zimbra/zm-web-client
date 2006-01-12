@@ -537,7 +537,7 @@ function(ev) {
 			DBG.println(AjxDebug.DBG1, "Filter rule dialog: no row created!");
 			return;
 		}
-		table.tBodies[0].insertBefore(row, table.rows[newIndex]);
+		table.tBodies[0].insertBefore(row, (newIndex != null) ? table.rows[newIndex] : null);
 		this._addDwtObjects(row.id);
 	}
 
