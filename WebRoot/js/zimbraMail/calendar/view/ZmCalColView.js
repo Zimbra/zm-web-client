@@ -1836,7 +1836,6 @@ function(data) {
 	data.startDate = new Date(data.appt.getStartTime());
 	data.startTimeEl = document.getElementById(data.apptEl.id +"_st");
 	data.endTimeEl = document.getElementById(data.apptEl.id +"_et");
-	data.layout = data.appt._layout; // record original layout
 			
 	data.bodyDivEl.style.cursor = 'move';	
 	this.deselectAll();
@@ -1872,8 +1871,11 @@ function(ev) {
     if (draggedOut) {
         	// simulate DND
         	if (!data._lastDraggedOut) {
-        	   data._lastDraggedOut = true;
-            ZmCalColView._restoreApptLoc(data);
+			data._lastDraggedOut = true;
+			data.snap.x = null;
+			data.snap.y = null;
+			data.startDate = new Date(data.appt.getStartTime());
+			ZmCalColView._restoreApptLoc(data);
             	if (!data.icon) { 
             	    data.icon = data.view._getApptDndIcon(data);
         	    }
@@ -1957,11 +1959,8 @@ function(docX, docY) {
 
 ZmCalColView._restoreApptLoc =
 function(data) {
-	var lo = data.layout;
+	var lo = data.appt._layout;
 	data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);
-    	data.snap.x = null;
-    data.snap.y = null;
-	data.startDate = new Date(data.appt.getStartTime());
 	if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.appt.getStartDate());
     	if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.appt.getEndDate());
 	ZmCalColView._setApptOpacity(data.appt, data.apptEl);
@@ -1996,12 +1995,7 @@ function(ev) {
 			cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, ev);
 			//cc.dndUpdateApptDate(data.appt._orig, data.startDate, endDate, null, errorCallback);
 		} else {
-
  //       		ZmCalColView._restoreApptLoc(data);
-/*			var lo = data.layout;
-			data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);
-    			if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.appt.getStartDate());
-           	if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.appt.getEndDate());*/
 		}
 
         if (draggedOut) {
@@ -2095,7 +2089,7 @@ function(ev, sash) {
 		apptX: origLoc.x,
 		apptY: origLoc.y,
 		parentOrigHeight: parentOrigHeight,		
-		startY: ev.docY
+		startY: ev.docY,
 	};
 
 	if (isTop) data.startDate = new Date(appt.getStartTime());
@@ -2127,41 +2121,55 @@ function(ev) {
 	if (mouseEv.docY > 0 && mouseEv.docY != data.startY)
 		delta = mouseEv.docY - data.startY;
 
-	var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT);
-	if (scrollOffset != 0) {
-		data.startY -= scrollOffset;	
-		deltaY += scrollOffset;
-	}
+	var draggedOut = data.view._apptDraggedOut(mouseEv.docX, mouseEv.docY);
+	
+	if (draggedOut) {
+        	if (!data._lastDraggedOut) {
+			data._lastDraggedOut = true;
+	        ZmCalColView._restoreApptLoc(data);
+		}	
+	} else {
+        	if (data._lastDraggedOut) {
+			data._lastDraggedOut = false;
+			data.lastDelta = 0;
+			Dwt.setOpacity(data.apptEl, ZmCalColView._OPACITY_APPT_DND);
+		}	
+        	var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT);
+        	if (scrollOffset != 0) {
+        		data.startY -= scrollOffset;	
+        		deltaY += scrollOffset;
+        	}
 
-	var delta15 = Math.floor(delta/ZmCalColView._15_MINUTE_HEIGHT);
-	delta = delta15 * ZmCalColView._15_MINUTE_HEIGHT;
+        	var delta15 = Math.floor(delta/ZmCalColView._15_MINUTE_HEIGHT);
+        	delta = delta15 * ZmCalColView._15_MINUTE_HEIGHT;
 
-	if (delta != data.lastDelta) {
-		if (data.isTop) {
-			var newY = data.apptY + delta;
-			var newHeight = data.origHeight - delta;
-			if (newHeight >= ZmCalColView._15_MINUTE_HEIGHT) {
-				Dwt.setLocation(data.apptEl, Dwt.DEFAULT, newY);
-				Dwt.setSize(data.apptEl, Dwt.DEFAULT, data.parentOrigHeight - delta);				
-				Dwt.setSize(data.apptBodyEl, Dwt.DEFAULT, Math.floor(newHeight));
-				data.lastDelta = delta;
-				data.startDate.setTime(data.appt.getStartTime() + (delta15 * AjxDateUtil.MSEC_PER_FIFTEEN_MINUTES)); // num msecs in 15 minutes
-				if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.startDate);
-			}
-		} else {
-			var newHeight = data.origHeight + delta;
-			if (newHeight >= ZmCalColView._15_MINUTE_HEIGHT) {
-				var parentNewHeight = data.parentOrigHeight + delta;			
-//			DBG.println("delta = " + delta);
-				Dwt.setSize(data.apptEl, Dwt.DEFAULT, parentNewHeight);
-				Dwt.setSize(data.apptBodyEl, Dwt.DEFAULT, newHeight + ZmCalColView._APPT_HEIGHT_FUDGE);
+        	if (delta != data.lastDelta) {
+        		if (data.isTop) {
+        			var newY = data.apptY + delta;
+        			var newHeight = data.origHeight - delta;
+        			if (newHeight >= ZmCalColView._15_MINUTE_HEIGHT) {
+        				Dwt.setLocation(data.apptEl, Dwt.DEFAULT, newY);
+        				Dwt.setSize(data.apptEl, Dwt.DEFAULT, data.parentOrigHeight - delta);				
+        				Dwt.setSize(data.apptBodyEl, Dwt.DEFAULT, Math.floor(newHeight));
+        				data.lastDelta = delta;
+        				data.startDate.setTime(data.appt.getStartTime() + (delta15 * AjxDateUtil.MSEC_PER_FIFTEEN_MINUTES)); // num msecs in 15 minutes
+        				if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.startDate);
+    		        	}
+        		} else {
+        			var newHeight = data.origHeight + delta;
+		        	if (newHeight >= ZmCalColView._15_MINUTE_HEIGHT) {
+        				var parentNewHeight = data.parentOrigHeight + delta;			
+//    	        		DBG.println("delta = " + delta);
+        				Dwt.setSize(data.apptEl, Dwt.DEFAULT, parentNewHeight);
+        				Dwt.setSize(data.apptBodyEl, Dwt.DEFAULT, newHeight + ZmCalColView._APPT_HEIGHT_FUDGE);
 
-				data.lastDelta = delta;
-				data.endDate.setTime(data.appt.getEndTime() + (delta15 * AjxDateUtil.MSEC_PER_FIFTEEN_MINUTES)); // num msecs in 15 minutes
-				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.endDate);
-			}
-		}
-	}
+        				data.lastDelta = delta;
+        				data.endDate.setTime(data.appt.getEndTime() + (delta15 * AjxDateUtil.MSEC_PER_FIFTEEN_MINUTES)); // num msecs in 15 minutes
+        				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.endDate);
+        			}
+        		}
+        	}
+    	}
 
 	mouseEv._stopPropagation = true;
 	mouseEv._returnValue = false;
@@ -2189,6 +2197,12 @@ function(ev) {
 	mouseEv._returnValue = false;
 	mouseEv.setToDhtmlEvent(ev);
 
+	var draggedOut = data.view._apptDraggedOut(mouseEv.docX, mouseEv.docY);
+    if (draggedOut) {
+        ZmCalColView._restoreApptLoc(data);
+        return false;
+    }
+
 	var needUpdate = false;
 	var startDate = null, endDate = null;
 	if (data.isTop && data.startDate.getTime() != data.appt.getStartTime()) {
@@ -2206,6 +2220,8 @@ function(ev) {
 		var edOffset = endDate ? (endDate.getTime() - data.appt.getEndTime()) : null;		
 		cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, ev);
 	}
+	
+	return false;
 }
 
 // END SASH ACTION HANDLERS
