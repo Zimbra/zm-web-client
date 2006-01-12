@@ -169,8 +169,12 @@ function(mode) {
 		return AjxVector.fromArray([invAddr]);
 	} else {
 		if (!(addrVec && addrVec.size())) {
-			addrVec = (this.isSent && mode == ZmOperation.REPLY_ALL) ? this._addrs[ZmEmailAddress.TO] :
-																	   this._addrs[ZmEmailAddress.FROM];
+			if (mode == ZmOperation.REPLY_CANCEL || this.isSent && mode == ZmOperation.REPLY_ALL) {
+				addrVec = this._addrs[ZmEmailAddress.TO];
+			}
+			else {
+				addrVec = this._addrs[ZmEmailAddress.FROM];
+			}
 		}
 		return addrVec;
 	}

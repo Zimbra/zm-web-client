@@ -252,7 +252,8 @@ ZmSearch.prototype.hasFolderTerm =
 function(path) {
 	if (!path) return false;
 	var regEx = new RegExp('\\s*in:\\s*"?(' + AjxStringUtil.regExEscape(path) + ')"?\\s*', "i");
-	return regEx.test(this.query);
+	var regExNot = new RegExp('(-|not)\\s*in:\\s*"?(' + AjxStringUtil.regExEscape(path) + ')"?\\s*', "i");
+	return (regEx.test(this.query) && !regExNot.test(this.query));
 };
 
 ZmSearch.prototype.replaceFolderTerm =
@@ -265,8 +266,9 @@ function(oldPath, newPath) {
 ZmSearch.prototype.hasTagTerm =
 function(name) {
 	if (!name) return false;
-	var regEx = new RegExp('\s*tag:\\s*"?(' + AjxStringUtil.regExEscape(name) + ')"?\\s*', "i");
-	return regEx.test(this.query);
+	var regEx = new RegExp('\\s*tag:\\s*"?(' + AjxStringUtil.regExEscape(name) + ')"?\\s*', "i");
+	var regExNot = new RegExp('(-|not)\\s*tag:\\s*"?(' + AjxStringUtil.regExEscape(name) + ')"?\\s*', "i");
+	return (regEx.test(this.query) && !regExNot.test(this.query));
 };
 
 ZmSearch.prototype.replaceTagTerm =

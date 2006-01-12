@@ -557,7 +557,8 @@ function(message) {
 		this.notesTopPart = new ZmMimePart();
 		// get text part and remove any previous canned text
 		var text = message.getBodyPart(ZmMimeTable.TEXT_PLAIN);
-		var notes = (text instanceof Object) ? (text.content ? text.content : "") : text;
+		var isObject = AjxUtil.isObject(text);
+		var notes = isObject ? (text.content ? text.content : "") : text;
 		notes = this._trimNotesSummary(notes);
 		// check if notes has html part
 		var html = message.getBodyPart(ZmMimeTable.TEXT_HTML);
@@ -728,8 +729,24 @@ function(folderId, callback, errorCallback) {
 };
 
 ZmAppt.prototype.cancel = 
-function(mode) {
+function(mode, msg) {
 	this.setViewMode(mode);
+	if (msg) {
+		// REVISIT: I have to explicitly set the bodyParts of the message
+		//          because ZmComposeView#getMsg only sets the topPart on
+		//          the new message that's returned. And ZmAppt#_setNotes
+		//          calls ZmMailMsg#getBodyPart.
+		var bodyParts = [];
+		var childParts = msg._topPart.node.ct == ZmMimeTable.MULTI_ALT
+						? msg._topPart.children.getArray() : [ msg._topPart ];
+		for (var i = 0; i < childParts.length; i++) {
+			bodyParts.push(childParts[i].node);
+		}
+		msg.setBodyParts(bodyParts);
+		this._setNotes(msg);
+		this._handleResponseCancel(mode);
+		return;
+	}
 	// To get the attendees for this appointment, we have to get the message.
 	var respCallback = new AjxCallback(this, this._handleResponseCancel, [mode]);
 	this.getDetails(null, respCallback);

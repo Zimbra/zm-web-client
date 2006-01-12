@@ -252,7 +252,7 @@ function() {
 ZmAppViewMgr.prototype.getCurrentView =
 function() {
 	var curView = this._views[this._currentView];
-	return curView[ZmAppViewMgr.C_APP_CONTENT];
+	return curView ? curView[ZmAppViewMgr.C_APP_CONTENT] : null;
 }
 
 /**
