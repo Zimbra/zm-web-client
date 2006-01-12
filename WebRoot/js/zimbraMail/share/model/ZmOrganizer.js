@@ -320,7 +320,8 @@ function() {
 ZmOrganizer.prototype.notifyCreate = function() {};
 
 /*
-* Handle modifications to fields that organizers have in general.
+* Handle modifications to fields that organizers have in general. Note that
+* the notification object may contain multiple notifications.
 *
 * @param obj	[Object]	a "modified" notification
 */
@@ -369,7 +370,7 @@ function(obj) {
 		fields[ZmOrganizer.F_SHARES] = true;
 		doNotify = true;
 	}
-
+	// Send out composite MODIFY change event
 	if (doNotify) {
 		details.fields = fields;
 		this._notify(ZmEvent.E_MODIFY, details);

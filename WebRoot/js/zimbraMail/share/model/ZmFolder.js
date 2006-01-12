@@ -309,8 +309,10 @@ function(obj, isSearch) {
 };
 
 /*
-* Handle modifications to fields that organizers have in general. This override
-* provides the former path in the event.
+* Provide some extra info in the change event about the former state
+* of the folder. Note that we null out the field after setting up the
+* change event, so the notification isn't also sent when the parent
+* class's method is called.
 *
 * @param obj	[Object]	a "modified" notification
 */
@@ -318,14 +320,21 @@ ZmFolder.prototype.notifyModify =
 function(obj) {
 	var details = {};
 	var fields = {};
+	var doNotify = false;
 	if (obj.name != null && this.name != obj.name) {
 		details.oldPath = this.getPath();
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
 		this.parent.children.sort(ZmTreeView.COMPARE_FUNC[this.type]);
+		doNotify = true;
+		obj.name = null;
+	}
+	if (doNotify) {
 		details.fields = fields;
 		this._notify(ZmEvent.E_MODIFY, details);
-	} else if (obj.l != null && obj.l != this.parent.id) {
+	}
+	
+	if (obj.l != null && obj.l != this.parent.id) {
 		details.oldPath = this.getPath();
 		var newParent = this._getNewParent(obj.l);
 		this.reparent(newParent);
@@ -333,9 +342,10 @@ function(obj) {
 		// could be moving search between Folders and Searches - make sure
 		// it has the correct tree
 		this.tree = newParent.tree; 
-	} else {
-		ZmOrganizer.prototype.notifyModify.apply(this, [obj]);
+		obj.l = null;
 	}
+
+	ZmOrganizer.prototype.notifyModify.apply(this, [obj]);
 };
 
 ZmFolder.prototype.createQuery =
