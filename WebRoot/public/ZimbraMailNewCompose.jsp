@@ -71,9 +71,9 @@ Contributor(s):
 	<style type="text/css">
 	<!--
 	<%if (hiRes != null) {%>
-	        @import url(<%= contextPath %>/js/ZimbraMail_hiRes_all.cgz?v=<%= vers %>);
+	        @import url(<%= contextPath %>/js/ZimbraMail_hiRes_all.css<%= ext %>?v=<%= vers %>);
 	<% } else { %>
-	        @import url(<%= contextPath %>/js/ZimbraMail_loRes_all.cgz?v=<%= vers %>);
+	        @import url(<%= contextPath %>/js/ZimbraMail_loRes_all.css<%= ext %>?v=<%= vers %>);
 	<% } %>
 	-->
 	</style>
