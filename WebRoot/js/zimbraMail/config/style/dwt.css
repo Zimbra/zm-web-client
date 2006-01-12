@@ -1334,9 +1334,3 @@ HTML>BODY .RadioGrouperLabel {
 }
 END FROM ADMIN */
 .xform_error { color: red }
-
-.DwtConfirmDialogQuestion {
-	font-size: 1.2em;
-	margin: .25em;
-	margin-bottom: 0.50em;
-}

@@ -76,6 +76,12 @@ function(items, folder, attrs) {
 		return;
 	}
 	
+	var chars = ["-"];
+	var searchFolder = this.search ? this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(this.search.folderId) : null;
+	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
+	for (var i = 0; i < folders.length; i++)
+		if (!(searchFolder && searchFolder.isUnder(folders[i])))
+			chars.push(ZmFolder.TCON_CODE[folders[i]]);
 	var attrs = new Object();
 	attrs.tcon = this._getTcon();
 	attrs.l = folder.id;
@@ -309,12 +315,11 @@ function(item, sortBy) {
 ZmMailList.prototype._getTcon =
 function() {
 	var chars = ["-"];
+	var searchFolder = this.search ? this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(this.search.folderId) : null;
 	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
-	for (var i = 0; i < folders.length; i++) {
-		var name = ZmFolder.QUERY_NAME[folders[i]];
-		if (!(this.search && this.search.hasFolderTerm(name)))
+	for (var i = 0; i < folders.length; i++)
+		if (!(searchFolder && searchFolder.isUnder(folders[i])))
 			chars.push(ZmFolder.TCON_CODE[folders[i]]);
-	}
 
 	return chars.join("");
 };

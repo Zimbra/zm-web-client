@@ -278,21 +278,12 @@ function() {
 	return this._filterRuleDialog;
 };
 
-ZmAppCtxt.prototype.getConfirmationDialog =
-function() {
-	if (!this._confirmDialog) {
-		this._confirmDialog = new DwtConfirmDialog(this.getShell());
-	}
-	return this._confirmDialog;
-};
-
 ZmAppCtxt.prototype.clearAllDialogs =
 function() {
 	this.clearFolderDialogs();
 	this.clearCalendarDialogs();
 	this.clearShareDialogs();
 	this._filterRuleDialog = null;
-	this._confirmDialog = null;	
 };
 
 ZmAppCtxt.prototype.clearFolderDialogs =

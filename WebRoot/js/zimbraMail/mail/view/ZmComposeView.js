@@ -99,6 +99,7 @@ function() {
 */
 ZmComposeView.prototype.set =
 function(action, msg, toOverride, subjOverride, extraBodyText) {
+
 	this._action = action;
 	this._msg = msg;
 
@@ -608,7 +609,6 @@ function(incAddrs, incSubject) {
 ZmComposeView.prototype._isInviteReply =
 function(action){
 	return (action == ZmOperation.REPLY_ACCEPT ||
-			action == ZmOperation.REPLY_CANCEL ||
 			action == ZmOperation.REPLY_DECLINE ||
 			action == ZmOperation.REPLY_TENTATIVE ||
 			action == ZmOperation.REPLY_NEW_TIME);
@@ -759,7 +759,6 @@ function(action, msg, subjOverride) {
 	switch (action) {
 		case ZmOperation.REPLY:
 		case ZmOperation.REPLY_ALL: 		prefix = ZmMsg.re + ": "; break;
-		case ZmOperation.REPLY_CANCEL: 		prefix = ZmMsg.cancelled + ": "; break;
 		case ZmOperation.FORWARD_INLINE:
 		case ZmOperation.FORWARD_ATT: 		prefix = ZmMsg.fwd + ": "; break;
 		case ZmOperation.REPLY_ACCEPT:		prefix = ZmMsg.subjectAccept + ": "; break;
@@ -1415,7 +1414,7 @@ ZmComposeView.prototype._badAddrsOkCallback =
 function() {
 	this.enableInputs(true);
 	this._badAddrsOkay = true;
-	this._getConfirmDialog().popdown();
+	this._getConfirmDialog.popdown();
 	this._controller.sendMsg();
 };
 
@@ -1424,7 +1423,7 @@ ZmComposeView.prototype._badAddrsCancelCallback =
 function(type) {
 	this.enableInputs(true);
 	this._badAddrsOkay = false;
-	this._getConfirmDialog().popdown();
+	this._getConfirmDialog.popdown();
 	if (this._using[type])
 		this._field[type].focus()
 	this._controller._toolbar.enableAll(true);
