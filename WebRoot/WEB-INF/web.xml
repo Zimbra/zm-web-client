@@ -28,11 +28,11 @@
 		</init-param>
 		<init-param>
 			<param-name>extensions</param-name>
-			<param-value>.jgz,.cgz</param-value>
+			<param-value>.zgz</param-value>
 		</init-param>
 		<init-param>
 			<param-name>GzipExtension</param-name>
-			<param-value>.jgz</param-value>
+			<param-value>.zgz</param-value>
 		</init-param>
 		<init-param>
 			<param-name>shouldSupportGzip</param-name>

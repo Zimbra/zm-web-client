@@ -15,7 +15,7 @@
   <property name="jars.dir"           location="jars"/>
   <property name="jars.archive.dir"   location="../ZimbraServer/jars"/>
   <property name="src.dir"            location="src"/>
-  <property name="gzipExtension" value=".jgz"/>	
+  <property name="gzipExtension" value=".zgz"/>	
   <property name="jsminExtension" value=".jsmin"/>	
   <property name="licenseExtension" value=".license"/>	
 
@@ -285,8 +285,8 @@
 			<fileset refid="za-css-includes"/>
 			<fileset refid="loRes-css-includes"/>
 		</concat>
-		<gzip src="${build.dir}/WebRoot/js/ZimbraMail_loRes_all.css" zipfile="${build.dir}/WebRoot/js/ZimbraMail_loRes_all.cgz"/>
-		<gzip src="${build.dir}/WebRoot/js/ZimbraAdmin_loRes_all.css" zipfile="${build.dir}/WebRoot/js/ZimbraAdmin_loRes_all.cgz"/>
+		<gzip src="${build.dir}/WebRoot/js/ZimbraMail_loRes_all.css" zipfile="${build.dir}/WebRoot/js/ZimbraMail_loRes_all.css${gzipExtension}"/>
+		<gzip src="${build.dir}/WebRoot/js/ZimbraAdmin_loRes_all.css" zipfile="${build.dir}/WebRoot/js/ZimbraAdmin_loRes_all.css${gzipExtension}"/>
 		<concat destfile="${build.dir}/WebRoot/js/ZimbraMail_hiRes_all.css" fixlastline="yes">
 			<header filtering="no" file="${build.dir}/preamble-zpl.txt"/>
 			<fileset refid="zm-css-includes"/>
@@ -297,8 +297,8 @@
 			<fileset refid="za-css-includes"/>
 			<fileset refid="hiRes-css-includes"/>
 		</concat>
-		<gzip src="${build.dir}/WebRoot/js/ZimbraMail_hiRes_all.css" zipfile="${build.dir}/WebRoot/js/ZimbraMail_hiRes_all.cgz"/>
-		<gzip src="${build.dir}/WebRoot/js/ZimbraAdmin_hiRes_all.css" zipfile="${build.dir}/WebRoot/js/ZimbraAdmin_hiRes_all.cgz"/>
+		<gzip src="${build.dir}/WebRoot/js/ZimbraMail_hiRes_all.css" zipfile="${build.dir}/WebRoot/js/ZimbraMail_hiRes_all.css${gzipExtension}"/>
+		<gzip src="${build.dir}/WebRoot/js/ZimbraAdmin_hiRes_all.css" zipfile="${build.dir}/WebRoot/js/ZimbraAdmin_hiRes_all.css${gzipExtension}"/>
 	</target>
 	
   <target name='images'>
