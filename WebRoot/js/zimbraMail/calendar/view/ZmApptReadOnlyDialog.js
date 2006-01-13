@@ -154,6 +154,9 @@ function(appt) {
 
 	var dateFormatter = AjxDateFormat.getDateInstance();
 	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+	var timezone = appt.getTimezone();
+	var localTimzone = ZmTimezones.guessMachineTimezone();
+
 	if (this._isOneDayAppt(sd, ed)) {
 		str[i++] = dateFormatter.format(sd);
 		if (!appt.isAllDayEvent()) {
@@ -163,6 +166,11 @@ function(appt) {
 			str[i++] = timeFormatter.format(sd);
 			str[i++] = " - ";
 			str[i++] = timeFormatter.format(ed);
+			// bug fix #4762
+			if (timezone && timezone != localTimzone) {
+				str[i++] = " ";
+				str[i++] = appt.getTimezone();
+			}
 		}
 	} else {
 		str[i++] = ZmMsg.from;
@@ -177,6 +185,11 @@ function(appt) {
 		if (!appt.isAllDayEvent()) {
 			str[i++] = ", ";
 			str[i++] = timeFormatter.format(ed);
+			// bug fix #4762
+			if (timezone && timezone != localTimzone) {
+				str[i++] = " ";
+				str[i++] = appt.getTimezone();
+			}
 		}
 	}
 
