@@ -175,7 +175,7 @@ function(msg) {
 	this._renderMessage(msg, contentDiv, respCallback);
 };
 
-ZmMailMsgView.prototype.highlightObjects = 
+ZmMailMsgView.prototype.highlightObjects =
 function() {
 	// This turns out to work fine for both HTML and Text emails.  For
 	// text, however, it's slower than if we were just calling findObjects
@@ -260,7 +260,7 @@ function (listener) {
 	this.addListener(ZmMailMsgView.SHARE_EVENT, listener);
 };
 
-ZmMailMsgView.prototype.detach = 
+ZmMailMsgView.prototype.detach =
 function(msgId, msgPartId) {
 	var getHtml = this._appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	var sender = this._appCtxt.getAppController();
@@ -268,7 +268,7 @@ function(msgId, msgPartId) {
 	ZmMailMsg.fetchMsg({sender:sender, msgId: msgId, partId:msgPartId, getHtml:getHtml, callback:callback});
 };
 
-ZmMailMsgView.prototype._detachCallback = 
+ZmMailMsgView.prototype._detachCallback =
 function(result) {
 	var resp = result.getResponse().GetMsgResponse;
 	var msg = new ZmMailMsg(this._appCtxt, resp.m[0].id);
@@ -296,7 +296,7 @@ function() {
 	// get a little space between the buttons.
 	var toolbarHtmlEl = this._inviteToolbar.getHtmlElement();
 	toolbarHtmlEl.firstChild.cellPadding = "3";
-	
+
 	var inviteToolBarListener = new AjxListener(this, this._inviteToolBarListener);
 	for (var i = 0; i < operationButtonIds.length; i++) {
 		var id = operationButtonIds[i];
@@ -310,7 +310,7 @@ function() {
 		button._triggeredClassName = button._className + "-" + DwtCssStyle.TRIGGERED;
 
 		this._inviteToolbar.addSelectionListener(id, inviteToolBarListener);
-		
+
 		var standardItems = [id, replyButtonIds[i]];
 		var menu = new ZmActionMenu(button, standardItems);
 		for (var j = 0; j < standardItems.length; j++) {
@@ -319,7 +319,7 @@ function() {
 		}
 		button.setMenu(menu);
 	}
-	
+
 	return this._inviteToolbar;
 };
 
@@ -405,12 +405,15 @@ ZmMailMsgView._dangerousCSS = {
 
  };
 
+ZmMailMsgView._URL_RE = /^((https?|ftps?):\x2f\x2f.+)$/;
+ZmMailMsgView._MAILTO_RE = /^mailto:[\x27\x22]?([^@?&\x22\x27]+@[^@?&]+\.[^@?&\x22\x27]+)[\x27\x22]?/;
+
 // Dives recursively into the given DOM node.  Creates ObjectHandlers in text
 // nodes and cleans the mess in element nodes.  Discards by default "script",
 // "link", "object", "style", "applet" and "iframe" (most of them shouldn't
 // even be here since (1) they belong in the <head> and (2) are discarded on
 // the server-side, but we check, just in case..).
-ZmMailMsgView.prototype._processHtmlDoc = 
+ZmMailMsgView.prototype._processHtmlDoc =
 function(doc) {
 	// var T1 = new Date().getTime();
 	var objectManager = this._objectManager,
@@ -426,12 +429,20 @@ function(doc) {
 			tmp = node.tagName.toLowerCase();
 			if (/^(img|a)$/.test(tmp)) {
 				if (tmp == "a"
-				    && (/^((https?|ftps?):\x2f\x2f.+)$/.test(node.href)
-					|| /^mailto:([^@?&]+@[^@?&]+\.[^@?&]+)/.test(node.href))) {
+				    && (ZmMailMsgView._URL_RE.test(node.href)
+					|| ZmMailMsgView._MAILTO_RE.test(node.href)))
+				{
 					// tricky.
+					var txt = RegExp.$1;
 					tmp = doc.createElement("div");
 					tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(RegExp.$1));
 					tmp = tmp.firstChild;
+					if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
+						// probably no objects were found.  A warning would be OK here
+						// since the regexps guarantee that objects _should_ be found.
+						// DBG.println(AjxDebug.DBG1, "No objects found for potentially valid text!");
+						return tmp.nextSibling;
+					}
 					// here, tmp is an object span, but it
 					// contains the URL (href) instead of
 					// the original link text.
@@ -564,7 +575,7 @@ function(msg, idoc, id, iframe) {
 	return func;
 };
 
-ZmMailMsgView.prototype._makeHighlightObjectsDiv = 
+ZmMailMsgView.prototype._makeHighlightObjectsDiv =
 function() {
 	var self = this;
 	function func() {
@@ -845,7 +856,7 @@ function(msg) {
 	html[i++] = this._tagCellId;
 	html[i++] = AjxEnv.isIE ? "' class='Tags'>" : "'>";
 
-	if (AjxEnv.isGeckoBased)	
+	if (AjxEnv.isGeckoBased)
 		html[i++] = "<table border=0 cellspacing=0 cellpadding=0><tr>";
 	for (var j = 0; j < ta.length; j++) {
 		var tag = ta[j];
@@ -891,7 +902,7 @@ function(ev) {
 	this.notifyListeners(ZmMailMsgView.REPLY_INVITE_EVENT, ev);
 };
 
-ZmMailMsgView.prototype._controlEventListener = 
+ZmMailMsgView.prototype._controlEventListener =
 function(ev) {
 	var iframe = document.getElementById(this._iframeId);
 	// we get here before we have a chance to initialize the IFRAME
@@ -967,7 +978,7 @@ function(ev) {
 
 // Callbacks
 
-ZmMailMsgView.prototype._msgTagClicked = 
+ZmMailMsgView.prototype._msgTagClicked =
 function(tagId) {
 	var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getById(tagId);
 	var query = 'tag:"' + tag.name + '"';
@@ -1057,8 +1068,8 @@ function(msg, preferHtml, callback) {
 		var size = attach.s;
 		if (size && size > 0) {
 		    if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
-            else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;"; 
-            else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;"; 
+            else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;";
+            else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;";
 		}
 
 		html[idx++] = "<tr><td style='font-size:14px'>";
@@ -1136,7 +1147,7 @@ function(myId, tagId) {
 	dwtObj.notifyListeners(ZmMailMsgView._TAG_CLICK, tagId);
 };
 
-ZmMailMsgView.rfc822Callback = 
+ZmMailMsgView.rfc822Callback =
 function(anchorEl, msgId, msgPartId) {
 	// get the reference to ZmMailMsgView from the anchor element
 	var msgView = anchorEl;
