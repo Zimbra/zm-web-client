@@ -45,16 +45,18 @@ function ZmSearch(appCtxt, params) {
 
 	this._appCtxt = appCtxt;
 
-	this.query			= params.query;
-	this.types			= params.types;
-	this.sortBy			= params.sortBy;
-	this.offset			= params.offset;
-	this.limit			= params.limit;
-	this.contactSource	= params.contactSource;
-	this.lastId			= params.lastId;
-	this.lastSortVal	= params.lastSortVal;
-	
-	this._parseQuery();
+	if (params) {
+		this.query			= params.query;
+		this.types			= params.types;
+		this.sortBy			= params.sortBy;
+		this.offset			= params.offset;
+		this.limit			= params.limit;
+		this.contactSource	= params.contactSource;
+		this.lastId			= params.lastId;
+		this.lastSortVal	= params.lastSortVal;
+		
+		this._parseQuery();
+	}
 };
 
 // Search types
