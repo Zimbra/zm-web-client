@@ -484,13 +484,20 @@ function(doc) {
 		    case 4:	// CDATA_SECTION_NODE (just in case)
 			// generate ObjectHandler-s
 			if (handlers && /[^\s\xA0]/.test(node.data)) try {
-				var a = null, b = null;
-				if (/^[\s\xA0]+/.test(node.data)) {
-					a = node;
-					node = node.splitText(RegExp.lastMatch.length);
+ 				var a = null, b = null;
+
+				if (!AjxEnv.isIE) {
+					// this block of code is supposed to free the object handlers from
+					// dealing with whitespace.  However, IE sometimes crashes here, for
+					// reasons that weren't possible to determine--hence we avoid this
+					// step for IE.  (bug #5345)
+					if (/^[\s\xA0]+/.test(node.data)) {
+						a = node;
+						node = node.splitText(RegExp.lastMatch.length);
+					}
+					if (/[\s\xA0]+$/.test(node.data))
+						b = node.splitText(node.data.length - RegExp.lastMatch.length);
 				}
-				if (/[\s\xA0]+$/.test(node.data))
-					b = node.splitText(node.data.length - RegExp.lastMatch.length);
 
 				tmp = doc.createElement("div");
 				tmp.innerHTML = objectManager.findObjects(node.data, true);
