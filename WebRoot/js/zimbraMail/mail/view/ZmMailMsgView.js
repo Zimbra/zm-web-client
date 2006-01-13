@@ -405,6 +405,9 @@ ZmMailMsgView._dangerousCSS = {
 
  };
 
+ZmMailMsgView._URL_RE = /^((https?|ftps?):\x2f\x2f.+)$/;
+ZmMailMsgView._MAILTO_RE = /^mailto:[\x27\x22]?([^@?&\x22\x27]+@[^@?&]+\.[^@?&\x22\x27]+)[\x27\x22]?/;
+
 // Dives recursively into the given DOM node.  Creates ObjectHandlers in text
 // nodes and cleans the mess in element nodes.  Discards by default "script",
 // "link", "object", "style", "applet" and "iframe" (most of them shouldn't
@@ -426,25 +429,27 @@ function(doc) {
 			tmp = node.tagName.toLowerCase();
 			if (/^(img|a)$/.test(tmp)) {
 				if (tmp == "a"
-				    && (/^((https?|ftps?):\x2f\x2f.+)$/.test(node.href)
-					|| /^mailto:([^@?&]+@[^@?&]+\.[^@?&]+)/.test(node.href))) 
+				    && (ZmMailMsgView._URL_RE.test(node.href)
+					|| ZmMailMsgView._MAILTO_RE.test(node.href)))
 				{
-					try {
-						// tricky.
-						tmp = doc.createElement("div");
-						tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(RegExp.$1));
-						tmp = tmp.firstChild;
-						// here, tmp is an object span, but it
-						// contains the URL (href) instead of
-						// the original link text.
-						node.parentNode.insertBefore(tmp, node); // add it to DOM
-						tmp.innerHTML = "";
-						tmp.appendChild(node); // we have the original link now
-						return tmp.nextSibling;	// move on
-					} catch (ex) {
-						// REALLY move on this time.. looks like we're doing something illegal
-						return tmp.nextSibling.nextSibling;
+					// tricky.
+					var txt = RegExp.$1;
+					tmp = doc.createElement("div");
+					tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(RegExp.$1));
+					tmp = tmp.firstChild;
+					if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
+						// probably no objects were found.  A warning would be OK here
+						// since the regexps guarantee that objects _should_ be found.
+						// DBG.println(AjxDebug.DBG1, "No objects found for potentially valid text!");
+						return tmp.nextSibling;
 					}
+					// here, tmp is an object span, but it
+					// contains the URL (href) instead of
+					// the original link text.
+					node.parentNode.insertBefore(tmp, node); // add it to DOM
+					tmp.innerHTML = "";
+					tmp.appendChild(node); // we have the original link now
+					return tmp.nextSibling;	// move on
 				}
 				handlers = false;
 			} else if (/^(script|link|object|iframe|applet)$/.test(tmp)) {
