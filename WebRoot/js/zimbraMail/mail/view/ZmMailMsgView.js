@@ -427,18 +427,24 @@ function(doc) {
 			if (/^(img|a)$/.test(tmp)) {
 				if (tmp == "a"
 				    && (/^((https?|ftps?):\x2f\x2f.+)$/.test(node.href)
-					|| /^mailto:([^@?&]+@[^@?&]+\.[^@?&]+)/.test(node.href))) {
-					// tricky.
-					tmp = doc.createElement("div");
-					tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(RegExp.$1));
-					tmp = tmp.firstChild;
-					// here, tmp is an object span, but it
-					// contains the URL (href) instead of
-					// the original link text.
-					node.parentNode.insertBefore(tmp, node); // add it to DOM
-					tmp.innerHTML = "";
-					tmp.appendChild(node); // we have the original link now
-					return tmp.nextSibling;	// move on
+					|| /^mailto:([^@?&]+@[^@?&]+\.[^@?&]+)/.test(node.href))) 
+				{
+					try {
+						// tricky.
+						tmp = doc.createElement("div");
+						tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(RegExp.$1));
+						tmp = tmp.firstChild;
+						// here, tmp is an object span, but it
+						// contains the URL (href) instead of
+						// the original link text.
+						node.parentNode.insertBefore(tmp, node); // add it to DOM
+						tmp.innerHTML = "";
+						tmp.appendChild(node); // we have the original link now
+						return tmp.nextSibling;	// move on
+					} catch (ex) {
+						// REALLY move on this time.. looks like we're doing something illegal
+						return tmp.nextSibling.nextSibling;
+					}
 				}
 				handlers = false;
 			} else if (/^(script|link|object|iframe|applet)$/.test(tmp)) {
