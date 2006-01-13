@@ -147,7 +147,7 @@ function(ev) {
 	var picker = element._picker;
 
 	var charCode = DwtKeyEvent.getCharCode(ev);
-	if (charCode == 13 || charCode == 3) {
+	if (charCode == 13 || charCode == 3 || charCode == 9) {
 		picker.execute();
 	    return false;
 	} else {
