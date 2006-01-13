@@ -138,7 +138,7 @@ function(msg) {
 	var oldMsg = this._msg;
 	this._msg = msg;
 	this._dateObjectHandlerDate = msg.sentDate ? new Date(msg.sentDate) : new Date(msg.date);
-	if ((this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) && msg.isInvite() && msg.needsRsvp()) {
+	if ((this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) && msg.isInvite()) {
 		var invite = msg.getInvite();
 		// in the single component case, which I think is going to be 90%
 		// of the time, we will just show a single toobar.
