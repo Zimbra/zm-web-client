@@ -445,10 +445,11 @@ function() {
 
 ZmAppCtxt.prototype.cacheSet =
 function(key, value) {
-	this._itemCache.set(key, value);
+	if (this._itemCache)
+		this._itemCache.set(key, value);
 };
 
 ZmAppCtxt.prototype.cacheGet =
 function(key) {
-	return this._itemCache.get(key);
+	return this._itemCache ? this._itemCache.get(key) : null;
 };

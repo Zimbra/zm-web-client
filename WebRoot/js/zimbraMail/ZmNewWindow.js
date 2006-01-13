@@ -114,7 +114,10 @@ function() {
 		var cc = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
 		cc.isChildWindow = true;
 		if (window.command == "compose") {
-			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController()._setView(window.args[0], window.args[1], window.args[2], window.args[3], window.args[4]);
+			// bug fix #4681
+			var action = window.args[0];
+			var msg = action == ZmOperation.REPLY_ALL ? this._deepCopyMsg(window.args[1]) : window.args[1];
+			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController()._setView(window.args[0], msg, window.args[2], window.args[3], window.args[4]);
 		} else {
 			var op = ZmOperation.NEW_MESSAGE;
 			if (window.args.msg) {
@@ -142,8 +145,9 @@ function() {
 */
 ZmNewWindow.prototype.sendRequest = 
 function(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout) {
-	return window.parentController ? window.parentController.sendRequest(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout) :
-									 null;
+	return window.parentController 
+		? window.parentController.sendRequest(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout) 
+		: null;
 };
 
 /**
@@ -178,6 +182,7 @@ function() {
 // App view mgr calls this, we don't need it to do anything.
 ZmNewWindow.prototype.setActiveApp = function() {};
 
+
 // Private methods
 
 // Creates an app object, which doesn't necessarily do anything just yet.
@@ -186,3 +191,78 @@ function(appName) {
 	if (this._apps[appName]) return;
 	this._apps[appName] = new ZmZimbraMail.APP_CLASS[appName](this._appCtxt, this._shell, window.parentController);
 };
+
+ZmNewWindow.prototype._deepCopyMsg = 
+function(msg) {
+	// initialize new ZmSearch if applicable
+	var newSearch = null;
+	var oldSearch = msg.list.search;
+
+	if (oldSearch) {
+		newSearch = new ZmSearch(this._appCtxt);
+
+		for (var i in oldSearch) {
+			if ((typeof oldSearch[i] == "object") || (typeof oldSearch[i] == "function"))
+				continue;
+			newSearch[i] = oldSearch[i];
+		}
+
+		// manually add objects since they are no longer recognizable
+		newSearch.types = new AjxVector();
+		var types = oldSearch.types.getArray();
+		for (var i in types) {
+			newSearch.types.add(types[i]);
+		}
+	}
+
+	// initialize new ZmMailList
+	var newMailList = new ZmMailList(msg.list.type, this._appCtxt, newSearch);
+	for (var i in msg.list) {
+		if ((typeof msg.list[i] == "object") || (typeof msg.list[i] == "function"))
+			continue;
+		newMailList[i] = msg.list[i];
+	}
+
+	// finally, initialize new ZmMailMsg
+	var newMsg = new ZmMailMsg(this._appCtxt, msg.id, newMailList);
+
+	for (var i in msg) {
+		if ((typeof msg[i] == "object") || (typeof msg[i] == "function"))
+			continue;
+		newMsg[i] = msg[i];
+	}
+
+	// manually add any objects since they are no longer recognizable
+	for (var i in msg._addrs) {
+		var addrs = msg._addrs[i].getArray();
+		for (var j in addrs) {
+			newMsg._addrs[i].add(addrs[j]);
+		}
+	}
+
+	if (msg._attachments.length > 0) {
+		for (var i in msg._attachments) {
+			newMsg._attachments.push(msg._attachments[i]);
+		}
+	}
+
+	for (var i in msg._bodyParts) {
+		newMsg._bodyParts.push(msg._bodyParts[i]);
+	}
+
+	if (msg._topPart) {
+		newMsg._topPart = new ZmMimePart();
+		for (var i in msg._topPart) {
+			if ((typeof msg._topPart[i] == "object") || (typeof msg._topPart[i] == "function"))
+				continue;
+			newMsg._topPart[i] = msg._topPart[i];
+		}
+		var children = msg._topPart.children.getArray();
+		for (var i in children) {
+			newMsg._topPart.children.add(children[i]);
+		}
+	}
+
+	return newMsg;
+};
+
