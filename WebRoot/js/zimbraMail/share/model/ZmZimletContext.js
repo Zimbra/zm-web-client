@@ -335,13 +335,30 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj) {
 	return url;
 };
 
-ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj) {
+/**
+* if there already is a paintable canvas to use, as in the case of tooltip,
+* pass it to 'div' parameter.  otherwise a canvas (window, popup, dialog) will be created
+* to display the contents from the url.
+*/
+ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div) {
 	var url = this.makeURL(actionUrl, obj);
+	var xslt = null;
 
-	if (canvas) {
-		canvas = this.handlerObject.makeCanvas(canvas[0], url);
+	if (actionUrl.xslt) {
+		xslt = this.getXslt(actionUrl.xslt);
+	}
+	
+	// need to use callback if the paintable canvas already exists, or if it needs xslt transformation.
+	if (div || xslt) {
+		var request = new AjxRpcRequest("zimlet");
+		if (!div) {
+			canvas = this.handlerObject.makeCanvas(canvas[0], null);
+			div = document.getElementById("zimletCanvasDiv");
+		}
+		url = ZmZimletBase.PROXY + AjxStringUtil.urlEncode(url);
+		request.invoke(null, url, null, new AjxCallback(this, this._rpcCallback, [xslt, div]), true);
 	} else {
-		window.open(url, this.name);
+		this.handlerObject.makeCanvas(canvas[0], url);
 	}
 };
 
@@ -505,3 +522,33 @@ ZmZimletContext._zmObjectTransformers = {
 	}
 
 };
+
+ZmZimletContext.prototype.getXslt =
+function(url) {
+	if (!this._xslt) {
+		this._xslt = {};
+	}
+	var realurl = this.getUrl() + url;
+	if (!this._xslt[realurl]) {
+		this._xslt[realurl] = AjxXslt.createFromUrl(realurl);
+	}
+	return this._xslt[realurl];
+};
+
+ZmZimletContext.prototype._rpcCallback =
+function(xslt, canvas, result) {
+	var html, resp = result.xml;
+	if (resp == undefined) {
+		var doc = AjxXmlDoc.createFromXml(result.text);
+		resp = doc.getDoc();
+	}
+	// TODO:  instead of changing innerHTML, maybe append
+	// the dom tree to the canvas.
+	if (xslt) {
+		html = xslt.transformToString(resp);
+	} else {
+		html = resp.innerHTML;
+	}
+	canvas.innerHTML = html;
+};
+

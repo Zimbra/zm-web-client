@@ -230,13 +230,20 @@ ZmZimletBase.prototype.toolTipPoppedUp =
 function(spanElement, contentObjText, matchContext, canvas) {
 	var c = this.xmlObj("contentObject");
 	if (c && c.toolTip) {
-		// FIXME: only plain tooltips support for now
 		var obj = { objectContent: contentObjText };
 		if (matchContext) {
 			for (var i = 0; i < matchContext.length; ++i)
 				obj["$"+i] = matchContext[i];
 		}
-		var txt = this.xmlObj().processString(c.toolTip, obj);
+		var txt;
+		if (c.toolTip instanceof Object &&
+		    c.toolTip.actionUrl) {
+		    this.xmlObj().handleActionUrl(c.toolTip.actionUrl, [{type:"tooltip"}], obj, canvas);
+		    // XXX the tooltip needs "some" text on it initially, otherwise it wouldn't resize afterwards.
+		    txt = "fetching data...";
+		} else {
+			txt = this.xmlObj().processString(c.toolTip, obj);
+		}
 		canvas.innerHTML = txt;
 	}
 };
@@ -504,7 +511,11 @@ function(object, context, span) {
 
 ZmZimletBase.prototype.makeCanvas = function(canvasData, url) {
 	var canvas = null;
-
+	var div;
+	
+	div = document.createElement("div");
+	div.id = "zimletCanvasDiv";
+	
 	// HACK #1: if an actionUrl was specified and there's no <canvas>, we
 	// assume a <canvas type="window">
 	if (!canvasData && url)
@@ -516,15 +527,20 @@ ZmZimletBase.prototype.makeCanvas = function(canvasData, url) {
 
 	switch (canvasData.type) {
 	    case "window":
-		if (url == null)
-			url = "/zimbra/public/blank.html";
+	    var browserUrl = url;
+		if (browserUrl == null)
+			browserUrl = "/zimbra/public/blank.html";
 		var props = [ "toolbar=yes,location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes" ];
 		if (canvasData.width)
 			props.push("width=" + canvasData.width);
 		if (canvasData.height)
 			props.push("height=" + canvasData.height);
 		props = props.join(",");
-		canvas = window.open(url, this.xmlObj("name"), props);
+		canvas = window.open(browserUrl, this.xmlObj("name"), props);
+		if (!url) {
+			// XXX todo: add div element in the window.
+			//canvas.document.getHtmlElement().appendChild(div);
+		}
 		break;
 
 	    case "dialog":
@@ -550,6 +566,8 @@ ZmZimletBase.prototype.makeCanvas = function(canvasData, url) {
 			el.style.height = sz.y + "px";
 			view.getHtmlElement().appendChild(el);
 			canvas.iframe = el;
+		} else {
+			view.getHtmlElement().appendChild(div);
 		}
 		canvas.popup();
 		break;
