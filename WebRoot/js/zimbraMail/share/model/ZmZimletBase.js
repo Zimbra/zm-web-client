@@ -575,6 +575,19 @@ ZmZimletBase.prototype.makeCanvas = function(canvasData, url) {
 	return canvas;
 };
 
+ZmZimletBase.prototype.applyXslt =
+function(xsltUrl, doc) {
+	var xslt = this.xmlObj().getXslt(xsltUrl);
+	if (!xslt) {
+		throw new Error("Cannot create XSLT engine: "+xsltUrl);
+	}
+	if (doc instanceof AjxXmlDoc) {
+		doc = doc.getDoc();
+	}
+	var ret = xslt.transformToDom(doc);
+	return AjxXmlDoc.createFromDom(ret);
+};
+
 /* Internal functions -- overriding is not recommended */
 
 ZmZimletBase.prototype._createDialog = function(args) {
