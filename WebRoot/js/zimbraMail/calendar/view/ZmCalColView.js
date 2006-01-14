@@ -39,6 +39,13 @@ function ZmCalColView(parent, posStyle, controller, dropTgt, view, numDays, sche
 	ZmCalBaseView.call(this, parent, className, posStyle, controller, view);
 	this.setScrollStyle(DwtControl.CLIP);	
 	this._needFirstLayout = true;
+	if (AjxEnv.isNav) {
+		var padding = new AjxBuffer();
+		for (var i=0; i < 64; i++) padding.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		this._padding = padding.toString();
+	} else {
+		this._padding = "";
+	}
 }
 
 ZmCalColView.prototype = new ZmCalBaseView;
@@ -707,6 +714,7 @@ function(appt) {
 	var div = document.createElement("div");	
 
 	div.style.position = 'absolute';
+	div.style.cursor = 'default';
 	Dwt.setSize(div, 10, 10);
 	div._styleClass = "appt";	
 	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
@@ -723,6 +731,8 @@ function(appt) {
 	var color = ZmCalBaseView.COLORS[this._controller.getCalendarColor(appt.getFolderId())];
 	var location = appt.getLocation() ? "<i>"+AjxStringUtil.htmlEncode(appt.getLocation())+"</i>" : "";
 	
+	var is30 = (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
+	
 	//var color = "Blue";
 	var subs = {
 		id: id,
@@ -730,10 +740,10 @@ function(appt) {
 		newState: isNew ? "_new" : "",
 		headerColor: color + (isNew ? "Dark" : "Light"),
 		bodyColor: color + (isNew ? "" : "Bg"),
-		name: AjxStringUtil.htmlEncode(appt.getName()),
+		name: AjxStringUtil.htmlEncode(appt.getName()) + (is30 ? this._padding : ""),
 //		tag: isNew ? "NEW" : "",		//  HACK: i18n
 		starttime: appt.getDurationText(true, true),
-		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmAppt._getTTHour(appt.getEndDate()),
+		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmAppt._getTTHour(appt.getEndDate()))+this._padding,
 		location: location,
 		statusKey: appt.getParticipationStatus(),
 		status: appt.isOrganizer() ? "" : appt.getParticipationStatusString()
@@ -746,7 +756,7 @@ function(appt) {
 		if (!this.isStartInView(appt._orig)) bs = "border-left:none;";
 		if (!this.isEndInView(appt._orig)) bs += "border-right:none;";
 		if (bs != "") subs.body_style = "style='"+bs+"'";
-	} else if (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR) {
+	} else if (is30) {
 		template = "calendar_appt_30";
 	} else if (appt._fanoutNum > 0) {
 		template = "calendar_appt_bottom_only";
@@ -1837,7 +1847,7 @@ function(data) {
 	data.startTimeEl = document.getElementById(data.apptEl.id +"_st");
 	data.endTimeEl = document.getElementById(data.apptEl.id +"_et");
 			
-	data.bodyDivEl.style.cursor = 'move';	
+//	data.bodyDivEl.style.cursor = 'move';	
 	this.deselectAll();
 	this.setSelection(data.appt);
 	Dwt.setOpacity(data.apptEl, ZmCalColView._OPACITY_APPT_DND);
@@ -1937,7 +1947,7 @@ function(ev) {
         			data.startDate = newDate;
         			data.snap = snap;
         			if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.startDate);
-		        	if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(new Date(data.startDate.getTime()+data.appt.getDuration()));
+		        	if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(new Date(data.startDate.getTime()+data.appt.getDuration()))+data.view._padding;
         		}
         	}
     	}
@@ -1962,7 +1972,7 @@ function(data) {
 	var lo = data.appt._layout;
 	data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);
 	if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.appt.getStartDate());
-    	if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.appt.getEndDate());
+    	if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.appt.getEndDate())+data.view._padding;
 	ZmCalColView._setApptOpacity(data.appt, data.apptEl);
 }
 
@@ -1981,7 +1991,7 @@ function(ev) {
 
 	if (data.dndStarted) {
         	ZmCalColView._setApptOpacity(data.appt, data.apptEl);
-		data.bodyDivEl.style.cursor = 'auto';
+//		data.bodyDivEl.style.cursor = 'auto';
 		if (data.startDate.getTime() != data.appt.getStartTime() && !draggedOut) {
             if (data.icon) Dwt.setVisible(data.icon, false);		
 			// save before we muck with start/end dates
@@ -2165,7 +2175,7 @@ function(ev) {
 
         				data.lastDelta = delta;
         				data.endDate.setTime(data.appt.getEndTime() + (delta15 * AjxDateUtil.MSEC_PER_FIFTEEN_MINUTES)); // num msecs in 15 minutes
-        				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.endDate);
+        				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.endDate)+data.view._padding;
         			}
         		}
         	}
