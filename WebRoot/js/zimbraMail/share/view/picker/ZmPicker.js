@@ -240,7 +240,7 @@ function(overviewId, parent, types, allowedTypes) {
 	this._picker.setScrollStyle(Dwt.CLIP);
 	var opc = this._appCtxt.getOverviewController();
 	opc.createOverview({overviewId: overviewId, parent: parent, //scroll: Dwt.VISIBLE,
-						overviewClass: "pickerOverview", headerClass: "DwtTreeItem",
+						headerClass: "DwtTreeItem",
 						treeStyle: DwtTree.CHECKEDITEM_STYLE});
 	opc.set(overviewId, types, null, allowedTypes);
 	this._treeView = new Object();
