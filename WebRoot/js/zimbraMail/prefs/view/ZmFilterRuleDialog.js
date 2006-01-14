@@ -279,10 +279,10 @@ function(data, isCondition) {
 
 	if (isCondition) {
 		this._inputs[rowId].isCondition = true;
-		html[i++] = this._createRowComponent(true, "subject", ZmFilterRule.CONDITIONS_LIST, data.subject, rowId, ZmFilterRule.CONDITIONS);
+		html[i++] = this._createRowComponent(true, "subject", ZmFilterRule.CONDITIONS_LIST, data.subject, rowId);
 		html[i++] = this._createRowComponent(conf, "subjectMod", conf.smOptions, data.subjectModifier, rowId);
-		html[i++] = this._createRowComponent(conf, "ops", conf.opsOptions, data.comparator, rowId, data.subject);
-		html[i++] = this._createRowComponent(conf, "value", conf.vOptions, data.value, rowId);
+		html[i++] = this._createRowComponent(conf, "ops", conf.opsOptions, data.comparator, rowId, data);
+		html[i++] = this._createRowComponent(conf, "value", conf.vOptions, data.value, rowId, data);
 		html[i++] = this._createRowComponent(conf, "valueMod", conf.vmOptions, data.valueModifier, rowId);
 	} else {
 		if (data.name == ZmFilterRule.A_STOP) {
@@ -290,7 +290,7 @@ function(data, isCondition) {
 			stopField.checked = true;
 			return;
 		}
-		html[i++] = this._createRowComponent(false, "name", ZmFilterRule.ACTIONS_LIST, data.name, rowId, ZmFilterRule.ACTIONS);
+		html[i++] = this._createRowComponent(false, "name", ZmFilterRule.ACTIONS_LIST, data.name, rowId);
 		html[i++] = this._createRowComponent(conf, "param", conf.pOptions, data.arg, rowId);
 	}
 	html[i++] = this._getPlusMinusHtml(rowId, isCondition);
@@ -358,10 +358,10 @@ function(rowId, isCondition) {
 * @param options	[array]				if the field type is a select, its options
 * @param dataValue	[string]			current value of the field, if any
 * @param rowId		[string]			ID of the containing row
-* @param config		[hash]*				config info (for rendering subject or action)
+* @param data		[object]*			ZmCondition or ZmAction
 */
 ZmFilterRuleDialog.prototype._createRowComponent =
-function(conf, field, options, dataValue, rowId, config) {
+function(conf, field, options, dataValue, rowId, data) {
 
 	var isMainSelect = (typeof conf == "boolean");
 	var isCondition, type;
@@ -379,6 +379,9 @@ function(conf, field, options, dataValue, rowId, config) {
 		var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: dataValue, size: 20});
 		input.setData(ZmFilterRuleDialog.ROW_ID, rowId);
 		this._inputs[rowId][field] = {id: id, dwtObj: input};
+		if (field == "value" && data.subject == ZmFilterRule.C_HEADER) {
+			input.setVisibility(!(data.comparator == ZmFilterRule.OP_EXISTS || data.comparator == ZmFilterRule.OP_NOT_EXISTS));
+		}
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 
 	} else if (type == ZmFilterRule.TYPE_SELECT) {
@@ -392,7 +395,7 @@ function(conf, field, options, dataValue, rowId, config) {
 			select.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
 			select.addChangeListener(this._rowChangeLstnr);
 		} else if (field == "ops") {
-			if (config == ZmFilterRule.C_HEADER) {
+			if (data.subject == ZmFilterRule.C_HEADER) {
 				select.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
 				select.addChangeListener(this._opsChangeLstnr);
 			}
@@ -554,9 +557,8 @@ function(ev) {
 	var rowId = ev._args.selectObj.getData(ZmFilterRuleDialog.ROW_ID);
 	var input = this._inputs[rowId];
 	if (!input) return;
-	var inputField = document.getElementById(input["value"].id);
 	var newValue = ev._args.newValue;
-	Dwt.setVisibility(inputField, (newValue != ZmFilterRule.OP_EXISTS && newValue != ZmFilterRule.OP_NOT_EXISTS));
+	input["value"].dwtObj.setVisibility(!(newValue == ZmFilterRule.OP_EXISTS || newValue == ZmFilterRule.OP_NOT_EXISTS));
 };
 
 /*

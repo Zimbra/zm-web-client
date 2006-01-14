@@ -305,11 +305,19 @@ function(index, notify, callback, errorCallback) {
 				if (condition.comparator == ZmFilterRule.OP_NOT_EXISTS)
 					subject = "not attachment";
 				comp = "";
+			} else if (condition.subject == ZmFilterRule.C_HEADER &&
+					   (condition.comparator == ZmFilterRule.OP_EXISTS ||
+					    condition.comparator == ZmFilterRule.OP_NOT_EXISTS)) {
+				subject = comp;
+				value = subjectMod;
+				subjectMod = comp = null;
 			}
+			if (subject)
+				node.setAttribute("name", subject);
 			if (subjectMod && subjectMod != "all")
 				node.setAttribute("k0", subjectMod);
-			node.setAttribute("name", subject);
-			node.setAttribute("op", comp);
+			if (comp)
+				node.setAttribute("op", comp);
 			if (value) {
 				// don't include "B" for bytes
 				if (valueMod && (!(subject == "size" && valueMod == "B")))
@@ -408,6 +416,12 @@ function(node, rule) {
 	if (subject == ZmFilterRule.C_SIZE && value.match(/(K|M)$/)) {
 		valueMod = value.substring(value.length - 2, 1);
 		value = value.substring(0, value.length - 2);
+	} else if (node.name == ZmFilterRule.OP_VALUE[ZmFilterRule.OP_EXISTS] ||
+			   node.name == ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_EXISTS]) {
+		if (node.k0) {
+			subject = ZmFilterRule.C_HEADER;
+			comparator = ZmFilterRule.OP_VALUE_MAP[node.name];
+		}
 	}
 
 	var condition = new ZmCondition(subject, comparator, value, subjectMod);
