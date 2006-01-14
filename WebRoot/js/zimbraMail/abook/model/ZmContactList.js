@@ -45,6 +45,7 @@ function ZmContactList(appCtxt, search, isGal) {
 
 	this._emailToContact = {};
 	this._acContacts = [];
+	this._loadCount = 0;
 };
 
 ZmContactList.prototype = new ZmList;
@@ -59,13 +60,15 @@ ZmContactList.AC_NAME_FIELDS	= [ZmContact.F_firstName, ZmContact.F_lastName];
 ZmContactList.AC_VALUE_FULL 	= "fullAddress";
 ZmContactList.AC_VALUE_EMAIL	= "email";
 ZmContactList.AC_MAX 			= 20; // max # of autocomplete matches to return
+ZmContactList.MAX_LOAD_COUNT	= 500; // max # of iterations when adding contacts
+
+
+// Public methods
 
 ZmContactList.prototype.toString = 
 function() {
 	return "ZmContactList";
 };
-
-// Public methods
 
 /**
 * Retrieves the contacts from the back end, and parses the response. The list is then sorted.
@@ -105,6 +108,9 @@ function(callback, result) {
 	var response = result.getResponse();
 	var list = response.GetContactsResponse.cn;
 	if (list) {
+		if (list.length > ZmContactList.MAX_LOAD_COUNT) {
+			this._loadAction = new AjxTimedAction(this, this._smartLoad, [list]);
+		}
 		this.set(list);
 	}
 	
@@ -114,16 +120,8 @@ function(callback, result) {
 ZmContactList.prototype.set = 
 function(list) {
 	this.clear();
-	
-	for (var i = 0; i < list.length; i++) {
-		var args = {appCtxt: this._appCtxt, addressHash: {}, list: this};
-		var contact = ZmList.ITEM_CLASS[this.type].createFromDom(list[i], args);
-
-		this._updateEmailHash(contact, true);
-//		this._acContacts.push(this._setAcContact(contact));
-		this._addAcContact(contact, this._acContacts);
-		this.add(contact);
-	}
+	// bug fix #290
+	this._smartLoad(list);
 };
 
 /**
@@ -295,6 +293,31 @@ ZmContactList.prototype.createLocal =
 function(item) {
 	this._updateEmailHash(item, true);
 	this._updateAcList(item, true);
+};
+
+
+// Private methods
+
+ZmContactList.prototype._smartLoad = 
+function(list) {
+	var diff = list.length - this._loadCount;
+	var limit = diff < ZmContactList.MAX_LOAD_COUNT
+		? (diff + this._loadCount)
+		: (ZmContactList.MAX_LOAD_COUNT + this._loadCount);
+
+	for (var i = this._loadCount; i < limit; i++) {
+		var args = {appCtxt: this._appCtxt, addressHash: {}, list: this};
+		var contact = ZmList.ITEM_CLASS[this.type].createFromDom(list[i], args);
+
+		this._updateEmailHash(contact, true);
+		this._addAcContact(contact, this._acContacts);
+		this.add(contact);
+	}
+
+	if (i < list.length-1 && this._loadAction) {
+		this._loadCount = i;
+		AjxTimedAction.scheduleAction(this._loadAction, 250);
+	}
 };
 
 ZmContactList.prototype._updateEmailHash =
