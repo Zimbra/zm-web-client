@@ -49,7 +49,7 @@ function(callback) {
 	soapDoc.getMethod().setAttribute("browseBy", "domains");
 
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
 
 ZmDomainTree.prototype._handleResponseLoad =

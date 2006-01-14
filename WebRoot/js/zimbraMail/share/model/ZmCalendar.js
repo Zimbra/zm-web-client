@@ -140,8 +140,7 @@ function(appCtxt, name, parentFolderId, url) {
 	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]);
 	if (url) folderNode.setAttribute("url", url);
 
-	var appController = appCtxt.getAppController();
-	return appController.sendRequest(soapDoc, false);
+	return appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: false});
 };
 
 ZmCalendar.createFromJs =

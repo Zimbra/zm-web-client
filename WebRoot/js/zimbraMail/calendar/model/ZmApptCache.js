@@ -232,9 +232,9 @@ function(start,end, fanoutAllDay, folderIds, callback) {
 
 	if (callback) {
 		var respCallback = new AjxCallback(this, this._getApptSummariesResponse, [context]);
-		this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);	
+		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 	} else {
-		var response = this._appCtxt.getAppController().sendRequest(soapDoc);
+		var response = this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
 		var csfeResult = new ZmCsfeResult(response, false);
 		return this._getApptSummariesResponse(context, csfeResult);
 	}

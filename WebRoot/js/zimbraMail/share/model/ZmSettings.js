@@ -126,7 +126,8 @@ ZmSettings.prototype.loadUserSettings =
 function(callback, errorCallback) {
     var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
     var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, callback);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+												  callback: respCallback, errorCallback: errorCallback});
 };
 
 ZmSettings.prototype._handleResponseLoadUserSettings =
@@ -185,7 +186,7 @@ ZmSettings.prototype.loadPrefs =
 function() {
     var soapDoc = AjxSoapDoc.create("GetPrefsRequest", "urn:zimbraAccount");
 	var respCallback = new AjxCallback(this, this._handleResponseLoadPrefs);
-    this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
 
 ZmSettings.prototype._handleResponseLoadPrefs =
@@ -218,7 +219,7 @@ function(list, callback) {
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSave, [list, callback]);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
 
 ZmSettings.prototype._handleResponseSave =

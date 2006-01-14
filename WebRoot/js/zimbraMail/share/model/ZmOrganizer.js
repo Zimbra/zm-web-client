@@ -533,9 +533,8 @@ function(params) {
 	actionNode.setAttribute("id", this.id);
 	for (var attr in params.attrs)
 		actionNode.setAttribute(attr, params.attrs[attr]);
-	var appCtlr = this.tree._appCtxt.getAppController();
 	var execFrame = new AjxCallback(this, this._itemAction, params);
-	appCtlr.sendRequest(soapDoc, true, null, null, execFrame);
+	this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, execFrame: execFrame});
 };
 
 // Test the name of this organizer and then descendants against the given name, case insensitively
@@ -684,7 +683,7 @@ function(operation, actionAttrs, grantAttrs) {
 	}
 	
 	var appCtlr = this.organizer.tree._appCtxt.getAppController();
-	var resp = appCtlr.sendRequest(soapDoc)["FolderActionResponse"];
+	var resp = appCtlr.sendRequest({soapDoc: soapDoc})["FolderActionResponse"];
 	
 	var id = parseInt(resp.action.id);
 	return (id == this.organizer.id);

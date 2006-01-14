@@ -1467,7 +1467,7 @@ ZmAppt.prototype._sendRequest =
 function(soapDoc, callback, errorCallback) {
 	var responseName = soapDoc.getMethod().nodeName.replace("Request", "Response");
 	var respCallback = new AjxCallback(this, this._handleResponseSend, [responseName, callback]);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback, errorCallback: errorCallback});
 };
 
 

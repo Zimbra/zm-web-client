@@ -144,10 +144,8 @@ function() {
 * Pass server requests to the main controller.
 */
 ZmNewWindow.prototype.sendRequest = 
-function(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout) {
-	return window.parentController 
-		? window.parentController.sendRequest(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout) 
-		: null;
+function(params) {
+	return window.parentController ? window.parentController.sendRequest(params) : null;
 };
 
 /**

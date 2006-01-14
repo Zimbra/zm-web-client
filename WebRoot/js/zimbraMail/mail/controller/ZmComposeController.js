@@ -205,9 +205,8 @@ function(delMsg) {
 		var actionNode = soapDoc.set("action");
 		actionNode.setAttribute("id", delMsg.id);
 		actionNode.setAttribute("op", "delete");
-		var ac = this._appCtxt.getAppController();
 		var respCallback = new AjxCallback(this, this._handleResponseDeleteDraft);
-		ac.sendRequest(soapDoc, true, respCallback);
+		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 	}
 };
 

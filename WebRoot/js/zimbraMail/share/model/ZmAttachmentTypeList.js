@@ -61,8 +61,7 @@ function(callback) {
 	soapDoc.getMethod().setAttribute("browseBy", "attachments");
 
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
-
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
 
 ZmAttachmentTypeList.prototype._handleResponseLoad =

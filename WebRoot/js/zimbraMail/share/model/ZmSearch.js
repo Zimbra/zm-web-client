@@ -121,7 +121,8 @@ function(params) {
 	
 	var respCallback = new AjxCallback(this, this._handleResponseExecute, [isGalSearch, params.callback]);
 	var execFrame = new AjxCallback(this, this.execute, params);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, params.errorCallback, execFrame);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback,
+												  errorCallback: params.errorCallback, execFrame: execFrame});
 };
 
 /*
@@ -151,7 +152,7 @@ function(cid, callback) {
 	if (this._appCtxt.get(ZmSetting.VIEW_AS_HTML))
 		method.setAttribute("html", "1");
 	var respCallback = new AjxCallback(this, this._handleResponseGetConv, callback);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
 
 ZmSearch.prototype._handleResponseGetConv = 

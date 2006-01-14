@@ -226,7 +226,7 @@ function(name, search, url) {
 		if (url) folderNode.setAttribute("url", url);
 	}
 	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [url]);
-	this.tree._appCtxt.getAppController().sendRequest(soapDoc, true, null, errorCallback);
+	this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback});
 };
 
 ZmFolder.prototype._handleErrorCreate =
