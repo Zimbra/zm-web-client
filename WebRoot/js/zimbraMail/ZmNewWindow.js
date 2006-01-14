@@ -119,18 +119,7 @@ function() {
 			var msg = action == ZmOperation.REPLY_ALL ? this._deepCopyMsg(window.args[1]) : window.args[1];
 			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController()._setView(window.args[0], msg, window.args[2], window.args[3], window.args[4]);
 		} else {
-			var op = ZmOperation.NEW_MESSAGE;
-			if (window.args.msg) {
-				switch (window.args.msg._mode) {
-					case ZmAppt.MODE_DELETE: 
-					case ZmAppt.MODE_DELETE_INSTANCE: 
-					case ZmAppt.MODE_DELETE_SERIES: {
-						op = ZmOperation.REPLY_CANCEL;
-						break;
-					}
-				}
-			}
-			cc._setView(op, window.args.msg, null, null, null, window.args.composeMode);
+			cc._setView(ZmOperation.NEW_MESSAGE, window.args.msg, null, null, null, window.args.composeMode);
 			cc._composeView.setDetach(window.args);
 		}
 	} else if (window.command == "msgViewDetach") {
@@ -144,8 +133,10 @@ function() {
 * Pass server requests to the main controller.
 */
 ZmNewWindow.prototype.sendRequest = 
-function(params) {
-	return window.parentController ? window.parentController.sendRequest(params) : null;
+function(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout) {
+	return window.parentController 
+		? window.parentController.sendRequest(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout) 
+		: null;
 };
 
 /**

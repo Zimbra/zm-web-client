@@ -63,7 +63,7 @@ function(id, name, groupNames, doDelete) {
 	if (name) method.setAttribute("name", name);
 	if (groupNames) method.setAttribute("groups", groupNames);
 	method.setAttribute("op", doDelete ? "remove" : "add");
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+	this._appCtxt.getAppController().sendRequest(soapDoc, true);
 };
 
 ZmRosterItem.prototype.getPresence =

@@ -126,7 +126,7 @@ function(callback) {
 	var msgNode = soapDoc.set("c");
 	msgNode.setAttribute("id", conv.id);
 	var respCallback = new AjxCallback(this, this._handleResponseLoadMsgIds, callback);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback)
 };
 
 ZmConv.prototype._handleResponseLoadMsgIds =

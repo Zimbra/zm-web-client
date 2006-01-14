@@ -301,7 +301,7 @@ function(attr) {
 	
 	var respCallback = new AjxCallback(this, this._handleResponseCreate, [attr]);
 	var execFrame = new AjxCallback(this, this.create, [attr]);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback, execFrame: execFrame});
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, null, execFrame);
 };
 
 ZmContact.prototype._handleResponseCreate =
@@ -354,7 +354,7 @@ function(attr, callback) {
 	
 	var respCallback = new AjxCallback(this, this._handleResponseModify, [attr, callback]);
 	var execFrame = new AjxCallback(this, this.modify, [attr]);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback, execFrame: execFrame});
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, null, execFrame);
 };
 
 ZmContact.prototype._handleResponseModify =

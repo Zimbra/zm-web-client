@@ -502,7 +502,7 @@ function(params) {
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	var respCallback = params.callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback]) : null;
 	var execFrame = new AjxCallback(this, this._itemAction, params);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback, execFrame: execFrame});
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, null, execFrame);
 };
 
 ZmList.prototype._handleResponseItemAction =

@@ -94,8 +94,7 @@ function(params) {
 	}
 	var respCallback = new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback]);
 	var execFrame = new AjxCallback(null, ZmMailMsg.fetchMsg, [params]);
-	params.sender.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback,
-							   errorCallback: params.errorCallback, execFrame: execFrame});
+	params.sender.sendRequest(soapDoc, true, respCallback, params.errorCallback, execFrame);
 };
 
 ZmMailMsg._handleResponseFetchMsg =
@@ -170,12 +169,8 @@ function(mode) {
 		return AjxVector.fromArray([invAddr]);
 	} else {
 		if (!(addrVec && addrVec.size())) {
-			if (mode == ZmOperation.REPLY_CANCEL || this.isSent && mode == ZmOperation.REPLY_ALL) {
-				addrVec = this._addrs[ZmEmailAddress.TO];
-			}
-			else {
-				addrVec = this._addrs[ZmEmailAddress.FROM];
-			}
+			addrVec = (this.isSent && mode == ZmOperation.REPLY_ALL) ? this._addrs[ZmEmailAddress.TO] :
+																	   this._addrs[ZmEmailAddress.FROM];
 		}
 		return addrVec;
 	}
@@ -697,7 +692,7 @@ function(params) {
 
 	// XXX: temp bug fix #4325 (until mozilla bug #295422 gets fixed)
 	if (window.parentController && AjxEnv.isGeckoBased) {
-		var resp = this._appCtxt.getAppController().sendRequest({soapDoc: params.soapDoc});
+		var resp = this._appCtxt.getAppController().sendRequest(params.soapDoc);
 		if (resp.SendInviteReplyResponse) {
 			return resp.SendInviteReplyResponse;
 		} else if (resp.SaveDraftResponse) {
@@ -708,8 +703,7 @@ function(params) {
 			return resp.SendMsgResponse;
 		}
 	} else {
-		this._appCtxt.getAppController().sendRequest({soapDoc: params.soapDoc, asyncMode: true, callback: respCallback,
-													  errorCallback: params.errorCallback, execFrame: execFrame});
+		this._appCtxt.getAppController().sendRequest(params.soapDoc, true, respCallback, params.errorCallback, execFrame);
 	}
 };
 

@@ -96,22 +96,7 @@ function() {
 	return this._rosterPresence;
 };
 
-ZmRoster.prototype._notifyPresence =
-function() {
-    var fields = {};
-    fields[ZmRoster.F_PRESENCE] = this.getPresence();
-    this._notify(ZmEvent.E_MODIFY, {fields: fields});
-};
-
-ZmRoster.prototype.reload =
-function() {
-    this.getRosterItemList().removeAllItems();
-    var soapDoc = AjxSoapDoc.create("IMGetRosterRequest", "urn:zimbraIM");
-    var respCallback = new AjxCallback(this, this._handleResponseReload);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
-};
-
-ZmRoster.prototype._handleResponseReload =
+ZmRoster.prototype._handleGetRosterResponse =
 function(args) {
     var resp = args.getResponse()
     if (!resp || !resp.IMGetRosterResponse) return;
@@ -119,7 +104,7 @@ function(args) {
     var list = this.getRosterItemList();
     if (roster.items && roster.items.item) {
         var items = roster.items.item;
-        for (var i = 0; i < items.length; i++) {
+        for (var i=0; i < items.length; i++) {
             var item = items[i];
             if (item.subscription == "TO" || item.subscription == "BOTH") {
                 var rp = new ZmRosterPresence();
@@ -135,6 +120,21 @@ function(args) {
     }
 };
 
+ZmRoster.prototype._notifyPresence =
+function() {
+    var fields = {};
+    fields[ZmRoster.F_PRESENCE] = this.getPresence();
+    this._notify(ZmEvent.E_MODIFY, {fields: fields});
+};
+
+ZmRoster.prototype.reload =
+function() {
+    this.getRosterItemList().removeAllItems();
+    var soapDoc = AjxSoapDoc.create("IMGetRosterRequest", "urn:zimbraIM");
+    var callback = new AjxCallback(this, this._handleGetRosterResponse);
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, callback);
+};
+
 /**
  * create item on server.
  */
@@ -146,7 +146,7 @@ function(addr, name, groups) {
 	if (name) method.setAttribute("name", name);
 	if (groups) method.setAttribute("groups", groups);
 	method.setAttribute("op", "add");
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+	this._appCtxt.getAppController().sendRequest(soapDoc, true);
 };
 
 /**
@@ -159,7 +159,7 @@ function(show, priority, showStatus) {
 	presence.setAttribute("show", show);
 	if (priority) presence.setAttribute("priority", priority);
 	if (showStatus) soapDoc.set("status", showStatus, presence);	
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+	this._appCtxt.getAppController().sendRequest(soapDoc, true);
 };
 
 /**

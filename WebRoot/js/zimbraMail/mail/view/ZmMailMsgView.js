@@ -484,7 +484,7 @@ function(doc) {
 		    case 4:	// CDATA_SECTION_NODE (just in case)
 			// generate ObjectHandler-s
 			if (handlers && /[^\s\xA0]/.test(node.data)) try {
-				var a = null, b = null;
+ 				var a = null, b = null;
 
 				if (!AjxEnv.isIE) {
 					// this block of code is supposed to free the object handlers from
@@ -810,47 +810,8 @@ function(el, bodyPart, callback, result) {
 	// if no text part, check if theres a calendar part and generate some canned
 	// text, otherwise, get the html part if one exists
 	if (content == null) {
-		if (bodyPart.ct == ZmMimeTable.TEXT_CAL) {
-			// NOTE: If there's only a text/calendar part, then fall
-			//       back to the description line(s) in the vcal content.
-			/***
-			var regex = /DESCRIPTION:(.*(?:\r\n\s+.*)*)/;
-			var results = regex.exec(bodyPart.content);
-			if (results && results.length > 1) {
-				content = results[1];
-				content = content.replace(/\r\n\s+/g," ");
-				content = content.replace(/\\t/g, "\t");
-				content = content.replace(/\\n/g, "\n");
-				content = content.replace(/\\(.)/g, "$1");
-			}
-			/***/
-			// NOTE: IE doesn't match my multi-line regex, even when
-			//       explicitly specifying the "m" attribute.
-			var lines = bodyPart.content.split(/\r\n/);
-			var desc = [];
-			for (var i = 0; i < lines.length; i++) {
-				var line = lines[i];
-				if (line.match(/^DESCRIPTION:/)) {
-					desc.push(line.substr(12));
-					for (var j = i + 1; j < lines.length; j++) {
-						var line = lines[j];
-						if (line.match(/^\s+/)) {
-							desc.push(line.replace(/^\s+/, " "));
-							continue;
-						}
-						break;
-					}
-					break;
-				}
-			}
-			if (desc.length > 0) {
-				content = desc.join("");
-				content = content.replace(/\\t/g, "\t");
-				content = content.replace(/\\n/g, "\n");
-				content = content.replace(/\\(.)/g, "$1");
-			}
-			/***/
-		}
+		if (bodyPart.ct == ZmMimeTable.TEXT_CAL)
+			content = this._msg.isInvite() ? this._msg.getInvite().getCannedText() : null;
 		else if (bodyPart.ct == ZmMimeTable.TEXT_HTML)
 			content = bodyPart.content;
 	}
@@ -1047,7 +1008,8 @@ function(msg, preferHtml, callback) {
 		if (preferHtml)
 			msgNode.setAttribute("html", "1");
 		var respCallback = new AjxCallback(null, ZmMailMsgView._handleResponseGetPrintHtml, [msg, preferHtml, callback]);
-		window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+		var appCtlr = window._zimbraMail;
+		appCtlr.sendRequest(soapDoc, true, respCallback);
 	} else {
 		if (callback)
 			ZmMailMsgView._printMessage(msg, preferHtml, callback);

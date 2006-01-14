@@ -99,8 +99,7 @@ function(attrs, callback, errorCallback) {
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
 DBG.showTiming(true, AjxDebug.PERF, "[PROFILING CONTACT LIST]");
 DBG.timePt(AjxDebug.PERF, "requesting contact list");
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
-												  callback: respCallback, errorCallback: errorCallback});
+	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
 };
 
 ZmContactList.prototype._handleResponseLoad =

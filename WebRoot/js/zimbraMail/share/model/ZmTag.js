@@ -115,7 +115,7 @@ function(name, color, callback, errorCallback) {
 	var tagNode = soapDoc.set("tag");
 	tagNode.setAttribute("name", name);
 	tagNode.setAttribute("color", color);
-	this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback});
+	this.tree._appCtxt.getAppController().sendRequest(soapDoc, true, callback, errorCallback);
 };
 
 ZmTag.prototype.getName = 
