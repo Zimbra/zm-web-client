@@ -87,6 +87,9 @@ function(parent, obj, tree, sorted) {
 
 ZmTag.sortCompare = 
 function(tagA, tagB) {
+	var check = ZmOrganizer.checkSortArgs(tagA, tagB);
+	if (check != null) return check;
+
 	if (tagA.name.toLowerCase() > tagB.name.toLowerCase()) return 1;
 	if (tagA.name.toLowerCase() < tagB.name.toLowerCase()) return -1;
 	return 0;
