@@ -179,8 +179,8 @@ function(ev) {
 ZmEmailObjectHandler.prototype._filterListener =
 function(ev) {
 	var rule = new ZmFilterRule();
-	rule.addCondition(new ZmCondition("from", ":is", this._actionAddress));
-	rule.addAction(new ZmAction("keep"));
+	rule.addCondition(new ZmCondition(ZmFilterRule.C_FROM, ZmFilterRule.OP_IS, this._actionAddress));
+	rule.addAction(new ZmAction(ZmFilterRule.A_KEEP));
 	var dialog = this._appCtxt.getFilterRuleDialog();
 	dialog.popup(rule);
 };
