@@ -1008,8 +1008,7 @@ function(msg, preferHtml, callback) {
 		if (preferHtml)
 			msgNode.setAttribute("html", "1");
 		var respCallback = new AjxCallback(null, ZmMailMsgView._handleResponseGetPrintHtml, [msg, preferHtml, callback]);
-		var appCtlr = window._zimbraMail;
-		appCtlr.sendRequest(soapDoc, true, respCallback);
+		window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 	} else {
 		if (callback)
 			ZmMailMsgView._printMessage(msg, preferHtml, callback);

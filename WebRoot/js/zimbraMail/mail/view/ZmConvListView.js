@@ -304,8 +304,7 @@ function(conv, preferHtml, callback) {
 		msgNode.setAttribute("id", conv.id);
 		
 		var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetPrintHtml, [conv, preferHtml, callback]);
-		var appCtlr = window._zimbraMail;
-		appCtlr.sendRequest(soapDoc, true, respCallback);
+		window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 	} else {
 		ZmConvListView._printMessages(conv, preferHtml, callback);
 	}
@@ -340,8 +339,7 @@ function(conv, preferHtml, callback) {
 		msgRequest.appendChild(msgNode);
 	}
 	var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetMessages, [conv, preferHtml, callback]);
-	var appCtlr = window._zimbraMail;
-	appCtlr.sendRequest(soapDoc, true, respCallback);
+	window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
 
 ZmConvListView._handleResponseGetMessages =

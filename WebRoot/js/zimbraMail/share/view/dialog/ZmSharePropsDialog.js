@@ -227,8 +227,7 @@ ZmSharePropsDialog.prototype._executeGrantAction = function(folder, share) {
 	shareNode.setAttribute("d", share.grantee.email);
 	shareNode.setAttribute("perm", share.link.perm);
 	
-	var appCtlr = this._appCtxt.getAppController();
-	var resp = appCtlr.sendRequest(soapDoc);
+	var resp = this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
 	
 	return resp.FolderActionResponse.action.zid;
 }

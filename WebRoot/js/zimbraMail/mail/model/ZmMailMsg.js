@@ -94,7 +94,8 @@ function(params) {
 	}
 	var respCallback = new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback]);
 	var execFrame = new AjxCallback(null, ZmMailMsg.fetchMsg, [params]);
-	params.sender.sendRequest(soapDoc, true, respCallback, params.errorCallback, execFrame);
+	params.sender.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback,
+							   errorCallback: params.errorCallback, execFrame: execFrame});
 };
 
 ZmMailMsg._handleResponseFetchMsg =
@@ -692,7 +693,7 @@ function(params) {
 
 	// XXX: temp bug fix #4325 (until mozilla bug #295422 gets fixed)
 	if (window.parentController && AjxEnv.isGeckoBased) {
-		var resp = this._appCtxt.getAppController().sendRequest(params.soapDoc);
+		var resp = this._appCtxt.getAppController().sendRequest({soapDoc: params.soapDoc});
 		if (resp.SendInviteReplyResponse) {
 			return resp.SendInviteReplyResponse;
 		} else if (resp.SaveDraftResponse) {
@@ -703,7 +704,8 @@ function(params) {
 			return resp.SendMsgResponse;
 		}
 	} else {
-		this._appCtxt.getAppController().sendRequest(params.soapDoc, true, respCallback, params.errorCallback, execFrame);
+		this._appCtxt.getAppController().sendRequest({soapDoc: params.soapDoc, asyncMode: true, callback: respCallback,
+													  errorCallback: params.errorCallback, execFrame: execFrame});
 	}
 };
 

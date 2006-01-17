@@ -198,7 +198,7 @@ function(force, callback) {
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: load rules");
 	var soapDoc = AjxSoapDoc.create("GetRulesRequest", "urn:zimbraMail");
 	var respCallback = new AjxCallback(this, this._handleResponseLoadRules, [callback]);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
 	
 ZmFilterRules.prototype._handleResponseLoadRules = 
@@ -330,7 +330,8 @@ function(index, notify, callback, errorCallback) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseSaveRules, [index, notify, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorSaveRules);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+												  callback: respCallback, errorCallback: errorCallback});
 };
 
 ZmFilterRules.prototype._handleResponseSaveRules =

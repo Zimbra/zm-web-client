@@ -621,7 +621,7 @@ function(calendars) {
 		}
 		var respCallback = new AjxCallback(this, this._handleResponseGetShares);
 		
-		this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback);
+		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 	}
 };
 
@@ -1296,7 +1296,7 @@ function(ev) {
 ZmCalViewController.prototype.sendRequest = 
 function(soapDoc) {
 	try {
-		return this._appCtxt.getAppController().sendRequest(soapDoc);
+		return this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
 	} catch (ex) {
 		// do nothing
 		return null;

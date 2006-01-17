@@ -148,7 +148,7 @@ function(text) {
     method.setAttribute("thread", thread);
     method.setAttribute("op", "close");
     // TODO: error handling
-	this._appCtxt.getAppController().sendRequest(soapDoc, true);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
 };
 
 /**
@@ -164,7 +164,7 @@ function(text) {
 	message.setAttribute("addr", this.getRosterItem(0).getAddress());
     var body = soapDoc.set("body", text, message);
     // TODO: error handling
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, this._sendMessageCallbackObj);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: this._sendMessageCallbackObj});
 };
 
 // stash the thread

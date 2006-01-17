@@ -116,7 +116,7 @@ ZmAcceptShareDialog.prototype._handleYesButton = function(event) {
 	//appCtlr.setActionedIds([this.organizer.id]); // TODO: ???
 	var mountpointId;
 	try {
-		var resp = appCtlr.sendRequest(soapDoc)["CreateMountpointResponse"];
+		var resp = appCtlr.sendRequest({soapDoc: soapDoc})["CreateMountpointResponse"];
 		mountpointId = parseInt(resp.link[0].id);
 	}
 	catch (ex) {
@@ -140,7 +140,7 @@ ZmAcceptShareDialog.prototype._handleYesButton = function(event) {
 	actionNode.setAttribute("color", this._color.getValue());
 
 	try {
-		var resp = appCtlr.sendRequest(soapDoc)["FolderActionResponse"];
+		var resp = appCtlr.sendRequest({soapDoc: soapDoc})["FolderActionResponse"];
 	}
 	catch (ex) {
 		// TODO: handle error

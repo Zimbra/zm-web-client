@@ -68,7 +68,8 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._pollActionId = null;
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
 	var errorCallback = new AjxCallback(this, this._handleErrorDoPoll);
-	this._pollAction = new AjxTimedAction(this, this.sendRequest, [soapDoc, true, null, errorCallback, null, null, true]);
+	var pollParams = {soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback, noBusyOverlay: true};
+	this._pollAction = new AjxTimedAction(this, this.sendRequest, [pollParams]);
 
 	this._needOverviewLayout = false;
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);	
@@ -371,24 +372,24 @@ function(settings) {
 * @param timeout		[int]*			timeout value (in seconds)
 * @param noBusyOverlay	[boolean]*		if true, don't use the busy overlay
 */
+//function(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout, noBusyOverlay) {
 ZmZimbraMail.prototype.sendRequest = 
-function(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout, noBusyOverlay) {
-	var reqId = ZmZimbraMail.getNextReqId();
-	timeout = (timeout != null) ? timeout : this._stdTimeout;
+function(params) {
+	var reqId = params.reqId = ZmZimbraMail.getNextReqId();
+	var timeout = (params.timeout != null) ? params.timeout : this._stdTimeout;
 	if (timeout) timeout = timeout * 1000; // convert seconds to ms
-	var asyncCallback = asyncMode ? new AjxCallback(this, this._handleResponseSendRequest,
-													[true, callback, errorCallback, noBusyOverlay, execFrame, reqId]) : null;
+	var asyncCallback = params.asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [params]) : null;
 	var command = new ZmCsfeCommand();
-	var params = {soapDoc: soapDoc, useXml: this._useXml, changeToken: this._changeToken,
-				  asyncMode: asyncMode, callback: asyncCallback, logRequest: this._logRequest};
+	var cmdParams = {soapDoc: params.soapDoc, useXml: this._useXml, changeToken: this._changeToken,
+					 asyncMode: params.asyncMode, callback: asyncCallback, logRequest: this._logRequest};
 	
-	DBG.println(AjxDebug.DBG2, "sendRequest: " + soapDoc._methodEl.nodeName);
-	if (asyncMode && !noBusyOverlay) {
+	DBG.println(AjxDebug.DBG2, "sendRequest: " + params.soapDoc._methodEl.nodeName);
+	if (params.asyncMode && !params.noBusyOverlay) {
 		var cancelCallback = null;
 		var showBusyDialog = false;
 		if (timeout) {
 			DBG.println(AjxDebug.DBG1, "ZmZimbraMail.sendRequest: timeout for " + reqId + " is " + timeout);
-			cancelCallback = new AjxCallback(this, this.cancelRequest, [reqId, errorCallback]);
+			cancelCallback = new AjxCallback(this, this.cancelRequest, [reqId, params.errorCallback]);
 			showBusyDialog = true;
 		}
 		this._shell.setBusy(true, reqId, showBusyDialog, timeout, cancelCallback); // put up busy overlay to block user input
@@ -397,32 +398,30 @@ function(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout, noBusy
 	this._pendingRequests[reqId] = command;
 
 	try {
-		var response = command.invoke(params);
+		var response = command.invoke(cmdParams);
 		command.state = ZmZimbraMail._SENT;
 	} catch (ex) {
-		if (asyncMode)
-			this._handleResponseSendRequest(asyncMode, asyncCallback, errorCallback, noBusyOverlay,
-											execFrame, reqId, new ZmCsfeResult(ex, true));
+		if (params.asyncMode)
+			this._handleResponseSendRequest(params, new ZmCsfeResult(ex, true));
 		else
 			throw ex;
 	}
-	if (!asyncMode)
-		return this._handleResponseSendRequest(asyncMode, null, errorCallback, noBusyOverlay,
-											   execFrame, reqId, response);
+	if (!params.asyncMode)
+		return this._handleResponseSendRequest(params, response);
 };
 
 ZmZimbraMail.prototype._handleResponseSendRequest =
-function(asyncMode, callback, errorCallback, noBusyOverlay, execFrame, reqId, result) {
+function(params, result) {
 	if (this._cancelDialog && this._cancelDialog.isPoppedUp())
 		this._cancelDialog.popdown();
 
-	if (!this._pendingRequests[reqId]) return;
-	if (this._pendingRequests[reqId].state == ZmZimbraMail._CANCEL) return;
+	if (!this._pendingRequests[params.reqId]) return;
+	if (this._pendingRequests[params.reqId].state == ZmZimbraMail._CANCEL) return;
 	
-	this._pendingRequests[reqId].state = ZmZimbraMail._RESPONSE;
+	this._pendingRequests[params.reqId].state = ZmZimbraMail._RESPONSE;
 	
-	if (!noBusyOverlay)
-		this._shell.setBusy(false, reqId); // remove busy overlay
+	if (!params.noBusyOverlay)
+		this._shell.setBusy(false, params.reqId); // remove busy overlay
 
 	// we just got activity, cancel current poll timer
 	if (this._pollActionId)
@@ -430,15 +429,15 @@ function(asyncMode, callback, errorCallback, noBusyOverlay, execFrame, reqId, re
 
 	var response;
 	try {
-		response = asyncMode ? result.getResponse() : result;
+		response = params.asyncMode ? result.getResponse() : result;
 	} catch (ex) {
-		DBG.println(AjxDebug.DBG2, "Request " + reqId + " got an exception");
-		if (errorCallback) {
-			var handled = errorCallback.run(ex);
+		DBG.println(AjxDebug.DBG2, "Request " + params.reqId + " got an exception");
+		if (params.errorCallback) {
+			var handled = params.errorCallback.run(ex);
 			if (!handled)
-				this._handleException(ex, execFrame);
+				this._handleException(ex, params.execFrame);
 		} else {
-			this._handleException(ex, execFrame);
+			this._handleException(ex, params.execFrame);
 		}
 		return;
 	}
@@ -451,17 +450,17 @@ function(asyncMode, callback, errorCallback, noBusyOverlay, execFrame, reqId, re
 		this._checkOverviewLayout();
 	}
 
-	if (asyncMode)
+	if (params.asyncMode)
 		result.set(response.Body);
 
 	// start poll timer if we didn't get an exception
 	if (this._pollInterval)
 		this._pollActionId = this._doPoll();
 
-	if (asyncMode)
-		if (callback) callback.run(result);
+	if (params.asyncMode)
+		if (params.callback) params.callback.run(result);
 	
-	this._clearPendingRequest(reqId);
+	this._clearPendingRequest(params.reqId);
 
 	// handle notifications after the response, so that item state is current
 	if (hdr && hdr.context && hdr.context.notify) {
@@ -472,7 +471,7 @@ function(asyncMode, callback, errorCallback, noBusyOverlay, execFrame, reqId, re
 		this._changeToken = hdr.context.change.token;
 	}
 
-	if (!asyncMode)
+	if (!params.asyncMode)
 		return response.Body;
 };
 

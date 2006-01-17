@@ -105,7 +105,7 @@ function(startTime, endTime, emailList, callback) {
 	soapDoc.setMethodAttribute("e", endTime);
 	soapDoc.setMethodAttribute("uid", emailList);
 
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, callback);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback});
 };
 
 ZmApptComposeController.prototype.toggleSpellCheckButton = 

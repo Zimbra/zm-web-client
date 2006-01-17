@@ -177,7 +177,8 @@ function(oldPassword, newPassword) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseChangePassword);
 	var errorCallback = new AjxCallback(this, this._handleErrorChangePassword);
-	this._appCtxt.getAppController().sendRequest(soapDoc, true, respCallback, errorCallback);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+												  callback: respCallback, errorCallback: errorCallback});
 };
 
 ZmPrefController.prototype._handleResponseChangePassword =

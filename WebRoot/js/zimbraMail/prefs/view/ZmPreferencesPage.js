@@ -494,9 +494,6 @@ function(status, aid) {
 
 ZmPreferencesPage.prototype._finishImport = 
 function(aid) {
-
-	var appCtlr = this._appCtxt.getAppController();
-
 	// send the import request w/ the att Id to the server
 	var soapDoc = AjxSoapDoc.create("ImportContactsRequest", "urn:zimbraMail");
 	var method = soapDoc.getMethod();
@@ -505,7 +502,8 @@ function(aid) {
 	content.setAttribute("aid", aid);
 	
 	var respCallback = new AjxCallback(this, this._handleResponseFinishImport, [aid]);
-	appCtlr.sendRequest(soapDoc, true, respCallback, null, null, ZmPreferencesPage.IMPORT_TIMEOUT);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback,
+												  timeout: ZmPreferencesPage.IMPORT_TIMEOUT});
 };
 
 ZmPreferencesPage.prototype._handleResponseFinishImport =
