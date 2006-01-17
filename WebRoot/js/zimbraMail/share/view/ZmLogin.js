@@ -409,7 +409,7 @@ function(uname, pword, result) {
 		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || ex.code == ZmCsfeException.NO_SUCH_ACCOUNT) {
 			ZmLogin.setErrorMessage(ZmMsg.loginError);
 		} else if (ex.code == ZmCsfeException.SOAP_ERROR || ex.code == ZmCsfeException.NETWORK_ERROR) {
-			var msg = ZmMsg.errorNetwork + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
+			var msg = ZmMsg.errorNetwork + " " + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
 			ZmLogin.setErrorMessage(msg);
 		} else if (ex.code == ZmCsfeException.ACCT_CHANGE_PASSWORD)	{
 			var unameField = document.getElementById("uname");
@@ -418,8 +418,11 @@ function(uname, pword, result) {
 			// disable username and password fields
 			unameField.disabled = pwordField.disabled = true;
 			ZmLogin.showChangePass(ex);
+		} else if (ex.code == ZmCsfeException.ACCT_MAINTENANCE_MODE) {
+			var msg = ZmMsg.errorMaintenanceMode + " " + ZmMsg.errorContact;
+			ZmLogin.setErrorMessage(msg);
 		} else {
-			var msg = ZmMsg.errorApplication + "\n\n" + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
+			var msg = ZmMsg.errorApplication + " " + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
 			ZmLogin.setErrorMessage(msg + " (" + ex.code + ")");
 		}
 		return;

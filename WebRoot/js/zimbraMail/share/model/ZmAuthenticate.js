@@ -59,8 +59,11 @@ function(uname, pword, callback) {
 
 ZmAuthenticate.prototype._handleResponseExecute =
 function(callback, result) {
-	var resp = result.getResponse().Body.AuthResponse;
-	this._setAuthToken(resp);
+	if (!result.isException()) {
+		var resp = result.getResponse().Body.AuthResponse;
+		this._setAuthToken(resp);
+	}
+
 	if (callback) callback.run(result);
 };
 
