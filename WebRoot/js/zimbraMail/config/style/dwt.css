@@ -1340,3 +1340,7 @@ END FROM ADMIN */
 	margin: .25em;
 	margin-bottom: 0.50em;
 }
+
+.DwtMenuCascadeCell {
+	border-left: solid gray 1px;
+}
