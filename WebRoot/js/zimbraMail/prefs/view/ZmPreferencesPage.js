@@ -201,18 +201,22 @@ function(useDefaults) {
 		var pref = settings.getSetting(id);
 		var newValue = this._getPrefValue(id, useDefaults);
 		if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_FONT) {
-			var curValue = this._dwtObjects[id].getValue();
+			var input = this._dwtObjects[id];
+			if (!input) continue;
+			
+			var curValue = input.getValue();
 			if (newValue != null && (curValue != newValue))
 				this._dwtObjects[id].setSelectedValue(newValue);
 		} else if (type == ZmPref.TYPE_INPUT) {
+			var input = this._dwtObjects[id];
+			if (!input) continue;
+			
 			var curValue = this._dwtObjects[id].getValue();
 			if (newValue != null && (curValue != newValue))
 				this._dwtObjects[id].setValue(newValue);
 		} else {
 			var element = document.getElementById((ZmPref.KEY_ID + id));
-
-			if (!element || element.value == newValue)
-				continue;
+			if (!element || element.value == newValue) continue;
 
 			if (type == ZmPref.TYPE_CHECKBOX) {
 				element.checked = newValue ? true : false;
