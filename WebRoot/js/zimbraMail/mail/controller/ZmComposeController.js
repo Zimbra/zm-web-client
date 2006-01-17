@@ -64,9 +64,9 @@ function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText) {
 
 		// this is how child window knows what to do once loading:
 		newWin.command = "compose";
-		newWin.args = [action, msg, toOverride, subjOverride, extraBodyText];
+		newWin.args = [action, msg, toOverride, subjOverride, extraBodyText, null];
 	} else {
-		this._setView(action, msg, toOverride, subjOverride, extraBodyText);
+		this._setView(action, msg, toOverride, subjOverride, extraBodyText, null);
 	}
 };
 
@@ -134,6 +134,17 @@ ZmComposeController.prototype.sendMsg =
 function(attId, isDraft, callback) {
 	var msg = this._composeView.getMsg(attId, isDraft);
 	if (!msg) return;
+	
+	if (msg.inviteMode == ZmOperation.REPLY_CANCEL) {
+		var origMsg = msg._origMsg;
+		var appt = origMsg._appt;
+		
+		appt.cancel(origMsg._mode, msg);
+
+		this._composeView.reset(false);
+		this._app.popView(true);
+		return;
+	}
 
 	var contactList = !isDraft
 		? this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList() : null;
@@ -217,6 +228,9 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 	if (!this._toolbar)
 		this._createToolBar();
 	this._toolbar.enableAll(true);
+	if (action == ZmOperation.REPLY_CANCEL) {
+		this._toolbar.enable( [ ZmOperation.ATTACHMENT, ZmOperation.SAVE_DRAFT ], false);
+	}
 
 	this.initComposeView();
 
