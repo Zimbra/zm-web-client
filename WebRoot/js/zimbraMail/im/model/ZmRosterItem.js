@@ -137,6 +137,9 @@ function(oldGroup, newGroup) {
 
 ZmRosterItem.sortCompare = 
 function(itemA, itemB) {
+	var check = ZmOrganizer.checkSortArgs(itemA, itemB);
+	if (check != null) return check;
+
 	// sort by name
 	var itemAName = itemA.getDisplayName().toLowerCase();
 	var itemBName = itemB.getDisplayName().toLowerCase();

@@ -64,6 +64,9 @@ function(parent, obj, tree, link) {
 
 ZmZimlet.sortCompare =
 function(zimletA, zimletB) {
+	var check = ZmOrganizer.checkSortArgs(zimletA, zimletB);
+	if (check != null) return check;
+
 	// sort by name
 	var zimletAName = zimletA.name.toLowerCase();
 	var zimletBName = zimletB.name.toLowerCase();

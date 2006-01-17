@@ -160,6 +160,9 @@ function(parent, obj, tree) {
 */
 ZmFolder.sortCompare = 
 function(folderA, folderB) {
+	var check = ZmOrganizer.checkSortArgs(folderA, folderB);
+	if (check != null) return check;
+
 	if (ZmFolder.SORT_ORDER[folderA.id] && ZmFolder.SORT_ORDER[folderB.id])
 		return (ZmFolder.SORT_ORDER[folderA.id] - ZmFolder.SORT_ORDER[folderB.id]);
 	if (!ZmFolder.SORT_ORDER[folderA.id] && ZmFolder.SORT_ORDER[folderB.id]) return 1;

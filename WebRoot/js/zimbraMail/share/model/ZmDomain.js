@@ -37,7 +37,10 @@ ZmDomain.prototype = new ZmModel;
 ZmDomain.prototype.constructor = ZmDomain;
 
 ZmDomain.sortCompare = 
-function(a,b) {
+function(a, b) {
+	var check = ZmOrganizer.checkSortArgs(a, b);
+	if (check != null) return check;
+
 	if (a.name < b.name) return -1;
 	if (a.name > b.name) return 1;
 	return 0;

@@ -44,6 +44,9 @@ function() {
 
 ZmRosterTreeGroup.sortCompare = 
 function(groupA, groupB) {
+	var check = ZmOrganizer.checkSortArgs(groupA, groupB);
+	if (check != null) return check;
+
 	// sort by name
 	var groupAName = groupA.getName().toLowerCase();
 	var groupBName = groupB.getName().toLowerCase();

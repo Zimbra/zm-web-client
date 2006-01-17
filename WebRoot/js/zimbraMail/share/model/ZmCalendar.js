@@ -182,6 +182,9 @@ function(name) {
 
 ZmCalendar.sortCompare = 
 function(calA, calB) {
+	var check = ZmOrganizer.checkSortArgs(calA, calB);
+	if (check != null) return check;
+
 	// links appear after personal calendars
 	if (calA.link != calB.link) {
 		return calA.link ? 1 : -1;

@@ -40,6 +40,9 @@ ZmRosterTreeItem.ID_ROSTER_TREE_ITEM = ZmOrganizer.ID_ROSTER_TREE_ITEM;
 
 ZmRosterTreeItem.sortCompare = 
 function(itemA, itemB) {
+	var check = ZmOrganizer.checkSortArgs(itemA, itemB);
+	if (check != null) return check;
+
 	// sort by name
 	var itemAName = itemA.getName().toLowerCase();
 	var itemBName = itemB.getName().toLowerCase();

@@ -182,6 +182,14 @@ function(name) {
 	return null;
 };
 
+ZmOrganizer.checkSortArgs =
+function(orgA, orgB) {
+	if (!orgA && !orgB) return 0;
+	if (orgA && !orgB) return 1;
+	if (!orgA && orgB) return -1;
+	return null;
+};
+
 ZmOrganizer.checkColor =
 function(color) {
 	return ((color != null) && (color >= 0 && color <= ZmOrganizer.MAX_COLOR)) ? color : ZmOrganizer.DEFAULT_COLOR;
