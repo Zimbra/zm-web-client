@@ -75,6 +75,7 @@ HTML>BODY INPUT {		/* clean border that works in FF */
 
 .ZmOverride {
 	background-color:#FFF6BF;
+	padding:2px;
 }
 
 .ZmSelectedHeaderBg {
