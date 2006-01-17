@@ -142,7 +142,7 @@ function(msg) {
 		var invite = msg.getInvite();
 		// in the single component case, which I think is going to be 90%
 		// of the time, we will just show a single toobar.
-		if (!invite.hasMultipleComponents()) {
+		if (!invite.isEmpty() && !invite.hasMultipleComponents() && msg.folderId != ZmFolder.ID_TRASH) {
 			// create toolbar
 			var topToolbar = this._getInviteToolbar();
 			// nuke the old toolbar if it exists b4 appending the new one
