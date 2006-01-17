@@ -1257,6 +1257,7 @@ function (appt) {
 	var calendar = this.getCheckedCalendar(appt.folderId);
 	var share = calendar.link ? calendar.shares[0] : null;
 
+	// action menu options
 	var accept = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_ACCEPT);
 	var decline = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_DECLINE);
 	var tent = this._actionMenu.getItemById(ZmOperation.KEY_ID,ZmOperation.REPLY_TENTATIVE);
@@ -1274,6 +1275,10 @@ function (appt) {
 	var write = share ? share.isWrite() : true;
 	var enabled = isOrganizer || write;
 	del.setEnabled(enabled);
+	
+	// recurring action menu options
+	var series = this._recurringActionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.VIEW_APPT_SERIES);
+	series.setEnabled(!appt.exception);
 };
 
 ZmCalViewController.prototype._listActionListener = 
