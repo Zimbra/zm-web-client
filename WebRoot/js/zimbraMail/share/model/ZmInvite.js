@@ -56,6 +56,7 @@ function(node) {
 	// not sure why components are null .. but.
 	if (invite.components == null) {
 		invite.components = [{}];
+		invite.components.empty = true;
 	}
 	return invite;
 };
@@ -150,6 +151,11 @@ function (compNum){
 ZmInvite.prototype.getRecurrenceRules = 
 function(compNum) {
 	return this.components[compNum].recur
+};
+
+ZmInvite.prototype.isEmpty =
+function() {
+	return Boolean(this.components.empty);
 };
 
 ZmInvite.prototype.isException = 

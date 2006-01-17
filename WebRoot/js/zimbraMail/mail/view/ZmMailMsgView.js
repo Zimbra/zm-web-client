@@ -142,7 +142,7 @@ function(msg) {
 		var invite = msg.getInvite();
 		// in the single component case, which I think is going to be 90%
 		// of the time, we will just show a single toobar.
-		if (!invite.hasMultipleComponents()) {
+		if (!invite.isEmpty() && !invite.hasMultipleComponents() && msg.folderId != ZmFolder.ID_TRASH) {
 			// create toolbar
 			var topToolbar = this._getInviteToolbar();
 			// nuke the old toolbar if it exists b4 appending the new one
@@ -811,7 +811,7 @@ function(el, bodyPart, callback, result) {
 	// text, otherwise, get the html part if one exists
 	if (content == null) {
 		if (bodyPart.ct == ZmMimeTable.TEXT_CAL) {
-			// NOTE: If there's only a text/calendar part, then fall 
+			// NOTE: If there's only a text/calendar part, then fall
 			//       back to the description line(s) in the vcal content.
 			/***
 			var regex = /DESCRIPTION:(.*(?:\r\n\s+.*)*)/;
