@@ -195,11 +195,12 @@ function(skipNotify) {
 	// based on preference, set the compose mode
 	var bComposeEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
-	var composeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
+	var composeMode = (bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML)
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-	formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, composeMode, skipNotify);
+	if (formatBtn)
+		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, composeMode, skipNotify);
 };
 
 ZmApptComposeController.prototype._showErrorMessage = 
@@ -365,7 +366,8 @@ function(ev) {
 	this._textModeOkCancel.popdown();
 	// reset the radio button for the format button menu
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-	formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
+	if (formatBtn)
+		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
 	this._apptView.reEnableDesignMode();
 };
 
