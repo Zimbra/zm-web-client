@@ -47,32 +47,32 @@ function ZmController(appCtxt, container, app) {
 };
 
 var i = 1;
-ZmController.CONVLIST_VIEW 			= i++;
-ZmController.CONV_VIEW 				= i++;
-ZmController.TRAD_VIEW 				= i++;
-ZmController.MSG_VIEW 				= i++;
-ZmController.MSG_NEW_WIN_VIEW        = i++; // needed for HACK (see ZmMailMsg)
-ZmController.CONTACT_CARDS_VIEW      = i++;
-ZmController.CONTACT_SIMPLE_VIEW 	= i++;
-ZmController.CONTACT_VIEW			= i++;
-ZmController.READING_PANE_VIEW 		= i++;
-ZmController.ATT_LIST_VIEW 			= i++;
-ZmController.ATT_ICON_VIEW 			= i++;
-ZmController.CAL_VIEW				= i++;
-ZmController.COMPOSE_VIEW			= i++;
-ZmController.CONTACT_SRC_VIEW		= i++; // contact picker source list
-ZmController.CONTACT_TGT_VIEW		= i++; // contact picker target list
-ZmController.PREF_VIEW				= i++;
-ZmController.CAL_DAY_VIEW			= i++;
-ZmController.CAL_SCHEDULE_VIEW		= i++;
-ZmController.CAL_WEEK_VIEW			= i++;
-ZmController.CAL_MONTH_VIEW			= i++;
-ZmController.CAL_WORK_WEEK_VIEW		= i++;
-ZmController.APPT_DETAIL_VIEW		= i++;
-ZmController.APPOINTMENT_VIEW 		= i++;
-ZmController.MIXED_VIEW				= i++;
-ZmController.IM_CHAT_TAB_VIEW         = i++;
-ZmController.IM_CHAT_MULTI_WINDOW_VIEW      = i++;
+ZmController.CONVLIST_VIEW 				= i++;
+ZmController.CONV_VIEW 					= i++;
+ZmController.TRAD_VIEW 					= i++;
+ZmController.MSG_VIEW 					= i++;
+ZmController.MSG_NEW_WIN_VIEW			= i++; // needed for HACK (see ZmMailMsg)
+ZmController.CONTACT_CARDS_VIEW			= i++;
+ZmController.CONTACT_SIMPLE_VIEW 		= i++;
+ZmController.CONTACT_VIEW				= i++;
+ZmController.READING_PANE_VIEW 			= i++;
+ZmController.ATT_LIST_VIEW 				= i++;
+ZmController.ATT_ICON_VIEW 				= i++;
+ZmController.CAL_VIEW					= i++;
+ZmController.COMPOSE_VIEW				= i++;
+ZmController.CONTACT_SRC_VIEW			= i++; // contact picker source list
+ZmController.CONTACT_TGT_VIEW			= i++; // contact picker target list
+ZmController.PREF_VIEW					= i++;
+ZmController.CAL_DAY_VIEW				= i++;
+ZmController.CAL_SCHEDULE_VIEW			= i++;
+ZmController.CAL_WEEK_VIEW				= i++;
+ZmController.CAL_MONTH_VIEW				= i++;
+ZmController.CAL_WORK_WEEK_VIEW			= i++;
+ZmController.APPT_DETAIL_VIEW			= i++;
+ZmController.APPOINTMENT_VIEW 			= i++;
+ZmController.MIXED_VIEW					= i++;
+ZmController.IM_CHAT_TAB_VIEW			= i++;
+ZmController.IM_CHAT_MULTI_WINDOW_VIEW	= i++;
 
 // Abstract methods
 
@@ -166,53 +166,8 @@ function(ex, method, params, restartOnError, obj) {
 		// remember the last search attempted for all other exceptions
 		this._execFrame = (method instanceof AjxCallback) ? method : {obj: obj, func: method, args: params, restartOnError: restartOnError};
 		this._errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
-		var msg = this._getErrorMsg(ex.code, params);
-		this.popupErrorDialog(msg, ex, true);
+		this.popupErrorDialog(ex.getErrorMsg(), ex, true);
 	}
-};
-
-// Map error code to error message. Optional params can be substituted.
-ZmController.prototype._getErrorMsg =
-function(code, params) {
-	var msg = null;
-	
-	switch (code) {
-		// network errors
-		case AjxException.NETWORK_ERROR:				msg = ZmMsg.errorNetwork; break;
-		case ZmCsfeException.NETWORK_ERROR:				msg = ZmMsg.errorNetwork; break;
-		case ZmCsfeException.SOAP_ERROR:				msg = ZmMsg.errorNetwork; break;
-		case ZmCsfeException.CSFE_SVC_ERROR:			msg = ZmMsg.errorService; break;
-
-		// CSFE errors
-		case ZmCsfeException.SVC_FAILURE:				msg = ZmMsg.errorService; break;
-		case ZmCsfeException.SVC_UNKNOWN_DOCUMENT:		msg = ZmMsg.errorUnknownDoc; break;
-		case ZmCsfeException.SVC_PARSE_ERROR:			msg = ZmMsg.errorParse; break;
-		case ZmCsfeException.SVC_PERM_DENIED:			msg = ZmMsg.errorPermission; break;
-
-		// account errors
-		case ZmCsfeException.ACCT_NO_SUCH_ACCOUNT:		msg = ZmMsg.errorNoSuchAcct; break;
-		case ZmCsfeException.ACCT_INVALID_PASSWORD:		msg = ZmMsg.errorInvalidPass; break;
-		case ZmCsfeException.ACCT_INVALID_PREF_NAME:	msg = ZmMsg.errorInvalidPrefName; break;
-		case ZmCsfeException.ACCT_INVALID_PREF_VALUE:	msg = ZmMsg.errorInvalidPrefValue; break;
-		case ZmCsfeException.ACCT_NO_SUCH_SAVED_SEARCH:	msg = ZmMsg.errorNoSuchSavedSearch; break;
-		case ZmCsfeException.ACCT_NO_SUCH_TAG:			msg = ZmMsg.errorNoSuchTag; break;
-
-		// mail errors
-		case ZmCsfeException.MAIL_INVALID_NAME:			msg = AjxStringUtil.resolve(ZmMsg.errorInvalidName, params.name); break;
-		case ZmCsfeException.MAIL_NO_SUCH_FOLDER:		msg = ZmMsg.errorNoSuchFolder; break;
-		case ZmCsfeException.MAIL_NO_SUCH_TAG:			msg = ZmMsg.errorNoSuchTag; break;
-		case ZmCsfeException.MAIL_NO_SUCH_CONV:			msg = ZmMsg.errorNoSuchConv; break;
-		case ZmCsfeException.MAIL_NO_SUCH_MSG:			msg = ZmMsg.errorNoSuchMsg; break;
-		case ZmCsfeException.MAIL_NO_SUCH_PART:			msg = ZmMsg.errorNoSuchPart; break;
-		case ZmCsfeException.MAIL_QUERY_PARSE_ERROR:	msg = ZmMsg.errorQueryParse; break;
-		case ZmCsfeException.MAIL_QUOTA_EXCEEDED:		msg = ZmMsg.errorQuotaExceeded; break;
-		case ZmCsfeException.MAIL_TOO_MANY_CONTACTS:	msg = ZmMsg.errorTooManyContacts; break;
-
-		// general errors
-		default:										msg = ZmMsg.errorGeneric; break;
-	}
-	
-	return msg;
 };
 
 /*

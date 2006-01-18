@@ -160,6 +160,40 @@ function(attId, isDraft, callback) {
 	}
 };
 
+ZmComposeController.prototype._handleResponseSendMsg =
+function(isDraft, msg, callback, result) {
+	var resp = result.getResponse();
+	this._processSendMsg(isDraft, msg, resp);
+
+	if (callback) callback.run(result);
+};
+
+ZmComposeController.prototype._handleErrorSendMsg =
+function(ex) {
+	this._toolbar.enableAll(true);
+	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
+		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE_INVALID);
+		var unsent = ex.getData(ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE_UNSENT);
+		var invalidMsg = (invalid && invalid.length) ? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses, AjxStringUtil.htmlEncode(invalid.join(", "))) : null;
+		var unsentMsg = (unsent && unsent.length) ? AjxMessageFormat.format(ZmMsg.sendErrorUnsentAddresses, AjxStringUtil.htmlEncode(unsent.join(", "))) : null;
+		var msg = ZmMsg.sendError;
+		if (invalidMsg || unsentMsg) {
+			msg = msg + "<br /><br />";
+			if (invalidMsg)
+				msg = msg + invalidMsg
+			if (invalidMsg && unsentMsg)
+				msg = msg += "<br />";
+			if (unsentMsg)
+				msg = msg + unsentMsg;
+		}
+		this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+		this._msgDialog.popup();
+		return true;
+	} else {
+		return false;
+	}
+};
+
 /**
 * Creates a new ZmComposeView if one does not already exist
 *
@@ -511,20 +545,6 @@ function(ev) {
 
 
 // Callbacks
-
-ZmComposeController.prototype._handleResponseSendMsg =
-function(isDraft, msg, callback, result) {
-	var resp = result.getResponse();
-	this._processSendMsg(isDraft, msg, resp);
-
-	if (callback) callback.run(result);
-};
-
-ZmComposeController.prototype._handleErrorSendMsg =
-function(ex) {
-	this._toolbar.enableAll(true);
-	return false;
-};
 
 ZmComposeController.prototype._detachCallback =
 function() {

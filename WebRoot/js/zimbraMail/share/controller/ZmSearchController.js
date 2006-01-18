@@ -391,7 +391,7 @@ function(search, isMixed, ex) {
 		ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
 		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR) {
 
-		var msg = this._getErrorMsg(ex.code);
+		var msg = ex.getErrorMsg();
 		this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 		var results = new ZmSearchResult(this._appCtxt);
 		results.type = search.types ? search.types.get(0) : null;
