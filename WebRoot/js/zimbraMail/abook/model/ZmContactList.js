@@ -266,13 +266,19 @@ function(items) {
 	}
 }
 
-// Handle modified contact. Note that the update of the autocomplete tree isn't
-// optimized - we don't check whether any of the changed attributes are related to
-// autocomplete.
+// Handle modified contact. 
 ZmContactList.prototype.modifyLocal =
 function(item, details) {
-	// remove traces of old contact
-	var oldContact = new ZmContact(this._appCtxt, details.contact.id, this);
+	if (details) {
+		// notify item's list
+		details.items = [item];
+		this._notify(ZmEvent.E_MODIFY, details);
+	}
+
+	// Remove traces of old contact - NOTE: we pass in null for the ID on 
+	// PURPOSE to avoid overwriting the existing cached contact
+	var oldContact = new ZmContact(this._appCtxt, null, this);
+	oldContact.id = details.contact.id;
 	oldContact.attr = details.oldAttr;
 	this._updateEmailHash(oldContact, false);
 	this._updateAcList(oldContact, false);
@@ -483,4 +489,10 @@ function(contact) {
 		if (ZmContact.compareByFileAs(a[i], contact) > 0)
 			return i;
 	return a.length;
+};
+
+ZmContactList.prototype._handleResponseModifyItem =
+function(item, result) {
+	// NOTE: we overload and do nothing b/c base class does more than we want 
+	//       (since everything is handled by notifications)
 };

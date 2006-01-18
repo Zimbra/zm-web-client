@@ -354,43 +354,50 @@ function(attr, callback) {
 	
 	var respCallback = new AjxCallback(this, this._handleResponseModify, [attr, callback]);
 	var execFrame = new AjxCallback(this, this.modify, [attr]);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback, execFrame: execFrame});
+	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, execFrame:execFrame});
 };
 
 ZmContact.prototype._handleResponseModify =
 function(attr, callback, result) {
 	var resp = result.getResponse().ModifyContactResponse;
-	cn = resp ? resp.cn[0] : null;
+	var cn = resp ? resp.cn[0] : null;
 	var id = cn ? cn.id : null;
-	var details = null;
 	
 	if (id && id == this.id) {
-		this.modified = cn.md;
-		var oldFileAs = this.getFileAs();
-		var oldFullName = this.getFullName();
-		this._resetCachedFields();
-		var oldAttr = new Object();
-		for (var a in attr) {
-			oldAttr[a] = this.getAttr(a);
-			if (attr[a] == undefined || attr[a] == '') {
-				this.removeAttr(a);
-			} else {
-				this.setAttr(a, attr[a]);
-			}
-		}
-		details = {attr: attr, oldAttr: oldAttr, fullNameChanged: this.getFullName() != oldFullName,
-				   fileAsChanged: this.getFileAs() != oldFileAs, contact: this};
-
 		this._appCtxt.getAppController().setStatusMsg(ZmMsg.contactModify);
 	} else {
 		var msg = ZmMsg.errorModifyContact + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
 		this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
 	}
-	
-	if (callback) {
-		result.set(details);
-		callback.run(result);
+	// NOTE: we no longer process callbacks here since notification handling 
+	//       takes care of everything, ya heard!
+};
+
+ZmContact.prototype.notifyModify =
+function(obj) {
+	ZmItem.prototype.notifyModify.call(this, obj);
+
+	var oldFileAs = this.getFileAs();
+	var oldFullName = this.getFullName();
+	this._resetCachedFields();
+	var oldAttr = new Object();
+	for (var a in obj._attrs) {
+		oldAttr[a] = this.getAttr(a);
+		if (obj._attrs[a] == undefined || obj._attrs[a] == "") {
+			this.removeAttr(a);
+		} else {
+			this.setAttr(a, obj._attrs[a]);
+		}
 	}
+	var details = {attr:obj._attrs, oldAttr:oldAttr, 
+				   fullNameChanged:this.getFullName() != oldFullName,
+				   fileAsChanged:this.getFileAs() != oldFileAs, 
+				   contact:this};
+
+	// update this contact's list per old/new attrs
+	this.list.modifyLocal(obj, details);
+
+	this._notify(ZmEvent.E_MODIFY, obj);
 };
 
 /**
