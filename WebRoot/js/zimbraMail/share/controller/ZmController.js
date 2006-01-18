@@ -142,7 +142,6 @@ function(ex, method, params) {
 
 ZmController.prototype._handleException =
 function(ex, method, params, restartOnError, obj) {
-	DBG.dumpObj(AjxDebug.DBG1, ex);
 	if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED || 
 		ex.code == ZmCsfeException.SVC_AUTH_REQUIRED || 
 		ex.code == ZmCsfeException.NO_AUTH_TOKEN) {
@@ -236,23 +235,25 @@ ZmController.prototype._handleResponseDoAuth =
 function(pubComp, result) {
 	try {
 		result.getResponse();
-	   	this._authenticating = false;
-	   	this._appCtxt.setIsPublicComputer(pubComp);
-	   	if (this._execFrame instanceof AjxCallback) {
-		   	// exec frame for an async call is a callback
-	   		this._execFrame.run();
-	   		this._execFrame = null;
-	   	} else if (this._execFrame) {
+		this._authenticating = false;
+		this._appCtxt.setIsPublicComputer(pubComp);
+		if (this._execFrame instanceof AjxCallback) {
+			// exec frame for an async call is a callback
+			this._execFrame.run();
+			this._execFrame = null;
+		} else if (this._execFrame) {
 			// old-style exec frame is obj
-	   		this._doLastSearch();
-	   	} else {
-	   		// if no exec frame, start over
-		   	this._appCtxt.getAppController().startup(); // restart application
-	   	}
-	   	this._hideLoginDialog();
+			this._doLastSearch();
+		} else {
+			// if no exec frame, start over
+			this._appCtxt.getAppController().startup(); // restart application
+		}
+		this._hideLoginDialog();
 	} catch (ex) {
 		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || ex.code == ZmCsfeException.SVC_INVALID_REQUEST) {
 			this._loginDialog.setError(ZmMsg.loginError);
+		} else if (ex.code == ZmCsfeException.ACCT_MAINTENANCE_MODE) {
+			this._loginDialog.setError(ZmMsg.errorMaintenanceMode + " " + ZmMsg.errorContact);
 		} else {
 			this.popupErrorDialog(ZmMsg.errorGeneric, ex); 
 		}
