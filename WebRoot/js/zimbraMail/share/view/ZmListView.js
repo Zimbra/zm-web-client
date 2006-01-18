@@ -666,7 +666,9 @@ function() {
 	// set the next appropriate selected item
 	if (this._firstSelIndex < 0)
 		this._firstSelIndex = 0;
-	var item = this._list.get(this._firstSelIndex) || this._list.getLast();
+	var item = this._list.get(this._firstSelIndex);
+	if (item == null) 
+		item = this._list.getLast();
 	if (item)
 		this.setSelection(item, false);
 }

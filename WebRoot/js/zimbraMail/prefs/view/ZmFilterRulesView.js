@@ -67,9 +67,6 @@ function() {
 	return this._title;
 };
 
-// View is always in sync with rules
-ZmFilterRulesView.prototype.reset = function() {};
-
 /*
 * ZmFilterListView
 */
