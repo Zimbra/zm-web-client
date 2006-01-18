@@ -95,8 +95,8 @@ function() {
 ZmConvView.prototype.deactivate = 
 function() {
 	if (this._conv.msgs)
-		this._conv.msgs.removeChangeListener(this._msgListView._listChangeListener);
-	this._conv.removeChangeListener(this._conv._listChangeListener);
+		this._conv.msgs.removeAllChangeListeners();
+	this._conv.removeAllChangeListeners();
 }
 
 ZmConvView.prototype.getTitle =
