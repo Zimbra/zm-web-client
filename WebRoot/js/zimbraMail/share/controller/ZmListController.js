@@ -805,11 +805,15 @@ function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 	var sc = this._appCtxt.getSearchController();
 	var params = {query: this.getSearchString(), types: types, sortBy: sortBy, offset: offset, limit: limit,
 				  lastId: lastId, lastSortVal: lastSortVal};
+	// add any additional params...
+	this._getMoreSearchParams(params);
+
 	var search = new ZmSearch(this._appCtxt, params);
 	if (isCurrent)
 		this._currentSearch = search;
 	var mods = {searchFieldAction: ZmSearchController.LEAVE_SEARCH_TXT};
-	sc.redoSearch(search, true, mods, callback);
+
+	this._appCtxt.getSearchController().redoSearch(search, true, mods, callback);
 };
 
 /*
@@ -873,13 +877,14 @@ function(view, forward, loadIndex) {
 /*
 * Updates the list and the view after a new page of items has been retrieved.
 *
-* @param view			[constant]		current view
-* @param saveSelection	[boolean]		if true, maintain current selection
-* @param loadIndex		[int]			index of item to show
-* @param result			[ZmCsfeResult]	result of SOAP request
+* @param view					[constant]		current view
+* @param saveSelection			[boolean]		if true, maintain current selection
+* @param loadIndex				[int]			index of item to show
+* @param result					[ZmCsfeResult]	result of SOAP request
+* @param ignoreResetSelection	[boolean] 		if true, dont reset selection
 */
 ZmListController.prototype._handleResponsePaginate =
-function(view, saveSelection, loadIndex, offset, result) {
+function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	var searchResult = result.getResponse();
 	
 	// update "more" flag
@@ -897,9 +902,17 @@ function(view, saveSelection, loadIndex, offset, result) {
 	
 	this._setViewContents(view);
 	this.pageIsDirty[this.currentPage] = false;
-	this._resetSelection(selectedIdx);
+
+	// bug fix #5134 - some views may not want to reset the current selection
+	if (!ignoreResetSelection) {
+		this._resetSelection(selectedIdx);
+	}
 };
 
+ZmListController.prototype._getMoreSearchParams =
+function(params) {
+	// overload me if more params are needed for SearchRequest
+};
 
 ZmListController.prototype._checkReplenish = 
 function(callback) {

@@ -227,10 +227,12 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.limit		= search.limit;
 	params.prevId		= search.prevId;
 	params.prevSortBy	= search.prevSortBy;
+	params.fetch		= search.fetch;
 	
-	if (changes)
+	if (changes) {
 		for (var key in changes) 
 			params[key] = changes[key];
+	}
 
 	this._doSearch(params, noRender, callback, errorCallback);
 }

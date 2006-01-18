@@ -54,6 +54,7 @@ function ZmSearch(appCtxt, params) {
 		this.contactSource	= params.contactSource;
 		this.lastId			= params.lastId;
 		this.lastSortVal	= params.lastSortVal;
+		this.fetch 			= params.fetch;
 		
 		this._parseQuery();
 	}
@@ -115,6 +116,11 @@ function(params) {
 				// special handling for showing participants ("To" instead of "From")
 				if (this.folderId == ZmFolder.ID_SENT || this.folderId == ZmFolder.ID_DRAFTS)
 					method.setAttribute("recip", "1");
+				// if we're prefetching the first hit message, also mark it as read
+				if (this.fetch) {
+					method.setAttribute("fetch", "1");
+					method.setAttribute("read", "1");
+				}
 			}
 		}
 	}
