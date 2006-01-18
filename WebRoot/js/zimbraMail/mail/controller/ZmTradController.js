@@ -43,6 +43,7 @@ function ZmTradController(appCtxt, container, mailApp) {
 ZmTradController.prototype = new ZmDoublePaneController;
 ZmTradController.prototype.constructor = ZmTradController;
 
+
 // Public methods
 
 ZmTradController.prototype.toString = 
@@ -67,6 +68,21 @@ function(search) {
 	this._setGroupMailBy(ZmItem.MSG);
 	this._resetNavToolBarButtons(ZmController.TRAD_VIEW);
 };
+
+ZmTradController.prototype.switchView =
+function(view) {
+	if (view == ZmController.READING_PANE_VIEW) {
+		ZmDoublePaneController.prototype.switchView.call(this, view);
+	} else if (view == ZmController.CONVLIST_VIEW) {
+		var sc = this._appCtxt.getSearchController();
+		var sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, ZmController.CONVLIST_VIEW);
+		var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE); // bug fix #3365
+		sc.redoSearch(this._appCtxt.getCurrentSearch(), null, {types: [ZmItem.CONV], offset: 0, sortBy: sortBy, limit: limit});
+	}
+};
+
+
+// Private methods
 
 ZmTradController.prototype._createDoublePaneView = 
 function() {
@@ -97,18 +113,6 @@ function(view) {
 	this._setupReadingPaneMenuItem(view, menu, true);
 };
 
-ZmTradController.prototype.switchView =
-function(view) {
-	if (view == ZmController.READING_PANE_VIEW) {
-		ZmDoublePaneController.prototype.switchView.call(this, view);
-	} else if (view == ZmController.CONVLIST_VIEW) {
-		var sc = this._appCtxt.getSearchController();
-		var sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, ZmController.CONVLIST_VIEW);
-		var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE); // bug fix #3365
-		sc.redoSearch(this._appCtxt.getCurrentSearch(), null, {types: [ZmItem.CONV], offset: 0, sortBy: sortBy, limit: limit});
-	}
-};
-
 ZmTradController.prototype._paginate = 
 function(view, bPageForward, convIdx) {
 	view = view ? view : this._currentView;
@@ -122,7 +126,21 @@ function(view) {
 	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
 };
 
+ZmTradController.prototype._getMoreSearchParams = 
+function(params) {
+	// OPTIMIZATION: find out if we need to pre-fetch the first hit message
+	params.fetch = this._readingPaneOn;
+};
+
+// Callbacks
+
 ZmTradController.prototype._processPrePopView = 
 function(view) {
 	this._resetNavToolBarButtons(view);
+};
+
+ZmTradController.prototype._handleResponsePaginate = 
+function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
+	// bug fix #5134 - overload to ignore resetting the selection since it is handled by setView
+	ZmListController.prototype._handleResponsePaginate.call(this, view, saveSelection, loadIndex, offset, result, true);
 };
