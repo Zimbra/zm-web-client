@@ -1063,8 +1063,6 @@
 	padding-left:10px;
 	padding-right:10px;
 	padding-bottom:10px;
-	
-	position:relative;
 }
 
 .TopGrouperBorder {
@@ -1082,7 +1080,7 @@
 	font-weight:bold;
 	font-size:13px;
 	position:absolute;	left:10; top:-8;
-	background-color:#EEEEEE;
+	background-color:#FFFFFF;
 	padding-left:2px; padding-right:2px;
 }
 
