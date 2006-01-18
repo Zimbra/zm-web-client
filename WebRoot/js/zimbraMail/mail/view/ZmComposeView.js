@@ -1335,7 +1335,18 @@ function(addrs) {
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
 		var type = ZmComposeView.ADDRS[i];
 		var vec = addrs[type];
-		var addr = vec.size() ? vec.toString(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
+		var size = vec.size();
+		var addr = size > 0 ? vec.toString(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
+
+		// bug fix #3139 - prepend separator if field type is populated but no separator
+		var val = AjxStringUtil.trim(this._field[type].value);
+		if (size > 0 && val.length > 0 && 
+			val.charAt(val.length-1) != ZmEmailAddress.DELIMS[0] && 
+			val.charAt(val.length-1) != ZmEmailAddress.DELIMS[1])
+		{
+			addr = ZmEmailAddress.SEPARATOR + addr;
+		}
+
 		this.setAddress(type, addr, true);
 	}
 	this._contactPicker.popdown();
