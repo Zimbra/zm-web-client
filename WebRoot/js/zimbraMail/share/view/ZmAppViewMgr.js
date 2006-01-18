@@ -198,8 +198,8 @@ function(components, doFit, noSetZ) {
 			comp.zShow(true);
 
 		if (cid == ZmAppViewMgr.C_SASH)
-			comp.registerCallback(this._sashCallback, this);
-//			comp.setCursor("default");
+//			comp.registerCallback(this._sashCallback, this);
+			comp.setCursor("default");
 	}
 	if (doFit)
 		this._fitToContainer(list);
@@ -252,7 +252,7 @@ function() {
 ZmAppViewMgr.prototype.getCurrentView =
 function() {
 	var curView = this._views[this._currentView];
-	return curView ? curView[ZmAppViewMgr.C_APP_CONTENT] : null;
+	return curView[ZmAppViewMgr.C_APP_CONTENT];
 }
 
 /**
@@ -662,7 +662,8 @@ function(delta) {
 	DBG.println("shell width = " + this._shellSz.x);
 
 	// TODO: check overview min width
-	var w = this._components[ZmAppViewMgr.C_APP_CONTENT].getSize().x;
+	
+	var w = this._components["app content"].getSize().x;
 	DBG.println("main app width = " + w);
 
 
