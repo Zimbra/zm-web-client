@@ -66,6 +66,14 @@ function(listener) {
 }
 
 /**
+* Removes all change listeners.
+*/
+ZmModel.prototype.removeAllChangeListeners = 
+function() {
+	return this._evtMgr.removeAll(ZmEvent.L_MODIFY);    	
+}
+
+/**
 * Notifies listeners of the given change event.
 *
 * @param event		[constant]		event type (see ZmEvent)

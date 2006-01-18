@@ -198,8 +198,8 @@ function(components, doFit, noSetZ) {
 			comp.zShow(true);
 
 		if (cid == ZmAppViewMgr.C_SASH)
-//			comp.registerCallback(this._sashCallback, this);
-			comp.setCursor("default");
+			comp.registerCallback(this._sashCallback, this);
+//			comp.setCursor("default");
 	}
 	if (doFit)
 		this._fitToContainer(list);
@@ -477,20 +477,14 @@ function(components) {
 		if (cont) {
 			var contBds = Dwt.getBounds(cont);
 			var comp = this._components[cid];
-			if (cid == ZmAppViewMgr.C_APP_CONTENT || 
-				cid == ZmAppViewMgr.C_TOOLBAR_TOP || 
-				cid == ZmAppViewMgr.C_TOOLBAR_BOTTOM) {
-				// make sure we fit the component that's current
-				var elements = this._views[this._currentView];
-				comp = elements[cid];
-			}
 			if (comp && (comp.getZIndex() != Dwt.Z_HIDDEN)) {
 				comp.setBounds(contBds.x, contBds.y, contBds.width, contBds.height);
 				this._contBounds[cid] = contBds;
 			}
 		}
 	}
-	this._debugShowMetrics(components);
+	if (DBG.getDebugLevel >= AjxDebug.DBG2)
+		this._debugShowMetrics(components);
 }
 
 // Performs manual layout of the components, absent a containing skin. Currently assumes
@@ -564,6 +558,7 @@ function(view, show) {
 		for (var cid in elements) {
 			list.push(cid);
 			elements[cid].zShow(true);
+			this._components[cid] = elements[cid];
 		}
 		if (this._hasSkin)
 			this._fitToContainer(list);
@@ -651,7 +646,7 @@ function(components) {
 		var cont = this._containers[cid];
 		if (cont) {
 			var contBds = Dwt.getBounds(cont);
-			DBG.println(AjxDebug.DBG2, "Container bounds for " + cid + ": " + contBds.x + ", " + contBds.y + 
+			DBG.println("Container bounds for " + cid + ": " + contBds.x + ", " + contBds.y + 
 						" | " + contBds.width + " x " + contBds.height);
 		}
 	}
@@ -667,8 +662,7 @@ function(delta) {
 	DBG.println("shell width = " + this._shellSz.x);
 
 	// TODO: check overview min width
-	
-	var w = this._components["app content"].getSize().x;
+	var w = this._components[ZmAppViewMgr.C_APP_CONTENT].getSize().x;
 	DBG.println("main app width = " + w);
 
 
