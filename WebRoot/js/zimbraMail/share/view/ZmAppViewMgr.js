@@ -84,13 +84,15 @@
 * @param shell			the outermost containing element
 * @param controller		the app controller
 * @param isNewWindow	true if we are a child window of the main app
+* @param hasSkin		true if the app has provided containing HTML
 */
-function ZmAppViewMgr(shell, controller, isNewWindow) {
+function ZmAppViewMgr(shell, controller, isNewWindow, hasSkin) {
 
 	this._shell = shell;
 	this._controller = controller;
 	this._appCtxt = controller._appCtxt;
 	this._isNewWindow = isNewWindow;
+	this._hasSkin = hasSkin;
 
 	this._shellSz = this._shell.getSize();
 	this._controlListener = new AjxListener(this, this._shellControlListener);
@@ -184,13 +186,15 @@ function(components, doFit, noSetZ) {
 		this._components[cid] = comp;
 		var htmlEl = comp.getHtmlElement();
 		this._htmlEl[cid] = htmlEl;
-		var contId = this._appCtxt.get(ZmAppViewMgr.CONT_ID_KEY[cid]);
-		var contEl = document.getElementById(contId);
-		this._containers[cid] = contEl;
-		if (Dwt.contains(contEl, htmlEl))
-			throw new AjxException("element already added to container: " + cid);		
-		Dwt.removeChildren(contEl);
-		list.push(cid);
+		if (this._hasSkin) {
+			var contId = this._appCtxt.get(ZmAppViewMgr.CONT_ID_KEY[cid]);
+			var contEl = document.getElementById(contId);
+			this._containers[cid] = contEl;
+			if (Dwt.contains(contEl, htmlEl))
+				throw new AjxException("element already added to container: " + cid);		
+			Dwt.removeChildren(contEl);
+			list.push(cid);
+		}
 
 		if (!noSetZ)
 			comp.zShow(true);
@@ -250,7 +254,7 @@ function() {
 ZmAppViewMgr.prototype.getCurrentView =
 function() {
 	var curView = this._views[this._currentView];
-	return curView[ZmAppViewMgr.C_APP_CONTENT];
+	return curView ? curView[ZmAppViewMgr.C_APP_CONTENT] : null;
 }
 
 /**
@@ -341,6 +345,8 @@ function(viewId, force) {
 		return false;
 	}
 
+	this._layout(this._currentView);
+
 	var viewController = this._views[viewId][ZmAppViewMgr.C_APP_CONTENT].getController();
 	if (viewController && viewController.setCurrentView)
 		viewController.setCurrentView(viewId);
@@ -377,6 +383,8 @@ function(force) {
 	if (!this._showView(this._currentView, this._popCallback, null, force, true))
 		throw new AjxException("no view to show");
 	this._removeFromHidden(this._currentView);
+
+	this._layout(this._currentView);	
 	
 	this._controller.setActiveApp(this._viewApp[this._currentView], this._currentView);
 	return true;
@@ -481,6 +489,21 @@ function(components) {
 		this._debugShowMetrics(components);
 }
 
+// Performs manual layout of the components, absent a containing skin. Currently assumes
+// that there will be a top toolbar and app content.
+ZmAppViewMgr.prototype._layout =
+function(view) {
+	// if skin, elements already laid out by being placed in their containers
+	if (this._hasSkin) return; 
+	
+	var topToolbar = this._components[ZmAppViewMgr.C_TOOLBAR_TOP];
+	var sz = topToolbar.getSize();
+	var height = sz.y ? sz.y : topToolbar.getHtmlElement().clientHeight;
+	topToolbar.setBounds(0, 0, this._shellSz.x, height);
+	var appContent = this._components[ZmAppViewMgr.C_APP_CONTENT];
+	appContent.setBounds(0, height, this._shellSz.x, this._shellSz.y - height);
+};
+
 // Tries to hide the given view. First checks to see if the view has a callback
 // for when it is hidden. The callback must return true for the view to be hidden.
 ZmAppViewMgr.prototype._hideView =
@@ -539,7 +562,8 @@ function(view, show) {
 			elements[cid].zShow(true);
 			this._components[cid] = elements[cid];
 		}
-		this._fitToContainer(list);
+		if (this._hasSkin)
+			this._fitToContainer(list);
 		this._setTitle(view);
 		this._controller.setActiveApp(this._viewApp[view], view);
 	} else {
@@ -643,8 +667,7 @@ function(delta) {
 	DBG.println("shell width = " + this._shellSz.x);
 
 	// TODO: check overview min width
-	
-	var w = this._components["app content"].getSize().x;
+	var w = this._components[ZmAppViewMgr.C_APP_CONTENT].getSize().x;
 	DBG.println("main app width = " + w);
 
 
