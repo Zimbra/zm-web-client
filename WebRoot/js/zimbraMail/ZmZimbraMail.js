@@ -234,7 +234,7 @@ ZmZimbraMail.prototype.startup =
 function(params) {
 	if (!(params && params.isRelogin)) {
 		if (!this._appViewMgr) {
-			this._appViewMgr = new ZmAppViewMgr(this._shell, this, false);
+			this._appViewMgr = new ZmAppViewMgr(this._shell, this, false, true);
 		}
 
 		skin.showSkin(true);
