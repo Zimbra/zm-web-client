@@ -114,7 +114,12 @@ function(str) {
 	// Note: It would be nice if you could get back the matching parenthesized subexpressions from replace,
 	// then we wouldn't have to do both a match and a replace. The parsing works by removing parts after it
 	// finds them.
-	var parts = str.match(ZmEmailAddress.addrAnglePat);
+	var parts = str.match(ZmEmailAddress.commentPat);
+	if (parts) {
+		comment = parts[2]; // doesn't include the ()
+		str = str.replace(ZmEmailAddress.commentPat, '');
+	}
+	parts = str.match(ZmEmailAddress.addrAnglePat);
 	var user, host, name, comment;
 	if (parts) {
 		user = parts[3];
@@ -127,11 +132,6 @@ function(str) {
 			host = parts[11];
 			str = str.replace(ZmEmailAddress.addrPat, '');
 		}
-	}
-	parts = str.match(ZmEmailAddress.commentPat);
-	if (parts) {
-		comment = parts[2]; // doesn't include the ()
-		str = str.replace(ZmEmailAddress.commentPat, '');
 	}
 	parts = str.match(ZmEmailAddress.phrasePat);
 	if (parts) {
