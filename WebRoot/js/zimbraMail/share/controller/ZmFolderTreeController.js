@@ -149,7 +149,8 @@ function(folder) {
 		stc._itemClicked(folder);
 	} else {
 		var searchController = this._appCtxt.getSearchController();
-		var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
+		var searchFor = folder.isInTrash() ? ZmSearchToolBar.FOR_ANY_MI : ZmSearchToolBar.FOR_MAIL_MI;
+		var types = searchController.getTypes(searchFor);
 		searchController.search({query: folder.createQuery(), types: types});
 	}
 };
