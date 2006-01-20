@@ -964,7 +964,7 @@ function(ev) {
 	var cal = menu.getItem(0);
 	// always(?) reset the date to today's date
 	cal.setDate(new Date(), true);
-	menu.popup();
+	ev.item.popup();
 };
 
 ZmApptRecurDialog.prototype._dateCalSelectionListener = 
