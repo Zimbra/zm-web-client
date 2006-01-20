@@ -587,7 +587,7 @@ function(contactList, isDraft, callback, errorCallback) {
 	if (this.isInviteReply && !isDraft) {
 		this.sendInviteReply(contactList, true, 0, callback, errorCallback, this._instanceDate);
 	} else {
-		var request = isDraft ? "SaveWikiRequest" : "SendMsgRequest";
+		var request = isDraft ? "SaveDraftRequest" : "SendMsgRequest";
 		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
 		// TODO - return code and put up status message
 		this._createMessageNode(soapDoc, contactList, isDraft);
