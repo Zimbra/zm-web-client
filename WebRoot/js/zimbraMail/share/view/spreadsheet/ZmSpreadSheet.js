@@ -133,7 +133,9 @@ ZmSpreadSheet.prototype.getCellModel = function(td) {
 };
 
 ZmSpreadSheet.prototype._init = function() {
-	var html = [ "<div style='position: relative'><table cellspacing='1' cellpadding='0' border='0'>" ];
+	this._relDivID = Dwt.getNextId();
+
+	var html = [ "<div id='", this._relDivID, "' style='position: relative'><table cellspacing='1' cellpadding='0' border='0'>" ];
 	var row = [ "<tr><td class='LeftBar'></td>" ];
 
 	var ROWS = this._model.ROWS;
@@ -179,7 +181,6 @@ ZmSpreadSheet.prototype._init = function() {
 
 // called when a cell from the top header was clicked or mousedown
 ZmSpreadSheet.prototype._topCellClicked = function(td, ev) {
-	// yeah, we test. :-)
 	if (/click/i.test(ev.type)) {
 		this._model.insertCol(td.cellIndex - 1);
 	}
@@ -187,7 +188,6 @@ ZmSpreadSheet.prototype._topCellClicked = function(td, ev) {
 
 // called when a cell from the left header was clicked or mousedown
 ZmSpreadSheet.prototype._leftCellClicked = function(td, ev) {
-	// yeah, we test. :-)
 	if (/click/i.test(ev.type)) {
 		this._model.insertRow(td.parentNode.rowIndex - 1);
 	}
@@ -235,12 +235,16 @@ ZmSpreadSheet.prototype._selectCell = function(td) {
 	}
 };
 
+ZmSpreadSheet.prototype._getRelDiv = function() {
+	return document.getElementById(this._relDivID);
+};
+
 ZmSpreadSheet.prototype._getInputField = function() {
 	var input = null;
 	if (this._inputFieldID)
 		input = document.getElementById(this._inputFieldID);
 	if (!input) {
-		var div = this.getHtmlElement().firstChild;
+		var div = this._getRelDiv();
 		input = document.createElement("input");
 		this._inputFieldID = input.id = Dwt.getNextId();
 		input.setAttribute("autocomplete", "off");
@@ -252,8 +256,9 @@ ZmSpreadSheet.prototype._getInputField = function() {
 		div.appendChild(input);
 
 		// set event handlers
-		input[AjxEnv.isIE || AjxEnv.isOpera ? "onkeydown" : "onkeypress"]
+		input[(AjxEnv.isIE || AjxEnv.isOpera) ? "onkeydown" : "onkeypress"]
 			= ZmSpreadSheet.simpleClosure(this._input_keyPress, this);
+		input.onmouseup = ZmSpreadSheet.simpleClosure(this._input_mouseUp, this);
 		input.onblur = ZmSpreadSheet.simpleClosure(this._input_blur, this);
 		input.onfocus = ZmSpreadSheet.simpleClosure(this._input_focus, this);
 	}
@@ -270,7 +275,7 @@ ZmSpreadSheet.prototype._getSpanField = function() {
 		var span = document.createElement("span");
 		this._spanFieldID = span.id = Dwt.getNextId();
 		span.className = "InputField";
-		var div = this.getHtmlElement().firstChild;
+		var div = this._getRelDiv();
 		div.appendChild(span);
 	}
 	return span;
@@ -291,6 +296,7 @@ ZmSpreadSheet.prototype._editCell = function(td) {
 		input.focus();
 		this._editingCell = td;
 		mc.setStyleToElement(input);
+		this._displayRangeIfAny();
 		// quick hack to set the field size from the start
 		// this._input_keyPress();
 	}
@@ -304,6 +310,7 @@ ZmSpreadSheet.prototype._input_blur = function(ev) {
 	input.style.width = "";
 	if (!this._preventSaveOnBlur)
 		this._save_value(input.value);
+	this._hideRange();
 };
 
 // In Firefox the input field loses focus when the whole document lost focus
@@ -311,8 +318,7 @@ ZmSpreadSheet.prototype._input_blur = function(ev) {
 // focus but remains hidden in the top-left corner, so we re-edit the cell here
 ZmSpreadSheet.prototype._input_focus = function(ev) {
 	var input = this._getInputField();
-	if (input.style.visibility == "hidden" &&
-	    this._editingCell)
+	if (input.style.visibility == "hidden" && this._editingCell)
 		this._editCell(this._editingCell);
 };
 
@@ -388,7 +394,12 @@ ZmSpreadSheet.prototype._getLeftCell = function(td) {
 	return null;
 };
 
+ZmSpreadSheet.prototype._input_mouseUp = function() {
+	this._displayRangeIfAny();
+};
+
 ZmSpreadSheet.prototype._input_keyPress = function(ev) {
+	ev || (ev = window.event);
 	var setTimer = true;
 	if (ev) {
 		var dwtev = new DwtUiEvent();
@@ -408,9 +419,8 @@ ZmSpreadSheet.prototype._input_keyPress = function(ev) {
 
 		    case 37: // LEFT
 		    case 39: // RIGHT
-			var doit = ( AjxEnv.isGeckoBased &&
-				     input.selectionStart == 0 &&
-				     input.selectionEnd == input.value.length );
+			var doit = ( Dwt.getSelectionStart(input) == 0 &&
+				     Dwt.getSelectionEnd(input) == input.value.length );
 			if (doit || !input.value || ev.altKey) {
 				setTimer = false;
 				this._save_value(input.value);
@@ -442,6 +452,17 @@ ZmSpreadSheet.prototype._input_keyPress = function(ev) {
 			dwtev._stopPropagation = true;
 			dwtev._returnValue = false;
 			dwtev.setToDhtmlEvent(ev);
+			break;
+
+		    case 113: // F2
+			// users (I at least) expect to be able to use the
+			// left/right arrow keys to move a caret inside the
+			// field; so we simply must unselect the text if it's
+			// selected.
+			Dwt.setSelectionRange(input,
+					      input.value.length,
+					      input.value.length);
+			break;
 
 		}
 		this._preventSaveOnBlur = false;
@@ -458,8 +479,108 @@ ZmSpreadSheet.prototype._input_keyPress = function(ev) {
 			if (span.offsetWidth > (input.offsetWidth - 20))
 				input.style.width = span.offsetWidth + 50 + "px";
 			self._input_keyPress_timer = null;
+			self._displayRangeIfAny();
 		}, 10);
+	} else
+		this._hideRange();
+};
+
+ZmSpreadSheet.prototype._displayRangeIfAny = function() {
+	var input = this._getInputField();
+	if (!/^=(.*)$/.test(input.value)) {
+		// no formulae
+		this._hideRange();
+		return;
 	}
+	var expr = RegExp.$1;
+	var
+		selStart = Dwt.getSelectionStart(input),
+		selEnd   = Dwt.getSelectionEnd(input);
+	try {
+		if (selStart > 0)
+			--selStart;
+		if (selEnd > 0)
+			--selEnd;
+		var tokens = ZmSpreadSheetFormulae.parseTokens(expr, true);	// don't throw
+		var tok = null;
+		for (var i = 0; i < tokens.length; ++i) {
+			var tmp = tokens[i];
+			if (tmp.strPos <= selStart &&
+			    tmp.strPos + tmp.strLen >= selEnd &&
+			    ( tmp.type === ZmSpreadSheetFormulae.TOKEN.CELL ||
+			      tmp.type === ZmSpreadSheetFormulae.TOKEN.CELLRANGE )) {
+				tok = tmp;
+				break;
+			}
+		}
+		if (tok) {
+			var c1, c2;
+			if (tok.type === ZmSpreadSheetFormulae.TOKEN.CELL) {
+				c1 = c2 = ZmSpreadSheetModel.identifyCell(tok.val);
+			}
+			if (tok.type === ZmSpreadSheetFormulae.TOKEN.CELLRANGE) {
+				var a = tok.val.split(/:/);
+				var c1 = ZmSpreadSheetModel.identifyCell(a[0]);
+				var c2 = ZmSpreadSheetModel.identifyCell(a[1]);
+			}
+			if (c1 && c2) {
+				var startRow = Math.min(c1.row, c2.row);
+				var startCol = Math.min(c1.col, c2.col);
+				var endRow   = Math.max(c1.row, c2.row);
+				var endCol   = Math.max(c1.col, c2.col);
+				this._showRange(startRow, startCol, endRow, endCol);
+				// Dwt.setSelectionRange(input, tok.strPos + 1, tok.strPos + tok.strLen + 1);
+			} else
+				throw "HIDE";
+		} else
+			throw "HIDE";
+	} catch(ex) {
+		this._hideRange();
+	}
+};
+
+ZmSpreadSheet.prototype._showRange = function(startRow, startCol, endRow, endCol) {
+	this._model.checkBounds(startRow, startCol);
+	this._model.checkBounds(endRow, endCol);
+	var r1 = this._getTable().rows[startRow + 1];
+	var r2 = this._getTable().rows[endRow + 1];
+	if (!r1 || !r2)
+		this._hideRange();
+	var c1 = r1.cells[startCol + 1];
+	var c2 = r2.cells[endCol + 1];
+	if (!c1 || !c2)
+		this._hideRange();
+	// and we have the top-left cell in c1 and bottom-right cell in c2
+	var div = this._getRangeDiv();
+	var w = c2.offsetTop + c2.offsetHeight - c1.offsetTop;
+	var h = c2.offsetLeft + c2.offsetWidth - c1.offsetLeft;
+	if (AjxEnv.isIE) {
+		w += 2;
+		h += 2;
+	}
+	div.style.height = w + "px";
+	div.style.width = h + "px";
+	div.style.left = c1.offsetLeft - 1 + "px";
+	div.style.top = c1.offsetTop - 1 + "px";
+	div.style.visibility = "";
+};
+
+ZmSpreadSheet.prototype._getRangeDiv = function() {
+	if (!this._rangeDivID)
+		this._rangeDivID = Dwt.getNextId();
+	var div = document.getElementById(this._rangeDivID);
+	if (!div) {
+		var div = document.createElement("div");
+		div.id = this._rangeDivID;
+		div.className = "ShowRange";
+		this._getRelDiv().appendChild(div);
+		div.style.visibility = "hidden";
+	}
+	return div;
+};
+
+ZmSpreadSheet.prototype._hideRange = function() {
+	this._getRangeDiv().style.visibility = "hidden";
 };
 
 ZmSpreadSheet.prototype._table_onClick = function(ev) {
@@ -486,7 +607,7 @@ ZmSpreadSheet.prototype._table_onClick = function(ev) {
 };
 
 ZmSpreadSheet.prototype._getTable = function() {
-	return this.getHtmlElement().firstChild.firstChild;
+	return this._getRelDiv().firstChild;
 };
 
 ZmSpreadSheet.simpleClosure = function(func, obj) {

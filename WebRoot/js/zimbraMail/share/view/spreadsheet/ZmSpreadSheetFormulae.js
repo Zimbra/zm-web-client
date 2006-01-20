@@ -32,7 +32,8 @@
  */
 function ZmSpreadSheetFormulae(model, formula) {
 	this._model = model;
-	this.compile(formula);
+	if (formula)
+		this.compile(formula);
 };
 
 // This defines parser tokens as regular expressions
@@ -40,7 +41,7 @@ function ZmSpreadSheetFormulae(model, formula) {
 ZmSpreadSheetFormulae.TOKEN = {
 
 	STRING     : { // This definition must look weird so that we mimic a
-		       // RegExp (essentially we need it to have the 'match'
+		       // RegExp (essentially we need it to have the 'exec'
 		       // function... as always, because IE does not respect
 		       // the standards--in this case, the JS spec.)
 		       match   : { exec: function(txt) {
@@ -59,6 +60,12 @@ ZmSpreadSheetFormulae.TOKEN = {
 				       else {
 					       if (c == quote && !esc)
 						       return [ txt.substr(0, i + 1), str ];
+					       if (esc) {
+						       switch (c) {
+							   case "n": c = "\n"; break;
+							   case "t": c = "\t"; break;
+						       }
+					       }
 					       str += c;
 					       esc = false;
 				       }
@@ -96,7 +103,7 @@ ZmSpreadSheetFormulae.TOKEN = {
 		       type    : "cell"
 	},
 
-	OPERATOR   : { match   : /^([x*/+%^.-])/,
+	OPERATOR   : { match   : /^(<=|>=|==|!=|lt|gt|eq|uc|lc|ne|&&|and|\|\||or|not|[-x*/+%^.<>!])/,
 		       getVal  : function(a) { return a[1]; },
 		       isOpr   : false,
 		       type    : "operator"
@@ -129,6 +136,8 @@ ZmSpreadSheetFormulae.TOKEN = {
 };
 
 ZmSpreadSheetFormulae.parseFloat = function(n) {
+	if (typeof n == "boolean")
+		return n ? 1 : 0;
 	n = parseFloat(n);
 	if (isNaN(n))
 		n = 0;
@@ -150,8 +159,32 @@ ZmSpreadSheetFormulae.OPERATORS = {
 	'/'   : { priority: 20, assoc: 2, n_args: 2 },
 	'%'   : { priority: 30, assoc: 2, n_args: 2 },
 	'^'   : { priority: 30, assoc: 2, n_args: 2 },
-	'.'   : { priority: 30, assoc: 2, n_args: 2 }, // String concatenation (Perl)
-	'x'   : { priority: 30, assoc: 2, n_args: 2 }  // String multiplication (Perl)
+	'.'   : { priority:  5, assoc: 2, n_args: 2 }, // String concatenation (Perl)
+	'lc'  : { priority:  5, assoc: 1, n_args: 1 }, // String to lower case (Perl)
+	'uc'  : { priority:  5, assoc: 1, n_args: 1 }, // String to UPPER case (Perl)
+	'x'   : { priority: 35, assoc: 2, n_args: 2 }, // String multiplication (Perl)
+
+	// conditional operators
+	'<'   : { priority:  3, assoc: 2, n_args: 2 },
+	'>'   : { priority:  3, assoc: 2, n_args: 2 },
+	'<='  : { priority:  3, assoc: 2, n_args: 2 },
+	'>='  : { priority:  3, assoc: 2, n_args: 2 },
+	'=='  : { priority:  3, assoc: 2, n_args: 2 },
+	'!='  : { priority:  3, assoc: 2, n_args: 2 },
+	'lt'  : { priority:  3, assoc: 2, n_args: 2 },
+	'gt'  : { priority:  3, assoc: 2, n_args: 2 },
+	'eq'  : { priority:  3, assoc: 2, n_args: 2 },
+	'ne'  : { priority:  3, assoc: 2, n_args: 2 },
+	'&&'  : { priority:  2, assoc: 2, n_args: 2 },
+	'and' : { priority:  2, assoc: 2, n_args: 2 },
+	'||'  : { priority:  2, assoc: 2, n_args: 2 },
+	'or'  : { priority:  2, assoc: 2, n_args: 2 },
+
+	// the following may not work
+	'!'   : { priority:  4, assoc: 1, n_args: 1 },
+	'not' : { priority:  4, assoc: 1, n_args: 1 }
+
+	// we're getting tight on priorities.. :)  perhaps I should multiply them all by 10?
 };
 
 ZmSpreadSheetFormulae.FUNCTIONS = {};
@@ -175,30 +208,39 @@ ZmSpreadSheetFormulae.FUNCTIONS = {};
 // are CELL or CELLRANGE identifiers.  This operation will be left on the
 // framework.  IF any function was passed a CELL(RANGE) identifier, this will
 // be converted to respective cells' values before the function was called.
+//
+// Operators are functions as well, as we all know from the good old Lisp, so
+// they are defined through the same means.
 ZmSpreadSheetFormulae.DEF = function(name, n_args, callback) {
-	var funcdef = { name   : name,
-			n_args : n_args,
-			func   : callback };
-	ZmSpreadSheetFormulae.FUNCTIONS[name] = funcdef;
+	if (name instanceof Array) {
+		// let's make it easy to define aliases, shall we
+		for (var i = name.length; --i >= 0;)
+			ZmSpreadSheetFormulae.DEF(name[i], n_args, callback);
+	} else {
+		var funcdef = { name   : name,
+				n_args : n_args,
+				func   : callback };
+		ZmSpreadSheetFormulae.FUNCTIONS[name] = funcdef;
+	}
 };
 
 ///------------------- BEGIN FUNCTION DEFINITIONS -------------------
 
-ZmSpreadSheetFormulae.DEF("sum", -1, function() {
+ZmSpreadSheetFormulae.DEF([ "sum", "+" ], -1, function() {
 	var ret = 0;
 	for (var i = arguments.length; --i >= 0;)
 		ret += ZmSpreadSheetFormulae.parseFloat(arguments[i]);
 	return ret;
 });
 
-ZmSpreadSheetFormulae.DEF("multiply", -1, function() {
+ZmSpreadSheetFormulae.DEF([ "multiply", "*" ], -1, function() {
 	var ret = 1;
 	for (var i = arguments.length; --i >= 0;)
 		ret *= ZmSpreadSheetFormulae.parseFloat(arguments[i]);
 	return ret;
 });
 
-ZmSpreadSheetFormulae.DEF("modulo", 2, function(a, b) {
+ZmSpreadSheetFormulae.DEF([ "modulo", "%" ], 2, function(a, b) {
 	return ZmSpreadSheetFormulae.parseFloat(a) % ZmSpreadSheetFormulae.parseFloat(b);
 });
 
@@ -242,11 +284,12 @@ ZmSpreadSheetFormulae.DEF("modulo", 2, function(a, b) {
 		return str.toString().length;
 	});
 
-	ZmSpreadSheetFormulae.DEF("concat", -1, function() {
+	ZmSpreadSheetFormulae.DEF([ "concat", "." ], -1, function() {
 		var ret = [ arguments[0] ];
-		for (var i = 1; i < arguments.length; ++i)
+		for (var i = 1; i < arguments.length; ++i) {
 			if (arguments[i] != "")
 				ret.push(arguments[i]);
+		}
 		return ret.join("");
 	});
 
@@ -266,6 +309,63 @@ ZmSpreadSheetFormulae.DEF("modulo", 2, function(a, b) {
 	});
 }
 
+{ // conditionals
+	ZmSpreadSheetFormulae.DEF("<", 2, function(a, b) {
+		return ZmSpreadSheetFormulae.parseFloat(a) < ZmSpreadSheetFormulae.parseFloat(b);
+	});
+	ZmSpreadSheetFormulae.DEF(">", 2, function(a, b) {
+		return ZmSpreadSheetFormulae.parseFloat(a) > ZmSpreadSheetFormulae.parseFloat(b);
+	});
+	ZmSpreadSheetFormulae.DEF("<=", 2, function(a, b) {
+		return ZmSpreadSheetFormulae.parseFloat(a) <= ZmSpreadSheetFormulae.parseFloat(b);
+	});
+	ZmSpreadSheetFormulae.DEF(">=", 2, function(a, b) {
+		return ZmSpreadSheetFormulae.parseFloat(a) >= ZmSpreadSheetFormulae.parseFloat(b);
+	});
+	ZmSpreadSheetFormulae.DEF("==", 2, function(a, b) {
+		return a == b;
+	});
+	ZmSpreadSheetFormulae.DEF("!=", 2, function(a, b) {
+		return a != b;
+	});
+	ZmSpreadSheetFormulae.DEF([ "&&", "and" ], 2, function(a, b) {
+		return a && b;
+	});
+	ZmSpreadSheetFormulae.DEF([ "||", "or" ], 2, function(a, b) {
+		return a || b;
+	});
+	ZmSpreadSheetFormulae.DEF([ "!", "not" ], 1, function(a) {
+		return !a;
+	});
+	ZmSpreadSheetFormulae.DEF("lt", 2, function(a, b) {
+		return a.toString() < b.toString();
+	});
+	ZmSpreadSheetFormulae.DEF("gt", 2, function(a, b) {
+		return a.toString() > b.toString();
+	});
+	ZmSpreadSheetFormulae.DEF("eq", 2, function(a, b) {
+		return a.toString() == b.toString();
+	});
+	ZmSpreadSheetFormulae.DEF("ne", 2, function(a, b) {
+		return a.toString() != b.toString();
+	});
+	ZmSpreadSheetFormulae.DEF("lc", 1, function(a) {
+		return a.toString().toLowerCase();
+	});
+	ZmSpreadSheetFormulae.DEF("uc", 1, function(a) {
+		return a.toString().toUpperCase();
+	});
+
+	// Note a major downside with our "if" implementation: since this is a
+	// plain function, it means that both exprTrue and exprFalse are
+	// evaluated, regardless of the condition state.  Luckily, code written
+	// in our simple spread-sheet language can't have side-effects (or can
+	// it...?)
+	ZmSpreadSheetFormulae.DEF("if", 3, function(cond, exprTrue, exprFalse) {
+		return cond ? exprTrue : exprFalse;
+	});
+}
+
 { // easter egg
 	ZmSpreadSheetFormulae.DEF("WHO_are_YOU?", 0, function() {
 		alert("Hello World from the ZmSpreadSheetFormulae!\n\n" +
@@ -274,8 +374,6 @@ ZmSpreadSheetFormulae.DEF("modulo", 2, function(a, b) {
 		return "http://www.dynarch.com/";
 	});
 }
-
-// Operators are functions as well, as we know from the good old Lisp
 
 ZmSpreadSheetFormulae.DEF("-", 2, function(a, b) {
 	return ZmSpreadSheetFormulae.parseFloat(a) -
@@ -291,12 +389,6 @@ ZmSpreadSheetFormulae.DEF("^", 2, function(a, b) {
 	return Math.pow(a, b);
 });
 
-ZmSpreadSheetFormulae.FUNCTIONS["+"] = ZmSpreadSheetFormulae.FUNCTIONS.sum;
-ZmSpreadSheetFormulae.FUNCTIONS["*"] = ZmSpreadSheetFormulae.FUNCTIONS.multiply;
-ZmSpreadSheetFormulae.FUNCTIONS["%"] = ZmSpreadSheetFormulae.FUNCTIONS.modulo;
-ZmSpreadSheetFormulae.FUNCTIONS["."] = ZmSpreadSheetFormulae.FUNCTIONS.concat;
-ZmSpreadSheetFormulae.FUNCTIONS["x"] = ZmSpreadSheetFormulae.FUNCTIONS.x;
-
 ///------------------- END FUNCTION DEFINITIONS -------------------
 
 ZmSpreadSheetFormulae.prototype.depends = function(ident) {
@@ -309,8 +401,6 @@ ZmSpreadSheetFormulae.prototype.callFunction = function(func, args) {
 	var f = ZmSpreadSheetFormulae.FUNCTIONS[func];
 	if (!f)
 		throw "No such function: " + func;
-	// We must check the arguments here and expand any CELL/CELLRANGE to
-	// its value.  Or do this at compile time.
 	return f.func.apply(this, args);
 };
 
@@ -376,7 +466,7 @@ ZmSpreadSheetFormulae.prototype.getFormula = function() {
 
 // Given a formula, returns an array of valid tokens if parsing was successful,
 // or throws an exception otherwise.  Note this doesn't mean syntax checking.
-ZmSpreadSheetFormulae.parseTokens = function(formula) {
+ZmSpreadSheetFormulae.parseTokens = function(formula, nothrow) {
 	var TYPE = ZmSpreadSheetFormulae.TOKEN; // we use this quite a lot
 
 	var tokens = [];
@@ -401,14 +491,14 @@ ZmSpreadSheetFormulae.parseTokens = function(formula) {
 			var a = t.match.exec(formula);
 			if (a) {
 
-				if (tokens.length > 0) {
-					// if it looks like we have 2
-					// consecutive CELL or CELLRANGE
-					// tokens, let's try something else
-					if ( (t === TYPE.CELL      && peek(tokens).type === TYPE.CELL) ||
-					     (t === TYPE.CELLRANGE && peek(tokens).type === TYPE.CELLRANGE))
-						continue;
-				}
+// 				if (tokens.length > 0) {
+// 					// if it looks like we have 2
+// 					// consecutive CELL or CELLRANGE
+// 					// tokens, let's try something else
+// 					if ( (t === TYPE.CELL      && peek(tokens).type === TYPE.CELL) ||
+// 					     (t === TYPE.CELLRANGE && peek(tokens).type === TYPE.CELLRANGE))
+// 						continue;
+// 				}
 
 				var val = t.getVal(a);
 				var len = a[0].length;
@@ -431,10 +521,10 @@ ZmSpreadSheetFormulae.parseTokens = function(formula) {
 				if (t === TYPE.IDENTIFIER) {
 					// FIXME [1]: currently the only identifiers we allow are function calls
 					var func = ZmSpreadSheetFormulae.FUNCTIONS[val];
-					if (!func)
+					if (!func && !nothrow)
 						throw "No such function: \"" + val + "\"";
 					tok.priority = 100;
-					if (func.n_args == 0) {
+					if (func && func.n_args == 0) {
 						tok.isOpr = true; // assumed to be a constant
 						tok.val = func.func();
 					}
@@ -446,11 +536,21 @@ ZmSpreadSheetFormulae.parseTokens = function(formula) {
 			}
 		}
 		if (!found) {
-			throw "Parse error at: " + formula;
+			if (!nothrow)
+				throw "Parse error at: " + formula;
+			else {
+				// silently try to move forward
+				formula = formula.substr(1);
+				++pos;
+			}
 		}
 	}
 
 	return tokens;
+};
+
+ZmSpreadSheetFormulae.prototype.getTokens = function() {
+	return this._tokens;
 };
 
 // This function takes a string formulae and compiles it to an internal parse
@@ -488,9 +588,9 @@ ZmSpreadSheetFormulae.prototype.compile = function(formula) {
 		if (t.type === TYPE.OPERATOR && !next)
 			throw "Misplaced operator";
 		if (last) {
-			if (t.type === TYPE.OPERATOR &&
-			    last.type === TYPE.OPERATOR)
-				throw "Consecutive operators not allowed";
+// 			if (t.type === TYPE.OPERATOR &&
+// 			    last.type === TYPE.OPERATOR)
+// 				throw "Consecutive operators not allowed";
 			if (t.type === TYPE.COMMA &&
 			    ( last.type === TYPE.COMMA ||
 			      last.type === TYPE.OPENPAREN ||
@@ -584,7 +684,7 @@ ZmSpreadSheetFormulae.prototype.compile = function(formula) {
 			var o2;
 			while (((o2 = peek(stack)) != null) && o2.type === TYPE.OPERATOR &&
 			       ((t.assoc >= 2 /* (left-)associative */ && t.priority <= o2.priority) ||
-				(t.assoc == 1 /* right-associative */ && t.priority < o2.priority))) {
+				(t.assoc == 1 /* right-associative */ && t.priority > o2.priority))) {
 				output.push(stack.pop());
 			}
 			stack.push(t);

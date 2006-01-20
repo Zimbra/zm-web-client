@@ -253,6 +253,11 @@ ZmSpreadSheetCellModel.prototype.setValue = function(value) {
 };
 
 ZmSpreadSheetCellModel.prototype.getValue = function() {
+	switch (this.getType()) {
+	    case "currency":
+	    case "number":
+		return ZmSpreadSheetFormulae.parseFloat(this._value);
+	}
 	return this._value;
 };
 
@@ -262,14 +267,15 @@ ZmSpreadSheetCellModel.prototype.getDisplayValue = function() {
 	switch (type) {
 	    case "number":
 		val = ZmSpreadSheetFormulae.parseFloat(val);
-		if (this._decimals)
+		if (this._decimals != null)
 			val = val.toFixed(this._decimals);
 		break;
 
 	    case "currency":
 		val = ZmSpreadSheetFormulae.parseFloat(val);
-		if (this._decimals)
-			val = "$" + val.toFixed(this._decimals);
+		if (this._decimals != null)
+			val = val.toFixed(this._decimals);
+		val = "$" + val;
 		break;
 	}
 	return val;
@@ -363,6 +369,9 @@ ZmSpreadSheetCellModel.prototype.setEditValue = function(editValue) {
 			val = expr.eval();
 			auto = this._determineType(val);
 			this._autoType = auto.type;
+			if (this._autoType == "currency")
+				// FIXME: this stinks.
+				val = auto.val;
 		} else {
 			this.setExpression(null);
 			val = auto.val;
