@@ -2002,7 +2002,7 @@ function(ev) {
 			var errorCallback = new AjxCallback(null, ZmCalColView._handleError, data);
 			var sdOffset = data.startDate ? (data.startDate.getTime() - data.appt.getStartTime()) : null;
 			var edOffset = endDate ? (endDate.getTime() - data.appt.getEndTime() ) : null;		
-			cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, ev);
+			cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, mouseEv);
 			//cc.dndUpdateApptDate(data.appt._orig, data.startDate, endDate, null, errorCallback);
 		} else {
  //       		ZmCalColView._restoreApptLoc(data);
@@ -2228,7 +2228,7 @@ function(ev) {
 		var errorCallback = new AjxCallback(null, ZmCalColView._handleError, data);
 		var sdOffset = startDate ? (startDate.getTime() - data.appt.getStartTime()) : null;
 		var edOffset = endDate ? (endDate.getTime() - data.appt.getEndTime()) : null;		
-		cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, ev);
+		cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, mouseEv);
 	}
 	
 	return false;
