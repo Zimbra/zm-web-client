@@ -877,11 +877,11 @@ function(attach, hasCheckbox, skipIcon) {
 	var mimeInfo = ZmMimeTable.getInfo(attach.ct);
 	var icon = mimeInfo ? mimeInfo.image : "GenericDoc";
 	var size = attach.s;
-	var sizeText = "";
+	var sizeText = null;
 	if (size != null) {
-	    if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
-        else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;"; 
-        else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;"; 
+	    if (size < 1024)		sizeText = size + " B";
+        else if (size < 1024^2)	sizeText = Math.round((size/1024) * 10) / 10 + " KB"; 
+        else 					sizeText = Math.round((size / (1024*1024)) * 10) / 10 + " MB"; 
 	}
 
 	var html = new Array();
@@ -907,8 +907,30 @@ function(attach, hasCheckbox, skipIcon) {
 	html[i++] = attach.part;
 	html[i++] = "'>";
 	html[i++] = attach.filename;
-	html[i++] = sizeText;
-	html[i++] = "</a></td></tr>";
+	html[i++] = "</a>";
+	// XXX: UNCOMMENT ONCE BUG #5562 IS FIXED
+	//var addHtmlLink = (this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) && 
+	//				  attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct));
+	var addHtmlLink = false;
+	if (sizeText || addHtmlLink) {
+		html[i++] = "&nbsp;(";
+		if (sizeText) {
+			html[i++] = sizeText;
+			if (addHtmlLink)
+				html[i++] = ", ";
+		}
+		if (addHtmlLink) {
+			html[i++] = "<a style='text-decoration:underline' target='_blank' class='AttLink' ";
+			html[i++] = hrefRoot;
+			html[i++] = attach.part;
+			html[i++] = "&view=html";
+			html[i++] = "'>";
+			html[i++] = ZmMsg.viewAsHtml;
+			html[i++] = "</a>";
+		}
+		html[i++] = ")";
+	}
+	html[i++] = "</td></tr>";
 	html[i++] = "</table>";
 
 	return html.join("");
