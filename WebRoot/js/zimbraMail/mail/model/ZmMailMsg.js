@@ -71,6 +71,8 @@ ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_REPLY_TO] = ZmMsg.replyTo;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_DATE] = ZmMsg.sent;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT] = ZmMsg.subject;
 
+ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/ig;
+
 /**
 * Fetches a message from the server.
 *
@@ -762,7 +764,6 @@ function(attachment) {
 	return true;
 };
 
-
 // this is a helper method to get an attachment url for multipart/related content
 ZmMailMsg.prototype.getContentIdAttachUrl = 
 function(cid, domain) {
@@ -795,101 +796,86 @@ function(cl, domain) {
 	return null;
 }
 
-ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/ig;
-// this is a helper method to build a list of attachment links in html
-ZmMailMsg.prototype.buildAttachLinks = 
-function(bFindHits, domain, objectManager) {
-	var attLinks = new Array();
+/**
+ * Returns an array of objects containing meta info about attachments to be used 
+ * to build href's by the caller
+*/
+ZmMailMsg.prototype.getAttachmentLinks = 
+function(findHits) {
+	var attLinks = [];
 
 	if (this._attachments && this._attachments.length > 0) {
-		var csfeMsgFetchSvc = location.protocol+ "//" + domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
-    		var hrefRoot = "href='" + csfeMsgFetchSvc + "id=" + this.getId() + "&amp;part=";
-    	
-    	for (var i = 0; i < this._attachments.length; i++) {
-    		// flag used to tell us whether we should use content location instead of built href
-    		var useCL = false;
+		var csfeMsgFetchSvc = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+		var hrefRoot = csfeMsgFetchSvc + "id=" + this.getId() + "&amp;part=";
+
+		for (var i = 0; i < this._attachments.length; i++) {
     		var attach = this._attachments[i];
-			var type = attach.ct;
-			
+
 			if (!this.isRealAttachment(attach))
     			continue;
-    		
-    		// get a viable label for this attachment
-    		var label = attach.name || attach.filename || (ZmMsg.unknown + " <" + type + ">");
-    		
-    		// start building html
-    		var mimeInfo = ZmMimeTable.getInfo(type);
-			var attProps = new Object;
-			var htmlArr = new Array();
-			var idx = 0;
 
-			// get size info in any
-			var sizeText = "";
-    		var size = attach.s;
-    		if (size && size > 0) {
-    		    if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
-                else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;"; 
-                else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;"; 
+			var props = {};
+
+    		// set a viable label for this attachment
+    		props.label = attach.name || attach.filename || (ZmMsg.unknown + " <" + attach.ct + ">");
+
+			// use content location instead of built href flag
+    		var useCL = false;
+			// set size info in any
+    		if (attach.s && attach.s > 0) {
+    		    if (attach.s < 1024)		props.size = attach.s + " B";
+                else if (attach.s < 1024^2)	props.size = Math.round((attach.s / 1024) * 10) / 10 + " KB"; 
+                else 						props.size = Math.round((attach.s / (1024*1024)) * 10) / 10 + " MB"; 
     		} else {
     			useCL = attach.cl && ZmMailMsg.URL_RE.test(attach.cl);
     		}
 
-			// calc. widths of all data involved
-    		var icon = mimeInfo ? mimeInfo.image : "GenericDoc";
-    		var encLabel = "&nbsp;" + AjxStringUtil.htmlEncode(label) + "&nbsp;";
-    		var labelWidth = Dwt.getHtmlExtent(encLabel).x;
-    		// The 5 is for padding for IE
-    		labelWidth += sizeText ? Dwt.getHtmlExtent(sizeText).x + 5 : 0;
-    		var iconLabelWidth = 16 + labelWidth;
-
-			// set link
-			var link = "";
-			if (type == ZmMimeTable.MSG_RFC822) {
-				link = "<a href='javascript:;' onclick='ZmMailMsgView.rfc822Callback(this," + this.getId() + ",\"" + attach.part + "\")' class='AttLink'>";
+			// handle rfc/822 attachments differently
+			if (attach.ct == ZmMimeTable.MSG_RFC822) {
+				var html = new Array(5);
+				var i = 0;
+				html[i++] = "<a href='javascript:;' onclick='ZmMailMsgView.rfc822Callback(this,";
+				html[i++] = this.getId();
+				html[i++] = ",\"";
+				html[i++] = attach.part;
+				html[i++] = "\")' class='AttLink'>";
+				props.link = html.join("");
 			} else {
-				link = useCL
-					? ("<a target='att_view_win' class='AttLink' href='" + attach.cl + "'>")
-					: ("<a target='att_view_win' class='AttLink' " + hrefRoot + attach.part + "'>");
+				// set the anchor html for the link to this attachment on the server
+				var url = useCL ? attach.cl : (hrefRoot + attach.part);
+				props.link = "<a target='_blank' class='AttLink' href='" + url + "'>";
+				if (!useCL) {
+					if (attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct) &&
+						this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML))
+					{
+						// set the anchor html for the HTML version of this attachment on the server
+						props.htmlLink = "<a style='text-decoration:underline' target='_blank' class='AttLink' href='" + url + "&view=html" + "'>";
+					}
+					else 
+					{
+						// set the objectify flag
+						props.objectify = attach.ct && attach.ct.match(/^image/);
+					}
+				}
 			}
 
-    		htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 style='display:inline; width:";
-    		htmlArr[idx++] = iconLabelWidth;
-    		htmlArr[idx++] = "'><tr><td style='width:" + iconLabelWidth + "'>";
+			// set the link icon
+			var mimeInfo = ZmMimeTable.getInfo(attach.ct);
+			props.linkIcon = mimeInfo ? mimeInfo.image : "GenericDoc";
 
-    		htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 style='display:inline; width:";
-    		htmlArr[idx++] = iconLabelWidth;
-    		htmlArr[idx++] = "'><tr><td style='width:" + icon[1] + "'>";
+			// set other meta info
+			props.isHit = findHits && this._isAttInHitList(attach);
+			props.mpId = attach.part;
+			props.url = csfeMsgFetchSvc + "id=" + this.getId() + "&part=" + attach.part;
 
-			// position:relative required to make this work in FF    		
-     		htmlArr[idx++] = link + AjxImg.getImageHtml(icon, "position:relative;") + "</a>";
-    		htmlArr[idx++] = "</td><td style='white-space:nowrap; width:" + labelWidth + "'>";
+			// and finally, add to attLink array
+			attLinks.push(props);
+		}
+	}
 
-			// if this attachment is a match for the current search, set class name
-			var theLink;
-			if (bFindHits && this._isAttInHitList(attach)) {
-				theLink = "<span class='AttName-matched'>" + link + encLabel + sizeText + "</a></span>";
-			} else {
-				theLink = link + encLabel + sizeText +  "</a>";
-			}
-
-			if (objectManager && type && type.match(/^image/)) {
-				var theURL = csfeMsgFetchSvc + "id=" + this.getId() + "&part="+attach.part;
-				idx = objectManager.generateSpan(objectManager.getImageAttachmentHandler(), htmlArr, idx, theLink, {url: theURL});
-			} else {
-				htmlArr[idx++] = theLink;
-			}
-
-    		htmlArr[idx++] = "</td></tr></table></td>";
-	    	htmlArr[idx++] = "</tr></table>";
-    		
-    		attProps.html = htmlArr.join("");
-    		attProps.mpId = attach.part;
-    		attLinks.push(attProps);
-    	}
-    }
-	
 	return attLinks;
 };
+
 
 // Private methods
 

@@ -1167,13 +1167,16 @@ function(msg, action, replyPref) {
 			  action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL)) ||
 			 action == ZmOperation.DRAFT))
 	{
-		var attLinks = msg.buildAttachLinks(false, document.domain, null);
+		var attLinks = msg.getAttachmentLinks();
 		if (attLinks.length > 0) {
 			html[idx++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%>";
 			for (var i = 0; i < attLinks.length; i++) {
+				var att = attLinks[i];
 				html[idx++] = "<tr><td width=65 align=right>";
-				if (i == 0) // only add icon for first attachment(?)
+				// only add icon for first attachment
+				if (i == 0) {
 					html[idx++] = AjxImg.getImageHtml("Attachment");
+				}
 				html[idx++] = "</td><td width=1%><input name='";
 				html[idx++] = ZmComposeView.FORWARD_ATT_NAME;
 				html[idx++] = "' type='checkbox'";
@@ -1184,10 +1187,17 @@ function(msg, action, replyPref) {
 					html[idx++] = " CHECKED";
 				}
 				html[idx++] = " id='";
-				html[idx++] = attLinks[i].mpId;
+				html[idx++] = att.mpId;
 				html[idx++] = "'></td>";
-				html[idx++] = "<td valign=top class='nobreak'>";
-				html[idx++] = attLinks[i].html;
+				html[idx++] = "<td class='nobreak'>";
+				html[idx++] = att.link;
+				html[idx++] = AjxStringUtil.htmlEncode(att.label);
+				html[idx++] = "</a>";
+				if (att.size) {
+					html[idx++] = "&nbsp;(";
+					html[idx++] = att.size;
+					html[idx++] = ")";
+				}
 				html[idx++] = "</td></tr>";
 			}
 			html[idx++] = "</table>";

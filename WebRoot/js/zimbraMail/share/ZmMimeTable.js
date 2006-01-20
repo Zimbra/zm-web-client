@@ -136,3 +136,14 @@ function(type) {
 	}
 	return false;
 };
+
+ZmMimeTable.hasHtmlVersion = 
+function(type) {
+	if (ZmMimeTable.isIgnored(type) || 
+		type.match(/^image/) || type.match(/^audio/) || type.match(/^video/)) 
+	{
+		return false;
+	}
+
+	return true;
+};

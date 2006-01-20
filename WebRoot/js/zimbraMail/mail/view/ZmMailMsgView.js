@@ -768,15 +768,7 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "</td></tr>"
 
 	// Attachments
-	var attLinks = msg.buildAttachLinks(true, document.domain, this._objectManager);
-	if (attLinks.length > 0) {
-		htmlArr[idx++] = "<tr><td class='LabelColName'>";
-		htmlArr[idx++] = ZmMsg.attachments;
-		htmlArr[idx++] = ": </td><td class='LabelColValue'>";
-		for (var i = 0; i<attLinks.length; i++)
-			htmlArr[idx++] = attLinks[i].html;
-		htmlArr[idx++] = "</td></tr>";
-	}
+	idx = this._getAttachmentHtml(msg, htmlArr, idx);
 
 	htmlArr[idx++] = "</table></div>";
 	var el = container ? container : this.getHtmlElement();
@@ -936,6 +928,66 @@ function(msg) {
 		html[i++] = "</tr></table>";
 	html[i++] = "</td></tr></table>";
 	tagCell.innerHTML = html.join("");
+};
+
+ZmMailMsgView.prototype._getAttachmentHtml = 
+function(msg, htmlArr, idx) {
+	var attLinks = msg.getAttachmentLinks(true);
+	for (var i = 0; i < attLinks.length; i++) {
+		var att = attLinks[i];
+
+		htmlArr[idx++] = "<tr>";
+		if (i == 0) {
+			htmlArr[idx++] = "<td class='LabelColName'>";
+			htmlArr[idx++] = ZmMsg.attachments;
+			htmlArr[idx++] = ": </td>";
+		} else {
+			htmlArr[idx++] = "<td></td>";
+		}
+		htmlArr[idx++] = "<td class='LabelColValue'>";
+		htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
+		htmlArr[idx++] = "<td style='width:18px'>";
+		htmlArr[idx++] = AjxImg.getImageHtml(att.linkIcon, "position:relative;");
+		htmlArr[idx++] = "</td><td style='white-space:nowrap'>";
+
+		var linkArr = new Array();
+		var j = 0;
+		linkArr[j++] = att.isHit ? "<span class='AttName-matched'>" : "";
+		linkArr[j++] = att.link;
+		linkArr[j++] = AjxStringUtil.htmlEncode(att.label);
+		linkArr[j++] = att.isHit ? "</a></span>" : "</a>";
+		var link = linkArr.join("");
+
+		// objectify if this attachment is an image
+		if (att.objectify) {
+			var imgHandler = this._objectManager.getImageAttachmentHandler();
+			idx = this._objectManager.generateSpan(imgHandler, htmlArr, idx, link, {url:att.url});
+		} else {
+			htmlArr[idx++] = link;
+		}
+
+		if (att.size || att.htmlLink) {
+			htmlArr[idx++] = "&nbsp;(";
+			if (att.size) {
+				htmlArr[idx++] = att.size;
+				if (att.htmlLink)
+					htmlArr[idx++] = ", ";
+			}
+			if (att.htmlLink) {
+				htmlArr[idx++] = att.htmlLink;
+				htmlArr[idx++] = ZmMsg.viewAsHtml;
+				htmlArr[idx++] = "</a>";
+			}
+			
+			htmlArr[idx++] = ")";
+		}
+		htmlArr[idx++] = "</td>";
+		htmlArr[idx++] = "</tr></table>";
+		htmlArr[idx++] = "</td>";
+		htmlArr[idx++] = "</tr>";
+	}
+
+	return idx;
 };
 
 
