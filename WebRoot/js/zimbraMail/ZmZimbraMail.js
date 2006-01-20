@@ -66,10 +66,6 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._pendingRequests = {};
 
 	this._pollActionId = null;
-	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-	var errorCallback = new AjxCallback(this, this._handleErrorDoPoll);
-	var pollParams = {soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback, noBusyOverlay: true};
-	this._pollAction = new AjxTimedAction(this, this.sendRequest, [pollParams]);
 
 	this._needOverviewLayout = false;
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);	
@@ -1202,7 +1198,14 @@ function(parent) {
 ZmZimbraMail.prototype._doPoll =
 function() {
 	this._pollActionId = null; // so we don't try to cancel
-	return AjxTimedAction.scheduleAction(this._pollAction, this._pollInterval);
+	
+	// It'd be more efficient to make these instance variables, but for some
+	// reason that breaks polling in IE.
+	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
+	var errorCallback = new AjxCallback(this, this._handleErrorDoPoll);
+	var pollParams = {soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback, noBusyOverlay: true};
+	var pollAction = new AjxTimedAction(this, this.sendRequest, [pollParams]);
+	return AjxTimedAction.scheduleAction(pollAction, this._pollInterval);
 };
 
 ZmZimbraMail.prototype._handleErrorDoPoll =
