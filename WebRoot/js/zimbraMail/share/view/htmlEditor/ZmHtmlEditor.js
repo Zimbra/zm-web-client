@@ -622,11 +622,11 @@ function(parent) {
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
 	b.addSelectionListener(insElListener);
 	
-	b = this._insertTableButton = new DwtButton(tb, null, "TBButton");
-	b.setImage("InsertTable");
-	b.setToolTipContent(ZmMsg.insertTable);
-	b.setData(ZmHtmlEditor._VALUE, ZmHtmlEditor._INSERT_TABLE);
-	b.addSelectionListener(insElListener);
+	//b = this._insertTableButton = new DwtButton(tb, null, "TBButton");
+	//b.setImage("InsertTable");
+	//b.setToolTipContent(ZmMsg.insertTable);
+	//b.setData(ZmHtmlEditor._VALUE, ZmHtmlEditor._INSERT_TABLE);
+	//b.addSelectionListener(insElListener);
 };
 
 ZmHtmlEditor.prototype._createStyleSelect =
