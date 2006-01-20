@@ -155,6 +155,7 @@ function(overviewId, treeIds, omit) {
 		if (treeView) {
 			// add the tree view's HTML element back to the overview
 			overview.addChild(treeView);
+			treeView.setCheckboxes();
 		} else {
 			// create the tree view as a child of the overview
 			this._controllers[treeId].show(overviewId, this._showUnread[overviewId], omit);
