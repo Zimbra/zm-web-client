@@ -541,6 +541,7 @@ function() {
 ZmApptTabViewPage.prototype._createApptHtml =
 function() {
 	var dims = this.parent.getSize();
+	var rowHeight = AjxEnv.isIE ? 140 : 110;
 	this.setSize(dims.x-2, dims.y-30);
 	this._notesHtmlEditorId = Dwt.getNextId();
 
@@ -549,14 +550,17 @@ function() {
 
 	html[i++] = "<table border=0 style='table-layout:fixed; height:";
 	html[i++] = dims.y-30;
-	html[i++] = "px'><colgroup><col width='315'><col></colgroup>";
-	html[i++] = "<tr style='height:110px'><td valign=top><fieldset";
+	html[i++] = "px'><colgroup><col width='335'><col></colgroup>";
+	html[i++] = "<tr style='height:";
+	html[i++] = rowHeight;
+	html[i++] = "px'><td valign=top><fieldset";
 	if (AjxEnv.isMozilla)
 		html[i++] = " style='border: 1px dotted #555555'";
 	html[i++] = "><legend style='color:#555555'>";
 	html[i++] = ZmMsg.details;
 	html[i++] = "</legend><div style='overflow:hidden; height:";
-	html[i++] = AjxEnv.isIE ? "90px;'>" : "82px;'>";
+	html[i++] = AjxEnv.isIE ? (rowHeight-20) : rowHeight;
+	html[i++] = "px'>";
 	html[i++] = this._getDetailsHtml();
 	html[i++] = "</div></fieldset></td>";
 	html[i++] = "<td valign=top><fieldset";
@@ -565,7 +569,9 @@ function() {
 	html[i++] = "><legend style='color:#555555'>";
 	html[i++] = ZmMsg.time;
 	html[i++] = "</legend><div style='overflow:hidden; height:";
-	html[i++] = AjxEnv.isIE ? "90px;'>" : "82px;'>";
+	html[i++] = AjxEnv.isIE ? (rowHeight-20) : rowHeight;
+	html[i++] = "px;";
+	html[i++] = AjxEnv.isIE ? " width:99%'>" : "'>";
 	html[i++] = this._getTimeHtml();
 	html[i++] = "</div></fieldset>";
 	html[i++] = "</td></tr><tr style='height:30px;'><td colspan=2>";
@@ -586,7 +592,7 @@ function() {
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.ONEXIT_VALIDATION});
 	this._subjectField.setRequired();
-	Dwt.setSize(this._subjectField.getInputElement(), "235", "22px");
+	Dwt.setSize(this._subjectField.getInputElement(), "250", "22px");
 	this._subjectField.reparentHtmlElement(this._subjectFieldId);
 	delete this._subjectFieldId;
 
@@ -594,7 +600,7 @@ function() {
 											initialValue:null, size:null, maxLen:null,
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.ONEXIT_VALIDATION});
-	Dwt.setSize(this._locationField.getInputElement(), "235", "22px");
+	Dwt.setSize(this._locationField.getInputElement(), "250", "22px");
 	this._locationField.reparentHtmlElement(this._locationFieldId);
 	delete this._locationFieldId;
 };
@@ -629,7 +635,6 @@ function() {
 	// init timezone to the local machine's time zone
 	this._tzoneSelect.setSelectedValue(ZmTimezones.guessMachineTimezone());
 	this._tzoneSelect.reparentHtmlElement(this._tzoneSelectId);
-	this._tzoneSelect.setSize("100"); 											// XXX: hardcode width for now
 	delete this._tzoneSelectId;
 
 	this._repeatSelect = new DwtSelect(this);
@@ -687,8 +692,8 @@ function() {
 	html[i++] = ZmMsg.showAs;
 	html[i++] = "</td><td width=1% id='";
 	html[i++] = this._showAsSelectId;
-	html[i++] = "'></td>";
-	html[i++] = "<td width=100%></td>";
+	html[i++] = "'></td></tr>";
+	html[i++] = "<tr>";
 	html[i++] = "<td width=1% class='ZmApptTabViewPageField' id='";
 	html[i++] = this._calLabelId;
 	html[i++] = "'>";
@@ -720,6 +725,15 @@ function() {
 	var i = 0;
 
 	html[i++] = "<table border=0>";
+	html[i++] = "<tr><td></td><td width=1%>";
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
+	html[i++] = "<input type='checkbox' id='";
+	html[i++] = this._allDayCheckboxId;
+	html[i++] = "'></td><td><nobr>&nbsp;";
+	html[i++] = ZmMsg.allDayEvent;
+	html[i++] = "</td></tr></table></td><td></td><td colspan=10 id='";
+	html[i++] = this._tzoneSelectId;
+	html[i++] = "'></td></tr>";
 	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.start;
 	html[i++] = ":</td><td>";
@@ -734,9 +748,6 @@ function() {
 	html[i++] = "</tr></table></td>";
 	html[i++] = "<td>@</td><td id='";
 	html[i++] = this._startTimeSelectId;
-	html[i++] = "'></td>";
-	html[i++] = "<td colspan=3 id='";
-	html[i++] = this._tzoneSelectId;
 	html[i++] = "'></td>";
 	html[i++] = "</tr><tr><td class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.end;
@@ -753,11 +764,7 @@ function() {
 	html[i++] = "<td>@</td><td id='";
 	html[i++] = this._endTimeSelectId;
 	html[i++] = "'></td>";
-	html[i++] = "<td><input type='checkbox' id='";
-	html[i++] = this._allDayCheckboxId;
-	html[i++] = "'></td><td><nobr>";
-	html[i++] = ZmMsg.allDayEvent;
-	html[i++] = "</td><td width=100%></td></tr>";
+	html[i++] = "</tr>";
 	html[i++] = "<tr><td valign=top class='ZmApptTabViewPageField' style='line-height:22px'>";
 	html[i++] = ZmMsg.repeat;
 	html[i++] = ":</td><td valign=top colspan=2 id='";
@@ -894,7 +901,6 @@ function(appt, mode) {
 		}
 	}
 	// always reset the width of this select widget
-	this._calendarSelect.setSize("110");
 	this._calendarSelect.setSelectedValue(appt.getFolderId());
 };
 
