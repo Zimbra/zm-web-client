@@ -628,12 +628,14 @@ function(calendars) {
 ZmCalViewController.prototype._handleResponseGetShares = 
 function(result) {
 	var resp = result.getResponse().BatchResponse.GetFolderResponse;
-	for (var i = 0; i < resp.length; i++) {
-		var link = resp[i].link ? resp[i].link[0] : null;
-		var cal = link ? this.getCalendar(link.id) : null;
-
-		if (cal)
-			cal.setPermissions(link.perm);
+	if (resp) {
+		for (var i = 0; i < resp.length; i++) {
+			var link = resp[i].link ? resp[i].link[0] : null;
+			var cal = link ? this.getCalendar(link.id) : null;
+	
+			if (cal)
+				cal.setPermissions(link.perm);
+		}
 	}
 };
 
