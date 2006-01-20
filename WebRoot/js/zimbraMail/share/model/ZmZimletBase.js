@@ -50,13 +50,12 @@ function(zimletContext, shell) {
 	this._appCtxt = shell.getData(ZmAppCtxt.LABEL);
 	this._origIcon = this.xmlObj().icon;
 
-	var contentObj = this.xmlObj().contentObject;
-	if (contentObj && contentObj.matchOn[0]) {
-		var regExInfo = contentObj.matchOn[0].regex[0];
+	var contentObj = this.xmlObj("contentObject");
+	if (contentObj && contentObj.matchOn) {
+		var regExInfo = contentObj.matchOn.regex;
 		this.RE = new RegExp(regExInfo._content, regExInfo.attrs);
-		if (contentObj.type) {
-			this.type = this.xmlObj().contentObject.type;
-		}
+		if (contentObj.type)
+			this.type = contentObj.type;
 		// note the _appCtxt is already initialized above
 		ZmObjectHandler.prototype.init.call(this, this.type, contentObj["class"]);
 	}
@@ -123,6 +122,45 @@ function(canvas) {
 	this.createPropertyEditor();
 };
 
+ZmZimletBase.prototype._dispatch =
+function(handlerName) {
+	var params = [];
+	for (var i = 1; i < arguments.length; ++i)
+		params[i-1] = arguments[i];
+	// create a canvas if so was specified
+	var canvas;
+	switch (handlerName) {
+	    case "singleClicked":
+	    case "doubleClicked":
+		// the panel item was clicked
+		var obj = this.xmlObj("zimletPanelItem")
+			[handlerName == "singleClicked" ? "onClick" : "onDoubleClick"];
+		if (!obj)
+			break;
+		var url = obj.actionUrl;
+		if (url)
+			url = this.xmlObj().makeURL(url);
+		if (obj && (obj.canvas || url))
+			canvas = this.makeCanvas(obj.canvas, url);
+		break;
+
+	    case "doDrop":
+		var obj = params[1]; // the dragSrc that matched
+		if (!obj)
+			break;
+		var url = obj.actionUrl;
+		if (url)
+			// params[0] is the dropped object
+			url = this.xmlObj().makeURL(url, params[0]);
+		if (obj && (obj.canvas || url))
+			canvas = this.makeCanvas(obj.canvas, url);
+		break;
+	}
+	if (canvas != null)
+		params.push(canvas);
+	return this.xmlObj().callHandler(handlerName, params);
+};
+
 // Similar to doubleClicked, but called upon a single click.  Note that this
 // might be called once or twice in the case of a dbl. click too.
 ZmZimletBase.prototype.singleClicked =
@@ -170,14 +208,14 @@ function(content, startIndex) {
 // - canvas
 ZmZimletBase.prototype.clicked =
 function(spanElement, contentObjText, matchContext, canvas) {
-	var c = this.xmlObj("contentObject").onClick[0];
+	var c = this.xmlObj("contentObject.onClick");
 	if (c && c.actionUrl) {
 		var obj = { objectContent: contentObjText };
 		if (matchContext && (matchContext instanceof Array)) {
 			for (var i = 0; i < matchContext.length; ++i)
 				obj["$"+i] = matchContext[i];
 		}
-		this.xmlObj().handleActionUrl(c.actionUrl[0], c.canvas, obj);
+		this.xmlObj().handleActionUrl(c.actionUrl, c.canvas, obj);
 	}
 };
 
@@ -192,13 +230,20 @@ ZmZimletBase.prototype.toolTipPoppedUp =
 function(spanElement, contentObjText, matchContext, canvas) {
 	var c = this.xmlObj("contentObject");
 	if (c && c.toolTip) {
-		// FIXME: only plain tooltips support for now
 		var obj = { objectContent: contentObjText };
 		if (matchContext) {
 			for (var i = 0; i < matchContext.length; ++i)
 				obj["$"+i] = matchContext[i];
 		}
-		var txt = this.xmlObj().processString(c.toolTip[0]._content, obj);
+		var txt;
+		if (c.toolTip instanceof Object &&
+		    c.toolTip.actionUrl) {
+		    this.xmlObj().handleActionUrl(c.toolTip.actionUrl, [{type:"tooltip"}], obj, canvas);
+		    // XXX the tooltip needs "some" text on it initially, otherwise it wouldn't resize afterwards.
+		    txt = "fetching data...";
+		} else {
+			txt = this.xmlObj().processString(c.toolTip, obj);
+		}
 		canvas.innerHTML = txt;
 	}
 };
@@ -245,7 +290,7 @@ function(contextMenu, menuItemId, spanElement, contentObjText, canvas) {};
 // element.
 ZmZimletBase.prototype.createPropertyEditor =
 function(callback) {
-	var userprop = this.xmlObj("userProperties");
+	var userprop = this.xmlObj().userProperties;
 
 	if (!userprop)
 		return;
@@ -387,7 +432,7 @@ ZmZimletBase.prototype.saveUserProperties =
 function(callback) {
 	var soapDoc = AjxSoapDoc.create("ModifyPropertiesRequest", "urn:zimbraAccount");
 
-	var props = this.xmlObj("userProperties");
+	var props = this.xmlObj().userProperties;
 	var check = this.checkProperties(props);
 
 	if (!check)
@@ -466,15 +511,36 @@ function(object, context, span) {
 
 ZmZimletBase.prototype.makeCanvas = function(canvasData, url) {
 	var canvas = null;
+	var div;
+	
+	div = document.createElement("div");
+	div.id = "zimletCanvasDiv";
+	
+	// HACK #1: if an actionUrl was specified and there's no <canvas>, we
+	// assume a <canvas type="window">
+	if (!canvasData && url)
+		canvasData = { type: "window" };
+
+	// HACK #2: some folks insist on using "style" instead of "type". ;-)
+	if (canvasData.style && !canvasData.type)
+		canvasData.type = canvasData.style;
+
 	switch (canvasData.type) {
 	    case "window":
+	    var browserUrl = url;
+		if (browserUrl == null)
+			browserUrl = "/zimbra/public/blank.html";
 		var props = [ "toolbar=yes,location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes" ];
 		if (canvasData.width)
 			props.push("width=" + canvasData.width);
 		if (canvasData.height)
 			props.push("height=" + canvasData.height);
 		props = props.join(",");
-		canvas = window.open(url, this.xmlObj("name"), props);
+		canvas = window.open(browserUrl, this.xmlObj("name"), props);
+		if (!url) {
+			// XXX todo: add div element in the window.
+			//canvas.document.getHtmlElement().appendChild(div);
+		}
 		break;
 
 	    case "dialog":
@@ -499,11 +565,27 @@ ZmZimletBase.prototype.makeCanvas = function(canvasData, url) {
 			el.style.width = sz.x + "px";
 			el.style.height = sz.y + "px";
 			view.getHtmlElement().appendChild(el);
+			canvas.iframe = el;
+		} else {
+			view.getHtmlElement().appendChild(div);
 		}
 		canvas.popup();
 		break;
 	}
 	return canvas;
+};
+
+ZmZimletBase.prototype.applyXslt =
+function(xsltUrl, doc) {
+	var xslt = this.xmlObj().getXslt(xsltUrl);
+	if (!xslt) {
+		throw new Error("Cannot create XSLT engine: "+xsltUrl);
+	}
+	if (doc instanceof AjxXmlDoc) {
+		doc = doc.getDoc();
+	}
+	var ret = xslt.transformToDom(doc);
+	return AjxXmlDoc.createFromDom(ret);
 };
 
 /* Internal functions -- overriding is not recommended */
@@ -520,7 +602,7 @@ ZmZimletBase.prototype._createDialog = function(args) {
 /* Overrides default ZmObjectHandler methods for Zimlet API compat */
 ZmZimletBase.prototype._getHtmlContent =
 function(html, idx, obj, context) {
-	var contentObj = this.xmlObj().getVal('contentObject');
+	var contentObj = this.xmlObj().getVal("contentObject");
 	if(contentObj && contentObj.onClick) {
 // 		html[idx++] = '<a target="_blank" href="';
 // 		html[idx++] = (contentObj.onClick[0].actionUrl[0].target).replace('${objectContent}', AjxStringUtil.htmlEncode(obj));

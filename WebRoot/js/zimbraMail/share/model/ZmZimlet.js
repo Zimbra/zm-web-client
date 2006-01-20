@@ -92,8 +92,10 @@ function() {
 ZmZimlet.prototype.getIcon =
 function() {
 	if (this.id == ZmZimlet.ID_ZIMLET) {
+		DBG.println(AjxDebug.DBG2, "*************** NULL ****");
 		return null;
 	}
+	DBG.println(AjxDebug.DBG2, "*************** " + this._zimletContext.icon + "..." + this);
 	return this._zimletContext.icon;
 };
 
