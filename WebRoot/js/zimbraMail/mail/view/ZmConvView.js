@@ -248,11 +248,11 @@ function(conv) {
 		var anchorId = [this._tagDiv.id, ZmConvView._TAG_ANCHOR, tag.id].join("");
 		var imageId = [this._tagDiv.id, ZmDoublePaneView._TAG_IMG, tag.id].join("");
 
-		html[i++] = "<a href='javascript:ZmConvView._tagClick(\"";
+		html[i++] = "<a href='javascript:;' onclick='ZmConvView._tagClick(\"";
 		html[i++] = this._htmlElId;
 		html[i++] = '","';
 		html[i++] = tag.id;
-		html[i++] = "\")' id='";
+		html[i++] = "\"); return false;' id='";
 		html[i++] = anchorId;
 		html[i++] = "'>";
 		html[i++] = "<table style='display:inline; vertical-align:middle;' border=0 cellspacing=0 cellpadding=0><tr><td>";
