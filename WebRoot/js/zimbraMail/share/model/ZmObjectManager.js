@@ -186,6 +186,8 @@ function(content, htmlEncode, type) {
 			if (content instanceof ZmEmailAddress) {
 				if(lowestHandler) {
 					this.generateSpan(lowestHandler, html, idx, content, null);
+				} else {
+					html[idx++] = content;
 				}
 				return html.join("");
 			}	
@@ -228,6 +230,8 @@ function(content, htmlEncode, type) {
 		// add the match
 		if(lowestHandler) {
 			idx = this.generateSpan(lowestHandler, html, idx, lowestResult[0], lowestResult.context);
+		} else {
+			html[idx++] = lowestResult[0];
 		}
 
 		// update the index
