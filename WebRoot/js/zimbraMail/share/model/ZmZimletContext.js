@@ -25,6 +25,9 @@
 
 function ZmZimletContext(id, zimlet, appCtxt) {
 	this._appCtxt = appCtxt;
+	// sane JSON here
+	this.json = ZmZimletContext.sanitize(zimlet, "zimlet", ZmZimletContext.RE_ARRAY_ELEMENTS);
+
 	this.id = id;
 	this.icon = "ZimbraIcon";
 	this.ctxt = zimlet.zimletContext;
@@ -35,18 +38,8 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 	DBG.println(AjxDebug.DBG2, "Zimlets - context: " + this.name + " base: " + this._url);
 	this.description = zimlet.description;
 	this.version = zimlet.version;
-	this.includes = zimlet.include;
-	if (this.includes) {
-		for (var i = this.includes.length; --i >= 0;) {
-			this.includes[i] = this.includes[i]._content;
-		}
-	}
-	this.includeCSS = zimlet.includeCSS;
-	if (this.includeCSS) {
-		for (i = this.includeCSS.length; --i >= 0;) {
-			this.includeCSS[i] = this.includeCSS[i]._content;
-		}
-	}
+	this.includes = this.json.zimlet.include;
+	this.includeCSS = this.json.zimlet.includeCSS;
 	if(zimlet.serverExtension && zimlet.serverExtension[0].hasKeyword){
 		this.keyword = zimlet.serverExtension[0].hasKeyword;
 	}
@@ -68,6 +61,10 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 				this, this._makeMenu,
 				[ this.zimletPanelItem.contextMenu.menuItem ]);
 		}
+		if (this.zimletPanelItem.onClick)
+			this.zimletPanelItem.onClick = this.zimletPanelItem.onClick[0];
+		if (this.zimletPanelItem.onDoubleClick)
+			this.zimletPanelItem.onDoubleClick = this.zimletPanelItem.onDoubleClick[0];
 	}
 	if(zimlet.handlerObject){
 		this.handlerObject = zimlet.handlerObject[0]._content;
@@ -86,6 +83,50 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 
 	this._handleMenuItemSelected = new AjxListener(this, this._handleMenuItemSelected);
 }
+
+ZmZimletContext.RE_ARRAY_ELEMENTS = /^(dragSource|include|includeCSS|menuItem|param|property|resource)$/;
+
+/** This function creates a 'sane' JSON object, given one returned by the
+ * Zimbra server.
+ *
+ * It will basically remove unnecessary arrays and create String objects for
+ * those tags that have text data, so that we don't need to dereference lots of
+ * arrays and use _content.  It does the job that the server should do.  *grin*
+ *
+ * BIG FAT WARNING: usage of an attribute named "length" may give weird
+ * results, since we convert tags that have text content to Strings.
+ *
+ * @param obj -- array or object, whatever was given by server
+ * @param tag -- the tag of this object, if it's an array
+ * @param wantarray_re -- RegExp that matches tags that must remain an array
+ *
+ * @return -- sanitized object
+ */
+ZmZimletContext.sanitize = function(obj, tag, wantarray_re) {
+	function doit(obj, tag) {
+		var cool_json, val, i;
+		if (obj instanceof Array) {
+			if (obj.length == 1 && !(wantarray_re && wantarray_re.test(tag))) {
+				cool_json = doit(obj[0], tag);
+			} else {
+				cool_json = [];
+				for (var i = 0; i < obj.length; ++i)
+					cool_json[i] = doit(obj[i], tag);
+			}
+		} else if (typeof obj == "object") {
+			if (obj._content)
+				cool_json = new String(obj._content);
+			else
+				cool_json = {};
+			for (i in obj)
+				cool_json[i] = doit(obj[i], i);
+		} else {
+			cool_json = obj;
+		}
+		return cool_json;
+	};
+	return doit(obj, tag);
+};
 
 ZmZimletContext.prototype.constructor = ZmZimletContext;
 
@@ -156,16 +197,9 @@ ZmZimletContext.prototype.getOrganizer = function() {
 
 ZmZimletContext.prototype.getUrl = function() { return this._url; };
 
-ZmZimletContext.prototype.getVal = function(key, val) {
-	if (val == null)
-		val = this[key];
-	if (val == null)
-		return null;
-	if (val instanceof Array && val.length == 1)
-		val = val[0];
-	if (val._content != null)
-		val = val._content;
-	return val;
+ZmZimletContext.prototype.getVal = function(key) {
+	var zimlet = this.json.zimlet;
+	return eval("zimlet." + key);
 };
 
 ZmZimletContext.prototype.callHandler = function(funcname, args) {
@@ -301,13 +335,29 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj) {
 	return url;
 };
 
-ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj) {
+/**
+* if there already is a paintable canvas to use, as in the case of tooltip,
+* pass it to 'div' parameter.  otherwise a canvas (window, popup, dialog) will be created
+* to display the contents from the url.
+*/
+ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div) {
 	var url = this.makeURL(actionUrl, obj);
+	var xslt = null;
 
-	if (canvas) {
-		canvas = this.handlerObject.makeCanvas(canvas[0], url);
+	if (actionUrl.xslt) {
+		xslt = this.getXslt(actionUrl.xslt);
+	}
+	
+	// need to use callback if the paintable canvas already exists, or if it needs xslt transformation.
+	if (div || xslt) {
+		if (!div) {
+			canvas = this.handlerObject.makeCanvas(canvas[0], null);
+			div = document.getElementById("zimletCanvasDiv");
+		}
+		url = ZmZimletBase.PROXY + AjxStringUtil.urlEncode(url);
+		AjxRpc.invoke(null, url, null, new AjxCallback(this, this._rpcCallback, [xslt, div]), true);
 	} else {
-		window.open(url, this.name);
+		this.handlerObject.makeCanvas(canvas[0], url);
 	}
 };
 
@@ -471,3 +521,33 @@ ZmZimletContext._zmObjectTransformers = {
 	}
 
 };
+
+ZmZimletContext.prototype.getXslt =
+function(url) {
+	if (!this._xslt) {
+		this._xslt = {};
+	}
+	var realurl = this.getUrl() + url;
+	if (!this._xslt[realurl]) {
+		this._xslt[realurl] = AjxXslt.createFromUrl(realurl);
+	}
+	return this._xslt[realurl];
+};
+
+ZmZimletContext.prototype._rpcCallback =
+function(xslt, canvas, result) {
+	var html, resp = result.xml;
+	if (resp == undefined) {
+		var doc = AjxXmlDoc.createFromXml(result.text);
+		resp = doc.getDoc();
+	}
+	// TODO:  instead of changing innerHTML, maybe append
+	// the dom tree to the canvas.
+	if (xslt) {
+		html = xslt.transformToString(resp);
+	} else {
+		html = resp.innerHTML;
+	}
+	canvas.innerHTML = html;
+};
+
