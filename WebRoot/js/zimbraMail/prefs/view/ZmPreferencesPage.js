@@ -89,7 +89,8 @@ function() {
 		if (pre && !(this._appCtxt.get(pre))) continue;		
 
 		// save the current value (for checking later if it changed)
-		var value = pref.origValue = this._getPrefValue(id);
+		pref.origValue = this._getPrefValue(id);
+		var value = this._getPrefValue(id, false, true);
 		if (id == ZmSetting.SHOW_FRAGMENTS && !this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED))
 			setup.displayName = ZmMsg.showFragmentsMsg;
 		// bug fix #4519 - only show html font settings if html compose is enabled
@@ -199,7 +200,7 @@ function(useDefaults) {
 		var type = setup.displayContainer;
 		if (type == ZmPref.TYPE_PASSWORD) continue; // ignore non-form elements
 		var pref = settings.getSetting(id);
-		var newValue = this._getPrefValue(id, useDefaults);
+		var newValue = this._getPrefValue(id, useDefaults, true);
 		if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_FONT) {
 			var input = this._dwtObjects[id];
 			if (!input) continue;
@@ -239,16 +240,19 @@ function(useDefaults) {
 *
 * @param id			[constant]		pref ID
 * @param useDefault	[boolean]		if true, use pref's default value
+* @param convert	[boolean]		if true, convert value to user-visible form
 */
 ZmPreferencesPage.prototype._getPrefValue =
-function(id, useDefault) {
+function(id, useDefault, convert) {
 	var value = null;
 	var pref = this._appCtxt.getSettings().getSetting(id);
 	var value = useDefault ? pref.getDefaultValue() : pref.getValue();
-	if (id == ZmSetting.SIGNATURE_STYLE)
-		value = (value == ZmSetting.SIG_INTERNET);
-	if (id == ZmSetting.POLLING_INTERVAL)
-		value = parseInt(value / 60); // setting stored as seconds, displayed as minutes
+	if (convert) {
+		if (id == ZmSetting.SIGNATURE_STYLE)
+			value = (value == ZmSetting.SIG_INTERNET);
+		if (id == ZmSetting.POLLING_INTERVAL)
+			value = parseInt(value / 60); // setting stored as seconds, displayed as minutes
+	}
 
 	return value;
 };

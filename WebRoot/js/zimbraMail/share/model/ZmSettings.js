@@ -229,7 +229,7 @@ function(list, callback, result) {
 		// notify each changed setting's listeners
 		for (var i = 0; i < list.length; i++) {
 			var setting = list[i];
-			setting.origValue = setting.value;
+			setting.prevValue = setting.value;
 			setting._notify(ZmEvent.E_MODIFY);
 		}
 	}
