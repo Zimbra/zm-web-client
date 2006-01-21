@@ -907,11 +907,11 @@ function(msg) {
 			html[i++] = AjxImg.getImageHtml(ZmTag.COLOR_MINI_ICON[tag.color], null, ["id='", imageId, "'"].join(""));
 			html[i++] = "</td><td class='Tags' style='white-space:nowrap;'>";
 		}
-		html[i++] = "<a href='javascript:ZmMailMsgView._tagClick(\"";
+		html[i++] = "<a href='javascript:' onclick='ZmMailMsgView._tagClick(\"";
 		html[i++] = this._htmlElId;
 		html[i++] = '","';
 		html[i++] = tag.id;
-		html[i++] = "\")' id='";
+		html[i++] = "\"); return false;' id='";
 		html[i++] = anchorId;
 		html[i++] = "'>";
 		if (AjxEnv.isIE) {
