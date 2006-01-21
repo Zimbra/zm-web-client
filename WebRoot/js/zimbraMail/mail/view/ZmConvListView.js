@@ -59,6 +59,12 @@ function(defaultColumnSort) {
 	var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
 	if (fromColSpan)
 		fromColSpan.innerHTML = "&nbsp;" + (isFolder.sent || isFolder.drafts ? ZmMsg.to : ZmMsg.from);
+
+	// bug fix #4786
+	var dateColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]);
+	var dateColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[dateColIdx]._id);
+	if (dateColSpan)
+		dateColSpan.innerHTML = "&nbsp;" + (isFolder.sent ? ZmMsg.sent : ZmMsg.received);
 };
 
 ZmConvListView.prototype.markUIAsRead = 
