@@ -350,13 +350,12 @@ ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div
 	
 	// need to use callback if the paintable canvas already exists, or if it needs xslt transformation.
 	if (div || xslt) {
-		var request = new AjxRpcRequest("zimlet");
 		if (!div) {
 			canvas = this.handlerObject.makeCanvas(canvas[0], null);
 			div = document.getElementById("zimletCanvasDiv");
 		}
 		url = ZmZimletBase.PROXY + AjxStringUtil.urlEncode(url);
-		request.invoke(null, url, null, new AjxCallback(this, this._rpcCallback, [xslt, div]), true);
+		AjxRpc.invoke(null, url, null, new AjxCallback(this, this._rpcCallback, [xslt, div]), true);
 	} else {
 		this.handlerObject.makeCanvas(canvas[0], url);
 	}
