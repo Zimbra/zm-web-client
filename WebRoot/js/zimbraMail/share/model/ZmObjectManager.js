@@ -159,6 +159,7 @@ function(content, htmlEncode, type) {
 	while (true) {
 		var lowestResult = null;
 		var lowestIndex = maxIndex;
+		var lowestHandler = null;
 
 		// if given a type, just go thru the handler defined for that type.
 		// otherwise, go thru every handler we have. Regardless, ask each handler
@@ -183,7 +184,9 @@ function(content, htmlEncode, type) {
 			}
 			// If it's an email address just handle it and return the result.
 			if (content instanceof ZmEmailAddress) {
-				this.generateSpan(lowestHandler, html, idx, content, null);
+				if(lowestHandler) {
+					this.generateSpan(lowestHandler, html, idx, content, null);
+				}
 				return html.join("");
 			}	
 		} else {
@@ -223,7 +226,9 @@ function(content, htmlEncode, type) {
 		}
 
 		// add the match
-		idx = this.generateSpan(lowestHandler, html, idx, lowestResult[0], lowestResult.context);
+		if(lowestHandler) {
+			idx = this.generateSpan(lowestHandler, html, idx, lowestResult[0], lowestResult.context);
+		}
 
 		// update the index
 		lastIndex = lowestResult.index + lowestResult[0].length;
