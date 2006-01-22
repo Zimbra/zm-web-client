@@ -96,17 +96,11 @@ function(interval) {
 	}
 };
 
-ZmPref.SIGNATURE_MAX_LENGTH = 1024;
-ZmPref.validateSignature = 
-function(signature) {
-	return (signature.length <= ZmPref.SIGNATURE_MAX_LENGTH);
-};
-
-ZmPref.AWAY_MESSAGE_MAX_LENGTH = 8192;
-ZmPref.validateAwayMessage = 
-function(away) {
-	return (away.length <= ZmPref.AWAY_MESSAGE_MAX_LENGTH);
-};
+// maximum value lengths
+ZmPref.MAX_LENGTH = {};
+ZmPref.MAX_LENGTH[ZmSetting.INITIAL_SEARCH]	= 512;
+ZmPref.MAX_LENGTH[ZmSetting.SIGNATURE]		= 1024;
+ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE]	= 8192;
 
 // The SETUP object for a pref gets translated into a form input. Available properties are:
 //
@@ -155,6 +149,8 @@ ZmPref.SETUP[ZmSetting.SHOW_FRAGMENTS] = {
 ZmPref.SETUP[ZmSetting.INITIAL_SEARCH] = {
 	displayName:		ZmMsg.initialMailSearch,
 	displayContainer:	ZmPref.TYPE_INPUT,
+	maxLength:			ZmPref.MAX_LENGTH[ZmSetting.INITIAL_SEARCH],
+	errorMessage:       AjxMessageFormat.format(ZmMsg.invalidInitialSearch, ZmPref.MAX_LENGTH[ZmSetting.INITIAL_SEARCH]),
 	displaySeparator:	false,
 	precondition:		ZmSetting.INITIAL_SEARCH_ENABLED};
 
@@ -205,8 +201,8 @@ ZmPref.SETUP[ZmSetting.SIGNATURE_STYLE] = {
 ZmPref.SETUP[ZmSetting.SIGNATURE] = {
 	displayName:		ZmMsg.signature,
 	displayContainer:	ZmPref.TYPE_TEXTAREA,
-	validationFunction: ZmPref.validateSignature,
-	errorMessage:       AjxMessageFormat.format(ZmMsg.invalidSignature, ZmPref.SIGNATURE_MAX_LENGTH),
+	maxLength:			ZmPref.MAX_LENGTH[ZmSetting.SIGNATURE],
+	errorMessage:       AjxMessageFormat.format(ZmMsg.invalidSignature, ZmPref.MAX_LENGTH[ZmSetting.SIGNATURE]),
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.VACATION_MSG_ENABLED] = {
@@ -216,8 +212,8 @@ ZmPref.SETUP[ZmSetting.VACATION_MSG_ENABLED] = {
 ZmPref.SETUP[ZmSetting.VACATION_MSG] = {
 	displayName:		ZmMsg.awayMessage,
 	displayContainer:	ZmPref.TYPE_TEXTAREA,
-	validationFunction: ZmPref.validateAwayMessage,
-	errorMessage:       AjxMessageFormat.format(ZmMsg.invalidAwayMessage, ZmPref.AWAY_MESSAGE_MAX_LENGTH),
+	maxLength:			ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE],
+	errorMessage:       AjxMessageFormat.format(ZmMsg.invalidAwayMessage, ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE]),
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.NOTIF_ENABLED] = {
