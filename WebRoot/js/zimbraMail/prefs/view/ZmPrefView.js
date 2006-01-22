@@ -170,7 +170,6 @@ function(dirtyCheck, noValidation) {
 			if (pre && !(this._appCtxt.get(pre))) continue;		
 			
 			var type = setup ? setup.displayContainer : null;
-			var validationFunc = setup ? setup.validationFunction : null;
 			if (type == ZmPref.TYPE_PASSWORD) continue; // ignore non-form elements
 				
 			// check if value has changed
@@ -189,11 +188,16 @@ function(dirtyCheck, noValidation) {
 					return true;
 				}
 			} else if (!unchanged) {
-				if (!noValidation && validationFunc) {
-					var isValid = validationFunc(value);
-					if (!isValid)
-						errorStr += "\n" + AjxStringUtil.resolve(setup.errorMessage, value);
+				var maxLength = setup ? setup.maxLength : null
+				var validationFunc = setup ? setup.validationFunction : null;
+				var isValid = true;
+				if (!noValidation && maxLength && (value.length > maxLength)) {
+					isValid = false;
+				} else if (!noValidation && validationFunc) {
+					isValid = validationFunc(value);
 				}
+				if (!isValid)
+					errorStr += "\n" + AjxStringUtil.resolve(setup.errorMessage, value);
 				pref.setValue(value);
 				list.push(pref);
 			}
