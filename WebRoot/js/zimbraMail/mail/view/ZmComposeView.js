@@ -780,7 +780,7 @@ function(action, msg, extraBodyText) {
 	}
 
 	var composingHtml = this._composeMode == DwtHtmlEditor.HTML;
-
+	
 	// XXX: consolidate this code later.
 	if (action == ZmOperation.DRAFT || action == ZmOperation.SHARE) {
 		var body = "";
@@ -869,8 +869,12 @@ function(action, msg, extraBodyText) {
 			if (!from && msg.isSent)
 				from = this._appCtxt.get(ZmSetting.USERNAME);
 			var preface = "";
-			if (from)
-				preface = ZmMsg.DASHES + " " + from.toString() + " " + ZmMsg.wrote + ":" + crlf;
+			if (from) {
+				if (!ZmComposeView._replyPrefixFormatter) {
+					ZmComposeView._replyPrefixFormatter = new AjxMessageFormat(ZmMsg.replyPrefix);
+				}
+				preface = ZmComposeView._replyPrefixFormatter.format(from.toString());
+			}
 			var prefix = this._appCtxt.get(ZmSetting.REPLY_PREFIX);
 			if (forwPref == ZmSetting.INCLUDE_PREFIX || replyPref == ZmSetting.INCLUDE_PREFIX) {
 				value += leadingText + preface + AjxStringUtil.wordWrap(body, ZmComposeView.WRAP_LENGTH, prefix + " ");
@@ -880,6 +884,20 @@ function(action, msg, extraBodyText) {
 					chunks[i] = AjxStringUtil.wordWrap(chunks[i], ZmComposeView.WRAP_LENGTH, prefix + " ");
 				var text = chunks.length ? chunks.join('\n\n') : body;
 				value += leadingText + preface + text;
+			} else if (action == ZmOperation.REPLY_ACCEPT || action == ZmOperation.REPLY_DECLINE ||
+				action == ZmOperation.REPLY_TENTATIVE) {
+				var notes;
+		
+				var bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
+				var body = bodyPart ? bodyPart.content : "";
+				body = body.replace(/\r\n/g, "\n");
+		
+				var regex = new RegExp(AjxStringUtil.regExEscape(ZmAppt.NOTES_SEPARATOR));
+				var match = regex.exec(body);
+				if (match) {
+					notes = body.substr(match.index + ZmAppt.NOTES_SEPARATOR.length);
+					value = preface + AjxStringUtil.wordWrap(notes, ZmComposeView.WRAP_LENGTH, prefix + " ");
+				}
 			}
 		}
 	}
