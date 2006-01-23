@@ -107,7 +107,7 @@ function(event) {
 					break;
 				}
 				default: {
-					msg = ZmCsfeException.getErrorMsg(ex.code) || msg;
+					msg = ex.getErrorMsg() || msg;
 				}
 			}
 		}
