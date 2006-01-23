@@ -98,8 +98,6 @@ function() {
 		list = list.concat(this._msgOps());
 		list.push(ZmOperation.SEP);
 		list.push(ZmOperation.SPAM);
-        	list.push(ZmOperation.SEP);
-        	list.push(ZmOperation.CHECK_MAIL);
 		list.push(ZmOperation.SEP);
 		list.push(ZmOperation.CLOSE);
 		return list;

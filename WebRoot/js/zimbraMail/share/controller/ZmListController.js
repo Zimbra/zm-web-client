@@ -48,8 +48,8 @@ function ZmListController(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmController.call(this, appCtxt, container, app);
 
-	this._toolbar = new Object;		// ZmButtonToolbar (one per view)
-	this._listView = new Object;	// ZmListView (one per view)
+	this._toolbar = {};		// ZmButtonToolbar (one per view)
+	this._listView = {};	// ZmListView (one per view)
 	this._list = null;				// ZmList (the data)
 	this._actionMenu = null; 		// ZmActionMenu
 	this._actionEv = null;
@@ -61,7 +61,7 @@ function ZmListController(appCtxt, container, app) {
 	this._activeSearch = null;
 
 	// create a listener for each operation
-	this._listeners = new Object();
+	this._listeners = {};
 	this._listeners[ZmOperation.NEW_MENU] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.TAG_MENU] = new AjxListener(this, this._tagButtonListener);
 	this._listeners[ZmOperation.TAG] = new AjxListener(this, this._tagListener);
@@ -81,7 +81,7 @@ function ZmListController(appCtxt, container, app) {
 	this._dropTgt = new DwtDropTarget(ZmTag);
 	this._dropTgt.markAsMultiple();
 	this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
-}
+};
 
 ZmListController.prototype = new ZmController;
 ZmListController.prototype.constructor = ZmListController;
@@ -93,7 +93,7 @@ ZmListController.prototype.constructor = ZmListController;
 ZmListController.prototype.toString = 
 function() {
 	return "ZmListController";
-}
+};
 
 /**
 * Performs some setup for displaying the given search results in a list view. Subclasses will need
@@ -111,8 +111,8 @@ function(searchResults, view) {
 		this._currentSearch = searchResults.search;
 	this.currentPage = 1;
 	this.maxPage = 1;
-	this.pageIsDirty = new Object();
-}
+	this.pageIsDirty = {};
+};
 
 ZmListController.prototype.getSearchString = 
 function() {
@@ -122,12 +122,12 @@ function() {
 ZmListController.prototype.getCurrentView = 
 function() {
 	return this._listView[this._currentView];
-}
+};
 
 ZmListController.prototype.getList = 
 function() {
 	return this._list;
-}
+};
 
 ZmListController.prototype.setList = 
 function(newList) {
@@ -137,36 +137,36 @@ function(newList) {
 			this._list.clear();
 		this._list = newList;
 	}
-}
+};
 
 // abstract protected methods
 
 // Creates the view element
-ZmListController.prototype._createNewView	 	= function() {}
+ZmListController.prototype._createNewView	 	= function() {};
 
 // Returns the view ID
-ZmListController.prototype._getViewType 		= function() {}
+ZmListController.prototype._getViewType 		= function() {};
 
 // Populates the view with data
-ZmListController.prototype._setViewContents		= function(view) {}
+ZmListController.prototype._setViewContents		= function(view) {};
 
 // Returns text for the tag operation
-ZmListController.prototype._getTagMenuMsg 		= function(num) {}
+ZmListController.prototype._getTagMenuMsg 		= function(num) {};
 
 // Returns text for the move dialog
-ZmListController.prototype._getMoveDialogTitle	= function(num) {}
+ZmListController.prototype._getMoveDialogTitle	= function(num) {};
 
 // Returns a list of desired toolbar operations
-ZmListController.prototype._getToolBarOps 		= function() {}
+ZmListController.prototype._getToolBarOps 		= function() {};
 
 // Returns a list of desired action menu operations
-ZmListController.prototype._getActionMenuOps 	= function() {}
+ZmListController.prototype._getActionMenuOps 	= function() {};
 
 // Attempts to process a nav toolbar up/down button click
-ZmListController.prototype._paginateDouble 		= function(bDoubleForward) {}
+ZmListController.prototype._paginateDouble 		= function(bDoubleForward) {};
 
 // Returns the type of item in the underlying list
-ZmListController.prototype._getItemType			= function() {}
+ZmListController.prototype._getItemType			= function() {};
 
 // private and protected methods
 
@@ -176,7 +176,7 @@ function(view) {
 	this._initialize(view);
 	this._resetOperations(this._toolbar[view], 0);
 	this._resetOperations(this._actionMenu, 0);
-}
+};
 
 // Creates the basic elements: toolbar, list view, and action menu
 ZmListController.prototype._initialize =
@@ -184,14 +184,16 @@ function(view) {
 	this._initializeToolBar(view);
 	this._initializeListView(view);
 	this._initializeActionMenu();
-}
+};
 
 // Below are functions that return various groups of operations, for cafeteria-style
 // operation selection.
 
 ZmListController.prototype._standardToolBarOps =
 function() {
-	var list = [ZmOperation.NEW_MENU];
+	var list = [];
+	list.push(ZmOperation.CHECK_MAIL);
+	list.push(ZmOperation.NEW_MENU);
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		list.push(ZmOperation.TAG_MENU);
 	list.push(ZmOperation.SEP);
@@ -200,11 +202,11 @@ function() {
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
 		list.push(ZmOperation.PRINT);
 	return list;
-}
+};
 
 ZmListController.prototype._standardActionMenuOps =
 function() {
-	var list = new Array();
+	var list = [];
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		list.push(ZmOperation.TAG_MENU);
 	list.push(ZmOperation.DELETE);
@@ -212,11 +214,11 @@ function() {
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
 		list.push(ZmOperation.PRINT);
 	return list;
-}
+};
 
 ZmListController.prototype._contactOps =
 function() {
-	var list = new Array();
+	var list = [];
 	if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED))
 		list.push(ZmOperation.SEARCH);
 	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED))
@@ -229,7 +231,7 @@ function() {
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
 		list.push(ZmOperation.CONTACT);
 	return list;
-}
+};
 
 // toolbar: buttons and listeners
 ZmListController.prototype._initializeToolBar = 
@@ -266,7 +268,7 @@ function(view) {
 			this._setupTagMenu(this._toolbar[view]);
 		}
 	}
-}
+};
 
 // list view and its listeners
 ZmListController.prototype._initializeListView = 
@@ -276,7 +278,7 @@ function(view) {
 	this._listView[view] = this._createNewView(view);
 	this._listView[view].addSelectionListener(new AjxListener(this, this._listSelectionListener));
 	this._listView[view].addActionListener(new AjxListener(this, this._listActionListener));	
-}
+};
 
 // action menu: menu items and listeners
 ZmListController.prototype._initializeActionMenu = 
@@ -293,7 +295,7 @@ function() {
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		this._setupTagMenu(this._actionMenu);
 	}
-}
+};
 
 /**
 * Creates the desired application view.
@@ -311,7 +313,7 @@ function(view, elements, isAppView, clear, pushOnly, isPoppable) {
 	// create the view (if we haven't yet)
 	if (!this._appViews[view]) {
 		// view management callbacks
-		var callbacks = new Object();
+		var callbacks = {};
 		
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] =
 			this._preHideCallback ? new AjxCallback(this, this._preHideCallback) : null;
@@ -332,7 +334,7 @@ function(view, elements, isAppView, clear, pushOnly, isPoppable) {
 
 	// push the view
 	 return (clear ? this._app.setView(view) : this._app.pushView(view));
-}
+};
 
 // List listeners
 
@@ -345,7 +347,7 @@ function(ev) {
 	} else {
 		this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectionCount());
 	}
-}
+};
 
 // List action event - set the dynamic tag menu, and enable operations in the action menu
 // based on the number of selected items. Note that the menu is not actually popped up
@@ -356,13 +358,13 @@ function(ev) {
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		this._setTagMenu(this._actionMenu);
 	this._resetOperations(this._actionMenu, this._listView[this._currentView].getSelectionCount());
-}
+};
 
 ZmListController.prototype._popdownActionListener = 
 function() {
 	if (!this._pendingActionData)
 		this._listView[this._currentView].handleActionPopdown();
-}
+};
 
 // Operation listeners
 
@@ -395,14 +397,14 @@ function(ev) {
 		newCalDialog.setParentFolder(folder);
 		newCalDialog.popup();
 	}
-}
+};
 
 // Tag button has been pressed. We don't tag anything (since no tag has been selected),
 // we just show the dynamic tag menu.
 ZmListController.prototype._tagButtonListener = 
 function(ev) {
 	this._setTagMenu(this._toolbar[this._currentView]);
-}
+};
 
 // Tag/untag items.
 ZmListController.prototype._tagListener = 
@@ -425,7 +427,7 @@ function(item) {
 			this._doRemoveAllTags(items);
 		}
 	}
-}
+};
 
 ZmListController.prototype._printListener = 
 function(ev) {
@@ -435,18 +437,18 @@ function(ev) {
 		this._printView = new ZmPrintView(this._appCtxt);
 	
 	this._printView.render(item);
-}
+};
 
 ZmListController.prototype._backListener = 
 function(ev) {
 	this._app.popView();
-}
+};
 
 // Delete one or more items.
 ZmListController.prototype._deleteListener = 
 function(ev) {
 	this._doDelete(this._listView[this._currentView].getSelection());
-}
+};
 
 // Move button has been pressed, show the dialog.
 ZmListController.prototype._moveListener = 
@@ -456,13 +458,13 @@ function(ev) {
 	this._showDialog(moveToDialog, this._moveCallback, this._pendingActionData);
 	moveToDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, moveToDialog);
 	moveToDialog.setTitle(this._getMoveDialogTitle(this._pendingActionData.length));
-}
+};
 
 // Switch to selected view.
 ZmListController.prototype._viewButtonListener =
 function(ev) {
 	this.switchView(ev.item.getData(ZmOperation.MENUITEM_ID));
-}
+};
 
 // Navbar listeners
 
@@ -479,7 +481,7 @@ function(ev) {
 	} else if (op == ZmOperation.PAGE_DBL_BACK || op == ZmOperation.PAGE_DBL_FORW) {
 		this._paginateDouble(op == ZmOperation.PAGE_DBL_FORW);
 	}
-}
+};
 
 // Participant listeners
 
@@ -488,14 +490,14 @@ ZmListController.prototype._participantSearchListener =
 function(ev) {
 	var name = this._actionEv.address.getAddress();
 	this._appCtxt.getSearchController().fromSearch(name);
-}
+};
 
 // Browse based on email address
 ZmListController.prototype._participantBrowseListener = 
 function(ev) {
 	var name = this._actionEv.address.getAddress();
 	this._appCtxt.getSearchController().fromBrowse(name);
-}
+};
 
 // Compose message to participant
 ZmListController.prototype._participantComposeListener = 
@@ -504,7 +506,7 @@ function(ev) {
 	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
 	var cc = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
 	cc.doAction(ZmOperation.NEW_MESSAGE, inNewWindow, null, name);
-}
+};
 
 // IM the participant (if enabled via config)
 ZmListController.prototype._participantImListener =
@@ -517,7 +519,7 @@ function(ev) {
 	else
 		this._newImDialog.setScreenName(screenName);
 	this._newImDialog.popup();
-}
+};
 
 // If there's a contact for the participant, edit it, otherwise add it.
 ZmListController.prototype._participantContactListener = 
@@ -530,7 +532,7 @@ function(ev) {
 		contact.initFromEmail(this._actionEv.address);
 		cc.show(contact, true);
 	}
-}
+};
 
 // Drag and drop listeners
 
@@ -539,7 +541,7 @@ function(ev) {
 	if (ev.action == DwtDragEvent.SET_DATA) {
 		ev.srcData = {data: ev.srcControl.getDnDSelection(), controller: this};
 	}
-}
+};
 
 // The list view as a whole is the drop target, since it's the lowest-level widget. Still, we
 // need to find out which item got dropped onto, so we get that from the original UI event 
@@ -578,7 +580,7 @@ function(ev) {
 		view.dragDeselect(div);
 	} else if (ev.action == DwtDropEvent.DRAG_OP_CHANGED) {
 	}
-}
+};
 
 // Dialog callbacks
 
@@ -595,7 +597,7 @@ function(ev) {
 			this._popdownActionListener();
 		}
 	}
-}
+};
 
 // Create a folder.
 ZmListController.prototype._newFolderCallback =
@@ -603,7 +605,7 @@ function(parent, name, url) {
 	this._appCtxt.getNewFolderDialog().popdown();
 	var ftc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
 	ftc._doCreate(parent, parent, null, url);
-}
+};
 
 // Create a tag.
 ZmListController.prototype._newTagCallback =
@@ -612,14 +614,14 @@ function(creatingTag, name, color) {
 	var ttc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.TAG);
 	ttc._doCreate(name, color);
 	this._creatingTag = creatingTag;
-}
+};
 
 // Move stuff to a new folder.
 ZmListController.prototype._moveCallback =
 function(folder) {
 	this._doMove(this._pendingActionData, folder);
 	this._clearDialog(this._appCtxt.getMoveToDialog());
-}
+};
 
 // Data handling
 
@@ -627,19 +629,19 @@ function(folder) {
 ZmListController.prototype._doFlag =
 function(items) {
 	this._list.flagItems(items, "flag", !items[0].isFlagged);
-}
+};
 
 // Tag/untag items
 ZmListController.prototype._doTag =
 function(items, tag, doTag) {
 	this._list.tagItems(items, tag.id, doTag);
-}
+};
 
 // Remove all tags for given items
 ZmListController.prototype._doRemoveAllTags = 
 function(items) {
 	this._list.removeAllTags(items);
-}
+};
 
 /*
 * Deletes one or more items from the list.
@@ -651,7 +653,7 @@ function(items) {
 ZmListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
 	this._list.deleteItems(items, hardDelete, attrs);
-}
+};
 
 /*
 * Moves a list of items to the given folder. Any item already in that folder is excluded.
@@ -663,7 +665,7 @@ function(items, hardDelete, attrs) {
 ZmListController.prototype._doMove =
 function(items, folder, attrs) {
 	this._list.moveItems(items, folder, attrs);
-}
+};
 
 // Modify an item
 ZmListController.prototype._doModify =
