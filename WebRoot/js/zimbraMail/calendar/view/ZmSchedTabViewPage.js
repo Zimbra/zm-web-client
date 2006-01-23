@@ -55,9 +55,6 @@ ZmSchedTabViewPage.prototype.constructor = ZmSchedTabViewPage;
 
 // Consts
 
-ZmSchedTabViewPage.FREEBUSY_ROW_HEIGHT		= 25;
-ZmSchedTabViewPage.FREEBUSY_ATTENDEE_WIDTH	= 150;
-ZmSchedTabViewPage.FREEBUSY_NEXTPREV_WIDTH	= 21;
 ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES	= 12;
 
 ZmSchedTabViewPage.STATUS_FREE				= 1;
@@ -357,8 +354,6 @@ function() {
 			html[i++] = "<div id='";
 			html[i++] = attendee.dwtId;
 			html[i++] = "'></div>";
-		}
-		if (j > 0) {
 			html[i++] = "&nbsp;&nbsp;";
 			html[i++] = ZmMsg.clickHereToAddName;
 		}
@@ -504,8 +499,10 @@ ZmSchedTabViewPage.prototype._showAttendeeField =
 function(el) {
 	if (el.tagName.toLowerCase() == "div") {
 		var inputEl = el.firstChild.firstChild.firstChild; // yuck
-		Dwt.setVisible(inputEl, true);
-		inputEl.focus();
+		if (!inputEl.disabled) {
+			Dwt.setVisible(inputEl, true);
+			inputEl.focus();
+		}
 	}
 };
 
