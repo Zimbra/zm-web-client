@@ -375,6 +375,7 @@ function(results, search, isMixed) {
 		}
 	}
 	this._appCtxt.setCurrentList(results.getResults(results.type));
+	this._updateOverview(search);
 	DBG.timePt("render search results");
 };
 
@@ -471,3 +472,31 @@ function(id) {
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
 	this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_BUTTON).setToolTipContent(tooltip);
 }
+
+/*
+* Selects the appropriate item in the overview based on the search. Selection only happens
+* if the search was a simple search for a folder or tag.
+*
+* @param search		[ZmSearch]		the current search
+*/
+ZmSearchController.prototype._updateOverview =
+function(search) {
+	var id, type;
+	if (search.folderId) {
+		id = search.folderId;
+		type = ZmOrganizer.FOLDER;
+	} else if (search.tagId) {
+		id = search.tagId;
+		type = ZmOrganizer.TAG;
+	}
+	var opc = this._appCtxt.getOverviewController();
+	if (id) {
+		var treeView = opc.getTreeView(ZmZimbraMail._OVERVIEW_ID, type);
+		var treeItem = treeView.getTreeItemById(id);
+		treeView.setSelected(id, true);
+		opc.itemSelected(ZmZimbraMail._OVERVIEW_ID, type);
+	} else {
+		// clear overview of selection
+		opc.itemSelected(ZmZimbraMail._OVERVIEW_ID, 0);
+	}
+};
