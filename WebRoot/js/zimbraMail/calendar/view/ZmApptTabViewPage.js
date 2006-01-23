@@ -68,6 +68,7 @@ ZmApptTabViewPage.SHOWAS_OPTIONS = [
 	{ label: ZmMsg.busy, 				value: "B", 	selected: true  },
 	{ label: ZmMsg.outOfOffice,			value: "O", 	selected: false }];
 
+ZmApptTabViewPage._REPEAT_CHANGE = "REPEAT_CHANGE";
 
 // Public
 
@@ -185,6 +186,11 @@ function() {
 
 	// disable all input fields
 	this.enableInputs(false);
+};
+
+ZmApptTabViewPage.prototype.addRepeatChangeListener =
+function(listener) {
+	this.addListener(ZmApptTabViewPage._REPEAT_CHANGE, listener);
 };
 
 // Acceptable hack needed to prevent cursor from bleeding thru higher z-index'd views
@@ -1148,6 +1154,7 @@ function(ev) {
 	} else {
 		this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(newSelectVal);
 	}
+	this.notifyListeners(ZmApptTabViewPage._REPEAT_CHANGE, ev);
 };
 
 ZmApptTabViewPage.prototype._recurOkListener =
