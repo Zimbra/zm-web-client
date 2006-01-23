@@ -181,13 +181,14 @@ function() {
 /**
 * Selects the tree item for the given organizer.
 *
-* @param organizer		[ZmOrganizer]	the organizer to select
+* @param organizer		[ZmOrganizer]	the organizer to select, or its ID
 * @param skipNotify		[boolean]*		whether to skip notifications
 */
 ZmTreeView.prototype.setSelected =
 function(organizer, skipNotify) {
-	if (!organizer || !this._treeHash[organizer.id]) return;
-	this.setSelection(this._treeHash[organizer.id], skipNotify);
+	var id = (organizer instanceof ZmOrganizer) ? organizer.id : organizer;
+	if (!id || !this._treeHash[id]) return;
+	this.setSelection(this._treeHash[id], skipNotify);
 }
 
 // Private and protected methods
