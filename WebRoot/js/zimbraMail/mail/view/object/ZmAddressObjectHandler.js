@@ -73,9 +73,8 @@ function(obj, context) {
 		ZmAddressObjectHandler.displayMap(ZmAddressObjectHandler.CACHE[obj+"lng"], 
 		                                  ZmAddressObjectHandler.CACHE[obj+"lat"], obj);
 	} else {
-		var request = new AjxRpcRequest("geocode");
 		var url = "/service/proxy?target=" + AjxStringUtil.urlEncode(ZmAddressObjectHandler.URL + AjxStringUtil.htmlEncode(obj));
-		request.invoke(null, url, null, new AjxCallback(this, this._callback, obj), true);
+		AjxRpc.invoke(null, url, null, new AjxCallback(this, this._callback, obj), true);
 	}
 };
 
