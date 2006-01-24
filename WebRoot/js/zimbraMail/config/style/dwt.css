@@ -1063,6 +1063,8 @@
 	padding-left:10px;
 	padding-right:10px;
 	padding-bottom:10px;
+	
+	position:relative;	
 }
 
 .TopGrouperBorder {
@@ -1080,7 +1082,7 @@
 	font-weight:bold;
 	font-size:13px;
 	position:absolute;	left:10; top:-8;
-	background-color:#FFFFFF;
+	background-color:#EEEEEE;
 	padding-left:2px; padding-right:2px;
 }
 
@@ -1330,6 +1332,72 @@ HTML>BODY .RadioGrouperLabel {
 	background-color:FFFF66;
 	padding:4px;
 }
+
+
+.xform_grouper_border,
+.xform_radio_grouper_border,
+.xform_TopGrouperBorder {
+	border:1px solid #999999;
+	margin-top:5px;
+	margin-bottom:5px;
+
+	padding-top:5px;
+	padding-left:10px;
+	padding-right:10px;
+	padding-bottom:10px;
+}
+
+.xform_top_grouper_border {
+	border:1px dotted #999999;
+	border-left:none;
+	border-right:none;
+	border-bottom:none;
+	margin-top:20px;
+	padding-bottom:0px;
+	margin-bottom:0px;
+}
+
+.xform_grouper_label,
+.xform_radio_grouper_label {
+	font-weight:bold;
+	font-size:13px;
+	position:relative;
+	left:10; 
+	top:-15;
+	background-color:#FFFFFF;
+	padding-left:2px; padding-right:2px;
+}
+
+.xform_grouper_inset {
+
+}
+
+.xform_radio_grouper_inset {
+
+}
+
+.xform_radio_grouper_border {
+	border:1px solid #999999;
+	margin-bottom:2px;
+
+}
+
+HTML>BODY .xform_radio_grouper_border {
+	border:1px dotted #999999;
+}
+
+.xform_radio_grouper_label {
+	margin-left:5px;
+	color:#666666;
+	font-weight:normal;
+	font-size:11px;
+}
+
+HTML>BODY .xform_radio_grouper_label {
+	margin-left:-5px;
+}
+
+
 END FROM ADMIN */
 .xform_error { color: red }
 
