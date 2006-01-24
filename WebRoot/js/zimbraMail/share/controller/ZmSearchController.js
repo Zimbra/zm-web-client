@@ -181,6 +181,7 @@ function() {
 * @param sortBy			[constant]*			sort constraint
 * @param offset			[int]*				starting point in list of matching items
 * @param limit			[int]*				maximum number of items to return
+* @param searchId		[int]*				ID of owning search folder (if any)
 * @param prevId			[int]*				ID of last items displayed (for pagination)
 * @param prevSortBy		[constant]*			previous sort order (for pagination)
 * @param noRender		[boolean]*			if true, results will not be passed to controller
@@ -228,6 +229,7 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.prevId		= search.prevId;
 	params.prevSortBy	= search.prevSortBy;
 	params.fetch		= search.fetch;
+	params.searchId		= search.searchId;
 	
 	if (changes) {
 		for (var key in changes) 
@@ -488,6 +490,9 @@ function(search) {
 	} else if (search.tagId) {
 		id = search.tagId;
 		type = ZmOrganizer.TAG;
+	} else if (search.searchId) {
+		id = search.searchId;
+		type = ZmOrganizer.SEARCH;
 	}
 	var opc = this._appCtxt.getOverviewController();
 	if (id) {

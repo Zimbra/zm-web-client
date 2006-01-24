@@ -39,7 +39,7 @@ function ZmSearchTreeController(appCtxt) {
 
 	this._listeners[ZmOperation.RENAME_SEARCH] = new AjxListener(this, this._renameListener);
 	this._listeners[ZmOperation.MODIFY_SEARCH] = new AjxListener(this, this._modifySearchListener);
-}
+};
 
 ZmSearchTreeController.prototype = new ZmFolderTreeController;
 ZmSearchTreeController.prototype.constructor = ZmSearchTreeController;
@@ -49,7 +49,7 @@ ZmSearchTreeController.prototype.constructor = ZmSearchTreeController;
 ZmSearchTreeController.prototype.toString = 
 function() {
 	return "ZmSearchTreeController";
-}
+};
 
 /**
 * Enables/disables operations based on context.
@@ -62,7 +62,7 @@ function(parent, type, id) {
 	parent.enableAll(true);
 	var search = this._dataTree.getById(id);
 	parent.enable(ZmOperation.EXPAND_ALL, (search.size() > 0));
-}
+};
 
 // Private methods
 
@@ -72,7 +72,7 @@ function(parent, type, id) {
 ZmSearchTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [ZmOperation.EXPAND_ALL];
-}
+};
 
 /*
 * Returns ops available for saved searches.
@@ -85,7 +85,7 @@ function() {
 			  ZmOperation.MOVE,
 			  ZmOperation.EXPAND_ALL);
 	return list;
-}
+};
 
 /*
 * Returns a "New Saved Search" dialog.
@@ -93,7 +93,7 @@ function() {
 ZmSearchTreeController.prototype._getNewDialog =
 function() {
 	return this._appCtxt.getNewSearchDialog();
-}
+};
 
 /*
 * Called when a left click occurs (by the tree view listener). The saved
@@ -102,11 +102,10 @@ function() {
 * @param search		ZmSearchFolder		search that was clicked
 */
 ZmSearchTreeController.prototype._itemClicked =
-function(search) {
+function(searchFolder) {
 	var searchController = this._appCtxt.getSearchController();
-	var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
-	searchController.search(search);
-}
+	searchController.redoSearch(searchFolder.search);
+};
 
 // Listeners
 
@@ -126,7 +125,7 @@ function(ev) {
 		DBG.println(AjxDebug.DBG3, "DRAG_DROP: " + ev.srcData.name + " on to " + dropSearchFolder.name);
 		this._doMove(ev.srcData, dropSearchFolder);
 	}
-}
+};
 
 /*
 * Handles a search folder being moved from Searches to Folders.
@@ -163,7 +162,7 @@ function(ev, treeView) {
 			ZmTreeController.prototype._changeListener.call(this, ev, treeView);
 		}
 	}
-}
+};
 
 // Callbacks
 
@@ -179,7 +178,7 @@ ZmSearchTreeController.prototype._newCallback =
 function(parent, name, search) {
 	this._doCreate(parent, name, search);
 	this._getNewDialog().popdown();
-}
+};
 
 // Miscellaneous
 
@@ -189,4 +188,4 @@ function(parent, name, search) {
 ZmSearchTreeController.prototype._getMoveDialogTitle =
 function() {
 	return AjxStringUtil.resolve(ZmMsg.moveSearch, this._pendingActionData.name);
-}
+};

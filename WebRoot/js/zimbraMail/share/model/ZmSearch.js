@@ -40,6 +40,8 @@
 * @param contactSource	[constant]*		where to search for contacts (GAL or personal)
 * @param lastId			[int]*			ID of last item displayed (for pagination)
 * @param lastSortVal	[string]*		value of sort field for above item
+* @param fetch			[boolean]*		if true, fetch first hit message
+* @param searchId		[int]*			ID of owning search folder (if any)
 */
 function ZmSearch(appCtxt, params) {
 
@@ -55,13 +57,14 @@ function ZmSearch(appCtxt, params) {
 		this.lastId			= params.lastId;
 		this.lastSortVal	= params.lastSortVal;
 		this.fetch 			= params.fetch;
+		this.searchId		= params.searchId;
 		
 		this._parseQuery();
 	}
 };
 
 // Search types
-ZmSearch.TYPE = new Object();
+ZmSearch.TYPE = {};
 ZmSearch.TYPE[ZmItem.CONV]		= "conversation";
 ZmSearch.TYPE[ZmItem.MSG]		= "message";
 ZmSearch.TYPE[ZmItem.CONTACT]	= "contact";
@@ -69,14 +72,32 @@ ZmSearch.TYPE[ZmItem.APPT]		= "appointment";
 ZmSearch.TYPE[ZmItem.NOTE]		= "note";
 ZmSearch.TYPE_ANY				= "any";
 
+ZmSearch.TYPE_MAP = {};
+for (var i in ZmSearch.TYPE)
+	ZmSearch.TYPE_MAP[ZmSearch.TYPE[i]] = i;
+
 // Sort By
-ZmSearch.DATE_DESC 	= "dateDesc";
-ZmSearch.DATE_ASC 	= "dateAsc";
-ZmSearch.SUBJ_DESC 	= "subjDesc";
-ZmSearch.SUBJ_ASC 	= "subjAsc";
-ZmSearch.NAME_DESC 	= "nameDesc";
-ZmSearch.NAME_ASC 	= "nameAsc";
-ZmSearch.SCORE_DESC = "scoreDesc";
+var i = 1;
+ZmSearch.DATE_DESC 	= i++;
+ZmSearch.DATE_ASC 	= i++;
+ZmSearch.SUBJ_DESC 	= i++;
+ZmSearch.SUBJ_ASC 	= i++;
+ZmSearch.NAME_DESC 	= i++;
+ZmSearch.NAME_ASC 	= i++;
+ZmSearch.SCORE_DESC = i++;
+
+ZmSearch.SORT_BY = {};
+ZmSearch.SORT_BY[ZmSearch.DATE_DESC] 	= "dateDesc";
+ZmSearch.SORT_BY[ZmSearch.DATE_ASC] 	= "dateAsc";
+ZmSearch.SORT_BY[ZmSearch.SUBJ_DESC] 	= "subjDesc";
+ZmSearch.SORT_BY[ZmSearch.SUBJ_ASC] 	= "subjAsc";
+ZmSearch.SORT_BY[ZmSearch.NAME_DESC] 	= "nameDesc";
+ZmSearch.SORT_BY[ZmSearch.NAME_ASC] 	= "nameAsc";
+ZmSearch.SORT_BY[ZmSearch.SCORE_DESC]	= "scoreDesc";
+
+ZmSearch.SORT_BY_MAP = {};
+for (var i in ZmSearch.SORT_BY)
+	ZmSearch.SORT_BY_MAP[ZmSearch.SORT_BY[i]] = i;
 
 ZmSearch.FOLDER_QUERY_RE = new RegExp('^in:\\s*"?(' + ZmOrganizer.VALID_PATH_CHARS + '+)"?\\s*$', "i");
 ZmSearch.TAG_QUERY_RE = new RegExp('^tag:\\s*"?(' + ZmOrganizer.VALID_NAME_CHARS + '+)"?\\s*$', "i");
@@ -109,7 +130,7 @@ function(params) {
 		if (this.types) {
 			var a = this.types.getArray();
 			if (a.length) {
-				var typeStr = new Array();
+				var typeStr = [];
 				for (var i = 0; i < a.length; i++)
 					typeStr.push(ZmSearch.TYPE[a[i]]);
 				method.setAttribute("types", typeStr.join(","));
@@ -200,7 +221,7 @@ function(soapDoc) {
 	var method = soapDoc.getMethod();
 	
 	if (this.sortBy)
-		method.setAttribute("sortBy", this.sortBy);
+		method.setAttribute("sortBy", ZmSearch.SORT_BY[this.sortBy]);
 
 	if (this.lastId && this.lastSortVal) {
 		// cursor is used for paginated searches

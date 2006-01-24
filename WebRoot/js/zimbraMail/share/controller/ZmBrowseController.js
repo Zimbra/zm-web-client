@@ -111,7 +111,7 @@ function(visible) {
 */
 ZmBrowseController.prototype._updateQuery =
 function(doSearch) {
-	var queries = new Array();
+	var queries = {};
 	var numPickers = 0;
 	for (var id in this._pickers) {
 		var a = this._pickers[id].getArray();
@@ -126,7 +126,7 @@ function(doSearch) {
 			}
 		}
 	}
-	var queryStr = new Array();
+	var queryStr = [];
 	for (var id in queries) {
 		var a = queries[id];
 		if (a && a.length) {
@@ -145,13 +145,19 @@ function(doSearch) {
 			}
 		}
 	}
+	
+	// so we can select search folder in overview
+	var a = this._pickers[ZmPicker.SEARCH].getArray();
+	this._searchId = null;
+	if (a && (a.length == 1) && (queryStr.length == 1))
+		this._searchId = a[0]._searchId;
 
 	var newQuery = queryStr.join(" ");
 	if (newQuery != this._query) {
 		this._query = newQuery;
 		DBG.println(AjxDebug.DBG3, "Browse query: " + this._query);
 		if (doSearch)
-			this._appCtxt.getSearchController().search({query: this._query});
+			this._appCtxt.getSearchController().search({query: this._query, searchId: this._searchId});
 		else
 			this._appCtxt.getSearchController().setSearchField(this._query);
 	}
@@ -159,7 +165,7 @@ function(doSearch) {
 
 ZmBrowseController.prototype._executeQuery =
 function() {
-	this._appCtxt.getSearchController().search({query: this._query});
+	this._appCtxt.getSearchController().search({query: this._query, searchId: this._searchId});
 }
 
 ZmBrowseController.prototype._resetListener =
