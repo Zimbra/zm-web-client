@@ -135,12 +135,12 @@ ZmSpreadSheetFormulae.TOKEN = {
 
 };
 
-ZmSpreadSheetFormulae.parseFloat = function(n) {
+ZmSpreadSheetFormulae.parseFloat = function(n, defVal) {
 	if (typeof n == "boolean")
 		return n ? 1 : 0;
 	n = parseFloat(n);
 	if (isNaN(n))
-		n = 0;
+		n = defVal != null ? defVal : 0;
 	return n;
 };
 
@@ -236,7 +236,7 @@ ZmSpreadSheetFormulae.DEF([ "sum", "+" ], -1, function() {
 ZmSpreadSheetFormulae.DEF([ "multiply", "*" ], -1, function() {
 	var ret = 1;
 	for (var i = arguments.length; --i >= 0;)
-		ret *= ZmSpreadSheetFormulae.parseFloat(arguments[i]);
+		ret *= ZmSpreadSheetFormulae.parseFloat(arguments[i], 1);
 	return ret;
 });
 
@@ -434,7 +434,8 @@ ZmSpreadSheetFormulae.prototype._analyzeRange = function(tok) {
 };
 
 // This should be called for each formula after the geometry of the model
-// rows/cols has changed.  Because we store direct references to cells,
+// rows/cols has changed.  Because we store direct references to cells rather
+// than cell ID-s, note that it's very easy to update the formula. :-)
 ZmSpreadSheetFormulae.prototype.update = function() {
 	var formula       = this._formula,
 		a         = this._cellTokens,

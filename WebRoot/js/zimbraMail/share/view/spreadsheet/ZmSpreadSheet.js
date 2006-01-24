@@ -33,6 +33,36 @@ function ZmSpreadSheet(parent, className, posStyle, deferred) {
 	className = className || "ZmSpreadSheet";
 	DwtComposite.call(this, parent, className, posStyle, deferred);
 
+	// WARNING: the mousemove handler is a crazy workaround to the fact
+	// that the range DIV blocks events from reaching the table element.
+	// So upon mouseover, we hide it for about 10 milliseconds; during this
+	// timeout the table will catch on mouseover-s.  Produces a short
+	// flicker :-(  I donno how to work around this...
+	var footimeout = null;
+	this._selectRangeCapture = new DwtMouseEventCapture(
+		this, "ZmSpreadSheet",
+		ZmSpreadSheet.simpleClosure(this._table_mouseOver, this),
+		null,		// no mousedown
+
+// 		// mousemove handler (see warning above)
+// 		ZmSpreadSheet.simpleClosure(function(ev) {
+// 			var self = this;
+// 			if (footimeout)
+// 				clearTimeout(footimeout);
+// 			footimeout = setTimeout(function() {
+// 				self._getRangeDiv().style.display = "none";
+// 				setTimeout(function() {
+// 					self._getRangeDiv().style.display = "";
+// 				}, 1);
+// 			}, 50);
+// 		}, this),
+
+		null, // for now
+
+		ZmSpreadSheet.simpleClosure(this._clear_selectRangeCapture, this),
+		null,		// no mouseout?
+		true);		// hard capture
+
 // 	this.ROWS = 5;
 // 	this.COLS = 5;
 
@@ -75,6 +105,7 @@ ZmSpreadSheet.prototype._model_cellComputed = function(row, col, cell) {
 };
 
 ZmSpreadSheet.prototype._model_insertRow = function(cells, rowIndex) {
+	this._hideRange();
 	var selected = this._selectedCell;
 	this._selectCell();
 	var rows = this._getTable().rows;
@@ -107,6 +138,7 @@ ZmSpreadSheet.prototype._model_insertRow = function(cells, rowIndex) {
 };
 
 ZmSpreadSheet.prototype._model_insertCol = function(cells, colIndex) {
+	this._hideRange();
 	var selected = this._selectedCell;
 	this._selectCell();
 	var rows = this._getTable().rows;
@@ -134,8 +166,10 @@ ZmSpreadSheet.prototype.getCellModel = function(td) {
 
 ZmSpreadSheet.prototype._init = function() {
 	this._relDivID = Dwt.getNextId();
+	this._focusLinkID = Dwt.getNextId();
 
-	var html = [ "<div id='", this._relDivID, "' style='position: relative'><table cellspacing='1' cellpadding='0' border='0'>" ];
+	var html = [ "<div id='", this._relDivID,
+		     "' style='position: relative'><table cellspacing='1' cellpadding='0' border='0'>" ];
 	var row = [ "<tr><td class='LeftBar'></td>" ];
 
 	var ROWS = this._model.ROWS;
@@ -161,6 +195,19 @@ ZmSpreadSheet.prototype._init = function() {
 	table.rows[0].className = "TopBar";
 	table.rows[0].cells[0].className = "TopLeft";
 
+	// the "focus link" is our clever way to receive key events when the
+	// "spreadsheet" is focused.  As usual, it requires some special bits
+	// for IE (needs to have a href and some content in order to be
+	// focusable).  It looks better in FF without these special bits.
+	html = [ "<a id='", this._focusLinkID, "'" ];
+	if (AjxEnv.isIE)
+		html.push(" href='#' onclick='return false'");
+	html.push(">");
+	if (AjxEnv.isIE)
+		html.push("&nbsp;");
+	html.push("</a>");
+	table.rows[0].cells[0].innerHTML = html.join("");
+
 	for (var i = 1; i < table.rows.length; ++i)
 		table.rows[i].cells[0].innerHTML = "<div>" + i + "</div>";
 	row = table.rows[0];
@@ -175,21 +222,37 @@ ZmSpreadSheet.prototype._init = function() {
 		}
 	}
 
+	table.onmouseup = ZmSpreadSheet.simpleClosure(this._table_onMouseUp, this);
 	table.onmousedown = ZmSpreadSheet.simpleClosure(this._table_onClick, this);
 	table.onclick = ZmSpreadSheet.simpleClosure(this._table_onClick, this);
+	table.ondblclick = ZmSpreadSheet.simpleClosure(this._table_onClick, this);
+
+	var link = this._getFocusLink();
+	link.onkeypress = ZmSpreadSheet.simpleClosure(this._focus_keyPress, this);
+	if (AjxEnv.isIE || AjxEnv.isOpera)
+		link.onkeydown = link.onkeypress;
 };
 
 // called when a cell from the top header was clicked or mousedown
 ZmSpreadSheet.prototype._topCellClicked = function(td, ev) {
 	if (/click/i.test(ev.type)) {
-		this._model.insertCol(td.cellIndex - 1);
+		var col = td.cellIndex;
+		this._selectCell(this._getTable().rows[td.parentNode.rowIndex + 1].cells[col]);
+		var col = ZmSpreadSheetModel.getColName(col);
+		var c1 = col + "1";
+		var c2 = col + this._model.ROWS;
+		this._selectRange(c1, c2);
 	}
 };
 
 // called when a cell from the left header was clicked or mousedown
 ZmSpreadSheet.prototype._leftCellClicked = function(td, ev) {
 	if (/click/i.test(ev.type)) {
-		this._model.insertRow(td.parentNode.rowIndex - 1);
+		var row = td.parentNode.rowIndex;
+		this._selectCell(this._getTable().rows[row].cells[td.cellIndex + 1]);
+		var c1 = "A" + row;
+		var c2 = ZmSpreadSheetModel.getColName(this._model.COLS) + row;
+		this._selectRange(c1, c2);
 	}
 };
 
@@ -200,12 +263,29 @@ ZmSpreadSheet.prototype._topLeftCellClicked = function(td, ev) {
 // called for all other cells; normally we display an input field here and
 // allow one to edit cell contents
 ZmSpreadSheet.prototype._cellClicked = function(td, ev) {
+	var is_mousedown = /mousedown/i.test(ev.type);
+	this._hideRange();
 	this._selectCell(td);
-	if (/click/i.test(ev.type)) {
+	if (is_mousedown) {
+		ev._stopPropagation = true;
+		ev._returnValue = false;
+		this._selectRangeCapture.capture();
+		if (this._editingCell && this._hasExpression)
+			this._updateCellRangeToken();
+		else
+			this.focus();
+	}
+	if (/dblclick/i.test(ev.type)) {
 		ev._stopPropagation = true;
 		ev._returnValue = false;
 		this._editCell(td);
 	}
+};
+
+ZmSpreadSheet.prototype.focus = function() {
+	// this link will intercept keybindings.  Clever, huh? B-)
+	this._getFocusLink().focus();
+	window.status = ""; // Clear the statusbar for IE's smart ass
 };
 
 ZmSpreadSheet.prototype._getTopLeftCell = function() {
@@ -239,6 +319,10 @@ ZmSpreadSheet.prototype._getRelDiv = function() {
 	return document.getElementById(this._relDivID);
 };
 
+ZmSpreadSheet.prototype._getFocusLink = function() {
+	return document.getElementById(this._focusLinkID);
+};
+
 ZmSpreadSheet.prototype._getInputField = function() {
 	var input = null;
 	if (this._inputFieldID)
@@ -258,6 +342,7 @@ ZmSpreadSheet.prototype._getInputField = function() {
 		// set event handlers
 		input[(AjxEnv.isIE || AjxEnv.isOpera) ? "onkeydown" : "onkeypress"]
 			= ZmSpreadSheet.simpleClosure(this._input_keyPress, this);
+		// input.onmousedown = ZmSpreadSheet.simpleClosure(this._input_mouseUp, this);
 		input.onmouseup = ZmSpreadSheet.simpleClosure(this._input_mouseUp, this);
 		input.onblur = ZmSpreadSheet.simpleClosure(this._input_blur, this);
 		input.onfocus = ZmSpreadSheet.simpleClosure(this._input_focus, this);
@@ -282,9 +367,11 @@ ZmSpreadSheet.prototype._getSpanField = function() {
 };
 
 ZmSpreadSheet.prototype._editCell = function(td) {
+	var input = this._getInputField();
+	if (this._editingCell)
+		input.blur();
 	if (td) {
 		this._selectCell(td);
-		var input = this._getInputField();
 		input.style.visibility = "";
 		input.style.top = td.offsetTop - 1 + "px";
 		input.style.left = td.offsetLeft - 1 + "px";
@@ -292,13 +379,14 @@ ZmSpreadSheet.prototype._editCell = function(td) {
 		input.style.height = td.offsetHeight + 2 + "px";
 		var mc = this.getCellModel(td);
 		input.value = mc.getEditValue();
+		input._caretMoved = false;
 		input.select();
 		input.focus();
 		this._editingCell = td;
 		mc.setStyleToElement(input);
 		this._displayRangeIfAny();
 		// quick hack to set the field size from the start
-		// this._input_keyPress();
+		this._input_keyPress();
 	}
 };
 
@@ -310,6 +398,7 @@ ZmSpreadSheet.prototype._input_blur = function(ev) {
 	input.style.width = "";
 	if (!this._preventSaveOnBlur)
 		this._save_value(input.value);
+	this._editingCell = null;
 	this._hideRange();
 };
 
@@ -318,8 +407,8 @@ ZmSpreadSheet.prototype._input_blur = function(ev) {
 // focus but remains hidden in the top-left corner, so we re-edit the cell here
 ZmSpreadSheet.prototype._input_focus = function(ev) {
 	var input = this._getInputField();
-	if (input.style.visibility == "hidden" && this._editingCell)
-		this._editCell(this._editingCell);
+	if (input.style.visibility == "hidden" && this._selectedCell)
+		this._editCell(this._selectedCell);
 };
 
 ZmSpreadSheet.prototype._save_value = function(origval) {
@@ -328,7 +417,7 @@ ZmSpreadSheet.prototype._save_value = function(origval) {
 
 ZmSpreadSheet.prototype._getNextCell = function(td) {
 	if (td == null)
-		td = this._editingCell;
+		td = this._editingCell || this._selectedCell;
 	var row = td.parentNode;
 	if (td.cellIndex < row.cells.length - 1)
 		return row.cells[td.cellIndex + 1];
@@ -340,7 +429,7 @@ ZmSpreadSheet.prototype._getNextCell = function(td) {
 
 ZmSpreadSheet.prototype._getPrevCell = function(td) {
 	if (td == null)
-		td = this._editingCell;
+		td = this._editingCell || this._selectedCell;
 	var row = td.parentNode;
 	if (td.cellIndex > 1)
 		return row.cells[td.cellIndex - 1];
@@ -354,7 +443,7 @@ ZmSpreadSheet.prototype._getPrevCell = function(td) {
 
 ZmSpreadSheet.prototype._getDownCell = function(td) {
 	if (td == null)
-		td = this._editingCell;
+		td = this._editingCell || this._selectedCell;
 	var row = td.parentNode;
 	var body = this._getTable();
 	if (row.rowIndex < body.rows.length - 1) {
@@ -366,7 +455,7 @@ ZmSpreadSheet.prototype._getDownCell = function(td) {
 
 ZmSpreadSheet.prototype._getUpCell = function(td) {
 	if (td == null)
-		td = this._editingCell;
+		td = this._editingCell || this._selectedCell;
 	var row = td.parentNode;
 	var body = this._getTable();
 	if (row.rowIndex > 1) {
@@ -378,7 +467,7 @@ ZmSpreadSheet.prototype._getUpCell = function(td) {
 
 ZmSpreadSheet.prototype._getRightCell = function(td) {
 	if (td == null)
-		td = this._editingCell;
+		td = this._editingCell || this._selectedCell;
 	var row = td.parentNode;
 	if (td.cellIndex < row.cells.length - 1)
 		return row.cells[td.cellIndex + 1];
@@ -387,11 +476,99 @@ ZmSpreadSheet.prototype._getRightCell = function(td) {
 
 ZmSpreadSheet.prototype._getLeftCell = function(td) {
 	if (td == null)
-		td = this._editingCell;
+		td = this._editingCell || this._selectedCell;
 	var row = td.parentNode;
 	if (td.cellIndex > 1)
 		return row.cells[td.cellIndex - 1];
 	return null;
+};
+
+ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
+	var needs_keypress = AjxEnv.isIE || AjxEnv.isOpera;
+	this.focus();
+	var handled = true;
+	switch (dwtev.keyCode) {
+	    case 9: // TAB
+		var td = dwtev.shiftKey
+			? this._getPrevCell()
+			: this._getNextCell();
+		if (td)
+			this._selectCell(td);
+		break;
+
+	    case 37: // LEFT
+	    case 39: // RIGHT
+		var td = dwtev.keyCode == 37
+			? this._getLeftCell()
+			: this._getRightCell();
+		if (td)
+			this._selectCell(td);
+		break;
+
+	    case 38: // UP
+	    case 13: // ENTER
+	    case 40: // DOWN
+		var td = (dwtev.keyCode == 13
+			  ? ( dwtev.shiftKey
+			      ? this._getUpCell()
+			      : this._getDownCell())
+			  : ( dwtev.keyCode == 38
+			      ? this._getUpCell()
+			      : this._getDownCell()));
+		if (td)
+			this._selectCell(td);
+		break;
+
+	    case 113: // F2
+		this._editCell(this._selectedCell);
+		break;
+
+	    case 46: // DEL
+		if (this._selectedRangeName) {
+			this._model.forEachCell(this._selectedRangeName,
+						function(cell) {
+							cell.clearValue();
+						});
+		}
+		// the selected cell _can_ be outside the selected range. ;-)
+		// let's clear that too.
+		this.getCellModel(this._selectedCell).clearValue();
+		break;
+
+	    case 27:		// ignore ESC for IE
+		break;
+
+	    default:
+		if ((!needs_keypress && ev.charCode)
+		    || (needs_keypress && /keypress/i.test(dwtev.type))) {
+			var val = String.fromCharCode(dwtev.charCode);
+// 			// FIXME: this sucks.  Isn't there any way to determine
+// 			// if some character is a printable Unicode character? :(
+// 			if (/[`~\x5d\x5ba-zA-Z0-9!@#$%^&*(),.<>\/?;:\x22\x27{}\\|+=_-]/.test(val)) {
+			this._editCell(this._selectedCell);
+			// Workaround for IE: all codes reported are uppercase.
+			// Should find something better. :-|
+// 			if (AjxEnv.isIE && !dwtev.shiftKey)
+// 				val = val.toLowerCase();
+			this._getInputField().value = val;
+			Dwt.setSelectionRange(this._getInputField(), 1, 1);
+		} else
+			handled = false;
+	}
+	if (handled) {
+		dwtev._stopPropagation = true;
+		dwtev._returnValue = false;
+	}
+	return handled;
+};
+
+ZmSpreadSheet.prototype._focus_keyPress = function(ev) {
+	ev || (ev = window.event);
+	var dwtev = new DwtKeyEvent();
+	dwtev.setFromDhtmlEvent(ev);
+	this._focus_handleKey(dwtev, ev);
+	dwtev.setToDhtmlEvent(ev);
+	return dwtev._returnValue;
 };
 
 ZmSpreadSheet.prototype._input_mouseUp = function() {
@@ -402,7 +579,7 @@ ZmSpreadSheet.prototype._input_keyPress = function(ev) {
 	ev || (ev = window.event);
 	var setTimer = true;
 	if (ev) {
-		var dwtev = new DwtUiEvent();
+		var dwtev = new DwtKeyEvent();
 		dwtev.setFromDhtmlEvent(ev);
 		var input = this._getInputField();
 		this._preventSaveOnBlur = true;	// we're saving manually when it's the case.
@@ -411,60 +588,48 @@ ZmSpreadSheet.prototype._input_keyPress = function(ev) {
 		    case 9: // TAB
 			setTimer = false;
 			this._save_value(input.value);
-			this._editCell(ev.shiftKey ? this._getPrevCell() : this._getNextCell());
-			dwtev._stopPropagation = true;
-			dwtev._returnValue = false;
-			dwtev.setToDhtmlEvent(ev);
+			input.blur();
+			this._focus_handleKey(dwtev, ev);
 			break;
 
 		    case 37: // LEFT
 		    case 39: // RIGHT
-			var doit = ( Dwt.getSelectionStart(input) == 0 &&
-				     Dwt.getSelectionEnd(input) == input.value.length );
+			var doit = ( !input._caretMoved &&
+				     ( (Dwt.getSelectionStart(input) == 0 && dwtev.keyCode == 37) ||
+				       (Dwt.getSelectionEnd(input) == input.value.length && dwtev.keyCode == 39) ) );
 			if (doit || !input.value || ev.altKey) {
 				setTimer = false;
 				this._save_value(input.value);
-				this._editCell(ev.keyCode == 37 ? this._getLeftCell() : this._getRightCell());
-				dwtev._stopPropagation = true;
-				dwtev._returnValue = false;
-				dwtev.setToDhtmlEvent(ev);
-			}
+				input.blur();
+				this._focus_handleKey(dwtev, ev);
+			} else
+				input._caretMoved = true;
  			break;
 
 		    case 38: // UP
 		    case 13: // ENTER
 		    case 40: // DOWN
-			var td = (ev.keyCode == 13
-				  ? (ev.shiftKey ? this._getUpCell() : this._getDownCell())
-				  : (ev.keyCode == 38 ? this._getUpCell() : this._getDownCell()));
 			setTimer = false;
 			this._save_value(input.value);
-			this._editCell(td);
-			dwtev._stopPropagation = true;
-			dwtev._returnValue = false;
-			dwtev.setToDhtmlEvent(ev);
+			input.blur();
+			this._focus_handleKey(dwtev, ev);
 			break;
 
 		    case 27: // ESC
-			// setTimer = false;
-			// input.blur();
-			this._editCell(this._editingCell);
-			dwtev._stopPropagation = true;
-			dwtev._returnValue = false;
-			dwtev.setToDhtmlEvent(ev);
+			setTimer = false;
+			if (AjxEnv.isIE) {
+				var mc = this.getCellModel(this._editingCell);
+				input.value = mc.getEditValue();
+			}
+			this.focus();
 			break;
 
-		    case 113: // F2
-			// users (I at least) expect to be able to use the
-			// left/right arrow keys to move a caret inside the
-			// field; so we simply must unselect the text if it's
-			// selected.
-			Dwt.setSelectionRange(input,
-					      input.value.length,
-					      input.value.length);
+		    case 113: // F2 -- select all
+			Dwt.setSelectionRange(input, 0, input.value.length);
 			break;
 
 		}
+		dwtev.setToDhtmlEvent(ev);
 		this._preventSaveOnBlur = false;
 	}
 	if (setTimer) {
@@ -485,9 +650,25 @@ ZmSpreadSheet.prototype._input_keyPress = function(ev) {
 		this._hideRange();
 };
 
+ZmSpreadSheet.prototype._selectRange = function(c1, c2, showSingleCell) {
+	this._selectedRangeName = null;
+	var show = showSingleCell || (c1.toLowerCase() != c2.toLowerCase());
+	c1 = ZmSpreadSheetModel.identifyCell(c1);
+	c2 = ZmSpreadSheetModel.identifyCell(c2);
+	if (show && c1 && c2) {
+		var startRow = Math.min(c1.row, c2.row);
+		var startCol = Math.min(c1.col, c2.col);
+		var endRow   = Math.max(c1.row, c2.row);
+		var endCol   = Math.max(c1.col, c2.col);
+		this._showRange(startRow, startCol, endRow, endCol);
+	} else
+		this._hideRange();
+};
+
 ZmSpreadSheet.prototype._displayRangeIfAny = function() {
 	var input = this._getInputField();
-	if (!/^=(.*)$/.test(input.value)) {
+	this._hasExpression = /^=(.*)$/.test(input.value);
+	if (!this._hasExpression) {
 		// no formulae
 		this._hideRange();
 		return;
@@ -513,25 +694,18 @@ ZmSpreadSheet.prototype._displayRangeIfAny = function() {
 				break;
 			}
 		}
+		this._rangeToken = tok;
 		if (tok) {
 			var c1, c2;
 			if (tok.type === ZmSpreadSheetFormulae.TOKEN.CELL) {
-				c1 = c2 = ZmSpreadSheetModel.identifyCell(tok.val);
+				c1 = c2 = tok.val;
 			}
 			if (tok.type === ZmSpreadSheetFormulae.TOKEN.CELLRANGE) {
 				var a = tok.val.split(/:/);
-				var c1 = ZmSpreadSheetModel.identifyCell(a[0]);
-				var c2 = ZmSpreadSheetModel.identifyCell(a[1]);
+				c1 = a[0];
+				c2 = a[1];
 			}
-			if (c1 && c2) {
-				var startRow = Math.min(c1.row, c2.row);
-				var startCol = Math.min(c1.col, c2.col);
-				var endRow   = Math.max(c1.row, c2.row);
-				var endCol   = Math.max(c1.col, c2.col);
-				this._showRange(startRow, startCol, endRow, endCol);
-				// Dwt.setSelectionRange(input, tok.strPos + 1, tok.strPos + tok.strLen + 1);
-			} else
-				throw "HIDE";
+			this._selectRange(c1, c2, true);
 		} else
 			throw "HIDE";
 	} catch(ex) {
@@ -550,6 +724,8 @@ ZmSpreadSheet.prototype._showRange = function(startRow, startCol, endRow, endCol
 	var c2 = r2.cells[endCol + 1];
 	if (!c1 || !c2)
 		this._hideRange();
+	this._selectedRangeName = [ ZmSpreadSheet.getCellName(c1),
+				    ZmSpreadSheet.getCellName(c2) ].join(":");
 	// and we have the top-left cell in c1 and bottom-right cell in c2
 	var div = this._getRangeDiv();
 	var w = c2.offsetTop + c2.offsetHeight - c1.offsetTop;
@@ -575,12 +751,83 @@ ZmSpreadSheet.prototype._getRangeDiv = function() {
 		div.className = "ShowRange";
 		this._getRelDiv().appendChild(div);
 		div.style.visibility = "hidden";
+		// at any move, we should hide the range display :-(
+		// otherwise, elements below it won't be able to receive mouse clicks
+		// div.onmousemove = ZmSpreadSheet.simpleClosure(this._hideRange, this);
+		div.onmousedown = ZmSpreadSheet.simpleClosure(this._rangediv_mousedown, this);
 	}
 	return div;
 };
 
+ZmSpreadSheet.prototype._rangediv_mousedown = function(ev) {
+	var dwtev = new DwtUiEvent(ev);
+	dwtev.setFromDhtmlEvent(ev);
+	this._hideRange();
+	dwtev._stopPropagation = true;
+	dwtev._returnValue = false;
+	dwtev.setToDhtmlEvent(ev);
+};
+
 ZmSpreadSheet.prototype._hideRange = function() {
-	this._getRangeDiv().style.visibility = "hidden";
+	this._selectedRangeName = null;
+	var div = this._getRangeDiv();
+	div.style.visibility = "hidden";
+	// amazing performance improvement:
+	div.style.top = "0px";
+	div.style.left = "0px";
+	div.style.width = "5px";
+	div.style.height = "5px";
+};
+
+ZmSpreadSheet.prototype._table_mouseOver = function(ev) {
+	var dwtev = new DwtMouseEvent();
+	dwtev.setFromDhtmlEvent(ev);
+	var table = this._getTable();
+	var td = DwtUiEvent.getTarget(dwtev);
+	while (td && td !== table && !/^td$/i.test(td.tagName))
+		td = td.parentNode;
+	if (td && /^td$/i.test(td.tagName)) {
+		this._selectRange(ZmSpreadSheet.getCellName(this._selectedCell),
+				  ZmSpreadSheet.getCellName(td), false);
+		this._updateCellRangeToken();
+	}
+	dwtev._stopPropagation = true;
+	dwtev._returnValue = false;
+	dwtev.setToDhtmlEvent(ev);
+	return dwtev._returnValue;
+};
+
+ZmSpreadSheet.prototype._updateCellRangeToken = function() {
+	if (this._editingCell && this._hasExpression) {
+		var val = this._selectedRangeName ||
+			ZmSpreadSheet.getCellName(this._selectedCell);
+		var input = this._getInputField();
+		var tok = this._rangeToken;
+		if (!tok) {
+			tok = { strPos: Dwt.getSelectionStart(input) };
+			tok.strLen = Dwt.getSelectionEnd(input) - tok.strPos;
+			tok.strPos--;
+		}
+		Dwt.setSelectionRange(input, tok.strPos + 1, tok.strPos + tok.strLen + 1);
+		tok.strLen = val.length;
+		Dwt.setSelectionText(input, val);
+		val = tok.strPos + tok.strLen + 1;
+		Dwt.setSelectionRange(input, val, val);
+		this._displayRangeIfAny();
+	}
+};
+
+ZmSpreadSheet.prototype._clear_selectRangeCapture = function(ev) {
+	this._selectRangeCapture.release();
+	if (this._editingCell)
+		this._selectCell(this._editingCell);
+};
+
+// hmm, do we ever get here?
+ZmSpreadSheet.prototype._table_onMouseUp = function(ev) {
+ 	if (this._editingCell && !this._hasExpression)
+ 		// save & clear
+ 		this._getInputField().blur();
 };
 
 ZmSpreadSheet.prototype._table_onClick = function(ev) {
@@ -604,6 +851,7 @@ ZmSpreadSheet.prototype._table_onClick = function(ev) {
 			this._cellClicked(td, dwtev);
 	}
 	dwtev.setToDhtmlEvent(ev);
+	return dwtev._returnValue;
 };
 
 ZmSpreadSheet.prototype._getTable = function() {

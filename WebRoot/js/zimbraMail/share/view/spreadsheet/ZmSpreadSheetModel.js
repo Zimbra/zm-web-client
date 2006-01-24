@@ -93,6 +93,32 @@ ZmSpreadSheetModel.identifyCell = function(ident) {
 	throw "Can't parse cell identifier " + ident + " at ZmSpreadSheetModel.identifyCell";
 };
 
+// FIXME: [duplicate] there's some code in Formulae that does the same thing
+ZmSpreadSheetModel.prototype.getCellsInRange = function(range) {
+	var a = range.split(/:/);
+	// now a[0] is the supposedly start cell and a[1] the end cell
+	var c1 = ZmSpreadSheetModel.identifyCell(a[0]);
+	var c2 = ZmSpreadSheetModel.identifyCell(a[1]);
+
+	// note that we do need to check that (maybe it's a reverse range)
+	var startRow = Math.min(c1.row, c2.row);
+	var startCol = Math.min(c1.col, c2.col);
+	var endRow   = Math.max(c1.row, c2.row);
+	var endCol   = Math.max(c1.col, c2.col);
+
+	var cells = [];
+	for (var i = startRow; i <= endRow; ++i)
+		for (var j = startCol; j <= endCol; ++j)
+			cells.push(this.data[i][j]);
+	return cells;
+};
+
+ZmSpreadSheetModel.prototype.forEachCell = function(range, func, obj) {
+	var cells = this.getCellsInRange(range);
+	for (var i = 0; i < cells.length; ++i)
+		func.apply(obj, [ cells[i], i, cells ]);
+};
+
 ZmSpreadSheetModel.prototype.insertRow = function(before) {
 	if (before == null)
 		before = this.ROWS;
@@ -327,9 +353,12 @@ ZmSpreadSheetCellModel.prototype._determineType = function(str) {
 	}
 
 	// expression
-	else if (/^=(.*)$/.test(str)) {
-		type = "expression";
+	else if (/^=(.+)$/.test(str)) {
 		val = RegExp.$1;
+		if (/\S/.test(val))
+			type = "expression";
+		else
+			val = str;
 	}
 
 	// number
@@ -354,6 +383,10 @@ ZmSpreadSheetCellModel.prototype._determineType = function(str) {
 
 ZmSpreadSheetCellModel.prototype.getType = function() {
 	return this._type || this._autoType || "string";
+};
+
+ZmSpreadSheetCellModel.prototype.clearValue = function() {
+	this.setEditValue("");	// for now
 };
 
 ZmSpreadSheetCellModel.prototype.setEditValue = function(editValue) {
