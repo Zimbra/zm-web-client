@@ -158,8 +158,8 @@ Xborder:1px solid #eeeeee;
 .SplashScreenOKButton {
 Xborder:1px solid #eeeeee;
 	position:absolute;
-	left:395;
-	top:294;
+	left:410;
+	top:305;
 	width:60;
 	height:20;
 }
@@ -169,10 +169,9 @@ Xborder:1px solid #eeeeee;
 Xborder:1px solid #eeeeee;
 	position:absolute;
 	left:8;
-	top:315;
+	top:294;
 	font-size:9px;
 	color:#999999;
-	background-color:white;
 }
 
 
