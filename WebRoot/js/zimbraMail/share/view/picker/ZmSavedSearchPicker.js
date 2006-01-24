@@ -50,7 +50,7 @@ function(parent) {
 
 ZmSavedSearchPicker.prototype._updateQuery = 
 function() {
-	var searches = new Array();
+	var searches = [];
 	var num = this._checkedItems.size();
 	for (var i = 0; i < num; i++) {
 		var search = this._checkedItems.get(i);
@@ -65,6 +65,8 @@ function() {
 			searchStr = "(" + searchStr + ")";
 		query += searchStr;
 	}
+	if (num == 1)
+		this._searchId = this._checkedItems.get(0).searchId;
 	this.setQuery(query);
 	this.execute();
 }
@@ -74,7 +76,7 @@ function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED) {
  		var ti = ev.item;
  		var checked = ti.getChecked();
- 		var search = ti.getData(Dwt.KEY_OBJECT);
+ 		var search = ti.getData(Dwt.KEY_OBJECT).search;
  		if (ti.getChecked()) {
 			this._checkedItems.add(search);
  		} else {

@@ -28,7 +28,8 @@ function ZmSearchFolder(id, name, parent, tree, numUnread, query, types, sortBy)
 	ZmFolder.call(this, id, name, parent, tree, numUnread);
 	
 	this.type = ZmOrganizer.SEARCH;
-	this.query = query;
+	if (query)
+		this.search = new ZmSearch(tree._appCtxt, {query: query, types: types, sortBy: sortBy, searchId: id});
 };
 
 ZmSearchFolder.prototype = new ZmFolder;
@@ -44,8 +45,15 @@ function(parent, obj, tree) {
 	if (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID &&
 		obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.SEARCH])) return;
 
-	var types = obj.types ? obj.types.split(",") : null;
-	var folder = new ZmSearchFolder(obj.id, obj.name, parent, tree, obj.u, obj.query, types, obj.sortBy);
+	var types = null;
+	if (obj.types) {
+		var t = obj.types.split(",");
+		types = [];
+		for (var i = 0; i < t.length; i++)
+			types.push(ZmSearch.TYPE_MAP[t[i]]);
+	}
+	var sortBy = obj.sortBy ? ZmSearch.SORT_BY_MAP[obj.sortBy] : null;
+	var folder = new ZmSearchFolder(obj.id, obj.name, parent, tree, obj.u, obj.query, types, sortBy);
 
 	// a search may only contain other searches
 	if (obj.search && obj.search.length) {

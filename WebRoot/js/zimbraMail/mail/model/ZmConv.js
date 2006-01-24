@@ -39,7 +39,7 @@ function ZmConv(appCtxt, id, list) {
 	ZmMailItem.call(this, appCtxt, ZmItem.CONV, id, list);
 	
 	// conversations are always sorted by date desc initially
-	this._sortBy = ZmSearch.DATE_DESC; 
+	this._sortBy = ZmSearch.DATE_DESC;
 	this._listChangeListener = new AjxListener(this, this._msgListChangeListener);
 };
 
@@ -64,9 +64,9 @@ function(node, args) {
 ZmConv.prototype.load =
 function(searchString, sortBy, offset, limit, pagCallback, callback) {
 
-	var sortBy = sortBy || ZmSearch.DATE_DESC;
-	var offset = offset || 0;
-	var limit = limit || this.list._appCtxt.get(ZmSetting.PAGE_SIZE);
+	var sortBy = sortBy ? sortBy : ZmSearch.DATE_DESC;
+	var offset = offset ? offset : 0;
+	var limit = limit ? limit : this.list._appCtxt.get(ZmSetting.PAGE_SIZE);
 	
 	if (this.msgs) {
 		if (this._sortBy != sortBy) {
