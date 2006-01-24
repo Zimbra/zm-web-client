@@ -110,7 +110,7 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	var obj = this.handlerObject;
 	if (obj) {
 		var CTOR = eval(obj);
-		obj = new CTOR;
+		obj = new CTOR();
 		obj.constructor = CTOR;
 	} else {
 		// well, go figure. :-) We need a handler object, so let's
@@ -128,12 +128,11 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 };
 
 ZmZimletContext.prototype._loadStyles = function() {
-	if (!this.includeCSS)
-		return;
+	if (!this.includeCSS) {return;}
 	var head = document.getElementsByTagName("head")[0];
 	for (var i = 0; i < this.includeCSS.length; ++i) {
 		var fullurl = this.includeCSS[i];
-		if (!/^((https?|ftps?):\x2f\x2f|\x2f)/.test(fullurl)) {
+		if (!(/^((https?|ftps?):\x2f\x2f|\x2f)/).test(fullurl)) {
 			fullurl = this._url + fullurl;
 		}
 		var style = document.createElement("link");
@@ -157,14 +156,18 @@ ZmZimletContext.prototype.getOrganizer = function() {
 ZmZimletContext.prototype.getUrl = function() { return this._url; };
 
 ZmZimletContext.prototype.getVal = function(key, val) {
-	if (val == null)
+	if (!val) {
 		val = this[key];
-	if (val == null)
+	}
+	if (!val) {
 		return null;
-	if (val instanceof Array && val.length == 1)
+	}
+	if (val instanceof Array && val.length == 1) {
 		val = val[0];
-	if (val._content != null)
+	}
+	if (val._content) {
 		val = val._content;
+	}
 	return val;
 };
 
@@ -172,10 +175,12 @@ ZmZimletContext.prototype.callHandler = function(funcname, args) {
 	if (this.handlerObject) {
 		var f = this.handlerObject[funcname];
 		if (typeof f == "function") {
-			if (typeof args == "undefined")
+			if (typeof args == "undefined") {
 				args = [];
-			if (!(args instanceof Array))
+			}
+			if (!(args instanceof Array)) {
 				args = [ args ];
+			}
 			return f.apply(this.handlerObject, args);
 		}
 	}
@@ -191,9 +196,9 @@ ZmZimletContext.prototype._translateUserProp = function() {
 	// that's gonna do for now.
 	var a = this.userProperties = this.userProperties.property;
 	this._propsById = {};
-	for (var i = 0; i < a.length; ++i)
+	for (var i = 0; i < a.length; ++i) {
 		this._propsById[a[i].name] = a[i];
-	// alert(this.userProperties.toSource());
+	}
 };
 
 ZmZimletContext.prototype.setPropValue = function(name, val) {
@@ -324,8 +329,9 @@ ZmZimletContext._translateZMObject = function(obj) {
 ZmZimletContext._zmObjectTransformers = {
 
 	"ZmMailMsg" : function(o) {
-		if (o[0])
+		if (o[0]) {
 			o = o[0];
+		}
 		var ret = { TYPE: "ZmMailMsg" };
 		ret.id           = o.getId();
 		ret.convId       = o.getConvId();
@@ -344,23 +350,14 @@ ZmZimletContext._zmObjectTransformers = {
 		ret.sent         = o.isSent;
 		ret.replied      = o.isReplied;
 		ret.draft        = o.isDraft;
-		ret.body         = o.getTextPart();
-		if (!ret.body) {
-// 			ret.body = AjxStringUtil.convertHtml2Text(
-// 				Dwt.parseHtmlFragment(
-// 					"<div>" +
-// 					o.getBodyPart(ZmMimeTable.TEXT_HTML).content +
-// 					"</div>"));
-//  			ret.body = o.getBodyPart(ZmMimeTable.TEXT_HTML).content;
-			// FIXME: figure out how to properly translate it to text
-			ret.body = ret.fragment;
-		}
+		ret.body		 = ZmZimletContext._getMsgBody(o);
 		return ret;
 	},
 
 	"ZmConv" : function(o) {
-		if (o[0])
+		if (o[0]) {
 			o = o[0];
+		}
 		var ret = { TYPE: "ZmConv" };
 		ret.id           = o.id;
 		ret.subject      = o.getSubject();
@@ -374,9 +371,9 @@ ZmZimletContext._zmObjectTransformers = {
 		ret.unread       = o.isUnread;
 		// ret.attachment   = o._attachments ?;
 		// ret.sent         = o.isSent;
-
-		// FIXME: perhaps we should get the body of the most recent message?
-		ret.body         = ret.fragment;
+		
+		// Use first message... maybe should be getHotMsg()?
+		ret.body         = ZmZimletContext._getMsgBody(o.getFirstMsg());
 		return ret;
 	},
 
@@ -434,8 +431,9 @@ ZmZimletContext._zmObjectTransformers = {
 		// displayed once, we need to check it's "0" property and
 		// retrieve the actual object from there.  x-( So, object in an
 		// object.  Could it be because of our current JSON format?
-		if (o[0])
+		if (o[0]) {
 			o = o[0];
+		}
 		var ret = { TYPE: "ZmContact" };
 		var a = this.ZmContact_fields;
 		if (typeof a == "function")
@@ -448,8 +446,9 @@ ZmZimletContext._zmObjectTransformers = {
 	},
 
 	"ZmAppt" : function(o) {
-		if (o[0])
+		if (o[0]) {
 			o = o[0];
+		}
 		var ret = { TYPE: "ZmAppt" };
 		ret.id             = o.getId();
 		ret.uid            = o.getUid();
@@ -470,4 +469,15 @@ ZmZimletContext._zmObjectTransformers = {
 		return ret;
 	}
 
+};
+
+ZmZimletContext._getMsgBody = function(o) {
+	var body = o.getTextPart();
+	DBG.dumpObj(body);
+	if (!body) {	
+		var div = document.createElement("div");
+		div.innerHTML = o.getBodyPart(ZmMimeTable.TEXT_HTML).content;
+		body = AjxStringUtil.convertHtml2Text(div);
+	}
+	return body;
 };
