@@ -98,19 +98,6 @@ function() {
 	return "ZmCalViewController";
 }
 
-// Zimlet hack 
-ZmCalViewController.prototype.postInitListeners = function () {
-	if(ZmZimlet.listeners && ZmZimlet.listeners["ZmCalViewController"]) {
-		for(var ix in ZmZimlet.listeners["ZmCalViewController"]) {
-			if(ZmZimlet.listeners["ZmCalViewController"][ix] instanceof AjxListener)  {
-				this._listeners[ix] = ZmZimlet.listeners["ZmCalViewController"][ix];
-			} else {
-				this._listeners[ix] = new AjxListener(this, ZmZimlet.listeners["ZmCalViewController"][ix]);
-			}
-		}
-	}
-}
-//
 ZmCalViewController.prototype._defaultView =
 function() {
 	var view = this._appCtxt.get(ZmSetting.CALENDAR_INITIAL_VIEW);
@@ -692,7 +679,6 @@ function(ev) {
 	mm.popup(0, ev.docX, ev.docY);
 }
 
-/*
 // Create action menu if needed
 ZmCalViewController.prototype._getMiniCalActionMenu =
 function() {
@@ -704,37 +690,7 @@ function() {
 		this._minicalMenu.addSelectionListener(ZmOperation.SEARCH_MAIL, this._listeners[ZmOperation.SEARCH_MAIL]);
 	}
 	return this._minicalMenu;
-};*/
-
-//Zimlet hack
-ZmCalViewController.prototype._getMiniCalActionMenu =
-function() {
-	if (this._minicalMenu == null) {
-		
-		this.postInitListeners();
-
-		var list = [ZmOperation.NEW_APPT, ZmOperation.NEW_ALLDAY_APPT, ZmOperation.SEP, ZmOperation.SEARCH_MAIL];
-		var extraList = [];
-		if(ZmZimlet.actionMenus && ZmZimlet.actionMenus["ZmCalViewController"] && ZmZimlet.actionMenus["ZmCalViewController"] instanceof Array) {
-			extraList = ZmZimlet.actionMenus["ZmCalViewController"];
-		}
-		this._minicalMenu = new ZmActionMenu(this._appCtxt.getShell(), list,extraList);
-		var cnt = list.length;
-		for(var ix=0; ix < cnt; ix++) {
-			if(this._listeners[list[ix]]) {
-				this._minicalMenu.addSelectionListener(list[ix], this._listeners[list[ix]]);
-			}		
-		}
-		cnt = extraList.length;
-		for(var ix=0; ix < cnt; ix++) {
-			if(this._listeners[extraList[ix].id]) {
-				this._minicalMenu.addSelectionListener(extraList[ix].id, this._listeners[extraList[ix].id]);
-			}		
-		}		
-	}
-	return this._minicalMenu;
 };
-//
 
 ZmCalViewController.prototype._miniCalSelectionListener =
 function(ev) {
@@ -823,7 +779,7 @@ function(appt, mode) {
 	this._cancelNoReplyCallback.args = [appt, mode];
 	
 	var confirmDialog = this._appCtxt.getConfirmationDialog();
-	if (appt.isOrganizer() && appt.hasOtherAttendees()) {
+	if (appt.hasOtherAttendees()) {
 		confirmDialog.popup(ZmMsg.confirmCancelApptReply, this._cancelReplyCallback, this._cancelNoReplyCallback);
 	}
 	else {

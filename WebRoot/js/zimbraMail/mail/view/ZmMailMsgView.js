@@ -484,7 +484,7 @@ function(doc) {
 		    case 4:	// CDATA_SECTION_NODE (just in case)
 			// generate ObjectHandler-s
 			if (handlers && /[^\s\xA0]/.test(node.data)) try {
-				var a = null, b = null;
+ 				var a = null, b = null;
 
 				if (!AjxEnv.isIE) {
 					// this block of code is supposed to free the object handlers from
