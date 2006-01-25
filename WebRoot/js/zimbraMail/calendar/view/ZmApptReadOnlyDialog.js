@@ -86,11 +86,23 @@ function(appt) {
 		html[i++] = "</td></tr>";
 	}
 
-	html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
+	html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'";
+	var isException = appt._orig.isException();
+	if (isException) {
+		html[i++] = " rowspan='2'";
+	}
+	html[i++] = ">";
 	html[i++] = ZmMsg.time;
 	html[i++] = ":</td><td>";
 	html[i++] = this._objectManager.findObjects(this._getTimeString(appt), true);
 	html[i++] = "</td></tr>";
+	if (isException) {
+		html[i++] = "<tr valign='center'><td><div class='";
+		html[i++] = AjxImg.getClassForImage("ApptException");
+		html[i++] = "' style='float:left;padding-right:0.25em'></div><b>";
+		html[i++] = ZmMsg.apptExceptionNote;
+		html[i++] = "</b></td></tr>";
+	}
 
 	if (attendees && attendees.length > 0) {
 		var organizer = appt.getOrganizer();
@@ -149,8 +161,8 @@ function(appt) {
 	var str = new Array();
 	var i = 0;
 
-	var sd = appt.getStartDate();
-	var ed = appt.getEndDate();
+	var sd = appt._orig.getStartDate();
+	var ed = appt._orig.getEndDate();
 
 	var dateFormatter = AjxDateFormat.getDateInstance();
 	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
