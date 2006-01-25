@@ -296,5 +296,5 @@ function(ev, treeView) {
 */
 ZmFolderTreeController.prototype._getMoveDialogTitle =
 function() {
-	return AjxStringUtil.resolve(ZmMsg.moveFolder, this._pendingActionData.name);
+	return AjxMessageFormat.format(ZmMsg.moveFolder, this._pendingActionData.name);
 };

@@ -126,7 +126,7 @@ function(obj, span, context, isDialog) {
 		var domain = parts[parts.length - 1];
 		var pieces = domain.split(".");
 		var url = (pieces.length <= 2) ? 'www.' + domain : domain;
-		var text = AjxStringUtil.resolve(ZmMsg.goToUrl, [url]);
+		var text = AjxMessageFormat.format(ZmMsg.goToUrl, [url]);
 		this._menu.getOp(ZmOperation.GO_TO_URL).setText(text);
 		this._actionUrl = "http://" + url;
 	} else {

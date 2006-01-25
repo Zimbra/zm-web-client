@@ -190,7 +190,7 @@ function(ev) {
 		this._deleteShield.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
 	}
 	this._deleteShield.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, filter);
-	var msg = AjxStringUtil.resolve(ZmMsg.askDeleteFilter, filter.getName());
+	var msg = AjxMessageFormat.format(ZmMsg.askDeleteFilter, filter.getName());
 	this._deleteShield.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 	this._deleteShield.popup();
 };

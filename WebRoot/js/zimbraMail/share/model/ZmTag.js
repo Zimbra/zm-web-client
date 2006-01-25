@@ -101,7 +101,7 @@ function(name) {
 	if (msg) return msg;
 
 	if (name.indexOf('\\') == 0)
-		return AjxStringUtil.resolve(ZmMsg.errorInvalidName, name);
+		return AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
 
 	return null;
 };

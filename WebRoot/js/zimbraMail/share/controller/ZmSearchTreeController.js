@@ -187,5 +187,5 @@ function(parent, name, search) {
 */
 ZmSearchTreeController.prototype._getMoveDialogTitle =
 function() {
-	return AjxStringUtil.resolve(ZmMsg.moveSearch, this._pendingActionData.name);
+	return AjxMessageFormat.format(ZmMsg.moveSearch, this._pendingActionData.name);
 };

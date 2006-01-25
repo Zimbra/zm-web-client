@@ -232,7 +232,7 @@ function(attId, isDraft) {
 	if (!isDraft && addrs[ZmComposeView.BAD].size() && !this._badAddrsOkay) {
 		this.enableInputs(false);
 	    var bad = AjxStringUtil.htmlEncode(addrs[ZmComposeView.BAD].toString(ZmEmailAddress.SEPARATOR));
-	    var msg = AjxStringUtil.resolve(ZmMsg.compBadAddresses, bad);
+	    var msg = AjxMessageFormat.format(ZmMsg.compBadAddresses, bad);
     	confirmDialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this);
 		confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, addrs.badType);
