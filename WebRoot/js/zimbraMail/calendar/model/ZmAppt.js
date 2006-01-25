@@ -939,10 +939,10 @@ function(attach, hasCheckbox) {
 	html[i++] = "'>";
 	html[i++] = attach.filename;
 	html[i++] = "</a>";
-	// XXX: UNCOMMENT ONCE BUG #5562 IS FIXED
-	//var addHtmlLink = (this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) && 
-	//				  attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct));
-	var addHtmlLink = false;
+
+	var addHtmlLink = (this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) && 
+					  attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct));
+
 	if (sizeText || addHtmlLink) {
 		html[i++] = "&nbsp;(";
 		if (sizeText) {
