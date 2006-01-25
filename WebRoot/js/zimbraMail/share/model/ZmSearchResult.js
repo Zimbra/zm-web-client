@@ -112,7 +112,7 @@ function(respEl, contactSource) {
 			var data = respEl[ZmList.NODE[type]];
 			
 			// do a bunch of sanity checks
-			if (this._results[type] && data && (data instanceof Array) && data.length) {
+			if (this._results[type] && data && data.length) {
 				_count += data.length;
 				for (var j = 0; j < data.length; j++)
 					this._results[type].addFromDom(data[j], {addressHash: addressHash});
