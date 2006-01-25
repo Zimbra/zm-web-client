@@ -145,7 +145,7 @@ function(attId) {
 		top.setContentType(ZmMimeTable.TEXT_PLAIN);
 		top.setContent(this._notesHtmlEditor.getContent());
 	}
-	appt.attendees = AjxStringUtil.trim(this._attendeesField.value);
+	appt.attendees = AjxStringUtil.trim(this._attendeesField.getValue());
 	appt.notesTopPart = top;
 
 	// set any recurrence rules
@@ -182,7 +182,7 @@ function() {
 	// clear out all input fields
 	this._subjectField.setValue("");
 	this._locationField.setValue("");
-	this._attendeesField.value = "";
+	this._attendeesField.setValue("");
 	this._repeatDescField.innerHTML = "";
 	this._notesHtmlEditor.clear();
 
@@ -208,7 +208,7 @@ ZmApptTabViewPage.prototype.enableInputs =
 function(bEnableInputs) {
 	this._subjectField.disabled(!bEnableInputs);
 	this._locationField.disabled(!bEnableInputs);
-	this._attendeesField.disabled = !bEnableInputs;
+	this._attendeesField.disabled(!bEnableInputs);
 	this._startDateField.disabled = !bEnableInputs;
 	this._endDateField.disabled = !bEnableInputs;
 };
@@ -248,7 +248,9 @@ function() {
 		if (startDate.valueOf() > endDate.valueOf()) {
 			errorMsg = ZmMsg.errorInvalidDates;
 		} else {
-			// TODO: check proper attendees
+			// check proper attendees
+			if (!this._attendeesField.isValid())
+				errorMsg = ZmMsg.errorInvalidAttendees + " " + ZmMsg.errorTryAgain;
 		}
 	} else {
 		errorMsg = ZmMsg.errorMissingSubject;
@@ -294,7 +296,7 @@ function(startHourIdx, startMinuteIdx, startAmPmIdx, endHourIdx, endMinuteIdx, e
 
 ZmApptTabViewPage.prototype.updateAttendeesField =
 function(attendees) {
-	this._attendeesField.value = attendees;
+	this._attendeesField.setValue(attendees);
 };
 
 ZmApptTabViewPage.prototype.reEnableDesignMode =
@@ -424,7 +426,7 @@ function() {
 	var organizer = this._calendarOrgs[calId] || this._appCtxt.get(ZmSetting.USERNAME);
 
 	// bug fix #4719 - only grab the valid email addresses
-	var addrs = ZmEmailAddress.parseEmailString(this._attendeesField.value);
+	var addrs = ZmEmailAddress.parseEmailString(this._attendeesField.getValue());
 	var addrsArr = addrs.all.getArray();
 	var allAddrs = new Array();
 	for (var i = 0; i < addrsArr.length; i++)
@@ -514,7 +516,7 @@ function(appt, mode) {
 	}
 
 	// attendees
-	this._attendeesField.value = appt.getAttendees();
+	this._attendeesField.setValue(appt.getAttendees());
 
 	// attachments
 	var attachList = appt.getAttachments();
@@ -618,6 +620,7 @@ function() {
 	this._subjectField.reparentHtmlElement(this._subjectFieldId);
 	delete this._subjectFieldId;
 
+
 	this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
 											initialValue:null, size:null, maxLen:null,
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
@@ -625,6 +628,17 @@ function() {
 	Dwt.setSize(this._locationField.getInputElement(), "250", "22px");
 	this._locationField.reparentHtmlElement(this._locationFieldId);
 	delete this._locationFieldId;
+
+
+	this._attendeesField = new DwtInputField({parent:this, type:DwtInputField.STRING,
+											  initialValue:null, size:null, maxLen:null,
+											  errorIconStyle:DwtInputField.ERROR_ICON_NONE,
+											  validationStyle:DwtInputField.ONEXIT_VALIDATION,
+											  validator: this._emailValidator,
+											  validatorCtxtObj: this});
+	Dwt.setSize(this._attendeesField.getInputElement(), "100%", "22px");
+	this._attendeesField.reparentHtmlElement(this._attendeesFieldId);
+	delete this._attendeesFieldId;
 };
 
 ZmApptTabViewPage.prototype._createSelects =
@@ -819,7 +833,8 @@ function() {
 		html[i++] = ZmMsg.attendees;
 		html[i++] = ":</td>";
 	}
-	html[i++] = "<td><input autocomplete='off' style='width:100%; height:22px' type='text' id='";
+	//html[i++] = "<td><input autocomplete='off' style='width:100%; height:22px' type='text' id='";
+	html[i++] = "<td id='";
 	html[i++] = this._attendeesFieldId;
 	html[i++] = "'></td>";
 	html[i++] = "</tr></table>";
@@ -847,7 +862,7 @@ function() {
 	var params = {parent: shell, dataClass: contactsApp, dataLoader: contactsList,
 				  matchValue: ZmContactList.AC_VALUE_EMAIL, locCallback: locCallback};
 	this._autocomplete = new ZmAutocompleteListView(params);
-	this._autocomplete.handle(this._attendeesField);
+	this._autocomplete.handle(this._attendeesField.getInputElement());
 };
 
 ZmApptTabViewPage.prototype._addEventHandlers =
@@ -872,7 +887,6 @@ function() {
 	this._calLabelField 	= document.getElementById(this._calLabelId); 			delete this._calLabelId;
 	this._startDateField 	= document.getElementById(this._startDateFieldId); 		delete this._startDateFieldId;
 	this._endDateField 		= document.getElementById(this._endDateFieldId);	 	delete this._endDateFieldId;
-	this._attendeesField 	= document.getElementById(this._attendeesFieldId); 		delete this._attendeesFieldId;
 	this._allDayCheckbox 	= document.getElementById(this._allDayCheckboxId); 		// dont delete!
 	this._repeatDescField 	= document.getElementById(this._repeatDescId); 			// dont delete!
 };
@@ -1051,7 +1065,7 @@ function(excludeAttendees) {
 		vals.push(this._tzoneSelect.getValue());
 	vals.push(this._repeatSelect.getValue());
 	if (!excludeAttendees)
-		vals.push(this._attendeesField.value);
+		vals.push(this._attendeesField.getValue());
 	vals.push(this._notesHtmlEditor.getContent());
 
 	var str = vals.join("|");
@@ -1220,9 +1234,10 @@ function(addrs) {
 	for (var i = 0; i < addrs.length; i++)
 		addrsArr.push(addrs[i].address);
 
-	this._attendeesField.value += addrsArr.length > 0
+	var value = addrsArr.length > 0
 		? ((addrsArr.join(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR))
 		: "";
+	this._attendeesField.setValue(this._attendeesField.getValue() + value);
 
 	this._contactPicker.popdown();
 
@@ -1239,8 +1254,9 @@ function(args) {
 ZmApptTabViewPage.prototype._getAcListLoc =
 function(ev) {
 	if (this._attendeesField) {
-		var loc = Dwt.getLocation(this._attendeesField);
-		var height = Dwt.getSize(this._attendeesField).y;
+		var inputEl = this._attendeesField.getInputElement();
+		var loc = Dwt.getLocation(inputEl);
+		var height = Dwt.getSize(inputEl).y;
 		return (new DwtPoint(loc.x, loc.y+height));
 	}
 	return null;
@@ -1256,6 +1272,20 @@ function(status, attId) {
 	} else {
 		DBG.println(AjxDebug.DBG1, "attachment error: " + status);
 	}
+};
+
+ZmApptTabViewPage.prototype._emailValidator = 
+function(value) {
+	// first parse the value string based on separator
+	var attendees = AjxStringUtil.trim(value);
+	if (attendees.length > 0) {
+		var addrs = ZmEmailAddress.parseEmailString(attendees);
+		if (addrs.bad.size() > 0) {
+			throw ZmMsg.errorInvalidEmail2;
+		}
+	}
+
+	return value;
 };
 
 
