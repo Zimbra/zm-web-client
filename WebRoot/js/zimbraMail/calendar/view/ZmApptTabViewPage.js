@@ -833,7 +833,6 @@ function() {
 		html[i++] = ZmMsg.attendees;
 		html[i++] = ":</td>";
 	}
-	//html[i++] = "<td><input autocomplete='off' style='width:100%; height:22px' type='text' id='";
 	html[i++] = "<td id='";
 	html[i++] = this._attendeesFieldId;
 	html[i++] = "'></td>";
