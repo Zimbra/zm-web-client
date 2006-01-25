@@ -101,7 +101,6 @@ function() {
 ZmApptComposeView.prototype.preload = 
 function() {
     this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-    this.enableInputs(false);
     this._apptTab.createHtml();
 };
 
@@ -118,18 +117,6 @@ function(composeMode) {
 	{
 		this._apptTab.setComposeMode(composeMode);
 	}
-};
-
-ZmApptComposeView.prototype.enableInputs = 
-function(bEnableInputs) {
-	DBG.println("TODO: reset input elements!");
-	// this shit doesnt work right ... 
-	// need to figure out how to get the current tab and reset its inputs
-/*
-	var currTabKey = this._tabs.getCurrentTab();
-	var currTab = currTabKey == this._scheduleTabKey ? this._scheduleTab : this._apptTab;
-	currTab.enableInputs(bEnableInputs);
-*/
 };
 
 ZmApptComposeView.prototype.reEnableDesignMode = 
@@ -177,6 +164,11 @@ function(tabKey) {
 ZmApptComposeView.prototype.getAppt = 
 function(attId) {
 	return this._apptTab.getAppt(attId);
+};
+
+ZmApptComposeView.prototype.getApptTab =
+function() {
+	return this._apptTab;
 };
 
 ZmApptComposeView.prototype.getHtmlEditor = 

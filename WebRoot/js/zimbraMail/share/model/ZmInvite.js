@@ -153,6 +153,12 @@ function(compNum) {
 	return this.components[compNum].recur
 };
 
+ZmInvite.prototype.getAttendees =
+function(compNum) {
+	compNum = compNum || 0;
+	return this.components[compNum].at;
+};
+
 ZmInvite.prototype.isEmpty =
 function() {
 	return Boolean(this.components.empty);
