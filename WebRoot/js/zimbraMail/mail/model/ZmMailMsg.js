@@ -71,7 +71,7 @@ ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_REPLY_TO] = ZmMsg.replyTo;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_DATE] = ZmMsg.sent;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT] = ZmMsg.subject;
 
-ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/ig;
+ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/i;
 
 /**
 * Fetches a message from the server.
@@ -802,7 +802,11 @@ function(cl, domain) {
 */
 ZmMailMsg.prototype.getAttachmentLinks = 
 function(findHits) {
-	var attLinks = [];
+	// cache the attachment links once they've been generated.
+	if (this._attLinks != null)
+		return this._attLinks;
+
+	this._attLinks = [];
 
 	if (this._attachments && this._attachments.length > 0) {
 		var csfeMsgFetchSvc = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
@@ -856,6 +860,8 @@ function(findHits) {
 						// set the objectify flag
 						props.objectify = attach.ct && attach.ct.match(/^image/);
 					}
+				} else {
+					props.url = url;
 				}
 			}
 
@@ -866,14 +872,15 @@ function(findHits) {
 			// set other meta info
 			props.isHit = findHits && this._isAttInHitList(attach);
 			props.mpId = attach.part;
-			props.url = csfeMsgFetchSvc + "id=" + this.getId() + "&part=" + attach.part;
+			if (!useCL)
+				props.url = csfeMsgFetchSvc + "id=" + this.getId() + "&part=" + attach.part;
 
 			// and finally, add to attLink array
-			attLinks.push(props);
+			this._attLinks.push(props);
 		}
 	}
 
-	return attLinks;
+	return this._attLinks;
 };
 
 
