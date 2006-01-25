@@ -88,10 +88,20 @@ function(attId) {
 		this._submitAttachments();
 		return null;
 	}
-
 	// create a copy of the appointment so we dont muck w/ the original
 	var appt = ZmAppt.quickClone(this._appt);
 	appt.setViewMode(this._mode);
+
+	// bug fix #5617 - check if there are any existing attachments that were unchecked
+	if (this._mode != ZmAppt.MODE_NEW) {
+		var attCheckboxes = document.getElementsByName(ZmAppt.ATTACHMENT_CHECKBOX_NAME);
+		if (attCheckboxes && attCheckboxes.length > 0) {
+			for (var i = 0; i < attCheckboxes.length; i++) {
+				if (!attCheckboxes[i].checked)
+					appt.removeAttachment(attCheckboxes[i].value);
+			}
+		}
+	}
 
 	// save field values of this view w/in given appt
 	appt.setName(this._subjectField.getValue());

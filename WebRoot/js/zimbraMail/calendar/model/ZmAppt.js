@@ -115,6 +115,8 @@ ZmAppt.SERVER_WEEK_DAYS				= ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 ZmAppt.NOTES_SEPARATOR				= "\n\n*~*~*~*~*~*~*~*~*~*\n\n";
 ZmAppt.NOTES_SEPARATOR_REGEX		= /\s*\*~\*~\*~\*~\*~\*~\*~\*~\*~\*\s*/;
 
+ZmAppt.ATTACHMENT_CHECKBOX_NAME 	= Dwt.getNextId();
+
 ZmAppt._statusString = {
 	TE:   ZmMsg.tentative,
 	CONF: ZmMsg.confirmed,
@@ -242,7 +244,10 @@ function(appt) {
 	newAppt.startDate = new Date(appt.startDate.getTime());
 	newAppt.endDate = new Date(appt.endDate.getTime());
 	newAppt._uniqId = Dwt.getNextId();
+	// XXX: this could be dangerous since we're not doing a DEEP copy:
 	newAppt._origAttendees = appt.getOrigAttendees();
+	newAppt._validAttachments = appt._validAttachments;
+	
 	if (newAppt._orig == null) 
 		newAppt._orig = appt;
 
@@ -394,6 +399,18 @@ function() {
 		return this._validAttachments.length > 0 ? this._validAttachments : null;
 	}
 	return null;
+};
+
+ZmAppt.prototype.removeAttachment = 
+function(part) {
+	if (this._validAttachments && this._validAttachments.length > 0) {
+		for (var i = 0; i < this._validAttachments.length; i++) {
+			if (this._validAttachments[i].part == part) {
+				this._validAttachments.splice(i,1);
+				break;
+			}
+		}
+	}
 };
 
 ZmAppt.prototype.getDurationText =
@@ -878,8 +895,12 @@ function() {
 	return buf.join("");
 };
 
+/**
+ * @param attach		generic Object contain meta info about the attachment
+ * @param hasCheckbox	whether to insert a checkbox prior to the attachment
+*/
 ZmAppt.prototype.getAttachListHtml = 
-function(attach, hasCheckbox, skipIcon) {
+function(attach, hasCheckbox) {
 	var csfeMsgFetchSvc = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 	var hrefRoot = "href='" + csfeMsgFetchSvc + "id=" + this.getInvId() + "&amp;part=";
 
@@ -902,16 +923,16 @@ function(attach, hasCheckbox, skipIcon) {
 	if (hasCheckbox) {
 		html[i++] = "<td width=1%><input type='checkbox' checked value='";
 		html[i++] = attach.part;
+		html[i++] = "' name='";
+		html[i++] = ZmAppt.ATTACHMENT_CHECKBOX_NAME;
 		html[i++] = "'></td>";
 	}
-	if (!skipIcon) {
-		html[i++] = "<td width=20><a target='_blank' class='AttLink' ";
-		html[i++] = hrefRoot;
-		html[i++] = attach.part;
-		html[i++] = "'>";
-		html[i++] = AjxImg.getImageHtml(icon);
-		html[i++] = "</a></td>";
-	}
+	html[i++] = "<td width=20><a target='_blank' class='AttLink' ";
+	html[i++] = hrefRoot;
+	html[i++] = attach.part;
+	html[i++] = "'>";
+	html[i++] = AjxImg.getImageHtml(icon);
+	html[i++] = "</a></td>";
 	html[i++] = "<td><a target='_blank' class='AttLink' ";
 	html[i++] = hrefRoot;
 	html[i++] = attach.part;
