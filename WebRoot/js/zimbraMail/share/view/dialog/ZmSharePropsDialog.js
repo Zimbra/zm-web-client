@@ -138,13 +138,12 @@ ZmSharePropsDialog.prototype._handleOkButton = function(event) {
 	if (this._dialogType == ZmSharePropsDialog.NEW) {
 		share.grantee.name = this._inputEl.value;
 	}
+	share.grantee.email = share.grantee.name;
 	share.link.perm = this._getSelectedRole();
 
 	// execute grant operation
 	try {
-		var action = this._executeGrantAction(folder, share);
-		share.grantee.id = action.zid;
-		share.grantee.email = action.d;
+		share.grantee.id = this._executeGrantAction(folder, share);
 	}
 	catch (ex) {
 		var message = ZmMsg.unknownError;
@@ -225,12 +224,12 @@ ZmSharePropsDialog.prototype._executeGrantAction = function(folder, share) {
 	
 	var shareNode = soapDoc.set("grant", null, actionNode);
 	shareNode.setAttribute("gt", "usr");
-	shareNode.setAttribute("d", share.grantee.name);
+	shareNode.setAttribute("d", share.grantee.email);
 	shareNode.setAttribute("perm", share.link.perm);
 	
 	var resp = this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
 	
-	return resp.FolderActionResponse.action;
+	return resp.FolderActionResponse.action.zid;
 }
 
 ZmSharePropsDialog.prototype._handleCompletionData = 
