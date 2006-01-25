@@ -673,6 +673,7 @@ function() {
 										  size: 10, maxLen: 10,
 										  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 										  validationStyle: DwtInputField.ONEXIT_VALIDATION,
+										  validator: this._endByDateValidator, 
 										  validatorCtxtObj: this});
 	this._endByField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._endByField.reparentHtmlElement(this._endByFieldId);
@@ -991,6 +992,16 @@ function(value) {
 	DwtInputField.validateInteger(value);
 	if (parseInt(value) < 1) {
 		throw ZmMsg.errorLessThanOne;
+	}
+	return value;
+};
+
+ZmApptRecurDialog.prototype._endByDateValidator =
+function(value) {
+	DwtInputField.validateDate(value);
+	var endByDate = new Date(value);
+	if (endByDate.valueOf() < this._startDate.valueOf()) {
+		throw ZmMsg.errorEndByDate;
 	}
 	return value;
 };
