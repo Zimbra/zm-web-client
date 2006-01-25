@@ -233,7 +233,7 @@ ZmSharePropsDialog.prototype._executeGrantAction = function(folder, share) {
 }
 
 ZmSharePropsDialog.prototype._handleCompletionData = 
-function (text, element) {
+function (control, text, element) {
 	text = text.replace(/;\s*/, "");
 	element.value = text;
 	try {
