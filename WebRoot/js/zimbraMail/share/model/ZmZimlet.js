@@ -29,7 +29,12 @@ function ZmZimlet(id, name, parent, tree, color, link) {
 
 ZmZimlet.prototype = new ZmOrganizer;
 ZmZimlet.prototype.constructor = ZmZimlet;
-
+// test hack 
+ZmZimlet.actionMenus = new Object();
+ZmZimlet.actionMenus["ZmCalViewController"] = new Array();
+ZmZimlet.listeners = new Object();
+ZmZimlet.listeners["ZmCalViewController"] = new Object();
+//
 ZmZimlet.prototype.toString =
 function() {
 	return "ZmZimlet - " + this.name;
