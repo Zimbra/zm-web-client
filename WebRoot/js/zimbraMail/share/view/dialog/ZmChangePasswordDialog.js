@@ -127,7 +127,7 @@ function() {
 
 	// check that the length is okay
 	if (newPassword.length < this._minPwdLength || newPassword.length > this._maxPwdLength) {
-		this.showMessageDialog(AjxStringUtil.resolve(ZmMsg.newPasswordBadLength, [this._minPwdLength, this._maxPwdLength]));
+		this.showMessageDialog(AjxMessageFormat.format(ZmMsg.newPasswordBadLength, [this._minPwdLength, this._maxPwdLength]));
 		return null;
 	}
 

@@ -1037,7 +1037,7 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 		appt.save(null, callback, errorCallback);
 	} catch (ex) {
 		if (ex.msg) {
-			this.popupErrorDialog(AjxStringUtil.resolve(ZmMsg.mailSendFailure, ex.msg));
+			this.popupErrorDialog(AjxMessageFormat.format(ZmMsg.mailSendFailure, ex.msg));
 		} else {
 			this.popupErrorDialog(ZmMsg.errorGeneric, ex);
 		}

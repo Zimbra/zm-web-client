@@ -197,7 +197,7 @@ function(dirtyCheck, noValidation) {
 					isValid = validationFunc(value);
 				}
 				if (!isValid)
-					errorStr += "\n" + AjxStringUtil.resolve(setup.errorMessage, value);
+					errorStr += "\n" + AjxMessageFormat.format(setup.errorMessage, value);
 				pref.setValue(value);
 				list.push(pref);
 			}

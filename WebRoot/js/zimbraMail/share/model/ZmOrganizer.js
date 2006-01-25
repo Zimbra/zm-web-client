@@ -174,10 +174,10 @@ function(name) {
 		return ZmMsg.nameEmpty;
 
 	if (name.length > ZmOrganizer.MAX_NAME_LENGTH)
-		return AjxStringUtil.resolve(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
+		return AjxMessageFormat.format(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
 
 	if (!ZmOrganizer.VALID_NAME_RE.test(name))
-		return AjxStringUtil.resolve(ZmMsg.errorInvalidName, name);
+		return AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
 
 	return null;
 };
