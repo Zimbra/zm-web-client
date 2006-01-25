@@ -779,7 +779,7 @@ function(appt, mode) {
 	this._cancelNoReplyCallback.args = [appt, mode];
 	
 	var confirmDialog = this._appCtxt.getConfirmationDialog();
-	if (appt.hasOtherAttendees()) {
+	if (appt.isOrganizer() && appt.hasOtherAttendees()) {
 		confirmDialog.popup(ZmMsg.confirmCancelApptReply, this._cancelReplyCallback, this._cancelNoReplyCallback);
 	}
 	else {
