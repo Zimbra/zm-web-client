@@ -264,7 +264,7 @@ function() {
 	this._subjectField = new DwtInputField({parent:this, type:DwtInputField.STRING,
 											initialValue:null, size:null, maxLen:null,
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
-											validationStyle:DwtInputField.ONEXIT_VALIDATION});
+											validationStyle:DwtInputField.CONTINUAL_VALIDATION});
 	this._subjectField.setRequired();
 	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
 	this._subjectField.reparentHtmlElement(this._subjectFieldId);
