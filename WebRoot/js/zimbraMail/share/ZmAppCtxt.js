@@ -54,14 +54,14 @@ function(shell) {
 	return shell.getData(ZmAppCtxt.LABEL);
 };
 
-ZmAppCtxt.prototype.isPublicComputer =
+ZmAppCtxt.prototype.rememberMe =
 function() {
-	return this._isPublicComputer;
+	return this._rememberMe;
 };
 
-ZmAppCtxt.prototype.setIsPublicComputer =
-function(isPublicComputer) {
-	this._isPublicComputer = isPublicComputer;
+ZmAppCtxt.prototype.setRememberMe =
+function(rememberMe) {
+	this._rememberMe = rememberMe;
 };
 
 ZmAppCtxt.prototype.setAppController =

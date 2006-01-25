@@ -182,7 +182,7 @@ function(domain, app, userShellId) {
 	// Create the global app context
 	var appCtxt = new ZmAppCtxt();
 
-	appCtxt.setIsPublicComputer(false);
+	appCtxt.setRememberMe(false);
 
 	// Create the shell
 	var settings = appCtxt.getSettings();
@@ -341,7 +341,7 @@ function(settings) {
 	if (tagList) tagList.reset();
 	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER)
 	if (folderTree) folderTree.reset();
-	if (this._appCtxt.isPublicComputer())
+	if (!this._appCtxt.rememberMe())
 		this._appCtxt.getLoginDialog().clearAll();
 	for (var app in this._apps)					// reset apps
 		this._apps[app] = null;

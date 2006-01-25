@@ -176,22 +176,22 @@ function(ex, method, params, restartOnError, obj) {
 *
 * @param username	[string]	user name
 * @param password	[string]	user password
-* @param pubComp	[boolean]
+* @param rememberMe	[boolean]	if true, preserve user's auth token
 */
 ZmController.prototype._doAuth = 
-function(username, password, pubComp) {
+function(username, password, rememberMe) {
 	ZmCsfeCommand.clearAuthToken();
 	var auth = new ZmAuthenticate(this._appCtxt);
-	var respCallback = new AjxCallback(this, this._handleResponseDoAuth, pubComp);
+	var respCallback = new AjxCallback(this, this._handleResponseDoAuth, rememberMe);
 	auth.execute(username, password, respCallback);
 };
 
 ZmController.prototype._handleResponseDoAuth =
-function(pubComp, result) {
+function(rememberMe, result) {
 	try {
 		result.getResponse();
 		this._authenticating = false;
-		this._appCtxt.setIsPublicComputer(pubComp);
+		this._appCtxt.setRememberMe(rememberMe);
 		if (this._execFrame instanceof AjxCallback) {
 			// exec frame for an async call is a callback
 			this._execFrame.run();
@@ -225,8 +225,8 @@ function() {
 /*********** Login dialog Callbacks */
 
 ZmController.prototype._loginCallback =
-function(username, password, pubComp) {
-	this._doAuth(username, password, pubComp);
+function(username, password, rememberMe) {
+	this._doAuth(username, password, rememberMe);
 };
 
 ZmController.prototype._doLastSearch = 

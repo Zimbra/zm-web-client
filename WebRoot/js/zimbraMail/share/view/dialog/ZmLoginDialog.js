@@ -79,7 +79,7 @@ function(func, obj) {
 ZmLoginDialog.prototype.clearAll =
 function() {
 	this._unameField.value = this._pwordField.value = "";
-	this._pubCompField.checked = false;
+	this._rememberMeField.checked = false;
 }
 
 ZmLoginDialog.prototype.clearPassword =
@@ -143,7 +143,6 @@ function(visible, transparentBg) {
 
 }
 
-// TODO: Rewrite this using box model rather than tables
 ZmLoginDialog.prototype._createHtml = 
 function(unameId, pwordId, okCellId, errorCellId, reloginModeId) {
 	var html = new Array();
@@ -200,11 +199,11 @@ function(bReloginMode, app, obj) {
 		var i = 0;
 		html[i++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%>";
 		html[i++] = "<tr><td width=1><input type=checkbox id='" + modeId + "'/></td>";
-		html[i++] = "<td valign=middle>" + ZmMsg.publicComputer + "</td></tr></table>";
+		html[i++] = "<td valign=middle>" + ZmMsg.rememberMe + "</td></tr></table>";
 		this._reloginModeField.innerHTML = html.join("");
 
-	    this._pubCompField = document.getElementById(modeId);
-	    this._pubCompField._parentId = this._htmlElId;
+	    this._rememberMeField = document.getElementById(modeId);
+	    this._rememberMeField._parentId = this._htmlElId;
 	}
 }
 
@@ -218,7 +217,7 @@ function(selEvt) {
 	}
 	
 	if (this._callback)
-		this._callback.run(username, this._pwordField.value, this._pubCompField.checked);
+		this._callback.run(username, this._pwordField.value, this._rememberMeField.checked);
 }
 
 ZmLoginDialog._keyPressHdlr =
@@ -233,7 +232,7 @@ function(ev) {
 		} else {
 			if (parent._callback) {
 				parent.setCursor("wait");
-				parent._callback.run(parent._unameField.value, parent._pwordField.value, parent._pubCompField.checked);
+				parent._callback.run(parent._unameField.value, parent._pwordField.value, parent._rememberMeField.checked);
 			}
 		}
 		return false;
