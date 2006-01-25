@@ -73,6 +73,17 @@ function() {
 
 ZmApptComposeView.prototype.set =
 function(appt, mode, isDirty) {
+	var button = this._tabs.getTabButton(this._apptTabKey);
+	if (mode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
+		button.setImage("ApptException");
+	}
+	else if (mode == ZmAppt.MODE_EDIT_SERIES) {
+		button.setImage("ApptRecur");
+	}
+	else {
+		button.setImage("Appointment");
+	}
+
 	// always switch to appointment tab
 	this._tabs.switchToTab(this._apptTabKey);
 
@@ -181,12 +192,24 @@ function() {
 	this._tabs = new DwtTabView(this);
 
 	this._apptTab = new ZmApptTabViewPage(this, this._appCtxt);
+	this._apptTab.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 	this._scheduleTab = new ZmSchedTabViewPage(this, this._appCtxt, this._apptTab, this._controller);
+	var button = this._scheduleTab
 
 	this._apptTabKey = this._tabs.addTab(ZmMsg.appointment, this._apptTab);
 	this._scheduleTabKey = this._tabs.addTab(ZmMsg.scheduleAttendees, this._scheduleTab);
 
+	var button = this._tabs.getTabButton(this._scheduleTabKey);
+	button.setImage("ApptMeeting");
+
 	this.addControlListener(new AjxListener(this, this._controlListener));
+};
+
+ZmApptComposeView.prototype._repeatChangeListener =
+function(ev) {
+	var value = ev._args.newValue;
+	var button = this._tabs.getTabButton(this._apptTabKey);
+	button.setImage(value != "NON" ? "ApptRecur" : "Appointment");
 };
 
 // Consistent spot to locate various dialogs
