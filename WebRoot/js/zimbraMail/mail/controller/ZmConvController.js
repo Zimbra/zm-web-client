@@ -141,6 +141,7 @@ function() {
 ZmConvController.prototype._standardToolBarOps =
 function() {
 	var list = [ZmOperation.NEW_MENU];
+	list.push(ZmOperation.CHECK_MAIL);
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		list.push(ZmOperation.TAG_MENU);
 	list.push(ZmOperation.SEP);
