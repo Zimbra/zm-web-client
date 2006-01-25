@@ -798,3 +798,7 @@ ZmSpreadSheetFormulae.prototype.eval = function() {
 	this._running = false;
 	return ret;
 };
+
+ZmSpreadSheetFormulae.prototype.toString = function() {
+	return this._formula;
+};

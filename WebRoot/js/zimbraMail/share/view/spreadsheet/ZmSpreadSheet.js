@@ -41,7 +41,7 @@ function ZmSpreadSheet(parent, className, posStyle, deferred) {
 	var footimeout = null;
 	this._selectRangeCapture = new DwtMouseEventCapture(
 		this, "ZmSpreadSheet",
-		ZmSpreadSheet.simpleClosure(this._table_mouseOver, this),
+		ZmSpreadSheet.simpleClosure(this._table_dragMouseOver, this),
 		null,		// no mousedown
 
 // 		// mousemove handler (see warning above)
@@ -63,11 +63,19 @@ function ZmSpreadSheet(parent, className, posStyle, deferred) {
 		null,		// no mouseout?
 		true);		// hard capture
 
+	this._onResize = new AjxListener(this, this._onResize);
+	this._hoverOverListener = new AjxListener(this, this._handleOverListener);
+	this._hoverOutListener = new AjxListener(this, this._handleOutListener);
+	this.addControlListener(this._onResize);
+	this.onSelectCell = [];
+
 // 	this.ROWS = 5;
 // 	this.COLS = 5;
 
 // 	this._init();
 };
+
+ZmSpreadSheet.TOOLTIP_DELAY = 750;
 
 // custom HTML attributes for our data
 // ZmSpreadSheet.ATTR = {
@@ -91,7 +99,8 @@ ZmSpreadSheet.prototype.setModel = function(model) {
 	model.setViewListener("onCellValue", new AjxCallback(this, this._model_cellComputed));
 	model.setViewListener("onInsertRow", new AjxCallback(this, this._model_insertRow));
 	model.setViewListener("onInsertCol", new AjxCallback(this, this._model_insertCol));
-	model.setViewListener
+	model.setViewListener("onDeleteRow", new AjxCallback(this, this._model_deleteRow));
+	model.setViewListener("onDeleteCol", new AjxCallback(this, this._model_deleteCol));
 };
 
 ZmSpreadSheet.prototype._model_cellEdited = function(row, col, cell) {
@@ -102,6 +111,47 @@ ZmSpreadSheet.prototype._model_cellEdited = function(row, col, cell) {
 ZmSpreadSheet.prototype._model_cellComputed = function(row, col, cell) {
 	var td = this._getTable().rows[row].cells[col];
 	cell.setToElement(td);
+};
+
+ZmSpreadSheet.prototype._model_deleteRow = function(rowIndex) {
+	this._hideRange();
+	var selected = this._selectedCell;
+	this._selectCell();
+	var pos_x = selected.cellIndex;
+	var pos_y = selected.parentNode.rowIndex;
+	var rows = this._getTable().rows;
+	var tr = rows[rows.length - 1];
+	tr.removeChild(tr.firstChild);
+	++rowIndex;
+	for (var i = rows.length; --i > rowIndex;) {
+		var node = rows[i - 1].firstChild;
+		rows[i].insertBefore(node, rows[i].firstChild);
+	}
+	var tr = rows[i];
+	tr.parentNode.removeChild(tr);
+	// rows = this._getTable().rows; // is this updated? in all browsers?
+	if (pos_y >= rows.length)
+		--pos_y;
+	this._selectCell(rows[pos_y].cells[pos_x]);
+};
+
+ZmSpreadSheet.prototype._model_deleteCol = function(colIndex) {
+	this._hideRange();
+	var selected = this._selectedCell;
+	this._selectCell();
+	var pos_x = selected.cellIndex;
+	var pos_y = selected.parentNode.rowIndex;
+	var rows = this._getTable().rows;
+	for (var i = 1; i < rows.length; ++i) {
+		var tr = rows[i];
+		var td = tr.cells[colIndex + 1];
+		tr.removeChild(td);
+	}
+	tr = rows[0];
+	tr.removeChild(tr.cells[tr.cells.length - 1]);
+	if (pos_x >= tr.cells.length)
+		--pos_x;
+	this._selectCell(rows[pos_y].cells[pos_x]);
 };
 
 ZmSpreadSheet.prototype._model_insertRow = function(cells, rowIndex) {
@@ -167,9 +217,24 @@ ZmSpreadSheet.prototype.getCellModel = function(td) {
 ZmSpreadSheet.prototype._init = function() {
 	this._relDivID = Dwt.getNextId();
 	this._focusLinkID = Dwt.getNextId();
+	this._tableID = Dwt.getNextId();
 
 	var html = [ "<div id='", this._relDivID,
-		     "' style='position: relative'><table cellspacing='1' cellpadding='0' border='0'>" ];
+		     "' class='ZmSpreadSheet-RelDiv'>" ];
+
+	// the "focus link" is our clever way to receive key events when the
+	// "spreadsheet" is focused.  As usual, it requires some special bits
+	// for IE (needs to have a href and some content in order to be
+	// focusable).  It looks better in FF without these special bits.
+	html.push("<a class='FocusLink' id='", this._focusLinkID, "'");
+	if (AjxEnv.isIE)
+		html.push(" href='#' onclick='return false'");
+	html.push(">");
+	if (AjxEnv.isIE)
+		html.push("&nbsp;");
+	html.push("</a>");
+
+	html.push("<table class='SpreadSheet' id='", this._tableID, "' cellspacing='1' cellpadding='0' border='0'>");
 	var row = [ "<tr><td class='LeftBar'></td>" ];
 
 	var ROWS = this._model.ROWS;
@@ -195,19 +260,6 @@ ZmSpreadSheet.prototype._init = function() {
 	table.rows[0].className = "TopBar";
 	table.rows[0].cells[0].className = "TopLeft";
 
-	// the "focus link" is our clever way to receive key events when the
-	// "spreadsheet" is focused.  As usual, it requires some special bits
-	// for IE (needs to have a href and some content in order to be
-	// focusable).  It looks better in FF without these special bits.
-	html = [ "<a id='", this._focusLinkID, "'" ];
-	if (AjxEnv.isIE)
-		html.push(" href='#' onclick='return false'");
-	html.push(">");
-	if (AjxEnv.isIE)
-		html.push("&nbsp;");
-	html.push("</a>");
-	table.rows[0].cells[0].innerHTML = html.join("");
-
 	for (var i = 1; i < table.rows.length; ++i)
 		table.rows[i].cells[0].innerHTML = "<div>" + i + "</div>";
 	row = table.rows[0];
@@ -226,6 +278,8 @@ ZmSpreadSheet.prototype._init = function() {
 	table.onmousedown = ZmSpreadSheet.simpleClosure(this._table_onClick, this);
 	table.onclick = ZmSpreadSheet.simpleClosure(this._table_onClick, this);
 	table.ondblclick = ZmSpreadSheet.simpleClosure(this._table_onClick, this);
+	table.onmouseover = ZmSpreadSheet.simpleClosure(this._table_mouseOver, this);
+	table.onmouseout = ZmSpreadSheet.simpleClosure(this._table_mouseOut, this);
 
 	var link = this._getFocusLink();
 	link.onkeypress = ZmSpreadSheet.simpleClosure(this._focus_keyPress, this);
@@ -311,7 +365,14 @@ ZmSpreadSheet.prototype._selectCell = function(td) {
 		Dwt.addClass(td, "Selected");
 		Dwt.addClass(this._getTopHeaderCell(td), "TopSelected");
 		Dwt.addClass(this._getLeftHeaderCell(td), "LeftSelected");
-		// this._getTopLeftCell().innerHTML = ZmSpreadSheet.getCellName(td);
+		this._getTopLeftCell().innerHTML = ZmSpreadSheet.getCellName(td);
+		var link = this._getFocusLink();
+		link.style.top = td.offsetTop + td.offsetHeight - 1 + "px";
+		link.style.left = td.offsetLeft + td.offsetWidth - 1 + "px";
+		if (!this._editingCell)
+			this.focus();
+		for (var i = this.onSelectCell.length; --i >= 0;)
+			this.onSelectCell[i].run(this.getCellModel(td), td);
 	}
 };
 
@@ -527,7 +588,10 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 		if (this._selectedRangeName) {
 			this._model.forEachCell(this._selectedRangeName,
 						function(cell) {
-							cell.clearValue();
+							if (dwtev.ctrlKey)
+								cell.clearAll();
+							else
+								cell.clearValue();
 						});
 		}
 		// the selected cell _can_ be outside the selected range. ;-)
@@ -563,6 +627,7 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 };
 
 ZmSpreadSheet.prototype._focus_keyPress = function(ev) {
+	this._clearTooltip();
 	ev || (ev = window.event);
 	var dwtev = new DwtKeyEvent();
 	dwtev.setFromDhtmlEvent(ev);
@@ -734,11 +799,12 @@ ZmSpreadSheet.prototype._showRange = function(startRow, startCol, endRow, endCol
 		w += 2;
 		h += 2;
 	}
+	div.style.display = "none";
 	div.style.height = w + "px";
 	div.style.width = h + "px";
 	div.style.left = c1.offsetLeft - 1 + "px";
 	div.style.top = c1.offsetTop - 1 + "px";
-	div.style.visibility = "";
+	div.style.display = "";
 };
 
 ZmSpreadSheet.prototype._getRangeDiv = function() {
@@ -749,17 +815,35 @@ ZmSpreadSheet.prototype._getRangeDiv = function() {
 		var div = document.createElement("div");
 		div.id = this._rangeDivID;
 		div.className = "ShowRange";
+		div.style.display = "none";
 		this._getRelDiv().appendChild(div);
-		div.style.visibility = "hidden";
 		// at any move, we should hide the range display :-(
 		// otherwise, elements below it won't be able to receive mouse clicks
 		// div.onmousemove = ZmSpreadSheet.simpleClosure(this._hideRange, this);
 		div.onmousedown = ZmSpreadSheet.simpleClosure(this._rangediv_mousedown, this);
+		div.onmousemove = ZmSpreadSheet.simpleClosure(this._rangediv_mousemove, this);
 	}
 	return div;
 };
 
+ZmSpreadSheet.prototype._rangediv_mousemove = function(ev) {
+	var dwtev = new DwtMouseEvent(ev);
+	dwtev.setFromDhtmlEvent(ev);
+	var html = [ "<div class='ZmSpreadSheet-Tooltip'>",
+		     "<div class='CellName'>",
+		     ZmMsg.cellRange + " - " + this._selectedRangeName,
+		     "</div>" ];
+	// let's try to present a nice sum of the selected cells ;-)
+	try {
+		var formula = new ZmSpreadSheetFormulae(this._model, "sum(" + this._selectedRangeName + ")");
+		html.push("Sum: ", formula.eval());
+	} catch(ex) {}
+	html.push("</div>");
+	this._setTooltip(html.join(""), dwtev.docX, dwtev.docY);
+};
+
 ZmSpreadSheet.prototype._rangediv_mousedown = function(ev) {
+	this._clearTooltip();
 	var dwtev = new DwtUiEvent(ev);
 	dwtev.setFromDhtmlEvent(ev);
 	this._hideRange();
@@ -771,7 +855,7 @@ ZmSpreadSheet.prototype._rangediv_mousedown = function(ev) {
 ZmSpreadSheet.prototype._hideRange = function() {
 	this._selectedRangeName = null;
 	var div = this._getRangeDiv();
-	div.style.visibility = "hidden";
+	div.style.display = "none";
 	// amazing performance improvement:
 	div.style.top = "0px";
 	div.style.left = "0px";
@@ -779,7 +863,7 @@ ZmSpreadSheet.prototype._hideRange = function() {
 	div.style.height = "5px";
 };
 
-ZmSpreadSheet.prototype._table_mouseOver = function(ev) {
+ZmSpreadSheet.prototype._table_dragMouseOver = function(ev) {
 	var dwtev = new DwtMouseEvent();
 	dwtev.setFromDhtmlEvent(ev);
 	var table = this._getTable();
@@ -830,7 +914,72 @@ ZmSpreadSheet.prototype._table_onMouseUp = function(ev) {
  		this._getInputField().blur();
 };
 
+ZmSpreadSheet.prototype._setTooltip = function(cell, x, y) {
+	var shell = DwtShell.getShell(window);
+	var manager = shell.getHoverMgr();
+	if (!manager.isHovering()) {
+		manager.reset();
+		manager.setHoverOverDelay(ZmSpreadSheet.TOOLTIP_DELAY);
+		if (typeof cell == "object")
+			manager.setHoverOverData(cell.getTooltipText());
+		else
+			manager.setHoverOverData(cell);
+		manager.setHoverOverListener(this._hoverOverListener);
+		manager.hoverOver(x, y);
+	}
+};
+
+ZmSpreadSheet.prototype._handleOverListener = function(ev) {
+	var shell = DwtShell.getShell(window);
+	var text = ev.object;
+	var tooltip = shell.getToolTip();
+	tooltip.setContent(text);
+	tooltip.popup(ev.x, ev.y);
+};
+
+ZmSpreadSheet.prototype._handleOutListener = function(ev) {
+	var shell = DwtShell.getShell(window);
+	var tooltip = shell.getToolTip();
+	tooltip.popdown();
+};
+
+ZmSpreadSheet.prototype._clearTooltip = function() {
+	var shell = DwtShell.getShell(window);
+	var manager = shell.getHoverMgr();
+        manager.setHoverOutDelay(0);
+        manager.setHoverOutData(null);
+        manager.setHoverOutListener(this._hoverOutListener);
+        manager.hoverOut();
+};
+
+ZmSpreadSheet.prototype._table_mouseOut = function() {
+	this._clearTooltip();
+};
+
+ZmSpreadSheet.prototype._table_mouseOver = function(ev) {
+	if (this._editingCell)
+		// no tooltips while we're writing code. :-p
+		return;
+	var dwtev = new DwtMouseEvent();
+	dwtev.setFromDhtmlEvent(ev);
+	var table = this._getTable();
+	var td = DwtUiEvent.getTarget(dwtev);
+	while (td && td !== table && !/^td$/i.test(td.tagName))
+		td = td.parentNode;
+	if (td && /^td$/i.test(td.tagName)) {
+		try {
+			var cell = this.getCellModel(td);
+			this._setTooltip(cell, dwtev.docX, dwtev.docY);
+		} catch(ex) {
+			window.status = ex;
+			// ignoring exceptions (such as when we mouseover a
+			// top/left bar td)
+		}
+	}
+};
+
 ZmSpreadSheet.prototype._table_onClick = function(ev) {
+	this._clearTooltip();
 	var dwtev = new DwtMouseEvent();
 	dwtev.setFromDhtmlEvent(ev);
 	var table = this._getTable();
@@ -855,7 +1004,37 @@ ZmSpreadSheet.prototype._table_onClick = function(ev) {
 };
 
 ZmSpreadSheet.prototype._getTable = function() {
-	return this._getRelDiv().firstChild;
+	return document.getElementById(this._tableID);
+};
+
+ZmSpreadSheet.prototype._onResize = function(ev) {
+	var el = this.getHtmlElement();
+	var reldiv = this._getRelDiv();
+	reldiv.style.display = "none";
+	var h = el.offsetHeight;
+	reldiv.style.display = "";
+	h -= reldiv.offsetTop + 2;
+	var p = reldiv.nextSibling;
+	while (p) {
+		h -= p.offsetHeight;
+		p = p.nextSibling;
+	}
+	reldiv.style.height = h + "px";
+};
+
+ZmSpreadSheet.prototype.getSelectionRange = function() {
+	var range = this._selectedRangeName;
+	if (!range && this._selectedCell) {
+		range = ZmSpreadSheet.getCellName(this._selectedCell);
+		range += ":" + range;
+	}
+	return range;
+};
+
+ZmSpreadSheet.prototype.getSelectedCellModel = function() {
+	if (this._selectedCell)
+		return this.getCellModel(this._selectedCell);
+	return null;
 };
 
 ZmSpreadSheet.simpleClosure = function(func, obj) {

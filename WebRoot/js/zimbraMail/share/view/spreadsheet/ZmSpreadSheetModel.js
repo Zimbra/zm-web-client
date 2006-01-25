@@ -146,18 +146,30 @@ ZmSpreadSheetModel.prototype.insertCol = function(before) {
 };
 
 ZmSpreadSheetModel.prototype.deleteRow = function(row) {
-	data.splice(row, 1);
-	--this.ROWS;
-	this.triggerEvent("onDeleteRow", row);
-	this.recompute();
+	// silently refuse to delete the last row
+	if (this.ROWS > 1) {
+		var cells = this.data[row];
+		for (var i = cells.length; --i >= 0;)
+			cells[i]._td = null;
+		this.data.splice(row, 1);
+		--this.ROWS;
+		this.triggerEvent("onDeleteRow", row);
+		this.recompute();
+	}
 };
 
 ZmSpreadSheetModel.prototype.deleteCol = function(col) {
-	for (var i = this.ROWS; --i >= 0;)
-		data[i].splice(col, 1);
-	--this.COLS;
-	this.triggerEvent("onDeleteCol", col);
-	this.recompute();
+	// silently refuse to delete the last col
+	if (this.COLS > 1) {
+		for (var i = this.ROWS; --i >= 0;) {
+			var cell = this.data[i][col];
+			this.data[i].splice(col, 1);
+			cell._td = null;
+		}
+		--this.COLS;
+		this.triggerEvent("onDeleteCol", col);
+		this.recompute();
+	}
 };
 
 ZmSpreadSheetModel.prototype.checkBounds = function(row, col) {
@@ -196,8 +208,14 @@ ZmSpreadSheetModel.prototype.getCellByID = function(ident) {
 
 ZmSpreadSheetModel.prototype.recompute = function() {
 	for (var i = this._expressionCells.length; --i >= 0;) {
-		var expr = this._expressionCells[i]._expr;
-		expr.update();
+		var cell = this._expressionCells[i];
+		var expr = cell._expr;
+		try {
+			expr.update();
+		} catch(ex) {
+			// broken cell references
+			cell._td.innerHTML = "#REF";
+		}
 	}
 };
 
@@ -389,6 +407,18 @@ ZmSpreadSheetCellModel.prototype.clearValue = function() {
 	this.setEditValue("");	// for now
 };
 
+ZmSpreadSheetCellModel.prototype.clearStyle = function() {
+	for (var i in this._style)
+		this._style[i] = "";
+	if (this._td)
+		this.setStyleToElement(this._td);
+};
+
+ZmSpreadSheetCellModel.prototype.clearAll = function() {
+	this.clearStyle();
+	this.clearValue();
+};
+
 ZmSpreadSheetCellModel.prototype.setEditValue = function(editValue) {
 	if (editValue != this._editValue) {
 		this._editValue = editValue;
@@ -417,21 +447,6 @@ ZmSpreadSheetCellModel.prototype.setEditValue = function(editValue) {
 			}
 		}
 
-// 		if (/^\x27(.*)$/.test(val)) {
-// 			val = RegExp.$1;
-// 			if (!/^([\x27=]|\$?[0-9]+\.?[0-9]*$)/.test(val)) {
-// 				// if it doesn't look like some special type
-// 				// that we support, discard the useless quote.
-// 				this._editValue = editValue = val;
-// 			}
-// 		} else if (/^=(.*)$/.test(val)) {
-// 			var expr = this._formulae = new ZmSpreadSheetFormulae(this._model, RegExp.$1);
-// 			val = expr.eval();
-// 			this.setExpression(expr);
-// 		} else
-// 			// this is useful so that we clean any previous expression hooks that may be present
-// 			this.setExpression(null);
-
 		this.setValue(val);
 		this._model.triggerEvent("onCellEdit", this.getRow(), this.getCol(), this);
 	}
@@ -456,5 +471,40 @@ ZmSpreadSheetCellModel.prototype._getTD = function() {
 };
 
 ZmSpreadSheetCellModel.prototype.getName = function() {
-	return ZmSpreadSheetModel.getCellName(this.getRow(), this.getCol());
+	if (this._td)
+		return ZmSpreadSheetModel.getCellName(this.getRow(), this.getCol());
+	else
+		return "##";
+};
+
+ZmSpreadSheetCellModel.prototype.setStyleProp = function(prop, val) {
+	this._style[prop] = val;
+	if (this._td)
+		this.setStyleToElement(this._td);
+};
+
+ZmSpreadSheetCellModel.prototype.getStyleProp = function(prop) {
+	return this._style[prop];
+};
+
+ZmSpreadSheetCellModel.prototype.isEmpty = function() {
+	return this._editValue == "";
+};
+
+ZmSpreadSheetCellModel.prototype.getTooltipText = function() {
+	var html = [ "<div class='ZmSpreadSheet-Tooltip'>",
+		     "<div class='CellName'>Cell: ", this.getName(), "</div>" ];
+	if (!this.isEmpty())
+		html.push("<div class='CellType'>Type: ", this.getType(), "</div>");
+	else
+		html.push("<div class='CellType'>Empty cell</div>");
+	if (this._expr) {
+		html.push("Expression:");
+		html.push("<div class='CellExpr'>[", this._expr.toString(), "]</div>");
+	}
+	var span = this._td.firstChild;
+	if (span.offsetWidth >= this._td.offsetWidth)
+		html.push("Value:", "<div class='CellValue'>", this.getDisplayValue(), "</div>");
+	html.push("</div>");
+	return html.join("");
 };
