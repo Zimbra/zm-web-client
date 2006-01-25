@@ -249,7 +249,7 @@ function() {
 			errorMsg = ZmMsg.errorInvalidDates;
 		} else {
 			// check proper attendees
-			if (!this._attendeesField.isValid())
+			if (this._attendeesField.isValid() == null)
 				errorMsg = ZmMsg.errorInvalidAttendees + " " + ZmMsg.errorTryAgain;
 		}
 	} else {
