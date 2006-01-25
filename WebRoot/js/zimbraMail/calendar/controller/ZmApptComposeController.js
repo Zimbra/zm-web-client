@@ -37,6 +37,9 @@
 function ZmApptComposeController(appCtxt, container, calApp) {
 
 	ZmController.call(this, appCtxt, container, calApp);
+
+	this._newAttList = new Array();
+	this._removeAttList = new Array();
 };
 
 ZmApptComposeController.prototype = new ZmController();
@@ -52,6 +55,7 @@ function() {
 ZmApptComposeController.prototype.show =
 function(appt, mode, isDirty) {
 
+	this._newAttList.length = this._removeAttList.length = 0;
 	this._initToolbar(mode);
 	this.initApptComposeView();
 	this._setFormatBtnItem(true);
@@ -74,7 +78,6 @@ function() {
 		this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 		this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 	}
-	this._apptView.enableInputs(false);
     this._popShield.popup(this._apptView._getDialogXY());
 	return false;
 };
@@ -88,14 +91,24 @@ ZmApptComposeController.prototype.saveAppt =
 function(attId) {
 	var appt = this._apptView.getAppt(attId);
 	if (appt) {
-		var args;
-		var mode = appt.getViewMode();
-		if (mode != ZmAppt.MODE_NEW && appt._orig && appt._orig.folderId != appt.folderId) {
-			// pass along appt and folderId for appt move
-			args = [ appt, appt.folderId ];
+		// bug fix #4160
+		var origAttendees = appt.getOrigAttendees();
+		if (!this._apptView.getApptTab().isDirty(true) &&	// make sure other fields (besides attendees field) have not changed
+			attId == null && 								// make sure we're not u/l'ing a file
+			origAttendees && origAttendees.length > 0) 		// make sure we are editing an existing appt w/ attendees
+		{
+			var attendees = appt.getAttendees();
+			if (attendees.length > 0) {
+				attendees = attendees.split(ZmAppt.ATTENDEES_SEPARATOR_REGEX);
+				// check whether organizer has added/removed any attendees
+				if (this._attendeesUpdated(appt, attId, attendees, origAttendees))
+					return false;
+			}
 		}
-		appt.save(attId, new AjxCallback(this, this._handleResponseSave, args));
+		// otherwise, just save the appointment
+		this._saveApptFoRealz(appt, attId);
 	}
+	return true;
 };
 
 ZmApptComposeController.prototype.getFreeBusyInfo = 
@@ -214,6 +227,60 @@ function(errorMsg) {
 	this._apptErrorDialog.popup();
 };
 
+ZmApptComposeController.prototype._saveApptFoRealz = 
+function(appt, attId, notifyList) {
+	var args = null;
+	var mode = appt.getViewMode();
+	if (mode != ZmAppt.MODE_NEW && appt._orig && appt._orig.folderId != appt.folderId) {
+		// pass along appt and folderId for appt move
+		args = [ appt, appt.folderId ];
+	}
+	appt.save(attId, new AjxCallback(this, this._handleResponseSave, args), null, notifyList);
+};
+
+ZmApptComposeController.prototype._attendeesUpdated = 
+function(appt, attId, attendees, origAttendees) {
+	// create a temporary hash of emails used to quickly compare
+	var hash = new Object();
+	for (var i = 0; i < origAttendees.length; i++)
+		hash[origAttendees[i]] = "";
+
+	// walk the current list of attendees and check if there any new ones
+	for (var i = 0 ; i < attendees.length; i++) {
+		var att = AjxStringUtil.trim(attendees[i]);
+		if (att.length > 0) {
+			var e = ZmEmailAddress.parse(att);
+			if (e) {
+				// if not found in orig attendees hash, then its new
+				if (hash[att] == null) 
+					this._newAttList.push(e.address);
+				else
+					hash[att] = true;
+			}
+		}
+	}
+
+	// walk orig attendees hash and see if there were any removed
+	for (var i in hash) {
+		if (hash[i] !== true)
+			this._removeAttList.push(i);
+	}
+
+	if (this._newAttList.length > 0 || this._removeAttList.length > 0) {
+		if (this._notifyDialog == null) {
+			this._notifyDialog = new ZmApptNotifyDialog(this._shell);
+			this._notifyDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._notifyDlgOkListener));
+			this._notifyDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._notifyDlgCancelListener));
+			this._notifyDialog._disableFFhack();
+		}
+		this._notifyDialog.initialize(appt, attId, this._newAttList, this._removeAttList);
+		this._notifyDialog.popup();
+		return true;
+	}
+
+	return false;
+};
+
 // Spell check methods
 
 ZmApptComposeController.prototype._spellCheckAgain = 
@@ -307,7 +374,7 @@ function() {
 	// check if all fields are populated w/ valid values
 	try {
 		if (this._apptView.isValid()) {
-			this.saveAppt();
+			return this.saveAppt();
 		}
 	} catch(ex) {
 		if (typeof ex == "string") {
@@ -371,3 +438,14 @@ function(ev) {
 	this._apptView.reEnableDesignMode();
 };
 
+ZmApptComposeController.prototype._notifyDlgOkListener = 
+function(ev) {
+	var notifyList = this._notifyDialog.notifyNew() ? this._newAttList : null;
+	this._saveApptFoRealz(this._notifyDialog.getAppt(), this._notifyDialog.getAttId(), notifyList);
+	this._app.popView(true);
+};
+
+ZmApptComposeController.prototype._notifyDlgCancelListener =
+function(ev) {
+	this._newAttList.length = this._removeAttList.length = 0;
+};

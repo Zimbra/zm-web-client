@@ -135,7 +135,7 @@ function(attId) {
 		top.setContentType(ZmMimeTable.TEXT_PLAIN);
 		top.setContent(this._notesHtmlEditor.getContent());
 	}
-	appt.attendees = this._attendeesField.value;
+	appt.attendees = AjxStringUtil.trim(this._attendeesField.value);
 	appt.notesTopPart = top;
 
 	// set any recurrence rules
@@ -203,11 +203,18 @@ function(bEnableInputs) {
 	this._endDateField.disabled = !bEnableInputs;
 };
 
+/**
+/* @param excludeAttendees		check for dirty fields excluding the attendees field
+*/
 ZmApptTabViewPage.prototype.isDirty =
-function() {
+function(excludeAttendees) {
+	var formValue = excludeAttendees 
+		? this._origFormValueMinusAttendees 
+		: this._origFormValue;
+
 	return (this._gotAttachments()) || 
 			this._isDirty ||
-		   (this._formValue() != this._origFormValue);
+		   (this._formValue(excludeAttendees) != formValue);
 };
 
 ZmApptTabViewPage.prototype.isValid =
@@ -302,9 +309,8 @@ function() {
  */
 ZmApptTabViewPage.prototype.addAttachmentField =
 function(appt, attach) {
-	if (this._attachCount == 0) {
-		this._initAttachIframe();
-	}
+	if (this._attachCount == 0)
+		this._initAttachContainer();
 
 	if (this._attachCount == 3)
 		this._attachDiv.style.height = Dwt.getSize(this._attachDiv).y + "px";
@@ -318,8 +324,7 @@ function(appt, attach) {
 	var attachInputId = "_att_" + Dwt.getNextId();
 
 	if (attach) {
-		// skip setting the icon since the attachment field is inside an iframe
-		div.innerHTML = appt.getAttachListHtml(attach, true, false);
+		div.innerHTML = appt.getAttachListHtml(attach, true);
 	} else {
 		var html = new Array();
 		var i = 0;
@@ -451,7 +456,8 @@ function(appt, mode) {
 	this._subjectField.focus();
 
 	// save the original form data in its initialized state
-	this._origFormValue = this._formValue();
+	this._origFormValue = this._formValue(false);
+	this._origFormValueMinusAttendees = this._formValue(true);
 };
 
 /**
@@ -910,7 +916,7 @@ function(appt, mode) {
 	this._calendarSelect.setSelectedValue(appt.getFolderId());
 };
 
-ZmApptTabViewPage.prototype._initAttachIframe =
+ZmApptTabViewPage.prototype._initAttachContainer =
 function() {
 	// create new table row which will contain parent fieldset
 	var table = this.getHtmlElement().firstChild;
@@ -1020,7 +1026,7 @@ function(repeatType) {
 
 // Returns a string representing the form content
 ZmApptTabViewPage.prototype._formValue =
-function() {
+function(excludeAttendees) {
 	var vals = new Array();
 
 	vals.push(this._subjectField.getValue());
@@ -1034,7 +1040,8 @@ function() {
 	if (Dwt.getVisibility(this._tzoneSelect.getHtmlElement()))
 		vals.push(this._tzoneSelect.getValue());
 	vals.push(this._repeatSelect.getValue());
-	vals.push(this._attendeesField.value);
+	if (!excludeAttendees)
+		vals.push(this._attendeesField.value);
 	vals.push(this._notesHtmlEditor.getContent());
 
 	var str = vals.join("|");
