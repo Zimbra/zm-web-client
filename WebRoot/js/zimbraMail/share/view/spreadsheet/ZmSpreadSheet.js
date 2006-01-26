@@ -312,6 +312,10 @@ ZmSpreadSheet.prototype._leftCellClicked = function(td, ev) {
 
 // called when the top-left cell was clicked or mousedown (TODO: do we do anything here?)
 ZmSpreadSheet.prototype._topLeftCellClicked = function(td, ev) {
+	var c1 = "A1";
+	var c2 = ZmSpreadSheetModel.getColName(this._model.COLS) + this._model.ROWS;
+	this.focus();
+	this._selectRange(c1, c2, true);
 };
 
 // called for all other cells; normally we display an input field here and
@@ -337,6 +341,8 @@ ZmSpreadSheet.prototype._cellClicked = function(td, ev) {
 };
 
 ZmSpreadSheet.prototype.focus = function() {
+	if (!this._selectedCell)
+		this._selectCell(this._getTable().rows[1].cells[1]);
 	// this link will intercept keybindings.  Clever, huh? B-)
 	this._getFocusLink().focus();
 	window.status = ""; // Clear the statusbar for IE's smart ass
@@ -428,6 +434,7 @@ ZmSpreadSheet.prototype._getSpanField = function() {
 };
 
 ZmSpreadSheet.prototype._editCell = function(td) {
+	this._shiftRangeStart = null;
 	var input = this._getInputField();
 	if (this._editingCell)
 		input.blur();
@@ -452,6 +459,7 @@ ZmSpreadSheet.prototype._editCell = function(td) {
 };
 
 ZmSpreadSheet.prototype._input_blur = function(ev) {
+	this._shiftRangeStart = null;
 	var input = this._getInputField();
 	input.style.visibility = "hidden";
 	input.style.left = 0;
@@ -548,6 +556,8 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 	var needs_keypress = AjxEnv.isIE || AjxEnv.isOpera;
 	this.focus();
 	var handled = true;
+	var is_movement = false;
+	var old_sel = this._selectedCell;
 	switch (dwtev.keyCode) {
 	    case 9: // TAB
 		var td = dwtev.shiftKey
@@ -562,8 +572,10 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 		var td = dwtev.keyCode == 37
 			? this._getLeftCell()
 			: this._getRightCell();
-		if (td)
+		if (td) {
 			this._selectCell(td);
+			is_movement = true;
+		}
 		break;
 
 	    case 38: // UP
@@ -576,8 +588,10 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 			  : ( dwtev.keyCode == 38
 			      ? this._getUpCell()
 			      : this._getDownCell()));
-		if (td)
+		if (td) {
 			this._selectCell(td);
+			is_movement = dwtev.keyCode != 13;
+		}
 		break;
 
 	    case 113: // F2
@@ -599,7 +613,8 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 		this.getCellModel(this._selectedCell).clearValue();
 		break;
 
-	    case 27:		// ignore ESC for IE
+	    case 27:
+		this._hideRange();
 		break;
 
 	    default:
@@ -622,6 +637,17 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 	if (handled) {
 		dwtev._stopPropagation = true;
 		dwtev._returnValue = false;
+	}
+	if (is_movement) {
+		if (dwtev.shiftKey && !this._shiftRangeStart)
+			this._shiftRangeStart = old_sel;
+		else if (!dwtev.shiftKey)
+			this._shiftRangeStart = null;
+		if (this._shiftRangeStart) {
+			// we select the range between _shiftRangeStart and _selectedCell
+			this._selectRange(ZmSpreadSheet.getCellName(this._shiftRangeStart),
+					  ZmSpreadSheet.getCellName(this._selectedCell), false);
+		}
 	}
 	return handled;
 };
@@ -834,6 +860,9 @@ ZmSpreadSheet.prototype._rangediv_mousemove = function(ev) {
 		     ZmMsg.cellRange + " - " + this._selectedRangeName,
 		     "</div>" ];
 	// let's try to present a nice sum of the selected cells ;-)
+	var g = ZmSpreadSheetModel.getRangeGeometry(this._selectedRangeName);
+	html.push("<div class='CellDesc'>[ ", g.rows, " rows x ", g.cols, " cols = ",
+		  g.rows * g.cols, " cells ]</div>");
 	try {
 		var formula = new ZmSpreadSheetFormulae(this._model, "sum(" + this._selectedRangeName + ")");
 		html.push("Sum: ", formula.eval());
@@ -853,6 +882,7 @@ ZmSpreadSheet.prototype._rangediv_mousedown = function(ev) {
 };
 
 ZmSpreadSheet.prototype._hideRange = function() {
+	this._shiftRangeStart = null;
 	this._selectedRangeName = null;
 	var div = this._getRangeDiv();
 	div.style.display = "none";
@@ -971,7 +1001,6 @@ ZmSpreadSheet.prototype._table_mouseOver = function(ev) {
 			var cell = this.getCellModel(td);
 			this._setTooltip(cell, dwtev.docX, dwtev.docY);
 		} catch(ex) {
-			window.status = ex;
 			// ignoring exceptions (such as when we mouseover a
 			// top/left bar td)
 		}

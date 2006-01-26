@@ -93,8 +93,7 @@ ZmSpreadSheetModel.identifyCell = function(ident) {
 	throw "Can't parse cell identifier " + ident + " at ZmSpreadSheetModel.identifyCell";
 };
 
-// FIXME: [duplicate] there's some code in Formulae that does the same thing
-ZmSpreadSheetModel.prototype.getCellsInRange = function(range) {
+ZmSpreadSheetModel.getRangeBounds = function(range) {
 	var a = range.split(/:/);
 	// now a[0] is the supposedly start cell and a[1] the end cell
 	var c1 = ZmSpreadSheetModel.identifyCell(a[0]);
@@ -105,6 +104,23 @@ ZmSpreadSheetModel.prototype.getCellsInRange = function(range) {
 	var startCol = Math.min(c1.col, c2.col);
 	var endRow   = Math.max(c1.row, c2.row);
 	var endCol   = Math.max(c1.col, c2.col);
+
+	return [ { row: startRow , col: startCol },
+	         { row: endRow   , col: endCol } ];
+};
+
+ZmSpreadSheetModel.getRangeGeometry = function(range) {
+	var bounds = ZmSpreadSheetModel.getRangeBounds(range);
+	return { rows: bounds[1].row - bounds[0].row + 1,
+		 cols: bounds[1].col - bounds[0].col + 1 };
+};
+
+ZmSpreadSheetModel.prototype.getCellsInRange = function(range) {
+	var bounds   = ZmSpreadSheetModel.getRangeBounds(range);
+	var startRow = bounds[0].row;
+	var startCol = bounds[0].col;
+	var endRow   = bounds[1].row;
+	var endCol   = bounds[1].col;
 
 	var cells = [];
 	for (var i = startRow; i <= endRow; ++i)
@@ -264,7 +280,7 @@ ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
 	else
 		val = (val+"").replace(/\s/g, "\xA0");
 	el.firstChild.appendChild(document.createTextNode(val));
-	this.setStyleToElement(el.firstChild);
+	this.setStyleToElement(el);
 	if (this._expr)
 		Dwt.addClass(el, "hasFormula");
 	else
@@ -403,6 +419,18 @@ ZmSpreadSheetCellModel.prototype.getType = function() {
 	return this._type || this._autoType || "string";
 };
 
+ZmSpreadSheetCellModel.prototype.setType = function(type) {
+	this._type = type;
+	if (type == null) {
+		var auto = this._determineType(this.getValue());
+		this._value = auto.val;
+		this._type = auto.type;
+	} else if (type == "currency" && this._decimals == null)
+		this._decimals = 2;
+	if (this._td)
+		this.setToElement(this._td);
+};
+
 ZmSpreadSheetCellModel.prototype.clearValue = function() {
 	this.setEditValue("");	// for now
 };
@@ -415,6 +443,7 @@ ZmSpreadSheetCellModel.prototype.clearStyle = function() {
 };
 
 ZmSpreadSheetCellModel.prototype.clearAll = function() {
+	this._type = this._decimals = null;
 	this.clearStyle();
 	this.clearValue();
 };
@@ -493,7 +522,7 @@ ZmSpreadSheetCellModel.prototype.isEmpty = function() {
 
 ZmSpreadSheetCellModel.prototype.getTooltipText = function() {
 	var html = [ "<div class='ZmSpreadSheet-Tooltip'>",
-		     "<div class='CellName'>Cell: ", this.getName(), "</div>" ];
+		     "<div class='CellName'>Cell - ", this.getName(), "</div>" ];
 	if (!this.isEmpty())
 		html.push("<div class='CellType'>Type: ", this.getType(), "</div>");
 	else

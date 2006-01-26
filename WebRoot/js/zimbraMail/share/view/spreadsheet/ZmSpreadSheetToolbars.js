@@ -120,8 +120,8 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	b = this._buttons.bgColor = new DwtButton(toolbar, null, "TBButton");
 	b.setImage("FontBackground");
 	b.setToolTipContent(ZmMsg.fontBackground);
-	var m = new DwtMenu(b, DwtMenu.COLOR_PICKER_STYLE);
-	var cp = new DwtColorPicker(m);
+	m = new DwtMenu(b, DwtMenu.COLOR_PICKER_STYLE);
+	cp = new DwtColorPicker(m);
 	cp.addSelectionListener(new AjxListener(this, this._on_bgColor));
 	b.setMenu(m);
 
@@ -259,6 +259,14 @@ ZmSpreadSheetToolbars.prototype._on_buttonPress = function(ev) {
 };
 
 ZmSpreadSheetToolbars.prototype._on_typeSelect = function(ev) {
+	this._spreadSheet.focus();
+	var range = this._spreadSheet.getSelectionRange();
+	if (!range)
+		return;
+	var type = ev._args.newValue;
+	this.getModel().forEachCell(range, function(cell) {
+		cell.setType(type);
+	}, this);
 };
 
 ZmSpreadSheetToolbars.prototype.getModel = function() {
