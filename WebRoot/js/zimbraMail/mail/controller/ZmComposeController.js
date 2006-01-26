@@ -171,21 +171,18 @@ function(isDraft, msg, callback, result) {
 ZmComposeController.prototype._handleErrorSendMsg =
 function(ex) {
 	this._toolbar.enableAll(true);
+	var msg = null;
 	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
-		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE_INVALID);
-		var unsent = ex.getData(ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE_UNSENT);
-		var invalidMsg = (invalid && invalid.length) ? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses, AjxStringUtil.htmlEncode(invalid.join(", "))) : null;
-		var unsentMsg = (unsent && unsent.length) ? AjxMessageFormat.format(ZmMsg.sendErrorUnsentAddresses, AjxStringUtil.htmlEncode(unsent.join(", "))) : null;
-		var msg = ZmMsg.sendError;
-		if (invalidMsg || unsentMsg) {
-			msg = msg + "<br /><br />";
-			if (invalidMsg)
-				msg = msg + invalidMsg
-			if (invalidMsg && unsentMsg)
-				msg = msg += "<br />";
-			if (unsentMsg)
-				msg = msg + unsentMsg;
-		}
+		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
+		var invalidMsg = (invalid && invalid.length) ? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses,
+														AjxStringUtil.htmlEncode(invalid.join(", "))) : null;
+		msg = ZmMsg.sendErrorAbort + "<br/>" + invalidMsg;
+	} else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
+		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
+		msg = (invalid && invalid.length) ? AjxMessageFormat.format(ZmMsg.sendErrorPartial,
+											AjxStringUtil.htmlEncode(invalid.join(", "))) : ZmMsg.sendErrorAbort;
+	}
+	if (msg) {
 		this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 		this._msgDialog.popup();
 		return true;
