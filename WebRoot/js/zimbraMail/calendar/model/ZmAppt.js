@@ -756,7 +756,7 @@ function(folderId, callback, errorCallback) {
 };
 
 ZmAppt.prototype.cancel = 
-function(mode, msg) {
+function(mode, msg, errorCallback) {
 	this.setViewMode(mode);
 	if (msg) {
 		// REVISIT: I have to explicitly set the bodyParts of the message
@@ -776,7 +776,7 @@ function(mode, msg) {
 	}
 	// To get the attendees for this appointment, we have to get the message.
 	var respCallback = new AjxCallback(this, this._handleResponseCancel, [mode]);
-	this.getDetails(null, respCallback);
+	this.getDetails(null, respCallback, errorCallback);
 };
 
 // Returns canned text for meeting invites.
