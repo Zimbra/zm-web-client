@@ -77,8 +77,7 @@ function(appt, mode, isDirty) {
 	if (mode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
 		button.setImage("ApptException");
 	}
-	else if (mode == ZmAppt.MODE_EDIT_SERIES || 
-			(mode == ZmAppt.MODE_NEW_FROM_QUICKADD && appt.repeatType != "NON")) {
+	else if (mode == ZmAppt.MODE_EDIT_SERIES) {
 		button.setImage("ApptRecur");
 	}
 	else {
