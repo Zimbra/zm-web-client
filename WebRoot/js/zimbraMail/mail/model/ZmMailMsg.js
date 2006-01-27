@@ -837,12 +837,12 @@ function(findHits) {
 			// handle rfc/822 attachments differently
 			if (attach.ct == ZmMimeTable.MSG_RFC822) {
 				var html = new Array(5);
-				var i = 0;
-				html[i++] = "<a href='javascript:;' onclick='ZmMailMsgView.rfc822Callback(this,";
-				html[i++] = this.getId();
-				html[i++] = ",\"";
-				html[i++] = attach.part;
-				html[i++] = "\")' class='AttLink'>";
+				var j = 0;
+				html[j++] = "<a href='javascript:;' onclick='ZmMailMsgView.rfc822Callback(this,";
+				html[j++] = this.getId();
+				html[j++] = ",\"";
+				html[j++] = attach.part;
+				html[j++] = "\")' class='AttLink'>";
 				props.link = html.join("");
 			} else {
 				// set the anchor html for the link to this attachment on the server
