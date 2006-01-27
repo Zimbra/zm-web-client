@@ -101,8 +101,12 @@ function(view) {
 
 ZmConvController.prototype._initializeToolBar = 
 function(view) {
-	if (!this._toolbar[view])
-		ZmDoublePaneController.prototype._initializeToolBar.call(this, view, ZmNavToolBar.ALL_ARROWS);
+	if (!this._toolbar[view]) {
+		// nuke the double arrows for 800x600 resolutions or lower
+		var navArrows = AjxEnv.is800x600orLower ? ZmNavToolBar.SINGLE_ARROWS : ZmNavToolBar.ALL_ARROWS;
+
+		ZmDoublePaneController.prototype._initializeToolBar.call(this, view, navArrows);
+	}
 	this._setupDeleteMenu(view);	// ALWAYS call setup to turn delete menu on/off
 }
 

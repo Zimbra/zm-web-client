@@ -72,7 +72,8 @@ function(ids, enabled) {
 			ids = [ids];
 		for (var i = 0; i < ids.length; i++) {
 			var button = this.getButton(ids[i]);
-			button.setToolTipContent(null);
+			if (button)
+				button.setToolTipContent(null);
 		}
 	}
 };

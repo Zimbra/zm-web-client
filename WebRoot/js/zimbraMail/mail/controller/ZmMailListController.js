@@ -145,6 +145,25 @@ function(view, arrowStyle) {
 		arrowStyle = arrowStyle ? arrowStyle : ZmNavToolBar.SINGLE_ARROWS;
 		var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, arrowStyle, true);
 		this._setNavToolBar(tb);
+
+		// nuke the text for tag menu for 800x600 resolutions
+		if (AjxEnv.is800x600orLower) {
+			this._toolbar[view].getButton(ZmOperation.TAG_MENU).setText("");
+
+			// nuke the text for reply/forward for 800x600 resolutions or lower
+			if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
+				this._toolbar[view].getButton(ZmOperation.REPLY_MENU).setText("");
+			} else {
+				this._toolbar[view].getButton(ZmOperation.REPLY).setText("");
+				this._toolbar[view].getButton(ZmOperation.REPLY_ALL).setText("");
+			}
+		
+			if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
+				this._toolbar[view].getButton(ZmOperation.FORWARD_MENU).setText("");
+			} else {
+				this._toolbar[view].getButton(ZmOperation.FORWARD).setText("");
+			}
+		}
 	}
 
 	this._setupDeleteButton(view);
