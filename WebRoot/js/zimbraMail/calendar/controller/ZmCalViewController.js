@@ -61,8 +61,6 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._apptCache = new ZmApptCache(this, appCtxt);
 	
 	this._initializeViewActionMenu();	
-
-	this._errorCallback = new AjxCallback(this, this._handleError);
 }
 
 ZmCalViewController.prototype = new ZmListController();
@@ -847,7 +845,7 @@ ZmCalViewController.prototype._continueDeleteReply =
 function(appt, mode) {
 	var action = ZmOperation.REPLY_CANCEL;
 	var respCallback = new AjxCallback(this, this._continueDeleteReplyRespondAction, [appt, action, mode]);
-	appt.getDetails(null, respCallback, this._errorCallback);
+	appt.getDetails(null, respCallback);
 };
 
 ZmCalViewController.prototype._continueDeleteReplyRespondAction =
@@ -864,7 +862,7 @@ function(appt, action, mode) {
 ZmCalViewController.prototype._continueDelete = 
 function(appt, mode) {
 	try {
-		appt.cancel(mode, null, this._errorCallback);
+		appt.cancel(mode);
 	} catch (ex) {
 		var params = [appt, mode];
 		this._handleException(ex, this._continueDelete, params, false);		
@@ -1172,8 +1170,7 @@ function(ev) {
 
 	if (appt.isReadOnly()) {
 		// always get details on appt as if we're editing series (since its read only)
-		var callback = new AjxCallback(this, this._showReadOnlyDialog, [appt]);
-		appt.getDetails(ZmAppt.MODE_EDIT_SERIES, callback, this._errorCallback);
+		appt.getDetails(ZmAppt.MODE_EDIT_SERIES, new AjxCallback(this, this._showReadOnlyDialog, [appt]));
 	} else {
 		var mode = ZmAppt.MODE_EDIT;
 		var menuItem = ev.item;
@@ -1193,7 +1190,7 @@ function(ev) {
 	var type = ev.item.getData(ZmOperation.KEY_ID);
 	var op = ev.item.parent.getData(ZmOperation.KEY_ID);
 	var respCallback = new AjxCallback(this, this._handleResponseHandleApptRespondAction, [appt, type, op]);
-	appt.getDetails(null, respCallback, this._errorCallback);
+	appt.getDetails(null, respCallback);
 };
 
 ZmCalViewController.prototype._handleResponseHandleApptRespondAction =
@@ -1211,7 +1208,7 @@ function(ev) {
 	var id = ev.item.getData(ZmOperation.KEY_ID);
 	var op = ev.item.parent.parent.parent.getData(ZmOperation.KEY_ID);
 	var respCallback = new AjxCallback(this, this._handleResponseHandleApptEditRespondAction, [appt, id, op]);
-	appt.getDetails(null, respCallback, this._errorCallback);
+	appt.getDetails(null, respCallback);
 };
 
 ZmCalViewController.prototype._handleResponseHandleApptEditRespondAction =
@@ -1227,24 +1224,6 @@ function(appt, id, op) {
 	}
 	var instanceDate = op == ZmOperation.VIEW_APPT_INSTANCE ? new Date(appt._uniqStartTime) : null;
 	msgController._editInviteReply(id, 0, instanceDate);
-};
-
-ZmCalViewController.prototype._handleError =
-function(ex) {
-	if (ex.code == 'mail.INVITE_OUT_OF_DATE' ||	ex.code == 'mail.NO_SUCH_APPT') {
-		var msgDialog = this._appCtxt.getMsgDialog();
-		msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._handleError2, this, [msgDialog]);
-		msgDialog.setMessage(ZmMsg.apptOutOfDate, DwtMessageDialog.INFO_STYLE);
-		msgDialog.popup();
-		return true;
-	}
-	return false;
-};
-ZmCalViewController.prototype._handleError2 =
-function(msgDialog) {
-	msgDialog.unregisterCallback(DwtDialog.OK_BUTTON);
-	msgDialog.popdown();
-	this._refreshAction(false);
 };
 
 /**
