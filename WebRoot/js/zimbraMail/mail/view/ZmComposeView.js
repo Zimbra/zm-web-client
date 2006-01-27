@@ -1471,13 +1471,13 @@ function(type) {
 };
 
 // Files have been uploaded, re-initiate the send with an attachment ID.
-// TODO: error handling
 ZmComposeView.prototype._attsDoneCallback =
 function(isDraft, status, attId) {
 	DBG.println(AjxDebug.DBG1, "Attachments: isDraft = " + isDraft + ", status = " + status + ", attId = " + attId);
 	if (status == AjxPost.SC_OK) {
 		this._controller.sendMsg(attId, isDraft);
 	} else {
+		// bug fix #2131 - handle errors during attachment upload.
 		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, status);
 		switch (status) {
 			// add other error codes/message here as necessary
