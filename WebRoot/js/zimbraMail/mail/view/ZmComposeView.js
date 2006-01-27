@@ -1475,11 +1475,17 @@ function(type) {
 ZmComposeView.prototype._attsDoneCallback =
 function(isDraft, status, attId) {
 	DBG.println(AjxDebug.DBG1, "Attachments: isDraft = " + isDraft + ", status = " + status + ", attId = " + attId);
-	if (status == 200) {
+	if (status == AjxPost.SC_OK) {
 		this._controller.sendMsg(attId, isDraft);
 	} else {
-		DBG.println(AjxDebug.DBG1, "attachment error: " + status);
-		this._controller.popupErrorDialog("Attachment error: " + status + "<br />Probably a file is too big.<br /><br />Cannot continue.", null, null, true);
+		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, status);
+		switch (status) {
+			// add other error codes/message here as necessary
+			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>";
+		}
+
+		this._controller.popupErrorDialog(msg + ZmMsg.errorTryAgain, null, null, true);
+		this._controller._toolbar.enableAll(true);
 	}
 };
 
