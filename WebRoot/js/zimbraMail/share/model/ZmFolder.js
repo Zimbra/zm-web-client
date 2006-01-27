@@ -113,6 +113,13 @@ ZmFolder.TCON_CODE[ZmFolder.ID_SPAM]	= "j";
 ZmFolder.TCON_CODE[ZmFolder.ID_SENT]	= "s";
 ZmFolder.TCON_CODE[ZmFolder.ID_OTHER]	= "o";
 
+// Hide folders migrated from Outlook mailbox
+ZmFolder.HIDE = {};
+ZmFolder.HIDE["Journal"]	= true;
+ZmFolder.HIDE["Notes"]		= true;
+ZmFolder.HIDE["Outbox"]		= true;
+ZmFolder.HIDE["Tasks"]		= true;
+
 // map name to ID
 ZmFolder.QUERY_ID = new Object();
 for (var i in ZmFolder.QUERY_NAME)

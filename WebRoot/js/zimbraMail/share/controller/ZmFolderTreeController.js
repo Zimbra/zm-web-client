@@ -57,6 +57,26 @@ function() {
 };
 
 /**
+* Displays a folder tree. Certain folders are hidden.
+*
+* @param overviewId		[constant]	overview ID
+* @param showUnread		[boolean]*	if true, unread counts will be shown
+* @param omit			[Object]*	hash of organizer IDs to ignore
+* @param forceCreate	[boolean]*	if true, tree view will be created
+*/
+ZmFolderTreeController.prototype.show = 
+function(overviewId, showUnread, omit, forceCreate) {
+	for (var name in ZmFolder.HIDE) {
+		var folder = this._dataTree.getByName(name);
+		if (folder) {
+			if (!omit) omit = {};
+			omit[folder.id] = true;
+		}
+	}
+	ZmTreeController.prototype.show.apply(this, [overviewId, showUnread, omit, forceCreate]);
+};
+
+/**
 * Enables/disables operations based on context.
 *
 * @param parent		[DwtControl]	the widget that contains the operations
