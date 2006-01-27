@@ -69,6 +69,11 @@ ZmSpreadSheetModel.getCellName = function(row, col) {
 	return ZmSpreadSheetModel.getColName(col) + row;
 };
 
+ZmSpreadSheetModel.getRangeName = function(startRow, startCol, endRow, endCol) {
+	return ZmSpreadSheetModel.getCellName(startRow, startCol) +
+		":" + ZmSpreadSheetModel.getCellName(endRow, endCol);
+};
+
 ZmSpreadSheetModel.getColName = function(index) {
 	if (index <= 26)
 		return String.fromCharCode(64 + index);
@@ -109,10 +114,24 @@ ZmSpreadSheetModel.getRangeBounds = function(range) {
 	         { row: endRow   , col: endCol } ];
 };
 
+ZmSpreadSheetModel.shiftCell = function(cell, rows, cols) {
+	var c = ZmSpreadSheetModel.identifyCell(cell);
+	c.row += rows;
+	c.col += cols;
+	return ZmSpreadSheetModel.getCellName(c.row + 1, c.col + 1);
+};
+
+ZmSpreadSheetModel.shiftRange = function(range, rows, cols) {
+	var a = range.split(/:/);
+	return ZmSpreadSheetModel.shiftCell(a[0], rows, cols)
+		+ ":" + ZmSpreadSheetModel.shiftCell(a[1], rows, cols);
+};
+
 ZmSpreadSheetModel.getRangeGeometry = function(range) {
 	var bounds = ZmSpreadSheetModel.getRangeBounds(range);
-	return { rows: bounds[1].row - bounds[0].row + 1,
-		 cols: bounds[1].col - bounds[0].col + 1 };
+	return { rows   : bounds[1].row - bounds[0].row + 1,
+		 cols   : bounds[1].col - bounds[0].col + 1,
+		 bounds : bounds };
 };
 
 ZmSpreadSheetModel.prototype.getCellsInRange = function(range) {
@@ -235,6 +254,133 @@ ZmSpreadSheetModel.prototype.recompute = function() {
 	}
 };
 
+// Paste the given src range from the given model to the destination range in
+// the current model.  This actually performs something like the "fill"
+// operation in Excel.
+//
+// IF (dest.rows < src.rows || dest.cols < src.cols)
+//       enlarge dest to fit the "clipboard"
+// ELSE
+//       dest.rows -= dest.rows % src.rows;
+//       dest.cols -= dest.cols % src.cols;
+//
+// Having a normalized destination range, we copy data and formatting from
+// cells to dest according to the geometry.  If "dest" is bigger, multiple
+// copies will be thrown out.
+//
+// src and dest are range descriptors.
+ZmSpreadSheetModel.prototype.paste = function(clipboard, dest) {
+	var g_src = clipboard.geometry;
+	var b_src = clipboard.bounds;
+
+	var g_dest = ZmSpreadSheetModel.getRangeGeometry(dest);
+	var b_dest = g_dest.bounds;
+	var i;
+
+	if (g_dest.rows < g_src.rows)
+		g_dest.rows = g_src.rows;
+	else
+		g_dest.rows -= g_dest.rows % g_src.rows;
+
+	if (g_dest.cols < g_src.cols)
+		g_dest.cols = g_src.cols;
+	else
+		g_dest.cols -= g_dest.cols % g_src.cols;
+
+	b_dest[1].row = b_dest[0].row + g_dest.rows - 1;
+	b_dest[1].col = b_dest[0].col + g_dest.cols - 1;
+
+	// shift and recompile formulae by this value
+	clipboard.setDelta(b_dest[0].row - b_src[0].row,
+			   b_dest[0].col - b_src[0].col);
+
+	// enlarge this model if needed
+	for (i = b_dest[1].row - this.ROWS; i-- >= 0;)
+		this.insertRow();
+	for (i = b_dest[1].col - this.COLS; i-- >= 0;)
+		this.insertCol();
+
+	// alert("Pasting cells to:\n" + b_dest.toSource());
+
+	var src_i = 0;
+	var dr = 0;
+	for (var i = b_dest[0].row; i <= b_dest[1].row; ++i) {
+		var src_j = 0;
+		var dc = 0;
+		for (var j = b_dest[0].col; j <= b_dest[1].col; ++j) {
+			var dest_cell = this.data[i][j];
+			clipboard.paste(src_i, src_j, dest_cell, dr, dc);
+			src_j++;
+			if (src_j == g_src.cols) {
+				dc += g_src.cols;
+				src_j = 0;
+			}
+		}
+		src_i++;
+		if (src_i == g_src.rows) {
+			dr += g_src.rows;
+			src_i = 0;
+		}
+	}
+
+	return [ ZmSpreadSheetModel.getCellName(b_dest[0].row + 1, b_dest[0].col + 1),
+		 ZmSpreadSheetModel.getCellName(b_dest[1].row + 1, b_dest[1].col + 1) ];
+};
+
+/// A Range copy
+
+function ZmSpreadSheetClipboard(model, range, move) {
+	this._move = !!move;
+	this.model = model;
+	this.geometry = ZmSpreadSheetModel.getRangeGeometry(range);
+	this.range = range;
+	this.bounds = this.geometry.bounds;
+	var a = this.cells = model.getCellsInRange(range);
+	if (!move) {
+		// we need to copy contents
+		for (var i = a.length; --i >= 0;)
+			a[i] = a[i].clone();
+	}
+};
+
+// row and col here should be from 0 to this.geometry.rows - 1 or
+// this.geometry.cols - 1 respectively.
+ZmSpreadSheetClipboard.prototype.getCell = function(row, col) {
+	return this.cells[row * this.geometry.cols + col];
+};
+
+ZmSpreadSheetClipboard.prototype.setDelta = function(rows, cols) {
+	this.delta = { rows: rows, cols: cols };
+};
+
+ZmSpreadSheetClipboard.prototype.paste = function(row, col, dest, dr, dc) {
+	var src = this.getCell(row, col);
+//  	alert("Pasting " + src._value + " to " + dest.getName() + " with delta " +
+//  	      (this.delta.rows + dr) + " x " +
+//  	      (this.delta.cols + dc));
+	// deep copy style
+	for (var i in src._style)
+		dest._style[i] = src._style[i];
+	if (src._expr) {
+		// update formulae
+		var e = src._expr;
+		var formulae = e.shift(this.delta.rows + dr,
+				       this.delta.cols + dc);
+		dest.setEditValue("=" + formulae);
+	} else {
+		dest.setEditValue(src.getEditValue());
+		dest._type = src._type;
+		dest._autoType = src._autoType;
+		dest._decimals = src._decimals;
+	}
+	if (this._move && !src._wasCut) {
+		var clone = src.clone();
+		this.cells[row * this.geometry.cols + col] = clone;
+		clone._wasCut = true;
+		src.clearAll();
+	}
+};
+
 /// The Cell Model
 
 function ZmSpreadSheetCellModel(model, type, editValue, style) {
@@ -262,6 +408,7 @@ function ZmSpreadSheetCellModel(model, type, editValue, style) {
 	// style_default("padding"         , "");
 
 	this._model = model;
+	this._td = null;
 	this._decimals = null;
 	this._type = type;
 	this._autoType = null;
@@ -270,6 +417,23 @@ function ZmSpreadSheetCellModel(model, type, editValue, style) {
 	this._style = style;
 	this._expr = null;
 	this._affects = [];
+};
+
+ZmSpreadSheetCellModel.prototype.clone = function() {
+	var newCell = new ZmSpreadSheetCellModel(null);	// no model by default
+	newCell._decimals  = this._decimals;
+	newCell._type      = this._type;
+	newCell._autoType  = this._autoType;
+	newCell._editValue = this._editValue;
+	newCell._value     = this._value;
+	newCell._expr      = this._expr; // WARNING: calling code should *not*
+					 // modify *our* expression directly.
+
+	// deep copy style
+	for (var i in this._style)
+		newCell._style[i] = this._style[i];
+
+	return newCell;
 };
 
 ZmSpreadSheetCellModel.prototype.setToElement = function(el) {

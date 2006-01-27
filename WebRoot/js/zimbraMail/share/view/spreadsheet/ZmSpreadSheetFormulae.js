@@ -461,6 +461,33 @@ ZmSpreadSheetFormulae.prototype.update = function() {
 		this.compile(formula);
 };
 
+// somewhat similar but not the same as the above function, this one will
+// return a new (string) formula where all cell or cellrange tokens will be
+// shifted by the given number of rows and cols.
+ZmSpreadSheetFormulae.prototype.shift = function(rows, cols) {
+	var formula       = this._formula,
+		a         = this._cellTokens,
+		TYPE      = ZmSpreadSheetFormulae.TOKEN;
+	for (var i = a.length; --i >= 0;) {
+		var t = a[i];
+		// t is a cell token or a range token
+		var name = null;
+		if (t.type === TYPE.CELL) {
+			name = ZmSpreadSheetModel.shiftCell(t.val, rows, cols);
+		}
+		if (t.type === TYPE.CELLRANGE) {
+			name = ZmSpreadSheetModel.shiftRange(t.val, rows, cols);
+		}
+		if (name && t.val != name) {
+			formula = [ formula.substr(0, t.strPos),
+				    name,
+				    formula.substr(t.strPos + t.strLen)
+			].join("");
+		}
+	}
+	return formula;
+};
+
 ZmSpreadSheetFormulae.prototype.getFormula = function() {
 	return this._formula;
 };

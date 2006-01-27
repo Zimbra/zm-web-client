@@ -618,8 +618,8 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 		break;
 
 	    default:
-		if ((!needs_keypress && ev.charCode)
-		    || (needs_keypress && /keypress/i.test(dwtev.type))) {
+		if (!dwtev.ctrlKey && ( (!needs_keypress && ev.charCode) ||
+					(needs_keypress && /keypress/i.test(dwtev.type)))) {
 			var val = String.fromCharCode(dwtev.charCode);
 // 			// FIXME: this sucks.  Isn't there any way to determine
 // 			// if some character is a printable Unicode character? :(
@@ -634,6 +634,41 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 		} else
 			handled = false;
 	}
+	if (!handled) {
+		switch (String.fromCharCode(dwtev.charCode)) {
+
+		    case "c":	// COPY
+		    case "C":
+			if (dwtev.ctrlKey) {
+				handled = true;
+				ZmSpreadSheet._clipboard = new ZmSpreadSheetClipboard
+					(this._model, this.getSelectionRange(), false);
+			}
+			break;
+
+		    case "x":	// CUT
+		    case "X":
+			if (dwtev.ctrlKey) {
+				handled = true;
+				ZmSpreadSheet._clipboard = new ZmSpreadSheetClipboard
+					(this._model, this.getSelectionRange(), true);
+			}
+			break;
+
+		    case "v":	// PASTE
+		    case "V":
+			if (dwtev.ctrlKey) {
+				handled = true;
+				if (ZmSpreadSheet._clipboard) {
+					var r = this._model.paste(ZmSpreadSheet._clipboard,
+								  this.getSelectionRange());
+					this._selectRange.apply(this, r);
+				}
+			}
+			break;
+
+		}
+	}
 	if (handled) {
 		dwtev._stopPropagation = true;
 		dwtev._returnValue = false;
@@ -641,8 +676,10 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 	if (is_movement) {
 		if (dwtev.shiftKey && !this._shiftRangeStart)
 			this._shiftRangeStart = old_sel;
-		else if (!dwtev.shiftKey)
+		else if (!dwtev.shiftKey) {
 			this._shiftRangeStart = null;
+			this._hideRange();
+		}
 		if (this._shiftRangeStart) {
 			// we select the range between _shiftRangeStart and _selectedCell
 			this._selectRange(ZmSpreadSheet.getCellName(this._shiftRangeStart),
