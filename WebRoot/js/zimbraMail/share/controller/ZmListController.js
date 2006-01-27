@@ -379,8 +379,14 @@ function(ev) {
 		var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
 		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController().doAction(ZmOperation.NEW_MESSAGE, inNewWindow);
 	} else if (id == ZmOperation.NEW_CONTACT) {
-		var contact = new ZmContact(this._appCtxt);
-		this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(contact);
+		// bug fix #5373 
+		// - dont allow adding new contacts after searching GAL if contacts disabled
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+			var contact = new ZmContact(this._appCtxt);
+			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(contact);
+		} else {
+			ev.item.popup();
+		}
 	} else if (id == ZmOperation.NEW_APPT) {
 		var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 		cc.newAppointment(null, null, null, new Date());
