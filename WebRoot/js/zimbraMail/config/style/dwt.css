@@ -1056,10 +1056,10 @@
 .RadioGrouperBorder,
 .TopGrouperBorder {
 	border:1px solid #999999;
-	margin-top:10px;
+	margin-top:5px;
 	margin-bottom:5px;
 
-	padding-top:15px;
+	padding-top:5px;
 	padding-left:10px;
 	padding-right:10px;
 	padding-bottom:10px;
@@ -1079,9 +1079,12 @@
 
 .GrouperLabel,
 .RadioGrouperLabel {
+	display: inline;
 	font-weight:bold;
 	font-size:13px;
-	position:absolute;	left:10; top:-8;
+	position:relative;
+	left:10; 
+	top:-15;
 	background-color:#EEEEEE;
 	padding-left:2px; padding-right:2px;
 }
