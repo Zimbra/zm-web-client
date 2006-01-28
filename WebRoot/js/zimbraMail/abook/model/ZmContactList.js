@@ -48,6 +48,7 @@ function ZmContactList(appCtxt, search, isGal) {
 	this._acAddrList = {};
 	this._loadCount = 0;
 	this._loaded = false;
+	this._showStatus = true;
 };
 
 ZmContactList.prototype = new ZmList;
@@ -119,6 +120,8 @@ function(callback, result) {
 			this._loadAction = new AjxTimedAction(this, this._smartLoad, [list]);
 		}
 		this.set(list);
+	} else {
+		this._loaded = true;	// this means user has no contacts
 	}
 	if (callback) callback.run();
 };
@@ -195,8 +198,9 @@ function(str) {
 	DBG.println(AjxDebug.DBG3, "begin contact matching");
 	DBG.showTiming(true, "start autocomplete match: " + str);
 
-	if (!this.isLoaded()) {
+	if (!this.isLoaded() && this._showStatus) {
 		this._appCtxt.setStatusMsg(ZmMsg.autocompleteNotReady, ZmStatusView.LEVEL_WARNING);
+		this._showStatus = false; // only show status message once.
 		return null;
 	}
 
