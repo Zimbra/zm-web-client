@@ -673,7 +673,9 @@ function(container, html, isTextMsg) {
 			     ".Object a:hover { text-decoration: underline; }",
 			     ".Object-activated { text-decoration:underline; }"
 		].join(" ");
-	var ifw = new DwtIframe(this, "MsgBody", true, html, inner_styles, false, "static", callback);
+	var ifw = new DwtIframe(this, "MsgBody", true, html, inner_styles,
+				!ZmMailMsgView.SCROLL_WITH_IFRAME, // "noscroll"
+				"static", callback);
 	this._iframeId = ifw.getIframe().id;
 
 	var idoc = ifw.getDocument();
@@ -1264,10 +1266,13 @@ function(self, iframe) {
 			substract(self._inviteToolbar.getHtmlElement());
 	} else {
 		var doc = iframe.contentWindow.document;
-		if (AjxEnv.isIE)
+		var w = doc.body.scrollWidth;
+		if (AjxEnv.isIE) {
 			h = doc.body.scrollHeight;
-		else
-			h = doc.documentElement.offsetHeight;
+		} else {
+			h = doc.documentElement.scrollHeight;
+		}
+		iframe.style.width = w + "px";
 	}
 	iframe.style.height = h + "px";
 };
