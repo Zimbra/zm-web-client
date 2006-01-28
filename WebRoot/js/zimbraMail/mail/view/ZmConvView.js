@@ -187,6 +187,8 @@ function() {
 	var subjDivId = Dwt.getNextId();
 	var tagDivId = Dwt.getNextId();
 	this._subjectBar = document.createElement("div");
+	if (AjxEnv.is800x600orLower)
+		this._subjectBar.style.display = "none";
 	this._subjectBar.className = "SubjectBar";
 	var html = new Array(2);
 	var idx = 0;

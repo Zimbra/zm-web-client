@@ -36,7 +36,9 @@ function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 	this._tagCellId = Dwt.getNextId();
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
-	this.setScrollStyle(DwtControl.CLIP);
+	this.setScrollStyle(ZmMailMsgView.SCROLL_WITH_IFRAME
+			    ? DwtControl.CLIP
+			    : DwtControl.SCROLL);
 
 	if (!controller.isChildWindow) {
 		// Add change listener to taglist to track changes in tag color
@@ -65,6 +67,11 @@ ZmMailMsgView.prototype.constructor = ZmMailMsgView;
 
 
 // Consts
+
+ZmMailMsgView.SCROLL_WITH_IFRAME = false;
+ZmMailMsgView.LIMIT_ATTACHMENTS = ZmMailMsgView.SCROLL_WITH_IFRAME ? 3 : 0;
+ZmMailMsgView.ATTC_COLUMNS = 2;
+ZmMailMsgView.ATTC_MAX_SIZE = ZmMailMsgView.LIMIT_ATTACHMENTS * 16 + 8;
 
 ZmMailMsgView.HEADER_ID 		= "h--" + Dwt.getNextId();
 ZmMailMsgView.QUOTE_DEPTH_MOD 	= 3;
@@ -602,7 +609,7 @@ function() {
 		div.className = "DisplayImages";
 		div.id = self._highlightObjectsId;
 		div.innerHTML =
-			[ "<table width='100%' cellspacing='0' cellpadding='0'><tr><td style='width:20px'>",
+			[ "<table cellspacing='0' cellpadding='0'><tr><td style='width:20px'>",
 			  AjxImg.getImageHtml("Status") + "</td><td>",
 			  ZmMsg.objectsNotDisplayed,
 			  " <span style='font: inherit; color:blue; text-decoration:underline'>",
@@ -741,6 +748,14 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "<div id='" + ZmMailMsgView.HEADER_ID + "' class='MsgHeader'>";
 	htmlArr[idx++] = "<table id='" + this._hdrTableId + "' cellspacing=2 cellpadding=2 border=0 width=100%>";
 
+	// Subject
+	var subject = msg.getSubject() || ZmMsg.noSubject;
+	htmlArr[idx++] = "<tr class='SubjectLine'><td class='LabelColName'>";
+	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.subject);
+	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
+	htmlArr[idx++] = this._objectManager ? this._objectManager.findObjects(subject, true) : subject;
+	htmlArr[idx++] = "</td></tr>";
+
 	// Date
 	htmlArr[idx++] = "<tr><td class='LabelColName'>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.sent);
@@ -758,14 +773,6 @@ function(msg, container, callback) {
 			idx = this._addAddressHeaderHtml(htmlArr, idx, addrs, prefix);
 		}
 	}
-
-	// Subject
-	var subject = msg.getSubject() || ZmMsg.noSubject;
-	htmlArr[idx++] = "<tr><td class='LabelColName'>";
-	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.subject);
-	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
-	htmlArr[idx++] = this._objectManager ? this._objectManager.findObjects(subject, true) : subject;
-	htmlArr[idx++] = "</td></tr>"
 
 	// Attachments
 	idx = this._getAttachmentHtml(msg, htmlArr, idx);
@@ -930,22 +937,31 @@ function(msg) {
 	tagCell.innerHTML = html.join("");
 };
 
-ZmMailMsgView.prototype._getAttachmentHtml = 
+ZmMailMsgView.prototype._getAttachmentHtml =
 function(msg, htmlArr, idx) {
 	var attLinks = msg.getAttachmentLinks(true);
+	if (attLinks.length == 0)
+		return idx;
+	htmlArr[idx++] = "<tr>";
+	htmlArr[idx++] = "<td class='LabelColName'>";
+	htmlArr[idx++] = ZmMsg.attachments;
+	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
+	var dividx = idx;	// we might get back here
+	htmlArr[idx++] = "<div style='overflow: auto;'>";
+	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0>";
+	var rows = 0;
 	for (var i = 0; i < attLinks.length; i++) {
 		var att = attLinks[i];
 
-		htmlArr[idx++] = "<tr>";
-		if (i == 0) {
-			htmlArr[idx++] = "<td class='LabelColName'>";
-			htmlArr[idx++] = ZmMsg.attachments;
-			htmlArr[idx++] = ": </td>";
-		} else {
-			htmlArr[idx++] = "<td></td>";
+		if ((i % ZmMailMsgView.ATTC_COLUMNS) == 0) {
+			if (i != 0)
+				htmlArr[idx++] = "</tr>";
+			htmlArr[idx++] = "<tr>";
+			++rows;
 		}
-		htmlArr[idx++] = "<td class='LabelColValue'>";
-		htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
+
+		htmlArr[idx++] = "<td>";
+		htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='margin-right: 1em'><tr>";
 		htmlArr[idx++] = "<td style='width:18px'>";
 		htmlArr[idx++] = AjxImg.getImageHtml(att.linkIcon, "position:relative;");
 		htmlArr[idx++] = "</td><td style='white-space:nowrap'>";
@@ -978,14 +994,23 @@ function(msg, htmlArr, idx) {
 				htmlArr[idx++] = ZmMsg.viewAsHtml;
 				htmlArr[idx++] = "</a>";
 			}
-			
+
 			htmlArr[idx++] = ")";
 		}
 		htmlArr[idx++] = "</td>";
 		htmlArr[idx++] = "</tr></table>";
 		htmlArr[idx++] = "</td>";
-		htmlArr[idx++] = "</tr>";
 	}
+	if (ZmMailMsgView.LIMIT_ATTACHMENTS != 0 && rows > ZmMailMsgView.LIMIT_ATTACHMENTS)
+		// limit display size.  seems like an attc. row has exactly
+		// 16px; we set it to 56px so that it becomes obvious that
+		// there are more attachments.
+		htmlArr[dividx] = "<div style='height: " + ZmMailMsgView.ATTC_MAX_SIZE + "px; overflow: auto;'>";
+	htmlArr[idx++] = "</tr>"; // hopefully ;-)
+	htmlArr[idx++] = "</table>";
+	htmlArr[idx++] = "</div>";
+	htmlArr[idx++] = "</td>";
+	htmlArr[idx++] = "</tr>";
 
 	return idx;
 };
@@ -1221,20 +1246,29 @@ function (image, i, len, msg, idoc) {
 
 ZmMailMsgView._resetIframeHeight =
 function(self, iframe) {
-	var h = self.getH() - 1;
-	function substract(el) {
-		if (el) {
-			if (typeof el == "string")
-				el = document.getElementById(el);
-			if (el)
-				h -= Dwt.getSize(el, true).y;
-		}
-	};
-	substract(self._hdrTableId);
-	substract(self._displayImagesId);
-	substract(self._highlightObjectsId);
-	if (self._inviteToolbar)
-		substract(self._inviteToolbar.getHtmlElement());
+	var h;
+	if (ZmMailMsgView.SCROLL_WITH_IFRAME) {
+		h = self.getH() - 2;
+		function substract(el) {
+			if (el) {
+				if (typeof el == "string")
+					el = document.getElementById(el);
+				if (el)
+					h -= Dwt.getSize(el, true).y;
+			}
+		};
+		substract(self._hdrTableId);
+		substract(self._displayImagesId);
+		substract(self._highlightObjectsId);
+		if (self._inviteToolbar)
+			substract(self._inviteToolbar.getHtmlElement());
+	} else {
+		var doc = iframe.contentWindow.document;
+		if (AjxEnv.isIE)
+			h = doc.body.scrollHeight;
+		else
+			h = doc.documentElement.offsetHeight;
+	}
 	iframe.style.height = h + "px";
 };
 
