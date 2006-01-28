@@ -756,13 +756,6 @@ function(msg, container, callback) {
 	htmlArr[idx++] = this._objectManager ? this._objectManager.findObjects(subject, true) : subject;
 	htmlArr[idx++] = "</td></tr>";
 
-	// Date
-	htmlArr[idx++] = "<tr><td class='LabelColName'>";
-	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.sent);
-	htmlArr[idx++] = ": </td><td>";
-	htmlArr[idx++] = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
-	htmlArr[idx++] = "</td></tr>";
-
 	// From/To
 	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
@@ -773,6 +766,13 @@ function(msg, container, callback) {
 			idx = this._addAddressHeaderHtml(htmlArr, idx, addrs, prefix);
 		}
 	}
+
+	// Date
+	htmlArr[idx++] = "<tr><td class='LabelColName'>";
+	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.sent);
+	htmlArr[idx++] = ": </td><td>";
+	htmlArr[idx++] = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
+	htmlArr[idx++] = "</td></tr>";
 
 	// Attachments
 	idx = this._getAttachmentHtml(msg, htmlArr, idx);
