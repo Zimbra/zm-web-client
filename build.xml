@@ -175,6 +175,12 @@
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebApp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraAdmin_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="XForms.jsp,ZimbraAdmin.jsp"/>
     </jammer> 
+    <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/AjaxNewWindow_all.js">
+      <filelist dir="${build.dir}/WebRoot/public" files="AjaxNewWindow.jsp,Zimbra.jsp"/>
+    </jammer>
+    <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraNewWindow_all.js">
+      <filelist dir="${build.dir}/WebRoot/public" files="ZimbraNewWindow.jsp"/>
+    </jammer>
   </target>
 
   <target name="gzip-js">
@@ -242,6 +248,7 @@
 				<fileset dir="${build.dir}/WebRoot/js">
 					<include name="ZimbraAdmin_all.js" />
 					<include name="ZimbraMail_all.js" />
+					<include name="ZimbraNewWindow_all.js" />
 				</fileset>
 			</path>
 		</foreach>
@@ -249,6 +256,7 @@
 			<path>
 				<fileset dir="${build.dir}/WebRoot/js">
 					<include name="Ajax_all.js" />
+					<include name="AjaxNewWindow_all.js" />
 				</fileset>
 			</path>
 		</foreach>

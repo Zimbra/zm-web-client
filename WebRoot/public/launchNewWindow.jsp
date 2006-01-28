@@ -64,9 +64,9 @@ Contributor(s):
 	@import url(/zimbra/skins/steel/skin.css?v=<%= vers %>);
 	-->
 	</style>
-	<jsp:include page="Ajax.jsp"/>
+	<jsp:include page="AjaxNewWindow.jsp"/>
 	<jsp:include page="Zimbra.jsp"/>
-	<jsp:include page="ZimbraMail.jsp"/>
+	<jsp:include page="ZimbraNewWindow.jsp"/>
 <% } else { %>
 	<style type="text/css">
 	<!--
@@ -77,8 +77,8 @@ Contributor(s):
 	<% } %>
 	-->
 	</style>
-	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
-	<script type="text/javascript" src="<%= contextPath %>/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="<%= contextPath %>/js/AjaxNewWindow_all.js<%= ext %>?v=<%= vers %>"></script>
+	<script type="text/javascript" src="<%= contextPath %>/js/ZimbraNewWindow_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>
 <script language="JavaScript">  
     var cacheKillerVersion = "<%= vers %>";

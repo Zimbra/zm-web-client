@@ -420,7 +420,7 @@ function() {
 	var args = "height=450,width=615,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
 	var prefix = document.location.protocol + "//" + document.domain;
 	var port = location.port == "80" ? "" : ":" + location.port;
-	var url = prefix + port + "/zimbra/public/ZimbraMailNewCompose.jsp";
+	var url = prefix + port + "/zimbra/public/launchNewWindow.jsp";
 	var newWin = window.open(url, "_blank", args);
 	
 	// always set back pointer to parent controller w/in new child window
