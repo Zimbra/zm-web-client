@@ -67,12 +67,10 @@ Contributor(s):
 	-->
 	</style>
 	<%if (full != null) {%>
-		<script type="text/javascript">alert('inside')</script>
 		<jsp:include page="Ajax.jsp"/>
 		<jsp:include page="Zimbra.jsp"/>
 		<jsp:include page="ZimbraMail.jsp"/>
 	<% } else { %>
-		<script type="text/javascript">alert('outside')</script>
 		<jsp:include page="AjaxNewWindow.jsp"/>
 		<jsp:include page="Zimbra.jsp"/>
 		<jsp:include page="ZimbraNewWindow.jsp"/>
