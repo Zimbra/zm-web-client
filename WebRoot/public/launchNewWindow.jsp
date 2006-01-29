@@ -27,15 +27,17 @@ Contributor(s):
 <head>
 <title>Zimbra</title>
 <%
-  String contextPath = (String)request.getContextPath(); 
-  String mode = (String) request.getAttribute("mode");
-  String ext = (String) request.getAttribute("fileExtension");
-  if (ext == null) ext = "";
-  String vers = (String) request.getAttribute("version");
-  if (vers == null) vers = "";
-  String hiRes = (String) request.getParameter("hiRes");
+	String contextPath = (String)request.getContextPath(); 
+	String mode = (String) request.getAttribute("mode");
+	String ext = (String) request.getAttribute("fileExtension");
+	String full = (String) request.getParameter("full");
+
+	if (ext == null) ext = "";
+	String vers = (String) request.getAttribute("version");
+	if (vers == null) vers = "";
+	String hiRes = (String) request.getParameter("hiRes");
   
-    final String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
+	final String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
 	Cookie[] cookies = request.getCookies();
 	String authToken = null;
 	if (cookies != null) {
@@ -44,8 +46,8 @@ Contributor(s):
 				authToken = cookies[idx].getValue();
 		}
 	}
-
 %>
+
 <script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
@@ -64,9 +66,15 @@ Contributor(s):
 	@import url(/zimbra/skins/steel/skin.css?v=<%= vers %>);
 	-->
 	</style>
-	<jsp:include page="AjaxNewWindow.jsp"/>
-	<jsp:include page="Zimbra.jsp"/>
-	<jsp:include page="ZimbraNewWindow.jsp"/>
+	<%if (full != null) {%>
+		<jsp:include page="Ajax.jsp"/>
+		<jsp:include page="Zimbra.jsp"/>
+		<jsp:include page="ZimbraMail.jsp"/>
+	<% } else { %>
+		<jsp:include page="AjaxNewWindow.jsp"/>
+		<jsp:include page="Zimbra.jsp"/>
+		<jsp:include page="ZimbraNewWindow.jsp"/>
+	<% } %>
 <% } else { %>
 	<style type="text/css">
 	<!--
@@ -77,8 +85,14 @@ Contributor(s):
 	<% } %>
 	-->
 	</style>
-	<script type="text/javascript" src="<%= contextPath %>/js/AjaxNewWindow_all.js<%= ext %>?v=<%= vers %>"></script>
-	<script type="text/javascript" src="<%= contextPath %>/js/ZimbraNewWindow_all.js<%= ext %>?v=<%= vers %>"></script>
+
+	<%if (full != null) {%>
+		<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
+		<script type="text/javascript" src="<%= contextPath %>/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
+	<% } else { %>
+		<script type="text/javascript" src="<%= contextPath %>/js/AjaxNewWindow_all.js<%= ext %>?v=<%= vers %>"></script>
+		<script type="text/javascript" src="<%= contextPath %>/js/ZimbraNewWindow_all.js<%= ext %>?v=<%= vers %>"></script>
+	<% } %>
 <% } %>
 <script language="JavaScript">  
     var cacheKillerVersion = "<%= vers %>";

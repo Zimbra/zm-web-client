@@ -415,12 +415,14 @@ function() {
 
 // XXX: this could potentially go away since we have a static class that does this
 ZmAppCtxt.prototype.getNewWindow = 
-function() {
+function(fullVersion) {
 	// XXX: the jsp url might change depending what new window is being opened (or possibly add an argument to url?)
 	var args = "height=450,width=615,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
 	var prefix = document.location.protocol + "//" + document.domain;
 	var port = location.port == "80" ? "" : ":" + location.port;
 	var url = prefix + port + "/zimbra/public/launchNewWindow.jsp";
+	if (fullVersion)
+		url += "?full=1";
 	var newWin = window.open(url, "_blank", args);
 	
 	// always set back pointer to parent controller w/in new child window

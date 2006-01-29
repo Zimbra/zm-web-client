@@ -281,7 +281,7 @@ function(result) {
 	var msg = new ZmMailMsg(this._appCtxt, resp.m[0].id);
 	msg._loadFromDom(resp.m[0]);
 
-	var newWin = this._appCtxt.getNewWindow();
+	var newWin = this._appCtxt.getNewWindow(true);
 	newWin.command = "msgViewDetach";
 	newWin.args = {msg: msg};
 };
@@ -977,7 +977,7 @@ function(msg, htmlArr, idx) {
 		var link = linkArr.join("");
 
 		// objectify if this attachment is an image
-		if (att.objectify) {
+		if (att.objectify && this._objectManager) {
 			var imgHandler = this._objectManager.getImageAttachmentHandler();
 			idx = this._objectManager.generateSpan(imgHandler, htmlArr, idx, link, {url:att.url});
 		} else {
