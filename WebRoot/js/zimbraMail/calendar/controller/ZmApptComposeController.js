@@ -165,12 +165,12 @@ function(mode) {
 
 ZmApptComposeController.prototype._createToolBar =
 function() {
-	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.ATTACHMENT];
+	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.ATTACHMENT, ZmOperation.SEP, ZmOperation.SPELL_CHECK];
 
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))
+	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+		buttons.push(ZmOperation.SEP);
 		buttons.push(ZmOperation.COMPOSE_FORMAT);
-
-	buttons.push(ZmOperation.SPELL_CHECK);
+	}
 
 	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmAppToolBar");
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
@@ -180,6 +180,9 @@ function() {
 	// change default button style to toggle for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
+	if (AjxEnv.is800x600orLower) {
+		spellCheckButton.setText("");
+	}
 
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		var formatButton = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
