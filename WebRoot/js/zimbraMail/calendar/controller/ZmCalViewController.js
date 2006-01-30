@@ -316,21 +316,18 @@ function(ev) {
 
 ZmCalViewController.prototype._getToolBarOps =
 function() {
-	var list = new Array();
-	list.push(ZmOperation.NEW_MENU);
-	list.push(ZmOperation.DELETE);
-	list.push(ZmOperation.PRINT);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.DAY_VIEW);
-	list.push(ZmOperation.WORK_WEEK_VIEW);
-	list.push(ZmOperation.WEEK_VIEW);
-	list.push(ZmOperation.MONTH_VIEW);
-	list.push(ZmOperation.SCHEDULE_VIEW);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.TODAY);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.CAL_REFRESH);
-	return list;
+	return [
+		ZmOperation.NEW_MENU,
+		ZmOperation.CAL_REFRESH,
+		ZmOperation.SEP,
+		ZmOperation.DELETE, ZmOperation.PRINT,
+		ZmOperation.SEP,
+		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW,
+		ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW,
+		ZmOperation.SCHEDULE_VIEW,
+		ZmOperation.SEP,
+		ZmOperation.TODAY
+	];
 }
 
 /* This method is called from ZmListController._setup. We control when this method is called in our
@@ -353,6 +350,16 @@ function(viewId) {
 	this._toolbar[ZmController.CAL_DAY_VIEW].addSelectionListener(ZmOperation.SCHEDULE_VIEW, calViewButtonListener);		
 	this._toolbar[ZmController.CAL_DAY_VIEW].addSelectionListener(ZmOperation.TODAY, todayButtonListener);
 	this._toolbar[ZmController.CAL_DAY_VIEW].addSelectionListener(ZmOperation.CAL_REFRESH, refreshButtonListener);	
+
+	// NOTE: bug 5720
+	if (AjxEnv.is800x600orLower) {
+		var toolbar = this._toolbar[ZmController.CAL_DAY_VIEW];
+		toolbar.getButton(ZmOperation.DAY_VIEW).setText("");
+		toolbar.getButton(ZmOperation.WEEK_VIEW).setText("");
+		toolbar.getButton(ZmOperation.WORK_WEEK_VIEW).setText("");
+		toolbar.getButton(ZmOperation.MONTH_VIEW).setText("");
+		toolbar.getButton(ZmOperation.SCHEDULE_VIEW).setText("");
+	}
 	
 	// Set the other view toolbar entries to point to the Day view entry. I.e. this is a trick
 	// to fool the ZmListController into thinking there are multiple toolbars
@@ -371,8 +378,7 @@ function(viewId) {
 	this._setNavToolBar(tb);
 
 	this._setNewButtonProps(viewId, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
-
-}
+};
 
 // Create menu for View button and add listeners.
 ZmCalViewController.prototype._setupViewMenu =
