@@ -61,6 +61,7 @@ function() {
 
 ZmApptTabViewPage.UPLOAD_FIELD_NAME = "attUpload";
 ZmApptTabViewPage.CONTACT_PICKER_BID = ZmEmailAddress.TO;
+ZmApptTabViewPage.SHOW_MAX_ATTACHMENTS = AjxEnv.is800x600orLower ? 2 : 3;
 
 ZmApptTabViewPage.SHOWAS_OPTIONS = [
 	{ label: ZmMsg.free, 				value: "F", 	selected: false },
@@ -324,7 +325,7 @@ function(appt, attach) {
 	if (this._attachCount == 0)
 		this._initAttachContainer();
 
-	if (this._attachCount == 3)
+	if (this._attachCount == ZmApptTabViewPage.SHOW_MAX_ATTACHMENTS)
 		this._attachDiv.style.height = Dwt.getSize(this._attachDiv).y + "px";
 
 	this._attachCount++;
@@ -574,7 +575,9 @@ function() {
 
 	html[i++] = "<table border=0 style='table-layout:fixed; height:";
 	html[i++] = dims.y-30;
-	html[i++] = "px'><colgroup><col width='335'><col></colgroup>";
+	html[i++] = "px'><colgroup><col width='";
+	html[i++] = AjxEnv.is800x600orLower ? "235" : "335";
+	html[i++] = "'><col></colgroup>";
 	html[i++] = "<tr style='height:";
 	html[i++] = rowHeight;
 	html[i++] = "px'><td valign=top><fieldset";
@@ -611,12 +614,14 @@ function() {
 
 ZmApptTabViewPage.prototype._createInputs = 
 function() {
+	var width = AjxEnv.is800x600orLower ? "150" : "250";
+
 	this._subjectField = new DwtInputField({parent:this, type:DwtInputField.STRING,
 											initialValue:null, size:null, maxLen:null,
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.CONTINUAL_VALIDATION});
 	this._subjectField.setRequired();
-	Dwt.setSize(this._subjectField.getInputElement(), "250", "22px");
+	Dwt.setSize(this._subjectField.getInputElement(), width, "22px");
 	this._subjectField.reparentHtmlElement(this._subjectFieldId);
 	delete this._subjectFieldId;
 
@@ -625,7 +630,7 @@ function() {
 											initialValue:null, size:null, maxLen:null,
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.ONEXIT_VALIDATION});
-	Dwt.setSize(this._locationField.getInputElement(), "250", "22px");
+	Dwt.setSize(this._locationField.getInputElement(), width, "22px");
 	this._locationField.reparentHtmlElement(this._locationFieldId);
 	delete this._locationFieldId;
 
@@ -997,7 +1002,7 @@ function(removeId) {
 		} else {
 			this._attachCount--;
 		}
-		if (this._attachCount == 3)
+		if (this._attachCount == ZmApptTabViewPage.SHOW_MAX_ATTACHMENTS)
 			this._attachDiv.style.height = "";
 		this._resizeNotes();
 	}
