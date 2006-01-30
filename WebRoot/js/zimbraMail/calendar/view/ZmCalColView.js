@@ -1477,7 +1477,7 @@ function() {
 	this._layoutAllDayAppts();
 	this._layoutAppts();
 
-	this._apptBodyDivOffset = Dwt.toWindow(document.getElementById(this._apptBodyDivId), 0, 0, null);
+	this._apptBodyDivOffset = Dwt.toWindow(document.getElementById(this._apptBodyDivId), 0, 0, null, true);
 
 	if (this._scheduleMode) {
 		this._layoutUnionData();
@@ -1675,11 +1675,11 @@ function(ev, div, dblclick) {
 	var date;
 	switch (div._type) {
 		case ZmCalBaseView.TYPE_APPTS_DAYGRID:
-			gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
+			gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div, true);
 			date = this._getDateFromXY(gridLoc.x, gridLoc.y, 30);
 			break;
 		case ZmCalBaseView.TYPE_ALL_DAY:
-			gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
+			gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div, true);
 			date = this._getAllDayDateFromXY(gridLoc.x, gridLoc.y);
 			isAllDay = true;
 			break;			
@@ -1710,7 +1710,7 @@ function(ev, div) {
 			break;
 		case ZmCalBaseView.TYPE_HOURS_COL:
 			if (ev.button == DwtMouseEvent.LEFT) {
-				var gridLoc = AjxEnv.isIE ? Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div) : {x: ev.elementX, y: ev.elementY};
+				var gridLoc = AjxEnv.isIE ? Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div, true) : {x: ev.elementX, y: ev.elementY};
 				var fakeLoc = this._getLocationForDate(this.getDate());
 				if (fakeLoc) {
 					gridLoc.x = fakeLoc.x;
@@ -1727,7 +1727,7 @@ function(ev, div) {
 			this._timeSelectionAction(ev, div, false);
 			if (ev.button == DwtMouseEvent.LEFT) {
 				// save grid location here, since timeSelection might move the time selection div
-				var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
+				var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div, true);
 				return this._gridMouseDownAction(ev, div, gridLoc);
 			} else if (ev.button == DwtMouseEvent.RIGHT) {
 				DwtUiEvent.copy(this._actionEv, ev);
@@ -1738,7 +1738,7 @@ function(ev, div) {
 		case ZmCalBaseView.TYPE_ALL_DAY:
 			this._timeSelectionAction(ev, div, false);
 			if (ev.button == DwtMouseEvent.LEFT) {
-				var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div);
+				var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, div, true);
 				return this._gridMouseDownAction(ev, div, gridLoc, true);				
 			} else if (ev.button == DwtMouseEvent.RIGHT) {
 				DwtUiEvent.copy(this._actionEv, ev);
@@ -1762,7 +1762,7 @@ function(ev, apptEl) {
 	var appt = AjxCore.objectWithId(apptEl._itemIndex);
 	if (appt.isReadOnly() || appt.isAllDayEvent() || (appt._fanoutNum > 0)) return false;
 	
-	var apptOffset = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, apptEl);
+	var apptOffset = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, apptEl, true);
 
 	var data = { 
 		dndStarted: false,
