@@ -280,24 +280,23 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 
 ZmComposeController.prototype._createToolBar =
 function() {
-	var buttons = [ZmOperation.SEND, ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.ATTACHMENT];
+	var buttons = [ZmOperation.SEND, ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.ATTACHMENT, ZmOperation.SEP, ZmOperation.SPELL_CHECK, ZmOperation.SEP];
 
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		buttons.push(ZmOperation.SEP);
+	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))
 		buttons.push(ZmOperation.COMPOSE_FORMAT);
-	}
-	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
+
+	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED))
 		buttons.push(ZmOperation.SAVE_DRAFT);
-	}
+
 	var addSig = (!this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED) && this._appCtxt.get(ZmSetting.SIGNATURE));
 	if (addSig) {
 		buttons.push(ZmOperation.ADD_SIGNATURE);
 	}
 
-	buttons.push(ZmOperation.SPELL_CHECK);
-
 	if (!this.isChildWindow) {
-		buttons.push(ZmOperation.SEP);
+		// avoid double separators
+		if (buttons[buttons.length-1] != ZmOperation.SEP)
+			buttons.push(ZmOperation.SEP);
 		buttons.push(ZmOperation.DETACH_COMPOSE);
 	}
 
@@ -310,6 +309,16 @@ function() {
 	// change default button style to toggle for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
+
+	// bug fix #5719
+	if (AjxEnv.is800x600orLower) {
+		spellCheckButton.setText("");
+		// if "add signature" button exists, remove label for attachment button
+		if (addSig) {
+			var attachmentButton = this._toolbar.getButton(ZmOperation.ATTACHMENT);
+			attachmentButton.setText("");
+		}
+	}
 
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		var formatButton = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
