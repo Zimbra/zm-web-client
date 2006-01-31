@@ -166,7 +166,9 @@ function(ex, method, params, restartOnError, obj) {
 		// remember the last search attempted for all other exceptions
 		this._execFrame = (method instanceof AjxCallback) ? method : {obj: obj, func: method, args: params, restartOnError: restartOnError};
 		this._errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
-		this.popupErrorDialog(ex.getErrorMsg(), ex, true);
+		// bug fix #5603 - error msg for mail.SEND_FAILURE takes an argument
+		var args = ex.code == ZmCsfeException.MAIL_SEND_FAILURE ? ex.code : null;
+		this.popupErrorDialog(ex.getErrorMsg(args), ex, true);
 	}
 };
 
