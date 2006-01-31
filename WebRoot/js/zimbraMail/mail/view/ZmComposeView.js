@@ -638,10 +638,22 @@ function(addrVec, used) {
 // returns the text part given a body part (if body part is HTML, converts it to text)
 ZmComposeView.prototype._getTextPart =
 function(bodyPart, encodeSpace) {
+	var text = "";
 	// if the only content type returned is html, convert to text
-	return bodyPart.ct == ZmMimeTable.TEXT_HTML
-		? AjxStringUtil.convertHtml2Text(Dwt.parseHtmlFragment("<div>" + bodyPart.content + "</div>"))
-		: (encodeSpace ? AjxStringUtil.convertToHtml(bodyPart.content) : bodyPart.content);
+	if (bodyPart.ct == ZmMimeTable.TEXT_HTML) {
+		// create a temp iframe to create a proper DOM tree
+		var dwtIframe = new DwtIframe(this, null, true, bodyPart.content);
+		if (dwtIframe) {
+			text = AjxStringUtil.convertHtml2Text(dwtIframe.getDocument().body);
+			delete dwtIframe;
+		}
+	} else {
+		text = encodeSpace 
+			? AjxStringUtil.convertToHtml(bodyPart.content) 
+			: bodyPart.content;
+	}
+
+	return text;
 };
 
 ZmComposeView.prototype._getAttachmentTable =
@@ -839,7 +851,7 @@ function(action, msg, extraBodyText) {
 			}
 		} else {
 			// grab text part out of the body part
-			var bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
+			var bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML);
 			body = bodyPart ? this._getTextPart(bodyPart) : null;
 		}
 
