@@ -118,13 +118,14 @@ function() {
 	appt.setOrganizer(this._calendarOrgs[calId]);
 
 	// set the start date by aggregating start date/time fields
-	var startDate = this._startDateField.value;
-	var endDate = this._endDateField.value;
+	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 	if (this._appt.isAllDayEvent()) {
 		appt.setAllDayEvent(true);
 	} else {
-		startDate = startDate + " " + this._startTimeSelect.getValue();
-		endDate = endDate + " " + this._endTimeSelect.getValue();
+		appt.setAllDayEvent(false);
+		startDate = this._startTimeSelect.getValue(startDate);
+		endDate = this._endTimeSelect.getValue(endDate);
 	}
 	appt.setStartDate(startDate);
 	appt.setEndDate(endDate);
@@ -141,17 +142,10 @@ function() {
 
 	if (subj && subj.length > 0) {
 		// check proper dates..
-		var sd = this._startDateField.value;
-		var ed = this._endDateField.value;
-		
-		if (!this._appt.isAllDayEvent()) {
-			sd += " " + this._startTimeSelect.getValue();
-			ed += " " + this._endTimeSelect.getValue();
-		}
-		var startDate = new Date(sd);
-		var endDate = new Date(ed);
+		var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+		var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 
-		if (startDate.valueOf() > endDate.valueOf()) {
+		if (startDate == null || endDate == null || startDate.valueOf() > endDate.valueOf()) {
 			errorMsg = ZmMsg.errorInvalidDates;
 		}
 	} else {
@@ -374,8 +368,10 @@ function() {
 	vals.push(this._startDateField.value);
 	vals.push(this._endDateField.value);
 	if (!this._appt.isAllDayEvent()) {
-		vals.push(this._startTimeSelect.getValue());
-		vals.push(this._endTimeSelect.getValue());
+		vals.push(
+			AjxDateUtil.getServerDateTime(this._startTimeSelect.getValue()),
+			AjxDateUtil.getServerDateTime(this._endTimeSelect.getValue())
+		);
 	}
 	vals.push(this._repeatSelect.getValue());
 
@@ -390,8 +386,8 @@ function() {
 ZmApptQuickAddDialog.prototype._dateButtonListener = 
 function(ev) {
 	var calDate = ev.item == this._startDateButton
-		? new Date(this._startDateField.value)
-		: new Date(this._endDateField.value);
+		? AjxDateUtil.simpleParseDateStr(this._startDateField.value)
+		: AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 
 	// if date was input by user and its foobar, reset to today's date
 	if (isNaN(calDate)) {
@@ -413,8 +409,8 @@ function(ev) {
 	var parentButton = ev.item.parent.parent;
 
 	// do some error correction... maybe we can optimize this?
-	var sd = new Date(this._startDateField.value);
-	var ed = new Date(this._endDateField.value);
+	var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	var ed = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 	var newDate = AjxDateUtil.simpleComputeDateStr(ev.detail);
 
 	// change the start/end date if they mismatch

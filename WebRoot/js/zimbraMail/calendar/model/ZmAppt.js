@@ -200,7 +200,7 @@ function(startDate) {
 	if (this._origStartDate == null && this.startDate != null) {
 		this._origStartDate = new Date(this.startDate.getTime());
 	}
-	this.startDate = new Date(startDate);
+	this.startDate = startDate;
 	this._resetCached();
 };
 ZmAppt.prototype.setType 						= function(newType) 	{ this.type = newType; };

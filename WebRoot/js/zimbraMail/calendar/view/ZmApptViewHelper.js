@@ -138,17 +138,17 @@ function(appt, startTimeSelect, endTimeSelect) {
 ZmApptViewHelper.handleDateChange = 
 function(startDateField, endDateField, isStartDate, skipCheck) {
 	var needsUpdate = false;
-	var sd = new Date(startDateField.value);
-	var ed = new Date(endDateField.value);
+	var sd = AjxDateUtil.simpleParseDateStr(startDateField.value);
+	var ed = AjxDateUtil.simpleParseDateStr(endDateField.value);
 
 	// if start date changed, reset end date if necessary
 	if (isStartDate) {
-		// if date was input by user and its foobar, reset to today's date
+		// if date was input by user and it's foobar, reset to today's date
 		if (!skipCheck) {
-			if (isNaN(sd)) {
+			if (sd == null || isNaN(sd)) {
 				sd = new Date();
 			}
-			// always reset the field value in case user entered date in wront format
+			// always reset the field value in case user entered date in wrong format
 			startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
 		}
 
@@ -156,12 +156,12 @@ function(startDateField, endDateField, isStartDate, skipCheck) {
 			endDateField.value = startDateField.value;
 		needsUpdate = true;
 	} else {
-		// if date was input by user and its foobar, reset to today's date
+		// if date was input by user and it's foobar, reset to today's date
 		if (!skipCheck) {
-			if (isNaN(ed)) {
+			if (ed == null || isNaN(ed)) {
 				ed = new Date();
 			}
-			// always reset the field value in case user entered date in wront format
+			// always reset the field value in case user entered date in wrong format
 			endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
 		}
 
@@ -231,15 +231,6 @@ function(recurrences, startDate) {
 		}
 	}
 	return str.join("");
-};
-
-ZmApptViewHelper._buildTimeFromSelect = 
-function(hourSelectObj, minSelectObj, amPmSelectObj) {
-	var timeStr = hourSelectObj.getValue() + ":" + minSelectObj.getValue();
-	if (amPmSelectObj) {
-		timeStr += (" " + amPmSelectObj.getValue());
-	}
-	return timeStr;
 };
 
 ZmApptViewHelper._ruleToString = 
@@ -509,9 +500,23 @@ function ZmTimeSelect(parent) {
 ZmTimeSelect.prototype = new DwtComposite;
 ZmTimeSelect.prototype.constructor = ZmTimeSelect;
 
+/**
+ * Returns a date object with the hours and minutes set based on
+ * the value of this time select.
+ *
+ * @param date [Date] Optional. If specified, the hour and minute
+ *                    values will be set on the specified object;
+ *                    else, a new <code>Date</code> object is created.
+ */
 ZmTimeSelect.prototype.getValue =
-function() {
-	return ZmApptViewHelper._buildTimeFromSelect(this._hourSelect, this._minuteSelect, this._amPmSelect);
+function(date) {
+	var hour = Number(this._hourSelect.getValue());
+	var minute = Number(this._minuteSelect.getValue());
+	var amPm = this._amPmSelect ? this.getSelectedAmPmIdx() * 12 : 0;
+	
+	date = date || new Date();
+	date.setHours(hour + amPm, minute, 0, 0);
+	return date;
 };
 
 ZmTimeSelect.prototype.setSelected = 
