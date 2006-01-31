@@ -80,7 +80,6 @@ function() {
 ZmZimletMgr.prototype.registerContentZimlet =
 function(zimletObj) {
 	var i = this._CONTENT_ZIMLETS.length;
-	DBG.println(AjxDebug.DBG2, "Zimlets - add to content "+ i +" "+ zimletObj);
 	this._CONTENT_ZIMLETS[i] = zimletObj;
 };
 

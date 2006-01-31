@@ -61,19 +61,21 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 				this, this._makeMenu,
 				[ this.zimletPanelItem.contextMenu.menuItem ]);
 		}
-		if (this.zimletPanelItem.onClick)
+		if (this.zimletPanelItem.onClick) {
 			this.zimletPanelItem.onClick = this.zimletPanelItem.onClick[0];
-		if (this.zimletPanelItem.onDoubleClick)
+		}
+		if (this.zimletPanelItem.onDoubleClick) {
 			this.zimletPanelItem.onDoubleClick = this.zimletPanelItem.onDoubleClick[0];
+		}
 	}
-	if(zimlet.handlerObject){
+	if(zimlet.handlerObject) {
 		this.handlerObject = zimlet.handlerObject[0]._content;
 	}
-	if(zimlet.userProperties){
+	if(zimlet.userProperties) {
 		this.userProperties = zimlet.userProperties[0];
 		this._translateUserProp();
 	}
-	if(this.config){
+	if(this.config) {
 		this.config = this.config[0];
 		this._translateConfig();
 	}
@@ -110,16 +112,19 @@ ZmZimletContext.sanitize = function(obj, tag, wantarray_re) {
 				cool_json = doit(obj[0], tag);
 			} else {
 				cool_json = [];
-				for (var i = 0; i < obj.length; ++i)
+				for (i = 0; i < obj.length; ++i) {
 					cool_json[i] = doit(obj[i], tag);
+				}
 			}
 		} else if (typeof obj == "object") {
-			if (obj._content)
-				cool_json = new String(obj._content);
-			else
+			if (obj._content) {
+				cool_json = new String(obj._content); 
+			} else {
 				cool_json = {};
-			for (i in obj)
+			}
+			for (i in obj) {
 				cool_json[i] = doit(obj[i], i);
+			}
 		} else {
 			cool_json = obj;
 		}

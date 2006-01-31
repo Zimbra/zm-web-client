@@ -27,7 +27,7 @@ function ZmZimlet(id, name, parent, tree, color, link) {
 	ZmOrganizer.call(this, ZmOrganizer.ZIMLET, id, name, parent, tree);
 }
 
-ZmZimlet.prototype = new ZmOrganizer;
+ZmZimlet.prototype = new ZmOrganizer();
 ZmZimlet.prototype.constructor = ZmZimlet;
 // test hack 
 ZmZimlet.actionMenus = new Object();
@@ -59,7 +59,6 @@ function(parent, obj, tree, link) {
 			// WARNING: it's a bit unorthodox to do this linkage
 			// here, but we really do need these objects know about
 			// each other.
-			DBG.println(AjxDebug.DBG2, "Zimlets - loading tree: n " + obj[i].name + " i " + obj[i].icon);
 			childZimlet._zimletContext = obj[i];
 			obj[i]._organizer = childZimlet;
 		}
@@ -70,7 +69,7 @@ function(parent, obj, tree, link) {
 ZmZimlet.sortCompare =
 function(zimletA, zimletB) {
 	var check = ZmOrganizer.checkSortArgs(zimletA, zimletB);
-	if (check != null) return check;
+	if (!check) {return check;}
 
 	// sort by name
 	var zimletAName = zimletA.name.toLowerCase();
@@ -97,10 +96,8 @@ function() {
 ZmZimlet.prototype.getIcon =
 function() {
 	if (this.id == ZmZimlet.ID_ZIMLET) {
-		DBG.println(AjxDebug.DBG2, "*************** NULL ****");
 		return null;
 	}
-	DBG.println(AjxDebug.DBG2, "*************** " + this._zimletContext.icon + "..." + this);
 	return this._zimletContext.icon;
 };
 
