@@ -140,6 +140,11 @@ function() {
 	this._objects = new Object();
 };
 
+ZmObjectManager.prototype.objectsCount =
+function() {
+	return this._appCtxt._settings._zmm.getContentZimlets().length;
+};
+
 ZmObjectManager.prototype.getImageAttachmentHandler =
 function() {
 	return this._imageAttachmentHandler;

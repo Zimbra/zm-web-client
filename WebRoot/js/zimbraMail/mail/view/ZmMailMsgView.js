@@ -24,21 +24,20 @@
  */
 
 function ZmMailMsgView(parent, className, posStyle, mode, controller) {
-
 	className = className || "ZmMailMsgView";
 	DwtComposite.call(this, parent, className, posStyle);
 
 	this._mode = mode;
 	this._controller = controller;
+	// Set to false in case objects are turned off
+	this._objectsCount = false;
 
 	this._displayImagesId = Dwt.getNextId();
 	this._tagRowId = Dwt.getNextId();
 	this._tagCellId = Dwt.getNextId();
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
-	this.setScrollStyle(ZmMailMsgView.SCROLL_WITH_IFRAME
-			    ? DwtControl.CLIP
-			    : DwtControl.SCROLL);
+	this.setScrollStyle(ZmMailMsgView.SCROLL_WITH_IFRAME ? DwtControl.CLIP : DwtControl.SCROLL);
 
 	if (!controller.isChildWindow) {
 		// Add change listener to taglist to track changes in tag color
@@ -53,6 +52,7 @@ function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 	if (!controller.isChildWindow) {
 		// this manages all the detected objects within the view
 		this._objectManager = new ZmObjectManager(this, this._appCtxt);
+		this._objectsCount = this._objectManager.objectsCount();
 	}
 
 	this._changeListener = new AjxListener(this, this._msgChangeListener);
@@ -415,6 +415,18 @@ ZmMailMsgView._dangerousCSS = {
 ZmMailMsgView._URL_RE = /^((https?|ftps?):\x2f\x2f.+)$/;
 ZmMailMsgView._MAILTO_RE = /^mailto:[\x27\x22]?([^@?&\x22\x27]+@[^@?&]+\.[^@?&\x22\x27]+)[\x27\x22]?/;
 
+// New Zimlets or Objects may have been added after view was created.
+// Check for new ones and load a new ZmObjectManager if things change.
+ZmMailMsgView.prototype._checkForNewObjects =
+function() {
+	if(this._objectsCount && (this._objectsCount != this._objectManager.objectsCount())) {
+		DBG.println(AjxDebug.DBG2, "New objects create new ZmObjectManager");
+		// this manages all the detected objects within the view
+		this._objectManager = new ZmObjectManager(this, this._appCtxt);
+		this._objectsCount = this._objectManager.objectsCount();
+	}
+};
+
 // Dives recursively into the given DOM node.  Creates ObjectHandlers in text
 // nodes and cleans the mess in element nodes.  Discards by default "script",
 // "link", "object", "style", "applet" and "iframe" (most of them shouldn't
@@ -423,6 +435,7 @@ ZmMailMsgView._MAILTO_RE = /^mailto:[\x27\x22]?([^@?&\x22\x27]+@[^@?&]+\.[^@?&\x
 ZmMailMsgView.prototype._processHtmlDoc =
 function(doc) {
 	// var T1 = new Date().getTime();
+	this._checkForNewObjects();
 	var objectManager = this._objectManager,
 		node = doc.body;
 
@@ -646,6 +659,7 @@ function(container, html, isTextMsg) {
 		if (isTextMsg) {
 			if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT && this._objectManager) {
 				// better process objects directly rather than scanning the DOM afterwards.
+				this._checkForNewObjects();
 				html = this._objectManager.findObjects(html, true);
 			} else {
 				html = AjxStringUtil.convertToHtml(html);
