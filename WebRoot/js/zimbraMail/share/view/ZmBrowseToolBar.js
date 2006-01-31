@@ -43,7 +43,8 @@ function ZmBrowseToolBar(parent, pickers) {
 	this.addFiller();
 
 	var id = ZmPicker.CLOSE;
-	var b = this._createButton(id, ZmPicker.IMAGE[id], ZmMsg[ZmPicker.MSG_KEY[id]], null, ZmMsg[ZmPicker.TT_MSG_KEY[id]], true);
+	var label = AjxEnv.is800x600orLower ? null : ZmMsg[ZmPicker.MSG_KEY[id]];
+	var b = this._createButton(id, ZmPicker.IMAGE[id], label, null, ZmMsg[ZmPicker.TT_MSG_KEY[id]], true);
 	b.setData(ZmPicker.KEY_ID, id);
 }
 
