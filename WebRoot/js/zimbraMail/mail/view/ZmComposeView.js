@@ -904,12 +904,8 @@ function(action, msg, extraBodyText) {
 				var body = bodyPart ? bodyPart.content : "";
 				body = body.replace(/\r\n/g, "\n");
 		
-				var regex = new RegExp(AjxStringUtil.regExEscape(ZmAppt.NOTES_SEPARATOR));
-				var match = regex.exec(body);
-				if (match) {
-					notes = body.substr(match.index + ZmAppt.NOTES_SEPARATOR.length);
-					value = preface + AjxStringUtil.wordWrap(notes, ZmComposeView.WRAP_LENGTH, prefix + " ");
-				}
+				// bug 5122: always show original meeting details
+				value = preface + AjxStringUtil.wordWrap(body, ZmComposeView.WRAP_LENGTH, prefix + " ");
 			}
 		}
 	}
