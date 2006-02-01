@@ -72,8 +72,8 @@ function() {
 
 ZmApptRecurDialog.prototype.initialize = 
 function(startDate, endDate, repeatType, appt) {
-	this._startDate = new Date(startDate);
-	this._endDate = new Date(endDate);
+	this._startDate = new Date(startDate.getTime());
+	this._endDate = new Date(endDate.getTime());
 	
 	// based on repeat type, setup the repeat type values
 	var repeatType = repeatType || "DAI";
@@ -118,7 +118,7 @@ function(appt) {
 	if (appt.repeatEndType == "A")
 		appt.repeatEndCount = this._endIntervalField.getValue();
 	else if (appt.repeatEndType == "D")
-		appt.repeatEndDate = new Date(this._endByField.getValue());
+		appt.repeatEndDate = AjxDateUtil.simpleParseDateStr(this._endByField.getValue());
 };
 
 ZmApptRecurDialog.prototype.setCustomDailyValues = 
@@ -999,8 +999,8 @@ function(value) {
 ZmApptRecurDialog.prototype._endByDateValidator =
 function(value) {
 	DwtInputField.validateDate(value);
-	var endByDate = new Date(value);
-	if (endByDate.valueOf() < this._startDate.valueOf()) {
+	var endByDate = AjxDateUtil.simpleParseDateStr(value);
+	if (endByDate == null || endByDate.valueOf() < this._startDate.valueOf()) {
 		throw ZmMsg.errorEndByDate;
 	}
 	return value;

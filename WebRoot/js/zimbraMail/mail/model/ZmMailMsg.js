@@ -234,7 +234,8 @@ function() {
 ZmMailMsg.prototype.getHeaderStr =
 function(hdr) {
 	if (hdr == ZmMailMsg.HDR_DATE) {
-		return this.sentDate ? ZmMailMsg.HDR_KEY[hdr] + ": " + (new Date(this.sentDate)).toLocaleString() : "";
+		var formatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.FULL);
+		return this.sentDate ? ZmMailMsg.HDR_KEY[hdr] + ": " + formatter.format(new Date(this.sentDate)) : "";
 	} else if (hdr == ZmMailMsg.HDR_SUBJECT) {
 		var subj = this.getSubject();
 		return subj ? ZmMailMsg.HDR_KEY[hdr] + ": " + subj : "";

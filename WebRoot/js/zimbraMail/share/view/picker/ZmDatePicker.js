@@ -79,7 +79,7 @@ function(parent) {
 ZmDatePicker.prototype.secondDate =
 function() {
 	this._select.selectedIndex = 0;
-	var date = new Date(this._cal.getDate());
+	var date = new Date(this._cal.getDate().getTime());
 	AjxDateUtil.roll(date, AjxDateUtil.MONTH, -3);
 	this._cal.setDate(date);
 	this._updateQuery();

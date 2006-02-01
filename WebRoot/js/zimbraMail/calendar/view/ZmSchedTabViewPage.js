@@ -529,20 +529,22 @@ function(inputEl) {
 
 ZmSchedTabViewPage.prototype._getStartTime = 
 function() {
-	var sd = this._startDateField.value;
-	if (!this._allDayCheckbox.checked)
-		sd += " 12:00 AM";
-	return ((new Date(sd)).getTime());
+	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	if (!this._allDayCheckbox.checked) {
+		startDate.setHours(0, 0, 0, 0);
+	}
+	return startDate.getTime();
 };
 
 ZmSchedTabViewPage.prototype._getEndTime = 
 function() {
 	// XXX: always get start date field value since we dont support multiday yet
 	//var ed = this._endDateField.value;
-	var ed = this._startDateField.value;
-	if (!this._allDayCheckbox.checked)
-		ed += " 11:59 PM";
-	return ((new Date(ed)).getTime());
+	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+	if (!this._allDayCheckbox.checked) {
+		endDate.setHours(23, 59, 0, 0);
+	}
+	return endDate.getTime();
 };
 
 ZmSchedTabViewPage.prototype._colorAllAttendees =
@@ -678,7 +680,7 @@ function() {
 ZmSchedTabViewPage.prototype._resetFullDateField =
 function() {
 	var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.LONG);
-	this._navToolbar.setText(formatter.format(new Date(this._startDateField.value)));
+	this._navToolbar.setText(formatter.format(AjxDateUtil.simpleParseDateStr(this._startDateField.value)));
 };
 
 ZmSchedTabViewPage.prototype._handleDateChange = 
@@ -708,8 +710,8 @@ function(ev0, ev1) {
 ZmSchedTabViewPage.prototype._dateButtonListener = 
 function(ev) {
 	var calDate = ev.item == this._startDateButton
-		? new Date(this._startDateField.value)
-		: new Date(this._endDateField.value);
+		? AjxDateUtil.simpleParseDateStr(this._startDateField.value)
+		: AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 
 	// if date was input by user and its foobar, reset to today's date
 	if (isNaN(calDate)) {
@@ -744,8 +746,8 @@ ZmSchedTabViewPage.prototype._navBarListener =
 function(ev) {
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 
-	var sd = new Date(this._startDateField.value);
-	var ed = new Date(this._endDateField.value);
+	var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	var ed = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 
 	var newSd = op == ZmOperation.PAGE_BACK ? sd.getDate()-1 : sd.getDate()+1;
 	var newEd = op == ZmOperation.PAGE_BACK ? ed.getDate()-1 : ed.getDate()+1;

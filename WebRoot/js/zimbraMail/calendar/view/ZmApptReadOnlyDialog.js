@@ -239,16 +239,11 @@ function(appt) {
 // returns true if given dates are w/in a single day
 ZmApptReadOnlyDialog.prototype._isOneDayAppt = 
 function(sd, ed) {
-	var start = new Date(sd);
-	var end = new Date(ed);
+	var start = new Date(sd.getTime());
+	var end = new Date(ed.getTime());
 
-	start.setHours(0);
-	start.setMinutes(0);
-	start.setSeconds(0);
-
-	end.setHours(0);
-	end.setMinutes(0);
-	end.setSeconds(0);
+	start.setHours(0, 0, 0, 0);
+	end.setHours(0, 0, 0, 0);
 
 	return start.valueOf() == end.valueOf();
 };

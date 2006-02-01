@@ -109,7 +109,7 @@ function() {
 	var idx = 0;
 	var startDate = new Date(this.getTimeRange().start);
 	var endDate = new Date(this.getTimeRange().end);
-	var currDate = new Date(startDate);
+	var currDate = new Date(startDate.getTime());
 	var currMonth = this.getDate().getMonth();
 	var currYear = this.getDate().getFullYear();
 	var list = this.getList();
@@ -145,7 +145,7 @@ function() {
 		numOfWeeks++;
 	}
 	
-	currDate = new Date(startDate);
+	currDate = new Date(startDate.getTime());
 	var dayFormatter = DwtCalendar.getDayFormatter();
 	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
 	while (currDate < endDate) {
@@ -558,7 +558,7 @@ function() {
 		for (var j=0; j < 7; j++) {
 			var loc = i*7+j;
 			var day = this._days[loc];
-			day.date = new Date(d);
+			day.date = new Date(d.getTime());
 			this._dateToDayIndex[this._dayKey(day.date)] = day;
 			var thisMonth = day.date.getMonth() == this._month;
 	 		var te = document.getElementById(day.titleId);
@@ -742,7 +742,7 @@ function(ev, div, dblclick) {
 	
 	switch (div._type) {
 		case ZmCalBaseView.TYPE_MONTH_DAY:
-			var date = new Date(this._days[div._loc].date);
+			var date = new Date(this._days[div._loc].date.getTime());
 			var now = new Date();
 			date.setHours(now.getHours(), now.getMinutes());
 			break;
