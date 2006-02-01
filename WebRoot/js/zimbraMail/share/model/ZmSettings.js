@@ -280,7 +280,7 @@ function() {
 	this._settings[ZmSetting.CSFE_SERVER_URI].setValue(value);
 
 	// CSFE_MSG_FETCHER_URI
-	value = portPrefix + "/service/home/~/?";
+	value = portPrefix + "/service/home/~/?auth=co&";
 	this._settings[ZmSetting.CSFE_MSG_FETCHER_URI].setValue(value);
 	
 	// CSFE_UPLOAD_URI
@@ -288,7 +288,7 @@ function() {
 	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value);
 	
 	// CSFE EXPORT URI
-	value = portPrefix + "/service/home/~/?id=7&fmt=csv";
+	value = portPrefix + "/service/home/~/?auth=co&id=7&fmt=csv";
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value);
 	
 	// default sorting preferences
