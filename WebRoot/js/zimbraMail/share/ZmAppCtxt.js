@@ -419,7 +419,7 @@ function(fullVersion) {
 	// XXX: the jsp url might change depending what new window is being opened (or possibly add an argument to url?)
 	var args = "height=450,width=615,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
 	var prefix = document.location.protocol + "//" + document.domain;
-	var port = location.port == "80" ? "" : ":" + location.port;
+	var port = (!location.port || location.port == "80") ? "" : ":" + location.port;
 	var url = prefix + port + "/zimbra/public/launchNewWindow.jsp";
 	if (fullVersion)
 		url += "?full=1";
