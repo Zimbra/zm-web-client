@@ -109,7 +109,7 @@ ZmZimletTreeController.prototype._itemClicked = function(z) {
 	if (!z.__dbl_click_timeout) {
 		z.__dbl_click_timeout = setTimeout(function() {
 			z.__dbl_click_timeout = null;
-			z.getZimletContext().callHandler("singleClicked");
+			z.getZimletContext().callHandler("_dispatch", [ "singleClicked" ]);
 		}, 350);
 	}
 };
@@ -122,7 +122,7 @@ ZmZimletTreeController.prototype._itemDblClicked = function(z) {
 		clearTimeout(z.__dbl_click_timeout);
 		z.__dbl_click_timeout = null;
 	}
-	z.getZimletContext().callHandler("doubleClicked");
+	z.getZimletContext().callHandler("_dispatch", [ "doubleClicked" ]);
 };
 
 // Handles a drop event
@@ -147,22 +147,27 @@ ZmZimletTreeController.prototype._dropListener = function(ev) {
  	if (!dragSrc) {
  		ev.doIt = false;
  	} else {
-		if (ev.action == DwtDropEvent.DRAG_ENTER) {
-			var doIt = false;
-			for (var i = dragSrc.length; --i >= 0;) {
-				if (srcData.toString().indexOf(dragSrc[i].type) == 0) {
-					doIt = true;
-					break;
-				}
+		var doIt = false;
+		for (var i = dragSrc.length; --i >= 0;) {
+			if (srcData.toString().indexOf(dragSrc[i].type) == 0) {
+				doIt = true;
+				dragSrc = dragSrc[i];
+				break;
 			}
+		}
+		if (ev.action == DwtDropEvent.DRAG_ENTER) {
 			if (doIt) {
-				doIt = z.callHandler(
-					"doDrag", [ ZmZimletContext._translateZMObject(srcData) ]);
+				doIt = z.callHandler("_dispatch",
+						     [ "doDrag",
+						       ZmZimletContext._translateZMObject(srcData),
+						       dragSrc ]);
 			}
 			ev.doIt = doIt;
 		} else if (ev.action == DwtDropEvent.DRAG_DROP) {
-			z.callHandler(
-				"doDrop", [ ZmZimletContext._translateZMObject(srcData) ]);
+			z.callHandler("_dispatch",
+				      [ "doDrop",
+					ZmZimletContext._translateZMObject(srcData),
+					dragSrc ]);
 		}
  	}
 };

@@ -25,6 +25,9 @@
 
 function ZmZimletContext(id, zimlet, appCtxt) {
 	this._appCtxt = appCtxt;
+	// sane JSON here
+	this.json = ZmZimletContext.sanitize(zimlet, "zimlet", ZmZimletContext.RE_ARRAY_ELEMENTS);
+
 	this.id = id;
 	this.icon = "ZimbraIcon";
 	this.ctxt = zimlet.zimletContext;
@@ -35,18 +38,8 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 	DBG.println(AjxDebug.DBG2, "Zimlets - context: " + this.name + " base: " + this._url);
 	this.description = zimlet.description;
 	this.version = zimlet.version;
-	this.includes = zimlet.include;
-	if (this.includes) {
-		for (var i = this.includes.length; --i >= 0;) {
-			this.includes[i] = this.includes[i]._content;
-		}
-	}
-	this.includeCSS = zimlet.includeCSS;
-	if (this.includeCSS) {
-		for (i = this.includeCSS.length; --i >= 0;) {
-			this.includeCSS[i] = this.includeCSS[i]._content;
-		}
-	}
+	this.includes = this.json.zimlet.include;
+	this.includeCSS = this.json.zimlet.includeCSS;
 	if(zimlet.serverExtension && zimlet.serverExtension[0].hasKeyword){
 		this.keyword = zimlet.serverExtension[0].hasKeyword;
 	}
@@ -208,20 +201,9 @@ ZmZimletContext.prototype.getOrganizer = function() {
 
 ZmZimletContext.prototype.getUrl = function() { return this._url; };
 
-ZmZimletContext.prototype.getVal = function(key, val) {
-	if (!val) {
-		val = this[key];
-	}
-	if (!val) {
-		return null;
-	}
-	if (val instanceof Array && val.length == 1) {
-		val = val[0];
-	}
-	if (val._content) {
-		val = val._content;
-	}
-	return val;
+ZmZimletContext.prototype.getVal = function(key) {
+	var zimlet = this.json.zimlet;
+	return eval("zimlet." + key);
 };
 
 ZmZimletContext.prototype.callHandler = function(funcname, args) {
@@ -359,13 +341,29 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj) {
 	return url;
 };
 
-ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj) {
+/**
+* if there already is a paintable canvas to use, as in the case of tooltip,
+* pass it to 'div' parameter.  otherwise a canvas (window, popup, dialog) will be created
+* to display the contents from the url.
+*/
+ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div) {
 	var url = this.makeURL(actionUrl, obj);
+	var xslt = null;
 
-	if (canvas) {
-		canvas = this.handlerObject.makeCanvas(canvas[0], url);
+	if (actionUrl.xslt) {
+		xslt = this.getXslt(actionUrl.xslt);
+	}
+	
+	// need to use callback if the paintable canvas already exists, or if it needs xslt transformation.
+	if (div || xslt) {
+		if (!div) {
+			canvas = this.handlerObject.makeCanvas(canvas[0], null);
+			div = document.getElementById("zimletCanvasDiv");
+		}
+		url = ZmZimletBase.PROXY + AjxStringUtil.urlEncode(url);
+		AjxRpc.invoke(null, url, null, new AjxCallback(this, this._rpcCallback, [xslt, div]), true);
 	} else {
-		window.open(url, this.name);
+		this.handlerObject.makeCanvas(canvas[0], url);
 	}
 };
 
@@ -522,6 +520,35 @@ ZmZimletContext._zmObjectTransformers = {
 		return ret;
 	}
 
+};
+
+ZmZimletContext.prototype.getXslt =
+function(url) {
+	if (!this._xslt) {
+		this._xslt = {};
+	}
+	var realurl = this.getUrl() + url;
+	if (!this._xslt[realurl]) {
+		this._xslt[realurl] = AjxXslt.createFromUrl(realurl);
+	}
+	return this._xslt[realurl];
+};
+
+ZmZimletContext.prototype._rpcCallback =
+function(xslt, canvas, result) {
+	var html, resp = result.xml;
+	if (resp == undefined) {
+		var doc = AjxXmlDoc.createFromXml(result.text);
+		resp = doc.getDoc();
+	}
+	// TODO:  instead of changing innerHTML, maybe append
+	// the dom tree to the canvas.
+	if (xslt) {
+		html = xslt.transformToString(resp);
+	} else {
+		html = resp.innerHTML;
+	}
+	canvas.innerHTML = html;
 };
 
 ZmZimletContext._getMsgBody = function(o) {
