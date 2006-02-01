@@ -510,12 +510,19 @@ ZmTimeSelect.prototype.constructor = ZmTimeSelect;
  */
 ZmTimeSelect.prototype.getValue =
 function(date) {
-	var hour = Number(this._hourSelect.getValue());
-	var minute = Number(this._minuteSelect.getValue());
-	var amPm = this._amPmSelect && hour < 12 ? this.getSelectedAmPmIdx() * 12 : 0;
+	var hours = Number(this._hourSelect.getValue());
+	if (this._amPmSelect) {
+		if (this.getSelectedAmPmIdx() == 0) {
+			hours = hours != 12 ? hours : 0;
+		}
+		else {
+			hours = hours < 12 ? hours + 12 : hours;
+		}
+	}
+	var minutes = Number(this._minuteSelect.getValue());
 	
 	date = date || new Date();
-	date.setHours(hour + amPm, minute, 0, 0);
+	date.setHours(hours, minutes, 0, 0);
 	return date;
 };
 
