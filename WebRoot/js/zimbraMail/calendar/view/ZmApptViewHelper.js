@@ -512,7 +512,7 @@ ZmTimeSelect.prototype.getValue =
 function(date) {
 	var hour = Number(this._hourSelect.getValue());
 	var minute = Number(this._minuteSelect.getValue());
-	var amPm = this._amPmSelect ? this.getSelectedAmPmIdx() * 12 : 0;
+	var amPm = this._amPmSelect && hour < 12 ? this.getSelectedAmPmIdx() * 12 : 0;
 	
 	date = date || new Date();
 	date.setHours(hour + amPm, minute, 0, 0);
