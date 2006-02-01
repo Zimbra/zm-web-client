@@ -189,7 +189,11 @@ ZmAppt.prototype.hasOtherAttendees 				= function() { return this.otherAttendees
 // Setters
 
 ZmAppt.prototype.setAllDayEvent 				= function(isAllDay) 	{ this.allDayEvent = isAllDay ? "1" : "0"; };
-ZmAppt.prototype.setEndDate 					= function(endDate) 	{ this.endDate = new Date(endDate); this._resetCached(); };
+ZmAppt.prototype.setEndDate = 
+function(endDate) { 
+	this.endDate = new Date(endDate instanceof Date ? endDate.getTime(): endDate);
+	this._resetCached(); 
+};
 ZmAppt.prototype.setFolderId 					= function(folderId) 	{ this.folderId = folderId || ZmFolder.ID_CALENDAR; };
 ZmAppt.prototype.setFreeBusy 					= function(fb) 			{ this.freeBusy = fb || "B"; };
 ZmAppt.prototype.setOrganizer 					= function(organizer) 	{ this.organizer = organizer != "" ? organizer : null; };
@@ -200,7 +204,7 @@ function(startDate) {
 	if (this._origStartDate == null && this.startDate != null) {
 		this._origStartDate = new Date(this.startDate.getTime());
 	}
-	this.startDate = startDate;
+	this.startDate = new Date(startDate instanceof Date ? startDate.getTime() : startDate);
 	this._resetCached();
 };
 ZmAppt.prototype.setType 						= function(newType) 	{ this.type = newType; };
@@ -419,7 +423,7 @@ function(emptyAllDay,startOnly) {
 		if (emptyAllDay)
 			return "";
 		if (this.isMultiDay()) {
-			var endDate = new Date(this.getEndDate());
+			var endDate = new Date(this.getEndDate().getTime());
 			endDate.setDate(endDate.getDate()-1);
 
 			var startDay = this._getTTDay(this.getStartDate());
@@ -463,7 +467,7 @@ function() {
 ZmAppt.prototype.getUniqueStartDate = 
 function() {
 	if (this._uniqueStartDate == null) {
-		this._uniqueStartDate = new Date(this.getUniqueStartTime());
+		this._uniqueStartDate = new Date(this.getUniqueStartTime().getTime());
 	}
 	return this._uniqueStartDate;
 };

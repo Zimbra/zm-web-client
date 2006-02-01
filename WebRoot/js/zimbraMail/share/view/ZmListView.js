@@ -544,7 +544,8 @@ function(item, div) {
 			var dateStr = new Array()
 			var i = 0;
 			dateStr[i++] = prefix;
-			dateStr[i++] = (new Date(date)).toLocaleString();
+			var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
+			dateStr[i++] = dateFormatter.format(new Date(date));
 			var delta = AjxDateUtil.computeDateDelta(date);
 			if (delta) {
 				dateStr[i++] = " <span style='white-space:nowrap'>(";

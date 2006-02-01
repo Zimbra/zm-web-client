@@ -172,7 +172,7 @@ function(line, startIndex) {
 	var result = ZmDate1ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 	
-	var d = new Date(this.getCurrentDate());
+	var d = new Date(this.getCurrentDate().getTime());
 	var when = result[1].toLowerCase();
 	if (when == "yesterday") {
 		d.setDate(d.getDate()-1);
@@ -200,7 +200,7 @@ function(line, startIndex) {
 	var result = ZmDate2ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(this.getCurrentDate());
+	var d = new Date(this.getCurrentDate().getTime());
 	var dow = d.getDay();
 	var ndow = ZmDateObjectHandler.DOW[result[2].toLowerCase()];
 	var addDays;
@@ -237,7 +237,7 @@ function(line, startIndex) {
 	var result = ZmDate3ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(this.getCurrentDate());
+	var d = new Date(this.getCurrentDate().getTime());
 	var dom = parseInt(result[1], 10);;
 	var month = ZmDateObjectHandler.MONTH[result[2].toLowerCase()];
 	d.setMonth(month, dom);
@@ -270,7 +270,7 @@ function(line, startIndex) {
 	var result = ZmDate4ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(this.getCurrentDate());
+	var d = new Date(this.getCurrentDate().getTime());
 	var month = ZmDateObjectHandler.MONTH[result[1].toLowerCase()];
 	var dom = parseInt(result[2], 10);;
 	d.setMonth(month, dom);
@@ -303,7 +303,7 @@ function(line, startIndex) {
 	var result = ZmDate5ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(this.getCurrentDate());
+	var d = new Date(this.getCurrentDate().getTime());
 	var month = parseInt(result[1], 10) - 1;
 	var dom = parseInt(result[2], 10);
 	d.setMonth(month, dom);
@@ -335,7 +335,7 @@ function(line, startIndex) {
 	var result = ZmDate6ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(this.getCurrentDate());
+	var d = new Date(this.getCurrentDate().getTime());
 	var year = parseInt(result[1], 10);
 	var month = parseInt(result[2], 10) - 1;
 	var dom = parseInt(result[3], 10);
@@ -364,7 +364,7 @@ function(line, startIndex) {
 	var result = ZmDate7ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(this.getCurrentDate());
+	var d = new Date(this.getCurrentDate().getTime());
 	var month = parseInt(result[1], 10) - 1;
 	var dom = parseInt(result[2], 10);
 	d.setMonth(month, dom);
@@ -396,7 +396,7 @@ function(line, startIndex) {
 	var result = ZmDate8ObjectHandler.REGEX.exec(line);
 	if (result == null) return null;
 
-	var d = new Date(this.getCurrentDate());
+	var d = new Date(this.getCurrentDate().getTime());
 	var year = parseInt(result[1], 10);
 	var month = parseInt(result[2], 10) - 1;
 	var dom = parseInt(result[3], 10);
