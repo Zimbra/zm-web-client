@@ -467,7 +467,7 @@ function() {
 ZmAppt.prototype.getUniqueStartDate = 
 function() {
 	if (this._uniqueStartDate == null) {
-		this._uniqueStartDate = new Date(this.getUniqueStartTime().getTime());
+		this._uniqueStartDate = new Date(this.getUniqueStartTime());
 	}
 	return this._uniqueStartDate;
 };
