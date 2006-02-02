@@ -610,7 +610,7 @@ ZmListController.prototype._newFolderCallback =
 function(parent, name, url) {
 	this._appCtxt.getNewFolderDialog().popdown();
 	var ftc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
-	ftc._doCreate(parent, parent, null, url);
+	ftc._doCreate(parent, name, null, url);
 };
 
 // Create a tag.
