@@ -146,4 +146,5 @@ function(phoneIn) {
 	return 'callto:+1' + phone.replace('+1', '');
 };
 
-ZmObjectManager.registerHandler("ZmPhoneObjectHandler");
+// Start at 5 so Zimlet writers can provide custom handlers if they choose.
+ZmObjectManager.registerHandler("ZmPhoneObjectHandler", ZmPhoneObjectHandler.TYPE , 24);

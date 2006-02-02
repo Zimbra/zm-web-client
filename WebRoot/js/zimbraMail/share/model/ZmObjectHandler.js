@@ -35,24 +35,32 @@ ZmObjectHandler.prototype.constructor = ZmObjectHandler;
 ZmObjectHandler.prototype.init =
 function(typeName, className) {
 	this._typeName = typeName;
-	this._className = className != null ? className : "Object";
+	this._className = className ? className : "Object";
 };
 
 ZmObjectHandler.prototype.toString = 
 function() {
-	return "ZmObjectHandler: type(" + this._typeName + ") class(" + this._className + ")";
-}
+	// If you can find a cleaner way to get the name of 
+	// a sub-class without hard coding each instance
+	// in a toString() method feel free to change.
+	if(!this._toString) {
+		var ctor = "" + this.constructor;
+		ctor = ctor.substring(0,ctor.indexOf("("));
+		this._toString = ctor.substring("function ".length);
+	}
+	return this._toString;
+};
 
 ZmObjectHandler.prototype.getTypeName =
 function() {
 	return this._typeName;
-}
+};
 
 // OVERRIDE if need be
 ZmObjectHandler.prototype.getClassName =
 function(obj, context) {
 	return this._className;
-}
+};
 
 // OVERRIDE if need be
 ZmObjectHandler.prototype.getActivatedClassName =
@@ -63,7 +71,7 @@ function(obj, context) {
 		this._classNameActivated = cname + "-" + DwtCssStyle.ACTIVATED;
 	}
 	return this._classNameActivated;
-}
+};
 
 // OVERRIDE if need be
 ZmObjectHandler.prototype.getTriggeredClassName =
@@ -74,21 +82,22 @@ function(obj, context) {
 		this._classNameTriggered = cname + "-" + DwtCssStyle.TRIGGERED;
 	}
 	return this._classNameTriggered;
-}
+};
 
 ZmObjectHandler.prototype.findObject =
 function(content, startIndex) {
-	if (startIndex == 0) {
+	if (startIndex === 0) {
 		this._lastMatch = null;
 		this._noMatch = false;
 	}
-	if (this._noMatch) return null;
-	if (this._lastMatch && this._lastMatch.index >= startIndex)
+	if (this._noMatch) {return null;}
+	if (this._lastMatch && this._lastMatch.index >= startIndex) {
 		return this._lastMatch;
+	}
 	this._lastMatch = this.match(content, startIndex);
-	this._noMatch = this._lastMatch == null;
+	this._noMatch = (this._lastMatch === null);
 	return this._lastMatch;
-}
+};
 
 
 /** OVERRIDE. returns non-null result in the format of String.match if text on the line matched this
@@ -104,14 +113,14 @@ function(content, startIndex) {
 ZmObjectHandler.prototype.match =
 function(content, startIndex) {
 	return null;
-}
+};
 
 // OVERRIDE IF NEED BE. Generates content inside the <span>
 ZmObjectHandler.prototype._getHtmlContent =
 function(html, idx, obj, context) {
 	html[idx++] = AjxStringUtil.htmlEncode(obj, true);
 	return idx;
-}
+};
 
 // generates the span
 ZmObjectHandler.prototype.generateSpan = 
@@ -124,37 +133,37 @@ function(html, idx, obj, spanId, context) {
 	idx = this._getHtmlContent(html, idx, obj, context);
 	html[idx++] = "</span>";
 	return idx;
-}
+};
 
 ZmObjectHandler.prototype.hasToolTipText =
 function(obj, context) {
 	return true;
-}
+};
 
 ZmObjectHandler.prototype.getToolTipText =
 function(obj, context) {
 	return AjxStringUtil.htmlEncode(obj);
-}
+};
 
 ZmObjectHandler.prototype.populateToolTip =
 function(obj, context) {
 	return;
-}
+};
 
 
 ZmObjectHandler.prototype.getActionMenu =
 function(obj, span, context) {
 	return null;
-}
+};
 
 ZmObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
 	return this.clicked(span, obj, context, ev);
-}
+};
 
 ZmObjectHandler.prototype.clicked =
 function(span, obj, context, ev) {
-}
+};
 
 ZmObjectHandler.prototype.hoverOver = function(object, context, x, y) {
 	var shell = DwtShell.getShell(window);
@@ -162,10 +171,10 @@ ZmObjectHandler.prototype.hoverOver = function(object, context, x, y) {
 	tooltip.setContent(this.getToolTipText(object, context));
 	tooltip.popup(x, y);
 	this.populateToolTip(object, context);
+};
 
-}
 ZmObjectHandler.prototype.hoverOut = function(object, context) {
 	var shell = DwtShell.getShell(window);
 	var tooltip = shell.getToolTip();
 	tooltip.popdown();
-}
+};

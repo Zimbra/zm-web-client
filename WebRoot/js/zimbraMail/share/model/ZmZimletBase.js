@@ -603,6 +603,9 @@ ZmZimletBase.prototype._createDialog = function(args) {
 ZmZimletBase.prototype._getHtmlContent =
 function(html, idx, obj, context) {
 	var contentObj = this.xmlObj().getVal("contentObject");
+	if (obj instanceof ZmEmailAddress) {
+		obj = obj.address;
+	}
 	if(contentObj && contentObj.onClick) {
 // 		html[idx++] = '<a target="_blank" href="';
 // 		html[idx++] = (contentObj.onClick[0].actionUrl[0].target).replace('${objectContent}', AjxStringUtil.htmlEncode(obj));

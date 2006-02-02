@@ -93,4 +93,5 @@ function(obj, span, context) {
 	return null;
 };
 
-ZmObjectManager.registerHandler("ZmTrackingObjectHandler");
+// Start at 5 so Zimlet writers can provide custom handlers if they choose.
+ZmObjectManager.registerHandler("ZmTrackingObjectHandler", ZmTrackingObjectHandler.TYPE, 26);

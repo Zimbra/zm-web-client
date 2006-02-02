@@ -192,4 +192,5 @@ function(ev) {
 	}
 };
 
-ZmObjectManager.registerHandler("ZmEmailObjectHandler");
+// Start at 5 so Zimlet writers can provide custom handlers if they choose.
+ZmObjectManager.registerHandler("ZmEmailObjectHandler", ZmEmailObjectHandler.TYPE, 23);

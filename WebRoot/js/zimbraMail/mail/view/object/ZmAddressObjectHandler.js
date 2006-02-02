@@ -32,7 +32,7 @@ ZmAddressObjectHandler.prototype = new ZmObjectHandler;
 ZmAddressObjectHandler.prototype.constructor = ZmAddressObjectHandler;
 
 // Consts
-ZmAddressObjectHandler.TYPE = "gaddress";
+ZmAddressObjectHandler.TYPE = "address";
 // TODO This regex is very very simple.  It only matches single line simple addresses like:
 // 1234 Main St City CA 99999
 ZmAddressObjectHandler.ADDRESS_RE = /[\w]{3,}([A-Za-z]\.)?([ \w]*\#\d+)?(\r\n| )[ \w]{3,}\x20[A-Za-z]{2}\x20\d{5}(-\d{4})?\b/ig;
@@ -119,4 +119,4 @@ ZmAddressObjectHandler.prototype.hoverOut = function(object, context) {
 	// no-op
 }
 */
-//ZmObjectManager.registerHandler("ZmAddressObjectHandler");
+//ZmObjectManager.registerHandler("ZmAddressObjectHandler",ZmAddressObjectHandler.TYPE, 27);

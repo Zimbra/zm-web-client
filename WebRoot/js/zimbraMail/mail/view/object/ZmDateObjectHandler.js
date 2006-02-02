@@ -407,11 +407,12 @@ function(line, startIndex) {
 	return result;
 };
 
-ZmObjectManager.registerHandler("ZmDate1ObjectHandler", ZmDateObjectHandler.TYPE);
-ZmObjectManager.registerHandler("ZmDate2ObjectHandler", ZmDateObjectHandler.TYPE);
-ZmObjectManager.registerHandler("ZmDate3ObjectHandler", ZmDateObjectHandler.TYPE);
-ZmObjectManager.registerHandler("ZmDate4ObjectHandler", ZmDateObjectHandler.TYPE);
-ZmObjectManager.registerHandler("ZmDate5ObjectHandler", ZmDateObjectHandler.TYPE);
-ZmObjectManager.registerHandler("ZmDate6ObjectHandler", ZmDateObjectHandler.TYPE);
-ZmObjectManager.registerHandler("ZmDate7ObjectHandler", ZmDateObjectHandler.TYPE);
-ZmObjectManager.registerHandler("ZmDate8ObjectHandler", ZmDateObjectHandler.TYPE);
+// Start at 5 so Zimlet writers can provide custom date handlers if they choose.
+ZmObjectManager.registerHandler("ZmDate1ObjectHandler", ZmDateObjectHandler.TYPE, 15);
+ZmObjectManager.registerHandler("ZmDate2ObjectHandler", ZmDateObjectHandler.TYPE, 16);
+ZmObjectManager.registerHandler("ZmDate3ObjectHandler", ZmDateObjectHandler.TYPE, 17);
+ZmObjectManager.registerHandler("ZmDate4ObjectHandler", ZmDateObjectHandler.TYPE, 18);
+ZmObjectManager.registerHandler("ZmDate5ObjectHandler", ZmDateObjectHandler.TYPE, 19);
+ZmObjectManager.registerHandler("ZmDate6ObjectHandler", ZmDateObjectHandler.TYPE, 20);
+ZmObjectManager.registerHandler("ZmDate7ObjectHandler", ZmDateObjectHandler.TYPE, 21);
+ZmObjectManager.registerHandler("ZmDate8ObjectHandler", ZmDateObjectHandler.TYPE, 22);

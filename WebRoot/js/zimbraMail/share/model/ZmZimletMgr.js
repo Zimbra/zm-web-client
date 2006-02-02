@@ -78,9 +78,12 @@ function() {
 };
 
 ZmZimletMgr.prototype.registerContentZimlet =
-function(zimletObj) {
+function(zimletObj, type, priority) {
 	var i = this._CONTENT_ZIMLETS.length;
 	this._CONTENT_ZIMLETS[i] = zimletObj;
+	this._CONTENT_ZIMLETS[i].type = type;
+	this._CONTENT_ZIMLETS[i].prio = priority;
+	
 };
 
 ZmZimletMgr.prototype.getContentZimlets =

@@ -25,7 +25,7 @@
 
 function ZmZimletContext(id, zimlet, appCtxt) {
 	this._appCtxt = appCtxt;
-	// sane JSON here
+	// sanitize JSON here
 	this.json = ZmZimletContext.sanitize(zimlet, "zimlet", ZmZimletContext.RE_ARRAY_ELEMENTS);
 
 	this.id = id;
@@ -34,8 +34,9 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 	this.config = zimlet.zimletConfig;
 	zimlet = zimlet.zimlet[0];
 	this.name = zimlet.name;
+	DBG.println(AjxDebug.DBG2, "Zimlets - context: " + this.name);
 	this._url = this.ctxt[0].baseUrl;
-	DBG.println(AjxDebug.DBG2, "Zimlets - context: " + this.name + " base: " + this._url);
+	this.priority = this.ctxt[0].priority;
 	this.description = zimlet.description;
 	this.version = zimlet.version;
 	this.includes = this.json.zimlet.include;
@@ -129,7 +130,7 @@ ZmZimletContext.sanitize = function(obj, tag, wantarray_re) {
 			cool_json = obj;
 		}
 		return cool_json;
-	};
+	}
 	return doit(obj, tag);
 };
 
@@ -166,7 +167,7 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	this.handlerObject = obj;
 	obj._init(this, DwtShell.getShell(window));
 	if (this.contentObject) {
-		this._appCtxt._settings._zmm.registerContentZimlet(obj);
+		this._appCtxt._settings._zmm.registerContentZimlet(obj, this.type, this.priority);
 		DBG.println(AjxDebug.DBG2, "Zimlets - registerContentZimlet(): " + this.name);
 	}
 	obj.init();

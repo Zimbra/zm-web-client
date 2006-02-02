@@ -145,4 +145,5 @@ function(ev) {
 	this._actionSpan.className = this.getClassName(obj);
 };
 
-ZmObjectManager.registerHandler("ZmPOObjectHandler");
+// Start at 5 so Zimlet writers can provide custom handlers if they choose.
+ZmObjectManager.registerHandler("ZmPOObjectHandler", ZmPOObjectHandler.TYPE, 25);

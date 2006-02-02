@@ -45,6 +45,7 @@ function ZmObjectManager(view, appCtxt, selectCallback) {
 	this._uuid = Dwt.getNextId();
 	this._objectIdPrefix = "OBJ_" + this._uuid + "_";
 	this._objectHandlers = new Object();
+	this._allObjectHandlers = new Array();
 	// don't include when looking for objects. only used to provide tool tips for images
 	this._imageAttachmentHandler = new ZmImageAttachmentObjectHandler(appCtxt);
 
@@ -53,11 +54,23 @@ function ZmObjectManager(view, appCtxt, selectCallback) {
 	
 	// get Zimlet handler's
 	var zimlets = this._appCtxt._settings._zmm.getContentZimlets();
-	for (i = 0; i < zimlets.length; i++) {
-		DBG.println(AjxDebug.DBG2, "ZmObjectManager: addHandler " + zimlets[i]);
-		this.addHandler(zimlets[i]);
+	for (var i = 0; i < zimlets.length; i++) {
+		this.addHandler(zimlets[i], zimlets[i].type, zimlets[i].prio);
 	}
-	
+
+	// Sort the Object Handler's by priority
+	function PrioCmp(a, b) {return (b._prio < a._prio) - (a._prio < b._prio);}
+	for (i in this._objectHandlers) {
+		// Object handlers grouped by Type
+		this._objectHandlers[i].sort(PrioCmp);
+		
+		// Copy each array to a single array of all Object Handlers
+		for (var k=0;k< this._objectHandlers[i].length;k++) {
+			this._allObjectHandlers.push(this._objectHandlers[i][k]);
+		}
+	}
+	this._allObjectHandlers.sort(PrioCmp);
+
 	this.reset();
 
 	// install handlers
@@ -76,7 +89,7 @@ ZmObjectManager._TOOLTIP_DELAY = 275;
 ZmObjectManager._autohandlers = [];
 
 ZmObjectManager.registerHandler =
-function(obj, type) {
+function(obj, type, priority) {
 	if (typeof obj == "string") {
 		obj = eval(obj);
 	}
@@ -86,6 +99,9 @@ function(obj, type) {
 		var i = id - 1;
 		if(type) {
 			c[i].useType = type;
+		}
+		if(priority) {
+			c[i].usePrio = priority;
 		}
 		obj.__registered = true;
 	}
@@ -107,14 +123,19 @@ function(obj) {
 };
 
 ZmObjectManager.prototype.addHandler =
-function(h, type) {
-    this._objectHandlers[type ? type : h.getTypeName()] = [h];
+function(h, type, priority) {
+	type = type ? type : (h.getTypeName() ? h.getTypeName() : "none");
+	priority = priority ? priority : -1;
+	h._prio = priority;
+	DBG.println(AjxDebug.DBG3, "addHandler " + h + " type: " + type + " prio: " + priority);
+	var oh = this._objectHandlers;
+	if (!oh[type]) {oh[type] = [];}
+	oh[type].push(h);
 };
 
 ZmObjectManager.prototype._createHandlers =
 function() {
-	var c = ZmObjectManager._autohandlers, i, obj,
-		oh = this._objectHandlers;
+	var c = ZmObjectManager._autohandlers, i, obj, prio;
 	for (i = 0; i < c.length; ++i) {
 		obj = c[i];
 		var	zim = obj;
@@ -125,8 +146,10 @@ function() {
 		if (obj.useType) {
 			type = obj.useType;
 		}
-		if (!oh[type]) {oh[type] = [];}
-		oh[type].push(zim);
+		if (obj.usePrio) {
+			prio = obj.usePrio;
+		}
+		this.addHandler(zim, type, prio);
 	}
 };
 
@@ -175,6 +198,7 @@ function(content, htmlEncode, type) {
 		// when we are done, we take the handler with the lowest index.
 		var i;
 		var handlers;
+		var chunk;
 		var result = null;
 		if (type) {
 			handlers = this._objectHandlers[type];
@@ -197,15 +221,13 @@ function(content, htmlEncode, type) {
 				return html.join("");
 			}	
 		} else {
-			for (i in this._objectHandlers) {
-				handlers = this._objectHandlers[i];
-				for (var j = 0; j < handlers.length; j++) {
-					result = handlers[j].findObject(content, lastIndex);
-					if (result && result.index < lowestIndex) {
-						lowestResult = result;
-						lowestIndex = result.index;
-						lowestHandler = handlers[j];
-					}
+			for (var j = 0; j < this._allObjectHandlers.length; j++) {
+				var handler = this._allObjectHandlers[j];
+				result = handler.findObject(content, lastIndex);
+				if (result && result.index < lowestIndex) {
+					lowestResult = result;
+					lowestIndex = result.index;
+					lowestHandler = handler;
 				}
 			}
 		}
@@ -213,7 +235,7 @@ function(content, htmlEncode, type) {
 		if (!lowestResult) {
 			// all done
 			// do last chunk
-			var chunk = content.substring(lastIndex, maxIndex);
+			chunk = content.substring(lastIndex, maxIndex);
 			if (htmlEncode) {
 				html[idx++] = AjxStringUtil.htmlEncode(chunk, true);
 			} else {
@@ -224,7 +246,7 @@ function(content, htmlEncode, type) {
 
 		//  add anything before the match
 		if (lowestIndex > lastIndex) {
-			var chunk = content.substring(lastIndex, lowestIndex);
+			chunk = content.substring(lastIndex, lowestIndex);
 			if (htmlEncode) {
 				html[idx++] = AjxStringUtil.htmlEncode(chunk, true); 
 			} else {
@@ -265,7 +287,7 @@ function(handler, html, idx, obj, context) {
 
 ZmObjectManager.prototype._findObjectSpan =
 function(e) {
-	while (e && (e.id == null || e.id.indexOf(this._objectIdPrefix) != 0)) {
+	while (e && (!e.id || e.id.indexOf(this._objectIdPrefix) !== 0)) {
 		e = e.parentNode;
 	}
 	return e;
@@ -274,9 +296,9 @@ function(e) {
 ZmObjectManager.prototype._mouseOverListener =
 function(ev) {
 	var span = this._findObjectSpan(ev.target);
-	if (!span) return false;
+	if (!span) {return false;}
 	var object = this._objects[span.id];
-	if (!object) return false;
+	if (!object) {return false;}
 
 	span.className = object.handler.getActivatedClassName(object.object, object.context);
 	if (object.handler.hasToolTipText()) {
@@ -331,9 +353,9 @@ function(ev) {
 ZmObjectManager.prototype._mouseDownListener =
 function(ev) {
 	var span = this._findObjectSpan(ev.target);
-	if (!span) return true;
+	if (!span) {return true;}
 	var object = this._objects[span.id];
-	if (!object) return true;
+	if (!object) {return true;}
 
 	var shell = DwtShell.getShell(window);
 	var manager = shell.getHoverMgr();
@@ -348,12 +370,14 @@ function(ev) {
 		//       menu needs to be a higher z-index
 		var isDialog = (this._view instanceof DwtDialog);
 		var menu = object.handler.getActionMenu(object.object, span, object.context, isDialog);
-		if (menu)
+		if (menu) {
 			menu.popup(0, ev.docX, ev.docY);
+		}
 		return true;
 	} else if (ev.button == DwtMouseEvent.LEFT) {
-		if (this._selectCallback)
+		if (this._selectCallback) {
 			this._selectCallback.run();
+		}
 		object.handler.selected(object.object, span, ev, object.context);
 		return true;
 	}
@@ -363,16 +387,16 @@ function(ev) {
 ZmObjectManager.prototype._mouseUpListener =
 function(ev) {
 	var span = this._findObjectSpan(ev.target);
-	if (!span) return false;
+	if (!span) {return false;}
 	var object = this._objects[span.id];
-	if (!object) return false;
+	if (!object) {return false;}
 
 	span.className = object.handler.getActivatedClassName(object.object, object.context);
 	return false;
 };
 
 ZmObjectManager.prototype._handleHoverOver = function(event) {
-	if (!(event && event.object)) return;
+	if (!(event && event.object)) {return;}
 
 	var span = this._findObjectSpan(event.target);
 	var handler = event.object.handler;
@@ -385,7 +409,7 @@ ZmObjectManager.prototype._handleHoverOver = function(event) {
 };
 
 ZmObjectManager.prototype._handleHoverOut = function(event) {
-	if (!(event && event.object)) return;
+	if (!(event && event.object)) {return;}
 
 	var span = this._findObjectSpan(event.target);
 	var handler = event.object.handler;
