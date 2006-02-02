@@ -1281,6 +1281,8 @@ function(self, iframe) {
 		if (self._inviteToolbar)
 			substract(self._inviteToolbar.getHtmlElement());
 	} else {
+		if (!iframe.contentWindow)
+			return;
 		var doc = iframe.contentWindow.document;
 		var w = doc.body.scrollWidth;
 		if (AjxEnv.isIE) {
