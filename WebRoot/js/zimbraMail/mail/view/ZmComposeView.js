@@ -1489,7 +1489,9 @@ function(isDraft, status, attId) {
 		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, status);
 		switch (status) {
 			// add other error codes/message here as necessary
-			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>";
+			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>";
+			case AjxPost.SC_UNAUTHORIZED: 				msg += " " + ZmMsg.errorNotAuthenticated + "<br><br>";
+			default: 									msg += " ";
 		}
 
 		this._controller.popupErrorDialog(msg + ZmMsg.errorTryAgain, null, null, true);
