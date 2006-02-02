@@ -358,8 +358,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	background-color: #EEEEEE;
 }
 
-.ZmMailMsgView .MsgHeader .SubjectLine td { font-size: 12px; font-weight: bold; }
-
 .ZmMailMsgView .MsgHeader .LabelColName {
 	overflow: hidden;
 	width: 15ex;
