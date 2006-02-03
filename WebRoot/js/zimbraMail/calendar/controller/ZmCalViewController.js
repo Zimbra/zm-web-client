@@ -478,6 +478,12 @@ function(ev) {
 		var dropDate = this._miniCalendar.getDndDate();
 
 		if (dropDate) {
+			// bug fix #5088 - reset time to next available slot
+			var now = new Date();
+			dropDate.setHours(now.getHours());
+			dropDate.setMinutes(now.getMinutes());
+			dropDate = AjxDateUtil.roundTimeMins(dropDate, 30);
+
 			if (!(data instanceof ZmContact))
 				this.newApptFromMailItem(data, dropDate);
 			else
