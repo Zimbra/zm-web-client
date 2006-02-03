@@ -537,19 +537,22 @@ function(uname, oldPass) {
 		DBG.dumpObj(ex);
 		// XXX: for some reason, ZmCsfeException consts are fubar
 		if (ex.code == "account.PASSWORD_RECENTLY_USED" ||
-			ex.code == "account.PASSWORD_CHANGE_TOO_SOON") {
+			ex.code == "account.PASSWORD_CHANGE_TOO_SOON")
+		{
 			var msg = ex.code == ZmCsfeException.ACCT_PASS_RECENTLY_USED
 				? ZmMsg.errorPassRecentlyUsed
 				: (ZmMsg.errorPassChangeTooSoon + " " + errorContact);
 			ZmLogin._setErrorMessage(msg);
 			newPassField.value = conPassField.value = "";
 			newPassField.focus();
-		} else if (ex.code == "account.PASSWORD_LOCKED") {
+		}
+		else if (ex.code == "account.PASSWORD_LOCKED")
+		{
 			// remove the new password and confirmation fields
 			var passTable = document.getElementById("passTable");
 			passTable.deleteRow(2);
 			passTable.deleteRow(2);
-			
+
 			// re-enable username and password fields
 			var unameField = document.getElementById("uname");
 			var pwordField = document.getElementById("pass");
@@ -558,6 +561,11 @@ function(uname, oldPass) {
 			pwordField.focus();
 			
 			ZmLogin._setErrorMessage(ZmMsg.errorPassLocked);
+		}
+		else if (ex.code == "account.INVALID_PASSWORD")
+		{
+			ZmLogin._setErrorMessage(ZmMsg.errorInvalidPass);
+			newPassField.focus();
 		}
 	}
 	
