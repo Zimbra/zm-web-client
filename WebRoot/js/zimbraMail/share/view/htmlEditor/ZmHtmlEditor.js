@@ -1069,14 +1069,16 @@ ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
 		}
 		var pos, ms = sc.menu.getSize(), ws = this.shell.getSize();
 		if (!plainText) {
-			pos = Dwt.getLocation(document.getElementById(this._iFrameId));
-			var pos2 = Dwt.getLocation(p);
+			// bug fix #5857 - use Dwt.toWindow instead of Dwt.getLocation so we can turn off dontIncScrollTop
+			pos = Dwt.toWindow(document.getElementById(this._iFrameId), 0, 0, null, true);
+			var pos2 = Dwt.toWindow(p, 0, 0, null, true);
 			pos.x += pos2.x
 				- (doc.documentElement.scrollLeft || doc.body.scrollLeft);
 			pos.y += pos2.y
 				- (doc.documentElement.scrollTop || doc.body.scrollTop);
 		} else {
-			pos = Dwt.getLocation(p);
+			// bug fix #5857
+			pos = Dwt.toWindow(p, 0, 0, null, true);
 			var div = document.getElementById(this._spellCheckDivId);
 			pos.x -= div.scrollLeft;
 			pos.y -= div.scrollTop;
