@@ -286,12 +286,12 @@ ZmPref.SETUP[ZmSetting.CONTACTS_PER_PAGE] = {
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.IMPORT] = {
-	displayName:		ZmMsg.importFromCSV,
+	displayName:		ZmMsg._import,
 	displayContainer:	ZmPref.TYPE_IMPORT,
 	displaySeparator:	false};
 
 ZmPref.SETUP[ZmSetting.EXPORT] = {
-	displayName:		ZmMsg.exportToCSV,
+	displayName:		ZmMsg._export,
 	displayContainer:	ZmPref.TYPE_EXPORT,
 	displaySeparator:	true};
 
