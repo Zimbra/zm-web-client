@@ -239,6 +239,60 @@ function(words, keepModeDiv) {
 		});
 	};
 
+	var doc;
+
+	// having the data, this function will parse the DOM and replace
+	// occurrences of the misspelled words with <span
+	// class="ZM-SPELLCHECK-MISSPELLED">word</span>
+	function rec(node) {
+		switch (node.nodeType) {
+		    case 1: /* ELEMENT */
+			for (var i = node.firstChild; i; i = rec(i));
+			node = node.nextSibling;
+			break;
+		    case 3: /* TEXT */
+			if (!/\S/.test(node.data)) {
+				node = node.nextSibling;
+				break;
+			}
+			// for correct handling of whitespace we should
+			// not mess ourselves with leading/trailing
+			// whitespace, thus we save it in 2 text nodes.
+			var a = null, b = null;
+			if (/^[\s\xA0]+/.test(node.data)) {
+				// a will contain the leading space
+				a = node;
+				node = node.splitText(RegExp.lastMatch.length);
+			}
+			if (/[\s\xA0]+$/.test(node.data)) {
+				// and b will contain the trailing space
+				b = node.splitText(node.data.length - RegExp.lastMatch.length);
+			}
+
+			var text = hiliteWords(node.data, false);
+			text = text.replace(/^ +/, "&nbsp;").replace(/ +$/, "&nbsp;");
+			var div = doc.createElement("div");
+			div.innerHTML = text;
+
+			// restore whitespace now
+			if (a)
+				div.insertBefore(a, div.firstChild);
+			if (b)
+				div.appendChild(b);
+
+			var p = node.parentNode;
+			while (div.firstChild)
+				p.insertBefore(div.firstChild, node);
+			div = node.nextSibling;
+			p.removeChild(node);
+			node = div;
+			break;
+		    default :
+			node = node.nextSibling;
+		}
+		return node;
+	};
+
 	if (this._mode == DwtHtmlEditor.HTML) {
 		// HTML mode; See the "else" branch for the TEXT mode--code
 		// differs quite a lot.  We should probably implement separate
@@ -267,57 +321,6 @@ function(words, keepModeDiv) {
 			head.appendChild(style);
 		}
 
-		// having the data, this function will parse the DOM and replace
-		// occurrences of the misspelled words with <span
-		// class="ZM-SPELLCHECK-MISSPELLED">word</span>
-		function rec(node) {
-			switch (node.nodeType) {
-			    case 1: /* ELEMENT */
-				for (var i = node.firstChild; i; i = rec(i));
-				node = node.nextSibling;
-				break;
-			    case 3: /* TEXT */
-				if (!/\S/.test(node.data)) {
-					node = node.nextSibling;
-					break;
-				}
-				// for correct handling of whitespace we should
-				// not mess ourselves with leading/trailing
-				// whitespace, thus we save it in 2 text nodes.
-				var a = null, b = null;
-				if (/^[\s\xA0]+/.test(node.data)) {
-					// a will contain the leading space
-					a = node;
-					node = node.splitText(RegExp.lastMatch.length);
-				}
-				if (/[\s\xA0]+$/.test(node.data)) {
-					// and b will contain the trailing space
-					b = node.splitText(node.data.length - RegExp.lastMatch.length);
-				}
-
-				var text = hiliteWords(node.data, false);
-				text = text.replace(/^ +/, "&nbsp;").replace(/ +$/, "&nbsp;");
-				var div = doc.createElement("div");
-				div.innerHTML = text;
-
-				// restore whitespace now
-				if (a)
-					div.insertBefore(a, div.firstChild);
-				if (b)
-					div.appendChild(b);
-
-				var p = node.parentNode;
-				while (div.firstChild)
-					p.insertBefore(div.firstChild, node);
-				div = node.nextSibling;
-				p.removeChild(node);
-				node = div;
-				break;
-			    default :
-				node = node.nextSibling;
-			}
-			return node;
-		};
 		body.style.display = "none"; // seems to have a good impact on speed,
 		// since we may modify a lot of the DOM
 		if (!AjxEnv.isIE)
@@ -349,8 +352,9 @@ function(words, keepModeDiv) {
 		div.style.width = size.x + "px";
 		div.style.height = size.y + "px";
 
-		var text = hiliteWords(this.getTextVersion(), true);
-		div.innerHTML = text;
+		div.innerHTML = AjxStringUtil.convertToHtml(this.getContent());
+		doc = document;
+		rec(div);
 
 		textArea.parentNode.insertBefore(div, textArea);
 		div.scrollTop = scrollTop;
@@ -458,7 +462,7 @@ function(ev) {
 			if (!this._ntd) {
 				this._ntd = new ZmHETablePropsDialog(this.shell);
 				this._ntd.registerCallback(DwtDialog.OK_BUTTON, this._tableDialogOkCallback, this);
-			}	
+			}
 			this._ntd.popup();
 			break;
 		default:
@@ -625,7 +629,7 @@ function(parent) {
 	b.setToolTipContent(ZmMsg.horizRule);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
 	b.addSelectionListener(insElListener);
-	
+
 	//b = this._insertTableButton = new DwtButton(tb, null, "TBButton");
 	//b.setImage("InsertTable");
 	//b.setToolTipContent(ZmMsg.insertTable);
