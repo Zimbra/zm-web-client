@@ -381,52 +381,66 @@ ZmZimletContext._translateZMObject = function(obj) {
 ZmZimletContext._zmObjectTransformers = {
 
 	"ZmMailMsg" : function(o) {
-		if (o[0]) {
-			o = o[0];
+		var all = new Array();
+		for(var i=0; i< o.length; i++) {
+			var ret = { TYPE: "ZmMailMsg" };
+			var oi = o[i];
+			ret.id           = oi.getId();
+			ret.convId       = oi.getConvId();
+			ret.from         = oi.getAddresses(ZmEmailAddress.FROM).getArray();
+			ret.to           = oi.getAddresses(ZmEmailAddress.TO).getArray();
+			ret.cc           = oi.getAddresses(ZmEmailAddress.CC).getArray();
+			ret.subject      = oi.getSubject();
+			ret.date         = oi.getDate();
+			ret.size         = oi.getSize();
+			ret.fragment     = oi.fragment;
+			// FIXME: figure out how to get these
+			// ret.tags         = oi.getTags();
+			// ret.flagged      = oi.getFlagged();
+			ret.unread       = oi.isUnread;
+			ret.attachment   = oi._attachments.length > 0;
+			ret.sent         = oi.isSent;
+			ret.replied      = oi.isReplied;
+			ret.draft        = oi.isDraft;
+			ret.body		 = ZmZimletContext._getMsgBody(o);
+			all[i] = ret;
 		}
-		var ret = { TYPE: "ZmMailMsg" };
-		ret.id           = o.getId();
-		ret.convId       = o.getConvId();
-		ret.from         = o.getAddresses(ZmEmailAddress.FROM).getArray();
-		ret.to           = o.getAddresses(ZmEmailAddress.TO).getArray();
-		ret.cc           = o.getAddresses(ZmEmailAddress.CC).getArray();
-		ret.subject      = o.getSubject();
-		ret.date         = o.getDate();
-		ret.size         = o.getSize();
-		ret.fragment     = o.fragment;
-		// FIXME: figure out how to get these
-		// ret.tags         = o.getTags();
-		// ret.flagged      = o.getFlagged();
-		ret.unread       = o.isUnread;
-		ret.attachment   = o._attachments.length > 0;
-		ret.sent         = o.isSent;
-		ret.replied      = o.isReplied;
-		ret.draft        = o.isDraft;
-		ret.body		 = ZmZimletContext._getMsgBody(o);
-		return ret;
+		if(all.length == 1) {
+			return all[0];
+		} else {
+			all["TYPE"] = "ZmMailMsg";
+			return all;
+		}
 	},
 
 	"ZmConv" : function(o) {
-		if (o[0]) {
-			o = o[0];
+		var all = new Array();
+		for(var i=0; i< o.length; i++) {
+			var oi = o[i];
+			var ret = { TYPE: "ZmConv" };
+			ret.id           = oi.id;
+			ret.subject      = oi.getSubject();
+			ret.date         = oi.date;
+			ret.fragment     = oi.fragment;
+			ret.participants = oi.participants.getArray();
+			ret.numMsgs      = oi.numMsgs;
+			// FIXME: figure out how to get these
+			// ret.tags         = oi.getTags();
+			// ret.flagged      = oi.getFlagged();
+			ret.unread       = oi.isUnread;
+			// ret.attachment   = oi._attachments ?;
+			// ret.sent         = oi.isSent;
+			
+			// Use first message... maybe should be getHotMsg()?
+			ret.body         = ZmZimletContext._getMsgBody(oi.getFirstMsg());
+			all[i] = ret;
 		}
-		var ret = { TYPE: "ZmConv" };
-		ret.id           = o.id;
-		ret.subject      = o.getSubject();
-		ret.date         = o.date;
-		ret.fragment     = o.fragment;
-		ret.participants = o.participants.getArray();
-		ret.numMsgs      = o.numMsgs;
-		// FIXME: figure out how to get these
-		// ret.tags         = o.getTags();
-		// ret.flagged      = o.getFlagged();
-		ret.unread       = o.isUnread;
-		// ret.attachment   = o._attachments ?;
-		// ret.sent         = o.isSent;
-		
-		// Use first message... maybe should be getHotMsg()?
-		ret.body         = ZmZimletContext._getMsgBody(o.getFirstMsg());
-		return ret;
+		if(all.length == 1) {
+			return all[0];
+		} else {
+			all["TYPE"] = "ZmConv";
+			return all;
+		}
 	},
 
 	ZmContact_fields : function() {
@@ -479,46 +493,56 @@ ZmZimletContext._zmObjectTransformers = {
 	},
 
 	"ZmContact" : function(o) {
-		// can't even remotely understand why, after a contact has been
-		// displayed once, we need to check it's "0" property and
-		// retrieve the actual object from there.  x-( So, object in an
-		// object.  Could it be because of our current JSON format?
-		if (o[0]) {
-			o = o[0];
+		var all = new Array();
+		for(var i=0; i< o.length; i++) {
+			var ret = { TYPE: "ZmContact" };
+			var a = this.ZmContact_fields;
+			if (typeof a == "function")
+				a = this.ZmContact_fields = a();
+			var attr = o[i].getAttrs();
+			for (var j = 0; j < a.length; ++j) {
+				ret[a[j]] = attr[a[j]];
+			}
+			all[i] = ret;
 		}
-		var ret = { TYPE: "ZmContact" };
-		var a = this.ZmContact_fields;
-		if (typeof a == "function")
-			a = this.ZmContact_fields = a();
-		var attr;
-		var attr = o.getAttrs();
-		for (var i = 0; i < a.length; ++i)
-			ret[a[i]] = attr[a[i]];
-		return ret;
+		if(all.length == 1) {
+			return all[0];
+		} else {
+			all["TYPE"] = "ZmContact";
+			return all;
+		}
 	},
 
 	"ZmAppt" : function(o) {
-		if (o[0]) {
-			o = o[0];
+		var all = new Array();
+		for(var i=0; i< o.length; i++) {
+			var oi = o[i];
+			oi.getDetails();
+			var ret = { TYPE: "ZmAppt" };
+			ret.id             = oi.getId();
+			ret.uid            = oi.getUid();
+			ret.type           = oi.getType();
+			ret.subject        = oi.getName();
+			ret.startDate      = oi.getStartDate();
+			ret.endDate        = oi.getEndDate();
+			ret.allDayEvent    = oi.isAllDayEvent();
+			ret.exception      = oi.isException();
+			ret.recurring      = oi.isRecurring();
+			ret.alarm          = oi.hasAlarm();
+			ret.otherAttendees = oi.hasOtherAttendees();
+			ret.attendees      = oi.getAttendees();
+			ret.location       = oi.getLocation();
+			ret.notes          = oi.getNotesPart();
+			ret.isRecurring    = ret.recurring; // WARNING: duplicate
+			ret.timeZone       = oi.getTimezone();
+			all[i] = ret;
 		}
-		var ret = { TYPE: "ZmAppt" };
-		ret.id             = o.getId();
-		ret.uid            = o.getUid();
-		ret.type           = o.getType();
-		ret.subject        = o.getName();
-		ret.startDate      = o.getStartDate();
-		ret.endDate        = o.getEndDate();
-		ret.allDayEvent    = o.isAllDayEvent();
-		ret.exception      = o.isException();
-		ret.recurring      = o.isRecurring();
-		ret.alarm          = o.hasAlarm();
-		ret.otherAttendees = o.hasOtherAttendees();
-		ret.attendees      = o.getAttendees();
-		ret.location       = o.getLocation();
-		ret.notes          = o.getNotesPart();
-		ret.isRecurring    = ret.recurring; // WARNING: duplicate
-		ret.timeZone       = o.getTimezone();
-		return ret;
+		if(all.length == 1) {
+			return all[0];
+		} else {
+			all["TYPE"] = "ZmAppt";
+			return all;
+		}
 	}
 
 };
