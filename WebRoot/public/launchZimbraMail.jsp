@@ -108,7 +108,6 @@ static final private String LOGIN_PAGE = "/zimbra/";
 		 	// figure out the debug level
 			if (location.search && (location.search.indexOf("debug=") != -1)) {
 			var m = location.search.match(/debug=(\w+)/);
-			debugger;
 			if (m && m.length) {
 				var num = parseInt(m[1]);
 				var level = AjxDebug.DBG[num];
