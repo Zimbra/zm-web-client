@@ -107,12 +107,15 @@ static final private String LOGIN_PAGE = "/zimbra/";
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		 	// figure out the debug level
 			if (location.search && (location.search.indexOf("debug=") != -1)) {
-			var m = location.search.match(/debug=(\d+)/);
-			if (m.length) {
+			var m = location.search.match(/debug=(\w+)/);
+			debugger;
+			if (m && m.length) {
 				var num = parseInt(m[1]);
 				var level = AjxDebug.DBG[num];
 				if (level)
 					DBG.setDebugLevel(level);
+				if (m[1] && (m[1].indexOf('t') != -1))
+					DBG.showTiming(true);
 			}
 		}
 
@@ -120,7 +123,7 @@ static final private String LOGIN_PAGE = "/zimbra/";
 		var app = null;
 		if (location.search && (location.search.indexOf("app=") != -1)) {
 			var m = location.search.match(/app=(\w+)/);
-			if (m.length)
+			if (m && m.length)
 				app = m[1];
 		}
 
