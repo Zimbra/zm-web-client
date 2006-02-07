@@ -1280,6 +1280,7 @@ function(self, iframe) {
 		substract(self._highlightObjectsId);
 		if (self._inviteToolbar)
 			substract(self._inviteToolbar.getHtmlElement());
+		iframe.style.height = h + "px";
 	} else {
 		try {
 			if (!iframe.contentWindow)
@@ -1289,15 +1290,15 @@ function(self, iframe) {
 			return;
 		}
 		var doc = iframe.contentWindow.document;
-		var w = doc.body.scrollWidth;
 		if (AjxEnv.isIE) {
 			h = doc.body.scrollHeight;
 		} else {
 			h = doc.documentElement.scrollHeight;
 		}
+		iframe.style.height = h + "px";
+		var w = doc.body.scrollWidth;
 		iframe.style.width = w + "px";
 	}
-	iframe.style.height = h + "px";
 };
 
 ZmMailMsgView._tagClick =
