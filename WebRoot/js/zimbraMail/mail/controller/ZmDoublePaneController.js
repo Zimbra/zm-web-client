@@ -274,7 +274,7 @@ function(ev, action, extraBodyText) {
 ZmDoublePaneController.prototype._loadItem =
 function(item, view) {
 	if (item instanceof ZmMailItem) { // conv
-DBG.timePt(AjxDebug.PERF, "***** CONV: load");
+		DBG.timePt("***** CONV: load", true);
 		if (!item.isLoaded()) {
 			var respCallback = new AjxCallback(this, this._handleResponseLoadItem, view);
 			item.load(this.getSearchString(), null, null, null, null, respCallback);
@@ -363,7 +363,7 @@ function(ev) {
 				this._doublePaneView.resetMsg(msg);
 	    }
     }
-DBG.timePt(AjxDebug.PERF, "***** CONV: msg selection");
+	DBG.timePt("***** CONV: msg selection");
 };
 
 ZmDoublePaneController.prototype._listActionListener =
@@ -418,7 +418,7 @@ function(view, result) {
 		this._list = response;
 		this._activeSearch = response;
 	}
-DBG.timePt(AjxDebug.PERF, "***** CONV: render");
+	DBG.timePt("***** CONV: render");
 	this._displayResults(view);
 };
 

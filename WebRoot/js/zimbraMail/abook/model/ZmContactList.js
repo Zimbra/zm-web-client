@@ -105,14 +105,14 @@ function(attrs, callback, errorCallback) {
 	}
 	
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
-	DBG.showTiming(true, AjxDebug.PERF, "[PROFILING CONTACT LIST]");
-	DBG.timePt(AjxDebug.PERF, "requesting contact list");
+	DBG.timePt("requesting contact list", true);
 	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
 												  callback: respCallback, errorCallback: errorCallback});
 };
 
 ZmContactList.prototype._handleResponseLoad =
 function(callback, result) {
+	DBG.timePt("got contact list");
 	var response = result.getResponse();
 	var list = response.GetContactsResponse.cn;
 	if (list) {
@@ -128,6 +128,7 @@ function(callback, result) {
 
 ZmContactList.prototype._smartLoad = 
 function(list) {
+	DBG.timePt("loading contacts - " + this._loadCount);
 	var diff = list.length - this._loadCount;
 	var limit = diff < ZmContactList.MAX_LOAD_COUNT
 		? (diff + this._loadCount)
@@ -138,7 +139,7 @@ function(list) {
 		var contact = ZmList.ITEM_CLASS[this.type].createFromDom(list[i], args);
 
 		this._updateEmailHash(contact, true);
-		this._addAcContact(contact, this._acContacts, true);
+//		this._addAcContact(contact, this._acContacts, true);
 		this.add(contact);
 	}
 
@@ -146,6 +147,7 @@ function(list) {
 		this._loadCount = i;
 		AjxTimedAction.scheduleAction(this._loadAction, ZmContactList.LOAD_PAUSE);
 	} else {
+		DBG.timePt("done loading contacts");
 		this._loaded = true;
 	}
 };
@@ -196,7 +198,6 @@ function(items, hardDelete, attrs) {
 ZmContactList.prototype.autocompleteMatch =
 function(str) {
 	DBG.println(AjxDebug.DBG3, "begin contact matching");
-	DBG.showTiming(true, "start autocomplete match: " + str);
 
 	if (!this.isLoaded() && this._showStatus) {
 		this._appCtxt.setStatusMsg(ZmMsg.autocompleteNotReady, ZmStatusView.LEVEL_WARNING);

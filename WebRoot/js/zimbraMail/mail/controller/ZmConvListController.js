@@ -221,7 +221,6 @@ function(ev) {
 		if (ev.item.isDraft) {
 			this._doAction(ev, ZmOperation.DRAFT);
 		} else {
-DBG.showTiming(true, AjxDebug.PERF, "***** CONV: start");
 			this._app.getConvController().show(this._activeSearch, ev.item);
 		}
 	}
