@@ -249,7 +249,7 @@ ZmSpreadSheetModel.prototype.recompute = function() {
 			expr.update();
 		} catch(ex) {
 			// broken cell references
-			cell._td.innerHTML = "#REF";
+			cell._td.firstChild.innerHTML = "#REF";
 		}
 	}
 };
@@ -384,28 +384,10 @@ ZmSpreadSheetClipboard.prototype.paste = function(row, col, dest, dr, dc) {
 /// The Cell Model
 
 function ZmSpreadSheetCellModel(model, type, editValue, style) {
-	if (style == null)
-		style = {};
 	if (editValue == null)
 		editValue = "";
 	if (type == null)
 		type = null;	// cool isn't it...
-
-	// initialize the style properties that are not present with the absolutely default value, "".
-	function style_default(key, val) {
-		if (style[key] == null)
-			style[key] = val;
-	};
-
-	style_default("fontFamily"      , "");
-	style_default("fontWeight"      , "");
-	style_default("fontStyle"       , "");
-	style_default("fontSize"        , "");
-	style_default("backgroundColor" , "");
-	style_default("color"           , "");
-	style_default("textAlign"       , "");
-	style_default("verticalAlign"   , "");
-	// style_default("padding"         , "");
 
 	this._model = model;
 	this._td = null;
@@ -414,9 +396,31 @@ function ZmSpreadSheetCellModel(model, type, editValue, style) {
 	this._autoType = null;
 	this._editValue = editValue;
 	this._value = editValue;
-	this._style = style;
+	this._style = ZmSpreadSheetCellModel.getDefaultStyle(style);
 	this._expr = null;
 	this._affects = [];
+};
+
+ZmSpreadSheetCellModel.defaultStyle = {
+	fontFamily        : "",
+	fontWeight        : "",
+	fontStyle         : "",
+	fontSize          : "",
+	backgroundColor   : "",
+	color             : "",
+	textAlign         : "",
+	verticalAlign     : "",
+	width             : "100px"
+};
+
+ZmSpreadSheetCellModel.getDefaultStyle = function(obj) {
+	if (!obj)
+		obj = {};
+	var s = ZmSpreadSheetCellModel.defaultStyle;
+	for (var i in s)
+		if (typeof obj[i] == "undefined")
+			obj[i] = s[i];
+	return obj;
 };
 
 ZmSpreadSheetCellModel.prototype.clone = function() {
@@ -428,7 +432,6 @@ ZmSpreadSheetCellModel.prototype.clone = function() {
 	newCell._value     = this._value;
 	newCell._expr      = this._expr; // WARNING: calling code should *not*
 					 // modify *our* expression directly.
-
 	// deep copy style
 	for (var i in this._style)
 		newCell._style[i] = this._style[i];
@@ -456,12 +459,43 @@ ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
 	}
 };
 
-ZmSpreadSheetCellModel.prototype.setStyleToElement = function(el) {
-	for (var i in this._style)
-		el.style[i] = this._style[i];
+ZmSpreadSheetCellModel.prototype.setStyleToElement = function(el, special) {
+	for (var i in this._style) {
+		var val = this._style[i];
+		switch (i) {
+		    case "width":
+			if (!special)
+				el.firstChild.style.width = val;
+			break;
+
+		    default :
+			el.style[i] = val;
+		}
+	}
 };
 
-ZmSpreadSheetCellModel.prototype.setValue = function(value) {
+// Returns a set of all cells affected by the current cell in an order
+// appropriate for correct evaluation (level 1 dependencies first, etc.)
+ZmSpreadSheetCellModel.prototype._mkDeps = function() {
+	var deps = [];
+	var count = {};
+	function pushDeps(cell) {
+		var a = cell._affects, i = 0, c, name, j = deps.length;
+		while (c = a[i++]) {
+			name = c.getName();
+			if (!count[name]) {
+				count[name] = true;
+				deps.push(c);
+			}
+		}
+		while (j < deps.length)
+			pushDeps(deps[j++]);
+	};
+	pushDeps(this);
+	return deps;
+};
+
+ZmSpreadSheetCellModel.prototype.setValue = function(value, noDeps) {
 	// on evil occasions, this function may get to be called recursively
 	// (i.e. [A1]=B1 and [B1]=A1), thus we need to filter these situations
 	// using a rude approach:
@@ -469,9 +503,11 @@ ZmSpreadSheetCellModel.prototype.setValue = function(value) {
 		this._settingValue = true;
 		this._value = value;
 		this._model.triggerEvent("onCellValue", this.getRow(), this.getCol(), this);
-		var a = this._affects;
-		for (var i = a.length; --i >= 0;)
-			a[i].recompute();
+		if (!noDeps) {
+			var a = this._mkDeps();
+			for (var i = 0; i < a.length; ++i)
+				a[i].recompute();
+		}
 		this._settingValue = false;
 	}
 };
@@ -534,7 +570,7 @@ ZmSpreadSheetCellModel.prototype.setExpression = function(expr) {
 };
 
 ZmSpreadSheetCellModel.prototype.recompute = function() {
-	this.setValue(this._expr.eval());
+	this.setValue(this._expr.eval(), true);
 };
 
 // this tries to determine a cell type based on the given string
@@ -600,8 +636,7 @@ ZmSpreadSheetCellModel.prototype.clearValue = function() {
 };
 
 ZmSpreadSheetCellModel.prototype.clearStyle = function() {
-	for (var i in this._style)
-		this._style[i] = "";
+	this._style = ZmSpreadSheetCellModel.getDefaultStyle();
 	if (this._td)
 		this.setStyleToElement(this._td);
 };
@@ -695,6 +730,14 @@ ZmSpreadSheetCellModel.prototype.getTooltipText = function() {
 		html.push("Expression:");
 		html.push("<div class='CellExpr'>[", this._expr.toString(), "]</div>");
 	}
+	// DEBUG!
+// 	var a = this._mkDeps();
+// 	if (a.length > 0) {
+// 		html.push("Affects cells:<br />");
+// 		for (var i = 0; i < a.length; ++i)
+// 			html.push(a[i].getName(), " ");
+// 		html.push("<br />");
+// 	}
 	var span = this._td.firstChild;
 	if (span.offsetWidth >= this._td.offsetWidth)
 		html.push("Value:", "<div class='CellValue'>", this.getDisplayValue(), "</div>");

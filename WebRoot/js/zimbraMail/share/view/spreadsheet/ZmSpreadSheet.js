@@ -41,23 +41,23 @@ function ZmSpreadSheet(parent, className, posStyle, deferred) {
 	var footimeout = null;
 	this._selectRangeCapture = new DwtMouseEventCapture(
 		this, "ZmSpreadSheet",
-		ZmSpreadSheet.simpleClosure(this._table_dragMouseOver, this),
+		ZmSpreadSheet.simpleClosure(this._table_selrange_MouseOver, this),
 		null,		// no mousedown
 
-// 		// mousemove handler (see warning above)
-// 		ZmSpreadSheet.simpleClosure(function(ev) {
-// 			var self = this;
-// 			if (footimeout)
-// 				clearTimeout(footimeout);
-// 			footimeout = setTimeout(function() {
-// 				self._getRangeDiv().style.display = "none";
-// 				setTimeout(function() {
-// 					self._getRangeDiv().style.display = "";
-// 				}, 1);
-// 			}, 50);
-// 		}, this),
+		// mousemove handler (see warning above)
+		ZmSpreadSheet.simpleClosure(function(ev) {
+			var self = this;
+			if (footimeout)
+				clearTimeout(footimeout);
+			footimeout = setTimeout(function() {
+				self._getRangeDiv().style.display = "none";
+				setTimeout(function() {
+					self._getRangeDiv().style.display = "";
+				}, 1);
+			}, 50);
+		}, this),
 
-		null, // for now
+// 		null, // for now
 
 		ZmSpreadSheet.simpleClosure(this._clear_selectRangeCapture, this),
 		null,		// no mouseout?
@@ -203,7 +203,6 @@ ZmSpreadSheet.prototype._model_insertCol = function(cells, colIndex) {
 		row = rows[i + 1];
 		var td = row.insertCell(colIndex + 1);
 		td.className = "cell";
-		td.innerHTML = "&nbsp;";
 		cells[i]._td = td;
 		cells[i].setToElement(td);
 	}
@@ -244,7 +243,7 @@ ZmSpreadSheet.prototype._init = function() {
 	this._spanFieldID = null;
 
 	for (var i = COLS; --i >= 0;)
-		row.push("<td class='cell'>&nbsp;</td>");
+		row.push("<td class='cell'></td>");
 	row.push("</tr>");
 
 	row = row.join("");
@@ -270,7 +269,8 @@ ZmSpreadSheet.prototype._init = function() {
 		var row = table.rows[i + 1];
 		for (var j = 0; j < COLS; ++j) {
 			var mc = this._model.data[i][j];
-			mc.setToElement(mc._td = row.cells[j + 1]);
+			var td = mc._td = row.cells[j + 1];
+			mc.setToElement(td);
 		}
 	}
 
@@ -285,6 +285,14 @@ ZmSpreadSheet.prototype._init = function() {
 	link.onkeypress = ZmSpreadSheet.simpleClosure(this._focus_keyPress, this);
 	if (AjxEnv.isIE || AjxEnv.isOpera)
 		link.onkeydown = link.onkeypress;
+
+// 	var self = this;
+// 	this._getRelDiv().onscroll = function() {
+// 		var t = self._getTable();
+// 		var r = t.rows[0];
+// 		r.style.position = "absolute";
+// 		r.style.top = this.scrollTop;
+// 	};
 };
 
 // called when a cell from the top header was clicked or mousedown
@@ -373,6 +381,10 @@ ZmSpreadSheet.prototype._selectCell = function(td) {
 		Dwt.addClass(this._getLeftHeaderCell(td), "LeftSelected");
 		this._getTopLeftCell().innerHTML = ZmSpreadSheet.getCellName(td);
 		var link = this._getFocusLink();
+		link.style.top = td.offsetTop + "px";
+		link.style.left = td.offsetLeft + "px";
+		if (!this._editingCell)
+			this.focus();
 		link.style.top = td.offsetTop + td.offsetHeight - 1 + "px";
 		link.style.left = td.offsetLeft + td.offsetWidth - 1 + "px";
 		if (!this._editingCell)
@@ -451,7 +463,7 @@ ZmSpreadSheet.prototype._editCell = function(td) {
 		input.select();
 		input.focus();
 		this._editingCell = td;
-		mc.setStyleToElement(input);
+		mc.setStyleToElement(input, true);
 		this._displayRangeIfAny();
 		// quick hack to set the field size from the start
 		this._input_keyPress();
@@ -890,6 +902,8 @@ ZmSpreadSheet.prototype._getRangeDiv = function() {
 };
 
 ZmSpreadSheet.prototype._rangediv_mousemove = function(ev) {
+	if (this._selectRangeCapture.capturing())
+		return;
 	var dwtev = new DwtMouseEvent(ev);
 	dwtev.setFromDhtmlEvent(ev);
 	var html = [ "<div class='ZmSpreadSheet-Tooltip'>",
@@ -930,7 +944,7 @@ ZmSpreadSheet.prototype._hideRange = function() {
 	div.style.height = "5px";
 };
 
-ZmSpreadSheet.prototype._table_dragMouseOver = function(ev) {
+ZmSpreadSheet.prototype._table_selrange_MouseOver = function(ev) {
 	var dwtev = new DwtMouseEvent();
 	dwtev.setFromDhtmlEvent(ev);
 	var table = this._getTable();
