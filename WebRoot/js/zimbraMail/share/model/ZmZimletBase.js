@@ -149,12 +149,16 @@ function(handlerName) {
 		var obj = params[1]; // the dragSrc that matched
 		if (!obj)
 			break;
+		if (obj.canvas) {
+			canvas = obj.canvas[0];
+		}
 		var url = obj.actionUrl;
-		if (url)
+		if (url && canvas) {
 			// params[0] is the dropped object
-			url = this.xmlObj().makeURL(url, params[0]);
-		if (obj && (obj.canvas || url))
-			canvas = this.makeCanvas(obj.canvas, url);
+			url = this.xmlObj().makeURL(url[0], params[0]);
+			canvas = this.makeCanvas(canvas, url);
+			return;
+		}
 		break;
 	}
 	if (canvas != null)
