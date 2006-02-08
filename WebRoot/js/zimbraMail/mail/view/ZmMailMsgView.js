@@ -657,9 +657,9 @@ function(container, html, isTextMsg) {
 
 	var callback = null;
 	var msgSize = html.length / 1024;
-	if (this._objectManager) {
-		if (isTextMsg) {
-			if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT && this._objectManager) {
+	if (isTextMsg) {
+		if (this._objectManager) {
+			if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT) {
 				// better process objects directly rather than scanning the DOM afterwards.
 				this._checkForNewObjects();
 				html = this._objectManager.findObjects(html, true);
@@ -667,11 +667,13 @@ function(container, html, isTextMsg) {
 				html = AjxStringUtil.convertToHtml(html);
 				this._makeHighlightObjectsDiv();
 			}
-			html = html.replace(/^ /mg, "&nbsp;")
-				.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
-				.replace(/\n/g, "<br>");
-		} else {
-			html = html.replace(/<!--(.*?)-->/g, ""); // remove comments
+		}
+		html = html.replace(/^ /mg, "&nbsp;")
+			.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
+			.replace(/\n/g, "<br>");
+	} else {
+		html = html.replace(/<!--(.*?)-->/g, ""); // remove comments
+		if (this._objectManager) {
 			// html = html.replace(/<style>/, "<style type='text/css'>");
 			// this callback will post-process the HTML after the IFRAME is created
 			if (msgSize <= ZmMailMsgView.OBJ_SIZE_HTML)
