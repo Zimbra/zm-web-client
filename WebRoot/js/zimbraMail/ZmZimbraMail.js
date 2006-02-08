@@ -59,6 +59,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
  
 	this._apps = {};
 	this._activeApp = null;
+    this._highestNotifySeen = 0;
 	
 	this._sessionTimer = new AjxTimedAction(null, ZmZimbraMail.logOff);
 	this._sessionTimerId = -1;
@@ -337,6 +338,7 @@ function(settings) {
 	// could have each app do shutdown()
 	DBG.println(AjxDebug.DBG1, "RESTARTING APP");
 	ZmCsfeCommand.setSessionId(null);			// so we get a refresh block
+    this._highestNotifySeen = 0; //b/c we have a new session
 	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 	if (tagList) tagList.reset();
 	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER)
@@ -349,7 +351,7 @@ function(settings) {
 	this._appViewMgr.dtor();
 	this._appViewMgr = null;
 	this._searchController = this._overviewController = null;
-	this.startup({bIsRelogin: false, settings: settings});
+   	this.startup({bIsRelogin: false, settings: settings});
 };
 
 /**
@@ -377,7 +379,8 @@ function(params) {
 	var asyncCallback = params.asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [params]) : null;
 	var command = new ZmCsfeCommand();
 	var cmdParams = {soapDoc: params.soapDoc, useXml: this._useXml, changeToken: this._changeToken,
-					 asyncMode: params.asyncMode, callback: asyncCallback, logRequest: this._logRequest};
+					 asyncMode: params.asyncMode, callback: asyncCallback, logRequest: this._logRequest,
+					 highestNotifySeen: this._highestNotifySeen };
 	
 	DBG.println(AjxDebug.DBG2, "sendRequest: " + params.soapDoc._methodEl.nodeName);
 	if (params.asyncMode && !params.noBusyOverlay) {
@@ -460,8 +463,18 @@ function(params, result) {
 
 	// handle notifications after the response, so that item state is current
 	if (hdr && hdr.context && hdr.context.notify) {
-		this._notifyHandler(hdr.context.notify);
+        for(i=0;i<hdr.context.notify.length;i++) {
+            // BUG?  What if the array isn't in sequence-order?  We would miss some notifications. Can that happen?  
+            if (hdr.context.notify[i].seq > this._highestNotifySeen) {
+                DBG.println(AjxDebug.DBG1, "Handling notification["+i+"] seq="+hdr.context.notify[i].seq);
+                this._notifyHandler(hdr.context.notify[i]);
+                this._highestNotifySeen = hdr.context.notify[i].seq;
+            } else {
+            	DBG.println(AjxDebug.DBG1, "SKIPPING notification["+i+"] seq="+hdr.context.notify[i].seq+" highestNotifySeen="+this._highestNotifySeen);
+	      	}
+    	}        
 	}
+	
 	// update change token if we get one
 	if (hdr && hdr.context && hdr.context.change) {
 		this._changeToken = hdr.context.change.token;
