@@ -53,6 +53,7 @@ function(zimletContext, shell) {
 	var contentObj = this.xmlObj("contentObject");
 	if (contentObj && contentObj.matchOn) {
 		var regExInfo = contentObj.matchOn.regex;
+		if(!regExInfo.attrs) {regExInfo.attrs = "ig";}
 		this.RE = new RegExp(regExInfo._content, regExInfo.attrs);
 		if (contentObj.type)
 			this.type = contentObj.type;
