@@ -40,6 +40,8 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 	this.description = zimlet.description;
 	this.version = zimlet.version;
 	this.includes = this.json.zimlet.include;
+	this.includes = this.includes ? this.includes : new Array();
+	this.includes.push("/zimbra/js/msgs/" + this.name + ".js");
 	this.includeCSS = this.json.zimlet.includeCSS;
 	if(zimlet.serverExtension && zimlet.serverExtension[0].hasKeyword){
 		this.keyword = zimlet.serverExtension[0].hasKeyword;
@@ -153,24 +155,15 @@ function() {
 ZmZimletContext.prototype._finished_loadIncludes = function() {
 	// we don't allow _loadIncludes a second time
 	this.includes = null;
-	// instantiate the handler object if present
-	var obj = this.handlerObject;
-	if (obj) {
-		var CTOR = eval(obj);
-		obj = new CTOR();
-		obj.constructor = CTOR;
-	} else {
-		// well, go figure. :-) We need a handler object, so let's
-		// initialize the base one.
-		obj = new ZmZimletBase();
-	}
-	this.handlerObject = obj;
-	obj._init(this, DwtShell.getShell(window));
+	var CTOR  = this.handlerObject ? window[this.handlerObject] : ZmZimletBase;
+	this.handlerObject = new CTOR();
+	this.handlerObject._init(this, DwtShell.getShell(window));
 	if (this.contentObject) {
-		this._appCtxt._settings._zmm.registerContentZimlet(obj, this.type, this.priority);
+		this._appCtxt._settings._zmm.registerContentZimlet(this.handlerObject, this.type, this.priority);
 		DBG.println(AjxDebug.DBG2, "Zimlets - registerContentZimlet(): " + this.name);
 	}
-	obj.init();
+	this.handlerObject.init();
+	this.handlerObject._zimletContext = this;
 	DBG.println(AjxDebug.DBG2, "Zimlets - init(): " + this.name);
 };
 
@@ -187,7 +180,6 @@ ZmZimletContext.prototype._loadStyles = function() {
 		style.rel = "stylesheet";
 		style.href = fullurl;
 		style.title = this.name + " " + this.includeCSS[i];
-		DBG.println(AjxDebug.DBG2, "Zimlets - CSS: " + style.href);
 		head.appendChild(style);
 		style.disabled = true;
 		style.disabled = false;
@@ -204,7 +196,7 @@ ZmZimletContext.prototype.getUrl = function() { return this._url; };
 
 ZmZimletContext.prototype.getVal = function(key) {
 	var zimlet = this.json.zimlet;
-	return eval("zimlet." + key);
+	return zimlet[key];
 };
 
 ZmZimletContext.prototype.callHandler = function(funcname, args) {
@@ -225,11 +217,10 @@ ZmZimletContext.prototype.callHandler = function(funcname, args) {
 // TODO: this func. must be a wrapper that translates msg which may be in the
 // form "${msg.foo}" into calls that AjxMessageFormat can handle.
 ZmZimletContext.prototype.msgFormat = function(msg) {
-	return msg;
+	return window[this.name][msg];
 };
 
 ZmZimletContext.prototype._translateUserProp = function() {
-	// that's gonna do for now.
 	var a = this.userProperties = this.userProperties.property;
 	this._propsById = {};
 	for (var i = 0; i < a.length; ++i) {
@@ -253,28 +244,33 @@ ZmZimletContext.prototype._translateConfig = function() {
 	if (this.config.global) {
 		var prop = this.config.global[0].property;
 		this.config.global = {};
-		for (var i = 0; i < prop.length; i++)
+		for (var i = 0; i < prop.length; i++) {
 			this.config.global[prop[i].name] = prop[i]._content;
+		}
 	}
 	if (this.config.local) {
-		var prop = this.config.local[0].property;
+		var propLocal = this.config.local[0].property;
 		this.config.local = {};
-		for (var i = 0; i < prop.length; i++)
-			this.config.local[prop[i].name] = prop[i]._content;
+		for (var j = 0; j < propLocal.length; j++) {
+			this.config.local[propLocal[j].name] = propLocal[j]._content;
+		}
 	}
 };
 
 ZmZimletContext.prototype.getConfig = function(name) {
-	if (this.config.local && this.config.local[name])
+	if (this.config.local && this.config.local[name]) {
 		return this.config.local[name];
-	if (this.config.global && this.config.global[name])
+	}
+	if (this.config.global && this.config.global[name]) {
 		return this.config.global[name];
+	}
 	return undef;
 };
 
 ZmZimletContext.prototype.getPanelActionMenu = function() {
-	if (this._panelActionMenu instanceof AjxCallback)
+	if (this._panelActionMenu instanceof AjxCallback) {
 		this._panelActionMenu = this._panelActionMenu.run();
+	}
 	return this._panelActionMenu;
 };
 
@@ -282,9 +278,9 @@ ZmZimletContext.prototype._makeMenu = function(obj) {
 	var menu = new ZmPopupMenu(DwtShell.getShell(window));
 	for (var i = 0; i < obj.length; ++i) {
 		var data = obj[i];
-		if (!data.id)
+		if (!data.id) {
 			menu.createSeparator();
-		else {
+		} else {
 			//alert([data.id, data.label, data.icon].join("\n"));
 			var item = menu.createMenuItem(data.id, data.icon, data.label,
 						       data.disabledIcon, true);
@@ -329,8 +325,9 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj) {
 			// trim whitespace as it's almost certain that the
 			// developer didn't intend it.
 			var val = AjxStringUtil.trim(a[i]._content);
-			if (obj != null)
+			if (obj) {
 				val = this.processString(val, obj);
+			}
 			param.push([ AjxStringUtil.urlEncode(a[i].name),
 				     "=",
 				     AjxStringUtil.urlEncode(val) ].join(""));
@@ -370,12 +367,14 @@ ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div
 
 ZmZimletContext._translateZMObject = function(obj) {
 	var type = obj.toString();
-	if (/^([a-z0-9_$]+)/i.test(type))
+	if (/^([a-z0-9_$]+)/i.test(type)) {
 		type = RegExp.$1;
-	if (ZmZimletContext._zmObjectTransformers[type])
+	}
+	if (ZmZimletContext._zmObjectTransformers[type]) {
 		return ZmZimletContext._zmObjectTransformers[type](obj);
-	else
+	} else {
 		return obj;
+	}
 };
 
 ZmZimletContext._zmObjectTransformers = {
@@ -497,8 +496,9 @@ ZmZimletContext._zmObjectTransformers = {
 		for(var i=0; i< o.length; i++) {
 			var ret = { TYPE: "ZmContact" };
 			var a = this.ZmContact_fields;
-			if (typeof a == "function")
+			if (typeof a == "function") {
 				a = this.ZmContact_fields = a();
+			}
 			var attr = o[i].getAttrs();
 			for (var j = 0; j < a.length; ++j) {
 				ret[a[j]] = attr[a[j]];
@@ -514,35 +514,26 @@ ZmZimletContext._zmObjectTransformers = {
 	},
 
 	"ZmAppt" : function(o) {
-		var all = new Array();
-		for(var i=0; i< o.length; i++) {
-			var oi = o[i];
-			oi.getDetails();
-			var ret = { TYPE: "ZmAppt" };
-			ret.id             = oi.getId();
-			ret.uid            = oi.getUid();
-			ret.type           = oi.getType();
-			ret.subject        = oi.getName();
-			ret.startDate      = oi.getStartDate();
-			ret.endDate        = oi.getEndDate();
-			ret.allDayEvent    = oi.isAllDayEvent();
-			ret.exception      = oi.isException();
-			ret.recurring      = oi.isRecurring();
-			ret.alarm          = oi.hasAlarm();
-			ret.otherAttendees = oi.hasOtherAttendees();
-			ret.attendees      = oi.getAttendees();
-			ret.location       = oi.getLocation();
-			ret.notes          = oi.getNotesPart();
-			ret.isRecurring    = ret.recurring; // WARNING: duplicate
-			ret.timeZone       = oi.getTimezone();
-			all[i] = ret;
-		}
-		if(all.length == 1) {
-			return all[0];
-		} else {
-			all["TYPE"] = "ZmAppt";
-			return all;
-		}
+		var oi = o[0] ? o[0] : o;
+		oi.getDetails();
+		var ret = { TYPE: "ZmAppt" };
+		ret.id             = oi.getId();
+		ret.uid            = oi.getUid();
+		ret.type           = oi.getType();
+		ret.subject        = oi.getName();
+		ret.startDate      = oi.getStartDate();
+		ret.endDate        = oi.getEndDate();
+		ret.allDayEvent    = oi.isAllDayEvent();
+		ret.exception      = oi.isException();
+		ret.recurring      = oi.isRecurring();
+		ret.alarm          = oi.hasAlarm();
+		ret.otherAttendees = oi.hasOtherAttendees();
+		ret.attendees      = oi.getAttendees();
+		ret.location       = oi.getLocation();
+		ret.notes          = oi.getNotesPart();
+		ret.isRecurring    = ret.recurring; // WARNING: duplicate
+		ret.timeZone       = oi.getTimezone();
+		return ret;
 	}
 
 };
@@ -562,7 +553,7 @@ function(url) {
 ZmZimletContext.prototype._rpcCallback =
 function(xslt, canvas, result) {
 	var html, resp = result.xml;
-	if (resp == undefined) {
+	if (!resp) {
 		var doc = AjxXmlDoc.createFromXml(result.text);
 		resp = doc.getDoc();
 	}

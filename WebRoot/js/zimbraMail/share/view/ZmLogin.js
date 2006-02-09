@@ -304,12 +304,8 @@ function(ev) {
     
     var target = ev.target ? ev.target: ev.srcElement;
     if (!target) return true;
-
-	var button = document.getElementById("loginButton");
     
     var keyCode = ev.keyCode;
-	var shiftKey = ev.shiftKey;
-
     if (keyCode == 13) { // Enter
 		if (target.id == "uname") {
 			document.getElementById("pass").focus();
@@ -321,6 +317,7 @@ function(ev) {
 		ZmLogin.cancelEvent(ev);
 		return false;
 	} else if (keyCode == 9) { // Tab
+		var shiftKey = ev.shiftKey;
 		if (target.id == "uname") {
 			if (!shiftKey) {
 				document.getElementById("pass").focus();
@@ -358,8 +355,10 @@ function(ev) {
 				if (obj.disabled) {
 					obj = document.getElementById("passNew");
 				} else {
-					if (!AjxEnv.isIE)
+					if (!AjxEnv.isIE) {
+						var button = document.getElementById("loginButton");
 						ZmLogin.loginButtonBlur(button.parentNode);
+					}
 				}
 				obj.focus();
 			} else {
@@ -468,6 +467,7 @@ function() {
 	var pwordField = document.getElementById("pass");
     var uname = unameField.value;
     var pword = pwordField.value;
+	
 
 	// check if we're trying to change the password
 	if (unameField.disabled && pwordField.disabled) {
