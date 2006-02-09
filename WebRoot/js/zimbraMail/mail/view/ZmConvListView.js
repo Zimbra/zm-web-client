@@ -132,7 +132,7 @@ function(conv, now, isDndIcon, isMixedView, div) {
 			idx = this._getField(htmlArr, idx, conv, ZmItem.F_TAG, i);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) == 0) {
 			// Participants
-			var width = AjxEnv.isIE ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
+			var width = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
 			var fieldId = this._getFieldId(conv, ZmItem.F_PARTICIPANT);
 			htmlArr[idx++] = "<td width=" + width + " id='" + fieldId + "'>";
 			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
@@ -156,7 +156,7 @@ function(conv, now, isDndIcon, isMixedView, div) {
 			htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
 			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT]) == 0) {
-			var width = AjxEnv.isIE ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
+			var width = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
 			htmlArr[idx++] = "<td id='" + this._getFieldId(conv, ZmItem.F_COUNT) + "'";
 			htmlArr[idx++] = " width=" + width + ">";
 			htmlArr[idx++] = conv.numMsgs > 1 ? ("(" + conv.numMsgs + ")") : "";
