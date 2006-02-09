@@ -388,11 +388,13 @@ function(x, y) {
 
 	if (this._spellCheckModeDivId)
 		y -= document.getElementById(this._spellCheckModeDivId).offsetHeight;
-	if (this._toolbar1 && this._toolbar2) {
-		y -= delta
-			+ this._toolbar1.getHtmlElement().offsetHeight
-			+ this._toolbar2.getHtmlElement().offsetHeight;
+	if (this._toolbar1 && this._toolbar2 && this._mode == DwtHtmlEditor.HTML) {
+		y -= (this._toolbar1.getHtmlElement().offsetHeight +
+			 this._toolbar2.getHtmlElement().offsetHeight);
 	}
+
+	y -= delta;
+
 	main.style.width = x + "px";
 	main.style.height = y + "px";
 	if (div) {
