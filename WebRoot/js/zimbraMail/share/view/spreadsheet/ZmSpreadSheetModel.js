@@ -47,8 +47,19 @@ function ZmSpreadSheetModel(rows, cols) {
 		}
 	}
 
+	this.colProps = new Array(cols);
+	for (var i = 0; i < cols; ++i)
+		this.colProps[i] = ZmSpreadSheetModel.getDefaultColProp();
+
 	this._expressionCells = [];
 	this.reset();
+};
+
+ZmSpreadSheetModel.getDefaultColProp = function() {
+	var prop = {
+		width: 100
+	};
+	return prop;
 };
 
 /* View events.  Views can hook upon events that happen in the data model.  The
@@ -75,13 +86,14 @@ ZmSpreadSheetModel.getRangeName = function(startRow, startCol, endRow, endCol) {
 };
 
 ZmSpreadSheetModel.getColName = function(index) {
-	if (index <= 26)
-		return String.fromCharCode(64 + index);
-	else if (index < 676)
-		return String.fromCharCode(64 + Math.floor(index / 26)) +
-			String.fromCharCode(64 + index % 26);
-	else
-		throw "Too many columns at ZmSpreadSheetModel.getColName";
+	--index;
+	// translate to base 26 and represent each digit with an alphabet letter
+	var letters = [];
+	do {
+		letters.unshift(String.fromCharCode(65 + index % 26));
+		index = Math.floor(index / 26);
+	} while (index > 0);
+	return letters.join("");
 };
 
 ZmSpreadSheetModel.identifyCell = function(ident) {
@@ -175,6 +187,7 @@ ZmSpreadSheetModel.prototype.insertCol = function(before) {
 		cells[i] = c;
 		this.data[i].splice(before, 0, c);
 	}
+	this.colProps.splice(before, 0, ZmSpreadSheetModel.getDefaultColProp());
 	++this.COLS;
 	this.triggerEvent("onInsertCol", cells, before);
 	this.recompute();
@@ -201,9 +214,22 @@ ZmSpreadSheetModel.prototype.deleteCol = function(col) {
 			this.data[i].splice(col, 1);
 			cell._td = null;
 		}
+		this.colProps.splice(col, 1);
 		--this.COLS;
 		this.triggerEvent("onDeleteCol", col);
 		this.recompute();
+	}
+};
+
+ZmSpreadSheetModel.prototype.getColWidth = function(col) {
+	return this.colProps[col].width;
+};
+
+ZmSpreadSheetModel.prototype.setColWidth = function(col, width) {
+	this.colProps[col].width = width;
+	for (var i = 0; i < this.data.length; ++i) {
+		var cell = this.data[i][col];
+		cell.setWidth(width);
 	}
 };
 
@@ -409,8 +435,7 @@ ZmSpreadSheetCellModel.defaultStyle = {
 	backgroundColor   : "",
 	color             : "",
 	textAlign         : "",
-	verticalAlign     : "",
-	width             : "100px"
+	verticalAlign     : ""
 };
 
 ZmSpreadSheetCellModel.getDefaultStyle = function(obj) {
@@ -439,6 +464,15 @@ ZmSpreadSheetCellModel.prototype.clone = function() {
 	return newCell;
 };
 
+ZmSpreadSheetCellModel.prototype.setWidth = function(width) {
+	if (this._td) {
+		// var fuzz = AjxEnv.isIE ? 0 : -2;
+		var fuzz = -2;
+// 		this._td.style.width = width + fuzz + "px";
+ 		this._td.firstChild.style.width = width + fuzz + "px";
+	}
+};
+
 ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
 	el.innerHTML = "<div class='Wrapper'></div>";
 	var val = this.getDisplayValue();
@@ -447,6 +481,15 @@ ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
 	else
 		val = (val+"").replace(/\s/g, "\xA0");
 	el.firstChild.appendChild(document.createTextNode(val));
+	if (AjxEnv.isGeckoBased) {
+		// A stupid Gecko bug don't trigger onmouseover events on the
+		// table cells when we capture events for range selection,
+		// _unless_ this div doesn't have "overflow: hidden".  Took
+		// hours to debug. x-(
+		//
+		// OTOH, if we don't set this in IE then layout will be broken
+		el.firstChild.style.overflow = "visible";
+	}
 	this.setStyleToElement(el);
 	if (this._expr)
 		Dwt.addClass(el, "hasFormula");
@@ -457,17 +500,13 @@ ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
 		el.className = el.className.replace(/(^|\s)SpreadSheet-Type-.*?(\s|$)/g, " ");
 		Dwt.addClass(el, "SpreadSheet-Type-" + type);
 	}
+	el.firstChild.style.width = this._model.getColWidth(this.getCol() - 1) - 2 + "px";
 };
 
 ZmSpreadSheetCellModel.prototype.setStyleToElement = function(el, special) {
 	for (var i in this._style) {
 		var val = this._style[i];
 		switch (i) {
-		    case "width":
-			if (!special)
-				el.firstChild.style.width = val;
-			break;
-
 		    default :
 			el.style[i] = val;
 		}

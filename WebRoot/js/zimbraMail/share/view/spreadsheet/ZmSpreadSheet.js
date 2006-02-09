@@ -63,6 +63,15 @@ function ZmSpreadSheet(parent, className, posStyle, deferred) {
 		null,		// no mouseout?
 		true);		// hard capture
 
+	this._colsizeCapture = new DwtMouseEventCapture(
+		this, "ZmSpreadSheet",
+		null,
+		null,
+		ZmSpreadSheet.simpleClosure(this._colsize_mouseMove, this),
+		ZmSpreadSheet.simpleClosure(this._colsize_mouseUp, this),
+		null,
+		true);
+
 	this._onResize = new AjxListener(this, this._onResize);
 	this._hoverOverListener = new AjxListener(this, this._handleOverListener);
 	this._hoverOutListener = new AjxListener(this, this._handleOutListener);
@@ -151,6 +160,7 @@ ZmSpreadSheet.prototype._model_deleteCol = function(colIndex) {
 	tr.removeChild(tr.cells[tr.cells.length - 1]);
 	if (pos_x >= tr.cells.length)
 		--pos_x;
+	this._header_resetColWidths();
 	this._selectCell(rows[pos_y].cells[pos_x]);
 };
 
@@ -206,6 +216,7 @@ ZmSpreadSheet.prototype._model_insertCol = function(cells, colIndex) {
 		cells[i]._td = td;
 		cells[i].setToElement(td);
 	}
+	this._header_resetColWidths();
 	this._selectCell(selected);
 };
 
@@ -259,7 +270,7 @@ ZmSpreadSheet.prototype._init = function() {
 	table.rows[0].className = "TopBar";
 	table.rows[0].cells[0].className = "TopLeft";
 
-	for (var i = 1; i < table.rows.length; ++i)
+	for (var i = 0; i < table.rows.length; ++i)
 		table.rows[i].cells[0].innerHTML = "<div>" + i + "</div>";
 	row = table.rows[0];
 	for (var i = 1; i < row.cells.length; ++i)
@@ -286,13 +297,29 @@ ZmSpreadSheet.prototype._init = function() {
 	if (AjxEnv.isIE || AjxEnv.isOpera)
 		link.onkeydown = link.onkeypress;
 
-// 	var self = this;
-// 	this._getRelDiv().onscroll = function() {
-// 		var t = self._getTable();
-// 		var r = t.rows[0];
-// 		r.style.position = "absolute";
-// 		r.style.top = this.scrollTop;
-// 	};
+	var header = document.createElement("table");
+	header.cellSpacing = 1;
+	header.cellPadding = 0;
+	header.border = 0;
+	header.id = this._headerID = Dwt.getNextId();
+	header.className = "SpreadSheet Header";
+	var hbody = document.createElement("tbody");
+	header.appendChild(hbody);
+	header.style.position = "absolute";
+	header.style.left = "0px";
+	header.style.top = "0px";
+	this._getRelDiv().appendChild(header);
+
+	header.onclick = table.onclick;	// hack ;-)
+	header.onmousemove = ZmSpreadSheet.simpleClosure(this._header_onMouseMove, this);
+	header.onmousedown = ZmSpreadSheet.simpleClosure(this._header_onMouseDown, this);
+
+	this._header_resetColWidths();
+
+ 	var self = this;
+ 	this._getRelDiv().onscroll = function() {
+ 		header.style.top = this.scrollTop + "px";
+ 	};
 };
 
 // called when a cell from the top header was clicked or mousedown
@@ -357,15 +384,142 @@ ZmSpreadSheet.prototype.focus = function() {
 };
 
 ZmSpreadSheet.prototype._getTopLeftCell = function() {
-	return this._getTable().rows[0].cells[0];
+	return this._getHeaderTable().rows[0].cells[0];
 };
 
 ZmSpreadSheet.prototype._getTopHeaderCell = function(td) {
-	return this._getTable().rows[0].cells[td.cellIndex];
+	return this._getHeaderTable().rows[0].cells[td.cellIndex];
 };
 
 ZmSpreadSheet.prototype._getLeftHeaderCell = function(td) {
 	return this._getTable().rows[td.parentNode.rowIndex].cells[0];
+};
+
+ZmSpreadSheet.prototype._colsize_mouseMove = function(ev) {
+	var dwtev = new DwtMouseEvent();
+	dwtev.setFromDhtmlEvent(ev);
+	var delta = dwtev.docX - this._colsizeArgs.docX;
+	var fuzz = AjxEnv.isIE ? 0 : -2;
+	var OK = true;
+	if (this._resizeColStart) {
+		var w1 = this._colsizeArgs.w1 - delta + fuzz;
+		var w2 = this._colsizeArgs.w2 + delta + fuzz;
+		if (w1 > 7 && w2 > 7) {
+			this._colsizeArgs.td1.firstChild.style.width = w1 + "px";
+			this._colsizeArgs.td2.firstChild.style.width = w2 + "px";
+		} else
+			OK = false;
+	} else {
+		var w1 = this._colsizeArgs.w1 + delta + fuzz;
+		if (w1 > 7)
+			this._colsizeArgs.td1.firstChild.style.width = w1 + "px";
+		else
+			OK = false;
+	}
+	if (OK)
+		this._colsizeArgs.delta = delta;
+	dwtev._stopPropagation = true;
+	dwtev._returnValue = false;
+	dwtev.setToDhtmlEvent(ev);
+	return dwtev._returnValue;
+};
+
+ZmSpreadSheet.prototype._colsize_mouseUp = function(ev) {
+	var dwtev = new DwtMouseEvent();
+	dwtev.setFromDhtmlEvent(ev);
+	this._colsizeCapture.release();
+	var w;
+	var delta = this._colsizeArgs.delta;
+	var index = this._resizeColIndex;
+	if (this._resizeColStart) {
+		w = this._model.getColWidth(index - 1);
+		this._model.setColWidth(index - 1, w - delta);
+		w = this._model.getColWidth(index - 2);
+		this._model.setColWidth(index - 2, w + delta);
+	} else {
+		w = this._model.getColWidth(index - 1);
+		this._model.setColWidth(index - 1, w + delta);
+	}
+	dwtev._stopPropagation = true;
+	dwtev._returnValue = false;
+	dwtev.setToDhtmlEvent(ev);
+	return dwtev._returnValue;
+};
+
+ZmSpreadSheet.prototype._header_onMouseDown = function(ev) {
+	var dwtev = new DwtMouseEvent();
+	dwtev.setFromDhtmlEvent(ev);
+	if (this._resizeColIndex) {
+		this._hideRange();
+		var td = this._getHeaderTable().rows[0].cells[this._resizeColIndex];
+		this._colsizeArgs = {
+			td1       : td,
+			w1        : td.firstChild.offsetWidth,
+			docX      : dwtev.docX,
+			docY      : dwtev.docY
+		};
+		var dir = this._resizeColStart ? -1 : +1;
+		td = this._getHeaderTable().rows[0].cells[this._resizeColIndex + dir];
+		if (td) {
+			this._colsizeArgs.td2 = td;
+			this._colsizeArgs.w2 = td.firstChild.offsetWidth;
+		}
+		this._colsizeCapture.capture();
+		dwtev._stopPropagation = true;
+		dwtev._returnValue = false;
+	}
+	dwtev.setToDhtmlEvent(ev);
+	return dwtev._returnValue;
+};
+
+ZmSpreadSheet.prototype._header_onMouseMove = function(ev) {
+	var dwtev = new DwtMouseEvent();
+	dwtev.setFromDhtmlEvent(ev);
+	var table = this._getHeaderTable();
+	var td = DwtUiEvent.getTarget(dwtev);
+	while (td && td !== table && !/^td$/i.test(td.tagName))
+		td = td.parentNode;
+	if (td && /^td$/i.test(td.tagName)) {
+		var index = td.cellIndex;
+		if (index > 0) {
+			var row = td.parentNode;
+			var cells = row.cells;
+			var tmp = Dwt.getLocation(this._getRelDiv());
+			var tdX = dwtev.docX - tmp.x - td.offsetLeft + this._getRelDiv().scrollLeft;
+			if (Math.abs(tdX - td.offsetWidth) < 5) {
+				this._resizeColIndex = index;
+				this._resizeColStart = false;
+				Dwt.delClass(table, "Header-ColWSize", "Header-ColESize");
+			} else if (tdX < 5 && index > 1) {
+				this._resizeColIndex = index;
+				this._resizeColStart = true;
+				Dwt.delClass(table, "Header-ColESize", "Header-ColWSize");
+			} else {
+				this._resizeColIndex = null;
+				Dwt.delClass(table, "Header-ColWSize");
+				Dwt.delClass(table, "Header-ColESize");
+			}
+		}
+	} else {
+// 		Dwt.delClass(table, "Header-ColWSize");
+// 		Dwt.delClass(table, "Header-ColESize");
+	}
+	dwtev.setToDhtmlEvent(ev);
+	return dwtev._returnValue;
+};
+
+ZmSpreadSheet.prototype._header_resetColWidths = function() {
+	var table = this._getTable();
+	var header = this._getHeaderTable();
+	if (header.rows.length > 0)
+		header.deleteRow(0);
+	header.firstChild.appendChild(table.rows[0].cloneNode(true));
+	var a = table.rows[0].cells;
+	var b = header.rows[0].cells;
+	var fuzz = AjxEnv.isIE ? 0 : -2;
+	for (var i = 0; i < a.length; ++i) {
+		b[i].firstChild.style.width = a[i].firstChild.offsetWidth + fuzz + "px";
+	}
 };
 
 ZmSpreadSheet.prototype._selectCell = function(td) {
@@ -379,7 +533,7 @@ ZmSpreadSheet.prototype._selectCell = function(td) {
 		Dwt.addClass(td, "Selected");
 		Dwt.addClass(this._getTopHeaderCell(td), "TopSelected");
 		Dwt.addClass(this._getLeftHeaderCell(td), "LeftSelected");
-		this._getTopLeftCell().innerHTML = ZmSpreadSheet.getCellName(td);
+		this._getTopLeftCell().innerHTML = "<div>" + ZmSpreadSheet.getCellName(td) + "</div>";
 		var link = this._getFocusLink();
 		link.style.top = td.offsetTop + "px";
 		link.style.left = td.offsetLeft + "px";
@@ -392,6 +546,10 @@ ZmSpreadSheet.prototype._selectCell = function(td) {
 		for (var i = this.onSelectCell.length; --i >= 0;)
 			this.onSelectCell[i].run(this.getCellModel(td), td);
 	}
+};
+
+ZmSpreadSheet.prototype._getHeaderTable = function() {
+	return document.getElementById(this._headerID);
 };
 
 ZmSpreadSheet.prototype._getRelDiv = function() {
@@ -1094,12 +1252,16 @@ ZmSpreadSheet.prototype._onResize = function(ev) {
 	var h = el.offsetHeight;
 	reldiv.style.display = "";
 	h -= reldiv.offsetTop + 2;
+	var w = ev.requestedWidth;
+	if (AjxEnv.isIE)
+		w -= 2;		// don't ask..
 	var p = reldiv.nextSibling;
 	while (p) {
 		h -= p.offsetHeight;
 		p = p.nextSibling;
 	}
 	reldiv.style.height = h + "px";
+	reldiv.style.width = w + "px";
 };
 
 ZmSpreadSheet.prototype.getSelectionRange = function() {
