@@ -651,6 +651,8 @@ function(street, city, state, zipcode, country) {
 ZmContact.prototype._initFullName =
 function(email) {
 	var name = email.getName();
+	name = AjxStringUtil.trim(name.replace(ZmEmailAddress.commentPat, '')); // strip comment (text in parens)
+	
 	if (name && name.length) {
 		this._setFullName(name, [" "]);
 	} else {

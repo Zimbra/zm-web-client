@@ -35,17 +35,14 @@
 * @param type		from, to, cc, bcc, or reply-to
 * @param name		the personal name portion
 * @param dispName	an abbreviated form of the name (not currently used)
+* @param comment	email comment (in parens)
 */
-function ZmEmailAddress(address, type, name, dispName) {
+function ZmEmailAddress(address, type, name, dispName, comment) {
 	this.address = address;
-
-	// bug fix #1932 - remove wrapping single quotes from name if exists
-	this.name = (name && name.charAt(0) == "'" && name.charAt(name.length - 1) == "'")
-		? (name.substring(1, name.length - 1))
-		: name;
-
+	this.name = this._setName(name);
 	this.dispName = dispName;
-	this.type = type || ZmEmailAddress.TO;
+	this.comment = comment;
+	this.type = type ? type : ZmEmailAddress.TO;
 }
 
 ZmEmailAddress.FROM			= 1;
@@ -142,6 +139,7 @@ function(str) {
 	var addr = new ZmEmailAddress();
 	addr.address = [user, '@', host].join("");
 	addr.name = name ? name : comment;
+	addr.comment = comment;
 	
 	return addr;
 }
@@ -342,3 +340,14 @@ ZmEmailAddress.prototype.getDispName =
 function() {
 	return this.dispName;
 }
+
+ZmEmailAddress.prototype._setName =
+function(name) {
+	if (!name) return "";
+	
+	// remove wrapping single quotes from name if present
+	if (name && name.charAt(0) == "'" && name.charAt(name.length - 1) == "'")
+		name = name.substring(1, name.length - 1);
+		
+	return name;		
+};
