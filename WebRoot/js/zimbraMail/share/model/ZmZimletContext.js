@@ -301,14 +301,22 @@ ZmZimletContext.prototype._handleMenuItemSelected = function(ev) {
 	}
 };
 
-ZmZimletContext.RE_SCAN_OBJ = /(^|[^\\])\$\{(obj|src)\.([\$a-zA-Z0-9_]+)\}/g;
+ZmZimletContext.RE_SCAN_OBJ = /(^|[^\\])\$\{(?:obj|src)\.([\$a-zA-Z0-9_]+)\}/g;
+ZmZimletContext.RE_SCAN_PROP = /(^|[^\\])\$\{prop\.([\$a-zA-Z0-9_]+)\}/g;
 
 ZmZimletContext.prototype.processString = function(str, obj) {
-	return str.replace(ZmZimletContext.RE_SCAN_OBJ,
-			   function(str, p1, p2, prop) {
+	return this.replaceObj(ZmZimletContext.RE_SCAN_OBJ, str, obj);
+};
+
+ZmZimletContext.prototype.replaceObj = function(re, str, obj) {
+	return str.replace(re,
+			   function(str, p1, prop) {
 				   var txt = p1;
 				   if (typeof obj[prop] != "undefined") {
-					   txt += obj[prop];
+				       if (obj[prop] instanceof Object)
+				           txt += obj[prop].value;  // user prop
+				       else
+					       txt += obj[prop];   // string
 				   } else {
 					   txt += "(UNDEFINED: obj." + prop + ")";
 				   }
@@ -328,6 +336,7 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj) {
 			if (obj) {
 				val = this.processString(val, obj);
 			}
+			val = this.replaceObj(ZmZimletContext.RE_SCAN_PROP, val, this._propsById);
 			param.push([ AjxStringUtil.urlEncode(a[i].name),
 				     "=",
 				     AjxStringUtil.urlEncode(val) ].join(""));
