@@ -107,6 +107,7 @@ ZmContact.F_workStreet		= "workStreet";
 ZmContact.F_workURL			= "workURL";
 
 // extra fields
+ZmContact.X_fileAs			= "fileAs";
 ZmContact.X_firstLast		= "firstLast";
 ZmContact.X_fullName		= "fullName";
 
@@ -148,13 +149,13 @@ function(node, args) {
 * Compares two contacts based on how they are filed. Intended for use by
 * sort methods.
 *
-* @param a		a contact
-* @param b		a contact
+* @param a		[object]		a contact
+* @param b		[object]		a contact
 */
 ZmContact.compareByFileAs =
 function(a, b) {
-	var aFileAs = a.getFileAs(true);
-	var bFileAs = b.getFileAs(true);
+	var aFileAs = (a instanceof ZmContact) ? a.getFileAs(true) : ZmContact.computeFileAs(a._attrs).toLowerCase();
+	var bFileAs = (b instanceof ZmContact) ? b.getFileAs(true) : ZmContact.computeFileAs(b._attrs).toLowerCase();
 
 	if (aFileAs > bFileAs) return 1;
 	if (aFileAs < bFileAs) return -1;
@@ -164,11 +165,14 @@ function(a, b) {
 /**
 * Figures out the filing string for the contact according to the chosen method.
 *
-* @param attr		a set of contact attributes
+* @param contact	[hash]		a set of contact attributes
 */
 ZmContact.computeFileAs =
 function(contact) {
-	var attr = contact.getAttrs ? contact.getAttrs() : contact;
+	if (contact && contact[ZmContact.X_fileAs])
+		return contact[ZmContact.X_fileAs];
+
+	var attr = (contact instanceof ZmContact) ? contact.getAttrs() : contact;
 	var val = parseInt(attr.fileAs);
 
 	var fa = new Array();
@@ -235,10 +239,35 @@ function(contact) {
 			}
 			break;
 	}
-	return fa.join("");
+	var fileAs = fa.join("");
+	if (contact && contact.id && !(contact instanceof ZmContact))
+		contact[ZmContact.X_fileAs] = fileAs;
+
+	return fileAs;
 };
 
-// Public methods
+/* These next few static methods handle a contact that is either an anonymous object or an actual
+* ZmContact. The former is used to optimize loading. The anonymous object is upgraded to a
+* ZmContact when needed. */
+
+ZmContact.getAttr =
+function(contact, attr) {
+	return (contact instanceof ZmContact) ? contact.getAttr(attr) : contact._attrs[attr];
+};
+
+ZmContact.setAttr =
+function(contact, attr, value) {
+	if (contact instanceof ZmContact)
+		contact.setAttr(attr, value)
+	else 
+		contact._attrs[attr] = value;
+};
+
+ZmContact.isInTrash =
+function(contact) {
+	var folderId = (contact instanceof ZmContact) ? contact.folderId : contact.l;
+	return (folderId == ZmFolder.ID_TRASH);
+};
 
 ZmContact.prototype.getAttr =
 function(name) {
@@ -507,7 +536,7 @@ function(lower) {
 		this._fileAs = ZmContact.computeFileAs(this);
 		this._fileAsLC = this._fileAs.toLowerCase();
 	}
-	return lower === true ? this._fileAsLC : this._fileAs;
+	return lower ? this._fileAsLC : this._fileAs;
 };
 
 ZmContact.prototype.getHeader = 

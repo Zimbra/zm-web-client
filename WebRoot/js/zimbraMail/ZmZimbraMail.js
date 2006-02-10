@@ -463,14 +463,16 @@ function(params, result) {
 
 	// handle notifications after the response, so that item state is current
 	if (hdr && hdr.context && hdr.context.notify) {
-        for(i=0;i<hdr.context.notify.length;i++) {
+        for(i = 0; i < hdr.context.notify.length; i++) {
+        	var notify = hdr.context.notify[i];
+        	var seq = notify.seq;
             // BUG?  What if the array isn't in sequence-order?  We would miss some notifications. Can that happen?  
-            if (hdr.context.notify[i].seq > this._highestNotifySeen) {
-                DBG.println(AjxDebug.DBG1, "Handling notification["+i+"] seq="+hdr.context.notify[i].seq);
-                this._notifyHandler(hdr.context.notify[i]);
-                this._highestNotifySeen = hdr.context.notify[i].seq;
+            if (notify.seq > this._highestNotifySeen) {
+                DBG.println(AjxDebug.DBG1, "Handling notification[" + i + "] seq=" + seq);
+                this._notifyHandler(notify);
+                this._highestNotifySeen = seq;
             } else {
-            	DBG.println(AjxDebug.DBG1, "SKIPPING notification["+i+"] seq="+hdr.context.notify[i].seq+" highestNotifySeen="+this._highestNotifySeen);
+            	DBG.println(AjxDebug.DBG1, "SKIPPING notification[" + i + "] seq=" + seq + " highestNotifySeen=" + this._highestNotifySeen);
 	      	}
     	}        
 	}
