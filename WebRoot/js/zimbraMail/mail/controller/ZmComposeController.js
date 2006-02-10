@@ -60,11 +60,11 @@ function() {
 ZmComposeController.prototype.doAction =
 function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText) {
 	if (inNewWindow) {
-		var newWin = this._appCtxt.getNewWindow();
+		var newWinObj = this._appCtxt.getNewWindow();
 
 		// this is how child window knows what to do once loading:
-		newWin.command = "compose";
-		newWin.args = [action, msg, toOverride, subjOverride, extraBodyText, null];
+		newWinObj.command = "compose";
+		newWinObj.args = [action, msg, toOverride, subjOverride, extraBodyText, null];
 	} else {
 		this._setView(action, msg, toOverride, subjOverride, extraBodyText, null);
 	}
@@ -83,10 +83,10 @@ function(toggled) {
 */
 ZmComposeController.prototype.detach =
 function() {
-	var newWin = this._appCtxt.getNewWindow();
+	var newWinObj = this._appCtxt.getNewWindow();
 
 	// this is how child window knows what to do once loading:
-	newWin.command = "composeDetach";
+	newWinObj.command = "composeDetach";
 
 	var msg = this._composeView.getOrigMsg();
 	var addrs = this._composeView.getRawAddrFields();
@@ -95,7 +95,7 @@ function() {
 	var body = this._composeView.getHtmlEditor().getContent();
 	var composeMode = this._composeView.getComposeMode();
 
-	newWin.args = {action: this._action, msg: msg, addrs: addrs, subj: subj, forwardHtml: forAttHtml, body: body, composeMode: composeMode };
+	newWinObj.args = {action: this._action, msg: msg, addrs: addrs, subj: subj, forwardHtml: forAttHtml, body: body, composeMode: composeMode };
 };
 
 ZmComposeController.prototype.popShield =

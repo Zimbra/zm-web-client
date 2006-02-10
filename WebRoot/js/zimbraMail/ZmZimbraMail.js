@@ -813,15 +813,34 @@ ZmZimbraMail.prototype.addChildWindow =
 function(childWin) {
 	if (this._childWinList == null)
 		this._childWinList = new AjxVector();
-	
-	this._childWinList.add(childWin);
+
+	// NOTE: we now save childWin w/in Object so other params can be added to it.
+	// Otherwise, Safari breaks (see http://bugzilla.opendarwin.org/show_bug.cgi?id=7162)
+	var newWinObj = new Object();
+	newWinObj.win = childWin;
+
+	this._childWinList.add(newWinObj);
+
+	return newWinObj;
+};
+
+ZmZimbraMail.prototype.getChildWindow = 
+function(childWin) {
+	if (this._childWinList) {
+		for (var i = 0; i < this._childWinList.size(); i++) {
+			if (childWin == this._childWinList.get(i).win) {
+				return this._childWinList.get(i);
+			}
+		}
+	}
+	return null;
 };
 
 ZmZimbraMail.prototype.removeChildWindow =
 function(childWin) {
 	if (this._childWinList) {
 		for (var i = 0; i < this._childWinList.size(); i++) {
-			if (childWin == this._childWinList.get(i)) {
+			if (childWin == this._childWinList.get(i).win) {
 				this._childWinList.removeAt(i);
 				break;
 			}
@@ -1211,7 +1230,7 @@ function(parent) {
 * exceptions unless they're auth-related.
 */
 ZmZimbraMail.prototype._doPoll =
-function() {
+function(now) {
 	this._pollActionId = null; // so we don't try to cancel
 	
 	// It'd be more efficient to make these instance variables, but for some
@@ -1220,7 +1239,7 @@ function() {
 	var errorCallback = new AjxCallback(this, this._handleErrorDoPoll);
 	var pollParams = {soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback, noBusyOverlay: true};
 	var pollAction = new AjxTimedAction(this, this.sendRequest, [pollParams]);
-	return AjxTimedAction.scheduleAction(pollAction, this._pollInterval);
+	return AjxTimedAction.scheduleAction(pollAction, (now ? 0 : this._pollInterval));
 };
 
 ZmZimbraMail.prototype._handleErrorDoPoll =
