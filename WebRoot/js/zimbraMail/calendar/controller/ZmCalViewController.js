@@ -188,24 +188,24 @@ function(viewId) {
 		case ZmController.CAL_DAY_VIEW: 
 		case ZmController.CAL_SCHEDULE_VIEW: 		
 			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.day);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.day);
+			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousDay);
+			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextDay);
 			break;
 		case ZmController.CAL_WORK_WEEK_VIEW:
 			this._miniCalendar.setSelectionMode(DwtCalendar.WORK_WEEK);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.workWeek);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.workWeek);			
+			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWorkWeek);
+			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWorkWeek);			
 			break;
 		case ZmController.CAL_WEEK_VIEW:
 			this._miniCalendar.setSelectionMode(DwtCalendar.WEEK);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.week);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.week);			
+			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWeek);
+			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWeek);			
 			break;;		
 		case ZmController.CAL_MONTH_VIEW:
 			// use day until month does something
 			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);		
-			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.month);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.month);
+			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMonth);
+			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextMonth);
 			break;
 	}
 	DBG.timePt("switching selection mode and tooltips");

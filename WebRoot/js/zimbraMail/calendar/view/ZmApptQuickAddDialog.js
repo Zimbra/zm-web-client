@@ -423,7 +423,7 @@ function(ev) {
 
 ZmApptQuickAddDialog.prototype._repeatChangeListener = 
 function(ev) {
-	this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(ev._args.newValue);
+	this._repeatDescField.innerHTML = ev._args.newValue != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.recurEndNone) : "";
 };
 
 // Static methods
