@@ -482,6 +482,13 @@ function(propertyName) {
 	return this.xmlObj().getProp(propertyName);
 };
 
+// TODO: this func. must be a wrapper that translates msg which may be in the
+// form "${msg.foo}" into calls that AjxMessageFormat can handle.
+ZmZimletBase.prototype.getMessage =
+function(msg) {
+	return window[this.xmlObj().name][msg];
+};
+
 ZmZimletBase.prototype.getConfig =
 function(configName) {
 	return this.xmlObj().getConfig(configName);
@@ -607,16 +614,12 @@ ZmZimletBase.prototype._createDialog = function(args) {
 /* Overrides default ZmObjectHandler methods for Zimlet API compat */
 ZmZimletBase.prototype._getHtmlContent =
 function(html, idx, obj, context) {
-	var contentObj = this.xmlObj().getVal("contentObject");
 	if (obj instanceof ZmEmailAddress) {
 		obj = obj.address;
 	}
+	var contentObj = this.xmlObj().getVal("contentObject");
 	if(contentObj && contentObj.onClick) {
-// 		html[idx++] = '<a target="_blank" href="';
-// 		html[idx++] = (contentObj.onClick[0].actionUrl[0].target).replace('${objectContent}', AjxStringUtil.htmlEncode(obj));
-// 		html[idx++] = '">'+AjxStringUtil.htmlEncode(obj)+'</a>';
-
-		html[idx++] = AjxStringUtil.htmlEncode(obj);
+ 		html[idx++] = AjxStringUtil.htmlEncode(obj);
 	} else {
 		html[idx++] = AjxStringUtil.htmlEncode(obj, true);
 	}

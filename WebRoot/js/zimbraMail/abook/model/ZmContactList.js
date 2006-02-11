@@ -144,10 +144,11 @@ function(list) {
 		if (!contact._attrs) contact._attrs = {}; // handle empty contacts
 		// note that we don't create a ZmContact here (optimization)
 		this._updateEmailHash(contact, true);
-		contact._attrs[ZmContact.X_fullName] = AjxStringUtil.trim(AjxUtil.collapseList([contact._attrs[ZmContact.F_firstName],
-											   contact._attrs[ZmContact.F_middleName], contact._attrs[ZmContact.F_lastName]]).join(" "));
-		contact._attrs[ZmContact.X_firstLast] = AjxStringUtil.trim(AjxUtil.collapseList([contact._attrs[ZmContact.F_firstName],
-												contact._attrs[ZmContact.F_lastName]]).join(" "));
+		contact._attrs[ZmContact.X_fullName] = AjxStringUtil.trim(([contact._attrs[ZmContact.F_firstName],
+		                                       contact._attrs[ZmContact.F_middleName],
+		                                       contact._attrs[ZmContact.F_lastName]]).join(" "));
+		contact._attrs[ZmContact.X_firstLast] = AjxStringUtil.trim(([contact._attrs[ZmContact.F_firstName],
+		                                        contact._attrs[ZmContact.F_lastName]]).join(" "));
 		this._preMatch(contact);
 		this.add(contact);
 	}
@@ -459,22 +460,16 @@ function(str) {
 */
 ZmContactList.prototype._preMatch =
 function(contact) {
-	if (!ZmContactList.AC_PREMATCH) return;
-	
-	var strings = {};
+	if (!ZmContactList.AC_PREMATCH) {return;}
 	for (var i = 0; i < ZmContactList.AC_FIELDS.length; i++) {
-		var field = ZmContactList.AC_FIELDS[i];
-		var value = contact._attrs[field];
+		var value = contact._attrs[ZmContactList.AC_FIELDS[i]];
 		if (value) {
-			for (var j = 1; j <= ZmContactList.AC_PREMATCH; j++)
-				strings[value.substring(0, j).toLowerCase()] = true;
+			for (var j = 1; j <= ZmContactList.AC_PREMATCH; j++) {
+				var str = value.substring(0, j).toLowerCase();
+				this._acAddrList[str] = this._acAddrList[str] ? this._acAddrList[str] : [];
+				this._acAddrList[str].push(contact.id);
+			}
 		}
-	}
-	// no need to test, we know these are matches
-	for (var str in strings) {
-		if (!this._acAddrList[str])
-			this._acAddrList[str] = [];
-		this._acAddrList[str].push(contact.id);
 	}
 };
 

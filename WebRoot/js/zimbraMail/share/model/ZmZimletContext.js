@@ -196,7 +196,7 @@ ZmZimletContext.prototype.getUrl = function() { return this._url; };
 
 ZmZimletContext.prototype.getVal = function(key) {
 	var zimlet = this.json.zimlet;
-	return zimlet[key];
+	return eval("zimlet." + key);
 };
 
 ZmZimletContext.prototype.callHandler = function(funcname, args) {
@@ -212,12 +212,6 @@ ZmZimletContext.prototype.callHandler = function(funcname, args) {
 			return f.apply(this.handlerObject, args);
 		}
 	}
-};
-
-// TODO: this func. must be a wrapper that translates msg which may be in the
-// form "${msg.foo}" into calls that AjxMessageFormat can handle.
-ZmZimletContext.prototype.msgFormat = function(msg) {
-	return window[this.name][msg];
 };
 
 ZmZimletContext.prototype._translateUserProp = function() {
