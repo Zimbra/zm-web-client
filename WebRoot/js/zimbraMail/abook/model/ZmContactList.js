@@ -461,13 +461,17 @@ function(str) {
 ZmContactList.prototype._preMatch =
 function(contact) {
 	if (!ZmContactList.AC_PREMATCH) {return;}
+	var strings = {};
 	for (var i = 0; i < ZmContactList.AC_FIELDS.length; i++) {
 		var value = contact._attrs[ZmContactList.AC_FIELDS[i]];
 		if (value) {
 			for (var j = 1; j <= ZmContactList.AC_PREMATCH; j++) {
 				var str = value.substring(0, j).toLowerCase();
-				this._acAddrList[str] = this._acAddrList[str] ? this._acAddrList[str] : [];
-				this._acAddrList[str].push(contact.id);
+				if(!strings[str]) {
+					this._acAddrList[str] = this._acAddrList[str] ? this._acAddrList[str] : [];
+					this._acAddrList[str].push(contact.id);
+					strings[str] = true;
+				}
 			}
 		}
 	}
