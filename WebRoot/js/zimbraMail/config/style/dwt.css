@@ -1165,6 +1165,9 @@ HTML>BODY .RadioGrouperLabel {
 	margin-left:4px;
 	margin-right:4px;
 	height:15;
+	border-style:none;
+	border-color:#EEEEEE;
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonUp__H.gif);
 }
 
 .oselect_display_disabled {
