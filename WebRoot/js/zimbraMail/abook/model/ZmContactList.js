@@ -143,6 +143,7 @@ function(list) {
 		var contact = list[i];
 		if (!contact._attrs) contact._attrs = {}; // handle empty contacts
 		// note that we don't create a ZmContact here (optimization)
+		contact.list = this;
 		this._updateEmailHash(contact, true);
 		contact._attrs[ZmContact.X_fullName] = AjxStringUtil.trim(([contact._attrs[ZmContact.F_firstName],
 		                                       contact._attrs[ZmContact.F_middleName],
@@ -172,21 +173,27 @@ function() {
 
 /*
 * Converts an anonymous contact object (contained by the JS returned by load request)
-* into a ZmContact.
+* into a ZmContact, and updates the containing list if it is the canonical one.
 *
 * @param contact	[object]	a contact
+* @param idx		[int]*		index of contact in canonical list
 */
 ZmContactList.prototype._realizeContact =
-function(contact) {
-	var idx = this._getIndexById(contact.id);
-	if (idx == null) return null;
+function(contact, idx) {
+	if (contact instanceof ZmContact) return contact;
+
+	if (this.isCanonical)
+		idx = idx ? idx : this._getIndexById(contact.id);
 	
 	var args = {appCtxt: this._appCtxt, addressHash: {}, list: this};
 	var realContact = ZmList.ITEM_CLASS[this.type].createFromDom(contact, args);
-	var a = this.getArray();
-	a[idx] = realContact;
-	this._updateEmailHash(realContact, true);
-	this._idHash[contact.id] = realContact;
+
+	if (this.isCanonical) {
+		var a = this.getArray();
+		a[idx] = realContact;
+		this._updateEmailHash(realContact, true);
+		this._idHash[contact.id] = realContact;
+	}
 	
 	return realContact;	
 };
@@ -207,23 +214,8 @@ function(id) {
 };
 
 /**
-* Override in order to make sure the contact has been realized.
-*
-* @param id		[int]		a contact ID
-*/
-ZmContactList.prototype.getById =
-function(id) {
-	var contact = this._idHash[id];
-	if (!contact) return null;
-
-	if (!(contact instanceof ZmContact))
-		contact = this._realizeContact(contact);
-
-	return contact;
-};
-
-/**
-* Override in order to make sure the contacts have been realized.
+* Override in order to make sure the contacts have been realized. We don't
+* call realizeContact() since this is not the canonical list.
 *
 * @param offset		[int]		starting index
 * @param limit		[int]		size of sublist
@@ -233,14 +225,25 @@ function(offset, limit) {
 	var vec = ZmList.prototype.getSubList.call(this, offset, limit);
 	var a = vec.getArray();
 	for (var i = 0; i < a.length; i++) {
-		var contact = a[i];
-		if (!(contact instanceof ZmContact)) {
-			var args = {appCtxt: this._appCtxt, addressHash: {}, list: this};
-			var realContact = ZmList.ITEM_CLASS[this.type].createFromDom(contact, args);
-			a[i] = realContact;
-		}
+		a[i] = this._realizeContact(a[i], offset + i);
 	}
 	return vec;
+};
+
+/**
+* Override in order to make sure the contact has been realized. Canonical list only.
+* Returns a ZmContact.
+*
+* @param id		[int]		a contact ID
+*/
+ZmContactList.prototype.getById =
+function(id) {
+	if (!id || !this.isCanonical) return null;
+
+	var contact = this._idHash[id];
+	if (!contact) return null;
+
+	return this._realizeContact(contact);
 };
 
 /**
@@ -250,15 +253,12 @@ function(offset, limit) {
 */
 ZmContactList.prototype.getContactByEmail = 
 function(address) {
-	if (!address) return null;
+	if (!address || !this.isCanonical) return null;
 
 	var contact = this._emailToContact[address.toLowerCase()];
 	if (!contact) return null;
 
-	if (!(contact instanceof ZmContact))
-		contact = this._realizeContact(contact);
-
-	return contact;
+	return this._realizeContact(contact);
 };
 
 /**
