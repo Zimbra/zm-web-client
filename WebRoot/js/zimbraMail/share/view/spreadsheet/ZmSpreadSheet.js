@@ -430,16 +430,22 @@ ZmSpreadSheet.prototype._colsize_mouseUp = function(ev) {
 	this._colsizeCapture.release();
 	var w;
 	var delta = this._colsizeArgs.delta;
-	var index = this._resizeColIndex;
-	if (this._resizeColStart) {
-		w = this._model.getColWidth(index - 1);
-		this._model.setColWidth(index - 1, w - delta);
-		w = this._model.getColWidth(index - 2);
-		this._model.setColWidth(index - 2, w + delta);
-	} else {
-		w = this._model.getColWidth(index - 1);
-		this._model.setColWidth(index - 1, w + delta);
+	if (delta) {
+		var index = this._resizeColIndex;
+		if (this._resizeColStart) {
+			w = this._model.getColWidth(index - 1);
+			this._model.setColWidth(index - 1, w - delta);
+			w = this._model.getColWidth(index - 2);
+			this._model.setColWidth(index - 2, w + delta);
+		} else {
+			w = this._model.getColWidth(index - 1);
+			this._model.setColWidth(index - 1, w + delta);
+		}
 	}
+	// null out some things to make sure we don't leak
+	this._colsizeArgs.td1 = null;
+	this._colsizeArgs.td2 = null;
+	this._colsizeArgs = null;
 	dwtev._stopPropagation = true;
 	dwtev._returnValue = false;
 	dwtev.setToDhtmlEvent(ev);

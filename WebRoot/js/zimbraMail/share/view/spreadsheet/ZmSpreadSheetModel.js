@@ -474,12 +474,14 @@ ZmSpreadSheetCellModel.prototype.setWidth = function(width) {
 };
 
 ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
-	el.innerHTML = "<div class='Wrapper'></div>";
+	if (!el.firstChild)
+		el.innerHTML = "<div class='Wrapper'></div>";
 	var val = this.getDisplayValue();
 	if (!/\S/.test(val))
 		val = "\xA0";
 	else
 		val = (val+"").replace(/\s/g, "\xA0");
+	el.firstChild.innerHTML = "";
 	el.firstChild.appendChild(document.createTextNode(val));
 	if (AjxEnv.isGeckoBased) {
 		// A stupid Gecko bug don't trigger onmouseover events on the
