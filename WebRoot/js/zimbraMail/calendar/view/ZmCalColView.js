@@ -493,19 +493,28 @@ function() {
 	this._scrollTo8AM();
 }
 
+ZmCalColView._inSyncScroll = false;
+
 ZmCalColView.prototype._syncScroll =
 function(resetLeft)
 {
-	var bodyElement = document.getElementById(this._bodyDivId);
-	var hourElement = document.getElementById(this._hoursScrollDivId);
-	var alldayElement = document.getElementById(this._allDayScrollDivId);
-	var unionGridScrollElement = document.getElementById(this._unionGridScrollDivId);
-	var alldayApptElement = document.getElementById(this._allDayApptScrollDivId);
-	hourElement.scrollTop = bodyElement.scrollTop;
-	if (resetLeft) bodyElement.scrollLeft = 0;
-	alldayElement.scrollLeft = bodyElement.scrollLeft;
-	alldayApptElement.scrollLeft = bodyElement.scrollLeft;	
-	if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
+	if (ZmCalColView._inSyncScroll) return
+	else ZmCalColView._inSyncScroll = true;
+	
+	try {
+		var bodyElement = document.getElementById(this._bodyDivId);
+		var hourElement = document.getElementById(this._hoursScrollDivId);
+		var alldayElement = document.getElementById(this._allDayScrollDivId);
+		var unionGridScrollElement = document.getElementById(this._unionGridScrollDivId);
+		var alldayApptElement = document.getElementById(this._allDayApptScrollDivId);
+		hourElement.scrollTop = bodyElement.scrollTop;
+		if (resetLeft) bodyElement.scrollLeft = 0;
+		alldayElement.scrollLeft = bodyElement.scrollLeft;
+		alldayApptElement.scrollLeft = bodyElement.scrollLeft;	
+		if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
+	} finally {
+		 ZmCalColView._inSyncScroll = false;
+	}
 }
 
 ZmCalColView.prototype._horizontalScrollbar =
