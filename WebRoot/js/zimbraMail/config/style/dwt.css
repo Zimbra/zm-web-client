@@ -1209,12 +1209,6 @@ HTML>BODY .RadioGrouperLabel {
 	padding-top:1px;
 	padding-bottom:1px;
 	margin-right:1px;
-/*	padding-top:4px;
-	padding-bottom:4px;
-	padding-left:10px;
-	padding-right:20px;
-	margin:1px;
-*/
 	white-space:nowrap;
 }
 .oselect_choice_selected {
@@ -1225,12 +1219,6 @@ HTML>BODY .RadioGrouperLabel {
 	padding-top:1px;
 	padding-bottom:1px;
 	margin-right:1px;
-/*	padding-top:4px;
-	padding-bottom:4px;
-	padding-left:10px;
-	padding-right:20px;
-	margin:1px;
-*/
 	white-space:nowrap;
 }
 
@@ -1246,165 +1234,6 @@ HTML>BODY .RadioGrouperLabel {
 	padding:4px;
 }
 
-/* FROM ADMIN
-.oselect, .oselect_check {
-	cursor:pointer;
-}
-.oselect_table,
-.oselect_check_table {
-	border-collapse:collapse;
-	background-color:white;
-	border-left:1px solid #EEEEEE;
-	border-top:1px solid #EEEEEE;
-	border-right:1px solid gray;
-	border-bottom:1px solid gray;
-	padding:0;
-}
-.oselect_table TD,
-.oselect_check_table TD {
-	padding:0;
-}
-.oselect_display {
-	white-space:nowrap;
-	overflow:hidden;
-	margin-left:4px;
-	margin-right:4px;
-}
-
-.oselect_disabled {
-	background-color: rgb(233,236,216);
-}
-
-.oselect_table_disabled {
-	background-color: rgb(233,236,216);
-	border-collapse:collapse;
-	color: rgb(201, 201, 194);
-	border-left:1px solid #EEEEEE;
-	border-top:1px solid #EEEEEE;
-	border-right:1px solid gray;
-	border-bottom:1px solid gray;
-	padding:0;
-}
-
-.oselect_display_disabled {
-    background-color: rgb(233,236,216);
-	color: rgb(201, 201, 194);
-	white-space:nowrap;
-	overflow:hidden;
-	margin-left:4px;
-	margin-right:4px;
-}
-
-
-.oselect_menu {
-	position:absolute;
-	z-index:10000000000;
-	cursor:pointer;
-	border-bottom:1px outset gray;
-	border-right:1px outset gray;
-}
-.oselect_choice_table,
-.oselect_check_choice_table {
-	border-collapse:collapse;
-	border:1px solid black;
-	background-color:white;
-}
-.oselect_choice {
-	background-color:white;
-	color:black;
-	padding-top:4px;
-	padding-bottom:4px;
-	padding-left:10px;
-	margin:1px;
-	white-space:nowrap;
-}
-.oselect_choice_selected {
-	color:black;
-	background-color:FFFF66;
-	padding-top:4px;
-	padding-bottom:4px;
-	padding-left:10px;
-	margin:1px;
-}
-
-.oselect_check_choice {
-	background-color:white;
-	color:black;
-	padding:4px;
-	white-space:nowrap;
-}
-.oselect_check_choice_selected {
-	color:black;
-	background-color:FFFF66;
-	padding:4px;
-}
-
-
-.xform_grouper_border,
-.xform_radio_grouper_border,
-.xform_TopGrouperBorder {
-	border:1px solid #999999;
-	margin-top:5px;
-	margin-bottom:5px;
-
-	padding-top:5px;
-	padding-left:10px;
-	padding-right:10px;
-	padding-bottom:10px;
-}
-
-.xform_top_grouper_border {
-	border:1px dotted #999999;
-	border-left:none;
-	border-right:none;
-	border-bottom:none;
-	margin-top:20px;
-	padding-bottom:0px;
-	margin-bottom:0px;
-}
-
-.xform_grouper_label,
-.xform_radio_grouper_label {
-	font-weight:bold;
-	font-size:13px;
-	position:relative;
-	left:10; 
-	top:-15;
-	background-color:#FFFFFF;
-	padding-left:2px; padding-right:2px;
-}
-
-.xform_grouper_inset {
-
-}
-
-.xform_radio_grouper_inset {
-
-}
-
-.xform_radio_grouper_border {
-	border:1px solid #999999;
-	margin-bottom:2px;
-
-}
-
-HTML>BODY .xform_radio_grouper_border {
-	border:1px dotted #999999;
-}
-
-.xform_radio_grouper_label {
-	margin-left:5px;
-	color:#666666;
-	font-weight:normal;
-	font-size:11px;
-}
-
-HTML>BODY .xform_radio_grouper_label {
-	margin-left:-5px;
-}
-
-
-END FROM ADMIN */
 .xform_error { color: red }
 
 .DwtConfirmDialogQuestion {
