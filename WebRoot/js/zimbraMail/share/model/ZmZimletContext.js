@@ -107,7 +107,8 @@ ZmZimletContext.RE_ARRAY_ELEMENTS = /^(dragSource|include|includeCSS|menuItem|pa
  *
  * @return -- sanitized object
  */
-ZmZimletContext.sanitize = function(obj, tag, wantarray_re) {
+ZmZimletContext.sanitize = 
+function(obj, tag, wantarray_re) {
 	function doit(obj, tag) {
 		var cool_json, val, i;
 		if (obj instanceof Array) {
@@ -164,6 +165,11 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	}
 	this.handlerObject.init();
 	this.handlerObject._zimletContext = this;
+	if(this._id) {
+		var tree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
+		var zimletItem = tree.getById(this._id);
+		zimletItem.resetName();
+	}
 	DBG.println(AjxDebug.DBG2, "Zimlets - init(): " + this.name);
 };
 
@@ -275,14 +281,12 @@ ZmZimletContext.prototype._makeMenu = function(obj) {
 		if (!data.id) {
 			menu.createSeparator();
 		} else {
-			//alert([data.id, data.label, data.icon].join("\n"));
-			var item = menu.createMenuItem(data.id, data.icon, data.label,
+			var item = menu.createMenuItem(data.id, data.icon, this.processMessage(data.label),
 						       data.disabledIcon, true);
 			item.setData("xmlMenuItem", data);
 			item.addSelectionListener(this._handleMenuItemSelected);
 		}
 	}
-	//menu.addSelectionListener();
 	return menu;
 };
 
@@ -297,9 +301,20 @@ ZmZimletContext.prototype._handleMenuItemSelected = function(ev) {
 
 ZmZimletContext.RE_SCAN_OBJ = /(^|[^\\])\$\{(?:obj|src)\.([\$a-zA-Z0-9_]+)\}/g;
 ZmZimletContext.RE_SCAN_PROP = /(^|[^\\])\$\{prop\.([\$a-zA-Z0-9_]+)\}/g;
+ZmZimletContext.RE_SCAN_MSG = /(^|[^\\])\$\{msg\.([\$a-zA-Z0-9_]+)\}/g;
 
 ZmZimletContext.prototype.processString = function(str, obj) {
 	return this.replaceObj(ZmZimletContext.RE_SCAN_OBJ, str, obj);
+};
+
+ZmZimletContext.prototype.processMessage = function(str) {
+	// i18n files load async so if not defined skip translation
+	if(!window[this.name]) {
+		DBG.println(AjxDebug.DBG2, "processMessage no messages: " + str);
+		return str;
+	}
+	var props = window[this.name];
+	return this.replaceObj(ZmZimletContext.RE_SCAN_MSG, str, props);
 };
 
 ZmZimletContext.prototype.replaceObj = function(re, str, obj) {
