@@ -1505,6 +1505,8 @@ function(ev) {
 	ev || (ev = window.event);
 
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
+	if (!element) return true;
+
 	var id = element.id;
 	var cv = AjxCore.objectWithId(element._composeView);
 
@@ -1540,6 +1542,8 @@ function(ev) {
 	ev || (ev = window.event);
 
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
+	if (!element) return true;
+
 	var id = element.id;
 	var key = DwtKeyEvent.getCharCode(ev);
 	// ignore return in attachment input field (bug 961)
