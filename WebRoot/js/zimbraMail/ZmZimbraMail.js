@@ -281,7 +281,8 @@ function(params) {
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
 		this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
 
-	this.setPollInterval();
+	if (document.domain != "localhost")
+		this.setPollInterval();
 	var opc = this._appCtxt.getOverviewController();
 	opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
 						selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true});
