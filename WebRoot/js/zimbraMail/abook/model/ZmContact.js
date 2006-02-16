@@ -111,6 +111,10 @@ ZmContact.X_fileAs			= "fileAs";
 ZmContact.X_firstLast		= "firstLast";
 ZmContact.X_fullName		= "fullName";
 
+// GAL fields
+ZmContact.GAL_MODIFY_TIMESTAMP = "modifyTimeStamp";
+ZmContact.GAL_CREATE_TIMESTAMP = "createTimeStamp";
+
 // file as
 var i = 1;
 ZmContact.FA_LAST_C_FIRST			= i++;
@@ -711,20 +715,35 @@ function(field, data, html, idx) {
 // Reset computed fields.
 ZmContact.prototype._resetCachedFields =
 function() {
-	this._fileAs = null;
-	this._fullName = null;
-	this._toolTip = null;
+	this._fileAs = this._fullName = this._toolTip = null;
 };
 
 // Parse a contact node. A contact will only have attribute values if it is in the canonical list.
 ZmContact.prototype._loadFromDom =
 function(node) {
-	this.created = node.cd;
-	this.modified = node.md;
-	this.folderId = node.l;
-	this._parseFlags(node.f);
-	this._parseTags(node.t);
-	this.attr = node._attrs;
+	// if we have node.a then we must be dealing with a GAL contact
+	if (node.a && (node.a instanceof Array)) {
+		for (var i = 0; i < node.a.length; i++) {
+			var attr = node.a[i];
+			if (attr.n == ZmContact.X_fullName) {
+				this.attr[ZmContact.X_fullName] = attr._content;
+			} else if (attr.n == ZmContact.GAL_MODIFY_TIMESTAMP) {
+				this.modified = attr._content;
+			} else if (attr.n == ZmContact.GAL_CREATE_TIMESTAMP) {
+				this.created - attr._content;
+			} else {
+				// for now just save all other attrs regardless of dupes
+				this.attr[attr.n] = attr._content;
+			}
+		}
+	} else {
+		this.created = node.cd;
+		this.modified = node.md;
+		this.folderId = node.l;
+		this._parseFlags(node.f);
+		this._parseTags(node.t);
+		this.attr = node._attrs;
+	}
 };
 
 // these need to be kept in sync with ZmContact.F_*
