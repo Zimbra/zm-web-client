@@ -69,9 +69,32 @@ function(overviewId, showUnread, omit, forceCreate) {
 		if (root) {
 			var items = root.getItems();
 			for (var i = 0; i < items.length; i++) {
-				var item = items[i];
+				this.setToolTipText(items[i]);
 			}
 		}
+	}
+};
+
+ZmZimletTreeController.prototype.setToolTipText =
+function (item) {
+	var zimlet = item.getData(Dwt.KEY_OBJECT);
+	if (zimlet) zimlet.setToolTipText(item);
+};
+
+// ZmTreeController removes existing DwtTreeItem object then add a new one on ZmEvent.E_MODIFY,
+// wiping out any properties set on the object. 
+ZmZimletTreeController.prototype._changeListener =
+function(ev, treeView) {
+	ZmTreeController.prototype._changeListener.call(this, ev, treeView);
+	var organizers = ev.getDetail("organizers");
+	if (!organizers && ev.source)
+		organizers = [ev.source];
+
+	for (var i = 0; i < organizers.length; i++) {
+		var organizer = organizers[i];
+		var id = organizer.id;
+		var item = treeView.getTreeItemById(id);
+		this.setToolTipText(item);
 	}
 };
 

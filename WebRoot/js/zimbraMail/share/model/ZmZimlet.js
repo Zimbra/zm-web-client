@@ -106,6 +106,15 @@ function() {
 	}
 };
 
+ZmZimlet.prototype.setToolTipText =
+function (control) {
+	if (this._zimletContext &&
+		this._zimletContext.zimletPanelItem &&
+		this._zimletContext.zimletPanelItem.toolTipText) {
+		control.setToolTipContent(this._zimletContext.zimletPanelItem.toolTipText);
+	}
+};
+
 ZmZimlet.prototype.getIcon =
 function() {
 	if (this.id == ZmZimlet.ID_ZIMLET) {

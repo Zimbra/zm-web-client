@@ -55,6 +55,9 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 	this._panelActionMenu = null;
 	if(zimlet.zimletPanelItem){
 		this.zimletPanelItem = zimlet.zimletPanelItem[0];
+		if (this.zimletPanelItem.toolTipText) {
+			this.zimletPanelItem.toolTipText = this.zimletPanelItem.toolTipText[0]._content;
+		}
 		if (this.zimletPanelItem.icon) {
 			this.icon = this.zimletPanelItem.icon;
 		}
