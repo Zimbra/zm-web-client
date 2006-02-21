@@ -283,9 +283,9 @@ function(result) {
 	var msg = new ZmMailMsg(this._appCtxt, resp.m[0].id);
 	msg._loadFromDom(resp.m[0]);
 
-	var newWinObj = this._appCtxt.getNewWindow(true);
-	newWinObj.command = "msgViewDetach";
-	newWinObj.args = {msg: msg};
+	var newWin = this._appCtxt.getNewWindow(true);
+	newWin.command = "msgViewDetach";
+	newWin.args = {msg: msg};
 };
 
 

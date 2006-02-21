@@ -53,14 +53,13 @@ function(parent, obj, tree, link) {
 	if (obj && obj.length) {
 		var id = ZmZimlet.ID_ZIMLET;
 		for (var i = 0; i < obj.length; i++) {
-			var lbl = obj[i].processMessage(obj[i].zimletPanelItem.label);
-			var childZimlet = new ZmZimlet(++id, lbl, zimletRoot, tree, null, null);
+			var desc = obj[i].zimletPanelItem.label;
+			var childZimlet = new ZmZimlet(++id, desc, zimletRoot, tree, null, null);
 			zimletRoot.children.add(childZimlet);
 			// WARNING: it's a bit unorthodox to do this linkage
 			// here, but we really do need these objects know about
 			// each other.
 			childZimlet._zimletContext = obj[i];
-			childZimlet._zimletContext._id = id;
 			obj[i]._organizer = childZimlet;
 		}
 	}
@@ -92,27 +91,6 @@ function() {
 		return ZmMsg.zimlets;
 	}
 	return this.name;
-};
-
-ZmZimlet.prototype.resetName =
-function() {
-	if(this._zimletContext && this.name) {
-		this.name = this._zimletContext.processMessage(this.name);
-		var fields = {};
-		fields[ZmOrganizer.F_NAME] = true;
-		var details = {};
-		details.fields = fields;
-		this._notify(ZmEvent.E_MODIFY, details);
-	}
-};
-
-ZmZimlet.prototype.setToolTipText =
-function (control) {
-	if (this._zimletContext &&
-		this._zimletContext.zimletPanelItem &&
-		this._zimletContext.zimletPanelItem.toolTipText) {
-		control.setToolTipContent(this._zimletContext.zimletPanelItem.toolTipText);
-	}
 };
 
 ZmZimlet.prototype.getIcon =

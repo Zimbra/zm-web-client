@@ -19,11 +19,7 @@ skin.hideQuota = function () {
 }
 
 skin.showSearchBuilder = function (state) {
-	var container = navigator.userAgent.indexOf("Safari/") != -1
-		? "skin_div_search_builder"
-		: "skin_tr_search_builder";
-
-	skin._showEl(container, state);
+	skin._showEl("skin_tr_search_builder", state);
 	skin._showEl("skin_container_search_builder", state);	//HACK: necessary for IE?
 }
 skin.hideSearchBuilder = function () {
@@ -146,7 +142,7 @@ QUOTA
 <!-- BEGIN SEARCH BUILDER -->
 			<tr id="skin_tr_search_builder">
 				<td colspan=4 id="skin_td_search_builder">
-					<div id="skin_div_search_builder" class="ConsoleInset">
+					<div class="ConsoleInset">
 						<table class="ConsoleInsetTable" cellpadding=0>
 						<tr>
 							<td class="ConsoleToolbarCorner_L" align=right><div class="ImgConsoleSearchBuilderToolbar_L"></div></td>
@@ -162,7 +158,7 @@ SEARCH BUILDER TOOLBAR
 						</tr>
 						<tr><td class="ConsoleVertical"  ><div class="ImgConsoleInset_L__V" style='height:100%'></div></td>
 							<td>
-								<div id="skin_container_search_builder" class="skin_container">
+								<div id="skin_container_search_builder"class="skin_container">
 <!--
 <A HREF='javascript:skin.hideSearchBuilder()'>
 SEARCH BUILDER

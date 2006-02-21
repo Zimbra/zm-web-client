@@ -614,8 +614,6 @@ function(ev) {
 ZmContactView.getPrintHtml = 
 function(contact, abridged, appCtxt) {
 
-	contact = contact.list._realizeContact(contact); // make sure it's a real ZmContact
-
 	var html = new Array();
 	var idx = 0;
 
