@@ -40,7 +40,7 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 	this.description = zimlet.description;
 	this.version = zimlet.version;
 	this.includes = this.json.zimlet.include;
-	this.includes = this.includes ? this.includes : new Array();
+	this.includes = this.includes ? this.includes : [];
 	this.includes.push("/zimbra/js/msgs/" + this.name + ".js");
 	this.includeCSS = this.json.zimlet.includeCSS;
 	if(zimlet.serverExtension && zimlet.serverExtension[0].hasKeyword){
@@ -157,23 +157,24 @@ function() {
 };
 
 ZmZimletContext.prototype._finished_loadIncludes = function() {
-	// we don't allow _loadIncludes a second time
+	// We don't allow _loadIncludes a second time
 	this.includes = null;
 	var CTOR  = this.handlerObject ? window[this.handlerObject] : ZmZimletBase;
 	this.handlerObject = new CTOR();
 	this.handlerObject._init(this, DwtShell.getShell(window));
 	if (this.contentObject) {
 		this._appCtxt._settings._zmm.registerContentZimlet(this.handlerObject, this.type, this.priority);
-		DBG.println(AjxDebug.DBG2, "Zimlets - registerContentZimlet(): " + this.name);
 	}
 	this.handlerObject.init();
 	this.handlerObject._zimletContext = this;
+	// If it has an _id then we need to make sure the treeItem
+	// is up-to-date now that the i18n files have loaded.
 	if(this._id) {
 		var tree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
 		var zimletItem = tree.getById(this._id);
-		zimletItem.resetName();
+		zimletItem.resetNames();
 	}
-	DBG.println(AjxDebug.DBG2, "Zimlets - init(): " + this.name);
+	DBG.println(AjxDebug.DBG2, "Zimlets - init() complete: " + this.name);
 };
 
 ZmZimletContext.prototype._loadStyles = function() {
@@ -330,7 +331,7 @@ ZmZimletContext.prototype.replaceObj = function(re, str, obj) {
 				       else
 					       txt += obj[prop];   // string
 				   } else {
-					   txt += "(UNDEFINED: obj." + prop + ")";
+					   txt += "(UNDEFINED - str '" + str + "' obj '" + obj + "')";
 				   }
 				   return txt;
 			   });

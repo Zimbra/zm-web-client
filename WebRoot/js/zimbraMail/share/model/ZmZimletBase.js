@@ -33,7 +33,7 @@ function ZmZimletBase() {
 	// For Zimlets, the ZmObjectHandler constructor is a no-op.  Zimlets
 	// don't receive any arguments in constructor.  In the init() function
 	// below we call ZmObjectHandler.init() in order to set some arguments.
-};
+}
 
 ZmZimletBase.PANEL_MENU = 1;
 ZmZimletBase.CONTENTOBJECT_MENU = 2;
@@ -55,8 +55,9 @@ function(zimletContext, shell) {
 		var regExInfo = contentObj.matchOn.regex;
 		if(!regExInfo.attrs) {regExInfo.attrs = "ig";}
 		this.RE = new RegExp(regExInfo._content, regExInfo.attrs);
-		if (contentObj.type)
+		if (contentObj.type) {
 			this.type = contentObj.type;
+		}
 		// note the _appCtxt is already initialized above
 		ZmObjectHandler.prototype.init.call(this, this.type, contentObj["class"]);
 	}
@@ -81,9 +82,7 @@ ZmZimletBase.prototype.getAppCtxt = function() {
 
 ZmZimletBase.prototype.xmlObj =
 function(key) {
-	return key == null
-		? this._zimletContext
-		: this._zimletContext.getVal(key);
+	return !key ? this._zimletContext : this._zimletContext.getVal(key);
 };
 
 
@@ -126,33 +125,39 @@ function(canvas) {
 ZmZimletBase.prototype._dispatch =
 function(handlerName) {
 	var params = [];
-	for (var i = 1; i < arguments.length; ++i)
+	var obj;
+	var url;
+	for (var i = 1; i < arguments.length; ++i) {
 		params[i-1] = arguments[i];
+	}
 	// create a canvas if so was specified
 	var canvas;
 	switch (handlerName) {
 	    case "singleClicked":
 	    case "doubleClicked":
 		// the panel item was clicked
-		var obj = this.xmlObj("zimletPanelItem")
+		obj = this.xmlObj("zimletPanelItem")
 			[handlerName == "singleClicked" ? "onClick" : "onDoubleClick"];
-		if (!obj)
+		if (!obj) {
 			break;
-		var url = obj.actionUrl;
-		if (url)
+		}
+		url = obj.actionUrl;
+		if (url) {
 			url = this.xmlObj().makeURL(url);
-		if (obj && (obj.canvas || url))
+		}
+		if (obj && (obj.canvas || url)) {
 			canvas = this.makeCanvas(obj.canvas, url);
+		}
 		break;
 
 	    case "doDrop":
-		var obj = params[1]; // the dragSrc that matched
+		obj = params[1]; // the dragSrc that matched
 		if (!obj)
 			break;
 		if (obj.canvas) {
 			canvas = obj.canvas[0];
 		}
-		var url = obj.actionUrl;
+		url = obj.actionUrl;
 		if (url && canvas) {
 			// params[0] is the dropped object
 			url = this.xmlObj().makeURL(url[0], params[0]);
@@ -161,8 +166,9 @@ function(handlerName) {
 		}
 		break;
 	}
-	if (canvas != null)
+	if (canvas) {
 		params.push(canvas);
+	}
 	return this.xmlObj().callHandler(handlerName, params);
 };
 
@@ -199,8 +205,9 @@ function(content, startIndex) {
 	if(!this.RE) {return;}
 	this.RE.lastIndex = startIndex;
 	var ret = this.RE.exec(content);
-	if (ret)
+	if (ret) {
 		ret.context = ret;
+	}
 	return ret;
 };
 
@@ -217,8 +224,9 @@ function(spanElement, contentObjText, matchContext, canvas) {
 	if (c && c.actionUrl) {
 		var obj = { objectContent: contentObjText };
 		if (matchContext && (matchContext instanceof Array)) {
-			for (var i = 0; i < matchContext.length; ++i)
+			for (var i = 0; i < matchContext.length; ++i) {
 				obj["$"+i] = matchContext[i];
+			}
 		}
 		this.xmlObj().handleActionUrl(c.actionUrl, c.canvas, obj);
 	}
@@ -237,8 +245,9 @@ function(spanElement, contentObjText, matchContext, canvas) {
 	if (c && c.toolTip) {
 		var obj = { objectContent: contentObjText };
 		if (matchContext) {
-			for (var i = 0; i < matchContext.length; ++i)
+			for (var i = 0; i < matchContext.length; ++i) {
 				obj["$"+i] = matchContext[i];
+			}
 		}
 		var txt;
 		if (c.toolTip instanceof Object &&
@@ -247,6 +256,8 @@ function(spanElement, contentObjText, matchContext, canvas) {
 		    // XXX the tooltip needs "some" text on it initially, otherwise it wouldn't resize afterwards.
 		    txt = "fetching data...";
 		} else {
+			// If it's an email address just use the address value.
+			if (obj.objectContent instanceof ZmEmailAddress) {obj.objectContent = obj.objectContent.address;}
 			txt = this.xmlObj().processString(c.toolTip, obj);
 		}
 		canvas.innerHTML = txt;
@@ -297,8 +308,7 @@ ZmZimletBase.prototype.createPropertyEditor =
 function(callback) {
 	var userprop = this.xmlObj().userProperties;
 
-	if (!userprop)
-		return;
+	if (!userprop) {return;}
 
 	if (!this._dlg_propertyEditor) {
 		var view = new DwtComposite(this.getShell());

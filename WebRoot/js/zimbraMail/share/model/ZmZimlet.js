@@ -30,10 +30,10 @@ function ZmZimlet(id, name, parent, tree, color, link) {
 ZmZimlet.prototype = new ZmOrganizer();
 ZmZimlet.prototype.constructor = ZmZimlet;
 // test hack 
-ZmZimlet.actionMenus = new Object();
-ZmZimlet.actionMenus["ZmCalViewController"] = new Array();
-ZmZimlet.listeners = new Object();
-ZmZimlet.listeners["ZmCalViewController"] = new Object();
+ZmZimlet.actionMenus = {};
+ZmZimlet.actionMenus["ZmCalViewController"] = [];
+ZmZimlet.listeners = {};
+ZmZimlet.listeners["ZmCalViewController"] = {};
 //
 ZmZimlet.prototype.toString =
 function() {
@@ -61,6 +61,7 @@ function(parent, obj, tree, link) {
 			// each other.
 			childZimlet._zimletContext = obj[i];
 			childZimlet._zimletContext._id = id;
+			childZimlet._toolTip = obj[i].zimletPanelItem.toolTipText;
 			obj[i]._organizer = childZimlet;
 		}
 	}
@@ -94,10 +95,18 @@ function() {
 	return this.name;
 };
 
-ZmZimlet.prototype.resetName =
+ZmZimlet.prototype.resetNames =
 function() {
+	var update = false;
+	if(this._zimletContext && this._toolTip) {
+		this._toolTip = this._zimletContext.processMessage(this._toolTip);
+		update = true;
+	}
 	if(this._zimletContext && this.name) {
 		this.name = this._zimletContext.processMessage(this.name);
+		update = true;
+	}
+	if(update) {
 		var fields = {};
 		fields[ZmOrganizer.F_NAME] = true;
 		var details = {};
@@ -108,11 +117,7 @@ function() {
 
 ZmZimlet.prototype.setToolTipText =
 function (control) {
-	if (this._zimletContext &&
-		this._zimletContext.zimletPanelItem &&
-		this._zimletContext.zimletPanelItem.toolTipText) {
-		control.setToolTipContent(this._zimletContext.zimletPanelItem.toolTipText);
-	}
+	control.setToolTipContent(this._toolTip);
 };
 
 ZmZimlet.prototype.getIcon =
