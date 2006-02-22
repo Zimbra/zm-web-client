@@ -30,10 +30,10 @@ function ZmZimlet(id, name, parent, tree, color, link) {
 ZmZimlet.prototype = new ZmOrganizer();
 ZmZimlet.prototype.constructor = ZmZimlet;
 // test hack 
-ZmZimlet.actionMenus = {};
-ZmZimlet.actionMenus["ZmCalViewController"] = [];
-ZmZimlet.listeners = {};
-ZmZimlet.listeners["ZmCalViewController"] = {};
+ZmZimlet.actionMenus = new Object();
+ZmZimlet.actionMenus["ZmCalViewController"] = new Array();
+ZmZimlet.listeners = new Object();
+ZmZimlet.listeners["ZmCalViewController"] = new Object();
 //
 ZmZimlet.prototype.toString =
 function() {
@@ -53,15 +53,13 @@ function(parent, obj, tree, link) {
 	if (obj && obj.length) {
 		var id = ZmZimlet.ID_ZIMLET;
 		for (var i = 0; i < obj.length; i++) {
-			var lbl = obj[i].processMessage(obj[i].zimletPanelItem.label);
-			var childZimlet = new ZmZimlet(++id, lbl, zimletRoot, tree, null, null);
+			var desc = obj[i].zimletPanelItem.label;
+			var childZimlet = new ZmZimlet(++id, desc, zimletRoot, tree, null, null);
 			zimletRoot.children.add(childZimlet);
 			// WARNING: it's a bit unorthodox to do this linkage
 			// here, but we really do need these objects know about
 			// each other.
 			childZimlet._zimletContext = obj[i];
-			childZimlet._zimletContext._id = id;
-			childZimlet._toolTip = obj[i].zimletPanelItem.toolTipText;
 			obj[i]._organizer = childZimlet;
 		}
 	}
@@ -93,31 +91,6 @@ function() {
 		return ZmMsg.zimlets;
 	}
 	return this.name;
-};
-
-ZmZimlet.prototype.resetNames =
-function() {
-	var update = false;
-	if(this._zimletContext && this._toolTip) {
-		this._toolTip = this._zimletContext.processMessage(this._toolTip);
-		update = true;
-	}
-	if(this._zimletContext && this.name) {
-		this.name = this._zimletContext.processMessage(this.name);
-		update = true;
-	}
-	if(update) {
-		var fields = {};
-		fields[ZmOrganizer.F_NAME] = true;
-		var details = {};
-		details.fields = fields;
-		this._notify(ZmEvent.E_MODIFY, details);
-	}
-};
-
-ZmZimlet.prototype.setToolTipText =
-function (control) {
-	control.setToolTipContent(this._toolTip);
 };
 
 ZmZimlet.prototype.getIcon =

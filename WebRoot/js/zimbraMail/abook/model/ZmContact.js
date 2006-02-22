@@ -107,13 +107,8 @@ ZmContact.F_workStreet		= "workStreet";
 ZmContact.F_workURL			= "workURL";
 
 // extra fields
-ZmContact.X_fileAs			= "fileAs";
 ZmContact.X_firstLast		= "firstLast";
 ZmContact.X_fullName		= "fullName";
-
-// GAL fields
-ZmContact.GAL_MODIFY_TIMESTAMP = "modifyTimeStamp";
-ZmContact.GAL_CREATE_TIMESTAMP = "createTimeStamp";
 
 // file as
 var i = 1;
@@ -153,13 +148,13 @@ function(node, args) {
 * Compares two contacts based on how they are filed. Intended for use by
 * sort methods.
 *
-* @param a		[object]		a contact
-* @param b		[object]		a contact
+* @param a		a contact
+* @param b		a contact
 */
 ZmContact.compareByFileAs =
 function(a, b) {
-	var aFileAs = (a instanceof ZmContact) ? a.getFileAs(true) : ZmContact.computeFileAs(a._attrs).toLowerCase();
-	var bFileAs = (b instanceof ZmContact) ? b.getFileAs(true) : ZmContact.computeFileAs(b._attrs).toLowerCase();
+	var aFileAs = a.getFileAs(true);
+	var bFileAs = b.getFileAs(true);
 
 	if (aFileAs > bFileAs) return 1;
 	if (aFileAs < bFileAs) return -1;
@@ -169,14 +164,11 @@ function(a, b) {
 /**
 * Figures out the filing string for the contact according to the chosen method.
 *
-* @param contact	[hash]		a set of contact attributes
+* @param attr		a set of contact attributes
 */
 ZmContact.computeFileAs =
 function(contact) {
-	if (contact && contact[ZmContact.X_fileAs])
-		return contact[ZmContact.X_fileAs];
-
-	var attr = (contact instanceof ZmContact) ? contact.getAttrs() : contact;
+	var attr = contact.getAttrs ? contact.getAttrs() : contact;
 	var val = parseInt(attr.fileAs);
 
 	var fa = new Array();
@@ -243,35 +235,10 @@ function(contact) {
 			}
 			break;
 	}
-	var fileAs = fa.join("");
-	if (contact && contact.id && !(contact instanceof ZmContact))
-		contact[ZmContact.X_fileAs] = fileAs;
-
-	return fileAs;
+	return fa.join("");
 };
 
-/* These next few static methods handle a contact that is either an anonymous object or an actual
-* ZmContact. The former is used to optimize loading. The anonymous object is upgraded to a
-* ZmContact when needed. */
-
-ZmContact.getAttr =
-function(contact, attr) {
-	return (contact instanceof ZmContact) ? contact.getAttr(attr) : contact._attrs[attr];
-};
-
-ZmContact.setAttr =
-function(contact, attr, value) {
-	if (contact instanceof ZmContact)
-		contact.setAttr(attr, value)
-	else 
-		contact._attrs[attr] = value;
-};
-
-ZmContact.isInTrash =
-function(contact) {
-	var folderId = (contact instanceof ZmContact) ? contact.folderId : contact.l;
-	return (folderId == ZmFolder.ID_TRASH);
-};
+// Public methods
 
 ZmContact.prototype.getAttr =
 function(name) {
@@ -540,7 +507,7 @@ function(lower) {
 		this._fileAs = ZmContact.computeFileAs(this);
 		this._fileAsLC = this._fileAs.toLowerCase();
 	}
-	return lower ? this._fileAsLC : this._fileAs;
+	return lower === true ? this._fileAsLC : this._fileAs;
 };
 
 ZmContact.prototype.getHeader = 
@@ -655,8 +622,6 @@ function(street, city, state, zipcode, country) {
 ZmContact.prototype._initFullName =
 function(email) {
 	var name = email.getName();
-	name = AjxStringUtil.trim(name.replace(ZmEmailAddress.commentPat, '')); // strip comment (text in parens)
-	
 	if (name && name.length) {
 		this._setFullName(name, [" "]);
 	} else {
@@ -715,35 +680,20 @@ function(field, data, html, idx) {
 // Reset computed fields.
 ZmContact.prototype._resetCachedFields =
 function() {
-	this._fileAs = this._fullName = this._toolTip = null;
+	this._fileAs = null;
+	this._fullName = null;
+	this._toolTip = null;
 };
 
 // Parse a contact node. A contact will only have attribute values if it is in the canonical list.
 ZmContact.prototype._loadFromDom =
 function(node) {
-	// if we have node.a then we must be dealing with a GAL contact
-	if (node.a && (node.a instanceof Array)) {
-		for (var i = 0; i < node.a.length; i++) {
-			var attr = node.a[i];
-			if (attr.n == ZmContact.X_fullName) {
-				this.attr[ZmContact.X_fullName] = attr._content;
-			} else if (attr.n == ZmContact.GAL_MODIFY_TIMESTAMP) {
-				this.modified = attr._content;
-			} else if (attr.n == ZmContact.GAL_CREATE_TIMESTAMP) {
-				this.created - attr._content;
-			} else {
-				// for now just save all other attrs regardless of dupes
-				this.attr[attr.n] = attr._content;
-			}
-		}
-	} else {
-		this.created = node.cd;
-		this.modified = node.md;
-		this.folderId = node.l;
-		this._parseFlags(node.f);
-		this._parseTags(node.t);
-		this.attr = node._attrs;
-	}
+	this.created = node.cd;
+	this.modified = node.md;
+	this.folderId = node.l;
+	this._parseFlags(node.f);
+	this._parseTags(node.t);
+	this.attr = node._attrs;
 };
 
 // these need to be kept in sync with ZmContact.F_*

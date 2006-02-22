@@ -49,21 +49,11 @@ function(zimletArray, userProps) {
 			}
 		}
 	}
-	var panelZimlets = this.getPanelZimlets();
- 	if(panelZimlets && panelZimlets.length > 0) {
-		var zimletTree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
-	 	if (!zimletTree) {
-	 		zimletTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ZIMLET);
-	 		this._appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
-	 	}
-	 	zimletTree.reset();
-	 	zimletTree.loadFromJs(panelZimlets);
- 	}
 };
 
 ZmZimletMgr.prototype.getPanelZimlets =
 function() {
-	var panelZimlets = [];
+	var panelZimlets = new Array();
 	var j=0;
 	for(var i=0; i < this._ZIMLETS.length; i++) {
 		if(this._ZIMLETS[i].zimletPanelItem) {
@@ -76,7 +66,7 @@ function() {
 
 ZmZimletMgr.prototype.getIndexedZimlets =
 function() {
-	var indexedZimlets = [];
+	var indexedZimlets = new Array();
 	var j=0;
 	for(var i=0; i < this._ZIMLETS.length; i++) {
 		if(this._ZIMLETS[i].keyword) {
@@ -93,7 +83,7 @@ function(zimletObj, type, priority) {
 	this._CONTENT_ZIMLETS[i] = zimletObj;
 	this._CONTENT_ZIMLETS[i].type = type;
 	this._CONTENT_ZIMLETS[i].prio = priority;
-	DBG.println(AjxDebug.DBG2, "Zimlets - registerContentZimlet(): " + this.name);
+	
 };
 
 ZmZimletMgr.prototype.getContentZimlets =
