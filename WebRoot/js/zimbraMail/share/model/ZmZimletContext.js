@@ -161,6 +161,10 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	this.includes = null;
 	var CTOR  = this.handlerObject ? window[this.handlerObject] : ZmZimletBase;
 	this.handlerObject = new CTOR();
+	if(!this.handlerObject._init) {
+		DBG.println(AjxDebug.DBG1, "ERROR - Zimlet handler (" + this.name + ") not defined. " +
+		    "Make sure the Zimlet name and handlerObject defined in " + this.name + ".xml are different.");
+	}
 	this.handlerObject._init(this, DwtShell.getShell(window));
 	if (this.contentObject) {
 		this._appCtxt._settings._zmm.registerContentZimlet(this.handlerObject, this.type, this.priority);
