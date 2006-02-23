@@ -39,13 +39,11 @@ function ZmComposeController(appCtxt, container, mailApp) {
 	ZmController.call(this, appCtxt, container, mailApp);
 
 	this._action = null;
-	// NOTE: only add listener if this is not a child window since we dont care 
-	// about these settings in child window
+	// only add listener if this is not a child window
 	if (mailApp._parentController == null) {
 		var settings = this._appCtxt.getSettings();
-		var scl = new AjxListener(this, this._settingsChangeListener);
-		settings.getSetting(ZmSetting.SIGNATURE_ENABLED).addChangeListener(scl);
-		settings.getSetting(ZmSetting.SIGNATURE).addChangeListener(scl);
+		settings.getSetting(ZmSetting.SIGNATURE_ENABLED).addChangeListener(new AjxListener(this, this._settingsChangeListener));
+		settings.getSetting(ZmSetting.SIGNATURE).addChangeListener(new AjxListener(this, this._settingsChangeListener));
 	}
 };
 
@@ -59,25 +57,14 @@ function() {
 
 // Public methods
 
-
-// called by ZmNewWindow.unload to remove ZmSettings listeners (which resides in 
-// the parent window). Otherwise, after the child window is closed, the parent 
-// window is still referencing this class which has been unloaded!!
-ZmComposeController.prototype.dispose = 
-function() {
-	var settings = this._appCtxt.getSettings();
-	//settings.getSetting(ZmSetting.SHOW_CC).removeChangeListener(/* AjxListener object goes here */);
-	//settings.getSetting(ZmSetting.SHOW_BCC).removeChangeListener(/* AjxListener object goes here */);
-};
-
 ZmComposeController.prototype.doAction =
 function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText) {
 	if (inNewWindow) {
-		var newWinObj = this._appCtxt.getNewWindow();
+		var newWin = this._appCtxt.getNewWindow();
 
 		// this is how child window knows what to do once loading:
-		newWinObj.command = "compose";
-		newWinObj.args = [action, msg, toOverride, subjOverride, extraBodyText, null];
+		newWin.command = "compose";
+		newWin.args = [action, msg, toOverride, subjOverride, extraBodyText, null];
 	} else {
 		this._setView(action, msg, toOverride, subjOverride, extraBodyText, null);
 	}
@@ -96,10 +83,10 @@ function(toggled) {
 */
 ZmComposeController.prototype.detach =
 function() {
-	var newWinObj = this._appCtxt.getNewWindow();
+	var newWin = this._appCtxt.getNewWindow();
 
 	// this is how child window knows what to do once loading:
-	newWinObj.command = "composeDetach";
+	newWin.command = "composeDetach";
 
 	var msg = this._composeView.getOrigMsg();
 	var addrs = this._composeView.getRawAddrFields();
@@ -108,7 +95,7 @@ function() {
 	var body = this._composeView.getHtmlEditor().getContent();
 	var composeMode = this._composeView.getComposeMode();
 
-	newWinObj.args = {action: this._action, msg: msg, addrs: addrs, subj: subj, forwardHtml: forAttHtml, body: body, composeMode: composeMode };
+	newWin.args = {action: this._action, msg: msg, addrs: addrs, subj: subj, forwardHtml: forAttHtml, body: body, composeMode: composeMode };
 };
 
 ZmComposeController.prototype.popShield =

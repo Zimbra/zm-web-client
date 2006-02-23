@@ -159,7 +159,18 @@ function(callback, result) {
 	if(obj.zimlets && obj.zimlets.zimlet) {
 		DBG.println(AjxDebug.DBG1, "Zimlets - Got " + (obj.zimlets.zimlet.length + 1) + " Zimlets");
 		this._zmm.loadZimlets(obj.zimlets.zimlet, obj.props.prop);
-	}
+	 	var panelZimlets = this._zmm.getPanelZimlets();
+	 	if(panelZimlets && panelZimlets.length > 0) {
+			var zimletTree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
+		 	if (!zimletTree) {
+		 		zimletTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ZIMLET);
+		 		this._appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
+		 	}
+		 	var zimletString = zimletTree.asString();
+		 	zimletTree.reset();
+		 	zimletTree.loadFromJs(panelZimlets);
+	 	}
+	 }
 
 	this.userSettingsLoaded = true;
 	

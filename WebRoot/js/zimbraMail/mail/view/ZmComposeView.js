@@ -43,9 +43,6 @@ function ZmComposeView(parent, controller, composeMode) {
 	this._contactPickerEnabled = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
 								 this._appCtxt.get(ZmSetting.GAL_ENABLED);
 	this._initialize(composeMode);
-
-	// make sure no unnecessary scrollbars show up
-	this.getHtmlElement().style.overflow = "hidden";
 };
 
 ZmComposeView.prototype = new DwtComposite;
@@ -54,22 +51,23 @@ ZmComposeView.prototype.constructor = ZmComposeView;
 
 // Consts
 
-// Consts related to compose fields
+// Address fields available
 ZmComposeView.ADDRS = [ZmEmailAddress.TO, ZmEmailAddress.CC, ZmEmailAddress.BCC];
-ZmComposeView.QUOTED_HDRS = [ZmMailMsg.HDR_FROM, ZmMailMsg.HDR_TO, ZmMailMsg.HDR_CC,
-							 ZmMailMsg.HDR_DATE, ZmMailMsg.HDR_SUBJECT];
-ZmComposeView.BAD = "_bad_addrs_";
 
 // Message dialog placement
 ZmComposeView.DIALOG_X = 50;
 ZmComposeView.DIALOG_Y = 100;
 
-// Attachment related
-ZmComposeView.UPLOAD_FIELD_NAME	= "attUpload";
-ZmComposeView.FORWARD_ATT_NAME	= "forAtt---" + Dwt.getNextId();
+// The iframe holds a form with attachment input fields
+ZmComposeView.IFRAME_HEIGHT = 30;
+ZmComposeView.UPLOAD_FIELD_NAME = "attUpload";
 
-// max # of attachments to show
-ZmComposeView.SHOW_MAX_ATTACHMENTS = AjxEnv.is800x600orLower ? 2 : 3;
+// Minimum height of compose body textarea
+ZmComposeView.MIN_BODY_HEIGHT = 300;
+
+// Data keys
+ZmComposeView.BAD = "_bad_addrs_";
+ZmComposeView.FORWARD_ATT_NAME = "forAtt---" + Dwt.getNextId();
 
 // Reply/forward stuff
 ZmComposeView.EMPTY_FORM_RE = /^[\s\|]*$/;
@@ -77,6 +75,8 @@ ZmComposeView.SUBJ_PREFIX_RE = new RegExp("^\\s*(" + ZmMsg.re + "|" + ZmMsg.fwd 
 ZmComposeView.QUOTED_CONTENT_RE = new RegExp("^----- ", "m");
 
 ZmComposeView.WRAP_LENGTH = 72;
+ZmComposeView.QUOTED_HDRS = [ZmMailMsg.HDR_FROM, ZmMailMsg.HDR_TO, ZmMailMsg.HDR_CC,
+							 ZmMailMsg.HDR_DATE, ZmMailMsg.HDR_SUBJECT];
 
 
 // Public methods
@@ -461,8 +461,6 @@ function(bEnableInputs) {
 	// the div that holds the attc.table and null out innerHTML
 	this._hasAttcDiv = false;
 	this._attcDiv.innerHTML = "";
-	this._attcDiv.style.height = "";
-	this._attachCount = 0;
 
 	this._resetBodySize();
 
@@ -493,14 +491,8 @@ ZmComposeView.prototype.addAttachmentField =
 function() {
 
 	var attTable = this._getAttachmentTable();
+
 	if (!attTable) return;
-
-	if (this._attachCount == ZmComposeView.SHOW_MAX_ATTACHMENTS) {
-		this._attcDiv.style.height = Dwt.getSize(this._attcDiv).y + "px";
-		this._attcDiv.style.overflow = "auto";
-	}
-
-	this._attachCount++;
 
 	// add new row
 	var row = attTable.insertRow(-1);
@@ -508,12 +500,13 @@ function() {
 	var attRemoveId = attId + "_r";
 	var attInputId = attId + "_i";
 	row.id = attId;
+	row.style.height = ZmComposeView.IFRAME_HEIGHT;
 
 	// add new cell and build html for inserting file upload input element
 	var	cell = row.insertCell(-1);
 	var html = new Array();
 	var idx = 0;
-	html[idx++] = "<table cellspacing=2 cellpadding=0 border=0><tr>";
+	html[idx++] = "<table cellspacing=4 cellpadding=0 border=0><tr>";
 	html[idx++] = "<td><div class='attachText'>" + ZmMsg.attachFile + ":</div></td>";
 	html[idx++] = "<td class='nobreak'>";
 	html[idx++] = "<input id='" + attInputId + "' type='file' name='" + ZmComposeView.UPLOAD_FIELD_NAME + "' size=40>&nbsp;";
@@ -665,10 +658,13 @@ function(bodyPart, encodeSpace) {
 
 ZmComposeView.prototype._getAttachmentTable =
 function() {
+	var attTable = null;
+
 	if (!this._hasAttcDiv)
 		this._createAttachmentsContainer();
 
-	return document.getElementById(this._attachmentTableId);
+	attTable = document.getElementById(this._attachmentTableId);
+	return attTable;
 };
 
 // Consistent spot to locate various dialogs
@@ -1015,7 +1011,6 @@ function(composeMode) {
 	// misc. inits
 	this._msgDialog = this._appCtxt.getMsgDialog();
 	this.setScrollStyle(DwtControl.SCROLL);
-	this._attachCount = 0;
 
 	// init listeners
 	this.addControlListener(new AjxListener(this, ZmComposeView.prototype._controlListener));
@@ -1159,7 +1154,7 @@ function() {
 	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	var html = new Array();
 	var idx = 0;
-	html[idx++] = "<div style='overflow:auto'>";
+	html[idx++] = "<div style='overflow:visible'>";
 	html[idx++] = "<form method='POST' action='";
 	html[idx++] = uri;
 	html[idx++] = "' id='";
@@ -1246,7 +1241,16 @@ function() {
 		return;
 
 	var height = size.y - Dwt.getSize(this.getHtmlElement().firstChild).y;
+	if (height < ZmComposeView.MIN_BODY_HEIGHT)
+		height = ZmComposeView.MIN_BODY_HEIGHT;
+
 	this._htmlEditor.setSize(size.x, height);
+
+	// reset scrollbars (in FF sometimes they will stay on even if it's not the case)
+	var el = this.getHtmlElement();
+	el.style.overflow = "hidden";
+	if (height == ZmComposeView.MIN_BODY_HEIGHT)
+		el.style.overflow = "auto";
 };
 
 // Show address field
@@ -1505,8 +1509,6 @@ function(ev) {
 	ev || (ev = window.event);
 
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) return true;
-
 	var id = element.id;
 	var cv = AjxCore.objectWithId(element._composeView);
 
@@ -1516,14 +1518,6 @@ function(ev) {
 		var row = document.getElementById(attId);
 		var table = document.getElementById(cv._attachmentTableId);
 		table.deleteRow(row.rowIndex);
-		if (--cv._attachCount < ZmComposeView.SHOW_MAX_ATTACHMENTS) {
-			cv._attcDiv.style.overflow = "";
-			cv._attcDiv.style.height = "";
-			if (AjxEnv.isIE && cv._attachCount == 0) {
-				cv._attcDiv.innerHTML = "";
-				cv._hasAttcDiv = false;
-			}
-		}
 		cv._resetBodySize();
 		return false; // disable following of link
 	}
@@ -1542,8 +1536,6 @@ function(ev) {
 	ev || (ev = window.event);
 
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) return true;
-
 	var id = element.id;
 	var key = DwtKeyEvent.getCharCode(ev);
 	// ignore return in attachment input field (bug 961)

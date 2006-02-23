@@ -511,7 +511,7 @@ function(appt, mode) {
 	if (appt.isCustomRecurrence()) {
 		this._repeatDescField.innerHTML = appt._getRecurrenceBlurbForSave();
 	} else {
-		this._repeatDescField.innerHTML = appt.repeatType != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
+		this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(appt.repeatType);
 	}
 
 	// attendees
@@ -1093,12 +1093,8 @@ function() {
 	var rows = this.getHtmlElement().firstChild.rows;
 	var lastRowIdx = rows.length-1;
 	var rowHeight = 0;
-	for (var i = 0; i < lastRowIdx; i++) {
-		// safari cant handle heights for TR's so get from TD's instead
-		rowHeight += AjxEnv.isSafari 
-			? Dwt.getSize(rows[i].cells[0]).y
-			: Dwt.getSize(rows[i]).y;
-	}
+	for (var i = 0; i < lastRowIdx; i++)
+		rowHeight += Dwt.getSize(rows[i]).y;
 	rowHeight = this.getSize().y - rowHeight;
 	var fudge = this._composeMode == DwtHtmlEditor.HTML ? 75 : 15;
 	Dwt.setSize(this._bodyField, Dwt.DEFAULT, rowHeight-fudge);
@@ -1195,7 +1191,7 @@ function(ev) {
 		this._oldRepeatValue = ev._args.oldValue;
 		this._showRecurDialog();
 	} else {
-		this._repeatDescField.innerHTML = newSelectVal != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
+		this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(newSelectVal);
 	}
 	this.notifyListeners(ZmApptTabViewPage._REPEAT_CHANGE, ev);
 };

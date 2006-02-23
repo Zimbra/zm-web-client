@@ -170,8 +170,8 @@ function(msg, now, isDndIcon, isMixedView) {
 			continue;
 
 		var id = this._headerList[i]._id;
-		// IE/Safari do not obey box model properly so we over compensate :(
-		var width = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
+		// IE does not obey box model properly so we over compensate :(
+		var width = AjxEnv.isIE ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
 		
 		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) == 0) {
 			// Flags

@@ -70,11 +70,7 @@ function(domain) {
 
 	// Create the global app context
 	var appCtxt = new ZmAppCtxt();
-
-	if (!window.parentController) {
-		window.parentController = window.opener._zimbraMail;
-	}
-
+	
 	// set any global references in parent w/in child window
 	if (window.parentController) {
 		appCtxt.setSettings(window.parentController._appCtxt.getSettings());
@@ -85,7 +81,7 @@ function(domain) {
 
 	// Create upload manager (for sending attachments)
 	appCtxt.setUploadManager(new AjxPost(appCtxt.getUploadFrameId()));
-
+	
 	// Go!
 	var lm = new ZmNewWindow(appCtxt, domain);
 };
@@ -95,16 +91,6 @@ function(domain) {
 */
 ZmNewWindow.unload = 
 function(ev) {	
-	// compose controller adds listeners to parent window's list so we need to 
-	// remove them before closing this window!
-	if (window.command == "compose" || window.command == "composeDetach") {
-		// is there a better way to get a ref to the compose controller?
-		var shell = AjxCore.objectWithId(window._dwtShell);
-		var appCtxt = shell ? shell.getData(ZmAppCtxt.LABEL) : null;
-		var cc = appCtxt ? appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController() : null;
-		if (cc) cc.dispose();
-	}
-
 	if (window.parentController) {
 		window.parentController.removeChildWindow(window);
 	}
@@ -122,15 +108,6 @@ function() {
 
 	if (!this._appViewMgr)
 		this._appViewMgr = new ZmAppViewMgr(this._shell, this, true, false);
-
-	// get params from parent window b/c of Safari bug #7162
-	if (window.parentController) {
-		var childWinObj = window.parentController.getChildWindow(window);
-		if (childWinObj) {
-			window.command = childWinObj.command;
-			window.args = childWinObj.args;
-		}
-	}
 
 	// depending on the command, do the right thing
 	if (window.command == "compose" || window.command == "composeDetach") {
