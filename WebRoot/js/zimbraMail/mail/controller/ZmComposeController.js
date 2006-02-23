@@ -39,11 +39,13 @@ function ZmComposeController(appCtxt, container, mailApp) {
 	ZmController.call(this, appCtxt, container, mailApp);
 
 	this._action = null;
-	// only add listener if this is not a child window
+	// NOTE: only add listener if this is not a child window since we dont care 
+	// about these settings in child window
 	if (mailApp._parentController == null) {
 		var settings = this._appCtxt.getSettings();
-		settings.getSetting(ZmSetting.SIGNATURE_ENABLED).addChangeListener(new AjxListener(this, this._settingsChangeListener));
-		settings.getSetting(ZmSetting.SIGNATURE).addChangeListener(new AjxListener(this, this._settingsChangeListener));
+		var scl = new AjxListener(this, this._settingsChangeListener);
+		settings.getSetting(ZmSetting.SIGNATURE_ENABLED).addChangeListener(scl);
+		settings.getSetting(ZmSetting.SIGNATURE).addChangeListener(scl);
 	}
 };
 
@@ -56,6 +58,17 @@ function() {
 };
 
 // Public methods
+
+
+// called by ZmNewWindow.unload to remove ZmSettings listeners (which resides in 
+// the parent window). Otherwise, after the child window is closed, the parent 
+// window is still referencing this class which has been unloaded!!
+ZmComposeController.prototype.dispose = 
+function() {
+	var settings = this._appCtxt.getSettings();
+	//settings.getSetting(ZmSetting.SHOW_CC).removeChangeListener(/* AjxListener object goes here */);
+	//settings.getSetting(ZmSetting.SHOW_BCC).removeChangeListener(/* AjxListener object goes here */);
+};
 
 ZmComposeController.prototype.doAction =
 function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText) {
