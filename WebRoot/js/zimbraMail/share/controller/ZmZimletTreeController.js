@@ -172,7 +172,9 @@ ZmZimletTreeController.prototype._dropListener = function(ev) {
  	} else {
 		var doIt = false;
 		for (var i = dragSrc.length; --i >= 0;) {
-			if (srcData.toString().indexOf(dragSrc[i].type) == 0) {
+			// XXX Assumes all srcData are of the same Type
+			var type = srcData[0] ? srcData[0].toString() : srcData.toString();
+			if (type == dragSrc[i].type) {
 				doIt = true;
 				dragSrc = dragSrc[i];
 				break;

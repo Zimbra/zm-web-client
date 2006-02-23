@@ -392,10 +392,8 @@ ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div
 };
 
 ZmZimletContext._translateZMObject = function(obj) {
-	var type = obj.toString();
-	if (/^([a-z0-9_$]+)/i.test(type)) {
-		type = RegExp.$1;
-	}
+	// XXX Assumes all dragged objects are of the same type
+	var type = obj[0] ? obj[0].toString() : obj.toString();
 	if (ZmZimletContext._zmObjectTransformers[type]) {
 		return ZmZimletContext._zmObjectTransformers[type](obj);
 	} else {
@@ -406,7 +404,7 @@ ZmZimletContext._translateZMObject = function(obj) {
 ZmZimletContext._zmObjectTransformers = {
 
 	"ZmMailMsg" : function(o) {
-		var all = new Array();
+		var all = [];
 		for(var i=0; i< o.length; i++) {
 			var ret = { TYPE: "ZmMailMsg" };
 			var oi = o[i];
@@ -427,7 +425,7 @@ ZmZimletContext._zmObjectTransformers = {
 			ret.sent         = oi.isSent;
 			ret.replied      = oi.isReplied;
 			ret.draft        = oi.isDraft;
-			ret.body		 = ZmZimletContext._getMsgBody(o);
+			ret.body		 = ZmZimletContext._getMsgBody(oi);
 			all[i] = ret;
 		}
 		if(all.length == 1) {
@@ -439,7 +437,7 @@ ZmZimletContext._zmObjectTransformers = {
 	},
 
 	"ZmConv" : function(o) {
-		var all = new Array();
+		var all = [];
 		for(var i=0; i< o.length; i++) {
 			var oi = o[i];
 			var ret = { TYPE: "ZmConv" };
