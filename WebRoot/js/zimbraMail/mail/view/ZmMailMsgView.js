@@ -918,7 +918,7 @@ function(msg) {
 	html[i++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%><tr>";
 	html[i++] = "<td style='overflow:hidden; id='";
 	html[i++] = this._tagCellId;
-	html[i++] = AjxEnv.isIE ? "' class='Tags'>" : "'>";
+	html[i++] = AjxEnv.isIE || AjxEnv.isSafari ? "' class='Tags'>" : "'>";
 
 	if (AjxEnv.isGeckoBased)
 		html[i++] = "<table border=0 cellspacing=0 cellpadding=0><tr>";
@@ -940,7 +940,7 @@ function(msg) {
 		html[i++] = "\"); return false;' id='";
 		html[i++] = anchorId;
 		html[i++] = "'>";
-		if (AjxEnv.isIE) {
+		if (AjxEnv.isIE || AjxEnv.isSafari) {
 			html[i++] = "<table style='display:inline; vertical-align:middle; width:16px' border=0 cellspacing=0 cellpadding=0><tr><td>";
 			html[i++] = AjxImg.getImageHtml(ZmTag.COLOR_MINI_ICON[tag.color], null, ["id='", imageId, "'"].join(""));
 			html[i++] = "</td></tr></table>";
