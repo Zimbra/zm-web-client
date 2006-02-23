@@ -39,15 +39,58 @@ function ZmComposeController(appCtxt, container, mailApp) {
 	ZmController.call(this, appCtxt, container, mailApp);
 
 	this._action = null;
-	// NOTE: only add listener if this is not a child window since we dont care 
-	// about these settings in child window
-	if (mailApp._parentController == null) {
-		var settings = this._appCtxt.getSettings();
-		var scl = new AjxListener(this, this._settingsChangeListener);
-		settings.getSetting(ZmSetting.SIGNATURE_ENABLED).addChangeListener(scl);
-		settings.getSetting(ZmSetting.SIGNATURE).addChangeListener(scl);
+	
+	this._listeners = {};
+	this._listeners[ZmOperation.SEND] = new AjxListener(this, this._sendListener);
+	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
+	this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._attachmentListener);
+	this._listeners[ZmOperation.DETACH_COMPOSE] = new AjxListener(this, this._detachListener);
+	this._listeners[ZmOperation.SAVE_DRAFT] = new AjxListener(this, this._saveDraftListener);
+	this._listeners[ZmOperation.ADD_SIGNATURE] = new AjxListener(this, this._addSignatureListener);
+	this._listeners[ZmOperation.SPELL_CHECK] = new AjxListener(this, this._spellCheckListener);
+	this._listeners[ZmOperation.COMPOSE_OPTIONS] = new AjxListener(this, this._optionsListener);
+	
+	var settings = this._appCtxt.getSettings();
+	var scl = this._settingsChangeListener = new AjxListener(this, this._settingsChangeListener);
+	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
+		settings.getSetting(ZmComposeController.SETTINGS[i]).addChangeListener(scl);
 	}
 };
+
+// settings whose changes affect us (so we add a listener to them)
+ZmComposeController.SETTINGS = [ZmSetting.SHOW_CC, ZmSetting.SHOW_BCC,
+								ZmSetting.SIGNATURE_ENABLED, ZmSetting.SIGNATURE];
+
+// radio groups for options items
+ZmComposeController.RADIO_GROUP = {};
+ZmComposeController.RADIO_GROUP[ZmOperation.REPLY]			= 1;
+ZmComposeController.RADIO_GROUP[ZmOperation.REPLY_ALL]		= 1;
+ZmComposeController.RADIO_GROUP[ZmOperation.FORMAT_HTML]	= 2;
+ZmComposeController.RADIO_GROUP[ZmOperation.FORMAT_TEXT]	= 2;
+ZmComposeController.RADIO_GROUP[ZmOperation.INC_ATTACHMENT]	= 3;
+ZmComposeController.RADIO_GROUP[ZmOperation.INC_NO_PREFIX]	= 3;
+ZmComposeController.RADIO_GROUP[ZmOperation.INC_NONE]		= 3;
+ZmComposeController.RADIO_GROUP[ZmOperation.INC_PREFIX]		= 3;
+ZmComposeController.RADIO_GROUP[ZmOperation.INC_SMART]		= 3;
+
+// translate between include preferences and operations
+ZmComposeController.INC_OP = {};
+ZmComposeController.INC_OP[ZmSetting.INCLUDE_ATTACH]	= ZmOperation.INC_ATTACHMENT;
+ZmComposeController.INC_OP[ZmSetting.INCLUDE]			= ZmOperation.INC_NO_PREFIX;
+ZmComposeController.INC_OP[ZmSetting.INCLUDE_NONE]		= ZmOperation.INC_NONE;
+ZmComposeController.INC_OP[ZmSetting.INCLUDE_PREFIX]	= ZmOperation.INC_PREFIX;
+ZmComposeController.INC_OP[ZmSetting.INCLUDE_SMART]		= ZmOperation.INC_SMART;
+ZmComposeController.INC_MAP = {};
+for (var i in ZmComposeController.INC_OP)
+	ZmComposeController.INC_MAP[ZmComposeController.INC_OP[i]] = i;
+delete i;
+
+ZmComposeController.OPTIONS_TT = {};
+ZmComposeController.OPTIONS_TT[ZmOperation.NEW_MESSAGE]		= "composeOptions";
+ZmComposeController.OPTIONS_TT[ZmOperation.REPLY]			= "replyOptions";
+ZmComposeController.OPTIONS_TT[ZmOperation.REPLY_ALL]		= "replyOptions";
+ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_ATT]		= "forwardOptions";
+ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_INLINE]	= "forwardOptions";
 
 ZmComposeController.prototype = new ZmController();
 ZmComposeController.prototype.constructor = ZmComposeController;
@@ -59,15 +102,18 @@ function() {
 
 // Public methods
 
-
-// called by ZmNewWindow.unload to remove ZmSettings listeners (which resides in 
-// the parent window). Otherwise, after the child window is closed, the parent 
-// window is still referencing this class which has been unloaded!!
+/**
+* Called by ZmNewWindow.unload to remove ZmSettings listeners (which reside in 
+* the parent window). Otherwise, after the child window is closed, the parent 
+* window is still referencing the child window's compose controller, which has
+* been unloaded!!
+*/
 ZmComposeController.prototype.dispose = 
 function() {
 	var settings = this._appCtxt.getSettings();
-	//settings.getSetting(ZmSetting.SHOW_CC).removeChangeListener(/* AjxListener object goes here */);
-	//settings.getSetting(ZmSetting.SHOW_BCC).removeChangeListener(/* AjxListener object goes here */);
+	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
+		settings.getSetting(ZmComposeController.SETTINGS[i]).removeChangeListener(this._settingsChangeListener);
+	}
 };
 
 ZmComposeController.prototype.doAction =
@@ -267,24 +313,25 @@ function(result) {
 ZmComposeController.prototype._setView =
 function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 
+	// save args in case we need to re-display (eg go from Reply to Reply All)
 	this._action = action;
+	this._msg = msg;
+	this._toOverride = toOverride;
+	this._subjOverride = subjOverride;
+	this._extraBodyText = extraBodyText;
+	this._composeMode = composeMode;
 
 	if (!this._toolbar)
 		this._createToolBar();
 	this._toolbar.enableAll(true);
 	if (action == ZmOperation.REPLY_CANCEL) {
-		this._toolbar.enable( [ ZmOperation.ATTACHMENT, ZmOperation.SAVE_DRAFT ], false);
+		this._toolbar.enable([ZmOperation.ATTACHMENT, ZmOperation.SAVE_DRAFT], false);
 	}
 
 	this.initComposeView();
 
-	if (composeMode) {
-		// set compose mode if already supplied
-		this._setFormatBtnItem(composeMode);
-	} else {
-		// otherwise, figure it out based on the given msg and mode type
-		this._setComposeMode(msg);
-	}
+	composeMode = composeMode ? composeMode : this._setComposeMode(msg);
+	this._setOptionsMenu(composeMode);
 
 	this._composeView.set(action, msg, toOverride, subjOverride, extraBodyText);
 	this._app.pushView(ZmController.COMPOSE_VIEW, true);
@@ -293,37 +340,42 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 
 ZmComposeController.prototype._createToolBar =
 function() {
-	var buttons = [ZmOperation.SEND, ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.ATTACHMENT, ZmOperation.SEP, ZmOperation.SPELL_CHECK, ZmOperation.SEP];
-
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))
-		buttons.push(ZmOperation.COMPOSE_FORMAT);
-
+	var buttons = [ZmOperation.SEND, ZmOperation.CANCEL, ZmOperation.SEP];
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED))
 		buttons.push(ZmOperation.SAVE_DRAFT);
+	buttons.push(ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK);
+	buttons.push(ZmOperation.ADD_SIGNATURE);
 
-	var addSig = (!this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED) && this._appCtxt.get(ZmSetting.SIGNATURE));
-	if (addSig) {
-		buttons.push(ZmOperation.ADD_SIGNATURE);
-	}
-
+	buttons.push(ZmOperation.FILLER); // right-align remaining buttons
+	buttons.push(ZmOperation.COMPOSE_OPTIONS);
 	if (!this.isChildWindow) {
-		// avoid double separators
-		if (buttons[buttons.length-1] != ZmOperation.SEP)
-			buttons.push(ZmOperation.SEP);
 		buttons.push(ZmOperation.DETACH_COMPOSE);
 	}
 
 	var className = this.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
 	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, className);
-	this._toolbar.addSelectionListener(ZmOperation.SEND, new AjxListener(this, this._sendListener));
-	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
-	this._toolbar.addSelectionListener(ZmOperation.ATTACHMENT, new AjxListener(this, this._attachmentListener));
+
+	for (var i = 0; i < buttons.length; i++)
+		if (buttons[i] > 0 && this._listeners[buttons[i]])
+			this._toolbar.addSelectionListener(buttons[i], this._listeners[buttons[i]]);
+
+	var canAddSig = (!this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED) && this._appCtxt.get(ZmSetting.SIGNATURE));
+	var signatureButton = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+	signatureButton.setVisible(canAddSig);
+
+	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY, ZmOperation.FORWARD_ATT];
+	this._optionsMenu = {};
+	for (var i = 0; i < actions.length; i++) {
+		this._optionsMenu[actions[i]] = this._createOptionsMenu(actions[i]);
+	}
+	this._optionsMenu[ZmOperation.REPLY_ALL] = this._optionsMenu[ZmOperation.REPLY];
+	this._optionsMenu[ZmOperation.FORWARD_INLINE] = this._optionsMenu[ZmOperation.FORWARD_ATT];
 
 	// change default button style to toggle for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
 
-	// bug fix #5719
+	// reduce toolbar width if low-res display
 	if (AjxEnv.is800x600orLower) {
 		spellCheckButton.setText("");
 		// if "add signature" button exists, remove label for attachment button
@@ -332,35 +384,75 @@ function() {
 			attachmentButton.setText("");
 		}
 	}
+};
 
+ZmComposeController.prototype._createOptionsMenu =
+function(action) {
+
+	var isReply = (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL);
+	var isForward = (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE);
+	var list = [];
+	if (isReply)
+		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.SEP);
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		var formatButton = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-		var m = new DwtMenu(formatButton);
-		formatButton.setMenu(m);
-
-		var mi = new DwtMenuItem(m, DwtMenuItem.RADIO_STYLE);
-		mi.setImage("HtmlDoc");
-		mi.setText(ZmMsg.htmlDocument);
-		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
-		mi.addSelectionListener(new AjxListener(this, this._formatListener));
-
-		mi = new DwtMenuItem(m, DwtMenuItem.RADIO_STYLE);
-		mi.setImage("GenericDoc");
-		mi.setText(ZmMsg.plainText);
-		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
-		mi.addSelectionListener(new AjxListener(this, this._formatListener));
+		list.push(ZmOperation.FORMAT_HTML, ZmOperation.FORMAT_TEXT, ZmOperation.SEP);
+	}
+	list.push(ZmOperation.SHOW_CC, ZmOperation.SHOW_BCC);
+	if (isReply) {
+		list.push(ZmOperation.SEP, ZmOperation.INC_NONE, ZmOperation.INC_ATTACHMENT, ZmOperation.INC_NO_PREFIX,
+				  ZmOperation.INC_PREFIX, ZmOperation.INC_SMART);
+	} else if (isForward) {
+		list.push(ZmOperation.SEP, ZmOperation.INC_ATTACHMENT, ZmOperation.INC_NO_PREFIX, ZmOperation.INC_PREFIX);
 	}
 
-	if (!this.isChildWindow)
-		this._toolbar.addSelectionListener(ZmOperation.DETACH_COMPOSE, new AjxListener(this, this._detachListener));
+	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+	var menu = new ZmPopupMenu(button);
+	
+	for (var i = 0; i < list.length; i++) {
+		var op = list[i];
+		if (op == ZmOperation.SEP) {
+			menu.createSeparator();
+		} else {
+			var style = (op == ZmOperation.SHOW_CC || op == ZmOperation.SHOW_BCC) ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
+			var radioGroup = (style == DwtMenuItem.RADIO_STYLE) ? ZmComposeController.RADIO_GROUP[op] : null;
+			var text = (op == ZmOperation.REPLY) ? ZmMsg.replySender : ZmMsg[ZmOperation.MSG_KEY[op]];
+			var mi = menu.createMenuItem(op, ZmOperation.IMAGE[op], text, null, true, style, radioGroup);
+			if (op == ZmOperation.FORMAT_HTML) {
+				mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
+			} else if (op == ZmOperation.FORMAT_TEXT) {
+				mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
+			}
+			mi.setData(ZmOperation.KEY_ID, op);		
+			mi.addSelectionListener(this._listeners[ZmOperation.COMPOSE_OPTIONS]);
+		}
+	}
+	return menu;
+};
 
-	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED))
-	  	this._toolbar.addSelectionListener(ZmOperation.SAVE_DRAFT, new AjxListener(this, this._saveDraftListener));
+ZmComposeController.prototype._setOptionsMenu =
+function(composeMode) {
+	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+	button.setToolTipContent(ZmMsg[ZmComposeController.OPTIONS_TT[this._action]]);
+	var menu = this._optionsMenu[this._action];
+	if (!menu) return;
 
-	if (addSig)
-	  	this._toolbar.addSelectionListener(ZmOperation.ADD_SIGNATURE, new AjxListener(this, this._addSignatureListener));
-
-	  this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
+	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+		menu.checkItem(ZmHtmlEditor._VALUE, composeMode, true);
+	}
+	var isReply = (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL);
+	var isForward = (this._action == ZmOperation.FORWARD_ATT || this._action == ZmOperation.FORWARD_INLINE);
+	if (isReply || isForward) {
+		var includePref = this._appCtxt.get(isReply ? ZmSetting.REPLY_INCLUDE_ORIG : ZmSetting.FORWARD_INCLUDE_ORIG);
+		this._curIncOption = ZmComposeController.INC_OP[includePref];
+		menu.checkItem(ZmOperation.KEY_ID, this._curIncOption, true);
+		if (isReply) {
+			menu.checkItem(ZmOperation.KEY_ID, this._action, true);
+		}
+	}
+	menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_CC).setChecked(this._appCtxt.get(ZmSetting.SHOW_CC), true);
+	menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_BCC).setChecked(this._appCtxt.get(ZmSetting.SHOW_BCC), true);
+	
+	button.setMenu(menu);
 };
 
 ZmComposeController.prototype._setComposeMode =
@@ -396,16 +488,24 @@ function(msg) {
 
 	this._composeView.setComposeMode(composeMode);
 
-	// dont forget to set the checked format type per compose mode
-	this._setFormatBtnItem(composeMode);
+	return composeMode;
 };
 
-// sets the check mark for the appropriate menu item depending on the compose mode
-ZmComposeController.prototype._setFormatBtnItem =
-function(composeMode) {
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, composeMode);
+ZmComposeController.prototype._setFormat =
+function(mode) {
+	if (mode == this._composeView.getComposeMode())	return;
+
+	if (mode == DwtHtmlEditor.TEXT && this._composeView.isDirty()) {
+		// if formatting from html to text, confirm w/ user!
+		if (!this._textToHtmlDialog) {
+			this._textToHtmlDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+			this._textToHtmlDialog.setMessage(ZmMsg.switchToText, DwtMessageDialog.WARNING_STYLE);
+			this._textToHtmlDialog.registerCallback(DwtDialog.OK_BUTTON, this._htmlToTextOkCallback, this, incOption);
+			this._textToHtmlDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._htmlToTextCancelCallback, this);
+		}
+		this._textToHtmlDialog.popup(this._composeView._getDialogXY());
+	} else {
+		this._composeView.setComposeMode(mode);
 	}
 };
 
@@ -480,27 +580,41 @@ function(ev) {
 	this._composeView.addAttachmentField();
 };
 
-ZmComposeController.prototype._formatListener =
+ZmComposeController.prototype._optionsListener =
 function(ev) {
+	var op = ev.item.getData(ZmOperation.KEY_ID);
 
-	if (!ev.item.getChecked())
+	// Show CC/BCC are checkboxes
+	if (op == ZmOperation.SHOW_CC || op == ZmOperation.SHOW_BCC) {
+		var showField = (ev.detail == DwtMenuItem.CHECKED);
+		var addrType = (op == ZmOperation.SHOW_CC) ? ZmEmailAddress.CC : ZmEmailAddress.BCC;
+		this._composeView._showAddressField(addrType, showField);
 		return;
+	}
 
-	var mode = ev.item.getData(ZmHtmlEditor._VALUE);
-	if (mode == this._composeView.getComposeMode())
-		return;
+	// the rest are radio buttons, we only care when they're selected
+	if (ev.detail != DwtMenuItem.CHECKED) return;
 
-	if (mode == DwtHtmlEditor.TEXT) {
-		// if formatting from html to text, confirm w/ user!
-		if (!this._textModeOkCancel) {
-			this._textModeOkCancel = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
-			this._textModeOkCancel.setMessage(ZmMsg.switchToText, DwtMessageDialog.WARNING_STYLE);
-			this._textModeOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._textModeOkCallback, this);
-			this._textModeOkCancel.registerCallback(DwtDialog.CANCEL_BUTTON, this._textModeCancelCallback, this);
-		}
-		this._textModeOkCancel.popup(this._composeView._getDialogXY());
+	if (op == ZmOperation.REPLY || op == ZmOperation.REPLY_ALL) {
+		this._composeView._setAddresses(op, this._toOverride);
+	} else if (op == ZmOperation.FORMAT_HTML || op == ZmOperation.FORMAT_TEXT) {
+		this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE));
 	} else {
-		this._composeView.setComposeMode(mode);
+		var incOption = ZmComposeController.INC_MAP[op];
+		if (incOption) {
+			if (this._composeView.isDirty()) {
+				if (!this._switchIncludeDialog) {
+					this._switchIncludeDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+					this._switchIncludeDialog.setMessage(ZmMsg.switchIncludeWarning, DwtMessageDialog.WARNING_STYLE);
+					this._switchIncludeDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._switchIncludeCancelCallback, this);
+				}
+				this._switchIncludeDialog.registerCallback(DwtDialog.OK_BUTTON, this._switchIncludeOkCallback, this, incOption);
+				this._switchIncludeDialog.popup(this._composeView._getDialogXY());
+			} else {
+				this._composeView.resetBody(this._action, this._msg, this._extraBodyText, incOption);
+				this._curIncOption = ZmComposeController.INC_OP[incOption];
+			}
+		}
 	}
 };
 
@@ -551,14 +665,17 @@ ZmComposeController.prototype._settingsChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 
-	var sigButton = this._toolbar.getOp(ZmOperation.ADD_SIGNATURE);
-	var haveSigButton = (sigButton != null);
-	var needSigButton = (!this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED) && this._appCtxt.get(ZmSetting.SIGNATURE));
-	if (haveSigButton && !needSigButton) {
-		this._toolbar.removeOp(ZmOperation.ADD_SIGNATURE);
-	} else if (!haveSigButton && needSigButton) {
-		this._toolbar.addOp(ZmOperation.ADD_SIGNATURE);
-	  	this._toolbar.addSelectionListener(ZmOperation.ADD_SIGNATURE, new AjxListener(this, this._addSignatureListener));
+	var id = ev.source.id;
+	if (id == ZmSetting.SIGNATURE_ENABLED || id == ZmSetting.SIGNATURE) {
+		var canAddSig = (!this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED) && this._appCtxt.get(ZmSetting.SIGNATURE));
+		var signatureButton = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+		signatureButton.setVisible(canAddSig);
+	} else if (id == ZmSetting.SHOW_CC) {
+		var menu = this._optionsMenu[this._action];
+		menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_CC).setChecked(this._appCtxt.get(ZmSetting.SHOW_CC), true);
+	} else if (id == ZmSetting.SHOW_BCC) {
+		var menu = this._optionsMenu[this._action];
+		menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_BCC).setChecked(this._appCtxt.get(ZmSetting.SHOW_BCC), true);
 	}
 };
 
@@ -573,15 +690,15 @@ function() {
 	this._app.popView(true);
 };
 
-ZmComposeController.prototype._textModeOkCallback =
-function(ev) {
-	this._textModeOkCancel.popdown();
+ZmComposeController.prototype._htmlToTextOkCallback =
+function() {
+	this._htmlToTextDialog.popdown();
 	this._composeView.setComposeMode(DwtHtmlEditor.TEXT);
 };
 
-ZmComposeController.prototype._textModeCancelCallback =
-function(ev) {
-	this._textModeOkCancel.popdown();
+ZmComposeController.prototype._htmlToTextCancelCallback =
+function() {
+	this._htmlToTextDialog.popdown();
 	// reset the radio button for the format button menu
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 	formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
@@ -589,7 +706,7 @@ function(ev) {
 };
 
 ZmComposeController.prototype._draftSavedCallback =
-function(ev) {
+function() {
 	this._draftSavedDialog.popdown();
 	this._composeView.reEnableDesignMode();
 };
@@ -644,4 +761,20 @@ function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(false);
 	this._composeView.reEnableDesignMode();
+};
+
+ZmComposeController.prototype._switchIncludeOkCallback =
+function(incOption) {
+	this._switchIncludeDialog.popdown();
+	this._composeView.resetBody(this._action, this._msg, this._extraBodyText, incOption);
+	this._curIncOption = ZmComposeController.INC_OP[incOption];
+};
+
+ZmComposeController.prototype._switchIncludeCancelCallback =
+function() {
+	this._switchIncludeDialog.popdown();
+	// reset the radio button for the include mode
+	var menu = this._optionsMenu[this._action];
+	if (!menu) return;
+	menu.checkItem(ZmOperation.KEY_ID, this._curIncOption, true);
 };

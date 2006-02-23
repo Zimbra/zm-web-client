@@ -187,7 +187,7 @@ function(result) {
 /**
 * Saves one or more settings.
 *
-* @param list	a list of settings (ZmSetting)
+* @param list	[array]		a list of ZmSetting
 */
 ZmSettings.prototype.save =
 function(list, callback) {
@@ -198,6 +198,10 @@ function(list, callback) {
 		var setting = list[i];
 		if (setting.type != ZmSetting.T_PREF) {
 			DBG.println(AjxDebug.DBG1, "*** Attempt to modify non-pref: " + setting.id + " / " + setting.name);
+			continue;
+		}
+		if (!setting.name) {
+			DBG.println(AjxDebug.DBG1, "*** Attempt to modify internal pref: " + setting.id);
 			continue;
 		}
 		var value = setting.getValue();

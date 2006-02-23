@@ -255,11 +255,11 @@ function(view) {
 	var toolbar = this._toolbar[view];
 	var button = toolbar.getButton(ZmOperation.NEW_MENU);
 	if (button) {
-        	var listener = new AjxListener(toolbar, ZmListController._newDropDownListener);
-        	button.addDropDownSelectionListener(listener);
-        	toolbar._ZmListController_this = this;
-        	toolbar._ZmListController_newDropDownListener = listener;
-    	}
+       	var listener = new AjxListener(toolbar, ZmListController._newDropDownListener);
+       	button.addDropDownSelectionListener(listener);
+       	toolbar._ZmListController_this = this;
+       	toolbar._ZmListController_newDropDownListener = listener;
+   	}
 	
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		var tagMenuButton = this._toolbar[view].getButton(ZmOperation.TAG_MENU);
@@ -687,11 +687,18 @@ function(list, args) {
 
 // Miscellaneous
 
-// Adds the same listener to all of a menu's items
+/*
+* Adds the same listener to all of the items in a button or menu item's submenu.
+* By default, propagates the listener for the given operation.
+*
+* @param parent		[DwtControl]		parent toolbar or menu
+* @param op			[constant]			operation (button or menu item)
+* @param listener	[AjxListener]*		listener to propagate
+*/
 ZmListController.prototype._propagateMenuListeners =
 function(parent, op, listener) {
 	if (!parent) return;
-	listener = listener || this._listeners[op];
+	listener = listener ? listener : this._listeners[op];
 	var opWidget = parent.getOp(op);
 	if (opWidget) {
 		var menu = opWidget.getMenu();
@@ -1083,6 +1090,10 @@ function(view, viewPushed) {
 	return true;
 };
 
+/*
+* Creates the New menu's drop down menu the first time the drop down arrow is used,
+* then removes itself as a listener.
+*/
 ZmListController._newDropDownListener = 
 function(event) {
 	var toolbar = this;

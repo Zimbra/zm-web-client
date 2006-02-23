@@ -139,10 +139,10 @@ function() {
 		if (window.command == "compose") {
 			// bug fix #4681
 			var action = window.args[0];
-			var msg = action == ZmOperation.REPLY_ALL ? this._deepCopyMsg(window.args[1]) : window.args[1];
+			var msg = (action == ZmOperation.REPLY_ALL) ? this._deepCopyMsg(window.args[1]) : window.args[1];
 			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController()._setView(window.args[0], msg, window.args[2], window.args[3], window.args[4]);
 		} else {
-			var op = ZmOperation.NEW_MESSAGE;
+			var op = window.args.action ? window.args.action : ZmOperation.NEW_MESSAGE;
 			if (window.args.msg) {
 				switch (window.args.msg._mode) {
 					case ZmAppt.MODE_DELETE: 

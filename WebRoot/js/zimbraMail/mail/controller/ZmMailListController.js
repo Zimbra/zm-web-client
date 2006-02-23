@@ -48,7 +48,6 @@ function ZmMailListController(appCtxt, container, mailApp) {
 		this._listeners[ZmOperation.REPLY_MENU] = replyLis;
 	} else {
 		this._listeners[ZmOperation.REPLY] = replyLis;
-		this._listeners[ZmOperation.REPLY_ALL] = replyLis;
 	}
 
 	var forwardLis = new AjxListener(this, this._forwardListener);
