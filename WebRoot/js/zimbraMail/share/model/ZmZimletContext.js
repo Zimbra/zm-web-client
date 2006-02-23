@@ -405,6 +405,7 @@ ZmZimletContext._zmObjectTransformers = {
 
 	"ZmMailMsg" : function(o) {
 		var all = [];
+		o = (o instanceof Array) ? o : [o];
 		for(var i=0; i< o.length; i++) {
 			var ret = { TYPE: "ZmMailMsg" };
 			var oi = o[i];
@@ -438,6 +439,7 @@ ZmZimletContext._zmObjectTransformers = {
 
 	"ZmConv" : function(o) {
 		var all = [];
+		o = (o instanceof Array) ? o : [o];
 		for(var i=0; i< o.length; i++) {
 			var oi = o[i];
 			var ret = { TYPE: "ZmConv" };
