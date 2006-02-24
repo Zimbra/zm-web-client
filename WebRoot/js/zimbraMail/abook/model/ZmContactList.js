@@ -223,9 +223,11 @@ function(id) {
 ZmContactList.prototype.getSubList = 
 function(offset, limit) {
 	var vec = ZmList.prototype.getSubList.call(this, offset, limit);
-	var a = vec.getArray();
-	for (var i = 0; i < a.length; i++) {
-		a[i] = this._realizeContact(a[i], offset + i);
+	if (vec) {
+		var a = vec.getArray();
+		for (var i = 0; i < a.length; i++) {
+			a[i] = this._realizeContact(a[i], offset + i);
+		}
 	}
 	return vec;
 };
