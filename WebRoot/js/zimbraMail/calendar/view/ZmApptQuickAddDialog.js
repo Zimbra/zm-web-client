@@ -86,8 +86,8 @@ function(appt) {
 	this._subjectField.focus();
 
 	// reset fields...
-	this._subjectField.setValue("");
-	this._locationField.setValue("");
+	this._subjectField.setValue(appt.getName() ? appt.getName() : "");
+	this._locationField.setValue(appt.getLocation() ? appt.getLocation() : "");
 	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getStartDate());
 	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getEndDate());
 	var isAllDay = appt.isAllDayEvent();
