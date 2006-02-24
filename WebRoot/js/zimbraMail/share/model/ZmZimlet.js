@@ -97,16 +97,16 @@ function() {
 
 ZmZimlet.prototype.resetNames =
 function() {
-	var update = false;
+	var oldName = this.name;
+	var oldToolTip = this._toolTip;
 	if(this._zimletContext && this._toolTip) {
 		this._toolTip = this._zimletContext.processMessage(this._toolTip);
-		update = true;
 	}
 	if(this._zimletContext && this.name) {
 		this.name = this._zimletContext.processMessage(this.name);
-		update = true;
 	}
-	if(update) {
+	// Update only if there was a change
+	if((oldName != this.name) || (oldToolTip != this._toolTip)) {
 		var fields = {};
 		fields[ZmOrganizer.F_NAME] = true;
 		var details = {};

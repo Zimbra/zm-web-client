@@ -93,7 +93,7 @@ function(zimletObj, type, priority) {
 	this._CONTENT_ZIMLETS[i] = zimletObj;
 	this._CONTENT_ZIMLETS[i].type = type;
 	this._CONTENT_ZIMLETS[i].prio = priority;
-	DBG.println(AjxDebug.DBG2, "Zimlets - registerContentZimlet(): " + this.name);
+	DBG.println(AjxDebug.DBG2, "Zimlets - registerContentZimlet(): " + this._CONTENT_ZIMLETS[i]._zimletContext.name);
 };
 
 ZmZimletMgr.prototype.getContentZimlets =
