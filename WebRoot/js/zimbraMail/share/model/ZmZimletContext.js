@@ -418,11 +418,11 @@ ZmZimletContext._zmObjectTransformers = {
 			ret.date         = oi.getDate();
 			ret.size         = oi.getSize();
 			ret.fragment     = oi.fragment;
-			// FIXME: figure out how to get these
-			// ret.tags         = oi.getTags();
+			ret.tags         = oi.tags;
 			// ret.flagged      = oi.getFlagged();
 			ret.unread       = oi.isUnread;
 			ret.attachment   = oi._attachments.length > 0;
+			// ret.forwarded      = oi.isForwarded();
 			ret.sent         = oi.isSent;
 			ret.replied      = oi.isReplied;
 			ret.draft        = oi.isDraft;
@@ -449,8 +449,7 @@ ZmZimletContext._zmObjectTransformers = {
 			ret.fragment     = oi.fragment;
 			ret.participants = oi.participants.getArray();
 			ret.numMsgs      = oi.numMsgs;
-			// FIXME: figure out how to get these
-			// ret.tags         = oi.getTags();
+			ret.tags         = oi.tags;
 			// ret.flagged      = oi.getFlagged();
 			ret.unread       = oi.isUnread;
 			// ret.attachment   = oi._attachments ?;
@@ -564,13 +563,12 @@ ZmZimletContext._zmObjectTransformers = {
 		ret.endDate        = oi.getEndDate();
 		ret.allDayEvent    = oi.isAllDayEvent();
 		ret.exception      = oi.isException();
-		ret.recurring      = oi.isRecurring();
 		ret.alarm          = oi.hasAlarm();
 		ret.otherAttendees = oi.hasOtherAttendees();
 		ret.attendees      = oi.getAttendees();
 		ret.location       = oi.getLocation();
 		ret.notes          = oi.getNotesPart();
-		ret.isRecurring    = ret.recurring; // WARNING: duplicate
+		ret.isRecurring    = oi.isRecurring();
 		ret.timeZone       = oi.getTimezone();
 		return ret;
 	}
