@@ -821,7 +821,11 @@ function(status, slots, table, sched) {
 			if (ed.getMinutes() >= 30)
 				endIdx++;
 
-			for (j = startIdx; j <= endIdx; j++) {
+			// normalize
+			if (endIdx <= startIdx)
+				endIdx = 48;
+
+			for (j = startIdx; j < endIdx; j++) {
 				if (row.cells[j]) {
 					if (status != ZmSchedTabViewPage.STATUS_UNKNOWN)
 						this._allAttendees[j] = this._allAttendees[j]+1;
