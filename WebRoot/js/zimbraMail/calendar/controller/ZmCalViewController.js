@@ -605,9 +605,9 @@ function(ev) {
 ZmCalViewController.prototype._postShowCallback =
 function() {
 	this._viewVisible = true;
-	if (this._needFullRefresh) {
-		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW);	
-	}
+//	if (this._needFullRefresh) {
+//		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW);	
+//	}
 }
 
 ZmCalViewController.prototype._postHideCallback =
@@ -1474,6 +1474,9 @@ ZmCalViewController.prototype.refreshHandler =
 function() {
 	var act = new AjxTimedAction(this, this._refreshAction);
 	AjxTimedAction.scheduleAction(act, 0);
+	// XXX: temp, until we get better server support 
+	//      (automatically comes down w/ refresh block)
+	this._getFolderPermissions(this.getAllCalendars());	
 }
 
 ZmCalViewController.prototype._refreshAction =
@@ -1484,17 +1487,10 @@ function(dontClearCache) {
 	if (this._viewMgr != null) {
 		// mark all views as dirty
 		this._viewMgr.setNeedsRefresh(true);
-		if (this._viewVisible) {
-			this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW);
-		} else {
-			// delay until we are visible
-			this._needFullRefresh = true;
-		}
+		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW);
+	} else if (this._miniCalendar != null) {
+		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
 	}
-
-	// XXX: temp, until we get better server support 
-	//      (automatically comes down w/ refresh block)
-	this._getFolderPermissions(this.getAllCalendars());
 }
 
 ZmCalViewController.prototype._maintErrorHandler =
