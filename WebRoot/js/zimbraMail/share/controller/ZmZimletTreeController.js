@@ -26,7 +26,7 @@
 function ZmZimletTreeController(appCtxt, type, dropTgt) {
 	if (arguments.length === 0) {return;}
 	type = type ? type : ZmOrganizer.ZIMLET;
-	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(ZmAppt, ZmConv, ZmMailMsg, ZmContact);
+	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(ZmAppt, ZmConv, ZmMailMsg, ZmContact, ZmFolder);
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 	this._eventMgrs = {};
 }
@@ -161,7 +161,7 @@ ZmZimletTreeController.prototype._dropListener = function(ev) {
 		ev.doIt = false;
 		return;
 	}
-	var srcData = ev.srcData.data;
+	var srcData = ev.srcData.data ? ev.srcData.data : ev.srcData;
 	if (!z || !srcData) {
 		ev.doIt = false;
 		return;

@@ -538,6 +538,19 @@ ZmZimletContext._zmObjectTransformers = {
 			return all;
 		}
 	},
+	
+	"ZmFolder" : function(o) {
+		var oi = o[0] ? o[0] : o;
+		var ret = { TYPE: "ZmFolder" };
+		ret.id           = oi.id;
+		ret.name         = oi.getName();
+		ret.path         = oi.getPath();
+		ret.isInTrash    = oi.isInTrash();
+		ret.unread       = oi.numUnread;
+		ret.total        = oi.numTotal;
+		ret.url          = oi.url;
+		return ret;
+	},
 
 	"ZmAppt" : function(o) {
 		var oi = o[0] ? o[0] : o;
