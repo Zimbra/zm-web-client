@@ -148,6 +148,49 @@
     </delete>	
   </target>
 
+	<target name='i18n-check' depends='compile'>
+		<taskdef name='i18ncheck' 
+				 classname='org.apache.kabuki.tools.i18n.ComparePropsTask' 
+				 classpath='${build.dir}/classes'
+		/>
+
+		<echo />
+		<echo>Checking Ajax messages</echo>
+		<echo />
+		<property name='ajax.msgs.dir' value='${ajax.dir}/WebRoot/js/config/msgs' />
+		<i18ncheck>
+			<sourcefile file='${ajax.msgs.dir}/AjxMsg.properties' />
+			<targetfileset dir='${ajax.msgs.dir}' includes='AjxMsg_*.properties' />
+		</i18ncheck>
+
+		<echo />
+		<echo>Checking Zimbra messages</echo>
+		<echo />
+		<property name='zimbra.msgs.dir' value='WebRoot/js/zimbra/config/msgs' />
+		<i18ncheck>
+			<sourcefile file='${zimbra.msgs.dir}/ZMsg.properties' />
+			<targetfileset dir='${zimbra.msgs.dir}' includes='ZMsg_*.properties' />
+		</i18ncheck>
+
+		<echo />
+		<echo>Checking Zimbra Admin messages</echo>
+		<echo />
+		<property name='zimbraAdmin.msgs.dir' value='WebRoot/js/zimbraAdmin/config/msgs' />
+		<i18ncheck>
+			<sourcefile file='${zimbraAdmin.msgs.dir}/ZaMsg.properties' />
+			<targetfileset dir='${zimbraAdmin.msgs.dir}' includes='ZaMsg_*.properties' />
+		</i18ncheck>
+
+		<echo />
+		<echo>Checking Zimbra Mail messages</echo>
+		<echo />
+		<property name='zimbraMail.msgs.dir' value='WebRoot/js/zimbraMail/config/msgs' />
+		<i18ncheck>
+			<sourcefile file='${zimbraMail.msgs.dir}/ZmMsg.properties' />
+			<targetfileset dir='${zimbraMail.msgs.dir}' includes='ZmMsg_*.properties' />
+		</i18ncheck>
+	</target>
+
 	<target name='i18n' depends='i18n-init,compile' unless='i18n-done'>
 		<taskdef name='i18n' 
 				 classname='org.apache.kabuki.tools.i18n.GenerateDataTask' 
