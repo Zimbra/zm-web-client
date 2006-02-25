@@ -32,8 +32,8 @@
   <property name="ajax.src.dir" value="${ajax.dir}/src"/>
   <property name="ajax.jars.dir" value="${ajax.dir}/jars"/>
   <property name="ajax.dwtimg.dir" value="${ajax.dir}/img"/>
-  <property name='ajax.imagemerge.dir' location='${ajax.src.dir}/com/zimbra/ajax/imagemerge'/>
-  <property name='ajax.i18n.dir' location='${ajax.src.dir}/com/zimbra/ajax/i18n'/>
+  <property name='ajax.imagemerge.dir' location='${ajax.src.dir}/org/apache/kabuki/tools/img'/>
+  <property name='ajax.i18n.dir' location='${ajax.src.dir}/org/apache/kabuki/tools/i18n'/>
   
   <condition property="deploy.dir" value="${env.DEPLOY_DIR}">
     <isset property="env.DEPLOY_DIR" />
@@ -124,7 +124,7 @@
       </path>
     </pathconvert>
     <taskdef name='imagemerge' 
-      classname='com.zimbra.ajax.imagemerge.ImageMergeTask' 
+      classname='org.apache.kabuki.tools.img.ImageMergeTask' 
       classpath='${imagemerge.cp}'
       />
 
@@ -136,7 +136,7 @@
       </path>
     </pathconvert>
     <taskdef name='imagesort' 
-      classname='com.zimbra.ajax.imagesort.ImageSortTask' 
+      classname='org.apache.kabuki.tools.img.ImageSortTask' 
       classpath='${sortimages.cp}'
       />
   </target>
@@ -150,7 +150,7 @@
 
 	<target name='i18n' depends='i18n-init,compile' unless='i18n-done'>
 		<taskdef name='i18n' 
-				 classname='com.zimbra.ajax.i18n.GenerateDataTask' 
+				 classname='org.apache.kabuki.tools.i18n.GenerateDataTask' 
 				 classpath='${build.dir}/classes'
 		/>
 		<mkdir dir='${build.dir}/i18n/msgs' />
@@ -209,23 +209,24 @@
     <echo>Prepend ZPL: ${var}</echo>
   </target>
 
-  <target name="prepend-MPL">
+  <target name="prepend-ASL">
     <concat destfile="${var}${jsminExtension}${licenseExtension}">
-      <header filtering="no" file="${build.dir}/preamble-mpl.txt"/>
+      <header filtering="no" file="${build.dir}/preamble-asl.txt"/>
       <path>
 	<fileset file="${var}${jsminExtension}"/>
       </path>
     </concat>
-    <echo>Prepend MPL: ${var}</echo>
+    <echo>Prepend ASL: ${var}</echo>
   </target>
 
 	<target name="compress-js-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, jam-files">
 		<fileset id="js-includes" dir="${build.dir}/WebRoot" includes="js/*.js" />
-		<concat destfile="${build.dir}/preamble-mpl.txt">
+		<concat destfile="${build.dir}/preamble-asl.txt">
 			<header>/*</header>
 			<footer>*/</footer>
 			<path>
-				<fileset file="../ZimbraLicenses/zimbra/preamble-MPL-Ajax.txt" />
+				<fileset file="${ajax.dir}/LICENSE.txt" />
+				<fileset file="${ajax.dir}/NOTICE.txt" />
 			</path>
 		</concat>
 		<concat destfile="${build.dir}/preamble-zpl.txt">
@@ -252,7 +253,7 @@
 				</fileset>
 			</path>
 		</foreach>
-		<foreach target="prepend-MPL" param="var">
+		<foreach target="prepend-ASL" param="var">
 			<path>
 				<fileset dir="${build.dir}/WebRoot/js">
 					<include name="Ajax_all.js" />
@@ -632,7 +633,7 @@
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar"/>
-      <classes dir="${build.dir}/classes" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
+      <classes dir="${build.dir}/classes" includes="**/*.class" excludes="org/apache/kabuki/tools/**,**/build/*"/>
   	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
@@ -654,7 +655,7 @@
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes="msgs/*.properties"/>
-      <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class"/>
+      <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class,**/servlets/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="help/**"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/xforms/**,**/test/**"/>
@@ -731,7 +732,7 @@
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes="msgs/*.properties"/>
-      <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class"/>
+      <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class,**/servlets/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
       <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/adminPost.js,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheHiRes.html,public/CacheLoRes.html,public/pre-cache.jsp"/>
@@ -750,7 +751,7 @@
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
       <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes="msgs/*.properties"/>
-      <classes dir="${build.dir}/classes" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
+      <classes dir="${build.dir}/classes" includes="**/*.class" excludes="org/apache/kabuki/tools/**,**/build/*"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
       <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/adminPost.js,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheHiRes.html,public/CacheLoRes.html,public/pre-cache.jsp"/>

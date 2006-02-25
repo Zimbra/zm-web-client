@@ -96,7 +96,7 @@ Contributor(s):
 	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/img/loRes/skins/steel/skin.css?v=<%= vers %>);
 	<% } %>
-	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/dwt.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/js/ajax/config/style/dwt.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/common.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/skins/steel/skin.css?v=<%= vers %>);  

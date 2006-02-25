@@ -86,7 +86,7 @@ static final private String LOGIN_PAGE = "/zimbra/";
 			@import url(/zimbra/img/loRes/skins/steel/skin.css?v=<%= vers %>);
 	<% } %>
 
-		@import url(/zimbra/js/zimbraMail/config/style/dwt.css?v=<%= vers %>);
+		@import url(/zimbra/js/ajax/config/style/dwt.css?v=<%= vers %>);
 		@import url(/zimbra/js/zimbraMail/config/style/common.css?v=<%= vers %>);
 		@import url(/zimbra/js/zimbraMail/config/style/msgview.css?v=<%= vers %>);
 		@import url(/zimbra/js/zimbraMail/config/style/zm.css?v=<%= vers %>);
