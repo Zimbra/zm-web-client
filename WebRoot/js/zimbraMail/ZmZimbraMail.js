@@ -59,7 +59,6 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
  
 	this._apps = {};
 	this._activeApp = null;
-    this._highestNotifySeen = 0;
 	
 	this._sessionTimer = new AjxTimedAction(null, ZmZimbraMail.logOff);
 	this._sessionTimerId = -1;
@@ -138,9 +137,9 @@ ZmZimbraMail.OVERVIEW_TREES = {};
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]	= [ZmOrganizer.CALENDAR, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.ROSTER_TREE_ITEM];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
 
 ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
 
@@ -281,8 +280,7 @@ function(params) {
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
 		this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
 
-	if (document.domain != "localhost")
-		this.setPollInterval();
+	this.setPollInterval();
 	var opc = this._appCtxt.getOverviewController();
 	opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
 						selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true});
@@ -339,7 +337,6 @@ function(settings) {
 	// could have each app do shutdown()
 	DBG.println(AjxDebug.DBG1, "RESTARTING APP");
 	ZmCsfeCommand.setSessionId(null);			// so we get a refresh block
-    this._highestNotifySeen = 0; //b/c we have a new session
 	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 	if (tagList) tagList.reset();
 	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER)
@@ -352,7 +349,7 @@ function(settings) {
 	this._appViewMgr.dtor();
 	this._appViewMgr = null;
 	this._searchController = this._overviewController = null;
-   	this.startup({bIsRelogin: false, settings: settings});
+	this.startup({bIsRelogin: false, settings: settings});
 };
 
 /**
@@ -380,8 +377,7 @@ function(params) {
 	var asyncCallback = params.asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [params]) : null;
 	var command = new ZmCsfeCommand();
 	var cmdParams = {soapDoc: params.soapDoc, useXml: this._useXml, changeToken: this._changeToken,
-					 asyncMode: params.asyncMode, callback: asyncCallback, logRequest: this._logRequest,
-					 highestNotifySeen: this._highestNotifySeen };
+					 asyncMode: params.asyncMode, callback: asyncCallback, logRequest: this._logRequest};
 	
 	DBG.println(AjxDebug.DBG2, "sendRequest: " + params.soapDoc._methodEl.nodeName);
 	if (params.asyncMode && !params.noBusyOverlay) {
@@ -464,20 +460,8 @@ function(params, result) {
 
 	// handle notifications after the response, so that item state is current
 	if (hdr && hdr.context && hdr.context.notify) {
-        for(i = 0; i < hdr.context.notify.length; i++) {
-        	var notify = hdr.context.notify[i];
-        	var seq = notify.seq;
-            // BUG?  What if the array isn't in sequence-order?  We would miss some notifications. Can that happen?  
-            if (notify.seq > this._highestNotifySeen) {
-                DBG.println(AjxDebug.DBG1, "Handling notification[" + i + "] seq=" + seq);
-                this._notifyHandler(notify);
-                this._highestNotifySeen = seq;
-            } else {
-            	DBG.println(AjxDebug.DBG1, "SKIPPING notification[" + i + "] seq=" + seq + " highestNotifySeen=" + this._highestNotifySeen);
-	      	}
-    	}        
+		this._notifyHandler(hdr.context.notify);
 	}
-	
 	// update change token if we get one
 	if (hdr && hdr.context && hdr.context.change) {
 		this._changeToken = hdr.context.change.token;
@@ -814,34 +798,15 @@ ZmZimbraMail.prototype.addChildWindow =
 function(childWin) {
 	if (this._childWinList == null)
 		this._childWinList = new AjxVector();
-
-	// NOTE: we now save childWin w/in Object so other params can be added to it.
-	// Otherwise, Safari breaks (see http://bugzilla.opendarwin.org/show_bug.cgi?id=7162)
-	var newWinObj = new Object();
-	newWinObj.win = childWin;
-
-	this._childWinList.add(newWinObj);
-
-	return newWinObj;
-};
-
-ZmZimbraMail.prototype.getChildWindow = 
-function(childWin) {
-	if (this._childWinList) {
-		for (var i = 0; i < this._childWinList.size(); i++) {
-			if (childWin == this._childWinList.get(i).win) {
-				return this._childWinList.get(i);
-			}
-		}
-	}
-	return null;
+	
+	this._childWinList.add(childWin);
 };
 
 ZmZimbraMail.prototype.removeChildWindow =
 function(childWin) {
 	if (this._childWinList) {
 		for (var i = 0; i < this._childWinList.size(); i++) {
-			if (childWin == this._childWinList.get(i).win) {
+			if (childWin == this._childWinList.get(i)) {
 				this._childWinList.removeAt(i);
 				break;
 			}
@@ -1231,7 +1196,7 @@ function(parent) {
 * exceptions unless they're auth-related.
 */
 ZmZimbraMail.prototype._doPoll =
-function(now) {
+function() {
 	this._pollActionId = null; // so we don't try to cancel
 	
 	// It'd be more efficient to make these instance variables, but for some
@@ -1240,7 +1205,7 @@ function(now) {
 	var errorCallback = new AjxCallback(this, this._handleErrorDoPoll);
 	var pollParams = {soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback, noBusyOverlay: true};
 	var pollAction = new AjxTimedAction(this, this.sendRequest, [pollParams]);
-	return AjxTimedAction.scheduleAction(pollAction, (now ? 0 : this._pollInterval));
+	return AjxTimedAction.scheduleAction(pollAction, this._pollInterval);
 };
 
 ZmZimbraMail.prototype._handleErrorDoPoll =

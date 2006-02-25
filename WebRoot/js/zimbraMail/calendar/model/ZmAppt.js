@@ -95,14 +95,21 @@ ZmAppt.PSTATUS_DECLINED				= "DE";
 ZmAppt.PSTATUS_DELEGATED			= "DG";
 
 ZmAppt.SERVER_DAYS_TO_DISPLAY = {
-	SU: I18nMsg.weekdaySunLong,
-	MO: I18nMsg.weekdayMonLong,
-	TU: I18nMsg.weekdayTueLong,
-	WE: I18nMsg.weekdayWedLong,
-	TH: I18nMsg.weekdayThuLong,
-	FR: I18nMsg.weekdayFriLong,
-	SA: I18nMsg.weekdaySatLong
+	SU: "Sunday",
+	MO: "Monday",
+	TU: "Tuesday",
+	WE: "Wednesday",
+	TH: "Thursday",
+	FR: "Friday",
+	SA: "Saturday"
 };
+
+ZmAppt.MONTHLY_DAY_OPTIONS = [
+	{ label: AjxMsg.first, 			value: "1", 		selected: true 	},
+	{ label: AjxMsg.second, 		value: "2", 		selected: false },
+	{ label: AjxMsg.third, 			value: "3", 		selected: false },
+	{ label: AjxMsg.fourth, 		value: "4", 		selected: false },
+	{ label: AjxMsg.last, 			value: "-1", 		selected: false }];
 
 ZmAppt.SERVER_WEEK_DAYS				= ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 ZmAppt.NOTES_SEPARATOR				= "\n\n*~*~*~*~*~*~*~*~*~*\n\n";
@@ -1186,117 +1193,104 @@ function(cancel) {
 
 ZmAppt.prototype._getRecurrenceBlurbForSave = 
 function() {
-	// recurrence text
-	var every = [];
-	switch (this.repeatType) {
-		case "DAI": {
-			if (this.repeatCustom == "1") {
-				every.push(ZmMsg.recurDailyEveryWeekday);
-			}
-			else if (this.repeatCustomCount == 1) {
-				every.push(ZmMsg.recurDailyEveryDay);
-			}
-			else {
-				var formatter = new AjxMessageFormat(ZmMsg.recurDailyEveryNumDays);
-				every.push(formatter.format(this.repeatCustomCount));
-			}
-			break;
-		}
-		case "WEE": {
-			if (this.repeatCustomCount == 1 && this.repeatWeeklyDays.length == 1) {
-				var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatWeeklyDays[0]);
-				var date = new Date();
-				date.setDate(date.getDate() - date.getDay() + dayofweek);
-				
-				var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryWeekday);
-				every.push(formatter.format(date));
-			}
-			else {
-				var weekdays = [];
-				for (var i = 0; i < this.repeatWeeklyDays.length; i++) {
-					var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatWeeklyDays[i]);
-					var date = new Date();
-					date.setDate(date.getDate() - date.getDay() + dayofweek);
-					
-					weekdays.push(date);
-				}
-				
-				var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryNumWeeksDate);
-				every.push(formatter.format([ this.repeatCustomCount, weekdays, "" ]));
-			}
-			break;
-		}
-		case "MON": {
-			if (this.repeatCustomType == "S") {
-				var count = Number(this.repeatCustomCount);
-				var date = Number(this.repeatMonthlyDayList[0]);
-			
-				var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsDate);
-				every.push(formatter.format([ date, count ]));
-			}
-			else {
-				var ordinal = Number(this.repeatCustomOrdinal);
-				var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatCustomDayOfWeek);
-				var day = new Date();
-				day.setDate(day.getDate() - day.getDay() + dayofweek);
-				var count = Number(this.repeatCustomCount);
+	if (this.repeatType == "NON") return "";
 
-				var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsNumDay);
-				every.push(formatter.format([ ordinal, day, count ]));
+	var blurb = new Array();
+	var idx = 0;
+
+	blurb[idx++] = "Every ";
+	if (this.repeatCustomCount > 1) {
+		blurb[idx++] = this.repeatCustomCount;
+		blurb[idx++] = " ";
+	}
+	blurb[idx++] = this._frequencyToDisplayString(this.repeatType, this.repeatCustomCount);
+
+	var customRepeat = (this.repeatCustom == '1');
+	if (this.repeatType == "WEE") {
+		blurb[idx++] = " on ";
+		if (customRepeat) {
+			if (this.repeatWeeklyDays.length > 0) {
+				for (var i = 0; i < this.repeatWeeklyDays.length; ++i) {
+					blurb[idx++] = ZmAppt.SERVER_DAYS_TO_DISPLAY[this.repeatWeeklyDays[i]];
+					if (i == (this.repeatWeeklyDays.length - 2 )) {
+						blurb[idx++] = " and ";
+					} else if (i < (this.repeatWeeklyDays.length - 1)) {
+						blurb[idx++] = ", ";
+					}
+				}
 			}
-			break;
+		} else {
+			blurb[idx++] = AjxDateUtil.WEEKDAY_LONG[this.startDate.getDay()];
 		}
-		case "YEA": {
-			if (this.repeatCustomType == "S") {
-				var month = new Date();
-				month.setMonth(Number(this.repeatYearlyMonthsList));
-				var day = Number(this.repeatCustomMonthDay);
-				
-				var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryDate);
-				every.push(formatter.format([ month, day ]));
+	} else if (this.repeatType == "MON"){
+		if (this.repeatCustomType == "S") {
+			blurb[idx++] = " on the ";
+			if (customRepeat) {
+				var nums = this.repeatMonthlyDayList;
+				nums = nums.sort(ZmAppt._SORTBY_VALUE);
+				for (var i = 0 ; i < nums.length; ++i ) {
+					blurb[idx++] = nums[i];
+					if (i < nums.length - 1) {
+						blurb[idx++] = ", ";
+					} else if (i == nums.length - 2) {
+						blurb[idx++] = " and ";
+					}
+				}
+			} else {
+				blurb[idx++] =  this.repeatCustomOrdinal;
+				blurb[idx++] = this.repeatCustomDayOfWeek;
+				blurb[idx++] = " of the month ";
 			}
-			else {
-				var ordinal = Number(this.repeatCustomOrdinal);
-				var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatCustomDayOfWeek);
-				var day = new Date();
-				day.setDate(day.getDate() - day.getDay() + dayofweek);
-				var month = new Date();
-				month.setMonth(Number(this.repeatYearlyMonthsList));
-				
-				var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryMonthNumDay);
-				every.push(formatter.format([ ordinal, day, month ]));
+		} else {
+			blurb[idx++] = this.startDate.getDate();
+		}
+	} else if (this.repeatType == "YEA") {
+		if (customRepeat) {
+			blurb[idx++] = " on ";
+			blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[Number(this.repeatYearlyMonthsList)-1]; // 0-based
+			if (this.repeatCustomType == "O") {
+				blurb[idx++] = " on the ";
+				blurb[idx++] = ZmAppt.MONTHLY_DAY_OPTIONS[Number(this.repeatCustomOrdinal)-1].label;
+				var dayOfWeek = null;
+				blurb[idx++] = " ";
+				for (var i = 0; i < ZmAppt.SERVER_WEEK_DAYS.length; i++) {
+					if (ZmAppt.SERVER_WEEK_DAYS[i] == this.repeatCustomDayOfWeek) {
+						dayOfWeek = AjxDateUtil.WEEKDAY_LONG[i];
+						break;
+					}
+				}
+				blurb[idx++] = dayOfWeek;
+				blurb[idx++] = " of the month ";
+			} else {
+				blurb[idx++] = " ";
+				blurb[idx++] = this.repeatCustomMonthDay;
 			}
-			break;
+		} else {
+			blurb[idx++] = " on ";
+			blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[this.startDate.getMonth()];
+			blurb[idx++] = " ";
+			blurb[idx++] = this.startDate.getDate();
 		}
 	}
-	
-	// start
-	var start = [];
-	var formatter = new AjxMessageFormat(ZmMsg.recurStart);
-	start.push(formatter.format(this.startDate));
-	
-	// end
-	var end = [];
-	switch (this.repeatEndType) {
-		case "N": {
-			end.push(ZmMsg.recurEndNone);
-			break;
+
+	var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
+	if (this.repeatEndDate != null && this.repeatEndType == "D") {
+		blurb[idx++] = " until ";
+		blurb[idx++] = dateFormatter.format(this.repeatEndDate);
+		if (this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE)) {
+			blurb[idx++] = " ";
+			blurb[idx++] = ZmTimezones.valueToDisplay[this.timezone];
 		}
-		case "A": {
-			var formatter = new AjxMessageFormat(ZmMsg.recurEndNumber);
-			end.push(formatter.format(this.repeatEndCount));
-			break;
-		}
-		case "D": {
-			var formatter = new AjxMessageFormat(ZmMsg.recurEndByDate);
-			end.push(formatter.format(this.repeatEndDate));
-			break;
-		}
+
+	} else if (this.repeatEndType == "A") {
+		blurb[idx++] = " for ";
+		blurb[idx++] = this.repeatEndCount;
+		blurb[idx++] = " ";
+		blurb[idx++] = this._frequencyToDisplayString(this.repeatType, this.repeatEndCount);
 	}
-	
-	// join all three together
-	var formatter = new AjxMessageFormat(ZmMsg.recurBlurb);
-	return formatter.format([ every.join(""), start.join(""), end.join("") ]);
+	blurb[idx++] = " effective ";
+	blurb[idx++] = dateFormatter.format(this.startDate);
+	return blurb.join("");
 };
 
 

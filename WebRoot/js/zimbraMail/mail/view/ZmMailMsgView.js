@@ -119,18 +119,18 @@ function(target) {
 		// XXX: for some reason Safari is returning false on getSelection()
 		//      even when something is selected w/in msg view. Just return false
 		//      to allow copying text :(
-		return true;
+		return false;
 	} else {
 		var bObjFound = target.id.indexOf("OBJ_") == 0;
 		var bSelection = false;
 
 		// determine if anything has been selected (IE and mozilla do it differently)
-		if (document.selection) {			// IE
+		if (document.selection) { // IE
 			bSelection = document.selection.type == "Text";
-		} else if (getSelection()) {		// mozilla
-			bSelection = getSelection().toString().length > 0;
+		} else if (getSelection()) { 		// mozilla
+			if (getSelection().toString().length)
+				bSelection = true;
 		}
-	
 		// if something has been selected and target is not a custom object,
 		return bSelection && !bObjFound ? false : true;
 	}
@@ -283,9 +283,9 @@ function(result) {
 	var msg = new ZmMailMsg(this._appCtxt, resp.m[0].id);
 	msg._loadFromDom(resp.m[0]);
 
-	var newWinObj = this._appCtxt.getNewWindow(true);
-	newWinObj.command = "msgViewDetach";
-	newWinObj.args = {msg: msg};
+	var newWin = this._appCtxt.getNewWindow(true);
+	newWin.command = "msgViewDetach";
+	newWin.args = {msg: msg};
 };
 
 
@@ -779,6 +779,7 @@ function(msg, container, callback) {
 	// From/To
 	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
+		// bug fix #3227 - dont bother filtering out BCC - server wont return any if they dont belong
 		var addrs = msg.getAddresses(type);
 		if (addrs.size() > 0) {
 			var prefix = ZmMsg[ZmEmailAddress.TYPE_STRING[type]];
@@ -918,7 +919,7 @@ function(msg) {
 	html[i++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%><tr>";
 	html[i++] = "<td style='overflow:hidden; id='";
 	html[i++] = this._tagCellId;
-	html[i++] = AjxEnv.isIE || AjxEnv.isSafari ? "' class='Tags'>" : "'>";
+	html[i++] = AjxEnv.isIE ? "' class='Tags'>" : "'>";
 
 	if (AjxEnv.isGeckoBased)
 		html[i++] = "<table border=0 cellspacing=0 cellpadding=0><tr>";
@@ -940,7 +941,7 @@ function(msg) {
 		html[i++] = "\"); return false;' id='";
 		html[i++] = anchorId;
 		html[i++] = "'>";
-		if (AjxEnv.isIE || AjxEnv.isSafari) {
+		if (AjxEnv.isIE) {
 			html[i++] = "<table style='display:inline; vertical-align:middle; width:16px' border=0 cellspacing=0 cellpadding=0><tr><td>";
 			html[i++] = AjxImg.getImageHtml(ZmTag.COLOR_MINI_ICON[tag.color], null, ["id='", imageId, "'"].join(""));
 			html[i++] = "</td></tr></table>";

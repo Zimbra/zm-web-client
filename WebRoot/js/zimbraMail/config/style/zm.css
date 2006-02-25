@@ -358,8 +358,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	background-color: #EEEEEE;
 }
 
-.ZmMailMsgView .MsgHeader .SubjectLine td { font-size: 12px; font-weight: bold; }
-
 .ZmMailMsgView .MsgHeader .LabelColName {
 	overflow: hidden;
 	width: 15ex;
@@ -1038,6 +1036,12 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	width: 1%;
 }
 
+/* ZmSchedTabViewPage */
+.ZmSchedTabViewPageKey {
+	vertical-align: top;
+	text-align: right;
+}
+
 .ZmSchedTabViewPageKeySquare {
 	width: 16px;
 	height: 16px;
@@ -1065,17 +1069,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	cursor: text;
 	line-height: 22px;
 	color: #AAAAAA;
-	width: 148px;
-}
-
-.ZmSchedTabViewPageEmail {
-	white-space: nowrap;
-	overflow: hidden;
-	cursor: text;
-	line-height: 22px;
-	height: 24px;
-	color: #AAAAAA;
-	width: 128px;
 }
 
 .ZmSchedTabViewPageCell {
@@ -1111,7 +1104,8 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmSchedTabViewPageInput {
-	height: 24px;
+	width: 100%;
+	height: 100%;
 	border: 0px;
 	padding-top: 3px;
 	font-size: 13px;
