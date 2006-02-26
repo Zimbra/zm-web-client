@@ -1503,25 +1503,11 @@ HTML>BODY .appt-selected .appt_allday_body
 /*
  * Contact picker
  */
-.ZmContactPicker .abPickList {
-	width: 250px;
-	height: 285px;
-	margin: 5 5 0 5;
-}
 
 .ZmContactPicker  {
 	border: 1px solid black;
 	background-color: #CCCCCC;
 }
-
-.ZmContactPicker-Active {
-	border: 1px solid #000000;
-}
-
-
-
-
-
 
 /*
  *  Autocompletion

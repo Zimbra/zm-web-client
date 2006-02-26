@@ -763,12 +763,12 @@ function(ev) {
 ZmSchedTabViewPage.prototype._contactPickerListener =
 function(ev) {
 	if (!this._contactPicker) {
-		var buttonInfo = [ { id:ZmEmailAddress.TO, value:ZmMsg.add.toLowerCase() } ];
+		var buttonInfo = [ { label: ZmMsg.add } ];
 		this._contactPicker = new ZmContactPicker(this._appCtxt, buttonInfo);
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
 	}
 	this._cpButton = ev.item;
-	this._contactPicker.popup(ZmEmailAddress.TO);
+	this._contactPicker.popup();
 };
 
 ZmSchedTabViewPage.prototype._navBarListener = 
@@ -898,8 +898,8 @@ function(value) {
 };
 
 ZmSchedTabViewPage.prototype._contactPickerOk =
-function(addrs) {
-	var addrs = addrs[ZmEmailAddress.TO].getArray();
+function(vec) {
+	var addrs = vec.getArray();
 	if (addrs.length) {
 		var dwtInputField = AjxCore.objectWithId(this._cpButton._inputFieldId);
 		var schedTableIdx = dwtInputField.schedTableIdx;
