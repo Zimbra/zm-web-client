@@ -763,8 +763,7 @@ function(ev) {
 ZmSchedTabViewPage.prototype._contactPickerListener =
 function(ev) {
 	if (!this._contactPicker) {
-		var buttonInfo = [ { label: ZmMsg.add } ];
-		this._contactPicker = new ZmContactPicker(this._appCtxt, buttonInfo);
+		this._contactPicker = new ZmContactPicker(this._appCtxt);
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
 	}
 	this._cpButton = ev.item;

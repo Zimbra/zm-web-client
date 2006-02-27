@@ -146,7 +146,7 @@ function() {
 	html[idx++] = "</td></tr></table>";
 	
 	// placeholder for the chooser
-	html[idx++] = "<div class='DwtChooser' id='";
+	html[idx++] = "<div id='";
 	html[idx++] = this._chooserDivId;
 	html[idx++] = "'></div>";
 	
