@@ -799,6 +799,12 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	table-layout:fixed;
 }
 
+.calendar_month_header_table {
+	width:100%;
+	height:100%;
+	border-collapse:collapse;
+}
+
 .calendar_month_cells_td {
 	height:16%;
 	border:1px solid #CCCCCC;
