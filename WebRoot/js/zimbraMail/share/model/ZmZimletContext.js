@@ -237,11 +237,15 @@ ZmZimletContext.prototype._translateUserProp = function() {
 };
 
 ZmZimletContext.prototype.setPropValue = function(name, val) {
-	this._propsById[name].value = val;
+	if(this._propsById[name]) {
+		this._propsById[name].value = val;
+	}
 };
 
 ZmZimletContext.prototype.getPropValue = function(name) {
-	return this._propsById[name].value;
+	if(this._propsById[name]) {
+		return this._propsById[name].value;
+	}
 };
 
 ZmZimletContext.prototype.getProp = function(name) {
