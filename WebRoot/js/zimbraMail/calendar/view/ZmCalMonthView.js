@@ -489,7 +489,7 @@ function() {
 	html.append("<table class=calendar_view_table>");
 	html.append("<tr><td>");
 	html.append("<div id='", this._headerId, "' style='position:relative;'>");
-	html.append("<table id=calendar_month_header_table class=calendar_month_table>");
+	html.append("<table id=calendar_month_header_table class=calendar_month_header_table>");
 	html.append("<colgroup>");
 	for (var i=0; i < 7; i++) {
 		this._headerColId[i] = Dwt.getNextId();
