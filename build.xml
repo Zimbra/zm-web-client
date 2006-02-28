@@ -30,7 +30,6 @@
   </condition>	
 
   <property name="ajax.src.dir" value="${ajax.dir}/src"/>
-  <property name="ajax.css.dir" value="${ajax.dir}/WebRoot/js/config/style"/>
   <property name="ajax.jars.dir" value="${ajax.dir}/jars"/>
   <property name="ajax.dwtimg.dir" value="${ajax.dir}/img"/>
   <property name='ajax.imagemerge.dir' location='${ajax.src.dir}/org/apache/kabuki/tools/img'/>
@@ -263,8 +262,8 @@
     <echo>Prepend ASL: ${var}</echo>
   </target>
 
-	<target name="compress-js-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, jam-files">
-		<fileset id="js-includes" dir="${build.dir}/WebRoot" includes="js/*.js" />
+	<target name='generate-preambles' depends='check4zimbraajax'>
+		<mkdir dir='${build.dir}'/>
 		<concat destfile="${build.dir}/preamble-asl.txt">
 			<header>/*</header>
 			<footer>*/</footer>
@@ -280,6 +279,10 @@
 				<fileset file="../ZimbraLicenses/zimbra/preamble-ZPL-WebClient.txt" />
 			</path>
 		</concat>
+	</target>
+	
+	<target name="compress-js-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, jam-files,generate-preambles">
+		<fileset id="js-includes" dir="${build.dir}/WebRoot" includes="js/*.js" />
 		<copy todir="${build.dir}/WebRoot">
 			<fileset refid="js-includes" />
 		</copy>
@@ -321,11 +324,13 @@
 		<echo>CSS File ${var}</echo>
 	</target>
 
-	<target name="compress-css-files" depends="copy-files-to-build-area, images">
+	<target name="compress-css-files" depends="copy-files-to-build-area, images, generate-preambles">
 		<echo>Compress CSS files</echo>
-		<delete dir="${build.dir}/WebRoot/js/" includes="*all.c*"/>
-		<fileset id="zm-css-includes" dir="${build.dir}/WebRoot" includes="${ajax.css.dir}/*.css,js/zimbraMail/config/style/*.css,skins/steel/skin.css" />
-		<fileset id="za-css-includes" dir="${build.dir}/WebRoot" includes="${ajax.css.dir}/*.css,js/zimbraAdmin/config/style/*.css,js/zimbraMail/config/style/*.css,skins/steel/skin.css" />
+		<delete>
+			<fileset dir="${build.dir}/WebRoot/js/" includes="*all.c*"/>
+		</delete>
+		<fileset id="zm-css-includes" dir="${build.dir}/WebRoot" includes="js/ajax/**/*.css,js/zimbraMail/**/*.css,skins/steel/skin.css" />
+		<fileset id="za-css-includes" dir="${build.dir}/WebRoot" includes="js/ajax/**/*.css,js/zimbraAdmin/**/*.css,js/zimbraMail/config/style/*.css,skins/steel/skin.css" />
 		<fileset id="hiRes-css-includes" dir="${build.dir}/WebRoot/img/hiRes/" includes="**/*.css" />
 		<fileset id="loRes-css-includes" dir="${build.dir}/WebRoot/img/loRes/" includes="**/*.css" />
 		<concat destfile="${build.dir}/WebRoot/js/ZimbraMail_loRes_all.css" fixlastline="yes">
