@@ -34,11 +34,13 @@
 * @param className 		class name for this view (defaults to ZmApptComposeView)
 * @param calApp			a handle to the owning calendar application
 * @param controller		the controller for this view
+* @param contactPicker	handle to a ZmContactPicker for selecting addresses
+* @param composeMode 	passed in so detached window knows which mode to be in on startup
 */
 function ZmApptComposeView(parent, className, calApp, controller) {
 
-	className = className ? className : "ZmApptComposeView";
-	DwtTabView.call(this, parent, className, Dwt.ABSOLUTE_STYLE);
+	className = className || "ZmApptComposeView";
+	DwtComposite.call(this, parent, className, Dwt.ABSOLUTE_STYLE);
 	
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._app = calApp;
@@ -47,7 +49,7 @@ function ZmApptComposeView(parent, className, calApp, controller) {
 	this._initialize();
 };
 
-ZmApptComposeView.prototype = new DwtTabView;
+ZmApptComposeView.prototype = new DwtComposite;
 ZmApptComposeView.prototype.constructor = ZmApptComposeView;
 
 // Consts
@@ -71,7 +73,7 @@ function() {
 
 ZmApptComposeView.prototype.set =
 function(appt, mode, isDirty) {
-	var button = this.getTabButton(this._apptTabKey);
+	var button = this._tabs.getTabButton(this._apptTabKey);
 	if (mode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
 		button.setImage("ApptException");
 	}
@@ -84,7 +86,7 @@ function(appt, mode, isDirty) {
 	}
 
 	// always switch to appointment tab
-	this.switchToTab(this._apptTabKey);
+	this._tabs.switchToTab(this._apptTabKey);
 
 	this._apptTab.initialize(appt, mode, isDirty);
 	this._scheduleTab.initialize(appt, mode);
@@ -180,15 +182,17 @@ function() {
 
 ZmApptComposeView.prototype._initialize = 
 function() {
+	this._tabs = new DwtTabView(this);
+
 	this._apptTab = new ZmApptTabViewPage(this, this._appCtxt);
 	this._apptTab.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 	this._scheduleTab = new ZmSchedTabViewPage(this, this._appCtxt, this._apptTab, this._controller);
 	var button = this._scheduleTab
 
-	this._apptTabKey = this.addTab(ZmMsg.appointment, this._apptTab);
-	this._scheduleTabKey = this.addTab(ZmMsg.scheduleAttendees, this._scheduleTab);
+	this._apptTabKey = this._tabs.addTab(ZmMsg.appointment, this._apptTab);
+	this._scheduleTabKey = this._tabs.addTab(ZmMsg.scheduleAttendees, this._scheduleTab);
 
-	var button = this.getTabButton(this._scheduleTabKey);
+	var button = this._tabs.getTabButton(this._scheduleTabKey);
 	button.setImage("ApptMeeting");
 
 	this.addControlListener(new AjxListener(this, this._controlListener));
@@ -197,7 +201,7 @@ function() {
 ZmApptComposeView.prototype._repeatChangeListener =
 function(ev) {
 	var value = ev._args.newValue;
-	var button = this.getTabButton(this._apptTabKey);
+	var button = this._tabs.getTabButton(this._apptTabKey);
 	button.setImage(value != "NON" ? "ApptRecur" : "Appointment");
 };
 
@@ -219,7 +223,7 @@ function(ev) {
 	if (newWidth == null && newHeight == null)
 		return;
 
-	if (this.getCurrentTab() == this._apptTabKey) {
+	if (this._tabs.getCurrentTab() == this._apptTabKey) {
 		this._apptTab.resize(newWidth, newHeight);
 	} else {
 		this._scheduleTab.resize(newWidth, newHeight);
