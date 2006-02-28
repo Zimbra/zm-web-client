@@ -147,7 +147,8 @@ function(view, arrowStyle) {
 
 		// nuke the text for tag menu for 800x600 resolutions
 		if (AjxEnv.is800x600orLower) {
-			this._toolbar[view].getButton(ZmOperation.TAG_MENU).setText("");
+			if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+				this._toolbar[view].getButton(ZmOperation.TAG_MENU).setText("");
 
 			// nuke the text for reply/forward for 800x600 resolutions or lower
 			if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
