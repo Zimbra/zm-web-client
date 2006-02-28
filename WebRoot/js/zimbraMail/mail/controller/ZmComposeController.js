@@ -379,7 +379,7 @@ function() {
 	if (AjxEnv.is800x600orLower) {
 		spellCheckButton.setText("");
 		// if "add signature" button exists, remove label for attachment button
-		if (addSig) {
+		if (canAddSig) {
 			var attachmentButton = this._toolbar.getButton(ZmOperation.ATTACHMENT);
 			attachmentButton.setText("");
 		}
