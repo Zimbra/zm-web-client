@@ -315,7 +315,7 @@ function(callback) {
 		var pe = this._propertyEditor = new DwtPropertyEditor(view, true);
 		pe.initProperties(userprop);
 		var dialog_args = {
-			title : this.xmlObj("description") + " preferences",
+			title : this._zimletContext.processMessage(this.xmlObj("description")) + " preferences",
 			view  : view
 		};
 		var dlg = this._dlg_propertyEditor = this._createDialog(dialog_args);

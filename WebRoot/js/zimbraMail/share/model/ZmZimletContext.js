@@ -331,18 +331,31 @@ ZmZimletContext.prototype.processMessage = function(str) {
 
 ZmZimletContext.prototype.replaceObj = function(re, str, obj) {
 	return str.replace(re,
-			   function(str, p1, prop) {
-				   var txt = p1;
-				   if (typeof obj[prop] != "undefined") {
-				       if (obj[prop] instanceof Object)
-				           txt += obj[prop].value;  // user prop
-				       else
-					       txt += obj[prop];   // string
-				   } else {
-					   txt += "(UNDEFINED - str '" + str + "' obj '" + obj + "')";
-				   }
-				   return txt;
-			   });
+		function(str, p1, prop) {
+			var txt = p1;
+			if (obj instanceof Array && obj.length > 1) {
+				for(var i=0; i < obj.length; i++) {
+					if(txt) {txt += ",";}
+					var o = obj[i];
+					if (o[prop] instanceof Object) {
+						txt += o[prop].value;  // user prop
+					} else {
+						txt += o[prop];   // string
+					}
+				}
+			} else {
+				if (typeof obj[prop] != "undefined") {
+					if (obj[prop] instanceof Object) {
+						txt += obj[prop].value;  // user prop
+					} else {
+						txt += obj[prop];   // string
+					}
+				} else {
+					txt += "(UNDEFINED - str '" + str + "' obj '" + obj + "')";
+				}
+			}
+			return txt;
+		});
 };
 
 ZmZimletContext.prototype.makeURL = function(actionUrl, obj) {
@@ -532,6 +545,7 @@ ZmZimletContext._zmObjectTransformers = {
 			for (var j = 0; j < a.length; ++j) {
 				ret[a[j]] = attr[a[j]];
 			}
+			ret.id = o[i].id;
 			all[i] = ret;
 		}
 		if(all.length == 1) {
