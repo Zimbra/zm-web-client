@@ -24,19 +24,21 @@
  */
 
 function ZmMoveToDialog(parent, msgDialog, className) {
+	DBG.showTiming(true, AjxDebug.PERF, "ZmMoveToDialog");
 	var newButton = new DwtDialog_ButtonDescriptor(ZmMoveToDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.move, [newButton]);
 
 	this.setContent(this._contentHtml());
 	this._createOverview(ZmMoveToDialog._OVERVIEW_ID, this._folderTreeCellId);
-	DBG.timePt("setting content");
+	DBG.timePt(AjxDebug.PERF, "setting content");
 
 	this.registerCallback(ZmMoveToDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._changeListener = new AjxListener(this, this._folderTreeChangeListener);
 
 	this._creatingFolder = false;
-	DBG.timePt("done");
-};
+	DBG.timePt(AjxDebug.PERF, "done");
+	DBG.showTiming(false);
+}
 
 ZmMoveToDialog._OVERVIEW_ID = "ZmMoveToFolderDialog";
 
@@ -48,10 +50,11 @@ ZmMoveToDialog.NEW_BUTTON = ++DwtDialog.LAST_BUTTON;
 ZmMoveToDialog.prototype.toString = 
 function() {
 	return "ZmMoveToDialog";
-};
+}
 
 ZmMoveToDialog.prototype.popup =
 function(data, loc) {
+	DBG.showTiming(true, AjxDebug.PERF, "ZmMoveToDialog#popup");
 	var omit = new Object();
 	omit[ZmFolder.ID_DRAFTS] = true;
 	var treeIds = [ZmOrganizer.FOLDER];
@@ -72,7 +75,7 @@ function(data, loc) {
 	// this listener has to be added after folder tree view is set
 	// (so that it comes after the view's standard change listener)
 	folderTree.addChangeListener(this._changeListener);
-	DBG.timePt("render and register listeners", true);
+	DBG.timePt(AjxDebug.PERF, "render and register listeners");
 
 	ZmDialog.prototype.popup.call(this, loc);
 	for (var i = 0; i < treeIds.length; i++) {
@@ -84,8 +87,9 @@ function(data, loc) {
 		if (this._folder && treeId == this._folder.type)
 			treeView.setSelected(tree.root);
 	}
-	DBG.timePt("expanded and selected");
-};
+	DBG.timePt(AjxDebug.PERF, "expanded and selected");
+	DBG.showTiming(false);
+}
 
 ZmMoveToDialog.prototype._contentHtml = 
 function() {
@@ -98,7 +102,7 @@ function() {
 	html[idx++] = "</table>";
 	
 	return html.join("");
-};
+}
 
 ZmMoveToDialog.prototype._showNewDialog =
 function() {
@@ -106,7 +110,7 @@ function() {
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._newCallback, this);
 	dialog.popup(null, this);
-};
+}
 
 ZmMoveToDialog.prototype._newCallback =
 function(parent, name) {
@@ -114,7 +118,7 @@ function(parent, name) {
 	ftc._doCreate(parent, name);
 	this._appCtxt.getNewFolderDialog().popdown();
 	this._creatingFolder = true;
-};
+}
 
 ZmMoveToDialog.prototype._folderTreeChangeListener =
 function(ev) {
@@ -122,7 +126,7 @@ function(ev) {
 		this._folderTreeView.setSelected(ev.source, true);
 		this._creatingFolder = false;
 	}
-};
+}
 
 ZmMoveToDialog.prototype._okButtonListener =
 function(ev) {
@@ -143,4 +147,4 @@ function(ev) {
 		this._showError(msg);
 	else
 		DwtDialog.prototype._buttonListener.call(this, ev, [tgtFolder]);
-};
+}

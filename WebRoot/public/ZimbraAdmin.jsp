@@ -20,7 +20,7 @@ All Rights Reserved.
 
 Contributor(s):
 
-***** END LICENSE BLOCK ***** 
+***** END LICENSE BLOCK *****
 -->
 <% 
    String vers = (String)request.getAttribute("version");
@@ -136,7 +136,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaServerMessageCountPage.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaServerSpamActivityPage.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaServerDiskStatsPage.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaServerMBXStatsPage.js<%= ext %>?v=<%= vers %>"></script>
+
 
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/globalconfig/view/GlobalConfigXFormView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/accounts/view/ZaAccMiniListView.js<%= ext %>?v=<%= vers %>"></script>

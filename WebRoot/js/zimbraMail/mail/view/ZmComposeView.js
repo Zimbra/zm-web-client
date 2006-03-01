@@ -43,9 +43,6 @@ function ZmComposeView(parent, controller, composeMode) {
 	this._contactPickerEnabled = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
 								 this._appCtxt.get(ZmSetting.GAL_ENABLED);
 	this._initialize(composeMode);
-
-	// make sure no unnecessary scrollbars show up
-	this.getHtmlElement().style.overflow = "hidden";
 };
 
 ZmComposeView.prototype = new DwtComposite;
@@ -54,25 +51,23 @@ ZmComposeView.prototype.constructor = ZmComposeView;
 
 // Consts
 
-// Consts related to compose fields
+// Address fields available
 ZmComposeView.ADDRS = [ZmEmailAddress.TO, ZmEmailAddress.CC, ZmEmailAddress.BCC];
-ZmComposeView.ADDR_SETTING = {};
-ZmComposeView.ADDR_SETTING[ZmEmailAddress.CC]	= ZmSetting.SHOW_CC;
-ZmComposeView.ADDR_SETTING[ZmEmailAddress.BCC]	= ZmSetting.SHOW_BCC;
-ZmComposeView.QUOTED_HDRS = [ZmMailMsg.HDR_FROM, ZmMailMsg.HDR_TO, ZmMailMsg.HDR_CC,
-							 ZmMailMsg.HDR_DATE, ZmMailMsg.HDR_SUBJECT];
-ZmComposeView.BAD = "_bad_addrs_";
 
 // Message dialog placement
 ZmComposeView.DIALOG_X = 50;
 ZmComposeView.DIALOG_Y = 100;
 
-// Attachment related
-ZmComposeView.UPLOAD_FIELD_NAME	= "attUpload";
-ZmComposeView.FORWARD_ATT_NAME	= "forAtt---" + Dwt.getNextId();
+// The iframe holds a form with attachment input fields
+ZmComposeView.IFRAME_HEIGHT = 30;
+ZmComposeView.UPLOAD_FIELD_NAME = "attUpload";
 
-// max # of attachments to show
-ZmComposeView.SHOW_MAX_ATTACHMENTS = AjxEnv.is800x600orLower ? 2 : 3;
+// Minimum height of compose body textarea
+ZmComposeView.MIN_BODY_HEIGHT = 300;
+
+// Data keys
+ZmComposeView.BAD = "_bad_addrs_";
+ZmComposeView.FORWARD_ATT_NAME = "forAtt---" + Dwt.getNextId();
 
 // Reply/forward stuff
 ZmComposeView.EMPTY_FORM_RE = /^[\s\|]*$/;
@@ -80,6 +75,8 @@ ZmComposeView.SUBJ_PREFIX_RE = new RegExp("^\\s*(" + ZmMsg.re + "|" + ZmMsg.fwd 
 ZmComposeView.QUOTED_CONTENT_RE = new RegExp("^----- ", "m");
 
 ZmComposeView.WRAP_LENGTH = 72;
+ZmComposeView.QUOTED_HDRS = [ZmMailMsg.HDR_FROM, ZmMailMsg.HDR_TO, ZmMailMsg.HDR_CC,
+							 ZmMailMsg.HDR_DATE, ZmMailMsg.HDR_SUBJECT];
 
 
 // Public methods
@@ -111,9 +108,9 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 	this._createAttachmentsContainer();
 
 	// reset To/Cc/Bcc fields
-	this._showAddressField(ZmEmailAddress.TO, true, true);
-	this._showAddressField(ZmEmailAddress.CC, this._appCtxt.get(ZmSetting.SHOW_CC), true);
-	this._showAddressField(ZmEmailAddress.BCC, this._appCtxt.get(ZmSetting.SHOW_BCC), true);
+	this._showField(ZmEmailAddress.TO, true);
+	this._showField(ZmEmailAddress.CC, false);
+	this._showField(ZmEmailAddress.BCC, false);
 
 	// populate fields based on the action and user prefs
 	this._setAddresses(action, toOverride);
@@ -204,7 +201,7 @@ function() {
 * Returns the message from the form, after some basic input validation.
 */
 ZmComposeView.prototype.getMsg =
-function(attId, isDraft) {	
+function(attId, isDraft) {
 	// Check destination addresses.
 	var addrs = this._collectAddrs();
 
@@ -345,15 +342,13 @@ function(attId, isDraft) {
 *
 * @param type	the address type
 * @param addr	the address string
-*
-* XXX: if addr empty, check if should hide field
 */
 ZmComposeView.prototype.setAddress =
 function(type, addr, bDontClear) {
-	addr = addr ? addr : "";
+	addr = addr || "";
 	if (addr.length && !this._using[type]) {
 		this._using[type] = true;
-		this._showAddressField(type, true);
+		this._showField(type, true);
 	}
 
 	this._field[type].value = bDontClear ? this._field[type].value + addr : addr;
@@ -466,8 +461,6 @@ function(bEnableInputs) {
 	// the div that holds the attc.table and null out innerHTML
 	this._hasAttcDiv = false;
 	this._attcDiv.innerHTML = "";
-	this._attcDiv.style.height = "";
-	this._attachCount = 0;
 
 	this._resetBodySize();
 
@@ -498,14 +491,8 @@ ZmComposeView.prototype.addAttachmentField =
 function() {
 
 	var attTable = this._getAttachmentTable();
+
 	if (!attTable) return;
-
-	if (this._attachCount == ZmComposeView.SHOW_MAX_ATTACHMENTS) {
-		this._attcDiv.style.height = Dwt.getSize(this._attcDiv).y + "px";
-		this._attcDiv.style.overflow = "auto";
-	}
-
-	this._attachCount++;
 
 	// add new row
 	var row = attTable.insertRow(-1);
@@ -513,12 +500,13 @@ function() {
 	var attRemoveId = attId + "_r";
 	var attInputId = attId + "_i";
 	row.id = attId;
+	row.style.height = ZmComposeView.IFRAME_HEIGHT;
 
 	// add new cell and build html for inserting file upload input element
 	var	cell = row.insertCell(-1);
 	var html = new Array();
 	var idx = 0;
-	html[idx++] = "<table cellspacing=2 cellpadding=0 border=0><tr>";
+	html[idx++] = "<table cellspacing=4 cellpadding=0 border=0><tr>";
 	html[idx++] = "<td><div class='attachText'>" + ZmMsg.attachFile + ":</div></td>";
 	html[idx++] = "<td class='nobreak'>";
 	html[idx++] = "<input id='" + attInputId + "' type='file' name='" + ZmComposeView.UPLOAD_FIELD_NAME + "' size=40>&nbsp;";
@@ -560,15 +548,27 @@ function(mimePart) {
 /**
 * Adds the user's signature to the message body. An "internet" style signature
 * is prefixed by a special line and added to the bottom. An "outlook" style
-* signature is added before quoted content.
+* signature is added before the quoted content.
 */
 ZmComposeView.prototype.addSignature =
 function() {
+	var sig = this._appCtxt.get(ZmSetting.SIGNATURE);
+	if (!sig) return;
+
+	var sigStyle = this._appCtxt.get(ZmSetting.SIGNATURE_STYLE);
+
+	var newLine = (this._composeMode == DwtHtmlEditor.HTML) ? "<br>" : "\n";
+
+	if (this._composeMode == DwtHtmlEditor.HTML)
+		sig = AjxStringUtil.htmlEncodeSpace(sig);
+	sig = sig + newLine;
+
+	var sep = newLine + newLine;
+	if (sigStyle == ZmSetting.SIG_INTERNET)
+		sep = sep + "-- " + newLine;
+
 	var content = this._htmlEditor.getContent();
-	var sig = this._getSignature();
-	var sep = this._getSignatureSeparator();
-	var newLine = this._getSignatureNewLine();
-	if (this._appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_OUTLOOK) {
+	if (sigStyle == ZmSetting.SIG_OUTLOOK) {
 		if (content.match(ZmComposeView.QUOTED_CONTENT_RE))
 			content = content.replace(ZmComposeView.QUOTED_CONTENT_RE, [sep, sig, newLine, "----- "].join(""));
 		else
@@ -578,33 +578,6 @@ function() {
 	}
 
 	this._htmlEditor.setContent(content);
-};
-
-ZmComposeView.prototype._getSignature =
-function() {
-	var sig = this._appCtxt.get(ZmSetting.SIGNATURE);
-	if (!sig) return;
-
-	var newLine = this._getSignatureNewLine();
-	if (this._composeMode == DwtHtmlEditor.HTML)
-		sig = AjxStringUtil.htmlEncodeSpace(sig);
-
-	return sig + newLine;
-};
-
-ZmComposeView.prototype._getSignatureSeparator =
-function() {
-	var newLine = this._getSignatureNewLine();
-	var sep = newLine + newLine;
-	if (this._appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET)
-		sep = sep + "-- " + newLine;
-		
-	return sep;
-};
-
-ZmComposeView.prototype._getSignatureNewLine =
-function() {
-	return (this._composeMode == DwtHtmlEditor.HTML) ? "<br>" : "\n";
 };
 
 /**
@@ -685,10 +658,13 @@ function(bodyPart, encodeSpace) {
 
 ZmComposeView.prototype._getAttachmentTable =
 function() {
+	var attTable = null;
+
 	if (!this._hasAttcDiv)
 		this._createAttachmentsContainer();
 
-	return document.getElementById(this._attachmentTableId);
+	attTable = document.getElementById(this._attachmentTableId);
+	return attTable;
 };
 
 // Consistent spot to locate various dialogs
@@ -743,26 +719,23 @@ function(cv, ev) {
 */
 ZmComposeView.prototype._setAddresses =
 function(action, toOverride) {
-	this._action = action;
-	if (action == ZmOperation.NEW_MESSAGE && toOverride) {
+	if (this._action == ZmOperation.NEW_MESSAGE && toOverride) {
 		this.setAddress(ZmEmailAddress.TO, toOverride);
-	} else if (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL ||
-			   this._isInviteReply(action)) {
+	} else if (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL ||
+			   this._isInviteReply(this._action)) {
 
 		var used = {};
 		used[this._appCtxt.get(ZmSetting.USERNAME)] = true; // don't add user addr to To: or Cc:
 		if (!this._msg.isSent) {
-			var addr = this._getAddrString(this._msg.getReplyAddresses(action), used);
+			var addr = this._getAddrString(this._msg.getReplyAddresses(this._action), used);
 			this.setAddress(ZmEmailAddress.TO, addr);
-		} else if (action == ZmOperation.REPLY) {
+		} else if (this._action == ZmOperation.REPLY) {
 			var toAddrs = this._msg.getAddresses(ZmEmailAddress.TO);
 			this.setAddress(ZmEmailAddress.TO, this._getAddrString(toAddrs, used));
 		}
 
 		// reply to all senders if reply all (includes To: and Cc:)
-		if (action == ZmOperation.REPLY) {
-			this.setAddress(ZmEmailAddress.CC, "");
-		} else if (action == ZmOperation.REPLY_ALL) {
+		if (this._action == ZmOperation.REPLY_ALL) {
 			var addrs = new AjxVector();
 			addrs.addList(this._msg.getAddresses(ZmEmailAddress.CC));
 			var toAddrs = this._msg.getAddresses(ZmEmailAddress.TO);
@@ -774,7 +747,7 @@ function(action, toOverride) {
 			}
 			this.setAddress(ZmEmailAddress.CC, this._getAddrString(addrs, used));
 		}
-	} else if (action == ZmOperation.DRAFT || action == ZmOperation.SHARE) {
+	} else if (this._action == ZmOperation.DRAFT || this._action == ZmOperation.SHARE) {
 		for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
 			var addrs = this._msg.getAddresses(ZmComposeView.ADDRS[i]);
 			this.setAddress(ZmComposeView.ADDRS[i], addrs.getArray().join(ZmEmailAddress.SEPARATOR));
@@ -810,7 +783,7 @@ function(action, msg, subjOverride) {
 };
 
 ZmComposeView.prototype._setBody =
-function(action, msg, extraBodyText, incOption) {
+function(action, msg, extraBodyText) {
 
 	if (action == ZmOperation.NEW_MESSAGE) {
 		if (this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED))
@@ -842,27 +815,25 @@ function(action, msg, extraBodyText, incOption) {
 		return;
 	}
 
-	var sigStyle = (this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED) && this._appCtxt.get(ZmSetting.SIGNATURE))
-				   ? this._appCtxt.get(ZmSetting.SIGNATURE_STYLE) : null;
+	var sigStyle = this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED) && this._appCtxt.get(ZmSetting.SIGNATURE)
+		? this._appCtxt.get(ZmSetting.SIGNATURE_STYLE)
+		: null;
+
+	if (sigStyle == ZmSetting.SIG_OUTLOOK)
+		this.addSignature();
 
 	var value = "";
-	if (sigStyle == ZmSetting.SIG_OUTLOOK)
-		value = this._getSignatureSeparator() + this._getSignature();
-
 
 	// get reply/forward prefs as necessary
-	if (!incOption) {
-		if (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL) {
-			incOption = this._appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG);
-		} else if (action == ZmOperation.FORWARD_INLINE) {
-			incOption = this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
-		}
-	}
+	var replyPref = action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL 
+		? this._appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG) : null;
+	var forwPref = action == ZmOperation.FORWARD_INLINE 
+		? this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) : null;
 
-	if (incOption == ZmSetting.INCLUDE_NONE) {
+	if (replyPref == ZmSetting.INCLUDE_NONE) {
 		if (extraBodyText)
 			value += extraBodyText;
-	} else if (incOption == ZmSetting.INCLUDE_ATTACH || action == ZmOperation.FORWARD_ATT) {
+	} else if (replyPref == ZmSetting.INCLUDE_ATTACH || action == ZmOperation.FORWARD_ATT) {
 		this._msgAttId = this._msg.id;
 	} else {
 		var crlf = composingHtml ? "<br>" : ZmMsg.CRLF;
@@ -887,8 +858,8 @@ function(action, msg, extraBodyText, incOption) {
 		body = body || ""; // prevent from printing "null" if no body found
 
 		// bug fix# 3215 - dont allow prefixing for html msgs
-		if ((action == ZmOperation.FORWARD_INLINE && incOption != ZmSetting.INCLUDE_PREFIX) || 
-			 incOption == ZmSetting.INCLUDE || composingHtml) 
+		if ((action == ZmOperation.FORWARD_INLINE && forwPref != ZmSetting.INCLUDE_PREFIX) || 
+			 replyPref == ZmSetting.INCLUDE || composingHtml) 
 		{
 			var msgText = (action == ZmOperation.FORWARD_INLINE) ? ZmMsg.forwardedMessage : ZmMsg.origMsg;
 			var text = ZmMsg.DASHES + " " + msgText + " " + ZmMsg.DASHES + crlf;
@@ -903,7 +874,9 @@ function(action, msg, extraBodyText, incOption) {
 			}
 			body = text + crlf + body;
 			value += leadingText + body;
-		} else {
+		} 
+		else 
+		{
 			var from = msg.getAddress(ZmEmailAddress.FROM);
 			if (!from && msg.isSent)
 				from = this._appCtxt.get(ZmSetting.USERNAME);
@@ -915,9 +888,9 @@ function(action, msg, extraBodyText, incOption) {
 				preface = ZmComposeView._replyPrefixFormatter.format(from.toString());
 			}
 			var prefix = this._appCtxt.get(ZmSetting.REPLY_PREFIX);
-			if (incOption == ZmSetting.INCLUDE_PREFIX || incOption == ZmSetting.INCLUDE_PREFIX) {
+			if (forwPref == ZmSetting.INCLUDE_PREFIX || replyPref == ZmSetting.INCLUDE_PREFIX) {
 				value += leadingText + preface + AjxStringUtil.wordWrap(body, ZmComposeView.WRAP_LENGTH, prefix + " ");
-			} else if (incOption == ZmSetting.INCLUDE_SMART) {
+			} else if (replyPref == ZmSetting.INCLUDE_SMART) {
 				var chunks = AjxStringUtil.getTopLevel(body);
 				for (var i = 0; i < chunks.length; i++)
 					chunks[i] = AjxStringUtil.wordWrap(chunks[i], ZmComposeView.WRAP_LENGTH, prefix + " ");
@@ -937,18 +910,16 @@ function(action, msg, extraBodyText, incOption) {
 		}
 	}
 
+	// bug fix #2684 - if we inserted a signature, lets preserve it!
+	var sig = this._htmlEditor.getContent();
+	value = sig ? (sig + value) : value;
+
 	this._htmlEditor.setContent(value);
 
 	if (sigStyle == ZmSetting.SIG_INTERNET)
 		this.addSignature();
 
-	this._showForwardField(msg, action, incOption);
-};
-
-ZmComposeView.prototype.resetBody =
-function(action, msg, extraBodyText, incOption) {
-	this._setBody(action, msg, extraBodyText, incOption);
-	this._origFormValue = this._formValue();
+	this._showForwardField(msg, action, replyPref);
 };
 
 // Generic routine for attaching an event handler to a field. Since "this" for the handlers is
@@ -997,6 +968,7 @@ function(composeMode) {
 	this._buttonTdId = new Object();
 	this._fieldId = new Object();
 	this._using = new Object();
+	this._addLinkId = new Object();
 	this._button = new Object();
 	this._field = new Object();
 	this._internalId = AjxCore.assignId(this);
@@ -1006,6 +978,7 @@ function(composeMode) {
 		this._divId[type] = Dwt.getNextId();
 		this._buttonTdId[type] = Dwt.getNextId();
 		this._fieldId[type] = Dwt.getNextId();
+		this._addLinkId[type] = Dwt.getNextId();
 	}
 
 	// init element IDs
@@ -1038,7 +1011,6 @@ function(composeMode) {
 	// misc. inits
 	this._msgDialog = this._appCtxt.getMsgDialog();
 	this.setScrollStyle(DwtControl.SCROLL);
-	this._attachCount = 0;
 
 	// init listeners
 	this.addControlListener(new AjxListener(this, ZmComposeView.prototype._controlListener));
@@ -1079,6 +1051,10 @@ function(composeMode) {
 			this._setEventHandler(this._fieldId[type], "onClick");
 		}
 	}
+
+	// init event handlers for add cc/bcc links
+	this._setEventHandler(this._addLinkId[ZmEmailAddress.CC], "onClick", ZmEmailAddress.CC);
+	this._setEventHandler(this._addLinkId[ZmEmailAddress.BCC], "onClick", ZmEmailAddress.BCC);
 };
 
 ZmComposeView.prototype._createHtml =
@@ -1117,6 +1093,27 @@ function() {
 		html[idx++] = "' rows=2 class='addresses'></textarea></td>";
 		html[idx++] = "</tr></table></div></td></tr>";
 	}
+
+	// create element for adding address fields
+	html[idx++] = "<tr><td><table cellspacing=4 cellpadding=0 border=0 width=100%><tr>";
+	html[idx++] = "<td width=60></td><td class='nobreak'>";
+	// create a fake link so they dont get focus when tabbing..
+	var fakeLinkStyle = "onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;'";
+	html[idx++] = "<span "
+	html[idx++] = fakeLinkStyle;
+	html[idx++] = " id='";
+	html[idx++] = this._addLinkId[ZmEmailAddress.CC];
+	html[idx++] = "'>";
+	html[idx++] = ZmMsg.addCc;
+	html[idx++] = "</span>";
+	html[idx++] = " | <span ";
+	html[idx++] = fakeLinkStyle;
+	html[idx++] = " id='";
+	html[idx++] = this._addLinkId[ZmEmailAddress.BCC];
+	html[idx++] = "'>";
+	html[idx++] = ZmMsg.addBcc;
+	html[idx++] = "</span></td>";
+	html[idx++] = "</tr></table></td></tr>";
 
 	// create subject field
 	html[idx++] = "<tr><td><table cellspacing=4 cellpadding=0 border=0 width=100%><tr>";
@@ -1157,7 +1154,7 @@ function() {
 	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	var html = new Array();
 	var idx = 0;
-	html[idx++] = "<div style='overflow:auto'>";
+	html[idx++] = "<div style='overflow:visible'>";
 	html[idx++] = "<form method='POST' action='";
 	html[idx++] = uri;
 	html[idx++] = "' id='";
@@ -1244,20 +1241,31 @@ function() {
 		return;
 
 	var height = size.y - Dwt.getSize(this.getHtmlElement().firstChild).y;
+	if (height < ZmComposeView.MIN_BODY_HEIGHT)
+		height = ZmComposeView.MIN_BODY_HEIGHT;
+
 	this._htmlEditor.setSize(size.x, height);
+
+	// reset scrollbars (in FF sometimes they will stay on even if it's not the case)
+	var el = this.getHtmlElement();
+	el.style.overflow = "hidden";
+	if (height == ZmComposeView.MIN_BODY_HEIGHT)
+		el.style.overflow = "auto";
 };
 
 // Show address field
-ZmComposeView.prototype._showAddressField =
-function(type, show, skipNotify) {
+ZmComposeView.prototype._showField =
+function(type, show) {
 	this._using[type] = show;
 	Dwt.setVisible(document.getElementById(this._divId[type]), show);
 	this._field[type].value = ""; // bug fix #750 and #3680
 	if (show)
 		this._field[type].focus();
-	var setting = ZmComposeView.ADDR_SETTING[type];
-	if (setting) {
-		this._appCtxt.set(setting, show, null, false, skipNotify);
+	var link = document.getElementById(this._addLinkId[type]);
+	if (link) {
+		link.innerHTML = show
+			? ZmMsg.remove + " " + ZmEmailAddress.TYPE_STRING[type].toUpperCase()
+			: "Add " + ZmEmailAddress.TYPE_STRING[type].toUpperCase();
 	}
 	this._resetBodySize();
 };
@@ -1336,9 +1344,10 @@ function(ev) {
 
 	if (!this._contactPicker) {
 		var buttonInfo = [
-			{ id: ZmEmailAddress.TO,	label: ZmMsg[ZmEmailAddress.TYPE_STRING[ZmEmailAddress.TO]] },
-			{ id: ZmEmailAddress.CC,	label: ZmMsg[ZmEmailAddress.TYPE_STRING[ZmEmailAddress.CC]] },
-			{ id: ZmEmailAddress.BCC,	label: ZmMsg[ZmEmailAddress.TYPE_STRING[ZmEmailAddress.BCC]] }];
+			{ id: ZmEmailAddress.TO, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.TO] },
+			{ id: ZmEmailAddress.CC, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.CC] },
+			{ id: ZmEmailAddress.BCC, value: ZmEmailAddress.TYPE_STRING[ZmEmailAddress.BCC] }];
+
 		this._contactPicker = new ZmContactPicker(this._appCtxt, buttonInfo);
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOkCallback, this);
 		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancelCallback, this);
@@ -1381,7 +1390,7 @@ function(addrs) {
 };
 
 ZmComposeView.prototype._contactPickerCancelCallback =
-function() {
+function(args) {
 	this.enableInputs(true);
 	this.reEnableDesignMode();
 };
@@ -1500,8 +1509,6 @@ function(ev) {
 	ev || (ev = window.event);
 
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) return true;
-
 	var id = element.id;
 	var cv = AjxCore.objectWithId(element._composeView);
 
@@ -1511,16 +1518,16 @@ function(ev) {
 		var row = document.getElementById(attId);
 		var table = document.getElementById(cv._attachmentTableId);
 		table.deleteRow(row.rowIndex);
-		if (--cv._attachCount < ZmComposeView.SHOW_MAX_ATTACHMENTS) {
-			cv._attcDiv.style.overflow = "";
-			cv._attcDiv.style.height = "";
-			if (AjxEnv.isIE && cv._attachCount == 0) {
-				cv._attcDiv.innerHTML = "";
-				cv._hasAttcDiv = false;
-			}
-		}
 		cv._resetBodySize();
 		return false; // disable following of link
+	}
+
+	switch (id) {
+		case cv._addLinkId[ZmEmailAddress.TO]:
+		case cv._addLinkId[ZmEmailAddress.CC]:
+		case cv._addLinkId[ZmEmailAddress.BCC]:
+			cv._showField(element._addrType, !cv._using[element._addrType]);
+			return false; // disable following of link
 	}
 };
 
@@ -1529,8 +1536,6 @@ function(ev) {
 	ev || (ev = window.event);
 
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) return true;
-
 	var id = element.id;
 	var key = DwtKeyEvent.getCharCode(ev);
 	// ignore return in attachment input field (bug 961)

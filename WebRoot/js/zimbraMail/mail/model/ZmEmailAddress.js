@@ -31,17 +31,22 @@
 * with RFC2822, so there are limitations for some of the edge cases.
 *
 * @author Conrad Damon
-* @param address	[string]		an email string, or just the address portion
-* @param type		[constant]*		from, to, cc, bcc, or reply-to
-* @param name		[string]*		the personal name portion
-* @param dispName	[string]*		a brief display version of the name
+* @param address	an email string, or just the address portion
+* @param type		from, to, cc, bcc, or reply-to
+* @param name		the personal name portion
+* @param dispName	an abbreviated form of the name (not currently used)
 */
 function ZmEmailAddress(address, type, name, dispName) {
 	this.address = address;
-	this.name = this._setName(name);
+
+	// bug fix #1932 - remove wrapping single quotes from name if exists
+	this.name = (name && name.charAt(0) == "'" && name.charAt(name.length-1) == "'")
+		? (name.substring(1, name.length-1))
+		: name;
+
 	this.dispName = dispName;
-	this.type = type ? type : ZmEmailAddress.TO;
-};
+	this.type = type || ZmEmailAddress.TO;
+}
 
 ZmEmailAddress.FROM			= 1;
 ZmEmailAddress.TO			= 2;
@@ -77,15 +82,14 @@ ZmEmailAddress.IS_DELIM = new Object();
 for (var i = 0; i < ZmEmailAddress.DELIMS.length; i++)
 	ZmEmailAddress.IS_DELIM[ZmEmailAddress.DELIMS[i]] = true;
 
-// validation patterns
-
+// we're currently using addrPat to validate strings as email addresses
 ZmEmailAddress.addrAnglePat = /(\s*<(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))>\s*)/;
-// use addrPat to validate strings as email addresses
 ZmEmailAddress.addrPat = /(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))/;
-// Pattern below hangs on an unclosed comment, so use simpler one if parsing for comments
+// XXX: this was causing bug #5569 - for now, we will use a more simpler regex to parse out comments
 //ZmEmailAddress.commentPat = /(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|(\s*\((\s*(([^()\\])|(\\([^\x0A\x0D]))|)+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*))+)*\s*\)\s*)/;
-ZmEmailAddress.commentPat = /\((.*)\)/g;
+ZmEmailAddress.commentPat = /\((.*)\)/;
 ZmEmailAddress.phrasePat = /(((\s*[^\x00-\x1F\x7F()<>\[\]:;@\"\s]+\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))+)/;
+
 ZmEmailAddress.boundAddrPat = /(\s*<?(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))>?\s*)$/;
 
 /**
@@ -95,12 +99,12 @@ ZmEmailAddress.boundAddrPat = /(\s*<?(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\
 * implementation. We don't really need or want that, since we don't want to be overly restrictive or bloated. It was easier
 * to just use the resulting regexes from the Perl module, rather than go through all the rigmarole of building them up from
 * atoms. Plus, I get to use the word "rigmarole".
-* <p>
-* If the address parses successfully, the current object's properties will be set.</p>
+* 
+* <p>If the address parses successfully, the current object's properties will be set.</p>
 */
 ZmEmailAddress.parse =
 function(str) {
-	var addr, name;
+	var user, host, name, comment;
 	var str = AjxStringUtil.trim(str);
 	var prelimOkay = ZmEmailAddress._prelimCheck(str);
 	if (!(prelimOkay && str.match(ZmEmailAddress.addrPat))) {
@@ -111,37 +115,45 @@ function(str) {
 	// Note: It would be nice if you could get back the matching parenthesized subexpressions from replace,
 	// then we wouldn't have to do both a match and a replace. The parsing works by removing parts after it
 	// finds them.
-	
-	// First find the address (and remove it)
+	var parts = str.match(ZmEmailAddress.commentPat);
+	if (parts) {
+		comment = parts[1]; // doesn't include the ()
+		str = str.replace(ZmEmailAddress.commentPat, '');
+	}
 	parts = str.match(ZmEmailAddress.addrAnglePat);
-	if (parts && parts.length) {
-		addr = parts[0];
+
+	if (parts) {
+		user = parts[3];
+		host = parts[12];
 		str = str.replace(ZmEmailAddress.addrAnglePat, '');
 	} else {
 		parts = str.match(ZmEmailAddress.addrPat);
-		if (parts && parts.length) {
-			addr = parts[0];
+		if (parts) {
+			user = parts[2];
+			host = parts[11];
 			str = str.replace(ZmEmailAddress.addrPat, '');
 		}
 	}
-	
-	// What remains is the name
 	parts = str.match(ZmEmailAddress.phrasePat);
 	if (parts) {
 		name = AjxStringUtil.trim(AjxStringUtil.trim(parts[0]), false, '"');
 	}
 	
-	return new ZmEmailAddress(addr, name);
-};
+	var addr = new ZmEmailAddress();
+	addr.address = [user, '@', host].join("");
+	addr.name = name ? name : comment;
+	
+	return addr;
+}
 
 /**
 * Takes a string with one or more addresses and parses it. An object with lists of good addresses, bad
 * addresses, and all addresses is returned. Strict RFC822 validation (at least as far as it goes in the
 * regexes we have) is optional. If it's off, we'll retry a failed address after quoting the personal part.
 *
-* @param emailStr	[string]	an email string with one or more addresses
-* @param type		[constant]	address type of the string
-* @param strict		[boolean]*	if true, do strict checking
+* @param emailStr		an email string with one or more addresses
+* @param type			address type of the string
+* @param strict			enforce RFC822
 */
 ZmEmailAddress.parseEmailString =
 function(emailStr, type, strict) {
@@ -155,13 +167,12 @@ function(emailStr, type, strict) {
 			var addr = ZmEmailAddress.parse(addrStr);
 			if (!addr && !strict) {
 				var temp = addrStr;
-				var parts = temp.match(ZmEmailAddress.addrAnglePat);
-				if (parts && parts.length) {
-					var name = temp.replace(ZmEmailAddress.addrAnglePat, '');
-					var newAddr = ['"', name, '" ', parts[0]].join("");
-					addr = ZmEmailAddress.parse(newAddr);
+				if (temp.match(ZmEmailAddress.addrAnglePat)) {
+					var t1 = temp.replace(ZmEmailAddress.addrAnglePat, '');
+					temp = temp.replace(t1, ['"', t1, '"'].join(""));
+					var addr = ZmEmailAddress.parse(temp);
 					if (addr)
-						addr.name = name; // reset name to original unquoted form
+						addr.name = t1; // reset name to original form
 				}
 			}
 			if (addr) {
@@ -175,7 +186,7 @@ function(emailStr, type, strict) {
 		}
 	}
 	return {good: good, bad: bad, all: all};
-};
+}
 
 /**
 * Tests a string to see if it's a valid email string according to our mailbox pattern.
@@ -187,7 +198,7 @@ function(str) {
 	str = AjxStringUtil.trim(str);
 	var prelimOkay = ZmEmailAddress._prelimCheck(str);
 	return (prelimOkay && str.match(ZmEmailAddress.addrPat));
-};
+}
 
 ZmEmailAddress._prelimCheck =
 function(str) {
@@ -198,19 +209,17 @@ function(str) {
 	var dotIndex = str.lastIndexOf('.');
 	var okay = ((atIndex != -1) && (dotIndex != -1) && (dotIndex > atIndex));
 	return okay;
-};
+}
 
 /**
 * Splits a string into (possible) email address strings based on delimiters. Tries to
 * be flexible about what it will accept. The following delimiters are recognized, under
 * the following conditions:
 *
-* <p><pre>
 * return		always
 * semicolon		must not be inside quoted or comment text
 * comma			must not be inside quoted or comment text, and must follow an address (which
 *				may be in angle brackets)
-* </pre></p>
 *
 * @param str	the string to be split
 */
@@ -284,12 +293,12 @@ function(str) {
 		}
 	}
 	return addrList;
-};
+}
 
 ZmEmailAddress.prototype.toString =
 function() {
 	if (this.name) {
-		var name = this.name.replace(/"/g, '\\"', this.name); // escape double quotes
+		var name = this.name.replace(/"/g, '\\"', this.name);
 		var addr = [name, " <", this.address, ">"].join("");
 		if (!ZmEmailAddress.parse(addr))
 			addr = ['"', name, '" <', this.address, ">"].join("");
@@ -297,50 +306,39 @@ function() {
 	} else {
 		return this.address;
 	}
-};
+}
 
 ZmEmailAddress.prototype.getAddress =
 function() {
 	return this.address;
-};
+}
 
 ZmEmailAddress.prototype.setAddress =
 function(addr) {
 	this.address = addr;
-};
+}
 
 ZmEmailAddress.prototype.getType =
 function() {
 	return this.type;
-};
+}
 
 ZmEmailAddress.prototype.setType =
 function(type) {
 	this.type = type;
-};
+}
 
 ZmEmailAddress.prototype.getTypeAsString =
 function() {
 	return ZmEmailAddress.TYPE_STRING[this.type];
-};
+}
 
 ZmEmailAddress.prototype.getName =
 function() {
 	return this.name;
-};
+}
 
 ZmEmailAddress.prototype.getDispName =
 function() {
 	return this.dispName;
-};
-
-ZmEmailAddress.prototype._setName =
-function(name) {
-	if (!name) return "";
-	
-	// remove wrapping single quotes from name if present
-	if (name && name.charAt(0) == "'" && name.charAt(name.length - 1) == "'")
-		name = name.substring(1, name.length - 1);
-		
-	return name;		
-};
+}
