@@ -66,7 +66,6 @@ ZmDialog.prototype = new DwtDialog;
 ZmDialog.prototype.constructor = ZmDialog;
 
 ZmDialog.prototype._contentHtml = function () {return "";};
-ZmDialog.prototype._okButtonListener = function () {};
 
 ZmDialog.prototype.setView =
 function(newView, noReset) {
@@ -91,6 +90,11 @@ function() {
 	if (this._nameField)
 		this._nameField.value = "";
 	DwtDialog.prototype.reset.call(this);
+};
+
+ZmDialog.prototype._okButtonListener =
+function() {
+	this.popdown();
 };
 
 ZmDialog.prototype._setNameField =
