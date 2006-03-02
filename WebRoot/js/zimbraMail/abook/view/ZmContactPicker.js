@@ -285,7 +285,7 @@ function(ev) {
 * @param buttonInfo		[array]			transfer button IDs and labels
 */
 function ZmContactChooser(parent, buttonInfo) {
-	DwtChooser.call(this, parent, buttonInfo, DwtChooser.HORIZ_STYLE, true);
+	DwtChooser.call(this, parent, null, buttonInfo, DwtChooser.HORIZ_STYLE, true);
 };
 
 ZmContactChooser.prototype = new DwtChooser;
@@ -319,7 +319,7 @@ function(item, list) {
 */
 function ZmContactChooserSourceListView(parent) {
 
-	DwtChooserListView.call(this, parent, DwtChooserListView.SOURCE);
+	DwtChooserListView.call(this, parent, DwtChooserListView.SOURCE, "ZmContactChooserListView");
 };
 
 ZmContactChooserSourceListView.prototype = new DwtChooserListView;
@@ -377,7 +377,7 @@ function(item) {
 function ZmContactChooserTargetListView(parent, showType) {
 
 	this._showType = showType;
-	DwtChooserListView.call(this, parent, DwtChooserListView.TARGET);
+	DwtChooserListView.call(this, parent, DwtChooserListView.TARGET, "ZmContactChooserListView");
 };
 
 ZmContactChooserTargetListView.prototype = new DwtChooserListView;

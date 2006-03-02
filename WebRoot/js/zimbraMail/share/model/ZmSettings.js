@@ -270,24 +270,24 @@ function() {
 	value = portPrefix + "/service/soap/";
 	if (location.search && location.search.indexOf("host=") != -1)
 		value += location.search;
-	this._settings[ZmSetting.CSFE_SERVER_URI].setValue(value);
+	this._settings[ZmSetting.CSFE_SERVER_URI].setValue(value, null, false, true);
 
 	// CSFE_MSG_FETCHER_URI
 	value = portPrefix + "/service/home/~/?auth=co&";
-	this._settings[ZmSetting.CSFE_MSG_FETCHER_URI].setValue(value);
+	this._settings[ZmSetting.CSFE_MSG_FETCHER_URI].setValue(value, null, false, true);
 	
 	// CSFE_UPLOAD_URI
 	value = portPrefix + "/service/upload";
-	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value);
+	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value, null, false, true);
 	
 	// CSFE EXPORT URI
 	value = portPrefix + "/service/home/~/?auth=co&id=7&fmt=csv";
-	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value);
+	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
 	
 	// default sorting preferences
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONVLIST_VIEW, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONV_VIEW, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.TRAD_VIEW, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SRC_VIEW, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_TGT_VIEW, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONVLIST_VIEW, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONV_VIEW, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.TRAD_VIEW, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SRC_VIEW, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_TGT_VIEW, true, true);
 };

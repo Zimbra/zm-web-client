@@ -186,7 +186,7 @@ function() {
 	var button = this._scheduleTab
 
 	this._apptTabKey = this.addTab(ZmMsg.appointment, this._apptTab);
-	this._scheduleTabKey = this.addTab(ZmMsg.scheduleAttendees, this._scheduleTab);
+	this._scheduleTabKey = this.addTab(ZmMsg.schedule, this._scheduleTab);
 
 	var button = this.getTabButton(this._scheduleTabKey);
 	button.setImage("ApptMeeting");
