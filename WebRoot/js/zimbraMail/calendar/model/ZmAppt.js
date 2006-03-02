@@ -878,15 +878,17 @@ function() {
 		buf[i++] = "\n";
 	}
 
-	buf[i++] = "\n";
-	buf[i++] = ZmMsg.invitees;
-	buf[i++] = ": ";
-	var attendees = this.attendees.replace(/^\s*/,"").replace(/\s*$/,"").split(/;\s*/);
-	if (attendees.length > 10) {
-		attendees = attendees.slice(0, 10);
-		attendees.push("...");
+	if (this.attendees) {
+		buf[i++] = "\n";
+		buf[i++] = ZmMsg.invitees;
+		buf[i++] = ": ";
+		var attendees = this.attendees.replace(/^\s*/,"").replace(/\s*$/,"").split(/;\s*/);
+		if (attendees.length > 10) {
+			attendees = attendees.slice(0, 10);
+			attendees.push("...");
+		}
+		buf[i++] = attendees.join(", ");
 	}
-	buf[i++] = attendees.join(", ");
 	buf[i++] = ZmAppt.NOTES_SEPARATOR;
 
 	return buf.join("");
