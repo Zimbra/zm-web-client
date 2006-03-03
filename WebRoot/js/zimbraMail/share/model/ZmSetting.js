@@ -150,6 +150,7 @@ ZmSetting.QUOTA							= i++;
 ZmSetting.SAVED_SEARCHES_ENABLED		= i++;
 ZmSetting.TAGGING_ENABLED				= i++;
 ZmSetting.VIEW_ATTACHMENT_AS_HTML 		= i++;
+ZmSetting.SHARING_ENABLED				= i++;
 
 // USER METADATA
 ZmSetting.QUOTA_USED					= i++;
@@ -304,6 +305,7 @@ ZmSetting.INIT[ZmSetting.QUOTA]							= ["zimbraMailQuota", ZmSetting.T_COS, ZmS
 ZmSetting.INIT[ZmSetting.SAVED_SEARCHES_ENABLED]		= ["zimbraFeatureSavedSearchesEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.TAGGING_ENABLED]				= ["zimbraFeatureTaggingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.VIEW_ATTACHMENT_AS_HTML] 		= ["zimbraFeatureViewInHtmlEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.SHARING_ENABLED]		 		= ["zimbraFeatureSharingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 
 // user metadata (included with COS since the user can't change them)
 ZmSetting.INIT[ZmSetting.QUOTA_USED]					= [null, ZmSetting.T_COS, ZmSetting.D_INT];
