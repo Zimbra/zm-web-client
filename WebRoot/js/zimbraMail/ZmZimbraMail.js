@@ -36,7 +36,6 @@
 * @param app		[constant]		starting app
 */
 function ZmZimbraMail(appCtxt, domain, app, userShell) {
-
 	ZmController.call(this, appCtxt);
 
 	this._userShell = userShell;
@@ -54,7 +53,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	appCtxt.setClientCmdHdlr(new ZmClientCmdHandler(appCtxt));
 
 	this._shell = appCtxt.getShell();
-	this._shell.addListener(DwtEvent.ONKEYPRESS, new AjxListener(this, this._keyPressListener));
+	this._shell.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._keyUpListener));
     this._splashScreen = new ZmSplashScreen(this._shell, "SplashScreen");
  
 	this._apps = {};
@@ -76,6 +75,11 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._logRequest = this._appCtxt.get(ZmSetting.LOG_REQUEST);
 	this._stdTimeout = this._appCtxt.get(ZmSetting.TIMEOUT);
 
+	this._killKeySeqTimedAction = new AjxTimedAction(this, this._killKeySequenceAction);
+	this._killKeySeqTimedActionId = -1;
+	this._keySequence = new Array();
+	this._keyMap = new ZmKeyMap();
+	
 	this.startup({app: app});
 };
 
@@ -1397,13 +1401,111 @@ function(ev) {
 	}
 };
 
-ZmZimbraMail.prototype._keyPressListener =
+ZmZimbraMail.prototype._keyUpListener =
 function(ev) {
-//	DBG.println("ZmZimbraMail.KeyPressListener");
+
+	if (this._killKeySeqTimedActionId != -1) {
+		AjxTimedAction.cancelAction(this._killKeySeqTimedActionId);
+		this._killKeySeqTimedActionId = -1;
+	}
+	
+	//if (this._keySequence.length > 0)
+	// this._keySequence[this._keySequence.length] = ZmKeyMap.SEP;
+	
+ 	var key = "";
+	
+	if (ev.ctrlKey)
+		key += ZmKeyMap.CTRL;
+		
+	if (ev.altKey)
+		key += ZmKeyMap.ALT;
+		
+	if (ev.shiftKey)
+		key += ZmKeyMap.SHIFT;
+	
+	this._keySequence[this._keySequence.length] = key + this._keyMap.keyCode2Char(DwtKeyEvent.getCharCode(ev));
+
+	//DBG.println("KEY SEQ: " + this._keySequence.join(""));
+
+	return this._dispatchKeyEvent(ev)
+};
+
+ZmZimbraMail.prototype._killKeySequenceAction =
+function() {
+	//DBG.println("KILLING KEY SEQUENCE");
+	this._killKeySeqTimedActionId = -1;
+	this._keySequence.length = 0;
+}
+
+/* If ev is true, then this method is being called from 
+ *ZmZimbraMail.prototype._keyDownListener else if ev is false, then this is 
+ * the result of being called from a timed action */
+ZmZimbraMail.prototype._dispatchKeyEvent =
+function(ev) {
 	var curView = this._appViewMgr.getCurrentView();
 	if (curView && curView.getController) {
-		//DBG.println("DO IT!");
 		var c = curView.getController();
-		if (c && c.handleKeyPressEvent) c.handleKeyPressEvent(ev);
+		if (c && c.handleKeyAction) {
+			var cName = c.toString();
+			var actionCode = this._keyMap.getActionCode(this._keySequence, cName);
+			var terminal = this._keyMap.isTerminal(this._keySequence, cName)
+			/* If we have an action code for the key sequence, then execute the action
+			 * and stop event propagation. If the key sequence is not a terminal,
+			 * then halt event propagation since a subsequent key sequence could
+			 * trigger a terminal. Else if this is a terminal & there is no action
+			 * associated with it, then let the event propagate (to the browser) */
+			DBG.println("TERMINAL: " + terminal);
+			DBG.println("ACTION CODE: " + actionCode);			
+			if (!terminal || actionCode != null) {
+				if (actionCode != null) {
+					DBG.println("DISPATCHING ACTION: " + this._keySequence.join(""));
+					switch (actionCode) {
+						case ZmKeyMap.DBG_NONE:
+							this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_NONE);
+							DBG.setDebugLevel(AjxDebug.NONE);
+							break;
+						case ZmKeyMap.DBG_1:
+							this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_1);
+							DBG.setDebugLevel(AjxDebug.DBG1);
+							break;
+						case ZmKeyMap.DBG_2:
+							this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_2);
+							DBG.setDebugLevel(AjxDebug.DBG2);
+							break;
+						case ZmKeyMap.DBG_3:
+							this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_3);
+							DBG.setDebugLevel(AjxDebug.DBG3);
+							break;
+						case ZmKeyMap.DBG_TIMING: {
+							var on = DBG._showTiming;
+							var newState = on ? "off" : "on";
+							this._appCtxt.setStatusMsg("Turning timing info " + newState);
+							DBG.showTiming(!on);
+							break;
+						}
+							
+						default:
+							c.handleKeyAction(actionCode);
+							break;
+					}
+					this._keySequence.length = 0;
+				} else {
+					//DBG.println("SCHEDULING KILL SEQUENCE ACTION");
+					/* setup a timed action to kill the key sequence in the event
+					 * the user does not press another key in the allotted time */
+					this._killKeySeqTimedActionId = 
+						AjxTimedAction.scheduleAction(this._killKeySeqTimedAction, 1000);
+				}
+				ev._stopPropagation = true;
+				ev._returnValue = false;
+				return false;
+			}		
+		}
 	}
-}
+
+	//DBG.println("TERMINAL W/O ACTION CODE OR NO CURRENT VIEW");
+	this._keySequence.length = 0;
+	ev._stopPropagation = false;
+	ev._returnValue = true;
+	return true; // No view etc, so consider it dispatched
+};

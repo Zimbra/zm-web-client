@@ -296,6 +296,22 @@ function() {
 	return popView;
 }
 
+ZmConvController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println("ZmConvController.handleKeyAction");
+	
+	switch (actionCode) {
+		case ZmKeyMap.CANCEL: //Cancel or close
+			this._app.popView();
+			break;
+
+		default:
+			ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
+			break;
+	}
+};
+
+
 ZmConvController.prototype._resetOperations = 
 function(parent, num) {
 	ZmDoublePaneController.prototype._resetOperations.call(this, parent, num);

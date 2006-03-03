@@ -112,8 +112,38 @@ function(view) {
 	this._currentView = view;
 };
 
-ZmController.prototype.handleKeyPressEvent =
-function(ev) {
+
+ZmController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println("ZmController.handleKeyAction");
+	switch (actionCode) {
+		case ZmKeyMap.NEW_APPT:
+			var appt = new ZmAppt(this._appCtxt);
+			this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getContactController().show(appt);
+			break;
+			
+		case ZmKeyMap.NEW_CALENDAR:
+			alert("New Calendar");
+			break;
+			
+		case ZmKeyMap.NEW_CONTACT:
+			var contact = new ZmContact(this._appCtxt);
+			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(contact);
+			break;
+			
+		case ZmKeyMap.NEW_FOLDER:
+			alert("New Folder");
+			break;
+			
+		case ZmKeyMap.NEW_MESSAGE:
+			var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
+			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController().doAction(ZmOperation.NEW_MESSAGE, inNewWindow);
+			break;
+			
+		case ZmKeyMap.NEW_TAG:
+			alert("New Tag");
+			break;	
+	}
 };
 
 ZmController.prototype._showLoginDialog =

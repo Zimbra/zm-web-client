@@ -101,9 +101,19 @@ function(searchResult) {
 	this._resetNavToolBarButtons(this._currentView);
 };
 
-ZmConvListController.prototype.handleKeyPressEvent =
-function(ev) {
-	DBG.println("ZmConvListController.handleKeyPressEvent");
+ZmConvListController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println("ZmConvListController.handleKeyAction");
+	
+	switch (actionCode) {
+		case ZmKeyMap.OPEN:
+			alert("Open Conversation: UNIMPLEMENTED");
+			break;
+			
+		default:
+			ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
+			break;
+	}
 };
 
 // Private and protected methods

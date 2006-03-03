@@ -95,6 +95,25 @@ function() {
 	return "ZmMailListController";
 };
 
+ZmMailListController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println("ZmMailListController.handleKeyAction");
+	
+	switch (actionCode) {
+		case ZmKeyMap.REPLY:
+		    this._doAction(null, ZmOperation.REPLY);
+			break;
+		
+		case ZmKeyMap.REPLY_ALL:
+		    this._doAction(null, ZmOperation.REPLY_ALL);
+			break;
+			
+		default:
+			ZmListController.prototype.handleKeyAction.call(this, actionCode);
+			break;
+	}
+};
+
 // Private and protected methods
 
 ZmMailListController.prototype._setupViewMenu = function(view) {};
@@ -280,6 +299,7 @@ function(ev) {
 	this._doAction(ev, action);
 };
 
+// This method may be called with a null ev parameter
 ZmMailListController.prototype._doAction = 
 function(ev, action, extraBodyText, instanceDate) {
 	// retrieve msg and make sure its loaded
@@ -296,7 +316,7 @@ function(ev, action, extraBodyText, instanceDate) {
 	var sameFormat = this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
 	var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg.isLoaded() && sameFormat)))));
 		
-	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
+	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || (ev && ev.shiftKey);
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText]);
 	msg.load(getHtml, action == ZmOperation.DRAFT, respCallback);
 };
@@ -426,7 +446,7 @@ function(type) {
 ZmMailListController.prototype._editInviteReply =
 function (action , componentId, instanceDate) {
 	var replyBody = this._getInviteReplyBody(action, instanceDate);
-	this._doAction({}, action, replyBody, instanceDate);
+	this._doAction(null, action, replyBody, instanceDate);
 };
 
 ZmMailListController.prototype._sendInviteReply = 

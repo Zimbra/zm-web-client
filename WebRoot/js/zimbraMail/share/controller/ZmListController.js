@@ -139,6 +139,15 @@ function(newList) {
 	}
 };
 
+ZmListController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println("ZmListController.handleKeyAction");
+	switch (actionCode) {
+		default:
+			ZmController.prototype.handleKeyAction.call(this, actionCode);
+	}
+};
+
 // abstract protected methods
 
 // Creates the view element

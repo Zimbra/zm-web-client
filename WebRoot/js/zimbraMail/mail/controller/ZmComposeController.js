@@ -276,6 +276,27 @@ function(initHide) {
 	}
 };
 
+ZmComposeController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println("ZmComposeController.handleKeyAction");
+	switch (actionCode) {
+		case ZmKeyMap.CANCEL:
+			this._cancelCompose();
+			break;
+			
+		case ZmKeyMap.SAVE: // Save to draft
+			this._saveDraft();
+			break;
+
+		case ZmKeyMap.SEND: // Send message
+			this._send();
+			break;
+
+		default:
+			ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
+			break;
+	}
+};
 
 // Private methods
 
@@ -548,6 +569,11 @@ function(isDraft, msg, resp) {
 // Send button was pressed
 ZmComposeController.prototype._sendListener =
 function(ev) {
+	this.send();
+};
+
+ZmComposeController.prototype._send =
+function() {
 	this._toolbar.enableAll(false); // thwart multiple clicks on Send button
 	this.sendMsg();
 };
@@ -555,7 +581,11 @@ function(ev) {
 // Cancel button was pressed
 ZmComposeController.prototype._cancelListener =
 function(ev) {
+	this._cancelCompose();
+};
 
+ZmComposeController.prototype._cancelCompose =
+function() {
 	var dirty = this._composeView.isDirty();
 	if (!dirty) {
 		this._composeView.reset(true);
@@ -564,7 +594,7 @@ function(ev) {
 	}
 	this._composeView.reEnableDesignMode();
 	this._app.popView(!dirty);
-};
+}
 
 // Attachment button was pressed
 ZmComposeController.prototype._attachmentListener =
@@ -633,6 +663,11 @@ function(ev) {
 // Save Draft button was pressed
 ZmComposeController.prototype._saveDraftListener =
 function(ev) {
+	this._saveDraft();
+};
+
+ZmComposeController.prototype._saveDraft =
+function() {
 	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener);
 	this.sendMsg(null, true, respCallback);
 };
