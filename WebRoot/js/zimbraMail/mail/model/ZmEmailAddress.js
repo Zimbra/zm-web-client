@@ -115,7 +115,7 @@ function(str) {
 	// First find the address (and remove it)
 	parts = str.match(ZmEmailAddress.addrAnglePat);
 	if (parts && parts.length) {
-		addr = parts[0];
+		addr = parts[2];
 		str = str.replace(ZmEmailAddress.addrAnglePat, '');
 	} else {
 		parts = str.match(ZmEmailAddress.addrPat);
@@ -131,7 +131,7 @@ function(str) {
 		name = AjxStringUtil.trim(AjxStringUtil.trim(parts[0]), false, '"');
 	}
 	
-	return new ZmEmailAddress(addr, name);
+	return new ZmEmailAddress(addr, null, name);
 };
 
 /**
