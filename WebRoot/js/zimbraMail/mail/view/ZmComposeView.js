@@ -1344,13 +1344,15 @@ function(ev) {
 		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancelCallback, this);
 	}
 
+	var curType = obj.addrType;
 	var a = {};
 	var addrs = this._collectAddrs();
 	for (var type in ZmComposeView.ADDRS) {
 		if (addrs[type])
-			a[type] = addrs[type].all.getArray();
+			a[type] = addrs[type].good.getArray();
 	}
-	this._contactPicker.popup(obj.addrType, a);
+	var str = (this._field[curType].value && !(a[curType] && a[curType].length)) ? this._field[curType].value : "";
+	this._contactPicker.popup(curType, a, str);
 };
 
 ZmComposeView.prototype._controlListener =
@@ -1366,11 +1368,9 @@ ZmComposeView.prototype._contactPickerOkCallback =
 function(addrs) {
 	this.enableInputs(true);
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
-		var type = ZmComposeView.ADDRS[i];
 		var vec = addrs[type];
-		var size = vec.size();
-		var addr = (size > 0) ? vec.toString(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
-		this.setAddress(type, addr);
+		var addr = (vec.size() > 0) ? vec.toString(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
+		this.setAddress(ZmComposeView.ADDRS[i], addr);
 	}
 	this._contactPicker.popdown();
 	this.reEnableDesignMode();
