@@ -35,8 +35,8 @@ function ZmSharePropsDialog(appCtxt, shell, className) {
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		var dataClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		var dataLoader = dataClass.getContactList;
-		var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, this);
-		var compCallback = new AjxCallback(this, this._handleCompletionData, this);
+		var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, [this]);
+		var compCallback = new AjxCallback(this, this._handleCompletionData, [this]);
 		var params = {parent: this, dataClass: dataClass, dataLoader: dataLoader,
 					  matchValue: ZmContactList.AC_VALUE_EMAIL, locCallback: locCallback,
 					  compCallback: compCallback};
@@ -193,7 +193,9 @@ ZmSharePropsDialog.prototype._handleKeyUp = function(event) {
 	var target = DwtUiEvent.getTarget(event);
 
 	var dialog = target._dialog;
-	target._onkeyup(event);
+	if (target._onkeyup) {
+		target._onkeyup(event);
+	}
 	return dialog._handleEdit.call(target, event);
 };
 
@@ -268,9 +270,12 @@ ZmSharePropsDialog.prototype._createView = function() {
 	this._typeEl = document.createElement("SPAN");
 	
 	this._inputEl = document.createElement("INPUT");
+	this._inputEl.id = Dwt.getNextId();
 	this._inputEl.type = "text";
 	this._inputEl.style.width = "20em";
-	this._acAddrSelectList.handle(this._inputEl);
+	if (this._acAddrSelectList) {
+		this._acAddrSelectList.handle(this._inputEl);
+	}
 	// HACK: need to redirect key up because of auto-complete
 	this._inputEl._dialog = this;
 	this._inputEl._onkeyup = this._inputEl.onkeyup;

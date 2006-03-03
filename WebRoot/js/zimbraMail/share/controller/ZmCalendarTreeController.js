@@ -147,7 +147,12 @@ function() {
 // Returns a list of desired action menu operations
 ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
-	return [ZmOperation.SHARE_CALENDAR, ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.SYNC];
+	var ops = [];
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		ops.push(ZmOperation.SHARE_CALENDAR);
+	}
+	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.SYNC);
+	return ops;
 };
 
 ZmCalendarTreeController.prototype.getTreeStyle =

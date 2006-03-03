@@ -27,11 +27,16 @@ function ZmFolderPropsDialog(appCtxt, parent, className) {
 	if (arguments.length == 0) return;
 
 	className = className || "ZmFolderPropsDialog";
-	var extraButtons  = [
-		new DwtDialog_ButtonDescriptor(ZmFolderPropsDialog.ADD_SHARE_BUTTON, ZmMsg.addShare, DwtDialog.ALIGN_LEFT)
-	];
+	var extraButtons;
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		extraButtons  = [
+			new DwtDialog_ButtonDescriptor(ZmFolderPropsDialog.ADD_SHARE_BUTTON, ZmMsg.addShare, DwtDialog.ALIGN_LEFT)
+		];
+	}
 	DwtDialog.call(this, parent, className, ZmMsg.folderProperties, null, extraButtons);
-	this.registerCallback(ZmFolderPropsDialog.ADD_SHARE_BUTTON, this._handleAddShareButton, this);
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		this.registerCallback(ZmFolderPropsDialog.ADD_SHARE_BUTTON, this._handleAddShareButton, this);
+	}
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._handleCancelButton));
 
@@ -74,7 +79,9 @@ ZmFolderPropsDialog.prototype.getFolder = function() {
 ZmFolderPropsDialog.prototype.popup = function(loc) {
 	this._handleFolderChange();
 	var visible = !this.getFolder().link;
-	this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, visible);
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, visible);
+	}
 	DwtDialog.prototype.popup.call(this, loc);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 };
@@ -179,7 +186,9 @@ ZmFolderPropsDialog.prototype._handleFolderChange = function(event) {
 	this._color.setSelectedValue(this._folder.color);
 	this._excludeFbCheckbox.checked = this._folder.excludeFreeBusy;
 	
-	this._populateShares();
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		this._populateShares();
+	}
 
 	this._props.setPropertyVisible(this._ownerId, this._folder.owner != null);
 	this._props.setPropertyVisible(this._urlId, this._folder.url != null);
@@ -290,14 +299,18 @@ ZmFolderPropsDialog.prototype._createView = function() {
 	propsGroup.setElement(propsContainer);
 
 	// setup shares group
-	this._sharesGroup = new DwtGrouper(view);
-	this._sharesGroup.setLabel(ZmMsg.folderSharing);
-	this._sharesGroup.setVisible(false);
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		this._sharesGroup = new DwtGrouper(view);
+		this._sharesGroup.setLabel(ZmMsg.folderSharing);
+		this._sharesGroup.setVisible(false);
+	}
 
 	// add everything to view and return
 	var element = view.getHtmlElement();
 	element.appendChild(propsGroup.getHtmlElement());
-	element.appendChild(this._sharesGroup.getHtmlElement());
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		element.appendChild(this._sharesGroup.getHtmlElement());
+	}
 
 	return view;
 };
