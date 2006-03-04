@@ -226,6 +226,7 @@ ZmZimletContext.prototype.callHandler = function(funcname, args) {
 			return f.apply(this.handlerObject, args);
 		}
 	}
+    return null;
 };
 
 ZmZimletContext.prototype._translateUserProp = function() {
@@ -243,9 +244,7 @@ ZmZimletContext.prototype.setPropValue = function(name, val) {
 };
 
 ZmZimletContext.prototype.getPropValue = function(name) {
-	if(this._propsById[name]) {
-		return this._propsById[name].value;
-	}
+	return this._propsById[name] ? this._propsById[name].value : null;
 };
 
 ZmZimletContext.prototype.getProp = function(name) {
