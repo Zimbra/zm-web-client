@@ -32,12 +32,14 @@
 * @param parent			the element that created this view
 * @param appCtxt 		app context
 */
-function ZmSchedTabViewPage(parent, appCtxt, apptTab, controller) {
+function ZmSchedTabViewPage(parent, appCtxt, id, controller) {
 	DwtTabViewPage.call(this, parent);
 
 	this._appCtxt = appCtxt;
-	this._apptTab = apptTab;
+	this._id = id;
 	this._controller = controller;
+
+	this._apptTab = parent.getTabPage(ZmApptComposeView.TAB_APPOINTMENT);
 
 	this.setScrollStyle(Dwt.SCROLL);
 	this._rendered = false;

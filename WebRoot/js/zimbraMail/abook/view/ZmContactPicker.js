@@ -241,15 +241,11 @@ function(columnItem, ascending) {
 ZmContactPicker.prototype._handleResponseSearch = 
 function(result) {
 	var resp = result.getResponse();
-
-	if (this._list && this._list.size())
-		this._list.clear();
-	
-	this._list = resp.getResults(ZmItem.CONTACT);
+	var vec = resp.getResults(ZmItem.CONTACT);
 	
 	// Take the contacts and create a list of their email addresses (a contact may have more than one)
 	var list = [];
-	var a = this._list.getArray();
+	var a = vec.getArray();
 	for (var i = 0; i < a.length; i++) {
 		var contact = a[i];
 		var emails = contact.getEmails();
@@ -320,7 +316,7 @@ function() {
 */
 ZmContactChooser.prototype._isDuplicate =
 function(item, list) {
-	return list.containsLike(item, item.getAddress);	
+	return list.containsLike(item, item.getAddress);
 };
 
 /***********************************************************************************/
