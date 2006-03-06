@@ -112,10 +112,9 @@ function(view) {
 	this._currentView = view;
 };
 
-
 ZmController.prototype.handleKeyAction =
 function(actionCode) {
-	DBG.println("ZmController.handleKeyAction");
+	DBG.println(AjxDebug.DBG3, "ZmController.handleKeyAction");
 	switch (actionCode) {
 		case ZmKeyMap.NEW_APPT:
 			var appt = new ZmAppt(this._appCtxt);

@@ -1454,11 +1454,11 @@ function(ev) {
 			 * then halt event propagation since a subsequent key sequence could
 			 * trigger a terminal. Else if this is a terminal & there is no action
 			 * associated with it, then let the event propagate (to the browser) */
-			DBG.println("TERMINAL: " + terminal);
-			DBG.println("ACTION CODE: " + actionCode);			
+			DBG.println(AjxDebug.DBG3, "TERMINAL: " + terminal);
+			DBG.println(AjxDebug.DBG3, "ACTION CODE: " + actionCode);			
 			if (!terminal || actionCode != null) {
 				if (actionCode != null) {
-					DBG.println("DISPATCHING ACTION: " + this._keySequence.join(""));
+					DBG.println(AjxDebug.DBG3, "DISPATCHING ACTION: " + this._keySequence.join(""));
 					switch (actionCode) {
 						case ZmKeyMap.DBG_NONE:
 							this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_NONE);
