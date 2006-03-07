@@ -321,6 +321,9 @@ ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG] = {
 ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG] = {
 		param:		ZmFilterRule.TYPE_TAG_PICKER
 };
+ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD] = {
+		param:		ZmFilterRule.TYPE_INPUT
+};
 
 ZmFilterRule.ACTIONS_LIST = [ZmFilterRule.A_KEEP, ZmFilterRule.A_DISCARD, ZmFilterRule.A_FOLDER,
 							 ZmFilterRule.A_TAG, ZmFilterRule.A_FLAG];
