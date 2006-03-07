@@ -48,8 +48,12 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 	}
 
 	this._contentActionMenu = null;
-	if(zimlet.contentObject){
+	if (zimlet.contentObject) {
 		this.contentObject = zimlet.contentObject[0];
+		if (this.contentObject.contextMenu) {
+			this.contentObject.contextMenu = this.contentObject.contextMenu[0];
+			this._contentActionMenu = new AjxCallback(this, this._makeMenu,[this.contentObject.contextMenu.menuItem]);
+		}
 	}
 
 	this._panelActionMenu = null;

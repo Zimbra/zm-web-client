@@ -162,7 +162,7 @@ function(handlerName) {
 			// params[0] is the dropped object
 			url = this.xmlObj().makeURL(url[0], params[0]);
 			canvas = this.makeCanvas(canvas, url);
-			return;
+			return "";
 		}
 		break;
 	}
@@ -202,7 +202,7 @@ function(canvas) {};
 // Return the first content object match in the content starting from startIndex
 ZmZimletBase.prototype.match =
 function(content, startIndex) {
-	if(!this.RE) {return;}
+	if(!this.RE) {return null;}
 	this.RE.lastIndex = startIndex;
 	var ret = this.RE.exec(content);
 	if (ret) {
@@ -279,10 +279,14 @@ function(spanElement, contentObjText, matchContext, canvas) {
 };
 
 ZmZimletBase.prototype.getActionMenu =
-function() {
-	return null;
+function(obj, span, context) {
+	if (this._zimletContext._contentActionMenu instanceof AjxCallback) {
+		this._zimletContext._contentActionMenu = this._zimletContext._contentActionMenu.run();
+	}
+	this._actionObject = obj;
+	this._actionSpan = span;
+	return this._zimletContext._contentActionMenu;
 };
-
 
 /* Common methods */
 
@@ -451,13 +455,13 @@ function(callback) {
 	var check = this.checkProperties(props);
 
 	if (!check)
-		return;
+		return "";
 	if (typeof check == "string")
 		return this.displayErrorMessage(check);
 
 	if (this._propertyEditor)
 		if (!this._propertyEditor.validateData())
-			return;
+			return "";
 
 	// note that DwtPropertyEditor actually works on the original
 	// properties object, which means that we already have the edited data
@@ -485,6 +489,7 @@ function(callback) {
 		this._propertyEditor = null;
 		this._dlg_propertyEditor = null;
 	}
+	return "";
 };
 
 ZmZimletBase.prototype.getUserPropertyInfo =
@@ -492,8 +497,6 @@ function(propertyName) {
 	return this.xmlObj().getProp(propertyName);
 };
 
-// TODO: this func. must be a wrapper that translates msg which may be in the
-// form "${msg.foo}" into calls that AjxMessageFormat can handle.
 ZmZimletBase.prototype.getMessage =
 function(msg) {
 	return window[this.xmlObj().name][msg];
@@ -560,7 +563,7 @@ ZmZimletBase.prototype.makeCanvas = function(canvasData, url) {
 		props = props.join(",");
 		canvas = window.open(browserUrl, this.xmlObj("name"), props);
 		if (!url) {
-			// XXX todo: add div element in the window.
+			// TODO: add div element in the window.
 			//canvas.document.getHtmlElement().appendChild(div);
 		}
 		break;
