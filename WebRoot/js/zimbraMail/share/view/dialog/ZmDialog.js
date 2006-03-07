@@ -40,12 +40,11 @@
 function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 
 	if (arguments.length == 0) return;
-	DBG.timePt("ZmDialog start", true);
 	DwtDialog.call(this, parent, className, title, null, extraButtons);
-	DBG.timePt("DwtDialog constructor");
+	DBG.timePt(AjxDebug.PERF, "DwtDialog constructor");
 	if (!view) {
 		this.setContent(this._contentHtml());
-		DBG.timePt("setContent(_contentHtml())");
+		DBG.timePt(AjxDebug.PERF, "setContent(_contentHtml())");
 	} else {
 		this.setView(view);
 	}
@@ -59,13 +58,14 @@ function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 	
 	this._treeView = new Object();
 	this._opc = this._appCtxt.getOverviewController();
-	DBG.timePt("ZmDialog constructor");
-};
+	DBG.timePt(AjxDebug.PERF, "ZmDialog constructor");
+}
 
 ZmDialog.prototype = new DwtDialog;
 ZmDialog.prototype.constructor = ZmDialog;
 
 ZmDialog.prototype._contentHtml = function () {return "";};
+ZmDialog.prototype._okButtonListener = function () {};
 
 ZmDialog.prototype.setView =
 function(newView, noReset) {
@@ -80,22 +80,19 @@ function(newView, noReset) {
 
 ZmDialog.prototype.popup =
 function(data, loc) {
-	DBG.timePt("ZmDialog popup start");
+	var showTiming = DBG.isShowTiming();
+	if (!showTiming) DBG.showTiming(true, AjxDebug.PERF, "ZmDialog#popup");
 	DwtDialog.prototype.popup.call(this, loc);
-	DBG.timePt("ZmDialog popup end");
-};
+	DBG.timePt(AjxDebug.PERF, "ZmDialog popup");
+	if (!showTiming) DBG.showTiming(false);
+}
 
 ZmDialog.prototype.reset =
 function() {
 	if (this._nameField)
 		this._nameField.value = "";
 	DwtDialog.prototype.reset.call(this);
-};
-
-ZmDialog.prototype._okButtonListener =
-function() {
-	this.popdown();
-};
+}
 
 ZmDialog.prototype._setNameField =
 function(fieldId) {
@@ -103,20 +100,20 @@ function(fieldId) {
 	if (this._nameField) this._focusElementId = fieldId;
 	this.setTabOrder([fieldId]);
 	this.addEnterListener(new AjxListener(this, this._enterListener));
-};
+}
 
 ZmDialog.prototype._setOverview =
 function(overviewId, fieldId, treeIds, omit) {
 	this._createOverview(overviewId, fieldId);
 	this._renderOverview(overviewId, treeIds, omit);
-};
+}
 
 ZmDialog.prototype._createOverview =
 function(overviewId, fieldId) {
 	var overview = this._opc.createOverview({overviewId: overviewId, overviewClass: "dialogOverview",
 											 headerClass: "DwtTreeItem"});
 	document.getElementById(fieldId).appendChild(overview.getHtmlElement());
-};
+}
 
 ZmDialog.prototype._renderOverview =
 function(overviewId, treeIds, omit) {
@@ -126,13 +123,13 @@ function(overviewId, treeIds, omit) {
 		var hi = treeView.getHeaderItem();
 		hi.enableSelection(true);
 	}
-};
+}
 
 ZmDialog.prototype._getInputFields = 
 function() {
 	if (this._nameField)
 		return [this._nameField];
-};
+}
 
 ZmDialog.prototype._showError =
 function(msg, loc) {
@@ -141,4 +138,4 @@ function(msg, loc) {
     this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
     this._msgDialog.popup(loc);
     return null;
-};
+}
