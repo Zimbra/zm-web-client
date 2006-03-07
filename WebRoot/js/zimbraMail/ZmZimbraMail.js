@@ -70,6 +70,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._needOverviewLayout = false;
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);	
 	this._calendarListener = new AjxListener(this, this._calendarChangeListener);
+	this._addrBookListener = new AjxListener(this, this._addrBookChangeListener);
 
 	this._useXml = this._appCtxt.get(ZmSetting.USE_XML);
 	this._logRequest = this._appCtxt.get(ZmSetting.LOG_REQUEST);
@@ -140,7 +141,7 @@ ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.IM_APP]	        = "displayIM";
 
 ZmZimbraMail.OVERVIEW_TREES = {};
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.ADDRBOOK, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]	= [ZmOrganizer.CALENDAR, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
@@ -853,14 +854,15 @@ function(childWin) {
 	}
 };
 
-// A <refresh> block is returned in a SOAP response any time the session ID has changed. It always happens
-// on the first SOAP command (eg gettings prefs). After that, it happens after a session timeout.
-// We'll always get a <folder> element back, but we might not get back a <tags>, so we
-// need to make sure a tag tree is created, even if it's empty.
+// A <refresh> block is returned in a SOAP response any time the session ID has 
+// changed. It always happens on the first SOAP command (eg gettings prefs). 
+// After that, it happens after a session timeout. We'll always get a <folder> 
+// element back, but we might not get back a <tags>, so we need to make sure a 
+// tag tree is created, even if it's empty.
 //
-// Note: this could be optimized to do a compare (since for the large majority of refreshes, the tags and
-// folders won't have changed except unread counts), but a session timeout should be relatively rare when
-// we're doing polling.
+// Note: this could be optimized to do a compare (since for the large majority 
+// of refreshes, the tags and folders won't have changed except unread counts), 
+// but a session timeout should be relatively rare when we're doing polling.
 ZmZimbraMail.prototype._refreshHandler =
 function(refresh) {
 	DBG.println(AjxDebug.DBG2, "Handling REFRESH");
@@ -886,7 +888,14 @@ function(refresh) {
 	calendarTree.reset();
 
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
-        	this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
+		this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
+
+	var addrBookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+	if (!addrBookTree) {
+		addrBookTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ADDRBOOK);
+		addrBookTree.addChangeListener(this._addrBookListener);
+		this._appCtxt.setTree(ZmOrganizer.ADDRBOOK, addrBookTree);
+	}
     
 	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 	if (!folderTree) {
@@ -912,6 +921,7 @@ function(refresh) {
 		calendarTree.loadFromJs(refresh.folder[0]);
 		folderTree.loadFromJs(refresh.folder[0]);
 		searchTree.loadFromJs(refresh.folder[0]);
+		addrBookTree.loadFromJs(refresh.folder[0]);
 	}
 	
 	if (tagTree.asString() != tagString || folderTree.asString() != folderString ||
@@ -1303,6 +1313,12 @@ function(ev) {
 ZmZimbraMail.prototype._calendarChangeListener =
 function(ev) {
 	// TODO
+};
+
+ZmZimbraMail.prototype._addrBookChangeListener =
+function(ev) {
+	// TODO
+	DBG.println("TODO: addrBookChangeListener");
 };
 
 ZmZimbraMail.prototype._createBanner =

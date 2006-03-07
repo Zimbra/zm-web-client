@@ -64,12 +64,13 @@ ZmTreeView.KEY_ID	= "_treeId_";
 
 // compare functions for each type
 ZmTreeView.COMPARE_FUNC = new Object();
-ZmTreeView.COMPARE_FUNC[ZmOrganizer.FOLDER] = ZmFolder.sortCompare;
-ZmTreeView.COMPARE_FUNC[ZmOrganizer.TAG] = ZmTag.sortCompare;
-ZmTreeView.COMPARE_FUNC[ZmOrganizer.SEARCH] = ZmFolder.sortCompare;
-ZmTreeView.COMPARE_FUNC[ZmOrganizer.CALENDAR] = ZmCalendar.sortCompare;
-ZmTreeView.COMPARE_FUNC[ZmOrganizer.ZIMLET] = ZmZimlet.sortCompare;
-ZmTreeView.COMPARE_FUNC[ZmOrganizer.ROSTER_TREE_ITEM] = ZmRosterTreeItem.sortCompare;
+ZmTreeView.COMPARE_FUNC[ZmOrganizer.FOLDER]				= ZmFolder.sortCompare;
+ZmTreeView.COMPARE_FUNC[ZmOrganizer.TAG]				= ZmTag.sortCompare;
+ZmTreeView.COMPARE_FUNC[ZmOrganizer.SEARCH]				= ZmFolder.sortCompare;
+ZmTreeView.COMPARE_FUNC[ZmOrganizer.CALENDAR]			= ZmCalendar.sortCompare;
+ZmTreeView.COMPARE_FUNC[ZmOrganizer.ZIMLET]				= ZmZimlet.sortCompare;
+ZmTreeView.COMPARE_FUNC[ZmOrganizer.ROSTER_TREE_ITEM]	= ZmRosterTreeItem.sortCompare;
+ZmTreeView.COMPARE_FUNC[ZmOrganizer.ADDRBOOK]			= ZmAddrBook.sortCompare;
 
 // add space after the following items
 ZmTreeView.ADD_SEP = new Object();
