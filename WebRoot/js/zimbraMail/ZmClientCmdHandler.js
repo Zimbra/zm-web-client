@@ -78,6 +78,9 @@ function(cmdStr) {
 		var pi = this._appCtxt.get(ZmSetting.POLLING_INTERVAL); // LDAP time format converted to seconds
 		this._alert("Set polling interval to " + pi + " seconds");
 		this._appCtxt.getAppController().setPollInterval();
+	} else if (arg0 == "noop") {
+		this._appCtxt.getAppController()._doPoll(true);
+		this._alert("Sent NoOpRequest");
 	} else if (arg0 == "feed") {
 		if (!argv[1]) return;	
 		var enabled = argv[1] == 1;

@@ -413,10 +413,8 @@ function() {
 	return (ctlr && ctlr.getList) ? ctlr.getList() : this._list ? this._list : null;
 };
 
-// XXX: this could potentially go away since we have a static class that does this
 ZmAppCtxt.prototype.getNewWindow = 
 function(fullVersion) {
-	// XXX: the jsp url might change depending what new window is being opened (or possibly add an argument to url?)
 	var args = "height=450,width=615,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
 	var prefix = document.location.protocol + "//" + document.domain;
 	var port = (!location.port || location.port == "80") ? "" : ":" + location.port;
@@ -425,14 +423,8 @@ function(fullVersion) {
 		url += "?full=1";
 	var newWin = window.open(url, "_blank", args);
 	
-	// always set back pointer to parent controller w/in new child window
-	var appController = this.getAppController();
-	newWin.parentController = appController;
-		
 	// add this new window to global list so parent can keep track of child windows!
-	appController.addChildWindow(newWin);
-
-	return newWin;
+	return this.getAppController().addChildWindow(newWin);
 };
 
 ZmAppCtxt.prototype.setItemCache =
