@@ -569,7 +569,7 @@ function(isDraft, msg, resp) {
 // Send button was pressed
 ZmComposeController.prototype._sendListener =
 function(ev) {
-	this.send();
+	this._send();
 };
 
 ZmComposeController.prototype._send =
