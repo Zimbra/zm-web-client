@@ -193,7 +193,7 @@ function() {
 	this._subjectField.setValue("");
 	this._locationField.setValue("");
 	this._attendeesField.setValue("");
-//	this._resourcesField.setValue("");
+	this._resourcesField.setValue("");
 	this._repeatDescField.innerHTML = "";
 	this._notesHtmlEditor.clear();
 
@@ -220,7 +220,7 @@ function(bEnableInputs) {
 	this._subjectField.disabled(!bEnableInputs);
 	this._locationField.disabled(!bEnableInputs);
 	this._attendeesField.disabled(!bEnableInputs);
-//	this._resourcesField.disabled(!bEnableInputs);
+	this._resourcesField.disabled(!bEnableInputs);
 	this._startDateField.disabled = !bEnableInputs;
 	this._endDateField.disabled = !bEnableInputs;
 };
@@ -625,46 +625,34 @@ ZmApptTabViewPage.prototype._createInputs =
 function() {
 	var width = AjxEnv.is800x600orLower ? "150" : "250";
 
-	this._subjectField = new DwtInputField({parent:this, type:DwtInputField.STRING,
-											initialValue:null, size:null, maxLen:null,
-											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
-											validationStyle:DwtInputField.CONTINUAL_VALIDATION});
+	this._subjectField = new DwtInputField({parent: this, type:DwtInputField.STRING,
+											errorIconStyle: DwtInputField.ERROR_ICON_NONE,
+											validationStyle: DwtInputField.CONTINUAL_VALIDATION});
 	this._subjectField.setRequired();
 	Dwt.setSize(this._subjectField.getInputElement(), width, "22px");
 	this._subjectField.reparentHtmlElement(this._subjectFieldId);
 	delete this._subjectFieldId;
 
 
-	this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
-											initialValue:null, size:null, maxLen:null,
-											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
-											validationStyle:DwtInputField.ONEXIT_VALIDATION});
+	this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING});
 	Dwt.setSize(this._locationField.getInputElement(), width, "22px");
 	this._locationField.reparentHtmlElement(this._locationFieldId);
 	delete this._locationFieldId;
 
 
-	this._attendeesField = new DwtInputField({parent:this, type:DwtInputField.STRING,
-											  initialValue:null, size:null, maxLen:null,
-											  errorIconStyle:DwtInputField.ERROR_ICON_NONE,
-											  validationStyle:DwtInputField.ONEXIT_VALIDATION,
+	this._attendeesField = new DwtInputField({parent: this, type: DwtInputField.STRING,
+											  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
+											  validationStyle: DwtInputField.ONEXIT_VALIDATION,
 											  validator: this._emailValidator,
 											  validatorCtxtObj: this});
 	Dwt.setSize(this._attendeesField.getInputElement(), "100%", "22px");
 	this._attendeesField.reparentHtmlElement(this._attendeesFieldId);
 	delete this._attendeesFieldId;
 
-/*
-	this._resourcesField = new DwtInputField({parent:this, type:DwtInputField.STRING,
-											  initialValue:null, size:null, maxLen:null,
-											  errorIconStyle:DwtInputField.ERROR_ICON_NONE,
-											  validationStyle:DwtInputField.ONEXIT_VALIDATION,
-											  validator: this._emailValidator,
-											  validatorCtxtObj: this});
+	this._resourcesField = new DwtInputField({parent: this, type: DwtInputField.STRING});
 	Dwt.setSize(this._resourcesField.getInputElement(), "100%", "22px");
 	this._resourcesField.reparentHtmlElement(this._resourcesFieldId);
 	delete this._resourcesFieldId;
-*/
 };
 
 ZmApptTabViewPage.prototype._createSelects =
@@ -711,7 +699,6 @@ function() {
 
 ZmApptTabViewPage.prototype._createButtons =
 function() {
-/*
 	this._locationBtnListener = new AjxListener(this, this._locationButtonListener);
 	this._locationButton = new DwtButton(this);
 	this._locationButton.setText(ZmMsg.location);
@@ -720,7 +707,6 @@ function() {
 	// cleanup...
 	this._locationButton.reparentHtmlElement(this._locationBtnId);
 	delete this._locationBtnId;
-*/
 
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
@@ -737,7 +723,6 @@ function() {
 	this._attendeesButton.reparentHtmlElement(this._attendeesBtnId);
 	delete this._attendeesBtnId;
 
-/*
 	this._resourcesBtnListener = new AjxListener(this, this._resourcesButtonListener);
 	this._resourcesButton = new DwtButton(this);
 	this._resourcesButton.setText(ZmMsg.resources + "...");
@@ -746,13 +731,12 @@ function() {
 	// cleanup...
 	this._resourcesButton.reparentHtmlElement(this._resourcesBtnId);
 	delete this._resourcesBtnId;
-*/
 };
 
 ZmApptTabViewPage.prototype._getDetailsHtml =
 function() {
 	this._subjectFieldId 		= Dwt.getNextId();
-//	this._locationBtnId			= Dwt.getNextId();
+	this._locationBtnId			= Dwt.getNextId();
 	this._locationFieldId 		= Dwt.getNextId();
 	this._calLabelId 			= Dwt.getNextId();
 	this._calSelectId 			= Dwt.getNextId();
@@ -767,12 +751,9 @@ function() {
 	html[i++] = ":</td><td colspan=5 id='";
 	html[i++] = this._subjectFieldId;
 	html[i++] = "'></td></tr>";
-//	html[i++] = "<tr><td width=1% id='";
-//	html[i++] = this._locationBtnId;
-//	html[i++] = "'></td>";
-	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'>";
-	html[i++] = ZmMsg.location;
-	html[i++] = "</td>";
+	html[i++] = "<tr><td width=1% id='";
+	html[i++] = this._locationBtnId;
+	html[i++] = "'></td>";
 	html[i++] = "</td><td colspan=5 id='";
 	html[i++] = this._locationFieldId;
 	html[i++] = "'></td></tr>";
@@ -872,8 +853,8 @@ ZmApptTabViewPage.prototype._getSchedulingHtml =
 function() {
 	this._attendeesBtnId = Dwt.getNextId();
 	this._attendeesFieldId = Dwt.getNextId();
-//	this._resourcesBtnId = Dwt.getNextId();
-//	this._resourcesFieldId = Dwt.getNextId();
+	this._resourcesBtnId = Dwt.getNextId();
+	this._resourcesFieldId = Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
@@ -894,7 +875,6 @@ function() {
 	html[i++] = "'></td>";
 	html[i++] = "</tr>";
 
-/*
 	html[i++] = "<tr>";
 	if (this._contactsSupported) {
 		html[i++] = "<td width=1% id='";
@@ -909,7 +889,6 @@ function() {
 	html[i++] = this._resourcesFieldId;
 	html[i++] = "'></td>";
 	html[i++] = "</tr>";
-*/
 
 	html[i++] = "</table>";
 
@@ -1207,11 +1186,6 @@ function(ev, isHover) {
 
 // Listeners
 
-ZmApptTabViewPage.prototype._locationButtonListener =
-function(ev) {
-	DBG.println("***** ZmApptTabViewPage.prototype._locationButtonListener");
-};
-
 ZmApptTabViewPage.prototype._dateButtonListener =
 function(ev) {
 	var calDate = ev.item == this._startDateButton
@@ -1233,22 +1207,19 @@ function(ev) {
 	ev.item.popup();
 };
 
+ZmApptTabViewPage.prototype._locationButtonListener =
+function(ev) {
+	this.parent.switchToTab(ZmApptComposeView.TAB_LOCATIONS);
+};
+
 ZmApptTabViewPage.prototype._attendeesButtonListener =
 function(ev) {
-/*
-	if (!this._contactPicker) {
-		this._contactPicker = new ZmContactPicker(this._appCtxt);
-		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
-		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancel, this);
-	}
-	this._contactPicker.popup();
-*/
 	this.parent.switchToTab(ZmApptComposeView.TAB_ATTENDEES);
 };
 
 ZmApptTabViewPage.prototype._resourcesButtonListener =
 function(ev) {
-	DBG.println("***** ZmApptTabViewPage.prototype._resourcesButtonListener");
+	this.parent.switchToTab(ZmApptComposeView.TAB_RESOURCES);
 };
 
 ZmApptTabViewPage.prototype._dateCalSelectionListener =
@@ -1318,16 +1289,23 @@ function(ev) {
 ZmApptTabViewPage.prototype._chooserListener =
 function(ev) {
 	var items = ev.getDetail("items");
+	var type = ev.getDetail("chooserType");
 	var list = [];
 	var a = items.getArray();
 	for (var i = 0; i < a.length; i++) {
-		var email = a[i].getEmail();
-		if (email) {
-			list.push(email);
+		var text = (type == ZmApptComposeView.TAB_ATTENDEES) ? a[i].getEmail() : a[i].getAttr("displayName");
+		if (text) {
+			list.push(text);
 		}
 	}
 	var val = list.length ? list.join(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
-	this._attendeesField.setValue(val);
+	if (type == ZmApptComposeView.TAB_ATTENDEES) {
+		this._attendeesField.setValue(val);
+	} else if (type == ZmApptComposeView.TAB_LOCATIONS) {
+		this._locationField.setValue(val);
+	} else if (type == ZmApptComposeView.TAB_RESOURCES) {
+		this._resourcesField.setValue(val);
+	}
 };
 
 // Callbacks
