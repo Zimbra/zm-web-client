@@ -51,9 +51,6 @@ function ZmApptTabViewPage(parent, appCtxt, id) {
 	this._attachCount = 0;
 	
 	this._values = {};
-	this._values[ZmAppt.ATTENDEE] = [];
-	this._values[ZmAppt.LOCATION] = [];
-	this._values[ZmAppt.RESOURCE] = [];
 };
 
 ZmApptTabViewPage.prototype = new DwtTabViewPage;
@@ -84,6 +81,10 @@ ZmApptTabViewPage.prototype.showMe =
 function() {
 	if (this._rendered)
 		this.parent.tabSwitched(this._tabKey);
+
+	this._values[ZmAppt.ATTENDEE] = [];
+	this._values[ZmAppt.LOCATION] = [];
+	this._values[ZmAppt.RESOURCE] = [];
 
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
