@@ -1134,7 +1134,7 @@ function () {
 									if (this.repeatWeeklyDays == null) 
 										this.repeatWeeklyDays = new Array();
 									this.repeatWeeklyDays.push(rule.byday[0].wkday[x].day);
-								}	
+								}
 							} else {
 								this.repeatCustomDayOfWeek = rule.byday[0].wkday[0].day;
 								this.repeatCustomOrdinal = rule.byday[0].wkday[0].ordwk;
@@ -1149,6 +1149,9 @@ function () {
 							this.repeatEndCount = rule.count[0].num;
 						}
 					}
+				}
+				if (this.repeatWeeklyDays == null) {
+					this.resetRepeatWeeklyDays();
 				}
 			}
 		}
@@ -1516,13 +1519,16 @@ function(soapDoc, inv, m, notifyList) {
 			if (e) addrs.push(e);
 		}
 */
-	for (var i = 0; i < this.attendees.length; i++) {
+	var attendeesLen = this.attendees ? this.attendees.length : 0;
+	for (var i = 0; i < attendeesLen; i++) {
 		this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.attendees[i], ZmAppt.ATTENDEE);
 	}
-	for (var i = 0; i < this.resources.length; i++) {
+	var resourcesLen = this.resources ? this.resources.length : 0;
+	for (var i = 0; i < resourcesLen; i++) {
 		this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.resources[i], ZmAppt.RESOURCE);
 	}
-	for (var i = 0; i < this.locations.length; i++) {
+	var locationsLen = this.locations ? this.locations.length : 0;
+	for (var i = 0; i < locationsLen; i++) {
 		this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.locations[i], ZmAppt.LOCATION);
 	}
 /*
