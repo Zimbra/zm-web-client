@@ -49,6 +49,11 @@ function ZmApptTabViewPage(parent, appCtxt, id) {
 
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
+	
+	this._values = {};
+	this._values[ZmAppt.ATTENDEE] = [];
+	this._values[ZmAppt.LOCATION] = [];
+	this._values[ZmAppt.RESOURCE] = [];
 };
 
 ZmApptTabViewPage.prototype = new DwtTabViewPage;
@@ -148,7 +153,9 @@ function(attId) {
 		top.setContentType(ZmMimeTable.TEXT_PLAIN);
 		top.setContent(this._notesHtmlEditor.getContent());
 	}
-	appt.attendees = AjxStringUtil.trim(this._attendeesField.getValue());
+	appt.attendees = this._getValues(ZmAppt.ATTENDEE);
+	appt.locations = this._getValues(ZmAppt.LOCATION);
+	appt.resources = this._getValues(ZmAppt.RESOURCE);
 	appt.notesTopPart = top;
 
 	// set any recurrence rules
@@ -634,7 +641,7 @@ function() {
 	delete this._subjectFieldId;
 
 
-	this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING});
+	this._locationField = new DwtInputField({parent: this, type: DwtInputField.STRING});
 	Dwt.setSize(this._locationField.getInputElement(), width, "22px");
 	this._locationField.reparentHtmlElement(this._locationFieldId);
 	delete this._locationFieldId;
@@ -1290,20 +1297,24 @@ ZmApptTabViewPage.prototype._chooserListener =
 function(ev) {
 	var items = ev.getDetail("items");
 	var type = ev.getDetail("chooserType");
-	var list = [];
 	var a = items.getArray();
 	for (var i = 0; i < a.length; i++) {
-		var text = (type == ZmApptComposeView.TAB_ATTENDEES) ? a[i].getEmail() : a[i].getAttr("displayName");
-		if (text) {
-			list.push(text);
-		}
+		var item = a[i];
+		var text = (type == ZmAppt.ATTENDEE) ? item.getEmail() : item.getAttr("displayName");
+		var value = (type == ZmAppt.ATTENDEE) ? item.getEmail() : item.getAttr("mail");
+		this._values[type].push({text: text, value: value});
+	}
+	var list = [];
+	var a = this._values[type];
+	for (var i = 0; i < a.length; i++) {
+		list.push(a[i].text);
 	}
 	var val = list.length ? list.join(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
-	if (type == ZmApptComposeView.TAB_ATTENDEES) {
+	if (type == ZmAppt.ATTENDEE) {
 		this._attendeesField.setValue(val);
-	} else if (type == ZmApptComposeView.TAB_LOCATIONS) {
+	} else if (type == ZmAppt.LOCATION) {
 		this._locationField.setValue(val);
-	} else if (type == ZmApptComposeView.TAB_RESOURCES) {
+	} else if (type == ZmAppt.RESOURCE) {
 		this._resourcesField.setValue(val);
 	}
 };
@@ -1438,4 +1449,14 @@ function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = AjxCore.objectWithId(el._tabViewPageId);
 	ZmApptViewHelper.handleDateChange(tvp._startDateField, tvp._endDateField, el == tvp._startDateField);
+};
+
+ZmApptTabViewPage.prototype._getValues =
+function(type) {
+	var list = [];
+	var a = this._values[type];
+	for (var i = 0; i < a.length; a++) {
+		list.push(a[i].value);
+	}
+	return list;
 };

@@ -23,16 +23,18 @@
  * ***** END LICENSE BLOCK *****
  */
 /**
-* Creates a new tab view that can be used to choose attendees.
+* Creates a new tab view that can be used to choose attendees, locations, and/or
+* resources.
 * @constructor
 * @class
-* This class allows the user to search their contacts or the GAL for attendees
-* to add to the appointment.
+* This class allows the user to search for attendees, locations, and/or
+* resources. It presents a chooser which allows the user to select items from
+* the search results.
 *
 * @author Conrad Damon
 *
-* @param parent			the element that created this view
-* @param appCtxt 		app context
+* @param parent		[DwtComposite]	the element that created this view
+* @param appCtxt 	[ZmAppCtxt]		app context
 * @param type		[constant]		chooser page type
 */
 function ZmApptChooserTabViewPage(parent, appCtxt, type) {
@@ -80,14 +82,14 @@ ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_CAPACITY]	= 30;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_NOTES]		= 30;
 
 ZmApptChooserTabViewPage.COLS = {};
-ZmApptChooserTabViewPage.COLS[ZmApptComposeView.TAB_ATTENDEES] =
+ZmApptChooserTabViewPage.COLS[ZmAppt.ATTENDEE] =
 	[ZmApptChooserTabViewPage.ID_NAME, ZmApptChooserTabViewPage.ID_EMAIL,
 	 ZmApptChooserTabViewPage.ID_WORK_PHONE, ZmApptChooserTabViewPage.ID_HOME_PHONE];
-ZmApptChooserTabViewPage.COLS[ZmApptComposeView.TAB_LOCATIONS] =
+ZmApptChooserTabViewPage.COLS[ZmAppt.LOCATION] =
 	[ZmApptChooserTabViewPage.ID_NAME, ZmApptChooserTabViewPage.ID_LOCATION,
 	 ZmApptChooserTabViewPage.ID_CONTACT, ZmApptChooserTabViewPage.ID_CAPACITY,
 	 ZmApptChooserTabViewPage.ID_NOTES];
-ZmApptChooserTabViewPage.COLS[ZmApptComposeView.TAB_RESOURCES] =
+ZmApptChooserTabViewPage.COLS[ZmAppt.RESOURCE] =
 	[ZmApptChooserTabViewPage.ID_NAME, ZmApptChooserTabViewPage.ID_LOCATION,
 	 ZmApptChooserTabViewPage.ID_CONTACT, ZmApptChooserTabViewPage.ID_NOTES];
 
@@ -131,31 +133,31 @@ ZmApptChooserTabViewPage.SF_OP[ZmApptChooserTabViewPage.SF_CAPACITY]	= "ge";
 ZmApptChooserTabViewPage.SF_OP[ZmApptChooserTabViewPage.SF_FLOOR]		= "eq";
 
 ZmApptChooserTabViewPage.ATTRS = {};
-ZmApptChooserTabViewPage.ATTRS[ZmApptComposeView.TAB_LOCATIONS] =
-	["displayName", "zimbraCalResSite", "zimbraCalResBuilding", "zimbraCalResFloor", "zimbraCalResRoom",
+ZmApptChooserTabViewPage.ATTRS[ZmAppt.LOCATION] =
+	["displayName", "mail", "zimbraCalResSite", "zimbraCalResBuilding", "zimbraCalResFloor", "zimbraCalResRoom",
 	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "zimbraNotes",
 	 "street", "l", "st", "postalCode", "co"];
-ZmApptChooserTabViewPage.ATTRS[ZmApptComposeView.TAB_RESOURCES] =
-	["displayName", "zimbraCalResSite", "zimbraCalResBuilding", "zimbraCalResFloor", "zimbraCalResRoom",
+ZmApptChooserTabViewPage.ATTRS[ZmAppt.RESOURCE] =
+	["displayName", "mail", "zimbraCalResSite", "zimbraCalResBuilding", "zimbraCalResFloor", "zimbraCalResRoom",
 	 "zimbraCalResContactEmail", "zimbraNotes",
 	 "street", "l", "st", "postalCode", "co"];
 
 ZmApptChooserTabViewPage.SEARCH_FIELDS = {};
-ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmApptComposeView.TAB_ATTENDEES] =
+ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmAppt.ATTENDEE] =
 	[ZmApptChooserTabViewPage.SF_ATT_NAME, ZmApptChooserTabViewPage.SF_SOURCE];
-ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmApptComposeView.TAB_LOCATIONS] =
+ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmAppt.LOCATION] =
 	[ZmApptChooserTabViewPage.SF_NAME, ZmApptChooserTabViewPage.SF_SITE,
 	 ZmApptChooserTabViewPage.SF_CAPACITY, ZmApptChooserTabViewPage.SF_BUILDING,
 	 ZmApptChooserTabViewPage.SF_NOTES, ZmApptChooserTabViewPage.SF_FLOOR];
-ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmApptComposeView.TAB_RESOURCES] =
+ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmAppt.RESOURCE] =
 	[ZmApptChooserTabViewPage.SF_NAME, ZmApptChooserTabViewPage.SF_SITE,
 	 ZmApptChooserTabViewPage.SF_NOTES, ZmApptChooserTabViewPage.SF_BUILDING,
 	 ZmApptChooserTabViewPage.SF_CONTACT, ZmApptChooserTabViewPage.SF_FLOOR];
 
 ZmApptChooserTabViewPage.SORT_BY = {};
-ZmApptChooserTabViewPage.SORT_BY[ZmApptComposeView.TAB_ATTENDEES] = ZmSearch.NAME_ASC;
-ZmApptChooserTabViewPage.SORT_BY[ZmApptComposeView.TAB_LOCATIONS] = ZmSearch.NAME_ASC;
-ZmApptChooserTabViewPage.SORT_BY[ZmApptComposeView.TAB_RESOURCES] = ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmAppt.ATTENDEE] = ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmAppt.LOCATION] = ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmAppt.RESOURCE] = ZmSearch.NAME_ASC;
 
 ZmApptChooserTabViewPage.prototype = new DwtTabViewPage;
 ZmApptChooserTabViewPage.prototype.constructor = ZmApptChooserTabViewPage;
@@ -203,6 +205,11 @@ function(newWidth, newHeight) {
 ZmApptChooserTabViewPage.prototype.cleanup =
 function() {
 
+};
+
+ZmApptChooserTabViewPage.prototype.isValid =
+function() {
+	return true;
 };
 
 ZmApptChooserTabViewPage.prototype._createHtml =
@@ -316,7 +323,7 @@ function() {
 
 ZmApptChooserTabViewPage.prototype._searchButtonListener = 
 function(ev) {
-	if (this.type == ZmApptComposeView.TAB_ATTENDEES) {
+	if (this.type == ZmAppt.ATTENDEE) {
 		this.searchContacts();
 	} else {
 		this.searchCalendarResources();
@@ -363,7 +370,7 @@ ZmApptChooserTabViewPage.prototype.searchCalendarResources =
 function(sortBy) {
 	var fields = ZmApptChooserTabViewPage.SEARCH_FIELDS[this.type];
 	var conds = [];
-	var value = (this.type == ZmApptComposeView.TAB_LOCATIONS) ? "Location" : "Equipment";
+	var value = (this.type == ZmAppt.LOCATION) ? "Location" : "Equipment";
 	conds.push({attr: "zimbraCalResType", op: "eq", value: value});
 	for (var i = 0; i < fields.length; i++) {
 		var sf = fields[i];
@@ -480,7 +487,7 @@ function(item) {
 	for (var i = 0; i < this._headerList.length; i++) {
 		var id = this._headerList[i]._id;
 		if (id.indexOf(ZmApptChooserTabViewPage.ID_NAME) == 0) {
-			var name = (this._chooserType == ZmApptComposeView.TAB_ATTENDEES) ? item.getFullName() : item.getAttr("displayName");
+			var name = (this._chooserType == ZmAppt.ATTENDEE) ? item.getFullName() : item.getAttr("displayName");
 			html[idx++] = this._getField(i, name);
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_EMAIL) == 0) {
 			html[idx++] = this._getField(i, item.getEmail());
