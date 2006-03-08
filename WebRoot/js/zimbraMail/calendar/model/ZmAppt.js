@@ -85,8 +85,8 @@ ZmAppt.ATTENDEE = 1;
 ZmAppt.LOCATION = 2;
 ZmAppt.RESOURCE = 3;
 
-ZmAppt.ATTENDEES_SEPARATOR_REGEX	= /[;,]/;
-ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE= "; ";
+ZmAppt.ATTENDEES_SEPARATOR_REGEX		= /[;,]/;
+ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE	= "; ";
 
 ZmAppt.STATUS_TENTATIVE		= "TENT";
 ZmAppt.STATUS_CONFIRMED		= "CONF";
@@ -149,8 +149,9 @@ function() {
 
 // Getters
 
-ZmAppt.prototype.getAttendees 					= function() { return this.attendees ? this.attendees.join(ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE) : ""; };
-ZmAppt.prototype.getResources 					= function() { return this.resources ? this.resources.join(ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE) : ""; };
+ZmAppt.prototype.getAttendees 					= function() { return this._getAttendeesString(this.attendees); };
+ZmAppt.prototype.getLocations 					= function() { return this._getAttendeesString(this.locations); };
+ZmAppt.prototype.getResources 					= function() { return this._getAttendeesString(this.resources); };
 ZmAppt.prototype.getOrigAttendees 				= function() { return this._origAttendees; };
 ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
 ZmAppt.prototype.getEndDate 					= function() { return this.endDate; };
@@ -988,6 +989,18 @@ function(attach, hasCheckbox) {
 
 // Private / Protected methods
 
+ZmAppt.prototype._getAttendeesString = 
+function(list) {
+	if (!(list && list.length)) return "";
+
+	var a = [];
+	for (var i = 0; i < list.length; i++) {
+		var name = item.getFullName();
+		a.push(name ? name : item.getEmail());
+	}
+	return a.join(ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE);
+};
+
 ZmAppt.prototype._getTextSummaryTime = 
 function(isEdit, fieldstr, extDate, start, end, hasTime) {
 	var showingTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
@@ -1548,20 +1561,27 @@ function(soapDoc, inv, m, notifyList) {
 
 ZmAppt.prototype._addAttendeeToSoap = 
 function(soapDoc, inv, m, notifyList, attendee, type) {
-	if (inv != null) {
+	var address = attendee.getAddress();
+	var dispName = attendee.getDispName();
+	if (inv) {
 		at = soapDoc.set("at", null, inv);
 		// for now make attendees optional, until UI has a way of setting this
 		at.setAttribute("role", (type == ZmAppt.ATTENDEE) ? ZmAppt.ROLE_OPTIONAL : ZmAppt.ROLE_NON_PARTICIPANT);
 		at.setAttribute("ptst", ZmAppt.PSTATUS_NEEDS_ACTION);
 		at.setAttribute("cutype", (type == ZmAppt.ATTENDEE) ? ZmAppt.CUTYPE_INDIVIDUAL : ZmAppt.CUTYPE_RESOURCE);
 		at.setAttribute("rsvp", "1");
-		at.setAttribute("a", attendee);
+		at.setAttribute("a", address);
+		if (dispName) {
+			at.setAttribute("d", dispName);
+		}
 	}
 
 	// set email to notify if notifyList not explicitly given
-	if (m && !notifyList && (type == ZmAppt.ATTENDEE)) {
+	if (m && !notifyList) {
 		e = soapDoc.set("e", null, m);
-		e.setAttribute("a", attendee);
+		e.setAttribute("a", address);
+		if (dispName)
+			e.setAttribute("p", dispName);
 		e.setAttribute("t", ZmEmailAddress.toSoapType[ZmEmailAddress.TO]);
 	}
 };
@@ -1652,7 +1672,6 @@ function(mode, message, callback, result) {
 	this.setFromMessage(message, mode);
 	if (callback) callback.run(result);
 };
-
 
 // Static methods
 
