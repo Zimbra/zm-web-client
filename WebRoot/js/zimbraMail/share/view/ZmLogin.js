@@ -304,8 +304,12 @@ function(ev) {
     
     var target = ev.target ? ev.target: ev.srcElement;
     if (!target) return true;
+
+	var button = document.getElementById("loginButton");
     
     var keyCode = ev.keyCode;
+	var shiftKey = ev.shiftKey;
+
     if (keyCode == 13) { // Enter
 		if (target.id == "uname") {
 			document.getElementById("pass").focus();
@@ -317,7 +321,6 @@ function(ev) {
 		ZmLogin.cancelEvent(ev);
 		return false;
 	} else if (keyCode == 9) { // Tab
-		var shiftKey = ev.shiftKey;
 		if (target.id == "uname") {
 			if (!shiftKey) {
 				document.getElementById("pass").focus();
@@ -355,10 +358,8 @@ function(ev) {
 				if (obj.disabled) {
 					obj = document.getElementById("passNew");
 				} else {
-					if (!AjxEnv.isIE) {
-						var button = document.getElementById("loginButton");
+					if (!AjxEnv.isIE)
 						ZmLogin.loginButtonBlur(button.parentNode);
-					}
 				}
 				obj.focus();
 			} else {
@@ -467,7 +468,6 @@ function() {
 	var pwordField = document.getElementById("pass");
     var uname = unameField.value;
     var pword = pwordField.value;
-	
 
 	// check if we're trying to change the password
 	if (unameField.disabled && pwordField.disabled) {
@@ -537,22 +537,19 @@ function(uname, oldPass) {
 		DBG.dumpObj(ex);
 		// XXX: for some reason, ZmCsfeException consts are fubar
 		if (ex.code == "account.PASSWORD_RECENTLY_USED" ||
-			ex.code == "account.PASSWORD_CHANGE_TOO_SOON")
-		{
+			ex.code == "account.PASSWORD_CHANGE_TOO_SOON") {
 			var msg = ex.code == ZmCsfeException.ACCT_PASS_RECENTLY_USED
 				? ZmMsg.errorPassRecentlyUsed
 				: (ZmMsg.errorPassChangeTooSoon + " " + errorContact);
 			ZmLogin._setErrorMessage(msg);
 			newPassField.value = conPassField.value = "";
 			newPassField.focus();
-		}
-		else if (ex.code == "account.PASSWORD_LOCKED")
-		{
+		} else if (ex.code == "account.PASSWORD_LOCKED") {
 			// remove the new password and confirmation fields
 			var passTable = document.getElementById("passTable");
 			passTable.deleteRow(2);
 			passTable.deleteRow(2);
-
+			
 			// re-enable username and password fields
 			var unameField = document.getElementById("uname");
 			var pwordField = document.getElementById("pass");
@@ -561,11 +558,6 @@ function(uname, oldPass) {
 			pwordField.focus();
 			
 			ZmLogin._setErrorMessage(ZmMsg.errorPassLocked);
-		}
-		else if (ex.code == "account.INVALID_PASSWORD")
-		{
-			ZmLogin._setErrorMessage(ZmMsg.errorInvalidPass);
-			newPassField.focus();
 		}
 	}
 	

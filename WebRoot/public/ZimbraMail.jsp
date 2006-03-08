@@ -25,7 +25,7 @@ Contributor(s):
 <% 
    String vers = (String)request.getAttribute("version");
    String ext = (String)request.getAttribute("fileExtension");
-   String contextPath = request.getContextPath(); 
+   String contextPath = (String)request.getContextPath(); 
    if (vers == null){
       vers = "";
    }
@@ -48,9 +48,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmShareInfo.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmOrganizer.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmFolder.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmKeyMap.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmSearchFolder.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmAddrBook.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmCalendar.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmAttachmentTypeList.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmAuthenticate.js<%= ext %>?v=<%= vers %>"></script>
@@ -132,7 +130,6 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/controller/ZmController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/controller/ZmListController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/controller/ZmTreeController.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/controller/ZmAddrBookTreeController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/controller/ZmCalendarTreeController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/controller/ZmTagTreeController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/controller/ZmFolderTreeController.js<%= ext %>?v=<%= vers %>"></script>
@@ -158,6 +155,7 @@ Contributor(s):
 
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mail/view/object/ZmPhoneObjectHandler.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mail/view/object/ZmEmailObjectHandler.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mail/view/object/ZmPOObjectHandler.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mail/view/object/ZmDateObjectHandler.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mail/view/object/ZmEmoticonObjectHandler.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mail/view/object/ZmImageAttachmentObjectHandler.js<%= ext %>?v=<%= vers %>"></script>
@@ -204,7 +202,6 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/view/ZmApptQuickAddDialog.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/view/ZmApptTabViewPage.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/view/ZmSchedTabViewPage.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/view/ZmApptChooserTabViewPage.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/controller/ZmCalViewController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/controller/ZmApptComposeController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/ZmCalendarApp.js<%= ext %>?v=<%= vers %>"></script>
