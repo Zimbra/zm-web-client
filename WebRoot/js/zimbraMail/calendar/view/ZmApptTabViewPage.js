@@ -31,14 +31,11 @@
 * @param parent			the element that created this view
 * @param appCtxt 		app context
 */
-function ZmApptTabViewPage(parent, appCtxt, id) {
-
+function ZmApptTabViewPage(parent, appCtxt) {
 	DwtTabViewPage.call(this, parent);
 
-	this._appCtxt = appCtxt;
-	this._id = id;
-
 	this.setScrollStyle(DwtControl.CLIP);
+	this._appCtxt = appCtxt;
 	this._rendered = false;
 	this._contactsSupported = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) || this._appCtxt.get(ZmSetting.GAL_ENABLED);
 
@@ -63,6 +60,7 @@ function() {
 // Consts
 
 ZmApptTabViewPage.UPLOAD_FIELD_NAME = "attUpload";
+ZmApptTabViewPage.CONTACT_PICKER_BID = ZmEmailAddress.TO;
 ZmApptTabViewPage.SHOW_MAX_ATTACHMENTS = AjxEnv.is800x600orLower ? 2 : 3;
 
 ZmApptTabViewPage.SHOWAS_OPTIONS = [
@@ -172,13 +170,6 @@ function(appt, mode, isDirty) {
 	AjxTimedAction.scheduleAction(ta, 0);
 };
 
-ZmApptTabViewPage.prototype.addChooserListener =
-function(tab) {
-	if (tab && tab._chooser) {
-		tab._chooser.addChangeListener(new AjxListener(this, this._chooserListener));
-	}
-};
-
 ZmApptTabViewPage.prototype.cleanup =
 function() {
 	if (this._recurDialog) {
@@ -193,7 +184,6 @@ function() {
 	this._subjectField.setValue("");
 	this._locationField.setValue("");
 	this._attendeesField.setValue("");
-	this._resourcesField.setValue("");
 	this._repeatDescField.innerHTML = "";
 	this._notesHtmlEditor.clear();
 
@@ -220,7 +210,6 @@ function(bEnableInputs) {
 	this._subjectField.disabled(!bEnableInputs);
 	this._locationField.disabled(!bEnableInputs);
 	this._attendeesField.disabled(!bEnableInputs);
-	this._resourcesField.disabled(!bEnableInputs);
 	this._startDateField.disabled = !bEnableInputs;
 	this._endDateField.disabled = !bEnableInputs;
 };
@@ -522,7 +511,7 @@ function(appt, mode) {
 	if (appt.isCustomRecurrence()) {
 		this._repeatDescField.innerHTML = appt._getRecurrenceBlurbForSave();
 	} else {
-		this._repeatDescField.innerHTML = appt.repeatType != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
+		this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(appt.repeatType);
 	}
 
 	// attendees
@@ -625,34 +614,34 @@ ZmApptTabViewPage.prototype._createInputs =
 function() {
 	var width = AjxEnv.is800x600orLower ? "150" : "250";
 
-	this._subjectField = new DwtInputField({parent: this, type:DwtInputField.STRING,
-											errorIconStyle: DwtInputField.ERROR_ICON_NONE,
-											validationStyle: DwtInputField.CONTINUAL_VALIDATION});
+	this._subjectField = new DwtInputField({parent:this, type:DwtInputField.STRING,
+											initialValue:null, size:null, maxLen:null,
+											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
+											validationStyle:DwtInputField.CONTINUAL_VALIDATION});
 	this._subjectField.setRequired();
 	Dwt.setSize(this._subjectField.getInputElement(), width, "22px");
 	this._subjectField.reparentHtmlElement(this._subjectFieldId);
 	delete this._subjectFieldId;
 
 
-	this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING});
+	this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
+											initialValue:null, size:null, maxLen:null,
+											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
+											validationStyle:DwtInputField.ONEXIT_VALIDATION});
 	Dwt.setSize(this._locationField.getInputElement(), width, "22px");
 	this._locationField.reparentHtmlElement(this._locationFieldId);
 	delete this._locationFieldId;
 
 
-	this._attendeesField = new DwtInputField({parent: this, type: DwtInputField.STRING,
-											  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
-											  validationStyle: DwtInputField.ONEXIT_VALIDATION,
+	this._attendeesField = new DwtInputField({parent:this, type:DwtInputField.STRING,
+											  initialValue:null, size:null, maxLen:null,
+											  errorIconStyle:DwtInputField.ERROR_ICON_NONE,
+											  validationStyle:DwtInputField.ONEXIT_VALIDATION,
 											  validator: this._emailValidator,
 											  validatorCtxtObj: this});
 	Dwt.setSize(this._attendeesField.getInputElement(), "100%", "22px");
 	this._attendeesField.reparentHtmlElement(this._attendeesFieldId);
 	delete this._attendeesFieldId;
-
-	this._resourcesField = new DwtInputField({parent: this, type: DwtInputField.STRING});
-	Dwt.setSize(this._resourcesField.getInputElement(), "100%", "22px");
-	this._resourcesField.reparentHtmlElement(this._resourcesFieldId);
-	delete this._resourcesFieldId;
 };
 
 ZmApptTabViewPage.prototype._createSelects =
@@ -699,15 +688,6 @@ function() {
 
 ZmApptTabViewPage.prototype._createButtons =
 function() {
-	this._locationBtnListener = new AjxListener(this, this._locationButtonListener);
-	this._locationButton = new DwtButton(this);
-	this._locationButton.setText(ZmMsg.location);
-	this._locationButton.setSize(80);
-	this._locationButton.addSelectionListener(this._locationBtnListener);
-	// cleanup...
-	this._locationButton.reparentHtmlElement(this._locationBtnId);
-	delete this._locationBtnId;
-
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
@@ -722,21 +702,11 @@ function() {
 	// cleanup...
 	this._attendeesButton.reparentHtmlElement(this._attendeesBtnId);
 	delete this._attendeesBtnId;
-
-	this._resourcesBtnListener = new AjxListener(this, this._resourcesButtonListener);
-	this._resourcesButton = new DwtButton(this);
-	this._resourcesButton.setText(ZmMsg.resources + "...");
-	this._resourcesButton.setSize(80);
-	this._resourcesButton.addSelectionListener(this._resourcesBtnListener);
-	// cleanup...
-	this._resourcesButton.reparentHtmlElement(this._resourcesBtnId);
-	delete this._resourcesBtnId;
 };
 
 ZmApptTabViewPage.prototype._getDetailsHtml =
 function() {
 	this._subjectFieldId 		= Dwt.getNextId();
-	this._locationBtnId			= Dwt.getNextId();
 	this._locationFieldId 		= Dwt.getNextId();
 	this._calLabelId 			= Dwt.getNextId();
 	this._calSelectId 			= Dwt.getNextId();
@@ -751,10 +721,9 @@ function() {
 	html[i++] = ":</td><td colspan=5 id='";
 	html[i++] = this._subjectFieldId;
 	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td width=1% id='";
-	html[i++] = this._locationBtnId;
-	html[i++] = "'></td>";
-	html[i++] = "</td><td colspan=5 id='";
+	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'>";
+	html[i++] = ZmMsg.location;
+	html[i++] = ":</td><td colspan=5 id='";
 	html[i++] = this._locationFieldId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr>";
@@ -853,14 +822,11 @@ ZmApptTabViewPage.prototype._getSchedulingHtml =
 function() {
 	this._attendeesBtnId = Dwt.getNextId();
 	this._attendeesFieldId = Dwt.getNextId();
-	this._resourcesBtnId = Dwt.getNextId();
-	this._resourcesFieldId = Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
 
-	html[i++] = "<table border=0 width=100%>";
-	html[i++] = "<tr>";
+	html[i++] = "<table border=0 width=100%><tr>";
 	if (this._contactsSupported) {
 		html[i++] = "<td width=1% id='";
 		html[i++] = this._attendeesBtnId;
@@ -873,24 +839,7 @@ function() {
 	html[i++] = "<td id='";
 	html[i++] = this._attendeesFieldId;
 	html[i++] = "'></td>";
-	html[i++] = "</tr>";
-
-	html[i++] = "<tr>";
-	if (this._contactsSupported) {
-		html[i++] = "<td width=1% id='";
-		html[i++] = this._resourcesBtnId;
-		html[i++] = "'></td>";
-	} else {
-		html[i++] = "<td width=1% align=right>";
-		html[i++] = ZmMsg.resources;
-		html[i++] = ":</td>";
-	}
-	html[i++] = "<td id='";
-	html[i++] = this._resourcesFieldId;
-	html[i++] = "'></td>";
-	html[i++] = "</tr>";
-
-	html[i++] = "</table>";
+	html[i++] = "</tr></table>";
 
 	return html.join("");
 };
@@ -1207,19 +1156,15 @@ function(ev) {
 	ev.item.popup();
 };
 
-ZmApptTabViewPage.prototype._locationButtonListener =
-function(ev) {
-	this.parent.switchToTab(ZmApptComposeView.TAB_LOCATIONS);
-};
-
 ZmApptTabViewPage.prototype._attendeesButtonListener =
 function(ev) {
-	this.parent.switchToTab(ZmApptComposeView.TAB_ATTENDEES);
-};
-
-ZmApptTabViewPage.prototype._resourcesButtonListener =
-function(ev) {
-	this.parent.switchToTab(ZmApptComposeView.TAB_RESOURCES);
+	if (!this._contactPicker) {
+		var buttonInfo = [ { id:ZmApptTabViewPage.CONTACT_PICKER_BID, value:ZmMsg.add.toLowerCase() } ];
+		this._contactPicker = new ZmContactPicker(this._appCtxt, buttonInfo);
+		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
+		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancel, this);
+	}
+	this._contactPicker.popup(ZmApptTabViewPage.CONTACT_PICKER_BID);
 };
 
 ZmApptTabViewPage.prototype._dateCalSelectionListener =
@@ -1250,7 +1195,7 @@ function(ev) {
 		this._oldRepeatValue = ev._args.oldValue;
 		this._showRecurDialog();
 	} else {
-		this._repeatDescField.innerHTML = newSelectVal != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
+		this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(newSelectVal);
 	}
 	this.notifyListeners(ZmApptTabViewPage._REPEAT_CHANGE, ev);
 };
@@ -1286,34 +1231,14 @@ function(ev) {
 	this._recurDialog.popdown();
 };
 
-ZmApptTabViewPage.prototype._chooserListener =
-function(ev) {
-	var items = ev.getDetail("items");
-	var type = ev.getDetail("chooserType");
-	var list = [];
-	var a = items.getArray();
-	for (var i = 0; i < a.length; i++) {
-		var text = (type == ZmApptComposeView.TAB_ATTENDEES) ? a[i].getEmail() : a[i].getAttr("displayName");
-		if (text) {
-			list.push(text);
-		}
-	}
-	var val = list.length ? list.join(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
-	if (type == ZmApptComposeView.TAB_ATTENDEES) {
-		this._attendeesField.setValue(val);
-	} else if (type == ZmApptComposeView.TAB_LOCATIONS) {
-		this._locationField.setValue(val);
-	} else if (type == ZmApptComposeView.TAB_RESOURCES) {
-		this._resourcesField.setValue(val);
-	}
-};
 
 // Callbacks
 
-// Transfers addresses from the contact picker to the attendees field.
+// Transfers addresses from the contact picker to the compose view.
 ZmApptTabViewPage.prototype._contactPickerOk =
-function(vec) {
+function(addrs) {
 	// populate attendees field w/ chosen contacts from picker
+	var vec = addrs[ZmApptTabViewPage.CONTACT_PICKER_BID];
 
 	// bug fix #4719 - just display the email address (no display name)
 	var addrs = vec.getArray();

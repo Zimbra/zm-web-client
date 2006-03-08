@@ -159,7 +159,18 @@ function(callback, result) {
 	if(obj.zimlets && obj.zimlets.zimlet) {
 		DBG.println(AjxDebug.DBG1, "Zimlets - Got " + (obj.zimlets.zimlet.length + 1) + " Zimlets");
 		this._zmm.loadZimlets(obj.zimlets.zimlet, obj.props.prop);
-	}
+	 	var panelZimlets = this._zmm.getPanelZimlets();
+	 	if(panelZimlets && panelZimlets.length > 0) {
+			var zimletTree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
+		 	if (!zimletTree) {
+		 		zimletTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ZIMLET);
+		 		this._appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
+		 	}
+		 	var zimletString = zimletTree.asString();
+		 	zimletTree.reset();
+		 	zimletTree.loadFromJs(panelZimlets);
+	 	}
+	 }
 
 	this.userSettingsLoaded = true;
 	
@@ -187,7 +198,7 @@ function(result) {
 /**
 * Saves one or more settings.
 *
-* @param list	[array]		a list of ZmSetting
+* @param list	a list of settings (ZmSetting)
 */
 ZmSettings.prototype.save =
 function(list, callback) {
@@ -198,10 +209,6 @@ function(list, callback) {
 		var setting = list[i];
 		if (setting.type != ZmSetting.T_PREF) {
 			DBG.println(AjxDebug.DBG1, "*** Attempt to modify non-pref: " + setting.id + " / " + setting.name);
-			continue;
-		}
-		if (!setting.name) {
-			DBG.println(AjxDebug.DBG1, "*** Attempt to modify internal pref: " + setting.id);
 			continue;
 		}
 		var value = setting.getValue();
@@ -270,24 +277,24 @@ function() {
 	value = portPrefix + "/service/soap/";
 	if (location.search && location.search.indexOf("host=") != -1)
 		value += location.search;
-	this._settings[ZmSetting.CSFE_SERVER_URI].setValue(value, null, false, true);
+	this._settings[ZmSetting.CSFE_SERVER_URI].setValue(value);
 
 	// CSFE_MSG_FETCHER_URI
 	value = portPrefix + "/service/home/~/?auth=co&";
-	this._settings[ZmSetting.CSFE_MSG_FETCHER_URI].setValue(value, null, false, true);
+	this._settings[ZmSetting.CSFE_MSG_FETCHER_URI].setValue(value);
 	
 	// CSFE_UPLOAD_URI
 	value = portPrefix + "/service/upload";
-	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value, null, false, true);
+	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value);
 	
 	// CSFE EXPORT URI
 	value = portPrefix + "/service/home/~/?auth=co&id=7&fmt=csv";
-	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
+	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value);
 	
 	// default sorting preferences
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONVLIST_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONV_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.TRAD_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SRC_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_TGT_VIEW, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONVLIST_VIEW, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONV_VIEW, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.TRAD_VIEW, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SRC_VIEW, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_TGT_VIEW, true);
 };
