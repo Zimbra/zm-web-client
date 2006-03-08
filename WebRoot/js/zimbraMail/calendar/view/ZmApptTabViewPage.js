@@ -440,6 +440,9 @@ function() {
 	return dateInfo;
 };
 
+/**
+* Returns a joined string of email addresses.
+*/
 ZmApptTabViewPage.prototype.getOrganizerAndAttendees =
 function() {
 	// always prepend organizer before returning attendees field
@@ -450,14 +453,12 @@ function() {
 	var list = [];
 	list.push(organizer);
 	
-	// bug fix #4719 - only grab the valid email addresses
-	var addrs = ZmEmailAddress.parseEmailString(this._attendeesField.getValue());
-	var addrsArr = addrs.all.getArray();
-	var allAddrs = new Array();
-	for (var i = 0; i < addrsArr.length; i++)
-		allAddrs.push(addrsArr[i].address);
+	var all = this._attendees[ZmAppt.ATTENDEE].concat(this._attendees[ZmAppt.LOCATION]).concat(this._attendees[ZmAppt.RESOURCE])
+	for (var i = 0; i < all.length; i++) {
+		list.push(all[i].getAddress());
+	}
 
-	return (organizer + "; " + allAddrs.join("; "));
+	return (list.join(ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE));
 };
 
 
