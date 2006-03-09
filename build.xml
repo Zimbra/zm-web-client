@@ -653,7 +653,7 @@
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}/js/ajax">
-      <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js" excludes="**/img/"/>
+      <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js,**/*.css" excludes="**/img/"/>
     </copy>
     <copy verbose='true' todir='${deploy.dir}${deploy.path}/WEB-INF/classes'>
       <fileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
