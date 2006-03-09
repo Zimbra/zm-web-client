@@ -158,6 +158,7 @@ function(compNum) {
 	compNum = compNum ? compNum : 0;
 	var att = this.components[compNum].at;
 	var list = [];
+	if (!(att && att.length)) return list;
 	for (var i = 0; i < att.length; i++) {
 		if (att[i].cutype == ZmAppt.CUTYPE_INDIVIDUAL) {
 			list.push(att[i]);
@@ -171,6 +172,7 @@ function(compNum) {
 	compNum = compNum ? compNum : 0;
 	var att = this.components[compNum].at;
 	var list = [];
+	if (!(att && att.length)) return list;
 	for (var i = 0; i < att.length; i++) {
 		if (att[i].cutype == ZmAppt.CUTYPE_RESOURCE) {
 			list.push(att[i]);
