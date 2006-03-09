@@ -42,13 +42,75 @@ function ZmAddrBookTreeController(appCtxt, type, dropTgt) {
 	dropTgt = dropTgt || (new DwtDropTarget(ZmContact));
 
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
+
+	this._listeners[ZmOperation.NEW_ADDRBOOK] = new AjxListener(this, this._newAddrBookListener);
+	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editPropsListener);
+	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 };
 
 ZmAddrBookTreeController.prototype = new ZmTreeController();
 ZmAddrBookTreeController.prototype.constructor = ZmAddrBookTreeController;
+
+
+// Public methods
 
 ZmAddrBookTreeController.prototype.toString = 
 function() {
 	return "ZmAddrBookTreeController";
 };
 
+// Enables/disables operations based on the given organizer ID
+ZmAddrBookTreeController.prototype.resetOperations = 
+function(actionMenu, type, id) {
+	DBG.println("TODO: resetOperations");
+
+	if (actionMenu) {
+		// TODO
+	}
+};
+
+
+// Protected methods
+
+// Returns a list of desired header action menu operations
+ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
+function() {
+	return [ZmOperation.NEW_ADDRBOOK];
+};
+
+// Returns a list of desired action menu operations
+ZmAddrBookTreeController.prototype._getActionMenuOps =
+function() {
+	var ops = [];
+	/* TODO:
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		ops.push(ZmOperation.SHARE_ADDRBOOK);
+	}*/
+	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS);
+	return ops;
+};
+
+
+// Listeners
+
+ZmAddrBookTreeController.prototype._newAddrBookListener = 
+function(ev) {
+	// TODO
+	DBG.println("TODO: newAddrBookListener");
+	if (!this._newAddrBookDlg) {
+		this._newAddrBookDlg = new ZmNewAddrBookDialog(this._appCtxt.getShell());
+	}
+	this._newAddrBookDlg.popup(this._appCtxt.getTree(ZmOrganizer.ADDRBOOK));
+};
+
+ZmAddrBookTreeController.prototype._editPropsListener = 
+function(ev) {
+	// TODO
+	DBG.println("TODO: editPropsListener");
+};
+
+ZmAddrBookTreeController.prototype._deleteListener = 
+function(ev) {
+	// TODO
+	DBG.println("TODO: deleteListener");
+};

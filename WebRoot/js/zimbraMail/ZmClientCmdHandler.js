@@ -80,11 +80,6 @@ function(cmdStr) {
 	} else if (arg0 == "noop") {
 		this._appCtxt.getAppController()._doPoll(true);
 		this._alert("Sent NoOpRequest");
-	} else if (arg0 == "feed") {
-		if (!argv[1]) return;	
-		var enabled = argv[1] == 1;
-		ZmNewFolderDialog._feedEnabled = enabled;
-		this._alert("Turning "+ (enabled ? "on" : "off") +" feed support in new folder dialog");
 	} else if (arg0 == "toast") {
 		var delay = argv[1] ? argv[1] : null
 		if (argv[2])	ZmStatusView.ANIMATION_DELAY = argv[2];

@@ -99,6 +99,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/dialog/ZmMoveToDialog.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/dialog/ZmPickTagDialog.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/dialog/ZmNewFolderDialog.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/dialog/ZmNewAddrBookDialog.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/dialog/ZmNewCalendarDialog.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/dialog/ZmNewSearchDialog.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/dialog/ZmNewImDialog.js<%= ext %>?v=<%= vers %>"></script>
