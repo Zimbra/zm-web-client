@@ -77,6 +77,7 @@ function ZmSpreadSheet(parent, className, posStyle, deferred) {
 	this._hoverOutListener = new AjxListener(this, this._handleOutListener);
 	this.addControlListener(this._onResize);
 	this.onSelectCell = [];
+	this.onInputModified = [];
 
 // 	this.ROWS = 5;
 // 	this.COLS = 5;
@@ -547,10 +548,11 @@ ZmSpreadSheet.prototype._selectCell = function(td) {
 			this.focus();
 		link.style.top = td.offsetTop + td.offsetHeight - 1 + "px";
 		link.style.left = td.offsetLeft + td.offsetWidth - 1 + "px";
-		if (!this._editingCell)
+		if (!this._editingCell) {
 			this.focus();
-		for (var i = this.onSelectCell.length; --i >= 0;)
-			this.onSelectCell[i].run(this.getCellModel(td), td);
+			for (var i = this.onSelectCell.length; --i >= 0;)
+				this.onSelectCell[i].run(this.getCellModel(td), td);
+		}
 	}
 };
 
@@ -564,6 +566,13 @@ ZmSpreadSheet.prototype._getRelDiv = function() {
 
 ZmSpreadSheet.prototype._getFocusLink = function() {
 	return document.getElementById(this._focusLinkID);
+};
+
+ZmSpreadSheet.prototype._input_setValue = function(val) {
+	var input = this._getInputField();
+	input.value = val;
+	for (var i = this.onInputModified.length; --i >= 0;)
+		this.onInputModified[i].run(val);
 };
 
 ZmSpreadSheet.prototype._getInputField = function() {
@@ -589,6 +598,7 @@ ZmSpreadSheet.prototype._getInputField = function() {
 		input.onmouseup = ZmSpreadSheet.simpleClosure(this._input_mouseUp, this);
 		input.onblur = ZmSpreadSheet.simpleClosure(this._input_blur, this);
 		input.onfocus = ZmSpreadSheet.simpleClosure(this._input_focus, this);
+		input.setValue = ZmSpreadSheet.simpleClosure(this._input_setValue, this);
 	}
 	return input;
 };
@@ -622,7 +632,7 @@ ZmSpreadSheet.prototype._editCell = function(td) {
 		input.style.width = td.offsetWidth + 2 + "px";
 		input.style.height = td.offsetHeight + 2 + "px";
 		var mc = this.getCellModel(td);
-		input.value = mc.getEditValue();
+		input.setValue(mc.getEditValue());
 		input._caretMoved = false;
 		input.select();
 		input.focus();
@@ -805,7 +815,7 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 			// Should find something better. :-|
 // 			if (AjxEnv.isIE && !dwtev.shiftKey)
 // 				val = val.toLowerCase();
-			this._getInputField().value = val;
+			this._getInputField().setValue(val);
 			Dwt.setSelectionRange(this._getInputField(), 1, 1);
 		} else
 			handled = false;
@@ -923,7 +933,7 @@ ZmSpreadSheet.prototype._input_keyPress = function(ev) {
 			setTimer = false;
 			if (AjxEnv.isIE) {
 				var mc = this.getCellModel(this._editingCell);
-				input.value = mc.getEditValue();
+				input.setValue(mc.getEditValue());
 			}
 			this.focus();
 			break;
@@ -949,6 +959,8 @@ ZmSpreadSheet.prototype._input_keyPress = function(ev) {
 				input.style.width = span.offsetWidth + 50 + "px";
 			self._input_keyPress_timer = null;
 			self._displayRangeIfAny();
+			for (var i = self.onInputModified.length; --i >= 0;)
+				self.onInputModified[i].run(input.value);
 		}, 10);
 	} else
 		this._hideRange();

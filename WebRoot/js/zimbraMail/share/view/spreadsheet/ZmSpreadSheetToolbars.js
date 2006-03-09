@@ -28,8 +28,11 @@
  * inserted at the top, or to any other widget.
  */
 function ZmSpreadSheetToolbars(parent, spreadSheet) {
+	if (spreadSheet == null)
+		spreadSheet = parent;
 	this._spreadSheet = spreadSheet;
 	DwtComposite.call(this, parent, "ZmSpreadSheetToolbars", DwtControl.RELATIVE_STYLE);
+	this._on_buttonPress = new AjxListener(this, this._on_buttonPress);
 	this._buttons = {};
 	this._createWidgets();
 	if (parent === spreadSheet) {
@@ -52,16 +55,17 @@ ZmSpreadSheetToolbars.prototype._cellSelected = function(cell) {
 	this._buttons.justifyLeft.setToggled(align == "left");
 	this._buttons.justifyCenter.setToggled(align == "center");
 	this._buttons.justifyRight.setToggled(align == "right");
+	this._dataField.setValue(cell.getEditValue());
 };
 
 ZmSpreadSheetToolbars.prototype._createWidgets = function() {
 	this._createToolbar1();
-	// this._createToolbar2();
+	this._createToolbar2();
 };
 
 ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	var toolbar = new DwtToolBar(this, "ToolBar", DwtControl.RELATIVE_STYLE, 0);
-	var listener = new AjxListener(this, this._on_buttonPress);
+	var listener = this._on_buttonPress;
 
 	var b = this._buttons.bold = new DwtButton(toolbar, DwtButton.TOGGLE_STYLE, "TBButton");
 	b.setImage("Bold");
@@ -173,10 +177,49 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	s.addOption("Number", false, "number");
 	s.addOption("Currency", false, "currency");
 	s.addOption("Text", false, "string");
+
+	// DEBUG
+// 	toolbar.addSeparator("vertSep");
+// 	b = new DwtButton(toolbar, 0, "TBButton");
+// 	b.setText("DEBUG: Serialize");
+// 	b.addSelectionListener(new AjxListener(this, function() {
+// 		var txt = this.getModel().serialize();
+// 		alert(txt);
+// 	}));
 };
 
-// ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
-// };
+ZmSpreadSheetToolbars.prototype._inputModified = function(val) {
+	this._dataField.setValue(val);
+};
+
+ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
+	var toolbar = new DwtToolBar(this, "ToolBar", DwtControl.RELATIVE_STYLE, 0);
+	var listener = this._on_buttonPress;
+
+// 	var b = new DwtButton(toolbar, 0, "TBButton");
+// 	b.setImage("Check");
+// 	b.setToolTipContent(ZmMsg.subjectAccept);
+// 	b.setData("SS", "DataEntry-OK");
+// 	b.addSelectionListener(listener);
+
+// 	b = new DwtButton(toolbar, 0, "TBButton");
+// 	b.setImage("Cancel");
+// 	b.setToolTipContent(ZmMsg.cancel);
+// 	b.setData("SS", "DataEntry-Cancel");
+// 	b.addSelectionListener(listener);
+
+	var b = new DwtButton(toolbar, 0, "TBButton");
+	b.setImage("SpreadSheetSum");
+	b.setToolTipContent("Sum cells");
+	b.setData("SS", "DataEntry-SumCells");
+	b.addSelectionListener(listener);
+
+	var field = new DwtInputField({ parent: toolbar, size: 50 });
+	field.setReadOnly(true);
+	this._dataField = field;
+
+	this._spreadSheet.onInputModified.push(new AjxCallback(this, this._inputModified));
+};
 
 ZmSpreadSheetToolbars.prototype._on_fontColor = function(ev) {
 	this.applyStyle("color", ev.detail);
@@ -191,6 +234,8 @@ ZmSpreadSheetToolbars.prototype._on_bgColor = function(ev) {
 ZmSpreadSheetToolbars.prototype._on_buttonPress = function(ev) {
 	var btn = ev.item;
 	var data = btn.getData("SS");
+	var ss = this._spreadSheet;
+	ss.focus();
 	switch (data) {
 		// Style formatting
 	    case "Bold":
@@ -225,37 +270,46 @@ ZmSpreadSheetToolbars.prototype._on_buttonPress = function(ev) {
 
 		// Insert/remove rows/cols
 	    case "RowInsertAbove":
-		var cell = this._spreadSheet.getSelectedCellModel();
+		var cell = ss.getSelectedCellModel();
 		if (cell)
 			this.getModel().insertRow(cell.getRow() - 1);
 		break;
 	    case "RowInsertUnder":
-		var cell = this._spreadSheet.getSelectedCellModel();
+		var cell = ss.getSelectedCellModel();
 		if (cell)
 			this.getModel().insertRow(cell.getRow());
 		break;
 	    case "ColInsertBefore":
-		var cell = this._spreadSheet.getSelectedCellModel();
+		var cell = ss.getSelectedCellModel();
 		if (cell)
 			this.getModel().insertCol(cell.getCol() - 1);
 		break;
 	    case "ColInsertAfter":
-		var cell = this._spreadSheet.getSelectedCellModel();
+		var cell = ss.getSelectedCellModel();
 		if (cell)
 			this.getModel().insertCol(cell.getCol());
 		break;
 	    case "RowDelete":
-		var cell = this._spreadSheet.getSelectedCellModel();
+		var cell = ss.getSelectedCellModel();
 		if (cell)
 			this.getModel().deleteRow(cell.getRow() - 1);
 		break;
 	    case "ColDelete":
-		var cell = this._spreadSheet.getSelectedCellModel();
+		var cell = ss.getSelectedCellModel();
 		if (cell)
 			this.getModel().deleteCol(cell.getCol() - 1);
 		break;
+	    case "DataEntry-SumCells":
+		var cell = ss.getSelectedCellModel();
+		if (cell) {
+			var input = ss._getInputField();
+			ss.focus();
+			ss._editCell(cell._td);
+			input.setValue("=sum()");
+			Dwt.setSelectionRange(input, 5, 5);
+		}
+		break;
 	}
-	this._spreadSheet.focus();
 };
 
 ZmSpreadSheetToolbars.prototype._on_typeSelect = function(ev) {
