@@ -543,6 +543,7 @@ function(appt, mode) {
 
 	// attendees
 	this._attendeesField.setValue(appt.getAttendees());
+	this._resourcesField.setValue(appt.getResources());
 
 	// attachments
 	var attachList = appt.getAttachments();
@@ -1307,7 +1308,7 @@ function(ev) {
 		var name = items[i].getName();
 		list.push(name ? name : items[i].getAddress());
 	}
-	var val = list.length ? list.join(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
+	var val = list.length ? list.join(ZmEmailAddress.SEPARATOR) : "";
 	if (type == ZmAppt.ATTENDEE) {
 		this._attendeesField.setValue(val);
 	} else if (type == ZmAppt.LOCATION) {
