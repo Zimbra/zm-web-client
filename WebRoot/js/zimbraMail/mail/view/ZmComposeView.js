@@ -1368,6 +1368,7 @@ ZmComposeView.prototype._contactPickerOkCallback =
 function(addrs) {
 	this.enableInputs(true);
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
+		var type = ZmComposeView.ADDRS[i];
 		var vec = addrs[type];
 		var addr = (vec.size() > 0) ? vec.toString(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
 		this.setAddress(ZmComposeView.ADDRS[i], addr);
