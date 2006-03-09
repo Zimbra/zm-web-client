@@ -86,7 +86,7 @@ static final private String LOGIN_PAGE = "/zimbra/";
 			@import url(/zimbra/img/loRes/skins/steel/skin.css?v=<%= vers %>);
 	<% } %>
 
-		@import url(/zimbra/js/ajax/config/style/dwt.css?v=<%= vers %>);
+		@import url(/zimbra/js/zimbraMail/config/style/dwt.css?v=<%= vers %>);
 		@import url(/zimbra/js/zimbraMail/config/style/common.css?v=<%= vers %>);
 		@import url(/zimbra/js/zimbraMail/config/style/msgview.css?v=<%= vers %>);
 		@import url(/zimbra/js/zimbraMail/config/style/zm.css?v=<%= vers %>);
@@ -121,15 +121,14 @@ static final private String LOGIN_PAGE = "/zimbra/";
 	function launch() {
 		AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
-		// figure out the debug level
-		if (location.search && (location.search.indexOf("debug=") != -1)) {
-			var m = location.search.match(/debug=(\w+)/);
-			if (m && m.length) {
-				var level = parseInt(m[1]);
+		 	// figure out the debug level
+			if (location.search && (location.search.indexOf("debug=") != -1)) {
+			var m = location.search.match(/debug=(\d+)/);
+			if (m.length) {
+				var num = parseInt(m[1]);
+				var level = AjxDebug.DBG[num];
 				if (level)
 					DBG.setDebugLevel(level);
-				else if (m[1] == 't')
-					DBG.showTiming(true);
 			}
 		}
 
@@ -137,7 +136,7 @@ static final private String LOGIN_PAGE = "/zimbra/";
 		var app = null;
 		if (location.search && (location.search.indexOf("app=") != -1)) {
 			var m = location.search.match(/app=(\w+)/);
-			if (m && m.length)
+			if (m.length)
 				app = m[1];
 		}
 

@@ -150,40 +150,18 @@ function (compNum){
 
 ZmInvite.prototype.getRecurrenceRules = 
 function(compNum) {
-	return this.components[compNum].recur;
+	return this.components[compNum].recur
 };
 
 ZmInvite.prototype.getAttendees =
 function(compNum) {
-	compNum = compNum ? compNum : 0;
-	var att = this.components[compNum].at;
-	var list = [];
-	if (!(att && att.length)) return list;
-	for (var i = 0; i < att.length; i++) {
-		if (att[i].cutype == ZmAppt.CUTYPE_INDIVIDUAL) {
-			list.push(att[i]);
-		}
-	}
-	return list;
-};
-
-ZmInvite.prototype.getResources =
-function(compNum) {
-	compNum = compNum ? compNum : 0;
-	var att = this.components[compNum].at;
-	var list = [];
-	if (!(att && att.length)) return list;
-	for (var i = 0; i < att.length; i++) {
-		if (att[i].cutype == ZmAppt.CUTYPE_RESOURCE) {
-			list.push(att[i]);
-		}
-	}
-	return list;
+	compNum = compNum || 0;
+	return this.components[compNum].at;
 };
 
 ZmInvite.prototype.getStatus =
 function(compNum) {
-	compNum = compNum ? compNum : 0;
+	compNum = compNum || 0;
 	return this.components[compNum].status;
 };
 
