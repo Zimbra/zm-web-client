@@ -744,7 +744,7 @@
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/ajax">
-      <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js" excludes="**/img/"/>
+      <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js,**/*.css" excludes="**/img/"/>
     </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/zimbraAdmin/config/style">
       <fileset dir="WebRoot/js/zimbraMail/config/style" includes="*.css" excludes="zm.css"/>
