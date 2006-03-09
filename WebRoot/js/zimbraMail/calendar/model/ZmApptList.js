@@ -105,9 +105,9 @@ function(resp) {
 				appt._seriesInvId = apptNode.invId;
 			}
 			appt.name = this._getAttr(apptNode, instNode, "name");
-//			appt.location = this._getAttr(apptNode, instNode, "loc");
-			appt.locations = [];
-			appt.locations.push(new ZmEmailAddress(null, null, this._getAttr(apptNode, instNode, "loc")));
+			appt.location = this._getAttr(apptNode, instNode, "loc");
+//			appt.locations = [];
+//			appt.locations.push(new ZmEmailAddress(null, null, this._getAttr(apptNode, instNode, "loc")));
 			appt.startDate = new Date(startTime);
 			appt._uniqStartTime = appt.startDate.getTime(); // neede to construct uniq id later
 			if (instNode.fba && ZmApptList._fba2ptst[instNode.fba]) {

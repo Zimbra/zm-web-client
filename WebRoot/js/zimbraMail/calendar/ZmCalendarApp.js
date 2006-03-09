@@ -92,6 +92,15 @@ function() {
 	return this._apptController;
 };
 
+ZmCalendarApp.prototype.getResources = 
+function() {
+	if (!this._resources) {
+		this._resources = new ZmResourceList(this._appCtxt);
+		this._resources.isCanonical = true;
+		this._resources.load();
+	}
+	return this._resources;
+};
 
 ZmCalendarApp.prototype._settingsChangeListener =
 function(ev) {

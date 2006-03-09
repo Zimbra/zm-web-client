@@ -160,7 +160,7 @@ function(compNum) {
 	var list = [];
 	if (!(att && att.length)) return list;
 	for (var i = 0; i < att.length; i++) {
-		if (att[i].cutype == ZmAppt.CUTYPE_INDIVIDUAL) {
+		if (!att[i].cutype || (att[i].cutype == ZmAppt.CUTYPE_INDIVIDUAL)) {
 			list.push(att[i]);
 		}
 	}

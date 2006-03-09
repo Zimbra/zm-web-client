@@ -28,19 +28,20 @@
 * @class
 *
 * @author Parag Shah
-* @param parent			the element that created this view
-* @param appCtxt 		app context
+*
+* @param parent		[DwtComposite]		the appt compose view
+* @param appCtxt 	[ZmAppCtxt]			app context
 */
-function ZmApptTabViewPage(parent, appCtxt, id) {
+function ZmApptTabViewPage(parent, appCtxt) {
 
 	DwtTabViewPage.call(this, parent);
 
 	this._appCtxt = appCtxt;
-	this._id = id;
 
 	this.setScrollStyle(DwtControl.CLIP);
 	this._rendered = false;
 	this._contactsSupported = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) || this._appCtxt.get(ZmSetting.GAL_ENABLED);
+	this._contacts = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 
 	var bComposeEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
@@ -51,9 +52,9 @@ function ZmApptTabViewPage(parent, appCtxt, id) {
 	this._attachCount = 0;
 
 	this._attendees = {};
-	this._attendees[ZmAppt.ATTENDEE] = [];
-	this._attendees[ZmAppt.LOCATION] = [];
-	this._attendees[ZmAppt.RESOURCE] = [];
+	this._attendees[ZmAppt.ATTENDEE] = [];	// list of ZmEmailAddress
+	this._attendees[ZmAppt.LOCATION] = [];	// list of ZmResource
+	this._attendees[ZmAppt.RESOURCE] = [];	// list of ZmResource
 };
 
 ZmApptTabViewPage.prototype = new DwtTabViewPage;
@@ -156,11 +157,7 @@ function(attId) {
 	appt.attendees = this._attendees[ZmAppt.ATTENDEE];
 	appt.locations = this._attendees[ZmAppt.LOCATION];
 	appt.resources = this._attendees[ZmAppt.RESOURCE];
-	// temporary hack
-	this._attendees[ZmAppt.ATTENDEE] = [];
-	this._attendees[ZmAppt.LOCATION] = [];
-	this._attendees[ZmAppt.RESOURCE] = [];
-	
+
 	appt.notesTopPart = top;
 
 	// set any recurrence rules
@@ -200,6 +197,11 @@ function() {
 
 	delete this._appt;
 	this._appt = null;
+
+	// clear attendees lists
+	this._attendees[ZmAppt.ATTENDEE] = [];
+	this._attendees[ZmAppt.LOCATION] = [];
+	this._attendees[ZmAppt.RESOURCE] = [];
 
 	// clear out all input fields
 	this._subjectField.setValue("");
@@ -542,11 +544,40 @@ function(appt, mode) {
 	}
 
 	// attendees
-	this._attendeesField.setValue(appt.getAttendees());
-	this._resourcesField.setValue(appt.getResources());
-	this._attendees[ZmAppt.ATTENDEE] = appt.attendees;
-	this._attendees[ZmAppt.RESOURCE] = appt.resources;
-	this._attendees[ZmAppt.LOCATION] = appt.locations;
+	if (appt.attendees && appt.attendees.length) {
+		this._attendeesField.setValue(appt.getAttendees());
+		this._attendees[ZmAppt.ATTENDEE] = appt.attendees;
+		// attendees chooser handles ZmContact (not ZmEmailAddress)
+		// grub for attendees in user's contacts, pass any found to chooser
+		var tp = this.parent.getTabPage(ZmApptComposeView.TAB_ATTENDEES);
+		var list = [];
+		for (var i = 0; i < appt.attendees.length; i++) {
+			var addr = appt.attendees[i].getAddress();
+			var contact = this._contacts.getContactByEmail(addr);
+			if (contact) {
+				list.push(contact);
+			}
+		}
+		if (list.length) {
+			tp._chooser.transfer(list);
+		}
+	}
+
+	// locations
+	if (appt.locations && appt.locations.length) {
+//		this._locationField.setValue(appt.getLocation());
+		this._attendees[ZmAppt.LOCATION] = appt.locations;
+		tp = this.parent.getTabPage(ZmApptComposeView.TAB_LOCATIONS);
+		tp._chooser.transfer(appt.locations);
+	}
+	
+	// resources
+	if (appt.resources && appt.resources.length) {
+		this._resourcesField.setValue(appt.getResources());
+		this._attendees[ZmAppt.RESOURCE] = appt.resources;
+		tp = this.parent.getTabPage(ZmApptComposeView.TAB_RESOURCES);
+		tp._chooser.transfer(appt.resources);
+	}
 
 	// attachments
 	var attachList = appt.getAttachments();

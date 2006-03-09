@@ -33,6 +33,8 @@ function ZmSearchResult(appCtxt, search) {
 		this._results[ZmItem.ATT] = new ZmMailList(ZmItem.ATT, appCtxt, search);
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED))
 		this._results[ZmItem.CONTACT] = new ZmContactList(appCtxt, search, false);
+	if (appCtxt.get(ZmSetting.GAL_ENABLED))
+		this._results[ZmItem.RESOURCE] = new ZmResourceList(appCtxt, search);
 
 	this._appCtxt = appCtxt;
 	this.search = search;
@@ -84,9 +86,9 @@ function(respEl, contactSource) {
 
 	this._respEl = respEl;
 	
-	if (this.search.isGalSearch || this.search.isCalResSearch)
+	if (this.search.isGalSearch)
 		this._results[ZmItem.CONTACT].setIsGal(true);
-	
+
 	var addressHash = new Object();
 	var foundType = new Object();
 	var numTypes = 0;
@@ -96,7 +98,7 @@ function(respEl, contactSource) {
 	var _count = 0; // XXX: FOR DEBUG USE ONLY :XXX
 	if (this.search.isGalSearch || this.search.isCalResSearch) {
 		// process JS eval result for SearchGalRequest
-		currentType = ZmItem.CONTACT;
+		currentType = this.search.isGalSearch ? ZmItem.CONTACT : ZmItem.RESOURCE;
 		var data = this.search.isGalSearch ? respEl.cn : respEl.calresource;
 		if (data) {
 			for (var j = 0; j < data.length; j++)

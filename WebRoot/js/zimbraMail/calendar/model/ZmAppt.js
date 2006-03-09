@@ -56,6 +56,16 @@ function ZmAppt(appCtxt, list, noinit) {
 	this.timezone = ZmTimezones.getDefault();
 	this._viewMode = ZmAppt.MODE_NEW;
 	this.folderId = ZmFolder.ID_CALENDAR;
+	
+	this.attendees = null;	// list of ZmEmailAddress
+	this.locations = null;	// list of ZmResource
+	this.resources = null;	// list of ZmResource
+
+	this._origAttendees = null;	// list of ZmEmailAddress
+
+	// for looking up additional contact/resource info	
+	this._contacts = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+	this._resources = appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getResources();
 }
 
 ZmAppt.prototype = new ZmItem;
@@ -543,18 +553,29 @@ function(message, viewMode) {
 		var attendees = message.invite.getAttendees();
 		if (attendees) {
 			for (var i = 0; i < attendees.length; i++) {
-				var email = new ZmEmailAddress(attendees[i].url);
+				var addr = attendees[i].url;
+				// get name from user's contacts if possible
+				var contact = this._contacts.getContactByEmail(addr);
+				var name = contact ? contact.getFullName() : null;
+				var email = new ZmEmailAddress(addr, null, name);
 				this._origAttendees.push(email);
 			}
 //			this.attendees = this._origAttendees.join("; ");
 			this.attendees = this._origAttendees;
 		}
+		this.locations = [];
 		this.resources = [];
 		var resources = message.invite.getResources();
 		if (resources) {
 			for (var i = 0; i < resources.length; i++) {
-				var email = new ZmEmailAddress(resources[i].url);
-				this.resources.push(email);
+				var resource = this._resources.getResourceByEmail(resources[i].url);
+				if (resource) {
+					if (resource.isLocation()) {
+						this.locations.push(resource);
+					} else {
+						this.resources.push(resource);
+					}
+				}
 			}
 		}
 
@@ -834,11 +855,12 @@ function() {
 	buf[i++] = organizer;
 	buf[i++] = "\n\n";
 	
-	if (this.locations && this.locations.length) {
+	var location = this.getLocation();
+	if (location) {
 		buf[i++] = ZmMsg.location;
 		buf[i++] = ": ";
-		buf[i++] = this.getLocation();
-		if (isEdit && (orig.getLocation() != this.getLocation())) {
+		buf[i++] = location;
+		if (isEdit && (orig.getLocation() != location)) {
 			buf[i++] = " ";
 			buf[i++] = ZmMsg.apptModifiedStamp;
 		}
@@ -907,7 +929,7 @@ function() {
 		buf[i++] = "\n";
 	}
 
-	if (this.attendees) {
+	if (this.attendees && this.attendees.length) {
 		buf[i++] = "\n";
 		buf[i++] = ZmMsg.invitees;
 		buf[i++] = ": ";
@@ -999,6 +1021,10 @@ function(attach, hasCheckbox) {
 
 // Private / Protected methods
 
+/*
+* Creates a string from a list of attendees/locations/resources. If an item
+* doesn't have a name, its address is used.
+*/
 ZmAppt.prototype._getAttendeesString = 
 function(list) {
 	if (!(list && list.length)) return "";
@@ -1007,7 +1033,10 @@ function(list) {
 	for (var i = 0; i < list.length; i++) {
 		var item = list[i];
 		var name = item.getName();
-		a.push(name ? name : item.getAddress());
+		var text = name ? name : item.getAddress();
+		if (text) {
+			a.push(text);
+		}
 	}
 	return a.join(ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE);
 };
@@ -1413,8 +1442,11 @@ function(soapDoc, method,  attachmentId, notifyList) {
 	soapDoc.set("su", this.name, m);
 	inv.setAttribute("name", this.name);
 
-	if (this.locations && this.locations.length)
+	if (this.locations && this.locations.length) {
 		inv.setAttribute("loc", this.getLocation());
+	} else if (this.location) {
+		inv.setAttribute("loc", this.location);
+	}
 
 	var organizer = this.organizer || this._appCtxt.get(ZmSetting.USERNAME);
 	var org = soapDoc.set("or", null, inv);
@@ -1547,13 +1579,16 @@ function(soapDoc, inv, m, notifyList) {
 ZmAppt.prototype._addAttendeeToSoap = 
 function(soapDoc, inv, m, notifyList, attendee, type) {
 	var address = attendee.getAddress();
-	var dispName = attendee.getDispName();
+	var dispName = attendee.getName();
 	if (inv) {
 		at = soapDoc.set("at", null, inv);
 		// for now make attendees optional, until UI has a way of setting this
 		at.setAttribute("role", (type == ZmAppt.ATTENDEE) ? ZmAppt.ROLE_OPTIONAL : ZmAppt.ROLE_NON_PARTICIPANT);
 		at.setAttribute("ptst", ZmAppt.PSTATUS_NEEDS_ACTION);
-		at.setAttribute("cutype", (type == ZmAppt.ATTENDEE) ? ZmAppt.CUTYPE_INDIVIDUAL : ZmAppt.CUTYPE_RESOURCE);
+		var cutype = (type == ZmAppt.ATTENDEE) ? null : ZmAppt.CUTYPE_RESOURCE;
+		if (cutype) {
+			at.setAttribute("cutype", cutype);
+		}
 		at.setAttribute("rsvp", "1");
 		at.setAttribute("a", address);
 		if (dispName) {

@@ -46,10 +46,13 @@
 * @param appCtxt	[ZmAppCtxt]		the app context
 * @param search		[ZmSearch]*		search that generated this list
 * @param isGal		[boolean]*		if true, this is a list of GAL contacts
+* @param type		[constant]*		item type
 */
-function ZmContactList(appCtxt, search, isGal) {
+function ZmContactList(appCtxt, search, isGal, type) {
 	
-	ZmList.call(this, ZmItem.CONTACT, appCtxt, search);
+	if (arguments.length == 0) return;
+	type = type ? type : ZmItem.CONTACT;
+	ZmList.call(this, type, appCtxt, search);
 
 	this.isGal = (isGal === true);
 	this.isCanonical = false;
