@@ -434,13 +434,14 @@ function(appt) {
 	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
 	
 	//html.append("<LI class='", color, "' style='color:black'>");
-	html.append("<LI class='", color, isNew ? "DarkC" : "C", "'>");
+	html.append("<div class='", color, isNew ? "DarkC" : "C", "'>");
+	html.append("&bull;&nbsp;");
 	html.append(dur);
 	if (dur != "") {
 		html.append("&nbsp;");
 	}
 	html.append(AjxStringUtil.htmlEncode(appt.getName()));
-	html.append("</LI>");	
+	html.append("</div>");	
 	/* */
 
 	//html.append("<LI>"+AjxStringUtil.htmlEncode(appt.getName())+"</LI>";
@@ -462,11 +463,14 @@ function(html, loc, week, dow) {
 	var tid = Dwt.getNextId();	
 
 	html.append("<td class='calendar_month_cells_td' id='", tdid, "'>");
+	html.append("<div style='width:100%;height:100%;'>");
 	html.append("<table class='calendar_month_day_table'>");
 	html.append("<tr><td colspan=2 id='", tid, "'></td></tr></table>");
 	html.append("<table class='calendar_month_day_table'><tbody id='", did, "'>");
 	html.append("</tbody></table>");
+	html.append("</div>");
 	html.append("</td>");
+
 	var data = { dayId: did, titleId: tid, tdId: tdid, week: week, dow: dow, view: this};
 	this._days[loc] = data;
 };
@@ -688,9 +692,11 @@ function(date, list, controller) {
 			var color = ZmCalBaseView.COLORS[controller.getCalendarColor(ao.getFolderId())];
 			var pstatus = ao.getParticipationStatus();
 			var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
-	
-			html.append("<tr><td class='calendar_month_day_item'><LI class='", color, isNew ? "DarkC" : "C", "'>");		
+
+
+			html.append("<tr><td class='calendar_month_day_item'><div class='", color, isNew ? "DarkC" : "C", "'>");		
 			if (isNew) html.append("<b>");
+			//html.append("&bull;&nbsp;");
 			var dur = ao.getShortStartHour();
 			html.append(dur);
 			if (dur != "") {
@@ -698,7 +704,7 @@ function(date, list, controller) {
 			}
 			html.append(AjxStringUtil.htmlEncode(ao.getName()));
 			if (isNew) html.append("</b>");			
-			html.append("</LI>");
+			html.append("</div>");
 			html.append("</td></tr>");
 		}
 	}
