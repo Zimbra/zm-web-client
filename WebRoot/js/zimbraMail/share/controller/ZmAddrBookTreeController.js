@@ -100,7 +100,7 @@ function(ev) {
 	if (!this._newAddrBookDlg) {
 		this._newAddrBookDlg = new ZmNewAddrBookDialog(this._appCtxt.getShell());
 	}
-	this._newAddrBookDlg.popup(this._appCtxt.getTree(ZmOrganizer.ADDRBOOK));
+	this._showDialog(this._newAddrBookDlg, this._newFolderCallback, this._getActionedOrganizer(ev));
 };
 
 ZmAddrBookTreeController.prototype._editPropsListener = 
@@ -113,4 +113,14 @@ ZmAddrBookTreeController.prototype._deleteListener =
 function(ev) {
 	// TODO
 	DBG.println("TODO: deleteListener");
+};
+
+
+// Callbacks
+
+ZmAddrBookTreeController.prototype._newFolderCallback =
+function(parent, name) {
+	this._newAddrBookDlg.popdown();
+	var ftc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.ADDRBOOK);
+	ftc._doCreate(parent, name);
 };

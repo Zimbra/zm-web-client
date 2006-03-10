@@ -37,7 +37,7 @@
 * @param owner		[string]*		owner of the address book (if shared)
 */
 function ZmAddrBook(id, name, parent, tree, owner) {
-	ZmOrganizer.call(this, ZmOrganizer.CALENDAR, id, name, parent, tree, null, null, null, owner);
+	ZmOrganizer.call(this, ZmOrganizer.ADDRBOOK, id, name, parent, tree, null, null, null, owner);
 };
 
 ZmAddrBook.prototype = new ZmOrganizer;
@@ -69,6 +69,17 @@ function() {
 		: "ContactsApp";
 };
 
+ZmAddrBook.prototype.create = 
+function(name) {
+	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
+	var folderNode = soapDoc.set("folder");
+	folderNode.setAttribute("name", name);
+	folderNode.setAttribute("l", this.id);
+	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]);
+
+	this.tree._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true});
+};
+
 // XXX: temp method until we get better server support post Birdseye!
 ZmAddrBook.prototype.setPermissions = 
 function(permission) {
@@ -87,6 +98,7 @@ function(permission) {
 
 ZmAddrBook.prototype.notifyCreate =
 function(obj, link) {
+debugger;
 	var ab = ZmAddrBook.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(ab, ZmAddrBook.sortCompare);
 	this.children.add(calendar, index);
@@ -118,22 +130,8 @@ function(obj) {
 };
 */
 
+
 // Static methods
-
-/** Caller is responsible to catch exception. */
-ZmAddrBook.create =
-function(appCtxt, name, parentFolderId) {
-	parentFolderId = parentFolderId || ZmOrganizer.ID_ROOT;
-
-	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
-	var folderNode = soapDoc.set("folder");
-	folderNode.setAttribute("name", name);
-	folderNode.setAttribute("l", parentFolderId);
-	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]);
-
-	// XXX: why are we doing this synchronously?
-	return appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: false});
-};
 
 ZmAddrBook.createFromJs =
 function(parent, obj, tree) {
