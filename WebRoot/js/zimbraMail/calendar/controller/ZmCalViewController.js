@@ -297,7 +297,7 @@ function(folderId) {
 // todo: change to currently "selected" calendar
 ZmCalViewController.prototype.getDefaultCalendarFolderId =
 function() {
-	return ZmFolder.ID_CALENDAR;
+	return ZmOrganizer.ID_CALENDAR;
 }
 
 ZmCalViewController.prototype.getCalendarColor =

@@ -53,21 +53,35 @@ function() {
 ZmMoveToDialog.prototype.popup =
 function(data, loc) {
 	var omit = new Object();
-	omit[ZmFolder.ID_DRAFTS] = true;
 	var treeIds = [ZmOrganizer.FOLDER];
+
 	if (data instanceof ZmSearchFolder) {
 		this._folder = data;
+		omit[ZmFolder.ID_DRAFTS] = true;
 		treeIds = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH];
 	} else if (data instanceof ZmFolder) {
 		this._folder = data;
+		omit[ZmFolder.ID_DRAFTS] = true;
 		omit[ZmFolder.ID_SPAM] = true;
+	} else if (data instanceof ZmAddrBook) {
+		this._folder = data;
+		treeIds = [ZmOrganizer.ADDRBOOK];
 	} else {
+		omit[ZmFolder.ID_DRAFTS] = true;
 		this._items = data;
 	}
 
 	this._renderOverview(ZmMoveToDialog._OVERVIEW_ID, treeIds, omit);
-	this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
-	var folderTree = this._opc.getTreeData(ZmOrganizer.FOLDER);
+
+	var folderTree = null;
+	if (data instanceof ZmAddrBook) {
+		this._folderTreeView = this._treeView[ZmOrganizer.ADDRBOOK];
+		folderTree = this._opc.getTreeData(ZmOrganizer.ADDRBOOK);
+	} else {
+		this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
+		folderTree = this._opc.getTreeData(ZmOrganizer.FOLDER);
+	}
+
 	folderTree.removeChangeListener(this._changeListener);
 	// this listener has to be added after folder tree view is set
 	// (so that it comes after the view's standard change listener)
@@ -93,9 +107,11 @@ function() {
 	var html = new Array();
 	var idx = 0;
 	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
-	html[idx++] = "<tr><td class='Label' colspan=2>" + ZmMsg.targetFolder + ":</td></tr>";
-	html[idx++] = "<tr><td colspan=2 id='" + this._folderTreeCellId + "'/></tr>";
-	html[idx++] = "</table>";
+	html[idx++] = "<tr><td class='Label' colspan=2>";
+	html[idx++] = ZmMsg.targetFolder;
+	html[idx++] = ":</td></tr><tr><td colspan=2 id='";
+	html[idx++] = this._folderTreeCellId;
+	html[idx++] = "'/></tr></table>";
 	
 	return html.join("");
 };

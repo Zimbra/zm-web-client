@@ -351,7 +351,7 @@ function(attr, result) {
 		this._fullName = null;
 		this.id = id;
 		this.modified = cn.md;
-		this.folderId = ZmFolder.ID_CONTACTS;
+		this.folderId = ZmOrganizer.ID_ADDRBOOK;
 		for (var a in attr) {
 			if (!(attr[a] == undefined || attr[a] == ''))
 				this.setAttr(a, attr[a]);

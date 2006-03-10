@@ -55,7 +55,7 @@ function ZmAppt(appCtxt, list, noinit) {
 	this.attachments = null;
 	this.timezone = ZmTimezones.getDefault();
 	this._viewMode = ZmAppt.MODE_NEW;
-	this.folderId = ZmFolder.ID_CALENDAR;
+	this.folderId = ZmOrganizer.ID_CALENDAR;
 	
 	this.attendees = null;	// list of ZmEmailAddress
 	this.locations = null;	// list of ZmResource
@@ -167,7 +167,7 @@ ZmAppt.prototype.getOrigAttendees 				= function() { return this._origAttendees;
 ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
 ZmAppt.prototype.getEndDate 					= function() { return this.endDate; };
 ZmAppt.prototype.getEndTime 					= function() { return this.endDate.getTime(); }; 	// end time in ms
-ZmAppt.prototype.getFolderId 					= function() { return this.folderId || ZmFolder.ID_CALENDAR; };
+ZmAppt.prototype.getFolderId 					= function() { return this.folderId || ZmOrganizer.ID_CALENDAR; };
 ZmAppt.prototype.getFragment 					= function() { return this.fragment; };
 ZmAppt.prototype.getId 							= function() { return this.id; }; 					// mail item id on appt instance
 ZmAppt.prototype.getInvId 						= function() { return this.invId; }; 				// default mail item invite id on appt instance
@@ -215,7 +215,7 @@ function(endDate) {
 	this.endDate = new Date(endDate instanceof Date ? endDate.getTime(): endDate);
 	this._resetCached(); 
 };
-ZmAppt.prototype.setFolderId 					= function(folderId) 	{ this.folderId = folderId || ZmFolder.ID_CALENDAR; };
+ZmAppt.prototype.setFolderId 					= function(folderId) 	{ this.folderId = folderId || ZmOrganizer.ID_CALENDAR; };
 ZmAppt.prototype.setFreeBusy 					= function(fb) 			{ this.freeBusy = fb || "B"; };
 ZmAppt.prototype.setOrganizer 					= function(organizer) 	{ this.organizer = organizer != "" ? organizer : null; };
 ZmAppt.prototype.setMessage 					= function(message) 	{ this._message = message; };
@@ -1393,7 +1393,7 @@ function(soapDoc, method,  attachmentId, notifyList) {
 	m.setAttribute("d", new Date().getTime());
 
 	// do not set folderId if default folder or editing single instance
-	if (this.getFolderId() != ZmFolder.ID_CALENDAR && 
+	if (this.getFolderId() != ZmOrganizer.ID_CALENDAR && 
 		this._viewMode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE)
 	{
 		m.setAttribute("l", this.folderId);

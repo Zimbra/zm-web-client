@@ -93,15 +93,25 @@ function(permission) {
 	}
 };
 
+ZmAddrBook.prototype.mayContain =
+function(what) {
+	if (!what) return true;
+
+	var invalid = (what.parent == this || 
+				   this.isChildOf(what) ||
+				   what.id == this.id);
+
+	return !invalid;
+};
+
 
 // Callbacks
 
 ZmAddrBook.prototype.notifyCreate =
 function(obj, link) {
-debugger;
 	var ab = ZmAddrBook.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(ab, ZmAddrBook.sortCompare);
-	this.children.add(calendar, index);
+	this.children.add(ab, index);
 	ab._notify(ZmEvent.E_CREATE);
 };
 

@@ -1127,11 +1127,19 @@ function(creates, modifies) {
 			var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 			var searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
 			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+			var addrBookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
 			// parent could be a folder or a search
 			if (parentId == ZmOrganizer.ID_ROOT) {
-				parent = (name == "folder")
-						? (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] ? calendarTree.getById(parentId) : folderTree.getById(parentId))
-						: searchTree.getById(parentId);
+				if (name == "folder") {
+					if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR])
+						parent = calendarTree.getById(parentId);
+					else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK])
+						parent = addrBookTree.getById(parentId);
+					else
+						parent = folderTree.getById(parentId);
+				} else {
+					parent = searchTree.getById(parentId);
+				}
 			} else {
 				parent = folderTree.getById(parentId);
 				if (!parent)

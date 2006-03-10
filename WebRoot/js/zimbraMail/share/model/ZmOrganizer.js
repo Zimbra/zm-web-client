@@ -89,12 +89,14 @@ ZmOrganizer.SOAP_CMD[ZmOrganizer.FOLDER]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.TAG]		= "TagAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.SEARCH]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.CALENDAR]	= "FolderAction";
+ZmOrganizer.SOAP_CMD[ZmOrganizer.ADDRBOOK]	= "FolderAction";
 
 ZmOrganizer.FIRST_USER_ID = {};
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]	= 256;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]		= 64;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.SEARCH]	= 256;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.CALENDAR]	= 256;
+ZmOrganizer.FIRST_USER_ID[ZmOrganizer.ADDRBOOK] = 256;
 
 // fields that can be part of a displayed organizer
 var i = 1;

@@ -44,8 +44,8 @@ function ZmAddrBookTreeController(appCtxt, type, dropTgt) {
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 
 	this._listeners[ZmOperation.NEW_ADDRBOOK] = new AjxListener(this, this._newAddrBookListener);
+	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
 	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editPropsListener);
-	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 };
 
 ZmAddrBookTreeController.prototype = new ZmTreeController();
@@ -61,11 +61,12 @@ function() {
 
 // Enables/disables operations based on the given organizer ID
 ZmAddrBookTreeController.prototype.resetOperations = 
-function(actionMenu, type, id) {
-	DBG.println("TODO: resetOperations");
+function(parent, type, id) {
+	parent.enableAll(true);
 
-	if (actionMenu) {
-		// TODO
+	var addrBook = this._dataTree.getById(id);
+	if (addrBook && addrBook.isSystem()) {
+		parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.RENAME_FOLDER], false);
 	}
 };
 
@@ -86,8 +87,24 @@ function() {
 	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_ADDRBOOK);
 	}*/
-	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS);
+	ops.push(ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.RENAME_FOLDER, ZmOperation.EDIT_PROPS);
 	return ops;
+};
+
+/*
+* Returns a "Rename Folder" dialog.
+*/
+ZmAddrBookTreeController.prototype._getRenameDialog =
+function() {
+	return this._appCtxt.getRenameFolderDialog();
+};
+
+/*
+* Returns a title for moving a folder.
+*/
+ZmAddrBookTreeController.prototype._getMoveDialogTitle =
+function() {
+	return AjxMessageFormat.format(ZmMsg.moveAddrBook, this._pendingActionData.name);
 };
 
 
@@ -95,24 +112,17 @@ function() {
 
 ZmAddrBookTreeController.prototype._newAddrBookListener = 
 function(ev) {
-	// TODO
-	DBG.println("TODO: newAddrBookListener");
 	if (!this._newAddrBookDlg) {
 		this._newAddrBookDlg = new ZmNewAddrBookDialog(this._appCtxt.getShell());
 	}
-	this._showDialog(this._newAddrBookDlg, this._newFolderCallback, this._getActionedOrganizer(ev));
+	this._pendingActionData = this._getActionedOrganizer(ev);
+	this._showDialog(this._newAddrBookDlg, this._newFolderCallback, this._pendingActionData);
 };
 
 ZmAddrBookTreeController.prototype._editPropsListener = 
 function(ev) {
 	// TODO
 	DBG.println("TODO: editPropsListener");
-};
-
-ZmAddrBookTreeController.prototype._deleteListener = 
-function(ev) {
-	// TODO
-	DBG.println("TODO: deleteListener");
 };
 
 
