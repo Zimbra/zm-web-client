@@ -160,7 +160,8 @@ function() {
 // Getters
 
 ZmAppt.prototype.getAttendees 					= function() { return this._getAttendeesString(this.attendees); };
-ZmAppt.prototype.getLocation 					= function() { return this._getAttendeesString(this.locations); };
+ZmAppt.prototype.getLocation					= function() { return (this.locations && this.locations.length) ? 
+																this._getAttendeesString(this.locations) : this.location; };
 ZmAppt.prototype.getResources 					= function() { return this._getAttendeesString(this.resources); };
 ZmAppt.prototype.getOrigAttendees 				= function() { return this._origAttendees; };
 ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
@@ -554,9 +555,14 @@ function(message, viewMode) {
 		if (attendees) {
 			for (var i = 0; i < attendees.length; i++) {
 				var addr = attendees[i].url;
-				// get name from user's contacts if possible
-				var contact = this._contacts.getContactByEmail(addr);
-				var name = contact ? contact.getFullName() : null;
+				var name = attendees[i].d;
+				if (!name) {
+					// get name from user's contacts if possible
+					var contact = this._contacts.getContactByEmail(addr);
+					if (contact) {
+						name = contact.getFullName();
+					}
+				}
 				var email = new ZmEmailAddress(addr, null, name);
 				this._origAttendees.push(email);
 			}
