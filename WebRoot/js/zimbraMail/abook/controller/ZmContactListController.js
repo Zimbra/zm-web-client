@@ -107,9 +107,10 @@ function(search, bIsGalSearch) {
 ZmContactListController.prototype.switchView = 
 function(view, force) {
 	if (view != this._currentView || force) {
-		DBG.timePt("setting up view", true);
+DBG.showTiming(true, AjxDebug.PERF, "[PROFILING CONTACT VIEW]");
+DBG.timePt(AjxDebug.PERF, "setting up view");
 		this._setup(view);
-		DBG.timePt("done setting up view");
+DBG.timePt(AjxDebug.PERF, "done setting up view");
 		this._resetNavToolBarButtons(view);
 		var elements = new Object();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
@@ -133,6 +134,7 @@ function(view, force) {
 		// reset selection since we wiped the canvas
 		if (item)
 			this._listView[view].setSelection(item);
+DBG.showTiming(false);
 	}
 };
 
@@ -220,9 +222,9 @@ function(view) {
 // Load contacts into the given view and perform layout.
 ZmContactListController.prototype._setViewContents =
 function(view) {
-	DBG.timePt("setting list");
+DBG.timePt(AjxDebug.PERF, "setting list");
 	this._listView[view].set(this._list);
-	DBG.timePt("done setting list");
+DBG.timePt(AjxDebug.PERF, "done setting list");
 };
 
 // Create menu for View button and add listeners.

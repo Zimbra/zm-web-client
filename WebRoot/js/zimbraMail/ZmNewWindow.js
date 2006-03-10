@@ -95,16 +95,6 @@ function(domain) {
 */
 ZmNewWindow.unload = 
 function(ev) {	
-	// compose controller adds listeners to parent window's list so we need to 
-	// remove them before closing this window!
-	if (window.command == "compose" || window.command == "composeDetach") {
-		// is there a better way to get a ref to the compose controller?
-		var shell = AjxCore.objectWithId(window._dwtShell);
-		var appCtxt = shell ? shell.getData(ZmAppCtxt.LABEL) : null;
-		var cc = appCtxt ? appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController() : null;
-		if (cc) cc.dispose();
-	}
-
 	if (window.parentController) {
 		window.parentController.removeChildWindow(window);
 	}
@@ -139,10 +129,10 @@ function() {
 		if (window.command == "compose") {
 			// bug fix #4681
 			var action = window.args[0];
-			var msg = (action == ZmOperation.REPLY_ALL) ? this._deepCopyMsg(window.args[1]) : window.args[1];
+			var msg = action == ZmOperation.REPLY_ALL ? this._deepCopyMsg(window.args[1]) : window.args[1];
 			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController()._setView(window.args[0], msg, window.args[2], window.args[3], window.args[4]);
 		} else {
-			var op = window.args.action ? window.args.action : ZmOperation.NEW_MESSAGE;
+			var op = ZmOperation.NEW_MESSAGE;
 			if (window.args.msg) {
 				switch (window.args.msg._mode) {
 					case ZmAppt.MODE_DELETE: 

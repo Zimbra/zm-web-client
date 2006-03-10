@@ -25,7 +25,7 @@
 
 function ZmSearchResult(appCtxt, search) {
 
-	this._results = {};
+	this._results = new Object();
 	if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED))
 		this._results[ZmItem.CONV] = new ZmMailList(ZmItem.CONV, appCtxt, search);
 	this._results[ZmItem.MSG] = new ZmMailList(ZmItem.MSG, appCtxt, search);
@@ -33,17 +33,15 @@ function ZmSearchResult(appCtxt, search) {
 		this._results[ZmItem.ATT] = new ZmMailList(ZmItem.ATT, appCtxt, search);
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED))
 		this._results[ZmItem.CONTACT] = new ZmContactList(appCtxt, search, false);
-	if (appCtxt.get(ZmSetting.GAL_ENABLED))
-		this._results[ZmItem.RESOURCE] = new ZmResourceList(appCtxt, search);
 
 	this._appCtxt = appCtxt;
 	this.search = search;
-};
+}
 
 ZmSearchResult.prototype.toString = 
 function() {
 	return "ZmSearchResult";
-};
+}
 
 ZmSearchResult.prototype.dtor = 
 function() {
@@ -55,7 +53,7 @@ function() {
 		}
 	}
 	this._results = null;
-};
+}
 
 ZmSearchResult.prototype.getResults =
 function(type) {
@@ -74,21 +72,22 @@ function(type) {
 	} else {
 		return this._results[type];
 	}
-};
+}
 
 ZmSearchResult.prototype.getAttribute = 
 function(name) {
 	return this._respEl ? this._respEl[name] : null;
-};
+}
 
 ZmSearchResult.prototype.set =
 function(respEl, contactSource) {
 
 	this._respEl = respEl;
 	
-	if (this.search.isGalSearch)
-		this._results[ZmItem.CONTACT].setIsGal(true);
-
+	var isGalSearch = (contactSource == ZmSearchToolBar.FOR_GAL_MI);
+	if (contactSource)
+		this._results[ZmItem.CONTACT].setIsGal(isGalSearch);
+	
 	var addressHash = new Object();
 	var foundType = new Object();
 	var numTypes = 0;
@@ -96,10 +95,10 @@ function(respEl, contactSource) {
 	
 	var _st = new Date();
 	var _count = 0; // XXX: FOR DEBUG USE ONLY :XXX
-	if (this.search.isGalSearch || this.search.isCalResSearch) {
+	if (isGalSearch) {
 		// process JS eval result for SearchGalRequest
-		currentType = this.search.isGalSearch ? ZmItem.CONTACT : ZmItem.RESOURCE;
-		var data = this.search.isGalSearch ? respEl.cn : respEl.calresource;
+		currentType = ZmItem.CONTACT;
+		var data = respEl.cn;
 		if (data) {
 			for (var j = 0; j < data.length; j++)
 				this._results[currentType].addFromDom(data[j], {addressHash: addressHash});
@@ -137,4 +136,4 @@ function(respEl, contactSource) {
 	}
 
 	return this.type;
-};
+}

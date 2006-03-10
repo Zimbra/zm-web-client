@@ -42,8 +42,6 @@
 * @param lastSortVal	[string]*		value of sort field for above item
 * @param fetch			[boolean]*		if true, fetch first hit message
 * @param searchId		[int]*			ID of owning search folder (if any)
-* @param conds			[array]*		list of search conditions (SearchCalendarResourcesRequest)
-* @param attrs			[array]*		list of attributes to return (SearchCalendarResourcesRequest)
 */
 function ZmSearch(appCtxt, params) {
 
@@ -60,16 +58,9 @@ function ZmSearch(appCtxt, params) {
 		this.lastSortVal	= params.lastSortVal;
 		this.fetch 			= params.fetch;
 		this.searchId		= params.searchId;
-		this.galType		= params.galType ? params.galType : ZmSearch.GAL_ACCOUNT;
-		this.conds			= params.conds;
-		this.join			= params.join ? params.join : ZmSearch.JOIN_AND;
-		this.attrs			= params.attrs;
 		
-		if (this.query)
-			this._parseQuery();
+		this._parseQuery();
 	}
-	this.isGalSearch = false;
-	this.isCalResSearch = false;
 };
 
 // Search types
@@ -80,13 +71,6 @@ ZmSearch.TYPE[ZmItem.CONTACT]	= "contact";
 ZmSearch.TYPE[ZmItem.APPT]		= "appointment";
 ZmSearch.TYPE[ZmItem.NOTE]		= "note";
 ZmSearch.TYPE_ANY				= "any";
-
-ZmSearch.GAL_ACCOUNT	= "account";
-ZmSearch.GAL_RESOURCE	= "resource";
-ZmSearch.GAL_ALL		= "";
-
-ZmSearch.JOIN_AND	= 1;
-ZmSearch.JOIN_OR	= 2;
 
 ZmSearch.TYPE_MAP = {};
 for (var i in ZmSearch.TYPE)
@@ -133,39 +117,13 @@ function() {
 ZmSearch.prototype.execute =
 function(params) {
 
-	this.isGalSearch = (this.contactSource == ZmSearchToolBar.FOR_GAL_MI);
-	this.isCalResSearch = (this.conds != null);
-	if (!this.query && !this.isCalResSearch) return;
-
+	if (!this.query) return;
+	
+	var isGalSearch = (this.contactSource == ZmSearchToolBar.FOR_GAL_MI);
 	var soapDoc;
-	if (this.isGalSearch) {
+	if (isGalSearch) {
 		soapDoc = AjxSoapDoc.create("SearchGalRequest", "urn:zimbraAccount");
-		var method = soapDoc.getMethod();
-		if (this.galType) {
-			method.setAttribute("type", this.galType);
-		}
 		soapDoc.set("name", this.query);
-	} else if (this.isCalResSearch) {
-		soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
-		var method = soapDoc.getMethod();
-//		if (this.sortBy)
-//			method.setAttribute("sortBy", ZmSearch.SORT_BY[this.sortBy]);
-		if (this.attrs)
-			method.setAttribute("attrs", this.attrs.join(","));
-		var searchFilterEl = soapDoc.set("searchFilter");
-		if (this.conds && this.conds.length) {
-			var condsEl = soapDoc.set("conds", null, searchFilterEl);
-			if (this.join == ZmSearch.JOIN_OR) {
-				condsEl.setAttribute("or", 1);
-			}
-			for (var i = 0; i < this.conds.length; i++) {
-				var cond = this.conds[i];
-				var condEl = soapDoc.set("cond", null, condsEl);
-				condEl.setAttribute("attr", cond.attr);
-				condEl.setAttribute("op", cond.op);
-				condEl.setAttribute("value", cond.value);
-			}
-		}
 	} else {
 		soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 		var method = this._getStandardMethod(soapDoc);
@@ -188,7 +146,7 @@ function(params) {
 		}
 	}
 	
-	var respCallback = new AjxCallback(this, this._handleResponseExecute, [this.isGalSearch, this.isCalResSearch, params.callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseExecute, [isGalSearch, params.callback]);
 	var execFrame = new AjxCallback(this, this.execute, params);
 	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback,
 												  errorCallback: params.errorCallback, execFrame: execFrame});
@@ -198,15 +156,9 @@ function(params) {
 * Convert the SOAP response into a ZmSearchResult and pass it along.
 */
 ZmSearch.prototype._handleResponseExecute = 
-function(isGalSearch, isCalResSearch, callback, result) {
+function(isGalSearch, callback, result) {
 	var response = result.getResponse();
-	if (isGalSearch) {
-		response = response.SearchGalResponse;
-	} else if (isCalResSearch) {
-		response = response.SearchCalendarResourcesResponse;
-	} else {
-		response = response.SearchResponse;
-	}
+	response = isGalSearch ? response.SearchGalResponse : response.SearchResponse;
 	var searchResult = new ZmSearchResult(this._appCtxt, this);
 	searchResult.set(response, this.contactSource);
 	result.set(searchResult);

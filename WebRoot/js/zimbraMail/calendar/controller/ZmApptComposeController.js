@@ -38,9 +38,8 @@ function ZmApptComposeController(appCtxt, container, calApp) {
 
 	ZmController.call(this, appCtxt, container, calApp);
 
-	this._newAttList = [];
-	this._removeAttList = [];
-	var xxx = calApp.getResources();
+	this._newAttList = new Array();
+	this._removeAttList = new Array();
 };
 
 ZmApptComposeController.prototype = new ZmController();
@@ -383,10 +382,7 @@ function() {
 	} catch(ex) {
 		if (typeof ex == "string") {
 			this._showErrorMessage(ex);
-		} else {
-			DBG.dumpObj(AjxDebug.DBG1, ex);
 		}
-		
 		return false;
 	}
 };

@@ -63,19 +63,18 @@ ZmItem.prototype = new ZmModel;
 ZmItem.prototype.constructor = ZmItem;
 
 // Item types
-ZmItem.CONV			= ZmEvent.S_CONV;
-ZmItem.MSG			= ZmEvent.S_MSG;
-ZmItem.ATT			= ZmEvent.S_ATT;
-ZmItem.CONTACT		= ZmEvent.S_CONTACT;
-ZmItem.APPT			= ZmEvent.S_APPT;
-ZmItem.NOTE			= ZmEvent.S_NOTE;
-ZmItem.CHAT			= ZmEvent.S_CHAT;
-ZmItem.ROSTER_ITEM	= ZmEvent.S_ROSTER_ITEM;
-ZmItem.RESOURCE		= ZmEvent.S_RESOURCE;		// calendar resource
-ZmItem.MAX			= ZmEvent.S_MAX;
+ZmItem.CONV		= ZmEvent.S_CONV;
+ZmItem.MSG		= ZmEvent.S_MSG;
+ZmItem.ATT		= ZmEvent.S_ATT;
+ZmItem.CONTACT	= ZmEvent.S_CONTACT;
+ZmItem.APPT		= ZmEvent.S_APPT;
+ZmItem.NOTE		= ZmEvent.S_NOTE;
+ZmItem.CHAT		= ZmEvent.S_CHAT;
+ZmItem.ROSTER_ITEM = ZmEvent.S_ROSTER_ITEM;
+ZmItem.MAX		= ZmEvent.S_MAX;
 
 // Type names
-ZmItem.MSG_KEY = {};
+ZmItem.MSG_KEY = new Object();
 ZmItem.MSG_KEY[ZmItem.CONV]		= "conversation";
 ZmItem.MSG_KEY[ZmItem.MSG]		= "message";
 ZmItem.MSG_KEY[ZmItem.ATT]		= "attachment";
@@ -85,7 +84,7 @@ ZmItem.MSG_KEY[ZmItem.NOTE]		= "note";
 ZmItem.MSG_KEY[ZmItem.CHAT]		= "chat";
 
 // Representative icons
-ZmItem.ICON = {};
+ZmItem.ICON = new Object();
 ZmItem.ICON[ZmItem.CONV]	= "Conversation";
 ZmItem.ICON[ZmItem.MSG]		= "Message";
 ZmItem.ICON[ZmItem.ATT]		= "Attachment";
