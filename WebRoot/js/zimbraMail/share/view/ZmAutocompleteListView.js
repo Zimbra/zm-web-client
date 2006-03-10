@@ -135,8 +135,6 @@ function(ev) {
 	if (ev.type == "keyup")
 		DBG.println(AjxDebug.DBG3, "onKeyUp");
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) return true;
-
 	var aclv = AjxCore.objectWithId(element._acListViewId);
 	
 	var id = element.id;
