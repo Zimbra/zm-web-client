@@ -168,7 +168,7 @@ function() {
 
 ZmAppt.prototype.getAttendees 					= function() { return this._getAttendeesString(this.attendees); };
 ZmAppt.prototype.getLocation					= function() { return (this.locations && this.locations.length) ? 
-																this._getAttendeesString(this.locations) : this.location; };
+																this._getAttendeesString(this.locations) : this.location ? this.location : ""; };
 ZmAppt.prototype.getResources 					= function() { return this._getAttendeesString(this.resources); };
 ZmAppt.prototype.getOrigAttendees 				= function() { return this._origAttendees; };
 ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
