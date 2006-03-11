@@ -1556,6 +1556,7 @@ function(soapDoc, inv, m, notifyList) {
 		for (var i = 0; i < this.resources.length; i++) {
 			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.resources[i], ZmAppt.RESOURCE);
 		}
+	}
 	if (this.locations && this.locations.length) {
 		for (var i = 0; i < this.locations.length; i++) {
 			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.locations[i], ZmAppt.LOCATION);
