@@ -31,11 +31,14 @@
 * @param parent			the element that created this view
 * @param appCtxt 		app context
 */
-function ZmApptTabViewPage(parent, appCtxt) {
+function ZmApptTabViewPage(parent, appCtxt, id) {
+
 	DwtTabViewPage.call(this, parent);
 
-	this.setScrollStyle(DwtControl.CLIP);
 	this._appCtxt = appCtxt;
+	this._id = id;
+
+	this.setScrollStyle(DwtControl.CLIP);
 	this._rendered = false;
 	this._contactsSupported = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) || this._appCtxt.get(ZmSetting.GAL_ENABLED);
 
@@ -167,6 +170,13 @@ function(appt, mode, isDirty) {
 	// OPTIMIZATION: create timed action to reset the view
 	var ta = new AjxTimedAction(this, this._reset, [appt, mode || ZmAppt.MODE_NEW]);
 	AjxTimedAction.scheduleAction(ta, 0);
+};
+
+ZmApptTabViewPage.prototype.addChooserListener =
+function(tab) {
+	if (tab && tab._chooser) {
+		tab._chooser.addChangeListener(new AjxListener(this, this._chooserListener));
+	}
 };
 
 ZmApptTabViewPage.prototype.cleanup =
@@ -1225,12 +1235,15 @@ function(ev) {
 
 ZmApptTabViewPage.prototype._attendeesButtonListener =
 function(ev) {
+/*
 	if (!this._contactPicker) {
 		this._contactPicker = new ZmContactPicker(this._appCtxt);
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
 		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancel, this);
 	}
 	this._contactPicker.popup();
+*/
+	this.parent.switchToTab(ZmApptComposeView.TAB_ATTENDEES);
 };
 
 ZmApptTabViewPage.prototype._resourcesButtonListener =
@@ -1302,6 +1315,20 @@ function(ev) {
 	this._recurDialog.popdown();
 };
 
+ZmApptTabViewPage.prototype._chooserListener =
+function(ev) {
+	var items = ev.getDetail("items");
+	var list = [];
+	var a = items.getArray();
+	for (var i = 0; i < a.length; i++) {
+		var email = a[i].getEmail();
+		if (email) {
+			list.push(email);
+		}
+	}
+	var val = list.length ? list.join(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
+	this._attendeesField.setValue(val);
+};
 
 // Callbacks
 
