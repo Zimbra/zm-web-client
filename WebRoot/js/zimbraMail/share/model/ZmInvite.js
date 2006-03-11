@@ -155,13 +155,33 @@ function(compNum) {
 
 ZmInvite.prototype.getAttendees =
 function(compNum) {
-	compNum = compNum || 0;
-	return this.components[compNum].at;
+	compNum = compNum ? compNum : 0;
+	var att = this.components[compNum].at;
+	var list = [];
+	for (var i = 0; i < att.length; i++) {
+		if (att[i].cutype == ZmAppt.CUTYPE_INDIVIDUAL) {
+			list.push(att[i]);
+		}
+	}
+	return list;
+};
+
+ZmInvite.prototype.getResources =
+function(compNum) {
+	compNum = compNum ? compNum : 0;
+	var att = this.components[compNum].at;
+	var list = [];
+	for (var i = 0; i < att.length; i++) {
+		if (att[i].cutype == ZmAppt.CUTYPE_RESOURCE) {
+			list.push(att[i]);
+		}
+	}
+	return list;
 };
 
 ZmInvite.prototype.getStatus =
 function(compNum) {
-	compNum = compNum || 0;
+	compNum = compNum ? compNum : 0;
 	return this.components[compNum].status;
 };
 

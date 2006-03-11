@@ -29,7 +29,7 @@ function ZmAppt(appCtxt, list, noinit) {
 
 	this.id = this.uid = -1;
 	this.type = null;
-	this.name = this.location = this.fragment = "";
+	this.name = this.fragment = "";
 	this.startDate = new Date();
 	this.endDate = new Date(this.startDate.getTime() + (30*60*1000));
 	this.transparency = "FR";
@@ -157,7 +157,7 @@ function() {
 // Getters
 
 ZmAppt.prototype.getAttendees 					= function() { return this._getAttendeesString(this.attendees); };
-ZmAppt.prototype.getLocations 					= function() { return this._getAttendeesString(this.locations); };
+ZmAppt.prototype.getLocation 					= function() { return this._getAttendeesString(this.locations); };
 ZmAppt.prototype.getResources 					= function() { return this._getAttendeesString(this.resources); };
 ZmAppt.prototype.getOrigAttendees 				= function() { return this._origAttendees; };
 ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
@@ -167,7 +167,7 @@ ZmAppt.prototype.getFolderId 					= function() { return this.folderId || ZmFolde
 ZmAppt.prototype.getFragment 					= function() { return this.fragment; };
 ZmAppt.prototype.getId 							= function() { return this.id; }; 					// mail item id on appt instance
 ZmAppt.prototype.getInvId 						= function() { return this.invId; }; 				// default mail item invite id on appt instance
-ZmAppt.prototype.getLocation 					= function() { return this.location; };
+//ZmAppt.prototype.getLocation 					= function() { return this.location; };
 ZmAppt.prototype.getMessage 					= function() { return this._message; };
 ZmAppt.prototype.getName 						= function() { return this.name; }; 				// name (aka Subject) of appt
 ZmAppt.prototype.getOrganizer 					= function() { return this.organizer || ""; };
@@ -546,13 +546,23 @@ function(message, viewMode) {
 		this.repeatCustomMonthDay = this.startDate.getDate();
 
 		// parse out attendees for this invite
-		this._origAttendees = new Array();
+		this._origAttendees = [];
 		var attendees = message.invite.getAttendees();
 		if (attendees) {
-			for (var i = 0; i < attendees.length; i++)
-				this._origAttendees.push(attendees[i].url);
+			for (var i = 0; i < attendees.length; i++) {
+				var email = new ZmEmailAddress(attendees[i].url);
+				this._origAttendees.push(email);
+			}
 //			this.attendees = this._origAttendees.join("; ");
 			this.attendees = this._origAttendees;
+		}
+		this.resources = [];
+		var resources = message.invite.getResources();
+		if (resources) {
+			for (var i = 0; i < resources.length; i++) {
+				var email = new ZmEmailAddress(resources[i].url);
+				this.resources.push(email);
+			}
 		}
 
 		this.getAttachments();
@@ -831,11 +841,11 @@ function() {
 	buf[i++] = organizer;
 	buf[i++] = "\n\n";
 	
-	if (this.location != "") {
+	if (this.locations && this.locations.length) {
 		buf[i++] = ZmMsg.location;
 		buf[i++] = ": ";
-		buf[i++] = this.location;
-		if (isEdit && orig.getLocation() != this.getLocation()) {
+		buf[i++] = this.getLocation();
+		if (isEdit && (orig.getLocation() != this.getLocation())) {
 			buf[i++] = " ";
 			buf[i++] = ZmMsg.apptModifiedStamp;
 		}
@@ -1002,8 +1012,9 @@ function(list) {
 
 	var a = [];
 	for (var i = 0; i < list.length; i++) {
-		var name = item.getFullName();
-		a.push(name ? name : item.getEmail());
+		var item = list[i];
+		var name = item.getName();
+		a.push(name ? name : item.getAddress());
 	}
 	return a.join(ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE);
 };
@@ -1393,8 +1404,8 @@ function(soapDoc, method,  attachmentId, notifyList) {
 	soapDoc.set("su", this.name, m);
 	inv.setAttribute("name", this.name);
 
-	if (this.location != null)
-		inv.setAttribute("loc", this.location);
+	if (this.locations && this.locations.length)
+		inv.setAttribute("loc", this.getLocation());
 
 	var organizer = this.organizer || this._appCtxt.get(ZmSetting.USERNAME);
 	var org = soapDoc.set("or", null, inv);
@@ -1498,51 +1509,21 @@ function(soapDoc, inv) {
 
 ZmAppt.prototype._addAttendeesToSoap = 
 function(soapDoc, inv, m, notifyList) {
-/*
-	if (!((this.attendees && this.attendees.length) ||
-		  (this.resources && this.resources.length)) {
-		return;
-	}
-		var addrArr = this.attendees.split(ZmAppt.ATTENDEES_SEPARATOR_REGEX);
-		var addrs = new Array();
-		for (var z = 0 ; z < addrArr.length; ++z) {
-			var e = ZmEmailAddress.parse(addrArr[z]);
-			if (e) addrs.push(e);
+	if (this.attendees && this.attendees.length) {
+		for (var i = 0; i < this.attendees.length; i++) {
+			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.attendees[i], ZmAppt.ATTENDEE);
 		}
-*/
-	for (var i = 0; i < this.attendees.length; i++) {
-		this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.attendees[i], ZmAppt.ATTENDEE);
 	}
-	for (var i = 0; i < this.resources.length; i++) {
-		this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.resources[i], ZmAppt.RESOURCE);
+	if (this.resources && this.resources.length) {
+		for (var i = 0; i < resourcesLen; i++) {
+			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.resources[i], ZmAppt.RESOURCE);
+		}
+	if (this.locations && this.locations.length) {
+		for (var i = 0; i < locationsLen; i++) {
+			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.locations[i], ZmAppt.LOCATION);
+		}
 	}
-	for (var i = 0; i < this.locations.length; i++) {
-		this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.locations[i], ZmAppt.LOCATION);
-	}
-/*
-		for (var i = 0; i < addrs.length; ++i) {
-			var address = addrs[i].getAddress();
-			var dispName = addrs[i].getDispName();
-			if (inv != null) {
-				at = soapDoc.set("at", null, inv);			
-				at.setAttribute("role", "OPT");		// for now make all attendees optional, until UI has a way of setting this
-				at.setAttribute("ptst", "NE"); 		// not sure if status required on create
-				at.setAttribute("rsvp", "1");
-				at.setAttribute("a", address);
-				if (dispName)
-					at.setAttribute("d", dispName);
-			}
 
-			// set email to notify if notifyList not explicitly given
-			if (m != null && notifyList == null) {
-				e = soapDoc.set("e", null, m);
-				e.setAttribute("a", address);
-				if (dispName)
-					e.setAttribute("p", dispName);
-				e.setAttribute("t", ZmEmailAddress.toSoapType[addrs[i].getType()]);
-			}
-		}
-*/
 	// if we have a separate list of attendees to notify, do it here
 	if (m && notifyList) {
 		for (var i = 0; i < notifyList.length; i++) {
@@ -1570,7 +1551,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 		}
 	}
 
-	// set email to notify if notifyList not explicitly given
+	// set email to notify if notifyList not provided
 	if (m && !notifyList) {
 		e = soapDoc.set("e", null, m);
 		e.setAttribute("a", address);
