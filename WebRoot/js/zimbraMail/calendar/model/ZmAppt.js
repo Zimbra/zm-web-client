@@ -1515,11 +1515,11 @@ function(soapDoc, inv, m, notifyList) {
 		}
 	}
 	if (this.resources && this.resources.length) {
-		for (var i = 0; i < resourcesLen; i++) {
+		for (var i = 0; i < this.resources.length; i++) {
 			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.resources[i], ZmAppt.RESOURCE);
 		}
 	if (this.locations && this.locations.length) {
-		for (var i = 0; i < locationsLen; i++) {
+		for (var i = 0; i < this.locations.length; i++) {
 			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.locations[i], ZmAppt.LOCATION);
 		}
 	}

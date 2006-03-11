@@ -544,6 +544,9 @@ function(appt, mode) {
 	// attendees
 	this._attendeesField.setValue(appt.getAttendees());
 	this._resourcesField.setValue(appt.getResources());
+	this._attendees[ZmAppt.ATTENDEE] = appt.attendees;
+	this._attendees[ZmAppt.RESOURCE] = appt.resources;
+	this._attendees[ZmAppt.LOCATION] = appt.locations;
 
 	// attachments
 	var attachList = appt.getAttachments();
