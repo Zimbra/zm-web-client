@@ -58,6 +58,8 @@ ZmContactPicker.ID_ICON 		= "i--";
 ZmContactPicker.ID_PARTICIPANT 	= "p--";
 ZmContactPicker.ID_EMAIL 		= "e--";
 
+ZmContactPicker.CHOOSER_HEIGHT = 300;
+
 // Public methods
 
 ZmContactPicker.prototype.toString = 
@@ -117,7 +119,7 @@ function() {
 ZmContactPicker.prototype._contentHtml = 
 function() {
 	this._searchFieldId	= Dwt.getNextId();
-	this._listSearchId	= Dwt.getNextId();
+	this._searchBtnTdId	= Dwt.getNextId();
 	this._listSelectId	= Dwt.getNextId();
 	this._chooserDivId	= Dwt.getNextId();
 
@@ -132,7 +134,7 @@ function() {
 	html[idx++] = "</td><td><input type='text' autocomplete='off' size=30 nowrap id='";
 	html[idx++] = this._searchFieldId;
 	html[idx++] = "'>&nbsp;</td><td id='";
-	html[idx++] = this._listSearchId;
+	html[idx++] = this._searchBtnTdId;
 	html[idx++] = "'></td></tr></table>";
 	html[idx++] = "</td><td align=right>";
 	// add placeholder for drop down select widget
@@ -163,7 +165,7 @@ function() {
 	this.setContent(this._contentHtml());
 	
 	// add search button
-	var searchSpan = document.getElementById(this._listSearchId);
+	var searchSpan = document.getElementById(this._searchBtnTdId);
 	var searchButton = new DwtButton(this);
 	searchButton.setText(ZmMsg.search);
 	searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
@@ -182,7 +184,7 @@ function() {
 	this._chooser = new ZmContactChooser(this, this._buttonInfo);
 	var chooserDiv = document.getElementById(this._chooserDivId);
 	chooserDiv.appendChild(this._chooser.getHtmlElement());
-	
+	this._chooser.resize(this.getSize().x, ZmContactPicker.CHOOSER_HEIGHT);
 
     // init listeners
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
@@ -319,7 +321,7 @@ function(item, list) {
 */
 function ZmContactChooserSourceListView(parent) {
 
-	DwtChooserListView.call(this, parent, DwtChooserListView.SOURCE, "ZmContactChooserListView");
+	DwtChooserListView.call(this, parent, DwtChooserListView.SOURCE);
 };
 
 ZmContactChooserSourceListView.prototype = new DwtChooserListView;
@@ -377,7 +379,7 @@ function(item) {
 function ZmContactChooserTargetListView(parent, showType) {
 
 	this._showType = showType;
-	DwtChooserListView.call(this, parent, DwtChooserListView.TARGET, "ZmContactChooserListView");
+	DwtChooserListView.call(this, parent, DwtChooserListView.TARGET);
 };
 
 ZmContactChooserTargetListView.prototype = new DwtChooserListView;

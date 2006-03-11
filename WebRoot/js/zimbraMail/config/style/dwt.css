@@ -1264,3 +1264,8 @@ HTML>BODY .RadioGrouperLabel {
 .DwtChooser-Active {
 	border: 1px solid #000000;
 }
+
+.DwtChooserListView {
+	border: 1px solid #000000;
+	margin: 5 5 5 5;
+}

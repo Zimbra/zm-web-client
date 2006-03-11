@@ -88,6 +88,7 @@ function(appt, mode, isDirty) {
 
 	this._apptTab.initialize(appt, mode, isDirty);
 	this._scheduleTab.initialize(appt, mode);
+//	this._attendeesTab.initialize(appt, mode);
 };
 
 ZmApptComposeView.prototype.cleanup = 
@@ -154,7 +155,7 @@ function(tabKey) {
 			buttons.push(ZmOperation.DETACH_COMPOSE);
 		toolbar.enable(buttons, false);
 		this._apptTab.enableInputs(false);
-	} else {
+	} else if (tabKey == this._apptTabKey) {
 		this._apptTab.enableInputs(true);
 		this._apptTab.reEnableDesignMode();
 	}
@@ -183,13 +184,16 @@ function() {
 	this._apptTab = new ZmApptTabViewPage(this, this._appCtxt);
 	this._apptTab.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 	this._scheduleTab = new ZmSchedTabViewPage(this, this._appCtxt, this._apptTab, this._controller);
-	var button = this._scheduleTab
+//	this._attendeesTab = new ZmAttendeesTabViewPage(this, this._appCtxt);
 
 	this._apptTabKey = this.addTab(ZmMsg.appointment, this._apptTab);
 	this._scheduleTabKey = this.addTab(ZmMsg.schedule, this._scheduleTab);
+//	this._attendeesTabKey = this.addTab(ZmMsg.findAttendees, this._attendeesTab);
 
 	var button = this.getTabButton(this._scheduleTabKey);
 	button.setImage("ApptMeeting");
+//	button = this.getTabButton(this._attendeesTabKey);
+//	button.setImage("ApptMeeting");
 
 	this.addControlListener(new AjxListener(this, this._controlListener));
 };

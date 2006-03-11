@@ -1118,7 +1118,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	display: none;
 }
 
-
 .leftAlign {
   text-align:left;
 }
@@ -1507,12 +1506,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmContactPicker  {
 	border: 1px solid black;
 	background-color: #CCCCCC;
-}
-
-.ZmContactChooserListView {
-	width: 250px;
-	height: 285px;
-	margin: 5 5 0 5;
 }
 
 /*
