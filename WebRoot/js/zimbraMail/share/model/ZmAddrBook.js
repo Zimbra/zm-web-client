@@ -97,9 +97,38 @@ ZmAddrBook.prototype.mayContain =
 function(what) {
 	if (!what) return true;
 
-	var invalid = (what.parent == this || 
+	var invalid = false;
+
+	if (what instanceof ZmAddrBook) {
+		invalid = (what.parent == this || 
 				   this.isChildOf(what) ||
 				   what.id == this.id);
+	} else {
+		// An item or an array of items is being moved
+		var items = (what instanceof Array) ? what : [what];
+		var item = items[0];
+		if (this.id == ZmOrganizer.ID_ROOT) {
+			invalid = true;		// container can only have folders/searches
+		} else if (item.type != ZmItem.CONTACT) {
+			invalid = true;		// only contacts are valid for addr books.
+		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
+			invalid = true;		// cannot drag a gal to addr book (at least not for now)
+		} else {
+			// can't move items to folder they're already in; we're okay if we 
+			// have one item from another folder
+			if (!invalid) {
+				if (items[0].folderId) {
+					invalid = true;
+					for (var i = 0; i < items.length; i++) {
+						if (items[i].folderId != this.id) {
+							invalid = false;
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
 
 	return !invalid;
 };
@@ -109,36 +138,14 @@ function(what) {
 
 ZmAddrBook.prototype.notifyCreate =
 function(obj, link) {
+	// ignore creates of system folders
+	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.ADDRBOOK]) return;
+
 	var ab = ZmAddrBook.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(ab, ZmAddrBook.sortCompare);
 	this.children.add(ab, index);
 	ab._notify(ZmEvent.E_CREATE);
 };
-
-/*
-
-// TODO - figure out how this will work
-
-ZmAddrBook.prototype.notifyModify =
-function(obj) {
-	ZmOrganizer.prototype.notifyModify.call(this, obj);
-
-	var doNotify = false;
-	var fields = new Object();
-	if (obj.excludeFreeBusy != null && this.excludeFreeBusy != obj.excludeFreeBusy) {
-		this.excludeFreeBusy = obj.excludeFreeBusy;
-		// TODO: Should a F_EXCLUDE_FB property be added to ZmOrganizer?
-		//       It doesn't make sense to require the base class to know about
-		//       all the possible fields in sub-classes. So I'm just using the
-		//       modified property name as the key.
-		fields["excludeFreeBusy"] = true;
-		doNotify = true;
-	}
-	
-	if (doNotify)
-		this._notify(ZmEvent.E_MODIFY, {fields: fields});
-};
-*/
 
 
 // Static methods
@@ -163,11 +170,6 @@ function(parent, obj, tree) {
 	ab._setSharesFromJs(obj);
 	
 	return ab;
-};
-
-ZmAddrBook.checkName =
-function(name) {
-	return ZmOrganizer.checkName(name);
 };
 
 ZmAddrBook.sortCompare = 

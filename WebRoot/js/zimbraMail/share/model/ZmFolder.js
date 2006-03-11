@@ -307,8 +307,9 @@ function(obj, isSearch) {
 	// ignore creates of system folders
 	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]) return;
 
-	var folder = isSearch ? ZmSearchFolder.createFromJs(this, obj, this.tree) :
-							ZmFolder.createFromJs(this, obj, this.tree);
+	var folder = isSearch 
+		? ZmSearchFolder.createFromJs(this, obj, this.tree) 
+		: ZmFolder.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
 	this.children.add(folder, index);
 	folder._notify(ZmEvent.E_CREATE);

@@ -119,18 +119,98 @@ function(ev) {
 	this._showDialog(this._newAddrBookDlg, this._newFolderCallback, this._pendingActionData);
 };
 
+/*
+* Permanently deletes an address book. A warning dialog is shown before the 
+* address book is nuked.
+*
+* @param ev		[DwtUiEvent]	the UI event
+*/
+ZmAddrBookTreeController.prototype._deleteListener = 
+function(ev) {
+	var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
+	if (!this._deleteShield) {
+		this._deleteShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
+		this._deleteShield.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
+		this._deleteShield.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
+	}
+	var msg = AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName());
+	this._deleteShield.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	this._deleteShield.popup();
+};
+
 ZmAddrBookTreeController.prototype._editPropsListener = 
 function(ev) {
 	// TODO
 	DBG.println("TODO: editPropsListener");
 };
 
+/*
+* Don't allow dragging of system folders.
+*
+* @param ev		[DwtDragEvent]		the drag event
+*/
+ZmAddrBookTreeController.prototype._dragListener =
+function(ev) {
+	if (ev.action == DwtDragEvent.DRAG_START) {
+		var addrBook = ev.srcData = ev.srcControl.getData(Dwt.KEY_OBJECT);
+		if (!(addrBook instanceof ZmAddrBook) || addrBook.isSystem())
+			ev.operation = Dwt.DND_DROP_NONE;
+	}
+};
+
+/*
+* Handles the potential drop of a contact or another addr book onto an addr book. 
+*
+* @param ev		[DwtDropEvent]		the drop event
+*/
+ZmAddrBookTreeController.prototype._dropListener =
+function(ev) {
+	var dropTarget = ev.targetControl.getData(Dwt.KEY_OBJECT);
+	var srcData = ev.srcData;
+
+	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		if (srcData instanceof ZmAddrBook) {
+			var dragFolder = srcData;
+			ev.doIt = dropTarget.mayContain(dragFolder);
+		} else {
+			ev.doIt = !this._dropTgt.isValidTarget(srcData.data)
+				? false
+				: dropTarget.mayContain(srcData.data);
+		}
+	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
+		if (srcData instanceof ZmAddrBook) {
+			this._doMove(srcData, dropTarget);
+		} else {
+			var data = srcData.data;
+			var ctlr = srcData.controller;
+			var items = (data instanceof Array) ? data : [data];
+			ctlr._doMove(items, dropTarget);
+		}
+	}
+};
 
 // Callbacks
+
+/*
+* Called when a left click occurs (by the tree view listener).
+*
+* @param addrBook		ZmAddrBook		the address book clicked on
+*/
+ZmAddrBookTreeController.prototype._itemClicked =
+function(addrBook) {
+	// TODO
+	DBG.println("TODO: itemClicked");
+};
 
 ZmAddrBookTreeController.prototype._newFolderCallback =
 function(parent, name) {
 	this._newAddrBookDlg.popdown();
 	var ftc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.ADDRBOOK);
 	ftc._doCreate(parent, name);
+};
+
+ZmAddrBookTreeController.prototype._deleteShieldYesCallback =
+function() {
+	this._doDelete(this._pendingActionData);
+	this._clearDialog(this._deleteShield);
 };

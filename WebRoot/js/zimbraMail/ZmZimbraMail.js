@@ -1142,10 +1142,9 @@ function(creates, modifies) {
 				}
 			} else {
 				parent = folderTree.getById(parentId);
-				if (!parent)
-					parent = searchTree.getById(parentId);
-				if (!parent)
-					parnet = calendarTree.getById(parentId);
+				if (!parent) parent = searchTree.getById(parentId);
+				if (!parent) parent = calendarTree.getById(parentId);
+				if (!parent) parent = addrBookTree.getById(parentId);
 			}
 			if (parent)
 				parent.notifyCreate(create, (name == "search"));
