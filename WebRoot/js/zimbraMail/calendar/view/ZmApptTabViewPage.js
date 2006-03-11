@@ -183,6 +183,7 @@ function() {
 	this._subjectField.setValue("");
 	this._locationField.setValue("");
 	this._attendeesField.setValue("");
+	this._resourcesField.setValue("");
 	this._repeatDescField.innerHTML = "";
 	this._notesHtmlEditor.clear();
 
@@ -209,6 +210,7 @@ function(bEnableInputs) {
 	this._subjectField.disabled(!bEnableInputs);
 	this._locationField.disabled(!bEnableInputs);
 	this._attendeesField.disabled(!bEnableInputs);
+	this._resourcesField.disabled(!bEnableInputs);
 	this._startDateField.disabled = !bEnableInputs;
 	this._endDateField.disabled = !bEnableInputs;
 };
@@ -641,6 +643,16 @@ function() {
 	Dwt.setSize(this._attendeesField.getInputElement(), "100%", "22px");
 	this._attendeesField.reparentHtmlElement(this._attendeesFieldId);
 	delete this._attendeesFieldId;
+
+	this._resourcesField = new DwtInputField({parent:this, type:DwtInputField.STRING,
+											  initialValue:null, size:null, maxLen:null,
+											  errorIconStyle:DwtInputField.ERROR_ICON_NONE,
+											  validationStyle:DwtInputField.ONEXIT_VALIDATION,
+											  validator: this._emailValidator,
+											  validatorCtxtObj: this});
+	Dwt.setSize(this._resourcesField.getInputElement(), "100%", "22px");
+	this._resourcesField.reparentHtmlElement(this._resourcesFieldId);
+	delete this._resourcesFieldId;
 };
 
 ZmApptTabViewPage.prototype._createSelects =
@@ -687,6 +699,15 @@ function() {
 
 ZmApptTabViewPage.prototype._createButtons =
 function() {
+	this._locationBtnListener = new AjxListener(this, this._locationButtonListener);
+	this._locationButton = new DwtButton(this);
+	this._locationButton.setText(ZmMsg.location);
+	this._locationButton.setSize(80);
+	this._locationButton.addSelectionListener(this._locationBtnListener);
+	// cleanup...
+	this._locationButton.reparentHtmlElement(this._locationBtnId);
+	delete this._locationBtnId;
+
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
@@ -701,11 +722,21 @@ function() {
 	// cleanup...
 	this._attendeesButton.reparentHtmlElement(this._attendeesBtnId);
 	delete this._attendeesBtnId;
+
+	this._resourcesBtnListener = new AjxListener(this, this._resourcesButtonListener);
+	this._resourcesButton = new DwtButton(this);
+	this._resourcesButton.setText(ZmMsg.resources + "...");
+	this._resourcesButton.setSize(80);
+	this._resourcesButton.addSelectionListener(this._resourcesBtnListener);
+	// cleanup...
+	this._resourcesButton.reparentHtmlElement(this._resourcesBtnId);
+	delete this._resourcesBtnId;
 };
 
 ZmApptTabViewPage.prototype._getDetailsHtml =
 function() {
 	this._subjectFieldId 		= Dwt.getNextId();
+	this._locationBtnId			= Dwt.getNextId();
 	this._locationFieldId 		= Dwt.getNextId();
 	this._calLabelId 			= Dwt.getNextId();
 	this._calSelectId 			= Dwt.getNextId();
@@ -720,9 +751,10 @@ function() {
 	html[i++] = ":</td><td colspan=5 id='";
 	html[i++] = this._subjectFieldId;
 	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'>";
-	html[i++] = ZmMsg.location;
-	html[i++] = ":</td><td colspan=5 id='";
+	html[i++] = "<tr><td width=1% id='";
+	html[i++] = this._locationBtnId;
+	html[i++] = "'></td>";
+	html[i++] = "</td><td colspan=5 id='";
 	html[i++] = this._locationFieldId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr>";
@@ -821,11 +853,14 @@ ZmApptTabViewPage.prototype._getSchedulingHtml =
 function() {
 	this._attendeesBtnId = Dwt.getNextId();
 	this._attendeesFieldId = Dwt.getNextId();
+	this._resourcesBtnId = Dwt.getNextId();
+	this._resourcesFieldId = Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
 
-	html[i++] = "<table border=0 width=100%><tr>";
+	html[i++] = "<table border=0 width=100%>";
+	html[i++] = "<tr>";
 	if (this._contactsSupported) {
 		html[i++] = "<td width=1% id='";
 		html[i++] = this._attendeesBtnId;
@@ -838,7 +873,24 @@ function() {
 	html[i++] = "<td id='";
 	html[i++] = this._attendeesFieldId;
 	html[i++] = "'></td>";
-	html[i++] = "</tr></table>";
+	html[i++] = "</tr>";
+
+	html[i++] = "<tr>";
+	if (this._contactsSupported) {
+		html[i++] = "<td width=1% id='";
+		html[i++] = this._resourcesBtnId;
+		html[i++] = "'></td>";
+	} else {
+		html[i++] = "<td width=1% align=right>";
+		html[i++] = ZmMsg.resources;
+		html[i++] = ":</td>";
+	}
+	html[i++] = "<td id='";
+	html[i++] = this._resourcesFieldId;
+	html[i++] = "'></td>";
+	html[i++] = "</tr>";
+
+	html[i++] = "</table>";
 
 	return html.join("");
 };
@@ -1134,6 +1186,11 @@ function(ev, isHover) {
 
 // Listeners
 
+ZmApptTabViewPage.prototype._locationButtonListener =
+function(ev) {
+	DBG.println("***** ZmApptTabViewPage.prototype._locationButtonListener");
+};
+
 ZmApptTabViewPage.prototype._dateButtonListener =
 function(ev) {
 	var calDate = ev.item == this._startDateButton
@@ -1158,12 +1215,16 @@ function(ev) {
 ZmApptTabViewPage.prototype._attendeesButtonListener =
 function(ev) {
 	if (!this._contactPicker) {
-		var buttonInfo = [ { label: ZmMsg.add } ];
-		this._contactPicker = new ZmContactPicker(this._appCtxt, buttonInfo);
+		this._contactPicker = new ZmContactPicker(this._appCtxt);
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
 		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancel, this);
 	}
 	this._contactPicker.popup();
+};
+
+ZmApptTabViewPage.prototype._resourcesButtonListener =
+function(ev) {
+	DBG.println("***** ZmApptTabViewPage.prototype._resourcesButtonListener");
 };
 
 ZmApptTabViewPage.prototype._dateCalSelectionListener =
@@ -1233,7 +1294,7 @@ function(ev) {
 
 // Callbacks
 
-// Transfers addresses from the contact picker to the compose view.
+// Transfers addresses from the contact picker to the attendees field.
 ZmApptTabViewPage.prototype._contactPickerOk =
 function(vec) {
 	// populate attendees field w/ chosen contacts from picker
