@@ -49,11 +49,11 @@ function ZmApptTabViewPage(parent, appCtxt, id) {
 
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
-	
-	this._values = {};
-	this._values[ZmAppt.ATTENDEE] = [];
-	this._values[ZmAppt.LOCATION] = [];
-	this._values[ZmAppt.RESOURCE] = [];
+
+	this._attendees = {};
+	this._attendees[ZmAppt.ATTENDEE] = [];
+	this._attendees[ZmAppt.LOCATION] = [];
+	this._attendees[ZmAppt.RESOURCE] = [];
 };
 
 ZmApptTabViewPage.prototype = new DwtTabViewPage;
@@ -153,13 +153,13 @@ function(attId) {
 		top.setContentType(ZmMimeTable.TEXT_PLAIN);
 		top.setContent(this._notesHtmlEditor.getContent());
 	}
-	appt.attendees = this._getValues(ZmAppt.ATTENDEE);
-	appt.locations = this._getValues(ZmAppt.LOCATION);
-	appt.resources = this._getValues(ZmAppt.RESOURCE);
-	// temporary
-	this._values[ZmAppt.ATTENDEE] = [];
-	this._values[ZmAppt.LOCATION] = [];
-	this._values[ZmAppt.RESOURCE] = [];
+	appt.attendees = this._attendees[ZmAppt.ATTENDEE];
+	appt.locations = this._attendees[ZmAppt.LOCATION];
+	appt.resources = this._attendees[ZmAppt.RESOURCE];
+	// temporary hack
+	this._attendees[ZmAppt.ATTENDEE] = [];
+	this._attendees[ZmAppt.LOCATION] = [];
+	this._attendees[ZmAppt.RESOURCE] = [];
 	
 	appt.notesTopPart = top;
 
@@ -440,13 +440,16 @@ function() {
 	return dateInfo;
 };
 
-ZmApptTabViewPage.prototype.getAttendees =
+ZmApptTabViewPage.prototype.getOrganizerAndAttendees =
 function() {
 	// always prepend organizer before returning attendees field
-	// XXX: for now, assume no organizer means its the user :/
+	// XXX: for now, assume no organizer means it's the user :/
 	var calId = this._calendarSelect.getValue();
-	var organizer = this._calendarOrgs[calId] || this._appCtxt.get(ZmSetting.USERNAME);
+	var organizer = this._calendarOrgs[calId] ? this._calendarOrgs[calId] : this._appCtxt.get(ZmSetting.USERNAME);
 
+	var list = [];
+	list.push(organizer);
+	
 	// bug fix #4719 - only grab the valid email addresses
 	var addrs = ZmEmailAddress.parseEmailString(this._attendeesField.getValue());
 	var addrsArr = addrs.all.getArray();
@@ -645,18 +648,12 @@ function() {
 	this._subjectField.reparentHtmlElement(this._subjectFieldId);
 	delete this._subjectFieldId;
 
-
 	this._locationField = new DwtInputField({parent: this, type: DwtInputField.STRING});
 	Dwt.setSize(this._locationField.getInputElement(), width, "22px");
 	this._locationField.reparentHtmlElement(this._locationFieldId);
 	delete this._locationFieldId;
 
-
-	this._attendeesField = new DwtInputField({parent: this, type: DwtInputField.STRING,
-											  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
-											  validationStyle: DwtInputField.ONEXIT_VALIDATION,
-											  validator: this._emailValidator,
-											  validatorCtxtObj: this});
+	this._attendeesField = new DwtInputField({parent: this, type: DwtInputField.STRING});
 	Dwt.setSize(this._attendeesField.getInputElement(), "100%", "22px");
 	this._attendeesField.reparentHtmlElement(this._attendeesFieldId);
 	delete this._attendeesFieldId;
@@ -1300,19 +1297,14 @@ function(ev) {
 
 ZmApptTabViewPage.prototype._chooserListener =
 function(ev) {
-	var items = ev.getDetail("items");
+	var vec = ev.getDetail("items");
 	var type = ev.getDetail("chooserType");
-	var a = items.getArray();
-	for (var i = 0; i < a.length; i++) {
-		var item = a[i];
-		var text = (type == ZmAppt.ATTENDEE) ? item.getEmail() : item.getAttr("displayName");
-		var value = (type == ZmAppt.ATTENDEE) ? item.getEmail() : item.getAttr("mail");
-		this._values[type].push({text: text, value: value});
-	}
+	var items = this._attendees[type] = vec.getArray();
+
 	var list = [];
-	var a = this._values[type];
-	for (var i = 0; i < a.length; i++) {
-		list.push(a[i].text);
+	for (var i = 0; i < items.length; i++) {
+		var name = items[i].getName();
+		list.push(name ? name : items[i].getAddress());
 	}
 	var val = list.length ? list.join(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
 	if (type == ZmAppt.ATTENDEE) {
@@ -1325,34 +1317,6 @@ function(ev) {
 };
 
 // Callbacks
-
-// Transfers addresses from the contact picker to the attendees field.
-ZmApptTabViewPage.prototype._contactPickerOk =
-function(vec) {
-	// populate attendees field w/ chosen contacts from picker
-
-	// bug fix #4719 - just display the email address (no display name)
-	var addrs = vec.getArray();
-	var addrsArr = new Array();
-	for (var i = 0; i < addrs.length; i++)
-		addrsArr.push(addrs[i].address);
-
-	var value = addrsArr.length > 0
-		? ((addrsArr.join(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR))
-		: "";
-	this._attendeesField.setValue(this._attendeesField.getValue() + value);
-
-	this._contactPicker.popdown();
-
-	this.enableInputs(true);
-	this.reEnableDesignMode();
-};
-
-ZmApptTabViewPage.prototype._contactPickerCancel =
-function(args) {
-	this.enableInputs(true);
-	this.reEnableDesignMode();
-};
 
 ZmApptTabViewPage.prototype._getAcListLoc =
 function(ev) {
@@ -1454,14 +1418,4 @@ function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = AjxCore.objectWithId(el._tabViewPageId);
 	ZmApptViewHelper.handleDateChange(tvp._startDateField, tvp._endDateField, el == tvp._startDateField);
-};
-
-ZmApptTabViewPage.prototype._getValues =
-function(type) {
-	var list = [];
-	var a = this._values[type];
-	for (var i = 0; i < a.length; a++) {
-		list.push(a[i].value);
-	}
-	return list;
 };

@@ -84,7 +84,7 @@ function() {
 	this.resize(pSize.x, pSize.y);
 
 	// set the free/busy view w/ fresh data
-	this.set(this._apptTab.getDateInfo(), this._apptTab.getAttendees());
+	this.set(this._apptTab.getDateInfo(), this._apptTab.getOrganizerAndAttendees());
 
 	this.parent.tabSwitched(this._tabKey);
 };

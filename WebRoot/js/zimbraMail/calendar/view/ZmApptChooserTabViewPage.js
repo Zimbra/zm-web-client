@@ -420,6 +420,31 @@ function ZmApptChooser(parent, buttonInfo) {
 ZmApptChooser.prototype = new DwtChooser;
 ZmApptChooser.prototype.constructor = ZmApptChooser;
 
+/**
+* Returns a list of ZmEmailAddress objects. The reason that we don't just convert
+* search results into ZmEmailAddress is that we display fields that are not part of
+* ZmEmailAddress.
+*/
+ZmApptChooser.prototype.getItems =
+function() {
+	var list = [];
+	var items = this._data[this._buttonInfo[0].id];
+	var a = items.getArray();
+	for (var i = 0; i < a.length; i++) {
+		var item = a[i];
+		var text;
+		if (this.parent.type == ZmAppt.ATTENDEE) {
+			var name = item.getFullName();
+			text = name ? name : item.getEmail();
+		} else {
+			text = item.getAttr("displayName");
+		}
+		var value = (this.parent.type == ZmAppt.ATTENDEE) ? item.getEmail() : item.getAttr("mail");
+		list.push(new ZmEmailAddress(value, null, text));
+	}
+	return AjxVector.fromArray(list);
+};
+
 ZmApptChooser.prototype._createSourceListView =
 function() {
 	return new ZmApptChooserListView(this, DwtChooserListView.SOURCE, this.parent.type);

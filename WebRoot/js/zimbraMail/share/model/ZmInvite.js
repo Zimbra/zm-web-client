@@ -150,7 +150,7 @@ function (compNum){
 
 ZmInvite.prototype.getRecurrenceRules = 
 function(compNum) {
-	return this.components[compNum].recur
+	return this.components[compNum].recur;
 };
 
 ZmInvite.prototype.getAttendees =
