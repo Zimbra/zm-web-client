@@ -59,15 +59,6 @@ ZmApptComposeView.TAB_LOCATIONS		= i++;
 ZmApptComposeView.TAB_RESOURCES		= i++;
 delete i;
 
-/*
-ZmApptComposeView.TAB_CLASS = {};
-ZmApptComposeView.TAB_CLASS[ZmApptComposeView.TAB_APPOINTMENT]	= ZmApptTabViewPage;
-ZmApptComposeView.TAB_CLASS[ZmApptComposeView.TAB_SCHEDULE]		= ZmSchedTabViewPage;
-ZmApptComposeView.TAB_CLASS[ZmApptComposeView.TAB_ATTENDEES]	= ZmAttendeesTabViewPage;
-ZmApptComposeView.TAB_CLASS[ZmApptComposeView.TAB_LOCATIONS]	= ZmLocationsTabViewPage;
-ZmApptComposeView.TAB_CLASS[ZmApptComposeView.TAB_RESOURCES]	= ZmResourcesTabViewPage;
-*/
-
 ZmApptComposeView.TAB_NAME = {};
 ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_APPOINTMENT]	= "appointment";
 ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_SCHEDULE]		= "schedule";
@@ -79,8 +70,8 @@ ZmApptComposeView.TAB_IMAGE = {};
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_APPOINTMENT]	= "Appointment";
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_SCHEDULE]		= "ApptMeeting";
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_ATTENDEES]	= "ApptMeeting";
-ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_LOCATIONS]	= null;
-ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_RESOURCES]	= null;
+ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_LOCATIONS]	= "ApptMeeting";
+ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_RESOURCES]	= "ApptMeeting";
 
 
 
@@ -296,9 +287,9 @@ function(id) {
 	switch (id) {
 		case ZmApptComposeView.TAB_APPOINTMENT	: return new ZmApptTabViewPage(this, this._appCtxt, id, this._controller);
 		case ZmApptComposeView.TAB_SCHEDULE		: return new ZmSchedTabViewPage(this, this._appCtxt, id, this._controller);
-		case ZmApptComposeView.TAB_ATTENDEES	: return new ZmAttendeesTabViewPage(this, this._appCtxt, id, this._controller);
-		case ZmApptComposeView.TAB_LOCATIONS	: return new ZmLocationsTabViewPage(this, this._appCtxt, id, this._controller);
-		case ZmApptComposeView.TAB_RESOURCES	: return new ZmResourcesTabViewPage(this, this._appCtxt, id, this._controller);
+		case ZmApptComposeView.TAB_ATTENDEES	:
+		case ZmApptComposeView.TAB_LOCATIONS	:
+		case ZmApptComposeView.TAB_RESOURCES	: return new ZmApptChooserTabViewPage(this, this._appCtxt, id);
 	}
 };
 
