@@ -1252,3 +1252,17 @@ HTML>BODY .RadioGrouperLabel {
 .DwtMenuCascadeCell {
 	border-left: solid gray 1px;
 }
+
+/*
+ * DwtChooser
+ */
+
+.DwtChooser-Active {
+	border: 1px solid #000000;
+}
+
+.DwtChooserListView {
+	width: 250px;
+	height: 285px;
+	margin: 5 5 0 5;
+}

@@ -60,7 +60,6 @@ function() {
 // Consts
 
 ZmApptTabViewPage.UPLOAD_FIELD_NAME = "attUpload";
-ZmApptTabViewPage.CONTACT_PICKER_BID = ZmEmailAddress.TO;
 ZmApptTabViewPage.SHOW_MAX_ATTACHMENTS = AjxEnv.is800x600orLower ? 2 : 3;
 
 ZmApptTabViewPage.SHOWAS_OPTIONS = [
@@ -1159,12 +1158,12 @@ function(ev) {
 ZmApptTabViewPage.prototype._attendeesButtonListener =
 function(ev) {
 	if (!this._contactPicker) {
-		var buttonInfo = [ { id:ZmApptTabViewPage.CONTACT_PICKER_BID, value:ZmMsg.add.toLowerCase() } ];
+		var buttonInfo = [ { label: ZmMsg.add } ];
 		this._contactPicker = new ZmContactPicker(this._appCtxt, buttonInfo);
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
 		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancel, this);
 	}
-	this._contactPicker.popup(ZmApptTabViewPage.CONTACT_PICKER_BID);
+	this._contactPicker.popup();
 };
 
 ZmApptTabViewPage.prototype._dateCalSelectionListener =
@@ -1236,9 +1235,8 @@ function(ev) {
 
 // Transfers addresses from the contact picker to the compose view.
 ZmApptTabViewPage.prototype._contactPickerOk =
-function(addrs) {
+function(vec) {
 	// populate attendees field w/ chosen contacts from picker
-	var vec = addrs[ZmApptTabViewPage.CONTACT_PICKER_BID];
 
 	// bug fix #4719 - just display the email address (no display name)
 	var addrs = vec.getArray();
