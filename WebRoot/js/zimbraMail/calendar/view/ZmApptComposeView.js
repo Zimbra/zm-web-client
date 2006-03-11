@@ -258,8 +258,8 @@ function() {
 ZmApptComposeView.prototype._createTabViewPage =
 function(id) {
 	switch (id) {
-		case ZmApptComposeView.TAB_APPOINTMENT	: return new ZmApptTabViewPage(this, this._appCtxt, id, this._controller);
-		case ZmApptComposeView.TAB_SCHEDULE		: return new ZmSchedTabViewPage(this, this._appCtxt, id, this._controller);
+		case ZmApptComposeView.TAB_APPOINTMENT	: return new ZmApptTabViewPage(this, this._appCtxt);
+		case ZmApptComposeView.TAB_SCHEDULE		: return new ZmSchedTabViewPage(this, this._appCtxt, this._controller);
 		case ZmApptComposeView.TAB_ATTENDEES	: return new ZmApptChooserTabViewPage(this, this._appCtxt, ZmAppt.ATTENDEE);
 		case ZmApptComposeView.TAB_LOCATIONS	: return new ZmApptChooserTabViewPage(this, this._appCtxt, ZmAppt.LOCATION);
 		case ZmApptComposeView.TAB_RESOURCES	: return new ZmApptChooserTabViewPage(this, this._appCtxt, ZmAppt.RESOURCE);

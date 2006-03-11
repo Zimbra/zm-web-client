@@ -29,14 +29,15 @@
 * @class
 *
 * @author Parag Shah
-* @param parent			the element that created this view
-* @param appCtxt 		app context
+*
+* @param parent		[DwtComposite]		the appt compose view
+* @param appCtxt 	[ZmAppCtxt]			app context
+* @param controller	[ZmController]		the appt compose controller
 */
-function ZmSchedTabViewPage(parent, appCtxt, id, controller) {
+function ZmSchedTabViewPage(parent, appCtxt, controller) {
 	DwtTabViewPage.call(this, parent);
 
 	this._appCtxt = appCtxt;
-	this._id = id;
 	this._controller = controller;
 
 	this._apptTab = parent.getTabPage(ZmApptComposeView.TAB_APPOINTMENT);

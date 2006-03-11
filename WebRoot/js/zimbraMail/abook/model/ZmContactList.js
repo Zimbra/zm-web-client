@@ -35,10 +35,13 @@
 * only one instance of this class that is fully populated. Other instances (such as
 * those created by a search) will have minimal data, and will get their attribute
 * values from the canonical list.
+* @param type		[constant]*		item type
 */
-function ZmContactList(appCtxt, search, isGal) {
+function ZmContactList(appCtxt, search, isGal, type) {
 	
-	ZmList.call(this, ZmItem.CONTACT, appCtxt, search);
+	if (arguments.length == 0) return;
+	type = type ? type : ZmItem.CONTACT;
+	ZmList.call(this, type, appCtxt, search);
 
 	this.isGal = isGal;
 	this.isCanonical = false;

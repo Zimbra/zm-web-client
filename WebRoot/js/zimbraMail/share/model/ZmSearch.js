@@ -60,7 +60,9 @@ function ZmSearch(appCtxt, params) {
 		this.lastSortVal	= params.lastSortVal;
 		this.fetch 			= params.fetch;
 		this.searchId		= params.searchId;
+		this.galType		= params.galType ? params.galType : ZmSearch.GAL_ACCOUNT;
 		this.conds			= params.conds;
+		this.join			= params.join ? params.join : ZmSearch.JOIN_AND;
 		this.attrs			= params.attrs;
 		
 		if (this.query)
@@ -78,6 +80,13 @@ ZmSearch.TYPE[ZmItem.CONTACT]	= "contact";
 ZmSearch.TYPE[ZmItem.APPT]		= "appointment";
 ZmSearch.TYPE[ZmItem.NOTE]		= "note";
 ZmSearch.TYPE_ANY				= "any";
+
+ZmSearch.GAL_ACCOUNT	= "account";
+ZmSearch.GAL_RESOURCE	= "resource";
+ZmSearch.GAL_ALL		= "";
+
+ZmSearch.JOIN_AND	= 1;
+ZmSearch.JOIN_OR	= 2;
 
 ZmSearch.TYPE_MAP = {};
 for (var i in ZmSearch.TYPE)
@@ -132,7 +141,9 @@ function(params) {
 	if (this.isGalSearch) {
 		soapDoc = AjxSoapDoc.create("SearchGalRequest", "urn:zimbraAccount");
 		var method = soapDoc.getMethod();
-		method.setAttribute("type", "account");
+		if (this.galType) {
+			method.setAttribute("type", this.galType);
+		}
 		soapDoc.set("name", this.query);
 	} else if (this.isCalResSearch) {
 		soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
@@ -142,13 +153,18 @@ function(params) {
 		if (this.attrs)
 			method.setAttribute("attrs", this.attrs.join(","));
 		var searchFilterEl = soapDoc.set("searchFilter");
-		var condsEl = soapDoc.set("conds", null, searchFilterEl);
-		for (var i = 0; i < this.conds.length; i++) {
-			var cond = this.conds[i];
-			var condEl = soapDoc.set("cond", null, condsEl);
-			condEl.setAttribute("attr", cond.attr);
-			condEl.setAttribute("op", cond.op);
-			condEl.setAttribute("value", cond.value);
+		if (this.conds && this.conds.length) {
+			var condsEl = soapDoc.set("conds", null, searchFilterEl);
+			if (this.join == ZmSearch.JOIN_OR) {
+				condsEl.setAttribute("or", 1);
+			}
+			for (var i = 0; i < this.conds.length; i++) {
+				var cond = this.conds[i];
+				var condEl = soapDoc.set("cond", null, condsEl);
+				condEl.setAttribute("attr", cond.attr);
+				condEl.setAttribute("op", cond.op);
+				condEl.setAttribute("value", cond.value);
+			}
 		}
 	} else {
 		soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");

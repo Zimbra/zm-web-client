@@ -68,26 +68,27 @@ ZmList.prototype = new ZmModel;
 ZmList.prototype.constructor = ZmList;
 
 // for item creation
-ZmList.ITEM_CLASS = new Object();
-ZmList.ITEM_CLASS[ZmItem.CONV] = ZmConv; 
-ZmList.ITEM_CLASS[ZmItem.MSG] = ZmMailMsg;
-ZmList.ITEM_CLASS[ZmItem.ATT] = ZmMimePart;
-ZmList.ITEM_CLASS[ZmItem.CONTACT] = ZmContact;
-ZmList.ITEM_CLASS[ZmItem.APPT] = ZmAppt;
+ZmList.ITEM_CLASS = {};
+ZmList.ITEM_CLASS[ZmItem.CONV]		= ZmConv; 
+ZmList.ITEM_CLASS[ZmItem.MSG]		= ZmMailMsg;
+ZmList.ITEM_CLASS[ZmItem.ATT]		= ZmMimePart;
+ZmList.ITEM_CLASS[ZmItem.CONTACT]	= ZmContact;
+ZmList.ITEM_CLASS[ZmItem.APPT]		= ZmAppt;
+ZmList.ITEM_CLASS[ZmItem.RESOURCE]		= ZmResource;
 
 // node names for item types
-ZmList.NODE = new Object();
-ZmList.NODE[ZmItem.CONV] = "c";
-ZmList.NODE[ZmItem.MSG] = "m";
-ZmList.NODE[ZmItem.ATT] = "mp";
-ZmList.NODE[ZmItem.CONTACT] = "cn";
+ZmList.NODE = {};
+ZmList.NODE[ZmItem.CONV]		= "c";
+ZmList.NODE[ZmItem.MSG]			= "m";
+ZmList.NODE[ZmItem.ATT]			= "mp";
+ZmList.NODE[ZmItem.CONTACT]		= "cn";
+ZmList.NODE[ZmItem.RESOURCE]	= "calresource";
 
 // item types based on node name
-ZmList.ITEM_TYPE = new Object();
-ZmList.ITEM_TYPE["c"] = ZmItem.CONV;
-ZmList.ITEM_TYPE["m"] = ZmItem.MSG;
-ZmList.ITEM_TYPE["mp"] = ZmItem.ATT;
-ZmList.ITEM_TYPE["cn"] = ZmItem.CONTACT;
+ZmList.ITEM_TYPE = {};
+for (var i in ZmList.NODE) {
+	ZmList.ITEM_TYPE[ZmList.NODE[i]] = i;
+}
 
 ZmList.TYPES = [ZmItem.CONTACT, ZmItem.CONV, ZmItem.MSG, ZmItem.ATT, ZmItem.APPT];
 ZmList.MIXED = -1; // special type for heterogeneous list

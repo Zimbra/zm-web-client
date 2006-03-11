@@ -40,12 +40,15 @@
 * @param appCtxt	[ZmAppCtxt]			the app context
 * @param id			[int]				unique ID
 * @param list		[ZmContactList]		list that contains this contact
+* @param type		[constant]*		item type
 */
-function ZmContact(appCtxt, id, list) {
+function ZmContact(appCtxt, id, list, type) {
 	
+	if (arguments.length == 0) return;
 	var contactList = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 	list = list ? list : contactList;
-	ZmItem.call(this, appCtxt, ZmItem.CONTACT, id, list);
+	type = type ? type : ZmItem.CONTACT;
+	ZmItem.call(this, appCtxt, type, id, list);
 
 	this.attr = new Object();
 	// handle to canonical list (for contacts that are part of search results)

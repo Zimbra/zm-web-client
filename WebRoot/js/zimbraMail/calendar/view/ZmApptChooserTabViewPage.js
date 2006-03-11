@@ -391,7 +391,7 @@ function(sortBy) {
 ZmApptChooserTabViewPage.prototype._handleResponseSearchCalendarResources = 
 function(result) {
 	var resp = result.getResponse();
-	this._chooser.setItems(resp.getResults(ZmItem.CONTACT).getVector());
+	this._chooser.setItems(resp.getResults(ZmItem.RESOURCE).getVector());
 };
 
 ZmApptChooserTabViewPage._keyPressHdlr =
@@ -421,26 +421,21 @@ ZmApptChooser.prototype = new DwtChooser;
 ZmApptChooser.prototype.constructor = ZmApptChooser;
 
 /**
-* Returns a list of ZmEmailAddress objects. The reason that we don't just convert
-* search results into ZmEmailAddress is that we display fields that are not part of
-* ZmEmailAddress.
+* Returns a list of ZmResource (resource/location) or ZmEmailAddress (attendee) objects.
+* Both of those support getName() and getAddress().
 */
 ZmApptChooser.prototype.getItems =
 function() {
-	var list = [];
 	var items = this._data[this._buttonInfo[0].id];
+	if (this.parent.type != ZmAppt.ATTENDEE) {
+		return items;
+	}
+	
+	var list = [];
 	var a = items.getArray();
 	for (var i = 0; i < a.length; i++) {
 		var item = a[i];
-		var text;
-		if (this.parent.type == ZmAppt.ATTENDEE) {
-			var name = item.getFullName();
-			text = name ? name : item.getEmail();
-		} else {
-			text = item.getAttr("displayName");
-		}
-		var value = (this.parent.type == ZmAppt.ATTENDEE) ? item.getEmail() : item.getAttr("mail");
-		list.push(new ZmEmailAddress(value, null, text));
+		list.push(new ZmEmailAddress(item.getEmail(), null, item.getFullName()));
 	}
 	return AjxVector.fromArray(list);
 };
@@ -461,10 +456,26 @@ function(event, details) {
 	DwtChooser.prototype._notify.call(this, event, details);
 };
 
+/*
+* The item is a ZmContact or ZmResource. Its address is used for comparison.
+*
+* @param item	[ZmContact]			ZmContact or ZmResource
+* @param list	[AjxVector]			list to check against
+*/
+ZmApptChooser.prototype._isDuplicate =
+function(item, list) {
+	return list.containsLike(item, (this.parent.type == ZmAppt.ATTENDEE) ? item.getEmail : item.getAddress);
+};
+
 /***********************************************************************************/
 
 /**
-* This class creates a specialized source list view for the contact chooser.
+* This class creates a specialized source list view for the contact chooser. The items
+* it manages are of type ZmContact or its subclass ZmResource.
+*
+* @param parent			[DwtChooser]	chooser that owns this list view
+* @param type			[constant]		list view type (source or target)
+* @param chooserType	[constant]		type of owning chooser (attendee/location/resource)
 */
 function ZmApptChooserListView(parent, type, chooserType) {
 
