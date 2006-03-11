@@ -186,7 +186,8 @@ function() {
 	var html = new Array();
 	var i = 0;
 
-	html[i++] = "<table width=675 border=0><tr><td>";
+//	html[i++] = "<table width=675 border=0><tr><td>";
+	html[i++] = "<table border=0><tr><td>";
 	html[i++] = this._getTimeHtml();
 	html[i++] = "</td><td>";
 	html[i++] = this._getKeyHtml();
@@ -339,7 +340,8 @@ function() {
 		html[i++] = "<tr>";
 		html[i++] = "<td><table border=0 width=100% cellpadding=0 cellspacing=0 class='ZmSchedTabViewPageTable'><tr>";
 		html[i++] = "<td";
-		html[i++] = j == ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES-1 || j == 0 ? " style='width:148px; border-bottom:1px solid #CCCCCC'>" : ">";
+//		html[i++] = j == ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES-1 || j == 0 ? " style='width:148px; border-bottom:1px solid #CCCCCC'>" : ">";
+		html[i++] = j == ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES-1 || j == 0 ? " style='width:180px; border-bottom:1px solid #CCCCCC'>" : ">";
 		html[i++] = "<div class='ZmSchedTabViewPageName'";
 		html[i++] = j == 1 ? (AjxEnv.isIE ? "style='background-color:#FFFFFF'>" : "style='background-color:#D4D0C8'>") : ">";
 		
@@ -357,7 +359,8 @@ function() {
 			}
 			html[i++] = "<div id='";
 			html[i++] = attendee.dwtId;
-			html[i++] = j > 1 ? "' style='width:128px'>" : "'>";
+//			html[i++] = j > 1 ? "' style='width:128px'>" : "'>";
+			html[i++] = j > 1 ? "' style='width:160px'>" : "'>";
 			html[i++] = "</div>&nbsp;&nbsp;";
 			html[i++] = ZmMsg.clickHereToAddEmail;
 			if (j > 1) {
@@ -432,8 +435,14 @@ function() {
 		dwtInputField.schedTableIdx = i;
 		Dwt.setPosition(dwtInputField.getHtmlElement(), Dwt.ABSOLUTE_STYLE);
 		if (i > 0) {
-			dwtInputField.setSize("128");
-			Dwt.setSize(dwtInputField.getInputElement(), "128");
+//			dwtInputField.setSize("128");
+			dwtInputField.setSize("160");
+//			Dwt.setSize(dwtInputField.getInputElement(), "128");
+			Dwt.setSize(dwtInputField.getInputElement(), "160");
+		}
+		if (i == 0) {
+			dwtInputField.setSize("180");
+			Dwt.setSize(dwtInputField.getInputElement(), "180");
 		}
 		var inputEl = dwtInputField.getInputElement();
 		inputEl.className = "ZmSchedTabViewPageInput";
