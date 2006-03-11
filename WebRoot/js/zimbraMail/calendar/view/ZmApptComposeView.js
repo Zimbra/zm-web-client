@@ -73,11 +73,8 @@ ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_ATTENDEES]	= "ApptMeeting";
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_LOCATIONS]	= "ApptMeeting";
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_RESOURCES]	= "ApptMeeting";
 
-
-
-//ZmApptComposeView.TABS = [ZmApptComposeView.TAB_APPOINTMENT, ZmApptComposeView.TAB_SCHEDULE, ZmApptComposeView.TAB_ATTENDEES,
-//						  ZmApptComposeView.TAB_LOCATIONS, ZmApptComposeView.TAB_RESOURCES];
-ZmApptComposeView.TABS = [ZmApptComposeView.TAB_APPOINTMENT, ZmApptComposeView.TAB_SCHEDULE, ZmApptComposeView.TAB_ATTENDEES];
+ZmApptComposeView.TABS = [ZmApptComposeView.TAB_APPOINTMENT, ZmApptComposeView.TAB_SCHEDULE, ZmApptComposeView.TAB_ATTENDEES,
+						  ZmApptComposeView.TAB_LOCATIONS, ZmApptComposeView.TAB_RESOURCES];
 
 ZmApptComposeView.prototype = new DwtTabView;
 ZmApptComposeView.prototype.constructor = ZmApptComposeView;
@@ -120,12 +117,9 @@ function(appt, mode, isDirty) {
 		var id = ZmApptComposeView.TABS[i];
 		this._tabPages[id].initialize(appt, mode, isDirty);
 	}
-/*
-	this._apptTab.initialize(appt, mode, isDirty);
-	this._scheduleTab.initialize(appt, mode);
-	this._attendeesTab.initialize(appt, mode);
-*/
 	this._apptTab.addChooserListener(this._tabPages[ZmApptComposeView.TAB_ATTENDEES]);
+	this._apptTab.addChooserListener(this._tabPages[ZmApptComposeView.TAB_LOCATIONS]);
+	this._apptTab.addChooserListener(this._tabPages[ZmApptComposeView.TAB_RESOURCES]);
 };
 
 ZmApptComposeView.prototype.cleanup = 
@@ -134,11 +128,6 @@ function() {
 		var id = ZmApptComposeView.TABS[i];
 		this._tabPages[id].cleanup();
 	}
-/*
-	// allow both tabs to cleanup
-	this._apptTab.cleanup();
-	this._scheduleTab.cleanup();
-*/
 };
 
 ZmApptComposeView.prototype.preload = 
@@ -250,7 +239,6 @@ ZmApptComposeView.prototype._initialize =
 function() {
 	for (var i = 0; i < ZmApptComposeView.TABS.length; i++) {
 		var id = ZmApptComposeView.TABS[i];
-//		this._tabPages[id] = new ZmApptComposeView.TAB_CLASS[id](this, this._appCtxt, id, this._controller);
 		this._tabPages[id] = this._createTabViewPage(id);
 		this._tabKeys[id] = this.addTab(ZmMsg[ZmApptComposeView.TAB_NAME[id]], this._tabPages[id]);
 		this._tabIdByKey[this._tabKeys[id]] = id;
@@ -264,21 +252,6 @@ function() {
 	this._apptTabKey = this._tabKeys[ZmApptComposeView.TAB_APPOINTMENT];
 
 	this._apptTab.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
-
-/*
-	this._apptTab = new ZmApptTabViewPage(this, this._appCtxt);
-	this._scheduleTab = new ZmSchedTabViewPage(this, this._appCtxt, this._apptTab, this._controller);
-	this._attendeesTab = new ZmAttendeesTabViewPage(this, this._appCtxt);
-
-	this._apptTabKey = this.addTab(ZmMsg.appointment, this._apptTab);
-	this._scheduleTabKey = this.addTab(ZmMsg.schedule, this._scheduleTab);
-	this._attendeesTabKey = this.addTab(ZmMsg.findAttendees, this._attendeesTab);
-
-	var button = this.getTabButton(this._scheduleTabKey);
-	button.setImage("ApptMeeting");
-	button = this.getTabButton(this._attendeesTabKey);
-	button.setImage("ApptMeeting");
-*/
 	this.addControlListener(new AjxListener(this, this._controlListener));
 };
 
@@ -318,11 +291,4 @@ function(ev) {
 	if (!(newWidth || newHeight)) return;
 
 	this._tabPages[this._tabIdByKey[this.getCurrentTab()]].resize(newWidth, newHeight);
-/*
-	if (this.getCurrentTab() == this._apptTabKey) {
-		this._apptTab.resize(newWidth, newHeight);
-	} else {
-		this._scheduleTab.resize(newWidth, newHeight);
-	}
-*/
 };

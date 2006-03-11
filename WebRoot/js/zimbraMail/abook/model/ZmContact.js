@@ -447,17 +447,21 @@ function() {
 */
 ZmContact.prototype.getFullName =
 function() {
-	// update/null if modified
 	if (!this._fullName) {
-		var fn = new Array();
-		var idx = 0;
-		var first = this.getAttr(ZmContact.F_firstName);
-		var middle = this.getAttr(ZmContact.F_middleName);
-		var last = this.getAttr(ZmContact.F_lastName);
-		if (first) fn[idx++] = first;
-		if (middle) fn[idx++] = middle;
-		if (last) fn[idx++] = last;
-		this._fullName = fn.join(" ");
+		var fullName = this.getAttr(ZmContact.X_fullName); // present if GAL contact
+		if (fullName) {
+			this._fullName = fullName;
+		} else {
+			var fn = [];
+			var idx = 0;
+			var first = this.getAttr(ZmContact.F_firstName);
+			var middle = this.getAttr(ZmContact.F_middleName);
+			var last = this.getAttr(ZmContact.F_lastName);
+			if (first) fn[idx++] = first;
+			if (middle) fn[idx++] = middle;
+			if (last) fn[idx++] = last;
+			this._fullName = fn.join(" ");
+		}
 	}
 	return this._fullName;
 };
