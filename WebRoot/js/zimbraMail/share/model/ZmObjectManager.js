@@ -86,6 +86,11 @@ function ZmObjectManager(view, appCtxt, selectCallback) {
 
 ZmObjectManager._TOOLTIP_DELAY = 275;
 
+// Define common types for quicker object matching.
+ZmObjectManager.EMAIL = "email";
+ZmObjectManager.URL = "url";
+ZmObjectManager.PHONE = "phone";
+
 ZmObjectManager._autohandlers = [];
 
 ZmObjectManager.registerHandler =

@@ -157,7 +157,7 @@ function(callback, result) {
 		
 	// load Zimlets
 	if(obj.zimlets && obj.zimlets.zimlet) {
-		DBG.println(AjxDebug.DBG1, "Zimlets - Got " + (obj.zimlets.zimlet.length + 1) + " Zimlets");
+		DBG.println(AjxDebug.DBG1, "Zimlets - Got " + obj.zimlets.zimlet.length + " Zimlets");
 		this._zmm.loadZimlets(obj.zimlets.zimlet, obj.props.prop);
 	}
 
