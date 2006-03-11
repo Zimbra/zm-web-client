@@ -376,9 +376,8 @@ function(item) {
 */
 function ZmContactChooserTargetListView(parent, showType) {
 
-	DwtChooserListView.call(this, parent, DwtChooserListView.TARGET);
-	
 	this._showType = showType;
+	DwtChooserListView.call(this, parent, DwtChooserListView.TARGET);
 };
 
 ZmContactChooserTargetListView.prototype = new DwtChooserListView;

@@ -1261,8 +1261,14 @@ HTML>BODY .RadioGrouperLabel {
 	border: 1px solid #000000;
 }
 
-.DwtChooserListView {
+.DwtChooserListView_horiz {
 	width: 250px;
 	height: 285px;
 	margin: 5 5 0 5;
+}
+
+.DwtChooserListView_vert {
+	width: 500px;
+	height: 100px;
+	margin: 0 5 5 5;
 }
