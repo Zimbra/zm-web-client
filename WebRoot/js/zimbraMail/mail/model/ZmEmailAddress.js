@@ -55,21 +55,21 @@ ZmEmailAddress.BCC			= 4;
 ZmEmailAddress.REPLY_TO		= 5;
 ZmEmailAddress.LAST_ADDR	= 5;
 
-ZmEmailAddress.TYPE_STRING = new Array();
+ZmEmailAddress.TYPE_STRING = {};
 ZmEmailAddress.TYPE_STRING[ZmEmailAddress.FROM]		= "from";
 ZmEmailAddress.TYPE_STRING[ZmEmailAddress.TO]		= "to";
 ZmEmailAddress.TYPE_STRING[ZmEmailAddress.CC]		= "cc";
 ZmEmailAddress.TYPE_STRING[ZmEmailAddress.BCC]		= "bcc";
 ZmEmailAddress.TYPE_STRING[ZmEmailAddress.REPLY_TO]	= "replyTo";
 
-ZmEmailAddress.fromSoapType = new Array();
+ZmEmailAddress.fromSoapType = {};
 ZmEmailAddress.fromSoapType["f"] = ZmEmailAddress.FROM;
 ZmEmailAddress.fromSoapType["t"] = ZmEmailAddress.TO;
 ZmEmailAddress.fromSoapType["c"] = ZmEmailAddress.CC;
 ZmEmailAddress.fromSoapType["b"] = ZmEmailAddress.BCC;
 ZmEmailAddress.fromSoapType["r"] = ZmEmailAddress.REPLY_TO;
 
-ZmEmailAddress.toSoapType = new Array();
+ZmEmailAddress.toSoapType = {};
 ZmEmailAddress.toSoapType[ZmEmailAddress.FROM]		= "f";
 ZmEmailAddress.toSoapType[ZmEmailAddress.TO]		= "t";
 ZmEmailAddress.toSoapType[ZmEmailAddress.CC]		= "c";
@@ -78,7 +78,7 @@ ZmEmailAddress.toSoapType[ZmEmailAddress.REPLY_TO]	= "r";
 
 ZmEmailAddress.SEPARATOR = "; ";			// used to join addresses
 ZmEmailAddress.DELIMS = [';', ',', '\n'];	// recognized as address delimiters
-ZmEmailAddress.IS_DELIM = new Object();
+ZmEmailAddress.IS_DELIM = {};
 for (var i = 0; i < ZmEmailAddress.DELIMS.length; i++)
 	ZmEmailAddress.IS_DELIM[ZmEmailAddress.DELIMS[i]] = true;
 

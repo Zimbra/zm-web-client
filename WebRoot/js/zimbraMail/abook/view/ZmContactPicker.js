@@ -78,7 +78,7 @@ function() {
 * @param addrType	the address type of the button that called us
 */
 ZmContactPicker.prototype.popup =
-function(buttonId) {
+function(buttonId, addrs) {
 	if (!this._initialized) {
 		this._initialize();
 		this._initialized = true;
@@ -91,6 +91,15 @@ function(buttonId) {
 	this._chooser.reset();
 	if (buttonId) {
 		this._chooser._setActiveButton(buttonId);
+	}
+	
+	// populate target list if addrs were passed in
+	if (addrs) {
+		for (var id in addrs) {
+			if (this._button[id]) {
+				this._chooser.transfer(addrs[id], id);
+			}
+		}
 	}
 	
 	// reset search field

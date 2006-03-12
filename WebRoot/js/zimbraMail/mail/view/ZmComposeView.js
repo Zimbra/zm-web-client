@@ -344,14 +344,14 @@ function(attId, isDraft) {
 * @param addr	the address string
 */
 ZmComposeView.prototype.setAddress =
-function(type, addr, bDontClear) {
+function(type, addr) {
 	addr = addr || "";
 	if (addr.length && !this._using[type]) {
 		this._using[type] = true;
 		this._showField(type, true);
 	}
 
-	this._field[type].value = bDontClear ? this._field[type].value + addr : addr;
+	this._field[type].value = addr;
 	if (this._using[type] &&
 		this._action != ZmOperation.REPLY &&
 		this._action != ZmOperation.REPLY_ALL)
@@ -1348,7 +1348,13 @@ function(ev) {
 		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancelCallback, this);
 	}
 
-	this._contactPicker.popup(obj.addrType);
+	var a = {};
+	var addrs = this._collectAddrs();
+	for (var type in ZmComposeView.ADDRS) {
+		if (addrs[type])
+			a[type] = addrs[type].all.getArray();
+	}
+	this._contactPicker.popup(obj.addrType, a);
 };
 
 ZmComposeView.prototype._controlListener =
@@ -1367,18 +1373,8 @@ function(addrs) {
 		var type = ZmComposeView.ADDRS[i];
 		var vec = addrs[type];
 		var size = vec.size();
-		var addr = size > 0 ? vec.toString(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
-
-		// bug fix #3139 - prepend separator if field type is populated but no separator
-		var val = AjxStringUtil.trim(this._field[type].value);
-		if (size > 0 && val.length > 0 && 
-			val.charAt(val.length-1) != ZmEmailAddress.DELIMS[0] && 
-			val.charAt(val.length-1) != ZmEmailAddress.DELIMS[1])
-		{
-			addr = ZmEmailAddress.SEPARATOR + addr;
-		}
-
-		this.setAddress(type, addr, true);
+		var addr = (size > 0) ? vec.toString(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR : "";
+		this.setAddress(type, addr);
 	}
 	this._contactPicker.popdown();
 	this.reEnableDesignMode();
