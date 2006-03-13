@@ -450,6 +450,10 @@ function (ev, listEv, clickedEl) {
 
 ZmListView.prototype._allowLeftSelection =
 function(clickedEl, ev, button) {
+	// We only care about mouse events
+	if (!(ev instanceof DwtMouseEvent))
+		return true;
+		
 	var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : clickedEl.id;
 	var type = Dwt.getAttr(clickedEl, "_type");
 	if (id && type && type == DwtListView.TYPE_LIST_ITEM) {

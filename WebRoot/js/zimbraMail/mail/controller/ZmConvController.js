@@ -298,13 +298,21 @@ function() {
 
 ZmConvController.prototype.handleKeyAction =
 function(actionCode) {
-	DBG.println("ZmConvController.handleKeyAction");
+	DBG.println(AjxDebug.DBG3, "ZmConvController.handleKeyAction");
 	
 	switch (actionCode) {
 		case ZmKeyMap.CANCEL: //Cancel or close
 			this._app.popView();
 			break;
-
+			
+		case ZmKeyMap.NEXT_CONV:
+			this._paginateDouble(true);
+			break;
+			
+		case ZmKeyMap.PREV_CONV:
+			this._paginateDouble(false);
+			break;
+			
 		default:
 			ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
 			break;

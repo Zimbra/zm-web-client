@@ -141,8 +141,30 @@ function(newList) {
 
 ZmListController.prototype.handleKeyAction =
 function(actionCode) {
-	DBG.println("ZmListController.handleKeyAction");
+	DBG.println(AjxDebug.DBG3, "ZmListController.handleKeyAction");
+	var listView = this._listView[this._currentView]
+	
 	switch (actionCode) {
+		case ZmKeyMap.DEL:
+			this._doDelete(this._listView[this._currentView].getSelection());
+			break;
+			
+		case ZmKeyMap.NEXT_ITEM:
+			listView.selectItem(true);
+			break;
+			
+		case ZmKeyMap.PREV_ITEM:
+			listView.selectItem(false);
+			break;
+			
+		case ZmKeyMap.NEXT_PAGE:
+			this._paginate(this._currentView, true);
+			break;
+			
+		case ZmKeyMap.PREV_PAGE:
+			this._paginate(this._currentView, false);
+			break;
+			
 		default:
 			ZmController.prototype.handleKeyAction.call(this, actionCode);
 	}

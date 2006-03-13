@@ -103,13 +103,30 @@ function(searchResult) {
 
 ZmConvListController.prototype.handleKeyAction =
 function(actionCode) {
-	DBG.println("ZmConvListController.handleKeyAction");
+	DBG.println(AjxDebug.DBG3, "ZmConvListController.handleKeyAction");
 	
 	switch (actionCode) {
-		case ZmKeyMap.OPEN:
-			alert("Open Conversation: UNIMPLEMENTED");
+		case ZmKeyMap.DELETE:
+			hardDelete = (this._list.search.folderId == ZmFolder.ID_TRASH);
+			ZmMailListController.prototype._doDelete.call(this, items, hardDelete, attrs);
 			break;
-			
+	
+		case ZmKeyMap.OPEN: {
+			var item = this.getCurrentView().getAnchorItem();
+			if (item) {
+				if (item.isDraft)
+					this._doAction(null, ZmOperation.DRAFT);
+				else
+					this._app.getConvController().show(this._activeSearch, item);
+			}
+			break;
+		}
+		
+		case ZmKeyMap.DELETE: {
+			// DEAL WITH ALL THE ITEMS
+			break;
+		}
+		
 		default:
 			ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
 			break;

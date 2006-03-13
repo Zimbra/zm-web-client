@@ -53,7 +53,8 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	appCtxt.setClientCmdHdlr(new ZmClientCmdHandler(appCtxt));
 
 	this._shell = appCtxt.getShell();
-	this._shell.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._keyUpListener));
+	this._shell.addListener(DwtEvent.ONKEYDOWN, new AjxListener(this, this._keyDownListener));
+	
     this._splashScreen = new ZmSplashScreen(this._shell, "SplashScreen");
  
 	this._apps = {};
@@ -1424,17 +1425,31 @@ function(ev) {
 	}
 };
 
-ZmZimbraMail.prototype._keyUpListener =
+
+ZmZimbraMail.prototype._keyDownListener =
 function(ev) {
 
+	/* Filter out the following keys: Alt, Shift, Ctrl. Also filter out
+	 * alphanumeric keys if the target of the key event is an input field
+	 * or a text area and there is no pending sequence in play and the key
+	 * is alphanumeric or a punctuation key*/
+	var charCode = DwtKeyEvent.getCharCode(ev);
+	var tagName = (ev.target) ? ev.target.tagName.toLowerCase() : null;
+	if (charCode == ZmKeyMap.ALT || charCode == ZmKeyMap.CTRL
+		|| charCode == ZmKeyMap.SHIFT 
+		|| (!DwtShell.haveFocus() 
+			&& this._killKeySeqTimedActionId == -1 && !ev.ctrlKey && !ev.altKey
+			&& ZmKeyMap.isUsableTextInputValue(charCode))) {
+		ev._stopPropagation = false;
+		ev._returnValue = true;
+		return true; // No view etc, so consider it dispatched
+	}
+	 
 	if (this._killKeySeqTimedActionId != -1) {
 		AjxTimedAction.cancelAction(this._killKeySeqTimedActionId);
 		this._killKeySeqTimedActionId = -1;
 	}
-	
-	//if (this._keySequence.length > 0)
-	// this._keySequence[this._keySequence.length] = ZmKeyMap.SEP;
-	
+		
  	var key = "";
 	
 	if (ev.ctrlKey)
@@ -1446,9 +1461,9 @@ function(ev) {
 	if (ev.shiftKey)
 		key += ZmKeyMap.SHIFT;
 	
-	this._keySequence[this._keySequence.length] = key + this._keyMap.keyCode2Char(DwtKeyEvent.getCharCode(ev));
+	this._keySequence[this._keySequence.length] = key + this._keyMap.keyCode2Char(charCode);
 
-	//DBG.println("KEY SEQ: " + this._keySequence.join(""));
+//	DBG.println("KEYCODE: " + charCode + " - KEY SEQ: " + this._keySequence.join(""));
 
 	return this._dispatchKeyEvent(ev)
 };
@@ -1477,8 +1492,8 @@ function(ev) {
 			 * then halt event propagation since a subsequent key sequence could
 			 * trigger a terminal. Else if this is a terminal & there is no action
 			 * associated with it, then let the event propagate (to the browser) */
-			DBG.println(AjxDebug.DBG3, "TERMINAL: " + terminal);
-			DBG.println(AjxDebug.DBG3, "ACTION CODE: " + actionCode);			
+			//DBG.println(AjxDebug.DBG3, "TERMINAL: " + terminal);
+			//DBG.println(AjxDebug.DBG3, "ACTION CODE: " + actionCode);			
 			if (!terminal || actionCode != null) {
 				if (actionCode != null) {
 					DBG.println(AjxDebug.DBG3, "DISPATCHING ACTION: " + this._keySequence.join(""));
@@ -1508,7 +1523,7 @@ function(ev) {
 						}
 							
 						default:
-							c.handleKeyAction(actionCode);
+							c.handleKeyAction(actionCode, ev);
 							break;
 					}
 					this._keySequence.length = 0;

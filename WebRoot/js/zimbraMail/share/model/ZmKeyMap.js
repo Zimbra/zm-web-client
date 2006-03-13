@@ -91,13 +91,20 @@ ZmKeyMap.DBG_1 = i++;
 ZmKeyMap.DBG_2 = i++;
 ZmKeyMap.DBG_3 = i++;
 ZmKeyMap.DBG_TIMING = i++;
+ZmKeyMap.DEL = i++;
 ZmKeyMap.NEW_APPT = i++;
 ZmKeyMap.NEW_CALENDAR = i++;
 ZmKeyMap.NEW_CONTACT = i++;
 ZmKeyMap.NEW_FOLDER = i++;
 ZmKeyMap.NEW_MESSAGE = i++;
 ZmKeyMap.NEW_TAG = i++;
+ZmKeyMap.NEXT_CONV = i++;
+ZmKeyMap.NEXT_ITEM = i++;
+ZmKeyMap.NEXT_PAGE = i++;
 ZmKeyMap.OPEN = i++;
+ZmKeyMap.PREV_CONV = i++;
+ZmKeyMap.PREV_ITEM = i++;
+ZmKeyMap.PREV_PAGE = i++;
 ZmKeyMap.SAVE = i++;
 ZmKeyMap.SELECT = i++;
 
@@ -124,18 +131,33 @@ ZmKeyMap._DEF_MAPPINGS = {
 		"Alt+N,M": ZmKeyMap.NEW_MESSAGE,
 		"Alt+N,T": ZmKeyMap.NEW_TAG,
 		"Alt+S":   ZmKeyMap.SAVE,
-		"Esc":     ZmKeyMap.CANCEL
+		"Del":     ZmKeyMap.DEL,
+		"Esc":     ZmKeyMap.CANCEL,
+		"ArrowDown":  ZmKeyMap.NEXT_ITEM,
+		"N":          ZmKeyMap.NEXT_ITEM,
+		"ArrowUp":    ZmKeyMap.PREV_ITEM,
+		"P":          ZmKeyMap.PREV_ITEM,
+		"ArrowRight": ZmKeyMap.NEXT_PAGE,
+		"ArrowLeft":  ZmKeyMap.PREV_PAGE
 	},
 	ZmComposeController: {
 		"Alt+Shift+S": ZmKeyMap.SEND
 	},
 	ZmConvListController: {
 		"Alt+R": ZmKeyMap.REPLY,
-		"Alt+Shift+R": ZmKeyMap.REPLY_ALL
+		"R": ZmKeyMap.REPLY,
+		"Alt+Shift+R": ZmKeyMap.REPLY_ALL,
+		"A": ZmKeyMap.REPLY_ALL,
+		"Enter": ZmKeyMap.OPEN
 	},
 	ZmConvController: {
 		"Alt+R": ZmKeyMap.REPLY,
-		"Alt+Shift+R": ZmKeyMap.REPLY_ALL
+		"R": ZmKeyMap.REPLY,
+		"Alt+Shift+R": ZmKeyMap.REPLY_ALL,
+		"A": ZmKeyMap.REPLY_ALL,
+		"R": ZmKeyMap.REPLY,
+		"Shift+ArrowRight": ZmKeyMap.NEXT_CONV,
+		"Shift+ArrowLeft": ZmKeyMap.PREV_CONV
 	}
 };
 
@@ -199,18 +221,21 @@ function(keyCode) {
 
 ZmKeyMap._initUsKeyCodeMap =
 function() {
-	ZmKeyMap._KEYCODES[40] = ZmKeyMap.ARROW_DOWN;
-	ZmKeyMap._KEYCODES[37] = ZmKeyMap.ARROW_LEFT;
-	ZmKeyMap._KEYCODES[39] = ZmKeyMap.ARROW_RIGHT;
-	ZmKeyMap._KEYCODES[38] = ZmKeyMap.ARROW_UP;
-	ZmKeyMap._KEYCODES[8]  = ZmKeyMap.BACKSPACE;
-	ZmKeyMap._KEYCODES[46] = ZmKeyMap.DELETE;
-	ZmKeyMap._KEYCODES[35] = ZmKeyMap.END;
-	ZmKeyMap._KEYCODES[13] = ZmKeyMap.ENTER;
-	ZmKeyMap._KEYCODES[27] = ZmKeyMap.ESC;
-	ZmKeyMap._KEYCODES[34] = ZmKeyMap.PAGE_DOWN;
-	ZmKeyMap._KEYCODES[33] = ZmKeyMap.PAGE_UP;
-	ZmKeyMap._KEYCODES[32] = ZmKeyMap.SPACE;
+	ZmKeyMap._KEYCODES[18]  = ZmKeyMap.ALT;
+	ZmKeyMap._KEYCODES[40]  = ZmKeyMap.ARROW_DOWN;
+	ZmKeyMap._KEYCODES[37]  = ZmKeyMap.ARROW_LEFT;
+	ZmKeyMap._KEYCODES[39]  = ZmKeyMap.ARROW_RIGHT;
+	ZmKeyMap._KEYCODES[38]  = ZmKeyMap.ARROW_UP;
+	ZmKeyMap._KEYCODES[8]   = ZmKeyMap.BACKSPACE;
+	ZmKeyMap._KEYCODES[17]  = ZmKeyMap.CTRL;
+	ZmKeyMap._KEYCODES[46]  = ZmKeyMap.DELETE;
+	ZmKeyMap._KEYCODES[35]  = ZmKeyMap.END;
+	ZmKeyMap._KEYCODES[13]  = ZmKeyMap.ENTER;
+	ZmKeyMap._KEYCODES[27]  = ZmKeyMap.ESC;
+	ZmKeyMap._KEYCODES[34]  = ZmKeyMap.PAGE_DOWN;
+	ZmKeyMap._KEYCODES[33]  = ZmKeyMap.PAGE_UP;
+	ZmKeyMap._KEYCODES[145] = ZmKeyMap.SHIFT;
+	ZmKeyMap._KEYCODES[32]  = ZmKeyMap.SPACE;
 	
 	// Function keys
 	for (var i = 112; i < 124; i++) 
@@ -237,6 +262,72 @@ function() {
 	ZmKeyMap._KEYCODES[221] = "]";
 	ZmKeyMap._KEYCODES[192] = "`";
 	ZmKeyMap._KEYCODES[187] = "=";	
+	
+	// Setup the "is" methods
+	ZmKeyMap.isAlpha = ZmKeyMap._isAlphaUs;
+	ZmKeyMap.isNumeric = ZmKeyMap._isNumericUs;
+	ZmKeyMap.isAlphanumeric = ZmKeyMap._isAlphanumericUs;
+	ZmKeyMap.isPunctuation = ZmKeyMap._isPunctuationUs;
+	ZmKeyMap.isUsableTextInputValue = ZmKeyMap.isUsableTextInputValueUs;
+}
+
+ZmKeyMap._isAlphaUs = 
+function(keyCode) {
+	if (keyCode > 64 && keyCode < 91)
+		return true;
+}
+
+ZmKeyMap._isNumericUs = 
+function(keyCode) {
+	if (keyCode > 47 && keyCode < 58)
+		return true;
+}
+
+ZmKeyMap._isAlphanumericUs = 
+function(keyCode) {
+	return (ZmKeyMap._isNumericUs(keyCode) || ZmKeyMap._isAlphaUs(keyCode));
+}
+
+ZmKeyMap._isPunctuationUs = 
+function(keyCode) {
+	switch (keyCode) {
+		case 186:
+		case 187:
+		case 188:
+		case 189:
+		case 190:
+		case 191:
+		case 192:
+		case 219:
+		case 220:
+		case 221:
+		case 222:
+			return true;
+		default:
+			return false;		
+	}
+}
+
+ZmKeyMap.isUsableTextInputValueUs =
+function(keyCode) {
+	if (ZmKeyMap._isAlphanumericUs(keyCode) || ZmKeyMap._isPunctuationUs(keyCode) 
+		|| ZmKeyMap._isAlphanumericUs(keyCode))
+		return true;
+		
+	switch (keyCode) {
+		case 37:
+		case 39:
+		case 8:
+		case 45:
+		case 46:
+		case 35:
+		case 13:
+		case 27:
+			return true;
+			
+		default:
+			return false;
+	}	
 }
 
 ZmKeyMap._buildFSA =

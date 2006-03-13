@@ -97,7 +97,7 @@ function() {
 
 ZmMailListController.prototype.handleKeyAction =
 function(actionCode) {
-	DBG.println("ZmMailListController.handleKeyAction");
+	DBG.println(AjxDebug.DBG3, "ZmMailListController.handleKeyAction");
 	
 	switch (actionCode) {
 		case ZmKeyMap.REPLY:
