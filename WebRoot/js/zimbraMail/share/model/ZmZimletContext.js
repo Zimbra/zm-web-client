@@ -537,6 +537,7 @@ ZmZimletContext._zmObjectTransformers = {
 	},
 
 	"ZmContact" : function(o) {
+		o = (o instanceof Array) ? o : [o];
 		var all = new Array();
 		for(var i=0; i< o.length; i++) {
 			var ret = { TYPE: "ZmContact" };
