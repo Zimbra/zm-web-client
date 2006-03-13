@@ -323,6 +323,7 @@ function(keyCode) {
 		case 35:
 		case 13:
 		case 27:
+		case 32:
 			return true;
 			
 		default:
