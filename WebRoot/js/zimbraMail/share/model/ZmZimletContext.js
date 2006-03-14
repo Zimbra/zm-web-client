@@ -488,6 +488,7 @@ ZmZimletContext._zmObjectTransformers = {
 	},
 
 	"ZmContact" : function(o) {
+		o = (o instanceof Array) ? o : [o];
 		// can't even remotely understand why, after a contact has been
 		// displayed once, we need to check it's "0" property and
 		// retrieve the actual object from there.  x-( So, object in an
