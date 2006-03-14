@@ -90,6 +90,8 @@ ZmObjectManager._TOOLTIP_DELAY = 275;
 ZmObjectManager.EMAIL = "email";
 ZmObjectManager.URL = "url";
 ZmObjectManager.PHONE = "phone";
+ZmObjectManager.DATE = "date";
+
 
 ZmObjectManager._autohandlers = [];
 

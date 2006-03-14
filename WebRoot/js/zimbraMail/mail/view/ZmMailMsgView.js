@@ -790,7 +790,8 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "<tr><td class='LabelColName'>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.sent);
 	htmlArr[idx++] = ": </td><td>";
-	htmlArr[idx++] = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
+	var dateString = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
+	htmlArr[idx++] = this._objectManager ? this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE) : dateString;
 	htmlArr[idx++] = "</td></tr>";
 
 	// Attachments
