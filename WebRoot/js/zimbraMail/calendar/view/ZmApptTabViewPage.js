@@ -1014,15 +1014,19 @@ function(appt, mode) {
 			}
 		}
 		var visible = len > 1;
-		var enabled = mode == ZmAppt.MODE_NEW || !apptCal.link;
+		var enabled = mode == ZmAppt.MODE_NEW || mode == ZmAppt.MODE_NEW_FROM_QUICKADD || !apptCal.link;
 		if (visible) {
 			for (var i = 0; i < len; i++) {
 				var cal = children[i];
 				this._calendarOrgs[cal.id] = cal.owner;
 				// if for some reason, we dont have share info, show all shares
 				// Note: can't move appts to/from shared calendars
-				if (!enabled || !cal.link || (mode == ZmAppt.MODE_NEW && cal.link && (cal.shares == null || cal.shares[0].isWrite())))
+				if (!enabled || !cal.link || 
+					((mode == ZmAppt.MODE_NEW || ZmAppt.MODE_NEW_FROM_QUICKADD) && cal.link && 
+						(cal.shares == null || cal.shares[0].isWrite())))
+				{
 					this._calendarSelect.addOption(cal.name, false, cal.id);
+				}
 			}
 		}
 		Dwt.setVisibility(this._calendarSelect.getHtmlElement(), visible);
