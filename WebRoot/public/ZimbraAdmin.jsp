@@ -91,7 +91,6 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/controller/ZaServerStatsController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/globalconfig/controller/ZaGlobalConfigViewController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/dl/controller/ZaDLController.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/resource/controller/ZaResourceController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/helpdesk/controller/ZaHelpViewController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/helpdesk/controller/ZaMWizController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/mta/controller/ZaMTAListController.js<%= ext %>?v=<%= vers %>"></script>
@@ -100,7 +99,6 @@ Contributor(s):
 <!-- model -->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/accounts/model/ZaAccount.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/dl/model/ZaDistributionList.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/resource/model/ZaResource.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/search/model/ZaSearch.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/accounts/model/ZaAlias.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/accounts/model/ZaForwardingAddress.js<%= ext %>?v=<%= vers %>"></script>
@@ -146,8 +144,6 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/globalconfig/view/GlobalConfigXFormView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/accounts/view/ZaAccMiniListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/dl/view/ZaDLXFormView.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/resource/view/ZaResourceXFormView.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/resource/view/ZaNewResourceXWizard.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/ZaZimbraAdmin.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/helpdesk/view/ZaHelpView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/helpdesk/view/ZaMWizView.js<%= ext %>?v=<%= vers %>"></script>

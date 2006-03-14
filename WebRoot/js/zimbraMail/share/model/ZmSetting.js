@@ -217,8 +217,6 @@ ZmSetting.REPLY_PREFIX					= i++;
 ZmSetting.REPLY_TO_ADDRESS				= i++;
 ZmSetting.SAVE_TO_SENT					= i++;
 ZmSetting.SENT_FOLDER_NAME				= i++;
-ZmSetting.SHOW_BCC						= i++;
-ZmSetting.SHOW_CC						= i++;
 ZmSetting.SHOW_FRAGMENTS				= i++;
 ZmSetting.SIGNATURE						= i++;
 ZmSetting.SIGNATURE_ENABLED				= i++;
@@ -305,7 +303,7 @@ ZmSetting.INIT[ZmSetting.QUOTA]							= ["zimbraMailQuota", ZmSetting.T_COS, ZmS
 ZmSetting.INIT[ZmSetting.SAVED_SEARCHES_ENABLED]		= ["zimbraFeatureSavedSearchesEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.TAGGING_ENABLED]				= ["zimbraFeatureTaggingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.VIEW_ATTACHMENT_AS_HTML] 		= ["zimbraFeatureViewInHtmlEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
-ZmSetting.INIT[ZmSetting.SHARING_ENABLED]		 		= ["zimbraFeatureSharingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.SHARING_ENABLED]				= ["zimbraFeatureSharingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 
 // user metadata (included with COS since the user can't change them)
 ZmSetting.INIT[ZmSetting.QUOTA_USED]					= [null, ZmSetting.T_COS, ZmSetting.D_INT];
@@ -372,8 +370,6 @@ ZmSetting.INIT[ZmSetting.REPLY_PREFIX]					= ["zimbraPrefForwardReplyPrefixChar"
 ZmSetting.INIT[ZmSetting.REPLY_TO_ADDRESS]				= ["zimbraPrefReplyToAddress", ZmSetting.T_PREF];
 ZmSetting.INIT[ZmSetting.SAVE_TO_SENT]					= ["zimbraPrefSaveToSent", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.SENT_FOLDER_NAME]				= ["zimbraPrefSentMailFolder", ZmSetting.T_PREF, ZmSetting.D_STRING, "sent"];
-ZmSetting.INIT[ZmSetting.SHOW_BCC]						= [null, ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
-ZmSetting.INIT[ZmSetting.SHOW_CC]						= [null, ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.SHOW_FRAGMENTS]				= ["zimbraPrefShowFragments", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.SIGNATURE]						= ["zimbraPrefMailSignature", ZmSetting.T_PREF];
 ZmSetting.INIT[ZmSetting.SIGNATURE_ENABLED]				= ["zimbraPrefMailSignatureEnabled", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
@@ -419,10 +415,9 @@ function(key) {
 * @param value			the new value for the setting
 * @param key 			optional key for use by hash table data type
 * @param setDefault		if true, also set the default value
-* @param skipNotify		if true, don't notify listeners
 */
 ZmSetting.prototype.setValue =
-function(value, key, setDefault, skipNotify) {
+function(value, key, setDefault) {
 	if (this.dataType == ZmSetting.D_STRING) {
 		this.value = value;
 	} else if (this.dataType == ZmSetting.D_INT) {
@@ -458,11 +453,6 @@ function(value, key, setDefault, skipNotify) {
 			this.defaultValue[key] = this.value[key];
 		else
 			this.defaultValue = this.value;
-	}
-	
-	// Setting an internal pref is equivalent to saving it, so we should notify
-	if (!this.name && !skipNotify) {
-		this._notify(ZmEvent.E_MODIFY);
 	}
 };
 

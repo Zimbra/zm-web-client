@@ -96,7 +96,7 @@ Contributor(s):
 	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/img/loRes/skins/steel/skin.css?v=<%= vers %>);
 	<% } %>
-	@import url(<%= contextPath %>/js/ajax/config/style/dwt.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/dwt.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/common.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/skins/steel/skin.css?v=<%= vers %>);  
@@ -124,17 +124,17 @@ Contributor(s):
    			AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		 	ACCESS_RIGHTS = new Object();
- 			// figure out the debug level
-			if (location.search && (location.search.indexOf("debug=") != -1)) {
-				var m = location.search.match(/debug=(\w+)/);
-				if (m && m.length) {
-					var level = parseInt(m[1]);
-					if (level)
-						DBG.setDebugLevel(level);
-					else if (m[1] == 't')
-						DBG.showTiming(true);
-				}
-			}
+		 	// figure out the debug level
+				if (location.search && (location.search.indexOf("debug=") != -1)) {
+			   		var m = location.search.match(/debug=([\d\-]+)/);
+				  	if (m && m.length) {
+				  		var num = parseInt(m[1]);
+						var level = AjxDebug.DBG[num];
+						if (level) {
+						    DBG.setDebugLevel(level);
+						}
+					}
+			    }
 			    /**
 			    * temporary code - 
 			    * TODO: remove when server is ready

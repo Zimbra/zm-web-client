@@ -749,20 +749,19 @@ function() {
 ZmMailMsg.prototype.isRealAttachment = 
 function(attachment) {
 	var type = attachment.ct;
+	if (ZmMimeTable.isIgnored(type) || attachment.body) 
+		return false;
 
-	// bug fix #6374 - ignore if attachment is body unless content type is message/rfc822
-	if (ZmMimeTable.isIgnored(type) || 
-		(attachment.body && attachment.ct != ZmMimeTable.MSG_RFC822))
-	{
+	// EMC 8/1/2005 -- TEMPORARY HACK
+	// If there is a content id, we need to see if the part is referenced in the body 
+	// of the message. However, currently, we do the attachment creation rather early in
+	// the rendering process, so  .... We're making the assumption that image types are the 
+	// ones that will be included, and that all other types, with a content id, should be
+	// rendered as a valid attachment.
+	// THIS SHOULD BE REMOVED.                                                       // below added for bug fix #3361
+	if (type.match(/^image/) && ((attachment.ci != null) || ((attachment.cl != null) && !attachment.cl.match(".*//")))) {
 		return false;
 	}
-
-	if (type.match(/^image/) && 
-		((attachment.ci != null) || ((attachment.cl != null) && !attachment.cl.match(".*//")))) 
-	{
-		return false;
-	}
-
 	return true;
 };
 
@@ -844,7 +843,7 @@ function(findHits) {
 				html[j++] = this.getId();
 				html[j++] = ",\"";
 				html[j++] = attach.part;
-				html[j++] = "\"); return false;' class='AttLink'>";
+				html[j++] = "\")' class='AttLink'>";
 				props.link = html.join("");
 			} else {
 				// set the anchor html for the link to this attachment on the server
