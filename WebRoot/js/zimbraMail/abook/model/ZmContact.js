@@ -738,7 +738,7 @@ function(node) {
 			} else if (attr.n == ZmContact.GAL_MODIFY_TIMESTAMP) {
 				this.modified = attr._content;
 			} else if (attr.n == ZmContact.GAL_CREATE_TIMESTAMP) {
-				this.created - attr._content;
+				this.created = attr._content;
 			} else {
 				// for now just save all other attrs regardless of dupes
 				this.attr[attr.n] = attr._content;
