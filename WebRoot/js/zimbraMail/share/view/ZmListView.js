@@ -552,9 +552,9 @@ function(item, div) {
 			dateStr[i++] = dateFormatter.format(new Date(date));
 			var delta = AjxDateUtil.computeDateDelta(date);
 			if (delta) {
-				dateStr[i++] = " <span style='white-space:nowrap'>(";
+				dateStr[i++] = "<br><center><span style='white-space:nowrap'>(";
 				dateStr[i++] = delta;
-				dateStr[i++] = ")</span>";
+				dateStr[i++] = ")</span></center>";
 			}
 			div._dateStr = dateStr.join("");
 		} else {
