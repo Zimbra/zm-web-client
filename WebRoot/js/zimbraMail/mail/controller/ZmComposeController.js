@@ -518,13 +518,13 @@ function(mode) {
 
 	if (mode == DwtHtmlEditor.TEXT && this._composeView.isDirty()) {
 		// if formatting from html to text, confirm w/ user!
-		if (!this._textToHtmlDialog) {
-			this._textToHtmlDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
-			this._textToHtmlDialog.setMessage(ZmMsg.switchToText, DwtMessageDialog.WARNING_STYLE);
-			this._textToHtmlDialog.registerCallback(DwtDialog.OK_BUTTON, this._htmlToTextOkCallback, this, incOption);
-			this._textToHtmlDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._htmlToTextCancelCallback, this);
+		if (!this._htmlToTextDialog) {
+			this._htmlToTextDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+			this._htmlToTextDialog.setMessage(ZmMsg.switchToText, DwtMessageDialog.WARNING_STYLE);
+			this._htmlToTextDialog.registerCallback(DwtDialog.OK_BUTTON, this._htmlToTextOkCallback, this);
+			this._htmlToTextDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._htmlToTextCancelCallback, this);
 		}
-		this._textToHtmlDialog.popup(this._composeView._getDialogXY());
+		this._htmlToTextDialog.popup(this._composeView._getDialogXY());
 	} else {
 		this._composeView.setComposeMode(mode);
 	}
