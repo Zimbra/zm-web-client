@@ -55,12 +55,13 @@ ZmSpreadSheetToolbars.prototype._cellSelected = function(cell) {
 	this._buttons.justifyLeft.setToggled(align == "left");
 	this._buttons.justifyCenter.setToggled(align == "center");
 	this._buttons.justifyRight.setToggled(align == "right");
-	this._dataField.setValue(cell.getEditValue());
+	if (this._dataField)
+		this._dataField.setValue(cell.getEditValue());
 };
 
 ZmSpreadSheetToolbars.prototype._createWidgets = function() {
 	this._createToolbar1();
-	this._createToolbar2();
+	// this._createToolbar2();
 };
 
 ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
@@ -171,6 +172,47 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 
 	toolbar.addSeparator("vertSep");
 
+	b = new DwtButton(toolbar, 0, "TBButton");
+	b.setImage("SpreadSheetSum");
+	b.setToolTipContent("Sum cells");
+	b.setData("SS", "Func-SumCells");
+	b.addSelectionListener(listener);
+
+	// BEGIN: Insert Function menu
+
+	b = new DwtButton(toolbar, 0, "TBButton");
+	b.setText("Insert function");
+
+	var menu = new DwtMenu(b);
+
+	var funcs = [];
+	for (var i in ZmSpreadSheetFormulae.HELP)
+		funcs.push(i);
+	funcs = funcs.sort();
+
+	var func_listener = new AjxListener(this, this._on_insertFunction);
+
+	for (var i = 0; i < funcs.length; ++i) {
+		var help = ZmSpreadSheetFormulae.HELP[funcs[i]];
+		if (help.alias)	// skip aliases for now
+			continue;
+		var item = new DwtMenuItem(menu);
+		item.setText([ '<div style="float:left; width: 5em; text-align: right">', funcs[i],
+			       '</div>',
+			       '<div style="margin-left: 5em">&nbsp;- ',
+			       help.help,
+			       '</div>' ].join(""));
+		item.setData("SS", funcs[i]);
+		item.addSelectionListener(func_listener);
+		if (help.args)
+			item.setToolTipContent(help.args);
+	}
+	b.setMenu(menu);
+
+	// END: insert function
+
+	toolbar.addSeparator("vertSep");
+
 	var s = this._buttons.typeSelect = new DwtSelect(toolbar, null);
 	s.addChangeListener(new AjxListener(this, this._on_typeSelect));
 	s.addOption("Auto type", true, null);
@@ -179,17 +221,46 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	s.addOption("Text", false, "string");
 
 	// DEBUG
-// 	toolbar.addSeparator("vertSep");
-// 	b = new DwtButton(toolbar, 0, "TBButton");
-// 	b.setText("DEBUG: Serialize");
-// 	b.addSelectionListener(new AjxListener(this, function() {
-// 		var txt = this.getModel().serialize();
-// 		alert(txt);
-// 	}));
+ 	toolbar.addSeparator("vertSep");
+ 	b = new DwtButton(toolbar, 0, "TBButton");
+ 	b.setText("DEBUG: Serialize");
+ 	b.addSelectionListener(new AjxListener(this, function() {
+ 		var txt = this.getModel().serialize();
+		var win = window.open("/zimbra/public/blank.html", "_blank", "scrollbars=no");
+		var timeout = setInterval(function() {
+			try {
+				var d = win.document;
+				var b = d.body;
+				b.style.backgroundColor = "ButtonFace";
+				var t = d.createElement("textarea");
+				t.value = txt;
+				b.appendChild(t);
+				t.style.width = "100%";
+				t.style.height = "100%";
+				clearInterval(timeout);
+			} catch(ex) {}
+		}, 250);
+ 	}));
 };
 
 ZmSpreadSheetToolbars.prototype._inputModified = function(val) {
-	this._dataField.setValue(val);
+	if (this._dataField)
+		this._dataField.setValue(val);
+};
+
+ZmSpreadSheetToolbars.prototype._input_clicked = function(ev) {
+	var dwtev = new DwtUiEvent();
+	this._dataField.getInputElement().blur();
+	dwtev.setFromDhtmlEvent(ev);
+	var td = this._spreadSheet._selectedCell;
+	if (td) {
+		this._spreadSheet.focus();
+		this._spreadSheet._editCell(td);
+	}
+	dwtev._stopPropagation = true;
+	dwtev._returnValue = false;
+	dwtev.setToDhtmlEvent(ev);
+	return false;
 };
 
 ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
@@ -208,17 +279,18 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 // 	b.setData("SS", "DataEntry-Cancel");
 // 	b.addSelectionListener(listener);
 
-	var b = new DwtButton(toolbar, 0, "TBButton");
-	b.setImage("SpreadSheetSum");
-	b.setToolTipContent("Sum cells");
-	b.setData("SS", "DataEntry-SumCells");
-	b.addSelectionListener(listener);
-
 	var field = new DwtInputField({ parent: toolbar, size: 50 });
 	field.setReadOnly(true);
+	field.getInputElement().onfocus = ZmSpreadSheet.simpleClosure(this._input_clicked, this);
 	this._dataField = field;
 
 	this._spreadSheet.onInputModified.push(new AjxCallback(this, this._inputModified));
+
+	// toolbar.getHtmlElement().style.display = "none";
+};
+
+ZmSpreadSheetToolbars.prototype._on_insertFunction = function(ev) {
+	this.insertFunction(ev.item.getData("SS"));
 };
 
 ZmSpreadSheetToolbars.prototype._on_fontColor = function(ev) {
@@ -299,16 +371,30 @@ ZmSpreadSheetToolbars.prototype._on_buttonPress = function(ev) {
 		if (cell)
 			this.getModel().deleteCol(cell.getCol() - 1);
 		break;
-	    case "DataEntry-SumCells":
-		var cell = ss.getSelectedCellModel();
-		if (cell) {
-			var input = ss._getInputField();
-			ss.focus();
-			ss._editCell(cell._td);
-			input.setValue("=sum()");
-			Dwt.setSelectionRange(input, 5, 5);
-		}
+	    case "Func-SumCells":
+		this.insertFunction("sum");
 		break;
+	}
+};
+
+ZmSpreadSheetToolbars.prototype.insertFunction = function(fn) {
+	var ss = this._spreadSheet;
+	var cell = ss.getSelectedCellModel();
+	if (cell) {
+		var help = ZmSpreadSheetFormulae.HELP[fn];
+		var pos = fn.length + 2;
+		if (help && help.helper) {
+			fn = help.helper;
+			pos = fn.indexOf("|");
+			fn = fn.replace(/\|/g, "");
+		} else {
+			fn = "=" + fn + "()";
+		}
+		var input = ss._getInputField();
+		ss.focus();
+		ss._editCell(cell._td);
+		input.setValue(fn);
+		Dwt.setSelectionRange(input, pos, pos);
 	}
 };
 

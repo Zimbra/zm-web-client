@@ -103,7 +103,6 @@ ZmSpreadSheet.getCellName = function(td) {
 ZmSpreadSheet.prototype.setModel = function(model) {
 	model.reset();
 	this._model = model;
-	this._init();
 
 //	model.setViewListener("onCellEdit", new AjxCallback(this, this._model_cellEdited));
 	model.setViewListener("onCellValue", new AjxCallback(this, this._model_cellComputed));
@@ -111,6 +110,8 @@ ZmSpreadSheet.prototype.setModel = function(model) {
 	model.setViewListener("onInsertCol", new AjxCallback(this, this._model_insertCol));
 	model.setViewListener("onDeleteRow", new AjxCallback(this, this._model_deleteRow));
 	model.setViewListener("onDeleteCol", new AjxCallback(this, this._model_deleteCol));
+
+	this._init();
 };
 
 ZmSpreadSheet.prototype._model_cellEdited = function(row, col, cell) {
@@ -290,7 +291,7 @@ ZmSpreadSheet.prototype._init = function() {
 	table.onmousedown = ZmSpreadSheet.simpleClosure(this._table_onClick, this);
 	table.onclick = ZmSpreadSheet.simpleClosure(this._table_onClick, this);
 	table.ondblclick = ZmSpreadSheet.simpleClosure(this._table_onClick, this);
-	table.onmouseover = ZmSpreadSheet.simpleClosure(this._table_mouseOver, this);
+	table.onmousemove = ZmSpreadSheet.simpleClosure(this._table_mouseMove, this);
 	table.onmouseout = ZmSpreadSheet.simpleClosure(this._table_mouseOut, this);
 
 	var link = this._getFocusLink();
@@ -316,11 +317,11 @@ ZmSpreadSheet.prototype._init = function() {
 	header.onmousedown = ZmSpreadSheet.simpleClosure(this._header_onMouseDown, this);
 
 	this._header_resetColWidths();
+ 	this._getRelDiv().onscroll = ZmSpreadSheet.simpleClosure(this._header_resetScrollTop, this);
 
- 	var self = this;
- 	this._getRelDiv().onscroll = function() {
- 		header.style.top = this.scrollTop + "px";
- 	};
+	this.getHtmlElement().style.display = "none"; // things may be recomputed 1-2 times, let's disable refresh for better performance
+	this._model.doneSetView();
+	this.getHtmlElement().style.display = "";
 };
 
 // called when a cell from the top header was clicked or mousedown
@@ -527,6 +528,10 @@ ZmSpreadSheet.prototype._header_resetColWidths = function() {
 	for (var i = 0; i < a.length; ++i) {
 		b[i].firstChild.style.width = a[i].firstChild.offsetWidth + fuzz + "px";
 	}
+};
+
+ZmSpreadSheet.prototype._header_resetScrollTop = function() {
+	this._getHeaderTable().style.top = this._getRelDiv().scrollTop + "px";
 };
 
 ZmSpreadSheet.prototype._selectCell = function(td) {
@@ -1213,7 +1218,7 @@ ZmSpreadSheet.prototype._table_mouseOut = function() {
 	this._clearTooltip();
 };
 
-ZmSpreadSheet.prototype._table_mouseOver = function(ev) {
+ZmSpreadSheet.prototype._table_mouseMove = function(ev) {
 	if (this._editingCell)
 		// no tooltips while we're writing code. :-p
 		return;

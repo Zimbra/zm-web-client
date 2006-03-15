@@ -189,6 +189,19 @@ ZmSpreadSheetFormulae.OPERATORS = {
 
 ZmSpreadSheetFormulae.FUNCTIONS = {};
 
+ZmSpreadSheetFormulae.HELP = {};
+
+ZmSpreadSheetFormulae.getHelp = function(funcname) {
+	var help = ZmSpreadSheetFormulae.HELP[funcname];
+	var txt = null;
+	if (help) {
+		txt = help.help;
+		if (help.args)
+			txt += "<br />" + help.args;
+	}
+	return txt;
+};
+
 // DEF stands for "defineFunction".  Intuitive, right? :-p
 //
 // Call this to define a new function that will be supported by the
@@ -211,53 +224,71 @@ ZmSpreadSheetFormulae.FUNCTIONS = {};
 //
 // Operators are functions as well, as we all know from the good old Lisp, so
 // they are defined through the same means.
-ZmSpreadSheetFormulae.DEF = function(name, n_args, callback) {
+ZmSpreadSheetFormulae.DEF = function(name, n_args, callback, help) {
 	if (name instanceof Array) {
 		// let's make it easy to define aliases, shall we
-		for (var i = name.length; --i >= 0;)
-			ZmSpreadSheetFormulae.DEF(name[i], n_args, callback);
+		var alias = name[0];
+		ZmSpreadSheetFormulae.DEF(alias, n_args, callback, help);
+		if (help) {
+			var tmp = { alias: alias };
+			for (var i in help)
+				tmp[i] = help[i];
+			help = tmp;
+		}
+		for (var i = 1; i < name.length; ++i)
+			ZmSpreadSheetFormulae.DEF(name[i], n_args, callback, help);
 	} else {
 		var funcdef = { name   : name,
 				n_args : n_args,
 				func   : callback };
 		ZmSpreadSheetFormulae.FUNCTIONS[name] = funcdef;
+		if (help)
+			ZmSpreadSheetFormulae.HELP[name] = help;
 	}
 };
 
 ///------------------- BEGIN FUNCTION DEFINITIONS -------------------
 
-ZmSpreadSheetFormulae.DEF([ "sum", "+" ], -1, function() {
-	var ret = 0;
-	for (var i = arguments.length; --i >= 0;)
-		ret += ZmSpreadSheetFormulae.parseFloat(arguments[i]);
-	return ret;
-});
-
-ZmSpreadSheetFormulae.DEF([ "multiply", "*" ], -1, function() {
-	var ret = 1;
-	for (var i = arguments.length; --i >= 0;)
-		ret *= ZmSpreadSheetFormulae.parseFloat(arguments[i], 1);
-	return ret;
-});
-
-ZmSpreadSheetFormulae.DEF([ "modulo", "%" ], 2, function(a, b) {
-	return ZmSpreadSheetFormulae.parseFloat(a) % ZmSpreadSheetFormulae.parseFloat(b);
-});
-
 { // Math functions
-	ZmSpreadSheetFormulae.DEF("PI"    , 0, function()  { return Math.PI; });
-	ZmSpreadSheetFormulae.DEF("sin"   , 1, function(a) { return Math.sin(a); });
-	ZmSpreadSheetFormulae.DEF("cos"   , 1, function(a) { return Math.cos(a); });
-	ZmSpreadSheetFormulae.DEF("tan"   , 1, function(a) { return Math.tan(a); });
+	ZmSpreadSheetFormulae.DEF([ "sum", "+" ], -1, function() {
+		var ret = 0;
+		for (var i = arguments.length; --i >= 0;)
+			ret += ZmSpreadSheetFormulae.parseFloat(arguments[i]);
+		return ret;
+	}, ZmMsg.SS.func.sum);
 
-	ZmSpreadSheetFormulae.DEF("round" , 1, function(a) { return Math.round(a); });
-	ZmSpreadSheetFormulae.DEF("ceil"  , 1, function(a) { return Math.ceil(a); });
-	ZmSpreadSheetFormulae.DEF("floor" , 1, function(a) { return Math.floor(a); });
-	ZmSpreadSheetFormulae.DEF("abs"   , 1, function(a) { return Math.abs(a); });
+	ZmSpreadSheetFormulae.DEF([ "multiply", "*" ], -1, function() {
+		var ret = 1;
+		for (var i = arguments.length; --i >= 0;)
+			ret *= ZmSpreadSheetFormulae.parseFloat(arguments[i], 1);
+		return ret;
+	}, ZmMsg.SS.func.multiply);
 
-	ZmSpreadSheetFormulae.DEF("sqrt"  , 1, function(a) { return Math.sqrt(a); });
-	ZmSpreadSheetFormulae.DEF("exp"   , 1, function(a) { return Math.exp(a); });
-	ZmSpreadSheetFormulae.DEF("log"   , 1, function(a) { return Math.log(a); });
+	ZmSpreadSheetFormulae.DEF([ "modulo", "%" ], 2, function(a, b) {
+		return ZmSpreadSheetFormulae.parseFloat(a) % ZmSpreadSheetFormulae.parseFloat(b);
+	}, ZmMsg.SS.func.modulo);
+
+	ZmSpreadSheetFormulae.DEF([ "average", "avg" ], -1, function() {
+		var cnt = arguments.length;
+		var sum = 0;
+		for (var i = cnt; --i >= 0;)
+			sum += arguments[i];
+		return sum/cnt;
+	}, ZmMsg.SS.func.average);
+
+	ZmSpreadSheetFormulae.DEF("PI"    , 0, function()  { return Math.PI; }, ZmMsg.SS.func.PI);
+	ZmSpreadSheetFormulae.DEF("sin"   , 1, function(a) { return Math.sin(a); }, ZmMsg.SS.func.sin);
+	ZmSpreadSheetFormulae.DEF("cos"   , 1, function(a) { return Math.cos(a); }, ZmMsg.SS.func.cos);
+	ZmSpreadSheetFormulae.DEF("tan"   , 1, function(a) { return Math.tan(a); }, ZmMsg.SS.func.tan);
+
+	ZmSpreadSheetFormulae.DEF("round" , 1, function(a) { return Math.round(a); }, ZmMsg.SS.func.round);
+	ZmSpreadSheetFormulae.DEF("ceil"  , 1, function(a) { return Math.ceil(a); }, ZmMsg.SS.func.ceil);
+	ZmSpreadSheetFormulae.DEF("floor" , 1, function(a) { return Math.floor(a); }, ZmMsg.SS.func.floor);
+	ZmSpreadSheetFormulae.DEF("abs"   , 1, function(a) { return Math.abs(a); }, ZmMsg.SS.func.abs);
+
+	ZmSpreadSheetFormulae.DEF("sqrt"  , 1, function(a) { return Math.sqrt(a); }, ZmMsg.SS.func.sqrt);
+	ZmSpreadSheetFormulae.DEF("exp"   , 1, function(a) { return Math.exp(a); }, ZmMsg.SS.func.exp);
+	ZmSpreadSheetFormulae.DEF("log"   , 1, function(a) { return Math.log(a); }, ZmMsg.SS.func.log);
 
 	// The default Math.min() and Math.max() implementations only take 2
 	// arguments.  How Pascal-like!  :-\  Therefore we implement our own.
@@ -268,7 +299,7 @@ ZmSpreadSheetFormulae.DEF([ "modulo", "%" ], 2, function(a, b) {
 			if (min > arguments[i])
 				min = arguments[i];
 		return min;
-	});
+	}, ZmMsg.SS.func.min);
 
 	ZmSpreadSheetFormulae.DEF("max", -1, function() {
 		var max = arguments[0];
@@ -276,13 +307,13 @@ ZmSpreadSheetFormulae.DEF([ "modulo", "%" ], 2, function(a, b) {
 			if (max < arguments[i])
 				max = arguments[i];
 		return max;
-	});
+	}, ZmMsg.SS.func.max);
 }
 
 { // String functions
 	ZmSpreadSheetFormulae.DEF("len", 1, function(str) {
 		return str.toString().length;
-	});
+	}, ZmMsg.SS.func.len);
 
 	ZmSpreadSheetFormulae.DEF([ "concat", "." ], -1, function() {
 		var ret = [ arguments[0] ];
@@ -291,7 +322,7 @@ ZmSpreadSheetFormulae.DEF([ "modulo", "%" ], 2, function(a, b) {
 				ret.push(arguments[i]);
 		}
 		return ret.join("");
-	});
+	}, ZmMsg.SS.func.concat);
 
 	ZmSpreadSheetFormulae.DEF("join", -2, function(sep) {
 		var ret = [ arguments[1] ];
@@ -299,7 +330,7 @@ ZmSpreadSheetFormulae.DEF([ "modulo", "%" ], 2, function(a, b) {
 			if (arguments[i] != "")
 				ret.push(arguments[i]);
 		return ret.join(sep);
-	});
+	}, ZmMsg.SS.func.join);
 
 	ZmSpreadSheetFormulae.DEF("x", 2, function(str, times) {
 		var ret = "";
@@ -457,8 +488,10 @@ ZmSpreadSheetFormulae.prototype.update = function() {
 			].join("");
 		}
 	}
-	if (formula != this._formula)
+	if (formula != this._formula) {
 		this.compile(formula);
+		return formula;
+	}
 };
 
 // somewhat similar but not the same as the above function, this one will
@@ -626,6 +659,7 @@ ZmSpreadSheetFormulae.prototype.compile = function(formula) {
 				throw "Misplaced comma";
 		}
 		if (t.type === TYPE.CELL) {
+			t.val = t.val.toUpperCase();
 			var pos = ZmSpreadSheetModel.identifyCell(t.val);
 			this._model.checkBounds(pos.row, pos.col);
 			t.cell = this._deps[t.val] = this._model.data[pos.row][pos.col];
