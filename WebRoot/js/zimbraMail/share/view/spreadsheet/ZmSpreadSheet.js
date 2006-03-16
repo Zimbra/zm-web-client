@@ -826,35 +826,26 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 			handled = false;
 	}
 	if (!handled) {
-		switch (String.fromCharCode(dwtev.charCode)) {
+		switch (String.fromCharCode(dwtev.charCode).toLowerCase()) {
 
 		    case "c":	// COPY
-		    case "C":
 			if (dwtev.ctrlKey) {
 				handled = true;
-				ZmSpreadSheet._clipboard = new ZmSpreadSheetClipboard
-					(this._model, this.getSelectionRange(), false);
+				this.clipboardCopy();
 			}
 			break;
 
 		    case "x":	// CUT
-		    case "X":
 			if (dwtev.ctrlKey) {
 				handled = true;
-				ZmSpreadSheet._clipboard = new ZmSpreadSheetClipboard
-					(this._model, this.getSelectionRange(), true);
+				this.clipboardCut();
 			}
 			break;
 
 		    case "v":	// PASTE
-		    case "V":
 			if (dwtev.ctrlKey) {
 				handled = true;
-				if (ZmSpreadSheet._clipboard) {
-					var r = this._model.paste(ZmSpreadSheet._clipboard,
-								  this.getSelectionRange());
-					this._selectRange.apply(this, r);
-				}
+				this.clipboardPaste();
 			}
 			break;
 
@@ -1300,6 +1291,24 @@ ZmSpreadSheet.prototype.getSelectedCellModel = function() {
 	if (this._selectedCell)
 		return this.getCellModel(this._selectedCell);
 	return null;
+};
+
+ZmSpreadSheet.prototype.clipboardCopy = function() {
+	ZmSpreadSheet._clipboard = new ZmSpreadSheetClipboard
+		(this._model, this.getSelectionRange(), false);
+};
+
+ZmSpreadSheet.prototype.clipboardCut = function() {
+	ZmSpreadSheet._clipboard = new ZmSpreadSheetClipboard
+		(this._model, this.getSelectionRange(), true);
+};
+
+ZmSpreadSheet.prototype.clipboardPaste = function() {
+	if (ZmSpreadSheet._clipboard) {
+		var r = this._model.paste(ZmSpreadSheet._clipboard,
+					  this.getSelectionRange());
+		this._selectRange.apply(this, r);
+	}
 };
 
 ZmSpreadSheet.simpleClosure = function(func, obj) {

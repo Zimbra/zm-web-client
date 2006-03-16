@@ -229,7 +229,7 @@ ZmSpreadSheetFormulae.DEF = function(name, n_args, callback, help) {
 		// let's make it easy to define aliases, shall we
 		var alias = name[0];
 		ZmSpreadSheetFormulae.DEF(alias, n_args, callback, help);
-		if (help) {
+		if (help && name.length > 1) {
 			var tmp = { alias: alias };
 			for (var i in help)
 				tmp[i] = help[i];

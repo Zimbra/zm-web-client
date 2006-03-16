@@ -67,8 +67,29 @@ ZmSpreadSheetToolbars.prototype._createWidgets = function() {
 ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	var toolbar = new DwtToolBar(this, "ToolBar", DwtControl.RELATIVE_STYLE, 0);
 	var listener = this._on_buttonPress;
+	var b;
 
-	var b = this._buttons.bold = new DwtButton(toolbar, DwtButton.TOGGLE_STYLE, "TBButton");
+	b = this._buttons.clipboardCopy = new DwtButton(toolbar, null, "TBButton");
+	b.setImage("Copy");
+	b.setData("SS", "ClipboardCopy");
+	b.addSelectionListener(listener);
+	b.setToolTipContent(ZmMsg.copy);
+
+	b = this._buttons.clipboardCut = new DwtButton(toolbar, null, "TBButton");
+	b.setImage("Cut");
+	b.setData("SS", "ClipboardCut");
+	b.addSelectionListener(listener);
+	b.setToolTipContent(ZmMsg.cut);
+
+	b = this._buttons.clipboardPaste = new DwtButton(toolbar, null, "TBButton");
+	b.setImage("Paste");
+	b.setData("SS", "ClipboardPaste");
+	b.addSelectionListener(listener);
+	b.setToolTipContent(ZmMsg.paste);
+
+	toolbar.addSeparator("vertSep");
+
+	b = this._buttons.bold = new DwtButton(toolbar, DwtButton.TOGGLE_STYLE, "TBButton");
 	b.setImage("Bold");
 	b.setData("SS", "Bold");
 	b.addSelectionListener(listener);
@@ -220,27 +241,45 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	s.addOption("Currency", false, "currency");
 	s.addOption("Text", false, "string");
 
-	// DEBUG
- 	toolbar.addSeparator("vertSep");
- 	b = new DwtButton(toolbar, 0, "TBButton");
- 	b.setText("DEBUG: Serialize");
- 	b.addSelectionListener(new AjxListener(this, function() {
- 		var txt = this.getModel().serialize();
-		var win = window.open("/zimbra/public/blank.html", "_blank", "scrollbars=no");
-		var timeout = setInterval(function() {
-			try {
-				var d = win.document;
-				var b = d.body;
-				b.style.backgroundColor = "ButtonFace";
-				var t = d.createElement("textarea");
-				t.value = txt;
-				b.appendChild(t);
-				t.style.width = "100%";
-				t.style.height = "100%";
-				clearInterval(timeout);
-			} catch(ex) {}
-		}, 250);
- 	}));
+	if (ZmSpreadSheetModel.DEBUG) {
+		// DEBUG
+		toolbar.addSeparator("vertSep");
+		new DwtLabel(toolbar).setText("DEBUG: ");
+		b = new DwtButton(toolbar, 0, "TBButton");
+		b.setText("Serialize");
+		b.addSelectionListener(new AjxListener(this, function() {
+			var txt = this.getModel().serialize();
+			var win = window.open("/zimbra/public/blank.html", "_blank", "scrollbars=no");
+			var timeout = setInterval(function() {
+				try {
+					var d = win.document;
+					var b = d.body;
+					b.style.backgroundColor = "ButtonFace";
+					var t = d.createElement("textarea");
+					t.value = txt;
+					b.appendChild(t);
+					t.style.width = "100%";
+					t.style.height = "100%";
+					clearInterval(timeout);
+				} catch(ex) {}
+			}, 250);
+		}));
+		b = new DwtButton(toolbar, 0, "TBButton");
+		b.setText("getHtml");
+		b.addSelectionListener(new AjxListener(this, function() {
+			var txt = this.getModel().getHtml();
+			var win = window.open("/zimbra/public/blank.html", "_blank", "scrollbars=no");
+			var timeout = setInterval(function() {
+				try {
+					var d = win.document;
+					var b = d.body;
+					b.style.backgroundColor = "ButtonFace";
+					b.innerHTML = txt;
+					clearInterval(timeout);
+				} catch(ex) {}
+			}, 250);
+		}));
+	}
 };
 
 ZmSpreadSheetToolbars.prototype._inputModified = function(val) {
@@ -309,6 +348,18 @@ ZmSpreadSheetToolbars.prototype._on_buttonPress = function(ev) {
 	var ss = this._spreadSheet;
 	ss.focus();
 	switch (data) {
+
+		// Clipboard
+	    case "ClipboardCopy":
+		ss.clipboardCopy();
+		break;
+	    case "ClipboardCut":
+		ss.clipboardCut();
+		break;
+	    case "ClipboardPaste":
+		ss.clipboardPaste();
+		break;
+
 		// Style formatting
 	    case "Bold":
 		this.applyStyle("fontWeight", btn.isToggled() ? "bold" : "");

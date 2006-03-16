@@ -286,12 +286,13 @@ ZmSpreadSheetModel.prototype._orderExpressionCells = function(cells) {
 			// since we're playing with dependencies, not all cells
 			// have an expression
 			if (cell._expr) {
+				pushCells(cell._expr.depends());
 				// don't add a cell a second time
-				if (!count[cell.getName()]) {
-					count[cell.getName()] = true;
+				var name = cell.getName();
+				if (!count[name]) {
+					count[name] = true;
 					ordered.unshift(cell);
 				}
-				pushCells(cell._expr.depends());
 			}
 		}
 	};
@@ -438,8 +439,8 @@ ZmSpreadSheetModel.deserializeJSObject = function(str) {
 	// \x22 stands for " and \x27 for '
 	var tmp = str.replace(/(\x22(\\.|[^\x22\\])*\x22|\x27(\\.|[^\x27\\])*\x27)/g, "");
 	var forbid = ZmSpreadSheetModel.DEBUG
-		? /([;()+=\x2f-])/g
-		: /([\n;()+=\x2f-])/g;
+		? /([;()+=\x2f*.-])/g
+		: /([\n;()+=\x2f*.-])/g;
 	if (forbid.test(tmp)) {
 		// we don't allow:
 		// ";", newline, parens, operators, comments.  We want plain
@@ -499,6 +500,23 @@ ZmSpreadSheetModel.prototype.doneSetView = function() {
 	var a = this._expressionCells;
 	for (var i = 0; i < a.length; ++i)
 		a[i].recompute();
+};
+
+ZmSpreadSheetModel.prototype.getHtml = function() {
+	var html = [ "<style type='text/css'>",
+		     "td.SpreadSheet-Type-number { text-align: right; }",
+		     "td.SpreadSheet-Type-currency { text-align: right; }",
+		     "</style>",
+		     "<table style='font: 8pt tahoma,verdana,sans-serif; background-color: #fff; border-collapse: collapse'>"
+		];
+	for (var i = 0; i < this.ROWS; ++i) {
+		html.push("<tr>");
+		for (var j = 0; j < this.COLS; ++j)
+			html.push(this.data[i][j].getHtml());
+		html.push("</tr>");
+	}
+	html.push("</table>");
+	return html.join("");
 };
 
 /// A Range copy
@@ -638,6 +656,36 @@ ZmSpreadSheetCellModel.prototype.setWidth = function(width) {
 	}
 };
 
+ZmSpreadSheetCellModel.prototype.getHtml = function() {
+	var style = [];
+	for (var i in this._style) {
+		if (this._style[i] != "") {
+			var css_name = i.replace(/([a-z])([A-Z])([a-z])/g, function(str, p1, p2, p3) {
+				return p1 + "-" + p2.toLowerCase() + p3;
+			});
+			style.push(css_name + ":" + this._style[i]);
+		}
+	}
+	var width = this._model.getColWidth(this.getCol() - 1);
+	if (AjxEnv.isIE)
+		width -= 2;
+	style.push("width:" + width + "px");
+	style.push("border:1px solid #aaa");
+	if (style.length > 0)
+		style = [ " style='", style.join(";"), "'" ].join("");
+	else
+		style = "";
+	var cls = this.getType();
+	if (cls)
+		var cls = " class='SpreadSheet-Type-" + cls + "'";
+	else
+		cls = "";
+	var val = this.getDisplayValue();
+	if (val == "")
+		val = "<br />";
+	return [ "<td", cls, style, ">", val, "</td>" ].join("");
+};
+
 ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
 	if (!el.firstChild)
 		el.innerHTML = "<div class='Wrapper'></div>";
@@ -686,16 +734,15 @@ ZmSpreadSheetCellModel.prototype._mkDeps = function() {
 	var deps = [];
 	var count = {};
 	function pushDeps(cell) {
-		var a = cell._affects, i = 0, c, name, j = deps.length;
+		var a = cell._affects, i = 0, c, name;
 		while (c = a[i++]) {
 			name = c.getName();
 			if (!count[name]) {
 				count[name] = true;
-				deps.push(c);
+				pushDeps(c);
+				deps.unshift(c);
 			}
 		}
-		while (j < deps.length)
-			pushDeps(deps[j++]);
 	};
 	pushDeps(this);
 	return deps;
@@ -948,17 +995,26 @@ ZmSpreadSheetCellModel.prototype.getTooltipText = function() {
 		html.push("Expression:");
 		html.push("<div class='CellExpr'>[", this._expr.toString(), "]</div>");
 	}
-	// DEBUG!
-// 	var a = this._mkDeps();
-// 	if (a.length > 0) {
-// 		html.push("Affects cells:<br />");
-// 		for (var i = 0; i < a.length; ++i)
-// 			html.push(a[i].getName(), " ");
-// 		html.push("<br />");
-// 	}
-	var span = this._td.firstChild;
-	if (span.offsetWidth >= this._td.offsetWidth)
-		html.push("Value:", "<div class='CellValue'>", this.getDisplayValue(), "</div>");
-	html.push("</div>");
+	if (ZmSpreadSheetModel.DEBUG) {
+		// DEBUG!
+		var a = this._affects;
+		if (a.length > 0) {
+			html.push("Directly affects cells:<br />");
+			for (var i = 0; i < a.length; ++i)
+				html.push(a[i].getName(), " ");
+			html.push("<br />");
+		}
+		a = this._mkDeps();
+		if (a.length > 0) {
+			html.push("Affects cells:<br />");
+			for (var i = 0; i < a.length; ++i)
+				html.push(a[i].getName(), " ");
+			html.push("<br />");
+		}
+		var span = this._td.firstChild;
+		if (span.offsetWidth >= this._td.offsetWidth)
+			html.push("Value:", "<div class='CellValue'>", this.getDisplayValue(), "</div>");
+		html.push("</div>");
+	}
 	return html.join("");
 };
