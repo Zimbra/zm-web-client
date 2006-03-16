@@ -26,7 +26,7 @@
 function ZmClientCmdHandler(appCtxt) {
 	this._appCtxt = appCtxt;
 	this._settings = new Object();
-};
+}
 
 ZmClientCmdHandler.prototype.execute =
 function(cmdStr) {
@@ -46,12 +46,13 @@ function(cmdStr) {
 		if (argv[1] == "t") {
 			var on = DBG._showTiming;
 			var newState = on ? "off" : "on";
-			this._alert("Turning timing info " + newState);
+			this._alert("Turning debug timing info " + newState);
 			DBG.showTiming(!on);
 		} else {
-			var level = Number(argv[1]);
+			var arg = Number(argv[1]);
+			var level = AjxDebug.DBG[arg];
 			if (level) {
-				this._alert("Setting Debug to level: " + level);
+				this._alert("Setting Debug to level:" + level);
 				DBG.setDebugLevel(level);
 			} else {
 				this._alert("Invalid debug level", ZmStatusView.LEVEL_WARN);
@@ -80,6 +81,11 @@ function(cmdStr) {
 	} else if (arg0 == "noop") {
 		this._appCtxt.getAppController()._doPoll(true);
 		this._alert("Sent NoOpRequest");
+	} else if (arg0 == "feed") {
+		if (!argv[1]) return;	
+		var enabled = argv[1] == 1;
+		ZmNewFolderDialog._feedEnabled = enabled;
+		this._alert("Turning "+ (enabled ? "on" : "off") +" feed support in new folder dialog");
 	} else if (arg0 == "toast") {
 		var delay = argv[1] ? argv[1] : null
 		if (argv[2])	ZmStatusView.ANIMATION_DELAY = argv[2];
@@ -104,9 +110,9 @@ function(cmdStr) {
 			      "    Build Date: " + this._appCtxt.get(ZmSetting.CLIENT_DATETIME));
 		}
 	}
-};
+}
 
 ZmClientCmdHandler.prototype._alert = 
 function(msg, level) {
 	this._appCtxt.setStatusMsg(msg, level);
-};
+}		

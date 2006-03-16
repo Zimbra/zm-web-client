@@ -1,0 +1,1271 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.1
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.1 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ * 
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
+ * All Rights Reserved.
+ * 
+ * Contributor(s):
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
+/*
+* Modifiers
+*
+* Modifiers were found to not work reliably in IE and have been removed.  
+* 
+* Instead of using multiple class names to change styles, we're using hyphens now, eg:
+*		.TBButton.activated
+*  becomes
+*		.TBButton-activated
+*
+*/
+
+.DisabledText { 
+	color: #999999; 
+}
+
+.inactive {
+	background-color: #C6C5D7;
+}
+
+.nobreak {
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+/*
+ * DwtShell
+ */
+
+.DwtShellBusyDialog table.DialogContent {
+	width: 300px;
+	height: 75px;
+}
+
+.DwtShellBusyDialog td.WaitIcon {
+	background-image:url(/zimbra/img/animated/wait_64.gif);
+	background-repeat:no-repeat;
+	background-position:center center;
+	width:64px;
+	height:64px;
+}
+
+.DwtWait16Icon {
+	background-image:url(/zimbra/img/animated/wait_16.gif);
+	background-repeat:no-repeat;
+	background-position:center center;
+	width:16px;
+	height:16px;
+}
+
+.DwtWait32Icon {
+	background-image:url(/zimbra/img/animated/wait_32.gif);
+	background-repeat:no-repeat;
+	background-position:center center;
+	width:32px;
+	height:32px;
+}
+
+.DwtShellBusyDialog table td.MsgText {
+	font: 11pt Tahoma, Arial, Helvetica, sans-serif;
+	padding:5px;
+	vertical-align:top;
+}
+
+/*
+ *	Tabs
+ */
+
+.DwtTabView {
+	width: 100%;
+	align: left;	
+	background-color: white;
+}
+
+.DwtTabView .Title {
+}
+
+.DwtTabViewPage {
+	background-color:#EEEEEE;
+}
+.DwtTabViewPage .TitleBar {
+	background-color: #C6C5D7;
+	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+}
+.DwtTabViewPage .Title {
+	font: bold 12pt Arial, Helvetica, sans-serif;
+	padding: 3px;
+}
+
+.DwtTabBar {
+	background-color: #CCCCCC;
+}
+
+.DwtTabButton {}
+
+.DwtTabButton-active {}
+
+.DwtTabButton-inactive {}
+
+
+.DwtTabTable {
+	background-color: #EEEEEE;
+}
+
+.DwtTabButtonTL {}
+.DwtTabButtonTM {}
+.DwtTabButtonTR {}
+.DwtTabButtonML {	width: 9px;		}
+.DwtTabButtonMM {}
+.DwtTabButtonMR {	width: 9px;		}
+.DwtTabButtonBL {}
+.DwtTabButtonBM {}
+.DwtTabButtonBR {}
+
+.DwtPropertyPage {
+	background-color:#EEEEEE;
+}
+.DwtPropertyPage .TitleBar {
+	background-color: #C6C5D7;
+	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+}
+.DwtPropertyPage .Title {
+	font: bold 12pt Arial, Helvetica, sans-serif;
+	padding: 3px;
+}
+
+/*
+* Tool tips
+*/
+
+.DwtToolTip {}
+.DwtStickyToolTip {}
+.DwtStickyToolTipClose {}
+.DwtStickyToolTipClose-activated {}
+
+.DwtStickyToolTipTitle {
+	font-weight: bold;
+	padding-bottom: 2px;
+	cursor: default;
+}
+
+.hover_frame_table { 
+	border-collapse:collapse;
+	padding:0;
+}
+
+.hover_contents {}
+.hover_tip_top 		{	position: absolute;	}
+.hover_tip_bottom 	{	position: relative;	}
+
+/*
+* Sashes
+*/
+
+.DwtSash, .AppSash-horiz, .AppSash-vert { 
+	background-color: #666666;
+}
+
+.AppSash-horiz { width: 5px; }
+.AppSash-vert { 
+	height: 5px;
+	width: 100%;
+	font-size: 5px; /* WEIRD IE QUIRK */
+}
+
+/*
+* Trees
+*/
+
+.DwtTree, .DwtTreeItem {
+	background-color: transparent;
+	cursor: default;
+}
+
+.DwtTreeItem, .DwtTreeItem-selected, .DwtTreeItem-actioned {
+	padding-top:1px;
+	padding-left:2px;
+	padding-right:2px;
+	cursor: default;
+}
+
+.DwtTreeItem-Text {
+	padding-top:1px;
+	padding-left:2px;
+	padding-right:2px;
+}
+
+.DwtTreeItem-selected {
+	background-color: #ADD6D6;
+}
+
+.DwtTreeItem-actioned {
+	background-color: #D6EBEB;
+}
+
+.DwtTreeItem-DragOver {
+	background-color: #339999;
+}
+
+.DwtTreeItem .imageCell {
+	padding-right:4px;
+	white-space: nowrap;
+}
+
+.DwtTreeItemChildDiv {
+	padding-left:16px;
+}
+
+.DwtTreeItemLevel1ChildDiv {
+	padding-left:16px;
+	padding-top:2px;
+}
+
+/*
+* Buttons
+*
+* The background color is set by a modifier.
+* TBButton - toolbar button, very light border (so we can show a border on mouseover)
+* States for buttons:
+*	-activated	-- mouseover state
+*	-triggered	-- mousedown state
+*/
+
+.TBButton, TBButtonDefault {
+	border: 1px solid #EEEEEE;
+}
+
+.TBButtonWhite {
+	border: 1px solid white;
+}
+
+.DwtButton, .ColorButton, .TBButton-activated, .TBButtonWhite-activated {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonUp__H.gif);
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+}
+
+.DwtButton-activated, .ColorButton-activated {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDown__H.gif);
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+}
+
+.DwtButton-triggered, .ColorButton-triggered, .TBButton-triggered, .TBButtonWhite-triggered {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDown__H.gif);
+	border:1px solid;
+	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+}
+
+.DwtButton-toggled, .ColorButton-toggled, .TBButton-toggled, .TBButtonWhite-toggled {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDown__H.gif);
+	border:1px solid;
+	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+}
+
+.TBButtonDefault {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonUpDefault__H.gif);
+	border: 1px solid;
+	border-color: #b6e4e4 #6a9090 #6a9090 #b6e4e4;
+}
+
+.TBButtonDefault-activated {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDownDefault__H.gif);
+	border: 1px solid;
+	border-color: #b6e4e4 #6a9090 #6a9090 #b6e4e4;
+}
+
+.TBButtonDefault-triggered {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDownDefault__H.gif);
+	border: 1px solid;
+	border-color: #6a9090 #b6e4e4 #b6e4e4 #6a9090;
+}
+
+/*
+ *  DwtSelect 
+ */
+
+.DwtSelect {  
+	cursor: default;
+	overflow:hidden;
+	height:20px;
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonUp__H.gif);
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+	min-width:40px;
+}
+
+.DwtSelect-activated {  
+	cursor: default;
+	overflow:hidden;
+	height:20px;
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDown__H.gif);
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+	min-width:40px;
+}
+
+.DwtSelect-triggered {  
+	cursor: default;
+	overflow:hidden;
+	height:20px;
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDown__H.gif);
+	border:1px solid;
+	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+	min-width:40px;
+}
+
+
+.DwtSelect table,
+.DwtSelect-activated table,
+.DwtSelect-triggered table,
+.DwtSelect-disabled table {
+	border-spacing:none;
+	border-collapse: collapse;
+	width:100%;
+	text-align:center;
+	table-layout:fixed;
+	padding:0px;
+}
+
+.DwtSelect .Text,
+.DwtSelect-activated .Text,
+.DwtSelect-triggered .Text {
+	padding: 2px;
+	text-align:left;
+	padding-left:4px;
+	overflow:hidden;
+}
+
+.DwtSelect-disabled .Text {
+	padding: 2px;
+	text-align:left;
+	padding-left:4px;
+	overflow:hidden;
+	color:#CCCCCC;
+}
+
+.DwtSelect.disabled {
+	border:1px solid #CCCCCC;
+}
+
+.dropDownCell { 
+	width: 16px;
+}
+
+.DwtSelectMenu { 
+	background-color:white;
+	border:1px solid;
+	border-color:#CCCCCC black black #CCCCCC;
+	position : absolute;
+}
+
+.DwtSelectMenu .DwtMenuItem {
+	border: 1px solid white;
+	background-color: white;
+	cursor: default;
+}
+
+.DwtSelectMenu table { 
+	width:99%;
+}
+
+.DwtSelectMenu .DwtMenuItem-text {
+	text-align:left;
+	padding-left:4px;
+}
+
+.DwtSelectMenu .DwtMenuItem-leftFill {
+	width:19px;
+}
+
+.DwtSelectMenu .DwtMenuItem-selected {
+	background-color: #ADD6D6;
+	color:black;
+	cursor: default;
+}
+
+.DwtSelectMenu .DwtMenuItem-selected .DwtMenuItem-text{
+	cursor: default;
+}
+
+/*
+* List views
+*/
+
+/* Common styles */
+.DwtListView {
+	width: 100%;
+}
+
+.DwtListView-Rows {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: #FFFFFF;
+}
+
+.DwtListView-Rows td {
+	padding: 2px;
+}
+
+.DwtListView-Sash {
+	width: 1px; 
+	height: 100%;
+	vertical-align: top;
+}
+
+.DwtListView-ColHeader {
+	background-color: #C6C5D7;
+	position: relative;
+	height: 24px;
+}
+
+.DwtListView-Column {
+	padding: 0 0 0 2;
+	border-style: solid;
+	border-width: 0 0 2 0;
+	border-bottom-color: #777777;
+	background-color: #EEEEEE;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.DwtListView-ColumnEmpty {
+	background-color: #555555;
+}
+
+.DwtListView-ColumnSash {
+	width: 2px;
+	background-color: #000000;
+}
+
+.DwtListView .DwtListView-ColumnHover {
+	background-color: #D8D8E0;
+	border-bottom-color: #AAAAAA;
+}
+
+.DwtListView-ColumnActive {
+	background-color: #EEEEEE;
+}
+
+/*
+ *  DwtAddRemove
+ */
+
+.DwtAddRemove {}
+.DwtAddRemoveListView {
+	border: solid #777777 1px;
+}
+
+.DwtAddRemoveListViewRow {
+	padding-left: .25em;
+}
+
+.DwtAddRemove-outerTable { 
+  border:0px;
+  border-spacing:0px;
+}
+
+.DwtAddRemove-outerTable TD{ 
+  padding:4px;
+}
+
+
+/*
+* Menus
+*/
+
+.DwtMenu, .ActionMenu {
+	background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);
+	border: 2px solid;
+	border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;
+}
+
+.DwtMenu {}
+.DwtMenuItem {
+	border:1px solid #EEEEEE;
+}
+
+.DwtMenuItem-selected, .DwtMenuItem-IconArea-selected, .DwtMenuItem-CheckedArea-selected {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonUp__H.gif);
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+}
+
+.DwtMenuItem-triggered, .DwtMenuItem-IconArea-triggered, .DwtMenuItem-CheckedArea-triggered {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonDown__H.gif);
+	border:1px solid;
+	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+}
+
+.DwtMenuItem-IconArea, .DwtMenuItem-CheckedArea {}
+
+.DwtMenuItem-Separator {
+	background-color: #999999;
+	padding-left: 5px;
+	white-space:noWrap;
+	width:100%;
+	height:1px;
+}
+
+.DwtMenuItem .Text, .DwtMenuItem .DisabledText,
+.DwtMenuItem-triggered .Text,
+.DwtMenuItem-selected .Text {
+	white-space:nowrap;
+	padding-right:2px;
+	padding-left:5px;
+}
+
+/*
+ * Dialogs
+ */
+
+.DwtDialog { background-color: transparent; }
+
+.DwtDialog .Title {
+	background: #2557AD;
+	color: white;
+	font-size: 10pt;
+	font-weight: bold;
+	padding: 5px 0 3px 10px;
+}
+
+.DwtDialog .MainPanel {
+	background-color: #C6C5D7;
+	border: 2px solid #2557AD;
+	padding: 10px;
+}
+
+.DwtDialog textarea { width: 100%; }
+.DwtDialog .Label { font-size: 10pt; }
+.DwtDialog .Field { width: 290px; }
+
+.DwtPropertySheet .Label {
+  color: #666;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.DialogBody 			{	background-color:#EEEEEE;		}
+.DialogTable			{	border-collapse:collapse;		}
+.DialogToolbar 			{	background-image:url(/zimbra/img/loRes/skins/steel/PebbleDark__BG.gif);	}
+
+.DialogTitle {
+	background-color:#3d3d3d; 
+	cursor:move;
+}
+
+.DialogTitleCell {	
+	color:white;
+	width:auto;
+	font-weight:bold;
+}
+
+.DialogTitleText {
+	color:white;
+	width:auto;
+	font-weight:bold;	
+	padding-left:2px;
+	padding-right:2px;
+}
+
+/* NEEDED? -- REMOVE FROM BORDER */
+.dialog_shadow_c { width:6;	height:6;		}
+.border_outset_c { width:4;	height:4;		}
+.border_shadow_v { width:6;	height:100%;	}
+
+/* 
+ * Message dialog 
+ */
+.DwtMsgDialog { width: 400px; }
+.DwtMsgArea { padding-left: 12px; }
+
+/*
+ *  DwtAlert
+ */
+
+.DwtAlert {
+	border-style: solid;
+	border-width: 1px;
+	margin: .5em 2em;
+	padding: .25em;
+}
+
+.DwtAlertBare {
+	margin: 0px;
+	padding: 0px;
+	border-style: none;
+	background-color: transparent;
+}
+
+.DwtAlertInfo {
+	border-color: #99DD99; /* dark green */
+	background-color: #CCFFCC; /* light green */
+} 
+
+.DwtAlertWarn {
+	border-color: #DDDD99; /* dark yellow */
+	background-color: #FFFFCC; /* light yellow */
+}
+
+.DwtAlertCrit {
+	border-color: #DD9999; /* dark red */
+	background-color: #FFCCCC; /* light red */
+}
+
+.DwtAlertIcon {
+	margin: 0.25em;
+	margin-right: 0.5em;
+}
+
+.DwtAlertTitle {
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+.DwtAlertContent {}
+
+.NoResults {
+	font-size: 10pt;
+	text-align: center;
+	white-space: nowrap;
+}
+
+/* 
+ * DwtColorPicker 
+ */
+.DwtColorPicker { border: 1px solid #999999; }
+.DwtColorPicker table td img { border: 1px none black; }
+
+.DwtResizeGripper {
+	background-image:url(/zimbra/img/hiRes/dwt/ResizeGripper.gif);
+	border: none;
+	width:16px;
+	height:16px;
+}
+
+/* 
+ * Calendar
+ */
+
+.DwtCalendar {
+	background-color: transparent;
+}
+
+.DwtCalendarTitlebar {
+	background-color: #CCCCCC;
+}
+
+.DwtCalendarButton {
+	border:1px solid #CCCCCC;
+	text-align:center;
+	width:15px;
+	padding:3px;
+}	
+
+.DwtCalendarButton-activated {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonSmallUp__H.gif);
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+	text-align:center;
+	width:15px;
+	padding:3px;
+}
+
+.DwtCalendarButton-triggered {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonSmallDown__H.gif);
+	border:1px solid;
+	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+	text-align:center;
+	width:15px;
+	padding:3px;
+}
+
+.DwtCalendarDay {
+	border:1px solid #EEEEEE;
+}
+
+.DwtCalendarDay-activated {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonSmallUp__H.gif);
+	border: 1px solid;
+	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+}
+
+.DwtCalendarDay-triggered {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonSmallDown__H.gif);
+	border:1px solid;
+	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+}
+
+.DwtCalendarTitleCell {
+	width: 100%;
+}
+
+.DwtCalendarDow {
+	border-bottom: 1px solid #CCCCCC;
+} 
+
+.DwtCalendarDay-selected {
+	border:1px solid #ADD6D6;
+	background-color: #ADD6D6;
+}
+
+.DwtCalendarDay-activated {
+	background-color: white;
+	border: 1px outset black;
+}
+
+.DwtCalendarDay-triggered {
+	background-color: #FFCC00;
+	border: 1px inset black;
+}
+
+.DwtCalendarDay-today {
+	border: 1px solid #990000;
+}
+
+.DwtCalendarDay-grey {
+	color: #666666;
+}
+
+.DwtCalendarDay-hilited {
+	font-weight: bold;
+}
+
+/*
+ * DwtInputField
+ */
+.DwtInputField input {
+	color: black;
+	background-color: white;
+}
+
+.DwtInputField-Error input {
+	color: black;
+	background-color: #F4FB7F;
+}
+
+/*
+ *  DwtWizardDialog
+ */
+
+.DwtWizardDialogPageDiv {
+	background-color:#EEEEEE;
+	position: static;
+}
+
+.DwtStepLabelActive {
+	font-size: 12pt;
+	font-weight: bold;
+	color: black;	
+	padding-right: 2px;
+	padding-left: 2px;	
+}
+
+.DwtStepLabelInactive {
+	font-size: 14pt;
+	font-weight: normal;
+	color: #999999;	
+	padding-right: 2px;
+	padding-left: 2px;	
+}
+
+/* <DwtPropertyEditor> */
+
+.DwtPropertyEditor table {
+  border-collapse: collapse;
+/*  border: 1px solid #777; background-color: #f5f5f5; color: #000; */
+}
+.DwtPropertyEditor * { font-size: 11px !important; font-family: Tahoma,Verdana,sans-serif !important; }
+.DwtPropertyEditor table td {
+/*
+  border-bottom: 1px solid #999;
+  border-top: 1px solid #999;
+*/
+  padding: 1px 5px;
+}
+.DwtPropertyEditor table td.label {
+/*
+  border-right: 1px dotted #ddd;
+*/
+  cursor: default; text-align: right;
+  font-weight: bold;
+}
+.DwtPropertyEditor table td.label:after { content: ":"; }
+.DwtPropertyEditor table td.field { cursor: text; }
+
+.DwtPropertyEditor table tr.expander-collapsed td { cursor: pointer; background-color: #e5e5e5; }
+.DwtPropertyEditor table tr.expander-collapsed td div {
+  background: url("/zimbra/img/hiRes/dwt/Expand.gif") no-repeat 100% 50%;
+  padding-right: 15px;
+}
+
+.DwtPropertyEditor table tr.expander-expanded td { cursor: pointer; background-color: #e5e5e5; }
+.DwtPropertyEditor table tr.expander-expanded td div {
+  background: url("/zimbra/img/hiRes/dwt/Collapse.gif") no-repeat 100% 50%;
+  padding-right: 15px;
+}
+
+.DwtPropertyEditor table tr.level-1 td.label { padding-left: 20px; }
+.DwtPropertyEditor table tr.level-2 td.label { padding-left: 35px; }
+.DwtPropertyEditor table tr.level-3 td.label { padding-left: 50px; }
+.DwtPropertyEditor table tr.level-4 td.label { padding-left: 65px; }
+.DwtPropertyEditor table tr.level-5 td.label { padding-left: 80px; }
+.DwtPropertyEditor table tr.level-6 td.label { padding-left: 95px; }
+.DwtPropertyEditor table tr.level-7 td.label { padding-left: 110px; }
+.DwtPropertyEditor table tr.level-8 td.label { padding-left: 125px; }
+.DwtPropertyEditor table tr.level-9 td.label { padding-left: 140px; }
+
+.DwtPropertyEditor table tr.readonly td.field { color: #888; cursor: default; }
+.DwtPropertyEditor table tr.dirty td { color: #42c; }
+.DwtPropertyEditor table tr.invisible { display: none; }
+
+/*
+.DwtPropertyEditor table tr.number td.field,
+.DwtPropertyEditor table tr.integer td.field,
+.DwtPropertyEditor input.number,
+.DwtPropertyEditor input.integer { text-align: right; }
+*/
+
+.DwtPropertyEditor input.DwtPropertyEditor-input {
+  position: absolute;
+  border: 2px solid #000;
+  padding: 0 4px;
+}
+.DwtPropertyEditor input.DwtPropertyEditor-input-error { background-color: #fca; border-color: red; }
+
+.DwtPropertyEditor .DwtPropertyEditor-ErrorMsg {
+  position: absolute;
+  border: 1px solid red;
+  padding: 5px;
+  font-size: 90%;
+  font-weight: bold;
+  background-color: #ffffcd;
+  color: red;
+}
+
+.DwtPropertyEditor span.DwtPropertyEditor-required { font-size: 80%; color: red; }
+
+/* </DwtPropertyEditor> */
+
+/*
+ *	Border stuff
+ */ 
+
+.card_border_table {
+	border-collapse:collapse;
+	padding:0;
+}
+
+.card_contents {
+	background-color:white;
+	position:relative;
+	left:-3px;	top:-3px; 
+	margin-bottom:-3px; margin-right:-3px;
+}
+
+.card_contents_table {}
+
+.card_spacer_TL		{ width:10; 	height:10;		overflow:hidden;	}
+.card_spacer_T		{ width:100%; 	height:10;		overflow:hidden;	}
+.card_spacer_TR		{ width:10; 	height:10;		overflow:hidden;	}
+.card_spacer_R		{ width:10; 	height:100%;	overflow:hidden;	}
+.card_spacer_BG		{ background-color:white;	}
+.card_spacer_L		{ width:10; 	height:100%;	overflow:hidden;	}
+.card_spacer_BL		{ width:10; 	height:10;		overflow:hidden;	}
+.card_spacer_B		{ width:100%; 	height:10;		overflow:hidden;	}
+.card_spacer_BR		{ width:10; 	height:10;		overflow:hidden;	}
+
+/*
+ * XForms things
+ *
+ * Please don't change the below, if you think you need to, come talk to Owen
+ *
+ */
+
+
+/* RENAME ME */
+.redAsteric {
+	color: rgb(250, 0, 0);
+}
+
+
+
+/* widgets */
+.xform_table {
+	border-collapse:collapse;
+	padding:0;
+}
+.xform_composite_table {
+	border-collapse:collapse;
+	padding:0;
+}
+
+.xform_field_container,
+.xform_select_container,
+.xform_output_container
+{
+	padding:2px;
+}
+
+
+.xform_field,
+.xform_select,
+.xform_select1,
+.xform_textarea,
+.xform_output,
+.xform_button,
+.xform_anchor{
+
+}
+
+.xform_output {
+	padding-left:2px;
+	padding-right:2px;
+}
+
+.xform_select1 {
+
+}
+
+.xform_select {
+  height:100px;
+  width:200px;
+}
+
+.xform_label,
+.xform_label_left {
+  color:#666666;
+  padding-left:4px;
+  padding-right:2px;
+  white-space:nowrap;
+  text-align:right;
+}
+
+.xform_label_left {
+  padding-left:0;
+  text-align:left;
+}
+
+
+.xform_separator {
+  width:100%;
+  height:1;
+  border-bottom:1px solid black;
+  font-size:1px;
+}
+
+.xform_button {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonSmallUp__H.gif);
+	border:1px outset #999999;	
+	white-space:nowrap;
+}
+
+.xform_button_default {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonSmallUp__H.gif);
+	border:2px outset #999999;	
+	white-space:nowrap;
+}
+
+
+
+/* "small" button grid */
+
+.xform_button_grid_small {}
+.xform_button_grid_small_table {
+	border-collapse:collapse;
+	padding:0;
+}
+.xform_button_grid_small_table td {
+	padding:0;
+}
+
+.xform_button_grid_small_button {
+	cursor:pointer;
+	width:12px;
+	height:12px;
+	padding:3px;
+	background-color:white;
+	border:1px outset gray;
+	margin:1px;
+	text-align:center;
+}
+.xform_button_grid_small_button_selected {
+	cursor:pointer;
+	width:12px;
+	height:12px;
+	padding:3px;
+	background-color:gray;
+	border:1px inset gray;
+	margin:1px;
+	text-align:center;
+}
+
+
+
+/* "medium" button grid */
+
+.xform_button_grid_medium {}
+.xform_button_grid_medium_table {
+	border-collapse:collapse;
+	padding:2;
+}
+.xform_button_grid_medium_table td {
+	padding:2;
+}
+.xform_button_grid_medium_button {
+	cursor:pointer;
+	white-space:nowrap;
+	overflow:hidden;
+	width:40px;
+	padding:3px;
+	background-color:white;
+	border:1px outset gray;
+	text-align:center;
+}
+.xform_button_grid_medium_button_selected {
+	cursor:pointer;
+	white-space:nowrap;
+	overflow:hidden;
+	width:40px;
+	padding:3px;
+	background-color:gray;
+	border:1px inset gray;
+	text-align:center;
+}
+
+
+.GrouperBorder,
+.RadioGrouperBorder,
+.TopGrouperBorder {
+	border:1px solid #999999;
+	margin-top:5px;
+	margin-bottom:5px;
+
+	padding-top:5px;
+	padding-left:10px;
+	padding-right:10px;
+	padding-bottom:10px;
+	
+	position:relative;	
+}
+
+.TopGrouperBorder {
+	border:1px dotted #999999;
+	border-left:none;
+	border-right:none;
+	border-bottom:none;
+	margin-top:20px;
+	padding-bottom:0px;
+	margin-bottom:0px;
+}
+
+.GrouperLabel,
+.RadioGrouperLabel {
+	display: inline;
+	font-weight:bold;
+	font-size:13px;
+	position:relative;
+	left:10; 
+	top:-15;
+	background-color:#EEEEEE;
+	padding-left:2px; padding-right:2px;
+}
+
+.GrouperInset {
+
+}
+
+.RadioGrouperInset {
+
+}
+
+.RadioGrouperBorder {
+	border:1px solid #999999;
+	margin-bottom:2px;
+
+}
+
+HTML>BODY .RadioGrouperBorder {
+	border:1px dotted #999999;
+}
+
+.RadioGrouperLabel {
+	margin-left:5px;
+	color:#666666;
+	font-weight:normal;
+	font-size:11px;
+}
+
+HTML>BODY .RadioGrouperLabel {
+	margin-left:-5px;
+}
+
+.quotabar {
+	width: 100px;
+	border: 1px solid white;
+	background-color: white;
+}
+
+.quotaused {
+	height: 6px;
+	font-size: 6px; /* WEIRD IE QUIRK */
+}
+
+.percent {
+	white-space: nowrap;
+	font-size: 7pt;
+	color: black;
+}
+
+
+
+
+
+
+/*
+ * Xforms -- OSelect FormItem Widget
+ */
+
+.oselect, .oselect_check {
+	cursor:pointer;
+}
+.oselect_table,
+.oselect_check_table {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonUp__H.gif);
+	border-collapse:collapse;
+	border:1px solid;
+	border-color:#CCCCCC #333333 #333333 #CCCCCC;
+	padding:0;
+}
+.oselect_table TD,
+.oselect_check_table TD {
+	padding:0;
+}
+.oselect_display {
+	white-space:nowrap;
+	overflow:hidden;
+	margin-left:4px;
+	margin-right:4px;
+	height:15;
+	border-style:none;
+	border-color:#EEEEEE;
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonUp__H.gif);
+}
+
+.oselect_display_disabled {
+    background-color: #EEEEEE;
+	color: #CCCCCC;
+	white-space:nowrap;
+	overflow:hidden;
+	margin-left:4px;
+	margin-right:4px;
+}
+
+.oselect_table_disabled {
+	background-color: #EEEEEE;
+	border-collapse:collapse;
+	color: #CCCCCC;
+	border-left:1px solid #EEEEEE;
+	border-top:1px solid #EEEEEE;
+	border-right:1px solid gray;
+	border-bottom:1px solid gray;
+}
+
+.oselect_choice_table_scrolled {
+	border-collapse:collapse;
+	border-left:1px solid #CCCCCC;
+	border-top:0px;
+	border-right:0px;
+	border-bottom:1px solid black;
+}
+
+.oselect_menu {
+	background-color:white;
+	position:absolute;
+	z-index:10000000000;
+	cursor:pointer;
+}
+.oselect_choice_table,
+.oselect_check_choice_table {
+	border-collapse:collapse;
+	border:1px solid;
+	border-color:#CCCCCC black black #CCCCCC;
+}
+.oselect_choice {
+	background-color:white;
+	border:1px solid white;
+	padding-left:4px;
+	padding-top:1px;
+	padding-bottom:1px;
+	margin-right:1px;
+	white-space:nowrap;
+}
+.oselect_choice_selected {
+	background-image:url(/zimbra/img/hiRes/dwt/ButtonUp__H.gif);
+	border:1px solid;
+	border-color:#CCCCCC black black #CCCCCC;
+	padding-left:4px;
+	padding-top:1px;
+	padding-bottom:1px;
+	margin-right:1px;
+	white-space:nowrap;
+}
+
+.oselect_check_choice {
+	background-color:white;
+	color:black;
+	padding:4px;
+	white-space:nowrap;
+}
+.oselect_check_choice_selected {
+	color:black;
+	background-color:FFFF66;
+	padding:4px;
+}
+
+.xform_error { color: red }
+
+.DwtConfirmDialogQuestion {
+	font-size: 1.2em;
+	margin: .25em;
+	margin-bottom: 0.50em;
+}
+
+.DwtMenuCascadeCell {
+	border-left: solid gray 1px;
+}
+
+/*
+ * DwtChooser
+ */
+
+.DwtChooser {
+	width: 100%;
+}
+
+.DwtChooser-Active {
+	border: 1px solid #000000;
+}
+
+.DwtChooserListView {
+	border: 1px solid #000000;
+	margin: 5 5 5 5;
+}

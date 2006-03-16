@@ -746,7 +746,7 @@ function(htmlArr, idx, addrs, prefix) {
 
 		var addr = addrs.get(i);
 		if (this._objectManager && addr.address) {
-			htmlArr[idx++] = this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
+			htmlArr[idx++] = this._objectManager.findObjects(addr, true, ZmEmailObjectHandler.TYPE);
 		} else {
 			htmlArr[idx++] = addr.address ? addr.address : (AjxStringUtil.htmlEncode(addr.name));
 		}
@@ -790,8 +790,7 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "<tr><td class='LabelColName'>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.sent);
 	htmlArr[idx++] = ": </td><td>";
-	var dateString = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
-	htmlArr[idx++] = this._objectManager ? this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE) : dateString;
+	htmlArr[idx++] = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
 	htmlArr[idx++] = "</td></tr>";
 
 	// Attachments

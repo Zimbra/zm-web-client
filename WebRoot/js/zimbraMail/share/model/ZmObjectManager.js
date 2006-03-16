@@ -44,8 +44,8 @@ function ZmObjectManager(view, appCtxt, selectCallback) {
 	this._selectCallback = selectCallback;
 	this._uuid = Dwt.getNextId();
 	this._objectIdPrefix = "OBJ_" + this._uuid + "_";
-	this._objectHandlers = {};
-	this._allObjectHandlers = [];
+	this._objectHandlers = new Object();
+	this._allObjectHandlers = new Array();
 	// don't include when looking for objects. only used to provide tool tips for images
 	this._imageAttachmentHandler = new ZmImageAttachmentObjectHandler(appCtxt);
 
@@ -85,13 +85,6 @@ function ZmObjectManager(view, appCtxt, selectCallback) {
 }
 
 ZmObjectManager._TOOLTIP_DELAY = 275;
-
-// Define common types for quicker object matching.
-ZmObjectManager.EMAIL = "email";
-ZmObjectManager.URL = "url";
-ZmObjectManager.PHONE = "phone";
-ZmObjectManager.DATE = "date";
-
 
 ZmObjectManager._autohandlers = [];
 
@@ -167,7 +160,7 @@ function() {
 
 ZmObjectManager.prototype.reset =
 function() {
-	this._objects = {};
+	this._objects = new Object();
 };
 
 ZmObjectManager.prototype.objectsCount =
@@ -185,7 +178,7 @@ function() {
 ZmObjectManager.prototype.findObjects =
 function(content, htmlEncode, type) {
 	if  (!content) {return "";}
-	var html = [];
+	var html = new Array();
 	var idx = 0;
 
 	var maxIndex = content.length;
@@ -208,16 +201,11 @@ function(content, htmlEncode, type) {
 		var chunk;
 		var result = null;
 		if (type) {
-			DBG.println(AjxDebug.DBG3, "findObjects type [" + type + "]");
 			handlers = this._objectHandlers[type];
 			if (handlers) {
 				for (i = 0; i < handlers.length; i++) {
-					DBG.println(AjxDebug.DBG3, "findObjects by TYPE (" + handlers[i] + ")");
 					result = handlers[i].findObject(content, lastIndex);
-					// No match keep trying.
-					if(!result) {continue;}
-					// Got a match let's handle it.
-					if (result.index >= lowestIndex) {break;}
+					if (!result || result.index >= lowestIndex) {break;}
 					lowestResult = result;
 					lowestIndex = result.index;
 					lowestHandler = handlers[i];
@@ -235,7 +223,6 @@ function(content, htmlEncode, type) {
 		} else {
 			for (var j = 0; j < this._allObjectHandlers.length; j++) {
 				var handler = this._allObjectHandlers[j];
-				DBG.println(AjxDebug.DBG3, "findObjects trying (" + handler + ")");
 				result = handler.findObject(content, lastIndex);
 				if (result && result.index < lowestIndex) {
 					lowestResult = result;
