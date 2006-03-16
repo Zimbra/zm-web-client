@@ -243,10 +243,7 @@ function(str) {
 			if (result) {
 				// propagate previous match forward, reset matched text
 				DBG.println(AjxDebug.DBG2, "adding " + result[ZmContactList.AC_VALUE_EMAIL]);
-				match.text = result.text;
-				match[ZmContactList.AC_VALUE_FULL] = result[ZmContactList.AC_VALUE_FULL];
-				match[ZmContactList.AC_VALUE_EMAIL] = result[ZmContactList.AC_VALUE_EMAIL];
-				this._acAddrList[str].push(match);
+				this._acAddrList[str].push(result);
 				foundOne = true;
 			}
 		}
@@ -384,7 +381,7 @@ function(contact, doAdd) {
 		} else {
 			var newMatches = [];
 			for (var i = 0; i < list.length; i++) {
-				if (list[i].data.id != contact.id)
+				if (list[i].data._id != contact.id)
 					newMatches.push(list[i]);
 			}
 			this._acAddrList[str] = newMatches;
@@ -397,7 +394,7 @@ function(contact, doAdd) {
 		} else {
 			var newAcContacts = [];
 			for (var i = 0; i < this._acContacts.length; i++)
-				if (this._acContacts[i].id != contact.id)
+				if (this._acContacts[i]._id != contact.id)
 					newAcContacts.push(this._acContacts[i]);
 			this._acContacts = newAcContacts;
 		}
@@ -420,7 +417,8 @@ function(contact, list, preMatch) {
 	list = list ? list : [];
 	for (var j = 0; j < emails.length; j++) {
 		var acContact = {};
-		acContact.id = contact.id;
+		acContact._id = contact.id;
+		acContact._item = contact;
 		var strings = preMatch ? {} : null;
 		acContact[ZmContact.F_email] = emails[j];
 		if (preMatch && emails[j] && emails[j].length) {
@@ -430,12 +428,13 @@ function(contact, list, preMatch) {
 		for (var k = 0; k < ZmContactList.AC_FIELDS.length; k++) {
 			var field = ZmContactList.AC_FIELDS[k];
 			var value;
-			if (field == ZmContact.X_fullName)
+			if (field == ZmContact.X_fullName) {
 				value = contact.getFullName();
-			else if (field == ZmContact.X_firstLast)
+			} else if (field == ZmContact.X_firstLast) {
 				value = AjxStringUtil.trim([contact.getAttr(ZmContact.F_firstName), contact.getAttr(ZmContact.F_lastName)].join(" "));
-			else
+			} else {
 				value = contact.getAttr(field);
+			}
 			acContact[field] = value;
 			if (preMatch && value && value.length) {
 				strings[value.substring(0, 1).toLowerCase()] = true;
@@ -461,7 +460,7 @@ function(acContact, str) {
 	var matchedField = null;
 	var savedMatch = null;
 	for (var field in acContact) {
-		if (field == "id") continue;
+		if (field.indexOf("_") == 0) continue;
 		var value = acContact[field];
 		if (value && (value.toLowerCase().indexOf(str) == 0)) {
 			try {
@@ -475,40 +474,44 @@ function(acContact, str) {
 			break;
 		}
 	}
-	if (matchedField != null) {
-		var name;
-		if (matchedField == ZmContact.X_fullName || matchedField == ZmContact.X_firstLast) {
-			// if one of these matched, it will already be highlighted
-			name = savedMatch;
-		} else {
-			// construct name - first or last may have matched and been highlighted
-			var names = [];
-			for (var i = 0; i < ZmContactList.AC_NAME_FIELDS.length; i++) {
-				var field = ZmContactList.AC_NAME_FIELDS[i];
-				var val = acContact[field];
-				if (val)
-					names.push((matchedField == field) ? savedMatch : val);
-			}
-			name = names.join(" ");
-		}			
-		var textEmail, valEmail;
-		if (matchedField == ZmContact.F_email) {
-			textEmail = savedMatch; // highlighted version
-			valEmail = acContact[ZmContact.F_email];
-		} else {
-			textEmail = valEmail = acContact[ZmContact.F_email];
+	return matchedField ? this._getMatchObject(acContact, matchedField, savedMatch) : null;
+};
+
+// Assembles a match object for the type of item that was matched
+ZmContactList.prototype._getMatchObject =
+function(acContact, matchedField, savedMatch) {
+	var name;
+	if (matchedField == ZmContact.X_fullName || matchedField == ZmContact.X_firstLast) {
+		// if one of these matched, it will already be highlighted
+		name = savedMatch;
+	} else {
+		// construct name - first or last may have matched and been highlighted
+		var names = [];
+		for (var i = 0; i < ZmContactList.AC_NAME_FIELDS.length; i++) {
+			var field = ZmContactList.AC_NAME_FIELDS[i];
+			var val = acContact[field];
+			if (val)
+				names.push((matchedField == field) ? savedMatch : val);
 		}
-		var text = name + " &lt;" + textEmail + "&gt;";
-		var acEmail = new ZmEmailAddress(valEmail, null, acContact[ZmContact.X_fullName]);
-		var acValue = acEmail.toString();
-		var result = {};
-		result.data = acContact;
-		result.text = text;
-		result[ZmContactList.AC_VALUE_FULL] = acValue;
-		result[ZmContactList.AC_VALUE_EMAIL] = valEmail;
-		return result;
+		name = names.join(" ");
 	}
-	return null;
+	var textEmail, valEmail;
+	if (matchedField == ZmContact.F_email) {
+		textEmail = savedMatch; // highlighted version
+		valEmail = acContact[ZmContact.F_email];
+	} else {
+		textEmail = valEmail = acContact[ZmContact.F_email];
+	}
+	var text = name + " &lt;" + textEmail + "&gt;";
+	var acEmail = new ZmEmailAddress(valEmail, null, acContact[ZmContact.X_fullName]);
+	var acValue = acEmail.toString();
+	var result = {};
+	result.data = acContact;
+	result.text = text;
+	result[ZmContactList.AC_VALUE_FULL] = acValue;
+	result[ZmContactList.AC_VALUE_EMAIL] = valEmail;
+
+	return result;
 };
 
 ZmContactList.prototype._matchList =

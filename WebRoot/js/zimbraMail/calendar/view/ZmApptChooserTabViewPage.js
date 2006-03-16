@@ -35,13 +35,17 @@
 *
 * @param parent		[DwtComposite]	the element that created this view
 * @param appCtxt 	[ZmAppCtxt]		app context
+* @param tabId		[constant]		tab ID
+* @param attendees	[hash]			attendees/locations/resources
 * @param type		[constant]		chooser page type
 */
-function ZmApptChooserTabViewPage(parent, appCtxt, type) {
+function ZmApptChooserTabViewPage(parent, appCtxt, tabId, attendees, type) {
 
 	DwtTabViewPage.call(this, parent);
 
 	this._appCtxt = appCtxt;
+	this._tabId = tabId;
+	this._attendees = attendees;
 	this.type = type;
 
 	this.setScrollStyle(DwtControl.CLIP);
@@ -49,6 +53,8 @@ function ZmApptChooserTabViewPage(parent, appCtxt, type) {
 	this._searchFields = {};
 	this._searchFieldIds = {};
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
+
+	parent.addChangeListener(new AjxListener(this, this._attendeesChangeListener));
 };
 
 // List view columns
@@ -82,7 +88,7 @@ ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_CAPACITY]	= 30;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_NOTES]		= 30;
 
 ZmApptChooserTabViewPage.COLS = {};
-ZmApptChooserTabViewPage.COLS[ZmAppt.ATTENDEE] =
+ZmApptChooserTabViewPage.COLS[ZmAppt.PERSON] =
 	[ZmApptChooserTabViewPage.ID_NAME, ZmApptChooserTabViewPage.ID_EMAIL,
 	 ZmApptChooserTabViewPage.ID_WORK_PHONE, ZmApptChooserTabViewPage.ID_HOME_PHONE];
 ZmApptChooserTabViewPage.COLS[ZmAppt.LOCATION] =
@@ -121,7 +127,7 @@ ZmApptChooserTabViewPage.SF_LABEL[ZmApptChooserTabViewPage.SF_FLOOR]	= "floor"
 ZmApptChooserTabViewPage.SF_ATTR = {};
 ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_NAME]		= "displayName";
 ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_CAPACITY]	= "zimbraCalResCapacity";
-ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_NOTES]		= "zimbraNotes";
+ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_NOTES]		= "description";
 ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_CONTACT]	= "zimbraCalResContactName";
 ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_SITE]		= "zimbraCalResSite";
 ZmApptChooserTabViewPage.SF_ATTR[ZmApptChooserTabViewPage.SF_BUILDING]	= "zimbraCalResBuilding";
@@ -135,15 +141,15 @@ ZmApptChooserTabViewPage.SF_OP[ZmApptChooserTabViewPage.SF_FLOOR]		= "eq";
 ZmApptChooserTabViewPage.ATTRS = {};
 ZmApptChooserTabViewPage.ATTRS[ZmAppt.LOCATION] =
 	["displayName", "mail", "zimbraCalResSite", "zimbraCalResBuilding", "zimbraCalResFloor", "zimbraCalResRoom",
-	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "zimbraNotes",
+	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description",
 	 "street", "l", "st", "postalCode", "co"];
 ZmApptChooserTabViewPage.ATTRS[ZmAppt.RESOURCE] =
 	["displayName", "mail", "zimbraCalResSite", "zimbraCalResBuilding", "zimbraCalResFloor", "zimbraCalResRoom",
-	 "zimbraCalResContactEmail", "zimbraNotes",
+	 "zimbraCalResContactEmail", "description",
 	 "street", "l", "st", "postalCode", "co"];
 
 ZmApptChooserTabViewPage.SEARCH_FIELDS = {};
-ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmAppt.ATTENDEE] =
+ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmAppt.PERSON] =
 	[ZmApptChooserTabViewPage.SF_ATT_NAME, ZmApptChooserTabViewPage.SF_SOURCE];
 ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmAppt.LOCATION] =
 	[ZmApptChooserTabViewPage.SF_NAME, ZmApptChooserTabViewPage.SF_SITE,
@@ -155,9 +161,9 @@ ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmAppt.RESOURCE] =
 	 ZmApptChooserTabViewPage.SF_CONTACT, ZmApptChooserTabViewPage.SF_FLOOR];
 
 ZmApptChooserTabViewPage.SORT_BY = {};
-ZmApptChooserTabViewPage.SORT_BY[ZmAppt.ATTENDEE] = ZmSearch.NAME_ASC;
-ZmApptChooserTabViewPage.SORT_BY[ZmAppt.LOCATION] = ZmSearch.NAME_ASC;
-ZmApptChooserTabViewPage.SORT_BY[ZmAppt.RESOURCE] = ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmAppt.PERSON]		= ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmAppt.LOCATION]	= ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmAppt.RESOURCE]	= ZmSearch.NAME_ASC;
 
 ZmApptChooserTabViewPage.prototype = new DwtTabViewPage;
 ZmApptChooserTabViewPage.prototype.constructor = ZmApptChooserTabViewPage;
@@ -323,11 +329,36 @@ function() {
 
 ZmApptChooserTabViewPage.prototype._searchButtonListener = 
 function(ev) {
-	if (this.type == ZmAppt.ATTENDEE) {
+	if (this.type == ZmAppt.PERSON) {
 		this.searchContacts();
 	} else {
 		this.searchCalendarResources();
 	}
+};
+
+/*
+* Updates the appropriate target list. We do a wholesale replace. The number of items should
+* never be very large, and a wholesale replace is easier and safer than trying to change
+* the list by adding or removing a single item.
+*/
+ZmApptChooserTabViewPage.prototype._attendeesChangeListener =
+function(ev) {
+
+	var tabId = ev.getDetail("tabId");	// source of the change
+	var type = ev.getDetail("type");	// what changed
+	
+	// make sure we're interested in the change
+	if (tabId == this._tabId || type != this.type) {
+		return;
+	}
+
+	var allAttendees = ev.getDetail("attendees");
+	var attendees = allAttendees[type];
+
+	// clear target list/data
+	this._chooser.reset(DwtChooserListView.TARGET);
+	// add attendees (and don't let chooser notify listeners)
+	this._chooser.transfer(attendees, null, true);
 };
 
 /**
@@ -420,26 +451,6 @@ function ZmApptChooser(parent, buttonInfo) {
 ZmApptChooser.prototype = new DwtChooser;
 ZmApptChooser.prototype.constructor = ZmApptChooser;
 
-/**
-* Returns a list of ZmResource (resource/location) or ZmEmailAddress (attendee) objects.
-* Both of those support getName() and getAddress().
-*/
-ZmApptChooser.prototype.getItems =
-function() {
-	var items = this._data[this._buttonInfo[0].id];
-	if (this.parent.type != ZmAppt.ATTENDEE) {
-		return items;
-	}
-	
-	var list = [];
-	var a = items.getArray();
-	for (var i = 0; i < a.length; i++) {
-		var item = a[i];
-		list.push(new ZmEmailAddress(item.getEmail(), null, item.getFullName()));
-	}
-	return AjxVector.fromArray(list);
-};
-
 ZmApptChooser.prototype._createSourceListView =
 function() {
 	return new ZmApptChooserListView(this, DwtChooserListView.SOURCE, this.parent.type);
@@ -452,7 +463,8 @@ function() {
 
 ZmApptChooser.prototype._notify =
 function(event, details) {
-	details.chooserType = this.parent.type;
+	details.type = this.parent.type;
+	details.tabId = this.parent._tabId;
 	DwtChooser.prototype._notify.call(this, event, details);
 };
 
@@ -464,7 +476,7 @@ function(event, details) {
 */
 ZmApptChooser.prototype._isDuplicate =
 function(item, list) {
-	return list.containsLike(item, (this.parent.type == ZmAppt.ATTENDEE) ? item.getEmail : item.getAddress);
+	return list.containsLike(item, item.getEmail);
 };
 
 /***********************************************************************************/
@@ -523,7 +535,7 @@ function(item) {
 	for (var i = 0; i < this._headerList.length; i++) {
 		var id = this._headerList[i]._id;
 		if (id.indexOf(ZmApptChooserTabViewPage.ID_NAME) == 0) {
-			var name = (this._chooserType == ZmAppt.ATTENDEE) ? item.getFullName() : item.getAttr("displayName");
+			var name = (this._chooserType == ZmAppt.PERSON) ? item.getFullName() : item.getAttr("displayName");
 			html[idx++] = this._getField(i, name);
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_EMAIL) == 0) {
 			html[idx++] = this._getField(i, item.getEmail());
@@ -550,7 +562,7 @@ function(item) {
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_CAPACITY) == 0) {
 			html[idx++] = this._getField(i, item.getAttr("zimbraCalResCapacity"), 'right');
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_NOTES) == 0) {
-			var notes = item.getAttr("zimbraNotes");
+			var notes = item.getAttr("description");
 			if (notes) {
 				var notesId = Dwt.getNextId();
 				this._notes[notesId] = notes;
