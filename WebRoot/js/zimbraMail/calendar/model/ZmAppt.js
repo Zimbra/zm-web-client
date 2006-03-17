@@ -57,11 +57,11 @@ function ZmAppt(appCtxt, list, noinit) {
 	this._viewMode = ZmAppt.MODE_NEW;
 	this.folderId = ZmOrganizer.ID_CALENDAR;
 	
-	this.attendees = null;	// list of ZmEmailAddress
+	this.attendees = null;	// list of ZmContact
 	this.locations = null;	// list of ZmResource
 	this.resources = null;	// list of ZmResource
 
-	this._origAttendees = null;	// list of ZmEmailAddress
+	this._origAttendees = null;	// list of ZmContact
 
 	// for looking up additional contact/resource info	
 	this._contacts = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
@@ -91,9 +91,9 @@ ZmAppt.SOAP_METHOD_REQUEST			= 1;
 ZmAppt.SOAP_METHOD_REPLY			= 2;
 ZmAppt.SOAP_METHOD_CANCEL			= 3;
 
-ZmAppt.ATTENDEE = 1;
-ZmAppt.LOCATION = 2;
-ZmAppt.RESOURCE = 3;
+ZmAppt.PERSON	= 1;
+ZmAppt.LOCATION	= 2;
+ZmAppt.RESOURCE	= 3;
 
 ZmAppt.ATTENDEES_SEPARATOR_REGEX		= /[;,]/;
 ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE	= "; ";
@@ -159,10 +159,12 @@ function() {
 
 // Getters
 
+// next 3 getters convert array to string
 ZmAppt.prototype.getAttendees 					= function() { return this._getAttendeesString(this.attendees); };
 ZmAppt.prototype.getLocation					= function() { return (this.locations && this.locations.length) ? 
 																this._getAttendeesString(this.locations) : this.location ? this.location : ""; };
 ZmAppt.prototype.getResources 					= function() { return this._getAttendeesString(this.resources); };
+
 ZmAppt.prototype.getOrigAttendees 				= function() { return this._origAttendees; };
 ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
 ZmAppt.prototype.getEndDate 					= function() { return this.endDate; };
@@ -257,8 +259,8 @@ function(mode) {
 };
 
 /**
- * Used to make our own copy because the form will modify the date object by 
- * calling its setters instead of replacing it with a new date object.
+* Used to make our own copy because the form will modify the date object by 
+* calling its setters instead of replacing it with a new date object.
 */
 ZmApptClone = function() { }
 ZmAppt.quickClone = 
@@ -269,9 +271,9 @@ function(appt) {
 	newAppt.startDate = new Date(appt.startDate.getTime());
 	newAppt.endDate = new Date(appt.endDate.getTime());
 	newAppt._uniqId = Dwt.getNextId();
-	// XXX: this could be dangerous since we're not doing a DEEP copy:
-	newAppt._origAttendees = appt.getOrigAttendees();
-	newAppt._validAttachments = appt._validAttachments;
+
+	newAppt._origAttendees = AjxUtil.createProxy(appt.getOrigAttendees());
+	newAppt._validAttachments = AjxUtil.createProxy(appt._validAttachments);
 	
 	if (newAppt._orig == null) 
 		newAppt._orig = appt;
@@ -402,7 +404,7 @@ ZmAppt.prototype.setAttachments =
 function(ids) {
 	if (ids != null && ids.length > 0) {
 		var ids = ids.split(',');
-		this.attachments = new Array();
+		this.attachments = [];
 		for (var i = 0 ; i < ids.length; ++i){
 			this.attachments[i] = {id: ids[i]};
 		}
@@ -415,7 +417,7 @@ function() {
 	if (this.hasDetails() && m._attachments != null) {
 		var attachs = m._attachments;
 		if (this._validAttachments == null) {
-			this._validAttachments = new Array();
+			this._validAttachments = [];
 			for (var i = 0; i < attachs.length; ++i) {
 				if (m.isRealAttachment(attachs[i]))
 					this._validAttachments.push(attachs[i]);
@@ -550,24 +552,23 @@ function(message, viewMode) {
 		this.repeatCustomMonthDay = this.startDate.getDate();
 
 		// parse out attendees for this invite
+		this.attendees = [];
 		this._origAttendees = [];
 		var attendees = message.invite.getAttendees();
 		if (attendees) {
 			for (var i = 0; i < attendees.length; i++) {
 				var addr = attendees[i].url;
 				var name = attendees[i].d;
-				if (!name) {
-					// get name from user's contacts if possible
-					var contact = this._contacts.getContactByEmail(addr);
-					if (contact) {
-						name = contact.getFullName();
-					}
+				// see if attendee is in personal contacts
+				var contact = this._contacts.getContactByEmail(addr);
+				if (!contact) {
+					var email = new ZmEmailAddress(addr, null, name);
+					contact = new ZmContact(this._appCtxt);
+					contact.initFromEmail(email);
 				}
-				var email = new ZmEmailAddress(addr, null, name);
-				this._origAttendees.push(email);
+				this.attendees.push(contact);
+				this._origAttendees.push(contact);
 			}
-//			this.attendees = this._origAttendees.join("; ");
-			this.attendees = this._origAttendees;
 		}
 		this.locations = [];
 		this.resources = [];
@@ -843,7 +844,7 @@ function() {
 				 this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE ||
 				 this._viewMode == ZmAppt.MODE_EDIT_SERIES;
 
-	var buf = new Array();
+	var buf = [];
 	var i = 0;
 
 	buf[i++] = ZmMsg.subject;
@@ -857,7 +858,7 @@ function() {
 	
 	buf[i++] = ZmMsg.organizer;
 	buf[i++] = " ";
-	var organizer = this.organizer || this._appCtxt.get(ZmSetting.USERNAME);
+	var organizer = this.organizer ? this.organizer : this._appCtxt.get(ZmSetting.USERNAME);
 	buf[i++] = organizer;
 	buf[i++] = "\n\n";
 	
@@ -939,13 +940,11 @@ function() {
 		buf[i++] = "\n";
 		buf[i++] = ZmMsg.invitees;
 		buf[i++] = ": ";
-//		var attendees = this.attendees.replace(/^\s*/,"").replace(/\s*$/,"").split(/;\s*/);
-		var attendees = this.attendees;
-		if (attendees.length > 10) {
-			attendees = attendees.slice(0, 10);
-			attendees.push("...");
+		var attString = this._getAttendeesString(this.attendees.slice(0, 10));
+		if (this.attendees.length > 10) {
+			attString += ", ...";
 		}
-		buf[i++] = attendees.join(", ");
+		buf[i++] = attString;
 	}
 	buf[i++] = ZmAppt.NOTES_SEPARATOR;
 
@@ -972,7 +971,7 @@ function(attach, hasCheckbox) {
         else 					sizeText = Math.round((size / (1024*1024)) * 10) / 10 + " MB"; 
 	}
 
-	var html = new Array();
+	var html = [];
 	var i = 0;
 
 	// start building html for this attachment
@@ -1030,6 +1029,8 @@ function(attach, hasCheckbox) {
 /*
 * Creates a string from a list of attendees/locations/resources. If an item
 * doesn't have a name, its address is used.
+*
+* @param list	[array]		list of attendees (ZmContact or ZmResource)
 */
 ZmAppt.prototype._getAttendeesString = 
 function(list) {
@@ -1038,8 +1039,8 @@ function(list) {
 	var a = [];
 	for (var i = 0; i < list.length; i++) {
 		var item = list[i];
-		var name = item.getName();
-		var text = name ? name : item.getAddress();
+		var name = item.getFullName();
+		var text = name ? name : item.getEmail();
 		if (text) {
 			a.push(text);
 		}
@@ -1051,7 +1052,7 @@ ZmAppt.prototype._getTextSummaryTime =
 function(isEdit, fieldstr, extDate, start, end, hasTime) {
 	var showingTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
 
-	var buf = new Array();
+	var buf = [];
 	var i = 0;
 
 	buf[i++] = fieldstr;
@@ -1107,7 +1108,7 @@ function() {
 ZmAppt.prototype._createRangeIfNecessary = 
 function() {
  	if (this._rangeObj == null) {
-		this._rangeObj = new Object();
+		this._rangeObj = {};
 		this._rangeObj.startDate = new Date();
 		this._rangeObj.endDate = new Date();
 	}
@@ -1178,7 +1179,7 @@ function () {
 								this.repeatWeekday = this.repeatType == "DAI";
 								for (x = 0; x < wkdayLen; ++x) {
 									if (this.repeatWeeklyDays == null) 
-										this.repeatWeeklyDays = new Array();
+										this.repeatWeeklyDays = [];
 									this.repeatWeeklyDays.push(rule.byday[0].wkday[x].day);
 								}
 							} else {
@@ -1245,7 +1246,7 @@ function(soapDoc) {
 
 ZmAppt.prototype._getDefaultBlurb = 
 function(cancel) {
-	var buf = new Array();
+	var buf = [];
 	var i = 0;
 	var singleInstance = this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE	|| 
 						 this._viewMode == ZmAppt.MODE_DELETE_INSTANCE;
@@ -1269,117 +1270,104 @@ function(cancel) {
 
 ZmAppt.prototype._getRecurrenceBlurbForSave = 
 function() {
-	// recurrence text
-	var every = [];
-	switch (this.repeatType) {
-		case "DAI": {
-			if (this.repeatCustom == "1") {
-				every.push(ZmMsg.recurDailyEveryWeekday);
-			}
-			else if (this.repeatCustomCount == 1) {
-				every.push(ZmMsg.recurDailyEveryDay);
-			}
-			else {
-				var formatter = new AjxMessageFormat(ZmMsg.recurDailyEveryNumDays);
-				every.push(formatter.format(this.repeatCustomCount));
-			}
-			break;
-		}
-		case "WEE": {
-			if (this.repeatCustomCount == 1 && this.repeatWeeklyDays.length == 1) {
-				var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatWeeklyDays[0]);
-				var date = new Date();
-				date.setDate(date.getDate() - date.getDay() + dayofweek);
-				
-				var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryWeekday);
-				every.push(formatter.format(date));
-			}
-			else {
-				var weekdays = [];
-				for (var i = 0; i < this.repeatWeeklyDays.length; i++) {
-					var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatWeeklyDays[i]);
-					var date = new Date();
-					date.setDate(date.getDate() - date.getDay() + dayofweek);
-					
-					weekdays.push(date);
-				}
-				
-				var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryNumWeeksDate);
-				every.push(formatter.format([ this.repeatCustomCount, weekdays, "" ]));
-			}
-			break;
-		}
-		case "MON": {
-			if (this.repeatCustomType == "S") {
-				var count = Number(this.repeatCustomCount);
-				var date = Number(this.repeatMonthlyDayList[0]);
-			
-				var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsDate);
-				every.push(formatter.format([ date, count ]));
-			}
-			else {
-				var ordinal = Number(this.repeatCustomOrdinal);
-				var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatCustomDayOfWeek);
-				var day = new Date();
-				day.setDate(day.getDate() - day.getDay() + dayofweek);
-				var count = Number(this.repeatCustomCount);
+	if (this.repeatType == "NON") return "";
 
-				var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsNumDay);
-				every.push(formatter.format([ ordinal, day, count ]));
+	var blurb = [];
+	var idx = 0;
+
+	blurb[idx++] = "Every ";
+	if (this.repeatCustomCount > 1) {
+		blurb[idx++] = this.repeatCustomCount;
+		blurb[idx++] = " ";
+	}
+	blurb[idx++] = this._frequencyToDisplayString(this.repeatType, this.repeatCustomCount);
+
+	var customRepeat = (this.repeatCustom == '1');
+	if (this.repeatType == "WEE") {
+		blurb[idx++] = " on ";
+		if (customRepeat) {
+			if (this.repeatWeeklyDays.length > 0) {
+				for (var i = 0; i < this.repeatWeeklyDays.length; ++i) {
+					blurb[idx++] = ZmAppt.SERVER_DAYS_TO_DISPLAY[this.repeatWeeklyDays[i]];
+					if (i == (this.repeatWeeklyDays.length - 2 )) {
+						blurb[idx++] = " and ";
+					} else if (i < (this.repeatWeeklyDays.length - 1)) {
+						blurb[idx++] = ", ";
+					}
+				}
 			}
-			break;
+		} else {
+			blurb[idx++] = AjxDateUtil.WEEKDAY_LONG[this.startDate.getDay()];
 		}
-		case "YEA": {
-			if (this.repeatCustomType == "S") {
-				var month = new Date();
-				month.setMonth(Number(this.repeatYearlyMonthsList));
-				var day = Number(this.repeatCustomMonthDay);
-				
-				var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryDate);
-				every.push(formatter.format([ month, day ]));
+	} else if (this.repeatType == "MON"){
+		if (this.repeatCustomType == "S") {
+			blurb[idx++] = " on the ";
+			if (customRepeat) {
+				var nums = this.repeatMonthlyDayList;
+				nums = nums.sort(ZmAppt._SORTBY_VALUE);
+				for (var i = 0 ; i < nums.length; ++i ) {
+					blurb[idx++] = nums[i];
+					if (i < nums.length - 1) {
+						blurb[idx++] = ", ";
+					} else if (i == nums.length - 2) {
+						blurb[idx++] = " and ";
+					}
+				}
+			} else {
+				blurb[idx++] =  this.repeatCustomOrdinal;
+				blurb[idx++] = this.repeatCustomDayOfWeek;
+				blurb[idx++] = " of the month ";
 			}
-			else {
-				var ordinal = Number(this.repeatCustomOrdinal);
-				var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatCustomDayOfWeek);
-				var day = new Date();
-				day.setDate(day.getDate() - day.getDay() + dayofweek);
-				var month = new Date();
-				month.setMonth(Number(this.repeatYearlyMonthsList));
-				
-				var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryMonthNumDay);
-				every.push(formatter.format([ ordinal, day, month ]));
+		} else {
+			blurb[idx++] = this.startDate.getDate();
+		}
+	} else if (this.repeatType == "YEA") {
+		if (customRepeat) {
+			blurb[idx++] = " on ";
+			blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[Number(this.repeatYearlyMonthsList)-1]; // 0-based
+			if (this.repeatCustomType == "O") {
+				blurb[idx++] = " on the ";
+				blurb[idx++] = ZmAppt.MONTHLY_DAY_OPTIONS[Number(this.repeatCustomOrdinal)-1].label;
+				var dayOfWeek = null;
+				blurb[idx++] = " ";
+				for (var i = 0; i < ZmAppt.SERVER_WEEK_DAYS.length; i++) {
+					if (ZmAppt.SERVER_WEEK_DAYS[i] == this.repeatCustomDayOfWeek) {
+						dayOfWeek = AjxDateUtil.WEEKDAY_LONG[i];
+						break;
+					}
+				}
+				blurb[idx++] = dayOfWeek;
+				blurb[idx++] = " of the month ";
+			} else {
+				blurb[idx++] = " ";
+				blurb[idx++] = this.repeatCustomMonthDay;
 			}
-			break;
+		} else {
+			blurb[idx++] = " on ";
+			blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[this.startDate.getMonth()];
+			blurb[idx++] = " ";
+			blurb[idx++] = this.startDate.getDate();
 		}
 	}
-	
-	// start
-	var start = [];
-	var formatter = new AjxMessageFormat(ZmMsg.recurStart);
-	start.push(formatter.format(this.startDate));
-	
-	// end
-	var end = [];
-	switch (this.repeatEndType) {
-		case "N": {
-			end.push(ZmMsg.recurEndNone);
-			break;
+
+	var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
+	if (this.repeatEndDate != null && this.repeatEndType == "D") {
+		blurb[idx++] = " until ";
+		blurb[idx++] = dateFormatter.format(this.repeatEndDate);
+		if (this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE)) {
+			blurb[idx++] = " ";
+			blurb[idx++] = ZmTimezones.valueToDisplay[this.timezone];
 		}
-		case "A": {
-			var formatter = new AjxMessageFormat(ZmMsg.recurEndNumber);
-			end.push(formatter.format(this.repeatEndCount));
-			break;
-		}
-		case "D": {
-			var formatter = new AjxMessageFormat(ZmMsg.recurEndByDate);
-			end.push(formatter.format(this.repeatEndDate));
-			break;
-		}
+
+	} else if (this.repeatEndType == "A") {
+		blurb[idx++] = " for ";
+		blurb[idx++] = this.repeatEndCount;
+		blurb[idx++] = " ";
+		blurb[idx++] = this._frequencyToDisplayString(this.repeatType, this.repeatEndCount);
 	}
-	
-	// join all three together
-	var formatter = new AjxMessageFormat(ZmMsg.recurBlurb);
-	return formatter.format([ every.join(""), start.join(""), end.join("") ]);
+	blurb[idx++] = " effective ";
+	blurb[idx++] = dateFormatter.format(this.startDate);
+	return blurb.join("");
 };
 
 
@@ -1454,9 +1442,15 @@ function(soapDoc, method,  attachmentId, notifyList) {
 		inv.setAttribute("loc", this.location);
 	}
 
-	var organizer = this.organizer || this._appCtxt.get(ZmSetting.USERNAME);
+	var organizer = this.organizer ? this.organizer : this._appCtxt.get(ZmSetting.USERNAME);
 	var org = soapDoc.set("or", null, inv);
 	org.setAttribute("a", organizer);
+	if (organizer == this._appCtxt.get(ZmSetting.USERNAME)) {
+		var name = this._appCtxt.get(ZmSetting.DISPLAY_NAME);
+		if (name) {
+			org.setAttribute("d", name);
+		}
+	}
 
 	// handle attachments
 	if (attachmentId != null || (this._validAttachments != null && this._validAttachments.length)) {
@@ -1558,7 +1552,7 @@ ZmAppt.prototype._addAttendeesToSoap =
 function(soapDoc, inv, m, notifyList) {
 	if (this.attendees && this.attendees.length) {
 		for (var i = 0; i < this.attendees.length; i++) {
-			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.attendees[i], ZmAppt.ATTENDEE);
+			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.attendees[i], ZmAppt.PERSON);
 		}
 	}
 	if (this.resources && this.resources.length) {
@@ -1572,7 +1566,7 @@ function(soapDoc, inv, m, notifyList) {
 		}
 	}
 
-	// if we have a separate list of attendees to notify, do it here
+	// if we have a separate list of email addresses to notify, do it here
 	if (m && notifyList) {
 		for (var i = 0; i < notifyList.length; i++) {
 			e = soapDoc.set("e", null, m);
@@ -1584,14 +1578,14 @@ function(soapDoc, inv, m, notifyList) {
 
 ZmAppt.prototype._addAttendeeToSoap = 
 function(soapDoc, inv, m, notifyList, attendee, type) {
-	var address = attendee.getAddress();
-	var dispName = attendee.getName();
+	var address = attendee.getEmail();
+	var dispName = attendee.getFullName();
 	if (inv) {
 		at = soapDoc.set("at", null, inv);
 		// for now make attendees optional, until UI has a way of setting this
-		at.setAttribute("role", (type == ZmAppt.ATTENDEE) ? ZmAppt.ROLE_OPTIONAL : ZmAppt.ROLE_NON_PARTICIPANT);
+		at.setAttribute("role", (type == ZmAppt.PERSON) ? ZmAppt.ROLE_OPTIONAL : ZmAppt.ROLE_NON_PARTICIPANT);
 		at.setAttribute("ptst", ZmAppt.PSTATUS_NEEDS_ACTION);
-		var cutype = (type == ZmAppt.ATTENDEE) ? null : ZmAppt.CUTYPE_RESOURCE;
+		var cutype = (type == ZmAppt.PERSON) ? null : ZmAppt.CUTYPE_RESOURCE;
 		if (cutype) {
 			at.setAttribute("cutype", cutype);
 		}

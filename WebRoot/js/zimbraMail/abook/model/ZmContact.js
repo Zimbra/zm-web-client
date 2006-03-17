@@ -38,9 +38,9 @@
 * gets its attribute values from that canonical list.</p>
 *
 * @param appCtxt	[ZmAppCtxt]			the app context
-* @param id			[int]				unique ID
-* @param list		[ZmContactList]		list that contains this contact
-* @param type		[constant]*		item type
+* @param id			[int]*				unique ID
+* @param list		[ZmContactList]*	list that contains this contact
+* @param type		[constant]*			item type
 */
 function ZmContact(appCtxt, id, list, type) {
 	

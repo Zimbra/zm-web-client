@@ -39,12 +39,16 @@ function ZmResourceList(appCtxt, search) {
 	ZmContactList.call(this, appCtxt, search, true, ZmItem.RESOURCE);
 
 	this._emailToResource = {};
+	this._acMatchFields = ZmResourceList.AC_FIELDS;
 };
 
 ZmResourceList.ATTRS =
 	["displayName", "mail", "zimbraCalResSite", "zimbraCalResBuilding", "zimbraCalResFloor", "zimbraCalResRoom",
-	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "zimbraNotes",
+	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description",
 	 "street", "l", "st", "postalCode", "co"];
+
+ZmResourceList.AC_FIELDS = ["displayName"];
+ZmResourceList.AC_VALUE_NAME = "name";
 
 ZmResourceList.prototype = new ZmContactList;
 ZmResourceList.prototype.constructor = ZmResourceList;
@@ -71,7 +75,10 @@ function(result) {
 		if (email) {
 			this._emailToResource[email.toLowerCase()] = resource;
 		}
+		this._preMatch(resource);
+		this._idHash[resource.id] = resource;
 	}
+	this._loaded = true;
 };
 
 /**
@@ -85,3 +92,53 @@ function(address) {
 
 	return this._emailToResource[address.toLowerCase()];
 };
+
+/**
+* Returns true if the given string maps to a single resource. Used by autocomplete.
+* We match names, and names are not guaranteed unique, so return false.
+*
+* @param str		string to test for uniqueness
+*/
+ZmResourceList.prototype.isUniqueValue =
+function(str) {
+	return false;
+};
+
+/*
+* Creates the matching object(s) for a particular matched contact. If a contact has multiple
+* email addresses and didn't match on one of them (it matched on a name), then a matching
+* object will be created for each email address.
+*
+* @param id		[int]		ID of matched contact
+* @param str	[string]	string that was matched
+*/
+ZmResourceList.prototype._getMatches =
+function(id, str) {
+	var match = this._testAcMatch(this.getById(id), str, true);
+	if (!match) {
+		DBG.println(AjxDebug.DBG1, "Matched resource with ID " + id + " no longer matches '" + str);
+		return null;
+	}
+
+	var resource = this.getById(id);
+	var matchObj = this._createMatch(match, resource);
+
+	return [matchObj];	
+};
+
+/*
+* Creates a match object from the given fields.
+*
+* @param match		[object]		info from the match
+* @param resource	[ZmResource]	the resource that was matched
+*/
+ZmResourceList.prototype._createMatch =
+function(match, resource) {
+	var result = {};
+	result.item = resource;
+	result.text = match.savedMatch;
+	result[ZmResourceList.AC_VALUE_NAME] = resource.getFullName();
+
+	return result;
+};
+

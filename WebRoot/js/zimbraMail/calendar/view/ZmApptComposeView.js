@@ -27,13 +27,18 @@
 * Creates a new appointment view. The view does not display itself on construction.
 * @constructor
 * @class
-* This class provides a form for creating/editing appointments.
+* This class provides a form for creating/editing appointments. It is a tab view with
+* five tabs: the appt form, a scheduling page, and three pickers (one each for finding
+* attendees, locations, and resources). The attendee data (people, locations, and
+* resources are all attendees) is maintained here centrally, since it is presented and
+* can be modified in each of the five tabs.
 *
 * @author Parag Shah
-* @param parent			the element that created this view
-* @param className 		class name for this view (defaults to ZmApptComposeView)
-* @param calApp			a handle to the owning calendar application
-* @param controller		the controller for this view
+*
+* @param parent			[DwtShell]					the element that created this view
+* @param className 		[string]*					class name for this view
+* @param calApp			[ZmCalendarApp]				a handle to the owning calendar application
+* @param controller		[ZmApptComposeController]	the controller for this view
 */
 function ZmApptComposeView(parent, className, calApp, controller) {
 
@@ -47,6 +52,22 @@ function ZmApptComposeView(parent, className, calApp, controller) {
 	this._tabPages = {};
 	this._tabKeys = {};
 	this._tabIdByKey = {};
+
+	// centralized attendee data
+	this._attendees = {};
+	this._attendees[ZmAppt.PERSON]		= [];	// list of ZmEmailAddress
+	this._attendees[ZmAppt.LOCATION]	= [];	// list of ZmResource
+	this._attendees[ZmAppt.RESOURCE]	= [];	// list of ZmResource
+
+	// set of attendee keys (for preventing duplicates)
+	this._attendeeKeys = {};
+	this._attendeeKeys[ZmAppt.PERSON]	= {};
+	this._attendeeKeys[ZmAppt.LOCATION]	= {};
+	this._attendeeKeys[ZmAppt.RESOURCE]	= {}
+
+	// for attendees change events
+	this._evt = new ZmEvent(ZmEvent.S_CONTACT);
+	this._evtMgr = new AjxEventMgr();
 
 	this._initialize();
 };
@@ -68,13 +89,16 @@ ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_RESOURCES]		= "findResources";
 
 ZmApptComposeView.TAB_IMAGE = {};
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_APPOINTMENT]	= "Appointment";
-ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_SCHEDULE]		= "ApptMeeting";
+ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_SCHEDULE]		= "GroupSchedule";
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_ATTENDEES]	= "ApptMeeting";
-ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_LOCATIONS]	= "ApptMeeting";
-ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_RESOURCES]	= "ApptMeeting";
+ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_LOCATIONS]	= "Location";
+ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_RESOURCES]	= "Resource";
 
 ZmApptComposeView.TABS = [ZmApptComposeView.TAB_APPOINTMENT, ZmApptComposeView.TAB_SCHEDULE, ZmApptComposeView.TAB_ATTENDEES,
 						  ZmApptComposeView.TAB_LOCATIONS, ZmApptComposeView.TAB_RESOURCES];
+
+ZmApptComposeView.MODE_ADD		= 1;
+ZmApptComposeView.MODE_REPLACE	= 2;
 
 ZmApptComposeView.prototype = new DwtTabView;
 ZmApptComposeView.prototype.constructor = ZmApptComposeView;
@@ -117,13 +141,32 @@ function(appt, mode, isDirty) {
 		var id = ZmApptComposeView.TABS[i];
 		this._tabPages[id].initialize(appt, mode, isDirty);
 	}
-	this._apptTab.addChooserListener(this._tabPages[ZmApptComposeView.TAB_ATTENDEES]);
-	this._apptTab.addChooserListener(this._tabPages[ZmApptComposeView.TAB_LOCATIONS]);
-	this._apptTab.addChooserListener(this._tabPages[ZmApptComposeView.TAB_RESOURCES]);
+	this._addChooserListener(this._tabPages[ZmApptComposeView.TAB_ATTENDEES]);
+	this._addChooserListener(this._tabPages[ZmApptComposeView.TAB_LOCATIONS]);
+	this._addChooserListener(this._tabPages[ZmApptComposeView.TAB_RESOURCES]);
 };
 
 ZmApptComposeView.prototype.cleanup = 
 function() {
+	// reset autocomplete lists
+	if (this._acContactsList) {
+		this._acContactsList.reset();
+		this._acContactsList.show(false);
+	}
+	if (this._acResourcesList) {
+		this._acResourcesList.reset();
+		this._acResourcesList.show(false);
+	}
+
+	// clear attendees lists
+	this._attendees[ZmAppt.PERSON]		= [];
+	this._attendees[ZmAppt.LOCATION]	= [];
+	this._attendees[ZmAppt.RESOURCE]	= [];
+
+	this._attendeeKeys[ZmAppt.PERSON]	= [];
+	this._attendeeKeys[ZmAppt.LOCATION]	= [];
+	this._attendeeKeys[ZmAppt.RESOURCE]	= [];
+
 	for (var i = 0; i < ZmApptComposeView.TABS.length; i++) {
 		var id = ZmApptComposeView.TABS[i];
 		this._tabPages[id].cleanup();
@@ -233,10 +276,90 @@ function(id) {
 	}
 };
 
+/**
+* Updates the set of attendees for this appointment.
+*
+* @param attendees	[array]			list of attendees
+* @param type		[constant]		attendee type (attendee/location/resource)
+* @param tabId		[constant]		ID of tab that generated update
+* @param mode		[constant]*		replace (default) or add
+*/
+ZmApptComposeView.prototype.updateAttendees =
+function(attendees, type, tabId, mode) {
+	attendees = (attendees instanceof Array) ? attendees : [attendees];
+	mode = mode ? mode : ZmApptComposeView.MODE_REPLACE;
+	if (mode == ZmApptComposeView.MODE_REPLACE) {
+		this._attendees[type] = attendees;
+		this._setAttendeeKeys(this._attendees[type], type);
+	} else {
+		var attendee = attendees[0];
+		var key = this._getAttendeeKey(attendee, type);
+		if (!this._attendeeKeys[type][key]) {
+			this._attendees[type].push(attendee);
+		}
+	}
+	var details = {attendees: this._attendees, type: type, tabId: tabId};
+	this._notify(ZmEvent.E_MODIFY, details);
+};
+
+ZmApptComposeView.prototype._setAttendeeKeys =
+function(attendees, type) {
+	for (var i = 0; i < attendees.length; i++) {
+		var key = this._getAttendeeKey(attendees[i], type);
+		this._attendeeKeys[type][key] = true;
+	}
+};
+
+ZmApptComposeView.prototype._getAttendeeKey =
+function(attendee, type) {
+	return (type == ZmAppt.LOCATION) ? attendee.getFullName() : attendee.getEmail();
+};
+
+/**
+* Adds a change listener.
+*
+* @param listener	[AjxListener]	a listener
+*/
+ZmApptComposeView.prototype.addChangeListener = 
+function(listener) {
+	return this._evtMgr.addListener(ZmEvent.L_MODIFY, listener);
+};
+
+/**
+* Removes the given change listener.
+*
+* @param listener	[AjxListener]	a listener
+*/
+ZmApptComposeView.prototype.removeChangeListener = 
+function(listener) {
+	return this._evtMgr.removeListener(ZmEvent.L_MODIFY, listener);    	
+};
+
+
 // Private / Protected methods
 
 ZmApptComposeView.prototype._initialize = 
 function() {
+	// for attendees
+	var shell = this._appCtxt.getShell();
+	var locCallback = new AjxCallback(this, this._getAcListLoc);
+	var acCallback = new AjxCallback(this, this._autocompleteCallback);
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+		var contactsLoader = contactsClass.getContactList;
+		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader,
+					  matchValue: ZmContactList.AC_VALUE_FULL, locCallback: locCallback, compCallback: acCallback};
+		this._acContactsList = new ZmAutocompleteListView(params);
+	}
+	// for locations/resources
+	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
+		var resourcesLoader = resourcesClass.getResources;
+		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesLoader,
+					  matchValue: ZmResourceList.AC_VALUE_NAME, locCallback: locCallback, compCallback: acCallback};
+		this._acResourcesList = new ZmAutocompleteListView(params);
+	}
+
 	for (var i = 0; i < ZmApptComposeView.TABS.length; i++) {
 		var id = ZmApptComposeView.TABS[i];
 		this._tabPages[id] = this._createTabViewPage(id);
@@ -250,7 +373,7 @@ function() {
 	}
 	this._apptTab = this._tabPages[ZmApptComposeView.TAB_APPOINTMENT];
 	this._apptTabKey = this._tabKeys[ZmApptComposeView.TAB_APPOINTMENT];
-
+	
 	this._apptTab.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 	this.addControlListener(new AjxListener(this, this._controlListener));
 };
@@ -258,11 +381,16 @@ function() {
 ZmApptComposeView.prototype._createTabViewPage =
 function(id) {
 	switch (id) {
-		case ZmApptComposeView.TAB_APPOINTMENT	: return new ZmApptTabViewPage(this, this._appCtxt);
-		case ZmApptComposeView.TAB_SCHEDULE		: return new ZmSchedTabViewPage(this, this._appCtxt, this._controller);
-		case ZmApptComposeView.TAB_ATTENDEES	: return new ZmApptChooserTabViewPage(this, this._appCtxt, ZmAppt.ATTENDEE);
-		case ZmApptComposeView.TAB_LOCATIONS	: return new ZmApptChooserTabViewPage(this, this._appCtxt, ZmAppt.LOCATION);
-		case ZmApptComposeView.TAB_RESOURCES	: return new ZmApptChooserTabViewPage(this, this._appCtxt, ZmAppt.RESOURCE);
+		case ZmApptComposeView.TAB_APPOINTMENT :
+			return new ZmApptTabViewPage(this, this._appCtxt, id, this._attendees, this._acContactsList, this._acResourcesList);
+		case ZmApptComposeView.TAB_SCHEDULE :
+			return new ZmSchedTabViewPage(this, this._appCtxt, id, this._attendees, this._controller, this._acContactsList, this._acResourcesList);
+		case ZmApptComposeView.TAB_ATTENDEES :
+			return new ZmApptChooserTabViewPage(this, this._appCtxt, id, this._attendees, ZmAppt.PERSON);
+		case ZmApptComposeView.TAB_LOCATIONS :
+			return new ZmApptChooserTabViewPage(this, this._appCtxt, id, this._attendees, ZmAppt.LOCATION);
+		case ZmApptComposeView.TAB_RESOURCES :
+			return new ZmApptChooserTabViewPage(this, this._appCtxt, id, this._attendees, ZmAppt.RESOURCE);
 	}
 };
 
@@ -280,8 +408,56 @@ function() {
 	return new DwtPoint(loc.x + ZmComposeView.DIALOG_X, loc.y + ZmComposeView.DIALOG_Y);
 };
 
+ZmApptComposeView.prototype._getAcListLoc =
+function(ev) {
+	var element = ev.element;
+	var loc = Dwt.getLocation(element);
+	var height = Dwt.getSize(element).y;
+	return (new DwtPoint(loc.x, loc.y + height));
+};
+
+ZmApptComposeView.prototype._autocompleteCallback =
+function(text, el, match) {
+	var attendee = match.item;
+	var tabId = el._tabId;
+	var type = el._type;
+	this.updateAttendees(attendee, type, tabId, ZmApptComposeView.MODE_ADD);
+};
+
+ZmApptComposeView.prototype._addChooserListener =
+function(tab) {
+	if (!this._chooserLstnr) {
+		this._chooserLstnr = new AjxListener(this, this._chooserListener);
+	}
+	if (tab && tab._chooser) {
+		tab._chooser.addChangeListener(this._chooserLstnr);
+	}
+};
+
+/**
+* Notifies listeners of the given change to attendees.
+*
+* @param event		[constant]		event type (see ZmEvent)
+* @param details	[hash]*			additional information
+*/
+ZmApptComposeView.prototype._notify =
+function(event, details) {
+	if (this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
+		this._evt.set(event, this);
+		this._evt.setDetails(details);
+		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
+	}
+};
 
 // Listeners
+
+ZmApptComposeView.prototype._chooserListener =
+function(ev) {
+	var vec = ev.getDetail("items");
+	var type = ev.getDetail("type");
+	var tabId = ev.getDetail("tabId");
+	this.updateAttendees(vec.getArray(), type, tabId);
+};
 
 ZmApptComposeView.prototype._controlListener = 
 function(ev) {

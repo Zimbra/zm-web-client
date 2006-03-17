@@ -62,6 +62,8 @@ function ZmContactList(appCtxt, search, isGal, type) {
 	this._loadCount = 0;
 	this._loaded = false;
 	this._showStatus = true;
+	
+	this._acMatchFields = ZmContactList.AC_FIELDS;
 };
 
 ZmContactList.prototype = new ZmList;
@@ -467,8 +469,11 @@ ZmContactList.prototype._preMatch =
 function(contact) {
 	if (!ZmContactList.AC_PREMATCH) {return;}
 	var strings = {};
-	for (var i = 0; i < ZmContactList.AC_FIELDS.length; i++) {
-		var value = contact._attrs[ZmContactList.AC_FIELDS[i]];
+	for (var i = 0; i < this._acMatchFields.length; i++) {
+		// placeholder objects (ZmContactList) will have _attrs
+		// realized objects (ZmResourceList) will have attr
+		var value = contact._attrs ? contact._attrs[this._acMatchFields[i]] :
+									 contact.attr ? contact.attr[this._acMatchFields[i]] : null;
 		if (value) {
 			for (var j = 1; j <= ZmContactList.AC_PREMATCH; j++) {
 				var str = value.substring(0, j).toLowerCase();
@@ -492,10 +497,10 @@ function(contact) {
 */
 ZmContactList.prototype._testAcMatch =
 function(contact, str, doMarkup) {
-	if (ZmContact.isInTrash(contact)) return false;
+	if (!contact || ZmContact.isInTrash(contact)) return false;
 
-	for (var i = 0; i < ZmContactList.AC_FIELDS.length; i++) {
-		var field = ZmContactList.AC_FIELDS[i];
+	for (var i = 0; i < this._acMatchFields.length; i++) {
+		var field = this._acMatchFields[i];
 		var value = ZmContact.getAttr(contact, field);
 		if (value && (value.toLowerCase().indexOf(str) == 0)) {
 			if (doMarkup) {
@@ -598,14 +603,16 @@ function(id, str) {
 * @param emailHL	[string]		email address (may have highlighting)
 * @param name		[string]		full name
 * @param email		[string]		email address (for sending message)
+* @param contact	[ZmContact]		the matched contact
 */
 ZmContactList.prototype._createMatch =
-function(nameHL, emailHL, name, email) {
+function(nameHL, emailHL, name, email, contact) {
 	var text = nameHL + " &lt;" + emailHL + "&gt;";
 	var acValue = ['"', name, '" <', email, ">"].join("");
 	
 	var result = {};
 	result.text = text;
+	result.item = contact;
 	result[ZmContactList.AC_VALUE_FULL] = acValue;
 	result[ZmContactList.AC_VALUE_EMAIL] = email;
 

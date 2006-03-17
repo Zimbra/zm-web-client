@@ -38,9 +38,8 @@ function ZmApptComposeController(appCtxt, container, calApp) {
 
 	ZmController.call(this, appCtxt, container, calApp);
 
-	this._newAttList = [];
-	this._removeAttList = [];
-	var xxx = calApp.getResources();
+	this._addedAttendees = [];
+	this._removedAttendees = [];
 };
 
 ZmApptComposeController.prototype = new ZmController();
@@ -56,7 +55,7 @@ function() {
 ZmApptComposeController.prototype.show =
 function(appt, mode, isDirty) {
 
-	this._newAttList.length = this._removeAttList.length = 0;
+	this._addedAttendees.length = this._removedAttendees.length = 0;
 	this._initToolbar(mode);
 	this.initApptComposeView();
 	this._setFormatBtnItem(true);
@@ -98,9 +97,8 @@ function(attId) {
 			attId == null && 								// make sure we're not u/l'ing a file
 			origAttendees && origAttendees.length > 0) 		// make sure we are editing an existing appt w/ attendees
 		{
-			var attendees = appt.getAttendees();
+			var attendees = appt.attendees;
 			if (attendees.length > 0) {
-				attendees = attendees.split(ZmAppt.ATTENDEES_SEPARATOR_REGEX);
 				// check whether organizer has added/removed any attendees
 				if (this._attendeesUpdated(appt, attId, attendees, origAttendees))
 					return false;
@@ -132,9 +130,9 @@ ZmApptComposeController.prototype.initApptComposeView =
 function(initHide) {
 	if (this._apptView == null) {
 		this._apptView = new ZmApptComposeView(this._container, null, this._app, this);
-		var callbacks = new Object();
+		var callbacks = {};
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
-		var elements = new Object();
+		var elements = {};
 		if (!this._toolbar)
 			this._createToolBar();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
@@ -244,40 +242,40 @@ function(appt, attId, notifyList) {
 
 ZmApptComposeController.prototype._attendeesUpdated = 
 function(appt, attId, attendees, origAttendees) {
-	// create a temporary hash of emails used to quickly compare
-	var hash = new Object();
-	for (var i = 0; i < origAttendees.length; i++)
-		hash[origAttendees[i]] = "";
+	// create hashes of emails for comparison
+	for (var i = 0; i < origAttendees.length; i++) {
+		var email = origAttendees[i].getEmail();
+		origEmails[email] = true;
+	}
+	var curEmails = {};
+	for (var i = 0; i < attendees.length; i++) {
+		var email = attendees[i].getEmail();
+		curEmails[email] = true;
+	}
 
 	// walk the current list of attendees and check if there any new ones
 	for (var i = 0 ; i < attendees.length; i++) {
-		var att = AjxStringUtil.trim(attendees[i]);
-		if (att.length > 0) {
-			var e = ZmEmailAddress.parse(att);
-			if (e) {
-				// if not found in orig attendees hash, then its new
-				if (hash[att] == null) 
-					this._newAttList.push(e.address);
-				else
-					hash[att] = true;
-			}
+		var email = attendees[i].getEmail();
+		if (!origEmails[email]) {
+			this._addedAttendees.push(email);
 		}
 	}
 
-	// walk orig attendees hash and see if there were any removed
-	for (var i in hash) {
-		if (hash[i] !== true)
-			this._removeAttList.push(i);
+	for (var i = 0 ; i < origAttendees.length; i++) {
+		var email = origAttendees[i].getEmail();
+		if (!curEmails[email]) {
+			this._removedAttendees.push(email);
+		}
 	}
 
-	if (this._newAttList.length > 0 || this._removeAttList.length > 0) {
-		if (this._notifyDialog == null) {
+	if (this._addedAttendees.length > 0 || this._removedAttendees.length > 0) {
+		if (!this._notifyDialog) {
 			this._notifyDialog = new ZmApptNotifyDialog(this._shell);
 			this._notifyDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._notifyDlgOkListener));
 			this._notifyDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._notifyDlgCancelListener));
 			this._notifyDialog._disableFFhack();
 		}
-		this._notifyDialog.initialize(appt, attId, this._newAttList, this._removeAttList);
+		this._notifyDialog.initialize(appt, attId, this._addedAttendees, this._removedAttendees);
 		this._notifyDialog.popup();
 		return true;
 	}
@@ -447,12 +445,12 @@ function(ev) {
 
 ZmApptComposeController.prototype._notifyDlgOkListener = 
 function(ev) {
-	var notifyList = this._notifyDialog.notifyNew() ? this._newAttList : null;
+	var notifyList = this._notifyDialog.notifyNew() ? this._addedAttendees : null;
 	this._saveApptFoRealz(this._notifyDialog.getAppt(), this._notifyDialog.getAttId(), notifyList);
 	this._app.popView(true);
 };
 
 ZmApptComposeController.prototype._notifyDlgCancelListener =
 function(ev) {
-	this._newAttList.length = this._removeAttList.length = 0;
+	this._addedAttendees.length = this._removedAttendees.length = 0;
 };
