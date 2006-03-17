@@ -79,7 +79,7 @@ function ZmAutocompleteListView(params) {
 	this._setMouseEventHdlrs();
 	this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
 	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
-	this._addSelectionListener(new AjxListener(this, this._update));
+	this._addSelectionListener(new AjxListener(this, this._listSelectionListener));
 	this._outsideListener = new AjxListener(this, this._outsideMouseDownListener);
 
 	// only trigger matching after a sufficient pause
@@ -135,8 +135,6 @@ function(ev) {
 	if (ev.type == "keyup")
 		DBG.println(AjxDebug.DBG3, "onKeyUp");
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) return true;
-
 	var aclv = AjxCore.objectWithId(element._acListViewId);
 	
 	var id = element.id;
@@ -309,7 +307,7 @@ function(key, isDelim) {
 
 // Called as a timed action, after a sufficient pause in typing within an address field.
 ZmAutocompleteListView.prototype._autocompleteAction =
-function(ev, key) {
+function(ev) {
 	try {
 		DBG.println(AjxDebug.DBG2, "performing autocomplete");
 		var element = ev.element;
@@ -319,7 +317,7 @@ function(ev, key) {
 
 		if (this._locCallback) {	
 			var loc = this._locCallback.run(ev);
-			aclv.autocomplete(element, loc, key);
+			aclv.autocomplete(element, loc);
 		}
 	} catch (ex) {
 		DBG.println("Session expired? No controller to handle exception. Cannot autocomplete w/o contact list.");
@@ -381,7 +379,7 @@ function(chunk) {
 
 	var list = this._getMatches(str);
 	if (list && list.length == 1 && this._data.isUniqueValue(str)) {
-		DBG.println(AjxDebug.DBG2, "unique match on email, hiding autocomplete list");
+		DBG.println(AjxDebug.DBG2, "unique match, hiding autocomplete list");
 		return {text: text, start: start};
 	}
 
@@ -410,7 +408,7 @@ function(chunk) {
 	return {text: text, start: start};
 }
 
-// Replaces a string within some text with the selected address match.
+// Replaces a string within some text from the selected address match.
 ZmAutocompleteListView.prototype._complete =
 function(text, hasDelim) {
 	DBG.println(AjxDebug.DBG3, "complete: selected is " + this._selected);
@@ -424,30 +422,31 @@ function(text, hasDelim) {
 	var newText = [text.substring(0, start), value, this._separator, text.substring(end, text.length)].join("");
 	this._done[value] = true;
 	DBG.display(AjxDebug.DBG2, newText);
-	return {text: newText, start: start + value.length + this._separator.length};
+	return {text: newText, start: start + value.length + this._separator.length, match: match};
 }
 
 // Resets the value of an element to the given text.
 ZmAutocompleteListView.prototype._updateField =
-function(text) {
+function(text, match) {
 	var el = this._element;
 	el.value = text;
 	el.focus();
 	this.reset();
 	if (this._compCallback)
-		this._compCallback.run(text, el);
+		this._compCallback.run(text, el, match);
 }
 
 // Updates the element with the currently selected match.
 ZmAutocompleteListView.prototype._update =
 function(hasDelim) {
 	var result = this._complete(this._element.value, hasDelim);
-	this._updateField(result.text);
+	this._updateField(result.text, result.match);
 }
 
 // Listeners
 
-// Mouse down selects a match and performs an update
+// MOUSE_DOWN selects a match and performs an update. Note that we don't wait for
+// a corresponding MOUSE_UP event.
 ZmAutocompleteListView.prototype._mouseDownListener = 
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
@@ -459,7 +458,7 @@ function(ev) {
 		if (this.isListenerRegistered(DwtEvent.SELECTION)) {
 	    	var selEv = DwtShell.selectionEvent;
 	    	DwtUiEvent.copy(selEv, ev);
-	    	selEv.item = this;
+	    	selEv.match = div._match;
 	    	selEv.detail = 0;
 	    	this.notifyListeners(DwtEvent.SELECTION, selEv);
 	    	return true;
@@ -483,6 +482,11 @@ function(listener) {
 	this._eventMgr.addListener(DwtEvent.SELECTION, listener);
 }
 
+ZmAutocompleteListView.prototype._listSelectionListener = 
+function(ev) {
+	this._update(true);
+};
+
 // Layout
 
 // Creates the list and its member elements based on the matches we have. Each match becomes a 
@@ -495,7 +499,6 @@ function(sel) {
 	for (var i = 0; i < len; i++) {
 		var div = document.createElement("div");
 		var match = this._matches.get(i);
-		div._item = match;
 		div._pos = i;
 		div._styleClass = "Row";
 		div._selectedStyleClass = div._styleClass + "-" + DwtCssStyle.SELECTED;

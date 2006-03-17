@@ -23,20 +23,30 @@
  * ***** END LICENSE BLOCK *****
  */
 /**
-* Creates a new tab view that can be used to overload DwtTabView base class methods
+* Creates a new appointment tab.
 * @constructor
 * @class
+* This is the main screen for creating/editing an appointment. It provides inputs 
+* for the various appointment details.
 *
 * @author Parag Shah
 *
-* @param parent		[DwtComposite]		the appt compose view
-* @param appCtxt 	[ZmAppCtxt]			app context
+* @param parent				[DwtComposite]				the appt compose view
+* @param appCtxt 			[ZmAppCtxt]					app context
+* @param tabId				[constant]					tab ID
+* @param attendees			[hash]						attendees/locations/resources
+* @param acContactsList		[ZmAutocompleteListView]	autocomplete for attendees
+* @param acResourcesList	[ZmAutocompleteListView]	autocomplete for locations/resources
 */
-function ZmApptTabViewPage(parent, appCtxt) {
+function ZmApptTabViewPage(parent, appCtxt, tabId, attendees, acContactsList, acResourcesList) {
 
 	DwtTabViewPage.call(this, parent);
 
 	this._appCtxt = appCtxt;
+	this._tabId = tabId;
+	this._attendees = attendees;
+	this._acContactsList = acContactsList;
+	this._acResourcesList = acResourcesList;
 
 	this.setScrollStyle(DwtControl.CLIP);
 	this._rendered = false;
@@ -50,11 +60,8 @@ function ZmApptTabViewPage(parent, appCtxt) {
 
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
-
-	this._attendees = {};
-	this._attendees[ZmAppt.ATTENDEE] = [];	// list of ZmEmailAddress
-	this._attendees[ZmAppt.LOCATION] = [];	// list of ZmResource
-	this._attendees[ZmAppt.RESOURCE] = [];	// list of ZmResource
+	
+	parent.addChangeListener(new AjxListener(this, this._attendeesChangeListener));
 };
 
 ZmApptTabViewPage.prototype = new DwtTabViewPage;
@@ -154,7 +161,7 @@ function(attId) {
 		top.setContentType(ZmMimeTable.TEXT_PLAIN);
 		top.setContent(this._notesHtmlEditor.getContent());
 	}
-	appt.attendees = this._attendees[ZmAppt.ATTENDEE];
+	appt.attendees = this._attendees[ZmAppt.PERSON];
 	appt.locations = this._attendees[ZmAppt.LOCATION];
 	appt.resources = this._attendees[ZmAppt.RESOURCE];
 
@@ -173,19 +180,11 @@ function(appt, mode, isDirty) {
 
 	this.createHtml();
 
-	this._mode = mode == ZmAppt.MODE_NEW_FROM_QUICKADD || mode == null
-		? ZmAppt.MODE_NEW : mode;
+	this._mode = (mode == ZmAppt.MODE_NEW_FROM_QUICKADD || !mode) ? ZmAppt.MODE_NEW : mode;
 
 	// OPTIMIZATION: create timed action to reset the view
 	var ta = new AjxTimedAction(this, this._reset, [appt, mode || ZmAppt.MODE_NEW]);
 	AjxTimedAction.scheduleAction(ta, 0);
-};
-
-ZmApptTabViewPage.prototype.addChooserListener =
-function(tab) {
-	if (tab && tab._chooser) {
-		tab._chooser.addChangeListener(new AjxListener(this, this._chooserListener));
-	}
 };
 
 ZmApptTabViewPage.prototype.cleanup =
@@ -197,11 +196,6 @@ function() {
 
 	delete this._appt;
 	this._appt = null;
-
-	// clear attendees lists
-	this._attendees[ZmAppt.ATTENDEE] = [];
-	this._attendees[ZmAppt.LOCATION] = [];
-	this._attendees[ZmAppt.RESOURCE] = [];
 
 	// clear out all input fields
 	this._subjectField.setValue("");
@@ -445,22 +439,16 @@ function() {
 /**
 * Returns a joined string of email addresses.
 */
-ZmApptTabViewPage.prototype.getOrganizerAndAttendees =
+ZmApptTabViewPage.prototype.getOrganizer =
 function() {
-	// always prepend organizer before returning attendees field
 	// XXX: for now, assume no organizer means it's the user :/
 	var calId = this._calendarSelect.getValue();
-	var organizer = this._calendarOrgs[calId] ? this._calendarOrgs[calId] : this._appCtxt.get(ZmSetting.USERNAME);
+	var orgEmail = this._calendarOrgs[calId] ? this._calendarOrgs[calId] : this._appCtxt.get(ZmSetting.USERNAME);
+	var orgName = (orgEmail == this._appCtxt.get(ZmSetting.USERNAME)) ? this._appCtxt.get(ZmSetting.DISPLAY_NAME) : null;
+	var organizer = new ZmContact(this._appCtxt);
+	organizer.initFromEmail(new ZmEmailAddress(orgEmail, null, orgName));
 
-	var list = [];
-	list.push(organizer);
-	
-	var all = this._attendees[ZmAppt.ATTENDEE].concat(this._attendees[ZmAppt.LOCATION]).concat(this._attendees[ZmAppt.RESOURCE])
-	for (var i = 0; i < all.length; i++) {
-		list.push(all[i].getAddress());
-	}
-
-	return (list.join(ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE));
+	return organizer;
 };
 
 
@@ -540,21 +528,19 @@ function(appt, mode) {
 	if (appt.isCustomRecurrence()) {
 		this._repeatDescField.innerHTML = appt._getRecurrenceBlurbForSave();
 	} else {
-		this._repeatDescField.innerHTML = appt.repeatType != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
+		this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(appt.repeatType);
 	}
 
 	// attendees
 	if (appt.attendees && appt.attendees.length) {
 		this._attendeesField.setValue(appt.getAttendees());
-		this._attendees[ZmAppt.ATTENDEE] = appt.attendees;
-		// attendees chooser handles ZmContact (not ZmEmailAddress)
-		// grub for attendees in user's contacts, pass any found to chooser
+		this._attendees[ZmAppt.PERSON] = appt.attendees;
 		var tp = this.parent.getTabPage(ZmApptComposeView.TAB_ATTENDEES);
 		var list = [];
 		for (var i = 0; i < appt.attendees.length; i++) {
-			var addr = appt.attendees[i].getAddress();
-			var contact = this._contacts.getContactByEmail(addr);
-			if (contact) {
+			var contact = appt.attendees[i];
+			// see if it's a recognized personal or GAL contact
+			if (contact.id || contact.isGal) {
 				list.push(contact);
 			}
 		}
@@ -684,19 +670,34 @@ function() {
 	this._subjectField.reparentHtmlElement(this._subjectFieldId);
 	delete this._subjectFieldId;
 
+	var inputEl;
 	this._locationField = new DwtInputField({parent: this, type: DwtInputField.STRING});
-	Dwt.setSize(this._locationField.getInputElement(), width, "22px");
+	inputEl = this._locationField.getInputElement();
+	Dwt.setSize(inputEl, width, "22px");
+	inputEl._tabId = this._tabId;
+	inputEl._type = ZmAppt.LOCATION;
 	this._locationField.reparentHtmlElement(this._locationFieldId);
+	this._locationField._tabView = ZmApptComposeView.TAB_APPOINTMENT;
+	this._locationField._resourceType = ZmResource.LOCATION;
 	delete this._locationFieldId;
 
 	this._attendeesField = new DwtInputField({parent: this, type: DwtInputField.STRING});
-	Dwt.setSize(this._attendeesField.getInputElement(), "100%", "22px");
+	inputEl = this._attendeesField.getInputElement();
+	Dwt.setSize(inputEl, "100%", "22px");
+	inputEl._tabId = this._tabId;
+	inputEl._type = ZmAppt.PERSON;
 	this._attendeesField.reparentHtmlElement(this._attendeesFieldId);
+	this._attendeesField._tabView = ZmApptComposeView.TAB_APPOINTMENT;
 	delete this._attendeesFieldId;
 
 	this._resourcesField = new DwtInputField({parent: this, type: DwtInputField.STRING});
-	Dwt.setSize(this._resourcesField.getInputElement(), "100%", "22px");
+	inputEl = this._resourcesField.getInputElement();
+	Dwt.setSize(inputEl, "100%", "22px");
+	inputEl._tabId = this._tabId;
+	inputEl._type = ZmAppt.RESOURCE;
 	this._resourcesField.reparentHtmlElement(this._resourcesFieldId);
+	this._resourcesField._tabView = ZmApptComposeView.TAB_APPOINTMENT;
+	this._resourcesField._resourceType = ZmResource.RESOURCE;
 	delete this._resourcesFieldId;
 };
 
@@ -950,17 +951,9 @@ function() {
 
 ZmApptTabViewPage.prototype._initAutocomplete =
 function() {
-	if (this._autocomplete || !this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
-		return;
-
-	var shell = this._appCtxt.getShell();
-	var contactsApp = shell ? shell.getData(ZmAppCtxt.LABEL).getApp(ZmZimbraMail.CONTACTS_APP) : null;
-	var contactsList = contactsApp ? contactsApp.getContactList : null;
-	var locCallback = new AjxCallback(this, this._getAcListLoc, this);
-	var params = {parent: shell, dataClass: contactsApp, dataLoader: contactsList,
-				  matchValue: ZmContactList.AC_VALUE_EMAIL, locCallback: locCallback};
-	this._autocomplete = new ZmAutocompleteListView(params);
-	this._autocomplete.handle(this._attendeesField.getInputElement());
+	this._acContactsList.handle(this._attendeesField.getInputElement());
+	this._acResourcesList.handle(this._locationField.getInputElement());
+	this._acResourcesList.handle(this._resourcesField.getInputElement());
 };
 
 ZmApptTabViewPage.prototype._addEventHandlers =
@@ -1002,7 +995,7 @@ function(appt, mode) {
 	var calTreeData = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
 	if (calTreeData && calTreeData.root) {
 		this._calendarSelect.clearOptions();
-		this._calendarOrgs = new Array();
+		this._calendarOrgs = {};
 		var children = calTreeData.root.children.getArray();
 		var len = children.length;
 		var apptCal;
@@ -1014,7 +1007,7 @@ function(appt, mode) {
 			}
 		}
 		var visible = len > 1;
-		var enabled = mode == ZmAppt.MODE_NEW || mode == ZmAppt.MODE_NEW_FROM_QUICKADD || !apptCal.link;
+		var enabled = (mode == ZmAppt.MODE_NEW || mode == ZmAppt.MODE_NEW_FROM_QUICKADD || !apptCal.link);
 		if (visible) {
 			for (var i = 0; i < len; i++) {
 				var cal = children[i];
@@ -1299,7 +1292,7 @@ function(ev) {
 		this._oldRepeatValue = ev._args.oldValue;
 		this._showRecurDialog();
 	} else {
-		this._repeatDescField.innerHTML = newSelectVal != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
+		this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(newSelectVal);
 	}
 	this.notifyListeners(ZmApptTabViewPage._REPEAT_CHANGE, ev);
 };
@@ -1335,25 +1328,35 @@ function(ev) {
 	this._recurDialog.popdown();
 };
 
-ZmApptTabViewPage.prototype._chooserListener =
+/*
+* Updates the value of the appropriate input field.
+*/
+ZmApptTabViewPage.prototype._attendeesChangeListener =
 function(ev) {
-	var vec = ev.getDetail("items");
-	var type = ev.getDetail("chooserType");
-	var items = this._attendees[type] = vec.getArray();
+
+	var tabId = ev.getDetail("tabId");
+	if (tabId == this._tabId) {
+		return;
+	}
+
+	var allAttendees = ev.getDetail("attendees");
+	var type = ev.getDetail("type");
+	var attendees = allAttendees[type];
 
 	var list = [];
-	for (var i = 0; i < items.length; i++) {
-		var name = items[i].getName();
-		list.push(name ? name : items[i].getAddress());
+	for (var i = 0; i < attendees.length; i++) {
+		var name = attendees[i].getFullName();
+		list.push(name ? name : attendees[i].getEmail());
 	}
 	var val = list.length ? list.join(ZmEmailAddress.SEPARATOR) : "";
-	if (type == ZmAppt.ATTENDEE) {
+	if (type == ZmAppt.PERSON) {
 		this._attendeesField.setValue(val);
 	} else if (type == ZmAppt.LOCATION) {
 		this._locationField.setValue(val);
 	} else if (type == ZmAppt.RESOURCE) {
 		this._resourcesField.setValue(val);
 	}
+
 };
 
 // Callbacks

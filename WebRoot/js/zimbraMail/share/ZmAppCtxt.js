@@ -106,10 +106,10 @@ function(id, key) {
 
 // convenience method to set the value of a setting
 ZmAppCtxt.prototype.set =
-function(id, value, key, setDefault, skipNotify) {
+function(id, value, key) {
 	var setting = this.getSettings().getSetting(id);
 	if (setting)
-		setting.setValue(value, key, setDefault, skipNotify);
+		setting.setValue(value, key);
 };
 
 ZmAppCtxt.prototype.getApp =

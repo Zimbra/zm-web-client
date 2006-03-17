@@ -42,10 +42,6 @@
 	cursor: pointer;
 }
 
-.Object-triggered {
-	color: blue;
-}
-
 .POObject {color: blue;}
 .POObjectApproved {color: green;}
 .POObjectRejected {color: red;}

@@ -149,7 +149,7 @@ function(contact, now, isDndIcon, getHtml) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("E", value, isDndIcon, ZmObjectManager.EMAIL);
+		html[idx++] = this._getField("E", value, isDndIcon, ZmEmailObjectHandler.TYPE);
 		html[idx++] = "</tr>";
 	}
 
@@ -157,13 +157,13 @@ function(contact, now, isDndIcon, getHtml) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("E2", value, isDndIcon, ZmObjectManager.EMAIL);
+		html[idx++] = this._getField("E2", value, isDndIcon, ZmEmailObjectHandler.TYPE);
 		html[idx++] = "</tr>";
 	} else if (value = contact.getAttr("email3")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("E3", value, isDndIcon, ZmObjectManager.EMAIL);
+		html[idx++] = this._getField("E3", value, isDndIcon, ZmEmailObjectHandler.TYPE);
 		html[idx++] = "</tr>";
 	}
 	
@@ -176,35 +176,35 @@ function(contact, now, isDndIcon, getHtml) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("W", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getField("W", value, isDndIcon, ZmPhoneObjectHandler.TYPE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("workPhone2")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("W2", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getField("W2", value, isDndIcon, ZmPhoneObjectHandler.TYPE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("workFax")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("F", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getField("F", value, isDndIcon, ZmPhoneObjectHandler.TYPE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("mobilePhone")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("M", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getField("M", value, isDndIcon, ZmPhoneObjectHandler.TYPE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("homePhone")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("H", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getField("H", value, isDndIcon, ZmPhoneObjectHandler.TYPE);
 		html[idx++] = "</tr>";
 	}
 	

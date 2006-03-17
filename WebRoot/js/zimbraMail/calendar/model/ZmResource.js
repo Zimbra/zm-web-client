@@ -52,12 +52,12 @@ function() {
 	return this.getAttr("zimbraCalResType") == ZmResource.TYPE_LOCATION;
 };
 
-ZmResource.prototype.getAddress =
+ZmResource.prototype.getEmail =
 function() {
 	return this.getAttr("mail");
 };
 
-ZmResource.prototype.getName =
+ZmResource.prototype.getFullName =
 function() {
 	return this.getAttr("displayName");
 };
