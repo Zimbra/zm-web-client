@@ -42,7 +42,7 @@ function ZmResourceList(appCtxt, search) {
 };
 
 ZmResourceList.ATTRS =
-	["displayName", "mail", "zimbraCalResLocationDisplayName",
+	["displayName", "mail", "zimbraCalResType", "zimbraCalResLocationDisplayName",
 	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description"];
 
 ZmResourceList.AC_VALUE_NAME = "name";
