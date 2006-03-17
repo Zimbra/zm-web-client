@@ -49,6 +49,7 @@ function(zimletContext, shell) {
 	this._dwtShell = shell;
 	this._appCtxt = shell.getData(ZmAppCtxt.LABEL);
 	this._origIcon = this.xmlObj().icon;
+	this.name = this.xmlObj().name;
 
 	var contentObj = this.xmlObj("contentObject");
 	if (contentObj && contentObj.matchOn) {
@@ -69,7 +70,7 @@ ZmZimletBase.prototype.init = function(){};
 
 ZmZimletBase.prototype.toString =
 function() {
-	return this.xmlObj().name;
+	return this.name;
 };
 
 ZmZimletBase.prototype.getShell = function() {
@@ -285,6 +286,7 @@ function(obj, span, context) {
 	}
 	this._actionObject = obj;
 	this._actionSpan = span;
+	this._actionContext = context;
 	return this._zimletContext._contentActionMenu;
 };
 

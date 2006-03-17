@@ -689,6 +689,7 @@ function(container, html, isTextMsg) {
 			     ".MsgHeader .Object { white-space: nowrap; }",
 			     ".Object a:link, .Object a:active, .Object a:visited { text-decoration: none; }",
 			     ".Object a:hover { text-decoration: underline; }",
+			     ".Object-triggered { text-decoration:none; color: blue;}",
 			     ".Object-activated { text-decoration:underline; }"
 		].join(" ");
 	var ifw = new DwtIframe(this, "MsgBody", true, html, inner_styles,
@@ -759,7 +760,7 @@ function(htmlArr, idx, addrs, prefix) {
 ZmMailMsgView.prototype._renderMessage =
 function(msg, container, callback) {
 	if(this._objectManager) {
-	    this._objectManager.setHandlerAttr(ZmDateObjectHandler.TYPE, ZmDateObjectHandler.ATTR_CURRENT_DATE, this._dateObjectHandlerDate);
+	    this._objectManager.setHandlerAttr(ZmObjectManager.DATE, ZmObjectManager.ATTR_CURRENT_DATE, this._dateObjectHandlerDate);
 	}
 
 	var idx = 0;
@@ -852,7 +853,7 @@ function(el, bodyPart, callback, result) {
 				if (line.match(/^DESCRIPTION:/)) {
 					desc.push(line.substr(12));
 					for (var j = i + 1; j < lines.length; j++) {
-						var line = lines[j];
+						line = lines[j];
 						if (line.match(/^\s+/)) {
 							desc.push(line.replace(/^\s+/, " "));
 							continue;
