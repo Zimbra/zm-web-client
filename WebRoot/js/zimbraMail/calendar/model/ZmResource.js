@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmResource(appCtxt, list) {
-	ZmContact.call(this, appCtxt, ZmItem.RESOURCE, null, list);
+function ZmResource(appCtxt, id, list) {
+	ZmContact.call(this, appCtxt, id, list, ZmItem.RESOURCE);
 };
 
 ZmResource.TYPE_LOCATION	= "Location";
@@ -38,7 +38,7 @@ ZmResource.TYPE_EQUIPMENT	= "Equipment";
 */
 ZmResource.createFromDom =
 function(node, args) {
-	var resource = new ZmResource(args.appCtxt, args.list);
+	var resource = new ZmResource(args.appCtxt, node.id, args.list);
 	resource._loadFromDom(node);
 
 	return resource;
