@@ -43,9 +43,8 @@ function ZmResourceList(appCtxt, search) {
 };
 
 ZmResourceList.ATTRS =
-	["displayName", "mail", "zimbraCalResSite", "zimbraCalResBuilding", "zimbraCalResFloor", "zimbraCalResRoom",
-	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description",
-	 "street", "l", "st", "postalCode", "co"];
+	["displayName", "mail", "zimbraCalResLocationDisplayName",
+	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description"];
 
 ZmResourceList.AC_FIELDS = ["displayName"];
 ZmResourceList.AC_VALUE_NAME = "name";
@@ -58,7 +57,7 @@ function() {
 	var conds = [];
 	conds.push({attr: "zimbraCalResType", op: "eq", value: ZmResource.TYPE_LOCATION});
 	conds.push({attr: "zimbraCalResType", op: "eq", value: ZmResource.TYPE_EQUIPMENT});
-	var params = {conds: conds, join: ZmSearch.JOIN_OR, attrs: ZmResource.ATTRS};
+	var params = {conds: conds, join: ZmSearch.JOIN_OR, attrs: ZmResourceList.ATTRS};
 	var search = new ZmSearch(this._appCtxt, params);
 	
 	search.execute({callback: new AjxCallback(this, this._handleResponseLoad)});

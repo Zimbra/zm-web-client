@@ -74,7 +74,7 @@ ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_WORK_PHONE]	= "AB
 ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_HOME_PHONE]	= "AB_FIELD_homePhone";
 ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_LOCATION]	= "location";
 ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_CONTACT]		= "contact";
-ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_CAPACITY]	= "size";
+ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_CAPACITY]	= "capacity";
 ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_NOTES]		= "notes";
 
 ZmApptChooserTabViewPage.COL_WIDTH = {};
@@ -84,7 +84,7 @@ ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_WORK_PHONE]	= 100
 ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_HOME_PHONE]	= 100;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_LOCATION]	= null;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_CONTACT]		= 150;
-ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_CAPACITY]	= 30;
+ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_CAPACITY]	= 50;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_NOTES]		= 30;
 
 ZmApptChooserTabViewPage.COLS = {};
@@ -140,13 +140,11 @@ ZmApptChooserTabViewPage.SF_OP[ZmApptChooserTabViewPage.SF_FLOOR]		= "eq";
 
 ZmApptChooserTabViewPage.ATTRS = {};
 ZmApptChooserTabViewPage.ATTRS[ZmAppt.LOCATION] =
-	["displayName", "mail", "zimbraCalResSite", "zimbraCalResBuilding", "zimbraCalResFloor", "zimbraCalResRoom",
-	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description",
-	 "street", "l", "st", "postalCode", "co"];
+	["displayName", "mail", "zimbraCalResLocationDisplayName",
+	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description"];
 ZmApptChooserTabViewPage.ATTRS[ZmAppt.RESOURCE] =
-	["displayName", "mail", "zimbraCalResSite", "zimbraCalResBuilding", "zimbraCalResFloor", "zimbraCalResRoom",
-	 "zimbraCalResContactEmail", "description",
-	 "street", "l", "st", "postalCode", "co"];
+	["displayName", "mail", "zimbraCalResLocationDisplayName",
+	 "zimbraCalResContactEmail", "description"];
 
 ZmApptChooserTabViewPage.SEARCH_FIELDS = {};
 ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmAppt.PERSON] =
@@ -544,19 +542,7 @@ function(item) {
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_HOME_PHONE) == 0) {
 			html[idx++] = this._getField(i, item.getAttr(ZmContact.F_homePhone));
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_LOCATION) == 0) {
-			var a;
-			var site = item.getAttr("zimbraCalResSite");
-			if (site) {
-				var building, floor, room;
-				var buildingText = (building = item.getAttr("zimbraCalResBuilding")) ? [ZmMsg.building, ": ", building].join("") : null;
-				var floorText = (floor = item.getAttr("zimbraCalResFloor")) ? [ZmMsg.floor, ": ", floor].join("") : null;
-				var roomText = (room = item.getAttr("zimbraCalResRoom")) ? [ZmMsg.room, ": ", room].join("") : null;
-				a = [site, buildingText, floorText, roomText];
-			} else {
-				a = [site, item.getAttr("street"), item.getAttr("l"), item.getAttr("st"), item.getAttr("co")];
-			}
-			var loc = AjxUtil.collapseList(a).join(", ");
-			html[idx++] = this._getField(i, loc);
+			html[idx++] = this._getField(i, item.getAttr("zimbraCalResLocationDisplayName"));
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_CONTACT) == 0) {
 			html[idx++] = this._getField(i, item.getAttr("zimbraCalResContactEmail"));
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_CAPACITY) == 0) {
