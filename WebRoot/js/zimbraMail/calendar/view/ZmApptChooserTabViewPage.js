@@ -203,7 +203,9 @@ function(newWidth, newHeight) {
 
 	var searchTable = document.getElementById(this._searchTableId);
 	var stSz = Dwt.getSize(searchTable);
-	this._chooser.resize(newWidth - 12, newHeight - stSz.y - 40);
+	var newChooserWidth = newWidth ? newWidth - 12 : Dwt.DEFAULT;
+	var newChooserHeight = newHeight ? newHeight - stSz.y - 40 : Dwt.DEFAULT;
+	this._chooser.resize(newChooserWidth, newChooserHeight);
 };
 
 ZmApptChooserTabViewPage.prototype.cleanup =
@@ -236,14 +238,18 @@ function() {
 
 	html[i++] = "<table border=0 cellpadding=1 cellspacing=1 width=100%><tr>";
 	
-	var row = 0;
 	for (var j = 0; j < fields.length; j++) {
 		var isEven = ((j % 2) == 0);
-		if (isEven) html[i++] = "<tr>";
+		if (isEven) {
+			html[i++] = "<tr>";
+		}
 		var sf = fields[j];
-		var addButton = (row == 0 && j == 1);
-		i = this._getSearchFieldHtml(sf, html, i, addButton);
-		if (!isEven) html[i++] = "</tr>";
+		var addButton = (j == 1);
+		var addMultLocsCheckbox = (this.type == ZmAppt.LOCATION && j == fields.length - 1);
+		i = this._getSearchFieldHtml(sf, html, i, addButton, addMultLocsCheckbox);
+		if (!isEven || j == fields.length - 1) {
+			html[i++] = "</tr>";
+		}
 	}
 			
 	html[i++] = "</table></div>";
@@ -257,7 +263,7 @@ function() {
 };
 
 ZmApptChooserTabViewPage.prototype._getSearchFieldHtml =
-function(id, html, i, addButton) {
+function(id, html, i, addButton, addMultLocsCheckbox) {
 	if (id == ZmApptChooserTabViewPage.SF_SOURCE) {
 		// no need for source select if contacts and GAL aren't both supported
 		if (!(this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED))) {
@@ -277,7 +283,7 @@ function(id, html, i, addButton) {
 
 		html[i++] = "<input type='text' autocomplete='off' size=30 nowrap id='";
 		html[i++] = this._searchFieldIds[id];
-		html[i++] = "'>&nbsp;</td>";
+		html[i++] = "' />&nbsp;</td>";
 	}
 
 	if (addButton) {
@@ -285,6 +291,14 @@ function(id, html, i, addButton) {
 		html[i++] = "<td id='";
 		html[i++] = this._searchBtnTdId;
 		html[i++] = "'></td>";
+	} else if (addMultLocsCheckbox) {
+		this._multLocsCheckboxId = Dwt.getNextId();
+		html[i++] = "<td>";
+		html[i++] = "<input type='checkbox' id='";
+		html[i++] = this._multLocsCheckboxId;
+		html[i++] = "' />&nbsp;";
+		html[i++] = ZmMsg.allowMultipleLocations;
+		html[i++] = "</td>";
 	}
 
 	return i;
@@ -322,6 +336,11 @@ function() {
 		var sf = fields[i];
 		var searchField = this._searchFields[sf] = document.getElementById(this._searchFieldIds[sf]);
 		Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmApptChooserTabViewPage._keyPressHdlr);
+	}
+	
+	if (this._multLocsCheckboxId) {
+		var cb = document.getElementById(this._multLocsCheckboxId);
+		Dwt.setHandler(cb, DwtEvent.ONCLICK, ZmApptChooserTabViewPage._multLocsCheckboxHdlr);
 	}
 };
 
@@ -425,13 +444,23 @@ function(result) {
 
 ZmApptChooserTabViewPage._keyPressHdlr =
 function(ev) {
-    var stb = DwtUiEvent.getDwtObjFromEvent(ev);
+    var tvp = DwtUiEvent.getDwtObjFromEvent(ev);
 	var charCode = DwtKeyEvent.getCharCode(ev);
-	if (stb._keyPressCallback && (charCode == 13 || charCode == 3)) {
-		stb._keyPressCallback.run();
+	if (tvp._keyPressCallback && (charCode == 13 || charCode == 3)) {
+		tvp._keyPressCallback.run();
 	    return false;
 	}
 	return true;
+};
+
+ZmApptChooserTabViewPage._multLocsCheckboxHdlr =
+function(ev) {
+	var cb = DwtUiEvent.getTarget(ev);
+    var tvp = DwtUiEvent.getDwtObjFromEvent(ev);
+    if (tvp) {
+		tvp._chooser.setSelectStyle(cb.checked ? DwtChooser.MULTI_SELECT : DwtChooser.SINGLE_SELECT, true);
+		tvp.showMe(); // force resize to adjust chooser layout
+	}
 };
 
 /***********************************************************************************/
@@ -443,7 +472,9 @@ function(ev) {
 * @param buttonInfo		[array]			transfer button IDs and labels
 */
 function ZmApptChooser(parent, buttonInfo) {
-	DwtChooser.call(this, parent, null, buttonInfo, DwtChooser.VERT_STYLE, true);
+	var selectStyle = (parent.type == ZmAppt.LOCATION) ? DwtChooser.SINGLE_SELECT : null;
+	DwtChooser.call(this, {parent: parent, buttonInfo: buttonInfo, layoutStyle: DwtChooser.VERT_STYLE,
+						   noDuplicates: true, selectStyle: selectStyle});
 };
 
 ZmApptChooser.prototype = new DwtChooser;
