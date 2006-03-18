@@ -32,7 +32,7 @@ function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt) {
 	if (arguments.length == 0) return;
 	this._appCtxt = appCtxt;
 
-	DwtHtmlEditor.call(this, parent, "ZmHtmlEditor", posStyle, content, mode, "/zimbra/public/blank.html");
+	DwtHtmlEditor.call(this, parent, "ZmHtmlEditor", posStyle, content, mode, appContextPath+"/public/blank.html");
 
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));
 
@@ -307,7 +307,7 @@ function(words, keepModeDiv) {
 			style.id = "ZM-SPELLCHECK-STYLE";
 			style.rel = "stylesheet";
 			style.type = "text/css";
-			var style_url = "/zimbra/js/zimbraMail/config/style/spellcheck.css?v="+cacheKillerVersion;
+			var style_url = appContextPath+"/js/zimbraMail/config/style/spellcheck.css?v="+cacheKillerVersion;
 			if (AjxEnv.isGeckoBased) {
 				style_url = document.baseURI.replace(
 					/^(https?:\x2f\x2f[^\x2f]+).*$/, "$1") + style_url;

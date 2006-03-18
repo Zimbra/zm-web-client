@@ -708,7 +708,7 @@ function(container, html, isTextMsg) {
 	var head = idoc.getElementsByTagName("head")[0];
 	var link = idoc.createElement("link");
 	link.rel = "stylesheet";
-	link.href = "/zimbra/js/zimbraMail/config/style/msgview.css?v="+cacheKillerVersion;
+	link.href = appContextPath+"/js/zimbraMail/config/style/msgview.css?v="+cacheKillerVersion;
 	head.appendChild(link);
 
 	ifw.getIframe().style.visibility = "";

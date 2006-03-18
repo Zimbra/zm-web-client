@@ -556,7 +556,7 @@ ZmZimletBase.prototype.makeCanvas = function(canvasData, url) {
 	    case "window":
 	    var browserUrl = url;
 		if (browserUrl == null)
-			browserUrl = "/zimbra/public/blank.html";
+			browserUrl = appContextPath+"/public/blank.html";
 		var props = [ "toolbar=yes,location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes" ];
 		if (canvasData.width)
 			props.push("width=" + canvasData.width);

@@ -249,11 +249,11 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 		b.setText("Serialize");
 		b.addSelectionListener(new AjxListener(this, function() {
 			var txt = this.getModel().serialize();
-			var win = window.open("/zimbra/public/blank.html", "_blank", "scrollbars=no");
+			var win = window.open(appContextPath+"/public/blank.html", "_blank", "scrollbars=no");
 			var timeout = setInterval(function() {
 				try {
 					var d = win.document;
-					var b = d.body;
+					b = d.body;
 					b.style.backgroundColor = "ButtonFace";
 					var t = d.createElement("textarea");
 					t.value = txt;
@@ -268,11 +268,11 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 		b.setText("getHtml");
 		b.addSelectionListener(new AjxListener(this, function() {
 			var txt = this.getModel().getHtml();
-			var win = window.open("/zimbra/public/blank.html", "_blank", "scrollbars=no");
+			var win = window.open(appContextPath+"/public/blank.html", "_blank", "scrollbars=no");
 			var timeout = setInterval(function() {
 				try {
 					var d = win.document;
-					var b = d.body;
+					b = d.body;
 					b.style.backgroundColor = "ButtonFace";
 					b.innerHTML = txt;
 					clearInterval(timeout);

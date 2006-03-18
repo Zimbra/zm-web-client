@@ -47,7 +47,7 @@ ZmLogin = function() {}
 ZmLogin.lastGoodUserNameCookie   = "ls_last_username";
 ZmLogin.lastGoodMailServerCookie = "ls_last_server";
 ZmLogin.CSFE_SERVER_URI = location.port == "80" ? "/service/soap/" : ":" + location.port + "/service/soap/";
-ZmLogin.ZIMBRA_APP_URI  = location.port == "80" ? "/zimbra/mail" : ":" + location.port + "/zimbra/mail";
+ZmLogin.ZIMBRA_APP_URI  = location.port == "80" ? appContextPath+"/mail" : ":" + location.port + appContextPath+"/mail";
 ZmLogin.MAILBOX_REGEX =/^([a-zA-Z0-9_\.\-])+(\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+)?$/;
 
 /**
@@ -104,7 +104,9 @@ function() {
 	html[idx++] = "<tr><td bgcolor='#FFFFFF'><div class='banner'></div></td></tr>";
 	html[idx++] = "<tr><td class='mainPanel' align=center><div class='error'>";
 	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2><tr>";
-	html[idx++] = "<td valign=top width=40><img src='/zimbra/img/hiRes/dwt/Critical_32.gif' width=32 height=32></td>";
+	html[idx++] = "<td valign=top width=40><img src='";
+	html[idx++] = appContextPath;
+	html[idx++] = "/img/loRes/dwt/Critical_32.gif' width=32 height=32></td>";
 	html[idx++] = "<td>";
 	html[idx++] = errorStr;
 	html[idx++] = "</td></tr></table>";
@@ -162,7 +164,9 @@ function() {
 	// error message div
 	html[idx++] = "<center><div class='error' style='display:none' id='errorMessageContainer'>";
 	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2><tr>";
-	html[idx++] = "<td valign=top width=40><img src='/zimbra/img/hiRes/dwt/Critical_32.gif' id='errorIcon' width=32 height=32></td>";
+	html[idx++] = "<td valign=top width=40><img src='";
+	html[idx++] = appContextPath;
+	html[idx++] = "/img/hiRes/dwt/Critical_32.gif' id='errorIcon' width=32 height=32></td>";
 	html[idx++] = "<td id='errorMessage'>";
 	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</div></center>";
@@ -644,5 +648,5 @@ function (mailServer) {
 	var ms = mailServer ? mailServer : location.hostname;
 	return (location.protocol + "//" + ms + ((location.port == 80) 
 		? "" 
-		: ":" + location.port) +"/zimbra/auth/" + window.location.search);
+		: ":" + location.port) + appContextPath + "/auth/" + window.location.search);
 };

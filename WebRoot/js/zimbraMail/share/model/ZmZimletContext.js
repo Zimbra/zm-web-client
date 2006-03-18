@@ -41,7 +41,7 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 	this.version = zimlet.version;
 	this.includes = this.json.zimlet.include;
 	this.includes = this.includes ? this.includes : [];
-	this.includes.push("/zimbra/js/msgs/" + this.name + ".js");
+	this.includes.push(appContextPath+"/js/msgs/" + this.name + ".js");
 	this.includeCSS = this.json.zimlet.includeCSS;
 	if(zimlet.serverExtension && zimlet.serverExtension[0].hasKeyword){
 		this.keyword = zimlet.serverExtension[0].hasKeyword;
