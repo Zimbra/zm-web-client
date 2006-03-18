@@ -26,9 +26,11 @@ Contributor(s):
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
+<%!
+static final private String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
+static final private String LOGIN_PAGE = "/zimbra/";
+%>
 <%
-	final String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
-	String contextPath = request.getContextPath();
 	String authToken = request.getParameter("auth");
 	if (authToken != null && authToken.equals("")) {
 		authToken = null;
@@ -44,22 +46,23 @@ Contributor(s):
 		}
 
 		if (authToken == null) {
-			response.sendRedirect(contextPath);
+			response.sendRedirect(LOGIN_PAGE);
 		}
 	} else {
 		Cookie c = new Cookie(AUTH_TOKEN_COOKIE_NAME, authToken);
 		c.setPath("/");
-		c.setMaxAge(-1);
+		c.setMaxAge(-1);                
 		response.addCookie(c);
 	}
 
+	String contextPath = (String)request.getContextPath(); 
 	String mode = (String) request.getAttribute("mode");
 	String vers = (String) request.getAttribute("version");
 	String ext = (String) request.getAttribute("fileExtension");
-	String hiRes = request.getParameter("hiRes");
-	String ua = request.getHeader("user-agent");
+	String hiRes = (String) request.getParameter("hiRes");
+	String ua = (String) request.getHeader("user-agent");
 	boolean isSafari = ua.indexOf("Safari/") != -1;
-
+	
 	if (vers == null) vers = "";
 	if (ext == null) ext = "";
 %>
@@ -71,30 +74,28 @@ Contributor(s):
 <title>Zimbra</title>
 
 <script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" language="javascript">
-appContextPath = "<%= contextPath %>";
-</script>
+
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
 	<!--
 	<%if (hiRes != null) {%>
-			@import url(<%= contextPath %>/img/hiRes/imgs.css?v=<%= vers %>);
-			@import url(<%= contextPath %>/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
+			@import url(/zimbra/img/hiRes/imgs.css?v=<%= vers %>);
+			@import url(/zimbra/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
 	<% } else { %>
-			@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-			@import url(<%= contextPath %>/img/loRes/skins/steel/skin.css?v=<%= vers %>);
+			@import url(/zimbra/img/loRes/imgs.css?v=<%= vers %>);
+			@import url(/zimbra/img/loRes/skins/steel/skin.css?v=<%= vers %>);
 	<% } %>
 
-		@import url(<%= contextPath %>/js/ajax/config/style/dwt.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/js/zimbraMail/config/style/common.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/js/zimbraMail/config/style/msgview.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/js/zimbraMail/config/style/zm.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/js/zimbraMail/config/style/spellcheck.css?v=<%= vers %>);
+		@import url(/zimbra/js/zimbraMail/config/style/dwt.css?v=<%= vers %>);
+		@import url(/zimbra/js/zimbraMail/config/style/common.css?v=<%= vers %>);
+		@import url(/zimbra/js/zimbraMail/config/style/msgview.css?v=<%= vers %>);
+		@import url(/zimbra/js/zimbraMail/config/style/zm.css?v=<%= vers %>);
+		@import url(/zimbra/js/zimbraMail/config/style/spellcheck.css?v=<%= vers %>);
 		
 		<%if (isSafari) { %>
-			@import url(<%= contextPath %>/skins/steel/skin-safari.css?v=<%= vers %>);
+			@import url(/zimbra/skins/steel/skin-safari.css?v=<%= vers %>);
 		<% } else { %>
-			@import url(<%= contextPath %>/skins/steel/skin.css?v=<%= vers %>);
+			@import url(/zimbra/skins/steel/skin.css?v=<%= vers %>);
 		<% } %>
 	-->
 	</style>
@@ -115,20 +116,19 @@ appContextPath = "<%= contextPath %>";
 	<script type="text/javascript" src="<%= contextPath %>/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>
 
-<script  type="text/javascript" language="JavaScript">
+<script language="JavaScript">  
 	var cacheKillerVersion = "<%= vers %>";
 	function launch() {
 		AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
-		// figure out the debug level
-		if (location.search && (location.search.indexOf("debug=") != -1)) {
-			var m = location.search.match(/debug=(\w+)/);
-			if (m && m.length) {
-				var level = parseInt(m[1]);
+		 	// figure out the debug level
+			if (location.search && (location.search.indexOf("debug=") != -1)) {
+			var m = location.search.match(/debug=(\d+)/);
+			if (m.length) {
+				var num = parseInt(m[1]);
+				var level = AjxDebug.DBG[num];
 				if (level)
 					DBG.setDebugLevel(level);
-				else if (m[1] == 't')
-					DBG.showTiming(true);
 			}
 		}
 
@@ -136,7 +136,7 @@ appContextPath = "<%= contextPath %>";
 		var app = null;
 		if (location.search && (location.search.indexOf("app=") != -1)) {
 			var m = location.search.match(/app=(\w+)/);
-			if (m && m.length)
+			if (m.length)
 				app = m[1];
 		}
 

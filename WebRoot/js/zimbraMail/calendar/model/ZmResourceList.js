@@ -39,14 +39,12 @@ function ZmResourceList(appCtxt, search) {
 	ZmContactList.call(this, appCtxt, search, true, ZmItem.RESOURCE);
 
 	this._emailToResource = {};
-	this._acMatchFields = ZmResourceList.AC_FIELDS;
 };
 
 ZmResourceList.ATTRS =
 	["displayName", "mail", "zimbraCalResType", "zimbraCalResLocationDisplayName",
 	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description"];
 
-ZmResourceList.AC_FIELDS = ["displayName"];
 ZmResourceList.AC_VALUE_NAME = "name";
 
 ZmResourceList.prototype = new ZmContactList;
@@ -74,8 +72,7 @@ function(result) {
 		if (email) {
 			this._emailToResource[email.toLowerCase()] = resource;
 		}
-		this._preMatch(resource);
-		this._idHash[resource.id] = resource;
+		this._addAcContact(resource, this._acContacts, true);
 	}
 	this._loaded = true;
 };
@@ -104,40 +101,52 @@ function(str) {
 };
 
 /*
-* Creates the matching object(s) for a particular matched contact. If a contact has multiple
-* email addresses and didn't match on one of them (it matched on a name), then a matching
-* object will be created for each email address.
+* Parses a contact into an object to do autocomplete matching against.
+* To make the matching process simpler, we create multiple objects for any 
+* contact that has more than one email address, one for each address, and then 
+* match against those.
 *
-* @param id		[int]		ID of matched contact
-* @param str	[string]	string that was matched
+* @param resource	[ZmResource]	resource to add
+* @param list		[array]			list to add to
+* @param preMatch	[boolean]		if true, perform matching for this contact
 */
-ZmResourceList.prototype._getMatches =
-function(id, str) {
-	var match = this._testAcMatch(this.getById(id), str, true);
-	if (!match) {
-		DBG.println(AjxDebug.DBG1, "Matched resource with ID " + id + " no longer matches '" + str);
-		return null;
+ZmResourceList.prototype._addAcContact =
+function(resource, list, preMatch) {
+
+	var acContact = {};
+	acContact._item = resource;
+	var strings = preMatch ? {} : null;
+	// only match against displayName
+	var name = resource.getFullName();
+	acContact[ZmContact.X_fullName] = name;
+	if (preMatch && name) {
+		strings[name.substring(0, 1).toLowerCase()] = true;
+		strings[name.substring(0, 2).toLowerCase()] = true;
+	}
+	list.push(acContact);
+	if (preMatch) {
+		for (var str in strings) {
+			var match = this._acMatch(acContact, str);
+			if (!this._acAddrList[str])
+				this._acAddrList[str] = [];
+			this._acAddrList[str].push(match);
+		}
 	}
 
-	var resource = this.getById(id);
-	var matchObj = this._createMatch(match, resource);
-
-	return [matchObj];	
+	return [acContact];
 };
 
 /*
-* Creates a match object from the given fields.
-*
-* @param match		[object]		info from the match
-* @param resource	[ZmResource]	the resource that was matched
+* Returns a resource match object. The resource name is used as both
+* display text and the completion value.
 */
-ZmResourceList.prototype._createMatch =
-function(match, resource) {
+ZmResourceList.prototype._getMatchObject =
+function(acContact, matchedField, savedMatch) {
 	var result = {};
-	result.item = resource;
-	result.text = match.savedMatch;
-	result[ZmResourceList.AC_VALUE_NAME] = resource.getFullName();
+	result.data = acContact;
+	result.text = acContact[ZmContact.X_fullName];
+	result[ZmContactList.AC_VALUE_EMAIL] = acContact[ZmContact.F_email];
+	result[ZmResourceList.AC_VALUE_NAME] = acContact[ZmContact.X_fullName];
 
 	return result;
 };
-

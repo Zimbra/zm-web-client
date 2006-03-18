@@ -39,32 +39,30 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 	this.priority = this.ctxt[0].priority;
 	this.description = zimlet.description;
 	this.version = zimlet.version;
-	this.includes = this.json.zimlet.include;
-	this.includes = this.includes ? this.includes : [];
-	this.includes.push(appContextPath+"/js/msgs/" + this.name + ".js");
-	this.includeCSS = this.json.zimlet.includeCSS;
+	this.includes = zimlet.include;
+	if (this.includes) {
+		for (var i = this.includes.length; --i >= 0;) {
+			this.includes[i] = this.includes[i]._content;
+		}
+	}
+	this.includeCSS = zimlet.includeCSS;
+	if (this.includeCSS) {
+		for (i = this.includeCSS.length; --i >= 0;) {
+			this.includeCSS[i] = this.includeCSS[i]._content;
+		}
+	}
 	if(zimlet.serverExtension && zimlet.serverExtension[0].hasKeyword){
 		this.keyword = zimlet.serverExtension[0].hasKeyword;
 	}
 
 	this._contentActionMenu = null;
-	if (zimlet.contentObject) {
+	if(zimlet.contentObject){
 		this.contentObject = zimlet.contentObject[0];
-		if(this.contentObject.type) {
-			this.type = this.contentObject.type;
-		}
-		if (this.contentObject.contextMenu) {
-			this.contentObject.contextMenu = this.contentObject.contextMenu[0];
-			this._contentActionMenu = new AjxCallback(this, this._makeMenu,[this.contentObject.contextMenu.menuItem]);
-		}
 	}
 
 	this._panelActionMenu = null;
 	if(zimlet.zimletPanelItem){
 		this.zimletPanelItem = zimlet.zimletPanelItem[0];
-		if (this.zimletPanelItem.toolTipText) {
-			this.zimletPanelItem.toolTipText = this.zimletPanelItem.toolTipText[0]._content;
-		}
 		if (this.zimletPanelItem.icon) {
 			this.icon = this.zimletPanelItem.icon;
 		}
@@ -117,8 +115,7 @@ ZmZimletContext.RE_ARRAY_ELEMENTS = /^(dragSource|include|includeCSS|menuItem|pa
  *
  * @return -- sanitized object
  */
-ZmZimletContext.sanitize = 
-function(obj, tag, wantarray_re) {
+ZmZimletContext.sanitize = function(obj, tag, wantarray_re) {
 	function doit(obj, tag) {
 		var cool_json, val, i;
 		if (obj instanceof Array) {
@@ -164,28 +161,27 @@ function() {
 };
 
 ZmZimletContext.prototype._finished_loadIncludes = function() {
-	// We don't allow _loadIncludes a second time
+	// we don't allow _loadIncludes a second time
 	this.includes = null;
-	var CTOR  = this.handlerObject ? window[this.handlerObject] : ZmZimletBase;
-	this.handlerObject = new CTOR();
-	if(!this.handlerObject._init) {
-		DBG.println(AjxDebug.DBG1, "ERROR - Zimlet handler (" + this.name + ") not defined. " +
-		    "Make sure the Zimlet name and handlerObject defined in " + this.name + ".xml are different.");
+	// instantiate the handler object if present
+	var obj = this.handlerObject;
+	if (obj) {
+		var CTOR = eval(obj);
+		obj = new CTOR();
+		obj.constructor = CTOR;
+	} else {
+		// well, go figure. :-) We need a handler object, so let's
+		// initialize the base one.
+		obj = new ZmZimletBase();
 	}
-	this.handlerObject._init(this, DwtShell.getShell(window));
+	this.handlerObject = obj;
+	obj._init(this, DwtShell.getShell(window));
 	if (this.contentObject) {
-		this._appCtxt._settings._zmm.registerContentZimlet(this.handlerObject, this.type, this.priority);
+		this._appCtxt._settings._zmm.registerContentZimlet(obj, this.type, this.priority);
+		DBG.println(AjxDebug.DBG2, "Zimlets - registerContentZimlet(): " + this.name);
 	}
-	this.handlerObject.init();
-	this.handlerObject._zimletContext = this;
-	// If it has an _id then we need to make sure the treeItem
-	// is up-to-date now that the i18n files have loaded.
-	if(this._id) {
-		var tree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
-		var zimletItem = tree.getById(this._id);
-		zimletItem.resetNames();
-	}
-	DBG.println(AjxDebug.DBG2, "Zimlets - init() complete: " + this.name);
+	obj.init();
+	DBG.println(AjxDebug.DBG2, "Zimlets - init(): " + this.name);
 };
 
 ZmZimletContext.prototype._loadStyles = function() {
@@ -201,6 +197,7 @@ ZmZimletContext.prototype._loadStyles = function() {
 		style.rel = "stylesheet";
 		style.href = fullurl;
 		style.title = this.name + " " + this.includeCSS[i];
+		DBG.println(AjxDebug.DBG2, "Zimlets - CSS: " + style.href);
 		head.appendChild(style);
 		style.disabled = true;
 		style.disabled = false;
@@ -215,9 +212,20 @@ ZmZimletContext.prototype.getOrganizer = function() {
 
 ZmZimletContext.prototype.getUrl = function() { return this._url; };
 
-ZmZimletContext.prototype.getVal = function(key) {
-	var zimlet = this.json.zimlet;
-	return eval("zimlet." + key);
+ZmZimletContext.prototype.getVal = function(key, val) {
+	if (!val) {
+		val = this[key];
+	}
+	if (!val) {
+		return null;
+	}
+	if (val instanceof Array && val.length == 1) {
+		val = val[0];
+	}
+	if (val._content) {
+		val = val._content;
+	}
+	return val;
 };
 
 ZmZimletContext.prototype.callHandler = function(funcname, args) {
@@ -233,10 +241,16 @@ ZmZimletContext.prototype.callHandler = function(funcname, args) {
 			return f.apply(this.handlerObject, args);
 		}
 	}
-    return null;
+};
+
+// TODO: this func. must be a wrapper that translates msg which may be in the
+// form "${msg.foo}" into calls that AjxMessageFormat can handle.
+ZmZimletContext.prototype.msgFormat = function(msg) {
+	return msg;
 };
 
 ZmZimletContext.prototype._translateUserProp = function() {
+	// that's gonna do for now.
 	var a = this.userProperties = this.userProperties.property;
 	this._propsById = {};
 	for (var i = 0; i < a.length; ++i) {
@@ -251,7 +265,9 @@ ZmZimletContext.prototype.setPropValue = function(name, val) {
 };
 
 ZmZimletContext.prototype.getPropValue = function(name) {
-	return this._propsById[name] ? this._propsById[name].value : null;
+	if(this._propsById[name]) {
+		return this._propsById[name].value;
+	}
 };
 
 ZmZimletContext.prototype.getProp = function(name) {
@@ -262,33 +278,28 @@ ZmZimletContext.prototype._translateConfig = function() {
 	if (this.config.global) {
 		var prop = this.config.global[0].property;
 		this.config.global = {};
-		for (var i = 0; i < prop.length; i++) {
+		for (var i = 0; i < prop.length; i++)
 			this.config.global[prop[i].name] = prop[i]._content;
-		}
 	}
 	if (this.config.local) {
-		var propLocal = this.config.local[0].property;
+		var prop = this.config.local[0].property;
 		this.config.local = {};
-		for (var j = 0; j < propLocal.length; j++) {
-			this.config.local[propLocal[j].name] = propLocal[j]._content;
-		}
+		for (var i = 0; i < prop.length; i++)
+			this.config.local[prop[i].name] = prop[i]._content;
 	}
 };
 
 ZmZimletContext.prototype.getConfig = function(name) {
-	if (this.config.local && this.config.local[name]) {
+	if (this.config.local && this.config.local[name])
 		return this.config.local[name];
-	}
-	if (this.config.global && this.config.global[name]) {
+	if (this.config.global && this.config.global[name])
 		return this.config.global[name];
-	}
 	return undef;
 };
 
 ZmZimletContext.prototype.getPanelActionMenu = function() {
-	if (this._panelActionMenu instanceof AjxCallback) {
+	if (this._panelActionMenu instanceof AjxCallback)
 		this._panelActionMenu = this._panelActionMenu.run();
-	}
 	return this._panelActionMenu;
 };
 
@@ -296,15 +307,17 @@ ZmZimletContext.prototype._makeMenu = function(obj) {
 	var menu = new ZmPopupMenu(DwtShell.getShell(window));
 	for (var i = 0; i < obj.length; ++i) {
 		var data = obj[i];
-		if (!data.id) {
+		if (!data.id)
 			menu.createSeparator();
-		} else {
-			var item = menu.createMenuItem(data.id, data.icon, this.processMessage(data.label),
+		else {
+			//alert([data.id, data.label, data.icon].join("\n"));
+			var item = menu.createMenuItem(data.id, data.icon, data.label,
 						       data.disabledIcon, true);
 			item.setData("xmlMenuItem", data);
 			item.addSelectionListener(this._handleMenuItemSelected);
 		}
 	}
+	//menu.addSelectionListener();
 	return menu;
 };
 
@@ -317,51 +330,19 @@ ZmZimletContext.prototype._handleMenuItemSelected = function(ev) {
 	}
 };
 
-ZmZimletContext.RE_SCAN_OBJ = /(^|[^\\])\$\{(?:obj|src)\.([\$a-zA-Z0-9_]+)\}/g;
-ZmZimletContext.RE_SCAN_PROP = /(^|[^\\])\$\{prop\.([\$a-zA-Z0-9_]+)\}/g;
-ZmZimletContext.RE_SCAN_MSG = /(^|[^\\])\$\{msg\.([\$a-zA-Z0-9_]+)\}/g;
+ZmZimletContext.RE_SCAN_OBJ = /(^|[^\\])\$\{(obj|src)\.([\$a-zA-Z0-9_]+)\}/g;
 
 ZmZimletContext.prototype.processString = function(str, obj) {
-	return this.replaceObj(ZmZimletContext.RE_SCAN_OBJ, str, obj);
-};
-
-ZmZimletContext.prototype.processMessage = function(str) {
-	// i18n files load async so if not defined skip translation
-	if(!window[this.name]) {
-		DBG.println(AjxDebug.DBG2, "processMessage no messages: " + str);
-		return str;
-	}
-	var props = window[this.name];
-	return this.replaceObj(ZmZimletContext.RE_SCAN_MSG, str, props);
-};
-
-ZmZimletContext.prototype.replaceObj = function(re, str, obj) {
-	return str.replace(re,
-		function(str, p1, prop) {
-			var txt = p1;
-			if (obj instanceof Array && obj.length > 1) {
-				for(var i=0; i < obj.length; i++) {
-					if(txt) {txt += ",";}
-					var o = obj[i];
-					if (o[prop] instanceof Object) {
-						txt += o[prop].value;  // user prop
-					} else {
-						txt += o[prop];   // string
-					}
-				}
-			} else {
-				if (typeof obj[prop] != "undefined") {
-					if (obj[prop] instanceof Object) {
-						txt += obj[prop].value;  // user prop
-					} else {
-						txt += obj[prop];   // string
-					}
-				} else {
-					txt += "(UNDEFINED - str '" + str + "' obj '" + obj + "')";
-				}
-			}
-			return txt;
-		});
+	return str.replace(ZmZimletContext.RE_SCAN_OBJ,
+			   function(str, p1, p2, prop) {
+				   var txt = p1;
+				   if (typeof obj[prop] != "undefined") {
+					   txt += obj[prop];
+				   } else {
+					   txt += "(UNDEFINED: obj." + prop + ")";
+				   }
+				   return txt;
+			   });
 };
 
 ZmZimletContext.prototype.makeURL = function(actionUrl, obj) {
@@ -373,10 +354,8 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj) {
 			// trim whitespace as it's almost certain that the
 			// developer didn't intend it.
 			var val = AjxStringUtil.trim(a[i]._content);
-			if (obj) {
+			if (obj != null)
 				val = this.processString(val, obj);
-			}
-			val = this.replaceObj(ZmZimletContext.RE_SCAN_PROP, val, this._propsById);
 			param.push([ AjxStringUtil.urlEncode(a[i].name),
 				     "=",
 				     AjxStringUtil.urlEncode(val) ].join(""));
@@ -388,106 +367,75 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj) {
 	return url;
 };
 
-/**
-* if there already is a paintable canvas to use, as in the case of tooltip,
-* pass it to 'div' parameter.  otherwise a canvas (window, popup, dialog) will be created
-* to display the contents from the url.
-*/
-ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div) {
+ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj) {
 	var url = this.makeURL(actionUrl, obj);
-	var xslt = null;
 
-	if (actionUrl.xslt) {
-		xslt = this.getXslt(actionUrl.xslt);
-	}
-	
-	// need to use callback if the paintable canvas already exists, or if it needs xslt transformation.
-	if (div || xslt) {
-		if (!div) {
-			canvas = this.handlerObject.makeCanvas(canvas[0], null);
-			div = document.getElementById("zimletCanvasDiv");
-		}
-		url = ZmZimletBase.PROXY + AjxStringUtil.urlEncode(url);
-		AjxRpc.invoke(null, url, null, new AjxCallback(this, this._rpcCallback, [xslt, div]), true);
+	if (canvas) {
+		canvas = this.handlerObject.makeCanvas(canvas[0], url);
 	} else {
-		this.handlerObject.makeCanvas(canvas[0], url);
+		window.open(url, this.name);
 	}
 };
 
 ZmZimletContext._translateZMObject = function(obj) {
-	// XXX Assumes all dragged objects are of the same type
-	var type = obj[0] ? obj[0].toString() : obj.toString();
-	if (ZmZimletContext._zmObjectTransformers[type]) {
+	var type = obj.toString();
+	if (/^([a-z0-9_$]+)/i.test(type))
+		type = RegExp.$1;
+	if (ZmZimletContext._zmObjectTransformers[type])
 		return ZmZimletContext._zmObjectTransformers[type](obj);
-	} else {
+	else
 		return obj;
-	}
 };
 
 ZmZimletContext._zmObjectTransformers = {
 
 	"ZmMailMsg" : function(o) {
-		var all = [];
-		o = (o instanceof Array) ? o : [o];
-		for(var i=0; i< o.length; i++) {
-			var ret = { TYPE: "ZmMailMsg" };
-			var oi = o[i];
-			ret.id           = oi.getId();
-			ret.convId       = oi.getConvId();
-			ret.from         = oi.getAddresses(ZmEmailAddress.FROM).getArray();
-			ret.to           = oi.getAddresses(ZmEmailAddress.TO).getArray();
-			ret.cc           = oi.getAddresses(ZmEmailAddress.CC).getArray();
-			ret.subject      = oi.getSubject();
-			ret.date         = oi.getDate();
-			ret.size         = oi.getSize();
-			ret.fragment     = oi.fragment;
-			ret.tags         = oi.tags;
-			// ret.flagged      = oi.getFlagged();
-			ret.unread       = oi.isUnread;
-			ret.attachment   = oi._attachments.length > 0;
-			// ret.forwarded      = oi.isForwarded();
-			ret.sent         = oi.isSent;
-			ret.replied      = oi.isReplied;
-			ret.draft        = oi.isDraft;
-			ret.body		 = ZmZimletContext._getMsgBody(oi);
-			all[i] = ret;
+		if (o[0]) {
+			o = o[0];
 		}
-		if(all.length == 1) {
-			return all[0];
-		} else {
-			all["TYPE"] = "ZmMailMsg";
-			return all;
-		}
+		var ret = { TYPE: "ZmMailMsg" };
+		ret.id           = o.getId();
+		ret.convId       = o.getConvId();
+		ret.from         = o.getAddresses(ZmEmailAddress.FROM).getArray();
+		ret.to           = o.getAddresses(ZmEmailAddress.TO).getArray();
+		ret.cc           = o.getAddresses(ZmEmailAddress.CC).getArray();
+		ret.subject      = o.getSubject();
+		ret.date         = o.getDate();
+		ret.size         = o.getSize();
+		ret.fragment     = o.fragment;
+		// FIXME: figure out how to get these
+		// ret.tags         = o.getTags();
+		// ret.flagged      = o.getFlagged();
+		ret.unread       = o.isUnread;
+		ret.attachment   = o._attachments.length > 0;
+		ret.sent         = o.isSent;
+		ret.replied      = o.isReplied;
+		ret.draft        = o.isDraft;
+		ret.body		 = ZmZimletContext._getMsgBody(o);
+		return ret;
 	},
 
 	"ZmConv" : function(o) {
-		var all = [];
-		o = (o instanceof Array) ? o : [o];
-		for(var i=0; i< o.length; i++) {
-			var oi = o[i];
-			var ret = { TYPE: "ZmConv" };
-			ret.id           = oi.id;
-			ret.subject      = oi.getSubject();
-			ret.date         = oi.date;
-			ret.fragment     = oi.fragment;
-			ret.participants = oi.participants.getArray();
-			ret.numMsgs      = oi.numMsgs;
-			ret.tags         = oi.tags;
-			// ret.flagged      = oi.getFlagged();
-			ret.unread       = oi.isUnread;
-			// ret.attachment   = oi._attachments ?;
-			// ret.sent         = oi.isSent;
-			
-			// Use first message... maybe should be getHotMsg()?
-			ret.body         = ZmZimletContext._getMsgBody(oi.getFirstMsg());
-			all[i] = ret;
+		if (o[0]) {
+			o = o[0];
 		}
-		if(all.length == 1) {
-			return all[0];
-		} else {
-			all["TYPE"] = "ZmConv";
-			return all;
-		}
+		var ret = { TYPE: "ZmConv" };
+		ret.id           = o.id;
+		ret.subject      = o.getSubject();
+		ret.date         = o.date;
+		ret.fragment     = o.fragment;
+		ret.participants = o.participants.getArray();
+		ret.numMsgs      = o.numMsgs;
+		// FIXME: figure out how to get these
+		// ret.tags         = o.getTags();
+		// ret.flagged      = o.getFlagged();
+		ret.unread       = o.isUnread;
+		// ret.attachment   = o._attachments ?;
+		// ret.sent         = o.isSent;
+		
+		// Use first message... maybe should be getHotMsg()?
+		ret.body         = ZmZimletContext._getMsgBody(o.getFirstMsg());
+		return ret;
 	},
 
 	ZmContact_fields : function() {
@@ -541,92 +489,48 @@ ZmZimletContext._zmObjectTransformers = {
 
 	"ZmContact" : function(o) {
 		o = (o instanceof Array) ? o : [o];
-		var all = new Array();
-		for(var i=0; i< o.length; i++) {
-			var ret = { TYPE: "ZmContact" };
-			var a = this.ZmContact_fields;
-			if (typeof a == "function") {
-				a = this.ZmContact_fields = a();
-			}
-			var attr = o[i].getAttrs();
-			for (var j = 0; j < a.length; ++j) {
-				ret[a[j]] = attr[a[j]];
-			}
-			ret.id = o[i].id;
-			all[i] = ret;
+		// can't even remotely understand why, after a contact has been
+		// displayed once, we need to check it's "0" property and
+		// retrieve the actual object from there.  x-( So, object in an
+		// object.  Could it be because of our current JSON format?
+		if (o[0]) {
+			o = o[0];
 		}
-		if(all.length == 1) {
-			return all[0];
-		} else {
-			all["TYPE"] = "ZmContact";
-			return all;
-		}
-	},
-	
-	"ZmFolder" : function(o) {
-		var oi = o[0] ? o[0] : o;
-		var ret = { TYPE: "ZmFolder" };
-		ret.id           = oi.id;
-		ret.name         = oi.getName();
-		ret.path         = oi.getPath();
-		ret.isInTrash    = oi.isInTrash();
-		ret.unread       = oi.numUnread;
-		ret.total        = oi.numTotal;
-		ret.url          = oi.url;
+		var ret = { TYPE: "ZmContact" };
+		var a = this.ZmContact_fields;
+		if (typeof a == "function")
+			a = this.ZmContact_fields = a();
+		var attr;
+		var attr = o.getAttrs();
+		for (var i = 0; i < a.length; ++i)
+			ret[a[i]] = attr[a[i]];
 		return ret;
 	},
 
 	"ZmAppt" : function(o) {
-		var oi = o[0] ? o[0] : o;
-		oi.getDetails();
+		if (o[0]) {
+			o = o[0];
+		}
 		var ret = { TYPE: "ZmAppt" };
-		ret.id             = oi.getId();
-		ret.uid            = oi.getUid();
-		ret.type           = oi.getType();
-		ret.subject        = oi.getName();
-		ret.startDate      = oi.getStartDate();
-		ret.endDate        = oi.getEndDate();
-		ret.allDayEvent    = oi.isAllDayEvent();
-		ret.exception      = oi.isException();
-		ret.alarm          = oi.hasAlarm();
-		ret.otherAttendees = oi.hasOtherAttendees();
-		ret.attendees      = oi.getAttendees();
-		ret.location       = oi.getLocation();
-		ret.notes          = oi.getNotesPart();
-		ret.isRecurring    = oi.isRecurring();
-		ret.timeZone       = oi.getTimezone();
+		ret.id             = o.getId();
+		ret.uid            = o.getUid();
+		ret.type           = o.getType();
+		ret.subject        = o.getName();
+		ret.startDate      = o.getStartDate();
+		ret.endDate        = o.getEndDate();
+		ret.allDayEvent    = o.isAllDayEvent();
+		ret.exception      = o.isException();
+		ret.recurring      = o.isRecurring();
+		ret.alarm          = o.hasAlarm();
+		ret.otherAttendees = o.hasOtherAttendees();
+		ret.attendees      = o.getAttendees();
+		ret.location       = o.getLocation();
+		ret.notes          = o.getNotesPart();
+		ret.isRecurring    = ret.recurring; // WARNING: duplicate
+		ret.timeZone       = o.getTimezone();
 		return ret;
 	}
 
-};
-
-ZmZimletContext.prototype.getXslt =
-function(url) {
-	if (!this._xslt) {
-		this._xslt = {};
-	}
-	var realurl = this.getUrl() + url;
-	if (!this._xslt[realurl]) {
-		this._xslt[realurl] = AjxXslt.createFromUrl(realurl);
-	}
-	return this._xslt[realurl];
-};
-
-ZmZimletContext.prototype._rpcCallback =
-function(xslt, canvas, result) {
-	var html, resp = result.xml;
-	if (!resp) {
-		var doc = AjxXmlDoc.createFromXml(result.text);
-		resp = doc.getDoc();
-	}
-	// TODO:  instead of changing innerHTML, maybe append
-	// the dom tree to the canvas.
-	if (xslt) {
-		html = xslt.transformToString(resp);
-	} else {
-		html = resp.innerHTML;
-	}
-	canvas.innerHTML = html;
 };
 
 ZmZimletContext._getMsgBody = function(o) {

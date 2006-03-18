@@ -81,6 +81,7 @@ function(view) {
 	}
 };
 
+
 // Private methods
 
 ZmTradController.prototype._createDoublePaneView = 
