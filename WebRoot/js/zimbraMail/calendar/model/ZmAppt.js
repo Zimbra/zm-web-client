@@ -192,11 +192,15 @@ ZmAppt.prototype.getType 						= function() { return this.type; };					// type o
 ZmAppt.prototype.getUid 						= function() { return this.uid; }; 					// iCal uid of appt
 ZmAppt.prototype.getUniqueStartTime 			= function() { return this._uniqStartTime; }; 		// returns unique start time for an instance of recurring appt
 ZmAppt.prototype.getUniqueId =
-function() {
-	// return unique (across recurrance) id, by using getUid()+"/"+getStartTime()
-	if (this._uniqId == null)
-		this._uniqId = Dwt.getNextId();
-	return (this.id + "_" + this._uniqId);
+function(useStartTime) {
+	if (useStartTime) {
+		if (!this._startTimeUniqId) this._startTimeUniqId = this.id + "_" + this.getStartTime();
+		return this._startTimeUniqId;
+	} else {
+		if (this._uniqId == null)
+			this._uniqId = Dwt.getNextId();
+		return (this.id + "_" + this._uniqId);
+	}
 };
 
 ZmAppt.prototype.isAllDayEvent 					= function() { return this.allDayEvent == "1"; };
@@ -1101,6 +1105,7 @@ function(notes) {
 
 ZmAppt.prototype._resetCached =
 function() {
+	delete this._startTimeUniqId;
 	delete this._validAttachments;
 	delete this.tooltip;
 };

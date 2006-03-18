@@ -80,6 +80,10 @@ function(cmdStr) {
 	} else if (arg0 == "noop") {
 		this._appCtxt.getAppController()._doPoll(true);
 		this._alert("Sent NoOpRequest");
+	} else if (arg0 == "rr") {
+		this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getReminderController().refresh();
+	} else if (arg0 == "rh") {
+		this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getReminderController()._housekeepingAction();
 	} else if (arg0 == "toast") {
 		var delay = argv[1] ? argv[1] : null
 		if (argv[2])	ZmStatusView.ANIMATION_DELAY = argv[2];

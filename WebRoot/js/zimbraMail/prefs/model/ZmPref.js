@@ -63,7 +63,8 @@ ZmPref.ADDR_BOOK_PREFS = [ZmSetting.AUTO_ADD_ADDRESS,
 						  ZmSetting.IMPORT, ZmSetting.EXPORT];
 						  
 ZmPref.CALENDAR_PREFS = [ZmSetting.CALENDAR_INITIAL_VIEW, ZmSetting.CAL_FIRST_DAY_OF_WEEK, 
-						 ZmSetting.CAL_SHOW_TIMEZONE, ZmSetting.CAL_USE_QUICK_ADD, ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL];
+						 ZmSetting.CAL_SHOW_TIMEZONE, ZmSetting.CAL_USE_QUICK_ADD, ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL,
+						 ZmSetting.CAL_REMINDER_WARNING_TIME];
 
 var i = 1;
 ZmPref.TYPE_INPUT		= i++;
@@ -329,4 +330,10 @@ ZmPref.SETUP[ZmSetting.CAL_USE_QUICK_ADD] = {
 ZmPref.SETUP[ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL] = {
  	displayName:		ZmMsg.alwaysShowMiniCal,
  	displayContainer:	ZmPref.TYPE_CHECKBOX};
-	
+
+ZmPref.SETUP[ZmSetting.CAL_REMINDER_WARNING_TIME] = {
+	displayName:		ZmMsg.numberOfMinutes,
+	displayContainer:	ZmPref.TYPE_SELECT,
+	displayOptions:		[ZmMsg.neverShow, "1", "5", "10", "15", "30", "45", "60"],
+	options:			[0, 1, 5, 10, 15, 30, 45, 60]
+	};

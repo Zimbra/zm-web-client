@@ -94,6 +94,8 @@ ZmCalViewController.DEFAULT_APPOINTMENT_DURATION = 3600000;
 ZmCalViewController.MAINT_NONE 		= 0x0; // no work to do
 ZmCalViewController.MAINT_MINICAL 	= 0x1; // minical needs refresh
 ZmCalViewController.MAINT_VIEW 		= 0x2; // view needs refresh
+ZmCalViewController.MAINT_REMINDER	= 0x4; // reminders need refresh
+
 
 ZmCalViewController.prototype.toString =
 function() {
@@ -1491,6 +1493,7 @@ function(dontClearCache) {
 	} else if (this._miniCalendar != null) {
 		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
 	}
+	this._scheduleMaintenance(ZmCalViewController.MAINT_REMINDER);
 }
 
 ZmCalViewController.prototype._maintErrorHandler =
@@ -1518,11 +1521,13 @@ function(work, view, list) {
 		if (work & ZmCalViewController.MAINT_VIEW) {
 			// now schedule view for maint
 			this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
-			return;
 		}
 	} else if (work & ZmCalViewController.MAINT_VIEW) {
 		this._list = list;
 		view.set(list);
+	}
+	if (work & ZmCalViewController.MAINT_REMINDER) {
+		this._app.getReminderController().refresh();
 	}
 }
 
@@ -1558,5 +1563,7 @@ function() {
 			this.getApptSummaries(rt.start, rt.end, view._fanoutAllDay(), this.getCheckedCalendarFolderIds(), cb);
 			view.setNeedsRefresh(false);
 		}
+	} else if (work & ZmCalViewController.MAINT_REMINDER) {
+		this._app.getReminderController().refresh();
 	}
 }

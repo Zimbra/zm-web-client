@@ -85,6 +85,13 @@ function() {
 	return this._calController;
 };
 
+ZmCalendarApp.prototype.getReminderController =
+function() {
+	if (!this._reminderController)
+		this._reminderController = new ZmReminderController(this._appCtxt, this.getCalController());
+	return this._reminderController;
+};
+
 ZmCalendarApp.prototype.getApptComposeController = 
 function() {
 	if (!this._apptController)

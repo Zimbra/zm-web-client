@@ -190,6 +190,7 @@ ZmSetting.CAL_USE_QUICK_ADD 			= i++;
 ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL		= i++;
 ZmSetting.CALENDAR_INITIAL_VIEW			= i++;
 ZmSetting.DEFAULT_CALENDAR_TIMEZONE		= i++;
+ZmSetting.CAL_REMINDER_WARNING_TIME		= i++;
 // general preferences
 ZmSetting.PASSWORD						= i++;
 ZmSetting.SEARCH_INCLUDES_SPAM			= i++;
@@ -345,6 +346,8 @@ ZmSetting.INIT[ZmSetting.CAL_USE_QUICK_ADD] 			= ["zimbraPrefCalendarUseQuickAdd
 ZmSetting.INIT[ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL]		= ["zimbraPrefCalendarAlwaysShowMiniCal", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.CALENDAR_INITIAL_VIEW]			= ["zimbraPrefCalendarInitialView", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.CAL_DAY];
 ZmSetting.INIT[ZmSetting.DEFAULT_CALENDAR_TIMEZONE]		= ["zimbraPrefTimeZoneId", ZmSetting.T_PREF, ZmSetting.D_STRING];
+ZmSetting.INIT[ZmSetting.CAL_REMINDER_WARNING_TIME]		= ["zimbraPrefCalendarApptReminderWarningTime", ZmSetting.T_PREF, ZmSetting.D_INT, 30];
+
 // general preferences
 ZmSetting.INIT[ZmSetting.PASSWORD]						= [null, ZmSetting.T_PREF];
 ZmSetting.INIT[ZmSetting.SEARCH_INCLUDES_SPAM]			= ["zimbraPrefIncludeSpamInSearch", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];

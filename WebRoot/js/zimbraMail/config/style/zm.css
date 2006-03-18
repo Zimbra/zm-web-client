@@ -1021,6 +1021,29 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 .TextPage span {margin: 10ex 0 0 0}
 
+/* Reminder Dialog */
+
+.ZmReminderDialog { width: 475px; ZZZheight: 185px; margin: 5 5 0 5; overflow: auto;}
+
+.ZmReminderOverdue {
+	color: red;
+}
+
+.ZmReminderSoon {
+	color: red;
+	font-weight: bold;
+}
+
+.ZmReminderFuture {
+
+}
+
+.ZmReminderField {
+	text-align: right;
+	color: #555555;
+	white-space: nowrap;
+	overflow: hidden;
+}
 
 /* Appointment View */
 .ZmApptComposeView {
@@ -1035,6 +1058,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	overflow: hidden;
 	width: 1%;
 }
+
 
 .ZmApptReadOnlyDialogField {
 	text-align: right;
