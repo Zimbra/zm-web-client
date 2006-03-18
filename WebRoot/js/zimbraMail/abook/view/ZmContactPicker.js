@@ -292,7 +292,8 @@ function(ev) {
 * @param buttonInfo		[array]			transfer button IDs and labels
 */
 function ZmContactChooser(parent, buttonInfo) {
-	DwtChooser.call(this, parent, null, buttonInfo, DwtChooser.HORIZ_STYLE, true);
+	DwtChooser.call(this, {parent: parent, buttonInfo: buttonInfo, layoutStyle: DwtChooser.HORIZ_STYLE,
+						   noDuplicates: true});
 };
 
 ZmContactChooser.prototype = new DwtChooser;

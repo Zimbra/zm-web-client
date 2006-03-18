@@ -536,22 +536,11 @@ function(appt, mode) {
 		this._attendeesField.setValue(appt.getAttendees());
 		this._attendees[ZmAppt.PERSON] = appt.attendees;
 		var tp = this.parent.getTabPage(ZmApptComposeView.TAB_ATTENDEES);
-		var list = [];
-		for (var i = 0; i < appt.attendees.length; i++) {
-			var contact = appt.attendees[i];
-			// see if it's a recognized personal or GAL contact
-			if (contact.id || contact.isGal) {
-				list.push(contact);
-			}
-		}
-		if (list.length) {
-			tp._chooser.transfer(list);
-		}
+		tp._chooser.transfer(appt.attendees);
 	}
 
-	// locations
+	// locations (location field set above)
 	if (appt.locations && appt.locations.length) {
-//		this._locationField.setValue(appt.getLocation());
 		this._attendees[ZmAppt.LOCATION] = appt.locations;
 		tp = this.parent.getTabPage(ZmApptComposeView.TAB_LOCATIONS);
 		tp._chooser.transfer(appt.locations);
