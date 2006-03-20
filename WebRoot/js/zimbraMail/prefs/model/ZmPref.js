@@ -55,7 +55,8 @@ ZmPref.MAIL_PREFS = [ZmSetting.INITIAL_GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSet
 					 ZmSetting.SIGNATURE_ENABLED, ZmSetting.SIGNATURE_STYLE, ZmSetting.SIGNATURE,
 					 ZmSetting.VACATION_MSG_ENABLED, ZmSetting.VACATION_MSG,
 					 ZmSetting.NOTIF_ENABLED, ZmSetting.NOTIF_ADDRESS,
-					 ZmSetting.MAIL_FORWARDING_ADDRESS,
+					 ZmSetting.MAIL_FORWARDING_ADDRESS,					 
+					 ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED,
 					 ZmSetting.VIEW_AS_HTML, ZmSetting.DEDUPE_MSG_TO_SELF, 
 					 ZmSetting.COMPOSE_AS_FORMAT, ZmSetting.COMPOSE_SAME_FORMAT, ZmSetting.NEW_WINDOW_COMPOSE];
 					 
@@ -229,12 +230,17 @@ ZmPref.SETUP[ZmSetting.NOTIF_ADDRESS] = {
 	errorMessage:       ZmMsg.invalidEmail,
 	displaySeparator:	true};
 
+ZmPref.SETUP[ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED] = {
+	displayName:		ZmMsg.mailDeliveryDisabled,
+	displayContainer:	ZmPref.TYPE_CHECKBOX,
+	displaySeparator:	true,
+	precondition:		ZmSetting.MAIL_FORWARDING_ENABLED};
+
 ZmPref.SETUP[ZmSetting.MAIL_FORWARDING_ADDRESS] = {
 	displayName:		ZmMsg.mailForwardingAddress,
 	displayContainer:	ZmPref.TYPE_INPUT,
 	validationFunction: ZmPref.validateEmail,
 	errorMessage:       ZmMsg.invalidEmail,
-	displaySeparator:	true,
 	precondition:		ZmSetting.MAIL_FORWARDING_ENABLED};
 	
 ZmPref.SETUP[ZmSetting.VIEW_AS_HTML] = {
