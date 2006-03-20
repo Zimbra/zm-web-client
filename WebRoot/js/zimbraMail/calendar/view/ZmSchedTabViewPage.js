@@ -75,8 +75,6 @@ ZmSchedTabViewPage.STATUS_TENTATIVE			= 3;
 ZmSchedTabViewPage.STATUS_OUT				= 4;
 ZmSchedTabViewPage.STATUS_UNKNOWN			= 5;
 
-ZmSchedTabViewPage.ATT_TYPES = [ZmAppt.PERSON, ZmAppt.LOCATION, ZmAppt.RESOURCE];
-
 // Public methods
 
 ZmSchedTabViewPage.prototype.toString = 
@@ -375,7 +373,7 @@ function() {
 			html[i++] = attendee.dwtId;
 			html[i++] = "'></div>";
 			html[i++] = "&nbsp;&nbsp;";
-			html[i++] = ZmMsg.clickHereToAddName;
+			html[i++] = ZmMsg.clickHereToAddAttendee;
 		}
 		html[i++] = "</div></td>";
 		html[i++] = "</tr></table>";
@@ -486,6 +484,8 @@ function() {
 
 	this._selectChangeListener = new AjxListener(this, this._selectChangeListener);
 	for (var i = 0; i < this._schedTable.length; i++) {
+		// we use onClick in containing DIV to determine whether we got focus, since
+		// input starts out disabled
 		var attendeeDiv = document.getElementById(this._schedTable[i].dwtDivId);
 		if (attendeeDiv) {
 			Dwt.setHandler(attendeeDiv, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
@@ -493,6 +493,7 @@ function() {
 		}
 		var attendeeInput = document.getElementById(this._schedTable[i].dwtInputId);
 		if (attendeeInput) {
+			// handle focus moving to/from an enabled input
 			Dwt.setHandler(attendeeInput, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
 			Dwt.setHandler(attendeeInput, DwtEvent.ONBLUR, ZmSchedTabViewPage._onBlur);
 			attendeeInput._schedViewPageId = svpId;
@@ -527,6 +528,9 @@ function(el) {
 	}
 };
 
+/*
+* Called by ONBLUR handler for attendee input field.
+*/
 ZmSchedTabViewPage.prototype._handleAttendeeField = 
 function(inputEl) {
 	var dwtInput = Dwt.getObjectFromElement(inputEl);
@@ -633,8 +637,8 @@ function(organizer, attendees) {
 	var emails = [];
 	var num = 0;
 	emails.push(this._setAttendee(num++, organizer, ZmAppt.PERSON, true)); // add organizer first
-	for (var t = 0; t < ZmSchedTabViewPage.ATT_TYPES.length; t++) {
-		var type = ZmSchedTabViewPage.ATT_TYPES[t];
+	for (var t = 0; t < ZmApptComposeView.ATT_TYPES.length; t++) {
+		var type = ZmApptComposeView.ATT_TYPES[t];
 		var att = attendees[type];
 		for (var i = 0; i < att.length; i++) {
 			if (att[i]) {
@@ -735,18 +739,6 @@ function(isStartDate, skipCheck) {
 	// finally, update the appt tab view page w/ new date(s)
 	this._apptTab.updateDateField(this._startDateField.value, this._endDateField.value);
 };
-
-ZmSchedTabViewPage.prototype._getAcListLoc =
-function(ev0, ev1) {
-	var inputEl = ev1.element;
-	if (inputEl) {
-		var loc = Dwt.getLocation(inputEl);
-		var height = Dwt.getSize(inputEl).y;
-		return (new DwtPoint(loc.x, loc.y+height));
-	}
-	return null;
-};
-
 
 // Listeners
 
@@ -991,7 +983,7 @@ ZmSchedTabViewPage._onClick =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var svp = AjxCore.objectWithId(el._schedViewPageId);
-
+//DBG.println("***** ONCLICK: " + el.tagName);
 	// figure out which object was clicked
 	if (el.id == svp._allDayCheckboxId) {
 		svp._showTimeFields(el.checked ? false : true);
@@ -1006,6 +998,7 @@ ZmSchedTabViewPage._onBlur =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var svp = AjxCore.objectWithId(el._schedViewPageId);
+//DBG.println("***** ONBLUR: " + el.tagName);
 
 	svp._handleAttendeeField(el);
 };
@@ -1014,6 +1007,7 @@ ZmSchedTabViewPage._onChange =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var svp = AjxCore.objectWithId(el._schedViewPageId);
+//DBG.println("***** ONCHANGE: " + el.tagName);
 
 	svp._handleDateChange(el == svp._startDateField);
 };

@@ -57,9 +57,10 @@ function ZmAppt(appCtxt, list, noinit) {
 	this._viewMode = ZmAppt.MODE_NEW;
 	this.folderId = ZmOrganizer.ID_CALENDAR;
 	
-	this.attendees = null;	// list of ZmContact
-	this.locations = null;	// list of ZmResource
-	this.resources = null;	// list of ZmResource
+	this._attendees = {};	// attendees by type
+	this._attendees[ZmAppt.PERSON]		= [];
+	this._attendees[ZmAppt.LOCATION]	= [];
+	this._attendees[ZmAppt.RESOURCE]	= [];
 
 	this._origAttendees = null;	// list of ZmContact
 
@@ -159,11 +160,15 @@ function() {
 
 // Getters
 
+ZmAppt.prototype.getAttendees					= function() { return this._attendees[ZmAppt.PERSON]; };
+ZmAppt.prototype.getLocations					= function() { return this._attendees[ZmAppt.LOCATION]; };
+ZmAppt.prototype.getResources					= function() { return this._attendees[ZmAppt.RESOURCE]; };
+
 // next 3 getters convert array to string
-ZmAppt.prototype.getAttendees 					= function() { return this._getAttendeesString(this.attendees); };
-ZmAppt.prototype.getLocation					= function() { return (this.locations && this.locations.length) ? 
-																this._getAttendeesString(this.locations) : this.location ? this.location : ""; };
-ZmAppt.prototype.getResources 					= function() { return this._getAttendeesString(this.resources); };
+ZmAppt.prototype.getAttendeesText				= function() { return this._getAttendeesString(this._attendees[ZmAppt.PERSON]); };
+ZmAppt.prototype.getLocation					= function() { return (this._attendees[ZmAppt.LOCATION] && this._attendees[ZmAppt.LOCATION].length) ? 
+																this._getAttendeesString(this._attendees[ZmAppt.LOCATION]) : this.location ? this.location : ""; };
+ZmAppt.prototype.getResourcesText				= function() { return this._getAttendeesString(this._attendees[ZmAppt.RESOURCE]); };
 
 ZmAppt.prototype.getOrigAttendees 				= function() { return this._origAttendees; };
 ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
@@ -237,6 +242,41 @@ function(startDate) {
 ZmAppt.prototype.setType 						= function(newType) 	{ this.type = newType; };
 ZmAppt.prototype.setTimezone 					= function(timezone) 	{ this.timezone = timezone; };
 
+// Takes list of email string, ZmEmailAddress, or ZmContact
+ZmAppt.prototype.setAttendees =
+function(list) {
+	list = (list instanceof Array) ? list : [list];
+	for (var i = 0; i < list.length; i++) {
+		var attendee = this._getAttendeeFromItem(list[i], ZmAppt.PERSON);
+		if (attendee) {
+			this._attendees[ZmAppt.PERSON].push(attendee);
+		}
+	}
+};
+
+// Takes list of email string, ZmEmailAddress, or ZmResource
+ZmAppt.prototype.setResources =
+function(list) {
+	list = (list instanceof Array) ? list : [list];
+	for (var i = 0; i < list.length; i++) {
+		var attendee = this._getAttendeeFromItem(list[i], ZmAppt.RESOURCE);
+		if (attendee) {
+			this._attendees[ZmAppt.RESOURCE].push(attendee);
+		}
+	}
+};
+
+// Takes list of email string, ZmEmailAddress, or ZmResource
+ZmAppt.prototype.setLocations =
+function(list) {
+	list = (list instanceof Array) ? list : [list];
+	for (var i = 0; i < list.length; i++) {
+		var attendee = this._getAttendeeFromItem(list[i], ZmAppt.LOCATION);
+		if (attendee) {
+			this._attendees[ZmAppt.LOCATION].push(attendee);
+		}
+	}
+};
 
 // Public methods
 
@@ -556,7 +596,7 @@ function(message, viewMode) {
 		this.repeatCustomMonthDay = this.startDate.getDate();
 
 		// parse out attendees for this invite
-		this.attendees = [];
+		this._attendees[ZmAppt.PERSON] = [];
 		this._origAttendees = [];
 		var attendees = message.invite.getAttendees();
 		if (attendees) {
@@ -570,21 +610,21 @@ function(message, viewMode) {
 					contact = new ZmContact(this._appCtxt);
 					contact.initFromEmail(email);
 				}
-				this.attendees.push(contact);
+				this._attendees[ZmAppt.PERSON].push(contact);
 				this._origAttendees.push(contact);
 			}
 		}
-		this.locations = [];
-		this.resources = [];
+		this._attendees[ZmAppt.LOCATION] = [];
+		this._attendees[ZmAppt.RESOURCE] = [];
 		var resources = message.invite.getResources();
 		if (resources) {
 			for (var i = 0; i < resources.length; i++) {
 				var resource = this._resources.getResourceByEmail(resources[i].url);
 				if (resource) {
 					if (resource.isLocation()) {
-						this.locations.push(resource);
+						this._attendees[ZmAppt.LOCATION].push(resource);
 					} else {
-						this.resources.push(resource);
+						this._attendees[ZmAppt.RESOURCE].push(resource);
 					}
 				}
 			}
@@ -624,8 +664,7 @@ function(message) {
 	var addrs = message.getAddresses(ZmEmailAddress.FROM, used);
 	addrs.addList(message.getAddresses(ZmEmailAddress.CC, used));
 	addrs.addList(message.getAddresses(ZmEmailAddress.TO, used));
-//	this.attendees = addrs.toString(ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE, true);
-	this.attendees = addrs;
+	this._attendees[ZmAppt.PERSON] = addrs;
 	
 	this._setNotes(message);
 }
@@ -940,12 +979,12 @@ function() {
 		buf[i++] = "\n";
 	}
 
-	if (this.attendees && this.attendees.length) {
+	if (this._attendees[ZmAppt.PERSON] && this._attendees[ZmAppt.PERSON].length) {
 		buf[i++] = "\n";
 		buf[i++] = ZmMsg.invitees;
 		buf[i++] = ": ";
-		var attString = this._getAttendeesString(this.attendees.slice(0, 10));
-		if (this.attendees.length > 10) {
+		var attString = this._getAttendeesString(this._attendees[ZmAppt.PERSON].slice(0, 10));
+		if (this._attendees[ZmAppt.PERSON].length > 10) {
 			attString += ", ...";
 		}
 		buf[i++] = attString;
@@ -1029,6 +1068,32 @@ function(attach, hasCheckbox) {
 
 
 // Private / Protected methods
+
+// Takes a string, ZmEmailAddress, or contact/resource and returns
+// a ZmContact or a ZmResource
+ZmAppt.prototype._getAttendeeFromItem =
+function(item, type) {
+	var attendee = null;
+	if (item instanceof ZmContact) {
+		attendee = item;
+	} else if (item instanceof ZmEmailAddress) {
+	 	attendee = (type == ZmAppt.PERSON) ? this._contacts.getContactByEmail(item.getAddress()) :
+	 										 this._resources.getResourceByEmail(item.getAddress());
+	 	if (!attendee) {
+			attendee = (type == ZmAppt.PERSON) ? new ZmContact(this._appCtxt) :
+												 new ZmResource(this._appCtxt);
+			attendee.initFromEmail(item);
+		}
+	} else if (typeof item == "string") {
+	 	var email = ZmEmailAddress.parse(item);
+	 	if (email) {
+			attendee = (type == ZmAppt.PERSON) ? new ZmContact(this._appCtxt) :
+												 new ZmResource(this._appCtxt);
+			attendee.initFromEmail(item);
+		}
+	}
+	return attendee;
+};
 
 /*
 * Creates a string from a list of attendees/locations/resources. If an item
@@ -1441,7 +1506,7 @@ function(soapDoc, method,  attachmentId, notifyList) {
 	soapDoc.set("su", this.name, m);
 	inv.setAttribute("name", this.name);
 
-	if (this.locations && this.locations.length) {
+	if (this._attendees[ZmAppt.LOCATION] && this._attendees[ZmAppt.LOCATION].length) {
 		inv.setAttribute("loc", this.getLocation());
 	} else if (this.location) {
 		inv.setAttribute("loc", this.location);
@@ -1555,19 +1620,19 @@ function(soapDoc, inv) {
 
 ZmAppt.prototype._addAttendeesToSoap = 
 function(soapDoc, inv, m, notifyList) {
-	if (this.attendees && this.attendees.length) {
-		for (var i = 0; i < this.attendees.length; i++) {
-			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.attendees[i], ZmAppt.PERSON);
+	if (this._attendees[ZmAppt.PERSON] && this._attendees[ZmAppt.PERSON].length) {
+		for (var i = 0; i < this._attendees[ZmAppt.PERSON].length; i++) {
+			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[ZmAppt.PERSON][i], ZmAppt.PERSON);
 		}
 	}
-	if (this.resources && this.resources.length) {
-		for (var i = 0; i < this.resources.length; i++) {
-			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.resources[i], ZmAppt.RESOURCE);
+	if (this._attendees[ZmAppt.RESOURCE] && this._attendees[ZmAppt.RESOURCE].length) {
+		for (var i = 0; i < this._attendees[ZmAppt.RESOURCE].length; i++) {
+			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[ZmAppt.RESOURCE][i], ZmAppt.RESOURCE);
 		}
 	}
-	if (this.locations && this.locations.length) {
-		for (var i = 0; i < this.locations.length; i++) {
-			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this.locations[i], ZmAppt.LOCATION);
+	if (this._attendees[ZmAppt.LOCATION] && this._attendees[ZmAppt.LOCATION].length) {
+		for (var i = 0; i < this._attendees[ZmAppt.LOCATION].length; i++) {
+			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[ZmAppt.LOCATION][i], ZmAppt.LOCATION);
 		}
 	}
 
@@ -1613,7 +1678,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 
 ZmAppt.prototype._addNotesToSoap = 
 function(soapDoc, m, cancel) {	
-	var prefix = this.attendees ? this._getDefaultBlurb(cancel) : "";
+	var prefix = this._attendees[ZmAppt.PERSON] ? this._getDefaultBlurb(cancel) : "";
 	var mp = soapDoc.set("mp", null, m);
 	var ct = this.notesTopPart ? this.notesTopPart.getContentType() : ZmMimeTable.TEXT_PLAIN;
 	mp.setAttribute("ct", ct);

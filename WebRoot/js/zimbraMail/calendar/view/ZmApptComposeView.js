@@ -97,6 +97,8 @@ ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_RESOURCES]	= "Attachment";
 ZmApptComposeView.TABS = [ZmApptComposeView.TAB_APPOINTMENT, ZmApptComposeView.TAB_SCHEDULE, ZmApptComposeView.TAB_ATTENDEES,
 						  ZmApptComposeView.TAB_LOCATIONS, ZmApptComposeView.TAB_RESOURCES];
 
+ZmApptComposeView.ATT_TYPES = [ZmAppt.PERSON, ZmAppt.LOCATION, ZmAppt.RESOURCE];
+
 ZmApptComposeView.MODE_ADD		= 1;
 ZmApptComposeView.MODE_REPLACE	= 2;
 
@@ -163,9 +165,9 @@ function() {
 	this._attendees[ZmAppt.LOCATION]	= [];
 	this._attendees[ZmAppt.RESOURCE]	= [];
 
-	this._attendeeKeys[ZmAppt.PERSON]	= [];
-	this._attendeeKeys[ZmAppt.LOCATION]	= [];
-	this._attendeeKeys[ZmAppt.RESOURCE]	= [];
+	this._attendeeKeys[ZmAppt.PERSON]	= {};
+	this._attendeeKeys[ZmAppt.LOCATION]	= {};
+	this._attendeeKeys[ZmAppt.RESOURCE]	= {};
 
 	for (var i = 0; i < ZmApptComposeView.TABS.length; i++) {
 		var id = ZmApptComposeView.TABS[i];
@@ -246,6 +248,7 @@ function(tabKey) {
 		this._apptTab.enableInputs(true);
 		this._apptTab.reEnableDesignMode();
 	}
+	this._curTabKey = tabKey;
 };
 
 ZmApptComposeView.prototype.getAppt = 
@@ -273,6 +276,7 @@ function(id) {
 	var tabKey = this._tabKeys[id];
 	if (tabKey) {
 		DwtTabView.prototype.switchToTab.call(this, tabKey);
+		this._curTabKey = tabKey;
 	}
 };
 
@@ -348,7 +352,7 @@ function() {
 		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		var contactsLoader = contactsClass.getContactList;
 		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader,
-					  matchValue: ZmContactList.AC_VALUE_FULL, locCallback: locCallback, compCallback: acCallback};
+					  matchValue: ZmContactList.AC_VALUE_NAME, locCallback: locCallback, compCallback: acCallback};
 		this._acContactsList = new ZmAutocompleteListView(params);
 	}
 	// for locations/resources
@@ -356,7 +360,7 @@ function() {
 		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
 		var resourcesLoader = resourcesClass.getResources;
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesLoader,
-					  matchValue: ZmResourceList.AC_VALUE_NAME, locCallback: locCallback, compCallback: acCallback};
+					  matchValue: ZmContactList.AC_VALUE_NAME, locCallback: locCallback, compCallback: acCallback};
 		this._acResourcesList = new ZmAutocompleteListView(params);
 	}
 
@@ -420,7 +424,7 @@ ZmApptComposeView.prototype._autocompleteCallback =
 function(text, el, match) {
 	var attendee = match.item;
 	var tabId = el._tabId;
-	var type = el._type;
+	var type = el._attType;
 	this.updateAttendees(attendee, type, tabId, ZmApptComposeView.MODE_ADD);
 };
 

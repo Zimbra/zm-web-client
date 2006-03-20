@@ -30,6 +30,13 @@ function ZmResource(appCtxt, id, list) {
 ZmResource.TYPE_LOCATION	= "Location";
 ZmResource.TYPE_EQUIPMENT	= "Equipment";
 
+ZmResource.F_capacity			= "zimbraCalResCapacity";
+ZmResource.F_contactMail		= "zimbraCalResContactEmail";
+ZmResource.F_locationName		= "zimbraCalResLocationDisplayName";
+ZmResource.F_mail				= "mail";
+ZmResource.F_name				= "displayName";
+ZmResource.F_type				= "zimbraCalResType";
+
 /**
 * Creates a resource from an XML node.
 *
@@ -49,15 +56,30 @@ ZmResource.prototype.constructor = ZmResource;
 
 ZmResource.prototype.isLocation =
 function() {
-	return this.getAttr("zimbraCalResType") == ZmResource.TYPE_LOCATION;
+	return this.getAttr(ZmResource.F_type) == ZmResource.TYPE_LOCATION;
 };
 
 ZmResource.prototype.getEmail =
 function() {
-	return this.getAttr("mail");
+	return this.getAttr(ZmResource.F_mail);
 };
 
 ZmResource.prototype.getFullName =
 function() {
-	return this.getAttr("displayName");
+	return this.getAttr(ZmResource.F_name);
+};
+
+/**
+* 
+*
+* @param email		an ZmEmailAddress, or an email string
+*/
+ZmResource.prototype.initFromEmail =
+function(email) {
+	if (email instanceof ZmEmailAddress) {
+		this.setAttr(ZmResource.F_mail, email.getAddress());
+		this.setAttr(ZmResource.F_name, email.getName());
+	} else {
+		this.setAttr(ZmResource.F_mail, email.getAddress());
+	}
 };

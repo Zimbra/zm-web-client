@@ -78,6 +78,7 @@ ZmContactList.AC_FIELDS 		= [ZmContact.F_firstName, ZmContact.F_lastName, ZmCont
 ZmContactList.AC_NAME_FIELDS	= [ZmContact.F_firstName, ZmContact.F_lastName];
 ZmContactList.AC_VALUE_FULL 	= "fullAddress";
 ZmContactList.AC_VALUE_EMAIL	= "email";
+ZmContactList.AC_VALUE_NAME		= "name";
 ZmContactList.AC_MAX 			= 20;	// max # of autocomplete matches to return
 ZmContactList.AC_PREMATCH		= 2;	// # of characters to do pre-matching for
 
@@ -615,6 +616,7 @@ function(nameHL, emailHL, name, email, contact) {
 	result.item = contact;
 	result[ZmContactList.AC_VALUE_FULL] = acValue;
 	result[ZmContactList.AC_VALUE_EMAIL] = email;
+	result[ZmContactList.AC_VALUE_NAME] = acContact[ZmContact.X_fullName];
 
 	return result;
 };

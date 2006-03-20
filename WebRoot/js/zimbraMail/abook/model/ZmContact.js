@@ -69,6 +69,7 @@ ZmContact.F_callbackPhone	= "callbackPhone";
 ZmContact.F_carPhone		= "carPhone";
 ZmContact.F_company			= "company";
 ZmContact.F_companyPhone	= "companyPhone";
+ZmContact.F_description		= "description";
 ZmContact.F_email			= "email";
 ZmContact.F_email2			= "email2";
 ZmContact.F_email3			= "email3";
