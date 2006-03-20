@@ -169,7 +169,9 @@ ZmFilterRule.MATCHING_OPS = [ZmFilterRule.OP_IS, ZmFilterRule.OP_NOT_IS, ZmFilte
 
 ZmFilterRule.ADDR_OPTIONS = [{label: ZmMsg.entireAddress, value: ":all"}, {label: ZmMsg.localPart, value: ":localpart"},
 							 {label: ZmMsg.domainPart, value: ":domain"}];
-							  
+
+delete i;
+						  
 /*
 * Conditions
 *
@@ -276,6 +278,7 @@ ZmFilterRule.A_DISCARD	= i++;
 ZmFilterRule.A_STOP		= i++;
 ZmFilterRule.A_FLAG		= i++;
 ZmFilterRule.A_TAG		= i++;
+ZmFilterRule.A_FORWARD	= i++;
 
 ZmFilterRule.A_VALUE = {};
 ZmFilterRule.A_VALUE[ZmFilterRule.A_KEEP]		= "keep";
@@ -284,6 +287,7 @@ ZmFilterRule.A_VALUE[ZmFilterRule.A_DISCARD]	= "discard";
 ZmFilterRule.A_VALUE[ZmFilterRule.A_STOP]		= "stop";
 ZmFilterRule.A_VALUE[ZmFilterRule.A_FLAG]		= "flag";
 ZmFilterRule.A_VALUE[ZmFilterRule.A_TAG]		= "tag";
+ZmFilterRule.A_VALUE[ZmFilterRule.A_FORWARD]	= "redirect";
 
 ZmFilterRule.A_VALUE_MAP = {};
 for (var i in ZmFilterRule.A_VALUE)
@@ -296,6 +300,7 @@ ZmFilterRule.A_LABEL[ZmFilterRule.A_DISCARD]	= ZmMsg.discard;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_STOP]		= ZmMsg.stopEvaluation;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_FLAG]		= ZmMsg.mark;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_TAG]		= ZmMsg.tagWith;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_FORWARD]	= ZmMsg.forwardTo;
 
 /*
 * Actions
@@ -326,7 +331,7 @@ ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD] = {
 };
 
 ZmFilterRule.ACTIONS_LIST = [ZmFilterRule.A_KEEP, ZmFilterRule.A_DISCARD, ZmFilterRule.A_FOLDER,
-							 ZmFilterRule.A_TAG, ZmFilterRule.A_FLAG];
+							 ZmFilterRule.A_TAG, ZmFilterRule.A_FLAG, ZmFilterRule.A_FORWARD];
 
 ZmFilterRule.prototype.toString =
 function() {

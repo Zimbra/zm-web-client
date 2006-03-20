@@ -35,7 +35,7 @@ ZmSplashScreen.prototype.getDefaultSubstitutions = function (){
 	if (ZmSplashScreen._defaultSubstitutions == null) {
 		ZmSplashScreen._defaultSubstitutions = {
 			url:ZmMsg.splashScreenZimbraUrl,
-			shortVersion: "",
+			shortVersion: "BETA",
 			appName: ZmMsg.splashScreenAppName,
 			// version is not used 
 			// version : "Some version",

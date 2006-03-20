@@ -29,7 +29,7 @@ function ZmFolderPropsDialog(appCtxt, parent, className) {
 	className = className || "ZmFolderPropsDialog";
 	var extraButtons;
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-		extraButtons  = [
+		extraButtons = [
 			new DwtDialog_ButtonDescriptor(ZmFolderPropsDialog.ADD_SHARE_BUTTON, ZmMsg.addShare, DwtDialog.ALIGN_LEFT)
 		];
 	}

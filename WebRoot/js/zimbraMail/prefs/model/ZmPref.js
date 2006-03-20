@@ -31,7 +31,7 @@ function ZmPref(id, name, dataType) {
 	this.isDirty = false;
 };
 
-ZmPref.prototype = ZmSetting;
+ZmPref.prototype = new ZmSetting();
 ZmPref.prototype.constructor = ZmPref;
 
 ZmPref.KEY_ID = "prefId_";
@@ -302,12 +302,12 @@ ZmPref.SETUP[ZmSetting.CONTACTS_PER_PAGE] = {
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.IMPORT] = {
-	displayName:		ZmMsg._import,
+	displayName:		ZmMsg.importFromCSV,
 	displayContainer:	ZmPref.TYPE_IMPORT,
 	displaySeparator:	false};
 
 ZmPref.SETUP[ZmSetting.EXPORT] = {
-	displayName:		ZmMsg._export,
+	displayName:		ZmMsg.exportToCSV,
 	displayContainer:	ZmPref.TYPE_EXPORT,
 	displaySeparator:	true};
 

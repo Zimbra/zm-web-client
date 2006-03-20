@@ -40,9 +40,9 @@
 * moved), we need to update the UI based on the response.</p>
 *
 * @author Conrad Damon
-* @param type			item type
-* @param appCtxt		the app context
-* @param search			ZmSearch that generated this list
+* @param type		[constant]		item type
+* @param appCtxt	[ZmAppCtxt]		the app context
+* @param search		[ZmSearch]*		search that generated this list
 */
 function ZmList(type, appCtxt, search) {
 
@@ -248,7 +248,12 @@ function(node, args) {
 	this.add(ZmList.ITEM_CLASS[this.type].createFromDom(node, args));
 }
 
-// returns a vector containing a subset of items of this list
+/* 
+* Returns a vector containing a subset of items of this list.
+*
+* @param offset		[int]		starting index
+* @param limit		[int]		size of sublist
+*/
 ZmList.prototype.getSubList = 
 function(offset, limit) {
 	var subVector = null;

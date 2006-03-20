@@ -336,7 +336,7 @@ function(search, noRender, isMixed, callback, result) {
 	var results = result.getResponse();
 
 	this._appCtxt.setCurrentSearch(search);
-	DBG.timePt("execute search");
+	DBG.timePt("execute search", true);
 	if (this._searchToolBar)
 		this._searchToolBar.setEnabled(true);
 	if (!results.type)

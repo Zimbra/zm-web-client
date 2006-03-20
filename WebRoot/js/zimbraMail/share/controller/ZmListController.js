@@ -139,6 +139,37 @@ function(newList) {
 	}
 };
 
+ZmListController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println(AjxDebug.DBG3, "ZmListController.handleKeyAction");
+	var listView = this._listView[this._currentView]
+	
+	switch (actionCode) {
+		case ZmKeyMap.DEL:
+			this._doDelete(this._listView[this._currentView].getSelection());
+			break;
+			
+		case ZmKeyMap.NEXT_ITEM:
+			listView.selectItem(true);
+			break;
+			
+		case ZmKeyMap.PREV_ITEM:
+			listView.selectItem(false);
+			break;
+			
+		case ZmKeyMap.NEXT_PAGE:
+			this._paginate(this._currentView, true);
+			break;
+			
+		case ZmKeyMap.PREV_PAGE:
+			this._paginate(this._currentView, false);
+			break;
+			
+		default:
+			ZmController.prototype.handleKeyAction.call(this, actionCode);
+	}
+};
+
 // abstract protected methods
 
 // Creates the view element
@@ -255,11 +286,11 @@ function(view) {
 	var toolbar = this._toolbar[view];
 	var button = toolbar.getButton(ZmOperation.NEW_MENU);
 	if (button) {
-        	var listener = new AjxListener(toolbar, ZmListController._newDropDownListener);
-        	button.addDropDownSelectionListener(listener);
-        	toolbar._ZmListController_this = this;
-        	toolbar._ZmListController_newDropDownListener = listener;
-    	}
+       	var listener = new AjxListener(toolbar, ZmListController._newDropDownListener);
+       	button.addDropDownSelectionListener(listener);
+       	toolbar._ZmListController_this = this;
+       	toolbar._ZmListController_newDropDownListener = listener;
+   	}
 	
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		var tagMenuButton = this._toolbar[view].getButton(ZmOperation.TAG_MENU);
@@ -390,6 +421,9 @@ function(ev) {
 	} else if (id == ZmOperation.NEW_APPT) {
 		var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 		cc.newAppointment(null, null, null, new Date());
+	} else if (id == ZmOperation.NEW_NOTE) {
+		var note = new ZmNote(this._appCtxt);
+		this._appCtxt.getApp(ZmZimbraMail.NOTES_APP).getNoteEditController().show(note);
 	} else if (id == ZmOperation.NEW_FOLDER) {
 		this._showDialog(this._appCtxt.getNewFolderDialog(), this._newFolderCallback);
 	} else if (id == ZmOperation.NEW_TAG) {
@@ -687,11 +721,18 @@ function(list, args) {
 
 // Miscellaneous
 
-// Adds the same listener to all of a menu's items
+/*
+* Adds the same listener to all of the items in a button or menu item's submenu.
+* By default, propagates the listener for the given operation.
+*
+* @param parent		[DwtControl]		parent toolbar or menu
+* @param op			[constant]			operation (button or menu item)
+* @param listener	[AjxListener]*		listener to propagate
+*/
 ZmListController.prototype._propagateMenuListeners =
 function(parent, op, listener) {
 	if (!parent) return;
-	listener = listener || this._listeners[op];
+	listener = listener ? listener : this._listeners[op];
 	var opWidget = parent.getOp(op);
 	if (opWidget) {
 		var menu = opWidget.getMenu();
@@ -1083,6 +1124,10 @@ function(view, viewPushed) {
 	return true;
 };
 
+/*
+* Creates the New menu's drop down menu the first time the drop down arrow is used,
+* then removes itself as a listener.
+*/
 ZmListController._newDropDownListener = 
 function(event) {
 	var toolbar = this;
