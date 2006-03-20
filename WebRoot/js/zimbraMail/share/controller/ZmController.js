@@ -73,6 +73,8 @@ ZmController.APPOINTMENT_VIEW 			= i++;
 ZmController.MIXED_VIEW					= i++;
 ZmController.IM_CHAT_TAB_VIEW			= i++;
 ZmController.IM_CHAT_MULTI_WINDOW_VIEW	= i++;
+ZmController.NOTE_VIEW					= i++;
+ZmController.NOTE_EDIT_VIEW				= i++;
 
 // Abstract methods
 

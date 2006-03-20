@@ -62,6 +62,7 @@ ZmOverviewController.CONTROLLER[ZmOrganizer.CALENDAR]			= ZmCalendarTreeControll
 ZmOverviewController.CONTROLLER[ZmOrganizer.ADDRBOOK] 			= ZmAddrBookTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]				= ZmZimletTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.ROSTER_TREE_ITEM]	= ZmRosterTreeController;
+ZmOverviewController.CONTROLLER[ZmOrganizer.NOTEBOOK]			= ZmNotebookTreeController;
 
 ZmOverviewController.DEFAULT_FOLDER_ID = ZmFolder.ID_INBOX;
 

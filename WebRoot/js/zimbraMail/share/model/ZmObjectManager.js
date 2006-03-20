@@ -277,10 +277,114 @@ function(content, htmlEncode, type) {
 		}
 
 		// update the index
-		lastIndex = lowestResult.index + lowestResult[0].length;
+		lastIndex = lowestResult.index + (lowestResult.matchLength || lowestResult[0].length);
 	}
 
 	return html.join("");
+};
+
+// Dives recursively into the given DOM node.  Creates ObjectHandlers in text
+// nodes and cleans the mess in element nodes.  Discards by default "script",
+// "link", "object", "style", "applet" and "iframe" (most of them shouldn't
+// even be here since (1) they belong in the <head> and (2) are discarded on
+// the server-side, but we check, just in case..).
+ZmObjectManager.prototype.processHtmlNode =
+function(node, handlers) {
+	handlers = handlers != null ? handlers : true;
+	var tmp, i, val;
+	switch (node.nodeType) {
+	    case 1:	// ELEMENT_NODE
+		node.normalize();
+		tmp = node.tagName.toLowerCase();
+		if (/^(img|a)$/.test(tmp)) {
+			if (tmp == "a"
+			    && (ZmMailMsgView._URL_RE.test(node.href)
+				|| ZmMailMsgView._MAILTO_RE.test(node.href)))
+			{
+				// tricky.
+				var txt = RegExp.$1;
+				tmp = document.createElement("div");
+				tmp.innerHTML = this.findObjects(AjxStringUtil.trim(RegExp.$1));
+				tmp = tmp.firstChild;
+				if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
+					// probably no objects were found.  A warning would be OK here
+					// since the regexps guarantee that objects _should_ be found.
+					// DBG.println(AjxDebug.DBG1, "No objects found for potentially valid text!");
+					return tmp.nextSibling;
+				}
+				// here, tmp is an object span, but it
+				// contains the URL (href) instead of
+				// the original link text.
+				node.parentNode.insertBefore(tmp, node); // add it to DOM
+				tmp.innerHTML = "";
+				tmp.appendChild(node); // we have the original link now
+				return tmp.nextSibling;	// move on
+			}
+			handlers = false;
+		} else if (/^(script|link|object|iframe|applet)$/.test(tmp)) {
+			tmp = node.nextSibling;
+			node.parentNode.removeChild(node);
+			return tmp;
+		}
+		// fix style
+		// node.nowrap = "";
+		// node.className = "";
+
+		if (AjxEnv.isIE)
+			// strips expression()-s, bwuahahaha!
+			// granted, they get lost on the server-side anyway, but assuming some get through...
+			// the line below exterminates them.
+			node.style.cssText = node.style.cssText;
+
+		// Clear dangerous rules.  FIXME: implement proper way
+		// using removeAttribute (kind of difficult as it's
+		// (expectedly) quite different in IE from *other*
+		// browsers, so for now style.prop="" will do.)
+		tmp = ZmMailMsgView._dangerousCSS;
+		for (i in tmp) {
+			val = tmp[i];
+			if (!val || val.test(node.style[i]))
+				node.style[i] = "";
+		}
+		for (i = node.firstChild; i; i = this.processHtmlNode(i, handlers));
+		return node.nextSibling;
+
+	    case 3:	// TEXT_NODE
+	    case 4:	// CDATA_SECTION_NODE (just in case)
+		// generate ObjectHandler-s
+		if (handlers && /[^\s\xA0]/.test(node.data)) try {
+			var a = null, b = null;
+
+			if (!AjxEnv.isIE) {
+				// this block of code is supposed to free the object handlers from
+				// dealing with whitespace.  However, IE sometimes crashes here, for
+				// reasons that weren't possible to determine--hence we avoid this
+				// step for IE.  (bug #5345)
+				if (/^[\s\xA0]+/.test(node.data)) {
+					a = node;
+					node = node.splitText(RegExp.lastMatch.length);
+				}
+				if (/[\s\xA0]+$/.test(node.data))
+					b = node.splitText(node.data.length - RegExp.lastMatch.length);
+			}
+
+			tmp = document.createElement("div");
+			tmp.innerHTML = this.findObjects(node.data, true);
+
+			if (a)
+				tmp.insertBefore(a, tmp.firstChild);
+			if (b)
+				tmp.appendChild(b);
+
+			a = node.parentNode;
+			while (tmp.firstChild)
+				a.insertBefore(tmp.firstChild, node);
+			tmp = node.nextSibling;
+			a.removeChild(node);
+			return tmp;
+		} catch(ex) {};
+	}
+	return node.nextSibling;
 };
 
 ZmObjectManager.prototype.setHandlerAttr =

@@ -71,6 +71,7 @@ ZmTreeView.COMPARE_FUNC[ZmOrganizer.CALENDAR]			= ZmCalendar.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.ZIMLET]				= ZmZimlet.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.ROSTER_TREE_ITEM]	= ZmRosterTreeItem.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.ADDRBOOK]			= ZmAddrBook.sortCompare;
+ZmTreeView.COMPARE_FUNC[ZmOrganizer.NOTEBOOK]			= ZmNotebook.sortCompare;
 
 // add space after the following items
 ZmTreeView.ADD_SEP = new Object();

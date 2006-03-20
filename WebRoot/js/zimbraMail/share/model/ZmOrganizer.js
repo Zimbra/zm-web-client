@@ -73,6 +73,7 @@ ZmOrganizer.ADDRBOOK 			= ZmEvent.S_CONTACT;
 ZmOrganizer.ROSTER_TREE_ITEM	= ZmEvent.S_ROSTER_TREE_ITEM;
 ZmOrganizer.ROSTER_TREE_GROUP	= ZmEvent.S_ROSTER_TREE_GROUP;
 ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
+ZmOrganizer.NOTEBOOK			= ZmEvent.S_NOTEBOOK;
 
 // defined in com.zimbra.cs.mailbox.Mailbox
 ZmOrganizer.ID_ROOT				= 1;
@@ -90,6 +91,7 @@ ZmOrganizer.SOAP_CMD[ZmOrganizer.TAG]		= "TagAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.SEARCH]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.CALENDAR]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.ADDRBOOK]	= "FolderAction";
+ZmOrganizer.SOAP_CMD[ZmOrganizer.NOTEBOOK]	= "FolderAction";
 
 ZmOrganizer.FIRST_USER_ID = {};
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]	= 256;
@@ -97,6 +99,7 @@ ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]		= 64;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.SEARCH]	= 256;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.CALENDAR]	= 256;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.ADDRBOOK] = 256;
+ZmOrganizer.FIRST_USER_ID[ZmOrganizer.NOTEBOOK] = 256;
 
 // fields that can be part of a displayed organizer
 var i = 1;
@@ -154,6 +157,7 @@ ZmOrganizer.VIEWS = new Object;
 ZmOrganizer.VIEWS[ZmOrganizer.FOLDER] = "conversation";
 ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] = "appointment";
 ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK] = "contact";
+ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK] = "wiki";
 
 // Abstract methods
 

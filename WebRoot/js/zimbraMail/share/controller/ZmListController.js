@@ -421,6 +421,9 @@ function(ev) {
 	} else if (id == ZmOperation.NEW_APPT) {
 		var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 		cc.newAppointment(null, null, null, new Date());
+	} else if (id == ZmOperation.NEW_NOTE) {
+		var note = new ZmNote(this._appCtxt);
+		this._appCtxt.getApp(ZmZimbraMail.NOTES_APP).getNoteEditController().show(note);
 	} else if (id == ZmOperation.NEW_FOLDER) {
 		this._showDialog(this._appCtxt.getNewFolderDialog(), this._newFolderCallback);
 	} else if (id == ZmOperation.NEW_TAG) {

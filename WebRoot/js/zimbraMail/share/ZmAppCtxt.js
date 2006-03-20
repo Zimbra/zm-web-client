@@ -202,6 +202,14 @@ function() {
 	return this._newCalendarDialog;
 };
 
+ZmAppCtxt.prototype.getNewNotebookDialog =
+function() {
+	if (!this._newNotebookDialog) {
+		this._newNotebookDialog = new ZmNewNotebookDialog(this, this.getShell());
+	}
+	return this._newNotebookDialog;
+};
+
 ZmAppCtxt.prototype.getNewRosterItemDialog =
 function() {
 	if (!this._newRosterItemDialog) {
@@ -290,6 +298,7 @@ ZmAppCtxt.prototype.clearAllDialogs =
 function() {
 	this.clearFolderDialogs();
 	this.clearCalendarDialogs();
+	this.clearNotebookDialogs();
 	this.clearShareDialogs();
 	this._filterRuleDialog = null;
 	this._confirmDialog = null;	
@@ -304,6 +313,11 @@ function() {
 ZmAppCtxt.prototype.clearCalendarDialogs =
 function() {
 	this._newCalendarDialog = null;
+};
+
+ZmAppCtxt.prototype.clearNotebookDialogs =
+function() {
+	this._newNotebookDialog = null;
 };
 
 ZmAppCtxt.prototype.clearShareDialogs = 

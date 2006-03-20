@@ -1660,3 +1660,44 @@ HTML>BODY .appt-selected .appt_allday_body
 	font-size: 10pt;
 	color: #666;
 }
+
+.ZmNoteView, .ZmNoteEditView {
+	background-color: #EEE;
+	xwidth: 100%;
+}
+
+.ZmNoteView {
+	padding: 0.5em;
+	overflow: auto;
+	font-family: "Times New Roman", Times, serif;
+	font-size: 12pt;
+}
+.ZmNoteView H1 {
+	margin-top: 0em;
+	margin-bottom: 0.25em;
+}
+.ZmNoteView H2 {
+	margin-top: 0.25em;
+	margin-bottom: 0.25em;
+}
+.ZmNoteView * {
+	font-family: inherit;
+}
+.ZmNoteView SPAN.Object, .ZmNoteView SPAN.Object-activated {
+	font-size: inherit;
+}
+
+.ZmNoteEditView {
+	padding: 3px;
+}
+.ZmNoteEditView .Label {
+	font-size: 14pt;
+	text-align: right;
+	width: 1%;
+}
+.ZmEditNoteView .DwtInputField {
+	width: 100%;
+}
+.ZmEditNoteView .DwtHtmlEditorIFrame {
+	height: 100%;
+}
