@@ -585,12 +585,12 @@ function(id, str) {
 	var results = [];
 	var fullName = ZmContact.getAttr(contact, ZmContact.X_fullName);
 	if (match.matchedField == ZmContact.F_email || match.matchedField == ZmContact.F_email2 || match.matchedField == ZmContact.F_email3) {
-		results.push(this._createMatch(name, match.savedMatch, fullName, ZmContact.getAttr(contact, match.matchedField)));
+		results.push(this._createMatch(name, match.savedMatch, fullName, ZmContact.getAttr(contact, match.matchedField), contact));
 	} else {
 		for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
 			var val = ZmContact.getAttr(contact, ZmContact.F_EMAIL_FIELDS[i]);
 			if (val)
-				results.push(this._createMatch(name, val, fullName, val));
+				results.push(this._createMatch(name, val, fullName, val, contact));
 		}
 	}
 	
@@ -616,7 +616,7 @@ function(nameHL, emailHL, name, email, contact) {
 	result.item = contact;
 	result[ZmContactList.AC_VALUE_FULL] = acValue;
 	result[ZmContactList.AC_VALUE_EMAIL] = email;
-	result[ZmContactList.AC_VALUE_NAME] = acContact[ZmContact.X_fullName];
+	result[ZmContactList.AC_VALUE_NAME] = name;
 
 	return result;
 };
