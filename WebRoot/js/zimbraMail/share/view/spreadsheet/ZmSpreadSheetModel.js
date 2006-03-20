@@ -503,11 +503,12 @@ ZmSpreadSheetModel.prototype.doneSetView = function() {
 };
 
 ZmSpreadSheetModel.prototype.getHtml = function() {
-	var html = [ "<style type='text/css'>",
-		     "td.SpreadSheet-Type-number { text-align: right; }",
-		     "td.SpreadSheet-Type-currency { text-align: right; }",
-		     "</style>",
-		     "<table style='font: 8pt tahoma,verdana,sans-serif; background-color: #fff; border-collapse: collapse'>"
+	var html = [ 
+		"<style type='text/css'>",
+		"td.SpreadSheet-Type-number { text-align: right; }",
+		"td.SpreadSheet-Type-currency { text-align: right; }",
+		"</style>",
+		"<table style='font: 8pt tahoma,verdana,sans-serif; background-color: #fff; border-collapse: collapse'>"
 		];
 	for (var i = 0; i < this.ROWS; ++i) {
 		html.push("<tr>");
@@ -560,10 +561,10 @@ ZmSpreadSheetClipboard.prototype.paste = function(row, col, dest, dr, dc) {
 				       this.delta.cols + dc);
 		dest.setEditValue("=" + formulae);
 	} else {
-		dest.setEditValue(src.getEditValue());
 		dest._type = src._type;
 		dest._autoType = src._autoType;
 		dest._decimals = src._decimals;
+		dest.setEditValue(src.getEditValue());
 	}
 	if (this._move && !src._wasCut) {
 		var clone = src.clone();
@@ -682,7 +683,7 @@ ZmSpreadSheetCellModel.prototype.getHtml = function() {
 		cls = "";
 	var val = this.getDisplayValue();
 	if (val == "")
-		val = "<br />";
+		val = "&nbsp;";
 	return [ "<td", cls, style, ">", val, "</td>" ].join("");
 };
 

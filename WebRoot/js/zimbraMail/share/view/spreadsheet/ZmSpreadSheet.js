@@ -227,12 +227,16 @@ ZmSpreadSheet.prototype.getCellModel = function(td) {
 };
 
 ZmSpreadSheet.prototype._init = function() {
-	this._relDivID = Dwt.getNextId();
+	var html = [];
+	var was_initialized = true;
+	if (!this._relDivID) {
+		was_initialized = false;
+		this._relDivID = Dwt.getNextId();
+		html.push("<div id='", this._relDivID,
+			  "' class='ZmSpreadSheet-RelDiv'>");
+	}
 	this._focusLinkID = Dwt.getNextId();
 	this._tableID = Dwt.getNextId();
-
-	var html = [ "<div id='", this._relDivID,
-		     "' class='ZmSpreadSheet-RelDiv'>" ];
 
 	// the "focus link" is our clever way to receive key events when the
 	// "spreadsheet" is focused.  As usual, it requires some special bits
@@ -264,10 +268,16 @@ ZmSpreadSheet.prototype._init = function() {
 	// one more row for the header
 	for (var i = ROWS; i-- >= 0;)
 		html.push(row);
-	html.push("</table></div>");
+	html.push("</table>");
 
-	var div = this.getHtmlElement();
-	div.innerHTML = html.join("");
+	if (!was_initialized) {
+		html.push("</div>");
+		var div = this.getHtmlElement();
+		div.innerHTML = html.join("");
+	} else {
+		this._getRelDiv().innerHTML = html.join("");
+	}
+
 	var table = this._getTable();
 	table.rows[0].className = "TopBar";
 	table.rows[0].cells[0].className = "TopLeft";

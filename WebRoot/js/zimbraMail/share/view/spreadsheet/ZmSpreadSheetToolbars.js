@@ -61,7 +61,7 @@ ZmSpreadSheetToolbars.prototype._cellSelected = function(cell) {
 
 ZmSpreadSheetToolbars.prototype._createWidgets = function() {
 	this._createToolbar1();
-	// this._createToolbar2();
+	this._createToolbar2();
 };
 
 ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
@@ -150,8 +150,52 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	cp = new DwtColorPicker(m);
 	cp.addSelectionListener(new AjxListener(this, this._on_bgColor));
 	b.setMenu(m);
+};
 
-	toolbar.addSeparator("vertSep");
+ZmSpreadSheetToolbars.prototype._inputModified = function(val) {
+	if (this._dataField)
+		this._dataField.setValue(val);
+};
+
+ZmSpreadSheetToolbars.prototype._input_clicked = function(ev) {
+	var dwtev = new DwtUiEvent();
+	this._dataField.getInputElement().blur();
+	dwtev.setFromDhtmlEvent(ev);
+	var td = this._spreadSheet._selectedCell;
+	if (td) {
+		this._spreadSheet.focus();
+		this._spreadSheet._editCell(td);
+	}
+	dwtev._stopPropagation = true;
+	dwtev._returnValue = false;
+	dwtev.setToDhtmlEvent(ev);
+	return false;
+};
+
+ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
+	var toolbar = new DwtToolBar(this, "ToolBar ToolBar2", DwtControl.RELATIVE_STYLE, 0);
+	var listener = this._on_buttonPress;
+
+// 	var b = new DwtButton(toolbar, 0, "TBButton");
+// 	b.setImage("Check");
+// 	b.setToolTipContent(ZmMsg.subjectAccept);
+// 	b.setData("SS", "DataEntry-OK");
+// 	b.addSelectionListener(listener);
+
+// 	b = new DwtButton(toolbar, 0, "TBButton");
+// 	b.setImage("Cancel");
+// 	b.setToolTipContent(ZmMsg.cancel);
+// 	b.setData("SS", "DataEntry-Cancel");
+// 	b.addSelectionListener(listener);
+
+// 	var field = new DwtInputField({ parent: toolbar, size: 50 });
+// 	field.setReadOnly(true);
+// 	field.getInputElement().onfocus = ZmSpreadSheet.simpleClosure(this._input_clicked, this);
+// 	this._dataField = field;
+
+// 	this._spreadSheet.onInputModified.push(new AjxCallback(this, this._inputModified));
+
+	// toolbar.getHtmlElement().style.display = "none";
 
 	b = this._buttons.rowInsertAbove = new DwtButton(toolbar, 0, "TBButton");
 	b.setImage("RowInsertAbove");
@@ -268,7 +312,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 		b.setText("getHtml");
 		b.addSelectionListener(new AjxListener(this, function() {
 			var txt = this.getModel().getHtml();
-			var win = window.open(appContextPath+"/public/blank.html", "_blank", "scrollbars=no");
+			var win = window.open(appContextPath+"/public/blank.html", "_blank", "scrollbars=yes");
 			var timeout = setInterval(function() {
 				try {
 					var d = win.document;
@@ -280,52 +324,6 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 			}, 250);
 		}));
 	}
-};
-
-ZmSpreadSheetToolbars.prototype._inputModified = function(val) {
-	if (this._dataField)
-		this._dataField.setValue(val);
-};
-
-ZmSpreadSheetToolbars.prototype._input_clicked = function(ev) {
-	var dwtev = new DwtUiEvent();
-	this._dataField.getInputElement().blur();
-	dwtev.setFromDhtmlEvent(ev);
-	var td = this._spreadSheet._selectedCell;
-	if (td) {
-		this._spreadSheet.focus();
-		this._spreadSheet._editCell(td);
-	}
-	dwtev._stopPropagation = true;
-	dwtev._returnValue = false;
-	dwtev.setToDhtmlEvent(ev);
-	return false;
-};
-
-ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
-	var toolbar = new DwtToolBar(this, "ToolBar", DwtControl.RELATIVE_STYLE, 0);
-	var listener = this._on_buttonPress;
-
-// 	var b = new DwtButton(toolbar, 0, "TBButton");
-// 	b.setImage("Check");
-// 	b.setToolTipContent(ZmMsg.subjectAccept);
-// 	b.setData("SS", "DataEntry-OK");
-// 	b.addSelectionListener(listener);
-
-// 	b = new DwtButton(toolbar, 0, "TBButton");
-// 	b.setImage("Cancel");
-// 	b.setToolTipContent(ZmMsg.cancel);
-// 	b.setData("SS", "DataEntry-Cancel");
-// 	b.addSelectionListener(listener);
-
-	var field = new DwtInputField({ parent: toolbar, size: 50 });
-	field.setReadOnly(true);
-	field.getInputElement().onfocus = ZmSpreadSheet.simpleClosure(this._input_clicked, this);
-	this._dataField = field;
-
-	this._spreadSheet.onInputModified.push(new AjxCallback(this, this._inputModified));
-
-	// toolbar.getHtmlElement().style.display = "none";
 };
 
 ZmSpreadSheetToolbars.prototype._on_insertFunction = function(ev) {
