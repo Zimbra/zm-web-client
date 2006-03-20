@@ -65,6 +65,7 @@ ZmContactList.AC_FIELDS 		= [ZmContact.F_firstName, ZmContact.F_lastName, ZmCont
 ZmContactList.AC_NAME_FIELDS	= [ZmContact.F_firstName, ZmContact.F_lastName];
 ZmContactList.AC_VALUE_FULL 	= "fullAddress";
 ZmContactList.AC_VALUE_EMAIL	= "email";
+ZmContactList.AC_VALUE_NAME		= "name";
 ZmContactList.AC_MAX 			= 20; // max # of autocomplete matches to return
 
 // Load contacts in chunks so browser remains reasonably responsive.
@@ -510,6 +511,7 @@ function(acContact, matchedField, savedMatch) {
 	result.text = text;
 	result[ZmContactList.AC_VALUE_FULL] = acValue;
 	result[ZmContactList.AC_VALUE_EMAIL] = valEmail;
+	result[ZmContactList.AC_VALUE_NAME] = acContact[ZmContact.X_fullName];
 
 	return result;
 };

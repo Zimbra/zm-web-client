@@ -523,7 +523,7 @@ function(contact, date) {
 	if (!emailAddr || emailAddr == "")
 		return;		
 	var newAppt = this._newApptObject(date);
-	newAppt.attendees = emailAddr;
+	newAppt.setAttendees(emailAddr);
 	this.newAppointment(newAppt, ZmAppt.MODE_NEW);
 }
 
@@ -538,7 +538,7 @@ function(emailAddr, date) {
 	if (!emailAddr || emailAddr == "")
 		return;		
 	var newAppt = this._newApptObject(date);
-	newAppt.attendees = emailAddr;
+	newAppt.setAttendees(emailAddr);
 	this.newAppointment(newAppt, ZmAppt.MODE_NEW);
 }
 

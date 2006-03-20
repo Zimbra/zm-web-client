@@ -173,11 +173,10 @@ function() {
 
 ZmApptChooserTabViewPage.prototype.showMe =
 function() {
-	if (this._rendered)
-		this.parent.tabSwitched(this._tabKey);
-
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
+
+	this.parent.tabSwitched(this._tabKey);
 };
 
 ZmApptChooserTabViewPage.prototype.initialize =
@@ -564,7 +563,7 @@ function(item) {
 	for (var i = 0; i < this._headerList.length; i++) {
 		var id = this._headerList[i]._id;
 		if (id.indexOf(ZmApptChooserTabViewPage.ID_NAME) == 0) {
-			var name = (this._chooserType == ZmAppt.PERSON) ? item.getFullName() : item.getAttr("displayName");
+			var name = (this._chooserType == ZmAppt.PERSON) ? item.getFullName() : item.getAttr(ZmResource.F_name);
 			html[idx++] = this._getField(i, name);
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_EMAIL) == 0) {
 			html[idx++] = this._getField(i, item.getEmail());
@@ -573,13 +572,13 @@ function(item) {
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_HOME_PHONE) == 0) {
 			html[idx++] = this._getField(i, item.getAttr(ZmContact.F_homePhone));
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_LOCATION) == 0) {
-			html[idx++] = this._getField(i, item.getAttr("zimbraCalResLocationDisplayName"));
+			html[idx++] = this._getField(i, item.getAttr(ZmResource.F_locationName));
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_CONTACT) == 0) {
-			html[idx++] = this._getField(i, item.getAttr("zimbraCalResContactEmail"));
+			html[idx++] = this._getField(i, item.getAttr(ZmResource.F_contactMail));
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_CAPACITY) == 0) {
-			html[idx++] = this._getField(i, item.getAttr("zimbraCalResCapacity"), 'right');
+			html[idx++] = this._getField(i, item.getAttr(ZmResource.F_capacity), 'center');
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_NOTES) == 0) {
-			var notes = item.getAttr("description");
+			var notes = item.getAttr(ZmContact.F_description);
 			if (notes) {
 				var notesId = Dwt.getNextId();
 				this._notes[notesId] = notes;
@@ -603,10 +602,10 @@ function(item) {
 ZmApptChooserListView.prototype._getField =
 function(index, value, align) {
 	var width = this._headerList[index]._width;
-	var widthText = width ? "width='" + width + "'" : "";
-	var alignText = align ? "align='" + align + "'" : "";
+	var widthText = width ? " width='" + width + "'" : "";
+	var alignText = align ? " align='" + align + "'" : " align='left'";
 	value = value ? value : "";
-	return "<td " + alignText + widthText + ">&nbsp;" + value + "</td>";
+	return "<td" + alignText + widthText + ">&nbsp;" + value + "</td>";
 };
 
 ZmApptChooserListView.prototype._mouseOverAction =

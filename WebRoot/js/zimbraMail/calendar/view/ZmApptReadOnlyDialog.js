@@ -61,8 +61,7 @@ function(appt) {
 	var attendees = appt.getAttendees();
 
 	// set the title of this dialog
-	var title = attendees && attendees.length > 0
-		? ZmMsg.meeting : ZmMsg.appointment;
+	var title = (attendees && attendees.length) ? ZmMsg.meeting : ZmMsg.appointment;
 	this.setTitle(title + ": " + name);
 
 	// set content of this dialog

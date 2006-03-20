@@ -45,8 +45,6 @@ ZmResourceList.ATTRS =
 	["displayName", "mail", "zimbraCalResType", "zimbraCalResLocationDisplayName",
 	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description"];
 
-ZmResourceList.AC_VALUE_NAME = "name";
-
 ZmResourceList.prototype = new ZmContactList;
 ZmResourceList.prototype.constructor = ZmResourceList;
 
@@ -146,7 +144,7 @@ function(acContact, matchedField, savedMatch) {
 	result.data = acContact;
 	result.text = acContact[ZmContact.X_fullName];
 	result[ZmContactList.AC_VALUE_EMAIL] = acContact[ZmContact.F_email];
-	result[ZmResourceList.AC_VALUE_NAME] = acContact[ZmContact.X_fullName];
+	result[ZmContactList.AC_VALUE_NAME] = acContact[ZmContact.X_fullName];
 
 	return result;
 };

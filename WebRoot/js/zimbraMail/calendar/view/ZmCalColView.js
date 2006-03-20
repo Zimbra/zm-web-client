@@ -267,7 +267,7 @@ function(appt) {
 	html[idx++] = "<table border=0 width=100%>";
 	
 	var organizer = appt.getOrganizer();
-	var attendees = appt.getAttendees();
+	var attendees = appt.getAttendeesText();
 
 	if (organizer && attendees) {
 		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.organizer + "</u></td>";
