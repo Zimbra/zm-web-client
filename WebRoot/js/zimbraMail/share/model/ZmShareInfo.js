@@ -338,7 +338,7 @@ ZmShareInfo._createXmlPart = function(action, shareInfo) {
 ZmShareInfo._createContent = function(formatter, shareInfo) {
 	var params = [
 		shareInfo.link.name, 
-		shareInfo.link.view ? "(" + shareInfo.link.view + ")" : "", 
+		ZmShareInfo._getFolderType(shareInfo.link.view),
 		shareInfo.grantor.name, 
 		shareInfo.grantee.name,
 		ZmShareInfo.getRoleName(shareInfo.link.perm),
@@ -347,9 +347,23 @@ ZmShareInfo._createContent = function(formatter, shareInfo) {
 	var content = formatter.format(params);
 	return content;
 }
+ZmShareInfo._getFolderType = function(view) {
+	if (view) {
+		var folderType = ZmShareInfo._VIEWS[view] || ZmShareInfo._VIEWS["any"];
+		return "(" + folderType + ")";
+	}
+	return "";
+};
 
 ZmShareInfo._init = function() {
 	if (ZmShareInfo._SUBJECTS) return;
+
+	// view types
+	ZmShareInfo._VIEWS = {};
+	ZmShareInfo._VIEWS["conversation"] = ZmMsg.mailFolder;
+	ZmShareInfo._VIEWS["message"] = ZmMsg.mailFolder;
+	ZmShareInfo._VIEWS["appointment"] = ZmMsg.calendarFolder;
+	ZmShareInfo._VIEWS["any"] = ZmMsg.folder;
 
 	// message subjects
 	ZmShareInfo._SUBJECTS = {};
