@@ -486,7 +486,7 @@
     <!-- usage:  make a "images" directory in your ZimbraWebClient directory and do:
     ant sortskin
     -->
-    <echo message='Sorting skins/steel'/><echo/>
+    <echo message='Sorting skins/steel'/>
     <imagesort source='images' target='WebRoot/skins/steel/img' delete='true'/>
   </target>
 
