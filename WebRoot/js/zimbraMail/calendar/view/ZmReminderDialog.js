@@ -60,9 +60,7 @@ function ZmReminderDialog(parent, appCtxt, reminderController, calController) {
 	this._calController = calController;
 	this.registerCallback(ZmReminderDialog.SNOOZE_BUTTON, this._handleSnoozeButton, this);
 	this.registerCallback(ZmReminderDialog.DISMISS_ALL_BUTTON, this._handleDismissAllButton, this);
-	this._updateTimedAction = new AjxTimedAction(this, this._updateDeltaAction);	
 	this._snoozeTimedAction = new AjxTimedAction(this, this._snoozeAction);
-
 	this._active = false;
 };
 
@@ -230,33 +228,15 @@ function(ev, args) {
 	}
 };
 
-ZmReminderDialog.prototype._updateDeltaAction =
-function() {
-	for (var id in this._apptData) {
-		this._updateDelta(this._apptData[id]);
-	}
-	this._updateActionId = AjxTimedAction.scheduleAction(this._updateTimedAction, 62*1000);
-};
-
 ZmReminderDialog.prototype._snoozeAction =
 function() {
 	if (!this.isPoppedUp()) this.popup();
-};
-
-ZmReminderDialog.prototype.popdown =
-function() {
-	DwtDialog.prototype.popdown.call(this);
-	AjxTimedAction.cancelAction(this._updateActionId);
-	delete this._updateActionId;
 };
 
 ZmReminderDialog.prototype.popup =
 function() {
 	DwtDialog.prototype.popup.call(this);
 	this._cancelSnooze();
-	AjxTimedAction.cancelAction(this._updateActionId);
-	delete this._updateActionId;
-	this._updateActionId = AjxTimedAction.scheduleAction(this._updateTimedAction, 61*1000);
 };
 
 ZmReminderDialog._computeDelta =

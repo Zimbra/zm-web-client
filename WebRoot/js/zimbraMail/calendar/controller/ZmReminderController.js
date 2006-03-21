@@ -148,13 +148,14 @@ function() {
 	var activeSize = this._activeAppts.size();	
 	if (cachedSize == 0 && activeSize == 0) return;
 
+	var numNotify = 0;
+	
 	// look for appts that fall with startTime/endTime
 	var startTime = (new Date()).getTime();
 	var endTime = startTime + (this._warningTime * 60 * 1000);
 
 	var toRemove = [];
-	var numSilent = 0; // appts that were already popped up beefore a refresh
-//	var activeSize = this._activeAppts.size();
+
 	for (var i=0; i < cachedSize; i++) {
 		var appt = this._cachedAppts.get(i);
 		if (appt.getEndTime() < startTime) {
@@ -167,10 +168,10 @@ function() {
 			if (state == ZmReminderController._STATE_DISMISSED) {
 				// just remove themn
 			} else if (state == ZmReminderController._STATE_ACTIVE) {
-				numSilent++;
 				this._activeAppts.add(appt);
 			} else {
 				// we need to notify on this one
+				numNotify++;
 				this._activeAppts.add(appt);
 				this._apptState[uid] = ZmReminderController._STATE_ACTIVE;
 			}
@@ -186,10 +187,9 @@ function() {
 		this._cachedAppts.remove(toRemove[i]);
 	}
 
-	var notifyTotal = this._activeAppts.size() - numSilent;
 	var rd = this.getReminderDialog();	
 	// if we have any to notify on, do it
-	if (notifyTotal > 0 || rd.isPoppedUp()) {
+	if (numNotify || rd.isPoppedUp()) {
 		if (this._activeAppts.size() == 0 && rd.isPoppedUp()) {
 			rd.popdown();
 		} else {
