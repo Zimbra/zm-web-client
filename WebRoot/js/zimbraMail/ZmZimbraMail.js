@@ -58,7 +58,12 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	//this._shell.registerKeyMap(new ZmKeyMap());
 	//this._shell.registerGlobalKeyActionHandler(this);
 
-    this._splashScreen = new ZmSplashScreen(this._shell, "SplashScreen");
+	
+	if (location.search && (location.search.indexOf("nss=1") != -1)) {
+   	    this._splashScreen = null;
+    } else {
+   	    this._splashScreen = new ZmSplashScreen(this._shell, "SplashScreen");
+    }
  
 	this._apps = {};
 	this._activeApp = null;
@@ -632,7 +637,7 @@ function() {
 
 ZmZimbraMail.prototype._killSplash =
 function() {
-	this._splashScreen.setVisible(false);
+	if (this._splashScreen)	this._splashScreen.setVisible(false);
 };
 
 // Creates an app object, which doesn't necessarily do anything just yet.
