@@ -442,13 +442,25 @@ function(type, componentId, instanceDate) {
 	msg.isInviteReply = true;
 	var replyBody = this._getInviteReplyBody(type, instanceDate);
 	if (replyBody != null) {
-		var top = new ZmMimePart();
-		top.setContentType(ZmMimeTable.TEXT_PLAIN);
 		var dummyAppt = new ZmAppt(this._appCtxt);
 		dummyAppt.setFromMessage(msg._origMsg);
-		replyBody = replyBody + dummyAppt.getTextSummary();
-		top.setContent(replyBody);	
-		msg.setTopPart(top);
+
+		var tcontent = replyBody + dummyAppt.getTextSummary();
+		var textPart = new ZmMimePart();
+		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
+		textPart.setContent(tcontent);
+
+		var hcontent = replyBody + dummyAppt.getHtmlSummary();
+		var htmlPart = new ZmMimePart();
+		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
+		htmlPart.setContent(hcontent);
+
+		var topPart = new ZmMimePart();
+		topPart.setContentType(ZmMimeTable.MULTI_ALT);
+		topPart.children.add(textPart);
+		topPart.children.add(htmlPart);
+		
+		msg.setTopPart(topPart);
 	}
 	var subject = this._getInviteReplySubject(type);
 	subject  = subject + msg._origMsg.getInvite().getEventName(0);
