@@ -56,7 +56,6 @@ Contributor(s):
 	String mode = (String) request.getAttribute("mode");
 	String vers = (String) request.getAttribute("version");
 	String ext = (String) request.getAttribute("fileExtension");
-	String hiRes = request.getParameter("hiRes");
 	String ua = request.getHeader("user-agent");
 	boolean isSafari = ua.indexOf("Safari/") != -1;
 
@@ -77,14 +76,8 @@ appContextPath = "<%= contextPath %>";
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
 	<!--
-	<%if (hiRes != null) {%>
-			@import url(<%= contextPath %>/img/hiRes/imgs.css?v=<%= vers %>);
-			@import url(<%= contextPath %>/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
-	<% } else { %>
-			@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-			@import url(<%= contextPath %>/img/loRes/skins/steel/skin.css?v=<%= vers %>);
-	<% } %>
-
+    	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
+    	@import url(<%= contextPath %>/img/loRes/skins/steel/skin.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/js/ajax/config/style/dwt.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/js/zimbraMail/config/style/common.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/js/zimbraMail/config/style/msgview.css?v=<%= vers %>);
@@ -104,11 +97,7 @@ appContextPath = "<%= contextPath %>";
 <% } else { %>
 	<style type="text/css">
 	<!--
-	<%if (hiRes != null) {%>
-			@import url(<%= contextPath %>/js/ZimbraMail_hiRes_all.css<%= ext %>?v=<%= vers %>);
-	<% } else { %>
 			@import url(<%= contextPath %>/js/ZimbraMail_loRes_all.css<%= ext %>?v=<%= vers %>);
-	<% } %>
 	-->
 	</style>
 	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>

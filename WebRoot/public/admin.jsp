@@ -63,7 +63,6 @@ Contributor(s):
 	String mode = (String) request.getAttribute("mode");
 	String vers = (String) request.getAttribute("version");
 	String ext = (String) request.getAttribute("fileExtension");
-	String hiRes = request.getParameter("hiRes");
 	if (vers == null){
 	   vers = "";
 	}
@@ -89,13 +88,8 @@ Contributor(s):
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
 	<!--
-	<%if (hiRes != null) {%>
-	@import url(<%= contextPath %>/img/hiRes/imgs.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
-	<% } else { %>
 	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/img/loRes/skins/steel/skin.css?v=<%= vers %>);
-	<% } %>
 	@import url(<%= contextPath %>/js/ajax/config/style/dwt.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/common.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css?v=<%= vers %>);
@@ -109,11 +103,7 @@ Contributor(s):
 <% } else { %>
 	<style type="text/css">
 	<!--
-	<%if (hiRes != null) {%>
-	        @import url(<%= contextPath %>/js/ZimbraAdmin_hiRes_all.css<%= ext %>?v=<%= vers %>);
-	<% } else { %>
-	        @import url(<%= contextPath %>/js/ZimbraAdmin_loRes_all.css<%= ext %>?v=<%= vers %>);
-	<% } %>
+    @import url(<%= contextPath %>/js/ZimbraAdmin_loRes_all.css<%= ext %>?v=<%= vers %>);
 	-->
 	</style>
 	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>

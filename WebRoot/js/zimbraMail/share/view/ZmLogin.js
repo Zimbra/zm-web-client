@@ -166,7 +166,7 @@ function() {
 	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2><tr>";
 	html[idx++] = "<td valign=top width=40><img src='";
 	html[idx++] = appContextPath;
-	html[idx++] = "/img/hiRes/dwt/Critical_32.gif' id='errorIcon' width=32 height=32></td>";
+	html[idx++] = "/img/loRes/dwt/Critical_32.gif' id='errorIcon' width=32 height=32></td>";
 	html[idx++] = "<td id='errorMessage'>";
 	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</div></center>";

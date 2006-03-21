@@ -117,8 +117,6 @@ ZmOperation.NEW_FOLDER				= i++;
 ZmOperation.NEW_CALENDAR			= i++;
 ZmOperation.NEW_MENU				= i++;
 ZmOperation.NEW_MESSAGE				= i++;
-ZmOperation.NEW_NOTE				= i++;
-ZmOperation.NEW_NOTEBOOK			= i++;
 ZmOperation.NEW_ROSTER_ITEM			= i++;
 ZmOperation.NEW_TAG					= i++;
 ZmOperation.PAGE_BACK				= i++;
@@ -148,10 +146,9 @@ ZmOperation.SEARCH					= i++;
 ZmOperation.SEARCH_MAIL    			= i++;
 ZmOperation.SEND					= i++;
 ZmOperation.SHARE					= i++;
-ZmOperation.SHARE_ACCEPT			= i++;
 ZmOperation.SHARE_CALENDAR			= i++;
+ZmOperation.SHARE_ACCEPT			= i++;
 ZmOperation.SHARE_DECLINE			= i++;
-ZmOperation.SHARE_NOTEBOOK			= i++;
 ZmOperation.SHOW_BCC				= i++;
 ZmOperation.SHOW_CC					= i++;
 ZmOperation.SHOW_ORIG				= i++;
@@ -244,8 +241,6 @@ ZmOperation.MSG_KEY[ZmOperation.NEW_FOLDER]				= "newFolder";
 ZmOperation.MSG_KEY[ZmOperation.NEW_CALENDAR]			= "newCalendar";
 ZmOperation.MSG_KEY[ZmOperation.NEW_MENU]				= "_new";
 ZmOperation.MSG_KEY[ZmOperation.NEW_MESSAGE]			= "newEmail";
-ZmOperation.MSG_KEY[ZmOperation.NEW_NOTE]				= "newNote";
-ZmOperation.MSG_KEY[ZmOperation.NEW_NOTEBOOK]			= "newNotebook";
 ZmOperation.MSG_KEY[ZmOperation.NEW_ROSTER_ITEM]		= "newRosterItem";
 ZmOperation.MSG_KEY[ZmOperation.NEW_TAG]				= "newTag";
 ZmOperation.MSG_KEY[ZmOperation.PRINT]					= "print";
@@ -272,7 +267,6 @@ ZmOperation.MSG_KEY[ZmOperation.SHARE]					= "share";
 ZmOperation.MSG_KEY[ZmOperation.SHARE_ACCEPT]			= "acceptShare";
 ZmOperation.MSG_KEY[ZmOperation.SHARE_CALENDAR]			= "shareCalendar";
 ZmOperation.MSG_KEY[ZmOperation.SHARE_DECLINE]			= "declineShare";
-ZmOperation.MSG_KEY[ZmOperation.SHARE_NOTEBOOK]			= "shareNotebook";
 ZmOperation.MSG_KEY[ZmOperation.SHOW_BCC]				= "showBcc";
 ZmOperation.MSG_KEY[ZmOperation.SHOW_CC]				= "showCc";
 ZmOperation.MSG_KEY[ZmOperation.SHOW_ORIG]				= "showOrig";
@@ -317,7 +311,6 @@ ZmOperation.MSG_KEY_TT[ZmOperation.NEW_ALLDAY_APPT]		= "newAllDayApptTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.NEW_CONTACT]			= "newContactTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.NEW_FOLDER]			= "newFolderTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.NEW_MESSAGE]			= "newMessageTooltip";
-ZmOperation.MSG_KEY_TT[ZmOperation.NEW_NOTE]			= "createNewNote";
 ZmOperation.MSG_KEY_TT[ZmOperation.NEW_TAG]				= "newTagTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.PRINT]				= "printTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.PRINT_MENU]	 		= "printTooltip";
@@ -400,8 +393,6 @@ ZmOperation.IMAGE[ZmOperation.NEW_CALENDAR]				= "NewAppointment";
 ZmOperation.IMAGE[ZmOperation.NEW_CONTACT]				= "NewContact";
 ZmOperation.IMAGE[ZmOperation.NEW_FOLDER]				= "NewFolder";
 ZmOperation.IMAGE[ZmOperation.NEW_MESSAGE]				= "NewMessage";
-ZmOperation.IMAGE[ZmOperation.NEW_NOTE]					= "NewNote";
-ZmOperation.IMAGE[ZmOperation.NEW_NOTEBOOK]				= "NewNote"; // REVISIT
 ZmOperation.IMAGE[ZmOperation.NEW_ROSTER_ITEM]			= "ImBuddy"; //"HappyEmoticon";
 ZmOperation.IMAGE[ZmOperation.NEW_TAG]					= "NewTag";
 ZmOperation.IMAGE[ZmOperation.PAGE_BACK]				= "LeftArrow";
@@ -467,7 +458,6 @@ ZmOperation.DIS_IMAGE[ZmOperation.IM]					= "ImStartChatDis";
 ZmOperation.DIS_IMAGE[ZmOperation.MONTH_VIEW]			= "MonthViewDis";
 ZmOperation.DIS_IMAGE[ZmOperation.MOVE]					= "MoveToFolderDis";
 ZmOperation.DIS_IMAGE[ZmOperation.NEW_MESSAGE]			= "NewMessageDis";
-ZmOperation.DIS_IMAGE[ZmOperation.NEW_NOTE]				= "NewNoteDis";
 ZmOperation.DIS_IMAGE[ZmOperation.NEW_TAG]				= "NewTagDis";
 ZmOperation.DIS_IMAGE[ZmOperation.PAGE_BACK]			= "LeftArrowDis";
 ZmOperation.DIS_IMAGE[ZmOperation.PAGE_DBL_BACK]		= "LeftDoubleArrowDis";
@@ -532,7 +522,7 @@ function(parent, standardOperations, extraOperations) {
 	return obj._createOperations(parent, standardOperations, extraOperations);
 }
 
-// Done through an object so that we can have more than one invocation going without 
+// Done through an object so that we can have more than one invocation going without
 // sharing memory (eg, creating New submenu).
 ZmOperation.prototype._createOperations =
 function(parent, standardOperations, extraOperations) {
@@ -567,7 +557,7 @@ function(parent, standardOperations, extraOperations) {
 	for (var i = 0; i < operationList.length; i++) {
 		ZmOperation.addOperation(parent, operationList[i], operations);
 	}
-	
+
 	return operations;
 }
 
@@ -634,7 +624,7 @@ ZmOperation.setOperation =
 function(parent, oldOp, newOp, text, image, disImage) {
 	var op = parent.getOp(oldOp);
 	if (!op) return;
-	
+
 	op.setText(text || ZmMsg[ZmOperation.MSG_KEY[newOp]]);
 	op.setImage(image || ZmOperation.IMAGE[newOp]);
 	op.setDisabledImage(disImage || ZmOperation.DIS_IMAGE[newOp]);
@@ -655,8 +645,6 @@ function(parent) {
 		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_CONTACT, ZmMsg.contact, Dwt.DEFAULT, Dwt.DEFAULT));
 	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED))
 		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_APPT, ZmMsg.appointment, Dwt.DEFAULT, Dwt.DEFAULT));
-	if (appCtxt.get(ZmSetting.NOTES_ENABLED))
-		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_NOTE, ZmMsg.note, Dwt.DEFAULT, Dwt.DEFAULT));
 	if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED) || appCtxt.get(ZmSetting.TAGGING_ENABLED) || appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		list.push(new ZmOperation_Descriptor(ZmOperation.SEP, Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT));
 		if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED))
@@ -762,7 +750,7 @@ function(parent, opHash) {
                 ZmOperation.IM_PRESENCE_INVISIBLE];
     var button = opHash[ZmOperation.IM_PRESENCE_MENU];
 	var menu = new ZmPopupMenu(button);
-	
+
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
 		var mi = menu.createMenuItem(op, ZmOperation.IMAGE[op], ZmMsg[ZmOperation.MSG_KEY[op]], null, true, DwtMenuItem.RADIO_STYLE);

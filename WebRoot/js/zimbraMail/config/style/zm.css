@@ -986,10 +986,10 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 /** The cal/appt images are here temporarily **/
 
-.calendar_header_note	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_note.gif);	}
-.calendar_header_alarm	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_alarm.gif);	}
-.calendar_header_repeat	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_repeat.gif);	}
-.menu_light				{	width:8;	height:16;	background-image:url(/zimbra/img/hiRes/other/menu_light.gif);	}
+.calendar_header_note	 		{	width:10;	height:16;	background-image:url(/zimbra/img/loRes/calendar/calendar_header_note.gif);	}
+.calendar_header_alarm	 		{	width:10;	height:16;	background-image:url(/zimbra/img/loRes/calendar/calendar_header_alarm.gif);	}
+.calendar_header_repeat	 		{	width:10;	height:16;	background-image:url(/zimbra/img/loRes/calendar/calendar_header_repeat.gif);	}
+.menu_light				{	width:8;	height:16;	background-image:url(/zimbra/img/loRes/other/menu_light.gif);	}
 
 .allday {
         left:0;

@@ -193,17 +193,17 @@ body, form {
 }
 
 .DwtButton {
-	background-image:url(<%= contextPath %>/img/hiRes/dwt/ButtonUp__H.gif);
+	background-image:url(<%= contextPath %>/img/loRes/dwt/ButtonUp__H.gif);
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 }
 
 .DwtButton-activated {
-	background-image:url(<%= contextPath %>/img/hiRes/dwt/ButtonDown__H.gif);
+	background-image:url(<%= contextPath %>/img/loRes/dwt/ButtonDown__H.gif);
 	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 }
 
 .DwtButton-triggered {
-	background-image:url(<%= contextPath %>/img/hiRes/dwt/ButtonDown__H.gif);
+	background-image:url(<%= contextPath %>/img/loRes/dwt/ButtonDown__H.gif);
 	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 }
 
