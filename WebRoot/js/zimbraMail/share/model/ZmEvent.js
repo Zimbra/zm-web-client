@@ -37,7 +37,7 @@ function ZmEvent(type) {
 	this.type = type; //source type
 	this.event = null; //event type
 	this.source = null;
-	this._details = {};
+	this._details = new Object();
 }
 
 // Listener types
@@ -54,8 +54,6 @@ ZmEvent.S_ATT				= i++;
 ZmEvent.S_CONTACT			= i++;
 ZmEvent.S_APPT				= i++;
 ZmEvent.S_NOTE				= i++;
-ZmEvent.S_WIKI				= i++;
-ZmEvent.S_NOTEBOOK			= i++;
 ZmEvent.S_PICKER			= i++;
 ZmEvent.S_SEARCH			= i++;
 ZmEvent.S_SETTING			= i++;
@@ -98,7 +96,7 @@ ZmEvent.E_ZIMLETS		= i++;
 ZmEvent.prototype.toString = 
 function() {
 	return "ZmEvent";
-};
+}
 
 /**
 * Sets the event type and source.
@@ -110,7 +108,7 @@ ZmEvent.prototype.set =
 function(event, source) {
 	this.event = event; 
 	this.source = source; 
-};
+}
 
 /**
 * Adds an arbitrary bit of info to the event.
@@ -121,7 +119,7 @@ function(event, source) {
 ZmEvent.prototype.setDetail =
 function(field, value) {
 	this._details[field] = value;
-};
+}
 
 /**
 * Returns an arbitrary bit of info from the event.
@@ -131,7 +129,7 @@ function(field, value) {
 ZmEvent.prototype.getDetail =
 function(field) {
 	return this._details[field];
-};
+}
 
 /**
 * looks for a detail with a name of "items", and returns it, or an
@@ -143,7 +141,7 @@ ZmEvent.prototype.getItems =
 function() {
     var items = this._details["items"];
     return items ? items : [];
-};
+}
 
 /**
 * Sets the event details. Any existing details will be lost.
@@ -152,8 +150,8 @@ function() {
 */
 ZmEvent.prototype.setDetails =
 function(details) {
-	this._details = details ? details : {};
-};
+	this._details = details ? details : new Object();
+}
 
 /**
 * Returns the event details.
@@ -161,4 +159,4 @@ function(details) {
 ZmEvent.prototype.getDetails =
 function() {
 	return this._details;
-};
+}

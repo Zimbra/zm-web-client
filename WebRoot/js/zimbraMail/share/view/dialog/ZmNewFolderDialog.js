@@ -24,65 +24,60 @@
  */
 
 function ZmNewFolderDialog(parent, msgDialog, className) {
+	DBG.showTiming(true, AjxDebug.PERF, "ZmNewFolderDialog");
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.createNewFolder);
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
 	this._setupRemoteCheckboxField();
-DBG.timePt("setup content");
-
 	var omit = new Object();
 	omit[ZmFolder.ID_SPAM] = true;
 	omit[ZmFolder.ID_DRAFTS] = true;
+	DBG.timePt(AjxDebug.PERF, "setup content");
+	
 	this._setOverview(ZmNewFolderDialog._OVERVIEW_ID, this._folderTreeCellId, [ZmOrganizer.FOLDER], omit);
 	this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
 	this._folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-DBG.timePt("set overview");
-};
+	DBG.timePt(AjxDebug.PERF, "set overview");
+	DBG.showTiming(false);
+}
 
 ZmNewFolderDialog._OVERVIEW_ID = "ZmNewFolderDialog";
+
+ZmNewFolderDialog._feedEnabled = true;
 
 ZmNewFolderDialog.prototype = new ZmDialog;
 ZmNewFolderDialog.prototype.constructor = ZmNewFolderDialog;
 
-
-// Public methods
-
 ZmNewFolderDialog.prototype.toString = 
 function() {
 	return "ZmNewFolderDialog";
-};
+}
 
 ZmNewFolderDialog.prototype.popup =
 function(folder, loc) {
+	DBG.showTiming(true, AjxDebug.PERF, "ZmNewFolderDialog#popup");
 	folder = folder ? folder : this._folderTree.root;
-
 	this._folderTreeView.setSelected(folder);
 	if (folder.id == ZmOrganizer.ID_ROOT) {
 		var ti = this._folderTreeView.getTreeItemById(folder.id);
 		ti.setExpanded(true);
 	}
-	DBG.timePt("selected folder", true);
+	DBG.timePt(AjxDebug.PERF, "selected folder");
+
+	//var feedEnabled = this._appCtxt.get(ZmSetting.FEED_ENABLED);
+	var feedEnabled = ZmNewFolderDialog._feedEnabled;
+	if (this._feedEnabled != feedEnabled) {
+		this._feedEnabled = ZmNewFolderDialog._feedEnabled;
+		var cbField= document.getElementById(this._checkboxRowId);
+		cbField.style.display = this._feedEnabled ? (AjxEnv.isIE ? "block" : "table-row") : "none";
+	}
+	DBG.timePt(AjxDebug.PERF, "feed enabled");
 	
 	ZmDialog.prototype.popup.call(this, loc);
-};
-
-ZmNewFolderDialog.prototype.reset =
-function() {
-	ZmDialog.prototype.reset.call(this);
-
-	if (this._urlField) {
-		this._urlField.value = "";
-	}
-	if (this._remoteCheckboxField) {
-		this._remoteCheckboxField.checked = false;
-		var urlRow = document.getElementById(this._remoteCheckboxField.id+"URLrow");		
-		urlRow.style.display = "none";
-	}
-};
-
-
-// Private / protected methods
+	DBG.timePt(AjxDebug.PERF, "ZmDialog#popup");
+	DBG.showTiming(false);
+}
 
 ZmNewFolderDialog.prototype._contentHtml = 
 function() {
@@ -91,48 +86,34 @@ function() {
 	this._urlFieldId = Dwt.getNextId();		
 	this._checkboxRowId = Dwt.getNextId();
 	this._folderTreeCellId = Dwt.getNextId();	
-
 	var html = new Array();
 	var idx = 0;
-	html[idx++] = "<table cellpadding=0 cellspacing=5 border=0>";
-	html[idx++] = "<tr valign='center'><td class='Label'>";
-	html[idx++] = ZmMsg.nameLabel;
-	html[idx++] = "</td>";
-	html[idx++] = "<td><input autocomplete='off' type='text' class='Field' id='";
-	html[idx++] = this._nameFieldId;
-	html[idx++] = "' /></td></tr>";
+	html[idx++] = "<table cellpadding='0' cellspacing='5' border='0'>";
+	html[idx++] = "<tr valign='center'><td class='Label' Xstyle='padding: 0px 0px 5px 0px;'>" + ZmMsg.nameLabel + "</td>";
+	html[idx++] = "<td><input autocomplete='off' type='text' class='Field' id='" + this._nameFieldId + "' /></td></tr>";
 	
-	html[idx++] = "<tr id='";
-	html[idx++] = this._checkboxRowId;
-	html[idx++] = "'><td colspan=2>";
-	html[idx++] = "<table cellpadding=0 cellspacing=5 border=0>";
-	html[idx++] = "<tr valign='center'><td class='Label'><input type='checkbox' id='";
-	html[idx++] = this._remoteCheckboxFieldId;
-	html[idx++] = "'/></td><td>";
-	html[idx++] = ZmMsg.subscribeToFeed;
-	html[idx++] = "</td></tr>";
+	html[idx++] = "<tr id='"+this._checkboxRowId+"' style='display:none;'><td colspan=2>";
+	html[idx++] = "<table cellpadding='0' cellspacing='5' border='0'>";
+	html[idx++] = "<tr valign='center'><td class='Label'><input type='checkbox' id='" + this._remoteCheckboxFieldId + "'/></td><td>"+ZmMsg.subscribeToFeed+"</td></tr>";
 	html[idx++] = "</table>";	
 	html[idx++] = "</td></tr>";
 	
-	html[idx++] = "<tr style='display:none;' id='";
-	html[idx++] = this._remoteCheckboxFieldId;
-	html[idx++] = "URLrow' valign='center'><td class='Label'>";
-	html[idx++] = ZmMsg.urlLabel;
-	html[idx++] = "</td>";
-	html[idx++] = "<td><input autocomplete='off' type='text' class='Field' id='";
-	html[idx++] = this._remoteCheckboxFieldId;
-	html[idx++] = "URLfield'/></td></tr>";
+	html[idx++] = "<tr style='display:none;' id='"+this._remoteCheckboxFieldId+"URLrow' valign='center'><td class='Label' Xstyle='padding: 0px 0px 5px 0px;'>" + ZmMsg.urlLabel + "</td>";
+	html[idx++] = "<td><input autocomplete='off' type='text' class='Field' id='" +this._remoteCheckboxFieldId+"URLfield'/></td></tr>";
 
-	html[idx++] = "<tr><td class='Label' colspan=2>";
-	html[idx++] = ZmMsg.newFolderParent;
-	html[idx++] = ":</td></tr>";
-	html[idx++] = "<tr><td colspan=2 id='";
-	html[idx++] = this._folderTreeCellId;
-	html[idx++] = "'/></tr>";
+	html[idx++] = "<tr><td class='Label' colspan=2>" + ZmMsg.newFolderParent + ":</td></tr>";
+	html[idx++] = "<tr><td colspan=2 id='" + this._folderTreeCellId + "'/></tr>";
 	html[idx++] = "</table>";
 	
 	return html.join("");
-};
+}
+
+ZmNewFolderDialog.prototype._okButtonListener =
+function(ev) {
+	var results = this._getFolderData();
+	if (results)
+		DwtDialog.prototype._buttonListener.call(this, ev, results);
+}
 
 ZmNewFolderDialog.prototype._getFolderData =
 function() {
@@ -164,34 +145,34 @@ function() {
 	}
 
 	return (msg ? this._showError(msg) : [parentFolder, name, url]);
-};
-
-ZmNewFolderDialog.prototype._setupRemoteCheckboxField =
-function() {
-	this._remoteCheckboxField = document.getElementById(this._remoteCheckboxFieldId);
-	this._urlField = document.getElementById(this._remoteCheckboxFieldId+"URLfield");	
-	Dwt.setHandler(this._remoteCheckboxField, DwtEvent.ONCLICK, this._handleCheckbox);	
-};
-
-
-// Listeners
-
-ZmNewFolderDialog.prototype._okButtonListener =
-function(ev) {
-	var results = this._getFolderData();
-	if (results)
-		DwtDialog.prototype._buttonListener.call(this, ev, results);
-};
+}
 
 ZmNewFolderDialog.prototype._enterListener =
 function(ev) {
 	var results = this._getFolderData();
 	if (results)
 		this._runEnterCallback(results);
-};
+}
+
+ZmNewFolderDialog.prototype._setupRemoteCheckboxField =
+function() {
+	this._remoteCheckboxField = document.getElementById(this._remoteCheckboxFieldId);
+	this._urlField = document.getElementById(this._remoteCheckboxFieldId+"URLfield");	
+	Dwt.setHandler(this._remoteCheckboxField, DwtEvent.ONCLICK, this._handleCheckbox);	
+}
 
 
-// Callbacks
+ZmNewFolderDialog.prototype.reset =
+function() {
+	ZmDialog.prototype.reset.call(this);
+	if (this._urlField)
+		this._urlField.value = "";
+	if (this._remoteCheckboxField) {
+		this._remoteCheckboxField.checked = false;
+		var urlRow = document.getElementById(this._remoteCheckboxField.id+"URLrow");		
+		urlRow.style.display = "none";
+	}
+}
 
 ZmNewFolderDialog.prototype._handleCheckbox =
 function(event) {
@@ -203,4 +184,4 @@ function(event) {
 	if (target.checked) {
 		urlField.focus();
 	}
-};
+}
