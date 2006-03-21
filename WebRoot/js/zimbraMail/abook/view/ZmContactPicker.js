@@ -73,12 +73,12 @@ function() {
 * passed in. The address button that was used to popup the dialog is set 
 * as the active button.
 *
-* @param loc		a DwtPoint for setting the location
-* @param addrs		array of 3 vectors (one for each type of address)
-* @param addrType	the address type of the button that called us
+* @param buttonId	[string]*	button ID of the button that called us
+* @param addrs		[hash]*		hash of 3 vectors (one for each type of address)
+* @param str		[string]*	initial search string
 */
 ZmContactPicker.prototype.popup =
-function(buttonId, addrs) {
+function(buttonId, addrs, str) {
 	if (!this._initialized) {
 		this._initialize();
 		this._initialized = true;
@@ -106,7 +106,7 @@ function(buttonId, addrs) {
 	var searchField = document.getElementById(this._searchFieldId);
 	searchField.disabled = false;
 	searchField.focus();
-	searchField.value = "";
+	searchField.value = str ? str : "";
 	
 	DwtDialog.prototype.popup.call(this);
 };

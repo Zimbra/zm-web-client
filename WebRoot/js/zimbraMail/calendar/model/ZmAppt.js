@@ -55,7 +55,7 @@ function ZmAppt(appCtxt, list, noinit) {
 	this.attachments = null;
 	this.timezone = ZmTimezones.getDefault();
 	this._viewMode = ZmAppt.MODE_NEW;
-	this.folderId = ZmFolder.ID_CALENDAR;
+	this.folderId = ZmOrganizer.ID_CALENDAR;
 	
 	this._attendees = {};	// attendees by type
 	this._attendees[ZmAppt.PERSON]		= [];
@@ -121,21 +121,14 @@ ZmAppt.CUTYPE_ROOM			= "ROO";
 ZmAppt.CUTYPE_UNKNOWN		= "UNK";
 
 ZmAppt.SERVER_DAYS_TO_DISPLAY = {
-	SU: "Sunday",
-	MO: "Monday",
-	TU: "Tuesday",
-	WE: "Wednesday",
-	TH: "Thursday",
-	FR: "Friday",
-	SA: "Saturday"
+	SU: I18nMsg.weekdaySunLong,
+	MO: I18nMsg.weekdayMonLong,
+	TU: I18nMsg.weekdayTueLong,
+	WE: I18nMsg.weekdayWedLong,
+	TH: I18nMsg.weekdayThuLong,
+	FR: I18nMsg.weekdayFriLong,
+	SA: I18nMsg.weekdaySatLong
 };
-
-ZmAppt.MONTHLY_DAY_OPTIONS = [
-	{ label: AjxMsg.first, 			value: "1", 		selected: true 	},
-	{ label: AjxMsg.second, 		value: "2", 		selected: false },
-	{ label: AjxMsg.third, 			value: "3", 		selected: false },
-	{ label: AjxMsg.fourth, 		value: "4", 		selected: false },
-	{ label: AjxMsg.last, 			value: "-1", 		selected: false }];
 
 ZmAppt.SERVER_WEEK_DAYS				= ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 ZmAppt.NOTES_SEPARATOR				= "\n\n*~*~*~*~*~*~*~*~*~*\n\n";
@@ -181,7 +174,7 @@ ZmAppt.prototype.getOrigAttendees 				= function() { return this._origAttendees;
 ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
 ZmAppt.prototype.getEndDate 					= function() { return this.endDate; };
 ZmAppt.prototype.getEndTime 					= function() { return this.endDate.getTime(); }; 	// end time in ms
-ZmAppt.prototype.getFolderId 					= function() { return this.folderId || ZmFolder.ID_CALENDAR; };
+ZmAppt.prototype.getFolderId 					= function() { return this.folderId || ZmOrganizer.ID_CALENDAR; };
 ZmAppt.prototype.getFragment 					= function() { return this.fragment; };
 ZmAppt.prototype.getId 							= function() { return this.id; }; 					// mail item id on appt instance
 ZmAppt.prototype.getInvId 						= function() { return this.invId; }; 				// default mail item invite id on appt instance
@@ -233,7 +226,7 @@ function(endDate) {
 	this.endDate = new Date(endDate instanceof Date ? endDate.getTime(): endDate);
 	this._resetCached(); 
 };
-ZmAppt.prototype.setFolderId 					= function(folderId) 	{ this.folderId = folderId || ZmFolder.ID_CALENDAR; };
+ZmAppt.prototype.setFolderId 					= function(folderId) 	{ this.folderId = folderId || ZmOrganizer.ID_CALENDAR; };
 ZmAppt.prototype.setFreeBusy 					= function(fb) 			{ this.freeBusy = fb || "B"; };
 ZmAppt.prototype.setOrganizer 					= function(organizer) 	{ this.organizer = organizer != "" ? organizer : null; };
 ZmAppt.prototype.setMessage 					= function(message) 	{ this._message = message; };
@@ -916,6 +909,8 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
 	
+	buf[i++] = ZmMsg.organizer;
+	buf[i++] = " ";
 	var organizer = this.organizer ? this.organizer : this._appCtxt.get(ZmSetting.USERNAME);
 	var params = [ ZmMsg.organizer, organizer, "" ];
 	buf[i++] = formatter.format(params);
@@ -1003,6 +998,8 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 			buf[i++] = "</table>\n<p>\n<table border='0'>";
 		}
 		buf[i++] = "\n";
+		buf[i++] = ZmMsg.invitees;
+		buf[i++] = ": ";
 		var attString = this._getAttendeesString(this._attendees[ZmAppt.PERSON].slice(0, 10));
 		if (this._attendees[ZmAppt.PERSON].length > 10) {
 			attString += ", ...";
@@ -1275,7 +1272,7 @@ function () {
 									if (this.repeatWeeklyDays == null) 
 										this.repeatWeeklyDays = [];
 									this.repeatWeeklyDays.push(rule.byday[0].wkday[x].day);
-								}	
+								}
 							} else {
 								this.repeatCustomDayOfWeek = rule.byday[0].wkday[0].day;
 								this.repeatCustomOrdinal = rule.byday[0].wkday[0].ordwk;
@@ -1290,6 +1287,9 @@ function () {
 							this.repeatEndCount = rule.count[0].num;
 						}
 					}
+				}
+				if (this.repeatWeeklyDays == null) {
+					this.resetRepeatWeeklyDays();
 				}
 			}
 		}
@@ -1478,7 +1478,7 @@ function(soapDoc, method,  attachmentId, notifyList) {
 	m.setAttribute("d", new Date().getTime());
 
 	// do not set folderId if default folder or editing single instance
-	if (this.getFolderId() != ZmFolder.ID_CALENDAR && 
+	if (this.getFolderId() != ZmOrganizer.ID_CALENDAR && 
 		this._viewMode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE)
 	{
 		m.setAttribute("l", this.folderId);

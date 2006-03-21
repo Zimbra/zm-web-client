@@ -493,19 +493,28 @@ function() {
 	this._scrollTo8AM();
 }
 
+ZmCalColView._inSyncScroll = false;
+
 ZmCalColView.prototype._syncScroll =
 function(resetLeft)
 {
-	var bodyElement = document.getElementById(this._bodyDivId);
-	var hourElement = document.getElementById(this._hoursScrollDivId);
-	var alldayElement = document.getElementById(this._allDayScrollDivId);
-	var unionGridScrollElement = document.getElementById(this._unionGridScrollDivId);
-	var alldayApptElement = document.getElementById(this._allDayApptScrollDivId);
-	hourElement.scrollTop = bodyElement.scrollTop;
-	if (resetLeft) bodyElement.scrollLeft = 0;
-	alldayElement.scrollLeft = bodyElement.scrollLeft;
-	alldayApptElement.scrollLeft = bodyElement.scrollLeft;	
-	if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
+	if (ZmCalColView._inSyncScroll) return
+	else ZmCalColView._inSyncScroll = true;
+	
+	try {
+		var bodyElement = document.getElementById(this._bodyDivId);
+		var hourElement = document.getElementById(this._hoursScrollDivId);
+		var alldayElement = document.getElementById(this._allDayScrollDivId);
+		var unionGridScrollElement = document.getElementById(this._unionGridScrollDivId);
+		var alldayApptElement = document.getElementById(this._allDayApptScrollDivId);
+		hourElement.scrollTop = bodyElement.scrollTop;
+		if (resetLeft) bodyElement.scrollLeft = 0;
+		alldayElement.scrollLeft = bodyElement.scrollLeft;
+		alldayApptElement.scrollLeft = bodyElement.scrollLeft;	
+		if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
+	} finally {
+		 ZmCalColView._inSyncScroll = false;
+	}
 }
 
 ZmCalColView.prototype._horizontalScrollbar =
@@ -792,18 +801,14 @@ ZmCalColView.prototype._createHoursHtml =
 function(html) {
 	html.append("<div style='position:absolute; top:-8; width:", ZmCalColView._HOURS_DIV_WIDTH, "px;' id='", this._bodyHourDivId, "'>");
 	html.append("<table class=calendar_grid_day_table>");
+	var formatter = DwtCalendar.getHourFormatter();
+	var date = new Date();
+	date.setHours(0, 0, 0, 0);
 	for (var h=0; h < 25; h++) {
-		var hour = (h==0 || h == 12) ? 12 : h % 12;
-		var ampm = (h < 12) ? "am" : "pm";
 		html.append("<tr><td class=calendar_grid_body_time_td style='height:",
 		ZmCalColView._HOUR_HEIGHT ,"px; width:", ZmCalColView._HOURS_DIV_WIDTH, "px'><div class=calendar_grid_body_time_text>");
-		if (h == 0 || h == 24) {
-			html.append("&nbsp;");
-		} else if (h == 12) {
-			html.append(ZmMsg.noon);
-		} else {
-			html.append(hour, " ", ampm);
-		}
+		date.setHours(h);
+		html.append(h > 0 && h < 24 ? AjxStringUtil.htmlEncode(formatter.format([h, date])) : "&nbsp;");
 		html.append("</div></td></tr>");	
 	}
 	html.append("</table>", "</div>");	

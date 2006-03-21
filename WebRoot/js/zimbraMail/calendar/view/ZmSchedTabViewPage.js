@@ -161,12 +161,6 @@ function() {
 	return true;
 };
 
-ZmSchedTabViewPage.prototype.enableInputs = 
-function() {
-	// TODO
-	DBG.println("TODO: enable inputs for schedule tab view");
-};
-
 ZmSchedTabViewPage.prototype.resize = 
 function(newWidth, newHeight) {
 	if (!this._rendered) return;
@@ -227,6 +221,11 @@ function() {
 	var i = 0;
 	
 	html[i++] = "<table border=0>";
+	html[i++] = "<tr><td></td><td colspan=10><table border=0><tr><td><input type='checkbox' id='";
+	html[i++] = this._allDayCheckboxId;
+	html[i++] = "'></td><td><nobr>";
+	html[i++] = ZmMsg.allDayEvent;
+	html[i++] = "</td></tr></table></td></tr>";
 	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.meetingStart;
 	html[i++] = "</td><td>";
@@ -239,11 +238,8 @@ function() {
 	html[i++] = "</tr></table></td>";
 	html[i++] = "<td>@</td><td id='";
 	html[i++] = this._startTimeSelectId;
-	html[i++] = "'></td><td><input type='checkbox' id='";
-	html[i++] = this._allDayCheckboxId;
-	html[i++] = "'></td><td><nobr>";
-	html[i++] = ZmMsg.allDayEvent;
-	html[i++] = "</td><td width=100%></td></tr><tr><td class='ZmApptTabViewPageField'>";
+	html[i++] = "'></td>";
+	html[i++] = "<td width=100%></td></tr><tr><td class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.meetingEnd;
 	html[i++] = "</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
@@ -453,8 +449,8 @@ function() {
 		if (selectDiv) {
 			var select = new DwtSelect(this);
 			select.addOption(new DwtSelectOption(ZmAppt.PERSON, true, null, null, null, "ApptMeeting"));
-			select.addOption(new DwtSelectOption(ZmAppt.LOCATION, false, null, null, null, "Location"));
-			select.addOption(new DwtSelectOption(ZmAppt.RESOURCE, false, null, null, null, "Resource"));
+			select.addOption(new DwtSelectOption(ZmAppt.LOCATION, false, null, null, null, "Globe"));
+			select.addOption(new DwtSelectOption(ZmAppt.RESOURCE, false, null, null, null, "Attachment"));
 			select.reparentHtmlElement(selectId);
 			select.id = this._schedTable[i].dwtSelectId;
 			select.addChangeListener(this._selectChangeListener);
@@ -731,7 +727,7 @@ function() {
 
 ZmSchedTabViewPage.prototype._resetFullDateField =
 function() {
-	var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.LONG);
+	var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.MEDIUM);
 	this._navToolbar.setText(formatter.format(AjxDateUtil.simpleParseDateStr(this._startDateField.value)));
 };
 
@@ -780,6 +776,16 @@ function(ev) {
 
 	// change the start/end date if they mismatch
 	this._handleDateChange(parentButton == this._startDateButton, true);
+};
+
+ZmSchedTabViewPage.prototype._contactPickerListener =
+function(ev) {
+	if (!this._contactPicker) {
+		this._contactPicker = new ZmContactPicker(this._appCtxt);
+		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
+	}
+	this._cpButton = ev.item;
+	this._contactPicker.popup();
 };
 
 ZmSchedTabViewPage.prototype._navBarListener = 
@@ -923,6 +929,51 @@ function(value) {
 	}
 
 	return value;
+};
+
+ZmSchedTabViewPage.prototype._contactPickerOk =
+function(vec) {
+	var addrs = vec.getArray();
+	if (addrs.length) {
+		var dwtInputField = AjxCore.objectWithId(this._cpButton._inputFieldId);
+		var schedTableIdx = dwtInputField.schedTableIdx;
+		var emails = new Array();
+
+		for (var i = 0; i < addrs.length; i++) {
+			var addr = addrs[i].address;
+			emails.push(addr);
+
+			if (dwtInputField) {
+				var inputEl = dwtInputField.getInputElement();
+				dwtInputField.setValue(addr);
+				Dwt.setVisible(inputEl, true);
+				this._attendees[addr] = inputEl._schedTableIdx;
+			} else {
+				break;		// something is screwed up, just quit
+			}
+
+			// get the next EMPTY dwtInputField to populate
+			var found = false;
+			while (!found && this._schedTable[++schedTableIdx]) {
+				var inputDiv = document.getElementById(this._schedTable[schedTableIdx].dwtId);
+				dwtInputField = inputDiv ? Dwt.getObjectFromElement(inputDiv.firstChild) : null;
+				if (dwtInputField) {
+					found = dwtInputField.getValue() == "";
+				} else {
+					break;	// something is screwed up, just quit
+				}
+			}
+
+			// check if we have any more available slots
+			if (this._schedTable[schedTableIdx] == null)
+				break;
+		}
+
+		this._updateAttendeesField = true;
+		this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), emails.join(","), this._fbCallback);
+	}
+
+	this._contactPicker.popdown();
 };
 
 
