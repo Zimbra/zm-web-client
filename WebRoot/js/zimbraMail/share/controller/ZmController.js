@@ -120,7 +120,7 @@ function(actionCode) {
 	switch (actionCode) {
 		case ZmKeyMap.NEW_APPT:
 			var appt = new ZmAppt(this._appCtxt);
-			this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getContactController().show(appt);
+			this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalendarController().show(appt);
 			break;
 			
 		case ZmKeyMap.NEW_CALENDAR:

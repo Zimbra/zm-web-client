@@ -149,14 +149,6 @@ function(actionCode) {
 			this._doDelete(this._listView[this._currentView].getSelection());
 			break;
 			
-		case ZmKeyMap.NEXT_ITEM:
-			listView.selectItem(true);
-			break;
-			
-		case ZmKeyMap.PREV_ITEM:
-			listView.selectItem(false);
-			break;
-			
 		case ZmKeyMap.NEXT_PAGE:
 			this._paginate(this._currentView, true);
 			break;
