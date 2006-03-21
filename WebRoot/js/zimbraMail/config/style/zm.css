@@ -358,8 +358,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	background-color: #EEEEEE;
 }
 
-.ZmMailMsgView .MsgHeader .SubjectLine td { font-size: 12px; font-weight: bold; }
-
 .ZmMailMsgView .MsgHeader .LabelColName {
 	overflow: hidden;
 	width: 15ex;
@@ -1068,6 +1066,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	width: 1%;
 }
 
+/* ZmSchedTabViewPage */
 .ZmSchedTabViewPageKey {
 	vertical-align: top;
 	text-align: right;
@@ -1101,17 +1100,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	line-height: 22px;
 	color: #AAAAAA;
 }
-/*
-.ZmSchedTabViewPageEmail {
-	white-space: nowrap;
-	overflow: hidden;
-	cursor: text;
-	line-height: 22px;
-	height: 24px;
-	color: #AAAAAA;
-	width: 160px;
-}
-*/
+
 .ZmSchedTabViewPageCell {
 	width: 12px;
 	border-width: 1 1 0 0;
@@ -1145,7 +1134,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmSchedTabViewPageInput {
-/*	height: 24px; */
 	width: 100%;
 	height: 100%;
 	border: 0px;
@@ -1659,45 +1647,4 @@ HTML>BODY .appt-selected .appt_allday_body
 	font-weight: normal;
 	font-size: 10pt;
 	color: #666;
-}
-
-.ZmNoteView, .ZmNoteEditView {
-	background-color: #EEE;
-	xwidth: 100%;
-}
-
-.ZmNoteView {
-	padding: 0.5em;
-	overflow: auto;
-	font-family: "Times New Roman", Times, serif;
-	font-size: 12pt;
-}
-.ZmNoteView H1 {
-	margin-top: 0em;
-	margin-bottom: 0.25em;
-}
-.ZmNoteView H2 {
-	margin-top: 0.25em;
-	margin-bottom: 0.25em;
-}
-.ZmNoteView * {
-	font-family: inherit;
-}
-.ZmNoteView SPAN.Object, .ZmNoteView SPAN.Object-activated {
-	font-size: inherit;
-}
-
-.ZmNoteEditView {
-	padding: 3px;
-}
-.ZmNoteEditView .Label {
-	font-size: 14pt;
-	text-align: right;
-	width: 1%;
-}
-.ZmEditNoteView .DwtInputField {
-	width: 100%;
-}
-.ZmEditNoteView .DwtHtmlEditorIFrame {
-	height: 100%;
 }
