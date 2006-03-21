@@ -528,7 +528,7 @@ function(appt, mode) {
 	if (appt.isCustomRecurrence()) {
 		this._repeatDescField.innerHTML = appt._getRecurrenceBlurbForSave();
 	} else {
-		this._repeatDescField.innerHTML = appt.repeatType != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
+		this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(appt.repeatType);
 	}
 
 	// attendees
@@ -1275,7 +1275,7 @@ function(ev) {
 		this._oldRepeatValue = ev._args.oldValue;
 		this._showRecurDialog();
 	} else {
-		this._repeatDescField.innerHTML = newSelectVal != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
+		this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(newSelectVal);
 	}
 	this.notifyListeners(ZmApptTabViewPage._REPEAT_CHANGE, ev);
 };

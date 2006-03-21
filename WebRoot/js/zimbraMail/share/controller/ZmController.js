@@ -73,8 +73,6 @@ ZmController.APPOINTMENT_VIEW 			= i++;
 ZmController.MIXED_VIEW					= i++;
 ZmController.IM_CHAT_TAB_VIEW			= i++;
 ZmController.IM_CHAT_MULTI_WINDOW_VIEW	= i++;
-ZmController.NOTE_VIEW					= i++;
-ZmController.NOTE_EDIT_VIEW				= i++;
 
 // Abstract methods
 
@@ -114,37 +112,8 @@ function(view) {
 	this._currentView = view;
 };
 
-ZmController.prototype.handleKeyAction =
-function(actionCode) {
-	DBG.println(AjxDebug.DBG3, "ZmController.handleKeyAction");
-	switch (actionCode) {
-		case ZmKeyMap.NEW_APPT:
-			var appt = new ZmAppt(this._appCtxt);
-			this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getContactController().show(appt);
-			break;
-			
-		case ZmKeyMap.NEW_CALENDAR:
-			alert("New Calendar");
-			break;
-			
-		case ZmKeyMap.NEW_CONTACT:
-			var contact = new ZmContact(this._appCtxt);
-			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(contact);
-			break;
-			
-		case ZmKeyMap.NEW_FOLDER:
-			alert("New Folder");
-			break;
-			
-		case ZmKeyMap.NEW_MESSAGE:
-			var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
-			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController().doAction(ZmOperation.NEW_MESSAGE, inNewWindow);
-			break;
-			
-		case ZmKeyMap.NEW_TAG:
-			alert("New Tag");
-			break;	
-	}
+ZmController.prototype.handleKeyPressEvent =
+function(ev) {
 };
 
 ZmController.prototype._showLoginDialog =
@@ -198,9 +167,8 @@ function(ex, method, params, restartOnError, obj) {
 		this._execFrame = (method instanceof AjxCallback) ? method : {obj: obj, func: method, args: params, restartOnError: restartOnError};
 		this._errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
 		// bug fix #5603 - error msg for mail.SEND_FAILURE takes an argument
-		var args = (ex.code == ZmCsfeException.MAIL_SEND_FAILURE) ? ex.code : null;
-		var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg ? ex.msg : ex.message;
-		this.popupErrorDialog(msg, ex, true);
+		var args = ex.code == ZmCsfeException.MAIL_SEND_FAILURE ? ex.code : null;
+		this.popupErrorDialog(ex.getErrorMsg(args), ex, true);
 	}
 };
 
