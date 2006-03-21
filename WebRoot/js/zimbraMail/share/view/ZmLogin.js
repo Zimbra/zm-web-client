@@ -47,7 +47,7 @@ ZmLogin = function() {}
 ZmLogin.lastGoodUserNameCookie   = "ls_last_username";
 ZmLogin.lastGoodMailServerCookie = "ls_last_server";
 ZmLogin.CSFE_SERVER_URI = location.port == "80" ? "/service/soap/" : ":" + location.port + "/service/soap/";
-ZmLogin.ZIMBRA_APP_URI  = location.port == "80" ? appContextPath+"/mail" : ":" + location.port + appContextPath+"/mail";
+ZmLogin.ZIMBRA_APP_URI  = location.port == "80" ? "/zimbra/mail" : ":" + location.port + "/zimbra/mail";
 ZmLogin.MAILBOX_REGEX =/^([a-zA-Z0-9_\.\-])+(\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+)?$/;
 
 /**
@@ -104,9 +104,7 @@ function() {
 	html[idx++] = "<tr><td bgcolor='#FFFFFF'><div class='banner'></div></td></tr>";
 	html[idx++] = "<tr><td class='mainPanel' align=center><div class='error'>";
 	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2><tr>";
-	html[idx++] = "<td valign=top width=40><img src='";
-	html[idx++] = appContextPath;
-	html[idx++] = "/img/loRes/dwt/Critical_32.gif' width=32 height=32></td>";
+	html[idx++] = "<td valign=top width=40><img src='/zimbra/img/hiRes/dwt/Critical_32.gif' width=32 height=32></td>";
 	html[idx++] = "<td>";
 	html[idx++] = errorStr;
 	html[idx++] = "</td></tr></table>";
@@ -164,9 +162,7 @@ function() {
 	// error message div
 	html[idx++] = "<center><div class='error' style='display:none' id='errorMessageContainer'>";
 	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2><tr>";
-	html[idx++] = "<td valign=top width=40><img src='";
-	html[idx++] = appContextPath;
-	html[idx++] = "/img/loRes/dwt/Critical_32.gif' id='errorIcon' width=32 height=32></td>";
+	html[idx++] = "<td valign=top width=40><img src='/zimbra/img/hiRes/dwt/Critical_32.gif' id='errorIcon' width=32 height=32></td>";
 	html[idx++] = "<td id='errorMessage'>";
 	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</div></center>";
@@ -308,8 +304,12 @@ function(ev) {
     
     var target = ev.target ? ev.target: ev.srcElement;
     if (!target) return true;
+
+	var button = document.getElementById("loginButton");
     
     var keyCode = ev.keyCode;
+	var shiftKey = ev.shiftKey;
+
     if (keyCode == 13) { // Enter
 		if (target.id == "uname") {
 			document.getElementById("pass").focus();
@@ -321,7 +321,6 @@ function(ev) {
 		ZmLogin.cancelEvent(ev);
 		return false;
 	} else if (keyCode == 9) { // Tab
-		var shiftKey = ev.shiftKey;
 		if (target.id == "uname") {
 			if (!shiftKey) {
 				document.getElementById("pass").focus();
@@ -359,10 +358,8 @@ function(ev) {
 				if (obj.disabled) {
 					obj = document.getElementById("passNew");
 				} else {
-					if (!AjxEnv.isIE) {
-						var button = document.getElementById("loginButton");
+					if (!AjxEnv.isIE)
 						ZmLogin.loginButtonBlur(button.parentNode);
-					}
 				}
 				obj.focus();
 			} else {
@@ -471,7 +468,6 @@ function() {
 	var pwordField = document.getElementById("pass");
     var uname = unameField.value;
     var pword = pwordField.value;
-	
 
 	// check if we're trying to change the password
 	if (unameField.disabled && pwordField.disabled) {
@@ -541,22 +537,19 @@ function(uname, oldPass) {
 		DBG.dumpObj(ex);
 		// XXX: for some reason, ZmCsfeException consts are fubar
 		if (ex.code == "account.PASSWORD_RECENTLY_USED" ||
-			ex.code == "account.PASSWORD_CHANGE_TOO_SOON")
-		{
+			ex.code == "account.PASSWORD_CHANGE_TOO_SOON") {
 			var msg = ex.code == ZmCsfeException.ACCT_PASS_RECENTLY_USED
 				? ZmMsg.errorPassRecentlyUsed
 				: (ZmMsg.errorPassChangeTooSoon + " " + errorContact);
 			ZmLogin._setErrorMessage(msg);
 			newPassField.value = conPassField.value = "";
 			newPassField.focus();
-		}
-		else if (ex.code == "account.PASSWORD_LOCKED")
-		{
+		} else if (ex.code == "account.PASSWORD_LOCKED") {
 			// remove the new password and confirmation fields
 			var passTable = document.getElementById("passTable");
 			passTable.deleteRow(2);
 			passTable.deleteRow(2);
-
+			
 			// re-enable username and password fields
 			var unameField = document.getElementById("uname");
 			var pwordField = document.getElementById("pass");
@@ -565,11 +558,6 @@ function(uname, oldPass) {
 			pwordField.focus();
 			
 			ZmLogin._setErrorMessage(ZmMsg.errorPassLocked);
-		}
-		else if (ex.code == "account.INVALID_PASSWORD")
-		{
-			ZmLogin._setErrorMessage(ZmMsg.errorInvalidPass);
-			newPassField.focus();
 		}
 	}
 	
@@ -648,5 +636,5 @@ function (mailServer) {
 	var ms = mailServer ? mailServer : location.hostname;
 	return (location.protocol + "//" + ms + ((location.port == 80) 
 		? "" 
-		: ":" + location.port) + appContextPath + "/auth/" + window.location.search);
+		: ":" + location.port) +"/zimbra/auth/" + window.location.search);
 };

@@ -84,8 +84,8 @@ function(ev) {
 			} else {
 				// otherwise, change folder ID in canonical list
 				var contact = contactList.getById(items[i].id);
-				if (contact && contact.folderId != ZmOrganizer.ID_ADDRBOOK)
-					contact.folderId = ZmOrganizer.ID_ADDRBOOK;
+				if (contact && contact.folderId != ZmFolder.ID_CONTACTS)
+					contact.folderId = ZmFolder.ID_CONTACTS;
 			}
 		}
 	}
