@@ -60,7 +60,7 @@ function ZmKeyMap() {
 		"Alt+R": ZmKeyMap.REPLY,
 		"R": ZmKeyMap.REPLY,
 		"Alt+Shift+R": ZmKeyMap.REPLY_ALL,
-		"A": ZmKeyMap.REPLY_ALL,
+		"A": ZmKeyMap.REPLY_ALL
 	};
 	
 	this._map["ZmConvController"] = {
