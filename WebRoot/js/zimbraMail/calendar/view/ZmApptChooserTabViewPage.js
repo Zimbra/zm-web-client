@@ -236,6 +236,23 @@ function() {
 	return true;
 };
 
+/**
+* Enables/disables multiple locations.
+*
+* @param enable		[boolean]	if true, allow multiple locations
+*/
+ZmApptChooserTabViewPage.prototype.enableMultipleLocations =
+function(enable) {
+	if (this._multLocsCheckboxId) {
+		var cb = document.getElementById(this._multLocsCheckboxId);
+		if (cb.checked != enable) {
+			cb.checked = enable;
+			this._chooser.setSelectStyle(cb.checked ? DwtChooser.MULTI_SELECT : DwtChooser.SINGLE_SELECT, true);
+			this.showMe(); // force resize to adjust chooser layout
+		}
+	}
+};
+
 ZmApptChooserTabViewPage.prototype._createHtml =
 function() {
 

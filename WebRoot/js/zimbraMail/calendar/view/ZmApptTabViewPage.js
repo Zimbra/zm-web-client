@@ -550,6 +550,9 @@ function(appt, mode) {
 	if (locations && locations.length) {
 		this._attendees[ZmAppt.LOCATION] = AjxVector.fromArray(locations);
 		tp = this.parent.getTabPage(ZmApptComposeView.TAB_LOCATIONS);
+		if (locations.length > 1) {
+			tp.enableMultipleLocations(true);
+		}
 		tp._chooser.transfer(locations);
 	}
 	
