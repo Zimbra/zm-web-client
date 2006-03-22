@@ -159,6 +159,23 @@ ZmApptChooserTabViewPage.SORT_BY[ZmAppt.PERSON]		= ZmSearch.NAME_ASC;
 ZmApptChooserTabViewPage.SORT_BY[ZmAppt.LOCATION]	= ZmSearch.NAME_ASC;
 ZmApptChooserTabViewPage.SORT_BY[ZmAppt.RESOURCE]	= ZmSearch.NAME_ASC;
 
+ZmApptChooserTabViewPage.TOP_LEGEND = {};
+ZmApptChooserTabViewPage.TOP_LEGEND[ZmAppt.PERSON]		= ZmMsg.findAttendees;
+ZmApptChooserTabViewPage.TOP_LEGEND[ZmAppt.LOCATION]	= ZmMsg.findLocations;
+ZmApptChooserTabViewPage.TOP_LEGEND[ZmAppt.RESOURCE]	= ZmMsg.findResources;
+
+ZmApptChooserTabViewPage.BOTTOM_LEGEND = {};
+ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmAppt.PERSON]	= ZmMsg.apptAttendees;
+ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmAppt.LOCATION]	= ZmMsg.apptLocations;
+ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmAppt.RESOURCE]	= ZmMsg.apptResources;
+
+// images for the bottom fieldset legend
+ZmApptChooserTabViewPage.ICON = {};
+ZmApptChooserTabViewPage.ICON[ZmAppt.PERSON]	= "/zimbra/img/hiRes/calendar/ApptMeeting.gif";
+ZmApptChooserTabViewPage.ICON[ZmAppt.LOCATION]	= "/zimbra/img/hiRes/calendar/Location.gif";
+ZmApptChooserTabViewPage.ICON[ZmAppt.RESOURCE]	= "/zimbra/img/hiRes/calendar/Resource.gif";
+
+
 ZmApptChooserTabViewPage.prototype = new DwtTabViewPage;
 ZmApptChooserTabViewPage.prototype.constructor = ZmApptChooserTabViewPage;
 
@@ -203,14 +220,15 @@ function(newWidth, newHeight) {
 
 	var searchTable = document.getElementById(this._searchTableId);
 	var stSz = Dwt.getSize(searchTable);
-	var newChooserWidth = newWidth ? newWidth - 12 : Dwt.DEFAULT;
-	var newChooserHeight = newHeight ? newHeight - stSz.y - 40 : Dwt.DEFAULT;
+	// leave clearance for field sets
+	var newChooserWidth = newWidth ? newWidth - 32 : Dwt.DEFAULT;
+	var newChooserHeight = newHeight ? newHeight - stSz.y - 100 : Dwt.DEFAULT;
 	this._chooser.resize(newChooserWidth, newChooserHeight);
 };
 
 ZmApptChooserTabViewPage.prototype.cleanup =
 function() {
-
+	this._chooser.reset();
 };
 
 ZmApptChooserTabViewPage.prototype.isValid =
@@ -222,7 +240,12 @@ ZmApptChooserTabViewPage.prototype._createHtml =
 function() {
 
 	this._searchTableId	= Dwt.getNextId();
-	this._chooserDivId	= Dwt.getNextId();
+
+	this._topFieldsetId = Dwt.getNextId();
+	this._bottomFieldsetId = Dwt.getNextId();
+	this._chooserSourceListViewDivId	= Dwt.getNextId();
+	this._chooserButtonsDivId	= Dwt.getNextId();
+	this._chooserTargetListViewDivId	= Dwt.getNextId();
 
 	var fields = ZmApptChooserTabViewPage.SEARCH_FIELDS[this.type];
 	for (var i = 0; i < fields.length; i++) {
@@ -231,6 +254,16 @@ function() {
 
 	var html = [];
 	var i = 0;
+	
+	html[i++] = "<fieldset style='margin:3px' id='";
+	html[i++] = this._topFieldsetId;
+	html[i++] = "'";
+	if (AjxEnv.isMozilla)
+		html[i++] = " style='border: 1px dotted #555555'";
+	html[i++] = "><legend style='color:#555555'>";
+	html[i++] = "<img src='/zimbra/img/hiRes/common/Search.gif' />&nbsp;";
+	html[i++] = ZmApptChooserTabViewPage.TOP_LEGEND[this.type];
+	html[i++] = "</legend>";
 	
 	html[i++] = "<div style='margin-top:10px' id='";
 	html[i++] = this._searchTableId;
@@ -253,11 +286,35 @@ function() {
 	}
 			
 	html[i++] = "</table></div>";
-	
-	// placeholder for the chooser
+
+	// placeholder for the chooser's source list view
 	html[i++] = "<div id='";
-	html[i++] = this._chooserDivId;
+	html[i++] = this._chooserSourceListViewDivId;
 	html[i++] = "'></div>";
+	html[i++] = "</fieldset>";
+	
+	// placeholder for the chooser's buttons
+	html[i++] = "<div id='";
+	html[i++] = this._chooserButtonsDivId;
+	html[i++] = "'></div>";
+	
+	html[i++] = "<fieldset style='margin:3px' id='";
+	html[i++] = this._bottomFieldsetId;
+	html[i++] = "'";
+	if (AjxEnv.isMozilla)
+		html[i++] = " style='border: 1px dotted #555555'";
+	html[i++] = "><legend style='color:#555555'>";
+	html[i++] = "<img src='";
+	html[i++] = ZmApptChooserTabViewPage.ICON[this.type];
+	html[i++] = "' />&nbsp;";
+	html[i++] = ZmApptChooserTabViewPage.BOTTOM_LEGEND[this.type];
+	html[i++] = "</legend>";
+
+	// placeholder for the chooser's target list view
+	html[i++] = "<div id='";
+	html[i++] = this._chooserTargetListViewDivId;
+	html[i++] = "'></div>";
+	html[i++] = "</fieldset>";
 	
 	this.getHtmlElement().innerHTML = html.join("");
 };
@@ -327,8 +384,15 @@ function() {
    
 	// add chooser
 	this._chooser = new ZmApptChooser(this);
-	var chooserDiv = document.getElementById(this._chooserDivId);
-	chooserDiv.appendChild(this._chooser.getHtmlElement());
+	var chooserSourceListViewDiv = document.getElementById(this._chooserSourceListViewDivId);
+	var sourceListView = this._chooser.getSourceListView();
+	chooserSourceListViewDiv.appendChild(sourceListView);
+	var chooserButtonsDiv = document.getElementById(this._chooserButtonsDivId);
+	var buttons = this._chooser.getButtons();
+	chooserButtonsDiv.appendChild(buttons);
+	var chooserTargetListViewDiv = document.getElementById(this._chooserTargetListViewDivId);
+	var targetListView = this._chooser.getTargetListView();
+	chooserTargetListViewDiv.appendChild(targetListView);
 
 	// save search fields, and add handler for Return key to them	
 	var fields = ZmApptChooserTabViewPage.SEARCH_FIELDS[this.type];
@@ -609,4 +673,4 @@ function(ev, div) {
 		this.setToolTipContent(note);
 
 	return true;
-}
+};
