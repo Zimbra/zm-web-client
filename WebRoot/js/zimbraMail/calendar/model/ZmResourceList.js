@@ -38,13 +38,14 @@
 function ZmResourceList(appCtxt, search) {
 	ZmContactList.call(this, appCtxt, search, true, ZmItem.RESOURCE);
 
+	this._nameToResource = {};
 	this._emailToResource = {};
 	this._acMatchFields = ZmResourceList.AC_FIELDS;
 };
 
 ZmResourceList.ATTRS =
-	["displayName", "mail", "zimbraCalResType", "zimbraCalResLocationDisplayName",
-	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description"];
+	[ZmResource.F_name, ZmResource.F_mail, ZmResource.F_type, ZmResource.F_locationName,
+	 ZmResource.F_capacity, ZmResource.F_contactMail, ZmContact.F_description];
 
 ZmResourceList.AC_FIELDS = ["displayName"];
 
@@ -54,8 +55,8 @@ ZmResourceList.prototype.constructor = ZmResourceList;
 ZmResourceList.prototype.load =
 function() {
 	var conds = [];
-	conds.push({attr: "zimbraCalResType", op: "eq", value: ZmResource.TYPE_LOCATION});
-	conds.push({attr: "zimbraCalResType", op: "eq", value: ZmResource.TYPE_EQUIPMENT});
+	conds.push({attr: ZmResource.F_type, op: "eq", value: ZmResource.TYPE_LOCATION});
+	conds.push({attr: ZmResource.F_type, op: "eq", value: ZmResource.TYPE_EQUIPMENT});
 	var params = {conds: conds, join: ZmSearch.JOIN_OR, attrs: ZmResourceList.ATTRS};
 	var search = new ZmSearch(this._appCtxt, params);
 	
@@ -69,14 +70,37 @@ function(result) {
 	var a = this._vector.getArray();
 	for (var i = 0; i < a.length; i++) {
 		var resource = a[i];
-		var email = resource.getAttr("mail");
-		if (email) {
-			this._emailToResource[email.toLowerCase()] = resource;
-		}
+		this.updateHashes(resource);
 		this._preMatch(resource);
 		this._idHash[resource.id] = resource;
 	}
 	this._loaded = true;
+};
+
+ZmResourceList.prototype.updateHashes = 
+function(resource) {
+	var name = resource.getFullName();
+	if (name) {
+		this._nameToResource[name.toLowerCase()] = resource;
+	}
+	var email = resource.getEmail();
+	if (email) {
+		this._emailToResource[email.toLowerCase()] = resource;
+	}
+};
+
+/**
+* Returns the resource with the given name, if any. Canonical list only.
+* Since names aren't guaranteed to be unique, this returns the last resource
+* with the given name.
+*
+* @param name	[string]	a resource name
+*/
+ZmResourceList.prototype.getResourceByName = 
+function(name) {
+	if (!name || !this.isCanonical) return null;
+
+	return this._nameToResource[name.toLowerCase()];
 };
 
 /**
@@ -135,6 +159,7 @@ function(match, resource) {
 	var result = {};
 	result.item = resource;
 	result.text = match.savedMatch;
+	result[ZmContactList.AC_VALUE_EMAIL] = resource.getEmail();
 	result[ZmContactList.AC_VALUE_NAME] = resource.getFullName();
 
 	return result;

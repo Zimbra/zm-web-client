@@ -40,6 +40,8 @@ function ZmApptComposeController(appCtxt, container, calApp) {
 
 	this._addedAttendees = [];
 	this._removedAttendees = [];
+	
+	calApp.getResources();	// make sure resources are available for autocomplete
 };
 
 ZmApptComposeController.prototype = new ZmController();
@@ -243,6 +245,7 @@ function(appt, attId, notifyList) {
 ZmApptComposeController.prototype._attendeesUpdated = 
 function(appt, attId, attendees, origAttendees) {
 	// create hashes of emails for comparison
+	var origEmails = {};
 	for (var i = 0; i < origAttendees.length; i++) {
 		var email = origAttendees[i].getEmail();
 		origEmails[email] = true;

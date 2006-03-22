@@ -24,6 +24,8 @@
  */
 
 function ZmResource(appCtxt, id, list) {
+	id = id ? id : Dwt.getNextId();
+	list = list ? list : appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getResources();
 	ZmContact.call(this, appCtxt, id, list, ZmItem.RESOURCE);
 };
 
@@ -72,7 +74,7 @@ function() {
 /**
 * 
 *
-* @param email		an ZmEmailAddress, or an email string
+* @param email	[object]	a ZmEmailAddress, or an email string
 */
 ZmResource.prototype.initFromEmail =
 function(email) {
@@ -80,6 +82,6 @@ function(email) {
 		this.setAttr(ZmResource.F_mail, email.getAddress());
 		this.setAttr(ZmResource.F_name, email.getName());
 	} else {
-		this.setAttr(ZmResource.F_mail, email.getAddress());
+		this.setAttr(ZmResource.F_mail, email);
 	}
 };

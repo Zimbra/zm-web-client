@@ -63,10 +63,6 @@ function ZmAppt(appCtxt, list, noinit) {
 	this._attendees[ZmAppt.RESOURCE]	= [];
 
 	this._origAttendees = null;	// list of ZmContact
-
-	// for looking up additional contact/resource info	
-	this._contacts = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
-	this._resources = appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getResources();
 }
 
 ZmAppt.prototype = new ZmItem;
@@ -96,8 +92,7 @@ ZmAppt.PERSON	= 1;
 ZmAppt.LOCATION	= 2;
 ZmAppt.RESOURCE	= 3;
 
-ZmAppt.ATTENDEES_SEPARATOR_REGEX		= /[;,]/;
-ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE	= "; ";
+ZmAppt.ATTENDEES_SEPARATOR	= "; ";
 
 ZmAppt.STATUS_TENTATIVE		= "TENT";
 ZmAppt.STATUS_CONFIRMED		= "CONF";
@@ -242,38 +237,19 @@ function(startDate) {
 ZmAppt.prototype.setType 						= function(newType) 	{ this.type = newType; };
 ZmAppt.prototype.setTimezone 					= function(timezone) 	{ this.timezone = timezone; };
 
-// Takes list of email string, ZmEmailAddress, or ZmContact
+/**
+* Sets the attendees (person, location, or resource) for this appt.
+*
+* @param list	[array]		list of email string, ZmEmailAddress, ZmContact, or ZmResource
+*/
 ZmAppt.prototype.setAttendees =
-function(list) {
+function(list, type) {
+	this._attendees[type] = [];
 	list = (list instanceof Array) ? list : [list];
 	for (var i = 0; i < list.length; i++) {
-		var attendee = this._getAttendeeFromItem(list[i], ZmAppt.PERSON);
+		var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, list[i], type);
 		if (attendee) {
-			this._attendees[ZmAppt.PERSON].push(attendee);
-		}
-	}
-};
-
-// Takes list of email string, ZmEmailAddress, or ZmResource
-ZmAppt.prototype.setResources =
-function(list) {
-	list = (list instanceof Array) ? list : [list];
-	for (var i = 0; i < list.length; i++) {
-		var attendee = this._getAttendeeFromItem(list[i], ZmAppt.RESOURCE);
-		if (attendee) {
-			this._attendees[ZmAppt.RESOURCE].push(attendee);
-		}
-	}
-};
-
-// Takes list of email string, ZmEmailAddress, or ZmResource
-ZmAppt.prototype.setLocations =
-function(list) {
-	list = (list instanceof Array) ? list : [list];
-	for (var i = 0; i < list.length; i++) {
-		var attendee = this._getAttendeeFromItem(list[i], ZmAppt.LOCATION);
-		if (attendee) {
-			this._attendees[ZmAppt.LOCATION].push(attendee);
+			this._attendees[type].push(attendee);
 		}
 	}
 };
@@ -572,6 +548,7 @@ function(message, viewMode) {
 		this.isOrg = message.invite.isOrganizer(0);
 		this.organizer = message.getInviteOrganizer();
 		this.name = message.invite.getName(0);
+		this.location = message.invite.getLocation(0);
 		this.exception = message.invite.isException(0);
 		this.freeBusy = message.invite.getFreeBusy(0);
 		// if instance of recurring appointment, start date is generated from 
@@ -603,15 +580,12 @@ function(message, viewMode) {
 			for (var i = 0; i < attendees.length; i++) {
 				var addr = attendees[i].url;
 				var name = attendees[i].d;
-				// see if attendee is in personal contacts
-				var contact = this._contacts.getContactByEmail(addr);
-				if (!contact) {
-					var email = new ZmEmailAddress(addr, null, name);
-					contact = new ZmContact(this._appCtxt);
-					contact.initFromEmail(email);
+				var email = new ZmEmailAddress(addr, null, name);
+				var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, email, ZmAppt.PERSON);
+				if (attendee) {
+					this._attendees[ZmAppt.PERSON].push(attendee);
+					this._origAttendees.push(attendee);
 				}
-				this._attendees[ZmAppt.PERSON].push(contact);
-				this._origAttendees.push(contact);
 			}
 		}
 		this._attendees[ZmAppt.LOCATION] = [];
@@ -619,7 +593,7 @@ function(message, viewMode) {
 		var resources = message.invite.getResources();
 		if (resources) {
 			for (var i = 0; i < resources.length; i++) {
-				var resource = this._resources.getResourceByEmail(resources[i].url);
+				var resource = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, resources[i].url);
 				if (resource) {
 					if (resource.isLocation()) {
 						this._attendees[ZmAppt.LOCATION].push(resource);
@@ -628,6 +602,10 @@ function(message, viewMode) {
 					}
 				}
 			}
+		}
+		if (this.location && !this._attendees[ZmAppt.LOCATION].length) {
+			var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, this.location, ZmAppt.LOCATION);
+			this._attendees[ZmAppt.LOCATION].push(attendee);
 		}
 
 		this.getAttachments();
@@ -1092,32 +1070,6 @@ function(attach, hasCheckbox) {
 
 // Private / Protected methods
 
-// Takes a string, ZmEmailAddress, or contact/resource and returns
-// a ZmContact or a ZmResource
-ZmAppt.prototype._getAttendeeFromItem =
-function(item, type) {
-	var attendee = null;
-	if (item instanceof ZmContact) {
-		attendee = item;
-	} else if (item instanceof ZmEmailAddress) {
-	 	attendee = (type == ZmAppt.PERSON) ? this._contacts.getContactByEmail(item.getAddress()) :
-	 										 this._resources.getResourceByEmail(item.getAddress());
-	 	if (!attendee) {
-			attendee = (type == ZmAppt.PERSON) ? new ZmContact(this._appCtxt) :
-												 new ZmResource(this._appCtxt);
-			attendee.initFromEmail(item);
-		}
-	} else if (typeof item == "string") {
-	 	var email = ZmEmailAddress.parse(item);
-	 	if (email) {
-			attendee = (type == ZmAppt.PERSON) ? new ZmContact(this._appCtxt) :
-												 new ZmResource(this._appCtxt);
-			attendee.initFromEmail(item);
-		}
-	}
-	return attendee;
-};
-
 /*
 * Creates a string from a list of attendees/locations/resources. If an item
 * doesn't have a name, its address is used.
@@ -1137,7 +1089,7 @@ function(list) {
 			a.push(text);
 		}
 	}
-	return a.join(ZmAppt.ATTENDEES_SEPARATOR_AND_SPACE);
+	return a.join(ZmAppt.ATTENDEES_SEPARATOR);
 };
 
 ZmAppt.prototype._getTextSummaryTime = 
@@ -1676,6 +1628,8 @@ function(soapDoc, inv, m, notifyList) {
 ZmAppt.prototype._addAttendeeToSoap = 
 function(soapDoc, inv, m, notifyList, attendee, type) {
 	var address = attendee.getEmail();
+	if (!address) return;
+
 	var dispName = attendee.getFullName();
 	if (inv) {
 		at = soapDoc.set("at", null, inv);

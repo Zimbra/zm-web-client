@@ -32,18 +32,16 @@
 *
 * @param parent				[ZmApptComposeView]			the appt compose view
 * @param appCtxt 			[ZmAppCtxt]					app context
-* @param tabId				[constant]					tab ID
 * @param attendees			[hash]						attendees/locations/resources
 * @param controller			[ZmApptComposeController]	the appt compose controller
 * @param acContactsList		[ZmAutocompleteListView]	autocomplete for attendees
 * @param acResourcesList	[ZmAutocompleteListView]	autocomplete for locations/resources
 */
-function ZmSchedTabViewPage(parent, appCtxt, tabId, attendees, controller, acContactsList, acResourcesList) {
+function ZmSchedTabViewPage(parent, appCtxt, attendees, controller, acContactsList, acResourcesList) {
 
 	DwtTabViewPage.call(this, parent);
 
 	this._appCtxt = appCtxt;
-	this._tabId = tabId;
 	this._attendees = attendees;
 	this._controller = controller;
 	this._acContactsList = acContactsList;
@@ -57,6 +55,11 @@ function ZmSchedTabViewPage(parent, appCtxt, tabId, attendees, controller, acCon
 	this._schedTable = [];
 	this._allAttendees = [];
 	this._allAttendeeSlot = null;
+	
+	this._badAttendeeMsg = {};
+	this._badAttendeeMsg[ZmAppt.PERSON]		= ZmMsg.schedBadAttendee;
+	this._badAttendeeMsg[ZmAppt.LOCATION]	= ZmMsg.schedBadLocation;
+	this._badAttendeeMsg[ZmAppt.RESOURCE]	= ZmMsg.schedBadResource;
 
 	this._fbCallback = new AjxCallback(this, this._handleResponseFreeBusy);
 };
@@ -68,6 +71,7 @@ ZmSchedTabViewPage.prototype.constructor = ZmSchedTabViewPage;
 // Consts
 
 ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES	= 12;
+ZmSchedTabViewPage.FREEBUSY_NUM_CELLS		= 48;
 
 ZmSchedTabViewPage.STATUS_FREE				= 1;
 ZmSchedTabViewPage.STATUS_BUSY				= 2;
@@ -89,13 +93,19 @@ function() {
 	if (!this._rendered)
 		this._initialize();
 
+	this.parent.tabSwitched(this._tabKey);
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
 
 	// set the free/busy view with fresh data
 	this.set(this._apptTab.getDateInfo(), this._apptTab.getOrganizer(), this._attendees);
+};
 
-	this.parent.tabSwitched(this._tabKey);
+ZmSchedTabViewPage.prototype.tabBlur =
+function() {
+	if (this._activeInputField) {
+		this._handleAttendeeField(this._activeInputField);
+	}
 };
 
 ZmSchedTabViewPage.prototype.initialize = 
@@ -135,7 +145,7 @@ function() {
 		// re-enable the first row (which is the "read-only" organizer row)
 		if (i == 0)
 			inputEl.disabled = false;
-		this._cleanRow(inputEl, sched);
+		this._cleanRow(inputEl, sched, true);
 	}
 
 	// cleanup all attendees row
@@ -337,11 +347,11 @@ function() {
 	for (var j = 0; j < ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES; j++) {
 		// store some meta data about this table row
 		var attendee = {};
-		var dwtId = attendee.dwtId = Dwt.getNextId();
-		attendee.dwtDivId = dwtId + "_DIV_";
-		attendee.dwtInputId = dwtId + "_INPUT_";
-		attendee.dwtTableId = dwtId + "_TABLE_";
-		attendee.dwtSelectId = dwtId + "_SELECT_";
+		var dwtId = attendee.dwtId = Dwt.getNextId();	// container for input
+		attendee.dwtDivId = dwtId + "_DIV_";			// outer container
+		attendee.dwtInputId = dwtId + "_INPUT_";		// input field
+		attendee.dwtTableId = dwtId + "_TABLE_";		// f/b table
+		attendee.dwtSelectId = dwtId + "_SELECT_";		// container for select menu
 		attendee.idx = j;
 		attendee._coloredCells = [];
 
@@ -384,7 +394,7 @@ function() {
 		html[i++] = attendee.dwtTableId;
 		html[i++] = "'><tr";
 		html[i++] = j == 0 ? " style='background-color:#FFFFFF'>" : ">";
-		for (var k = 0; k < 48; k++)
+		for (var k = 0; k < ZmSchedTabViewPage.FREEBUSY_NUM_CELLS; k++)
 			html[i++] = "<td><div class='ZmSchedTabViewPageGrid'></div></td>";
 		html[i++] = "</tr></table>";
 		html[i++] = "</td></tr>";
@@ -440,7 +450,6 @@ function() {
 			var inputEl = dwtInputField.getInputElement();
 			inputEl.className = "ZmSchedTabViewPageInput";
 			inputEl.id = this._schedTable[i].dwtInputId;
-			inputEl._tabId = this._tabId;
 			inputEl._type = ZmAppt.PERSON;
 			inputEl._dwtObjId = AjxCore.assignId(dwtInputField);
 		}
@@ -448,11 +457,10 @@ function() {
 		var selectDiv = document.getElementById(selectId);
 		if (selectDiv) {
 			var select = new DwtSelect(this);
-			select.addOption(new DwtSelectOption(ZmAppt.PERSON, true, null, null, null, "ApptMeeting"));
+			select.addOption(new DwtSelectOption(ZmAppt.PERSON, true, null, null, null, "Person"));
 			select.addOption(new DwtSelectOption(ZmAppt.LOCATION, false, null, null, null, "Globe"));
 			select.addOption(new DwtSelectOption(ZmAppt.RESOURCE, false, null, null, null, "Attachment"));
 			select.reparentHtmlElement(selectId);
-			select.id = this._schedTable[i].dwtSelectId;
 			select.addChangeListener(this._selectChangeListener);
 			this._schedTable[i].selectObjId = AjxCore.assignId(select);
 			if (inputField) {
@@ -525,6 +533,9 @@ function(el) {
 			Dwt.setVisible(inputEl, true);
 			inputEl.focus();
 		}
+		this._activeInputField = inputEl;
+	} else if (el.tagName.toLowerCase == "input") {
+		this._activeInputField = el;
 	}
 };
 
@@ -533,24 +544,33 @@ function(el) {
 */
 ZmSchedTabViewPage.prototype._handleAttendeeField = 
 function(inputEl) {
-	var dwtInput = Dwt.getObjectFromElement(inputEl);
-	var isValid = dwtInput.validate();
-	var email = AjxStringUtil.trim(inputEl.value);
+	var value = AjxStringUtil.trim(inputEl.value);
 	var sched = this._schedTable[inputEl._schedTableIdx];
+	var select = AjxCore.objectWithId(sched.selectObjId);
+	var type = select.getValue();
+	var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, value, type, true);
 
-	if (isValid && email && email.length > 0) {
+	if (attendee) {
+		var email = attendee.getEmail();
 		this._emailToIdx[email] = inputEl._schedTableIdx;
-		// go get this attendee's free/busy info if we havent already
+		// go get this attendee's free/busy info if we haven't already
 		if (sched.uid != email) {
-			this._updateAttendeesField = true;
 			this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), email, this._fbCallback);
 		}
+		this.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
 	} else {
-		this._cleanRow(inputEl, sched, !isValid);
-		this._colorAllAttendees();
-		if (isValid)
-			this._updateAttendees();
+		if (value) {
+			this.parent.showErrorMessage(this._badAttendeeMsg[type], null, this._badAttendeeCallback, this, [inputEl, sched]);
+		} else {
+			this._cleanRow(inputEl, sched);
+		}
 	}
+};
+
+ZmSchedTabViewPage.prototype._badAttendeeCallback = 
+function(inputEl, sched) {
+	this._cleanRow(inputEl, sched);
+	this.parent._msgDialog.popdown();
 };
 
 ZmSchedTabViewPage.prototype._getStartTime = 
@@ -584,25 +604,6 @@ function() {
 			this._allAttendeeSlot._coloredCells.push(row.cells[i]);
 		}
 	}
-};
-
-ZmSchedTabViewPage.prototype._updateAttendees = 
-function() {
-	// get all the emails and update the appointment view
-	// XXX: optimize later!!
-	var attendeeArr = [];
-	// always skip the first attendee since that should be the organizer
-	for (var i = 1; i < this._schedTable.length; i++) {
-		var inputEl = document.getElementById(this._schedTable[i].dwtInputId);
-		if (inputEl && inputEl.value.length)
-			attendeeArr.push(inputEl.value);
-	}
-	if (attendeeArr.length) {
-		this._origAttendees = attendeeArr.join("; ");
-		this._apptTab.updateAttendeesField(this._origAttendees);
-	}
-
-	this._updateAttendeesField = false;
 };
 
 ZmSchedTabViewPage.prototype._updateFreeBusy = 
@@ -639,7 +640,7 @@ function(organizer, attendees) {
 	emails.push(this._setAttendee(num++, organizer, ZmAppt.PERSON, true)); // add organizer first
 	for (var t = 0; t < ZmApptComposeView.ATT_TYPES.length; t++) {
 		var type = ZmApptComposeView.ATT_TYPES[t];
-		var att = attendees[type];
+		var att = attendees[type].getArray();
 		for (var i = 0; i < att.length; i++) {
 			if (att[i]) {
 				emails.push(this._setAttendee(num++, att[i], type, false));
@@ -655,46 +656,57 @@ function(organizer, attendees) {
 ZmSchedTabViewPage.prototype._setAttendee = 
 function(i, attendee, type, isOrganizer) {
 	var name = attendee.getFullName();
-	var address = attendee.getEmail();
+	var email = attendee.getEmail();
 	var inputEl = document.getElementById(this._schedTable[i].dwtInputId);
 	if (inputEl) {
 		Dwt.setVisible(inputEl, true);
-		inputEl.value = name ? name : address;
+		inputEl.value = (type == ZmAppt.PERSON) ? email : name ? name : email;
 	}
 	var select = AjxCore.objectWithId(this._schedTable[i].selectObjId);
 	if (select) {
 		select.setSelectedValue(type);
 	}
-	this._emailToIdx[address] = i;
+	this._emailToIdx[email] = i;
 
 	if (isOrganizer) {
 		inputEl.disabled = true;
 	}
 	
-	return address;
+	return email;
 };
 
+/*
+* Resets a row to its starting state. The input is cleared and removed, and
+* the free/busy blocks are set back to their default color. Optionally, the
+* select is set back to person.
+*
+* @param inputEl		[Element]		the input element
+* @param sched			[object]		info for this row
+* @param resetSelect	[boolean]*		if true, set select to PERSON
+*/
 ZmSchedTabViewPage.prototype._cleanRow = 
-function(inputEl, sched, isInvalid) {
+function(inputEl, sched, resetSelect) {
 	// clear input element value and make invisible
-	if (inputEl && !isInvalid) {
-		inputEl.value = "";
-		if (Dwt.getVisible(inputEl))
-			Dwt.setVisible(inputEl, false);
+	inputEl.value = "";
+	if (Dwt.getVisible(inputEl)) {
+		Dwt.setVisible(inputEl, false);
 	}
 
 	// reset the row color to non-white
 	var table = document.getElementById(sched.dwtTableId);
-	if (table)
+	if (table) {
 		table.rows[0].style.backgroundColor = "#F4F4F4";
+	}
 
 	// remove the bgcolor from the cells that were colored
 	this._clearColoredCells(sched);
 	
 	// reset the select to person
-	var select = AjxCore.objectWithId(sched.selectObjId);
-	if (select) {
-		select.setSelectedValue(ZmAppt.PERSON);
+	if (resetSelect) {
+		var select = AjxCore.objectWithId(sched.selectObjId);
+		if (select) {
+			select.setSelectedValue(ZmAppt.PERSON);
+		}
 	}
 
 	sched.uid = null;
@@ -705,8 +717,9 @@ function(sched) {
 	while (sched._coloredCells.length > 0) {
 		// decrement cell count in all attendees row
 		var idx = sched._coloredCells[0].cellIndex;
-		if (this._allAttendees[idx] > 0)
+		if (this._allAttendees[idx] > 0) {
 			this._allAttendees[idx] = this._allAttendees[idx] - 1;
+		}
 
 		sched._coloredCells[0].style.backgroundColor = "";
 		sched._coloredCells.shift();
@@ -721,8 +734,9 @@ function(sched) {
 
 ZmSchedTabViewPage.prototype._resetAttendeeCount = 
 function() {
-	for (var i = 0; i < this._allAttendees.length; i++)
+	for (var i = 0; i < ZmSchedTabViewPage.FREEBUSY_NUM_CELLS; i++) {
 		this._allAttendees[i] = 0;
+	}
 };
 
 ZmSchedTabViewPage.prototype._resetFullDateField =
@@ -824,13 +838,22 @@ function(ev) {
 ZmSchedTabViewPage.prototype._selectChangeListener = 
 function(ev) {
 	var select = ev._args.selectObj;
-	if (!select) {
-		return;
-	}
+	if (!select) return;
+
 	var type = select.getValue();
 	var input = select.dwtInputField.getInputElement();
+	if (input._type == type) return;
 	input._type = type;
+
+	// reset row
 	var svp = select.parent;
+	var sched = svp._schedTable[input._schedTableIdx];
+	if (input.value) {
+		input.value = "";
+		svp._clearColoredCells(sched);
+	}
+
+	// reset autocomplete handler
 	if (type == ZmAppt.PERSON && svp._acContactsList) {
 		svp._acContactsList.handle(input);
 	} else if (svp._acResourcesList) {
@@ -857,19 +880,17 @@ function(status, slots, table, sched) {
 
 			// normalize
 			if (endIdx <= startIdx)
-				endIdx = 48;
+				endIdx = ZmSchedTabViewPage.FREEBUSY_NUM_CELLS;
 
 			for (j = startIdx; j < endIdx; j++) {
 				if (row.cells[j]) {
 					if (status != ZmSchedTabViewPage.STATUS_UNKNOWN)
-						this._allAttendees[j] = this._allAttendees[j]+1;
+						this._allAttendees[j] = this._allAttendees[j] + 1;
 					sched._coloredCells.push(row.cells[j]);
 					row.cells[j].style.backgroundColor = bgcolor;
 				}
 			}
 		}
-
-		this._colorAllAttendees();
 	}
 };
 
@@ -910,15 +931,9 @@ function(result) {
 			if (usr.t) this._colorSchedule(ZmSchedTabViewPage.STATUS_TENTATIVE, usr.t, table, sched);
 			if (usr.b) this._colorSchedule(ZmSchedTabViewPage.STATUS_BUSY, usr.b, table, sched);
 			if (usr.u) this._colorSchedule(ZmSchedTabViewPage.STATUS_OUT, usr.u, table, sched);
-
-			// if all we got back was free and nothing else, repaint all attendees row
-			if (usr.f && usr.n == null && usr.t == null && usr.b == null && usr.u == null)
-				this._colorAllAttendees();
 		}
 	}
-
-	if (this._updateAttendeesField)
-		this._updateAttendees();
+	this._colorAllAttendees();
 };
 
 ZmSchedTabViewPage.prototype._emailValidator =
@@ -983,7 +998,6 @@ ZmSchedTabViewPage._onClick =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var svp = AjxCore.objectWithId(el._schedViewPageId);
-//DBG.println("***** ONCLICK: " + el.tagName);
 	// figure out which object was clicked
 	if (el.id == svp._allDayCheckboxId) {
 		svp._showTimeFields(el.checked ? false : true);
@@ -998,16 +1012,13 @@ ZmSchedTabViewPage._onBlur =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var svp = AjxCore.objectWithId(el._schedViewPageId);
-//DBG.println("***** ONBLUR: " + el.tagName);
-
 	svp._handleAttendeeField(el);
+	svp._activeInputField = null;
 };
 
 ZmSchedTabViewPage._onChange = 
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var svp = AjxCore.objectWithId(el._schedViewPageId);
-//DBG.println("***** ONCHANGE: " + el.tagName);
-
 	svp._handleDateChange(el == svp._startDateField);
 };
