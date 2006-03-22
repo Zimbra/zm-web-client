@@ -50,7 +50,7 @@ function ZmContact(appCtxt, id, list, type) {
 	type = type ? type : ZmItem.CONTACT;
 	ZmItem.call(this, appCtxt, type, id, list);
 
-	this.attr = new Object();
+	this.attr = {};
 	// handle to canonical list (for contacts that are part of search results)
 	if (!list.isCanonical && !list.isGal)
 		this.canonicalList = contactList;
@@ -175,7 +175,7 @@ function(contact) {
 	var attr = contact.getAttrs ? contact.getAttrs() : contact;
 	var val = parseInt(attr.fileAs);
 
-	var fa = new Array();
+	var fa = [];
 	var idx = 0;
 
 	switch (val) {
@@ -384,7 +384,7 @@ function(obj) {
 	var oldFileAs = this.getFileAs();
 	var oldFullName = this.getFullName();
 	this._resetCachedFields();
-	var oldAttr = new Object();
+	var oldAttr = {};
 	for (var a in obj._attrs) {
 		oldAttr[a] = this.getAttr(a);
 		if (obj._attrs[a] == undefined || obj._attrs[a] == "") {
@@ -437,7 +437,7 @@ function() {
 // returns a list (array) of all valid emails for this contact
 ZmContact.prototype.getEmails = 
 function() {
-	var emails = new Array();
+	var emails = [];
 	for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
 		var value = this.getAttr(ZmContact.F_EMAIL_FIELDS[i]);
 		if (value)
@@ -477,7 +477,7 @@ ZmContact.prototype.getToolTip =
 function(email) {
 	// update/null if modified
 	if (!this._toolTip || this._toolTipEmail != email) {
-		var html = new Array();
+		var html = [];
 		var idx = 0;
 		var entryTitle = this.getFileAs();
 		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0>";
@@ -532,7 +532,7 @@ function() {
 	var attrs = this.getAttrs();
 	var fa = parseInt(attrs.fileAs);
 	
-	var val = new Array();
+	var val = [];
 	var idx = 0;
 	
 	if (fa == ZmContact.FA_LAST_C_FIRST || fa == ZmContact.FA_FIRST_LAST) {
@@ -596,7 +596,7 @@ ZmContact.prototype._getAddressField =
 function(street, city, state, zipcode, country) {
 	if (street == null && city == null && state == null && zipcode == null && country == null) return null;
 	
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 	
 	if (street) {

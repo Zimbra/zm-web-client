@@ -35,16 +35,14 @@
 *
 * @param parent		[DwtComposite]	the element that created this view
 * @param appCtxt 	[ZmAppCtxt]		app context
-* @param tabId		[constant]		tab ID
 * @param attendees	[hash]			attendees/locations/resources
 * @param type		[constant]		chooser page type
 */
-function ZmApptChooserTabViewPage(parent, appCtxt, tabId, attendees, type) {
+function ZmApptChooserTabViewPage(parent, appCtxt, attendees, type) {
 
 	DwtTabViewPage.call(this, parent);
 
 	this._appCtxt = appCtxt;
-	this._tabId = tabId;
 	this._attendees = attendees;
 	this.type = type;
 
@@ -53,8 +51,6 @@ function ZmApptChooserTabViewPage(parent, appCtxt, tabId, attendees, type) {
 	this._searchFields = {};
 	this._searchFieldIds = {};
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
-
-	parent.addChangeListener(new AjxListener(this, this._attendeesChangeListener));
 };
 
 // List view columns
@@ -177,6 +173,11 @@ function() {
 	this.resize(pSize.x, pSize.y);
 
 	this.parent.tabSwitched(this._tabKey);
+	this._setAttendees();
+};
+
+ZmApptChooserTabViewPage.prototype.tabBlur =
+function() {
 };
 
 ZmApptChooserTabViewPage.prototype.initialize =
@@ -319,8 +320,8 @@ function() {
 	if (this._listSelectId) {
 		var listSelect = document.getElementById(this._listSelectId);
 		this._selectDiv = new DwtSelect(this);
-		this._selectDiv.addOption(ZmMsg.contacts, true, ZmContactPicker.SEARCHFOR_CONTACTS);
-		this._selectDiv.addOption(ZmMsg.GAL, false, ZmContactPicker.SEARCHFOR_GAL);
+		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactPicker.SEARCHFOR_CONTACTS);
+		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactPicker.SEARCHFOR_GAL);
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
 	}
    
@@ -353,28 +354,18 @@ function(ev) {
 };
 
 /*
-* Updates the appropriate target list. We do a wholesale replace. The number of items should
-* never be very large, and a wholesale replace is easier and safer than trying to change
-* the list by adding or removing a single item.
+* Sets the target list to the current set of attendees.
 */
-ZmApptChooserTabViewPage.prototype._attendeesChangeListener =
-function(ev) {
-
-	var tabId = ev.getDetail("tabId");	// source of the change
-	var type = ev.getDetail("type");	// what changed
-	
-	// make sure we're interested in the change
-	if (tabId == this._tabId || type != this.type) {
-		return;
-	}
-
-	var allAttendees = ev.getDetail("attendees");
-	var attendees = allAttendees[type];
+ZmApptChooserTabViewPage.prototype._setAttendees =
+function() {
+	var attendees = this._attendees[this.type].getArray();
 
 	// clear target list/data
 	this._chooser.reset(DwtChooserListView.TARGET);
-	// add attendees (and don't let chooser notify listeners)
-	this._chooser.transfer(attendees, null, true);
+	if (attendees && attendees.length) {
+		// add attendees (and don't let chooser notify listeners)
+		this._chooser.transfer(attendees, null, true);
+	}
 };
 
 /**
@@ -492,7 +483,6 @@ function() {
 ZmApptChooser.prototype._notify =
 function(event, details) {
 	details.type = this.parent.type;
-	details.tabId = this.parent._tabId;
 	DwtChooser.prototype._notify.call(this, event, details);
 };
 

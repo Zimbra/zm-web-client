@@ -480,6 +480,69 @@ function(recurrences) {
 	return repeatWeekday;
 };
 
+/*
+* Takes a string, ZmEmailAddress, or contact/resource and returns
+* a ZmContact or a ZmResource. If the attendee cannot be found in
+* personal contacts or the list of resources, a new contact or
+* resource is created and initialized.
+*
+* @param appCtxt	[ZmAppCtxt]		the app context
+* @param item		[object]		string, ZmEmailAddress, ZmContact, or ZmResource
+* @param type		[constant]		attendee type
+* @param strict		[boolean]*		if true, item must be a known contact/resource
+*/
+ZmApptViewHelper.getAttendeeFromItem =
+function(appCtxt, item, type, strict) {
+
+	if (!item) return null;
+
+	var contacts = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+	var resources = appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getResources();
+
+	var attendee = null;
+	if (item instanceof ZmContact) {
+		// it's already a contact or resource, return it as is
+		attendee = item;
+	} else if (item instanceof ZmEmailAddress) {
+		var addr = item.getAddress();
+		// see if we have this contact/resource by checking email address
+	 	attendee = (type == ZmAppt.PERSON) ? contacts.getContactByEmail(addr) :
+	 										 resources.getResourceByEmail(addr);
+	 	if (!attendee) {
+			// ZmEmailAddress has name and email, init a new contact/resource from those
+			attendee = (type == ZmAppt.PERSON) ? new ZmContact(appCtxt) :
+												 new ZmResource(appCtxt);
+			attendee.initFromEmail(item);
+		}
+	} else if (typeof item == "string") {
+		// see if it's an email we can use for lookup
+	 	var email = ZmEmailAddress.parse(item);
+	 	if (email) {
+	 		var addr = email.getAddress();
+	 		// is it a contact/resource we already know about?
+	 		attendee = (type == ZmAppt.PERSON) ? contacts.getContactByEmail(addr) :
+	 											 resources.getResourceByEmail(addr);
+	 		if (attendee) {
+	 			return attendee;
+	 		}
+			attendee = (type == ZmAppt.PERSON) ? new ZmContact(appCtxt) :
+												 new ZmResource(appCtxt);
+			attendee.initFromEmail(item);
+		} else if (type != ZmAppt.PERSON) {
+			// check if it's a location we know by name somehow
+			attendee = resources.getResourceByName(item);
+		}
+		// non-email string: initialize as a resource if it's a location
+		if (!attendee && type == ZmAppt.LOCATION && !strict) {
+			attendee = new ZmResource(appCtxt);
+			attendee.setAttr(ZmResource.F_name, item);
+			resources.updateHashes(attendee);
+		}
+	}
+	return attendee;
+};
+
+
 
 /**
 * Creates up to three separate DwtSelects for the time (hour, minute, am|pm)
