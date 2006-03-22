@@ -503,8 +503,9 @@ function(resetLeft)
 	var alldayApptElement = document.getElementById(this._allDayApptScrollDivId);
 	hourElement.scrollTop = bodyElement.scrollTop;
 	if (resetLeft) bodyElement.scrollLeft = 0;
+	//DBG.println("bodyElement: scrollLeft = "+ bodyElement.scrollLeft + " scrollTop = "+bodyElement.scrollTop);
 	alldayElement.scrollLeft = bodyElement.scrollLeft;
-	alldayApptElement.scrollLeft = bodyElement.scrollLeft;	
+	alldayApptElement.scrollLeft = bodyElement.scrollLeft;
 	if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
 }
 
@@ -941,7 +942,8 @@ function(abook) {
 	}
 	
 	// grid body
-	html.append("<div id='", this._bodyDivId, "' class=calendar_body style='position:absolute'>");
+	html.append("<div id='", this._bodyDivId, "' class=calendar_body style='position:absolute",
+								AjxEnv.isSafari ? "; overflow:auto" : "", "'>");
 	html.append("<div id='", this._apptBodyDivId, "' class='ImgCalendarDayGrid__BG' style='width:100%; height:1008px; position:absolute;'>");	
 	html.append("<div id='", this._timeSelectionDivId, "' class='calendar_time_selection' style='position:absolute; display:none;'></div>");
 	html.append("<div id='", this._newApptDivId, "' class='appt-Selected' style='position:absolute; display:none;'></div>");
@@ -1374,7 +1376,7 @@ function() {
 	// size appts divs
 	this._apptBodyDivHeight = ZmCalColView._DAY_HEIGHT + 1; // extra for midnight to show up
 	this._apptBodyDivWidth = Math.max(this._bodyDivWidth, this._calcMinBodyWidth(this._bodyDivWidth, numCols));
-	var needHorzScroll = this._apptBodyDivWidth > this._bodyDivWidth;
+	var needHorzScroll = this._apptBodyDivWidth > this._bodyDivWidth || AjxEnv.isSafari;
 	
 
 	this._horizontalScrollbar(needHorzScroll);
