@@ -503,13 +503,7 @@ ZmSpreadSheetModel.prototype.doneSetView = function() {
 };
 
 ZmSpreadSheetModel.prototype.getHtml = function() {
-	var html = [ 
-		"<style type='text/css'>",
-		"td.SpreadSheet-Type-number { text-align: right; }",
-		"td.SpreadSheet-Type-currency { text-align: right; }",
-		"</style>",
-		"<table style='font: 8pt tahoma,verdana,sans-serif; background-color: #fff; border-collapse: collapse'>"
-		];
+	var html = [ "<table style='font: 8pt tahoma,verdana,sans-serif; background-color: #fff; border-collapse: collapse'>" ];
 	for (var i = 0; i < this.ROWS; ++i) {
 		html.push("<tr>");
 		for (var j = 0; j < this.COLS; ++j)
@@ -681,7 +675,7 @@ ZmSpreadSheetCellModel.prototype.getHtml = function() {
 		var cls = " class='SpreadSheet-Type-" + cls + "'";
 	else
 		cls = "";
-	var val = this.getDisplayValue();
+	var val = AjxStringUtil.htmlEncode(this.getDisplayValue().toString());
 	if (val == "")
 		val = "&nbsp;";
 	return [ "<td", cls, style, ">", val, "</td>" ].join("");

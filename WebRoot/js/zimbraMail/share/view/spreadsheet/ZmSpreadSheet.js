@@ -41,11 +41,11 @@ function ZmSpreadSheet(parent, className, posStyle, deferred) {
 	var footimeout = null;
 	this._selectRangeCapture = new DwtMouseEventCapture(
 		this, "ZmSpreadSheet",
-		ZmSpreadSheet.simpleClosure(this._table_selrange_MouseOver, this),
+		AjxCallback.simpleClosure(this._table_selrange_MouseOver, this),
 		null,		// no mousedown
 
 		// mousemove handler (see warning above)
-		ZmSpreadSheet.simpleClosure(function(ev) {
+		AjxCallback.simpleClosure(function(ev) {
 			var self = this;
 			if (footimeout)
 				clearTimeout(footimeout);
@@ -59,7 +59,7 @@ function ZmSpreadSheet(parent, className, posStyle, deferred) {
 
 // 		null, // for now
 
-		ZmSpreadSheet.simpleClosure(this._clear_selectRangeCapture, this),
+		AjxCallback.simpleClosure(this._clear_selectRangeCapture, this),
 		null,		// no mouseout?
 		true);		// hard capture
 
@@ -67,8 +67,8 @@ function ZmSpreadSheet(parent, className, posStyle, deferred) {
 		this, "ZmSpreadSheet",
 		null,
 		null,
-		ZmSpreadSheet.simpleClosure(this._colsize_mouseMove, this),
-		ZmSpreadSheet.simpleClosure(this._colsize_mouseUp, this),
+		AjxCallback.simpleClosure(this._colsize_mouseMove, this),
+		AjxCallback.simpleClosure(this._colsize_mouseUp, this),
 		null,
 		true);
 
@@ -297,15 +297,15 @@ ZmSpreadSheet.prototype._init = function() {
 		}
 	}
 
-	table.onmouseup = ZmSpreadSheet.simpleClosure(this._table_onMouseUp, this);
-	table.onmousedown = ZmSpreadSheet.simpleClosure(this._table_onClick, this);
-	table.onclick = ZmSpreadSheet.simpleClosure(this._table_onClick, this);
-	table.ondblclick = ZmSpreadSheet.simpleClosure(this._table_onClick, this);
-	table.onmousemove = ZmSpreadSheet.simpleClosure(this._table_mouseMove, this);
-	table.onmouseout = ZmSpreadSheet.simpleClosure(this._table_mouseOut, this);
+	table.onmouseup = AjxCallback.simpleClosure(this._table_onMouseUp, this);
+	table.onmousedown = AjxCallback.simpleClosure(this._table_onClick, this);
+	table.onclick = AjxCallback.simpleClosure(this._table_onClick, this);
+	table.ondblclick = AjxCallback.simpleClosure(this._table_onClick, this);
+	table.onmousemove = AjxCallback.simpleClosure(this._table_mouseMove, this);
+	table.onmouseout = AjxCallback.simpleClosure(this._table_mouseOut, this);
 
 	var link = this._getFocusLink();
-	link.onkeypress = ZmSpreadSheet.simpleClosure(this._focus_keyPress, this);
+	link.onkeypress = AjxCallback.simpleClosure(this._focus_keyPress, this);
 	if (AjxEnv.isIE || AjxEnv.isOpera)
 		link.onkeydown = link.onkeypress;
 
@@ -323,11 +323,11 @@ ZmSpreadSheet.prototype._init = function() {
 	this._getRelDiv().appendChild(header);
 
 	header.onclick = table.onclick;	// hack ;-)
-	header.onmousemove = ZmSpreadSheet.simpleClosure(this._header_onMouseMove, this);
-	header.onmousedown = ZmSpreadSheet.simpleClosure(this._header_onMouseDown, this);
+	header.onmousemove = AjxCallback.simpleClosure(this._header_onMouseMove, this);
+	header.onmousedown = AjxCallback.simpleClosure(this._header_onMouseDown, this);
 
 	this._header_resetColWidths();
- 	this._getRelDiv().onscroll = ZmSpreadSheet.simpleClosure(this._header_resetScrollTop, this);
+ 	this._getRelDiv().onscroll = AjxCallback.simpleClosure(this._header_resetScrollTop, this);
 
 	this.getHtmlElement().style.display = "none"; // things may be recomputed 1-2 times, let's disable refresh for better performance
 	this._model.doneSetView();
@@ -608,12 +608,12 @@ ZmSpreadSheet.prototype._getInputField = function() {
 
 		// set event handlers
 		input[(AjxEnv.isIE || AjxEnv.isOpera) ? "onkeydown" : "onkeypress"]
-			= ZmSpreadSheet.simpleClosure(this._input_keyPress, this);
-		// input.onmousedown = ZmSpreadSheet.simpleClosure(this._input_mouseUp, this);
-		input.onmouseup = ZmSpreadSheet.simpleClosure(this._input_mouseUp, this);
-		input.onblur = ZmSpreadSheet.simpleClosure(this._input_blur, this);
-		input.onfocus = ZmSpreadSheet.simpleClosure(this._input_focus, this);
-		input.setValue = ZmSpreadSheet.simpleClosure(this._input_setValue, this);
+			= AjxCallback.simpleClosure(this._input_keyPress, this);
+		// input.onmousedown = AjxCallback.simpleClosure(this._input_mouseUp, this);
+		input.onmouseup = AjxCallback.simpleClosure(this._input_mouseUp, this);
+		input.onblur = AjxCallback.simpleClosure(this._input_blur, this);
+		input.onfocus = AjxCallback.simpleClosure(this._input_focus, this);
+		input.setValue = AjxCallback.simpleClosure(this._input_setValue, this);
 	}
 	return input;
 };
@@ -1076,9 +1076,9 @@ ZmSpreadSheet.prototype._getRangeDiv = function() {
 		this._getRelDiv().appendChild(div);
 		// at any move, we should hide the range display :-(
 		// otherwise, elements below it won't be able to receive mouse clicks
-		// div.onmousemove = ZmSpreadSheet.simpleClosure(this._hideRange, this);
-		div.onmousedown = ZmSpreadSheet.simpleClosure(this._rangediv_mousedown, this);
-		div.onmousemove = ZmSpreadSheet.simpleClosure(this._rangediv_mousemove, this);
+		// div.onmousemove = AjxCallback.simpleClosure(this._hideRange, this);
+		div.onmousedown = AjxCallback.simpleClosure(this._rangediv_mousedown, this);
+		div.onmousemove = AjxCallback.simpleClosure(this._rangediv_mousemove, this);
 	}
 	return div;
 };
@@ -1304,23 +1304,19 @@ ZmSpreadSheet.prototype.getSelectedCellModel = function() {
 };
 
 ZmSpreadSheet.prototype.clipboardCopy = function() {
-	ZmSpreadSheet._clipboard = new ZmSpreadSheetClipboard
+	window.top._ZmSpreadSheet_clipboard = new ZmSpreadSheetClipboard
 		(this._model, this.getSelectionRange(), false);
 };
 
 ZmSpreadSheet.prototype.clipboardCut = function() {
-	ZmSpreadSheet._clipboard = new ZmSpreadSheetClipboard
+	window.top._ZmSpreadSheet_clipboard = new ZmSpreadSheetClipboard
 		(this._model, this.getSelectionRange(), true);
 };
 
 ZmSpreadSheet.prototype.clipboardPaste = function() {
-	if (ZmSpreadSheet._clipboard) {
-		var r = this._model.paste(ZmSpreadSheet._clipboard,
-					  this.getSelectionRange());
+	var c = window.top._ZmSpreadSheet_clipboard;
+	if (c) {
+		var r = this._model.paste(c, this.getSelectionRange());
 		this._selectRange.apply(this, r);
 	}
-};
-
-ZmSpreadSheet.simpleClosure = function(func, obj) {
-	return function() { return func.call(obj, arguments[0]); };
 };

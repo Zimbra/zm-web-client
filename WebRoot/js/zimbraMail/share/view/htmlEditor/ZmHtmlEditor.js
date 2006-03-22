@@ -123,9 +123,18 @@ function(callback) {
 	this._eventCallback = callback;
 };
 
+ZmHtmlEditor.prototype._onContentInitialized =
+function() {
+	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML) {
+		setTimeout(AjxCallback.simpleClosure(this._deserializeAceObjects, this), 100);
+	}
+};
+
 ZmHtmlEditor.prototype.getContent =
 function() {
 	this.discardMisspelledWords();
+	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML)
+		this._serializeAceObjects();
 	return DwtHtmlEditor.prototype.getContent.call(this);
 };
 
@@ -709,46 +718,67 @@ function(name, target, data) {
 			this._insertNodeAtSelection(ifr);
 		else
 			target.parentNode.replaceChild(ifr, target);
-		if (data) {
-			if (AjxEnv.isIE) {
-				ifr.onreadystatechange = function() {
-					if (ifr.readyState == "complete") {
-						Dwt.getIframeWindow(ifr).deserialize(data);
-						ifr.onreadystatechange = null;
-					}
-				};
-			} else {
-				ifr.onload = function() {
-					Dwt.getIframeWindow(ifr).deserialize(data);
-					ifr.onload = null;
-				};
-			}
-		}
+		var handler = AjxCallback.simpleClosure(this._ace_finishedLoading, this, ifr, name, data);
+		if (AjxEnv.isIE)
+			ifr.onreadystatechange = handler;
+		else
+			ifr.onload = handler;
 		// outer.style.display = "";
+	}
+};
+
+ZmHtmlEditor.prototype._ace_finishedLoading = function(ifr, name, data) {
+	if (!AjxEnv.isIE || ifr.readyState == "complete") {
+		var win = Dwt.getIframeWindow(ifr);
+		win.ZmACE = true;
+		win.ZmACE_COMPONENT_NAME = name;
+		ifr.onload = null;
+		ifr.onreadystatechange = null;
+		win.create(data);
 	}
 };
 
 // Returns an array of embedded objects (each one is a reference to its containing IFRAME)
 ZmHtmlEditor.prototype._getAceObjects =
 function() {
-	return this._getIframeDoc().getElementsByTagName("iframe");
+	var tmp = this._getIframeDoc().getElementsByTagName("iframe");
+	var a = new Array(tmp.length);
+	for (var i = tmp.length; --i >= 0;)
+		a[i] = tmp[i];
+	return a;
+};
+
+ZmHtmlEditor.prototype._embedHtmlContent =
+function(html) {
+	if (!(this.ACE_ENABLED && this._headContent))
+		return DwtHtmlEditor.prototype._embedHtmlContent.call(this, html);
+	var headContent = this._headContent.join("");
+	return [ "<html><head>",
+		 headContent,
+		 "</head><body>",
+		 html,
+		 "</body></html>" ].join("");
 };
 
 ZmHtmlEditor.prototype._serializeAceObjects =
 function() {
+	var headContent = this._headContent = [];
+	var done = {};
 	var objects = this._getAceObjects();
-	var tmp = new Array(objects.length);
-	for (var i = 0; i < objects.length; ++i)
-		tmp[i] = objects.item(i);
-	objects = tmp;
 	var doc = this._getIframeDoc();
 	for (var i = 0; i < objects.length; ++i) {
 		var iframe = objects[i];
 		if (/^ACE-/.test(iframe.id)) {
 			var win = Dwt.getIframeWindow(iframe);
-			var data = win.serialize();
+			var data = win.serialize()
+				.replace(/&/g, "&amp;")
+				.replace(/>/g, "&gt;");
 			var html = win.getHTML();
-			var component_name = win.ACE_COMPONENT_NAME;
+			var component_name = win.ZmACE_COMPONENT_NAME;
+			if (!done[component_name] && typeof win.getHeadHTML == "function") {
+				done[component_name] = true;
+				headContent.push(win.getHeadHTML());
+			}
 			var holder = doc.createElement("div");
 			iframe.parentNode.replaceChild(holder, iframe);
 			holder.innerHTML = html;
@@ -769,7 +799,9 @@ function() {
 		var holder = divs[i];
 		if (/^ACE\s+([^\s]+)/.test(holder.className)) {
 			var component_name = RegExp.$1;
-			var data = holder.lastChild.data; // serialized data here
+			var data = holder.lastChild.data
+				.replace(/&gt;/g, ">")
+				.replace(/&amp;/g, "&");
 			this.insertObject(component_name, holder, data);
 		}
 	}
@@ -1309,8 +1341,8 @@ ZmHtmlEditor.prototype._enableDesignMode = function(doc) {
 		doc.designMode = "on";
 		// Probably a regression of FF 1.5.0.1/Linux requires us to
 		// reset event handlers here (Zimbra bug: 6545).
-		if (AjxEnv.isGeckoBased && AjxEnv.isLinux)
-			editor._registerEditorEventHandlers(document.getElementById(editor._iFrameId), doc);
+ 		if (AjxEnv.isGeckoBased && AjxEnv.isLinux)
+ 			editor._registerEditorEventHandlers(document.getElementById(editor._iFrameId), doc);
 		if (bookmark) {
 			var sel = editor._getIframeWin().getSelection();
 			sel.removeAllRanges();

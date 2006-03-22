@@ -190,7 +190,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 
 // 	var field = new DwtInputField({ parent: toolbar, size: 50 });
 // 	field.setReadOnly(true);
-// 	field.getInputElement().onfocus = ZmSpreadSheet.simpleClosure(this._input_clicked, this);
+// 	field.getInputElement().onfocus = AjxCallback.simpleClosure(this._input_clicked, this);
 // 	this._dataField = field;
 
 // 	this._spreadSheet.onInputModified.push(new AjxCallback(this, this._inputModified));
