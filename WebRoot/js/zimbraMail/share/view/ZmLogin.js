@@ -71,7 +71,7 @@ function(ev, skipBrowserCheck) {
 */
 ZmLogin.isSupportedBrowser = 
 function() {
-	return AjxEnv.isIE6up || AjxEnv.isMozilla1_4up || AjxEnv.isFirefox;
+	return AjxEnv.isIE6up || AjxEnv.isMozilla1_4up || AjxEnv.isFirefox || AjxEnv.isSafari;
 };
 
 /**
@@ -79,7 +79,7 @@ function() {
 */
 ZmLogin.isAlmostSupportedBrowser = 
 function() {
-	return AjxEnv.isSafari || AjxEnv.isOpera;
+	return AjxEnv.isOpera;
 };
 
 /**
@@ -111,7 +111,9 @@ function() {
 	html[idx++] = errorStr;
 	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</div><p>";
-	html[idx++] = "<div style='text-align:left; width:85%'>" + tip + "</div><br>";
+	html[idx++] = "<div style='text-align:left; width:85%'>";
+	html[idx++] = tip;
+	html[idx++] = "</div><br>";
 	html[idx++] = "<div style='font-size:9px; text-align:center; color:#999999; padding-bottom:3px; white-space:nowrap;'>";
 	html[idx++] = ZmMsg.splashScreenCopyright;
 	html[idx++] = "</div>";
@@ -173,14 +175,20 @@ function() {
 	// real content
 	html[idx++] = "<table id='passTable' border=0 width=425>";
 	html[idx++] = "<tr height=40>";
-	html[idx++] = "<td width=100 align=right>" + ZmMsg.username + ":</td>";
+	html[idx++] = "<td width=100 align=right>";
+	html[idx++] = ZmMsg.username;
+	html[idx++] = ":</td>";
 	html[idx++] = "<td><input style='width:100%' autocomplete=OFF type=text tabIndex=1 id='uname'></td>";
 	html[idx++] = "</tr><tr height=30>";
-	html[idx++] = "<td align=right width=100>" + ZmMsg.password + ":</td>";
+	html[idx++] = "<td align=right width=100>";
+	html[idx++] = ZmMsg.password;
+	html[idx++] = ":</td>";
 	html[idx++] = "<td><input style='width:100%' type=password tabIndex=2 id='pass'></td>";
 	html[idx++] = "</tr><tr><td></td>";
 	html[idx++] = "<td><table border=0 width=100%><tr height=28><td width=1><input style='width:13px' id='rememberMe' type='checkbox'></td>";
-	html[idx++] = "<td style='width:1px' width=1><nobr>" + ZmMsg.rememberMe + "</td>";
+	html[idx++] = "<td style='width:1px' width=1><nobr>";
+	html[idx++] = ZmMsg.rememberMe;
+	html[idx++] = "</td>";
 	html[idx++] = "<td width=100%></td>";
 	html[idx++] = "<td>";
 	// logon button starts here
