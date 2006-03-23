@@ -390,12 +390,18 @@
       <dirset dir='${ajax.dwtimg.dir}/loRes' includes='*' excludes='**/examples,**/shadow_border'/>
     </imagemerge>
 
+    <!-- Copy some DWT files; They need a direct image as merged images are not used currently-->
+    <imagemerge destdir='${images.loRes.destDir}' copy='true'
+      cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'>
+      <dirset dir='${ajax.dwtimg.dir}/loRes' includes='dwt'/>
+    </imagemerge>
+
     <echo message='Copying non-mergeable low resolution dwt images'/>
     <echo/>
     <imagemerge destdir='${images.loRes.destDir}' copy='true' disable='true'
       cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'
       cachefile='${dir.imgcache}/CacheLoRes.html'>
-      <dirset dir='${ajax.dwtimg.dir}/loRes' includes='**/examples,**/shadow_border'/>
+      <dirset dir='${ajax.dwtimg.dir}/loRes' includes='**/shadow_border'/>
     </imagemerge>
 
 
@@ -404,8 +410,7 @@
     <imagemerge destdir='${images.loRes.destDir}' disable='true'
       cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'
       cachefile='${dir.imgcache}/CacheLoRes.html'>
-      <dirset dir='img/loRes' 
-	includes='*'  excludes="**/logo,**/translate"/>
+      <dirset dir='img/loRes' includes='*'  excludes="**/logo,**/translate"/>
     </imagemerge>
 
     <echo/>
