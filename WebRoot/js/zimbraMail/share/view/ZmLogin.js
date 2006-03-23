@@ -460,6 +460,7 @@ function(uname, pword, result) {
 	ZmLogin._authToken = resp.authToken;
 	ZmLogin._authTokenLifetime = resp.lifetime;
 	var mailServer = resp.refer;
+	if (location.hostname == "localhost") mailServer = "localhost";	
 	var rmChecked = document.getElementById("rememberMe").checked;
 	ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword, rmChecked);
 	ZmLogin._authToken = ZmLogin._authTokenLifetime = null;
