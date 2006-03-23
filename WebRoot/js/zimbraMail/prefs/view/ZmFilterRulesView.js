@@ -210,6 +210,10 @@ function(ev) {
 */
 ZmFilterListView.prototype._allowLeftSelection =
 function(clickedEl, ev, button) {
+	// We only care about mouse events
+	if (!(ev instanceof DwtMouseEvent))
+		return true;
+		
 	var target = DwtUiEvent.getTarget(ev);
 	var isInput = (target.id.indexOf("_ruleCheckbox") == 0);
 	if (AjxEnv.isIE && isInput)

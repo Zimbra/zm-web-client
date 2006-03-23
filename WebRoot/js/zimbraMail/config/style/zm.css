@@ -358,6 +358,8 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	background-color: #EEEEEE;
 }
 
+.ZmMailMsgView .MsgHeader .SubjectLine td { font-size: 12px; font-weight: bold; }
+
 .ZmMailMsgView .MsgHeader .LabelColName {
 	overflow: hidden;
 	width: 15ex;
@@ -984,10 +986,10 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 /** The cal/appt images are here temporarily **/
 
-.calendar_header_note	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_note.gif);	}
-.calendar_header_alarm	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_alarm.gif);	}
-.calendar_header_repeat	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_repeat.gif);	}
-.menu_light				{	width:8;	height:16;	background-image:url(/zimbra/img/hiRes/other/menu_light.gif);	}
+.calendar_header_note	 		{	width:10;	height:16;	background-image:url(/zimbra/img/loRes/calendar/calendar_header_note.gif);	}
+.calendar_header_alarm	 		{	width:10;	height:16;	background-image:url(/zimbra/img/loRes/calendar/calendar_header_alarm.gif);	}
+.calendar_header_repeat	 		{	width:10;	height:16;	background-image:url(/zimbra/img/loRes/calendar/calendar_header_repeat.gif);	}
+.menu_light				{	width:8;	height:16;	background-image:url(/zimbra/img/loRes/other/menu_light.gif);	}
 
 .allday {
         left:0;
@@ -1066,7 +1068,6 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	width: 1%;
 }
 
-/* ZmSchedTabViewPage */
 .ZmSchedTabViewPageKey {
 	vertical-align: top;
 	text-align: right;
@@ -1100,7 +1101,17 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	line-height: 22px;
 	color: #AAAAAA;
 }
-
+/*
+.ZmSchedTabViewPageEmail {
+	white-space: nowrap;
+	overflow: hidden;
+	cursor: text;
+	line-height: 22px;
+	height: 24px;
+	color: #AAAAAA;
+	width: 160px;
+}
+*/
 .ZmSchedTabViewPageNameMark {
 	white-space: nowrap;
 	overflow: hidden;
@@ -1157,6 +1168,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmSchedTabViewPageInput {
+/*	height: 24px; */
 	width: 100%;
 	height: 100%;
 	border: 0px;
@@ -1670,4 +1682,48 @@ HTML>BODY .appt-selected .appt_allday_body
 	font-weight: normal;
 	font-size: 10pt;
 	color: #666;
+}
+
+.ZmNoteView, .ZmNoteEditView {
+	background-color: #EEE;
+	xwidth: 100%;
+}
+
+.ZmNoteView {
+	overflow: auto;
+}
+.ZmNoteView, .ZmNoteView P, .ZmNoteView TD, .ZmNoteView DIV,
+.ZmNoteView SPAN, .ZmNoteView SELECT, .ZmNoteView INPUT, 
+.ZmNoteView TEXTAREA, .ZmNoteView BUTTON {
+	font-family: "Times New Roman", Times, serif;
+	font-size: 12pt;
+}
+.ZmNoteView H1 {
+	margin-top: 0em;
+	margin-bottom: 0.25em;
+}
+.ZmNoteView H2 {
+	margin-top: 0.25em;
+	margin-bottom: 0.25em;
+}
+.ZmNoteView * {
+	font-family: inherit;
+}
+.ZmNoteView SPAN.Object, .ZmNoteView SPAN.Object-activated {
+	font-size: inherit;
+}
+
+.ZmNoteEditView {
+}
+.ZmNoteEditView .Label {
+	font-family: "Times New Roman", Times, serif;
+	font-size: 14pt;
+	text-align: right;
+	width: 1%;
+}
+.ZmEditNoteView .DwtInputField {
+	width: 100%;
+}
+.ZmEditNoteView .DwtHtmlEditorIFrame {
+	height: 100%;
 }

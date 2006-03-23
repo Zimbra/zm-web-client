@@ -283,7 +283,7 @@ function(context, result) {
 			this._cacheApptSummaries(apptList, start, end, folderId);
 
 			// convert to sorted vector
-			list = ZmApptList.toVector(apptList, start, end, fanoutAllDay);	
+			var list = ZmApptList.toVector(apptList, start, end, fanoutAllDay);	
 			this._cacheVector(list, start, end, fanoutAllDay, folderId); // id in response tied back to folder id
 
 			context.resultList.push(list);

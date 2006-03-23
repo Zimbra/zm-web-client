@@ -844,7 +844,7 @@ function(findHits) {
 				html[j++] = this.getId();
 				html[j++] = ",\"";
 				html[j++] = attach.part;
-				html[j++] = "\")' class='AttLink'>";
+				html[j++] = "\"); return false;' class='AttLink'>";
 				props.link = html.join("");
 			} else {
 				// set the anchor html for the link to this attachment on the server

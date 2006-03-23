@@ -75,7 +75,7 @@ function(callback, errorCallback) {
 			} else {
 				this._contactList = new ZmContactList(this._appCtxt, null, false);
 				var respCallback = new AjxCallback(this, this._handleResponseGetContactList, callback);
-				this._contactList.load(null, respCallback, errorCallback);
+				this._contactList.load(respCallback, errorCallback);
 			}
 		} catch (ex) {
 			this._contactList = null;
