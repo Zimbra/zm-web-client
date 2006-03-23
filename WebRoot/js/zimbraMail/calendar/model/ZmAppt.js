@@ -134,7 +134,9 @@ ZmAppt.MONTHLY_DAY_OPTIONS = [
 
 ZmAppt.SERVER_WEEK_DAYS				= ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 ZmAppt.NOTES_SEPARATOR				= "\n\n*~*~*~*~*~*~*~*~*~*\n\n";
+ZmAppt.NOTES_SEPARATOR_HTML			= "<div>*~*~*~*~*~*~*~*~*~*</div>";
 ZmAppt.NOTES_SEPARATOR_REGEX		= /\s*\*~\*~\*~\*~\*~\*~\*~\*~\*~\*\s*/;
+ZmAppt.NOTES_SEPARATOR_REGEX_HTML	= /\s*<div>\*~\*~\*~\*~\*~\*~\*~\*~\*~\*<\/div>\s*/;
 
 ZmAppt.ATTACHMENT_CHECKBOX_NAME 	= Dwt.getNextId();
 
@@ -677,7 +679,7 @@ function(message) {
 	
 			var htmlPart = new ZmMimePart();
 			htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
-			htmlPart.setContent(this._trimNotesSummary(html.content));
+			htmlPart.setContent(this._trimNotesSummary(html.content, true));
 			this.notesTopPart.children.add(htmlPart);
 		} else {
 			this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
@@ -985,15 +987,13 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 		if (this._attendees[ZmAppt.PERSON].length > 10) {
 			attString += ", ...";
 		}
-		var params = [ ZmMsg.invitees+":", attString, "" ];
+		var params = [ ZmMsg.invitees + ":", attString, "" ];
 		buf[i++] = formatter.format(params);
 	}
 	if (isHtml) {
 		buf[i++] = "</table>\n";
 	}
-	else {
-		buf[i++] = ZmAppt.NOTES_SEPARATOR;
-	}
+	buf[i++] = isHtml ? ZmAppt.NOTES_SEPARATOR_HTML : ZmAppt.NOTES_SEPARATOR;
 
 	return buf.join("");
 };
@@ -1135,11 +1135,12 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 };
 
 ZmAppt.prototype._trimNotesSummary = 
-function(notes) {
+function(notes, isHtml) {
 	if (notes) {
-		notesArr = notes.split(ZmAppt.NOTES_SEPARATOR_REGEX);
-		if (notesArr.length > 1)
-			notes = notesArr[1];
+		var notesArr = notes.split(isHtml ? ZmAppt.NOTES_SEPARATOR_REGEX_HTML : ZmAppt.NOTES_SEPARATOR_REGEX);
+		if (notesArr.length > 1) {
+			notes = notesArr.slice(1, notesArr.length).join("");
+		}
 	}
 	return notes;
 };
@@ -1659,10 +1660,8 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 
 ZmAppt.prototype._addNotesToSoap = 
 function(soapDoc, m, cancel) {	
-	var notesPre = ["<p>\n<table border='0'><tr><th align='left'>",ZmMsg.notes,":","</th><td>"].join("");
-	var notesPost = "</td></tr>\n</table>\n";
-	
-	var hasAttendees = this._attendees[ZmAppt.PERSON];
+
+	var hasAttendees = (this._attendees[ZmAppt.PERSON] && this._attendees[ZmAppt.PERSON].length);
 	var tprefix = hasAttendees ? this._getDefaultBlurb(cancel) : "";
 	var hprefix = hasAttendees ? this._getDefaultBlurb(cancel, true) : "";
 	
@@ -1678,7 +1677,7 @@ function(soapDoc, m, cancel) {
 
 			var isHtml = pct == ZmMimeTable.TEXT_HTML;
 			var pprefix = isHtml ? hprefix  : tprefix;
-			var content = AjxBuffer.concat(pprefix, isHtml?notesPre:"", part.getContent(), isHtml?notesPost:"");
+			var content = AjxBuffer.concat(pprefix, part.getContent());
 			soapDoc.set("content", content, partNode);
 		}
 	}
@@ -1691,7 +1690,7 @@ function(soapDoc, m, cancel) {
 		var hcontent = AjxStringUtil.nl2br(tcontent);
 		var htmlPart = soapDoc.set("mp", null, mp);
 		htmlPart.setAttribute("ct", ZmMimeTable.TEXT_HTML);
-		soapDoc.set("content", AjxBuffer.concat(hprefix, notesPre, hcontent, notesPost), htmlPart);
+		soapDoc.set("content", AjxBuffer.concat(hprefix, hcontent), htmlPart);
 	}
 };
 
