@@ -347,7 +347,7 @@ function(ev, div) {
 			var item = this.getItemFromElement(div);
 			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
 				if (!item.isFlagged)
-					ev.target.className = "ImgFlagDis";
+					ev.target.className = "ImgFlagRedDis";
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) {
 				this._setTagToolTip(div);
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) {
@@ -450,6 +450,10 @@ function (ev, listEv, clickedEl) {
 
 ZmListView.prototype._allowLeftSelection =
 function(clickedEl, ev, button) {
+	// We only care about mouse events
+	if (!(ev instanceof DwtMouseEvent))
+		return true;
+		
 	var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : clickedEl.id;
 	var type = Dwt.getAttr(clickedEl, "_type");
 	if (id && type && type == DwtListView.TYPE_LIST_ITEM) {
@@ -548,9 +552,9 @@ function(item, div) {
 			dateStr[i++] = dateFormatter.format(new Date(date));
 			var delta = AjxDateUtil.computeDateDelta(date);
 			if (delta) {
-				dateStr[i++] = " <span style='white-space:nowrap'>(";
+				dateStr[i++] = "<br><center><span style='white-space:nowrap'>(";
 				dateStr[i++] = delta;
-				dateStr[i++] = ")</span>";
+				dateStr[i++] = ")</span></center>";
 			}
 			div._dateStr = dateStr.join("");
 		} else {

@@ -56,6 +56,7 @@ ZmOperation.CLEAR_ALL				= i++;
 ZmOperation.CLOSE					= i++;
 ZmOperation.COLOR_MENU				= i++;
 ZmOperation.COMPOSE_FORMAT 			= i++;
+ZmOperation.COMPOSE_OPTIONS			= i++;
 ZmOperation.CONTACT					= i++; 		// (placeholder) add or edit contact
 ZmOperation.DAY_VIEW				= i++;
 ZmOperation.DELETE					= i++;
@@ -72,6 +73,8 @@ ZmOperation.EDIT_REPLY_CANCEL		= i++;
 ZmOperation.EDIT_REPLY_DECLINE		= i++;
 ZmOperation.EDIT_REPLY_TENTATIVE	= i++;
 ZmOperation.EXPAND_ALL				= i++;
+ZmOperation.FORMAT_HTML				= i++;
+ZmOperation.FORMAT_TEXT				= i++;
 ZmOperation.FORWARD					= i++;
 ZmOperation.FORWARD_ATT 			= i++;
 ZmOperation.FORWARD_INLINE			= i++;
@@ -88,6 +91,11 @@ ZmOperation.IM_PRESENCE_MENU		= i++;
 ZmOperation.IM_PRESENCE_OFFLINE  	= i++;
 ZmOperation.IM_PRESENCE_ONLINE   	= i++;
 ZmOperation.IM_PRESENCE_XA			= i++;
+ZmOperation.INC_ATTACHMENT			= i++;
+ZmOperation.INC_NO_PREFIX			= i++;
+ZmOperation.INC_NONE				= i++;
+ZmOperation.INC_PREFIX				= i++;
+ZmOperation.INC_SMART				= i++;
 ZmOperation.INVITE_REPLY_MENU		= i++;
 ZmOperation.INVITE_REPLY_ACCEPT		= i++;
 ZmOperation.INVITE_REPLY_DECLINE	= i++;
@@ -101,6 +109,7 @@ ZmOperation.MOUNT_CALENDAR			= i++;
 ZmOperation.MOVE					= i++;
 ZmOperation.MOVE_UP_FILTER_RULE		= i++;
 ZmOperation.MOVE_DOWN_FILTER_RULE	= i++;
+ZmOperation.NEW_ADDRBOOK 			= i++;
 ZmOperation.NEW_APPT				= i++;
 ZmOperation.NEW_ALLDAY_APPT			= i++;
 ZmOperation.NEW_CONTACT				= i++;
@@ -140,6 +149,8 @@ ZmOperation.SHARE					= i++;
 ZmOperation.SHARE_CALENDAR			= i++;
 ZmOperation.SHARE_ACCEPT			= i++;
 ZmOperation.SHARE_DECLINE			= i++;
+ZmOperation.SHOW_BCC				= i++;
+ZmOperation.SHOW_CC					= i++;
 ZmOperation.SHOW_ORIG				= i++;
 ZmOperation.SPAM 					= i++;
 ZmOperation.SPELL_CHECK 			= i++;
@@ -174,6 +185,7 @@ ZmOperation.MSG_KEY[ZmOperation.CLEAR_ALL]				= "clearAll";
 ZmOperation.MSG_KEY[ZmOperation.CLOSE]					= "close";
 ZmOperation.MSG_KEY[ZmOperation.COLOR_MENU]				= "tagColor";
 ZmOperation.MSG_KEY[ZmOperation.COMPOSE_FORMAT] 		= "format";
+ZmOperation.MSG_KEY[ZmOperation.COMPOSE_OPTIONS] 		= "options";
 ZmOperation.MSG_KEY[ZmOperation.DAY_VIEW]				= "viewDay";
 ZmOperation.MSG_KEY[ZmOperation.DELETE]					= "del";
 ZmOperation.MSG_KEY[ZmOperation.DELETE_CONV]			= "delConv";
@@ -186,6 +198,8 @@ ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_ACCEPT]		= "replyAccept";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_DECLINE]		= "replyDecline";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_TENTATIVE]   = "replyTentative";
 ZmOperation.MSG_KEY[ZmOperation.EXPAND_ALL]				= "expandAll";
+ZmOperation.MSG_KEY[ZmOperation.FORMAT_HTML]			= "formatAsHtml";
+ZmOperation.MSG_KEY[ZmOperation.FORMAT_TEXT]			= "formatAsText";
 ZmOperation.MSG_KEY[ZmOperation.FORWARD]				= "forward";
 ZmOperation.MSG_KEY[ZmOperation.FORWARD_ATT] 			= "forwardAtt";
 ZmOperation.MSG_KEY[ZmOperation.FORWARD_INLINE] 		= "forwardInline";
@@ -201,6 +215,11 @@ ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_MENU]		= "imPresence";
 ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_OFFLINE]	= "imStatusOffline";
 ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_ONLINE]		= "imStatusOnline";
 ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_XA]			= "imStatusExtAway";
+ZmOperation.MSG_KEY[ZmOperation.INC_ATTACHMENT]			= "includeMenuAttachment";
+ZmOperation.MSG_KEY[ZmOperation.INC_NO_PREFIX]			= "includeMenuNoPrefix";
+ZmOperation.MSG_KEY[ZmOperation.INC_NONE]				= "includeMenuNone";
+ZmOperation.MSG_KEY[ZmOperation.INC_PREFIX]				= "includeMenuPrefix";
+ZmOperation.MSG_KEY[ZmOperation.INC_SMART]				= "includeMenuSmart";
 ZmOperation.MSG_KEY[ZmOperation.INVITE_REPLY_MENU]		= "editReply";
 ZmOperation.MSG_KEY[ZmOperation.INVITE_REPLY_ACCEPT]	= "editReply";
 ZmOperation.MSG_KEY[ZmOperation.INVITE_REPLY_DECLINE]	= "editReply";
@@ -214,6 +233,7 @@ ZmOperation.MSG_KEY[ZmOperation.MOUNT_CALENDAR]			= "mountCalendar";
 ZmOperation.MSG_KEY[ZmOperation.MOVE]					= "move";
 ZmOperation.MSG_KEY[ZmOperation.MOVE_UP_FILTER_RULE]	= "filterMoveUp";
 ZmOperation.MSG_KEY[ZmOperation.MOVE_DOWN_FILTER_RULE]	= "filterMoveDown";
+ZmOperation.MSG_KEY[ZmOperation.NEW_ADDRBOOK] 			= "newAddrBook";
 ZmOperation.MSG_KEY[ZmOperation.NEW_APPT]				= "newAppt";
 ZmOperation.MSG_KEY[ZmOperation.NEW_ALLDAY_APPT]		= "newAllDayAppt";
 ZmOperation.MSG_KEY[ZmOperation.NEW_CONTACT]			= "newContact";
@@ -241,12 +261,14 @@ ZmOperation.MSG_KEY[ZmOperation.SAVE]					= "save";
 ZmOperation.MSG_KEY[ZmOperation.SAVE_DRAFT]				= "saveDraft";
 ZmOperation.MSG_KEY[ZmOperation.SCHEDULE_VIEW]			= "viewSchedule";
 ZmOperation.MSG_KEY[ZmOperation.SEARCH]					= "search";
-ZmOperation.MSG_KEY[ZmOperation.SEARCH_MAIL]				= "searchMail";
+ZmOperation.MSG_KEY[ZmOperation.SEARCH_MAIL]			= "searchMail";
 ZmOperation.MSG_KEY[ZmOperation.SEND]					= "send";
 ZmOperation.MSG_KEY[ZmOperation.SHARE]					= "share";
 ZmOperation.MSG_KEY[ZmOperation.SHARE_ACCEPT]			= "acceptShare";
 ZmOperation.MSG_KEY[ZmOperation.SHARE_CALENDAR]			= "shareCalendar";
 ZmOperation.MSG_KEY[ZmOperation.SHARE_DECLINE]			= "declineShare";
+ZmOperation.MSG_KEY[ZmOperation.SHOW_BCC]				= "showBcc";
+ZmOperation.MSG_KEY[ZmOperation.SHOW_CC]				= "showCc";
 ZmOperation.MSG_KEY[ZmOperation.SHOW_ORIG]				= "showOrig";
 ZmOperation.MSG_KEY[ZmOperation.SPAM] 					= "junk";
 ZmOperation.MSG_KEY[ZmOperation.SPELL_CHECK] 			= "spellCheck";
@@ -283,6 +305,7 @@ ZmOperation.MSG_KEY_TT[ZmOperation.FORWARD_INLINE]		= "forwardTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.FORWARD_MENU]		= "forwardTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.MONTH_VIEW]			= "viewMonthTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.MOVE]				= "moveTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.NEW_ADDRBOOK] 		= "newAddrBookTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.NEW_APPT]			= "newApptTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.NEW_ALLDAY_APPT]		= "newAllDayApptTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.NEW_CONTACT]			= "newContactTooltip";
@@ -293,6 +316,7 @@ ZmOperation.MSG_KEY_TT[ZmOperation.PRINT]				= "printTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.PRINT_MENU]	 		= "printTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.REPLY]				= "replyTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.REPLY_ALL]			= "replyAllTooltip";
+ZmOperation.MSG_KEY_TT[ZmOperation.REPLY_MENU]			= "replyTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.SCHEDULE_VIEW]		= "viewScheduleTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.SHARE]				= "shareTooltip";
 ZmOperation.MSG_KEY_TT[ZmOperation.SAVE_DRAFT]			= "saveDraftTooltip";
@@ -332,6 +356,8 @@ ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_ACCEPT]		= "Check";
 ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_DECLINE]		= "Cancel";
 ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_TENTATIVE]		= "QuestionMark";
 ZmOperation.IMAGE[ZmOperation.EXPAND_ALL]				= "Plus";
+ZmOperation.IMAGE[ZmOperation.FORMAT_HTML]				= "HtmlDoc";
+ZmOperation.IMAGE[ZmOperation.FORMAT_TEXT]				= "GenericDoc";
 ZmOperation.IMAGE[ZmOperation.FORWARD]					= "Forward";
 ZmOperation.IMAGE[ZmOperation.FORWARD_ATT]				= "Forward";
 ZmOperation.IMAGE[ZmOperation.FORWARD_INLINE] 			= "Forward";
@@ -360,6 +386,7 @@ ZmOperation.IMAGE[ZmOperation.MOUNT_CALENDAR]			= "GroupSchedule";
 ZmOperation.IMAGE[ZmOperation.MOVE]						= "MoveToFolder";
 ZmOperation.IMAGE[ZmOperation.MOVE_DOWN_FILTER_RULE]	= "DownArrow";
 ZmOperation.IMAGE[ZmOperation.MOVE_UP_FILTER_RULE]		= "UpArrow";
+ZmOperation.IMAGE[ZmOperation.NEW_ADDRBOOK] 			= "NewContact";
 ZmOperation.IMAGE[ZmOperation.NEW_APPT]					= "NewAppointment";
 ZmOperation.IMAGE[ZmOperation.NEW_ALLDAY_APPT]			= "NewAppointment";
 ZmOperation.IMAGE[ZmOperation.NEW_CALENDAR]				= "NewAppointment";
@@ -400,7 +427,7 @@ ZmOperation.IMAGE[ZmOperation.SPAM] 					= "SpamFolder";
 ZmOperation.IMAGE[ZmOperation.SPELL_CHECK] 				= "SpellCheck";
 ZmOperation.IMAGE[ZmOperation.SYNC]		 				= "redo";
 ZmOperation.IMAGE[ZmOperation.TAG_MENU]					= "Tag";
-ZmOperation.IMAGE[ZmOperation.TODAY]				= "Date";
+ZmOperation.IMAGE[ZmOperation.TODAY]					= "Date";
 ZmOperation.IMAGE[ZmOperation.TODAY_GOTO]				= "Date";
 ZmOperation.IMAGE[ZmOperation.UNDELETE]					= "MoveToFolder"; 		// XXX: need new icon?
 ZmOperation.IMAGE[ZmOperation.VIEW]						= "SplitView";
@@ -495,7 +522,7 @@ function(parent, standardOperations, extraOperations) {
 	return obj._createOperations(parent, standardOperations, extraOperations);
 }
 
-// Done through an object so that we can have more than one invocation going without 
+// Done through an object so that we can have more than one invocation going without
 // sharing memory (eg, creating New submenu).
 ZmOperation.prototype._createOperations =
 function(parent, standardOperations, extraOperations) {
@@ -530,7 +557,7 @@ function(parent, standardOperations, extraOperations) {
 	for (var i = 0; i < operationList.length; i++) {
 		ZmOperation.addOperation(parent, operationList[i], operations);
 	}
-	
+
 	return operations;
 }
 
@@ -597,7 +624,7 @@ ZmOperation.setOperation =
 function(parent, oldOp, newOp, text, image, disImage) {
 	var op = parent.getOp(oldOp);
 	if (!op) return;
-	
+
 	op.setText(text || ZmMsg[ZmOperation.MSG_KEY[newOp]]);
 	op.setImage(image || ZmOperation.IMAGE[newOp]);
 	op.setDisabledImage(disImage || ZmOperation.DIS_IMAGE[newOp]);
@@ -639,7 +666,7 @@ function(parent) {
 */
 ZmOperation.addTagMenu =
 function(parent) {
-	var tagMenu = new ZmTagMenu(parent, null);
+	var tagMenu = new ZmTagMenu(parent);
 	parent.setMenu(tagMenu);
 	return tagMenu;
 }
@@ -671,7 +698,7 @@ function(parent, dialog) {
 ZmOperation.addReplyMenu =
 function(parent) {
 	var list = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
-	var menu = new ZmActionMenu(parent, list, null);
+	var menu = new ZmActionMenu(parent, list);
 	parent.setMenu(menu);
 	return menu;
 }
@@ -684,7 +711,7 @@ function(parent) {
 ZmOperation.addForwardMenu =
 function(parent) {
 	var list = [ZmOperation.FORWARD_INLINE, ZmOperation.FORWARD_ATT];
-	var menu = new ZmActionMenu(parent, list, null);
+	var menu = new ZmActionMenu(parent, list);
 	parent.setMenu(menu);
 	return menu;
 }
@@ -697,7 +724,7 @@ function(parent) {
 ZmOperation.addInviteReplyMenu =
 function(parent) {
 	var list = [ZmOperation.EDIT_REPLY_ACCEPT, ZmOperation.EDIT_REPLY_DECLINE, ZmOperation.EDIT_REPLY_TENTATIVE];
-	var menu = new ZmActionMenu(parent, list, null);
+	var menu = new ZmActionMenu(parent, list);
 	parent.setMenu(menu);
 	return menu;
 };
@@ -711,7 +738,7 @@ function(parent) {
 ZmOperation.addCalViewMenu =
 function(parent) {
 	var list = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
-	var menu = new ZmActionMenu(parent, list, null);
+	var menu = new ZmActionMenu(parent, list);
 	parent.setMenu(menu);
 	return menu;
 };
@@ -722,8 +749,8 @@ function(parent, opHash) {
                 ZmOperation.IM_PRESENCE_DND, ZmOperation.IM_PRESENCE_AWAY, ZmOperation.IM_PRESENCE_XA,
                 ZmOperation.IM_PRESENCE_INVISIBLE];
     var button = opHash[ZmOperation.IM_PRESENCE_MENU];
-	var menu = new ZmPopupMenu(button, null, null);
-	
+	var menu = new ZmPopupMenu(button);
+
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
 		var mi = menu.createMenuItem(op, ZmOperation.IMAGE[op], ZmMsg[ZmOperation.MSG_KEY[op]], null, true, DwtMenuItem.RADIO_STYLE);

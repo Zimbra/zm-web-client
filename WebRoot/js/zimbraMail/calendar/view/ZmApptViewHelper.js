@@ -175,19 +175,6 @@ function(startDateField, endDateField, isStartDate, skipCheck) {
 	return needsUpdate;
 };
 
-ZmApptViewHelper.setSimpleRecurString = 
-function(repeatType) {
-	// per new select value, change the recur description
-	var recurDesc = null;
-	switch (repeatType) {
-		case "DAI": recurDesc = ZmMsg.everyDay;   break;
-		case "WEE": recurDesc = ZmMsg.everyWeek;  break;
-		case "MON": recurDesc = ZmMsg.everyMonth; break;
-		case "YEA": recurDesc = ZmMsg.everyYear;  break;
-	}
-	return recurDesc ? (recurDesc + " (" + ZmMsg.noEndDate + ")") : "";
-};
-
 //TODO : i18n
 ZmApptViewHelper.getRecurrenceDisplayString = 
 function(recurrences, startDate) {
@@ -357,6 +344,7 @@ function(rule, str, idx) {
 					str[idx++] = num;
 					str[idx++] = " week of the ";
 				}
+				// REVISIT: Where is this value coming from?!
 				str[idx++] = freq;
 				str[idx++] = " ";
 			}

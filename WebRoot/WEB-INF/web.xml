@@ -101,7 +101,7 @@
 	<servlet>
 		<servlet-name>Properties2Javascript</servlet-name>
 		<servlet-class>
-			com.zimbra.webClient.servlet.Props2JsServlet
+			org.apache.kabuki.servlets.Props2JsServlet
 		</servlet-class>
 	</servlet>
 

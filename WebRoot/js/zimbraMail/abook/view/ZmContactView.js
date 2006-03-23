@@ -264,13 +264,15 @@ ZmContactView.prototype._addStreetRow =
 function(field, html, idx) {
 	html[idx++] = "<tr>";
 	html[idx++] = "<td valign=top style='width:18ex;'>" + AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]) + ":" + "</td>";
-	html[idx++] = "<td align=right>";
+	html[idx++] = "<td";
+	html[idx++] = this._isReadOnly ? ">" : " align=right>";
+
 	if (!this._isReadOnly) {
 		var id = this._fieldIds[field] = Dwt.getNextId();
 		var rows = AjxEnv.isIE ? 3 : 2;
 		html[idx++] = "<textarea wrap='hard' cols=32 rows=" + rows + " id='" + id + "'></textarea>";
 	} else {
-		html[idx++] = this._attr[field] ? AjxStringUtil.htmlEncode(this._attr[field]) : "";
+		html[idx++] = this._attr[field] ? AjxStringUtil.convertToHtml(this._attr[field]) : "";
 	}
 	html[idx++] = "</td></tr>";
 	return idx;
@@ -362,8 +364,9 @@ function(html, idx) {
 		var notesId = this._fieldIds[ZmContact.F_notes] = Dwt.getNextId();
 		html[idx++] = "<textarea wrap='hard' rows=8 style='width:100%;' id='" + notesId + "'></textarea>";
 	}
-	else
-		html[idx++] = this._attr[ZmContact.F_notes];
+	else {
+		html[idx++] = AjxStringUtil.convertToHtml(this._attr[ZmContact.F_notes]);
+	}
 	html[idx++] = "</td></tr>";
 
 	return idx;
@@ -613,6 +616,8 @@ function(ev) {
 
 ZmContactView.getPrintHtml = 
 function(contact, abridged, appCtxt) {
+
+	contact = contact.list._realizeContact(contact); // make sure it's a real ZmContact
 
 	var html = new Array();
 	var idx = 0;
