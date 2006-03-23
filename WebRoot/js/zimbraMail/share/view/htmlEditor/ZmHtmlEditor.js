@@ -667,15 +667,11 @@ function(parent) {
 
 		var item = new DwtMenuItem(menu);
 		item.setText("DEBUG SERIALIZATION");
-		item.addSelectionListener(new AjxListener(this, function() {
-			this._serializeAceObjects();
-		}));
+		item.addSelectionListener(new AjxListener(this, this._serializeAceObjects));
 
 		var item = new DwtMenuItem(menu);
 		item.setText("DESERIALIZATION");
-		item.addSelectionListener(new AjxListener(this, function() {
-			this._deserializeAceObjects();
-		}));
+		item.addSelectionListener(new AjxListener(this, this._deserializeAceObjects));
 	}
 };
 
@@ -775,6 +771,7 @@ function() {
 				.replace(/>/g, "&gt;");
 			var html = win.getHTML();
 			var component_name = win.ZmACE_COMPONENT_NAME;
+			data = [ "ACE[", component_name, "]:", data ].join("");
 			if (!done[component_name] && typeof win.getHeadHTML == "function") {
 				done[component_name] = true;
 				headContent.push(win.getHeadHTML());
@@ -799,10 +796,17 @@ function() {
 		var holder = divs[i];
 		if (/^ACE\s+([^\s]+)/.test(holder.className)) {
 			var component_name = RegExp.$1;
-			var data = holder.lastChild.data
-				.replace(/&gt;/g, ">")
-				.replace(/&amp;/g, "&");
-			this.insertObject(component_name, holder, data);
+			var data = holder.lastChild;
+			if (data.nodeType == 8 /* Node.COMMENT_NODE */) {
+				data = data.data;
+				var header = "ACE[" + component_name + "]:";
+				if (data.indexOf(header) == 0) {
+					data = data.substr(header.length)
+						.replace(/&gt;/g, ">")
+						.replace(/&amp;/g, "&");
+					this.insertObject(component_name, holder, data);
+				}
+			}
 		}
 	}
 };

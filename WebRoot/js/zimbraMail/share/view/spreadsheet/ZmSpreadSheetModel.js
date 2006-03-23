@@ -55,7 +55,7 @@ function ZmSpreadSheetModel(rows, cols) {
 	this.reset();
 };
 
-ZmSpreadSheetModel.DEBUG = true;
+ZmSpreadSheetModel.DEBUG = false;
 
 ZmSpreadSheetModel.getDefaultColProp = function() {
 	var prop = {
