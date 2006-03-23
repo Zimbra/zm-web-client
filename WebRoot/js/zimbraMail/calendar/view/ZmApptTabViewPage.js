@@ -311,9 +311,9 @@ function(isAllDay) {
 };
 
 ZmApptTabViewPage.prototype.updateTimeField =
-function(startHourIdx, startMinuteIdx, startAmPmIdx, endHourIdx, endMinuteIdx, endAmPmIdx) {
-	this._startTimeSelect.setSelected(startHourIdx, startMinuteIdx, startAmPmIdx);
-	this._endTimeSelect.setSelected(endHourIdx, endMinuteIdx, endAmPmIdx);
+function(dateInfo) {
+	this._startTimeSelect.setSelected(dateInfo.startHourIdx, dateInfo.startMinuteIdx, dateInfo.startAmPmIdx);
+	this._endTimeSelect.setSelected(dateInfo.endHourIdx, dateInfo.endMinuteIdx, dateInfo.endAmPmIdx);
 };
 
 ZmApptTabViewPage.prototype.updateAttendeesField =
@@ -420,24 +420,6 @@ function(newWidth, newHeight) {
 ZmApptTabViewPage.prototype.getNotesHtmlEditor =
 function() {
 	return this._notesHtmlEditor;
-};
-
-ZmApptTabViewPage.prototype.getDateInfo =
-function() {
-	var dateInfo = {};
-	dateInfo.startDate = this._startDateField.value;
-	dateInfo.endDate = this._endDateField.value;
-	if (!this._allDayCheckbox.checked) {
-		dateInfo.showTime = true;
-
-		dateInfo.startHourIdx = this._startTimeSelect.getSelectedHourIdx();
-		dateInfo.startMinuteIdx = this._startTimeSelect.getSelectedMinuteIdx();
-		dateInfo.startAmPmIdx = this._startTimeSelect.getSelectedAmPmIdx();
-		dateInfo.endHourIdx = this._endTimeSelect.getSelectedHourIdx();
-		dateInfo.endMinuteIdx = this._endTimeSelect.getSelectedMinuteIdx();
-		dateInfo.endAmPmIdx = this._endTimeSelect.getSelectedAmPmIdx();
-	}
-	return dateInfo;
 };
 
 /**
@@ -1410,7 +1392,7 @@ ZmApptTabViewPage._onChange =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = AjxCore.objectWithId(el._tabViewPageId);
-	ZmApptViewHelper.handleDateChange(tvp._startDateField, tvp._endDateField, el == tvp._startDateField);
+	ZmApptViewHelper.handleDateChange(tvp._startDateField, tvp._endDateField, (el == tvp._startDateField));
 };
 
 ZmApptTabViewPage._onFocus = 

@@ -85,17 +85,17 @@ function() {
 
 ZmSchedTabViewPage.prototype.showMe = 
 function() {
-	this.setZIndex(DwtTabView.Z_ACTIVE_TAB); // XXX: is this necessary?
-
-	if (!this._rendered)
+	if (!this._rendered) {
 		this._initialize();
+	}
 
 	this.parent.tabSwitched(this._tabKey);
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
 
 	// set the free/busy view with fresh data
-	this.set(this._apptTab.getDateInfo(), this._apptTab.getOrganizer(), this._attendees);
+	var dateInfo = ZmApptViewHelper.getDateInfo(this._apptTab);
+	this.set(dateInfo, this._apptTab.getOrganizer(), this._attendees);
 };
 
 ZmSchedTabViewPage.prototype.tabBlur =
@@ -125,6 +125,7 @@ function(dateInfo, organizer, attendees) {
 		this._showTimeFields(false);
 	}
 	this._resetFullDateField();
+	this._outlineAppt();
 
 	this._setAttendees(organizer, attendees);
 };
@@ -203,6 +204,7 @@ function() {
 
 ZmSchedTabViewPage.prototype._createHTML = 
 function() {
+
 	var html = [];
 	var i = 0;
 
@@ -210,8 +212,10 @@ function() {
 	html[i++] = this._getTimeHtml();
 	html[i++] = "</td><td class='ZmSchedTabViewPageKey'>";
 	html[i++] = this._getKeyHtml();
-	html[i++] = "</td></tr></table><p>";
+	html[i++] = "</td></tr></table>";
+	html[i++] = "<div style='margin-top:10'>";
 	html[i++] = this._getFreeBusyHtml();
+	html[i++] = "</div>";
 
 	this.getHtmlElement().innerHTML = html.join("");
 };
@@ -279,22 +283,20 @@ function() {
 	html[i++] = ZmMsg.key;
 	html[i++] = "</td></tr><tr><td style='padding:3px; background-color:#FFFFFF'>";
 	html[i++] = "<table border=0 cellpadding=3 cellspacing=3><tr>";
-	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#ADD6D6'></div></td>";
+	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#FFFFFF'></div></td>";
 	html[i++] = "<td class='nobreak'>";
-	html[i++] = ZmMsg.selected;
+	html[i++] = ZmMsg.free;
 	html[i++] = "</td>"
 	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#990000'></div></td>";
 	html[i++] = "<td class='nobreak'>";
 	html[i++] = ZmMsg.busy;
 	html[i++] = "</td>"
+	html[i++] = "<td>&nbsp;</td>";
+	html[i++] = "<td>&nbsp;</td>";
+	html[i++] = "</tr><tr>";
 	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#FFCC00'></div></td>";
 	html[i++] = "<td class='nobreak'>";
 	html[i++] = ZmMsg.outOfOffice;
-	html[i++] = "</td>"
-	html[i++] = "</tr><tr>";
-	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#FFFFFF'></div></td>";
-	html[i++] = "<td class='nobreak'>";
-	html[i++] = ZmMsg.free;
 	html[i++] = "</td>"
 	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#FF3300'></div></td>";
 	html[i++] = "<td class='nobreak'>";
@@ -344,7 +346,7 @@ function() {
 	}
 	html[i++] = "</tr></table>";
 	html[i++] = "</td></tr>";
-
+	
 	for (var j = 0; j < ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES; j++) {
 		// store some meta data about this table row
 		var attendee = {};
@@ -363,11 +365,15 @@ function() {
 		}
 
 		html[i++] = "<tr>";
-		if (j > 1) {
+		if (j == 1) {
+			html[i++] = "<td align='center'>";
+			html[i++] = AjxImg.getImageHtml("Person");
+			html[i++] = "</td>";
+		} else if (j > 1) {
 			html[i++] = "<td><div id='" + attendee.dwtSelectId + "'></div></td>";
 		}
 		html[i++] = "<td";
-		html[i++] = (j <= 1) ? " colspan=2>" : ">";
+		html[i++] = (j == 0) ? " colspan=2>" : ">";
 		html[i++] = "<table border=0 width=100% cellpadding=0 cellspacing=0 class='ZmSchedTabViewPageTable'><tr>";
 		html[i++] = "<td";
 		html[i++] = (j == ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES - 1 || j == 0) ? " style='border-bottom:1px solid #CCCCCC'>" : ">";
@@ -390,13 +396,14 @@ function() {
 		html[i++] = "</tr></table>";
 		html[i++] = "</td>";
 		html[i++] = "<td";
-		html[i++] = j == ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES-1 || j == 0 ? " style='border-bottom:1px solid #CCCCCC'>" : ">";
+		html[i++] = (j == ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES - 1 || j == 0) ? " style='border-bottom:1px solid #CCCCCC'>" : ">";
 		html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmSchedTabViewPageTable' id='";
 		html[i++] = attendee.dwtTableId;
 		html[i++] = "'><tr";
-		html[i++] = j == 0 ? " style='background-color:#FFFFFF'>" : ">";
-		for (var k = 0; k < ZmSchedTabViewPage.FREEBUSY_NUM_CELLS; k++)
+		html[i++] = (j == 0) ? " style='background-color:#FFFFFF'>" : ">";
+		for (var k = 0; k < ZmSchedTabViewPage.FREEBUSY_NUM_CELLS; k++) {
 			html[i++] = "<td><div class='ZmSchedTabViewPageGrid'></div></td>";
+		}
 		html[i++] = "</tr></table>";
 		html[i++] = "</td></tr>";
 
@@ -438,6 +445,9 @@ function() {
 	this._navToolbar.addSelectionListener(ZmOperation.PAGE_FORWARD, navBarListener);
 	this._navToolbar.reparentHtmlElement(this._navToolbarId);
 	delete this._navToolbarId;
+
+	this._freeBusyDiv = document.getElementById(this._freeBusyDivId);
+	delete this._freeBusyDivId;
 
 	// create DwtInputField and DwtSelect for each attendee slot
 	for (var i = 0; i < this._schedTable.length; i++) {
@@ -749,8 +759,9 @@ function() {
 ZmSchedTabViewPage.prototype._handleDateChange = 
 function(isStartDate, skipCheck) {
 	var needsUpdate = ZmApptViewHelper.handleDateChange(this._startDateField, this._endDateField, isStartDate, skipCheck);
-	if (needsUpdate)
+	if (needsUpdate) {
 		this._updateFreeBusy();
+	}
 	// finally, update the appt tab view page w/ new date(s)
 	this._apptTab.updateDateField(this._startDateField.value, this._endDateField.value);
 };
@@ -817,13 +828,9 @@ function(ev) {
 
 ZmSchedTabViewPage.prototype._timeChangeListener =
 function(ev) {
-	// always update the appt tab view's time fields
-	this._apptTab.updateTimeField(this._startTimeSelect.getSelectedHourIdx(), 
-								  this._startTimeSelect.getSelectedMinuteIdx(), 
-								  this._startTimeSelect.getSelectedAmPmIdx(), 
-								  this._endTimeSelect.getSelectedHourIdx(),
-								  this._endTimeSelect.getSelectedMinuteIdx(),
-								  this._endTimeSelect.getSelectedAmPmIdx());
+	var dateInfo = ZmApptViewHelper.getDateInfo(this);
+	this._outlineAppt(dateInfo);
+	this._apptTab.updateTimeField(dateInfo);
 };
 
 ZmSchedTabViewPage.prototype._selectChangeListener = 
@@ -860,14 +867,8 @@ function(status, slots, table, sched) {
 	if (row && bgcolor) {
 		// figure out the table cell that needs to be colored
 		for (var i = 0; i < slots.length; i++) {
-			var sd = new Date(slots[i].s);
-			var ed = new Date(slots[i].e);
-			var startIdx = sd.getHours() * 2;
-			if (sd.getMinutes() >= 30)
-				startIdx++;
-			var endIdx = ed.getHours() * 2;
-			if (ed.getMinutes() >= 30)
-				endIdx++;
+			var startIdx = this._getIndexFromTime(slots[i].s);
+			var endIdx = this._getIndexFromTime(slots[i].e);
 
 			// normalize
 			if (endIdx <= startIdx)
@@ -883,6 +884,91 @@ function(status, slots, table, sched) {
 			}
 		}
 	}
+};
+
+/*
+* Draws a dark border for the appt's start and end times.
+*
+* @param index		[object]		start and end indexes
+*/
+ZmSchedTabViewPage.prototype._outlineAppt =
+function(dateInfo) {
+	dateInfo = dateInfo ? dateInfo : ZmApptViewHelper.getDateInfo(this);
+	var index = this._getIndexesFromDateInfo(dateInfo);
+	this._updateBorders(this._allAttendeesSlot, index);
+	for (var j = 0; j < ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES; j++) {
+		this._updateBorders(this._schedTable[j], index);
+	}
+};
+
+/*
+* The table borders outline the time of the current appt.
+*
+* @param sched		[sched]			IDs for this row
+* @param index		[object]		start and end indexes
+*/
+ZmSchedTabViewPage.prototype._updateBorders =
+function(sched, index) {
+	if (!sched || !index) return;
+
+	var div, curClass, newClass;
+
+	// if start time is midnight, mark right border of attendee div
+	div = document.getElementById(sched.dwtDivId);
+	curClass = div.className;
+	newClass = (index.start == -1) ? "ZmSchedTabViewPageNameMark" :
+									 "ZmSchedTabViewPageName";
+	if (curClass != newClass) {
+		div.className = newClass;
+	}
+	
+	// mark right borders of appropriate f/b table cells
+	var table = document.getElementById(sched.dwtTableId);
+	var row = table.rows[0];
+	if (row) {
+		for (var i = 0; i < ZmSchedTabViewPage.FREEBUSY_NUM_CELLS; i++) {
+			var cell = row.cells[i];
+			div = cell ? cell.firstChild : null;
+			if (div) {
+				curClass = div.className;
+				newClass = (i == index.start || i == index.end) ? "ZmSchedTabViewPageGridMark" :
+																  "ZmSchedTabViewPageGrid";
+				if (curClass != newClass) {
+					div.className = newClass;
+				}
+			}
+		}
+	}
+};
+
+ZmSchedTabViewPage.prototype._getIndexFromTime = 
+function(time, isStart) {
+	var d = (time instanceof Date) ? time : new Date(time);
+	var idx = d.getHours() * 2;
+	if (d.getMinutes() >= 30) {
+		idx++;
+	}
+
+	return idx;
+};
+
+ZmSchedTabViewPage.prototype._getIndexesFromDateInfo = 
+function(dateInfo) {
+	var index = {start: -99, end: -99};
+	if (dateInfo.showTime) {
+		var startDate = ZmTimeSelect.getDateFromFields(dateInfo.startHourIdx + 1, dateInfo.startMinuteIdx * 5,
+													   dateInfo.startAmPmIdx,
+													   AjxDateUtil.simpleParseDateStr(dateInfo.startDate));
+		var endDate = ZmTimeSelect.getDateFromFields(dateInfo.endHourIdx + 1, dateInfo.endMinuteIdx * 5,
+													 dateInfo.endAmPmIdx,
+													 AjxDateUtil.simpleParseDateStr(dateInfo.endDate));
+		// subtract 1 from index since we're marking right borders
+		index.start = this._getIndexFromTime(startDate) - 1;
+		index.end = this._getIndexFromTime(endDate) - 1;
+		DBG.println("****** index is " + index.start + " for " + startDate.toString());
+		DBG.println("****** index is " + index.end + " for " + endDate.toString());
+	}
+	return index;
 };
 
 ZmSchedTabViewPage.prototype._getColorForStatus = 
@@ -948,6 +1034,7 @@ function(ev) {
 	if (el.id == svp._allDayCheckboxId) {
 		svp._showTimeFields(el.checked ? false : true);
 		svp._apptTab.updateAllDayField(el.checked);
+		svp._outlineAppt();
 	} else {
 		// looks like user clicked on attendee field
 		svp._showAttendeeField(el);

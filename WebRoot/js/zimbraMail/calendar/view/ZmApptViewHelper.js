@@ -135,6 +135,29 @@ function(appt, startTimeSelect, endTimeSelect) {
 	endTimeSelect.setSelected(endHourIdx, endMinuteIdx, endAmPmIdx);
 };
 
+/**
+* Returns an object with the indices of the currently selected time fields.
+*
+* @param tabView	[DwtTabView]	ZmApptTabViewPage or DwtSchedTabViewPage
+*/
+ZmApptViewHelper.getDateInfo =
+function(tabView) {
+	var dateInfo = {};
+	dateInfo.startDate = tabView._startDateField.value;
+	dateInfo.endDate = tabView._endDateField.value;
+	if (!tabView._allDayCheckbox.checked) {
+		dateInfo.showTime = true;
+
+		dateInfo.startHourIdx = tabView._startTimeSelect.getSelectedHourIdx();
+		dateInfo.startMinuteIdx = tabView._startTimeSelect.getSelectedMinuteIdx();
+		dateInfo.startAmPmIdx = tabView._startTimeSelect.getSelectedAmPmIdx();
+		dateInfo.endHourIdx = tabView._endTimeSelect.getSelectedHourIdx();
+		dateInfo.endMinuteIdx = tabView._endTimeSelect.getSelectedMinuteIdx();
+		dateInfo.endAmPmIdx = tabView._endTimeSelect.getSelectedAmPmIdx();
+	}
+	return dateInfo;
+};
+
 ZmApptViewHelper.handleDateChange = 
 function(startDateField, endDateField, isStartDate, skipCheck) {
 	var needsUpdate = false;
@@ -560,6 +583,22 @@ function ZmTimeSelect(parent) {
 	this._createSelects();
 };
 
+ZmTimeSelect.getDateFromFields =
+function(hours, minutes, ampm, date) {
+	hours = Number(hours);
+	if (ampm != null) {
+		if (ampm == 0) {
+			hours = (hours == 12) ? 0 : hours;
+		} else {
+			hours = (hours < 12) ? hours + 12 : hours;
+		}
+	}
+	
+	date = date ? date : new Date();
+	date.setHours(hours, Number(minutes), 0, 0);
+	return date;
+};
+
 ZmTimeSelect.prototype = new DwtComposite;
 ZmTimeSelect.prototype.constructor = ZmTimeSelect;
 
@@ -573,20 +612,8 @@ ZmTimeSelect.prototype.constructor = ZmTimeSelect;
  */
 ZmTimeSelect.prototype.getValue =
 function(date) {
-	var hours = Number(this._hourSelect.getValue());
-	if (this._amPmSelect) {
-		if (this.getSelectedAmPmIdx() == 0) {
-			hours = hours != 12 ? hours : 0;
-		}
-		else {
-			hours = hours < 12 ? hours + 12 : hours;
-		}
-	}
-	var minutes = Number(this._minuteSelect.getValue());
-	
-	date = date || new Date();
-	date.setHours(hours, minutes, 0, 0);
-	return date;
+	var ampm = this._amPmSelect ? this.getSelectedAmPmIdx() : null;
+	return (ZmTimeSelect.getDateFromFields(this._hourSelect.getValue(), this._minuteSelect.getValue(), ampm, date));
 };
 
 ZmTimeSelect.prototype.setSelected = 
