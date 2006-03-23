@@ -28,6 +28,8 @@ function ZmNoteView(parent, appCtxt, controller) {
 	
 	this._appCtxt = appCtxt;
 	this._controller = controller;
+
+	this._createHtml();	
 	
 	this._setMouseEventHdlrs(); // needed by object manager
 }
@@ -44,9 +46,6 @@ function() {
 ZmNoteView.prototype._appCtxt;
 ZmNoteView.prototype._controller;
 
-ZmNoteView.prototype._keywordEl;
-ZmNoteView.prototype._contentEl;
-
 // Public methods
 
 ZmNoteView.prototype.getController =
@@ -62,14 +61,12 @@ function(note) {
 		return;
 	}
 
-	var content = note.getContent();
-	if (note.name.match(/^[^_]/)) {
-		var cache = this._controller._app.getNoteCache();
-		var chrome = cache.getNoteByName(note.folderId, "_CHROME_");
-	
-		var chromeContent = chrome.getContent();
-		content = chromeContent.replace(/\{\{CONTENT\}\}/ig, content);
-	}
+	var cache = this._controller._app.getNoteCache();
+	var chrome = cache.getNoteByName(note.folderId, "_CHROME_");
+
+	var chromeContent = chrome.getContent();
+	var pageContent = note.getContent();
+	var content = chromeContent.replace(/\{\{CONTENT\}\}/ig, pageContent);
 	
 	element.innerHTML = content;
 	this._render(element, note);
@@ -82,8 +79,7 @@ function() {
 };
 ZmNoteView.prototype.getContent =
 function() {
-	var element = this.getHtmlElement();
-	return element.innerHTML;
+	return this.getHtmlElement().innerHTML;
 };
 
 ZmNoteView.prototype.getSelection =
@@ -95,36 +91,50 @@ function() {
 ZmNoteView.prototype.addSelectionListener = function(listener) { /*TODO*/ };
 ZmNoteView.prototype.addActionListener = function(listener) { /*TODO*/ };
 
-ZmNoteView.prototype.setBounds = 
-function(x, y, width, height) {
-	// HACK: subtract height/width of scrollbars???
-	width -= 11;
-	height -= 11;
-	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
-};
-
 // Protected methods
+
+ZmNoteView.prototype._createHtml = function() {
+	var element = this.getHtmlElement();
+	Dwt.setScrollStyle(element, Dwt.SCROLL);
+};
 
 ZmNoteView.prototype._render = function(element, note) {
 	var ids = [];
-	this._render1(element, note, ids);
-	var action = new AjxTimedAction(this, this._render2, [ids, note]);
+
+	element.normalize();
+	this._renderFindTransclusions(element, note, ids);
+
+	var action = new AjxTimedAction(this, this._renderReplaceTransclusions, [ids, note]);
 	AjxTimedAction.scheduleAction(action, 0);
 };
-ZmNoteView.prototype._render1 = function(element, note, ids) {
-	var re = /(?=^|[^\\])\{\{(.+?)(?:\|(.*?))?\}\}/g;
+ZmNoteView.prototype._renderFindTransclusions = function(element, note, ids) {
+	var commentRe = /<!--.*?-->/g;
+	var transclusionRe = /(?=^|[^\\])\{\{\s*(.+?)\s*(?:\|\s*(.*?))?\s*\}\}/g;
 	for (var child = element.firstChild; child != null; child = child.nextSibling) {
 		if (child.nodeType == AjxUtil.ELEMENT_NODE) {
-			this._render1(child, note, ids);
+			this._renderFindTransclusions(child, note, ids);
 			continue;
 		}
 		if (child.nodeType == AjxUtil.TEXT_NODE) {
 			var m;
-			while (m = re.exec(child.nodeValue)) {
+			while (m = transclusionRe.exec(child.nodeValue)) {
+				// skip comments
+				var commentM = commentRe.exec(child.nodeValue);
+				if (commentM) {
+					var commentLen = commentM.index + commentM[0].length;
+					if (m.index > commentM.index && m.index < commentLen) {
+						commentRe.lastIndex = commentLen;
+						transclusionRe.lastIndex = commentLen;
+						continue;
+					}
+				}
+			
 				// split text before/after transclusion
-				child = child.splitText(m.index);
-				if (child.nextSibling && child.nextSibling.nodeType == AjxUtil.TEXT_NODE) {
-					child = child.nextSibling.splitText(m[0].length);
+				if (m.index > 0) {
+					child = child.splitText(m.index);
+				}
+				if (child.nodeValue.length > m[0].length) {
+					child.splitText(m[0].length);
 				}
 				
 				// wrap transclusion in placeholder element
@@ -138,12 +148,13 @@ ZmNoteView.prototype._render1 = function(element, note, ids) {
 				placeholder.appendChild(child);
 				child = placeholder;
 				
-				re.lastIndex = 0;
+				commentRe.lastIndex = 0;
+				transclusionRe.lastIndex = 0;
 			}
 		}
 	}
 };
-ZmNoteView.prototype._render2 = function(ids, note) {
+ZmNoteView.prototype._renderReplaceTransclusions = function(ids, note) {
 	var cache = this._controller._app.getNoteCache();
 	for (var i = 0; i < ids.length; i++) {
 		var placeholder = document.getElementById(ids[i]);
@@ -156,23 +167,19 @@ ZmNoteView.prototype._render2 = function(ids, note) {
 		}
 		placeholder.parentNode.replaceChild(replacement, placeholder);
 	}
-	var action = new AjxTimedAction(this, this._render3);
+	var action = new AjxTimedAction(this, this._renderFindObjects);
 	AjxTimedAction.scheduleAction(action, 0);
 };
-ZmNoteView.prototype._render3 = function() {
-	var element = this.getHtmlElement();
+ZmNoteView.prototype._renderFindObjects = function() {
 	if (!this._objectMgr) {
 		this._objectMgr = new ZmObjectManager(this, this._appCtxt);
 	}
 	this._objectMgr.reset();
-	this._objectMgr.processHtmlNode(element, true);
+	this._objectMgr.processHtmlNode(this.getHtmlElement(), true);
 };
 
 ZmNoteView.WIKLETS = {
 	"TOC": function(element, cache, note) {
-		// REVISIT: This isn't needed once notifications are used
-		cache.fillCache(note.folderId);
-	
 		var notes = ZmNoteView.__object2Array(cache.getNotesInFolder(note.folderId));
 		notes.sort(ZmNoteView.__byNoteName);
 		
@@ -206,8 +213,9 @@ ZmNoteView.WIKLETS = {
 
 		return toc;
 	},
-	"PAGENAME": function(element, cache, note) {
-		return document.createTextNode(note.name);
+	"NAME": function(element, cache, note) {
+		var name = note.name == "_INDEX_" ? ZmMsg.wikiToc : note.name;
+		return document.createTextNode(name);
 	},
 	"MSG": function(element, cache, note) {
 		var key = element.vvalue;
@@ -215,7 +223,63 @@ ZmNoteView.WIKLETS = {
 			return document.createTextNode(ZmMsg[key]);
 		}
 		return element.firstChild;
+	},
+	"INCLUDE": function(element, cache, note) {
+		var name = element.vvalue;
+		// REVISIT: right now, assume same folder
+		var note = cache.getNoteByName(note.folderId, name);
+		if (note) {
+			var container = document.createElement("SPAN");
+			container.innerHTML = note.getContent();
+			var fragment = document.createDocumentFragment();
+			var child = container.firstChild;
+			while (child != null) {
+				fragment.appendChild(child);
+				child = container.firstChild;
+			}
+			return fragment;
+		}
+		return element.firstChild;
+	},
+	"CREATOR": function(element, cache, note) {
+		return document.createTextNode(note.creator);
+	},
+	"CREATEDATE": function(element, cache, note) {
+		return ZmNoteView._wikletFormatDate("date", element.vvalue, note.createDate);
+	},
+	"CREATETIME": function(element, cache, note) {
+		return ZmNoteView._wikletFormatDate("time", element.vvalue, note.createDate);
+	},
+	"MODIFIER": function(element, cache, note) {
+		return document.createTextNode(note.modifier || note.creator);
+	},
+	"MODIFYDATE": function(element, cache, note) {
+		return ZmNoteView._wikletFormatDate("date", element.vvalue, note.modifyDate);
+	},
+	"MODIFYTIME": function(element, cache, note) {
+		return ZmNoteView._wikletFormatDate("time", element.vvalue, note.modifyDate);
+	},
+	"VERSION": function(element, cache, note) {
+		return document.createTextNode(note.version);
 	}
+};
+
+ZmNoteView._wikletDateFormatters = {};
+ZmNoteView._wikletFormatDate = function(type, style, date) {
+		var formatter;
+		if (style) {
+			var pattern = ["{0",type,style,"}"].join();
+			if (!ZmNoteView._wikletDateFormatters[pattern]) {
+				ZmNoteView._wikletDateFormatters[pattern] = new AjxMessageFormat(pattern);
+			}
+			formatter = ZmNoteView._wikletDateFormatters[pattern];
+		}
+		else {
+			formatter = AjxDateFormat.getDateInstance();
+		}
+		
+		var s = formatter.format(date);
+		return document.createTextNode(s);
 };
 
 // Utility functions

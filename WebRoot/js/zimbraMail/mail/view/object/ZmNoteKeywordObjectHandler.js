@@ -135,7 +135,9 @@ ZmNoteKeywordObjectHandler.prototype._selectedHandleResponse =
 function(note) {
 	var appController = this._appCtxt.getAppController();
 	var notesApp = appController.getApp(ZmZimbraMail.NOTES_APP);
-	var controller = note.isNew() ? notesApp.getNoteEditController() : notesApp.getNoteController();
+	
+	var isNew = !note || note.version == 0;
+	var controller = isNew ? notesApp.getNoteEditController() : notesApp.getNoteController();
 	controller.show(note);
 };
 

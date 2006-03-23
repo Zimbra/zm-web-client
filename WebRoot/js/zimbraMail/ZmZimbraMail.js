@@ -488,8 +488,8 @@ function(params, result) {
             // BUG?  What if the array isn't in sequence-order?  We would miss some notifications. Can that happen?  
             if (notify.seq > this._highestNotifySeen) {
                 DBG.println(AjxDebug.DBG1, "Handling notification[" + i + "] seq=" + seq);
-                this._notifyHandler(notify);
                 this._highestNotifySeen = seq;
+                this._notifyHandler(notify);
             } else {
             	DBG.println(AjxDebug.DBG1, "SKIPPING notification[" + i + "] seq=" + seq + " highestNotifySeen=" + this._highestNotifySeen);
 	      	}
@@ -1118,6 +1118,15 @@ function(deletes) {
 		DBG.println(AjxDebug.DBG2, "handling delete notif for ID " + ids[i]);
 		if (item)
 			item.notifyDelete();
+		// REVISIT: Use app item cache
+		else {
+			var notesApp = this.getApp(ZmZimbraMail.NOTES_APP);
+			var cache = notesApp.getNoteCache();
+			var note = cache.getNoteById(ids[i]);
+			if (note) {
+				cache.removeNote(note);
+			}
+		}
 	}
 };
 
@@ -1260,7 +1269,9 @@ function(modifies) {
 			// REVISIT: Use app context item cache
 			var notesApp = this.getApp(ZmZimbraMail.NOTES_APP);
 			var cache = notesApp.getNoteCache();
-			var note = cache.getNoteByName(name);
+			// REVISIT: server not returning folderId
+			mod.l = mod.l || ZmNote.DEFAULT_FOLDER;
+			var note = cache.getNoteByName(mod.l, mod.name);
 			if (!note) {
 				note = new ZmNote(this._appCtxt);
 				cache.putNote(note);

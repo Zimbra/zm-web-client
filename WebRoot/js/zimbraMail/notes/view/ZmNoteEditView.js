@@ -74,7 +74,8 @@ function() {
 };
 ZmNoteEditView.prototype.getContent =
 function() {
-	return this._textArea.getContent();
+	var content = this._textArea.getContent();
+	return content;
 };
 
 ZmNoteEditView.prototype.getSelection =
@@ -88,16 +89,10 @@ ZmNoteEditView.prototype.addActionListener = function(listener) { /*TODO*/ };
 
 ZmNoteEditView.prototype.setBounds = 
 function(x, y, width, height) {
-	/***
-	// HACK: subtract height/width of scrollbars???
-	width -= 11;
-	height -= 11;
-	/***/
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
 
-	var textAreaEl = this._textArea.getHtmlElement();
-	var loc = Dwt.getPosition(textAreaEl);
-	Dwt.setSize("100%", height - loc.y);
+	var size = Dwt.getSize(this._inputEl);
+	this._textArea.setSize(width, height - size.y);
 };
 
 // Protected methods
@@ -118,7 +113,8 @@ function() {
 	textAreaEl.style.height = "100%";
 
 	// build html
-	var table = document.createElement("TABLE");
+	this._inputEl = document.createElement("TABLE");
+	var table = this._inputEl;
 	table.cellSpacing = 0;
 	table.cellPadding = 3;
 	table.width = "100%";

@@ -1667,8 +1667,11 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmNoteView {
-	padding: 0.5em;
 	overflow: auto;
+}
+.ZmNoteView, .ZmNoteView P, .ZmNoteView TD, .ZmNoteView DIV,
+.ZmNoteView SPAN, .ZmNoteView SELECT, .ZmNoteView INPUT, 
+.ZmNoteView TEXTAREA, .ZmNoteView BUTTON {
 	font-family: "Times New Roman", Times, serif;
 	font-size: 12pt;
 }
@@ -1688,9 +1691,9 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmNoteEditView {
-	padding: 3px;
 }
 .ZmNoteEditView .Label {
+	font-family: "Times New Roman", Times, serif;
 	font-size: 14pt;
 	text-align: right;
 	width: 1%;

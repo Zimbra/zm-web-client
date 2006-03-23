@@ -15,7 +15,7 @@
  * The Original Code is: Zimbra Collaboration Suite Web Client
  * 
  * The Initial Developer of the Original Code is Zimbra, Inc.
- * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2006 Zimbra, Inc.
  * All Rights Reserved.
  * 
  * Contributor(s):
@@ -28,6 +28,28 @@ function ZmNoteCache(appCtxt) {
 	this.clearCache();
 	this._changeListener = new AjxListener(this, this._handleChange);
 }
+
+//
+// Constants
+//
+
+ZmNoteCache._SPECIAL = {
+	"_INDEX_": [
+		"<H2>{{MSG|wikiUserPages}}</H2>",
+		"<P>",
+			"{{TOC}}",
+		"<H2>{{MSG|wikiSpecialPages}}</H2>",
+		"<P>",
+			"{{TOC|name='_*_'}}"
+	].join(""),
+	"_CHROME_": [
+		"<DIV style='padding:0.5em'>",
+			"<H1>{{NAME}}</H1>",
+			"<DIV>{{CONTENT}}</DIV>",
+		"</DIV>"
+	].join("")
+};
+
 
 //
 // Data
@@ -48,17 +70,10 @@ ZmNoteCache.prototype._changeListener;
 // cache management
 
 ZmNoteCache.prototype.fillCache = function(folderId, callback, errorCallback) {
-	/***
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("types", "wiki");
 	var search = "is:anywhere"; // REVISIT!
 	var queryNode = soapDoc.set("query", search);
-	/***/
-	var soapDoc = AjxSoapDoc.create("ListWikiRequest", "urn:zimbraMail");
-	if (folderId) {
-		soapDoc.setMethodAttribute("l", folderId);
-	}
-	/***/
 		
 	var handleResponse = callback ? new AjxCallback(this, this._fillCacheResponse, [folderId, callback]) : null;
 	var params = {
@@ -78,16 +93,25 @@ ZmNoteCache.prototype.fillCache = function(folderId, callback, errorCallback) {
 };
 
 ZmNoteCache.prototype.putNote = function(note) {
-	//this._idMap[note.id] = note;
-	this.getNotesInFolder(note.folderId)[note.name] = note;
-	this.getNotesByCreator(note.creator)[note.name] = note;
+	if (note.id) { 
+		this._idMap[note.id] = note; 
+	}
+	var folderId = note.folderId || ZmNote.DEFAULT_FOLDER;
+	this.getNotesInFolder(folderId)[note.name] = note;
+	if (note.creator) {
+		this.getNotesByCreator(note.creator)[note.name] = note;
+	}
 	
 	note.addChangeListener(this._changeListener);
 };
 ZmNoteCache.prototype.removeNote = function(note) {
-	//delete this._idMap[note.id];
+	if (note.id) { 
+		delete this._idMap[note.id]; 
+	}
 	delete this.getNotesInFolder(note.folderId)[note.name];
-	delete this.getNotesByCreator(note.creator)[note.name];
+	if (note.creator) {
+		delete this.getNotesByCreator(note.creator)[note.name];
+	}
 	
 	note.removeChangeListener(this._changeListener);
 };
@@ -121,6 +145,11 @@ ZmNoteCache.prototype.getNotesInFolder = function(folderId) {
 	if (!this._foldersMap[folderId]) {
 		this._foldersMap[folderId] = {};
 	}
+	for (var name in ZmNoteCache._SPECIAL) {
+		if (!this._foldersMap[folderId][name]) {
+			this._foldersMap[folderId][name] = this._generateSpecialNote(folderId, name);
+		}
+	}
 	return this._foldersMap[folderId];
 };
 ZmNoteCache.prototype.getNotesByCreator = function(creator) {
@@ -135,17 +164,9 @@ ZmNoteCache.prototype.getNotesByCreator = function(creator) {
 ZmNoteCache.prototype._fillCacheResponse = 
 function(folderId, callback, response) {
 	if (response && response._data) {
-		/***
-		// REVISIT: Search response returns mail items ("m")
-		var words = response._data.SearchResponse.m || [];
-		for (var i = 0; i < words.length; i++) {
-			var m = words[i];
-			var word = { id: m.id, name: m.w, folderId: m.l, creator: m.cr };
-		/***/
-		var words = response._data.ListWikiResponse.w || [];
+		var words = response._data.SearchResponse.w || [];
 		for (var i = 0; i < words.length; i++) {
 			var word = words[i];
-		/***/
 			var note = this.getNoteById(word.id);
 			if (!note) {
 				note = new ZmNote(this._appCtxt);
@@ -165,4 +186,18 @@ function(folderId, callback, response) {
 
 ZmNoteCache.prototype._handleChange = function(event) {
 	debugger;
+};
+
+ZmNoteCache.prototype._generateSpecialNote = function(folderId, name) {
+	var note = new ZmNote(this._appCtxt);
+	note.name = name;
+	note.fragment = "";
+	note.setContent(ZmNoteCache._SPECIAL[name]);
+	note.folderId = folderId;
+	note.creator = "[auto]"; // i18n
+	note.createDate = new Date();
+	note.modifier = note.creator;
+	note.modifyDate = new Date(note.createDate.getTime());
+	//note.version = 0;
+	return note;
 };

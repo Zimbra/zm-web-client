@@ -31,6 +31,8 @@ function ZmNoteController(appCtxt, container, app) {
 	this._listeners[ZmOperation.PAGE_BACK] = new AjxListener(this, this._pageBackListener);
 	this._listeners[ZmOperation.PAGE_DBL_BACK] = new AjxListener(this, this._homeListener);
 	this._listeners[ZmOperation.PAGE_FORWARD] = new AjxListener(this, this._pageForwardListener);
+	
+	this._cachedFolders = {};
 }
 ZmNoteController.prototype = new ZmListController;
 ZmNoteController.prototype.constructor = ZmNoteController;
@@ -52,8 +54,7 @@ ZmNoteController.prototype._history;
 ZmNoteController.prototype.show =
 function(noteOrFolderId, force) {
 	if (!(noteOrFolderId instanceof ZmNote)) {
-		noteOrFolderId = noteOrFolderId || ZmNote.DEFAULT_FOLDER;
-		this._generateIndex(noteOrFolderId);
+		this._showIndex(noteOrFolderId || ZmNote.DEFAULT_FOLDER);
 		return;
 	}
 
@@ -165,8 +166,6 @@ function() {
 
 ZmNoteController.prototype._doDelete =
 function(note) {
-	debugger;
-	
 	var soapDoc = AjxSoapDoc.create("DeleteWikiRequest", "urn:zimbraMail");
 	var wordNode = soapDoc.set("w");
 	wordNode.setAttribute("name", note.name);
@@ -194,7 +193,7 @@ function(ev) {
 	var noteRef = this._history[this._place];
 	if (noteRef) {
 		if (this._place == 0) {
-			this._generateIndex(noteRef.folderId);
+			this._showIndex(noteRef.folderId);
 		}
 		else {
 			var cache = this._app.getNoteCache();
@@ -224,63 +223,19 @@ function(ev) {
 	}
 };
 
-ZmNoteController.prototype._generateIndex = function(folderId, callback) {
+ZmNoteController.prototype._showIndex = function(folderId) {
 	var cache = this._app.getNoteCache();
-	var index = cache.getNoteByName(folderId, "_INDEX_");
-	if (!index) {
-		var responseHandler = new AjxCallback(this, this._generateIndexResponse, [folderId, callback]);
+	if (!this._cachedFolders[folderId]) {
+		// NOTE: Only need to fill the cache for each folder once
+		//       because it will automatically be updated via the
+		//       notifications in the app controller.
+		this._cachedFolders[folderId] = true;
+		var responseHandler = new AjxCallback(this, this._showIndex, [folderId]);
 		cache.fillCache(folderId, responseHandler);
 		return;
 	}
-	this.show(index);
-};
-ZmNoteController.prototype._generateIndexResponse = 
-function(folderId, callback, response) {
-	var cache = this._app.getNoteCache();
 	var index = cache.getNoteByName(folderId, "_INDEX_");
-	if (!index) {
-		index = new ZmNote(this._appCtxt);
-		index.folderId = folderId;
-		index.name = "_INDEX_";
-		index.setContent( [
-			"<H1>{{MSG|wikiToc}}</H1>",
-			"<H2>{{MSG|wikiUserPages}}</H2>",
-			"<P>",
-				"{{TOC}}",
-			"<H2>{{MSG|wikiSpecialPages}}</H2>",
-			"<P>",
-				"{{TOC|name='_*_'}}"
-		].join("") );
-		cache.putNote(index);
-	}
-	
-	var chrome = cache.getNoteByName(folderId, "_CHROME_");
-	if (!chrome) {
-		chrome = new ZmNote(this._appCtxt);
-		chrome.folderId = folderId;
-		chrome.name = "_CHROME_";
-		chrome.setContent( [
-			"<H1>{{PAGENAME}}</H1>",
-			"<DIV>",
-				"{{CONTENT}}"
-		].join("") );
-		cache.putNote(chrome);
-	}
-	
 	this.show(index);
-	
-	if (callback) {
-		callback.run(index);
-	}
-};
-/***/
-
-ZmNoteController.__byWord = function(a, b) {
-	var ac = a.name.toLowerCase();
-	var bc = b.name.toLowerCase();
-	if (ac < bc) return -1;
-	if (ac > bc) return 1;
-	return 0;
 };
 
 ZmNoteController.prototype._enableNaviButtons =

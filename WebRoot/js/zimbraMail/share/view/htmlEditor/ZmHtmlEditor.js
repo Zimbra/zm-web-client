@@ -33,7 +33,7 @@ function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt) {
 	this._appCtxt = appCtxt;
 
 	// ACE?
-	this.ACE_ENABLED = false;
+	this.ACE_ENABLED = true;
 
 	DwtHtmlEditor.call(this, parent, "ZmHtmlEditor", posStyle, content, mode, appContextPath+"/public/blank.html");
 
