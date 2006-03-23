@@ -230,7 +230,12 @@ function(ev, args) {
 
 ZmReminderDialog.prototype._snoozeAction =
 function() {
-	if (!this.isPoppedUp()) this.popup();
+	if (!this.isPoppedUp()) {
+		for (var id in this._apptData) {
+			this._updateDelta(this._apptData[id]);
+		}
+		this.popup();
+	}
 };
 
 ZmReminderDialog.prototype.popup =
