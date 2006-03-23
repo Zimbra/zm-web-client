@@ -884,9 +884,9 @@ ZmAppt.prototype.getHtmlSummary = function() {
 ZmAppt.prototype.getSummary = function(isHtml) {
 	var orig = this._orig ? this._orig : this;
 
-	var isEdit = this._viewMode == ZmAppt.MODE_EDIT || 
-				 this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE ||
-				 this._viewMode == ZmAppt.MODE_EDIT_SERIES;
+	var isEdit = (this._viewMode == ZmAppt.MODE_EDIT || 
+				  this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE ||
+				  this._viewMode == ZmAppt.MODE_EDIT_SERIES);
 
 	var buf = [];
 	var i = 0;
@@ -923,6 +923,13 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 	if (location) {
 		var modified = isEdit && (orig.getLocation(true) != location);
 		var params = [ ZmMsg.location + ":", location, modified ? ZmMsg.apptModifiedStamp : "" ];
+		buf[i++] = formatter.format(params);
+		buf[i++] = "\n";
+	}
+	
+	var resources = this.getResourcesText();
+	if (resources) {
+		var params = [ZmMsg.resources + ":", resources, ""];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
@@ -1677,7 +1684,9 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 ZmAppt.prototype._addNotesToSoap = 
 function(soapDoc, m, cancel) {	
 
-	var hasAttendees = (this._attendees[ZmAppt.PERSON] && this._attendees[ZmAppt.PERSON].length);
+	var hasAttendees = ((this._attendees[ZmAppt.PERSON] && this._attendees[ZmAppt.PERSON].length) ||
+						(this._attendees[ZmAppt.LOCATION] && this._attendees[ZmAppt.LOCATION].length) ||
+						(this._attendees[ZmAppt.RESOURCE] && this._attendees[ZmAppt.RESOURCE].length));
 	var tprefix = hasAttendees ? this._getDefaultBlurb(cancel) : "";
 	var hprefix = hasAttendees ? this._getDefaultBlurb(cancel, true) : "";
 	
