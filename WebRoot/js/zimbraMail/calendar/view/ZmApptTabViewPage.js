@@ -58,7 +58,6 @@ function ZmApptTabViewPage(parent, appCtxt, attendees, acContactsList, acResourc
 
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
-	this._badAttendees = {};
 	
 	parent.addChangeListener(new AjxListener(this, this._attendeesChangeListener));
 };
@@ -1296,7 +1295,6 @@ function(type) {
 	if (value == this._attInputCurVal[type]) return;
 
 	var attendees = new AjxVector();
-	this._badAttendees[type] = [];
 	var items = value.split(";");
 	for (var i = 0; i < items.length; i++) {
 		var item = AjxStringUtil.trim(items[i]);
@@ -1309,11 +1307,16 @@ function(type) {
 		if (attendee) {
 			attendees.add(attendee);
 		} else {
-			this._badAttendees[type].push(item);
-			DBG.println(AjxDebug.DBG1, "Bad attendee: " + item);
+			this.parent.showErrorMessage(this.parent._badAttendeeMsg[type], null, this._badAttendeeCallback, this, type);
 		}
 	}
 	this.parent.updateAttendees(attendees, type);
+};
+
+ZmApptTabViewPage.prototype._badAttendeeCallback = 
+function(type) {
+	this._attInputField[type].setValue(this._attInputCurVal[type]);
+	this.parent._msgDialog.popdown();
 };
 
 ZmApptTabViewPage.prototype._getAttendeeByItem =

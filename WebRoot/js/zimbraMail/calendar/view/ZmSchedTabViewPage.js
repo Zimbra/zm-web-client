@@ -24,9 +24,11 @@
  */
 
 /**
-* Creates a new tab view that can be used to overload DwtTabView base class methods
+* Creates a new tab view for scheduling appointment attendees.
 * @constructor
 * @class
+* This class displays free/busy information for an appointment's attendees. An
+* attendee may be a person, a location, or a resource.
 *
 * @author Parag Shah
 *
@@ -56,11 +58,6 @@ function ZmSchedTabViewPage(parent, appCtxt, attendees, controller, acContactsLi
 	this._allAttendees = [];
 	this._allAttendeeSlot = null;
 	
-	this._badAttendeeMsg = {};
-	this._badAttendeeMsg[ZmAppt.PERSON]		= ZmMsg.schedBadAttendee;
-	this._badAttendeeMsg[ZmAppt.LOCATION]	= ZmMsg.schedBadLocation;
-	this._badAttendeeMsg[ZmAppt.RESOURCE]	= ZmMsg.schedBadResource;
-
 	this._fbCallback = new AjxCallback(this, this._handleResponseFreeBusy);
 };
 
@@ -564,7 +561,7 @@ function(inputEl) {
 		this.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
 	} else {
 		if (value) {
-			this.parent.showErrorMessage(this._badAttendeeMsg[type], null, this._badAttendeeCallback, this, [inputEl, sched]);
+			this.parent.showErrorMessage(this.parent._badAttendeeMsg[type], null, this._badAttendeeCallback, this, [inputEl, sched]);
 		} else {
 			this._cleanRow(inputEl, sched);
 		}

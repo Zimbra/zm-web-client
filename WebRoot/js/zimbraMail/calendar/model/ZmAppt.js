@@ -168,12 +168,6 @@ ZmAppt.prototype.getAttendees					= function() { return this._attendees[ZmAppt.P
 ZmAppt.prototype.getLocations					= function() { return this._attendees[ZmAppt.LOCATION]; };
 ZmAppt.prototype.getResources					= function() { return this._attendees[ZmAppt.RESOURCE]; };
 
-// next 3 getters convert array to string
-ZmAppt.prototype.getAttendeesText				= function() { return this._getAttendeesString(this._attendees[ZmAppt.PERSON]); };
-ZmAppt.prototype.getLocation					= function() { return (this._attendees[ZmAppt.LOCATION] && this._attendees[ZmAppt.LOCATION].length) ? 
-																this._getAttendeesString(this._attendees[ZmAppt.LOCATION]) : this.location ? this.location : ""; };
-ZmAppt.prototype.getResourcesText				= function() { return this._getAttendeesString(this._attendees[ZmAppt.RESOURCE]); };
-
 ZmAppt.prototype.getOrigAttendees 				= function() { return this._origAttendees; };
 ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
 ZmAppt.prototype.getEndDate 					= function() { return this.endDate; };
@@ -182,7 +176,6 @@ ZmAppt.prototype.getFolderId 					= function() { return this.folderId || ZmFolde
 ZmAppt.prototype.getFragment 					= function() { return this.fragment; };
 ZmAppt.prototype.getId 							= function() { return this.id; }; 					// mail item id on appt instance
 ZmAppt.prototype.getInvId 						= function() { return this.invId; }; 				// default mail item invite id on appt instance
-//ZmAppt.prototype.getLocation 					= function() { return this.location; };
 ZmAppt.prototype.getMessage 					= function() { return this._message; };
 ZmAppt.prototype.getName 						= function() { return this.name; }; 				// name (aka Subject) of appt
 ZmAppt.prototype.getOrganizer 					= function() { return this.organizer || ""; };
@@ -211,6 +204,27 @@ function(useStartTime) {
 		return (this.id + "_" + this._uniqId);
 	}
 };
+
+// next 3 getters convert array to string
+ZmAppt.prototype.getAttendeesText				= function() { return this._getAttendeesString(this._attendees[ZmAppt.PERSON]); };
+ZmAppt.prototype.getResourcesText				= function() { return this._getAttendeesString(this._attendees[ZmAppt.RESOURCE]); };
+ZmAppt.prototype.getLocation =
+function(includeDisplayName) {
+	var locs = this._attendees[ZmAppt.LOCATION];
+	if (locs && locs.length) {
+		var text = this._getAttendeesString(locs);
+		if (includeDisplayName && locs.length == 1) {
+			var displayName = locs[0].getAttr(ZmResource.F_locationName);
+			if (displayName) {
+				text = [text, " (", displayName, ")"].join("");
+			}
+		}
+		return text;
+	} else {
+		return this.location ? this.location : "";
+	}
+return (this._attendees[ZmAppt.LOCATION] && this._attendees[ZmAppt.LOCATION].length) ? 
+																this._getAttendeesString(this._attendees[ZmAppt.LOCATION]) : this.location ? this.location : ""; };
 
 ZmAppt.prototype.isAllDayEvent 					= function() { return this.allDayEvent == "1"; };
 ZmAppt.prototype.isCustomRecurrence 			= function() { return this.repeatCustom == "1" || this.repeatEndType != "N"; };
@@ -869,9 +883,11 @@ function(mode, msg, errorCallback) {
 ZmAppt.prototype.getTextSummary = function() {
 	return this.getSummary(false);
 };
+
 ZmAppt.prototype.getHtmlSummary = function() {
 	return this.getSummary(true);
 };
+
 ZmAppt.prototype.getSummary = function(isHtml) {
 	var orig = this._orig ? this._orig : this;
 
@@ -892,7 +908,7 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 		buf[i++] = "<p>\n<table border='0'>\n";
 	}
 	var modified = isEdit && orig.getName() != this.getName();
-	var params = [ ZmMsg.subject+":", this.name, modified ? ZmMsg.apptModifiedStamp : "" ];
+	var params = [ ZmMsg.subject + ":", this.name, modified ? ZmMsg.apptModifiedStamp : "" ];
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
 	
@@ -908,10 +924,10 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 		buf[i++] = "<p>\n<table border='0'>\n";
 	}
 	
-	var location = this.getLocation();
+	var location = this.getLocation(true);
 	if (location) {
-		var modified = isEdit && (orig.getLocation() != location);
-		var params = [ ZmMsg.location+":", location, modified ? ZmMsg.apptModifiedStamp : "" ];
+		var modified = isEdit && (orig.getLocation(true) != location);
+		var params = [ ZmMsg.location + ":", location, modified ? ZmMsg.apptModifiedStamp : "" ];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
@@ -931,7 +947,7 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 		var hasTime = isEdit 
 			? ((orig.startDate.getTime() != s.getTime()) || (orig.endDate.getTime() != e.getTime()))
 			: false;
-		var params = [ ZmMsg.time+":", this._getTextSummaryTime(isEdit, ZmMsg.time, null, s, e, hasTime), "" ];
+		var params = [ ZmMsg.time + ":", this._getTextSummaryTime(isEdit, ZmMsg.time, null, s, e, hasTime), "" ];
 		buf[i++] = formatter.format(params);
 	}
 	else if (s.getFullYear() == e.getFullYear() && 
@@ -941,17 +957,17 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 		var hasTime = isEdit 
 			? ((orig.startDate.getTime() != this.startDate.getTime()) || (orig.endDate.getTime() != this.endDate.getTime()))
 			: false;
-		var params = [ ZmMsg.time+":", this._getTextSummaryTime(isEdit, ZmMsg.time, s, s, e, hasTime), "" ];
+		var params = [ ZmMsg.time + ":", this._getTextSummaryTime(isEdit, ZmMsg.time, s, s, e, hasTime), "" ];
 		buf[i++] = formatter.format(params);
 	}
 	else 
 	{
 		var hasTime = isEdit ? (orig.startDate.getTime() != this.startDate.getTime()) : false;
-		var params = [ ZmMsg.start+":", this._getTextSummaryTime(isEdit, ZmMsg.start, s, s, null, hasTime), "" ];
+		var params = [ ZmMsg.start + ":", this._getTextSummaryTime(isEdit, ZmMsg.start, s, s, null, hasTime), "" ];
 		buf[i++] = formatter.format(params);
 
 		var hasTime = isEdit ? (orig.endDate.getTime() != this.endDate.getTime()) : false;
-		var params = [ ZmMsg.end+":", this._getTextSummaryTime(isEdit, ZmMsg.end, e, null, e, hasTime), "" ];
+		var params = [ ZmMsg.end + ":", this._getTextSummaryTime(isEdit, ZmMsg.end, e, null, e, hasTime), "" ];
 		buf[i++] = formatter.format(params);
 	}
 
@@ -973,7 +989,7 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 						   orig.repeatMonthlyDayList != this.repeatMonthlyDayList ||
 						   orig.repeatYearlyMonthsList != this.repeatYearlyMonthsList;
 		}
-		var params = [ ZmMsg.recurrence+":", this._getRecurrenceBlurbForSave(), modified ? ZmMsg.apptModifiedStamp: "" ];
+		var params = [ ZmMsg.recurrence + ":", this._getRecurrenceBlurbForSave(), modified ? ZmMsg.apptModifiedStamp: "" ];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
@@ -1175,7 +1191,7 @@ function(field, data, html, idx, wrap, width) {
 		html[idx++] = AjxStringUtil.htmlEncode(field) + ":";
 		html[idx++] = "</div></b></td><td align='left'><div style='white-space:";
 		html[idx++] = wrap ? "wrap;" : "nowrap;";
-		if (width) html[idx++] = "width:"+width+"px;";
+		if (width) html[idx++] = "width:" + width + "px;";
 		html[idx++] = "'>";
 		html[idx++] = AjxStringUtil.htmlEncode(data);
 		html[idx++] = "</div></td></tr>";
