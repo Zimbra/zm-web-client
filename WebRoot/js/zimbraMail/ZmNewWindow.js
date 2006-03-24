@@ -155,6 +155,14 @@ function() {
 			}
 			cc._setView(op, window.args.msg, null, null, null, window.args.composeMode);
 			cc._composeView.setDetach(window.args);
+
+			// bug fix #5887 - get the parent window's compose controller
+			var parentCC = window.parentController.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
+			if (parentCC) {
+				// once everything is set in child window, pop parent window's compose view
+				parentCC._composeView.reset(true);
+				parentCC._app.popView(true);
+			}
 		}
 	} else if (window.command == "msgViewDetach") {
 		var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
