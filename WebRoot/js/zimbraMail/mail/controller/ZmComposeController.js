@@ -83,17 +83,17 @@ function(toggled) {
 */
 ZmComposeController.prototype.detach =
 function() {
-	var newWinObj = this._appCtxt.getNewWindow();
-
-	// this is how child window knows what to do once loading:
-	newWinObj.command = "composeDetach";
-
 	var msg = this._composeView.getOrigMsg();
 	var addrs = this._composeView.getRawAddrFields();
 	var subj = this._composeView._subjectField.value;
 	var forAttHtml = this._composeView.getForwardLinkHtml();
 	var body = this._composeView.getHtmlEditor().getContent();
 	var composeMode = this._composeView.getComposeMode();
+
+	var newWinObj = this._appCtxt.getNewWindow();
+
+	// this is how child window knows what to do once loading:
+	newWinObj.command = "composeDetach";
 
 	newWinObj.args = {action: this._action, msg: msg, addrs: addrs, subj: subj, forwardHtml: forAttHtml, body: body, composeMode: composeMode };
 };
@@ -498,8 +498,6 @@ function(ev) {
 		this._detachOkCancel.popup(this._composeView._getDialogXY());
 	} else {
 		this.detach();
-		this._composeView.reset(true);
-		this._app.popView(true);
 	}
 };
 
@@ -556,8 +554,6 @@ ZmComposeController.prototype._detachCallback =
 function() {
 	this._detachOkCancel.popdown();
 	this.detach();
-	this._composeView.reset(true);
-	this._app.popView(true);
 };
 
 ZmComposeController.prototype._textModeOkCallback =
