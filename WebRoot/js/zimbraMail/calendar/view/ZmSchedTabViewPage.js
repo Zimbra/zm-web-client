@@ -461,7 +461,7 @@ function() {
 			var inputEl = dwtInputField.getInputElement();
 			inputEl.className = "ZmSchedTabViewPageInput";
 			inputEl.id = this._schedTable[i].dwtInputId;
-			inputEl._type = ZmAppt.PERSON;
+			inputEl._attType = ZmAppt.PERSON;
 			inputEl._dwtObjId = AjxCore.assignId(dwtInputField);
 		}
 		var selectId = this._schedTable[i].dwtSelectId;
@@ -840,8 +840,8 @@ function(ev) {
 
 	var type = select.getValue();
 	var input = select.dwtInputField.getInputElement();
-	if (input._type == type) return;
-	input._type = type;
+	if (input._attType == type) return;
+	input._attType = type;
 
 	// reset row
 	var svp = select.parent;
