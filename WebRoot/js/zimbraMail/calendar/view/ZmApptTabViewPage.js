@@ -634,7 +634,7 @@ function() {
 	html[i++] = AjxEnv.isIE ? " width:99%'>" : "'>";
 	html[i++] = this._getTimeHtml();
 	html[i++] = "</div></fieldset>";
-	html[i++] = "</td></tr><tr style='height:30px;'><td colspan=2>";
+	html[i++] = "</td></tr><tr><td colspan=2>";
 	html[i++] = this._getSchedulingHtml();
 	html[i++] = "</td></tr><tr><td valign=top colspan=2 id='";
 	html[i++] = this._notesHtmlEditorId;
@@ -1119,17 +1119,17 @@ function() {
 
 	// init html editor heights
 	var rows = this.getHtmlElement().firstChild.rows;
-	var lastRowIdx = rows.length-1;
+	var lastRowIdx = rows.length - 1;
 	var rowHeight = 0;
 	for (var i = 0; i < lastRowIdx; i++) {
-		// safari cant handle heights for TR's so get from TD's instead
+		// safari can't handle heights for TR's so get from TD's instead
 		rowHeight += AjxEnv.isSafari 
 			? Dwt.getSize(rows[i].cells[0]).y
 			: Dwt.getSize(rows[i]).y;
 	}
 	rowHeight = this.getSize().y - rowHeight;
-	var fudge = this._composeMode == DwtHtmlEditor.HTML ? 75 : 15;
-	Dwt.setSize(this._bodyField, Dwt.DEFAULT, rowHeight-fudge);
+	var fudge = (this._composeMode == DwtHtmlEditor.HTML) ? 75 : 15;
+	Dwt.setSize(this._bodyField, Dwt.DEFAULT, rowHeight - fudge);
 };
 
 ZmApptTabViewPage.prototype._submitAttachments =
