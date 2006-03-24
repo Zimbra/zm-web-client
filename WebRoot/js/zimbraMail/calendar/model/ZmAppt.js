@@ -198,9 +198,9 @@ function(useStartTime) {
 	}
 };
 
-// next 3 getters convert array to string
 ZmAppt.prototype.getAttendeesText				= function() { return this._getAttendeesString(this._attendees[ZmAppt.PERSON]); };
 ZmAppt.prototype.getResourcesText				= function() { return this._getAttendeesString(this._attendees[ZmAppt.RESOURCE]); };
+
 ZmAppt.prototype.getLocation =
 function(includeDisplayName) {
 	var locs = this._attendees[ZmAppt.LOCATION];
@@ -214,10 +214,18 @@ function(includeDisplayName) {
 		}
 		return text;
 	} else {
-		return this.location ? this.location : "";
+		if (!this.location) return "";
+		var text = this.location;
+		if (includeDisplayName) {
+			var loc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getResources().getResourceByName(this.location);
+			var displayName = loc ? loc.getAttr(ZmResource.F_locationName) : "";
+			if (displayName) {
+				text = [this.location, " (", displayName, ")"].join("");
+			}
+		}
+		return text;
 	}
-return (this._attendees[ZmAppt.LOCATION] && this._attendees[ZmAppt.LOCATION].length) ? 
-																this._getAttendeesString(this._attendees[ZmAppt.LOCATION]) : this.location ? this.location : ""; };
+};
 
 ZmAppt.prototype.isAllDayEvent 					= function() { return this.allDayEvent == "1"; };
 ZmAppt.prototype.isCustomRecurrence 			= function() { return this.repeatCustom == "1" || this.repeatEndType != "N"; };
@@ -753,7 +761,7 @@ function(calController) {
 		var when = this.getDurationText(false, false);
 				
 		idx = this._addEntryRow(ZmMsg.when, when, html, idx, false);		
-		idx = this._addEntryRow(ZmMsg.location, this.getLocation(), html, idx, false);
+		idx = this._addEntryRow(ZmMsg.location, this.getLocation(true), html, idx, false);
 		idx = this._addEntryRow(ZmMsg.notes, this.getFragment(), html, idx, true, "250");
 
 		html[idx++] = "</table>";

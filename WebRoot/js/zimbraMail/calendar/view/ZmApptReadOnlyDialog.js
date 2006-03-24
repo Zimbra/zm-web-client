@@ -76,7 +76,7 @@ function(appt) {
 	html[i++] = this._objectManager.findObjects(name, true);
 	html[i++] = "</td></tr>";
 
-	var location = appt.getLocation();
+	var location = appt.getLocation(true);
 	if (location) {
 		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
 		html[i++] = ZmMsg.location;
