@@ -310,30 +310,31 @@ function(attendees, type, mode, index) {
 	mode = mode ? mode : ZmApptComposeView.MODE_REPLACE;
 	if (mode == ZmApptComposeView.MODE_REPLACE) {
 		this._attendees[type] = attendees.clone();
-		this._setAttendeeKeys(this._attendees[type], type);
+		for (var i = 0; i < attendees.length; i++) {
+			this._addAttendeeKey(attendee, type);
+		}
 	} else {
 		// only add first attendee passed in
 		var attendee = attendees.get(0);
-		if (!this.hasAttendeeKey(attendee, type)) {
+		var key = this._getAttendeeKey(attendee);
+		if (!this._attendeeKeys[type][key] === true) {
 			this._attendees[type].add(attendee, index);
+			this._addAttendeeKey(attendee, type);
 		}
 	}
 };
 
-ZmApptComposeView.prototype.hasAttendeeKey =
-function(attendee, type) {
+ZmApptComposeView.prototype._getAttendeeKey =
+function(attendee) {
 	var email = attendee.getEmail();
 	var name = attendee.getFullName();
-	var key = email ? email : name;
-	return (this._attendeeKeys[type][key] === true);
+	return email ? email : name;
 };
 
-ZmApptComposeView.prototype._setAttendeeKeys =
-function(attendees, type) {
-	for (var i = 0; i < attendees.length; i++) {
-		var email = attendees[i].getEmail();
-		var name = attendee.getFullName();
-		var key = email ? email : name;
+ZmApptComposeView.prototype._addAttendeeKey =
+function(attendee, type) {
+	var key = this._getAttendeeKey(attendee);
+	if (key) {
 		this._attendeeKeys[type][key] = true;
 	}
 };
