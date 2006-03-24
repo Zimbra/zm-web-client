@@ -198,6 +198,7 @@ function(item, isDndIcon, isMatched) {
 	var	div = document.createElement("div");
 
 	var base = "Row";
+	div._kbFocusClass = "Row-Focus";
 	div._styleClass = base;
 	div._selectedStyleClass = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
 	if (isDndIcon && isMatched) {

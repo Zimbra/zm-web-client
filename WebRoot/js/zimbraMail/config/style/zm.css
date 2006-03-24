@@ -54,6 +54,8 @@
 * display one of those widgets, you'll have to add a class for it.
 */
 
+.Row-Focus {border: 1px dashed black;}
+
 /*
 * Top-level (shell) stuff
 */

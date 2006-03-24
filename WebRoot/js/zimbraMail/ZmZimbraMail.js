@@ -54,7 +54,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 
 	this._shell = appCtxt.getShell();
 	
-	// TWO LINES BELOW ARE TEMPORARILY COMMENTED OUT WHILE I WORK ON KB NAV
+	// TEMPORARILY COMMENTED OUT
 	//this._shell.registerKeyMap(new ZmKeyMap());
 	//this._shell.registerGlobalKeyActionHandler(this);
 
