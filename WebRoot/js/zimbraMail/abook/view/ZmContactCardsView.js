@@ -37,6 +37,9 @@ function ZmContactCardsView(parent, className, posStyle, controller, dropTgt) {
 ZmContactCardsView.prototype = new ZmContactsBaseView;
 ZmContactCardsView.prototype.constructor = ZmContactCardsView;
 
+
+// Public methods
+
 ZmContactCardsView.prototype.toString = 
 function() {
 	return "ZmContactCardsView";
@@ -70,6 +73,9 @@ function(contacts) {
 	ZmContactsBaseView.prototype.set.call(this, contacts);
 	this._layout();
 };
+
+
+// Private / protected methods
 
 ZmContactCardsView.prototype._generateObject =
 function(data, type) {
@@ -290,23 +296,6 @@ function(ev) {
 	this._layout();
 };
 
-ZmContactCardsView.prototype._changeListener =
-function(ev) {
-	// need custom handling for delete (can't just remove row)
-	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
-		var items = ev.getDetail("items");
-		for (var i = 0; i < items.length; i++)
-			this._list.remove(items[i]);
-		this._layout();
-	} else {
-		ZmContactsBaseView.prototype._changeListener.call(this, ev);
-	}
-	// set selection to the first non-trash contact in list
-	var selected = this.getFirstValid(this.getList());
-	if (selected)
-		this.setSelection(selected);
-};
-
 // returns all child divs w/in each table's rows/cells
 ZmContactCardsView.prototype._getChildren = 
 function() {
@@ -348,6 +337,43 @@ function(dropAllowed) {
 			: this._dndIcon._origClassName + " DropNotAllowed-linux";
 	}
 };
+
+
+// Listeners
+
+ZmContactCardsView.prototype._mouseDownListener = 
+function(ev) {
+	var div = ev.target;
+
+	// bug fix #4595 - dont process mouse down for objects
+	if (div.id.indexOf("OBJ_") == 0) {
+		this._dragOp = Dwt.DND_DROP_NONE;
+		this._dragging = DwtControl._NO_DRAG;
+	} else {
+		// otherwise, just call base class
+		DwtListView.prototype._mouseDownListener.call(this, ev);
+	}
+};
+
+ZmContactCardsView.prototype._changeListener =
+function(ev) {
+	// need custom handling for delete (can't just remove row)
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
+		var items = ev.getDetail("items");
+		for (var i = 0; i < items.length; i++)
+			this._list.remove(items[i]);
+		this._layout();
+	} else {
+		ZmContactsBaseView.prototype._changeListener.call(this, ev);
+	}
+	// set selection to the first non-trash contact in list
+	var selected = this.getFirstValid(this.getList());
+	if (selected)
+		this.setSelection(selected);
+};
+
+
+// Static methods
 
 ZmContactCardsView.getPrintHtml = 
 function(list) {
