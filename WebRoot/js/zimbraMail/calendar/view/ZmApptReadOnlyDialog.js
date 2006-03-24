@@ -58,14 +58,14 @@ function(appt) {
 	this._objectManager.reset();
 
 	var name = appt.getName();
-	var attendees = appt.getAttendees();
+	var attendees = appt.getAttendeesText();
 
 	// set the title of this dialog
-	var title = (attendees && attendees.length) ? ZmMsg.meeting : ZmMsg.appointment;
+	var title = attendees ? ZmMsg.meeting : ZmMsg.appointment;
 	this.setTitle(title + ": " + name);
 
 	// set content of this dialog
-	var html = new Array();
+	var html = [];
 	var i = 0;
 
 	html[i++] = "<table cellpadding=2 cellspacing=2 width=440>";
@@ -77,11 +77,20 @@ function(appt) {
 	html[i++] = "</td></tr>";
 
 	var location = appt.getLocation();
-	if (location && location != "") {
+	if (location) {
 		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
 		html[i++] = ZmMsg.location;
 		html[i++] = ":</td><td>";
 		html[i++] = this._objectManager.findObjects(location, true);
+		html[i++] = "</td></tr>";
+	}
+
+	var resources = appt.getResourcesText();
+	if (resources) {
+		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
+		html[i++] = ZmMsg.resources;
+		html[i++] = ":</td><td>";
+		html[i++] = this._objectManager.findObjects(resources, true);
 		html[i++] = "</td></tr>";
 	}
 
@@ -103,7 +112,7 @@ function(appt) {
 		html[i++] = "</b></td></tr>";
 	}
 
-	if (attendees && attendees.length > 0) {
+	if (attendees) {
 		var organizer = appt.getOrganizer();
 		if (organizer != "") {
 			html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
@@ -121,7 +130,7 @@ function(appt) {
 	}
 
 	var repeatStr = appt._getRecurrenceBlurbForSave();
-	if (repeatStr && repeatStr != "") {
+	if (repeatStr) {
 		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
 		html[i++] = ZmMsg.repeats;
 		html[i++] = ":</td><td>";
@@ -130,7 +139,7 @@ function(appt) {
 	}
 
 	var attachStr = this._getAttachString(appt);
-	if (attachStr && attachStr != "") {
+	if (attachStr) {
 		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
 		html[i++] = ZmMsg.attachments;
 		html[i++] = ":</td><td>";
@@ -139,7 +148,7 @@ function(appt) {
 	}
 
 	var notesStr = this._getNotesString(appt);
-	if (notesStr && notesStr != "") {
+	if (notesStr) {
 		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
 		html[i++] = ZmMsg.notes;
 		html[i++] = ":</td><td><div style='height:75px; overflow:auto'>";
@@ -157,7 +166,7 @@ function(appt) {
 
 ZmApptReadOnlyDialog.prototype._getTimeString = 
 function(appt) {
-	var str = new Array();
+	var str = [];
 	var i = 0;
 
 	var sd = appt._orig.getStartDate();
@@ -209,7 +218,7 @@ function(appt) {
 
 ZmApptReadOnlyDialog.prototype._getAttachString = 
 function(appt) {
-	var str = new Array();
+	var str = [];
 	var j = 0;
 
 	var attachList = appt.getAttachments();
