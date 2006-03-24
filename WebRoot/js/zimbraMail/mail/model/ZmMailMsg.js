@@ -558,7 +558,7 @@ function (contactList, edited, componentId, callback, errorCallback, instanceDat
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply, [callback]);
 	var params = {soapDoc: soapDoc, isInvite: true, isDraft: false, callback: respCallback, errorCallback: errorCallback};
-	this._sendMessage(params);
+	return this._sendMessage(params);
 };
 
 ZmMailMsg.prototype._handleResponseSendInviteReply =
@@ -588,7 +588,7 @@ function(contactList, isDraft, callback, errorCallback) {
 	// XXX: not sure how saving a invite draft works?!
 	////////////////////////////////////////////////////////////////////////////////////////
 	if (this.isInviteReply && !isDraft) {
-		this.sendInviteReply(contactList, true, 0, callback, errorCallback, this._instanceDate);
+		return this.sendInviteReply(contactList, true, 0, callback, errorCallback, this._instanceDate);
 	} else {
 		var request = isDraft ? "SaveDraftRequest" : "SendMsgRequest";
 		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
