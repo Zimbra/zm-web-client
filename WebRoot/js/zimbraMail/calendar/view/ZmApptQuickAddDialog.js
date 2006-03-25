@@ -92,8 +92,10 @@ function(appt) {
 	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getEndDate());
 	var isAllDay = appt.isAllDayEvent();
 	this._showTimeFields(!isAllDay);
-	if (!isAllDay)
-		ZmApptViewHelper.resetTimeSelect(appt, this._startTimeSelect, this._endTimeSelect);
+	if (!isAllDay) {
+		this._startTimeSelect.set(appt.getStartDate());
+		this._endTimeSelect.set(appt.getEndDate());
+	}
 	this._resetCalendarSelect(appt);
 	this._repeatSelect.setSelectedValue("NON");
 	this._repeatDescField.innerHTML = "";
@@ -282,11 +284,15 @@ function() {
 	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener, true);
 
 	// create selects for Time section
-	this._startTimeSelect = new ZmTimeSelect(this);
+	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
+	
+	this._startTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.START);
+	this._startTimeSelect.addChangeListener(timeSelectListener);
 	this._startTimeSelect.reparentHtmlElement(this._startTimeSelectId);
 	delete this._startTimeSelectId;
 
-	this._endTimeSelect = new ZmTimeSelect(this);
+	this._endTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.END);
+	this._endTimeSelect.addChangeListener(timeSelectListener);
 	this._endTimeSelect.reparentHtmlElement(this._endTimeSelectId);
 	delete this._endTimeSelectId;
 
@@ -424,6 +430,11 @@ function(ev) {
 ZmApptQuickAddDialog.prototype._repeatChangeListener = 
 function(ev) {
 	this._repeatDescField.innerHTML = ev._args.newValue != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.recurEndNone) : "";
+};
+
+ZmApptQuickAddDialog.prototype._timeChangeListener =
+function(ev) {
+	ZmTimeSelect.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField);
 };
 
 // Static methods
