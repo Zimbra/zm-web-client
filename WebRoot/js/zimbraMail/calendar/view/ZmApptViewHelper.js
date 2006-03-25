@@ -89,52 +89,6 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 	return dateButton;
 };
 
-ZmApptViewHelper.resetTimeSelect = 
-function(appt, startTimeSelect, endTimeSelect) {
-	var startHourIdx = 0;
-	var startMinuteIdx = 0;
-	var startAmPmIdx = 0;
-
-	var endHourIdx = 0;
-	var endMinuteIdx = 0;
-	var endAmPmIdx = 0;
-
-	var isLocale24Hour = startTimeSelect.isLocale24Hour();
-
-	var sd = appt.getStartDate();
-	var ed = appt.getEndDate();
-
-	// calc. the hours index for both start/end times
-	var startHours = sd.getHours();
-	if (!isLocale24Hour && startHours > 12)
-		startHourIdx = startHours - 13;
-	else if (!isLocale24Hour && startHours == 0)
-		startHourIdx = startTimeSelect.getHourSelectSize()-1;
-	else
-		startHourIdx = isLocale24Hour ? startHours : startHours-1;
-
-	var endHours = ed.getHours();
-	if (!isLocale24Hour && endHours > 12)
-		endHourIdx = endHours - 13;
-	else if (!isLocale24Hour && endHours == 0)
-		endHourIdx = endTimeSelect.getHourSelectSize()-1;
-	else
-		endHourIdx = isLocale24Hour ? endHours : endHours-1;
-
-	// calc. the minutes index for both start/end times
-	startMinuteIdx = sd.getMinutes() / 5;
-	endMinuteIdx = ed.getMinutes() / 5;
-
-	// calc. the am/pm index for both start end times if applicable
-	if (!isLocale24Hour) {
-		startAmPmIdx = sd.getHours() >= 12 ? 1 : 0;
-		endAmPmIdx = ed.getHours() >= 12 ? 1 : 0;
-	}
-
-	startTimeSelect.setSelected(startHourIdx, startMinuteIdx, startAmPmIdx);
-	endTimeSelect.setSelected(endHourIdx, endMinuteIdx, endAmPmIdx);
-};
-
 /**
 * Returns an object with the indices of the currently selected time fields.
 *
@@ -147,7 +101,6 @@ function(tabView) {
 	dateInfo.endDate = tabView._endDateField.value;
 	if (!tabView._allDayCheckbox.checked) {
 		dateInfo.showTime = true;
-
 		dateInfo.startHourIdx = tabView._startTimeSelect.getSelectedHourIdx();
 		dateInfo.startMinuteIdx = tabView._startTimeSelect.getSelectedMinuteIdx();
 		dateInfo.startAmPmIdx = tabView._startTimeSelect.getSelectedAmPmIdx();
@@ -574,14 +527,26 @@ function(appCtxt, item, type, strict) {
 * XXX: NOT SURE IF THIS SHOULD BE SPLIT INTO A NEW FILE JUST YET
 *
 * @author Parag Shah
-* @param parent		the parent widget
+*
+* @param parent		[DwtComposite]	the parent widget
+* @param id			[string]*		an ID that is propagated to component select objects
 */
-function ZmTimeSelect(parent) {
+function ZmTimeSelect(parent, id) {
 	DwtComposite.call(this, parent);
 
+	this.id = id;
 	this._isLocale24Hour = true;
 	this._createSelects();
 };
+
+// IDs for types of time selects
+ZmTimeSelect.START	= 1;
+ZmTimeSelect.END	= 2;
+
+// IDs for time select components
+ZmTimeSelect.HOUR	= 1;
+ZmTimeSelect.MINUTE	= 2;
+ZmTimeSelect.AMPM	= 3;
 
 ZmTimeSelect.getDateFromFields =
 function(hours, minutes, ampm, date) {
@@ -599,12 +564,89 @@ function(hours, minutes, ampm, date) {
 	return date;
 };
 
+/**
+* Adjust an appt's start or end based on changes to the other one. If the user changes
+* the start time, change the end time so that the appt duration is maintained. If the
+* user changes the end time, we leave things alone unless the end time is changed to
+* before the start time, in which case we change the start time to maintain the appt
+* duration.
+*
+* @param ev					[Event]				UI event from a DwtSelect
+* @param startSelect		[ZmTimeSelect]		start time select
+* @param endSelect			[ZmTimeSelect]		end time select
+* @param startDateField		[element]			start date field
+* @param endDateField		[element]			end date field
+*/
+ZmTimeSelect.adjustStartEnd =
+function(ev, startSelect, endSelect, startDateField, endDateField) {
+	var select = ev._args.selectObj;
+	var startDate = AjxDateUtil.simpleParseDateStr(startDateField.value);
+	var endDate = AjxDateUtil.simpleParseDateStr(endDateField.value);
+	if (select.id == ZmTimeSelect.START) {
+		var hours = (select.compId == ZmTimeSelect.HOUR) ? ev._args.oldValue : startSelect.getHours();
+		var minutes = (select.compId == ZmTimeSelect.MINUTE) ? ev._args.oldValue : startSelect.getMinutes();
+		var ampm = (select.compId == ZmTimeSelect.AMPM) ? ev._args.oldValue : startSelect.getAmPm();
+		var oldStartDateMs = ZmTimeSelect.getDateFromFields(hours, minutes, ampm, startDate).getTime();
+		var newStartDateMs = ZmTimeSelect.getDateFromFields(startSelect.getHours(), startSelect.getMinutes(), startSelect.getAmPm(), startDate).getTime();
+		var oldEndDateMs = ZmTimeSelect.getDateFromFields(endSelect.getHours(), endSelect.getMinutes(), endSelect.getAmPm(), endDate).getTime();
+		var delta = oldEndDateMs - oldStartDateMs;
+		var newEndDateMs = newStartDateMs + delta;
+		var newEndDate = new Date(newEndDateMs);
+		endSelect.set(newEndDate);
+		endDateField.value = AjxDateUtil.simpleComputeDateStr(newEndDate);
+	} else {
+		var oldStartDateMs = ZmTimeSelect.getDateFromFields(startSelect.getHours(), startSelect.getMinutes(), startSelect.getAmPm(), startDate).getTime();
+		var newEndDateMs = ZmTimeSelect.getDateFromFields(endSelect.getHours(), endSelect.getMinutes(), endSelect.getAmPm(), endDate).getTime();
+		if (newEndDateMs <= oldStartDateMs) {
+			var hours = (select.compId == ZmTimeSelect.HOUR) ? ev._args.oldValue : endSelect.getHours();
+			var minutes = (select.compId == ZmTimeSelect.MINUTE) ? ev._args.oldValue : endSelect.getMinutes();
+			var ampm = (select.compId == ZmTimeSelect.AMPM) ? ev._args.oldValue : endSelect.getAmPm();
+			var oldEndDateMs = ZmTimeSelect.getDateFromFields(hours, minutes, ampm, endDate).getTime();
+			var delta = oldEndDateMs - oldStartDateMs;
+			var newStartDateMs = newEndDateMs - delta;
+			var newStartDate = new Date(newStartDateMs);
+			startSelect.set(newStartDate);
+			startDateField.value = AjxDateUtil.simpleComputeDateStr(newStartDate);
+		}
+	}
+};
+
 ZmTimeSelect.prototype = new DwtComposite;
 ZmTimeSelect.prototype.constructor = ZmTimeSelect;
 
 /**
+* Sets the time select according to the given date.
+*
+* @param date	[Date]		a Date object
+*/
+ZmTimeSelect.prototype.set = 
+function(date) {
+
+	var hourIdx = 0, minuteIdx = 0, amPmIdx = 0;
+	var isLocale24Hour = this.isLocale24Hour();
+
+	var hours = date.getHours();
+	if (!isLocale24Hour && hours > 12) {
+		hourIdx = hours - 13;
+	} else if (!isLocale24Hour && hours == 0) {
+		hourIdx = this.getHourSelectSize() - 1;
+	} else {
+		hourIdx = isLocale24Hour ? hours : hours - 1;
+	}
+
+	minuteIdx = Math.floor(date.getMinutes() / 5);
+
+	if (!isLocale24Hour) {
+		amPmIdx = (date.getHours() >= 12) ? 1 : 0;
+	}
+
+	this.setSelected(hourIdx, minuteIdx, amPmIdx);
+};
+
+
+/**
  * Returns a date object with the hours and minutes set based on
- * the value of this time select.
+ * the values of this time select.
  *
  * @param date [Date] Optional. If specified, the hour and minute
  *                    values will be set on the specified object;
@@ -612,8 +654,22 @@ ZmTimeSelect.prototype.constructor = ZmTimeSelect;
  */
 ZmTimeSelect.prototype.getValue =
 function(date) {
-	var ampm = this._amPmSelect ? this.getSelectedAmPmIdx() : null;
-	return (ZmTimeSelect.getDateFromFields(this._hourSelect.getValue(), this._minuteSelect.getValue(), ampm, date));
+	return (ZmTimeSelect.getDateFromFields(this.getHours(), this.getMinutes(), this.getAmPm(), date));
+};
+
+ZmTimeSelect.prototype.getHours =
+function() {
+	return this._hourSelect.getValue();
+};
+
+ZmTimeSelect.prototype.getMinutes =
+function() {
+	return this._minuteSelect.getValue();
+};
+
+ZmTimeSelect.prototype.getAmPm =
+function() {
+	return this._amPmSelect ? this.getSelectedAmPmIdx() : null;
 };
 
 ZmTimeSelect.prototype.setSelected = 
@@ -674,7 +730,7 @@ function() {
 	var hourSegmentIdx = 0;
 	var minuteSegmentIdx = 0;
 
-	var html = new Array();
+	var html = [];
 	var i = 0;
 
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
@@ -720,6 +776,8 @@ function() {
 
 	// create new DwtSelect for hour slot
 	this._hourSelect = new DwtSelect(this);
+	this._hourSelect.id = this.id;
+	this._hourSelect.compId = ZmTimeSelect.HOUR;
 	for (var i = start; i < limit; i++) {
 		now.setHours(i);
 		var label = timeFormatter._segments[hourSegmentIdx].format(now);
@@ -730,7 +788,9 @@ function() {
 
 	// create new DwtSelect for minute slot
 	this._minuteSelect = new DwtSelect(this);
-	for (var i = 0; i < 60; i+=5) {
+	this._minuteSelect.id = this.id;
+	this._minuteSelect.compId = ZmTimeSelect.MINUTE;
+	for (var i = 0; i < 60; i = i + 5) {
 		now.setMinutes(i);
 		var label = timeFormatter._segments[minuteSegmentIdx].format(now);
 		this._minuteSelect.addOption(label, false, i);
@@ -741,6 +801,8 @@ function() {
 	// if locale is 12-hour time, add AM|PM DwtSelect
 	if (!this._isLocale24Hour) {
 		this._amPmSelect = new DwtSelect(this);
+		this._amPmSelect.id = this.id;
+		this._amPmSelect.compId = ZmTimeSelect.AMPM;
 		this._amPmSelect.addOption(I18nMsg["periodAm"], false, "AM");
 		this._amPmSelect.addOption(I18nMsg["periodPm"], false, "PM");
 		this._amPmSelect.reparentHtmlElement(this._amPmSelectId);

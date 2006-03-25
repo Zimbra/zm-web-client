@@ -220,7 +220,6 @@ function() {
 	this.getHtmlElement().innerHTML = html.join("");
 };
 
-// XXX: refactor this code since ZmApptTabViewPage uses similar?
 ZmSchedTabViewPage.prototype._getTimeHtml = 
 function() {
 	var html = [];
@@ -421,12 +420,12 @@ ZmSchedTabViewPage.prototype._createDwtObjects =
 function() {
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 
-	this._startTimeSelect = new ZmTimeSelect(this);
+	this._startTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.START);
 	this._startTimeSelect.reparentHtmlElement(this._startTimeSelectId);
 	this._startTimeSelect.addChangeListener(timeSelectListener);
 	delete this._startTimeSelectId;
 
-	this._endTimeSelect = new ZmTimeSelect(this);
+	this._endTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.END);
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 	this._endTimeSelect.reparentHtmlElement(this._endTimeSelectId);
 	delete this._endTimeSelectId;
@@ -828,6 +827,7 @@ function(ev) {
 
 ZmSchedTabViewPage.prototype._timeChangeListener =
 function(ev) {
+	ZmTimeSelect.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField);
 	var dateInfo = ZmApptViewHelper.getDateInfo(this);
 	this._outlineAppt(dateInfo);
 	this._apptTab.updateTimeField(dateInfo);
@@ -965,8 +965,6 @@ function(dateInfo) {
 		// subtract 1 from index since we're marking right borders
 		index.start = this._getIndexFromTime(startDate) - 1;
 		index.end = this._getIndexFromTime(endDate) - 1;
-		DBG.println("****** index is " + index.start + " for " + startDate.toString());
-		DBG.println("****** index is " + index.end + " for " + endDate.toString());
 	}
 	return index;
 };

@@ -452,7 +452,8 @@ function(appt, mode) {
 	}
 
 	// if all day appt, set time anyway in case user changes mind
-	ZmApptViewHelper.resetTimeSelect(appt, this._startTimeSelect, this._endTimeSelect);
+	this._startTimeSelect.set(appt.getStartDate());
+	this._endTimeSelect.set(appt.getEndDate());
 
 	this._resetTimezoneSelect(appt, isAllDayAppt);
 	this._resetCalendarSelect(appt, mode);
@@ -686,12 +687,16 @@ function() {
 	this._showAsSelect.reparentHtmlElement(this._showAsSelectId);
 	delete this._showAsSelectId;
 
-	this._startTimeSelect = new ZmTimeSelect(this);
+	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
+
+	this._startTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.START);
 	this._startTimeSelect.reparentHtmlElement(this._startTimeSelectId);
+	this._startTimeSelect.addChangeListener(timeSelectListener);
 	delete this._startTimeSelectId;
 
-	this._endTimeSelect = new ZmTimeSelect(this);
+	this._endTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.END);
 	this._endTimeSelect.reparentHtmlElement(this._endTimeSelectId);
+	this._endTimeSelect.addChangeListener(timeSelectListener);
 	delete this._endTimeSelectId;
 
 	this._tzoneSelect = new DwtSelect(this);
@@ -1246,6 +1251,11 @@ function(ev) {
 	// reset the selected option to whatever it was before user canceled
 	this._repeatSelect.setSelectedValue(this._oldRepeatValue);
 	this._recurDialog.popdown();
+};
+
+ZmApptTabViewPage.prototype._timeChangeListener =
+function(ev) {
+	ZmTimeSelect.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField);
 };
 
 /*
