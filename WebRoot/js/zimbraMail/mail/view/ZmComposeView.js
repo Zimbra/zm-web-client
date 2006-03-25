@@ -75,6 +75,7 @@ ZmComposeView.SHOW_MAX_ATTACHMENTS = AjxEnv.is800x600orLower ? 2 : 3;
 ZmComposeView.EMPTY_FORM_RE = /^[\s\|]*$/;
 ZmComposeView.SUBJ_PREFIX_RE = new RegExp("^\\s*(" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
 ZmComposeView.QUOTED_CONTENT_RE = new RegExp("^----- ", "m");
+ZmComposeView.HTML_QUOTED_CONTENT_RE = new RegExp("<br>----- ", "i");
 
 ZmComposeView.WRAP_LENGTH = 72;
 
@@ -576,8 +577,16 @@ function() {
 
 	var content = this._htmlEditor.getContent();
 	if (sigStyle == ZmSetting.SIG_OUTLOOK) {
-		if (content.match(ZmComposeView.QUOTED_CONTENT_RE))
-			content = content.replace(ZmComposeView.QUOTED_CONTENT_RE, [sep, sig, newLine, "----- "].join(""));
+		var regexp = ZmComposeView.QUOTED_CONTENT_RE;
+		var repl = "----- ";
+
+		if (this._composeMode == DwtHtmlEditor.HTML) {
+			regexp = ZmComposeView.HTML_QUOTED_CONTENT_RE;
+			repl = "<br>----- ";
+		}
+
+		if (content.match(regexp))
+			content = content.replace(regexp, [sep, sig, newLine, repl].join(""));
 		else
 			content = [content, sep, sig].join("");
 	} else {
