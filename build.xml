@@ -62,6 +62,9 @@
   <property name="images.loRes.destDir" value="${build.dir}/WebRoot/img/loRes"/>
   <property name="images.cssFile" value="imgs.css"/>
 
+  <property name='l10n.includes' value='msgs/*.properties' />
+  <property name='l10n.excludes' value='msgs/*_*.properties' />
+	
   <condition property='isProduction' value='true'>
     <or>
       <not><isset property='env.ZIMBRA_BUILD'/></not>
@@ -634,9 +637,9 @@
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar"/>
       <classes dir="${build.dir}/classes" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
   	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
-      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
-      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
-      <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes="msgs/*.properties"/>
+      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}'/>
+      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}'/>
+      <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes='${l10n.includes}' excludes='${l10n.excludes}'/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,test/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**"/>
       <fileset dir="${build.dir}/WebRoot" includes="zimlets/**,public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**"/>
@@ -651,9 +654,9 @@
     <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar,gifencoder.jar,commons-cli-1.0.jar"/>
   	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
-      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
-      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
-      <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes="msgs/*.properties"/>
+      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}'/>
+      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}'/>
+      <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes='${l10n.includes}' excludes='${l10n.excludes}'/>
       <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="help/**"/>
@@ -728,9 +731,9 @@
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar,gifencoder.jar,commons-cli-1.0.jar"/>
   	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
-      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
-      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
-      <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes="msgs/*.properties"/>
+      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}'/>
+      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}'/>
+      <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes='${l10n.includes}' excludes='${l10n.excludes}'/>
       <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
@@ -747,9 +750,9 @@
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar"/>
    	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
-      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='msgs/*.properties'/>
-      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes="msgs/*.properties"/>
-      <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes="msgs/*.properties"/>
+      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}'/>
+      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}'/>
+      <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes='${l10n.includes}' excludes='${l10n.excludes}'/>
       <classes dir="${build.dir}/classes" includes="**/*.class" excludes="**/imagemerge/*,**/build/*"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
