@@ -347,7 +347,8 @@ function(contentType) {
 			if (ct == ZmMimeTable.TEXT_PLAIN) {
 				var div = document.createElement("div");
 				div.innerHTML = this.notesTopPart.getContentForType(ZmMimeTable.TEXT_HTML);
-				return AjxStringUtil.convertHtml2Text(div);
+				var text = AjxStringUtil.convertHtml2Text(div);
+				return text.substring(1); // above func prepends \n due to div
 			} else if (ct == ZmMimeTable.TEXT_HTML) {
 				content = AjxStringUtil.convertToHtml(this.notesTopPart.getContentForType(ZmMimeTable.TEXT_PLAIN));
 			}
@@ -921,7 +922,9 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 	buf[i++] = "\n";
 	
 	var organizer = this.organizer ? this.organizer : this._appCtxt.get(ZmSetting.USERNAME);
-	var params = [ ZmMsg.organizer, organizer, "" ];
+	var orgEmail = ZmApptViewHelper.getOrganizerEmail(this._appCtxt, this.organizer).toString();
+	var orgText = isHtml ? AjxStringUtil.htmlEncode(orgEmail) : orgEmail;
+	var params = [ ZmMsg.organizer, orgText, "" ];
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
 	if (isHtml) {
@@ -1526,11 +1529,10 @@ function(soapDoc, method,  attachmentId, notifyList) {
 	var organizer = this.organizer ? this.organizer : this._appCtxt.get(ZmSetting.USERNAME);
 	var org = soapDoc.set("or", null, inv);
 	org.setAttribute("a", organizer);
-	if (organizer == this._appCtxt.get(ZmSetting.USERNAME)) {
-		var name = this._appCtxt.get(ZmSetting.DISPLAY_NAME);
-		if (name) {
-			org.setAttribute("d", name);
-		}
+	var orgEmail = ZmApptViewHelper.getOrganizerEmail(this._appCtxt, this.organizer);
+	var orgName = orgEmail.getName();
+	if (name) {
+		org.setAttribute("d", name);
 	}
 
 	// handle attachments

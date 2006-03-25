@@ -518,7 +518,12 @@ function(appCtxt, item, type, strict) {
 	return attendee;
 };
 
-
+ZmApptViewHelper.getOrganizerEmail =
+function(appCtxt, organizer) {
+	var orgAddress = organizer ? organizer : appCtxt.get(ZmSetting.USERNAME);
+	var orgName = (orgAddress == appCtxt.get(ZmSetting.USERNAME)) ? appCtxt.get(ZmSetting.DISPLAY_NAME) : null;
+	return new ZmEmailAddress(orgAddress, null, orgName);
+};
 
 /**
 * Creates up to three separate DwtSelects for the time (hour, minute, am|pm)

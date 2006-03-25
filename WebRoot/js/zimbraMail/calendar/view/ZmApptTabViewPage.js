@@ -427,12 +427,9 @@ function() {
 */
 ZmApptTabViewPage.prototype.getOrganizer =
 function() {
-	// XXX: for now, assume no organizer means it's the user :/
 	var calId = this._calendarSelect.getValue();
-	var orgEmail = this._calendarOrgs[calId] ? this._calendarOrgs[calId] : this._appCtxt.get(ZmSetting.USERNAME);
-	var orgName = (orgEmail == this._appCtxt.get(ZmSetting.USERNAME)) ? this._appCtxt.get(ZmSetting.DISPLAY_NAME) : null;
 	var organizer = new ZmContact(this._appCtxt);
-	organizer.initFromEmail(new ZmEmailAddress(orgEmail, null, orgName));
+	organizer.initFromEmail(ZmApptViewHelper.getOrganizerEmail(this._appCtxt, this._calendarOrgs[calId]));
 
 	return organizer;
 };
