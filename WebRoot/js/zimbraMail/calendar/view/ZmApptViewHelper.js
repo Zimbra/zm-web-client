@@ -491,6 +491,8 @@ function(appCtxt, item, type, strict) {
 			attendee.initFromEmail(item);
 		}
 	} else if (typeof item == "string") {
+		item = AjxStringUtil.trim(item);	// trim white space
+		item = item.replace(/;$/, "");		// trim separator
 		// see if it's an email we can use for lookup
 	 	var email = ZmEmailAddress.parse(item);
 	 	if (email) {
