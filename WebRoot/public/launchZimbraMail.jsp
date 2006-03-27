@@ -68,43 +68,51 @@ Contributor(s):
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss" />
 
 <title>Zimbra</title>
+
 <script type="text/javascript" language="JavaScript">
-var zJSloading = (new Date()).getTime();
-appContextPath = "<%=contextPath %>";
+	var zJSloading = (new Date()).getTime();
+	appContextPath = "<%=contextPath %>";
 </script>
+
 <script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext %>?v=<%=vers %>"></script>
 <% if ((mode != null) && (mode.equalsIgnoreCase("mjsf"))) { %>
-<style type="text/css">
-<!--
-@import url(<%=contextPath %>/img/loRes/imgs.css?v=<%=vers%>);
-@import url(<%=contextPath %>/img/loRes/skins/steel/skin.css?v=<%=vers%>);
-@import url(<%=contextPath %>/js/ajax/config/style/dwt.css?v=<%=vers%>);
-@import url(<%=contextPath %>/js/zimbraMail/config/style/common.css?v=<%=vers%>);
-@import url(<%=contextPath %>/js/zimbraMail/config/style/msgview.css?v=<%=vers%>);
-@import url(<%=contextPath %>/js/zimbraMail/config/style/zm.css?v=<%=vers%>);
-@import url(<%=contextPath %>/js/zimbraMail/config/style/spellcheck.css?v=<%=vers%>);
+	<style type="text/css">
+	<!--
+		@import url(<%=contextPath %>/img/loRes/imgs.css?v=<%=vers%>);
+		@import url(<%=contextPath %>/img/loRes/skins/steel/skin.css?v=<%=vers%>);
+		@import url(<%=contextPath %>/js/ajax/config/style/dwt.css?v=<%=vers%>);
+		@import url(<%=contextPath %>/js/zimbraMail/config/style/common.css?v=<%=vers%>);
+		@import url(<%=contextPath %>/js/zimbraMail/config/style/msgview.css?v=<%=vers%>);
+		@import url(<%=contextPath %>/js/zimbraMail/config/style/zm.css?v=<%=vers%>);
+		@import url(<%=contextPath %>/js/zimbraMail/config/style/spellcheck.css?v=<%=vers%>);
+		@import url(<%=contextPath %>/skins/steel/skin.css?v=<%=vers%>);
+	-->
+	</style>
+	<jsp:include page="Ajax.jsp"/>
+	<jsp:include page="Zimbra.jsp"/>
+	<jsp:include page="ZimbraMail.jsp"/>
+<% } else { %>
+	<style type="text/css">
+	<!--
+		@import url(<%=contextPath%>/js/ZimbraMail_loRes_all.css<%=ext%>?v=<%=vers%>);
+	-->
+	</style>
+	<script type="text/javascript" src="<%=contextPath%>/js/Ajax_all.js<%=ext %>?v=<%=vers%>"></script>
+	<script type="text/javascript" src="<%=contextPath%>/js/ZimbraMail_all.js<%=ext %>?v=<%=vers%>"></script>
+<% } %>
+
 <%if (isSafari) { %>
-@import url(<%=contextPath %>/skins/steel/skin-safari.css?v=<%=vers%>);
-<% } else { %>
-@import url(<%=contextPath %>/skins/steel/skin.css?v=<%=vers%>);
+	<style type="text/css">
+	<!--
+		@import url(<%=contextPath %>/skins/steel/skin-safari.css?v=<%=vers%>);
+	-->
+	</style>
 <% } %>
--->
-</style>
-<jsp:include page="Ajax.jsp"/>
-<jsp:include page="Zimbra.jsp"/>
-<jsp:include page="ZimbraMail.jsp"/>
-<% } else { %>
-<style type="text/css">
-<!--
-@import url(<%=contextPath%>/js/ZimbraMail_loRes_all.css<%=ext%>?v=<%=vers%>);
--->
-</style>
-<script type="text/javascript" src="<%=contextPath%>/js/Ajax_all.js<%=ext %>?v=<%=vers%>"></script>
-<script type="text/javascript" src="<%=contextPath%>/js/ZimbraMail_all.js<%=ext %>?v=<%=vers%>"></script>
-<% } %>
+
 <script type="text/javascript" language="JavaScript">
-zJSloading = (new Date()).getTime() - zJSloading;
+	zJSloading = (new Date()).getTime() - zJSloading;
 </script>
+
 <script  type="text/javascript" language="JavaScript">
 	var cacheKillerVersion = "<%=vers%>";
 	function launch() {
