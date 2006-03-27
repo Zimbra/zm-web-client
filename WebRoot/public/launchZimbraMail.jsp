@@ -91,12 +91,7 @@ static final private String LOGIN_PAGE = "/zimbra/";
 		@import url(/zimbra/js/zimbraMail/config/style/msgview.css?v=<%= vers %>);
 		@import url(/zimbra/js/zimbraMail/config/style/zm.css?v=<%= vers %>);
 		@import url(/zimbra/js/zimbraMail/config/style/spellcheck.css?v=<%= vers %>);
-		
-		<%if (isSafari) { %>
-			@import url(/zimbra/skins/steel/skin-safari.css?v=<%= vers %>);
-		<% } else { %>
-			@import url(/zimbra/skins/steel/skin.css?v=<%= vers %>);
-		<% } %>
+		@import url(/zimbra/skins/steel/skin.css?v=<%= vers %>);
 	-->
 	</style>
 	<jsp:include page="Ajax.jsp"/>
@@ -115,6 +110,16 @@ static final private String LOGIN_PAGE = "/zimbra/";
 	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
 	<script type="text/javascript" src="<%= contextPath %>/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>
+
+
+<%if (isSafari) { %>
+	<style type="text/css">
+	<!--
+		@import url(/zimbra/skins/steel/skin-safari.css?v=<%= vers %>);
+	-->
+	</style>
+<% } %>
+
 
 <script language="JavaScript">  
 	var cacheKillerVersion = "<%= vers %>";
