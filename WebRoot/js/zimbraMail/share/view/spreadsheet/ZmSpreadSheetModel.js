@@ -216,6 +216,8 @@ ZmSpreadSheetModel.prototype.deleteCol = function(col) {
 	if (this.COLS > 1) {
 		for (var i = this.ROWS; --i >= 0;) {
 			var cell = this.data[i][col];
+			if (cell._expr)
+				cell.setExpression(null);
 			this.data[i].splice(col, 1);
 			cell._td = null;
 		}
@@ -915,14 +917,27 @@ ZmSpreadSheetCellModel.prototype.setEditValue = function(editValue, force) {
 		var auto = this._determineType(editValue);
 		this._autoType = auto.type;
 		if (auto.type == "expression") {
-			var expr = new ZmSpreadSheetFormulae(this._model, auto.val);
+			var expr;
+			try {
+				expr = new ZmSpreadSheetFormulae(this._model, auto.val);
+				this._errorMessage = null;
+			} catch(ex) {
+				expr = null;
+				this._errorMessage = ex;
+				val = "#ERROR";
+			}
 			this.setExpression(expr);
-			val = expr.eval();
-			auto = this._determineType(val);
-			this._autoType = auto.type;
-			if (this._autoType == "currency")
-				// FIXME: this stinks.
-				val = auto.val;
+			if (expr) {
+				val = expr.eval();
+				auto = this._determineType(val);
+				this._autoType = auto.type;
+				if (this._autoType == "currency")
+					// FIXME: this stinks.
+					val = auto.val;
+			} else {
+				this._type = null;
+				this._autoType = "error";
+			}
 		} else {
 			this.setExpression(null);
 			val = auto.val;
@@ -986,7 +1001,10 @@ ZmSpreadSheetCellModel.prototype.getTooltipText = function() {
 		html.push("<div class='CellType'>Type: ", this.getType(), "</div>");
 	else
 		html.push("<div class='CellType'>Empty cell</div>");
-	if (this._expr) {
+	if (this._errorMessage) {
+		html.push("Edit value: " + this._editValue);
+		html.push("<div class='CellExprError'>", this._errorMessage, "</div>");
+	} else if (this._expr) {
 		html.push("Expression:");
 		html.push("<div class='CellExpr'>[", this._expr.toString(), "]</div>");
 	}
@@ -1009,7 +1027,7 @@ ZmSpreadSheetCellModel.prototype.getTooltipText = function() {
 		var span = this._td.firstChild;
 		if (span.offsetWidth >= this._td.offsetWidth)
 			html.push("Value:", "<div class='CellValue'>", this.getDisplayValue(), "</div>");
-		html.push("</div>");
 	}
+	html.push("</div>");
 	return html.join("");
 };

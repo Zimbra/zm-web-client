@@ -399,9 +399,6 @@ ZmSpreadSheetFormulae.DEF = function(name, n_args, callback, help) {
 
 { // easter egg
 	ZmSpreadSheetFormulae.DEF("WHO_are_YOU?", 0, function() {
-		alert("Hello World from the ZmSpreadSheetFormulae!\n\n" +
-		      "This code is implemented by Mihai Bazon (www.dynarch.com)\n" +
-		      "for Zimbra (www.zimbra.com)");
 		return "http://www.dynarch.com/";
 	});
 }

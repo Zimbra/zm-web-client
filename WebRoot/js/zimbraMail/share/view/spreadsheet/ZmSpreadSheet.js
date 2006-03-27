@@ -1133,7 +1133,8 @@ ZmSpreadSheet.prototype._table_selrange_MouseOver = function(ev) {
 	var td = DwtUiEvent.getTarget(dwtev);
 	while (td && td !== table && !/^td$/i.test(td.tagName))
 		td = td.parentNode;
-	if (td && /^td$/i.test(td.tagName)) {
+	if (td && /^td$/i.test(td.tagName)
+	    && td.cellIndex > 0 && td.parentNode.rowIndex > 0) {
 		this._selectRange(ZmSpreadSheet.getCellName(this._selectedCell),
 				  ZmSpreadSheet.getCellName(td), false);
 		this._updateCellRangeToken();
@@ -1220,8 +1221,8 @@ ZmSpreadSheet.prototype._table_mouseOut = function() {
 };
 
 ZmSpreadSheet.prototype._table_mouseMove = function(ev) {
-	if (this._editingCell)
-		// no tooltips while we're writing code. :-p
+	if (this._editingCell || this._selectRangeCapture.capturing())
+		// no tooltips while we're writing code or dragging. :-p
 		return;
 	var dwtev = new DwtMouseEvent();
 	dwtev.setFromDhtmlEvent(ev);

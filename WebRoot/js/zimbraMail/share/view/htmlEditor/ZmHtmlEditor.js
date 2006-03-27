@@ -702,6 +702,9 @@ function(name, target, data) {
 		// outer.style.display = "none";
 		var doc = this._getIframeDoc();
 		this.focus();
+		if (!this._ace_componentsLoading)
+			this._ace_componentsLoading = 0;
+		++this._ace_componentsLoading;
 		if (AjxEnv.isGeckoBased)
 			doc.designMode = "off";
 		var ifr = doc.createElement("iframe");
@@ -731,6 +734,7 @@ ZmHtmlEditor.prototype._ace_finishedLoading = function(ifr, name, data) {
 		ifr.onload = null;
 		ifr.onreadystatechange = null;
 		win.create(data);
+		--this._ace_componentsLoading;
 	}
 };
 
@@ -1329,6 +1333,8 @@ ZmHtmlEditor.prototype._enableDesignMode = function(doc) {
 	var bookmark = null;
 
 	function blur() {
+		if (editor._ace_componentsLoading > 0)
+			return;
 		try {
 			var sel = editor._getIframeWin().getSelection();
 			bookmark = sel.getRangeAt(0);
@@ -1341,6 +1347,8 @@ ZmHtmlEditor.prototype._enableDesignMode = function(doc) {
 	};
 
 	function focus() {
+		if (editor._ace_componentsLoading > 0)
+			return;
 		// window.status = "ADDED DESIGN MODE";
 		doc.designMode = "on";
 		// Probably a regression of FF 1.5.0.1/Linux requires us to
