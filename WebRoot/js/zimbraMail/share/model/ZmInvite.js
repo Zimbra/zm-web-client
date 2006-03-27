@@ -227,11 +227,12 @@ function(compNum) {
 			this._serverEndTime = this.components[compNum].e[0].d;
 		} else {
 			// get the duration
-			var dd = this.components[compNum].dur[0].d || 0;
-			var weeks = this.components[compNum].dur[0].w || 0;
-			var hh = this.components[compNum].dur[0].h || 0;
-			var mm = this.components[compNum].dur[0].m || 0;
-			var ss = this.components[compNum].dur[0].s || 0;
+			var dur	= this.components[compNum].dur;
+			var dd		= dur && dur[0].d || 0;
+			var weeks	= dur && dur[0].w || 0;
+			var hh		= dur && dur[0].h || 0;
+			var mm		= dur && dur[0].m || 0;
+			var ss		= dur && dur[0].s || 0;
 			var t = parseInt(ss) + (parseInt(mm) * 60) + (parseInt(hh) * 3600) + (parseInt(dd) * 24 * 3600) + (parseInt(weeks) * 7 * 24 * 3600);
 			// parse the start date
 			var start = this.components[compNum].s[0].d;
