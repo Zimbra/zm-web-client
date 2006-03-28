@@ -89,7 +89,7 @@ ZmApptComposeView.TAB_RESOURCES		= i++;
 delete i;
 
 ZmApptComposeView.TAB_NAME = {};
-ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_APPOINTMENT]	= "appointment";
+ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_APPOINTMENT]	= "apptDetails";
 ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_SCHEDULE]		= "schedule";
 ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_ATTENDEES]		= "findAttendees";
 ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_LOCATIONS]		= "findLocations";

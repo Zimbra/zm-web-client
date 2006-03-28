@@ -1179,6 +1179,10 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	display: none;
 }
 
+.ZmApptChooserTabViewPage fieldset {
+	margin: 5px;
+}
+
 .leftAlign {
   text-align:left;
 }
