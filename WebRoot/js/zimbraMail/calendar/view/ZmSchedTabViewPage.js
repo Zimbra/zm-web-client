@@ -103,6 +103,9 @@ function() {
 	if (this._activeInputField) {
 		this._handleAttendeeField(this._activeInputField);
 	}
+	if (this._activeDateField) {
+		this._handleDateChange(this._activeDateField == this._startDateField);
+	}
 };
 
 ZmSchedTabViewPage.prototype.initialize = 
@@ -153,8 +156,12 @@ function() {
 		allAttCells.shift();
 	}
 
-	for (var i in this._emailToIdx)
+	for (var i in this._emailToIdx) {
 		delete this._emailToIdx[i];
+	}
+	
+	this._curValStartDate = "";
+	this._curValEndDate = "";
 
 	this._resetAttendeeCount();
 };
@@ -189,7 +196,6 @@ ZmSchedTabViewPage.prototype._initialize =
 function() {
 	this._createHTML();
 	this._createDwtObjects();
-	this._cacheFields();
 	this._addEventHandlers();
 	this._resetAttendeeCount();
 
@@ -474,14 +480,14 @@ function() {
 			}
 		}
 	}
-};
 
-ZmSchedTabViewPage.prototype._cacheFields = 
-function() {
-	this._startDateField 	= document.getElementById(this._startDateFieldId); 	delete this._startDateFieldId;
-	this._endDateField 		= document.getElementById(this._endDateFieldId);	delete this._endDateFieldId;
+	this._startDateField 	= document.getElementById(this._startDateFieldId);
+	this._endDateField 		= document.getElementById(this._endDateFieldId);
 	this._allDayCheckbox 	= document.getElementById(this._allDayCheckboxId);
 	this._allAttendeesTable = document.getElementById(this._allAttendeeSlot.dwtTableId); 
+	
+	this._curValStartDate = "";
+	this._curValEndDate = "";
 };
 
 ZmSchedTabViewPage.prototype._addEventHandlers = 
@@ -491,9 +497,10 @@ function() {
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
 	this._allDayCheckbox._schedViewPageId = svpId;
 
-	// add onchange handlers to the start/end date fields
-	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmSchedTabViewPage._onChange);
-	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmSchedTabViewPage._onChange);
+	Dwt.setHandler(this._startDateField, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
+	Dwt.setHandler(this._endDateField, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
+	Dwt.setHandler(this._startDateField, DwtEvent.ONBLUR, ZmSchedTabViewPage._onBlur);
+	Dwt.setHandler(this._endDateField, DwtEvent.ONBLUR, ZmSchedTabViewPage._onBlur);
 	this._startDateField._schedViewPageId = this._endDateField._schedViewPageId = svpId;
 
 	this._selectChangeListener = new AjxListener(this, this._selectChangeListener);
@@ -753,6 +760,14 @@ function() {
 
 ZmSchedTabViewPage.prototype._handleDateChange = 
 function(isStartDate, skipCheck) {
+	var start = this._startDateField.value;
+	var end = this._endDateField.value;
+	if ((isStartDate && (start == this._curValStartDate)) ||
+		(!isStartDate && (end == this._curValEndDate))) {
+		return;
+	}
+
+	isStartDate ? this._curValStartDate = start : this._curValEndDate = end;
 	var needsUpdate = ZmApptViewHelper.handleDateChange(this._startDateField, this._endDateField, isStartDate, skipCheck);
 	if (needsUpdate) {
 		this._updateFreeBusy();
@@ -791,7 +806,7 @@ function(ev) {
 	var parentButton = ev.item.parent.parent;
 
 	// update the appropriate field w/ the chosen date
-	var field = parentButton == this._startDateButton
+	var field = (parentButton == this._startDateButton)
 		? this._startDateField : this._endDateField;
 	field.value = AjxDateUtil.simpleComputeDateStr(ev.detail);
 
@@ -833,7 +848,8 @@ function(ev) {
 
 ZmSchedTabViewPage.prototype._timeChangeListener =
 function(ev) {
-	ZmTimeSelect.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField);
+	this._activeDateField = ZmTimeSelect.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect,
+														this._startDateField, this._endDateField);
 	var dateInfo = ZmApptViewHelper.getDateInfo(this);
 	this._outlineAppt(dateInfo);
 	this._apptTab.updateTimeField(dateInfo);
@@ -1084,6 +1100,8 @@ function(ev) {
 		svp._showTimeFields(el.checked ? false : true);
 		svp._apptTab.updateAllDayField(el.checked);
 		svp._outlineAppt();
+	} else if (el.id == svp._startDateFieldId || el.id == svp._endDateFieldId) {
+		svp._activeDateField = el;
 	} else {
 		// looks like user clicked on attendee field
 		svp._showAttendeeField(el);
@@ -1094,13 +1112,11 @@ ZmSchedTabViewPage._onBlur =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var svp = AjxCore.objectWithId(el._schedViewPageId);
-	svp._handleAttendeeField(el);
-	svp._activeInputField = null;
-};
-
-ZmSchedTabViewPage._onChange = 
-function(ev) {
-	var el = DwtUiEvent.getTarget(ev);
-	var svp = AjxCore.objectWithId(el._schedViewPageId);
-	svp._handleDateChange(el == svp._startDateField);
+	if (el.id == svp._startDateFieldId || el.id == svp._endDateFieldId) {
+		svp._handleDateChange(el == svp._startDateField);
+		svp._activeDateField = null;
+	} else {
+		svp._handleAttendeeField(el);
+		svp._activeInputField = null;
+	}
 };
