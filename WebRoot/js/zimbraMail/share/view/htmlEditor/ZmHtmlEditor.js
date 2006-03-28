@@ -693,7 +693,7 @@ function(name, target, data) {
 	// chose from.
 	switch (name) {
 	    case "ZmSpreadSheet":
-		component_url = toplevel_url + appContextPath + "/test/spreadsheet/index.jsp";
+		component_url = toplevel_url + appContextPath + "/ALE/spreadsheet/index.jsp";
 		break;
 	}
 

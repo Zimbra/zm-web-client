@@ -425,40 +425,11 @@
       <dirset dir='img/loRes' includes='**/logo,**/translate'/>
     </imagemerge>
     <echo/>
-    
+
     <antcall target="skin-images">
     </antcall>
 
   </target>
-
-  <!-- list all the skins to build with here -->
-  <property name='skins' value='steel,chocolate' />
-  
-  <target name='skin-css'>
-  	<antcall target='build-skin-css'>
-  		<param name='skindir' value='chocolate'/>
-  		<param name='skin_output_dir' value='${deploy.dir}${deploy.path}'/>
-  	</antcall>
-  </target>
-
-  <target name="build-skin-css">
-	<mkdir dir="${skin_output_dir}/skins/${skindir}"/>
-
-	<!-- first process the skin_subs.txt file itself, to get any subs in there -->
-	<filter filtersfile="WebRoot/skins/${skindir}/skin_subs.txt"/>
-	<copy todir="${skin_output_dir}/skins/${skindir}" filtering="true" overwrite="true">
-	  <fileset dir="WebRoot/skins/${skindir}" includes="skin_subs.txt"/>
-	</copy>
-
-	<!-- now process all .css files with the processed subs.txt file -->
-	<filter filtersfile="${skin_output_dir}/skins/${skindir}/skin_subs.txt"/>
-	<copy todir="${skin_output_dir}/skins/${skindir}" filtering="true" overwrite="true">
-	  <fileset dir="WebRoot/js/zimbraMail/config/style" includes="**/*.css"/>
-	  <fileset dir="${ajax.dir}/WebRoot/js/config/style" includes="**/*.css"/>
-	  <fileset dir="WebRoot/skins/${skindir}" includes="**/*.css"/>
-	</copy>
-  </target> 
-
 
   <target name='skin-images'>
     <!-- put in a separate antcall for each skin directory here -->
@@ -469,7 +440,7 @@
 
   <target name='build-skin-images' depends='compile' unless='imagesdone'>
 	<property name='dir.skincache' value='../../../../skins/${skindir}' />
-  	
+
 
     <!-- merge loRes skin images -->
     <mkdir dir="${images.loRes.destDir}/skins/${skindir}"/>
@@ -485,7 +456,7 @@
     </imagemerge>
     <echo/>
   </target>
-  
+
 
   <target name='images-are-dirty' description='checks to see if images need to be processed' unless='images.force'>
     <dependset>
@@ -496,17 +467,17 @@
     </dependset>
     <available property='imagesdone' file='${images.loRes.destDir}/${images.cssFile}'/>
   </target>
-  
+
 
   <target name='sortimages' depends='sortimagesinit'>
     <!-- check properties -->
-    <fail unless='sort.source' message='Must specify source directory. For example: ant -Dsort.source=src ...'/>    
-    <fail unless='sort.target' message='Must specify target directory. For example: ant -Dsort.target=dest ...'/>    
-    
+    <fail unless='sort.source' message='Must specify source directory. For example: ant -Dsort.source=src ...'/>
+    <fail unless='sort.target' message='Must specify target directory. For example: ant -Dsort.target=dest ...'/>
+
     <!-- process directories -->
     <imagesort source='${sort.source}' target='${sort.target}' delete='true'/><!-- noop='true'/-->
   </target>
-  
+
   <target name='sorticons' depends='sortimagesinit'>
     <!-- usage:  make a "images" directory in your ZimbraWebClient directory and do:
     ant sorticons
@@ -529,12 +500,12 @@
 
   <target name='sortimagesinit' depends='compile'>
   </target>
-  
+
   <target name="check4zimbraajax">
     <available property="ajax.present" file="${ajax.dir}" type="dir"/>
     <fail message="This project depends on Ajax being checked out at: ${ajax.dir}" unless="ajax.present"/>
   </target>
-  
+
   <target name="copy-files-to-build-area" depends="check4zimbraajax">
     <copy file="WebRoot/WEB-INF/web.xml" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="${isProduction}"/>
     <copy todir="${build.dir}/WebRoot/public/" overwrite="${isProduction}" >
@@ -547,18 +518,18 @@
       <fileset dir="${ajax.dir}/WebRoot/js"/>
     </copy>
   </target>
-  
+
   <target name="copy-imgs-to-tmp-area" depends="check4zimbraajax">
     <copy todir="${tmp.dir}" overwrite="true">
       <fileset dir="img/loRes"/>
     </copy>
   </target>
-  
+
   <target name="helpinit" unless='help.force'>
     <available property='helpdone' file='${build.dir}/WebRoot/help/WebHelp/'/>
   </target>
 
-  <target name="copy-help" depends="helpinit" unless='helpdone'>	
+  <target name="copy-help" depends="helpinit" unless='helpdone'>
     <unzip src="WebRoot/help/WebHelp.zip" dest="${build.dir}/WebRoot/tmp/help" overwrite="yes">
       <patternset>
 	<include name="WebHelp/**/*"/>
@@ -568,13 +539,13 @@
       <fileset dir="${build.dir}/WebRoot/tmp/help/WebHelp/" includes="**/*"/>
     </copy>
     <delete dir="${build.dir}/WebRoot/tmp/help"/>
-  </target>	
+  </target>
 
   <target name="adminhelpinit" unless='adminhelp.force'>
     <available property='adminhelpdone' file='${build.dir}/WebRoot/adminhelp/html/WebHelp/'/>
   </target>
 
-  <target name="copy-admin-help" depends="adminhelpinit" unless='adminhelpdone'>	
+  <target name="copy-admin-help" depends="adminhelpinit" unless='adminhelpdone'>
     <mkdir dir="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp"/>
     <unzip src="WebRoot/adminhelp/html/ZimbraAdminOLH.zip" dest="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp" overwrite="yes">
       <patternset>
@@ -586,9 +557,9 @@
     </copy>
     <copy todir="${build.dir}/WebRoot/adminhelp/pdf/" overwrite="true" >
       <fileset dir="WebRoot/adminhelp/pdf/" includes="*"/>
-    </copy>  	
+    </copy>
     <delete dir="${build.dir}/WebRoot/tmp/adminhelp/html"/>
-  </target>	
+  </target>
 
   <target name="set-buildinfo-vars">
 	<tstamp />
@@ -613,14 +584,14 @@
       </not>
     </condition>
   </target>
-	
+
   <target name="generate-build-info">
     <propertyfile file="${build.dir}/build.properties" >
       <entry  key="build.number" type="int" default="1" operation="+" pattern="00000"/>
       <entry  key="build.date" type="date" value="now" pattern="yyyy-MM-dd HH:mm:ss" />
       <entry  key="build.simpleDate" type="date" value="now" pattern="yyMMddHHmmss"/>
       <entry  key="date.format" value="yyyyMMddHHmmss" />
-    </propertyfile>	
+    </propertyfile>
   </target>
 
   <target name="inject-build-info" depends="set-buildinfo-vars,generate-build-info">
@@ -629,7 +600,7 @@
 	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSetting.js" token="@buildDateTime@" value="${DSTAMP}-${TSTAMP}" />
   </target>
 
-  <!-- 
+  <!--
   This target is meant only to be run after a full deploy has
   been done once. It does not deal with the java code used by the
   ZimbraWebClient webapp, so if there are any java changes, another
@@ -637,7 +608,7 @@
   -->
   <target name="dev-sync">
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
-      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**"/>
+      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**,ALE/**"/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}/js/ajax">
@@ -649,11 +620,6 @@
       <fileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
       <fileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
     </copy>
-
-	<!-- FOR EACH SKIN, COPY AND TRANSLATE CSS FILES -->
-    <foreach list='${skins}' target='build-skin-css' param='skindir'>
-    	<param name='skin_output_dir' value='${deploy.dir}${deploy.path}' />
-    </foreach>
 
     <dependset>
       <srcfileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
@@ -683,7 +649,7 @@
       <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,test/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="zimlets/**,public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="ALE/**,public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**"/>
     </war>
   </target>
 
