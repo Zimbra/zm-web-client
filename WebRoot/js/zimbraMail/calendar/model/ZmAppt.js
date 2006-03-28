@@ -1668,7 +1668,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 	if (inv) {
 		at = soapDoc.set("at", null, inv);
 		// for now make attendees optional, until UI has a way of setting this
-		at.setAttribute("role", (type == ZmAppt.PERSON) ? ZmAppt.ROLE_OPTIONAL : ZmAppt.ROLE_NON_PARTICIPANT);
+		at.setAttribute("role", (type == ZmAppt.PERSON) ? ZmAppt.ROLE_REQUIRED : ZmAppt.ROLE_NON_PARTICIPANT);
 		at.setAttribute("ptst", ZmAppt.PSTATUS_NEEDS_ACTION);
 		var cutype = (type == ZmAppt.PERSON) ? null : ZmAppt.CUTYPE_RESOURCE;
 		if (cutype) {
