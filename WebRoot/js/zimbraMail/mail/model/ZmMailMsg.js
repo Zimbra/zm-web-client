@@ -698,8 +698,8 @@ function(params) {
 	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params.isInvite, params.isDraft, params.callback]);
 	var execFrame = new AjxCallback(this, this._sendMessage, [params]);
 
-	// XXX: temp bug fix #4325 (until mozilla bug #295422 gets fixed)
-	if (window.parentController && AjxEnv.isGeckoBased) {
+	// bug fix #4325 - its safer to make sync request when dealing w/ new window
+	if (window.parentController) {
 		var resp = this._appCtxt.getAppController().sendRequest({soapDoc: params.soapDoc});
 		if (resp.SendInviteReplyResponse) {
 			return resp.SendInviteReplyResponse;
