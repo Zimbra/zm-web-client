@@ -158,7 +158,7 @@ function() {
 
 	for (var i=0; i < cachedSize; i++) {
 		var appt = this._cachedAppts.get(i);
-		if (appt.getEndTime() < startTime) {
+		if (appt.isAllDayEvent() || appt.getEndTime() < startTime) {
 			toRemove.push(appt);
 		} else if (appt.isInRange(startTime, endTime)) {
 			toRemove.push(appt);
