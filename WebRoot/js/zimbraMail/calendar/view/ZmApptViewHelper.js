@@ -589,6 +589,9 @@ function(ev, startSelect, endSelect, startDateField, endDateField) {
 	var select = ev._args.selectObj;
 	var startDate = AjxDateUtil.simpleParseDateStr(startDateField.value);
 	var endDate = AjxDateUtil.simpleParseDateStr(endDateField.value);
+	var startDateOrig = startDateField.value;
+	var endDateOrig = endDateField.value;
+	var changedDateField = null;
 	if (select.id == ZmTimeSelect.START) {
 		var hours = (select.compId == ZmTimeSelect.HOUR) ? ev._args.oldValue : startSelect.getHours();
 		var minutes = (select.compId == ZmTimeSelect.MINUTE) ? ev._args.oldValue : startSelect.getMinutes();
@@ -601,6 +604,9 @@ function(ev, startSelect, endSelect, startDateField, endDateField) {
 		var newEndDate = new Date(newEndDateMs);
 		endSelect.set(newEndDate);
 		endDateField.value = AjxDateUtil.simpleComputeDateStr(newEndDate);
+		if (endDateField.value != endDateOrig) {
+			changedDateField = endDateField;
+		}
 	} else {
 		var oldStartDateMs = ZmTimeSelect.getDateFromFields(startSelect.getHours(), startSelect.getMinutes(), startSelect.getAmPm(), startDate).getTime();
 		var newEndDateMs = ZmTimeSelect.getDateFromFields(endSelect.getHours(), endSelect.getMinutes(), endSelect.getAmPm(), endDate).getTime();
@@ -614,8 +620,12 @@ function(ev, startSelect, endSelect, startDateField, endDateField) {
 			var newStartDate = new Date(newStartDateMs);
 			startSelect.set(newStartDate);
 			startDateField.value = AjxDateUtil.simpleComputeDateStr(newStartDate);
+			if (startDateField.value != startDateOrig) {
+				changedDateField = startDateField;
+			}
 		}
 	}
+	return changedDateField;
 };
 
 ZmTimeSelect.prototype = new DwtComposite;

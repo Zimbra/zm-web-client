@@ -1381,7 +1381,7 @@ function(ev) {
 
 ZmApptTabViewPage._onMouseOver =
 function(ev) {
-	ev = ev || window.event;
+	ev = DwtUiEvent.getEvent(ev);
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = AjxCore.objectWithId(el._tabViewPageId);
 	if (el == tvp._repeatDescField) {
@@ -1391,7 +1391,7 @@ function(ev) {
 
 ZmApptTabViewPage._onMouseOut = 
 function(ev) {
-	ev = ev || window.event;
+	ev = DwtUiEvent.getEvent(ev);
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = AjxCore.objectWithId(el._tabViewPageId);
 	if (el == tvp._repeatDescField) {
@@ -1401,7 +1401,6 @@ function(ev) {
 
 ZmApptTabViewPage._onChange =
 function(ev) {
-	ev = ev || window.event;
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = AjxCore.objectWithId(el._tabViewPageId);
 	ZmApptViewHelper.handleDateChange(tvp._startDateField, tvp._endDateField, (el == tvp._startDateField));
@@ -1409,7 +1408,6 @@ function(ev) {
 
 ZmApptTabViewPage._onFocus = 
 function(ev) {
-	ev = ev || window.event;
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = AjxCore.objectWithId(el._tabViewPageId);
 	tvp._activeInputField = el._attType;
@@ -1418,7 +1416,6 @@ function(ev) {
 
 ZmApptTabViewPage._onBlur = 
 function(ev) {
-	ev = ev || window.event;
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = AjxCore.objectWithId(el._tabViewPageId);
 	tvp._handleAttendeeField(el._attType);
