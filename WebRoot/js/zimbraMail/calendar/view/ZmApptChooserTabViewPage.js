@@ -40,7 +40,7 @@
 */
 function ZmApptChooserTabViewPage(parent, appCtxt, attendees, type) {
 
-	DwtTabViewPage.call(this, parent);
+	DwtTabViewPage.call(this, parent, "ZmApptChooserTabViewPage");
 
 	this._appCtxt = appCtxt;
 	this._attendees = attendees;
@@ -71,7 +71,9 @@ ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_HOME_PHONE]	= "AB
 ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_LOCATION]	= "location";
 ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_CONTACT]		= "contact";
 ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_CAPACITY]	= "capacity";
-ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_NOTES]		= "notes";
+
+ZmApptChooserTabViewPage.COL_IMAGE = {};
+ZmApptChooserTabViewPage.COL_IMAGE[ZmApptChooserTabViewPage.ID_NOTES]		= "SearchNotes";
 
 ZmApptChooserTabViewPage.COL_WIDTH = {};
 ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_NAME]		= 150;
@@ -258,8 +260,6 @@ function() {
 
 	this._searchTableId	= Dwt.getNextId();
 
-	this._topFieldsetId = Dwt.getNextId();
-	this._bottomFieldsetId = Dwt.getNextId();
 	this._chooserSourceListViewDivId	= Dwt.getNextId();
 	this._chooserButtonsDivId	= Dwt.getNextId();
 	this._chooserTargetListViewDivId	= Dwt.getNextId();
@@ -272,13 +272,11 @@ function() {
 	var html = [];
 	var i = 0;
 	
-	html[i++] = "<fieldset style='margin:3px' id='";
-	html[i++] = this._topFieldsetId;
-	html[i++] = "'";
+	html[i++] = "<fieldset";
 	if (AjxEnv.isMozilla)
 		html[i++] = " style='border: 1px dotted #555555'";
 	html[i++] = "><legend style='color:#555555'>";
-	html[i++] = "<img src='/zimbra/img/hiRes/common/Search.gif' />&nbsp;";
+//	html[i++] = "<img src='/zimbra/img/hiRes/common/Search.gif' />&nbsp;";
 	html[i++] = ZmApptChooserTabViewPage.TOP_LEGEND[this.type];
 	html[i++] = "</legend>";
 	
@@ -315,15 +313,13 @@ function() {
 	html[i++] = this._chooserButtonsDivId;
 	html[i++] = "'></div>";
 	
-	html[i++] = "<fieldset style='margin:3px' id='";
-	html[i++] = this._bottomFieldsetId;
-	html[i++] = "'";
+	html[i++] = "<fieldset";
 	if (AjxEnv.isMozilla)
 		html[i++] = " style='border: 1px dotted #555555'";
 	html[i++] = "><legend style='color:#555555'>";
-	html[i++] = "<img src='";
-	html[i++] = ZmApptChooserTabViewPage.ICON[this.type];
-	html[i++] = "' />&nbsp;";
+//	html[i++] = "<img src='";
+//	html[i++] = ZmApptChooserTabViewPage.ICON[this.type];
+//	html[i++] = "' />&nbsp;";
 	html[i++] = ZmApptChooserTabViewPage.BOTTOM_LEGEND[this.type];
 	html[i++] = "</legend>";
 
@@ -384,10 +380,14 @@ function() {
 	// add search button
 	if (this._searchBtnTdId) {
 		var element = document.getElementById(this._searchBtnTdId);
-		var searchButton = new DwtButton(this);
+		var searchButton = this._searchButton = new DwtButton(this);
 		searchButton.setText(ZmMsg.search);
 		searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
 		element.appendChild(searchButton.getHtmlElement());
+		// attendees tab: search button enabled only if there is search field input
+		if (this.type == ZmAppt.PERSON) {
+			searchButton.setEnabled(false);
+		}
 	}
 
 	// add select menu for contact source if we need one
@@ -417,6 +417,7 @@ function() {
 		var sf = fields[i];
 		var searchField = this._searchFields[sf] = document.getElementById(this._searchFieldIds[sf]);
 		Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmApptChooserTabViewPage._keyPressHdlr);
+		Dwt.setHandler(searchField, DwtEvent.ONKEYUP, ZmApptChooserTabViewPage._keyUpHdlr);
 	}
 	
 	if (this._multLocsCheckboxId) {
@@ -521,6 +522,18 @@ function(ev) {
 		tvp._keyPressCallback.run();
 	    return false;
 	}
+
+	return true;
+};
+
+ZmApptChooserTabViewPage._keyUpHdlr =
+function(ev) {
+    var tvp = DwtUiEvent.getDwtObjFromEvent(ev);
+	var field = DwtUiEvent.getTarget(ev);
+	if (tvp.type == ZmAppt.PERSON) {
+		tvp._searchButton.setEnabled(field && field.value);
+	}
+	
 	return true;
 };
 
@@ -611,8 +624,9 @@ function() {
 	for (var i = 0; i < cols.length; i++) {
 		var id = cols[i];
 		var label = ZmMsg[ZmApptChooserTabViewPage.COL_LABEL[id]];
+		var image = ZmApptChooserTabViewPage.COL_IMAGE[id];
 		var width = ZmApptChooserTabViewPage.COL_WIDTH[id];
-		headerList.push(new DwtListHeaderItem(id, label, null, width));
+		headerList.push(new DwtListHeaderItem(id, label, image, width));
 	}
 	
 	return headerList;
@@ -684,10 +698,21 @@ function(ev, div) {
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
 	var id = ev.target.id || div.id;
 	if (!id) return true;
-	
-	var note = this._notes[id];
-	if (note)
-		this.setToolTipContent(note);
+
+	// check if we're hovering over a column header
+	var type = Dwt.getAttr(div, "_type");
+	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
+		var itemIdx = Dwt.getAttr(div, "_itemIndex");
+		var id = this._headerList[itemIdx]._id;
+		if (id.indexOf(ZmApptChooserTabViewPage.ID_NOTES) == 0) {
+			this.setToolTipContent(ZmMsg.notes);
+		}
+	} else {
+		var note = this._notes[id];
+		if (note) {
+			this.setToolTipContent(note);
+		}
+	}
 
 	return true;
 };

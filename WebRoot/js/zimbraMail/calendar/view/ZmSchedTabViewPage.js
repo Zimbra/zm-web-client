@@ -238,7 +238,7 @@ function() {
 	
 	html[i++] = "<table border=0>";
 	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
-	html[i++] = ZmMsg.meetingStart;
+	html[i++] = ZmMsg.startTime;
 	html[i++] = "</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
 	html[i++] = "<input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='";
@@ -254,7 +254,7 @@ function() {
 	html[i++] = "'></td><td><nobr>";
 	html[i++] = ZmMsg.allDayEvent;
 	html[i++] = "</td><td width=100%></td></tr><tr><td class='ZmApptTabViewPageField'>";
-	html[i++] = ZmMsg.meetingEnd;
+	html[i++] = ZmMsg.endTime;
 	html[i++] = "</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
 	html[i++] = "<input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='";
@@ -389,7 +389,7 @@ function() {
 			html[i++] = attendee.dwtId;
 			html[i++] = "'></div>";
 			html[i++] = "&nbsp;&nbsp;";
-			html[i++] = ZmMsg.clickHereToAddAttendee;
+			html[i++] = ZmMsg.clickToAdd;
 		}
 		html[i++] = "</div></td>";
 		html[i++] = "</tr></table>";
