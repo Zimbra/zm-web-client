@@ -64,7 +64,7 @@ Contributor(s):
 	if (skin == null) {
 		skin = "steel";
 	}
-	String skinHtmlFile = "../skins/" + skin + "/skin.html";
+	String skinHtmlFile = "../skins/" + skin + "/" + skin + ".html";
 
 
 	if (vers == null) vers = "";
@@ -87,13 +87,13 @@ Contributor(s):
 	<style type="text/css">
 	<!--
 		@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/skin.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/dwt.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/common.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/msgview.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/zm.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/spellcheck.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/skins/<%= skin %>/skin.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
 	-->
 	</style>
 	<jsp:include page="Ajax.jsp"/>
@@ -113,7 +113,7 @@ Contributor(s):
 <%if (isSafari) { %>
 	<style type="text/css">
 	<!--
-		@import url(<%=contextPath %>/skins/<%= skin %>/skin-safari.css?v=<%=vers%>);
+		@import url(<%=contextPath %>/skins/<%= skin %>/<%= skin %>-safari.css?v=<%=vers%>);
 	-->
 	</style>
 <% } %>

@@ -23,6 +23,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
+P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
+	@FontDefault@
+	@FontNormal@
+	@Text@
+}
 
 
 .MsgHeader .Object, .MsgHeader .Object-activated {

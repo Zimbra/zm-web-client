@@ -426,8 +426,7 @@
     </imagemerge>
     <echo/>
 
-    <antcall target="skin-images">
-    </antcall>
+    <antcall target="skin-images"></antcall>
 
   </target>
 
@@ -440,14 +439,14 @@
   <target name="build-skin-css">
 	<mkdir dir="${skin_output_dir}/skins/${skindir}"/>
 
-	<!-- first process the skin_subs.txt file itself, to get any subs in there -->
-	<filter filtersfile="WebRoot/skins/${skindir}/skin_subs.txt"/>
+	<!-- first process the <skin>_subs.txt file itself, to get any subs in there -->
+	<filter filtersfile="WebRoot/skins/${skindir}/${skindir}_subs.txt"/>
 	<copy todir="${skin_output_dir}/skins/${skindir}" filtering="true" overwrite="true">
-	  <fileset dir="WebRoot/skins/${skindir}" includes="skin_subs.txt"/>
+	  <fileset dir="WebRoot/skins/${skindir}" includes="${skindir}_subs.txt"/>
 	</copy>
 
 	<!-- now process all .css files with the processed subs.txt file -->
-	<filter filtersfile="${skin_output_dir}/skins/${skindir}/skin_subs.txt"/>
+	<filter filtersfile="${skin_output_dir}/skins/${skindir}/${skindir}_subs.txt"/>
 	<copy todir="${skin_output_dir}/skins/${skindir}" filtering="true" overwrite="true">
 	  <fileset dir="WebRoot/js/zimbraMail/config/style" includes="**/*.css"/>
 	  <fileset dir="WebRoot/js/zimbraAdmin/config/style" includes="**/*.css"/>
@@ -469,13 +468,13 @@
 
     <!-- merge loRes skin images -->
     <mkdir dir="${images.loRes.destDir}/skins/${skindir}"/>
-    <delete file='${images.loRes.destDir}/skins/${skindir}/skin.css'/>
+    <delete file='${images.loRes.destDir}/skins/${skindir}/${skindir}.css'/>
     <delete file='${images.loRes.destDir}/skins/${skindir}/${dir.skincache}/CacheLoRes.html'/>
     <echo/>
     <echo message='Merging loRes images for skin ${skindir}'/>
     <echo/>
     <imagemerge destdir='${images.loRes.destDir}/skins/${skindir}'
-      cssfile='skin.css' csspath='${csspathprefix}loRes/skins/${skindir}/'
+      cssfile='${skindir}.css' csspath='${csspathprefix}loRes/skins/${skindir}/'
       cachefile='${dir.skincache}/CacheLoRes.html'>
       <dirset dir='WebRoot/skins/${skindir}' includes='**/img'/>
     </imagemerge>

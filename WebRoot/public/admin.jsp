@@ -77,6 +77,7 @@ Contributor(s):
 	if (skin == null) {
 		skin = "steel";
 	}
+	String skinHtmlFile = "../skins/" + skin + "/" + skin + ".html";
 
     String contextPath = request.getContextPath();
     if(contextPath == null || contextPath.equals("/")) {
@@ -95,7 +96,7 @@ Contributor(s):
 	<style type="text/css">
 	<!--
 	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/skin.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
 
 	@import url(<%= contextPath %>/skins/<%= skin %>/dwt.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/skins/<%= skin %>/common.css?v=<%= vers %>);
@@ -103,8 +104,7 @@ Contributor(s):
 	@import url(<%= contextPath %>/skins/<%= skin %>/msgview.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/skins/<%= skin %>/spellcheck.css?v=<%= vers %>);
 
-	@import url(<%= contextPath %>/skins/<%= skin %>/skin.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/skins/<%= skin %>/skin_images.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
 	-->
 	</style>
 	<jsp:include page="/public/Ajax.jsp"/>
@@ -144,7 +144,7 @@ Contributor(s):
   </head>
   <body onload="javascript:void launch()">
   <jsp:include page="/public/pre-cache.jsp"/>  
-  <jsp:include page="../skins/steel/skin.html"/>  
+  <jsp:include page="<%= skinHtmlFile %>"/>
   <script type="text/javascript" language=Javascript>
     skin.hideQuota();
   </script>
