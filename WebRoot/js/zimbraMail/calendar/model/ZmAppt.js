@@ -205,14 +205,14 @@ function(useStartTime) {
 	}
 };
 
-ZmAppt.prototype.getAttendeesText				= function() { return this._getAttendeesString(this._attendees[ZmAppt.PERSON]); };
-ZmAppt.prototype.getResourcesText				= function() { return this._getAttendeesString(this._attendees[ZmAppt.RESOURCE]); };
+ZmAppt.prototype.getAttendeesText				= function() { return this._getAttendeesString(this._attendees[ZmAppt.PERSON], ZmAppt.PERSON); };
+ZmAppt.prototype.getResourcesText				= function() { return this._getAttendeesString(this._attendees[ZmAppt.RESOURCE], ZmAppt.RESOURCE); };
 
 ZmAppt.prototype.getLocation =
 function(includeDisplayName) {
 	var locs = this._attendees[ZmAppt.LOCATION];
 	if (locs && locs.length) {
-		var text = this._getAttendeesString(locs);
+		var text = this._getAttendeesString(locs, ZmAppt.LOCATION);
 		if (includeDisplayName && locs.length == 1) {
 			var displayName = locs[0].getAttr(ZmResource.F_locationName);
 			if (displayName) {
@@ -1017,7 +1017,7 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 			buf[i++] = "</table>\n<p>\n<table border='0'>";
 		}
 		buf[i++] = "\n";
-		var attString = this._getAttendeesString(this._attendees[ZmAppt.PERSON].slice(0, 10));
+		var attString = this._getAttendeesString(this._attendees[ZmAppt.PERSON].slice(0, 10), ZmAppt.PERSON);
 		if (this._attendees[ZmAppt.PERSON].length > 10) {
 			attString += ", ...";
 		}
@@ -1112,19 +1112,15 @@ function(attach, hasCheckbox) {
 * doesn't have a name, its address is used.
 *
 * @param list	[array]		list of attendees (ZmContact or ZmResource)
+* @param type	[constant]	attendee type
 */
 ZmAppt.prototype._getAttendeesString = 
-function(list) {
+function(list, type) {
 	if (!(list && list.length)) return "";
 
 	var a = [];
 	for (var i = 0; i < list.length; i++) {
-		var item = list[i];
-		var name = item.getFullName();
-		var text = name ? name : item.getEmail();
-		if (text) {
-			a.push(text);
-		}
+		a.push(list[i].getAttendeeText(type));
 	}
 	return a.join(ZmAppt.ATTENDEES_SEPARATOR);
 };

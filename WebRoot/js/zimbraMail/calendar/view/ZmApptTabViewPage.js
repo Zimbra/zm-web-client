@@ -659,10 +659,14 @@ function() {
 	this._attInputCurVal = {};
 	for (var t = 0; t < ZmApptComposeView.ATT_TYPES.length; t++) {
 		var type = ZmApptComposeView.ATT_TYPES[t];
-		var input = this._attInputField[type] = new DwtInputField({parent: this, type: DwtInputField.STRING});
+		var params = {parent: this, type: DwtInputField.STRING};
+		if (type == ZmAppt.PERSON) {
+			params.rows = 3;
+		}
+		var input = this._attInputField[type] = new DwtInputField(params);
 		var inputEl = input.getInputElement();
 		var w = (type == ZmAppt.LOCATION) ? width : "100%";
-		Dwt.setSize(inputEl, w, "22px");
+		Dwt.setSize(inputEl, w, (type == ZmAppt.PERSON) ? "50px" : "22px");
 		inputEl._attType = type;
 		input.reparentHtmlElement(this._attTdId[type]);
 		this._attInputCurVal[type] = "";
@@ -846,10 +850,9 @@ function() {
 
 	html[i++] = "<table border=0 width=100%>";
 	html[i++] = "<tr>";
-	html[i++] = "<td width=1% align=right class='ZmApptTabViewPageField'>";
+	html[i++] = "<td width='1%' align='right' valign='top' class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.attendees;
 	html[i++] = ":</td>";
-
 	html[i++] = "<td id='";
 	html[i++] = this._attTdId[ZmAppt.PERSON];
 	html[i++] = "'></td>";
@@ -1266,12 +1269,7 @@ function() {
 		var attendees = this._attendees[type].getArray();
 		var list = [];
 		for (var i = 0; i < attendees.length; i++) {
-			var name = attendees[i].getFullName();
-			var email = attendees[i].getEmail();
-			var value = (type == ZmAppt.PERSON) ? email : name ? name : email;
-			if (value) {
-				list.push(value);
-			}
+			list.push(attendees[i].getAttendeeText(type));
 		}
 		var val = list.length ? list.join(ZmAppt.ATTENDEES_SEPARATOR) : "";
 		this._attInputField[type].setValue(val);
