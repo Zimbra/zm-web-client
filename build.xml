@@ -433,7 +433,7 @@
 
   <!-- list all the skins to build with here -->
   <property name='skins' value='steel,chocolate' />
-  
+
   <target name='skin-css'>
     <foreach list='${skins}' target='build-skin-css' param='skindir'>
     	<param name='skin_output_dir' value='${deploy.dir}${deploy.path}' />
@@ -457,7 +457,7 @@
 	  <fileset dir="${ajax.dir}/WebRoot/js/config/style" includes="**/*.css"/>
 	  <fileset dir="WebRoot/skins/${skindir}" includes="**/*.css"/>
 	</copy>
-  </target> 
+  </target>
 
 
   <target name='skin-images'>
@@ -545,6 +545,9 @@
     <copy todir="${build.dir}/WebRoot/js/ajax" overwrite="${isProduction}" >
       <fileset dir="${ajax.dir}/WebRoot/js"/>
     </copy>
+    <foreach list='${skins}' target='build-skin-css' param='skindir'>
+      <param name='skin_output_dir' value='${build.dir}/WebRoot'/>
+    </foreach>
   </target>
 
   <target name="copy-imgs-to-tmp-area" depends="check4zimbraajax">
@@ -649,20 +652,20 @@
       <fileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
     </copy>
 
-    <foreach list='${skins}' target='build-skin-css' param='skindir'>
-    	<param name='skin_output_dir' value='${deploy.dir}${deploy.path}' />
-    </foreach>
+      <foreach list='${skins}' target='build-skin-css' param='skindir'>
+          <param name='skin_output_dir' value='${deploy.dir}${deploy.path}'/>
+      </foreach>
 
-    <dependset>
+      <dependset>
       <srcfileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
       <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
       <srcfileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
 	  <srcfileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
       <targetfilelist dir='${deploy.dir}${deploy.path}/WEB-INF' files='web.xml'/>
     </dependset>
-    <copy todir="${deploy.dir}${deploy.path}/WEB-INF">  	
+    <copy todir="${deploy.dir}${deploy.path}/WEB-INF">
       <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
-      <fileset dir="WebRoot/WEB-INF" includes="tlds/*"/>		
+      <fileset dir="WebRoot/WEB-INF" includes="tlds/*"/>
     </copy>
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
@@ -703,21 +706,21 @@
       <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**"/>
     </war>
   </target>
-  
+
   <target name="deploy" depends="war">
     <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
       path="${deploy.path}" war="${deploy.war}" update="true"/>
   </target>
-  
+
   <target name="prod-deploy" depends="prod-war">
     <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
       path="${deploy.path}" war="${deploy.war}" update="true"/>
   </target>
-  
+
   <target name="console-deploy" depends="deploy">
     <echo message="Please use 'deploy' instead of 'console-deploy' and goto '/zimbra' instead of '/ZimbraConsole'"/>
-  </target>	
-  
+  </target>
+
   <target name="dev-dist" description="build tar file of dev build to unpack over RPM install" depends="war">
     <delete>
       <fileset dir="${dist.dir}" includes="${dist.tarfile}"/>
@@ -728,7 +731,7 @@
 	mode="640" username="zimbra" group="zimbra"/>
     </tar>
   </target>
-  
+
   <!-- admin console targets -->
   <target name="admin-dev-sync">
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}">

@@ -60,13 +60,13 @@ Contributor(s):
 	boolean isSafari = ua.indexOf("Safari/") != -1;
 
 	// MOW:  get the skin name from a query parameter, defaulting to "chocolate"
-	String skin = (String) request.getParameter("skin");
+	String skin = request.getParameter("skin");
 	if (skin == null) {
 		skin = "steel";
 	}
 	String skinHtmlFile = "../skins/" + skin + "/skin.html";
-	
-	
+
+
 	if (vers == null) vers = "";
 	if (ext == null) ext = "";
 %>
@@ -88,14 +88,12 @@ Contributor(s):
 	<!--
 		@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/skin.css?v=<%= vers %>);
-
 		@import url(<%= contextPath %>/skins/<%= skin %>/dwt.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/common.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/msgview.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/zm.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/spellcheck.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/skin.css?v=<%= vers %>);
-
 	-->
 	</style>
 	<jsp:include page="Ajax.jsp"/>
@@ -157,7 +155,7 @@ Contributor(s):
 </script>
 </head>
 <body>
-	<jsp:include page="/public/pre-cache.jsp"/>  
+	<jsp:include page="/public/pre-cache.jsp"/>
 	<jsp:include page="<%= skinHtmlFile %>"/>
 </body>
 </html>
