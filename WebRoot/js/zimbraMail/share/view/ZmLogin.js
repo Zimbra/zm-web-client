@@ -114,7 +114,7 @@ function() {
 	html[idx++] = "<div style='text-align:left; width:85%'>";
 	html[idx++] = tip;
 	html[idx++] = "</div><br>";
-	html[idx++] = "<div style='font-size:9px; text-align:center; color:#999999; padding-bottom:3px; white-space:nowrap;'>";
+	html[idx++] = "<div class='LoginPanelLicense'>";
 	html[idx++] = ZmMsg.splashScreenCopyright;
 	html[idx++] = "</div>";
 	html[idx++] = "</td></tr>";
@@ -160,8 +160,9 @@ function() {
 	var idx = 0;
 	
 	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td>";
-	html[idx++] = "<table width=450 align=center border=0 cellspacing=0 cellpadding=0 style='border: 2px solid; border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;'>";
-	html[idx++] = "<tr><td bgcolor='#FFFFFF'><div class='banner'></div></td></tr>";
+	html[idx++] = "<table align=center border=0 cellspacing=0 cellpadding=0 class='LoginPanel'>";
+//MOW: Make AppName and ShortVersion dynamic!!!!
+	html[idx++] = "<tr><td align=center><div class='LoginPanelBanner'><div class='LoginPanelAppName'>Collaboration Suite</div><div class='LoginPanelShortVersion'>BETA</div></div></td></tr>";
 	html[idx++] = "<tr><td id='loginPanel' class='mainPanel'>";
 	// error message div
 	html[idx++] = "<center><div class='error' style='display:none' id='errorMessageContainer'>";
@@ -173,12 +174,13 @@ function() {
 	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</div></center>";
 	// real content
-	html[idx++] = "<table id='passTable' border=0 width=425>";
+	html[idx++] = "<table id='passTable' class='LoginPanelTable' border=0>";
 	html[idx++] = "<tr height=40>";
 	html[idx++] = "<td width=100 align=right>";
 	html[idx++] = ZmMsg.username;
 	html[idx++] = ":</td>";
 	html[idx++] = "<td><input style='width:100%' autocomplete=OFF type=text tabIndex=1 id='uname'></td>";
+	html[idx++] = "<td><div class='LoginPanelFormSpacer'></div></td>";
 	html[idx++] = "</tr><tr height=30>";
 	html[idx++] = "<td align=right width=100>";
 	html[idx++] = ZmMsg.password;
@@ -202,18 +204,18 @@ function() {
 	html[idx++] = "onselectstart='javascript: return false;' ";
 	html[idx++] = "onfocus='javascript:ZmLogin.loginButtonFocus(this.parentNode);return false;' ";
 	html[idx++] = "onblur='javascript:ZmLogin.loginButtonBlur(this.parentNode);return false;'";
-	html[idx++] = ">";
+	html[idx++] = "><table style='width:100%;height:100%'><tr><td class='Text' align=center>";
 	html[idx++] = ZmMsg.login;
 	// non-IE browsers dont allow focus for non-INPUT elements so we have to 
 	// create a hidden input to fake focus for our DIV which acts as an input button
 	if (!AjxEnv.isIE)
 		html[idx++] = "<input type='button' style='display:none' id='hiddenButton'>";
-	html[idx++] = "</div></td>";
+	html[idx++] = "</td></tr></table></div></td>";
 	
 	html[idx++] = "</tr></table>";
 	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</td></tr>";
-	html[idx++] = "<tr><td colspan=50 class='mainPanel' style='font-size:9px; text-align:center; color:#999999; padding-bottom:3px; white-space:nowrap;'><br>";
+	html[idx++] = "<tr><td class='LoginPanelLicense'>";
 	html[idx++] = ZmMsg.splashScreenCopyright;
 	html[idx++] = "</td></tr>";
 	html[idx++] = "</table>";

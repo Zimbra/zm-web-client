@@ -726,13 +726,13 @@ function() {
 		var percent = Math.min(Math.round((usedQuota / quota) * 100), 100);
 		
 		// set background color based on percent used
-		var bgcolor = "#66cc33";
+		var progressClassName = "quotaUsed";
 		if (percent < 85 && percent > 65)
-			bgcolor	= "orange";
+			progressClassName = "quotaWarning";
 		else if (percent >= 85)
-			bgcolor = "red";
+			progressClassName = "quotaCritical";
 		
-		html[idx++] = "<td><div class='quotabar'><div style='width: " + percent + "; background-color:" + bgcolor + "' class='quotaused'></div></div></td>";
+		html[idx++] = "<td><div class='quotabar'><div style='width: " + percent + ";' class='" + progressClassName + "'></div></div></td>";
 		quotaTooltip = ZmMsg.quota + ": " + percent + "% (" + size + " of " + limit + ")";
 	} else {
 		html[idx++] = "<td class='BannerText'> " + size + " of unlimited</td>";

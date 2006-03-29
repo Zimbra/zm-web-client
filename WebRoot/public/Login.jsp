@@ -142,72 +142,13 @@ Contributor(s):
 <link rel="SHORTCUT ICON" href="<%= contextPath %>/img/loRes/logo/favicon.ico"/>
 
 <title>Zimbra Login</title>
+
+<!-- ALL STYLES MOVED TO login.css SO THEY CAN BE SKINNED:  WE PICK A DEFAULT SKIN HERE... -->
 <style type="text/css">
-
-body, p, td, div, span, input {
-	font-size: 8pt; font-family: Tahoma, Arial, Helvetica, sans-serif;
-}
-
-body {
-	background-color: #b7b7b7; 
-	background-image:url(<%= contextPath %>/img/loRes/skins/steel/Steel__BG.gif);
-	overflow:hidden;
-}
-
-body, form {
-	margin: 0px;
-	padding: 0px;
-}
-
-.mainPanel {
-	background-image:url(<%= contextPath %>/img/loRes/skins/steel/Pebble__BG.gif);
-}
-
-.banner {
-	margin-top:10px;
-	margin-bottom:10px;
-	/* the following are the dims of the login banner: */
-	width:447px; 
-	height:115px; 
-	background-image:url(<%= contextPath %>/img/loRes/logo/LoginBanner.gif);
-}
-
-.error {  
-	margin-top: 10px;
-	margin-bottom: 10px;
-	padding: 5px;
-	width: 85%;
-	background-color: rgb(255, 255, 204); 
-	border: 1px solid rgb(124, 124, 148);
-	text-align:left;
-}
-
-.focusBorder { 
-	border: 1px dotted black;
-}
-
-.DwtButton, .DwtButton-activated, .DwtButton-triggered {
-	border: 1px solid;
-	width: 60px;
-	padding: 4 0 4 0;
-}
-
-.DwtButton {
-	background-image:url(<%= contextPath %>/img/loRes/dwt/ButtonUp__H.gif);
-	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
-}
-
-.DwtButton-activated {
-	background-image:url(<%= contextPath %>/img/loRes/dwt/ButtonDown__H.gif);
-	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
-}
-
-.DwtButton-triggered {
-	background-image:url(<%= contextPath %>/img/loRes/dwt/ButtonDown__H.gif);
-	border-color: #555555 #E0E0E0 #E0E0E0 #555555;
-}
-
+	@import url(/zimbra/skins/chocolate/login.css?v=<%= vers %>);
 </style>
+
+
 <script type="text/javascript" language="javascript">
 appContextPath = "<%= contextPath %>";
 </script>

@@ -243,18 +243,18 @@ function(width, height) {
 
 	var contactHeaderDiv = document.getElementById(this._fieldIds[ZmContactView.F_contactTitle]);
 	if (contactHeaderDiv)
-		Dwt.setSize(contactHeaderDiv, width-50); // offet by 50px to allow tag icon!
+		Dwt.setSize(contactHeaderDiv, "100%");//-50); // offet by 50px to allow tag icon!
 };
 
 ZmContactView.prototype._addEntryRow =
 function(field, html, idx) {
 	html[idx++] = "<tr>";
-	html[idx++] = "<td style='width:18ex;'>" + AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]) + ":" + "</td>";
+	html[idx++] = "<td class='editLabel' style='width:18em;'>" + AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]) + ":" + "</td>";
 	if (!this._isReadOnly) {
 		var id = this._fieldIds[field] = Dwt.getNextId();
 		html[idx++] = "<td><input type='text' autocomplete='off' size=35 id='" + id + "'></td>";
 	} else {
-		html[idx++] = "<td>" + (this._attr[field] || "") + "</td>";
+		html[idx++] = "<td class='contactOutput'>" + (this._attr[field] || "") + "</td>";
 	}
 	html[idx++] = "</tr>";
 	return idx;
@@ -263,7 +263,7 @@ function(field, html, idx) {
 ZmContactView.prototype._addStreetRow =
 function(field, html, idx) {
 	html[idx++] = "<tr>";
-	html[idx++] = "<td valign=top style='width:18ex;'>" + AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]) + ":" + "</td>";
+	html[idx++] = "<td class='editLabel' valign=top style='width:18em;'>" + AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]) + ":" + "</td>";
 	html[idx++] = "<td";
 	html[idx++] = this._isReadOnly ? ">" : " align=right>";
 
@@ -282,7 +282,7 @@ ZmContactView.prototype._addFileAsRow =
 function(html, idx) {
 	this._fileAsSelectCellId = Dwt.getNextId();
 	html[idx++] = "<tr valign='center'>";
-	html[idx++] = "<td>" + ZmMsg.fileAs + ":" + "</td>";
+	html[idx++] = "<td class='editLabel'>" + ZmMsg.fileAs + ":" + "</td>";
 	html[idx++] = "<td id='" + this._fileAsSelectCellId + "'></td>";
 	html[idx++] = "</tr>";
 	return idx;
@@ -311,8 +311,8 @@ ZmContactView.prototype._generateHtml =
 function(html, idx, label, colOneInfo, colTwoInfo) {
 	// add label
 	if (label) {
-		html[idx++] = "<tr><td colspan=10 valign=top class='editLabel'>";
-		html[idx++] = label + "<hr style='margin:0px' noshade size=1 color='#000000'>";
+		html[idx++] = "<tr><td colspan=10 valign=top class='editSectionLabel'>";
+		html[idx++] = label;
 		html[idx++] = "</td></tr>";
 	}
 
@@ -354,8 +354,8 @@ function(html, idx, label, colOneInfo, colTwoInfo) {
 ZmContactView.prototype._createNotesHtml =
 function(html, idx) {
 	// add label
-	html[idx++] = "<tr><td colspan=10 valign=top class='editLabel'>";
-	html[idx++] = "Notes<hr style='margin:0px' noshade size=1 color='#000000'>";
+	html[idx++] = "<tr><td colspan=10 valign=top class='editSectionLabel'>";
+	html[idx++] = "Notes";
 	html[idx++] = "</td></tr>";
 
 	// add textarea
@@ -527,11 +527,11 @@ function(contact) {
 	var html = new Array(50);
 
 	// Title bar
-	html[idx++] = "<table id='" + this._contactHeaderId + "' bgcolor='#CCCCCC'><tr>";
+	html[idx++] = "<table id='" + this._contactHeaderId + "' cellspacing=0 cellpadding=0 class='BigHeaderBg'><tr>";
 	if (this._isReadOnly) {
-		html[idx++] = "<td><div class='contactHeader'>" + contact.getFileAs() + "</div></td>";
+		html[idx++] = "<td><div >" + contact.getFileAs() + "</div></td>";
 	} else {
-		html[idx++] = "<td><div class='contactHeader' id='" + titleId + "'></div></td>";
+		html[idx++] = "<td><div id='" + titleId + "' class='contactHeader'></div></td>";
 		html[idx++] = "<td align='right' id='" + tagsId + "'></td>";
 	}
 	html[idx++] = "</tr></table>";

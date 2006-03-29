@@ -72,6 +72,12 @@ Contributor(s):
 	if(mode == null) {
 		mode= "";
 	}
+
+	String skin = (String) request.getAttribute("skin");
+	if (skin == null) {
+		skin = "steel";
+	}
+
     String contextPath = request.getContextPath();
     if(contextPath == null || contextPath.equals("/")) {
 		response.sendRedirect("/zimbraAdmin?mode="+mode+"&version="+vers+"&fileExtension="+ext);    	
@@ -89,11 +95,16 @@ Contributor(s):
 	<style type="text/css">
 	<!--
 	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/img/loRes/skins/steel/skin.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/js/ajax/config/style/dwt.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/common.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/skin.css?v=<%= vers %>);
+
+	@import url(<%= contextPath %>/skins/<%= skin %>/dwt.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/skins/<%= skin %>/common.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/skins/steel/skin.css?v=<%= vers %>);  
+	@import url(<%= contextPath %>/skins/<%= skin %>/msgview.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/skins/<%= skin %>/spellcheck.css?v=<%= vers %>);
+
+	@import url(<%= contextPath %>/skins/<%= skin %>/skin.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/skins/<%= skin %>/skin_images.css?v=<%= vers %>);
 	-->
 	</style>
 	<jsp:include page="/public/Ajax.jsp"/>

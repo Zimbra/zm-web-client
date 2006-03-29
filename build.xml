@@ -431,11 +431,39 @@
 
   </target>
 
+  <!-- list all the skins to build with here -->
+  <property name='skins' value='steel,chocolate' />
+  
+  <target name='skin-css'>
+    <foreach list='${skins}' target='build-skin-css' param='skindir'>
+    	<param name='skin_output_dir' value='${deploy.dir}${deploy.path}' />
+    </foreach>
+  </target>
+
+  <target name="build-skin-css">
+	<mkdir dir="${skin_output_dir}/skins/${skindir}"/>
+
+	<!-- first process the skin_subs.txt file itself, to get any subs in there -->
+	<filter filtersfile="WebRoot/skins/${skindir}/skin_subs.txt"/>
+	<copy todir="${skin_output_dir}/skins/${skindir}" filtering="true" overwrite="true">
+	  <fileset dir="WebRoot/skins/${skindir}" includes="skin_subs.txt"/>
+	</copy>
+
+	<!-- now process all .css files with the processed subs.txt file -->
+	<filter filtersfile="${skin_output_dir}/skins/${skindir}/skin_subs.txt"/>
+	<copy todir="${skin_output_dir}/skins/${skindir}" filtering="true" overwrite="true">
+	  <fileset dir="WebRoot/js/zimbraMail/config/style" includes="**/*.css"/>
+	  <fileset dir="WebRoot/js/zimbraAdmin/config/style" includes="**/*.css"/>
+	  <fileset dir="${ajax.dir}/WebRoot/js/config/style" includes="**/*.css"/>
+	  <fileset dir="WebRoot/skins/${skindir}" includes="**/*.css"/>
+	</copy>
+  </target> 
+
+
   <target name='skin-images'>
-    <!-- put in a separate antcall for each skin directory here -->
-    <antcall target='build-skin-images'>
-      <param name="skindir" value="steel"/>
-    </antcall>
+    <foreach list='${skins}' target='build-skin-images' param='skindir'>
+		<param name="csspathprefix" value="/zimbra/img/"/>
+    </foreach>
   </target>
 
   <target name='build-skin-images' depends='compile' unless='imagesdone'>
@@ -621,6 +649,10 @@
       <fileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
     </copy>
 
+    <foreach list='${skins}' target='build-skin-css' param='skindir'>
+    	<param name='skin_output_dir' value='${deploy.dir}${deploy.path}' />
+    </foreach>
+
     <dependset>
       <srcfileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
       <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
@@ -715,6 +747,12 @@
       <fileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
       <fileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
     </copy>
+
+	<!-- FOR EACH SKIN, COPY AND TRANSLATE CSS FILES -->
+    <foreach list='${skins}' target='build-skin-css' param='skindir'>
+    	<param name='skin_output_dir' value='${deploy.dir}${deploy.admin.path}' />
+    </foreach>
+
     <dependset>
       <srcfileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
       <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>

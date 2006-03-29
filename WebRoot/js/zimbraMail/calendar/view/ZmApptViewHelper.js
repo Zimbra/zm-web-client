@@ -67,9 +67,11 @@ ZmApptViewHelper.REPEAT_OPTIONS = [
 ZmApptViewHelper.createMiniCalButton =
 function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDialog) {
 	// create button
-	var dateButton = new DwtButton(parent);
+	var dateButton = new DwtButton(parent, null, "DwtSelect");
 	dateButton.addDropDownSelectionListener(dateButtonListener);
-	dateButton.setSize(20, 20);
+
+    //	MOW: don't set height explicitly -- allow to default to smallest size possible
+    // 	dateButton.setSize(20, null);
 
 	// create menu for button
 	var calMenu = new DwtMenu(dateButton, DwtMenu.CALENDAR_PICKER_STYLE, null, null, isInDialog);

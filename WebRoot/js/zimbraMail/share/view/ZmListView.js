@@ -634,7 +634,7 @@ function(dragOp) {
 								
 		div = document.createElement("div");
 		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
-		div.innerHTML = "<table><tr><td class='MailMultiSelectText'>" 
+		div.innerHTML = "<table><tr><td class='DndIconTextLabel'>" 
 						+ dndSelection.length + "</td></tr></table>";
 		icon.appendChild(div);
 

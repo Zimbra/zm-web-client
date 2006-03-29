@@ -36,7 +36,7 @@ function ZmCurrentAppToolBar(parent, className, buttons) {
 	this._currentAppLabel = new DwtLabel(this, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "currentAppLabel");
 
 	this.addFiller();
-	this._viewButton = new DwtButton(this, null, "TBButtonWhite");
+	this._viewButton = new DwtButton(this, null, "InsetTBButton");
 	this._viewButton.setText(ZmMsg.view);
 	this._viewButton.setToolTipContent(ZmMsg.view);
 	this._viewButton.setEnabled(true);

@@ -301,7 +301,7 @@ function() {
 	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
 	this._inviteToolbar = new ZmButtonToolBar(this,	operationButtonIds,
 						  null, DwtControl.STATIC_STYLE,
-						  "ZmInviteToolBar", "DwtButton");
+						  "ZmInviteToolBar", "TBButton");
 	// get a little space between the buttons.
 	var toolbarHtmlEl = this._inviteToolbar.getHtmlElement();
 	toolbarHtmlEl.firstChild.cellPadding = "3";
@@ -341,7 +341,7 @@ function() {
 	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
 	this._shareToolbar = new ZmButtonToolBar(this,	buttonIds,
 											  null, DwtControl.STATIC_STYLE,
-											  "ZmShareToolBar", "DwtButton");
+											  "ZmShareToolBar", "TBButton");
 	// get a little space between the buttons.
 	var toolbarHtmlEl = this._shareToolbar.getHtmlElement();
 	toolbarHtmlEl.firstChild.cellPadding = "3";
