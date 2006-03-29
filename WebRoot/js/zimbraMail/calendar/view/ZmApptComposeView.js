@@ -107,8 +107,10 @@ ZmApptComposeView.TABS = [ZmApptComposeView.TAB_APPOINTMENT, ZmApptComposeView.T
 
 ZmApptComposeView.ATT_TYPES = [ZmAppt.PERSON, ZmAppt.LOCATION, ZmAppt.RESOURCE];
 
+// attendee operations
 ZmApptComposeView.MODE_ADD		= 1;
-ZmApptComposeView.MODE_REPLACE	= 2;
+ZmApptComposeView.MODE_REMOVE	= 2;
+ZmApptComposeView.MODE_REPLACE	= 3;
 
 ZmApptComposeView.prototype = new DwtTabView;
 ZmApptComposeView.prototype.constructor = ZmApptComposeView;
@@ -305,21 +307,30 @@ function(id) {
 */
 ZmApptComposeView.prototype.updateAttendees =
 function(attendees, type, mode, index) {
-	attendees = (attendees instanceof AjxVector) ? attendees :
-				(attendees instanceof Array) ? AjxVector.fromArray(attendees) : AjxVector.fromArray([attendees]);
+	attendees = (attendees instanceof AjxVector) ? attendees.getArray() :
+				(attendees instanceof Array) ? attendees : [attendees];
 	mode = mode ? mode : ZmApptComposeView.MODE_REPLACE;
 	if (mode == ZmApptComposeView.MODE_REPLACE) {
-		this._attendees[type] = attendees.clone();
+		this._attendees[type] = new AjxVector();
 		for (var i = 0; i < attendees.length; i++) {
+			var attendee = attendees[i];
+			this._attendees[type].add(attendee);
 			this._addAttendeeKey(attendee, type);
 		}
-	} else {
-		// only add first attendee passed in
-		var attendee = attendees.get(0);
-		var key = this._getAttendeeKey(attendee);
-		if (!this._attendeeKeys[type][key] === true) {
-			this._attendees[type].add(attendee, index);
-			this._addAttendeeKey(attendee, type);
+	} else if (mode == ZmApptComposeView.MODE_ADD) {
+		for (var i = 0; i < attendees.length; i++) {
+			var attendee = attendees[i];
+			var key = this._getAttendeeKey(attendee);
+			if (!this._attendeeKeys[type][key] === true) {
+				this._attendees[type].add(attendee, index);
+				this._addAttendeeKey(attendee, type);
+			}
+		}
+	} else if (mode == ZmApptComposeView.MODE_REMOVE) {
+		for (var i = 0; i < attendees.length; i++) {
+			var attendee = attendees[i];
+			this._removeAttendeeKey(attendee, type);
+			this._attendees[type].remove(attendee);
 		}
 	}
 };
@@ -336,6 +347,14 @@ function(attendee, type) {
 	var key = this._getAttendeeKey(attendee);
 	if (key) {
 		this._attendeeKeys[type][key] = true;
+	}
+};
+
+ZmApptComposeView.prototype._removeAttendeeKey =
+function(attendee, type) {
+	var key = this._getAttendeeKey(attendee);
+	if (key) {
+		delete this._attendeeKeys[type][key];
 	}
 };
 

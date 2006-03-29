@@ -755,6 +755,27 @@ function(node) {
 	}
 };
 
+/**
+* Returns display text for an attendee. Prefers name over email.
+*
+* @param type		[constant]		attendee type
+* @param shortForm	[boolean]*		if true, return only name or email
+*/
+ZmContact.prototype.getAttendeeText =
+function(type, shortForm) {
+	var text = "";
+	var name = this.getFullName();
+	var email = this.getEmail();
+	if (type == ZmAppt.PERSON && !shortForm) {
+		var e = new ZmEmailAddress(email, null, name);
+		text = e.toString();
+	} else {
+		text = name ? name : email ? email : "";
+	}
+	
+	return text;
+};
+
 // these need to be kept in sync with ZmContact.F_*
 ZmContact._AB_FIELD = {
 	firstName: ZmMsg.AB_FIELD_firstName,

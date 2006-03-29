@@ -495,7 +495,7 @@ function(appCtxt, item, type, strict) {
 	 		}
 			attendee = (type == ZmAppt.PERSON) ? new ZmContact(appCtxt) :
 												 new ZmResource(appCtxt);
-			attendee.initFromEmail(item);
+			attendee.initFromEmail(email);
 		} else if (type != ZmAppt.PERSON) {
 			// check if it's a location we know by name somehow
 			attendee = resources.getResourceByName(item);
@@ -510,6 +510,12 @@ function(appCtxt, item, type, strict) {
 	return attendee;
 };
 
+/**
+* Returns a ZmEmailAddress for the organizer.
+*
+* @param appCtxt	[ZmAppCtxt]		the app context
+* @param organizer	[string]*		organizer's email address
+*/
 ZmApptViewHelper.getOrganizerEmail =
 function(appCtxt, organizer) {
 	var orgAddress = organizer ? organizer : appCtxt.get(ZmSetting.USERNAME);
@@ -521,8 +527,6 @@ function(appCtxt, organizer) {
 * Creates up to three separate DwtSelects for the time (hour, minute, am|pm)
 * Showing the AM|PM select widget is dependent on the user's locale
 * 
-* XXX: NOT SURE IF THIS SHOULD BE SPLIT INTO A NEW FILE JUST YET
-*
 * @author Parag Shah
 *
 * @param parent		[DwtComposite]	the parent widget
