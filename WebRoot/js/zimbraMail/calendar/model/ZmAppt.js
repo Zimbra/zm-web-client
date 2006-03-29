@@ -795,10 +795,10 @@ function() {
 };
 
 /**
- * @param attachmentId 		ID of the already uploaded attachment
- * @param callback 			callback triggered once request for appointment save is complete
- * @param errorCallback 	callback triggered if error during appointment save request
- * @param notifyList 		optional sublist of attendees to be notified (if different than original list of attendees)
+ * @param attachmentId 		[string]*		ID of the already uploaded attachment
+ * @param callback 			[AjxCallback]*	callback triggered once request for appointment save is complete
+ * @param errorCallback 	[AjxCallback]*	callback triggered if error during appointment save request
+ * @param notifyList 		[Array]*		optional sublist of attendees to be notified (if different from original list of attendees)
 */
 ZmAppt.prototype.save = 
 function(attachmentId, callback, errorCallback, notifyList) {

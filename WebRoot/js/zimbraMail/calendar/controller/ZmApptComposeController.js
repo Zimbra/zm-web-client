@@ -239,7 +239,48 @@ function(appt, attId, notifyList) {
 		// pass along appt and folderId for appt move
 		args = [ appt, appt.folderId ];
 	}
-	appt.save(attId, new AjxCallback(this, this._handleResponseSave, args), null, notifyList);
+	var callback = new AjxCallback(this, this._handleResponseSave, args);
+	var errorCallback = new AjxCallback(this, this._handleErrorSave);
+	
+	appt.save(attId, callback, errorCallback, notifyList);
+};
+
+ZmApptComposeController.prototype._handleResponseSave = 
+function(appt, folderId) {
+	if (appt && folderId) {
+		var callback = new AjxCallback(this, this._handleResponseCleanup);
+		appt.move(folderId, callback);
+	}
+	else {
+		this._handleResponseCleanup();
+	}
+};
+
+ZmApptComposeController.prototype._handleResponseCleanup = 
+function() {
+	this._apptView.cleanup();
+};
+
+ZmApptComposeController.prototype._handleErrorSave = 
+function(ex) {
+	var msg = null;
+	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
+		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
+		var invalidMsg = (invalid && invalid.length) ? AjxMessageFormat.format(ZmMsg.apptSendErrorInvalidAddresses,
+														AjxStringUtil.htmlEncode(invalid.join(", "))) : null;
+		msg = ZmMsg.apptSendErrorAbort + "<br/>" + invalidMsg;
+	} else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
+		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
+		msg = (invalid && invalid.length) ? AjxMessageFormat.format(ZmMsg.apptSendErrorPartial,
+											AjxStringUtil.htmlEncode(invalid.join(", "))) : ZmMsg.apptSendErrorAbort;
+	}
+	if (msg) {
+		this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+		this._msgDialog.popup();
+		return true;
+	} else {
+		return false;
+	}
 };
 
 ZmApptComposeController.prototype._attendeesUpdated = 
@@ -357,22 +398,6 @@ function(ev) {
 
 
 // Callbacks
-
-ZmApptComposeController.prototype._handleResponseSave = 
-function(appt, folderId) {
-	if (appt && folderId) {
-		var callback = new AjxCallback(this, this._handleResponseCleanup);
-		appt.move(folderId, callback);
-	}
-	else {
-		this._handleResponseCleanup();
-	}
-};
-
-ZmApptComposeController.prototype._handleResponseCleanup = 
-function() {
-	this._apptView.cleanup();
-};
 
 ZmApptComposeController.prototype._doSave =
 function() {
