@@ -371,7 +371,6 @@ function(words, keepModeDiv) {
 
 ZmHtmlEditor.prototype.setSize =
 function(x, y) {
-	// window.status = ev.oldWidth + "x" + ev.oldHeight + " -> " + ev.newWidth + "x" + ev.newHeight;
 	var div = null;
 	if (this._spellCheckDivId) {
 		div = document.getElementById(this._spellCheckDivId);
@@ -381,18 +380,26 @@ function(x, y) {
 	var main = document.getElementById(this.getBodyFieldId());
 	main.style.display = "none";
 
-	var delta = 2 + 6;	// we must substract borders and paddings
+	// FUDGE: we must substract borders and paddings
+	var delta = 2 + 6;
 	if (this._mode == DwtHtmlEditor.HTML)
-		delta += 2;	// for some reason...
+		delta += 2;	// for some reason... yuck
 	x -= delta;
 
-	if (this._spellCheckModeDivId)
+	// subtract spellchecker DIV if applicable
+	if (this._spellCheckModeDivId) {
 		y -= document.getElementById(this._spellCheckModeDivId).offsetHeight;
-	if (this._toolbar1 && this._toolbar2) {
-		y -= delta
-			+ this._toolbar1.getHtmlElement().offsetHeight
-			+ this._toolbar2.getHtmlElement().offsetHeight;
 	}
+
+	// subtract height of toolbars if in HTML mode
+	if (this._mode == DwtHtmlEditor.HTML && this._toolbar1 && this._toolbar2) {
+		y -= (this._toolbar1.getHtmlElement().offsetHeight + 
+			  this._toolbar2.getHtmlElement().offsetHeight);
+	}
+
+	// subtract fudge factor
+	y -= delta;
+
 	main.style.width = x + "px";
 	main.style.height = y + "px";
 	if (div) {
