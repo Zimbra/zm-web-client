@@ -126,10 +126,7 @@ ZmAppt.SERVER_DAYS_TO_DISPLAY = {
 };
 
 ZmAppt.SERVER_WEEK_DAYS				= ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
-ZmAppt.NOTES_SEPARATOR				= "\n\n*~*~*~*~*~*~*~*~*~*\n\n";
-ZmAppt.NOTES_SEPARATOR_HTML			= "<div>*~*~*~*~*~*~*~*~*~*</div>";
-ZmAppt.NOTES_SEPARATOR_REGEX		= /\s*\*~\*~\*~\*~\*~\*~\*~\*~\*~\*\s*/;
-ZmAppt.NOTES_SEPARATOR_REGEX_HTML	= /\s*<div>\*~\*~\*~\*~\*~\*~\*~\*~\*~\*<\/div>\s*/;
+ZmAppt.NOTES_SEPARATOR				= "*~*~*~*~*~*~*~*~*~*";
 
 ZmAppt.ATTACHMENT_CHECKBOX_NAME 	= Dwt.getNextId();
 
@@ -332,7 +329,7 @@ function(appt) {
 ZmAppt.prototype.getNotesPart = 
 function(contentType) {
 	if (this.notesTopPart) {
-		var ct = contentType || ZmMimeTable.TEXT_PLAIN;
+		var ct = contentType ? contentType : ZmMimeTable.TEXT_PLAIN;
 		var content = this.notesTopPart.getContentForType(ct);
 
 		// if requested content type not found, try the other
@@ -1024,7 +1021,9 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 	if (isHtml) {
 		buf[i++] = "</table>\n";
 	}
-	buf[i++] = isHtml ? ZmAppt.NOTES_SEPARATOR_HTML : ZmAppt.NOTES_SEPARATOR;
+	buf[i++] = isHtml ? "<div>" : "\n\n";
+	buf[i++] = ZmAppt.NOTES_SEPARATOR;
+	buf[i++] = isHtml ? "</div>" : "\n\n";
 
 	return buf.join("");
 };
@@ -1161,15 +1160,20 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 	return buf.join("");
 };
 
+// Uses indexOf() rather than a regex since IE didn't split on the regex correctly.
 ZmAppt.prototype._trimNotesSummary = 
 function(notes, isHtml) {
 	if (notes) {
-		var notesArr = notes.split(isHtml ? ZmAppt.NOTES_SEPARATOR_REGEX_HTML : ZmAppt.NOTES_SEPARATOR_REGEX);
-		if (notesArr.length > 1) {
-			notes = notesArr.slice(1, notesArr.length).join("");
+		var idx = notes.indexOf(ZmAppt.NOTES_SEPARATOR);
+		if (idx != -1) {
+			notes = notes.substr(idx + ZmAppt.NOTES_SEPARATOR.length);
+			var junk = isHtml ? "</div>" : "\n\n";
+			if (notes.indexOf(junk) == 0) {
+				notes = notes.replace(junk, "");
+			}
 		}
 	}
-	return notes;
+	return AjxStringUtil.trim(notes);
 };
 
 ZmAppt.prototype._resetCached =
