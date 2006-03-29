@@ -63,7 +63,10 @@
 
   <property name='l10n.includes' value='msgs/*.properties' />
   <property name='l10n.excludes' value='msgs/*_*.properties' />
-	
+
+  <!-- list all the skins to build with here -->
+  <property name='skins' value='steel,chocolate' />
+
   <condition property='isProduction' value='true'>
     <or>
       <not><isset property='env.ZIMBRA_BUILD'/></not>
@@ -321,30 +324,28 @@
 			</path>
 		</foreach>
 	</target>
-	
-	<target name="print">
-		<echo>CSS File ${var}</echo>
-	</target>
 
-	<target name="compress-css-files" depends="copy-files-to-build-area, images, generate-preambles">
-		<echo>Compress CSS files</echo>
-		<delete>
-			<fileset dir="${build.dir}/WebRoot/js/" includes="*all.c*"/>
-		</delete>
-		<fileset id="zm-css-includes" dir="${build.dir}/WebRoot" includes="js/ajax/**/*.css,js/zimbraMail/**/*.css,skins/steel/skin.css" />
-		<fileset id="za-css-includes" dir="${build.dir}/WebRoot" includes="js/ajax/**/*.css,js/zimbraAdmin/**/*.css,js/zimbraMail/config/style/*.css,skins/steel/skin.css" />
-		<fileset id="loRes-css-includes" dir="${build.dir}/WebRoot/img/loRes/" includes="**/*.css" />
-		<concat destfile="${build.dir}/WebRoot/js/ZimbraMail_loRes_all.css" fixlastline="yes">
-			<header filtering="no" file="${build.dir}/preamble-zpl.txt"/>
+    <target name="compress-css-files">
+        <delete>
+            <fileset dir="${build.dir}/WebRoot/js/" includes="*all.css*"/>
+        </delete>
+        <foreach list='${skins}' target='compress-css-file' param='skin'/>
+    </target>
+
+    <target name="compress-css-file" depends="copy-files-to-build-area, images, generate-preambles">
+		<echo>Compress CSS file ${skin}</echo>
+		<fileset id="zm-css-includes" dir="${build.dir}/WebRoot" includes="skins/${skin}/*.css" />
+		<fileset id="za-css-includes" dir="${build.dir}/WebRoot" includes="js/ajax/**/*.css,js/zimbraAdmin/**/*.css,js/zimbraMail/config/style/*.css,skins/${skin}/skin.css" />
+		<fileset id="loRes-css-includes" dir="${build.dir}/WebRoot/img/loRes/" includes="*.css,${skin}/*.css" />
+		<concat destfile="${build.dir}/WebRoot/js/ZimbraMail_loRes_${skin}_all.css" fixlastline="yes">
 			<fileset refid="zm-css-includes"/>
 			<fileset refid="loRes-css-includes"/>
 		</concat>
 		<concat destfile="${build.dir}/WebRoot/js/ZimbraAdmin_loRes_all.css" fixlastline="yes">
-			<header filtering="no" file="${build.dir}/preamble-zpl.txt"/>
 			<fileset refid="za-css-includes"/>
 			<fileset refid="loRes-css-includes"/>
 		</concat>
-		<gzip src="${build.dir}/WebRoot/js/ZimbraMail_loRes_all.css" zipfile="${build.dir}/WebRoot/js/ZimbraMail_loRes_all.css${gzipExtension}"/>
+		<gzip src="${build.dir}/WebRoot/js/ZimbraMail_loRes_${skin}_all.css" zipfile="${build.dir}/WebRoot/js/ZimbraMail_loRes_${skin}_all.css${gzipExtension}"/>
 		<gzip src="${build.dir}/WebRoot/js/ZimbraAdmin_loRes_all.css" zipfile="${build.dir}/WebRoot/js/ZimbraAdmin_loRes_all.css${gzipExtension}"/>
 	</target>
 	
@@ -352,7 +353,6 @@
     <antcall target='build-images'>
       <param name="csspathprefix" value="/zimbra/img/"/>
     </antcall>
-    
   </target>
   
   <target name='admin-images'>
@@ -430,9 +430,6 @@
     </antcall>
 
   </target>
-
-  <!-- list all the skins to build with here -->
-  <property name='skins' value='steel,chocolate' />
 
   <target name='skin-css'>
     <foreach list='${skins}' target='build-skin-css' param='skindir'>

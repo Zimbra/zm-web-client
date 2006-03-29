@@ -102,7 +102,7 @@ Contributor(s):
 <% } else { %>
 <style type="text/css">
 <!--
-@import url(<%=contextPath%>/js/ZimbraMail_loRes_all.css<%=ext%>?v=<%=vers%>);
+@import url(<%=contextPath%>/js/ZimbraMail_loRes_<%= skin %>_all.css<%=ext%>?v=<%=vers%>);
 -->
 </style>
 <script type="text/javascript" src="<%=contextPath%>/js/Ajax_all.js<%=ext %>?v=<%=vers%>"></script>
