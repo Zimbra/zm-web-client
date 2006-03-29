@@ -62,7 +62,7 @@ Contributor(s):
 	// MOW:  get the skin name from a query parameter, defaulting to "chocolate"
 	String skin = (String) request.getParameter("skin");
 	if (skin == null) {
-		skin = "chocolate";
+		skin = "steel";
 	}
 	String skinHtmlFile = "../skins/" + skin + "/skin.html";
 	

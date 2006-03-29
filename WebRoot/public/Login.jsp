@@ -134,6 +134,12 @@ Contributor(s):
 	if (ext == null) {
 		ext = "";
 	}
+	
+	// MOW:  get the skin name from a query parameter, defaulting to "chocolate"
+	String skin = (String) request.getParameter("skin");
+	if (skin == null) {
+		skin = "steel";
+	}	
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -143,9 +149,10 @@ Contributor(s):
 
 <title>Zimbra Login</title>
 
-<!-- ALL STYLES MOVED TO login.css SO THEY CAN BE SKINNED:  WE PICK A DEFAULT SKIN HERE... -->
+<!-- ALL STYLES MOVED TO login.css SO THEY CAN BE SKINNED:  WE USE THE SKIN FROM ABOVE. -->
 <style type="text/css">
-	@import url(/zimbra/skins/chocolate/login.css?v=<%= vers %>);
+	@import url(/zimbra/skins/<%= skin %>/common.css?v=<%= vers %>);
+	@import url(/zimbra/skins/<%= skin %>/login.css?v=<%= vers %>);
 </style>
 
 
