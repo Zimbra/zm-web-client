@@ -27,6 +27,7 @@ function ZmNoteEditController(appCtxt, container, app) {
 	ZmListController.call(this, appCtxt, container, app);
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
+	this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._addDocsListener);
 }
 ZmNoteEditController.prototype = new ZmListController;
 ZmNoteEditController.prototype.constructor = ZmNoteEditController;
@@ -39,6 +40,8 @@ function() {
 // Data
 
 ZmNoteEditController.prototype._note;
+
+ZmNoteEditController.prototype._uploadCallback;
 
 // Public methods
 
@@ -69,17 +72,36 @@ function() {
 
 ZmNoteEditController.prototype._getToolBarOps = 
 function() {
-	var list = [ZmOperation.SAVE];
-	list.push(ZmOperation.CANCEL);
+	var list = [];
+	list.push(
+		ZmOperation.SAVE, ZmOperation.CANCEL,
+		ZmOperation.SEP
+	);
 	/***
-	list.push(ZmOperation.SEP);
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		list.push(
+			ZmOperation.TAG_MENU,
+			ZmOperation.SEP
+		);
+	}
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
 		list.push(ZmOperation.PRINT);
-	list.push(ZmOperation.DELETE);
+	list.push(
+		ZmOperation.DELETE,
+		ZmOperation.SEP
+	);
 	/***/
+	list.push(ZmOperation.ATTACHMENT);
 	return list;
+};
+ZmNoteEditController.prototype._initializeToolBar =
+function(view) {
+	ZmListController.prototype._initializeToolBar.call(this, view);
+
+	var toolbar = this._toolbar[this._currentView];
+	var button = toolbar.getButton(ZmOperation.ATTACHMENT);
+	button.setText(ZmMsg.addDocuments);
+	button.setToolTipContent(ZmMsg.addDocumentsTT);
 };
 
 ZmNoteEditController.prototype._defaultView =
@@ -98,6 +120,12 @@ function(view) {
 		this._noteView = new ZmNoteEditView(this._container, this._appCtxt, this); 
 	}
 	return this._noteView;
+};
+
+ZmNoteEditController.prototype._setView = 
+function(view, elements, isAppView, clear, pushOnly, isPoppable) {
+	ZmListController.prototype._setView.apply(this, arguments);
+	//this._app._setViewMenu(view);
 };
 
 ZmNoteEditController.prototype._setViewContents =
@@ -124,4 +152,11 @@ function(ev) {
 ZmNoteEditController.prototype._cancelListener =
 function(ev) {
 	this._app.popView();
+};
+
+ZmNoteEditController.prototype._addDocsListener =
+function(ev) {
+	var dialog = this._appCtxt.getUploadDialog();
+	dialog.setFolderId(this._note.folderId || ZmNote.DEFAULT_FOLDER);
+	dialog.popup();
 };

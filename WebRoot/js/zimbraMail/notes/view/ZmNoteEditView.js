@@ -105,7 +105,7 @@ function() {
 	var titleInputEl = this._titleInput.getInputElement();
 	titleInputEl.size = 50;
 		
-	this._textArea = new ZmNoteEditor(this, null, null, DwtHtmlEditor.HTML, this._appCtxt);
+	this._textArea = new ZmNoteEditor(this, null, null, DwtHtmlEditor.HTML, this._appCtxt, this._controller);
 	// HACK: Notes are always HTML format, regardless of the COS setting.
 	this._textArea.isHtmlEditingSupported = new Function("return true");
 	var textAreaEl = this._textArea.getHtmlElement();
@@ -136,9 +136,10 @@ function() {
 // ZmNoteEditor class
 //
 
-function ZmNoteEditor(parent, posStyle, content, mode, appCtxt) {
+function ZmNoteEditor(parent, posStyle, content, mode, appCtxt, controller) {
 	if (arguments.length == 0) return;
 	ZmHtmlEditor.call(this, parent, posStyle, content, mode, appCtxt)
+	this._controller = controller;
 }
 ZmNoteEditor.prototype = new ZmHtmlEditor;
 ZmNoteEditor.prototype.constructor = ZmNoteEditor;
@@ -148,6 +149,94 @@ ZmNoteEditor.prototype.toString = function() {
 };
 
 // Protected methods
+
+ZmNoteEditor.prototype._createToolbars = function() {
+	ZmHtmlEditor.prototype._createToolbars.call(this);
+	if (!this._wikiToolBar) {
+		this._createWikiToolBar(this);
+	}
+};
+
+ZmNoteEditor.prototype._createToolBar2 = function(parent) {
+	ZmHtmlEditor.prototype._createToolBar2.call(this, parent);
+
+	var button = new DwtButton(this._toolbar2, null, "TBButton")
+	button.setImage("ImageDoc");
+	button.addSelectionListener(new AjxListener(this, this._insertImageListener));
+};
+
+ZmNoteEditor.prototype._createWikiToolBar = function(parent) {
+	var toolbar = this._wikiToolBar = new ZmToolBar(parent, "ToolBar", DwtControl.RELATIVE_STYLE, 2);
+	toolbar.setVisible(this._mode == DwtHtmlEditor.HTML);
+	
+	var listener = new AjxListener(this, this._wikiToolBarListener);
+	
+	for (var name in ZmNoteView.WIKLETS) {
+		var wiklet = ZmNoteView.WIKLETS[name];
+		var button = new DwtButton(toolbar, null, "TBButton");
+		button.setText(wiklet.label || name);
+		button.setToolTipContent(wiklet.tooltip);
+		button.setData("wiklet", name);
+		button.addSelectionListener(listener);
+	}
+	
+	this._toolbars.push(toolbar);
+};
+
+ZmNoteEditor.prototype._insertImageListener = function(event) {
+	var note = this._controller.getNote();
+
+	var dialog = this._appCtxt.getUploadDialog();
+	dialog.setFolderId(note.folderId || ZmNote.DEFAULT_FOLDER);
+	if (!this._insertImageCallback) {
+		this._insertImageCallback = new AjxCallback(this, this._insertImageByIds);
+	}
+	dialog.setCallback(this._insertImageCallback);
+	dialog.popup();
+};
+
+ZmNoteEditor.prototype._insertImageByIds = function(ids) {
+	var loc = document.location;
+	var uname = this._appCtxt.get(ZmSetting.USERNAME);
+	for (var i = 0; i < ids.length; i++) {
+		var id = ids[i];
+		var src = [
+			loc.protocol,"//",loc.host,"/service/home/~",uname,"/?id=",id
+		].join("");
+
+		this.insertImage(src);
+	}
+};
+
+ZmNoteEditor.prototype._wikiToolBarListener = function(event) {
+	var name = event.item.getData("wiklet");
+	/***
+	var node = document.createElement("DIV");
+	node.style.backgroundColor = "black";
+	node.style.color = "white";
+	node.innerHTML = name;
+	/***
+	var button = new DwtButton(this);
+	button.setText(name);
+	button.addSelectionListener(new AjxListener(this, this._configureWiklet));
+	var node = button.getHtmlElement();
+	/***/
+	var a = [
+		"{{", name,
+	];
+	if (ZmNoteView.WIKLETS[name].params) {
+		a.push("|", ZmNoteView.WIKLETS[name].params);
+	}
+	a.push("}}");
+	var node = document.createTextNode(a.join(""));
+	/***/
+	this._insertNodeAtSelection(node);
+};
+/***
+ZmNoteEditor.prototype._configureWiklet = function(event) {
+	alert("click!");
+};
+/***/
 
 ZmNoteEditor.prototype._getInitialStyle = function(useDiv) {
 	return "";

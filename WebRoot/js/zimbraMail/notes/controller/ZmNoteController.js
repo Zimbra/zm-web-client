@@ -25,105 +25,157 @@
 
 function ZmNoteController(appCtxt, container, app) {
 	ZmListController.call(this, appCtxt, container, app);
-	this._history = [];
-	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
+
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
+	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
+	this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._uploadListener);
+	this._listeners[ZmOperation.DETACH] = new AjxListener(this, this._detachListener);
 	this._listeners[ZmOperation.PAGE_BACK] = new AjxListener(this, this._pageBackListener);
 	this._listeners[ZmOperation.PAGE_DBL_BACK] = new AjxListener(this, this._homeListener);
 	this._listeners[ZmOperation.PAGE_FORWARD] = new AjxListener(this, this._pageForwardListener);
 	
+	this._history = [];
 	this._cachedFolders = {};
 }
 ZmNoteController.prototype = new ZmListController;
 ZmNoteController.prototype.constructor = ZmNoteController;
 
-ZmNoteController.prototype.toString =
-function() {
+ZmNoteController.prototype.toString = function() {
 	return "ZmNoteController";
 };
 
+// Constants
+
+ZmNoteController._VIEWS = {};
+ZmNoteController._VIEWS[ZmController.NOTE_VIEW] = ZmNoteView;
+ZmNoteController._VIEWS[ZmController.NOTE_FILE_VIEW] = ZmNoteFileView;
+
 // Data
 
-ZmNoteController.prototype._note;
+ZmNoteController.prototype._object;
+ZmNoteController.prototype._folderId;
 
 ZmNoteController.prototype._place = -1;
 ZmNoteController.prototype._history;
 
+//
 // Public methods
+//
 
-ZmNoteController.prototype.show =
-function(noteOrFolderId, force) {
+// note
+
+ZmNoteController.prototype.gotoNote = function(noteRef) {
+	this._enableNaviButtons();
+
+	var cache = this._app.getNoteCache();
+	var note = cache.getNoteByName(noteRef.folderId, noteRef.name);
+	this._listView[this._currentView].set(this._object = note);
+};
+
+ZmNoteController.prototype.getNote = function() {
+	return this._object;
+};
+
+// view management
+
+ZmNoteController.prototype.show = function(noteOrFolderId, force) {
 	if (!(noteOrFolderId instanceof ZmNote)) {
 		this._showIndex(noteOrFolderId || ZmNote.DEFAULT_FOLDER);
 		return;
 	}
 
-	var elements;
-	if (!this._currentView) {
-		this._currentView = this._defaultView();
-		this._setup(this._currentView);
-
-		elements = new Object();
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
-	}
-	
-	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
-
-	this._note = noteOrFolderId;
-	if (this._note) {
+	this._object = noteOrFolderId;
+	this._folderId = null;
+	if (this._object) {
+		this._folderId = this._object.folderId;
 		for (var i = this._place + 1; i < this._history.length; i++) {
 			this._history[i] = null;
 		}
 		this._history.length = ++this._place;
-		var noteRef = { folderId: this._note.folderId, name: this._note.name };
+		var noteRef = { folderId: this._object.folderId, name: this._object.name };
 		this._history[this._place] = noteRef;
 	}
+	
+	var view = this._currentView;
+	if (!view) {
+		view = this._defaultView();
+		force = true;
+	}
+	this.switchView(view, force);
+
+	this._listView[this._currentView].set(this._object);
+};
+
+ZmNoteController.prototype.switchView = function(view, force) {
+	var viewChanged = force || view != this._currentView;
+
+	if (viewChanged) {	
+		this._currentView = view;
+		this._setup(view);
+	}
+
+	this._resetOperations(this._toolbar[view], 1); // enable all buttons
 	this._enableNaviButtons();
-	this._setView(this._currentView, elements, true);
+
+	if (viewChanged) {
+		var elements = {};
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+
+		var ok = this._setView(view, elements, true);
+		if (ok) {
+			this._setViewMenu(view);
+		}
+	}
 };
 
-ZmNoteController.prototype.gotoNote =
-function(noteRef) {
-	this._enableNaviButtons();
-
-	var cache = this._app.getNoteCache();
-	var note = cache.getNoteByName(noteRef.folderId, noteRef.name);
-	this._listView[this._currentView].set(this._note = note);
-};
-
-ZmNoteController.prototype.getNote = 
-function() {
-	return this._note;
-};
-
+//
 // Protected methods
+//
 
-ZmNoteController.prototype._getToolBarOps = 
-function() {
+// initialization
+
+ZmNoteController.prototype._getToolBarOps = function() {
 	var list = [];
-	list.push(ZmOperation.NEW_MENU, ZmOperation.EDIT, ZmOperation.SEP);
+	// shared items
+	list.push(ZmOperation.NEW_MENU, ZmOperation.REFRESH);
 	/***
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		list.push(ZmOperation.TAG_MENU);
+	/***/
+	list.push(ZmOperation.EDIT, ZmOperation.SEP);
+	/***
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
 		list.push(ZmOperation.PRINT);
 	/***/
 	list.push(
-		ZmOperation.REFRESH, ZmOperation.SEP,
-		ZmOperation.DELETE, 
+		ZmOperation.DELETE,
+		ZmOperation.SEP,
+		ZmOperation.ATTACHMENT,
 		ZmOperation.FILLER, 
+		ZmOperation.DETACH
+	);
+	// NOTE_VIEW items
+	list.push(
+		ZmOperation.SEP,
 		ZmOperation.PAGE_BACK, ZmOperation.PAGE_DBL_BACK, ZmOperation.PAGE_FORWARD
 	);
 	return list;
 };
-ZmNoteController.prototype._initializeToolBar =
-function(view) {
+ZmNoteController.prototype._initializeToolBar = function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
-	this._setNewButtonProps(view, ZmMsg.createNewNote, "NewNote", "NewNoteDis", ZmOperation.NEW_NOTE);
+	this._setNewButtonProps(view, ZmMsg.createNewNote, "NewPage", "NewPageDis", ZmOperation.NEW_NOTE);
 
 	var toolbar = this._toolbar[this._currentView];
+	var button = toolbar.getButton(ZmOperation.REFRESH);
+	button.setImage("SendRecieve");
+	button.setDisabledImage("SendRecieveDis");
+
+	var button = toolbar.getButton(ZmOperation.ATTACHMENT);
+	button.setText(ZmMsg.addDocuments);
+	button.setToolTipContent(ZmMsg.addDocumentsTT);
+
 	var button = toolbar.getButton(ZmOperation.PAGE_BACK);
 	button.setToolTipContent("");
 
@@ -136,60 +188,75 @@ function(view) {
 	button.setToolTipContent("");
 };
 
-ZmNoteController.prototype._defaultView =
-function() {
-	return ZmController.NOTE_VIEW;
-};
-
-ZmNoteController.prototype._getViewType = 
-function() {
-	return ZmItem.NOTE;
-};
-
-ZmNoteController.prototype._createNewView =
-function(view) {
-	if (!this._noteView) {
-		this._noteView = new ZmNoteView(this._container, this._appCtxt, this); 
-	}
-	return this._noteView;
-};
-
-ZmNoteController.prototype._setViewContents =
-function(view) {
-	this._listView[view].set(this._note);
-};
-
-ZmNoteController.prototype._getTagMenuMsg = 
-function() {
+ZmNoteController.prototype._getTagMenuMsg = function() {
 	return ZmMsg.tagNote;
 };
 
-ZmNoteController.prototype._doDelete =
-function(note) {
-	var soapDoc = AjxSoapDoc.create("DeleteWikiRequest", "urn:zimbraMail");
-	var wordNode = soapDoc.set("w");
-	wordNode.setAttribute("name", note.name);
-	
-	var params = {
-		soapDoc: soapDoc,
-		asyncMode: true,
-		callback: new AjxCallback(this, this._pageBackListener),
-		errorCallback: null,
-		noBusyOverlay: false
-	};
-	
-	var appController = this._appCtxt.getAppController();
-	appController.sendRequest(params);
+// view management
+
+ZmNoteController.prototype._getViewType = function() {
+	return ZmItem.NOTE;
 };
 
-ZmNoteController.prototype._editListener =
-function(ev) {
-	var noteEditController = this._app.getNoteEditController();
-	noteEditController.show(this._note);
+ZmNoteController.prototype._defaultView = function() {
+	return ZmController.NOTE_VIEW;
 };
 
-ZmNoteController.prototype._refreshListener =
-function(ev) {
+ZmNoteController.prototype._createNewView = function(view) {
+	if (!this._listView[view]) {
+		var viewCtor = ZmNoteController._VIEWS[view];
+		this._listView[view] = new viewCtor(this._container, this._appCtxt, this); 
+	}
+	return this._listView[view];
+};
+
+ZmNoteController.prototype._setViewContents = function(view) {
+	this._listView[view].set(this._object);
+};
+
+ZmNoteController.prototype._setViewMenu = function(view) {
+	var appToolbar = this._appCtxt.getCurrentAppToolbar();
+	var menu = appToolbar.getViewMenu(view);
+	if (!menu) {
+		var listener = this._listeners[ZmOperation.VIEW];
+		
+		menu = new ZmPopupMenu(appToolbar.getViewButton());
+
+		var item = menu.createMenuItem(ZmNotesApp.NOTE, "Page", ZmMsg.noteView, null, true, DwtMenuItem.RADIO_STYLE);
+		item.setData(ZmOperation.MENUITEM_ID, ZmController.NOTE_VIEW);
+		item.addSelectionListener(listener);
+		
+		var item = menu.createMenuItem(ZmNotesApp.FILE, "Folder", ZmMsg.noteFileView, null, true, DwtMenuItem.RADIO_STYLE);
+		item.setData(ZmOperation.MENUITEM_ID, ZmController.NOTE_FILE_VIEW);
+		item.addSelectionListener(listener);
+	}
+
+	var item = menu.getItemById(ZmOperation.MENUITEM_ID, view);
+	item.setChecked(true, true);
+
+	appToolbar.setViewMenu(view, menu);
+};
+
+ZmNoteController.prototype._enableNaviButtons = function() {
+	var enabled = this._currentView == ZmController.NOTE_VIEW;
+
+	var toolbar = this._toolbar[this._currentView];
+	var button = toolbar.getButton(ZmOperation.PAGE_BACK);
+	button.setEnabled(enabled && this._place > 0);
+	this.__setButtonToolTip(button, this._history[this._place - 1]);
+	
+	var button = toolbar.getButton(ZmOperation.PAGE_DBL_BACK);
+	button.setEnabled(enabled && this._place > 0);
+	this.__setButtonToolTip(button, this._history[0]);
+
+	var button = toolbar.getButton(ZmOperation.PAGE_FORWARD);
+	button.setEnabled(enabled && this._place + 1 < this._history.length);
+	this.__setButtonToolTip(button, this._history[this._place + 1]);
+};
+
+// listeners
+
+ZmNoteController.prototype._refreshListener = function(event) {
 	var noteRef = this._history[this._place];
 	if (noteRef) {
 		if (this._place == 0) {
@@ -204,24 +271,40 @@ function(ev) {
 	}
 };
 
-ZmNoteController.prototype._pageBackListener = 
-function(ev) {
+ZmNoteController.prototype._editListener = function(event) {
+	var noteEditController = this._app.getNoteEditController();
+	var note = this._listView[this._currentView].getSelection();
+	noteEditController.show(note);
+};
+
+ZmNoteController.prototype._uploadListener = function(event) {
+	var dialog = this._appCtxt.getUploadDialog();
+	dialog.setFolderId(this._folderId || ZmNote.DEFAULT_FOLDER);
+	dialog.popup();
+};
+
+ZmNoteController.prototype._detachListener = function(event) {
+	alert("TODO: _detachListener");	
+};
+
+
+ZmNoteController.prototype._pageBackListener = function(event) {
 	if (this._place > 0) {
 		this.gotoNote(this._history[--this._place]);
 	}
 };
-ZmNoteController.prototype._homeListener =
-function(ev) {
+ZmNoteController.prototype._homeListener = function(event) {
 	if (this._place > 0) {
 		this.gotoNote(this._history[this._place = 0]);
 	}
 };
-ZmNoteController.prototype._pageForwardListener =
-function(ev) {
+ZmNoteController.prototype._pageForwardListener = function(event) {
 	if (this._place + 1 < this._history.length) {
 		this.gotoNote(this._history[++this._place]);
 	}
 };
+
+// note view
 
 ZmNoteController.prototype._showIndex = function(folderId) {
 	var cache = this._app.getNoteCache();
@@ -238,37 +321,11 @@ ZmNoteController.prototype._showIndex = function(folderId) {
 	this.show(index);
 };
 
-ZmNoteController.prototype._enableNaviButtons =
-function() {
-	var toolbar = this._toolbar[this._currentView];
-	/***
-	var button = toolbar.getButton(ZmOperation.EDIT);
-	button.setEnabled(this._place > 0);
-	
-	var button = toolbar.getButton(ZmOperation.DELETE);
-	button.setEnabled(this._note && !this._note._topPage);
-	/***/
-	
-	var button = toolbar.getButton(ZmOperation.REFRESH);
-	button.setEnabled(Boolean(this._history[this._place]));
-	
-	var button = toolbar.getButton(ZmOperation.PAGE_BACK);
-	button.setEnabled(this._place > 0);
-	this.__setButtonToolTip(button, this._history[this._place - 1]);
-	
-	var button = toolbar.getButton(ZmOperation.PAGE_DBL_BACK);
-	button.setEnabled(this._place > 0);
-	this.__setButtonToolTip(button, this._history[0]);
-
-	var button = toolbar.getButton(ZmOperation.PAGE_FORWARD);
-	button.setEnabled(this._place + 1 < this._history.length);
-	this.__setButtonToolTip(button, this._history[this._place + 1]);
-};
-
+//
 // Private methods
+//
 
-ZmNoteController.prototype.__setButtonToolTip = 
-function(button, noteRef) {
+ZmNoteController.prototype.__setButtonToolTip = function(button, noteRef) {
 	var text = noteRef ? noteRef.name : "";
 	button.setToolTipContent(text);
 };

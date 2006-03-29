@@ -326,6 +326,9 @@ function(node, handlers) {
 			node.parentNode.removeChild(node);
 			return tmp;
 		}
+		else if (tmp == "style") {
+			return tmp;
+		}
 		// fix style
 		// node.nowrap = "";
 		// node.className = "";

@@ -25,7 +25,7 @@
 
 function ZmNotesApp(appCtxt, container, parentController) {
 	ZmApp.call(this, ZmZimbraMail.NOTES_APP, appCtxt, container, parentController);
-	
+	this._controllers = {};
 	this._noteCache = new ZmNoteCache(appCtxt);
 }
 
@@ -37,8 +37,18 @@ function() {
 	return "ZmNotesApp";
 }
 
+// Constants
+
+ZmNotesApp.NOTE = "note";
+ZmNotesApp.EDIT = "edit";
+
+ZmNotesApp.__CONTROLLERS = {};
+ZmNotesApp.__CONTROLLERS[ZmNotesApp.NOTE] = ZmNoteController;
+ZmNotesApp.__CONTROLLERS[ZmNotesApp.EDIT] = ZmNoteEditController;
+
 // Data
 
+ZmNotesApp.prototype._controllers;
 ZmNotesApp.prototype._noteCache;
 
 // Public methods
@@ -63,20 +73,21 @@ function(active) {
 	/***/
 };
 
-ZmNotesApp.prototype.getNoteController =
-function() {
-	if (!this._noteController) {
-		this._noteController = new ZmNoteController(this._appCtxt, this._container, this);
+ZmNotesApp.prototype.getController = function(name) {
+	name = name || ZmNotesApp.NOTE;
+	if (!this._controllers[name]) {
+		var controllerCtor = ZmNotesApp.__CONTROLLERS[name];
+		this._controllers[name] = new controllerCtor(this._appCtxt, this._container, this);
 	}
-	return this._noteController;
+	return this._controllers[name];
 };
 
-ZmNotesApp.prototype.getNoteEditController =
-function() {
-	if (!this._noteEditController) {
-		this._noteEditController = new ZmNoteEditController(this._appCtxt, this._container, this);
-	}
-	return this._noteEditController;
+ZmNotesApp.prototype.getNoteController = function() {
+	return this.getController(ZmNotesApp.NOTE);
+};
+
+ZmNotesApp.prototype.getNoteEditController = function() {
+	return this.getController(ZmNotesApp.EDIT);
 };
 
 ZmNotesApp.prototype.getNoteCache = 

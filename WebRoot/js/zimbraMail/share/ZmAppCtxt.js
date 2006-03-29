@@ -294,6 +294,14 @@ function() {
 	return this._confirmDialog;
 };
 
+ZmAppCtxt.prototype.getUploadDialog =
+function() {
+	if (!this._uploadDialog) {
+		this._uploadDialog = new ZmUploadDialog(this, this.getShell());
+	}
+	return this._uploadDialog;
+};
+
 ZmAppCtxt.prototype.clearAllDialogs =
 function() {
 	this.clearFolderDialogs();
@@ -302,6 +310,7 @@ function() {
 	this.clearShareDialogs();
 	this._filterRuleDialog = null;
 	this._confirmDialog = null;	
+	this._uploadDialog = null;
 };
 
 ZmAppCtxt.prototype.clearFolderDialogs =

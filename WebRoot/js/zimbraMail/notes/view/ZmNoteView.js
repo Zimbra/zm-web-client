@@ -163,7 +163,7 @@ ZmNoteView.prototype._renderReplaceTransclusions = function(ids, note) {
 		var replacement = placeholder.firstChild;
 		var wiklet = ZmNoteView.WIKLETS[placeholder.vname.toUpperCase()];
 		if (wiklet) {
-			replacement = wiklet(placeholder, cache, note);
+			replacement = wiklet.func(placeholder, cache, note);
 		}
 		placeholder.parentNode.replaceChild(replacement, placeholder);
 	}
@@ -179,88 +179,128 @@ ZmNoteView.prototype._renderFindObjects = function() {
 };
 
 ZmNoteView.WIKLETS = {
-	"TOC": function(element, cache, note) {
-		var notes = ZmNoteView.__object2Array(cache.getNotesInFolder(note.folderId));
-		notes.sort(ZmNoteView.__byNoteName);
-		
-		var nameRe = /^[^_]/;
-
-		var attrs = ZmNoteView.__parseValueAttrs(element.vvalue);
-		if (attrs.name) {
-			var reSource = attrs.name;
-			reSource = reSource.replace(/\?/g, ".");
-			reSource = reSource.replace(/\*/g, ".*");
-			reSource = reSource.replace(/([\[\(\{\+])/g, "\\$1");
-
-			nameRe = new RegExp("^" + reSource + "$", "i");
-		}
-
-		var a = [ "<UL>" ];
-		for (var i = 0; i < notes.length; i++) {
-			var name = notes[i].name;
-			if (!nameRe.test(name)) continue;
-			a.push(
-				"<LI>",
-				"[[", name, "]]",
-				"</LI>"
-			);
-		}
-		a.push("</UL>");
-
-		var toc = document.createElement("DIV");
-		toc.className = "WikiTOC";
-		toc.innerHTML = a.join("");
-
-		return toc;
-	},
-	"NAME": function(element, cache, note) {
-		var name = note.name == "_INDEX_" ? ZmMsg.wikiToc : note.name;
-		return document.createTextNode(name);
-	},
-	"MSG": function(element, cache, note) {
-		var key = element.vvalue;
-		if (key && ZmMsg[key]) {
-			return document.createTextNode(ZmMsg[key]);
-		}
-		return element.firstChild;
-	},
-	"INCLUDE": function(element, cache, note) {
-		var name = element.vvalue;
-		// REVISIT: right now, assume same folder
-		var note = cache.getNoteByName(note.folderId, name);
-		if (note) {
-			var container = document.createElement("SPAN");
-			container.innerHTML = note.getContent();
-			var fragment = document.createDocumentFragment();
-			var child = container.firstChild;
-			while (child != null) {
-				fragment.appendChild(child);
-				child = container.firstChild;
+	"TOC": {
+		tooltip: ZmMsg.wikletTocTT,
+		params: "name = '*'",
+		func: function(element, cache, note) {
+			var notes = ZmNoteView.__object2Array(cache.getNotesInFolder(note.folderId));
+			notes.sort(ZmNoteView.__byNoteName);
+			
+			var nameRe = /^[^_]/;
+	
+			var attrs = ZmNoteView.__parseValueAttrs(element.vvalue);
+			if (attrs.name) {
+				var reSource = attrs.name;
+				reSource = reSource.replace(/\?/g, ".");
+				reSource = reSource.replace(/\*/g, ".*");
+				reSource = reSource.replace(/([\[\(\{\+])/g, "\\$1");
+	
+				nameRe = new RegExp("^" + reSource + "$", "i");
 			}
-			return fragment;
+	
+			var a = [ "<UL>" ];
+			for (var i = 0; i < notes.length; i++) {
+				var name = notes[i].name;
+				if (!nameRe.test(name)) continue;
+				a.push(
+					"<LI>",
+					"[[", name, "]]",
+					"</LI>"
+				);
+			}
+			a.push("</UL>");
+	
+			var toc = document.createElement("DIV");
+			toc.className = "WikiTOC";
+			toc.innerHTML = a.join("");
+	
+			return toc;
 		}
-		return element.firstChild;
 	},
-	"CREATOR": function(element, cache, note) {
-		return document.createTextNode(note.creator);
+	"NAME": {
+		tooltip: ZmMsg.wikletNameTT,
+		func: function(element, cache, note) {
+			var name = note.name == "_INDEX_" ? ZmMsg.wikiToc : note.name;
+			return document.createTextNode(name);
+		}
 	},
-	"CREATEDATE": function(element, cache, note) {
-		return ZmNoteView._wikletFormatDate("date", element.vvalue, note.createDate);
+	"MSG": {
+		tooltip: ZmMsg.wikletMsgTT,
+		params: "messageKey",
+		func: function(element, cache, note) {
+			var key = element.vvalue;
+			if (key && ZmMsg[key]) {
+				return document.createTextNode(ZmMsg[key]);
+			}
+			return element.firstChild;
+		}
 	},
-	"CREATETIME": function(element, cache, note) {
-		return ZmNoteView._wikletFormatDate("time", element.vvalue, note.createDate);
+	"INCLUDE": {
+		tooltip: ZmMsg.wikletIncludeTT,
+		params: "PageName",
+		func: function(element, cache, note) {
+			var name = element.vvalue;
+			// REVISIT: right now, assume same folder
+			var note = cache.getNoteByName(note.folderId, name);
+			if (note) {
+				var container = document.createElement("SPAN");
+				container.innerHTML = note.getContent();
+				var fragment = document.createDocumentFragment();
+				var child = container.firstChild;
+				while (child != null) {
+					fragment.appendChild(child);
+					child = container.firstChild;
+				}
+				return fragment;
+			}
+			return element.firstChild;
+		}
 	},
-	"MODIFIER": function(element, cache, note) {
-		return document.createTextNode(note.modifier || note.creator);
+	"CREATOR": {
+		tooltip: ZmMsg.wikletCreatorTT,
+		func: function(element, cache, note) {
+			return document.createTextNode(note.creator);
+		}
 	},
-	"MODIFYDATE": function(element, cache, note) {
-		return ZmNoteView._wikletFormatDate("date", element.vvalue, note.modifyDate);
+	"CREATEDATE": {
+		tooltip: ZmMsg.wikletCreateDateTT,
+		params: "medium",
+		func: function(element, cache, note) {
+			return ZmNoteView._wikletFormatDate("date", element.vvalue, note.createDate);
+		}
 	},
-	"MODIFYTIME": function(element, cache, note) {
-		return ZmNoteView._wikletFormatDate("time", element.vvalue, note.modifyDate);
+	"CREATETIME": {
+		tooltip: ZmMsg.wikletCreateTimeTT,
+		params: "short",
+		func: function(element, cache, note) {
+			return ZmNoteView._wikletFormatDate("time", element.vvalue, note.createDate);
+		}
 	},
-	"VERSION": function(element, cache, note) {
-		return document.createTextNode(note.version);
+	"MODIFIER": {
+		tooltip: ZmMsg.wikletModifierTT,
+		func: function(element, cache, note) {
+			return document.createTextNode(note.modifier || note.creator);
+		}
+	},
+	"MODIFYDATE": {
+		tooltip: ZmMsg.wikletModifyDateTT,
+		params: "medium",
+		func: function(element, cache, note) {
+			return ZmNoteView._wikletFormatDate("date", element.vvalue, note.modifyDate);
+		}
+	},
+	"MODIFYTIME": {
+		tooltip: ZmMsg.wikletModifyTimeTT,
+		params: "short",
+		func: function(element, cache, note) {
+			return ZmNoteView._wikletFormatDate("time", element.vvalue, note.modifyDate);
+		}
+	},
+	"VERSION": {
+		tooltip: ZmMsg.wikletVersionTT,
+		func: function(element, cache, note) {
+			return document.createTextNode(note.version);
+		}
 	}
 };
 

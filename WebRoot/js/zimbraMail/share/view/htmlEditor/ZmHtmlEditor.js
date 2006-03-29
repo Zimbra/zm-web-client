@@ -31,6 +31,7 @@
 function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt) {
 	if (arguments.length == 0) return;
 	this._appCtxt = appCtxt;
+	this._toolbars = [];
 
 	// ACE?
 	this.ACE_ENABLED = true;
@@ -61,6 +62,10 @@ ZmHtmlEditor.prototype.constructor = ZmHtmlEditor;
 // Consts
 ZmHtmlEditor._VALUE = "value";
 ZmHtmlEditor._INSERT_TABLE = "ZmHtmlEditor._INSERT_TABLE";
+
+// Data
+
+ZmHtmlEditor._toolbars;
 
 // Public methods
 
@@ -400,9 +405,11 @@ function(x, y) {
 
 	if (this._spellCheckModeDivId)
 		y -= document.getElementById(this._spellCheckModeDivId).offsetHeight;
-	if (this._toolbar1 && this._toolbar2 && this._mode == DwtHtmlEditor.HTML) {
-		y -= (this._toolbar1.getHtmlElement().offsetHeight +
-			 this._toolbar2.getHtmlElement().offsetHeight);
+	if (this._mode == DwtHtmlEditor.HTML && this._toolbars.length > 0) {
+		for (var i = 0; i < this._toolbars.length; i++) {
+			var toolbar = this._toolbars[i];
+			y -= toolbar.getHtmlElement().offsetHeight;
+		}
 	}
 
 	y -= delta;
@@ -558,6 +565,8 @@ function(parent) {
 	b.setToolTipContent(ZmMsg.subscript);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUBSCRIPT_STYLE);
 	b.addSelectionListener(listener);
+
+	this._toolbars.push(tb);
 };
 
 ZmHtmlEditor.prototype._createToolBar2 =
@@ -673,6 +682,8 @@ function(parent) {
 		item.setText("DESERIALIZATION");
 		item.addSelectionListener(new AjxListener(this, this._deserializeAceObjects));
 	}
+	
+	this._toolbars.push(tb);
 };
 
 ZmHtmlEditor.prototype._menu_insertObject =
