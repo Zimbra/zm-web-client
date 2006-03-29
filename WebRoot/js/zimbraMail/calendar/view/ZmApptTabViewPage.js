@@ -512,7 +512,7 @@ function(appt, mode) {
 	if (appt.isCustomRecurrence()) {
 		this._repeatDescField.innerHTML = appt._getRecurrenceBlurbForSave();
 	} else {
-		this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(appt.repeatType);
+		this._repeatDescField.innerHTML = appt.repeatType != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
 	}
 
 	// attendees
@@ -567,10 +567,10 @@ ZmApptTabViewPage.prototype._enableRepeat =
 function(enable) {
 	if (enable) {
 		this._repeatSelect.enable();
-		this._repeatDescField.style.color = "#0000FF";
+		this._repeatDescField.className = "FakeAnchor";
 	}  else {
 		this._repeatSelect.disable();
-		this._repeatDescField.style.color = "#999999";
+		this._repeatDescField.style.color = "DisabledText";
 	}
 	this._repeatSelectDisabled = !enable;
 	this._repeatSelect.setAlign(DwtLabel.ALIGN_LEFT); // XXX: hack b/c bug w/ DwtSelect
@@ -611,20 +611,14 @@ function() {
 	html[i++] = "'><col></colgroup>";
 	html[i++] = "<tr style='height:";
 	html[i++] = rowHeight;
-	html[i++] = "px'><td valign=top><fieldset";
-	if (AjxEnv.isMozilla)
-		html[i++] = " style='border: 1px dotted #555555'";
-	html[i++] = "><legend style='color:#555555'>";
+	html[i++] = "px'><td valign=top><fieldset class='ZmFieldset'><legend class='ZmLegend'>";
 	html[i++] = ZmMsg.details;
 	html[i++] = "</legend><div style='overflow:hidden; height:";
 	html[i++] = AjxEnv.isIE ? (rowHeight - 20) : rowHeight;
 	html[i++] = "px'>";
 	html[i++] = this._getDetailsHtml();
 	html[i++] = "</div></fieldset></td>";
-	html[i++] = "<td valign=top><fieldset";
-	if (AjxEnv.isMozilla)
-		html[i++] = " style='border: 1px dotted #555555'";
-	html[i++] = "><legend style='color:#555555'>";
+	html[i++] = "<td valign=top><fieldset class='ZmFieldset'><legend class='ZmLegend'>";
 	html[i++] = ZmMsg.time;
 	html[i++] = "</legend><div style='overflow:hidden; height:";
 	html[i++] = AjxEnv.isIE ? (rowHeight - 20) : rowHeight;
@@ -740,7 +734,7 @@ function() {
 	var i = 0;
 
 	html[i++] = "<table border=0 width=100%>";
-	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'><sup>*</sup>";
+	html[i++] = "<tr><td width=1% class='ZmFieldLabelRight'>*&nbsp;";
 	html[i++] = ZmMsg.subject;
 	html[i++] = ":</td><td colspan=5 id='";
 	html[i++] = this._subjectFieldId;
@@ -751,13 +745,13 @@ function() {
 	html[i++] = this._attTdId[ZmAppt.LOCATION];
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr>";
-	html[i++] = "<td width=1% class='ZmApptTabViewPageField'>";
+	html[i++] = "<td width=1% class='ZmFieldLabelRight'>";
 	html[i++] = ZmMsg.showAs;
 	html[i++] = "</td><td width=1% id='";
 	html[i++] = this._showAsSelectId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr>";
-	html[i++] = "<td width=1% class='ZmApptTabViewPageField' id='";
+	html[i++] = "<td width=1% class='ZmFieldLabelRight' id='";
 	html[i++] = this._calLabelId;
 	html[i++] = "'>";
 	html[i++] = ZmMsg.calendar;
@@ -792,12 +786,12 @@ function() {
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
 	html[i++] = "<input type='checkbox' id='";
 	html[i++] = this._allDayCheckboxId;
-	html[i++] = "'></td><td><nobr>&nbsp;";
+	html[i++] = "'></td><td class='ZmFieldLabelLeft'>&nbsp;";
 	html[i++] = ZmMsg.allDayEvent;
 	html[i++] = "</td></tr></table></td><td></td><td colspan=10 id='";
 	html[i++] = this._tzoneSelectId;
 	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
+	html[i++] = "<tr><td class='ZmFieldLabelRight'>";
 	html[i++] = ZmMsg.start;
 	html[i++] = ":</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
@@ -809,10 +803,10 @@ function() {
 	html[i++] = this._startMiniCalBtnId;
 	html[i++] = "'></td>";
 	html[i++] = "</tr></table></td>";
-	html[i++] = "<td>@</td><td id='";
+	html[i++] = "<td class='ZmFieldLabelCenter'>@</td><td id='";
 	html[i++] = this._startTimeSelectId;
 	html[i++] = "'></td>";
-	html[i++] = "</tr><tr><td class='ZmApptTabViewPageField'>";
+	html[i++] = "</tr><tr><td class='ZmFieldLabelRight'>";
 	html[i++] = ZmMsg.end;
 	html[i++] = ":</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
@@ -824,11 +818,11 @@ function() {
 	html[i++] = this._endMiniCalBtnId;
 	html[i++] = "'></td>";
 	html[i++] = "</tr></table></td>";
-	html[i++] = "<td>@</td><td id='";
+	html[i++] = "<td class='ZmFieldLabelCenter'>@</td><td id='";
 	html[i++] = this._endTimeSelectId;
 	html[i++] = "'></td>";
 	html[i++] = "</tr>";
-	html[i++] = "<tr><td valign=top class='ZmApptTabViewPageField' style='line-height:22px'>";
+	html[i++] = "<tr><td valign=top class='ZmFieldLabelRight' style='line-height:22px'>";
 	html[i++] = ZmMsg.repeat;
 	html[i++] = ":</td><td valign=top colspan=2 id='";
 	html[i++] = this._repeatSelectId;
@@ -986,10 +980,7 @@ function() {
 	// create fieldset and append to given table cell
 	var html = [];
 	var i = 0;
-	html[i++] = "<fieldset";
-	if (AjxEnv.isMozilla)
-		html[i++] = " style='border:1px dotted #555555'";
-	html[i++] = "><legend style='color:#555555'>";
+	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
 	html[i++] = ZmMsg.attachments;
 	html[i++] = "</legend>";
 
@@ -1217,7 +1208,7 @@ function(ev) {
 		this._oldRepeatValue = ev._args.oldValue;
 		this._showRecurDialog();
 	} else {
-		this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(newSelectVal);
+		this._repeatDescField.innerHTML = newSelectVal != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
 	}
 	this.notifyListeners(ZmApptTabViewPage._REPEAT_CHANGE, ev);
 };

@@ -106,10 +106,10 @@ function(id, key) {
 
 // convenience method to set the value of a setting
 ZmAppCtxt.prototype.set =
-function(id, value, key) {
+function(id, value, key, setDefault, skipNotify) {
 	var setting = this.getSettings().getSetting(id);
 	if (setting)
-		setting.setValue(value, key);
+		setting.setValue(value, key, setDefault, skipNotify);
 };
 
 ZmAppCtxt.prototype.getApp =
@@ -202,6 +202,14 @@ function() {
 	return this._newCalendarDialog;
 };
 
+ZmAppCtxt.prototype.getNewNotebookDialog =
+function() {
+	if (!this._newNotebookDialog) {
+		this._newNotebookDialog = new ZmNewNotebookDialog(this, this.getShell());
+	}
+	return this._newNotebookDialog;
+};
+
 ZmAppCtxt.prototype.getNewRosterItemDialog =
 function() {
 	if (!this._newRosterItemDialog) {
@@ -286,13 +294,23 @@ function() {
 	return this._confirmDialog;
 };
 
+ZmAppCtxt.prototype.getUploadDialog =
+function() {
+	if (!this._uploadDialog) {
+		this._uploadDialog = new ZmUploadDialog(this, this.getShell());
+	}
+	return this._uploadDialog;
+};
+
 ZmAppCtxt.prototype.clearAllDialogs =
 function() {
 	this.clearFolderDialogs();
 	this.clearCalendarDialogs();
+	this.clearNotebookDialogs();
 	this.clearShareDialogs();
 	this._filterRuleDialog = null;
 	this._confirmDialog = null;	
+	this._uploadDialog = null;
 };
 
 ZmAppCtxt.prototype.clearFolderDialogs =
@@ -304,6 +322,11 @@ function() {
 ZmAppCtxt.prototype.clearCalendarDialogs =
 function() {
 	this._newCalendarDialog = null;
+};
+
+ZmAppCtxt.prototype.clearNotebookDialogs =
+function() {
+	this._newNotebookDialog = null;
 };
 
 ZmAppCtxt.prototype.clearShareDialogs = 
@@ -346,7 +369,7 @@ function() {
 	if (!this._uploadManagerIframeId) {
 		var iframeId = Dwt.getNextId();
 		var html = [ "<iframe name='", iframeId, "' id='", iframeId,
-			     "' src='", (AjxEnv.isIE && location.protocol == "https:") ? "/zimbra/public/blank.html" : "javascript:\"\"",
+			     "' src='", (AjxEnv.isIE && location.protocol == "https:") ? appContextPath+"/public/blank.html" : "javascript:\"\"",
 			     "' style='position: absolute; top: 0; left: 0; visibility: hidden'></iframe>" ];
 		var div = document.createElement("div");
 		div.innerHTML = html.join("");
@@ -418,7 +441,7 @@ function(fullVersion) {
 	var args = "height=450,width=615,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
 	var prefix = document.location.protocol + "//" + document.domain;
 	var port = (!location.port || location.port == "80") ? "" : ":" + location.port;
-	var url = prefix + port + "/zimbra/public/launchNewWindow.jsp";
+	var url = prefix + port + appContextPath+"/public/launchNewWindow.jsp";
 	if (fullVersion)
 		url += "?full=1";
 	var newWin = window.open(url, "_blank", args);

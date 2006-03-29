@@ -26,11 +26,9 @@ Contributor(s):
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<%!
-static final private String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
-static final private String LOGIN_PAGE = "/zimbra/";
-%>
 <%
+	final String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
+	String contextPath = request.getContextPath();
 	String authToken = request.getParameter("auth");
 	if (authToken != null && authToken.equals("")) {
 		authToken = null;
@@ -39,101 +37,106 @@ static final private String LOGIN_PAGE = "/zimbra/";
 	if (authToken == null) {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
-			for (int idx = 0; idx < cookies.length; ++idx) {
-				if (cookies[idx].getName().equals(AUTH_TOKEN_COOKIE_NAME))
-					authToken = cookies[idx].getValue();
-			}
+            for (Cookie cooky : cookies) {
+                if (cooky.getName().equals(AUTH_TOKEN_COOKIE_NAME))
+                    authToken = cooky.getValue();
+            }
 		}
 
 		if (authToken == null) {
-			response.sendRedirect(LOGIN_PAGE);
+			response.sendRedirect(contextPath);
 		}
 	} else {
 		Cookie c = new Cookie(AUTH_TOKEN_COOKIE_NAME, authToken);
 		c.setPath("/");
-		c.setMaxAge(-1);                
+		c.setMaxAge(-1);
 		response.addCookie(c);
 	}
 
-	String contextPath = (String)request.getContextPath(); 
 	String mode = (String) request.getAttribute("mode");
 	String vers = (String) request.getAttribute("version");
 	String ext = (String) request.getAttribute("fileExtension");
-	String hiRes = (String) request.getParameter("hiRes");
-	String ua = (String) request.getHeader("user-agent");
+	String ua = request.getHeader("user-agent");
 	boolean isSafari = ua.indexOf("Safari/") != -1;
-	
+
+	// MOW:  get the skin name from a query parameter, defaulting to "chocolate"
+	String skin = request.getParameter("skin");
+	if (skin == null) {
+		skin = "steel";
+	}
+	String skinHtmlFile = "../skins/" + skin + "/" + skin + ".html";
+
+
 	if (vers == null) vers = "";
 	if (ext == null) ext = "";
 %>
 
-<link rel="ICON" type="image/gif" href="<%= contextPath %>/img/loRes/logo/favicon.gif"/>
-<link rel="SHORTCUT ICON" href="<%= contextPath %>/img/loRes/logo/favicon.ico"/>
+<link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif"/>
+<link rel="SHORTCUT ICON" href="<%=contextPath %>/img/loRes/logo/favicon.ico"/>
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss" />
 
 <title>Zimbra</title>
 
-<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" language="JavaScript">
+	var zJSloading = (new Date()).getTime();
+	appContextPath = "<%=contextPath %>";
+</script>
 
+<script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext %>?v=<%=vers %>"></script>
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
 	<!--
-	<%if (hiRes != null) {%>
-			@import url(/zimbra/img/hiRes/imgs.css?v=<%= vers %>);
-			@import url(/zimbra/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
-	<% } else { %>
-			@import url(/zimbra/img/loRes/imgs.css?v=<%= vers %>);
-			@import url(/zimbra/img/loRes/skins/steel/skin.css?v=<%= vers %>);
-	<% } %>
-
-		@import url(/zimbra/js/zimbraMail/config/style/dwt.css?v=<%= vers %>);
-		@import url(/zimbra/js/zimbraMail/config/style/common.css?v=<%= vers %>);
-		@import url(/zimbra/js/zimbraMail/config/style/msgview.css?v=<%= vers %>);
-		@import url(/zimbra/js/zimbraMail/config/style/zm.css?v=<%= vers %>);
-		@import url(/zimbra/js/zimbraMail/config/style/spellcheck.css?v=<%= vers %>);
-		@import url(/zimbra/skins/steel/skin.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/skins/<%= skin %>/dwt.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/skins/<%= skin %>/common.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/skins/<%= skin %>/msgview.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/skins/<%= skin %>/zm.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/skins/<%= skin %>/spellcheck.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
 	-->
 	</style>
 	<jsp:include page="Ajax.jsp"/>
 	<jsp:include page="Zimbra.jsp"/>
 	<jsp:include page="ZimbraMail.jsp"/>
 <% } else { %>
-	<style type="text/css">
-	<!--
-	<%if (hiRes != null) {%>
-			@import url(<%= contextPath %>/js/ZimbraMail_hiRes_all.css<%= ext %>?v=<%= vers %>);
-	<% } else { %>
-			@import url(<%= contextPath %>/js/ZimbraMail_loRes_all.css<%= ext %>?v=<%= vers %>);
-	<% } %>
-	-->
-	</style>
-	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
-	<script type="text/javascript" src="<%= contextPath %>/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
+<style type="text/css">
+<!--
+@import url(<%=contextPath%>/js/ZimbraMail_loRes_<%= skin %>_all.css<%=ext%>?v=<%=vers%>);
+-->
+</style>
+<script type="text/javascript" src="<%=contextPath%>/js/Ajax_all.js<%=ext %>?v=<%=vers%>"></script>
+<script type="text/javascript" src="<%=contextPath%>/js/ZimbraMail_all.js<%=ext %>?v=<%=vers%>"></script>
 <% } %>
 
 
 <%if (isSafari) { %>
 	<style type="text/css">
 	<!--
-		@import url(/zimbra/skins/steel/skin-safari.css?v=<%= vers %>);
+		@import url(<%=contextPath %>/skins/<%= skin %>/<%= skin %>-safari.css?v=<%=vers%>);
 	-->
 	</style>
 <% } %>
 
 
-<script language="JavaScript">  
-	var cacheKillerVersion = "<%= vers %>";
+<script type="text/javascript" language="JavaScript">
+	zJSloading = (new Date()).getTime() - zJSloading;
+</script>
+
+<script  type="text/javascript" language="JavaScript">
+	var cacheKillerVersion = "<%=vers%>";
 	function launch() {
-		AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
+		AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp"
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
-		 	// figure out the debug level
-			if (location.search && (location.search.indexOf("debug=") != -1)) {
-			var m = location.search.match(/debug=(\d+)/);
-			if (m.length) {
-				var num = parseInt(m[1]);
-				var level = AjxDebug.DBG[num];
+		// figure out the debug level
+		if (location.search && (location.search.indexOf("debug=") != -1)) {
+			var m = location.search.match(/debug=(\w+)/);
+			if (m && m.length) {
+				var level = parseInt(m[1]);
 				if (level)
 					DBG.setDebugLevel(level);
+				else if (m[1] == 't')
+					DBG.showTiming(true);
 			}
 		}
 
@@ -141,7 +144,7 @@ static final private String LOGIN_PAGE = "/zimbra/";
 		var app = null;
 		if (location.search && (location.search.indexOf("app=") != -1)) {
 			var m = location.search.match(/app=(\w+)/);
-			if (m.length)
+			if (m && m.length)
 				app = m[1];
 		}
 
@@ -151,9 +154,8 @@ static final private String LOGIN_PAGE = "/zimbra/";
 	AjxCore.addOnunloadListener(ZmZimbraMail.unload);
 </script>
 </head>
-
 <body>
-	<jsp:include page="/public/pre-cache.jsp"/>  
-	<jsp:include page="../skins/steel/skin.html"/>
+	<jsp:include page="/public/pre-cache.jsp"/>
+	<jsp:include page="<%= skinHtmlFile %>"/>
 </body>
 </html>

@@ -26,7 +26,7 @@
 function ZmZimletTreeController(appCtxt, type, dropTgt) {
 	if (arguments.length === 0) {return;}
 	type = type ? type : ZmOrganizer.ZIMLET;
-	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(ZmAppt, ZmConv, ZmMailMsg, ZmContact);
+	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(ZmAppt, ZmConv, ZmMailMsg, ZmContact, ZmFolder);
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 	this._eventMgrs = {};
 }
@@ -69,9 +69,32 @@ function(overviewId, showUnread, omit, forceCreate) {
 		if (root) {
 			var items = root.getItems();
 			for (var i = 0; i < items.length; i++) {
-				var item = items[i];
+				this.setToolTipText(items[i]);
 			}
 		}
+	}
+};
+
+ZmZimletTreeController.prototype.setToolTipText =
+function (item) {
+	var zimlet = item.getData(Dwt.KEY_OBJECT);
+	if (zimlet) zimlet.setToolTipText(item);
+};
+
+// ZmTreeController removes existing DwtTreeItem object then add a new one on ZmEvent.E_MODIFY,
+// wiping out any properties set on the object. 
+ZmZimletTreeController.prototype._changeListener =
+function(ev, treeView) {
+	ZmTreeController.prototype._changeListener.call(this, ev, treeView);
+	var organizers = ev.getDetail("organizers");
+	if (!organizers && ev.source)
+		organizers = [ev.source];
+
+	for (var i = 0; i < organizers.length; i++) {
+		var organizer = organizers[i];
+		var id = organizer.id;
+		var item = treeView.getTreeItemById(id);
+		this.setToolTipText(item);
 	}
 };
 
@@ -109,7 +132,7 @@ ZmZimletTreeController.prototype._itemClicked = function(z) {
 	if (!z.__dbl_click_timeout) {
 		z.__dbl_click_timeout = setTimeout(function() {
 			z.__dbl_click_timeout = null;
-			z.getZimletContext().callHandler("singleClicked");
+			z.getZimletContext().callHandler("_dispatch", [ "singleClicked" ]);
 		}, 350);
 	}
 };
@@ -122,7 +145,7 @@ ZmZimletTreeController.prototype._itemDblClicked = function(z) {
 		clearTimeout(z.__dbl_click_timeout);
 		z.__dbl_click_timeout = null;
 	}
-	z.getZimletContext().callHandler("doubleClicked");
+	z.getZimletContext().callHandler("_dispatch", [ "doubleClicked" ]);
 };
 
 // Handles a drop event
@@ -138,7 +161,7 @@ ZmZimletTreeController.prototype._dropListener = function(ev) {
 		ev.doIt = false;
 		return;
 	}
-	var srcData = ev.srcData.data;
+	var srcData = ev.srcData.data ? ev.srcData.data : ev.srcData;
 	if (!z || !srcData) {
 		ev.doIt = false;
 		return;
@@ -147,22 +170,29 @@ ZmZimletTreeController.prototype._dropListener = function(ev) {
  	if (!dragSrc) {
  		ev.doIt = false;
  	} else {
-		if (ev.action == DwtDropEvent.DRAG_ENTER) {
-			var doIt = false;
-			for (var i = dragSrc.length; --i >= 0;) {
-				if (srcData.toString().indexOf(dragSrc[i].type) == 0) {
-					doIt = true;
-					break;
-				}
+		var doIt = false;
+		for (var i = dragSrc.length; --i >= 0;) {
+			// XXX Assumes all srcData are of the same Type
+			var type = srcData[0] ? srcData[0].toString() : srcData.toString();
+			if (type == dragSrc[i].type) {
+				doIt = true;
+				dragSrc = dragSrc[i];
+				break;
 			}
+		}
+		if (ev.action == DwtDropEvent.DRAG_ENTER) {
 			if (doIt) {
-				doIt = z.callHandler(
-					"doDrag", [ ZmZimletContext._translateZMObject(srcData) ]);
+				doIt = z.callHandler("_dispatch",
+						     [ "doDrag",
+						       ZmZimletContext._translateZMObject(srcData),
+						       dragSrc ]);
 			}
 			ev.doIt = doIt;
 		} else if (ev.action == DwtDropEvent.DRAG_DROP) {
-			z.callHandler(
-				"doDrop", [ ZmZimletContext._translateZMObject(srcData) ]);
+			z.callHandler("_dispatch",
+				      [ "doDrop",
+					ZmZimletContext._translateZMObject(srcData),
+					dragSrc ]);
 		}
  	}
 };

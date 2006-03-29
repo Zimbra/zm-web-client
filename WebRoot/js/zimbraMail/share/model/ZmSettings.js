@@ -157,20 +157,9 @@ function(callback, result) {
 		
 	// load Zimlets
 	if(obj.zimlets && obj.zimlets.zimlet) {
-		DBG.println(AjxDebug.DBG1, "Zimlets - Got " + (obj.zimlets.zimlet.length + 1) + " Zimlets");
+		DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + obj.zimlets.zimlet.length + " Zimlets");
 		this._zmm.loadZimlets(obj.zimlets.zimlet, obj.props.prop);
-	 	var panelZimlets = this._zmm.getPanelZimlets();
-	 	if(panelZimlets && panelZimlets.length > 0) {
-			var zimletTree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
-		 	if (!zimletTree) {
-		 		zimletTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ZIMLET);
-		 		this._appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
-		 	}
-		 	var zimletString = zimletTree.asString();
-		 	zimletTree.reset();
-		 	zimletTree.loadFromJs(panelZimlets);
-	 	}
-	 }
+	}
 
 	this.userSettingsLoaded = true;
 	
@@ -198,7 +187,7 @@ function(result) {
 /**
 * Saves one or more settings.
 *
-* @param list	a list of settings (ZmSetting)
+* @param list	[array]		a list of ZmSetting
 */
 ZmSettings.prototype.save =
 function(list, callback) {
@@ -209,6 +198,10 @@ function(list, callback) {
 		var setting = list[i];
 		if (setting.type != ZmSetting.T_PREF) {
 			DBG.println(AjxDebug.DBG1, "*** Attempt to modify non-pref: " + setting.id + " / " + setting.name);
+			continue;
+		}
+		if (!setting.name) {
+			DBG.println(AjxDebug.DBG1, "*** Attempt to modify internal pref: " + setting.id);
 			continue;
 		}
 		var value = setting.getValue();
