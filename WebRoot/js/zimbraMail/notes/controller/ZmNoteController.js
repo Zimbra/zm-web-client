@@ -192,6 +192,23 @@ ZmNoteController.prototype._getTagMenuMsg = function() {
 	return ZmMsg.tagNote;
 };
 
+ZmNoteController.prototype._doDelete = function(note) {
+	var soapDoc = AjxSoapDoc.create("DeleteWikiRequest", "urn:zimbraMail");
+	var wordNode = soapDoc.set("w");
+	wordNode.setAttribute("name", note.name);
+	
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: new AjxCallback(this, this._pageBackListener),
+		errorCallback: null,
+		noBusyOverlay: false
+	};
+	
+	var appController = this._appCtxt.getAppController();
+	appController.sendRequest(params);
+};
+
 // view management
 
 ZmNoteController.prototype._getViewType = function() {

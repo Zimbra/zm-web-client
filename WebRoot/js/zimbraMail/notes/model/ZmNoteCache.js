@@ -37,10 +37,12 @@ ZmNoteCache._SPECIAL = {
 	"_INDEX_": [
 		"<H2>{{MSG|wikiUserPages}}</H2>",
 		"<P>",
-			"{{TOC}}",
+			"{{TOC}}"
+		/***
 		"<H2>{{MSG|wikiSpecialPages}}</H2>",
 		"<P>",
 			"{{TOC|name='_*_'}}"
+		/***/
 	].join(""),
 	"_CHROME_": [
 		"<DIV style='padding:0.5em'>",

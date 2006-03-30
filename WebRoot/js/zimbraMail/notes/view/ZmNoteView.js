@@ -30,8 +30,11 @@ function ZmNoteView(parent, appCtxt, controller) {
 	this._controller = controller;
 
 	this._createHtml();	
-	
 	this._setMouseEventHdlrs(); // needed by object manager
+	
+	this._commentRe = /<!--.*?-->/g;
+	this._transclusionRe = /(?=^|[^\\])\{\{\s*(.+?)\s*(?:\|\s*(.*?))?\s*\}\}/g;
+	
 }
 ZmNoteView.prototype = new DwtComposite;
 ZmNoteView.prototype.constructor = ZmNoteView;
@@ -100,31 +103,26 @@ ZmNoteView.prototype._createHtml = function() {
 
 ZmNoteView.prototype._render = function(element, note) {
 	var ids = [];
-
-	element.normalize();
-	this._renderFindTransclusions(element, note, ids);
-
-	var action = new AjxTimedAction(this, this._renderReplaceTransclusions, [ids, note]);
-	AjxTimedAction.scheduleAction(action, 0);
+	this._renderFindTransclusions(element, element.firstChild, note, ids);
+	this._renderReplaceTransclusions(note, ids);
+	this._renderFindObjects(element);
 };
-ZmNoteView.prototype._renderFindTransclusions = function(element, note, ids) {
-	var commentRe = /<!--.*?-->/g;
-	var transclusionRe = /(?=^|[^\\])\{\{\s*(.+?)\s*(?:\|\s*(.*?))?\s*\}\}/g;
-	for (var child = element.firstChild; child != null; child = child.nextSibling) {
+ZmNoteView.prototype._renderFindTransclusions = function(element, startChild, note, ids) {
+	for (var child = startChild; child != null; child = child.nextSibling) {
 		if (child.nodeType == AjxUtil.ELEMENT_NODE) {
-			this._renderFindTransclusions(child, note, ids);
+			this._renderFindTransclusions(child, child.firstChild, note, ids);
 			continue;
 		}
 		if (child.nodeType == AjxUtil.TEXT_NODE) {
 			var m;
-			while (m = transclusionRe.exec(child.nodeValue)) {
+			while (m = this._transclusionRe.exec(child.nodeValue)) {
 				// skip comments
-				var commentM = commentRe.exec(child.nodeValue);
+				var commentM = this._commentRe.exec(child.nodeValue);
 				if (commentM) {
 					var commentLen = commentM.index + commentM[0].length;
 					if (m.index > commentM.index && m.index < commentLen) {
-						commentRe.lastIndex = commentLen;
-						transclusionRe.lastIndex = commentLen;
+						this._commentRe.lastIndex = commentLen;
+						this._transclusionRe.lastIndex = commentLen;
 						continue;
 					}
 				}
@@ -148,34 +146,42 @@ ZmNoteView.prototype._renderFindTransclusions = function(element, note, ids) {
 				placeholder.appendChild(child);
 				child = placeholder;
 				
-				commentRe.lastIndex = 0;
-				transclusionRe.lastIndex = 0;
+				this._commentRe.lastIndex = 0;
+				this._transclusionRe.lastIndex = 0;
 			}
 		}
 	}
 };
-ZmNoteView.prototype._renderReplaceTransclusions = function(ids, note) {
+ZmNoteView.prototype._renderReplaceTransclusions = function(note, ids) {
 	var cache = this._controller._app.getNoteCache();
-	for (var i = 0; i < ids.length; i++) {
-		var placeholder = document.getElementById(ids[i]);
+	while (ids.length > 0) {
+		var id = ids.shift();
+		var placeholder = document.getElementById(id);
 		if (!placeholder) continue;
 		
+		var context;
 		var replacement = placeholder.firstChild;
 		var wiklet = ZmNoteView.WIKLETS[placeholder.vname.toUpperCase()];
 		if (wiklet) {
-			replacement = wiklet.func(placeholder, cache, note);
+			replacement = wiklet.func(placeholder, cache, note, context = []);
+			if (replacement.nodeType == 11) { // document fragment
+				var container = document.createElement("SPAN");
+				container.appendChild(replacement);
+				replacement = container;
+			}
 		}
 		placeholder.parentNode.replaceChild(replacement, placeholder);
+		
+		var subnote = context && context.length ? context[0] : note;
+		this._renderFindTransclusions(replacement.parentNode, replacement, subnote, ids); 
 	}
-	var action = new AjxTimedAction(this, this._renderFindObjects);
-	AjxTimedAction.scheduleAction(action, 0);
 };
-ZmNoteView.prototype._renderFindObjects = function() {
+ZmNoteView.prototype._renderFindObjects = function(element) {
 	if (!this._objectMgr) {
 		this._objectMgr = new ZmObjectManager(this, this._appCtxt);
 	}
 	this._objectMgr.reset();
-	this._objectMgr.processHtmlNode(this.getHtmlElement(), true);
+	this._objectMgr.processHtmlNode(element, true);
 };
 
 ZmNoteView.WIKLETS = {
@@ -183,9 +189,6 @@ ZmNoteView.WIKLETS = {
 		tooltip: ZmMsg.wikletTocTT,
 		params: "name = '*'",
 		func: function(element, cache, note) {
-			var notes = ZmNoteView.__object2Array(cache.getNotesInFolder(note.folderId));
-			notes.sort(ZmNoteView.__byNoteName);
-			
 			var nameRe = /^[^_]/;
 	
 			var attrs = ZmNoteView.__parseValueAttrs(element.vvalue);
@@ -198,20 +201,29 @@ ZmNoteView.WIKLETS = {
 				nameRe = new RegExp("^" + reSource + "$", "i");
 			}
 	
-			var a = [ "<UL>" ];
-			for (var i = 0; i < notes.length; i++) {
-				var name = notes[i].name;
-				if (!nameRe.test(name)) continue;
-				a.push(
-					"<LI>",
-					"[[", name, "]]",
-					"</LI>"
-				);
-			}
-			a.push("</UL>");
-	
+			var notes = ZmNoteView.__object2Array(cache.getNotesInFolder(note.folderId), nameRe);
+			notes.sort(ZmNoteView.__byNoteName);
+
 			var toc = document.createElement("DIV");
 			toc.className = "WikiTOC";
+
+			var a = [];
+			if (notes.length == 0) {
+				a.push("{{MSG|wikiPagesNotFound}}");
+			}
+			else {
+				a.push("<UL>");
+				for (var i = 0; i < notes.length; i++) {
+					var name = notes[i].name;
+					if (!nameRe.test(name)) continue;
+					a.push(
+						"<LI>",
+						"[[", name, "]]",
+						"</LI>"
+					);
+				}
+				a.push("</UL>");
+			}
 			toc.innerHTML = a.join("");
 	
 			return toc;
@@ -230,19 +242,20 @@ ZmNoteView.WIKLETS = {
 		func: function(element, cache, note) {
 			var key = element.vvalue;
 			if (key && ZmMsg[key]) {
-				return document.createTextNode(ZmMsg[key]);
+				element.innerHTML = ZmMsg[key];
 			}
-			return element.firstChild;
+			return element.childNodes.length == 1 ? element.firstChild : element;
 		}
 	},
 	"INCLUDE": {
 		tooltip: ZmMsg.wikletIncludeTT,
 		params: "PageName",
-		func: function(element, cache, note) {
+		func: function(element, cache, note, context) {
 			var name = element.vvalue;
 			// REVISIT: right now, assume same folder
 			var note = cache.getNoteByName(note.folderId, name);
 			if (note) {
+				context.push(note);
 				var container = document.createElement("SPAN");
 				container.innerHTML = note.getContent();
 				var fragment = document.createDocumentFragment();
@@ -338,10 +351,12 @@ ZmNoteView.__parseValueAttrs = function(s) {
 	return attrs;
 };
 
-ZmNoteView.__object2Array = function(o) {
+ZmNoteView.__object2Array = function(o, re) {
 	var a = [];
 	for (var p in o) {
-		a.push(o[p]);
+		var op = o[p];
+		if (!re.test(op.name)) continue;
+		a.push(op);
 	}
 	return a;
 };
