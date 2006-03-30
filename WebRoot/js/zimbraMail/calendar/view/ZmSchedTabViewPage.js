@@ -895,13 +895,13 @@ function(ev) {
 	var select = ev._args.selectObj;
 	if (!select) return;
 
+	var svp = select.parent;
 	var type = select.getValue();
 	var sched = svp._schedTable[select._schedTableIdx];
 	if (sched.attType == type) return;
 	sched.attType = type;
 
 	// reset row
-	var svp = select.parent;
 	var input = sched.inputObj;
 	input.setValue("", true);
 	svp._clearColoredCells(sched);
