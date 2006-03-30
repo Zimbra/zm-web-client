@@ -590,7 +590,8 @@ function() {
 	this._createButtons();
 	this._cacheFields();
 	this._initNotesHtmlEditor();
-	this._initAutocomplete();
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
+		this._initAutocomplete();
 	this._addEventHandlers();
 };
 

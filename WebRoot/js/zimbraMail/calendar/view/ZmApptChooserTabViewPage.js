@@ -416,8 +416,10 @@ function() {
 	for (var i = 0; i < fields.length; i++) {
 		var sf = fields[i];
 		var searchField = this._searchFields[sf] = document.getElementById(this._searchFieldIds[sf]);
-		Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmApptChooserTabViewPage._keyPressHdlr);
-		Dwt.setHandler(searchField, DwtEvent.ONKEYUP, ZmApptChooserTabViewPage._keyUpHdlr);
+		if (searchField) {
+			Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmApptChooserTabViewPage._keyPressHdlr);
+			Dwt.setHandler(searchField, DwtEvent.ONKEYUP, ZmApptChooserTabViewPage._keyUpHdlr);
+		}
 	}
 	
 	if (this._multLocsCheckboxId) {
