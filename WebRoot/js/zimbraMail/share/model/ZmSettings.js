@@ -154,7 +154,12 @@ function(callback, result) {
 		this._settings[ZmSetting.BROWSE_ENABLED].setValue(false, null, true);
 	if (this.get(ZmSetting.FORCE_CAL_OFF))
 		this._settings[ZmSetting.CALENDAR_ENABLED].setValue(false, null, true);
-		
+
+	// bug fix #6787 - disable HTML compose in Safari until design mode is more stable
+	if (AjxEnv.isSafari) {
+		this._settings[ZmSetting.HTML_COMPOSE_ENABLED].setValue(false);
+	}
+
 	// load Zimlets
 	if(obj.zimlets && obj.zimlets.zimlet) {
 		DBG.println(AjxDebug.DBG1, "Zimlets - Got " + (obj.zimlets.zimlet.length + 1) + " Zimlets");
