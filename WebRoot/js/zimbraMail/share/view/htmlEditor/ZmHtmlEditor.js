@@ -408,6 +408,7 @@ function(x, y) {
 	// subtract spellchecker DIV if applicable
 	if (this._spellCheckModeDivId) {
 		y -= document.getElementById(this._spellCheckModeDivId).offsetHeight;
+	}
 	if (this._mode == DwtHtmlEditor.HTML && this._toolbars.length > 0) {
 		for (var i = 0; i < this._toolbars.length; i++) {
 			var toolbar = this._toolbars[i];
