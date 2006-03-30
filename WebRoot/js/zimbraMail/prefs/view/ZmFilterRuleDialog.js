@@ -631,7 +631,7 @@ function(button, organizer) {
 	var dialog = isFolder ? this._appCtxt.getMoveToDialog() : this._tagPicker;
 	if (organizer) {
 		button.setText(organizer.getName(false, null, true));
-		var value = isFolder ? "/" + organizer.getPath() : organizer.getName(false, null, true);
+		var value = isFolder ? "/" + organizer.getPath(false, false, null, true) : organizer.getName(false, null, true);
 		button.setData(ZmFilterRuleDialog.DATA, value);
 	}
 	dialog.popdown();

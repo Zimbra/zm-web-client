@@ -231,20 +231,28 @@ function(name, search, url) {
 		folderNode.setAttribute("l", this.id);
 		if (url) folderNode.setAttribute("url", url);
 	}
-	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [url]);
+	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [url, name]);
 	this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback});
 };
 
 ZmFolder.prototype._handleErrorCreate =
-function(url, ex) {
-	if (!url) return false;
+function(url, name, ex) {
+	if (!url && !name) return false;
 	
 	var msgDialog = this.tree._appCtxt.getMsgDialog();
-	msgDialog.reset();
-	var msg = (ex.code == ZmCsfeException.SVC_RESOURCE_UNREACHABLE) ? ZmMsg.feedUnreachable : ZmMsg.feedInvalid;
-	msg = AjxMessageFormat.format(msg, url);
-	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-	msgDialog.popup();
+	var msg;
+	if (name && (ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS)) {
+		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [ZmMsg.folderLc, name]);
+	} else if (url) {
+		var msg = (ex.code == ZmCsfeException.SVC_RESOURCE_UNREACHABLE) ? ZmMsg.feedUnreachable : ZmMsg.feedInvalid;
+		msg = AjxMessageFormat.format(msg, url);
+	}
+	if (msg) {
+		msgDialog.reset();
+		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+		msgDialog.popup();
+	}
+
 	return true;
 };
 
@@ -405,12 +413,15 @@ function() {
 /**
 * Returns the full folder path as a string.
 *
-* @param includeRoot		whether to include root name at the beginning of the path
+* @param includeRoot	[boolean]*	whether to include root name at the beginning of the path
+* @param showUnread		[boolean]*	whether to display the number of unread items (in parens)
+* @param maxLength		[int]*		length in chars to truncate the name to
+* @param noMarkup		[boolean]*	if true, don't return any HTML
 */
 ZmFolder.prototype.getPath = 
-function(includeRoot) {
+function(includeRoot, showUnread, maxLength, noMarkup) {
 	var parent = this.parent;
-	var path = this.getName();
+	var path = this.getName(showUnread, maxLength, noMarkup);
 	while (parent && ((parent.id != ZmOrganizer.ID_ROOT) || includeRoot)) {
 		path = parent.getName() + ZmFolder.SEP + path;
 		parent = parent.parent;
