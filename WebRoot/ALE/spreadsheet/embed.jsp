@@ -29,16 +29,15 @@ Contributor(s):
     <title>Zimbra ALE - Prototype</title>
       <style type="text/css">
           <!--
-          @import url( <%= contextPath %>/img/loRes/imgs.css );
-          @import url( <%= contextPath %>/img/loRes/skins/steel/skin.css );
-          @import url( <%= contextPath %>/js/zimbraMail/config/style/dwt.css );
-          @import url( <%= contextPath %>/js/zimbraMail/config/style/common.css );
-          @import url( <%= contextPath %>/js/zimbraMail/config/style/msgview.css );
-          @import url( <%= contextPath %>/js/zimbraMail/config/style/zm.css );
-          @import url( <%= contextPath %>/js/zimbraMail/config/style/spellcheck.css );
-          @import url( <%= contextPath %>/skins/steel/skin.css );
-          @import url( <%= contextPath %>/js/zimbraMail/config/style/dwt.css );
-          @import url( style.css );
+		@import url(/zimbra/img/loRes/imgs.css?v=060330134117);
+		@import url(/zimbra/img/loRes/skins/steel/steel.css?v=060330134117);
+		@import url(/zimbra/skins/steel/dwt.css?v=060330134117);
+		@import url(/zimbra/skins/steel/common.css?v=060330134117);
+		@import url(/zimbra/skins/steel/msgview.css?v=060330134117);
+		@import url(/zimbra/skins/steel/zm.css?v=060330134117);
+		@import url(/zimbra/skins/steel/spellcheck.css?v=060330134117);
+		@import url(/zimbra/skins/steel/steel.css?v=060330134117);
+        @import url( style.css );
           -->
       </style>
     <script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js"></script>

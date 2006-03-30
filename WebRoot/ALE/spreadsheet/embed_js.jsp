@@ -43,5 +43,5 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/spreadsheet/ZmSpreadSheetModel.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/spreadsheet/ZmSpreadSheetFormulae.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/spreadsheet/ZmSpreadSheetToolbars.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="test-embed.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/ALE/spreadsheet/test-embed.js<%= ext %>?v=<%= vers %>"></script>
 <!-- END SCRIPT BLOCK -->

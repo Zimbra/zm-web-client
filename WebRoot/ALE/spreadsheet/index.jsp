@@ -22,28 +22,34 @@ Contributor(s):
 
 ***** END LICENSE BLOCK *****
 -->
+<%
+    String contextPath = request.getContextPath();
+    String vers = (String)request.getAttribute("version");
+    String ext = (String)request.getAttribute("fileExtension");
+    if (vers == null){
+       vers = "";
+    }
+    if (ext == null){
+       ext = "";
+    }
+%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
     <title>Zimbra Spreadsheet Prototype</title>
-      <style type="text/css">
-          @import url( /zimbra/img/loRes/imgs.css );
-          @import url( /zimbra/img/loRes/skins/steel/skin.css );
-          @import url( /zimbra/js/zimbraMail/config/style/common.css );
-          @import url( /zimbra/js/ajax/config/style/dwt.css );
-          @import url( style.css );
-      </style>
-<%
-   String contextPath = request.getContextPath();
-   String vers = (String)request.getAttribute("version");
-   String ext = (String)request.getAttribute("fileExtension");
-   if (vers == null){
-      vers = "";
-   }
-   if (ext == null){
-      ext = "";
-   }
-%>
+	<style type="text/css">
+	<!--
+    @import url(/zimbra/img/loRes/imgs.css?v=060330134117);
+    @import url(/zimbra/img/loRes/skins/steel/steel.css?v=060330134117);
+    @import url(/zimbra/skins/steel/dwt.css?v=060330134117);
+    @import url(/zimbra/skins/steel/common.css?v=060330134117);
+    @import url(/zimbra/skins/steel/msgview.css?v=060330134117);
+    @import url(/zimbra/skins/steel/zm.css?v=060330134117);
+    @import url(/zimbra/skins/steel/spellcheck.css?v=060330134117);
+    @import url(/zimbra/skins/steel/steel.css?v=060330134117);
+    @import url(<%=contextPath %>/ALE/spreadsheet/style.css?v=<%=vers%>);
+	-->
+	</style>
     <jsp:include page="../../public/Messages.jsp"/>
     <jsp:include page="../../public/Ajax.jsp"/>
     <jsp:include page="index_js.jsp"/>
