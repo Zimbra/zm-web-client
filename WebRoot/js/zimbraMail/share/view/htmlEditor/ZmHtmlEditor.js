@@ -395,7 +395,9 @@ function(x, y) {
 	}
 
 	var main = document.getElementById(this.getBodyFieldId());
-	main.style.display = "none";
+	// bug fix #6789 - Safari nukes the IFRAME's document if you hide the containing DIV
+	if (!AjxEnv.isSafari)
+		main.style.display = "none";
 
 	// FUDGE: we must substract borders and paddings
 	var delta = 2 + 6;
