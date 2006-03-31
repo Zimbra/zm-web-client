@@ -35,6 +35,7 @@ function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt) {
 
 	// ACE?
 	this.ACE_ENABLED = true;
+	this.ACE_DEBUG = false;
 
 	DwtHtmlEditor.call(this, parent, "ZmHtmlEditor", posStyle, content, mode, appContextPath+"/public/blank.html");
 
@@ -677,15 +678,17 @@ function(parent) {
 		item.addSelectionListener(new AjxListener(this, this._menu_insertObject));
 
 		// DEBUG
-		// menu.createSeparator();
-
-		var item = new DwtMenuItem(menu);
-		item.setText("DEBUG SERIALIZATION");
-		item.addSelectionListener(new AjxListener(this, this._serializeAceObjects));
-
-		var item = new DwtMenuItem(menu);
-		item.setText("DESERIALIZATION");
-		item.addSelectionListener(new AjxListener(this, this._deserializeAceObjects));
+		if (this.ACE_DEBUG) {
+			// menu.createSeparator();
+	
+			var item = new DwtMenuItem(menu);
+			item.setText("DEBUG SERIALIZATION");
+			item.addSelectionListener(new AjxListener(this, this._serializeAceObjects));
+	
+			var item = new DwtMenuItem(menu);
+			item.setText("DESERIALIZATION");
+			item.addSelectionListener(new AjxListener(this, this._deserializeAceObjects));
+		}
 	}
 	
 	this._toolbars.push(tb);
