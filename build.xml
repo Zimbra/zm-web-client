@@ -296,6 +296,15 @@
         </antcall>
         <gzip src="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js${jsminExtension}" zipfile="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js${gzipExtension}"/>
         <delete file="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js${jsminExtension}"/>
+
+        <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js">
+          <filelist dir="${build.dir}/WebRoot/ALE/spreadsheet" files="../../public/Ajax.jsp,embed_js.jsp"/>
+        </jammer>
+        <antcall target="jsmin">
+            <param name="var" value="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js"/>
+        </antcall>
+        <gzip src="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js${jsminExtension}" zipfile="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js${gzipExtension}"/>
+        <delete file="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js${jsminExtension}"/>
     </target>
 
     <target name="compress-js-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, jam-files,generate-preambles">

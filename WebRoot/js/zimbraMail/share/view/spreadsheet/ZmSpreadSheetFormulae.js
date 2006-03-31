@@ -409,7 +409,7 @@ ZmSpreadSheetFormulae.DEF = function(name, n_args, callback, help) {
 
  // easter egg
 	ZmSpreadSheetFormulae.DEF("WHO_are_YOU?", 0, function() {
-		return "http://www.dynarch.com/";
+		return "http://www.zimbra.com/";
 	});
 
 

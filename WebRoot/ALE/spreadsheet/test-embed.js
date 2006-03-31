@@ -43,11 +43,10 @@ function Test() {
 			if (AjxEnv.isGeckoBased)
 				doc.designMode = "off";
 			var ifr = doc.createElement("iframe");
-			ifr.src = "/zimbra/ALE/spreadsheet/index.jsp";
+            ifr.src = location.protocol + "//" + location.hostname + ((location.port == '80')? "" : ":" +location.port) + "/zimbra/ALE/spreadsheet/index.jsp";
 			ifr.style.width = "100%";
 			ifr.style.height = "400px";
 			editor._insertNodeAtSelection(ifr);
-			// doc.body.appendChild(div);
 		});
 
 		container.setZIndex(Dwt.Z_VIEW);

@@ -162,7 +162,7 @@ function() {
 	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td>";
 	html[idx++] = "<table align=center border=0 cellspacing=0 cellpadding=0 class='LoginPanel'>";
 //MOW: Make AppName and ShortVersion dynamic!!!!
-	html[idx++] = "<tr><td align=center><div class='LoginPanelBanner'><div class='LoginPanelAppName'>Collaboration Suite</div><div class='LoginPanelShortVersion'>BETA</div></div></td></tr>";
+	html[idx++] = "<tr><td align=center><div class='LoginPanelBanner'><div class='LoginPanelAppName'>Collaboration Suite</div><div class='LoginPanelShortVersion'></div></div></td></tr>";
 	html[idx++] = "<tr><td id='loginPanel' class='mainPanel'>";
 	// error message div
 	html[idx++] = "<center><div class='error' style='display:none' id='errorMessageContainer'>";

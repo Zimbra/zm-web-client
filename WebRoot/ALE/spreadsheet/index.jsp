@@ -51,7 +51,7 @@ Contributor(s):
     @import url(<%=contextPath %>/ALE/spreadsheet/style.css?v=<%=vers%>);
 	-->
 	</style>
-<script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext %>?v=<%=vers %>"></script>
+    <script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext %>?v=<%=vers %>"></script>
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
     <jsp:include page="../../public/Ajax.jsp"/>
     <jsp:include page="index_js.jsp"/>

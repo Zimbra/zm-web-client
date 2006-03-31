@@ -22,28 +22,42 @@ Contributor(s):
 
 ***** END LICENSE BLOCK *****
 -->
-<% String contextPath = request.getContextPath(); %>
+<%
+    String contextPath = request.getContextPath();
+    String vers = (String)request.getAttribute("version");
+    String ext = (String)request.getAttribute("fileExtension");
+    String mode = (String) request.getAttribute("mode");
+    if (vers == null){
+       vers = "";
+    }
+    if (ext == null){
+       ext = "";
+    }
+%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
     <title>Zimbra ALE - Prototype</title>
       <style type="text/css">
-          <!--
-		@import url(/zimbra/img/loRes/imgs.css?v=060330134117);
-		@import url(/zimbra/img/loRes/skins/steel/steel.css?v=060330134117);
-		@import url(/zimbra/skins/steel/dwt.css?v=060330134117);
-		@import url(/zimbra/skins/steel/common.css?v=060330134117);
-		@import url(/zimbra/skins/steel/msgview.css?v=060330134117);
-		@import url(/zimbra/skins/steel/zm.css?v=060330134117);
-		@import url(/zimbra/skins/steel/spellcheck.css?v=060330134117);
-		@import url(/zimbra/skins/steel/steel.css?v=060330134117);
+        <!--
+        @import url(<%=contextPath %>/img/loRes/imgs.css?v=<%=vers%>);
+        @import url(<%=contextPath %>/img/loRes/skins/steel/steel.css?v=<%=vers%>);
+        @import url(<%=contextPath %>/skins/steel/dwt.css?v=<%=vers%>);
+        @import url(<%=contextPath %>/skins/steel/common.css?v=<%=vers%>);
+        @import url(<%=contextPath %>/skins/steel/msgview.css?v=<%=vers%>);
+        @import url(<%=contextPath %>/skins/steel/zm.css?v=<%=vers%>);
+        @import url(<%=contextPath %>/skins/steel/spellcheck.css?v=<%=vers%>);
+        @import url(<%=contextPath %>/skins/steel/steel.css?v=<%=vers%>);
         @import url( style.css );
-          -->
+        -->
       </style>
-    <script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js"></script>
-    <jsp:include page="../../public/Messages.jsp"/>
-    <jsp:include page="../../public/Ajax.jsp"/>
-    <jsp:include page="embed_js.jsp"/>
+    <script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext %>?v=<%=vers %>"></script>
+<% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
+     <jsp:include page="../../public/Ajax.jsp"/>
+     <jsp:include page="embed_js.jsp"/>
+<% } else { %>
+     <script type="text/javascript" src="<%=contextPath %>/ALE/spreadsheet/embed_all.js<%=ext%>?v=<%=vers%>"></script>
+<% } %>
   </head>
     <body>
     <noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
