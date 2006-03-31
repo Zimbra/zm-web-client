@@ -32,9 +32,10 @@
  */
 function ZmSpreadSheetFormulae(model, formula) {
 	this._model = model;
-	if (formula)
+	if (formula) {
 		this.compile(formula);
-};
+    }
+}
 
 // This defines parser tokens as regular expressions
 // WARNING: the order of these tokens is important!
@@ -48,19 +49,21 @@ ZmSpreadSheetFormulae.TOKEN = {
 			       // strings are a little bit more complex to
 			       // match with a RegExp because they can
 			       // potentially contain \' or \" or even \\\"
-			       if (!/^([\x22\x27])/.test(txt))
+			       if (!(/^([\x22\x27])/.test(txt))) {
 				       return null;
-			       var quote = RegExp.$1;
+                   }
+                   var quote = RegExp.$1;
 			       var esc = false;
 			       var str = "";
 			       for (var i = 1; i < txt.length; ++i) {
 				       var c = txt.charAt(i);
-				       if (!esc && c == "\\")
+				       if (!esc && c == "\\") {
 					       esc = true;
-				       else {
-					       if (c == quote && !esc)
+                       } else {
+					       if (c == quote && !esc) {
 						       return [ txt.substr(0, i + 1), str ];
-					       if (esc) {
+                           }
+                           if (esc) {
 						       switch (c) {
 							   case "n": c = "\n"; break;
 							   case "t": c = "\t"; break;
@@ -103,7 +106,7 @@ ZmSpreadSheetFormulae.TOKEN = {
 		       type    : "cell"
 	},
 
-	OPERATOR   : { match   : /^(<=|>=|==|!=|lt|gt|eq|uc|lc|ne|&&|and|\|\||or|not|[-x*/+%^.<>!])/,
+	OPERATOR   : { match   : /^(<=|>=|==|!=|lt|gt|eq|uc|lc|ne|&&|and|\|\||or|not|[-x*\/+%^.<>!])/,
 		       getVal  : function(a) { return a[1]; },
 		       isOpr   : false,
 		       type    : "operator"
@@ -115,7 +118,7 @@ ZmSpreadSheetFormulae.TOKEN = {
 		       type    : "identifier"
 	},
 
-	OPENPAREN  : { match   : /^\(/,
+	OPENPAREN  : { match   : new RegExp('^\\('),
 		       getVal  : function(a) { return a[0]; },
 		       isOpr   : false,
 		       type    : "openparen"
@@ -127,7 +130,7 @@ ZmSpreadSheetFormulae.TOKEN = {
 		       type    : "closeparen"
 	},
 
-	COMMA      : { match   : /^,/,
+	COMMA      : { match   : new RegExp("^,"),
 		       getVal  : function(a) { return a[0]; },
 		       isOpr   : false,
 		       type    : "comma"
@@ -136,12 +139,14 @@ ZmSpreadSheetFormulae.TOKEN = {
 };
 
 ZmSpreadSheetFormulae.parseFloat = function(n, defVal) {
-	if (typeof n == "boolean")
+	if (typeof n == "boolean") {
 		return n ? 1 : 0;
-	n = parseFloat(n);
-	if (isNaN(n))
-		n = defVal != null ? defVal : 0;
-	return n;
+    }
+    n = parseFloat(n);
+	if (isNaN(n)) {
+		n = defVal ? defVal : 0;
+    }
+    return n;
 };
 
 ZmSpreadSheetFormulae.GOOD_OLD_COMMA = {
@@ -196,9 +201,10 @@ ZmSpreadSheetFormulae.getHelp = function(funcname) {
 	var txt = null;
 	if (help) {
 		txt = help.help;
-		if (help.args)
+		if (help.args) {
 			txt += "<br />" + help.args;
-	}
+        }
+    }
 	return txt;
 };
 
@@ -228,28 +234,32 @@ ZmSpreadSheetFormulae.DEF = function(name, n_args, callback, help) {
 	if (name instanceof Array) {
 		// let's make it easy to define aliases, shall we
 		var alias = name[0];
-		ZmSpreadSheetFormulae.DEF(alias, n_args, callback, help);
+        var i;
+        ZmSpreadSheetFormulae.DEF(alias, n_args, callback, help);
 		if (help && name.length > 1) {
 			var tmp = { alias: alias };
-			for (var i in help)
+			for (i in help) {
 				tmp[i] = help[i];
-			help = tmp;
+            }
+            help = tmp;
 		}
-		for (var i = 1; i < name.length; ++i)
+		for (i = 1; i < name.length; ++i) {
 			ZmSpreadSheetFormulae.DEF(name[i], n_args, callback, help);
-	} else {
+        }
+    } else {
 		var funcdef = { name   : name,
 				n_args : n_args,
 				func   : callback };
 		ZmSpreadSheetFormulae.FUNCTIONS[name] = funcdef;
-		if (help)
+		if (help) {
 			ZmSpreadSheetFormulae.HELP[name] = help;
-	}
+        }
+    }
 };
 
 ///------------------- BEGIN FUNCTION DEFINITIONS -------------------
 
-{ // Math functions
+ // Math functions
 	ZmSpreadSheetFormulae.DEF([ "sum", "+" ], -1, function() {
 		var ret = 0;
 		for (var i = arguments.length; --i >= 0;)
@@ -308,9 +318,9 @@ ZmSpreadSheetFormulae.DEF = function(name, n_args, callback, help) {
 				max = arguments[i];
 		return max;
 	}, ZmMsg.SS.func.max);
-}
 
-{ // String functions
+
+ // String functions
 	ZmSpreadSheetFormulae.DEF("len", 1, function(str) {
 		return str.toString().length;
 	}, ZmMsg.SS.func.len);
@@ -338,9 +348,9 @@ ZmSpreadSheetFormulae.DEF = function(name, n_args, callback, help) {
 			ret += str;
 		return ret;
 	});
-}
 
-{ // conditionals
+
+ // conditionals
 	ZmSpreadSheetFormulae.DEF("<", 2, function(a, b) {
 		return ZmSpreadSheetFormulae.parseFloat(a) < ZmSpreadSheetFormulae.parseFloat(b);
 	});
@@ -395,13 +405,13 @@ ZmSpreadSheetFormulae.DEF = function(name, n_args, callback, help) {
 	ZmSpreadSheetFormulae.DEF("if", 3, function(cond, exprTrue, exprFalse) {
 		return cond ? exprTrue : exprFalse;
 	});
-}
 
-{ // easter egg
+
+ // easter egg
 	ZmSpreadSheetFormulae.DEF("WHO_are_YOU?", 0, function() {
 		return "http://www.dynarch.com/";
 	});
-}
+
 
 ZmSpreadSheetFormulae.DEF("-", 2, function(a, b) {
 	return ZmSpreadSheetFormulae.parseFloat(a) -

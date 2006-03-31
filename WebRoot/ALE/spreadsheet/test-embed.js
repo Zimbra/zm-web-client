@@ -43,9 +43,7 @@ function Test() {
 			if (AjxEnv.isGeckoBased)
 				doc.designMode = "off";
 			var ifr = doc.createElement("iframe");
-			// ifr.src = "/zimbra/test/spreadsheet/index.jsp";
-			ifr.src = "http://localhost:7070/zimbra/test/spreadsheet/index.jsp";
-			// ifr.src = "http://localzimbra:7070/zimbra/test/spreadsheet/index.jsp";
+			ifr.src = "/zimbra/ALE/spreadsheet/index.jsp";
 			ifr.style.width = "100%";
 			ifr.style.height = "400px";
 			editor._insertNodeAtSelection(ifr);
