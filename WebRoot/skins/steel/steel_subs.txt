@@ -84,7 +84,7 @@ TextOnInset				= color:@_TextColor_@;
 TextNoWrap				= white-space:nowrap; overflow:hidden;
 	
 Input					= color:@_TextColor_@; background-color: @_BodyColor_@; border:1px inset @_HeaderColor_@; padding-left:3px; padding-top:2px;
-InputError				= color:@_ErrorColor_@; background-color: @_BodyColor_@; border:1px inset @_HeaderColor_@; padding-left:3px; padding-top:2px;
+InputError				= color:@_TextColor_@; background-color: @_ErrorColor_@; border:1px inset @_HeaderColor_@; padding-left:3px; padding-top:2px;
 
 TableCompact			= border-collapse:collapse; border-spacing:none; padding:0px;
 TableFixed				= table-layout:fixed;
