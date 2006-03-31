@@ -557,9 +557,15 @@ function(mimePart) {
 * Adds the user's signature to the message body. An "internet" style signature
 * is prefixed by a special line and added to the bottom. An "outlook" style
 * signature is added before the quoted content.
+* 
+* @content 			optional content to use otherwise get it from html editor widget
+* @returnContent	returns the new content w/ signature added instead of setting it w/in html editor widget
 */
 ZmComposeView.prototype.addSignature =
-function() {
+function(content, returnContent) {
+	// bug fix #6821 - we need to pass in "content" and "returnContent" params
+	// since HTML composing in new window doesnt guarantee the html editor
+	// widget will be initialized when this code is running.
 	var sig = this._appCtxt.get(ZmSetting.SIGNATURE);
 	if (!sig) return;
 
@@ -575,7 +581,7 @@ function() {
 	if (sigStyle == ZmSetting.SIG_INTERNET)
 		sep = sep + "-- " + newLine;
 
-	var content = this._htmlEditor.getContent();
+	var content = content || this._htmlEditor.getContent();
 	if (sigStyle == ZmSetting.SIG_OUTLOOK) {
 		var regexp = ZmComposeView.QUOTED_CONTENT_RE;
 		var repl = "----- ";
@@ -593,7 +599,11 @@ function() {
 		content = [content, sep, sig].join("");
 	}
 
-	this._htmlEditor.setContent(content);
+	if (returnContent) {
+		return content;
+	} else {
+		this._htmlEditor.setContent(content);
+	}
 };
 
 /**
@@ -805,7 +815,7 @@ function(action, msg, extraBodyText) {
 	}
 
 	var composingHtml = this._composeMode == DwtHtmlEditor.HTML;
-	
+
 	// XXX: consolidate this code later.
 	if (action == ZmOperation.DRAFT || action == ZmOperation.SHARE) {
 		var body = "";
@@ -832,10 +842,9 @@ function(action, msg, extraBodyText) {
 		? this._appCtxt.get(ZmSetting.SIGNATURE_STYLE)
 		: null;
 
-	if (sigStyle == ZmSetting.SIG_OUTLOOK)
-		this.addSignature();
-
-	var value = "";
+	var value = sigStyle == ZmSetting.SIG_OUTLOOK
+		? this.addSignature(null, true)
+		: "";
 
 	// get reply/forward prefs as necessary
 	var replyPref = action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL 
@@ -927,10 +936,11 @@ function(action, msg, extraBodyText) {
 	var sig = this._htmlEditor.getContent();
 	value = sig ? (sig + value) : value;
 
-	this._htmlEditor.setContent(value);
-
-	if (sigStyle == ZmSetting.SIG_INTERNET)
-		this.addSignature();
+	if (sigStyle == ZmSetting.SIG_INTERNET) {
+		this.addSignature(value);
+	} else {
+		this._htmlEditor.setContent(value);
+	}
 
 	this._showForwardField(msg, action, replyPref);
 };
