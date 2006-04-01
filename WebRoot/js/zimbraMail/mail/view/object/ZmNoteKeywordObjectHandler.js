@@ -162,7 +162,3 @@ function(html, idx, keyword, context) {
    	html[idx++] = AjxStringUtil.htmlEncode(keyword);
 	return idx;
 };
-
-// Static initialization
-
-ZmObjectManager.registerHandler("ZmNoteKeywordObjectHandler", ZmNoteKeywordObjectHandler.TYPE, 20);

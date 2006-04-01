@@ -182,6 +182,9 @@ ZmNoteView.prototype._renderReplaceTransclusions = function(note, ids) {
 ZmNoteView.prototype._renderFindObjects = function(element) {
 	if (!this._objectMgr) {
 		this._objectMgr = new ZmObjectManager(this, this._appCtxt);
+		var handler = new ZmNoteKeywordObjectHandler(this._appCtxt);
+		this._objectMgr.addHandler(handler, ZmNoteKeywordObjectHandler.TYPE, 20);
+		this._objectMgr.sortHandlers();
 	}
 	this._objectMgr.reset();
 	this._objectMgr.processHtmlNode(element, true);

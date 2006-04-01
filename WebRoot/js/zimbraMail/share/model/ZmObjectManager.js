@@ -45,7 +45,6 @@ function ZmObjectManager(view, appCtxt, selectCallback) {
 	this._uuid = Dwt.getNextId();
 	this._objectIdPrefix = "OBJ_" + this._uuid + "_";
 	this._objectHandlers = {};
-	this._allObjectHandlers = [];
 	// don't include when looking for objects. only used to provide tool tips for images
 	this._imageAttachmentHandler = new ZmImageAttachmentObjectHandler(appCtxt);
 
@@ -58,19 +57,7 @@ function ZmObjectManager(view, appCtxt, selectCallback) {
 		this.addHandler(zimlets[i], zimlets[i].type, zimlets[i].prio);
 	}
 
-	// Sort the Object Handler's by priority
-	function PrioCmp(a, b) {return (b._prio < a._prio) - (a._prio < b._prio);}
-	for (i in this._objectHandlers) {
-		// Object handlers grouped by Type
-		this._objectHandlers[i].sort(PrioCmp);
-		
-		// Copy each array to a single array of all Object Handlers
-		for (var k=0;k< this._objectHandlers[i].length;k++) {
-			this._allObjectHandlers.push(this._objectHandlers[i][k]);
-		}
-	}
-	this._allObjectHandlers.sort(PrioCmp);
-
+	this.sortHandlers();
 	this.reset();
 
 	// install handlers
@@ -140,6 +127,21 @@ function(h, type, priority) {
 	var oh = this._objectHandlers;
 	if (!oh[type]) {oh[type] = [];}
 	oh[type].push(h);
+};
+
+ZmObjectManager.prototype.sortHandlers =
+function() {
+	this._allObjectHandlers = [];
+	for (i in this._objectHandlers) {
+		// Object handlers grouped by Type
+		this._objectHandlers[i].sort(ZmObjectManager.__byPriority);
+		
+		// Copy each array to a single array of all Object Handlers
+		for (var k=0;k< this._objectHandlers[i].length;k++) {
+			this._allObjectHandlers.push(this._objectHandlers[i][k]);
+		}
+	}
+	this._allObjectHandlers.sort(ZmObjectManager.__byPriority);
 };
 
 ZmObjectManager.prototype._createHandlers =
@@ -539,4 +541,10 @@ ZmObjectManager.prototype._handleHoverOut = function(event) {
 	var context = event.object.context;
 
 	handler.hoverOut(object, context, span);
+};
+
+// Private static functions
+
+ZmObjectManager.__byPriority = function(a, b) {
+	return (b._prio < a._prio) - (a._prio < b._prio);
 };
