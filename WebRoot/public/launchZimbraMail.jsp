@@ -64,7 +64,7 @@ Contributor(s):
 	if (skin == null) {
 		skin = "steel";
 	}
-	String skinHtmlFile = "../skins/" + skin + "/" + skin + ".html";
+    String skinHtmlFile = "../skins/" + skin + "/" + skin + ".html";
 
 
 	if (vers == null) vers = "";
@@ -80,6 +80,7 @@ Contributor(s):
 <script type="text/javascript" language="JavaScript">
 	var zJSloading = (new Date()).getTime();
 	appContextPath = "<%=contextPath %>";
+    appCurrentSkin = "<%=skin %>";
 </script>
 
 <script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext %>?v=<%=vers %>"></script>

@@ -18,7 +18,7 @@ _ClickColor_			= red
 _ToobarSeparatorColor_	= black
 _SeparatorColor_		= #dddddd
 
-_InfoColor_				= #779193
+_InfoColor_				= #add6d6
 _WarningColor_			= #FFF6BF
 _CriticalColor_			= #F5BFBF
 
@@ -62,7 +62,7 @@ FullWidth				= width:100%;
 FullHeight				= height:100%;
 
 FontDefault				= font-family: Tahoma, Arial, Helvetica, sans-serif; 
-FontFixed				= font-family: monospace; font-size:10px;
+FontFixed				= font-family: monospace; font-size:10pt;
 
 FontNormal				= font-size:11px;
 FontBig					= font-size:12px;

@@ -35,6 +35,10 @@ Contributor(s):
 	if (ext == null) ext = "";
 	String vers = (String) request.getAttribute("version");
 	if (vers == null) vers = "";
+    String skin = request.getParameter("skin");
+    if (skin == null) {
+        skin = "steel";
+    }
 %>
 <script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" language="javascript">
@@ -42,15 +46,15 @@ appContextPath = "<%= contextPath %>";
 </script>
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
-	<!--
-	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/img/loRes/skins/steel/skin.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/js/ajax/config/style/dwt.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/js/zimbraMail/config/style/common.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/js/zimbraMail/config/style/zm.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/js/zimbraMail/config/style/spellcheck.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/skins/steel/skin.css?v=<%= vers %>);
-	-->
+        <!--
+            @import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
+            @import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
+            @import url(<%= contextPath %>/skins/<%= skin %>/dwt.css?v=<%= vers %>);
+            @import url(<%= contextPath %>/skins/<%= skin %>/common.css?v=<%= vers %>);
+            @import url(<%= contextPath %>/skins/<%= skin %>/zm.css?v=<%= vers %>);
+            @import url(<%= contextPath %>/skins/<%= skin %>/spellcheck.css?v=<%= vers %>);
+            @import url(<%= contextPath %>/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
+        -->
 	</style>
 	<%if (full != null) {%>
 		<jsp:include page="Ajax.jsp"/>
@@ -64,7 +68,7 @@ appContextPath = "<%= contextPath %>";
 <% } else { %>
 	<style type="text/css">
 	<!--
-    @import url(<%= contextPath %>/js/ZimbraMail_loRes_all.css<%= ext %>?v=<%= vers %>);
+    @import url(<%=contextPath%>/js/ZimbraMail_loRes_<%= skin %>_all.css<%=ext%>?v=<%=vers%>);
 	-->
 	</style>
 

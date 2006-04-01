@@ -307,7 +307,7 @@ td.DDSepInvisible div {
 }
 
 .ZmConvView .SubjectBar {
-	@SkinHeaderBgColor@
+	@SkinInsetBgDarkColor@
 }
 
 .ZmConvView .Subject {
@@ -361,7 +361,6 @@ td.DDSepInvisible div {
 }
 
 .ZmMailMsgView .MsgHeader .SubjectLine td { 
-	@FontBigger@
 	margin-top:5px;
 }
 

@@ -325,7 +325,7 @@ function(words, keepModeDiv) {
 			style.id = "ZM-SPELLCHECK-STYLE";
 			style.rel = "stylesheet";
 			style.type = "text/css";
-			var style_url = appContextPath+"/js/zimbraMail/config/style/spellcheck.css?v="+cacheKillerVersion;
+			var style_url = appContextPath+"/skins/"+appCurrentSkin+"/spellcheck.css?v="+cacheKillerVersion;
 			if (AjxEnv.isGeckoBased) {
 				style_url = document.baseURI.replace(
 					/^(https?:\x2f\x2f[^\x2f]+).*$/, "$1") + style_url;
