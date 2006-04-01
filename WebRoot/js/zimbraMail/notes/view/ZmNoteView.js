@@ -66,10 +66,13 @@ function(note) {
 
 	var cache = this._controller._app.getNoteCache();
 	var chrome = cache.getNoteByName(note.folderId, "_CHROME_");
-
 	var chromeContent = chrome.getContent();
-	var pageContent = note.getContent();
-	var content = chromeContent.replace(/\{\{CONTENT\}\}/ig, pageContent);
+
+	var content = chromeContent;
+	if (note.name != "_CHROME_") {
+		var pageContent = note.getContent();
+		content = chromeContent.replace(/\{\{CONTENT\}\}/ig, pageContent);
+	}
 	
 	element.innerHTML = content;
 	this._render(element, note);

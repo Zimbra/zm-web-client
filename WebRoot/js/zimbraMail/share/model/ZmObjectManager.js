@@ -327,7 +327,7 @@ function(node, handlers) {
 			return tmp;
 		}
 		else if (tmp == "style") {
-			return tmp;
+			return node.nextSibling;
 		}
 		// fix style
 		// node.nowrap = "";
