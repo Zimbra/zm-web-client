@@ -522,7 +522,16 @@ function(doc) {
 				}
 
 				tmp = doc.createElement("div");
-				tmp.innerHTML = objectManager.findObjects(node.data, true);
+				var code = objectManager.findObjects(node.data, true);
+				var disembowel = false;
+				if (AjxEnv.isIE && /^pre$/i.test(node.parentNode.tagName)) {
+					// Bug #6481: innerHTML in IE massacrates whitespace
+					//            unless it sees a <pre> in the code.
+					tmp.innerHTML = [ "<pre>", code, "</pre>" ].join("");
+					disembowel = true;
+				} else {
+					tmp.innerHTML = code;
+				}
 
 				if (a)
 					tmp.insertBefore(a, tmp.firstChild);
@@ -530,6 +539,8 @@ function(doc) {
 					tmp.appendChild(b);
 
 				a = node.parentNode;
+				if (disembowel)
+					tmp = tmp.firstChild;
 				while (tmp.firstChild)
 					a.insertBefore(tmp.firstChild, node);
 				tmp = node.nextSibling;
