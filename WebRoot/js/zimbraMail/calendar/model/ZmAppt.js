@@ -47,7 +47,7 @@ function ZmAppt(appCtxt, list, noinit) {
 	this.repeatWeekday = false; 												// set to true if freq = "DAI" and custom repeats every weekday
 	this.repeatWeeklyDays = null; 												//SU|MO|TU|WE|TH|FR|SA
 	this.repeatMonthlyDayList = null; 											// list of numbers representing days (usually, just one day)
-	this.repeatYearlyMonthsList = "1"; 											// list of numbers representing months (usually, just one month)
+	this.repeatYearlyMonthsList = 1; 											// list of numbers representing months (usually, just one month)
 	this.repeatEnd = null;
 	this.repeatEndDate = null; 													// maps to "until"
 	this.repeatEndCount = 1; 													// maps to "count" (when there is no end date specified)
@@ -1229,6 +1229,7 @@ function () {
 		excludes = recurrences[k].excludes;
 		excepts = recurrences[k].except;
 		if (adds != null) {
+			this.repeatYearlyMonthsList = this.startDate.getMonth() + 1;
 			for (i = 0; i < adds.length; ++i) {
 				rules = adds[i].rule;
 				if (rules) {
@@ -1615,7 +1616,7 @@ function(soapDoc, inv) {
 	else if (this.repeatType == "YEA") 
 	{
 		var bm = soapDoc.set("bymonth", null, rule);
-		bm.setAttribute("molist", this.repeatYearlyMonthsList + 1);
+		bm.setAttribute("molist", this.repeatYearlyMonthsList);
 		var co = soapDoc.set('x-name', null, rule);
 		co.setAttribute('name', "repeatCustomType");
 		co.setAttribute('value', this.repeatCustomType);

@@ -179,12 +179,12 @@ function(appt) {
 	if (value == "1") {
 		appt.repeatCustomType = "S";
 		appt.repeatCustomMonthDay = this._yearlyDayField.getValue();
-		appt.repeatYearlyMonthsList = this._yearlyMonthSelect.getValue();
+		appt.repeatYearlyMonthsList = Number(this._yearlyMonthSelect.getValue()) + 1;
 	} else {
 		appt.repeatCustomType = "O";
 		appt.repeatCustomOrdinal = this._yearlyDaySelect.getValue();
 		appt.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[this._yearlyWeekdaySelect.getValue()];
-		appt.repeatYearlyMonthsList = this._yearlyMonthSelectEx.getValue();
+		appt.repeatYearlyMonthsList = Number(this._yearlyMonthSelectEx.getValue()) + 1;
 	}
 };
 
@@ -908,7 +908,7 @@ function(appt) {
 		if (appt.repeatCustomType == "S") {
 			yearlyRadioOptions[0].checked = true;
 			this._yearlyDayField.setValue(appt.repeatCustomMonthDay);
-			this._yearlyMonthSelect.setSelectedValue(Number(appt.repeatYearlyMonthsList)+1);
+			this._yearlyMonthSelect.setSelectedValue(Number(appt.repeatYearlyMonthsList)-1);
 		} else {
 			yearlyRadioOptions[1].checked = true;
 			this._yearlyDaySelect.setSelectedValue(appt.repeatCustomOrdinal);
