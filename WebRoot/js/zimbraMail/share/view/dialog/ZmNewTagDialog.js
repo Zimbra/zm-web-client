@@ -24,15 +24,13 @@
  */
 
 function ZmNewTagDialog(parent, msgDialog, className) {
-	DBG.showTiming(true, AjxDebug.PERF, "ZmNewTagDialog");
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.createNewTag);
 
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
 	this._setTagColorMenu(this._tagColorButtonCellId);
-	DBG.timePt(AjxDebug.PERF, "set content");
-	DBG.showTiming(false);
-}
+	DBG.timePt("set content");
+};
 
 ZmNewTagDialog.prototype = new ZmDialog;
 ZmNewTagDialog.prototype.constructor = ZmNewTagDialog;
@@ -40,24 +38,25 @@ ZmNewTagDialog.prototype.constructor = ZmNewTagDialog;
 ZmNewTagDialog.prototype.toString = 
 function() {
 	return "ZmNewTagDialog";
-}
+};
 
 ZmNewTagDialog.prototype.cleanup =
 function(bPoppedUp) {
 	DwtDialog.prototype.cleanup.call(this, bPoppedUp);
     var color = this._getNextColor();
  	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.COLOR_ICON[color]);
-}
+};
 
 ZmNewTagDialog.prototype._colorListener = 
 function(ev) {
 	var color = ev.item.getData(ZmOperation.MENUITEM_ID);
 	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.COLOR_ICON[color]);
-} 
+};
 
 ZmNewTagDialog.prototype._setTagColorMenu =
 function(fieldId) {
-    this._colorButton = new DwtButton(this, null, "ColorButton");
+    this._colorButton = new DwtButton(this, null, "DwtSelect");
+    this._colorButton.setHtmlElementId("ZmTagColorMenu");
     this._colorButton.noMenuBar = true;
  	document.getElementById(fieldId).appendChild(this._colorButton.getHtmlElement());
 	ZmOperation.addColorMenu(this._colorButton, this);
@@ -68,14 +67,14 @@ function(fieldId) {
 	var items = menu.getItems();
 	for (var i = 0; i < items.length; i++)
 		items[i].addSelectionListener(this._tagColorListener);
-}
+};
 
 ZmNewTagDialog.prototype._setColorButton =
 function(color, text, image) {
 	this._colorButton.setData(ZmOperation.MENUITEM_ID, color);
 	this._colorButton.setText(text);
 	this._colorButton.setImage(image);
-} 
+};
 
 ZmNewTagDialog.prototype._contentHtml = 
 function() {
@@ -87,14 +86,14 @@ function() {
 		    "<td id='" + this._tagColorButtonCellId + "' /></tr>" +
 			"</table>";
 
-}
+};
 
 ZmNewTagDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getTagData();
 	if (results)
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
-}
+};
 
 ZmNewTagDialog.prototype._getTagData =
 function() {
@@ -107,14 +106,14 @@ function() {
 		msg = ZmMsg.tagNameExists
 
 	return (msg ? this._showError(msg) : [name, this._colorButton.getData(ZmOperation.MENUITEM_ID)]);
-}
+};
 
 ZmNewTagDialog.prototype._enterListener =
 function(ev) {
 	var results = this._getTagData();
 	if (results)
 		this._runEnterCallback(results);
-}
+};
 
 ZmNewTagDialog.prototype._getNextColor =
 function() {
@@ -130,4 +129,4 @@ function() {
 			return color;
 	}
 	return ZmTag.DEFAULT_COLOR;
-}
+};

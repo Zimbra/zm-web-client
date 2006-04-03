@@ -27,12 +27,18 @@
 * HTML elements - use for global declarations
 */
 
-P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON {
-	font-family: Tahoma, Arial, Helvetica, sans-serif;
-	font-size:11px;
+P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
+	@FontDefault@
+	@FontNormal@
+	@Text@
+}
+
+HTML {
+	@FullSize@
 }
 
 BODY {
+	@FullSize@
 	margin: 0px;
 }
 
@@ -41,36 +47,44 @@ FORM {
 	padding: 0;
 }
 
-HTML>BODY INPUT {		/* clean border that works in FF */
-	border:1px solid;
-	border-color: black AAAAAA AAAAAA black;
-	padding-left:2px;
+
+input, textarea {
+	@Input@
 }
 
+.TableCompact {
+	@TableCompact@
+}
+
+.fullSize	{	@FullSize@		}
+.fullWidth 	{	@FullWidth@		}
+.fullHeight {	@FullHeight@	}
+.minSize	{	width:1px; height:1px;	}
 
 
+.BigHeaderBg {
+	@SkinHeaderBigBg@
+}
 
 /* Generic classes -- try to use one of these if you can */
 .ZmHead {
-	font-size:18px;
-	font-weight:bold;
-	height:20px;
+	@FontH1@
 }
 
 .ZmSubHead {
-	font-size:13px;
-	font-weight:bold;
-	height:18px;
+	@FontH2@
 }
 
 .ZmBigger {
-	font-size:13px;
-	height:18px;
+	@FontH3@
+}
+
+.ZmFinePrint {
+	@FontFinePrint@
 }
 
 .ZmImportant {
-	font-weight:bold;
-	color:darkred;
+	@FontImportant@
 }
 
 .ZmOverride {
@@ -82,160 +96,67 @@ HTML>BODY INPUT {		/* clean border that works in FF */
 	background-color:#ADD6D6;
 }
 
-.subtleAnchor {
-	color:black;
-	Xtext-decoration:none;
+
+
+.ZmFieldset {
+	border: 1px dotted @_SeparatorColor_@;
 }
 
-.subtleAnchor:hover {
-	color:blue;
-	text-decoration:underline;
+.ZmLegend {
+	@Text@
 }
 
 
 
+/* USE THESE GUYS FOR ALL FIELD LABELS!  */
+.ZmFieldLabelLeft {
+	@TextLabel@
+	text-align:left;
+}
 
-/* splash screen and login banner pieces */
-
-/* "url" substitution:  eg:  "<a href='http://www.zimbra.com'>http:/www..." */
-.SplashScreenUrl {
-Xborder:1px solid #cccccc;
-	position:absolute;
-	left:164;
-	top:9;
-	width:300;
-	font-size:12px;
+.ZmFieldLabelRight {
+	@TextLabel@
 	text-align:right;
 }
 
-
-/* "appName" substitution:  eg:  "Collaboration Suite" */
-.SplashScreenAppName {
-Xborder:1px solid #eeeeee;
-	position:absolute;
-	left:80;
-	top:115;
-	width:350;
-	height:30;
-	font-size:24px;
-	text-align:right;
-}
-
-/* "version" substitution:  eg:  "V 1.23 * 'Birdseye' * Wed Oct 12, 2005" */
-.SplashScreenVersion {
-Xborder:1px solid #eeeeee;
-	position:absolute;
-	left:80;
-	top:145;
-	width:350;
-	text-align:right;
-}
-
-/* "shortVersion" substitution:  eg:  "BETA" */
-.SplashScreenShortVersion {
-Xborder:1px solid #cccccc;
-	position:absolute;
-	left:384;
-	top:45;
-	width:80;
-	font-size:24px;
-	color:#CCCCCC;
-}
-
-
-/* "contents" substitution:  eg:  "Version: XXX, etc" */
-.SplashScreenContents {
-Xborder:1px solid #eeeeee;
-	position:absolute;
-	left:240;
-	top:185;
-	width:217;
-	height:105;
-	overflow:auto;
-}
-
-/* "button" substitution:  eg:  "<button style='width:60px;'>OK</button>" */
-.SplashScreenOKButton {
-Xborder:1px solid #eeeeee;
-	position:absolute;
-	left:410;
-	top:305;
-	width:60;
-	height:20;
-}
-
-/* "license" substitution:  eg:  "Copyright 2005 Zimbra, Inc..." */
-.SplashScreenLicense {
-Xborder:1px solid #eeeeee;
-	position:absolute;
-	left:8;
-	top:294;
-	font-size:9px;
-	color:#999999;
+.ZmFieldLabelCenter {
+	@TextLabel@
+	text-align:center;
 }
 
 
 
-/* "url" substitution:  eg:  "<a href='http://www.zimbra.com'>http:/www..." */
-#LoginBannerUrl {
-Xborder:1px solid #cccccc;
-	Xvisibility:hidden;
-	position:absolute;
-	left:25;
-	top:106;
-	width:270;
-	font-size:12px;
+/* Graph key -- eg: in Appt Schedule view */
+.ZmGraphKey {
+	border:1px outset gray;
+	background-color: black;
+}
+
+.ZmGraphKeyHeader {
+	@ListHeaderBg@
+	height:24px;
+	padding-left:3px;
+	font-weight:bold;
+	color:white;
+	vertical-align:center;
+}
+
+.ZmGraphKeyBody {
+	padding:5px;
+}
+
+.ZmGraphKeyColorBox {
+	border:1px inset gray;
+	width:16px;
+	height:16px;
+}
+
+.ZmGraphKeyColorText {
+	white-space:nowrap;
+	color:white;
 }
 
 
-/* "appName" substitution:  eg:  "Collaboration Suite" */
-#LoginBannerAppName {
-Xborder:1px solid #eeeeee;
-	position:absolute;
-	left:60;
-	top:80;
-	width:350;
-	height:30;
-	font-size:24px;
-	text-align:right;
-}
-
-/* "version" substitution:  eg:  "V 1.23 * 'Birdseye' * Wed Oct 12, 2005" */
-#LoginBannerVersion {
-Xborder:1px solid #eeeeee;
-	position:absolute;
-	left:60;
-	top:107;
-	width:350;
-	text-align:right;
-}
-
-/* "shortVersion" substitution:  eg:  "BETA" */
-#LoginBannerShortVersion {
-Xborder:1px solid #cccccc;
-	position:absolute;
-	left:358;
-	top:15;
-	width:80;
-	font-size:24px;
-	color:#CCCCCC;
-}
-
-.ImgBarberPole_216 {
-	background-image:url(/zimbra/img/animated/BarberPole_216.gif);
-	width:216;
-	height:14;
-}
-
-
-/*
- *  Skin pieces -- MOVE INTO SKIN???
- */
-
-.LogoContainer {
-	left: 54px;
-	top: 6px;
-}
 
 
 
@@ -245,13 +166,13 @@ Xborder:1px solid #cccccc;
 
 /* Horizontal separator */
 .horizSep {
-	border-bottom: 1px solid #666666;
+	border-bottom: 1px solid @_ToobarSeparatorColor_@;
     margin: 10px 0;
 	width: 100%;
 }
 /* Vertical separator */
 .vertSep {
-	border-left:1px solid #666666;
+	border-left:1px solid @_ToobarSeparatorColor_@;
 	margin-left:1px;
 	padding-right:1px;
 	width:3;
@@ -263,19 +184,32 @@ DIV.vSpace {
 	margin: 10px 0;
 }
 
-/* Link to open an attachment */
-.AttLink:link, .AttLink:active, .AttLink:visited, .AttLink:hover {
-	text-decoration: none;
-	cursor:hand;
+
+
+/* 
+	Link to open an attachment 
+	WHY IS THIS DIFFERENT ?
+*/
+
+.AttLink:link, .AttLink:visited {
+	@AnchorText@
 }
-.AttLink:link, .AttLink:active, .AttLink:visited {
-	color: black;
+.AttLink:hover {
+	@AnchorTextHover@
 }
+
+.AttLink:active {
+	@AnchorTextActive@
+}
+
+/*  ??? WHY WERE THESE DIFFERENT ? */
 .Row-selected .AttLink:link, .Row-selected .AttLink:active, .Row-selected .AttLink:visited {
 	color: white;
 }
-.AttLink:hover, .Row-selected .AttLink:hover {color: #CC3333;}
-
+.AttLink:hover, .Row-selected .AttLink:hover {
+	color: #CC3333;
+}
+*/
 
 
 
@@ -284,46 +218,32 @@ DIV.vSpace {
 */
 
 .DndIcon {
-	filter:alpha(opacity=70)
-		   progid:DXImageTransform.Microsoft.Shadow(color=black,direction=135,strength=8);
-	-moz-opacity:0.7;
-	opacity:0.7;
+	@DndOpacity@
 }
 
 .DropNotAllowed {
-	border: 2px solid red;
-	background-color: white;	
-	filter:alpha(opacity=70)
-		   progid:DXImageTransform.Microsoft.Shadow(color=black,direction=135,strength=8);
-	-moz-opacity:0.7;
-	opacity:0.7;	
+	@DndNotAllowedBg@
+	@DndOpacity@
 }
 
 /* bug fix# 3235 */
 .DropNotAllowed-linux {
-	border: 2px solid red;
-	background-color: white;	
+	@DndNotAllowedBg@
 }
 
 .DropAllowed {
-	border: 2px solid green;
-	background-color: white;	
-	filter:alpha(opacity=70)
-		   progid:DXImageTransform.Microsoft.Shadow(color=black,direction=135,strength=8);
-	-moz-opacity:0.7;
-	opacity:0.7;
+	@DndAllowedBg@
+	@DndOpacity@
 }
 
 /* bug fix# 3235 */
 .DropAllowed-linux {
-	border: 2px solid green;
-	background-color: white;	
+	@DndAllowedBg@
 }
 
 
 /* Used by the text in the multi-select Icon */
-.MailMultiSelectText {
-	font-size: 11px;
+.DndIconTextLabel {
 	font-weight: bold;
 	color: white;
 }
@@ -355,6 +275,9 @@ DIV.vSpace {
 	cursor: "not-allowed";
 }
 
+.CurtainOverlay table {
+	background-color: white;
+}
 
 
 
@@ -362,15 +285,17 @@ DIV.vSpace {
 
 /*
  *  New tag dialog 
- */
+---UNUSED---
 .TagColorMenu {
 	background-color: white;
 	border: solid #CCCCCC 1px;
 }
+*/
+
 
 /* 
  * New folder dialog 
- */
+---UNUSED---
 .FolderTree {
 	background-color: white;
 	width: 400px;
@@ -379,29 +304,41 @@ DIV.vSpace {
 	padding: 5px 0 0 5px;
 }
 .FolderTree td {padding: 0;}
-
+ */
+ 
+ 
 /* 
  *  Row display and highlighting 
  */
 .Row, .Row-selected, .Row-matched, .Row-matched-drag, 
 .Row-drag, .Row-selected-drag, .Row-selected-right, .Row-selected-disabled {
-	border-bottom: 1px solid #DDDDDD;
+	@ListRow@
 }
 
 .selected, .Row-selected, .Row-selected-drag { 
-	background-color: #ADD6D6;
-	color:black;
+	@ListRowSelected@
 }
 .Row-selected-disabled {
-	background-color: rgb(233,236,216);
-	color: rgb(201, 201, 194);
+	@ListRowSelected@
 }
-.Row-matched, .Row-matched-dnd { background-color: #FFFFBB; }
-.Row-selected-right, .Row-drag, .Row-matched-drag { background-color: #EAF5F5; }
+
+.Row-matched, .Row-matched-dnd { 
+	@ListRowMatched@
+}
+
+.Row-matched td, .Row-matched-dnd td{ 
+	@ListTextMatched@
+}
+
+
+/* ??? what is this used for ?*/
+.Row-selected-right, .Row-drag, .Row-matched-drag { 
+	@ListRowRightClick@
+}
 
 .Row-selected table, .Row-selected-drag table, .Row-drag table, 
 .Row-matched-drag table, .Row-selected-right table { 
-	color: black;
+	@Text@
 }
 
 .Row table, .Row-selected table, .Row-matched table, .Row-matched-drag table, .Row-dnd table, 
@@ -412,6 +349,7 @@ DIV.vSpace {
 .Row, .Row-selected, .Row-selected-disabled, .Row-dnd, 
 .Row td, .Row div, .Row-selected td, .Row-matched td, .Row-dnd td, .Row-selected-drag td, 
 .Row-drag td, .Row-matched-drag td, .Row-selected-right td {
+	@Text@
 	vertical-align: top;
 	white-space: nowrap;
 	overflow: hidden;
@@ -431,8 +369,12 @@ DIV.vSpace {
 /* 
  * Flags 
  */
-.Unread { font-weight: bold; }
-.Trash { text-decoration: line-through; }
+.Unread { 
+	@TextUnread@
+}
+.Trash { 
+	@TextDeleted@
+}
 
 
 
@@ -445,21 +387,20 @@ DIV.vSpace {
 }
 
 .dialogOverview {
-	background-color: white;
+	@SkinInsetBg@
+	@SkinInsetBorder@
 	height: 200px;
-	border: 1px solid #999999;
-	padding: 5px 0 0 5px;
 }
 
 .pickerOverview {
-	background-color: white;
+	@SkinInsetBg@
 	height: 100%;
 }
 
 .overviewHeader {
-	border: 1px solid;
-	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
-	background-image:url(/zimbra/skins/steel/images/tree_header_bg.gif);
+	@SkinInsetBgDark@
+	@SkinInsetBgDarkColor@
+	@SkinInsetBgDarkBorder@
 	padding-top:1px;
 	margin-left:2px;
 	margin-bottom:2px;
@@ -469,11 +410,164 @@ DIV.vSpace {
 
 .overviewHeader-Text, .overviewHeader-actioned,
 .overviewHeader-DragOver {
+	@FontBig@
 	font-weight:bold;
-	height:18px;
 }
+
 
 .overviewHeader .imageCell {
 	padding-right:4px;
 	white-space: nowrap;
 }
+
+
+
+
+
+
+
+/* FIX THIS STUFF */
+
+
+/*
+ * Splash Screen
+ */
+ 
+.ZmSplashScreen { 
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
+  position:absolute;
+}
+.ZmSplashScreen, .ZmSplashScreen table {
+	@SkinOuterBg@
+}
+
+
+
+/* splash screen and login banner pieces */
+
+/* "url" substitution:  eg:  "<a href='http://www.zimbra.com'>http:/www..." */
+.SplashScreenUrl {
+	position:absolute;
+	left:164;
+	top:9;
+	width:300;
+	text-align:right;
+}
+.SplashScreenUrl a:link,
+.SplashScreenUrl a:visited,
+.SplashScreenUrl a:hover {
+	color:black;
+}
+.SplashScreenUrl a:active {
+	@AnchorTextClick@
+}
+
+
+/* "appName" substitution:  eg:  "Collaboration Suite" */
+.SplashScreenAppName {
+	position:absolute;
+	left:80;
+	top:115;
+	width:350;
+	height:30;
+	@FontBiggest@
+	font-weight:normal;
+	text-align:right;
+}
+
+/* "version" substitution:  eg:  "V 1.23 * 'Birdseye' * Wed Oct 12, 2005" */
+.SplashScreenVersion {
+	position:absolute;
+	left:80;
+	top:145;
+	width:350;
+	text-align:right;
+}
+
+/* "shortVersion" substitution:  eg:  "BETA" */
+.SplashScreenShortVersion {
+	position:absolute;
+	left:384;
+	top:45;
+	width:80;
+	@FontBiggest@
+	font-weight:normal;
+	@TextDisabled@
+}
+
+
+/* "contents" substitution:  eg:  "Version: XXX, etc" */
+.SplashScreenContents {
+	position:absolute;
+	left:240;
+	top:185;
+	width:217;
+	height:105;
+	overflow:auto;
+}
+
+/* "button" substitution:  eg:  "<button style='width:60px;'>OK</button>" */
+.SplashScreenOKButton {
+	position:absolute;
+	left:410;
+	top:305;
+	width:60;
+	height:20;
+}
+
+/* "license" substitution:  eg:  "Copyright 2005 Zimbra, Inc..." */
+.SplashScreenLicense {
+	position:absolute;
+	left:8;
+	top:315;
+	@FontTiny@
+	@TextDisabled@
+}
+
+
+/* LOGIN SCREEN STUFF MOVED TO login.css */
+
+
+
+
+/* Login Panel */
+.ZmLoginDialog {
+	background-color: #3D2D1F;
+	/*background-image:url(/zimbra/img/loRes/skins/steel/Steel__BG.gif);*/
+	overflow:hidden;
+}
+.ZmLoginDialog-Transparent {background-color: transparent;}
+.ZmLoginDialog-HeaderPanel {
+	margin-top:10px;
+	margin-bottom:10px;
+	height:115px;
+	background-image:url(/zimbra/img/loRes/logo/LoginBanner.gif);
+}
+.ZmLoginDialog-HeaderText, .ZmLoginDialog-SubHeaderText {
+	color: white;
+}
+.ZmLoginDialog-HeaderText {
+	font-style: bold
+	font-size: 14pt;
+}
+.ZmLoginDialog-MainPanel {
+	width:460px;
+	/*background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);*/
+}
+.ZmLoginDialog-SubHeaderText { font-size: 12pt; }
+.ZmLoginDialog-Field { width: 290px; }
+.ZmLoginDialog-ErrorText { width: 360px; }
+.ZmLoginDialog-ErrorPanel {
+	border: 1px solid #999999;
+	background-color: #FFFFCC;
+	width:415px;
+	height: 55px;
+}
+
+.ImgBarberPole_216 {	@BarberPole@	}
+
+
+

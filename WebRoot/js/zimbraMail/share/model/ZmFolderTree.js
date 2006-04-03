@@ -44,6 +44,10 @@ function(rootFolderObj) {
 		this.root = ZmSearchFolder.createFromJs(null, rootFolderObj, this);
 	else if (this.type == ZmOrganizer.CALENDAR)
 		this.root = ZmCalendar.createFromJs(null, rootFolderObj, this);
+	else if (this.type == ZmOrganizer.NOTEBOOK)
+		this.root = ZmNotebook.createFromJs(null, rootFolderObj, this);
+	else if (this.type == ZmOrganizer.ADDRBOOK)
+		this.root = ZmAddrBook.createFromJs(null, rootFolderObj, this);
 	else if (this.type == ZmOrganizer.ZIMLET)
 		this.root = ZmZimlet.createFromJs(null, rootFolderObj, this);
 	else if (this.type == ZmOrganizer.ROSTER_TREE_ITEM)

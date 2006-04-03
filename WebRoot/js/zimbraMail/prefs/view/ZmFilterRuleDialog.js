@@ -573,10 +573,7 @@ function(ev) {
 	var date = ev.detail;
 	var button = cal._dateButton;
 	button.setText(AjxDateUtil.simpleComputeDateStr(date));
-	// REVISIT: The backend expects date to be specified as MM/dd/yyyy but
-	//          should be updated to use canonical form in order to be
-	//          more consistent.
-	button.setData(ZmFilterRuleDialog.DATA, AjxDateFormat.format("MM/dd/yyyy", date));
+	button.setData(ZmFilterRuleDialog.DATA, AjxDateFormat.format("yyyyMMdd", date));
 };
 
 /*

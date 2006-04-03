@@ -44,8 +44,7 @@ function ZmObjectManager(view, appCtxt, selectCallback) {
 	this._selectCallback = selectCallback;
 	this._uuid = Dwt.getNextId();
 	this._objectIdPrefix = "OBJ_" + this._uuid + "_";
-	this._objectHandlers = new Object();
-	this._allObjectHandlers = new Array();
+	this._objectHandlers = {};
 	// don't include when looking for objects. only used to provide tool tips for images
 	this._imageAttachmentHandler = new ZmImageAttachmentObjectHandler(appCtxt);
 
@@ -58,19 +57,7 @@ function ZmObjectManager(view, appCtxt, selectCallback) {
 		this.addHandler(zimlets[i], zimlets[i].type, zimlets[i].prio);
 	}
 
-	// Sort the Object Handler's by priority
-	function PrioCmp(a, b) {return (b._prio < a._prio) - (a._prio < b._prio);}
-	for (i in this._objectHandlers) {
-		// Object handlers grouped by Type
-		this._objectHandlers[i].sort(PrioCmp);
-		
-		// Copy each array to a single array of all Object Handlers
-		for (var k=0;k< this._objectHandlers[i].length;k++) {
-			this._allObjectHandlers.push(this._objectHandlers[i][k]);
-		}
-	}
-	this._allObjectHandlers.sort(PrioCmp);
-
+	this.sortHandlers();
 	this.reset();
 
 	// install handlers
@@ -85,6 +72,15 @@ function ZmObjectManager(view, appCtxt, selectCallback) {
 }
 
 ZmObjectManager._TOOLTIP_DELAY = 275;
+
+// Define common types for quicker object matching.
+ZmObjectManager.EMAIL = "email";
+ZmObjectManager.URL = "url";
+ZmObjectManager.PHONE = "phone";
+ZmObjectManager.DATE = "date";
+
+// Allows callers to pass in a current date
+ZmObjectManager.ATTR_CURRENT_DATE = "currentDate";
 
 ZmObjectManager._autohandlers = [];
 
@@ -133,6 +129,21 @@ function(h, type, priority) {
 	oh[type].push(h);
 };
 
+ZmObjectManager.prototype.sortHandlers =
+function() {
+	this._allObjectHandlers = [];
+	for (i in this._objectHandlers) {
+		// Object handlers grouped by Type
+		this._objectHandlers[i].sort(ZmObjectManager.__byPriority);
+		
+		// Copy each array to a single array of all Object Handlers
+		for (var k=0;k< this._objectHandlers[i].length;k++) {
+			this._allObjectHandlers.push(this._objectHandlers[i][k]);
+		}
+	}
+	this._allObjectHandlers.sort(ZmObjectManager.__byPriority);
+};
+
 ZmObjectManager.prototype._createHandlers =
 function() {
 	var c = ZmObjectManager._autohandlers, i, obj, prio;
@@ -160,7 +171,7 @@ function() {
 
 ZmObjectManager.prototype.reset =
 function() {
-	this._objects = new Object();
+	this._objects = {};
 };
 
 ZmObjectManager.prototype.objectsCount =
@@ -178,7 +189,7 @@ function() {
 ZmObjectManager.prototype.findObjects =
 function(content, htmlEncode, type) {
 	if  (!content) {return "";}
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 
 	var maxIndex = content.length;
@@ -201,11 +212,16 @@ function(content, htmlEncode, type) {
 		var chunk;
 		var result = null;
 		if (type) {
+			DBG.println(AjxDebug.DBG3, "findObjects type [" + type + "]");
 			handlers = this._objectHandlers[type];
 			if (handlers) {
 				for (i = 0; i < handlers.length; i++) {
+					DBG.println(AjxDebug.DBG3, "findObjects by TYPE (" + handlers[i] + ")");
 					result = handlers[i].findObject(content, lastIndex);
-					if (!result || result.index >= lowestIndex) {break;}
+					// No match keep trying.
+					if(!result) {continue;}
+					// Got a match let's handle it.
+					if (result.index >= lowestIndex) {break;}
 					lowestResult = result;
 					lowestIndex = result.index;
 					lowestHandler = handlers[i];
@@ -223,6 +239,7 @@ function(content, htmlEncode, type) {
 		} else {
 			for (var j = 0; j < this._allObjectHandlers.length; j++) {
 				var handler = this._allObjectHandlers[j];
+				DBG.println(AjxDebug.DBG3, "findObjects trying (" + handler + ")");
 				result = handler.findObject(content, lastIndex);
 				if (result && result.index < lowestIndex) {
 					lowestResult = result;
@@ -262,10 +279,117 @@ function(content, htmlEncode, type) {
 		}
 
 		// update the index
-		lastIndex = lowestResult.index + lowestResult[0].length;
+		lastIndex = lowestResult.index + (lowestResult.matchLength || lowestResult[0].length);
 	}
 
 	return html.join("");
+};
+
+// Dives recursively into the given DOM node.  Creates ObjectHandlers in text
+// nodes and cleans the mess in element nodes.  Discards by default "script",
+// "link", "object", "style", "applet" and "iframe" (most of them shouldn't
+// even be here since (1) they belong in the <head> and (2) are discarded on
+// the server-side, but we check, just in case..).
+ZmObjectManager.prototype.processHtmlNode =
+function(node, handlers) {
+	handlers = handlers != null ? handlers : true;
+	var tmp, i, val;
+	switch (node.nodeType) {
+	    case 1:	// ELEMENT_NODE
+		node.normalize();
+		tmp = node.tagName.toLowerCase();
+		if (/^(img|a)$/.test(tmp)) {
+			if (tmp == "a"
+			    && (ZmMailMsgView._URL_RE.test(node.href)
+				|| ZmMailMsgView._MAILTO_RE.test(node.href)))
+			{
+				// tricky.
+				var txt = RegExp.$1;
+				tmp = document.createElement("div");
+				tmp.innerHTML = this.findObjects(AjxStringUtil.trim(RegExp.$1));
+				tmp = tmp.firstChild;
+				if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
+					// probably no objects were found.  A warning would be OK here
+					// since the regexps guarantee that objects _should_ be found.
+					// DBG.println(AjxDebug.DBG1, "No objects found for potentially valid text!");
+					return tmp.nextSibling;
+				}
+				// here, tmp is an object span, but it
+				// contains the URL (href) instead of
+				// the original link text.
+				node.parentNode.insertBefore(tmp, node); // add it to DOM
+				tmp.innerHTML = "";
+				tmp.appendChild(node); // we have the original link now
+				return tmp.nextSibling;	// move on
+			}
+			handlers = false;
+		} else if (/^(script|link|object|iframe|applet)$/.test(tmp)) {
+			tmp = node.nextSibling;
+			node.parentNode.removeChild(node);
+			return tmp;
+		}
+		else if (tmp == "style") {
+			return node.nextSibling;
+		}
+		// fix style
+		// node.nowrap = "";
+		// node.className = "";
+
+		if (AjxEnv.isIE)
+			// strips expression()-s, bwuahahaha!
+			// granted, they get lost on the server-side anyway, but assuming some get through...
+			// the line below exterminates them.
+			node.style.cssText = node.style.cssText;
+
+		// Clear dangerous rules.  FIXME: implement proper way
+		// using removeAttribute (kind of difficult as it's
+		// (expectedly) quite different in IE from *other*
+		// browsers, so for now style.prop="" will do.)
+		tmp = ZmMailMsgView._dangerousCSS;
+		for (i in tmp) {
+			val = tmp[i];
+			if (!val || val.test(node.style[i]))
+				node.style[i] = "";
+		}
+		for (i = node.firstChild; i; i = this.processHtmlNode(i, handlers));
+		return node.nextSibling;
+
+	    case 3:	// TEXT_NODE
+	    case 4:	// CDATA_SECTION_NODE (just in case)
+		// generate ObjectHandler-s
+		if (handlers && /[^\s\xA0]/.test(node.data)) try {
+			var a = null, b = null;
+
+			if (!AjxEnv.isIE) {
+				// this block of code is supposed to free the object handlers from
+				// dealing with whitespace.  However, IE sometimes crashes here, for
+				// reasons that weren't possible to determine--hence we avoid this
+				// step for IE.  (bug #5345)
+				if (/^[\s\xA0]+/.test(node.data)) {
+					a = node;
+					node = node.splitText(RegExp.lastMatch.length);
+				}
+				if (/[\s\xA0]+$/.test(node.data))
+					b = node.splitText(node.data.length - RegExp.lastMatch.length);
+			}
+
+			tmp = document.createElement("div");
+			tmp.innerHTML = this.findObjects(node.data, true);
+
+			if (a)
+				tmp.insertBefore(a, tmp.firstChild);
+			if (b)
+				tmp.appendChild(b);
+
+			a = node.parentNode;
+			while (tmp.firstChild)
+				a.insertBefore(tmp.firstChild, node);
+			tmp = node.nextSibling;
+			a.removeChild(node);
+			return tmp;
+		} catch(ex) {};
+	}
+	return node.nextSibling;
 };
 
 ZmObjectManager.prototype.setHandlerAttr =
@@ -417,4 +541,10 @@ ZmObjectManager.prototype._handleHoverOut = function(event) {
 	var context = event.object.context;
 
 	handler.hoverOut(object, context, span);
+};
+
+// Private static functions
+
+ZmObjectManager.__byPriority = function(a, b) {
+	return (b._prio < a._prio) - (a._prio < b._prio);
 };

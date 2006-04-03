@@ -30,11 +30,22 @@
 * This class represents a list of contacts. It may be a user contact list, or the
 * global address list (aka GAL). A hash matching email addresses to contacts is
 * maintained for convenience.
-*
+* <p>
 * Full contact data (attributes and their values) is only loaded once, so there is
 * only one instance of this class that is fully populated. Other instances (such as
 * those created by a search) will have minimal data, and will get their attribute
-* values from the canonical list.
+* values from the canonical list.</p>
+* <p>
+* Also, loading has been optimized by delaying the creation of ZmContact objects until
+* they are needed. That has a big impact on IE, and not much on Firefox. Loading a subset
+* of attributes did not have much impact on load time, probably because a large majority
+* of contacts contain only those minimal fields.</p>
+*
+* @author Conrad Damon
+*
+* @param appCtxt	[ZmAppCtxt]		the app context
+* @param search		[ZmSearch]*		search that generated this list
+* @param isGal		[boolean]*		if true, this is a list of GAL contacts
 * @param type		[constant]*		item type
 */
 function ZmContactList(appCtxt, search, isGal, type) {
@@ -43,15 +54,16 @@ function ZmContactList(appCtxt, search, isGal, type) {
 	type = type ? type : ZmItem.CONTACT;
 	ZmList.call(this, type, appCtxt, search);
 
-	this.isGal = isGal;
+	this.isGal = (isGal === true);
 	this.isCanonical = false;
 
 	this._emailToContact = {};
-	this._acContacts = [];
 	this._acAddrList = {};
 	this._loadCount = 0;
 	this._loaded = false;
 	this._showStatus = true;
+	
+	this._acMatchFields = ZmContactList.AC_FIELDS;
 };
 
 ZmContactList.prototype = new ZmList;
@@ -61,12 +73,14 @@ ZmContactList.prototype.constructor = ZmContactList;
 // Constants
 
 // fields used for autocomplete matching
-ZmContactList.AC_FIELDS 		= [ZmContact.F_firstName, ZmContact.F_lastName, ZmContact.X_fullName, ZmContact.X_firstLast];
+ZmContactList.AC_FIELDS 		= [ZmContact.F_firstName, ZmContact.F_lastName, ZmContact.X_fullName, ZmContact.X_firstLast,
+								   ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
 ZmContactList.AC_NAME_FIELDS	= [ZmContact.F_firstName, ZmContact.F_lastName];
 ZmContactList.AC_VALUE_FULL 	= "fullAddress";
 ZmContactList.AC_VALUE_EMAIL	= "email";
 ZmContactList.AC_VALUE_NAME		= "name";
-ZmContactList.AC_MAX 			= 20; // max # of autocomplete matches to return
+ZmContactList.AC_MAX 			= 20;	// max # of autocomplete matches to return
+ZmContactList.AC_PREMATCH		= 2;	// # of characters to do pre-matching for
 
 // Load contacts in chunks so browser remains reasonably responsive.
 // To increase browser responsiveness, lower the chunk size and increase the
@@ -74,7 +88,6 @@ ZmContactList.AC_MAX 			= 20; // max # of autocomplete matches to return
 ZmContactList.MAX_LOAD_COUNT	= AjxEnv.isIE ? 100 : 500;	// chunk size for loading contacts
 ZmContactList.LOAD_PAUSE		= AjxEnv.isIE ? 500 : 250;	// delay between chunks
 
-// Public methods
 
 ZmContactList.prototype.toString = 
 function() {
@@ -83,13 +96,12 @@ function() {
 
 /**
 * Retrieves the contacts from the back end, and parses the response. The list is then sorted.
-*
-* Canonical list only.
-*
-* @param attrs		load only these attributes
+* This method is used only by the canonical list of contacts, in order to load their content.
+* <p>
+* Loading a minimal set of attributes did not result in a significant performance gain.</p>
 */
 ZmContactList.prototype.load =
-function(attrs, callback, errorCallback) {
+function(callback, errorCallback) {
 
 	// only the canonical list gets loaded
 	DBG.println(AjxDebug.DBG1, "loading contacts");
@@ -99,59 +111,25 @@ function(attrs, callback, errorCallback) {
 	var method = soapDoc.getMethod();
 	method.setAttribute("sortBy", "nameAsc");
 
-	if (attrs) {
-		// load only the given attributes
-		var node;
-		for (var i = 0; i < attrs.length; i++) {
-			node = soapDoc.set("a");
-			node.setAttribute("n", attrs[i]);
-		}
-	}
-	
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
-	DBG.showTiming(true, AjxDebug.PERF, "[PROFILING CONTACT LIST]");
-	DBG.timePt(AjxDebug.PERF, "requesting contact list");
+	DBG.timePt("requesting contact list", true);
 	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
 												  callback: respCallback, errorCallback: errorCallback});
 };
 
 ZmContactList.prototype._handleResponseLoad =
 function(callback, result) {
-	var response = result.getResponse();
-	var list = response.GetContactsResponse.cn;
+	DBG.timePt("got contact list");
+	var list = result.getResponse().GetContactsResponse.cn;
 	if (list) {
 		if (list.length > ZmContactList.MAX_LOAD_COUNT) {
 			this._loadAction = new AjxTimedAction(this, this._smartLoad, [list]);
 		}
 		this.set(list);
 	} else {
-		this._loaded = true;	// this means user has no contacts
+		this._loaded = true; // user has no contacts
 	}
 	if (callback) callback.run();
-};
-
-ZmContactList.prototype._smartLoad = 
-function(list) {
-	var diff = list.length - this._loadCount;
-	var limit = diff < ZmContactList.MAX_LOAD_COUNT
-		? (diff + this._loadCount)
-		: (ZmContactList.MAX_LOAD_COUNT + this._loadCount);
-
-	for (var i = this._loadCount; i < limit; i++) {
-		var args = {appCtxt: this._appCtxt, addressHash: {}, list: this};
-		var contact = ZmList.ITEM_CLASS[this.type].createFromDom(list[i], args);
-
-		this._updateEmailHash(contact, true);
-		this._addAcContact(contact, this._acContacts, true);
-		this.add(contact);
-	}
-
-	if (i < (list.length - 1) && this._loadAction) {
-		this._loadCount = i;
-		AjxTimedAction.scheduleAction(this._loadAction, ZmContactList.LOAD_PAUSE);
-	} else {
-		this._loaded = true;
-	}
 };
 
 ZmContactList.prototype.set = 
@@ -160,21 +138,135 @@ function(list) {
 	this._smartLoad(list);
 };
 
+ZmContactList.prototype._smartLoad = 
+function(list) {
+	DBG.timePt("loading contacts - " + this._loadCount);
+	var diff = list.length - this._loadCount;
+	var limit = diff < ZmContactList.MAX_LOAD_COUNT ? (diff + this._loadCount) :
+													  (ZmContactList.MAX_LOAD_COUNT + this._loadCount);
+
+	for (var i = this._loadCount; i < limit; i++) {
+		var contact = list[i];
+		if (!contact._attrs) contact._attrs = {}; // handle empty contacts
+		// note that we don't create a ZmContact here (optimization)
+		contact.list = this;
+		this._updateEmailHash(contact, true);
+		contact._attrs[ZmContact.X_fullName] = AjxStringUtil.trim(([contact._attrs[ZmContact.F_firstName],
+		                                       contact._attrs[ZmContact.F_middleName],
+		                                       contact._attrs[ZmContact.F_lastName]]).join(" "));
+		contact._attrs[ZmContact.X_firstLast] = AjxStringUtil.trim(([contact._attrs[ZmContact.F_firstName],
+		                                        contact._attrs[ZmContact.F_lastName]]).join(" "));
+		this._preMatch(contact);
+		this.add(contact);
+	}
+
+	if (i < (list.length - 1) && this._loadAction) {
+		this._loadCount = i;
+		AjxTimedAction.scheduleAction(this._loadAction, ZmContactList.LOAD_PAUSE);
+	} else {
+		DBG.timePt("done loading contacts");
+		this._loaded = true;
+	}
+};
+
+/**
+* Returns true if contacts have finished loading.
+*/
 ZmContactList.prototype.isLoaded =
 function() {
 	return this._loaded;
 };
 
+/*
+* Converts an anonymous contact object (contained by the JS returned by load request)
+* into a ZmContact, and updates the containing list if it is the canonical one.
+*
+* @param contact	[object]	a contact
+* @param idx		[int]*		index of contact in canonical list
+*/
+ZmContactList.prototype._realizeContact =
+function(contact, idx) {
+	if (contact instanceof ZmContact) return contact;
+
+	if (this.isCanonical)
+		idx = idx ? idx : this._getIndexById(contact.id);
+	
+	var args = {appCtxt: this._appCtxt, addressHash: {}, list: this};
+	var realContact = ZmList.ITEM_CLASS[this.type].createFromDom(contact, args);
+
+	if (this.isCanonical) {
+		var a = this.getArray();
+		a[idx] = realContact;
+		this._updateEmailHash(realContact, true);
+		this._idHash[contact.id] = realContact;
+	}
+	
+	return realContact;	
+};
+
+/*
+* Finds the array index for the contact with the given ID.
+*
+* @param id		[int]		a contact ID
+*/
+ZmContactList.prototype._getIndexById =
+function(id) {
+	var a = this.getArray();
+	for (var i = 0; i < a.length; i++) {
+		if (a[i].id == id)
+			return i;
+	}
+	return null;
+};
+
 /**
-* Returns the contact with the given address, if any.
+* Override in order to make sure the contacts have been realized. We don't
+* call realizeContact() since this is not the canonical list.
 *
-* Canonical list only.
+* @param offset		[int]		starting index
+* @param limit		[int]		size of sublist
+*/
+ZmContactList.prototype.getSubList = 
+function(offset, limit) {
+	var vec = ZmList.prototype.getSubList.call(this, offset, limit);
+	if (vec) {
+		var a = vec.getArray();
+		for (var i = 0; i < a.length; i++) {
+			a[i] = this._realizeContact(a[i], offset + i);
+		}
+	}
+	return vec;
+};
+
+/**
+* Override in order to make sure the contact has been realized. Canonical list only.
+* Returns a ZmContact.
 *
-* @param address	an email address (as a string)
+* @param id		[int]		a contact ID
+*/
+ZmContactList.prototype.getById =
+function(id) {
+	if (!id || !this.isCanonical) return null;
+
+	var contact = this._idHash[id];
+	if (!contact) return null;
+
+	return this._realizeContact(contact);
+};
+
+/**
+* Returns the contact with the given address, if any. Canonical list only.
+*
+* @param address	[string]	an email address
 */
 ZmContactList.prototype.getContactByEmail = 
 function(address) {
-	return address ? this._emailToContact[address.toLowerCase()] : null;
+	if (!address || !this.isCanonical) return null;
+
+	var contact = this._emailToContact[address.toLowerCase()];
+	if (!contact) return null;
+
+	return this._realizeContact(contact);
 };
 
 /**
@@ -191,83 +283,6 @@ function(items, hardDelete, attrs) {
 		return;
 	}
 	ZmList.prototype.deleteItems.call(this, items, hardDelete, attrs);
-};
-
-/**
-* Returns a list of matching contacts for a given string. The first name, last
-* name, and email addresses are matched against.
-*/
-ZmContactList.prototype.autocompleteMatch =
-function(str) {
-	DBG.println(AjxDebug.DBG3, "begin contact matching");
-	DBG.showTiming(true, "start autocomplete match: " + str);
-
-	if (!this.isLoaded() && this._showStatus) {
-		this._appCtxt.setStatusMsg(ZmMsg.autocompleteNotReady, ZmStatusView.LEVEL_WARNING);
-		this._showStatus = false; // only show status message once.
-		return null;
-	}
-
-	// have we already done this string?
-	if (this._acAddrList[str]) {
-		DBG.println(AjxDebug.DBG3, "found previous match for " + str);
-		DBG.timePt("end autocomplete match - found previous match");
-		return this._matchList(str);
-	}
-		
-	str = str.toLowerCase();
-	var strLen = str.length;
-	DBG.println(AjxDebug.DBG3, "str = " + str);
-	var newList = [];
-
-	// have we done part of this string?
-	var tmp = str;
-	var list = null;
-	while (tmp && !list) {
-		tmp = tmp.slice(0, -1);
-		list = this._acAddrList[tmp];
-		if (list && list.noMatches) {
-			DBG.timePt("end autocomplete match - no matches");
-			return null;
-		}
-	}
-	
-	var foundOne = false;
-	if (list) {
-		DBG.println(AjxDebug.DBG3, "working forward from '" + tmp + "'");
-		this._acAddrList[str] = [];
-		var len = list.length;
-		for (var i = 0; i < len; i++) {
-			var match = list[i];
-			var acContact = match.data;
-			var result = this._acMatch(acContact, str);
-			if (result) {
-				// propagate previous match forward, reset matched text
-				DBG.println(AjxDebug.DBG2, "adding " + result[ZmContactList.AC_VALUE_EMAIL]);
-				this._acAddrList[str].push(result);
-				foundOne = true;
-			}
-		}
-	} else { // initial matching
-		DBG.println(AjxDebug.DBG2, "creating new match list for '" + str + "'");
-		for (var i = 0; i < this._acContacts.length; i++) {
-			var match = this._acMatch(this._acContacts[i], str);
-			if (match) {
-				DBG.println(AjxDebug.DBG2, "adding " + match[ZmContactList.AC_VALUE_EMAIL]);
-				if (!this._acAddrList[str])
-					this._acAddrList[str] = [];
-				this._acAddrList[str].push(match);
-				foundOne = true;
-			}
-		}	
-	}
-	if (!foundOne) {
-		this._acAddrList[str] = {};
-		this._acAddrList[str].noMatches = true;
-	}
-
-	DBG.timePt("end autocomplete match");
-	return this._matchList(str);
 };
 
 /**
@@ -345,7 +360,7 @@ function(item) {
 ZmContactList.prototype._updateEmailHash =
 function(contact, doAdd) {
 	for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
-		var email = contact.getAttr(ZmContact.F_EMAIL_FIELDS[i]);
+		var email = ZmContact.getAttr(contact, ZmContact.F_EMAIL_FIELDS[i]);
 		if (email) {
 			if (doAdd)
 				this._emailToContact[email.toLowerCase()] = contact;
@@ -353,177 +368,6 @@ function(contact, doAdd) {
 				delete this._emailToContact[email.toLowerCase()];
 		}
 	}
-};
-
-/*
-* Adds or removes a contact from its matching strings, as well as the
-* list of contact matching objects.
-*
-* @param contact	[ZmContact]		contact to add or remove
-* @param doAdd		[boolean]		if true, contact was added
-*/
-ZmContactList.prototype._updateAcList =
-function(contact, doAdd) {
-	// get matching objects for this contact
-	var acContacts = this._addAcContact(contact);
-
-	// check against matched strings
-	for (var str in this._acAddrList) {
-		var list = this._acAddrList[str];
-		if (doAdd) {
-			for (var i = 0; i < acContacts.length; i++) {
-				var match = this._acMatch(acContacts[i], str);
-				if (match) {
-					if (list.noMatches)
-						this._acAddrList[str] = [];
-					this._acAddrList[str].push(match);
-				}
-			}
-		} else {
-			var newMatches = [];
-			for (var i = 0; i < list.length; i++) {
-				if (list[i].data._id != contact.id)
-					newMatches.push(list[i]);
-			}
-			this._acAddrList[str] = newMatches;
-		}
-	}
-	// add or remove from acContacts
-	if (this._acContacts) {
-		if (doAdd) {
-			this._acContacts = this._acContacts.concat(acContacts);
-		} else {
-			var newAcContacts = [];
-			for (var i = 0; i < this._acContacts.length; i++)
-				if (this._acContacts[i]._id != contact.id)
-					newAcContacts.push(this._acContacts[i]);
-			this._acContacts = newAcContacts;
-		}
-	}
-};
-
-/*
-* Parses a contact into an object to do autocomplete matching against.
-* To make the matching process simpler, we create multiple objects for any 
-* contact that has more than one email address, one for each address, and then 
-* match against those.
-*
-* @param contact	[ZmContact]		contact to add
-* @param list		[array]			list to add to
-* @param preMatch	[boolean]		if true, perform matching for this contact
-*/
-ZmContactList.prototype._addAcContact =
-function(contact, list, preMatch) {
-	var emails = contact.getEmails();
-	list = list ? list : [];
-	for (var j = 0; j < emails.length; j++) {
-		var acContact = {};
-		acContact._id = contact.id;
-		acContact._item = contact;
-		var strings = preMatch ? {} : null;
-		acContact[ZmContact.F_email] = emails[j];
-		if (preMatch && emails[j] && emails[j].length) {
-			strings[emails[j].substring(0, 1).toLowerCase()] = true;
-			strings[emails[j].substring(0, 2).toLowerCase()] = true;
-		}
-		for (var k = 0; k < ZmContactList.AC_FIELDS.length; k++) {
-			var field = ZmContactList.AC_FIELDS[k];
-			var value;
-			if (field == ZmContact.X_fullName) {
-				value = contact.getFullName();
-			} else if (field == ZmContact.X_firstLast) {
-				value = AjxStringUtil.trim([contact.getAttr(ZmContact.F_firstName), contact.getAttr(ZmContact.F_lastName)].join(" "));
-			} else {
-				value = contact.getAttr(field);
-			}
-			acContact[field] = value;
-			if (preMatch && value && value.length) {
-				strings[value.substring(0, 1).toLowerCase()] = true;
-				strings[value.substring(0, 2).toLowerCase()] = true;
-			}
-		}
-		list.push(acContact);
-		if (preMatch) {
-			for (var str in strings) {
-				var match = this._acMatch(acContact, str);
-				if (!this._acAddrList[str])
-					this._acAddrList[str] = [];
-				this._acAddrList[str].push(match);
-			}
-		}
-	}
-	return list;
-};
-
-// Returns a match object if the string matches any of the contact's autocomplete fields.
-ZmContactList.prototype._acMatch =
-function(acContact, str) {
-	var matchedField = null;
-	var savedMatch = null;
-	for (var field in acContact) {
-		if (field.indexOf("_") == 0) continue;
-		var value = acContact[field];
-		if (value && (value.toLowerCase().indexOf(str) == 0)) {
-			try {
-				var regex = new RegExp("^(" + str + ")", "i");
-				savedMatch = value.replace(regex, "<b>$1</b>");
-				matchedField = field;
-			} catch (ex) {
-				// illegal regex attempt - do nothing...
-				continue;
-			}
-			break;
-		}
-	}
-	return matchedField ? this._getMatchObject(acContact, matchedField, savedMatch) : null;
-};
-
-// Assembles a match object for the type of item that was matched
-ZmContactList.prototype._getMatchObject =
-function(acContact, matchedField, savedMatch) {
-	var name;
-	if (matchedField == ZmContact.X_fullName || matchedField == ZmContact.X_firstLast) {
-		// if one of these matched, it will already be highlighted
-		name = savedMatch;
-	} else {
-		// construct name - first or last may have matched and been highlighted
-		var names = [];
-		for (var i = 0; i < ZmContactList.AC_NAME_FIELDS.length; i++) {
-			var field = ZmContactList.AC_NAME_FIELDS[i];
-			var val = acContact[field];
-			if (val)
-				names.push((matchedField == field) ? savedMatch : val);
-		}
-		name = names.join(" ");
-	}
-	var textEmail, valEmail;
-	if (matchedField == ZmContact.F_email) {
-		textEmail = savedMatch; // highlighted version
-		valEmail = acContact[ZmContact.F_email];
-	} else {
-		textEmail = valEmail = acContact[ZmContact.F_email];
-	}
-	var text = name + " &lt;" + textEmail + "&gt;";
-	var acEmail = new ZmEmailAddress(valEmail, null, acContact[ZmContact.X_fullName]);
-	var acValue = acEmail.toString();
-	var result = {};
-	result.data = acContact;
-	result.text = text;
-	result[ZmContactList.AC_VALUE_FULL] = acValue;
-	result[ZmContactList.AC_VALUE_EMAIL] = valEmail;
-	result[ZmContactList.AC_VALUE_NAME] = acContact[ZmContact.X_fullName];
-
-	return result;
-};
-
-ZmContactList.prototype._matchList =
-function(str) {
-	var max = Math.min(this._acAddrList[str].length, ZmContactList.AC_MAX);
-	DBG.println(AjxDebug.DBG2, "returning " + max + " match" + (max == 1) ? "" : "es");
-	var list = null;
-	if (this._acAddrList[str].length)
-		list = this._acAddrList[str].slice(0, max);
-	return list;
 };
 
 // Returns the position at which the given contact should be inserted in this list.
@@ -540,4 +384,263 @@ ZmContactList.prototype._handleResponseModifyItem =
 function(item, result) {
 	// NOTE: we overload and do nothing b/c base class does more than we want 
 	//       (since everything is handled by notifications)
+};
+
+/**
+* Returns a list of matching contacts for a given string. The first name, last
+* name, full name, first/last name, and email addresses are matched against.
+*
+* @param str	[string]	string to match against
+*/
+ZmContactList.prototype.autocompleteMatch =
+function(str) {
+	DBG.println(AjxDebug.DBG3, "begin contact matching");
+
+	if (!this.isLoaded() && this._showStatus) {
+		this._appCtxt.setStatusMsg(ZmMsg.autocompleteNotReady, ZmStatusView.LEVEL_WARNING);
+		this._showStatus = false; // only show status message once.
+		return null;
+	}
+
+	str = str.toLowerCase();
+	DBG.println(AjxDebug.DBG3, "str = " + str);
+
+	// have we already done this string?
+	if (this._acAddrList[str]) {
+		DBG.println(AjxDebug.DBG3, "found previous match for " + str);
+		DBG.timePt("end autocomplete match - found previous match");
+		return this._matchList(str);
+	}
+		
+	var strLen = str.length;
+	var newList = [];
+
+	// have we done part of this string?
+	var tmp = str;
+	var list = null;
+	while (tmp && !list) {
+		tmp = tmp.slice(0, -1); // remove last character
+		list = this._acAddrList[tmp];
+		if (list && list.length == 0) {
+			// substring had no matches, so this one doesn't as well
+			DBG.timePt("end autocomplete match - no matches");
+			return null;
+		}
+	}
+	
+	var foundOne = false;
+	if (list) {
+		// found a substring that we've already done matching for
+		DBG.println(AjxDebug.DBG3, "working forward from '" + tmp + "'");
+		this._acAddrList[str] = [];
+		var len = list.length;
+		// test each of the substring's matches to see if it also matches this string
+		for (var i = 0; i < len; i++) {
+			var id = list[i];
+			if (this._testAcMatch(this.getById(id), str)) {
+				this._acAddrList[str].push(id);
+				foundOne = true;
+			}
+		}
+	} else {
+		// initial matching against all contacts
+		DBG.println(AjxDebug.DBG2, "creating new match list for '" + str + "'");
+		list = this.getArray();
+		for (var i = 0; i < list.length; i++) {
+			var contact = list[i];
+			if (this._testAcMatch(contact, str)) {
+				this._acAddrList[str].push(contact.id);
+				foundOne = true;
+			}
+		}
+	}
+	if (!foundOne)
+		this._acAddrList[str] = [];
+
+	DBG.timePt("end autocomplete match");
+	return this._matchList(str);
+};
+
+/*
+* Fills in matches for strings up to two characters.
+*
+* @param contact	[object]	a contact
+*/
+ZmContactList.prototype._preMatch =
+function(contact) {
+	if (!ZmContactList.AC_PREMATCH) {return;}
+	var strings = {};
+	for (var i = 0; i < this._acMatchFields.length; i++) {
+		// placeholder objects (ZmContactList) will have _attrs
+		// realized objects (ZmResourceList) will have attr
+		var value = contact._attrs ? contact._attrs[this._acMatchFields[i]] :
+									 contact.attr ? contact.attr[this._acMatchFields[i]] : null;
+		if (value) {
+			for (var j = 1; j <= ZmContactList.AC_PREMATCH; j++) {
+				var str = value.substring(0, j).toLowerCase();
+				if(!strings[str]) {
+					this._acAddrList[str] = this._acAddrList[str] ? this._acAddrList[str] : [];
+					this._acAddrList[str].push(contact.id);
+					strings[str] = true;
+				}
+			}
+		}
+	}
+};
+
+/*
+* Tests a string against various fields of a contact to see if the contact matches.
+* Contacts that are in the Trash will always fail to match.
+*
+* @param contact	[object]		contact
+* @param str		[string]		test string
+* @param doMarkup	[boolean]		if true, return highlighted value and matched field
+*/
+ZmContactList.prototype._testAcMatch =
+function(contact, str, doMarkup) {
+	if (!contact || ZmContact.isInTrash(contact)) return false;
+
+	for (var i = 0; i < this._acMatchFields.length; i++) {
+		var field = this._acMatchFields[i];
+		var value = ZmContact.getAttr(contact, field);
+		if (value && (value.toLowerCase().indexOf(str) == 0)) {
+			if (doMarkup) {
+				try {
+					var regex = new RegExp("^(" + str + ")", "i");
+					savedMatch = value.replace(regex, "<b>$1</b>");
+				} catch (ex) {}	// illegal regex attempt - do nothing...
+				return {savedMatch: savedMatch, matchedField: field};
+			} else {
+				return contact.id;
+			}
+		}
+	}
+	return null;
+};
+
+/*
+* Returns a list of no more than the maximum number of matches. Each item in the list
+* is a matching object from which the caller selects the data it needs.
+*
+* @param str		[string]	string to match against
+*/
+ZmContactList.prototype._matchList =
+function(str) {
+	var max = Math.min(this._acAddrList[str].length, ZmContactList.AC_MAX);
+	DBG.println(AjxDebug.DBG2, "returning " + max + " match" + (max == 1) ? "" : "es");
+	var list = null;
+	if (this._acAddrList[str].length)
+		list = this._acAddrList[str].slice(0, max);
+	else
+		return null;
+	
+	var num = 0;
+	var results = [];
+	for (var i = 0; i < list.length; i++) {
+		var matches = this._getMatches(list[i], str);
+		if (matches && matches.length) {
+			for (var j = 0; j < matches.length; j++) {
+				num++;
+				if (num <= ZmContactList.AC_MAX)
+					results.push(matches[j]);
+			}
+		}
+	}
+
+	return results;
+};
+
+/*
+* Creates the matching object(s) for a particular matched contact. If a contact has multiple
+* email addresses and didn't match on one of them (it matched on a name), then a matching
+* object will be created for each email address.
+*
+* @param id		[int]		ID of matched contact
+* @param str	[string]	string that was matched
+*/
+ZmContactList.prototype._getMatches =
+function(id, str) {
+	var match = this._testAcMatch(this.getById(id), str, true);
+	if (!match) {
+		DBG.println(AjxDebug.DBG1, "Matched contact with ID " + id + " no longer matches '" + str + "' (possibly deleted)");
+		return null;
+	}
+
+	var contact = this.getById(id);
+	var name;
+	if (match.matchedField == ZmContact.X_fullName || match.matchedField == ZmContact.X_firstLast) {
+		// if one of these matched, it will already be highlighted
+		name = match.savedMatch;
+	} else {
+		// construct name - first or last may have matched and been highlighted
+		var names = [];
+		for (var i = 0; i < ZmContactList.AC_NAME_FIELDS.length; i++) {
+			var field = ZmContactList.AC_NAME_FIELDS[i];
+			var val = ZmContact.getAttr(contact, field);
+			if (val)
+				names.push((match.matchedField == field) ? match.savedMatch : val);
+		}
+		name = names.join(" ");
+	}			
+	var results = [];
+	var fullName = ZmContact.getAttr(contact, ZmContact.X_fullName);
+	if (match.matchedField == ZmContact.F_email || match.matchedField == ZmContact.F_email2 || match.matchedField == ZmContact.F_email3) {
+		results.push(this._createMatch(name, match.savedMatch, fullName, ZmContact.getAttr(contact, match.matchedField), contact));
+	} else {
+		for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
+			var val = ZmContact.getAttr(contact, ZmContact.F_EMAIL_FIELDS[i]);
+			if (val)
+				results.push(this._createMatch(name, val, fullName, val, contact));
+		}
+	}
+	
+	return results;
+};
+
+/*
+* Creates a match object from the given fields.
+*
+* @param nameHL		[string]		full name (may have highlighting)
+* @param emailHL	[string]		email address (may have highlighting)
+* @param name		[string]		full name
+* @param email		[string]		email address (for sending message)
+* @param contact	[ZmContact]		the matched contact
+*/
+ZmContactList.prototype._createMatch =
+function(nameHL, emailHL, name, email, contact) {
+	var text = nameHL + " &lt;" + emailHL + "&gt;";
+	var acValue = ['"', name, '" <', email, ">"].join("");
+	
+	var result = {};
+	result.text = text;
+	result.item = contact;
+	result[ZmContactList.AC_VALUE_FULL] = acValue;
+	result[ZmContactList.AC_VALUE_EMAIL] = email;
+	result[ZmContactList.AC_VALUE_NAME] = name;
+
+	return result;
+};
+
+/*
+* Adds or removes a contact from its matching strings.
+*
+* @param contact	[object]		contact to add or remove
+* @param doAdd		[boolean]		if true, contact was added
+*/
+ZmContactList.prototype._updateAcList =
+function(contact, doAdd) {
+	for (var str in this._acAddrList) {
+		var list = this._acAddrList[str];
+		if (doAdd) {
+			if (this._testAcMatch(contact, str))
+				list.push(contact.id);
+		} else {
+			var newMatches = [];
+			for (var i = 0; i < list.length; i++) {
+				if (list[i] != contact.id)
+					newMatches.push(list[i]);
+			}
+			this._acAddrList[str] = newMatches;
+		}
+	}
 };

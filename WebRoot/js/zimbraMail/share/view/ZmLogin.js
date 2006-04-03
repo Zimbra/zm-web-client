@@ -47,7 +47,7 @@ ZmLogin = function() {}
 ZmLogin.lastGoodUserNameCookie   = "ls_last_username";
 ZmLogin.lastGoodMailServerCookie = "ls_last_server";
 ZmLogin.CSFE_SERVER_URI = location.port == "80" ? "/service/soap/" : ":" + location.port + "/service/soap/";
-ZmLogin.ZIMBRA_APP_URI  = location.port == "80" ? "/zimbra/mail" : ":" + location.port + "/zimbra/mail";
+ZmLogin.ZIMBRA_APP_URI  = location.port == "80" ? appContextPath+"/mail" : ":" + location.port + appContextPath+"/mail";
 ZmLogin.MAILBOX_REGEX =/^([a-zA-Z0-9_\.\-])+(\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+)?$/;
 
 /**
@@ -104,7 +104,9 @@ function() {
 	html[idx++] = "<tr><td bgcolor='#FFFFFF'><div class='banner'></div></td></tr>";
 	html[idx++] = "<tr><td class='mainPanel' align=center><div class='error'>";
 	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2><tr>";
-	html[idx++] = "<td valign=top width=40><img src='/zimbra/img/hiRes/dwt/Critical_32.gif' width=32 height=32></td>";
+	html[idx++] = "<td valign=top width=40><img src='";
+	html[idx++] = appContextPath;
+	html[idx++] = "/img/loRes/dwt/Critical_32.gif' width=32 height=32></td>";
 	html[idx++] = "<td>";
 	html[idx++] = errorStr;
 	html[idx++] = "</td></tr></table>";
@@ -112,7 +114,7 @@ function() {
 	html[idx++] = "<div style='text-align:left; width:85%'>";
 	html[idx++] = tip;
 	html[idx++] = "</div><br>";
-	html[idx++] = "<div style='font-size:9px; text-align:center; color:#999999; padding-bottom:3px; white-space:nowrap;'>";
+	html[idx++] = "<div class='LoginPanelLicense'>";
 	html[idx++] = ZmMsg.splashScreenCopyright;
 	html[idx++] = "</div>";
 	html[idx++] = "</td></tr>";
@@ -158,23 +160,27 @@ function() {
 	var idx = 0;
 	
 	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td>";
-	html[idx++] = "<table width=450 align=center border=0 cellspacing=0 cellpadding=0 style='border: 2px solid; border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;'>";
-	html[idx++] = "<tr><td bgcolor='#FFFFFF'><div class='banner'></div></td></tr>";
+	html[idx++] = "<table align=center border=0 cellspacing=0 cellpadding=0 class='LoginPanel'>";
+//MOW: Make AppName and ShortVersion dynamic!!!!
+	html[idx++] = "<tr><td align=center><div class='LoginPanelBanner'><div class='LoginPanelAppName'>Collaboration Suite</div><div class='LoginPanelShortVersion'></div></div></td></tr>";
 	html[idx++] = "<tr><td id='loginPanel' class='mainPanel'>";
 	// error message div
 	html[idx++] = "<center><div class='error' style='display:none' id='errorMessageContainer'>";
 	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2><tr>";
-	html[idx++] = "<td valign=top width=40><img src='/zimbra/img/hiRes/dwt/Critical_32.gif' id='errorIcon' width=32 height=32></td>";
+	html[idx++] = "<td valign=top width=40><img src='";
+	html[idx++] = appContextPath;
+	html[idx++] = "/img/loRes/dwt/Critical_32.gif' id='errorIcon' width=32 height=32></td>";
 	html[idx++] = "<td id='errorMessage'>";
 	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</div></center>";
 	// real content
-	html[idx++] = "<table id='passTable' border=0 width=425>";
+	html[idx++] = "<table id='passTable' class='LoginPanelTable' border=0>";
 	html[idx++] = "<tr height=40>";
 	html[idx++] = "<td width=100 align=right>";
 	html[idx++] = ZmMsg.username;
 	html[idx++] = ":</td>";
 	html[idx++] = "<td><input style='width:100%' autocomplete=OFF type=text tabIndex=1 id='uname'></td>";
+	html[idx++] = "<td><div class='LoginPanelFormSpacer'></div></td>";
 	html[idx++] = "</tr><tr height=30>";
 	html[idx++] = "<td align=right width=100>";
 	html[idx++] = ZmMsg.password;
@@ -198,18 +204,18 @@ function() {
 	html[idx++] = "onselectstart='javascript: return false;' ";
 	html[idx++] = "onfocus='javascript:ZmLogin.loginButtonFocus(this.parentNode);return false;' ";
 	html[idx++] = "onblur='javascript:ZmLogin.loginButtonBlur(this.parentNode);return false;'";
-	html[idx++] = ">";
+	html[idx++] = "><table style='width:100%;height:100%'><tr><td class='Text' align=center>";
 	html[idx++] = ZmMsg.login;
 	// non-IE browsers dont allow focus for non-INPUT elements so we have to 
 	// create a hidden input to fake focus for our DIV which acts as an input button
 	if (!AjxEnv.isIE)
 		html[idx++] = "<input type='button' style='display:none' id='hiddenButton'>";
-	html[idx++] = "</div></td>";
+	html[idx++] = "</td></tr></table></div></td>";
 	
 	html[idx++] = "</tr></table>";
 	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</td></tr>";
-	html[idx++] = "<tr><td colspan=50 class='mainPanel' style='font-size:9px; text-align:center; color:#999999; padding-bottom:3px; white-space:nowrap;'><br>";
+	html[idx++] = "<tr><td class='LoginPanelLicense'>";
 	html[idx++] = ZmMsg.splashScreenCopyright;
 	html[idx++] = "</td></tr>";
 	html[idx++] = "</table>";
@@ -312,12 +318,8 @@ function(ev) {
     
     var target = ev.target ? ev.target: ev.srcElement;
     if (!target) return true;
-
-	var button = document.getElementById("loginButton");
     
     var keyCode = ev.keyCode;
-	var shiftKey = ev.shiftKey;
-
     if (keyCode == 13) { // Enter
 		if (target.id == "uname") {
 			document.getElementById("pass").focus();
@@ -329,6 +331,7 @@ function(ev) {
 		ZmLogin.cancelEvent(ev);
 		return false;
 	} else if (keyCode == 9) { // Tab
+		var shiftKey = ev.shiftKey;
 		if (target.id == "uname") {
 			if (!shiftKey) {
 				document.getElementById("pass").focus();
@@ -366,8 +369,10 @@ function(ev) {
 				if (obj.disabled) {
 					obj = document.getElementById("passNew");
 				} else {
-					if (!AjxEnv.isIE)
+					if (!AjxEnv.isIE) {
+						var button = document.getElementById("loginButton");
 						ZmLogin.loginButtonBlur(button.parentNode);
+					}
 				}
 				obj.focus();
 			} else {
@@ -477,6 +482,7 @@ function() {
 	var pwordField = document.getElementById("pass");
     var uname = unameField.value;
     var pword = pwordField.value;
+	
 
 	// check if we're trying to change the password
 	if (unameField.disabled && pwordField.disabled) {
@@ -546,19 +552,22 @@ function(uname, oldPass) {
 		DBG.dumpObj(ex);
 		// XXX: for some reason, ZmCsfeException consts are fubar
 		if (ex.code == "account.PASSWORD_RECENTLY_USED" ||
-			ex.code == "account.PASSWORD_CHANGE_TOO_SOON") {
+			ex.code == "account.PASSWORD_CHANGE_TOO_SOON")
+		{
 			var msg = ex.code == ZmCsfeException.ACCT_PASS_RECENTLY_USED
 				? ZmMsg.errorPassRecentlyUsed
 				: (ZmMsg.errorPassChangeTooSoon + " " + errorContact);
 			ZmLogin._setErrorMessage(msg);
 			newPassField.value = conPassField.value = "";
 			newPassField.focus();
-		} else if (ex.code == "account.PASSWORD_LOCKED") {
+		}
+		else if (ex.code == "account.PASSWORD_LOCKED")
+		{
 			// remove the new password and confirmation fields
 			var passTable = document.getElementById("passTable");
 			passTable.deleteRow(2);
 			passTable.deleteRow(2);
-			
+
 			// re-enable username and password fields
 			var unameField = document.getElementById("uname");
 			var pwordField = document.getElementById("pass");
@@ -567,6 +576,11 @@ function(uname, oldPass) {
 			pwordField.focus();
 			
 			ZmLogin._setErrorMessage(ZmMsg.errorPassLocked);
+		}
+		else if (ex.code == "account.INVALID_PASSWORD")
+		{
+			ZmLogin._setErrorMessage(ZmMsg.errorInvalidPass);
+			newPassField.focus();
 		}
 	}
 	
@@ -645,5 +659,5 @@ function (mailServer) {
 	var ms = mailServer ? mailServer : location.hostname;
 	return (location.protocol + "//" + ms + ((location.port == 80) 
 		? "" 
-		: ":" + location.port) +"/zimbra/auth/" + window.location.search);
+		: ":" + location.port) + appContextPath + "/auth/" + window.location.search);
 };

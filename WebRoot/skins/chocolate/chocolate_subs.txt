@@ -1,0 +1,210 @@
+
+// SUBSTITUTIONS PERFORMED WITHIN THIS FILE ONLY -- DON'T USE OUTSIDE THIS FILE!
+
+_SkinDir_				= /zimbra/skins/chocolate/img
+
+_ChromeColor_			= #4e3d2d
+_InsetColor_			= #adcbce;
+_InsetDarkColor_		= #779193;
+
+_HeaderColor_			= #3c3c3c
+_BodyColor_				= #1b1a17
+
+_ButtonColor_			= #504431
+_ToolbarColor_			= #504431
+_HoverColor_			= #fde79a
+_ClickColor_			= #ffc600
+
+_ToobarSeparatorColor_	= black
+_SeparatorColor_		= #4e3d2d
+
+_InfoColor_				= #779193;
+_WarningColor_			= #FFF6BF
+_CriticalColor_			= #F5BFBF
+
+_ErrorColor_			= #fde79a
+
+_TextColor_				= white
+_ActivatedColor_		= black
+_TriggeredColor_		= black
+_DisabledColor_			= #999999
+_AnchorColor_			= #fde79a
+
+_SelectedRowColor_		= #c5c4b9
+_MatchedRowColor_		= #1b1a17
+_MatchedTextColor_		= #33cc33
+_RightClickColor_		= #EAF5F5
+
+_ContrastTextColor_		= black
+_ContrastDisabledColor_	= #333333
+
+
+
+// SUBSTITUTIONS TO BE DONE IN ALL OTHER CSS FILES
+
+
+
+NoGeneratedPosition		= background-position:0px 0px;
+
+FullSize				= width:100%; height:100%;
+FullWidth				= width:100%;
+FullHeight				= height:100%;
+
+FontDefault				= font-family: Verdana, Arial, Helvetica, sans-serif;
+FontFixed				= font-family: monospace; font-size:10px;
+
+FontNormal				= font-size:10px;
+FontBig					= font-size:12px;
+FontBigger				= font-size:14px; font-weight:bold;
+FontBiggest				= font-size:18px; font-weight:bold;
+FontTiny				= font-size:9px;
+FontMiniscule			= font-size:6px;
+FontImportant			= font-weight:bold; color:darkred;
+	
+Text 					= color:@_TextColor_@;
+TextLabel				= color:@_DisabledColor_@;		white-space:nowrap; overflow:hidden;
+TextActivated			= color:lightgreen;
+TextTriggered			= color:pink;
+TextDisabled 			= color:@_DisabledColor_@;
+TextUnread				= font-weight:bold;
+TextDeleted				= color:@_DisabledColor_@;font-style:italic;
+TextOnConsole			= color:@_TextColor_@;
+TextOnInset				= color:@_ContrastTextColor_@;
+TextNoWrap				= white-space:nowrap; overflow:hidden;
+	
+Input					= color:@_TextColor_@; background-color: @_BodyColor_@; border:1px inset @_HeaderColor_@; padding-left:3px; padding-top:2px;
+InputError				= color:@_ErrorColor_@; background-color: @_BodyColor_@; border:1px inset @_HeaderColor_@; padding-left:3px; padding-top:2px;
+
+TableCompact			= border-collapse:collapse; border-spacing:none; padding:0px;
+TableFixed				= table-layout:fixed;
+
+AnchorText				= color:@_AnchorColor_@; text-decoration: none; 	 cursor: pointer;
+AnchorTextHover			= color:@_AnchorColor_@; text-decoration: underline; cursor: pointer;
+AnchorTextClick			= color:@_ClickColor_@; text-decoration: underline; cursor: pointer;
+AnchorTextDisabled		= color:@_DisabledColor_@;; text-decoration: none; 	 cursor: not-allowed;
+	
+ZimletBorder			= padding:2px; 							cursor:pointer;
+ZimletBorderHover		= padding:1px; border:1px dotted red;	cursor:pointer;
+	
+
+ButtonMinWidth				= min-width:60px;
+	
+Button						= background-color:@_ButtonColor_@; border: 1px outset @_ButtonColor_@; cursor: pointer; height:20px;
+Button-activated			= background-color:@_HoverColor_@; border: 1px outset @_ButtonColor_@; cursor: pointer; height:20px;
+Button-triggered			= background-color:@_ClickColor_@; border: 1px inset @_ButtonColor_@;	cursor: pointer; height:20px;
+Button-toggled				= background-color:@_ClickColor_@; border: 1px inset @_ButtonColor_@;	cursor: pointer; height:20px;
+Button-disabled				= background-color:@_ButtonColor_@; border:none; 				cursor: not-allowed;
+
+ButtonText					= color:@_TextColor_@;
+ButtonText-activated		= color:@_ActivatedColor_@;
+ButtonText-triggered		= color:@_TriggeredColor_@;
+ButtonText-toggled			= color:@_TriggeredColor_@;
+ButtonText-disabled			= color:@_DisabledColor_@;
+
+
+ToolbarButton				= cursor:pointer;
+ToolbarButton-activated		= background-color:@_HoverColor_@; cursor:pointer;
+ToolbarButton-triggered		= background-color:@_ClickColor_@; cursor:pointer;
+ToolbarButton-toggled		= background-color:@_ClickColor_@; cursor:pointer;
+ToolbarButton-disabled		= cursor: not-allowed;
+
+ToolbarButtonText			= color:@_TextColor_@;
+ToolbarButtonText-activated	= color:@_ActivatedColor_@;
+ToolbarButtonText-triggered	= color:@_TriggeredColor_@;
+ToolbarButtonText-toggled	= color:@_TriggeredColor_@;
+ToolbarButtonText-disabled	= color:@_DisabledColor_@;
+
+InsetButton					= cursor:pointer;
+InsetButton-activated		= background-color:@_HoverColor_@; cursor:pointer;
+InsetButton-triggered		= background-color:@_ClickColor_@; cursor:pointer;
+InsetButton-toggled			= background-color:@_ClickColor_@; cursor:pointer;
+InsetButton-disabled		= cursor:not-allowed;
+
+InsetButtonText				= color:@_ContrastTextColor_@;
+InsetButtonText-activated	= color:@_ContrastTextColor_@;
+InsetButtonText-triggered	= color:@_ContrastTextColor_@;
+InsetButtonText-toggled		= color:@_ContrastTextColor_@;
+InsetButtonText-disabled	= color:@_ContrastDisabledColor_@;
+
+ListBorder					= border: 2px solid @SeparatorColor@;
+ListBg						= background-color: @_BodyColor_@;
+ListRow						= border-bottom: 1px solid @_SeparatorColor_@;
+ListRowSelected				= background-image:url(@_SkinDir_@/RowSelected__H.gif); color: @_SelectedRowColor_@;
+ListRowMatched				= background-color:@_MatchedRowColor_@;
+ListTextMatched				= background-color:@_MatchedTextColor_@;
+ListRowRightClick			= background-color:@_RightClickColor_@;
+
+ListHeaderBg				= background-image:url(@_SkinDir_@/ListHeader__H.gif); background-color: @_HeaderColor_@;
+
+SeparatorColor			 	= @_SeparatorColor_@
+SeparatorBgColor			= background-color:@_SeparatorColor_@;
+
+
+MenuMinWidth				= min-width:40px;
+Menu						= background-color:@_ActivatedColor_@; padding:1px; border-right: 2px solid black; border-bottom: 2px solid black;
+
+MenuItem					= background-color:@_ButtonColor_@; cursor:pointer;
+MenuItem-selected			= background-color:@_HoverColor_@; cursor:pointer;
+MenuItem-triggered			= background-color:@_ClickColor_@; cursor:pointer;
+MenuItem-disabled			= background-color:@_ButtonColor_@; cursor:pointer;
+
+MenuItemText				= color:@_TextColor_@;
+MenuItemText-selected		= color:@_ActivatedColor_@;
+MenuItemText-triggered		= color:@_TriggeredColor_@;
+MenuItemText-disabled		= color:@_DisabledColor_@;;
+MenuItemTextPadding			= height:16px; white-space:nowrap; padding-right:2px; padding-left:5px;
+
+
+	
+SkinOuterBg				= background-image:url(@_SkinDir_@/Console__BG.gif); background-color:@_ChromeColor_@;
+SkinOuterBgColor		= background-color:@_ChromeColor_@;
+
+SkinAppInsetBg			= background-color:@_BodyColor_@;
+
+SkinBodyBg				= background-color:@_HeaderColor_@;	
+	
+SkinInsetBg				= background-image:url(@_SkinDir_@/Inset__BG.gif);
+SkinInsetBgColor		= background-color:@_InsetColor_@;
+SkinInsetBorder			= border: 1px solid #999999; padding: 5px 0 0 5px;
+SkinInsetBgDark			= background-image:url(@_SkinDir_@/InsetDark__BG.gif);
+SkinInsetBgDarkColor	= background-color:@_InsetDarkColor_@;
+SkinInsetBgDarkBorder	= border: 1px inset @_InsetDarkColor_@;
+
+	
+SkinHToolbarBg			= background-image:url(@_SkinDir_@/Toolbar__BG.gif);width:100%;height:31;
+SkinHToolbarBgColor		= background-color:@_ToolbarColor_@;
+SkinHToolbarStart		= background-image:url(@_SkinDir_@/Toolbar_L.gif);width:12;height:31;
+SkinHToolbarEnd			= background-image:url(@_SkinDir_@/Toolbar_R.gif);width:12;height:31;
+	
+SkinVToolbarBg			= background-image:url(@_SkinDir_@/AppToolbar__V.gif);width:31;height:100%;
+SkinVToolbarBgColor		= background-color:@_ToolbarColor_@;
+SkinVToolbarStart		= background-image:url(@_SkinDir_@/AppToolbar_T.gif);width:31;height:17;
+SkinVToolbarEnd			= background-image:url(@_SkinDir_@/AppToolbar_B.gif);width:31;height:17;
+
+
+SkinHeaderBg			= background-image:url(@_SkinDir_@/ListHeader__H.gif);
+SkinHeaderBgColor		= background-color:@_HeaderColor_@;
+SkinHeaderSeparatorColor= #@_ChromeColor_@;
+
+SkinHeaderBigBg			= background-image:url(@_SkinDir_@/HeaderBig__H.gif); height:40px;
+
+ProgressBarBg			= background-color: @_InsetColor_@; border: 1px inset @_InsetColor_@;
+ProgressBarInfo			= background-color: @_InfoColor_@;
+ProgressBarWarning		= background-color: @_WarningColor_@;
+ProgressBarCritical		= background-color: @_CriticalColor_@;
+
+ToastPane				= border:1px solid black;
+ToastInfo				= background-color: @_InfoColor_@;
+ToastWarning			= background-color: @_WarningColor_@;
+ToastCritical			= background-color: @_CriticalColor_@;
+
+
+BarberPole				= background-image:url(/zimbra/img/animated/BarberPole_216.gif); width:216; height:14;
+
+
+DndOpacity				= filter:alpha(opacity=70); -moz-opacity:0.7; opacity:0.7;
+DndAllowedBg			= border: 2px solid green; background-color: black;	
+DndNotAllowedBg			= border: 2px solid red; background-color: black;	
+
+
+PickerBg				= background-color:@_HeaderColor_@; border-right: 1px solid #666666;
