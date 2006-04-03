@@ -1265,10 +1265,6 @@ function() {
 		return;
 
 	var height = size.y - Dwt.getSize(this.getHtmlElement().firstChild).y;
-
-	// bug fix #6786 - normalize height if less than zero
-	if (height < 0) height = 0;
-
 	this._htmlEditor.setSize(size.x, height);
 };
 

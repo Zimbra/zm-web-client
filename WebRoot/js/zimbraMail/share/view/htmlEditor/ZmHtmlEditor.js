@@ -402,21 +402,25 @@ function(x, y) {
 	// subtract fudge factor
 	y -= delta;
 
+	// bug fix #6786 - normalize width/height if less than zero
+	if (x < 0) x = 0;
+	if (y < 0) y = 0;
+
 	main.style.width = x + "px";
 	main.style.height = y + "px";
 	if (div) {
 		if (!AjxEnv.isIE) {
-			x -= 4;
-			y -= 4;
+			x = x > 4 ? (x-4) : x;
+			y = y > 4 ? (y-4) : y;
 		} else {
 			y += 2;
 		}
+
 		div.style.width = x + "px";
 		div.style.height = y + "px";
 		div.style.display = "";
 	} else {
-		// when the DIV is present, "main" is the textarea which should
-		// actually remain hidden
+		// when DIV is present, "main" is textarea which should actually remain hidden
 		main.style.display = "";
 	}
 };
