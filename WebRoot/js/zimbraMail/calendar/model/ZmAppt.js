@@ -1503,8 +1503,9 @@ function(soapDoc, method,  attachmentId, notifyList) {
 
 		// bug fix #4697 (part 1) - append "Z" @ end of start/end dates if no timezone found
 		if (this.timezone) {
-			s.setAttribute("tz", this.timezone);
-			e.setAttribute("tz", this.timezone);
+			var tz = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(this.timezone) : this.timezone;
+			s.setAttribute("tz", tz);
+			e.setAttribute("tz", tz);
 		} else {
 			// sanity check
 			if (sd.charAt(sd.length-1) != "Z") sd += "Z";
