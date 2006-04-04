@@ -47,7 +47,7 @@ function ZmAppt(appCtxt, list, noinit) {
 	this.repeatWeekday = false; 												// set to true if freq = "DAI" and custom repeats every weekday
 	this.repeatWeeklyDays = null; 												//SU|MO|TU|WE|TH|FR|SA
 	this.repeatMonthlyDayList = null; 											// list of numbers representing days (usually, just one day)
-	this.repeatYearlyMonthsList = "1"; 											// list of numbers representing months (usually, just one month)
+	this.repeatYearlyMonthsList = 1; 											// list of numbers representing months (usually, just one month)
 	this.repeatEnd = null;
 	this.repeatEndDate = null; 													// maps to "until"
 	this.repeatEndCount = 1; 													// maps to "count" (when there is no end date specified)
@@ -1226,6 +1226,7 @@ function () {
 		excludes = recurrences[k].excludes;
 		excepts = recurrences[k].except;
 		if (adds != null) {
+			this.repeatYearlyMonthsList = this.startDate.getMonth() + 1;
 			for (i = 0; i < adds.length; ++i) {
 				rules = adds[i].rule;
 				if (rules) {
@@ -1354,104 +1355,117 @@ function(cancel, isHtml) {
 
 ZmAppt.prototype._getRecurrenceBlurbForSave = 
 function() {
-	if (this.repeatType == "NON") return "";
-
-	var blurb = [];
-	var idx = 0;
-
-	blurb[idx++] = "Every ";
-	if (this.repeatCustomCount > 1) {
-		blurb[idx++] = this.repeatCustomCount;
-		blurb[idx++] = " ";
-	}
-	blurb[idx++] = this._frequencyToDisplayString(this.repeatType, this.repeatCustomCount);
-
-	var customRepeat = (this.repeatCustom == '1');
-	if (this.repeatType == "WEE") {
-		blurb[idx++] = " on ";
-		if (customRepeat) {
-			if (this.repeatWeeklyDays.length > 0) {
-				for (var i = 0; i < this.repeatWeeklyDays.length; ++i) {
-					blurb[idx++] = ZmAppt.SERVER_DAYS_TO_DISPLAY[this.repeatWeeklyDays[i]];
-					if (i == (this.repeatWeeklyDays.length - 2 )) {
-						blurb[idx++] = " and ";
-					} else if (i < (this.repeatWeeklyDays.length - 1)) {
-						blurb[idx++] = ", ";
-					}
-				}
+	// recurrence text
+	var every = [];
+	switch (this.repeatType) {
+		case "DAI": {
+			if (this.repeatCustom == "1") {
+				every.push(ZmMsg.recurDailyEveryWeekday);
 			}
-		} else {
-			blurb[idx++] = AjxDateUtil.WEEKDAY_LONG[this.startDate.getDay()];
-		}
-	} else if (this.repeatType == "MON"){
-		if (this.repeatCustomType == "S") {
-			blurb[idx++] = " on the ";
-			if (customRepeat) {
-				var nums = this.repeatMonthlyDayList;
-				nums = nums.sort(ZmAppt._SORTBY_VALUE);
-				for (var i = 0 ; i < nums.length; ++i ) {
-					blurb[idx++] = nums[i];
-					if (i < nums.length - 1) {
-						blurb[idx++] = ", ";
-					} else if (i == nums.length - 2) {
-						blurb[idx++] = " and ";
-					}
-				}
-			} else {
-				blurb[idx++] =  this.repeatCustomOrdinal;
-				blurb[idx++] = this.repeatCustomDayOfWeek;
-				blurb[idx++] = " of the month ";
+			else if (this.repeatCustomCount == 1) {
+				every.push(ZmMsg.recurDailyEveryDay);
 			}
-		} else {
-			blurb[idx++] = this.startDate.getDate();
-		}
-	} else if (this.repeatType == "YEA") {
-		if (customRepeat) {
-			blurb[idx++] = " on ";
-			blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[Number(this.repeatYearlyMonthsList)-1]; // 0-based
-			if (this.repeatCustomType == "O") {
-				blurb[idx++] = " on the ";
-				blurb[idx++] = ZmAppt.MONTHLY_DAY_OPTIONS[Number(this.repeatCustomOrdinal)-1].label;
-				var dayOfWeek = null;
-				blurb[idx++] = " ";
-				for (var i = 0; i < ZmAppt.SERVER_WEEK_DAYS.length; i++) {
-					if (ZmAppt.SERVER_WEEK_DAYS[i] == this.repeatCustomDayOfWeek) {
-						dayOfWeek = AjxDateUtil.WEEKDAY_LONG[i];
-						break;
-					}
-				}
-				blurb[idx++] = dayOfWeek;
-				blurb[idx++] = " of the month ";
-			} else {
-				blurb[idx++] = " ";
-				blurb[idx++] = this.repeatCustomMonthDay;
+			else {
+				var formatter = new AjxMessageFormat(ZmMsg.recurDailyEveryNumDays);
+				every.push(formatter.format(this.repeatCustomCount));
 			}
-		} else {
-			blurb[idx++] = " on ";
-			blurb[idx++] = AjxDateUtil.MONTH_MEDIUM[this.startDate.getMonth()];
-			blurb[idx++] = " ";
-			blurb[idx++] = this.startDate.getDate();
+			break;
+		}
+		case "WEE": {
+			if (this.repeatCustomCount == 1 && this.repeatWeeklyDays.length == 1) {
+				var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatWeeklyDays[0]);
+				var date = new Date();
+				date.setDate(date.getDate() - date.getDay() + dayofweek);
+				
+				var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryWeekday);
+				every.push(formatter.format(date));
+			}
+			else {
+				var weekdays = [];
+				for (var i = 0; i < this.repeatWeeklyDays.length; i++) {
+					var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatWeeklyDays[i]);
+					var date = new Date();
+					date.setDate(date.getDate() - date.getDay() + dayofweek);
+					
+					weekdays.push(date);
+				}
+				
+				var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryNumWeeksDate);
+				every.push(formatter.format([ this.repeatCustomCount, weekdays, "" ]));
+			}
+			break;
+		}
+		case "MON": {
+			if (this.repeatCustomType == "S") {
+				var count = Number(this.repeatCustomCount);
+				var date = Number(this.repeatMonthlyDayList[0]);
+			
+				var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsDate);
+				every.push(formatter.format([ date, count ]));
+			}
+			else {
+				var ordinal = Number(this.repeatCustomOrdinal);
+				var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatCustomDayOfWeek);
+				var day = new Date();
+				day.setDate(day.getDate() - day.getDay() + dayofweek);
+				var count = Number(this.repeatCustomCount);
+
+				var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsNumDay);
+				every.push(formatter.format([ ordinal, day, count ]));
+			}
+			break;
+		}
+		case "YEA": {
+			if (this.repeatCustomType == "S") {
+				var month = new Date();
+				month.setMonth(Number(this.repeatYearlyMonthsList));
+				var day = Number(this.repeatCustomMonthDay);
+				
+				var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryDate);
+				every.push(formatter.format([ month, day ]));
+			}
+			else {
+				var ordinal = Number(this.repeatCustomOrdinal);
+				var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatCustomDayOfWeek);
+				var day = new Date();
+				day.setDate(day.getDate() - day.getDay() + dayofweek);
+				var month = new Date();
+				month.setMonth(Number(this.repeatYearlyMonthsList));
+				
+				var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryMonthNumDay);
+				every.push(formatter.format([ ordinal, day, month ]));
+			}
+			break;
 		}
 	}
-
-	var dateFormatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
-	if (this.repeatEndDate != null && this.repeatEndType == "D") {
-		blurb[idx++] = " until ";
-		blurb[idx++] = dateFormatter.format(this.repeatEndDate);
-		if (this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE)) {
-			blurb[idx++] = " ";
-			blurb[idx++] = ZmTimezones.valueToDisplay[this.timezone];
+	
+	// start
+	var start = [];
+	var formatter = new AjxMessageFormat(ZmMsg.recurStart);
+	start.push(formatter.format(this.startDate));
+	
+	// end
+	var end = [];
+	switch (this.repeatEndType) {
+		case "N": {
+			end.push(ZmMsg.recurEndNone);
+			break;
 		}
-
-	} else if (this.repeatEndType == "A") {
-		blurb[idx++] = " for ";
-		blurb[idx++] = this.repeatEndCount;
-		blurb[idx++] = " ";
-		blurb[idx++] = this._frequencyToDisplayString(this.repeatType, this.repeatEndCount);
+		case "A": {
+			var formatter = new AjxMessageFormat(ZmMsg.recurEndNumber);
+			end.push(formatter.format(this.repeatEndCount));
+			break;
+		}
+		case "D": {
+			var formatter = new AjxMessageFormat(ZmMsg.recurEndByDate);
+			end.push(formatter.format(this.repeatEndDate));
+			break;
+		}
 	}
-	blurb[idx++] = " effective ";
-	blurb[idx++] = dateFormatter.format(this.startDate);
-	return blurb.join("");
+	
+	// join all three together
+	var formatter = new AjxMessageFormat(ZmMsg.recurBlurb);
+	return formatter.format([ every.join(""), start.join(""), end.join("") ]);
 };
 
 
@@ -1615,7 +1629,7 @@ function(soapDoc, inv) {
 	else if (this.repeatType == "YEA") 
 	{
 		var bm = soapDoc.set("bymonth", null, rule);
-		bm.setAttribute("molist", this.repeatYearlyMonthsList + 1);
+		bm.setAttribute("molist", this.repeatYearlyMonthsList);
 		var co = soapDoc.set('x-name', null, rule);
 		co.setAttribute('name', "repeatCustomType");
 		co.setAttribute('value', this.repeatCustomType);

@@ -765,7 +765,7 @@ function(startDate, duration, folderId) {
 	newAppt.setEndDate(newAppt.getStartTime() + (duration ? duration : ZmCalViewController.DEFAULT_APPOINTMENT_DURATION));
 	newAppt.resetRepeatWeeklyDays();
 	newAppt.resetRepeatMonthlyDayList();
-	newAppt.repeatYearlyMonthsList = startDate.getMonth();
+	newAppt.repeatYearlyMonthsList = startDate.getMonth() + 1;
 	newAppt.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[startDate.getDay()];	
 	if (folderId)
 		newAppt.setFolderId(folderId);
