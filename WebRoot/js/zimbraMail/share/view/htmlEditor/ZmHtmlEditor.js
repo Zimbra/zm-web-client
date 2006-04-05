@@ -147,6 +147,11 @@ function() {
 ZmHtmlEditor.prototype.spellCheck =
 function(callback) {
 	var text = this.getTextVersion();
+
+	// bug fix #6970 - safari doesnt xml encode for us :(
+	if (AjxEnv.isSafari)
+		text = AjxStringUtil.xmlEncode(text);
+
 	if (/\S/.test(text)) {
 		if (!this.onExitSpellChecker)
 			this.onExitSpellChecker = callback;
