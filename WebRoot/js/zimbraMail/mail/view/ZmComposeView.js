@@ -433,6 +433,7 @@ ZmComposeView.prototype.processMsgDraft =
 function(msgDraft) {
 	this._action = ZmOperation.DRAFT;
 	this._msg = msgDraft;
+	this._msgAttId = null;
 	// always redo att links since user couldve removed att before saving draft
 	this._hasAttcDiv = false;
 	this._attcDiv.innerHTML = "";
