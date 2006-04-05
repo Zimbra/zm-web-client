@@ -340,7 +340,7 @@ function(contentType) {
 		var content = this.notesTopPart.getContentForType(ct);
 
 		// if requested content type not found, try the other
-		if (content == null) {
+		if (content == null || content == "") {
 			if (ct == ZmMimeTable.TEXT_PLAIN) {
 				var div = document.createElement("div");
 				div.innerHTML = this.notesTopPart.getContentForType(ZmMimeTable.TEXT_HTML);
@@ -679,32 +679,32 @@ function(message) {
 
 ZmAppt.prototype._setNotes = 
 function(message) {
-		this.notesTopPart = new ZmMimePart();
-		// get text part and remove any previous canned text
-		var text = message.getBodyPart(ZmMimeTable.TEXT_PLAIN);
-		var isObject = AjxUtil.isObject(text);
-		var notes = isObject ? (text.content ? text.content : "") : text;
-		notes = this._trimNotesSummary(notes);
-		// check if notes has html part
-		var html = message.getBodyPart(ZmMimeTable.TEXT_HTML);
+	this.notesTopPart = new ZmMimePart();
+	// get text part and remove any previous canned text
+	var text = message.getBodyPart(ZmMimeTable.TEXT_PLAIN);
+	var isObject = AjxUtil.isObject(text);
+	var notes = isObject ? (text.content ? text.content : "") : text;
+	notes = this._trimNotesSummary(notes);
+	// check if notes has html part
+	var html = message.getBodyPart(ZmMimeTable.TEXT_HTML);
 
-		if (html) {
-			this.notesTopPart.setContentType(ZmMimeTable.MULTI_ALT);
-	
-			// create two more mp's for text and html content types
-			var textPart = new ZmMimePart();
-			textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-			textPart.setContent(notes);
-			this.notesTopPart.children.add(textPart);
-	
-			var htmlPart = new ZmMimePart();
-			htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
-			htmlPart.setContent(this._trimNotesSummary(html.content, true));
-			this.notesTopPart.children.add(htmlPart);
-		} else {
-			this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-			this.notesTopPart.setContent(notes);
-		}
+	if (html) {
+		this.notesTopPart.setContentType(ZmMimeTable.MULTI_ALT);
+
+		// create two more mp's for text and html content types
+		var textPart = new ZmMimePart();
+		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
+		textPart.setContent(notes);
+		this.notesTopPart.children.add(textPart);
+
+		var htmlPart = new ZmMimePart();
+		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
+		htmlPart.setContent(this._trimNotesSummary(html.content, true));
+		this.notesTopPart.children.add(htmlPart);
+	} else {
+		this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
+		this.notesTopPart.setContent(notes);
+	}
 }
 
 /**
