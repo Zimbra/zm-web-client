@@ -80,7 +80,12 @@ function(cmdStr) {
 	} else if (arg0 == "noop") {
 		this._appCtxt.getAppController()._doPoll(true);
 		this._alert("Sent NoOpRequest");
-	} else if (arg0 == "rr") {
+	} else if (arg0 == "a") {
+		if (this._assistantDialog == null) {
+			this._assistantDialog = new ZmAssistantDialog(this._appCtxt);
+		}
+		this._assistantDialog.popup();
+	} else if (arg0 == "rr") {		
 		this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getReminderController().refresh();
 	} else if (arg0 == "rh") {
 		this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getReminderController()._housekeepingAction();

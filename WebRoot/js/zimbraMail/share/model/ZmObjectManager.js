@@ -52,23 +52,26 @@ function ZmObjectManager(view, appCtxt, selectCallback) {
 	this._createHandlers();
 	
 	// get Zimlet handler's
-	var zimlets = this._appCtxt._settings._zmm.getContentZimlets();
-	for (var i = 0; i < zimlets.length; i++) {
-		this.addHandler(zimlets[i], zimlets[i].type, zimlets[i].prio);
+	if (this._appCtxt != null) {
+		var zimlets = this._appCtxt._settings._zmm.getContentZimlets();
+		for (var i = 0; i < zimlets.length; i++) {
+			this.addHandler(zimlets[i], zimlets[i].type, zimlets[i].prio);
+		}
 	}
 
 	this.sortHandlers();
 	this.reset();
 
 	// install handlers
-    view.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
-    view.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this._mouseOutListener));
-    view.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
-    view.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._mouseUpListener));
-    view.addListener(DwtEvent.ONMOUSEMOVE, new AjxListener(this, this._mouseMoveListener));
-
-    this._hoverOverListener = new AjxListener(this, this._handleHoverOver);
-    this._hoverOutListener = new AjxListener(this, this._handleHoverOut);
+	if (view != null) {
+	    view.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
+	    view.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this._mouseOutListener));
+	    view.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
+	    view.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._mouseUpListener));
+	    view.addListener(DwtEvent.ONMOUSEMOVE, new AjxListener(this, this._mouseMoveListener));
+	    this._hoverOverListener = new AjxListener(this, this._handleHoverOver);
+	    this._hoverOutListener = new AjxListener(this, this._handleHoverOut);
+	}
 }
 
 ZmObjectManager._TOOLTIP_DELAY = 275;
@@ -283,6 +286,57 @@ function(content, htmlEncode, type) {
 	}
 
 	return html.join("");
+};
+
+/**
+ * go through the content and return the result of the object handler's match call.
+ */
+ZmObjectManager.prototype.findMatch =
+function(content, type) {
+	if  (!content) {return "";}
+
+	var maxIndex = content.length;
+	var lastIndex = 0;
+
+	var lowestResult = null;
+	var lowestIndex = maxIndex;
+	var lowestHandler = null;
+
+	// if given a type, just go thru the handler defined for that type.
+	// otherwise, go thru every handler we have.
+	// when we are done, we take the handler with the lowest index.
+	var i;
+
+	var result = null;
+	if (type) {
+		DBG.println(AjxDebug.DBG3, "findObjects type [" + type + "]");
+		var handlers = this._objectHandlers[type];
+		if (handlers) {
+			for (i = 0; i < handlers.length; i++) {
+				DBG.println(AjxDebug.DBG3, "findObjects by TYPE (" + handlers[i] + ")");
+				result = handlers[i].findObject(content, lastIndex);
+				// No match keep trying.
+				if(!result) {continue;}
+				// Got a match let's handle it.
+				if (result.index >= lowestIndex) {break;}
+				lowestResult = result;
+				lowestIndex = result.index;
+				lowestHandler = handlers[i];
+			}
+		}
+	} else {
+		for (var j = 0; j < this._allObjectHandlers.length; j++) {
+			var handler = this._allObjectHandlers[j];
+			DBG.println(AjxDebug.DBG3, "findObjects trying (" + handler + ")");
+			result = handler.findObject(content, lastIndex);
+			if (result && result.index < lowestIndex) {
+				lowestResult = result;
+				lowestIndex = result.index;
+				lowestHandler = handler;
+			}
+		}
+	}
+	return lowestResult;
 };
 
 // Dives recursively into the given DOM node.  Creates ObjectHandlers in text
