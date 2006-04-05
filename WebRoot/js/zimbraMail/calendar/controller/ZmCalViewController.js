@@ -963,7 +963,8 @@ function(appt) {
 		// if we have an appointment, go get all the details.
 		if (!appt.__creating) {
 			if (appt.isReadOnly()) {
-				appt.getDetails(ZmAppt.MODE_EDIT_SERIES, new AjxCallback(this, this._showReadOnlyDialog, [appt]));
+				var mode = appt.isException() ? ZmAppt.MODE_EDIT_SINGLE_INSTANCE : ZmAppt.MODE_EDIT_SERIES;
+				appt.getDetails(mode, new AjxCallback(this, this._showReadOnlyDialog, [appt]));
 			} else {
 				if (appt.isRecurring()) {
 					// prompt user to edit instance vs. series if recurring but not exception
