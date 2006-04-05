@@ -264,14 +264,18 @@ function(words, keepModeDiv) {
 			// not mess ourselves with leading/trailing
 			// whitespace, thus we save it in 2 text nodes.
 			var a = null, b = null;
-			if (/^[\s\xA0]+/.test(node.data)) {
+			var regex = /^[\s\xA0]+/;
+			var result = regex.exec(node.data);
+			if (result) {
 				// a will contain the leading space
 				a = node;
-				node = node.splitText(RegExp.lastMatch.length);
+				node = node.splitText(result[0].length);
 			}
-			if (/[\s\xA0]+$/.test(node.data)) {
+			regex = /[\s\xA0]+$/;
+			result = regex.exec(node.data);
+			if (result) {
 				// and b will contain the trailing space
-				b = node.splitText(node.data.length - RegExp.lastMatch.length);
+				b = node.splitText(node.data.length - result[0].length);
 			}
 
 			var text = hiliteWords(node.data, false);
@@ -395,7 +399,8 @@ function(x, y) {
 
 	// subtract spellchecker DIV if applicable
 	if (this._spellCheckModeDivId) {
-		y -= document.getElementById(this._spellCheckModeDivId).offsetHeight;
+		var spellCheckDivHeight = document.getElementById(this._spellCheckModeDivId).offsetHeight;
+		y -= (isNaN(spellCheckDivHeight) ? 0 : spellCheckDivHeight);
 	}
 
 	// subtract height of toolbars if in HTML mode
