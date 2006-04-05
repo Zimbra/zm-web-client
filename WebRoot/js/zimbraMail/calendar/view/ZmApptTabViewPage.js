@@ -552,8 +552,9 @@ function(appt, mode) {
 	}
 
 	// set notes/content (based on compose mode per user prefs)
-	if (this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT) ||
-		 this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML)
+	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && 
+		(this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT) ||
+		 this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML))
 	{
 		this.setComposeMode(DwtHtmlEditor.HTML);
 		this._notesHtmlEditor.setContent(appt.getNotesPart(ZmMimeTable.TEXT_HTML));
