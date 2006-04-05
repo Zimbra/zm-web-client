@@ -680,7 +680,10 @@ function(item) {
 	html[idx++] = "</tr></table>";
 		
 	div.innerHTML = html.join("");
-		
+	
+	if (!item.id) {
+		item.id = Dwt.getNextId();
+	}
 	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
 		
 	return div;
