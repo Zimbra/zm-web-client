@@ -513,12 +513,16 @@ function(doc) {
 					// dealing with whitespace.  However, IE sometimes crashes here, for
 					// reasons that weren't possible to determine--hence we avoid this
 					// step for IE.  (bug #5345)
-					if (/^[\s\xA0]+/.test(node.data)) {
+					var regex = /^[\s\xA0]+/;
+					var results = regex.exec(node.data);
+					if (results) {
 						a = node;
-						node = node.splitText(RegExp.lastMatch.length);
+						node = node.splitText(results[0].length);
 					}
-					if (/[\s\xA0]+$/.test(node.data))
-						b = node.splitText(node.data.length - RegExp.lastMatch.length);
+					regex = /[\s\xA0]+$/;
+					results = regex.exec(node.data);
+					if (results)
+						b = node.splitText(node.data.length - results[0].length);
 				}
 
 				tmp = doc.createElement("div");
