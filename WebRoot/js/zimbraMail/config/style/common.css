@@ -544,7 +544,7 @@ DIV.vSpace {
 	margin-top:10px;
 	margin-bottom:10px;
 	height:115px;
-	background-image:url(/zimbra/img/loRes/logo/LoginBanner.gif);
+	background-image:url(/zimbra/img/loRes/logo/LoginBanner_blank.gif);
 }
 .ZmLoginDialog-HeaderText, .ZmLoginDialog-SubHeaderText {
 	color: white;
