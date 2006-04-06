@@ -250,7 +250,9 @@ function(enable) {
 		if (cb.checked != enable) {
 			cb.checked = enable;
 			this._chooser.setSelectStyle(cb.checked ? DwtChooser.MULTI_SELECT : DwtChooser.SINGLE_SELECT, true);
-			this.showMe(); // force resize to adjust chooser layout
+			if (parent._currentTabKey == this._tabKey) {
+				this.showMe(); // force resize to adjust chooser layout
+			}
 		}
 	}
 };
