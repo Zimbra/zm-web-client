@@ -457,7 +457,7 @@
     </foreach>
   </target>
 
-  <target name="build-skin-css" depends='build-skin-css-init' unless='build-skin-css-done'>
+  <target name="build-skin-css" depends='build-skin-css-init'>
 	<mkdir dir="${skin_output_dir}/skins/${skindir}"/>
 
 	<!-- first process the <skin>_subs.txt file itself, to get any subs in there -->
