@@ -99,8 +99,8 @@ ZmApptComposeView.TAB_IMAGE = {};
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_APPOINTMENT]	= "Appointment";
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_SCHEDULE]		= "GroupSchedule";
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_ATTENDEES]	= "ApptMeeting";
-ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_LOCATIONS]	= "Globe";
-ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_RESOURCES]	= "Attachment";
+ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_LOCATIONS]	= "Location";
+ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_RESOURCES]	= "Resource";
 
 ZmApptComposeView.TABS = [ZmApptComposeView.TAB_APPOINTMENT, ZmApptComposeView.TAB_SCHEDULE, ZmApptComposeView.TAB_ATTENDEES,
 						  ZmApptComposeView.TAB_LOCATIONS, ZmApptComposeView.TAB_RESOURCES];
@@ -469,7 +469,7 @@ function(ev) {
 
 ZmApptComposeView.prototype._autocompleteCallback =
 function(text, el, match) {
-	var attendee = match.item;
+	var attendee = match.data._item;
 	var type = el._attType;
 	this.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
 };

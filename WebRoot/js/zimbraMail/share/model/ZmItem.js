@@ -69,7 +69,6 @@ ZmItem.ATT			= ZmEvent.S_ATT;
 ZmItem.CONTACT		= ZmEvent.S_CONTACT;
 ZmItem.APPT			= ZmEvent.S_APPT;
 ZmItem.NOTE			= ZmEvent.S_NOTE;
-ZmItem.WIKI			= ZmEvent.S_WIKI;
 ZmItem.CHAT			= ZmEvent.S_CHAT;
 ZmItem.ROSTER_ITEM	= ZmEvent.S_ROSTER_ITEM;
 ZmItem.RESOURCE		= ZmEvent.S_RESOURCE;		// calendar resource
@@ -83,7 +82,6 @@ ZmItem.MSG_KEY[ZmItem.ATT]		= "attachment";
 ZmItem.MSG_KEY[ZmItem.CONTACT]	= "contact";
 ZmItem.MSG_KEY[ZmItem.APPT]		= "appointment";
 ZmItem.MSG_KEY[ZmItem.NOTE]		= "note";
-ZmItem.MSG_KEY[ZmItem.WIKI]		= "note"; // REVISIT
 ZmItem.MSG_KEY[ZmItem.CHAT]		= "chat";
 
 // Representative icons
@@ -94,7 +92,6 @@ ZmItem.ICON[ZmItem.ATT]		= "Attachment";
 ZmItem.ICON[ZmItem.CONTACT]	= "Contact";
 ZmItem.ICON[ZmItem.APPT]	= "Appointment";
 ZmItem.ICON[ZmItem.NOTE]	= "Note";
-ZmItem.ICON[ZmItem.WIKI]	= "Note"; // REVISIT
 ZmItem.ICON[ZmItem.CHAT]	= "ImStartChat";
 
 // fields that can be part of a displayed item

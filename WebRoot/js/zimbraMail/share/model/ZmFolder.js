@@ -61,7 +61,9 @@ ZmFolder.ID_SPAM			= ZmOrganizer.ID_SPAM;
 ZmFolder.ID_SENT			= 5;
 ZmFolder.ID_DRAFTS			= 6;
 ZmFolder.LAST_SYSTEM_ID		= 6;
+ZmFolder.ID_CONTACTS 		= 7;
 ZmFolder.ID_TAGS	 		= 8;
+ZmFolder.ID_CALENDAR		= ZmOrganizer.ID_CALENDAR;
 
 // system folder names
 ZmFolder.MSG_KEY = new Object();
@@ -70,6 +72,8 @@ ZmFolder.MSG_KEY[ZmFolder.ID_TRASH]		= "trash";
 ZmFolder.MSG_KEY[ZmFolder.ID_SPAM]		= "junk";
 ZmFolder.MSG_KEY[ZmFolder.ID_SENT]		= "sent";
 ZmFolder.MSG_KEY[ZmFolder.ID_DRAFTS]	= "drafts";
+ZmFolder.MSG_KEY[ZmFolder.ID_CONTACTS]	= "contacts";
+ZmFolder.MSG_KEY[ZmFolder.ID_CALENDAR]	= "calendar";
 ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]		= "tags";
 
 // system folder icons
@@ -79,6 +83,8 @@ ZmFolder.IMAGE[ZmFolder.ID_TRASH]		= "Trash";
 ZmFolder.IMAGE[ZmFolder.ID_SPAM]		= "SpamFolder";
 ZmFolder.IMAGE[ZmFolder.ID_SENT]		= "SentFolder";
 ZmFolder.IMAGE[ZmFolder.ID_DRAFTS]		= "DraftFolder";
+ZmFolder.IMAGE[ZmFolder.ID_CONTACTS]	= "ContactsFolder";
+ZmFolder.IMAGE[ZmFolder.ID_CALENDAR]	= "CalendarFolder";
 
 // name to use within the query language
 ZmFolder.QUERY_NAME = new Object();
@@ -87,6 +93,8 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_TRASH]		= "trash";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SPAM]		= "junk";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]		= "sent";
 ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]		= "drafts";
+ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]	= "contacts";
+ZmFolder.QUERY_NAME[ZmFolder.ID_CALENDAR]	= "calendar";
 
 // order within the overview panel
 ZmFolder.SORT_ORDER = new Object();
@@ -126,11 +134,7 @@ function(parent, obj, tree) {
 		obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER])) return;
 	
 	// ignore calendar folders
-	if (obj.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] ||
-		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]) 
-	{
-		return;
-	}
+	if (obj.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) return;
 
 	var name = ZmFolder.MSG_KEY[obj.id] ? ZmMsg[ZmFolder.MSG_KEY[obj.id]] : obj.name;
 	var folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n, obj.url);
@@ -315,9 +319,8 @@ function(obj, isSearch) {
 	// ignore creates of system folders
 	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]) return;
 
-	var folder = isSearch 
-		? ZmSearchFolder.createFromJs(this, obj, this.tree) 
-		: ZmFolder.createFromJs(this, obj, this.tree);
+	var folder = isSearch ? ZmSearchFolder.createFromJs(this, obj, this.tree) :
+							ZmFolder.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
 	this.children.add(folder, index);
 	folder._notify(ZmEvent.E_CREATE);

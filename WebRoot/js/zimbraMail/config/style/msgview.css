@@ -22,70 +22,42 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-
-P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
-	@FontDefault@
-	@FontNormal@
-	@Text@
+.Object {
+	color: blue;
+	cursor: pointer;
+}
+.Object a:link, .Object a:active, .Object a:visited, .Object a:hover {
+	color: blue;
+	cursor: pointer;
+}
+.Object a:link, .Object a:active, .Object a:visited {
+	text-decoration: none;
+}
+.Object a:hover {text-decoration: underline;}
+/* unfortunately since IE6 ( 7 is supposed to) doesn't handle multiple classes
+   correctly, I have to add this to make the msg view still work */
+.Object-activated {
+	background-color: #F9DD87;
+	text-decoration:underline;
+	cursor: pointer;
 }
 
-
+.POObject {color: blue;}
+.POObjectApproved {color: green;}
+.POObjectRejected {color: red;}
 .MsgHeader .Object, .MsgHeader .Object-activated {
+	color: black;
 	white-space: nowrap;
 }
 
-.MsgBody-text, .MsgBody-text * { 
-	@Text@
-	@FontFixed@
-}
+.MsgBody-text, .MsgBody-text * { font: 10pt monospace; }
 
-body.MsgBody { 
-	@Text@
-	padding: 10px; 
-}
+body.MsgBody { padding: 10px; }
 
 .MsgBody .SignatureText { color: gray; }
 .MsgBody .QuotedText0 { color: purple; }
 .MsgBody .QuotedText1 { color: green; }
 .MsgBody .QuotedText2 { color: red; }
-
-
-.Object {
-	@AnchorText@
-	@ZimletBorder@
-}
-
-.Object-activated {
-	@AnchorTextHover@
-	@ZimletBorderHover@
-}
-
-.Object-triggered {
-	color: blue;
-}
-
-
-.FakeAnchor, 
-a:link, a:visited {
-	@AnchorText@
-}
-
-a:hover {
-	@AnchorTextHover@
-}
-
-a:active {
-	@AnchorTextClick@
-}
-
-
-
-
-.POObject {color: blue;}
-.POObjectApproved {color: green;}
-.POObjectRejected {color: red;}
-
-
 
 .zimbraHide {
 	display: none;

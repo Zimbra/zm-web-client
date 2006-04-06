@@ -31,13 +31,8 @@
 function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt) {
 	if (arguments.length == 0) return;
 	this._appCtxt = appCtxt;
-	this._toolbars = [];
 
-	// ACE?
-	this.ACE_ENABLED = true;
-	this.ACE_DEBUG = false;
-
-	DwtHtmlEditor.call(this, parent, "ZmHtmlEditor", posStyle, content, mode, appContextPath+"/public/blank.html");
+	DwtHtmlEditor.call(this, parent, "ZmHtmlEditor", posStyle, content, mode, "/zimbra/public/blank.html");
 
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));
 
@@ -64,10 +59,6 @@ ZmHtmlEditor.prototype.constructor = ZmHtmlEditor;
 ZmHtmlEditor._VALUE = "value";
 ZmHtmlEditor._INSERT_TABLE = "ZmHtmlEditor._INSERT_TABLE";
 
-// Data
-
-ZmHtmlEditor._toolbars;
-
 // Public methods
 
 ZmHtmlEditor.prototype.toString =
@@ -91,16 +82,16 @@ function(mode, convert) {
 	this.discardMisspelledWords();
 
 	// make sure we have toolbars for html mode
-// 	if (mode == DwtHtmlEditor.HTML)
-// 		this._createToolbars();
+	if (mode == DwtHtmlEditor.HTML)
+		this._createToolbars();
 
 	DwtHtmlEditor.prototype.setMode.call(this, mode, convert);
 
 	// show/hide toolbars based on mode
-	for (var i = 0; i < this._toolbars.length; i++) {
-		var toolbar = this._toolbars[i];
-		toolbar.setVisible(mode == DwtHtmlEditor.HTML);
-	}
+	if (this._toolbar1)
+		this._toolbar1.setVisible(mode == DwtHtmlEditor.HTML);
+	if (this._toolbar2)
+		this._toolbar2.setVisible(mode == DwtHtmlEditor.HTML);
 };
 
 ZmHtmlEditor.prototype.getBodyFieldId =
@@ -120,7 +111,7 @@ function() {
 ZmHtmlEditor.prototype.reEnableDesignMode =
 function() {
 	if (AjxEnv.isGeckoBased) {
-		this._enableDesignMode(this._getIframeDoc());
+		this._enableDesignMode([this._getIframeDoc()]);
 	}
 };
 
@@ -129,18 +120,9 @@ function(callback) {
 	this._eventCallback = callback;
 };
 
-ZmHtmlEditor.prototype._onContentInitialized =
-function() {
-	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML) {
-		setTimeout(AjxCallback.simpleClosure(this._deserializeAceObjects, this), 100);
-	}
-};
-
 ZmHtmlEditor.prototype.getContent =
 function() {
 	this.discardMisspelledWords();
-	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML)
-		this._serializeAceObjects();
 	return DwtHtmlEditor.prototype.getContent.call(this);
 };
 
@@ -334,7 +316,7 @@ function(words, keepModeDiv) {
 			style.id = "ZM-SPELLCHECK-STYLE";
 			style.rel = "stylesheet";
 			style.type = "text/css";
-			var style_url = appContextPath+"/skins/"+appCurrentSkin+"/spellcheck.css?v="+cacheKillerVersion;
+			var style_url = "/zimbra/js/zimbraMail/config/style/spellcheck.css?v="+cacheKillerVersion;
 			if (AjxEnv.isGeckoBased) {
 				style_url = document.baseURI.replace(
 					/^(https?:\x2f\x2f[^\x2f]+).*$/, "$1") + style_url;
@@ -420,11 +402,11 @@ function(x, y) {
 		var spellCheckDivHeight = document.getElementById(this._spellCheckModeDivId).offsetHeight;
 		y -= (isNaN(spellCheckDivHeight) ? 0 : spellCheckDivHeight);
 	}
-	if (this._mode == DwtHtmlEditor.HTML && this._toolbars.length > 0) {
-		for (var i = 0; i < this._toolbars.length; i++) {
-			var toolbar = this._toolbars[i];
-			y -= toolbar.getHtmlElement().offsetHeight;
-		}
+
+	// subtract height of toolbars if in HTML mode
+	if (this._mode == DwtHtmlEditor.HTML && this._toolbar1 && this._toolbar2) {
+		y -= (this._toolbar1.getHtmlElement().offsetHeight + 
+			  this._toolbar2.getHtmlElement().offsetHeight);
 	}
 
 	// subtract fudge factor
@@ -459,13 +441,9 @@ function(x, y) {
 ZmHtmlEditor.prototype._initialize =
 function() {
 	// OPTIMIZATION - only create toolbars if in HTML mode
-// 	if (this._mode == DwtHtmlEditor.HTML) {
-//		this._createToolbars();
-// 	}
-
-	// Bug #4920: optimization breaks height computation.  Let's always
-	// create toolbars for now.
-	this._createToolbars();
+	if (this._mode == DwtHtmlEditor.HTML) {
+		this._createToolbars();
+	}
 
 	DwtHtmlEditor.prototype._initialize.call(this);
 };
@@ -585,8 +563,6 @@ function(parent) {
 	b.setToolTipContent(ZmMsg.subscript);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUBSCRIPT_STYLE);
 	b.addSelectionListener(listener);
-
-	this._toolbars.push(tb);
 };
 
 ZmHtmlEditor.prototype._createToolBar2 =
@@ -678,174 +654,6 @@ function(parent) {
 	//b.setToolTipContent(ZmMsg.insertTable);
 	//b.setData(ZmHtmlEditor._VALUE, ZmHtmlEditor._INSERT_TABLE);
 	//b.addSelectionListener(insElListener);
-
-	if (this.ACE_ENABLED) {
-		tb.addSeparator("vertSep");
-		var b = new DwtButton(tb, 0, "TBButton");
-		b.setText(ZmMsg.insertObject);
-		var menu = new DwtMenu(b);
-		b.setMenu(menu);
-
-		var item = new DwtMenuItem(menu);
-		item.setText(ZmMsg.spreadsheet);
-		item.setData("ACE", "ZmSpreadSheet");
-		item.addSelectionListener(new AjxListener(this, this._menu_insertObject));
-
-		// DEBUG
-		if (this.ACE_DEBUG) {
-			// menu.createSeparator();
-	
-			var item = new DwtMenuItem(menu);
-			item.setText("DEBUG SERIALIZATION");
-			item.addSelectionListener(new AjxListener(this, this._serializeAceObjects));
-	
-			var item = new DwtMenuItem(menu);
-			item.setText("DESERIALIZATION");
-			item.addSelectionListener(new AjxListener(this, this._deserializeAceObjects));
-		}
-	}
-	
-	this._toolbars.push(tb);
-};
-
-ZmHtmlEditor.prototype._menu_insertObject =
-function(ev){
-	var item = ev.item;
-	var data = item.getData("ACE");
-	this.insertObject(data);
-};
-
-ZmHtmlEditor.prototype.insertObject =
-function(name, target, data) {
-	var toplevel_url = document.URL
-		.replace(/^(https?:\x2f\x2f[^\x2f]+\x2f?).*$/i, "$1")
-		.replace(/\x2f*$/, "");
-	var component_url = null;
-
-	// REVISIT: object factory needed when there'll be many components to
-	// chose from.
-	switch (name) {
-	    case "ZmSpreadSheet":
-		component_url = toplevel_url + appContextPath + "/ALE/spreadsheet/index.jsp";
-		break;
-	}
-
-	if (component_url) {
-		// var outer = this.getIframe();
-		// outer.style.display = "none";
-		var doc = this._getIframeDoc();
-		this.focus();
-		if (!this._ace_componentsLoading)
-			this._ace_componentsLoading = 0;
-		++this._ace_componentsLoading;
-		if (AjxEnv.isGeckoBased)
-			doc.designMode = "off";
-		var ifr = doc.createElement("iframe");
-		ifr.id = "ACE-" + Dwt.getNextId();
-		ifr.frameBorder = 0;
-		ifr.src = component_url;
-		ifr.style.width = "100%";
-		ifr.style.height = "400px";
-		if (!target)
-			this._insertNodeAtSelection(ifr);
-		else
-			target.parentNode.replaceChild(ifr, target);
-		var handler = AjxCallback.simpleClosure(this._ace_finishedLoading, this, ifr, name, data);
-		if (AjxEnv.isIE)
-			ifr.onreadystatechange = handler;
-		else
-			ifr.onload = handler;
-		// outer.style.display = "";
-	}
-};
-
-ZmHtmlEditor.prototype._ace_finishedLoading = function(ifr, name, data) {
-	if (!AjxEnv.isIE || ifr.readyState == "complete") {
-		var win = Dwt.getIframeWindow(ifr);
-		win.ZmACE = true;
-		win.ZmACE_COMPONENT_NAME = name;
-		ifr.onload = null;
-		ifr.onreadystatechange = null;
-		win.create(data);
-		--this._ace_componentsLoading;
-	}
-};
-
-// Returns an array of embedded objects (each one is a reference to its containing IFRAME)
-ZmHtmlEditor.prototype._getAceObjects =
-function() {
-	var tmp = this._getIframeDoc().getElementsByTagName("iframe");
-	var a = new Array(tmp.length);
-	for (var i = tmp.length; --i >= 0;)
-		a[i] = tmp[i];
-	return a;
-};
-
-ZmHtmlEditor.prototype._embedHtmlContent =
-function(html) {
-	if (!(this.ACE_ENABLED && this._headContent))
-		return DwtHtmlEditor.prototype._embedHtmlContent.call(this, html);
-	var headContent = this._headContent.join("");
-	return [ "<html><head>",
-		 headContent,
-		 "</head><body>",
-		 html,
-		 "</body></html>" ].join("");
-};
-
-ZmHtmlEditor.prototype._serializeAceObjects =
-function() {
-	var headContent = this._headContent = [];
-	var done = {};
-	var objects = this._getAceObjects();
-	var doc = this._getIframeDoc();
-	for (var i = 0; i < objects.length; ++i) {
-		var iframe = objects[i];
-		if (/^ACE-/.test(iframe.id)) {
-			var win = Dwt.getIframeWindow(iframe);
-			var data = win.serialize()
-				.replace(/&/g, "&amp;")
-				.replace(/>/g, "&gt;");
-			var html = win.getHTML();
-			var component_name = win.ZmACE_COMPONENT_NAME;
-			data = [ "ACE[", component_name, "]:", data ].join("");
-			if (!done[component_name] && typeof win.getHeadHTML == "function") {
-				done[component_name] = true;
-				headContent.push(win.getHeadHTML());
-			}
-			var holder = doc.createElement("div");
-			iframe.parentNode.replaceChild(holder, iframe);
-			holder.innerHTML = html;
-			holder.appendChild(doc.createComment(data));
-			holder.className = "ACE " + component_name;
-		}
-	}
-};
-
-ZmHtmlEditor.prototype._deserializeAceObjects =
-function() {
-	var divs = this._getIframeDoc().getElementsByTagName("div");
-	var tmp = new Array(divs.length);
-	for (var i = 0; i < divs.length; ++i)
-		tmp[i] = divs.item(i);
-	divs = tmp;
-	for (var i = 0; i < divs.length; ++i) {
-		var holder = divs[i];
-		if (/^ACE\s+([^\s]+)/.test(holder.className)) {
-			var component_name = RegExp.$1;
-			var data = holder.lastChild;
-			if (data.nodeType == 8 /* Node.COMMENT_NODE */) {
-				data = data.data;
-				var header = "ACE[" + component_name + "]:";
-				if (data.indexOf(header) == 0) {
-					data = data.substr(header.length)
-						.replace(/&gt;/g, ">")
-						.replace(/&amp;/g, "&");
-					this.insertObject(component_name, holder, data);
-				}
-			}
-		}
-	}
 };
 
 ZmHtmlEditor.prototype._createStyleSelect =
@@ -1340,65 +1148,4 @@ function(ev) {
 	var vals = this._ntd.getValues();
 	this.insertTable(vals.numRows, vals.numCols, vals.width, vals.cellSpacing, vals.cellPadding, vals.alignment);
 	this._ntd.popdown();
-};
-
-// overwrites the base class' _enableDesignMode in order to work around Gecko problems
-ZmHtmlEditor.prototype._enableDesignMode = function(doc) {
-	if (!doc)
-		return;
-	if (!(AjxEnv.isGeckoBased && this.ACE_ENABLED))
-		return DwtHtmlEditor.prototype._enableDesignMode.call(this, doc);
-	// Gecko needs special attention here. (https://bugzilla.mozilla.org/show_bug.cgi?id=326600)
-	// :-(
-
-	// REVISIT! are we adding these events multiple times?
-	// -- findings suggest that Firefox loses these events on certain
-	//    occasions (i.e. iframe.style.display = "none"), so we DO need to
-	//    add them multiple times.  Crap.
-
-//	if (!this._hasDesignModeHack) {
-
-	// Also, if we move the inner functions outside and make them
-	// controlled closures, we break Firefox/Linux.  FF/Win is OK.  Hell knows why :(
-
-	this._hasDesignModeHack = true;
-	var editor = this;
-	var bookmark = null;
-
-	function blur() {
-		if (editor._ace_componentsLoading > 0)
-			return;
-		try {
-			var sel = editor._getIframeWin().getSelection();
-			bookmark = sel.getRangeAt(0);
-			sel.removeAllRanges();
-		} catch(ex) {
-			bookmark = null;
-		}
-		doc.designMode = "off";
-		// window.status = "REMOVED DESIGN MODE";
-	};
-
-	function focus() {
-		if (editor._ace_componentsLoading > 0)
-			return;
-		// window.status = "ADDED DESIGN MODE";
-		doc.designMode = "on";
-		// Probably a regression of FF 1.5.0.1/Linux requires us to
-		// reset event handlers here (Zimbra bug: 6545).
- 		if (AjxEnv.isGeckoBased && AjxEnv.isLinux)
- 			editor._registerEditorEventHandlers(document.getElementById(editor._iFrameId), doc);
-		if (bookmark) {
-			var sel = editor._getIframeWin().getSelection();
-			sel.removeAllRanges();
-			sel.addRange(bookmark);
-			bookmark = null;
-		}
-		// doc.body.removeEventListener("click", focus);
-	};
-
-	doc.addEventListener("blur", blur, true);
-	// doc.body.addEventListener("click", focus, true);
-	doc.addEventListener("focus", focus, true);
-//	}
 };
