@@ -77,6 +77,15 @@ function ZmApptComposeView(parent, className, calApp, controller) {
 	
 	this._msgDialog = this._appCtxt.getMsgDialog();
 
+	this._tabIds = [ZmApptComposeView.TAB_APPOINTMENT, ZmApptComposeView.TAB_SCHEDULE];
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) || this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		this._tabIds.push(ZmApptComposeView.TAB_ATTENDEES);
+	}
+	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		this._tabIds.push(ZmApptComposeView.TAB_LOCATIONS);
+		this._tabIds.push(ZmApptComposeView.TAB_RESOURCES);
+	}
+
 	this._initialize();
 };
 
@@ -101,11 +110,6 @@ ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_SCHEDULE]		= "GroupSchedule";
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_ATTENDEES]	= "ApptMeeting";
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_LOCATIONS]	= "Globe";
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_RESOURCES]	= "Attachment";
-
-ZmApptComposeView.TABS = [ZmApptComposeView.TAB_APPOINTMENT, ZmApptComposeView.TAB_SCHEDULE, ZmApptComposeView.TAB_ATTENDEES,
-						  ZmApptComposeView.TAB_LOCATIONS, ZmApptComposeView.TAB_RESOURCES];
-
-ZmApptComposeView.ATT_TYPES = [ZmAppt.PERSON, ZmAppt.LOCATION, ZmAppt.RESOURCE];
 
 // attendee operations
 ZmApptComposeView.MODE_ADD		= 1;
@@ -149,8 +153,8 @@ function(appt, mode, isDirty) {
 	// always switch to appointment tab
 	this.switchToTab(this._apptTabKey);
 
-	for (var i = 0; i < ZmApptComposeView.TABS.length; i++) {
-		var id = ZmApptComposeView.TABS[i];
+	for (var i = 0; i < this._tabIds.length; i++) {
+		var id = this._tabIds[i];
 		this._tabPages[id].initialize(appt, mode, isDirty);
 	}
 	this._addChooserListener(this._tabPages[ZmApptComposeView.TAB_ATTENDEES]);
@@ -179,8 +183,8 @@ function() {
 	this._attendeeKeys[ZmAppt.LOCATION]	= {};
 	this._attendeeKeys[ZmAppt.RESOURCE]	= {};
 
-	for (var i = 0; i < ZmApptComposeView.TABS.length; i++) {
-		var id = ZmApptComposeView.TABS[i];
+	for (var i = 0; i < this._tabIds.length; i++) {
+		var id = this._tabIds[i];
 		this._tabPages[id].cleanup();
 	}
 };
@@ -213,8 +217,8 @@ function() {
 
 ZmApptComposeView.prototype.isDirty =
 function() {
-	for (var i = 0; i < ZmApptComposeView.TABS.length; i++) {
-		var id = ZmApptComposeView.TABS[i];
+	for (var i = 0; i < this._tabIds.length; i++) {
+		var id = this._tabIds[i];
 		if (this._tabPages[id].isDirty()) {
 			return true;
 		}
@@ -224,8 +228,8 @@ function() {
 
 ZmApptComposeView.prototype.isValid = 
 function() {
-	for (var i = 0; i < ZmApptComposeView.TABS.length; i++) {
-		var id = ZmApptComposeView.TABS[i];
+	for (var i = 0; i < this._tabIds.length; i++) {
+		var id = this._tabIds[i];
 		if (!this._tabPages[id].isValid()) {
 			return false;
 		}
@@ -391,10 +395,12 @@ function(msg, style, cb, cbObj, cbArgs) {
 
 ZmApptComposeView.prototype._initialize = 
 function() {
-	// for attendees
+
 	var shell = this._appCtxt.getShell();
 	var locCallback = new AjxCallback(this, this._getAcListLoc);
 	var acCallback = new AjxCallback(this, this._autocompleteCallback);
+
+	// autocomplete for attendees
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		var contactsLoader = contactsClass.getContactList;
@@ -402,7 +408,7 @@ function() {
 					  matchValue: ZmContactList.AC_VALUE_EMAIL, locCallback: locCallback, compCallback: acCallback};
 		this._acContactsList = new ZmAutocompleteListView(params);
 	}
-	// for locations/resources
+	// autocomplete for locations/resources
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
 		var resourcesLoader = resourcesClass.getResources;
@@ -411,8 +417,8 @@ function() {
 		this._acResourcesList = new ZmAutocompleteListView(params);
 	}
 
-	for (var i = 0; i < ZmApptComposeView.TABS.length; i++) {
-		var id = ZmApptComposeView.TABS[i];
+	for (var i = 0; i < this._tabIds.length; i++) {
+		var id = this._tabIds[i];
 		this._tabPages[id] = this._createTabViewPage(id);
 		this._tabKeys[id] = this.addTab(ZmMsg[ZmApptComposeView.TAB_NAME[id]], this._tabPages[id]);
 		this._tabIdByKey[this._tabKeys[id]] = id;

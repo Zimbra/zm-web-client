@@ -57,7 +57,13 @@ function ZmSchedTabViewPage(parent, appCtxt, attendees, controller, acContactsLi
 	this._schedTable = [];
 	this._allAttendees = [];
 	this._allAttendeesSlot = null;
-	
+
+	this._attTypes = [ZmAppt.PERSON];
+	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		this._attTypes.push(ZmAppt.LOCATION);
+		this._attTypes.push(ZmAppt.RESOURCE);
+	}
+
 	this._fbCallback = new AjxCallback(this, this._handleResponseFreeBusy);
 };
 
@@ -680,8 +686,8 @@ function(organizer, attendees) {
 	var emails = [];
 	this._organizerIndex = this._addAttendeeRow(false, true); // create a slot for the organizer
 	emails.push(this._setAttendee(this._organizerIndex, organizer, ZmAppt.PERSON, true));
-	for (var t = 0; t < ZmApptComposeView.ATT_TYPES.length; t++) {
-		var type = ZmApptComposeView.ATT_TYPES[t];
+	for (var t = 0; t < this._attTypes.length; t++) {
+		var type = this._attTypes[t];
 		var att = attendees[type].getArray();
 		for (var i = 0; i < att.length; i++) {
 			if (att[i]) {

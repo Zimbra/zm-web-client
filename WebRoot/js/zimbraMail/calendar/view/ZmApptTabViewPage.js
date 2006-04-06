@@ -48,8 +48,6 @@ function ZmApptTabViewPage(parent, appCtxt, attendees, acContactsList, acResourc
 
 	this.setScrollStyle(DwtControl.CLIP);
 	this._rendered = false;
-	this._contactsSupported = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) || this._appCtxt.get(ZmSetting.GAL_ENABLED);
-	this._contacts = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 
 	var bComposeEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
@@ -58,6 +56,11 @@ function ZmApptTabViewPage(parent, appCtxt, attendees, acContactsList, acResourc
 
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
+	
+	this._attTypes = [ZmAppt.PERSON, ZmAppt.LOCATION];
+	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		this._attTypes.push(ZmAppt.RESOURCE);
+	}
 	
 	parent.addChangeListener(new AjxListener(this, this._attendeesChangeListener));
 };
@@ -168,8 +171,8 @@ function(attId) {
 		top.setContent(this._notesHtmlEditor.getContent());
 	}
 
-	for (var t = 0; t < ZmApptComposeView.ATT_TYPES.length; t++) {
-		var type = ZmApptComposeView.ATT_TYPES[t];
+	for (var t = 0; t < this._attTypes.length; t++) {
+		var type = this._attTypes[t];
 		appt.setAttendees(this._attendees[type].getArray(), type);
 	}
 
@@ -209,8 +212,8 @@ function() {
 	this._subjectField.setValue("");
 	this._repeatDescField.innerHTML = "";
 	this._notesHtmlEditor.clear();
-	for (var t = 0; t < ZmApptComposeView.ATT_TYPES.length; t++) {
-		this._attInputField[ZmApptComposeView.ATT_TYPES[t]].setValue("");
+	for (var t = 0; t < this._attTypes.length; t++) {
+		this._attInputField[this._attTypes[t]].setValue("");
 	}
 
 	// reinit non-time sensitive selects option values
@@ -236,8 +239,8 @@ function(bEnableInputs) {
 	this._subjectField.disabled(!bEnableInputs);
 	this._startDateField.disabled = !bEnableInputs;
 	this._endDateField.disabled = !bEnableInputs;
-	for (var t = 0; t < ZmApptComposeView.ATT_TYPES.length; t++) {
-		this._attInputField[ZmApptComposeView.ATT_TYPES[t]].disabled(!bEnableInputs);
+	for (var t = 0; t < this._attTypes.length; t++) {
+		this._attInputField[this._attTypes[t]].disabled(!bEnableInputs);
 	}
 };
 
@@ -521,7 +524,9 @@ function(appt, mode) {
 		this._attInputField[ZmAppt.PERSON].setValue(appt.getAttendeesText());
 		this._attendees[ZmAppt.PERSON] = AjxVector.fromArray(attendees);
 		var tp = this.parent.getTabPage(ZmApptComposeView.TAB_ATTENDEES);
-		tp._chooser.transfer(attendees);
+		if (tp) {
+			tp._chooser.transfer(attendees);
+		}
 	}
 
 	// locations (location field set above)
@@ -529,19 +534,23 @@ function(appt, mode) {
 	if (locations && locations.length) {
 		this._attendees[ZmAppt.LOCATION] = AjxVector.fromArray(locations);
 		tp = this.parent.getTabPage(ZmApptComposeView.TAB_LOCATIONS);
-		if (locations.length > 1) {
-			tp.enableMultipleLocations(true);
+		if (tp) {
+			if (locations.length > 1) {
+				tp.enableMultipleLocations(true);
+			}
+			tp._chooser.transfer(locations);
 		}
-		tp._chooser.transfer(locations);
 	}
 	
 	// resources
 	var resources = appt.getResources();
-	if (resources && resources.length) {
+	if (resources && resources.length && this._attInputField[ZmAppt.RESOURCE]) {
 		this._attInputField[ZmAppt.RESOURCE].setValue(appt.getResourcesText());
 		this._attendees[ZmAppt.RESOURCE] = AjxVector.fromArray(resources);
 		tp = this.parent.getTabPage(ZmApptComposeView.TAB_RESOURCES);
-		tp._chooser.transfer(resources);
+		if (tp) {
+			tp._chooser.transfer(resources);
+		}
 	}
 
 	// attachments
@@ -581,8 +590,8 @@ ZmApptTabViewPage.prototype._createHTML =
 function() {
 
 	this._attTdId = {};
-	for (var t = 0; t < ZmApptComposeView.ATT_TYPES.length; t++) {
-		this._attTdId[ZmApptComposeView.ATT_TYPES[t]] = Dwt.getNextId();
+	for (var t = 0; t < this._attTypes.length; t++) {
+		this._attTdId[this._attTypes[t]] = Dwt.getNextId();
 	}
 
 	this._createApptHtml();
@@ -653,8 +662,8 @@ function() {
 
 	this._attInputField = {};
 	this._attInputCurVal = {};
-	for (var t = 0; t < ZmApptComposeView.ATT_TYPES.length; t++) {
-		var type = ZmApptComposeView.ATT_TYPES[t];
+	for (var t = 0; t < this._attTypes.length; t++) {
+		var type = this._attTypes[t];
 		var params = {parent: this, type: DwtInputField.STRING};
 		if (type == ZmAppt.PERSON) {
 			params.rows = 3;
@@ -854,15 +863,17 @@ function() {
 	html[i++] = "'></td>";
 	html[i++] = "</tr>";
 
-	html[i++] = "<tr>";
-	html[i++] = "<td width=1% align=right class='ZmApptTabViewPageField'>";
-	html[i++] = ZmMsg.resources;
-	html[i++] = ":</td>";
+	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		html[i++] = "<tr>";
+		html[i++] = "<td width=1% align=right class='ZmApptTabViewPageField'>";
+		html[i++] = ZmMsg.resources;
+		html[i++] = ":</td>";
 
-	html[i++] = "<td id='";
-	html[i++] = this._attTdId[ZmAppt.RESOURCE];
-	html[i++] = "'></td>";
-	html[i++] = "</tr>";
+		html[i++] = "<td id='";
+		html[i++] = this._attTdId[ZmAppt.RESOURCE];
+		html[i++] = "'></td>";
+		html[i++] = "</tr>";
+	}
 
 	html[i++] = "</table>";
 
@@ -879,9 +890,13 @@ function() {
 
 ZmApptTabViewPage.prototype._initAutocomplete =
 function() {
-	this._acContactsList.handle(this._attInputField[ZmAppt.PERSON].getInputElement());
-	this._acResourcesList.handle(this._attInputField[ZmAppt.LOCATION].getInputElement());
-	this._acResourcesList.handle(this._attInputField[ZmAppt.RESOURCE].getInputElement());
+	if (this._acContactsList) {
+		this._acContactsList.handle(this._attInputField[ZmAppt.PERSON].getInputElement());
+	}
+	if (this._acResourcesList) {
+		this._acResourcesList.handle(this._attInputField[ZmAppt.LOCATION].getInputElement());
+		this._acResourcesList.handle(this._attInputField[ZmAppt.RESOURCE].getInputElement());
+	}
 };
 
 ZmApptTabViewPage.prototype._addEventHandlers =
@@ -1257,8 +1272,8 @@ function(ev) {
 */
 ZmApptTabViewPage.prototype._setAttendees =
 function() {
-	for (var t = 0; t < ZmApptComposeView.ATT_TYPES.length; t++) {
-		var type = ZmApptComposeView.ATT_TYPES[t];
+	for (var t = 0; t < this._attTypes.length; t++) {
+		var type = this._attTypes[t];
 		var attendees = this._attendees[type].getArray();
 		var list = [];
 		for (var i = 0; i < attendees.length; i++) {

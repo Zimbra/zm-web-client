@@ -101,8 +101,11 @@ function(respEl, contactSource) {
 		currentType = this.search.isGalSearch ? ZmItem.CONTACT : ZmItem.RESOURCE;
 		var data = this.search.isGalSearch ? respEl.cn : respEl.calresource;
 		if (data) {
-			for (var j = 0; j < data.length; j++)
-				this._results[currentType].addFromDom(data[j], {addressHash: addressHash});
+			for (var j = 0; j < data.length; j++) {
+				if (this._results[currentType]) {
+					this._results[currentType].addFromDom(data[j], {addressHash: addressHash});
+				}
+			}
 			_count = data.length;
 		}
 	} else {

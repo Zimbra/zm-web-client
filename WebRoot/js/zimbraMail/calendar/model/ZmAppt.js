@@ -214,10 +214,13 @@ function(includeDisplayName) {
 		if (!this.location) return "";
 		var text = this.location;
 		if (includeDisplayName) {
-			var loc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getResources().getResourceByName(this.location);
-			var displayName = loc ? loc.getAttr(ZmResource.F_locationName) : "";
-			if (displayName) {
-				text = [this.location, " (", displayName, ")"].join("");
+			var resources = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getResources();
+			if (resources) {
+				var loc = resources.getResourceByName(this.location);
+				var displayName = loc ? loc.getAttr(ZmResource.F_locationName) : "";
+				if (displayName) {
+					text = [this.location, " (", displayName, ")"].join("");
+				}
 			}
 		}
 		return text;
