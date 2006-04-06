@@ -1433,7 +1433,7 @@ function() {
 				var day = new Date();
 				day.setDate(day.getDate() - day.getDay() + dayofweek);
 				var month = new Date();
-				month.setMonth(Number(this.repeatYearlyMonthsList));
+				month.setMonth(Number(this.repeatYearlyMonthsList)-1);
 				
 				var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryMonthNumDay);
 				every.push(formatter.format([ ordinal, day, month ]));
