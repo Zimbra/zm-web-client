@@ -56,7 +56,7 @@ function ZmSchedTabViewPage(parent, appCtxt, attendees, controller, acContactsLi
 	this._emailToIdx = {};
 	this._schedTable = [];
 	this._allAttendees = [];
-	this._allAttendeeSlot = null;
+	this._allAttendeesSlot = null;
 	
 	this._fbCallback = new AjxCallback(this, this._handleResponseFreeBusy);
 };
@@ -67,7 +67,6 @@ ZmSchedTabViewPage.prototype.constructor = ZmSchedTabViewPage;
 
 // Consts
 
-ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES	= 12;
 ZmSchedTabViewPage.FREEBUSY_NUM_CELLS		= 48;
 
 ZmSchedTabViewPage.STATUS_FREE				= 1;
@@ -85,6 +84,11 @@ function() {
 
 ZmSchedTabViewPage.prototype.showMe = 
 function() {
+	if (!this._dateInfo) {
+		this._dateInfo = ZmApptViewHelper.getDateInfo(this._apptTab);
+		this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
+	}
+
 	if (!this._rendered) {
 		this._initialize();
 	}
@@ -93,9 +97,7 @@ function() {
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
 
-	// set the free/busy view with fresh data
-	var dateInfo = ZmApptViewHelper.getDateInfo(this._apptTab);
-	this.set(dateInfo, this._apptTab.getOrganizer(), this._attendees);
+	this.set(this._dateInfo, this._apptTab.getOrganizer(), this._attendees);
 };
 
 ZmSchedTabViewPage.prototype.tabBlur =
@@ -128,7 +130,6 @@ function(dateInfo, organizer, attendees) {
 		this._showTimeFields(false);
 	}
 	this._resetFullDateField();
-	this._outlineAppt();
 
 	this._setAttendees(organizer, attendees);
 };
@@ -136,22 +137,15 @@ function(dateInfo, organizer, attendees) {
 ZmSchedTabViewPage.prototype.cleanup = 
 function() {
 	if (!this._rendered) return;
-
-	// XXX: optimize later - cache objects instead of iterating DOM!
-	for (var i = 0; i < this._schedTable.length; i++) {
-		var sched = this._schedTable[i];
-
-		// set all visible input elements to invisible
-		var input = sched.inputObj;
-		// re-enable the first row (which is the "read-only" organizer row)
-		if (i == 0) {
-			input.disabled(false);
-		}
-		this._cleanRow(sched, true);
+	
+	// remove all but first two rows (header and All Attendees)
+	while (this._attendeesTable.rows.length > 2) {
+		this._removeAttendeeRow(2);
 	}
+	this._activeInputField = null;
 
 	// cleanup all attendees row
-	var allAttCells = this._allAttendeeSlot._coloredCells;
+	var allAttCells = this._allAttendeesSlot._coloredCells;
 	while (allAttCells.length > 0) {
 		allAttCells[0].style.backgroundColor = "";
 		allAttCells.shift();
@@ -322,17 +316,26 @@ function() {
 
 ZmSchedTabViewPage.prototype._getFreeBusyHtml =
 function() {
+
 	this._navToolbarId = Dwt.getNextId();
+	this._attendeesTableId = Dwt.getNextId();
+	this._schedTable[0] = null;	// header row has no attendee data
 
 	var html = [];
 	var i = 0;
 
-	html[i++] = "<table style='padding-left: 3px' border=0 cellpadding=0 cellspacing=0 width=100%>";
+	html[i++] = "<table style='padding-left: 3px' border=0 cellpadding=0 cellspacing=0 width=100% id='";
+	html[i++] = this._attendeesTableId;
+	html[i++] = "'>";
 	html[i++] = "<colgroup>";
-	html[i++] = "<col style='width:20px' />";
-	html[i++] = "<col style='width:100%' />";
+	html[i++] = "<col style='width:";
+	html[i++] = AjxEnv.isIE ? 34 : 42;
+	html[i++] = "px'";
+	html[i++] = "<col style='width:165px' />";
 	html[i++] = "<col style='width:626px' />";
 	html[i++] = "</colgroup>";
+	
+	// header row
 	html[i++] = "<tr>";
 	html[i++] = "<td colspan=2 id='";
 	html[i++] = this._navToolbarId;
@@ -345,83 +348,128 @@ function() {
 		for (var k = 12; k < 24; k++) {
 			var hour = k - 12;
 			if (hour == 0) hour = 12;
-	
-			html[i++] = "<td><div class='ZmSchedTabViewPageCell'>";
+			html[i++] = "<td><div class='ZmSchedTabViewPageGridHeaderCell'>";
 			html[i++] = hour;
-			html[i++] = "</div></td><td><div class='ZmSchedTabViewPageCell'></div></td>";
+			html[i++] = "</div></td><td><div class='ZmSchedTabViewPageGridHeaderCell'></div></td>";
 		}
 	}
 	html[i++] = "</tr></table>";
 	html[i++] = "</td></tr>";
 	
-	for (var j = 0; j < ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES; j++) {
-		// store some meta data about this table row
-		var attendee = {};
-		var dwtId = attendee.dwtId = Dwt.getNextId();	// container for input
-		attendee.dwtDivId = dwtId + "_DIV_";			// outer container
-		attendee.dwtInputId = dwtId + "_INPUT_";		// input field
-		attendee.dwtTableId = dwtId + "_TABLE_";		// f/b table
-		attendee.dwtSelectId = dwtId + "_SELECT_";		// container for select menu
-		attendee.idx = j;
-		attendee._coloredCells = [];
-
-		if (j == 0) {
-			this._allAttendeeSlot = attendee;
-		} else {
-			this._schedTable.push(attendee);
-		}
-
-		html[i++] = "<tr>";
-		if (j == 1) {
-			html[i++] = "<td align='center'>";
-			html[i++] = AjxImg.getImageHtml("Person");
-			html[i++] = "</td>";
-		} else if (j > 1) {
-			html[i++] = "<td><div id='" + attendee.dwtSelectId + "'></div></td>";
-		}
-		html[i++] = "<td";
-		html[i++] = (j == 0) ? " colspan=2>" : ">";
-		html[i++] = "<table border=0 width=100% cellpadding=0 cellspacing=0 class='ZmSchedTabViewPageTable'><tr>";
-		html[i++] = "<td";
-		html[i++] = (j == ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES - 1 || j == 0) ? " style='border-bottom:1px solid #CCCCCC'>" : ">";
-		html[i++] = "<div class='ZmSchedTabViewPageName' id='";
-		html[i++] = attendee.dwtDivId;
-		html[i++] = "'>";
-		// make the first row the "All Attendees" row
-		if (j == 0) {
-			html[i++] = "<table border=0 bgcolor='#FFFFFF' cellpadding=0 cellspacing=0 width=100% height=100%><tr height=100%><td class='ZmSchedTabViewPageAll'>";
-			html[i++] = ZmMsg.allAttendees;
-			html[i++] = "</td></tr></table>";
-		} else {
-			html[i++] = "<div id='";
-			html[i++] = attendee.dwtId;
-			html[i++] = "'></div>";
-			html[i++] = "&nbsp;&nbsp;";
-			html[i++] = ZmMsg.clickToAdd;
-		}
-		html[i++] = "</div></td>";
-		html[i++] = "</tr></table>";
-		html[i++] = "</td>";
-		html[i++] = "<td";
-		html[i++] = (j == ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES - 1 || j == 0) ? " style='border-bottom:1px solid #CCCCCC'>" : ">";
-		html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmSchedTabViewPageTable' id='";
-		html[i++] = attendee.dwtTableId;
-		html[i++] = "'><tr";
-		html[i++] = (j == 0) ? " style='background-color:#FFFFFF'>" : ">";
-		for (var k = 0; k < ZmSchedTabViewPage.FREEBUSY_NUM_CELLS; k++) {
-			html[i++] = "<td><div class='ZmSchedTabViewPageGrid'></div></td>";
-		}
-		html[i++] = "</tr></table>";
-		html[i++] = "</td></tr>";
-
-		// add an empty row here to visually separate All Attendees
-		if (j == 0) {
-			html[i++] = "<tr><td style='height:5px'></td></tr>";
-		}
-	}
 	html[i++] = "</table>";
 
 	return html.join("");
+};
+
+ZmSchedTabViewPage.prototype._addAttendeeRow =
+function(isAllAttendees, isOrganizer, index) {
+	index = index ? index : this._attendeesTable.rows.length;
+	
+	// store some meta data about this table row
+	var sched = {};
+	var dwtId = Dwt.getNextId();	// container for input
+	sched.dwtNameId = dwtId + "_NAME_";			// TD that contains name
+	sched.dwtTableId = dwtId + "_TABLE_";		// TABLE with free/busy cells
+	sched.dwtSelectId = dwtId + "_SELECT_";		// TD that contains select menu
+	sched.dwtInputId = dwtId + "_INPUT_";		// input field
+	sched.idx = index;
+	sched._coloredCells = [];
+	this._schedTable[index] = sched;
+
+	var tr = this._attendeesTable.insertRow(index);
+
+	var td = tr.insertCell(-1);
+	if (isAllAttendees) {
+		td.colSpan = 2;
+		td.className = 'ZmSchedTabViewPageAllTd';
+		td.innerHTML = ZmMsg.allAttendees;
+	} else  if (isOrganizer) {
+		td.align = 'center';
+		td.className = 'ZmSchedTabViewPageOrgIconTd';
+		td.innerHTML = AjxImg.getImageHtml("Person");
+	} else {
+		td.id = sched.dwtSelectId;
+	}
+	
+	if (!isAllAttendees) {
+		td = tr.insertCell(-1);
+		td.className = "ZmSchedTabViewPageNameTd";
+		td.id = sched.dwtNameId;
+	}
+	
+	var html = [];
+	var i = 0;
+	td = tr.insertCell(-1);
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmSchedTabViewPageTable' id='";
+	html[i++] = sched.dwtTableId;
+	html[i++] = "'><tr";
+	html[i++] = isAllAttendees ? " style='background-color:#FFFFFF'>" : ">";
+	for (var k = 0; k < ZmSchedTabViewPage.FREEBUSY_NUM_CELLS; k++) {
+		html[i++] = "<td><div class='";
+		html[i++] = isAllAttendees ? "ZmSchedTabViewPageGridTopCell" : "ZmSchedTabViewPageGridCell";
+		html[i++] = "'></div></td>";
+	}
+	html[i++] = "</tr></table>";
+	td.innerHTML = html.join("");	
+	
+	// create DwtInputField and DwtSelect for the attendee slot
+	if (!isAllAttendees) {
+		var select;
+		if (!isOrganizer) {
+			var selectId = sched.dwtSelectId;
+			var selectDiv = document.getElementById(selectId);
+			if (selectDiv) {
+				select = new DwtSelect(this);
+				select.addOption(new DwtSelectOption(ZmAppt.PERSON, true, null, null, null, "Person"));
+				select.addOption(new DwtSelectOption(ZmAppt.LOCATION, false, null, null, null, "Location"));
+				select.addOption(new DwtSelectOption(ZmAppt.RESOURCE, false, null, null, null, "Resource"));
+				select.reparentHtmlElement(selectId);
+				select.addChangeListener(this._selectChangeListener);
+				select._schedTableIdx = index;
+				sched.selectObj = select;
+			}
+		}
+		var nameDiv = document.getElementById(sched.dwtNameId);
+		var dwtInputField;
+		if (nameDiv) {
+			dwtInputField = new DwtInputField({parent: this, type: DwtInputField.STRING, maxLen: 256});
+			dwtInputField.setDisplay(Dwt.DISPLAY_INLINE);
+			var inputEl = dwtInputField.getInputElement();
+			inputEl.className = "ZmSchedTabViewPageInput";
+			inputEl.id = sched.dwtInputId;
+			sched.attType = inputEl._attType = ZmAppt.PERSON;
+			sched.inputObj = dwtInputField;
+			if (select) {
+				select.dwtInputField = dwtInputField;
+			}
+			dwtInputField.reparentHtmlElement(sched.dwtNameId);
+		}
+	}
+
+	if (!isAllAttendees && !isOrganizer) {
+		var attendeeInput = document.getElementById(sched.dwtInputId);
+		if (attendeeInput) {
+			// handle focus moving to/from an enabled input
+			Dwt.setHandler(attendeeInput, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
+			Dwt.setHandler(attendeeInput, DwtEvent.ONBLUR, ZmSchedTabViewPage._onBlur);
+			attendeeInput._schedViewPageId = this._svpId;
+			attendeeInput._schedTableIdx = index;
+			// default to person-based autocomplete handling
+			if (this._acContactsList) {
+				this._acContactsList.handle(attendeeInput);
+			}
+		}
+	}
+
+	this._updateBorders(sched, isAllAttendees);
+
+	return index;
+};
+
+ZmSchedTabViewPage.prototype._removeAttendeeRow =
+function(index) {
+	this._attendeesTable.deleteRow(index);
+	this._schedTable.splice(index, 1);
 };
 
 ZmSchedTabViewPage.prototype._createDwtObjects = 
@@ -456,82 +504,36 @@ function() {
 	this._freeBusyDiv = document.getElementById(this._freeBusyDivId);
 	delete this._freeBusyDivId;
 
-	// create DwtInputField and DwtSelect for each attendee slot
-	for (var i = 0; i < this._schedTable.length; i++) {
-		var inputFieldId = this._schedTable[i].dwtId;
-		var inputField = document.getElementById(inputFieldId);
-		var dwtInputField;
-		if (inputField) {
-			dwtInputField = new DwtInputField({parent: this, type: DwtInputField.STRING, maxLen: 256});
-			dwtInputField.setDisplay(Dwt.DISPLAY_INLINE);
-			dwtInputField.reparentHtmlElement(inputFieldId);
-			var inputEl = dwtInputField.getInputElement();
-			inputEl.className = "ZmSchedTabViewPageInput";
-			inputEl.id = this._schedTable[i].dwtInputId;
-			this._schedTable[i].attType = ZmAppt.PERSON;
-			this._schedTable[i].inputObj = dwtInputField;
-		}
-		var selectId = this._schedTable[i].dwtSelectId;
-		var selectDiv = document.getElementById(selectId);
-		if (selectDiv) {
-			var select = new DwtSelect(this);
-			select.addOption(new DwtSelectOption(ZmAppt.PERSON, true, null, null, null, "Person"));
-			select.addOption(new DwtSelectOption(ZmAppt.LOCATION, false, null, null, null, "Globe"));
-			select.addOption(new DwtSelectOption(ZmAppt.RESOURCE, false, null, null, null, "Attachment"));
-			select.reparentHtmlElement(selectId);
-			select.addChangeListener(this._selectChangeListener);
-			select._schedTableIdx = i;
-			this._schedTable[i].selectObj = select;
-			if (inputField) {
-				select.dwtInputField = dwtInputField;
-			}
-		}
-	}
-
 	this._startDateField 	= document.getElementById(this._startDateFieldId);
 	this._endDateField 		= document.getElementById(this._endDateFieldId);
 	this._allDayCheckbox 	= document.getElementById(this._allDayCheckboxId);
-	this._allAttendeesTable = document.getElementById(this._allAttendeeSlot.dwtTableId); 
 	
 	this._curValStartDate = "";
 	this._curValEndDate = "";
+
+	// add All Attendees row
+	this._svpId = AjxCore.assignId(this);
+	this._attendeesTable	= document.getElementById(this._attendeesTableId);
+	this._allAttendeesIndex = this._addAttendeeRow(true, false);
+	this._allAttendeesSlot = this._schedTable[this._allAttendeesIndex];
+	this._allAttendeesTable = document.getElementById(this._allAttendeesSlot.dwtTableId);
 };
 
 ZmSchedTabViewPage.prototype._addEventHandlers = 
 function() {
-	var svpId = AjxCore.assignId(this);
-
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
-	this._allDayCheckbox._schedViewPageId = svpId;
+	this._allDayCheckbox._schedViewPageId = this._svpId;
 
 	Dwt.setHandler(this._startDateField, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
 	Dwt.setHandler(this._endDateField, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
 	Dwt.setHandler(this._startDateField, DwtEvent.ONBLUR, ZmSchedTabViewPage._onBlur);
 	Dwt.setHandler(this._endDateField, DwtEvent.ONBLUR, ZmSchedTabViewPage._onBlur);
-	this._startDateField._schedViewPageId = this._endDateField._schedViewPageId = svpId;
+	this._startDateField._schedViewPageId = this._endDateField._schedViewPageId = this._svpId;
 
 	this._selectChangeListener = new AjxListener(this, this._selectChangeListener);
 	for (var i = 0; i < this._schedTable.length; i++) {
-		// we use onClick in containing DIV to determine whether we got focus, since
-		// input starts out disabled
-		var attendeeDiv = document.getElementById(this._schedTable[i].dwtDivId);
-		if (attendeeDiv) {
-			Dwt.setHandler(attendeeDiv, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
-			attendeeDiv._schedViewPageId = svpId;
-			attendeeDiv._schedTableIdx = i;
-		}
-		var attendeeInput = document.getElementById(this._schedTable[i].dwtInputId);
-		if (attendeeInput) {
-			// handle focus moving to/from an enabled input
-			Dwt.setHandler(attendeeInput, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
-			Dwt.setHandler(attendeeInput, DwtEvent.ONBLUR, ZmSchedTabViewPage._onBlur);
-			attendeeInput._schedViewPageId = svpId;
-			attendeeInput._schedTableIdx = i;
-			// default to person-based autocomplete handling
-			if (this._acContactsList) {
-				this._acContactsList.handle(attendeeInput);
-			}
-		}
+		var sched = this._schedTable[i];
+		if (!sched || i == this._allAttendeesIndex || i == this._organizerIndex) continue;
 	}
 };
 
@@ -539,25 +541,12 @@ ZmSchedTabViewPage.prototype._showTimeFields =
 function(show) {
 	Dwt.setVisibility(this._startTimeSelect.getHtmlElement(), show);
 	Dwt.setVisibility(this._endTimeSelect.getHtmlElement(), show);
-	if (this._supportTimeZones)
+	if (this._supportTimeZones) {
 		Dwt.setVisibility(this._endTZoneSelect.getHtmlElement(), show);
+	}
 	// also show/hide the "@" text
 	Dwt.setVisibility(this._startTimeSelect.getHtmlElement().parentNode.previousSibling, show);
 	Dwt.setVisibility(this._endTimeSelect.getHtmlElement().parentNode.previousSibling, show);
-};
-
-ZmSchedTabViewPage.prototype._showAttendeeField =
-function(el) {
-	var sched = this._schedTable[el._schedTableIdx];
-	if (!sched) return;
-
-	var input = this._activeInputField = sched.inputObj;
-	if (el.tagName.toLowerCase() == "div") {
-		if (!input.isDisabled()) {
-			input.setVisible(true);
-			input.focus();
-		}
-	}
 };
 
 /*
@@ -569,9 +558,19 @@ function(inputEl) {
 	var sched = this._schedTable[idx];
 	var input = sched.inputObj;
 	var value = AjxStringUtil.trim(input.getValue());
+	var curAttendee = sched.attendee;
 	var type = sched.attType;
 	
 	if (value) {
+		if (curAttendee) {
+			// user edited slot with an attendee in it
+			var attText = AjxStringUtil.trim(curAttendee.getAttendeeText(type, true));
+			if (value == attText) {
+				return;
+			} else {
+				this._resetRow(sched, false, type, true);
+			}
+		}
 		var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, value, type, true);
 		if (attendee) {
 			var email = attendee.getEmail();
@@ -583,11 +582,17 @@ function(inputEl) {
 			sched.attendee = attendee;
 			this._setAttendeeToolTip(sched, attendee);
 			this.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
+			if (!curAttendee) {
+				// user added attendee in empty slot
+				this._addAttendeeRow(false, false); // add new empty slot
+			}
 		} else {
-			this.parent.showErrorMessage(this.parent._badAttendeeMsg[type], null, this._badAttendeeCallback, this, sched);
+			this.parent.showErrorMessage(this.parent._badAttendeeMsg[type], null, this._badAttendeeCallback, this, idx);
 		}
-	} else {
-		this._cleanRow(sched, false, type);
+	} else if (curAttendee) {
+		// user erased an attendee
+		this._resetRow(sched, false, type);
+		this._removeAttendeeRow(idx);
 	}
 };
 
@@ -603,8 +608,9 @@ function(sched, attendee, type) {
 };
 
 ZmSchedTabViewPage.prototype._badAttendeeCallback = 
-function(sched) {
-	this._cleanRow(sched);
+function(index) {
+	this._activeInputField = null;
+	this._removeAttendeeRow(index);
 	this.parent._msgDialog.popdown();
 };
 
@@ -635,8 +641,8 @@ function() {
 	for (var i = 0; i < this._allAttendees.length; i++) {
 		if (this._allAttendees[i] > 0) {
 			// TODO: opacity...
-			row.cells[i].style.backgroundColor = this._getClassForStatus(ZmSchedTabViewPage.STATUS_BUSY);
-			this._allAttendeeSlot._coloredCells.push(row.cells[i]);
+			row.cells[i].style.backgroundColor = this._getColorForStatus(ZmSchedTabViewPage.STATUS_BUSY);
+			this._allAttendeesSlot._coloredCells.push(row.cells[i]);
 		}
 	}
 };
@@ -650,6 +656,7 @@ function() {
 	var uids = [];
 	for (var i = 0; i < this._schedTable.length; i++) {
 		var sched = this._schedTable[i];
+		if (!sched) continue;
 		if (sched.uid)
 			uids.push(sched.uid);
 	}
@@ -671,42 +678,45 @@ function(organizer, attendees) {
 	this._origAttendees = attendees;
 
 	var emails = [];
-	var num = 0;
-	emails.push(this._setAttendee(num++, organizer, ZmAppt.PERSON, true)); // add organizer first
+	this._organizerIndex = this._addAttendeeRow(false, true); // create a slot for the organizer
+	emails.push(this._setAttendee(this._organizerIndex, organizer, ZmAppt.PERSON, true));
 	for (var t = 0; t < ZmApptComposeView.ATT_TYPES.length; t++) {
 		var type = ZmApptComposeView.ATT_TYPES[t];
 		var att = attendees[type].getArray();
 		for (var i = 0; i < att.length; i++) {
 			if (att[i]) {
-				emails.push(this._setAttendee(num++, att[i], type, false));
+				var index = this._addAttendeeRow(false, false); // create a slot for this attendee
+				emails.push(this._setAttendee(index, att[i], type, false));
 			}
 		}
 	}
+	this._addAttendeeRow(false, false); // make sure there's always an empty slot
 
-	if (emails.length > 0) {
+	if (emails.length) {
 		this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), emails.join(","), this._fbCallback);
 	}
 };
 
 ZmSchedTabViewPage.prototype._setAttendee = 
-function(i, attendee, type, isOrganizer) {
-	var sched = this._schedTable[i];
+function(index, attendee, type, isOrganizer) {
+	var sched = this._schedTable[index];
+	if (!sched) return;
+
 	sched.attendee = attendee;
 	sched.attType = type;
 	var input = sched.inputObj;
 	if (input) {
-		input.setVisible(true);
 		input.setValue(attendee.getAttendeeText(type, true), true);
 	}
 	
-	var select = this._schedTable[i].selectObj;
+	var select = sched.selectObj;
 	if (select) {
 		select.setSelectedValue(type);
 	}
 	var email = attendee.getEmail();
-	this._emailToIdx[email] = i;
+	this._emailToIdx[email] = index;
 
-	if (isOrganizer) {
+	if (input && isOrganizer) {
 		input.disabled(true);
 	}
 	this._setAttendeeToolTip(sched, attendee, type);
@@ -722,21 +732,23 @@ function(i, attendee, type, isOrganizer) {
 * @param sched			[object]		info for this row
 * @param resetSelect	[boolean]*		if true, set select to PERSON
 * @param type			[constant]*		attendee type
+* @param noClear		[boolean]*		if true, don't clear input field
 */
-ZmSchedTabViewPage.prototype._cleanRow = 
-function(sched, resetSelect, type) {
+ZmSchedTabViewPage.prototype._resetRow = 
+function(sched, resetSelect, type, noClear) {
 
+	var input = sched.inputObj;
 	if (sched.attendee && type) {
 		this.parent.updateAttendees(sched.attendee, type, ZmApptComposeView.MODE_REMOVE);
-		sched.inputObj.setToolTipContent(null);
+		if (input) {
+			input.setToolTipContent(null);
+		}
 		sched.attendee = null;
 	}
 
-	// clear input element value and make invisible
-	var input = sched.inputObj;
-	input.setValue("", true);
-	if (input.getVisible()) {
-		input.setVisible(false);
+	// clear input field
+	if (input && !noClear) {
+		input.setValue("", true);
 	}
 
 	// reset the row color to non-white
@@ -773,7 +785,7 @@ function(sched) {
 		sched._coloredCells.shift();
 	}
 
-	var allAttColors = this._allAttendeeSlot._coloredCells;
+	var allAttColors = this._allAttendeesSlot._coloredCells;
 	while (allAttColors.length > 0) {
 		allAttColors[0].style.backgroundColor = "";
 		allAttColors.shift();
@@ -885,9 +897,10 @@ ZmSchedTabViewPage.prototype._timeChangeListener =
 function(ev) {
 	this._activeDateField = ZmTimeSelect.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect,
 														this._startDateField, this._endDateField);
-	var dateInfo = ZmApptViewHelper.getDateInfo(this);
-	this._outlineAppt(dateInfo);
-	this._apptTab.updateTimeField(dateInfo);
+	this._dateInfo = ZmApptViewHelper.getDateInfo(this);
+	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
+	this._outlineAppt(this._dateInfo);
+	this._apptTab.updateTimeField(this._dateInfo);
 };
 
 ZmSchedTabViewPage.prototype._selectChangeListener = 
@@ -899,7 +912,6 @@ function(ev) {
 	var type = select.getValue();
 	var sched = svp._schedTable[select._schedTableIdx];
 	if (sched.attType == type) return;
-	sched.attType = type;
 
 	// reset row
 	var input = sched.inputObj;
@@ -908,9 +920,10 @@ function(ev) {
 	
 	// if we wiped out an attendee, make sure it's reflected in master list
 	if (sched.attendee) {
-		this.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_REMOVE);
+		this.parent.updateAttendees(sched.attendee, sched.attType, ZmApptComposeView.MODE_REMOVE);
 		sched.attendee = null;
 	}
+	sched.attType = type;
 	
 	// reset autocomplete handler
 	var inputEl = input.getInputElement();
@@ -955,11 +968,9 @@ function(status, slots, table, sched) {
 */
 ZmSchedTabViewPage.prototype._outlineAppt =
 function(dateInfo) {
-	dateInfo = dateInfo ? dateInfo : ZmApptViewHelper.getDateInfo(this);
-	var index = this._getIndexesFromDateInfo(dateInfo);
-	this._updateBorders(this._allAttendeeSlot, index);
-	for (var j = 0; j < ZmSchedTabViewPage.FREEBUSY_INIT_ATTENDEES; j++) {
-		this._updateBorders(this._schedTable[j], index);
+	this._updateBorders(this._allAttendeesSlot);
+	for (var j = 1; j < this._schedTable.length; j++) {
+		this._updateBorders(this._schedTable[j]);
 	}
 };
 
@@ -967,34 +978,40 @@ function(dateInfo) {
 * The table borders outline the time of the current appt.
 *
 * @param sched		[sched]			IDs for this row
-* @param index		[object]		start and end indexes
+
 */
 ZmSchedTabViewPage.prototype._updateBorders =
-function(sched, index) {
-	if (!sched || !index) return;
+function(sched, isAllAttendees) {
+	if (!sched) return;
+	isAllAttendees = isAllAttendees || (sched == this._allAttendeesSlot);
 
 	var div, curClass, newClass;
 
 	// if start time is midnight, mark right border of attendee div
-	div = document.getElementById(sched.dwtDivId);
-	curClass = div.className;
-	newClass = (index.start == -1) ? "ZmSchedTabViewPageNameMark" :
-									 "ZmSchedTabViewPageName";
-	if (curClass != newClass) {
-		div.className = newClass;
+	div = document.getElementById(sched.dwtNameId);
+	if (div) {
+		curClass = div.className;
+		newClass = (this._dateBorder.start == -1) ? "ZmSchedTabViewPageNameTdBorder" :
+													"ZmSchedTabViewPageNameTd";
+		if (curClass != newClass) {
+			div.className = newClass;
+		}
 	}
 	
 	// mark right borders of appropriate f/b table cells
+	var normalClass = isAllAttendees ? "ZmSchedTabViewPageGridTopCell" :
+									   "ZmSchedTabViewPageGridCell";
+	var borderClass = isAllAttendees ? "ZmSchedTabViewPageGridTopCellBorder" :
+									   "ZmSchedTabViewPageGridCellBorder";
 	var table = document.getElementById(sched.dwtTableId);
 	var row = table.rows[0];
 	if (row) {
 		for (var i = 0; i < ZmSchedTabViewPage.FREEBUSY_NUM_CELLS; i++) {
-			var cell = row.cells[i];
-			div = cell ? cell.firstChild : null;
+			var td = row.cells[i];
+			div = td ? td.firstChild : null;
 			if (div) {
 				curClass = div.className;
-				newClass = (i == index.start || i == index.end) ? "ZmSchedTabViewPageGridMark" :
-																  "ZmSchedTabViewPageGrid";
+				newClass = (i == this._dateBorder.start || i == this._dateBorder.end) ? borderClass : normalClass;
 				if (curClass != newClass) {
 					div.className = newClass;
 				}
@@ -1014,7 +1031,7 @@ function(time, isStart) {
 	return idx;
 };
 
-ZmSchedTabViewPage.prototype._getIndexesFromDateInfo = 
+ZmSchedTabViewPage.prototype._getBordersFromDateInfo = 
 function(dateInfo) {
 	var index = {start: -99, end: -99};
 	if (dateInfo.showTime) {
@@ -1143,8 +1160,10 @@ function(ev) {
 	} else if (el.id == svp._startDateFieldId || el.id == svp._endDateFieldId) {
 		svp._activeDateField = el;
 	} else {
-		// looks like user clicked on attendee field
-		svp._showAttendeeField(el);
+		var sched = svp._schedTable[el._schedTableIdx];
+		if (sched) {
+			svp._activeInputField = sched.inputObj;
+		}
 	}
 };
 

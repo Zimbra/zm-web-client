@@ -1135,6 +1135,7 @@ td.DDSepInvisible div {
 	width: 1%;
 }
 
+
 .ZmSchedTabViewPageKey {
 	vertical-align: top;
 	text-align: right;
@@ -1159,10 +1160,39 @@ td.DDSepInvisible div {
 	text-align: center;
 }
 
-.ZmSchedTabViewPageName {
+.ZmSchedTabViewPageGridHeaderCell {
+	width: 12px;
+	border-width: 1 1 0 0;
+	border-style: solid;
+	border-color: #EEEEEE;
 	white-space: nowrap;
 	overflow: hidden;
-	border-width: 1 1 0 1;
+	text-align: center;
+	color: #555555;
+}
+
+.ZmSchedTabViewPageAllTd {
+	text-align: center;
+	color: #777777;
+	font-weight: bold;
+	white-space: nowrap;
+	overflow: hidden;
+	cursor: default;
+	border-width: 1 1 1 1;
+	border-style: solid;
+	border-color: #CCCCCC;
+}
+
+.ZmSchedTabViewPageOrgIconTd {
+	border-width: 0 1 0 1;
+	border-style: solid;
+	border-color: #CCCCCC;
+}
+
+.ZmSchedTabViewPageNameTd {
+	white-space: nowrap;
+	overflow: hidden;
+	border-width: 0 1 1 0;
 	border-style: solid;
 	border-color: #CCCCCC;
 	height: 24px;
@@ -1182,13 +1212,29 @@ td.DDSepInvisible div {
 	width: 160px;
 }
 */
-.ZmSchedTabViewPageNameMark {
+.ZmSchedTabViewPageGridCell {
+	border-width: 0 1 1 0;
+	border-style: solid;
+	border-color: #CCCCCC;
+	width: 12px;
+	height: 24px;
+}
+
+.ZmSchedTabViewPageGridTopCell {
+	border-width: 1 1 1 0;
+	border-style: solid;
+	border-color: #CCCCCC;
+	width: 12px;
+	height: 24px;
+}
+
+.ZmSchedTabViewPageNameTdBorder {
 	white-space: nowrap;
 	overflow: hidden;
-	border-width: 1 1 0 1;
+	border-width: 0 1 1 0;
 	border-style: solid;
-	border-top-color: #CCCCCC;
 	border-right-color: #000000;
+	border-bottom-color: #CCCCCC;
 	height: 24px;
 	vertical-align: middle;
 	cursor: text;
@@ -1196,45 +1242,27 @@ td.DDSepInvisible div {
 	color: #AAAAAA;
 }
 
-.ZmSchedTabViewPageCell {
-	width: 12px;
-	border-width: 1 1 0 0;
+.ZmSchedTabViewPageGridCellBorder {
+	border-width: 0 1 1 0;
 	border-style: solid;
-	border-color: #EEEEEE;
-	white-space: nowrap;
-	overflow: hidden;
-	text-align: center;
-	color: #555555;
-}
-
-.ZmSchedTabViewPageGrid {
-	border-width: 1 1 0 0;
-	border-style: solid;
-	border-color: #CCCCCC;
+	border-right-color: #000000;
+	border-bottom-color: #CCCCCC;
 	width: 12px;
 	height: 24px;
 }
 
-.ZmSchedTabViewPageGridMark {
-	border-width: 1 1 0 0;
+.ZmSchedTabViewPageGridTopCellBorder {
+	border-width: 1 1 1 0;
 	border-style: solid;
 	border-top-color: #CCCCCC;
 	border-right-color: #000000;
+	border-bottom-color: #CCCCCC;
 	width: 12px;
 	height: 24px;
 }
 
 .ZmSchedTabViewPageTable {
 	background-color: #F4F4F4;
-}
-
-.ZmSchedTabViewPageAll {
-	text-align: center;
-	color: #777777;
-	font-weight: bold;
-	white-space: nowrap;
-	overflow: hidden;
-	cursor: default;
 }
 
 .ZmSchedTabViewPageInput {
@@ -1244,7 +1272,6 @@ td.DDSepInvisible div {
 	border: 0px;
 	padding-top: 3px;
 	font-size: 13px;
-	display: none;
 }
 
 .ZmApptChooserTabViewPage fieldset {
