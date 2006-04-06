@@ -44,11 +44,11 @@ function() {
 //
 
 ZmNoteFileView.COLWIDTH_ICON 			= 20;
-ZmNoteFileView.COLWIDTH_NAME			= 105;
-ZmNoteFileView.COLWIDTH_TYPE			= 47;
+ZmNoteFileView.COLWIDTH_NAME			= 200;
+ZmNoteFileView.COLWIDTH_TYPE			= 120;
 ZmNoteFileView.COLWIDTH_SIZE 			= 45;
-ZmNoteFileView.COLWIDTH_DATE 			= 75;
-ZmNoteFileView.COLWIDTH_OWNER			= 105;
+ZmNoteFileView.COLWIDTH_DATE 			= 120;
+ZmNoteFileView.COLWIDTH_OWNER			= 200;
 
 //
 // Data
@@ -70,7 +70,6 @@ function() {
 
 ZmNoteFileView.prototype.set =
 function(note) {
-	/***/
 	var folderId = note ? note.folderId : ZmNote.DEFAULT_FOLDER;
 	
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
@@ -90,26 +89,37 @@ function(note) {
 	var list = new AjxVector();
 	if (response.SearchResponse) {
 		var words = response.SearchResponse.w || [];
+		ZmNoteFileView.__typify(words, "wiki");
 		var docs = response.SearchResponse.doc || [];
+		ZmNoteFileView.__typify(docs, "document");
 		var items = words.concat(docs).sort(ZmNoteView.__byNoteName);
 		for (var i = 0; i < items.length; i++) {
 			list.add(items[i]);
 		}
 	}
 	this._fileListView.set(list);
-	/***
-	this._fileListView.setUI();
-	/***/
+};
+
+// methods delegated to internal list view
+
+ZmNoteFileView.prototype.addSelectionListener = function(listener) {
+	this._fileListView.addSelectionListener(listener);
+};
+ZmNoteFileView.prototype.addActionListener = function(listener) {
+	this._fileListView.addActionListener(listener);
 };
 
 ZmNoteFileView.prototype.getSelection =
 function() {
-	return this._controller.getNote();
+	return this._fileListView.getSelection();
 };
-
-
-ZmNoteFileView.prototype.addSelectionListener = function(listener) { /*TODO*/ };
-ZmNoteFileView.prototype.addActionListener = function(listener) { /*TODO*/ };
+ZmNoteFileView.prototype.getSelectedItems =
+function() {
+	return this._fileListView.getSelectedItems();
+};
+ZmNoteFileView.prototype.getSelectionCount = function() {
+	return this._fileListView.getSelectionCount();
+};
 
 //
 // Protected methods
@@ -119,13 +129,12 @@ ZmNoteFileView.prototype._createHtml = function() {
 	var parent = this;
 	var className = null;
 	var posStyle = null;
-	var view = null; // ???
-	var type = null; // ???
+	var view = ZmController.NOTE_FILE_VIEW;
+	var type = ZmItem.WIKI;
 	var controller = this._controller;
 	var headerList = this._createHeaderList();
 	var dropTgt = null; // ???
-	this._fileListView = new ZmListView(parent, className, posStyle, view, type, controller, headerList, dropTgt);
-	this._fileListView._createItemHtml = this._createItemHtml;
+	this._fileListView = new ZmNoteFileListView(parent, className, posStyle, view, type, controller, headerList, dropTgt);
 
 	var element = this.getHtmlElement();
 	Dwt.setScrollStyle(element, Dwt.SCROLL);
@@ -134,18 +143,46 @@ ZmNoteFileView.prototype._createHtml = function() {
 
 ZmNoteFileView.prototype._createHeaderList = function() {
 	// Columns: tag, name, type, size, date, owner
-	return [
+	var headers = [];
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		/*** TODO
+		headers.push(
+			new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "Tag", ZmNoteFileView.COLWIDTH_ICON, null, null, false, ZmMsg.tag)
+		);
+		/***/
+	}
+	headers.push(
 		// new DwtListHeaderItem(id, label, icon, width, sortable, resizeable, visible, tt)
-		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "Tag", ZmNoteFileView.COLWIDTH_ICON, null, null, false, ZmMsg.tag),
 		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg._name, null, ZmNoteFileView.COLWIDTH_NAME, true, true, null, null),
 		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE], ZmMsg.type, null, ZmNoteFileView.COLWIDTH_TYPE, true, null, null, null),
 		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE], ZmMsg.size, null, ZmNoteFileView.COLWIDTH_SIZE, true, null, null, null),
 		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.date, null, ZmNoteFileView.COLWIDTH_DATE, true, null, null, null),
 		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FROM], ZmMsg.owner, null, ZmNoteFileView.COLWIDTH_OWNER, true, null, null, null)
-	];
+	);
+	return headers;		
 };
 
-ZmNoteFileView.prototype._createItemHtml =
+//
+// Private functions
+//
+
+ZmNoteFileView.__typify = function(array, type) {
+	for (var i = 0; i < array.length; i++) {
+		array[i]._type = type;
+	}
+};
+
+//
+// Classes
+//
+
+function ZmNoteFileListView(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
+	ZmListView.call(this, parent, className, posStyle, view, type, controller, headerList, dropTgt);
+}
+ZmNoteFileListView.prototype = new ZmListView;
+ZmNoteFileListView.prototype.constructor = ZmNoteFileListView;
+
+ZmNoteFileListView.prototype._createItemHtml =
 function(item, now, isDndIcon, isMixedView) {
 	var isMatched = false; // ???
 	var	div = this._getDiv(item, isDndIcon, isMatched);
@@ -176,14 +213,16 @@ function(item, now, isDndIcon, isMixedView) {
 				// REVISIT
 				idx = this._getField(htmlArr, idx, item, ZmItem.F_TAG, i);
 				/***/
-				htmlArr[idx++] = "<td width="+width+"></td>";
+				htmlArr[idx++] = ["<td width=",width,"></td>"].join("");
 				/***/
 				break;
 			}
 			case ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]: {
-				var mimeInfo = item.ct ? ZmMimeTable.getInfo(item.ct) : null;
-				var icon = mimeInfo ? mimeInfo.image : "Page";
-				
+				var icon = item._type == "wiki" ? "Page" : null;
+				if (!icon) {
+					var mimeInfo = item.ct ? ZmMimeTable.getInfo(item.ct) : null;
+					icon = mimeInfo ? mimeInfo.image : "UnknownDoc";
+				}
 				htmlArr[idx++] = [
 					"<td width=",width," class=Img",icon," style='margin-left:2px;padding-left:20px'>",
 						item.name,
@@ -192,11 +231,12 @@ function(item, now, isDndIcon, isMixedView) {
 				break;
 			}
 			case ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE]: {
-				htmlArr[idx++] = [
-					"<td width=",width,">",
-						"&nbsp;",
-					"</td>"
-				].join("");
+				var desc = item._type == "wiki" ? ZmMsg.note : null;
+				if (!desc) {
+					var mimeInfo = item.ct ? ZmMimeTable.getInfo(item.ct) : null;
+					desc = mimeInfo ? mimeInfo.desc : "&nbsp;";
+				}
+				htmlArr[idx++] = ["<td width=",width,">",desc,"</td>"].join("");
 				break;
 			}
 			case ZmListView.FIELD_PREFIX[ZmItem.F_SIZE]: {
@@ -204,7 +244,7 @@ function(item, now, isDndIcon, isMixedView) {
 				htmlArr[idx++] = AjxUtil.formatSize(item.s);
 				if (AjxEnv.isNav)
 					htmlArr[idx++] = ZmListView._fillerString;
-				htmlArr[idx++] = "</td>";
+				htmlArr[idx++] = "</nobr></td>";
 				break;
 			}
 			case ZmListView.FIELD_PREFIX[ZmItem.F_DATE]: {
@@ -224,43 +264,10 @@ function(item, now, isDndIcon, isMixedView) {
 				].join("");
 				break;
 			}
-		} 
-		
-		/***
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0) {
-			// Attachments
-			idx = this._getField(htmlArr, idx, msg, ZmItem.F_ATTACHMENT, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
-			// Fragment
-			if (this._mode == ZmController.CONV_VIEW) {
-				htmlArr[idx++] = "<td id='" + this._getFieldId(msg, ZmItem.F_FRAGMENT) + "'";
-				htmlArr[idx++] = AjxEnv.isSafari ? " style='width:auto;'><div style='overflow:hidden'>" : " width=100%>";
-				htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
-			} else {
-				htmlArr[idx++] = "<td id='" + this._getFieldId(msg, ZmItem.F_SUBJECT) + "'";
-				htmlArr[idx++] = AjxEnv.isSafari ? " style='width:auto;'><div style='overflow:hidden'>" : " width=100%>";
-				var subj = msg.getSubject() || ZmMsg.noSubject;
-				htmlArr[idx++] = AjxStringUtil.htmlEncode(subj);
-				if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
-					htmlArr[idx++] = "<span class='ZmConvListFragment'> - ";
-					htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
-					htmlArr[idx++] = "</span>";
-				}
+			default: {
+				htmlArr[idx++] = ["<td width=",width,">&nbsp;</td>"].join("");
 			}
-			htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
-			htmlArr[idx++] = AjxEnv.isSafari ? "</div>" : "";
-			htmlArr[idx++] = "</td>";
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER]) == 0) {
-			// Folder
-			htmlArr[idx++] = "<td width=" + width + ">";
-			htmlArr[idx++] = "<nobr id='" + this._getFieldId(msg, ZmItem.F_FOLDER) + "'>"; // required for IE bug
-			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(msg.folderId);
-			htmlArr[idx++] = folder ? folder.getName() : "";
-			htmlArr[idx++] = "</nobr>";
-			if (AjxEnv.isNav)
-				htmlArr[idx++] = ZmListView._fillerString;
-			htmlArr[idx++] = "</td>";
-		/***/
+		} 
 	}
 	
 	htmlArr[idx++] = "</tr></table>";

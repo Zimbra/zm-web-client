@@ -28,6 +28,7 @@ function ZmNoteEditController(appCtxt, container, app) {
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
 	this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._addDocsListener);
+	this._listeners[ZmOperation.COMPOSE_FORMAT] = new AjxListener(this, this._formatListener);
 }
 ZmNoteEditController.prototype = new ZmListController;
 ZmNoteEditController.prototype.constructor = ZmNoteEditController;
@@ -36,6 +37,14 @@ ZmNoteEditController.prototype.toString =
 function() {
 	return "ZmNoteEditController";
 };
+
+// Constants
+
+ZmNoteEditController.RADIO_GROUP = {};
+ZmNoteEditController.RADIO_GROUP[ZmOperation.FORMAT_HTML_SOURCE]	= 1;
+ZmNoteEditController.RADIO_GROUP[ZmOperation.FORMAT_MEDIA_WIKI]		= 1;
+ZmNoteEditController.RADIO_GROUP[ZmOperation.FORMAT_RICH_TEXT]		= 1;
+ZmNoteEditController.RADIO_GROUP[ZmOperation.FORMAT_TWIKI]			= 1;
 
 // Data
 
@@ -91,17 +100,48 @@ function() {
 		ZmOperation.SEP
 	);
 	/***/
-	list.push(ZmOperation.ATTACHMENT);
+	list.push(
+		ZmOperation.ATTACHMENT,
+		ZmOperation.FILLER,
+		ZmOperation.COMPOSE_FORMAT
+	);
 	return list;
 };
 ZmNoteEditController.prototype._initializeToolBar =
 function(view) {
+	if (this._toolbar[view]) return;
+	
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
-	var toolbar = this._toolbar[this._currentView];
+	var toolbar = this._toolbar[view];
 	var button = toolbar.getButton(ZmOperation.ATTACHMENT);
 	button.setText(ZmMsg.addDocuments);
 	button.setToolTipContent(ZmMsg.addDocumentsTT);
+	
+	var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+	var menu = new ZmPopupMenu(button);
+	var items = [
+		{ op: ZmOperation.FORMAT_RICH_TEXT, format: ZmNoteEditor.RICH_TEXT },
+		{ op: ZmOperation.FORMAT_HTML_SOURCE, format: ZmNoteEditor.HTML_SOURCE },
+		{ op: ZmOperation.FORMAT_MEDIA_WIKI, format: ZmNoteEditor.MEDIA_WIKI },
+		{ op: ZmOperation.FORMAT_TWIKI, format: ZmNoteEditor.TWIKI }
+	];
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		var op = item.op;
+
+		var icon = ZmOperation.IMAGE[op];
+		var text = ZmMsg[ZmOperation.MSG_KEY[op]];
+		var style = DwtMenuItem.RADIO_STYLE;
+		var group = ZmNoteEditController.RADIO_GROUP[op];
+
+		var menuItem = menu.createMenuItem(op, icon, text, null, true, style, group);
+		menuItem.setData(ZmOperation.KEY_ID, op);		
+		menuItem.setData(ZmNoteEditor.KEY_FORMAT, item.format);		
+		menuItem.addSelectionListener(this._listeners[ZmOperation.COMPOSE_FORMAT]);
+	}
+	
+	button.setMenu(menu);
 };
 
 ZmNoteEditController.prototype._defaultView =
@@ -116,16 +156,23 @@ function() {
 
 ZmNoteEditController.prototype._createNewView =
 function(view) {
-	if (!this._noteView) {
-		this._noteView = new ZmNoteEditView(this._container, this._appCtxt, this); 
+	if (!this._noteEditView) {
+		this._noteEditView = new ZmNoteEditView(this._container, this._appCtxt, this); 
 	}
-	return this._noteView;
+	return this._noteEditView;
 };
 
 ZmNoteEditController.prototype._setView = 
 function(view, elements, isAppView, clear, pushOnly, isPoppable) {
 	ZmListController.prototype._setView.apply(this, arguments);
 	//this._app._setViewMenu(view);
+
+	this._format = this._format || DwtHtmlEditor.WYSIWYG;
+	
+	var toolbar = this._toolbar[view];
+	var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+	var menu = button.getMenu();
+	menu.checkItem(ZmNoteEditor.KEY_FORMAT, this._format, true);
 };
 
 ZmNoteEditController.prototype._setViewContents =
@@ -141,8 +188,8 @@ function() {
 ZmNoteEditController.prototype._saveListener =
 function(ev) {
 	// set fields on note object
-	this._note.name = this._noteView.getTitle();
-	this._note.setContent(this._noteView.getContent());
+	this._note.name = this._noteEditView.getTitle();
+	this._note.setContent(this._noteEditView.getContent());
 	
 	// save
 	var callback = new AjxCallback(this._app, this._app.popView);
@@ -159,4 +206,36 @@ function(ev) {
 	var dialog = this._appCtxt.getUploadDialog();
 	dialog.setFolderId(this._note.folderId || ZmNote.DEFAULT_FOLDER);
 	dialog.popup();
+};
+
+ZmNoteEditController.prototype._formatListener = function(ev) {
+	// popup menu
+	var op = ev.item.getData(ZmOperation.KEY_ID);
+	if (op == ZmOperation.COMPOSE_FORMAT) {
+		var toolbar = this._toolbar[this._currentView];
+		var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+		/***/
+		button.popup();
+		/***
+		var menu = button.getMenu();
+		if (menu.isPoppedup()) {
+			menu.popdown();
+		}
+		else {
+			button.popup();
+		}
+		/***/
+		return;
+	}
+
+	// ignore de-selection
+	if (ev.item.getChecked() == false) {
+		return;
+	}
+	
+	// handle selection
+	var content = this._noteEditView.getContent();
+	var format = ev.item.getData(ZmNoteEditor.KEY_FORMAT);
+	this._noteEditView.setFormat(format);
+	this._noteEditView.setContent(content);
 };

@@ -243,6 +243,7 @@ Contributor(s):
 <!-- Notes Application -->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notes/model/ZmNote.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notes/model/ZmNoteCache.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notes/view/conv/ZmWikiConverter.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notes/view/ZmNoteView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notes/view/ZmNoteEditView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notes/view/ZmNoteFileView.js<%= ext %>?v=<%= vers %>"></script>

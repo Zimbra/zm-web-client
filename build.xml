@@ -457,7 +457,7 @@
     </foreach>
   </target>
 
-  <target name="build-skin-css">
+  <target name="build-skin-css" depends='build-skin-css-init' unless='build-skin-css-done'>
 	<mkdir dir="${skin_output_dir}/skins/${skindir}"/>
 
 	<!-- first process the <skin>_subs.txt file itself, to get any subs in there -->
@@ -476,6 +476,13 @@
 	</copy>
   </target>
 
+  <target name='build-skin-css-init'>
+    <dependset>
+      <srcfileset dir='WebRoot/skins/${skindir}' includes='**' />
+      <targetfilelist dir="${skin_output_dir}" files="${skindir}_subs.txt" />
+    </dependset>
+    <available property='build-skin-css-done' file='${skin_output_dir}/skins/${skindir}/${skindir}_subs.txt'/>
+  </target>
 
   <target name='skin-images'>
     <foreach list='${skins}' target='build-skin-images' param='skindir'>

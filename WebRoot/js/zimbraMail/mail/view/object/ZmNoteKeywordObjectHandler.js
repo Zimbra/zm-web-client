@@ -122,6 +122,7 @@ function(obj, span, ev, context) {
 	
 	var folderId = ZmFolder.ID_INBOX; // TODO: Where does this come from?!?!
 	var note = cache.getNoteByName(folderId, context.keyword);
+	/***
 	if (note) {
 		this._selectedHandleResponse(note);
 		return;
@@ -129,6 +130,15 @@ function(obj, span, ev, context) {
 	
 	var callback = new AjxCallback(this, this._selectedHandleResponse);
 	ZmNote.load(this._appCtxt, folderId, context.keyword, null, callback);
+	/***/
+	if (!note) {
+		// NOTE: We assume the note is new if there's no entry in the cache.
+		note = new ZmNote(this._appCtxt);
+		note.name = context.keyword;
+		note.folderId = folderId;
+	}	
+	this._selectedHandleResponse(note);
+	/***/
 };
 
 ZmNoteKeywordObjectHandler.prototype._selectedHandleResponse =

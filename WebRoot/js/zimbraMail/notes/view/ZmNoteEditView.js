@@ -62,7 +62,7 @@ ZmNoteEditView.prototype._setResponse = function(note) {
 	this._titleInput.disabled(name != "");
 
 	var content = note.getContent();
-	this._textArea.setContent(content);
+	this.setContent(content);
 		
 	var focusedComp = name == "" ? this._titleInput : this._textArea;
 	focusedComp.focus();
@@ -72,10 +72,20 @@ ZmNoteEditView.prototype.getTitle =
 function() {
 	return this._titleInput.getValue();
 };
+
+ZmNoteEditView.prototype.setFormat = function(format) {
+	this._textArea.setFormat(format);
+};
+ZmNoteEditView.prototype.getFormat = function() {
+	return this._textArea.getFormat();
+};
+
+ZmNoteEditView.prototype.setContent = function(content) {
+	this._textArea.setContent(content);
+};
 ZmNoteEditView.prototype.getContent =
 function() {
-	var content = this._textArea.getContent();
-	return content;
+	return this._textArea.getContent();
 };
 
 ZmNoteEditView.prototype.getSelection =
@@ -148,7 +158,88 @@ ZmNoteEditor.prototype.toString = function() {
 	return "ZmNoteEditor";
 };
 
+// Constants
+
+ZmNoteEditor.KEY_FORMAT = "format";
+
+ZmNoteEditor.HTML_SOURCE = "htmlsrc";
+ZmNoteEditor.MEDIA_WIKI = "mediawiki";
+ZmNoteEditor.RICH_TEXT = "richtext";
+ZmNoteEditor.TWIKI = "twiki";
+
+ZmNoteEditor.DEFAULT = ZmNoteEditor.RICH_TEXT;
+
+ZmNoteEditor._MODES = {};
+ZmNoteEditor._MODES[ZmNoteEditor.HTML_SOURCE] = DwtHtmlEditor.TEXT;
+ZmNoteEditor._MODES[ZmNoteEditor.MEDIA_WIKI] = DwtHtmlEditor.TEXT;
+ZmNoteEditor._MODES[ZmNoteEditor.RICH_TEXT] = DwtHtmlEditor.HTML;
+ZmNoteEditor._MODES[ZmNoteEditor.TWIKI] = DwtHtmlEditor.TEXT;
+
+ZmNoteEditor._WIKI2HTML = {};
+ZmNoteEditor._WIKI2HTML[ZmNoteEditor.MEDIA_WIKI] = function(content) {
+	return ZmWikiConverter.convert(content, MediaWiki.rules);
+};
+ZmNoteEditor._WIKI2HTML[ZmNoteEditor.TWIKI] = function(content) {
+	return ZmWikiConverter.convert(content, TWiki.rules);
+};
+
+ZmNoteEditor._HTML2WIKI = {};
+ZmNoteEditor._HTML2WIKI[ZmNoteEditor.MEDIA_WIKI] = null; // TODO
+ZmNoteEditor._HTML2WIKI[ZmNoteEditor.TWIKI] = null; // TODO
+
+// Data
+
+ZmNoteEditor.prototype._format = ZmNoteEditor.DEFAULT;
+
+// Public methods
+
+ZmNoteEditor.prototype.setFormat = function(format) {
+	this._format = format;
+	this.setMode(ZmNoteEditor._MODES[format]);
+};
+ZmNoteEditor.prototype.getFormat = function() {
+	return this._format;
+};
+
+ZmNoteEditor.prototype.setMode = function(mode) {
+	if (mode != this._mode) {
+		ZmHtmlEditor.prototype.setMode.call(this, mode);
+		this.setSize(this._oldW, this._oldH);
+	}
+};
+
+ZmNoteEditor.prototype.setSize = function(w, h) {
+	// NOTE: We need to save our explicitly-set size so that we can
+	//       resize the control properly when the mode is changed.
+	//       Querying the size later returns the wrong values for
+	//       some reason. REVISIT!
+	this._oldW = w;
+	this._oldH = h;
+	ZmHtmlEditor.prototype.setSize.apply(this, arguments);
+};
+
+ZmNoteEditor.prototype.setContent = function(content) {
+	var converter = ZmNoteEditor._HTML2WIKI[this._format];
+	if (converter) {
+		// TODO
+	}
+	ZmHtmlEditor.prototype.setContent.call(this, content);
+};
+ZmNoteEditor.prototype.getContent = function() {
+	var content = ZmHtmlEditor.prototype.getContent.call(this);
+	var converter = ZmNoteEditor._WIKI2HTML[this._format];
+	if (converter) {
+		content = converter(content);
+	}
+	return content;
+};
+
 // Protected methods
+
+ZmNoteEditor.prototype._embedHtmlContent =
+function(html) {
+	return html;
+};
 
 ZmNoteEditor.prototype._createToolbars = function() {
 	ZmHtmlEditor.prototype._createToolbars.call(this);

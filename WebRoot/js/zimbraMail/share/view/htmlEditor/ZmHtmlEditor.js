@@ -97,10 +97,10 @@ function(mode, convert) {
 	DwtHtmlEditor.prototype.setMode.call(this, mode, convert);
 
 	// show/hide toolbars based on mode
-	if (this._toolbar1)
-		this._toolbar1.setVisible(mode == DwtHtmlEditor.HTML);
-	if (this._toolbar2)
-		this._toolbar2.setVisible(mode == DwtHtmlEditor.HTML);
+	for (var i = 0; i < this._toolbars.length; i++) {
+		var toolbar = this._toolbars[i];
+		toolbar.setVisible(mode == DwtHtmlEditor.HTML);
+	}
 };
 
 ZmHtmlEditor.prototype.getBodyFieldId =

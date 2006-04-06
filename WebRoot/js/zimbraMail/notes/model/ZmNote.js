@@ -98,6 +98,10 @@ function(callback, errorCallback) {
 	var soapDoc = AjxSoapDoc.create("SaveWikiRequest", "urn:zimbraMail", null);
 	var wordNode = soapDoc.set("w", this._content);
 	wordNode.setAttribute("name", this.name);
+	if (this.id && this.version) {
+		wordNode.setAttribute("id", this.id);
+		wordNode.setAttribute("ver", this.version);
+	}
 	if (this.folderId) {
 		wordNode.setAttribute("l", this.folderId);
 	}
