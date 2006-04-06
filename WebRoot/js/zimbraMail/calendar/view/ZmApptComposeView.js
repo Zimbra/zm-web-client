@@ -405,7 +405,7 @@ function() {
 		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		var contactsLoader = contactsClass.getContactList;
 		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader,
-					  matchValue: ZmContactList.AC_VALUE_EMAIL, locCallback: locCallback, compCallback: acCallback};
+					  matchValue: ZmContactList.AC_VALUE_NAME, locCallback: locCallback, compCallback: acCallback};
 		this._acContactsList = new ZmAutocompleteListView(params);
 	}
 	// autocomplete for locations/resources
@@ -478,6 +478,9 @@ function(text, el, match) {
 	var attendee = match.data._item;
 	var type = el._attType;
 	this.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
+	if (this._tabPages[this._curTabId]._autocompleteCallback) {
+		this._tabPages[this._curTabId]._autocompleteCallback(text, el, match);
+	}
 };
 
 ZmApptComposeView.prototype._addChooserListener =
