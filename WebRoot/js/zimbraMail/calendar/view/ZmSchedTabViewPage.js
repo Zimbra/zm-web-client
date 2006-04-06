@@ -829,6 +829,12 @@ function(isStartDate, skipCheck) {
 	this._apptTab.updateDateField(this._startDateField.value, this._endDateField.value);
 };
 
+ZmSchedTabViewPage.prototype._autocompleteCallback =
+function(text, el, match) {
+	this._addAttendeeRow(false, false);	// add empty slot now that we just filled one
+	this._activeInputField = null;
+};
+
 // Listeners
 
 // XXX: refactor this code since ZmApptTabViewPage uses similar?
@@ -1181,7 +1187,9 @@ function(ev) {
 		svp._handleDateChange(el == svp._startDateField);
 		svp._activeDateField = null;
 	} else {
-		svp._handleAttendeeField(el);
+		if (svp._activeInputField) {
+			svp._handleAttendeeField(el);
+		}
 		svp._activeInputField = null;
 	}
 };
