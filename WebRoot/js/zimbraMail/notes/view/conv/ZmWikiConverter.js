@@ -200,8 +200,8 @@ TWiki.rules = [
     { input: /\*([^*]+?)\*/g, output: "<b>$1</b>" },
     { input: /__([^_]+?)__/g, output: "<b><i>$1</i></b>" },
     { input: /_([^_]+?)_/g, output: "<i>$1</i>" },
-	{ input: /==([^=]+?)==/g, output: "<b><tt>$1</tt></b>" },
-	{ input: /=([^=]+?)=/g, output: "<tt>$1</tt>" },
+	{ input: new RegExp('==([^=]+?)==','g'), output: "<b><tt>$1</tt></b>" },
+	{ input: new RegExp('=([^=]+?)=','g'), output: "<tt>$1</tt>" },
 	// headers
     { input: /(?:^|\n)---(\+{1,6})(.*?)(?=\n|$)/g, output: MediaWiki._header },
 	// horizontal rule
