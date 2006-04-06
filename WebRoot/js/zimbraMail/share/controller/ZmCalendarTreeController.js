@@ -208,6 +208,12 @@ function(ev) {
 		var overviewId = ev.item.getData(ZmTreeView.KEY_ID);
 		var calendar = ev.item.getData(Dwt.KEY_OBJECT);
 
+		// bug fix #6514 - Explicitly set checkbox for Safari
+		// NOTE: this bug fix should be removed once Safari gets new version!
+		if (AjxEnv.isSafari) {
+			ev.item._checkBox.checked = !ev.item._checkBox.checked;
+		}
+
 		// notify listeners of selection
 		if (this._eventMgrs[overviewId]) {
 			this._eventMgrs[overviewId].notifyListeners(DwtEvent.SELECTION, ev);
