@@ -423,6 +423,7 @@ ZmSpreadSheetModel.serializeJSObject = function(obj) {
 		break;
 	    case "string":
 		ret = obj.replace(/\n/g, "\\n")
+			.replace(/\x5c/g, "\\x5c")
 			.replace(/\x22/g, "\\\"");
 		ret = [ '"', ret, '"' ].join("");
 		break;
