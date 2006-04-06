@@ -49,6 +49,8 @@ function ZmApptQuickAddDialog(parent, appCtxt) {
 
 	this._appCtxt = appCtxt;
 
+	this._attendees = {};
+
 	this.setContent(this._setHtml());
 	this.setTitle(ZmMsg.quickAddAppt);
 	DBG.timePt(AjxDebug.PERF, "create content");
@@ -103,6 +105,20 @@ function(appt) {
 	this._repeatDescField.innerHTML = "";
 
 	this._origFormValue = this._formValue();
+	this._attendees[ZmAppt.LOCATION] = new AjxVector();	// list of ZmResource
+	
+	// autocomplete for locations
+	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var shell = this._appCtxt.getShell();
+		var locCallback = new AjxCallback(this, this._getAcListLoc);
+		var acCallback = new AjxCallback(this, this._autocompleteCallback);
+		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
+		var resourcesLoader = resourcesClass.getResources;
+		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesLoader,
+					  matchValue: ZmContactList.AC_VALUE_NAME, locCallback: locCallback, compCallback: acCallback};
+		this._acResourcesList = new ZmAutocompleteListView(params);
+		this._acResourcesList.handle(this._locationField.getInputElement());
+	}
 };
 
 ZmApptQuickAddDialog.prototype.getAppt = 
@@ -133,6 +149,8 @@ function() {
 	appt.setEndDate(endDate);
 
 	appt.repeatType = this._repeatSelect.getValue();
+	
+	appt.setAttendees(this._attendees[ZmAppt.LOCATION].getArray(), ZmAppt.LOCATION);
 
 	return appt;
 };
@@ -192,7 +210,7 @@ function() {
 	this._repeatSelectId	= Dwt.getNextId();
 	this._repeatDescId 		= Dwt.getNextId();
 
-	var html = new Array();
+	var html = [];
 	var i = 0;
 
 	html[i++] = "<table border=0 width=325>";
@@ -336,7 +354,7 @@ function(appt) {
 	var calTreeData = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
 	if (calTreeData && calTreeData.root) {
 		this._calendarSelect.clearOptions();
-		this._calendarOrgs = new Array();
+		this._calendarOrgs = [];
 		var children = calTreeData.root.children.getArray();
 		var len = children.length;
 		Dwt.setVisibility(this._calendarSelect.getHtmlElement(), len>1);
@@ -367,7 +385,7 @@ function(show) {
 
 ZmApptQuickAddDialog.prototype._formValue =
 function() {
-	var vals = new Array();
+	var vals = [];
 
 	vals.push(this._subjectField.getValue());
 	vals.push(this._locationField.getValue());
@@ -386,6 +404,19 @@ function() {
 	return str;
 };
 
+ZmApptQuickAddDialog.prototype._getAcListLoc =
+function(ev) {
+	var element = ev.element;
+	var loc = Dwt.getLocation(element);
+	var height = Dwt.getSize(element).y;
+	return (new DwtPoint(loc.x, loc.y + height));
+};
+
+ZmApptQuickAddDialog.prototype._autocompleteCallback =
+function(text, el, match) {
+	var attendee = match.data._item;
+	this._attendees[ZmAppt.LOCATION].add(attendee);
+};
 
 // Listeners
 
