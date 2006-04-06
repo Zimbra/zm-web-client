@@ -483,7 +483,7 @@ function(appCtxt, item, type, strict) {
 		var addr = item.getAddress();
 		// see if we have this contact/resource by checking email address
 	 	attendee = (type == ZmAppt.PERSON) ? contacts.getContactByEmail(addr) :
-	 										 resources.getResourceByEmail(addr);
+	 										 resources ? resources.getResourceByEmail(addr) : null;
 	 	if (!attendee) {
 			// ZmEmailAddress has name and email, init a new contact/resource from those
 			attendee = (type == ZmAppt.PERSON) ? new ZmContact(appCtxt) :
@@ -499,7 +499,7 @@ function(appCtxt, item, type, strict) {
 	 		var addr = email.getAddress();
 	 		// is it a contact/resource we already know about?
 	 		attendee = (type == ZmAppt.PERSON) ? contacts.getContactByEmail(addr) :
-	 											 resources.getResourceByEmail(addr);
+	 											 resources ? resources.getResourceByEmail(addr) : null;
 	 		if (attendee) {
 	 			return attendee;
 	 		}
@@ -508,13 +508,15 @@ function(appCtxt, item, type, strict) {
 			attendee.initFromEmail(email);
 		} else if (type != ZmAppt.PERSON) {
 			// check if it's a location we know by name somehow
-			attendee = resources.getResourceByName(item);
+			attendee = resources ? resources.getResourceByName(item) : null;
 		}
 		// non-email string: initialize as a resource if it's a location
 		if (!attendee && type == ZmAppt.LOCATION && !strict) {
 			attendee = new ZmResource(appCtxt);
 			attendee.setAttr(ZmResource.F_name, item);
-			resources.updateHashes(attendee);
+			if (resources) {
+				resources.updateHashes(attendee);
+			}
 		}
 	}
 	return attendee;

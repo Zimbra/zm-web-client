@@ -101,6 +101,9 @@ function() {
 
 ZmCalendarApp.prototype.getResources = 
 function() {
+	if (!this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		return null;
+	}
 	if (!this._resources) {
 		this._resources = new ZmResourceList(this._appCtxt);
 		this._resources.isCanonical = true;
