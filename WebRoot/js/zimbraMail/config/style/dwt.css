@@ -1254,10 +1254,6 @@ HTML>BODY .RadioGrouperLabel {
  * DwtChooser
  */
 
-.DwtChooser {
-	width: 100%;
-}
-
 .DwtChooser-Active {
 	border: 1px solid #000000;
 }
