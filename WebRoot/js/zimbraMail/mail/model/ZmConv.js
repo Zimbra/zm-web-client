@@ -321,7 +321,10 @@ function() {
 	} else {
 		// otherwise, create a temp msg w/ the msg op Id
 		msg = new ZmMailMsg(this._appCtxt, this.msgOpId);
-		this.tempMsg = msg; 	// cache it.
+		// bug fix #7016 - only cache if not draft otherwise reopening cached 
+		// draft will not have new changes
+		if (!this.isDraft)
+			this.tempMsg = msg;
 	}
 	
 	// set the conv's list w/in msg
