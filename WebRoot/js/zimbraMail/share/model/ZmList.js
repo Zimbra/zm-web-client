@@ -74,7 +74,7 @@ ZmList.ITEM_CLASS[ZmItem.MSG]		= ZmMailMsg;
 ZmList.ITEM_CLASS[ZmItem.ATT]		= ZmMimePart;
 ZmList.ITEM_CLASS[ZmItem.CONTACT]	= ZmContact;
 ZmList.ITEM_CLASS[ZmItem.APPT]		= ZmAppt;
-ZmList.ITEM_CLASS[ZmItem.RESOURCE]		= ZmResource;
+ZmList.ITEM_CLASS[ZmItem.RESOURCE]	= ZmResource;
 
 // node names for item types
 ZmList.NODE = {};

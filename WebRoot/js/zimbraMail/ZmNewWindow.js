@@ -52,6 +52,10 @@ function ZmNewWindow(appCtxt, domain) {
 ZmNewWindow.prototype = new ZmController;
 ZmNewWindow.prototype.constructor = ZmNewWindow;
 
+ZmNewWindow.APP_CLASS = {};
+ZmNewWindow.APP_CLASS[ZmZimbraMail.MAIL_APP]			= ZmMailApp;
+ZmNewWindow.APP_CLASS[ZmZimbraMail.CONTACTS_APP]		= ZmContactsApp;
+
 ZmNewWindow.prototype.toString = 
 function() {
 	return "ZmNewWindow";
@@ -218,7 +222,7 @@ ZmNewWindow.prototype.setActiveApp = function() {};
 ZmNewWindow.prototype._createApp =
 function(appName) {
 	if (this._apps[appName]) return;
-	this._apps[appName] = new ZmZimbraMail.APP_CLASS[appName](this._appCtxt, this._shell, window.parentController);
+	this._apps[appName] = new ZmNewWindow.APP_CLASS[appName](this._appCtxt, this._shell, window.parentController);
 };
 
 ZmNewWindow.prototype._deepCopyMsg = 
