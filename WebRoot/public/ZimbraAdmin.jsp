@@ -30,7 +30,7 @@ Contributor(s):
    if (vers == null){
       vers = "";
    }
-   if (ext == null){
+   if (ext == null){ 
       ext = "";
    }
 %>
@@ -72,6 +72,8 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaCurrentAppToolBar.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaServerVersionInfo.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/MenuButton_XFormItem.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaAutoCompleteListView.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/AutoComplete_XFormItem.js<%= ext %>?v=<%= vers %>"></script>
 
 <!-- Admin UI Specific components -->
 <!-- controllers -->
