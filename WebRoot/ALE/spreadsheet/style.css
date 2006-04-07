@@ -41,7 +41,7 @@
 .ZmSpreadSheet .InputField { position: absolute; padding: 0 !important; border: 2px solid #000; }
 .ZmSpreadSheet input.InputField { z-index: 10; }
 .ZmSpreadSheet span.InputField { visibility: hidden; border: none; top: 0px; left: 0px; }
-.ZmSpreadSheet .Wrapper { white-space: nowrap; overflow: hidden; }
+.ZmSpreadSheet .Wrapper { white-space: nowrap; overflow: hidden; color: inherit; }
 
 .ZmSpreadSheet table.SpreadSheet td.hasFormula { color: #555; background-color: #fafafa; }
 
