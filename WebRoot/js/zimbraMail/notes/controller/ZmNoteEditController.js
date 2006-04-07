@@ -167,7 +167,7 @@ function(view, elements, isAppView, clear, pushOnly, isPoppable) {
 	ZmListController.prototype._setView.apply(this, arguments);
 	//this._app._setViewMenu(view);
 
-	this._format = this._format || DwtHtmlEditor.WYSIWYG;
+	this._format = this._format || ZmNoteEditor.RICH_TEXT;
 	
 	var toolbar = this._toolbar[view];
 	var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);

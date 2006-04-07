@@ -68,6 +68,8 @@ ZmOperation.DRAFT 					= i++;
 ZmOperation.EDIT 					= i++;
 ZmOperation.EDIT_CONTACT			= i++;
 ZmOperation.EDIT_FILTER_RULE		= i++;
+ZmOperation.EDIT_NOTEBOOK_CHROME	= i++;
+ZmOperation.EDIT_NOTEBOOK_INDEX		= i++;
 ZmOperation.EDIT_PROPS				= i++;
 ZmOperation.EDIT_REPLY_ACCEPT		= i++;
 ZmOperation.EDIT_REPLY_CANCEL		= i++;
@@ -202,6 +204,8 @@ ZmOperation.MSG_KEY[ZmOperation.DETACH_COMPOSE] 		= "detach";
 ZmOperation.MSG_KEY[ZmOperation.EDIT] 					= "edit";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_CONTACT]			= "AB_EDIT_CONTACT";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_FILTER_RULE]		= "filterEdit";
+ZmOperation.MSG_KEY[ZmOperation.EDIT_NOTEBOOK_CHROME]	= "editNotebookChrome";
+ZmOperation.MSG_KEY[ZmOperation.EDIT_NOTEBOOK_INDEX]	= "editNotebookIndex";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_PROPS]				= "editProperties";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_ACCEPT]		= "replyAccept";
 ZmOperation.MSG_KEY[ZmOperation.EDIT_REPLY_DECLINE]		= "replyDecline";
@@ -370,6 +374,8 @@ ZmOperation.IMAGE[ZmOperation.DETACH_COMPOSE] 			= "OpenInNewWindow";
 ZmOperation.IMAGE[ZmOperation.EDIT] 					= "Edit";
 ZmOperation.IMAGE[ZmOperation.EDIT_CONTACT]				= "Edit";
 ZmOperation.IMAGE[ZmOperation.EDIT_FILTER_RULE] 		= "Edit";
+ZmOperation.IMAGE[ZmOperation.EDIT_NOTEBOOK_CHROME]		= "Edit";
+ZmOperation.IMAGE[ZmOperation.EDIT_NOTEBOOK_INDEX]		= "Edit";
 ZmOperation.IMAGE[ZmOperation.EDIT_PROPS]				= "Properties";
 ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_ACCEPT]		= "Check";
 ZmOperation.IMAGE[ZmOperation.EDIT_REPLY_DECLINE]		= "Cancel";
@@ -442,6 +448,7 @@ ZmOperation.IMAGE[ZmOperation.SEARCH_MAIL]				= "SearchMail";
 ZmOperation.IMAGE[ZmOperation.SEND]						= "Send";
 ZmOperation.IMAGE[ZmOperation.SHARE_ACCEPT]			    = "Check";
 ZmOperation.IMAGE[ZmOperation.SHARE_CALENDAR]			= "CalendarFolder";
+ZmOperation.IMAGE[ZmOperation.SHARE_NOTEBOOK]			= "Notebook";
 ZmOperation.IMAGE[ZmOperation.SHARE_DECLINE]			= "Cancel";
 ZmOperation.IMAGE[ZmOperation.SHOW_ORIG]				= "Message";
 ZmOperation.IMAGE[ZmOperation.SPAM] 					= "SpamFolder";
@@ -661,23 +668,34 @@ function(parent, oldOp, newOp, text, image, disImage) {
 ZmOperation.addNewMenu =
 function(parent) {
 	var appCtxt = parent.shell.getData(ZmAppCtxt.LABEL);
+	var foldersEnabled = appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED);
+	var taggingEnabled = appCtxt.get(ZmSetting.TAGGING_ENABLED);
+	var contactsEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED);
+	var calendarEnabled = appCtxt.get(ZmSetting.CALENDAR_ENABLED);
+	var notebookEnabled = appCtxt.get(ZmSetting.NOTES_ENABLED);
+	
 	var list = new Array();
 	list.push(new ZmOperation_Descriptor(ZmOperation.NEW_MESSAGE, ZmMsg.message, Dwt.DEFAULT, Dwt.DEFAULT));
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED))
+	if (contactsEnabled)
 		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_CONTACT, ZmMsg.contact, Dwt.DEFAULT, Dwt.DEFAULT));
-	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED))
+	if (calendarEnabled)
 		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_APPT, ZmMsg.appointment, Dwt.DEFAULT, Dwt.DEFAULT));
-	if (appCtxt.get(ZmSetting.NOTES_ENABLED))
+	if (notebookEnabled)
 		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_NOTE, ZmMsg.note, Dwt.DEFAULT, Dwt.DEFAULT));
-	if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED) || appCtxt.get(ZmSetting.TAGGING_ENABLED) || appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+
+	if (foldersEnabled || taggingEnabled || calendarEnabled || notebookEnabled) {
 		list.push(new ZmOperation_Descriptor(ZmOperation.SEP, Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT));
-		if (appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED))
-			list.push(new ZmOperation_Descriptor(ZmOperation.NEW_FOLDER, ZmMsg.folder, Dwt.DEFAULT, Dwt.DEFAULT));
-		if (appCtxt.get(ZmSetting.TAGGING_ENABLED))
-			list.push(new ZmOperation_Descriptor(ZmOperation.NEW_TAG, ZmMsg.tag, Dwt.DEFAULT, Dwt.DEFAULT));
-		if (appCtxt.get(ZmSetting.CALENDAR_ENABLED))
-			list.push(new ZmOperation_Descriptor(ZmOperation.NEW_CALENDAR, ZmMsg.calendar, Dwt.DEFAULT, Dwt.DEFAULT));
 	}
+
+	if (foldersEnabled)
+		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_FOLDER, ZmMsg.folder, Dwt.DEFAULT, Dwt.DEFAULT));
+	if (taggingEnabled)
+		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_TAG, ZmMsg.tag, Dwt.DEFAULT, Dwt.DEFAULT));
+	if (calendarEnabled)
+		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_CALENDAR, ZmMsg.calendar, Dwt.DEFAULT, Dwt.DEFAULT));
+	if (notebookEnabled)
+		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_NOTEBOOK, ZmMsg.notebook, Dwt.DEFAULT, Dwt.DEFAULT));
+
 	var menu = new ZmActionMenu(parent, ZmOperation.NONE, list);
 	parent.setMenu(menu);
 	return menu;

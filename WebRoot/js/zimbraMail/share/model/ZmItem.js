@@ -94,7 +94,7 @@ ZmItem.ICON[ZmItem.ATT]		= "Attachment";
 ZmItem.ICON[ZmItem.CONTACT]	= "Contact";
 ZmItem.ICON[ZmItem.APPT]	= "Appointment";
 ZmItem.ICON[ZmItem.NOTE]	= "Note";
-ZmItem.ICON[ZmItem.WIKI]	= "Note"; // REVISIT
+ZmItem.ICON[ZmItem.WIKI]	= "Page";
 ZmItem.ICON[ZmItem.CHAT]	= "ImStartChat";
 
 // fields that can be part of a displayed item

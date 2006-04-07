@@ -59,7 +59,8 @@ function() {
 
 ZmNotebook.prototype.getIcon = 
 function() {
-	return this.id == ZmOrganizer.ID_ROOT ? null : "Note"; // REVISIT
+	if (this.id == ZmOrganizer.ID_ROOT) return null;
+	return this.parent.id == ZmOrganizer.ID_ROOT ? "Notebook" : "Section";
 };
 
 // XXX: temp method until we get better server support post Birdseye!
@@ -91,6 +92,11 @@ function(obj) {
 
 	var doNotify = false;
 	var fields = new Object();
+	if (obj.name != null && this.name != obj.name) {
+		this.name = obj.name;
+		fields[ZmOrganizer.F_NAME] = true;
+		doNotify = true;
+	}
 	
 	if (doNotify)
 		this._notify(ZmEvent.E_MODIFY, {fields: fields});
@@ -119,9 +125,24 @@ function(parent, obj, tree, link) {
 
 	// create calendar, populate, and return
 	var notebook = new ZmNotebook(obj.id, obj.name, parent, tree, link, obj.d);
+	/*** REVISIT: this is only temporary until we get dedicated folder ***
+	if (parent == null) {
+		var folder = {
+			id: 2, l: 1, name: ZmMsg.notebook, view: ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]
+		};
+		var childNotebook = ZmNotebook.createFromJs(notebook, folder, tree, false);
+		notebook.children.add(childNotebook);
+	}
+	/***/
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];
+			// REVISIT: this is only temporary until we get dedicated folder
+			if (folder.id == ZmOrganizer.ID_NOTEBOOK) {
+				folder = AjxUtil.createProxy(folder);
+				folder.name = ZmMsg.notebook;
+				folder.view = ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK];
+			}
 			if (folder.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
 				var childNotebook = ZmNotebook.createFromJs(notebook, folder, tree, false);
 				notebook.children.add(childNotebook);

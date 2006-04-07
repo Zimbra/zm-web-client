@@ -79,7 +79,7 @@ ZmNoteController.prototype.getNote = function() {
 // view management
 
 ZmNoteController.prototype.show = function(noteOrFolderId, force) {
-	if (!(noteOrFolderId instanceof ZmNote)) {
+	if (force || !(noteOrFolderId instanceof ZmNote)) {
 		this._showIndex(noteOrFolderId || ZmNote.DEFAULT_FOLDER);
 		return;
 	}

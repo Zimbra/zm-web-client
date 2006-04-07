@@ -127,7 +127,8 @@ function(parent, obj, tree) {
 	
 	// ignore calendar folders
 	if (obj.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] ||
-		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]) 
+		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK] ||
+		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) 
 	{
 		return;
 	}

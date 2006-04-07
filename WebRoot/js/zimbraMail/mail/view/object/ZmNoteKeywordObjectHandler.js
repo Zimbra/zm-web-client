@@ -119,18 +119,14 @@ function(obj, span, ev, context) {
 	var appController = this._appCtxt.getAppController();
 	var notesApp = appController.getApp(ZmZimbraMail.NOTES_APP);
 	var cache = notesApp.getNoteCache();
-	
-	var folderId = ZmFolder.ID_INBOX; // TODO: Where does this come from?!?!
+
+	// REVISIT: Need some structured syntax for wiki links	
+	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTES_APP);
+	var noteController = notesApp.getNoteController();
+	var note = noteController.getNote();
+	var folderId = note ? note.folderId : ZmOrganizer.ID_NOTEBOOK;
+
 	var note = cache.getNoteByName(folderId, context.keyword);
-	/***
-	if (note) {
-		this._selectedHandleResponse(note);
-		return;
-	}
-	
-	var callback = new AjxCallback(this, this._selectedHandleResponse);
-	ZmNote.load(this._appCtxt, folderId, context.keyword, null, callback);
-	/***/
 	if (!note) {
 		// NOTE: We assume the note is new if there's no entry in the cache.
 		note = new ZmNote(this._appCtxt);
@@ -138,7 +134,6 @@ function(obj, span, ev, context) {
 		note.folderId = folderId;
 	}	
 	this._selectedHandleResponse(note);
-	/***/
 };
 
 ZmNoteKeywordObjectHandler.prototype._selectedHandleResponse =

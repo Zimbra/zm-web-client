@@ -47,8 +47,10 @@ function() {
 
 // Data
 
-ZmNewNotebookDialog.prototype._nameFieldId;
 ZmNewNotebookDialog.prototype._parentFolder;
+
+ZmNewNotebookDialog.prototype._parentNameEl;
+ZmNewNotebookDialog.prototype._nameInputEl;
 
 // Public methods
 
@@ -59,11 +61,18 @@ function(folder) {
 
 ZmNewNotebookDialog.prototype.popup =
 function(loc) {
-	// reset input fields
+	var isRoot = this._parentFolder.id == ZmOrganizer.ID_ROOT;
+	var isNotebook = this._parentFolder.id == ZmOrganizer.ID_ROOT;
+	this.setTitle(isNotebook ? ZmMsg.createNewNotebook : ZmMsg.createNewSection);
+
+	// reset fields
 	this._nameInputEl.value = "";
+	this._parentNameEl.innerHTML = isRoot ? "<i>"+ZmMsg.rootFolder+"</i>" : this._parentFolder.name;
 	
 	// show dialog
 	ZmDialog.prototype.popup.call(this, loc);
+	
+	this._nameInputEl.focus();
 }
 
 // Protected methods
@@ -123,11 +132,17 @@ function() {
 	table.cellSpacing = 3;
 	table.cellPadding = 0;
 
-	var nameRow = table.insertRow(table.rows.length);
-	var nameLabelCell = nameRow.insertCell(nameRow.cells.length);
+	var parentRow = table.insertRow(-1);
+	var parentLabelCell = parentRow.insertCell(-1);
+	parentLabelCell.className = "Label";
+	parentLabelCell.innerHTML = ZmMsg.parentFolderLabel;
+	this._parentNameEl = parentRow.insertCell(-1);
+
+	var nameRow = table.insertRow(-1);
+	var nameLabelCell = nameRow.insertCell(-1);
 	nameLabelCell.className = "Label";
 	nameLabelCell.innerHTML = ZmMsg.nameLabel;
-	var nameInputCell = nameRow.insertCell(nameRow.cells.length);
+	var nameInputCell = nameRow.insertCell(-1);
 	nameInputCell.appendChild(this._nameInputEl);
 
 	return table;

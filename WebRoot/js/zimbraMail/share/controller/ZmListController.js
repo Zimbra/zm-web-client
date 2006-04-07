@@ -414,20 +414,27 @@ function(ev) {
 		var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 		cc.newAppointment(null, null, null, new Date());
 	} else if (id == ZmOperation.NEW_NOTE) {
+		var overviewController = this._appCtxt.getOverviewController();
+		var notebookTreeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
+		var notebookTreeView = notebookTreeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+		var notebook = notebookTreeView ? notebookTreeView.getSelected() : null;
 		var note = new ZmNote(this._appCtxt);
+		note.folderId = notebook ? notebook.id : ZmNote.DEFAULT_FOLDER;
 		this._appCtxt.getApp(ZmZimbraMail.NOTES_APP).getNoteEditController().show(note);
 	} else if (id == ZmOperation.NEW_FOLDER) {
 		this._showDialog(this._appCtxt.getNewFolderDialog(), this._newFolderCallback);
 	} else if (id == ZmOperation.NEW_TAG) {
 		this._showDialog(this._appCtxt.getNewTagDialog(), this._newTagCallback, null, null, false);
-	} else if (id == ZmOperation.NEW_CALENDAR) {
+	} else if (id == ZmOperation.NEW_CALENDAR || id == ZmOperation.NEW_NOTEBOOK) {
+		var isNewCal = id == ZmOperation.NEW_CALENDAR;
+		
 		var overviewController = this._appCtxt.getOverviewController();
-		var treeData = overviewController.getTreeData(ZmOrganizer.CALENDAR);
+		var treeData = overviewController.getTreeData(isNewCal ? ZmOrganizer.CALENDAR : ZmOrganizer.NOTEBOOK);
 		var folder = treeData.root;
 	
-		var newCalDialog = this._appCtxt.getNewCalendarDialog();
-		newCalDialog.setParentFolder(folder);
-		newCalDialog.popup();
+		var newDialog = isNewCal ? this._appCtxt.getNewCalendarDialog() : this._appCtxt.getNewNotebookDialog();
+		newDialog.setParentFolder(folder);
+		newDialog.popup();
 	}
 };
 

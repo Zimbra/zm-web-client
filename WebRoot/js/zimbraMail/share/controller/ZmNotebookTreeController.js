@@ -31,11 +31,12 @@ function ZmNotebookTreeController(appCtxt, type, dropTgt) {
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 
 	this._listeners[ZmOperation.NEW_NOTEBOOK] = new AjxListener(this, this._newNotebookListener);
-
 	this._listeners[ZmOperation.SHARE_NOTEBOOK] = new AjxListener(this, this._shareNotebookListener);
-	//this._listeners[ZmOperation.MOUNT_NOTEBOOK] = new AjxListener(this, this._mountNotebookListener);
+	this._listeners[ZmOperation.MOUNT_NOTEBOOK] = new AjxListener(this, this._mountNotebookListener);
 	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editPropsListener);
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
+	this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME] = new AjxListener(this, this._editNotebookListener);
+	this._listeners[ZmOperation.EDIT_NOTEBOOK_INDEX] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
 
 	this._eventMgrs = {};
 };
@@ -58,7 +59,6 @@ function(overviewId, showUnread, omit, forceCreate) {
 	if (firstTime) {
 		var treeView = this.getTreeView(overviewId);
 		var root = treeView.getTreeItemById(ZmOrganizer.ID_ROOT);
-		root.showCheckBox(false);
 		var items = root.getItems();
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
@@ -75,42 +75,45 @@ function(overviewId, showUnread, omit, forceCreate) {
 
 ZmNotebookTreeController.prototype.resetOperations = 
 function(actionMenu, type, id) {
-	/***
-	if (actionMenu) {
+	if (actionMenu && id != ZmOrganizer.ID_ROOT) {
 		var overviewController = this._appCtxt.getOverviewController();
 		var treeData = overviewController.getTreeData(ZmOrganizer.NOTEBOOK);
+
 		var notebook = treeData.getById(id);
-		actionMenu.enable(ZmOperation.SHARE_CALENDAR, !calendar.link);
-		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_CALENDAR);
-		actionMenu.enable(ZmOperation.SYNC, calendar.isFeed());
-		if (id == ZmOrganizer.ID_ROOT) {
-			var items = this._getItems(this._actionedOverviewId);
-			var foundChecked = false;
-			var foundUnchecked = false;
-			for (var i = 0; i < items.length; i++) {
-				items[i].getChecked() ? foundChecked = true : foundUnchecked = true;
-			}
-			actionMenu.enable(ZmOperation.CHECK_ALL, foundUnchecked);
-			actionMenu.enable(ZmOperation.CLEAR_ALL, foundChecked);
-		}
+		actionMenu.enable(ZmOperation.SHARE_NOTEBOOK, !notebook.link);
+		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_NOTEBOOK);
+		
+		var menuItem = actionMenu.getMenuItem(ZmOperation.NEW_NOTEBOOK);
+		menuItem.setText(ZmMsg.newSection);
+		menuItem.setImage("NewSection");
+		menuItem.setDisabledImage("NewSectionDis");
+		
+		var isNotebook = notebook.parent.id == ZmOrganizer.ID_ROOT;
+		var menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_NOTEBOOK);
+		menuItem.setText(isNotebook ? ZmMsg.shareNotebook : ZmMsg.shareSection);
+		menuItem.setImage(isNotebook ? "Notebook" : "Section");
+		menuItem.setDisabledImage(menuItem.getImage()+"Dis");
 	}
-	/***/
 };
 
 // Returns a list of desired header action menu operations
 ZmNotebookTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_NOTEBOOK];
+	return [ZmOperation.NEW_NOTEBOOK, ZmOperation.EXPAND_ALL];
 };
 
 // Returns a list of desired action menu operations
 ZmNotebookTreeController.prototype._getActionMenuOps =
 function() {
-	var ops = [];
+	var ops = [ZmOperation.NEW_NOTEBOOK, ZmOperation.SEP];
 	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_NOTEBOOK);
 	}
-	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS);
+	ops.push(
+		ZmOperation.DELETE, ZmOperation.EDIT_PROPS,
+		ZmOperation.SEP,
+		ZmOperation.EDIT_NOTEBOOK_INDEX, ZmOperation.EDIT_NOTEBOOK_CHROME
+	);
 	return ops;
 };
 
@@ -121,8 +124,10 @@ function() {
 
 // Method that is run when a tree item is left-clicked
 ZmNotebookTreeController.prototype._itemClicked =
-function() {
-	// TODO
+function(notebook) {
+	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTES_APP);
+	var noteController = notesApp.getNoteController();
+	noteController.show(notebook.id);
 };
 
 // Handles a drop event
@@ -164,13 +169,15 @@ function(ev, treeView) {
 
 ZmNotebookTreeController.prototype._newNotebookListener =
 function(ev) {
+	this._pendingActionData = this._getActionedOrganizer(ev);
+	
 	var overviewController = this._appCtxt.getOverviewController();
 	var treeData = overviewController.getTreeData(ZmOrganizer.NOTEBOOK);
-	var folder = treeData.root;
+	var folder = treeData.getById(this._pendingActionData.id);
 
 	var newNotebookDialog = this._appCtxt.getNewNotebookDialog();
-	newNotebookDialog .setParentFolder(folder);
-	newNotebookDialog .popup();
+	newNotebookDialog.setParentFolder(folder);
+	newNotebookDialog.popup();
 };
 
 ZmNotebookTreeController.prototype._shareNotebookListener =
@@ -200,6 +207,21 @@ function(ev) {
 	var folder = this._pendingActionData;
 	folderPropsDialog.setFolder(folder);
 	folderPropsDialog.popup();
+};
+
+ZmNotebookTreeController.prototype._editNotebookListener = function(ev) {
+	this._pendingActionData = this._getActionedOrganizer(ev);
+	
+	var notebook = this._pendingActionData;
+	var op = ev.item.getData(ZmOperation.KEY_ID);
+	var name = op == ZmOperation.EDIT_NOTEBOOK_INDEX ? "_INDEX_" : "_CHROME_";
+	
+	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTES_APP);
+	var cache = notesApp.getNoteCache();
+	
+	var noteEditController = notesApp.getNoteEditController();
+	var note = cache.getNoteByName(notebook.id, name);
+	noteEditController.show(note);
 };
 
 ZmNotebookTreeController.prototype._notifyListeners =

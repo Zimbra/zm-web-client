@@ -81,6 +81,7 @@ ZmOrganizer.ID_TRASH			= 3;
 ZmOrganizer.ID_SPAM				= 4;
 ZmOrganizer.ID_ADDRBOOK			= 7;
 ZmOrganizer.ID_CALENDAR			= 10;
+ZmOrganizer.ID_NOTEBOOK			= 2; // REVISIT: set to inbox for now
 ZmOrganizer.ID_ZIMLET			= -1000;  // zimlets need a range.  start from -1000 incrementing up.
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
