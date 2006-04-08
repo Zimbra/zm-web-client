@@ -781,7 +781,7 @@ function(action, toOverride) {
 
 ZmComposeView.prototype._setSubject =
 function(action, msg, subjOverride) {
-	if (action == ZmOperation.NEW_MESSAGE) return;
+	if (action == ZmOperation.NEW_MESSAGE && subjOverride == null) return;
 
 	var subj = subjOverride || msg.getSubject();
 
@@ -808,13 +808,6 @@ function(action, msg, subjOverride) {
 
 ZmComposeView.prototype._setBody =
 function(action, msg, extraBodyText) {
-
-	if (action == ZmOperation.NEW_MESSAGE) {
-		if (this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED))
-			this.addSignature();
-		return;
-	}
-
 	var composingHtml = this._composeMode == DwtHtmlEditor.HTML;
 
 	// XXX: consolidate this code later.
@@ -853,7 +846,7 @@ function(action, msg, extraBodyText) {
 	var forwPref = action == ZmOperation.FORWARD_INLINE 
 		? this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) : null;
 
-	if (replyPref == ZmSetting.INCLUDE_NONE) {
+	if (replyPref == ZmSetting.INCLUDE_NONE || action == ZmOperation.NEW_MESSAGE) {
 		if (extraBodyText)
 			value += extraBodyText;
 	} else if (replyPref == ZmSetting.INCLUDE_ATTACH || action == ZmOperation.FORWARD_ATT) {
@@ -943,7 +936,8 @@ function(action, msg, extraBodyText) {
 		this._htmlEditor.setContent(value);
 	}
 
-	this._showForwardField(msg, action, replyPref);
+	if (action != ZmOperation.NEW_MESSAGE)
+		this._showForwardField(msg, action, replyPref);
 };
 
 // Generic routine for attaching an event handler to a field. Since "this" for the handlers is
@@ -1197,7 +1191,7 @@ function() {
 
 ZmComposeView.prototype._showForwardField =
 function(msg, action, replyPref) {
-	var subj = msg.getSubject() || AjxStringUtil.htmlEncode(ZmMsg.noSubject);
+	var subj = (msg ? msg.getSubject() : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject);
 	var html = new Array();
 	var idx = 0;
 
