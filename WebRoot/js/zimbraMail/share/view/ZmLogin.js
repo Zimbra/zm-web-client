@@ -465,7 +465,13 @@ function(uname, pword, result) {
 	ZmLogin._authToken = resp.authToken;
 	ZmLogin._authTokenLifetime = resp.lifetime;
 	var mailServer = resp.refer;
-	if (location.hostname == "localhost") mailServer = "localhost";	
+
+	var match = location.search ? location.search.match(/\bredirect=([01])/) : null;
+	var redirect = match ? match[1] : null;
+	if (redirect == '0' || (location.hostname == "localhost") || (location.hostname && location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/))) {
+		if (redirect != '1') mailServer = location.hostname;
+	}
+
 	var rmChecked = document.getElementById("rememberMe").checked;
 	ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword, rmChecked);
 	ZmLogin._authToken = ZmLogin._authTokenLifetime = null;
