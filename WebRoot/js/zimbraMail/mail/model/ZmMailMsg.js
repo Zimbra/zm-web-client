@@ -626,7 +626,7 @@ function(soapDoc, contactList, isDraft) {
 		msgNode.setAttribute("origid", this.origId);
 
 	// if id is given, means we are re-saving a draft
-	if (isDraft && this.id)
+	if ((isDraft || this.isDraft) && this.id)
 		msgNode.setAttribute("id", this.id);
 
 	if (this.isForwarded) {

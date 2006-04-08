@@ -227,7 +227,7 @@ function(delMsg) {
 	var mailItem = list && list.type == ZmItem.CONV
 		? list.getById(delMsg.getConvId()) : delMsg;
 
-	if (mailItem) {
+	if (mailItem && list) {
 		list.deleteItems(mailItem, true);
 	} else if (delMsg.id) {
 		// do a manual delete of the "virtual" conv/msg that was created but
@@ -410,7 +410,7 @@ function(isDraft, msg, resp) {
 
 			// if the original message was a draft, we need to nuke it
 			var origMsg = msg._origMsg;
-			if (origMsg && origMsg.isDraft && origMsg.list)
+			if (origMsg && origMsg.isDraft)
 				this._deleteDraft(origMsg);
 
 			this._app.popView(true);
@@ -510,7 +510,7 @@ function(ev) {
 
 ZmComposeController.prototype._handleResponseSaveDraftListener =
 function(args) {
-	this._composeView.draftSaved();
+	this._action = ZmOperation.DRAFT;
 };
 
 ZmComposeController.prototype._addSignatureListener =
@@ -568,12 +568,6 @@ function(ev) {
 	// reset the radio button for the format button menu
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 	formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
-	this._composeView.reEnableDesignMode();
-};
-
-ZmComposeController.prototype._draftSavedCallback =
-function(ev) {
-	this._draftSavedDialog.popdown();
 	this._composeView.reEnableDesignMode();
 };
 

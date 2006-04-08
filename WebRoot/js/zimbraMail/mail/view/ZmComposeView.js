@@ -421,13 +421,6 @@ function() {
 		this._htmlEditor.reEnableDesignMode();
 };
 
-// triggered every time user saves draft. Here, we reset "dirty-ness"
-ZmComposeView.prototype.draftSaved =
-function() {
-	// save form state (to check for change later)
-	this._origFormValue = this._formValue();
-};
-
 // user just saved draft, update compose view as necessary
 ZmComposeView.prototype.processMsgDraft =
 function(msgDraft) {
@@ -439,6 +432,8 @@ function(msgDraft) {
 	this._attcDiv.innerHTML = "";
 	this._showForwardField(msgDraft, ZmOperation.DRAFT);
 	this._resetBodySize();
+	// save form state (to check for change later)
+	this._origFormValue = this._formValue();
 };
 
 /**
