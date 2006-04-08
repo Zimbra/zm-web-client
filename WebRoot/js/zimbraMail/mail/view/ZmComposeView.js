@@ -799,7 +799,7 @@ function(action, toOverride) {
 
 ZmComposeView.prototype._setSubject =
 function(action, msg, subjOverride) {
-	if (action == ZmOperation.NEW_MESSAGE) return;
+	if (action == ZmOperation.NEW_MESSAGE && subjOverride == null) return;
 
 	var subj = subjOverride || msg.getSubject();
 
@@ -826,13 +826,6 @@ function(action, msg, subjOverride) {
 
 ZmComposeView.prototype._setBody =
 function(action, msg, extraBodyText, incOption) {
-
-	if (action == ZmOperation.NEW_MESSAGE) {
-		if (this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED))
-			this.addSignature();
-		return;
-	}
-
 	var composingHtml = this._composeMode == DwtHtmlEditor.HTML;
 
 	// XXX: consolidate this code later.
@@ -874,7 +867,7 @@ function(action, msg, extraBodyText, incOption) {
 		}
 	}
 
-	if (incOption == ZmSetting.INCLUDE_NONE) {
+	if (incOption == ZmSetting.INCLUDE_NONE || action == ZmOperation.NEW_MESSAGE) {
 		if (extraBodyText)
 			value += extraBodyText;
 	} else if (incOption == ZmSetting.INCLUDE_ATTACH || action == ZmOperation.FORWARD_ATT) {
@@ -957,8 +950,9 @@ function(action, msg, extraBodyText, incOption) {
 	} else {
 		this._htmlEditor.setContent(value);
 	}
-
-	this._showForwardField(msg, action, incOption);
+	
+	if (action != ZmOperation.NEW_MESSAGE)
+		this._showForwardField(msg, action, incOption);
 };
 
 ZmComposeView.prototype.resetBody =
@@ -1191,7 +1185,7 @@ function() {
 
 ZmComposeView.prototype._showForwardField =
 function(msg, action, replyPref) {
-	var subj = msg.getSubject() || AjxStringUtil.htmlEncode(ZmMsg.noSubject);
+	var subj = (msg ? msg.getSubject() : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject);
 	var html = new Array();
 	var idx = 0;
 
