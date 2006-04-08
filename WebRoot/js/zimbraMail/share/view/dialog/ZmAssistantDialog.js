@@ -40,6 +40,7 @@ function ZmAssistantDialog(appCtxt) {
 	this._fields = {};	
 	this._msgDialog = this._appCtxt.getMsgDialog();
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
+	this._objectManager = new ZmObjectManager(null, null, null);		
 
 };
 
@@ -159,7 +160,37 @@ function(args) {
 	}
 	else this._setDefaultAction();
 }
-	
+
+ZmAssistantDialog.prototype._matchTime =
+function(args) {
+	var hour, minute, ampm = null;
+	var match1 = args.match(/\s*(\d+):(\d\d)(?:\s*(AM|PM))?\s*/i);
+	var match2 = args.match(/\s*(\d+)(AM|PM)\s*/i);	
+	// take the first match
+	if (match1 && match2) {
+		if  (match1.index < match2.index) match2 = null;
+		else match1 = null;
+	}
+	if (match1) {
+		hour = parseInt(match1[1]);
+		minute = parseInt(match1[2]);
+		if (match1[3]) ampm = match1[3].toLowerCase();
+		args = args.replace(match1[0], " ");
+	} else if (match2) {
+		hour = parseInt(match2[1]);
+		minute = 0;
+		ampm = match2[2].toLowerCase();	
+		args = args.replace(match2[0], " ");	
+	} else {
+		return null;
+	}
+
+	if (ampm == 'pm' && hour < 12) hour += 12;
+	else if (ampm == 'am' && hour == 12) hour = 0;
+
+	return {hour: hour, minute: minute, args: args };
+};
+
 /**
  * 
  * (...)                 matched as notes, stripped out
@@ -192,75 +223,9 @@ function(args) {
 
 	DBG.println("args = "+args);
 	var startDate = new Date();
-	var startHour = null;
-	var startMinute = 0;
 	var endDate = null;
-	var endHour = null;
-	var endMinute = 0;
 
-	DBG.println("args = "+args);
-
-	startDate.setMinutes(0);
-	match = args.match(/\s*(\d+):(\d\d)(?:\s*(AM|PM))?\s*/i);
-	if (match) {
-		startHour = parseInt(match[1]);
-		startMinute = parseInt(match[2]);
-		if (match[3]) {
-			var ampm = match[3].toLowerCase();
-			if (ampm == 'pm' && startHour < 12) startHour += 12;
-			else if (ampm == 'am' && startHour == 12) startHour = 0;
-		}
-		startDate.setHours(startHour, startMinute);
-		args = args.replace(match[0], " ");
-	}
-
-	match = args.match(/\s*(\d+):(\d\d)(?:\s*(AM|PM))?\s*/i);
-	if (match) {
-		endHour = parseInt(match[1]);
-		endMinute = parseInt(match[2]);
-		if (match[3]) {
-			var ampm = match[3].toLowerCase();
-			if (ampm == 'pm' && endHour < 12) endHour += 12;
-			else if (ampm == 'am' && endHour == 12) endHour = 0;
-		}
-//		endDate.setHours(endHour, endMinute);
-		args = args.replace(match[0], " ");
-	}
-
-	var om = new ZmObjectManager(null, null, null);	
-	match = om.findMatch(args, ZmObjectManager.DATE)
-	
-	if (match) {
-		args = args.replace(match[0], " ");
-		startDate = match.context.date;
-		if (startHour != null) startDate.setHours(startHour);
-		startDate.setMinutes(startMinute);
-		//this._setDateField(ZmMsg.startTime, startDate, false, fields);
-	}
-	
-	// look for an end date
-	match = om.findMatch(args, ZmObjectManager.DATE)
-	if (match) {
-		args = args.replace(match[0], " ");
-		endDate = match.context.date;
-		if (endHour != null) {
-			endDate.setHours(endHour);
-		}
-	} else {
-		endDate = new Date(startDate.getTime()+1000*60*60);	
-		if (endHour != null) endDate.setHours(endHour);
-	}
-	endDate.setMinutes(endMinute);		
-	
-	var subject = null;
-	match = args.match(/\s*\b(?:subject|sub|subj)\s+\"([^\"]*)\"?\s*/i);
-	if (match) {
-		DBG.println("subject = "+match[1]);
-		subject = match[1];
-		//this._setTextField(ZmMsg.subject, subject, null, null, "300px");
-		args = args.replace(match[0], " ");
-	}
-	DBG.println("args = "+args);
+//	DBG.println("args = "+args);
 
 	var loc = null;
 	match = args.match(/\s*\[([^\]]+)\]?\s*/);	
@@ -274,22 +239,65 @@ function(args) {
 	var notes = null;
 	match = args.match(/\s*\(([^)]+)\)?\s*/);	
 	if (match) {
-		DBG.println("notes = "+match[1]);
 		notes = match[1];
 		//this._setTextField(ZmMsg.notes, match[1], null, null, "300px");
 		args = args.replace(match[0], " ");
 	}
 
+	startDate.setMinutes(0);
+	var startTime = this._matchTime(args);
+	if (startTime) {
+		startDate.setHours(startTime.hour, startTime.minute);
+		args = startTime.args;
+	}
+
+	// look for an end time
+	var endTime = this._matchTime(args);
+	if (endTime) {
+		args = endTime.args;
+	}
+		
+
+	match = this._objectManager.findMatch(args, ZmObjectManager.DATE)
+	
+	if (match) {
+		args = args.replace(match[0], " ");
+		startDate = match.context.date;
+		if (startTime) startDate.setHours(startTime.hour, startTime.minute);
+		//this._setDateField(ZmMsg.startTime, startDate, false, fields);
+	}
+	
+	// look for an end date
+	match = this._objectManager.findMatch(args, ZmObjectManager.DATE)
+	if (match) {
+		args = args.replace(match[0], " ");
+		endDate = match.context.date;
+		if (endTime != null) endDate.setHours(endTime.hour, endTime.minute);
+	} else {
+		if (endTime) {
+			endDate = new Date(startDate.getTime());
+			if (endTime != null) endDate.setHours(endTime.hour, endTime.minute);			
+		} else if (startTime) {
+			endDate = new Date(startDate.getTime() + 1000 * 60 * 60);
+		}
+	}
+	
+	var subject = null;
+	match = args.match(/\s*\b(?:subject|sub|subj)\s+\"([^\"]*)\"?\s*/i);
+	if (match) {
+		subject = match[1];
+		//this._setTextField(ZmMsg.subject, subject, null, null, "300px");
+		args = args.replace(match[0], " ");
+	}
+
 	match = args.match(/\s*repeat\s+(\S+)\s*/);	
 	if (match) {
-		DBG.println("repeat = "+match[1]);
 		//this._setTextField(ZmMsg.repeat, match[1], null, null, "100px");
 		args = args.replace(match[0], " ");
 	}
 
 	match = args.match(/\s*invite\s+(\S+)\s*/);
 	if (match) {
-		DBG.println("invite = "+match[1]);
 		//this._setTextField(ZmMsg.attendees, match[1], null, null, "300px");
 		args = args.replace(match[0], " ");
 	}
@@ -301,8 +309,7 @@ function(args) {
 
 	this._setField(ZmMsg.subject, subject == "" ? "enter subject" : subject, subject == "", true);
 	this._setField(ZmMsg.location, loc == null ? "[ enclose location in brackets ]" : loc, loc == null, true);	
-	this._setDateField(ZmMsg.startTime, startDate, false);
-	this._setDateField(ZmMsg.endTime, endDate, false);
+	this._setDateFields(startDate, startTime, endDate, endTime);
 	this._setField(ZmMsg.notes, notes == null ? "( enclose notes in parens )" : notes, notes == null, true);
 	return;
 
@@ -454,7 +461,7 @@ function(title, value, size, maxlength, width, color) {
 
 ZmAssistantDialog.prototype._setDateField = 
 function(title, date, isAllDay) {
-	var dateValue = AjxDateUtil.simpleComputeDateStr(date);
+	var dateValue = DwtCalendar.getDateFullFormatter().format(date);
 	var timeValue = AjxDateUtil.computeTimeString(date);
 	var html = new AjxBuffer();
 	html.append("<table border=0 cellpadding=0 cellspacing=0><tr>");
@@ -463,6 +470,42 @@ function(title, date, isAllDay) {
 	html.append("<td>", AjxStringUtil.htmlEncode(timeValue), "</td>");	
 	html.append("</tr></table>");
 	this._setField(title, html, false, false);
+};
+
+ZmAssistantDialog.prototype._setDateFields = 
+function(startDate, startTime, endDate, endTime) {
+	var startDateValue = DwtCalendar.getDateFullFormatter().format(startDate);
+	var sameDay = false;
+	var html = new AjxBuffer();
+	html.append("<table border=0 cellpadding=0 cellspacing=0>");
+	html.append("<tr>");
+	html.append("<td>", AjxStringUtil.htmlEncode(startDateValue), "</td>");
+	if (startTime) {
+		var startTimeValue = AjxDateUtil.computeTimeString(startDate);
+		html.append("<td></td><td>&nbsp;</td><td>@</td><td>&nbsp;</td>");
+		html.append("<td>", AjxStringUtil.htmlEncode(startTimeValue), "</td>");
+		sameDay = endDate && endDate.getFullYear() == startDate.getFullYear() && 
+			endDate.getMonth() == startDate.getMonth() && endDate.getDate() == startDate.getDate();
+		if (sameDay) {
+			var endTimeValue = AjxDateUtil.computeTimeString(endDate);
+			html.append("<td>&nbsp;-&nbsp;</td>");
+			html.append("<td>", AjxStringUtil.htmlEncode(endTimeValue), "</td>");
+		}
+	}
+	html.append("</tr>");
+	if (endDate && !sameDay) {
+		var endDateValue = DwtCalendar.getDateFullFormatter().format(endDate);
+		html.append("<tr>");
+		html.append("<td>", AjxStringUtil.htmlEncode(endDateValue), "</td>");
+		if (startTime) { // display end time if a startTime was specified
+			var endTimeValue = AjxDateUtil.computeTimeString(endDate);
+			html.append("<td></td><td>&nbsp;</td><td>@</td><td>&nbsp;</td>");
+			html.append("<td>", AjxStringUtil.htmlEncode(endTimeValue), "</td>");
+		}
+		html.append("</tr>");
+	}
+	html.append("</table>");
+	this._setField(ZmMsg.when, html, false, false);
 };
 
 ZmAssistantDialog.prototype._setActionField = 
