@@ -241,7 +241,6 @@ function(args) {
 	var loc = null;
 	match = args.match(/\s*\[([^\]]*)\]?\s*/);	
 	if (match) {
-		DBG.println("location = "+match[1]);
 		loc = match[1];
 		args = args.replace(match[0], " ");
 	}
@@ -265,17 +264,16 @@ function(args) {
 	if (endTime) {
 		args = endTime.args;
 	}
-		
 
+	// look for start date
 	match = this._objectManager.findMatch(args, ZmObjectManager.DATE)
-	
 	if (match) {
 		args = args.replace(match[0], " ");
 		startDate = match.context.date;
 		if (startTime) startDate.setHours(startTime.hour, startTime.minute);
 	}
 	
-	// look for an end date
+	// look for end date
 	match = this._objectManager.findMatch(args, ZmObjectManager.DATE)
 	if (match) {
 		args = args.replace(match[0], " ");
@@ -298,8 +296,10 @@ function(args) {
 		args = args.replace(match[0], " ");
 	}
 
-	match = args.match(/\s*repeat\s+(\S+)\s*/);	
+	var repeat = null;
+	match = args.match(/\s*repeat?s\s+(\S+)\s*/);	
 	if (match) {
+		repeat = match[1];
 		args = args.replace(match[0], " ");
 	}
 
@@ -319,6 +319,7 @@ function(args) {
 	this._setDateFields(startDate, startTime, endDate, endTime);
 	this._setField(ZmMsg.location, locStr, loc == null, false);	
 	this._setField(ZmMsg.notes, notesStr, notes == null, false);
+	this._setOptField(ZmMsg.repeat, repeat, false, true);
 	return;
 
 };
@@ -408,6 +409,15 @@ function(title) {
 	if (fieldData) {
 		fieldData.rowEl.parentNode.removeChild(fieldData.rowEl);
 		delete this._fields[title];
+	}
+}
+
+ZmAssistantDialog.prototype._setOptField = 
+function(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign) {
+	if (value) {
+		this._setField(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign);
+	} else {
+		this._clearField(title);
 	}
 }
 
