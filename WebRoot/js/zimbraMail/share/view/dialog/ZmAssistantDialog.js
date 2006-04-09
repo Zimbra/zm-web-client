@@ -42,6 +42,10 @@ function ZmAssistantDialog(appCtxt) {
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this._objectManager = new ZmObjectManager(null, null, null);		
 
+	// only trigger matching after a sufficient pause
+	this._pasrseInterval = this._appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
+	this._parseTimedAction = new AjxTimedAction(this, this._parseAction);
+	this._parseActionId = -1;
 };
 
 ZmAssistantDialog.prototype = new ZmQuickAddDialog;
@@ -102,8 +106,15 @@ function(ev) {
 
 ZmAssistantDialog.prototype._commandUpdated =
 function() {
+	// reset timer on key activity
+	if (this._parseActionId != -1) 	AjxTimedAction.cancelAction(this._parseActionId);
+	this._parseActionId = AjxTimedAction.scheduleAction(this._parseTimedAction, this._parseInterval);
+}
+
+ZmAssistantDialog.prototype._parseAction =
+function() {
 	var cmd = this._commandEl.value.replace(/^\s*/, '');
-	var match = cmd.match(/^(appt|new|empty)\s*/);
+	var match = cmd.match(/^(appt|new|empty)\b\s*/);
 	if (!match) {
 			this._setDefaultAction();
 			return;
@@ -228,19 +239,17 @@ function(args) {
 //	DBG.println("args = "+args);
 
 	var loc = null;
-	match = args.match(/\s*\[([^\]]+)\]?\s*/);	
+	match = args.match(/\s*\[([^\]]*)\]?\s*/);	
 	if (match) {
 		DBG.println("location = "+match[1]);
 		loc = match[1];
-		//this._setTextField(ZmMsg.location, match[1], null, null, "300px");
 		args = args.replace(match[0], " ");
 	}
 
 	var notes = null;
-	match = args.match(/\s*\(([^)]+)\)?\s*/);	
+	match = args.match(/\s*\(([^)]*)\)?\s*/);
 	if (match) {
 		notes = match[1];
-		//this._setTextField(ZmMsg.notes, match[1], null, null, "300px");
 		args = args.replace(match[0], " ");
 	}
 
@@ -264,7 +273,6 @@ function(args) {
 		args = args.replace(match[0], " ");
 		startDate = match.context.date;
 		if (startTime) startDate.setHours(startTime.hour, startTime.minute);
-		//this._setDateField(ZmMsg.startTime, startDate, false, fields);
 	}
 	
 	// look for an end date
@@ -273,6 +281,7 @@ function(args) {
 		args = args.replace(match[0], " ");
 		endDate = match.context.date;
 		if (endTime != null) endDate.setHours(endTime.hour, endTime.minute);
+		else if (startTime != null) endDate.setHours(startTime.hour, startTime.minute);
 	} else {
 		if (endTime) {
 			endDate = new Date(startDate.getTime());
@@ -283,34 +292,33 @@ function(args) {
 	}
 	
 	var subject = null;
-	match = args.match(/\s*\b(?:subject|sub|subj)\s+\"([^\"]*)\"?\s*/i);
+	match = args.match(/\s*\"([^\"]*)\"?\s*/);
 	if (match) {
 		subject = match[1];
-		//this._setTextField(ZmMsg.subject, subject, null, null, "300px");
 		args = args.replace(match[0], " ");
 	}
 
 	match = args.match(/\s*repeat\s+(\S+)\s*/);	
 	if (match) {
-		//this._setTextField(ZmMsg.repeat, match[1], null, null, "100px");
 		args = args.replace(match[0], " ");
 	}
 
 	match = args.match(/\s*invite\s+(\S+)\s*/);
 	if (match) {
-		//this._setTextField(ZmMsg.attendees, match[1], null, null, "300px");
 		args = args.replace(match[0], " ");
 	}
 
 	if (subject == null) {
 		subject = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' ');
-		//this._setTextField(ZmMsg.subject, subject, null, null, "300px");
 	}
 
-	this._setField(ZmMsg.subject, subject == "" ? "enter subject" : subject, subject == "", true);
-	this._setField(ZmMsg.location, loc == null ? "[ enclose location in brackets ]" : loc, loc == null, true);	
+	var subStr = AjxStringUtil.convertToHtml(subject == "" ? "\"enclose subject in quotes or just type\"" : subject);
+	var locStr = AjxStringUtil.convertToHtml(loc == null ? "[enclose location in brackets]" : loc);
+	var notesStr = AjxStringUtil.convertToHtml(notes == null ? "(enclose notes in parens)" : notes);
+	this._setField(ZmMsg.subject, subStr, subject == "", false);
 	this._setDateFields(startDate, startTime, endDate, endTime);
-	this._setField(ZmMsg.notes, notes == null ? "( enclose notes in parens )" : notes, notes == null, true);
+	this._setField(ZmMsg.location, locStr, loc == null, false);	
+	this._setField(ZmMsg.notes, notesStr, notes == null, false);
 	return;
 
 };
@@ -321,7 +329,7 @@ function(title, str, args, fields) {
 	var match = args.match(regex);
 	if (match) {
 		var  val = match[1];
-		this._setTextField(title, val, null, null, "300px");
+		//this._setTextField(title, val, null, null, "300px");
 		fields[title] = 1;
 		args = args.replace(match[0], " ");
 	}
@@ -334,21 +342,18 @@ function(title, str, args, fields) {
 	var match = args.match(regex);
 	if (match) {
 		var  val = match[1];
-		this._setTextField(title, val, null, null, "300px");
+		//this._setTextField(title, val, null, null, "300px");
 		fields[title] = 1;
 		args = args.replace(match[0], " ");
 	}
 	return args;
 };
 
-
 ZmAssistantDialog.prototype._fieldsToDisplay =
 function(fields) {
 	for (var field in this._fields) {
 		if (!(field in fields)) {
-			var fieldData = this._fields[field];
-			fieldData.rowEl.parentNode.removeChild(fieldData.rowEl);
-			delete this._fields[field];
+			this._clearField(field);
 		}
 	}
 };
@@ -366,7 +371,6 @@ function(args) {
 
 	this._fieldsToDisplay(fields);
 };
-
 
 ZmAssistantDialog.prototype._newNoteCommand =
 function(args) {
@@ -398,8 +402,17 @@ function(args) {
 	this._fieldsToDisplay(fields);
 };
 
+ZmAssistantDialog.prototype._clearField = 
+function(title) {
+	var fieldData = this._fields[title];
+	if (fieldData) {
+		fieldData.rowEl.parentNode.removeChild(fieldData.rowEl);
+		delete this._fields[title];
+	}
+}
+
 ZmAssistantDialog.prototype._setField = 
-function(title, value, isDefault, htmlEncode) {
+function(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign) {
 	var color = isDefault ? 'gray' : 'black';
 	var fontStyle = isDefault ? 'italic' : 'normal';
 	var fieldData = this._fields[title];
@@ -412,7 +425,7 @@ function(title, value, isDefault, htmlEncode) {
 	} else {
 		var html = new AjxBuffer();
 		var id = Dwt.getNextId();
-		html.append("<td class='ZmApptTabViewPageField'>", AjxStringUtil.htmlEncode(title), ":</td>");
+		html.append("<td valign='", titleAlign ? titleAlign : "top", "' class='ZmApptTabViewPageField'>", AjxStringUtil.htmlEncode(title), ":</td>");
 		html.append("<td><div id='", id, "'");
 		if (color||fontStyle) {
 			html.append(" style='");
@@ -421,55 +434,15 @@ function(title, value, isDefault, htmlEncode) {
 			html.append("' ");			
 		}
 		html.append(">", value, "</div></td>");
-		var row = this._tableEl.insertRow(-1);
+		var rowIndex = -1;
+		if (afterRowTitle) {
+			var afterRow = this._fields[afterRowTitle];
+			if (afterRow) rowIndex = afterRow.rowEl.rowIndex+1;
+		}
+		var row = this._tableEl.insertRow(rowIndex);
 		row.innerHTML = html.toString();
 		this._fields[title] = { id: id, rowEl: row };
 	}
-};
-
-ZmAssistantDialog.prototype._setTextField = 
-function(title, value, size, maxlength, width, color) {
-	var fieldData = this._fields[title];
-	if (fieldData) {
-		fieldData.inputEl.value = value;
-	} else {
-		var html = new AjxBuffer();
-		var id = Dwt.getNextId();
-		html.append("<td class='ZmApptTabViewPageField'>");
-		html.append(title);
-		html.append(":</td><td colspan=2><div>");
-		html.append("<input readonly autocomplete='off' type='text'");
-		html.append(" id='", id, "'");
-		if (width || color) {
-			html.append(" style='");
-			if (color) html.append("color: ", color, ";")
-			if (width) html.append("width:", width, ";");
-			html.append("' ");			
-		}
-		if (value) html.append(" value='", value, "'");
-		if (size) html.append(" size='", size, "'");
-		if (maxlength) html.append(" maxlength='", maxlength, "'");	
-		html.append("></input>");
-		html.append("</div></td>");
-		var row = this._tableEl.insertRow(-1);
-		row.innerHTML = html.toString();
-		var inputEl = document.getElementById(id);
-		inputEl.value = value;
-		this._fields[title] = { inputEl: inputEl, rowEl: row };
-	}
-};
-
-ZmAssistantDialog.prototype._setDateField = 
-function(title, date, isAllDay) {
-	var dateValue = DwtCalendar.getDateFullFormatter().format(date);
-	var timeValue = AjxDateUtil.computeTimeString(date);
-	var html = new AjxBuffer();
-	html.append("<table border=0 cellpadding=0 cellspacing=0><tr>");
-	html.append("<td>", AjxStringUtil.htmlEncode(dateValue), "</td>");
-	html.append("</td><td></td><td>&nbsp;</td><td>@</td><td>&nbsp;</td>");
-	html.append("<td>", AjxStringUtil.htmlEncode(timeValue), "</td>");	
-	html.append("</tr></table>");
-	this._setField(title, html, false, false);
 };
 
 ZmAssistantDialog.prototype._setDateFields = 
@@ -492,9 +465,16 @@ function(startDate, startTime, endDate, endTime) {
 			html.append("<td>", AjxStringUtil.htmlEncode(endTimeValue), "</td>");
 		}
 	}
-	html.append("</tr>");
-	if (endDate && !sameDay) {
+	html.append("</tr></table>");	
+	var doEnd = (endDate && !sameDay);
+	
+	if (doEnd) {
+		this._clearField(ZmMsg.time);
+		this._setField(ZmMsg.startTime, html.toString(), false, false, ZmMsg.subject);
+		
+		html.clear();
 		var endDateValue = DwtCalendar.getDateFullFormatter().format(endDate);
+			html.append("<table border=0 cellpadding=0 cellspacing=0>");		
 		html.append("<tr>");
 		html.append("<td>", AjxStringUtil.htmlEncode(endDateValue), "</td>");
 		if (startTime) { // display end time if a startTime was specified
@@ -502,10 +482,14 @@ function(startDate, startTime, endDate, endTime) {
 			html.append("<td></td><td>&nbsp;</td><td>@</td><td>&nbsp;</td>");
 			html.append("<td>", AjxStringUtil.htmlEncode(endTimeValue), "</td>");
 		}
-		html.append("</tr>");
+		html.append("</tr></table>");
+		this._setField(ZmMsg.endTime, html.toString(), false, false, ZmMsg.startTime);
+		
+	} else {
+		this._setField(ZmMsg.time, html.toString(), false, false, ZmMsg.subject);
+		this._clearField(ZmMsg.startTime);
+		this._clearField(ZmMsg.endTime);		
 	}
-	html.append("</table>");
-	this._setField(ZmMsg.when, html, false, false);
 };
 
 ZmAssistantDialog.prototype._setActionField = 
@@ -515,13 +499,13 @@ function(value, icon) {
 	html.append("<td>", AjxStringUtil.htmlEncode(value), "</td>");	
 	html.append("<td>", AjxImg.getImageHtml(icon), "</td>");
 	html.append("</<tr></table>");
-	this._setField(ZmMsg.action, html, false, false);	
+	this._setField(ZmMsg.action, html, false, false, null, 'middle');
 };
 
 ZmAssistantDialog.prototype._setDefaultAction = 
 function() {
 	this._fieldsToDisplay({});		
-	this._setField(ZmMsg.action, "available actions: appt, contact, empty, message",  true, true);
+	this._setField(ZmMsg.action, "available actions: appt, contact, empty, message",  true, true, null, 'middle');
 };	
 	
 ZmAssistantDialog.prototype._setAction = 
@@ -563,7 +547,7 @@ ZmAssistantDialog.prototype._addCommand =
 function(html, value) {
 	var id = Dwt.getNextId();
 	html.append("<tr><td colspan=3><div>");
-	html.append("<textarea rows=1 style='width:100%' id='",id,"'>");
+	html.append("<textarea rows=2 style='width:100%' id='",id,"'>");
 	html.append(value);
 	html.append("</textarea>");
 	html.append("</div></td></tr>");
