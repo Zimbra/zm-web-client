@@ -478,7 +478,7 @@ function(appCtxt, item, type, strict) {
 			// ZmEmailAddress has name and email, init a new contact/resource from those
 			attendee = (type == ZmAppt.PERSON) ? new ZmContact(appCtxt) :
 												 new ZmResource(appCtxt);
-			attendee.initFromEmail(item);
+			attendee.initFromEmail(item, true);
 		}
 	} else if (typeof item == "string") {
 		item = AjxStringUtil.trim(item);	// trim white space
@@ -495,7 +495,7 @@ function(appCtxt, item, type, strict) {
 	 		}
 			attendee = (type == ZmAppt.PERSON) ? new ZmContact(appCtxt) :
 												 new ZmResource(appCtxt);
-			attendee.initFromEmail(email);
+			attendee.initFromEmail(email, true);
 		} else if (type != ZmAppt.PERSON) {
 			// check if it's a location we know by name somehow
 			attendee = resources ? resources.getResourceByName(item) : null;

@@ -441,13 +441,14 @@ function(obj) {
 /**
 * Sets this contacts email address.
 *
-* @param email		an ZmEmailAddress, or an email string
+* @param email		[object]		an ZmEmailAddress, or an email string
+* @param strictName	[boolean]*		if true, don't try to set name from user portion of address
 */
 ZmContact.prototype.initFromEmail =
-function(email) {
+function(email, strictName) {
 	if (email instanceof ZmEmailAddress) {
 		this.setAttr(ZmContact.F_email, email.getAddress());
-		this._initFullName(email);
+		this._initFullName(email, strictName);
 	} else {
 		this.setAttr(ZmContact.F_email, email);
 	}
@@ -662,13 +663,13 @@ function(street, city, state, zipcode, country) {
 
 // Sets the full name based on an email address.
 ZmContact.prototype._initFullName =
-function(email) {
+function(email, strictName) {
 	var name = email.getName();
 	name = AjxStringUtil.trim(name.replace(ZmEmailAddress.commentPat, '')); // strip comment (text in parens)
 	
 	if (name && name.length) {
 		this._setFullName(name, [" "]);
-	} else {
+	} else if (!strictName) {
 		name = email.getAddress();
 		if (name && name.length) {
 			var i = name.indexOf("@");
