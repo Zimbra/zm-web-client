@@ -108,7 +108,7 @@ function(str) {
 	var str = AjxStringUtil.trim(str);
 	var prelimOkay = ZmEmailAddress._prelimCheck(str);
 	if (!(prelimOkay && str.match(ZmEmailAddress.addrPat))) {
-		DBG.println(AjxDebug.DBG1, "mailbox match failed: " + str);
+		DBG.println(AjxDebug.DBG2, "mailbox match failed: " + str);
 		return null;
 	}
 
@@ -160,7 +160,7 @@ function(emailStr, type, strict) {
 	var good = new AjxVector();
 	var bad = new AjxVector();
 	var all = new AjxVector();
-	var addrList = ZmEmailAddress._split(emailStr);
+	var addrList = ZmEmailAddress.split(emailStr);
 	for (var i = 0; i < addrList.length; i++) {
 		var addrStr = AjxStringUtil.trim(addrList[i]);
 		if (addrStr) {
@@ -223,7 +223,7 @@ function(str) {
 *
 * @param str	the string to be split
 */
-ZmEmailAddress._split =
+ZmEmailAddress.split =
 function(str) {
 	// first, construct a list of ranges to ignore because they are quoted or comment text
 	var ignore = new Array();

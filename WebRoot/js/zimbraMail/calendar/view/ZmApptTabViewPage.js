@@ -126,7 +126,6 @@ function(attId) {
 
 	// save field values of this view w/in given appt
 	appt.setName(this._subjectField.getValue());
-	appt.location = this._attInputField[ZmAppt.LOCATION].getValue();
 	appt.freeBusy = this._showAsSelect.getValue();
 	var calId = this._calendarSelect.getValue();
 	appt.setFolderId(calId);
@@ -1324,7 +1323,7 @@ function(type) {
 	if (value == this._attInputCurVal[type]) return;
 
 	var attendees = new AjxVector();
-	var items = value.split(";");
+	var items = ZmEmailAddress.split(value);
 	for (var i = 0; i < items.length; i++) {
 		var item = AjxStringUtil.trim(items[i]);
 		if (!item) continue;

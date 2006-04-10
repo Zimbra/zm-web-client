@@ -202,37 +202,10 @@ function(useStartTime) {
 	}
 };
 
-ZmAppt.prototype.getAttendeesText				= function() { return this._getAttendeesString(this._attendees[ZmAppt.PERSON], ZmAppt.PERSON); };
-ZmAppt.prototype.getResourcesText				= function() { return this._getAttendeesString(this._attendees[ZmAppt.RESOURCE], ZmAppt.RESOURCE); };
-
-ZmAppt.prototype.getLocation =
-function(includeDisplayName) {
-	var locs = this._attendees[ZmAppt.LOCATION];
-	if (locs && locs.length) {
-		var text = this._getAttendeesString(locs, ZmAppt.LOCATION);
-		if (includeDisplayName && locs.length == 1) {
-			var displayName = locs[0].getAttr(ZmResource.F_locationName);
-			if (displayName) {
-				text = [text, " (", displayName, ")"].join("");
-			}
-		}
-		return text;
-	} else {
-		if (!this.location) return "";
-		var text = this.location;
-		if (includeDisplayName) {
-			var resources = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getResources();
-			if (resources) {
-				var loc = resources.getResourceByName(this.location);
-				var displayName = loc ? loc.getAttr(ZmResource.F_locationName) : "";
-				if (displayName) {
-					text = [this.location, " (", displayName, ")"].join("");
-				}
-			}
-		}
-		return text;
-	}
-};
+ZmAppt.prototype.getAttendeesText	= function() { return this._getAttendeesString(this._attendees[ZmAppt.PERSON], ZmAppt.PERSON); };
+ZmAppt.prototype.getResourcesText	= function(includeDisplayName) { return this._getAttendeesString(this._attendees[ZmAppt.RESOURCE], ZmAppt.RESOURCE, includeDisplayName); };
+ZmAppt.prototype.getLocationsText	= function(includeDisplayName) { return this._getAttendeesString(this._attendees[ZmAppt.LOCATION], ZmAppt.LOCATION, includeDisplayName); };
+ZmAppt.prototype.getLocation		= function(includeDisplayName) { return this.getLocationsText(includeDisplayName); };
 
 ZmAppt.prototype.isAllDayEvent 					= function() { return this.allDayEvent == "1"; };
 ZmAppt.prototype.isCustomRecurrence 			= function() { return this.repeatCustom == "1" || this.repeatEndType != "N"; };
@@ -580,7 +553,6 @@ function(message, viewMode) {
 		this.isOrg = message.invite.isOrganizer(0);
 		this.organizer = message.getInviteOrganizer();
 		this.name = message.invite.getName(0);
-		this.location = message.invite.getLocation(0);
 		this.exception = message.invite.isException(0);
 		this.freeBusy = message.invite.getFreeBusy(0);
 		// if instance of recurring appointment, start date is generated from 
@@ -635,8 +607,9 @@ function(message, viewMode) {
 				}
 			}
 		}
-		if (this.location && !this._attendees[ZmAppt.LOCATION].length) {
-			var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, this.location, ZmAppt.LOCATION);
+		var location = message.invite.getLocation(0);
+		if (location && !this._attendees[ZmAppt.LOCATION].length) {
+			var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, location, ZmAppt.LOCATION);
 			this._attendees[ZmAppt.LOCATION].push(attendee);
 		}
 
@@ -1113,17 +1086,27 @@ function(attach, hasCheckbox) {
 * Creates a string from a list of attendees/locations/resources. If an item
 * doesn't have a name, its address is used.
 *
-* @param list	[array]		list of attendees (ZmContact or ZmResource)
-* @param type	[constant]	attendee type
+* @param list					[array]			list of attendees (ZmContact or ZmResource)
+* @param type					[constant]		attendee type
+* @param includeDisplayName		[boolean]*		if true, include location info in parens (ZmResource)
 */
 ZmAppt.prototype._getAttendeesString = 
-function(list, type) {
+function(list, type, includeDisplayName) {
 	if (!(list && list.length)) return "";
 
 	var a = [];
 	for (var i = 0; i < list.length; i++) {
-		a.push(list[i].getAttendeeText(type));
+		var attendee = list[i];
+		var text = attendee.getAttendeeText(type);
+		if (includeDisplayName && list.length == 1) {
+			var displayName = attendee.getAttr(ZmResource.F_locationName);
+			if (displayName) {
+				text = [text, " (", displayName, ")"].join("");
+			}
+		}
+		a.push(text);
 	}
+
 	return a.join(ZmAppt.ATTENDEES_SEPARATOR);
 };
 
@@ -1527,8 +1510,6 @@ function(soapDoc, method,  attachmentId, notifyList) {
 
 	if (this._attendees[ZmAppt.LOCATION] && this._attendees[ZmAppt.LOCATION].length) {
 		inv.setAttribute("loc", this.getLocation());
-	} else if (this.location) {
-		inv.setAttribute("loc", this.location);
 	}
 
 	var organizer = this.organizer ? this.organizer : this._appCtxt.get(ZmSetting.USERNAME);

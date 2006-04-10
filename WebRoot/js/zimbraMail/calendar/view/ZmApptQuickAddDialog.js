@@ -110,11 +110,10 @@ function(appt) {
 	// autocomplete for locations
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var shell = this._appCtxt.getShell();
-		var acCallback = new AjxCallback(this, this._autocompleteCallback);
 		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
 		var resourcesLoader = resourcesClass.getResources;
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesLoader,
-					  matchValue: ZmContactList.AC_VALUE_NAME, compCallback: acCallback};
+					  matchValue: ZmContactList.AC_VALUE_NAME};
 		this._acResourcesList = new ZmAutocompleteListView(params);
 		this._acResourcesList.handle(this._locationField.getInputElement());
 	}
@@ -128,7 +127,6 @@ function() {
 
 	// save field values of this view w/in given appt
 	appt.setName(this._subjectField.getValue());
-	appt.location = this._locationField.getValue();
 
 	var calId = this._calendarSelect.getValue();
 	appt.setFolderId(calId);
@@ -149,7 +147,7 @@ function() {
 
 	appt.repeatType = this._repeatSelect.getValue();
 	
-	appt.setAttendees(this._attendees[ZmAppt.LOCATION].getArray(), ZmAppt.LOCATION);
+	appt.setAttendees(ZmEmailAddress.split(this._locationField.getValue()), ZmAppt.LOCATION);
 
 	return appt;
 };
@@ -401,12 +399,6 @@ function() {
 	var str = vals.join("|");
 	str = str.replace(/\|+/, "|");
 	return str;
-};
-
-ZmApptQuickAddDialog.prototype._autocompleteCallback =
-function(text, el, match) {
-	var attendee = match.data._item;
-	this._attendees[ZmAppt.LOCATION].add(attendee);
 };
 
 // Listeners
