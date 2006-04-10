@@ -25,7 +25,7 @@ Contributor(s):
 <% 
    String vers = (String)request.getAttribute("version");
    String ext = (String)request.getAttribute("fileExtension");
-   String contextPath = (String)request.getContextPath(); 
+   String contextPath = request.getContextPath(); 
    if (vers == null){
       vers = "";
    }
@@ -88,18 +88,11 @@ Contributor(s):
 
 <!-- Calendar Application -->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/model/ZmAppt.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/ZmCalendarApp.js<%= ext %>?v=<%= vers %>"></script>
 
 <!-- Addressbook Application -->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/abook/model/ZmContact.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/abook/ZmContactsApp.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/abook/view/ZmContactPicker.js<%= ext %>?v=<%= vers %>"></script>
-
-<!-- IM Application -->
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/im/ZmImApp.js<%= ext %>?v=<%= vers %>"></script>
-
-<!-- Preferences Application -->
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/ZmPreferencesApp.js<%= ext %>?v=<%= vers %>"></script>
 
 <!-- Dependent on previous class definitions -->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/model/ZmResource.js<%= ext %>?v=<%= vers %>"></script>

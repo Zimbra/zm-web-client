@@ -129,7 +129,7 @@ function(html, idx, obj, spanId, context) {
 	html[idx++] = this.getClassName(obj);
 	html[idx++] = "' id='";
 	html[idx++] = spanId;
-	html[idx++] = "'>";	
+	html[idx++] = "'>";
 	idx = this._getHtmlContent(html, idx, obj, context);
 	html[idx++] = "</span>";
 	return idx;
@@ -147,7 +147,6 @@ function(obj, context) {
 
 ZmObjectHandler.prototype.populateToolTip =
 function(obj, context) {
-	return;
 };
 
 

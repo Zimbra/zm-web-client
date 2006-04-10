@@ -1,0 +1,146 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.1
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.1 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ * 
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
+ * All Rights Reserved.
+ * 
+ * Contributor(s):
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
+ 
+ 
+P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
+	@FontDefault@
+}
+
+HTML {
+	@FullSize@
+}
+
+BODY {
+	@SkinOuterBg@
+	@FullSize@
+	margin: 0px;
+}
+
+FORM {
+	margin: 0;
+	padding: 0;
+}
+
+
+
+.LoginPanel {
+	width:500px;
+	background-color:white;
+	color:black;
+	border: 2px solid; 
+	border-color: #CCCCCC #000000 #000000 #CCCCCC;
+}
+
+
+.LoginPanelBanner {
+	margin-top:10px;
+	margin-bottom:10px;
+	/* the following are the dims of the login banner: */
+	width:447px; 
+	height:115px; 
+	position:relative;
+	background-image:url(/zimbra/img/loRes/logo/LoginBanner_blank.gif);
+}
+
+
+
+/* "appName" substitution:  eg:  "Collaboration Suite" */
+.LoginPanelAppName {
+	position:absolute;
+	left:60;
+	top:80;
+	width:350;
+	height:30;
+	@FontBiggest@
+	font-weight:normal;
+	text-align:right;
+}
+
+/* "version" substitution:  eg:  "V 1.23 * 'Birdseye' * Wed Oct 12, 2005" */
+.LoginPanelShortVersion {
+	position:absolute;
+	left:63px;
+	top:7px;
+	width:350;
+	text-align:right;
+	@FontBiggest@
+	font-weight:normal;
+	@TextDisabled@
+}
+
+
+.LoginPanelLicense {
+	@FontTiny@
+	@TextDisabled@
+	text-align:center;
+	padding-top:5px;
+	padding-bottom:5px;
+}
+
+
+
+
+.LoginPanelTable {
+	@SkinInsetBgColor@
+	@FullWidth@
+}
+
+.LoginPanelLicense {
+	@SkinInsetBgColor@
+	@TextDisabled@
+}
+
+
+.LoginPanelFormSpacer {
+	width:50px;
+}
+
+
+
+.error {  
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: 5px;
+	width: 85%;
+	background-color: rgb(255, 255, 204); 
+	border: 1px solid rgb(124, 124, 148);
+	text-align:left;
+}
+
+.focusBorder { 
+	border: 1px dotted black;
+}
+
+
+.DwtButton 						{	@Button@				@ButtonMinWidth@	}
+.DwtButton .Text 				{	@ButtonText@	}
+.DwtButton-activated 			{	@Button-activated@		@ButtonMinWidth@	}
+.DwtButton-activated .Text		{	@ButtonText-activated@	}
+.DwtButton-triggered			{	@Button-triggered@		@ButtonMinWidth@	}	
+.DwtButton-triggered .Text		{	@ButtonText-triggered@	}	
+.DwtButton-toggled				{	@Button-toggled@		@ButtonMinWidth@	}	
+.DwtButton-toggled .Text		{	@ButtonText-toggled@		}	
+.DwtButton-disabled				{	@Button-disabled@		@ButtonMinWidth@	}	
+.DwtButton-disabled .Text		{	@ButtonText-disabled@		}	

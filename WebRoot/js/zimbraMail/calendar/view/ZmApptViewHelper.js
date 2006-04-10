@@ -67,9 +67,11 @@ ZmApptViewHelper.REPEAT_OPTIONS = [
 ZmApptViewHelper.createMiniCalButton =
 function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDialog) {
 	// create button
-	var dateButton = new DwtButton(parent);
+	var dateButton = new DwtButton(parent, null, "DwtSelect");
 	dateButton.addDropDownSelectionListener(dateButtonListener);
-	dateButton.setSize(20, 20);
+
+    //	MOW: don't set height explicitly -- allow to default to smallest size possible
+    // 	dateButton.setSize(20, null);
 
 	// create menu for button
 	var calMenu = new DwtMenu(dateButton, DwtMenu.CALENDAR_PICKER_STYLE, null, null, isInDialog);
@@ -149,19 +151,6 @@ function(startDateField, endDateField, isStartDate, skipCheck) {
 	}
 
 	return needsUpdate;
-};
-
-ZmApptViewHelper.setSimpleRecurString = 
-function(repeatType) {
-	// per new select value, change the recur description
-	var recurDesc = null;
-	switch (repeatType) {
-		case "DAI": recurDesc = ZmMsg.everyDay;   break;
-		case "WEE": recurDesc = ZmMsg.everyWeek;  break;
-		case "MON": recurDesc = ZmMsg.everyMonth; break;
-		case "YEA": recurDesc = ZmMsg.everyYear;  break;
-	}
-	return recurDesc ? (recurDesc + " (" + ZmMsg.noEndDate + ")") : "";
 };
 
 //TODO : i18n
@@ -333,6 +322,7 @@ function(rule, str, idx) {
 					str[idx++] = num;
 					str[idx++] = " week of the ";
 				}
+				// REVISIT: Where is this value coming from?!
 				str[idx++] = freq;
 				str[idx++] = " ";
 			}
