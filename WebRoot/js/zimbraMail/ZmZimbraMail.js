@@ -40,15 +40,6 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 
 	this._userShell = userShell;
 
-	// load these here instead of globally so new window doesnt need to import unnecessary apps
-	ZmZimbraMail.APP_CLASS[ZmZimbraMail.MAIL_APP]			= ZmMailApp;
-	ZmZimbraMail.APP_CLASS[ZmZimbraMail.CONTACTS_APP]		= ZmContactsApp;
-	ZmZimbraMail.APP_CLASS[ZmZimbraMail.CALENDAR_APP]		= ZmCalendarApp;
-	ZmZimbraMail.APP_CLASS[ZmZimbraMail.IM_APP]				= ZmImApp;
-	ZmZimbraMail.APP_CLASS[ZmZimbraMail.NOTES_APP]			= ZmNotesApp;
-	ZmZimbraMail.APP_CLASS[ZmZimbraMail.PREFERENCES_APP]	= ZmPreferencesApp;
-	ZmZimbraMail.APP_CLASS[ZmZimbraMail.MIXED_APP]			= ZmMixedApp;
-
 	// settings structure and defaults
 	this._settings = appCtxt.getSettings();
     DBG.println(AjxDebug.DBG1, "Branch: " + appCtxt.get(ZmSetting.BRANCH) + " Image Load: " + zImgLoading + " JS/CSS Load: " + zJSloading);
@@ -63,15 +54,15 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 
 	this._shell = appCtxt.getShell();
 	
-	// TEMPORARILY COMMENTED OUT
-	//this._shell.registerKeyMap(new ZmKeyMap());
-	//this._shell.registerGlobalKeyActionHandler(this);
+	/* Register our keymap and global key action handler with the shell's keyboard manager */
+	//this._kbMgr = this._shell.getKeyboardMgr();
+	//this._kbMgr.registerKeyMap(new ZmKeyMap());
+	//this._kbMgr.registerGlobalKeyActionHandler(this);
 
-	if (location.search && (location.search.indexOf("nss=1") != -1)) {
+	if (location.search && (location.search.indexOf("nss=1") != -1))
    	    this._splashScreen = null;
-    } else {
+    else
    	    this._splashScreen = new ZmSplashScreen(this._shell, "SplashScreen");
-    }
  
 	this._apps = {};
 	this._activeApp = null;
@@ -111,6 +102,13 @@ ZmZimbraMail.PREFERENCES_APP	= "options";
 ZmZimbraMail.MIXED_APP			= "mixed";
 
 ZmZimbraMail.APP_CLASS = {};
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.MAIL_APP]			= ZmMailApp;
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.CONTACTS_APP]		= ZmContactsApp;
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.CALENDAR_APP]		= ZmCalendarApp;
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.IM_APP]				= ZmImApp;
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.NOTES_APP]			= ZmNotesApp;
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.PREFERENCES_APP]	= ZmPreferencesApp;
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.MIXED_APP]			= ZmMixedApp;
 
 ZmZimbraMail.MSG_KEY = {};
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]				= "mail";
@@ -157,7 +155,7 @@ ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]		= [ZmOrganizer.FOLDER, ZmOrg
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.ADDRBOOK, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]	= [ZmOrganizer.CALENDAR, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.NOTES_APP]		= [ZmOrganizer.NOTEBOOK, /*ZmOrganizer.SEARCH, ZmOrganizer.TAG,*/ ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.NOTES_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET]; // REVISIT: [ZmOrganizer.NOTEBOOK, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 
@@ -346,16 +344,6 @@ ZmZimbraMail.prototype._handleResponseStartup2 =
 function() {
 	this.setSessionTimer(true);
 	this._killSplash();
-	if (location.search && (location.search.match(/\bview=compose\b/))) {
-		var cc = this.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
-		var match = location.search.match(/\bsubject=([^&]+)/);
-		var subject = match ? decodeURIComponent(match[1]) : null;
-		match = location.search.match(/\bto=([^&]+)/);	
-		var to = match ? decodeURIComponent(match[1]) : null;
-		match = location.search.match(/\bbody=([^&]+)/);	
-		var body = match ? decodeURIComponent(match[1]) : null;
-		cc.doAction(ZmOperation.NEW_MESSAGE, false, null, to, subject, body);
-	}
 };
 
 /**
@@ -697,7 +685,6 @@ function(app) {
 		var id = list[i];
 		if ((id == ZmOrganizer.SEARCH && !this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) ||
 			(id == ZmOrganizer.CALENDAR && !this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) ||
-			(id == ZmOrganizer.NOTEBOOK && !this._appCtxt.get(ZmSetting.NOTES_ENABLED)) ||
 			(id == ZmOrganizer.ROSTER_TREE_ITEM && !this._appCtxt.get(ZmSetting.IM_ENABLED)) ||			
 			(id == ZmOrganizer.TAG && !this._appCtxt.get(ZmSetting.TAGGING_ENABLED))) {
 			continue;
@@ -1175,15 +1162,12 @@ function(creates, modifies) {
 			var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 			var searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
 			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-			var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 			var addrBookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
 			// parent could be a folder or a search
 			if (parentId == ZmOrganizer.ID_ROOT) {
 				if (name == "folder") {
 					if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR])
 						parent = calendarTree.getById(parentId);
-					else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK])
-						parent = notebookTree.getById(parentId);
 					else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK])
 						parent = addrBookTree.getById(parentId);
 					else
@@ -1195,21 +1179,16 @@ function(creates, modifies) {
 				parent = folderTree.getById(parentId);
 				if (!parent) parent = searchTree.getById(parentId);
 				if (!parent) parent = calendarTree.getById(parentId);
-				if (!parent) parent = notebookTree.getById(parentId);
 				if (!parent) parent = addrBookTree.getById(parentId);
 			}
 			if (parent)
 				parent.notifyCreate(create, (name == "search"));
 		} else if (name == "link") {
+			// TODO: We only support calendar links at the moment...
 			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-			var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 
 			var parentId = create.l;
-			var parent;
-			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR])
-				parent = calendarTree.getById(parentId);
-			else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK])
-				parent = notebookTree.getById(parentId);
+			var parent = calendarTree.getById(parentId);
 			
 			if (parent) {
 				parent.notifyCreate(create, true);
@@ -1536,39 +1515,51 @@ function() {
 
 ZmZimbraMail.prototype.handleKeyAction =
 function(actionCode, ev) {
-	var curView = this._appViewMgr.getCurrentView();
-	if (curView && curView.getController) {
-		var c = curView.getController();
-		if (c && c.handleKeyAction) {
-			switch (actionCode) {
-				case ZmKeyMap.DBG_NONE:
-					this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_NONE);
-					DBG.setDebugLevel(AjxDebug.NONE);
-					break;
-				case ZmKeyMap.DBG_1:
-					this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_1);
-					DBG.setDebugLevel(AjxDebug.DBG1);
-					break;
-				case ZmKeyMap.DBG_2:
-					this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_2);
-					DBG.setDebugLevel(AjxDebug.DBG2);
-					break;
-				case ZmKeyMap.DBG_3:
-					this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_3);
-					DBG.setDebugLevel(AjxDebug.DBG3);
-					break;
-				case ZmKeyMap.DBG_TIMING: {
-					var on = DBG._showTiming;
-					var newState = on ? "off" : "on";
-					this._appCtxt.setStatusMsg("Turning timing info " + newState);
-					DBG.showTiming(!on);
-					break;
-				}
-					
-				default:
+	switch (actionCode) {
+		case ZmKeyMap.DBG_NONE:
+			this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_NONE);
+			DBG.setDebugLevel(AjxDebug.NONE);
+			break;
+			
+		case ZmKeyMap.DBG_1:
+			alert("HERE");
+			this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_1);
+			DBG.setDebugLevel(AjxDebug.DBG1);
+			break;
+			
+		case ZmKeyMap.DBG_2:
+			this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_2);
+			DBG.setDebugLevel(AjxDebug.DBG2);
+			break;
+			
+		case ZmKeyMap.DBG_3:
+			this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_3);
+			DBG.setDebugLevel(AjxDebug.DBG3);
+			break;
+			
+		case ZmKeyMap.DBG_TIMING: {
+			var on = DBG._showTiming;
+			var newState = on ? "off" : "on";
+			this._appCtxt.setStatusMsg("Turning timing info " + newState);
+			DBG.showTiming(!on);
+			break;
+		}
+		
+		case ZmKeyMap.ASSISTANT: {
+			if (this._assistantDialog == null)
+				this._assistantDialog = new ZmAssistantDialog(this._appCtxt);
+			this._assistantDialog.popup();
+			break;
+		}
+			
+		default: {
+			var curView = this._appViewMgr.getCurrentView();
+			if (curView && curView.getController) {
+				var c = curView.getController();
+				if (c && c.handleKeyAction)
 					c.handleKeyAction(actionCode, ev);
-					break;
 			}
+			break;
 		}
 	}
 };

@@ -108,6 +108,35 @@ function(actionCode) {
 		    this._doAction(null, ZmOperation.REPLY_ALL);
 			break;
 			
+		case ZmKeyMap.MARK_READ: {
+			// This check is kind of weak (ditto for mark unread). We should really
+			// be smarter about what we send across the wire (look in ZmList) and
+			// minimize that data so the server does less work
+			var hasUnread = false;
+			var items = this._listView[this._currentView].getSelection();
+			for (var i = 0; i < items.length; i++) {
+				if (items[i].isUnread)
+					hasUnread = true;
+					break;
+			}
+			if (hasUnread)
+				this._list.markRead(this._listView[this._currentView].getSelection(), true);
+			break;
+		}
+			
+		case ZmKeyMap.MARK_UNREAD: {
+			var hasUnread = false;
+			var items = this._listView[this._currentView].getSelection();
+			for (var i = 0; i < items.length; i++) {
+				if (!items[i].isUnread)
+					hasUnread = true;
+					break;
+			}
+			if (hasUnread)
+				this._list.markRead(this._listView[this._currentView].getSelection(), false);
+			break;
+		}
+			
 		default:
 			ZmListController.prototype.handleKeyAction.call(this, actionCode);
 			break;
