@@ -25,12 +25,12 @@ Contributor(s):
 <% 
    String vers = (String)request.getAttribute("version");
    String ext = (String)request.getAttribute("fileExtension");
-   String contextPath = (String)request.getContextPath(); 
+   String contextPath = request.getContextPath(); 
 
    if (vers == null){
       vers = "";
    }
-   if (ext == null){
+   if (ext == null){ 
       ext = "";
    }
 %>
@@ -72,6 +72,8 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaCurrentAppToolBar.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaServerVersionInfo.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/MenuButton_XFormItem.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaAutoCompleteListView.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/AutoComplete_XFormItem.js<%= ext %>?v=<%= vers %>"></script>
 
 <!-- Admin UI Specific components -->
 <!-- controllers -->
@@ -155,7 +157,4 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/mta/view/ZaQMessagesListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/mta/view/ZaMTAListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/mta/view/ZaMTAXFormView.js<%= ext %>?v=<%= vers %>"></script>
-
-<!--script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/extensions/domainadmin.js<%= ext %>?v=<%= vers %>"></script-->
-
 <!-- END SCRIPT BLOCK -->

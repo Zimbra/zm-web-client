@@ -49,7 +49,7 @@ function(parent) {
 	
 	ti = this._unflagged = new DwtTreeItem(tree);
 	ti.setText(ZmMsg.unflagged);
-	ti.setImage("FlagDis");
+	ti.setImage("FlagRedDis");
 	
 	tree.addSeparator();
 

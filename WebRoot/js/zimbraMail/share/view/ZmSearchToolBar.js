@@ -42,10 +42,10 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	
 	var groupBy = this._appCtxt.getSettings().getGroupMailBy();
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
-    this._searchButton = this._createButton(ZmSearchToolBar.SEARCH_BUTTON, null, ZmMsg.search, null, tooltip, true, "TBButtonWhite");
+    this._searchButton = this._createButton(ZmSearchToolBar.SEARCH_BUTTON, null, ZmMsg.search, null, tooltip, true, "InsetTBButton");
     document.getElementById(searchColId).appendChild(this._searchButton.getHtmlElement());
 
-	this._searchMenuButton = this._createButton(ZmSearchToolBar.SEARCH_MENU_BUTTON, "MailFolder", null, null, ZmMsg.chooseSearchType, true, "TBButtonWhite");
+	this._searchMenuButton = this._createButton(ZmSearchToolBar.SEARCH_MENU_BUTTON, "MailFolder", null, null, ZmMsg.chooseSearchType, true, "InsetTBButton");
 	this._searchMenuButton.noMenuBar = true;
     document.getElementById(searchMenuColId).appendChild(this._searchMenuButton.getHtmlElement());
 	var menuParent = this._searchMenuButton;
@@ -83,12 +83,12 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	
 	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
 		var buttonStyle = DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_CENTER | DwtButton.TOGGLE_STYLE;
-		this._browseButton = this._createButton(ZmSearchToolBar.BROWSE_BUTTON, null, ZmMsg.searchBuilder, null, ZmMsg.openSearchBuilder, true, "TBButtonWhite", buttonStyle);
+		this._browseButton = this._createButton(ZmSearchToolBar.BROWSE_BUTTON, null, ZmMsg.searchBuilder, null, ZmMsg.openSearchBuilder, true, "InsetTBButton", buttonStyle);
 	    document.getElementById(browseColId).appendChild(this._browseButton.getHtmlElement());
 	}
 
 	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
-		this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, "Save", null, "SaveDis", ZmMsg.saveCurrentSearch, true, "TBButtonWhite");
+		this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, "Save", null, "SaveDis", ZmMsg.saveCurrentSearch, true, "InsetTBButton");
 	    document.getElementById(saveColId).appendChild(this._saveButton.getHtmlElement());
 	}
 }

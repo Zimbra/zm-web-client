@@ -54,47 +54,44 @@
 * display one of those widgets, you'll have to add a class for it.
 */
 
+.Row-Focus {border: 1px dashed black;}
+
 /*
 * Top-level (shell) stuff
 */
 
 .DwtShell, .MainShell {
+	position:absolute;
+	left:0px;
+	top:0px;
 	width: 100%;
 	height: 100%;
-	position:absolute;
-	top:0px;
-	left:0px;
 }
-.MainShell {
-	background-color: #B7B7B7;
-	background-image:url(/zimbra/img/loRes/skins/steel/Steel__BG.gif);
-}
+
+.MainShell {}
+
+/* MOVED TO common.css ???
 
 .CurtainOverlay table {
-	background-color: #B7B7B7;
+	background-color: white;
 }
+*/
 
 
 
-/*
- * Splash Screen
- */
-.ZmSplashScreen { 
-  width:100%;
-  height:100%;
-  top:0;
-  left:0;
-  position:absolute;
+/* Dwt-created elements that have their ID set so we can tweak them specifically here */
+
+/* MOVE TO SKIN ??? */
+#ZmTagColorMenu {
+	width: 100px;
 }
-.ZmSplashScreen, .ZmSplashScreen table {
-	background-color: #B7B7B7;
-	background-image:url(/zimbra/img/loRes/skins/steel/Steel__BG.gif);
-}
+
 
 
 
 /*
  * Banner (enlarges, turns green when angry)
+ *	- shows username, quota bar
  */
 
 
@@ -104,22 +101,33 @@
 
 .BannerBar .quotabar {
 	width: 100px;
-	border: 1px solid white;
-	background-color: white;
+	@ProgressBarBg@
 }
 
-.BannerBar .quotaused {
-	height: 6px;
-	font-size: 6px; /* WEIRD IE QUIRK */
+.quotaUsed {
+	@ProgressBarInfo@
 }
+
+/* 65% - 85% of quota used */
+.quotaWarning {
+	@ProgressBarWarning@
+}
+
+/* 85%+ of quota used */
+.quotaCritical {
+	@ProgressBarCritical@
+}
+
 
 .BannerBar .percent {
+	@FontTiny@
+	@TextOnConsole@
 	white-space: nowrap;
-	font-size: 7pt;
-	color: black;
 }
 
-.BannerBar td {padding-right: 5px;}
+.BannerBar td {
+	padding-right: 5px;
+}
 
 .BannerBar img {
 	border: none;
@@ -127,12 +135,12 @@
 }
 
 .BannerBar .BannerText {
-	color: black;
+	@TextOnConsole@
 	text-align: center;
 }
 
 .BannerBar .BannerTextUser {
-	color: black;
+	@TextOnConsole@
 	text-align: center;
 	font-weight: bold;
 	cursor: default;
@@ -140,12 +148,46 @@
 }
 
 
+
+
+/* Status bar stuff */
+
+.ZmStatusMainText {	
+	font-weight: bold; 
+}
+
+.ZmStatusToastText { 
+	font-weight: bold; 
+}
+
+.ZmStatusInfoToast {
+	@ToastPane@
+	@ToastInfo@
+}
+.ZmStatusWarningToast {	
+	@ToastPane@
+	@ToastWarning@
+}
+.ZmStatusCriticalToast {	
+	@ToastPane@
+	@ToastCritical@
+}
+
+.ZmStatusHistory { 
+	width: 400px; 
+	height: 285px; 
+	margin: 5 5 0 5; 
+	overflow: auto;
+}
+
+
+
 /*
  *  Dwt Overrides
  */
 
 .DwtListView {
-	background-color: white;
+	@ListBg@
 }
 
 
@@ -161,9 +203,7 @@
 */
 
 .ZmToolBar {
-	background-color: #EEEEEE;
 	width: 100%;
-	Xfilter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
 }
 
 .ZmBrowseToolBar {
@@ -179,188 +219,154 @@
 /* toolbar in child window */
 .ZmAppToolBar_cw {
 	width: 100%;
-	background-color: #EEEEEE;
 }
 
 /* toolbar in child window for message view */
+/* ??? */
 .ZmMsgViewToolBar_cw {
+	@SkinHToolbarBg@
 	width: 100%;
-	background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);
 }
 
 .ZmNavToolBar {background-color: transparent;}
 .ZmInviteToolBar, .ZmShareToolBar {
-	background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);
-	padding: 2px;
-	border-bottom: 1px solid #777777;
+	@SkinHToolbarBg@
+	padding-left:5px;
 }
 
 
-td.DDSepVisible div {background-color:black; width:1px;overflow:hidden;}
-td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
-
-
-
-/*
-* Buttons
-*
-* The background color is set by a modifier.
-* TBButton - toolbar button, very light border (so we can show a border on mouseover)
-* States for buttons:
-*	-activated	-- mouseover state
-*	-triggered	-- mousedown state
+/* ??? UNUSED ?
+td.DDSepVisible div {
+	background-color:black; width:1px;overflow:hidden;
+}
+td.DDSepInvisible div {
+	background-color:transparent;width:1px;overflow:hidden;
+}
 */
 
-.ZmLoginDialog .DwtButton, 		.ZmLoginDialog .DwtButton-activated,		.ZmLoginDialog .DwtButton-triggered,
-.DwtDialog .DwtButton,			.DwtDialog .DwtButton-activated,			.DwtDialog .DwtButton-triggered,
-.DwtTabViewPage .DwtButton,		.DwtTabViewPage .DwtButton-activated,		.DwtTabViewPage .DwtButton-triggered,
-.ZmComposeView .DwtButton,		.ZmComposeView .DwtButton-activated,		.ZmComposeView .DwtButton-triggered
-{ width: 60px; }
 
-.DwtDialog .ColorButton,
-.DwtDialog .ColorButton-activated,
-.DwtDialog .ColorButton-triggered { 
-	width: 80px;
-}
-
-/* Login Panel */
-.ZmLoginDialog {
-	background-color: #b7b7b7;
-	background-image:url(/zimbra/img/loRes/skins/steel/Steel__BG.gif);
-	overflow:hidden;
-}
-.ZmLoginDialog-Transparent {background-color: transparent;}
-.ZmLoginDialog-HeaderPanel {
-	margin-top:10px;
-	margin-bottom:10px;
-	height:115px;
-	background-image:url(/zimbra/img/loRes/logo/LoginBanner.gif);
-}
-.ZmLoginDialog-HeaderText, .ZmLoginDialog-SubHeaderText {
-	color: white;
-}
-.ZmLoginDialog-HeaderText {
-	font-style: bold
-	font-size: 14pt;
-}
-.ZmLoginDialog-MainPanel {
-	width:460px;
-	background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);
-}
-.ZmLoginDialog-SubHeaderText { font-size: 12pt; }
-.ZmLoginDialog-Field { width: 290px; }
-.ZmLoginDialog-ErrorText { width: 360px; }
-.ZmLoginDialog-ErrorPanel {
-	border: 1px solid #999999;
-	background-color: #FFFFCC;
-	width:415px;
-	height: 55px;
-}
 
 /* Search bar */
-.SearchPanel {
-	width: 100%;
-	height: 20;
-}
+.SearchPanel {	}
+
+
 
 /* Browse View */
+/* ??? WHAT? */
 .ZmBrowseView {
 	height: 225px;
 	width: 100%;
 	overflow: hidden;
+	margin-left:3px;
 }
-.ZmBrowseView {background-color:white;}
-.ZmPickerOverview {overflow: hidden;}
+
+
+
+/* Search builder */
+
 .ZmPicker {
-	background-color:#EEEEEE;
-	border-right: 1px solid #999999;
+	@PickerBg@
 	width: 200px;
 }
+
+/* Header of the picker */
 .ZmPicker .DwtToolBar {
-	background-color:#CCCCCC;
-	border: 1px solid;
-	border-color: #E0E0E0 #555555 #555555 #E0E0E0;
-	height:24px;
+	@SkinHeaderBg@
 }
 
-.ZmPicker .DwtToolBar .TBButton {
-	border: 1px solid #CCCCCC;
+/* Name of the picker in the header */
+.ZmPickerLabel .Text {
+	@FontBig@
+	font-weight:bold;
 }
 
-.ZmPickerLabel {
-	Xfilter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+/* Picker body */
+.ZmPickerOverview {
+	overflow: hidden;
 }
+
+.ZmPickerOverview td {
+	@TextLabel@
+}
+
+
 
 /* Conversation */
 .ZmConvListFragment { 
-	color: gray; 
+	@TextDisabled@
 	font-weight: normal; 
 }
 .Row-Selected .ZmConvListFragment { 
-	color: #333333; 
+	@TextDisabled@
 	font-weight: normal; 
 }
 
-.ZmConvView .DwtListView-ColHeader {
-	border-width: 1 0 0 0;
-	border-style: solid;
-	border-color: #777777;
+.ZmConvView td { 
+	white-space: nowrap; 
 }
-.ZmConvView td { white-space: nowrap; }
 
 .ZmConvView .SubjectBar {
-	background-color: #CCCCCC;
+	@SkinInsetBgDarkColor@
 }
 
 .ZmConvView .Subject {
-	font-size: 12pt;
-	font-weight: bold;
+	@Text@
+	@FontBigger@
+	width: 100%;
 	padding: 3px;
+	padding-left:5px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
-.ZmConvView .Tags a, .ZmMailMsgView .Tags a { padding-right: 5px; }
 
-.ZmConvView .Tags a:link, .ZmConvView .Tags a:active, .ZmConvView .Tags a:visited,
-.ZmMailMsgView .Tags a:link, .ZmMailMsgView .Tags a:active, .ZmMailMsgView .Tags a:visited {
-	text-decoration: none;
-	color: #2557AD;
+/* put space between display of tag icons/names in message views */
+.ZmConvView .Tags a, .ZmMailMsgView .Tags a { 
+	padding-right: 5px; 
 }
-.ZmConvView .Tags a:hover, .ZmMailMsgView .Tags a:hover {
-	text-decoration: none;
-	color: #CC3333;
-}
+
+
 
 /* Mail message */
 .ZmMailMsgView {
 	width: 100%;
-	background-color: white;
+	@ListBg@
 }
 
+.MsgBody {
+	@ListBg@
+}
+
+/* ??? WHAT IS THIS */
 .ZmMailMsgView .ZmToolBar {
 	background-color: #ffffff;
-	filter:progid: DXImageTransform.Microsoft.Gradient(enabled=false);
 	margin-left: 12px;
 	height: auto;
 	width: auto;
 }
 
 .ZmMailMsgView .MsgHeader {
-	border-top: 1px solid #777777;
-	border-bottom: 1px solid #777777;
+	@SkinHeaderBgColor@
+	border-bottom: 1px solid @SkinHeaderSeparatorColor@;
 }
 
 .ZmMailMsgView .MsgHeader table {
 	table-layout: fixed;
-	background-color: #EEEEEE;
+}
+
+.ZmMailMsgView .MsgHeader td {
+	@Text@
+}
+
+.ZmMailMsgView .MsgHeader .SubjectLine td { 
+	margin-top:5px;
 }
 
 .ZmMailMsgView .MsgHeader .LabelColName {
 	overflow: hidden;
-	width: 15ex;
+	width: 10em;
 	white-space: nowrap;
 	font-weight: bold;
 	vertical-align: top;
@@ -372,9 +378,19 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	vertical-align: top;
 }
 
-.ZmMailMsgView .AttName, .ZmMailMsgView .AttName-matched {padding-right: 8px;}
-.ZmMailMsgView .AttName-matched { background-color: #FFFFBB; white-space: nowrap; }
+/* ??? WHAT IS THIS FOR? */
+.ZmMailMsgView .AttName, 
+.ZmMailMsgView .AttName-matched {
+	padding-right: 8px;
+}
 
+/* ??? WHAT IS THIS FOR? */
+.ZmMailMsgView .AttName-matched { 
+	@ListRowMatched@
+	white-space: nowrap; 
+}
+
+/* ??? WHAT IS THIS FOR? */
 .ZmMailMsgView .Displayimages {
 	cursor: pointer;
 	background-color: #FFFFCC;
@@ -384,37 +400,69 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmMailMsgView .Displayimages td {
-	font-size: 10pt;
+
 }
 
-/* Message compose */
-.ZmComposeView {
-	background-color: #EEEEEE;
-	width: 100%;
-}
-.ZmComposeView .composerTable {
-	table-layout: fixed;
-	width: 100%;
-}
+
+
+
+
+
+
+
 /* styles below apply to attachments table in iframe */
 .iframeTable {
 	table-layout: fixed;
 }
-.colButtons {width: 62px;}
-.hSpace {width: 5px;}
+/* ??? WHAT IS THIS USED FOR */
+.colButtons {
+	width: 62px;
+}
+
+/* ??? WHAT IS THIS USED FOR */
+.hSpace {
+	width: 5px;
+}
 
 
-.ZmComposeView .addLink {margin: 0 0 0 65px;}
-.ZmComposeView .subjectField { width: 100%; }
-.ZmComposeView .addresses {height: 50px;}
-.ZmComposeView .addresses, .ZmComposeView .msgArea {
+
+/* Message compose */
+.ZmComposeView {
+	@SkinHeaderBgColor@
+	width: 100%;
+}
+
+.ZmComposeView td {
+	@Text@
+}
+
+.ZmComposeView input,
+.ZmComposeView textarea
+{}
+
+.ZmComposeView .composerTable {
+	table-layout: fixed;
+	width: 100%;
+}
+
+.ZmComposeView .addLink {
+	margin: 0 0 0 65px;
+}
+
+.ZmComposeView .subjectField {
+	width: 100%; 
+}
+.ZmComposeView .addresses {
+	height: 50px;
+}
+.ZmComposeView .addresses, 
+.ZmComposeView .msgArea {
 	width: 100%;
 	overflow: auto;
 }
 
 .ZmComposeView .msgArea {
-	height: 100%;
-	font: 10pt monospace;
+	@FontFixed@
 }
 
 .ZmComposeView .attachText {
@@ -429,33 +477,45 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmHtmlEditor .DwtHtmlEditorTextArea {
-	font: 10pt monospace;
+	@FontFixed@
 	width: 100%;
 	overflow: auto;
 	padding: 1px;
-	border-width: 1px;
-	border-style: solid;
-	border-color: #000000 #AAAAAA #AAAAAA #000000;
 }
 
+/* NOTE: this is deliberately always black text on white */
 .ZmHtmlEditor .DwtHtmlEditorIFrame {
-	border: 1px solid;
-	border-color: #000 #aaa #aaa #000;
 	background-color: white;
+	border: 1px inset gray;
 	width: 100%;
 }
 
+/* UNUSED
+.ZmComposeTBButton {
+	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080);
+}
+
+.ZmComposeTBButton.toggled {
+	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080);
+	background-color: white;
+}
+*/
+
+
+/* ??? WHAT IS THIS FOR ? */
 .NtdDialogTable .NtdLabel {
 	white-space:nowrap; 
 	padding:2px 5px; 
 	text-align:right;
 }
 
+/* ??? WHAT IS THIS FOR ? */
 .NtdDialogTable fieldset {
 	margin-left:5px;
 	margin-right:5px;
 }
 
+/* ??? WHAT IS THIS FOR ? */
 .TpdDialogTable .BorderColorSwatch {
 	padding:2px;
 	border:1px outset;
@@ -465,53 +525,48 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 
-.ZmComposeTBButton {
-	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080);
-}
-
-.ZmComposeTBButton.toggled {
-	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080);
-	background-color: white;
-}
-
 
 
 
 /* NEW CONTACTS UI STYLES */
 .ZmContactSplitView {
-	background-color: white;
 	padding: 4px;
 }
 
+/* list of contacts */
 .ZmContactSimpleView {
-	background-color: white;
-	border: 1px solid #666666;
+	@ListBg@
+	@ListBorder@
+}
+
+.SimpleContact td {
+	height:20px;
 }
 
 .ZmContactSimpleView .SimpleContact,
 .ZmContactSimpleView .SimpleContact-right,
 .ZmContactSimpleView .SimpleContact-drag {
-	border-bottom: 1px solid #EEEEEE
 	width: 100%;
 	overflow-x: hidden;
 }
 
 .ZmContactSimpleView .SimpleContact-right,
 .ZmContactSimpleView .SimpleContact-drag {
-	background-color:#EAF5F5;
+	Xbackground-color:#EAF5F5;
 }
 
 .ZmContactSimpleView .SimpleContact-drag {
-	color: white;
+	Xcolor: white;
 }
 
 .ZmContactSimpleView .SimpleContactHover {
-	background-color: #EEEEEE
+	Xbackground-color: #EEEEEE
 }
 
+/* display of one contact  */
 .ZmContactInfoView {
-	background-color: white;
-	border: 1px solid rgb(120, 120, 120);
+	@ListBorder@
+	@ListBg@
 	overflow: hidden;
 }
 
@@ -519,44 +574,48 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 .ZmContactView .contactHeader,
 .ZmContactCardsView .contactHeader,
 .ZmContactCard-dnd .contactHeader {
-	font-size: 22px;
-	font-weight: bold;
-	background-color: #CCCCCC;
-	color: black;
-	padding: 5px;
+	@FontBiggest@
+	@Text@
+	padding-left:5px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
 .ZmContactInfoView .companyName {
-	font-size: 18px;
+	@Text@
+	@FontBigger@
 	padding: 5px;
 }
 
 .ZmContactInfoView .contactOutput {
-	font-size: 12px;
+	@Text@
+	@FontBig@
 }
 
 .ZmContactInfoView .contactLabel {
-	font-size: 12px;
-	color: #999999;
-	white-space: nowrap;
+	@TextLabel@
+	@FontBig@
 	width: 1%;
 }
 
 .ZmContactView .editLabel {
-	font-weight: bold;
-	font-size: 14px;
+	@TextLabel@
+	text-align:right;
+}
+
+.ZmContactView .editSectionLabel {
+	@TextLabel@
+	@FontBigger@
+	border-bottom:1px solid @SeparatorColor@;
 }
 
 .contactEditHeader {
-	font-size:14px;
-	font-weight:bold;
+	@FontBigger@
+	border-bottom:1px solid @SeparatorColor@;
 	padding-top: 15;
 	padding-left: 5px;
 	margin-bottom: 5;
-	border-bottom:1px solid black;
 	overflow: hidden;
 }
 
@@ -565,6 +624,14 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	padding-left: 5px;
 	padding-right: 5px;
 	overflow: hidden;
+}
+
+
+
+.ZmContactCardsView {
+	@SkinAppInsetBg@
+	height: 100%;
+	width: 100%;
 }
 
 .ZmContactCard {
@@ -698,7 +765,8 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .calendar_heading_day_today {
-	color: red;
+	color: #790000;
+	font-weight:bold;
 	white-space: nowrap;
 	overflow:hidden;
 	text-align:center;
@@ -708,7 +776,8 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .calendar_heading_day_today-selected {
-	color: red;
+	color: #790000;
+	font-weight:bold;
 	background-color: #ADD6D6;
 	white-space: nowrap;
 	overflow:hidden;
@@ -984,10 +1053,10 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 /** The cal/appt images are here temporarily **/
 
-.calendar_header_note	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_note.gif);	}
-.calendar_header_alarm	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_alarm.gif);	}
-.calendar_header_repeat	 		{	width:10;	height:16;	background-image:url(/zimbra/img/hiRes/calendar/calendar_header_repeat.gif);	}
-.menu_light				{	width:8;	height:16;	background-image:url(/zimbra/img/hiRes/other/menu_light.gif);	}
+.calendar_header_note	 		{	width:10;	height:16;	background-image:url(/zimbra/img/loRes/calendar/calendar_header_note.gif);	}
+.calendar_header_alarm	 		{	width:10;	height:16;	background-image:url(/zimbra/img/loRes/calendar/calendar_header_alarm.gif);	}
+.calendar_header_repeat	 		{	width:10;	height:16;	background-image:url(/zimbra/img/loRes/calendar/calendar_header_repeat.gif);	}
+.menu_light				{	width:8;	height:16;	background-image:url(/zimbra/img/loRes/other/menu_light.gif);	}
 
 .allday {
         left:0;
@@ -1066,20 +1135,22 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	width: 1%;
 }
 
-/* ZmSchedTabViewPage */
 
 .ZmSchedTabViewPageKey {
 	vertical-align: top;
 	text-align: right;
 }
 
-.ZmSchedTabViewPageKeySquare {
-	width: 16px;
-	height: 16px;
-	border-width: 1px;
-	border-style: solid;
-	border-color: #555555 #C3C3C3 #C3C3C3 #555555;
-}
+
+
+
+/* Colors for the Schedule view */
+.ZmScheduleFree 		{	background-color: #FFFFFF;	}
+.ZmScheduleBusy 		{	background-color: #990000;	}
+.ZmScheduleTentative 	{	background-color: #FF3300;	}
+.ZmScheduleOutOfOffice 	{	background-color: #FFCC00;	}
+.ZmScheduleUnknown 		{	background-color: #FFF5CC;	}
+
 
 .ZmSchedTabViewPageDate {
 	font-weight: bold;
@@ -1130,7 +1201,17 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 	line-height: 22px;
 	color: #AAAAAA;
 }
-
+/*
+.ZmSchedTabViewPageEmail {
+	white-space: nowrap;
+	overflow: hidden;
+	cursor: text;
+	line-height: 22px;
+	height: 24px;
+	color: #AAAAAA;
+	width: 160px;
+}
+*/
 .ZmSchedTabViewPageGridCell {
 	border-width: 0 1 1 0;
 	border-style: solid;
@@ -1185,6 +1266,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .ZmSchedTabViewPageInput {
+/*	height: 24px; */
 	width: 100%;
 	height: 100%;
 	border: 0px;
@@ -1208,7 +1290,7 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
   font-weight:bold;
 }
 
-.ZmContactCardsView, .ZmCalViewMgr {
+.ZmCalViewMgr {
 	background-color: #EEEEEE;
 	height: 100%;
 	width: 100%;
@@ -1338,31 +1420,20 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 }
 
 .currentAppLabel .Text {
-	font-size: 13px;
-	font-weight: bold;
+	@FontBigger@
+	@TextOnInset@
 }
 
 .search_input {
+	@Input@
 	width:100%;
-	border:1px inset gray;
-	background-color:white;
 }
 
 .ZmNavToolBar .DwtText {white-space: nowrap;}
 
-.ZmStatusHistory { width: 400px; height: 285px; margin: 5 5 0 5; overflow: auto;}
 
-/*.ZmStatus { background-color: yellow; }*/
-.ZmStatusMainText {	font-weight: bold; }
 
-.ZmStatusToastText { font-weight: bold; }
 
-.ZmStatus .ZmStatusInfoToast, .ZmStatus .ZmStatusWarningToast, .ZmStatus .ZmStatusCriticalToast { border: 1px solid black; }
-.ZmStatusHistory .ZmStatusInfoToast, .ZmStatusHistory .ZmStatusWarningToast, .ZmStatusHistory .ZmStatusCriticalToast { border: 1px solid black; }
-
-.ZmStatusInfoToast {	background-color:#BFDFCA;	}
-.ZmStatusWarningToast {	background-color:#FFF6BF;	}
-.ZmStatusCriticalToast {	background-color:#F5BFBF;	}
 
 /*
  * Colors, for use in calendar and elsewhere.
@@ -1701,4 +1772,48 @@ HTML>BODY .appt-selected .appt_allday_body
 	font-weight: normal;
 	font-size: 10pt;
 	color: #666;
+}
+
+.ZmNoteView, .ZmNoteEditView {
+	background-color: #EEE;
+	xwidth: 100%;
+}
+
+.ZmNoteView {
+	overflow: auto;
+}
+.ZmNoteView, .ZmNoteView P, .ZmNoteView TD, .ZmNoteView DIV,
+.ZmNoteView SPAN, .ZmNoteView SELECT, .ZmNoteView INPUT, 
+.ZmNoteView TEXTAREA, .ZmNoteView BUTTON {
+	font-family: "Times New Roman", Times, serif;
+	font-size: 12pt;
+}
+.ZmNoteView H1 {
+	margin-top: 0em;
+	margin-bottom: 0.25em;
+}
+.ZmNoteView H2 {
+	margin-top: 0.25em;
+	margin-bottom: 0.25em;
+}
+.ZmNoteView * {
+	font-family: inherit;
+}
+.ZmNoteView SPAN.Object, .ZmNoteView SPAN.Object-activated {
+	font-size: inherit;
+}
+
+.ZmNoteEditView {
+}
+.ZmNoteEditView .Label {
+	font-family: "Times New Roman", Times, serif;
+	font-size: 14pt;
+	text-align: right;
+	width: 1%;
+}
+.ZmEditNoteView .DwtInputField {
+	width: 100%;
+}
+.ZmEditNoteView .DwtHtmlEditorIFrame {
+	height: 100%;
 }
