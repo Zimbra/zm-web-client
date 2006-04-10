@@ -648,6 +648,7 @@ function(inputEl, attendee) {
 				this._addAttendeeRow(false, false); // add new empty slot
 			}
 		} else {
+			this._activeInputIdx = null;
 			var msg = AjxMessageFormat.format(this.parent._badAttendeeMsg[type], value);
 			this.parent.showErrorMessage(msg, null, this._badAttendeeCallback, this, [idx, sched]);
 		}
