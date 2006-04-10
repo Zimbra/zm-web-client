@@ -585,16 +585,28 @@ function(message, viewMode) {
 				}
 			}
 		}
+
+		// Locations can be free-text or known, so we parse the "loc" string to get them rather than
+		// looking at the invite's resources (which will contain known locations)
 		this._attendees[ZmAppt.LOCATION] = [];
+		var locations = ZmEmailAddress.split(message.invite.getLocation(0));
+		if (locations) {
+			for (var i = 0; i < locations.length; i++) {
+				var location = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, locations[i], ZmAppt.LOCATION);
+				if (location && location.isLocation()) {
+					this._attendees[ZmAppt.LOCATION].push(location);
+				}
+			}
+		}
+		
+		// Get resources by email, make sure to exclude location resources
 		this._attendees[ZmAppt.RESOURCE] = [];
 		var resources = message.invite.getResources();
 		if (resources) {
 			for (var i = 0; i < resources.length; i++) {
 				var resource = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, resources[i].url);
 				if (resource) {
-					if (resource.isLocation()) {
-						this._attendees[ZmAppt.LOCATION].push(resource);
-					} else {
+					if (!resource.isLocation()) {
 						this._attendees[ZmAppt.RESOURCE].push(resource);
 					}
 				}

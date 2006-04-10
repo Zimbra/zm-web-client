@@ -454,7 +454,7 @@ function(recurrences) {
 *
 * @param appCtxt	[ZmAppCtxt]		the app context
 * @param item		[object]		string, ZmEmailAddress, ZmContact, or ZmResource
-* @param type		[constant]		attendee type
+* @param type		[constant]*		attendee type
 * @param strict		[boolean]*		if true, item must be a known contact/resource
 */
 ZmApptViewHelper.getAttendeeFromItem =
@@ -504,6 +504,7 @@ function(appCtxt, item, type, strict) {
 		if (!attendee && type == ZmAppt.LOCATION && !strict) {
 			attendee = new ZmResource(appCtxt);
 			attendee.setAttr(ZmResource.F_name, item);
+			attendee.setAttr(ZmResource.F_type, ZmResource.TYPE_LOCATION);
 			if (resources) {
 				resources.updateHashes(attendee);
 			}
