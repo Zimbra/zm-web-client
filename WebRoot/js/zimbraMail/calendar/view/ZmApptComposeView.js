@@ -164,16 +164,6 @@ function(appt, mode, isDirty) {
 
 ZmApptComposeView.prototype.cleanup = 
 function() {
-	// reset autocomplete lists
-	if (this._acContactsList) {
-		this._acContactsList.reset();
-		this._acContactsList.show(false);
-	}
-	if (this._acResourcesList) {
-		this._acResourcesList.reset();
-		this._acResourcesList.show(false);
-	}
-
 	// clear attendees lists
 	this._attendees[ZmAppt.PERSON]		= new AjxVector();
 	this._attendees[ZmAppt.LOCATION]	= new AjxVector();
@@ -395,28 +385,6 @@ function(msg, style, cb, cbObj, cbArgs) {
 
 ZmApptComposeView.prototype._initialize = 
 function() {
-
-	var shell = this._appCtxt.getShell();
-	var locCallback = new AjxCallback(this, this._getAcListLoc);
-	var acCallback = new AjxCallback(this, this._autocompleteCallback);
-
-	// autocomplete for attendees
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
-		var contactsLoader = contactsClass.getContactList;
-		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader,
-					  matchValue: ZmContactList.AC_VALUE_NAME, locCallback: locCallback, compCallback: acCallback};
-		this._acContactsList = new ZmAutocompleteListView(params);
-	}
-	// autocomplete for locations/resources
-	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
-		var resourcesLoader = resourcesClass.getResources;
-		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesLoader,
-					  matchValue: ZmContactList.AC_VALUE_NAME, locCallback: locCallback, compCallback: acCallback};
-		this._acResourcesList = new ZmAutocompleteListView(params);
-	}
-
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
 		this._tabPages[id] = this._createTabViewPage(id);
@@ -439,9 +407,9 @@ ZmApptComposeView.prototype._createTabViewPage =
 function(id) {
 	switch (id) {
 		case ZmApptComposeView.TAB_APPOINTMENT :
-			return new ZmApptTabViewPage(this, this._appCtxt, this._attendees, this._acContactsList, this._acResourcesList);
+			return new ZmApptTabViewPage(this, this._appCtxt, this._attendees);
 		case ZmApptComposeView.TAB_SCHEDULE :
-			return new ZmSchedTabViewPage(this, this._appCtxt, this._attendees, this._controller, this._acContactsList, this._acResourcesList);
+			return new ZmSchedTabViewPage(this, this._appCtxt, this._attendees, this._controller);
 		case ZmApptComposeView.TAB_ATTENDEES :
 			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, ZmAppt.PERSON);
 		case ZmApptComposeView.TAB_LOCATIONS :
@@ -463,24 +431,6 @@ ZmApptComposeView.prototype._getDialogXY =
 function() {
 	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
 	return new DwtPoint(loc.x + ZmComposeView.DIALOG_X, loc.y + ZmComposeView.DIALOG_Y);
-};
-
-ZmApptComposeView.prototype._getAcListLoc =
-function(ev) {
-	var element = ev.element;
-	var loc = Dwt.getLocation(element);
-	var height = Dwt.getSize(element).y;
-	return (new DwtPoint(loc.x, loc.y + height));
-};
-
-ZmApptComposeView.prototype._autocompleteCallback =
-function(text, el, match) {
-	var attendee = match.item;
-	var type = el._attType;
-	this.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
-	if (this._tabPages[this._curTabId]._autocompleteCallback) {
-		this._tabPages[this._curTabId]._autocompleteCallback(text, el, match);
-	}
 };
 
 ZmApptComposeView.prototype._addChooserListener =

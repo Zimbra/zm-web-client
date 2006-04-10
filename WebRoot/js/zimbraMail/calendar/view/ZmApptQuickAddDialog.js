@@ -108,12 +108,11 @@ function(appt) {
 	// autocomplete for locations
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var shell = this._appCtxt.getShell();
-		var locCallback = new AjxCallback(this, this._getAcListLoc);
 		var acCallback = new AjxCallback(this, this._autocompleteCallback);
 		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
 		var resourcesLoader = resourcesClass.getResources;
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesLoader,
-					  matchValue: ZmContactList.AC_VALUE_NAME, locCallback: locCallback, compCallback: acCallback};
+					  matchValue: ZmContactList.AC_VALUE_NAME, compCallback: acCallback};
 		this._acResourcesList = new ZmAutocompleteListView(params);
 		this._acResourcesList.handle(this._locationField.getInputElement());
 	}
@@ -398,14 +397,6 @@ function() {
 	var str = vals.join("|");
 	str = str.replace(/\|+/, "|");
 	return str;
-};
-
-ZmApptQuickAddDialog.prototype._getAcListLoc =
-function(ev) {
-	var element = ev.element;
-	var loc = Dwt.getLocation(element);
-	var height = Dwt.getSize(element).y;
-	return (new DwtPoint(loc.x, loc.y + height));
 };
 
 ZmApptQuickAddDialog.prototype._autocompleteCallback =

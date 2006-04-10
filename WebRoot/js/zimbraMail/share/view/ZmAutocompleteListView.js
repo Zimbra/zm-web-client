@@ -52,14 +52,16 @@
 * </p>
 * 
 * @author Conrad Damon
-* @param parent			the element that created this list
-* @param className		CSS class
-* @param dataClass		the class that has the data loader
-* @param dataLoader		a method of dataClass that returns data to match against
-* @param matchValue		name of field in match result to use for completion
-* @param locCallback	callback into client to get desired location of autocomplete list
-* @param compCallback	callback into client to notify it that completion happened
-* @param separator		separator (gets added to the end of a match)
+* @param parent				[DwtComposite]		the element that created this list
+* @param className			[string]*			CSS class
+* @param dataClass			[function]			the class that has the data loader
+* @param dataLoader			[function]			a method of dataClass that returns data to match against
+* @param matchValue			[string]			name of field in match result to use for completion
+* @param separator			[string]*			separator (gets added to the end of a match)
+* @param locCallback		[AjxCallback]		callback into client to get desired location of autocomplete list
+* @param compCallback		[AjxCallback]*		callback into client to notify it that completion happened
+* @param keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
+* @param keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
 */
 function ZmAutocompleteListView(params) {
 
@@ -71,9 +73,11 @@ function ZmAutocompleteListView(params) {
 	this._dataLoader = params.dataLoader;
 	this._dataLoaded = false;
 	this._matchValue = params.matchValue;
-	this._locCallback = params.locCallback;
-	this._compCallback = params.compCallback;
 	this._separator = (params.separator != null) ? params.separator : ZmEmailAddress.SEPARATOR;
+	this._locCallback = params.locCallback ? params.locCallback : new AjxCallback(this, this._getAcListLoc);
+	this._compCallback = params.compCallback;
+	this._keyDownCallback = params.keyDownCallback;
+	this._keyUpCallback = params.keyUpCallback;
 
 	// mouse event handling
 	this._setMouseEventHdlrs();
@@ -110,17 +114,41 @@ for (var i = 0; i < ZmAutocompleteListView.DELIMS.length; i++)
 
 // Public static methods
 
+ZmAutocompleteListView.onKeyDown =
+function(ev) {
+	ev = DwtUiEvent.getEvent(ev);
+	var result = ZmAutocompleteListView._onKeyDown(ev);
+	var element = DwtUiEvent.getTargetWithProp(ev, "id");
+	var aclv = AjxCore.objectWithId(element._acListViewId);
+	if (aclv._keyDownCallback) {
+		aclv._keyDownCallback.run(ev, aclv, result);
+	}
+	return result;
+};
+
+ZmAutocompleteListView.onKeyUp =
+function(ev) {
+	ev = DwtUiEvent.getEvent(ev);
+	var result = ZmAutocompleteListView._onKeyUp(ev);
+	var element = DwtUiEvent.getTargetWithProp(ev, "id");
+	var aclv = AjxCore.objectWithId(element._acListViewId);
+	if (aclv._keyUpCallback) {
+		aclv._keyUpCallback.run(ev, aclv, result);
+	}
+	return result;
+};
+
 /**
 * "onkeydown" handler for catching Tab and Esc keys. We don't want to let the browser
 * handle this event for those (which it will do before we get the keyup event).
 *
 * @param ev		the key event
 */
-ZmAutocompleteListView.onKeyDown =
+ZmAutocompleteListView._onKeyDown =
 function(ev) {
 	DBG.println(AjxDebug.DBG3, "onKeyDown");
 	var key = DwtKeyEvent.getCharCode(ev);
-	return (key == DwtKeyEvent.KEY_TAB || key == DwtKeyEvent.KEY_ESCAPE) ? ZmAutocompleteListView.onKeyUp(ev) : true;
+	return (key == DwtKeyEvent.KEY_TAB || key == DwtKeyEvent.KEY_ESCAPE) ? ZmAutocompleteListView._onKeyUp(ev) : true;
 }
 
 /**
@@ -129,11 +157,11 @@ function(ev) {
 *
 * @param ev		the key event
 */
-ZmAutocompleteListView.onKeyUp =
+ZmAutocompleteListView._onKeyUp =
 function(ev) {
-	ev = DwtUiEvent.getEvent(ev);
-	if (ev.type == "keyup")
+	if (ev.type == "keyup") {
 		DBG.println(AjxDebug.DBG3, "onKeyUp");
+	}
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
 	if (!element) return true;
 
@@ -212,6 +240,20 @@ function(ev) {
 	
 	return true;
 }
+
+// Hides list if there is a click elsewhere.
+ZmAutocompleteListView._outsideMouseDownListener =
+function(ev) {
+	var curList = ZmAutocompleteListView._activeAcList;
+    if (curList.getVisible()) {
+		var obj = DwtUiEvent.getDwtObjFromEvent(ev);
+		if (obj != curList) {
+			curList.show(false);
+			ev._stopPropagation = false;
+			ev._returnValue = true;
+		}
+	}
+};
 
 // Public methods
 
@@ -607,15 +649,10 @@ function(htmlEl) {
 	htmlEl.focus();
 }
 
-ZmAutocompleteListView._outsideMouseDownListener =
+ZmAutocompleteListView.prototype._getAcListLoc =
 function(ev) {
-	var curList = ZmAutocompleteListView._activeAcList;
-    if (curList.getVisible()) {
-		var obj = DwtUiEvent.getDwtObjFromEvent(ev);
-		if (obj != curList) {
-			curList.show(false);
-			ev._stopPropagation = false;
-			ev._returnValue = true;
-		}
-	}
+	var element = ev.element;
+	var loc = Dwt.getLocation(element);
+	var height = Dwt.getSize(element).y;
+	return (new DwtPoint(loc.x, loc.y + height));
 };
