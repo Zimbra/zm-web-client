@@ -34,17 +34,13 @@
 * @param parent				[DwtComposite]				the appt compose view
 * @param appCtxt 			[ZmAppCtxt]					app context
 * @param attendees			[hash]						attendees/locations/resources
-* @param acContactsList		[ZmAutocompleteListView]	autocomplete for attendees
-* @param acResourcesList	[ZmAutocompleteListView]	autocomplete for locations/resources
 */
-function ZmApptTabViewPage(parent, appCtxt, attendees, acContactsList, acResourcesList) {
+function ZmApptTabViewPage(parent, appCtxt, attendees) {
 
 	DwtTabViewPage.call(this, parent);
 
 	this._appCtxt = appCtxt;
 	this._attendees = attendees;
-	this._acContactsList = acContactsList;
-	this._acResourcesList = acResourcesList;
 
 	this.setScrollStyle(DwtControl.CLIP);
 	this._rendered = false;
@@ -226,6 +222,16 @@ function() {
 
 	// disable all input fields
 	this.enableInputs(false);
+
+	// reset autocomplete lists
+	if (this._acContactsList) {
+		this._acContactsList.reset();
+		this._acContactsList.show(false);
+	}
+	if (this._acResourcesList) {
+		this._acResourcesList.reset();
+		this._acResourcesList.show(false);
+	}
 };
 
 ZmApptTabViewPage.prototype.addRepeatChangeListener =
@@ -896,13 +902,35 @@ function() {
 
 ZmApptTabViewPage.prototype._initAutocomplete =
 function() {
-	if (this._acContactsList) {
+	var shell = this._appCtxt.getShell();
+	var acCallback = new AjxCallback(this, this._autocompleteCallback);
+
+	// autocomplete for attendees
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+		var contactsLoader = contactsClass.getContactList;
+		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader,
+					  matchValue: ZmContactList.AC_VALUE_NAME, compCallback: acCallback};
+		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acContactsList.handle(this._attInputField[ZmAppt.PERSON].getInputElement());
 	}
-	if (this._acResourcesList) {
+	// autocomplete for locations/resources
+	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
+		var resourcesLoader = resourcesClass.getResources;
+		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesLoader,
+					  matchValue: ZmContactList.AC_VALUE_NAME, compCallback: acCallback};
+		this._acResourcesList = new ZmAutocompleteListView(params);
 		this._acResourcesList.handle(this._attInputField[ZmAppt.LOCATION].getInputElement());
 		this._acResourcesList.handle(this._attInputField[ZmAppt.RESOURCE].getInputElement());
 	}
+};
+
+ZmApptTabViewPage.prototype._autocompleteCallback =
+function(text, el, match) {
+	var attendee = match.data._item;
+	var type = el._attType;
+	this.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
 };
 
 ZmApptTabViewPage.prototype._addEventHandlers =

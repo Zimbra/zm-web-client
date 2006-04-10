@@ -36,18 +36,14 @@
 * @param appCtxt 			[ZmAppCtxt]					app context
 * @param attendees			[hash]						attendees/locations/resources
 * @param controller			[ZmApptComposeController]	the appt compose controller
-* @param acContactsList		[ZmAutocompleteListView]	autocomplete for attendees
-* @param acResourcesList	[ZmAutocompleteListView]	autocomplete for locations/resources
 */
-function ZmSchedTabViewPage(parent, appCtxt, attendees, controller, acContactsList, acResourcesList) {
+function ZmSchedTabViewPage(parent, appCtxt, attendees, controller) {
 
 	DwtTabViewPage.call(this, parent);
 
 	this._appCtxt = appCtxt;
 	this._attendees = attendees;
 	this._controller = controller;
-	this._acContactsList = acContactsList;
-	this._acResourcesList = acResourcesList;
 
 	this._apptTab = parent.getTabPage(ZmApptComposeView.TAB_APPOINTMENT);
 
@@ -108,8 +104,9 @@ function() {
 
 ZmSchedTabViewPage.prototype.tabBlur =
 function() {
-	if (this._activeInputField) {
-		this._handleAttendeeField(this._activeInputField.getInputElement());
+	if (this._activeInputIdx != null) {
+		var inputEl = this._schedTable[this._activeInputIdx].inputObj.getInputElement();
+		this._handleAttendeeField(inputEl);
 	}
 	if (this._activeDateField) {
 		this._handleDateChange(this._activeDateField == this._startDateField);
@@ -148,7 +145,7 @@ function() {
 	while (this._attendeesTable.rows.length > 2) {
 		this._removeAttendeeRow(2);
 	}
-	this._activeInputField = null;
+	this._activeInputIdx = null;
 
 	// cleanup all attendees row
 	var allAttCells = this._allAttendeesSlot._coloredCells;
@@ -165,6 +162,16 @@ function() {
 	this._curValEndDate = "";
 
 	this._resetAttendeeCount();
+
+	// reset autocomplete lists
+	if (this._acContactsList) {
+		this._acContactsList.reset();
+		this._acContactsList.show(false);
+	}
+	if (this._acResourcesList) {
+		this._acResourcesList.reset();
+		this._acResourcesList.show(false);
+	}
 };
 
 ZmSchedTabViewPage.prototype.isDirty =
@@ -202,6 +209,7 @@ function(newWidth, newHeight) {
 ZmSchedTabViewPage.prototype._initialize = 
 function() {
 	this._createHTML();
+	this._initAutocomplete();
 	this._createDwtObjects();
 	this._addEventHandlers();
 	this._resetAttendeeCount();
@@ -366,6 +374,48 @@ function() {
 	return html.join("");
 };
 
+ZmSchedTabViewPage.prototype._initAutocomplete =
+function() {
+	var shell = this._appCtxt.getShell();
+	var locCallback = new AjxCallback(this, this._getAcListLoc);
+	var acCallback = new AjxCallback(this, this._autocompleteCallback);
+	var keyUpCallback = new AjxCallback(this, this._autocompleteKeyUpCallback);
+
+	// autocomplete for attendees
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+		var contactsLoader = contactsClass.getContactList;
+		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader,
+					  matchValue: ZmContactList.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback};
+		this._acContactsList = new ZmAutocompleteListView(params);
+	}
+	// autocomplete for locations/resources
+	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
+		var resourcesLoader = resourcesClass.getResources;
+		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesLoader,
+					  matchValue: ZmContactList.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback};
+		this._acResourcesList = new ZmAutocompleteListView(params);
+	}
+};
+
+// Add the attendee, then create a new empty slot since we've now filled one.
+ZmSchedTabViewPage.prototype._autocompleteCallback =
+function(text, el, match) {
+	this._handleAttendeeField(el, match.data._item);
+};
+
+// Enter listener. If the user types a return when no autocomplete list is showing,
+// then go ahead and add a new empty slot.
+ZmSchedTabViewPage.prototype._autocompleteKeyUpCallback =
+function(ev, aclv, result) {
+	var key = DwtKeyEvent.getCharCode(ev);
+	if ((key == 3 || key == 13) && !aclv.getVisible()) {
+		var el = DwtUiEvent.getTargetWithProp(ev, "id");
+		this._handleAttendeeField(el);
+	}
+};
+
 ZmSchedTabViewPage.prototype._addAttendeeRow =
 function(isAllAttendees, isOrganizer, index) {
 	index = index ? index : this._attendeesTable.rows.length;
@@ -454,8 +504,11 @@ function(isAllAttendees, isOrganizer, index) {
 	if (!isAllAttendees && !isOrganizer) {
 		var attendeeInput = document.getElementById(sched.dwtInputId);
 		if (attendeeInput) {
+			this._activeInputIdx = null;
+			attendeeInput.focus();
+			this._activeInputIdx = index;
 			// handle focus moving to/from an enabled input
-			Dwt.setHandler(attendeeInput, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
+			Dwt.setHandler(attendeeInput, DwtEvent.ONFOCUS, ZmSchedTabViewPage._onFocus);
 			Dwt.setHandler(attendeeInput, DwtEvent.ONBLUR, ZmSchedTabViewPage._onBlur);
 			attendeeInput._schedViewPageId = this._svpId;
 			attendeeInput._schedTableIdx = index;
@@ -558,8 +611,11 @@ function(show) {
 * Called by ONBLUR handler for attendee input field.
 */
 ZmSchedTabViewPage.prototype._handleAttendeeField = 
-function(inputEl) {
+function(inputEl, attendee) {
+
 	var idx = inputEl._schedTableIdx;
+	if (idx != this._activeInputIdx) return;
+
 	var sched = this._schedTable[idx];
 	var input = sched.inputObj;
 	var value = AjxStringUtil.trim(input.getValue());
@@ -576,7 +632,7 @@ function(inputEl) {
 				this._resetRow(sched, false, type, true);
 			}
 		}
-		var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, value, type, true);
+		attendee = attendee ? attendee : ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, value, type, true);
 		if (attendee) {
 			var email = attendee.getEmail();
 			this._emailToIdx[email] = idx;
@@ -592,7 +648,7 @@ function(inputEl) {
 				this._addAttendeeRow(false, false); // add new empty slot
 			}
 		} else {
-			this.parent.showErrorMessage(this.parent._badAttendeeMsg[type], null, this._badAttendeeCallback, this, idx);
+			this.parent.showErrorMessage(this.parent._badAttendeeMsg[type], null, this._badAttendeeCallback, this, [idx, sched]);
 		}
 	} else if (curAttendee) {
 		// user erased an attendee
@@ -613,10 +669,14 @@ function(sched, attendee, type) {
 };
 
 ZmSchedTabViewPage.prototype._badAttendeeCallback = 
-function(index) {
-	this._activeInputField = null;
-	this._removeAttendeeRow(index);
+function(index, sched) {
 	this.parent._msgDialog.popdown();
+	this._activeInputIdx = null;
+	if (sched && sched.attendee) {	
+		this._removeAttendeeRow(index);
+	} else {
+		this._resetRow(sched, false, sched.attType, true);
+	}
 };
 
 ZmSchedTabViewPage.prototype._getStartTime = 
@@ -774,7 +834,7 @@ function(sched, resetSelect, type, noClear) {
 	}
 
 	sched.uid = null;
-	this._activeInputField = null;
+	this._activeInputIdx = null;
 };
 
 ZmSchedTabViewPage.prototype._clearColoredCells = 
@@ -826,12 +886,6 @@ function(isStartDate, skipCheck) {
 	}
 	// finally, update the appt tab view page w/ new date(s)
 	this._apptTab.updateDateField(this._startDateField.value, this._endDateField.value);
-};
-
-ZmSchedTabViewPage.prototype._autocompleteCallback =
-function(text, el, match) {
-	this._addAttendeeRow(false, false);	// add empty slot now that we just filled one
-	this._activeInputField = null;
 };
 
 // Listeners
@@ -1115,11 +1169,16 @@ function(ev) {
 		svp._outlineAppt();
 	} else if (el.id == svp._startDateFieldId || el.id == svp._endDateFieldId) {
 		svp._activeDateField = el;
-	} else {
-		var sched = svp._schedTable[el._schedTableIdx];
-		if (sched) {
-			svp._activeInputField = sched.inputObj;
-		}
+	}
+};
+
+ZmSchedTabViewPage._onFocus = 
+function(ev) {
+	var el = DwtUiEvent.getTarget(ev);
+	var svp = AjxCore.objectWithId(el._schedViewPageId);
+	var sched = svp._schedTable[el._schedTableIdx];
+	if (sched) {
+		svp._activeInputIdx = el._schedTableIdx;
 	}
 };
 
@@ -1131,9 +1190,6 @@ function(ev) {
 		svp._handleDateChange(el == svp._startDateField);
 		svp._activeDateField = null;
 	} else {
-		if (svp._activeInputField) {
-			svp._handleAttendeeField(el);
-		}
-		svp._activeInputField = null;
+		svp._handleAttendeeField(el);
 	}
 };
