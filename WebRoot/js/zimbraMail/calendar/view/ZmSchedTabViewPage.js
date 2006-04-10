@@ -377,7 +377,6 @@ function() {
 ZmSchedTabViewPage.prototype._initAutocomplete =
 function() {
 	var shell = this._appCtxt.getShell();
-	var locCallback = new AjxCallback(this, this._getAcListLoc);
 	var acCallback = new AjxCallback(this, this._autocompleteCallback);
 	var keyUpCallback = new AjxCallback(this, this._autocompleteKeyUpCallback);
 
@@ -648,7 +647,8 @@ function(inputEl, attendee) {
 				this._addAttendeeRow(false, false); // add new empty slot
 			}
 		} else {
-			this.parent.showErrorMessage(this.parent._badAttendeeMsg[type], null, this._badAttendeeCallback, this, [idx, sched]);
+			var msg = AjxMessageFormat.format(this.parent._badAttendeeMsg[type], value);
+			this.parent.showErrorMessage(msg, null, this._badAttendeeCallback, this, [idx, sched]);
 		}
 	} else if (curAttendee) {
 		// user erased an attendee
@@ -1162,6 +1162,7 @@ ZmSchedTabViewPage._onClick =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var svp = AjxCore.objectWithId(el._schedViewPageId);
+	if (!svp) return;
 	// figure out which object was clicked
 	if (el.id == svp._allDayCheckboxId) {
 		svp._showTimeFields(el.checked ? false : true);
@@ -1176,6 +1177,7 @@ ZmSchedTabViewPage._onFocus =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var svp = AjxCore.objectWithId(el._schedViewPageId);
+	if (!svp) return;
 	var sched = svp._schedTable[el._schedTableIdx];
 	if (sched) {
 		svp._activeInputIdx = el._schedTableIdx;
@@ -1186,6 +1188,7 @@ ZmSchedTabViewPage._onBlur =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var svp = AjxCore.objectWithId(el._schedViewPageId);
+	if (!svp) return;
 	if (el.id == svp._startDateFieldId || el.id == svp._endDateFieldId) {
 		svp._handleDateChange(el == svp._startDateField);
 		svp._activeDateField = null;

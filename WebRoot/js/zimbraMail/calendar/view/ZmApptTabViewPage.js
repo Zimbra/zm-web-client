@@ -325,11 +325,6 @@ function(dateInfo) {
 	this._endTimeSelect.setSelected(dateInfo.endHourIdx, dateInfo.endMinuteIdx, dateInfo.endAmPmIdx);
 };
 
-ZmApptTabViewPage.prototype.updateAttendeesField =
-function(attendees) {
-	this._attInputField[ZmAppt.PERSON].setValue(attendees);
-};
-
 ZmApptTabViewPage.prototype.reEnableDesignMode =
 function() {
 	if (this._composeMode == DwtHtmlEditor.HTML)
@@ -1332,20 +1327,35 @@ function(type) {
 		var item = AjxStringUtil.trim(items[i]);
 		if (!item) continue;
 		
-		var attendee = this._getAttendeeByItem(item, type);
+		// see if it's an attendee we already know about (added via autocomplete or other tab)
+		var attendee = this._getAttendeeByName(type, item);
+		attendee = attendee ? attendee : this._getAttendeeByItem(item, type);
 		if (!attendee) {
 			attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, item, type);
 		}
 		if (attendee) {
 			attendees.add(attendee);
 		} else {
-			this.parent.showErrorMessage(this.parent._badAttendeeMsg[type], null, this._badAttendeeCallback, this, type);
+			var msg = AjxMessageFormat.format(this.parent._badAttendeeMsg[type], item);
+			this.parent.showErrorMessage(msg, null, this._badAttendeeCallback, this, type);
 		}
 	}
+	// replace attendees list with what we've found
 	this.parent.updateAttendees(attendees, type);
 };
 
-ZmApptTabViewPage.prototype._badAttendeeCallback = 
+ZmApptTabViewPage.prototype._getAttendeeByName =
+function(type, name) {
+	var a = this._attendees[type].getArray();
+	for (var i = 0; i < a.length; i++) {
+		if (a[i].getFullName() == name) {
+			return a[i];
+		}
+	}
+	return null;
+};
+
+ZmApptTabViewPage.prototype._badAttendeeCallback =
 function(type) {
 	this._attInputField[type].setValue(this._attInputCurVal[type]);
 	this.parent._msgDialog.popdown();
