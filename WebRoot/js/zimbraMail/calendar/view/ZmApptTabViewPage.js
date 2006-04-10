@@ -350,8 +350,10 @@ function(appt, attach) {
 	if (this._attachCount == 0)
 		this._initAttachContainer();
 
-	if (this._attachCount == ZmApptTabViewPage.SHOW_MAX_ATTACHMENTS)
-		this._attachDiv.style.height = Dwt.getSize(this._attachDiv).y + "px";
+	if (this._attachCount == ZmApptTabViewPage.SHOW_MAX_ATTACHMENTS) {
+		// bug fix #6906 - add a little extra padding for safari's weird scrollbars
+		this._attachDiv.style.height = Dwt.getSize(this._attachDiv).y + (AjxEnv.isSafari ? 2 : 0) + "px";
+	}
 
 	this._attachCount++;
 
