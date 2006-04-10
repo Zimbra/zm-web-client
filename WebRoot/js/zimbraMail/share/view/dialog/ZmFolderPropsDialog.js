@@ -29,7 +29,7 @@ function ZmFolderPropsDialog(appCtxt, parent, className) {
 	className = className || "ZmFolderPropsDialog";
 	var extraButtons;
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-		extraButtons = [
+		extraButtons  = [
 			new DwtDialog_ButtonDescriptor(ZmFolderPropsDialog.ADD_SHARE_BUTTON, ZmMsg.addShare, DwtDialog.ALIGN_LEFT)
 		];
 	}
@@ -58,7 +58,6 @@ ZmFolderPropsDialog.ADD_SHARE_BUTTON = ++DwtDialog.LAST_BUTTON;
 ZmFolderPropsDialog.TYPE_CHOICES = new Object;
 ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.FOLDER] = ZmMsg.mailFolder;
 ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.CALENDAR] = ZmMsg.calendarFolder;
-ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.NOTEBOOK] = ZmMsg.notebookFolder;
 
 // Data
 
@@ -85,10 +84,6 @@ ZmFolderPropsDialog.prototype.popup = function(loc) {
 	}
 	DwtDialog.prototype.popup.call(this, loc);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-	if (this._folder.id != ZmCalendar.ID_CALENDAR &&
-		this._folder.id != ZmOrganizer.ID_NOTEBOOK) {
-		this._nameInputEl.focus();
-	}
 };
 
 ZmFolderPropsDialog.prototype.popdown = function() {
@@ -175,8 +170,7 @@ ZmFolderPropsDialog.prototype._handleCancelButton = function(event) {
 };
 
 ZmFolderPropsDialog.prototype._handleFolderChange = function(event) {
-	if (this._folder.id == ZmCalendar.ID_CALENDAR || 
-		this._folder.id == ZmOrganizer.ID_NOTEBOOK) {
+	if (this._folder.id == ZmCalendar.ID_CALENDAR) {
 		this._nameOutputEl.innerHTML = AjxStringUtil.htmlEncode(this._folder.name);
 		this._nameOutputEl.style.display = "block";
 		this._nameInputEl.style.display = "none";
@@ -187,7 +181,7 @@ ZmFolderPropsDialog.prototype._handleFolderChange = function(event) {
 		this._nameOutputEl.style.display = "none";
 	}
 	this._ownerEl.innerHTML = AjxStringUtil.htmlEncode(this._folder.owner);
-	this._typeEl.innerHTML = ZmFolderPropsDialog.TYPE_CHOICES[this._folder.type] || ZmMsg.folder;
+	this._typeEl.innerHTML = ZmFolderPropsDialog.TYPE_CHOICES[this._folder.type];
 	this._urlEl.innerHTML = this._folder.url ? this._folder.url : "";
 	this._color.setSelectedValue(this._folder.color);
 	this._excludeFbCheckbox.checked = this._folder.excludeFreeBusy;

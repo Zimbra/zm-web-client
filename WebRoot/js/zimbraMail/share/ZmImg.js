@@ -32,6 +32,9 @@ function ZmImg() {
 ZmImg.M_BANNER 			= ["AppBanner", 200, 38];			// COULDN'T FIND
 ZmImg.M_DND_MULTI_NO  	= ["DndMultiNo_48", 52, 52];		// ---
 ZmImg.M_DND_MULTI_YES  	= ["DndMultiYes_48", 52, 52];		// ---
+ZmImg.M_LOGIN  			= ["LoginBanner", 31, 60];			// VERIFY	
+ZmImg.M_SPLASH  		= ["SplashScreen", 351, 222];		// VERIFY
+
 
 ZmImg.I_TMP  			= ["ImgTMPIcon", 100, 100];
 
@@ -73,7 +76,7 @@ ZmImg.I_DRAFT_MSG 		= ["DraftMsg", 16, 16];				// ---
 ZmImg.I_ENVELOPE 		= ["Envelope", 16, 16];				// UNUSED
 ZmImg.I_MESSAGE 		= ["MessageDoc", 16, 16];			// ---
 ZmImg.I_FLAG_ON 		= ["FlagRed", 16, 16];				// ---
-ZmImg.I_FLAG_OFF 		= ["FlagRedDis", 16, 16];			// ---
+ZmImg.I_FLAG_OFF 		= ["FlagDis", 16, 16];				// ---
 ZmImg.I_FOLDER 			= ["Folder", 16, 16];				// ---
 ZmImg.I_FONT_BACKGROUND = ["FontBackground", 16, 16];		// --- 
 ZmImg.I_FONT_COLOR 		= ["FontColor", 16, 16];			// ---

@@ -26,7 +26,8 @@
 function ZmBrowseController(appCtxt, parent) {
 
 	ZmController.call(this, appCtxt);
-    var pickers = this._allPickers = this._getPickers();
+
+	var pickers = this._allPickers = this._getPickers();
 	this._browseView = new ZmBrowseView(this._shell, pickers);
 	this._toolbar = new ZmBrowseToolBar(this._shell, pickers);
 	this._browseView._toolbar = this._toolbar;
@@ -63,10 +64,8 @@ function() {
 				ZmPicker.FOLDER];
 	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED))
 		list.push(ZmPicker.SEARCH);
-    list.push(ZmPicker.SIZE);
-    var idxZimlets = this._appCtxt._settings._zmm.getIndexedZimlets();
-    if (idxZimlets.length)
-    	list.push(ZmPicker.ZIMLET);
+	list.push(ZmPicker.SIZE);
+	list.push(ZmPicker.ZIMLET);
 	list.push(ZmPicker.FLAG);
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		list.push(ZmPicker.TAG);

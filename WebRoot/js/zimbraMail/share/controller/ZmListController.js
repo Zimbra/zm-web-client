@@ -139,29 +139,6 @@ function(newList) {
 	}
 };
 
-ZmListController.prototype.handleKeyAction =
-function(actionCode) {
-	DBG.println(AjxDebug.DBG3, "ZmListController.handleKeyAction");
-	var listView = this._listView[this._currentView]
-	
-	switch (actionCode) {
-		case ZmKeyMap.DEL:
-			this._doDelete(this._listView[this._currentView].getSelection());
-			break;
-			
-		case ZmKeyMap.NEXT_PAGE:
-			this._paginate(this._currentView, true);
-			break;
-			
-		case ZmKeyMap.PREV_PAGE:
-			this._paginate(this._currentView, false);
-			break;
-			
-		default:
-			ZmController.prototype.handleKeyAction.call(this, actionCode);
-	}
-};
-
 // abstract protected methods
 
 // Creates the view element
@@ -278,11 +255,11 @@ function(view) {
 	var toolbar = this._toolbar[view];
 	var button = toolbar.getButton(ZmOperation.NEW_MENU);
 	if (button) {
-       	var listener = new AjxListener(toolbar, ZmListController._newDropDownListener);
-       	button.addDropDownSelectionListener(listener);
-       	toolbar._ZmListController_this = this;
-       	toolbar._ZmListController_newDropDownListener = listener;
-   	}
+        	var listener = new AjxListener(toolbar, ZmListController._newDropDownListener);
+        	button.addDropDownSelectionListener(listener);
+        	toolbar._ZmListController_this = this;
+        	toolbar._ZmListController_newDropDownListener = listener;
+    	}
 	
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		var tagMenuButton = this._toolbar[view].getButton(ZmOperation.TAG_MENU);
@@ -413,28 +390,18 @@ function(ev) {
 	} else if (id == ZmOperation.NEW_APPT) {
 		var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 		cc.newAppointment(null, null, null, new Date());
-	} else if (id == ZmOperation.NEW_NOTE) {
-		var overviewController = this._appCtxt.getOverviewController();
-		var notebookTreeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
-		var notebookTreeView = notebookTreeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
-		var notebook = notebookTreeView ? notebookTreeView.getSelected() : null;
-		var note = new ZmNote(this._appCtxt);
-		note.folderId = notebook ? notebook.id : ZmNote.DEFAULT_FOLDER;
-		this._appCtxt.getApp(ZmZimbraMail.NOTES_APP).getNoteEditController().show(note);
 	} else if (id == ZmOperation.NEW_FOLDER) {
 		this._showDialog(this._appCtxt.getNewFolderDialog(), this._newFolderCallback);
 	} else if (id == ZmOperation.NEW_TAG) {
 		this._showDialog(this._appCtxt.getNewTagDialog(), this._newTagCallback, null, null, false);
-	} else if (id == ZmOperation.NEW_CALENDAR || id == ZmOperation.NEW_NOTEBOOK) {
-		var isNewCal = id == ZmOperation.NEW_CALENDAR;
-		
+	} else if (id == ZmOperation.NEW_CALENDAR) {
 		var overviewController = this._appCtxt.getOverviewController();
-		var treeData = overviewController.getTreeData(isNewCal ? ZmOrganizer.CALENDAR : ZmOrganizer.NOTEBOOK);
+		var treeData = overviewController.getTreeData(ZmOrganizer.CALENDAR);
 		var folder = treeData.root;
 	
-		var newDialog = isNewCal ? this._appCtxt.getNewCalendarDialog() : this._appCtxt.getNewNotebookDialog();
-		newDialog.setParentFolder(folder);
-		newDialog.popup();
+		var newCalDialog = this._appCtxt.getNewCalendarDialog();
+		newCalDialog.setParentFolder(folder);
+		newCalDialog.popup();
 	}
 };
 
@@ -720,18 +687,11 @@ function(list, args) {
 
 // Miscellaneous
 
-/*
-* Adds the same listener to all of the items in a button or menu item's submenu.
-* By default, propagates the listener for the given operation.
-*
-* @param parent		[DwtControl]		parent toolbar or menu
-* @param op			[constant]			operation (button or menu item)
-* @param listener	[AjxListener]*		listener to propagate
-*/
+// Adds the same listener to all of a menu's items
 ZmListController.prototype._propagateMenuListeners =
 function(parent, op, listener) {
 	if (!parent) return;
-	listener = listener ? listener : this._listeners[op];
+	listener = listener || this._listeners[op];
 	var opWidget = parent.getOp(op);
 	if (opWidget) {
 		var menu = opWidget.getMenu();
@@ -1123,10 +1083,6 @@ function(view, viewPushed) {
 	return true;
 };
 
-/*
-* Creates the New menu's drop down menu the first time the drop down arrow is used,
-* then removes itself as a listener.
-*/
 ZmListController._newDropDownListener = 
 function(event) {
 	var toolbar = this;

@@ -430,15 +430,15 @@ function() {
 ZmApptComposeController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
-	if (this._doSave()) {
-		// bug fix #5282
-		// check if the pending view is poppable - if so, force-pop this view first!
-		var avm = this._app.getAppViewMgr();
-		if (avm.isPoppable(avm.getPendingViewId()))
-			this._app.popView(true);
+	this._doSave();
 
-		this._app.getAppViewMgr().showPendingView(true);
-	}
+	// bug fix #5282
+	// check if the pending view is poppable - if so, force-pop this view first!
+	var avm = this._app.getAppViewMgr();
+	if (avm.isPoppable(avm.getPendingViewId()))
+		this._app.popView(true);
+
+	this._app.getAppViewMgr().showPendingView(true);
 };
 
 ZmApptComposeController.prototype._popShieldNoCallback =

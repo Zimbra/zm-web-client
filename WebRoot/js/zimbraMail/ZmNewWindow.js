@@ -52,10 +52,6 @@ function ZmNewWindow(appCtxt, domain) {
 ZmNewWindow.prototype = new ZmController;
 ZmNewWindow.prototype.constructor = ZmNewWindow;
 
-ZmNewWindow.APP_CLASS = {};
-ZmNewWindow.APP_CLASS[ZmZimbraMail.MAIL_APP]			= ZmMailApp;
-ZmNewWindow.APP_CLASS[ZmZimbraMail.CONTACTS_APP]		= ZmContactsApp;
-
 ZmNewWindow.prototype.toString = 
 function() {
 	return "ZmNewWindow";
@@ -99,16 +95,6 @@ function(domain) {
 */
 ZmNewWindow.unload = 
 function(ev) {	
-	// compose controller adds listeners to parent window's list so we need to 
-	// remove them before closing this window!
-	if (window.command == "compose" || window.command == "composeDetach") {
-		// is there a better way to get a ref to the compose controller?
-		var shell = AjxCore.objectWithId(window._dwtShell);
-		var appCtxt = shell ? shell.getData(ZmAppCtxt.LABEL) : null;
-		var cc = appCtxt ? appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController() : null;
-		if (cc) cc.dispose();
-	}
-
 	if (window.parentController) {
 		window.parentController.removeChildWindow(window);
 	}
@@ -143,10 +129,10 @@ function() {
 		if (window.command == "compose") {
 			// bug fix #4681
 			var action = window.args[0];
-			var msg = (action == ZmOperation.REPLY_ALL) ? this._deepCopyMsg(window.args[1]) : window.args[1];
+			var msg = action == ZmOperation.REPLY_ALL ? this._deepCopyMsg(window.args[1]) : window.args[1];
 			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController()._setView(window.args[0], msg, window.args[2], window.args[3], window.args[4]);
 		} else {
-			var op = window.args.action ? window.args.action : ZmOperation.NEW_MESSAGE;
+			var op = ZmOperation.NEW_MESSAGE;
 			if (window.args.msg) {
 				switch (window.args.msg._mode) {
 					case ZmAppt.MODE_DELETE: 
@@ -222,7 +208,7 @@ ZmNewWindow.prototype.setActiveApp = function() {};
 ZmNewWindow.prototype._createApp =
 function(appName) {
 	if (this._apps[appName]) return;
-	this._apps[appName] = new ZmNewWindow.APP_CLASS[appName](this._appCtxt, this._shell, window.parentController);
+	this._apps[appName] = new ZmZimbraMail.APP_CLASS[appName](this._appCtxt, this._shell, window.parentController);
 };
 
 ZmNewWindow.prototype._deepCopyMsg = 

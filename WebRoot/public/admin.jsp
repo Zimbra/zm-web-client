@@ -63,6 +63,7 @@ Contributor(s):
 	String mode = (String) request.getAttribute("mode");
 	String vers = (String) request.getAttribute("version");
 	String ext = (String) request.getAttribute("fileExtension");
+	String hiRes = (String) request.getParameter("hiRes");
 	if (vers == null){
 	   vers = "";
 	}
@@ -72,15 +73,8 @@ Contributor(s):
 	if(mode == null) {
 		mode= "";
 	}
-
-	String skin = (String) request.getAttribute("skin");
-	if (skin == null) {
-		skin = "steel";
-	}
-	String skinHtmlFile = "../skins/" + skin + "/" + skin + ".html";
-
-    String contextPath = request.getContextPath();
-    if(contextPath == null || contextPath.equals("/")) {
+    String contextPath = (String)request.getContextPath(); 
+    if(contextPath == null || contextPath=="/") {
 		response.sendRedirect("/zimbraAdmin?mode="+mode+"&version="+vers+"&fileExtension="+ext);    	
     }
 %>
@@ -95,16 +89,17 @@ Contributor(s):
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
 	<!--
+	<%if (hiRes != null) {%>
+	@import url(<%= contextPath %>/img/hiRes/imgs.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/img/hiRes/skins/steel/skin.css?v=<%= vers %>);
+	<% } else { %>
 	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
-
-	@import url(<%= contextPath %>/skins/<%= skin %>/dwt.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/skins/<%= skin %>/common.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/img/loRes/skins/steel/skin.css?v=<%= vers %>);
+	<% } %>
+	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/dwt.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/common.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/skins/<%= skin %>/msgview.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/skins/<%= skin %>/spellcheck.css?v=<%= vers %>);
-
-	@import url(<%= contextPath %>/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/skins/steel/skin.css?v=<%= vers %>);  
 	-->
 	</style>
 	<jsp:include page="/public/Ajax.jsp"/>
@@ -114,39 +109,48 @@ Contributor(s):
 <% } else { %>
 	<style type="text/css">
 	<!--
-    @import url(<%= contextPath %>/js/ZimbraAdmin_loRes_all.css<%= ext %>?v=<%= vers %>);
+	<%if (hiRes != null) {%>
+	        @import url(<%= contextPath %>/js/ZimbraAdmin_hiRes_all.css<%= ext %>?v=<%= vers %>);
+	<% } else { %>
+	        @import url(<%= contextPath %>/js/ZimbraAdmin_loRes_all.css<%= ext %>?v=<%= vers %>);
+	<% } %>
 	-->
 	</style>
 	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
 	<script type="text/javascript" src="<%= contextPath %>/js/ZimbraAdmin_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>    
-    <script type="text/javascript" language="JavaScript">
-		var appContextPath = "<%= contextPath %>";
-	   function launch() {
-		AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
-		DBG = new AjxDebug(AjxDebug.NONE, null, false);
-		ACCESS_RIGHTS = new Object();
-		// figure out the debug level
-		if (location.search && (location.search.indexOf("debug=") != -1)) {
-			var m = location.search.match(/debug=(\w+)/);
-			if (m && m.length) {
-				var level = parseInt(m[1]);
-				if (level)
-					DBG.setDebugLevel(level);
-				else if (m[1] == 't')
-					DBG.showTiming(true);
-			}
-		}
-			ZaZimbraAdmin.run(document.domain);
-		}
+    <script language="JavaScript">   	
+   		function launch() {
+   			AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
+			DBG = new AjxDebug(AjxDebug.NONE, null, false);
+		 	ACCESS_RIGHTS = new Object();
+		 	// figure out the debug level
+				if (location.search && (location.search.indexOf("debug=") != -1)) {
+			   		var m = location.search.match(/debug=([\d\-]+)/);
+				  	if (m && m.length) {
+				  		var num = parseInt(m[1]);
+						var level = AjxDebug.DBG[num];
+						if (level) {
+						    DBG.setDebugLevel(level);
+						}
+					}
+			    }
+			    /**
+			    * temporary code - 
+			    * TODO: remove when server is ready
+			    **/
+			    
+		    	ZaZimbraAdmin.run(document.domain);
+	    }
 		AjxCore.addOnloadListener(launch);
     </script>
   </head>
   <body onload="javascript:void launch()">
   <jsp:include page="/public/pre-cache.jsp"/>  
-  <jsp:include page="<%= skinHtmlFile %>"/>
-  <script type="text/javascript" language=Javascript>
-    skin.hideQuota();
-  </script>
+  <jsp:include page="../skins/steel/skin.html"/>  
+<script language=Javascript>
+	skin.hideQuota();
+</script>
   </body>
 </html>
+

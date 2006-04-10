@@ -31,7 +31,7 @@ function ZmPref(id, name, dataType) {
 	this.isDirty = false;
 };
 
-ZmPref.prototype = new ZmSetting();
+ZmPref.prototype = ZmSetting;
 ZmPref.prototype.constructor = ZmPref;
 
 ZmPref.KEY_ID = "prefId_";

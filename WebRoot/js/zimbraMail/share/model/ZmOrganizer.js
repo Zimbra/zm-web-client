@@ -42,7 +42,6 @@
 * @param numUnread	[int]*			number of unread items for this organizer
 * @param numTotal	[int]*			number of items for this organizer
 * @param url		[string]*		URL for this organizer's feed
-* @param owner		[string]* 		Owner for this organizer
 */
 function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, owner) {
 
@@ -69,38 +68,30 @@ ZmOrganizer.FOLDER				= ZmEvent.S_FOLDER;
 ZmOrganizer.TAG					= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
 ZmOrganizer.CALENDAR			= ZmEvent.S_APPT;
-ZmOrganizer.ADDRBOOK 			= ZmEvent.S_CONTACT;
 ZmOrganizer.ROSTER_TREE_ITEM	= ZmEvent.S_ROSTER_TREE_ITEM;
 ZmOrganizer.ROSTER_TREE_GROUP	= ZmEvent.S_ROSTER_TREE_GROUP;
 ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
-ZmOrganizer.NOTEBOOK			= ZmEvent.S_NOTEBOOK;
 
 // defined in com.zimbra.cs.mailbox.Mailbox
-ZmOrganizer.ID_ROOT				= 1;
-ZmOrganizer.ID_TRASH			= 3;
-ZmOrganizer.ID_SPAM				= 4;
-ZmOrganizer.ID_ADDRBOOK			= 7;
-ZmOrganizer.ID_CALENDAR			= 10;
-ZmOrganizer.ID_NOTEBOOK			= 2; // REVISIT: set to inbox for now
-ZmOrganizer.ID_ZIMLET			= -1000;  // zimlets need a range.  start from -1000 incrementing up.
-ZmOrganizer.ID_ROSTER_LIST		= -11;
-ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
+ZmOrganizer.ID_ROOT		= 1;
+ZmOrganizer.ID_TRASH	= 3;
+ZmOrganizer.ID_SPAM		= 4;
+ZmOrganizer.ID_CALENDAR	= 10;
+ZmOrganizer.ID_ZIMLET	= -1000;  // zimlets need a range.  start from -1000 incrementing up.
+ZmOrganizer.ID_ROSTER_LIST = -11;
+ZmOrganizer.ID_ROSTER_TREE_ITEM = -13;
 
 ZmOrganizer.SOAP_CMD = {};
 ZmOrganizer.SOAP_CMD[ZmOrganizer.FOLDER]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.TAG]		= "TagAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.SEARCH]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.CALENDAR]	= "FolderAction";
-ZmOrganizer.SOAP_CMD[ZmOrganizer.ADDRBOOK]	= "FolderAction";
-ZmOrganizer.SOAP_CMD[ZmOrganizer.NOTEBOOK]	= "FolderAction";
 
 ZmOrganizer.FIRST_USER_ID = {};
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]	= 256;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]		= 64;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.SEARCH]	= 256;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.CALENDAR]	= 256;
-ZmOrganizer.FIRST_USER_ID[ZmOrganizer.ADDRBOOK] = 256;
-ZmOrganizer.FIRST_USER_ID[ZmOrganizer.NOTEBOOK] = 256;
 
 // fields that can be part of a displayed organizer
 var i = 1;
@@ -157,8 +148,6 @@ for (var i = 0; i <= ZmOrganizer.MAX_COLOR; i++) {
 ZmOrganizer.VIEWS = new Object;
 ZmOrganizer.VIEWS[ZmOrganizer.FOLDER] = "conversation";
 ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] = "appointment";
-ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK] = "contact";
-ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK] = "wiki";
 
 // Abstract methods
 

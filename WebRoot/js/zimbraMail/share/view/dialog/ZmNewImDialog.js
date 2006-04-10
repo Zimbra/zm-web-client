@@ -31,11 +31,11 @@ function ZmNewImDialog(parent, className, screenName) {
 	DwtDialog.call(this, parent, className, title, DwtDialog.NO_BUTTONS);
 	this.setContent(this._contentHtml());
 
-    this._sendButton = new DwtButton(this);
+    this._sendButton = new DwtButton(this, null, "ColorButton");
     this._sendButton.setText("Send");
     this._sendButton.addSelectionListener(new AjxListener(this, ZmNewImDialog.prototype._sendButtonListener));
     
-    this._cancelButton = new DwtButton(this);
+    this._cancelButton = new DwtButton(this, null, "ColorButton");
     this._cancelButton.setText("Cancel");
     this._cancelButton.addSelectionListener(new AjxListener(this, ZmNewImDialog.prototype._cancelButtonListener));
 

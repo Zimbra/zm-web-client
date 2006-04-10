@@ -39,12 +39,13 @@
 * @param appCtxt 			singleton appCtxt
 */
 function ZmApptQuickAddDialog(parent, appCtxt) {
+	DBG.showTiming(true, AjxDebug.PERF, "ZmApptQuickAddDialog");
 	// create extra "more details" button to be added at the footer of DwtDialog
 	var moreDetailsButton = new DwtDialog_ButtonDescriptor(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, 
 														   ZmMsg.moreDetails, DwtDialog.ALIGN_LEFT);
 
 	ZmQuickAddDialog.call(this, parent, null, null, [moreDetailsButton]);
-	DBG.timePt("ZmQuickAddDialog constructor", true);
+	DBG.timePt(AjxDebug.PERF, "ZmQuickAddDialog constructor");
 
 	this._appCtxt = appCtxt;
 
@@ -52,13 +53,14 @@ function ZmApptQuickAddDialog(parent, appCtxt) {
 
 	this.setContent(this._setHtml());
 	this.setTitle(ZmMsg.quickAddAppt);
-	DBG.timePt("create content");
+	DBG.timePt(AjxDebug.PERF, "create content");
 
 	this._createDwtObjects();
 	this._cacheFields();
 	this._addEventHandlers();
 	this._button[ZmApptQuickAddDialog.MORE_DETAILS_BUTTON].setSize("100");
-	DBG.timePt("create dwt controls, fields; register handlers");
+	DBG.timePt(AjxDebug.PERF, "create dwt controls, fields; register handlers");
+	DBG.showTiming(false);
 };
 
 ZmApptQuickAddDialog.prototype = new ZmQuickAddDialog;
@@ -88,8 +90,8 @@ function(appt) {
 	this._subjectField.focus();
 
 	// reset fields...
-	this._subjectField.setValue(appt.getName() ? appt.getName() : "");
-	this._locationField.setValue(appt.getLocation() ? appt.getLocation() : "");
+	this._subjectField.setValue("");
+	this._locationField.setValue("");
 	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getStartDate());
 	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getEndDate());
 	var isAllDay = appt.isAllDayEvent();
@@ -183,8 +185,10 @@ function() {
 
 ZmApptQuickAddDialog.prototype.popup =
 function(loc) {
+	DBG.showTiming(true, AjxDebug.PERF, "ZmApptQuickAddDialog#popup");
 	ZmQuickAddDialog.prototype.popup.call(this, loc);
-	DBG.timePt("ZmQuickAddDialog#popup", true);
+	DBG.timePt(AjxDebug.PERF, "ZmQuickAddDialog#popup");
+	DBG.showTiming(false);
 };
 
 
@@ -451,7 +455,7 @@ function(ev) {
 
 ZmApptQuickAddDialog.prototype._repeatChangeListener = 
 function(ev) {
-	this._repeatDescField.innerHTML = ev._args.newValue != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.recurEndNone) : "";
+	this._repeatDescField.innerHTML = ZmApptViewHelper.setSimpleRecurString(ev._args.newValue);
 };
 
 ZmApptQuickAddDialog.prototype._timeChangeListener =

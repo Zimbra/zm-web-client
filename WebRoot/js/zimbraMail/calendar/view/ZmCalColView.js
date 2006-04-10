@@ -801,14 +801,18 @@ ZmCalColView.prototype._createHoursHtml =
 function(html) {
 	html.append("<div style='position:absolute; top:-8; width:", ZmCalColView._HOURS_DIV_WIDTH, "px;' id='", this._bodyHourDivId, "'>");
 	html.append("<table class=calendar_grid_day_table>");
-	var formatter = DwtCalendar.getHourFormatter();
-	var date = new Date();
-	date.setHours(0, 0, 0, 0);
 	for (var h=0; h < 25; h++) {
+		var hour = (h==0 || h == 12) ? 12 : h % 12;
+		var ampm = (h < 12) ? "am" : "pm";
 		html.append("<tr><td class=calendar_grid_body_time_td style='height:",
 		ZmCalColView._HOUR_HEIGHT ,"px; width:", ZmCalColView._HOURS_DIV_WIDTH, "px'><div class=calendar_grid_body_time_text>");
-		date.setHours(h);
-		html.append(h > 0 && h < 24 ? AjxStringUtil.htmlEncode(formatter.format([h, date])) : "&nbsp;");
+		if (h == 0 || h == 24) {
+			html.append("&nbsp;");
+		} else if (h == 12) {
+			html.append(ZmMsg.noon);
+		} else {
+			html.append(hour, " ", ampm);
+		}
 		html.append("</div></td></tr>");	
 	}
 	html.append("</table>", "</div>");	

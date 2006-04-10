@@ -82,7 +82,9 @@ ZmSharePropsDialog.prototype.setFolder = function(folder) {
 	this._folder = folder;
 
 	this._nameEl.innerHTML = AjxStringUtil.htmlEncode(folder.name);
-	this._typeEl.innerHTML = ZmFolderPropsDialog.TYPE_CHOICES[this._folder.type] || ZmMsg.folder;
+	// TODO: handle other types of folders
+	this._typeEl.innerHTML = folder.type == ZmOrganizer.CALENDAR
+							? ZmMsg.calendarFolder : ZmMsg.mailFolder;
 };
 ZmSharePropsDialog.prototype.setShareInfo = function(shareInfo) { 
 	if (!shareInfo) {
@@ -117,9 +119,6 @@ ZmSharePropsDialog.prototype.popup = function(loc) {
 
 	DwtDialog.prototype.popup.call(this, loc);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-	if (this._dialogType == ZmSharePropsDialog.NEW) {
-		this._inputEl.focus();
-	}
 };
 ZmSharePropsDialog.prototype.popdown = function() {
 	if (this._acAddrSelectList) {

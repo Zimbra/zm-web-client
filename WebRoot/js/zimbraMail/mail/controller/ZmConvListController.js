@@ -101,20 +101,9 @@ function(searchResult) {
 	this._resetNavToolBarButtons(this._currentView);
 };
 
-ZmConvListController.prototype.handleKeyAction =
-function(actionCode) {
-	DBG.println(AjxDebug.DBG3, "ZmConvListController.handleKeyAction");
-	
-	switch (actionCode) {
-		case ZmKeyMap.DELETE:
-			hardDelete = (this._list.search.folderId == ZmFolder.ID_TRASH);
-			ZmMailListController.prototype._doDelete.call(this, items, hardDelete, attrs);
-			break;
-			
-		default:
-			ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
-			break;
-	}
+ZmConvListController.prototype.handleKeyPressEvent =
+function(ev) {
+	DBG.println("ZmConvListController.handleKeyPressEvent");
 };
 
 // Private and protected methods
@@ -232,6 +221,7 @@ function(ev) {
 		if (ev.item.isDraft) {
 			this._doAction(ev, ZmOperation.DRAFT);
 		} else {
+DBG.showTiming(true, AjxDebug.PERF, "***** CONV: start");
 			this._app.getConvController().show(this._activeSearch, ev.item);
 		}
 	}

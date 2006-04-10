@@ -363,7 +363,6 @@ ZmShareInfo._init = function() {
 	ZmShareInfo._VIEWS["conversation"] = ZmMsg.mailFolder;
 	ZmShareInfo._VIEWS["message"] = ZmMsg.mailFolder;
 	ZmShareInfo._VIEWS["appointment"] = ZmMsg.calendarFolder;
-	ZmShareInfo._VIEWS["wiki"] = ZmMsg.notebookFolder;
 	ZmShareInfo._VIEWS["any"] = ZmMsg.folder;
 
 	// message subjects

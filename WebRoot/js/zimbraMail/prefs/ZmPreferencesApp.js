@@ -41,10 +41,8 @@ function() {
 };
 
 ZmPreferencesApp.prototype.launch =
-function(callback, errorCallback) {
+function(appCtxt) {
 	this.getPrefController().show();
-	if (callback)
-		callback.run();
 };
 
 ZmPreferencesApp.prototype.getPrefController =
