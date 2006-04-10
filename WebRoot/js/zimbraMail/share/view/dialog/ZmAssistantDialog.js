@@ -80,7 +80,7 @@ function() {
 	var html = new AjxBuffer();
 	this._tableId = Dwt.getNextId();
 	
-	html.append("<table cellspacing=4 border=0 width=400 id='", this._tableId, "'>");
+	html.append("<table cellspacing=3 border=0 width=400 id='", this._tableId, "'>");
 	this._commandId = this._addCommand(html, "");
 	html.append("<td colspan=3><hr></td>");
 	html.append("</table>");	
@@ -326,9 +326,12 @@ function(args) {
 
 };
 
+ZmAssistantDialog._ADDRESS = "ZmAssistantDialogAddress";
+	
 ZmAssistantDialog.prototype._matchTypedObject =
 function(args, obj, defaultType) {
-	var match = this._objectManager.findMatch(args, obj);
+	
+	var match = obj == ZmAssistantDialog._ADDRESS ? args.match(/\s*\[([^\]]*)\]?\s*/) : this._objectManager.findMatch(args, obj);
 	if (!match) return null;
 
 	var type = defaultType;
@@ -347,7 +350,8 @@ function(args, obj, defaultType) {
 	} else {
 		args = args.replace(match[0], " ");
 	}
-	return {data: match[0], args: args, type: type};
+	var data =  obj == ZmAssistantDialog._ADDRESS ? match[1] : match[0];
+	return {data: data, args: args, type: type};
 }
 
 ZmAssistantDialog._URL_ORDER = [ 'w', 'h', 'o' ];
@@ -355,6 +359,13 @@ ZmAssistantDialog._URL_FIELDS = {
 	 w: ZmMsg.AB_WORK_URL,
 	 h: ZmMsg.AB_HOME_URL,
  	 o: ZmMsg.AB_OTHER_URL
+};
+
+ZmAssistantDialog._ADDR_ORDER = [ 'w', 'h', 'o' ];
+ZmAssistantDialog._ADDR_FIELDS = {
+	 w: ZmMsg.AB_ADDR_WORK,
+	 h: ZmMsg.AB_ADDR_HOME, 
+ 	 o: ZmMsg.AB_ADDR_OTHER
 };
 
 ZmAssistantDialog._EMAIL_ORDER = [ '1', '2', '3' ];
@@ -387,18 +398,17 @@ function(args) {
 	this._setActionField(ZmMsg.newContact, "NewContact");
 	var match;
 
-	var addr = null;
-	match = args.match(/\s*\[([^\]]*)\]?\s*/);	
-	if (match) {
-		addr = match[1];
-		args = args.replace(match[0], " ");
+	var addresses = {};
+	while (match = this._matchTypedObject(args, ZmAssistantDialog._ADDRESS, 'w')) {
+		addresses[match.type] = match;
+		args = match.args;
 	}
+
 
 	var phones = {};
 	// look for phone numbers
 	while (match = this._matchTypedObject(args, ZmObjectManager.PHONE, 'w')) {
 		phones[match.type] = match;
-		//workPhone = match.phone + "type("+match.type+")";
 		args = match.args;
 	}
 
@@ -430,8 +440,31 @@ function(args) {
 		args = args.replace(match[0], " ");
 	}
 
+//	var title = null;
+//	match = args.match(/\s*\"([^\"]*)\"?\s*/);
+//	if (match) {
+//		title = match[1];
+//		args = args.replace(match[0], " ");
+//	}
+
+//	var company = null;
+//	match = args.match(/\s*\{([^\}]*)\}?\s*/);
+//	if (match) {
+//		company = match[1];
+//		args = args.replace(match[0], " ");
+//	}
+
+	var remaining = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' ').split(",", 3);
+	var fullName = remaining[0];
+	var title = remaining[1] ? remaining[1] : "";
+	var company = remaining[2] ? remaining[2] : "";	
+
 //	var subStr = AjxStringUtil.convertToHtml(subject == "" ? "\"enclose subject in quotes or just type\"" : subject);
 
+	this._setField(ZmMsg.AB_FIELD_fullName, fullName == "" ? "type to enter fullname, title, company" : fullName, fullName == "", true);
+	this._setOptField(ZmMsg.AB_FIELD_jobTitle, title, false, true, ZmMsg.AB_FIELD_fullName);
+	this._setOptField(ZmMsg.AB_FIELD_company, company, false, true, ZmMsg.AB_FIELD_fullName);
+	
 	match = emails['1'];
 	var email = match ? match.data : null;
 	this._setField(ZmMsg.AB_FIELD_email, email == null ? "(enter an email address)" : email, email == null, true);
@@ -442,18 +475,16 @@ function(args) {
 		this._setOptField(ZmAssistantDialog._EMAIL_FIELDS[key], data ? data.data : null, false, true, ZmMsg.AB_FIELD_email);
 	}
 
-	match = phones['w'];
-	var workPhone = match ? match.data : null;
-	this._setField(ZmMsg.AB_FIELD_workPhone, workPhone == null ? "(enter work phone)" : workPhone, workPhone == null, true);
+	//match = phones['w'];
+	//var workPhone = match ? match.data : null;
+	//this._setField(ZmMsg.AB_FIELD_workPhone, workPhone == null ? "(enter work phone)" : workPhone, workPhone == null, true);
 	for (var i=0; i < ZmAssistantDialog._PHONE_ORDER.length; i++) {
 		var key = ZmAssistantDialog._PHONE_ORDER[i];
-		if (key == 'w') continue;
 		var data = phones[key];
-		this._setOptField(ZmAssistantDialog._PHONE_FIELDS[key], data ? data.data : null, false, true, ZmMsg.AB_FIELD_workPhone);
+		this._setOptField(ZmAssistantDialog._PHONE_FIELDS[key], data ? data.data : null, false, true);
 	}
-	var addrStr = AjxStringUtil.convertToHtml(addr == null ? "[enclose work address in brackets]" : addr);
+	
 	var notesStr = AjxStringUtil.convertToHtml(notes == null ? "(enclose notes in parens)" : notes);
-	this._setField(ZmMsg.AB_ADDR_WORK, addrStr, addr == null, false);
 	this._setField(ZmMsg.notes, notesStr, notes == null, false);
 	
 	for (var i=0; i < ZmAssistantDialog._URL_ORDER.length; i++) {
@@ -461,6 +492,14 @@ function(args) {
 		var data = urls[key];
 		this._setOptField(ZmAssistantDialog._URL_FIELDS[key], data ? data.data : null, false, true);
 	}
+	
+	for (var i=0; i < ZmAssistantDialog._ADDR_ORDER.length; i++) {
+		var key = ZmAssistantDialog._ADDR_ORDER[i];
+		var data = addresses[key];
+		var addr = data ?  AjxStringUtil.convertToHtml(data.data) : null;
+		this._setOptField(ZmAssistantDialog._ADDR_FIELDS[key], addr, false, false);
+	}
+
 	
 //	this._setOptField(ZmMsg.repeat, repeat, false, true);
 	return;
@@ -509,7 +548,7 @@ function(title) {
 
 ZmAssistantDialog.prototype._setOptField = 
 function(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign) {
-	if (value) {
+	if (value && value != "") {
 		this._setField(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign);
 	} else {
 		this._clearField(title);
