@@ -40,7 +40,7 @@ function ZmAssistantDialog(appCtxt) {
 	this._fields = {};	
 	this._msgDialog = this._appCtxt.getMsgDialog();
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
-	this._objectManager = new ZmObjectManager(null, null, null);		
+	this._objectManager = new ZmObjectManager(null, this._appCtxt, null);		
 
 	// only trigger matching after a sufficient pause
 	this._pasrseInterval = this._appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
@@ -114,7 +114,7 @@ function() {
 ZmAssistantDialog.prototype._parseAction =
 function() {
 	var cmd = this._commandEl.value.replace(/^\s*/, '');
-	var match = cmd.match(/^(appt|new|empty)\b\s*/);
+	var match = cmd.match(/^(appt|contact|new|empty)\b\s*/);
 	if (!match) {
 			this._setDefaultAction();
 			return;
@@ -128,6 +128,8 @@ function() {
 
 	if (mainCommand == 'appt')
 		this._newApptCommand(args);
+	else if (mainCommand == 'contact') 
+		this._newContactCommand(args);		
 	else if (mainCommand == 'new')
 		this._newCommand(args);
 	else if (mainCommand == 'empty')
@@ -162,7 +164,6 @@ function(args) {
 	DBG.println("object = "+obj);
 	args = args.substring(match[0].length);
 	if (obj == 'appt') this._newApptCommand(args);
-	else if (obj == 'contact') this._newContactCommand(args);
 	else if (obj == 'note') this._newNoteCommand(args);	
 	else if (obj == 'message') this._newMessageCommand(args);	
 	else if (obj == 'm')  { 
@@ -191,7 +192,7 @@ function(args) {
 		hour = parseInt(match2[1]);
 		minute = 0;
 		ampm = match2[2].toLowerCase();	
-		args = args.replace(match2[0], " ");	
+		args = args.replace(match2[0], " ");
 	} else {
 		return null;
 	}
@@ -235,6 +236,7 @@ function(args) {
 	DBG.println("args = "+args);
 	var startDate = new Date();
 	var endDate = null;
+	var match;
 
 //	DBG.println("args = "+args);
 
@@ -266,7 +268,7 @@ function(args) {
 	}
 
 	// look for start date
-	match = this._objectManager.findMatch(args, ZmObjectManager.DATE)
+	match = this._objectManager.findMatch(args, ZmObjectManager.DATE);
 	if (match) {
 		args = args.replace(match[0], " ");
 		startDate = match.context.date;
@@ -274,7 +276,7 @@ function(args) {
 	}
 	
 	// look for end date
-	match = this._objectManager.findMatch(args, ZmObjectManager.DATE)
+	match = this._objectManager.findMatch(args, ZmObjectManager.DATE);
 	if (match) {
 		args = args.replace(match[0], " ");
 		endDate = match.context.date;
@@ -297,7 +299,7 @@ function(args) {
 	}
 
 	var repeat = null;
-	match = args.match(/\s*repeat?s\s+(\S+)\s*/);	
+	match = args.match(/\s*repeats?\s+(\S+)\s*/);	
 	if (match) {
 		repeat = match[1];
 		args = args.replace(match[0], " ");
@@ -323,54 +325,147 @@ function(args) {
 	return;
 
 };
-	
-ZmAssistantDialog.prototype._genericTextField =
-function(title, str, args, fields) {
-	var regex = new RegExp("\\s*\\b(?:"+str+")\\s+\\\"([^\\\"]*)\\\"?\\s*", "i");
-	var match = args.match(regex);
-	if (match) {
-		var  val = match[1];
-		//this._setTextField(title, val, null, null, "300px");
-		fields[title] = 1;
-		args = args.replace(match[0], " ");
-	}
-	return args;
-};
 
-ZmAssistantDialog.prototype._genericWordField =
-function(title, str, args, fields) {
-	var regex = new RegExp("\\s*\\b(?:"+str+")\\s+(\\S+)\\s*", "i");
-	var match = args.match(regex);
-	if (match) {
-		var  val = match[1];
-		//this._setTextField(title, val, null, null, "300px");
-		fields[title] = 1;
-		args = args.replace(match[0], " ");
-	}
-	return args;
-};
+ZmAssistantDialog.prototype._matchTypedObject =
+function(args, obj, defaultType) {
+	var match = this._objectManager.findMatch(args, obj);
+	if (!match) return null;
 
-ZmAssistantDialog.prototype._fieldsToDisplay =
-function(fields) {
-	for (var field in this._fields) {
-		if (!(field in fields)) {
-			this._clearField(field);
+	var type = defaultType;
+	var matchType = null;
+	if (match.index > 0) {
+		// check for a type
+		var targs = args.substring(0, match.index);
+		matchType = targs.match(/\b([0-9a-z]{1,2}):\s*$/i);
+		if (matchType) {
+			type = matchType[1];
+			if (type == 'f') type = 'wf'; // map f to wf internally
 		}
 	}
+	if (matchType) {
+		args = args.replace(matchType[0]+match[0], " ");
+	} else {
+		args = args.replace(match[0], " ");
+	}
+	return {data: match[0], args: args, type: type};
+}
+
+ZmAssistantDialog._URL_ORDER = [ 'w', 'h', 'o' ];
+ZmAssistantDialog._URL_FIELDS = {
+	 w: ZmMsg.AB_WORK_URL,
+	 h: ZmMsg.AB_HOME_URL,
+ 	 o: ZmMsg.AB_OTHER_URL
+};
+
+ZmAssistantDialog._EMAIL_ORDER = [ '1', '2', '3' ];
+ZmAssistantDialog._EMAIL_FIELDS = {
+	 '1': ZmMsg.AB_FIELD_email,
+	 '2': ZmMsg.AB_FIELD_email2,
+ 	 '3': ZmMsg.AB_FIELD_email3
+};
+ 
+ZmAssistantDialog._PHONE_ORDER = [ 'w', 'w2', 'm', 'p', 'wf', 'a', 'c', 'co', 'cb', 'h', 'h2', 'hf', 'o', 'of' ];
+ZmAssistantDialog._PHONE_FIELDS = {
+	 w: ZmMsg.AB_FIELD_workPhone,
+	w2: ZmMsg.AB_FIELD_workPhone2, 
+	 m: ZmMsg.AB_FIELD_mobilePhone,
+	 p: ZmMsg.AB_FIELD_pager,
+	wf: ZmMsg.AB_FIELD_workFax,
+	 a: ZmMsg.AB_FIELD_assistantPhone,
+	 c: ZmMsg.AB_FIELD_carPhone,
+	co: ZmMsg.AB_FIELD_companyPhone,
+	cb: ZmMsg.AB_FIELD_callbackPhone,
+	 h: ZmMsg.AB_FIELD_homePhone,
+	h2: ZmMsg.AB_FIELD_homePhone2,
+	hf: ZmMsg.AB_FIELD_homeFax,
+	 o: ZmMsg.AB_FIELD_otherPhone,
+	of: ZmMsg.AB_FIELD_otherFax
 };
 
 ZmAssistantDialog.prototype._newContactCommand =
 function(args) {
-	this._setAction(ZmMsg.newContact, "NewContact");
-	DBG.println("args = "+args);
+	this._setActionField(ZmMsg.newContact, "NewContact");
+	var match;
 
-	var fields = {};
+	var addr = null;
+	match = args.match(/\s*\[([^\]]*)\]?\s*/);	
+	if (match) {
+		addr = match[1];
+		args = args.replace(match[0], " ");
+	}
 
-	args = this._genericWordField("Email", "email", args, fields);
-	args = this._genericWordField("First", "first", args, fields);
-	args = this._genericWordField("Last", "last", args, fields);	
+	var phones = {};
+	// look for phone numbers
+	while (match = this._matchTypedObject(args, ZmObjectManager.PHONE, 'w')) {
+		phones[match.type] = match;
+		//workPhone = match.phone + "type("+match.type+")";
+		args = match.args;
+	}
 
-	this._fieldsToDisplay(fields);
+	var urls = {};
+	// look for urls
+	while (match = this._matchTypedObject(args, ZmObjectManager.URL, 'w')) {
+		urls[match.type] = match;
+		args = match.args;
+	}
+
+	var emails = {};
+	// look for urls
+	while (match = this._matchTypedObject(args, ZmObjectManager.EMAIL, '1')) {
+		emails[match.type] = match;
+		args = match.args;
+	}
+	
+	var repeat = null;
+	match = args.match(/\s*repeats?\s+(\S+)\s*/i);	
+	if (match) {
+		repeat = match[1];
+		args = args.replace(match[0], " ");
+	}
+
+	var notes = null;
+	match = args.match(/\s*\(([^)]*)\)?\s*/);
+	if (match) {
+		notes = match[1];
+		args = args.replace(match[0], " ");
+	}
+
+//	var subStr = AjxStringUtil.convertToHtml(subject == "" ? "\"enclose subject in quotes or just type\"" : subject);
+
+	match = emails['1'];
+	var email = match ? match.data : null;
+	this._setField(ZmMsg.AB_FIELD_email, email == null ? "(enter an email address)" : email, email == null, true);
+	for (var i=0; i < ZmAssistantDialog._EMAIL_ORDER.length; i++) {
+		var key = ZmAssistantDialog._EMAIL_ORDER[i];
+		if (key == '1') continue;
+		var data = emails[key];
+		this._setOptField(ZmAssistantDialog._EMAIL_FIELDS[key], data ? data.data : null, false, true, ZmMsg.AB_FIELD_email);
+	}
+
+	match = phones['w'];
+	var workPhone = match ? match.data : null;
+	this._setField(ZmMsg.AB_FIELD_workPhone, workPhone == null ? "(enter work phone)" : workPhone, workPhone == null, true);
+	for (var i=0; i < ZmAssistantDialog._PHONE_ORDER.length; i++) {
+		var key = ZmAssistantDialog._PHONE_ORDER[i];
+		if (key == 'w') continue;
+		var data = phones[key];
+		this._setOptField(ZmAssistantDialog._PHONE_FIELDS[key], data ? data.data : null, false, true, ZmMsg.AB_FIELD_workPhone);
+	}
+	var addrStr = AjxStringUtil.convertToHtml(addr == null ? "[enclose work address in brackets]" : addr);
+	var notesStr = AjxStringUtil.convertToHtml(notes == null ? "(enclose notes in parens)" : notes);
+	this._setField(ZmMsg.AB_ADDR_WORK, addrStr, addr == null, false);
+	this._setField(ZmMsg.notes, notesStr, notes == null, false);
+	
+	for (var i=0; i < ZmAssistantDialog._URL_ORDER.length; i++) {
+		var key = ZmAssistantDialog._URL_ORDER[i];
+		var data = urls[key];
+		this._setOptField(ZmAssistantDialog._URL_FIELDS[key], data ? data.data : null, false, true);
+	}
+	
+//	this._setOptField(ZmMsg.repeat, repeat, false, true);
+	return;
+
+
 };
 
 ZmAssistantDialog.prototype._newNoteCommand =
@@ -576,4 +671,40 @@ function(ev) {
 ZmAssistantDialog.prototype._handleResponseOkButtonListener =
 function() {
 	this.popdown();
+};
+
+	
+ZmAssistantDialog.prototype._genericTextField =
+function(title, str, args, fields) {
+	var regex = new RegExp("\\s*\\b(?:"+str+")\\s+\\\"([^\\\"]*)\\\"?\\s*", "i");
+	var match = args.match(regex);
+	if (match) {
+		var  val = match[1];
+		//this._setTextField(title, val, null, null, "300px");
+		fields[title] = 1;
+		args = args.replace(match[0], " ");
+	}
+	return args;
+};
+
+ZmAssistantDialog.prototype._genericWordField =
+function(title, str, args, fields) {
+	var regex = new RegExp("\\s*\\b(?:"+str+")\\s+(\\S+)\\s*", "i");
+	var match = args.match(regex);
+	if (match) {
+		var  val = match[1];
+		//this._setTextField(title, val, null, null, "300px");
+		fields[title] = 1;
+		args = args.replace(match[0], " ");
+	}
+	return args;
+};
+
+ZmAssistantDialog.prototype._fieldsToDisplay =
+function(fields) {
+	for (var field in this._fields) {
+		if (!(field in fields)) {
+			this._clearField(field);
+		}
+	}
 };
