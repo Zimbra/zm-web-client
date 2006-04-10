@@ -250,8 +250,7 @@ function(appt, folderId) {
 	if (appt && folderId) {
 		var callback = new AjxCallback(this, this._handleResponseCleanup);
 		appt.move(folderId, callback);
-	}
-	else {
+	} else {
 		this._handleResponseCleanup();
 	}
 };
@@ -259,6 +258,7 @@ function(appt, folderId) {
 ZmApptComposeController.prototype._handleResponseCleanup = 
 function() {
 	this._apptView.cleanup();
+	this._app.popView(true);
 };
 
 ZmApptComposeController.prototype._handleErrorSave = 
@@ -342,9 +342,18 @@ function() {
 // Save button was pressed
 ZmApptComposeController.prototype._saveListener =
 function(ev) {
-	if (this._doSave() === false)
-		return;
-	this._app.popView(true);
+	// check if all fields are populated w/ valid values
+	try {
+		if (this._apptView.isValid()) {
+			return this.saveAppt();
+		}
+	} catch(ex) {
+		if (typeof ex == "string") {
+			this._showErrorMessage(ex);
+		} else {
+			DBG.dumpObj(AjxDebug.DBG1, ex);
+		}
+	}
 };
 
 // Cancel button was pressed
@@ -398,24 +407,6 @@ function(ev) {
 
 
 // Callbacks
-
-ZmApptComposeController.prototype._doSave =
-function() {
-	// check if all fields are populated w/ valid values
-	try {
-		if (this._apptView.isValid()) {
-			return this.saveAppt();
-		}
-	} catch(ex) {
-		if (typeof ex == "string") {
-			this._showErrorMessage(ex);
-		} else {
-			DBG.dumpObj(AjxDebug.DBG1, ex);
-		}
-		
-		return false;
-	}
-};
 
 ZmApptComposeController.prototype._doSpellCheck =  
 function() {
