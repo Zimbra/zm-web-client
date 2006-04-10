@@ -434,7 +434,7 @@ ZmApptTabViewPage.prototype.getOrganizer =
 function() {
 	var calId = this._calendarSelect.getValue();
 	var organizer = new ZmContact(this._appCtxt);
-	organizer.initFromEmail(ZmApptViewHelper.getOrganizerEmail(this._appCtxt, this._calendarOrgs[calId]));
+	organizer.initFromEmail(ZmApptViewHelper.getOrganizerEmail(this._appCtxt, this._calendarOrgs[calId]), true);
 
 	return organizer;
 };
