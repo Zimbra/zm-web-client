@@ -136,16 +136,10 @@ function() {
 	var shell = this._appCtxt.getShell();
 	var contactsApp = shell ? shell.getData(ZmAppCtxt.LABEL).getApp(ZmZimbraMail.CONTACTS_APP) : null;
 	var contactsList = contactsApp ? contactsApp.getContactList : null;
-	var locCallback = new AjxCallback(this, this._getAddressAcListLoc, this);
 	var params = {parent: shell, dataClass: contactsApp, dataLoader: contactsList,
-				  matchValue: ZmContactList.AC_VALUE_EMAIL, locCallback: locCallback};
+				  matchValue: ZmContactList.AC_VALUE_EMAIL};
 	this._addressAutocomplete = new ZmAutocompleteListView(params);
 	this._addressAutocomplete.handle(document.getElementById(this._addressFieldId));
-};
-
-ZmNewRosterItemDialog.prototype._getAddressAcListLoc =
-function(ev) {
-    return this._getAcListLoc(ev, this._addressFieldId);
 };
 
 ZmNewRosterItemDialog.prototype._initGroupAutocomplete =
@@ -155,27 +149,10 @@ function() {
 	var shell = this._appCtxt.getShell();
 	var imApp = shell ? shell.getData(ZmAppCtxt.LABEL).getApp(ZmZimbraMail.IM_APP) : null;
 	var groupList = imApp ? imApp.getAutoCompleteGroups : null;
-	var locCallback = new AjxCallback(this, this._getGroupAcListLoc, this);
 	var params = {parent: shell, dataClass: imApp, dataLoader: groupList,
-				  matchValue: "text", locCallback: locCallback, separator: ','};
+				  matchValue: "text", separator: ','};
 	this._groupAutocomplete = new ZmAutocompleteListView(params);
 	this._groupAutocomplete.handle(document.getElementById(this._groupsFieldId));
-};
-
-ZmNewRosterItemDialog.prototype._getGroupAcListLoc =
-function(ev) {
-    return this._getAcListLoc(ev, this._groupsFieldId);
-};
-
-ZmNewRosterItemDialog.prototype._getAcListLoc =
-function(ev, id) {
-    var field = document.getElementById(id);
-	if (field) {
-		var loc = Dwt.getLocation(field);
-		var height = Dwt.getSize(field).y;
-		return (new DwtPoint(loc.x, loc.y+height));
-	}
-	return null;
 };
 
 ZmNewRosterItemDialog.prototype._showError =
