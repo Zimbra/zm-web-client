@@ -153,12 +153,13 @@ ZmNote.prototype.set = function(data) {
 	if (this.version == version && this._content) return;
 	
 	// ZmItem fields
-	this.id = Number(data.id);
-	this.folderId = Number(data.l);
+	this.id = data.id;
+	this.folderId = data.l;
 	// ZmNote fields
 	this.name = data.name;
-	this.fragment = data.fr;
-	this._content = data.body;
+	// REVISIT: This is temporary!
+	this.fragment = data.fr instanceof Array ? data.fr[0]._content : data.fr;
+	this._content = data.body instanceof Array ? data.body[0]._content : data.body;
 	this.creator = data.cr;
 	this.createDate = new Date(Number(data.d));
 	this.modifier = data.leb;

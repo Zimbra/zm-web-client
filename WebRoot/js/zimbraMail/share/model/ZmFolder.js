@@ -412,26 +412,6 @@ function() {
 };
 
 /**
-* Returns the full folder path as a string.
-*
-* @param includeRoot	[boolean]*	whether to include root name at the beginning of the path
-* @param showUnread		[boolean]*	whether to display the number of unread items (in parens)
-* @param maxLength		[int]*		length in chars to truncate the name to
-* @param noMarkup		[boolean]*	if true, don't return any HTML
-*/
-ZmFolder.prototype.getPath = 
-function(includeRoot, showUnread, maxLength, noMarkup) {
-	var parent = this.parent;
-	var path = this.getName(showUnread, maxLength, noMarkup);
-	while (parent && ((parent.id != ZmOrganizer.ID_ROOT) || includeRoot)) {
-		path = parent.getName() + ZmFolder.SEP + path;
-		parent = parent.parent;
-	}
-	
-	return path;
-};
-
-/**
 * Returns true if the given object(s) may be placed in this folder.
 *
 * If the object is a folder, check that:

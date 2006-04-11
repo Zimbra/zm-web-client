@@ -348,7 +348,7 @@ ZmNoteController.prototype._showIndex = function(folderId) {
 		cache.fillCache(folderId, responseHandler);
 		return;
 	}
-	var index = cache.getNoteByName(folderId, "_INDEX_");
+	var index = cache.getNoteByName(folderId, ZmNotebook.PAGE_INDEX);
 	this.show(index);
 };
 

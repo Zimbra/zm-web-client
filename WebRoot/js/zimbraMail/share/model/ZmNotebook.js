@@ -45,6 +45,11 @@ function ZmNotebook(id, name, parent, tree, link, owner) {
 ZmNotebook.prototype = new ZmOrganizer;
 ZmNotebook.prototype.constructor = ZmNotebook;
 
+// Constants
+
+ZmNotebook.PAGE_INDEX = "_INDEX_";
+ZmNotebook.PAGE_CHROME = "_CHROME_";
+
 // Public methods
 
 ZmNotebook.prototype.toString = 
@@ -125,15 +130,6 @@ function(parent, obj, tree, link) {
 
 	// create calendar, populate, and return
 	var notebook = new ZmNotebook(obj.id, obj.name, parent, tree, link, obj.d);
-	/*** REVISIT: this is only temporary until we get dedicated folder ***
-	if (parent == null) {
-		var folder = {
-			id: 2, l: 1, name: ZmMsg.notebook, view: ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]
-		};
-		var childNotebook = ZmNotebook.createFromJs(notebook, folder, tree, false);
-		notebook.children.add(childNotebook);
-	}
-	/***/
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];
@@ -146,6 +142,10 @@ function(parent, obj, tree, link) {
 			if (folder.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
 				var childNotebook = ZmNotebook.createFromJs(notebook, folder, tree, false);
 				notebook.children.add(childNotebook);
+				// REVISIT
+				if (folder.id == ZmOrganizer.ID_NOTEBOOK) {
+					childNotebook._origName = obj.folder[i].name;
+				}
 			}
 		}
 	}

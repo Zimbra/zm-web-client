@@ -155,8 +155,7 @@ ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]		= [ZmOrganizer.FOLDER, ZmOrg
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.ADDRBOOK, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]	= [ZmOrganizer.CALENDAR, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.NOTES_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET]; // REVISIT: [ZmOrganizer.NOTEBOOK, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.NOTES_APP]		= [ZmOrganizer.NOTEBOOK, /*ZmOrganizer.SEARCH, ZmOrganizer.TAG,*/ ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 
 ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
@@ -685,6 +684,7 @@ function(app) {
 		var id = list[i];
 		if ((id == ZmOrganizer.SEARCH && !this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) ||
 			(id == ZmOrganizer.CALENDAR && !this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) ||
+			(id == ZmOrganizer.NOTEBOOK && !this._appCtxt.get(ZmSetting.NOTES_ENABLED)) ||
 			(id == ZmOrganizer.ROSTER_TREE_ITEM && !this._appCtxt.get(ZmSetting.IM_ENABLED)) ||			
 			(id == ZmOrganizer.TAG && !this._appCtxt.get(ZmSetting.TAGGING_ENABLED))) {
 			continue;
@@ -950,11 +950,15 @@ function(refresh) {
 		addrBookTree.loadFromJs(refresh.folder[0]);
 	}
 	
-	if (tagTree.asString() != tagString || folderTree.asString() != folderString ||
-		calendarTree.asString() != calendarString) {
+	if (tagTree.asString() != tagString || 
+		folderTree.asString() != folderString ||
+		calendarTree.asString() != calendarString ||
+		notebookTree.asString() != notebookString) {
 		DBG.println(AjxDebug.DBG1, "overview layout needed (refresh)");
 		DBG.println(AjxDebug.DBG2, "tags: " + tagString + " / " + tagTree.asString());
 		DBG.println(AjxDebug.DBG2, "folders: " + folderString + " / " + folderTree.asString());
+		DBG.println(AjxDebug.DBG2, "calendars: " + calendarString + " / " + calendarTree.asString());
+		DBG.println(AjxDebug.DBG2, "notebooks: " + notebookString + " / " + notebookTree.asString());
 		this._needOverviewLayout = true;
 	} else {
 		this._checkUnread(tagTree, unread);
@@ -1162,12 +1166,17 @@ function(creates, modifies) {
 			var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 			var searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
 			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+			var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 			var addrBookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
 			// parent could be a folder or a search
 			if (parentId == ZmOrganizer.ID_ROOT) {
 				if (name == "folder") {
 					if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR])
 						parent = calendarTree.getById(parentId);
+					else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
+						DBG.println("notebook tree");
+						parent = notebookTree.getById(parentId);
+					}
 					else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK])
 						parent = addrBookTree.getById(parentId);
 					else
@@ -1175,10 +1184,15 @@ function(creates, modifies) {
 				} else {
 					parent = searchTree.getById(parentId);
 				}
+			/*** REVISIT: temporary until we get dedicated folder ***/
+			} else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
+				parent = notebookTree.getById(parentId);
+			/***/
 			} else {
 				parent = folderTree.getById(parentId);
 				if (!parent) parent = searchTree.getById(parentId);
 				if (!parent) parent = calendarTree.getById(parentId);
+				if (!parent) parent = notebookTree.getById(parentId);
 				if (!parent) parent = addrBookTree.getById(parentId);
 			}
 			if (parent)
@@ -1186,9 +1200,14 @@ function(creates, modifies) {
 		} else if (name == "link") {
 			// TODO: We only support calendar links at the moment...
 			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+			var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 
 			var parentId = create.l;
-			var parent = calendarTree.getById(parentId);
+			var parent;
+			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR])
+				parent = calendarTree.getById(parentId);
+			else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK])
+				parent = notebookTree.getById(parentId);
 			
 			if (parent) {
 				parent.notifyCreate(create, true);
@@ -1204,7 +1223,7 @@ function(creates, modifies) {
 			// re-render current page, if necessary
 			var noteController = notesApp.getNoteController();
 			var shownNote = noteController.getNote();
-			if (shownNote.name == "_INDEX_") {
+			if (shownNode && shownNote.name == ZmNotebook.PAGE_INDEX) {
 				noteController.gotoNote(shownNote);
 			}
 		} else if (name == "m") {
@@ -1284,7 +1303,7 @@ function(modifies) {
 			// re-render current page, if necessary
 			var noteController = notesApp.getNoteController();
 			var shownNote = noteController.getNote();
-			if (shownNote && (shownNote.name == "_INDEX_" || shownNote.name == note.name)) {
+			if (shownNote && (shownNote.name == ZmNotebook.PAGE_INDEX || shownNote.name == note.name)) {
 				noteController.gotoNote(shownNote);
 			}
 			continue;

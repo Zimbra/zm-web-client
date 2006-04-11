@@ -65,11 +65,11 @@ function(note) {
 	}
 
 	var cache = this._controller._app.getNoteCache();
-	var chrome = cache.getNoteByName(note.folderId, "_CHROME_");
+	var chrome = cache.getNoteByName(note.folderId, ZmNotebook.PAGE_CHROME);
 	var chromeContent = chrome.getContent();
 
 	var content = chromeContent;
-	if (note.name != "_CHROME_") {
+	if (note.name != ZmNotebook.PAGE_CHROME) {
 		var pageContent = note.getContent();
 		content = chromeContent.replace(/\{\{CONTENT\}\}/ig, pageContent);
 	}
@@ -238,7 +238,7 @@ ZmNoteView.WIKLETS = {
 	"NAME": {
 		tooltip: ZmMsg.wikletNameTT,
 		func: function(element, cache, note) {
-			var name = note.name == "_INDEX_" ? ZmMsg.wikiToc : note.name;
+			var name = note.name == ZmNotebook.PAGE_INDEX ? ZmMsg.wikiToc : note.name;
 			return document.createTextNode(name);
 		}
 	},

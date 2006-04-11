@@ -33,25 +33,23 @@ function ZmNoteCache(appCtxt) {
 // Constants
 //
 
-ZmNoteCache._SPECIAL = {
-	"_INDEX_": [
-		"<H2>{{MSG|wikiUserPages}}</H2>",
-		"<P>",
-			"{{TOC}}"
-		/***
-		"<H2>{{MSG|wikiSpecialPages}}</H2>",
-		"<P>",
-			"{{TOC|name='_*_'}}"
-		/***/
-	].join(""),
-	"_CHROME_": [
-		"<DIV style='padding:0.5em'>",
-			"<H1>{{NAME}}</H1>",
-			"<DIV>{{CONTENT}}</DIV>",
-		"</DIV>"
-	].join("")
-};
-
+ZmNoteCache._SPECIAL = {};
+ZmNoteCache._SPECIAL[ZmNotebook.PAGE_INDEX] = [
+	"<H2>{{MSG|wikiUserPages}}</H2>",
+	"<P>",
+		"{{TOC}}"
+	/***
+	"<H2>{{MSG|wikiSpecialPages}}</H2>",
+	"<P>",
+		"{{TOC|name='_*_'}}"
+	/***/
+].join("");
+ZmNoteCache._SPECIAL[ZmNotebook.PAGE_CHROME] = [
+	"<DIV style='padding:0.5em'>",
+		"<H1>{{NAME}}</H1>",
+		"<DIV>{{CONTENT}}</DIV>",
+	"</DIV>"
+].join("");
 
 //
 // Data
@@ -72,9 +70,20 @@ ZmNoteCache.prototype._changeListener;
 // cache management
 
 ZmNoteCache.prototype.fillCache = function(folderId, callback, errorCallback) {
+	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var notebook = tree.getById(folderId);
+	var path = notebook.getPath(null, null, true);
+	
+	/*** REVISIT: don't need once we get dedicated folder ***/
+	var defaultNotebook = tree.getById(ZmOrganizer.ID_NOTEBOOK);
+	if (path.match(new RegExp("^"+defaultNotebook.name+"(/)?"))) {
+		path = defaultNotebook._origName + path.substring(defaultNotebook.name.length);
+	}
+	var search = 'in:"'+path+'"';
+	/***/
+
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("types", "wiki");
-	var search = "is:anywhere"; // REVISIT!
 	var queryNode = soapDoc.set("query", search);
 		
 	var handleResponse = callback ? new AjxCallback(this, this._fillCacheResponse, [folderId, callback]) : null;
@@ -165,8 +174,9 @@ ZmNoteCache.prototype.getNotesByCreator = function(creator) {
 
 ZmNoteCache.prototype._fillCacheResponse = 
 function(folderId, callback, response) {
-	if (response && response._data) {
-		var words = response._data.SearchResponse.w || [];
+	if (response && (response.SearchResponse || response._data.SearchResponse)) {
+		var searchResponse = response.SearchResponse || response._data.SearchResponse;
+		var words = searchResponse.w || [];
 		for (var i = 0; i < words.length; i++) {
 			var word = words[i];
 			var note = this.getNoteById(word.id);

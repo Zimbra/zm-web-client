@@ -33,8 +33,9 @@ function ZmNotebookTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.NEW_NOTEBOOK] = new AjxListener(this, this._newNotebookListener);
 	this._listeners[ZmOperation.SHARE_NOTEBOOK] = new AjxListener(this, this._shareNotebookListener);
 	this._listeners[ZmOperation.MOUNT_NOTEBOOK] = new AjxListener(this, this._mountNotebookListener);
-	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editPropsListener);
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
+	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editPropsListener);
+	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME] = new AjxListener(this, this._editNotebookListener);
 	this._listeners[ZmOperation.EDIT_NOTEBOOK_INDEX] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
 
@@ -93,6 +94,12 @@ function(actionMenu, type, id) {
 		menuItem.setText(isNotebook ? ZmMsg.shareNotebook : ZmMsg.shareSection);
 		menuItem.setImage(isNotebook ? "Notebook" : "Section");
 		menuItem.setDisabledImage(menuItem.getImage()+"Dis");
+		
+		if (!this._actionMenuInitialized) {
+			var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
+			menuItem.setImage("SendRecieve"); // [sic]
+			this._actionMenuInitialized = true;
+		}
 	}
 };
 
@@ -110,7 +117,7 @@ function() {
 		ops.push(ZmOperation.SHARE_NOTEBOOK);
 	}
 	ops.push(
-		ZmOperation.DELETE, ZmOperation.EDIT_PROPS,
+		ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.REFRESH,
 		ZmOperation.SEP,
 		ZmOperation.EDIT_NOTEBOOK_INDEX, ZmOperation.EDIT_NOTEBOOK_CHROME
 	);
@@ -209,12 +216,22 @@ function(ev) {
 	folderPropsDialog.popup();
 };
 
+ZmNotebookTreeController.prototype._refreshListener =
+function(ev) {
+	this._pendingActionData = this._getActionedOrganizer(ev);
+	var notebook = this._pendingActionData;
+
+	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTES_APP);
+	var cache = notesApp.getNoteCache();
+	cache.fillCache(notebook.id);
+};
+
 ZmNotebookTreeController.prototype._editNotebookListener = function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	
 	var notebook = this._pendingActionData;
 	var op = ev.item.getData(ZmOperation.KEY_ID);
-	var name = op == ZmOperation.EDIT_NOTEBOOK_INDEX ? "_INDEX_" : "_CHROME_";
+	var name = op == ZmOperation.EDIT_NOTEBOOK_INDEX ? ZmNotebook.PAGE_INDEX : ZmNotebook.PAGE_CHROME;
 	
 	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTES_APP);
 	var cache = notesApp.getNoteCache();
