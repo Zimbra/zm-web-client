@@ -1010,16 +1010,18 @@ function(status, slots, table, sched) {
 		// figure out the table cell that needs to be colored
 		for (var i = 0; i < slots.length; i++) {
 			var startIdx = this._getIndexFromTime(slots[i].s);
-			var endIdx = this._getIndexFromTime(slots[i].e);
+			var endIdx = this._getIndexFromTime(slots[i].e, true);
 
 			// normalize
-			if (endIdx <= startIdx)
-				endIdx = ZmSchedTabViewPage.FREEBUSY_NUM_CELLS;
+			if (endIdx < startIdx) {
+				endIdx = ZmSchedTabViewPage.FREEBUSY_NUM_CELLS - 1;
+			}
 
-			for (j = startIdx; j < endIdx; j++) {
+			for (j = startIdx; j <= endIdx; j++) {
 				if (row.cells[j]) {
-					if (status != ZmSchedTabViewPage.STATUS_UNKNOWN)
+					if (status != ZmSchedTabViewPage.STATUS_UNKNOWN) {
 						this._allAttendees[j] = this._allAttendees[j] + 1;
+					}
 					sched._coloredCells.push(row.cells[j]);
 					row.cells[j].style.backgroundColor = bgcolor;
 				}
@@ -1035,22 +1037,21 @@ function(status, slots, table, sched) {
 */
 ZmSchedTabViewPage.prototype._outlineAppt =
 function(dateInfo) {
-	this._updateBorders(this._allAttendeesSlot);
+	this._updateBorders(this._allAttendeesSlot, true);
 	for (var j = 1; j < this._schedTable.length; j++) {
 		this._updateBorders(this._schedTable[j]);
 	}
 };
 
 /*
-* The table borders outline the time of the current appt.
+* Outlines the times of the current appt for the given row.
 *
-* @param sched		[sched]			IDs for this row
-
+* @param sched			[sched]			info for this row
+* @param isAllAttendees	[boolean]*		if true, this is the All Attendees row
 */
 ZmSchedTabViewPage.prototype._updateBorders =
 function(sched, isAllAttendees) {
 	if (!sched) return;
-	isAllAttendees = isAllAttendees || (sched == this._allAttendeesSlot);
 
 	var div, curClass, newClass;
 
@@ -1087,12 +1088,26 @@ function(sched, isAllAttendees) {
 	}
 };
 
+/*
+* Calculate index of the cell that covers the given time. A start time on a half-hour border
+* covers the corresponding time block, whereas an end time does not. For example, an appt with
+* a start time of 5:00 causes the 5:00 - 5:30 block to be marked. The end time of 5:30 does not
+* cause the 5:30 - 6:00 block to be marked.
+*
+* @param time	[Date or int]		time
+* @param isEnd	[boolean]*			if true, this is an appt end time
+*/
 ZmSchedTabViewPage.prototype._getIndexFromTime = 
-function(time, isStart) {
+function(time, isEnd) {
 	var d = (time instanceof Date) ? time : new Date(time);
 	var idx = d.getHours() * 2;
-	if (d.getMinutes() >= 30) {
+	var minutes = d.getMinutes()
+	if (minutes >= 30) {
 		idx++;
+	}
+	// end times don't mark blocks on half-hour boundary
+	if (isEnd && (minutes == 0 || minutes == 30)) {
+		idx--;
 	}
 
 	return idx;
@@ -1110,7 +1125,7 @@ function(dateInfo) {
 													 AjxDateUtil.simpleParseDateStr(dateInfo.endDate));
 		// subtract 1 from index since we're marking right borders
 		index.start = this._getIndexFromTime(startDate) - 1;
-		index.end = this._getIndexFromTime(endDate) - 1;
+		index.end = this._getIndexFromTime(endDate, true);
 	}
 	return index;
 };
