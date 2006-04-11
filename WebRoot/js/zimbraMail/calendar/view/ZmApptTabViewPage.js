@@ -1131,7 +1131,8 @@ function(excludeAttendees) {
 	var vals = [];
 
 	vals.push(this._subjectField.getValue());
-	vals.push(this._attInputField[ZmAppt.LOCATION].getValue());
+	vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.LOCATION].getArray(), ZmAppt.LOCATION));
+	vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.RESOURCE].getArray(), ZmAppt.RESOURCE));
 	vals.push(this._showAsSelect.getValue());
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
@@ -1141,12 +1142,12 @@ function(excludeAttendees) {
 		AjxDateUtil.getServerDateTime(startDate),
 		AjxDateUtil.getServerDateTime(endDate)
 	);
-	vals.push(""+this._allDayCheckbox.checked);
+	vals.push("" + this._allDayCheckbox.checked);
 	if (Dwt.getVisibility(this._tzoneSelect.getHtmlElement()))
 		vals.push(this._tzoneSelect.getValue());
 	vals.push(this._repeatSelect.getValue());
 	if (!excludeAttendees) {
-		vals.push(this._attInputField[ZmAppt.PERSON].getValue());
+		vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.PERSON].getArray(), ZmAppt.PERSON));
 	}
 	vals.push(this._notesHtmlEditor.getContent());
 

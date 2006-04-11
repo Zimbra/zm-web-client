@@ -202,9 +202,9 @@ function(useStartTime) {
 	}
 };
 
-ZmAppt.prototype.getAttendeesText	= function() { return this._getAttendeesString(this._attendees[ZmAppt.PERSON], ZmAppt.PERSON); };
-ZmAppt.prototype.getResourcesText	= function(includeDisplayName) { return this._getAttendeesString(this._attendees[ZmAppt.RESOURCE], ZmAppt.RESOURCE, includeDisplayName); };
-ZmAppt.prototype.getLocationsText	= function(includeDisplayName) { return this._getAttendeesString(this._attendees[ZmAppt.LOCATION], ZmAppt.LOCATION, includeDisplayName); };
+ZmAppt.prototype.getAttendeesText	= function() { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.PERSON], ZmAppt.PERSON); };
+ZmAppt.prototype.getResourcesText	= function(includeDisplayName) { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.RESOURCE], ZmAppt.RESOURCE, includeDisplayName); };
+ZmAppt.prototype.getLocationsText	= function(includeDisplayName) { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.LOCATION], ZmAppt.LOCATION, includeDisplayName); };
 ZmAppt.prototype.getLocation		= function(includeDisplayName) { return this.getLocationsText(includeDisplayName); };
 
 ZmAppt.prototype.isAllDayEvent 					= function() { return this.allDayEvent == "1"; };
@@ -1002,7 +1002,7 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 			buf[i++] = "</table>\n<p>\n<table border='0'>";
 		}
 		buf[i++] = "\n";
-		var attString = this._getAttendeesString(this._attendees[ZmAppt.PERSON].slice(0, 10), ZmAppt.PERSON);
+		var attString = ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.PERSON].slice(0, 10), ZmAppt.PERSON);
 		if (this._attendees[ZmAppt.PERSON].length > 10) {
 			attString += ", ...";
 		}
@@ -1093,34 +1093,6 @@ function(attach, hasCheckbox) {
 
 
 // Private / Protected methods
-
-/*
-* Creates a string from a list of attendees/locations/resources. If an item
-* doesn't have a name, its address is used.
-*
-* @param list					[array]			list of attendees (ZmContact or ZmResource)
-* @param type					[constant]		attendee type
-* @param includeDisplayName		[boolean]*		if true, include location info in parens (ZmResource)
-*/
-ZmAppt.prototype._getAttendeesString = 
-function(list, type, includeDisplayName) {
-	if (!(list && list.length)) return "";
-
-	var a = [];
-	for (var i = 0; i < list.length; i++) {
-		var attendee = list[i];
-		var text = attendee.getAttendeeText(type);
-		if (includeDisplayName && list.length == 1) {
-			var displayName = attendee.getAttr(ZmResource.F_locationName);
-			if (displayName) {
-				text = [text, " (", displayName, ")"].join("");
-			}
-		}
-		a.push(text);
-	}
-
-	return a.join(ZmAppt.ATTENDEES_SEPARATOR);
-};
 
 ZmAppt.prototype._getTextSummaryTime = 
 function(isEdit, fieldstr, extDate, start, end, hasTime) {

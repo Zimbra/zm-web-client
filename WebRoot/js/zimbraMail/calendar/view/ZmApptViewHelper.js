@@ -536,6 +536,34 @@ function(appCtxt, organizer) {
 	return new ZmEmailAddress(orgAddress, null, orgName);
 };
 
+/*
+* Creates a string from a list of attendees/locations/resources. If an item
+* doesn't have a name, its address is used.
+*
+* @param list					[array]			list of attendees (ZmContact or ZmResource)
+* @param type					[constant]		attendee type
+* @param includeDisplayName		[boolean]*		if true, include location info in parens (ZmResource)
+*/
+ZmApptViewHelper.getAttendeesString = 
+function(list, type, includeDisplayName) {
+	if (!(list && list.length)) return "";
+
+	var a = [];
+	for (var i = 0; i < list.length; i++) {
+		var attendee = list[i];
+		var text = attendee.getAttendeeText(type);
+		if (includeDisplayName && list.length == 1) {
+			var displayName = attendee.getAttr(ZmResource.F_locationName);
+			if (displayName) {
+				text = [text, " (", displayName, ")"].join("");
+			}
+		}
+		a.push(text);
+	}
+
+	return a.join(ZmAppt.ATTENDEES_SEPARATOR);
+};
+
 /**
 * Creates up to three separate DwtSelects for the time (hour, minute, am|pm)
 * Showing the AM|PM select widget is dependent on the user's locale
