@@ -676,7 +676,7 @@ function(soapDoc, contactList, isDraft) {
 			for (var i = 0; i < this._forAttIds.length; i++) {
 				var msgPartNode = soapDoc.set("mp", null, attachNode);
 				// XXX: this looks hacky but we cant send a null ID to the server!
-				var id = isDraft ? (this.id || this.origId) : (this.origId || this.id);
+				var id = (isDraft || this.isDraft) ? (this.id || this.origId) : (this.origId || this.id);
 				msgPartNode.setAttribute("mid", id);
 				msgPartNode.setAttribute("part", this._forAttIds[i]);
 			}
