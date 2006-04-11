@@ -44,7 +44,8 @@ function() {
 
 ZmTagPicker.prototype._setupPicker =
 function(parent) {
-	this._setOverview(ZmTagPicker._OVERVIEW_ID, parent, [ZmOrganizer.TAG]);
+	var overviewId = ZmTagPicker._OVERVIEW_ID + "_" + Dwt.getNextId();
+	this._setOverview(overviewId, parent, [ZmOrganizer.TAG]);
 }
 
 ZmTagPicker.prototype._updateQuery = 

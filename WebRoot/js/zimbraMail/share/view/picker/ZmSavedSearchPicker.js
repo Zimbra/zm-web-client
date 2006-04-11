@@ -44,7 +44,8 @@ function() {
 
 ZmSavedSearchPicker.prototype._setupPicker =
 function(parent) {
-	this._setOverview(ZmSavedSearchPicker._OVERVIEW_ID, parent, [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH]);
+	var overviewId = ZmSavedSearchPicker._OVERVIEW_ID + "_" + Dwt.getNextId();
+	this._setOverview(overviewId, parent, [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH]);
 	this._twiddle();
 }
 
