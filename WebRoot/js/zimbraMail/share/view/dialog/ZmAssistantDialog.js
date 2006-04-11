@@ -139,22 +139,6 @@ function() {
 	}
 };
 
-ZmAssistantDialog.prototype._emptyCommand =
-function(args) {
-	var match = args.match(/\s*(\w+)\s*/);
-	if (!match) return;
-	var obj = match[1];
-	//DBG.println("object = "+obj);
-	args = args.substring(match[0].length);
-	if (obj == 'trash') {
-		this._setAction(ZmMsg.emptyTrash, "Trash");
-	} else if (obj == 'junk') {
-		this._setAction(ZmMsg.emptyJunk, "SpamFolder");
-	} else {
-		this._setDefaultAction();
-	}
-}
-
 ZmAssistantDialog.prototype._newCommand =
 function(args) {
 	DBG.println("new = "+args);
@@ -329,7 +313,7 @@ function(args) {
 ZmAssistantDialog._ADDRESS = "ZmAssistantDialogAddress";
 	
 ZmAssistantDialog.prototype._matchTypedObject =
-function(args, obj, defaultType) {
+function(args, obj, defaultType, aliases) {
 	
 	var match = obj == ZmAssistantDialog._ADDRESS ? args.match(/\s*\[([^\]]*)\]?\s*/) : this._objectManager.findMatch(args, obj);
 	if (!match) return null;
@@ -339,10 +323,9 @@ function(args, obj, defaultType) {
 	if (match.index > 0) {
 		// check for a type
 		var targs = args.substring(0, match.index);
-		matchType = targs.match(/\b([0-9a-z]{1,2}):\s*$/i);
+		matchType = targs.match(/\b(\w+):\s*$/i);
 		if (matchType) {
 			type = matchType[1];
-			if (type == 'f') type = 'wf'; // map f to wf internally
 		}
 	}
 	if (matchType) {
@@ -350,79 +333,89 @@ function(args, obj, defaultType) {
 	} else {
 		args = args.replace(match[0], " ");
 	}
+
+	if (aliases) {
+		var real = ZmAssistantDialog._CONTACT_ALIASES[aliases][type];
+		if (real) type = real;
+	}
+	
 	var data =  obj == ZmAssistantDialog._ADDRESS ? match[1] : match[0];
+	
+	var fieldData = ZmAssistantDialog._CONTACT_FIELDS[type];
+
+	if (fieldData) type = fieldData.key;
+
 	return {data: data, args: args, type: type};
-}
-
-ZmAssistantDialog._URL_ORDER = [ 'w', 'h', 'o' ];
-ZmAssistantDialog._URL_FIELDS = {
-	 w: ZmMsg.AB_WORK_URL,
-	 h: ZmMsg.AB_HOME_URL,
- 	 o: ZmMsg.AB_OTHER_URL
 };
 
-ZmAssistantDialog._ADDR_ORDER = [ 'w', 'h', 'o' ];
-ZmAssistantDialog._ADDR_FIELDS = {
-	 w: ZmMsg.AB_ADDR_WORK,
-	 h: ZmMsg.AB_ADDR_HOME, 
- 	 o: ZmMsg.AB_ADDR_OTHER
+ZmAssistantDialog._URL_ORDER = [ 'wu', 'hu', 'ou' ];
+
+ZmAssistantDialog._ADDR_ORDER = [ 'wa', 'ha', 'oa' ];
+
+ZmAssistantDialog._EMAIL_ORDER = [ 'e', 'e2', 'e3' ];
+
+ZmAssistantDialog._PHONE_ORDER = [ 'wp', 'w2', 'm', 'p', 'wf', 'a', 'c', 'cp', 'cbp', 'hp', 'h2', 'hf', 'op', 'of' ];
+
+ZmAssistantDialog._CONTACT_ALIASES = {
+	url: { w: 'wu', h: 'hu', o: 'ou' },
+	addr: { w: 'wa', h: 'ha', o: 'oa' },
+	phone: { w: 'wp', h: 'hp', o: 'op' }
 };
 
-ZmAssistantDialog._EMAIL_ORDER = [ '1', '2', '3' ];
-ZmAssistantDialog._EMAIL_FIELDS = {
-	 '1': ZmMsg.AB_FIELD_email,
-	 '2': ZmMsg.AB_FIELD_email2,
- 	 '3': ZmMsg.AB_FIELD_email3
-};
- 
-ZmAssistantDialog._PHONE_ORDER = [ 'w', 'w2', 'm', 'p', 'wf', 'a', 'c', 'co', 'cb', 'h', 'h2', 'hf', 'o', 'of' ];
-ZmAssistantDialog._PHONE_FIELDS = {
-	 w: ZmMsg.AB_FIELD_workPhone,
-	w2: ZmMsg.AB_FIELD_workPhone2, 
-	 m: ZmMsg.AB_FIELD_mobilePhone,
-	 p: ZmMsg.AB_FIELD_pager,
-	wf: ZmMsg.AB_FIELD_workFax,
-	 a: ZmMsg.AB_FIELD_assistantPhone,
-	 c: ZmMsg.AB_FIELD_carPhone,
-	co: ZmMsg.AB_FIELD_companyPhone,
-	cb: ZmMsg.AB_FIELD_callbackPhone,
-	 h: ZmMsg.AB_FIELD_homePhone,
-	h2: ZmMsg.AB_FIELD_homePhone2,
-	hf: ZmMsg.AB_FIELD_homeFax,
-	 o: ZmMsg.AB_FIELD_otherPhone,
-	of: ZmMsg.AB_FIELD_otherFax
+ZmAssistantDialog._CONTACT_FIELDS = {
+	  a: { field: ZmMsg.AB_FIELD_assistantPhone, key: 'a' },
+	  c: { field: ZmMsg.AB_FIELD_carPhone, key: 'c' },
+	cbp: { field: ZmMsg.AB_FIELD_callbackPhone, key: 'cbp' },
+	 cp: { field: ZmMsg.AB_FIELD_companyPhone, key: 'cp' },
+	  e: { field: ZmMsg.AB_FIELD_email, key: 'e' },	 
+	 e2: { field: ZmMsg.AB_FIELD_email2, key: 'e2' },
+	 e3: { field: ZmMsg.AB_FIELD_email2, key: 'e3' },
+	  f: { field: ZmMsg.AB_FIELD_workFax, key: 'wf' }, // alias
+	 h2: { field: ZmMsg.AB_FIELD_homePhone2, key: 'h2' }, 
+	 ha: { field: ZmMsg.AB_ADDR_HOME, key: 'ha' },
+	 hf: { field: ZmMsg.AB_FIELD_homeFax, key: 'hf' },
+	 hp: { field: ZmMsg.AB_FIELD_homePhone, key: 'hp' },
+	 hu: { field: ZmMsg.AB_HOME_URL, key: 'hu' },
+	  m: { field: ZmMsg.AB_FIELD_mobilePhone, key: 'm' },
+  notes: { field: ZmMsg.notes, key: 'notes' },	  
+	 oa: { field: ZmMsg.AB_ADDR_OTHER, key: 'oa' },
+	 of: { field: ZmMsg.AB_FIELD_otherFax, key: 'of' },
+	 op: { field: ZmMsg.AB_FIELD_otherPhone, key: 'op' },
+	 ou: { field: ZmMsg.AB_OTHER_URL, key: 'ou' },
+	  p: { field: ZmMsg.AB_FIELD_pager, key: 'p' },
+	 w2: { field: ZmMsg.AB_FIELD_workPhone2, key: 'w2' },
+	 wa: { field: ZmMsg.AB_ADDR_WORK, key: 'wa' },
+	 wf: { field: ZmMsg.AB_FIELD_workFax, key: 'wf' },
+	 wp: { field: ZmMsg.AB_FIELD_workPhone, key: 'wp' },
+	 wu: { field: ZmMsg.AB_WORK_URL, key: 'wu' }
 };
 
 ZmAssistantDialog.prototype._newContactCommand =
 function(args) {
 	this._setActionField(ZmMsg.newContact, "NewContact");
 	var match;
-
-	var addresses = {};
-	while (match = this._matchTypedObject(args, ZmAssistantDialog._ADDRESS, 'w')) {
-		addresses[match.type] = match;
+	var objects = {};	
+		
+	while (match = this._matchTypedObject(args, ZmAssistantDialog._ADDRESS, 'wa', 'addr')) {
+		objects[match.type] = match;
 		args = match.args;
 	}
 
-
-	var phones = {};
 	// look for phone numbers
-	while (match = this._matchTypedObject(args, ZmObjectManager.PHONE, 'w')) {
-		phones[match.type] = match;
+	while (match = this._matchTypedObject(args, ZmObjectManager.PHONE, 'wp', 'phone')) {
+		objects[match.type] = match;
 		args = match.args;
 	}
 
-	var urls = {};
 	// look for urls
-	while (match = this._matchTypedObject(args, ZmObjectManager.URL, 'w')) {
-		urls[match.type] = match;
+	while (match = this._matchTypedObject(args, ZmObjectManager.URL, 'wu', 'url')) {
+		objects[match.type] = match;
 		args = match.args;
 	}
 
-	var emails = {};
 	// look for urls
-	while (match = this._matchTypedObject(args, ZmObjectManager.EMAIL, '1')) {
-		emails[match.type] = match;
+	while (match = this._matchTypedObject(args, ZmObjectManager.EMAIL, 'e')) {
+		objects[match.type] = match;
 		args = match.args;
 	}
 	
@@ -433,11 +426,13 @@ function(args) {
 		args = args.replace(match[0], " ");
 	}
 
-	var notes = null;
-	match = args.match(/\s*\(([^)]*)\)?\s*/);
-	if (match) {
-		notes = match[1];
-		args = args.replace(match[0], " ");
+	var notes = objects['notes'] ? objects['notes'].data : null;
+	if (notes == null) {
+		match = args.match(/\s*\(([^)]*)\)?\s*/);
+		if (match) {
+			notes = match[1];
+			args = args.replace(match[0], " ");
+		}
 	}
 
 //	var title = null;
@@ -465,14 +460,15 @@ function(args) {
 	this._setOptField(ZmMsg.AB_FIELD_jobTitle, title, false, true, ZmMsg.AB_FIELD_fullName);
 	this._setOptField(ZmMsg.AB_FIELD_company, company, false, true, ZmMsg.AB_FIELD_fullName);
 	
-	match = emails['1'];
+	match = objects['e'];
 	var email = match ? match.data : null;
 	this._setField(ZmMsg.AB_FIELD_email, email == null ? "(enter an email address)" : email, email == null, true);
 	for (var i=0; i < ZmAssistantDialog._EMAIL_ORDER.length; i++) {
 		var key = ZmAssistantDialog._EMAIL_ORDER[i];
-		if (key == '1') continue;
-		var data = emails[key];
-		this._setOptField(ZmAssistantDialog._EMAIL_FIELDS[key], data ? data.data : null, false, true, ZmMsg.AB_FIELD_email);
+		if (key == 'e') continue;
+		var data = objects[key];
+		var fname = ZmAssistantDialog._CONTACT_FIELDS[key].field;
+		this._setOptField(fname, data ? data.data : null, false, true, ZmMsg.AB_FIELD_email);
 	}
 
 	//match = phones['w'];
@@ -480,8 +476,9 @@ function(args) {
 	//this._setField(ZmMsg.AB_FIELD_workPhone, workPhone == null ? "(enter work phone)" : workPhone, workPhone == null, true);
 	for (var i=0; i < ZmAssistantDialog._PHONE_ORDER.length; i++) {
 		var key = ZmAssistantDialog._PHONE_ORDER[i];
-		var data = phones[key];
-		this._setOptField(ZmAssistantDialog._PHONE_FIELDS[key], data ? data.data : null, false, true);
+		var data = objects[key];		
+		var fname = ZmAssistantDialog._CONTACT_FIELDS[key].field;		
+		this._setOptField(fname, data ? data.data : null, false, true);
 	}
 	
 	var notesStr = AjxStringUtil.convertToHtml(notes == null ? "(enclose notes in parens)" : notes);
@@ -489,23 +486,37 @@ function(args) {
 	
 	for (var i=0; i < ZmAssistantDialog._URL_ORDER.length; i++) {
 		var key = ZmAssistantDialog._URL_ORDER[i];
-		var data = urls[key];
-		this._setOptField(ZmAssistantDialog._URL_FIELDS[key], data ? data.data : null, false, true);
+		var data = objects[key];
+		var fname = ZmAssistantDialog._CONTACT_FIELDS[key].field;
+		this._setOptField(fname, data ? data.data : null, false, true);
 	}
 	
 	for (var i=0; i < ZmAssistantDialog._ADDR_ORDER.length; i++) {
 		var key = ZmAssistantDialog._ADDR_ORDER[i];
-		var data = addresses[key];
+		var data = objects[key];
 		var addr = data ?  AjxStringUtil.convertToHtml(data.data) : null;
-		this._setOptField(ZmAssistantDialog._ADDR_FIELDS[key], addr, false, false);
+		var fname = ZmAssistantDialog._CONTACT_FIELDS[key].field;
+		this._setOptField(fname, addr, false, false);
 	}
-
 	
 //	this._setOptField(ZmMsg.repeat, repeat, false, true);
 	return;
 
 
 };
+
+ZmAssistantDialog.prototype._emptyCommand =
+function(args) {
+	this._setActionField(ZmMsg.empty, "Trash");
+	var match = args.match(/\s*(\w+)\s*/);
+	var folder = match ? match[1] : null;
+
+	if (folder == 'trash' || folder == 'junk') {
+		this._setOptField(ZmMsg.folder, folder, false, true);
+	} else {
+		this._setOptField(ZmMsg.folder, "trash or junk", true, true);
+	}
+}
 
 ZmAssistantDialog.prototype._newNoteCommand =
 function(args) {
