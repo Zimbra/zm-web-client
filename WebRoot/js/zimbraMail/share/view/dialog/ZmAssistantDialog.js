@@ -310,12 +310,21 @@ function(args) {
 
 };
 
-ZmAssistantDialog._ADDRESS = "ZmAssistantDialogAddress";
-	
+ZmAssistantDialog._BRACKETS = "ZmAssistantDialogBrackets";
+ZmAssistantDialog._PARENS = "ZmAssistantDialogParens";
+
 ZmAssistantDialog.prototype._matchTypedObject =
 function(args, objType, obj) {
 	
-	var match = objType == ZmAssistantDialog._ADDRESS ? args.match(/\s*\[([^\]]*)\]?\s*/) : this._objectManager.findMatch(args, objType);
+	var match;
+	var matchIndex = 0;
+	
+	if (objType == ZmAssistantDialog._BRACKETS) {
+		match = args.match(/\s*\[([^\]]*)\]?\s*/);
+		matchIndex = 1;
+	} else {
+		match = this._objectManager.findMatch(args, objType);
+	}
 	if (!match) return null;
 
 	var type = obj.defaultType;
@@ -325,7 +334,7 @@ function(args, objType, obj) {
 		var targs = args.substring(0, match.index);
 		matchType = targs.match(/\b(\w+):\s*$/i);
 		if (matchType) {
-			type = matchType[1];
+			type = matchType[1].toLowerCase();
 		}
 	}
 	if (matchType) {
@@ -339,16 +348,14 @@ function(args, objType, obj) {
 		if (real) type = real;
 	}
 	
-	var data =  objType == ZmAssistantDialog._ADDRESS ? match[1] : match[0];
-	
 	var fieldData = ZmAssistantDialog._CONTACT_FIELDS[type];
-
 	if (fieldData) type = fieldData.key;
 
-	return {data: data, args: args, type: type};
+	return {data: match[matchIndex], args: args, type: type};
 };
 
 ZmAssistantDialog._CONTACT_FIELD_ORDER = [
+     'title', 'company',
 	 'e', 'e2', 'e3', 
 	 'wp', 'w2', 'm', 'p', 'wf', 'a', 'c', 'cp', 'cbp',  'wa', 'wu',
 	 'hp', 'h2', 'hf', 'ha', 'hu',
@@ -359,8 +366,9 @@ ZmAssistantDialog._CONTACT_FIELDS = {
 	  a: { field: ZmMsg.AB_FIELD_assistantPhone, key: 'a' },
 	  c: { field: ZmMsg.AB_FIELD_carPhone, key: 'c' },
 	cbp: { field: ZmMsg.AB_FIELD_callbackPhone, key: 'cbp' },
+company: { field: ZmMsg.AB_FIELD_company, key: 'company' },
 	 cp: { field: ZmMsg.AB_FIELD_companyPhone, key: 'cp' },
-	  e: { field: ZmMsg.AB_FIELD_email, key: 'e', visible: true, defaultValue: 'enter an email address'},
+	  e: { field: ZmMsg.AB_FIELD_email, key: 'e', defaultValue: 'enter an email address'},
 	 e2: { field: ZmMsg.AB_FIELD_email2, key: 'e2' },
 	 e3: { field: ZmMsg.AB_FIELD_email3, key: 'e3' },
 	  f: { field: ZmMsg.AB_FIELD_workFax, key: 'wf' }, // alias f to wf
@@ -369,13 +377,15 @@ ZmAssistantDialog._CONTACT_FIELDS = {
 	 hf: { field: ZmMsg.AB_FIELD_homeFax, key: 'hf' },
 	 hp: { field: ZmMsg.AB_FIELD_homePhone, key: 'hp' },
 	 hu: { field: ZmMsg.AB_HOME_URL, key: 'hu' },
+jobtitle:{ field: ZmMsg.AB_FIELD_jobTitle, key: 'title' },	 // alias jobtitle to title
 	  m: { field: ZmMsg.AB_FIELD_mobilePhone, key: 'm' },
-  notes: { field: ZmMsg.notes, key: 'notes', multiLine: true, visible: true, defaultValue: '(enclose notes in parens)' },	  
+  notes: { field: ZmMsg.notes, key: 'notes', multiLine: true, defaultValue: '(enclose notes in parens)' },	  
 	 oa: { field: ZmMsg.AB_ADDR_OTHER, key: 'oa', multiLine: true },
 	 of: { field: ZmMsg.AB_FIELD_otherFax, key: 'of' },
 	 op: { field: ZmMsg.AB_FIELD_otherPhone, key: 'op' },
 	 ou: { field: ZmMsg.AB_OTHER_URL, key: 'ou' },
 	  p: { field: ZmMsg.AB_FIELD_pager, key: 'p' },
+  title: { field: ZmMsg.AB_FIELD_jobTitle, key: 'title' },
 	 w2: { field: ZmMsg.AB_FIELD_workPhone2, key: 'w2' },
 	 wa: { field: ZmMsg.AB_ADDR_WORK, key: 'wa', multiLine: true },
 	 wf: { field: ZmMsg.AB_FIELD_workFax, key: 'wf' },
@@ -387,11 +397,11 @@ ZmAssistantDialog._CONTACT_OBJECTS = { };
 ZmAssistantDialog._CONTACT_OBJECTS[ZmObjectManager.URL] = { defaultType: 'wu', aliases: { w: 'wu', h: 'hu', o: 'ou' }};
 ZmAssistantDialog._CONTACT_OBJECTS[ZmObjectManager.PHONE] = { defaultType: 'wp', aliases: { w: 'wp', h: 'hp', o: 'op' }};
 ZmAssistantDialog._CONTACT_OBJECTS[ZmObjectManager.EMAIL] = { defaultType: 'e' };
-ZmAssistantDialog._CONTACT_OBJECTS[ZmAssistantDialog._ADDRESS] = { defaultType: 'wa', aliases: { w: 'wa', h: 'ha', o: 'oa' }};
+ZmAssistantDialog._CONTACT_OBJECTS[ZmAssistantDialog._BRACKETS] = { defaultType: 'wa', aliases: { w: 'wa', h: 'ha', o: 'oa' }};
 
 // check address first, since we grab any fields quoted with [], objects in them won't be matched later
 ZmAssistantDialog._CONTACT_OBJECT_ORDER = [
-	ZmAssistantDialog._ADDRESS, ZmObjectManager.PHONE, ZmObjectManager.URL, ZmObjectManager.EMAIL
+	ZmAssistantDialog._BRACKETS, ZmObjectManager.PHONE, ZmObjectManager.URL, ZmObjectManager.EMAIL
 ];
 
 ZmAssistantDialog.prototype._newContactCommand =
@@ -412,23 +422,21 @@ function(args) {
 		}
 	}
 
-	var notes = objects['notes'] ? objects['notes'].data : null;
-	if (notes == null) {
+	if (!objects.notes) {
 		match = args.match(/\s*\(([^)]*)\)?\s*/);
 		if (match) {
-			objects['notes'] = {data : match[1] };
+			objects.notes = {data : match[1] };
 			args = args.replace(match[0], " ");
 		}
 	}
 
 	var remaining = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' ').split(",", 3);
 	var fullName = remaining[0];
-	var title = remaining[1] ? remaining[1] : "";
-	var company = remaining[2] ? remaining[2] : "";	
+
+	if (!objects.title) objects.title = { data : remaining[1] ? remaining[1] : ""};
+	if (!objects.company) objects.company = { data: remaining[2] ? remaining[2] : ""};	
 
 	this._setField(ZmMsg.AB_FIELD_fullName, fullName == "" ? "type to enter fullname, title, company" : fullName, fullName == "", true);
-	this._setOptField(ZmMsg.AB_FIELD_jobTitle, title, false, true, ZmMsg.AB_FIELD_fullName);
-	this._setOptField(ZmMsg.AB_FIELD_company, company, false, true, ZmMsg.AB_FIELD_fullName);
 	
 	for (var i=0; i < ZmAssistantDialog._CONTACT_FIELD_ORDER.length; i++) {	
 		var key = ZmAssistantDialog._CONTACT_FIELD_ORDER[i];
@@ -438,7 +446,7 @@ function(args) {
 		if (value != null) {
 			value = field.multiLine ? AjxStringUtil.convertToHtml(value) : AjxStringUtil.htmlEncode(value);
 		}
-		if (field.visible) {
+		if (field.defaultValue) {
 			var useDefault = (value == null || value == "");
 			this._setField(field.field, useDefault ? field.defaultValue : value, useDefault, false);
 		} else {
