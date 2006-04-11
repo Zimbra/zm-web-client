@@ -122,7 +122,7 @@ function(view) {
 		var menu = new ZmPopupMenu(delButton);
 		delButton.setMenu(menu);
 		
-		var mi = menu.createMenuItem(ZmOperation.DELETE_CONV, ZmOperation.IMAGE[ZmOperation.DELETE_CONV], ZmMsg[ZmOperation.MSG_KEY[ZmOperation.DELETE_CONV]]);
+		var mi = menu.createMenuItem(ZmOperation.DELETE_CONV, ZmOperation.SETUP[ZmOperation.DELETE_CONV].image, ZmMsg[ZmOperation.SETUP[ZmOperation.DELETE_CONV].text]);
 		mi.setData(ZmOperation.MENUITEM_ID, ZmOperation.DELETE_CONV);
 		mi.addSelectionListener(this._listeners[ZmOperation.DELETE]);
 

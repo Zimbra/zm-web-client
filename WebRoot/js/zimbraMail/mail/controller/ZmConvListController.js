@@ -130,7 +130,7 @@ function(view, arrowStyle) {
 		buttons.push(ZmOperation.FORWARD);
 	for (var i = 0; i < buttons.length; i++) {
 		var b = this._toolbar[view].getButton(buttons[i]);
-		var key = ZmOperation.MSG_KEY_TT[buttons[i]] + "Conv";
+		var key = ZmOperation.SETUP[buttons[i]].tooltip + "Conv";
 		if (b)
 			b.setToolTipContent(ZmMsg[key]);
 	}

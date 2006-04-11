@@ -251,7 +251,7 @@ function(view) {
 	var menu = new ZmPopupMenu(printButton);
 	printButton.setMenu(menu);
 	
-	var mi = menu.createMenuItem(ZmOperation.PRINT_CONTACTLIST, ZmOperation.IMAGE[ZmOperation.PRINT_CONTACTLIST], ZmMsg[ZmOperation.MSG_KEY[ZmOperation.PRINT_CONTACTLIST]]);
+	var mi = menu.createMenuItem(ZmOperation.PRINT_CONTACTLIST, ZmOperation.SETUP[ZmOperation.PRINT_CONTACTLIST].image, ZmMsg[ZmOperation.SETUP[ZmOperation.PRINT_CONTACTLIST].text]);
 	mi.setData(ZmOperation.MENUITEM_ID, ZmOperation.PRINT_CONTACTLIST);
 	mi.addSelectionListener(this._listeners[ZmOperation.PRINT]);
 };

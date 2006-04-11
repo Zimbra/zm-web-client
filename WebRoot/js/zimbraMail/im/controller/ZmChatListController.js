@@ -198,8 +198,8 @@ function(view) {
 
     // init presence menu			
     var presenceButton = this._toolbar[view].getButton(ZmOperation.IM_PRESENCE_MENU);
-    presenceButton.setImage(ZmOperation.IMAGE[ZmOperation.IM_PRESENCE_OFFLINE]);    
-    presenceButton.setText(ZmMsg[ZmOperation.MSG_KEY[ZmOperation.IM_PRESENCE_OFFLINE]]);
+    presenceButton.setImage(ZmOperation.SETUP[ZmOperation.IM_PRESENCE_OFFLINE].image);
+    presenceButton.setText(ZmMsg[ZmOperation.SETUP[ZmOperation.IM_PRESENCE_OFFLINE].text]);
     var presenceMenu = presenceButton.getMenu();
     
     	var list = [ZmOperation.IM_PRESENCE_OFFLINE, ZmOperation.IM_PRESENCE_ONLINE, ZmOperation.IM_PRESENCE_CHAT,
