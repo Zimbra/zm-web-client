@@ -751,10 +751,11 @@ function(name, target, data) {
 		else
 			target.parentNode.replaceChild(ifr, target);
 		var handler = AjxCallback.simpleClosure(this._ace_finishedLoading, this, ifr, name, data);
-		if (AjxEnv.isIE)
+		if (AjxEnv.isIE) {
 			ifr.onreadystatechange = handler;
-		else
-			ifr.onload = handler;
+		} else {
+			ifr.addEventListener("load", handler, true);
+		}
 		// outer.style.display = "";
 	}
 };
