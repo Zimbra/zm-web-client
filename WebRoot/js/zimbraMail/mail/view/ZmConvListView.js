@@ -27,6 +27,7 @@ function ZmConvListView(parent, className, posStyle, controller, dropTgt) {
 
 	var headerList = this._getHeaderList(parent);
 	ZmMailListView.call(this, parent, className, posStyle, ZmController.CONVLIST_VIEW, ZmItem.CONV, controller, headerList, dropTgt);
+	this.setHtmlElementId("ZmConvListView")
 };
 
 ZmConvListView.prototype = new ZmMailListView;
@@ -35,7 +36,7 @@ ZmConvListView.prototype.constructor = ZmConvListView;
 // Consts
 
 ZmConvListView.CONVLIST_REPLENISH_THRESHOLD = 0;
-ZmConvListView.CLV_COLWIDTH_ICON 			= 16;
+ZmConvListView.CLV_COLWIDTH_ICON 			= 19;
 ZmConvListView.CLV_COLWIDTH_FROM 			= 145;
 ZmConvListView.CLV_COLWIDTH_DATE 			= 60;
 
@@ -107,8 +108,8 @@ function(conv, now, isDndIcon, isMixedView, div) {
 	div.className = div._styleClass;
 	// XXX: for some reason, we need to explicitly set the height of the div
 	// since FF barfs if u remove the flag column.. too busy to figure out why
-	if (AjxEnv.isMozilla)
-		div.style.height = "20px";
+//MOW	if (AjxEnv.isMozilla)
+//MOW		div.style.height = "20px";
 
 	var htmlArr = new Array();
 	var idx = 0;

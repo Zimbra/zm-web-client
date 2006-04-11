@@ -33,7 +33,7 @@ HTML {
 }
 
 BODY {
-	@SkinOuterBg@
+	@ChromeBg@
 	@FullSize@
 	margin: 0px;
 }
@@ -47,8 +47,8 @@ FORM {
 
 .LoginPanel {
 	width:500px;
-	background-color:white;
-	color:black;
+	@InsetBg@
+	@Text@
 	border: 2px solid; 
 	border-color: #CCCCCC #000000 #000000 #CCCCCC;
 }
@@ -64,16 +64,23 @@ FORM {
 	background-image:url(/zimbra/img/loRes/logo/LoginBanner_blank.gif);
 }
 
+.LoginMainPanel {
+	@PageBg@
+}
+
+.LoginMainPanel td {
+	@Text@
+}
 
 
 /* "appName" substitution:  eg:  "Collaboration Suite" */
 .LoginPanelAppName {
+	@FontBiggest@
 	position:absolute;
 	left:60;
 	top:80;
 	width:350;
 	height:30;
-	@FontBiggest@
 	font-weight:normal;
 	text-align:right;
 }
@@ -87,29 +94,26 @@ FORM {
 	text-align:right;
 	@FontBiggest@
 	font-weight:normal;
-	@TextDisabled@
+	@DisabledText@
 }
 
 
 .LoginPanelLicense {
-	@FontTiny@
-	@TextDisabled@
+	@PageBg@
+	@FontSmaller@
+	@DisabledText@
+	height:40px;
 	text-align:center;
-	padding-top:5px;
-	padding-bottom:5px;
+	vertical-align:bottom;
+	padding-top:@BoxPaddingSize@;
+	padding-bottom:@BoxPaddingSize@;
 }
 
 
 
 
 .LoginPanelTable {
-	@SkinInsetBgColor@
 	@FullWidth@
-}
-
-.LoginPanelLicense {
-	@SkinInsetBgColor@
-	@TextDisabled@
 }
 
 
@@ -122,7 +126,7 @@ FORM {
 .error {  
 	margin-top: 10px;
 	margin-bottom: 10px;
-	padding: 5px;
+	padding: @BoxPaddingSize@;
 	width: 85%;
 	background-color: rgb(255, 255, 204); 
 	border: 1px solid rgb(124, 124, 148);
@@ -134,13 +138,166 @@ FORM {
 }
 
 
-.DwtButton 						{	@Button@				@ButtonMinWidth@	}
-.DwtButton .Text 				{	@ButtonText@	}
-.DwtButton-activated 			{	@Button-activated@		@ButtonMinWidth@	}
-.DwtButton-activated .Text		{	@ButtonText-activated@	}
-.DwtButton-triggered			{	@Button-triggered@		@ButtonMinWidth@	}	
-.DwtButton-triggered .Text		{	@ButtonText-triggered@	}	
-.DwtButton-toggled				{	@Button-toggled@		@ButtonMinWidth@	}	
-.DwtButton-toggled .Text		{	@ButtonText-toggled@		}	
-.DwtButton-disabled				{	@Button-disabled@		@ButtonMinWidth@	}	
-.DwtButton-disabled .Text		{	@ButtonText-disabled@		}	
+.DwtButton 						{	@NormalButton@					}
+.DwtButton-activated 			{	@NormalButton-hover@			}
+.DwtButton-triggered			{	@NormalButton-clicked@			}	
+.DwtButton-toggled				{	@NormalButton-clicked@			}	
+.DwtButton-disabled				{	@NormalButton-disabled@			}	
+
+.DwtButton .Text 				{	@NormalButtonText@				}
+.DwtButton-activated .Text		{	@NormalButtonText-hover@		}
+.DwtButton-triggered .Text		{	@NormalButtonText-clicked@		}	
+.DwtButton-toggled .Text		{	@NormalButtonText-clicked@		}	
+.DwtButton-disabled .Text		{	@NormalButtonText-disabled@		}	
+
+
+
+.SplashScreen {
+	@InsetBg@
+}
+
+/* FIX THIS STUFF */
+
+
+/*
+ * Splash Screen
+ */
+ 
+.ZmSplashScreen { 
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
+  position:absolute;
+}
+.ZmSplashScreen, .ZmSplashScreen table {
+	@ChromeBg@
+}
+
+
+
+/* splash screen and login banner pieces */
+
+/* "url" substitution:  eg:  "<a href='http://www.zimbra.com'>http:/www..." */
+.SplashScreenUrl {
+	position:absolute;
+	left:164;
+	top:9;
+	width:300;
+	text-align:right;
+}
+.SplashScreenUrl a:link,
+.SplashScreenUrl a:visited,
+.SplashScreenUrl a:hover {
+	color:black;
+}
+.SplashScreenUrl a:active {
+	@AnchorTextClick@
+}
+
+
+/* "appName" substitution:  eg:  "Collaboration Suite" */
+.SplashScreenAppName {
+	position:absolute;
+	left:60;
+	top:80;
+	width:350;
+	height:30;
+	@FontBiggest@
+	font-weight:normal;
+	text-align:right;
+}
+
+/* "version" substitution:  eg:  "V 1.23 * 'Birdseye' * Wed Oct 12, 2005" */
+.SplashScreenVersion {
+	position:absolute;
+	left:80;
+	top:145;
+	width:350;
+	text-align:right;
+}
+
+/* "shortVersion" substitution:  eg:  "BETA" */
+.SplashScreenShortVersion {
+	position:absolute;
+	left:384;
+	top:45;
+	width:80;
+	@FontBiggest@
+	font-weight:normal;
+	@DisabledText@
+}
+
+
+/* "contents" substitution:  eg:  "Version: XXX, etc" */
+.SplashScreenContents {
+	position:absolute;
+	left:240;
+	top:185;
+	width:217;
+	height:105;
+	overflow:auto;
+}
+
+/* "button" substitution:  eg:  "<button style='width:60px;'>OK</button>" */
+.SplashScreenOKButton {
+	position:absolute;
+	left:410;
+	top:305;
+	width:60;
+	height:20;
+}
+
+/* "license" substitution:  eg:  "Copyright 2005 Zimbra, Inc..." */
+.SplashScreenLicense {
+	position:absolute;
+	left:8;
+	top:305;
+	vertical-align:bottom;
+	@FontSmaller@
+	@DisabledText@
+}
+
+
+/* LOGIN SCREEN STUFF MOVED TO login.css */
+
+
+
+
+/* Login Panel */
+.ZmLoginDialog {
+	background-color: #3D2D1F;
+	/*background-image:url(/zimbra/img/loRes/skins/steel/Steel__BG.gif);*/
+	overflow:hidden;
+}
+.ZmLoginDialog-Transparent {background-color: transparent;}
+.ZmLoginDialog-HeaderPanel {
+	margin-top:10px;
+	margin-bottom:10px;
+	height:115px;
+	background-image:url(/zimbra/img/loRes/logo/LoginBanner_blank.gif);
+}
+.ZmLoginDialog-HeaderText, .ZmLoginDialog-SubHeaderText {
+	color: white;
+}
+.ZmLoginDialog-HeaderText {
+	font-style: bold
+	font-size: 14pt;
+}
+.ZmLoginDialog-MainPanel {
+	width:460px;
+	/*background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);*/
+}
+.ZmLoginDialog-SubHeaderText { font-size: 12pt; }
+.ZmLoginDialog-Field { width: 290px; }
+.ZmLoginDialog-ErrorText { width: 360px; }
+.ZmLoginDialog-ErrorPanel {
+	border: 1px solid #999999;
+	background-color: #FFFFCC;
+	width:415px;
+	height: 55px;
+}
+
+
+
+*/

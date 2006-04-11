@@ -30,7 +30,6 @@
 P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
 	@FontDefault@
 	@FontNormal@
-	@Text@
 }
 
 HTML {
@@ -49,11 +48,11 @@ FORM {
 
 
 input, textarea {
-	@Input@
+	@InputField@
 }
 
-.TableCompact {
-	@TableCompact@
+.CompactTable {
+	@CompactTable@
 }
 
 .fullSize	{	@FullSize@		}
@@ -62,98 +61,133 @@ input, textarea {
 .minSize	{	width:1px; height:1px;	}
 
 
-.BigHeaderBg {
-	@SkinHeaderBigBg@
+.leftAlign {
+  text-align:left;
 }
+
+.rightAlign {
+  text-align:right;
+}
+
+
+/* ??? USE? */
+.checkboxLabel {
+  font-weight:bold;
+}
+
+.ToolbarBg {
+	@ToolbarBg@
+}
+
 
 /* Generic classes -- try to use one of these if you can */
 .ZmHead {
-	@FontH1@
+	@FontBigger@
 }
 
 .ZmSubHead {
-	@FontH2@
+	@FontBig@
 }
 
 .ZmBigger {
-	@FontH3@
+	@FontBigger@
 }
 
 .ZmFinePrint {
-	@FontFinePrint@
+	@FontSmaller@
 }
 
 .ZmImportant {
 	@FontImportant@
 }
 
+.ZmFieldset {
+	@FieldSet@
+}
+
+.ZmLegend {
+	@FieldSetLabel@
+}
+
+/* Field labels -- always use one of these!  */
+.ZmFieldLabel {
+	@Label@
+}
+
+.ZmFieldLabelLeft {
+	@Label@
+	text-align:left;
+}
+
+.ZmFieldLabelRight {
+	@Label@
+	text-align:right;
+}
+
+.ZmFieldLabelCenter {
+	@Label@
+	text-align:center;
+}
+
+
+ZmSectionLabel {
+	@SectionLabel@
+}
+
+
+
+/* ??? USED */
+.BigHeaderBg {
+	@BigWidgetHeaderBg@
+}
+
+
+
+/* ??? */
 .ZmOverride {
 	background-color:#FFF6BF;
 	padding:2px;
 }
 
+/* ??? */
 .ZmSelectedHeaderBg {
 	background-color:#ADD6D6;
 }
 
 
 
-.ZmFieldset {
-	border: 1px dotted @_SeparatorColor_@;
-}
-
-.ZmLegend {
-	@Text@
-}
 
 
 
-/* USE THESE GUYS FOR ALL FIELD LABELS!  */
-.ZmFieldLabelLeft {
-	@TextLabel@
-	text-align:left;
-}
-
-.ZmFieldLabelRight {
-	@TextLabel@
-	text-align:right;
-}
-
-.ZmFieldLabelCenter {
-	@TextLabel@
-	text-align:center;
-}
-
-
-
-/* Graph key -- eg: in Appt Schedule view */
+/* Graph key -- eg: boxes in Appt Schedule view that say what each color mean */
 .ZmGraphKey {
-	border:1px outset gray;
-	background-color: black;
+	@ContentBg@
+	@ContentBorder@
 }
 
 .ZmGraphKeyHeader {
-	@ListHeaderBg@
-	height:24px;
-	padding-left:3px;
+	@WidgetHeaderBg@
+	@FontBig@
+	@Text@
+	@TextPadding@
+	text-align:left;
 	font-weight:bold;
-	color:white;
 	vertical-align:center;
 }
 
 .ZmGraphKeyBody {
-	padding:5px;
+	@BoxSpacing@
 }
 
 .ZmGraphKeyColorBox {
-	border:1px inset gray;
+	@ContentBorder@
 	width:16px;
 	height:16px;
 }
 
 .ZmGraphKeyColorText {
-	white-space:nowrap;
-	color:white;
+	@Text@
+	@NoWrap@
 }
 
 
@@ -166,13 +200,16 @@ input, textarea {
 
 /* Horizontal separator */
 .horizSep {
-	border-bottom: 1px solid @_ToobarSeparatorColor_@;
-    margin: 10px 0;
+	@BottomSeparator@
+	@AddVerticalSpace@
 	width: 100%;
 }
+
 /* Vertical separator */
+
+/* ??? MARGINS, USE */
 .vertSep {
-	border-left:1px solid @_ToobarSeparatorColor_@;
+	@LeftSeparator@
 	margin-left:1px;
 	padding-right:1px;
 	width:3;
@@ -181,7 +218,7 @@ input, textarea {
 
 /* Vertical space */
 DIV.vSpace {
-	margin: 10px 0;
+	@AddVerticalSpace@
 }
 
 
@@ -199,15 +236,15 @@ DIV.vSpace {
 }
 
 .AttLink:active {
-	@AnchorTextActive@
+	@AnchorTextClick@
 }
 
-/*  ??? WHY WERE THESE DIFFERENT ? */
+/*  ??? WHY ARE THESE DIFFERENT ? */
 .Row-selected .AttLink:link, .Row-selected .AttLink:active, .Row-selected .AttLink:visited {
-	color: white;
+	@AnchorText@
 }
 .AttLink:hover, .Row-selected .AttLink:hover {
-	color: #CC3333;
+	@AnchorTextHover@
 }
 */
 
@@ -242,7 +279,7 @@ DIV.vSpace {
 }
 
 
-/* Used by the text in the multi-select Icon */
+/* Used by the text laid over the multi-select icon to show number of items selected */
 .DndIconTextLabel {
 	font-weight: bold;
 	color: white;
@@ -251,32 +288,31 @@ DIV.vSpace {
 
 
 
+/* ??? WHY ARE SOME VEILS WHITE AND SOME TRANSPARENT? */
 .BusyOverlay table, .VeilOverlay table {
-	filter:alpha(opacity=50);
-	-moz-opacity:0.5;
-	opacity:0.5;
-	cursor: "wait";
-	background-color: transparent;
+	@VeilOpacity@
+	@BusyCursor@
+	background-color: transparent;	/* ??? */
 }
 /* As of 07/22/05 Linux (or rather X) has a nasty issue that causes a huge perf problem with opacity.*/
 
 .BusyOverlay-linux table, .VeilOverlay-linux table {
-	cursor: "wait";
+	@BusyCursor@
 	background-color: transparent;
 }
 
 
 .VeilOverlay table {
-	cursor: "not-allowed";
-	background-color: white;
+	@DisabledCursor@
+	@VeilColor@
 }
 
 .VeilOverlay-linux table {
-	cursor: "not-allowed";
+	@DisabledCursor@
 }
 
 .CurtainOverlay table {
-	background-color: white;
+	@VeilColor@
 }
 
 
@@ -301,7 +337,7 @@ DIV.vSpace {
 	width: 400px;
 	height: 200px;
 	border: 1px solid #999999;
-	padding: 5px 0 0 5px;
+	padding: @BoxPaddingSize@ 0 0 @BoxPaddingSize@;
 }
 .FolderTree td {padding: 0;}
  */
@@ -312,33 +348,34 @@ DIV.vSpace {
  */
 .Row, .Row-selected, .Row-matched, .Row-matched-drag, 
 .Row-drag, .Row-selected-drag, .Row-selected-right, .Row-selected-disabled {
-	@ListRow@
+	@ListNormalRowBg@
 }
 
-.selected, .Row-selected, .Row-selected-drag { 
-	@ListRowSelected@
-}
-.Row-selected-disabled {
-	@ListRowSelected@
+.selected, .Row-selected, .Row-selected-drag, .Row-selected-disabled { 
+	@ListSelectedRowBg@
 }
 
 .Row-matched, .Row-matched-dnd { 
-	@ListRowMatched@
+	@ListMatchedRowBg@
 }
 
 .Row-matched td, .Row-matched-dnd td{ 
-	@ListTextMatched@
+	@ListMatchedRowText@
+}
+
+.Row-Focus {
+	@FocusBorder@
 }
 
 
 /* ??? what is this used for ?*/
 .Row-selected-right, .Row-drag, .Row-matched-drag { 
-	@ListRowRightClick@
+	@ListRightClickRowBg@
 }
 
 .Row-selected table, .Row-selected-drag table, .Row-drag table, 
 .Row-matched-drag table, .Row-selected-right table { 
-	@Text@
+	@ListNormalText@
 }
 
 .Row table, .Row-selected table, .Row-matched table, .Row-matched-drag table, .Row-dnd table, 
@@ -350,7 +387,7 @@ DIV.vSpace {
 .Row td, .Row div, .Row-selected td, .Row-matched td, .Row-dnd td, .Row-selected-drag td, 
 .Row-drag td, .Row-matched-drag td, .Row-selected-right td {
 	@Text@
-	vertical-align: top;
+/*	vertical-align: top;*/
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -370,10 +407,10 @@ DIV.vSpace {
  * Flags 
  */
 .Unread { 
-	@TextUnread@
+	@UnreadText@
 }
 .Trash { 
-	@TextDeleted@
+	@DeletedText@
 }
 
 
@@ -382,192 +419,56 @@ DIV.vSpace {
 /* Overview */
 
 .overview {
-	width: 100%;
-	height: 100%;
+	@FullSize@
+}
+
+
+.OverviewTree {
+	@FullWidth@
+	margin-bottom: @BoxMarginSize@;
+}
+
+
+.dialogOverview {
+	@TreeBg@
+	@TreeHeaderBorder@
+	@BoxPadding@
+	height: 200px;		/* ??? SIZE */
 }
 
 .dialogOverview {
-	@SkinInsetBg@
-	@SkinInsetBorder@
-	height: 200px;
+	@ContentBg@
+}
+
+.dialogOverview td {
+	@Text@
 }
 
 .pickerOverview {
-	@SkinInsetBg@
-	height: 100%;
+	@TreeBg@
+	@FullHeight@
 }
 
+/* ??? MARGINS */
 .overviewHeader {
-	@SkinInsetBgDark@
-	@SkinInsetBgDarkColor@
-	@SkinInsetBgDarkBorder@
-	padding-top:1px;
-	margin-left:2px;
-	margin-bottom:2px;
-	height:18px;
-	cursor: default;
+	@InactiveCursor@
+	@TreeHeaderItem@
+	@TreeHeaderBigBorder@
+	@TreeHeaderItemText@
+	@TreeItemSpacing@
 }
 
 .overviewHeader-Text, .overviewHeader-actioned,
 .overviewHeader-DragOver {
-	@FontBig@
-	font-weight:bold;
+	@TreeHeaderItemText@
 }
 
 
 .overviewHeader .imageCell {
-	padding-right:4px;
-	white-space: nowrap;
+	@ImagePadding@
+	white-space: nowrap;	/* ??? */
 }
 
-
-
-
-
-
-
-/* FIX THIS STUFF */
-
-
-/*
- * Splash Screen
- */
- 
-.ZmSplashScreen { 
-  width:100%;
-  height:100%;
-  top:0;
-  left:0;
-  position:absolute;
-}
-.ZmSplashScreen, .ZmSplashScreen table {
-	@SkinOuterBg@
-}
-
-
-
-/* splash screen and login banner pieces */
-
-/* "url" substitution:  eg:  "<a href='http://www.zimbra.com'>http:/www..." */
-.SplashScreenUrl {
-	position:absolute;
-	left:164;
-	top:9;
-	width:300;
-	text-align:right;
-}
-.SplashScreenUrl a:link,
-.SplashScreenUrl a:visited,
-.SplashScreenUrl a:hover {
-	color:black;
-}
-.SplashScreenUrl a:active {
-	@AnchorTextClick@
-}
-
-
-/* "appName" substitution:  eg:  "Collaboration Suite" */
-.SplashScreenAppName {
-	position:absolute;
-	left:80;
-	top:115;
-	width:350;
-	height:30;
-	@FontBiggest@
-	font-weight:normal;
-	text-align:right;
-}
-
-/* "version" substitution:  eg:  "V 1.23 * 'Birdseye' * Wed Oct 12, 2005" */
-.SplashScreenVersion {
-	position:absolute;
-	left:80;
-	top:145;
-	width:350;
-	text-align:right;
-}
-
-/* "shortVersion" substitution:  eg:  "BETA" */
-.SplashScreenShortVersion {
-	position:absolute;
-	left:384;
-	top:45;
-	width:80;
-	@FontBiggest@
-	font-weight:normal;
-	@TextDisabled@
-}
-
-
-/* "contents" substitution:  eg:  "Version: XXX, etc" */
-.SplashScreenContents {
-	position:absolute;
-	left:240;
-	top:185;
-	width:217;
-	height:105;
-	overflow:auto;
-}
-
-/* "button" substitution:  eg:  "<button style='width:60px;'>OK</button>" */
-.SplashScreenOKButton {
-	position:absolute;
-	left:410;
-	top:305;
-	width:60;
-	height:20;
-}
-
-/* "license" substitution:  eg:  "Copyright 2005 Zimbra, Inc..." */
-.SplashScreenLicense {
-	position:absolute;
-	left:8;
-	top:315;
-	@FontTiny@
-	@TextDisabled@
-}
-
-
-/* LOGIN SCREEN STUFF MOVED TO login.css */
-
-
-
-
-/* Login Panel */
-.ZmLoginDialog {
-	background-color: #3D2D1F;
-	/*background-image:url(/zimbra/img/loRes/skins/steel/Steel__BG.gif);*/
-	overflow:hidden;
-}
-.ZmLoginDialog-Transparent {background-color: transparent;}
-.ZmLoginDialog-HeaderPanel {
-	margin-top:10px;
-	margin-bottom:10px;
-	height:115px;
-	background-image:url(/zimbra/img/loRes/logo/LoginBanner_blank.gif);
-}
-.ZmLoginDialog-HeaderText, .ZmLoginDialog-SubHeaderText {
-	color: white;
-}
-.ZmLoginDialog-HeaderText {
-	font-style: bold
-	font-size: 14pt;
-}
-.ZmLoginDialog-MainPanel {
-	width:460px;
-	/*background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);*/
-}
-.ZmLoginDialog-SubHeaderText { font-size: 12pt; }
-.ZmLoginDialog-Field { width: 290px; }
-.ZmLoginDialog-ErrorText { width: 360px; }
-.ZmLoginDialog-ErrorPanel {
-	border: 1px solid #999999;
-	background-color: #FFFFCC;
-	width:415px;
-	height: 55px;
-}
-
-.ImgBarberPole_216 {	@BarberPole@	}
 
 
 

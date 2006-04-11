@@ -26,7 +26,7 @@
 function ZmSearchToolBar(appCtxt, parent, posStyle) {
 
 	this._appCtxt = appCtxt;
-	ZmToolBar.call(this, parent, "ZmAppToolBar");
+	ZmToolBar.call(this, parent, "ZmSearchToolbar");
 
 	var fieldId = Dwt.getNextId();
 	var searchColId = Dwt.getNextId();

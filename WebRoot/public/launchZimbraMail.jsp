@@ -92,6 +92,7 @@ Contributor(s):
 		@import url(<%= contextPath %>/skins/<%= skin %>/dwt.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/common.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/msgview.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/skins/<%= skin %>/login.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/zm.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/spellcheck.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);

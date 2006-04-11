@@ -77,6 +77,17 @@ ZmSchedTabViewPage.STATUS_TENTATIVE			= 3;
 ZmSchedTabViewPage.STATUS_OUT				= 4;
 ZmSchedTabViewPage.STATUS_UNKNOWN			= 5;
 
+// Pre-cache the status css class names
+ZmSchedTabViewPage.STATUS_CLASSES = [];
+ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_FREE] = 	"ZmScheduler-free";
+ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_BUSY] =		"ZmScheduler-busy";
+ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_TENTATIVE]= "ZmScheduler-tentative";
+ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_OUT] = 		"ZmScheduler-outOfOffice";
+ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_UNKNOWN] = 	"ZmScheduler-unknown"; 
+
+// Hold on to this one separately because we use it often
+ZmSchedTabViewPage.FREE_CLASS = ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_FREE];
+
 // Public methods
 
 ZmSchedTabViewPage.prototype.toString = 
@@ -150,7 +161,7 @@ function() {
 	// cleanup all attendees row
 	var allAttCells = this._allAttendeesSlot._coloredCells;
 	while (allAttCells.length > 0) {
-		allAttCells[0].style.backgroundColor = "";
+		allAttCells[0].className = ZmSchedTabViewPage.FREE_CLASS;
 		allAttCells.shift();
 	}
 
@@ -294,29 +305,29 @@ function() {
 	html[i++] = "</td></tr><tr><td class='ZmGraphKeyBody'>";
 	html[i++] = "<table border=0 cellspacing=2><tr>";
 
-	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduleFree'></div></td>";
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-free'></div></td>";
 	html[i++] = "<td class='ZmGraphKeyColorText'>";
 	html[i++] = ZmMsg.free;
 	html[i++] = "</td><td>&nbsp;</td>"
 
-	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduleBusy'></div></td>";
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-busy'></div></td>";
 	html[i++] = "<td class='ZmGraphKeyColorText'>";
 	html[i++] = ZmMsg.busy;
 	html[i++] = "</td><td>&nbsp;</td>"
 
-	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduleTentative'></div></td>";
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-tentative'></div></td>";
 	html[i++] = "<td class='ZmGraphKeyColorText'>";
 	html[i++] = ZmMsg.tentative;
 	html[i++] = "</td><td>&nbsp;</td>"
 
 	html[i++] = "</tr><tr>";
 
-	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduleUnknown'></div></td>";
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-unknown'></div></td>";
 	html[i++] = "<td class='ZmGraphKeyColorText'>";
 	html[i++] = ZmMsg.unknown;
 	html[i++] = "</td><td>&nbsp;</td>"
 
-	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduleOutOfOffice'></div></td>";
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-outOfOffice'></div></td>";
 	html[i++] = "<td class='ZmGraphKeyColorText'>";
 	html[i++] = ZmMsg.outOfOffice;
 	html[i++] = "</td><td>&nbsp;</td>"
@@ -351,20 +362,20 @@ function() {
 	
 	// header row
 	html[i++] = "<tr>";
-	html[i++] = "<td colspan=2 id='";
+	html[i++] = "<td colspan=2 align='center' id='";
 	html[i++] = this._navToolbarId;
 	html[i++] = AjxEnv.isIE ? "' width=100%>" : "'>";
 	html[i++] = "</td>";
 	html[i++] = "<td>";
 	
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmSchedulerGridHeaderTable'><tr>";
 	for (var j = 0; j < 2; j++) {
 		for (var k = 12; k < 24; k++) {
 			var hour = k - 12;
 			if (hour == 0) hour = 12;
-			html[i++] = "<td><div class='ZmSchedTabViewPageGridHeaderCell'>";
+			html[i++] = "<td><div class='ZmSchedulerGridHeaderCell'>";
 			html[i++] = hour;
-			html[i++] = "</div></td><td><div class='ZmSchedTabViewPageGridHeaderCell'></div></td>";
+			html[i++] = "</div></td></td>";
 		}
 	}
 	html[i++] = "</tr></table>";
@@ -436,11 +447,11 @@ function(isAllAttendees, isOrganizer, index) {
 	var td = tr.insertCell(-1);
 	if (isAllAttendees) {
 		td.colSpan = 2;
-		td.className = 'ZmSchedTabViewPageAllTd';
+		td.className = 'ZmSchedulerAllTd';
 		td.innerHTML = ZmMsg.allAttendees;
 	} else  if (isOrganizer) {
 		td.align = 'center';
-		td.className = 'ZmSchedTabViewPageOrgIconTd';
+		td.className = 'ZmSchedulerOrgIconTd';
 		td.innerHTML = AjxImg.getImageHtml("Person");
 	} else {
 		td.id = sched.dwtSelectId;
@@ -448,21 +459,25 @@ function(isAllAttendees, isOrganizer, index) {
 	
 	if (!isAllAttendees) {
 		td = tr.insertCell(-1);
-		td.className = "ZmSchedTabViewPageNameTd";
+		td.className = "ZmSchedulerNameTd";
 		td.id = sched.dwtNameId;
 	}
 	
 	var html = [];
 	var i = 0;
 	td = tr.insertCell(-1);
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmSchedTabViewPageTable' id='";
+	var tableStyle = (isAllAttendees ? "ZmSchedulerGridTable-allAttendees" : "ZmSchedulerGridTable");
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='" + tableStyle + "' id='";
 	html[i++] = sched.dwtTableId;
-	html[i++] = "'><tr";
-	html[i++] = isAllAttendees ? " style='background-color:#FFFFFF'>" : ">";
+	html[i++] = "'><tr>";
+	var cellContents = [
+		"<td class='ZmScheduler-free'><div class='", 
+		(isAllAttendees ? "ZmSchedulerGridTopCell" : "ZmSchedulerGridDiv"),
+		"'></div></td>"
+	].join("");
+	
 	for (var k = 0; k < ZmSchedTabViewPage.FREEBUSY_NUM_CELLS; k++) {
-		html[i++] = "<td><div class='";
-		html[i++] = isAllAttendees ? "ZmSchedTabViewPageGridTopCell" : "ZmSchedTabViewPageGridCell";
-		html[i++] = "'></div></td>";
+		html[i++] = cellContents;
 	}
 	html[i++] = "</tr></table>";
 	td.innerHTML = html.join("");	
@@ -490,7 +505,7 @@ function(isAllAttendees, isOrganizer, index) {
 			dwtInputField = new DwtInputField({parent: this, type: DwtInputField.STRING, maxLen: 256});
 			dwtInputField.setDisplay(Dwt.DISPLAY_INLINE);
 			var inputEl = dwtInputField.getInputElement();
-			inputEl.className = "ZmSchedTabViewPageInput";
+			inputEl.className = "ZmSchedulerInput";
 			inputEl.id = sched.dwtInputId;
 			sched.attType = inputEl._attType = ZmAppt.PERSON;
 			sched.inputObj = dwtInputField;
@@ -553,7 +568,7 @@ function() {
 	
 	var navBarListener = new AjxListener(this, this._navBarListener);
 	this._navToolbar = new ZmNavToolBar(this, DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
-	this._navToolbar._textButton.getHtmlElement().className = "ZmSchedTabViewPageDate";
+	this._navToolbar._textButton.getHtmlElement().className = "ZmSchedulerDate";
 	this._navToolbar.addSelectionListener(ZmOperation.PAGE_BACK, navBarListener);
 	this._navToolbar.addSelectionListener(ZmOperation.PAGE_FORWARD, navBarListener);
 	this._navToolbar.reparentHtmlElement(this._navToolbarId);
@@ -708,7 +723,7 @@ function() {
 	for (var i = 0; i < this._allAttendees.length; i++) {
 		if (this._allAttendees[i] > 0) {
 			// TODO: opacity...
-			row.cells[i].style.backgroundColor = this._getColorForStatus(ZmSchedTabViewPage.STATUS_BUSY);
+			row.cells[i].className = this._getClassForStatus(ZmSchedTabViewPage.STATUS_BUSY);
 			this._allAttendeesSlot._coloredCells.push(row.cells[i]);
 		}
 	}
@@ -785,6 +800,7 @@ function(index, attendee, type, isOrganizer) {
 
 	if (input && isOrganizer) {
 		input.disabled(true);
+		input.className = "ZmSchedulerInputDisabled"
 	}
 	this._setAttendeeToolTip(sched, attendee, type);
 	
@@ -821,7 +837,7 @@ function(sched, resetSelect, type, noClear) {
 	// reset the row color to non-white
 	var table = document.getElementById(sched.dwtTableId);
 	if (table) {
-		table.rows[0].style.backgroundColor = "#F4F4F4";
+		table.rows[0].className = "ZmSchedulerDisabledRow";
 	}
 
 	// remove the bgcolor from the cells that were colored
@@ -848,13 +864,13 @@ function(sched) {
 			this._allAttendees[idx] = this._allAttendees[idx] - 1;
 		}
 
-		sched._coloredCells[0].style.backgroundColor = "";
+		sched._coloredCells[0].className = ZmSchedTabViewPage.FREE_CLASS;
 		sched._coloredCells.shift();
 	}
 
 	var allAttColors = this._allAttendeesSlot._coloredCells;
 	while (allAttColors.length > 0) {
-		allAttColors[0].style.backgroundColor = "";
+		allAttColors[0].className = ZmSchedTabViewPage.FREE_CLASS;
 		allAttColors.shift();
 	}
 };
@@ -1004,9 +1020,9 @@ function(ev) {
 ZmSchedTabViewPage.prototype._colorSchedule = 
 function(status, slots, table, sched) {
 	var row = table.rows[0];
-	var bgcolor = this._getClassForStatus(status);
+	var className = this._getClassForStatus(status);
 
-	if (row && bgcolor) {
+	if (row && className) {
 		// figure out the table cell that needs to be colored
 		for (var i = 0; i < slots.length; i++) {
 			var startIdx = this._getIndexFromTime(slots[i].s);
@@ -1023,7 +1039,7 @@ function(status, slots, table, sched) {
 						this._allAttendees[j] = this._allAttendees[j] + 1;
 					}
 					sched._coloredCells.push(row.cells[j]);
-					row.cells[j].style.backgroundColor = bgcolor;
+					row.cells[j].className = className;
 				}
 			}
 		}
@@ -1059,18 +1075,20 @@ function(sched, isAllAttendees) {
 	div = document.getElementById(sched.dwtNameId);
 	if (div) {
 		curClass = div.className;
-		newClass = (this._dateBorder.start == -1) ? "ZmSchedTabViewPageNameTdBorder" :
-													"ZmSchedTabViewPageNameTd";
+		newClass = (this._dateBorder.start == -1) ? "ZmSchedulerNameTdBorder" :
+													"ZmSchedulerNameTd";
 		if (curClass != newClass) {
 			div.className = newClass;
 		}
 	}
 	
 	// mark right borders of appropriate f/b table cells
-	var normalClass = isAllAttendees ? "ZmSchedTabViewPageGridTopCell" :
-									   "ZmSchedTabViewPageGridCell";
-	var borderClass = isAllAttendees ? "ZmSchedTabViewPageGridTopCellBorder" :
-									   "ZmSchedTabViewPageGridCellBorder";
+	var normalClassName = "ZmSchedulerGridDiv",
+		halfHourClassName = normalClassName + "-halfHour",
+		startClassName = normalClassName + "-start",
+		endClassName = normalClassName + "-end"
+
+
 	var table = document.getElementById(sched.dwtTableId);
 	var row = table.rows[0];
 	if (row) {
@@ -1079,7 +1097,14 @@ function(sched, isAllAttendees) {
 			div = td ? td.firstChild : null;
 			if (div) {
 				curClass = div.className;
-				newClass = (i == this._dateBorder.start || i == this._dateBorder.end) ? borderClass : normalClass;
+				newClass = normalClassName;
+				if (i == this._dateBorder.start) {
+					newClass = startClassName;
+				} else if (i == this._dateBorder.end) {
+					newClass = endClassName;
+				} else if (i % 2 == 0) {
+					newClass = halfHourClassName;
+				}
 				if (curClass != newClass) {
 					div.className = newClass;
 				}
@@ -1132,15 +1157,7 @@ function(dateInfo) {
 
 ZmSchedTabViewPage.prototype._getClassForStatus = 
 function(status) {
-	var className = null;
-	switch (status) {
-		case ZmSchedTabViewPage.STATUS_FREE: 		className = "ZmScheduleFree"; break;
-		case ZmSchedTabViewPage.STATUS_BUSY: 		className = "ZmScheduleBusy"; break;
-		case ZmSchedTabViewPage.STATUS_TENTATIVE:	className = "ZmScheduleTentative"; break;
-		case ZmSchedTabViewPage.STATUS_OUT: 		className = "ZmScheduleOutOfOffice"; break;
-		case ZmSchedTabViewPage.STATUS_UNKNOWN: 	className = "ZmScheduleUnknown"; break;
-	}
-	return className;
+	return ZmSchedTabViewPage.STATUS_CLASSES[status];
 };
 
 
@@ -1157,7 +1174,7 @@ function(result) {
 		var sched = this._schedTable[this._emailToIdx[usr.id]];
 		var table = sched ? document.getElementById(sched.dwtTableId) : null;
 		if (table) {
-			table.rows[0].style.backgroundColor = "#FFFFFF";
+			table.rows[0].className = "ZmSchedulerNormalRow";
 
 			this._clearColoredCells(sched);
 			sched.uid = usr.id;

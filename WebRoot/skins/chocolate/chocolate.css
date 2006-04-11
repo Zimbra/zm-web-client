@@ -96,7 +96,7 @@
 #skin_container_logo					{					height:32;									}
 #skin_container_quota					{					height:32;									}
 #search_control_inset					{																}
-#skin_container_search					{					height:15;	top:-2;		Xmargin-bottom:-8px;	}
+#skin_container_search					{					height:18;	top:-2;		Xmargin-bottom:-8px;	}
 #skin_container_search_builder			{					height:225;	left:-4; 						}
 #skin_container_search_builder_toolbar	{					height:26;	top:4;							}
 #skin_container_current_app				{					height:24;	top:-3; 	margin-bottom:-8px;	}
@@ -113,27 +113,22 @@
 /* The skin is in a separate DIV from the rest of the app.
 	Take advantage of that to make all tables in the skin collapse all white space 
 */
-#skin_outer table	{ 	@TableCompact@  }
+#skin_outer table	{ 	@CompactTable@  }
 #skin_outer	td		{	padding:0px;	}
 
 
 /* move (all) toolbars up a bit */
-.ZmAppToolBar	{margin-top:-3px}
+.ZmAppToolBar		{	margin-top:-5px	}
 
 
 /* NEW SUBSTITUTION STUFF */
-.SkinOuterBg			{	@SkinOuterBg@			}
-.SkinInsetBg 			{	@SkinInsetBg@			}
+.ChromeBg			{	@ChromeBg@			}
+.InsetBg 			{	@InsetBg@			}
 
-.SkinHToolbarStart 		{	@SkinHToolbarStart@		}
-.SkinHToolbarEnd		{	@SkinHToolbarEnd@		}
-.SkinHToolbarBg 		{	@SkinHToolbarBg@	}
+.ToolbarBg 			{	@ToolbarBg@	}
+.VToolbarBg 		{	@VToolbarBg@	}
 
-.SkinVToolbarStart 		{	@SkinVToolbarStart@		}
-.SkinVToolbarEnd		{	@SkinVToolbarEnd@		}
-.SkinVToolbarBg 		{	@SkinVToolbarBg@	}
-
-.SkinAppInsetBg			{	@SkinAppInsetBg@		}
+.PageBg				{	@PageBg@		}
 
 .CurvedShadow_BR_offset	{	
 	position:absolute;left:-7px;top:-8px;

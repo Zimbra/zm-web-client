@@ -101,6 +101,7 @@ Contributor(s):
 	@import url(<%= contextPath %>/skins/<%= skin %>/dwt.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/skins/<%= skin %>/common.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/js/zimbraAdmin/config/style/zmadmin.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/skins/<%= skin %>/login.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/skins/<%= skin %>/msgview.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/skins/<%= skin %>/spellcheck.css?v=<%= vers %>);
 

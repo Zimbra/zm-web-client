@@ -26,7 +26,6 @@
 P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
 	@FontDefault@
 	@FontNormal@
-	@Text@
 }
 
 
@@ -52,12 +51,12 @@ body.MsgBody {
 
 .Object {
 	@AnchorText@
-	@ZimletBorder@
+	@ZimletBg@
 }
 
 .Object-activated {
 	@AnchorTextHover@
-	@ZimletBorderHover@
+	@ZimletBg-Hover@
 }
 
 .Object-triggered {

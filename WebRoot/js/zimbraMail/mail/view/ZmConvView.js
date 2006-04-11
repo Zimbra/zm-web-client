@@ -142,7 +142,7 @@ function(newWidth, newHeight) {
 	}
 	
 	// always set width of the subject bar (bug 1490)
-	this._subjectDiv.style.width = newWidth - 10; /* 10px is just a fudge factor IE vs FF quirks */
+	this._subjTable.style.width = newWidth - 10; /* 10px is just a fudge factor IE vs FF quirks */
 
 	this._msgListView._resetColWidth();
 }
@@ -184,31 +184,35 @@ ZmConvView.prototype._initHeader =
 function() {
 	this._summary = new DwtComposite(this, "Summary", Dwt.RELATIVE_STYLE);
 
+	var subjTableId = Dwt.getNextId();
 	var subjDivId = Dwt.getNextId();
-	var tagDivId = Dwt.getNextId();
+	var tagCellId = Dwt.getNextId();
 	this._subjectBar = document.createElement("div");
 	if (AjxEnv.is800x600orLower)
 		this._subjectBar.style.display = "none";
 	this._subjectBar.className = "SubjectBar";
 	var html = new Array(2);
 	var idx = 0;
-	html[idx++] = "<div class='Subject' id='" + subjDivId + "'>&nbsp;</div>";
+	html[idx++] = "<table id='" + subjTableId + "' cellspacing=0 cellpadding=0><tr>";
+	html[idx++] = "<td class='Subject' id='" + subjDivId + "'>&nbsp;</td>";
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		html[idx++] = "<div class='Tags' id='" + tagDivId + "'>&nbsp;</div>";
+		html[idx++] = "<td class='Tags' style='text-align:right' id='" + tagCellId + "'>&nbsp;</td>";
+	html[idx++] = "</tr></table>";
 	this._subjectBar.innerHTML = html.join("");
 	this._summary.getHtmlElement().appendChild(this._subjectBar);
 
-	this._subjectDiv = document.getElementById(subjDivId);
+	this._subjTable = document.getElementById(subjTableId);
+	this._subjectCell = document.getElementById(subjDivId);
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		this._tagDiv = document.getElementById(tagDivId);
-		Dwt.setSize(this._tagDiv, Dwt.DEFAULT, ZmConvView._TAGLIST_HEIGHT);
-		Dwt.setVisible(this._tagDiv, false);
+		this._tagCell = document.getElementById(tagCellId);
+//		Dwt.setSize(this._tagCell, Dwt.DEFAULT, ZmConvView._TAGLIST_HEIGHT);
+		Dwt.setVisible(this._tagCell, false);
 	}
 }
 
 ZmConvView.prototype._setSubject =
 function(subject) {
-	this._subjectDiv.innerHTML = subject != null && subject != ""
+	this._subjectCell.innerHTML = subject != null && subject != ""
 		? AjxStringUtil.htmlEncode(ZmMsg.subject + ": " + subject)
 		: AjxStringUtil.htmlEncode(ZmMsg.subject + ": " + ZmMsg.noSubject);
 }
@@ -218,14 +222,14 @@ function(conv) {
 	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) return;
 
 	var numTags = conv.tags.length;
-	var origVis = Dwt.getVisible(this._tagDiv);
+	var origVis = Dwt.getVisible(this._tagCell);
 	var newVis = (numTags > 0);
 	if (origVis != newVis) {
-		Dwt.setVisible(this._tagDiv, newVis);
+		Dwt.setVisible(this._tagCell, newVis);
 		var sz = this.getSize();
 		this._resetSize(sz.x, sz.y);
 		if (!newVis) {
-			this._tagDiv.innerHTML = "";
+			this._tagCell.innerHTML = "";
 			return;
 		}
 	}
@@ -247,8 +251,8 @@ function(conv) {
 	for (var j = 0; j < ta.length; j++) {
 		var tag = ta[j];
 		if (!tag) continue;
-		var anchorId = [this._tagDiv.id, ZmConvView._TAG_ANCHOR, tag.id].join("");
-		var imageId = [this._tagDiv.id, ZmDoublePaneView._TAG_IMG, tag.id].join("");
+		var anchorId = [this._tagCell.id, ZmConvView._TAG_ANCHOR, tag.id].join("");
+		var imageId = [this._tagCell.id, ZmDoublePaneView._TAG_IMG, tag.id].join("");
 
 		html[i++] = "<a href='javascript:;' onclick='ZmConvView._tagClick(\"";
 		html[i++] = this._htmlElId;
@@ -264,7 +268,7 @@ function(conv) {
 		html[i++] = "</a>";
 	}
 	html[i++] = "</td></tr></table>";
-	this._tagDiv.innerHTML = html.join("");
+	this._tagCell.innerHTML = html.join("");
 }
 
 ZmConvView.prototype._convChangeListener =
@@ -325,7 +329,7 @@ function(ev) {
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
 		var tag = ev.getDetail("organizers")[0];
-		var img = document.getElementById(this._tagDiv.id +  ZmDoublePaneView._TAG_IMG + tag.id);
+		var img = document.getElementById(this._tagCell.id +  ZmDoublePaneView._TAG_IMG + tag.id);
 		if (img)
 			AjxImg.setImage(img, ZmTag.COLOR_MINI_ICON[tag.color]);
 	}
