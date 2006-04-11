@@ -179,12 +179,12 @@ function(appt) {
 	if (value == "1") {
 		appt.repeatCustomType = "S";
 		appt.repeatCustomMonthDay = this._yearlyDayField.getValue();
-		appt.repeatYearlyMonthsList = Number(this._yearlyMonthSelect.getValue()) + 1;
+		appt.repeatYearlyMonthsList = this._yearlyMonthSelect.getValue() + 1;
 	} else {
 		appt.repeatCustomType = "O";
 		appt.repeatCustomOrdinal = this._yearlyDaySelect.getValue();
 		appt.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[this._yearlyWeekdaySelect.getValue()];
-		appt.repeatYearlyMonthsList = Number(this._yearlyMonthSelectEx.getValue()) + 1;
+		appt.repeatYearlyMonthsList = this._yearlyMonthSelectEx.getValue() + 1;
 	}
 };
 
@@ -315,36 +315,70 @@ function() {
 	var html = new Array();
 	var i = 0;
 
+	// start table
 	html[i++] = "<table border=0>";
+	// no end date
 	html[i++] = "<tr><td width=1%><input checked value='N' type='radio' name='";
 	html[i++] = this._repeatEndName;
 	html[i++] = "' id='";
 	html[i++] = this._noEndDateRadioId;
 	html[i++] = "'></td><td colspan=2>";
-	html[i++] = ZmMsg.noEndDate;
-	html[i++] = "</td></tr><tr><td><input type='radio' value='A' name='";
+	html[i++] = ZmMsg.recurEndNone;
+	html[i++] = "</td></tr>";
+	// end after <num> occurrences
+	html[i++] = "<tr><td><input type='radio' value='A' name='";
 	html[i++] = this._repeatEndName;
 	html[i++] = "' id='";
 	html[i++] = this._endAfterRadioId;
 	html[i++] = "'></td><td colspan=2><nobr>";
-	html[i++] = ZmMsg.endAfter;
-	html[i++] = "&nbsp;";
-	html[i++] = "<span id='";
-	html[i++] = this._endIntervalFieldId;
-	html[i++] = "'></span>";
-	html[i++] = "&nbsp;";
-	html[i++] = ZmMsg.occurrences;
-	html[i++] = "</td></tr><tr><td><input type='radio' value='D' name='";
+	html[i++] = "<table border='0' cellspacing='0' cellpadding='2'><tr>";
+	var formatter = new AjxMessageFormat(ZmMsg.recurEndNumber);
+	var segments = formatter.getSegments();
+	for (var s = 0; s < segments.length; s++) {
+		html[i++] = "<td>";
+		var segment = segments[s];
+		if (segment instanceof AjxMessageFormat.MessageSegment && 
+			segment.getIndex() == 0) {
+			html[i++] = "<span id='";
+			html[i++] = this._endIntervalFieldId;
+			html[i++] = "'></span>";
+		}
+		else {
+			html[i++] = segment.toSubPattern();
+		}
+		html[i++] = "</td>";
+	}
+	html[i++] = "</tr></table>";
+	html[i++] = "</td></tr>";
+	// end by <date>
+	html[i++] = "<tr><td><input type='radio' value='D' name='";
 	html[i++] = this._repeatEndName;
 	html[i++] = "' id='";
 	html[i++] = this._endByRadioId;
-	html[i++] = "'></td><td><table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = ZmMsg.endBy;
-	html[i++] = "</td><td>&nbsp;</td><td><span id='";
-	html[i++] = this._endByFieldId;
-	html[i++] = "'></span></td><td id='";
-	html[i++] = this._endByButtonId;
-	html[i++] = "'></td></tr></table></td></tr></table>";
+	html[i++] = "'></td><td>";
+	html[i++] = "<table border='0' cellspacing='0' cellpadding='0'><tr>";
+	var formatter = new AjxMessageFormat(ZmMsg.recurEndByDate);
+	var segments = formatter.getSegments();
+	for (var s = 0; s < segments.length; s++) {
+		var segment = segments[s];
+		if (segment instanceof AjxMessageFormat.MessageSegment && 
+			segment.getIndex() == 0) {
+			html[i++] = "<td id='";
+			html[i++] = this._endByFieldId;
+			html[i++] = "'></td><td id='";
+			html[i++] = this._endByButtonId;
+			html[i++] = "'></td>";
+		}
+		else {
+			html[i++] = "<td style='padding-left:2px;padding-right:2px'>";
+			html[i++] = segment.toSubPattern();
+		}
+		html[i++] = "</td>";
+	}
+	html[i++] = "</tr></table>";
+	html[i++] = "</td></tr>";
+	// end table
+	html[i++] = "</table>";
 
 	return html.join("");
 };
@@ -393,28 +427,51 @@ function() {
 	var html = new Array();
 	var i = 0;
 
+	// start table
 	html[i++] = "<table border=0>";
+	// every day
 	html[i++] = "<tr><td><input checked value='1' type='radio' name='";
 	html[i++] = this._dailyRadioName;
 	html[i++] = "' id='";
 	html[i++] = this._dailyDefaultId;
-	html[i++] = "'></td><td colspan=3>";
-	html[i++] = ZmMsg.everyDay;
-	html[i++] = "</td></tr><tr><td><input value='2' type='radio' name='";
+	html[i++] = "'></td>";
+	html[i++] = "<td>";
+	html[i++] = ZmMsg.recurDailyEveryDay;
+	html[i++] = "</td></tr>";
+	// every weekday
+	html[i++] = "<tr><td><input value='2' type='radio' name='";
 	html[i++] = this._dailyRadioName;
-	html[i++] = "'></td><td colspan=3>";
-	html[i++] = ZmMsg.everyWeekday;
-	html[i++] = "</td></tr><tr><td><input value='3' type='radio' name='";
+	html[i++] = "'></td>";
+	html[i++] = "<td>";
+	html[i++] = ZmMsg.recurDailyEveryWeekday;
+	html[i++] = "</td></tr>";
+	// every <num> days
+	html[i++] = "<tr><td><input value='3' type='radio' name='";
 	html[i++] = this._dailyRadioName;
 	html[i++] = "' id='";
 	html[i++] = this._dailyFieldRadioId;
 	html[i++] = "'></td><td>";
-	html[i++] = ZmMsg.every;
-	html[i++] = "</td><td><span id='";
-	html[i++] = this._dailyFieldId;
-	html[i++] = "'></span></td><td>";
-	html[i++] = ZmMsg.day_s;
-	html[i++] = "</td></tr></table>";
+	html[i++] = "<table border='0' cellspacing='0' cellpadding='1'><tr>";
+	var formatter = new AjxMessageFormat(ZmMsg.recurDailyEveryNumDays);
+	var segments = formatter.getSegments();
+	for (var s = 0; s < segments.length; s++) {
+		html[i++] = "<td>";
+		var segment = segments[s];
+		if (segment instanceof AjxMessageFormat.MessageSegment &&
+			segment.getIndex() == 0) {
+			html[i++] = "<span id='";
+			html[i++] = this._dailyFieldId;
+			html[i++] = "'></span>";
+		}
+		else {
+			html[i++] = segment.toSubPattern();
+		}
+		html[i++] = "</td>";
+	}
+	html[i++] = "</tr></table>";
+	html[i++] = "</td></tr>";
+	// end table
+	html[i++] = "</table>";
 
 	return html.join("");
 };
@@ -431,35 +488,83 @@ function() {
 	var html = new Array();
 	var i = 0;
 
+	// start table
 	html[i++] = "<table border=0>";
+	// every <weekday>
 	html[i++] = "<tr><td><input checked value='1' type='radio' name='";
 	html[i++] = this._weeklyRadioName;
 	html[i++] = "' id='";
 	html[i++] = this._weeklyDefaultId;
 	html[i++] = "'></td><td>";
-	html[i++] = ZmMsg.every;
-	html[i++] = "</td><td id='";
-	html[i++] = this._weeklySelectId;
-	html[i++] = "'></td></tr><tr><td><input value='2' type='radio' name='";
+	html[i++] = "<table border='0' cellspacing='0' cellpadding='1'><tr>";
+	var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryWeekday);
+	var segments = formatter.getSegments();
+	for (var s = 0; s < segments.length; s++) {
+		var segment = segments[s];
+		var index = segment instanceof AjxMessageFormat.MessageSegment
+				  ? segment.getIndex() : -1;
+		if (index == 0) {
+			html[i++] = "<td id='";
+			html[i++] = this._weeklySelectId;
+			html[i++] = "'>";
+		}
+		else {
+			html[i++] = "<td>";
+			html[i++] = segment.toSubPattern();
+		}
+		html[i++] = "</td>";
+	}
+	html[i++] = "</tr></table>";
+	html[i++] = "</td></tr>";
+	// every <num> weeks on <days of week>
+	html[i++] = "<tr valign='top'><td><input value='2' type='radio' name='";
 	html[i++] = this._weeklyRadioName;
 	html[i++] = "' id='";
 	html[i++] = this._weeklyFieldRadioId;
-	html[i++] = "'></td><td width=1%>";
-	html[i++] = ZmMsg.every;
-	html[i++] = "</td><td><span id='";
-	html[i++] = this._weeklyFieldId;
-	html[i++] = "'></span>&nbsp;";
-	html[i++] = ZmMsg.weeksOn;
-	html[i++] = "</td></tr><tr><td></td><td colspan=2><table border=0 cellpadding=0 cellspacing=0><tr>";
-	for (var j = 0; j < AjxDateUtil.WEEKDAY_MEDIUM.length; j++) {
-		html[i++] = "<td><input type='checkbox' name='";
-		html[i++] = this._weeklyCheckboxName;
-		html[i++] = "'></td><td>";
-		html[i++] = AjxDateUtil.WEEKDAY_MEDIUM[j];
-		html[i++] = "</td><td>&nbsp;&nbsp;</td>";
+	html[i++] = "'></td>";
+	html[i++] = "<td>";
+	html[i++] = "<table border='0' cellspacing='0' cellpadding='1'><tr>";
+	var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryNumWeeksDate);
+	var segments = formatter.getSegments();
+	for (var s = 0; s < segments.length; s++) {
+		var segment = segments[s];
+		var index = segment instanceof AjxMessageFormat.MessageSegment
+				  ? segment.getIndex() : -1;
+		if (index == 0) {
+			html[i++] = "<td id='";
+			html[i++] = this._weeklyFieldId;
+			html[i++] = "'>";
+		}
+		else if (index == 1) {
+			html[i++] = "<td>";
+			html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
+			for (var j = 0; j < AjxDateUtil.WEEKDAY_MEDIUM.length; j++) {
+				if (j > 0) {
+					html[i++] = "<td>&nbsp;&nbsp;</td>";
+				}
+				html[i++] = "<td><input type='checkbox' name='";
+				html[i++] = this._weeklyCheckboxName;
+				html[i++] = "'></td><td>";
+				html[i++] = AjxDateUtil.WEEKDAY_MEDIUM[j];
+				html[i++] = "</td>";
+			}
+			html[i++] = "</tr></table>";
+		}
+		else if (index == 2) {
+			html[i++] = "</td></tr></table>";
+			html[i++] = "<table border='0' cellspacing='0' cellpadding='1'><tr>";
+			continue;
+		}
+		else {
+			html[i++] = "<td>";
+			html[i++] = segment.toSubPattern();
+		}
+		html[i++] = "</td>";
 	}
 	html[i++] = "</tr></table>";
-	html[i++] = "</td></tr></table>";
+	html[i++] = "</td></tr>";
+	// end table
+	html[i++] = "</table>";
 
 	return html.join("");
 };
@@ -478,40 +583,79 @@ function() {
 	var html = new Array();
 	var i = 0;
 
+	// start table
 	html[i++] = "<table border=0>";
+	// every <num> months on the <day>
 	html[i++] = "<tr><td><input checked value='1' type='radio' name='";
 	html[i++] = this._monthlyRadioName;
 	html[i++] = "' id='";
 	html[i++] = this._monthlyDefaultId;
-	html[i++] = "'></td><td>";
-	html[i++] = ZmMsg.day
-	html[i++] = "</td><td><nobr><span id='";
-	html[i++] = this._monthlyDayFieldId;
-	html[i++] = "'></span>&nbsp;";
-	html[i++] = ZmMsg.ofEvery;
-	html[i++] = "&nbsp;";
-	html[i++] = "<span id='";
-	html[i++] = this._monthlyMonthFieldId;
-	html[i++] = "'></span>&nbsp;";
-	html[i++] = ZmMsg.month_s;
-	html[i++] = "</td></tr><tr><td><input value='2' type='radio' name='";
+	html[i++] = "'></td>";
+	html[i++] = "<td>";
+	html[i++] = "<table border='0' cellspacing='0' cellpadding='1'><tr>";
+	var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsDate);
+	var segments = formatter.getSegments();
+	for (var s = 0; s < segments.length; s++) {
+		html[i++] = "<td>";
+		var segment = segments[s];
+		var index = segment instanceof AjxMessageFormat.MessageSegment
+				  ? segment.getIndex() : -1;
+		if (index == 0) {
+			html[i++] = "<span id='";
+			html[i++] = this._monthlyDayFieldId;
+			html[i++] = "'></span>";
+		}
+		else if (index == 1) {
+			html[i++] = "<span id='";
+			html[i++] = this._monthlyMonthFieldId;
+			html[i++] = "'></span>";
+		}
+		else {
+			html[i++] = segment.toSubPattern();
+		}
+		html[i++] = "</td>";
+	}
+	html[i++] = "</tr></table>";
+	html[i++] = "</td></tr>";
+	// every <num> months on the <ordinal> <weekday>
+	html[i++] = "<tr><td><input value='2' type='radio' name='";
 	html[i++] = this._monthlyRadioName;
 	html[i++] = "' id='";
 	html[i++] = this._monthlyFieldRadioId;
-	html[i++] = "'></td><td>";
-	html[i++] = ZmMsg.the;
-	html[i++] = "</td><td><table border=0 cellpadding=0 cellspacing=0><tr><td id='";
-	html[i++] = this._monthlyDaySelectId;
-	html[i++] = "'></td><td>&nbsp;</td><td id='";
-	html[i++] = this._monthlyWeekdaySelectId;
-	html[i++] = "'></td><td>&nbsp;</td><td>";
-	html[i++] = ZmMsg.ofEvery;
-	html[i++] = "</td><td>&nbsp;</td><td><span id='";
-	html[i++] = this._monthlyMonthFieldExId;
-	html[i++] = "'></span></td><td>&nbsp;</td><td>";
-	html[i++] = ZmMsg.month_s;
-	html[i++] = "</td></tr></table>";
-	html[i++] = "</td></tr></table>";
+	html[i++] = "'></td>";
+	html[i++] = "<td>";
+	html[i++] = "<table border='0' cellspacing='0' cellpadding='1'><tr>";
+	var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsNumDay);
+	var segments = formatter.getSegments();
+	for (var s = 0; s < segments.length; s++) {
+		var segment = segments[s];
+		var index = segment instanceof AjxMessageFormat.MessageSegment
+				  ? segment.getIndex() : -1;
+		if (index == 0) {
+			html[i++] = "<td id='";
+			html[i++] = this._monthlyDaySelectId;
+			html[i++] = "'>";
+		}
+		else if (index == 1) {
+			html[i++] = "<td id='";
+			html[i++] = this._monthlyWeekdaySelectId;
+			html[i++] = "'>";
+		}
+		else if (index == 2) {
+			html[i++] = "<td><span id='";
+			html[i++] = this._monthlyMonthFieldExId;
+			html[i++] = "'></span>";
+		}
+		else {
+			html[i++] = "<td>";
+			html[i++] = segment.toSubPattern();
+		}
+		html[i++] = "</td>";
+	}
+	html[i++] = "</tr></table>";
+	html[i++] = "</td></tr>";
+	// end table
+	html[i++] = "</table>";
 
 	return html.join("");
 };
@@ -530,32 +674,77 @@ function() {
 	var html = new Array();
 	var i = 0;
 
+	// start table
 	html[i++] = "<table border=0>";
+	// every year on <month> <day>
 	html[i++] = "<tr><td><input checked value='1' type='radio' name='";
 	html[i++] = this._yearlyRadioName;
 	html[i++] = "' id='";
 	html[i++] = this._yearlyDefaultId;
-	html[i++] = "'></td><td><table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = ZmMsg.everyYearOn;
-	html[i++] = "</td><td>&nbsp;</td><td id='";
-	html[i++] = this._yearlyMonthSelectId;
-	html[i++] = "'></td><td>&nbsp;</td><td><span id='";
-	html[i++] = this._yearlyDayFieldId;
-	html[i++] = "'></span></td></tr></table></td></tr><tr><td><input value='2' type='radio' name='";
+	html[i++] = "'></td><td>";
+	html[i++] = "<table border='0' cellspacing='0' cellpadding='1'><tr>";
+	var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryDate);
+	var segments = formatter.getSegments();
+	for (var s = 0; s < segments.length; s++) {
+		var segment = segments[s];
+		var index = segment instanceof AjxMessageFormat.MessageSegment
+				  ? segment.getIndex() : -1;
+		if (index == 0) {
+			html[i++] = "<td id='";
+			html[i++] = this._yearlyMonthSelectId;
+			html[i++] = "'>";
+		}
+		else if (index == 1) {
+			html[i++] = "<td><span id='";
+			html[i++] = this._yearlyDayFieldId;
+			html[i++] = "'></span>";
+		}
+		else {
+			html[i++] = "<td>";
+			html[i++] = segment.toSubPattern();
+		}
+		html[i++] = "</td>";
+	}
+	html[i++] = "</tr></table>";
+	html[i++] = "</td></tr>";
+	// every year on <ordinal> <weekday> of <month>
+	html[i++] = "<tr><td><input value='2' type='radio' name='";
 	html[i++] = this._yearlyRadioName;
 	html[i++] = "' id='";
 	html[i++] = this._yearlyFieldRadioId;
-	html[i++] = "'></td><td><table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = ZmMsg.the;
-	html[i++] = "</td><td>&nbsp;</td><td id='";
-	html[i++] = this._yearlyDaySelectId;
-	html[i++] = "'></td><td>&nbsp;</td><td id='";
-	html[i++] = this._yearlyWeekdaySelectId;
-	html[i++] = "'></td><td>&nbsp;</td><td>";
-	html[i++] = ZmMsg.of;
-	html[i++] = "</td><td>&nbsp;</td><td id='";
-	html[i++] = this._yearlyMonthSelectExId;
-	html[i++] = "'></td></tr></table></td></tr></table>";
+	html[i++] = "'></td><td>";
+	html[i++] = "<table border='0' cellspacing='0' cellpadding='1'><tr>";
+	var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryMonthNumDay);
+	var segments = formatter.getSegments();
+	for (var s = 0; s < segments.length; s++) {
+		var segment = segments[s];
+		var index = segment instanceof AjxMessageFormat.MessageSegment
+				  ? segment.getIndex() : -1;
+		if (index == 0) {
+			html[i++] = "<td id='";
+			html[i++] = this._yearlyDaySelectId;
+			html[i++] = "'>";
+		}
+		else if (index == 1) {
+			html[i++] = "<td id='";
+			html[i++] = this._yearlyWeekdaySelectId;
+			html[i++] = "'>";
+		}
+		else if (index == 2) {
+			html[i++] = "<td id='";
+			html[i++] = this._yearlyMonthSelectExId;
+			html[i++] = "'>";
+		}
+		else {
+			html[i++] = "<td>";
+			html[i++] = segment.toSubPattern();
+		}
+		html[i++] = "</td>";
+	}
+	html[i++] = "</tr></table>";
+	html[i++] = "</td></tr>";
+	// end table
+	html[i++] = "</table>";
 	
 	return html.join("");
 };
@@ -590,8 +779,14 @@ function() {
 	var selectChangeListener = new AjxListener(this, this._selectChangeListener);
 	this._weeklySelect = new DwtSelect(this);
 	this._weeklySelect.addChangeListener(selectChangeListener);
-	for (var i = 0; i < AjxDateUtil.WEEKDAY_LONG.length; i++)
-		this._weeklySelect.addOption(AjxDateUtil.WEEKDAY_LONG[i], false, i);
+	var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryWeekday);
+	var dayFormatter = formatter.getFormatsByArgumentIndex()[0];
+	var day = new Date();
+	day.setDate(day.getDate() - day.getDay());
+	for (var i = 0; i < 7; i++) {
+		this._weeklySelect.addOption(dayFormatter.format(day), false, i);
+		day.setDate(day.getDate() + 1);
+	}
 	var weeklySelectCell = document.getElementById(this._weeklySelectId);
 	if (weeklySelectCell)
 		weeklySelectCell.appendChild(this._weeklySelect.getHtmlElement());
@@ -599,9 +794,15 @@ function() {
 
 	this._monthlyDaySelect = new DwtSelect(this);
 	this._monthlyDaySelect.addChangeListener(selectChangeListener);
-	for (var i = 0; i < ZmAppt.MONTHLY_DAY_OPTIONS.length; i++) {
-		var option = ZmAppt.MONTHLY_DAY_OPTIONS[i];
-		this._monthlyDaySelect.addOption(option.label, option.selected, option.value);
+	var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsNumDay);
+	var ordinalFormatter = formatter.getFormatsByArgumentIndex()[0];
+	var limits = ordinalFormatter.getLimits();
+	var formats = ordinalFormatter.getFormats();
+	for (var i = 0; i < limits.length; i++) {
+		var index = (i + 1) % limits.length;
+		var label = formats[index].format();
+		var value = Math.floor(limits[index]);
+		this._monthlyDaySelect.addOption(label, false, value);
 	}
 	var monthlyDayCell = document.getElementById(this._monthlyDaySelectId);
 	if (monthlyDayCell)
@@ -610,8 +811,14 @@ function() {
 
 	this._monthlyWeekdaySelect = new DwtSelect(this);
 	this._monthlyWeekdaySelect.addChangeListener(selectChangeListener);
-	for (var i = 0; i < AjxDateUtil.WEEKDAY_LONG.length; i++)
-		this._monthlyWeekdaySelect.addOption(AjxDateUtil.WEEKDAY_LONG[i], false, i);
+	var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsNumDay);
+	var dayFormatter = formatter.getFormatsByArgumentIndex()[1];
+	var day = new Date();
+	day.setDate(day.getDate() - day.getDay());
+	for (var i = 0; i < 7; i++) {
+		this._monthlyWeekdaySelect.addOption(dayFormatter.format(day), false, i);
+		day.setDate(day.getDate() + 1);
+	}
 	var monthlyWeekdayCell = document.getElementById(this._monthlyWeekdaySelectId);
 	if (monthlyWeekdayCell)
 		monthlyWeekdayCell.appendChild(this._monthlyWeekdaySelect.getHtmlElement());
@@ -619,8 +826,13 @@ function() {
 
 	this._yearlyMonthSelect = new DwtSelect(this);
 	this._yearlyMonthSelect.addChangeListener(selectChangeListener);
-	for (var i = 0; i < AjxDateUtil.MONTH_LONG.length; i++)
-		this._yearlyMonthSelect.addOption(AjxDateUtil.MONTH_LONG[i], false, i);
+	var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryDate);
+	var monthFormatter = formatter.getFormatsByArgumentIndex()[0];
+	var month = new Date();
+	for (var i = 0; i < 12; i++) {
+		month.setMonth(i);
+		this._yearlyMonthSelect.addOption(monthFormatter.format(month), false, i);
+	}
 	var yearlyMonthCell = document.getElementById(this._yearlyMonthSelectId);
 	if (yearlyMonthCell)
 		yearlyMonthCell.appendChild(this._yearlyMonthSelect.getHtmlElement());
@@ -628,9 +840,15 @@ function() {
 
 	this._yearlyDaySelect = new DwtSelect(this);
 	this._yearlyDaySelect.addChangeListener(selectChangeListener);
-	for (var i = 0; i < ZmAppt.MONTHLY_DAY_OPTIONS.length; i++) {
-		var option = ZmAppt.MONTHLY_DAY_OPTIONS[i];
-		this._yearlyDaySelect.addOption(option.label, option.selected, option.value);
+	var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryMonthNumDay);
+	var ordinalFormatter = formatter.getFormatsByArgumentIndex()[0];
+	var limits = ordinalFormatter.getLimits();
+	var formats = ordinalFormatter.getFormats();
+	for (var i = 0; i < limits.length; i++) {
+		var index = (i + 1) % limits.length;
+		var label = formats[index].format();
+		var value = Math.floor(limits[index]);
+		this._yearlyDaySelect.addOption(label, false, value);
 	}
 	var yearlyDayCell = document.getElementById(this._yearlyDaySelectId);
 	if (yearlyDayCell)
@@ -639,8 +857,14 @@ function() {
 
 	this._yearlyWeekdaySelect = new DwtSelect(this);
 	this._yearlyWeekdaySelect.addChangeListener(selectChangeListener);
-	for (var i = 0; i < AjxDateUtil.WEEKDAY_LONG.length; i++)
-		this._yearlyWeekdaySelect.addOption(AjxDateUtil.WEEKDAY_LONG[i], false, i);
+	var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryMonthNumDay);
+	var dayFormatter = formatter.getFormatsByArgumentIndex()[1];
+	var day = new Date();
+	day.setDate(day.getDate() - day.getDay());
+	for (var i = 0; i < 7; i++) {
+		this._yearlyWeekdaySelect.addOption(dayFormatter.format(day), false, i);
+		day.setDate(day.getDate() + 1);
+	}
 	var yearlyWeekdayCell = document.getElementById(this._yearlyWeekdaySelectId);
 	if (yearlyWeekdayCell)
 		yearlyWeekdayCell.appendChild(this._yearlyWeekdaySelect.getHtmlElement());

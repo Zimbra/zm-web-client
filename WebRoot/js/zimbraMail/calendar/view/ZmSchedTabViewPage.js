@@ -184,12 +184,6 @@ function() {
 	return true;
 };
 
-ZmSchedTabViewPage.prototype.enableInputs = 
-function() {
-	// TODO
-	DBG.println("TODO: enable inputs for schedule tab view");
-};
-
 ZmSchedTabViewPage.prototype.resize = 
 function(newWidth, newHeight) {
 	if (!this._rendered) return;
@@ -223,9 +217,9 @@ function() {
 	var html = [];
 	var i = 0;
 
-	html[i++] = "<table border=0 width=100%><tr><td>";
+	html[i++] = "<table border=0 width=100% cellpadding=3><tr><td>";
 	html[i++] = this._getTimeHtml();
-	html[i++] = "</td><td class='ZmSchedTabViewPageKey'>";
+	html[i++] = "</td><td style='text-align:right'>";
 	html[i++] = this._getKeyHtml();
 	html[i++] = "</td></tr></table>";
 	html[i++] = "<div style='margin-top:10'>";
@@ -252,7 +246,12 @@ function() {
 	var i = 0;
 	
 	html[i++] = "<table border=0>";
-	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
+	html[i++] = "<tr><td></td><td colspan=10><table border=0><tr><td><input type='checkbox' id='";
+	html[i++] = this._allDayCheckboxId;
+	html[i++] = "'></td><td class='ZmFieldLabelLeft'>";
+	html[i++] = ZmMsg.allDayEvent;
+	html[i++] = "</td></tr></table></td></tr>";
+	html[i++] = "<tr><td class='ZmFieldLabelRight'>";
 	html[i++] = ZmMsg.startTime;
 	html[i++] = "</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
@@ -262,13 +261,10 @@ function() {
 	html[i++] = this._startMiniCalBtnId;
 	html[i++] = "'></td>";
 	html[i++] = "</tr></table></td>";
-	html[i++] = "<td>@</td><td id='";
+	html[i++] = "<td class='ZmFieldLabelCenter'>@</td><td id='";
 	html[i++] = this._startTimeSelectId;
-	html[i++] = "'></td><td><input type='checkbox' id='";
-	html[i++] = this._allDayCheckboxId;
-	html[i++] = "'></td><td><nobr>";
-	html[i++] = ZmMsg.allDayEvent;
-	html[i++] = "</td><td width=100%></td></tr><tr><td class='ZmApptTabViewPageField'>";
+	html[i++] = "'></td>";
+	html[i++] = "<td width=100%></td></tr><tr><td class='ZmFieldLabelRight'>";
 	html[i++] = ZmMsg.endTime;
 	html[i++] = "</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
@@ -278,7 +274,7 @@ function() {
 	html[i++] = this._endMiniCalBtnId;
 	html[i++] = "'></td>";
 	html[i++] = "</tr></table></td>";
-	html[i++] = "<td>@</td><td id='";
+	html[i++] = "<td class='ZmFieldLabelCenter'>@</td><td id='";
 	html[i++] = this._endTimeSelectId;
 	html[i++] = "'></td></tr>";
 	// XXX: note we're ignoring time zones for now
@@ -292,34 +288,39 @@ function() {
 	var html = [];
 	var i = 0;
 
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 style='border:1px solid black'><tr>";
-	html[i++] = "<td style='padding:3px; background-color:#CCCCCC; font-weight:bold'>";
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmGraphKey'><tr>";
+	html[i++] = "<td class='ZmGraphKeyHeader'>";
 	html[i++] = ZmMsg.key;
-	html[i++] = "</td></tr><tr><td style='padding:3px; background-color:#FFFFFF'>";
-	html[i++] = "<table border=0 cellpadding=3 cellspacing=3><tr>";
-	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#FFFFFF'></div></td>";
-	html[i++] = "<td class='nobreak'>";
+	html[i++] = "</td></tr><tr><td class='ZmGraphKeyBody'>";
+	html[i++] = "<table border=0 cellspacing=2><tr>";
+
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduleFree'></div></td>";
+	html[i++] = "<td class='ZmGraphKeyColorText'>";
 	html[i++] = ZmMsg.free;
-	html[i++] = "</td>"
-	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#990000'></div></td>";
-	html[i++] = "<td class='nobreak'>";
+	html[i++] = "</td><td>&nbsp;</td>"
+
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduleBusy'></div></td>";
+	html[i++] = "<td class='ZmGraphKeyColorText'>";
 	html[i++] = ZmMsg.busy;
-	html[i++] = "</td>"
-	html[i++] = "<td>&nbsp;</td>";
-	html[i++] = "<td>&nbsp;</td>";
-	html[i++] = "</tr><tr>";
-	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#FFCC00'></div></td>";
-	html[i++] = "<td class='nobreak'>";
-	html[i++] = ZmMsg.outOfOffice;
-	html[i++] = "</td>"
-	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#FF3300'></div></td>";
-	html[i++] = "<td class='nobreak'>";
+	html[i++] = "</td><td>&nbsp;</td>"
+
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduleTentative'></div></td>";
+	html[i++] = "<td class='ZmGraphKeyColorText'>";
 	html[i++] = ZmMsg.tentative;
-	html[i++] = "</td>"
-	html[i++] = "<td><div class='ZmSchedTabViewPageKeySquare' style='background-color:#FFF5CC'></div></td>";
-	html[i++] = "<td class='nobreak'>";
+	html[i++] = "</td><td>&nbsp;</td>"
+
+	html[i++] = "</tr><tr>";
+
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduleUnknown'></div></td>";
+	html[i++] = "<td class='ZmGraphKeyColorText'>";
 	html[i++] = ZmMsg.unknown;
-	html[i++] = "</td>"
+	html[i++] = "</td><td>&nbsp;</td>"
+
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduleOutOfOffice'></div></td>";
+	html[i++] = "<td class='ZmGraphKeyColorText'>";
+	html[i++] = ZmMsg.outOfOffice;
+	html[i++] = "</td><td>&nbsp;</td>"
+
 	html[i++] = "</tr>";
 	html[i++] = "</table>";
 	html[i++] = "</td></tr></table>";
@@ -867,7 +868,7 @@ function() {
 
 ZmSchedTabViewPage.prototype._resetFullDateField =
 function() {
-	var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.LONG);
+	var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.MEDIUM);
 	this._navToolbar.setText(formatter.format(AjxDateUtil.simpleParseDateStr(this._startDateField.value)));
 };
 
@@ -925,6 +926,16 @@ function(ev) {
 
 	// change the start/end date if they mismatch
 	this._handleDateChange(parentButton == this._startDateButton, true);
+};
+
+ZmSchedTabViewPage.prototype._contactPickerListener =
+function(ev) {
+	if (!this._contactPicker) {
+		this._contactPicker = new ZmContactPicker(this._appCtxt);
+		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
+	}
+	this._cpButton = ev.item;
+	this._contactPicker.popup();
 };
 
 ZmSchedTabViewPage.prototype._navBarListener = 
@@ -993,7 +1004,7 @@ function(ev) {
 ZmSchedTabViewPage.prototype._colorSchedule = 
 function(status, slots, table, sched) {
 	var row = table.rows[0];
-	var bgcolor = this._getColorForStatus(status);
+	var bgcolor = this._getClassForStatus(status);
 
 	if (row && bgcolor) {
 		// figure out the table cell that needs to be colored
@@ -1104,17 +1115,17 @@ function(dateInfo) {
 	return index;
 };
 
-ZmSchedTabViewPage.prototype._getColorForStatus = 
+ZmSchedTabViewPage.prototype._getClassForStatus = 
 function(status) {
-	var bgcolor = null;
+	var className = null;
 	switch (status) {
-		case ZmSchedTabViewPage.STATUS_FREE: 		bgcolor = "#FFFFFF"; break;
-		case ZmSchedTabViewPage.STATUS_BUSY: 		bgcolor = "#990000"; break;
-		case ZmSchedTabViewPage.STATUS_TENTATIVE:	bgcolor = "#FF3300"; break;
-		case ZmSchedTabViewPage.STATUS_OUT: 		bgcolor = "#FFCC00"; break;
-		case ZmSchedTabViewPage.STATUS_UNKNOWN: 	bgcolor = "#FFF5CC"; break;
+		case ZmSchedTabViewPage.STATUS_FREE: 		className = "ZmScheduleFree"; break;
+		case ZmSchedTabViewPage.STATUS_BUSY: 		className = "ZmScheduleBusy"; break;
+		case ZmSchedTabViewPage.STATUS_TENTATIVE:	className = "ZmScheduleTentative"; break;
+		case ZmSchedTabViewPage.STATUS_OUT: 		className = "ZmScheduleOutOfOffice"; break;
+		case ZmSchedTabViewPage.STATUS_UNKNOWN: 	className = "ZmScheduleUnknown"; break;
 	}
-	return bgcolor;
+	return className;
 };
 
 
@@ -1154,6 +1165,51 @@ function(value) {
 	}
 
 	return value;
+};
+
+ZmSchedTabViewPage.prototype._contactPickerOk =
+function(vec) {
+	var addrs = vec.getArray();
+	if (addrs.length) {
+		var dwtInputField = AjxCore.objectWithId(this._cpButton._inputFieldId);
+		var schedTableIdx = dwtInputField.schedTableIdx;
+		var emails = new Array();
+
+		for (var i = 0; i < addrs.length; i++) {
+			var addr = addrs[i].address;
+			emails.push(addr);
+
+			if (dwtInputField) {
+				var inputEl = dwtInputField.getInputElement();
+				dwtInputField.setValue(addr);
+				Dwt.setVisible(inputEl, true);
+				this._attendees[addr] = inputEl._schedTableIdx;
+			} else {
+				break;		// something is screwed up, just quit
+			}
+
+			// get the next EMPTY dwtInputField to populate
+			var found = false;
+			while (!found && this._schedTable[++schedTableIdx]) {
+				var inputDiv = document.getElementById(this._schedTable[schedTableIdx].dwtId);
+				dwtInputField = inputDiv ? Dwt.getObjectFromElement(inputDiv.firstChild) : null;
+				if (dwtInputField) {
+					found = dwtInputField.getValue() == "";
+				} else {
+					break;	// something is screwed up, just quit
+				}
+			}
+
+			// check if we have any more available slots
+			if (this._schedTable[schedTableIdx] == null)
+				break;
+		}
+
+		this._updateAttendeesField = true;
+		this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), emails.join(","), this._fbCallback);
+	}
+
+	this._contactPicker.popdown();
 };
 
 

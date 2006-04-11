@@ -36,15 +36,14 @@
 * @param app		[constant]		starting app
 */
 function ZmZimbraMail(appCtxt, domain, app, userShell) {
-
 	ZmController.call(this, appCtxt);
 
 	this._userShell = userShell;
 
 	// settings structure and defaults
 	this._settings = appCtxt.getSettings();
-	DBG.println(AjxDebug.DBG1, "Branch: " + appCtxt.get(ZmSetting.BRANCH));
-	var listener = new AjxListener(this, this._settingsChangeListener);
+    DBG.println(AjxDebug.DBG1, "Branch: " + appCtxt.get(ZmSetting.BRANCH) + " Image Load: " + zImgLoading + " JS/CSS Load: " + zJSloading);
+    var listener = new AjxListener(this, this._settingsChangeListener);
 	this._settings.getSetting(ZmSetting.QUOTA_USED).addChangeListener(listener);
 	this._settings.getSetting(ZmSetting.POLLING_INTERVAL).addChangeListener(listener);
 
@@ -54,16 +53,20 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	appCtxt.setClientCmdHdlr(new ZmClientCmdHandler(appCtxt));
 
 	this._shell = appCtxt.getShell();
-	this._shell.addListener(DwtEvent.ONKEYPRESS, new AjxListener(this, this._keyPressListener));
 	
-	if (location.search && (location.search.indexOf("nss=1") != -1)) {
+	/* Register our keymap and global key action handler with the shell's keyboard manager */
+	//this._kbMgr = this._shell.getKeyboardMgr();
+	//this._kbMgr.registerKeyMap(new ZmKeyMap());
+	//this._kbMgr.registerGlobalKeyActionHandler(this);
+
+	if (location.search && (location.search.indexOf("nss=1") != -1))
    	    this._splashScreen = null;
-    } else {
+    else
    	    this._splashScreen = new ZmSplashScreen(this._shell, "SplashScreen");
-    }
  
 	this._apps = {};
 	this._activeApp = null;
+    this._highestNotifySeen = 0;
 	
 	this._sessionTimer = new AjxTimedAction(null, ZmZimbraMail.logOff);
 	this._sessionTimerId = -1;
@@ -75,11 +78,15 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._needOverviewLayout = false;
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);	
 	this._calendarListener = new AjxListener(this, this._calendarChangeListener);
+	this._notebookListener = new AjxListener(this, this._notebookChangeListener);
+	this._addrBookListener = new AjxListener(this, this._addrBookChangeListener);
 
 	this._useXml = this._appCtxt.get(ZmSetting.USE_XML);
 	this._logRequest = this._appCtxt.get(ZmSetting.LOG_REQUEST);
 	this._stdTimeout = this._appCtxt.get(ZmSetting.TIMEOUT);
 
+	this._keyMap = new ZmKeyMap();
+	
 	this.startup({app: app});
 };
 
@@ -90,6 +97,7 @@ ZmZimbraMail.MAIL_APP			= "mail";
 ZmZimbraMail.CONTACTS_APP		= "contacts";
 ZmZimbraMail.CALENDAR_APP		= "calendar";
 ZmZimbraMail.IM_APP				= "im";
+ZmZimbraMail.NOTES_APP			= "notes";
 ZmZimbraMail.PREFERENCES_APP	= "options";
 ZmZimbraMail.MIXED_APP			= "mixed";
 
@@ -98,6 +106,7 @@ ZmZimbraMail.APP_CLASS[ZmZimbraMail.MAIL_APP]			= ZmMailApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.CONTACTS_APP]		= ZmContactsApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.CALENDAR_APP]		= ZmCalendarApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.IM_APP]				= ZmImApp;
+ZmZimbraMail.APP_CLASS[ZmZimbraMail.NOTES_APP]			= ZmNotesApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.PREFERENCES_APP]	= ZmPreferencesApp;
 ZmZimbraMail.APP_CLASS[ZmZimbraMail.MIXED_APP]			= ZmMixedApp;
 
@@ -106,6 +115,7 @@ ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]				= "mail";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CONTACTS_APP]			= "contacts";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CALENDAR_APP]			= "calendar";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.IM_APP]				= "imAppTitle";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.NOTES_APP]			= "notes";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.PREFERENCES_APP]		= "options";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MIXED_APP]			= "zimbraTitle";
 
@@ -114,6 +124,7 @@ ZmZimbraMail.APP_ICON[ZmZimbraMail.MAIL_APP]			= "MailApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.CONTACTS_APP]		= "ContactsApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.CALENDAR_APP]		= "CalendarApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.IM_APP]				= "ImStartChat";
+ZmZimbraMail.APP_ICON[ZmZimbraMail.NOTES_APP]			= "NoteApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.PREFERENCES_APP]		= "Preferences";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.MIXED_APP]			= "Globe";
 
@@ -122,6 +133,7 @@ ZmZimbraMail.APP_BUTTON[ZmZimbraMail.MAIL_APP]			= ZmAppChooser.B_EMAIL;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CONTACTS_APP]		= ZmAppChooser.B_CONTACTS;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CALENDAR_APP]		= ZmAppChooser.B_CALENDAR;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.IM_APP]			= ZmAppChooser.B_IM;
+ZmZimbraMail.APP_BUTTON[ZmZimbraMail.NOTES_APP]			= ZmAppChooser.B_NOTES;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.PREFERENCES_APP]	= ZmAppChooser.B_OPTIONS;
 
 ZmZimbraMail.DEFAULT_SEARCH = {};
@@ -140,11 +152,12 @@ ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.IM_APP]	        = "displayIM";
 
 ZmZimbraMail.OVERVIEW_TREES = {};
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.ADDRBOOK, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]	= [ZmOrganizer.CALENDAR, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.ROSTER_TREE_ITEM];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.NOTES_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET]; // REVISIT: [ZmOrganizer.NOTEBOOK, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 
 ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
 
@@ -285,7 +298,8 @@ function(params) {
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
 		this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
 
-	this.setPollInterval();
+	if (document.domain != "localhost")
+		this.setPollInterval();
 	var opc = this._appCtxt.getOverviewController();
 	opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
 						selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true});
@@ -330,16 +344,6 @@ ZmZimbraMail.prototype._handleResponseStartup2 =
 function() {
 	this.setSessionTimer(true);
 	this._killSplash();
-	if (location.search && (location.search.match(/\bview=compose\b/))) {
-		var cc = this.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
-		var match = location.search.match(/\bsubject=([^&]+)/);
-		var subject = match ? decodeURIComponent(match[1]) : null;
-		match = location.search.match(/\bto=([^&]+)/);	
-		var to = match ? decodeURIComponent(match[1]) : null;
-		match = location.search.match(/\bbody=([^&]+)/);	
-		var body = match ? decodeURIComponent(match[1]) : null;
-		cc.doAction(ZmOperation.NEW_MESSAGE, false, null, to, subject, body);
-	}
 };
 
 /**
@@ -352,6 +356,7 @@ function(settings) {
 	// could have each app do shutdown()
 	DBG.println(AjxDebug.DBG1, "RESTARTING APP");
 	ZmCsfeCommand.setSessionId(null);			// so we get a refresh block
+    this._highestNotifySeen = 0; //b/c we have a new session
 	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 	if (tagList) tagList.reset();
 	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER)
@@ -364,7 +369,7 @@ function(settings) {
 	this._appViewMgr.dtor();
 	this._appViewMgr = null;
 	this._searchController = this._overviewController = null;
-	this.startup({bIsRelogin: false, settings: settings});
+   	this.startup({bIsRelogin: false, settings: settings});
 };
 
 /**
@@ -392,7 +397,8 @@ function(params) {
 	var asyncCallback = params.asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [params]) : null;
 	var command = new ZmCsfeCommand();
 	var cmdParams = {soapDoc: params.soapDoc, useXml: this._useXml, changeToken: this._changeToken,
-					 asyncMode: params.asyncMode, callback: asyncCallback, logRequest: this._logRequest};
+					 asyncMode: params.asyncMode, callback: asyncCallback, logRequest: this._logRequest,
+					 highestNotifySeen: this._highestNotifySeen };
 	
 	DBG.println(AjxDebug.DBG2, "sendRequest: " + params.soapDoc._methodEl.nodeName);
 	if (params.asyncMode && !params.noBusyOverlay) {
@@ -475,8 +481,20 @@ function(params, result) {
 
 	// handle notifications after the response, so that item state is current
 	if (hdr && hdr.context && hdr.context.notify) {
-		this._notifyHandler(hdr.context.notify);
+        for(i = 0; i < hdr.context.notify.length; i++) {
+        	var notify = hdr.context.notify[i];
+        	var seq = notify.seq;
+            // BUG?  What if the array isn't in sequence-order?  We would miss some notifications. Can that happen?  
+            if (notify.seq > this._highestNotifySeen) {
+                DBG.println(AjxDebug.DBG1, "Handling notification[" + i + "] seq=" + seq);
+                this._highestNotifySeen = seq;
+                this._notifyHandler(notify);
+            } else {
+            	DBG.println(AjxDebug.DBG1, "SKIPPING notification[" + i + "] seq=" + seq + " highestNotifySeen=" + this._highestNotifySeen);
+	      	}
+    	}        
 	}
+	
 	// update change token if we get one
 	if (hdr && hdr.context && hdr.context.change) {
 		this._changeToken = hdr.context.change.token;
@@ -707,13 +725,13 @@ function() {
 		var percent = Math.min(Math.round((usedQuota / quota) * 100), 100);
 		
 		// set background color based on percent used
-		var bgcolor = "#66cc33";
+		var progressClassName = "quotaUsed";
 		if (percent < 85 && percent > 65)
-			bgcolor	= "orange";
+			progressClassName = "quotaWarning";
 		else if (percent >= 85)
-			bgcolor = "red";
+			progressClassName = "quotaCritical";
 		
-		html[idx++] = "<td><div class='quotabar'><div style='width: " + percent + "; background-color:" + bgcolor + "' class='quotaused'></div></div></td>";
+		html[idx++] = "<td><div class='quotabar'><div style='width: " + percent + ";' class='" + progressClassName + "'></div></div></td>";
 		quotaTooltip = ZmMsg.quota + ": " + percent + "% (" + size + " of " + limit + ")";
 	} else {
 		html[idx++] = "<td class='BannerText'> " + size + " of unlimited</td>";
@@ -852,14 +870,15 @@ function(childWin) {
 	}
 };
 
-// A <refresh> block is returned in a SOAP response any time the session ID has changed. It always happens
-// on the first SOAP command (eg gettings prefs). After that, it happens after a session timeout.
-// We'll always get a <folder> element back, but we might not get back a <tags>, so we
-// need to make sure a tag tree is created, even if it's empty.
+// A <refresh> block is returned in a SOAP response any time the session ID has 
+// changed. It always happens on the first SOAP command (eg gettings prefs). 
+// After that, it happens after a session timeout. We'll always get a <folder> 
+// element back, but we might not get back a <tags>, so we need to make sure a 
+// tag tree is created, even if it's empty.
 //
-// Note: this could be optimized to do a compare (since for the large majority of refreshes, the tags and
-// folders won't have changed except unread counts), but a session timeout should be relatively rare when
-// we're doing polling.
+// Note: this could be optimized to do a compare (since for the large majority 
+// of refreshes, the tags and folders won't have changed except unread counts), 
+// but a session timeout should be relatively rare when we're doing polling.
 ZmZimbraMail.prototype._refreshHandler =
 function(refresh) {
 	DBG.println(AjxDebug.DBG2, "Handling REFRESH");
@@ -884,8 +903,24 @@ function(refresh) {
 	var calendarString = calendarTree.asString();
 	calendarTree.reset();
 
+	var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	if (!notebookTree) {
+		notebookTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.NOTEBOOK);
+		notebookTree.addChangeListener(this._notebookListener);
+		this._appCtxt.setTree(ZmOrganizer.NOTEBOOK, notebookTree);
+	}
+	var notebookString = notebookTree.asString();
+	notebookTree.reset();
+
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
-        	this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
+		this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
+
+	var addrBookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+	if (!addrBookTree) {
+		addrBookTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ADDRBOOK);
+		addrBookTree.addChangeListener(this._addrBookListener);
+		this._appCtxt.setTree(ZmOrganizer.ADDRBOOK, addrBookTree);
+	}
     
 	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 	if (!folderTree) {
@@ -909,8 +944,10 @@ function(refresh) {
 		tagTree.loadFromJs(refresh.tags);
 	if (refresh.folder) {
 		calendarTree.loadFromJs(refresh.folder[0]);
+		notebookTree.loadFromJs(refresh.folder[0]);
 		folderTree.loadFromJs(refresh.folder[0]);
 		searchTree.loadFromJs(refresh.folder[0]);
+		addrBookTree.loadFromJs(refresh.folder[0]);
 	}
 	
 	if (tagTree.asString() != tagString || folderTree.asString() != folderString ||
@@ -1084,6 +1121,15 @@ function(deletes) {
 		DBG.println(AjxDebug.DBG2, "handling delete notif for ID " + ids[i]);
 		if (item)
 			item.notifyDelete();
+		// REVISIT: Use app item cache
+		else {
+			var notesApp = this.getApp(ZmZimbraMail.NOTES_APP);
+			var cache = notesApp.getNoteCache();
+			var note = cache.getNoteById(ids[i]);
+			if (note) {
+				cache.removeNote(note);
+			}
+		}
 	}
 };
 
@@ -1116,17 +1162,24 @@ function(creates, modifies) {
 			var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 			var searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
 			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+			var addrBookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
 			// parent could be a folder or a search
 			if (parentId == ZmOrganizer.ID_ROOT) {
-				parent = (name == "folder")
-						? (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] ? calendarTree.getById(parentId) : folderTree.getById(parentId))
-						: searchTree.getById(parentId);
+				if (name == "folder") {
+					if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR])
+						parent = calendarTree.getById(parentId);
+					else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK])
+						parent = addrBookTree.getById(parentId);
+					else
+						parent = folderTree.getById(parentId);
+				} else {
+					parent = searchTree.getById(parentId);
+				}
 			} else {
 				parent = folderTree.getById(parentId);
-				if (!parent)
-					parent = searchTree.getById(parentId);
-				if (!parent)
-					parnet = calendarTree.getById(parentId);
+				if (!parent) parent = searchTree.getById(parentId);
+				if (!parent) parent = calendarTree.getById(parentId);
+				if (!parent) parent = addrBookTree.getById(parentId);
 			}
 			if (parent)
 				parent.notifyCreate(create, (name == "search"));
@@ -1139,6 +1192,20 @@ function(creates, modifies) {
 			
 			if (parent) {
 				parent.notifyCreate(create, true);
+			}
+		} else if (name == "w") {
+			// REVISIT: use app context item cache
+			var notesApp = this.getApp(ZmZimbraMail.NOTES_APP);
+			var cache = notesApp.getNoteCache();
+			var note = new ZmNote(this._appCtxt);
+			note.set(create);
+			cache.putNote(note);
+			
+			// re-render current page, if necessary
+			var noteController = notesApp.getNoteController();
+			var shownNote = noteController.getNote();
+			if (shownNote.name == "_INDEX_") {
+				noteController.gotoNote(shownNote);
 			}
 		} else if (name == "m") {
 			var msg = ZmMailMsg.createFromDom(create, {appCtxt: this._appCtxt}, true);
@@ -1199,6 +1266,27 @@ function(modifies) {
 		if (name == "mbx") {
 			var setting = this._settings.getSetting(ZmSetting.QUOTA_USED);
 			setting.notifyModify(mod);
+			continue;
+		}
+		if (name == "w") {
+			// REVISIT: Use app context item cache
+			var notesApp = this.getApp(ZmZimbraMail.NOTES_APP);
+			var cache = notesApp.getNoteCache();
+			// REVISIT: server not returning folderId
+			mod.l = mod.l || ZmNote.DEFAULT_FOLDER;
+			var note = cache.getNoteByName(mod.l, mod.name);
+			if (!note) {
+				note = new ZmNote(this._appCtxt);
+				cache.putNote(note);
+			}
+			note.set(mod);
+			
+			// re-render current page, if necessary
+			var noteController = notesApp.getNoteController();
+			var shownNote = noteController.getNote();
+			if (shownNote && (shownNote.name == "_INDEX_" || shownNote.name == note.name)) {
+				noteController.gotoNote(shownNote);
+			}
 			continue;
 		}
 
@@ -1303,6 +1391,16 @@ ZmZimbraMail.prototype._calendarChangeListener =
 function(ev) {
 	// TODO
 };
+ZmZimbraMail.prototype._notebookChangeListener =
+function(ev) {
+	// TODO
+};
+
+ZmZimbraMail.prototype._addrBookChangeListener =
+function(ev) {
+	// TODO
+	DBG.println("TODO: addrBookChangeListener");
+};
 
 ZmZimbraMail.prototype._createBanner =
 function() {
@@ -1349,6 +1447,8 @@ function() {
 		buttons.push(ZmAppChooser.B_CALENDAR);
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
 		buttons.push(ZmAppChooser.B_IM);
+	if (this._appCtxt.get(ZmSetting.NOTES_ENABLED))
+		buttons.push(ZmAppChooser.B_NOTES);
 	buttons.push(ZmAppChooser.SPACER, ZmAppChooser.B_HELP, ZmAppChooser.B_OPTIONS, ZmAppChooser.B_LOGOUT);
 	var appChooser = new ZmAppChooser(this._shell, null, buttons);
 	
@@ -1388,6 +1488,8 @@ function(ev) {
 			this.activateApp(ZmZimbraMail.CALENDAR_APP);
 		} else if (id == ZmAppChooser.B_IM) {
 			this.activateApp(ZmZimbraMail.IM_APP);			
+		} else if (id == ZmAppChooser.B_NOTES) {
+			this.activateApp(ZmZimbraMail.NOTES_APP);
 		} else if (id == ZmAppChooser.B_HELP) {
 			window.open(this._appCtxt.get(ZmSetting.HELP_URI));
 		} else if (id == ZmAppChooser.B_OPTIONS) {
@@ -1400,13 +1502,64 @@ function(ev) {
 	}
 };
 
-ZmZimbraMail.prototype._keyPressListener =
-function(ev) {
-//	DBG.println("ZmZimbraMail.KeyPressListener");
+ZmZimbraMail.prototype.getKeyMapNameToUse =
+function() {
 	var curView = this._appViewMgr.getCurrentView();
 	if (curView && curView.getController) {
-		//DBG.println("DO IT!");
 		var c = curView.getController();
-		if (c && c.handleKeyPressEvent) c.handleKeyPressEvent(ev);
+		if (c && c.handleKeyAction)
+			return c.toString();
 	}
+	return null;
 }
+
+ZmZimbraMail.prototype.handleKeyAction =
+function(actionCode, ev) {
+	switch (actionCode) {
+		case ZmKeyMap.DBG_NONE:
+			this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_NONE);
+			DBG.setDebugLevel(AjxDebug.NONE);
+			break;
+			
+		case ZmKeyMap.DBG_1:
+			alert("HERE");
+			this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_1);
+			DBG.setDebugLevel(AjxDebug.DBG1);
+			break;
+			
+		case ZmKeyMap.DBG_2:
+			this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_2);
+			DBG.setDebugLevel(AjxDebug.DBG2);
+			break;
+			
+		case ZmKeyMap.DBG_3:
+			this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_3);
+			DBG.setDebugLevel(AjxDebug.DBG3);
+			break;
+			
+		case ZmKeyMap.DBG_TIMING: {
+			var on = DBG._showTiming;
+			var newState = on ? "off" : "on";
+			this._appCtxt.setStatusMsg("Turning timing info " + newState);
+			DBG.showTiming(!on);
+			break;
+		}
+		
+		case ZmKeyMap.ASSISTANT: {
+			if (this._assistantDialog == null)
+				this._assistantDialog = new ZmAssistantDialog(this._appCtxt);
+			this._assistantDialog.popup();
+			break;
+		}
+			
+		default: {
+			var curView = this._appViewMgr.getCurrentView();
+			if (curView && curView.getController) {
+				var c = curView.getController();
+				if (c && c.handleKeyAction)
+					c.handleKeyAction(actionCode, ev);
+			}
+			break;
+		}
+	}
+};
