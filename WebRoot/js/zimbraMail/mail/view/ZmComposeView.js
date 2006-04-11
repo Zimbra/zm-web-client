@@ -430,6 +430,8 @@ function(msgDraft) {
 	// always redo att links since user couldve removed att before saving draft
 	this._hasAttcDiv = false;
 	this._attcDiv.innerHTML = "";
+	this._attcDiv.style.height = "";
+	this._attachCount = 0;
 	this._showForwardField(msgDraft, ZmOperation.DRAFT);
 	this._resetBodySize();
 	// save form state (to check for change later)
