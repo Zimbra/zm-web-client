@@ -37,6 +37,9 @@ function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt) {
 	this.ACE_ENABLED = true;
 	this.ACE_DEBUG = false;
 
+	if (this.ACE_ENABLED)
+		this._ace_componentsLoading = 0;
+
 	DwtHtmlEditor.call(this, parent, "ZmHtmlEditor", posStyle, content, mode, appContextPath+"/public/blank.html");
 
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));
@@ -673,11 +676,15 @@ function(parent) {
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
 	b.addSelectionListener(insElListener);
 
-	//b = this._insertTableButton = new DwtButton(tb, null, "TBButton");
-	//b.setImage("InsertTable");
-	//b.setToolTipContent(ZmMsg.insertTable);
-	//b.setData(ZmHtmlEditor._VALUE, ZmHtmlEditor._INSERT_TABLE);
-	//b.addSelectionListener(insElListener);
+	b = this._insertTableButton = new DwtButton(tb, null, "TBButton");
+	b.setImage("InsertTable");
+	b.setToolTipContent(ZmMsg.insertTable);
+	// b.setData(ZmHtmlEditor._VALUE, ZmHtmlEditor._INSERT_TABLE);
+	// b.addSelectionListener(insElListener);
+ 	var menu = new DwtMenu(b, DwtMenu.GENERIC_WIDGET_STYLE);
+ 	var grid = new DwtGridSizePicker(menu);
+ 	grid.addSelectionListener(new AjxListener(this, this._createTableListener));
+ 	b.setMenu(menu);
 
 	if (this.ACE_ENABLED) {
 		tb.addSeparator("vertSep");
@@ -694,18 +701,24 @@ function(parent) {
 		// DEBUG
 		if (this.ACE_DEBUG) {
 			// menu.createSeparator();
-	
+
 			var item = new DwtMenuItem(menu);
 			item.setText("DEBUG SERIALIZATION");
 			item.addSelectionListener(new AjxListener(this, this._serializeAceObjects));
-	
+
 			var item = new DwtMenuItem(menu);
 			item.setText("DESERIALIZATION");
 			item.addSelectionListener(new AjxListener(this, this._deserializeAceObjects));
 		}
 	}
-	
+
 	this._toolbars.push(tb);
+};
+
+ZmHtmlEditor.prototype._createTableListener =
+function(ev) {
+	var size = ev.detail;
+	this.insertTable(size.rows, size.cols);
 };
 
 ZmHtmlEditor.prototype._menu_insertObject =
@@ -735,8 +748,6 @@ function(name, target, data) {
 		// outer.style.display = "none";
 		var doc = this._getIframeDoc();
 		this.focus();
-		if (!this._ace_componentsLoading)
-			this._ace_componentsLoading = 0;
 		++this._ace_componentsLoading;
 		if (AjxEnv.isGeckoBased)
 			doc.designMode = "off";
@@ -762,13 +773,22 @@ function(name, target, data) {
 
 ZmHtmlEditor.prototype._ace_finishedLoading = function(ifr, name, data) {
 	if (!AjxEnv.isIE || ifr.readyState == "complete") {
-		var win = Dwt.getIframeWindow(ifr);
-		win.ZmACE = true;
-		win.ZmACE_COMPONENT_NAME = name;
-		ifr.onload = null;
-		ifr.onreadystatechange = null;
-		win.create(data);
-		--this._ace_componentsLoading;
+		try {
+			var win = Dwt.getIframeWindow(ifr);
+			win.ZmACE = true;
+			win.ZmACE_COMPONENT_NAME = name;
+			ifr.onload = null;
+			ifr.onreadystatechange = null;
+			win.create(data);
+			--this._ace_componentsLoading;
+		} catch(ex) {
+			--this._ace_componentsLoading;
+			// throw new DwtException("Can't deserialize ALE component", DwtException.INTERNAL_ERROR, ex);
+			var dlg = this._appCtxt.getErrorDialog();
+			dlg.setMessage("Can't deserialize component", ex, DwtMessageDialog.WARNING_STYLE, "ALE error");
+			dlg.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
+			dlg.popup();
+		}
 	}
 };
 
@@ -802,7 +822,7 @@ function() {
 	var doc = this._getIframeDoc();
 	for (var i = 0; i < objects.length; ++i) {
 		var iframe = objects[i];
-		if (/^ACE-/.test(iframe.id)) {
+		if (/^ACE-/.test(iframe.id)) try {
 			var win = Dwt.getIframeWindow(iframe);
 			var data = win.serialize()
 				.replace(/&/g, "&amp;")
@@ -819,6 +839,9 @@ function() {
 			holder.innerHTML = html;
 			holder.appendChild(doc.createComment(data));
 			holder.className = "ACE " + component_name;
+		} catch(ex) {
+			// FIXME: for now we just drop the iframe; should we do something else?
+			iframe.parentNode.removeChild(iframe);
 		}
 	}
 };
