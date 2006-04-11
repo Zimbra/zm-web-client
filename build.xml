@@ -355,7 +355,7 @@
 
     <target name="compress-css-file" depends="copy-files-to-build-area, images, generate-preambles">
 		<echo>Compress CSS file ${skin}</echo>
-		<fileset id="zm-css-includes" dir="${build.dir}/WebRoot" includes="skins/${skin}/*.css" />
+		<fileset id="zm-css-includes" dir="${build.dir}/WebRoot/skins/${skin}/" includes="dwt.css,common.css,msgview.css,zm.css,spellcheck.css,${skin}.css" />
 		<fileset id="za-css-includes" dir="${build.dir}/WebRoot" includes="js/ajax/**/*.css,js/zimbraAdmin/**/*.css,js/zimbraMail/config/style/*.css,skins/${skin}/skin.css" />
 		<fileset id="loRes-css-includes" dir="${build.dir}/WebRoot/img/loRes/" includes="*.css,skins/${skin}/*.css" />
 		<concat destfile="${build.dir}/WebRoot/js/ZimbraMail_loRes_${skin}_all.css" fixlastline="yes">
