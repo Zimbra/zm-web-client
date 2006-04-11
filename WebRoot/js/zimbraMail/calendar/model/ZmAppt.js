@@ -923,7 +923,7 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 		buf[i++] = "\n";
 	}
 	
-	var resources = this.getResourcesText();
+	var resources = this.getResourcesText(true);
 	if (resources) {
 		var params = [ZmMsg.resources + ":", resources, ""];
 		buf[i++] = formatter.format(params);
