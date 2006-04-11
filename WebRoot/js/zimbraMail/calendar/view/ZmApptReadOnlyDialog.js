@@ -85,7 +85,7 @@ function(appt) {
 		html[i++] = "</td></tr>";
 	}
 
-	var resources = appt.getResourcesText();
+	var resources = appt.getResourcesText(true);
 	if (resources) {
 		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
 		html[i++] = ZmMsg.resources;
