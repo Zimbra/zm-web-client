@@ -1223,7 +1223,7 @@ function(creates, modifies) {
 			// re-render current page, if necessary
 			var noteController = notesApp.getNoteController();
 			var shownNote = noteController.getNote();
-			if (shownNode && shownNote.name == ZmNotebook.PAGE_INDEX) {
+			if (shownNote && shownNote.name == ZmNotebook.PAGE_INDEX) {
 				noteController.gotoNote(shownNote);
 			}
 		} else if (name == "m") {
