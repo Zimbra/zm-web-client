@@ -1284,7 +1284,7 @@ function(modifies) {
 			// re-render current page, if necessary
 			var noteController = notesApp.getNoteController();
 			var shownNote = noteController.getNote();
-			if (shownNote.name == "_INDEX_" || shownNote.name == note.name) {
+			if (shownNote && (shownNote.name == "_INDEX_" || shownNote.name == note.name)) {
 				noteController.gotoNote(shownNote);
 			}
 			continue;
