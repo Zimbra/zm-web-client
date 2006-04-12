@@ -103,16 +103,20 @@ function() {
 ZmFlagPicker.prototype._treeListener =
 function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED) {
+ 		// bug fix #7057 - remove when new version of safari is release
+ 		// see http://bugzilla.opendarwin.org/show_bug.cgi?id=7279
+ 		if (AjxEnv.isSafari)
+ 			ev.item._checkBox.checked = !ev.item._checkBox.checked;
  		var ti = ev.item;
  		var checked = ti.getChecked();
  		if (ti == this._flagged && checked && this._unflagged.getChecked())
- 				this._unflagged.setChecked(0);
+ 			this._unflagged.setChecked(0);
 		else if (ti == this._unflagged && checked && this._flagged.getChecked())
- 				this._flagged.setChecked(0);
+ 			this._flagged.setChecked(0);
 		else if (ti == this._read && checked && this._unread.getChecked())
- 				this._unread.setChecked(0);
+ 			this._unread.setChecked(0);
 		else if (ti == this._unread && checked && this._read.getChecked())
- 				this._read.setChecked(0);
+ 			this._read.setChecked(0);
 		this._updateQuery();
  	}
 }

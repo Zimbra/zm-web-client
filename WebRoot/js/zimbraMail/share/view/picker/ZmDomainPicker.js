@@ -83,7 +83,6 @@ function(parent) {
     var picker = new DwtComposite(parent);
 	var fromId = Dwt.getNextId();
 	var toId = Dwt.getNextId();
-//    var selectId = Dwt.getNextId();
     var html = new Array(100);
     var idx = 0;
 
