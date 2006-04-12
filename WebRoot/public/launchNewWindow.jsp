@@ -42,7 +42,8 @@ Contributor(s):
 %>
 <script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" language="javascript">
-appContextPath = "<%= contextPath %>";
+	appContextPath = "<%= contextPath %>";
+	appCurrentSkin = "<%=skin %>";
 </script>
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
