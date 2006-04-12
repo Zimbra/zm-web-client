@@ -167,7 +167,10 @@ function(view) {
 	if (!this._participantActionMenu) {
 		var menuItems = this._contactOps();
 		menuItems.push(ZmOperation.SEP);
-		menuItems = menuItems.concat(this._getActionMenuOps());
+		var ops = this._getActionMenuOps();
+		if (ops && ops.length) {
+			menuItems = menuItems.concat(ops);
+		}
     	this._participantActionMenu = new ZmActionMenu(this._shell, menuItems);
 		for (var i = 0; i < menuItems.length; i++) {
 			if (menuItems[i] > 0)
