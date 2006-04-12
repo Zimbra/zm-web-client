@@ -43,19 +43,22 @@ function ZmConvView(parent, controller, dropTgt) {
 ZmConvView.prototype = new ZmDoublePaneView;
 ZmConvView.prototype.constructor = ZmConvView;
 
-ZmConvView.prototype.toString = 
-function() {
-	return "ZmConvView";
-}
-
 ZmConvView._TAG_CLICK = "ZmConvView._TAG_CLICK";
 ZmConvView._TAG_ANCHOR = "TA";
 ZmConvView._TAGLIST_HEIGHT = 18;
 
+
+// Public methods
+
+ZmConvView.prototype.toString = 
+function() {
+	return "ZmConvView";
+};
+
 ZmConvView.prototype.addTagClickListener =
 function(listener) {
 	this.addListener(ZmConvView._TAG_CLICK, listener);
-}
+};
 
 ZmConvView.prototype.setItem =
 function(conv) {
@@ -77,13 +80,13 @@ function(conv) {
 	// display "hot" message (or newest if no search performed)
 	var hot = this._conv.getHotMsg(this._msgListView.getOffset(), this._msgListView.getLimit());
 	this._msgListView.setSelection(hot);
-}
+};
 
 ZmConvView.prototype.reset = 
 function() {
 	this._sashMoved = false;
 	ZmDoublePaneView.prototype.reset.call(this);
-}
+};
 
 /*
 * Handles a change of state in which the view cannot currently be shown. That happens via the
@@ -97,12 +100,15 @@ function() {
 	if (this._conv.msgs)
 		this._conv.msgs.removeAllChangeListeners();
 	this._conv.removeAllChangeListeners();
-}
+};
 
 ZmConvView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, ": ", this._conv.subject].join("");
-}
+};
+
+
+// Private / protected methods
 
 ZmConvView.prototype._resetSize = 
 function(newWidth, newHeight) {
@@ -141,95 +147,76 @@ function(newWidth, newHeight) {
 		this._msgListView.resetHeight(newHeight - summaryHeight);
 	}
 	
-	// always set width of the subject bar (bug 1490)
-	this._subjTable.style.width = newWidth - 10; /* 10px is just a fudge factor IE vs FF quirks */
-
 	this._msgListView._resetColWidth();
-}
-
-ZmConvView.prototype._sashCallback =
-function(delta) {
-	this._sashMoved = true;
-	if (delta > 0) {	// moving sash down
-		var newMsgViewHeight = this._msgView.getSize().y - delta;
-		var minMsgViewHeight = this._msgView.getMinHeight();
-		// make sure msg header remains visible
-		if (newMsgViewHeight > minMsgViewHeight) {
-			this._msgListView.resetHeight(this._msgListView.getSize().y + delta);
-			this._msgView.setSize(Dwt.DEFAULT, newMsgViewHeight);
-			this._msgView.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y + delta);
-		} else {
-			// TODO - slam the sash to its min. height
-			delta = 0;
-		}
-	} else {	// moving sash up
-		var absDelta = Math.abs(delta);
-		// make sure summary and MLV remain visible
-		if (this._msgSash.getLocation().y - absDelta > this._summaryTotalHeight) {
-			this._msgListView.resetHeight(this._msgListView.getSize().y - absDelta);
-			this._msgView.setSize(Dwt.DEFAULT, this._msgView.getSize().y + absDelta);
-			this._msgView.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - absDelta);
-		} else {
-			delta = 0;
-		}
-	}
-	
-	if (delta)
-		this._msgListView._resetColWidth();
-	
-	return delta;
-}
+};
 
 ZmConvView.prototype._initHeader = 
 function() {
 	this._summary = new DwtComposite(this, "Summary", Dwt.RELATIVE_STYLE);
 
-	var subjTableId = Dwt.getNextId();
 	var subjDivId = Dwt.getNextId();
-	var tagCellId = Dwt.getNextId();
-	this._subjectBar = document.createElement("div");
-	if (AjxEnv.is800x600orLower)
-		this._subjectBar.style.display = "none";
-	this._subjectBar.className = "SubjectBar";
-	var html = new Array(2);
-	var idx = 0;
-	html[idx++] = "<table id='" + subjTableId + "' cellspacing=0 cellpadding=0><tr>";
-	html[idx++] = "<td class='Subject' id='" + subjDivId + "'>&nbsp;</td>";
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		html[idx++] = "<td class='Tags' style='text-align:right' id='" + tagCellId + "'>&nbsp;</td>";
-	html[idx++] = "</tr></table>";
-	this._subjectBar.innerHTML = html.join("");
-	this._summary.getHtmlElement().appendChild(this._subjectBar);
+	var closeBtnCellId = Dwt.getNextId();
+	var tagDivId = Dwt.getNextId();
 
-	this._subjTable = document.getElementById(subjTableId);
-	this._subjectCell = document.getElementById(subjDivId);
+	// generate HTML for CV header
+	var html = new Array();
+	var idx = 0;
+
+	html[idx++] = "<table border=0 class='SubjectBar' width=100%><tr><td width=15>";
+	html[idx++] = AjxImg.getImageHtml("ConversationView");
+	html[idx++] = "</td><td width=99%><div class='Subject' id='";
+	html[idx++] = subjDivId;
+	html[idx++] = "'></div></td><td id='";
+	html[idx++] = closeBtnCellId;
+	html[idx++] = "'></td><td></td></tr>";
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		this._tagCell = document.getElementById(tagCellId);
-//		Dwt.setSize(this._tagCell, Dwt.DEFAULT, ZmConvView._TAGLIST_HEIGHT);
-		Dwt.setVisible(this._tagCell, false);
+		html[idx++] = "<tr><td colspan=4>";
+		html[idx++] = "<div class='Tags' id='";
+		html[idx++] = tagDivId;
+		html[idx++] = "'></div>";
+		html[idx++] = "</td></tr>";
 	}
-}
+	html[idx++] = "</table>";
+
+	this._summary.getHtmlElement().innerHTML = html.join("");
+
+	// add the close button
+	this._closeButton = new DwtButton(this, null, "TBButton");
+	this._closeButton.setImage("Close");
+	this._closeButton.setText(ZmMsg.close);
+	this._closeButton.reparentHtmlElement(closeBtnCellId);
+	this._closeButton.addSelectionListener(new AjxListener(this, this._closeButtonListener));
+	
+	// save the necessary DOM objects we just created
+	this._subjectDiv = document.getElementById(subjDivId);
+
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		this._tagDiv = document.getElementById(tagDivId);
+		Dwt.setSize(this._tagDiv, Dwt.DEFAULT, ZmConvView._TAGLIST_HEIGHT);
+		Dwt.setVisible(this._tagDiv, false);
+	}
+};
 
 ZmConvView.prototype._setSubject =
 function(subject) {
-	this._subjectCell.innerHTML = subject != null && subject != ""
-		? AjxStringUtil.htmlEncode(ZmMsg.subject + ": " + subject)
-		: AjxStringUtil.htmlEncode(ZmMsg.subject + ": " + ZmMsg.noSubject);
-}
+	this._subjectDiv.innerHTML = subject != null && subject != ""
+		? AjxStringUtil.htmlEncode(subject)
+		: AjxStringUtil.htmlEncode(ZmMsg.noSubject);
+};
 
 ZmConvView.prototype._setTags =
 function(conv) {
 	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) return;
 
 	var numTags = conv.tags.length;
-	var origVis = Dwt.getVisible(this._tagCell);
+	var origVis = Dwt.getVisible(this._tagDiv);
 	var newVis = (numTags > 0);
 	if (origVis != newVis) {
-		Dwt.setVisible(this._tagCell, newVis);
+		Dwt.setVisible(this._tagDiv, newVis);
 		var sz = this.getSize();
 		this._resetSize(sz.x, sz.y);
 		if (!newVis) {
-			this._tagCell.innerHTML = "";
+			this._tagDiv.innerHTML = "";
 			return;
 		}
 	}
@@ -251,8 +238,8 @@ function(conv) {
 	for (var j = 0; j < ta.length; j++) {
 		var tag = ta[j];
 		if (!tag) continue;
-		var anchorId = [this._tagCell.id, ZmConvView._TAG_ANCHOR, tag.id].join("");
-		var imageId = [this._tagCell.id, ZmDoublePaneView._TAG_IMG, tag.id].join("");
+		var anchorId = [this._tagDiv.id, ZmConvView._TAG_ANCHOR, tag.id].join("");
+		var imageId = [this._tagDiv.id, ZmDoublePaneView._TAG_IMG, tag.id].join("");
 
 		html[i++] = "<a href='javascript:;' onclick='ZmConvView._tagClick(\"";
 		html[i++] = this._htmlElId;
@@ -268,8 +255,11 @@ function(conv) {
 		html[i++] = "</a>";
 	}
 	html[i++] = "</td></tr></table>";
-	this._tagCell.innerHTML = html.join("");
-}
+	this._tagDiv.innerHTML = html.join("");
+};
+
+
+// Listeners
 
 ZmConvView.prototype._convChangeListener =
 function(ev) {
@@ -281,7 +271,7 @@ function(ev) {
 	} else if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_ID])) {
 		this._controller._convId = this._conv.id;
 	}
-}
+};
 
 ZmConvView.prototype._folderChangeListener = 
 function(ev) {
@@ -319,7 +309,7 @@ function(ev) {
 			this._msgListView.setSelection(this._conv.msgs.getVector().get(0));
 		}
 	}
-}
+};
 
 ZmConvView.prototype._tagChangeListener =
 function(ev) {
@@ -329,17 +319,61 @@ function(ev) {
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
 		var tag = ev.getDetail("organizers")[0];
-		var img = document.getElementById(this._tagCell.id +  ZmDoublePaneView._TAG_IMG + tag.id);
+		var img = document.getElementById(this._tagDiv.id +  ZmDoublePaneView._TAG_IMG + tag.id);
 		if (img)
 			AjxImg.setImage(img, ZmTag.COLOR_MINI_ICON[tag.color]);
 	}
 	
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY)
 		this._setTags(this._conv);
-}
+};
+
+ZmConvView.prototype._closeButtonListener = 
+function(ev) {
+	this._controller._app.popView();
+};
+
+
+// Callbacks
+
+ZmConvView.prototype._sashCallback =
+function(delta) {
+	this._sashMoved = true;
+	if (delta > 0) {	// moving sash down
+		var newMsgViewHeight = this._msgView.getSize().y - delta;
+		var minMsgViewHeight = this._msgView.getMinHeight();
+		// make sure msg header remains visible
+		if (newMsgViewHeight > minMsgViewHeight) {
+			this._msgListView.resetHeight(this._msgListView.getSize().y + delta);
+			this._msgView.setSize(Dwt.DEFAULT, newMsgViewHeight);
+			this._msgView.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y + delta);
+		} else {
+			// TODO - slam the sash to its min. height
+			delta = 0;
+		}
+	} else {	// moving sash up
+		var absDelta = Math.abs(delta);
+		// make sure summary and MLV remain visible
+		if (this._msgSash.getLocation().y - absDelta > this._summaryTotalHeight) {
+			this._msgListView.resetHeight(this._msgListView.getSize().y - absDelta);
+			this._msgView.setSize(Dwt.DEFAULT, this._msgView.getSize().y + absDelta);
+			this._msgView.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - absDelta);
+		} else {
+			delta = 0;
+		}
+	}
+	
+	if (delta)
+		this._msgListView._resetColWidth();
+	
+	return delta;
+};
+
+
+// Static methods
 
 ZmConvView._tagClick =
 function(myId, tagId) {
 	var dwtObj = Dwt.getObjectFromElement(document.getElementById(myId));
 	dwtObj.notifyListeners(ZmConvView._TAG_CLICK, tagId);
-}
+};

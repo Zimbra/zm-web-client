@@ -42,7 +42,6 @@ function ZmConvController(appCtxt, container, mailApp) {
 
 	this._convDeleteListener = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.DELETE_MENU] = this._convDeleteListener;
-	this._listeners[ZmOperation.CLOSE] = new AjxListener(this, this._backListener);
 }
 
 ZmConvController.prototype = new ZmDoublePaneController;
@@ -130,13 +129,6 @@ function(view) {
 		if (delButton.getMenu())
 			delButton.setMenu(null);
 	}
-}
-
-ZmConvController.prototype._getToolBarOps =
-function() {
-	var list = ZmDoublePaneController.prototype._getToolBarOps.call(this);
-	list.push(ZmOperation.CLOSE);
-	return list;
 }
 
 /*
@@ -339,7 +331,6 @@ function(parent, num) {
 	}
 	
 	parent.enable(ZmOperation.DELETE_MENU, canDelete);
-	parent.enable(ZmOperation.CLOSE, true);
 }
 
 ZmConvController.prototype._resetNavToolBarButtons = 

@@ -99,7 +99,6 @@ function() {
 		list.push(ZmOperation.SEP);
 		list.push(ZmOperation.SPAM);
 		list.push(ZmOperation.SEP);
-		list.push(ZmOperation.CLOSE);
 		return list;
 	}
 }

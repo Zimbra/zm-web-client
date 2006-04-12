@@ -413,28 +413,30 @@ td.DDSepInvisible div {
 }
 
 /* Container for the header of the message */
-.ZmMailMsgView .MsgHeader {
-	padding-top:7px;
+.ZmMailMsgView .MsgHeaderTable {
+	padding-top:5px;
 	@PageHeaderBg@
 	@BottomSeparator@
 }
 
-.ZmMailMsgView .MsgHeader table {
-	table-layout: fixed;
+.ZmMailMsgView .SubjectCol { 
+	@FontBigger@
+	@Text@
 }
 
-.ZmMailMsgView .MsgHeader .LabelColName {
+.ZmMailMsgView .LabelColName {
 	@NoWrap@
 	@Label@		/* ??? bold?*/
 	vertical-align: top;
 	text-align: right;
-	width:120px;		/* ??? SIZE */
+	padding: 3 0 3 0;
 }
 
-.ZmMailMsgView .MsgHeader .LabelColValue {
+.ZmMailMsgView .LabelColValue {
 	@Text@
 	white-space: normal;
 	vertical-align: top;
+	padding: 3px;
 }
 
 /* ??? USE? */

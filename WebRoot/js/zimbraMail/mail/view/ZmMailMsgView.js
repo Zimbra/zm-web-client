@@ -37,6 +37,13 @@ function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 	this._tagCellId = Dwt.getNextId();
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
+	// expand/collapse vars
+	this._expandHeader = false;
+	this._expandDivId = Dwt.getNextId();
+
+	// do we add a close button in the header section?
+	this._hasHeaderCloseBtn = this._mode == ZmController.MSG_VIEW && !this._controller.isChildWindow;
+
 	this.setScrollStyle(ZmMailMsgView.SCROLL_WITH_IFRAME ? DwtControl.CLIP : DwtControl.SCROLL);
 
 	if (!controller.isChildWindow) {
@@ -73,7 +80,6 @@ ZmMailMsgView.LIMIT_ATTACHMENTS = ZmMailMsgView.SCROLL_WITH_IFRAME ? 3 : 0;
 ZmMailMsgView.ATTC_COLUMNS = 2;
 ZmMailMsgView.ATTC_MAX_SIZE = ZmMailMsgView.LIMIT_ATTACHMENTS * 16 + 8;
 
-ZmMailMsgView.HEADER_ID 		= "h--" + Dwt.getNextId();
 ZmMailMsgView.QUOTE_DEPTH_MOD 	= 3;
 ZmMailMsgView.MAX_SIG_LINES 	= 8;
 ZmMailMsgView.SIG_LINE 			= /^(- ?-+)|(__+)\r?$/;
@@ -228,7 +234,7 @@ function() {
 ZmMailMsgView.prototype.getMinHeight =
 function() {
 	if (!this._headerHeight) {
-		var headerObj = document.getElementById(ZmMailMsgView.HEADER_ID);
+		var headerObj = document.getElementById(this._hdrTableId);
 		this._headerHeight = headerObj ? Dwt.getSize(headerObj).y : 0;
 	}
 	return this._headerHeight;
@@ -753,7 +759,7 @@ function(container, html, isTextMsg) {
 
 ZmMailMsgView.prototype._addAddressHeaderHtml =
 function(htmlArr, idx, addrs, prefix) {
-	htmlArr[idx++] = "<tr><td class='LabelColName'>";
+	htmlArr[idx++] = "<tr><td width=100 class='LabelColName'>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(prefix);
 	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
 	for (var i = 0; i < addrs.size(); i++) {
@@ -774,26 +780,75 @@ function(htmlArr, idx, addrs, prefix) {
 
 ZmMailMsgView.prototype._renderMessage =
 function(msg, container, callback) {
-	if(this._objectManager) {
-	    this._objectManager.setHandlerAttr(ZmObjectManager.DATE, ZmObjectManager.ATTR_CURRENT_DATE, this._dateObjectHandlerDate);
+	if (this._objectManager) {
+	    this._objectManager.setHandlerAttr(ZmObjectManager.DATE, 
+	    								   ZmObjectManager.ATTR_CURRENT_DATE, 
+	    								   this._dateObjectHandlerDate);
 	}
+
+	var closeBtnCellId = Dwt.getNextId();
+	this._hdrTableId = Dwt.getNextId();
+	this._expandHeaderId = Dwt.getNextId();
 
 	var idx = 0;
 	var htmlArr = new Array();
-	this._hdrTableId = Dwt.getNextId();
-	htmlArr[idx++] = "<div id='" + ZmMailMsgView.HEADER_ID + "' class='MsgHeader'>";
-	htmlArr[idx++] = "<table id='" + this._hdrTableId + "' cellspacing=2 cellpadding=2 border=0 width=100%>";
+
+	htmlArr[idx++] = "<table border=0 class='MsgHeaderTable' id='";
+	htmlArr[idx++] = this._hdrTableId;
+	htmlArr[idx++] = "' cellspacing=0 cellpadding=0 border=0 width=100%>";
 
 	// Subject
 	var subject = msg.getSubject() || ZmMsg.noSubject;
-	htmlArr[idx++] = "<tr class='SubjectLine'><td class='LabelColName'>";
+	htmlArr[idx++] = "<tr><td width=100 class='SubjectCol LabelColName' style='vertical-align:bottom'>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.subject);
-	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
+	htmlArr[idx++] = ": </td><td colspan=3>";
+	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td class='SubjectCol LabelColValue'>";
 	htmlArr[idx++] = this._objectManager ? this._objectManager.findObjects(subject, true) : subject;
+	htmlArr[idx++] = "</td>";
+	if (this._hasHeaderCloseBtn) {
+		htmlArr[idx++] = "<td width=1% id='";
+		htmlArr[idx++] = closeBtnCellId;
+		htmlArr[idx++] = "'></td><td>&nbsp;</td>"; // add extra cell for padding since CSS does not play well in IE
+	}
+	htmlArr[idx++] = "</tr></table>";
 	htmlArr[idx++] = "</td></tr>";
 
-	// From/To
-	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
+	// add non-collapsable header info (Sent by and date)
+	var addrs = msg.getAddresses(ZmEmailAddress.FROM);
+	if (addrs.size() > 0) {
+		var addr = addrs.get(0);
+		var dateString = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
+
+		htmlArr[idx++] = "<tr><td valign=middle>";
+		htmlArr[idx++] = "<table align=right border=0 cellpadding=0 cellspacing=0><tr><td id='";
+		htmlArr[idx++] = this._expandHeaderId;
+		htmlArr[idx++] = "'></td><td class='LabelColName'>";
+		htmlArr[idx++] = ZmMsg.sentBy;
+		htmlArr[idx++] = ": </td><tr></table></td>";
+		htmlArr[idx++] = "<td class='LabelColValue' style='vertical-align:bottom'>";
+		if (this._objectManager && addr.address) {
+			htmlArr[idx++] = this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
+		} else {
+			htmlArr[idx++] = addr.address || (AjxStringUtil.htmlEncode(addr.name));
+		}
+	   	htmlArr[idx++] = "&nbsp;&nbsp;<span class='LabelColName'>";
+	   	htmlArr[idx++] = ZmMsg.on;
+	   	htmlArr[idx++] = ": </span><span class='LabelColValue'>";
+		htmlArr[idx++] = this._objectManager 
+			? this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE) 
+			: dateString;
+	   	htmlArr[idx++] = "</span></td></tr>";
+	}
+
+	htmlArr[idx++] = "<tr><td colspan=100><div style='display:";
+	htmlArr[idx++] = this._expandHeader ? "block" : "none";
+	htmlArr[idx++] = "' id='";
+	htmlArr[idx++] = this._expandDivId;
+	htmlArr[idx++] = "'>";
+	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0>";
+
+	// To/CC/Reply-to
+	for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
 		var addrs = msg.getAddresses(type);
 		if (addrs.size() > 0) {
@@ -801,21 +856,32 @@ function(msg, container, callback) {
 			idx = this._addAddressHeaderHtml(htmlArr, idx, addrs, prefix);
 		}
 	}
-
-	// Date
-	htmlArr[idx++] = "<tr><td class='LabelColName'>";
-	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.sent);
-	htmlArr[idx++] = ": </td><td>";
-	var dateString = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
-	htmlArr[idx++] = this._objectManager ? this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE) : dateString;
-	htmlArr[idx++] = "</td></tr>";
+	htmlArr[idx++] = "</table>";
+	htmlArr[idx++] = "</div></td></tr>";
 
 	// Attachments
 	idx = this._getAttachmentHtml(msg, htmlArr, idx);
 
-	htmlArr[idx++] = "</table></div>";
+	htmlArr[idx++] = "</table>";
 	var el = container ? container : this.getHtmlElement();
 	el.appendChild(Dwt.parseHtmlFragment(htmlArr.join("")));
+
+	// add the expand/collapse arrow button now that we have add to the DOM tree
+	this._expandButton = new DwtButton(this, null, "TBButton");
+	var image = this._expandHeader ? "HeaderExpanded" : "HeaderCollapsed";
+	this._expandButton.setImage(image);
+	this._expandButton.setSize("14", "14");
+	this._expandButton.reparentHtmlElement(this._expandHeaderId);
+	this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener))
+
+	// add the close button if applicable
+	if (this._hasHeaderCloseBtn) {
+		this._closeButton = new DwtButton(this, null, "TBButton");
+		this._closeButton.setImage("Close");
+		this._closeButton.setText(ZmMsg.close);
+		this._closeButton.reparentHtmlElement(closeBtnCellId);
+		this._closeButton.addSelectionListener(new AjxListener(this, this._closeButtonListener));
+	}
 
 	var bodyPart = msg.getBodyPart();
 	if (bodyPart) {
@@ -979,9 +1045,11 @@ function(msg, htmlArr, idx) {
 	if (attLinks.length == 0)
 		return idx;
 	htmlArr[idx++] = "<tr>";
-	htmlArr[idx++] = "<td class='LabelColName'>";
+	htmlArr[idx++] = "<td width=100 class='LabelColName'>";
 	htmlArr[idx++] = ZmMsg.attachments;
-	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
+	htmlArr[idx++] = ": </td>";
+	htmlArr[idx++] = "<td colspan=3>";
+
 	var dividx = idx;	// we might get back here
 	htmlArr[idx++] = "<div style='overflow: auto;'>";
 	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0>";
@@ -997,7 +1065,7 @@ function(msg, htmlArr, idx) {
 		}
 
 		htmlArr[idx++] = "<td>";
-		htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='margin-right: 1em'><tr>";
+		htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='margin-right:1em; margin-bottom:1px'><tr>";
 		htmlArr[idx++] = "<td style='width:18px'>";
 		htmlArr[idx++] = AjxImg.getImageHtml(att.linkIcon, "position:relative;");
 		htmlArr[idx++] = "</td><td style='white-space:nowrap'>";
@@ -1132,6 +1200,25 @@ function(ev) {
 
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY)
 		this._setTags(this._msg);
+};
+
+ZmMailMsgView.prototype._expandButtonListener = 
+function(ev) {
+	this._expandHeader = !this._expandHeader;
+
+	var newImage = this._expandHeader ? "HeaderExpanded" : "HeaderCollapsed";
+	ev.item.setImage(newImage);
+
+	var expandDiv = document.getElementById(this._expandDivId);
+	if (expandDiv) {
+		expandDiv.style.display = this._expandHeader
+		? "block" : "none";
+	}
+};
+
+ZmMailMsgView.prototype._closeButtonListener = 
+function(ev) {
+	this._controller._app.popView();
 };
 
 
