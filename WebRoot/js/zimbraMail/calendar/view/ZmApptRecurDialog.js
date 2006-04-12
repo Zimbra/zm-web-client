@@ -1015,6 +1015,9 @@ function(dwtObj, ardId) {
 
 ZmApptRecurDialog.prototype._setRepeatSection = 
 function(repeatType) {
+	Dwt.setVisible(this._repeatSectionDiv, repeatType != "NON");
+	Dwt.setVisible(this._repeatEndDiv, repeatType != "NON");
+
 	var newSection = null;
 	switch (repeatType) {
 		case "DAI": newSection = this._repeatDailyDiv; break;
@@ -1022,6 +1025,7 @@ function(repeatType) {
 		case "MON": newSection = this._repeatMonthlyDiv; break;
 		case "YEA": newSection = this._repeatYearlyDiv; break;
 	}
+
 	if (newSection) {
 		if (this._currentSection)
 			Dwt.setVisible(this._currentSection, false);
@@ -1165,8 +1169,6 @@ function(appt) {
 ZmApptRecurDialog.prototype._repeatChangeListener =
 function(ev) {
 	var newValue = ev._args.newValue;
-	Dwt.setVisible(this._repeatSectionDiv, newValue != "NON");
-	Dwt.setVisible(this._repeatEndDiv, newValue != "NON");
 	this._setRepeatSection(newValue);
 };
 
