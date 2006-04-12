@@ -36,14 +36,16 @@
 * @param appCtxt 			[ZmAppCtxt]					app context
 * @param attendees			[hash]						attendees/locations/resources
 * @param controller			[ZmApptComposeController]	the appt compose controller
+* @param dateInfo			[object]					hash of date info
 */
-function ZmSchedTabViewPage(parent, appCtxt, attendees, controller) {
+function ZmSchedTabViewPage(parent, appCtxt, attendees, controller, dateInfo) {
 
 	DwtTabViewPage.call(this, parent);
 
 	this._appCtxt = appCtxt;
 	this._attendees = attendees;
 	this._controller = controller;
+	this._dateInfo = dateInfo;
 
 	this._apptTab = parent.getTabPage(ZmApptComposeView.TAB_APPOINTMENT);
 
@@ -97,10 +99,9 @@ function() {
 
 ZmSchedTabViewPage.prototype.showMe = 
 function() {
-	if (!this._dateInfo) {
-		this._dateInfo = ZmApptViewHelper.getDateInfo(this._apptTab);
-		this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
-	}
+
+	ZmApptViewHelper.getDateInfo(this._apptTab, this._dateInfo);
+	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
 
 	if (!this._rendered) {
 		this._initialize();
@@ -146,6 +147,7 @@ function(dateInfo, organizer, attendees) {
 	this._resetFullDateField();
 
 	this._setAttendees(organizer, attendees);
+	this._outlineAppt(this._dateInfo);
 };
 
 ZmSchedTabViewPage.prototype.cleanup = 
@@ -427,8 +429,17 @@ function(ev, aclv, result) {
 	}
 };
 
+/*
+* Adds a new, empty slot with a select for the attendee type, an input field, and
+* cells for free/busy info.
+*
+* @param isAllAttendees		[boolean]	if true, this is the "All Attendees" row
+* @param isOrganizer		[boolean]	if true, this is the organizer's row
+* @param drawBorder			[boolean]	if true, draw borders to indicate appt time
+* @param index				[int]		index at which to add the row
+*/
 ZmSchedTabViewPage.prototype._addAttendeeRow =
-function(isAllAttendees, isOrganizer, index) {
+function(isAllAttendees, isOrganizer, drawBorder, index) {
 	index = index ? index : this._attendeesTable.rows.length;
 	
 	// store some meta data about this table row
@@ -534,7 +545,9 @@ function(isAllAttendees, isOrganizer, index) {
 		}
 	}
 
-	this._updateBorders(sched, isAllAttendees);
+	if (drawBorder) {
+		this._updateBorders(sched, isAllAttendees);
+	}
 
 	return index;
 };
@@ -587,7 +600,7 @@ function() {
 	// add All Attendees row
 	this._svpId = AjxCore.assignId(this);
 	this._attendeesTable	= document.getElementById(this._attendeesTableId);
-	this._allAttendeesIndex = this._addAttendeeRow(true, false);
+	this._allAttendeesIndex = this._addAttendeeRow(true, false, false);
 	this._allAttendeesSlot = this._schedTable[this._allAttendeesIndex];
 	this._allAttendeesTable = document.getElementById(this._allAttendeesSlot.dwtTableId);
 };
@@ -660,7 +673,7 @@ function(inputEl, attendee) {
 			this.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
 			if (!curAttendee) {
 				// user added attendee in empty slot
-				this._addAttendeeRow(false, false); // add new empty slot
+				this._addAttendeeRow(false, false, true); // add new empty slot
 			}
 		} else {
 			this._activeInputIdx = null;
@@ -760,19 +773,19 @@ function(organizer, attendees) {
 	this._origAttendees = attendees;
 
 	var emails = [];
-	this._organizerIndex = this._addAttendeeRow(false, true); // create a slot for the organizer
+	this._organizerIndex = this._addAttendeeRow(false, true, false); // create a slot for the organizer
 	emails.push(this._setAttendee(this._organizerIndex, organizer, ZmAppt.PERSON, true));
 	for (var t = 0; t < this._attTypes.length; t++) {
 		var type = this._attTypes[t];
 		var att = attendees[type].getArray();
 		for (var i = 0; i < att.length; i++) {
 			if (att[i]) {
-				var index = this._addAttendeeRow(false, false); // create a slot for this attendee
+				var index = this._addAttendeeRow(false, false, false); // create a slot for this attendee
 				emails.push(this._setAttendee(index, att[i], type, false));
 			}
 		}
 	}
-	this._addAttendeeRow(false, false); // make sure there's always an empty slot
+	this._addAttendeeRow(false, false, false); // make sure there's always an empty slot
 
 	if (emails.length) {
 		this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), emails.join(","), this._fbCallback);
@@ -980,10 +993,9 @@ ZmSchedTabViewPage.prototype._timeChangeListener =
 function(ev) {
 	this._activeDateField = ZmTimeSelect.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect,
 														this._startDateField, this._endDateField);
-	this._dateInfo = ZmApptViewHelper.getDateInfo(this);
+	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
 	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
 	this._outlineAppt(this._dateInfo);
-	this._apptTab.updateTimeField(this._dateInfo);
 };
 
 ZmSchedTabViewPage.prototype._selectChangeListener = 

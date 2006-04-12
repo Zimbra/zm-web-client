@@ -34,13 +34,15 @@
 * @param parent				[DwtComposite]				the appt compose view
 * @param appCtxt 			[ZmAppCtxt]					app context
 * @param attendees			[hash]						attendees/locations/resources
+* @param dateInfo			[object]					hash of date info
 */
-function ZmApptTabViewPage(parent, appCtxt, attendees) {
+function ZmApptTabViewPage(parent, appCtxt, attendees, dateInfo) {
 
 	DwtTabViewPage.call(this, parent);
 
 	this._appCtxt = appCtxt;
 	this._attendees = attendees;
+	this._dateInfo = dateInfo;
 
 	this.setScrollStyle(DwtControl.CLIP);
 	this._rendered = false;
@@ -92,6 +94,7 @@ function() {
 	this.parent.tabSwitched(this._tabKey);
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
+	this.updateTimeField(this._dateInfo);
 	this._setAttendees();
 };
 
@@ -1289,6 +1292,7 @@ function(ev) {
 ZmApptTabViewPage.prototype._timeChangeListener =
 function(ev) {
 	ZmTimeSelect.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField);
+	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
 };
 
 /*

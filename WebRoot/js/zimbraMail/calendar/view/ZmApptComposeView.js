@@ -53,6 +53,9 @@ function ZmApptComposeView(parent, className, calApp, controller) {
 	this._tabKeys = {};
 	this._tabIdByKey = {};
 
+	// centralized date info
+	this._dateInfo = {};
+
 	// centralized attendee data
 	this._attendees = {};
 	this._attendees[ZmAppt.PERSON]		= new AjxVector();	// list of ZmContact
@@ -407,9 +410,9 @@ ZmApptComposeView.prototype._createTabViewPage =
 function(id) {
 	switch (id) {
 		case ZmApptComposeView.TAB_APPOINTMENT :
-			return new ZmApptTabViewPage(this, this._appCtxt, this._attendees);
+			return new ZmApptTabViewPage(this, this._appCtxt, this._attendees, this._dateInfo);
 		case ZmApptComposeView.TAB_SCHEDULE :
-			return new ZmSchedTabViewPage(this, this._appCtxt, this._attendees, this._controller);
+			return new ZmSchedTabViewPage(this, this._appCtxt, this._attendees, this._controller, this._dateInfo);
 		case ZmApptComposeView.TAB_ATTENDEES :
 			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, ZmAppt.PERSON);
 		case ZmApptComposeView.TAB_LOCATIONS :

@@ -95,13 +95,17 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 * Returns an object with the indices of the currently selected time fields.
 *
 * @param tabView	[DwtTabView]	ZmApptTabViewPage or DwtSchedTabViewPage
+* @param dateInfo	[object]		hash of date info to fill in
 */
 ZmApptViewHelper.getDateInfo =
-function(tabView) {
-	var dateInfo = {};
+function(tabView, dateInfo) {
 	dateInfo.startDate = tabView._startDateField.value;
 	dateInfo.endDate = tabView._endDateField.value;
-	if (!tabView._allDayCheckbox.checked) {
+	if (tabView._allDayCheckbox.checked) {
+		dateInfo.showTime = false;
+		dateInfo.startHourIdx = dateInfo.startMinuteIdx = dateInfo.startAmPmIdx =
+		dateInfo.endHourIdx = dateInfo.endMinuteIdx = dateInfo.endAmPmIdx = null;
+	} else {
 		dateInfo.showTime = true;
 		dateInfo.startHourIdx = tabView._startTimeSelect.getSelectedHourIdx();
 		dateInfo.startMinuteIdx = tabView._startTimeSelect.getSelectedMinuteIdx();
@@ -110,7 +114,6 @@ function(tabView) {
 		dateInfo.endMinuteIdx = tabView._endTimeSelect.getSelectedMinuteIdx();
 		dateInfo.endAmPmIdx = tabView._endTimeSelect.getSelectedAmPmIdx();
 	}
-	return dateInfo;
 };
 
 ZmApptViewHelper.handleDateChange = 
