@@ -342,18 +342,9 @@ function() {
 // Save button was pressed
 ZmApptComposeController.prototype._saveListener =
 function(ev) {
-	// check if all fields are populated w/ valid values
-	try {
-		if (this._apptView.isValid()) {
-			return this.saveAppt();
-		}
-	} catch(ex) {
-		if (typeof ex == "string") {
-			this._showErrorMessage(ex);
-		} else {
-			DBG.dumpObj(AjxDebug.DBG1, ex);
-		}
-	}
+	if (this._doSave() === false)
+		return;
+	this._app.popView(true);
 };
 
 // Cancel button was pressed
@@ -402,6 +393,24 @@ function(ev) {
 			this.toggleSpellCheckButton(false);
 	} else {
 		htmlEditor.discardMisspelledWords();
+	}
+};
+
+ZmApptComposeController.prototype._doSave =
+function() {
+	// check if all fields are populated w/ valid values
+	try {
+		if (this._apptView.isValid()) {
+			return this.saveAppt();
+		}
+	} catch(ex) {
+		if (typeof ex == "string") {
+			this._showErrorMessage(ex);
+		} else {
+			DBG.dumpObj(AjxDebug.DBG1, ex);
+		}
+		
+		return false;
 	}
 };
 

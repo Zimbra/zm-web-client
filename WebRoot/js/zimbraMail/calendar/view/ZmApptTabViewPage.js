@@ -1334,7 +1334,7 @@ function(type) {
 			attendees.add(attendee);
 		} else {
 			var msg = AjxMessageFormat.format(this.parent._badAttendeeMsg[type], item);
-			this.parent.showErrorMessage(msg, null, this._badAttendeeCallback, this, type);
+			throw msg;
 		}
 	}
 	// replace attendees list with what we've found
