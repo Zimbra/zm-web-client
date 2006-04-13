@@ -258,7 +258,6 @@ function(appt, folderId) {
 ZmApptComposeController.prototype._handleResponseCleanup = 
 function() {
 	this._apptView.cleanup();
-	this._app.popView(true);
 };
 
 ZmApptComposeController.prototype._handleErrorSave = 
