@@ -69,7 +69,7 @@ function() {
 };
 
 ZmNotebook.prototype.getSearchPath = function() {
-	var serverName = "Inbox"; // REVISIT
+	var serverName = "Notebook";
 	var clientName = ZmMsg.notebook;
 	
 	var path = ZmOrganizer.prototype.getPath.call(this, null, null, null, true);
@@ -132,19 +132,9 @@ function(parent, obj, tree, link) {
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];
-			// REVISIT: this is only temporary until we get dedicated folder
-			if (folder.id == ZmOrganizer.ID_NOTEBOOK) {
-				folder = AjxUtil.createProxy(folder);
-				folder.name = ZmMsg.notebook;
-				folder.view = ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK];
-			}
 			if (folder.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
 				var childNotebook = ZmNotebook.createFromJs(notebook, folder, tree, false);
 				notebook.children.add(childNotebook);
-				// REVISIT
-				if (folder.id == ZmOrganizer.ID_NOTEBOOK) {
-					childNotebook._origName = obj.folder[i].name;
-				}
 			}
 		}
 	}

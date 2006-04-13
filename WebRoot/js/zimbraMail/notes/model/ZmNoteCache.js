@@ -72,16 +72,7 @@ ZmNoteCache.prototype._changeListener;
 ZmNoteCache.prototype.fillCache = function(folderId, callback, errorCallback) {
 	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var notebook = tree.getById(folderId);
-
-	/*** REVISIT: don't need once we get dedicated folder ***/
-	var path = notebook.getPath(null, null, true);
-	var defaultNotebook = tree.getById(ZmOrganizer.ID_NOTEBOOK);
-	if (path.match(new RegExp("^"+defaultNotebook.name+"(/)?"))) {
-		path = defaultNotebook._origName + path.substring(defaultNotebook.name.length);
-	}
-	/***/
 	var path = notebook.getSearchPath();
-	/***/
 	var search = 'in:"'+path+'"';
 
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");

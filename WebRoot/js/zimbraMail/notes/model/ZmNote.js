@@ -38,7 +38,7 @@ function() {
 
 // Constants
 
-ZmNote.DEFAULT_FOLDER = ZmFolder.ID_INBOX; // REVISIT
+ZmNote.DEFAULT_FOLDER = ZmOrganizer.ID_NOTEBOOK;
 
 // Data
 
