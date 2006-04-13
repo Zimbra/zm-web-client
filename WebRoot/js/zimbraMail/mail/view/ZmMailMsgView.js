@@ -275,25 +275,6 @@ function (listener) {
 	this.addListener(ZmMailMsgView.SHARE_EVENT, listener);
 };
 
-ZmMailMsgView.prototype.detach =
-function(msgId, msgPartId) {
-	var getHtml = this._appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	var sender = this._appCtxt.getAppController();
-	var callback = new AjxCallback(this, this._detachCallback);
-	ZmMailMsg.fetchMsg({sender:sender, msgId: msgId, partId:msgPartId, getHtml:getHtml, callback:callback});
-};
-
-ZmMailMsgView.prototype._detachCallback =
-function(result) {
-	var resp = result.getResponse().GetMsgResponse;
-	var msg = new ZmMailMsg(this._appCtxt, resp.m[0].id);
-	msg._loadFromDom(resp.m[0]);
-
-	var newWinObj = this._appCtxt.getNewWindow(true);
-	newWinObj.command = "msgViewDetach";
-	newWinObj.args = {msg: msg};
-};
-
 
 // Private / protected methods
 
@@ -1412,14 +1393,24 @@ function(myId, tagId) {
 	dwtObj.notifyListeners(ZmMailMsgView._TAG_CLICK, tagId);
 };
 
+ZmMailMsgView._detachCallback =
+function(appCtxt, result) {
+	var resp = result.getResponse().GetMsgResponse;
+	var msg = new ZmMailMsg(appCtxt, resp.m[0].id);
+	msg._loadFromDom(resp.m[0]);
+
+	var newWinObj = appCtxt.getNewWindow(true);
+	newWinObj.command = "msgViewDetach";
+	newWinObj.args = { msg:msg };
+};
+
 ZmMailMsgView.rfc822Callback =
 function(anchorEl, msgId, msgPartId) {
-	// get the reference to ZmMailMsgView from the anchor element
-	var msgView = anchorEl;
-	while (msgView != null && (Dwt.getObjectFromElement(msgView) instanceof ZmMailMsgView == false))
-		msgView = msgView.parentNode;
-
-	if (msgView) msgView = Dwt.getObjectFromElement(msgView);
-	if (msgView)
-		msgView.detach(msgId, msgPartId);
+	var appCtxt = window.parentController 
+		? window.parentController._appCtxt 
+		: window._zimbraMail._appCtxt;
+	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	var sender = appCtxt.getAppController();
+	var callback = new AjxCallback(null, ZmMailMsgView._detachCallback, [appCtxt]);
+	ZmMailMsg.fetchMsg({ sender:sender, msgId:msgId, partId:msgPartId, getHtml:getHtml, callback:callback });
 };
