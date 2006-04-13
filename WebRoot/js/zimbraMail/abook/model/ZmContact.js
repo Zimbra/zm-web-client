@@ -395,6 +395,16 @@ function(attr, callback) {
 	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, execFrame:execFrame});
 };
 
+ZmContact.prototype.isEmpty = 
+function() {
+	var isEmpty = true;
+	for (var i in this.attr) {
+		isEmpty = false;
+		break;
+	}
+	return isEmpty;
+};
+
 ZmContact.prototype._handleResponseModify =
 function(attr, callback, result) {
 	var resp = result.getResponse().ModifyContactResponse;
@@ -402,7 +412,7 @@ function(attr, callback, result) {
 	var id = cn ? cn.id : null;
 	
 	if (id && id == this.id) {
-		this._appCtxt.getAppController().setStatusMsg(ZmMsg.contactModify);
+		this._appCtxt.getAppController().setStatusMsg(ZmMsg.contactSaved);
 	} else {
 		var msg = ZmMsg.errorModifyContact + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
 		this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);

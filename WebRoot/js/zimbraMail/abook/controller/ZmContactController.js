@@ -167,8 +167,13 @@ function(ev, bIsPopCallback) {
 				}
 			}
 		} else {
-			// print error message in toaster
-			this._appCtxt.setStatusMsg(ZmMsg.emptyContact, ZmStatusView.LEVEL_WARNING);
+			// bug fix #5829 - differentiate betw. an empty contact and saving 
+			//                 an existing contact w/o editing
+			if (this._contact.isEmpty()) {
+				this._appCtxt.setStatusMsg(ZmMsg.emptyContact, ZmStatusView.LEVEL_WARNING);
+			} else {
+				this._appCtxt.setStatusMsg(ZmMsg.contactSaved, ZmStatusView.LEVEL_INFO);
+			}
 		}
 	} catch (ex) {
 		this._handleException(ex, this._saveListener, ev, false);
