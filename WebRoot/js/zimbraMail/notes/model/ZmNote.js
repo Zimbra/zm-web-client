@@ -122,9 +122,14 @@ ZmNote.prototype.load =
 function(version, callback, errorCallback) {
 	var soapDoc = AjxSoapDoc.create("GetWikiRequest", "urn:zimbraMail");
 	var wordNode = soapDoc.set("w");
-	wordNode.setAttribute("name", this.name);
-	if (this.folderId) {
-		wordNode.setAttribute("l", this.folderId);
+	if (this.id) {
+		wordNode.setAttribute("id", this.id);
+	}
+	else {
+		wordNode.setAttribute("name", this.name);
+		if (this.folderId) {
+			wordNode.setAttribute("l", this.folderId);
+		}
 	}
 	if (version) {
 		wordNode.setAttribute("ver", version);

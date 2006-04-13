@@ -338,7 +338,7 @@ function() {
 	// if we're dealing w/ a shared cal, find out if we have any write access
 	if (cal.link) {
 		var share = cal.getShares()[0];
-		isLinkAndReadOnly = share && share.link && (share.link.perm.indexOf("w") == -1);
+		isLinkAndReadOnly = share && !share.isWrite();
 	}
 
 	return !this.isOrganizer() || isLinkAndReadOnly;

@@ -174,9 +174,10 @@ ZmNoteView.prototype._renderReplaceTransclusions = function(note, ids) {
 			}
 		}
 		placeholder.parentNode.replaceChild(replacement, placeholder);
-		
-		var subnote = context && context.length ? context[0] : note;
-		this._renderFindTransclusions(replacement.parentNode, replacement, subnote, ids); 
+		if (wiklet) {
+			var subnote = context && context.length ? context[0] : note;
+			this._renderFindTransclusions(replacement.parentNode, replacement, subnote, ids); 
+		}
 	}
 };
 ZmNoteView.prototype._renderFindObjects = function(element) {

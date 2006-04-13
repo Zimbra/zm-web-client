@@ -660,8 +660,11 @@ function(result) {
 			var link = resp[i].link ? resp[i].link[0] : null;
 			var cal = link ? this.getCalendar(link.id) : null;
 	
-			if (cal)
-				cal.setPermissions(link.perm);
+			if (cal) {
+				var share = cal.getShares()[0];
+				if (share)
+					share.link.perm = link.perm;
+			}
 		}
 	}
 };

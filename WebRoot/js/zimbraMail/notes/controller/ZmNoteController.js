@@ -35,7 +35,6 @@ function ZmNoteController(appCtxt, container, app) {
 	this._listeners[ZmOperation.PAGE_FORWARD] = new AjxListener(this, this._pageForwardListener);
 	
 	this._history = [];
-	this._cachedFolders = {};
 }
 ZmNoteController.prototype = new ZmListController;
 ZmNoteController.prototype.constructor = ZmNoteController;
@@ -84,7 +83,16 @@ ZmNoteController.prototype.show = function(noteOrFolderId, force) {
 		return;
 	}
 
-	this._object = noteOrFolderId;
+	// are we already showing this note?
+	var shownNote = this._object;
+	var curNote = noteOrFolderId;
+	if (shownNote && shownNote.name == curNote.name && 
+		shownNote.folderId == curNote.folderId) {
+		return;
+	}
+	
+	// update history
+	this._object = curNote;
 	this._folderId = null;
 	if (this._object) {
 		this._folderId = this._object.folderId;
@@ -96,6 +104,7 @@ ZmNoteController.prototype.show = function(noteOrFolderId, force) {
 		this._history[this._place] = noteRef;
 	}
 	
+	// switch view
 	var view = this._currentView;
 	if (!view) {
 		view = this._defaultView();
@@ -103,6 +112,7 @@ ZmNoteController.prototype.show = function(noteOrFolderId, force) {
 	}
 	this.switchView(view, force);
 
+	// show this note
 	this._listView[this._currentView].set(this._object);
 };
 
@@ -339,15 +349,6 @@ ZmNoteController.prototype._pageForwardListener = function(event) {
 
 ZmNoteController.prototype._showIndex = function(folderId) {
 	var cache = this._app.getNoteCache();
-	if (!this._cachedFolders[folderId]) {
-		// NOTE: Only need to fill the cache for each folder once
-		//       because it will automatically be updated via the
-		//       notifications in the app controller.
-		this._cachedFolders[folderId] = true;
-		var responseHandler = new AjxCallback(this, this._showIndex, [folderId]);
-		cache.fillCache(folderId, responseHandler);
-		return;
-	}
 	var index = cache.getNoteByName(folderId, ZmNotebook.PAGE_INDEX);
 	this.show(index);
 };

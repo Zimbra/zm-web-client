@@ -175,17 +175,9 @@ ZmNoteEditor._MODES[ZmNoteEditor.MEDIA_WIKI] = DwtHtmlEditor.TEXT;
 ZmNoteEditor._MODES[ZmNoteEditor.RICH_TEXT] = DwtHtmlEditor.HTML;
 ZmNoteEditor._MODES[ZmNoteEditor.TWIKI] = DwtHtmlEditor.TEXT;
 
-ZmNoteEditor._WIKI2HTML = {};
-ZmNoteEditor._WIKI2HTML[ZmNoteEditor.MEDIA_WIKI] = function(content) {
-	return ZmWikiConverter.convert(content, MediaWiki.rules);
-};
-ZmNoteEditor._WIKI2HTML[ZmNoteEditor.TWIKI] = function(content) {
-	return ZmWikiConverter.convert(content, TWiki.rules);
-};
-
-ZmNoteEditor._HTML2WIKI = {};
-ZmNoteEditor._HTML2WIKI[ZmNoteEditor.MEDIA_WIKI] = null; // TODO
-ZmNoteEditor._HTML2WIKI[ZmNoteEditor.TWIKI] = null; // TODO
+ZmNoteEditor._CONVERTERS = {};
+ZmNoteEditor._CONVERTERS[ZmNoteEditor.MEDIA_WIKI] = new MediaWikiConverter();
+ZmNoteEditor._CONVERTERS[ZmNoteEditor.TWIKI] = new TWikiConverter();
 
 // Data
 
@@ -219,17 +211,17 @@ ZmNoteEditor.prototype.setSize = function(w, h) {
 };
 
 ZmNoteEditor.prototype.setContent = function(content) {
-	var converter = ZmNoteEditor._HTML2WIKI[this._format];
+	var converter = ZmNoteEditor._CONVERTERS[this._format];
 	if (converter) {
-		// TODO
+		content = converter.toWiki(content);
 	}
 	ZmHtmlEditor.prototype.setContent.call(this, content);
 };
 ZmNoteEditor.prototype.getContent = function() {
 	var content = ZmHtmlEditor.prototype.getContent.call(this);
-	var converter = ZmNoteEditor._WIKI2HTML[this._format];
+	var converter = ZmNoteEditor._CONVERTERS[this._format];
 	if (converter) {
-		content = converter(content);
+		content = converter.toHtml(content);
 	}
 	return content;
 };

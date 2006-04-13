@@ -57,6 +57,7 @@ function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, own
 	this.numTotal = numTotal || 0;
 	this.url = url;
 	this.owner = owner;
+	this.shares = [];	
 
 	if (id && tree)
 		tree._appCtxt.cacheSet(id, this);
@@ -253,6 +254,11 @@ function(includeRoot, showUnread, maxLength, noMarkup) {
 	return path;
 };
 
+/** Returns the full path, suitable for use in search expressions. */
+ZmOrganizer.prototype.getSearchPath = function() {
+	return this.getPath(null, null, null, true);
+};
+
 ZmOrganizer.prototype.getShares =
 function() {
 	return this.shares;
@@ -260,17 +266,15 @@ function() {
 
 ZmOrganizer.prototype.setShares = 
 function(shares) {
-	this.shares = shares;
+	this.shares = shares || [];
 };
 
 ZmOrganizer.prototype.getShareByGranteeId = 
 function(granteeId) {
-	if (this.shares) {
-		for (var i = 0; i < this.shares.length; i++) {
-			var share = this.shares[i];
-			if (share.grantee.id == granteeId) {
-				return share;
-			}
+	for (var i = 0; i < this.shares.length; i++) {
+		var share = this.shares[i];
+		if (share.grantee.id == granteeId) {
+			return share;
 		}
 	}
 	return null;
@@ -278,9 +282,6 @@ function(granteeId) {
 
 ZmOrganizer.prototype.addShare = 
 function(share) {
-	if (!this.shares) {
-		this.shares = [];
-	}
 	this.shares.push(share);
 };
 

@@ -72,15 +72,17 @@ ZmNoteCache.prototype._changeListener;
 ZmNoteCache.prototype.fillCache = function(folderId, callback, errorCallback) {
 	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var notebook = tree.getById(folderId);
-	var path = notebook.getPath(null, null, true);
-	
+
 	/*** REVISIT: don't need once we get dedicated folder ***/
+	var path = notebook.getPath(null, null, true);
 	var defaultNotebook = tree.getById(ZmOrganizer.ID_NOTEBOOK);
 	if (path.match(new RegExp("^"+defaultNotebook.name+"(/)?"))) {
 		path = defaultNotebook._origName + path.substring(defaultNotebook.name.length);
 	}
-	var search = 'in:"'+path+'"';
 	/***/
+	var path = notebook.getSearchPath();
+	/***/
+	var search = 'in:"'+path+'"';
 
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("types", "wiki");
@@ -109,6 +111,12 @@ ZmNoteCache.prototype.putNote = function(note) {
 	}
 	var folderId = note.folderId || ZmNote.DEFAULT_FOLDER;
 	this.getNotesInFolder(folderId)[note.name] = note;
+	/*** REVISIT ***/
+	var remoteFolderId = note.remoteFolderId;
+	if (remoteFolderId) {
+		this.getNotesInFolder(remoteFolderId)[note.name] = note;
+	}
+	/***/
 	if (note.creator) {
 		this.getNotesByCreator(note.creator)[note.name] = note;
 	}
@@ -120,6 +128,12 @@ ZmNoteCache.prototype.removeNote = function(note) {
 		delete this._idMap[note.id]; 
 	}
 	delete this.getNotesInFolder(note.folderId)[note.name];
+	/*** REVISIT ***/
+	var remoteFolderId = note.remoteFolderId;
+	if (remoteFolderId) {
+		delete this.getNotesInFolder(remoteFolderId)[note.name];
+	}
+	/***/
 	if (note.creator) {
 		delete this.getNotesByCreator(note.creator)[note.name];
 	}
@@ -155,10 +169,27 @@ ZmNoteCache.prototype.getNotesInFolder = function(folderId) {
 	folderId = folderId || ZmNote.DEFAULT_FOLDER;
 	if (!this._foldersMap[folderId]) {
 		this._foldersMap[folderId] = {};
+		this.fillCache(folderId);
 	}
 	for (var name in ZmNoteCache._SPECIAL) {
 		if (!this._foldersMap[folderId][name]) {
-			this._foldersMap[folderId][name] = this._generateSpecialNote(folderId, name);
+			var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+			var parent = notebookTree.getById(folderId).parent;
+			var specialNote = null;
+			while (parent.id != ZmOrganizer.ID_ROOT) {
+				var folderMap = this._foldersMap[parent.id];
+				if (folderMap && folderMap[name]) {
+					specialNote = AjxUtil.createProxy(folderMap[name]);
+					specialNote.id = null;
+					specialNote.folderId = folderId;
+					specialNote.version = 0;
+					break;
+				}
+				parent = parent.parent;
+			}
+			
+			var folderMap = this._foldersMap[folderId];
+			folderMap[name] = specialNote || this._generateSpecialNote(folderId, name);
 		}
 	}
 	return this._foldersMap[folderId];
@@ -183,6 +214,12 @@ function(folderId, callback, response) {
 			if (!note) {
 				note = new ZmNote(this._appCtxt);
 				note.set(word);
+				/*** REVISIT ***/
+				if (folderId != note.folderId) {
+					note.remoteFolderId = note.folderId;
+					note.folderId = folderId;
+				}
+				/***/
 				this.putNote(note);
 			}
 			else {

@@ -80,19 +80,6 @@ function(name) {
 	this.tree._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true});
 };
 
-// XXX: temp method until we get better server support post Birdseye!
-ZmAddrBook.prototype.setPermissions = 
-function(permission) {
-	var share = null;
-	if (this.shares == null) {
-		share = new ZmOrganizerShare(this, null, null, null, permission, null);
-		this.addShare(share);
-	} else {
-		// lets just assume we're dealing w/ a link (which should only have one share)
-		this.shares[0].perm = permission;
-	}
-};
-
 ZmAddrBook.prototype.mayContain =
 function(what) {
 	if (!what) return true;

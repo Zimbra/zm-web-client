@@ -76,6 +76,8 @@ ZmTreeView.COMPARE_FUNC[ZmOrganizer.NOTEBOOK]			= ZmNotebook.sortCompare;
 // add space after the following items
 ZmTreeView.ADD_SEP = new Object();
 ZmTreeView.ADD_SEP[ZmFolder.ID_TRASH] = true;
+//ZmTreeView.ADD_SEP[ZmCalendar.ID_CALENDAR] = true;
+//ZmTreeView.ADD_SEP[ZmOrganizer.ID_NOTEBOOK] = true;
 
 // Static methods
 
@@ -207,10 +209,16 @@ function(treeNode, organizer, omit) {
 	var children = organizer.children.getArray();
 	children.sort(ZmTreeView.COMPARE_FUNC[this.type]);
 	DBG.println(AjxDebug.DBG3, "Render: " + organizer.name + ": " + children.length);
+	var addSep = true;
 	for (var i = 0; i < children.length; i++) {
 		var child = children[i];
 		if (omit && omit[child.id]) continue;
 		if (this._allowedTypes && !this._allowedTypes[child.type]) continue;
+		// NOTE: Separates public and shared folders
+		if (organizer.id == ZmOrganizer.ID_ROOT && child.link && addSep) {
+			treeNode.addSeparator();
+			addSep = false;
+		}
 		this._addNew(treeNode, child, null);
 	}
 }

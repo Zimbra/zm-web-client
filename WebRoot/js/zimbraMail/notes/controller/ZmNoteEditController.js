@@ -192,8 +192,17 @@ function(ev) {
 	this._note.setContent(this._noteEditView.getContent());
 	
 	// save
-	var callback = new AjxCallback(this._app, this._app.popView);
+	var callback = new AjxCallback(this, this._saveResponseHandler);
 	this._note.save(callback);
+};
+ZmNoteEditController.prototype._saveResponseHandler = function(response) {
+	this._app.popView();
+
+	var saveResp = response._data && response._data.SaveWikiResponse;
+	if (saveResp && saveResp.w[0].ver == 1) {
+		var noteController = this._app.getNoteController();
+		noteController.show(this._note);
+	}
 };
 
 ZmNoteEditController.prototype._cancelListener =

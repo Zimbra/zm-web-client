@@ -64,6 +64,7 @@ function(overviewId) {
 	var items = this._getItems(overviewId);
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
+		if (item._isSeparator) continue;
 		if (item.getChecked()) {
 			var calendar = item.getData(Dwt.KEY_OBJECT);
 			calendars.push(calendar);
@@ -107,6 +108,7 @@ function(overviewId, showUnread, omit, forceCreate) {
 		var items = root.getItems();
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
+			if (item._isSeparator) continue;
 			var object = item.getData(Dwt.KEY_OBJECT);
 			this._setTreeItemColor(item, object.color);
 			if (object.id == ZmCalendar.ID_CALENDAR) {
@@ -130,7 +132,9 @@ function(actionMenu, type, id) {
 			var foundChecked = false;
 			var foundUnchecked = false;
 			for (var i = 0; i < items.length; i++) {
-				items[i].getChecked() ? foundChecked = true : foundUnchecked = true;
+				var item = items[i];
+				if (item._isSeparator) continue;
+				item.getChecked() ? foundChecked = true : foundUnchecked = true;
 			}
 			actionMenu.enable(ZmOperation.CHECK_ALL, foundUnchecked);
 			actionMenu.enable(ZmOperation.CLEAR_ALL, foundChecked);
@@ -310,6 +314,7 @@ function(ev, checked) {
 	var checkedItems = [];
 	for (var i = 0;  i < items.length; i++) {
 		var item = items[i];
+		if (item._isSeparator) continue;
 		if (item.getChecked() != checked) {
 			item.setChecked(checked);
 			checkedItems.push(item);

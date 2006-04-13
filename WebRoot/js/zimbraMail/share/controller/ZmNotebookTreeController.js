@@ -51,29 +51,6 @@ ZmNotebookTreeController.prototype.toString = function() {
 
 // Public methods
 
-ZmNotebookTreeController.prototype.show = 
-function(overviewId, showUnread, omit, forceCreate) {
-	var firstTime = (!this._treeView[overviewId] || forceCreate);
-
-	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit, forceCreate);
-	
-	if (firstTime) {
-		var treeView = this.getTreeView(overviewId);
-		var root = treeView.getTreeItemById(ZmOrganizer.ID_ROOT);
-		var items = root.getItems();
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			var object = item.getData(Dwt.KEY_OBJECT);
-			/***
-			this._setTreeItemColor(item, object.color);
-			if (object.id == ZmCalendar.ID_CALENDAR) {
-				item.setChecked(true);
-			}
-			/***/
-		}
-	}
-};
-
 ZmNotebookTreeController.prototype.resetOperations = 
 function(actionMenu, type, id) {
 	if (actionMenu && id != ZmOrganizer.ID_ROOT) {

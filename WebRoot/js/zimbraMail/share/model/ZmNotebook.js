@@ -68,17 +68,16 @@ function() {
 	return this.parent.id == ZmOrganizer.ID_ROOT ? "Notebook" : "Section";
 };
 
-// XXX: temp method until we get better server support post Birdseye!
-ZmNotebook.prototype.setPermissions = 
-function(permission) {
-	var share = null;
-	if (this.shares == null) {
-		share = new ZmOrganizerShare(this, null, null, null, permission, null);
-		this.addShare(share);
-	} else {
-		// lets just assume we're dealing w/ a link (which should only have one share)
-		this.shares[0].perm = permission;
+ZmNotebook.prototype.getSearchPath = function() {
+	var serverName = "Inbox"; // REVISIT
+	var clientName = ZmMsg.notebook;
+	
+	var path = ZmOrganizer.prototype.getPath.call(this, null, null, null, true);
+	if (path.match(new RegExp("^"+clientName+"(/)?"))) {
+		path = serverName + path.substring(clientName.length);
 	}
+	
+	return path;
 };
 
 // Callbacks

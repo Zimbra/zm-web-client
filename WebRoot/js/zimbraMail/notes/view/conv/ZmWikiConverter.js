@@ -65,20 +65,20 @@ ZmWikiConverter.restore = function(id) {
 };
 
 //
-// MediaWiki syntax conversion
+// MediaWikiConverter syntax conversion
 //
 
-function MediaWiki() {
-	ZmWikiConverter.call(this, MediaWiki.toHtml.rules, MediaWiki.toWiki.rules);
+function MediaWikiConverter() {
+	ZmWikiConverter.call(this, MediaWikiConverter.toHtml.rules, MediaWikiConverter.toWiki.rules);
 }
-MediaWiki.prototype = new ZmWikiConverter;
-MediaWiki.prototype.constructor = MediaWiki;
+MediaWikiConverter.prototype = new ZmWikiConverter;
+MediaWikiConverter.prototype.constructor = MediaWikiConverter;
 
 // Static data
 
-MediaWiki.toHtml = {};
+MediaWikiConverter.toHtml = {};
 
-MediaWiki.toHtml._LIST = {
+MediaWikiConverter.toHtml._LIST = {
 	open: {
 		item: { "*" : "<li>", "#" : "<li>", ";" : "<dt>", ":" : "<dd>" },
 		list: { "*" : "<ul>", "#" : "<ol>", ";" : "<dl>", ":" : "<dl>" }
@@ -91,13 +91,13 @@ MediaWiki.toHtml._LIST = {
 
 // Replacement functions (note: are executed in scope of converter object)
 
-MediaWiki.toHtml._header = function(match, level, content) {
+MediaWikiConverter.toHtml._header = function(match, level, content) {
 	return [ "<h", level.length, ">", content, "</h", level.length, ">\n" ].join("");
 };
-MediaWiki.toHtml._list = function(match, level, content) {
+MediaWikiConverter.toHtml._list = function(match, level, content) {
 	return [ "{{", level, "}", content, "{", level, "}}\n" ].join("");
 };
-MediaWiki.toHtml._listTransition = function(match, close, open) {
+MediaWikiConverter.toHtml._listTransition = function(match, close, open) {
 	var offset = 0;
 	var length = close.length < open.length ? close.length : open.length;
 
@@ -115,46 +115,46 @@ MediaWiki.toHtml._listTransition = function(match, close, open) {
 	var a = [];
 	for (var i = close.length - 1; i >= offset; i--) {
 		var type = close.charAt(i);
-		a.push(MediaWiki.toHtml._LIST.close.item[type]);
-		a.push(MediaWiki.toHtml._LIST.close.list[type]);
+		a.push(MediaWikiConverter.toHtml._LIST.close.item[type]);
+		a.push(MediaWikiConverter.toHtml._LIST.close.list[type]);
 	}
 	for (var i = offset; i < open.length; i++) {
 		var type = open.charAt(i);
-		a.push(MediaWiki.toHtml._LIST.open.list[type]);
-		a.push(MediaWiki.toHtml._LIST.open.item[type]);
+		a.push(MediaWikiConverter.toHtml._LIST.open.list[type]);
+		a.push(MediaWikiConverter.toHtml._LIST.open.item[type]);
 	}
 
     if (close.length == open.length) {
 		var type = close.charAt(close.length - 1);
-		a.push(MediaWiki.toHtml._LIST.close.item[type]);
+		a.push(MediaWikiConverter.toHtml._LIST.close.item[type]);
 	}
 	var type = close.charAt(open.length - 1);
-	a.push(MediaWiki.toHtml._LIST.open.item[type]);
+	a.push(MediaWikiConverter.toHtml._LIST.open.item[type]);
 
 	return a.join("");
 };
-MediaWiki.toHtml._listBoundary = function(match, open, content, close) {
+MediaWikiConverter.toHtml._listBoundary = function(match, open, content, close) {
     var a = ['\n'];
 	for (var i = 0; i < open.length; i++) {
 	    var type = open.charAt(i);
-		a.push(MediaWiki.toHtml._LIST.open.list[type]);
-		a.push(MediaWiki.toHtml._LIST.open.item[type]);
+		a.push(MediaWikiConverter.toHtml._LIST.open.list[type]);
+		a.push(MediaWikiConverter.toHtml._LIST.open.item[type]);
 	}
 	a.push(content);
 	for (var i = close.length - 1; i >= 0; i--) {
 		var type = close.charAt(i);
-		a.push(MediaWiki.toHtml._LIST.close.item[type]);
-		a.push(MediaWiki.toHtml._LIST.close.list[type]);
+		a.push(MediaWikiConverter.toHtml._LIST.close.item[type]);
+		a.push(MediaWikiConverter.toHtml._LIST.close.list[type]);
 	}
 	return a.join("");
 }
-MediaWiki.toHtml._paragraph = function(match, newlines) {
+MediaWikiConverter.toHtml._paragraph = function(match, newlines) {
 	return [ match.substr(newlines.length - 2), "<p>" ].join("");
 };
 
 // Rule set
 
-MediaWiki.toHtml.rules = [
+MediaWikiConverter.toHtml.rules = [
 	// pre-processing
 	{ input: /\r?\n/g, output: "\n" },
 	{ input: /\\(\{)/g, output: function($0,$1) { return ZmWikiConverter.store($1); } },
@@ -174,14 +174,14 @@ MediaWiki.toHtml.rules = [
 	{ input: /\[([^\s]+)\s+([^\]]+)\]/g, output: "<a href='$1' target='_new'>$2</a>" },
 	{ input: /\[([^\]]+)\]/g, output: "<a href='$1' target='_new'>$1</a>" },
 	// headers
-	{ input: /(?:^|\n)(={1,4})(.*?)={1,4}/g, output: MediaWiki.toHtml._header },
+	{ input: /(?:^|\n)(={1,4})(.*?)={1,4}/g, output: MediaWikiConverter.toHtml._header },
 	// horizontal rule
 	{ input: /(?:^|\n)-{4}(?=\n|$)/g, output: "\n<hr>\n" },
 	// lists
 	{ input: /(?:^|\n)([*#;:]*)(;[^:]*?)(:.*?)(?:\n|$)/g, output: "$1$2$1$3\n" },
-	{ input: /(?:^|\n)([*#;:]+)(.*?)(?=\n|$)/g, output: MediaWiki.toHtml._list },
-	{ input: /\{([*#;:]+)\}\}\n\{\{([*#;:]+)\}/g, output: MediaWiki.toHtml._listTransition },
-	{ input: /\{\{([*#;:]+)\}(.*?)\{([*#;:]+)\}\}/g, output: MediaWiki.toHtml._listBoundary },
+	{ input: /(?:^|\n)([*#;:]+)(.*?)(?=\n|$)/g, output: MediaWikiConverter.toHtml._list },
+	{ input: /\{([*#;:]+)\}\}\n\{\{([*#;:]+)\}/g, output: MediaWikiConverter.toHtml._listTransition },
+	{ input: /\{\{([*#;:]+)\}(.*?)\{([*#;:]+)\}\}/g, output: MediaWikiConverter.toHtml._listBoundary },
 	// tables
 	{ input: /(?:^|\n)\{\|(.*?)(?=\n|$)/g, output: "<table $1>\n" },
 	{ input: /(?:^|\n)\|\}(?=\n|$)/g, output: "</table>\n" },
@@ -191,55 +191,55 @@ MediaWiki.toHtml.rules = [
 	{ input: /(?:^|\n)\|([^\|]+?)\|(.*?)(?=\n|$)/g, output: "<td $1>$2\n" },
 	{ input: /(?:^|\n)\|(.*?)(?=\n|$)/g, output: "<td>$1\n" },
 	// paragraphs
-	{ input: /(\n{2,})/g, output: MediaWiki.toHtml._paragraph },
+	{ input: /(\n{2,})/g, output: MediaWikiConverter.toHtml._paragraph },
 	// post-processing
 	{ input: /\{\{(\d+)\}\}/g, output: function($0,$1) { return ZmWikiConverter.restore($1); } },
 	{ input: /^\n+|(?:<p.*?>)*\n+$|<p.*?>*$/i, output: "" }
 ];
 
-MediaWiki.toWiki = {};
+MediaWikiConverter.toWiki = {};
 
-MediaWiki.toWiki._header = function(match, level, attrs, content) {
+MediaWikiConverter.toWiki._header = function(match, level, attrs, content) {
 	// REVISIT: What to do with attr content?
 	var marker = "====".substring(0, level);
 	return [ "\n", marker, content, marker, "\n" ].join("");
 };
 
-MediaWiki.toWiki._listClear = function(match) {
-	MediaWiki.toWiki._listLevel = "";
+MediaWikiConverter.toWiki._listClear = function(match) {
+	MediaWikiConverter.toWiki._listLevel = "";
 	return match;
 };
-MediaWiki.toWiki._list = function(match, type) {
+MediaWikiConverter.toWiki._list = function(match, type) {
 	if (match.charAt(1) == '/') {
-		var listLevel = MediaWiki.toWiki._listLevel;
-		MediaWiki.toWiki._listLevel = listLevel.substring(0, listLevel.length - 1);
+		var listLevel = MediaWikiConverter.toWiki._listLevel;
+		MediaWikiConverter.toWiki._listLevel = listLevel.substring(0, listLevel.length - 1);
 		return match;
 	}
-	MediaWiki.toWiki._listLevel += type;
+	MediaWikiConverter.toWiki._listLevel += type;
 	return [
 		match.substring(0, match.length-1),
-		" level=", MediaWiki.toWiki._listLevel, 
+		" level=", MediaWikiConverter.toWiki._listLevel, 
 		">"
 	].join("");
 };
-MediaWiki.toWiki._listItem = function(match, level, content) {
+MediaWikiConverter.toWiki._listItem = function(match, level, content) {
 	level = level.replace(/u/g,"*").replace(/o/g,"#").replace(/d/g,";");
 	return ["\n",level," ",content.replace(/[\s\n]+/g, " ").replace(/\n+$/,"")].join("");
 };
 
-MediaWiki.toWiki.rules = [
+MediaWikiConverter.toWiki.rules = [
 	// pre-processing
-	{ input: /^/g, output: MediaWiki.toWiki._listClear },
+	{ input: /^/g, output: MediaWikiConverter.toWiki._listClear },
 	// inlines
 	{ input: /(?:<em>|<i>)(.*?)(?:<\/em>|<\/i>)/ig, output: "''$1''" },
 	{ input: /(?:<strong>|<b>)(.*?)(?:<\/strong>|<\/b>)/ig, output: "'''$1'''" },
 	// headers
-	{ input: /<h(\d)(.*?)>(.*?)<\/h\d\s*>/ig, output: MediaWiki.toWiki._header },
+	{ input: /<h(\d)(.*?)>(.*?)<\/h\d\s*>/ig, output: MediaWikiConverter.toWiki._header },
 	// horizontal rule
 	{ input: /<hr(?:\s+.*)?>/ig, output: "\n----\n" },
 	// lists
-	{ input: /<(?:\/)?([uod])l(?:\s+.*?)?>/ig, output: MediaWiki.toWiki._list },
-	{ input: /<.*? level=([uod]+)>[\s\n]*<li>(.*?)(?!<\/.+?>)/ig, output: MediaWiki.toWiki._listItem },
+	{ input: /<(?:\/)?([uod])l(?:\s+.*?)?>/ig, output: MediaWikiConverter.toWiki._list },
+	{ input: /<.*? level=([uod]+)>[\s\n]*<li>(.*?)(?!<\/.+?>)/ig, output: MediaWikiConverter.toWiki._listItem },
 	{ input: /<\/[uod]l\s*>|<\/li>/ig, output: "" },
 	// paragraphs
 	{ input: /<p(\s+.*)?>/ig, output: "\n\n" },
@@ -249,33 +249,36 @@ MediaWiki.toWiki.rules = [
 ];
 
 //
-// TWiki syntax conversion
+// TWikiConverter syntax conversion
 //
 
-function TWiki() {
+function TWikiConverter() {
+	ZmWikiConverter.call(this, TWikiConverter.toHtml.rules, TWikiConverter.toWiki.rules);
 }
+TWikiConverter.prototype = new ZmWikiConverter;
+TWikiConverter.prototype.constructor = TWikiConverter;
 
-TWiki.toHtml = {};
+TWikiConverter.toHtml = {};
 
-TWiki.toHtml._verbatim = function(match, content) {
+TWikiConverter.toHtml._verbatim = function(match, content) {
 	return ZmWikiConverter.store(["<pre>",content,"</pre>"].join(""));
 };
-TWiki.toHtml._list = function(match, level, type, content) {
+TWikiConverter.toHtml._list = function(match, level, type, content) {
 	if ((level.length % 3) != 0) return match;
 	type = type.match(/\*/) ? type : "#";
 	for (var i = Math.floor(level / 3); i > 0; i--) {
 		type += type.substr(0,1);
 	}
-	return MediaWiki.toHtml._list(match, type, content);
+	return MediaWikiConverter.toHtml._list(match, type, content);
 };
 
-TWiki.toHtml.rules = [
+TWikiConverter.toHtml.rules = [
     // pre-processing
     { input: /\r?\n/g, output: "\n" },
     { input: /\\(\{)/g, output: function($0,$1) { return ZmWikiConverter.store($1); } },
     { input: /\{\{/g, output: function($0) { return ZmWikiConverter.store($0); } },
 	// non-wiki
-	{ input: /(?:^|\n)<verbatim>\n(.*?)\n<\/verbatim>(?=\n|$)/g, output: TWiki.toHtml._verbatim },
+	{ input: /(?:^|\n)<verbatim>\n(.*?)\n<\/verbatim>(?=\n|$)/g, output: TWikiConverter.toHtml._verbatim },
 	// literals
     { input: /&[^;]+?;/g, output: function($0) { return ZmWikiConverter.store($0); } },
     { input: /&/g, output: "&amp;" },
@@ -287,14 +290,21 @@ TWiki.toHtml.rules = [
 	{ input: new RegExp('==([^=]+?)==','g'), output: "<b><tt>$1</tt></b>" },
 	{ input: new RegExp('=([^=]+?)=','g'), output: "<tt>$1</tt>" },
 	// headers
-    { input: /(?:^|\n)---(\+{1,6})(.*?)(?=\n|$)/g, output: MediaWiki.toHtml._header },
+    { input: /(?:^|\n)---(\+{1,6})(.*?)(?=\n|$)/g, output: MediaWikiConverter.toHtml._header },
 	// horizontal rule
 	{ input: /(?:^|\n)-{3,}(?=\n|$)/g, output: "<hr>\n" },
 	// lists
-	{ input: /(?:^|\n)([ ]{3,})([*]|[\dAaIi]\.) (.*?)(?=\n|$)/g, output: TWiki.toHtml._list },
-	{ input: /\{([*#;:]+)\}\}\n\{\{([*#;:]+)\}/g, output: MediaWiki.toHtml._listTransition },
-	{ input: /\{\{([*#;:]+)\}(.*?)\{([*#;:]+)\}\}/g, output: MediaWiki.toHtml._listBoundary },
+	{ input: /(?:^|\n)([ ]{3,})([*]|[\dAaIi]\.) (.*?)(?=\n|$)/g, output: TWikiConverter.toHtml._list },
+	{ input: /\{([*#;:]+)\}\}\n\{\{([*#;:]+)\}/g, output: MediaWikiConverter.toHtml._listTransition },
+	{ input: /\{\{([*#;:]+)\}(.*?)\{([*#;:]+)\}\}/g, output: MediaWikiConverter.toHtml._listBoundary },
 	// post-processing
     { input: /\{\{(\d+)\}\}/g, output: function($0,$1) { return ZmWikiConverter.restore($1); } },
     { input: /^\n|\n$/, output: "" }
+];
+
+TWikiConverter.toWiki = {};
+
+TWikiConverter.toWiki.rules = [
+	// pre-processing
+	// post-processing
 ];
