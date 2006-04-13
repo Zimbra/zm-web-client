@@ -1981,9 +1981,15 @@ HTML>BODY .appt-selected .appt_allday_body
 	height: 100%;
 }
 
+.ZmAsstField, .ZmAsstField TD {
+	color: black;
+	font-style: normal;
+}
 
-
-
+.ZmAsstFieldDefValue, .ZmAsstFieldDefValue TD {
+	color: gray;
+	font-style: italic;
+}
 
 /*
  *	Quota stuff
