@@ -779,7 +779,7 @@ function(organizer, attendees) {
 		var type = this._attTypes[t];
 		var att = attendees[type].getArray();
 		for (var i = 0; i < att.length; i++) {
-			if (att[i]) {
+			if (att[i] && att[i].getEmail()) {
 				var index = this._addAttendeeRow(false, false, false); // create a slot for this attendee
 				emails.push(this._setAttendee(index, att[i], type, false));
 			}
