@@ -1981,6 +1981,16 @@ HTML>BODY .appt-selected .appt_allday_body
 	height: 100%;
 }
 
+
+/* Label for assist dialog */
+/* ??? RENAME TO ZmFieldLabelRight ? */
+.ZmAsstFieldLabel {
+	@Label@
+	@NoWrap@
+	text-align: right;
+	width: 1%;
+}
+
 .ZmAsstField, .ZmAsstField TD {
 	color: black;
 	font-style: normal;

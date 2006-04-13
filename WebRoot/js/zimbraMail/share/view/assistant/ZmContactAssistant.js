@@ -88,7 +88,6 @@ ZmContactAssistant._CONTACT_OBJECT_ORDER = [
 
 ZmContactAssistant.prototype.parse =
 function(dialog, verb, args) {
-	dialog._setActionField(ZmMsg.newContact, "NewContact");
 	dialog._setOkButton(ZmMsg.createNewContact, true, true, true, "NewContact");
 	var match;
 	var objects = {};	
@@ -123,7 +122,7 @@ function(dialog, verb, args) {
 	if (!objects.title) objects.title = { data : remaining[1] ? remaining[1] : ""};
 	if (!objects.company) objects.company = { data: remaining[2] ? remaining[2] : ""};	
 
-	dialog._setField(ZmMsg.AB_FIELD_fullName, fullName == "" ? "type to enter fullname, title, company" : fullName, fullName == "", true);
+	this._setField(ZmMsg.AB_FIELD_fullName, fullName == "" ? "type to enter fullname, title, company" : fullName, fullName == "", true);
 	
 	for (var i=0; i < ZmContactAssistant._CONTACT_FIELD_ORDER.length; i++) {	
 		var key = ZmContactAssistant._CONTACT_FIELD_ORDER[i];
@@ -135,9 +134,9 @@ function(dialog, verb, args) {
 		}
 		if (field.defaultValue) {
 			var useDefault = (value == null || value == "");
-			dialog._setField(field.field, useDefault ? field.defaultValue : value, useDefault, false);
+			this._setField(field.field, useDefault ? field.defaultValue : value, useDefault, false);
 		} else {
-			dialog._setOptField(field.field, value, false, false);
+			this._setOptField(field.field, value, false, false);
 		}
 	}
 	return;

@@ -27,22 +27,37 @@ function ZmAssistant(appCtxt) {
 	if (arguments.length == 0) return;
 	this._appCtxt = appCtxt;
 	this._objectManager = new ZmObjectManager(null, this._appCtxt, null);
+	this._fields = {};	
 	
 };
 
 ZmAssistant.prototype.constructor = ZmAssistant;
+
+// called first time dialog switches to this assistant
+ZmAssistant.prototype.initialize =
+function(dialog) {
+	var html = new AjxBuffer();
+	this._tableId = Dwt.getNextId();
+	html.append("<table cellspacing=3 border=0 width=100% id='", this._tableId, "'>");
+	html.append("</table>");	
+	dialog.setAssistantContent(html.toString());
+};
+
+// called when dialog switches away from this assistant
+ZmAssistant.prototype.finish =
+function(dialog) {
+	this._clearFields();
+};
 
 ZmAssistant.prototype.parse =
 function(dialog, verb, line) {
 	//override
 };
 
-
 ZmAssistant.prototype.okHandler =
 function(dialog) {
 	//override
 };
-
 
 ZmAssistant.prototype._matchTime =
 function(args) {
@@ -114,4 +129,56 @@ function(args, objType, obj) {
 	
 
 	return {data: match[matchIndex], args: args, type: type};
+};
+
+ZmAssistant.prototype._clearField = 
+function(title) {
+	var fieldData = this._fields[title];
+	if (fieldData) {
+		fieldData.rowEl.parentNode.removeChild(fieldData.rowEl);
+		delete this._fields[title];
+	}
+}
+
+ZmAssistant.prototype._setOptField = 
+function(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign) {
+	if (value && value != "") {
+		this._setField(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign);
+	} else {
+		this._clearField(title);
+	}
+}
+
+ZmAssistant.prototype._setField = 
+function(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign) {
+	var cname =  isDefault ? "ZmAsstFieldDefValue" : "ZmAsstField";
+
+	var fieldData = this._fields[title];
+	if (htmlEncode) value = AjxStringUtil.htmlEncode(value);
+	if (fieldData) {
+		var divEl = document.getElementById(fieldData.id);
+		divEl.innerHTML = value;
+		divEl.className = cname;
+	} else {
+		var html = new AjxBuffer();
+		var id = Dwt.getNextId();
+		html.append("<td valign='", titleAlign ? titleAlign : "top", "' class='ZmAsstFieldLabel'>", AjxStringUtil.htmlEncode(title), ":</td>");
+		html.append("<td><div id='", id, "' class='", cname, "'>", value, "</div></td>");
+		var rowIndex = -1;
+		if (afterRowTitle) {
+			var afterRow = this._fields[afterRowTitle];
+			if (afterRow) rowIndex = afterRow.rowEl.rowIndex+1;
+		}
+		var tableEl = document.getElementById(this._tableId);
+		var row = tableEl.insertRow(rowIndex);
+		row.innerHTML = html.toString();
+		this._fields[title] = { id: id, rowEl: row };
+	}
+};
+
+ZmAssistant.prototype._clearFields =
+function() {
+	for (var field in this._fields) {
+		this._clearField(field);
+	}
 };

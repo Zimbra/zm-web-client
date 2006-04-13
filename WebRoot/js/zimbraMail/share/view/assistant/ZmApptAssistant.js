@@ -63,7 +63,6 @@ function(dialog) {
  */
 ZmApptAssistant.prototype.parse =
 function(dialog, verb, args) {
-	dialog._setActionField(ZmMsg.newAppt, "NewAppointment");
 	dialog._setOkButton(ZmMsg.createNewAppt, true, true, true, "NewAppointment");
 	DBG.println("args = "+args);
 	var startDate = new Date();
@@ -151,16 +150,16 @@ function(dialog, verb, args) {
 	var subStr = AjxStringUtil.convertToHtml(subject == "" ? "\"enclose subject in quotes or just type\"" : subject);
 	var locStr = AjxStringUtil.convertToHtml(loc == null ? "[enclose location in brackets]" : loc);
 	var notesStr = AjxStringUtil.convertToHtml(notes == null ? "(enclose notes in parens)" : notes);
-	dialog._setField(ZmMsg.subject, subStr, subject == "", false);
-	this._setDateFields(dialog, startDate, startTime, endDate, endTime);
-	dialog._setField(ZmMsg.location, locStr, loc == null, false);	
-	dialog._setField(ZmMsg.notes, notesStr, notes == null, false);
-	dialog._setOptField(ZmMsg.repeat, repeat, false, true);
+	this._setField(ZmMsg.subject, subStr, subject == "", false);
+	this._setDateFields(startDate, startTime, endDate, endTime);
+	this._setField(ZmMsg.location, locStr, loc == null, false);	
+	this._setField(ZmMsg.notes, notesStr, notes == null, false);
+	this._setOptField(ZmMsg.repeat, repeat, false, true);
 	return;
 };
 
 ZmApptAssistant.prototype._setDateFields = 
-function(dialog, startDate, startTime, endDate, endTime) {
+function(startDate, startTime, endDate, endTime) {
 	var startDateValue = DwtCalendar.getDateFullFormatter().format(startDate);
 	var sameDay = false;
 	var html = new AjxBuffer();
@@ -183,8 +182,8 @@ function(dialog, startDate, startTime, endDate, endTime) {
 	var doEnd = (endDate && !sameDay);
 	
 	if (doEnd) {
-		dialog._clearField(ZmMsg.time);
-		dialog._setField(ZmMsg.startTime, html.toString(), false, false, ZmMsg.subject);
+		this._clearField(ZmMsg.time);
+		this._setField(ZmMsg.startTime, html.toString(), false, false, ZmMsg.subject);
 		
 		html.clear();
 		var endDateValue = DwtCalendar.getDateFullFormatter().format(endDate);
@@ -197,11 +196,11 @@ function(dialog, startDate, startTime, endDate, endTime) {
 			html.append("<td>", AjxStringUtil.htmlEncode(endTimeValue), "</td>");
 		}
 		html.append("</tr></table>");
-		dialog._setField(ZmMsg.endTime, html.toString(), false, false, ZmMsg.startTime);
+		this._setField(ZmMsg.endTime, html.toString(), false, false, ZmMsg.startTime);
 		
 	} else {
-		dialog._setField(ZmMsg.time, html.toString(), false, false, ZmMsg.subject);
-		dialog._clearField(ZmMsg.startTime);
-		dialog._clearField(ZmMsg.endTime);		
+		this._setField(ZmMsg.time, html.toString(), false, false, ZmMsg.subject);
+		this._clearField(ZmMsg.startTime);
+		this._clearField(ZmMsg.endTime);		
 	}
 };
