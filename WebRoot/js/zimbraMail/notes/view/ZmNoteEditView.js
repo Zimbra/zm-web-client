@@ -308,7 +308,7 @@ ZmNoteEditor.prototype._wikiToolBarListener = function(event) {
 		"{{", name,
 	];
 	if (ZmNoteView.WIKLETS[name].params) {
-		a.push("|", ZmNoteView.WIKLETS[name].params);
+		a.push(" ", ZmNoteView.WIKLETS[name].params);
 	}
 	a.push("}}");
 	var node = document.createTextNode(a.join(""));

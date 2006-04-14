@@ -73,9 +73,10 @@ function(note) {
 		var pageContent = note.getContent();
 		content = chromeContent.replace(/\{\{CONTENT\}\}/ig, pageContent);
 	}
-	
+	content = this._processWiklets(content, note);
+
 	element.innerHTML = content;
-	this._render(element, note);
+	this._renderFindObjects(element);
 };
 
 ZmNoteView.prototype.getTitle =
@@ -104,82 +105,41 @@ ZmNoteView.prototype._createHtml = function() {
 	Dwt.setScrollStyle(element, Dwt.SCROLL);
 };
 
-ZmNoteView.prototype._render = function(element, note) {
-	var ids = [];
-	this._renderFindTransclusions(element, element.firstChild, note, ids);
-	this._renderReplaceTransclusions(note, ids);
-	this._renderFindObjects(element);
+ZmNoteView.prototype._processWiklets = function(content, note) {
+	// global values needed by _replaceWiklet
+	ZmNoteView._cache = this._controller._app.getNoteCache();
+	ZmNoteView._context = [ note ];
+	
+	// process wiklets in content
+	return ZmNoteView._processWiklets(content);
+}
+
+ZmNoteView._processWiklets = function(content) {
+	var regex = /(?=^|[^\\])\{\{\s*(.+?)(?:\s+(.*?))?\s*\}\}/g;
+	return content.replace(regex, ZmNoteView._replaceWiklet);
 };
-ZmNoteView.prototype._renderFindTransclusions = function(element, startChild, note, ids) {
-	for (var child = startChild; child != null; child = child.nextSibling) {
-		if (child.nodeType == AjxUtil.ELEMENT_NODE) {
-			this._renderFindTransclusions(child, child.firstChild, note, ids);
-			continue;
+
+ZmNoteView._replaceWiklet = function(match, name, value) {
+	var content = match;
+	var wiklet = ZmNoteView.WIKLETS[name];
+	if (wiklet) {
+		var params = ZmNoteView.__parseValueAsParams(value);
+		var cache = ZmNoteView._cache;
+		var context = ZmNoteView._context;
+
+		var length = context.length;
+		try {
+			content = wiklet.func(name, value, params, cache, context);
+			content = ZmNoteView._processWiklets(content);
 		}
-		if (child.nodeType == AjxUtil.TEXT_NODE) {
-			var m;
-			while (m = this._transclusionRe.exec(child.nodeValue)) {
-				// skip comments
-				var commentM = this._commentRe.exec(child.nodeValue);
-				if (commentM) {
-					var commentLen = commentM.index + commentM[0].length;
-					if (m.index > commentM.index && m.index < commentLen) {
-						this._commentRe.lastIndex = commentLen;
-						this._transclusionRe.lastIndex = commentLen;
-						continue;
-					}
-				}
-			
-				// split text before/after transclusion
-				if (m.index > 0) {
-					child = child.splitText(m.index);
-				}
-				if (child.nodeValue.length > m[0].length) {
-					child.splitText(m[0].length);
-				}
-				
-				// wrap transclusion in placeholder element
-				var placeholder = document.createElement("SPAN");
-				ids.push(placeholder.id = Dwt.getNextId());
-				placeholder.vname = m[1];
-				placeholder.vvalue = m[2];
-				
-				// replace original node with placeholder
-				child.parentNode.replaceChild(placeholder, child);
-				placeholder.appendChild(child);
-				child = placeholder;
-				
-				this._commentRe.lastIndex = 0;
-				this._transclusionRe.lastIndex = 0;
-			}
+		catch (e) {
+			DBG.println("error when processing wiklets: "+e);
 		}
+		context.length = length;
 	}
+	return content;
 };
-ZmNoteView.prototype._renderReplaceTransclusions = function(note, ids) {
-	var cache = this._controller._app.getNoteCache();
-	while (ids.length > 0) {
-		var id = ids.shift();
-		var placeholder = document.getElementById(id);
-		if (!placeholder) continue;
-		
-		var context;
-		var replacement = placeholder.firstChild;
-		var wiklet = ZmNoteView.WIKLETS[placeholder.vname.toUpperCase()];
-		if (wiklet) {
-			replacement = wiklet.func(placeholder, cache, note, context = []);
-			if (replacement.nodeType == 11) { // document fragment
-				var container = document.createElement("SPAN");
-				container.appendChild(replacement);
-				replacement = container;
-			}
-		}
-		placeholder.parentNode.replaceChild(replacement, placeholder);
-		if (wiklet) {
-			var subnote = context && context.length ? context[0] : note;
-			this._renderFindTransclusions(replacement.parentNode, replacement, subnote, ids); 
-		}
-	}
-};
+
 ZmNoteView.prototype._renderFindObjects = function(element) {
 	if (!this._objectMgr) {
 		this._objectMgr = new ZmObjectManager(this, this._appCtxt);
@@ -192,136 +152,300 @@ ZmNoteView.prototype._renderFindObjects = function(element) {
 };
 
 ZmNoteView.WIKLETS = {
-	"TOC": {
-		tooltip: ZmMsg.wikletTocTT,
-		params: "name = '*'",
-		func: function(element, cache, note) {
-			var nameRe = /^[^_]/;
-	
-			var attrs = ZmNoteView.__parseValueAttrs(element.vvalue);
-			if (attrs.name) {
-				var reSource = attrs.name;
-				reSource = reSource.replace(/\?/g, ".");
-				reSource = reSource.replace(/\*/g, ".*");
-				reSource = reSource.replace(/([\[\(\{\+])/g, "\\$1");
-	
-				nameRe = new RegExp("^" + reSource + "$", "i");
-			}
-	
-			var notes = ZmNoteView.__object2Array(cache.getNotesInFolder(note.folderId), nameRe);
-			notes.sort(ZmNoteView.__byNoteName);
-
-			var toc = document.createElement("DIV");
-			toc.className = "WikiTOC";
-
-			var a = [];
-			if (notes.length == 0) {
-				a.push("{{MSG|wikiPagesNotFound}}");
-			}
-			else {
-				a.push("<UL>");
-				for (var i = 0; i < notes.length; i++) {
-					var name = notes[i].name;
-					if (!nameRe.test(name)) continue;
-					a.push(
-						"<LI>",
-						"[[", name, "]]",
-						"</LI>"
-					);
-				}
-				a.push("</UL>");
-			}
-			toc.innerHTML = a.join("");
-	
-			return toc;
-		}
-	},
 	"NAME": {
 		tooltip: ZmMsg.wikletNameTT,
-		func: function(element, cache, note) {
-			var name = note.name == ZmNotebook.PAGE_INDEX ? ZmMsg.wikiToc : note.name;
-			return document.createTextNode(name);
+		func: function(name, value, params, cache, context) {
+			var name = context[context.length - 1].name;
+			return name == ZmNotebook.PAGE_INDEX ? ZmMsg.wikiToc : name;
+		}
+	},
+	"ICON": {
+		tooltip: ZmMsg.wikletIconTT,
+		func: function(name, value, params, cache, context) {
+			var imgName = "Page";
+			var item = context[context.length - 1];
+			if (item instanceof ZmNotebook) {
+				imgName = item.parent.id == ZmOrganizer.ID_ROOT ? "Notebook" : "Section";
+			}
+			return ["<div class='Img",imgName," _icon'></div>"].join("");
+		}
+	},
+	"COLOR": {
+		tooltip: ZmMsg.wikletColorTT,
+		func: function(name, value, params, cache, context) {
+			var folderId = context[context.length - 1].folderId;
+			var notebookTree = cache._appCtxt.getTree(ZmOrganizer.NOTEBOOK); // REVISIT !!!
+			var notebook = notebookTree.getById(folderId);
+			var index = notebook.color || 0;
+			return ZmCalendarTreeController.COLOR_CLASSNAMES[index];
+		}
+	},
+	"FRAGMENT": {
+		tooltip: ZmMsg.wikletFragmentTT,
+		func: function(name, value, params, cache, context) {
+			var note = context[context.length - 1].name;
+			return note.fragment || "";
 		}
 	},
 	"MSG": {
 		tooltip: ZmMsg.wikletMsgTT,
 		params: "messageKey",
-		func: function(element, cache, note) {
-			var key = element.vvalue;
-			if (key && ZmMsg[key]) {
-				element.innerHTML = ZmMsg[key];
-			}
-			return element.childNodes.length == 1 ? element.firstChild : element;
+		func: function(name, value, params, cache, context) {
+			return value && ZmMsg[value] ? ZmMsg[value] : "{{"+name+"}}";
 		}
 	},
 	"INCLUDE": {
 		tooltip: ZmMsg.wikletIncludeTT,
 		params: "PageName",
-		func: function(element, cache, note, context) {
-			var name = element.vvalue;
-			// REVISIT: right now, assume same folder
-			var note = cache.getNoteByName(note.folderId, name);
+		func: function(name, value, params, cache, context) {
+			// check for recursive include
+			for (var i = context.length - 1; i >= 0; i--) {
+				var note = context[i];
+				// TODO: also check folderId
+				if (note.name == value) {
+					var formatter = new AjxMessageFormat(ZmMsg.wikiIncludeRecursion);
+					return formatter.format(value);
+				}
+			}
+			
+			// include note
+			var folderId = context[context.length - 1].folderId;
+			var note = cache.getNoteByName(folderId, value);
 			if (note) {
 				context.push(note);
-				var container = document.createElement("SPAN");
-				container.innerHTML = note.getContent();
-				var fragment = document.createDocumentFragment();
-				var child = container.firstChild;
-				while (child != null) {
-					fragment.appendChild(child);
-					child = container.firstChild;
-				}
-				return fragment;
+				return note.getContent();
 			}
-			return element.firstChild;
+			
+			// no such note
+			var formatter = new AjxMessageFormat(ZmMsg.wikiIncludeMissing);
+			return formatter.format(value);
 		}
 	},
 	"CREATOR": {
 		tooltip: ZmMsg.wikletCreatorTT,
-		func: function(element, cache, note) {
-			return document.createTextNode(note.creator);
+		func: function(name, value, params, cache, context) {
+			var uname = context[context.length - 1].creator;
+			return ZmNoteView._wikletFormatUser(uname, params.link);
+		}
+	},
+	"MODIFIER": {
+		tooltip: ZmMsg.wikletModifierTT,
+		func: function(name, value, params, cache, context) {
+			var note = context[context.length - 1];
+			var uname = note.modifier || note.creator;
+			return ZmNoteView._wikletFormatUser(uname, params.link);
 		}
 	},
 	"CREATEDATE": {
 		tooltip: ZmMsg.wikletCreateDateTT,
 		params: "medium",
-		func: function(element, cache, note) {
-			return ZmNoteView._wikletFormatDate("date", element.vvalue, note.createDate);
+		func: function(name, value, params, cache, context) {
+			var note = context[context.length - 1];
+			return ZmNoteView._wikletFormatDate("date", value, note.createDate);
 		}
 	},
 	"CREATETIME": {
 		tooltip: ZmMsg.wikletCreateTimeTT,
 		params: "short",
-		func: function(element, cache, note) {
-			return ZmNoteView._wikletFormatDate("time", element.vvalue, note.createDate);
-		}
-	},
-	"MODIFIER": {
-		tooltip: ZmMsg.wikletModifierTT,
-		func: function(element, cache, note) {
-			return document.createTextNode(note.modifier || note.creator);
+		func: function(name, value, params, cache, context) {
+			var note = context[context.length - 1];
+			return ZmNoteView._wikletFormatDate("time", value, note.createDate);
 		}
 	},
 	"MODIFYDATE": {
 		tooltip: ZmMsg.wikletModifyDateTT,
 		params: "medium",
-		func: function(element, cache, note) {
-			return ZmNoteView._wikletFormatDate("date", element.vvalue, note.modifyDate);
+		func: function(name, value, params, cache, context) {
+			var note = context[context.length - 1];
+			return ZmNoteView._wikletFormatDate("date", value, note.modifyDate);
 		}
 	},
 	"MODIFYTIME": {
 		tooltip: ZmMsg.wikletModifyTimeTT,
 		params: "short",
-		func: function(element, cache, note) {
-			return ZmNoteView._wikletFormatDate("time", element.vvalue, note.modifyDate);
+		func: function(name, value, params, cache, context) {
+			var note = context[context.length - 1];
+			return ZmNoteView._wikletFormatDate("time", value, note.modifyDate);
 		}
 	},
 	"VERSION": {
 		tooltip: ZmMsg.wikletVersionTT,
-		func: function(element, cache, note) {
-			return document.createTextNode(note.version);
+		func: function(name, value, params, cache, context) {
+			return String(context[context.length - 1].version);
+		}
+	},
+	"TOC": {
+		tooltip: ZmMsg.wikletTocTT,
+		params: "page = '*'",
+		func: function(name, value, params, cache, context) {
+			var folderId = context[context.length-1].folderId;
+			var nameRe = /^[^_]/;
+			if (params.page) {
+				var reSource = params.page;
+				reSource = reSource.replace(/\?/g, ".");
+				reSource = reSource.replace(/\*/g, ".*");
+				reSource = reSource.replace(/([\[\(\{\+\.])/g, "\\$1");
+	
+				nameRe = new RegExp("^" + reSource + "$", "i");
+			}
+			
+			var notes = cache.getNotesInFolder(folderId);
+			notes = ZmNoteView.__object2Array(notes, nameRe);
+			notes.sort(ZmNoteView.__byNoteName);
+			if (params.sort == "descending") {
+				notes.reverse();
+			}
+			
+			var content = [];
+			//content.push("<div class='WikiTOC'>");
+			if (notes.length == 0) {
+				content.push("{{MSG wikiPagesNotFound}}");
+			}
+			else switch (params.format || "simple") {
+				case "list": {
+					content.push("<ul class='_toc_list'>");
+					for (var i = 0; i < notes.length; i++) {
+						var note = notes[i];
+						content.push("<li class='_pageLink'>[[", note.name, "]]</li>");
+					}
+					content.push("</ul>");
+				}
+				case "template": {
+					var folderId = context[context.length - 1].folderId;
+					
+					var itemTemplate = params.itemTemplate ? cache.getNoteByName(folderId, params.itemTemplate) : null;
+					var itemContent = itemTemplate ? itemTemplate.getContent() : [
+						// REVISIT
+						"<tr>",
+							"<td class='_pageIcon'>{{ICON}}</td>",
+							"<td class='_pageLink'>[[{{NAME}}]]</td>",
+							"<td class='_author'>{{MODIFIER}}</td>",
+							"<td class='_history'>&bull;{{MODIFYDATE}}</td>",
+						"</tr>",
+						"<tr>",
+							"<td></td>",
+							"<td class='_fragment' colspan='4'>{{FRAGMENT}}</td>",
+						"</tr>"
+					].join("");
+					for (var i = 0; i < notes.length; i++) {
+						var length = context.length;
+						try {
+							context.push(notes[i]);
+							content.push(ZmNoteView._processWiklets(itemContent));
+						}
+						catch (e) {
+							DBG.println("error processing toc item: "+e);
+						}
+						context.length = length;
+					}
+
+					var bodyTemplate = params.bodyTemplate ? cache.getNoteByName(folderId, params.bodyTemplate) : null;
+					var bodyContent = bodyTemplate ? bodyTemplate.getContent() : [
+						// REVISIT
+						"<table class='_toc_icon_table'>",
+							"<tr>",
+								"<td colspan='4' class='_tocHead'>{{NAME}}</td>",
+							"</tr>",
+							"{{CONTENT}}",
+						"</table>"
+					].join("");
+					content = [ bodyContent.replace(/\{\{CONTENT\}\}/g, content.join("")) ];
+					break;
+				}
+				case "simple": default: {
+					content.push("<span class='_toc_simple'>");
+					for (var i = 0; i < notes.length; i++) {
+						var note = notes[i];
+						content.push("<span class='_pageLink'>[[", note.name, "]]</span>");
+					}
+					content.push("</span>");
+					break;
+				}
+			}
+			//content.push("</div>");
+			return content.join("");
+		}
+	},
+	"BREADCRUMBS": {
+		tooltip: ZmMsg.wikletBreadcrumbsTT,
+		func: function(name, value, params, cache, context) {
+			// TODO: params.page
+			
+			// get breadcrumb trail
+			var note = context[context.length - 1];
+			var notebookTree = cache._appCtxt.getTree(ZmOrganizer.NOTEBOOK); // REVISIT!!!
+			var notebook = notebookTree.getById(note.folderId);
+			
+			var trail = [];
+			while (notebook.id != ZmOrganizer.ID_ROOT) {
+				trail.unshift(notebook);
+				notebook = notebookTree.getById(notebook.parent.id);
+			}
+			
+			// generate content
+			var content = [];
+			switch (params.format || "simple") {
+				case "template": {
+					var folderId = note.folderId;
+					
+					var separatorTemplate = params.separatorTemplate ? cache.getNoteByName(folderId, params.separatorTemplate) : null;
+					var separatorContent = separatorTemplate ? separatorTemplate.getContent() : "<td class='_breadcrumb_separator'> &raquo; </td>";
+					
+					var itemTemplate = params.itemTemplate ? cache.getNoteByName(folderId, params.itemTemplate) : null;
+					var itemContent = itemTemplate ? itemTemplate.getContent() : [
+						// REVISIT
+						"<td class='_pageIcon'>{{ICON}}</td>",
+						"<td class='_pageLink'>{{NAME}}</td>"
+					].join("");
+					for (var i = 0; i < trail.length; i++) {
+						if (i > 0) {
+							content.push(separatorContent); // REVISIT: Should this be evaluated?
+						}
+						var length = context.length;
+						try {
+							context.push(trail[i]);
+							content.push(ZmNoteView._processWiklets(itemContent));
+						}
+						catch (e) {
+							DBG.println("error processing breadcrumb item: "+e);
+						}
+						context.length = length;
+					}
+					
+					var bodyTemplate = params.bodyTemplate ? cache.getNoteByName(folderId, params.bodyTemplate) : null;
+					var bodyContent = bodyTemplate ? bodyTemplate.getContent() : [
+						// REVISIT
+						"<table class='_breadcrumb_table'>",
+							"<tr>",
+								"{{CONTENT}}",
+							"</tr>",
+						"</table>"
+					].join("");
+					content = [ bodyContent.replace(/\{\{CONTENT\}\}/g, content.join("")) ];
+					break;
+				}
+				case "simple": default: {
+					content.push("<span class='_breadcrumbs_simple'>");
+					for (var i = 0; i < trail.length; i++) {
+						if (i > 0) {
+							content.push(" &raquo; ");
+						}
+						var crumb = trail[i];
+						var path = crumb.name; // TODO !!!
+						content.push("<span class='_pageLink'>[[", path, "]]</span>");
+					}
+					content.push("</span>");
+					break;
+				}
+			}
+			return content.join("");
 		}
 	}
+};
+
+ZmNoteView._wikletFormatUser = function(name, link) {
+	// TODO: add link around name
+	return name;
 };
 
 ZmNoteView._wikletDateFormatters = {};
@@ -334,28 +458,30 @@ ZmNoteView._wikletFormatDate = function(type, style, date) {
 			}
 			formatter = ZmNoteView._wikletDateFormatters[pattern];
 		}
-		else {
+		else if (type == "time") {
+			formatter = AjxDateFormat.getTimeInstance();
+		}
+		else { // type == "date"
 			formatter = AjxDateFormat.getDateInstance();
 		}
 		
-		var s = formatter.format(date);
-		return document.createTextNode(s);
+		return formatter.format(date);
 };
 
 // Utility functions
 
-ZmNoteView.__parseValueAttrs = function(s) {
-	var attrs = {};
+ZmNoteView.__parseValueAsParams = function(s) {
+	var params = {};
 
-	var re = /([a-z]+)\s*=\s*(?:'(.*?)'|"(.*?)")/g;
+	var re = /([a-z]+)\s*=\s*(?:'(.*?)'|"(.*?)"|(\S+))/g;
 	var m;
 	while (m = re.exec(s)) {
-		var aname = m[1].toLowerCase();
-		var avalue = m[2] || m[3] || "";
-		attrs[aname] = avalue;
+		var pname = m[1].toLowerCase();
+		var pvalue = m[2] || m[3] || m[4] | "";
+		params[pname] = pvalue;
 	}
 	
-	return attrs;
+	return params;
 };
 
 ZmNoteView.__object2Array = function(o, re) {

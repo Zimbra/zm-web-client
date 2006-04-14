@@ -35,7 +35,7 @@ function ZmNoteCache(appCtxt) {
 
 ZmNoteCache._SPECIAL = {};
 ZmNoteCache._SPECIAL[ZmNotebook.PAGE_INDEX] = [
-	"<H2>{{MSG|wikiUserPages}}</H2>",
+	"<H2>{{MSG wikiUserPages}}</H2>",
 	"<P>",
 		"{{TOC}}"
 	/***

@@ -37,8 +37,9 @@
 * @param link
 * @param owner
 */
-function ZmNotebook(id, name, parent, tree, link, owner) {
+function ZmNotebook(id, name, parent, tree, color, link, owner) {
 	ZmOrganizer.call(this, ZmOrganizer.NOTEBOOK, id, name, parent, tree, null, null, null, owner);
+	this.color = color || ZmOrganizer.DEFAULT_COLOR;
 	this.link = link;
 }
 
@@ -101,6 +102,11 @@ function(obj) {
 		fields[ZmOrganizer.F_NAME] = true;
 		doNotify = true;
 	}
+	else if (obj.color != null && this.color != obj.color) {
+		this.color = obj.color;
+		fields[ZmOrganizer.F_COLOR] = true;
+		doNotify = true;
+	}
 	
 	if (doNotify)
 		this._notify(ZmEvent.E_MODIFY, {fields: fields});
@@ -128,7 +134,7 @@ function(parent, obj, tree, link) {
 	if (!(obj && obj.id)) return;
 
 	// create calendar, populate, and return
-	var notebook = new ZmNotebook(obj.id, obj.name, parent, tree, link, obj.d);
+	var notebook = new ZmNotebook(obj.id, obj.name, parent, tree, obj.color, link, obj.d);
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];
