@@ -307,29 +307,24 @@ ZmComposeController.prototype._deleteDraft =
 function(delMsg) {
 
 	var list = delMsg.list;
-	var mailItem = list && list.type == ZmItem.CONV
-		? list.getById(delMsg.getConvId()) : delMsg;
+	var mailItem, request;
 
-	if (mailItem && list) {
-		list.deleteItems(mailItem, true);
-	} else if (delMsg.id) {
-		// do a manual delete of the "virtual" conv/msg that was created but
-		// never added to our internal list model
-		var soapDoc = AjxSoapDoc.create("MsgActionRequest", "urn:zimbraMail");
-		var actionNode = soapDoc.set("action");
-		actionNode.setAttribute("id", delMsg.id);
-		actionNode.setAttribute("op", "delete");
-		var respCallback = new AjxCallback(this, this._handleResponseDeleteDraft);
-		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	if (list && list.type == ZmItem.CONV) {
+		mailItem = list.getById(delMsg.getConvId());
+		request = "ConvActionRequest";
+	} else {
+		mailItem = delMsg;
+		request = "MsgActionRequest";
 	}
-};
 
-ZmComposeController.prototype._handleResponseDeleteDraft =
-function(result) {
-	// force a redo Search to refresh the drafts folder
-	var search = this._appCtxt.getCurrentSearch();
-	if (search.folderId == ZmFolder.ID_DRAFTS)
-		this._appCtxt.getSearchController().redoSearch(search);
+	// manually delete "virtual conv" or msg created but never added to internal list model
+	var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
+	var actionNode = soapDoc.set("action");
+	actionNode.setAttribute("id", mailItem.id);
+	actionNode.setAttribute("op", "delete");
+
+	var async = window.parentController == null;
+	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:async});
 };
 
 // Creates the compose view based on the mode we're in. Lazily creates the
