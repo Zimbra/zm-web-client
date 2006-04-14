@@ -522,6 +522,8 @@ function() {
 	if (AjxEnv.isIE)
 		this._setEventHandler(attInputId, "onKeyDown", null);
 	this._resetBodySize();
+
+	this._attcDiv.scrollTop = this._attcDiv.scrollHeight;
 };
 
 ZmComposeView.prototype.enableInputs =
