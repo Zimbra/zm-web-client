@@ -717,6 +717,8 @@ function(ev) {
 
 ZmComposeController.prototype._detachCallback =
 function() {
+	// get rid of any lingering attachments since they cannot be detached
+	this._composeView.cleanupAttachments();
 	this._detachOkCancel.popdown();
 	this.detach();
 };
