@@ -142,6 +142,9 @@ function(toggled) {
 */
 ZmComposeController.prototype.detach =
 function() {
+	// bug fix #7192 - disable detach toolbar button
+	this._toolbar.enable(ZmOperation.DETACH_COMPOSE, false);
+
 	var msg = this._composeView.getOrigMsg();
 	var addrs = this._composeView.getRawAddrFields();
 	var subj = this._composeView._subjectField.value;
