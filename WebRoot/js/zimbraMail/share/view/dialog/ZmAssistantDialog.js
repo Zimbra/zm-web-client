@@ -29,12 +29,11 @@
 */
 function ZmAssistantDialog(appCtxt) {
 
-	DwtDialog.call(this, appCtxt.getShell(), "ZmAssistantDialog", "Zimbra Assistant");
+	DwtDialog.call(this, appCtxt.getShell(), "ZmAssistantDialog", ZmMsg.zimbraAssistant);
 //	ZmQuickAddDialog.call(this, appCtxt.getShell(), null, null, []);
 
 	this._appCtxt = appCtxt;
 
-	this.setTitle("Zimbra Assistant");
 	this.setContent(this._contentHtml());
 	this._initContent();
 	this._msgDialog = this._appCtxt.getMsgDialog();
@@ -76,9 +75,9 @@ function() {
 	this._contentId = Dwt.getNextId();	
 	this._commandId = Dwt.getNextId();	
 	html.append("<table cellspacing=3 border=0 width=400>");
+	html.append("<tr><td colspan=3>", ZmMsg.enterCommand, "</td></tr>");	
 	html.append("<tr><td colspan=3><div>");
 	html.append("<textarea rows=2 style='width:100%' id='",this._commandId,"'>");
-	html.append("");
 	html.append("</textarea>");
 	html.append("</div></td></tr>");
 	html.append("<tr><td colspan=3><div class=horizSep></div></td></tr>");
@@ -137,13 +136,13 @@ function() {
 		if (this._assistant) this._assistant.initialize(this);
 	}
 
-	if (this._assistant) this._assistant.parse(this, null, args);
+	if (this._assistant) this._assistant.handle(this, null, args);
 	else this._setDefault();
 };
 
 ZmAssistantDialog.prototype._setDefault = 
 function() {
-	this.setAssistantContent("available actions: appt, contact, empty, message");
+	this.setAssistantContent("available commands: appt, contact, empty, message");
 	this._setOkButton(AjxMsg.ok, false, false, true, null);
 };	
 
@@ -169,6 +168,7 @@ function() {
 
 ZmAssistantDialog.prototype._okButtonListener =
 function(ev) {
+	if (this._assistant && !this._assistant.okHandler(this)) return;
 	this.popdown();
 };
 

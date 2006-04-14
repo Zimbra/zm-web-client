@@ -33,7 +33,7 @@ ZmContactAssistant.prototype.constructor = ZmAssistant;
 
 ZmContactAssistant.prototype.okHandler =
 function(dialog) {
-	//override
+	return true;	//override
 };
 
 ZmContactAssistant._CONTACT_FIELD_ORDER = [
@@ -86,7 +86,7 @@ ZmContactAssistant._CONTACT_OBJECT_ORDER = [
 	ZmAssistant._BRACKETS, ZmObjectManager.PHONE, ZmObjectManager.URL, ZmObjectManager.EMAIL
 ];
 
-ZmContactAssistant.prototype.parse =
+ZmContactAssistant.prototype.handle =
 function(dialog, verb, args) {
 	dialog._setOkButton(ZmMsg.createNewContact, true, true, true, "NewContact");
 	var match;
@@ -119,21 +119,22 @@ function(dialog, verb, args) {
 	var remaining = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' ').split(",", 3);
 	var fullName = remaining[0];
 
-	if (!objects.title) objects.title = { data : remaining[1] ? remaining[1] : ""};
-	if (!objects.company) objects.company = { data: remaining[2] ? remaining[2] : ""};	
+	if (!objects.title) objects.title = { data : remaining[1] != null ? remaining[1] : null};
+	if (!objects.company) objects.company = { data: remaining[2] != null ? remaining[2] : null};	
 
-	this._setField(ZmMsg.AB_FIELD_fullName, fullName == "" ? "type to enter fullname, title, company" : fullName, fullName == "", true);
+	this._setField(ZmMsg.AB_FIELD_fullName, fullName == "" ? ZmMsg.ASST_CONTACT_fullName : fullName, fullName == "", true);
 	
 	for (var i=0; i < ZmContactAssistant._CONTACT_FIELD_ORDER.length; i++) {	
 		var key = ZmContactAssistant._CONTACT_FIELD_ORDER[i];
 		var data = objects[key];
 		var field = ZmContactAssistant._CONTACT_FIELDS[key];
-		var value = (data && data.data) ? data.data : null;
+		var value = (data && data.data != null) ? data.data : null;
 		if (value != null) {
 			value = field.multiLine ? AjxStringUtil.convertToHtml(value) : AjxStringUtil.htmlEncode(value);
 		}
-		if (field.defaultValue) {
-			var useDefault = (value == null || value == "");
+		if (field.defaultValue || value != null) {
+			//var useDefault = (value == null || value == "");
+			var useDefault = (value == null);
 			this._setField(field.field, useDefault ? field.defaultValue : value, useDefault, false);
 		} else {
 			this._setOptField(field.field, value, false, false);

@@ -33,7 +33,7 @@ ZmApptAssistant.prototype.constructor = ZmAssistant;
 
 ZmApptAssistant.prototype.okHandler =
 function(dialog) {
-	//override
+	return true;
 };
 
 /**
@@ -61,7 +61,7 @@ function(dialog) {
  * everything left "lunch with satish" is taken as subject
  * 
  */
-ZmApptAssistant.prototype.parse =
+ZmApptAssistant.prototype.handle =
 function(dialog, verb, args) {
 	dialog._setOkButton(ZmMsg.createNewAppt, true, true, true, "NewAppointment");
 	DBG.println("args = "+args);
@@ -147,9 +147,9 @@ function(dialog, verb, args) {
 
 	dialog._setOkButton(null, true, subject != null && subject != "");
 	
-	var subStr = AjxStringUtil.convertToHtml(subject == "" ? "\"enclose subject in quotes or just type\"" : subject);
-	var locStr = AjxStringUtil.convertToHtml(loc == null ? "[enclose location in brackets]" : loc);
-	var notesStr = AjxStringUtil.convertToHtml(notes == null ? "(enclose notes in parens)" : notes);
+	var subStr = AjxStringUtil.convertToHtml(subject == "" ? ZmMsg.ASST_APPT_subject : subject);
+	var locStr = AjxStringUtil.convertToHtml(loc == null ? ZmMsg.ASST_APPT_location : loc);
+	var notesStr = AjxStringUtil.convertToHtml(notes == null ? ZmMsg.ASST_APPT_notes : notes);
 	this._setField(ZmMsg.subject, subStr, subject == "", false);
 	this._setDateFields(startDate, startTime, endDate, endTime);
 	this._setField(ZmMsg.location, locStr, loc == null, false);	

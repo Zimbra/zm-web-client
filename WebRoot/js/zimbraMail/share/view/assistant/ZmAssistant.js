@@ -49,14 +49,14 @@ function(dialog) {
 	this._clearFields();
 };
 
-ZmAssistant.prototype.parse =
+ZmAssistant.prototype.handle =
 function(dialog, verb, line) {
 	//override
 };
 
 ZmAssistant.prototype.okHandler =
 function(dialog) {
-	//override
+	return true; //override
 };
 
 ZmAssistant.prototype._matchTime =
