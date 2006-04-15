@@ -150,7 +150,7 @@ function(dialog, verb, args) {
 	var subStr = AjxStringUtil.convertToHtml(subject == "" ? ZmMsg.ASST_APPT_subject : subject);
 	var locStr = AjxStringUtil.convertToHtml(loc == null ? ZmMsg.ASST_APPT_location : loc);
 	var notesStr = AjxStringUtil.convertToHtml(notes == null ? ZmMsg.ASST_APPT_notes : notes);
-	this._setField(ZmMsg.subject, subStr, subject == "", false);
+	this._setField("* "+ZmMsg.subject, subStr, subject == "", false);
 	this._setDateFields(startDate, startTime, endDate, endTime);
 	this._setField(ZmMsg.location, locStr, loc == null, false);	
 	this._setField(ZmMsg.notes, notesStr, notes == null, false);

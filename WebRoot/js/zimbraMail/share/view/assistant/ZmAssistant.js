@@ -147,7 +147,8 @@ ZmAssistant.prototype._clearField =
 function(title) {
 	var fieldData = this._fields[title];
 	if (fieldData) {
-		fieldData.rowEl.parentNode.removeChild(fieldData.rowEl);
+		var rowEl = document.getElementById(fieldData.rowId);
+		if (rowEl) rowEl.parentNode.removeChild(rowEl);
 		delete this._fields[title];
 	}
 }
@@ -176,17 +177,21 @@ function(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign) {
 		var rowIndex = -1;
 		if (afterRowTitle) {
 			var afterRow = this._fields[afterRowTitle];
-			if (afterRow) rowIndex = afterRow.rowEl.rowIndex+1;
+			if (afterRow) {
+				var rowEl = document.getElementById(afterRow.rowId);
+				if (rowEl) rowIndex = rowEl.rowIndex+1;
+			}
 		}
 		var tableEl = document.getElementById(this._tableId);
 		var row = tableEl.insertRow(rowIndex);
+		row.id = Dwt.getNextId();
 		var cell1 = row.insertCell(-1);
 		cell1.valign = titleAlign ? titleAlign : "top";
 		cell1.className = 'ZmAsstFieldLabel';
 		cell1.innerHTML = AjxStringUtil.htmlEncode(title+":");
 		var cell2 = row.insertCell(-1);
 		cell2.innerHTML = "<div id='"+id+"' class='"+cname+"'>"+value+"</div></td>";
-		this._fields[title] = { id: id, rowEl: row };
+		this._fields[title] = { id: id, rowId: row.id };
 	}
 };
 
