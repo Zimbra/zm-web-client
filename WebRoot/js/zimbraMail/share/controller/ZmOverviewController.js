@@ -115,8 +115,10 @@ ZmOverviewController.prototype.clearOverview =
 function(overviewId) {
 	var treeIds = this._treeIds[overviewId];
 	if (treeIds) {
-		for (var i = 0; i < treeIds.length; i++)
-			this._controllers[treeIds[i]].clearTreeView(overviewId);
+		for (var i = 0; i < treeIds.length; i++) {
+			var treeController = this.getTreeController(treeIds[i]);
+			treeController.clearTreeView(overviewId);
+		}
 	}
 };
 
@@ -151,8 +153,7 @@ function(overviewId, treeIds, omit) {
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];
 		// lazily create appropriate tree controller
-		if (!this._controllers[treeId])
-			this._controllers[treeId] = new ZmOverviewController.CONTROLLER[treeId](this._appCtxt);
+		var treeController = this.getTreeController(treeId);
 		var treeView = this.getTreeView(overviewId, treeIds[i]);
 		if (treeView) {
 			// add the tree view's HTML element back to the overview
@@ -160,7 +161,7 @@ function(overviewId, treeIds, omit) {
 			treeView.setCheckboxes();
 		} else {
 			// create the tree view as a child of the overview
-			this._controllers[treeId].show(overviewId, this._showUnread[overviewId], omit);
+			treeController.show(overviewId, this._showUnread[overviewId], omit);
 		}
 	}
 	this._treeIds[overviewId] = treeIds;
@@ -173,6 +174,10 @@ function(overviewId, treeIds, omit) {
 */
 ZmOverviewController.prototype.getTreeController =
 function(treeId) {
+	if (!this._controllers[treeId]) {
+		var treeControllerCtor = ZmOverviewController.CONTROLLER[treeId];
+		this._controllers[treeId] = new treeControllerCtor(this._appCtxt);
+	}
 	return this._controllers[treeId];
 };
 

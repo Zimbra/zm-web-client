@@ -187,8 +187,19 @@ function() {
 
 ZmNoteEditController.prototype._saveListener =
 function(ev) {
+	var name = this._noteEditView.getTitle();
+	if (!name || name.replace(/^\s+/,"").replace(/\s+$/,"") == "") {
+		var dialog = this._appCtxt.getMsgDialog();
+		var message = ZmMsg.errorSavingPageNameRequired;
+		var style = DwtMessageDialog.WARNING_STYLE;
+		dialog.setMessage(message, style);
+		dialog.popup();
+		this._noteEditView.focus();
+		return;
+	}
+
 	// set fields on note object
-	this._note.name = this._noteEditView.getTitle();
+	this._note.name = name;
 	this._note.setContent(this._noteEditView.getContent());
 	
 	// save
@@ -200,9 +211,19 @@ ZmNoteEditController.prototype._saveResponseHandler = function(response) {
 
 	var saveResp = response._data && response._data.SaveWikiResponse;
 	if (saveResp && saveResp.w[0].ver == 1) {
-		var noteController = this._app.getNoteController();
-		noteController.show(this._note);
+		// NOTE: Need to let this call stack return and
+		//       process the notifications.
+		var args = [ this._note.folderId, this._note.name ];
+		var action = new AjxTimedAction(this, this._saveResponseHandlerShowNote, args);
+		AjxTimedAction.scheduleAction(action, 0);
 	}
+};
+ZmNoteEditController.prototype._saveResponseHandlerShowNote = 
+function(folderId, name) {
+		var cache = this._app.getNoteCache();
+		var note = cache.getNoteByName(folderId, name);
+		var noteController = this._app.getNoteController();
+		noteController.show(note);
 };
 
 ZmNoteEditController.prototype._cancelListener =
@@ -223,17 +244,7 @@ ZmNoteEditController.prototype._formatListener = function(ev) {
 	if (op == ZmOperation.COMPOSE_FORMAT) {
 		var toolbar = this._toolbar[this._currentView];
 		var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-		/***/
 		button.popup();
-		/***
-		var menu = button.getMenu();
-		if (menu.isPoppedup()) {
-			menu.popdown();
-		}
-		else {
-			button.popup();
-		}
-		/***/
 		return;
 	}
 
@@ -244,7 +255,7 @@ ZmNoteEditController.prototype._formatListener = function(ev) {
 	
 	// handle selection
 	var content = this._noteEditView.getContent();
-	var format = ev.item.getData(ZmNoteEditor.KEY_FORMAT);
-	this._noteEditView.setFormat(format);
+	this._format = ev.item.getData(ZmNoteEditor.KEY_FORMAT);
+	this._noteEditView.setFormat(this._format);
 	this._noteEditView.setContent(content);
 };

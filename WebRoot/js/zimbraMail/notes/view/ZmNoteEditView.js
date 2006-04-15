@@ -44,6 +44,10 @@ function() {
 ZmNoteEditView.prototype._appCtxt;
 ZmNoteEditView.prototype._controller;
 
+ZmNoteEditView.prototype._locationEl;
+ZmNoteEditView.prototype._pageNameInput;
+ZmNoteEditView.prototype._pageEditor;
+
 // Public methods
 
 ZmNoteEditView.prototype.getController =
@@ -57,35 +61,43 @@ function(note) {
 	note.getContent(callback);
 };
 ZmNoteEditView.prototype._setResponse = function(note) {
+	var content = "{{BREADCRUMBS format='template'}}";
+	content = ZmWikletProcessor.process(this._appCtxt, note, content);
+	this._locationEl.innerHTML = content;
+
 	var name = note.name || "";
-	this._titleInput.setValue(name);
-	this._titleInput.disabled(name != "");
+	this._pageNameInput.setValue(name);
+	this._pageNameInput.disabled(name != "");
 
 	var content = note.getContent();
 	this.setContent(content);
-		
-	var focusedComp = name == "" ? this._titleInput : this._textArea;
+	
+	/***	
+	var focusedComp = name == "" ? this._pageNameInput : this._pageEditor;
 	focusedComp.focus();
+	/***/
+	this.focus();
+	/***/
 };
 
 ZmNoteEditView.prototype.getTitle =
 function() {
-	return this._titleInput.getValue();
+	return this._pageNameInput.getValue();
 };
 
 ZmNoteEditView.prototype.setFormat = function(format) {
-	this._textArea.setFormat(format);
+	this._pageEditor.setFormat(format);
 };
 ZmNoteEditView.prototype.getFormat = function() {
-	return this._textArea.getFormat();
+	return this._pageEditor.getFormat();
 };
 
 ZmNoteEditView.prototype.setContent = function(content) {
-	this._textArea.setContent(content);
+	this._pageEditor.setContent(content);
 };
 ZmNoteEditView.prototype.getContent =
 function() {
-	return this._textArea.getContent();
+	return this._pageEditor.getContent();
 };
 
 ZmNoteEditView.prototype.getSelection =
@@ -102,7 +114,13 @@ function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
 
 	var size = Dwt.getSize(this._inputEl);
-	this._textArea.setSize(width, height - size.y);
+	this._pageEditor.setSize(width, height - size.y);
+};
+
+ZmNoteEditView.prototype.focus = function() {
+	var name = this._pageNameInput.getValue();
+	var focusedComp = name == "" ? this._pageNameInput : this._pageEditor;
+	focusedComp.focus();
 };
 
 // Protected methods
@@ -110,15 +128,15 @@ function(x, y, width, height) {
 ZmNoteEditView.prototype._createHtml =
 function() {
 	// create components
-	this._titleInput = new DwtInputField({parent:this});
-	this._titleInput.setRequired(true);
-	var titleInputEl = this._titleInput.getInputElement();
+	this._pageNameInput = new DwtInputField({parent:this});
+	this._pageNameInput.setRequired(true);
+	var titleInputEl = this._pageNameInput.getInputElement();
 	titleInputEl.size = 50;
 		
-	this._textArea = new ZmNoteEditor(this, null, null, DwtHtmlEditor.HTML, this._appCtxt, this._controller);
+	this._pageEditor = new ZmNoteEditor(this, null, null, DwtHtmlEditor.HTML, this._appCtxt, this._controller);
 	// HACK: Notes are always HTML format, regardless of the COS setting.
-	this._textArea.isHtmlEditingSupported = new Function("return true");
-	var textAreaEl = this._textArea.getHtmlElement();
+	this._pageEditor.isHtmlEditingSupported = new Function("return true");
+	var textAreaEl = this._pageEditor.getHtmlElement();
 	textAreaEl.style.width = "100%";
 	textAreaEl.style.height = "100%";
 
@@ -128,14 +146,21 @@ function() {
 	table.cellSpacing = 0;
 	table.cellPadding = 3;
 	table.width = "100%";
-	
-	var row = table.insertRow(table.rows.length);
-	var labelCell = row.insertCell(row.cells.length);
+
+	var row = table.insertRow(-1);
+	var labelCell = row.insertCell(-1);
 	labelCell.width = "1%";
 	labelCell.className = "Label";
-	labelCell.innerHTML = ZmMsg.titleLabel;
-	var inputCell = row.insertCell(row.cells.length);
-	inputCell.appendChild(this._titleInput.getHtmlElement());
+	labelCell.innerHTML = ZmMsg.locationLabel;
+	this._locationEl = row.insertCell(-1);
+	
+	var row = table.insertRow(-1);
+	var labelCell = row.insertCell(-1);
+	labelCell.width = "1%";
+	labelCell.className = "Label";
+	labelCell.innerHTML = ZmMsg.pageLabel;
+	var inputCell = row.insertCell(-1);
+	inputCell.appendChild(this._pageNameInput.getHtmlElement());
 	
 	var element = this.getHtmlElement();
 	element.appendChild(table);

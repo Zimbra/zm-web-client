@@ -1,0 +1,75 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.1
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.1 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ * 
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2006 Zimbra, Inc.
+ * All Rights Reserved.
+ * 
+ * Contributor(s):
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
+
+function ZmWikletContext(appCtxt, noteCache) {
+	this._appCtxt = appCtxt;
+	this._noteCache = noteCache;
+	this._items = [];
+}
+
+// Data
+
+ZmWikletContext.prototype._appCtxt;
+ZmWikletContext.prototype._noteCache;
+ZmWikletContext.prototype._processor;
+
+ZmWikletContext.prototype._items;
+
+// Public methods
+
+ZmWikletContext.prototype.pushItem = function(item) {
+	this._items.push(item);
+	return this._items.length;
+};
+ZmWikletContext.prototype.getItem = function() {
+	var length = this._items.length;
+	return length ? this._items[length - 1] : null;
+};
+ZmWikletContext.prototype.getItemAt = function(index) {
+	return this._items[index];
+};
+ZmWikletContext.prototype.getItemCount = function() {
+	return this._items.length;
+};
+ZmWikletContext.prototype.setItemCount = function(count) { 
+	this._items.length = count;
+};
+
+ZmWikletContext.prototype.getNotes = function(notebookId) {
+	return this._noteCache.getNotesInFolder(notebookId);
+};
+
+ZmWikletContext.prototype.getNoteByName = function(notebookId, name) {
+	return this._noteCache.getNoteByName(notebookId, name);
+};
+
+ZmWikletContext.prototype.getNotebookById = function(id) {
+	var treeController = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	return treeController.getById(id);
+};
+
+ZmWikletContext.prototype.process = function(content) {
+	return ZmWikletProcessor._process(content);
+};
