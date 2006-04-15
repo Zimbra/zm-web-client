@@ -657,16 +657,16 @@ function() {
 };
 
 ZmCalMonthView.getDayToolTipText =
-function(date, list, controller) {
+function(date, list, controller, noheader) {
 	var html = new AjxBuffer();
 
 	var formatter = DwtCalendar.getDateFullFormatter();	
 	var title = formatter.format(date);
 	
 	html.append("<div>");
+
 	html.append("<table cellpadding='0' cellspacing='0' border='0'>");
-	html.append("<tr><td><div class='calendar_tooltip_month_day_label'>", title, "</div></td></tr>");
-		
+	if (!noheader) html.append("<tr><td><div class='calendar_tooltip_month_day_label'>", title, "</div></td></tr>");
 	html.append("<tr><td>");
 	html.append("<table cellpadding='1' cellspacing='0' border='0' width=100%>");
 	

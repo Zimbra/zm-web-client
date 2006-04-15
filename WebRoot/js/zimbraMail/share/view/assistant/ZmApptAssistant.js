@@ -154,6 +154,10 @@ function(dialog, verb, args) {
 	this._setDateFields(startDate, startTime, endDate, endTime);
 	this._setField(ZmMsg.location, locStr, loc == null, false);	
 	this._setField(ZmMsg.notes, notesStr, notes == null, false);
+
+	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
+	var agenda = cc.getDayToolTipText(startDate, true);
+	this._setField(ZmMsg.agenda, agenda, false, false);
 	this._setOptField(ZmMsg.repeat, repeat, false, true);
 	return;
 };

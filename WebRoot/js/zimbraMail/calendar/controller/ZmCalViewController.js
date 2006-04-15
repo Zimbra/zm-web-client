@@ -1109,12 +1109,12 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 }
 
 ZmCalViewController.prototype.getDayToolTipText =
-function(date) {
+function(date, noheader) {
 	try {
 		var start = new Date(date.getTime());
 		start.setHours(0, 0, 0, 0);
 		var result = this.getApptSummaries(start.getTime(), start.getTime()+AjxDateUtil.MSEC_PER_DAY, true, this.getCheckedCalendarFolderIds());
-		return ZmCalMonthView.getDayToolTipText(start,result, this);
+		return ZmCalMonthView.getDayToolTipText(start,result, this, noheader);
 	} catch (ex) {
 		DBG.println(ex);
 		return "<b>"+ZmMsg.errorGettingAppts+"</b>";

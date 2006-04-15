@@ -50,8 +50,8 @@ ZmAssistant.prototype.initialize =
 function(dialog) {
 	var html = new AjxBuffer();
 	this._tableId = Dwt.getNextId();
-	html.append("<table cellspacing=3 border=0 width=100% id='", this._tableId, "'>");
-	html.append("</table>");	
+	html.append("<table cellspacing='3' border='0' width='100%'><tbody id='", this._tableId, "'>");
+	html.append("</tbody></table>");
 	dialog.setAssistantContent(html.toString());
 };
 
@@ -172,10 +172,7 @@ function(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign) {
 		divEl.innerHTML = value;
 		divEl.className = cname;
 	} else {
-		var html = new AjxBuffer();
 		var id = Dwt.getNextId();
-		html.append("<td valign='", titleAlign ? titleAlign : "top", "' class='ZmAsstFieldLabel'>", AjxStringUtil.htmlEncode(title), ":</td>");
-		html.append("<td><div id='", id, "' class='", cname, "'>", value, "</div></td>");
 		var rowIndex = -1;
 		if (afterRowTitle) {
 			var afterRow = this._fields[afterRowTitle];
@@ -183,7 +180,12 @@ function(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign) {
 		}
 		var tableEl = document.getElementById(this._tableId);
 		var row = tableEl.insertRow(rowIndex);
-		row.innerHTML = html.toString();
+		var cell1 = row.insertCell(-1);
+		cell1.valign = titleAlign ? titleAlign : "top";
+		cell1.className = 'ZmAsstFieldLabel';
+		cell1.innerHTML = AjxStringUtil.htmlEncode(title+":");
+		var cell2 = row.insertCell(-1);
+		cell2.innerHTML = "<div id='"+id+"' class='"+cname+"'>"+value+"</div></td>";
 		this._fields[title] = { id: id, rowEl: row };
 	}
 };
