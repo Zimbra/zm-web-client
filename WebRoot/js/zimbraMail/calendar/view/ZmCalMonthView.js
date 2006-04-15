@@ -698,7 +698,8 @@ function(date, list, controller, noheader) {
 			html.append("<tr><td class='calendar_month_day_item'><div class='", color, isNew ? "DarkC" : "C", "'>");		
 			if (isNew) html.append("<b>");
 			//html.append("&bull;&nbsp;");
-			var dur = ao.getShortStartHour();
+			//var dur = ao.getShortStartHour();
+			var dur = ao.getDurationText(false, false);
 			html.append(dur);
 			if (dur != "") {
 				html.append("&nbsp;");

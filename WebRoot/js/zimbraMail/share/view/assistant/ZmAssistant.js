@@ -186,7 +186,7 @@ function(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign) {
 		var row = tableEl.insertRow(rowIndex);
 		row.id = Dwt.getNextId();
 		var cell1 = row.insertCell(-1);
-		cell1.valign = titleAlign ? titleAlign : "top";
+		cell1.vAlign = titleAlign ? titleAlign : "top";
 		cell1.className = 'ZmAsstFieldLabel';
 		cell1.innerHTML = AjxStringUtil.htmlEncode(title+":");
 		var cell2 = row.insertCell(-1);
