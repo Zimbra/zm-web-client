@@ -50,7 +50,7 @@ ZmContactAssistant._CONTACT_FIELDS = {
 	cbp: { field: ZmMsg.AB_FIELD_callbackPhone, key: 'cbp' },
 company: { field: ZmMsg.AB_FIELD_company, key: 'company' },
 	 cp: { field: ZmMsg.AB_FIELD_companyPhone, key: 'cp' },
-	  e: { field: ZmMsg.AB_FIELD_email, key: 'e', defaultValue: 'enter an email address'},
+	  e: { field: ZmMsg.AB_FIELD_email, key: 'e', defaultValue: ZmMsg.ASST_CONTACT_email },
 	 e2: { field: ZmMsg.AB_FIELD_email2, key: 'e2' },
 	 e3: { field: ZmMsg.AB_FIELD_email3, key: 'e3' },
 	  f: { field: ZmMsg.AB_FIELD_workFax, key: 'wf' }, // alias f to wf
@@ -61,7 +61,7 @@ company: { field: ZmMsg.AB_FIELD_company, key: 'company' },
 	 hu: { field: ZmMsg.AB_HOME_URL, key: 'hu' },
 jobtitle:{ field: ZmMsg.AB_FIELD_jobTitle, key: 'title' },	 // alias jobtitle to title
 	  m: { field: ZmMsg.AB_FIELD_mobilePhone, key: 'm' },
-  notes: { field: ZmMsg.notes, key: 'notes', multiLine: true, defaultValue: '(enclose notes in parens)' },	  
+  notes: { field: ZmMsg.notes, key: 'notes', multiLine: true, defaultValue: ZmMsg.ASST_CONTACT_notes },
 	 oa: { field: ZmMsg.AB_ADDR_OTHER, key: 'oa', multiLine: true },
 	 of: { field: ZmMsg.AB_FIELD_otherFax, key: 'of' },
 	 op: { field: ZmMsg.AB_FIELD_otherPhone, key: 'op' },

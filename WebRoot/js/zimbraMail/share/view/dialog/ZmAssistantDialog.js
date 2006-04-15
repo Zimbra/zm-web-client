@@ -44,9 +44,16 @@ function ZmAssistantDialog(appCtxt) {
 	this._parseTimedAction = new AjxTimedAction(this, this._parseAction);
 	this._parseActionId = -1;
 	
-	this._apptAssist = new ZmApptAssistant(appCtxt);	
-	this._contactAssist = new ZmContactAssistant(appCtxt);
 	
+	// TODO: need to init these based on COS features (calendars, contacts, etc)
+	if (!ZmAssistantDialog._handlerInit) {
+		ZmAssistantDialog._handlerInit = true;
+		ZmAssistant.register(ZmMsg.ASST_APPT, new ZmApptAssistant(appCtxt));
+		ZmAssistant.register(ZmMsg.ASST_CONTACT, new ZmContactAssistant(appCtxt));
+		ZmAssistant.register(ZmMsg.ASST_CAL, new ZmCalAssistant(appCtxt));
+		ZmAssistant.register(ZmMsg.ASST_CALL, new ZmCallAssistant(appCtxt));
+		ZmAssistant.register(ZmMsg.ASST_MAIL, new ZmMailAssistant(appCtxt));
+	}	
 	var ok = this.getButton(DwtDialog.OK_BUTTON);
 	ok.setAlign(DwtLabel.IMAGE_RIGHT);
 };
@@ -54,6 +61,8 @@ function ZmAssistantDialog(appCtxt) {
 //ZmAssistantDialog.prototype = new ZmQuickAddDialog;
 ZmAssistantDialog.prototype = new DwtDialog;
 ZmAssistantDialog.prototype.constructor = ZmAssistantDialog;
+
+ZmAssistantDialog._handlerInit = false;
 
 /**
 */
@@ -123,11 +132,7 @@ function() {
 	if (match) {
 		var args = cmd.substring(match[0].length);
 		var mainCommand = match[1];
-		if (mainCommand == 'appt') assistant = this._apptAssist;
-		else if (mainCommand == 'contact') assistant = this._contactAssist;
-		else {
-			// assistant is null
-		}
+		assistant = ZmAssistant.getHandler(mainCommand);
 	}
 
 	if (this._assistant != assistant) {
@@ -142,7 +147,7 @@ function() {
 
 ZmAssistantDialog.prototype._setDefault = 
 function() {
-	this.setAssistantContent("available commands: appt, contact, empty, message");
+	this.setAssistantContent("available commands: appt, cal, call, contact, mail");
 	this._setOkButton(AjxMsg.ok, false, false, true, null);
 };	
 

@@ -28,10 +28,22 @@ function ZmAssistant(appCtxt) {
 	this._appCtxt = appCtxt;
 	this._objectManager = new ZmObjectManager(null, this._appCtxt, null);
 	this._fields = {};	
-	
 };
 
 ZmAssistant.prototype.constructor = ZmAssistant;
+
+
+ZmAssistant._handlers = {};
+
+ZmAssistant.register = 
+function(name, handler) {
+	ZmAssistant._handlers[name] = handler;
+};
+
+ZmAssistant.getHandler = 
+function(name) {
+	return ZmAssistant._handlers[name];
+};
 
 // called first time dialog switches to this assistant
 ZmAssistant.prototype.initialize =
