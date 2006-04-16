@@ -657,6 +657,12 @@ function(message) {
 	this._setNotes(message);
 }
 
+ZmAppt.prototype.setTextNotes = 
+function(notes) {
+	this.notesTopPart = new ZmMimePart();	
+	this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
+	this.notesTopPart.setContent(notes);	
+}
 
 ZmAppt.prototype._setNotes = 
 function(message) {

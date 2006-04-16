@@ -29,7 +29,13 @@
 */
 function ZmAssistantDialog(appCtxt) {
 
-	DwtDialog.call(this, appCtxt.getShell(), "ZmAssistantDialog", ZmMsg.zimbraAssistant);
+	var helpButton = new DwtDialog_ButtonDescriptor(ZmAssistantDialog.HELP_BUTTON, 
+														   "help", DwtDialog.ALIGN_LEFT);
+														   
+	var extraButton = new DwtDialog_ButtonDescriptor(ZmAssistantDialog.EXTRA_BUTTON, 
+														   ZmMsg.moreDetails, DwtDialog.ALIGN_LEFT);														   
+														   
+	DwtDialog.call(this, appCtxt.getShell(), "ZmAssistantDialog", ZmMsg.zimbraAssistant, null, [helpButton, extraButton]);
 //	ZmQuickAddDialog.call(this, appCtxt.getShell(), null, null, []);
 
 	this._appCtxt = appCtxt;
@@ -38,6 +44,7 @@ function ZmAssistantDialog(appCtxt) {
 	this._initContent();
 	this._msgDialog = this._appCtxt.getMsgDialog();
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
+	this.setButtonListener(ZmAssistantDialog.EXTRA_BUTTON, new AjxListener(this, this._extraButtonListener));	
 
 	// only trigger matching after a sufficient pause
 	this._pasrseInterval = this._appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
@@ -61,6 +68,9 @@ function ZmAssistantDialog(appCtxt) {
 //ZmAssistantDialog.prototype = new ZmQuickAddDialog;
 ZmAssistantDialog.prototype = new DwtDialog;
 ZmAssistantDialog.prototype.constructor = ZmAssistantDialog;
+
+ZmAssistantDialog.HELP_BUTTON = ++DwtDialog.LAST_BUTTON;
+ZmAssistantDialog.EXTRA_BUTTON = ++DwtDialog.LAST_BUTTON;
 
 ZmAssistantDialog._handlerInit = false;
 
@@ -149,11 +159,21 @@ ZmAssistantDialog.prototype._setDefault =
 function() {
 	this.setAssistantContent("available commands: appt, cal, call, contact, mail");
 	this._setOkButton(AjxMsg.ok, false, false, true, null);
+	this._setExtraButton(ZmMsg.moreDetails, false, false, true, null);	
 };	
 
 ZmAssistantDialog.prototype._setOkButton =
 function(title, visible, enabled, setImage, image) {
 	var ok = this.getButton(DwtDialog.OK_BUTTON);
+	if (title) ok.setText(title);
+	ok.setEnabled(enabled);
+	ok.setVisible(visible);
+	if (setImage) ok.setImage(image);
+};
+
+ZmAssistantDialog.prototype._setExtraButton =
+function(title, visible, enabled, setImage, image) {
+	var ok = this.getButton(ZmAssistantDialog.EXTRA_BUTTON);
 	if (title) ok.setText(title);
 	ok.setEnabled(enabled);
 	ok.setVisible(visible);
@@ -176,6 +196,13 @@ function(ev) {
 	if (this._assistant && !this._assistant.okHandler(this)) return;
 	this.popdown();
 };
+
+ZmAssistantDialog.prototype._extraButtonListener =
+function(ev) {
+	if (this._assistant && !this._assistant.extraButtonHandler(this)) return;
+	this.popdown();
+};
+
 
 ZmAssistantDialog.prototype._handleResponseOkButtonListener =
 function() {

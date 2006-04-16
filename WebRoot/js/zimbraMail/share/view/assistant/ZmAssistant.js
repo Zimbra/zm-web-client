@@ -71,6 +71,11 @@ function(dialog) {
 	return true; //override
 };
 
+ZmAssistant.prototype.extraButtonHandler =
+function(dialog) {
+	return true; //override
+};
+
 ZmAssistant.prototype._matchTime =
 function(args) {
 	var hour, minute, ampm = null;

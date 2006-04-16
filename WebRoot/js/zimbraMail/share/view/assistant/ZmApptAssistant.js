@@ -31,9 +31,44 @@ function ZmApptAssistant(appCtxt) {
 ZmApptAssistant.prototype = new ZmAssistant();
 ZmApptAssistant.prototype.constructor = ZmAssistant;
 
+ZmApptAssistant.prototype.initialize =
+function(dialog) {
+	ZmAssistant.prototype.initialize.call(this, dialog);
+	this._apptData = {};
+};
+
 ZmApptAssistant.prototype.okHandler =
 function(dialog) {
+	if (!this._apptData.subject) {
+		this._msgDialog.reset();
+		this._msgDialog.setMessage(ZmMsg.errorMissingSubject, DwtMessageDialog.CRITICAL_STYLE);
+		this._msgDialog.popup();
+	} else {
+		var appt = this.getAppt();
+		appt.save();			
+	}
 	return true;
+};
+
+ZmApptAssistant.prototype.extraButtonHandler =
+function(dialog) {
+	var calApp = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
+	var cc = calApp.getCalController();
+	cc.newAppointment(this.getAppt(), ZmAppt.MODE_NEW_FROM_QUICKADD, true); // dirty bit
+	return true;
+};
+
+ZmApptAssistant.prototype.getAppt =
+function() {
+	var appt = new ZmAppt(this._appCtxt);
+	appt.setStartDate(this._apptData.startDate);
+	appt.setEndDate(this._apptData.endDate ? this._apptData.endDate : this._apptData.startDate);
+	appt.setAllDayEvent(this._apptData.startTime == null);
+
+	if (this._apptData.location) appt.setAttendees(ZmEmailAddress.split(this._apptData.location), ZmAppt.LOCATION);
+	if (this._apptData.notes) appt.setTextNotes(this._apptData.notes);
+	if (this._apptData.subject) appt.setName(this._apptData.subject);
+	return appt;
 };
 
 /**
@@ -64,75 +99,73 @@ function(dialog) {
 ZmApptAssistant.prototype.handle =
 function(dialog, verb, args) {
 	dialog._setOkButton(ZmMsg.createNewAppt, true, true, true, "NewAppointment");
-	DBG.println("args = "+args);
-	var startDate = new Date();
-	var endDate = null;
+	dialog._setExtraButton(ZmMsg.moreDetails, true, true, false);
+	
+	var adata = this._apptData = {};
+	
+	adata.startDate = new Date();
+	adata.endDate = null;
+
 	var match;
 
-//	DBG.println("args = "+args);
-
-	var loc = null;
 	match = args.match(/\s*\[([^\]]*)\]?\s*/);	
 	if (match) {
-		loc = match[1];
+		adata.location = match[1];
 		args = args.replace(match[0], " ");
 	}
 
-	var notes = null;
 	match = args.match(/\s*\(([^)]*)\)?\s*/);
 	if (match) {
-		notes = match[1];
+		adata.notes = match[1];
 		args = args.replace(match[0], " ");
 	}
 
-	startDate.setMinutes(0);
-	var startTime = this._matchTime(args);
-	if (startTime) {
-		startDate.setHours(startTime.hour, startTime.minute);
-		args = startTime.args;
+	adata.startDate.setMinutes(0);
+	adata.startTime = this._matchTime(args);
+	if (adata.startTime) {
+		adata.startDate.setHours(adata.startTime.hour, adata.startTime.minute);
+		args = adata.startTime.args;
 	}
 
 	// look for an end time
-	var endTime = this._matchTime(args);
-	if (endTime) {
-		args = endTime.args;
+	adata.endTime = this._matchTime(args);
+	if (adata.endTime) {
+		args = adata.endTime.args;
 	}
 
 	// look for start date
 	match = this._objectManager.findMatch(args, ZmObjectManager.DATE);
 	if (match) {
 		args = args.replace(match[0], " ");
-		startDate = match.context.date;
-		if (startTime) startDate.setHours(startTime.hour, startTime.minute);
+		adata.startDate = match.context.date;
+		if (adata.startTime) adata.startDate.setHours(adata.startTime.hour, adata.startTime.minute);
 	}
 	
 	// look for end date
 	match = this._objectManager.findMatch(args, ZmObjectManager.DATE);
 	if (match) {
 		args = args.replace(match[0], " ");
-		endDate = match.context.date;
-		if (endTime != null) endDate.setHours(endTime.hour, endTime.minute);
-		else if (startTime != null) endDate.setHours(startTime.hour, startTime.minute);
+		adata.endDate = match.context.date;
+		if (adata.endTime != null) adata.endDate.setHours(adata.endTime.hour, adata.endTime.minute);
+		else if (adata.startTime != null) adata.endDate.setHours(adata.startTime.hour, adata.startTime.minute);
 	} else {
-		if (endTime) {
-			endDate = new Date(startDate.getTime());
-			if (endTime != null) endDate.setHours(endTime.hour, endTime.minute);			
-		} else if (startTime) {
-			endDate = new Date(startDate.getTime() + 1000 * 60 * 60);
+		if (adata.endTime) {
+			adata.endDate = new Date(adata.startDate.getTime());
+			if (adata.endTime != null) adata.endDate.setHours(adata.endTime.hour, adata.endTime.minute);			
+		} else if (adata.startTime) {
+			adata.endDate = new Date(adata.startDate.getTime() + 1000 * 60 * 60);
 		}
 	}
 	
-	var subject = null;
 	match = args.match(/\s*\"([^\"]*)\"?\s*/);
 	if (match) {
-		subject = match[1];
+		adata.subject = match[1];
 		args = args.replace(match[0], " ");
 	}
 
-	var repeat = null;
 	match = args.match(/\s*repeats?\s+(\S+)\s*/);	
 	if (match) {
-		repeat = match[1];
+		adata.repeat = match[1];
 		args = args.replace(match[0], " ");
 	}
 
@@ -141,24 +174,24 @@ function(dialog, verb, args) {
 		args = args.replace(match[0], " ");
 	}
 
-	if (subject == null) {
-		subject = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' ');
+	if (adata.subject == null) {
+		adata.subject = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' ');
 	}
 
-	dialog._setOkButton(null, true, subject != null && subject != "");
+	dialog._setOkButton(null, true, adata.subject != null && adata.subject != "");
 	
-	var subStr = AjxStringUtil.convertToHtml(subject == "" ? ZmMsg.ASST_APPT_subject : subject);
-	var locStr = AjxStringUtil.convertToHtml(loc == null ? ZmMsg.ASST_APPT_location : loc);
-	var notesStr = AjxStringUtil.convertToHtml(notes == null ? ZmMsg.ASST_APPT_notes : notes);
-	this._setField("* "+ZmMsg.subject, subStr, subject == "", false);
-	this._setDateFields(startDate, startTime, endDate, endTime);
-	this._setField(ZmMsg.location, locStr, loc == null, false);	
-	this._setField(ZmMsg.notes, notesStr, notes == null, false);
+	var subStr = AjxStringUtil.convertToHtml(adata.subject == "" ? ZmMsg.ASST_APPT_subject : adata.subject);
+	var locStr = AjxStringUtil.convertToHtml(adata.location == null ? ZmMsg.ASST_APPT_location : adata.location);
+	var notesStr = AjxStringUtil.convertToHtml(adata.notes == null ? ZmMsg.ASST_APPT_notes : adata.notes);
+	this._setField("* "+ZmMsg.subject, subStr, adata.subject == "", false);
+	this._setDateFields(adata.startDate, adata.startTime, adata.endDate, adata.endTime);
+	this._setField(ZmMsg.location, locStr, adata.location == null, false);	
+	this._setField(ZmMsg.notes, notesStr, adata.notes == null, false);
 
 	var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
-	var agenda = cc.getDayToolTipText(startDate, true);
+	var agenda = cc.getDayToolTipText(adata.startDate, true);
 	this._setField(ZmMsg.agenda, agenda, false, false);
-	this._setOptField(ZmMsg.repeat, repeat, false, true);
+	//this._setOptField(ZmMsg.repeat, repeat, false, true);
 	return;
 };
 
