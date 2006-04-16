@@ -99,6 +99,8 @@ function(dialog, verb, args) {
 		objects.body = { data : rest };
 	}
 
+	var index = -1, ri;
+
 	for (var i=0; i < ZmMailAssistant._FIELD_ORDER.length; i++) {	
 		var key = ZmMailAssistant._FIELD_ORDER[i];
 		var data = objects[key];
@@ -110,10 +112,11 @@ function(dialog, verb, args) {
 		if (field.defaultValue || value != null) {
 			//var useDefault = (value == null || value == "");
 			var useDefault = (value == null);
-			this._setField(field.field, useDefault ? field.defaultValue : value, useDefault, false);
+			ri = this._setField(field.field, useDefault ? field.defaultValue : value, useDefault, false, index+1);
 		} else {
-			this._setOptField(field.field, value, false, false);
+			ri = this._setOptField(field.field, value, false, false, index+1);
 		}
+		index = Math.max(index, ri);
 	}
 	return;
 };

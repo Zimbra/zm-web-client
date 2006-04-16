@@ -95,7 +95,8 @@ function() {
 	this._commandId = Dwt.getNextId();
 	this._commandTitleId = Dwt.getNextId();
 	html.append("<table cellspacing=3 border=0 width=400>");
-	html.append("<tr><td colspan=3 id='", this._commandTitleId, "'>", ZmMsg.enterCommand, "</td></tr>");	
+	html.append("<tr><td colspan=3>", ZmMsg.enterCommand, "&nbsp;<span class='ZmAsstField' id='", this._commandTitleId, "'></span></td></tr>");	
+	//html.append("<tr><td colspan=3 id='", this._commandTitleId, "'>", ZmMsg.enterCommand, "</td></tr>");		
 	html.append("<tr><td colspan=3><div>");
 	html.append("<textarea rows=2 style='width:100%' id='",this._commandId,"'>");
 	html.append("</textarea>");
@@ -165,7 +166,7 @@ function() {
 	this.setAssistantContent("available commands: appt, cal, call, contact, mail");
 	this._setOkButton(AjxMsg.ok, false, false, true, null);
 	this._setExtraButton(ZmMsg.moreDetails, false, false, true, null);	
-	this._setCommandTitle(ZmMsg.enterCommand);
+	this._setCommandTitle("");
 };	
 
 ZmAssistantDialog.prototype._setCommandTitle =

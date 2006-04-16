@@ -168,32 +168,28 @@ function(title) {
 ZmAssistant.prototype._setOptField = 
 function(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign) {
 	if (value && value != "") {
-		this._setField(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign);
+		return this._setField(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign);
 	} else {
 		this._clearField(title);
+		return -1;
 	}
 }
 
 ZmAssistant.prototype._setField = 
-function(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign) {
+function(title, value, isDefault, htmlEncode, desiredRowIndex, titleAlign) {
 	var cname =  isDefault ? "ZmAsstFieldDefValue" : "ZmAsstField";
-
+	var rowIndex = -1;
 	var fieldData = this._fields[title];
 	if (htmlEncode) value = AjxStringUtil.htmlEncode(value);
 	if (fieldData) {
+		var rowEl = document.getElementById(fieldData.rowId);
+		if (rowEl) rowIndex = rowEl.rowIndex;
 		var divEl = document.getElementById(fieldData.id);
 		divEl.innerHTML = value;
 		divEl.className = cname;
 	} else {
 		var id = Dwt.getNextId();
-		var rowIndex = -1;
-		if (afterRowTitle) {
-			var afterRow = this._fields[afterRowTitle];
-			if (afterRow) {
-				var rowEl = document.getElementById(afterRow.rowId);
-				if (rowEl) rowIndex = rowEl.rowIndex+1;
-			}
-		}
+		if (desiredRowIndex != null) rowIndex = desiredRowIndex;
 		var tableEl = document.getElementById(this._tableId);
 		var row = tableEl.insertRow(rowIndex);
 		row.id = Dwt.getNextId();
@@ -204,7 +200,9 @@ function(title, value, isDefault, htmlEncode, afterRowTitle, titleAlign) {
 		var cell2 = row.insertCell(-1);
 		cell2.innerHTML = "<div id='"+id+"' class='"+cname+"'>"+value+"</div></td>";
 		this._fields[title] = { id: id, rowId: row.id };
+		rowIndex = row.rowIndex;
 	}
+	return rowIndex;
 };
 
 ZmAssistant.prototype._clearFields =

@@ -127,23 +127,27 @@ function(dialog, verb, args) {
 	if (!objects.title) objects.title = { data : remaining[1] != null ? remaining[1] : null};
 	if (!objects.company) objects.company = { data: remaining[2] != null ? remaining[2] : null};	
 
-	this._setField(ZmMsg.AB_FIELD_fullName, fullName == "" ? ZmMsg.ASST_CONTACT_fullName : fullName, fullName == "", true);
+	var index, ri;
 	
+	index = this._setField(ZmMsg.AB_FIELD_fullName, fullName == "" ? ZmMsg.ASST_CONTACT_fullName : fullName, fullName == "", true);
+
 	for (var i=0; i < ZmContactAssistant._CONTACT_FIELD_ORDER.length; i++) {	
 		var key = ZmContactAssistant._CONTACT_FIELD_ORDER[i];
 		var data = objects[key];
 		var field = ZmContactAssistant._CONTACT_FIELDS[key];
 		var value = (data && data.data != null) ? data.data : null;
+
 		if (value != null) {
 			value = field.multiLine ? AjxStringUtil.convertToHtml(value) : AjxStringUtil.htmlEncode(value);
 		}
 		if (field.defaultValue || value != null) {
 			//var useDefault = (value == null || value == "");
 			var useDefault = (value == null);
-			this._setField(field.field, useDefault ? field.defaultValue : value, useDefault, false);
+			ri = this._setField(field.field, useDefault ? field.defaultValue : value, useDefault, false, index+1);
 		} else {
-			this._setOptField(field.field, value, false, false);
+			ri = this._setOptField(field.field, value, false, false, index+1);
 		}
+		index = Math.max(index, ri);
 	}
 	return;
 };
