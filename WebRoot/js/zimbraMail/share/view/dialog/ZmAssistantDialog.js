@@ -61,8 +61,8 @@ function ZmAssistantDialog(appCtxt) {
 		ZmAssistant.register(ZmMsg.ASST_CALL, new ZmCallAssistant(appCtxt));
 		ZmAssistant.register(ZmMsg.ASST_MAIL, new ZmMailAssistant(appCtxt));
 	}	
-	var ok = this.getButton(DwtDialog.OK_BUTTON);
-	ok.setAlign(DwtLabel.IMAGE_RIGHT);
+	//var ok = this.getButton(DwtDialog.OK_BUTTON);
+	//ok.setAlign(DwtLabel.IMAGE_RIGHT);
 };
 
 //ZmAssistantDialog.prototype = new ZmQuickAddDialog;
@@ -92,9 +92,10 @@ ZmAssistantDialog.prototype._contentHtml =
 function() {
 	var html = new AjxBuffer();
 	this._contentId = Dwt.getNextId();	
-	this._commandId = Dwt.getNextId();	
+	this._commandId = Dwt.getNextId();
+	this._commandTitleId = Dwt.getNextId();
 	html.append("<table cellspacing=3 border=0 width=400>");
-	html.append("<tr><td colspan=3>", ZmMsg.enterCommand, "</td></tr>");	
+	html.append("<tr><td colspan=3 id='", this._commandTitleId, "'>", ZmMsg.enterCommand, "</td></tr>");	
 	html.append("<tr><td colspan=3><div>");
 	html.append("<textarea rows=2 style='width:100%' id='",this._commandId,"'>");
 	html.append("</textarea>");
@@ -148,7 +149,11 @@ function() {
 	if (this._assistant != assistant) {
 		if (this._assistant != null) this._assistant.finish(this);
 		this._assistant = assistant;
-		if (this._assistant) this._assistant.initialize(this);
+		if (this._assistant) {
+			this._assistant.initialize(this);
+			var title = this._assistant.getTitle();
+			if (title) this._setCommandTitle(title);
+		}
 	}
 
 	if (this._assistant) this._assistant.handle(this, null, args);
@@ -160,24 +165,31 @@ function() {
 	this.setAssistantContent("available commands: appt, cal, call, contact, mail");
 	this._setOkButton(AjxMsg.ok, false, false, true, null);
 	this._setExtraButton(ZmMsg.moreDetails, false, false, true, null);	
+	this._setCommandTitle(ZmMsg.enterCommand);
 };	
 
+ZmAssistantDialog.prototype._setCommandTitle =
+function(title, dontHtmlEncode) {
+	var titleEl = document.getElementById(this._commandTitleId);
+	if (titleEl) titleEl.innerHTML = dontHtmlEncode ? title : AjxStringUtil.htmlEncode(title);
+};
+
 ZmAssistantDialog.prototype._setOkButton =
-function(title, visible, enabled, setImage, image) {
+function(title, visible, enabled) {
 	var ok = this.getButton(DwtDialog.OK_BUTTON);
 	if (title) ok.setText(title);
 	ok.setEnabled(enabled);
 	ok.setVisible(visible);
-	if (setImage) ok.setImage(image);
+	//if (setImage) ok.setImage(image);
 };
 
 ZmAssistantDialog.prototype._setExtraButton =
-function(title, visible, enabled, setImage, image) {
+function(title, visible, enabled) {
 	var ok = this.getButton(ZmAssistantDialog.EXTRA_BUTTON);
 	if (title) ok.setText(title);
 	ok.setEnabled(enabled);
 	ok.setVisible(visible);
-	if (setImage) ok.setImage(image);
+	//if (setImage) ok.setImage(image);
 };
 
 /**
@@ -209,6 +221,13 @@ function() {
 	this.popdown();
 };
 
+ZmAssistantDialog.prototype.messageDialog =
+function(message, style) {
+	this._msgDialog.reset();
+	this._msgDialog.setMessage(message, style);
+	this._msgDialog.popup();
+};
+
 //	else if (obj == 'm')  { 
 //		this._commandEl.value += "essage ";
 
@@ -225,11 +244,3 @@ function() {
 //	}
 //}
 
-//ZmAssistantDialog.prototype._newMessageCommand =
-//function(args) {
-//	this._setActionField(ZmMsg.newEmail, "NewMessage");
-//	args = this._genericWordField("To", "to", args, fields);
-//	args = this._genericWordField("Cc", "cc", args, fields);
-//	args = this._genericTextField("Subject", "subject", args, fields);	
-//	args = this._genericTextField("Body", "body", args, fields);		
-//};

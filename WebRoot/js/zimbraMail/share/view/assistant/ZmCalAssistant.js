@@ -43,6 +43,11 @@ function(dialog) {
 	return true;
 };
 
+ZmCalAssistant.prototype.getTitle =
+function() {
+	return ZmMsg.openCalendar;
+};
+
 ZmCalAssistant.prototype.handle =
 function(dialog, verb, args) {
 	
@@ -84,7 +89,7 @@ function(dialog, verb, args) {
 		this._view = null;
 	}
 
-	dialog._setOkButton(ZmMsg.openCalendar, true, true, true, icon);
+	dialog._setOkButton(AjxMsg.ok, true, true); //, true, icon);
 	
 	if (this._startDate == null) this._startDate = new Date();
 	var startDateValue = DwtCalendar.getDateFullFormatter().format(this._startDate);

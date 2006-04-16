@@ -61,6 +61,13 @@ function(dialog) {
 	this._clearFields();
 };
 
+// override
+ZmAssistant.prototype.getTitle =
+function() {
+	return null;
+};
+
+
 ZmAssistant.prototype.handle =
 function(dialog, verb, line) {
 	//override

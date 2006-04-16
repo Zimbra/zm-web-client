@@ -36,9 +36,14 @@ function(dialog) {
 	return true;	//override
 };
 
+ZmCallAssistant.prototype.getTitle =
+function() {
+	return ZmMsg.call;
+};
+
 ZmCallAssistant.prototype.handle =
 function(dialog, verb, args) {
-	dialog._setOkButton("call", true, true, true, "Telephone");
+	dialog._setOkButton(AjxMsg.ok, true, true);
 };
 
 // called first time dialog switches to this assistant

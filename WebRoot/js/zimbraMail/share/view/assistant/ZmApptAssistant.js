@@ -40,14 +40,12 @@ function(dialog) {
 ZmApptAssistant.prototype.okHandler =
 function(dialog) {
 	if (!this._apptData.subject) {
-		this._msgDialog.reset();
-		this._msgDialog.setMessage(ZmMsg.errorMissingSubject, DwtMessageDialog.CRITICAL_STYLE);
-		this._msgDialog.popup();
+		dialog.messageDialog(ZmMsg.errorMissingSubject, DwtMessageDialog.CRITICAL_STYLE);
 	} else {
 		var appt = this.getAppt();
-		appt.save();			
+		appt.save();// TODO: callback, etc.	
+		return true;
 	}
-	return true;
 };
 
 ZmApptAssistant.prototype.extraButtonHandler =
@@ -56,6 +54,11 @@ function(dialog) {
 	var cc = calApp.getCalController();
 	cc.newAppointment(this.getAppt(), ZmAppt.MODE_NEW_FROM_QUICKADD, true); // dirty bit
 	return true;
+};
+
+ZmApptAssistant.prototype.getTitle =
+function() {
+	return ZmMsg.createNewAppt;
 };
 
 ZmApptAssistant.prototype.getAppt =
@@ -98,7 +101,7 @@ function() {
  */
 ZmApptAssistant.prototype.handle =
 function(dialog, verb, args) {
-	dialog._setOkButton(ZmMsg.createNewAppt, true, true, true, "NewAppointment");
+	dialog._setOkButton(AjxMsg.ok, true, true, false);
 	dialog._setExtraButton(ZmMsg.moreDetails, true, true, false);
 	
 	var adata = this._apptData = {};
@@ -178,7 +181,7 @@ function(dialog, verb, args) {
 		adata.subject = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' ');
 	}
 
-	dialog._setOkButton(null, true, adata.subject != null && adata.subject != "");
+	//dialog._setOkButton(null, true, adata.subject != null && adata.subject != "");
 	
 	var subStr = AjxStringUtil.convertToHtml(adata.subject == "" ? ZmMsg.ASST_APPT_subject : adata.subject);
 	var locStr = AjxStringUtil.convertToHtml(adata.location == null ? ZmMsg.ASST_APPT_location : adata.location);

@@ -86,9 +86,14 @@ ZmContactAssistant._CONTACT_OBJECT_ORDER = [
 	ZmAssistant._BRACKETS, ZmObjectManager.PHONE, ZmObjectManager.URL, ZmObjectManager.EMAIL
 ];
 
+ZmContactAssistant.prototype.getTitle =
+function() {
+	return ZmMsg.createNewContact;
+};
+
 ZmContactAssistant.prototype.handle =
 function(dialog, verb, args) {
-	dialog._setOkButton(ZmMsg.createNewContact, true, true, true, "NewContact");
+	dialog._setOkButton(AjxMsg.ok, true, true); // true, "NewContact");
 	var match;
 	var objects = {};	
 		

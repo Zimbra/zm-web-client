@@ -57,9 +57,15 @@ ZmMailAssistant._OBJECT_ORDER = [
 	ZmAssistant._BRACKETS, ZmObjectManager.EMAIL
 ];
 
+
+ZmMailAssistant.prototype.getTitle =
+function() {
+	return ZmMsg.createNewMsg;
+};
+
 ZmMailAssistant.prototype.handle =
 function(dialog, verb, args) {
-	dialog._setOkButton(ZmMsg.send, true, true, true, "NewMessage");
+	dialog._setOkButton(AjxMsg.ok, true, true); //, true, "NewMessage");
 	var match;
 	var objects = {};	
 		
