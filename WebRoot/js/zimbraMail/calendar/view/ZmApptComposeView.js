@@ -263,9 +263,6 @@ function(tabKey) {
 
 ZmApptComposeView.prototype.getAppt = 
 function(attId) {
-	if (this._curTabId && (this._curTabId != this._tabIdByKey[tabKey])) {
-		this._tabPages[this._curTabId].tabBlur();
-	}
 	return this._apptTab.getAppt(attId);
 };
 

@@ -415,7 +415,7 @@ function() {
 // Add the attendee, then create a new empty slot since we've now filled one.
 ZmSchedTabViewPage.prototype._autocompleteCallback =
 function(text, el, match) {
-	this._handleAttendeeField(el, match.data._item);
+	this._handleAttendeeField(el, match.item);
 };
 
 // Enter listener. If the user types a return when no autocomplete list is showing,
