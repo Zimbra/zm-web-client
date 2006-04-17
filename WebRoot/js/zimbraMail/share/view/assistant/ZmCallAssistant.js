@@ -25,7 +25,7 @@
 
 function ZmCallAssistant(appCtxt) {
 	if (arguments.length == 0) return;
-	ZmAssistant.call(this, appCtxt);
+	ZmAssistant.call(this, appCtxt, ZmMsg.call, ZmMsg.ASST_CMD_CALL);
 };
 
 ZmCallAssistant.prototype = new ZmAssistant();
@@ -34,11 +34,6 @@ ZmCallAssistant.prototype.constructor = ZmAssistant;
 ZmCallAssistant.prototype.okHandler =
 function(dialog) {
 	return true;	//override
-};
-
-ZmCallAssistant.prototype.getTitle =
-function() {
-	return ZmMsg.call;
 };
 
 ZmCallAssistant.prototype.handle =

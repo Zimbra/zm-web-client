@@ -23,11 +23,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAssistant(appCtxt) {
+function ZmAssistant(appCtxt, title, command) {
 	if (arguments.length == 0) return;
 	this._appCtxt = appCtxt;
 	this._objectManager = new ZmObjectManager(null, this._appCtxt, null);
 	this._fields = {};	
+	this._title = title;
+	this._command = command;
 };
 
 ZmAssistant.prototype.constructor = ZmAssistant;
@@ -36,13 +38,34 @@ ZmAssistant.prototype.constructor = ZmAssistant;
 ZmAssistant._handlers = {};
 
 ZmAssistant.register = 
-function(name, handler) {
+function(handler, name) {
+	if (name == null) name = handler.getCommand();
 	ZmAssistant._handlers[name] = handler;
 };
 
 ZmAssistant.getHandler = 
 function(name) {
-	return ZmAssistant._handlers[name];
+	var n;
+	var handler = null;
+	for (n in ZmAssistant._handlers) {
+		if (n == name) return ZmAssistant._handlers[n];
+		else if (n.substring(0, name.length) == name) {
+			if (handler == null) handler = ZmAssistant._handlers[n];
+			else return null;
+		}
+	}
+	return handler;
+	//return ZmAssistant._handlers[name];
+};
+
+ZmAssistant.getHandlerCommands = 
+function(name) {
+	var cmds = [];
+	var n;
+	for (n in ZmAssistant._handlers) {
+		cmds.push(n);
+	}
+	return cmds.sort();
 };
 
 // called first time dialog switches to this assistant
@@ -61,12 +84,15 @@ function(dialog) {
 	this._clearFields();
 };
 
-// override
 ZmAssistant.prototype.getTitle =
 function() {
-	return null;
+	return this._title;
 };
 
+ZmAssistant.prototype.getCommand =
+function() {
+	return this._command;
+};
 
 ZmAssistant.prototype.handle =
 function(dialog, verb, line) {

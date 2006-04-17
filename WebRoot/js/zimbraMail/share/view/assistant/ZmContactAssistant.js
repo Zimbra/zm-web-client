@@ -25,7 +25,7 @@
 
 function ZmContactAssistant(appCtxt) {
 	if (arguments.length == 0) return;
-	ZmAssistant.call(this, appCtxt);
+	ZmAssistant.call(this, appCtxt, ZmMsg.createNewContact, ZmMsg.ASST_CMD_CONTACT);
 };
 
 ZmContactAssistant.prototype = new ZmAssistant();
@@ -85,11 +85,6 @@ ZmContactAssistant._CONTACT_OBJECTS[ZmAssistant._BRACKETS] = { defaultType: 'wa'
 ZmContactAssistant._CONTACT_OBJECT_ORDER = [
 	ZmAssistant._BRACKETS, ZmObjectManager.PHONE, ZmObjectManager.URL, ZmObjectManager.EMAIL
 ];
-
-ZmContactAssistant.prototype.getTitle =
-function() {
-	return ZmMsg.createNewContact;
-};
 
 ZmContactAssistant.prototype.handle =
 function(dialog, verb, args) {

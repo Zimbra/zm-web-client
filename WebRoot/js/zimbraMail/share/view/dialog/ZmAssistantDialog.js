@@ -35,7 +35,7 @@ function ZmAssistantDialog(appCtxt) {
 	var extraButton = new DwtDialog_ButtonDescriptor(ZmAssistantDialog.EXTRA_BUTTON, 
 														   ZmMsg.moreDetails, DwtDialog.ALIGN_LEFT);														   
 														   
-	DwtDialog.call(this, appCtxt.getShell(), "ZmAssistantDialog", ZmMsg.zimbraAssistant, null, [helpButton, extraButton]);
+	DwtDialog.call(this, appCtxt.getShell(), "ZmAssistantDialog", ZmMsg.zimbraAssistant, null, [extraButton]);
 //	ZmQuickAddDialog.call(this, appCtxt.getShell(), null, null, []);
 
 	this._appCtxt = appCtxt;
@@ -55,11 +55,11 @@ function ZmAssistantDialog(appCtxt) {
 	// TODO: need to init these based on COS features (calendars, contacts, etc)
 	if (!ZmAssistantDialog._handlerInit) {
 		ZmAssistantDialog._handlerInit = true;
-		ZmAssistant.register(ZmMsg.ASST_APPT, new ZmApptAssistant(appCtxt));
-		ZmAssistant.register(ZmMsg.ASST_CONTACT, new ZmContactAssistant(appCtxt));
-		ZmAssistant.register(ZmMsg.ASST_CAL, new ZmCalAssistant(appCtxt));
-		ZmAssistant.register(ZmMsg.ASST_CALL, new ZmCallAssistant(appCtxt));
-		ZmAssistant.register(ZmMsg.ASST_MAIL, new ZmMailAssistant(appCtxt));
+		ZmAssistant.register(new ZmApptAssistant(appCtxt));
+		ZmAssistant.register(new ZmContactAssistant(appCtxt));
+		ZmAssistant.register(new ZmCalAssistant(appCtxt));
+		ZmAssistant.register(new ZmCallAssistant(appCtxt));
+		ZmAssistant.register(new ZmMailAssistant(appCtxt));
 	}	
 	//var ok = this.getButton(DwtDialog.OK_BUTTON);
 	//ok.setAlign(DwtLabel.IMAGE_RIGHT);
@@ -79,6 +79,8 @@ ZmAssistantDialog._handlerInit = false;
 ZmAssistantDialog.prototype.popup =
 function() {
 	this._commandEl.value = "";
+	var commands = ZmAssistant.getHandlerCommands().join(", ");
+	this._availableCommands = ZmMsg.ASST_availableCommands+ " " + commands;
 	this._setDefault();
 
 	DwtDialog.prototype.popup.call(this);
@@ -145,6 +147,9 @@ function() {
 		var args = cmd.substring(match[0].length);
 		var mainCommand = match[1];
 		assistant = ZmAssistant.getHandler(mainCommand);
+		if (assistant && mainCommand == cmd && mainCommand != assistant.getCommand() && this._assistant != assistant) {
+			this._commandEl.value = assistant.getCommand()+ " ";
+		}
 	}
 
 	if (this._assistant != assistant) {
@@ -163,7 +168,7 @@ function() {
 
 ZmAssistantDialog.prototype._setDefault = 
 function() {
-	this.setAssistantContent("available commands: appt, cal, call, contact, mail");
+	this.setAssistantContent(this._availableCommands);
 	this._setOkButton(AjxMsg.ok, false, false, true, null);
 	this._setExtraButton(ZmMsg.moreDetails, false, false, true, null);	
 	this._setCommandTitle("");
@@ -230,7 +235,7 @@ function(message, style) {
 };
 
 //	else if (obj == 'm')  { 
-//		this._commandEl.value += "essage ";
+//		
 
 //ZmAssistantDialog.prototype._emptyCommand =
 //function(args) {

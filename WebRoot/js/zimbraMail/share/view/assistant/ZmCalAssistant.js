@@ -25,7 +25,7 @@
 
 function ZmCalAssistant(appCtxt) {
 	if (arguments.length == 0) return;
-	ZmAssistant.call(this, appCtxt);
+	ZmAssistant.call(this, appCtxt, ZmMsg.openCalendar, ZmMsg.ASST_CMD_CALENDAR);
 };
 
 ZmCalAssistant.prototype = new ZmAssistant();
@@ -41,11 +41,6 @@ function(dialog) {
 	cc.show(this._view);
 	cc.show(this._view);	
 	return true;
-};
-
-ZmCalAssistant.prototype.getTitle =
-function() {
-	return ZmMsg.openCalendar;
 };
 
 ZmCalAssistant.prototype.handle =

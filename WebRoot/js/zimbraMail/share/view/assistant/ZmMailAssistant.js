@@ -25,7 +25,7 @@
 
 function ZmMailAssistant(appCtxt) {
 	if (arguments.length == 0) return;
-	ZmAssistant.call(this, appCtxt);
+	ZmAssistant.call(this, appCtxt, ZmMsg.createNewMsg, ZmMsg.ASST_CMD_MAIL);
 };
 
 ZmMailAssistant.prototype = new ZmAssistant();
@@ -43,9 +43,9 @@ ZmMailAssistant._FIELD_ORDER = [
 ZmMailAssistant._FIELDS = {
   	 cc: { field: ZmMsg.cc, key: 'cc' },
   	bcc: { field: ZmMsg.bcc, key: 'bcc' },
-   body: { field: ZmMsg.body, key: 'body', defaultValue: '[enclose body in brackets]'},  	
-subject: { field: ZmMsg.subject, key: 'subject', defaultValue: '"enclose subject in quotes"'},
-  	 to: { field: ZmMsg.to, key: 'to' }
+   body: { field: ZmMsg.body, key: 'body', defaultValue: ZmMsg.ASST_MAIL_body },
+subject: { field: ZmMsg.subject, key: 'subject', defaultValue: ZmMsg.ASST_MAIL_subject },
+  	 to: { field: ZmMsg.to, key: 'to', defaultValue: ZmMsg.ASST_MAIL_to }
 };
 
 ZmMailAssistant._OBJECTS = { };
@@ -56,12 +56,6 @@ ZmMailAssistant._OBJECTS[ZmAssistant._BRACKETS] = { defaultType: 'body', aliases
 ZmMailAssistant._OBJECT_ORDER = [
 	ZmAssistant._BRACKETS, ZmObjectManager.EMAIL
 ];
-
-
-ZmMailAssistant.prototype.getTitle =
-function() {
-	return ZmMsg.createNewMsg;
-};
 
 ZmMailAssistant.prototype.handle =
 function(dialog, verb, args) {
