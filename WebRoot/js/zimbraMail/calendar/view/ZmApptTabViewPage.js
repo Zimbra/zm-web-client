@@ -144,8 +144,8 @@ function(attId) {
 		startDate = this._startTimeSelect.getValue(startDate);
 		endDate = this._endTimeSelect.getValue(endDate);
 	}
-	appt.setStartDate(startDate);
-	appt.setEndDate(endDate);
+	appt.setStartDate(startDate, true);
+	appt.setEndDate(endDate, true);
 	if (Dwt.getVisibility(this._tzoneSelect.getHtmlElement()))
 		appt.setTimezone(this._tzoneSelect.getValue());
 

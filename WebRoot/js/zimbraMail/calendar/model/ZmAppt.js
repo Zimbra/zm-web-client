@@ -214,9 +214,10 @@ ZmAppt.prototype.hasOtherAttendees 				= function() { return this.otherAttendees
 
 ZmAppt.prototype.setAllDayEvent 				= function(isAllDay) 	{ this.allDayEvent = isAllDay ? "1" : "0"; };
 ZmAppt.prototype.setEndDate = 
-function(endDate) { 
+function(endDate, keepCache) { 
 	this.endDate = new Date(endDate instanceof Date ? endDate.getTime(): endDate);
-	this._resetCached(); 
+	if (!keepCache)
+		this._resetCached(); 
 };
 ZmAppt.prototype.setFolderId 					= function(folderId) 	{ this.folderId = folderId || ZmOrganizer.ID_CALENDAR; };
 ZmAppt.prototype.setFreeBusy 					= function(fb) 			{ this.freeBusy = fb || "B"; };
@@ -224,12 +225,13 @@ ZmAppt.prototype.setOrganizer 					= function(organizer) 	{ this.organizer = org
 ZmAppt.prototype.setMessage 					= function(message) 	{ this._message = message; };
 ZmAppt.prototype.setName 						= function(newName) 	{ this.name = newName; };
 ZmAppt.prototype.setStartDate =
-function(startDate) {
+function(startDate, keepCache) {
 	if (this._origStartDate == null && this.startDate != null) {
 		this._origStartDate = new Date(this.startDate.getTime());
 	}
 	this.startDate = new Date(startDate instanceof Date ? startDate.getTime() : startDate);
-	this._resetCached();
+	if (!keepCache)
+		this._resetCached();
 };
 ZmAppt.prototype.setType 						= function(newType) 	{ this.type = newType; };
 ZmAppt.prototype.setTimezone 					= function(timezone) 	{ this.timezone = timezone; };
