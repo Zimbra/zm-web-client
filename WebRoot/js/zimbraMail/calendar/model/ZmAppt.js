@@ -558,14 +558,15 @@ function(message, viewMode) {
 			this.setStartDate(AjxDateUtil.parseServerDateTime(message.invite.getServerStartTime(0)));
 			this.setEndDate(AjxDateUtil.parseServerDateTime(message.invite.getServerEndTime(0)));
 		}
-		var timezone = message.invite.getServerStartTimeTz(0);
-		if (timezone) {
-			this.timezone = timezone;
-		} else {
-			var start = message.invite.getServerStartTime(0);
-			if (start.charAt(start.length-1) == "Z")
-				this.timezone = null;
-		}
+
+		// record whether the start/end dates are in UTC
+		var start = message.invite.getServerStartTime(0);
+		var end = message.invite.getServerEndTime(0);
+		this.startsInUTC = start.charAt(start.length-1) == "Z";
+		this.endsInUTC = end.charAt(start.length-1) == "Z";
+
+		// record timezone if given, otherwise, guess
+		this.timezone = (message.invite.getServerStartTimeTz(0)) || (AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 		
 		this.repeatCustomMonthDay = this.startDate.getDate();
 
@@ -811,9 +812,9 @@ function(attachmentId, callback, errorCallback, notifyList) {
 	if (needsExceptionId) {
 		var exceptId = soapDoc.set("exceptId", null, invAndMsg.inv);
 		if (this.allDayEvent != "1") {
-			var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate());
+			var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate(), this.startsInUTC);
 			// bug fix #4697 (part 2)
-			if (this.timezone) {
+			if (!this.startsInUTC && this.timezone) {
 				exceptId.setAttribute("tz", this.timezone);
 			}
 
@@ -1486,14 +1487,15 @@ function(soapDoc, method,  attachmentId, notifyList) {
 	var s = soapDoc.set("s", null, inv);
 	var e = soapDoc.set("e", null, inv);
 	if (this.allDayEvent != "1") {
-		var sd = AjxDateUtil.getServerDateTime(this.startDate);
-		var ed = AjxDateUtil.getServerDateTime(this.endDate);
+		var sd = AjxDateUtil.getServerDateTime(this.startDate, this.startsInUTC);
+		var ed = AjxDateUtil.getServerDateTime(this.endDate, this.endsInUTC);
 
-		if (this.timezone) {
-			var tz = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(this.timezone) : this.timezone;
+		// set timezone if not utc date/time
+		var tz = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(this.timezone) : this.timezone;
+		if (!this.startsInUTC && tz && tz.length)
 			s.setAttribute("tz", tz);
+		if (!this.endsInUTC && tz && tz.length)
 			e.setAttribute("tz", tz);
-		}
 
 		s.setAttribute("d", sd);
 		e.setAttribute("d", ed);
@@ -1755,7 +1757,9 @@ function(mode) {
 			soapDoc.setMethodAttribute("s", this.getOrigStartTime());
 			var inst = soapDoc.set("inst");
 			inst.setAttribute("d", AjxDateUtil.getServerDateTime(this.getOrigStartDate()));
-			inst.setAttribute("tz", this.timezone);
+			if (this.timezone) {
+				inst.setAttribute("tz", this.timezone);
+			}
 		}
 
 		var m = soapDoc.set("m");
