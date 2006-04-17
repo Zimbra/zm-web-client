@@ -955,12 +955,11 @@ td.DDSepInvisible div {
 	overflow: hidden;
 }
 
-/* ??? USE? */
-.calendar_union_scroll {
+.calendar_union_scroll,
+.calendar_allday_appt {
 	position:absolute;
 	overflow: hidden;
 }
-
 
 /* this is used when we don't want horizontal scroll in the appt grid */
 .calendar_body,
@@ -970,13 +969,10 @@ td.DDSepInvisible div {
 }
 
 /* this is used when we want h/v scroll in the appt grid */
-.calendar_body_hscroll,
-.calendar_allday_appt {
+.calendar_body_hscroll {
 	position:absolute;
 	overflow: auto;
 }
-
-
 
 /* outer scrolling container for the month view */
 .calendar_month_body {
