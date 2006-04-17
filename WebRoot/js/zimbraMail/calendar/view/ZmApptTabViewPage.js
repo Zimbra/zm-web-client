@@ -903,7 +903,7 @@ function() {
 		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		var contactsLoader = contactsClass.getContactList;
 		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader,
-					  matchValue: ZmContactList.AC_VALUE_NAME, compCallback: acCallback};
+					  matchValue: ZmContactList.AC_VALUE_FULL, compCallback: acCallback};
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acContactsList.handle(this._attInputField[ZmAppt.PERSON].getInputElement());
 	}
@@ -921,7 +921,7 @@ function() {
 
 ZmApptTabViewPage.prototype._autocompleteCallback =
 function(text, el, match) {
-	var attendee = match.data._item;
+	var attendee = match.item;
 	var type = el._attType;
 	this.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
 };

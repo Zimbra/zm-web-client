@@ -66,7 +66,6 @@ ZmEvent.S_ROSTER			= i++;
 ZmEvent.S_ROSTER_ITEM		= i++;
 ZmEvent.S_ROSTER_TREE_ITEM	= i++;
 ZmEvent.S_ROSTER_TREE_GROUP	= i++;
-ZmEvent.S_CHOOSER			= i++;
 ZmEvent.S_RESOURCE			= i++;
 
 //Source types for admin

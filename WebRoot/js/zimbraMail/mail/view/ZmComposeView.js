@@ -1361,9 +1361,11 @@ function(ev) {
 	var curType = obj.addrType;
 	var a = {};
 	var addrs = this._collectAddrs();
-	for (var type in ZmComposeView.ADDRS) {
-		if (addrs[type])
+	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
+		var type = ZmComposeView.ADDRS[i];
+		if (addrs[type]) {
 			a[type] = addrs[type].good.getArray();
+		}
 	}
 	var str = (this._field[curType].value && !(a[curType] && a[curType].length)) ? this._field[curType].value : "";
 	this._contactPicker.popup(curType, a, str);

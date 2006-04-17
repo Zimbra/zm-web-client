@@ -255,7 +255,7 @@ function(tabKey) {
 		toolbar.enable(buttons, false);
 		this._apptTab.enableInputs(false);
 	}
-	if (this._curTabId) {
+	if (this._curTabId && (this._curTabId != this._tabIdByKey[tabKey])) {
 		this._tabPages[this._curTabId].tabBlur();
 	}
 	this._curTabId = this._tabIdByKey[tabKey];
@@ -263,7 +263,7 @@ function(tabKey) {
 
 ZmApptComposeView.prototype.getAppt = 
 function(attId) {
-	if (this._curTabId) {
+	if (this._curTabId && (this._curTabId != this._tabIdByKey[tabKey])) {
 		this._tabPages[this._curTabId].tabBlur();
 	}
 	return this._apptTab.getAppt(attId);
@@ -442,7 +442,7 @@ function(tab) {
 		this._chooserLstnr = new AjxListener(this, this._chooserListener);
 	}
 	if (tab && tab._chooser) {
-		tab._chooser.addChangeListener(this._chooserLstnr);
+		tab._chooser.addStateChangeListener(this._chooserLstnr);
 	}
 };
 
@@ -450,8 +450,8 @@ function(tab) {
 
 ZmApptComposeView.prototype._chooserListener =
 function(ev) {
-	var vec = ev.getDetail("items");
-	var type = ev.getDetail("type");
+	var vec = this._tabPages[this._curTabId]._chooser.getItems();
+	var type = this._tabPages[this._curTabId].type;
 	this.updateAttendees(vec.getArray(), type);
 };
 

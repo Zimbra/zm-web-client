@@ -251,7 +251,8 @@ function(enable) {
 			cb.checked = enable;
 			this._chooser.setSelectStyle(cb.checked ? DwtChooser.MULTI_SELECT : DwtChooser.SINGLE_SELECT, true);
 			if (parent._currentTabKey == this._tabKey) {
-				this.showMe(); // force resize to adjust chooser layout
+				var pSize = this.parent.getSize();
+				this.resize(pSize.x, pSize.y); // force resize to adjust chooser layout
 			}
 		}
 	}
@@ -445,12 +446,10 @@ function(ev) {
 ZmApptChooserTabViewPage.prototype._setAttendees =
 function() {
 	var attendees = this._attendees[this.type].getArray();
-
-	// clear target list/data
-	this._chooser.reset(DwtChooserListView.TARGET);
-	if (attendees && attendees.length) {
-		// add attendees (and don't let chooser notify listeners)
-		this._chooser.transfer(attendees, null, true);
+	if (attendees.length) {
+		this._chooser.setItems(attendees, DwtChooserListView.TARGET);
+	} else {
+		this._chooser.reset(DwtChooserListView.TARGET);
 	}
 };
 
@@ -487,7 +486,7 @@ function(sortBy) {
 ZmApptChooserTabViewPage.prototype._handleResponseSearchContacts = 
 function(result) {
 	var resp = result.getResponse();
-	this._chooser.setItems(resp.getResults(ZmItem.CONTACT).getVector());
+	this._chooser.setItems(resp.getResults(ZmItem.CONTACT).getVector(), null, true);
 };
 
 ZmApptChooserTabViewPage.prototype.searchCalendarResources = 
@@ -515,7 +514,7 @@ function(sortBy) {
 ZmApptChooserTabViewPage.prototype._handleResponseSearchCalendarResources = 
 function(result) {
 	var resp = result.getResponse();
-	this._chooser.setItems(resp.getResults(ZmItem.RESOURCE).getVector());
+	this._chooser.setItems(resp.getResults(ZmItem.RESOURCE).getVector(), null, true);
 };
 
 ZmApptChooserTabViewPage._keyPressHdlr =
@@ -547,7 +546,8 @@ function(ev) {
     var tvp = DwtUiEvent.getDwtObjFromEvent(ev);
     if (tvp) {
 		tvp._chooser.setSelectStyle(cb.checked ? DwtChooser.MULTI_SELECT : DwtChooser.SINGLE_SELECT, true);
-		tvp.showMe(); // force resize to adjust chooser layout
+		var pSize = tvp.parent.getSize();
+		tvp.resize(pSize.x, pSize.y); // force resize to adjust chooser layout
 	}
 };
 
@@ -562,7 +562,7 @@ function(ev) {
 function ZmApptChooser(parent, buttonInfo) {
 	var selectStyle = (parent.type == ZmAppt.LOCATION) ? DwtChooser.SINGLE_SELECT : null;
 	DwtChooser.call(this, {parent: parent, buttonInfo: buttonInfo, layoutStyle: DwtChooser.VERT_STYLE,
-						   noDuplicates: true, selectStyle: selectStyle});
+						   selectStyle: selectStyle, allButtons: true});
 };
 
 ZmApptChooser.prototype = new DwtChooser;
@@ -642,7 +642,7 @@ function(item) {
 
 	var div = document.createElement("div");
 	div._styleClass = "Row";
-	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
+	div._selectedStyleClass = [div._styleClass, '-', DwtCssStyle.SELECTED].join("");
 	div.className = div._styleClass;
 
 	var html = [];

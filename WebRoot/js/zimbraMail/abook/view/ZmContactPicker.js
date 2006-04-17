@@ -96,12 +96,10 @@ function(buttonId, addrs, str) {
 	// populate target list if addrs were passed in
 	if (addrs) {
 		for (var id in addrs) {
-			if (this._button[id]) {
-				this._chooser.transfer(addrs[id], id);
-			}
+			this._chooser.addItems(addrs[id], DwtChooserListView.TARGET, true, id);
 		}
 	}
-	
+
 	// reset search field
 	var searchField = document.getElementById(this._searchFieldId);
 	searchField.disabled = false;
@@ -292,8 +290,7 @@ function(ev) {
 * @param buttonInfo		[array]			transfer button IDs and labels
 */
 function ZmContactChooser(parent, buttonInfo) {
-	DwtChooser.call(this, {parent: parent, buttonInfo: buttonInfo, layoutStyle: DwtChooser.HORIZ_STYLE,
-						   noDuplicates: true});
+	DwtChooser.call(this, {parent: parent, buttonInfo: buttonInfo, layoutStyle: DwtChooser.HORIZ_STYLE});
 };
 
 ZmContactChooser.prototype = new DwtChooser;
