@@ -43,7 +43,7 @@ ZmMailAssistant._FIELD_ORDER = [
 ZmMailAssistant._FIELDS = {
   	 cc: { field: ZmMsg.cc, key: 'cc' },
   	bcc: { field: ZmMsg.bcc, key: 'bcc' },
-   body: { field: ZmMsg.body, key: 'body', defaultValue: ZmMsg.ASST_MAIL_body },
+   body: { field: ZmMsg.body, key: 'body', defaultValue: ZmMsg.ASST_MAIL_body, multiLine: true },
 subject: { field: ZmMsg.subject, key: 'subject', defaultValue: ZmMsg.ASST_MAIL_subject },
   	 to: { field: ZmMsg.to, key: 'to', defaultValue: ZmMsg.ASST_MAIL_to }
 };
@@ -88,7 +88,7 @@ function(dialog, verb, args) {
 	}
 
 	if (!objects.body) {
-		var rest = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' ');
+		var rest = args.replace(/^\s+/, ""); //.replace(/\s+$/, ""); // .replace(/\s+/g, ' ');
 		if (rest == "" || rest == " ") rest = null;		
 		objects.body = { data : rest };
 	}

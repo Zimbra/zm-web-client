@@ -181,8 +181,8 @@ function(dialog, verb, args) {
 	var subStr = AjxStringUtil.convertToHtml(adata.subject == "" ? ZmMsg.ASST_APPT_subject : adata.subject);
 	var locStr = AjxStringUtil.convertToHtml(adata.location == null ? ZmMsg.ASST_APPT_location : adata.location);
 	var notesStr = AjxStringUtil.convertToHtml(adata.notes == null ? ZmMsg.ASST_APPT_notes : adata.notes);
-	this._setField("* "+ZmMsg.subject, subStr, adata.subject == "", false);
-	this._setDateFields(adata.startDate, adata.startTime, adata.endDate, adata.endTime);
+	var subjectIndex = this._setField("* "+ZmMsg.subject, subStr, adata.subject == "", false);
+	this._setDateFields(adata.startDate, adata.startTime, adata.endDate, adata.endTime, subjectIndex);
 	this._setField(ZmMsg.location, locStr, adata.location == null, false);	
 	this._setField(ZmMsg.notes, notesStr, adata.notes == null, false);
 
@@ -194,7 +194,7 @@ function(dialog, verb, args) {
 };
 
 ZmApptAssistant.prototype._setDateFields = 
-function(startDate, startTime, endDate, endTime) {
+function(startDate, startTime, endDate, endTime, rowIndex) {
 	var startDateValue = DwtCalendar.getDateFullFormatter().format(startDate);
 	var sameDay = false;
 	var html = new AjxBuffer();
@@ -218,7 +218,7 @@ function(startDate, startTime, endDate, endTime) {
 	
 	if (doEnd) {
 		this._clearField(ZmMsg.time);
-		this._setField(ZmMsg.startTime, html.toString(), false, false, ZmMsg.subject);
+		rowIndex = this._setField(ZmMsg.startTime, html.toString(), false, false, rowIndex+1);
 		
 		html.clear();
 		var endDateValue = DwtCalendar.getDateFullFormatter().format(endDate);
@@ -231,10 +231,10 @@ function(startDate, startTime, endDate, endTime) {
 			html.append("<td>", AjxStringUtil.htmlEncode(endTimeValue), "</td>");
 		}
 		html.append("</tr></table>");
-		this._setField(ZmMsg.endTime, html.toString(), false, false, ZmMsg.startTime);
+		this._setField(ZmMsg.endTime, html.toString(), false, false, rowIndex+1);
 		
 	} else {
-		this._setField(ZmMsg.time, html.toString(), false, false, ZmMsg.subject);
+		this._setField(ZmMsg.time, html.toString(), false, false, rowIndex+1);
 		this._clearField(ZmMsg.startTime);
 		this._clearField(ZmMsg.endTime);		
 	}
