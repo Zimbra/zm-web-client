@@ -349,7 +349,7 @@ ZmNoteController.prototype._pageForwardListener = function(event) {
 
 ZmNoteController.prototype._showIndex = function(folderId) {
 	var cache = this._app.getNoteCache();
-	var index = cache.getNoteByName(folderId, ZmNotebook.PAGE_INDEX);
+	var index = cache.getNoteByName(folderId, ZmNotebook.PAGE_INDEX, true);
 	this.show(index);
 };
 

@@ -65,7 +65,7 @@ function(note) {
 	}
 
 	var cache = this._controller._app.getNoteCache();
-	var chrome = cache.getNoteByName(note.folderId, ZmNotebook.PAGE_CHROME);
+	var chrome = cache.getNoteByName(note.folderId, ZmNotebook.PAGE_CHROME, true);
 	var chromeContent = chrome.getContent();
 
 	var content = chromeContent;

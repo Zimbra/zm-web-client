@@ -262,14 +262,15 @@ ZmNoteEditor.prototype.getContent = function() {
 
 ZmNoteEditor.prototype._serializeWiklets = function() {
 	var elems = this._getIframeDoc().getElementsByTagName("INPUT");
-	for (var i = 0; i < elems.length; i++) {
+	// NOTE: We go backwards because the collection is "live"
+	for (var i = elems.length - 1; i >= 0; i--) {
 		var elem = elems[i];
 		var name = elem.getAttribute("wikname");
 		var wiklet = ZmWiklet.getWikletByName(name);
 
 		var a = [ "{{", name ];
 		if (wiklet.type == ZmWiklet.SINGLE_VALUE) {
-			a.push(" ", elem.getAttribute("wikvalue"));
+			a.push(" ", elem.getAttribute("wikparam_value"));
 		}
 		else if (wiklet.type == ZmWiklet.PARAMETERIZED) {
 			var attrs = elem.attributes;
@@ -321,7 +322,8 @@ ZmNoteEditor.prototype._createWikletButton = function(wiklet, value, params) {
 	switch (wiklet.type) {
 		case ZmWiklet.SINGLE_VALUE: {
 			button.title = ZmMsg.wikletConfigureValue;
-			button.setAttribute("wikvalue", value || wiklet.value || "");
+			var paramdef = wiklet.paramdefs && wiklet.paramdefs["value"];
+			button.setAttribute("wikparam_value", value || paramdef.value || "");
 			break;
 		}
 		case ZmWiklet.PARAMETERIZED: {
@@ -332,14 +334,15 @@ ZmNoteEditor.prototype._createWikletButton = function(wiklet, value, params) {
 				}
 			}
 			else {
-				for (var pname in wiklet.params) {
-					button.setAttribute("wikparam_"+pname, wiklet.value[pname] || "");
+				for (var pname in wiklet.paramdefs) {
+					button.setAttribute("wikparam_"+pname, wiklet.paramdefs[pname].value || "");
 				}
 			}
 			break;
 		}
 		default: {
 			button.title = ZmMsg.wikletConfigureNone;
+			//button.disabled = true;
 		}
 	}
 	button.onclick = ZmNoteEditor._wikletButtonHandler;
@@ -417,7 +420,39 @@ ZmNoteEditor.prototype._wikiToolBarListener = function(event) {
 	this._insertNodeAtSelection(button);
 };
 ZmNoteEditor._wikletButtonHandler = function(event) {
-	alert("click!");
+	var target = DwtUiEvent.getTarget(event);
+	var name = target.getAttribute("wikname");
+	var wiklet = ZmWiklet.getWikletByName(name);
+	if (!wiklet || !wiklet.type) {
+		return;
+	}
+	
+	var props = [];
+	if (wiklet.type == ZmWiklet.SINGLE_VALUE) {
+		var proxy = AjxUtil.createProxy(wiklet.paramdefs);
+		var attr = target.getAttributeNode("wikparam_value");
+		proxy.value =  attr != null ? attr.nodeValue : (proxy.value || "");
+		props.push(proxy);
+	}
+	else if (wiklet.type == ZmWiklet.PARAMETERIZED) {
+		var attrs = target.attributes;
+		for (var i = 0; i < attrs.length; i++) {
+			var attr = attrs[i];
+			if (attr.nodeName.match(/^wikparam_/)) {
+				var pname = attr.nodeName.substr(9);
+				var proxy = AjxUtil.createProxy(wiklet.paramdefs[pname]);
+				proxy.value = attr.nodeValue || proxy.value || "";
+				props.push(proxy);
+			}
+		}
+	}
+	
+	var shell = DwtShell.getShell(window);
+	var dialog = new DwtDialog(shell);
+	var propEditor = new DwtPropertyEditor(dialog);
+	propEditor.initProperties(props);
+	dialog.setView(propEditor);
+	dialog.popup();
 };
 
 ZmNoteEditor.prototype._getInitialStyle = function(useDiv) {

@@ -92,7 +92,7 @@ function(note) {
 		ZmNoteFileView.__typify(words, "wiki");
 		var docs = response.SearchResponse.doc || [];
 		ZmNoteFileView.__typify(docs, "document");
-		var items = words.concat(docs).sort(ZmNoteView.__byNoteName);
+		var items = words.concat(docs).sort(ZmWiklet.__byNoteName);
 		for (var i = 0; i < items.length; i++) {
 			list.add(items[i]);
 		}

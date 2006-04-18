@@ -161,7 +161,7 @@ ZmNoteCache.prototype.getNoteByName = function(folderId, name, recurseUp) {
 		var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 		var parent = notebookTree.getById(folderId).parent;
 		while (parent != null) {
-			var folderMap = this._foldersMap[parent.id];
+			var folderMap = this.getNotesInFolder(parent.id);
 			if (folderMap && folderMap[name]) {
 				// create a proxy note but DO NOT insert it into the parent
 				// folderMap -- that way it won't show up in the TOC for the parent
@@ -169,8 +169,12 @@ ZmNoteCache.prototype.getNoteByName = function(folderId, name, recurseUp) {
 			}
 			parent = parent.parent;
 		}
-
 	}
+	
+	if (name in ZmNoteCache._SPECIAL) {
+		return this._generateSpecialNote(folderId, name);
+	}
+	
 	return null;
 };
 
@@ -179,24 +183,6 @@ ZmNoteCache.prototype.getNotesInFolder = function(folderId) {
 	if (!this._foldersMap[folderId]) {
 		this._foldersMap[folderId] = {};
 		this.fillCache(folderId);
-	}
-	for (var name in ZmNoteCache._SPECIAL) {
-		if (!this._foldersMap[folderId][name]) {
-			var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-			var parent = notebookTree.getById(folderId).parent;
-			var specialNote = null;
-			while (parent != null) {
-				var folderMap = this._foldersMap[parent.id];
-				if (folderMap && folderMap[name]) {
-					specialNote = this.makeProxyNote(folderMap[name], folderId);
-					break;
-				}
-				parent = parent.parent;
-			}
-			
-			var folderMap = this._foldersMap[folderId];
-			folderMap[name] = specialNote || this._generateSpecialNote(folderId, name);
-		}
 	}
 	return this._foldersMap[folderId];
 };

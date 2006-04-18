@@ -218,7 +218,7 @@ ZmNotebookTreeController.prototype._editNotebookListener = function(ev) {
 	var cache = notesApp.getNoteCache();
 	
 	var noteEditController = notesApp.getNoteEditController();
-	var note = cache.getNoteByName(notebook.id, name);
+	var note = cache.getNoteByName(notebook.id, name, true);
 	noteEditController.show(note);
 };
 

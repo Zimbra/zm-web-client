@@ -201,7 +201,14 @@ ZmWiklet.register(
 		label: ZmMsg.wikletMsg,
 		tooltip: ZmMsg.wikletMsgTT,
 		type: ZmWiklet.SINGLE_VALUE,
-		value: "messageKey",
+		paramdefs: {
+			value: {
+				id: "value",
+				label: ZmMsg.key,
+				type: "string",
+				value: "messageKey"
+			}
+		},
 		func: function(name, value, params, context) {
 			return value && ZmMsg[value] ? ZmMsg[value] : value;
 		}
@@ -211,7 +218,14 @@ ZmWiklet.register(
 		label: ZmMsg.wikletInclude,
 		tooltip: ZmMsg.wikletIncludeTT,
 		type: ZmWiklet.SINGLE_VALUE,
-		value: "PageName",
+		paramdefs: {
+			value: {
+				id: "value",
+				label: ZmMsg.page,
+				type: "string",
+				value: "PageName"
+			}
+		},
 		func: function(name, value, params, context) {
 			// check for recursive include
 			var itemCount = context.getItemCount();
@@ -264,7 +278,14 @@ ZmWiklet.register(
 		label: ZmMsg.wikletCreateDate,
 		tooltip: ZmMsg.wikletCreateDateTT,
 		type: ZmWiklet.SINGLE_VALUE,
-		value: "medium",
+		paramdefs: {
+			value: {
+				id: "value",
+				label: ZmMsg.format,
+				type: "string",
+				value: "medium"
+			}
+		},
 		func: function(name, value, params, context) {
 			var item = context.getItem();
 			return ZmWiklet._formatDate("date", value, item.createDate);
@@ -275,7 +296,14 @@ ZmWiklet.register(
 		label: ZmMsg.wikletCreateTime,
 		tooltip: ZmMsg.wikletCreateTimeTT,
 		type: ZmWiklet.SINGLE_VALUE,
-		value: "short",
+		paramdefs: {
+			value: {
+				id: "value",
+				label: ZmMsg.format,
+				type: "string",
+				value: "short"
+			}
+		},
 		func: function(name, value, params, context) {
 			var item = context.getItem();
 			return ZmWiklet._formatDate("time", value, item.createDate);
@@ -286,7 +314,14 @@ ZmWiklet.register(
 		label: ZmMsg.wikletModifyDate,
 		tooltip: ZmMsg.wikletModifyDateTT,
 		type: ZmWiklet.SINGLE_VALUE,
-		value: "medium",
+		paramdefs: {
+			value: {
+				id: "value",
+				label: ZmMsg.format,
+				type: "string",
+				value: "medium"
+			}
+		},
 		func: function(name, value, params, context) {
 			var item = context.getItem();
 			return ZmWiklet._formatDate("date", value, item.modifyDate);
@@ -297,7 +332,14 @@ ZmWiklet.register(
 		label: ZmMsg.wikletModifyTime,
 		tooltip: ZmMsg.wikletModifyTimeTT,
 		type: ZmWiklet.SINGLE_VALUE,
-		value: "short",
+		paramdefs: {
+			value: {
+				id: "value",
+				label: ZmMsg.format,
+				type: "string",
+				value: "short"
+			}
+		},
 		func: function(name, value, params, context) {
 			var item = context.getItem();
 			return ZmWiklet._formatDate("time", value, item.modifyDate);
@@ -316,17 +358,34 @@ ZmWiklet.register(
 		label: ZmMsg.wikletToc,
 		tooltip: ZmMsg.wikletTocTT,
 		type: ZmWiklet.PARAMETERIZED,
-		params: {
+		paramdefs: {
 			page: {
+				id: "page",
+				label: ZmMsg.page,
+				type: "string",
+				value: "*"
 			},
 			format: {
+				id: "format",
+				label: ZmMsg.format,
+				type: "item",
+				item: [
+					{ label: ZmMsg.simple, value: "simple" },
+					{ label: ZmMsg.list, value: "list" },
+					{ label: ZmMsg.template, value: "template" }
+				]
 			},
-			bodyTemplate: {
+			bodytemplate: {
+				id: "bodyTemplate",
+				label: ZmMsg.bodyTemplate,
+				type: "string"
 			},
-			itemTemplate: {
+			itemtemplate: {
+				id: "itemTemplate",
+				label: ZmMsg.itemTemplate,
+				type: "string"
 			}
 		},
-		value: { page: "*" },
 		func: function(name, value, params, context) {
 			var item = context.getItem();
 			var folderId = item instanceof ZmNote ? item.folderId : item.id;
@@ -431,15 +490,31 @@ ZmWiklet.register(
 		name: "BREADCRUMBS",
 		label: ZmMsg.wikletBreadcrumbs,
 		tooltip: ZmMsg.wikletBreadcrumbsTT,
-		type: ZmWiklet.SINGLE_VALUE,
-		params: {
+		type: ZmWiklet.PARAMETERIZED,
+		paramdefs: {
 			format: {
+				id: "format",
+				label: ZmMsg.format,
+				type: "enum",
+				item: [
+					{ label: ZmMsg.simple, value: "simple" },
+					{ label: ZmMsg.template, value: "template" }
+				]
 			},
-			bodyTemplate: {
+			bodytemplate: {
+				id: "bodyTemplate",
+				label: ZmMsg.bodyTemplate,
+				type: "string"
 			},
-			itemTemplate: {
+			itemtemplate: {
+				id: "itemTemplate",
+				label: ZmMsg.itemTemplate,
+				type: "string"
 			},
-			separatorTemplate: {
+			separator: {
+				id: "separator",
+				label: ZmMsg.separator,
+				type: "string"
 			}
 		},
 		func: function(name, value, params, context) {
@@ -461,8 +536,7 @@ ZmWiklet.register(
 				case "template": {
 					var folderId = note.folderId;
 					
-					var separatorTemplate = context.getNoteByName(folderId, (params.separatorTemplate || '_BREADCRUMB_SEPARATOR_'), true);
-					var separatorContent = separatorTemplate ? separatorTemplate.getContent() : "<td class='_breadcrumb_separator'> &raquo; </td>";
+					var separator = params.separator || "<td class='_breadcrumb_separator'> &raquo; </td>";
 					
 					var itemTemplate = context.getNoteByName(folderId, (params.itemTemplate || '_BREADCRUMB_ITEM_TEMPLATE_'), true);
 					var itemContent = itemTemplate ? itemTemplate.getContent() : [
@@ -472,7 +546,7 @@ ZmWiklet.register(
 					].join("");
 					for (var i = 0; i < trail.length; i++) {
 						if (i > 0) {
-							content.push(separatorContent); // REVISIT: Should this be evaluated?
+							content.push(separator);
 						}
 						var length = context.getItemCount();
 						try {
@@ -498,10 +572,12 @@ ZmWiklet.register(
 					break;
 				}
 				case "simple": default: {
+					var separator = params.separator || " &raquo; ";
+
 					content.push("<span class='_breadcrumbs_simple'>");
 					for (var i = 0; i < trail.length; i++) {
 						if (i > 0) {
-							content.push(" &raquo; ");
+							content.push(separator);
 						}
 						var crumb = trail[i];
 						var path = crumb.name; // TODO !!!
