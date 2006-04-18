@@ -24,9 +24,8 @@
  */
 
 function ZmFlagPicker(parent) {
-
 	ZmPicker.call(this, parent, ZmPicker.FLAG);
-}
+};
 
 ZmFlagPicker.prototype = new ZmPicker;
 ZmFlagPicker.prototype.constructor = ZmFlagPicker;
@@ -36,7 +35,7 @@ ZmPicker.CTOR[ZmPicker.FLAG] = ZmFlagPicker;
 ZmFlagPicker.prototype.toString = 
 function() {
 	return "ZmFlagPicker";
-}
+};
 
 ZmFlagPicker.prototype._setupPicker =
 function(parent) {
@@ -70,27 +69,31 @@ function(parent) {
 	ti = this._forwarded = new DwtTreeItem(tree);
 	ti.setText(ZmMsg.forwarded);
 	ti.setImage("Forward");	
-}
+};
 
 ZmFlagPicker.prototype._updateQuery = 
 function() {
-	var query = new Array();
+	var query = [];
 
-	if (this._flagged.getChecked())
+	if (this._flagged.getChecked()) {
 		query.push("is:flagged");
-	else if (this._unflagged.getChecked())
+	} else if (this._unflagged.getChecked()) {
 		query.push("is:unflagged");
+	}
 
-	if (this._read.getChecked())
+	if (this._read.getChecked()) {
 		query.push("is:read");
-	else if (this._unread.getChecked())
+	} else if (this._unread.getChecked()) {
 		query.push("is:unread");
+	}
 	
-	if (this._replied.getChecked())
+	if (this._replied.getChecked()) {
 		query.push("is:replied");
+	}
 
-	if (this._forwarded.getChecked())
+	if (this._forwarded.getChecked()) {
 		query.push("is:forwarded");
+	}
 
 	if (query.length) {
 		this.setQuery(query.join(" "));
@@ -98,7 +101,7 @@ function() {
 		this.setQuery("");
 	}
 	this.execute();
-}
+};
 
 ZmFlagPicker.prototype._treeListener =
 function(ev) {
@@ -109,14 +112,15 @@ function(ev) {
  			ev.item._checkBox.checked = !ev.item._checkBox.checked;
  		var ti = ev.item;
  		var checked = ti.getChecked();
- 		if (ti == this._flagged && checked && this._unflagged.getChecked())
- 			this._unflagged.setChecked(0);
-		else if (ti == this._unflagged && checked && this._flagged.getChecked())
- 			this._flagged.setChecked(0);
-		else if (ti == this._read && checked && this._unread.getChecked())
- 			this._unread.setChecked(0);
-		else if (ti == this._unread && checked && this._read.getChecked())
- 			this._read.setChecked(0);
+ 		if (ti == this._flagged && checked && this._unflagged.getChecked()) {
+ 			this._unflagged.setChecked(false);
+		} else if (ti == this._unflagged && checked && this._flagged.getChecked()) {
+ 			this._flagged.setChecked(false);
+		} else if (ti == this._read && checked && this._unread.getChecked()) {
+ 			this._unread.setChecked(false);
+		} else if (ti == this._unread && checked && this._read.getChecked()) {
+ 			this._read.setChecked(false);
+ 		}
 		this._updateQuery();
  	}
-}
+};
