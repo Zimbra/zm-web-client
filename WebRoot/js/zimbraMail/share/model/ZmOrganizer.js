@@ -250,13 +250,13 @@ function(includeRoot, showUnread, maxLength, noMarkup) {
 		path = parent.getName() + ZmFolder.SEP + path;
 		parent = parent.parent;
 	}
-	
+
 	return path;
 };
 
 /** Returns the full path, suitable for use in search expressions. */
 ZmOrganizer.prototype.getSearchPath = function() {
-	return this.getPath(null, null, null, true);
+	return this.id != ZmOrganizer.ID_ROOT ? this.getPath(null, null, null, true) : "/";
 };
 
 ZmOrganizer.prototype.getShares =

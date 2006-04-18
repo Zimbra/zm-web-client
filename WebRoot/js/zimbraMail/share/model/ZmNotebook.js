@@ -73,7 +73,7 @@ ZmNotebook.prototype.getSearchPath = function() {
 	var serverName = "Notebook";
 	var clientName = ZmMsg.notebook;
 	
-	var path = ZmOrganizer.prototype.getPath.call(this, null, null, null, true);
+	var path = ZmOrganizer.prototype.getSearchPath.call(this);
 	if (path.match(new RegExp("^"+clientName+"(/)?"))) {
 		path = serverName + path.substring(clientName.length);
 	}

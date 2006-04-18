@@ -83,7 +83,11 @@ function(actionMenu, type, id) {
 // Returns a list of desired header action menu operations
 ZmNotebookTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_NOTEBOOK, ZmOperation.EXPAND_ALL];
+	return [
+		ZmOperation.NEW_NOTEBOOK, ZmOperation.EXPAND_ALL,
+		ZmOperation.SEP,
+		ZmOperation.EDIT_NOTEBOOK_INDEX, ZmOperation.EDIT_NOTEBOOK_CHROME
+	];
 };
 
 // Returns a list of desired action menu operations
