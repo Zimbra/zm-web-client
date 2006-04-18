@@ -489,7 +489,6 @@ function(status, aid) {
 	
 	if (status == 200) {
 		this._importBtn.setEnabled(false);
-		//this._importIframe.style.visibility = "hidden";
 		appCtlr.setStatusMsg(ZmMsg.importingContacts);
 		this._finishImport(aid);
 	} else {
@@ -510,8 +509,10 @@ function(aid) {
 	content.setAttribute("aid", aid);
 	
 	var respCallback = new AjxCallback(this, this._handleResponseFinishImport, [aid]);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback,
-												  timeout: ZmPreferencesPage.IMPORT_TIMEOUT});
+	var errorCallback = new AjxCallback(this, this._handleErrorFinishImport);
+	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
+												  callback:respCallback, errorCallback:errorCallback, 
+												  timeout:ZmPreferencesPage.IMPORT_TIMEOUT});
 };
 
 ZmPreferencesPage.prototype._handleResponseFinishImport =
@@ -525,6 +526,19 @@ function(aid, result) {
 	// always re-render input file widget and its parent IFRAME
 	this._importDiv.innerHTML = "";
 	this._addImportWidgets(this._importDiv);
+};
+
+ZmPreferencesPage.prototype._handleErrorFinishImport = 
+function(ex) {
+	this._importBtn.setEnabled(true);
+
+	if (ex.code == ZmCsfeException.MAIL_UNABLE_TO_IMPORT_CONTACTS) {
+		var errDialog = this._appCtxt.getErrorDialog();
+		errDialog.setMessage(ex.getErrorMsg(), ex.msg, DwtMessageDialog.WARNING_STYLE);
+		errDialog.popup();
+		return true;
+	}
+	return false;
 };
 
 // Reset the form values to the pref defaults. Note that the pref defaults aren't the

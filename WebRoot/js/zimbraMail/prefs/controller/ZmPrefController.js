@@ -190,7 +190,7 @@ function(result) {
 ZmPrefController.prototype._handleErrorChangePassword =
 function(ex) {
 	if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED) {
-        	this._passwordDialog.showMessageDialog(ZmMsg.oldPasswordIsIncorrect);
+		this._passwordDialog.showMessageDialog(ZmMsg.oldPasswordIsIncorrect);
 		return true;
 	} else {
 		return false;
