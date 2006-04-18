@@ -61,8 +61,8 @@ ZmWikletContext.prototype.getNotes = function(notebookId) {
 	return this._noteCache.getNotesInFolder(notebookId);
 };
 
-ZmWikletContext.prototype.getNoteByName = function(notebookId, name) {
-	return this._noteCache.getNoteByName(notebookId, name);
+ZmWikletContext.prototype.getNoteByName = function(notebookId, name, recurseUp) {
+	return this._noteCache.getNoteByName(notebookId, name, recurseUp);
 };
 
 ZmWikletContext.prototype.getNotebookById = function(id) {

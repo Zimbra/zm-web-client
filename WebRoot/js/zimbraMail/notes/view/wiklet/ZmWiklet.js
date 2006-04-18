@@ -131,7 +131,7 @@ ZmWiklet.register(
 			if (item instanceof ZmNotebook) {
 				imgName = item.parent.id == ZmOrganizer.ID_ROOT ? "Notebook" : "Section";
 			}
-			return ["<div class='Img",imgName," _icon'></div>"].join("");
+			return ["<div class='Img",imgName," _pageIcon'></div>"].join("");
 		}
 	},
 	{
@@ -172,16 +172,17 @@ ZmWiklet.register(
 			for (var i = itemCount - 1; i >= 0; i--) {
 				var item = context.getItemAt(i);
 				// TODO: also check folderId
-				if (item.name == value) {
+				if (item.name == params.page) {
 					var formatter = new AjxMessageFormat(ZmMsg.wikiIncludeRecursion);
-					return formatter.format(value);
+					return formatter.format(params.page);
 				}
 			}
 			
 			// include note
 			var item = context.getItem();
+			var recurseUp = (params.lookup && params.lookup.toLowerCase() == 'true');
 			if (item.folderId) {
-				var note = context.getNoteByName(item.folderId, value);
+				var note = context.getNoteByName(item.folderId, params.page, recurseUp);
 				if (note) {
 					context.pushItem(note);
 					return note.getContent();
@@ -190,7 +191,7 @@ ZmWiklet.register(
 			
 			// no such note
 			var formatter = new AjxMessageFormat(ZmMsg.wikiIncludeMissing);
-			return formatter.format(value);
+			return formatter.format(params.page);
 		}
 	},
 	{
@@ -294,22 +295,23 @@ ZmWiklet.register(
 						);
 					}
 					content.push("</ul>");
+					break;
 				}
 				case "template": {
 					var folderId = context.getItem().folderId;
 					
-					var itemTemplate = params.itemTemplate ? context.getNoteByName(folderId, params.itemTemplate) : null;
+					var itemTemplate = context.getNoteByName(folderId, (params.itemTemplate || "_TOC_ITEM_TEMPLATE_"), true);
 					var itemContent = itemTemplate ? itemTemplate.getContent() : [
 						// REVISIT
 						"<tr>",
 							"<td class='_pageIcon'>{{ICON}}</td>",
 							"<td class='_pageLink'>[[{{NAME}}]]</td>",
-							"<td class='_author'>{{MODIFIER}}</td>",
-							"<td class='_history'>&bull;{{MODIFYDATE}}</td>",
+							"<td class='_tocAuthor'>{{MODIFIER}}</td>",
+							"<td class='_tocHistory'>{{MODIFYDATE}}</td>",
 						"</tr>",
 						"<tr>",
 							"<td></td>",
-							"<td class='_fragment' colspan='4'>{{FRAGMENT}}</td>",
+							"<td class='_tocFragment' colspan='4'>{{FRAGMENT}}</td>",
 						"</tr>"
 					].join("");
 					for (var i = 0; i < notes.length; i++) {
@@ -324,11 +326,12 @@ ZmWiklet.register(
 						context.setItemCount(length);
 					}
 
-					var bodyTemplate = params.bodyTemplate ? context.getNoteByName(folderId, params.bodyTemplate) : null;
+					var bodyTemplate = context.getNoteByName(folderId, (params.bodyTemplate || "_TOC_BODY_TEMPLATE_"), true);
 					var bodyContent = bodyTemplate ? bodyTemplate.getContent() : [
 						// REVISIT
-						"<table class='_toc_icon_table'>",
+						"<table class='_tocIconTable'>",
 							"<tr>",
+								"<td></td>",
 								"<td colspan='4' class='_tocHead'>{{NAME}}</td>",
 							"</tr>",
 							"{{CONTENT}}",
@@ -377,10 +380,10 @@ ZmWiklet.register(
 				case "template": {
 					var folderId = note.folderId;
 					
-					var separatorTemplate = params.separatorTemplate ? context.getNoteByName(folderId, params.separatorTemplate) : null;
+					var separatorTemplate = context.getNoteByName(folderId, (params.separatorTemplate || '_BREADCRUMB_SEPARATOR_'), true);
 					var separatorContent = separatorTemplate ? separatorTemplate.getContent() : "<td class='_breadcrumb_separator'> &raquo; </td>";
 					
-					var itemTemplate = params.itemTemplate ? context.getNoteByName(folderId, params.itemTemplate) : null;
+					var itemTemplate = context.getNoteByName(folderId, (params.itemTemplate || '_BREADCRUMB_ITEM_TEMPLATE_'), true);
 					var itemContent = itemTemplate ? itemTemplate.getContent() : [
 						// REVISIT
 						"<td class='_pageIcon'>{{ICON}}</td>",
@@ -401,7 +404,7 @@ ZmWiklet.register(
 						context.setItemCount(length);
 					}
 					
-					var bodyTemplate = params.bodyTemplate ? context.getNoteByName(folderId, params.bodyTemplate) : null;
+					var bodyTemplate = context.getNoteByName(folderId, (params.bodyTemplate || '_BREADCRUMB_BODY_TEMPLATE_'), true);
 					var bodyContent = bodyTemplate ? bodyTemplate.getContent() : [
 						// REVISIT
 						"<table class='_breadcrumb_table'>",

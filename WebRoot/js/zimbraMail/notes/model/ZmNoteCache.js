@@ -153,9 +153,27 @@ ZmNoteCache.prototype.getCreators = function() {
 ZmNoteCache.prototype.getNoteById = function(id) {
 	return this._idMap[id];
 };
-ZmNoteCache.prototype.getNoteByName = function(folderId, name) {
-	return this.getNotesInFolder(folderId)[name];
+ZmNoteCache.prototype.getNoteByName = function(folderId, name, recurseUp) {
+	var note = this.getNotesInFolder(folderId)[name];
+	if (note != null) return note;
+	
+	if (recurseUp == true) {
+		var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+		var parent = notebookTree.getById(folderId).parent;
+		while (parent != null) {
+			var folderMap = this._foldersMap[parent.id];
+			if (folderMap && folderMap[name]) {
+				// create a proxy note but DO NOT insert it into the parent
+				// folderMap -- that way it won't show up in the TOC for the parent
+				return this.makeProxyNote(folderMap[name], folderId);
+			}
+			parent = parent.parent;
+		}
+
+	}
+	return null;
 };
+
 ZmNoteCache.prototype.getNotesInFolder = function(folderId) {
 	folderId = folderId || ZmNote.DEFAULT_FOLDER;
 	if (!this._foldersMap[folderId]) {
@@ -167,13 +185,10 @@ ZmNoteCache.prototype.getNotesInFolder = function(folderId) {
 			var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 			var parent = notebookTree.getById(folderId).parent;
 			var specialNote = null;
-			while (parent.id != ZmOrganizer.ID_ROOT) {
+			while (parent != null) {
 				var folderMap = this._foldersMap[parent.id];
 				if (folderMap && folderMap[name]) {
-					specialNote = AjxUtil.createProxy(folderMap[name]);
-					specialNote.id = null;
-					specialNote.folderId = folderId;
-					specialNote.version = 0;
+					specialNote = this.makeProxyNote(folderMap[name], folderId);
 					break;
 				}
 				parent = parent.parent;
@@ -185,6 +200,23 @@ ZmNoteCache.prototype.getNotesInFolder = function(folderId) {
 	}
 	return this._foldersMap[folderId];
 };
+
+
+// make a proxy of a note in a different folder
+ZmNoteCache.prototype.makeProxyNote = function(note, folderId) {
+	// force the note to get it's content
+	// this way we can set the proxy's id to null, but still have the correct content in the proxy
+	note.getContent();
+
+	var specialNote = AjxUtil.createProxy(note);
+	specialNote.id = null;
+	specialNote.folderId = folderId;
+	specialNote.version = 0;
+	
+	return specialNote;
+}
+
+
 ZmNoteCache.prototype.getNotesByCreator = function(creator) {
 	if (!this._creatorsMap[creator]) {
 		this._creatorsMap[creator] = {};
