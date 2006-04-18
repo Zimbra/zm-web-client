@@ -23,21 +23,21 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmApptAssistant(appCtxt) {
+function ZmAppointmentAssistant(appCtxt) {
 	if (arguments.length == 0) return;
 	ZmAssistant.call(this, appCtxt, ZmMsg.createNewAppt, ZmMsg.ASST_CMD_APPOINTMENT);
 };
 
-ZmApptAssistant.prototype = new ZmAssistant();
-ZmApptAssistant.prototype.constructor = ZmAssistant;
+ZmAppointmentAssistant.prototype = new ZmAssistant();
+ZmAppointmentAssistant.prototype.constructor = ZmAppointmentAssistant;
 
-ZmApptAssistant.prototype.initialize =
+ZmAppointmentAssistant.prototype.initialize =
 function(dialog) {
 	ZmAssistant.prototype.initialize.call(this, dialog);
 	this._apptData = {};
 };
 
-ZmApptAssistant.prototype.okHandler =
+ZmAppointmentAssistant.prototype.okHandler =
 function(dialog) {
 	if (!this._apptData.subject) {
 		dialog.messageDialog(ZmMsg.errorMissingSubject, DwtMessageDialog.CRITICAL_STYLE);
@@ -48,7 +48,7 @@ function(dialog) {
 	}
 };
 
-ZmApptAssistant.prototype.extraButtonHandler =
+ZmAppointmentAssistant.prototype.extraButtonHandler =
 function(dialog) {
 	var calApp = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
 	var cc = calApp.getCalController();
@@ -56,7 +56,7 @@ function(dialog) {
 	return true;
 };
 
-ZmApptAssistant.prototype.getAppt =
+ZmAppointmentAssistant.prototype.getAppt =
 function() {
 	var appt = new ZmAppt(this._appCtxt);
 	appt.setStartDate(this._apptData.startDate);
@@ -94,7 +94,7 @@ function() {
  * everything left "lunch with satish" is taken as subject
  * 
  */
-ZmApptAssistant.prototype.handle =
+ZmAppointmentAssistant.prototype.handle =
 function(dialog, verb, args) {
 	dialog._setOkButton(AjxMsg.ok, true, true, false);
 	dialog._setExtraButton(ZmMsg.moreDetails, true, true, false);
@@ -193,7 +193,7 @@ function(dialog, verb, args) {
 	return;
 };
 
-ZmApptAssistant.prototype._setDateFields = 
+ZmAppointmentAssistant.prototype._setDateFields = 
 function(startDate, startTime, endDate, endTime, rowIndex) {
 	var startDateValue = DwtCalendar.getDateFullFormatter().format(startDate);
 	var sameDay = false;

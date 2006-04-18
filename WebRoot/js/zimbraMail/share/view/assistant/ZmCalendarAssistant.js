@@ -23,15 +23,15 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalAssistant(appCtxt) {
+function ZmCalendarAssistant(appCtxt) {
 	if (arguments.length == 0) return;
 	ZmAssistant.call(this, appCtxt, ZmMsg.openCalendar, ZmMsg.ASST_CMD_CALENDAR);
 };
 
-ZmCalAssistant.prototype = new ZmAssistant();
-ZmCalAssistant.prototype.constructor = ZmAssistant;
+ZmCalendarAssistant.prototype = new ZmAssistant();
+ZmCalendarAssistant.prototype.constructor = ZmCalendarAssistant;
 
-ZmCalAssistant.prototype.okHandler =
+ZmCalendarAssistant.prototype.okHandler =
 function(dialog) {
 	var calApp = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
 	//calApp.activate(true, this._view, this._startDate);	
@@ -43,7 +43,7 @@ function(dialog) {
 	return true;
 };
 
-ZmCalAssistant.prototype.handle =
+ZmCalendarAssistant.prototype.handle =
 function(dialog, verb, args) {
 	
 	this._startDate = null;

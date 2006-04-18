@@ -29,7 +29,7 @@ function ZmMailAssistant(appCtxt) {
 };
 
 ZmMailAssistant.prototype = new ZmAssistant();
-ZmMailAssistant.prototype.constructor = ZmAssistant;
+ZmMailAssistant.prototype.constructor = ZmMailAssistant;
 
 ZmMailAssistant.prototype.okHandler =
 function(dialog) {
@@ -87,10 +87,10 @@ function(dialog, verb, args) {
 		}
 	}
 
-	if (!objects.body) {
+	if (!objects.subject) {
 		var rest = args.replace(/^\s+/, ""); //.replace(/\s+$/, ""); // .replace(/\s+/g, ' ');
 		if (rest == "" || rest == " ") rest = null;		
-		objects.body = { data : rest };
+		objects.subject = { data : rest };
 	}
 
 	var index = -1, ri;

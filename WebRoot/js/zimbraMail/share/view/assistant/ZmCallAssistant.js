@@ -29,7 +29,7 @@ function ZmCallAssistant(appCtxt) {
 };
 
 ZmCallAssistant.prototype = new ZmAssistant();
-ZmCallAssistant.prototype.constructor = ZmAssistant;
+ZmCallAssistant.prototype.constructor = ZmCallAssistant;
 
 ZmCallAssistant.prototype.okHandler =
 function(dialog) {

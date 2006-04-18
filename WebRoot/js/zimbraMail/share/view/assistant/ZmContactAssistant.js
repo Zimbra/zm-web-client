@@ -29,7 +29,7 @@ function ZmContactAssistant(appCtxt) {
 };
 
 ZmContactAssistant.prototype = new ZmAssistant();
-ZmContactAssistant.prototype.constructor = ZmAssistant;
+ZmContactAssistant.prototype.constructor = ZmContactAssistant;
 
 ZmContactAssistant.prototype.okHandler =
 function(dialog) {
@@ -48,6 +48,7 @@ ZmContactAssistant._CONTACT_FIELDS = {
 	  a: { field: ZmMsg.AB_FIELD_assistantPhone, key: 'a' },
 	  c: { field: ZmMsg.AB_FIELD_carPhone, key: 'c' },
 	cbp: { field: ZmMsg.AB_FIELD_callbackPhone, key: 'cbp' },
+	 co:  { field: ZmMsg.AB_FIELD_company, key: 'company' },	
 company: { field: ZmMsg.AB_FIELD_company, key: 'company' },
 	 cp: { field: ZmMsg.AB_FIELD_companyPhone, key: 'cp' },
 	  e: { field: ZmMsg.AB_FIELD_email, key: 'e', defaultValue: ZmMsg.ASST_CONTACT_email },
@@ -67,6 +68,8 @@ jobtitle:{ field: ZmMsg.AB_FIELD_jobTitle, key: 'title' },	 // alias jobtitle to
 	 op: { field: ZmMsg.AB_FIELD_otherPhone, key: 'op' },
 	 ou: { field: ZmMsg.AB_OTHER_URL, key: 'ou' },
 	  p: { field: ZmMsg.AB_FIELD_pager, key: 'p' },
+	 ti: { field: ZmMsg.AB_FIELD_jobTitle, key: 'title' },
+	  t: { field: ZmMsg.AB_FIELD_jobTitle, key: 'title' },	  
   title: { field: ZmMsg.AB_FIELD_jobTitle, key: 'title' },
 	 w2: { field: ZmMsg.AB_FIELD_workPhone2, key: 'w2' },
 	 wa: { field: ZmMsg.AB_ADDR_WORK, key: 'wa', multiLine: true },

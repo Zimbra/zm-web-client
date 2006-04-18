@@ -55,9 +55,9 @@ function ZmAssistantDialog(appCtxt) {
 	// TODO: need to init these based on COS features (calendars, contacts, etc)
 	if (!ZmAssistantDialog._handlerInit) {
 		ZmAssistantDialog._handlerInit = true;
-		ZmAssistant.register(new ZmApptAssistant(appCtxt));
+		ZmAssistant.register(new ZmAppointmentAssistant(appCtxt));
 		ZmAssistant.register(new ZmContactAssistant(appCtxt));
-		ZmAssistant.register(new ZmCalAssistant(appCtxt));
+		ZmAssistant.register(new ZmCalendarAssistant(appCtxt));
 		ZmAssistant.register(new ZmCallAssistant(appCtxt));
 		ZmAssistant.register(new ZmMailAssistant(appCtxt));
 	}	
