@@ -26,6 +26,12 @@
 function ZmWiklet() {
 }
 
+// Constants
+
+ZmWiklet.NONE = undefined;
+ZmWiklet.SINGLE_VALUE = "value";
+ZmWiklet.PARAMETERIZED = "params";
+
 // Data
 
 ZmWiklet._wiklets = {};
@@ -114,8 +120,26 @@ ZmWiklet.__byNoteName = function(a, b) {
 // REGISTER KNOWN WIKLETS
 
 ZmWiklet.register(
+	{
+		name: "URL",
+		label: ZmMsg.wikletUrl,
+		tooltip: ZmMsg.wikletUrlTT,
+		func: function(name, value, params, context) {
+			// REVISIT: This needs to generate user-friendly URL
+			var item = context.getItem();
+			var notebook = context.getNotebookById(item.remoteFolderId || item.folderId);
+
+			var loc = document.location;
+			var uname = notebook.owner || context._appCtxt.get(ZmSetting.USERNAME); // REVISIT !!!
+
+			return [
+				loc.protocol,"//",loc.host,"/service/home/~",uname,"/?id=",item.id
+			].join("");
+		}
+	},
 	{ 
 		name: "NAME",
+		label: ZmMsg.wikletName,
 		tooltip: ZmMsg.wikletNameTT,
 		func: function(name, value, params, context) {
 			var name = context.getItem().name;
@@ -124,6 +148,7 @@ ZmWiklet.register(
 	},
 	{
 		name: "ICON",
+		label: ZmMsg.wikletIcon,
 		tooltip: ZmMsg.wikletIconTT,
 		func: function(name, value, params, context) {
 			var imgName = "Page";
@@ -136,6 +161,7 @@ ZmWiklet.register(
 	},
 	{
 		name: "COLOR",
+		label: ZmMsg.wikletColor,
 		tooltip: ZmMsg.wikletColorTT,
 		func: function(name, value, params, context) {
 			var item = context.getItem();
@@ -148,24 +174,44 @@ ZmWiklet.register(
 	},
 	{
 		name: "FRAGMENT",
+		label: ZmMsg.wikletFragment,
 		tooltip: ZmMsg.wikletFragmentTT,
 		func: function(name, value, params, context) {
+			// check for recursive fragment
 			var item = context.getItem();
-			return item.fragment || "";
+			var itemCount = context.getItemCount();
+			for (var i = itemCount - 2; i >= 0; i--) {
+				var prevItem = context.getItemAt(i);
+				if (prevItem != item) {
+					break;
+				}
+				if (prevItem.folderId == item.folderId && prevItem.name == item.name) {
+					return ZmMsg.wikiFragmentRecursion;
+				}
+			}
+
+			// return fragment
+			context.pushItem(item);
+			var content = item.fragment || "";
+			return content;
 		}
 	},
 	{
 		name: "MSG",
+		label: ZmMsg.wikletMsg,
 		tooltip: ZmMsg.wikletMsgTT,
-		params: "messageKey",
+		type: ZmWiklet.SINGLE_VALUE,
+		value: "messageKey",
 		func: function(name, value, params, context) {
 			return value && ZmMsg[value] ? ZmMsg[value] : value;
 		}
 	},
 	{
 		name: "INCLUDE",
+		label: ZmMsg.wikletInclude,
 		tooltip: ZmMsg.wikletIncludeTT,
-		params: "PageName",
+		type: ZmWiklet.SINGLE_VALUE,
+		value: "PageName",
 		func: function(name, value, params, context) {
 			// check for recursive include
 			var itemCount = context.getItemCount();
@@ -196,6 +242,7 @@ ZmWiklet.register(
 	},
 	{
 		name: "CREATOR",
+		label: ZmMsg.wikletCreator,
 		tooltip: ZmMsg.wikletCreatorTT,
 		func: function(name, value, params, context) {
 			var item = context.getItem();
@@ -204,6 +251,7 @@ ZmWiklet.register(
 	},
 	{
 		name: "MODIFIER",
+		label: ZmMsg.wikletModifier,
 		tooltip: ZmMsg.wikletModifierTT,
 		func: function(name, value, params, context) {
 			var item = context.getItem();
@@ -213,8 +261,10 @@ ZmWiklet.register(
 	},
 	{
 		name: "CREATEDATE",
+		label: ZmMsg.wikletCreateDate,
 		tooltip: ZmMsg.wikletCreateDateTT,
-		params: "medium",
+		type: ZmWiklet.SINGLE_VALUE,
+		value: "medium",
 		func: function(name, value, params, context) {
 			var item = context.getItem();
 			return ZmWiklet._formatDate("date", value, item.createDate);
@@ -222,8 +272,10 @@ ZmWiklet.register(
 	},
 	{
 		name: "CREATETIME",
+		label: ZmMsg.wikletCreateTime,
 		tooltip: ZmMsg.wikletCreateTimeTT,
-		params: "short",
+		type: ZmWiklet.SINGLE_VALUE,
+		value: "short",
 		func: function(name, value, params, context) {
 			var item = context.getItem();
 			return ZmWiklet._formatDate("time", value, item.createDate);
@@ -231,8 +283,10 @@ ZmWiklet.register(
 	},
 	{
 		name: "MODIFYDATE",
+		label: ZmMsg.wikletModifyDate,
 		tooltip: ZmMsg.wikletModifyDateTT,
-		params: "medium",
+		type: ZmWiklet.SINGLE_VALUE,
+		value: "medium",
 		func: function(name, value, params, context) {
 			var item = context.getItem();
 			return ZmWiklet._formatDate("date", value, item.modifyDate);
@@ -240,8 +294,10 @@ ZmWiklet.register(
 	},
 	{
 		name: "MODIFYTIME",
+		label: ZmMsg.wikletModifyTime,
 		tooltip: ZmMsg.wikletModifyTimeTT,
-		params: "short",
+		type: ZmWiklet.SINGLE_VALUE,
+		value: "short",
 		func: function(name, value, params, context) {
 			var item = context.getItem();
 			return ZmWiklet._formatDate("time", value, item.modifyDate);
@@ -249,6 +305,7 @@ ZmWiklet.register(
 	},
 	{
 		name: "VERSION",
+		label: ZmMsg.wikletVersion,
 		tooltip: ZmMsg.wikletVersionTT,
 		func: function(name, value, params, context) {
 			return String(context.getItem().version);
@@ -256,8 +313,20 @@ ZmWiklet.register(
 	},
 	{
 		name: "TOC",
+		label: ZmMsg.wikletToc,
 		tooltip: ZmMsg.wikletTocTT,
-		params: "page = '*'",
+		type: ZmWiklet.PARAMETERIZED,
+		params: {
+			page: {
+			},
+			format: {
+			},
+			bodyTemplate: {
+			},
+			itemTemplate: {
+			}
+		},
+		value: { page: "*" },
 		func: function(name, value, params, context) {
 			var item = context.getItem();
 			var folderId = item instanceof ZmNote ? item.folderId : item.id;
@@ -360,7 +429,19 @@ ZmWiklet.register(
 	},
 	{
 		name: "BREADCRUMBS",
+		label: ZmMsg.wikletBreadcrumbs,
 		tooltip: ZmMsg.wikletBreadcrumbsTT,
+		type: ZmWiklet.SINGLE_VALUE,
+		params: {
+			format: {
+			},
+			bodyTemplate: {
+			},
+			itemTemplate: {
+			},
+			separatorTemplate: {
+			}
+		},
 		func: function(name, value, params, context) {
 			// TODO: params.page
 			

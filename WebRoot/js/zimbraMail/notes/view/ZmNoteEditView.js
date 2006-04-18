@@ -241,8 +241,15 @@ ZmNoteEditor.prototype.setContent = function(content) {
 		content = converter.toWiki(content);
 	}
 	ZmHtmlEditor.prototype.setContent.call(this, content);
+	if (this._mode == DwtHtmlEditor.HTML) {
+		var root = this._getIframeDoc();
+		this._deserializeWiklets(root);
+	}
 };
 ZmNoteEditor.prototype.getContent = function() {
+	if (this._mode == DwtHtmlEditor.HTML) {
+		this._serializeWiklets();
+	}
 	var content = ZmHtmlEditor.prototype.getContent.call(this);
 	var converter = ZmNoteEditor._CONVERTERS[this._format];
 	if (converter) {
@@ -252,6 +259,92 @@ ZmNoteEditor.prototype.getContent = function() {
 };
 
 // Protected methods
+
+ZmNoteEditor.prototype._serializeWiklets = function() {
+	var elems = this._getIframeDoc().getElementsByTagName("INPUT");
+	for (var i = 0; i < elems.length; i++) {
+		var elem = elems[i];
+		var name = elem.getAttribute("wikname");
+		var wiklet = ZmWiklet.getWikletByName(name);
+
+		var a = [ "{{", name ];
+		if (wiklet.type == ZmWiklet.SINGLE_VALUE) {
+			a.push(" ", elem.getAttribute("wikvalue"));
+		}
+		else if (wiklet.type == ZmWiklet.PARAMETERIZED) {
+			var attrs = elem.attributes;
+			for (var j = 0; j < attrs.length; j++) {
+				var attr = attrs[j];
+				if (attr.nodeName.match(/^wikparam_/)) {
+					var aname = attr.nodeName.substr(9);
+					var avalue = attr.nodeValue.replace(/"/g,"");
+					a.push(" ", aname, "=\"", avalue, "\"");
+				}
+			}
+		}
+		a.push("}}");
+
+		var text = document.createTextNode(a.join(""));
+		elem.parentNode.replaceChild(text, elem);
+	}
+};
+ZmNoteEditor.prototype._deserializeWiklets = function(node) {
+	for (var child = node.firstChild; child; child = child.nextSibling) {
+		if (child.nodeType == AjxUtil.ELEMENT_NODE) {
+			this._deserializeWiklets(child);
+		}
+		else if (child.nodeType == AjxUtil.TEXT_NODE) {
+			var regex = /(?=^|[^\\])\{\{\s*(.+?)(?:\s+(.*?))?\s*\}\}/g;
+			var m;
+			while ((m = regex.exec(child.nodeValue))) {
+				var wiklet = ZmWiklet.getWikletByName(m[1]);
+				if (!wiklet) continue;
+				
+				child = child.splitText(m.index);
+				child = child.splitText(m[0].length);
+
+				var value = m[2] || "";
+				var params = ZmWikletProcessor.__parseValueAsParams(m[2]);
+				var button = this._createWikletButton(wiklet, value, params);
+				child.parentNode.replaceChild(button, child.previousSibling);
+
+				regex.startIndex = 0;
+			}
+		}
+	}
+};
+ZmNoteEditor.prototype._createWikletButton = function(wiklet, value, params) {
+	var button = document.createElement("INPUT");
+	button.type = "submit";
+	button.value = wiklet.label || wiklet.name;
+	button.setAttribute("wikname", wiklet.name);
+	switch (wiklet.type) {
+		case ZmWiklet.SINGLE_VALUE: {
+			button.title = ZmMsg.wikletConfigureValue;
+			button.setAttribute("wikvalue", value || wiklet.value || "");
+			break;
+		}
+		case ZmWiklet.PARAMETERIZED: {
+			button.title = ZmMsg.wikletConfigureParams;
+			if (params) {
+				for (var pname in params) {
+					button.setAttribute("wikparam_"+pname, params[pname] || "");
+				}
+			}
+			else {
+				for (var pname in wiklet.params) {
+					button.setAttribute("wikparam_"+pname, wiklet.value[pname] || "");
+				}
+			}
+			break;
+		}
+		default: {
+			button.title = ZmMsg.wikletConfigureNone;
+		}
+	}
+	button.onclick = ZmNoteEditor._wikletButtonHandler;
+	return button;
+};
 
 ZmNoteEditor.prototype._embedHtmlContent =
 function(html) {
@@ -279,8 +372,9 @@ ZmNoteEditor.prototype._createWikiToolBar = function(parent) {
 	
 	var listener = new AjxListener(this, this._wikiToolBarListener);
 	
-	for (var name in ZmNoteView.WIKLETS) {
-		var wiklet = ZmNoteView.WIKLETS[name];
+	var wiklets = ZmWiklet.getWiklets();
+	for (var name in wiklets) {
+		var wiklet = wiklets[name];
 		var button = new DwtButton(toolbar, null, "TBButton");
 		button.setText(wiklet.label || name);
 		button.setToolTipContent(wiklet.tooltip);
@@ -318,33 +412,13 @@ ZmNoteEditor.prototype._insertImageByIds = function(ids) {
 
 ZmNoteEditor.prototype._wikiToolBarListener = function(event) {
 	var name = event.item.getData("wiklet");
-	/***
-	var node = document.createElement("DIV");
-	node.style.backgroundColor = "black";
-	node.style.color = "white";
-	node.innerHTML = name;
-	/***
-	var button = new DwtButton(this);
-	button.setText(name);
-	button.addSelectionListener(new AjxListener(this, this._configureWiklet));
-	var node = button.getHtmlElement();
-	/***/
-	var a = [
-		"{{", name,
-	];
-	if (ZmNoteView.WIKLETS[name].params) {
-		a.push(" ", ZmNoteView.WIKLETS[name].params);
-	}
-	a.push("}}");
-	var node = document.createTextNode(a.join(""));
-	/***/
-	this._insertNodeAtSelection(node);
+	var wiklet = ZmWiklet.getWikletByName(name);
+	var button = this._createWikletButton(wiklet);
+	this._insertNodeAtSelection(button);
 };
-/***
-ZmNoteEditor.prototype._configureWiklet = function(event) {
+ZmNoteEditor._wikletButtonHandler = function(event) {
 	alert("click!");
 };
-/***/
 
 ZmNoteEditor.prototype._getInitialStyle = function(useDiv) {
 	return "";
