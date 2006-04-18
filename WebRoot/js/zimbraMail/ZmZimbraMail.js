@@ -229,8 +229,8 @@ function() {
 		// close all child windows
 		for (var i = 0; i < childWinList.size(); i++) {
 			var childWin = childWinList.get(i);
-			childWin.parentController = null;
-			childWin.close();
+			childWin.win.parentController = null;
+			childWin.win.close();
 		}
 	}
 	window._zimbraMail = window.onload = window.onresize = window.document.onkeypress = null;
