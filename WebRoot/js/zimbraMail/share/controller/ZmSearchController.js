@@ -394,8 +394,9 @@ function(search, isMixed, ex) {
 
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER ||
 		ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
-		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR) {
-
+		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR ||
+		ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS)
+	{
 		var msg = ex.getErrorMsg();
 		this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 		var results = new ZmSearchResult(this._appCtxt);

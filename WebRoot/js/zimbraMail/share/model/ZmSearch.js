@@ -148,8 +148,6 @@ function(params) {
 	} else if (this.isCalResSearch) {
 		soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
 		var method = soapDoc.getMethod();
-//		if (this.sortBy)
-//			method.setAttribute("sortBy", ZmSearch.SORT_BY[this.sortBy]);
 		if (this.attrs)
 			method.setAttribute("attrs", this.attrs.join(","));
 		var searchFilterEl = soapDoc.set("searchFilter");
