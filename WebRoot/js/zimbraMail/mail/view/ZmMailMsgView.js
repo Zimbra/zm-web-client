@@ -686,7 +686,7 @@ function(container, html, isTextMsg) {
 	}
 
 	// pass essential styles to avoid padding/font flickering
-	var inner_styles = [ ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }",
+/*	var inner_styles = [ ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }",
 			     "body.MsgBody { padding: 10px; }",
 			     ".MsgHeader .Object { white-space: nowrap; }",
 			     ".Object a:link, .Object a:active, .Object a:visited { text-decoration: none; }",
@@ -694,6 +694,8 @@ function(container, html, isTextMsg) {
 			     ".Object-triggered { text-decoration:none; color: blue;}",
 			     ".Object-activated { text-decoration:underline; }"
 		].join(" ");
+*/
+var inner_styles = "";
 	var ifw = new DwtIframe(this, "MsgBody", true, html, inner_styles,
 				!ZmMailMsgView.SCROLL_WITH_IFRAME, // "noscroll"
 				"static", callback);

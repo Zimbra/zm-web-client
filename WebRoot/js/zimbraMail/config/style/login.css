@@ -85,7 +85,7 @@ FORM {
 	text-align:right;
 }
 
-/* "version" substitution:  eg:  "V 1.23 * 'Birdseye' * Wed Oct 12, 2005" */
+/* "short version" substitution:  eg:  "BETA" */
 .LoginPanelShortVersion {
 	position:absolute;
 	left:63px;
@@ -96,6 +96,18 @@ FORM {
 	font-weight:normal;
 	@DisabledText@
 }
+
+/* "short version" substitution:  eg:  "V 1.23 * 'Birdseye' * Wed Oct 12, 2005" */
+.LoginPanelVersion {
+	position:absolute;
+	left:60;
+	top:120;
+	width:350;
+	height:30;
+	font-weight:normal;
+	text-align:right;
+}
+
 
 
 .LoginPanelLicense {
@@ -108,7 +120,6 @@ FORM {
 	padding-top:@BoxPaddingSize@;
 	padding-bottom:@BoxPaddingSize@;
 }
-
 
 
 

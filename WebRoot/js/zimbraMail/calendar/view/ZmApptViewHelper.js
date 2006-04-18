@@ -787,7 +787,7 @@ function() {
 		if (timeFormatter._segments[j] instanceof AjxFormat.TextSegment) {
 			var trimStr = AjxStringUtil.trim(segmentStr);
 			if (trimStr.length) {
-				html[i++] = "<td>"
+				html[i++] = "<td class='TextPadding ZmFieldLabel'>"
 				html[i++] = segmentStr;
 				html[i++] = "</td>";
 			}

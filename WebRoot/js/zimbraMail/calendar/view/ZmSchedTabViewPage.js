@@ -231,7 +231,7 @@ function() {
 	var html = [];
 	var i = 0;
 
-	html[i++] = "<table border=0 width=100% cellpadding=3><tr><td>";
+	html[i++] = "<table border=0 width=100% cellpadding=3><tr><td width=100%>";
 	html[i++] = this._getTimeHtml();
 	html[i++] = "</td><td style='text-align:right'>";
 	html[i++] = this._getKeyHtml();

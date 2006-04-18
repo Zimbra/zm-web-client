@@ -3,7 +3,7 @@
 // SUBSTITUTIONS PERFORMED WITHIN THIS FILE ONLY -- DON'T USE OUTSIDE THIS FILE!
 
 
-SkinImgDir					= /zimbra/skins/chocolate/img
+SkinImgDir					= /zimbra/skins/walnut/img
 SkinAnimatedImgDir			= /zimbra/img/animated
 DwtImgDir					= /zimbra/img/loRes/dwt
 
@@ -167,7 +167,7 @@ _SashSize_					= 8px
 
 
 FontDefault					= font-family: Verdana, Arial, Helvetica, sans-serif;
-FontFixed					= font-family: monospace; font-size:10px;
+FontFixed					= font-family: monospace; font-size:11px;
 
 FontNormal					= font-size:10px;
 FontBig						= font-size:12px;
@@ -227,8 +227,8 @@ DisabledText				= color: @_DisabledTextColor_@;
 UnreadText					= @Text@ font-weight:bold;
 DeletedText					= @DisabledText@ font-style:italic;
 
-HTMLText					= font-family:"Times New Roman", Times, serif;
-HTMLTextSize				= font-size:12pt;
+HTMLText					= font-family:Verdana,Arial,serif;
+HTMLTextSize				= font-size:10pt;
 
 // DIFFERENT REGIONS OF THE SKIN
 
@@ -346,7 +346,9 @@ DropText					= color:@_DropTextColor_@;
 // BUTTONS IN DIFFERENT FLAVORS
 
 
-NormalButton				= @_NormalButtonBorder_@			@NormalButtonBg@	@NormalButtonText@	@_NormalButtonSize_@	 @ActiveCursor@
+NormalButtonAppearance		= @_NormalButtonBorder_@			@NormalButtonBg@	@NormalButtonText@	@ActiveCursor@
+
+NormalButton				= @NormalButtonAppearance@ @_NormalButtonSize_@
 NormalButton-hover			= @_HoverBorder_@					@HoverBg@			@HoverText@			@_NormalButtonSize_@	 @ActiveCursor@
 NormalButton-clicked		= @_ClickedBorder_@					@ClickedBg@			@ClickedText@		@_NormalButtonSize_@	 @ActiveCursor@
 NormalButton-disabled		= @_NormalButtonDisabledBorder_@ 	@NormalButtonBg@ 	@DisabledText@		@_NormalButtonSize_@	 @DisabledCursor@
@@ -383,10 +385,10 @@ Select-hover				= @_HoverBorder_@					@HoverBg@		@_SelectSize_@	 @ActiveCursor@
 Select-clicked				= @_ClickedBorder_@					@ClickedBg@		@_SelectSize_@	 @ActiveCursor@
 Select-disabled				= @_SelectDisabledBorder_@ 			@SelectBg@ 		@_SelectSize_@	 @DisabledCursor@
 
-SelectText					= color:@_SelectTextColor_@;	@NoWrap@
-SelectText-hover			= @HoverText@					@NoWrap@
-SelectText-clicked			= @ClickedText@					@NoWrap@
-SelectText-disabled			= @DisabledText@				@NoWrap@
+SelectText					= color:@_SelectTextColor_@;	@NoWrap@ @TextPadding@ text-align:left;
+SelectText-hover			= @HoverText@					@NoWrap@ @TextPadding@ text-align:left;
+SelectText-clicked			= @ClickedText@					@NoWrap@ @TextPadding@ text-align:left;
+SelectText-disabled			= @DisabledText@				@NoWrap@ @TextPadding@ text-align:left;
 
 
 

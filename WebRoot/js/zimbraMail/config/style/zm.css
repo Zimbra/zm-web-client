@@ -77,6 +77,7 @@
 /* MOVE TO SKIN ??? */
 #ZmTagColorMenu {
 	width: 100px;	/* ??? SIZE */
+	height: 22px;
 }
 
 
@@ -276,7 +277,6 @@ td.DDSepInvisible div {
 
 /* Search input field */
 .search_input {
-	@InputField@
 	width:100%;
 }
 
@@ -1942,7 +1942,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmNoteView SPAN, .ZmNoteView SELECT, .ZmNoteView INPUT, 
 .ZmNoteView TEXTAREA, .ZmNoteView BUTTON {
 	@HTMLText@
-	font-size: 12pt;
 }
 .ZmNoteView H1 {
 	margin-top: 0em;
@@ -1953,12 +1952,12 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin-bottom: @BoxMarginSize@;
 }
 
-/* ??? USE? */
+/* This makes everything under the ZmNoteView item use the same font family */
 .ZmNoteView * {
 	font-family: inherit;
 }
 .ZmNoteView SPAN.Object, .ZmNoteView SPAN.Object-activated {
-	font-size: inherit;
+	Xfont-size: inherit;
 }
 
 .ZmNoteEditView {

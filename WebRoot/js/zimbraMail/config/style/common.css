@@ -47,9 +47,17 @@ FORM {
 }
 
 
-input, textarea {
+/* set for 'text' and 'password' fields explicitly so checkboxes don't get borders */
+HTML>BODY input[type="text"], 
+HTML>BODY input[type="password"], 
+HTML>BODY textarea {
 	@InputField@
 }
+
+HTML>BODY input[type="checkbox"] {
+	@ActiveCursor@
+}
+
 
 .CompactTable {
 	@CompactTable@
@@ -135,6 +143,10 @@ ZmSectionLabel {
 }
 
 
+/* Apply to any text element which you want to have some spacing on either side */
+.TextPadding {
+	@TextPadding@
+}
 
 /* ??? USED */
 .BigHeaderBg {

@@ -92,7 +92,7 @@
 
 /* named pieces of the skin that the app will work with */
 
-#skin_outer								{	Xdisplay:none;												}
+#skin_outer								{	display:none;												}
 #skin_container_logo					{					height:32;									}
 #skin_container_quota					{					height:32;									}
 #search_control_inset					{																}
@@ -144,4 +144,11 @@
 .LogoContainer {
 	left: 54px;
 	top: 6px;
+}
+
+.ZmScheduler-free 		{	@PageBg@	}
+
+
+.ZmHtmlEditor .Toolbar .TBButton {
+	@NormalButtonAppearance@
 }

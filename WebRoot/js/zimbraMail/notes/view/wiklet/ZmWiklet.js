@@ -488,7 +488,7 @@ ZmWiklet.register(
 					var bodyTemplate = context.getNoteByName(folderId, (params.bodyTemplate || '_BREADCRUMB_BODY_TEMPLATE_'), true);
 					var bodyContent = bodyTemplate ? bodyTemplate.getContent() : [
 						// REVISIT
-						"<table class='_breadcrumb_table'>",
+						"<table class='_breadcrumb_table' cellspacing=0 cellpadding=0>",
 							"<tr>",
 								"{{CONTENT}}",
 							"</tr>",

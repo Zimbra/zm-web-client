@@ -34,7 +34,7 @@ _TreeSeparatorColor_		= #333333
 _PageBgColor_				= #eeeeee
 _PageBgImg_					= none
 
-_PageHeaderBgColor_			= #cccccc
+_PageHeaderBgColor_			= #dddddd
 _PageHeaderBgImg_			= none
 
 _ContentBgColor_			= white
@@ -48,6 +48,7 @@ _TextColor_					= black
 _LabelColor_				= #666666
 _RequiredLabelColor_		= darkred
 _DisabledTextColor_			= #666666
+_DisabledBgColor_			= #dddddd
 _AnchorTextColor_			= darkblue
 _AnchorTextColor-hover_		= darkblue
 _AnchorTextColor-clicked_	= green
@@ -55,19 +56,24 @@ _AnchorTextColor-clicked_	= green
 _NormalButtonBgColor_		= #cccccc
 _NormalButtonBgImg_			= url(@DwtImgDir@/ButtonUp__H.gif)
 _NormalButtonTextColor_		= black
-_NormalButtonBorderColor_	= #333333
+_NormalButtonBorderColor_	= 
 _DefaultButtonBgColor_		= #cccccc
 _DefaultButtonBgImg_		= url(@DwtImgDir@/ButtonUpDefault__H.gif)
 
-_NormalButtonBorder_		= border: 1px outset @_NormalButtonBorderColor_@;
-_NormalButtonDisabledBorder_ = border: 1px solid @_DisabledTextColor_@
-_DefaultButtonBorder_		= border: 1px outset @_DefaultButtonBgColor_@;
-_ToolbarButtonBorder_		= border: 1px solid @_ToolbarBgColor_@;
-_InsetButtonBorder_			= border: 1px solid @_InsetBgColor_@;
-_HoverBorder_				= border: 1px outset @_NormalButtonBorderColor_@;
-_ClickedBorder_				= border: 1px inset @_NormalButtonBorderColor_@;
+// IT IS DIFFICULT TO DO ATTRACTIVE X-PLATFORM BORDERS, SO SET IT UP HERE AND USE IT EVERYWHERE WE CAN
+_OutsetBorder_				= border: 1px solid; border-color:#cccccc black black #cccccc;
+_InsetBorder_				= border: 1px solid; border-color:black #cccccc #cccccc black;
+_DisabledBorder_			= border: 1px solid #cccccc;
 
-_NormalButtonSize_			= min-width:60px; min-height:20px; 
+_NormalButtonBorder_		= @_OutsetBorder_@
+_NormalButtonDisabledBorder_ = @_DisabledBorder_@
+_DefaultButtonBorder_		= @_OutsetBorder_@ border-width:2px;
+_ToolbarButtonBorder_		= border: 0px; padding:1px;
+_InsetButtonBorder_			= border: 1px solid @_InsetBgColor_@;
+_HoverBorder_				= @_OutsetBorder_@
+_ClickedBorder_				= @_InsetBorder_@
+
+_NormalButtonSize_			= width:60px; height:20px; 
 
 _HoverBgColor_				= 
 _HoverBgImg_				= url(@DwtImgDir@/ButtonDown__H.gif)
@@ -93,7 +99,7 @@ _MenuItemBorder_			= border: 1px solid @_MenuBgColor_@;
 
 _NoticeTextColor_			= black
 _NoticeBorder_				= border: 1px solid black;
-_InfoBgColor_				= #47cb6c
+_InfoBgColor_				= #add6d6
 _WarningBgColor_			= #FFF6BF
 _CriticalBgColor_			= #F5BFBF
 
@@ -102,9 +108,9 @@ _InputBgColor_				= @_ContentBgColor_@
 _InputTextColor_			= @_TextColor_@
 _InputErrorBgColor_			= #fde79a
 _InputErrorTextColor_		= @_TextColor_@
-_InputDisabledBgColor_		= #cccccc
+_InputDisabledBgColor_		= @_DisabledBgColor_@
 _InputDisabledTextColor_	= @_DisabledTextColor_@
-_InputBorder_				= border: 1px inset @_InputBgColor_@;
+_InputBorder_				= @_InsetBorder_@
 
 
 _NormalRowBgColor_			= none
@@ -167,7 +173,7 @@ _SashSize_					= 8px
 
 
 FontDefault					= font-family: Tahoma, Arial, Helvetica, sans-serif;
-FontFixed					= font-family: monospace; font-size:11px;
+FontFixed					= font-family: monospace; font-size:12px;
 
 FontNormal					= font-size:11px;
 FontBig						= font-size:12px;
@@ -220,6 +226,7 @@ ImagePadding				= padding-right: @BoxMarginSize@;
 
 Text					 	= color: @_TextColor_@;
 Label				 		= color: @_LabelColor_@; @NoWrap@
+LabelWrap				 	= color: @_LabelColor_@; 
 RequiredText			 	= color: @_RequiredTextColor_@;
 HoverText				 	= color: @_HoverTextColor_@;
 ClickedText				 	= color: @_ClickedTextColor_@;
@@ -229,8 +236,8 @@ DisabledText				= color: @_DisabledTextColor_@;
 UnreadText					= @Text@ font-weight:bold;
 DeletedText					= @DisabledText@ font-style:italic;
 
-HTMLText					= font-family:"Times New Roman", Times, serif;
-HTMLTextSize				= font-size:12pt;
+HTMLText					= font-family:Verdana,Arial,serif;
+HTMLTextSize				= font-size:10pt;
 
 // DIFFERENT REGIONS OF THE SKIN
 
@@ -253,14 +260,14 @@ TreeBorder					= border: 1px solid @_TreeBgColor_@;
 TreeHeaderBg				= background-color:@_TreeHeaderBgColor_@; background-image:@_TreeHeaderBgImg_@;
 TreeHeaderText				= color: @_TreeHeaderTextColor_@;
 TreeHeaderBorder			= border: 1px solid @_TreeHeaderBgColor_@;
-TreeHeaderBigBorder			= border: 1px outset @_TreeSeparatorColor_@;
+TreeHeaderBigBorder			= @_OutsetBorder_@
 
 PageBg						= background-color:@_PageBgColor_@; background-image:@_PageBgImg_@;
 PageHeaderBg				= background-color:@_PageHeaderBgColor_@; background-image:@_PageHeaderBgImg_@;
 PageHeaderText				= @Text@
 
 ContentBg					= background-color:@_ContentBgColor_@; background-image:@_ContentBgImg_@;
-ContentBorder				= border: 1px inset @_SeparatorColor_@;
+ContentBorder				= @_InsetBorder_@
 
 SeparatorBorder				= border: 1px solid @_SeparatorColor_@;
 LeftSeparator				= border-left: 1px solid @_SeparatorColor_@;		Xfont-size:1px;
@@ -298,8 +305,8 @@ NoticeText					= color:@_NoticeTextColor_@;
 NoticeBorder				= @_NoticeBorder_@
 
 
-FieldSet				 	= border: 1px dotted @_SeparatorColor_@; @BoxSpacing@
-FieldSetLabel				= @Label@
+FieldSet				 	= border: 1px solid @_SeparatorColor_@; @BoxSpacing@
+FieldSetLabel				= @PageBg@ @Label@
 
 
 
@@ -310,6 +317,7 @@ TransparentBg				=
 NormalButtonBg				= background-color:@_NormalButtonBgColor_@; background-image:@_NormalButtonBgImg_@;
 NormalButtonText			= color: @_NormalButtonTextColor_@; text-align:center;	@NoWrap@
 DefaultButtonBg				= background-color:@_DefaultButtonBgColor_@; background-image:@_DefaultButtonBgImg_@;
+DisabledButtonBg			= background-color:@_DisabledBgColor_@;
 
 SelectBg					= background-color:@_SelectBgColor_@; background-image:@_SelectBgImg_@;
 
@@ -351,12 +359,12 @@ DropText					= color:@_DropTextColor_@;
 NormalButton				= @_NormalButtonBorder_@			@NormalButtonBg@	@NormalButtonText@	@_NormalButtonSize_@	 @ActiveCursor@
 NormalButton-hover			= @_HoverBorder_@					@HoverBg@			@HoverText@			@_NormalButtonSize_@	 @ActiveCursor@
 NormalButton-clicked		= @_ClickedBorder_@					@ClickedBg@			@ClickedText@		@_NormalButtonSize_@	 @ActiveCursor@
-NormalButton-disabled		= @_NormalButtonDisabledBorder_@ 	@NormalButtonBg@ 	@DisabledText@		@_NormalButtonSize_@	 @DisabledCursor@
+NormalButton-disabled		= @_NormalButtonDisabledBorder_@ 	@DisabledButtonBg@ 	@DisabledText@		@_NormalButtonSize_@	 @DisabledCursor@
 NormalButton-default		= @_DefaultButtonBorder_@			@DefaultButtonBg@	@NormalButtonText@	@_NormalButtonSize_@	 @ActiveCursor@
 
-NormalButtonText-hover		= @HoverText@
-NormalButtonText-clicked	= @ClickedText@
-NormalButtonText-disabled	= @DisabledText@
+NormalButtonText-hover		= @HoverText@ text-align:center;	@NoWrap@
+NormalButtonText-clicked	= @ClickedText@ text-align:center;	@NoWrap@
+NormalButtonText-disabled	= @DisabledText@ text-align:center;	@NoWrap@
 
 
 ToolbarButton				= @_ToolbarButtonBorder_@			@TransparentBg@		@ActiveCursor@
@@ -364,20 +372,20 @@ ToolbarButton-hover			= @_HoverBorder_@					@HoverBg@			@ActiveCursor@
 ToolbarButton-clicked		= @_ClickedBorder_@					@ClickedBg@			@ActiveCursor@
 ToolbarButton-disabled		= @_ToolbarButtonBorder_@			@TransparentBg@		@DisabledCursor@
 
-ToolbarButtonText			= @ToolbarText@;
-ToolbarButtonText-hover		= @HoverText@
-ToolbarButtonText-clicked	= @ClickedText@
-ToolbarButtonText-disabled	= @DisabledText@ @DisabledCursor@
+ToolbarButtonText			= @ToolbarText@; @NoWrap@
+ToolbarButtonText-hover		= @HoverText@ @NoWrap@
+ToolbarButtonText-clicked	= @ClickedText@ @NoWrap@
+ToolbarButtonText-disabled	= @DisabledText@ @NoWrap@ @DisabledCursor@ 
 
 InsetButton					= @_InsetButtonBorder_@				@TransparentBg@		@ActiveCursor@
 InsetButton-hover			= @_HoverBorder_@					@HoverBg@			@ActiveCursor@
 InsetButton-clicked			= @_ClickedBorder_@					@ClickedBg@			@ActiveCursor@
 InsetButton-disabled		= @_InsetButtonBorder_@				@TransparentBg@		@DisabledCursor@
 
-InsetButtonText				= @InsetText@;
-InsetButtonText-hover		= @HoverText@
-InsetButtonText-clicked		= @ClickedText@
-InsetButtonText-disabled	= @DisabledText@
+InsetButtonText				= @InsetText@		@NoWrap@
+InsetButtonText-hover		= @HoverText@		@NoWrap@
+InsetButtonText-clicked		= @ClickedText@		@NoWrap@
+InsetButtonText-disabled	= @DisabledText@	@NoWrap@
 
 
 Select						= @_SelectBorder_@					@SelectBg@		@_SelectSize_@	 @ActiveCursor@
@@ -385,10 +393,10 @@ Select-hover				= @_HoverBorder_@					@HoverBg@		@_SelectSize_@	 @ActiveCursor@
 Select-clicked				= @_ClickedBorder_@					@ClickedBg@		@_SelectSize_@	 @ActiveCursor@
 Select-disabled				= @_SelectDisabledBorder_@ 			@SelectBg@ 		@_SelectSize_@	 @DisabledCursor@
 
-SelectText					= color:@_SelectTextColor_@;	@NoWrap@
-SelectText-hover			= @HoverText@					@NoWrap@
-SelectText-clicked			= @ClickedText@					@NoWrap@
-SelectText-disabled			= @DisabledText@				@NoWrap@
+SelectText					= color:@_SelectTextColor_@;	text-align:left; 	@TextPadding@	@NoWrap@
+SelectText-hover			= @HoverText@					text-align:left; 	@TextPadding@	@NoWrap@
+SelectText-clicked			= @ClickedText@					text-align:left; 	@TextPadding@	@NoWrap@
+SelectText-disabled			= @DisabledText@				text-align:left; 	@TextPadding@	@NoWrap@
 
 
 
@@ -502,9 +510,9 @@ VSashSize					= width:100%;			height:@_SashSize_@;
 
 // FORM FIELDS
 
-InputField					= color:@_InputTextColor_@; background-color:@_InputBgColor_@; @_InputBorder_@ @TextPadding@ @TextCursor@
-InputField-error			= color:@_InputErrorTextColor_@; background-color:@_InputErrorBgColor_@; @_InputBorder_@ @TextPadding@ @InactiveCursor@
-InputField-disabled			= color:@_InputDisabledTextColor_@; background-color:@_InputDisabledBgColor_@; @_InputBorder_@ @TextPadding@ @TextCursor@
+InputField					= color:@_InputTextColor_@; background-color:@_InputBgColor_@; @_InputBorder_@ @TextPadding@
+InputField-error			= color:@_InputErrorTextColor_@; background-color:@_InputErrorBgColor_@; @_InputBorder_@ @TextPadding@
+InputField-disabled			= color:@_InputDisabledTextColor_@; background-color:@_InputDisabledBgColor_@; @_DisabledBorder_@ @TextPadding@ @InactiveCursor@
 
 
 // SEARCH BUILDER
