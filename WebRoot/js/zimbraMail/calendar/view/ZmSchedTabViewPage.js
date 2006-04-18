@@ -115,10 +115,11 @@ function() {
 };
 
 ZmSchedTabViewPage.prototype.tabBlur =
-function() {
+function(useException) {
 	if (this._activeInputIdx != null) {
 		var inputEl = this._schedTable[this._activeInputIdx].inputObj.getInputElement();
-		this._handleAttendeeField(inputEl);
+		this._handleAttendeeField(inputEl, null, useException);
+		this._activeInputIdx = null;
 	}
 	if (this._activeDateField) {
 		this._handleDateChange(this._activeDateField == this._startDateField);
@@ -639,7 +640,7 @@ function(show) {
 * Called by ONBLUR handler for attendee input field.
 */
 ZmSchedTabViewPage.prototype._handleAttendeeField = 
-function(inputEl, attendee) {
+function(inputEl, attendee, useException) {
 
 	var idx = inputEl._schedTableIdx;
 	if (idx != this._activeInputIdx) return;
@@ -678,7 +679,16 @@ function(inputEl, attendee) {
 		} else {
 			this._activeInputIdx = null;
 			var msg = AjxMessageFormat.format(this.parent._badAttendeeMsg[type], value);
-			this.parent.showErrorMessage(msg, null, this._badAttendeeCallback, this, [idx, sched]);
+			if (useException) {
+				if (curAttendee) {	
+					this._removeAttendeeRow(idx);
+				} else {
+					this._resetRow(sched, false, type, true);
+				}
+				throw msg;
+			} else {
+				this.parent.showErrorMessage(msg, null, this._badAttendeeCallback, this, [idx, sched]);
+			}
 		}
 	} else if (curAttendee) {
 		// user erased an attendee

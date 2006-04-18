@@ -99,9 +99,10 @@ function() {
 };
 
 ZmApptTabViewPage.prototype.tabBlur =
-function() {
+function(useException) {
 	if (this._activeInputField) {
-		this._handleAttendeeField(this._activeInputField);
+		this._handleAttendeeField(this._activeInputField, useException);
+		this._activeInputField = null;
 	}
 };
 
@@ -1314,7 +1315,8 @@ function() {
 };
 
 ZmApptTabViewPage.prototype._handleAttendeeField =
-function(type) {
+function(type, useException) {
+	if (!this._activeInputField) return;
 	var value = this._attInputField[type].getValue();
 	if (value == this._attInputCurVal[type]) return;
 
@@ -1334,7 +1336,13 @@ function(type) {
 			attendees.add(attendee);
 		} else {
 			var msg = AjxMessageFormat.format(this.parent._badAttendeeMsg[type], item);
-			throw msg;
+			if (useException) {
+				this._attInputField[type].setValue(this._attInputCurVal[type]);
+				this._activeInputField = null;
+				throw msg;
+			} else {
+				this.parent.showErrorMessage(msg, null, this._badAttendeeCallback, this, type);
+			}
 		}
 	}
 	// replace attendees list with what we've found
