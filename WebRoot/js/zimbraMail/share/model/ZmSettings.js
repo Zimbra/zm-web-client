@@ -84,6 +84,11 @@ function(id) {
 	return this._settings[id];
 };
 
+ZmSettings.prototype.getZimletManager = 
+function() {
+	return this._zmm;
+};
+
 ZmSettings.prototype.createFromDom = 
 function(node) {
 	var children = node.childNodes;
