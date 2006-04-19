@@ -104,11 +104,11 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/accounts/model/ZaAccount.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/dl/model/ZaDistributionList.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/resource/model/ZaResource.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/search/model/ZaSearch.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/accounts/model/ZaAlias.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/accounts/model/ZaForwardingAddress.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/cos/model/ZaCos.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/domains/model/ZaDomain.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/search/model/ZaSearch.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/servers/model/ZaServer.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/globalconfig/model/ZaGlobalConfig.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/status/model/ZaStatus.js<%= ext %>?v=<%= vers %>"></script>
