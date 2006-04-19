@@ -28,32 +28,26 @@
 * @param parent			the element that created this view
 */
 function ZmReminderDialog(parent, appCtxt, reminderController, calController) {
-
-	var templ = new AjxBuffer();
-
-	templ.append("<td valign='middle' class='ZmReminderField'>", ZmMsg.snoozeAll,"</td>");
-	this._selectId = Dwt.getNextId();
-	templ.append("<td valign='middle'>");	
-	templ.append("<select id='", this._selectId, "'>");
-	var snooze = [1,5, 10, 15, 30, 45, 60];
-	for (var i in snooze) {
-		templ.append("<option value='", snooze[i], "'>", snooze[i], " ", AjxMsg.minutes, "</option>");
-	}
-	templ.append("</select>");
-	templ.append("</td>");
-	templ.append("<td valign='middle' id=\"{0}\"></td>");
+	var selectId = Dwt.getNextId();
+	var html = new Array(5);
+	var i = 0;
+	html[i++] = "<td valign='middle' class='ZmReminderField'>";
+	html[i++] = ZmMsg.snoozeAll;
+	html[i++] = "</td><td valign='middle' id='";
+	html[i++] = selectId;
+	html[i++] = "'></td><td valign='middle' id=\"{0}\"></td>";
 	
 	var snoozeButton = new DwtDialog_ButtonDescriptor(ZmReminderDialog.SNOOZE_BUTTON, 
-														   ZmMsg.snooze, DwtDialog.ALIGN_LEFT, null,
-														   templ.toString());
-											
+													  ZmMsg.snooze, DwtDialog.ALIGN_LEFT, 
+													  null, html.join(""));
+
 	var dismissAllButton = new DwtDialog_ButtonDescriptor(ZmReminderDialog.DISMISS_ALL_BUTTON, 
 														   ZmMsg.dismissAll, DwtDialog.ALIGN_RIGHT);														   
 
 	DwtDialog.call(this, parent, null, null, [], [snoozeButton, dismissAllButton]);	
 
 	this._appCtxt = appCtxt;
-	this.setContent(this._contentHtml());
+	this.setContent(this._contentHtml(selectId));
 	this.setTitle(ZmMsg.apptReminders);
 	this._disableFFhack();	
 	this._reminderController = reminderController;
@@ -80,12 +74,18 @@ function() {
 };
 
 ZmReminderDialog.prototype._contentHtml = 
-function() {
+function(selectId) {
 	this._listId = Dwt.getNextId();
 
-	var html = new AjxBuffer();
-	html.append("<div class='ZmReminderDialog' id='",this._listId,"'>");
-	return html.toString();
+	var snooze = [1, 5, 10, 15, 30, 45, 60];
+	this._select = new DwtSelect(this);
+	for (var i = 0; i < snooze.length; i++) {
+		var label = snooze[i] + " " + (i==0 ? AjxMsg.minute : AjxMsg.minutes);
+		this._select.addOption(label, i==0, snooze[i]);
+	}
+	this._select.reparentHtmlElement(selectId);
+
+	return ["<div class='ZmReminderDialog' id='", this._listId, "'>"].join("");
 };
 
 ZmReminderDialog.prototype._addAttr = 
@@ -251,10 +251,7 @@ function(appt) {
 
 ZmReminderDialog.prototype._handleSnoozeButton =
 function() {
-	var select = document.getElementById(this._selectId);
-	if (select) {
-		this._snoozeActionId = AjxTimedAction.scheduleAction(this._snoozeTimedAction, select.value*60*1000);
-	}
+	this._snoozeActionId = AjxTimedAction.scheduleAction(this._snoozeTimedAction, this._select.getValue()*60*1000);
 	this.popdown();
 };
 
