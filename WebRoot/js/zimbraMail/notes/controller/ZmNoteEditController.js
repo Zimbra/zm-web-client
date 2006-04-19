@@ -49,7 +49,7 @@ ZmNoteEditController.RADIO_GROUP[ZmOperation.FORMAT_TWIKI]			= 1;
 // Data
 
 ZmNoteEditController.prototype._note;
-
+ZmNoteEditController.prototype._wikletParamDialog;
 ZmNoteEditController.prototype._uploadCallback;
 
 // Public methods

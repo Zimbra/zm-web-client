@@ -65,23 +65,42 @@ ZmWiklet._formatUser = function(name, link) {
 };
 
 ZmWiklet._dateFormatters = {};
-ZmWiklet._formatDate = function(type, style, date) {
-		var formatter;
-		if (style) {
-			var pattern = ["{0",type,style,"}"].join();
-			if (!ZmWiklet._dateFormatters[pattern]) {
-				ZmWiklet._dateFormatters[pattern] = new AjxMessageFormat(pattern);
-			}
-			formatter = ZmWiklet._dateFormatters[pattern];
+ZmWiklet._formatDate = function(params, date) {
+	if (!date) return "";
+	var type = params.type || "shortdateandtime"; // REVISIT: what is the default length?
+	if (type == "pattern") {
+		var pattern = params.pattern || "";
+		if (!ZmWiklet._dateFormatters[pattern]) {
+			ZmWiklet._dateFormatters[pattern] = new AjxDateFormat(pattern);
 		}
-		else if (type == "time") {
-			formatter = AjxDateFormat.getTimeInstance();
-		}
-		else { // type == "date"
-			formatter = AjxDateFormat.getDateInstance();
-		}
-		
-		return formatter.format(date);
+		return ZmWiklet._dateFormatters[pattern].format(date);
+	}
+	
+	var formatter;
+	var m;
+	if ((m = type.match(/^(short|medium|long|full)(date|time)(?:and(date|time))?$/i))) {
+		var func = ZmWiklet._formatDateFuncs[ m[3] ? m[2]+m[3] : m[2] ];
+		var length1 = ZmWiklet._formatDateLengths[ m[1] ];
+		var length2 = ZmWiklet._formatDateLengths[ m[1] ];
+		formatter = func(length1, length2);
+	}
+	else {
+		// REVISIT
+		formatter = AjxDateFormat.getDateInstance(AjxDateFormat.LONG);
+	}
+	
+	return formatter.format(date);
+};
+ZmWiklet._formatDateFuncs = {
+	date: AjxDateFormat.getDateInstance,
+	time: AjxDateFormat.getTimeInstance,
+	datetime: AjxDateFormat.getDateTimeInstance
+};
+ZmWiklet._formatDateLengths = {
+	short: AjxDateFormat.SHORT,
+	medium: AjxDateFormat.MEDIUM,
+	long: AjxDateFormat.LONG,
+	full: AjxDateFormat.FULL
 };
 
 // Utility functions
@@ -192,7 +211,7 @@ ZmWiklet.register(
 
 			// return fragment
 			context.pushItem(item);
-			var content = item.fragment || "";
+			var content = item.fragment ? item.fragment.replace(/\{\{.*?$/,"") : "";
 			return content;
 		}
 	},
@@ -203,7 +222,7 @@ ZmWiklet.register(
 		type: ZmWiklet.SINGLE_VALUE,
 		paramdefs: {
 			value: {
-				id: "value",
+				name: "value",
 				label: ZmMsg.key,
 				type: "string",
 				value: "messageKey"
@@ -220,7 +239,7 @@ ZmWiklet.register(
 		type: ZmWiklet.SINGLE_VALUE,
 		paramdefs: {
 			value: {
-				id: "value",
+				name: "value",
 				label: ZmMsg.page,
 				type: "string",
 				value: "PageName"
@@ -277,72 +296,64 @@ ZmWiklet.register(
 		name: "CREATEDATE",
 		label: ZmMsg.wikletCreateDate,
 		tooltip: ZmMsg.wikletCreateDateTT,
-		type: ZmWiklet.SINGLE_VALUE,
+		type: ZmWiklet.PARAMETERIZED,
 		paramdefs: {
-			value: {
-				id: "value",
-				label: ZmMsg.format,
-				type: "string",
-				value: "medium"
-			}
+			type: {
+				name: "type",
+				label: ZmMsg.type,
+				type: "enum",
+				item: [
+					{ label: ZmMsg.shortDate, value: "shortdate" },
+					{ label: ZmMsg.longDate, value: "longdate" },
+					{ label: ZmMsg.shortTime, value: "shorttime" },
+					{ label: ZmMsg.longTime, value: "longtime" },
+					{ label: ZmMsg.shortDateTime, value: "shortdateandtime" },
+					{ label: ZmMsg.longDateTime, value: "longdateandtime" },
+					{ label: ZmMsg.pattern, value: "pattern" }
+				]
+			},
+			pattern: {
+				name: "pattern",
+				label: ZmMsg.pattern,
+				type: "string"
+			}				
 		},
 		func: function(name, value, params, context) {
 			var item = context.getItem();
-			return ZmWiklet._formatDate("date", value, item.createDate);
-		}
-	},
-	{
-		name: "CREATETIME",
-		label: ZmMsg.wikletCreateTime,
-		tooltip: ZmMsg.wikletCreateTimeTT,
-		type: ZmWiklet.SINGLE_VALUE,
-		paramdefs: {
-			value: {
-				id: "value",
-				label: ZmMsg.format,
-				type: "string",
-				value: "short"
-			}
-		},
-		func: function(name, value, params, context) {
-			var item = context.getItem();
-			return ZmWiklet._formatDate("time", value, item.createDate);
+			return ZmWiklet._formatDate(params, item.createDate);
 		}
 	},
 	{
 		name: "MODIFYDATE",
 		label: ZmMsg.wikletModifyDate,
 		tooltip: ZmMsg.wikletModifyDateTT,
-		type: ZmWiklet.SINGLE_VALUE,
+		type: ZmWiklet.PARAMETERIZED,
 		paramdefs: {
-			value: {
-				id: "value",
-				label: ZmMsg.format,
-				type: "string",
-				value: "medium"
-			}
+			type: {
+				name: "type",
+				label: ZmMsg.type,
+				type: "enum",
+				item: [
+					{ label: ZmMsg.shortDate, value: "dateshort" },
+					{ label: ZmMsg.longDate, value: "datelong" },
+					{ label: ZmMsg.shortTime, value: "timeshort" },
+					{ label: ZmMsg.longTime, value: "timelong" },
+					{ label: ZmMsg.shortDateShortTime, value: "dateshorttimeshort" },
+					{ label: ZmMsg.shortDateLongTime, value: "dateshorttimelong" },
+					{ label: ZmMsg.longDateShortTime, value: "datelongtimeshort" },
+					{ label: ZmMsg.longDateLongTime, value: "datelongtimelong" },
+					{ label: ZmMsg.pattern, value: "pattern" }
+				]
+			},
+			pattern: {
+				name: "pattern",
+				label: ZmMsg.pattern,
+				type: "string"
+			}				
 		},
 		func: function(name, value, params, context) {
 			var item = context.getItem();
-			return ZmWiklet._formatDate("date", value, item.modifyDate);
-		}
-	},
-	{
-		name: "MODIFYTIME",
-		label: ZmMsg.wikletModifyTime,
-		tooltip: ZmMsg.wikletModifyTimeTT,
-		type: ZmWiklet.SINGLE_VALUE,
-		paramdefs: {
-			value: {
-				id: "value",
-				label: ZmMsg.format,
-				type: "string",
-				value: "short"
-			}
-		},
-		func: function(name, value, params, context) {
-			var item = context.getItem();
-			return ZmWiklet._formatDate("time", value, item.modifyDate);
+			return ZmWiklet._formatDate(params, item.modifyDate || item.createDate);
 		}
 	},
 	{
@@ -359,16 +370,36 @@ ZmWiklet.register(
 		tooltip: ZmMsg.wikletTocTT,
 		type: ZmWiklet.PARAMETERIZED,
 		paramdefs: {
-			page: {
-				id: "page",
-				label: ZmMsg.page,
+			type: {
+				name: "type",
+				label: ZmMsg.type,
+				type: "enum",
+				item: [
+					{ label: ZmMsg.pages, value: "pages" },
+					{ label: ZmMsg.sections, value: "sections" },
+					//{ label: ZmMsg., value: "files" },
+					{ label: ZmMsg.all, value: "all" }
+				]
+			},
+			pattern: {
+				name: "pattern",
+				label: ZmMsg.pattern,
 				type: "string",
-				value: "*"
+				value: ""
+			},
+			sort: {
+				name: "sort",
+				label: ZmMsg.sortOrder,
+				type: "enum",
+				item: [
+					{ label: ZmMsg.ascending, value: "ascending" },
+					{ label: ZmMsg.descending, value: "descending" }
+				]
 			},
 			format: {
-				id: "format",
+				name: "format",
 				label: ZmMsg.format,
-				type: "item",
+				type: "enum",
 				item: [
 					{ label: ZmMsg.simple, value: "simple" },
 					{ label: ZmMsg.list, value: "list" },
@@ -376,12 +407,12 @@ ZmWiklet.register(
 				]
 			},
 			bodytemplate: {
-				id: "bodyTemplate",
+				name: "bodytemplate",
 				label: ZmMsg.bodyTemplate,
 				type: "string"
 			},
 			itemtemplate: {
-				id: "itemTemplate",
+				name: "itemtemplate",
 				label: ZmMsg.itemTemplate,
 				type: "string"
 			}
@@ -389,18 +420,36 @@ ZmWiklet.register(
 		func: function(name, value, params, context) {
 			var item = context.getItem();
 			var folderId = item instanceof ZmNote ? item.folderId : item.id;
+
+			
 			var nameRe = /^[^_]/;
-			if (params.page) {
-				var reSource = params.page;
-				reSource = reSource.replace(/\?/g, ".");
-				reSource = reSource.replace(/\*/g, ".*");
-				reSource = reSource.replace(/([\[\(\{\+\.])/g, "\\$1");
-	
-				nameRe = new RegExp("^" + reSource + "$", "i");
+			var re = { pages: nameRe, sections: nameRe, files: nameRe };
+			var funcs = { 
+				pages: context.getNotes, 
+				sections: context.getSections, 
+				files: context.getFiles 
+			};
+
+			var notes = [];
+			for (var name in re) {
+				if (params.type && params.type != "all" && params.type != name) {
+					continue;
+				}
+				if (params[name]) {
+					var reSource = params[name];
+					reSource = reSource.replace(/([\[\(\{\+\.])/g, "\\$1");
+					reSource = reSource.replace(/\?/g, ".");
+					reSource = reSource.replace(/\*/g, ".*");
+		
+					re[name] = new RegExp("^" + reSource + "$", "i");
+				}
+				
+				var func = funcs[name];
+				var items = func.call(context, folderId);
+				items = ZmWiklet.__object2Array(items, re[name]);
+				notes = notes.concat(items);
 			}
 			
-			var notes = context.getNotes(folderId);
-			notes = ZmWiklet.__object2Array(notes, nameRe);
 			notes.sort(ZmWiklet.__byNoteName);
 			if (params.sort == "descending") {
 				notes.reverse();
@@ -493,7 +542,7 @@ ZmWiklet.register(
 		type: ZmWiklet.PARAMETERIZED,
 		paramdefs: {
 			format: {
-				id: "format",
+				name: "format",
 				label: ZmMsg.format,
 				type: "enum",
 				item: [
@@ -502,17 +551,17 @@ ZmWiklet.register(
 				]
 			},
 			bodytemplate: {
-				id: "bodyTemplate",
+				name: "bodytemplate",
 				label: ZmMsg.bodyTemplate,
 				type: "string"
 			},
 			itemtemplate: {
-				id: "itemTemplate",
+				name: "itemtemplate",
 				label: ZmMsg.itemTemplate,
 				type: "string"
 			},
 			separator: {
-				id: "separator",
+				name: "separator",
 				label: ZmMsg.separator,
 				type: "string"
 			}

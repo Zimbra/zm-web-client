@@ -72,12 +72,7 @@ ZmNoteEditView.prototype._setResponse = function(note) {
 	var content = note.getContent();
 	this.setContent(content);
 	
-	/***	
-	var focusedComp = name == "" ? this._pageNameInput : this._pageEditor;
-	focusedComp.focus();
-	/***/
 	this.focus();
-	/***/
 };
 
 ZmNoteEditView.prototype.getTitle =
@@ -279,6 +274,7 @@ ZmNoteEditor.prototype._serializeWiklets = function() {
 				if (attr.nodeName.match(/^wikparam_/)) {
 					var aname = attr.nodeName.substr(9);
 					var avalue = attr.nodeValue.replace(/"/g,"");
+					if (avalue == "") continue;
 					a.push(" ", aname, "=\"", avalue, "\"");
 				}
 			}
@@ -427,32 +423,51 @@ ZmNoteEditor._wikletButtonHandler = function(event) {
 		return;
 	}
 	
-	var props = [];
+	var schema = [];
 	if (wiklet.type == ZmWiklet.SINGLE_VALUE) {
-		var proxy = AjxUtil.createProxy(wiklet.paramdefs);
+		var proxy = AjxUtil.createProxy(wiklet.paramdefs["value"]);
 		var attr = target.getAttributeNode("wikparam_value");
 		proxy.value =  attr != null ? attr.nodeValue : (proxy.value || "");
-		props.push(proxy);
+		schema.push(proxy);
 	}
 	else if (wiklet.type == ZmWiklet.PARAMETERIZED) {
-		var attrs = target.attributes;
-		for (var i = 0; i < attrs.length; i++) {
-			var attr = attrs[i];
-			if (attr.nodeName.match(/^wikparam_/)) {
-				var pname = attr.nodeName.substr(9);
-				var proxy = AjxUtil.createProxy(wiklet.paramdefs[pname]);
-				proxy.value = attr.nodeValue || proxy.value || "";
-				props.push(proxy);
-			}
+		for (var pname in wiklet.paramdefs) {
+			var attr = target.attributes["wikparam_"+pname];
+			var proxy = AjxUtil.createProxy(wiklet.paramdefs[pname]);
+			proxy.value = attr ? attr.nodeValue : (proxy.value || "");
+			schema.push(proxy);
 		}
+	}
+	if (schema.length == 0) {
+		return;
 	}
 	
 	var shell = DwtShell.getShell(window);
-	var dialog = new DwtDialog(shell);
+	var dialog = new ZmDialog(shell, null, null, ZmMsg.wikletParams);
 	var propEditor = new DwtPropertyEditor(dialog);
-	propEditor.initProperties(props);
+	propEditor.initProperties(schema);
 	dialog.setView(propEditor);
+
+	var args = [dialog, propEditor, target, schema];
+	var listener = new AjxListener(null, ZmNoteEditor._wikletParamListener, args);
+	dialog.setButtonListener(DwtDialog.OK_BUTTON, listener);
 	dialog.popup();
+};
+
+ZmNoteEditor._wikletParamListener = 
+function(dialog, editor, wikletEl, schema) {
+	var props = editor.getProperties();
+	for (var pname in props) {
+		var aname = "wikparam_"+pname;
+		var avalue = props[pname];
+		if (avalue === "") {
+			wikletEl.removeAttribute(aname);
+		}
+		else {
+			wikletEl.setAttribute(aname, avalue);
+		}
+	}
+	dialog.popdown();
 };
 
 ZmNoteEditor.prototype._getInitialStyle = function(useDiv) {

@@ -69,6 +69,13 @@ ZmWikletContext.prototype.getNotebookById = function(id) {
 	var treeController = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	return treeController.getById(id);
 };
+ZmWikletContext.prototype.getSections = function(notebookId) {
+	var notebook = this.getNotebookById(notebookId);
+	return notebook ? notebook.children.getArray() : [];
+};
+ZmWikletContext.prototype.getFiles = function(notebookId) {
+	return []; // TODO
+};
 
 ZmWikletContext.prototype.process = function(content) {
 	return ZmWikletProcessor._process(content);

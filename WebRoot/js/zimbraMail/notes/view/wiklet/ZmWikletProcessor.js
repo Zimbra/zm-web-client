@@ -47,6 +47,7 @@ ZmWikletProcessor.process = function(appCtxt, note, content) {
 // Protected static functions
 
 ZmWikletProcessor._process = function(content) {
+	if (!content) return "";
 	var regex = /(?=^|[^\\])\{\{\s*(.+?)(?:\s+(.*?))?\s*\}\}/g;
 	return content.replace(regex, ZmWikletProcessor._replace);
 };
