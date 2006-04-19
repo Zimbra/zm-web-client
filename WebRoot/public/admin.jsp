@@ -91,6 +91,10 @@ Contributor(s):
     <link rel="ICON" type="image/gif" href="/zimbra/img/loRes/logo/favicon.gif"/>
     <link rel="SHORTCUT ICON" href="/zimbra/img/loRes/logo/favicon.ico"/>
     
+	<script>
+		appContextPath = "<%= contextPath %>";
+	 	appCurrentSkin = "<%= skin %>";
+	</script>
 <script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZaMsg.js<%= ext %>?v=<%= vers %>"></script>
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
@@ -115,14 +119,13 @@ Contributor(s):
 <% } else { %>
 	<style type="text/css">
 	<!--
-    @import url(<%= contextPath %>/js/ZimbraAdmin_loRes_all.css<%= ext %>?v=<%= vers %>);
+    @import url(<%= contextPath %>/js/ZimbraAdmin_loRes_<%= skin %>_all.css<%= ext %>?v=<%= vers %>);
 	-->
 	</style>
 	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
 	<script type="text/javascript" src="<%= contextPath %>/js/ZimbraAdmin_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>    
     <script type="text/javascript" language="JavaScript">
-		var appContextPath = "<%= contextPath %>";
 	   function launch() {
 		AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
