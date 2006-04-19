@@ -771,9 +771,7 @@ function() {
 		var option = ZmApptRecurDialog.REPEAT_OPTIONS[i];
 		this._repeatSelect.addOption(option.label, option.selected, option.value);
 	}
-	var repeatSelectDiv = document.getElementById(this._repeatSelectId);
-	if (repeatSelectDiv)
-		repeatSelectDiv.appendChild(this._repeatSelect.getHtmlElement());
+	this._repeatSelect.reparentHtmlElement(this._repeatSelectId);
 	delete this._repeatSelectId;
 
 	var selectChangeListener = new AjxListener(this, this._selectChangeListener);
@@ -787,9 +785,7 @@ function() {
 		this._weeklySelect.addOption(dayFormatter.format(day), false, i);
 		day.setDate(day.getDate() + 1);
 	}
-	var weeklySelectCell = document.getElementById(this._weeklySelectId);
-	if (weeklySelectCell)
-		weeklySelectCell.appendChild(this._weeklySelect.getHtmlElement());
+	this._weeklySelect.reparentHtmlElement(this._weeklySelectId);
 	delete this._weeklySelectId;
 
 	this._monthlyDaySelect = new DwtSelect(this);
@@ -804,9 +800,7 @@ function() {
 		var value = Math.floor(limits[index]);
 		this._monthlyDaySelect.addOption(label, false, value);
 	}
-	var monthlyDayCell = document.getElementById(this._monthlyDaySelectId);
-	if (monthlyDayCell)
-		monthlyDayCell.appendChild(this._monthlyDaySelect.getHtmlElement());
+	this._monthlyDaySelect.reparentHtmlElement(this._monthlyDaySelectId);
 	delete this._monthlyDaySelectId;
 
 	this._monthlyWeekdaySelect = new DwtSelect(this);
@@ -819,9 +813,7 @@ function() {
 		this._monthlyWeekdaySelect.addOption(dayFormatter.format(day), false, i);
 		day.setDate(day.getDate() + 1);
 	}
-	var monthlyWeekdayCell = document.getElementById(this._monthlyWeekdaySelectId);
-	if (monthlyWeekdayCell)
-		monthlyWeekdayCell.appendChild(this._monthlyWeekdaySelect.getHtmlElement());
+	this._monthlyWeekdaySelect.reparentHtmlElement(this._monthlyWeekdaySelectId);
 	delete this._monthlyWeekdaySelectId;
 
 	this._yearlyMonthSelect = new DwtSelect(this);
@@ -833,9 +825,7 @@ function() {
 		month.setMonth(i);
 		this._yearlyMonthSelect.addOption(monthFormatter.format(month), false, i);
 	}
-	var yearlyMonthCell = document.getElementById(this._yearlyMonthSelectId);
-	if (yearlyMonthCell)
-		yearlyMonthCell.appendChild(this._yearlyMonthSelect.getHtmlElement());
+	this._yearlyMonthSelect.reparentHtmlElement(this._yearlyMonthSelectId);
 	delete this._yearlyMonthSelectId;
 
 	this._yearlyDaySelect = new DwtSelect(this);
@@ -850,9 +840,7 @@ function() {
 		var value = Math.floor(limits[index]);
 		this._yearlyDaySelect.addOption(label, false, value);
 	}
-	var yearlyDayCell = document.getElementById(this._yearlyDaySelectId);
-	if (yearlyDayCell)
-		yearlyDayCell.appendChild(this._yearlyDaySelect.getHtmlElement());
+	this._yearlyDaySelect.reparentHtmlElement(this._yearlyDaySelectId);
 	delete this._yearlyDaySelectId;
 
 	this._yearlyWeekdaySelect = new DwtSelect(this);
@@ -865,18 +853,14 @@ function() {
 		this._yearlyWeekdaySelect.addOption(dayFormatter.format(day), false, i);
 		day.setDate(day.getDate() + 1);
 	}
-	var yearlyWeekdayCell = document.getElementById(this._yearlyWeekdaySelectId);
-	if (yearlyWeekdayCell)
-		yearlyWeekdayCell.appendChild(this._yearlyWeekdaySelect.getHtmlElement());
+	this._yearlyWeekdaySelect.reparentHtmlElement(this._yearlyWeekdaySelectId);
 	delete this._yearlyWeekdaySelectId;
 
 	this._yearlyMonthSelectEx = new DwtSelect(this);
 	this._yearlyMonthSelectEx.addChangeListener(selectChangeListener);
 	for (var i = 0; i < AjxDateUtil.MONTH_LONG.length; i++)
 		this._yearlyMonthSelectEx.addOption(AjxDateUtil.MONTH_LONG[i], false, i);
-	var yearlyMonthCellEx = document.getElementById(this._yearlyMonthSelectExId);
-	if (yearlyMonthCellEx)
-		yearlyMonthCellEx.appendChild(this._yearlyMonthSelectEx.getHtmlElement());
+	this._yearlyMonthSelectEx.reparentHtmlElement(this._yearlyMonthSelectExId);
 	delete this._yearlyMonthSelectExId;
 };
 
