@@ -99,7 +99,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/helpdesk/controller/ZaMWizController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/mta/controller/ZaMTAListController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/mta/controller/ZaMTAController.js<%= ext %>?v=<%= vers %>"></script>
-
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/search/controller/ZaSearchListController.js<%= ext %>?v=<%= vers %>"></script>
 <!-- model -->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/accounts/model/ZaAccount.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/dl/model/ZaDistributionList.js<%= ext %>?v=<%= vers %>"></script>
@@ -133,6 +133,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/cos/view/ZaCosXFormView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/search/view/ZaSearchToolBar.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/search/view/ZaSearchField.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/search/view/ZaSearchListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/status/view/ZaServicesListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaGlobalStatsView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/statistics/view/ZaGlobalMessageVolumePage.js<%= ext %>?v=<%= vers %>"></script>
