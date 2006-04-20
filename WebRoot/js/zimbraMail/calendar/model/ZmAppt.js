@@ -63,7 +63,9 @@ function ZmAppt(appCtxt, list, noinit) {
 	this._attendees[ZmAppt.RESOURCE]	= [];
 
 	this._origAttendees = null;	// list of ZmContact
-}
+	this._origLocations = null;	// list of ZmResource
+	this._origResources = null;	// list of ZmResource
+};
 
 ZmAppt.prototype = new ZmItem;
 ZmAppt.prototype.constructor = ZmAppt;
@@ -159,6 +161,8 @@ ZmAppt.prototype.getLocations					= function() { return this._attendees[ZmAppt.L
 ZmAppt.prototype.getResources					= function() { return this._attendees[ZmAppt.RESOURCE]; };
 
 ZmAppt.prototype.getOrigAttendees 				= function() { return this._origAttendees; };
+ZmAppt.prototype.getOrigLocations 				= function() { return this._origLocations; };
+ZmAppt.prototype.getOrigResources 				= function() { return this._origResources; };
 ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
 ZmAppt.prototype.getEndDate 					= function() { return this.endDate; };
 ZmAppt.prototype.getEndTime 					= function() { return this.endDate.getTime(); }; 	// end time in ms
@@ -196,9 +200,13 @@ function(useStartTime) {
 };
 
 ZmAppt.prototype.getAttendeesText	= function() { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.PERSON], ZmAppt.PERSON); };
-ZmAppt.prototype.getResourcesText	= function(includeDisplayName) { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.RESOURCE], ZmAppt.RESOURCE, includeDisplayName); };
 ZmAppt.prototype.getLocationsText	= function(includeDisplayName) { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.LOCATION], ZmAppt.LOCATION, includeDisplayName); };
 ZmAppt.prototype.getLocation		= function(includeDisplayName) { return this.getLocationsText(includeDisplayName); };
+ZmAppt.prototype.getResourcesText	= function(includeDisplayName) { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.RESOURCE], ZmAppt.RESOURCE, includeDisplayName); };
+
+ZmAppt.prototype.getOrigLocationsText	= function(includeDisplayName) { return ZmApptViewHelper.getAttendeesString(this._origLocations, ZmAppt.LOCATION, includeDisplayName); };
+ZmAppt.prototype.getOrigLocation		= function(includeDisplayName) { return this.getOrigLocationsText(includeDisplayName); };
+ZmAppt.prototype.getOrigResourcesText	= function(includeDisplayName) { return ZmApptViewHelper.getAttendeesString(this._origResources, ZmAppt.RESOURCE, includeDisplayName); };
 
 ZmAppt.prototype.isAllDayEvent 					= function() { return this.allDayEvent == "1"; };
 ZmAppt.prototype.isCustomRecurrence 			= function() { return this.repeatCustom == "1" || this.repeatEndType != "N"; };
@@ -292,6 +300,8 @@ function(appt) {
 	newAppt._uniqId = Dwt.getNextId();
 
 	newAppt._origAttendees = AjxUtil.createProxy(appt.getOrigAttendees());
+	newAppt._origLocations = AjxUtil.createProxy(appt.getOrigLocations());
+	newAppt._origResources = AjxUtil.createProxy(appt.getOrigResources());
 	newAppt._validAttachments = AjxUtil.createProxy(appt._validAttachments);
 	
 	if (newAppt._orig == null) 
@@ -590,20 +600,23 @@ function(message, viewMode) {
 		}
 
 		// Locations can be free-text or known, so we parse the "loc" string to get them rather than
-		// looking at the invite's resources (which will contain known locations)
+		// looking at the invite's resources (which will only contain known locations)
 		this._attendees[ZmAppt.LOCATION] = [];
+		this._origLocations = [];
 		var locations = ZmEmailAddress.split(message.invite.getLocation(0));
 		if (locations) {
 			for (var i = 0; i < locations.length; i++) {
 				var location = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, locations[i], ZmAppt.LOCATION);
 				if (location && location.isLocation()) {
 					this._attendees[ZmAppt.LOCATION].push(location);
+					this._origLocations.push(location);
 				}
 			}
 		}
 		
 		// Get resources by email, make sure to exclude location resources
 		this._attendees[ZmAppt.RESOURCE] = [];
+		this._origResources = [];
 		var resources = message.invite.getResources();
 		if (resources) {
 			for (var i = 0; i < resources.length; i++) {
@@ -611,6 +624,7 @@ function(message, viewMode) {
 				if (resource) {
 					if (!resource.isLocation()) {
 						this._attendees[ZmAppt.RESOURCE].push(resource);
+						this._origResources.push(resource);
 					}
 				}
 			}
@@ -902,7 +916,7 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 	if (isHtml) {
 		buf[i++] = "<p>\n<table border='0'>\n";
 	}
-	var modified = isEdit && orig.getName() != this.getName();
+	var modified = isEdit && (orig.getName() != this.getName());
 	var params = [ ZmMsg.subject + ":", this.name, modified ? ZmMsg.apptModifiedStamp : "" ];
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
@@ -925,7 +939,7 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 	
 	var location = this.getLocation(true);
 	if (location) {
-		var modified = isEdit && (orig.getLocation(true) != location);
+		var modified = isEdit && (this.getOrigLocation(true) != location);
 		var params = [ ZmMsg.location + ":", location, modified ? ZmMsg.apptModifiedStamp : "" ];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
@@ -933,7 +947,8 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 	
 	var resources = this.getResourcesText(true);
 	if (resources) {
-		var params = [ZmMsg.resources + ":", resources, ""];
+		var modified = isEdit && (this.getOrigResourcesText(true) != resources);
+		var params = [ ZmMsg.resources + ":", resources, modified ? ZmMsg.apptModifiedStamp : "" ];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}

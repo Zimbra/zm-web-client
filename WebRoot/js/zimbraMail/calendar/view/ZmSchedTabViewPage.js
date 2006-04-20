@@ -777,11 +777,8 @@ function() {
 // XXX: optimize later - currently we always update the f/b view :(
 ZmSchedTabViewPage.prototype._setAttendees = 
 function(organizer, attendees) {
-	if (this._origAttendees) {
-		this.cleanup();
-	}
-	this._origAttendees = attendees;
 
+	this.cleanup();
 	var emails = [];
 	this._organizerIndex = this._addAttendeeRow(false, true, false); // create a slot for the organizer
 	emails.push(this._setAttendee(this._organizerIndex, organizer, ZmAppt.PERSON, true));

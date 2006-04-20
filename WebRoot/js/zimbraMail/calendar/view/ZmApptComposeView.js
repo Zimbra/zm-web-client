@@ -448,7 +448,9 @@ function(tab) {
 
 ZmApptComposeView.prototype._chooserListener =
 function(ev) {
-	var vec = this._tabPages[this._curTabId]._chooser.getItems();
+	var chooser = this._tabPages[this._curTabId]._chooser;
+	if (!chooser) return;
+	var vec = chooser.getItems();
 	var type = this._tabPages[this._curTabId].type;
 	this.updateAttendees(vec.getArray(), type);
 };

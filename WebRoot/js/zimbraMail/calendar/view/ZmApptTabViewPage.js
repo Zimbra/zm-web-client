@@ -531,7 +531,7 @@ function(appt, mode) {
 		this._attendees[ZmAppt.PERSON] = AjxVector.fromArray(attendees);
 		var tp = this.parent.getTabPage(ZmApptComposeView.TAB_ATTENDEES);
 		if (tp) {
-			tp._chooser.transfer(attendees);
+			tp._chooser.transfer(attendees, null, true);
 		}
 	}
 
@@ -544,7 +544,7 @@ function(appt, mode) {
 			if (locations.length > 1) {
 				tp.enableMultipleLocations(true);
 			}
-			tp._chooser.transfer(locations);
+			tp._chooser.transfer(locations, null, true);
 		}
 	}
 	
@@ -555,7 +555,7 @@ function(appt, mode) {
 		this._attendees[ZmAppt.RESOURCE] = AjxVector.fromArray(resources);
 		tp = this.parent.getTabPage(ZmApptComposeView.TAB_RESOURCES);
 		if (tp) {
-			tp._chooser.transfer(resources);
+			tp._chooser.transfer(resources, null, true);
 		}
 	}
 
