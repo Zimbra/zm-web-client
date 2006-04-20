@@ -325,6 +325,8 @@ function(ev) {
 			document.getElementById("pass").focus();
 		} else if (target.id == "rememberMe") {
 			target.checked = !target.checked;
+		} else if (target.id == "passNew") {
+			document.getElementById("passConfirm").focus();
 		} else {
 			ZmLogin.handleLogin();
 		}
