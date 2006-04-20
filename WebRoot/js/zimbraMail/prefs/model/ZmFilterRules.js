@@ -68,24 +68,24 @@ function(rule, referenceRule, callback) {
 * Removes a rule from the list.
 *
 * @param rule			[ZmFilterRule]		rule to be removed
-* @param callback		[AjxCallback]*		callback
 */
 ZmFilterRules.prototype.removeRule = 
-function(rule, callback) {
+function(rule) {
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: remove rule '" + rule.getName() + "'");
 	var index = this.getIndexOfRule(rule);
 	this._vector.removeAt(index);
-	this._saveRules(index, true, callback);
+	delete this._ruleIdHash[rule.id];
+	delete this._ruleNameHash[rule.name];
+	this._saveRules(index, true);
 };
 
 /**
 * Moves a rule up in the list. If the rule is the first in the list, it isn't moved.
 *
 * @param rule			[ZmFilterRule]		rule to be moved
-* @param callback		[AjxCallback]*		callback
 */
 ZmFilterRules.prototype.moveUp = 
-function(rule, callback) {
+function(rule) {
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: move up rule '" + rule.getName() + "'");
 	var index = this.getIndexOfRule(rule);
 	if (index == 0) return;
@@ -93,17 +93,16 @@ function(rule, callback) {
 	var prevRule = this._vector.removeAt(index - 1);
 	this._insertRule(prevRule, index);
 
-	this._saveRules(index - 1, true, callback);
+	this._saveRules(index - 1, true);
 };
 
 /**
 * Moves a rule down in the list. If the rule is the last in the list, it isn't moved.
 *
 * @param rule			[ZmFilterRule]		rule to be moved
-* @param callback		[AjxCallback]*		callback
 */
 ZmFilterRules.prototype.moveDown = 
-function(rule, callback) {
+function(rule) {
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: move down rule '" + rule.getName() + "'");
 	var index = this.getIndexOfRule(rule);
 	if (index >= (this._vector.size() - 1)) return;
@@ -111,7 +110,7 @@ function(rule, callback) {
 	var nextRule = this._vector.removeAt(index + 1);
 	this._insertRule(nextRule, index);
 
-	this._saveRules(index + 1, true, callback);
+	this._saveRules(index + 1, true);
 };
 
 /**
@@ -119,13 +118,12 @@ function(rule, callback) {
 *
 * @param rule			[ZmFilterRule]		rule to mark active/inactive
 * @param active			[boolean]			if true, rule is marked active
-* @param callback		[AjxCallback]*		callback
 */
 ZmFilterRules.prototype.setActive =
-function(rule, active, callback) {
+function(rule, active) {
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: set active rule '" + rule.getName() + "', " + active);
 	rule.setActive(active);
-	this._saveRules(null, false, callback);
+	this._saveRules(null, false);
 };
 
 // utility methods
