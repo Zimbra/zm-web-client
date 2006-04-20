@@ -300,6 +300,17 @@ function(isGal) {
 	this.isGal = isGal;
 };
 
+/**
+* Overridden to prevent the adding of the same contact more than once by a single
+* notification. Of course, once the user reloads, they'll see duplicates if the
+* server in fact created them.
+*/
+ZmContactList.prototype.notifyCreate =
+function(node) {
+	if (this.getContactByEmail(node._attrs.email)) return;
+	ZmList.prototype.notifyCreate.call(this, node);
+};
+
 ZmContactList.prototype.moveLocal =
 function(items, folderId) {
 	// don't remove any contacts from the canonical list

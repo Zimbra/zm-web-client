@@ -209,7 +209,9 @@ function(isGalSearch, isCalResSearch, callback, result) {
 	searchResult.set(response, this.contactSource);
 	result.set(searchResult);
 	
-	callback.run(result);
+	if (callback) {
+		callback.run(result);
+	}
 };
 
 // searching w/in a conv (to get its messages) has its own special command
@@ -235,7 +237,9 @@ function(callback, result) {
 	searchResult.set(response, null, true);
 	result.set(searchResult);
 	
-	callback.run(result);
+	if (callback) {
+		callback.run(result);
+	}
 };
 
 /**
