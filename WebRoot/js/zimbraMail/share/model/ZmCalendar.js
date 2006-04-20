@@ -61,6 +61,54 @@ function() {
 	return "ZmCalendar";
 };
 
+ZmCalendar.prototype.create =
+function(name, url, color, excludeFb) {
+	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
+	var folderNode = soapDoc.set("folder");
+	folderNode.setAttribute("name", name);
+	folderNode.setAttribute("l", this.id);
+	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]);
+	if (url) folderNode.setAttribute("url", url);
+
+	var respCallback = new AjxCallback(this, this._handleResponseCreate, [color, excludeFb]);
+	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [url, name]);
+	this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+													   callback: respCallback, errorCallback: errorCallback});
+};
+
+ZmCalendar.prototype._handleResponseCreate =
+function(color, excludeFb, result) {
+	var response = result.getResponse();
+	var id = response.CreateFolderResponse.folder[0].id;
+	var cal = this.tree._appCtxt.cacheGet(id);
+	var respCallback = excludeFb ? new AjxCallback(this, this._handleResponseSetColor, cal) : null;
+	cal.setColor(color, respCallback);
+};
+
+ZmCalendar.prototype._handleResponseSetColor =
+function(cal) {
+	cal.setFreeBusy(true);
+};
+
+ZmCalendar.prototype._handleErrorCreate =
+function(url, name, ex) {
+	if (!url && !name) return false;
+	
+	var msgDialog = this.tree._appCtxt.getMsgDialog();
+	var msg;
+	if (url) {
+		var msg = (ex.code == ZmCsfeException.SVC_PARSE_ERROR) ? ZmMsg.calFeedInvalid : ZmMsg.feedUnreachable;
+		msg = AjxMessageFormat.format(msg, url);
+	}
+	if (msg) {
+		msgDialog.reset();
+		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+		msgDialog.popup();
+	}
+
+	return true;
+};
+
 ZmCalendar.prototype.getName = 
 function() {
 	return this.id == ZmOrganizer.ID_ROOT ? ZmMsg.calendars : this.name;
@@ -113,21 +161,6 @@ function(obj) {
 
 
 // Static methods
-
-/** Caller is responsible to catch exception. */
-ZmCalendar.create =
-function(appCtxt, name, parentFolderId, url) {
-	parentFolderId = parentFolderId || ZmOrganizer.ID_ROOT;
-
-	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
-	var folderNode = soapDoc.set("folder");
-	folderNode.setAttribute("name", name);
-	folderNode.setAttribute("l", parentFolderId);
-	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]);
-	if (url) folderNode.setAttribute("url", url);
-
-	return appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: false});
-};
 
 ZmCalendar.createFromJs =
 function(parent, obj, tree, link) {

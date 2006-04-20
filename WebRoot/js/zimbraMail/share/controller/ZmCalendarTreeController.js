@@ -30,7 +30,7 @@ function ZmCalendarTreeController(appCtxt, type, dropTgt) {
 	
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 
-	this._listeners[ZmOperation.NEW_CALENDAR] = new AjxListener(this, this._newCalListener);
+	this._listeners[ZmOperation.NEW_CALENDAR] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.CHECK_ALL] = new AjxListener(this, this._checkAllListener);
 	this._listeners[ZmOperation.CLEAR_ALL] = new AjxListener(this, this._clearAllListener);
 
@@ -176,6 +176,14 @@ function() {
 	// TODO
 };
 
+/*
+* Returns a "New Calendar" dialog.
+*/
+ZmCalendarTreeController.prototype._getNewDialog =
+function() {
+	return this._appCtxt.getNewCalendarDialog();
+};
+
 // Listener callbacks
 
 ZmCalendarTreeController.prototype._changeListener =
@@ -229,17 +237,6 @@ function(ev) {
 	ZmTreeController.prototype._treeViewListener.call(this, ev);
 };
 
-ZmCalendarTreeController.prototype._newCalListener =
-function(ev) {
-	var overviewController = this._appCtxt.getOverviewController();
-	var treeData = overviewController.getTreeData(ZmOrganizer.CALENDAR);
-	var folder = treeData.root;
-
-	var newCalDialog = this._appCtxt.getNewCalendarDialog();
-	newCalDialog.setParentFolder(folder);
-	newCalDialog.popup();
-};
-
 ZmCalendarTreeController.prototype._checkAllListener =
 function(ev) {
 	this._setAllChecked(ev, true);
@@ -277,6 +274,27 @@ function(ev) {
 	var folder = this._pendingActionData;
 	folderPropsDialog.setFolder(folder);
 	folderPropsDialog.popup();
+};
+
+/*
+* Called when a "New Calendar" dialog is submitted. This override is necessary because we
+* need to pass additional args to _doCreate().
+*
+* @param parent		[ZmFolder]	root calendar folder
+* @param name		[string]	name of the new calendar
+* @param url		[string]*	URL (if remote calendar)
+* @param color		[constant]	color
+* @param excludeFb	[boolean]*	if true, exclude free/busy info for this calendar
+*/
+ZmCalendarTreeController.prototype._newCallback =
+function(parent, name, url, color, excludeFb) {
+	this._doCreate(parent, name, url, color, excludeFb);
+	this._getNewDialog().popdown();
+};
+
+ZmCalendarTreeController.prototype._doCreate =
+function(parent, name, url, color, excludeFb) {
+	parent.create(name, url, color, excludeFb);
 };
 
 ZmCalendarTreeController.prototype._notifyListeners =

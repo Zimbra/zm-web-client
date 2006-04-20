@@ -30,6 +30,7 @@
 * This class is a base class for miscellaneous organizer-related dialogs.
 *
 * @author Conrad Damon
+*
 * @param parent			[DwtControl]	parent widget
 * @param msgDialog		[DwtMsgDialog]*	message dialog
 * @param className		[string]*		CSS class
@@ -57,7 +58,7 @@ function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 	}
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	
-	this._treeView = new Object();
+	this._treeView = {};
 	this._opc = this._appCtxt.getOverviewController();
 	DBG.timePt("ZmDialog constructor");
 };

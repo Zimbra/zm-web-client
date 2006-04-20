@@ -194,6 +194,22 @@ function(name) {
 	return null;
 };
 
+/**
+* Checks a URL (a folder or calendar feed, for example) for validity.
+*
+* TODO: be friendly and prepend "http://" when it's missing
+*
+* @param url	[string]	a URL
+*/
+ZmOrganizer.checkUrl =
+function(url) {
+	if (!url.match(/^[a-zA-Z]+:\/\/.*$/i)) {
+		return ZmMsg.errorUrlMissing;
+	}
+
+	return null;
+};
+
 ZmOrganizer.checkSortArgs =
 function(orgA, orgB) {
 	if (!orgA && !orgB) return 0;
@@ -299,10 +315,10 @@ function(name) {
 };
 
 ZmOrganizer.prototype.setColor =
-function(color) {
+function(color, callback) {
 	var color = ZmOrganizer.checkColor(color);
 	if (this.color == color) return;
-	this._organizerAction({action: "color", attrs: {color: color}});
+	this._organizerAction({action: "color", attrs: {color: color}, callback: callback});
 };
 
 /**
@@ -571,10 +587,20 @@ function(params) {
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("op", params.action);
 	actionNode.setAttribute("id", this.id);
-	for (var attr in params.attrs)
+	for (var attr in params.attrs) {
 		actionNode.setAttribute(attr, params.attrs[attr]);
+	}
+	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, params);
 	var execFrame = new AjxCallback(this, this._itemAction, params);
-	this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, execFrame: execFrame});
+	this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+													   callback: respCallback, execFrame: execFrame});
+};
+
+ZmOrganizer.prototype._handleResponseOrganizerAction =
+function(params, result) {
+	if (params.callback) {
+		params.callback.run(result);
+	}
 };
 
 // Test the name of this organizer and then descendants against the given name, case insensitively

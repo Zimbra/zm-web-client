@@ -23,44 +23,30 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewCalendarDialog(appCtxt, parent, className) {
-	var title = ZmMsg.createNewCalendar;
-	var buttons = [ DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON ];
-	DwtDialog.call(this, parent, className, title, buttons);
-	
-	this._appCtxt = appCtxt;
-	
-	var contentEl = this._createContentEl();
-	var contentDiv = this._getContentDiv();
-	contentDiv.appendChild(contentEl);
-	
-	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
-}
+function ZmNewCalendarDialog(parent, msgDialog, className) {
+	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.createNewCalendar);
 
-ZmNewCalendarDialog.prototype = new DwtDialog;
+	this.setContent(this._contentHtml());
+	this._setNameField(this._nameFieldId);
+	this._setElements();
+};
+
+ZmNewCalendarDialog.prototype = new ZmDialog;
 ZmNewCalendarDialog.prototype.constructor = ZmNewCalendarDialog;
 
 ZmNewCalendarDialog.prototype.toString = 
 function() {
 	return "ZmNewCalendarDialog";
-}
-
-// Data
-
-ZmNewCalendarDialog.prototype._nameFieldId;
-ZmNewCalendarDialog.prototype._parentFolder;
+};
 
 // Public methods
 
-ZmNewCalendarDialog.prototype.setParentFolder =
-function(folder) {
-	this._parentFolder = folder;
-};
-
 ZmNewCalendarDialog.prototype.popup =
-function(loc) {
+function(folder, loc) {
+	this._parentFolder = folder;
+
 	// reset input fields
-	this._nameInputEl.value = "";
+	this._nameField.value = "";
 	
 	var color = (this._colorInput.getValue() + 1) % ZmOrganizer.COLOR_CHOICES.length;
 	var option = this._colorInput.getOptionWithValue(color);
@@ -68,177 +54,118 @@ function(loc) {
 	
 	this._excludeFbCheckbox.checked = false;
 	
-	this._remoteCheckboxEl.checked = false;
-	this._remoteCheckboxEl._urlRow.style.display = "none";
-	this._urlInputEl.value = "";
+	this._remoteCheckbox.checked = false;
+	this._remoteCheckbox._urlRow.style.display = "none";
+	this._urlField.value = "";
 	
 	// show dialog
 	ZmDialog.prototype.popup.call(this, loc);
-}
+};
 
 // Protected methods
 
-ZmNewCalendarDialog.prototype._handleOkButton = 
-function(event) {
-	// check name for presence and validity
-	var name = AjxStringUtil.trim(this._nameInputEl.value);
-	var msg = ZmFolder.checkName(name) || this._checkUrl();
+ZmNewCalendarDialog.prototype._contentHtml = 
+function() {
+	this._nameFieldId			= Dwt.getNextId();
+	this._colorSelectTdId		= Dwt.getNextId();
+	this._excludeFbCheckboxId	= Dwt.getNextId();
+	this._remoteCheckboxId		= Dwt.getNextId();
+	this._urlRowId				= Dwt.getNextId();
+	this._urlFieldId			= Dwt.getNextId();
 	
-	// create folder
-	var ex = null;
-	var calendarId = null;
-	if (!msg) {
-		try {
-			var parentFolderId = this._parentFolder ? this._parentFolder.id : null;
-			var url = this._remoteCheckboxEl.checked ? AjxStringUtil.trim(this._urlInputEl.value) : null;
-			var results = ZmCalendar.create(this._appCtxt, name, parentFolderId, url);
-			calendarId = results.CreateFolderResponse.folder[0].id;
-		}
-		catch (ex) {
-			msg = ZmMsg.unknownError;
-			switch (ex.code) {
-				case "mail.ALREADY_EXISTS": {
-					msg = ZmMsg.folderNameExists;
-					ex = null;
-					break;
-				}
-				case "service.PARSE_ERROR": {
-					msg = ZmMsg.errorCalendarParse;
-					break;
-				}
-				default: {
-					msg = ex.getErrorMsg() || msg;
-				}
-			}
-		}
-	}
+	// create HTML
+	var html = [];
+	var i = 0;
 	
-	// color folder
-	if (!msg) {
-		try {
-			var calendar = this._appCtxt.cacheGet(calendarId);
-			var color = this._colorInput.getValue();
-			calendar.setColor(color);
-		}
-		catch (ex) {
-			msg = ZmMsg.errorCalendarSettingAfterCreate;
-		}
-	}
-	
-	// exclude from f/b
-	if (!msg && this._excludeFbCheckbox.checked) {
-		try {
-			var calendar = this._appCtxt.cacheGet(calendarId);
-			var exclude = true;
-			calendar.setFreeBusy(exclude);
-		}
-		catch (ex) {
-			msg = ZmMsg.errorCalendarSettingAfterCreate;
-		}
-	}
-	
-	// display error message
-	if (msg) {
-		var appController = this._appCtxt.getAppController();
-		var errorDialog = appController.popupErrorDialog(msg, ex, null, true);
-		return;
-	}
-	
-	// default processing
-	this.popdown();
+	html[i++] = "<table border=0 cellSpacing=3 cellPadding=0>";
+
+	html[i++] = "<tr><td class='Label'>";
+	html[i++] = ZmMsg.nameLabel;
+	html[i++] = "</td><td><input type='text' class='Field' id='";
+	html[i++] = this._nameFieldId;
+	html[i++] = "' /></td></tr>";
+
+	html[i++] = "<tr><td class='Label'>";
+	html[i++] = ZmMsg.colorLabel;
+	html[i++] = "</td><td id='";
+	html[i++] = this._colorSelectTdId;
+	html[i++] = "'></td></tr>";
+
+	html[i++] = "<tr><td colspan=2 class='Label'><input type='checkbox' id='";
+	html[i++] = this._excludeFbCheckboxId;
+	html[i++] = "' />";
+	html[i++] = ZmMsg.excludeFromFreeBusy;
+	html[i++] = "</td></tr>";
+
+	html[i++] = "<tr><td colspan=2 class='Label'><input type='checkbox' id='";
+	html[i++] = this._remoteCheckboxId;
+	html[i++] = "' />";
+	html[i++] = ZmMsg.addRemoteAppts;
+	html[i++] = "</td></tr>";
+
+	html[i++] = "<tr style='display:none' id='"
+	html[i++] = this._urlRowId;
+	html[i++] = "'><td class='Label'>";
+	html[i++] = ZmMsg.urlLabel;
+	html[i++] = "</td><td><input type='text' class='Field' id='";
+	html[i++] = this._urlFieldId;
+	html[i++] = "' /></td></tr>";
+
+	html[i++] = "</table>";
+
+	return html.join("");
 };
 
-ZmNewCalendarDialog.prototype._createContentEl = 
+ZmNewCalendarDialog.prototype._setElements =
 function() {
-	// create controls
-	this._nameInputEl = document.createElement("INPUT");
-	//this._nameInputEl.autocomplete = "OFF";
-	this._nameInputEl.type = "text";
-	this._nameInputEl.className = "Field";
-	
 	this._colorInput = new DwtSelect(this);
 	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
 		var choice = ZmOrganizer.COLOR_CHOICES[i];
 		this._colorInput.addOption(choice.label, i == 0, choice.value);
 	}
-
-	this._excludeFbCheckbox = document.createElement("INPUT");
-	this._excludeFbCheckbox.type = "checkbox";
-	this._excludeFbCheckbox.checked = false;
-
-	this._remoteCheckboxEl = document.createElement("INPUT");
-	this._remoteCheckboxEl.type = "checkbox";
-	this._remoteCheckboxEl.checked = false;
-	Dwt.setHandler(this._remoteCheckboxEl, DwtEvent.ONCLICK, this._handleCheckbox);
+	var colorTd = document.getElementById(this._colorSelectTdId);
+	colorTd.appendChild(this._colorInput.getHtmlElement());
 	
-	this._urlInputEl = document.createElement("INPUT");
-	this._urlInputEl.type = "text";
-	this._urlInputEl.className = "Field";
+	this._excludeFbCheckbox = document.getElementById(this._excludeFbCheckboxId);
+	this._remoteCheckbox = document.getElementById(this._remoteCheckboxId);
+	var urlRow = document.getElementById(this._urlRowId);
+	this._remoteCheckbox._urlRow = urlRow;
+	this._urlField = document.getElementById(this._urlFieldId);
+	this._remoteCheckbox._urlField = this._urlField;
 
-	// create HTML
-	var table = document.createElement("TABLE");
-	table.border = 0;
-	table.cellSpacing = 3;
-	table.cellPadding = 0;
-
-	var nameRow = table.insertRow(table.rows.length);
-	var nameLabelCell = nameRow.insertCell(nameRow.cells.length);
-	nameLabelCell.className = "Label";
-	nameLabelCell.innerHTML = ZmMsg.nameLabel;
-	var nameInputCell = nameRow.insertCell(nameRow.cells.length);
-	nameInputCell.appendChild(this._nameInputEl);
-
-	var colorRow = table.insertRow(table.rows.length);
-	var colorLabelCell = colorRow.insertCell(colorRow.cells.length);
-	colorLabelCell.className = "Label";
-	colorLabelCell.innerHTML = ZmMsg.colorLabel;
-	var colorInputCell = colorRow.insertCell(colorRow.cells.length);
-	colorInputCell.appendChild(this._colorInput.getHtmlElement());	
-	
-	var excludeFbRow = table.insertRow(table.rows.length);
-	var excludeFbCell = excludeFbRow.insertCell(excludeFbRow.cells.length);
-	excludeFbCell.colSpan = 2;
-	excludeFbCell.className = "Label";
-	excludeFbCell.appendChild(this._excludeFbCheckbox);
-	excludeFbCell.appendChild(document.createTextNode(ZmMsg.excludeFromFreeBusy));
-	
-	var remoteRow = table.insertRow(table.rows.length);
-	var remoteLabelCell = remoteRow.insertCell(remoteRow.cells.length);
-	remoteLabelCell.colSpan = 2;
-	remoteLabelCell.className = "Label";
-	remoteLabelCell.appendChild(this._remoteCheckboxEl);
-	remoteLabelCell.appendChild(document.createTextNode(ZmMsg.addRemoteAppts));
-	
-	var urlRow = table.insertRow(table.rows.length);
-	urlRow.style.display = "none";
-	var urlLabelCell = urlRow.insertCell(urlRow.cells.length);
-	urlLabelCell.className = "Label";
-	urlLabelCell.innerHTML = ZmMsg.urlLabel;
-	var urlInputCell = urlRow.insertCell(urlRow.cells.length);
-	urlInputCell.className = "Field";
-	urlInputCell.appendChild(this._urlInputEl);
-	
-	this._remoteCheckboxEl._urlRow = urlRow;
-	this._remoteCheckboxEl._urlInputEl = this._urlInputEl;
-		
-	return table;
+	Dwt.setHandler(this._remoteCheckbox, DwtEvent.ONCLICK, this._handleCheckbox);
 };
 
-ZmNewCalendarDialog.prototype._handleCheckbox = function(event) {
-	event = event || window.event;
+ZmNewCalendarDialog.prototype._getCalendarData =
+function() {
+	// check name for presence and validity
+	var name = AjxStringUtil.trim(this._nameField.value);
+	var msg = ZmCalendar.checkName(name);
+	
+	var url = null;
+	if (!msg && this._remoteCheckbox.checked) {
+		url = AjxStringUtil.trim(this._urlField.value);
+		msg = ZmOrganizer.checkUrl(url);
+	}
+
+	var color = this._colorInput.getValue();
+	var excludeFb = this._excludeFbCheckbox.checked;
+	
+	return (msg ? this._showError(msg) : [this._parentFolder, name, url, color, excludeFb]);
+};
+
+ZmNewCalendarDialog.prototype._okButtonListener =
+function(ev) {
+	var results = this._getCalendarData();
+	if (results)
+		DwtDialog.prototype._buttonListener.call(this, ev, results);
+};
+
+ZmNewCalendarDialog.prototype._handleCheckbox =
+function(event) {
 	var target = DwtUiEvent.getTarget(event);
 	target._urlRow.style.display = target.checked ? (AjxEnv.isIE ? "block" : "table-row") : "none";
 	if (target.checked) {
-		target._urlInputEl.focus();
+		target._urlField.focus();
 	}
-};
-
-ZmNewCalendarDialog.prototype._checkUrl = function() {
-	if (this._remoteCheckboxEl.checked && this._urlInputEl.value.match(/^\s*$/)) {
-		return ZmMsg.errorUrlMissing;
-	}
-};
-
-ZmNewCalendarDialog.prototype._getSeparatorTemplate = function() {
-	return "";
 };

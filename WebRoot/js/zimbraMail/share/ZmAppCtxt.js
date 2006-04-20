@@ -197,7 +197,7 @@ function() {
 ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
 	if (!this._newCalendarDialog) {
-		this._newCalendarDialog = new ZmNewCalendarDialog(this, this.getShell());
+		this._newCalendarDialog = new ZmNewCalendarDialog(this.getShell(), this.getMsgDialog());
 	}
 	return this._newCalendarDialog;
 };

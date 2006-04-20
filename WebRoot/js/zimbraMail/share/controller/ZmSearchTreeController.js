@@ -170,9 +170,9 @@ function(ev, treeView) {
 * Called when a "New Search" dialog is submitted. This override is necessary because we
 * need to pass the search object to _doCreate().
 *
-* @param 0	[ZmFolder]	folder (or search) that will contain it
-* @param 1	[string]	name of the new saved search
-* @param 2	[ZmSearch]	search object with details of the search
+* @param parent	[ZmFolder]	folder (or search) that will contain it
+* @param name	[string]	name of the new saved search
+* @param search	[ZmSearch]	search object with details of the search
 */
 ZmSearchTreeController.prototype._newCallback =
 function(parent, name, search) {

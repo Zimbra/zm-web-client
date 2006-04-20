@@ -92,7 +92,7 @@ function() {
 	this._checkboxRowId = Dwt.getNextId();
 	this._folderTreeCellId = Dwt.getNextId();	
 
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 	html[idx++] = "<table cellpadding=0 cellspacing=5 border=0>";
 	html[idx++] = "<tr valign='center'><td class='Label'>";
@@ -158,9 +158,7 @@ function() {
 
 	var url = this._remoteCheckboxField.checked ? this._urlField.value : null;
 	if (!msg && (this._remoteCheckboxField.checked)) {
-		if (!url.match(/^[a-zA-Z]+:\/\/.*$/i)) {
-			msg = ZmMsg.errorUrlMissing;
-		}			
+		msg = ZmOrganizer.checkUrl(url);
 	}
 
 	return (msg ? this._showError(msg) : [parentFolder, name, url]);
@@ -169,7 +167,7 @@ function() {
 ZmNewFolderDialog.prototype._setupRemoteCheckboxField =
 function() {
 	this._remoteCheckboxField = document.getElementById(this._remoteCheckboxFieldId);
-	this._urlField = document.getElementById(this._remoteCheckboxFieldId+"URLfield");	
+	this._urlField = document.getElementById(this._remoteCheckboxFieldId + "URLfield");	
 	Dwt.setHandler(this._remoteCheckboxField, DwtEvent.ONCLICK, this._handleCheckbox);	
 };
 

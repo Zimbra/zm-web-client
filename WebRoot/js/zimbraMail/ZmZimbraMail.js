@@ -459,28 +459,37 @@ function(params, result) {
 		}
 		return;
 	}
+	if (params.asyncMode) {
+		result.set(response.Body);
+	}
 	
-	// refresh block needs to be handled before we finish handling response, so
-	// that the overview panel gets updated/displayed
 	var hdr = response.Header;
+
+	// update change token if we got one
+	if (hdr && hdr.context && hdr.context.change) {
+		this._changeToken = hdr.context.change.token;
+	}
+	
+	// refresh block causes the overview panel to get updated
 	if (hdr && hdr.context && hdr.context.refresh) {
 		this._refreshHandler(hdr.context.refresh);
 		this._checkOverviewLayout();
 	}
 
-	if (params.asyncMode)
-		result.set(response.Body);
-
 	// start poll timer if we didn't get an exception
 	if (this._pollInterval)
 		this._pollActionId = this._doPoll();
 
-	if (params.asyncMode)
-		if (params.callback) params.callback.run(result);
-	
 	this._clearPendingRequest(params.reqId);
 
-	// handle notifications after the response, so that item state is current
+	// Handle notifications, then run the callback. Many callbacks take the SOAP
+	// response data and update the model. If we run into scenarios where that needs
+	// to happen before notifications are handled, then we may need to split the
+	// callback into two routines, one to handle the SOAP response, and one to do 
+	// everything else. In general, it always makes sense to run the callback last.
+	// That's especially important if the callback invokes another request, since if
+	// the callback were run before notifications, you'd end up with a stack of
+	// notifications running in inverted order.
 	if (hdr && hdr.context && hdr.context.notify) {
         for(i = 0; i < hdr.context.notify.length; i++) {
         	var notify = hdr.context.notify[i];
@@ -496,13 +505,13 @@ function(params, result) {
     	}        
 	}
 	
-	// update change token if we get one
-	if (hdr && hdr.context && hdr.context.change) {
-		this._changeToken = hdr.context.change.token;
+	if (params.asyncMode && params.callback) {
+		params.callback.run(result);
 	}
 
-	if (!params.asyncMode)
+	if (!params.asyncMode) {
 		return response.Body;
+	}
 };
 
 ZmZimbraMail.prototype.cancelRequest = 
