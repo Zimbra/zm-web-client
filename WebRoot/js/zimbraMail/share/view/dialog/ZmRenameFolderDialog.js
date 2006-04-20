@@ -75,9 +75,13 @@ function() {
 	var name = AjxStringUtil.trim(this._nameField.value);
 	var msg = ZmFolder.checkName(name);
 
-	// make sure folder with this name doesn't already exist at this level
-	if (!msg &&	this._folder.parent.hasChild(name))
-		msg = ZmMsg.folderOrSearchNameExists;
+	// make sure another folder with this name doesn't already exist at this level
+	if (!msg) {
+		var folder = this._folder.parent.getByName(name);
+		if (folder && (folder.id != this._folder.id)) {
+			msg = ZmMsg.folderOrSearchNameExists;
+		}
+	}
 
 	// if we're creating a top-level folder, check for conflict with top-level search
 	if (!msg && (this._folder.parent.id == ZmOrganizer.ID_ROOT)) {
