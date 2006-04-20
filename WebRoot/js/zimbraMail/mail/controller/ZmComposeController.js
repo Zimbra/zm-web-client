@@ -260,9 +260,9 @@ function(ex) {
 *					off screen (used as an optimization to preload this view)
 */
 ZmComposeController.prototype.initComposeView = 
-function(initHide) {
+function(initHide, composeMode) {
 	if (this._composeView == null) {
-		this._composeView = new ZmComposeView(this._container, this);
+		this._composeView = new ZmComposeView(this._container, this, composeMode);
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
@@ -338,7 +338,6 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 	this._toOverride = toOverride;
 	this._subjOverride = subjOverride;
 	this._extraBodyText = extraBodyText;
-	this._composeMode = composeMode;
 
 	if (!this._toolbar)
 		this._createToolBar();
@@ -347,10 +346,10 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 		this._toolbar.enable([ZmOperation.ATTACHMENT, ZmOperation.SAVE_DRAFT], false);
 	}
 
-	this.initComposeView();
+	this.initComposeView(null, composeMode);
 
-	composeMode = composeMode ? composeMode : this._setComposeMode(msg);
-	this._setOptionsMenu(composeMode);
+	this._composeMode = composeMode || this._setComposeMode(msg);
+	this._setOptionsMenu(this._composeMode);
 
 	this._composeView.set(action, msg, toOverride, subjOverride, extraBodyText);
 	this._app.pushView(ZmController.COMPOSE_VIEW, true);
