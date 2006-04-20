@@ -46,7 +46,7 @@ function() {
 ZmBasicPicker.prototype._makeRow =
 function(text, id) {
     var size = 20;
-    var html = new Array(10);
+    var html = [];
     var i = 0;
     html[i++] = "<tr valign='middle'>";
     html[i++] = "<td align='right' nowrap>" + text + ":</td>";
@@ -68,7 +68,7 @@ function(parent) {
     var inTrashId = Dwt.getNextId();
     var inSpamId, checked;
     
-	var html = new Array(20);
+	var html = [];
 	var i = 0;
 	html[i++] = "<table cellpadding='5' cellspacing='0' border='0'>";
 	html[i++] = this._makeRow(ZmMsg.from, fromId);
@@ -96,9 +96,10 @@ function(parent) {
 	this._to = this._setupField(toId);
 	this._subject= this._setupField(subjectId);
 	this._content = this._setupField(contentId);
-	if (this._appCtxt.get(ZmSetting.SPAM_ENABLED))
-		this._inSpam = this._setupSearch(inSpamId);
-	this._inTrash = this._setupSearch(inTrashId);
+	if (this._appCtxt.get(ZmSetting.SPAM_ENABLED)) {
+		this._inSpam = this._setupCheckbox(inSpamId);
+	}
+	this._inTrash = this._setupCheckbox(inTrashId);
 };
 
 ZmBasicPicker.prototype.setFrom =
@@ -133,10 +134,10 @@ function(id) {
 	return f;
 };
 
-ZmBasicPicker.prototype._setupSearch = 
+ZmBasicPicker.prototype._setupCheckbox = 
 function(id) {
 	var f = document.getElementById(id);
-	Dwt.setHandler(f, DwtEvent.ONCHANGE, ZmBasicPicker._onChange);
+	Dwt.setHandler(f, DwtEvent.ONCLICK, ZmBasicPicker._onChange);
 	f._picker = this;
 	return f;
 };
@@ -158,7 +159,7 @@ function(ev) {
 
 ZmBasicPicker.prototype._updateQuery = 
 function() {
-	var query1 = new Array();
+	var query1 = [];
 	var from = AjxStringUtil.trim(this._from.value, true);
 	if (from.length)
 		query1.push("from:(" + from + ")");
@@ -173,7 +174,7 @@ function() {
 		query1.push("content:(" + content + ")");
 	
 	// Sort out "Check Trash/Spam" pref vs checkbox
-	var query2 = new Array();
+	var query2 = [];
 	var checkSpamPref = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM);
 	var checkTrashPref = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH);
 	var checkSpamCheckbox = (this._inSpam && this._inSpam.checked);
@@ -198,8 +199,9 @@ function() {
 	var cbChange = (query1.length && ((this._cbQuery || cbQuery) && (this._cbQuery != cbQuery)));
 	var query = query1.concat(query2);
 	this.setQuery(query.length ? query.join(" ") : "");
-	if (cbChange)
+	if (cbChange) {
 		this.execute();
+	}
 	this._cbQuery = cbQuery;
 };
 
