@@ -105,6 +105,12 @@ function(dialog, verb, args) {
 	adata.endDate = null;
 
 	var match;
+	
+	match = args.match(/\s*\"([^\"]*)\"?\s*/);
+	if (match) {
+		adata.subject = match[1];
+		args = args.replace(match[0], " ");
+	}
 
 	match = args.match(/\s*\[([^\]]*)\]?\s*/);	
 	if (match) {
@@ -153,12 +159,6 @@ function(dialog, verb, args) {
 		} else if (adata.startTime) {
 			adata.endDate = new Date(adata.startDate.getTime() + 1000 * 60 * 60);
 		}
-	}
-	
-	match = args.match(/\s*\"([^\"]*)\"?\s*/);
-	if (match) {
-		adata.subject = match[1];
-		args = args.replace(match[0], " ");
 	}
 
 	match = args.match(/\s*repeats?\s+(\S+)\s*/);	

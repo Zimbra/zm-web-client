@@ -87,10 +87,10 @@ function(dialog, verb, args) {
 		}
 	}
 
-	if (!objects.subject) {
+	if (!objects.body) {
 		var rest = args.replace(/^\s+/, ""); //.replace(/\s+$/, ""); // .replace(/\s+/g, ' ');
 		if (rest == "" || rest == " ") rest = null;		
-		objects.subject = { data : rest };
+		objects.body = { data : rest };
 	}
 
 	var index = -1, ri;

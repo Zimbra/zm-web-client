@@ -112,8 +112,8 @@ function(dialog) {
 ZmAssistant.prototype._matchTime =
 function(args) {
 	var hour, minute, ampm = null;
-	var match1 = args.match(/\s*(\d+):(\d\d)(?:\s*(AM|PM))?\s*/i);
-	var match2 = args.match(/\s*(\d+)(AM|PM)\s*/i);	
+	var match1 = args.match(/\s+(?:(?:@|at|\-)\s*)?(\d+):(\d\d)(?:\s*(AM|PM))?\s*/i);
+	var match2 = args.match(/\s+(?:(?:@|at|\-)\s*)?(\d+)(AM|PM)\s*/i);	
 	// take the first match
 	if (match1 && match2) {
 		if  (match1.index < match2.index) match2 = null;

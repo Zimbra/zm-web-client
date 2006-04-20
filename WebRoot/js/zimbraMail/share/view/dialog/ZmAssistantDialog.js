@@ -47,7 +47,7 @@ function ZmAssistantDialog(appCtxt) {
 	this.setButtonListener(ZmAssistantDialog.EXTRA_BUTTON, new AjxListener(this, this._extraButtonListener));	
 
 	// only trigger matching after a sufficient pause
-	this._parseInterval = this._appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
+	this._parseInterval = 75; //this._appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
 	this._parseTimedAction = new AjxTimedAction(this, this._parseAction);
 	this._parseActionId = -1;
 	
