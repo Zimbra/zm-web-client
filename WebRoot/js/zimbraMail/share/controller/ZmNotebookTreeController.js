@@ -113,7 +113,7 @@ function() {
 // Method that is run when a tree item is left-clicked
 ZmNotebookTreeController.prototype._itemClicked =
 function(notebook) {
-	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTES_APP);
+	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var noteController = notesApp.getNoteController();
 	noteController.show(notebook.id);
 };
@@ -202,7 +202,7 @@ function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	var notebook = this._pendingActionData;
 
-	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTES_APP);
+	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var cache = notesApp.getNoteCache();
 	cache.fillCache(notebook.id);
 };
@@ -214,7 +214,7 @@ ZmNotebookTreeController.prototype._editNotebookListener = function(ev) {
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 	var name = op == ZmOperation.EDIT_NOTEBOOK_INDEX ? ZmNotebook.PAGE_INDEX : ZmNotebook.PAGE_CHROME;
 	
-	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTES_APP);
+	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var cache = notesApp.getNoteCache();
 	
 	var noteEditController = notesApp.getNoteEditController();

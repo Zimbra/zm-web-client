@@ -418,9 +418,9 @@ function(ev) {
 		var notebookTreeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
 		var notebookTreeView = notebookTreeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
 		var notebook = notebookTreeView ? notebookTreeView.getSelected() : null;
-		var note = new ZmNote(this._appCtxt);
-		note.folderId = notebook ? notebook.id : ZmNote.DEFAULT_FOLDER;
-		this._appCtxt.getApp(ZmZimbraMail.NOTES_APP).getNoteEditController().show(note);
+		var note = new ZmPage(this._appCtxt);
+		note.folderId = notebook ? notebook.id : ZmPage.DEFAULT_FOLDER;
+		this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP).getNoteEditController().show(note);
 	} else if (id == ZmOperation.NEW_FOLDER) {
 		this._showDialog(this._appCtxt.getNewFolderDialog(), this._newFolderCallback);
 	} else if (id == ZmOperation.NEW_TAG) {

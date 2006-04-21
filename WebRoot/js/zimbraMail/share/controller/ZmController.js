@@ -73,10 +73,10 @@ ZmController.APPOINTMENT_VIEW 			= i++;
 ZmController.MIXED_VIEW					= i++;
 ZmController.IM_CHAT_TAB_VIEW			= i++;
 ZmController.IM_CHAT_MULTI_WINDOW_VIEW	= i++;
-ZmController.NOTE_VIEW					= i++;
-ZmController.NOTE_EDIT_VIEW				= i++;
-ZmController.NOTE_FILE_VIEW				= i++;
-ZmController.NOTE_SITE_VIEW				= i++;
+ZmController.NOTEBOOK_PAGE_VIEW			= i++;
+ZmController.NOTEBOOK_PAGE_EDIT_VIEW	= i++;
+ZmController.NOTEBOOK_FILE_VIEW			= i++;
+ZmController.NOTEBOOK_SITE_VIEW			= i++;
 
 // Abstract methods
 

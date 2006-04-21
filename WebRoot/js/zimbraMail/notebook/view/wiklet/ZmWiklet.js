@@ -419,7 +419,7 @@ ZmWiklet.register(
 		},
 		func: function(name, value, params, context) {
 			var item = context.getItem();
-			var folderId = item instanceof ZmNote ? item.folderId : item.id;
+			var folderId = item instanceof ZmPage ? item.folderId : item.id;
 
 			
 			var nameRe = /^[^_]/;

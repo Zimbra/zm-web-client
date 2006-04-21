@@ -23,34 +23,34 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNoteKeywordObjectHandler(appCtxt) {
-	ZmObjectHandler.call(this, appCtxt, ZmNoteKeywordObjectHandler.TYPE);
+function ZmNotebookObjectHandler(appCtxt) {
+	ZmObjectHandler.call(this, appCtxt, ZmNotebookObjectHandler.TYPE);
 };
-ZmNoteKeywordObjectHandler.prototype = new ZmObjectHandler;
-ZmNoteKeywordObjectHandler.prototype.constructor = ZmNoteKeywordObjectHandler;
+ZmNotebookObjectHandler.prototype = new ZmObjectHandler;
+ZmNotebookObjectHandler.prototype.constructor = ZmNotebookObjectHandler;
 
 // Constants
 
-ZmNoteKeywordObjectHandler.TYPE = "noteKeyword";
+ZmNotebookObjectHandler.TYPE = "noteKeyword";
 
-ZmNoteKeywordObjectHandler.WIKIWORD_RE = /[A-Z]+[a-z]+[A-Z]+[a-zA-Z0-9]*/;
-ZmNoteKeywordObjectHandler.LITERAL_RE = /[^\]\|]+?/; // REVISIT: escaped ']'
+ZmNotebookObjectHandler.WIKIWORD_RE = /[A-Z]+[a-z]+[A-Z]+[a-zA-Z0-9]*/;
+ZmNotebookObjectHandler.LITERAL_RE = /[^\]\|]+?/; // REVISIT: escaped ']'
 
-ZmNoteKeywordObjectHandler.TWIKI_KEYWORD_RE = new RegExp(
-	"\\b(" + ZmNoteKeywordObjectHandler.WIKIWORD_RE.source + ")\\b" +
+ZmNotebookObjectHandler.TWIKI_KEYWORD_RE = new RegExp(
+	"\\b(" + ZmNotebookObjectHandler.WIKIWORD_RE.source + ")\\b" +
 	"|" +
 	"(?:\\[" +
-		"\\[(" + ZmNoteKeywordObjectHandler.LITERAL_RE.source + ")\\]" +
-		"(?:\\[(" + ZmNoteKeywordObjectHandler.LITERAL_RE.source + ")\\])?" +
+		"\\[(" + ZmNotebookObjectHandler.LITERAL_RE.source + ")\\]" +
+		"(?:\\[(" + ZmNotebookObjectHandler.LITERAL_RE.source + ")\\])?" +
 	"\\])",
 	"g"
 );
 
-ZmNoteKeywordObjectHandler.MEDIAWIKI_KEYWORD_RE = new RegExp(
-	"\\b(" + ZmNoteKeywordObjectHandler.WIKIWORD_RE.source + ")\\b" +
+ZmNotebookObjectHandler.MEDIAWIKI_KEYWORD_RE = new RegExp(
+	"\\b(" + ZmNotebookObjectHandler.WIKIWORD_RE.source + ")\\b" +
 	"|" +
 	"(?:\\[\\[" +
-		"(" + ZmNoteKeywordObjectHandler.LITERAL_RE.source + ")" +
+		"(" + ZmNotebookObjectHandler.LITERAL_RE.source + ")" +
 		"(?:\\|([^\\]]*?))?" +
 	"\\]\\])",
 	"g"
@@ -58,7 +58,7 @@ ZmNoteKeywordObjectHandler.MEDIAWIKI_KEYWORD_RE = new RegExp(
 
 // Public methods
 
-ZmNoteKeywordObjectHandler.prototype.match =
+ZmNotebookObjectHandler.prototype.match =
 function(line, startIndex) {
 	var twiki = this.matchTWiki(line, startIndex);
 	var mediaWiki = this.matchMediaWiki(line, startIndex);
@@ -68,10 +68,10 @@ function(line, startIndex) {
 	return twiki || mediaWiki;
 };
 
-ZmNoteKeywordObjectHandler.prototype.matchTWiki =
+ZmNotebookObjectHandler.prototype.matchTWiki =
 function(line, startIndex) {
-    ZmNoteKeywordObjectHandler.TWIKI_KEYWORD_RE.lastIndex = startIndex;
-    var m = ZmNoteKeywordObjectHandler.TWIKI_KEYWORD_RE.exec(line);
+    ZmNotebookObjectHandler.TWIKI_KEYWORD_RE.lastIndex = startIndex;
+    var m = ZmNotebookObjectHandler.TWIKI_KEYWORD_RE.exec(line);
     if (m) {
     	var keyword = m[2] || m[1];
     	var label = m[3] || m[2] || m[1];
@@ -83,10 +83,10 @@ function(line, startIndex) {
     return m;
 };
 
-ZmNoteKeywordObjectHandler.prototype.matchMediaWiki =
+ZmNotebookObjectHandler.prototype.matchMediaWiki =
 function(line, startIndex) {
-    ZmNoteKeywordObjectHandler.MEDIAWIKI_KEYWORD_RE.lastIndex = startIndex;
-    var m = ZmNoteKeywordObjectHandler.MEDIAWIKI_KEYWORD_RE.exec(line);
+    ZmNotebookObjectHandler.MEDIAWIKI_KEYWORD_RE.lastIndex = startIndex;
+    var m = ZmNotebookObjectHandler.MEDIAWIKI_KEYWORD_RE.exec(line);
     if (m) {
     	var keyword = m[2] || m[1];
     	var label = m[2] || m[1];
@@ -114,14 +114,14 @@ function(line, startIndex) {
     return m;
 };
 
-ZmNoteKeywordObjectHandler.prototype.selected =
+ZmNotebookObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
 	var appController = this._appCtxt.getAppController();
-	var notesApp = appController.getApp(ZmZimbraMail.NOTES_APP);
+	var notesApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var cache = notesApp.getNoteCache();
 
 	// REVISIT: Need some structured syntax for wiki links	
-	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTES_APP);
+	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var noteController = notesApp.getNoteController();
 	var note = noteController.getNote();
 	var folderId = note ? note.folderId : ZmOrganizer.ID_NOTEBOOK;
@@ -129,24 +129,24 @@ function(obj, span, ev, context) {
 	var note = cache.getNoteByName(folderId, context.keyword);
 	if (!note) {
 		// NOTE: We assume the note is new if there's no entry in the cache.
-		note = new ZmNote(this._appCtxt);
+		note = new ZmPage(this._appCtxt);
 		note.name = context.keyword;
 		note.folderId = folderId;
 	}	
 	this._selectedHandleResponse(note);
 };
 
-ZmNoteKeywordObjectHandler.prototype._selectedHandleResponse =
+ZmNotebookObjectHandler.prototype._selectedHandleResponse =
 function(note) {
 	var appController = this._appCtxt.getAppController();
-	var notesApp = appController.getApp(ZmZimbraMail.NOTES_APP);
+	var notesApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	
 	var isNew = !note || note.version == 0;
 	var controller = isNew ? notesApp.getNoteEditController() : notesApp.getNoteController();
 	controller.show(note);
 };
 
-ZmNoteKeywordObjectHandler.prototype.getToolTipText =
+ZmNotebookObjectHandler.prototype.getToolTipText =
 function(keyword, context) {
 	var text = [ "<b>Keyword:</b> '", context.keyword, "'" ];
 	if (context.keyword != context.label) {
@@ -155,14 +155,14 @@ function(keyword, context) {
 	return text.join("");
 };
 
-ZmNoteKeywordObjectHandler.prototype.getActionMenu =
+ZmNotebookObjectHandler.prototype.getActionMenu =
 function(obj) {
 	return null;
 };
 
 // Protected methods
 
-ZmNoteKeywordObjectHandler.prototype._getHtmlContent =
+ZmNotebookObjectHandler.prototype._getHtmlContent =
 function(html, idx, keyword, context) {
    	html[idx++] = AjxStringUtil.htmlEncode(keyword);
 	return idx;

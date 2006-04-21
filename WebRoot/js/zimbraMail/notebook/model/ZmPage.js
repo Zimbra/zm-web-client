@@ -23,49 +23,49 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNote(appCtxt, id, list) {
+function ZmPage(appCtxt, id, list) {
 	if (arguments.length == 0) return;
 	ZmItem.call(this, appCtxt, ZmItem.MSG, id, list);
-	this.folderId = ZmNote.DEFAULT_FOLDER;
+	this.folderId = ZmPage.DEFAULT_FOLDER;
 }
-ZmNote.prototype = new ZmItem;
-ZmNote.prototype.constructor = ZmNote;
+ZmPage.prototype = new ZmItem;
+ZmPage.prototype.constructor = ZmPage;
 
-ZmNote.prototype.toString =
+ZmPage.prototype.toString =
 function() {
-	return "ZmNote";
+	return "ZmPage";
 };
 
 // Constants
 
-ZmNote.DEFAULT_FOLDER = ZmOrganizer.ID_NOTEBOOK;
+ZmPage.DEFAULT_FOLDER = ZmOrganizer.ID_NOTEBOOK;
 
 // Data
 
-ZmNote.prototype.name;
-ZmNote.prototype.fragment;
-ZmNote.prototype._content; // NOTE: content loading can be deferred
-ZmNote.prototype.creator;
-ZmNote.prototype.createDate;
-ZmNote.prototype.modifier;
-ZmNote.prototype.modifyDate;
-ZmNote.prototype.size;
-ZmNote.prototype.version = 0;
+ZmPage.prototype.name;
+ZmPage.prototype.fragment;
+ZmPage.prototype._content; // NOTE: content loading can be deferred
+ZmPage.prototype.creator;
+ZmPage.prototype.createDate;
+ZmPage.prototype.modifier;
+ZmPage.prototype.modifyDate;
+ZmPage.prototype.size;
+ZmPage.prototype.version = 0;
 
-ZmNote.prototype._new;
+ZmPage.prototype._new;
 
 // Static functions
 
-ZmNote.load = function(appCtxt, folderId, name, version, callback, errorCallback) {
-	var note = new ZmNote(appCtxt);
+ZmPage.load = function(appCtxt, folderId, name, version, callback, errorCallback) {
+	var note = new ZmPage(appCtxt);
 	note.folderId = folderId;
 	note.name = name;
 	note.load(version, callback, errorCallback);
 	return note;
 };
 
-ZmNote.save = function(appCtxt, folderId, name, content, callback, errorCallback) {
-	var note = new ZmNote(appCtxt);
+ZmPage.save = function(appCtxt, folderId, name, content, callback, errorCallback) {
+	var note = new ZmPage(appCtxt);
 	note.folderId = folderId;
 	note.name = name;
 	note._content = content;
@@ -76,10 +76,10 @@ ZmNote.save = function(appCtxt, folderId, name, content, callback, errorCallback
 
 // query
 
-ZmNote.prototype.setContent = function(content) {
+ZmPage.prototype.setContent = function(content) {
 	this._content = content;
 };
-ZmNote.prototype.getContent = function(callback, errorCallback) {
+ZmPage.prototype.getContent = function(callback, errorCallback) {
 	if (this.name && this._content == null) {
 		this.load(this.version, callback, errorCallback);
 	}
@@ -91,7 +91,7 @@ ZmNote.prototype.getContent = function(callback, errorCallback) {
 
 // i/o
 
-ZmNote.prototype.save =
+ZmPage.prototype.save =
 function(callback, errorCallback) {
 
 	// create soap doc
@@ -118,7 +118,7 @@ function(callback, errorCallback) {
 	appController.sendRequest(params);
 };
 
-ZmNote.prototype.load = 
+ZmPage.prototype.load = 
 function(version, callback, errorCallback) {
 	var soapDoc = AjxSoapDoc.create("GetWikiRequest", "urn:zimbraMail");
 	var wordNode = soapDoc.set("w");
@@ -153,14 +153,14 @@ function(version, callback, errorCallback) {
 
 // initialization
 
-ZmNote.prototype.set = function(data) {
+ZmPage.prototype.set = function(data) {
 	var version = Number(data.ver);
 	if (this.version == version && this._content) return;
 	
 	// ZmItem fields
 	this.id = data.id;
 	this.folderId = data.l;
-	// ZmNote fields
+	// ZmPage fields
 	this.name = data.name;
 	// REVISIT: This is temporary!
 	this.fragment = data.fr instanceof Array ? data.fr[0]._content : data.fr;
@@ -175,7 +175,7 @@ ZmNote.prototype.set = function(data) {
 
 // Protected methods
 
-ZmNote.prototype._loadHandleResponse =
+ZmPage.prototype._loadHandleResponse =
 function(callback, response) {
 	var loaded = response && response.GetWikiResponse && response.GetWikiResponse.w;
 	if (loaded) {

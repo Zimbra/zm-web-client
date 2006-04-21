@@ -23,44 +23,44 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNoteEditView(parent, appCtxt, controller) {
-	DwtComposite.call(this, parent, "ZmNoteEditView", DwtControl.ABSOLUTE_STYLE);
+function ZmPageEditView(parent, appCtxt, controller) {
+	DwtComposite.call(this, parent, "ZmPageEditView", DwtControl.ABSOLUTE_STYLE);
 	
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 	
 	this._createHtml();
 }
-ZmNoteEditView.prototype = new DwtComposite;
-ZmNoteEditView.prototype.constructor = ZmNoteEditView
+ZmPageEditView.prototype = new DwtComposite;
+ZmPageEditView.prototype.constructor = ZmPageEditView
 
-ZmNoteEditView.prototype.toString =
+ZmPageEditView.prototype.toString =
 function() {
-	return "ZmNoteView";
+	return "ZmPageEditView";
 };
 
 // Data
 
-ZmNoteEditView.prototype._appCtxt;
-ZmNoteEditView.prototype._controller;
+ZmPageEditView.prototype._appCtxt;
+ZmPageEditView.prototype._controller;
 
-ZmNoteEditView.prototype._locationEl;
-ZmNoteEditView.prototype._pageNameInput;
-ZmNoteEditView.prototype._pageEditor;
+ZmPageEditView.prototype._locationEl;
+ZmPageEditView.prototype._pageNameInput;
+ZmPageEditView.prototype._pageEditor;
 
 // Public methods
 
-ZmNoteEditView.prototype.getController =
+ZmPageEditView.prototype.getController =
 function() {
 	return this._controller;
 };
 
-ZmNoteEditView.prototype.set =
+ZmPageEditView.prototype.set =
 function(note) {
 	var callback = new AjxCallback(this, this._setResponse, [note]);
 	note.getContent(callback);
 };
-ZmNoteEditView.prototype._setResponse = function(note) {
+ZmPageEditView.prototype._setResponse = function(note) {
 	var content = "{{BREADCRUMBS format='template'}}";
 	content = ZmWikletProcessor.process(this._appCtxt, note, content);
 	this._locationEl.innerHTML = content;
@@ -75,36 +75,36 @@ ZmNoteEditView.prototype._setResponse = function(note) {
 	this.focus();
 };
 
-ZmNoteEditView.prototype.getTitle =
+ZmPageEditView.prototype.getTitle =
 function() {
 	return this._pageNameInput.getValue();
 };
 
-ZmNoteEditView.prototype.setFormat = function(format) {
+ZmPageEditView.prototype.setFormat = function(format) {
 	this._pageEditor.setFormat(format);
 };
-ZmNoteEditView.prototype.getFormat = function() {
+ZmPageEditView.prototype.getFormat = function() {
 	return this._pageEditor.getFormat();
 };
 
-ZmNoteEditView.prototype.setContent = function(content) {
+ZmPageEditView.prototype.setContent = function(content) {
 	this._pageEditor.setContent(content);
 };
-ZmNoteEditView.prototype.getContent =
+ZmPageEditView.prototype.getContent =
 function() {
 	return this._pageEditor.getContent();
 };
 
-ZmNoteEditView.prototype.getSelection =
+ZmPageEditView.prototype.getSelection =
 function() {
 	return this._controller.getNote();
 };
 
 
-ZmNoteEditView.prototype.addSelectionListener = function(listener) { /*TODO*/ };
-ZmNoteEditView.prototype.addActionListener = function(listener) { /*TODO*/ };
+ZmPageEditView.prototype.addSelectionListener = function(listener) { /*TODO*/ };
+ZmPageEditView.prototype.addActionListener = function(listener) { /*TODO*/ };
 
-ZmNoteEditView.prototype.setBounds = 
+ZmPageEditView.prototype.setBounds = 
 function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
 
@@ -112,7 +112,7 @@ function(x, y, width, height) {
 	this._pageEditor.setSize(width, height - size.y);
 };
 
-ZmNoteEditView.prototype.focus = function() {
+ZmPageEditView.prototype.focus = function() {
 	var name = this._pageNameInput.getValue();
 	var focusedComp = name == "" ? this._pageNameInput : this._pageEditor;
 	focusedComp.focus();
@@ -120,7 +120,7 @@ ZmNoteEditView.prototype.focus = function() {
 
 // Protected methods
 
-ZmNoteEditView.prototype._createHtml =
+ZmPageEditView.prototype._createHtml =
 function() {
 	// create components
 	this._pageNameInput = new DwtInputField({parent:this});
@@ -128,7 +128,7 @@ function() {
 	var titleInputEl = this._pageNameInput.getInputElement();
 	titleInputEl.size = 50;
 		
-	this._pageEditor = new ZmNoteEditor(this, null, null, DwtHtmlEditor.HTML, this._appCtxt, this._controller);
+	this._pageEditor = new ZmPageEditor(this, null, null, DwtHtmlEditor.HTML, this._appCtxt, this._controller);
 	// HACK: Notes are always HTML format, regardless of the COS setting.
 	this._pageEditor.isHtmlEditingSupported = new Function("return true");
 	var textAreaEl = this._pageEditor.getHtmlElement();
@@ -163,64 +163,64 @@ function() {
 };
 
 //
-// ZmNoteEditor class
+// ZmPageEditor class
 //
 
-function ZmNoteEditor(parent, posStyle, content, mode, appCtxt, controller) {
+function ZmPageEditor(parent, posStyle, content, mode, appCtxt, controller) {
 	if (arguments.length == 0) return;
 	ZmHtmlEditor.call(this, parent, posStyle, content, mode, appCtxt)
 	this._controller = controller;
 }
-ZmNoteEditor.prototype = new ZmHtmlEditor;
-ZmNoteEditor.prototype.constructor = ZmNoteEditor;
+ZmPageEditor.prototype = new ZmHtmlEditor;
+ZmPageEditor.prototype.constructor = ZmPageEditor;
 
-ZmNoteEditor.prototype.toString = function() {
-	return "ZmNoteEditor";
+ZmPageEditor.prototype.toString = function() {
+	return "ZmPageEditor";
 };
 
 // Constants
 
-ZmNoteEditor.KEY_FORMAT = "format";
+ZmPageEditor.KEY_FORMAT = "format";
 
-ZmNoteEditor.HTML_SOURCE = "htmlsrc";
-ZmNoteEditor.MEDIA_WIKI = "mediawiki";
-ZmNoteEditor.RICH_TEXT = "richtext";
-ZmNoteEditor.TWIKI = "twiki";
+ZmPageEditor.HTML_SOURCE = "htmlsrc";
+ZmPageEditor.MEDIA_WIKI = "mediawiki";
+ZmPageEditor.RICH_TEXT = "richtext";
+ZmPageEditor.TWIKI = "twiki";
 
-ZmNoteEditor.DEFAULT = ZmNoteEditor.RICH_TEXT;
+ZmPageEditor.DEFAULT = ZmPageEditor.RICH_TEXT;
 
-ZmNoteEditor._MODES = {};
-ZmNoteEditor._MODES[ZmNoteEditor.HTML_SOURCE] = DwtHtmlEditor.TEXT;
-ZmNoteEditor._MODES[ZmNoteEditor.MEDIA_WIKI] = DwtHtmlEditor.TEXT;
-ZmNoteEditor._MODES[ZmNoteEditor.RICH_TEXT] = DwtHtmlEditor.HTML;
-ZmNoteEditor._MODES[ZmNoteEditor.TWIKI] = DwtHtmlEditor.TEXT;
+ZmPageEditor._MODES = {};
+ZmPageEditor._MODES[ZmPageEditor.HTML_SOURCE] = DwtHtmlEditor.TEXT;
+ZmPageEditor._MODES[ZmPageEditor.MEDIA_WIKI] = DwtHtmlEditor.TEXT;
+ZmPageEditor._MODES[ZmPageEditor.RICH_TEXT] = DwtHtmlEditor.HTML;
+ZmPageEditor._MODES[ZmPageEditor.TWIKI] = DwtHtmlEditor.TEXT;
 
-ZmNoteEditor._CONVERTERS = {};
-ZmNoteEditor._CONVERTERS[ZmNoteEditor.MEDIA_WIKI] = new MediaWikiConverter();
-ZmNoteEditor._CONVERTERS[ZmNoteEditor.TWIKI] = new TWikiConverter();
+ZmPageEditor._CONVERTERS = {};
+ZmPageEditor._CONVERTERS[ZmPageEditor.MEDIA_WIKI] = new MediaWikiConverter();
+ZmPageEditor._CONVERTERS[ZmPageEditor.TWIKI] = new TWikiConverter();
 
 // Data
 
-ZmNoteEditor.prototype._format = ZmNoteEditor.DEFAULT;
+ZmPageEditor.prototype._format = ZmPageEditor.DEFAULT;
 
 // Public methods
 
-ZmNoteEditor.prototype.setFormat = function(format) {
+ZmPageEditor.prototype.setFormat = function(format) {
 	this._format = format;
-	this.setMode(ZmNoteEditor._MODES[format]);
+	this.setMode(ZmPageEditor._MODES[format]);
 };
-ZmNoteEditor.prototype.getFormat = function() {
+ZmPageEditor.prototype.getFormat = function() {
 	return this._format;
 };
 
-ZmNoteEditor.prototype.setMode = function(mode) {
+ZmPageEditor.prototype.setMode = function(mode) {
 	if (mode != this._mode) {
 		ZmHtmlEditor.prototype.setMode.call(this, mode);
 		this.setSize(this._oldW, this._oldH);
 	}
 };
 
-ZmNoteEditor.prototype.setSize = function(w, h) {
+ZmPageEditor.prototype.setSize = function(w, h) {
 	// NOTE: We need to save our explicitly-set size so that we can
 	//       resize the control properly when the mode is changed.
 	//       Querying the size later returns the wrong values for
@@ -230,8 +230,8 @@ ZmNoteEditor.prototype.setSize = function(w, h) {
 	ZmHtmlEditor.prototype.setSize.apply(this, arguments);
 };
 
-ZmNoteEditor.prototype.setContent = function(content) {
-	var converter = ZmNoteEditor._CONVERTERS[this._format];
+ZmPageEditor.prototype.setContent = function(content) {
+	var converter = ZmPageEditor._CONVERTERS[this._format];
 	if (converter) {
 		content = converter.toWiki(content);
 	}
@@ -241,12 +241,12 @@ ZmNoteEditor.prototype.setContent = function(content) {
 		this._deserializeWiklets(root);
 	}
 };
-ZmNoteEditor.prototype.getContent = function() {
+ZmPageEditor.prototype.getContent = function() {
 	if (this._mode == DwtHtmlEditor.HTML) {
 		this._serializeWiklets();
 	}
 	var content = ZmHtmlEditor.prototype.getContent.call(this);
-	var converter = ZmNoteEditor._CONVERTERS[this._format];
+	var converter = ZmPageEditor._CONVERTERS[this._format];
 	if (converter) {
 		content = converter.toHtml(content);
 	}
@@ -255,7 +255,7 @@ ZmNoteEditor.prototype.getContent = function() {
 
 // Protected methods
 
-ZmNoteEditor.prototype._serializeWiklets = function() {
+ZmPageEditor.prototype._serializeWiklets = function() {
 	var elems = this._getIframeDoc().getElementsByTagName("INPUT");
 	// NOTE: We go backwards because the collection is "live"
 	for (var i = elems.length - 1; i >= 0; i--) {
@@ -285,7 +285,7 @@ ZmNoteEditor.prototype._serializeWiklets = function() {
 		elem.parentNode.replaceChild(text, elem);
 	}
 };
-ZmNoteEditor.prototype._deserializeWiklets = function(node) {
+ZmPageEditor.prototype._deserializeWiklets = function(node) {
 	for (var child = node.firstChild; child; child = child.nextSibling) {
 		if (child.nodeType == AjxUtil.ELEMENT_NODE) {
 			this._deserializeWiklets(child);
@@ -310,7 +310,7 @@ ZmNoteEditor.prototype._deserializeWiklets = function(node) {
 		}
 	}
 };
-ZmNoteEditor.prototype._createWikletButton = function(wiklet, value, params) {
+ZmPageEditor.prototype._createWikletButton = function(wiklet, value, params) {
 	var button = document.createElement("INPUT");
 	button.type = "submit";
 	button.value = wiklet.label || wiklet.name;
@@ -341,23 +341,23 @@ ZmNoteEditor.prototype._createWikletButton = function(wiklet, value, params) {
 			//button.disabled = true;
 		}
 	}
-	button.onclick = ZmNoteEditor._wikletButtonHandler;
+	button.onclick = ZmPageEditor._wikletButtonHandler;
 	return button;
 };
 
-ZmNoteEditor.prototype._embedHtmlContent =
+ZmPageEditor.prototype._embedHtmlContent =
 function(html) {
 	return html;
 };
 
-ZmNoteEditor.prototype._createToolbars = function() {
+ZmPageEditor.prototype._createToolbars = function() {
 	ZmHtmlEditor.prototype._createToolbars.call(this);
 	if (!this._wikiToolBar) {
 		this._createWikiToolBar(this);
 	}
 };
 
-ZmNoteEditor.prototype._createToolBar2 = function(parent) {
+ZmPageEditor.prototype._createToolBar2 = function(parent) {
 	ZmHtmlEditor.prototype._createToolBar2.call(this, parent);
 
 	var button = new DwtButton(this._toolbar2, null, "TBButton")
@@ -365,7 +365,7 @@ ZmNoteEditor.prototype._createToolBar2 = function(parent) {
 	button.addSelectionListener(new AjxListener(this, this._insertImageListener));
 };
 
-ZmNoteEditor.prototype._createWikiToolBar = function(parent) {
+ZmPageEditor.prototype._createWikiToolBar = function(parent) {
 	var toolbar = this._wikiToolBar = new ZmToolBar(parent, "ToolBar", DwtControl.RELATIVE_STYLE, 2);
 	toolbar.setVisible(this._mode == DwtHtmlEditor.HTML);
 	
@@ -384,11 +384,11 @@ ZmNoteEditor.prototype._createWikiToolBar = function(parent) {
 	this._toolbars.push(toolbar);
 };
 
-ZmNoteEditor.prototype._insertImageListener = function(event) {
+ZmPageEditor.prototype._insertImageListener = function(event) {
 	var note = this._controller.getNote();
 
 	var dialog = this._appCtxt.getUploadDialog();
-	dialog.setFolderId(note.folderId || ZmNote.DEFAULT_FOLDER);
+	dialog.setFolderId(note.folderId || ZmPage.DEFAULT_FOLDER);
 	if (!this._insertImageCallback) {
 		this._insertImageCallback = new AjxCallback(this, this._insertImageByIds);
 	}
@@ -396,7 +396,7 @@ ZmNoteEditor.prototype._insertImageListener = function(event) {
 	dialog.popup();
 };
 
-ZmNoteEditor.prototype._insertImageByIds = function(ids) {
+ZmPageEditor.prototype._insertImageByIds = function(ids) {
 	var loc = document.location;
 	var uname = this._appCtxt.get(ZmSetting.USERNAME);
 	for (var i = 0; i < ids.length; i++) {
@@ -409,13 +409,13 @@ ZmNoteEditor.prototype._insertImageByIds = function(ids) {
 	}
 };
 
-ZmNoteEditor.prototype._wikiToolBarListener = function(event) {
+ZmPageEditor.prototype._wikiToolBarListener = function(event) {
 	var name = event.item.getData("wiklet");
 	var wiklet = ZmWiklet.getWikletByName(name);
 	var button = this._createWikletButton(wiklet);
 	this._insertNodeAtSelection(button);
 };
-ZmNoteEditor._wikletButtonHandler = function(event) {
+ZmPageEditor._wikletButtonHandler = function(event) {
 	var target = DwtUiEvent.getTarget(event);
 	var name = target.getAttribute("wikname");
 	var wiklet = ZmWiklet.getWikletByName(name);
@@ -449,12 +449,12 @@ ZmNoteEditor._wikletButtonHandler = function(event) {
 	dialog.setView(propEditor);
 
 	var args = [dialog, propEditor, target, schema];
-	var listener = new AjxListener(null, ZmNoteEditor._wikletParamListener, args);
+	var listener = new AjxListener(null, ZmPageEditor._wikletParamListener, args);
 	dialog.setButtonListener(DwtDialog.OK_BUTTON, listener);
 	dialog.popup();
 };
 
-ZmNoteEditor._wikletParamListener = 
+ZmPageEditor._wikletParamListener = 
 function(dialog, editor, wikletEl, schema) {
 	var props = editor.getProperties();
 	for (var pname in props) {
@@ -470,6 +470,6 @@ function(dialog, editor, wikletEl, schema) {
 	dialog.popdown();
 };
 
-ZmNoteEditor.prototype._getInitialStyle = function(useDiv) {
+ZmPageEditor.prototype._getInitialStyle = function(useDiv) {
 	return "";
 };

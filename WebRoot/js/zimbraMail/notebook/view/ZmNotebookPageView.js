@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNoteView(parent, appCtxt, controller) {
-	DwtComposite.call(this, parent, "ZmNoteView", DwtControl.ABSOLUTE_STYLE);
+function ZmNotebookPageView(parent, appCtxt, controller) {
+	DwtComposite.call(this, parent, "ZmNotebookPageView", DwtControl.ABSOLUTE_STYLE);
 	
 	this._appCtxt = appCtxt;
 	this._controller = controller;
@@ -36,27 +36,27 @@ function ZmNoteView(parent, appCtxt, controller) {
 	this._transclusionRe = /(?=^|[^\\])\{\{\s*(.+?)\s*(?:\|\s*(.*?))?\s*\}\}/g;
 	
 }
-ZmNoteView.prototype = new DwtComposite;
-ZmNoteView.prototype.constructor = ZmNoteView;
+ZmNotebookPageView.prototype = new DwtComposite;
+ZmNotebookPageView.prototype.constructor = ZmNotebookPageView;
 
-ZmNoteView.prototype.toString =
+ZmNotebookPageView.prototype.toString =
 function() {
-	return "ZmNoteView";
+	return "ZmNotebookPageView";
 };
 
 // Data
 
-ZmNoteView.prototype._appCtxt;
-ZmNoteView.prototype._controller;
+ZmNotebookPageView.prototype._appCtxt;
+ZmNotebookPageView.prototype._controller;
 
 // Public methods
 
-ZmNoteView.prototype.getController =
+ZmNotebookPageView.prototype.getController =
 function() {
 	return this._controller;
 };
 
-ZmNoteView.prototype.set =
+ZmNotebookPageView.prototype.set =
 function(note) {
 	var element = this.getHtmlElement();
 	if (!note) {
@@ -79,37 +79,37 @@ function(note) {
 	this._findObjects(element);
 };
 
-ZmNoteView.prototype.getTitle =
+ZmNotebookPageView.prototype.getTitle =
 function() {
 	var note = this.getSelection();
 	return AjxStringUtil.xmlDecode(note.name);
 };
-ZmNoteView.prototype.getContent =
+ZmNotebookPageView.prototype.getContent =
 function() {
 	return this.getHtmlElement().innerHTML;
 };
 
-ZmNoteView.prototype.getSelection =
+ZmNotebookPageView.prototype.getSelection =
 function() {
 	return this._controller.getNote();
 };
 
 
-ZmNoteView.prototype.addSelectionListener = function(listener) { /*TODO*/ };
-ZmNoteView.prototype.addActionListener = function(listener) { /*TODO*/ };
+ZmNotebookPageView.prototype.addSelectionListener = function(listener) { /*TODO*/ };
+ZmNotebookPageView.prototype.addActionListener = function(listener) { /*TODO*/ };
 
 // Protected methods
 
-ZmNoteView.prototype._createHtml = function() {
+ZmNotebookPageView.prototype._createHtml = function() {
 	var element = this.getHtmlElement();
 	Dwt.setScrollStyle(element, Dwt.SCROLL);
 };
 
-ZmNoteView.prototype._findObjects = function(element) {
+ZmNotebookPageView.prototype._findObjects = function(element) {
 	if (!this._objectMgr) {
 		this._objectMgr = new ZmObjectManager(this, this._appCtxt);
-		var handler = new ZmNoteKeywordObjectHandler(this._appCtxt);
-		this._objectMgr.addHandler(handler, ZmNoteKeywordObjectHandler.TYPE, 20);
+		var handler = new ZmNotebookObjectHandler(this._appCtxt);
+		this._objectMgr.addHandler(handler, ZmNotebookObjectHandler.TYPE, 20);
 		this._objectMgr.sortHandlers();
 	}
 	this._objectMgr.reset();

@@ -45,7 +45,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.CONTACTS_APP]		= ZmContactsApp;
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.CALENDAR_APP]		= ZmCalendarApp;
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.IM_APP]				= ZmImApp;
-	ZmZimbraMail.APP_CLASS[ZmZimbraMail.NOTES_APP]			= ZmNotesApp;
+	ZmZimbraMail.APP_CLASS[ZmZimbraMail.NOTEBOOK_APP]			= ZmNotebookApp;
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.PREFERENCES_APP]	= ZmPreferencesApp;
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.MIXED_APP]			= ZmMixedApp;
 
@@ -106,7 +106,7 @@ ZmZimbraMail.MAIL_APP			= "mail";
 ZmZimbraMail.CONTACTS_APP		= "contacts";
 ZmZimbraMail.CALENDAR_APP		= "calendar";
 ZmZimbraMail.IM_APP				= "im";
-ZmZimbraMail.NOTES_APP			= "notes";
+ZmZimbraMail.NOTEBOOK_APP		= "notebook";
 ZmZimbraMail.PREFERENCES_APP	= "options";
 ZmZimbraMail.MIXED_APP			= "mixed";
 
@@ -117,7 +117,7 @@ ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]				= "mail";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CONTACTS_APP]			= "contacts";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CALENDAR_APP]			= "calendar";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.IM_APP]				= "imAppTitle";
-ZmZimbraMail.MSG_KEY[ZmZimbraMail.NOTES_APP]			= "notes";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.NOTEBOOK_APP]			= "notebooks";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.PREFERENCES_APP]		= "options";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MIXED_APP]			= "zimbraTitle";
 
@@ -126,7 +126,7 @@ ZmZimbraMail.APP_ICON[ZmZimbraMail.MAIL_APP]			= "MailApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.CONTACTS_APP]		= "ContactsApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.CALENDAR_APP]		= "CalendarApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.IM_APP]				= "ImStartChat";
-ZmZimbraMail.APP_ICON[ZmZimbraMail.NOTES_APP]			= "NoteApp";
+ZmZimbraMail.APP_ICON[ZmZimbraMail.NOTEBOOK_APP]		= "NoteApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.PREFERENCES_APP]		= "Preferences";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.MIXED_APP]			= "Globe";
 
@@ -135,7 +135,7 @@ ZmZimbraMail.APP_BUTTON[ZmZimbraMail.MAIL_APP]			= ZmAppChooser.B_EMAIL;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CONTACTS_APP]		= ZmAppChooser.B_CONTACTS;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CALENDAR_APP]		= ZmAppChooser.B_CALENDAR;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.IM_APP]			= ZmAppChooser.B_IM;
-ZmZimbraMail.APP_BUTTON[ZmZimbraMail.NOTES_APP]			= ZmAppChooser.B_NOTES;
+ZmZimbraMail.APP_BUTTON[ZmZimbraMail.NOTEBOOK_APP]		= ZmAppChooser.B_NOTEBOOK;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.PREFERENCES_APP]	= ZmAppChooser.B_OPTIONS;
 
 ZmZimbraMail.DEFAULT_SEARCH = {};
@@ -157,7 +157,7 @@ ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]		= [ZmOrganizer.FOLDER, ZmOrg
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.ADDRBOOK, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]	= [ZmOrganizer.CALENDAR, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.NOTES_APP]		= [ZmOrganizer.NOTEBOOK, /*ZmOrganizer.SEARCH, ZmOrganizer.TAG,*/ ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.NOTEBOOK_APP]		= [ZmOrganizer.NOTEBOOK, /*ZmOrganizer.SEARCH, ZmOrganizer.TAG,*/ ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 
 ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
@@ -1138,7 +1138,7 @@ function(deletes) {
 			item.notifyDelete();
 		// REVISIT: Use app item cache
 		else {
-			var notesApp = this.getApp(ZmZimbraMail.NOTES_APP);
+			var notesApp = this.getApp(ZmZimbraMail.NOTEBOOK_APP);
 			var cache = notesApp.getNoteCache();
 			var note = cache.getNoteById(ids[i]);
 			if (note) {
@@ -1225,9 +1225,9 @@ function(creates, modifies) {
 			}
 		} else if (name == "w") {
 			// REVISIT: use app context item cache
-			var notesApp = this.getApp(ZmZimbraMail.NOTES_APP);
+			var notesApp = this.getApp(ZmZimbraMail.NOTEBOOK_APP);
 			var cache = notesApp.getNoteCache();
-			var note = new ZmNote(this._appCtxt);
+			var note = new ZmPage(this._appCtxt);
 			note.set(create);
 			cache.putNote(note);
 			
@@ -1300,13 +1300,13 @@ function(modifies) {
 		}
 		if (name == "w") {
 			// REVISIT: Use app context item cache
-			var notesApp = this.getApp(ZmZimbraMail.NOTES_APP);
+			var notesApp = this.getApp(ZmZimbraMail.NOTEBOOK_APP);
 			var cache = notesApp.getNoteCache();
 			// REVISIT: server not returning folderId
-			mod.l = mod.l || ZmNote.DEFAULT_FOLDER;
+			mod.l = mod.l || ZmPage.DEFAULT_FOLDER;
 			var note = cache.getNoteByName(mod.l, mod.name);
 			if (!note) {
-				note = new ZmNote(this._appCtxt);
+				note = new ZmPage(this._appCtxt);
 				cache.putNote(note);
 			}
 			note.set(mod);
@@ -1478,7 +1478,7 @@ function() {
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
 		buttons.push(ZmAppChooser.B_IM);
 	if (this._appCtxt.get(ZmSetting.NOTES_ENABLED))
-		buttons.push(ZmAppChooser.B_NOTES);
+		buttons.push(ZmAppChooser.B_NOTEBOOK);
 	buttons.push(ZmAppChooser.SPACER, ZmAppChooser.B_HELP, ZmAppChooser.B_OPTIONS, ZmAppChooser.B_LOGOUT);
 	var appChooser = new ZmAppChooser(this._shell, null, buttons);
 	
@@ -1518,8 +1518,8 @@ function(ev) {
 			this.activateApp(ZmZimbraMail.CALENDAR_APP);
 		} else if (id == ZmAppChooser.B_IM) {
 			this.activateApp(ZmZimbraMail.IM_APP);			
-		} else if (id == ZmAppChooser.B_NOTES) {
-			this.activateApp(ZmZimbraMail.NOTES_APP);
+		} else if (id == ZmAppChooser.B_NOTEBOOK) {
+			this.activateApp(ZmZimbraMail.NOTEBOOK_APP);
 		} else if (id == ZmAppChooser.B_HELP) {
 			window.open(this._appCtxt.get(ZmSetting.HELP_URI));
 		} else if (id == ZmAppChooser.B_OPTIONS) {

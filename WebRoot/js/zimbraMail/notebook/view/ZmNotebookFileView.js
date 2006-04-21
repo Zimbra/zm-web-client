@@ -23,54 +23,54 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNoteFileView(parent, appCtxt, controller) {
-	DwtComposite.call(this, parent, "ZmNoteFileView", DwtControl.ABSOLUTE_STYLE);
+function ZmNotebookFileView(parent, appCtxt, controller) {
+	DwtComposite.call(this, parent, "ZmNotebookFileView", DwtControl.ABSOLUTE_STYLE);
 	
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 
 	this._createHtml();	
 }
-ZmNoteFileView.prototype = new DwtComposite;
-ZmNoteFileView.prototype.constructor = ZmNoteFileView;
+ZmNotebookFileView.prototype = new DwtComposite;
+ZmNotebookFileView.prototype.constructor = ZmNotebookFileView;
 
-ZmNoteFileView.prototype.toString =
+ZmNotebookFileView.prototype.toString =
 function() {
-	return "ZmNoteFileView";
+	return "ZmNotebookFileView";
 };
 
 //
 // Constants
 //
 
-ZmNoteFileView.COLWIDTH_ICON 			= 20;
-ZmNoteFileView.COLWIDTH_NAME			= 200;
-ZmNoteFileView.COLWIDTH_TYPE			= 120;
-ZmNoteFileView.COLWIDTH_SIZE 			= 45;
-ZmNoteFileView.COLWIDTH_DATE 			= 120;
-ZmNoteFileView.COLWIDTH_OWNER			= 200;
+ZmNotebookFileView.COLWIDTH_ICON 			= 20;
+ZmNotebookFileView.COLWIDTH_NAME			= 200;
+ZmNotebookFileView.COLWIDTH_TYPE			= 120;
+ZmNotebookFileView.COLWIDTH_SIZE 			= 45;
+ZmNotebookFileView.COLWIDTH_DATE 			= 120;
+ZmNotebookFileView.COLWIDTH_OWNER			= 200;
 
 //
 // Data
 //
 
-ZmNoteFileView.prototype._appCtxt;
-ZmNoteFileView.prototype._controller;
+ZmNotebookFileView.prototype._appCtxt;
+ZmNotebookFileView.prototype._controller;
 
-ZmNoteFileView.prototype._fileListView;
+ZmNotebookFileView.prototype._fileListView;
 
 //
 // Public methods
 //
 
-ZmNoteFileView.prototype.getController =
+ZmNotebookFileView.prototype.getController =
 function() {
 	return this._controller;
 };
 
-ZmNoteFileView.prototype.set =
+ZmNotebookFileView.prototype.set =
 function(note) {
-	var folderId = note ? note.folderId : ZmNote.DEFAULT_FOLDER;
+	var folderId = note ? note.folderId : ZmPage.DEFAULT_FOLDER;
 	
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("types", "wiki,document");
@@ -89,9 +89,9 @@ function(note) {
 	var list = new AjxVector();
 	if (response.SearchResponse) {
 		var words = response.SearchResponse.w || [];
-		ZmNoteFileView.__typify(words, "wiki");
+		ZmNotebookFileView.__typify(words, "wiki");
 		var docs = response.SearchResponse.doc || [];
-		ZmNoteFileView.__typify(docs, "document");
+		ZmNotebookFileView.__typify(docs, "document");
 		var items = words.concat(docs).sort(ZmWiklet.__byNoteName);
 		for (var i = 0; i < items.length; i++) {
 			list.add(items[i]);
@@ -102,22 +102,22 @@ function(note) {
 
 // methods delegated to internal list view
 
-ZmNoteFileView.prototype.addSelectionListener = function(listener) {
+ZmNotebookFileView.prototype.addSelectionListener = function(listener) {
 	this._fileListView.addSelectionListener(listener);
 };
-ZmNoteFileView.prototype.addActionListener = function(listener) {
+ZmNotebookFileView.prototype.addActionListener = function(listener) {
 	this._fileListView.addActionListener(listener);
 };
 
-ZmNoteFileView.prototype.getSelection =
+ZmNotebookFileView.prototype.getSelection =
 function() {
 	return this._fileListView.getSelection();
 };
-ZmNoteFileView.prototype.getSelectedItems =
+ZmNotebookFileView.prototype.getSelectedItems =
 function() {
 	return this._fileListView.getSelectedItems();
 };
-ZmNoteFileView.prototype.getSelectionCount = function() {
+ZmNotebookFileView.prototype.getSelectionCount = function() {
 	return this._fileListView.getSelectionCount();
 };
 
@@ -125,39 +125,39 @@ ZmNoteFileView.prototype.getSelectionCount = function() {
 // Protected methods
 //
 
-ZmNoteFileView.prototype._createHtml = function() {
+ZmNotebookFileView.prototype._createHtml = function() {
 	var parent = this;
 	var className = null;
 	var posStyle = null;
-	var view = ZmController.NOTE_FILE_VIEW;
-	var type = ZmItem.WIKI;
+	var view = ZmController.NOTEBOOK_FILE_VIEW;
+	var type = ZmItem.PAGE;
 	var controller = this._controller;
 	var headerList = this._createHeaderList();
 	var dropTgt = null; // ???
-	this._fileListView = new ZmNoteFileListView(parent, className, posStyle, view, type, controller, headerList, dropTgt);
+	this._fileListView = new ZmNotebookFileListView(parent, className, posStyle, view, type, controller, headerList, dropTgt);
 
 	var element = this.getHtmlElement();
 	Dwt.setScrollStyle(element, Dwt.SCROLL);
 	element.appendChild(this._fileListView.getHtmlElement());
 };
 
-ZmNoteFileView.prototype._createHeaderList = function() {
+ZmNotebookFileView.prototype._createHeaderList = function() {
 	// Columns: tag, name, type, size, date, owner
 	var headers = [];
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		/*** TODO
 		headers.push(
-			new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "Tag", ZmNoteFileView.COLWIDTH_ICON, null, null, false, ZmMsg.tag)
+			new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "Tag", ZmNotebookFileView.COLWIDTH_ICON, null, null, false, ZmMsg.tag)
 		);
 		/***/
 	}
 	headers.push(
 		// new DwtListHeaderItem(id, label, icon, width, sortable, resizeable, visible, tt)
-		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg._name, null, ZmNoteFileView.COLWIDTH_NAME, true, true, null, null),
-		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE], ZmMsg.type, null, ZmNoteFileView.COLWIDTH_TYPE, true, null, null, null),
-		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE], ZmMsg.size, null, ZmNoteFileView.COLWIDTH_SIZE, true, null, null, null),
-		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.date, null, ZmNoteFileView.COLWIDTH_DATE, true, null, null, null),
-		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FROM], ZmMsg.owner, null, ZmNoteFileView.COLWIDTH_OWNER, true, null, null, null)
+		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg._name, null, ZmNotebookFileView.COLWIDTH_NAME, true, true, null, null),
+		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE], ZmMsg.type, null, ZmNotebookFileView.COLWIDTH_TYPE, true, null, null, null),
+		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE], ZmMsg.size, null, ZmNotebookFileView.COLWIDTH_SIZE, true, null, null, null),
+		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.date, null, ZmNotebookFileView.COLWIDTH_DATE, true, null, null, null),
+		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FROM], ZmMsg.owner, null, ZmNotebookFileView.COLWIDTH_OWNER, true, null, null, null)
 	);
 	return headers;		
 };
@@ -166,7 +166,7 @@ ZmNoteFileView.prototype._createHeaderList = function() {
 // Private functions
 //
 
-ZmNoteFileView.__typify = function(array, type) {
+ZmNotebookFileView.__typify = function(array, type) {
 	for (var i = 0; i < array.length; i++) {
 		array[i]._type = type;
 	}
@@ -176,13 +176,13 @@ ZmNoteFileView.__typify = function(array, type) {
 // Classes
 //
 
-function ZmNoteFileListView(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
+function ZmNotebookFileListView(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
 	ZmListView.call(this, parent, className, posStyle, view, type, controller, headerList, dropTgt);
 }
-ZmNoteFileListView.prototype = new ZmListView;
-ZmNoteFileListView.prototype.constructor = ZmNoteFileListView;
+ZmNotebookFileListView.prototype = new ZmListView;
+ZmNotebookFileListView.prototype.constructor = ZmNotebookFileListView;
 
-ZmNoteFileListView.prototype._createItemHtml =
+ZmNotebookFileListView.prototype._createItemHtml =
 function(item, now, isDndIcon, isMixedView) {
 	var isMatched = false; // ???
 	var	div = this._getDiv(item, isDndIcon, isMatched);

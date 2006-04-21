@@ -1928,41 +1928,41 @@ HTML>BODY .appt-selected .appt_allday_body
  *  Notes application
  */
 
-.ZmNoteView, .ZmNoteEditView {
+.ZmNotebookPageView, .ZmPageEditView {
 	@ContentBg@
 }
 
-.ZmNoteView {
+.ZmNotebookPageView {
 	overflow: auto;
 }
 
 
 /* ??? I THINK THIS SHOULD BE DYNAMICALLY WRITTEN ACCORDING TO THEIR PREFERENCES...? */
-.ZmNoteView, .ZmNoteView P, .ZmNoteView TD, .ZmNoteView DIV,
-.ZmNoteView SPAN, .ZmNoteView SELECT, .ZmNoteView INPUT, 
-.ZmNoteView TEXTAREA, .ZmNoteView BUTTON {
+.ZmNotebookPageView, .ZmNotebookPageView P, .ZmNotebookPageView TD, .ZmNotebookPageView DIV,
+.ZmNotebookPageView SPAN, .ZmNotebookPageView SELECT, .ZmNotebookPageView INPUT, 
+.ZmNotebookPageView TEXTAREA, .ZmNotebookPageView BUTTON {
 	@HTMLText@
 }
-.ZmNoteView H1 {
+.ZmNotebookPageView H1 {
 	margin-top: 0em;
 	margin-bottom: @BoxMarginSize@;
 }
-.ZmNoteView H2 {
+.ZmNotebookPageView H2 {
 	margin-top: @BoxMarginSize@;
 	margin-bottom: @BoxMarginSize@;
 }
 
-/* This makes everything under the ZmNoteView item use the same font family */
-.ZmNoteView * {
+/* This makes everything under the ZmNotebookPageView item use the same font family */
+.ZmNotebookPageView * {
 	font-family: inherit;
 }
-.ZmNoteView SPAN.Object, .ZmNoteView SPAN.Object-activated {
+.ZmNotebookPageView SPAN.Object, .ZmNotebookPageView SPAN.Object-activated {
 	Xfont-size: inherit;
 }
 
-.ZmNoteEditView {
+.ZmPageEditView {
 }
-.ZmNoteEditView .Label {
+.ZmPageEditView .Label {
 	@HTMLText@
 	@FontBigger@
 	text-align: right;

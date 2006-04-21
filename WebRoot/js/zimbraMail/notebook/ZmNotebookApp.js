@@ -23,37 +23,37 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNotesApp(appCtxt, container, parentController) {
-	ZmApp.call(this, ZmZimbraMail.NOTES_APP, appCtxt, container, parentController);
+function ZmNotebookApp(appCtxt, container, parentController) {
+	ZmApp.call(this, ZmZimbraMail.NOTEBOOK_APP, appCtxt, container, parentController);
 	this._controllers = {};
-	this._noteCache = new ZmNoteCache(appCtxt);
+	this._noteCache = new ZmNotebookCache(appCtxt);
 }
 
-ZmNotesApp.prototype = new ZmApp;
-ZmNotesApp.prototype.constructor = ZmNotesApp;
+ZmNotebookApp.prototype = new ZmApp;
+ZmNotebookApp.prototype.constructor = ZmNotebookApp;
 
-ZmNotesApp.prototype.toString = 
+ZmNotebookApp.prototype.toString = 
 function() {
-	return "ZmNotesApp";
+	return "ZmNotebookApp";
 }
 
 // Constants
 
-ZmNotesApp.NOTE = "note";
-ZmNotesApp.EDIT = "edit";
+ZmNotebookApp.NOTEBOOK = "notebook";
+ZmNotebookApp.PAGE_EDIT = "page_edit";
 
-ZmNotesApp.__CONTROLLERS = {};
-ZmNotesApp.__CONTROLLERS[ZmNotesApp.NOTE] = ZmNoteController;
-ZmNotesApp.__CONTROLLERS[ZmNotesApp.EDIT] = ZmNoteEditController;
+ZmNotebookApp.__CONTROLLERS = {};
+ZmNotebookApp.__CONTROLLERS[ZmNotebookApp.NOTEBOOK] = ZmNotebookController;
+ZmNotebookApp.__CONTROLLERS[ZmNotebookApp.PAGE_EDIT] = ZmPageEditController;
 
 // Data
 
-ZmNotesApp.prototype._controllers;
-ZmNotesApp.prototype._noteCache;
+ZmNotebookApp.prototype._controllers;
+ZmNotebookApp.prototype._noteCache;
 
 // Public methods
 
-ZmNotesApp.prototype.launch =
+ZmNotebookApp.prototype.launch =
 function(callback, errorCallback) {
 	var noteController = this.getNoteController();
 	noteController.show();
@@ -63,7 +63,7 @@ function(callback, errorCallback) {
 	}
 };
 
-ZmNotesApp.prototype.setActive =
+ZmNotebookApp.prototype.setActive =
 function(active) {
 	/***
 	if (active) {
@@ -73,24 +73,24 @@ function(active) {
 	/***/
 };
 
-ZmNotesApp.prototype.getController = function(name) {
-	name = name || ZmNotesApp.NOTE;
+ZmNotebookApp.prototype.getController = function(name) {
+	name = name || ZmNotebookApp.NOTEBOOK;
 	if (!this._controllers[name]) {
-		var controllerCtor = ZmNotesApp.__CONTROLLERS[name];
+		var controllerCtor = ZmNotebookApp.__CONTROLLERS[name];
 		this._controllers[name] = new controllerCtor(this._appCtxt, this._container, this);
 	}
 	return this._controllers[name];
 };
 
-ZmNotesApp.prototype.getNoteController = function() {
-	return this.getController(ZmNotesApp.NOTE);
+ZmNotebookApp.prototype.getNoteController = function() {
+	return this.getController(ZmNotebookApp.NOTEBOOK);
 };
 
-ZmNotesApp.prototype.getNoteEditController = function() {
-	return this.getController(ZmNotesApp.EDIT);
+ZmNotebookApp.prototype.getNoteEditController = function() {
+	return this.getController(ZmNotebookApp.PAGE_EDIT);
 };
 
-ZmNotesApp.prototype.getNoteCache = 
+ZmNotebookApp.prototype.getNoteCache = 
 function() {
 	return this._noteCache;
 };

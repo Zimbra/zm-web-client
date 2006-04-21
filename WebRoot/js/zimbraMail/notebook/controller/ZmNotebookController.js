@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNoteController(appCtxt, container, app) {
+function ZmNotebookController(appCtxt, container, app) {
 	ZmListController.call(this, appCtxt, container, app);
 
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
@@ -36,26 +36,26 @@ function ZmNoteController(appCtxt, container, app) {
 	
 	this._history = [];
 }
-ZmNoteController.prototype = new ZmListController;
-ZmNoteController.prototype.constructor = ZmNoteController;
+ZmNotebookController.prototype = new ZmListController;
+ZmNotebookController.prototype.constructor = ZmNotebookController;
 
-ZmNoteController.prototype.toString = function() {
-	return "ZmNoteController";
+ZmNotebookController.prototype.toString = function() {
+	return "ZmNotebookController";
 };
 
 // Constants
 
-ZmNoteController._VIEWS = {};
-ZmNoteController._VIEWS[ZmController.NOTE_VIEW] = ZmNoteView;
-ZmNoteController._VIEWS[ZmController.NOTE_FILE_VIEW] = ZmNoteFileView;
+ZmNotebookController._VIEWS = {};
+ZmNotebookController._VIEWS[ZmController.NOTEBOOK_PAGE_VIEW] = ZmNotebookPageView;
+ZmNotebookController._VIEWS[ZmController.NOTEBOOK_FILE_VIEW] = ZmPageEditView;
 
 // Data
 
-ZmNoteController.prototype._object;
-ZmNoteController.prototype._folderId;
+ZmNotebookController.prototype._object;
+ZmNotebookController.prototype._folderId;
 
-ZmNoteController.prototype._place = -1;
-ZmNoteController.prototype._history;
+ZmNotebookController.prototype._place = -1;
+ZmNotebookController.prototype._history;
 
 //
 // Public methods
@@ -63,7 +63,7 @@ ZmNoteController.prototype._history;
 
 // note
 
-ZmNoteController.prototype.gotoNote = function(noteRef) {
+ZmNotebookController.prototype.gotoNote = function(noteRef) {
 	this._enableNaviButtons();
 
 	var cache = this._app.getNoteCache();
@@ -71,15 +71,15 @@ ZmNoteController.prototype.gotoNote = function(noteRef) {
 	this._listView[this._currentView].set(this._object = note);
 };
 
-ZmNoteController.prototype.getNote = function() {
+ZmNotebookController.prototype.getNote = function() {
 	return this._object;
 };
 
 // view management
 
-ZmNoteController.prototype.show = function(noteOrFolderId, force) {
-	if (force || !(noteOrFolderId instanceof ZmNote)) {
-		this._showIndex(noteOrFolderId || ZmNote.DEFAULT_FOLDER);
+ZmNotebookController.prototype.show = function(noteOrFolderId, force) {
+	if (force || !(noteOrFolderId instanceof ZmPage)) {
+		this._showIndex(noteOrFolderId || ZmPage.DEFAULT_FOLDER);
 		return;
 	}
 
@@ -116,7 +116,7 @@ ZmNoteController.prototype.show = function(noteOrFolderId, force) {
 	this._listView[this._currentView].set(this._object);
 };
 
-ZmNoteController.prototype.switchView = function(view, force) {
+ZmNotebookController.prototype.switchView = function(view, force) {
 	var viewChanged = force || view != this._currentView;
 
 	if (viewChanged) {	
@@ -143,7 +143,7 @@ ZmNoteController.prototype.switchView = function(view, force) {
 
 // initialization
 
-ZmNoteController.prototype._getToolBarOps = function() {
+ZmNotebookController.prototype._getToolBarOps = function() {
 	var list = [];
 	// shared items
 	list.push(ZmOperation.NEW_MENU, ZmOperation.REFRESH);
@@ -170,7 +170,7 @@ ZmNoteController.prototype._getToolBarOps = function() {
 	);
 	return list;
 };
-ZmNoteController.prototype._initializeToolBar = function(view) {
+ZmNotebookController.prototype._initializeToolBar = function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
 	this._setNewButtonProps(view, ZmMsg.createNewNote, "NewPage", "NewPageDis", ZmOperation.NEW_NOTE);
@@ -196,7 +196,7 @@ ZmNoteController.prototype._initializeToolBar = function(view) {
 	button.setToolTipContent("");
 };
 
-ZmNoteController.prototype._resetOperations = function(toolbarOrActionMenu, num) {
+ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, num) {
 	if (!toolbarOrActionMenu) return;
 	ZmListController.prototype._resetOperations.call(this, toolbarOrActionMenu, num);
 	toolbarOrActionMenu.enable([ZmOperation.REFRESH, ZmOperation.ATTACHMENT], true);
@@ -206,12 +206,12 @@ ZmNoteController.prototype._resetOperations = function(toolbarOrActionMenu, num)
 	}
 };
 
-ZmNoteController.prototype._getTagMenuMsg = function() {
+ZmNotebookController.prototype._getTagMenuMsg = function() {
 	return ZmMsg.tagNote;
 };
 
-ZmNoteController.prototype._doDelete = function(items) {
-	var ids = ZmNoteController.__itemize(items);
+ZmNotebookController.prototype._doDelete = function(items) {
+	var ids = ZmNotebookController.__itemize(items);
 	if (!ids) return;
 	
 	var soapDoc = AjxSoapDoc.create("ItemActionRequest", "urn:zimbraMail");
@@ -219,7 +219,7 @@ ZmNoteController.prototype._doDelete = function(items) {
 	actionNode.setAttribute("id", ids);
 	actionNode.setAttribute("op", "delete");
 	
-	var responseHandler = this._current == ZmController.NOTE_VIEW ? this._listeners[ZmOperation.PAGE_BACK] : null;
+	var responseHandler = this._current == ZmController.NOTEBOOK_PAGE_VIEW ? this._listeners[ZmOperation.PAGE_BACK] : null;
 	var params = {
 		soapDoc: soapDoc,
 		asyncMode: true,
@@ -235,27 +235,27 @@ ZmNoteController.prototype._doDelete = function(items) {
 
 // view management
 
-ZmNoteController.prototype._getViewType = function() {
+ZmNotebookController.prototype._getViewType = function() {
 	return ZmItem.NOTE;
 };
 
-ZmNoteController.prototype._defaultView = function() {
-	return ZmController.NOTE_VIEW;
+ZmNotebookController.prototype._defaultView = function() {
+	return ZmController.NOTEBOOK_PAGE_VIEW;
 };
 
-ZmNoteController.prototype._createNewView = function(view) {
+ZmNotebookController.prototype._createNewView = function(view) {
 	if (!this._listView[view]) {
-		var viewCtor = ZmNoteController._VIEWS[view];
+		var viewCtor = ZmNotebookController._VIEWS[view];
 		this._listView[view] = new viewCtor(this._container, this._appCtxt, this); 
 	}
 	return this._listView[view];
 };
 
-ZmNoteController.prototype._setViewContents = function(view) {
+ZmNotebookController.prototype._setViewContents = function(view) {
 	this._listView[view].set(this._object);
 };
 
-ZmNoteController.prototype._setViewMenu = function(view) {
+ZmNotebookController.prototype._setViewMenu = function(view) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = appToolbar.getViewMenu(view);
 	if (!menu) {
@@ -263,12 +263,12 @@ ZmNoteController.prototype._setViewMenu = function(view) {
 		
 		menu = new ZmPopupMenu(appToolbar.getViewButton());
 
-		var item = menu.createMenuItem(ZmNotesApp.NOTE, "Page", ZmMsg.noteView, null, true, DwtMenuItem.RADIO_STYLE);
-		item.setData(ZmOperation.MENUITEM_ID, ZmController.NOTE_VIEW);
+		var item = menu.createMenuItem(ZmNotebookApp.NOTEBOOK, "Page", ZmMsg.noteView, null, true, DwtMenuItem.RADIO_STYLE);
+		item.setData(ZmOperation.MENUITEM_ID, ZmController.NOTEBOOK_PAGE_VIEW);
 		item.addSelectionListener(listener);
 		
-		var item = menu.createMenuItem(ZmNotesApp.FILE, "Folder", ZmMsg.noteFileView, null, true, DwtMenuItem.RADIO_STYLE);
-		item.setData(ZmOperation.MENUITEM_ID, ZmController.NOTE_FILE_VIEW);
+		var item = menu.createMenuItem(ZmNotebookApp.FILE, "Folder", ZmMsg.noteFileView, null, true, DwtMenuItem.RADIO_STYLE);
+		item.setData(ZmOperation.MENUITEM_ID, ZmController.NOTEBOOK_FILE_VIEW);
 		item.addSelectionListener(listener);
 	}
 
@@ -278,26 +278,26 @@ ZmNoteController.prototype._setViewMenu = function(view) {
 	appToolbar.setViewMenu(view, menu);
 };
 
-ZmNoteController.prototype._enableNaviButtons = function() {
-	var enabled = this._currentView == ZmController.NOTE_VIEW;
+ZmNotebookController.prototype._enableNaviButtons = function() {
+	var enabled = this._currentView == ZmController.NOTEBOOK_PAGE_VIEW;
 
 	var toolbar = this._toolbar[this._currentView];
 	var button = toolbar.getButton(ZmOperation.PAGE_BACK);
 	button.setEnabled(enabled && this._place > 0);
-	ZmNoteController.__setButtonToolTip(button, this._history[this._place - 1]);
+	ZmNotebookController.__setButtonToolTip(button, this._history[this._place - 1]);
 	
 	var button = toolbar.getButton(ZmOperation.PAGE_DBL_BACK);
 	button.setEnabled(enabled && this._place > 0);
-	ZmNoteController.__setButtonToolTip(button, this._history[0]);
+	ZmNotebookController.__setButtonToolTip(button, this._history[0]);
 
 	var button = toolbar.getButton(ZmOperation.PAGE_FORWARD);
 	button.setEnabled(enabled && this._place + 1 < this._history.length);
-	ZmNoteController.__setButtonToolTip(button, this._history[this._place + 1]);
+	ZmNotebookController.__setButtonToolTip(button, this._history[this._place + 1]);
 };
 
 // listeners
 
-ZmNoteController.prototype._refreshListener = function(event) {
+ZmNotebookController.prototype._refreshListener = function(event) {
 	var noteRef = this._history[this._place];
 	if (noteRef) {
 		if (this._place == 0) {
@@ -312,34 +312,34 @@ ZmNoteController.prototype._refreshListener = function(event) {
 	}
 };
 
-ZmNoteController.prototype._editListener = function(event) {
+ZmNotebookController.prototype._editListener = function(event) {
 	var noteEditController = this._app.getNoteEditController();
 	var note = this._listView[this._currentView].getSelection();
 	noteEditController.show(note);
 };
 
-ZmNoteController.prototype._uploadListener = function(event) {
+ZmNotebookController.prototype._uploadListener = function(event) {
 	var dialog = this._appCtxt.getUploadDialog();
-	dialog.setFolderId(this._folderId || ZmNote.DEFAULT_FOLDER);
+	dialog.setFolderId(this._folderId || ZmPage.DEFAULT_FOLDER);
 	dialog.popup();
 };
 
-ZmNoteController.prototype._detachListener = function(event) {
+ZmNotebookController.prototype._detachListener = function(event) {
 	alert("TODO: _detachListener");	
 };
 
 
-ZmNoteController.prototype._pageBackListener = function(event) {
+ZmNotebookController.prototype._pageBackListener = function(event) {
 	if (this._place > 0) {
 		this.gotoNote(this._history[--this._place]);
 	}
 };
-ZmNoteController.prototype._homeListener = function(event) {
+ZmNotebookController.prototype._homeListener = function(event) {
 	if (this._place > 0) {
 		this.gotoNote(this._history[this._place = 0]);
 	}
 };
-ZmNoteController.prototype._pageForwardListener = function(event) {
+ZmNotebookController.prototype._pageForwardListener = function(event) {
 	if (this._place + 1 < this._history.length) {
 		this.gotoNote(this._history[++this._place]);
 	}
@@ -347,7 +347,7 @@ ZmNoteController.prototype._pageForwardListener = function(event) {
 
 // note view
 
-ZmNoteController.prototype._showIndex = function(folderId) {
+ZmNotebookController.prototype._showIndex = function(folderId) {
 	var cache = this._app.getNoteCache();
 	var index = cache.getNoteByName(folderId, ZmNotebook.PAGE_INDEX, true);
 	this.show(index);
@@ -357,12 +357,12 @@ ZmNoteController.prototype._showIndex = function(folderId) {
 // Private functions
 //
 
-ZmNoteController.__setButtonToolTip = function(button, noteRef) {
+ZmNotebookController.__setButtonToolTip = function(button, noteRef) {
 	var text = noteRef ? noteRef.name : "";
 	button.setToolTipContent(text);
 };
 
-ZmNoteController.__itemize = function(objects) {
+ZmNotebookController.__itemize = function(objects) {
 	if (objects instanceof Array) {
 		var ids = [];
 		for (var i = 0; i < objects.length; i++) {
