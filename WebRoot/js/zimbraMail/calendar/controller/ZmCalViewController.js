@@ -661,7 +661,8 @@ function(result) {
 			var cal = link ? this.getCalendar(link.id) : null;
 	
 			if (cal) {
-				var share = cal.getShares()[0];
+				var shares = cal.getShares();
+				var share = shares ? shares[0] : null;
 				if (share)
 					share.link.perm = link.perm;
 			}

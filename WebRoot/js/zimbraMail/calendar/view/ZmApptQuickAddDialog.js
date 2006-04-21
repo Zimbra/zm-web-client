@@ -357,7 +357,7 @@ function(appt) {
 				var cal = children[i];
 				this._calendarOrgs[cal.id] = cal.owner;
 				// if for some reason, we dont have share info, show all shares 
-				if (!cal.link || (cal.link && (cal.shares.length != 0 || cal.shares[0].isWrite())))
+				if (!cal.link || (cal.link && (cal.shares.length > 0 && cal.shares[0].isWrite())))
 					this._calendarSelect.addOption(cal.name, false, cal.id);
 			}
 		}

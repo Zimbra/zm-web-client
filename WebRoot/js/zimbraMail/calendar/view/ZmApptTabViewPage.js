@@ -994,7 +994,7 @@ function(appt, mode) {
 				// Note: can't move appts to/from shared calendars
 				if (!enabled || !cal.link || 
 					((mode == ZmAppt.MODE_NEW || ZmAppt.MODE_NEW_FROM_QUICKADD) && cal.link && 
-						(cal.shares == null || cal.shares[0].isWrite())))
+						(cal.shares && cal.shares.length > 0 && cal.shares[0].isWrite())))
 				{
 					this._calendarSelect.addOption(cal.name, false, cal.id);
 				}

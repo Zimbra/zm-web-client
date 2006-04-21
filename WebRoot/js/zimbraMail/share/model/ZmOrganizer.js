@@ -57,7 +57,6 @@ function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, own
 	this.numTotal = numTotal || 0;
 	this.url = url;
 	this.owner = owner;
-	this.shares = [];	
 
 	if (id && tree)
 		tree._appCtxt.cacheSet(id, this);
@@ -282,7 +281,7 @@ function() {
 
 ZmOrganizer.prototype.setShares = 
 function(shares) {
-	this.shares = shares || [];
+	this.shares = shares;
 };
 
 ZmOrganizer.prototype.getShareByGranteeId = 
