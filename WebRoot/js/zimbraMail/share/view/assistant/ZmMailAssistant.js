@@ -43,7 +43,9 @@ ZmMailAssistant._FIELD_ORDER = [
 ZmMailAssistant._FIELDS = {
   	 cc: { field: ZmMsg.cc, key: 'cc' },
   	bcc: { field: ZmMsg.bcc, key: 'bcc' },
+	  b: { field: ZmMsg.body, key: 'body', defaultValue: ZmMsg.ASST_MAIL_body, multiLine: true },  	
    body: { field: ZmMsg.body, key: 'body', defaultValue: ZmMsg.ASST_MAIL_body, multiLine: true },
+	  s: { field: ZmMsg.subject, key: 'subject', defaultValue: ZmMsg.ASST_MAIL_subject },
 subject: { field: ZmMsg.subject, key: 'subject', defaultValue: ZmMsg.ASST_MAIL_subject },
   	 to: { field: ZmMsg.to, key: 'to', defaultValue: ZmMsg.ASST_MAIL_to }
 };
@@ -54,7 +56,7 @@ ZmMailAssistant._OBJECTS[ZmAssistant._BRACKETS] = { defaultType: 'body', aliases
 
 // check address first, since we grab any fields quoted with [], objects in them won't be matched later
 ZmMailAssistant._OBJECT_ORDER = [
-	ZmAssistant._BRACKETS, ZmObjectManager.EMAIL
+	ZmAssistant._BRACKETS //, ZmObjectManager.EMAIL
 ];
 
 ZmMailAssistant.prototype.handle =
@@ -62,7 +64,8 @@ function(dialog, verb, args) {
 	dialog._setOkButton(AjxMsg.ok, true, true); //, true, "NewMessage");
 	var match;
 	var objects = {};	
-		
+
+/*		
 	// check address first, since we grab any fields quoted with [], objects in them won't be matched later
 	for (var i = 0; i < ZmMailAssistant._OBJECT_ORDER.length; i++) {
 		var objType = ZmMailAssistant._OBJECT_ORDER[i];
@@ -78,6 +81,7 @@ function(dialog, verb, args) {
 			args = match.args;
 		}
 	}
+*/
 
 	if (!objects.subject) {
 		match = args.match(/\s*\"([^\"]*)\"?\s*/);
@@ -87,11 +91,30 @@ function(dialog, verb, args) {
 		}
 	}
 
-	if (!objects.body) {
+	while(match = args.match(/((\w+)(:\s*)(.*?)\s*)(\w+:|$)/)) {
+		var k = match[2];
+		var v = match[4];
+		var strip = match[1];
+		var field = ZmMailAssistant._FIELDS[k];
+		if (field) {
+			if (field.key == 'body') {
+				strip = match[2] + match[3];
+				v = args.replace(strip,"");
+				args = "";
+			}
+			if (v == null) v = "";
+			objects[field.key] = {data: v};
+		}
+		if (args) args = args.replace(strip,"");
+	}
+
+/*
+	if (!object.body) {
 		var rest = args.replace(/^\s+/, ""); //.replace(/\s+$/, ""); // .replace(/\s+/g, ' ');
 		if (rest == "" || rest == " ") rest = null;		
 		objects.body = { data : rest };
 	}
+*/
 
 	var index = -1, ri;
 

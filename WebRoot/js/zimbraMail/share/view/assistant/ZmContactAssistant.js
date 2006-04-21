@@ -37,9 +37,10 @@ function(dialog) {
 };
 
 ZmContactAssistant._CONTACT_FIELD_ORDER = [
+     'f', 'm', 'l',
      'title', 'company',
 	 'e', 'e2', 'e3', 
-	 'wp', 'w2', 'm', 'p', 'wf', 'a', 'c', 'cp', 'cbp',  'wa', 'wu',
+	 'wp', 'w2', 'mo', 'p', 'wf', 'a', 'c', 'cp', 'cbp',  'wa', 'wu',
 	 'hp', 'h2', 'hf', 'ha', 'hu',
 	 'op', 'of', 'oa', 'ou', 'notes'
 ];
@@ -54,14 +55,21 @@ company: { field: ZmMsg.AB_FIELD_company, key: 'company' },
 	  e: { field: ZmMsg.AB_FIELD_email, key: 'e', defaultValue: ZmMsg.ASST_CONTACT_email },
 	 e2: { field: ZmMsg.AB_FIELD_email2, key: 'e2' },
 	 e3: { field: ZmMsg.AB_FIELD_email3, key: 'e3' },
-	  f: { field: ZmMsg.AB_FIELD_workFax, key: 'wf' }, // alias f to wf
+	  f: { field: ZmMsg.AB_FIELD_firstName, key: 'f', dontShow: true },
+  first: { field: ZmMsg.AB_FIELD_firstName, key: 'f', dontShow: true },	  
+    fax: { field: ZmMsg.AB_FIELD_workFax, key: 'wf' }, // alias fax to wf
 	 h2: { field: ZmMsg.AB_FIELD_homePhone2, key: 'h2' }, 
 	 ha: { field: ZmMsg.AB_ADDR_HOME, key: 'ha', multiline: true },
 	 hf: { field: ZmMsg.AB_FIELD_homeFax, key: 'hf' },
 	 hp: { field: ZmMsg.AB_FIELD_homePhone, key: 'hp' },
 	 hu: { field: ZmMsg.AB_HOME_URL, key: 'hu' },
 jobtitle:{ field: ZmMsg.AB_FIELD_jobTitle, key: 'title' },	 // alias jobtitle to title
-	  m: { field: ZmMsg.AB_FIELD_mobilePhone, key: 'm' },
+	  l: { field: ZmMsg.AB_FIELD_lastName, key: 'l' , dontShow: true },
+   last: { field: ZmMsg.AB_FIELD_lastName, key: 'l', dontShow: true },	  
+ middle: { field: ZmMsg.AB_FIELD_middleName, key: 'm' ,dontShow: true },   
+	  m: { field: ZmMsg.AB_FIELD_middleName, key: 'm', dontShow: true },
+	 mo: { field: ZmMsg.AB_FIELD_mobilePhone, key: 'mo' },
+ mobile: { field: ZmMsg.AB_FIELD_mobilePhone, key: 'mo' },	 
   notes: { field: ZmMsg.notes, key: 'notes', multiLine: true, defaultValue: ZmMsg.ASST_CONTACT_notes },
 	 oa: { field: ZmMsg.AB_ADDR_OTHER, key: 'oa', multiLine: true },
 	 of: { field: ZmMsg.AB_FIELD_otherFax, key: 'of' },
@@ -92,11 +100,11 @@ ZmContactAssistant._CONTACT_OBJECT_ORDER = [
 ZmContactAssistant.prototype.handle =
 function(dialog, verb, args) {
 	dialog._setOkButton(AjxMsg.ok, true, true); // true, "NewContact");
-	var match;
+	var match, i;
 	var objects = {};	
 		
 	// check address first, since we grab any fields quoted with [], objects in them won't be matched later
-	for (var i = 0; i < ZmContactAssistant._CONTACT_OBJECT_ORDER.length; i++) {
+	for (i = 0; i < ZmContactAssistant._CONTACT_OBJECT_ORDER.length; i++) {
 		var objType = ZmContactAssistant._CONTACT_OBJECT_ORDER[i];
 		var obj = ZmContactAssistant._CONTACT_OBJECTS[objType];
 		while (match = this._matchTypedObject(args, objType, obj)) {
@@ -119,11 +127,40 @@ function(dialog, verb, args) {
 		}
 	}
 
-	var remaining = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' ').split(",", 3);
-	var fullName = remaining[0];
+	//DBG.println("=============");
+	while(match = args.match(/((\w+):\s*(.*?)\s*)(\w+:|$)/)) {
+		//for (i=0; i < match.length; i++) 	DBG.println(i+" ("+match[i] + ")");
+		//DBG.println("-----");
+		var k = match[2];
+		var v = match[3];
+		var field = ZmContactAssistant._CONTACT_FIELDS[k];
+		if (field) {
+			if (v == null) v = "";
+			objects[field.key] = {data: v};
+		}
+		args = args.replace(match[1],"");	
+	}
+	//DBG.println("=============");
 
-	if (!objects.title) objects.title = { data : remaining[1] != null ? remaining[1] : null};
-	if (!objects.company) objects.company = { data: remaining[2] != null ? remaining[2] : null};	
+	var remaining = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' '); //.split(",", 3);
+		
+	var fullName = remaining;
+	
+	if (objects.f || objects.m || objects.l) {
+		fullName = null;
+		if (objects.f) fullName = objects.f.data;
+		if (objects.m) { 
+			if (fullName) fullName += " ";
+			fullName += objects.m.data;
+		}
+		if (objects.l) { 
+			if (fullName) fullName += " ";
+			fullName += objects.l.data;
+		}		
+	}
+
+	//if (!objects.title) objects.title = { data : remaining[1] != null ? remaining[1] : null};
+	//if (!objects.company) objects.company = { data: remaining[2] != null ? remaining[2] : null};	
 
 	var index, ri;
 	
@@ -133,6 +170,8 @@ function(dialog, verb, args) {
 		var key = ZmContactAssistant._CONTACT_FIELD_ORDER[i];
 		var data = objects[key];
 		var field = ZmContactAssistant._CONTACT_FIELDS[key];
+		if (field.dontShow) continue;
+
 		var value = (data && data.data != null) ? data.data : null;
 
 		if (value != null) {
