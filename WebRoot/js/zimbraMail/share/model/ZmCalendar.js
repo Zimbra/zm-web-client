@@ -129,6 +129,20 @@ function(exclude) {
 	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"}});
 };
 
+// XXX: temp method until we get better *server* support post Birdseye!
+// DO NOT REMOVE OR I WILL HUNT YOU DOWN AND SHOOT YOU.
+ZmCalendar.prototype.setPermissions = 
+function(permission) {
+	if (this.shares == null) {
+		var share = new ZmOrganizerShare(this, null, null, null, permission, null);
+		this.addShare(share);
+	} else {
+		// lets just assume we're dealing w/ a link (which should only have one share)
+		this.shares[0].perm = permission;
+	}
+};
+
+
 // Callbacks
 
 ZmCalendar.prototype.notifyCreate =

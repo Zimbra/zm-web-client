@@ -286,10 +286,12 @@ function(shares) {
 
 ZmOrganizer.prototype.getShareByGranteeId = 
 function(granteeId) {
-	for (var i = 0; i < this.shares.length; i++) {
-		var share = this.shares[i];
-		if (share.grantee.id == granteeId) {
-			return share;
+	if (this.shares) {
+		for (var i = 0; i < this.shares.length; i++) {
+			var share = this.shares[i];
+			if (share.grantee.id == granteeId) {
+				return share;
+			}
 		}
 	}
 	return null;
@@ -297,6 +299,8 @@ function(granteeId) {
 
 ZmOrganizer.prototype.addShare = 
 function(share) {
+	if (this.shares == null)
+		this.shares = [];
 	this.shares.push(share);
 };
 

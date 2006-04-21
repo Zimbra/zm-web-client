@@ -659,13 +659,9 @@ function(result) {
 		for (var i = 0; i < resp.length; i++) {
 			var link = resp[i].link ? resp[i].link[0] : null;
 			var cal = link ? this.getCalendar(link.id) : null;
-	
-			if (cal) {
-				var shares = cal.getShares();
-				var share = shares ? shares[0] : null;
-				if (share)
-					share.link.perm = link.perm;
-			}
+
+			if (cal)
+				cal.setPermissions(link.perm);
 		}
 	}
 };
