@@ -61,38 +61,38 @@ ZmNotebookController.prototype._history;
 // Public methods
 //
 
-// note
+// page
 
-ZmNotebookController.prototype.gotoNote = function(noteRef) {
+ZmNotebookController.prototype.gotoPage = function(pageRef) {
 	this._enableNaviButtons();
 
-	var cache = this._app.getNoteCache();
-	var note = cache.getNoteByName(noteRef.folderId, noteRef.name);
-	this._listView[this._currentView].set(this._object = note);
+	var cache = this._app.getNotebookCache();
+	var page = cache.getPageByName(pageRef.folderId, pageRef.name);
+	this._listView[this._currentView].set(this._object = page);
 };
 
-ZmNotebookController.prototype.getNote = function() {
+ZmNotebookController.prototype.getPage = function() {
 	return this._object;
 };
 
 // view management
 
-ZmNotebookController.prototype.show = function(noteOrFolderId, force) {
-	if (force || !(noteOrFolderId instanceof ZmPage)) {
-		this._showIndex(noteOrFolderId || ZmPage.DEFAULT_FOLDER);
+ZmNotebookController.prototype.show = function(pageOrFolderId, force) {
+	if (force || !(pageOrFolderId instanceof ZmPage)) {
+		this._showIndex(pageOrFolderId || ZmPage.DEFAULT_FOLDER);
 		return;
 	}
 
 	// are we already showing this note?
-	var shownNote = this._object;
-	var curNote = noteOrFolderId;
-	if (shownNote && shownNote.name == curNote.name && 
-		shownNote.folderId == curNote.folderId) {
+	var shownPage = this._object;
+	var currentPage = pageOrFolderId;
+	if (shownPage && shownPage.name == currentPage.name && 
+		shownPage.folderId == currentPage.folderId) {
 		return;
 	}
 	
 	// update history
-	this._object = curNote;
+	this._object = currentPage;
 	this._folderId = null;
 	if (this._object) {
 		this._folderId = this._object.folderId;
@@ -100,8 +100,8 @@ ZmNotebookController.prototype.show = function(noteOrFolderId, force) {
 			this._history[i] = null;
 		}
 		this._history.length = ++this._place;
-		var noteRef = { folderId: this._object.folderId, name: this._object.name };
-		this._history[this._place] = noteRef;
+		var pageRef = { folderId: this._object.folderId, name: this._object.name };
+		this._history[this._place] = pageRef;
 	}
 	
 	// switch view
@@ -112,7 +112,7 @@ ZmNotebookController.prototype.show = function(noteOrFolderId, force) {
 	}
 	this.switchView(view, force);
 
-	// show this note
+	// show this page
 	this._listView[this._currentView].set(this._object);
 };
 
@@ -173,7 +173,7 @@ ZmNotebookController.prototype._getToolBarOps = function() {
 ZmNotebookController.prototype._initializeToolBar = function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
-	this._setNewButtonProps(view, ZmMsg.createNewNote, "NewPage", "NewPageDis", ZmOperation.NEW_NOTE);
+	this._setNewButtonProps(view, ZmMsg.createNewPage, "NewPage", "NewPageDis", ZmOperation.NEW_PAGE);
 
 	var toolbar = this._toolbar[this._currentView];
 	var button = toolbar.getButton(ZmOperation.REFRESH);
@@ -263,11 +263,11 @@ ZmNotebookController.prototype._setViewMenu = function(view) {
 		
 		menu = new ZmPopupMenu(appToolbar.getViewButton());
 
-		var item = menu.createMenuItem(ZmNotebookApp.NOTEBOOK, "Page", ZmMsg.noteView, null, true, DwtMenuItem.RADIO_STYLE);
+		var item = menu.createMenuItem(ZmNotebookApp.NOTEBOOK, "Page", ZmMsg.notebookPageView, null, true, DwtMenuItem.RADIO_STYLE);
 		item.setData(ZmOperation.MENUITEM_ID, ZmController.NOTEBOOK_PAGE_VIEW);
 		item.addSelectionListener(listener);
 		
-		var item = menu.createMenuItem(ZmNotebookApp.FILE, "Folder", ZmMsg.noteFileView, null, true, DwtMenuItem.RADIO_STYLE);
+		var item = menu.createMenuItem(ZmNotebookApp.FILE, "Folder", ZmMsg.notebookFileView, null, true, DwtMenuItem.RADIO_STYLE);
 		item.setData(ZmOperation.MENUITEM_ID, ZmController.NOTEBOOK_FILE_VIEW);
 		item.addSelectionListener(listener);
 	}
@@ -298,24 +298,24 @@ ZmNotebookController.prototype._enableNaviButtons = function() {
 // listeners
 
 ZmNotebookController.prototype._refreshListener = function(event) {
-	var noteRef = this._history[this._place];
-	if (noteRef) {
+	var pageRef = this._history[this._place];
+	if (pageRef) {
 		if (this._place == 0) {
-			this._showIndex(noteRef.folderId);
+			this._showIndex(pageRef.folderId);
 		}
 		else {
-			var cache = this._app.getNoteCache();
-			var note = cache.getNoteByName(noteRef.folderId, noteRef.name);
-			note.load();
-			this._listView[this._currentView].set(note);
+			var cache = this._app.getNotebookCache();
+			var page = cache.getPageByName(pageRef.folderId, pageRef.name);
+			page.load();
+			this._listView[this._currentView].set(page);
 		}
 	}
 };
 
 ZmNotebookController.prototype._editListener = function(event) {
-	var noteEditController = this._app.getNoteEditController();
-	var note = this._listView[this._currentView].getSelection();
-	noteEditController.show(note);
+	var pageEditController = this._app.getPageEditController();
+	var page = this._listView[this._currentView].getSelection();
+	pageEditController.show(page);
 };
 
 ZmNotebookController.prototype._uploadListener = function(event) {
@@ -331,25 +331,25 @@ ZmNotebookController.prototype._detachListener = function(event) {
 
 ZmNotebookController.prototype._pageBackListener = function(event) {
 	if (this._place > 0) {
-		this.gotoNote(this._history[--this._place]);
+		this.gotoPage(this._history[--this._place]);
 	}
 };
 ZmNotebookController.prototype._homeListener = function(event) {
 	if (this._place > 0) {
-		this.gotoNote(this._history[this._place = 0]);
+		this.gotoPage(this._history[this._place = 0]);
 	}
 };
 ZmNotebookController.prototype._pageForwardListener = function(event) {
 	if (this._place + 1 < this._history.length) {
-		this.gotoNote(this._history[++this._place]);
+		this.gotoPage(this._history[++this._place]);
 	}
 };
 
-// note view
+// notebook page view
 
 ZmNotebookController.prototype._showIndex = function(folderId) {
-	var cache = this._app.getNoteCache();
-	var index = cache.getNoteByName(folderId, ZmNotebook.PAGE_INDEX, true);
+	var cache = this._app.getNotebookCache();
+	var index = cache.getPageByName(folderId, ZmNotebook.PAGE_INDEX, true);
 	this.show(index);
 };
 
@@ -357,8 +357,8 @@ ZmNotebookController.prototype._showIndex = function(folderId) {
 // Private functions
 //
 
-ZmNotebookController.__setButtonToolTip = function(button, noteRef) {
-	var text = noteRef ? noteRef.name : "";
+ZmNotebookController.__setButtonToolTip = function(button, pageRef) {
+	var text = pageRef ? pageRef.name : "";
 	button.setToolTipContent(text);
 };
 

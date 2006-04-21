@@ -117,7 +117,7 @@ ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]				= "mail";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CONTACTS_APP]			= "contacts";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CALENDAR_APP]			= "calendar";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.IM_APP]				= "imAppTitle";
-ZmZimbraMail.MSG_KEY[ZmZimbraMail.NOTEBOOK_APP]			= "notebooks";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.NOTEBOOK_APP]			= "notebook";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.PREFERENCES_APP]		= "options";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MIXED_APP]			= "zimbraTitle";
 
@@ -695,7 +695,7 @@ function(app) {
 		var id = list[i];
 		if ((id == ZmOrganizer.SEARCH && !this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) ||
 			(id == ZmOrganizer.CALENDAR && !this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) ||
-			(id == ZmOrganizer.NOTEBOOK && !this._appCtxt.get(ZmSetting.NOTES_ENABLED)) ||
+			(id == ZmOrganizer.NOTEBOOK && !this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) ||
 			(id == ZmOrganizer.ROSTER_TREE_ITEM && !this._appCtxt.get(ZmSetting.IM_ENABLED)) ||			
 			(id == ZmOrganizer.TAG && !this._appCtxt.get(ZmSetting.TAGGING_ENABLED))) {
 			continue;
@@ -1138,11 +1138,11 @@ function(deletes) {
 			item.notifyDelete();
 		// REVISIT: Use app item cache
 		else {
-			var notesApp = this.getApp(ZmZimbraMail.NOTEBOOK_APP);
-			var cache = notesApp.getNoteCache();
-			var note = cache.getNoteById(ids[i]);
-			if (note) {
-				cache.removeNote(note);
+			var notebookApp = this.getApp(ZmZimbraMail.NOTEBOOK_APP);
+			var cache = notebookApp.getNotebookCache();
+			var page = cache.getPageById(ids[i]);
+			if (page) {
+				cache.removePage(page);
 			}
 		}
 	}
@@ -1225,17 +1225,17 @@ function(creates, modifies) {
 			}
 		} else if (name == "w") {
 			// REVISIT: use app context item cache
-			var notesApp = this.getApp(ZmZimbraMail.NOTEBOOK_APP);
-			var cache = notesApp.getNoteCache();
-			var note = new ZmPage(this._appCtxt);
-			note.set(create);
-			cache.putNote(note);
+			var notebookApp = this.getApp(ZmZimbraMail.NOTEBOOK_APP);
+			var cache = notebookApp.getNotebookCache();
+			var page = new ZmPage(this._appCtxt);
+			page.set(create);
+			cache.putPage(page);
 			
 			// re-render current page, if necessary
-			var noteController = notesApp.getNoteController();
-			var shownNote = noteController.getNote();
-			if (shownNote && shownNote.name == ZmNotebook.PAGE_INDEX) {
-				noteController.gotoNote(shownNote);
+			var notebookController = notebookApp.getNotebookController();
+			var shownPage = notebookController.getPage();
+			if (shownPage && shownPage.name == ZmNotebook.PAGE_INDEX) {
+				notebookController.gotoPage(shownPage);
 			}
 		} else if (name == "m") {
 			var msg = ZmMailMsg.createFromDom(create, {appCtxt: this._appCtxt}, true);
@@ -1300,22 +1300,22 @@ function(modifies) {
 		}
 		if (name == "w") {
 			// REVISIT: Use app context item cache
-			var notesApp = this.getApp(ZmZimbraMail.NOTEBOOK_APP);
-			var cache = notesApp.getNoteCache();
+			var notebookApp = this.getApp(ZmZimbraMail.NOTEBOOK_APP);
+			var cache = notebookApp.getNotebookCache();
 			// REVISIT: server not returning folderId
 			mod.l = mod.l || ZmPage.DEFAULT_FOLDER;
-			var note = cache.getNoteByName(mod.l, mod.name);
-			if (!note) {
-				note = new ZmPage(this._appCtxt);
-				cache.putNote(note);
+			var page = cache.getPageByName(mod.l, mod.name);
+			if (!page) {
+				page = new ZmPage(this._appCtxt);
+				cache.putPage(page);
 			}
-			note.set(mod);
+			page.set(mod);
 			
 			// re-render current page, if necessary
-			var noteController = notesApp.getNoteController();
-			var shownNote = noteController.getNote();
-			if (shownNote && (shownNote.name == ZmNotebook.PAGE_INDEX || shownNote.name == note.name)) {
-				noteController.gotoNote(shownNote);
+			var notebookController = notebookApp.getNotebookController();
+			var shownPage = notebookController.getPage();
+			if (shownPage && (shownPage.name == ZmNotebook.PAGE_INDEX || shownPage.name == page.name)) {
+				notebookController.gotoPage(shownNote);
 			}
 			continue;
 		}
@@ -1477,7 +1477,7 @@ function() {
 		buttons.push(ZmAppChooser.B_CALENDAR);
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
 		buttons.push(ZmAppChooser.B_IM);
-	if (this._appCtxt.get(ZmSetting.NOTES_ENABLED))
+	if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED))
 		buttons.push(ZmAppChooser.B_NOTEBOOK);
 	buttons.push(ZmAppChooser.SPACER, ZmAppChooser.B_HELP, ZmAppChooser.B_OPTIONS, ZmAppChooser.B_LOGOUT);
 	var appChooser = new ZmAppChooser(this._shell, null, buttons);

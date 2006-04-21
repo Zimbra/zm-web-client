@@ -548,10 +548,10 @@ ZmOperation.SETUP[ZmOperation.NEW_MESSAGE] = {
 	image:		"NewMessage"
 };
 
-ZmOperation.NEW_NOTE = i++;
-ZmOperation.SETUP[ZmOperation.NEW_NOTE] = {
-	text:		"newNote",
-	tooltip:	"createNewNote",
+ZmOperation.NEW_PAGE = i++;
+ZmOperation.SETUP[ZmOperation.NEW_PAGE] = {
+	text:		"newPage",
+	tooltip:	"createNewPage",
 	image:		"NewPage"
 };
 
@@ -1035,7 +1035,7 @@ function(parent) {
 	var taggingEnabled = appCtxt.get(ZmSetting.TAGGING_ENABLED);
 	var contactsEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED);
 	var calendarEnabled = appCtxt.get(ZmSetting.CALENDAR_ENABLED);
-	var notebookEnabled = appCtxt.get(ZmSetting.NOTES_ENABLED);
+	var notebookEnabled = appCtxt.get(ZmSetting.NOTEBOOK_ENABLED);
 	
 	var list = new Array();
 	list.push(new ZmOperation_Descriptor(ZmOperation.NEW_MESSAGE, ZmMsg.message, Dwt.DEFAULT, Dwt.DEFAULT));
@@ -1044,7 +1044,7 @@ function(parent) {
 	if (calendarEnabled)
 		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_APPT, ZmMsg.appointment, Dwt.DEFAULT, Dwt.DEFAULT));
 	if (notebookEnabled)
-		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_NOTE, ZmMsg.note, Dwt.DEFAULT, Dwt.DEFAULT));
+		list.push(new ZmOperation_Descriptor(ZmOperation.NEW_PAGE, ZmMsg.page, Dwt.DEFAULT, Dwt.DEFAULT));
 
 	if (foldersEnabled || taggingEnabled || calendarEnabled || notebookEnabled) {
 		list.push(new ZmOperation_Descriptor(ZmOperation.SEP, Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT));

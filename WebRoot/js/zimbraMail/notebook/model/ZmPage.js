@@ -57,19 +57,19 @@ ZmPage.prototype._new;
 // Static functions
 
 ZmPage.load = function(appCtxt, folderId, name, version, callback, errorCallback) {
-	var note = new ZmPage(appCtxt);
-	note.folderId = folderId;
-	note.name = name;
-	note.load(version, callback, errorCallback);
-	return note;
+	var page = new ZmPage(appCtxt);
+	page.folderId = folderId;
+	page.name = name;
+	page.load(version, callback, errorCallback);
+	return page;
 };
 
 ZmPage.save = function(appCtxt, folderId, name, content, callback, errorCallback) {
-	var note = new ZmPage(appCtxt);
-	note.folderId = folderId;
-	note.name = name;
-	note._content = content;
-	note.save(callback, errorCallback);
+	var page = new ZmPage(appCtxt);
+	page.folderId = folderId;
+	page.name = name;
+	page._content = content;
+	page.save(callback, errorCallback);
 };
 
 // Public methods

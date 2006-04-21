@@ -257,18 +257,18 @@ ZmWiklet.register(
 				}
 			}
 			
-			// include note
+			// include page
 			var item = context.getItem();
 			var recurseUp = (params.lookup && params.lookup.toLowerCase() == 'true');
 			if (item.folderId) {
-				var note = context.getNoteByName(item.folderId, params.page, recurseUp);
-				if (note) {
-					context.pushItem(note);
-					return note.getContent();
+				var page = context.getPageByName(item.folderId, params.page, recurseUp);
+				if (page) {
+					context.pushItem(page);
+					return page.getContent();
 				}
 			}
 			
-			// no such note
+			// no such page
 			var formatter = new AjxMessageFormat(ZmMsg.wikiIncludeMissing);
 			return formatter.format(params.page);
 		}
@@ -425,12 +425,12 @@ ZmWiklet.register(
 			var nameRe = /^[^_]/;
 			var re = { pages: nameRe, sections: nameRe, files: nameRe };
 			var funcs = { 
-				pages: context.getNotes, 
+				pages: context.getPages, 
 				sections: context.getSections, 
 				files: context.getFiles 
 			};
 
-			var notes = [];
+			var items = [];
 			for (var name in re) {
 				if (params.type && params.type != "all" && params.type != name) {
 					continue;
@@ -445,29 +445,29 @@ ZmWiklet.register(
 				}
 				
 				var func = funcs[name];
-				var items = func.call(context, folderId);
-				items = ZmWiklet.__object2Array(items, re[name]);
-				notes = notes.concat(items);
+				var object = func.call(context, folderId);
+				var array = ZmWiklet.__object2Array(object, re[name]);
+				items = items.concat(array);
 			}
 			
-			notes.sort(ZmWiklet.__byNoteName);
+			items.sort(ZmWiklet.__byNoteName);
 			if (params.sort == "descending") {
-				notes.reverse();
+				items.reverse();
 			}
 			
 			var content = [];
 			//content.push("<div class='WikiTOC'>");
-			if (notes.length == 0) {
+			if (items.length == 0) {
 				content.push("{{MSG wikiPagesNotFound}}");
 			}
 			else switch (params.format || "list") {
 				case "list": {
 					content.push("<ul class='_toc_list'>");
-					for (var i = 0; i < notes.length; i++) {
-						var note = notes[i];
+					for (var i = 0; i < items.length; i++) {
+						var item = items[i];
 						content.push(
 							"<li class='_pageLink'>",
-								"[[", note.name, "]]",
+								"[[", item.name, "]]",
 							"</li>"
 						);
 					}
@@ -477,7 +477,7 @@ ZmWiklet.register(
 				case "template": {
 					var folderId = context.getItem().folderId;
 					
-					var itemTemplate = context.getNoteByName(folderId, (params.itemTemplate || "_TOC_ITEM_TEMPLATE_"), true);
+					var itemTemplate = context.getPageByName(folderId, (params.itemTemplate || "_TOC_ITEM_TEMPLATE_"), true);
 					var itemContent = itemTemplate ? itemTemplate.getContent() : [
 						// REVISIT
 						"<tr>",
@@ -491,10 +491,10 @@ ZmWiklet.register(
 							"<td class='_tocFragment' colspan='4'>{{FRAGMENT}}</td>",
 						"</tr>"
 					].join("");
-					for (var i = 0; i < notes.length; i++) {
+					for (var i = 0; i < items.length; i++) {
 						var length = context.getItemCount();
 						try {
-							context.pushItem(notes[i]);
+							context.pushItem(items[i]);
 							content.push(ZmWikletProcessor._process(itemContent));
 						}
 						catch (e) {
@@ -503,7 +503,7 @@ ZmWiklet.register(
 						context.setItemCount(length);
 					}
 
-					var bodyTemplate = context.getNoteByName(folderId, (params.bodyTemplate || "_TOC_BODY_TEMPLATE_"), true);
+					var bodyTemplate = context.getPageByName(folderId, (params.bodyTemplate || "_TOC_BODY_TEMPLATE_"), true);
 					var bodyContent = bodyTemplate ? bodyTemplate.getContent() : [
 						// REVISIT
 						"<table class='_tocIconTable'>",
@@ -519,11 +519,11 @@ ZmWiklet.register(
 				}
 				case "simple": default: {
 					content.push("<span class='_toc_simple'>");
-					for (var i = 0; i < notes.length; i++) {
-						var note = notes[i];
+					for (var i = 0; i < items.length; i++) {
+						var item = items[i];
 						content.push(
 							"<span class='_pageLink'>",
-								"[[", note.name, "]]",
+								"[[", items.name, "]]",
 							"</span>"
 						);
 					}
@@ -570,8 +570,8 @@ ZmWiklet.register(
 			// TODO: params.page
 			
 			// get breadcrumb trail
-			var note = context.getItem();
-			var notebook = context.getNotebookById(note.folderId);
+			var item = context.getItem();
+			var notebook = context.getNotebookById(item.folderId || (item.parent && item.parent.id));
 			
 			var trail = [];
 			while (notebook.id != ZmOrganizer.ID_ROOT) {
@@ -583,11 +583,11 @@ ZmWiklet.register(
 			var content = [];
 			switch (params.format || "simple") {
 				case "template": {
-					var folderId = note.folderId;
+					var folderId = item.folderId;
 					
 					var separator = params.separator || "<td class='_breadcrumb_separator'> &raquo; </td>";
 					
-					var itemTemplate = context.getNoteByName(folderId, (params.itemTemplate || '_BREADCRUMB_ITEM_TEMPLATE_'), true);
+					var itemTemplate = context.getPageByName(folderId, (params.itemTemplate || '_BREADCRUMB_ITEM_TEMPLATE_'), true);
 					var itemContent = itemTemplate ? itemTemplate.getContent() : [
 						// REVISIT
 						"<td class='_pageIcon'>{{ICON}}</td>",
@@ -608,7 +608,7 @@ ZmWiklet.register(
 						context.setItemCount(length);
 					}
 					
-					var bodyTemplate = context.getNoteByName(folderId, (params.bodyTemplate || '_BREADCRUMB_BODY_TEMPLATE_'), true);
+					var bodyTemplate = context.getPageByName(folderId, (params.bodyTemplate || '_BREADCRUMB_BODY_TEMPLATE_'), true);
 					var bodyContent = bodyTemplate ? bodyTemplate.getContent() : [
 						// REVISIT
 						"<table class='_breadcrumb_table' cellspacing=0 cellpadding=0>",

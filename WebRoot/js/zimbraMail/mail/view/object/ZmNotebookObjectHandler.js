@@ -31,7 +31,7 @@ ZmNotebookObjectHandler.prototype.constructor = ZmNotebookObjectHandler;
 
 // Constants
 
-ZmNotebookObjectHandler.TYPE = "noteKeyword";
+ZmNotebookObjectHandler.TYPE = "notebook";
 
 ZmNotebookObjectHandler.WIKIWORD_RE = /[A-Z]+[a-z]+[A-Z]+[a-zA-Z0-9]*/;
 ZmNotebookObjectHandler.LITERAL_RE = /[^\]\|]+?/; // REVISIT: escaped ']'
@@ -117,37 +117,37 @@ function(line, startIndex) {
 ZmNotebookObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
 	var appController = this._appCtxt.getAppController();
-	var notesApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
-	var cache = notesApp.getNoteCache();
+	var notebookApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	var cache = notebookApp.getNotebookCache();
 
 	// REVISIT: Need some structured syntax for wiki links	
-	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
-	var noteController = notesApp.getNoteController();
-	var note = noteController.getNote();
-	var folderId = note ? note.folderId : ZmOrganizer.ID_NOTEBOOK;
+	var notebookController = notebookApp.getNotebookController();
+	var page = notebookController.getPage();
+	var folderId = page ? page.folderId : ZmOrganizer.ID_NOTEBOOK;
 
-	var note = cache.getNoteByName(folderId, context.keyword);
-	if (!note) {
-		// NOTE: We assume the note is new if there's no entry in the cache.
-		note = new ZmPage(this._appCtxt);
-		note.name = context.keyword;
-		note.folderId = folderId;
+	var page = cache.getPageByName(folderId, context.keyword);
+	if (!page) {
+		// NOTE: We assume the page is new if there's no entry in the cache.
+		page = new ZmPage(this._appCtxt);
+		page.name = context.keyword;
+		page.folderId = folderId;
 	}	
-	this._selectedHandleResponse(note);
+	this._selectedHandleResponse(page);
 };
 
 ZmNotebookObjectHandler.prototype._selectedHandleResponse =
-function(note) {
+function(page) {
 	var appController = this._appCtxt.getAppController();
-	var notesApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	var notebookApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	
-	var isNew = !note || note.version == 0;
-	var controller = isNew ? notesApp.getNoteEditController() : notesApp.getNoteController();
-	controller.show(note);
+	var isNew = !page || page.version == 0;
+	var controller = isNew ? notebookApp.getPageEditController() : notebookApp.getNotebookController();
+	controller.show(page);
 };
 
 ZmNotebookObjectHandler.prototype.getToolTipText =
 function(keyword, context) {
+	// TODO: i18n
 	var text = [ "<b>Keyword:</b> '", context.keyword, "'" ];
 	if (context.keyword != context.label) {
 		text.push("<br>", "<b>Label:</b> '", context.label, "'");

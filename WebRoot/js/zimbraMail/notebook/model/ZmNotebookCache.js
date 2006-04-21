@@ -96,40 +96,40 @@ ZmNotebookCache.prototype.fillCache = function(folderId, callback, errorCallback
 	}
 };
 
-ZmNotebookCache.prototype.putNote = function(note) {
-	if (note.id) { 
-		this._idMap[note.id] = note; 
+ZmNotebookCache.prototype.putPage = function(page) {
+	if (page.id) { 
+		this._idMap[page.id] = page; 
 	}
-	var folderId = note.folderId || ZmPage.DEFAULT_FOLDER;
-	this.getNotesInFolder(folderId)[note.name] = note;
+	var folderId = page.folderId || ZmPage.DEFAULT_FOLDER;
+	this.getPagesInFolder(folderId)[page.name] = page;
 	/*** REVISIT ***/
-	var remoteFolderId = note.remoteFolderId;
+	var remoteFolderId = page.remoteFolderId;
 	if (remoteFolderId) {
-		this.getNotesInFolder(remoteFolderId)[note.name] = note;
+		this.getPagesInFolder(remoteFolderId)[page.name] = page;
 	}
 	/***/
-	if (note.creator) {
-		this.getNotesByCreator(note.creator)[note.name] = note;
+	if (page.creator) {
+		this.getPagesByCreator(page.creator)[page.name] = page;
 	}
 	
-	note.addChangeListener(this._changeListener);
+	page.addChangeListener(this._changeListener);
 };
-ZmNotebookCache.prototype.removeNote = function(note) {
-	if (note.id) { 
-		delete this._idMap[note.id]; 
+ZmNotebookCache.prototype.removePage = function(page) {
+	if (page.id) { 
+		delete this._idMap[page.id]; 
 	}
-	delete this.getNotesInFolder(note.folderId)[note.name];
+	delete this.getPagesInFolder(page.folderId)[page.name];
 	/*** REVISIT ***/
-	var remoteFolderId = note.remoteFolderId;
+	var remoteFolderId = page.remoteFolderId;
 	if (remoteFolderId) {
-		delete this.getNotesInFolder(remoteFolderId)[note.name];
+		delete this.getPagesInFolder(remoteFolderId)[page.name];
 	}
 	/***/
-	if (note.creator) {
-		delete this.getNotesByCreator(note.creator)[note.name];
+	if (page.creator) {
+		delete this.getPagesByCreator(page.creator)[page.name];
 	}
 	
-	note.removeChangeListener(this._changeListener);
+	page.removeChangeListener(this._changeListener);
 };
 
 ZmNotebookCache.prototype.clearCache = function() {
@@ -150,35 +150,35 @@ ZmNotebookCache.prototype.getCreators = function() {
 	return this._creatorsMap;
 };
 
-ZmNotebookCache.prototype.getNoteById = function(id) {
+ZmNotebookCache.prototype.getPageById = function(id) {
 	return this._idMap[id];
 };
-ZmNotebookCache.prototype.getNoteByName = function(folderId, name, recurseUp) {
-	var note = this.getNotesInFolder(folderId)[name];
-	if (note != null) return note;
+ZmNotebookCache.prototype.getPageByName = function(folderId, name, recurseUp) {
+	var page = this.getPagesInFolder(folderId)[name];
+	if (page != null) return page;
 	
 	if (recurseUp == true) {
 		var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 		var parent = notebookTree.getById(folderId).parent;
 		while (parent != null) {
-			var folderMap = this.getNotesInFolder(parent.id);
+			var folderMap = this.getPagesInFolder(parent.id);
 			if (folderMap && folderMap[name]) {
-				// create a proxy note but DO NOT insert it into the parent
+				// create a proxy page but DO NOT insert it into the parent
 				// folderMap -- that way it won't show up in the TOC for the parent
-				return this.makeProxyNote(folderMap[name], folderId);
+				return this.makeProxyPage(folderMap[name], folderId);
 			}
 			parent = parent.parent;
 		}
 	}
 	
 	if (name in ZmNotebookCache._SPECIAL) {
-		return this._generateSpecialNote(folderId, name);
+		return this._generateSpecialPage(folderId, name);
 	}
 	
 	return null;
 };
 
-ZmNotebookCache.prototype.getNotesInFolder = function(folderId) {
+ZmNotebookCache.prototype.getPagesInFolder = function(folderId) {
 	folderId = folderId || ZmPage.DEFAULT_FOLDER;
 	if (!this._foldersMap[folderId]) {
 		this._foldersMap[folderId] = {};
@@ -188,13 +188,13 @@ ZmNotebookCache.prototype.getNotesInFolder = function(folderId) {
 };
 
 
-// make a proxy of a note in a different folder
-ZmNotebookCache.prototype.makeProxyNote = function(note, folderId) {
-	// force the note to get it's content
+// make a proxy of a page in a different folder
+ZmNotebookCache.prototype.makeProxyPage = function(page, folderId) {
+	// force the page to get it's content
 	// this way we can set the proxy's id to null, but still have the correct content in the proxy
-	note.getContent();
+	page.getContent();
 
-	var specialNote = AjxUtil.createProxy(note);
+	var specialNote = AjxUtil.createProxy(page);
 	specialNote.id = null;
 	specialNote.folderId = folderId;
 	specialNote.version = 0;
@@ -203,7 +203,7 @@ ZmNotebookCache.prototype.makeProxyNote = function(note, folderId) {
 }
 
 
-ZmNotebookCache.prototype.getNotesByCreator = function(creator) {
+ZmNotebookCache.prototype.getPagesByCreator = function(creator) {
 	if (!this._creatorsMap[creator]) {
 		this._creatorsMap[creator] = {};
 	}
@@ -219,20 +219,20 @@ function(folderId, callback, response) {
 		var words = searchResponse.w || [];
 		for (var i = 0; i < words.length; i++) {
 			var word = words[i];
-			var note = this.getNoteById(word.id);
-			if (!note) {
-				note = new ZmPage(this._appCtxt);
-				note.set(word);
+			var page = this.getPageById(word.id);
+			if (!page) {
+				page = new ZmPage(this._appCtxt);
+				page.set(word);
 				/*** REVISIT ***/
-				if (folderId != note.folderId) {
-					note.remoteFolderId = note.folderId;
-					note.folderId = folderId;
+				if (folderId != page.folderId) {
+					page.remoteFolderId = page.folderId;
+					page.folderId = folderId;
 				}
 				/***/
-				this.putNote(note);
+				this.putPage(page);
 			}
 			else {
-				note.set(word);
+				page.set(word);
 			}
 		}
 	}
@@ -246,16 +246,16 @@ ZmNotebookCache.prototype._handleChange = function(event) {
 	debugger;
 };
 
-ZmNotebookCache.prototype._generateSpecialNote = function(folderId, name) {
-	var note = new ZmPage(this._appCtxt);
-	note.name = name;
-	note.fragment = "";
-	note.setContent(ZmNotebookCache._SPECIAL[name]);
-	note.folderId = folderId;
-	note.creator = "[auto]"; // i18n
-	note.createDate = new Date();
-	note.modifier = note.creator;
-	note.modifyDate = new Date(note.createDate.getTime());
-	//note.version = 0;
-	return note;
+ZmNotebookCache.prototype._generateSpecialPage = function(folderId, name) {
+	var page = new ZmPage(this._appCtxt);
+	page.name = name;
+	page.fragment = "";
+	page.setContent(ZmNotebookCache._SPECIAL[name]);
+	page.folderId = folderId;
+	page.creator = "[auto]"; // i18n
+	page.createDate = new Date();
+	page.modifier = page.creator;
+	page.modifyDate = new Date(page.createDate.getTime());
+	//page.version = 0;
+	return page;
 };

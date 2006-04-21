@@ -69,8 +69,8 @@ function() {
 };
 
 ZmNotebookFileView.prototype.set =
-function(note) {
-	var folderId = note ? note.folderId : ZmPage.DEFAULT_FOLDER;
+function(page) {
+	var folderId = page ? page.folderId : ZmPage.DEFAULT_FOLDER;
 	
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("types", "wiki,document");
@@ -231,7 +231,7 @@ function(item, now, isDndIcon, isMixedView) {
 				break;
 			}
 			case ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE]: {
-				var desc = item._type == "wiki" ? ZmMsg.note : null;
+				var desc = item._type == "wiki" ? ZmMsg.page : null;
 				if (!desc) {
 					var mimeInfo = item.ct ? ZmMimeTable.getInfo(item.ct) : null;
 					desc = mimeInfo ? mimeInfo.desc : "&nbsp;";

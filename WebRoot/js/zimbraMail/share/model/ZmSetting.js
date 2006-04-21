@@ -132,6 +132,7 @@ ZmSetting.SKIN_USER_INFO_ID				= i++;
 // COS SETTINGS
 ZmSetting.BROWSE_ENABLED				= i++;
 ZmSetting.CALENDAR_ENABLED				= i++;
+ZmSetting.NOTEBOOK_ENABLED				= i++;
 ZmSetting.CHANGE_PASSWORD_ENABLED		= i++;
 ZmSetting.CONTACTS_ENABLED				= i++;
 ZmSetting.CONVERSATIONS_ENABLED			= i++;
@@ -324,7 +325,8 @@ ZmSetting.INIT[ZmSetting.EVAL_ENABLED] 			 		= [null, ZmSetting.T_COS, ZmSetting
 ZmSetting.INIT[ZmSetting.FEED_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.HELP_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.MIXED_VIEW_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
-ZmSetting.INIT[ZmSetting.NOTES_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.NOTES_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.NOTEBOOK_ENABLED]				= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.PREFS_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.PRINT_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.REPLY_MENU_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];

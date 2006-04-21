@@ -413,14 +413,14 @@ function(ev) {
 	} else if (id == ZmOperation.NEW_APPT) {
 		var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 		cc.newAppointment(null, null, null, new Date());
-	} else if (id == ZmOperation.NEW_NOTE) {
+	} else if (id == ZmOperation.NEW_PAGE) {
 		var overviewController = this._appCtxt.getOverviewController();
 		var notebookTreeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
 		var notebookTreeView = notebookTreeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
 		var notebook = notebookTreeView ? notebookTreeView.getSelected() : null;
-		var note = new ZmPage(this._appCtxt);
-		note.folderId = notebook ? notebook.id : ZmPage.DEFAULT_FOLDER;
-		this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP).getNoteEditController().show(note);
+		var page = new ZmPage(this._appCtxt);
+		page.folderId = notebook ? notebook.id : ZmPage.DEFAULT_FOLDER;
+		this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP).getPageEditController().show(page);
 	} else if (id == ZmOperation.NEW_FOLDER) {
 		this._showDialog(this._appCtxt.getNewFolderDialog(), this._newFolderCallback);
 	} else if (id == ZmOperation.NEW_TAG) {

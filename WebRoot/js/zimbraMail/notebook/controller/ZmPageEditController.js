@@ -48,15 +48,17 @@ ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_TWIKI]			= 1;
 
 // Data
 
-ZmPageEditController.prototype._note;
+ZmPageEditController.prototype._page;
 ZmPageEditController.prototype._wikletParamDialog;
 ZmPageEditController.prototype._uploadCallback;
+
+ZmPageEditController.prototype._pageEditView;
 
 // Public methods
 
 ZmPageEditController.prototype.show =
-function(note) {
-	this._note = note;
+function(page) {
+	this._page = page;
 
 	var elements;
 	if (!this._currentView) {
@@ -72,9 +74,9 @@ function(note) {
 	this._setView(this._currentView, elements, false);
 };
 
-ZmPageEditController.prototype.getNote = 
+ZmPageEditController.prototype.getPage = 
 function() {
-	return this._note;
+	return this._page;
 };
 
 // Protected methods
@@ -156,10 +158,10 @@ function() {
 
 ZmPageEditController.prototype._createNewView =
 function(view) {
-	if (!this._noteEditView) {
-		this._noteEditView = new ZmPageEditView(this._container, this._appCtxt, this); 
+	if (!this._pageEditView) {
+		this._pageEditView = new ZmPageEditView(this._container, this._appCtxt, this); 
 	}
-	return this._noteEditView;
+	return this._pageEditView;
 };
 
 ZmPageEditController.prototype._setView = 
@@ -177,7 +179,7 @@ function(view, elements, isAppView, clear, pushOnly, isPoppable) {
 
 ZmPageEditController.prototype._setViewContents =
 function(view) {
-	this._listView[view].set(this._note);
+	this._listView[view].set(this._page);
 };
 
 ZmPageEditController.prototype._getTagMenuMsg = 
@@ -187,24 +189,24 @@ function() {
 
 ZmPageEditController.prototype._saveListener =
 function(ev) {
-	var name = this._noteEditView.getTitle();
+	var name = this._pageEditView.getTitle();
 	if (!name || name.replace(/^\s+/,"").replace(/\s+$/,"") == "") {
 		var dialog = this._appCtxt.getMsgDialog();
 		var message = ZmMsg.errorSavingPageNameRequired;
 		var style = DwtMessageDialog.WARNING_STYLE;
 		dialog.setMessage(message, style);
 		dialog.popup();
-		this._noteEditView.focus();
+		this._pageEditView.focus();
 		return;
 	}
 
-	// set fields on note object
-	this._note.name = name;
-	this._note.setContent(this._noteEditView.getContent());
+	// set fields on page object
+	this._page.name = name;
+	this._page.setContent(this._pageEditView.getContent());
 	
 	// save
 	var callback = new AjxCallback(this, this._saveResponseHandler);
-	this._note.save(callback);
+	this._page.save(callback);
 };
 ZmPageEditController.prototype._saveResponseHandler = function(response) {
 	this._app.popView();
@@ -213,17 +215,17 @@ ZmPageEditController.prototype._saveResponseHandler = function(response) {
 	if (saveResp && saveResp.w[0].ver == 1) {
 		// NOTE: Need to let this call stack return and
 		//       process the notifications.
-		var args = [ this._note.folderId, this._note.name ];
+		var args = [ this._page.folderId, this._page.name ];
 		var action = new AjxTimedAction(this, this._saveResponseHandlerShowNote, args);
 		AjxTimedAction.scheduleAction(action, 0);
 	}
 };
 ZmPageEditController.prototype._saveResponseHandlerShowNote = 
 function(folderId, name) {
-		var cache = this._app.getNoteCache();
-		var note = cache.getNoteByName(folderId, name);
-		var noteController = this._app.getNoteController();
-		noteController.show(note);
+		var cache = this._app.getNotebookCache();
+		var page = cache.getPageByName(folderId, name);
+		var notebookController = this._app.getNotebookController();
+		notebookController.show(page);
 };
 
 ZmPageEditController.prototype._cancelListener =
@@ -234,7 +236,7 @@ function(ev) {
 ZmPageEditController.prototype._addDocsListener =
 function(ev) {
 	var dialog = this._appCtxt.getUploadDialog();
-	dialog.setFolderId(this._note.folderId || ZmPage.DEFAULT_FOLDER);
+	dialog.setFolderId(this._page.folderId || ZmPage.DEFAULT_FOLDER);
 	dialog.popup();
 };
 
@@ -254,8 +256,8 @@ ZmPageEditController.prototype._formatListener = function(ev) {
 	}
 	
 	// handle selection
-	var content = this._noteEditView.getContent();
+	var content = this._pageEditView.getContent();
 	this._format = ev.item.getData(ZmPageEditor.KEY_FORMAT);
-	this._noteEditView.setFormat(this._format);
-	this._noteEditView.setContent(content);
+	this._pageEditView.setFormat(this._format);
+	this._pageEditView.setContent(content);
 };

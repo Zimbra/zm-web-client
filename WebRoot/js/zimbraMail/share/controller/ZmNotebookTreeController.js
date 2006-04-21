@@ -113,9 +113,9 @@ function() {
 // Method that is run when a tree item is left-clicked
 ZmNotebookTreeController.prototype._itemClicked =
 function(notebook) {
-	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
-	var noteController = notesApp.getNoteController();
-	noteController.show(notebook.id);
+	var notebookApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	var notebookController = notebookApp.getNotebookController();
+	notebookController.show(notebook.id);
 };
 
 // Handles a drop event
@@ -202,8 +202,8 @@ function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	var notebook = this._pendingActionData;
 
-	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
-	var cache = notesApp.getNoteCache();
+	var notebookApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	var cache = notebookApp.getNotebookCache();
 	cache.fillCache(notebook.id);
 };
 
@@ -214,12 +214,12 @@ ZmNotebookTreeController.prototype._editNotebookListener = function(ev) {
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 	var name = op == ZmOperation.EDIT_NOTEBOOK_INDEX ? ZmNotebook.PAGE_INDEX : ZmNotebook.PAGE_CHROME;
 	
-	var notesApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
-	var cache = notesApp.getNoteCache();
+	var notebookApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	var cache = notebookApp.getNotebookCache();
 	
-	var noteEditController = notesApp.getNoteEditController();
-	var note = cache.getNoteByName(notebook.id, name, true);
-	noteEditController.show(note);
+	var pageEditController = notebookApp.getPageEditController();
+	var page = cache.getPageByName(notebook.id, name, true);
+	pageEditController.show(page);
 };
 
 ZmNotebookTreeController.prototype._notifyListeners =

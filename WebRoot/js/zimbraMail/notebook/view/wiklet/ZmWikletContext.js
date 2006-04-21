@@ -23,16 +23,16 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmWikletContext(appCtxt, noteCache) {
+function ZmWikletContext(appCtxt, notebookCache) {
 	this._appCtxt = appCtxt;
-	this._noteCache = noteCache;
+	this._notebookCache = notebookCache;
 	this._items = [];
 }
 
 // Data
 
 ZmWikletContext.prototype._appCtxt;
-ZmWikletContext.prototype._noteCache;
+ZmWikletContext.prototype._notebookCache;
 ZmWikletContext.prototype._processor;
 
 ZmWikletContext.prototype._items;
@@ -57,12 +57,12 @@ ZmWikletContext.prototype.setItemCount = function(count) {
 	this._items.length = count;
 };
 
-ZmWikletContext.prototype.getNotes = function(notebookId) {
-	return this._noteCache.getNotesInFolder(notebookId);
+ZmWikletContext.prototype.getPages = function(notebookId) {
+	return this._notebookCache.getPagesInFolder(notebookId);
 };
 
-ZmWikletContext.prototype.getNoteByName = function(notebookId, name, recurseUp) {
-	return this._noteCache.getNoteByName(notebookId, name, recurseUp);
+ZmWikletContext.prototype.getPageByName = function(notebookId, name, recurseUp) {
+	return this._notebookCache.getPageByName(notebookId, name, recurseUp);
 };
 
 ZmWikletContext.prototype.getNotebookById = function(id) {

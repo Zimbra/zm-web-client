@@ -56,20 +56,20 @@ function() {
 };
 
 ZmPageEditView.prototype.set =
-function(note) {
-	var callback = new AjxCallback(this, this._setResponse, [note]);
-	note.getContent(callback);
+function(page) {
+	var callback = new AjxCallback(this, this._setResponse, [page]);
+	page.getContent(callback);
 };
-ZmPageEditView.prototype._setResponse = function(note) {
+ZmPageEditView.prototype._setResponse = function(page) {
 	var content = "{{BREADCRUMBS format='template'}}";
-	content = ZmWikletProcessor.process(this._appCtxt, note, content);
+	content = ZmWikletProcessor.process(this._appCtxt, page, content);
 	this._locationEl.innerHTML = content;
 
-	var name = note.name || "";
+	var name = page.name || "";
 	this._pageNameInput.setValue(name);
 	this._pageNameInput.disabled(name != "");
 
-	var content = note.getContent();
+	var content = page.getContent();
 	this.setContent(content);
 	
 	this.focus();
@@ -97,7 +97,7 @@ function() {
 
 ZmPageEditView.prototype.getSelection =
 function() {
-	return this._controller.getNote();
+	return this._controller.getPage();
 };
 
 
@@ -385,10 +385,10 @@ ZmPageEditor.prototype._createWikiToolBar = function(parent) {
 };
 
 ZmPageEditor.prototype._insertImageListener = function(event) {
-	var note = this._controller.getNote();
+	var page = this._controller.getPage();
 
 	var dialog = this._appCtxt.getUploadDialog();
-	dialog.setFolderId(note.folderId || ZmPage.DEFAULT_FOLDER);
+	dialog.setFolderId(page.folderId || ZmPage.DEFAULT_FOLDER);
 	if (!this._insertImageCallback) {
 		this._insertImageCallback = new AjxCallback(this, this._insertImageByIds);
 	}

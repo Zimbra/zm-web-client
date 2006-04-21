@@ -26,7 +26,7 @@
 function ZmNotebookApp(appCtxt, container, parentController) {
 	ZmApp.call(this, ZmZimbraMail.NOTEBOOK_APP, appCtxt, container, parentController);
 	this._controllers = {};
-	this._noteCache = new ZmNotebookCache(appCtxt);
+	this._notebookCache = new ZmNotebookCache(appCtxt);
 }
 
 ZmNotebookApp.prototype = new ZmApp;
@@ -49,14 +49,14 @@ ZmNotebookApp.__CONTROLLERS[ZmNotebookApp.PAGE_EDIT] = ZmPageEditController;
 // Data
 
 ZmNotebookApp.prototype._controllers;
-ZmNotebookApp.prototype._noteCache;
+ZmNotebookApp.prototype._notebookCache;
 
 // Public methods
 
 ZmNotebookApp.prototype.launch =
 function(callback, errorCallback) {
-	var noteController = this.getNoteController();
-	noteController.show();
+	var notebookController = this.getNotebookController();
+	notebookController.show();
 
 	if (callback) {
 		callback.run();
@@ -67,8 +67,8 @@ ZmNotebookApp.prototype.setActive =
 function(active) {
 	/***
 	if (active) {
-		var noteController = this.getNoteController();
-		noteController.show();
+		var notebookController = this.getNotebookController();
+		notebookController.show();
 	}
 	/***/
 };
@@ -82,15 +82,15 @@ ZmNotebookApp.prototype.getController = function(name) {
 	return this._controllers[name];
 };
 
-ZmNotebookApp.prototype.getNoteController = function() {
+ZmNotebookApp.prototype.getNotebookController = function() {
 	return this.getController(ZmNotebookApp.NOTEBOOK);
 };
 
-ZmNotebookApp.prototype.getNoteEditController = function() {
+ZmNotebookApp.prototype.getPageEditController = function() {
 	return this.getController(ZmNotebookApp.PAGE_EDIT);
 };
 
-ZmNotebookApp.prototype.getNoteCache = 
+ZmNotebookApp.prototype.getNotebookCache = 
 function() {
-	return this._noteCache;
+	return this._notebookCache;
 };

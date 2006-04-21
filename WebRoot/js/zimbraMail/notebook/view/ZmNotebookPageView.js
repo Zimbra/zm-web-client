@@ -57,23 +57,23 @@ function() {
 };
 
 ZmNotebookPageView.prototype.set =
-function(note) {
+function(page) {
 	var element = this.getHtmlElement();
-	if (!note) {
+	if (!page) {
 		element.innerHTML = "";
 		return;
 	}
 
-	var cache = this._controller._app.getNoteCache();
-	var chrome = cache.getNoteByName(note.folderId, ZmNotebook.PAGE_CHROME, true);
+	var cache = this._controller._app.getNotebookCache();
+	var chrome = cache.getPageByName(page.folderId, ZmNotebook.PAGE_CHROME, true);
 	var chromeContent = chrome.getContent();
 
 	var content = chromeContent;
-	if (note.name != ZmNotebook.PAGE_CHROME) {
-		var pageContent = note.getContent();
+	if (page.name != ZmNotebook.PAGE_CHROME) {
+		var pageContent = page.getContent();
 		content = chromeContent.replace(/\{\{CONTENT\}\}/ig, pageContent);
 	}
-	content = ZmWikletProcessor.process(this._appCtxt, note, content);
+	content = ZmWikletProcessor.process(this._appCtxt, page, content);
 
 	element.innerHTML = content;
 	this._findObjects(element);
@@ -81,8 +81,8 @@ function(note) {
 
 ZmNotebookPageView.prototype.getTitle =
 function() {
-	var note = this.getSelection();
-	return AjxStringUtil.xmlDecode(note.name);
+	var page = this.getSelection();
+	return AjxStringUtil.xmlDecode(page.name);
 };
 ZmNotebookPageView.prototype.getContent =
 function() {
@@ -91,7 +91,7 @@ function() {
 
 ZmNotebookPageView.prototype.getSelection =
 function() {
-	return this._controller.getNote();
+	return this._controller.getPage();
 };
 
 

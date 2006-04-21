@@ -32,13 +32,13 @@ ZmWikletProcessor._context;
 
 // Static functions
 
-ZmWikletProcessor.process = function(appCtxt, note, content) {
+ZmWikletProcessor.process = function(appCtxt, item, content) {
 	// global values needed by _replaceWiklet
-	var notesApp = appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
-	var cache = notesApp.getNoteCache();
+	var notebookApp = appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	var cache = notebookApp.getNotebookCache();
 	
 	ZmWikletProcessor._context = new ZmWikletContext(appCtxt, cache);
-	ZmWikletProcessor._context.pushItem(note);
+	ZmWikletProcessor._context.pushItem(item);
 	
 	// process wiklets in content
 	return ZmWikletProcessor._process(content);
