@@ -863,10 +863,12 @@ function(condition) {
 		var key = ZmFilterRule.CONDITIONS_KEY[f];
 		if (!key) continue;
 		if ((key == "value") && (condition.subject == ZmFilterRule.C_HEADER) &&
-			(condition.comparator == ZmFilterRule.OP_EXISTS || condition.comparator == ZmFilterRule.OP_NOT_EXISTS))
+			(condition.comparator == ZmFilterRule.OP_EXISTS || condition.comparator == ZmFilterRule.OP_NOT_EXISTS)) {
 			continue; // "Header Named" with "exists" doesn't take a value
-		if (conf[f] && !condition[key])
-			return this._conditionErrorFormatter.format([conf.label]);
+		}
+		if (conf[f] && !condition[key]) {
+			return this._conditionErrorFormatter.format([ZmFilterRule.C_LABEL[condition.subject]]);
+		}
 	}
 };
 
@@ -878,6 +880,7 @@ function(condition) {
 ZmFilterRuleDialog.prototype._checkAction =
 function(action) {
 	var conf = ZmFilterRule.ACTIONS[action.name];
-	if (conf.param && !action.arg)
-		return this._actionErrorFormatter.format([conf.label]);
+	if (conf.param && !action.arg) {
+		return this._actionErrorFormatter.format([ZmFilterRule.A_LABEL[action.name]]);
+	}
 };
