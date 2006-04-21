@@ -103,11 +103,6 @@ function() {
 	return this._msgListView.getSelection();
 }
 
-ZmDoublePaneView.prototype.isDisplayingMsg =
-function(msg) {
-	return this._msgView.isDisplayingMsg(msg);
-}
-
 ZmDoublePaneView.prototype.reset =
 function() {
 	this._msgView.reset();
