@@ -542,6 +542,7 @@ function(ev) {
 		}
 		table.tBodies[0].insertBefore(row, (newIndex != null) ? table.rows[newIndex] : null);
 		this._addDwtObjects(row.id);
+		this._resetOperations(isCondition);
 	}
 
 };
