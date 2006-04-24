@@ -366,12 +366,12 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 		html[i++] = "'></td>";
 	} else if (addMultLocsCheckbox) {
 		this._multLocsCheckboxId = Dwt.getNextId();
-		html[i++] = "<td>";
+		html[i++] = "<td><table border=0 cellpadding=0 cellspacing=0><tr><td>";
 		html[i++] = "<input type='checkbox' id='";
 		html[i++] = this._multLocsCheckboxId;
-		html[i++] = "' />&nbsp;";
+		html[i++] = "' /></td><td class='ZmFieldLabelLeft'>&nbsp;";
 		html[i++] = ZmMsg.allowMultipleLocations;
-		html[i++] = "</td>";
+		html[i++] = "</td></tr></table></td>";
 	}
 
 	return i;
