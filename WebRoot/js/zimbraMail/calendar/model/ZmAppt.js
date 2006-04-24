@@ -816,9 +816,8 @@ function(attachmentId, callback, errorCallback, notifyList) {
 			// bug fix #4697 (part 2)
 			if (this.timezone) {
 				exceptId.setAttribute("tz", this.timezone);
-			} else {
-				if (sd.charAt(sd.length-1) != "Z") sd += "Z";
 			}
+
 			exceptId.setAttribute("d", sd);
 		} else {
 			exceptId.setAttribute("d", AjxDateUtil.getServerDateTime(this.getOrigStartDate()));
@@ -1471,16 +1470,12 @@ function(soapDoc, method,  attachmentId, notifyList) {
 		var sd = AjxDateUtil.getServerDateTime(this.startDate);
 		var ed = AjxDateUtil.getServerDateTime(this.endDate);
 
-		// bug fix #4697 (part 1) - append "Z" @ end of start/end dates if no timezone found
 		if (this.timezone) {
 			var tz = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(this.timezone) : this.timezone;
 			s.setAttribute("tz", tz);
 			e.setAttribute("tz", tz);
-		} else {
-			// sanity check
-			if (sd.charAt(sd.length-1) != "Z") sd += "Z";
-			if (ed.charAt(ed.length-1) != "Z") ed += "Z";
 		}
+
 		s.setAttribute("d", sd);
 		e.setAttribute("d", ed);
 		
