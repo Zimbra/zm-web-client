@@ -889,15 +889,18 @@ function(mode, msg, errorCallback) {
 // Returns canned text for meeting invites.
 // - Instances of recurring meetings should send out information that looks very
 //   much like a simple appointment.
-ZmAppt.prototype.getTextSummary = function() {
+ZmAppt.prototype.getTextSummary =
+function() {
 	return this.getSummary(false);
 };
 
-ZmAppt.prototype.getHtmlSummary = function() {
+ZmAppt.prototype.getHtmlSummary =
+function() {
 	return this.getSummary(true);
 };
 
-ZmAppt.prototype.getSummary = function(isHtml) {
+ZmAppt.prototype.getSummary =
+function(isHtml) {
 	var orig = this._orig ? this._orig : this;
 
 	var isEdit = (this._viewMode == ZmAppt.MODE_EDIT || 
@@ -921,8 +924,6 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
 	
-	buf[i++] = ZmMsg.organizer;
-	buf[i++] = " ";
 	var organizer = this.organizer ? this.organizer : this._appCtxt.get(ZmSetting.USERNAME);
 	var orgEmail = ZmApptViewHelper.getOrganizerEmail(this._appCtxt, this.organizer).toString();
 	var orgText = isHtml ? AjxStringUtil.htmlEncode(orgEmail) : orgEmail;
@@ -1020,8 +1021,6 @@ ZmAppt.prototype.getSummary = function(isHtml) {
 			buf[i++] = "</table>\n<p>\n<table border='0'>";
 		}
 		buf[i++] = "\n";
-		buf[i++] = ZmMsg.invitees;
-		buf[i++] = ": ";
 		var attString = ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.PERSON].slice(0, 10), ZmAppt.PERSON);
 		if (this._attendees[ZmAppt.PERSON].length > 10) {
 			attString += ", ...";
