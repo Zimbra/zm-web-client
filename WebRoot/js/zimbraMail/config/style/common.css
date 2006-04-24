@@ -376,7 +376,7 @@ DIV.vSpace {
 }
 
 .Row-Focus {
-	@FocusBorder@
+	/*@FocusBorder@*/
 }
 
 
