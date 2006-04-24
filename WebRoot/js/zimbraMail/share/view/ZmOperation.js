@@ -1055,14 +1055,14 @@ function(parent, id, opHash) {
 * @param disImage	new disabled image (overrides that of newOp)
 */
 ZmOperation.setOperation =
-function(parent, oldOp, newOp, text, image) {
+function(parent, oldOp, newOp, text, image, disImage) {
 	var op = parent.getOp(oldOp);
 	if (!op) return;
 
 	op.setText(text ? text : ZmMsg[ZmOperation.SETUP[newOp].text]);
 	op.setImage(image ? image : ZmOperation.SETUP[newOp].image);
 	op.setDisabledImage(disImage ? disImage : ZmOperation.SETUP[newOp].disImage);
-}
+};
 
 /**
 * Adds a "New" submenu. Custom descriptors are used because we don't want "New" at the
@@ -1104,7 +1104,7 @@ function(parent) {
 	var menu = new ZmActionMenu(parent, ZmOperation.NONE, list);
 	parent.setMenu(menu);
 	return menu;
-}
+};
 
 /**
 * Adds a "Tag" submenu for tagging items.
@@ -1116,7 +1116,7 @@ function(parent) {
 	var tagMenu = new ZmTagMenu(parent);
 	parent.setMenu(tagMenu);
 	return tagMenu;
-}
+};
 
 /**
 * Adds a color submenu for choosing tag color.
@@ -1161,7 +1161,7 @@ function(parent) {
 	var menu = new ZmActionMenu(parent, list);
 	parent.setMenu(menu);
 	return menu;
-}
+};
 
 /**
  * Adds an invite actions submenu for accept/decline/tentative.
