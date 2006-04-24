@@ -95,10 +95,18 @@ function(data, loc) {
 		var tree = this._opc.getTreeData(treeId);
 		var ti = treeView.getTreeItemById(tree.root.id);
 		ti.setExpanded(true);
-		if (this._folder && treeId == this._folder.type)
+		if (this._folder && treeId == this._folder.type) {
 			treeView.setSelected(tree.root);
+		}
 	}
 	DBG.timePt("expanded and selected");
+};
+
+ZmMoveToDialog.prototype.reset = 
+function() {
+	ZmDialog.prototype.reset.call(this);
+	this._folder = this._items = null;
+	this._folderTreeView = null;
 };
 
 ZmMoveToDialog.prototype._contentHtml = 
@@ -144,19 +152,23 @@ ZmMoveToDialog.prototype._okButtonListener =
 function(ev) {
 	var msg;
 	var tgtFolder = this._opc.getSelected(ZmMoveToDialog._OVERVIEW_ID);
-	if (!tgtFolder)
+	if (!tgtFolder) {
 		msg = ZmMsg.noTargetFolder;
+	}
 
 	// moving a folder, check for valid target
-	if (!msg && this._folder &&	!tgtFolder.mayContain(this._folder))
+	if (!msg && this._folder &&	!tgtFolder.mayContain(this._folder)) {
 	    msg = ZmMsg.badTargetFolder;
+	}
 
 	// moving items, check for valid target
-	if (!msg && !this._folder && !tgtFolder.mayContain(this._items))
+	if (!msg && this._items && !tgtFolder.mayContain(this._items)) {
 		msg = ZmMsg.badTargetFolderItems;
+	}
 
-	if (msg)
+	if (msg) {
 		this._showError(msg);
-	else
+	} else {
 		DwtDialog.prototype._buttonListener.call(this, ev, [tgtFolder]);
+	}
 };
