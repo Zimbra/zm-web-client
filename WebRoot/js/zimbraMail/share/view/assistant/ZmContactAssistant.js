@@ -128,7 +128,7 @@ function(dialog, verb, args) {
 	}
 
 	//DBG.println("=============");
-	while(match = args.match(/((\w+):\s*(.*?)\s*)(\w+:|$)/)) {
+	while(match = args.match(/((\w+):\s*(.*?)\s*)(\w+:|$)/m)) {
 		//for (i=0; i < match.length; i++) 	DBG.println(i+" ("+match[i] + ")");
 		//DBG.println("-----");
 		var k = match[2];

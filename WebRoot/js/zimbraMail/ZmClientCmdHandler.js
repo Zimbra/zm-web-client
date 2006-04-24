@@ -29,7 +29,7 @@ function ZmClientCmdHandler(appCtxt) {
 };
 
 ZmClientCmdHandler.prototype.execute =
-function(cmdStr) {
+function(cmdStr, searchController) {
 
 	if (!cmdStr) return;
 
@@ -84,6 +84,7 @@ function(cmdStr) {
 		if (this._assistantDialog == null) {
 			this._assistantDialog = new ZmAssistantDialog(this._appCtxt);
 		}
+		searchController.setSearchField("");
 		this._assistantDialog.popup();
 	} else if (arg0 == "rr") {		
 		this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getReminderController().refresh();

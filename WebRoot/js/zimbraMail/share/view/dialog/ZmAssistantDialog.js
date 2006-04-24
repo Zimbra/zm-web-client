@@ -146,10 +146,16 @@ function() {
 	if (match) {
 		var args = cmd.substring(match[0].length);
 		var mainCommand = match[1];
-		assistant = ZmAssistant.getHandler(mainCommand);
+		var commands = ZmAssistant.matchWord(mainCommand);
+		if (commands.length == 1) assistant = ZmAssistant.getHandler(commands[0]);
+		else {
+			this._availableCommands = ZmMsg.ASST_availableCommands+ " " + commands.join(", ");
+		}
 		if (assistant && mainCommand == cmd && mainCommand != assistant.getCommand() && this._assistant != assistant) {
 			this._commandEl.value = assistant.getCommand()+ " ";
 		}
+	} else {
+		this._availableCommands = ZmMsg.ASST_availableCommands+ " " + ZmAssistant.getHandlerCommands().join(", ");
 	}
 
 	if (this._assistant != assistant) {

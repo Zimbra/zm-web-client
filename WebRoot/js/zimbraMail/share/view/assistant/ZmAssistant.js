@@ -36,15 +36,37 @@ ZmAssistant.prototype.constructor = ZmAssistant;
 
 
 ZmAssistant._handlers = {};
+ZmAssistant._commands = [];
 
 ZmAssistant.register = 
 function(handler, name) {
 	if (name == null) name = handler.getCommand();
+	if (name in ZmAssistant._handlers) return; // need to alert/error out and/or deal with dups!
 	ZmAssistant._handlers[name] = handler;
+	ZmAssistant._commands.push(name);
+	//ZmAssistant._commands = ZmAssistant._commands.sort();
+	ZmAssistant._commands.sort();	
+};
+
+ZmAssistant.matchWord = 
+function(word, words) {
+	if (words == null) words = ZmAssistant._commands;
+	var i;
+	var matched = [];
+	for (i in words) {
+		var n = words[i];
+		if (n == word) return [n];
+		else if (n.substring(0, word.length) == word) {
+			matched.push(n);
+		}
+	}
+	return matched;
 };
 
 ZmAssistant.getHandler = 
 function(name) {
+	return ZmAssistant._handlers[name];	
+/*	
 	var n;
 	var handler = null;
 	for (n in ZmAssistant._handlers) {
@@ -55,17 +77,13 @@ function(name) {
 		}
 	}
 	return handler;
+*/	
 	//return ZmAssistant._handlers[name];
 };
 
 ZmAssistant.getHandlerCommands = 
 function(name) {
-	var cmds = [];
-	var n;
-	for (n in ZmAssistant._handlers) {
-		cmds.push(n);
-	}
-	return cmds.sort();
+	return ZmAssistant._commands;
 };
 
 // called first time dialog switches to this assistant

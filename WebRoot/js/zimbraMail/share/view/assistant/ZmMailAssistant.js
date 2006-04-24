@@ -91,7 +91,7 @@ function(dialog, verb, args) {
 		}
 	}
 
-	while(match = args.match(/((\w+)(:\s*)(.*?)\s*)(\w+:|$)/)) {
+	while(match = args.match(/((\w+)(:\s*)(.*?)\s*)(\w+:|$)/m)) {
 		var k = match[2];
 		var v = match[4];
 		var strip = match[1];
