@@ -69,13 +69,15 @@ ZmOperation.ATTACHMENT = i++;
 ZmOperation.SETUP[ZmOperation.ATTACHMENT] = {
 	text:		"addAttachment",
 	tooltip:	"attachmentTooltip",
-	image:		"Attachment"
+	image:		"Attachment",
+	disImage:	"AttachmentDis"
 };
 
 ZmOperation.BROWSE = i++;
 ZmOperation.SETUP[ZmOperation.BROWSE] = {
 	text:		"advancedSearch",
-	image:		"SearchBuilder"
+	image:		"SearchBuilder",
+	disImage:	"SearchBuilderDis"
 };
 
 ZmOperation.CALL = i++;
@@ -154,14 +156,16 @@ ZmOperation.DAY_VIEW = i++;
 ZmOperation.SETUP[ZmOperation.DAY_VIEW] = {
 	text:		"viewDay",
 	tooltip:	"viewDayTooltip",
-	image:		"DayView"
+	image:		"DayView",
+	disImage:	"DayViewDis"
 };
 
 ZmOperation.DELETE = i++;
 ZmOperation.SETUP[ZmOperation.DELETE] = {
 	text:		"del",
 	tooltip:	"deleteTooltip",
-	image:		"Delete"
+	image:		"Delete",
+	disImage:	"DeleteDis"
 };
 
 ZmOperation.DELETE_CONV = i++;
@@ -173,7 +177,8 @@ ZmOperation.SETUP[ZmOperation.DELETE_CONV] = {
 ZmOperation.DELETE_MENU = i++;
 ZmOperation.SETUP[ZmOperation.DELETE_MENU] = {
 	tooltip:	"deleteTooltip",
-	image:		"Delete"
+	image:		"Delete",
+	disImage:	"DeleteDis"
 };
 
 ZmOperation.DETACH = i++;
@@ -187,7 +192,8 @@ ZmOperation.DETACH_COMPOSE = i++;
 ZmOperation.SETUP[ZmOperation.DETACH_COMPOSE] = {
 	text:		"detach",
 	tooltip:	"detachTooltip",
-	image:		"OpenInNewWindow"
+	image:		"OpenInNewWindow",
+	disImage:	"OpenInNewWindowDis"
 };
 
 ZmOperation.DRAFT = i++;
@@ -198,7 +204,8 @@ ZmOperation.EDIT = i++;
 ZmOperation.SETUP[ZmOperation.EDIT] = {
 	text:		"edit",
 	tooltip:	"editTooltip",
-	image:		"Edit"
+	image:		"Edit",
+	disImage:	"EditDis"
 };
 
 ZmOperation.EDIT_CONTACT = i++;
@@ -210,7 +217,8 @@ ZmOperation.SETUP[ZmOperation.EDIT_CONTACT] = {
 ZmOperation.EDIT_FILTER_RULE = i++;
 ZmOperation.SETUP[ZmOperation.EDIT_FILTER_RULE] = {
 	text:		"filterEdit",
-	image:		"Edit"
+	image:		"Edit",
+	disImage:	"EditDis"
 };
 
 ZmOperation.EDIT_NOTEBOOK_CHROME = i++;
@@ -229,7 +237,8 @@ ZmOperation.EDIT_PROPS = i++;
 ZmOperation.SETUP[ZmOperation.EDIT_PROPS] = {
 	text:		"editProperties",
 	tooltip:	"editPropertiesTooltip",
-	image:		"Properties"
+	image:		"Properties",
+	disImage:	"PropertiesDis"
 };
 
 ZmOperation.EDIT_REPLY_ACCEPT = i++;
@@ -296,28 +305,32 @@ ZmOperation.FORWARD = i++;
 ZmOperation.SETUP[ZmOperation.FORWARD] = {
 	text:		"forward",
 	tooltip:	"forwardTooltip",
-	image:		"Forward"
+	image:		"Forward",
+	disImage:	"ForwardDis"
 };
 
 ZmOperation.FORWARD_ATT = i++;
 ZmOperation.SETUP[ZmOperation.FORWARD_ATT] = {
 	text:		"forwardAtt",
 	tooltip:	"forwardAtt",
-	image:		"Forward"
+	image:		"Forward",
+	disImage:	"ForwardDis"
 };
 
 ZmOperation.FORWARD_INLINE = i++;
 ZmOperation.SETUP[ZmOperation.FORWARD_INLINE] = {
 	text:		"forwardInline",
 	tooltip:	"forwardTooltip",
-	image:		"Forward"
+	image:		"Forward",
+	disImage:	"ForwardDis"
 };
 
 ZmOperation.FORWARD_MENU = i++;
 ZmOperation.SETUP[ZmOperation.FORWARD_MENU] = {
 	text:		"forward",
 	tooltip:	"forwardTooltip",
-	image:		"Forward"
+	image:		"Forward",
+	disImage:	"ForwardDis"
 };
 
 ZmOperation.GO_TO_URL = i++;
@@ -328,7 +341,8 @@ ZmOperation.SETUP[ZmOperation.GO_TO_URL] = {
 ZmOperation.IM = i++;
 ZmOperation.SETUP[ZmOperation.IM] = {
 	text:		"newIM",
-	image:		"ImStartChat"
+	image:		"ImStartChat",
+	disImage:	"ImStartChatDis"
 };
 
 ZmOperation.IM_NEW_CHAT = i++;
@@ -467,7 +481,8 @@ ZmOperation.MONTH_VIEW = i++;
 ZmOperation.SETUP[ZmOperation.MONTH_VIEW] = {
 	text:		"viewMonth",
 	tooltip:	"viewMonthTooltip",
-	image:		"MonthView"
+	image:		"MonthView",
+	disImage:	"MonthViewDis"
 };
 
 ZmOperation.MOUNT_CALENDAR = i++;
@@ -480,7 +495,8 @@ ZmOperation.MOVE = i++;
 ZmOperation.SETUP[ZmOperation.MOVE] = {
 	text:		"move",
 	tooltip:	"moveTooltip",
-	image:		"MoveToFolder"
+	image:		"MoveToFolder",
+	disImage:	"MoveToFolderDis"
 };
 
 ZmOperation.MOVE_DOWN_FILTER_RULE = i++;
@@ -545,7 +561,8 @@ ZmOperation.NEW_MESSAGE = i++;
 ZmOperation.SETUP[ZmOperation.NEW_MESSAGE] = {
 	text:		"newEmail",
 	tooltip:	"newMessageTooltip",
-	image:		"NewMessage"
+	image:		"NewMessage",
+	disImage:	"NewMessageDis"
 };
 
 ZmOperation.NEW_PAGE = i++;
@@ -571,34 +588,40 @@ ZmOperation.NEW_TAG = i++;
 ZmOperation.SETUP[ZmOperation.NEW_TAG] = {
 	text:		"newTag",
 	tooltip:	"newTagTooltip",
-	image:		"NewTag"
+	image:		"NewTag",
+	disImage:	"NewTagDis"
 };
 
 ZmOperation.PAGE_BACK = i++;
 ZmOperation.SETUP[ZmOperation.PAGE_BACK] = {
-	image:		"LeftArrow"
+	image:		"LeftArrow",
+	disImage:	"LeftArrowDis"
 };
 
 ZmOperation.PAGE_DBL_BACK = i++;
 ZmOperation.SETUP[ZmOperation.PAGE_DBL_BACK] = {
-	image:		"LeftDoubleArrow"
+	image:		"LeftDoubleArrow",
+	disImage:	"LeftDoubleArrowDis"
 };
 
 ZmOperation.PAGE_DBL_FORW = i++;
 ZmOperation.SETUP[ZmOperation.PAGE_DBL_FORW] = {
-	image:		"RightDoubleArrow"
+	image:		"RightDoubleArrow",
+	disImage:	"RightDoubleArrowDis"
 };
 
 ZmOperation.PAGE_FORWARD = i++;
 ZmOperation.SETUP[ZmOperation.PAGE_FORWARD] = {
-	image:		"RightArrow"
+	image:		"RightArrow",
+	disImage:	"RightArrowDis"
 };
 
 ZmOperation.PRINT = i++;
 ZmOperation.SETUP[ZmOperation.PRINT] = {
 	text:		"print",
 	tooltip:	"printTooltip",
-	image:		"Print"
+	image:		"Print",
+	disImage:	"PrintDis"
 };
 
 ZmOperation.PRINT_CONTACTLIST = i++;
@@ -610,7 +633,8 @@ ZmOperation.SETUP[ZmOperation.PRINT_CONTACTLIST] = {
 ZmOperation.PRINT_MENU = i++;
 ZmOperation.SETUP[ZmOperation.PRINT_MENU] = {
 	tooltip:	"printTooltip",
-	image:		"Print"
+	image:		"Print",
+	disImage:	"PrintDis"
 };
 
 ZmOperation.REFRESH = i++;
@@ -646,7 +670,8 @@ ZmOperation.REPLY = i++;
 ZmOperation.SETUP[ZmOperation.REPLY] = {
 	text:		"reply",
 	tooltip:	"replyTooltip",
-	image:		"Reply"
+	image:		"Reply",
+	disImage:	"ReplyDis"
 };
 
 ZmOperation.REPLY_ACCEPT = i++;
@@ -659,7 +684,8 @@ ZmOperation.REPLY_ALL = i++;
 ZmOperation.SETUP[ZmOperation.REPLY_ALL] = {
 	text:		"replyAll",
 	tooltip:	"replyAllTooltip",
-	image:		"ReplyAll"
+	image:		"ReplyAll",
+	disImage:	"ReplyAllDis"
 };
 
 ZmOperation.REPLY_CANCEL = i++;
@@ -676,7 +702,8 @@ ZmOperation.REPLY_MENU = i++;
 ZmOperation.SETUP[ZmOperation.REPLY_MENU] = {
 	text:		"reply",
 	tooltip:	"replyTooltip",
-	image:		"Reply"
+	image:		"Reply",
+	disImage:	"ReplyDis"
 };
 
 ZmOperation.REPLY_NEW_TIME = i++;
@@ -694,7 +721,8 @@ ZmOperation.SETUP[ZmOperation.REPLY_TENTATIVE] = {
 ZmOperation.SAVE = i++;
 ZmOperation.SETUP[ZmOperation.SAVE] = {
 	text:		"save",
-	image:		"Save"
+	image:		"Save",
+	disImage:	"SaveDis"
 };
 
 ZmOperation.SAVE_DRAFT = i++;
@@ -714,7 +742,8 @@ ZmOperation.SETUP[ZmOperation.SCHEDULE_VIEW] = {
 ZmOperation.SEARCH = i++;
 ZmOperation.SETUP[ZmOperation.SEARCH] = {
 	text:		"search",
-	image:		"Search"
+	image:		"Search",
+	disImage:	"SearchDis"
 };
 
 ZmOperation.SEARCH_MAIL = i++;
@@ -727,7 +756,8 @@ ZmOperation.SEND = i++;
 ZmOperation.SETUP[ZmOperation.SEND] = {
 	text:		"send",
 	tooltip:	"sendTooltip",
-	image:		"Send"
+	image:		"Send",
+	disImage:	"SendDis"
 };
 
 ZmOperation.SHARE = i++;
@@ -773,20 +803,23 @@ ZmOperation.SETUP[ZmOperation.SHOW_CC] = {
 ZmOperation.SHOW_ORIG = i++;
 ZmOperation.SETUP[ZmOperation.SHOW_ORIG] = {
 	text:		"showOrig",
-	image:		"Message"
+	image:		"Message",
+	disImage:	"MessageDis"
 };
 
 ZmOperation.SPAM = i++;
 ZmOperation.SETUP[ZmOperation.SPAM] = {
 	text:		"junk",
 	tooltip:	"junkTooltip",
-	image:		"SpamFolder"
+	image:		"SpamFolder",
+	disImage:	"SpamFolderDis"
 };
 
 ZmOperation.SPELL_CHECK = i++;
 ZmOperation.SETUP[ZmOperation.SPELL_CHECK] = {
 	text:		"spellCheck",
-	image:		"SpellCheck"
+	image:		"SpellCheck",
+	disImage:	"SpellCheckDis"
 };
 
 ZmOperation.SYNC = i++;
@@ -803,7 +836,8 @@ ZmOperation.TAG_MENU = i++;
 ZmOperation.SETUP[ZmOperation.TAG_MENU] = {
 	text:		"tag",
 	tooltip:	"tagTooltip",
-	image:		"Tag"
+	image:		"Tag",
+	disImage:	"TagDis"
 };
 
 ZmOperation.TEXT = i++;
@@ -826,7 +860,8 @@ ZmOperation.UNDELETE = i++;
 ZmOperation.SETUP[ZmOperation.UNDELETE] = {
 	text:		"undelete",
 	tooltip:	"undelete",
-	image:		"MoveToFolder" 		// XXX: need new icon?
+	image:		"MoveToFolder", 		// XXX: need new icon?
+	disImage:	"MoveToFolderDis"
 };
 
 ZmOperation.VIEW = i++;
@@ -857,14 +892,16 @@ ZmOperation.WEEK_VIEW = i++;
 ZmOperation.SETUP[ZmOperation.WEEK_VIEW] = {
 	text:		"viewWeek",
 	tooltip:	"viewWeekTooltip",
-	image:		"WeekView"
+	image:		"WeekView",
+	disImage:	"WeekViewDis"
 };
 
 ZmOperation.WORK_WEEK_VIEW = i++;
 ZmOperation.SETUP[ZmOperation.WORK_WEEK_VIEW] = {
 	text:		"viewWorkWeek",
 	tooltip:	"viewWorkWeekTooltip",
-	image:		"WorkWeekView"
+	image:		"WorkWeekView",
+	disImage:	"WorkWeekViewDis"
 };
 
 ZmOperation.ZIMLET = i++;
@@ -877,10 +914,11 @@ delete i;
 ZmOperation.KEY_ID = "_opId";
 ZmOperation.MENUITEM_ID = "_menuItemId";
 
-function ZmOperation_Descriptor(id, label, image, enabled, toolTip) {
+function ZmOperation_Descriptor(id, label, image, disImage, enabled, toolTip) {
 	this.id = id;
 	this.label = label ? label : ZmMsg[ZmOperation.SETUP[id].text];
 	this.image = image ? image : ZmOperation.SETUP[id].image;
+	this.disImage = disImage ? disImage : ZmOperation.SETUP[id].disImage;
 	this.enabled = (enabled !== false);
 	this.toolTip = toolTip ? toolTip : ZmMsg[ZmOperation.SETUP[id].tooltip];
 	this.toolTip = toolTip ? toolTip : this.label;
@@ -892,7 +930,7 @@ ZmOperation._operationDesc = {};
 ZmOperation._createOperationDesc =
 function(id) {
 	return new ZmOperation_Descriptor(id, ZmMsg[ZmOperation.SETUP[id].text],
-				ZmOperation.SETUP[id].image, true, ZmMsg[ZmOperation.SETUP[id].tooltip]);
+				ZmOperation.SETUP[id].image, ZmOperation.SETUP[id].disImage, true, ZmMsg[ZmOperation.SETUP[id].tooltip]);
 };
 
 /**
@@ -940,6 +978,7 @@ function(parent, standardOperations, extraOperations) {
 				var id = extra.id;
 				extra.label = (extra.label == Dwt.DEFAULT) ? ZmMsg[ZmOperation.SETUP[id].text] : extra.label;
 				extra.image = (extra.image == Dwt.DEFAULT) ? ZmOperation.SETUP[id].image : extra.image;
+				extra.disImage = (extra.disImage == Dwt.DEFAULT) ? ZmOperation.SETUP[id].disImage : extra.disImage;
 				extra.toolTip = (extra.toolTip == Dwt.DEFAULT) ? ZmMsg[ZmOperation.SETUP[id].tooltip] : extra.toolTip;
 				operationList.push(id);
 				ZmOperation._operationDesc[id] = extra;
@@ -953,12 +992,13 @@ function(parent, standardOperations, extraOperations) {
 	}
 
 	return operations;
-}
+};
 
 ZmOperation.addOperation =
 function(parent, id, opHash) {
-	if (!ZmOperation._operationDesc[id])
+	if (!ZmOperation._operationDesc[id]) {
 		ZmOperation._operationDesc[id] = ZmOperation._createOperationDesc(id);
+	}
 	if (id == ZmOperation.SEP) {
 		parent.createSeparator();
 	} else if (id == ZmOperation.SPACER) {
@@ -1012,6 +1052,7 @@ function(parent, id, opHash) {
 * @param newOp		ID of new operation to get replacement attributes from
 * @param text		new text (overrides text of newOp)
 * @param image		new image (overrides image of newOp)
+* @param disImage	new disabled image (overrides that of newOp)
 */
 ZmOperation.setOperation =
 function(parent, oldOp, newOp, text, image) {
@@ -1020,6 +1061,7 @@ function(parent, oldOp, newOp, text, image) {
 
 	op.setText(text ? text : ZmMsg[ZmOperation.SETUP[newOp].text]);
 	op.setImage(image ? image : ZmOperation.SETUP[newOp].image);
+	op.setDisabledImage(disImage ? disImage : ZmOperation.SETUP[newOp].disImage);
 }
 
 /**
