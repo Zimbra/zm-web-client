@@ -291,6 +291,7 @@ function(ev) {
 			this._setContactText(this._actionEv.contact != null);
 		}
 		this._enableFlags(this._participantActionMenu, bHasUnread, bHasRead);
+		this._resetOperations(this._participantActionMenu, this._listView[this._currentView].getSelectionCount());
 		this._participantActionMenu.popup(0, ev.docX, ev.docY);
 	} else {
 		this._enableFlags(this._actionMenu, bHasUnread, bHasRead);
