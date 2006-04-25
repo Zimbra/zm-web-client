@@ -399,7 +399,7 @@ function() {
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		var contactsLoader = contactsClass.getContactList;
-		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader,
+		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader, separator: "",
 					  matchValue: ZmContactList.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback};
 		this._acContactsList = new ZmAutocompleteListView(params);
 	}
@@ -407,7 +407,7 @@ function() {
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
 		var resourcesLoader = resourcesClass.getResources;
-		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesLoader,
+		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesLoader, separator: "",
 					  matchValue: ZmContactList.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback};
 		this._acResourcesList = new ZmAutocompleteListView(params);
 	}
@@ -647,7 +647,11 @@ function(inputEl, attendee, useException) {
 
 	var sched = this._schedTable[idx];
 	var input = sched.inputObj;
-	var value = AjxStringUtil.trim(input.getValue());
+
+	var value = input.getValue();
+	if (value) {
+		value = AjxStringUtil.trim(value.replace(/[;,]$/, ""));	// trim separator, white space
+	}
 	var curAttendee = sched.attendee;
 	var type = sched.attType;
 	
