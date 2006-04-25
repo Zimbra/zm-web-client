@@ -100,7 +100,7 @@ function ZmKeyMap() {
 	};
 	
 	this._map["ZmConvListView"] = {"INHERIT": "DwtListView"};
-	this._map["ZmConvView"] = {"INHERIT": "DwtListView"};
+	this._map["ZmMailMsgListView"] = {"INHERIT": "DwtListView"};
 };
 
 ZmKeyMap.prototype = new DwtKeyMap(true);
