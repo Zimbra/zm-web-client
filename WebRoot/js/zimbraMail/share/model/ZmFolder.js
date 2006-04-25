@@ -504,7 +504,7 @@ ZmFolder.prototype._getByPath =
 function(path) {
 	if (this.id == ZmFolder.ID_TAGS) return null;
 
-	if (path == this.getPath().toLowerCase())
+	if (path == this.getPath(false, false, null, true).toLowerCase())
 		return this;
 		
 	var organizer;
