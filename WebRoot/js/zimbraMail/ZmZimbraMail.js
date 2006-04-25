@@ -743,7 +743,7 @@ function() {
 	var usedQuota = this._appCtxt.get(ZmSetting.QUOTA_USED);
 	usedQuota = usedQuota ? usedQuota : 0;
 
-	var size = AjxUtil.formatSize(usedQuota);
+	var size = AjxUtil.formatSize(usedQuota, false, 1);
 	var html = [];
 	var idx = 0;
 	
