@@ -245,11 +245,11 @@ function(listener) {
 // Acceptable hack needed to prevent cursor from bleeding thru higher z-index'd views
 ZmApptTabViewPage.prototype.enableInputs =
 function(bEnableInputs) {
-	this._subjectField.disabled(!bEnableInputs);
+	this._subjectField.setEnabled(bEnableInputs);
 	this._startDateField.disabled = !bEnableInputs;
 	this._endDateField.disabled = !bEnableInputs;
 	for (var t = 0; t < this._attTypes.length; t++) {
-		this._attInputField[this._attTypes[t]].disabled(!bEnableInputs);
+		this._attInputField[this._attTypes[t]].setEnabled(bEnableInputs);
 	}
 };
 

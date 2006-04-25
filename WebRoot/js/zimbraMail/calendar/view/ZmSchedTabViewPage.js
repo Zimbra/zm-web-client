@@ -819,7 +819,7 @@ function(index, attendee, type, isOrganizer) {
 	this._emailToIdx[email] = index;
 
 	if (input && isOrganizer) {
-		input.disabled(true);
+		input.setEnabled(false);
 		input.className = "ZmSchedulerInputDisabled"
 	}
 	this._setAttendeeToolTip(sched, attendee, type);

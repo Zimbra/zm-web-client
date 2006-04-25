@@ -67,7 +67,7 @@ ZmPageEditView.prototype._setResponse = function(page) {
 
 	var name = page.name || "";
 	this._pageNameInput.setValue(name);
-	this._pageNameInput.disabled(name != "");
+	this._pageNameInput.setEnabled(!name);
 
 	var content = page.getContent();
 	this.setContent(content);

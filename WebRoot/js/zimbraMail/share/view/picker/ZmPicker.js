@@ -192,7 +192,7 @@ function() {
 
 ZmPicker.prototype.setEnabled =
 function(enabled) {
-   DwtControl.prototype.setEnabled(this, enabled);
+   DwtControl.prototype.setEnabled.call(this, enabled);
     this._label.setEnabled(enabled);
     if (this._picker.setEnabled)
 	    this._picker.setEnabled(enabled);
