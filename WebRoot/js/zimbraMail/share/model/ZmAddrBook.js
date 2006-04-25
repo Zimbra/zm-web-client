@@ -61,12 +61,11 @@ function() {
 	return this.id == ZmOrganizer.ID_ROOT ? ZmMsg.addressBooks : this.name;
 };
 
-// XXX: need Address Book "folder" icon
 ZmAddrBook.prototype.getIcon = 
 function() {
 	return this.id == ZmOrganizer.ID_ROOT 
 		? null
-		: "ContactsApp";
+		: "ContactsFolder";
 };
 
 ZmAddrBook.prototype.create = 
@@ -77,7 +76,23 @@ function(name) {
 	folderNode.setAttribute("l", this.id);
 	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]);
 
-	this.tree._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true});
+	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [name]);
+	this.tree._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
+};
+
+ZmAddrBook.prototype._handleErrorCreate =
+function(name, ex) {
+	if (name && ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS) {
+		var msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [ZmMsg.folderLc, name]);
+	
+		var msgDialog = this.tree._appCtxt.getMsgDialog();
+		msgDialog.reset();
+		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+		msgDialog.popup();
+		return true;
+	}
+
+	return false;
 };
 
 ZmAddrBook.prototype.mayContain =

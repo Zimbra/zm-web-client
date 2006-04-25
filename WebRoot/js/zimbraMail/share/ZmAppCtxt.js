@@ -194,27 +194,31 @@ function() {
 	return this._newFolderDialog;
 };
 
+ZmAppCtxt.prototype.getNewAddrBookDialog = 
+function() {
+	if (!this._newAddrBookDialog)
+		this._newAddrBookDialog = new ZmNewAddrBookDialog(this.getShell());
+	return this._newAddrBookDialog;
+}
+
 ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
-	if (!this._newCalendarDialog) {
+	if (!this._newCalendarDialog)
 		this._newCalendarDialog = new ZmNewCalendarDialog(this.getShell(), this.getMsgDialog());
-	}
 	return this._newCalendarDialog;
 };
 
 ZmAppCtxt.prototype.getNewNotebookDialog =
 function() {
-	if (!this._newNotebookDialog) {
+	if (!this._newNotebookDialog)
 		this._newNotebookDialog = new ZmNewNotebookDialog(this, this.getShell());
-	}
 	return this._newNotebookDialog;
 };
 
 ZmAppCtxt.prototype.getNewRosterItemDialog =
 function() {
-	if (!this._newRosterItemDialog) {
+	if (!this._newRosterItemDialog)
 		this._newRosterItemDialog = new ZmNewRosterItemDialog(this.getShell(), this, this.getMsgDialog());
-	}
 	return this._newRosterItemDialog;
 };
 
@@ -241,38 +245,33 @@ function() {
 
 ZmAppCtxt.prototype.getFolderPropsDialog =
 function() {
-	if (!this._folderPropsDialog) {
+	if (!this._folderPropsDialog)
 		this._folderPropsDialog = new ZmFolderPropsDialog(this, this.getShell());
-	}
 	return this._folderPropsDialog;
 };
 
 ZmAppCtxt.prototype.getSharePropsDialog =
 function() {
-	if (!this._sharePropsDialog) {
+	if (!this._sharePropsDialog)
 		this._sharePropsDialog = new ZmSharePropsDialog(this, this.getShell());
-	}
 	return this._sharePropsDialog;
 };
 
 ZmAppCtxt.prototype.getAcceptShareDialog = function() {
-	if (!this._acceptShareDialog) {
+	if (!this._acceptShareDialog)
 		this._acceptShareDialog = new ZmAcceptShareDialog(this, this.getShell());
-	}
 	return this._acceptShareDialog;
 };
 
 ZmAppCtxt.prototype.getDeclineShareDialog = function() { 
-	if (!this._declineShareDialog) {
+	if (!this._declineShareDialog)
 		this._declineShareDialog = new ZmDeclineShareDialog(this, this.getShell());
-	}
 	return this._declineShareDialog;
 };
 
 ZmAppCtxt.prototype.getRevokeShareDialog = function() {
-	if (!this._revokeShareDialog) {
+	if (!this._revokeShareDialog)
 		this._revokeShareDialog = new ZmRevokeShareDialog(this, this.getShell());
-	}
 	return this._revokeShareDialog;
 };
 
@@ -288,17 +287,15 @@ function() {
 
 ZmAppCtxt.prototype.getConfirmationDialog =
 function() {
-	if (!this._confirmDialog) {
+	if (!this._confirmDialog)
 		this._confirmDialog = new DwtConfirmDialog(this.getShell());
-	}
 	return this._confirmDialog;
 };
 
 ZmAppCtxt.prototype.getUploadDialog =
 function() {
-	if (!this._uploadDialog) {
+	if (!this._uploadDialog)
 		this._uploadDialog = new ZmUploadDialog(this, this.getShell());
-	}
 	return this._uploadDialog;
 };
 

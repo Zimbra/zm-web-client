@@ -55,6 +55,10 @@ function(data, loc) {
 	var omit = new Object();
 	var treeIds = [ZmOrganizer.FOLDER];
 
+	// contacts have their own tree view so find out what kind of data we're dealing with
+	var item = (data instanceof Array) ? data[0] : null;
+	this._isContact = item && (item instanceof ZmContact);
+
 	if (data instanceof ZmSearchFolder) {
 		this._folder = data;
 		omit[ZmFolder.ID_DRAFTS] = true;
@@ -63,7 +67,7 @@ function(data, loc) {
 		this._folder = data;
 		omit[ZmFolder.ID_DRAFTS] = true;
 		omit[ZmFolder.ID_SPAM] = true;
-	} else if (data instanceof ZmAddrBook) {
+	} else if ((data instanceof ZmAddrBook) || this._isContact) {
 		this._folder = data;
 		treeIds = [ZmOrganizer.ADDRBOOK];
 	} else {
@@ -74,7 +78,7 @@ function(data, loc) {
 	this._renderOverview(ZmMoveToDialog._OVERVIEW_ID, treeIds, omit);
 
 	var folderTree = null;
-	if (data instanceof ZmAddrBook) {
+	if ((data instanceof ZmAddrBook) || this._isContact) {
 		this._folderTreeView = this._treeView[ZmOrganizer.ADDRBOOK];
 		folderTree = this._opc.getTreeData(ZmOrganizer.ADDRBOOK);
 	} else {
@@ -114,7 +118,7 @@ function() {
 	this._folderTreeCellId = Dwt.getNextId();
 	var html = new Array();
 	var idx = 0;
-	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
+	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
 	html[idx++] = "<tr><td class='Label' colspan=2>";
 	html[idx++] = ZmMsg.targetFolder;
 	html[idx++] = ":</td></tr><tr><td colspan=2 id='";
@@ -126,7 +130,9 @@ function() {
 
 ZmMoveToDialog.prototype._showNewDialog =
 function() {
-	var dialog = this._appCtxt.getNewFolderDialog();
+	var dialog = this._isContact 
+		? this._appCtxt.getNewAddrBookDialog()
+		: this._appCtxt.getNewFolderDialog();
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._newCallback, this);
 	dialog.popup(null, this);
@@ -134,9 +140,13 @@ function() {
 
 ZmMoveToDialog.prototype._newCallback =
 function(parent, name) {
-	var ftc = this._opc.getTreeController(ZmOrganizer.FOLDER);
+	var org = this._isContact ? ZmOrganizer.ADDRBOOK : ZmOrganizer.FOLDER;
+	var ftc = this._opc.getTreeController(org);
 	ftc._doCreate(parent, name);
-	this._appCtxt.getNewFolderDialog().popdown();
+	var dialog = this._isContact
+		? this._appCtxt.getNewAddrBookDialog()
+		: this._appCtxt.getNewFolderDialog();
+	dialog.popdown();
 	this._creatingFolder = true;
 };
 

@@ -112,11 +112,9 @@ function() {
 
 ZmAddrBookTreeController.prototype._newAddrBookListener = 
 function(ev) {
-	if (!this._newAddrBookDlg) {
-		this._newAddrBookDlg = new ZmNewAddrBookDialog(this._appCtxt.getShell());
-	}
+	var newAddrBookDlg = this._appCtxt.getNewAddrBookDialog();
 	this._pendingActionData = this._getActionedOrganizer(ev);
-	this._showDialog(this._newAddrBookDlg, this._newFolderCallback, this._pendingActionData);
+	this._showDialog(newAddrBookDlg, this._newFolderCallback, this._pendingActionData);
 };
 
 /*
