@@ -33,7 +33,7 @@ function ZmController(appCtxt, container, app) {
 	
 	this._shell = appCtxt.getShell();
 	this._appViews = new Object();   
-	this._currentView = null;                            
+	this._currentView = null;
 	
 	this._authenticating = false;
 
@@ -77,6 +77,21 @@ ZmController.NOTEBOOK_PAGE_VIEW			= i++;
 ZmController.NOTEBOOK_PAGE_EDIT_VIEW	= i++;
 ZmController.NOTEBOOK_FILE_VIEW			= i++;
 ZmController.NOTEBOOK_SITE_VIEW			= i++;
+
+/* ROSSD - It feels like we may need a ZmAppViewController class to help with
+ * the tab group work. Delaying this until I have more experience pushing the 
+ * tab group stuff around the app to see what abstraction makes sense*/
+ZmController._currAppViewTabGroup = null;
+
+ZmController._setCurrentAppViewTabGroup =
+function(tabGroup) {
+	ZmController._currAppViewTabGroup = tabGroup;
+}
+
+ZmController._getCurrentAppViewTabGroup =
+function() {
+	return ZmController._currAppViewTabGroup;
+}
 
 // Abstract methods
 
@@ -148,6 +163,23 @@ function(actionCode) {
 			break;	
 	}
 };
+
+ZmController.prototype._createTabGroup =
+function(name) {
+	this._tabGroup = new DwtTabGroup(name);
+}
+
+ZmController.prototype._setTabGroup =
+function(tabGroup) {
+	this._tabGroup = tabGroup;
+}
+
+
+ZmController.prototype.getTabGroup =
+function() {
+	return this._tabGroup;
+}
+
 
 ZmController.prototype._showLoginDialog =
 function(bReloginMode) {

@@ -85,7 +85,14 @@ function() {
 
 ZmConvController.prototype._createDoublePaneView = 
 function() {
-	return new ZmConvView(this._container, this, this._dropTgt);
+	DBG.println("ZmConvController.prototype._createDoublePaneView");
+	var view = new ZmConvView(this._container, this, this._dropTgt);
+	this._createTabGroup("Conv");
+	var tg = this.getTabGroup();
+	tg.newParent(this._appCtxt.getRootTabGroup());
+	tg.addMember(view.getMsgListView());
+	DBG.println("ZmConvController.prototype._createDoublePaneView: OUT");
+	return view;
 }
 
 // Creates the conv view, which is not a standard list view (it's a two-pane sort of thing).

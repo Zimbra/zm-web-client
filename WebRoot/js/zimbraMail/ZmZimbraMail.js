@@ -63,10 +63,12 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 
 	this._shell = appCtxt.getShell();
 	
-	/* Register our keymap and global key action handler with the shell's keyboard manager */
-	//this._kbMgr = this._shell.getKeyboardMgr();
-	//this._kbMgr.registerKeyMap(new ZmKeyMap());
-	//this._kbMgr.registerGlobalKeyActionHandler(this);
+	/* Register our keymap and global key action handler with the shell's keyboard manager 
+	 * CURRENTLY use $set: kbnav. 
+	 */
+	this._kbMgr = this._shell.getKeyboardMgr();
+	this._kbMgr.registerKeyMap(new ZmKeyMap());
+	this._kbMgr.registerGlobalKeyActionHandler(this);
 
 	if (location.search && (location.search.indexOf("nss=1") != -1))
    	    this._splashScreen = null;
@@ -309,6 +311,20 @@ function(params) {
 
 	if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED))
 		this._components[ZmAppViewMgr.C_SEARCH] = this._appCtxt.getSearchController().getSearchPanel();
+		
+	// ROSSD - TEMPORARY - WILL BE MOVED
+	/* Appview manager is the place for these. the issue is that the skins will need to provide the 
+	 * tabgroup index location of each of the top level views
+	 */
+	DBG.println("SETTING SEARCH CONTROLLER TAB GROUP")
+	var rootTg = this._appCtxt.getRootTabGroup();
+	rootTg.addMember(this._appCtxt.getSearchController().getTabGroup());
+	// Add dummy app view tab group. This will get replaced right away when the
+	// app view comes into play
+	var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
+	ZmController._setCurrentAppViewTabGroup(dummyTg);
+	rootTg.addMember(dummyTg);
+		
 	this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._createAppChooser();
 	this._appViewMgr.addComponents(this._components, true);
 
@@ -345,6 +361,10 @@ ZmZimbraMail.prototype._handleResponseStartup2 =
 function() {
 	this.setSessionTimer(true);
 	this._killSplash();
+	
+	//ROSSD will be moved?
+	this._shell.getKeyboardMgr().setTabGroup(this._appCtxt.getRootTabGroup());
+	//this._shell.getKeyboardMgr().grabFocus(this._appCtxt.getSearchController().getSearchToolbar().getSearchField());
 };
 
 /**
@@ -1545,6 +1565,7 @@ function() {
 
 ZmZimbraMail.prototype.handleKeyAction =
 function(actionCode, ev) {
+DBG.println("CALLING LONDON OVER");
 	switch (actionCode) {
 		case ZmKeyMap.DBG_NONE:
 			this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_NONE);

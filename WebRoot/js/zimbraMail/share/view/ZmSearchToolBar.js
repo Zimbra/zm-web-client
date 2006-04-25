@@ -35,6 +35,7 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	var navColId = Dwt.getNextId();
 	var searchMenuColId = Dwt.getNextId();
 
+	this._tabGroup = new DwtTabGroup(this.toString());
 	this._createHtml(fieldId, searchColId, browseColId, saveColId, navColId, searchMenuColId);
 
 	this._searchField = document.getElementById(fieldId);
@@ -43,7 +44,7 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	var groupBy = this._appCtxt.getSettings().getGroupMailBy();
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
     this._searchButton = this._createButton(ZmSearchToolBar.SEARCH_BUTTON, null, ZmMsg.search, null, tooltip, true, "InsetTBButton");
-    document.getElementById(searchColId).appendChild(this._searchButton.getHtmlElement());
+     document.getElementById(searchColId).appendChild(this._searchButton.getHtmlElement());
 
 	this._searchMenuButton = this._createButton(ZmSearchToolBar.SEARCH_MENU_BUTTON, "MailFolder", null, null, ZmMsg.chooseSearchType, true, "InsetTBButton");
 	this._searchMenuButton.noMenuBar = true;
@@ -80,17 +81,27 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 		mi = DwtMenuItem.create(menu, "SearchAll", ZmMsg.searchAll, null, true, DwtMenuItem.RADIO_STYLE, 0);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_ANY_MI);
 	}
+
+	this._tabGroup.addMember(this._searchField);
+	this._tabGroup.addMember(this._searchButton);
+	
+	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
+		this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, "Save", null, "SaveDis", ZmMsg.saveCurrentSearch, true, "InsetTBButton");
+	    document.getElementById(saveColId).appendChild(this._saveButton.getHtmlElement());
+		this._tabGroup.addMember(this._saveButton);
+	}
 	
 	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
 		var buttonStyle = DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_CENTER | DwtButton.TOGGLE_STYLE;
 		this._browseButton = this._createButton(ZmSearchToolBar.BROWSE_BUTTON, null, ZmMsg.searchBuilder, null, ZmMsg.openSearchBuilder, true, "InsetTBButton", buttonStyle);
 	    document.getElementById(browseColId).appendChild(this._browseButton.getHtmlElement());
+		this._tabGroup.addMember(this._browseButton);
 	}
 
-	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
-		this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, "Save", null, "SaveDis", ZmMsg.saveCurrentSearch, true, "InsetTBButton");
-	    document.getElementById(saveColId).appendChild(this._saveButton.getHtmlElement());
-	}
+	
+	DBG.println("DUMPING TG");
+	this._tabGroup.dump();
+	
 }
 
 ZmSearchToolBar.BROWSE_BUTTON 		= 1;
@@ -147,6 +158,11 @@ function() {
 ZmSearchToolBar.prototype.getNavToolBar = 
 function() {
 	return this._navToolbar;
+}
+
+ZmSearchToolBar.prototype.getTabGroup =
+function() {
+	return this._tabGroup;
 }
 
 ZmSearchToolBar.prototype.registerCallback =

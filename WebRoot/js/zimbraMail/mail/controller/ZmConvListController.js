@@ -175,6 +175,10 @@ ZmConvListController.prototype._createNewView =
 function(view) {
 	var clv = new ZmConvListView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
 	clv.setDragSource(this._dragSrc);
+	this._createTabGroup("ConvList");
+	var tg = this.getTabGroup();
+	tg.newParent(this._appCtxt.getRootTabGroup());
+	tg.addMember(clv);
 	return clv;
 };
 

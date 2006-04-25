@@ -334,6 +334,13 @@ function() {
 	this._revokeShareDialog = null;
 };
 
+ZmAppCtxt.prototype.getRootTabGroup =
+function() {
+	if (!this._rootTabGrp)
+		this._rootTabGrp = new DwtTabGroup("ROOT");
+	return this._rootTabGrp;
+}
+
 ZmAppCtxt.prototype.getShell =
 function() {
 	return this._shell;
