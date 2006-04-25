@@ -151,7 +151,8 @@ function() {
 		else {
 			this._availableCommands = ZmMsg.ASST_availableCommands+ " " + commands.join(", ");
 		}
-		if (assistant && mainCommand == cmd && mainCommand != assistant.getCommand() && this._assistant != assistant) {
+		//if (assistant && mainCommand == cmd && mainCommand != assistant.getCommand() && this._assistant != assistant) {		
+		if (assistant && mainCommand == cmd && this._assistant != assistant) {
 			this._commandEl.value = assistant.getCommand()+ " ";
 		}
 	} else {
