@@ -1565,33 +1565,31 @@ function() {
 
 ZmZimbraMail.prototype.handleKeyAction =
 function(actionCode, ev) {
-DBG.println("CALLING LONDON OVER");
 	switch (actionCode) {
 		case ZmKeyMap.DBG_NONE:
-			this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_NONE);
+			this._appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.NONE);
 			DBG.setDebugLevel(AjxDebug.NONE);
 			break;
 			
 		case ZmKeyMap.DBG_1:
-			alert("HERE");
-			this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_1);
+			this._appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG1);
 			DBG.setDebugLevel(AjxDebug.DBG1);
 			break;
 			
 		case ZmKeyMap.DBG_2:
-			this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_2);
+			this._appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG2);
 			DBG.setDebugLevel(AjxDebug.DBG2);
 			break;
 			
 		case ZmKeyMap.DBG_3:
-			this._appCtxt.setStatusMsg("Turning timing info " + ZmKeyMap.DBG_3);
+			this._appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG3);
 			DBG.setDebugLevel(AjxDebug.DBG3);
 			break;
 			
 		case ZmKeyMap.DBG_TIMING: {
 			var on = DBG._showTiming;
 			var newState = on ? "off" : "on";
-			this._appCtxt.setStatusMsg("Turning timing info " + newState);
+			this._appCtxt.setStatusMsg("Turning Timing Info " + newState);
 			DBG.showTiming(!on);
 			break;
 		}

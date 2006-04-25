@@ -726,36 +726,28 @@ function(id) {
 
 ZmMailListController.prototype._preHideCallback = 
 function() {
-	DBG.println("ZmMailListController.prototype._preHideCallback");
+	//DBG.println("ZmMailListController.prototype._preHideCallback");
 	var currentFocusMember = this._appCtxt.getRootTabGroup().getFocusMember();
 	this._savedFocusMember = 
 		(currentFocusMember && this.getTabGroup().contains(currentFocusMember))
 			? this._savedFocusMember = currentFocusMember
 			: this._savedFocusMember = null;
-	DBG.println("this._savedFocusMember = " + this._savedFocusMember);
 	return true;
 };
 
 ZmMailListController.prototype._postShowCallback = 
 function() {
-	DBG.println("ZmMailListController.prototype._postShowCallback");
+	//DBG.println("ZmMailListController.prototype._postShowCallback");
 	var rootTg = this._appCtxt.getRootTabGroup();
 	var myTg = this.getTabGroup();
 	var kbMgr = this._shell.getKeyboardMgr();
-DBG.println("============ DUMP1");
-rootTg.dump();
 
 	rootTg.replaceMember(ZmController._getCurrentAppViewTabGroup(), myTg);
-DBG.println("============ DUMP2");
-rootTg.dump();
-
-DBG.println("MY FIRST MEMBER: " + myTg.getFirstMember())
 	if (this._savedFocusMember)
 		kbMgr.grabFocus(this._savedFocusMember);
 	else 
 		kbMgr.grabFocus(myTg.getFirstMember());
 	ZmController._setCurrentAppViewTabGroup(myTg);
-	DBG.println("ZmMailListController.prototype._postShowCallback: OUT");
 	return true;
 };
 
