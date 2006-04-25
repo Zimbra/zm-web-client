@@ -115,6 +115,12 @@ function(html) {
 	contentDivEl.innerHTML = html;
 };
 
+ZmAssistantDialog.prototype.getAssistantDiv =
+function(html) {
+	return document.getElementById(this._contentId);
+};
+
+
 ZmAssistantDialog.prototype._initContent =
 function() {
 	this._commandEl = document.getElementById(this._commandId);
