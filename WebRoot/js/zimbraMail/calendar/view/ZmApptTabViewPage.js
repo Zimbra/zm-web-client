@@ -615,7 +615,6 @@ ZmApptTabViewPage.prototype._createApptHtml =
 function() {
 	var dims = this.parent.getSize();
 	var rowHeight = AjxEnv.isIE ? 140 : 110;
-	this.setSize(dims.x - 2, dims.y - 30);
 	this._notesHtmlEditorId = Dwt.getNextId();
 
 	var html = [];
@@ -630,16 +629,12 @@ function() {
 	html[i++] = rowHeight;
 	html[i++] = "px'><td valign=top><fieldset class='ZmFieldset'><legend class='ZmLegend'>";
 	html[i++] = ZmMsg.details;
-	html[i++] = "</legend><div style='overflow:hidden; height:";
-	html[i++] = AjxEnv.isIE ? (rowHeight - 20) : rowHeight;
-	html[i++] = "px'>";
+	html[i++] = "</legend><div>";
 	html[i++] = this._getDetailsHtml();
 	html[i++] = "</div></fieldset></td>";
 	html[i++] = "<td valign=top><fieldset class='ZmFieldset'><legend class='ZmLegend'>";
 	html[i++] = ZmMsg.time;
-	html[i++] = "</legend><div style='overflow:hidden; height:";
-	html[i++] = AjxEnv.isIE ? (rowHeight - 20) : rowHeight;
-	html[i++] = "px;";
+	html[i++] = "</legend><div style='overflow:hidden; ";
 	html[i++] = AjxEnv.isIE ? " width:99%'>" : "'>";
 	html[i++] = this._getTimeHtml();
 	html[i++] = "</div></fieldset>";
