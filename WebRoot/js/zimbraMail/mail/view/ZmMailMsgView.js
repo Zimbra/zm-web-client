@@ -515,8 +515,8 @@ function(doc) {
 				tmp = doc.createElement("div");
 				var code = objectManager.findObjects(node.data, true);
 				var disembowel = false;
-				if (AjxEnv.isIE && /^pre$/i.test(node.parentNode.tagName)) {
-					// Bug #6481: innerHTML in IE massacrates whitespace
+				if (AjxEnv.isIE) {
+					// Bug #6481, #4498: innerHTML in IE massacrates whitespace
 					//            unless it sees a <pre> in the code.
 					tmp.innerHTML = [ "<pre>", code, "</pre>" ].join("");
 					disembowel = true;
