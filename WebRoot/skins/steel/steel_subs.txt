@@ -153,7 +153,7 @@ _DialogTextColor_			= @_TextColor_@
 _DialogLabelColor_			= @_LabelColor_@
 _DialogTitleTextColor_		= white
 
-_FocusBorder_				= border: 1px dashed black;
+_FocusBorder_				= border: 1px dotted black;
 
 
 TextPaddingSize				= 3px
