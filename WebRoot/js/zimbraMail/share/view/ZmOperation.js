@@ -751,6 +751,12 @@ ZmOperation.SETUP[ZmOperation.SHARE_ACCEPT] = {
 	image:		"Check"
 };
 
+ZmOperation.SHARE_ADDRBOOK = i++;
+ZmOperation.SETUP[ZmOperation.SHARE_ADDRBOOK] = {
+	text:		"shareAddrBook",
+	image:		"SharedContactsFolder"
+};
+
 ZmOperation.SHARE_CALENDAR = i++;
 ZmOperation.SETUP[ZmOperation.SHARE_CALENDAR] = {
 	text:		"shareCalendar",

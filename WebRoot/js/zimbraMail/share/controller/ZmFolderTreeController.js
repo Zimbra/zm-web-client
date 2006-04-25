@@ -241,26 +241,21 @@ function(ev) {
 */
 ZmFolderTreeController.prototype._dropListener =
 function(ev) {
+	var dropFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
+	var srcData = ev.srcData;
+
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		var srcData = ev.srcData;
-		var dropFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
 		if (srcData instanceof ZmFolder) {
-			DBG.println(AjxDebug.DBG3, "DRAG_ENTER: " + srcData.name + " on to " + dropFolder.name);
 			var dragFolder = srcData; // note that folders cannot be moved as a list
 			ev.doIt = dropFolder.mayContain(dragFolder);
 		} else if (srcData instanceof ZmTag) {
 			ev.doIt = false; // tags cannot be moved
 		} else {
-			if (!this._dropTgt.isValidTarget(srcData.data)) {
-				ev.doIt = false;
-			} else {
-				ev.doIt = dropFolder.mayContain(srcData.data);
-			}
+			ev.doIt = !this._dropTgt.isValidTarget(srcData.data)
+				? false
+				: dropFolder.mayContain(srcData.data);
 		}
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
-		var dropFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
-		DBG.println(AjxDebug.DBG3, "DRAG_DROP: " + ev.srcData.name + " on to " + dropFolder.name);
-		var srcData = ev.srcData;
 		if (srcData instanceof ZmFolder) {
 			this._doMove(srcData, dropFolder);
 		} else {

@@ -37,10 +37,12 @@
 * @param owner		[string]*		owner of the address book (if shared)
 */
 function ZmAddrBook(id, name, parent, tree, owner) {
-	ZmOrganizer.call(this, ZmOrganizer.ADDRBOOK, id, name, parent, tree, null, null, null, owner);
+	ZmFolder.call(this, id, name, parent, tree);
+	this.type = ZmOrganizer.ADDRBOOK;
+	this.owner = owner;
 };
 
-ZmAddrBook.prototype = new ZmOrganizer;
+ZmAddrBook.prototype = new ZmFolder;
 ZmAddrBook.prototype.constructor = ZmAddrBook;
 
 
@@ -65,7 +67,7 @@ ZmAddrBook.prototype.getIcon =
 function() {
 	return this.id == ZmOrganizer.ID_ROOT 
 		? null
-		: "ContactsFolder";
+		: (this.id == ZmOrganizer.ID_TRASH ? "Trash" : "ContactsFolder");
 };
 
 ZmAddrBook.prototype.create = 
@@ -156,12 +158,14 @@ ZmAddrBook.createFromJs =
 function(parent, obj, tree) {
 	if (!(obj && obj.id)) return;
 
-	// create calendar, populate, and return
+	// create addrbook, populate, and return
 	var ab = new ZmAddrBook(obj.id, obj.name, parent, tree, obj.d);
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];
-			if (folder.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]) {
+			if (folder.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK] ||
+				folder.id == ZmOrganizer.ID_TRASH)
+			{
 				var childAB = ZmAddrBook.createFromJs(ab, folder, tree);
 				ab.children.add(childAB);
 			}

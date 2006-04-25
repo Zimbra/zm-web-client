@@ -60,6 +60,7 @@ ZmFolder.ID_TRASH			= ZmOrganizer.ID_TRASH;
 ZmFolder.ID_SPAM			= ZmOrganizer.ID_SPAM;
 ZmFolder.ID_SENT			= 5;
 ZmFolder.ID_DRAFTS			= 6;
+ZmFolder.ID_CONTACTS		= ZmOrganizer.ID_ADDRBOOK;
 ZmFolder.LAST_SYSTEM_ID		= 6;
 ZmFolder.ID_TAGS	 		= 8;
 
@@ -70,6 +71,7 @@ ZmFolder.MSG_KEY[ZmFolder.ID_TRASH]		= "trash";
 ZmFolder.MSG_KEY[ZmFolder.ID_SPAM]		= "junk";
 ZmFolder.MSG_KEY[ZmFolder.ID_SENT]		= "sent";
 ZmFolder.MSG_KEY[ZmFolder.ID_DRAFTS]	= "drafts";
+ZmFolder.MSG_KEY[ZmFolder.ID_CONTACTS]	= "contacts";
 ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]		= "tags";
 
 // system folder icons
@@ -87,6 +89,7 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_TRASH]		= "trash";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SPAM]		= "junk";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]		= "sent";
 ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]		= "drafts";
+ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]	= "contacts";
 
 // order within the overview panel
 ZmFolder.SORT_ORDER = new Object();
