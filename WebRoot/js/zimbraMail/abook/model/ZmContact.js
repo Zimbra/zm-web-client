@@ -738,11 +738,13 @@ function() {
 	this._fileAs = this._fullName = this._toolTip = null;
 };
 
-// Parse a contact node. A contact will only have attribute values if it is in the canonical list.
+// Parse contact node. A contact will only have attr values if its in canonical list.
 ZmContact.prototype._loadFromDom =
 function(node) {
-	// if we have node.a then we must be dealing with a GAL contact
-	if (node.a && (node.a instanceof Array)) {
+	// having node.a means we must be dealing with a GAL contact
+	// bug fix #7143 - check for length property instead of "instanceof Array" 
+	//                 since opening new window loses type info :(
+	if (node.a && node.a.length) {
 		for (var i = 0; i < node.a.length; i++) {
 			var attr = node.a[i];
 			if (attr.n == ZmContact.X_fullName) {
