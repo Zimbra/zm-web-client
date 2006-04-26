@@ -96,7 +96,7 @@ ZmOperation.CAL_REFRESH = i++;
 ZmOperation.SETUP[ZmOperation.CAL_REFRESH] = {
 	text:		"refresh",
 	tooltip:	"calRefreshTooltip",
-	image:		"SendRecieve"			// sic
+	image:		"SendReceive"
 };
 
 ZmOperation.CAL_VIEW_MENU = i++;
@@ -122,7 +122,7 @@ ZmOperation.CHECK_MAIL = i++;
 ZmOperation.SETUP[ZmOperation.CHECK_MAIL] = {
 	text:		"checkMail",
 	tooltip:	"checkMailTooltip",
-	image:		"SendRecieve"		// sic
+	image:		"SendReceive"
 };
 
 ZmOperation.CLEAR_ALL = i++;

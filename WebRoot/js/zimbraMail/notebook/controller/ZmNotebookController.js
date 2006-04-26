@@ -177,8 +177,8 @@ ZmNotebookController.prototype._initializeToolBar = function(view) {
 
 	var toolbar = this._toolbar[this._currentView];
 	var button = toolbar.getButton(ZmOperation.REFRESH);
-	button.setImage("SendRecieve");
-	button.setDisabledImage("SendRecieveDis");
+	button.setImage("SendReceive");
+	button.setDisabledImage("SendReceiveDis");
 
 	var button = toolbar.getButton(ZmOperation.ATTACHMENT);
 	button.setText(ZmMsg.addDocuments);

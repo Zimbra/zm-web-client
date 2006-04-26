@@ -117,7 +117,7 @@ function() {
 //	html.append("<td style='width:20px;' align='center'>", AjxImg.getImageHtml("Appointment"), "</td>");
 	html.append("<td style='width:20px;' align='center'><div id='", busyId, "' class='DwtWait16Icon'/></td>");
 	html.append("<td style='width:20px;' align='center'><div id='", blankId, "' class='Blank_16'/></td>");	
-//	html.append("<td style='width:20px;' align='center'>", AjxImg.getImageHtml("SendRecieve"), "</td>");
+//	html.append("<td style='width:20px;' align='center'>", AjxImg.getImageHtml("SendReceive"), "</td>");
 
 	html.append("</tr></table>");
 

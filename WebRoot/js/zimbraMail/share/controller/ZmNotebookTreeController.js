@@ -74,7 +74,7 @@ function(actionMenu, type, id) {
 		
 		if (!this._actionMenuInitialized) {
 			var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
-			menuItem.setImage("SendRecieve"); // [sic]
+			menuItem.setImage("SendReceive");
 			this._actionMenuInitialized = true;
 		}
 	}
