@@ -510,7 +510,7 @@ VSashSize					= width:100%;			height:@_SashSize_@;
 
 // FORM FIELDS
 
-InputField					= color:@_InputTextColor_@; background-color:@_InputBgColor_@; @_InputBorder_@ @TextPadding@
+InputField					= color:@_InputTextColor_@; @_InputBorder_@ @TextPadding@
 InputField-error			= color:@_InputErrorTextColor_@; background-color:@_InputErrorBgColor_@; @_InputBorder_@ @TextPadding@
 InputField-disabled			= color:@_InputDisabledTextColor_@; background-color:@_InputDisabledBgColor_@; @_DisabledBorder_@ @TextPadding@ @InactiveCursor@
 

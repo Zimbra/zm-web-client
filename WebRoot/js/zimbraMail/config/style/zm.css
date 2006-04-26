@@ -451,14 +451,18 @@ td.DDSepInvisible div {
 	white-space: nowrap; 
 }
 
-/* ??? USE? BUTTON?*/
+/* ??? "Displayimages" CLASS REALLY SHOULD BE SHARED WITH "SpellCheckModeDiv"  */
+/* CLASS DEFINED IN spellcheck.css SINCE THEY SHOULD HAVE THE SAME VISUAL LOOK */
 .ZmMailMsgView .Displayimages {
-	@NormalButton@
-	@NormalButtonText@
+	cursor: pointer;
+	background-color: #FFFFCC;
+	padding: 7px;
+	font-size: 10pt;
+	border-bottom: 1px solid #777777;
 }
 
 .ZmMailMsgView .Displayimages td {
-	@NormalButtonText@
+	font-size: 10pt;
 }
 
 
