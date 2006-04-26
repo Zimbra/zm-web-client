@@ -742,12 +742,15 @@ function() {
 	var myTg = this.getTabGroup();
 	var kbMgr = this._shell.getKeyboardMgr();
 
-	rootTg.replaceMember(ZmController._getCurrentAppViewTabGroup(), myTg);
-	if (this._savedFocusMember)
-		kbMgr.grabFocus(this._savedFocusMember);
-	else 
-		kbMgr.grabFocus(myTg.getFirstMember());
-	ZmController._setCurrentAppViewTabGroup(myTg);
+	// TODO - define proper tab grouping for new window when ready!
+	if (rootTg && myTg) {
+		rootTg.replaceMember(ZmController._getCurrentAppViewTabGroup(), myTg);
+		if (this._savedFocusMember)
+			kbMgr.grabFocus(this._savedFocusMember);
+		else 
+			kbMgr.grabFocus(myTg.getFirstMember());
+		ZmController._setCurrentAppViewTabGroup(myTg);
+	}
 	return true;
 };
 
