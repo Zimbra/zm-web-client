@@ -206,13 +206,6 @@ function(newMsg) {
 	// Remove listener for current msg if it exists
 	if (this._msg != null)
 		this._msg.removeChangeListener(this._changeListener);
-	// don't want add change listener for new until shown
-	this._msg = newMsg;
-};
-
-ZmMailMsgView.prototype.isDisplayingMsg =
-function(msg) {
-	return (this._msg == msg);
 };
 
 ZmMailMsgView.prototype.getMsg =
