@@ -485,7 +485,7 @@ function(sortBy) {
 ZmApptChooserTabViewPage.prototype._handleResponseSearchContacts = 
 function(result) {
 	var resp = result.getResponse();
-	this._chooser.setItems(resp.getResults(ZmItem.CONTACT).getVector(), null, true);
+	this._chooser.setItems(resp.getResults(ZmItem.CONTACT).getVector());
 };
 
 ZmApptChooserTabViewPage.prototype.searchCalendarResources = 
@@ -513,7 +513,7 @@ function(sortBy) {
 ZmApptChooserTabViewPage.prototype._handleResponseSearchCalendarResources = 
 function(result) {
 	var resp = result.getResponse();
-	this._chooser.setItems(resp.getResults(ZmItem.RESOURCE).getVector(), null, true);
+	this._chooser.setItems(resp.getResults(ZmItem.RESOURCE).getVector());
 };
 
 ZmApptChooserTabViewPage._keyPressHdlr =
@@ -561,7 +561,7 @@ function(ev) {
 function ZmApptChooser(parent, buttonInfo) {
 	var selectStyle = (parent.type == ZmAppt.LOCATION) ? DwtChooser.SINGLE_SELECT : null;
 	DwtChooser.call(this, {parent: parent, buttonInfo: buttonInfo, layoutStyle: DwtChooser.VERT_STYLE,
-						   selectStyle: selectStyle, allButtons: true});
+						   mode: DwtChooser.MODE_MOVE, selectStyle: selectStyle, allButtons: true});
 };
 
 ZmApptChooser.prototype = new DwtChooser;
