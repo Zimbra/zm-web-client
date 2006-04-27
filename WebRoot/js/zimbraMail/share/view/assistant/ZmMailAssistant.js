@@ -99,7 +99,7 @@ function(dialog, verb, args) {
 		if (field) {
 			if (field.key == 'body') {
 				strip = match[2] + match[3];
-				v = args.replace(strip,"");
+				v = args.replace(strip,"").replace(/^\s*/, '');
 				args = "";
 			}
 			if (v == null) v = "";
