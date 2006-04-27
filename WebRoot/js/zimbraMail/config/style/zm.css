@@ -570,6 +570,25 @@ td.DDSepInvisible div {
 
 
 
+.ZmHEDialog td.Label { text-align: right; 
+  width: 10em; -moz-user-select: none; user-select: none; 
+  padding-right: 3px;
+}
+.ZmHEDialog td.col2 { width: 7em; }
+.ZmHEDialog label { -moz-user-select: none; user-select: none; }
+.ZmHEDialog .ShowPickedColor {
+  border: 1px dashed #888;
+  width: 1.2em;
+  line-height: 1.2em;
+  -moz-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+.ZmHEDialog td.VSep-L { padding-left: 3px; font-size: 1px; border-right: 1px solid #aaa; }
+.ZmHEDialog td.VSep-R { padding-right: 3px; font-size: 1px; }
+
+
+
 
 /* ??? USED? */
 .ZmComposeTBButton {

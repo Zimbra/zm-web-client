@@ -65,7 +65,6 @@ ZmHtmlEditor.prototype.constructor = ZmHtmlEditor;
 
 // Consts
 ZmHtmlEditor._VALUE = "value";
-ZmHtmlEditor._INSERT_TABLE = "ZmHtmlEditor._INSERT_TABLE";
 
 // Data
 
@@ -502,15 +501,8 @@ ZmHtmlEditor.prototype._insElementListener =
 function(ev) {
 	var elType = ev.item.getData(ZmHtmlEditor._VALUE);
 	switch (elType) {
-		case ZmHtmlEditor._INSERT_TABLE:
-			if (!this._ntd) {
-				this._ntd = new ZmHETablePropsDialog(this.shell);
-				this._ntd.registerCallback(DwtDialog.OK_BUTTON, this._tableDialogOkCallback, this);
-			}
-			this._ntd.popup();
-			break;
-		default:
-			this.insertElement(elType);
+	    default:
+		this.insertElement(elType);
 	}
 };
 
@@ -676,15 +668,46 @@ function(parent) {
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
 	b.addSelectionListener(insElListener);
 
+	/* BEGIN: Table operations */
+
 	b = this._insertTableButton = new DwtButton(tb, null, "TBButton");
 	b.setImage("InsertTable");
 	b.setToolTipContent(ZmMsg.insertTable);
-	// b.setData(ZmHtmlEditor._VALUE, ZmHtmlEditor._INSERT_TABLE);
-	// b.addSelectionListener(insElListener);
  	var menu = new DwtMenu(b, DwtMenu.GENERIC_WIDGET_STYLE);
  	var grid = new DwtGridSizePicker(menu);
  	grid.addSelectionListener(new AjxListener(this, this._createTableListener));
  	b.setMenu(menu);
+
+	var tblListener = new AjxListener(this, this._tableOperationsListener);
+
+	b = this._tableOperationsButton = new DwtButton(tb, null, "TBButton");
+	b.setText("Table operations");
+	var menu = new DwtMenu(b);
+	b.setMenu(menu);
+
+	var tblCommands = [ "tableProperties...", "cellProperties...", null,
+			    "insertRow", "deleteRow", "insertColumn", "deleteColumn", null,
+			    "mergeCells", "splitCells", null,
+			    "deleteTable" ];
+	for (var i = 0; i < tblCommands.length; ++i) {
+		var cmd = tblCommands[i];
+		if (cmd == null)
+			new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+		else {
+			var dots = "";
+			if (/\.\.\.$/.test(cmd)) {
+				cmd = cmd.substr(0, cmd.length - 3);
+				dots = "&hellip;";
+			}
+			var item = new DwtMenuItem(menu);
+			var txt = ZmMsg[cmd] || cmd;
+			item.setText(txt + dots);
+			item.setData("TableOperations", cmd);
+			item.addSelectionListener(tblListener);
+		}
+	}
+
+	/* END: table operations */
 
 	if (this.ACE_ENABLED) {
 		tb.addSeparator("vertSep");
@@ -713,6 +736,27 @@ function(parent) {
 	}
 
 	this._toolbars.push(tb);
+};
+
+ZmHtmlEditor.prototype._tableOperationsListener =
+function(ev) {
+	var item = ev.item;
+	var data = item.getData("TableOperations");
+	this.focus();
+	switch (data) {
+	    case "mergeCells":
+		this.doTableOperation("mergeCells", { cells: this.getSelectedCells() });
+		break;
+	    case "tableProperties":
+		var dlg = ZmTableEditor.getTablePropsDialog(this, this.getNearestElement("table"));
+		dlg.popup();
+		break;
+	    case "cellProperties":
+		alert("Not implemented");
+		break;
+	    default:
+		this.doTableOperation(data);
+	}
 };
 
 ZmHtmlEditor.prototype._createTableListener =
@@ -932,6 +976,8 @@ function(ev) {
 
 	this._numberedListButton.setToggled(ev.isOrderedList);
 	this._listButton.setToggled(ev.isUnorderedList);
+
+	this._tableOperationsButton.setEnabled(this.getNearestElement("table"));
 
 	if (ev.style)
 		this._styleSelect.setSelectedValue(ev.style);
@@ -1359,13 +1405,6 @@ function(words) {
 		this.onExitSpellChecker.run(wordsFound);
 };
 
-ZmHtmlEditor.prototype._tableDialogOkCallback =
-function(ev) {
-	var vals = this._ntd.getValues();
-	this.insertTable(vals.numRows, vals.numCols, vals.width, vals.cellSpacing, vals.cellPadding, vals.alignment);
-	this._ntd.popdown();
-};
-
 // overwrites the base class' _enableDesignMode in order to work around Gecko problems
 ZmHtmlEditor.prototype._enableDesignMode = function(doc) {
 	if (!doc)
@@ -1382,47 +1421,51 @@ ZmHtmlEditor.prototype._enableDesignMode = function(doc) {
 
 //	if (!this._hasDesignModeHack) {
 
-	// Also, if we move the inner functions outside and make them
-	// controlled closures, we break Firefox/Linux.  FF/Win is OK.  Hell knows why :(
-
 	this._hasDesignModeHack = true;
-	var editor = this;
 	var bookmark = null;
 
-	function blur() {
-		if (editor._ace_componentsLoading > 0)
-			return;
-		try {
-			var sel = editor._getIframeWin().getSelection();
-			bookmark = sel.getRangeAt(0);
-			sel.removeAllRanges();
-		} catch(ex) {
-			bookmark = null;
-		}
-		doc.designMode = "off";
-		// window.status = "REMOVED DESIGN MODE";
-	};
+	if (!this._designModeHack_blur) {
+		this._designModeHack_blur = AjxCallback.simpleClosure(function() {
+			if (this._ace_componentsLoading > 0)
+				return;
+			var doc = this._getIframeDoc();
+			try {
+				var sel = this._getIframeWin().getSelection();
+				var i = 0, r;
+				try {
+					bookmark = [];
+					while (r = sel.getRangeAt(i++))
+						bookmark.push(r);
+				} catch(ex) {};
+				sel.removeAllRanges();
+			} catch(ex) {
+				bookmark = null;
+			}
+			doc.designMode = "off";
+		}, this);
+	}
 
-	function focus() {
-		if (editor._ace_componentsLoading > 0)
-			return;
-		// window.status = "ADDED DESIGN MODE";
-		doc.designMode = "on";
-		// Probably a regression of FF 1.5.0.1/Linux requires us to
-		// reset event handlers here (Zimbra bug: 6545).
- 		if (AjxEnv.isGeckoBased && AjxEnv.isLinux)
- 			editor._registerEditorEventHandlers(document.getElementById(editor._iFrameId), doc);
-		if (bookmark) {
-			var sel = editor._getIframeWin().getSelection();
-			sel.removeAllRanges();
-			sel.addRange(bookmark);
-			bookmark = null;
-		}
-		// doc.body.removeEventListener("click", focus);
-	};
+	if (!this._designModeHack_focus) {
+		this._designModeHack_focus = AjxCallback.simpleClosure(function() {
+			if (this._ace_componentsLoading > 0)
+				return;
+			var doc = this._getIframeDoc();
+			doc.designMode = "on";
+			// Probably a regression of FF 1.5.0.1/Linux requires us to
+			// reset event handlers here (Zimbra bug: 6545).
+			if (AjxEnv.isGeckoBased && (AjxEnv.isLinux || AjxEnv.isMac))
+				this._registerEditorEventHandlers(document.getElementById(this._iFrameId), doc);
+			if (bookmark) {
+				var sel = this._getIframeWin().getSelection();
+				sel.removeAllRanges();
+				for (var i = 0; i < bookmark.length; ++i)
+					sel.addRange(bookmark[i]);
+				bookmark = null;
+			}
+		}, this);
+	}
 
-	doc.addEventListener("blur", blur, true);
-	// doc.body.addEventListener("click", focus, true);
-	doc.addEventListener("focus", focus, true);
+	doc.addEventListener("blur", this._designModeHack_blur, true);
+	doc.addEventListener("focus", this._designModeHack_focus, true);
 //	}
 };
