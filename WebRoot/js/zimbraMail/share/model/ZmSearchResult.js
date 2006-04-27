@@ -26,15 +26,19 @@
 function ZmSearchResult(appCtxt, search) {
 
 	this._results = {};
-	if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED))
+	if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 		this._results[ZmItem.CONV] = new ZmMailList(ZmItem.CONV, appCtxt, search);
+	}
 	this._results[ZmItem.MSG] = new ZmMailList(ZmItem.MSG, appCtxt, search);
-	if (appCtxt.get(ZmSetting.ATT_VIEW_ENABLED))
+	if (appCtxt.get(ZmSetting.ATT_VIEW_ENABLED)) {
 		this._results[ZmItem.ATT] = new ZmMailList(ZmItem.ATT, appCtxt, search);
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED))
+	}
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		this._results[ZmItem.CONTACT] = new ZmContactList(appCtxt, search, false);
-	if (appCtxt.get(ZmSetting.GAL_ENABLED))
-		this._results[ZmItem.RESOURCE] = new ZmResourceList(appCtxt, search);
+	}
+	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		this._results[ZmItem.RESOURCE] = new ZmResourceList(appCtxt, null, search);
+	}
 
 	this._appCtxt = appCtxt;
 	this.search = search;
@@ -86,11 +90,12 @@ function(respEl, contactSource) {
 
 	this._respEl = respEl;
 	
-	if (this.search.isGalSearch)
+	if (this.search.isGalSearch) {
 		this._results[ZmItem.CONTACT].setIsGal(true);
+	}
 
-	var addressHash = new Object();
-	var foundType = new Object();
+	var addressHash = {};
+	var foundType = {};
 	var numTypes = 0;
 	var currentType = null;
 	

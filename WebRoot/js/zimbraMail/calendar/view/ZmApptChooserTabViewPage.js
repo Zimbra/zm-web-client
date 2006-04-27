@@ -23,19 +23,18 @@
  * ***** END LICENSE BLOCK *****
  */
 /**
-* Creates a new tab view that can be used to choose attendees, locations, and/or
-* resources.
+* Creates a new tab view that can be used to choose attendees, locations, or equipment.
 * @constructor
 * @class
-* This class allows the user to search for attendees, locations, and/or
-* resources. It presents a chooser which allows the user to select items from
+* This class allows the user to search for attendees, locations, or
+* equipment. It presents a chooser which allows the user to select items from
 * the search results.
 *
 * @author Conrad Damon
 *
 * @param parent		[DwtComposite]	the element that created this view
 * @param appCtxt 	[ZmAppCtxt]		app context
-* @param attendees	[hash]			attendees/locations/resources
+* @param attendees	[hash]			attendees/locations/equipment
 * @param type		[constant]		chooser page type
 */
 function ZmApptChooserTabViewPage(parent, appCtxt, attendees, type) {
@@ -93,7 +92,7 @@ ZmApptChooserTabViewPage.COLS[ZmAppt.LOCATION] =
 	[ZmApptChooserTabViewPage.ID_NAME, ZmApptChooserTabViewPage.ID_LOCATION,
 	 ZmApptChooserTabViewPage.ID_CONTACT, ZmApptChooserTabViewPage.ID_CAPACITY,
 	 ZmApptChooserTabViewPage.ID_NOTES];
-ZmApptChooserTabViewPage.COLS[ZmAppt.RESOURCE] =
+ZmApptChooserTabViewPage.COLS[ZmAppt.EQUIPMENT] =
 	[ZmApptChooserTabViewPage.ID_NAME, ZmApptChooserTabViewPage.ID_LOCATION,
 	 ZmApptChooserTabViewPage.ID_CONTACT, ZmApptChooserTabViewPage.ID_NOTES];
 
@@ -140,7 +139,7 @@ ZmApptChooserTabViewPage.ATTRS = {};
 ZmApptChooserTabViewPage.ATTRS[ZmAppt.LOCATION] =
 	["displayName", "mail", "zimbraCalResLocationDisplayName",
 	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description"];
-ZmApptChooserTabViewPage.ATTRS[ZmAppt.RESOURCE] =
+ZmApptChooserTabViewPage.ATTRS[ZmAppt.EQUIPMENT] =
 	["displayName", "mail", "zimbraCalResLocationDisplayName",
 	 "zimbraCalResContactEmail", "description"];
 
@@ -151,7 +150,7 @@ ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmAppt.LOCATION] =
 	[ZmApptChooserTabViewPage.SF_NAME, ZmApptChooserTabViewPage.SF_SITE,
 	 ZmApptChooserTabViewPage.SF_CAPACITY, ZmApptChooserTabViewPage.SF_BUILDING,
 	 ZmApptChooserTabViewPage.SF_NOTES, ZmApptChooserTabViewPage.SF_FLOOR];
-ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmAppt.RESOURCE] =
+ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmAppt.EQUIPMENT] =
 	[ZmApptChooserTabViewPage.SF_NAME, ZmApptChooserTabViewPage.SF_SITE,
 	 ZmApptChooserTabViewPage.SF_NOTES, ZmApptChooserTabViewPage.SF_BUILDING,
 	 ZmApptChooserTabViewPage.SF_CONTACT, ZmApptChooserTabViewPage.SF_FLOOR];
@@ -159,23 +158,23 @@ ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmAppt.RESOURCE] =
 ZmApptChooserTabViewPage.SORT_BY = {};
 ZmApptChooserTabViewPage.SORT_BY[ZmAppt.PERSON]		= ZmSearch.NAME_ASC;
 ZmApptChooserTabViewPage.SORT_BY[ZmAppt.LOCATION]	= ZmSearch.NAME_ASC;
-ZmApptChooserTabViewPage.SORT_BY[ZmAppt.RESOURCE]	= ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmAppt.EQUIPMENT]	= ZmSearch.NAME_ASC;
 
 ZmApptChooserTabViewPage.TOP_LEGEND = {};
 ZmApptChooserTabViewPage.TOP_LEGEND[ZmAppt.PERSON]		= ZmMsg.findAttendees;
 ZmApptChooserTabViewPage.TOP_LEGEND[ZmAppt.LOCATION]	= ZmMsg.findLocations;
-ZmApptChooserTabViewPage.TOP_LEGEND[ZmAppt.RESOURCE]	= ZmMsg.findResources;
+ZmApptChooserTabViewPage.TOP_LEGEND[ZmAppt.EQUIPMENT]	= ZmMsg.findResources;
 
 ZmApptChooserTabViewPage.BOTTOM_LEGEND = {};
-ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmAppt.PERSON]	= ZmMsg.apptAttendees;
-ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmAppt.LOCATION]	= ZmMsg.apptLocations;
-ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmAppt.RESOURCE]	= ZmMsg.apptResources;
+ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmAppt.PERSON]		= ZmMsg.apptAttendees;
+ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmAppt.LOCATION]		= ZmMsg.apptLocations;
+ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmAppt.EQUIPMENT]	= ZmMsg.apptResources;
 
 // images for the bottom fieldset legend
 ZmApptChooserTabViewPage.ICON = {};
 ZmApptChooserTabViewPage.ICON[ZmAppt.PERSON]	= "/zimbra/img/hiRes/calendar/ApptMeeting.gif";
 ZmApptChooserTabViewPage.ICON[ZmAppt.LOCATION]	= "/zimbra/img/hiRes/calendar/Location.gif";
-ZmApptChooserTabViewPage.ICON[ZmAppt.RESOURCE]	= "/zimbra/img/hiRes/calendar/Resource.gif";
+ZmApptChooserTabViewPage.ICON[ZmAppt.EQUIPMENT]	= "/zimbra/img/hiRes/calendar/Resource.gif";
 
 
 ZmApptChooserTabViewPage.prototype = new DwtTabViewPage;

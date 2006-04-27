@@ -85,12 +85,12 @@ function(appt) {
 		html[i++] = "</td></tr>";
 	}
 
-	var resources = appt.getResourcesText(true);
-	if (resources) {
+	var equipment = appt.getEquipmentText(true);
+	if (equipment) {
 		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
 		html[i++] = ZmMsg.resources;
 		html[i++] = ":</td><td>";
-		html[i++] = this._objectManager.findObjects(resources, true);
+		html[i++] = this._objectManager.findObjects(equipment, true);
 		html[i++] = "</td></tr>";
 	}
 

@@ -33,11 +33,14 @@
 * @author Conrad Damon
 *
 * @param appCtxt	[ZmAppCtxt]		the app context
+* @param resType	[constant]		type of resources (location or equipment)
 * @param search		[ZmSearch]*		search that generated this list
 */
-function ZmResourceList(appCtxt, search) {
+function ZmResourceList(appCtxt, resType, search) {
 	ZmContactList.call(this, appCtxt, search, true, ZmItem.RESOURCE);
 
+	this.resType = resType;
+	
 	this._nameToResource = {};
 	this._emailToResource = {};
 	this._acMatchFields = ZmResourceList.AC_FIELDS;
@@ -55,8 +58,8 @@ ZmResourceList.prototype.constructor = ZmResourceList;
 ZmResourceList.prototype.load =
 function() {
 	var conds = [];
-	conds.push({attr: ZmResource.F_type, op: "eq", value: ZmResource.TYPE_LOCATION});
-	conds.push({attr: ZmResource.F_type, op: "eq", value: ZmResource.TYPE_EQUIPMENT});
+	var value = (this.resType == ZmAppt.LOCATION) ? ZmResource.ATTR_LOCATION : ZmResource.ATTR_EQUIPMENT;
+	conds.push({attr: ZmResource.F_type, op: "eq", value: value});
 	var params = {conds: conds, join: ZmSearch.JOIN_OR, attrs: ZmResourceList.ATTRS};
 	var search = new ZmSearch(this._appCtxt, params);
 	

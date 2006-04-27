@@ -1513,12 +1513,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmSchedulerInputDisabled {
-	@PageBg@
-	@Label@
-	@FullSize@
-	@InactiveCursor@
-	border: 0px;
-	padding-top: 3px;
+	@TextPadding@
 }
 
 /*

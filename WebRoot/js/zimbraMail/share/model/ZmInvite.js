@@ -379,9 +379,8 @@ function(compNum) {
 
 ZmInvite.prototype.getLocation =
 function(compNum) {
-	return this.components[compNum] != null
-		? this.components[compNum].loc
-		: null;
+	compNum = compNum ? compNum : 0;
+	return this.components[compNum] ? this.components[compNum].loc : null;
 };
 
 /** 

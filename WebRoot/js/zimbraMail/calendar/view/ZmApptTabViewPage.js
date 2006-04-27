@@ -33,7 +33,7 @@
 *
 * @param parent				[DwtComposite]				the appt compose view
 * @param appCtxt 			[ZmAppCtxt]					app context
-* @param attendees			[hash]						attendees/locations/resources
+* @param attendees			[hash]						attendees/locations/equipment
 * @param dateInfo			[object]					hash of date info
 */
 function ZmApptTabViewPage(parent, appCtxt, attendees, dateInfo) {
@@ -57,7 +57,7 @@ function ZmApptTabViewPage(parent, appCtxt, attendees, dateInfo) {
 	
 	this._attTypes = [ZmAppt.PERSON, ZmAppt.LOCATION];
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		this._attTypes.push(ZmAppt.RESOURCE);
+		this._attTypes.push(ZmAppt.EQUIPMENT);
 	}
 	
 	parent.addChangeListener(new AjxListener(this, this._attendeesChangeListener));
@@ -231,9 +231,13 @@ function() {
 		this._acContactsList.reset();
 		this._acContactsList.show(false);
 	}
-	if (this._acResourcesList) {
-		this._acResourcesList.reset();
-		this._acResourcesList.show(false);
+	if (this._acLocationsList) {
+		this._acLocationsList.reset();
+		this._acLocationsList.show(false);
+	}
+	if (this._acEquipmentList) {
+		this._acEquipmentList.reset();
+		this._acEquipmentList.show(false);
 	}
 };
 
@@ -548,14 +552,14 @@ function(appt, mode) {
 		}
 	}
 	
-	// resources
-	var resources = appt.getResources();
-	if (resources && resources.length && this._attInputField[ZmAppt.RESOURCE]) {
-		this._attInputField[ZmAppt.RESOURCE].setValue(appt.getResourcesText());
-		this._attendees[ZmAppt.RESOURCE] = AjxVector.fromArray(resources);
-		tp = this.parent.getTabPage(ZmApptComposeView.TAB_RESOURCES);
+	// equipment
+	var equipment = appt.getEquipment();
+	if (equipment && equipment.length && this._attInputField[ZmAppt.EQUIPMENT]) {
+		this._attInputField[ZmAppt.EQUIPMENT].setValue(appt.getEquipmentText());
+		this._attendees[ZmAppt.EQUIPMENT] = AjxVector.fromArray(equipment);
+		tp = this.parent.getTabPage(ZmApptComposeView.TAB_EQUIPMENT);
 		if (tp) {
-			tp._chooser.transfer(resources, null, true);
+			tp._chooser.transfer(equipment, null, true);
 		}
 	}
 
@@ -871,7 +875,7 @@ function() {
 		html[i++] = ":</td>";
 
 		html[i++] = "<td id='";
-		html[i++] = this._attTdId[ZmAppt.RESOURCE];
+		html[i++] = this._attTdId[ZmAppt.EQUIPMENT];
 		html[i++] = "'></td>";
 		html[i++] = "</tr>";
 	}
@@ -903,15 +907,16 @@ function() {
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acContactsList.handle(this._attInputField[ZmAppt.PERSON].getInputElement());
 	}
-	// autocomplete for locations/resources
+	// autocomplete for locations/equipment
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
-		var resourcesLoader = resourcesClass.getResources;
-		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesLoader,
+		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations,
 					  matchValue: ZmContactList.AC_VALUE_NAME, compCallback: acCallback};
-		this._acResourcesList = new ZmAutocompleteListView(params);
-		this._acResourcesList.handle(this._attInputField[ZmAppt.LOCATION].getInputElement());
-		this._acResourcesList.handle(this._attInputField[ZmAppt.RESOURCE].getInputElement());
+		this._acLocationsList = new ZmAutocompleteListView(params);
+		this._acLocationsList.handle(this._attInputField[ZmAppt.LOCATION].getInputElement());
+		params.dataLoader = resourcesClass.getEquipment;
+		this._acEquipmentList = new ZmAutocompleteListView(params);
+		this._acEquipmentList.handle(this._attInputField[ZmAppt.EQUIPMENT].getInputElement());
 	}
 };
 
@@ -1122,7 +1127,7 @@ function(excludeAttendees) {
 
 	vals.push(this._subjectField.getValue());
 	vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.LOCATION].getArray(), ZmAppt.LOCATION));
-	vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.RESOURCE].getArray(), ZmAppt.RESOURCE));
+	vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.EQUIPMENT].getArray(), ZmAppt.EQUIPMENT));
 	vals.push(this._showAsSelect.getValue());
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);

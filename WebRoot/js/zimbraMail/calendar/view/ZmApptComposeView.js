@@ -29,8 +29,8 @@
 * @class
 * This class provides a form for creating/editing appointments. It is a tab view with
 * five tabs: the appt form, a scheduling page, and three pickers (one each for finding
-* attendees, locations, and resources). The attendee data (people, locations, and
-* resources are all attendees) is maintained here centrally, since it is presented and
+* attendees, locations, and equipment). The attendee data (people, locations, and
+* equipment are all attendees) is maintained here centrally, since it is presented and
 * can be modified in each of the five tabs.
 *
 * @author Parag Shah
@@ -60,19 +60,19 @@ function ZmApptComposeView(parent, className, calApp, controller) {
 	this._attendees = {};
 	this._attendees[ZmAppt.PERSON]		= new AjxVector();	// list of ZmContact
 	this._attendees[ZmAppt.LOCATION]	= new AjxVector();	// list of ZmResource
-	this._attendees[ZmAppt.RESOURCE]	= new AjxVector();	// list of ZmResource
+	this._attendees[ZmAppt.EQUIPMENT]	= new AjxVector();	// list of ZmResource
 
 	// set of attendee keys (for preventing duplicates)
 	this._attendeeKeys = {};
 	this._attendeeKeys[ZmAppt.PERSON]	= {};
 	this._attendeeKeys[ZmAppt.LOCATION]	= {};
-	this._attendeeKeys[ZmAppt.RESOURCE]	= {};
+	this._attendeeKeys[ZmAppt.EQUIPMENT]	= {};
 
 	// error msg for when user enters invalid attendee
 	this._badAttendeeMsg = {};
 	this._badAttendeeMsg[ZmAppt.PERSON]		= ZmMsg.schedBadAttendee;
 	this._badAttendeeMsg[ZmAppt.LOCATION]	= ZmMsg.schedBadLocation;
-	this._badAttendeeMsg[ZmAppt.RESOURCE]	= ZmMsg.schedBadResource;
+	this._badAttendeeMsg[ZmAppt.EQUIPMENT]	= ZmMsg.schedBadResource;
 
 	// for attendees change events
 	this._evt = new ZmEvent(ZmEvent.S_CONTACT);
@@ -86,7 +86,7 @@ function ZmApptComposeView(parent, className, calApp, controller) {
 	}
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		this._tabIds.push(ZmApptComposeView.TAB_LOCATIONS);
-		this._tabIds.push(ZmApptComposeView.TAB_RESOURCES);
+		this._tabIds.push(ZmApptComposeView.TAB_EQUIPMENT);
 	}
 
 	this._initialize();
@@ -97,7 +97,7 @@ ZmApptComposeView.TAB_APPOINTMENT	= i++;
 ZmApptComposeView.TAB_SCHEDULE		= i++;
 ZmApptComposeView.TAB_ATTENDEES		= i++;
 ZmApptComposeView.TAB_LOCATIONS		= i++;
-ZmApptComposeView.TAB_RESOURCES		= i++;
+ZmApptComposeView.TAB_EQUIPMENT		= i++;
 delete i;
 
 ZmApptComposeView.TAB_NAME = {};
@@ -105,14 +105,14 @@ ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_APPOINTMENT]	= "apptDetails";
 ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_SCHEDULE]		= "schedule";
 ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_ATTENDEES]		= "findAttendees";
 ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_LOCATIONS]		= "findLocations";
-ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_RESOURCES]		= "findResources";
+ZmApptComposeView.TAB_NAME[ZmApptComposeView.TAB_EQUIPMENT]		= "findResources";
 
 ZmApptComposeView.TAB_IMAGE = {};
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_APPOINTMENT]	= "Appointment";
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_SCHEDULE]		= "GroupSchedule";
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_ATTENDEES]	= "ApptMeeting";
 ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_LOCATIONS]	= "Globe";
-ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_RESOURCES]	= "Attachment";
+ZmApptComposeView.TAB_IMAGE[ZmApptComposeView.TAB_EQUIPMENT]	= "Attachment";
 
 // attendee operations
 ZmApptComposeView.MODE_ADD		= 1;
@@ -162,7 +162,7 @@ function(appt, mode, isDirty) {
 	}
 	this._addChooserListener(this._tabPages[ZmApptComposeView.TAB_ATTENDEES]);
 	this._addChooserListener(this._tabPages[ZmApptComposeView.TAB_LOCATIONS]);
-	this._addChooserListener(this._tabPages[ZmApptComposeView.TAB_RESOURCES]);
+	this._addChooserListener(this._tabPages[ZmApptComposeView.TAB_EQUIPMENT]);
 };
 
 ZmApptComposeView.prototype.cleanup = 
@@ -170,11 +170,11 @@ function() {
 	// clear attendees lists
 	this._attendees[ZmAppt.PERSON]		= new AjxVector();
 	this._attendees[ZmAppt.LOCATION]	= new AjxVector();
-	this._attendees[ZmAppt.RESOURCE]	= new AjxVector();
+	this._attendees[ZmAppt.EQUIPMENT]	= new AjxVector();
 
 	this._attendeeKeys[ZmAppt.PERSON]	= {};
 	this._attendeeKeys[ZmAppt.LOCATION]	= {};
-	this._attendeeKeys[ZmAppt.RESOURCE]	= {};
+	this._attendeeKeys[ZmAppt.EQUIPMENT]	= {};
 
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
@@ -296,7 +296,7 @@ function(id) {
 * replacing the current list (with a clone of the one passed in).
 *
 * @param attendees	[object]		attendee(s) as string, array, or AjxVector
-* @param type		[constant]		attendee type (attendee/location/resource)
+* @param type		[constant]		attendee type (attendee/location/equipment)
 * @param mode		[constant]*		replace (default) or add
 * @param index		[int]*			index at which to add attendee
 */
@@ -415,8 +415,8 @@ function(id) {
 			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, ZmAppt.PERSON);
 		case ZmApptComposeView.TAB_LOCATIONS :
 			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, ZmAppt.LOCATION);
-		case ZmApptComposeView.TAB_RESOURCES :
-			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, ZmAppt.RESOURCE);
+		case ZmApptComposeView.TAB_EQUIPMENT :
+			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, ZmAppt.EQUIPMENT);
 	}
 };
 

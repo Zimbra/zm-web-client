@@ -60,11 +60,11 @@ function ZmAppt(appCtxt, list, noinit) {
 	this._attendees = {};	// attendees by type
 	this._attendees[ZmAppt.PERSON]		= [];
 	this._attendees[ZmAppt.LOCATION]	= [];
-	this._attendees[ZmAppt.RESOURCE]	= [];
+	this._attendees[ZmAppt.EQUIPMENT]	= [];
 
 	this._origAttendees = null;	// list of ZmContact
 	this._origLocations = null;	// list of ZmResource
-	this._origResources = null;	// list of ZmResource
+	this._origEquipment = null;	// list of ZmResource
 };
 
 ZmAppt.prototype = new ZmItem;
@@ -90,9 +90,9 @@ ZmAppt.SOAP_METHOD_REQUEST			= 1;
 ZmAppt.SOAP_METHOD_REPLY			= 2;
 ZmAppt.SOAP_METHOD_CANCEL			= 3;
 
-ZmAppt.PERSON	= 1;
-ZmAppt.LOCATION	= 2;
-ZmAppt.RESOURCE	= 3;
+ZmAppt.PERSON		= 1;
+ZmAppt.LOCATION		= 2;
+ZmAppt.EQUIPMENT	= 3;
 
 ZmAppt.ATTENDEES_SEPARATOR	= "; ";
 
@@ -158,11 +158,11 @@ function() {
 
 ZmAppt.prototype.getAttendees					= function() { return this._attendees[ZmAppt.PERSON]; };
 ZmAppt.prototype.getLocations					= function() { return this._attendees[ZmAppt.LOCATION]; };
-ZmAppt.prototype.getResources					= function() { return this._attendees[ZmAppt.RESOURCE]; };
+ZmAppt.prototype.getEquipment					= function() { return this._attendees[ZmAppt.EQUIPMENT]; };
 
 ZmAppt.prototype.getOrigAttendees 				= function() { return this._origAttendees; };
 ZmAppt.prototype.getOrigLocations 				= function() { return this._origLocations; };
-ZmAppt.prototype.getOrigResources 				= function() { return this._origResources; };
+ZmAppt.prototype.getOrigEquipment 				= function() { return this._origEquipment; };
 ZmAppt.prototype.getDuration 					= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
 ZmAppt.prototype.getEndDate 					= function() { return this.endDate; };
 ZmAppt.prototype.getEndTime 					= function() { return this.endDate.getTime(); }; 	// end time in ms
@@ -202,11 +202,11 @@ function(useStartTime) {
 ZmAppt.prototype.getAttendeesText	= function() { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.PERSON], ZmAppt.PERSON); };
 ZmAppt.prototype.getLocationsText	= function(includeDisplayName) { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.LOCATION], ZmAppt.LOCATION, includeDisplayName); };
 ZmAppt.prototype.getLocation		= function(includeDisplayName) { return this.getLocationsText(includeDisplayName); };
-ZmAppt.prototype.getResourcesText	= function(includeDisplayName) { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.RESOURCE], ZmAppt.RESOURCE, includeDisplayName); };
+ZmAppt.prototype.getEquipmentText	= function(includeDisplayName) { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmAppt.EQUIPMENT], ZmAppt.EQUIPMENT, includeDisplayName); };
 
 ZmAppt.prototype.getOrigLocationsText	= function(includeDisplayName) { return ZmApptViewHelper.getAttendeesString(this._origLocations, ZmAppt.LOCATION, includeDisplayName); };
 ZmAppt.prototype.getOrigLocation		= function(includeDisplayName) { return this.getOrigLocationsText(includeDisplayName); };
-ZmAppt.prototype.getOrigResourcesText	= function(includeDisplayName) { return ZmApptViewHelper.getAttendeesString(this._origResources, ZmAppt.RESOURCE, includeDisplayName); };
+ZmAppt.prototype.getOrigEquipmentText	= function(includeDisplayName) { return ZmApptViewHelper.getAttendeesString(this._origEquipment, ZmAppt.EQUIPMENT, includeDisplayName); };
 
 ZmAppt.prototype.isAllDayEvent 					= function() { return this.allDayEvent == "1"; };
 ZmAppt.prototype.isCustomRecurrence 			= function() { return this.repeatCustom == "1" || this.repeatEndType != "N"; };
@@ -245,7 +245,7 @@ ZmAppt.prototype.setType 						= function(newType) 	{ this.type = newType; };
 ZmAppt.prototype.setTimezone 					= function(timezone) 	{ this.timezone = timezone; };
 
 /**
-* Sets the attendees (person, location, or resource) for this appt.
+* Sets the attendees (person, location, or equipment) for this appt.
 *
 * @param list	[array]		list of email string, ZmEmailAddress, ZmContact, or ZmResource
 */
@@ -301,7 +301,7 @@ function(appt) {
 
 	newAppt._origAttendees = AjxUtil.createProxy(appt.getOrigAttendees());
 	newAppt._origLocations = AjxUtil.createProxy(appt.getOrigLocations());
-	newAppt._origResources = AjxUtil.createProxy(appt.getOrigResources());
+	newAppt._origEquipment = AjxUtil.createProxy(appt.getOrigEquipment());
 	newAppt._validAttachments = AjxUtil.createProxy(appt._validAttachments);
 	
 	if (newAppt._orig == null) 
@@ -603,7 +603,7 @@ function(message, viewMode) {
 		// looking at the invite's resources (which will only contain known locations)
 		this._attendees[ZmAppt.LOCATION] = [];
 		this._origLocations = [];
-		var locations = ZmEmailAddress.split(message.invite.getLocation(0));
+		var locations = ZmEmailAddress.split(message.invite.getLocation());
 		if (locations) {
 			for (var i = 0; i < locations.length; i++) {
 				var location = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, locations[i], ZmAppt.LOCATION);
@@ -614,25 +614,23 @@ function(message, viewMode) {
 			}
 		}
 		
-		// Get resources by email, make sure to exclude location resources
-		this._attendees[ZmAppt.RESOURCE] = [];
-		this._origResources = [];
-		var resources = message.invite.getResources();
+		// Get equipment by email, make sure to exclude location resources
+		this._attendees[ZmAppt.EQUIPMENT] = [];
+		this._origEquipment = [];
+		var resources = message.invite.getResources();	// returns all the invite's resources
 		if (resources) {
 			for (var i = 0; i < resources.length; i++) {
-				var resource = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, resources[i].url);
-				if (resource) {
-					if (!resource.isLocation()) {
-						this._attendees[ZmAppt.RESOURCE].push(resource);
-						this._origResources.push(resource);
-					}
+				// see if it's a known location
+				var location = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, resources[i].url, ZmAppt.LOCATION, true, true);
+				if (location) {
+					continue;
+				}
+				var equipment = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, resources[i].url, ZmAppt.EQUIPMENT);
+				if (equipment) {
+					this._attendees[ZmAppt.EQUIPMENT].push(equipment);
+					this._origEquipment.push(equipment);
 				}
 			}
-		}
-		var location = message.invite.getLocation(0);
-		if (location && !this._attendees[ZmAppt.LOCATION].length) {
-			var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, location, ZmAppt.LOCATION);
-			this._attendees[ZmAppt.LOCATION].push(attendee);
 		}
 
 		this.getAttachments();
@@ -946,10 +944,10 @@ function(isHtml) {
 		buf[i++] = "\n";
 	}
 	
-	var resources = this.getResourcesText(true);
-	if (resources) {
-		var modified = isEdit && (this.getOrigResourcesText(true) != resources);
-		var params = [ ZmMsg.resources + ":", resources, modified ? ZmMsg.apptModifiedStamp : "" ];
+	var equipment = this.getEquipmentText(true);
+	if (equipment) {
+		var modified = isEdit && (this.getOrigEquipmentText(true) != equipment);
+		var params = [ ZmMsg.resources + ":", equipment, modified ? ZmMsg.apptModifiedStamp : "" ];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
@@ -1640,9 +1638,9 @@ function(soapDoc, inv, m, notifyList) {
 			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[ZmAppt.PERSON][i], ZmAppt.PERSON);
 		}
 	}
-	if (this._attendees[ZmAppt.RESOURCE] && this._attendees[ZmAppt.RESOURCE].length) {
-		for (var i = 0; i < this._attendees[ZmAppt.RESOURCE].length; i++) {
-			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[ZmAppt.RESOURCE][i], ZmAppt.RESOURCE);
+	if (this._attendees[ZmAppt.EQUIPMENT] && this._attendees[ZmAppt.EQUIPMENT].length) {
+		for (var i = 0; i < this._attendees[ZmAppt.EQUIPMENT].length; i++) {
+			this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[ZmAppt.EQUIPMENT][i], ZmAppt.EQUIPMENT);
 		}
 	}
 	if (this._attendees[ZmAppt.LOCATION] && this._attendees[ZmAppt.LOCATION].length) {
@@ -1698,7 +1696,7 @@ function(soapDoc, m, cancel) {
 
 	var hasAttendees = ((this._attendees[ZmAppt.PERSON] && this._attendees[ZmAppt.PERSON].length) ||
 						(this._attendees[ZmAppt.LOCATION] && this._attendees[ZmAppt.LOCATION].length) ||
-						(this._attendees[ZmAppt.RESOURCE] && this._attendees[ZmAppt.RESOURCE].length));
+						(this._attendees[ZmAppt.EQUIPMENT] && this._attendees[ZmAppt.EQUIPMENT].length));
 	var tprefix = hasAttendees ? this._getDefaultBlurb(cancel) : "";
 	var hprefix = hasAttendees ? this._getDefaultBlurb(cancel, true) : "";
 	

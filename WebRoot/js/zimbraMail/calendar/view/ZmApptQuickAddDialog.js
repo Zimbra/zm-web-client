@@ -109,12 +109,12 @@ function(appt) {
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var shell = this._appCtxt.getShell();
 		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
-		var resourcesLoader = resourcesClass.getResources;
-		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesLoader,
+		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations,
 					  matchValue: ZmContactList.AC_VALUE_NAME};
-		this._acResourcesList = new ZmAutocompleteListView(params);
-		this._acResourcesList.handle(this._locationField.getInputElement());
+		this._acLocationsList = new ZmAutocompleteListView(params);
+		this._acLocationsList.handle(this._locationField.getInputElement());
 	}
+
 };
 
 ZmApptQuickAddDialog.prototype.getAppt = 

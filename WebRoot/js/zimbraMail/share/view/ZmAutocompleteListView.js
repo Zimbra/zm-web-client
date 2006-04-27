@@ -352,20 +352,14 @@ function(key, isDelim) {
 // Called as a timed action, after a sufficient pause in typing within an address field.
 ZmAutocompleteListView.prototype._autocompleteAction =
 function(ev) {
-	try {
-		DBG.println(AjxDebug.DBG2, "performing autocomplete");
-		var element = ev.element;
-		var aclv = ev.aclv;
-		aclv._acActionId = -1; // so we don't try to cancel
-		aclv._numChars = 0;
+	DBG.println(AjxDebug.DBG2, "performing autocomplete");
+	var element = ev.element;
+	var aclv = ev.aclv;
+	aclv._acActionId = -1; // so we don't try to cancel
+	aclv._numChars = 0;
 
-		if (this._locCallback) {	
-			var loc = this._locCallback.run(ev);
-			aclv.autocomplete(element, loc);
-		}
-	} catch (ex) {
-		DBG.println("Session expired? No controller to handle exception. Cannot autocomplete w/o contact list.");
-	}
+	var loc = this._locCallback ? this._locCallback.run(ev) : null;
+	aclv.autocomplete(element, loc);
 }
 
 /**

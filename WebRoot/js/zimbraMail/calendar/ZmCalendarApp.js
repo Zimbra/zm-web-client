@@ -99,17 +99,32 @@ function() {
 	return this._apptController;
 };
 
-ZmCalendarApp.prototype.getResources = 
+/**
+* Returns a ZmResourceList of known locations.
+*/
+ZmCalendarApp.prototype.getLocations = 
 function() {
-	if (!this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		return null;
+	if (!this._locations) {
+		this._locations = new ZmResourceList(this._appCtxt, ZmAppt.LOCATION);
+		this._locations.isCanonical = true;
+		this._locations.load();
 	}
-	if (!this._resources) {
-		this._resources = new ZmResourceList(this._appCtxt);
-		this._resources.isCanonical = true;
-		this._resources.load();
+	
+	return this._locations;
+};
+
+/**
+* Returns a ZmResourceList of known equipment.
+*/
+ZmCalendarApp.prototype.getEquipment = 
+function() {
+	if (!this._equipment) {
+		this._equipment = new ZmResourceList(this._appCtxt, ZmAppt.EQUIPMENT);
+		this._equipment.isCanonical = true;
+		this._equipment.load();
 	}
-	return this._resources;
+	
+	return this._equipment;
 };
 
 ZmCalendarApp.prototype._settingsChangeListener =

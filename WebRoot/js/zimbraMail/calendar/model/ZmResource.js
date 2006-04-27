@@ -23,14 +23,12 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmResource(appCtxt, id, list) {
+function ZmResource(appCtxt, id, list, resType) {
 	id = id ? id : Dwt.getNextId();
-	list = list ? list : appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getResources();
 	ZmContact.call(this, appCtxt, id, list, ZmItem.RESOURCE);
+	
+	this.resType = resType;
 };
-
-ZmResource.TYPE_LOCATION	= "Location";
-ZmResource.TYPE_EQUIPMENT	= "Equipment";
 
 ZmResource.F_capacity			= "zimbraCalResCapacity";
 ZmResource.F_contactMail		= "zimbraCalResContactEmail";
@@ -38,6 +36,9 @@ ZmResource.F_locationName		= "zimbraCalResLocationDisplayName";
 ZmResource.F_mail				= "mail";
 ZmResource.F_name				= "displayName";
 ZmResource.F_type				= "zimbraCalResType";
+
+ZmResource.ATTR_LOCATION	= "Location";
+ZmResource.ATTR_EQUIPMENT	= "Equipment";
 
 /**
 * Creates a resource from an XML node.
@@ -49,7 +50,14 @@ ZmResource.createFromDom =
 function(node, args) {
 	var resource = new ZmResource(args.appCtxt, node.id, args.list);
 	resource._loadFromDom(node);
-
+	resource.resType = (resource.getAttr(ZmResource.F_type) == ZmResource.ATTR_LOCATION) ?
+						ZmAppt.LOCATION : ZmAppt.EQUIPMENT;
+	if (!resource.list) {
+		var calApp = args.appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
+		resource.list = (resource.resType == ZmAppt.LOCATION) ? calApp.getLocations() :
+																calApp.getEquipment();
+	}
+	
 	return resource;
 };
 
@@ -58,7 +66,7 @@ ZmResource.prototype.constructor = ZmResource;
 
 ZmResource.prototype.isLocation =
 function() {
-	return this.getAttr(ZmResource.F_type) == ZmResource.TYPE_LOCATION;
+	return (this.resType == ZmAppt.LOCATION);
 };
 
 ZmResource.prototype.getEmail =

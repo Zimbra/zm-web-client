@@ -30,9 +30,10 @@
 * This class manages appointment creation/editing.
 *
 * @author Parag Shah
-* @param appCtxt		the application context
-* @param container		the containing element
-* @param mailApp		a handle to the calendar application
+*
+* @param appCtxt	[ZmAppCtxt]		the application context
+* @param container	[DwtComposite]	the containing element
+* @param calApp		[ZmCalendarApp]	a handle to the calendar application
 */
 function ZmApptComposeController(appCtxt, container, calApp) {
 
@@ -41,7 +42,8 @@ function ZmApptComposeController(appCtxt, container, calApp) {
 	this._addedAttendees = [];
 	this._removedAttendees = [];
 	
-	calApp.getResources();	// make sure resources are available for autocomplete
+	calApp.getLocations();	// make sure locations are available for autocomplete
+	calApp.getEquipment();	// make sure equipment items are available for autocomplete
 };
 
 ZmApptComposeController.prototype = new ZmController();

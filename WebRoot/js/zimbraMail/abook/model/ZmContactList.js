@@ -460,13 +460,17 @@ function(str) {
 		for (var i = 0; i < list.length; i++) {
 			var contact = list[i];
 			if (this._testAcMatch(contact, str)) {
+				if (!this._acAddrList[str]) {
+					this._acAddrList[str] = [];
+				}
 				this._acAddrList[str].push(contact.id);
 				foundOne = true;
 			}
 		}
 	}
-	if (!foundOne)
+	if (!foundOne) {
 		this._acAddrList[str] = [];
+	}
 
 	DBG.timePt("end autocomplete match");
 	return this._matchList(str);
@@ -648,8 +652,9 @@ function(contact, doAdd) {
 		} else {
 			var newMatches = [];
 			for (var i = 0; i < list.length; i++) {
-				if (list[i] != contact.id)
+				if (list[i] != contact.id) {
 					newMatches.push(list[i]);
+				}
 			}
 			this._acAddrList[str] = newMatches;
 		}
