@@ -429,6 +429,7 @@ function(uname, pword) {
     var el = soapDoc.set("account", uname);
     el.setAttribute("by", "name");
     soapDoc.set("password", pword);
+    soapDoc.set("virtualHost", location.hostname);
 
 	var command = new ZmCsfeCommand();
 	var respCallback = new AjxCallback(null, ZmLogin._handleResponseSubmitAuthRequest, [uname, pword]);

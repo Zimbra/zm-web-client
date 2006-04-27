@@ -52,6 +52,7 @@ function(uname, pword, callback) {
 		soapDoc = AjxSoapDoc.create("AuthRequest", "urn:zimbraAdmin", null);
 		soapDoc.set("name", uname);
 	}
+	soapDoc.set("virtualHost", location.hostname);	
 	soapDoc.set("password", pword);
 	var respCallback = new AjxCallback(this, this._handleResponseExecute, callback);
 	command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true, asyncMode: true, callback: respCallback})
