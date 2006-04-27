@@ -282,19 +282,19 @@ function(ev) {
 *
 * @param parent		[ZmFolder]	root calendar folder
 * @param name		[string]	name of the new calendar
-* @param url		[string]*	URL (if remote calendar)
 * @param color		[constant]	color
+* @param url		[string]*	URL (if remote calendar)
 * @param excludeFb	[boolean]*	if true, exclude free/busy info for this calendar
 */
 ZmCalendarTreeController.prototype._newCallback =
-function(parent, name, url, color, excludeFb) {
-	this._doCreate(parent, name, url, color, excludeFb);
+function(parent, name, color, url, excludeFb) {
+	this._doCreate(parent, name, color, url, excludeFb);
 	this._getNewDialog().popdown();
 };
 
 ZmCalendarTreeController.prototype._doCreate =
-function(parent, name, url, color, excludeFb) {
-	parent.create(name, url, color, excludeFb);
+function(parent, name, color, url, excludeFb) {
+	parent.create(name, color, url, excludeFb);
 };
 
 ZmCalendarTreeController.prototype._notifyListeners =

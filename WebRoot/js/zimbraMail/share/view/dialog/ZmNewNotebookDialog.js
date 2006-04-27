@@ -23,21 +23,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewNotebookDialog(appCtxt, parent, className) {
+function ZmNewNotebookDialog(parent, msgDialog, className) {
 	var title = ZmMsg.createNewNotebook;
-	var buttons = [ DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON ];
-	DwtDialog.call(this, parent, className, title, buttons);
-	
-	this._appCtxt = appCtxt;
-	
-	var contentEl = this._createContentEl();
-	var contentDiv = this._getContentDiv();
-	contentDiv.appendChild(contentEl);
-	
-	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
+	var type = ZmOrganizer.NOTEBOOK;
+	ZmNewOrganizerDialog.call(this, parent, msgDialog, className, title, type);
 }
 
-ZmNewNotebookDialog.prototype = new DwtDialog;
+ZmNewNotebookDialog.prototype = new ZmNewOrganizerDialog;
 ZmNewNotebookDialog.prototype.constructor = ZmNewNotebookDialog;
 
 ZmNewNotebookDialog.prototype.toString = 
@@ -45,109 +37,10 @@ function() {
 	return "ZmNewNotebookDialog";
 }
 
-// Data
-
-ZmNewNotebookDialog.prototype._parentFolder;
-
-ZmNewNotebookDialog.prototype._parentNameEl;
-ZmNewNotebookDialog.prototype._nameInputEl;
-
-// Public methods
-
-ZmNewNotebookDialog.prototype.setParentFolder =
-function(folder) {
-	this._parentFolder = folder;
-};
-
-ZmNewNotebookDialog.prototype.popup =
-function(loc) {
-	var isRoot = this._parentFolder.id == ZmOrganizer.ID_ROOT;
-	var isNotebook = this._parentFolder.id == ZmOrganizer.ID_ROOT;
-	this.setTitle(isNotebook ? ZmMsg.createNewNotebook : ZmMsg.createNewSection);
-
-	// reset fields
-	this._nameInputEl.value = "";
-	this._parentNameEl.innerHTML = isRoot ? "<i>"+ZmMsg.rootFolder+"</i>" : this._parentFolder.name;
-	
-	// show dialog
-	ZmDialog.prototype.popup.call(this, loc);
-	
-	this._nameInputEl.focus();
-}
-
 // Protected methods
 
-ZmNewNotebookDialog.prototype._handleOkButton = 
-function(event) {
-	// check name for presence and validity
-	var name = AjxStringUtil.trim(this._nameInputEl.value);
-	var msg = ZmFolder.checkName(name);
-	
-	// create folder
-	var ex = null;
-	var notebookId = null;
-	if (!msg) {
-		try {
-			var parentFolderId = this._parentFolder ? this._parentFolder.id : null;
-			var results = ZmNotebook.create(this._appCtxt, name, parentFolderId);
-			notebookId = results.CreateFolderResponse.folder[0].id;
-		}
-		catch (ex) {
-			msg = ZmMsg.unknownError;
-			switch (ex.code) {
-				case "mail.ALREADY_EXISTS": {
-					msg = ZmMsg.folderNameExists;
-					ex = null;
-					break;
-				}
-				default: {
-					msg = ex.getErrorMsg() || msg;
-				}
-			}
-		}
-	}
-	
-	// display error message
-	if (msg) {
-		var appController = this._appCtxt.getAppController();
-		var errorDialog = appController.popupErrorDialog(msg, ex, null, true);
-		return;
-	}
-	
-	// default processing
-	this.popdown();
-};
-
-ZmNewNotebookDialog.prototype._createContentEl = 
-function() {
-	// create controls
-	this._nameInputEl = document.createElement("INPUT");
-	//this._nameInputEl.autocomplete = "OFF";
-	this._nameInputEl.type = "text";
-	this._nameInputEl.className = "Field";
-	
-	// create HTML
-	var table = document.createElement("TABLE");
-	table.border = 0;
-	table.cellSpacing = 3;
-	table.cellPadding = 0;
-
-	var parentRow = table.insertRow(-1);
-	var parentLabelCell = parentRow.insertCell(-1);
-	parentLabelCell.className = "Label";
-	parentLabelCell.innerHTML = ZmMsg.parentFolderLabel;
-	this._parentNameEl = parentRow.insertCell(-1);
-
-	var nameRow = table.insertRow(-1);
-	var nameLabelCell = nameRow.insertCell(-1);
-	nameLabelCell.className = "Label";
-	nameLabelCell.innerHTML = ZmMsg.nameLabel;
-	var nameInputCell = nameRow.insertCell(-1);
-	nameInputCell.appendChild(this._nameInputEl);
-
-	return table;
-};
-
-ZmNewNotebookDialog.prototype._getSeparatorTemplate = function() {
-	return "";
+// NOTE: don't show remote checkbox
+ZmNewNotebookDialog.prototype._createRemoteContentHtml =
+function(html, idx) {
+	return idx;
 };

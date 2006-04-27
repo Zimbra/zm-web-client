@@ -175,6 +175,8 @@ ZmFolderPropsDialog.prototype._handleCancelButton = function(event) {
 };
 
 ZmFolderPropsDialog.prototype._handleFolderChange = function(event) {
+	if (this._folder == null) return;
+	
 	if (this._folder.id == ZmCalendar.ID_CALENDAR || 
 		this._folder.id == ZmOrganizer.ID_NOTEBOOK) {
 		this._nameOutputEl.innerHTML = AjxStringUtil.htmlEncode(this._folder.name);
@@ -325,7 +327,9 @@ ZmFolderPropsDialog.prototype._handleNameChange = function(event) {
 	event = event || window.event;
 	var target = DwtUiEvent.getTarget(event);
 	var dialog = target._dialog;
-	dialog._folder.name = target.value;
+	if (dialog._folder) {
+		dialog._folder.name = target.value;
+	}
 	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 };
 ZmFolderPropsDialog.prototype._handleColorChange = function(event) {
@@ -336,6 +340,8 @@ ZmFolderPropsDialog.prototype._handleFreeBusyChange = function(event) {
 	event = event || window.event;
 	var target = DwtUiEvent.getTarget(event);
 	var dialog = target._dialog;
-	dialog._folder.excludeFreeBusy = target.checked;
+	if (this._folder) {
+		dialog._folder.excludeFreeBusy = target.checked;
+	}
 	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 };

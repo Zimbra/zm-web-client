@@ -207,7 +207,7 @@ function() {
 // Searches created here since they may be created under a folder or
 // another search.
 ZmFolder.prototype.create =
-function(name, search, url) {
+function(name, color, url, search) {
 	if (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_DRAFTS)
 		throw new AjxException("Cannot create subfolder of Spam or Drafts");
 

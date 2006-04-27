@@ -172,11 +172,13 @@ function(ev, treeView) {
 *
 * @param parent	[ZmFolder]	folder (or search) that will contain it
 * @param name	[string]	name of the new saved search
+* @param color				unused
+* @param url				unused
 * @param search	[ZmSearch]	search object with details of the search
 */
 ZmSearchTreeController.prototype._newCallback =
-function(parent, name, search) {
-	this._doCreate(parent, name, search);
+function(parent, name, color, url, search) {
+	this._doCreate(parent, name, color, url, search);
 	this._getNewDialog().popdown();
 };
 

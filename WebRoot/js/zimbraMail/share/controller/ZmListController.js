@@ -398,43 +398,70 @@ function(ev) {
 	var id = ev.item.getData(ZmOperation.KEY_ID);
 	if (!id || id == ZmOperation.NEW_MENU)
 		id = this._defaultNewId;
-	if (id == ZmOperation.NEW_MESSAGE) {
-		var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
-		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController().doAction(ZmOperation.NEW_MESSAGE, inNewWindow);
-	} else if (id == ZmOperation.NEW_CONTACT) {
-		// bug fix #5373 
-		// - dont allow adding new contacts after searching GAL if contacts disabled
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			var contact = new ZmContact(this._appCtxt);
-			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(contact);
-		} else {
-			ev.item.popup();
-		}
-	} else if (id == ZmOperation.NEW_APPT) {
-		var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
-		cc.newAppointment(null, null, null, new Date());
-	} else if (id == ZmOperation.NEW_PAGE) {
-		var overviewController = this._appCtxt.getOverviewController();
-		var notebookTreeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
-		var notebookTreeView = notebookTreeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
-		var notebook = notebookTreeView ? notebookTreeView.getSelected() : null;
-		var page = new ZmPage(this._appCtxt);
-		page.folderId = notebook ? notebook.id : ZmPage.DEFAULT_FOLDER;
-		this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP).getPageEditController().show(page);
-	} else if (id == ZmOperation.NEW_FOLDER) {
-		this._showDialog(this._appCtxt.getNewFolderDialog(), this._newFolderCallback);
-	} else if (id == ZmOperation.NEW_TAG) {
-		this._showDialog(this._appCtxt.getNewTagDialog(), this._newTagCallback, null, null, false);
-	} else if (id == ZmOperation.NEW_CALENDAR || id == ZmOperation.NEW_NOTEBOOK) {
-		var isNewCal = id == ZmOperation.NEW_CALENDAR;
 		
-		var overviewController = this._appCtxt.getOverviewController();
-		var treeData = overviewController.getTreeData(isNewCal ? ZmOrganizer.CALENDAR : ZmOrganizer.NOTEBOOK);
-		var folder = treeData.root;
-	
-		var newDialog = isNewCal ? this._appCtxt.getNewCalendarDialog() : this._appCtxt.getNewNotebookDialog();
-		newDialog.setParentFolder(folder);
-		newDialog.popup();
+	switch (id) {
+		// new items
+		case ZmOperation.NEW_MESSAGE: {
+			var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
+			var app = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
+			var controller = app.getComposeController();
+			controller.doAction(ZmOperation.NEW_MESSAGE, inNewWindow);
+			break;
+		}
+		case ZmOperation.NEW_CONTACT: {
+			// bug fix #5373 
+			// - dont allow adding new contacts after searching GAL if contacts disabled
+			if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+				var contact = new ZmContact(this._appCtxt);
+				var app = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+				var controller = app.getContactController();
+				controller.show(contact);
+			} else {
+				ev.item.popup();
+			}
+			break;
+		}
+		case ZmOperation.NEW_APPT: {
+			var app = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
+			var controller = app.getCalController();
+			controller.newAppointment(null, null, null, new Date());
+			break;
+		}
+		case ZmOperation.NEW_PAGE: {
+			var overviewController = this._appCtxt.getOverviewController();
+			var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
+			var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+
+			var notebook = treeView ? treeView.getSelected() : null;
+			var page = new ZmPage(this._appCtxt);
+			page.folderId = notebook ? notebook.id : ZmPage.DEFAULT_FOLDER;
+			
+			var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+			var controller = app.getPageEditController();
+			controller.show(page);
+			break;
+		}
+		// new organizers
+		case ZmOperation.NEW_FOLDER: {
+			var dialog = this._appCtxt.getNewFolderDialog();
+			this._showDialog(dialog, this._newFolderCallback);
+			break;
+		}
+		case ZmOperation.NEW_TAG: {
+			var dialog = this._appCtxt.getNewTagDialog();
+			this._showDialog(dialog, this._newTagCallback, null, null, false);
+			break;
+		}
+		case ZmOperation.NEW_CALENDAR: {
+			var dialog = this._appCtxt.getNewCalendarDialog();
+			this._showDialog(dialog, this._newCalendarCallback);
+			break;
+		}
+		case ZmOperation.NEW_NOTEBOOK: {
+			var dialog = this._appCtxt.getNewNotebookDialog();
+			this._showDialog(dialog, this._newNotebookCallback);
+			break;
+		}
 	}
 };
 
@@ -638,21 +665,56 @@ function(ev) {
 	}
 };
 
-// Create a folder.
+// new organizer callbacks
+
 ZmListController.prototype._newFolderCallback =
-function(parent, name, url) {
-	this._appCtxt.getNewFolderDialog().popdown();
-	var ftc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
-	ftc._doCreate(parent, name, null, url);
+function(parent, name, color, url) {
+	// REVISIT: Do we really want to close the dialog before we
+	//          know if the create succeeds or fails?
+	var dialog = this._appCtxt.getNewFolderDialog();
+	dialog.popdown();
+	
+	var overviewController = this._appCtxt.getOverviewController();
+	var controller = overviewController.getTreeController(ZmOrganizer.FOLDER);
+	controller._doCreate(parent, name, color, url);
 };
 
-// Create a tag.
 ZmListController.prototype._newTagCallback =
 function(creatingTag, name, color) {
-	this._appCtxt.getNewTagDialog().popdown();
-	var ttc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.TAG);
-	ttc._doCreate(name, color);
+	// REVISIT: Do we really want to close the dialog before we
+	//          know if the create succeeds or fails?
+	var dialog = this._appCtxt.getNewTagDialog();
+	dialog.popdown();
+	
+	var overviewController = this._appCtxt.getOverviewController();
+	var controller = overviewController.getTreeController(ZmOrganizer.TAG);
+	overviewController._doCreate(name, color);
+	
 	this._creatingTag = creatingTag;
+};
+
+ZmListController.prototype._newCalendarCallback =
+function(parent, name, color, url, excludeFb) {
+	// REVISIT: Do we really want to close the dialog before we
+	//          know if the create succeeds or fails?
+	var dialog = this._appCtxt.getNewCalendarDialog();
+	dialog.popdown();
+	
+	var overviewController = this._appCtxt.getOverviewController();
+	var controller = overviewController.getTreeController(ZmOrganizer.CALENDAR);
+	controller._doCreate(parent, name, color, url, excludeFb);
+};
+
+ZmListController.prototype._newNotebookCallback =
+function(parent, name, color/*, url*/) {
+	// REVISIT: Do we really want to close the dialog before we
+	//          know if the create succeeds or fails?
+	var dialog = this._appCtxt.getNewNotebookDialog();
+	dialog.popdown();
+	
+	var overviewController = this._appCtxt.getOverviewController();
+	var controller = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
+	controller._doCreate(parent, name, color);
 };
 
 // Move stuff to a new folder.

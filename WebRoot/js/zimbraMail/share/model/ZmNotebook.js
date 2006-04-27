@@ -112,10 +112,58 @@ function(obj) {
 		this._notify(ZmEvent.E_MODIFY, {fields: fields});
 };
 
+/** Caller is responsible to catch exception. */
+ZmNotebook.prototype.create =
+function(name, color) {
+	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
+	var folderNode = soapDoc.set("folder");
+	folderNode.setAttribute("name", name);
+	folderNode.setAttribute("l", this.id);
+	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]);
+
+	var callback = color ? new AjxCallback(this, this._createResponse, [color]) : null;
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: Boolean(callback),
+		callback: callback,
+		errorCallback: null
+	};
+
+	var appController = this.tree._appCtxt.getAppController();
+	return appController.sendRequest(params);
+};
+
+// Protected methods
+
+ZmNotebook.prototype._createResponse = function(color, response) {
+	if (!response._data && !response._data.CreateFolderResponse) {
+		// TODO
+		throw "error response!";
+	}
+	var folder = response._data.CreateFolderResponse.folder[0];
+	
+	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
+	var actionNode = soapDoc.set("action");
+	actionNode.setAttribute("id", folder.id);
+	actionNode.setAttribute("op", "color");
+	actionNode.setAttribute("color", color);
+	
+	var callback = null;
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: Boolean(callback),
+		callback: callback,
+		errorCallback: null
+	};
+
+	var appController = this.tree._appCtxt.getAppController();
+	return appController.sendRequest(params);
+};
 
 // Static methods
 
 /** Caller is responsible to catch exception. */
+/***
 ZmNotebook.create =
 function(appCtxt, name, parentFolderId) {
 	parentFolderId = parentFolderId || ZmOrganizer.ID_ROOT;
@@ -126,8 +174,10 @@ function(appCtxt, name, parentFolderId) {
 	folderNode.setAttribute("l", parentFolderId);
 	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]);
 
-	return appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: false});
+	var appController = appCtxt.getAppController();
+	return appController.sendRequest({soapDoc: soapDoc, asyncMode: false});
 };
+/***/
 
 ZmNotebook.createFromJs =
 function(parent, obj, tree, link) {

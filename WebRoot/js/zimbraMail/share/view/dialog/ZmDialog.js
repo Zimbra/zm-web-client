@@ -114,9 +114,15 @@ function(overviewId, fieldId, treeIds, omit) {
 
 ZmDialog.prototype._createOverview =
 function(overviewId, fieldId) {
-	var overview = this._opc.createOverview({overviewId: overviewId, overviewClass: "dialogOverview",
-											 headerClass: "DwtTreeItem"});
-	document.getElementById(fieldId).appendChild(overview.getHtmlElement());
+	var params = {
+		overviewId: overviewId, 
+		overviewClass: "dialogOverview",
+		headerClass: "DwtTreeItem"
+	};
+	var overview = this._opc.createOverview(params);
+	if (fieldId) {
+		document.getElementById(fieldId).appendChild(overview.getHtmlElement());
+	}
 };
 
 ZmDialog.prototype._renderOverview =

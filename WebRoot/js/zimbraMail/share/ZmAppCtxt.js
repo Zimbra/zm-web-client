@@ -175,71 +175,100 @@ function() {
 
 ZmAppCtxt.prototype.getNewTagDialog =
 function() {
-	if (!this._newTagDialog)
-		this._newTagDialog = new ZmNewTagDialog(this.getShell(), this.getMsgDialog());
+	if (!this._newTagDialog) {
+		var parent = this.getShell();
+		var msgDialog = this.getMsgDialog();
+		this._newTagDialog = new ZmNewTagDialog(parent, msgDialog);
+	}
 	return this._newTagDialog;
 };
 
 ZmAppCtxt.prototype.getRenameTagDialog =
 function() {
-	if (!this._renameTagDialog)
-		this._renameTagDialog = new ZmRenameTagDialog(this.getShell(), this.getMsgDialog());
+	if (!this._renameTagDialog) {
+		var parent = this.getShell();
+		var msgDialog = this.getMsgDialog();
+		this._renameTagDialog = new ZmRenameTagDialog(parent, msgDialog);
+	}
 	return this._renameTagDialog;
 };
 
 ZmAppCtxt.prototype.getNewFolderDialog =
 function() {
-	if (!this._newFolderDialog)
-		this._newFolderDialog = new ZmNewFolderDialog(this.getShell(), this.getMsgDialog());
+	if (!this._newFolderDialog) {
+		var parent = this.getShell();
+		var msgDialog = this.getMsgDialog();
+		this._newFolderDialog = new ZmNewFolderDialog(parent, msgDialog);
+	}
 	return this._newFolderDialog;
 };
 
 ZmAppCtxt.prototype.getNewAddrBookDialog = 
 function() {
-	if (!this._newAddrBookDialog)
-		this._newAddrBookDialog = new ZmNewAddrBookDialog(this.getShell());
+	if (!this._newAddrBookDialog) {
+		var parent = this.getShell();
+		this._newAddrBookDialog = new ZmNewAddrBookDialog(parent);
+	}
 	return this._newAddrBookDialog;
 }
 
 ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
-	if (!this._newCalendarDialog)
-		this._newCalendarDialog = new ZmNewCalendarDialog(this.getShell(), this.getMsgDialog());
+	if (!this._newCalendarDialog) {
+		var parent = this.getShell();
+		var msgDialog = this.getMsgDialog();
+		this._newCalendarDialog = new ZmNewCalendarDialog(parent, msgDialog);
+	}
 	return this._newCalendarDialog;
 };
 
 ZmAppCtxt.prototype.getNewNotebookDialog =
 function() {
-	if (!this._newNotebookDialog)
-		this._newNotebookDialog = new ZmNewNotebookDialog(this, this.getShell());
+	if (!this._newNotebookDialog) {
+		var parent = this.getShell();
+		var msgDialog = this.getMsgDialog();
+		this._newNotebookDialog = new ZmNewNotebookDialog(parent, msgDialog);
+	}
 	return this._newNotebookDialog;
 };
 
 ZmAppCtxt.prototype.getNewRosterItemDialog =
 function() {
-	if (!this._newRosterItemDialog)
-		this._newRosterItemDialog = new ZmNewRosterItemDialog(this.getShell(), this, this.getMsgDialog());
+	if (!this._newRosterItemDialog) {
+		var parent = this.getShell();
+		var msgDialog = this.getMsgDialog();
+		this._newRosterItemDialog = new ZmNewRosterItemDialog(parent, msgDialog);
+	}
 	return this._newRosterItemDialog;
 };
 
 ZmAppCtxt.prototype.getNewSearchDialog =
 function() {
-	if (!this._newSearchDialog)
-		this._newSearchDialog = new ZmNewSearchDialog(this.getShell(), this.getMsgDialog());
+	if (!this._newSearchDialog) {
+		var parent = this.getShell();
+		var msgDialog = this.getMsgDialog();
+		this._newSearchDialog = new ZmNewSearchDialog(parent, msgDialog);
+	}
 	return this._newSearchDialog;
 };
 
 ZmAppCtxt.prototype.getRenameFolderDialog =
 function() {
-	if (!this._renameFolderDialog)
-		this._renameFolderDialog = new ZmRenameFolderDialog(this.getShell(), this.getMsgDialog());
+	if (!this._renameFolderDialog) {
+		var parent = this.getShell();
+		var msgDialog = this.getMsgDialog();
+		this._renameFolderDialog = new ZmRenameFolderDialog(parent, msgDialog);
+	}
 	return this._renameFolderDialog;
 };
 
 ZmAppCtxt.prototype.getMoveToDialog =
 function() {
-	if (!this._moveToDialog)
-		this._moveToDialog = new ZmMoveToDialog(this.getShell(), this.getMsgDialog());
+	if (!this._moveToDialog) {
+		var parent = this.getShell();
+		var msgDialog = this.getMsgDialog();
+		this._moveToDialog = new ZmMoveToDialog(parent, msgDialog);
+	}
 	return this._moveToDialog;
 };
 

@@ -30,7 +30,7 @@ function ZmNotebookTreeController(appCtxt, type, dropTgt) {
 	
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 
-	this._listeners[ZmOperation.NEW_NOTEBOOK] = new AjxListener(this, this._newNotebookListener);
+	this._listeners[ZmOperation.NEW_NOTEBOOK] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_NOTEBOOK] = new AjxListener(this, this._shareNotebookListener);
 	this._listeners[ZmOperation.MOUNT_NOTEBOOK] = new AjxListener(this, this._mountNotebookListener);
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
@@ -105,6 +105,10 @@ function() {
 	return ops;
 };
 
+ZmNotebookTreeController.prototype._getNewDialog = function() {
+	return this._appCtxt.getNewNotebookDialog();
+};
+
 ZmNotebookTreeController.prototype.getTreeStyle =
 function() {
 	return DwtTree.SINGLE_STYLE;
@@ -155,6 +159,7 @@ function(ev, treeView) {
 	}
 };
 
+/***
 ZmNotebookTreeController.prototype._newNotebookListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
@@ -167,6 +172,7 @@ function(ev) {
 	newNotebookDialog.setParentFolder(folder);
 	newNotebookDialog.popup();
 };
+/***/
 
 ZmNotebookTreeController.prototype._shareNotebookListener =
 function(ev) {
@@ -231,6 +237,11 @@ function(overviewId, type, items, detail, srcEv, destEv) {
 		destEv.detail = detail;
 		this._eventMgrs[overviewId].notifyListeners(type, destEv);
 	}
+};
+
+ZmNotebookTreeController.prototype._doCreate =
+function(parent, name, color/*, url*/) {
+	parent.create(name, color);
 };
 
 ZmNotebookTreeController.prototype._getItems =

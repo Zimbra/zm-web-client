@@ -578,8 +578,8 @@ function() {
 * @param 1		[string]		the name of the new organizer
 */
 ZmTreeController.prototype._newCallback =
-function(parent, name, url) {
-	this._doCreate(parent, name, null, url);
+function(parent, name, color, url) {
+	this._doCreate(parent, name, color, url);
 	this._clearDialog(this._getNewDialog());
 };
 

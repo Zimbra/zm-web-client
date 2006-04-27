@@ -185,8 +185,8 @@ function(folder) {
 * @param search		[ZmSearch]		search object (saved search creation only)
 */
 ZmFolderTreeController.prototype._doCreate =
-function(parent, name, search, url) {
-	parent.create(name, search, url);
+function(parent, name, color, url, search) {
+	parent.create(name, color, url, search);
 };
 
 // Listeners

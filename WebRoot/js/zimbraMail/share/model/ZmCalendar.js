@@ -62,7 +62,7 @@ function() {
 };
 
 ZmCalendar.prototype.create =
-function(name, url, color, excludeFb) {
+function(name, color, url, excludeFb) {
 	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 	var folderNode = soapDoc.set("folder");
 	folderNode.setAttribute("name", name);
@@ -72,8 +72,15 @@ function(name, url, color, excludeFb) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseCreate, [color, excludeFb]);
 	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [url, name]);
-	this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
-													   callback: respCallback, errorCallback: errorCallback});
+	var params = {
+		soapDoc: soapDoc, 
+		asyncMode: true,
+		callback: respCallback, 
+		errorCallback: errorCallback
+	};
+	
+	var appController = this.tree._appCtxt.getAppController();
+	appController.sendRequest(params);
 };
 
 ZmCalendar.prototype._handleResponseCreate =
