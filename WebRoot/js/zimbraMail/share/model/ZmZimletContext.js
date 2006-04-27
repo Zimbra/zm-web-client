@@ -47,8 +47,11 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 		this.keyword = zimlet.serverExtension[0].hasKeyword;
 	}
 
-	this._contentActionMenu = null;
-	if (zimlet.contentObject) {
+    // Zimlets are won't load due to 6640 so disable for now.
+    // http://bugzilla.opendarwin.org/show_bug.cgi?id=6640
+
+    this._contentActionMenu = null;
+	if (zimlet.contentObject && !AjxEnv.isSafari) {
 		this.contentObject = zimlet.contentObject[0];
 		if(this.contentObject.type) {
 			this.type = this.contentObject.type;
@@ -60,7 +63,7 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 	}
 
 	this._panelActionMenu = null;
-	if(zimlet.zimletPanelItem){
+	if(zimlet.zimletPanelItem && !AjxEnv.isSafari){
 		this.zimletPanelItem = zimlet.zimletPanelItem[0];
 		if (this.zimletPanelItem.toolTipText) {
 			this.zimletPanelItem.toolTipText = this.zimletPanelItem.toolTipText[0]._content;
@@ -117,7 +120,7 @@ ZmZimletContext.RE_ARRAY_ELEMENTS = /^(dragSource|include|includeCSS|menuItem|pa
  *
  * @return -- sanitized object
  */
-ZmZimletContext.sanitize = 
+ZmZimletContext.sanitize =
 function(obj, tag, wantarray_re) {
 	function doit(obj, tag) {
 		var cool_json, val, i;
@@ -132,7 +135,7 @@ function(obj, tag, wantarray_re) {
 			}
 		} else if (typeof obj == "object") {
 			if (obj._content) {
-				cool_json = new String(obj._content); 
+				cool_json = new String(obj._content);
 			} else {
 				cool_json = {};
 			}
@@ -189,7 +192,11 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 };
 
 ZmZimletContext.prototype._loadStyles = function() {
-	if (!this.includeCSS) {return;}
+    // Safari can choke loading certian CSS files;
+    // might be related to the following issues.
+    // http://bugzilla.opendarwin.org/show_bug.cgi?id=8463
+    // http://bugzilla.opendarwin.org/show_bug.cgi?id=5476
+    if (!this.includeCSS || AjxEnv.isSafari) {return;}
 	var head = document.getElementsByTagName("head")[0];
 	for (var i = 0; i < this.includeCSS.length; ++i) {
 		var fullurl = this.includeCSS[i];
