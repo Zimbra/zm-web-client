@@ -28,6 +28,7 @@ function ZmPageEditController(appCtxt, container, app) {
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
 	this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._addDocsListener);
+	this._listeners[ZmOperation.SPELL_CHECK] = new AjxListener(this, this._spellCheckListener);
 	this._listeners[ZmOperation.COMPOSE_FORMAT] = new AjxListener(this, this._formatListener);
 }
 ZmPageEditController.prototype = new ZmListController;
@@ -103,7 +104,7 @@ function() {
 	);
 	/***/
 	list.push(
-		ZmOperation.ATTACHMENT,
+		ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK,
 		ZmOperation.FILLER,
 		ZmOperation.COMPOSE_FORMAT
 	);
@@ -117,9 +118,15 @@ function(view) {
 
 	var toolbar = this._toolbar[view];
 	var button = toolbar.getButton(ZmOperation.ATTACHMENT);
-	button.setText(ZmMsg.addDocuments);
+	button.setText(AjxEnv.is800x600orLower ? "" : ZmMsg.addDocuments);
 	button.setToolTipContent(ZmMsg.addDocumentsTT);
 	
+	var spellCheckButton = toolbar.getButton(ZmOperation.SPELL_CHECK);
+	spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
+	if (AjxEnv.is800x600orLower) {
+		spellCheckButton.setText("");
+	}
+
 	var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 	var menu = new ZmPopupMenu(button);
 	var items = [
@@ -238,6 +245,27 @@ function(ev) {
 	var dialog = this._appCtxt.getUploadDialog();
 	dialog.setFolderId(this._page.folderId || ZmPage.DEFAULT_FOLDER);
 	dialog.popup();
+};
+
+ZmPageEditController.prototype._spellCheckListener = 
+function(ev) {
+	var toolbar = this._toolbar[this._currentView];
+	var spellCheckButton = toolbar.getButton(ZmOperation.SPELL_CHECK);
+	var pageEditor = this._pageEditView.getPageEditor();
+
+	if (spellCheckButton.isToggled()) {
+		var callback = new AjxCallback(this, this.toggleSpellCheckButton)
+		if (!pageEditor.spellCheck(callback))
+			this.toggleSpellCheckButton(false);
+	} else {
+		pageEditor.discardMisspelledWords();
+	}
+};
+ZmPageEditController.prototype.toggleSpellCheckButton = 
+function(toggled) {
+	var toolbar = this._toolbar[this._currentView];
+	var spellCheckButton = toolbar.getButton(ZmOperation.SPELL_CHECK);
+	spellCheckButton.setToggled((toggled || false));
 };
 
 ZmPageEditController.prototype._formatListener = function(ev) {

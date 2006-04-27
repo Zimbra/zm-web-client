@@ -95,6 +95,10 @@ function() {
 	return this._pageEditor.getContent();
 };
 
+ZmPageEditView.prototype.getPageEditor = function() {
+	return this._pageEditor;
+};
+
 ZmPageEditView.prototype.getSelection =
 function() {
 	return this._controller.getPage();
