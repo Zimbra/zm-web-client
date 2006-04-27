@@ -519,7 +519,7 @@ function(appCtxt, item, type, strictText, strictEmail) {
 		// non-email string: initialize as a resource if it's a location, since
 		// those can be free-text
 		if (!attendee && type == ZmAppt.LOCATION && !strictText) {
-			attendee = new ZmResource(appCtxt, type);
+			attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._locations, ZmAppt.LOCATION);
 			attendee.setAttr(ZmResource.F_name, item);
 			attendee.setAttr(ZmResource.F_type, ZmResource.TYPE_LOCATION);
 			ZmApptViewHelper._locations.updateHashes(attendee);
