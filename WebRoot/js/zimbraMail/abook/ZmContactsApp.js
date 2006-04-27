@@ -73,7 +73,7 @@ function(callback, errorCallback) {
 			if (this._parentController) {
 				this._contactList = this._parentController.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 			} else {
-				this._contactList = new ZmContactList(this._appCtxt, null, false);
+				this._contactList = new ZmContactList(this._appCtxt);
 				var respCallback = new AjxCallback(this, this._handleResponseGetContactList, callback);
 				this._contactList.load(respCallback, errorCallback);
 			}

@@ -311,7 +311,7 @@ ZmContactView.prototype._generateHtml =
 function(html, idx, label, colOneInfo, colTwoInfo) {
 	// add label
 	if (label) {
-		html[idx++] = "<tr><td colspan=10 valign=top class='editSectionLabel'>";
+		html[idx++] = "<tr><td colspan=10 valign=top class='sectionLabel'>";
 		html[idx++] = label;
 		html[idx++] = "</td></tr>";
 	}
@@ -354,7 +354,7 @@ function(html, idx, label, colOneInfo, colTwoInfo) {
 ZmContactView.prototype._createNotesHtml =
 function(html, idx) {
 	// add label
-	html[idx++] = "<tr><td colspan=10 valign=top class='editSectionLabel'>";
+	html[idx++] = "<tr><td colspan=10 valign=top class='sectionLabel'>";
 	html[idx++] = "Notes";
 	html[idx++] = "</td></tr>";
 
@@ -527,12 +527,24 @@ function(contact) {
 	var html = new Array(50);
 
 	// Title bar
-	html[idx++] = "<table id='" + this._contactHeaderId + "' cellspacing=0 cellpadding=0 class='BigHeaderBg'><tr>";
+	html[idx++] = "<table id='";
+	html[idx++] = this._contactHeaderId;
+	html[idx++] = "' cellspacing=0 cellpadding=0><tr class='contactHeaderRow'>";
+	// TODO - set icon based on contact type (i.e. distro. list, shared, etc)
+	html[idx++] = "<td width=20><center>";
+	html[idx++] = AjxImg.getImageHtml("Person");
+	html[idx++] = "</center></td>";
 	if (this._isReadOnly) {
-		html[idx++] = "<td><div >" + contact.getFileAs() + "</div></td>";
+		html[idx++] = "<td><div>";
+		html[idx++] = contact.getFileAs();
+		html[idx++] = "</div></td>";
 	} else {
-		html[idx++] = "<td><div id='" + titleId + "' class='contactHeader'></div></td>";
-		html[idx++] = "<td align='right' id='" + tagsId + "'></td>";
+		html[idx++] = "<td><div id='";
+		html[idx++] = titleId;
+		html[idx++] = "' class='contactHeader'></div></td>";
+		html[idx++] = "<td align='right' id='";
+		html[idx++] = tagsId;
+		html[idx++] = "'></td>";
 	}
 	html[idx++] = "</tr></table>";
 
@@ -540,7 +552,9 @@ function(contact) {
 	html[idx++] = "<div style='overflow:auto;'";
 	if (!this._isReadOnly) {
 		this._contentId = Dwt.getNextId();
-		html[idx++] = " visibility:hidden;' id='" + this._contentId + "'";
+		html[idx++] = " visibility:hidden;' id='";
+		html[idx++] = this._contentId;
+		html[idx++] = "'";
 	}
 	html[idx++] = ">";
 	html[idx++] = "<table cellpadding=0 cellspacing=10 border=0>";

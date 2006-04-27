@@ -689,10 +689,14 @@ td.DDSepInvisible div {
 	overflow: hidden;
 }
 
+.ZmContactInfoView .contactHeaderRow,
+.ZmContactView .contactHeaderRow {
+	@BigWidgetHeaderBg@
+	height: 40px;
+}
 
 .ZmContactInfoView .contactHeader,
 .ZmContactView .contactHeader {
-	@BigWidgetHeaderBg@
 	@FontBiggest@
 	@Text@
 	padding-left:@BoxPaddingSize@;
@@ -701,7 +705,7 @@ td.DDSepInvisible div {
 }
 
 .ZmContactInfoView .companyName {
-	@Text@
+	@FontBigger@
 	@BoxPadding@;
 }
 
@@ -715,6 +719,7 @@ td.DDSepInvisible div {
 .ZmContactInfoView .contactLabel {
 	@Label@
 	width: 1%;
+	text-align: right;
 }
 
 
@@ -737,8 +742,7 @@ td.DDSepInvisible div {
 }
 
 
-/* ??? -> SectionLabel */
-.ZmContactView .editSectionLabel {
+.sectionLabel {
 	@SectionLabel@
 }
 

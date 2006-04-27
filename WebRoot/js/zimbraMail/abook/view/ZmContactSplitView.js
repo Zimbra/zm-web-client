@@ -142,10 +142,25 @@ function() {
 	var html = new Array();
 	var idx = 0;
 	
-	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>"
-	html[idx++] = "<tr height=40><td id='" + this._contactHeaderId + "' colspan='*' class='contactHeader'></td></tr>";
-	html[idx++] = "<tr height=100%><td valign=top><div style='width:" + this._contactPartWidth + "; height:" + (this._contactPartHeight-40) + "; overflow: auto' id='" + this._contactBodyId + "'></div></td></tr>";
-	html[idx++] = "</table>";
+	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>";
+	html[idx++] = "<tr class='contactHeaderRow'><td width=20><center>";
+	// TODO - set icon based on contact type (i.e. distro. list, shared, etc)
+	html[idx++] = AjxImg.getImageHtml("Person");
+	html[idx++] = "</center></td><td width='";
+	html[idx++] = this._contactPartWidth - 20;
+	html[idx++] = "' id='";
+	html[idx++] = this._contactHeaderId;
+	html[idx++] = "' class='contactHeader'></td>";
+	// TODO - add tags
+	// html[idx++] = "<td></td>";
+	html[idx++] = "</tr>";
+	html[idx++] = "<tr height=100%><td colspan=3 valign=top><div style='width:";
+	html[idx++] = this._contactPartWidth;
+	html[idx++] = "; height:";
+	html[idx++] = this._contactPartHeight - 40;
+	html[idx++] = "; overflow: auto' id='";
+	html[idx++] = this._contactBodyId;
+	html[idx++] = "'></div></td></tr></table>";
 
 	this._contactPart.getHtmlElement().innerHTML = html.join("");
 	
@@ -174,72 +189,78 @@ function(contact, isGal) {
 	// set contact header (file as)
 	var contactHdr = document.getElementById(this._contactHeaderId);
 	contactHdr.innerHTML = contact.getFileAs();
-	
+
 	// set body
 	var contactBodyDiv = document.getElementById(this._contactBodyId);
-	
+
 	var html = new Array();
 	var idx = 0;
 	
 	var width = this._contactPart.getSize().x / 2;
 	
-	html[idx++] = "<div class='companyName'>" + (contact.getCompanyField() || "&nbsp;") + "</div>";
-	html[idx++] = "<table border=0 width=100%>";
-	// start real content
-	
+	html[idx++] = "<div class='companyName'>";
+	html[idx++] = (contact.getCompanyField() || "&nbsp;");
+	html[idx++] = "</div>";
+	html[idx++] = "<table border=0 width=100% cellpadding=3 cellspacing=3>";
+
 	// add email fields
 	var email  = contact.getAttr(ZmContact.F_email);
 	var email2 = contact.getAttr(ZmContact.F_email2);
 	var email3 = contact.getAttr(ZmContact.F_email3);
+	var hasEmail = email || email2 || email3;
 
-	html[idx++] = "<tr><td colspan='*' valign=top>";
-	// - column 1
-	html[idx++] = "<table border=0>";
-	if (email || email2 || email3) {
-		html[idx++] = "<tr><td valign=top class='contactLabel'>Email</td><td valign=top class='contactOutput'>";
-		// TODO: make into EmailObjects and call compose view
+	if (hasEmail) {
+		html[idx++] = "<tr><td colspan=3 valign=top class='sectionLabel'>";
+		html[idx++] = ZmMsg.email;
+		html[idx++] = "</td></tr><tr><td class='contactOutput'>";
 		if (email) 	{ html[idx++] = this._generateObject(email,  ZmObjectManager.EMAIL); html[idx++] = "<br>"; }
 		if (email2) { html[idx++] = this._generateObject(email2, ZmObjectManager.EMAIL); html[idx++] = "<br>"; }
 		if (email3) { html[idx++] = this._generateObject(email3, ZmObjectManager.EMAIL); html[idx++] = "<br>"; }
 		html[idx++] = "</td></tr>";
 	}
-	html[idx++] = "</table>";
-	html[idx++] = "</td></tr>";
-	
+
 	html[idx++] = "<tr><td><br></td></tr>";
 	
 	// add work fields
-	var workField = AjxStringUtil.nl2br(contact.getWorkAddrField());
-	var workPhone = contact.getAttr(ZmContact.F_workPhone);
-	var workPhone2 = contact.getAttr(ZmContact.F_workPhone2);
-	var workFax = contact.getAttr(ZmContact.F_workFax);
-	var workAsst = contact.getAttr(ZmContact.F_assistantPhone);
+	var workField	= AjxStringUtil.nl2br(contact.getWorkAddrField());
+	var workPhone	= contact.getAttr(ZmContact.F_workPhone);
+	var workPhone2	= contact.getAttr(ZmContact.F_workPhone2);
+	var workFax		= contact.getAttr(ZmContact.F_workFax);
+	var workAsst	= contact.getAttr(ZmContact.F_assistantPhone);
 	var workCompany = contact.getAttr(ZmContact.F_companyPhone);
-	var workCallback = contact.getAttr(ZmContact.F_callbackPhone);
-	var workURL = contact.getAttr(ZmContact.F_workURL);
+	var workCallback= contact.getAttr(ZmContact.F_callbackPhone);
+	var workURL 	= contact.getAttr(ZmContact.F_workURL);
+	var hasWork		= workField || workPhone || workPhone2 || workFax || workAsst || workCompany || workCallback || workURL;
 
-	html[idx++] = "<tr><td valign=top width='" + width + "'>";
-	// - column 1
-	html[idx++] = "<table border=0>";
-	if (workField || workPhone || workPhone2 || workFax || workAsst || workCompany || workCallback || workURL) {
-		html[idx++] = "<tr><td valign=top class='contactLabel'>Work</td>";
-		html[idx++] = "<td valign=top class='contactOutput'>";
-		if (workField) 	html[idx++] = workField + "<br>";
-		if (workURL) 	html[idx++] = this._generateObject(workURL, ZmObjectManager.URL);
+	if (hasWork) {
+		html[idx++] = "<tr><td colspan=3 valign=top class='sectionLabel'>";
+		html[idx++] = ZmMsg.work;
+		html[idx++] = "</td></tr>";
+	
+		// - column 1
+		html[idx++] = "<tr><td valign=top width='";
+		html[idx++] = width;
+		html[idx++] = "'>";
+		
+		if (workField || workURL) {
+			html[idx++] = "<div class='contactOutput'>";
+			if (workField) 	html[idx++] = (workField + "<br>");
+			if (workURL) 	html[idx++] = this._generateObject(workURL, ZmObjectManager.URL);
+			html[idx++] = "</div>";
+		}
+		html[idx++] = "</td>";
+	
+		// - column 2
+		html[idx++] = "<td valign=top><table border=0>";
+		if (workPhone)		idx = this._getObjectHtml(html, idx, ZmMsg.phone, workPhone, ZmObjectManager.PHONE);
+		if (workPhone2)		idx = this._getObjectHtml(html, idx, ZmMsg.phone2, workPhone2, ZmObjectManager.PHONE);
+		if (workFax)		idx = this._getObjectHtml(html, idx, ZmMsg.fax, workFax, ZmObjectManager.PHONE);
+		if (workAsst)		idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_assistantPhone, workAsst, ZmObjectManager.PHONE);
+		if (workCompany)	idx = this._getObjectHtml(html, idx, ZmMsg.company, workCompany, ZmObjectManager.PHONE);
+		if (workCallback)	idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_callbackPhone, workCallback, ZmObjectManager.PHONE);
+		html[idx++] = "</table>";
 		html[idx++] = "</td></tr>";
 	}
-	html[idx++] = "</table>";
-	html[idx++] = "</td>";
-	// - column 2
-	html[idx++] = "<td valign=top><table border=0>";
-	if (workPhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + this._generateObject(workPhone, ZmObjectManager.PHONE) + "</td></tr>";
-	if (workPhone2)		html[idx++] = "<tr><td class='contactLabel'>Phone 2</td><td class='contactOutput'>" + this._generateObject(workPhone2, ZmObjectManager.PHONE) + "</td></tr>";
-	if (workFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + this._generateObject(workFax, ZmObjectManager.PHONE) + "</td></tr>";
-	if (workAsst)		html[idx++] = "<tr><td class='contactLabel'>Assistant</td><td class='contactOutput'>" + this._generateObject(workAsst, ZmObjectManager.PHONE) + "</td></tr>";
-	if (workCompany)	html[idx++] = "<tr><td class='contactLabel'>Company</td><td class='contactOutput'>" + this._generateObject(workCompany, ZmObjectManager.PHONE) + "</td></tr>";
-	if (workCallback)	html[idx++] = "<tr><td class='contactLabel'>Callback</td><td class='contactOutput'>" + this._generateObject(workCallback, ZmObjectManager.PHONE) + "</td></tr>";
-	html[idx++] = "</table>";
-	html[idx++] = "</td></tr>";
 
 	html[idx++] = "<tr><td><br></td></tr>";
 	
@@ -251,28 +272,35 @@ function(contact, isGal) {
 	var mobile = contact.getAttr(ZmContact.F_mobilePhone);
 	var pager = contact.getAttr(ZmContact.F_pager);
 	var homeURL = contact.getAttr(ZmContact.F_homeURL);
+	var hasHome = homeField || homePhone || homePhone2 || homeFax || mobile || pager || homeURL;
 
-	html[idx++] = "<tr><td valign=top width='" + width + "'>";
-	// - column 1
-	html[idx++] = "<table border=0>";
-	if (homeField || homePhone || homePhone2 || homeFax || mobile || pager || homeURL) {
-		html[idx++] = "<tr><td valign=top class='contactLabel'>Home</td>";
-		html[idx++] = "<td valign=top class='contactOutput'>";
-		if (homeField) 	html[idx++] = homeField + "<br>";
-		if (homeURL) 	html[idx++] = this._generateObject(homeURL, ZmObjectManager.URL);
+	if (hasHome) {
+		html[idx++] = "<tr><td colspan=3 valign=top class='sectionLabel'>";
+		html[idx++] = ZmMsg.home;
 		html[idx++] = "</td></tr>";
+
+		// - column 1
+		html[idx++] = "<tr><td valign=top width='";
+		html[idx++] = width;
+		html[idx++] = "'>";
+
+		if (homeField || homeURL) {
+			html[idx++] = "<div class='contactOutput'>";
+			if (homeField) 	html[idx++] = homeField + "<br>";
+			if (homeURL) 	html[idx++] = this._generateObject(homeURL, ZmObjectManager.URL);
+			html[idx++] = "</div>";
+		}
+		html[idx++] = "</td>";
+	
+		// - column 2
+		html[idx++] = "<td valign=top><table border=0>";
+		if (homePhone)		idx = this._getObjectHtml(html, idx, ZmMsg.phone, homePhone, ZmObjectManager.PHONE);
+		if (homePhone2)		idx = this._getObjectHtml(html, idx, ZmMsg.phone2, homePhone2, ZmObjectManager.PHONE);
+		if (homeFax)		idx = this._getObjectHtml(html, idx, ZmMsg.fax, homeFax, ZmObjectManager.PHONE);
+		if (mobile)			idx = this._getObjectHtml(html, idx, ZmMsg.mobile, mobile, ZmObjectManager.PHONE);
+		if (pager)			idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_pager, pager, ZmObjectManager.PHONE);
+		html[idx++] = "</table></td></tr>";
 	}
-	html[idx++] = "</table>";
-	html[idx++] = "</td>";
-	// - column 2
-	html[idx++] = "<td valign=top><table border=0>";
-	if (homePhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + this._generateObject(homePhone, ZmObjectManager.PHONE) + "</td></tr>";
-	if (homePhone2)		html[idx++] = "<tr><td class='contactLabel'>Phone 2</td><td class='contactOutput'>" + this._generateObject(homePhone2, ZmObjectManager.PHONE) + "</td></tr>";
-	if (homeFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + this._generateObject(homeFax, ZmObjectManager.PHONE) + "</td></tr>";
-	if (mobile)			html[idx++] = "<tr><td class='contactLabel'>Mobile</td><td class='contactOutput'>" + this._generateObject(mobile, ZmObjectManager.PHONE) + "</td></tr>";
-	if (pager)			html[idx++] = "<tr><td class='contactLabel'>Pager</td><td class='contactOutput'>" + this._generateObject(pager, ZmObjectManager.PHONE) + "</td></tr>";
-	html[idx++] = "</table>";
-	html[idx++] = "</td></tr>";
 
 	html[idx++] = "<tr><td><br></td></tr>";
 	
@@ -281,42 +309,62 @@ function(contact, isGal) {
 	var otherPhone = contact.getAttr(ZmContact.F_otherPhone);
 	var otherFax = contact.getAttr(ZmContact.F_otherFax);
 	var otherURL = contact.getAttr(ZmContact.F_otherURL);
+	var hasOther = otherField || otherPhone || otherFax || otherURL;
 
-	html[idx++] = "<tr><td valign=top width='" + width + "'>";
-	// - column 1
-	html[idx++] = "<table border=0>";
-	if (otherField || otherPhone || otherFax || otherURL) {
-		html[idx++] = "<tr><td valign=top class='contactLabel'>Other</td>";
-		html[idx++] = "<td valign=top class='contactOutput'>";
-		if (otherField) html[idx++] = otherField + "<br>";
-		if (otherURL) 	html[idx++] = this._generateObject(otherURL, ZmObjectManager.URL);
+	if (hasOther) {
+		html[idx++] = "<tr><td colspan=3 valign=top class='sectionLabel'>";
+		html[idx++] = ZmMsg.other;
 		html[idx++] = "</td></tr>";
-	}
-	html[idx++] = "</table>";
-	html[idx++] = "</td>";
-	// - column 2
-	html[idx++] = "<td valign=top><table border=0>";
-	if (otherPhone)		html[idx++] = "<tr><td class='contactLabel'>Phone</td><td class='contactOutput'>" + this._generateObject(otherPhone, ZmObjectManager.PHONE) + "</td></tr>";
-	if (otherFax)		html[idx++] = "<tr><td class='contactLabel'>Fax</td><td class='contactOutput'>" + this._generateObject(otherFax, ZmObjectManager.PHONE) + "</td></tr>";
-	html[idx++] = "</table>";
-	html[idx++] = "</td></tr>";
+
+		// - column 1
+		html[idx++] = "<tr><td valign=top width='";
+		html[idx++] = width;
+		html[idx++] = "'>";
 	
+		if (otherField || otherURL) {
+			html[idx++] = "<div class='contactOutput'>";
+			if (otherField) html[idx++] = otherField + "<br>";
+			if (otherURL) 	html[idx++] = this._generateObject(otherURL, ZmObjectManager.URL);
+			html[idx++] = "</div>";
+		}
+		html[idx++] = "</td>";
+	
+		// - column 2
+		html[idx++] = "<td valign=top><table border=0>";
+		if (otherPhone)		idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_otherPhone, otherPhone, ZmObjectManager.PHONE);
+		if (otherFax)		idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_otherFax, otherFax, ZmObjectManager.PHONE);
+		html[idx++] = "</table></td></tr>";
+	}
+
 	html[idx++] = "<tr><td><br></td></tr>";
 
+	// add notes field
 	var notes = this._generateObject(contact.getAttr(ZmContact.F_notes));
-	html[idx++] = "<tr><td valign=top colspan='10'>";
 	if (notes) {
-		html[idx++] = "<table border=0 width=100%>";
-		html[idx++] = "<tr><td valign=top class='contactLabel'>Notes</td><td class='contactOutput'>" + AjxStringUtil.nl2br(notes) + "</td></tr>";
-		html[idx++] = "</table>";
+		html[idx++] = "<tr><td valign=top colspan=3 class='sectionLabel'>";
+		html[idx++] = ZmMsg.notes;
+		html[idx++] = "</td></tr><tr><td colspan=3 class='contactOutput'>";
+		html[idx++] = AjxStringUtil.nl2br(notes);
+		html[idx++] = "<br><br></td></tr>";
 	}
-	html[idx++] = "</td></tr>";
 
 	html[idx++] = "</table>";
 	html[idx++] = "</div>";
 	
 	contactBodyDiv.innerHTML = html.join("");
 };
+
+ZmContactSplitView.prototype._getObjectHtml = 
+function(html, idx, label, field, objMgr) {
+	html[idx++] = "<tr><td class='contactLabel'>";
+	html[idx++] = label;
+	html[idx++] = ":</td><td class='contactOutput'>";
+	html[idx++] = this._generateObject(field, objMgr);
+	html[idx++] = "</td></tr>";
+
+	return idx;
+};
+
 
 //////////////////////////////////////////////////////////////////////////////
 // ZmContactSimpleView
@@ -396,6 +444,18 @@ function(contact, now, isDndIcon) {
 	idx = this._getTable(htmlArr, idx, isDndIcon);
 	idx = this._getRow(htmlArr, idx, contact);
 
+	// icon
+	// TODO - set icon based on contact type (i.e. distro. list, shared, etc)
+	htmlArr[idx++] = "<td style='vertical-align:middle;' width=16>";
+	htmlArr[idx++] = AjxImg.getImageHtml("Person");
+	htmlArr[idx++] = "</td>";
+
+	// file as
+	htmlArr[idx++] = "<td style='vertical-align:middle;'>&nbsp;";
+	htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
+	htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
+	htmlArr[idx++] = "</td>";
+
 	// tags
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		var cellId = this._getFieldId(contact, ZmItem.F_TAG_CELL);
@@ -406,13 +466,6 @@ function(contact, now, isDndIcon) {
 		htmlArr[idx++] = "</td>";
 	}
 	
-	// file as
-	htmlArr[idx++] = "<td style='vertical-align: middle'>&nbsp;";
-	htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
-	//htmlArr[idx++] = "&nbsp;</td>";
-	htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
-	htmlArr[idx++] = "</td>";
-
 	htmlArr[idx++] = "</tr></table>";
 
 	div.innerHTML = htmlArr.join("");
