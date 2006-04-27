@@ -1212,7 +1212,7 @@ td.DDSepInvisible div {
 
 .appt_top_sash,
 .appt_bottom_sash{ 
-	height: 6px; 
+	height: 5px; 
 	width:100%; 
 	position:absolute; 
 	font-size: 2pt; 
