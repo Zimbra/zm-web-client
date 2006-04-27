@@ -90,7 +90,7 @@ ZmNotebookController.prototype.show = function(pageOrFolderId, force) {
 		shownPage.folderId == currentPage.folderId) {
 		return;
 	}
-	
+
 	// update history
 	this._object = currentPage;
 	this._folderId = null;
@@ -102,6 +102,14 @@ ZmNotebookController.prototype.show = function(pageOrFolderId, force) {
 		this._history.length = ++this._place;
 		var pageRef = { folderId: this._object.folderId, name: this._object.name };
 		this._history[this._place] = pageRef;
+	}
+	
+	// REVISIT: Need to do proper list management! For now we fake
+	//          a list of a single item so that operations like
+	//          tagging and delete work.
+	this._list = new ZmList(ZmItem.PAGE, this._appCtxt);
+	if (this._object) {
+		this._list.add(this._object);
 	}
 	
 	// switch view
@@ -146,12 +154,12 @@ ZmNotebookController.prototype.switchView = function(view, force) {
 ZmNotebookController.prototype._getToolBarOps = function() {
 	var list = [];
 	// shared items
-	list.push(ZmOperation.NEW_MENU, ZmOperation.REFRESH);
-	/***
+	list.push(
+		ZmOperation.NEW_MENU, ZmOperation.REFRESH, ZmOperation.EDIT,
+		ZmOperation.SEP
+	);
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
-	/***/
-	list.push(ZmOperation.EDIT, ZmOperation.SEP);
+		list.push(ZmOperation.TAG_MENU, ZmOperation.SEP);
 	/***
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
 		list.push(ZmOperation.PRINT);
@@ -207,7 +215,7 @@ ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, 
 };
 
 ZmNotebookController.prototype._getTagMenuMsg = function() {
-	return ZmMsg.tagNote;
+	return ZmMsg.tagPage;
 };
 
 ZmNotebookController.prototype._doDelete = function(items) {
@@ -236,7 +244,7 @@ ZmNotebookController.prototype._doDelete = function(items) {
 // view management
 
 ZmNotebookController.prototype._getViewType = function() {
-	return ZmItem.NOTE;
+	return this._currentView;
 };
 
 ZmNotebookController.prototype._defaultView = function() {

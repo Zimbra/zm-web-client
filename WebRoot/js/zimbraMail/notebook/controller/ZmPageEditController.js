@@ -184,7 +184,7 @@ function(view) {
 
 ZmPageEditController.prototype._getTagMenuMsg = 
 function() {
-	return ZmMsg.tagNote;
+	return ZmMsg.tagPage;
 };
 
 ZmPageEditController.prototype._saveListener =

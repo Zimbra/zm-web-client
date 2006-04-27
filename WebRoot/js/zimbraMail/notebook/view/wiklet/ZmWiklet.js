@@ -128,7 +128,7 @@ ZmWiklet.__object2Array = function(o, re) {
 	}
 	return a;
 };
-ZmWiklet.__byNoteName = function(a, b) {
+ZmWiklet.__byItemName = function(a, b) {
 	var aname = a.name.toLowerCase();
 	var bname = b.name.toLowerCase();
 	if (aname < bname) return -1;
@@ -176,6 +176,29 @@ ZmWiklet.register(
 				imgName = item.parent.id == ZmOrganizer.ID_ROOT ? "Notebook" : "Section";
 			}
 			return ["<div class='Img",imgName," _pageIcon'></div>"].join("");
+		}
+	},
+	{
+		name: "TAGS",
+		label: ZmMsg.wikletTags,
+		tooltip: ZmMsg.wikletTagsTT,
+		func: function(name, value, params, context) {
+			var item = context.getItem();
+			if (!item.tags || item.tags.length == 0) {
+				return;
+			}
+			
+			var a = [];
+			a.push("<table border=0><tr>");
+			for (var i = 0; i < item.tags.length; i++) {
+				var tag = context.getTagById(item.tags[i]);
+				var color = tag ? tag.color : ZmTag.DEFAULT_COLOR;
+				var tagImageInfo = ZmTag.COLOR_MINI_ICON[color];
+				a.push("<td><div class='Img",tagImageInfo,"'></div></td>");
+				a.push("<td>",tag.name,"</td>");
+			}
+			a.push("</tr></table");
+			return a.join("");
 		}
 	},
 	{
@@ -450,7 +473,7 @@ ZmWiklet.register(
 				items = items.concat(array);
 			}
 			
-			items.sort(ZmWiklet.__byNoteName);
+			items.sort(ZmWiklet.__byItemName);
 			if (params.sort == "descending") {
 				items.reverse();
 			}

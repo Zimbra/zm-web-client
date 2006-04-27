@@ -69,7 +69,7 @@ ZmPageEditView.prototype._setResponse = function(page) {
 	this._pageNameInput.setValue(name);
 	this._pageNameInput.setEnabled(!name);
 
-	var content = page.getContent();
+	var content = page.getContent() || "";
 	this.setContent(content);
 	
 	this.focus();

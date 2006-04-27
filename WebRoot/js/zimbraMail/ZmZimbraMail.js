@@ -1337,7 +1337,7 @@ function(modifies) {
 			var notebookController = notebookApp.getNotebookController();
 			var shownPage = notebookController.getPage();
 			if (shownPage && (shownPage.name == ZmNotebook.PAGE_INDEX || shownPage.name == page.name)) {
-				notebookController.gotoPage(shownNote);
+				notebookController.gotoPage(shownPage);
 			}
 			continue;
 		}

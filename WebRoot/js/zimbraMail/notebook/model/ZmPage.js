@@ -80,7 +80,7 @@ ZmPage.prototype.setContent = function(content) {
 	this._content = content;
 };
 ZmPage.prototype.getContent = function(callback, errorCallback) {
-	if (this.name && this._content == null) {
+	if (this.name && this._content == null && this.version != 0) {
 		this.load(this.version, callback, errorCallback);
 	}
 	else if (callback) {
@@ -160,6 +160,8 @@ ZmPage.prototype.set = function(data) {
 	// ZmItem fields
 	this.id = data.id;
 	this.folderId = data.l;
+	this._parseTags(data.t);
+
 	// ZmPage fields
 	this.name = data.name;
 	// REVISIT: This is temporary!

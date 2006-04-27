@@ -77,6 +77,11 @@ ZmWikletContext.prototype.getFiles = function(notebookId) {
 	return []; // TODO
 };
 
+ZmWikletContext.prototype.getTagById = function(tagId) {
+	var tree = this._appCtxt.getTree(ZmOrganizer.TAG);
+	return tree.getById(tagId);
+};
+
 ZmWikletContext.prototype.process = function(content) {
 	return ZmWikletProcessor._process(content);
 };

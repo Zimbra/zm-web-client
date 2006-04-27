@@ -61,7 +61,7 @@ ZmWikiConverter.store = function(s) {
 	return "{{" + ZmWikiConverter._data.length + "}}";
 };
 ZmWikiConverter.restore = function(id) {
-	return ZmWikiConverter._data[id];
+	return ZmWikiConverter._data[id - 1];
 };
 
 //
@@ -258,10 +258,31 @@ function TWikiConverter() {
 TWikiConverter.prototype = new ZmWikiConverter;
 TWikiConverter.prototype.constructor = TWikiConverter;
 
+TWikiConverter.COLORS = {
+	YELLOW: { fg: "yellow" }, // 255,255,0
+	ORANGE: { fg: "#ff6600" }, // 255,102,0
+	RED: { fg: "red" }, // 255,0,0
+	PINK: { fg: "magenta" }, // 255,0,255
+	PURPLE: { fg: "purple" }, // 128,0,128
+	TEAL: { fg: "teal" }, // 0,128,128
+	NAVY: { fg: "navy" }, // 0,0,128
+	BLUE: { fg: "blue" }, // 0,0,255
+	AQUA: { fg: "aqua" }, // 0,255,255
+	LIME: { fg: "lime" }, // 0,255,0
+	GREEN: { fg: "green" }, // 0,128,0
+	OLIVE: { fg: "olive" }, // 128,0,128
+	MAROON: { fg: "maroon" }, // 128,0,0
+	BROWN: { fg: "#996633" }, // 153,102,51
+	BLACK: { fg: "black" }, // 0,0,0
+	GRAY: { fg: "gray" }, // 128,128,128
+	SILVER: { fg: "silver" }, // 192,192,192
+	WHITE: { fg: "white", bg: "gray" } // 255,255,255; 128,128,128
+};
+
 TWikiConverter.toHtml = {};
 
 TWikiConverter.toHtml._verbatim = function(match, content) {
-	return ZmWikiConverter.store(["<pre>",content,"</pre>"].join(""));
+	return ZmWikiConverter.store( [ "<nowiklet>", content, "</nowiklet>" ].join("") );
 };
 TWikiConverter.toHtml._list = function(match, level, type, content) {
 	if ((level.length % 3) != 0) return match;
@@ -271,6 +292,45 @@ TWikiConverter.toHtml._list = function(match, level, type, content) {
 	}
 	return MediaWikiConverter.toHtml._list(match, type, content);
 };
+TWikiConverter.toHtml._color = function(match, color, content) {
+	var COLOR = TWikiConverter.COLORS[color];
+	return [
+		"<span style='",
+			"color:",COLOR.fg,";",
+			(COLOR.bg ? "background-color:"+COLOR.bg+";" : ""),
+		"'>",
+			content,
+		"</span>"
+	].join("");
+};
+TWikiConverter.toHtml._tableRow = function(match, twikiRow) {
+	var a = [];
+	a.push("<tr>");
+	var cellRe = /\|([^\|]+?)(\|{1,})/g;
+	var m;
+	while (m = cellRe.exec(twikiRow)) {
+		var n = m[1].match(/^\s*<b>(.*?)<\/b>\s*$/g);
+		a.push(n ? "<th" : "<td");
+		if (m[1].match(/^\S+/)) {
+			a.push(" align=left");
+		}
+		else if (m[1].match(/\S+$/)) {
+			a.push(" align=right");
+		}
+		else {
+			a.push(" align=center");
+		}
+		if (m[2].length > 1) {
+			a.push(" colspan=",m[2].length);
+		}
+		a.push(">");
+		a.push(n ? n[1] : m[1]);
+		a.push(n ? "</th>" : "</td>");
+		cellRe.lastIndex--;
+	}
+	a.push("</tr>\n");
+	return a.join("");
+};
 
 TWikiConverter.toHtml.rules = [
     // pre-processing
@@ -278,28 +338,40 @@ TWikiConverter.toHtml.rules = [
     { input: /\\(\{)/g, output: function($0,$1) { return ZmWikiConverter.store($1); } },
     { input: /\{\{/g, output: function($0) { return ZmWikiConverter.store($0); } },
 	// non-wiki
-	{ input: /(?:^|\n)<verbatim>\n(.*?)\n<\/verbatim>(?=\n|$)/g, output: TWikiConverter.toHtml._verbatim },
+	{ input: /<verbatim>((?:.|\n)*?)<\/verbatim>/g, output: TWikiConverter.toHtml._verbatim },
+	{ input: /<noautolink>(.*?)<\/noautolink>/g, output: "<nolink>$1</nolink>" },
 	// literals
     { input: /&[^;]+?;/g, output: function($0) { return ZmWikiConverter.store($0); } },
     { input: /&/g, output: "&amp;" },
     { input: /<\s/g, output: function($0) { return ZmWikiConverter.store($0); } },
-    // inlines
-    { input: /\*([^*]+?)\*/g, output: "<b>$1</b>" },
-    { input: /__([^_]+?)__/g, output: "<b><i>$1</i></b>" },
-    { input: /_([^_]+?)_/g, output: "<i>$1</i>" },
-	{ input: new RegExp('==([^=]+?)==','g'), output: "<b><tt>$1</tt></b>" },
-	{ input: new RegExp('=([^=]+?)=','g'), output: "<tt>$1</tt>" },
-	// headers
-    { input: /(?:^|\n)---(\+{1,6})(.*?)(?=\n|$)/g, output: MediaWikiConverter.toHtml._header },
-	// horizontal rule
-	{ input: /(?:^|\n)-{3,}(?=\n|$)/g, output: "<hr>\n" },
+    { input: /!(\[\[.*?\]\])/g, output: "<nolink>$1</nolink>" },
+    { input: /!([A-Z]+[a-z]+[A-Z]+[a-zA-Z0-9]*)/g, output: "<nolink>$1</nolink>" },
 	// lists
 	{ input: /(?:^|\n)([ ]{3,})([*]|[\dAaIi]\.) (.*?)(?=\n|$)/g, output: TWikiConverter.toHtml._list },
 	{ input: /\{([*#;:]+)\}\}\n\{\{([*#;:]+)\}/g, output: MediaWikiConverter.toHtml._listTransition },
 	{ input: /\{\{([*#;:]+)\}(.*?)\{([*#;:]+)\}\}/g, output: MediaWikiConverter.toHtml._listBoundary },
+    // inlines
+    { input: /\*([^*]+?)\*/g, output: "<b>$1</b>" },
+    { input: /__([^_]+?)__/g, output: "<b><i>$1</i></b>" },
+    { input: /_([^_]+?[^\s])_/g, output: "<i>$1</i>" },
+    { input: /%(YELLOW|ORANGE|RED|PINK|PURPLE|TEAL|NAVY|BLUE|AQUA|LIME|GREEN|OLIVE|MAROON|BROWN|BLACK|GRAY|SILVER|WHITE)%(.*?)%ENDCOLOR%/g, output: TWikiConverter.toHtml._color },
+	// literals2
+    { input: /<[\/]?[a-zA-Z][a-zA-Z0-9]*.*?>/g, output: function($0) { return ZmWikiConverter.store($0); } },
+    // inlines2
+	{ input: new RegExp('==(.+?)==','g'), output: "<b><tt>$1</tt></b>" },
+	{ input: new RegExp('=(.+?)=','g'), output: "<tt>$1</tt>" },
+	// headers
+    { input: /(?:^|\n)---(\+{1,6})(.*?)(?=\n|$)/g, output: MediaWikiConverter.toHtml._header },
+	// horizontal rule
+	{ input: /(?:^|\n)-{3,}(?=\n|$)/g, output: "<hr>\n" },
+	// tables
+	{ input: /(?=^|\n)((?:\|.*?\|(?:\n|$)){1,})/g, output: "<table border=1>\n$1</table>\n" },
+	//{ input: /(?=\n)((\|.*?\|(?:\n)))/g, output: "<tr>\n$1</tr>\n" },
+	{ input: /(?!\n)(\|.*?\|)\n/g, output: TWikiConverter.toHtml._tableRow },
 	// post-processing
     { input: /\{\{(\d+)\}\}/g, output: function($0,$1) { return ZmWikiConverter.restore($1); } },
-    { input: /^\n|\n$/, output: "" }
+    { input: /\n{2,}/g, output: "\n<p>\n" },
+    { input: /^\s+|\s+$/, output: "" }
 ];
 
 TWikiConverter.toWiki = {};
