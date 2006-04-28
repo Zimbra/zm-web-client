@@ -100,18 +100,61 @@ ZmUploadDialog.prototype._upload = function(){
 	uploadMgr.execute(callback, uploadForm);
 };
 ZmUploadDialog.prototype._uploadSaveDocs = function(filenames, status, guids) {
+	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var notebook = tree.getById(this._uploadFolderId);
+
+	// REVISIT: For now, we overwrite existing docs w/o warning !!!
+	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
+	soapDoc.setMethodAttribute("types", "document");
+	soapDoc.set("query", "in:\""+notebook.getSearchPath()+"\"");
+
+	var args = [notebook.getPath(), filenames, status, guids];
+	var handleResponse = new AjxCallback(this, this._uploadSaveDocs2, args);	
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: handleResponse
+	};
+	var appController = this._appCtxt.getAppController();
+	appController.sendRequest(params);
+};
+
+ZmUploadDialog.prototype._uploadSaveDocs2 = 
+function(path, filenames, status, guids, response) {
+	// handle response
+	var docs = {};
+	if (response._data && response._data.SearchResponse) {
+		var searchResp = response._data.SearchResponse;
+		if (searchResp.doc) {
+			for (var i = 0; i < searchResp.doc.length; i++) {
+				var doc = searchResp.doc[i];
+				docs[doc.name] = doc;
+			}
+		}
+	}
+	
+	// create document wrappers
 	guids = guids.split(",");
 	var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra", null);
 	for (var i = 0; i < filenames.length; i++) {
-		var filename = filenames[i];
+		var filename = filenames[i] = filenames[i].replace(/^.*[\\\/:]/, "");
 		var guid = guids[i];
 		
 		var saveDocNode = soapDoc.set("SaveDocumentRequest");
 		saveDocNode.setAttribute("xmlns", "urn:zimbraMail");
 		
 		var docNode = soapDoc.set("doc", null, saveDocNode);
-		docNode.setAttribute("l", this._uploadFolderId);
-		//docNode.setAttribute("name", filename);
+		var doc = docs[filename];
+		if (doc) {
+			docNode.setAttribute("id", doc.id);
+			docNode.setAttribute("ver", doc.ver);
+			// REVISIT: The name is also required because of a bug
+			//          in the backend.
+			docNode.setAttribute("name", doc.name);
+		}
+		else {
+			docNode.setAttribute("l", this._uploadFolderId);
+		}
 		
 		var uploadNode = soapDoc.set("upload", null, docNode);
 		uploadNode.setAttribute("id", guid);
@@ -120,7 +163,7 @@ ZmUploadDialog.prototype._uploadSaveDocs = function(filenames, status, guids) {
 	var params = {
 		soapDoc: soapDoc,
 		asyncMode: true,
-		callback: new AjxCallback(this, this._uploadSaveDocsResponse),
+		callback: new AjxCallback(this, this._uploadSaveDocsResponse, [path, filenames]),
 		errorCallback: null,
 		execFrame: null
 	};	
@@ -128,19 +171,23 @@ ZmUploadDialog.prototype._uploadSaveDocs = function(filenames, status, guids) {
 	appController.sendRequest(params);
 };
 
-ZmUploadDialog.prototype._uploadSaveDocsResponse = function(response) {
+ZmUploadDialog.prototype._uploadSaveDocsResponse = function(path, filenames, response) {
 	if (this._uploadCallback) {
-		var ids = [];
+		/***
+		var items = []
 		if (response._data && response._data.BatchResponse) {
 			var docs = response._data.BatchResponse.SaveDocumentResponse;
 			if (docs) {
 				for (var i = 0; i < docs.length; i++) {
 					var doc = docs[i].doc[0];
-					ids.push(doc.id);
+					items.push(doc);
 				}
 			}
 		}
-		this._uploadCallback.run(ids);
+		this._uploadCallback.run(path, items);
+		/***/
+		this._uploadCallback.run(path, filenames);
+		/***/
 	}
 	
 	this.popdown();

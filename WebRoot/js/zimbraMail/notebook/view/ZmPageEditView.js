@@ -400,13 +400,13 @@ ZmPageEditor.prototype._insertImageListener = function(event) {
 	dialog.popup();
 };
 
-ZmPageEditor.prototype._insertImageByIds = function(ids) {
+ZmPageEditor.prototype._insertImageByIds = function(path, filenames) {
 	var loc = document.location;
 	var uname = this._appCtxt.get(ZmSetting.USERNAME);
-	for (var i = 0; i < ids.length; i++) {
-		var id = ids[i];
+	for (var i = 0; i < filenames.length; i++) {
+		var name = filenames[i];
 		var src = [
-			loc.protocol,"//",loc.host,"/service/home/~",uname,"/?id=",id
+			loc.protocol,"//",loc.host,"/service/home/~",uname,"/",path,"/",name
 		].join("");
 
 		this.insertImage(src);

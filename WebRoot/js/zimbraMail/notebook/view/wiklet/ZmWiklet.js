@@ -259,13 +259,19 @@ ZmWiklet.register(
 		name: "INCLUDE",
 		label: ZmMsg.wikletInclude,
 		tooltip: ZmMsg.wikletIncludeTT,
-		type: ZmWiklet.SINGLE_VALUE,
+		type: ZmWiklet.PARAMETERIZED,
 		paramdefs: {
-			value: {
-				name: "value",
+			page: {
+				name: "page",
 				label: ZmMsg.page,
 				type: "string",
 				value: "PageName"
+			},
+			lookup: {
+				name: "lookup",
+				label: ZmMsg.includeRecurseUp,
+				type: "boolean",
+				value: false
 			}
 		},
 		func: function(name, value, params, context) {

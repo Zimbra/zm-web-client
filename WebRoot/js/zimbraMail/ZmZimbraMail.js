@@ -1332,9 +1332,9 @@ function(modifies) {
 				cache.putPage(page);
 			}
 			else {
-				/***
-				page.set(mod);
 				/***/
+				page.set(mod);
+				/***
 				page.notifyModify(mod);
 				/***/
 			}
