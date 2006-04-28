@@ -76,6 +76,13 @@ ZmPage.save = function(appCtxt, folderId, name, content, callback, errorCallback
 
 // query
 
+ZmPage.prototype.getPath = function() {
+	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var notebook = tree.getById(this.folderId);
+	var name = this.name != ZmNotebook.PAGE_INDEX ? this.name : "";
+	return [ notebook.getPath(), "/", name ].join("");
+};
+
 ZmPage.prototype.setContent = function(content) {
 	this._content = content;
 };
@@ -151,6 +158,13 @@ function(version, callback, errorCallback) {
 	}
 };
 
+/***
+ZmPage.prototype.notifyModify = function(obj) {
+	// TODO
+	ZmItem.prototype.notifyModify.call(this, obj);
+};
+/***/
+
 // initialization
 
 ZmPage.prototype.set = function(data) {
@@ -159,7 +173,8 @@ ZmPage.prototype.set = function(data) {
 	
 	// ZmItem fields
 	this.id = data.id;
-	this.folderId = data.l;
+	// REVISIT: Sometimes the server doesn't return the folderId!!!
+	this.folderId = data.l || this.folderId;
 	this._parseTags(data.t);
 
 	// ZmPage fields

@@ -199,6 +199,8 @@ function(parent, obj, tree, link) {
 			var link = obj.link[i];
 			if (link.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
 				var childNotebook = ZmNotebook.createFromJs(notebook, link, tree, true);
+				childNotebook.rid = link.rid;
+				childNotebook.zid = link.zid;
 				notebook.children.add(childNotebook);
 			}
 		}

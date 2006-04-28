@@ -69,7 +69,8 @@ ZmNotebookCache.prototype._changeListener;
 
 // cache management
 
-ZmNotebookCache.prototype.fillCache = function(folderId, callback, errorCallback) {
+ZmNotebookCache.prototype.fillCache = 
+function(folderId, callback, errorCallback) {
 	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var notebook = tree.getById(folderId);
 	var path = notebook.getSearchPath();
@@ -79,7 +80,8 @@ ZmNotebookCache.prototype.fillCache = function(folderId, callback, errorCallback
 	soapDoc.setMethodAttribute("types", "wiki");
 	var queryNode = soapDoc.set("query", search);
 		
-	var handleResponse = callback ? new AjxCallback(this, this._fillCacheResponse, [folderId, callback]) : null;
+	var args = callback ? [folderId, callback, errorCallback] : null;
+	var handleResponse = callback ? new AjxCallback(this, this._fillCacheResponse, args) : null;
 	var params = {
 		soapDoc: soapDoc,
 		asyncMode: Boolean(handleResponse),
@@ -92,7 +94,7 @@ ZmNotebookCache.prototype.fillCache = function(folderId, callback, errorCallback
 	var response = appController.sendRequest(params);
 	
 	if (!params.asyncMode) {
-		this._fillCacheResponse(folderId, null, response);
+		this._fillCacheResponse(folderId, null, errorCallback, response);
 	}
 };
 
@@ -105,7 +107,10 @@ ZmNotebookCache.prototype.putPage = function(page) {
 	/*** REVISIT ***/
 	var remoteFolderId = page.remoteFolderId;
 	if (remoteFolderId) {
-		this.getPagesInFolder(remoteFolderId)[page.name] = page;
+		if (!this._foldersMap[remoteFolderId]) {
+			this._foldersMap[remoteFolderId] = this._foldersMap[folderId];
+		}
+		this._foldersMap[remoteFolderId][page.name] = page;
 	}
 	/***/
 	if (page.creator) {
@@ -157,7 +162,10 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, recurseUp) {
 	var page = this.getPagesInFolder(folderId)[name];
 	if (page != null) return page;
 	
-	if (recurseUp == true) {
+	// REVISIT: Need to force recursing up for "special" page when
+	//          navigating in the page browser. Is this always the
+	//          case? or should there be a better solution?
+	if (recurseUp == true || /^_.*_$/.test(name)) {
 		var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 		var parent = notebookTree.getById(folderId).parent;
 		while (parent != null) {
@@ -213,7 +221,12 @@ ZmNotebookCache.prototype.getPagesByCreator = function(creator) {
 // Protected methods
 
 ZmNotebookCache.prototype._fillCacheResponse = 
-function(folderId, callback, response) {
+function(folderId, callback, errorCallback, response) {
+	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var notebook = tree.getById(folderId);
+	var remoteFolderId = notebook.zid ? notebook.zid+":"+notebook.rid : undefined;
+
+	// add pages to folder map in cache
 	if (response && (response.SearchResponse || response._data.SearchResponse)) {
 		var searchResponse = response.SearchResponse || response._data.SearchResponse;
 		var words = searchResponse.w || [];
@@ -223,12 +236,7 @@ function(folderId, callback, response) {
 			if (!page) {
 				page = new ZmPage(this._appCtxt);
 				page.set(word);
-				/*** REVISIT ***/
-				if (folderId != page.folderId) {
-					page.remoteFolderId = page.folderId;
-					page.folderId = folderId;
-				}
-				/***/
+				page.remoteFolderId = remoteFolderId; // REVISIT
 				this.putPage(page);
 			}
 			else {
@@ -237,6 +245,37 @@ function(folderId, callback, response) {
 		}
 	}
 	
+	// get sub-folders for remote notebook
+	if (remoteFolderId) {
+		var soapDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
+		var folderNode = soapDoc.set("folder");
+		folderNode.setAttribute("l", remoteFolderId);
+	
+		var args = [callback, errorCallback];
+		var handleResponse = new AjxCallback(this, this._fillCacheResponse2, args);
+		var params = {
+			soapDoc: soapDoc,
+			asyncMode: Boolean(handleResponse),
+			callback: handleResponse,
+			errorCallback: errorCallback
+		};
+		var appController = this._appCtxt.getAppController();
+		appController.sendRequest(params);
+	}
+	
+	// post processing
+	else if (callback) {
+		callback.run();
+	}
+};
+
+ZmNotebookCache.prototype._fillCacheResponse2 = 
+function(callback, errorCallback, response) {
+
+	// TODO: add folders to overview tree
+	// response._data.folder[0].folder...
+	debugger;
+
 	if (callback) {
 		callback.run();
 	}

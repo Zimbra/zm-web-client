@@ -1320,18 +1320,24 @@ function(modifies) {
 			setting.notifyModify(mod);
 			continue;
 		}
-		if (name == "w") {
+		// REVISIT: server is not returning the page id!
+		if (name == "w" && id) {
 			// REVISIT: Use app context item cache
 			var notebookApp = this.getApp(ZmZimbraMail.NOTEBOOK_APP);
 			var cache = notebookApp.getNotebookCache();
-			// REVISIT: server not returning folderId
-			mod.l = mod.l || ZmPage.DEFAULT_FOLDER;
-			var page = cache.getPageByName(mod.l, mod.name);
+			var page = cache.getPageById(mod.id);
 			if (!page) {
 				page = new ZmPage(this._appCtxt);
+				page.set(mod);
 				cache.putPage(page);
 			}
-			page.set(mod);
+			else {
+				/***
+				page.set(mod);
+				/***/
+				page.notifyModify(mod);
+				/***/
+			}
 			
 			// re-render current page, if necessary
 			var notebookController = notebookApp.getNotebookController();

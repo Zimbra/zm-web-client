@@ -44,17 +44,17 @@ ZmWiklet.prototype.params;
 
 ZmWiklet.register = function(wiklet) {
 	for (var i = 0; i < arguments.length; i++) {
-		ZmWiklet._wiklets[arguments[i].name] = arguments[i];
+		ZmWiklet._wiklets[arguments[i].name.toUpperCase()] = arguments[i];
 	}
 };
 ZmWiklet.unregister = function(name) {
-	delete ZmWiklet._wiklets[name];
+	delete ZmWiklet._wiklets[name.toUpperCase()];
 };
 ZmWiklet.getWiklets = function() {
 	return ZmWiklet._wiklets;
 };
 ZmWiklet.getWikletByName = function(name) {
-	return ZmWiklet._wiklets[name];
+	return ZmWiklet._wiklets[name.toUpperCase()];
 };
 
 // Protected methods
@@ -149,10 +149,10 @@ ZmWiklet.register(
 			var notebook = context.getNotebookById(item.remoteFolderId || item.folderId);
 
 			var loc = document.location;
-			var uname = notebook.owner || context._appCtxt.get(ZmSetting.USERNAME); // REVISIT !!!
-
+			var uname = notebook.owner || this._appCtxt.get(ZmSetting.USERNAME); // REVISIT !!!
+		
 			return [
-				loc.protocol,"//",loc.host,"/service/home/~",uname,"/?id=",item.id
+				loc.protocol,"//",loc.host,"/service/home/~",uname,"/",page.getPath()
 			].join("");
 		}
 	},

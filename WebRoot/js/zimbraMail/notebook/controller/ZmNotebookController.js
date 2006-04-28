@@ -208,7 +208,7 @@ ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, 
 	if (!toolbarOrActionMenu) return;
 	ZmListController.prototype._resetOperations.call(this, toolbarOrActionMenu, num);
 	toolbarOrActionMenu.enable([ZmOperation.REFRESH, ZmOperation.ATTACHMENT], true);
-	toolbarOrActionMenu.enable(ZmOperation.DETACH, false);
+	//toolbarOrActionMenu.enable(ZmOperation.DETACH, false);
 	if (toolbarOrActionMenu instanceof ZmToolBar) {
 		this._enableNaviButtons();
 	}
@@ -333,7 +333,26 @@ ZmNotebookController.prototype._uploadListener = function(event) {
 };
 
 ZmNotebookController.prototype._detachListener = function(event) {
-	alert("TODO: _detachListener");	
+	var view = this._listView[this._currentView];
+	var page = view.getSelection();
+	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var notebook = tree.getById(page.remoteFolderId || page.folderId);
+
+	var loc = document.location;
+	var uname = notebook.owner || this._appCtxt.get(ZmSetting.USERNAME); // REVISIT !!!
+
+	var winurl = [
+		loc.protocol,"//",loc.host,"/service/home/~",uname,"/",page.getPath()
+	].join("");
+	var winname = "newwin"+Math.random();
+	var winfeatures = [
+		"width=",(window.outerWidth || 640),",",
+		"height=",(window.outerHeight || 480),",",
+		"location,menubar,",
+		"resizable,scrollbars,status,toolbar"
+	].join("");
+	
+	var win = open(winurl, winname, winfeatures);
 };
 
 
