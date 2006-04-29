@@ -161,4 +161,5 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/mta/view/ZaMTAListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/mta/view/ZaMTAXFormView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/mta/view/ZaMTAActionDialog.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/accounts/view/ZaAccountMemberOfListView.js<%= ext %>?v=<%= vers %>"></script>
 <!-- END SCRIPT BLOCK -->
