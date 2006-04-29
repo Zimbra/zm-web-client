@@ -269,7 +269,8 @@ function(rememberMe, result) {
 			this._doLastSearch();
 		} else {
 			// if no exec frame, start over
-			this._appCtxt.getAppController().startup(); // restart application
+			ZmCsfeCommand.setSessionId(null);								// so we get a refresh block
+			this._appCtxt.getAppController().startup({isRelogin: true});	// restart application
 		}
 		this._hideLoginDialog();
 	} catch (ex) {
