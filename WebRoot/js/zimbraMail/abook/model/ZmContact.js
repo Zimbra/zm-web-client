@@ -804,12 +804,12 @@ ZmContact._AB_FIELD = {
 	email3: ZmMsg.AB_FIELD_email3,	
 
 	// work address
-	workStreet: ZmMsg.AB_FIELD_workStreet,
-	workCity: ZmMsg.AB_FIELD_workCity,
-	workState: ZmMsg.AB_FIELD_workState,
-	workPostalCode: ZmMsg.AB_FIELD_workPostalCode,
-	workCountry: ZmMsg.AB_FIELD_workCountry,
-	workURL: ZmMsg.AB_FIELD_workURL,
+	workStreet: ZmMsg.AB_FIELD_street,
+	workCity: ZmMsg.AB_FIELD_city,
+	workState: ZmMsg.AB_FIELD_state,
+	workPostalCode: ZmMsg.AB_FIELD_postalCode,
+	workCountry: ZmMsg.AB_FIELD_country,
+	workURL: ZmMsg.AB_FIELD_URL,
 
 	// work phone numbers
 	workPhone: ZmMsg.AB_FIELD_workPhone,
@@ -820,12 +820,12 @@ ZmContact._AB_FIELD = {
 	callbackPhone: ZmMsg.AB_FIELD_callbackPhone,
 	
 	// home address
-	homeStreet: ZmMsg.AB_FIELD_homeStreet,
-	homeCity: ZmMsg.AB_FIELD_homeCity,
-	homeState: ZmMsg.AB_FIELD_homeState,
-	homePostalCode: ZmMsg.AB_FIELD_homePostalCode,
-	homeCountry: ZmMsg.AB_FIELD_homeCountry,
-	homeURL: ZmMsg.AB_FIELD_homeURL,
+	homeStreet: ZmMsg.AB_FIELD_street,
+	homeCity: ZmMsg.AB_FIELD_city,
+	homeState: ZmMsg.AB_FIELD_state,
+	homePostalCode: ZmMsg.AB_FIELD_postalCode,
+	homeCountry: ZmMsg.AB_FIELD_country,
+	homeURL: ZmMsg.AB_FIELD_URL,
 
 	// home phone numbers
 	homePhone: ZmMsg.AB_FIELD_homePhone,
@@ -836,12 +836,12 @@ ZmContact._AB_FIELD = {
 	carPhone: ZmMsg.AB_FIELD_carPhone,
 	
 	// other address
-	otherStreet: ZmMsg.AB_FIELD_otherStreet,
-	otherCity: ZmMsg.AB_FIELD_otherCity,
-	otherState: ZmMsg.AB_FIELD_otherState,
-	otherPostalCode: ZmMsg.AB_FIELD_otherPostalCode,
-	otherCountry: ZmMsg.AB_FIELD_otherCountry,
-	otherURL: ZmMsg.AB_FIELD_otherURL,
+	otherStreet: ZmMsg.AB_FIELD_street,
+	otherCity: ZmMsg.AB_FIELD_city,
+	otherState: ZmMsg.AB_FIELD_state,
+	otherPostalCode: ZmMsg.AB_FIELD_postalCode,
+	otherCountry: ZmMsg.AB_FIELD_country,
+	otherURL: ZmMsg.AB_FIELD_URL,
 	
 	// other phone numbers
 	otherPhone: ZmMsg.AB_FIELD_otherPhone,
