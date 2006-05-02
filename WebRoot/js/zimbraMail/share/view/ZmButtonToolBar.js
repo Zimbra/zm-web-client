@@ -33,18 +33,19 @@
 * example contain a button with a tab submenu. See also ZmActionMenu.
 *
 * @author Conrad Damon
-* @param parent					the containing widget
-* @param standardButtons		a list of operation IDs
-* @param extraButtons			a list of operation descriptors
-* @param posStyle				positioning style
-* @param className				CSS class name
+*
+* @param parent					[DwtComposite]		the containing widget
+* @param standardButtons		[array]*			a list of operation IDs
+* @param extraButtons			[array]*			a list of operation descriptors
+* @param posStyle				[constant]*			positioning style
+* @param className				[string]*			CSS class name
 */
 function ZmButtonToolBar(parent, standardButtons, extraButtons, posStyle, className, buttonClassName) {
 
 	if (arguments.length == 0) return;
 	ZmToolBar.call(this, parent, className, posStyle);
 	
-	if (buttonClassName == null) buttonClassName = "TBButton";
+	buttonClassName = buttonClassName ? buttonClassName : "TBButton";
 	this._buttonStyle = buttonClassName;
 
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
@@ -52,16 +53,18 @@ function ZmButtonToolBar(parent, standardButtons, extraButtons, posStyle, classN
 	// standard buttons default to New/Tag/Print/Delete
 	if (!standardButtons) {
 		standardButtons = [ZmOperation.NEW_MENU];
-		if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+		if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 			standardButtons.push(ZmOperation.TAG_MENU);
-		if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
+		}
+		if (this._appCtxt.get(ZmSetting.PRINT_ENABLED)) {
 			standardButtons.push(ZmOperation.PRINT);
+		}
 		standardButtons.push(ZmOperation.DELETE);
 	} else if (standardButtons == ZmOperation.NONE) {
 		standardButtons = null;
 	}
 	this._buttons = ZmOperation.createOperations(this, standardButtons, extraButtons);
-}
+};
 
 ZmButtonToolBar.prototype = new ZmToolBar;
 ZmButtonToolBar.prototype.constructor = ZmButtonToolBar;
@@ -71,39 +74,41 @@ ZmButtonToolBar.prototype.constructor = ZmButtonToolBar;
 ZmButtonToolBar.prototype.toString = 
 function() {
 	return "ZmButtonToolBar";
-}
+};
 
 /**
 * Creates a button and adds its operation ID as data.
 */
 ZmButtonToolBar.prototype.createOp =
-function(buttonId, text, imageInfo, disImageInfo, enabled, toolTip) {
+function(buttonId, text, imageInfo, disImageInfo, enabled, toolTip, index) {
 	var b;
-	if (buttonId == ZmOperation.TEXT)
+	if (buttonId == ZmOperation.TEXT) {
 		b = new DwtText(this);
-	else
-		b = ZmToolBar.prototype._createButton.call(this, buttonId, imageInfo, text, disImageInfo, toolTip, enabled, this._buttonStyle);
+	} else {
+		b = this._createButton(buttonId, imageInfo, text, disImageInfo, toolTip, enabled, this._buttonStyle, null, index);
+	}
 	b.setData(ZmOperation.KEY_ID, buttonId);
+
 	return b;
-}
+};
 
 /**
 * Creates a separator. Added because ZmToolBar defines _createSeparator().
 */
 ZmButtonToolBar.prototype.createSeparator =
-function() {
-	this.addSeparator("vertSep");
-}
+function(index) {
+	this.addSeparator("vertSep", index);
+};
 
 ZmButtonToolBar.prototype.addOp =
-function(id) {
-	ZmOperation.addOperation(this, id, this._buttons);
-}
+function(id, index) {
+	ZmOperation.addOperation(this, id, this._buttons, index);
+};
 
 ZmButtonToolBar.prototype.removeOp =
 function(id) {
 	ZmOperation.removeOperation(this, id, this._buttons);
-}
+};
 
 /**
 * Returns the button with the given ID.
@@ -113,7 +118,7 @@ function(id) {
 ZmButtonToolBar.prototype.getOp =
 function(id) {
 	return this.getButton(id);
-}
+};
 
 /**
 * Returns the menu's tag submenu, if any.
@@ -124,7 +129,7 @@ function() {
 	if (button) {
 		return button.getMenu();
 	}
-}
+};
 
 // Private methods
 
@@ -132,4 +137,4 @@ function() {
 ZmButtonToolBar.prototype._buttonId =
 function(button) {
 	return button.getData(ZmOperation.KEY_ID);
-}
+};

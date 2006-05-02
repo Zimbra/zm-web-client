@@ -433,8 +433,8 @@ function(action) {
 		} else {
 			var style = (op == ZmOperation.SHOW_CC || op == ZmOperation.SHOW_BCC) ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
 			var radioGroup = (style == DwtMenuItem.RADIO_STYLE) ? ZmComposeController.RADIO_GROUP[op] : null;
-			var text = (op == ZmOperation.REPLY) ? ZmMsg.replySender : ZmMsg[ZmOperation.SETUP[op].text];
-			var mi = menu.createMenuItem(op, ZmOperation.SETUP[op].image, text, null, true, style, radioGroup);
+			var text = (op == ZmOperation.REPLY) ? ZmMsg.replySender : ZmMsg[ZmOperation.getProp(op, "textKey")];
+			var mi = menu.createMenuItem(op, ZmOperation.getProp(op, "image"), text, null, true, style, radioGroup);
 			if (op == ZmOperation.FORMAT_HTML) {
 				mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
 			} else if (op == ZmOperation.FORMAT_TEXT) {

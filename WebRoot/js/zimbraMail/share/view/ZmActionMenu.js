@@ -33,10 +33,11 @@
 * example contain a tab submenu. See also ZmButtonToolBar.
 *
 * @author Conrad Damon
-* @param parent					the containing widget
-* @param standardMenuItems		a list of operation IDs
-* @param extraMenuItems			a list of operation descriptors
-* @param dialog					containing dialog, if any
+*
+* @param parent					[DwtComposite]		the containing widget
+* @param standardMenuItems		[array]*			a list of operation IDs
+* @param extraMenuItems			[array]*			a list of operation descriptors
+* @param dialog					[DwtDialog]*		containing dialog, if any
 */
 function ZmActionMenu(parent, standardMenuItems, extraMenuItems, dialog) {
 
@@ -47,10 +48,12 @@ function ZmActionMenu(parent, standardMenuItems, extraMenuItems, dialog) {
 	// standard menu items default to Tag/Print/Delete
 	if (!standardMenuItems) {
 		standardMenuItems = new Array();
-		if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+		if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 			standardMenuItems.push(ZmOperation.TAG_MENU);
-		if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
+		}
+		if (this._appCtxt.get(ZmSetting.PRINT_ENABLED)) {
 			standardMenuItems.push(ZmOperation.PRINT);
+		}
 		standardMenuItems.push(ZmOperation.DELETE);
 	} else if (standardMenuItems == ZmOperation.NONE) {
 		standardMenuItems = null;
@@ -73,10 +76,11 @@ function() {
 */
 ZmActionMenu.prototype.createOp =
 function(menuItemId, text, imageInfo, disImageInfo, enabled) {
-	var mi = ZmPopupMenu.prototype.createMenuItem.call(this, menuItemId, imageInfo, text, disImageInfo, enabled);
+	var mi = this.createMenuItem(menuItemId, imageInfo, text, disImageInfo, enabled);
 	mi.setData(ZmOperation.KEY_ID, menuItemId);
+
 	return mi;
-}
+};
 
 /**
 * Returns the menu item with the given ID.
@@ -86,17 +90,17 @@ function(menuItemId, text, imageInfo, disImageInfo, enabled) {
 ZmActionMenu.prototype.getMenuItem =
 function(id) {
 	return this._menuItems[id];
-}
+};
 
 ZmActionMenu.prototype.addOp =
 function(id) {
 	ZmOperation.addOperation(this, id, this._menuItems);
-}
+};
 
 ZmActionMenu.prototype.removeOp =
 function(id) {
 	ZmOperation.removeOperation(this, id, this._menuItems);
-}
+};
 
 /**
 * Returns the menu item with the given ID.
@@ -106,7 +110,7 @@ function(id) {
 ZmActionMenu.prototype.getOp =
 function(id) {
 	return this.getMenuItem(id);
-}
+};
 
 /**
 * Returns the menu's tag submenu, if any.
@@ -117,7 +121,7 @@ function() {
 	if (menuItem) {
 		return menuItem.getMenu();
 	}
-}
+};
 
 // Private methods
 
@@ -125,4 +129,4 @@ function() {
 ZmActionMenu.prototype._menuItemId =
 function(menuItem) {
 	return menuItem.getData(ZmOperation.KEY_ID);
-}
+};

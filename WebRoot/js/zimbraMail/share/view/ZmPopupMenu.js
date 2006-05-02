@@ -23,14 +23,27 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+* Creates a popup menu.
+* @const
+* @class
+* This class represents a basic popup menu which can add menu items, manage listeners, and
+* enable/disabled its menu items.
+*
+* @author Conrad Damon
+*
+* @param parent			[DwtComposite]		the containing widget
+* @param className		[string]*			CSS class
+* @param dialog			[DwtDialog]*		containing dialog, if any
+*/
 function ZmPopupMenu(parent, className, dialog) {
 
 	if (arguments.length == 0) return;
-	className = className || "ActionMenu";
+	className = className ? className : "ActionMenu";
 	DwtMenu.call(this, parent, DwtMenu.POPUP_STYLE, className, null, dialog);
 
-	this._menuItems = new Object();
-}
+	this._menuItems = {};
+};
 
 ZmPopupMenu.prototype = new DwtMenu;
 ZmPopupMenu.prototype.constructor = ZmPopupMenu;
@@ -38,28 +51,25 @@ ZmPopupMenu.prototype.constructor = ZmPopupMenu;
 ZmPopupMenu.prototype.toString = 
 function() {
 	return "ZmPopupMenu";
-}
+};
 
 ZmPopupMenu.prototype.addSelectionListener =
 function(menuItemId, listener) {
 	this._menuItems[menuItemId].addSelectionListener(listener);
-}
+};
 
 ZmPopupMenu.prototype.removeSelectionListener =
 function(menuItemId, listener) {
 	this._menuItems[menuItemId].removeSelectionListener(listener);
-}
+};
 
 ZmPopupMenu.prototype.popup =
 function(delay, x, y) {
-	if (delay == null)
-		delay = 0;
-	if (x == null) 
-		x = Dwt.DEFAULT;
-	if (y == null)
-		y = Dwt.DEFAULT;
+	delay = delay ? delay : 0;
+	x = (x != null) ? x : Dwt.DEFAULT;
+	y = (y != null) ? y : Dwt.DEFAULT;
 	DwtMenu.prototype.popup.call(this, delay, x, y);
-}
+};
 
 /**
 * Enables/disables menu items.
@@ -69,38 +79,44 @@ function(delay, x, y) {
 */
 ZmPopupMenu.prototype.enable =
 function(ids, enabled) {
-	if (!(ids instanceof Array))
-		ids = [ids];
-	for (var i = 0; i < ids.length; i++)
-		if (this._menuItems[ids[i]])
+	id = (ids instanceof Array) ? ids : [ids];
+	for (var i = 0; i < ids.length; i++) {
+		if (this._menuItems[ids[i]]) {
 			this._menuItems[ids[i]].setEnabled(enabled);
-}
+		}
+	}
+};
 
 ZmPopupMenu.prototype.enableAll =
 function(enabled) {
-	for (var i in this._menuItems)
+	for (var i in this._menuItems) {
 		this._menuItems[i].setEnabled(enabled);
-}
+	}
+};
 
 ZmPopupMenu.prototype.addMenuItem =
 function(menuItemId, menuItem) {
 	this._menuItems[menuItemId] = menuItem;
-}
+};
 
 ZmPopupMenu.prototype.createMenuItem =
 function(menuItemId, imageInfo, text, disImageInfo, enabled, style, radioGroupId) {
 	var mi = this._menuItems[menuItemId] = new DwtMenuItem(this, style, radioGroupId);
-	if (imageInfo)
+	if (imageInfo) {
 		mi.setImage(imageInfo);
-	if (text)
+	}
+	if (text) {
 		mi.setText(text);
-	if (disImageInfo)
+	}
+	if (disImageInfo) {
 		mi.setDisabledImage(disImageInfo);
+	}
 	mi.setEnabled(enabled !== false);
+
 	return mi;
-}
+};
 
 ZmPopupMenu.prototype.createSeparator =
 function() {
 	new DwtMenuItem(this, DwtMenuItem.SEPARATOR_STYLE);
-}
+};

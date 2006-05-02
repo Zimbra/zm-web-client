@@ -139,8 +139,8 @@ function(view) {
 		var item = items[i];
 		var op = item.op;
 
-		var icon = ZmOperation.SETUP[op].image;
-		var text = ZmMsg[ZmOperation.SETUP[op].text];
+		var icon = ZmOperation.getProp(op, "image");
+		var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
 		var style = DwtMenuItem.RADIO_STYLE;
 		var group = ZmPageEditController.RADIO_GROUP[op];
 

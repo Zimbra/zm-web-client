@@ -251,8 +251,9 @@ function(view) {
 	var menu = new ZmPopupMenu(printButton);
 	printButton.setMenu(menu);
 	
-	var mi = menu.createMenuItem(ZmOperation.PRINT_CONTACTLIST, ZmOperation.SETUP[ZmOperation.PRINT_CONTACTLIST].image, ZmMsg[ZmOperation.SETUP[ZmOperation.PRINT_CONTACTLIST].text]);
-	mi.setData(ZmOperation.MENUITEM_ID, ZmOperation.PRINT_CONTACTLIST);
+	var id = ZmOperation.PRINT_CONTACTLIST;
+	var mi = menu.createMenuItem(id, ZmOperation.getProp(id, "image"), ZmMsg[ZmOperation.getProp(id, "textKey")]);
+	mi.setData(ZmOperation.MENUITEM_ID, id);
 	mi.addSelectionListener(this._listeners[ZmOperation.PRINT]);
 };
 
