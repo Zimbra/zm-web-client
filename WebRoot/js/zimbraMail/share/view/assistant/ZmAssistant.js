@@ -23,12 +23,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAssistant(appCtxt, title, command) {
+function ZmAssistant(appCtxt, title, command, commandSummary) {
 	if (arguments.length == 0) return;
 	this._appCtxt = appCtxt;
 	this._objectManager = new ZmObjectManager(null, this._appCtxt, null);
 	this._fields = {};	
 	this._title = title;
+	this._commandSummary = commandSummary ? commandSummary : title;
 	this._command = command;
 };
 
@@ -103,6 +104,11 @@ function() {
 	return this._command;
 };
 
+ZmAssistant.prototype.getCommandSummary =
+function() {
+	return this._commandSummary;
+};
+
 ZmAssistant.prototype.handle =
 function(dialog, verb, line) {
 	//override
@@ -111,6 +117,11 @@ function(dialog, verb, line) {
 ZmAssistant.prototype.okHandler =
 function(dialog) {
 	return true; //override
+};
+
+ZmAssistant.prototype.getHelp = 
+function() {
+	return null; //override
 };
 
 ZmAssistant.prototype.extraButtonHandler =

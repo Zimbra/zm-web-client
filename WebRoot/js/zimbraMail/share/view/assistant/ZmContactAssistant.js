@@ -25,7 +25,7 @@
 
 function ZmContactAssistant(appCtxt) {
 	if (arguments.length == 0) return;
-	ZmAssistant.call(this, appCtxt, ZmMsg.createNewContact, ZmMsg.ASST_CMD_CONTACT);
+	ZmAssistant.call(this, appCtxt, ZmMsg.createNewContact, ZmMsg.ASST_CMD_CONTACT, ZmMsg.ASST_CMD_SUM_CONTACT);
 };
 
 ZmContactAssistant.prototype = new ZmAssistant();

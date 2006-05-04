@@ -25,7 +25,7 @@
 
 function ZmMailAssistant(appCtxt) {
 	if (arguments.length == 0) return;
-	ZmAssistant.call(this, appCtxt, ZmMsg.createNewMsg, ZmMsg.ASST_CMD_MAIL);
+	ZmAssistant.call(this, appCtxt, ZmMsg.createNewMsg, ZmMsg.ASST_CMD_MAIL, ZmMsg.ASST_CMD_SUM_MAIL);
 };
 
 ZmMailAssistant.prototype = new ZmAssistant();

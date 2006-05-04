@@ -25,7 +25,7 @@
 
 function ZmAppointmentAssistant(appCtxt) {
 	if (arguments.length == 0) return;
-	ZmAssistant.call(this, appCtxt, ZmMsg.createNewAppt, ZmMsg.ASST_CMD_APPOINTMENT);
+	ZmAssistant.call(this, appCtxt, ZmMsg.createNewAppt, ZmMsg.ASST_CMD_APPOINTMENT, ZmMsg.ASST_CMD_SUM_APPOINTMENT);
 };
 
 ZmAppointmentAssistant.prototype = new ZmAssistant();
@@ -54,6 +54,11 @@ function(dialog) {
 	var cc = calApp.getCalController();
 	cc.newAppointment(this.getAppt(), ZmAppt.MODE_NEW_FROM_QUICKADD, true); // dirty bit
 	return true;
+};
+
+ZmAppointmentAssistant.prototype.getHelp =
+function() {
+	return ZmMsg.ASST_APPT_HELP;
 };
 
 ZmAppointmentAssistant.prototype.getAppt =

@@ -25,7 +25,7 @@
 
 function ZmCalendarAssistant(appCtxt) {
 	if (arguments.length == 0) return;
-	ZmAssistant.call(this, appCtxt, ZmMsg.openCalendar, ZmMsg.ASST_CMD_CALENDAR);
+	ZmAssistant.call(this, appCtxt, ZmMsg.openCalendar, ZmMsg.ASST_CMD_CALENDAR, ZmMsg.ASST_CMD_SUM_CALENDAR);
 };
 
 ZmCalendarAssistant.prototype = new ZmAssistant();

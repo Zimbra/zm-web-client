@@ -29,13 +29,12 @@
 */
 function ZmAssistantDialog(appCtxt) {
 
-	var helpButton = new DwtDialog_ButtonDescriptor(ZmAssistantDialog.HELP_BUTTON, 
-														   "help", DwtDialog.ALIGN_LEFT);
+	var helpButton = new DwtDialog_ButtonDescriptor(ZmAssistantDialog.HELP_BUTTON, ZmMsg.help, DwtDialog.ALIGN_LEFT);
 														   
 	var extraButton = new DwtDialog_ButtonDescriptor(ZmAssistantDialog.EXTRA_BUTTON, 
 														   ZmMsg.moreDetails, DwtDialog.ALIGN_LEFT);														   
 														   
-	DwtDialog.call(this, appCtxt.getShell(), "ZmAssistantDialog", ZmMsg.zimbraAssistant, null, [extraButton]);
+	DwtDialog.call(this, appCtxt.getShell(), "ZmAssistantDialog", ZmMsg.zimbraAssistant, null, [helpButton, extraButton]);
 //	ZmQuickAddDialog.call(this, appCtxt.getShell(), null, null, []);
 
 	this._appCtxt = appCtxt;
@@ -45,6 +44,7 @@ function ZmAssistantDialog(appCtxt) {
 	this._msgDialog = this._appCtxt.getMsgDialog();
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this.setButtonListener(ZmAssistantDialog.EXTRA_BUTTON, new AjxListener(this, this._extraButtonListener));	
+	this.setButtonListener(ZmAssistantDialog.HELP_BUTTON, new AjxListener(this, this._helpButtonListener));
 
 	// only trigger matching after a sufficient pause
 	this._parseInterval = 75; //this._appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
@@ -67,8 +67,6 @@ function ZmAssistantDialog(appCtxt) {
 		ZmAssistant.register(new ZmVersionAssistant(appCtxt));
 		ZmAssistant.register(new ZmDebugAssistant(appCtxt));
 	}	
-	//var ok = this.getButton(DwtDialog.OK_BUTTON);
-	//ok.setAlign(DwtLabel.IMAGE_RIGHT);
 };
 
 //ZmAssistantDialog.prototype = new ZmQuickAddDialog;
@@ -88,7 +86,7 @@ function() {
 	var commands = ZmAssistant.getHandlerCommands().join(", ");
 	this._availableCommands = ZmMsg.ASST_availableCommands+ " " + commands;
 	this._setDefault();
-
+	this._setHelpButton(null, true, true);
 	DwtDialog.prototype.popup.call(this);
 	this._commandEl.focus();
 };
@@ -159,11 +157,17 @@ function() {
 		var args = cmd.substring(match[0].length);
 		var mainCommand = match[1];
 		var commands = ZmAssistant.matchWord(mainCommand);
-		if (commands.length == 1) assistant = ZmAssistant.getHandler(commands[0]);
-		else {
-			this._availableCommands = ZmMsg.ASST_availableCommands+ " " + commands.join(", ");
+		switch(commands.length) {
+			case 0:
+				this._availableCommands = ZmMsg.ASST_availableCommands+ " " + ZmMsg.ASST_no_match;
+				break;
+			case 1:
+				assistant = ZmAssistant.getHandler(commands[0]);
+				break;
+			default:
+				this._availableCommands = ZmMsg.ASST_availableCommands+ " " + commands.join(", ");
+				break;
 		}
-		//if (assistant && mainCommand == cmd && mainCommand != assistant.getCommand() && this._assistant != assistant) {		
 		if (assistant && mainCommand == cmd && this._assistant != assistant) {
 			this._commandEl.value = assistant.getCommand()+ " ";
 		}
@@ -178,6 +182,10 @@ function() {
 			this._assistant.initialize(this);
 			var title = this._assistant.getTitle();
 			if (title) this._setCommandTitle(title);
+			var help = this._assistant.getHelp();
+			this._setHelpButton(null, help != null, true);
+		} else {
+			this._setHelpButton(null, true, true);
 		}
 	}
 
@@ -217,6 +225,15 @@ function(title, visible, enabled) {
 	//if (setImage) ok.setImage(image);
 };
 
+ZmAssistantDialog.prototype._setHelpButton =
+function(title, visible, enabled) {
+	var b = this.getButton(ZmAssistantDialog.HELP_BUTTON);
+	if (title) b.setText(title);
+	b.setEnabled(enabled);
+	b.setVisible(visible);
+	//if (setImage) ok.setImage(image);
+};
+
 /**
 * Clears the conditions and actions table before popdown so we don't keep
 * adding to them.
@@ -238,6 +255,25 @@ ZmAssistantDialog.prototype._extraButtonListener =
 function(ev) {
 	if (this._assistant && !this._assistant.extraButtonHandler(this)) return;
 	this.popdown();
+};
+
+ZmAssistantDialog.prototype._helpButtonListener =
+function(ev) {
+	if (this._assistant) {
+		var help = this._assistant.getHelp();
+		if (help != null) this.messageDialog(help, DwtMessageDialog.INFO_STYLE);
+	} else {
+		var html = new AjxBuffer();
+		html.append(ZmMsg.ASST_HELP);
+		html.append("<table cellspacing=1 cellpadding=2 border=0>");
+		var cmds = ZmAssistant.getHandlerCommands();
+		for (var i=0; i < cmds.length; i++) {
+			var handler = ZmAssistant.getHandler(cmds[i]);
+			html.append("<tr><td><b>", AjxStringUtil.htmlEncode(handler.getCommand()), "</b></td><td>&nbsp;</td><td>", AjxStringUtil.htmlEncode(handler.getCommandSummary()),"</td></tr>");
+		}
+		html.append("</table>");
+		this.messageDialog(html.toString(), DwtMessageDialog.INFO_STYLE);
+	}
 };
 
 
