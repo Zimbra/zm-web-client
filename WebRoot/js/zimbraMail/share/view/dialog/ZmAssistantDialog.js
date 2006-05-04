@@ -64,6 +64,8 @@ function ZmAssistantDialog(appCtxt) {
 		}
 //		ZmAssistant.register(new ZmCallAssistant(appCtxt));
 		ZmAssistant.register(new ZmMailAssistant(appCtxt));
+		ZmAssistant.register(new ZmVersionAssistant(appCtxt));
+		ZmAssistant.register(new ZmDebugAssistant(appCtxt));
 	}	
 	//var ok = this.getButton(DwtDialog.OK_BUTTON);
 	//ok.setAlign(DwtLabel.IMAGE_RIGHT);
@@ -152,7 +154,7 @@ ZmAssistantDialog.prototype._parseAction =
 function() {
 	var assistant = null;	
 	var cmd = this._commandEl.value.replace(/^\s*/, '');
-	var match = cmd.match(/^(\w+)\b\s*/);
+	var match = cmd.match(/^([\.\w]+)\s*/);
 	if (match) {
 		var args = cmd.substring(match[0].length);
 		var mainCommand = match[1];
@@ -250,20 +252,3 @@ function(message, style) {
 	this._msgDialog.setMessage(message, style);
 	this._msgDialog.popup();
 };
-
-//	else if (obj == 'm')  { 
-//		
-
-//ZmAssistantDialog.prototype._emptyCommand =
-//function(args) {
-//	this._setActionField(ZmMsg.empty, "Trash");
-//	var match = args.match(/\s*(\w+)\s*/);
-//	var folder = match ? match[1] : null;
-//
-//	if (folder == 'trash' || folder == 'junk') {
-//		this._setOptField(ZmMsg.folder, folder, false, true);
-//	} else {
-//		this._setOptField(ZmMsg.folder, "trash or junk", true, true);
-//	}
-//}
-

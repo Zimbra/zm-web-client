@@ -37,20 +37,24 @@ ZmAssistant.prototype.constructor = ZmAssistant;
 
 ZmAssistant._handlers = {};
 ZmAssistant._commands = [];
+ZmAssistant._allCommands = []; // inclde . commands
 
 ZmAssistant.register = 
 function(handler, name) {
 	if (name == null) name = handler.getCommand();
 	if (name in ZmAssistant._handlers) return; // need to alert/error out and/or deal with dups!
 	ZmAssistant._handlers[name] = handler;
-	ZmAssistant._commands.push(name);
-	//ZmAssistant._commands = ZmAssistant._commands.sort();
-	ZmAssistant._commands.sort();	
+	ZmAssistant._allCommands.push(name);
+	ZmAssistant._allCommands.sort();
+	if (name.substring(0,1) != ".") {
+		ZmAssistant._commands.push(name);
+		ZmAssistant._commands.sort();		
+	}
 };
 
 ZmAssistant.matchWord = 
 function(word, words) {
-	if (words == null) words = ZmAssistant._commands;
+	if (words == null) words = ZmAssistant._allCommands;
 	var i;
 	var matched = [];
 	for (i in words) {
@@ -66,23 +70,10 @@ function(word, words) {
 ZmAssistant.getHandler = 
 function(name) {
 	return ZmAssistant._handlers[name];	
-/*	
-	var n;
-	var handler = null;
-	for (n in ZmAssistant._handlers) {
-		if (n == name) return ZmAssistant._handlers[n];
-		else if (n.substring(0, name.length) == name) {
-			if (handler == null) handler = ZmAssistant._handlers[n];
-			else return null;
-		}
-	}
-	return handler;
-*/	
-	//return ZmAssistant._handlers[name];
 };
 
 ZmAssistant.getHandlerCommands = 
-function(name) {
+function() {
 	return ZmAssistant._commands;
 };
 
