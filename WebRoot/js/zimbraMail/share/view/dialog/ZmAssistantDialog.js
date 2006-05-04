@@ -55,10 +55,14 @@ function ZmAssistantDialog(appCtxt) {
 	// TODO: need to init these based on COS features (calendars, contacts, etc)
 	if (!ZmAssistantDialog._handlerInit) {
 		ZmAssistantDialog._handlerInit = true;
-		ZmAssistant.register(new ZmAppointmentAssistant(appCtxt));
-		ZmAssistant.register(new ZmContactAssistant(appCtxt));
-		ZmAssistant.register(new ZmCalendarAssistant(appCtxt));
-		ZmAssistant.register(new ZmCallAssistant(appCtxt));
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+			ZmAssistant.register(new ZmContactAssistant(appCtxt));
+		}
+		if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+			ZmAssistant.register(new ZmCalendarAssistant(appCtxt));	
+			ZmAssistant.register(new ZmAppointmentAssistant(appCtxt));
+		}
+//		ZmAssistant.register(new ZmCallAssistant(appCtxt));
 		ZmAssistant.register(new ZmMailAssistant(appCtxt));
 	}	
 	//var ok = this.getButton(DwtDialog.OK_BUTTON);
