@@ -82,7 +82,7 @@ function(buttonId, key, data) {
 */
 ZmToolBar.prototype.enable =
 function(ids, enabled) {
-	id = (ids instanceof Array) ? ids : [ids];
+	ids = (ids instanceof Array) ? ids : [ids];
 	for (var i = 0; i < ids.length; i++) {
 		if (this._buttons[ids[i]]) {
 			this._buttons[ids[i]].setEnabled(enabled);
