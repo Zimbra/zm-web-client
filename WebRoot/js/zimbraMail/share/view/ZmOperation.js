@@ -647,7 +647,8 @@ ZmOperation.SETUP[ZmOperation.RENAME_SEARCH] = {
 
 ZmOperation.RENAME_TAG = i++;
 ZmOperation.SETUP[ZmOperation.RENAME_TAG] = {
-	textKey:	"rename"
+	textKey:	"renameTag",
+	image:		"Rename"
 };
 
 ZmOperation.REPLY = i++;
