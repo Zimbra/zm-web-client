@@ -182,7 +182,9 @@ function(folder) {
 *
 * @param parent		[ZmFolder]		parent of the new organizer
 * @param name		[string]		name of the new organizer
-* @param search		[ZmSearch]		search object (saved search creation only)
+* @param color		[constant]*		color of new folder
+* @param url		[string]*		URL if folder is RSS/ATOM
+* @param search		[ZmSearch]*		search object (saved search creation only)
 */
 ZmFolderTreeController.prototype._doCreate =
 function(parent, name, color, url, search) {
