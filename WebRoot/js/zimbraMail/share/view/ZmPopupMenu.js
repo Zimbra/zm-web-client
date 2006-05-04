@@ -79,7 +79,7 @@ function(delay, x, y) {
 */
 ZmPopupMenu.prototype.enable =
 function(ids, enabled) {
-	id = (ids instanceof Array) ? ids : [ids];
+	ids = (ids instanceof Array) ? ids : [ids];
 	for (var i = 0; i < ids.length; i++) {
 		if (this._menuItems[ids[i]]) {
 			this._menuItems[ids[i]].setEnabled(enabled);
