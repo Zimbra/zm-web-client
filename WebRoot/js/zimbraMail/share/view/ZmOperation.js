@@ -234,6 +234,31 @@ ZmOperation.SETUP[ZmOperation.EDIT_NOTEBOOK_INDEX] = {
 	image:		"Edit"
 };
 
+ZmOperation.EDIT_NOTEBOOK_STYLES = i++;
+ZmOperation.SETUP[ZmOperation.EDIT_NOTEBOOK_STYLES] = {
+	textKey:	"editNotebookStyles",
+	image:		"Edit"
+};
+
+ZmOperation.EDIT_NOTEBOOK_HEADER = i++;
+ZmOperation.SETUP[ZmOperation.EDIT_NOTEBOOK_HEADER] = {
+	textKey:	"editNotebookHeader",
+	image:		"Edit"
+};
+
+ZmOperation.EDIT_NOTEBOOK_FOOTER = i++;
+ZmOperation.SETUP[ZmOperation.EDIT_NOTEBOOK_FOOTER] = {
+	textKey:	"editNotebookFooter",
+	image:		"Edit"
+};
+
+ZmOperation.EDIT_NOTEBOOK_SIDE_BAR = i++;
+ZmOperation.SETUP[ZmOperation.EDIT_NOTEBOOK_SIDE_BAR] = {
+	textKey:	"editNotebookSideBar",
+	image:		"Edit"
+};
+
+
 ZmOperation.EDIT_PROPS = i++;
 ZmOperation.SETUP[ZmOperation.EDIT_PROPS] = {
 	textKey:	"editProperties",
@@ -624,7 +649,8 @@ ZmOperation.SETUP[ZmOperation.PRINT_MENU] = {
 
 ZmOperation.REFRESH = i++;
 ZmOperation.SETUP[ZmOperation.REFRESH] = {
-	textKey:	"refresh"
+	textKey:	"refresh",
+	img:		"SendReceive"
 };
 
 ZmOperation.REMOVE_FILTER_RULE = i++;

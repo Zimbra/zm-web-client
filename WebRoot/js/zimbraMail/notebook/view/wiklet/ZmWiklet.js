@@ -267,12 +267,27 @@ ZmWiklet.register(
 				type: "string",
 				value: "PageName"
 			},
-			lookup: {
-				name: "lookup",
+			inherit: {
+				name: "inherit",
 				label: ZmMsg.includeRecurseUp,
 				type: "boolean",
 				value: false
+			},
+			context: {
+				name: "context",
+				label: ZmMsg.includeRecurseUp,
+				type: "enum",
+				item: [
+					{ label: ZmMsg.contextPage, value: "page" },
+					{ label: ZmMsg.contextParent, value: "parent" },
+					{ label: ZmMsg.shortTime, value: "shorttime" },
+					{ label: ZmMsg.longTime, value: "longtime" },
+					{ label: ZmMsg.shortDateTime, value: "shortdateandtime" },
+					{ label: ZmMsg.longDateTime, value: "longdateandtime" },
+					{ label: ZmMsg.pattern, value: "pattern" }
+				]
 			}
+
 		},
 		func: function(name, value, params, context) {
 			// check for recursive include
@@ -288,7 +303,7 @@ ZmWiklet.register(
 			
 			// include page
 			var item = context.getItem();
-			var recurseUp = (params.lookup && params.lookup.toLowerCase() == 'true');
+			var recurseUp = (params.inherit && params.inherit.toLowerCase() == 'true');
 			if (item.folderId) {
 				var page = context.getPageByName(item.folderId, params.page, recurseUp);
 				if (page) {
@@ -506,7 +521,7 @@ ZmWiklet.register(
 				case "template": {
 					var folderId = context.getItem().folderId;
 					
-					var itemTemplate = context.getPageByName(folderId, (params.itemTemplate || "_TOC_ITEM_TEMPLATE_"), true);
+					var itemTemplate = context.getPageByName(folderId, (params.itemTemplate || ZmNotebook.PAGE_TOC_ITEM_TEMPLATE), true);
 					var itemContent = itemTemplate ? itemTemplate.getContent() : [
 						// REVISIT
 						"<tr>",
@@ -532,7 +547,7 @@ ZmWiklet.register(
 						context.setItemCount(length);
 					}
 
-					var bodyTemplate = context.getPageByName(folderId, (params.bodyTemplate || "_TOC_BODY_TEMPLATE_"), true);
+					var bodyTemplate = context.getPageByName(folderId, (params.bodyTemplate || ZmNotebook.PAGE_TOC_BODY_TEMPLATE), true);
 					var bodyContent = bodyTemplate ? bodyTemplate.getContent() : [
 						// REVISIT
 						"<table class='_tocIconTable'>",
@@ -565,9 +580,9 @@ ZmWiklet.register(
 		}
 	},
 	{
-		name: "BREADCRUMBS",
-		label: ZmMsg.wikletBreadcrumbs,
-		tooltip: ZmMsg.wikletBreadcrumbsTT,
+		name: "PATH",
+		label: ZmMsg.wikletPath,
+		tooltip: ZmMsg.wikletPathTT,
 		type: ZmWiklet.PARAMETERIZED,
 		paramdefs: {
 			format: {
@@ -598,7 +613,7 @@ ZmWiklet.register(
 		func: function(name, value, params, context) {
 			// TODO: params.page
 			
-			// get breadcrumb trail
+			// get path trail
 			var item = context.getItem();
 			var notebook = context.getNotebookById(item.folderId || (item.parent && item.parent.id));
 			
@@ -614,9 +629,9 @@ ZmWiklet.register(
 				case "template": {
 					var folderId = item.folderId;
 					
-					var separator = params.separator || "<td class='_breadcrumb_separator'> &raquo; </td>";
+					var separator = params.separator || "<td class='_path_separator'> &raquo; </td>";
 					
-					var itemTemplate = context.getPageByName(folderId, (params.itemTemplate || '_BREADCRUMB_ITEM_TEMPLATE_'), true);
+					var itemTemplate = context.getPageByName(folderId, (params.itemTemplate || ZmNotebook.PATH_ITEM_TEMPLATE), true);
 					var itemContent = itemTemplate ? itemTemplate.getContent() : [
 						// REVISIT
 						"<td class='_pageIcon'>{{ICON}}</td>",
@@ -632,15 +647,15 @@ ZmWiklet.register(
 							content.push(ZmWikletProcessor._process(itemContent));
 						}
 						catch (e) {
-							DBG.println("error processing breadcrumb item: "+e);
+							DBG.println("error processing path item: "+e);
 						}
 						context.setItemCount(length);
 					}
 					
-					var bodyTemplate = context.getPageByName(folderId, (params.bodyTemplate || '_BREADCRUMB_BODY_TEMPLATE_'), true);
+					var bodyTemplate = context.getPageByName(folderId, (params.bodyTemplate || ZmNotebook.PATH_BODY_TEMPLATE), true);
 					var bodyContent = bodyTemplate ? bodyTemplate.getContent() : [
 						// REVISIT
-						"<table class='_breadcrumb_table' cellspacing=0 cellpadding=0>",
+						"<table class='_path_table' cellspacing=0 cellpadding=0>",
 							"<tr>",
 								"{{CONTENT}}",
 							"</tr>",
@@ -652,7 +667,7 @@ ZmWiklet.register(
 				case "simple": default: {
 					var separator = params.separator || " &raquo; ";
 
-					content.push("<span class='_breadcrumbs_simple'>");
+					content.push("<span class='_path_simple'>");
 					for (var i = 0; i < trail.length; i++) {
 						if (i > 0) {
 							content.push(separator);

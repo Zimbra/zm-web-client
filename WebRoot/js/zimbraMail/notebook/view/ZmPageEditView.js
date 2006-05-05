@@ -61,7 +61,7 @@ function(page) {
 	page.getContent(callback);
 };
 ZmPageEditView.prototype._setResponse = function(page) {
-	var content = "{{BREADCRUMBS format='template'}}";
+	var content = "{{PATH format='template'}}";
 	content = ZmWikletProcessor.process(this._appCtxt, page, content);
 	this._locationEl.innerHTML = content;
 

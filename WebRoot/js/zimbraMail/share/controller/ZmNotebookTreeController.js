@@ -38,6 +38,10 @@ function ZmNotebookTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME] = new AjxListener(this, this._editNotebookListener);
 	this._listeners[ZmOperation.EDIT_NOTEBOOK_INDEX] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
+	this._listeners[ZmOperation.EDIT_NOTEBOOK_STYLES] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
+	this._listeners[ZmOperation.EDIT_NOTEBOOK_SIDE_BAR] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
+	this._listeners[ZmOperation.EDIT_NOTEBOOK_HEADER] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
+	this._listeners[ZmOperation.EDIT_NOTEBOOK_FOOTER] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
 
 	this._eventMgrs = {};
 };
@@ -85,8 +89,10 @@ ZmNotebookTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [
 		ZmOperation.NEW_NOTEBOOK, ZmOperation.EXPAND_ALL,
-		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_INDEX, ZmOperation.EDIT_NOTEBOOK_CHROME
+		ZmOperation.SEP, ZmOperation.REFRESH, ZmOperation.SEP,
+		ZmOperation.EDIT_NOTEBOOK_INDEX, ZmOperation.EDIT_NOTEBOOK_HEADER, 
+		ZmOperation.EDIT_NOTEBOOK_FOOTER, ZmOperation.EDIT_NOTEBOOK_SIDE_BAR,
+		ZmOperation.SEP, ZmOperation.EDIT_NOTEBOOK_CHROME, ZmOperation.EDIT_NOTEBOOK_STYLES
 	];
 };
 
@@ -100,7 +106,9 @@ function() {
 	ops.push(
 		ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.REFRESH,
 		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_INDEX, ZmOperation.EDIT_NOTEBOOK_CHROME
+		ZmOperation.EDIT_NOTEBOOK_INDEX, ZmOperation.SEP, ZmOperation.EDIT_NOTEBOOK_HEADER, 
+		ZmOperation.EDIT_NOTEBOOK_FOOTER, ZmOperation.EDIT_NOTEBOOK_SIDE_BAR,
+		ZmOperation.SEP, ZmOperation.EDIT_NOTEBOOK_CHROME, ZmOperation.EDIT_NOTEBOOK_STYLES
 	);
 	return ops;
 };
@@ -210,6 +218,7 @@ function(ev) {
 
 	var notebookApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var cache = notebookApp.getNotebookCache();
+
 	cache.fillCache(notebook.id);
 };
 
@@ -218,7 +227,25 @@ ZmNotebookTreeController.prototype._editNotebookListener = function(ev) {
 	
 	var notebook = this._pendingActionData;
 	var op = ev.item.getData(ZmOperation.KEY_ID);
-	var name = op == ZmOperation.EDIT_NOTEBOOK_INDEX ? ZmNotebook.PAGE_INDEX : ZmNotebook.PAGE_CHROME;
+	if (op == ZmOperation.EDIT_NOTEBOOK_INDEX) {
+		op = ZmNotebook.PAGE_INDEX;
+		
+	} else if (op == ZmOperation.EDIT_NOTEBOOK_CHROME) {
+		op = ZmNotebook.PAGE_CHROME;
+		
+	} else if (op == ZmOperation.EDIT_NOTEBOOK_STYLES) {
+		op = ZmNotebook.PAGE_CHROME_STYLES;
+		
+	} else if (op == ZmOperation.EDIT_NOTEBOOK_HEADER) {
+		op = ZmNotebook.PAGE_HEADER;
+		
+	} else if (op == ZmOperation.EDIT_NOTEBOOK_FOOTER) {
+		op = ZmNotebook.PAGE_FOOTER;
+		
+	} else if (op == ZmOperation.EDIT_NOTEBOOK_SIDE_BAR) {
+		op = ZmNotebook.PAGE_SIDE_BAR;
+	}
+	var name = op;
 	
 	var notebookApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var cache = notebookApp.getNotebookCache();

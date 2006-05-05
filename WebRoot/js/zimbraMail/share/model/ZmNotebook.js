@@ -48,8 +48,17 @@ ZmNotebook.prototype.constructor = ZmNotebook;
 
 // Constants
 
-ZmNotebook.PAGE_INDEX = "_INDEX_";
-ZmNotebook.PAGE_CHROME = "_CHROME_";
+ZmNotebook.PAGE_INDEX = "_Index";
+ZmNotebook.PAGE_CHROME = "_Template";
+ZmNotebook.PAGE_CHROME_STYLES = "_TemplateStyles";
+ZmNotebook.PAGE_HEADER = "_Header";
+ZmNotebook.PAGE_FOOTER = "_Footer";
+ZmNotebook.PAGE_SIDE_BAR = "_SideBar";
+ZmNotebook.PAGE_TOC_BODY_TEMPLATE = "_TocBodyTemplate";
+ZmNotebook.PAGE_TOC_ITEM_TEMPLATE = "_TocItemTemplate";
+ZmNotebook.PATH_BODY_TEMPLATE = "_PathBodyTemplate";
+ZmNotebook.PATH_ITEM_TEMPLATE = "_PathItemTemplate";
+ZmNotebook.PATH_SEPARATOR = "_PathSeparator";
 
 // Public methods
 
