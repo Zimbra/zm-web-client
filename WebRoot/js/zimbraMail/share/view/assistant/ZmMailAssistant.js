@@ -59,34 +59,143 @@ ZmMailAssistant._OBJECT_ORDER = [
 	ZmAssistant._BRACKETS //, ZmObjectManager.EMAIL
 ];
 
+ZmMailAssistant.prototype.okHandler =
+function(dialog) {
+	var bad = new AjxVector();	
+	var msg = this.getMessage(bad);
+
+	var confirmDialog = this._getConfirmDialog(dialog);
+
+	var subject = AjxStringUtil.trim(msg.getSubject());
+	if ((subject == null || subject == "") && !this._noSubjectOkay) {
+    	confirmDialog.setMessage(ZmMsg.compSubjectMissing, DwtMessageDialog.WARNING_STYLE);
+		confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this, dialog);
+		confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this, dialog);
+	    confirmDialog.popup();
+		return;
+	}
+
+	if (bad.size() > 0 && !this._badAddrsOkay) {
+	    var badAddrs = AjxStringUtil.htmlEncode(bad.toString(ZmEmailAddress.SEPARATOR));
+	    var message = AjxMessageFormat.format(ZmMsg.compBadAddresses, badAddrs);
+    	confirmDialog.setMessage(message, DwtMessageDialog.WARNING_STYLE);
+		confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this, dialog);
+		confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, dialog);
+	    confirmDialog.popup();
+		return false;
+	} else {
+		this._badAddrsOkay = false;
+	}
+
+	var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+	
+	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [dialog]);
+	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg, [dialog]);
+	
+	msg.send(contactList, false, respCallback, errorCallback);
+	// need to popdown in handle response instead of returning true..
+	return false;
+};
+
+ZmMailAssistant.prototype._handleResponseSendMsg =
+function(dialog) {
+	this._appCtxt.setStatusMsg(ZmMsg.messageSent);	
+	dialog.popdown();
+};
+
+ZmMailAssistant.prototype._handleErrorSendMsg =
+function(dialog, ex) {
+	var msg = null;
+	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
+		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
+		var invalidMsg = (invalid && invalid.length) ? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses,
+														AjxStringUtil.htmlEncode(invalid.join(", "))) : null;
+		msg = ZmMsg.sendErrorAbort + "<br/>" + invalidMsg;
+	} else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
+		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
+		msg = (invalid && invalid.length) ? AjxMessageFormat.format(ZmMsg.sendErrorPartial,
+											AjxStringUtil.htmlEncode(invalid.join(", "))) : ZmMsg.sendErrorAbort;
+	}
+	if (msg) {
+		dialog.messageDialog(msg, DwtMessageDialog.CRITICAL_STYLE);
+		return true;
+	} else {
+		return false;
+	}
+};
+
+// User has agreed to send message with no subject
+ZmMailAssistant.prototype._noSubjectOkCallback =
+function(dialog) {
+	this._noSubjectOkay = true;
+	this._getConfirmDialog().popdown();
+	this.okHandler(dialog);
+};
+
+// User has declined to send message with no subject
+ZmMailAssistant.prototype._noSubjectCancelCallback =
+function(dialog) {
+	this._noSubjectOkay = false;
+	this._getConfirmDialog().popdown();
+};
+
+// User has agreed to send message with bad addresses
+ZmMailAssistant.prototype._badAddrsOkCallback =
+function(dialog) {
+	this._badAddrsOkay = true;
+	this._getConfirmDialog().popdown();
+	this.okHandler(dialog);
+};
+
+// User has declined to send message with bad addresses - set focus to bad field
+ZmMailAssistant.prototype._badAddrsCancelCallback =
+function(dialog) {
+	this._badAddrsOkay = false;
+	this._getConfirmDialog().popdown();
+};
+
+ZmMailAssistant.prototype._getAddrs =
+function(msg, type, value, bad) {
+	if (value == null || value == "") return;
+	var result = ZmEmailAddress.parseEmailString(value, type, false)
+	if (result.bad.size() > 0 && bad != null) bad.addList(result.bad);
+	if (result.all.size() > 0) 	msg.setAddresses(type, result.all);
+};
+
+// bad is a vector that gets filled with bad addresses
+ZmMailAssistant.prototype.getMessage =
+function(bad) { 
+	var msg = new ZmMailMsg(this._appCtxt);
+	var body = new ZmMimePart();
+	body.setContentType(ZmMimeTable.TEXT_PLAIN);
+	var bodyText = this._mailFields.body != null ? this._mailFields.body : "";
+	if (this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED)) {
+		var sig = this._appCtxt.get(ZmSetting.SIGNATURE);
+		if (sig != null && sig != "") {
+			bodyText = bodyText + "\n" + 
+				((this._appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET) ? "--\n" : "") +
+				sig + "\n";
+		}
+	}
+	body.setContent(bodyText);
+	msg.setTopPart(body);
+	if (this._mailFields.subject) msg.setSubject(this._mailFields.subject);
+	this._getAddrs(msg, ZmEmailAddress.TO, this._mailFields.to, bad);
+	this._getAddrs(msg, ZmEmailAddress.CC, this._mailFields.cc, bad);
+	this._getAddrs(msg, ZmEmailAddress.BCC, this._mailFields.bcc, bad);		
+	return msg;
+}
+
 ZmMailAssistant.prototype.handle =
 function(dialog, verb, args) {
 	dialog._setOkButton(AjxMsg.ok, true, true); //, true, "NewMessage");
 	var match;
-	var objects = {};	
+	this._mailFields = {};	
 
-/*		
-	// check address first, since we grab any fields quoted with [], objects in them won't be matched later
-	for (var i = 0; i < ZmMailAssistant._OBJECT_ORDER.length; i++) {
-		var objType = ZmMailAssistant._OBJECT_ORDER[i];
-		var obj = ZmMailAssistant._OBJECTS[objType];
-		while (match = this._matchTypedObject(args, objType, obj)) {
-			
-//			var fieldData = ZmAssistantDialog._FIELDS[match.type];
-//			if (fieldData) type = fieldData.key;
-
-			var field = ZmMailAssistant._FIELDS[match.type];
-			var type = field ? field.key : match.type;
-			objects[type] = match;
-			args = match.args;
-		}
-	}
-*/
-
-	if (!objects.subject) {
+	if (!this._mailFields.subject) {
 		match = args.match(/\s*\"([^\"]*)\"?\s*/);
 		if (match) {
-			objects.subject = {data : match[1] };
+			this._mailFields.subject = match[1];
 			args = args.replace(match[0], " ");
 		}
 	}
@@ -103,26 +212,17 @@ function(dialog, verb, args) {
 				args = "";
 			}
 			if (v == null) v = "";
-			objects[field.key] = {data: v};
+			this._mailFields[field.key] = v;
 		}
 		if (args) args = args.replace(strip,"");
 	}
-
-/*
-	if (!object.body) {
-		var rest = args.replace(/^\s+/, ""); //.replace(/\s+$/, ""); // .replace(/\s+/g, ' ');
-		if (rest == "" || rest == " ") rest = null;		
-		objects.body = { data : rest };
-	}
-*/
 
 	var index = -1, ri;
 
 	for (var i=0; i < ZmMailAssistant._FIELD_ORDER.length; i++) {	
 		var key = ZmMailAssistant._FIELD_ORDER[i];
-		var data = objects[key];
 		var field = ZmMailAssistant._FIELDS[key];
-		var value = (data && data.data != null) ? data.data : null;
+		var value = this._mailFields[key]; 
 		if (value != null) {
 			value = field.multiLine ? AjxStringUtil.convertToHtml(value) : AjxStringUtil.htmlEncode(value);
 		}
@@ -137,3 +237,12 @@ function(dialog, verb, args) {
 	}
 	return;
 };
+
+ZmMailAssistant.prototype._getConfirmDialog = 
+function(dialog) {
+	if (!this._confirmDialog) {
+		this._confirmDialog = new DwtMessageDialog(dialog.shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+	}
+	return this._confirmDialog;
+};
+
