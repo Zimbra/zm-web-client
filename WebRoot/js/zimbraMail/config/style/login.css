@@ -46,6 +46,7 @@ FORM {
 
 
 .LoginPanel {
+	position:relative;
 	width:500px;
 	@InsetBg@
 	@Text@

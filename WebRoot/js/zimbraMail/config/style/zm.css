@@ -94,20 +94,28 @@
 .BannerBar .quotabar {
 	@ProgressBarBg@
 	width: 100px;
+	height: 6px;
+	@FixIESizeQuirk@	/* WEIRD IE QUIRK */
 }
 
 .BannerBar .quotaUsed {
 	@ProgressBarInfo@
+	height: 6px;
+	@FixIESizeQuirk@	/* WEIRD IE QUIRK */
 }
 
 /* 65% - 85% of quota used */
 .BannerBar .quotaWarning {
 	@ProgressBarWarning@
+	height: 6px;
+	@FixIESizeQuirk@	/* WEIRD IE QUIRK */
 }
 
 /* 85%+ of quota used */
 .BannerBar .quotaCritical {
 	@ProgressBarCritical@
+	height: 6px;
+	@FixIESizeQuirk@	/* WEIRD IE QUIRK */
 }
 
 
@@ -116,6 +124,8 @@
 	@FontSmaller@
 	@ChromeText@
 	@NoWrap@
+/*	@FixIESizeQuirk@	/* WEIRD IE QUIRK */
+	
 }
 
 .BannerBar td {
@@ -143,6 +153,7 @@
 	font-weight: bold;
 
 }
+
 
 
 
@@ -451,6 +462,7 @@ td.DDSepInvisible div {
 	white-space: nowrap; 
 }
 
+/* "Display Images" button in mail message view to show hidden images */
 /* ??? "Displayimages" CLASS REALLY SHOULD BE SHARED WITH "SpellCheckModeDiv"  */
 /* CLASS DEFINED IN spellcheck.css SINCE THEY SHOULD HAVE THE SAME VISUAL LOOK */
 .ZmMailMsgView .Displayimages {
@@ -1059,15 +1071,19 @@ td.DDSepInvisible div {
 	@PageHeaderBg@
 	@PageHeaderText@
 	@FontBiggest@
+	@Label@
+	text-align:center;
 }
 
 /* day of week label for the month */
 .calendar_month_header_cells_text {
 	@PageHeaderBg@
 	@PageHeaderText@
-	@FontBigger@
+	@FontBig@
 	@SmallBoxPadding@
 	@BottomSeparator@
+	@Label@
+	text-align:center;
 }
 
 
@@ -1101,8 +1117,8 @@ td.DDSepInvisible div {
 .calendar_month_day_label_off_month_today
 {
 	@NoWrap@
-	@FontBigger@
-	@SmallBoxPadding@
+	@FontBig@
+	@TextPadding@
 	text-align:right;
 }
 
@@ -1955,8 +1971,12 @@ HTML>BODY .appt-selected .appt_allday_body
  *  Notes application
  */
 
-.ZmNotebookPageView, .ZmPageEditView {
+.ZmNotebookPageView {
 	@ContentBg@
+}
+
+.ZmPageEditView {
+ 	@PageBg@
 }
 
 .ZmNotebookPageView {
@@ -2020,26 +2040,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmAsstFieldDefValue, .ZmAsstFieldDefValue TD {
 	color: gray;
 	font-style: italic;
-}
-
-/*
- *	Quota stuff
- */
-
-.quotabar {
-	@ProgressBarBg@
-	width: 100px;
-}
-
-.quotaused {
-	height: 6px;
-	@FixIESizeQuirk@	/* WEIRD IE QUIRK */
-}
-
-.percent {
-	@ChromeText@
-	@NoWrap@
-	@FixIESizeQuirk@	/* WEIRD IE QUIRK */
 }
 
 
