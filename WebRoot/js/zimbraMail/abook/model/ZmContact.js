@@ -654,6 +654,8 @@ function(street, city, state, zipcode, country) {
 		html[idx++] = city;
 		if (state)
 			html[idx++] = ", ";
+		else if (zipcode)
+			html[idx++] = " ";
 	}
 	
 	if (state) {
