@@ -640,20 +640,21 @@ function(ev) {
 	var tag = ev.getDetail("organizers")[0];
 	var fields = ev.getDetail("fields");
 	var ctlr = this._appCtxt.getCurrentController();
-	var isCurrentList = (this._appCtxt.getCurrentList() == this);
-	if (!isCurrentList) return;
+	if (!ctlr || (this._appCtxt.getCurrentList() != this)) {
+		return;
+	}
 	
 	if ((ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME]) {
 		// on tag rename, update current query if tag is part of query
 		var oldName = ev.getDetail("oldName");
-		if (ctlr._currentSearch.hasTagTerm(oldName)) {
+		if (ctlr._currentSearch && ctlr._currentSearch.hasTagTerm(oldName)) {
 			ctlr._currentSearch.replaceTagTerm(oldName, tag.getName());
 			this._appCtxt.getSearchController().setSearchField(ctlr._currentSearch.query);
 		}
 	} else if (ev.event == ZmEvent.E_DELETE) {
 		// Remove tag from any items that have it
 		var a = this.getArray();
-		var taggedItems = new Array();
+		var taggedItems = [];
 		for (var i = 0; i < a.length; i++) {
 			var item = a[i];
 			if (item && item.hasTag(tag.id)) {
@@ -668,7 +669,7 @@ function(ev) {
 		// If search results are based on this tag, keep them around so that user can still
 		// view msgs or open convs, but disable pagination and sorting since they're based
 		// on the current query.
-		if (ctlr._currentSearch.hasTagTerm(tag.getName())) {
+		if (ctlr._currentSearch && ctlr._currentSearch.hasTagTerm(tag.getName())) {
 			var viewId = this._appCtxt.getCurrentViewId();
 			ctlr.enablePagination(false, viewId);
 			var view = ctlr.getCurrentView();
