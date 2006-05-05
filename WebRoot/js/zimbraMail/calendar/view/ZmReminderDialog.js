@@ -159,6 +159,7 @@ function(html, appt, data, needSep) {
  
 ZmReminderDialog.prototype.initialize = 
 function(list) {
+	//DBG.println("ZmReminderDialog.prototype.initialize");
 	this._list = list.clone();
 	this._apptData = {};
 	
@@ -186,7 +187,7 @@ function(list) {
 		button.setImage("Cancel");
 		button.addSelectionListener(new AjxListener(this, this._closeButtonListener));
 		button.__apptUniqueId = uid;
-		button.setToolTipContent(ZmMsg.dismissReminderToolTip);
+		//button.setToolTipContent(ZmMsg.dismissReminderToolTip);
 		document.getElementById(data.buttonId).appendChild(button.getHtmlElement());
 		this._updateDelta(data);
 	}
