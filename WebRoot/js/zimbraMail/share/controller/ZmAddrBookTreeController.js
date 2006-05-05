@@ -130,12 +130,14 @@ function(ev) {
 */
 ZmAddrBookTreeController.prototype._itemClicked =
 function(folder) {
-	DBG.println("-----------------------");
-	DBG.println("-----------------------");
-	DBG.println("XXX: RUNNING SEARCH IS TEMPORARY UNTIL WE GET PROPER MODEL SUPPORT FOR MULTIPLE FOLDERS");
-	DBG.println("-----------------------");
-	DBG.println("-----------------------");
-	var searchController = this._appCtxt.getSearchController();
-	var types = searchController.getTypes(ZmItem.CONTACT);
-	searchController.search({query:folder.createQuery(), types:types});
+	// force a search if user clicked Trash folder
+	// XXX: this is temp until we figure out how to switch to mixed view
+	if (folder.id == ZmFolder.ID_TRASH) {
+		var searchController = this._appCtxt.getSearchController();
+		var types = searchController.getTypes(ZmItem.CONTACT);
+		searchController.search({query:folder.createQuery(), types:types});
+	} else {
+		var capp = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+		capp.showFolder(folder);
+	}
 };

@@ -36,7 +36,7 @@
 */
 function ZmContactsApp(appCtxt, container, parentController) {
 	ZmApp.call(this, ZmZimbraMail.CONTACTS_APP, appCtxt, container, parentController);
-}
+};
 
 ZmContactsApp.prototype = new ZmApp;
 ZmContactsApp.prototype.constructor = ZmContactsApp;
@@ -44,26 +44,34 @@ ZmContactsApp.prototype.constructor = ZmContactsApp;
 ZmContactsApp.prototype.toString = 
 function() {
 	return "ZmContactsApp";
-}
+};
 
 ZmContactsApp.prototype.launch =
 function(callback, errorCallback) {
 	var respCallback = new AjxCallback(this, this._handleResponseLaunch, callback);
 	this.getContactList(respCallback, errorCallback);
-}
+};
 
 ZmContactsApp.prototype._handleResponseLaunch =
 function(callback) {
-	this.getContactListController().show(this._contactList);
+	// XXX: hard code app folder name for now...
+	this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue("in:Contacts");
+	this.getContactListController().show(this._contactList, null, ZmOrganizer.ID_ADDRBOOK);
 	if (callback)
 		callback.run();
-}
+};
+
+ZmContactsApp.prototype.showFolder = 
+function(folder) {
+	this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue("in:" + folder.name);
+	this.getContactListController().show(this._contactList, null, folder.id);
+};
 
 ZmContactsApp.prototype.setActive =
 function(active) {
 	if (active)
 		this.getContactListController().show();
-}
+};
 
 ZmContactsApp.prototype.getContactList =
 function(callback, errorCallback) {
@@ -85,12 +93,12 @@ function(callback, errorCallback) {
 		if (callback) callback.run();
 	}
 	if (!callback) return this._contactList;
-}
+};
 
 ZmContactsApp.prototype._handleResponseGetContactList =
 function(callback) {
 	if (callback) callback.run();
-}
+};
 
 // NOTE: calling method should handle exceptions!
 ZmContactsApp.prototype.getGalContactList =
@@ -105,18 +113,18 @@ function() {
 		}
 	}
 	return this._galContactList;
-}
+};
 
 ZmContactsApp.prototype.getContactListController =
 function() {
 	if (!this._contactListController)
 		this._contactListController = new ZmContactListController(this._appCtxt, this._container, this);
 	return this._contactListController;
-}
+};
 
 ZmContactsApp.prototype.getContactController =
 function() {
 	if (this._contactController == null)
 		this._contactController = new ZmContactController(this._appCtxt, this._container, this);
 	return this._contactController;
-}
+};

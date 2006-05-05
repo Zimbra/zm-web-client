@@ -78,8 +78,9 @@ function() {
 // Public methods
 
 ZmContactListController.prototype.show =
-function(search, bIsGalSearch) {
+function(search, bIsGalSearch, folderId) {
 	this._isGalSearch = bIsGalSearch;
+	this._folderId = folderId;
 	var bForce = false;
 		
 	if (search instanceof ZmList) {
@@ -93,6 +94,7 @@ function(search, bIsGalSearch) {
 		this._list = search.getResults(ZmItem.CONTACT);
 		if (bIsGalSearch && (this._list == null))
 			this._list = new ZmContactList(this._appCtxt, search.search, bIsGalSearch);
+		this._list.setHasMore(search.getAttribute("more"));
 		ZmListController.prototype.show.apply(this, [search, this._currentView]);
 	}
 		
@@ -110,7 +112,6 @@ function(view, force) {
 		DBG.timePt("setting up view", true);
 		this._setup(view);
 		DBG.timePt("done setting up view");
-		this._resetNavToolBarButtons(view);
 		var elements = new Object();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
@@ -119,21 +120,20 @@ function(view, force) {
 		if (ok)
 			this._setViewMenu(view);
 
+		this._resetNavToolBarButtons(view);
+
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)
 		if (this._isGalSearch)
 			this._appCtxt.getSearchController().setDefaultSearchType(ZmSearchToolBar.FOR_GAL_MI, true);
 
-		// get the first selected item if applicable
-		var item = this._listView[view].getSelection()[0];
 		var list = this._listView[view].getList();
-		// find the first non-trash contact
-		if (!item && list)
-			item = this._listView[view].getFirstValid(list);
-
-		// reset selection since we wiped the canvas
-		if (item)
-			this._listView[view].setSelection(item);
+		this._listView[view].setSelection(list.get(0));
 	}
+};
+
+ZmContactListController.prototype.getFolderId = 
+function() {
+	return this._folderId;
 };
 
 
@@ -221,7 +221,7 @@ function(view) {
 ZmContactListController.prototype._setViewContents =
 function(view) {
 	DBG.timePt("setting list");
-	this._listView[view].set(this._list);
+	this._listView[view].set(this._list, null, this._folderId);
 	DBG.timePt("done setting list");
 };
 
@@ -278,15 +278,34 @@ function(view) {
 	
 	var offset = this._listView[view].getOffset();
 	this._navToolBar.enable(ZmOperation.PAGE_BACK, offset > 0);
-	
-	var evenMore = this._list ? (offset + this._listView[view].getLimit()) < this._list.size() : false;
-	this._navToolBar.enable(ZmOperation.PAGE_FORWARD, evenMore);
+
+	if (this._isGalSearch) {
+		var more = this._list ? (offset + this._listView[view].getLimit()) < this._list.size() : false;
+		this._navToolBar.enable(ZmOperation.PAGE_FORWARD, more);
+	} else {
+		this._navToolBar.enable(ZmOperation.PAGE_FORWARD, this._list.hasMore());
+	}
 	
 	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);
 	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
 
 	this._showListRange(view);
 };
+
+ZmContactListController.prototype._showListRange = 
+function(view) {
+	var offset = this._listView[view].getOffset();
+	var size = this._listView[view].getList().size();
+
+	var text = "";
+	if (size > 0) {
+		var start = offset + 1;
+		var end = offset + size;
+		text = start + " - " + end;
+	}
+	this._navToolBar.setText(text);
+};
+
 
 
 // List listeners
@@ -356,6 +375,12 @@ function(ev) {
 		this._printView.render(contact);
 };
 
+// Returns the type of item in the underlying list
+ZmContactListController.prototype._getItemType = 
+function() {
+	return ZmItem.CONTACT;
+};
+
 
 // Callbacks
 
@@ -372,9 +397,12 @@ function(view) {
 
 ZmContactListController.prototype._paginate =
 function(view, bPageForward) {
-	this._listView[view].paginate(this._list, bPageForward);
-	// XXX: async
-	this._resetNavToolBarButtons(view);
+	if (this._folderId) {
+		this._listView[view].paginate(this._list, bPageForward);
+		this._resetNavToolBarButtons(view);
+	} else {
+		ZmListController.prototype._paginate.call(this, view, bPageForward);
+	}
 };
 
 ZmContactListController.prototype._doDelete = 
@@ -394,5 +422,10 @@ function(items, hardDelete, attrs) {
 
 ZmContactListController.prototype._checkReplenish = 
 function() {
-	// let's not allow replenishment for contacts since they all get loaded at once
+	// reset the listview
+	var listview = this._listView[this._currentView];
+	listview.set(this._list);
+	// reset the selection to the first item
+	var list = listview.getList();
+	listview.setSelection(list.get(0));
 };

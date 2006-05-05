@@ -183,6 +183,15 @@ function(data, type) {
 ZmContactSplitView.prototype._setContact = 
 function(contact, isGal) {
 
+	// if folderId is null, that means user did a search (did not click on a addrbook)
+	var folderId = this._controller.getFolderId();
+	if (folderId && contact.folderId != folderId)
+		return;
+
+	// TODO
+	// TODO - set Folder in DwtSelect if contact belongs to a folder!
+	// TODO
+
 	if (!this._htmlInitialized)
 		this._createHtml();
 
@@ -217,10 +226,9 @@ function(contact, isGal) {
 		if (email2) { html[idx++] = this._generateObject(email2, ZmObjectManager.EMAIL); html[idx++] = "<br>"; }
 		if (email3) { html[idx++] = this._generateObject(email3, ZmObjectManager.EMAIL); html[idx++] = "<br>"; }
 		html[idx++] = "</td></tr>";
+		html[idx++] = "<tr><td><br></td></tr>";
 	}
 
-	html[idx++] = "<tr><td><br></td></tr>";
-	
 	// add work fields
 	var workField	= AjxStringUtil.nl2br(contact.getWorkAddrField());
 	var workPhone	= contact.getAttr(ZmContact.F_workPhone);
@@ -260,9 +268,8 @@ function(contact, isGal) {
 		if (workCallback)	idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_callbackPhone, workCallback, ZmObjectManager.PHONE);
 		html[idx++] = "</table>";
 		html[idx++] = "</td></tr>";
+		html[idx++] = "<tr><td><br></td></tr>";
 	}
-
-	html[idx++] = "<tr><td><br></td></tr>";
 	
 	// add home fields
 	var homeField = AjxStringUtil.nl2br(contact.getHomeAddrField());
@@ -300,9 +307,8 @@ function(contact, isGal) {
 		if (mobile)			idx = this._getObjectHtml(html, idx, ZmMsg.mobile, mobile, ZmObjectManager.PHONE);
 		if (pager)			idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_pager, pager, ZmObjectManager.PHONE);
 		html[idx++] = "</table></td></tr>";
+		html[idx++] = "<tr><td><br></td></tr>";
 	}
-
-	html[idx++] = "<tr><td><br></td></tr>";
 	
 	// add other fields
 	var otherField = AjxStringUtil.nl2br(contact.getOtherAddrField());
@@ -334,9 +340,8 @@ function(contact, isGal) {
 		if (otherPhone)		idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_otherPhone, otherPhone, ZmObjectManager.PHONE);
 		if (otherFax)		idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_otherFax, otherFax, ZmObjectManager.PHONE);
 		html[idx++] = "</table></td></tr>";
+		html[idx++] = "<tr><td><br></td></tr>";
 	}
-
-	html[idx++] = "<tr><td><br></td></tr>";
 
 	// add notes field
 	var notes = this._generateObject(contact.getAttr(ZmContact.F_notes));
@@ -385,9 +390,11 @@ function() {
 
 ZmContactSimpleView.prototype.set =
 function(list, defaultColumnSort) {
-	ZmContactsBaseView.prototype.set.call(this, list, defaultColumnSort);
-	if (!(this._list instanceof AjxVector) || this._list.size() == 0)
+	ZmContactsBaseView.prototype.set.call(this, list, defaultColumnSort, this._controller.getFolderId());
+	if (!(this._list instanceof AjxVector) || this._list.size() == 0) {
 		this.parent.clear();
+		this._controller._navToolBar.setText("");
+	}
 };
 
 ZmContactSimpleView.prototype._modifyContact =

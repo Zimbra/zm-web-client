@@ -40,13 +40,27 @@ function() {
 	return "ZmContactsBaseView";
 };
 
+ZmContactsBaseView.prototype.set =
+function(list, sortField, folderId) {
+	var subList;
+	if (list instanceof ZmList) {
+		// compute the sublist based on the folderId if applicable
+		list.addChangeListener(this._listChangeListener);
+		subList = list.getSubList(this.getOffset(), this.getLimit(), folderId);
+	} else {
+		subList = list;
+	}
+	DwtListView.prototype.set.call(this, subList, sortField);
+}
+
+
 ZmContactsBaseView.prototype.paginate = 
 function(contacts, bPageForward) {
 	var offset = this.getNewOffset(bPageForward);
-	var subVector = contacts.getSubList(offset, this.getLimit());
+	var subVector = contacts.getSubList(offset, this.getLimit(), this._controller.getFolderId());
 	ZmListView.prototype.set.call(this, subVector);
 	this.setOffset(offset);
-	this.setSelection(contacts.getVector().get(offset));
+	this.setSelection(this.getList().get(0));
 };
 
 ZmContactsBaseView.prototype._setParticipantToolTip = 
@@ -75,37 +89,27 @@ function() {
 	return [ZmMsg.zimbraTitle, ZmMsg.contacts].join(": ");
 };
 
-// returns the first non-trash contact in the list
-ZmContactsBaseView.prototype.getFirstValid = 
-function(list) {
-	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-	for (var i = 0; i < list.size(); i++) {
-		var contact = list.get(i);
-		var folder = folderTree.getById(contact.folderId);
-		if (!folder || !folder.isInTrash())
-			return contact;
-	}
-	return null;
-};
-
 ZmContactsBaseView.prototype._changeListener =
 function(ev) {
-	ZmListView.prototype._changeListener.call(this, ev);
-	if (ev.event == ZmEvent.E_MODIFY) {
-		this._modifyContact(ev);
-	} else if (ev.event == ZmEvent.E_CREATE) {
-		// XXX: this is somewhat inefficient 
-		// - needs to be rethought once SearchRequest w/ type attribute is implemented.
-		var subVector = ev.source.getSubList(this.getOffset(), this.getLimit());
-		ZmListView.prototype.set.call(this, subVector);
-		// only relayout if this is cards view
-		if (this instanceof ZmContactCardsView)
-			this._layout();
-		// always select newly add contact if its been added to the current page of contacts
-		var newContact = ev._details.items[0];
-		if (this.getList().contains(newContact))
-			this.setSelection(newContact);
-	} 
+	// if we dont have a folder, then assume user did a search of contacts
+	if (this._controller.getFolderId() != null || ev.event != ZmEvent.E_MOVE) {
+		ZmListView.prototype._changeListener.call(this, ev);
+		if (ev.event == ZmEvent.E_MODIFY) {
+			this._modifyContact(ev);
+		} else if (ev.event == ZmEvent.E_CREATE) {
+			// XXX: this is somewhat inefficient 
+			// - needs to be rethought once SearchRequest w/ type attribute is implemented.
+			var subVector = ev.source.getSubList(this.getOffset(), this.getLimit(), this._controller.getFolderId());
+			ZmListView.prototype.set.call(this, subVector);
+			// only relayout if this is cards view
+			if (this instanceof ZmContactCardsView)
+				this._layout();
+			// always select newly add contact if its been added to the current page of contacts
+			var newContact = ev._details.items[0];
+			if (this.getList().contains(newContact))
+				this.setSelection(newContact);
+		}
+	}
 };
 
 ZmContactsBaseView.prototype._modifyContact = 

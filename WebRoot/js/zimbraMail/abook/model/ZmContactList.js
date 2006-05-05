@@ -227,15 +227,39 @@ function(id) {
 * @param limit		[int]		size of sublist
 */
 ZmContactList.prototype.getSubList = 
-function(offset, limit) {
-	var vec = ZmList.prototype.getSubList.call(this, offset, limit);
-	if (vec) {
-		var a = vec.getArray();
-		for (var i = 0; i < a.length; i++) {
-			a[i] = this._realizeContact(a[i], offset + i);
+function(offset, limit, folderId) {
+	if (folderId) {
+		// only collect those contacts that belong to the given folderId if provided
+		var newlist = new Array();
+		var sublist = this.getArray();
+		var offsetCount = 0;
+		this.setHasMore(false);
+
+		for (var i = 0; i < sublist.length; i++) {
+			sublist[i] = this._realizeContact(sublist[i], i);
+			if (sublist[i].folderId == folderId) {
+				if (offsetCount >= offset) {
+					if (newlist.length == limit) {
+						this.setHasMore(true);
+						break;
+					}
+					newlist.push(sublist[i]);
+				}
+				offsetCount++;
+			}
 		}
+
+		return AjxVector.fromArray(newlist);
+	} else {
+		var vec = ZmList.prototype.getSubList.call(this, offset, limit);
+		if (vec) {
+			var a = vec.getArray();
+			for (var i = 0; i < a.length; i++) {
+				a[i] = this._realizeContact(a[i], offset + i);
+			}
+		}
+		return vec;
 	}
-	return vec;
 };
 
 /**

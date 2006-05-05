@@ -366,10 +366,7 @@ function(ev) {
 	} else {
 		ZmContactsBaseView.prototype._changeListener.call(this, ev);
 	}
-	// set selection to the first non-trash contact in list
-	var selected = this.getFirstValid(this.getList());
-	if (selected)
-		this.setSelection(selected);
+	this.setSelection(this.getList().get(0));
 };
 
 
