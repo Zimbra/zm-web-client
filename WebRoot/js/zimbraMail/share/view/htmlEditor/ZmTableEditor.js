@@ -140,12 +140,7 @@ function ZmTablePropsDialog(parent) {
 	this._wSummary.reparentHtmlElement(this._idSummary);
 	this._wSummary.getInputElement().style.width = "100%";
 
-	this._wWidth = new DwtInputField(
-	{ parent: this,
-			  type            : DwtInputField.INTEGER,
-			  size            : 4,
-			  validationStyle : DwtInputField.CONTINUAL_VALIDATION,
-			  errorIconStyle  : DwtInputField.ERROR_ICON_RIGHT });
+	this._wWidth = new DwtSpinner({ parent: this, size : 3, min: 0 });
 	this._wWidth.reparentHtmlElement(this._idWidth);
 
 	this._wWidthUnit = new DwtSelect(this, [ new DwtSelectOption("%", false, ZmMsg.percent),
@@ -193,29 +188,14 @@ function ZmTablePropsDialog(parent) {
 						    new DwtSelectOption("outset", false, ZmMsg.borderStyleOutset) ]))
 		.reparentHtmlElement(this._idBorderStyle);
 
-	(this._wBorderWidth = new DwtInputField(
-	{ parent: this,
-			  type            : DwtInputField.INTEGER,
-			  size            : 3,
-			  validationStyle : DwtInputField.CONTINUAL_VALIDATION,
-			  errorIconStyle  : DwtInputField.ERROR_ICON_RIGHT }))
-		.reparentHtmlElement(this._idBorderWidth);
+	this._wBorderWidth = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10 });
+	this._wBorderWidth.reparentHtmlElement(this._idBorderWidth);
 
-	(this._wBorderSpacing = new DwtInputField(
-	{ parent: this,
-			  type            : DwtInputField.INTEGER,
-			  size            : 3,
-			  validationStyle : DwtInputField.CONTINUAL_VALIDATION,
-			  errorIconStyle  : DwtInputField.ERROR_ICON_RIGHT }))
-		.reparentHtmlElement(this._idBorderSpacing);
+	this._wBorderSpacing = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10 });
+	this._wBorderSpacing.reparentHtmlElement(this._idBorderSpacing);
 
-	(this._wCellPadding = new DwtInputField(
-	{ parent: this,
-			  type            : DwtInputField.INTEGER,
-			  size            : 3,
-			  validationStyle : DwtInputField.CONTINUAL_VALIDATION,
-			  errorIconStyle  : DwtInputField.ERROR_ICON_RIGHT }))
-		.reparentHtmlElement(this._idCellPadding);
+	this._wCellPadding = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10 });
+	this._wCellPadding.reparentHtmlElement(this._idCellPadding);
 
 	(this._wTextAlign = new DwtSelect(this, [ new DwtSelectOption("", true, ZmMsg.notSet),
 						  new DwtSelectOption("left", false, ZmMsg.left),
