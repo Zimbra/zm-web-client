@@ -706,7 +706,12 @@ td.DDSepInvisible div {
 
 .ZmContactInfoView .companyName {
 	@FontBigger@
-	@BoxPadding@;
+}
+
+.ZmContactInfoView .companyFolder {
+	@FontBig@
+	@NoWrap@
+	width: 1%;
 }
 
 

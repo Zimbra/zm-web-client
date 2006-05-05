@@ -188,10 +188,6 @@ function(contact, isGal) {
 	if (folderId && contact.folderId != folderId)
 		return;
 
-	// TODO
-	// TODO - set Folder in DwtSelect if contact belongs to a folder!
-	// TODO
-
 	if (!this._htmlInitialized)
 		this._createHtml();
 
@@ -202,14 +198,27 @@ function(contact, isGal) {
 	// set body
 	var contactBodyDiv = document.getElementById(this._contactBodyId);
 
+	var width = this._contactPart.getSize().x / 2;
+
 	var html = new Array();
 	var idx = 0;
-	
-	var width = this._contactPart.getSize().x / 2;
-	
-	html[idx++] = "<div class='companyName'>";
+
+	// set company name and folder this contact belongs to
+	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100%><tr>";
+	html[idx++] = "<td width=100% class='companyName'>";
 	html[idx++] = (contact.getCompanyField() || "&nbsp;");
-	html[idx++] = "</div>";
+	html[idx++] = "</td>";
+	var folder = this._controller._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(contact.folderId);
+	if (folder) {
+		html[idx++] = "<td width=20>";
+		html[idx++] = AjxImg.getImageHtml(folder.getIcon()); 					// XXX: Set icon per type of contact we have!
+		html[idx++] = "</td><td class='companyFolder'>";
+		html[idx++] = folder.getName();
+		html[idx++] = "</td>";
+	}
+	html[idx++] = "</tr></table>";
+
+
 	html[idx++] = "<table border=0 width=100% cellpadding=3 cellspacing=3>";
 
 	// add email fields
@@ -219,9 +228,9 @@ function(contact, isGal) {
 	var hasEmail = email || email2 || email3;
 
 	if (hasEmail) {
-		html[idx++] = "<tr><td colspan=3 valign=top class='sectionLabel'>";
+		html[idx++] = "<tr><td colspan=4 valign=top class='sectionLabel'>";
 		html[idx++] = ZmMsg.email;
-		html[idx++] = "</td></tr><tr><td class='contactOutput'>";
+		html[idx++] = "</td></tr><tr><td width=5>&nbsp;</td><td class='contactOutput'>";
 		if (email) 	{ html[idx++] = this._generateObject(email,  ZmObjectManager.EMAIL); html[idx++] = "<br>"; }
 		if (email2) { html[idx++] = this._generateObject(email2, ZmObjectManager.EMAIL); html[idx++] = "<br>"; }
 		if (email3) { html[idx++] = this._generateObject(email3, ZmObjectManager.EMAIL); html[idx++] = "<br>"; }
@@ -241,12 +250,12 @@ function(contact, isGal) {
 	var hasWork		= workField || workPhone || workPhone2 || workFax || workAsst || workCompany || workCallback || workURL;
 
 	if (hasWork) {
-		html[idx++] = "<tr><td colspan=3 valign=top class='sectionLabel'>";
+		html[idx++] = "<tr><td colspan=4 valign=top class='sectionLabel'>";
 		html[idx++] = ZmMsg.work;
 		html[idx++] = "</td></tr>";
 	
 		// - column 1
-		html[idx++] = "<tr><td valign=top width='";
+		html[idx++] = "<tr><td width=5>&nbsp;</td><td valign=top width='";
 		html[idx++] = width;
 		html[idx++] = "'>";
 		
@@ -282,12 +291,12 @@ function(contact, isGal) {
 	var hasHome = homeField || homePhone || homePhone2 || homeFax || mobile || pager || homeURL;
 
 	if (hasHome) {
-		html[idx++] = "<tr><td colspan=3 valign=top class='sectionLabel'>";
+		html[idx++] = "<tr><td colspan=4 valign=top class='sectionLabel'>";
 		html[idx++] = ZmMsg.home;
 		html[idx++] = "</td></tr>";
 
 		// - column 1
-		html[idx++] = "<tr><td valign=top width='";
+		html[idx++] = "<tr><td width=5>&nbsp;</td><td valign=top width='";
 		html[idx++] = width;
 		html[idx++] = "'>";
 
@@ -318,12 +327,12 @@ function(contact, isGal) {
 	var hasOther = otherField || otherPhone || otherFax || otherURL;
 
 	if (hasOther) {
-		html[idx++] = "<tr><td colspan=3 valign=top class='sectionLabel'>";
+		html[idx++] = "<tr><td colspan=4 valign=top class='sectionLabel'>";
 		html[idx++] = ZmMsg.other;
 		html[idx++] = "</td></tr>";
 
 		// - column 1
-		html[idx++] = "<tr><td valign=top width='";
+		html[idx++] = "<tr><td width=5>&nbsp;</td><td valign=top width='";
 		html[idx++] = width;
 		html[idx++] = "'>";
 	
@@ -346,9 +355,9 @@ function(contact, isGal) {
 	// add notes field
 	var notes = this._generateObject(contact.getAttr(ZmContact.F_notes));
 	if (notes) {
-		html[idx++] = "<tr><td valign=top colspan=3 class='sectionLabel'>";
+		html[idx++] = "<tr><td valign=top colspan=4 class='sectionLabel'>";
 		html[idx++] = ZmMsg.notes;
-		html[idx++] = "</td></tr><tr><td colspan=3 class='contactOutput'>";
+		html[idx++] = "</td></tr><tr><td colspan=4 class='contactOutput'>";
 		html[idx++] = AjxStringUtil.nl2br(notes);
 		html[idx++] = "<br><br></td></tr>";
 	}
