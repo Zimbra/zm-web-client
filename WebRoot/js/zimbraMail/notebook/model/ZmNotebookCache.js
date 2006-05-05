@@ -165,7 +165,7 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, recurseUp) {
 	// REVISIT: Need to force recursing up for "special" page when
 	//          navigating in the page browser. Is this always the
 	//          case? or should there be a better solution?
-	if (recurseUp == true || /^_.*_$/.test(name)) {
+	if (recurseUp == true || /^_.*$/.test(name)) {
 		var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 		var parent = notebookTree.getById(folderId).parent;
 		while (parent != null) {
