@@ -350,7 +350,8 @@ function(newParent) {
 ZmOrganizer.prototype._delete =
 function() {
 	DBG.println(AjxDebug.DBG1, "deleting: " + this.name + ", ID: " + this.id);
-	var isEmptyOp = (this.type == ZmOrganizer.FOLDER && (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH));
+	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) && 
+					 (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH));
 	// make sure we're not deleting a system object (unless we're emptying SPAM or TRASH)
 	if (this.isSystem() && !isEmptyOp) return;
 	

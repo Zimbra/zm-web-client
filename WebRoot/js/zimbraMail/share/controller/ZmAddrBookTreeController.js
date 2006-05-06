@@ -63,12 +63,22 @@ function() {
 // Enables/disables operations based on the given organizer ID
 ZmAddrBookTreeController.prototype.resetOperations = 
 function(parent, type, id) {
-	parent.enableAll(true);
-
+	var deleteText = ZmMsg.del;
 	var addrBook = this._dataTree.getById(id);
-	if (addrBook && addrBook.isSystem()) {
-		parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.RENAME_FOLDER], false);
+
+	if (id == ZmFolder.ID_TRASH) {
+		parent.enableAll(false);
+		parent.enable(ZmOperation.DELETE, true);
+		deleteText = ZmMsg.emptyTrash;
+	} else {
+		parent.enableAll(true);
+		if (addrBook && addrBook.isSystem())
+			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.RENAME_FOLDER], false);
 	}
+
+	var op = parent.getOp(ZmOperation.DELETE);
+	if (op)
+		op.setText(deleteText);
 };
 
 
@@ -87,7 +97,7 @@ function() {
 	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_ADDRBOOK);
 	}
-	ops.push(ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.RENAME_FOLDER, ZmOperation.EDIT_PROPS);
+	ops.push(ZmOperation.DELETE, /*ZmOperation.MOVE,*/ ZmOperation.RENAME_FOLDER, ZmOperation.EDIT_PROPS);
 	return ops;
 };
 
@@ -110,8 +120,12 @@ function() {
 
 ZmAddrBookTreeController.prototype._editPropsListener = 
 function(ev) {
-	// TODO
-	DBG.println("TODO: editPropsListener");
+	this._pendingActionData = this._getActionedOrganizer(ev);
+
+	var folderPropsDialog = this._appCtxt.getFolderPropsDialog();
+	var folder = this._pendingActionData;
+	folderPropsDialog.setFolder(folder);
+	folderPropsDialog.popup();
 };
 
 ZmAddrBookTreeController.prototype._shareAddrBookListener = 
