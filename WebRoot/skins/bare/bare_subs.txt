@@ -8,7 +8,7 @@ SkinAnimatedImgDir			= /zimbra/img/animated
 DwtImgDir					= /zimbra/img/loRes/dwt
 
 _ChromeBgColor_				= #B7B7B7
-_ChromeBgImg_				= url(@SkinImgDir@/Steel__BG.gif)
+_ChromeBgImg_				= 
 _ChromeTextColor_			= black
 
 _InsetBgColor_				= white
@@ -19,15 +19,15 @@ _InsetSeparatorColor_		= #cccccc
 
 _ToolbarBgColor_			= #eeeeee
 _ToolbarTextColor_			= black
-_HToolbarBgImg_				= url(@SkinImgDir@/Toolbar__BG.gif)
-_VToolbarBgImg_				= url(@SkinImgDir@/Toolbar__BG.gif)
+_HToolbarBgImg_				= 
+_VToolbarBgImg_				= 
 	
 _TreeBgColor_				= #eeeeee
-_TreeBgImg_					= url(@SkinImgDir@/Toolbar__BG.gif)
+_TreeBgImg_					= 
 _TreeTextColor_				= black
 
 _TreeHeaderBgColor_			= #dcdcdc
-_TreeHeaderBgImg_			= url(@SkinImgDir@/PebbleDark__BG.gif)
+_TreeHeaderBgImg_			= 
 _TreeHeaderTextColor_		= black
 _TreeSeparatorColor_		= #333333
 
@@ -54,11 +54,11 @@ _AnchorTextColor-hover_		= darkblue
 _AnchorTextColor-clicked_	= green
 
 _NormalButtonBgColor_		= #cccccc
-_NormalButtonBgImg_			= url(@DwtImgDir@/ButtonUp__H.gif)
+_NormalButtonBgImg_			= 
 _NormalButtonTextColor_		= black
 _NormalButtonBorderColor_	= 
 _DefaultButtonBgColor_		= #cccccc
-_DefaultButtonBgImg_		= url(@DwtImgDir@/ButtonUpDefault__H.gif)
+_DefaultButtonBgImg_		= 
 
 // IT IS DIFFICULT TO DO ATTRACTIVE X-PLATFORM BORDERS, SO SET IT UP HERE AND USE IT EVERYWHERE WE CAN
 _OutsetBorder_				= border: 1px solid; border-color:#cccccc black black #cccccc;
@@ -76,11 +76,11 @@ _ClickedBorder_				= @_InsetBorder_@
 _NormalButtonSize_			= min-width:60px; height:20px; 
 
 _HoverBgColor_				= 
-_HoverBgImg_				= url(@DwtImgDir@/ButtonDown__H.gif)
+_HoverBgImg_				= 
 _HoverTextColor_			= black
 
 _ClickedBgColor_			= 
-_ClickedBgImg_				= url(@DwtImgDir@/ButtonDown__H.gif)
+_ClickedBgImg_				= 
 _ClickedTextColor_			= black
 
 _SelectBgColor_				= @_NormalButtonBgColor_@
@@ -153,7 +153,7 @@ _DialogTextColor_			= @_TextColor_@
 _DialogLabelColor_			= @_LabelColor_@
 _DialogTitleTextColor_		= white
 
-_FocusBorder_				= border: 1px dotted black;
+_FocusBorder_				= border: 1px dashed black;
 
 
 TextPaddingSize				= 3px
@@ -414,7 +414,7 @@ ZimletBg-Hover				= @TransparentBg@	color:@_AnchorTextColor-hover_@;	text-decora
 
 // MENUS
 
-MenuBg						= color: @_MenuBgColor_@; background-image:@_MenuBgImg_@; padding:2px; Xmin-width:40px; border:1px solid black; border-bottom-width:3px;border-right-width:3px;
+MenuBg						= color: @_MenuBgColor_@; background-color:@_MenuBgColor_@; background-image:@_MenuBgImg_@; padding:2px; min-width:40px; border:1px solid black; border-bottom-width:3px;border-right-width:3px;
 MenuText					= color: @_MenuTextColor_@;
 
 MenuItem					= @_MenuItemBorder_@	@TransparentBg@		@ActiveCursor@
@@ -510,7 +510,7 @@ VSashSize					= width:100%;			height:@_SashSize_@;
 
 // FORM FIELDS
 
-InputField					= color:@_InputTextColor_@; @_InputBorder_@ @TextPadding@
+InputField					= color:@_InputTextColor_@; background-color:@_InputBgColor_@; @_InputBorder_@ @TextPadding@
 InputField-error			= color:@_InputErrorTextColor_@; background-color:@_InputErrorBgColor_@; @_InputBorder_@ @TextPadding@
 InputField-disabled			= color:@_InputDisabledTextColor_@; background-color:@_InputDisabledBgColor_@; @_DisabledBorder_@ @TextPadding@ @InactiveCursor@
 

@@ -1,0 +1,40 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.1
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.1 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ * 
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
+ * All Rights Reserved.
+ * 
+ * Contributor(s):
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
+
+
+/*
+ * NOTE: This file is used only for handling Safari quirks. Otherwise, see
+ * skin.css for all other style info related to skinning.
+*/
+
+/* these are the containers of the pieces that can be hidden and shown */
+#skin_tr_search_builder				{ display:table-row; 	}
+#skin_div_search_builder			{ display:none;			}
+
+
+/* named pieces of the skin that the app will work with */
+
+#skin_container_search				{ height:18; top:-5; margin-bottom:-8px; }
+#skin_container_current_app			{ height:18; top:-4; margin-bottom:-8px; }

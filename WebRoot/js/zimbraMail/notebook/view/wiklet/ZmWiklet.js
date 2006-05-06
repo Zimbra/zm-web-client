@@ -97,11 +97,14 @@ ZmWiklet._formatDateFuncs = {
 	datetime: AjxDateFormat.getDateTimeInstance
 };
 ZmWiklet._formatDateLengths = {
-	short: AjxDateFormat.SHORT,
 	medium: AjxDateFormat.MEDIUM,
-	long: AjxDateFormat.LONG,
 	full: AjxDateFormat.FULL
 };
+// MOW:  "short" and "long" seem to be reserved words in IE, 
+//			so assigning inline above was causing script errors
+ZmWiklet._formatDateLengths["short"] = AjxDateFormat.SHORT;
+ZmWiklet._formatDateLengths["long"] = AjxDateFormat.LONG;
+
 
 // Utility functions
 
