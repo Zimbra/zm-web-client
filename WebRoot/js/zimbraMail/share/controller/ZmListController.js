@@ -86,6 +86,15 @@ function ZmListController(appCtxt, container, app) {
 ZmListController.prototype = new ZmController;
 ZmListController.prototype.constructor = ZmListController;
 
+// convert key mapping to operation
+ZmListController.ACTION_CODE_TO_OP = {};
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_APPT]		= ZmOperation.NEW_APPT;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_CALENDAR]	= ZmOperation.NEW_CALENDAR;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_CONTACT]	= ZmOperation.NEW_CONTACT;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_FOLDER]		= ZmOperation.NEW_FOLDER;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_MESSAGE]	= ZmOperation.NEW_MESSAGE;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_TAG]		= ZmOperation.NEW_TAG;
+
 // abstract public methods
 
 // public methods
@@ -157,6 +166,15 @@ function(actionCode) {
 			this._paginate(this._currentView, false);
 			break;
 			
+		case ZmKeyMap.NEW_APPT:
+		case ZmKeyMap.NEW_CALENDAR:
+		case ZmKeyMap.NEW_CONTACT:
+		case ZmKeyMap.NEW_FOLDER:
+		case ZmKeyMap.NEW_MESSAGE:
+		case ZmKeyMap.NEW_TAG:
+			this._newListener(null, ZmListController.ACTION_CODE_TO_OP[actionCode]);
+			break;
+		
 		default:
 			ZmController.prototype.handleKeyAction.call(this, actionCode);
 	}
@@ -394,15 +412,16 @@ function() {
 // Create some new thing, via a dialog. If just the button has been pressed (rather than
 // a menu item), the action taken depends on the app.
 ZmListController.prototype._newListener = 
-function(ev) {
-	var id = ev.item.getData(ZmOperation.KEY_ID);
-	if (!id || id == ZmOperation.NEW_MENU)
+function(ev, id) {
+	id = id ? id : ev.item.getData(ZmOperation.KEY_ID);
+	if (!id || id == ZmOperation.NEW_MENU) {
 		id = this._defaultNewId;
+	}
 		
 	switch (id) {
 		// new items
 		case ZmOperation.NEW_MESSAGE: {
-			var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
+			var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || (ev && ev.shiftKey);
 			var app = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
 			var controller = app.getComposeController();
 			controller.doAction(ZmOperation.NEW_MESSAGE, inNewWindow);
@@ -416,7 +435,7 @@ function(ev) {
 				var app = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 				var controller = app.getContactController();
 				controller.show(contact);
-			} else {
+			} else if (ev) {
 				ev.item.popup();
 			}
 			break;
