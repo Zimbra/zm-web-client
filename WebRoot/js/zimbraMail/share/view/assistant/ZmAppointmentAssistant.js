@@ -166,16 +166,16 @@ function(dialog, verb, args) {
 		}
 	}
 
-	match = args.match(/\s*repeats?\s+(\S+)\s*/);	
-	if (match) {
-		adata.repeat = match[1];
-		args = args.replace(match[0], " ");
-	}
+//	match = args.match(/\s*repeats?\s+(\S+)\s*/);	
+//	if (match) {
+//		adata.repeat = match[1];
+//		args = args.replace(match[0], " ");
+//	}
 
-	match = args.match(/\s*invite\s+(\S+)\s*/);
-	if (match) {
-		args = args.replace(match[0], " ");
-	}
+//	match = args.match(/\s*invite\s+(\S+)\s*/);
+//	if (match) {
+//		args = args.replace(match[0], " ");
+//	}
 
 	if (adata.subject == null) {
 		adata.subject = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' ');
