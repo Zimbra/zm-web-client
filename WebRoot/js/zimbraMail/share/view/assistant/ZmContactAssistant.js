@@ -121,6 +121,22 @@ function(dialog) {
 	return true;
 };
 
+ZmContactAssistant.prototype.getHelp =
+function() {
+	var html = new AjxBuffer();
+	html.append("<div class='ZmAsstContactHelpFields'>")	
+	html.append(ZmMsg.ASST_CONTACT_HELP);
+	html.append("<table cellspacing=1 cellpadding=2 border=0>");
+	var cmds = ZmAssistant.getHandlerCommands();
+	for (var key in ZmContactAssistant._CONTACT_FIELDS) {
+		var field = ZmContactAssistant._CONTACT_FIELDS[key];
+		html.append("<tr><td><b>", AjxStringUtil.htmlEncode(key), "</b></td><td>&nbsp;</td><td>", AjxStringUtil.htmlEncode(field.field),"</td></tr>");
+	}
+	html.append("</table></div>");
+	return html.toString();
+};
+
+
 // street  
 // city
 // state

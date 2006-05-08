@@ -59,6 +59,11 @@ ZmMailAssistant._OBJECT_ORDER = [
 	ZmAssistant._BRACKETS //, ZmObjectManager.EMAIL
 ];
 
+ZmMailAssistant.prototype.getHelp =
+function() {
+	return ZmMsg.ASST_MAIL_HELP;
+};
+
 ZmMailAssistant.prototype.okHandler =
 function(dialog) {
 	var bad = new AjxVector();	

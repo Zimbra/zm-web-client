@@ -2042,9 +2042,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	font-style: italic;
 }
 
-
-
-
+.ZmAsstContactHelpFields {
+	height: 200px;
+	overflow: auto;
+/*	@ContentBorder@*/
+}
 
 
 /*

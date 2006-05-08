@@ -179,13 +179,14 @@ function() {
 		if (this._assistant != null) this._assistant.finish(this);
 		this._assistant = assistant;
 		if (this._assistant) {
+			// reset help/extra
+			this._setHelpButton(null, true, true);		
+			this._setExtraButton(ZmMsg.moreDetails, false, false, true, null);			
 			this._assistant.initialize(this);
 			var title = this._assistant.getTitle();
 			if (title) this._setCommandTitle(title);
 			var help = this._assistant.getHelp();
 			this._setHelpButton(null, help != null, true);
-		} else {
-			this._setHelpButton(null, true, true);
 		}
 	}
 
@@ -197,6 +198,7 @@ ZmAssistantDialog.prototype._setDefault =
 function() {
 	this.setAssistantContent(this._availableCommands);
 	this._setOkButton(AjxMsg.ok, false, false, true, null);
+	this._setHelpButton(null, true, true);		
 	this._setExtraButton(ZmMsg.moreDetails, false, false, true, null);	
 	this._setCommandTitle("");
 };	
