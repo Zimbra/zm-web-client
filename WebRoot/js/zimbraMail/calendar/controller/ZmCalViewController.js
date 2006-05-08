@@ -252,7 +252,7 @@ function(id) {
 // returns list of all calendars in overview (whether they're checked or not)
 ZmCalViewController.prototype.getAllCalendars = 
 function() {
-	var calTreeData = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
+	var calTreeData = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
 	if (calTreeData && calTreeData.root) {
 		return calTreeData.root.children.getArray();
 	}
@@ -628,7 +628,10 @@ function(viewId, forward) {
 
 ZmCalViewController.prototype._getFolderPermissions = 
 function(calendars) {
-	var needPermArr = new Array();
+	if (!calendars) {
+		return;
+	}
+	var needPermArr = [];
 	for (var i = 0; i < calendars.length; i++) {
 		if (calendars[i].link && calendars[i].shares == null)
 			needPermArr.push(calendars[i].id);

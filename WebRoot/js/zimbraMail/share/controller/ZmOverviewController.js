@@ -126,13 +126,18 @@ function(overviewId) {
 * Displays the given list of tree views, applying the given overview's options. If a tree
 * view has already been created, its HTML element will be added to the overview, so that
 * its state is preserved.
+* <p>
+* A hash of IDs of organizers to omit from the overview may be given. Also, a hash of IDs
+* of tree views to reset may be provided. If a tree view is being reset, then its HTML
+* element is not pruned from the overview panel.</p>
 *
 * @param overviewId		[constant]	overview ID
 * @param treeIds		[Array]		list of organizer types
 * @param omit			[Object]*	hash of organizer IDs to ignore
+* @param reset			[Object]*	hash of tree IDs to reset
 */
 ZmOverviewController.prototype.set =
-function(overviewId, treeIds, omit) {
+function(overviewId, treeIds, omit, reset) {
 	if (!overviewId) return;
 	if (!(treeIds && treeIds.length)) return;
 	
@@ -143,9 +148,10 @@ function(overviewId, treeIds, omit) {
 		for (var i = 0; i < curTreeIds.length; i++) {
 			var treeId = curTreeIds[i];
 			var treeView = this.getTreeView(overviewId, treeId);
-			if (treeView)
+			if (treeView && !(reset && reset[treeId])) {
 				// remember to preserve a ref to the element so we can add it later
 				overview.removeChild(treeView, true);
+			}
 		}
 	}
 
@@ -155,13 +161,13 @@ function(overviewId, treeIds, omit) {
 		// lazily create appropriate tree controller
 		var treeController = this.getTreeController(treeId);
 		var treeView = this.getTreeView(overviewId, treeIds[i]);
-		if (treeView) {
+		if (!treeView || (reset && reset[treeId])) {
+			// create the tree view as a child of the overview
+			treeController.show(overviewId, this._showUnread[overviewId], omit);
+		} else {
 			// add the tree view's HTML element back to the overview
 			overview.addChild(treeView);
 			treeView.setCheckboxes();
-		} else {
-			// create the tree view as a child of the overview
-			treeController.show(overviewId, this._showUnread[overviewId], omit);
 		}
 	}
 	this._treeIds[overviewId] = treeIds;

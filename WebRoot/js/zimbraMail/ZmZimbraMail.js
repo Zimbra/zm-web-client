@@ -87,10 +87,13 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._pollActionId = null;
 
 	this._needOverviewLayout = false;
-	this._unreadListener = new AjxListener(this, this._unreadChangeListener);	
-	this._calendarListener = new AjxListener(this, this._calendarChangeListener);
-	this._notebookListener = new AjxListener(this, this._notebookChangeListener);
-	this._addrBookListener = new AjxListener(this, this._addrBookChangeListener);
+	this._treeListener = {};
+	var unreadListener = new AjxListener(this, this._unreadChangeListener);
+	this._treeListener[ZmOrganizer.FOLDER]		= unreadListener;
+	this._treeListener[ZmOrganizer.TAG]			= unreadListener;
+	this._treeListener[ZmOrganizer.CALENDAR]	= new AjxListener(this, this._calendarChangeListener);
+	this._treeListener[ZmOrganizer.NOTEBOOK]	= new AjxListener(this, this._notebookChangeListener);
+	this._treeListener[ZmOrganizer.ADDRBOOK]	= new AjxListener(this, this._addrBookChangeListener);
 
 	this._useXml = this._appCtxt.get(ZmSetting.USE_XML);
 	this._logRequest = this._appCtxt.get(ZmSetting.LOG_REQUEST);
@@ -114,6 +117,7 @@ ZmZimbraMail.MIXED_APP			= "mixed";
 
 ZmZimbraMail.APP_CLASS = {};
 
+// app names
 ZmZimbraMail.MSG_KEY = {};
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]				= "mail";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CONTACTS_APP]			= "contacts";
@@ -123,6 +127,7 @@ ZmZimbraMail.MSG_KEY[ZmZimbraMail.NOTEBOOK_APP]			= "notebook";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.PREFERENCES_APP]		= "options";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MIXED_APP]			= "zimbraTitle";
 
+// app icons
 ZmZimbraMail.APP_ICON = {};
 ZmZimbraMail.APP_ICON[ZmZimbraMail.MAIL_APP]			= "MailApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.CONTACTS_APP]		= "ContactsApp";
@@ -132,6 +137,14 @@ ZmZimbraMail.APP_ICON[ZmZimbraMail.NOTEBOOK_APP]		= "NoteApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.PREFERENCES_APP]		= "Preferences";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.MIXED_APP]			= "Globe";
 
+// tooltips for app buttons
+ZmZimbraMail.VIEW_TT_KEY = {};
+ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.MAIL_APP]			= "displayMail";
+ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CONTACTS_APP]		= "displayContacts";
+ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CALENDAR_APP]		= "displayCalendar";
+ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.IM_APP]	        = "displayIM";
+
+// app button IDs
 ZmZimbraMail.APP_BUTTON = {};
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.MAIL_APP]			= ZmAppChooser.B_EMAIL;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CONTACTS_APP]		= ZmAppChooser.B_CONTACTS;
@@ -140,6 +153,7 @@ ZmZimbraMail.APP_BUTTON[ZmZimbraMail.IM_APP]			= ZmAppChooser.B_IM;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.NOTEBOOK_APP]		= ZmAppChooser.B_NOTEBOOK;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.PREFERENCES_APP]	= ZmAppChooser.B_OPTIONS;
 
+// default search type for each app
 ZmZimbraMail.DEFAULT_SEARCH = {};
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MAIL_APP]		= ZmSearchToolBar.FOR_MAIL_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CONTACTS_APP]	= ZmItem.CONTACT;
@@ -148,12 +162,7 @@ ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmSearchToolBar.FOR_MAI
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.IM_APP]    	= ZmSearchToolBar.FOR_MAIL_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MIXED_APP]		= ZmSearchToolBar.FOR_ANY_MI;
 
-ZmZimbraMail.VIEW_TT_KEY = {};
-ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.MAIL_APP]			= "displayMail";
-ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CONTACTS_APP]		= "displayContacts";
-ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CALENDAR_APP]		= "displayCalendar";
-ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.IM_APP]	        = "displayIM";
-
+// trees shown in overview panel for each app
 ZmZimbraMail.OVERVIEW_TREES = {};
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.ADDRBOOK, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
@@ -161,6 +170,10 @@ ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]	= [ZmOrganizer.CALENDAR, 
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.NOTEBOOK_APP]	= [ZmOrganizer.NOTEBOOK, /*ZmOrganizer.SEARCH, ZmOrganizer.TAG,*/ ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
+
+// trees whose data comes in a <refresh> block
+ZmZimbraMail.REFRESH_TREES = [ZmOrganizer.FOLDER, ZmOrganizer.TAG, ZmOrganizer.SEARCH,
+							  ZmOrganizer.ADDRBOOK, ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK];
 
 ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
 
@@ -427,7 +440,6 @@ function() {
 * @param timeout		[int]*			timeout value (in seconds)
 * @param noBusyOverlay	[boolean]*		if true, don't use the busy overlay
 */
-//function(soapDoc, asyncMode, callback, errorCallback, execFrame, timeout, noBusyOverlay) {
 ZmZimbraMail.prototype.sendRequest = 
 function(params) {
 	var reqId = params.reqId = ZmZimbraMail.getNextReqId();
@@ -510,8 +522,8 @@ function(params, result) {
 	
 	// refresh block causes the overview panel to get updated
 	if (hdr && hdr.context && hdr.context.refresh) {
-		this._refreshHandler(hdr.context.refresh);
-		this._checkOverviewLayout();
+		var resetTree = this._refreshHandler(hdr.context.refresh);
+		this._checkOverviewLayout(false, resetTree);
 	}
 
 	// start poll timer if we didn't get an exception
@@ -711,11 +723,11 @@ function(appName) {
 };
 
 ZmZimbraMail.prototype._checkOverviewLayout =
-function(force) {
+function(force, resetTree) {
 	if ((this._needOverviewLayout || force) && this._settings.userSettingsLoaded) {
 		DBG.println(AjxDebug.DBG1, "laying out overview panel");
 		var opc = this._appCtxt.getOverviewController();
-		opc.set(ZmZimbraMail._OVERVIEW_ID, this._getOverviewTrees(this._activeApp));
+		opc.set(ZmZimbraMail._OVERVIEW_ID, this._getOverviewTrees(this._activeApp), null, resetTree);
 		this._components[ZmAppViewMgr.C_TREE] = opc.getOverview(ZmZimbraMail._OVERVIEW_ID);
 		// clear shared folder dialogs so they'll be recreated with new folder tree
 		this._appCtxt.clearFolderDialogs();
@@ -922,108 +934,77 @@ function(childWin) {
 };
 
 // A <refresh> block is returned in a SOAP response any time the session ID has 
-// changed. It always happens on the first SOAP command (eg gettings prefs). 
-// After that, it happens after a session timeout. We'll always get a <folder> 
-// element back, but we might not get back a <tags>, so we need to make sure a 
-// tag tree is created, even if it's empty.
-//
-// Note: this could be optimized to do a compare (since for the large majority 
-// of refreshes, the tags and folders won't have changed except unread counts), 
-// but a session timeout should be relatively rare when we're doing polling.
+// changed. It always happens on the first SOAP command (GetInfoRequest).
+// After that, it happens after a session timeout.
 ZmZimbraMail.prototype._refreshHandler =
 function(refresh) {
 	DBG.println(AjxDebug.DBG2, "Handling REFRESH");
+
+	var treeString = {};
+	var unread = {};
+	for (var i = 0; i < ZmZimbraMail.REFRESH_TREES.length; i++) {
+		var treeId = ZmZimbraMail.REFRESH_TREES[i];
+		var tree = this._appCtxt.getTree(treeId);
+		if (!tree) {
+			tree = (treeId == ZmOrganizer.TAG) ? new ZmTagTree(this._appCtxt) :
+												 new ZmFolderTree(this._appCtxt, treeId);
+			tree.addChangeListener(this._treeListener[treeId]);
+			this._appCtxt.setTree(treeId, tree);
+		}
+		treeString[treeId] = tree.asString();
+		if (treeId == ZmOrganizer.TAG || treeId == ZmOrganizer.FOLDER) {
+			tree.getUnreadHash(unread);
+		}
+		tree.reset();
+		if (treeId == ZmOrganizer.TAG) {
+			tree.createRoot(); // tag tree root not in the DOM
+		}
+	}
 	
-	var tagTree = this._appCtxt.getTree(ZmOrganizer.TAG);
-	if (!tagTree) {
-		tagTree = new ZmTagTree(this._appCtxt);
-		tagTree.addChangeListener(this._unreadListener);
-		this._appCtxt.setTree(ZmOrganizer.TAG, tagTree);
-	}
-	var tagString = tagTree.asString();
-	var unread = tagTree.getUnreadHash();
-	tagTree.reset();
-	tagTree.createRoot(); // tag tree root not in the DOM
-
-	var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-	if (!calendarTree) {
-		calendarTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.CALENDAR);
-		calendarTree.addChangeListener(this._calendarListener);
-		this._appCtxt.setTree(ZmOrganizer.CALENDAR, calendarTree);
-	}
-	var calendarString = calendarTree.asString();
-	calendarTree.reset();
-
-	var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	if (!notebookTree) {
-		notebookTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.NOTEBOOK);
-		notebookTree.addChangeListener(this._notebookListener);
-		this._appCtxt.setTree(ZmOrganizer.NOTEBOOK, notebookTree);
-	}
-	var notebookString = notebookTree.asString();
-	notebookTree.reset();
-
-	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
+	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
 		this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
+	}
 
-	var addrBookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
-	if (!addrBookTree) {
-		addrBookTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ADDRBOOK);
-		addrBookTree.addChangeListener(this._addrBookListener);
-		this._appCtxt.setTree(ZmOrganizer.ADDRBOOK, addrBookTree);
+	if (refresh.tags) {
+		this._appCtxt.getTree(ZmOrganizer.TAG).loadFromJs(refresh.tags);
 	}
-    
-	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-	if (!folderTree) {
-		folderTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.FOLDER);
-		folderTree.addChangeListener(this._unreadListener);
-		this._appCtxt.setTree(ZmOrganizer.FOLDER, folderTree);
-	}
-	var folderString = folderTree.asString();
-	folderTree.getUnreadHash(unread);
-	folderTree.reset();
-	
-	var searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
-	if (!searchTree) {
-		searchTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.SEARCH);
-		this._appCtxt.setTree(ZmOrganizer.SEARCH, searchTree);
-	}
-	var searchString = searchTree.asString();
-	searchTree.reset();
-
-	if (refresh.tags)
-		tagTree.loadFromJs(refresh.tags);
+	// everything but tags comes in the <folder> block
 	if (refresh.folder) {
-		calendarTree.loadFromJs(refresh.folder[0]);
-		notebookTree.loadFromJs(refresh.folder[0]);
-		folderTree.loadFromJs(refresh.folder[0]);
-		searchTree.loadFromJs(refresh.folder[0]);
-		addrBookTree.loadFromJs(refresh.folder[0]);
+		for (var i = 0; i < ZmZimbraMail.REFRESH_TREES.length; i++) {
+			var treeId = ZmZimbraMail.REFRESH_TREES[i];
+			var tree = this._appCtxt.getTree(treeId);
+			if (tree && treeId != ZmOrganizer.TAG) {
+				tree.loadFromJs(refresh.folder[0]);
+			}
+		}
 	}
 	
-	if (tagTree.asString() != tagString || 
-		folderTree.asString() != folderString ||
-		calendarTree.asString() != calendarString ||
-		notebookTree.asString() != notebookString) {
-		DBG.println(AjxDebug.DBG1, "overview layout needed (refresh)");
-		DBG.println(AjxDebug.DBG2, "tags: " + tagString + " / " + tagTree.asString());
-		DBG.println(AjxDebug.DBG2, "folders: " + folderString + " / " + folderTree.asString());
-		DBG.println(AjxDebug.DBG2, "calendars: " + calendarString + " / " + calendarTree.asString());
-		DBG.println(AjxDebug.DBG2, "notebooks: " + notebookString + " / " + notebookTree.asString());
-		this._needOverviewLayout = true;
-	} else {
-		this._checkUnread(tagTree, unread);
-		this._checkUnread(folderTree, unread);
+	var resetTree = {};
+	for (var i = 0; i < ZmZimbraMail.REFRESH_TREES.length; i++) {
+		var treeId = ZmZimbraMail.REFRESH_TREES[i];
+		var tree = this._appCtxt.getTree(treeId);
+		if (tree.asString() != treeString[treeId]) {
+			// structure of tree changed (organizer added/removed/renamed/moved)
+			DBG.println(AjxDebug.DBG2, treeId + ": " + treeString[treeId] + " / " + tree.asString());
+			this._needOverviewLayout = resetTree[treeId] = true;
+		} else if (treeId == ZmOrganizer.TAG || treeId == ZmOrganizer.FOLDER) {
+			// handle change in unread count by notifying tree
+			this._checkUnread(tree, unread);
+		}
 	}
 
-	var inbox = folderTree.getById(ZmFolder.ID_INBOX);
-	if (inbox) this._statusView.setIconVisible(ZmStatusView.ICON_INBOX,  inbox.numUnread > 0);
+	var inbox = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_INBOX);
+	if (inbox) {
+		this._statusView.setIconVisible(ZmStatusView.ICON_INBOX,  inbox.numUnread > 0);
+	}
 
 	// XXX: temp, until we get better server support - see bug #4434
 	var calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	calController.refreshHandler();
 	// need to tell calendar to refresh/relayout
-	//if (this._calController) this._calController.refreshHandler();	
+	//if (this._calController) this._calController.refreshHandler();
+	
+	return resetTree;
 };
 
 ZmZimbraMail.prototype._checkUnread =
