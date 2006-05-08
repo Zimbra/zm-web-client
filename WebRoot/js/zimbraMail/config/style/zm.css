@@ -2042,12 +2042,15 @@ HTML>BODY .appt-selected .appt_allday_body
 	font-style: italic;
 }
 
-.ZmAsstContactHelpFields {
+.ZmAsstContactHelp {
 	height: 200px;
 	overflow: auto;
-/*	@ContentBorder@*/
 }
 
+.ZmAsstContactHelpHeader TD {
+	font-weight: bold;
+	@BottomSeparator@
+}
 
 /*
  * Colors, for use in calendar and elsewhere.
