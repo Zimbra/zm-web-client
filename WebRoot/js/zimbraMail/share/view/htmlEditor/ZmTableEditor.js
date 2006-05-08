@@ -153,29 +153,20 @@ function ZmTablePropsDialog(parent) {
 					     new DwtSelectOption("right", false, ZmMsg.right) ]);
 	this._wAlign.reparentHtmlElement(this._idAlign);
 
-	this._wBgColor = new DwtButton(this, null, "TBButton");
-	this._wBgColor.setImage("FontBackground");
-	var m = new DwtMenu(this._wBgColor, DwtMenu.COLOR_PICKER_STYLE, null, null, this);
-	this._wBgColor.setMenu(m);
+	this._wBgColor = new DwtButtonColorPicker(this, null);
 	this._wBgColor.reparentHtmlElement(this._idBackgroundColor);
-	var c = new DwtColorPicker(m);
-	c.addSelectionListener(new AjxListener(this, this._bgColorSelected));
+	this._wBgColor.setImage("FontBackground");
+	this._wBgColor.showColorDisplay();
 
-	this._wFgColor = new DwtButton(this, null, "TBButton");
-	this._wFgColor.setImage("FontColor");
-	var m = new DwtMenu(this._wFgColor, DwtMenu.COLOR_PICKER_STYLE, null, null, this);
-	this._wFgColor.setMenu(m);
+	this._wFgColor = new DwtButtonColorPicker(this, null);
 	this._wFgColor.reparentHtmlElement(this._idForegroundColor);
-	var c = new DwtColorPicker(m);
-	c.addSelectionListener(new AjxListener(this, this._fgColorSelected));
+	this._wFgColor.setImage("FontColor");
+	this._wFgColor.showColorDisplay();
 
-	this._wBorderColor = new DwtButton(this, null, "TBButton");
-	this._wBorderColor.setImage("FontColor");
-	var m = new DwtMenu(this._wBorderColor, DwtMenu.COLOR_PICKER_STYLE, null, null, this);
-	this._wBorderColor.setMenu(m);
+	this._wBorderColor = new DwtButtonColorPicker(this, null);
 	this._wBorderColor.reparentHtmlElement(this._idBorderColor);
-	var c = new DwtColorPicker(m);
-	c.addSelectionListener(new AjxListener(this, this._borderColorSelected));
+	this._wBorderColor.setImage("FontBorder");
+	this._wBorderColor.showColorDisplay();
 
 	(this._wBorderStyle = new DwtSelect(this, [ new DwtSelectOption("none", false, ZmMsg.notSet),
 						    new DwtSelectOption("solid", true, ZmMsg.borderStyleSolid),
@@ -211,13 +202,6 @@ function ZmTablePropsDialog(parent) {
 
 	document.getElementById(this._idWidthAuto).onclick = AjxCallback.simpleClosure(this._setManualWidthState, this);
 	document.getElementById(this._idWidthAuto1).onclick = AjxCallback.simpleClosure(this._setManualWidthState, this);
-
-	document.getElementById(this._idShowForegroundColor).onclick
-		= AjxCallback.simpleClosure(this._clearSelectedColor, this, this._idShowForegroundColor);
-	document.getElementById(this._idShowBackgroundColor).onclick
-		= AjxCallback.simpleClosure(this._clearSelectedColor, this, this._idShowBackgroundColor);
-	document.getElementById(this._idShowBorderColor).onclick
-		= AjxCallback.simpleClosure(this._clearSelectedColor, this, this._idShowBorderColor);
 
 	this.registerCallback(DwtDialog.OK_BUTTON, this._onOK, this);
 	this.registerCallback(DwtDialog.CANCEL_BUTTON, this._onCancel, this);
@@ -309,15 +293,15 @@ ZmTablePropsDialog.prototype.setup = function(editor, table) {
 
 	var fgColor = table.style.color || "";
 	printfire("Font color: " + fgColor);
-	document.getElementById(this._idShowForegroundColor).style.backgroundColor = fgColor;
+	this._wFgColor.setColor(fgColor);
 
 	var bgColor = table.style.backgroundColor || "";
 	printfire("Background color: " + bgColor);
-	document.getElementById(this._idShowBackgroundColor).style.backgroundColor = bgColor;
+	this._wBgColor.setColor(bgColor);
 
 	var borderColor = table.style.borderTopColor || "";
 	printfire("Border color: " + borderColor);
-	document.getElementById(this._idShowBorderColor).style.backgroundColor = borderColor;
+	this._wBorderColor.setColor(borderColor);
 
 	var borderWidth = table.style.borderTopWidth || 0;
 	printfire("Border width: " + borderWidth);
@@ -359,22 +343,6 @@ ZmTablePropsDialog.prototype._setManualWidthState = function() {
 	this._wWidthUnit.setEnabled(!auto);
 };
 
-ZmTablePropsDialog.prototype._bgColorSelected = function(ev) {
-	document.getElementById(this._idShowBackgroundColor).style.backgroundColor = ev.detail;
-};
-
-ZmTablePropsDialog.prototype._fgColorSelected = function(ev) {
-	document.getElementById(this._idShowForegroundColor).style.backgroundColor = ev.detail;
-};
-
-ZmTablePropsDialog.prototype._borderColorSelected = function(ev) {
-	document.getElementById(this._idShowBorderColor).style.backgroundColor = ev.detail;
-};
-
-ZmTablePropsDialog.prototype._clearSelectedColor = function(id) {
-	document.getElementById(id).style.backgroundColor = "";
-};
-
 ZmTablePropsDialog.prototype._onOK = function() {
 	this._editor.focus();
 	this._editor.applyTableProperties(this._table, this.getValues());
@@ -411,10 +379,10 @@ ZmTablePropsDialog.prototype.getValues = function() {
 		tableLayout     : document.getElementById(this._idFixedLayout).checked ? "fixed" : "",
 		textAlign       : this._wTextAlign.getValue(),
 		verticalAlign   : this._wTextVAlign.getValue(),
-		color           : document.getElementById(this._idShowForegroundColor).style.backgroundColor,
-		backgroundColor : document.getElementById(this._idShowBackgroundColor).style.backgroundColor,
+		color           : this._wFgColor.getColor(),
+		backgroundColor : this._wBgColor.getColor(),
 		borderWidth     : this._wBorderWidth.getValue(),
-		borderColor     : document.getElementById(this._idShowBorderColor).style.backgroundColor,
+		borderColor     : this._wBorderColor.getColor(),
 		borderStyle     : this._wBorderStyle.getValue(),
 		borderCollapse  : document.getElementById(this._idBorderCollapse).checked ? "collapse" : "",
 		cellPadding     : this._wCellPadding.getValue(),
