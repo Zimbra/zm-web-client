@@ -52,7 +52,7 @@ ZmContactAssistant._CONTACT_FIELDS = [
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_email3, field: ZmMsg.AB_FIELD_email3, key: ZmContact.F_email3 },
 
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_workPhone, field: ZmMsg.AB_FIELD_workPhone, key: ZmContact.F_workPhone, defaultValue: ZmMsg.ASST_CONTACT_phone },
-	{ scmd: ZmMsg.ASST_CONTACT_SHORT_workPhone2, field: ZmMsg.AB_FIELD_workPhone2, key: ZmContact.F_workPhone2 },	 
+	{ scmd: ZmMsg.ASST_CONTACT_SHORT_workPhone2, field: ZmMsg.AB_FIELD_workPhone2, key: ZmContact.F_workPhone2 },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_mobilePhone, field: ZmMsg.AB_FIELD_mobilePhone, key: ZmContact.F_mobilePhone },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_pager, field: ZmMsg.AB_FIELD_pager, key: ZmContact.F_pager },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_workFax, field: ZmMsg.AB_FIELD_workFax, key: ZmContact.F_workFax },
@@ -60,17 +60,17 @@ ZmContactAssistant._CONTACT_FIELDS = [
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_assistantPhone, field: ZmMsg.AB_FIELD_assistantPhone, key: ZmContact.F_assistantPhone },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_carPhone, field: ZmMsg.AB_FIELD_carPhone, key: ZmContact.F_carPhone },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_companyPhone, field: ZmMsg.AB_FIELD_companyPhone, key: ZmContact.F_companyPhone },
-	{ scmd: ZmMsg.ASST_CONTACT_SHORT_callbackPhone, field: ZmMsg.AB_FIELD_callbackPhone, key: ZmContact.F_callbackPhone },	 
+	{ scmd: ZmMsg.ASST_CONTACT_SHORT_callbackPhone, field: ZmMsg.AB_FIELD_callbackPhone, key: ZmContact.F_callbackPhone },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_workAddress, field: ZmMsg.AB_ADDR_WORK, key: 'wa', multiLine: true },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_workStreet, field: ZmMsg.AB_FIELD_workStreet, key: ZmContact.F_workStreet, defaultValue: ZmMsg.ASST_CONTACT_address },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_workCity, field: ZmMsg.AB_FIELD_workCity, key: ZmContact.F_workCity },
-	{ scmd: ZmMsg.ASST_CONTACT_SHORT_workState, field: ZmMsg.AB_FIELD_workState, key: ZmContact.F_workState },    
+	{ scmd: ZmMsg.ASST_CONTACT_SHORT_workState, field: ZmMsg.AB_FIELD_workState, key: ZmContact.F_workState },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_workPostalCode, field: ZmMsg.AB_FIELD_workPostalCode, key: ZmContact.F_workPostalCode },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_workCountry, field: ZmMsg.AB_FIELD_workCountry, key: ZmContact.F_workCountry },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_workURL, field: ZmMsg.AB_WORK_URL, key: ZmContact.F_workURL, defaultValue: ZmMsg.ASST_CONTACT_url },
 
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_homePhone, field: ZmMsg.AB_FIELD_homePhone, key: ZmContact.F_homePhone },
-	{ scmd: ZmMsg.ASST_CONTACT_SHORT_homePhone2, field: ZmMsg.AB_FIELD_homePhone2, key: ZmContact.F_homePhone2 },	 
+	{ scmd: ZmMsg.ASST_CONTACT_SHORT_homePhone2, field: ZmMsg.AB_FIELD_homePhone2, key: ZmContact.F_homePhone2 },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_homeFax, field: ZmMsg.AB_FIELD_homeFax, key: ZmContact.F_homeFax },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_homeAddress, field: ZmMsg.AB_ADDR_HOME, key: 'ha', multiline: true },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_homeStreet, field: ZmMsg.AB_FIELD_homeStreet, key: ZmContact.F_homeStreet },
@@ -86,7 +86,7 @@ ZmContactAssistant._CONTACT_FIELDS = [
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_otherStreet, field: ZmMsg.AB_FIELD_otherStreet, key: ZmContact.F_otherStreet },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_otherCity, field: ZmMsg.AB_FIELD_otherCity, key: ZmContact.F_otherCity },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_otherState, field: ZmMsg.AB_FIELD_otherState, key: ZmContact.F_otherState },
-	{ scmd: ZmMsg.ASST_CONTACT_SHORT_otherPostalCode, field: ZmMsg.AB_FIELD_otherPostalCode, key: ZmContact.F_otherPostalCode },	 
+	{ scmd: ZmMsg.ASST_CONTACT_SHORT_otherPostalCode, field: ZmMsg.AB_FIELD_otherPostalCode, key: ZmContact.F_otherPostalCode },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_otherCountry, field: ZmMsg.AB_FIELD_otherCountry, key: ZmContact.F_otherCountry },
 	{ scmd: ZmMsg.ASST_CONTACT_SHORT_otherURL, field: ZmMsg.AB_OTHER_URL, key: ZmContact.F_otherURL },
 
@@ -122,7 +122,7 @@ function(dialog) {
 ZmContactAssistant.prototype.getHelp =
 function() {
 	var html = new AjxBuffer();
-	html.append("<div class='ZmAsstContactHelpFields'>")	
+	html.append("<div class='ZmAsstContactHelpFields'>")
 	html.append(ZmMsg.ASST_CONTACT_HELP);
 	html.append("<table cellspacing=1 cellpadding=2 border=0>");
 	var cmds = ZmAssistant.getHandlerCommands();
@@ -135,7 +135,7 @@ function() {
 };
 
 
-// street  
+// street
 // city
 // state
 // postal code
@@ -144,7 +144,7 @@ function() {
 ZmContactAssistant._ADDR_FIELDS = {
 	home: [ ZmContact.F_homeStreet, ZmContact.F_homeCity, ZmContact.F_homeState, ZmContact.F_homePostalCode, ZmContact.F_homeCountry],
 	other: [ ZmContact.F_otherStreet, ZmContact.F_otherCity, ZmContact.F_otherState, ZmContact.F_otherPostalCode, ZmContact.F_otherCountry],
-	work: [ ZmContact.F_workStreet, ZmContact.F_workCity, ZmContact.F_workState, ZmContact.F_workPostalCode, ZmContact.F_workCountry],		
+	work: [ ZmContact.F_workStreet, ZmContact.F_workCity, ZmContact.F_workState, ZmContact.F_workPostalCode, ZmContact.F_workCountry]		
 };
 
 ZmContactAssistant.prototype._parseAddress =
@@ -179,10 +179,10 @@ ZmContactAssistant.prototype.handle =
 function(dialog, verb, args) {
 	dialog._setOkButton(AjxMsg.ok, true, true); // true, "NewContact");
 	dialog._setExtraButton(ZmMsg.moreDetails, true, true);
-	
+
 	var match, i;
-	this._contactFields = {};	
-		
+	this._contactFields = {};
+
 	// check address first, since we grab any fields quoted with [], objects in them won't be matched later
 	for (i = 0; i < ZmContactAssistant._CONTACT_OBJECT_ORDER.length; i++) {
 		var objType = ZmContactAssistant._CONTACT_OBJECT_ORDER[i];
@@ -211,7 +211,7 @@ function(dialog, verb, args) {
 			if (v == null) v = "";
 			this._contactFields[field.key] = (field.capitalize) ? this._capitalize(v) : v;
 		}
-		args = args.replace(match[1],"");	
+		args = args.replace(match[1],"");
 	}
 
 	var fullName = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' '); //.split(",", 3);
@@ -219,14 +219,14 @@ function(dialog, verb, args) {
 	if (this._contactFields[ZmContact.F_firstName] || this._contactFields[ZmContact.F_middleName] || this._contactFields[ZmContact.F_lastName]) {
 		fullName = null;
 		if (this._contactFields[ZmContact.F_firstName]) fullName = this._contactFields[ZmContact.F_firstName];
-		if (this._contactFields[ZmContact.F_middleName]) { 
+		if (this._contactFields[ZmContact.F_middleName]) {
 			if (fullName) fullName += " ";
 			fullName += this._contactFields[ZmContact.F_middleName];
 		}
-		if (this._contactFields[ZmContact.F_lastName]) { 
+		if (this._contactFields[ZmContact.F_lastName]) {
 			if (fullName) fullName += " ";
 			fullName += this._contactFields[ZmContact.F_lastName];
-		}		
+		}
 	} else {
 		var parts = fullName.split(/\s+/);
 		for (var i=0; i < parts.length; i++) parts[i] = parts[i].substring(0,1).toUpperCase() + parts[i].substring(1);
@@ -263,11 +263,11 @@ function(dialog, verb, args) {
 	}
 
 	var index, ri;
-	
+
 	index = this._setField(ZmMsg.AB_FIELD_fullName, fullName == "" ? ZmMsg.ASST_CONTACT_fullName : fullName, fullName == "", true);
 
-	for (var i=0; i < ZmContactAssistant._CONTACT_FIELDS.length; i++) {	
-		var field = ZmContactAssistant._CONTACT_FIELDS[i];		
+	for (var i=0; i < ZmContactAssistant._CONTACT_FIELDS.length; i++) {
+		var field = ZmContactAssistant._CONTACT_FIELDS[i];
 		if (!field || field.dontShow) continue;		
 		var value = this._contactFields[field.key];
 
