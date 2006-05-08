@@ -130,8 +130,15 @@ function(ev) {
 
 ZmAddrBookTreeController.prototype._shareAddrBookListener = 
 function(ev) {
-	// TODO
-	DBG.println("TODO: share address book");
+    this._pendingActionData = this._getActionedOrganizer(ev);
+
+    var addrbook = this._pendingActionData;
+	
+    var sharePropsDialog = this._appCtxt.getSharePropsDialog();
+    sharePropsDialog.setDialogType(ZmSharePropsDialog.NEW);
+    sharePropsDialog.setFolder(addrbook);
+    sharePropsDialog.setShareInfo();
+    sharePropsDialog.popup();
 };
 
 

@@ -33,7 +33,8 @@ function ZmShareReply(parent, className) {
 	className = className || "ZmShareReply";
 	DwtComposite.call(this, parent, className);
 	this._initControl();
-}
+};
+
 ZmShareReply.prototype = new DwtComposite;
 ZmShareReply.prototype.constructor = ZmShareReply;
 
@@ -59,6 +60,7 @@ ZmShareReply.prototype.setReply = function(reply) {
 	this._replyCheckboxEl.checked = reply;
 	Dwt.setVisible(this._replyControlsEl, reply);
 };
+
 ZmShareReply.prototype.getReply = function() {
 	return this._replyCheckboxEl.checked;
 };
@@ -66,6 +68,7 @@ ZmShareReply.prototype.getReply = function() {
 ZmShareReply.prototype.setReplyRequired = function(required) {
 	Dwt.setVisible(this._replyEl, required ? false : true);
 };
+
 ZmShareReply.prototype.getReplyRequired = function() {
 	return Dwt.getVisible(this._replyEl);
 };
@@ -75,6 +78,7 @@ ZmShareReply.prototype.setReplyType = function(type) {
 	Dwt.setVisible(this._replyStandardMailNoteEl, type == ZmShareReply.STANDARD || type == ZmShareReply.QUICK);
 	Dwt.setVisible(this._replyNoteEl, type == ZmShareReply.QUICK);
 };
+
 ZmShareReply.prototype.getReplyType = function() {
 	return this._replyType.getValue();
 };
@@ -82,6 +86,7 @@ ZmShareReply.prototype.getReplyType = function() {
 ZmShareReply.prototype.setReplyNote = function(note) {
 	this._replyNoteEl.value = note;
 };
+
 ZmShareReply.prototype.getReplyNote = function() {
 	return this._replyNoteEl.value;
 };

@@ -25,8 +25,7 @@
 
 function ZmSharePropsDialog(appCtxt, shell, className) {
 	className = className || "ZmSharePropsDialog";
-	var title = ZmMsg.shareProperties;
-	DwtDialog.call(this, shell, className, title);
+	DwtDialog.call(this, shell, className, ZmMsg.shareProperties);
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 	
 	this._appCtxt = appCtxt;
@@ -44,11 +43,12 @@ function ZmSharePropsDialog(appCtxt, shell, className) {
 	}
 	
 	// set view
-	var view = this._createView();
-	this.setView(view);
-}
+	this.setView(this._createView());
+};
+
 ZmSharePropsDialog.prototype = new DwtDialog;
 ZmSharePropsDialog.prototype.constructor = ZmSharePropsDialog;
+
 
 // Constants
 
@@ -56,35 +56,26 @@ ZmSharePropsDialog.NEW = ZmShareInfo.NEW;
 ZmSharePropsDialog.EDIT= ZmShareInfo.EDIT;
 
 // Data
-
 ZmSharePropsDialog.prototype._dialogType = ZmSharePropsDialog.NEW;
 
-ZmSharePropsDialog.prototype._folder;
-ZmSharePropsDialog.prototype._shareInfo;
-
-ZmSharePropsDialog.prototype._nameEl;
-ZmSharePropsDialog.prototype._typeEl;
-ZmSharePropsDialog.prototype._inputEl;
-ZmSharePropsDialog.prototype._granteeEl;
-
-ZmSharePropsDialog.prototype._noneRadioEl;
-ZmSharePropsDialog.prototype._viewerRadioEl;
-ZmSharePropsDialog.prototype._managerRadioEl;
-
-ZmSharePropsDialog.prototype._reply;
 
 // Public methods
 
-ZmSharePropsDialog.prototype.setDialogType = function(type) {
+ZmSharePropsDialog.prototype.setDialogType =
+function(type) {
 	this._dialogType = type;
 };
-ZmSharePropsDialog.prototype.setFolder = function(folder) {
+
+ZmSharePropsDialog.prototype.setFolder =
+function(folder) {
 	this._folder = folder;
 
 	this._nameEl.innerHTML = AjxStringUtil.htmlEncode(folder.name);
 	this._typeEl.innerHTML = ZmFolderPropsDialog.TYPE_CHOICES[this._folder.type] || ZmMsg.folder;
 };
-ZmSharePropsDialog.prototype.setShareInfo = function(shareInfo) { 
+
+ZmSharePropsDialog.prototype.setShareInfo =
+function(shareInfo) {
 	if (!shareInfo) {
 		shareInfo = new ZmShareInfo;
 		shareInfo.link.perm = ZmShareInfo.ROLE_VIEWER;
@@ -92,7 +83,8 @@ ZmSharePropsDialog.prototype.setShareInfo = function(shareInfo) {
 	this._shareInfo = AjxUtil.createProxy(shareInfo, 1);
 };
 
-ZmSharePropsDialog.prototype.popup = function(loc) {
+ZmSharePropsDialog.prototype.popup =
+function(loc) {
 	this._inputEl.value = "";
 	if (this._dialogType == ZmSharePropsDialog.NEW) {
 		Dwt.setVisible(this._inputEl, true);
@@ -116,12 +108,13 @@ ZmSharePropsDialog.prototype.popup = function(loc) {
 	this._reply.setReplyNote("");
 
 	DwtDialog.prototype.popup.call(this, loc);
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 	if (this._dialogType == ZmSharePropsDialog.NEW) {
 		this._inputEl.focus();
 	}
 };
-ZmSharePropsDialog.prototype.popdown = function() {
+
+ZmSharePropsDialog.prototype.popdown =
+function() {
 	if (this._acAddrSelectList) {
 		this._acAddrSelectList.reset();
 		this._acAddrSelectList.show(false);
@@ -131,7 +124,8 @@ ZmSharePropsDialog.prototype.popdown = function() {
 
 // Protected methods
 
-ZmSharePropsDialog.prototype._handleOkButton = function(event) {
+ZmSharePropsDialog.prototype._handleOkButton =
+function(event) {
 	var folder = this._folder;
 	var share = this._shareInfo;
 
@@ -189,36 +183,27 @@ ZmSharePropsDialog.prototype._handleOkButton = function(event) {
 	this.popdown();
 };
 
-ZmSharePropsDialog.prototype._handleKeyUp = function(event) {
+ZmSharePropsDialog.prototype._handleEdit =
+function(event) {
 	event = event || window.event;
 	var target = DwtUiEvent.getTarget(event);
 
-	var dialog = target._dialog;
-	if (target._onkeyup) {
-		target._onkeyup(event);
-	}
-	return dialog._handleEdit.call(target, event);
-};
-
-ZmSharePropsDialog.prototype._handleEdit = function(event) {
-	event = event || window.event;
-	var target = DwtUiEvent.getTarget(event);
-
-	var dialog = target._dialog;
+	var dialog = Dwt.getObjectFromElement(target);
 	var enabled = AjxStringUtil.trim(dialog._inputEl.value) != "" || dialog._dialogType == ZmSharePropsDialog.EDIT;
-	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, enabled);
-	
+
 	return true;
 };
 
-ZmSharePropsDialog.prototype._getSelectedRole = function() {
+ZmSharePropsDialog.prototype._getSelectedRole =
+function() {
 	if (this._viewerRadioEl.checked) return ZmShareInfo.ROLE_VIEWER;
 	if (this._managerRadioEl.checked) return ZmShareInfo.ROLE_MANAGER;
 	return ZmShareInfo.ROLE_NONE;
 };
 
 /** Note: Caller is responsible to catch exceptions. */
-ZmSharePropsDialog.prototype._executeGrantAction = function(folder, share) {
+ZmSharePropsDialog.prototype._executeGrantAction =
+function(folder, share) {
 	// Note: We need the user's zid from the result
 	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
 	
@@ -234,7 +219,7 @@ ZmSharePropsDialog.prototype._executeGrantAction = function(folder, share) {
 	var resp = this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
 	
 	return resp.FolderActionResponse.action;
-}
+};
 
 ZmSharePropsDialog.prototype._handleCompletionData = 
 function (control, text, element) {
@@ -265,93 +250,91 @@ function(cv, ev) {
 	return new DwtPoint((location.x), (location.y + size.y) );
 };
 
-ZmSharePropsDialog.prototype._createView = function() {
-	this._nameEl = document.createElement("SPAN");
-	
-	this._typeEl = document.createElement("SPAN");
-	
-	this._inputEl = document.createElement("INPUT");
-	this._inputEl.id = Dwt.getNextId();
-	this._inputEl.type = "text";
-	this._inputEl.style.width = "20em";
-	if (this._acAddrSelectList) {
-		this._acAddrSelectList.handle(this._inputEl);
-	}
-	// HACK: need to redirect key up because of auto-complete
-	this._inputEl._dialog = this;
-	this._inputEl._onkeyup = this._inputEl.onkeyup;
-	Dwt.setHandler(this._inputEl, DwtEvent.ONKEYUP, this._handleKeyUp);
-	
-	this._granteeEl = document.createElement("SPAN");
-	
-	var granteeEl = document.createElement("DIV");
-	granteeEl.appendChild(this._inputEl);
-	granteeEl.appendChild(this._granteeEl);
-	
-	var rolesTable = document.createElement("TABLE");
-	rolesTable.border = 0;
-	rolesTable.cellSpacing = 0;
-	rolesTable.cellPadding = 0;
+ZmSharePropsDialog.prototype._createView =
+function() {
+	// add "name/type/share with" sections
+	var nameId = Dwt.getNextId();
+	var typeId = Dwt.getNextId();
+	var inputId = Dwt.getNextId();
+	var granteeId = Dwt.getNextId();
 
+	var html = new Array();
+	var idx = 0;
+
+	html[idx++] = "<table border=0><tr><td>";
+	html[idx++] = ZmMsg.nameLabel;
+	html[idx++] = "</td><td id='";
+	html[idx++] = nameId;
+	html[idx++] = "'></td></tr><tr><td>";
+	html[idx++] = ZmMsg.typeLabel;
+	html[idx++] = "</td><td id='";
+	html[idx++] = typeId;
+	html[idx++] = "'></td></tr><tr><td>";
+	html[idx++] = ZmMsg.shareWithLabel;
+	html[idx++] = "</td><td><input type='text' style='width:20em' id='";
+	html[idx++] = inputId;
+	html[idx++] = "'></td></tr><tr><td id='";
+	html[idx++] = granteeId;
+	html[idx++] = "'></td></tr></table>";
+
+	var view = new DwtComposite(this);
+	var element = view.getHtmlElement();
+	element.innerHTML = html.join("");
+
+	// add role section
 	var roles = [ ZmShareInfo.ROLE_NONE, ZmShareInfo.ROLE_VIEWER, ZmShareInfo.ROLE_MANAGER ];
-	var radios = [ "_noneRadioEl", "_viewerRadioEl", "_managerRadioEl" ];
-	
 	var radioName = this._htmlElId + "_radio";
-	for (var i = 0; i < roles.length; i++) {
+
+	html.length = 0;
+	idx = 0;
+
+	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0>";
+	for (var i=0; i<roles.length; i++) {
 		var perm = roles[i];
-		
-		var row = rolesTable.insertRow(rolesTable.rows.length);
-		row.vAlign = "top";
-		
-		var cell = row.insertCell(row.cells.length);
-		var radio;
-		if (AjxEnv.isIE) {
-			// NOTE: You have to create the element *with* the name in IE
-			//		 because you can't associate the name with the element
-			//		 afterwards.
-			radio = this[radios[i]] = document.createElement("<INPUT name='"+radioName+"'>");
-		}
-		else {
-			radio = this[radios[i]] = document.createElement("INPUT");
-			radio.name = radioName;
-		}
-		radio.type = "radio";
-		radio.value = perm;
-		radio._dialog = this;
-		Dwt.setHandler(radio, DwtEvent.ONCLICK, this._handleEdit);
-		cell.appendChild(radio);
-		
-		var cell = row.insertCell(row.cells.length);
-		cell.style.fontWeight = "bold";
-		cell.style.paddingRight = "0.25em";
-		cell.innerHTML = ZmShareInfo.getRoleName(perm);
 
-		var cell = row.insertCell(row.cells.length);
-		cell.style.whiteSpace = "nowrap";
-		cell.innerHTML = ZmShareInfo.getRoleActions(perm);
+		html[idx++] = "<tr><td valign=top><input type='radio' name='";
+		html[idx++] = radioName;
+		html[idx++] = "' value='";
+		html[idx++] = perm;
+		html[idx++] = "'></td><td style='font-weight:bold; padding-right:0.25em'>";
+		html[idx++] = ZmShareInfo.getRoleName(perm);
+		html[idx++] = "</td><td style='white-space:nowrap'>";
+		html[idx++] = ZmShareInfo.getRoleActions(perm);
+		html[idx++] = "</td></tr>";
 	}
-
-	var view = new DwtComposite(this);	
-
-	var propSheet = new DwtPropertySheet(view);
-	propSheet.addProperty(ZmMsg.nameLabel, this._nameEl);
-	propSheet.addProperty(ZmMsg.typeLabel, this._typeEl);
-	propSheet.addProperty(ZmMsg.shareWithLabel, granteeEl);
+	html[idx++] = "</table>";
 
 	var rolesGroup = new DwtGrouper(view);
 	rolesGroup.setLabel(ZmMsg.roleLabel);
-	rolesGroup.setElement(rolesTable);
-	
-	this._reply = new ZmShareReply(view);
-
-	var element = view.getHtmlElement();
-	element.appendChild(propSheet.getHtmlElement());
+	rolesGroup.setContent(html.join(""));
 	element.appendChild(rolesGroup.getHtmlElement());
+
+	this._reply = new ZmShareReply(view);
 	element.appendChild(this._reply.getHtmlElement());
-	
+
+	// save "name/type/share with" objects
+	this._nameEl = document.getElementById(nameId)
+	this._typeEl = document.getElementById(typeId);
+	this._granteeEl = document.getElementById(granteeId);
+	this._inputEl = document.getElementById(inputId);
+
+	if (this._acAddrSelectList) {
+		this._acAddrSelectList.handle(this._inputEl);
+	}
+
+	// save radio elements
+	var radios = [ "_noneRadioEl", "_viewerRadioEl", "_managerRadioEl" ];
+	var radioEls = document.getElementsByName(radioName);
+	for (var i=0; i<radioEls.length; i++) {
+		this[radios[i]] = radioEls[i];
+		Dwt.setHandler(radioEls[i], DwtEvent.ONCLICK, this._handleEdit);
+		Dwt.associateElementWithObject(radioEls[i], this);
+	}
+
 	return view;
 };
 
-ZmSharePropsDialog.prototype._getSeparatorTemplate = function() {
+ZmSharePropsDialog.prototype._getSeparatorTemplate =
+function() {
 	return "";
 };
