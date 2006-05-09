@@ -153,22 +153,22 @@ function ZmTablePropsDialog(parent) {
 					     new DwtSelectOption("right", false, ZmMsg.right) ]);
 	this._wAlign.reparentHtmlElement(this._idAlign);
 
-	this._wBgColor = new DwtButtonColorPicker(this, null);
+	this._wBgColor = new DwtButtonColorPicker(this, null, null, null, null, null, ZmMsg.auto);
 	this._wBgColor.reparentHtmlElement(this._idBackgroundColor);
 	this._wBgColor.setImage("FontBackground");
 	this._wBgColor.showColorDisplay();
 
-	this._wFgColor = new DwtButtonColorPicker(this, null);
+	this._wFgColor = new DwtButtonColorPicker(this, null, null, null, null, null, ZmMsg.auto);
 	this._wFgColor.reparentHtmlElement(this._idForegroundColor);
 	this._wFgColor.setImage("FontColor");
 	this._wFgColor.showColorDisplay();
 
-	this._wBorderColor = new DwtButtonColorPicker(this, null);
+	this._wBorderColor = new DwtButtonColorPicker(this, null, null, null, null, null, ZmMsg.auto);
 	this._wBorderColor.reparentHtmlElement(this._idBorderColor);
 	this._wBorderColor.setImage("FontBorder");
 	this._wBorderColor.showColorDisplay();
 
-	(this._wBorderStyle = new DwtSelect(this, [ new DwtSelectOption("none", false, ZmMsg.notSet),
+	(this._wBorderStyle = new DwtSelect(this, [ new DwtSelectOption("none", false, ZmMsg.none),
 						    new DwtSelectOption("solid", true, ZmMsg.borderStyleSolid),
 						    new DwtSelectOption("dashed", false, ZmMsg.borderStyleDashed),
 						    new DwtSelectOption("dotted", false, ZmMsg.borderStyleDotted),

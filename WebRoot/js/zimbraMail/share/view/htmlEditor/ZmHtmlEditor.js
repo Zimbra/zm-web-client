@@ -670,25 +670,26 @@ function(parent) {
 
 	/* BEGIN: Table operations */
 
-	b = this._insertTableButton = new DwtButton(tb, null, "TBButton");
-	b.setImage("InsertTable");
-	b.setToolTipContent(ZmMsg.insertTable);
- 	var menu = new DwtMenu(b, DwtMenu.GENERIC_WIDGET_STYLE);
- 	var grid = new DwtGridSizePicker(menu);
- 	grid.addSelectionListener(new AjxListener(this, this._createTableListener));
- 	b.setMenu(menu);
-
 	var tblListener = new AjxListener(this, this._tableOperationsListener);
 
-	b = this._tableOperationsButton = new DwtButton(tb, null, "TBButton");
-	b.setText("Table operations");
+	b = new DwtButton(tb, null, "TBButton");
+	b.setImage("InsertTable");
 	var menu = new DwtMenu(b);
 	b.setMenu(menu);
 
-	var tblCommands = [ "tableProperties...", "cellProperties...", null,
+	var item = new DwtMenuItem(menu);
+	item.setText(ZmMsg.insertTable);
+	var grid_menu = new DwtMenu(item, DwtMenu.GENERIC_WIDGET_STYLE);
+ 	var grid = new DwtGridSizePicker(grid_menu);
+ 	grid.addSelectionListener(new AjxListener(this, this._createTableListener));
+ 	item.setMenu(grid_menu);
+
+	var tblCommands = [ null,
+			    "tableProperties...", "cellProperties...", null,
 			    "insertRow", "deleteRow", "insertColumn", "deleteColumn", null,
 			    "mergeCells", "splitCells", null,
 			    "deleteTable" ];
+	this._tableCmdItems = [];
 	for (var i = 0; i < tblCommands.length; ++i) {
 		var cmd = tblCommands[i];
 		if (cmd == null)
@@ -704,6 +705,7 @@ function(parent) {
 			item.setText(txt + dots);
 			item.setData("TableOperations", cmd);
 			item.addSelectionListener(tblListener);
+			this._tableCmdItems.push(item);
 		}
 	}
 
@@ -977,7 +979,9 @@ function(ev) {
 	this._numberedListButton.setToggled(ev.isOrderedList);
 	this._listButton.setToggled(ev.isUnorderedList);
 
-	this._tableOperationsButton.setEnabled(this.getNearestElement("table"));
+	var table = this.getNearestElement("table");
+	for (var i = 0; i < this._tableCmdItems.length; ++i)
+		this._tableCmdItems[i].setEnabled(!!table);
 
 	if (ev.style)
 		this._styleSelect.setSelectedValue(ev.style);
