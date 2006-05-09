@@ -228,6 +228,11 @@ function(x, y, width, height) {
 	this._sizeChildren(width, height);
 };
 
+ZmContactView.prototype.getTitle = 
+function() {
+	return [ZmMsg.zimbraTitle, ZmMsg.contact].join(": ");
+};
+
 
 // Private / protected methods
 

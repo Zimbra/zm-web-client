@@ -52,6 +52,11 @@ function(msgs) {
 	}
 }
 
+ZmTradView.prototype.getTitle =
+function() {
+	return this._msgListView.getTitle();
+};
+
 ZmTradView.prototype._resetSize = 
 function(newWidth, newHeight) {
 	if (newHeight <= 0)

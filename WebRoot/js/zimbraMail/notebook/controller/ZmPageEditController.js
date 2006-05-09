@@ -196,7 +196,7 @@ function() {
 
 ZmPageEditController.prototype._saveListener =
 function(ev) {
-	var name = this._pageEditView.getTitle();
+	var name = this._pageEditView.getPageName();
 	if (!name || name.replace(/^\s+/,"").replace(/\s+$/,"") == "") {
 		var dialog = this._appCtxt.getMsgDialog();
 		var message = ZmMsg.errorSavingPageNameRequired;

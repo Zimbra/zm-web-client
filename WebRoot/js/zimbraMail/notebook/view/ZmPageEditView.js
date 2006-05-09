@@ -77,6 +77,15 @@ ZmPageEditView.prototype._setResponse = function(page) {
 
 ZmPageEditView.prototype.getTitle =
 function() {
+	var pageName = this.getPageName();
+	if (!pageName || (pageName.length == 0)) {
+		pageName = ZmMsg.newPage;
+	}
+	return [ZmMsg.zimbraTitle, pageName].join(": ");
+};
+
+ZmPageEditView.prototype.getPageName =
+function() {
 	return this._pageNameInput.getValue();
 };
 

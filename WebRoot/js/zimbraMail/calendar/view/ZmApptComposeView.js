@@ -330,6 +330,11 @@ function(attendees, type, mode, index) {
 	}
 };
 
+ZmApptComposeView.prototype.getTitle = 
+function() {
+	return [ZmMsg.zimbraTitle, ZmMsg.appointment].join(": ");
+};
+
 ZmApptComposeView.prototype._getAttendeeKey =
 function(attendee) {
 	var email = attendee.getEmail();

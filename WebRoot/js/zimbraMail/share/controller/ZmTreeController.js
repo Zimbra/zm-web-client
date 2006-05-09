@@ -433,15 +433,18 @@ function(ev, treeView) {
 					((id == ZmFolder.ID_DRAFTS) && (fields && fields[ZmOrganizer.F_TOTAL]))) {
 					var checked = node.getChecked();
 					node.setText(organizer.getName(true));
-					if (fields && fields[ZmOrganizer.F_NAME] && parentNode && (parentNode.getNumChildren() > 1)) {
-						// remove and re-insert the node (if parent has more than one child)
-						node.dispose();
-						var idx = ZmTreeView.getSortIndex(parentNode, organizer, ZmTreeView.COMPARE_FUNC[organizer.type]);
-						treeView._addNew(parentNode, organizer, idx);
-						if (checked) {
-							node = treeView.getTreeItemById(id);
-							node.setChecked(checked);
+					if (fields && fields[ZmOrganizer.F_NAME]) {
+						if (parentNode && (parentNode.getNumChildren() > 1)) {
+							// remove and re-insert the node (if parent has more than one child)
+							node.dispose();
+							var idx = ZmTreeView.getSortIndex(parentNode, organizer, ZmTreeView.COMPARE_FUNC[organizer.type]);
+							treeView._addNew(parentNode, organizer, idx);
+							if (checked) {
+								node = treeView.getTreeItemById(id);
+								node.setChecked(checked);
+							}
 						}
+						this._appCtxt.getAppViewMgr().updateTitle();
 					}
 					if (parentNode)
 						parentNode.setExpanded(true);

@@ -466,6 +466,14 @@ function() {
 	}
 }
 
+/**
+* Shows the current view's title in the title bar.
+*/
+ZmAppViewMgr.prototype.updateTitle = 
+function() {
+	this._setTitle(this._currentView);
+};
+
 // Private methods
 
 // Locates and sizes the given list of components to fit within their containers.

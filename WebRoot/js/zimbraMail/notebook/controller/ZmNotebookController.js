@@ -143,6 +143,7 @@ ZmNotebookController.prototype.switchView = function(view, force) {
 			this._setViewMenu(view);
 		}
 	}
+	Dwt.setTitle(this.getCurrentView().getTitle());
 };
 
 //
