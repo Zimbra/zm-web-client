@@ -56,7 +56,16 @@ ZmContactsApp.prototype._handleResponseLaunch =
 function(callback) {
 	// XXX: hard code app folder name for now...
 	this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue("in:Contacts");
-	this.getContactListController().show(this._contactList, null, ZmOrganizer.ID_ADDRBOOK);
+
+	// get the last selected folder ID
+	var folderId = ZmOrganizer.ID_ADDRBOOK;
+	var treeView = this._appCtxt.getOverviewController().getTreeView(ZmZimbraMail._OVERVIEW_ID, ZmOrganizer.ADDRBOOK);
+	var treeItem = treeView ? treeView.getSelection()[0] : null;
+	if (treeItem) {
+		folderId = treeItem.getData(Dwt.KEY_ID);
+	}
+
+	this.getContactListController().show(this._contactList, null, folderId);
 	if (callback)
 		callback.run();
 };

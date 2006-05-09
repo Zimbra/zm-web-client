@@ -75,6 +75,7 @@ ZmContact.F_email2			= "email2";
 ZmContact.F_email3			= "email3";
 ZmContact.F_fileAs			= "fileAs";
 ZmContact.F_firstName		= "firstName";
+ZmContact.F_folderId        = "folderId";
 ZmContact.F_homeCity		= "homeCity";
 ZmContact.F_homeCountry		= "homeCountry";
 ZmContact.F_homeFax			= "homeFax";
@@ -178,9 +179,6 @@ function(a, b) {
 */
 ZmContact.computeFileAs =
 function(contact) {
-	if (contact && contact[ZmContact.X_fileAs])
-		return contact[ZmContact.X_fileAs];
-
 	var attr = (contact instanceof ZmContact) ? contact.getAttrs() : contact;
 	var val = parseInt(attr.fileAs);
 
@@ -248,9 +246,7 @@ function(contact) {
 			}
 			break;
 	}
-	var fileAs = fa.join("");
-	if (contact && contact.id && !(contact instanceof ZmContact))
-		contact[ZmContact.X_fileAs] = fileAs;
+	return fa.join("");
 
 	return fileAs;
 };
@@ -276,6 +272,16 @@ ZmContact.isInTrash =
 function(contact) {
 	var folderId = (contact instanceof ZmContact) ? contact.folderId : contact.l;
 	return (folderId == ZmFolder.ID_TRASH);
+};
+
+ZmContact.prototype.isEmpty =
+function() {
+	var isEmpty = true;
+	for (var i in this.attr) {
+		isEmpty = false;
+		break;
+	}
+	return isEmpty;
 };
 
 ZmContact.prototype.getAttr =
@@ -331,8 +337,13 @@ function(attr) {
 
 	var soapDoc = AjxSoapDoc.create("CreateContactRequest", "urn:zimbraMail");
 	var cn = soapDoc.set("cn");
+
+	var folderId = attr[ZmContact.F_folderId] || ZmFolder.ID_CONTACTS;
+	cn.setAttribute("l", folderId);
 	
 	for (var name in attr) {
+		if (name == ZmContact.F_folderId)
+			continue;
 		var a = soapDoc.set("a", attr[name], cn);
 		a.setAttribute("n", name);
 	}
@@ -352,7 +363,7 @@ function(attr, result) {
 		this._fullName = null;
 		this.id = id;
 		this.modified = cn.md;
-		this.folderId = ZmOrganizer.ID_ADDRBOOK;
+		this.folderId = cn.l || ZmOrganizer.ID_ADDRBOOK;
 		for (var a in attr) {
 			if (!(attr[a] == undefined || attr[a] == ''))
 				this.setAttr(a, attr[a]);
@@ -384,8 +395,12 @@ function(attr, callback) {
 	soapDoc.getMethod().setAttribute("force", "1");
 	var cn = soapDoc.set("cn");
 	cn.setAttribute("id", this.id);
-	
+
+	// TODO - set new folder ID if applicable (see bug 2085)
+
 	for (var name in attr) {
+		if (name == ZmContact.F_folderId)
+			continue;
 		var a = soapDoc.set("a", attr[name], cn);
 		a.setAttribute("n", name);
 	}		
@@ -393,16 +408,6 @@ function(attr, callback) {
 	var respCallback = new AjxCallback(this, this._handleResponseModify, [attr, callback]);
 	var execFrame = new AjxCallback(this, this.modify, [attr]);
 	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, execFrame:execFrame});
-};
-
-ZmContact.prototype.isEmpty = 
-function() {
-	var isEmpty = true;
-	for (var i in this.attr) {
-		isEmpty = false;
-		break;
-	}
-	return isEmpty;
 };
 
 ZmContact.prototype._handleResponseModify =
@@ -417,8 +422,8 @@ function(attr, callback, result) {
 		var msg = ZmMsg.errorModifyContact + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
 		this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
 	}
-	// NOTE: we no longer process callbacks here since notification handling 
-	//       takes care of everything, ya heard!
+	// NOTE: we no longer process callbacks here since notification handling
+	//       takes care of everything
 };
 
 ZmContact.prototype.notifyModify =

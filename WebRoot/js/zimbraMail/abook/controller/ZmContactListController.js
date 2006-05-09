@@ -82,7 +82,7 @@ function(search, bIsGalSearch, folderId) {
 	this._isGalSearch = bIsGalSearch;
 	this._folderId = folderId;
 	var bForce = false;
-		
+
 	if (search instanceof ZmList) {
 		// show canonical list of contacts
 		this._list = search;
@@ -263,7 +263,6 @@ function(parent, num) {
 	if (!this._isGalSearch) {
 		ZmListController.prototype._resetOperations.call(this, parent, num);
 		parent.enable(ZmOperation.EDIT, num == 1);
-		parent.enable(ZmOperation.MOVE, false);
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
 		parent.enableAll(false);

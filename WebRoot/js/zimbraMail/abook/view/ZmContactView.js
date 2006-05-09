@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.1
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.1 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -45,8 +45,8 @@ ZmContactView.prototype.constructor = ZmContactView;
 ZmContactView.F_contactTitle	= 1;
 ZmContactView.F_contactTags		= 2;
 
-ZmContactView.primaryInfoOne	= [ZmContact.F_lastName, ZmContact.F_firstName, ZmContact.F_middleName];
-ZmContactView.primaryInfoTwo	= [ZmContact.F_jobTitle, ZmContact.F_company, ZmContact.F_fileAs];
+ZmContactView.primaryInfoOne	= [ZmContact.F_lastName, ZmContact.F_firstName, ZmContact.F_middleName, ZmContact.F_fileAs];
+ZmContactView.primaryInfoTwo	= [ZmContact.F_jobTitle, ZmContact.F_company, ZmContact.F_folderId];
 ZmContactView.emailInfo			= [ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
 ZmContactView.workAddrInfo		= [ZmContact.F_workStreet, ZmContact.F_workCity, ZmContact.F_workState, ZmContact.F_workPostalCode, ZmContact.F_workCountry, ZmContact.F_workURL];
 ZmContactView.workPhoneInfo		= [ZmContact.F_workPhone, ZmContact.F_workPhone2, ZmContact.F_workFax, ZmContact.F_assistantPhone, ZmContact.F_companyPhone, ZmContact.F_callbackPhone];
@@ -55,9 +55,9 @@ ZmContactView.homePhoneInfo		= [ZmContact.F_homePhone, ZmContact.F_homePhone2, Z
 ZmContactView.otherAddrInfo		= [ZmContact.F_otherStreet, ZmContact.F_otherCity, ZmContact.F_otherState, ZmContact.F_otherPostalCode, ZmContact.F_otherCountry, ZmContact.F_otherURL];
 ZmContactView.otherPhoneInfo	= [ZmContact.F_otherPhone, ZmContact.F_otherFax];
 
-ZmContactView._selectFields = { 
-	"fileAs": [ 
-		{ name: ZmContact._AB_FILE_AS[ZmContact.FA_LAST_C_FIRST],				selected: true  }, 
+ZmContactView._selectFields = {
+	"fileAs": [
+		{ name: ZmContact._AB_FILE_AS[ZmContact.FA_LAST_C_FIRST],				selected: true  },
 		{ name: ZmContact._AB_FILE_AS[ZmContact.FA_FIRST_LAST], 				selected: false },
 		{ name: ZmContact._AB_FILE_AS[ZmContact.FA_COMPANY],					selected: false },
 		{ name: ZmContact._AB_FILE_AS[ZmContact.FA_LAST_C_FIRST_COMPANY],		selected: false },
@@ -73,8 +73,8 @@ ZmContactView.DIALOG_Y = 100;
 
 
 // Public Methods
-	
-ZmContactView.prototype.toString = 
+
+ZmContactView.prototype.toString =
 function() {
 	return "ZmContactView";
 };
@@ -114,10 +114,10 @@ function(contact, isDirty) {
 	var contentDiv = document.getElementById(this._contentId);
 	Dwt.setVisibility(contentDiv, true);
 	contentDiv.scrollTop = 0; // bug fix #3362
-	
+
 	var lastNameInput = document.getElementById(this._fieldIds[ZmContact.F_lastName]);
 	lastNameInput.focus(); // bug fix #937
-	
+
 	this._isDirty = isDirty || false;
 };
 
@@ -140,7 +140,7 @@ function() {
 
 	// creating new contact (possibly some fields - but not ID - prepopulated)
 	if (this._contact.id == null || this._contact.isGal) {
-		for (var a in this._attr) {		
+		for (var a in this._attr) {
 			// bug fix #2982 - convert fileAs value to a String
 			var val = a == ZmContact.F_fileAs ? ("" + this._attr[a]) : AjxStringUtil.trim(this._attr[a]);
 			if ((val && val.length > 0)) {
@@ -156,11 +156,14 @@ function() {
 				}
 			}
 		}
+
+		// always set the folder Id
+		mods[ZmContact.F_folderId] = this._folderId;
 		// always set the full name for new contacts
 		mods[ZmContact.X_fullName] = fullName;
 	} else {
 		// modifying existing contact
-		for (var a in this._attr) {	
+		for (var a in this._attr) {
 			var val = this._contact.getAttr(a);
 			// do some normalizing
 			if (val && AjxUtil.isString(val)) {
@@ -168,13 +171,17 @@ function() {
 				if (a == ZmContact.F_fileAs)
 					val = parseInt(val);
 			}
-			
+
 			if (this._attr[a] != val) {
 				foundOne = true;
 				mods[a] = this._attr[a];
 				DBG.println(AjxDebug.DBG2, "DIFF: " + a + " = " + mods[a]);
 			}
 		}
+
+		// only set the folder Id if changed
+		if (this._contact.folderId != this._folderId)
+			mods[ZmContact.F_folderId] = this._folderId;
 
 		// only set the full name if changed
 		if (this._contact.getFullName() != fullName)
@@ -184,7 +191,7 @@ function() {
 	return foundOne ? mods : null;
 };
 
-ZmContactView.prototype.enableInputs = 
+ZmContactView.prototype.enableInputs =
 function(bEnable) {
 	for (var i in this._fieldIds) {
 		var field = document.getElementById(this._fieldIds[i]);
@@ -194,28 +201,28 @@ function(bEnable) {
 };
 
 // Following two overrides are a hack to allow this view to pretend it's a list view
-ZmContactView.prototype.getSelection = 
+ZmContactView.prototype.getSelection =
 function() {
 	return this._contact;
 };
 
-ZmContactView.prototype.getSelectionCount = 
+ZmContactView.prototype.getSelectionCount =
 function() {
 	return 1;
 };
 
-ZmContactView.prototype.isDirty = 
+ZmContactView.prototype.isDirty =
 function() {
 	return this._isDirty;
 };
 
-ZmContactView.prototype.setSize = 
+ZmContactView.prototype.setSize =
 function(width, height) {
 	DwtComposite.prototype.setSize.call(this, width, height);
 	this._sizeChildren(width, height);
 };
 
-ZmContactView.prototype.setBounds = 
+ZmContactView.prototype.setBounds =
 function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
 	this._sizeChildren(width, height);
@@ -231,7 +238,7 @@ function() {
 	return new DwtPoint(loc.x + ZmContactView.DIALOG_X, loc.y + ZmContactView.DIALOG_Y);
 };
 
-ZmContactView.prototype._sizeChildren = 
+ZmContactView.prototype._sizeChildren =
 function(width, height) {
 	var contentDiv = document.getElementById(this._contentId);
 	if (contentDiv)
@@ -281,14 +288,26 @@ function(field, html, idx) {
 ZmContactView.prototype._addFileAsRow =
 function(html, idx) {
 	this._fileAsSelectCellId = Dwt.getNextId();
-	html[idx++] = "<tr valign='center'>";
-	html[idx++] = "<td class='editLabel'>" + ZmMsg.fileAs + ":" + "</td>";
-	html[idx++] = "<td id='" + this._fileAsSelectCellId + "'></td>";
-	html[idx++] = "</tr>";
+	html[idx++] = "<tr valign='center'><td class='editLabel'>";
+	html[idx++] = ZmMsg.fileAs;
+	html[idx++] = ":</td><td id='";
+	html[idx++] = this._fileAsSelectCellId;
+	html[idx++] = "'></td></tr>";
 	return idx;
 };
 
-ZmContactView.prototype._addSelectOptions = 
+ZmContactView.prototype._addFolderRow =
+function(html, idx) {
+	this._folderCellId = Dwt.getNextId();
+	html[idx++] = "<tr valign='center'><td class='editLabel'>";
+	html[idx++] = ZmMsg.addressBook;
+	html[idx++] = ":</td><td id='";
+	html[idx++] = this._folderCellId;
+	html[idx++] = "'></td></tr>";
+	return idx;
+};
+
+ZmContactView.prototype._addSelectOptions =
 function() {
 	if (this._fileAsSelectCellId) {
 		// add all the options for file as...
@@ -298,12 +317,17 @@ function() {
 		for (var i in fileAsSelectOptions) {
 			this._fileAsSelect.addOption(fileAsSelectOptions[i].name, fileAsSelectOptions[i].selected, ++count);
 		}
-		var selectCell = document.getElementById(this._fileAsSelectCellId);
-		selectCell.appendChild(this._fileAsSelect.getHtmlElement());
-		
+		this._fileAsSelect.reparentHtmlElement(this._fileAsSelectCellId);
+
 		// add change listener for this select
 		this._fileAsSelect.addChangeListener(new AjxListener(this, this._selectChangeListener));
 		this._fileAsSelect._cv = this; // add back pointer to compose view
+	}
+
+	if (this._folderCellId) {
+		// add all the options for folders user can choose from
+		this._folderSelect = new DwtSelect(this);
+		this._folderSelect.reparentHtmlElement(this._folderCellId);
 	}
 };
 
@@ -320,10 +344,13 @@ function(html, idx, label, colOneInfo, colTwoInfo) {
 	html[idx++] = "<tr><td valign=top>";
 	html[idx++] = "<table cellpadding=0 cellspacing=2 border=0>";
 	for (var i=0; i<colOneInfo.length; i++) {
-		if (colOneInfo[i] == ZmContact.F_workStreet || 
-			colOneInfo[i] == ZmContact.F_homeStreet || 
+		if (colOneInfo[i] == ZmContact.F_workStreet ||
+			colOneInfo[i] == ZmContact.F_homeStreet ||
 			colOneInfo[i] == ZmContact.F_otherStreet) {
 			idx = this._addStreetRow(colOneInfo[i], html, idx);
+		} else if (colOneInfo[i] == ZmContact.F_fileAs) {
+			if (!this._isReadOnly)
+				idx = this._addFileAsRow(html, idx);
 		} else {
 			idx = this._addEntryRow(colOneInfo[i], html, idx);
 		}
@@ -336,9 +363,9 @@ function(html, idx, label, colOneInfo, colTwoInfo) {
 		html[idx++] = "<td valign=top>";
 		html[idx++] = "<table cellpadding=0 cellspacing=2 border=0>";
 		for (var i=0; i<colTwoInfo.length; i++) {
-			if (colTwoInfo[i] == ZmContact.F_fileAs) {
+			if (colTwoInfo[i] == ZmContact.F_folderId) {
 				if (!this._isReadOnly)
-					idx = this._addFileAsRow(html, idx);
+					idx = this._addFolderRow(html, idx);
 			} else {
 				idx = this._addEntryRow(colTwoInfo[i], html, idx);
 			}
@@ -346,8 +373,8 @@ function(html, idx, label, colOneInfo, colTwoInfo) {
 		html[idx++] = "</table>";
 		html[idx++] = "</td>";
 	}
-	html[idx++] = "</tr>";	
-	
+	html[idx++] = "</tr>";
+
 	return idx;
 };
 
@@ -372,14 +399,14 @@ function(html, idx) {
 	return idx;
 };
 
-ZmContactView.prototype._installOnKeyUpHandler = 
+ZmContactView.prototype._installOnKeyUpHandler =
 function(field) {
 	var e = document.getElementById(this._fieldIds[field]);
 	if (e) {
 		// only add onkeyup handlers to input/textarea's
 		var tagName = e.tagName.toLowerCase();
 		if (tagName == "input" || tagName == "textarea") {
-			Dwt.setHandler(e, DwtEvent.ONKEYUP, ZmContactView._onKeyUp); 
+			Dwt.setHandler(e, DwtEvent.ONKEYUP, ZmContactView._onKeyUp);
 			// TODO circular reference
 			e._view = this;
 			e._field = field;
@@ -422,8 +449,14 @@ function() {
 
 	// set primary info (minus fileas)
 	var primaryInfo = ZmContactView.primaryInfoOne.concat(ZmContactView.primaryInfoTwo);
-	for (var i=0; i<primaryInfo.length-1; i++)
-		this._setValue(primaryInfo[i]);
+	for (var i=0; i<primaryInfo.length; i++) {
+		if (primaryInfo[i] == ZmContact.F_fileAs)
+			continue;
+		if (primaryInfo[i] == ZmContact.F_folderId)
+			this._folderId = this._contact.folderId;
+		else
+			this._setValue(primaryInfo[i]);
+	}
 
 	// set email info
 	for (var i=0; i<ZmContactView.emailInfo.length; i++)
@@ -466,6 +499,26 @@ function() {
 		this._fileAsSelect.setSelectedValue(1);
 	}
 
+	// set folder
+	// TODO - enable/disable DwtSelect based on read/write privileges for shared address books
+	var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
+	var match = this._contact.folderId;
+	if (this._contact.id == null) {
+		var treeView = this._appCtxt.getOverviewController().getTreeView(ZmZimbraMail._OVERVIEW_ID, ZmOrganizer.ADDRBOOK);
+		var treeItem = treeView ? treeView.getSelection()[0] : null;
+		if (treeItem)
+			match = treeItem.getData(Dwt.KEY_ID);
+	}
+	// TODO - for now, always re-populate folders DwtSelect
+	this._folderSelect.clearOptions();
+	for (var i = 0; i < folders.length; i++) {
+		var folder = folders[i];
+		// TODO - ignore folders that are read only!
+		if (folder.id == ZmFolder.ID_ROOT || folder.id == ZmFolder.ID_TRASH)
+			continue;
+		this._folderSelect.addOption(folder.name, folder.id == match, folder.id);
+	}
+
 	// set notes
 	this._setValue(ZmContact.F_notes);
 };
@@ -474,8 +527,14 @@ ZmContactView.prototype._getFields =
 function() {
 	// get primary info (minus fileas)
 	var primaryInfo = ZmContactView.primaryInfoOne.concat(ZmContactView.primaryInfoTwo);
-	for (var i=0; i<primaryInfo.length-1; i++)
-		this._getValue(primaryInfo[i]);
+	for (var i=0; i<primaryInfo.length; i++) {
+		if (primaryInfo[i] == ZmContact.F_fileAs)
+			continue;
+		if (primaryInfo[i] == ZmContact.F_folderId)
+			this._folderId = this._folderSelect.getValue();
+		else
+			this._getValue(primaryInfo[i]);
+	}
 
 	// get email info
 	for (var i=0; i<ZmContactView.emailInfo.length; i++)
@@ -513,16 +572,16 @@ ZmContactView.prototype._createHtml =
 function(contact) {
 	if (!this._isReadOnly) {
 		this._fieldIds = new Object();
-	
+
 		var titleId = Dwt.getNextId();
 		this._fieldIds[ZmContactView.F_contactTitle] = titleId;
-	
+
 		var tagsId = Dwt.getNextId();
 		this._fieldIds[ZmContactView.F_contactTags] = tagsId;
-		
+
 		this._contactHeaderId = Dwt.getNextId();
 	}
-	
+
 	var idx = 0;
 	var html = new Array(50);
 
@@ -548,7 +607,7 @@ function(contact) {
 	}
 	html[idx++] = "</tr></table>";
 
-	// Primary contact info	
+	// Primary contact info
 	html[idx++] = "<div style='overflow:auto;'";
 	if (!this._isReadOnly) {
 		this._contentId = Dwt.getNextId();
@@ -573,7 +632,7 @@ function(contact) {
 
 	if (this._isReadOnly) return;			// dont bother w/ rest if read only
 
-	this._addSelectOptions(); 				// add DwtSelect's	
+	this._addSelectOptions(); 				// add DwtSelect's
 
 	for (var i in this._fieldIds) 			// add onKeyUp handlers
 		this._installOnKeyUpHandler(i);
@@ -592,12 +651,12 @@ function(ev) {
 		this._setTags(this._contact);
 };
 
-ZmContactView.prototype._selectChangeListener = 
+ZmContactView.prototype._selectChangeListener =
 function(ev) {
 	var selectObj = ev._args.selectObj;
 	var newValue = ev._args.newValue;
 	var cv = selectObj ? selectObj._cv : null;
-	
+
 	if (cv) {
 		if (selectObj == this._fileAsSelect) {
 			cv._attr[ZmContact.F_fileAs] = newValue;
@@ -616,7 +675,7 @@ function(ev) {
 	var e = DwtUiEvent.getTarget(ev);
 	if (e) {
 		e._view._isDirty = true;
-		
+
 		if (e._field == ZmContact.F_firstName ||
 		  	e._field == ZmContact.F_lastName ||
 			e._field == ZmContact.F_company)
@@ -628,7 +687,7 @@ function(ev) {
 	return true;
 };
 
-ZmContactView.getPrintHtml = 
+ZmContactView.getPrintHtml =
 function(contact, abridged, appCtxt) {
 
 	contact = contact.list._realizeContact(contact); // make sure it's a real ZmContact
@@ -647,7 +706,7 @@ function(contact, abridged, appCtxt) {
 		html[idx++] = "<td style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>";
 		html[idx++] = contact.getFullName();
 		html[idx++] = "</td></tr>";
-		
+
 		for (var i = 0; i < fields.length; i++) {
 			var value = AjxStringUtil.htmlEncode(contact.getAttr(fields[i]));
 			if (value) {
@@ -666,14 +725,14 @@ function(contact, abridged, appCtxt) {
 		printView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 		printView.zShow(false);
 		printView.set(contact);
-		
+
 		html[idx++] = "<div class='ZmContactView'>";
 		html[idx++] = printView.getHtmlElement().innerHTML;
 		html[idx++] = "</div>";
-		
+
 		// cleanup
 		cc._container.getHtmlElement().removeChild(printView.getHtmlElement());
 	}
-	
+
 	return html.join("");
 };

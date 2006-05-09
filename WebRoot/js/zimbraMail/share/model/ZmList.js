@@ -428,21 +428,8 @@ function(items, hardDelete, attrs) {
 * @param mods			hash of new properties
 */
 ZmList.prototype.modifyItem =
-function(item, mods) {
-	var respCallback = new AjxCallback(this, this._handleResponseModifyItem, [item]);
-	item.modify(mods, respCallback);
-};
-
-ZmList.prototype._handleResponseModifyItem =
-function(item, result) {
-	var details = result.getResponse();
-	if (details) {
-		// notify item and its list
-		item._notify(ZmEvent.E_MODIFY, details);
-		details.items = [item];
-		this._notify(ZmEvent.E_MODIFY, details);
-		this.modifyLocal(item, details);
-	}
+function(item, mods, callback) {
+	item.modify(mods, callback);
 };
 
 // Notification handling
