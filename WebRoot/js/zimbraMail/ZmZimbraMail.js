@@ -469,10 +469,7 @@ function(params) {
 		var response = command.invoke(cmdParams);
 		command.state = ZmZimbraMail._SENT;
 	} catch (ex) {
-		if (params.asyncMode)
-			this._handleResponseSendRequest(params, new ZmCsfeResult(ex, true));
-		else
-			throw ex;
+		this._handleResponseSendRequest(params, new ZmCsfeResult(ex, true));
 	}
 	if (!params.asyncMode)
 		return this._handleResponseSendRequest(params, response);
@@ -507,24 +504,14 @@ function(params, result) {
 		} else {
 			this._handleException(ex, params.execFrame);
 		}
+		this._handleHeader(result.getHeader());
 		return;
 	}
 	if (params.asyncMode) {
 		result.set(response.Body);
 	}
 	
-	var hdr = response.Header;
-
-	// update change token if we got one
-	if (hdr && hdr.context && hdr.context.change) {
-		this._changeToken = hdr.context.change.token;
-	}
-	
-	// refresh block causes the overview panel to get updated
-	if (hdr && hdr.context && hdr.context.refresh) {
-		var resetTree = this._refreshHandler(hdr.context.refresh);
-		this._checkOverviewLayout(false, resetTree);
-	}
+	this._handleHeader(response.Header);
 
 	// start poll timer if we didn't get an exception
 	if (this._pollInterval)
@@ -532,29 +519,6 @@ function(params, result) {
 
 	this._clearPendingRequest(params.reqId);
 
-	// Handle notifications, then run the callback. Many callbacks take the SOAP
-	// response data and update the model. If we run into scenarios where that needs
-	// to happen before notifications are handled, then we may need to split the
-	// callback into two routines, one to handle the SOAP response, and one to do 
-	// everything else. In general, it always makes sense to run the callback last.
-	// That's especially important if the callback invokes another request, since if
-	// the callback were run before notifications, you'd end up with a stack of
-	// notifications running in inverted order.
-	if (hdr && hdr.context && hdr.context.notify) {
-        for(i = 0; i < hdr.context.notify.length; i++) {
-        	var notify = hdr.context.notify[i];
-        	var seq = notify.seq;
-            // BUG?  What if the array isn't in sequence-order?  We would miss some notifications. Can that happen?  
-            if (notify.seq > this._highestNotifySeen) {
-                DBG.println(AjxDebug.DBG1, "Handling notification[" + i + "] seq=" + seq);
-                this._highestNotifySeen = seq;
-                this._notifyHandler(notify);
-            } else {
-            	DBG.println(AjxDebug.DBG1, "SKIPPING notification[" + i + "] seq=" + seq + " highestNotifySeen=" + this._highestNotifySeen);
-	      	}
-    	}        
-	}
-	
 	if (params.asyncMode && params.callback) {
 		params.callback.run(result);
 	}
@@ -584,6 +548,55 @@ ZmZimbraMail.prototype._clearPendingRequest =
 function(reqId) {
 	if (this._pendingRequests[reqId])
 		delete this._pendingRequests[reqId];
+};
+
+/**
+ * Processes the SOAP header that comes with a response. It updates the
+ * change token, processes a <refresh> block if there is one (that happens
+ * when a new session is created on the server), and handles notifications.
+ * 
+ * @param hdr	[object]	a SOAP header
+ */
+ZmZimbraMail.prototype._handleHeader =
+function(hdr) {
+	if (!hdr) {
+		return;
+	}
+
+	// update change token if we got one
+	if (hdr && hdr.context && hdr.context.change) {
+		this._changeToken = hdr.context.change.token;
+	}
+	
+	// refresh block causes the overview panel to get updated
+	if (hdr && hdr.context && hdr.context.refresh) {
+		var resetTree = this._refreshHandler(hdr.context.refresh);
+		this._checkOverviewLayout(false, resetTree);
+	}
+
+	// Handle notifications, then run the callback. Many callbacks take the SOAP
+	// response data and update the model. If we run into scenarios where that needs
+	// to happen before notifications are handled, then we may need to split the
+	// callback into two routines, one to handle the SOAP response, and one to do 
+	// everything else. In general, it always makes sense to run the callback last.
+	// That's especially important if the callback invokes another request, since if
+	// the callback were run before notifications, you'd end up with a stack of
+	// notifications running in inverted order.
+	if (hdr && hdr.context && hdr.context.notify) {
+        for(i = 0; i < hdr.context.notify.length; i++) {
+        	var notify = hdr.context.notify[i];
+        	var seq = notify.seq;
+            // BUG?  What if the array isn't in sequence-order?  We would miss some notifications. Can that happen?  
+            if (notify.seq > this._highestNotifySeen) {
+                DBG.println(AjxDebug.DBG1, "Handling notification[" + i + "] seq=" + seq);
+                this._highestNotifySeen = seq;
+                this._notifyHandler(notify);
+            } else {
+            	DBG.println(AjxDebug.DBG1, "SKIPPING notification[" + i + "] seq=" + seq + " highestNotifySeen=" + this._highestNotifySeen);
+	      	}
+    	}        
+	}
+	
 };
 
 /**
