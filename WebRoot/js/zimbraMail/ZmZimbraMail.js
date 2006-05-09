@@ -570,6 +570,7 @@ function(hdr) {
 	
 	// refresh block causes the overview panel to get updated
 	if (hdr && hdr.context && hdr.context.refresh) {
+		this._highestNotifySeen = 0;
 		var resetTree = this._refreshHandler(hdr.context.refresh);
 		this._checkOverviewLayout(false, resetTree);
 	}
