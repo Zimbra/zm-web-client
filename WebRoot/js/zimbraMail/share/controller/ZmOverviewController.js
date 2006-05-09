@@ -148,9 +148,13 @@ function(overviewId, treeIds, omit, reset) {
 		for (var i = 0; i < curTreeIds.length; i++) {
 			var treeId = curTreeIds[i];
 			var treeView = this.getTreeView(overviewId, treeId);
-			if (treeView && !(reset && reset[treeId])) {
-				// remember to preserve a ref to the element so we can add it later
-				overview.removeChild(treeView, true);
+			if (treeView) {
+				if (reset && reset[treeId]) {
+					this.getTreeController(treeId).clearTreeView(overviewId);
+				} else {
+					// preserve a ref to the element so we can add it back later
+					overview.removeChild(treeView, true);
+				}
 			}
 		}
 	}
