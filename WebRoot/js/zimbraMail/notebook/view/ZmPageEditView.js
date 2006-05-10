@@ -61,17 +61,48 @@ function(page) {
 	page.getContent(callback);
 };
 ZmPageEditView.prototype._setResponse = function(page) {
-	var content = "{{PATH format='template'}}";
-	content = ZmWikletProcessor.process(this._appCtxt, page, content);
+	// set location
+	var appCtxt = this._appCtxt;
+	var tree = appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+
+	var content;
+	if (page.folderId == ZmFolder.ID_ROOT) {
+		content = tree.getById(page.folderId).name;
+	}
+	else {
+		var iconAndName = "<td><wiklet class='ICON' /></td><td><wiklet class='NAME' /></td>";
+		var separator = "<td>&nbsp;&raquo;&nbsp;</td>";
+
+		var a = [ ];
+
+		var folderId = page.folderId;
+		while (folderId != ZmFolder.ID_ROOT) {
+			var notebook = tree.getById(folderId);
+			a.unshift(ZmWikletProcessor.process(appCtxt, notebook, iconAndName));
+			folderId = notebook.parent.id;
+			if (folderId != ZmFolder.ID_ROOT) {
+				a.unshift(separator);
+			}
+		}
+
+		a.unshift("<table border=0 cellpadding=0 cellspacing=3><tr>");
+		a.push("</tr></table>");
+
+		content = a.join("");
+	}
+
 	this._locationEl.innerHTML = content;
 
+	// set name
 	var name = page.name || "";
 	this._pageNameInput.setValue(name);
 	this._pageNameInput.setEnabled(!name);
 
+	// set content
 	var content = page.getContent() || "";
 	this.setContent(content);
-	
+
+	// set focus
 	this.focus();
 };
 
@@ -269,90 +300,74 @@ ZmPageEditor.prototype.getContent = function() {
 // Protected methods
 
 ZmPageEditor.prototype._serializeWiklets = function() {
-	var elems = this._getIframeDoc().getElementsByTagName("INPUT");
+	var elems = this._getIframeDoc().getElementsByTagName("BUTTON");
 	// NOTE: We go backwards because the collection is "live"
 	for (var i = elems.length - 1; i >= 0; i--) {
 		var elem = elems[i];
 		var name = elem.getAttribute("wikname");
 		var wiklet = ZmWiklet.getWikletByName(name);
 
-		var a = [ "{{", name ];
-		if (wiklet.type == ZmWiklet.SINGLE_VALUE) {
-			a.push(" ", elem.getAttribute("wikparam_value"));
-		}
-		else if (wiklet.type == ZmWiklet.PARAMETERIZED) {
-			var attrs = elem.attributes;
-			for (var j = 0; j < attrs.length; j++) {
-				var attr = attrs[j];
-				if (attr.nodeName.match(/^wikparam_/)) {
-					var aname = attr.nodeName.substr(9);
-					var avalue = attr.nodeValue.replace(/"/g,"");
-					if (avalue == "") continue;
-					a.push(" ", aname, "=\"", avalue, "\"");
-				}
-			}
-		}
-		a.push("}}");
+		var wikletEl = document.createElement("WIKLET");
+		wikletEl.setAttribute("class", name);
+		var attrs = elem.attributes;
+        for (var j = 0; j < attrs.length; j++) {
+            var attr = attrs[j];
+			var aname = attr.nodeName;
+			if (!aname.match(/^wikparam_/)) continue;
 
-		var text = document.createTextNode(a.join(""));
-		elem.parentNode.replaceChild(text, elem);
+			var avalue = attr.nodeValue.replace(/"/g,"");
+			if (avalue == "") continue;
+
+			wikletEl.setAttribute(aname.substr(9), avalue);
+  		}
+
+		elem.parentNode.replaceChild(wikletEl, elem);
 	}
 };
+
 ZmPageEditor.prototype._deserializeWiklets = function(node) {
-	for (var child = node.firstChild; child; child = child.nextSibling) {
-		if (child.nodeType == AjxUtil.ELEMENT_NODE) {
-			this._deserializeWiklets(child);
+	var wikletEls = node.getElementsByTagName("WIKLET");
+	for (var i = wikletEls.length - 1; i >= 0; i--) {
+		var wikletEl = wikletEls[i];
+		var wiklet = ZmWiklet.getWikletByName(wikletEl.className);
+		if (!wiklet) continue;
+
+		var value = [];
+		var params = {};
+		for (var j = wikletEl.attributes.length - 1; j >= 0; j--) {
+			var attr = wikletEl.attributes[j];
+			var aname = attr.nodeName;
+			var avalue = attr.nodeValue;
+
+			value.push(aname,"=\"",avalue.replace(/"/g,"&quot;"),"\" ");
+			params[aname] = avalue;
 		}
-		else if (child.nodeType == AjxUtil.TEXT_NODE) {
-			var regex = /(?=^|[^\\])\{\{\s*(.+?)(?:\s+(.*?))?\s*\}\}/g;
-			var m;
-			while ((m = regex.exec(child.nodeValue))) {
-				var wiklet = ZmWiklet.getWikletByName(m[1]);
-				if (!wiklet) continue;
-				
-				child = child.splitText(m.index);
-				child = child.splitText(m[0].length);
 
-				var value = m[2] || "";
-				var params = ZmWikletProcessor.__parseValueAsParams(m[2]);
-				var button = this._createWikletButton(wiklet, value, params);
-				child.parentNode.replaceChild(button, child.previousSibling);
+		var button = this._createWikletButton(wiklet, value, params);
+		wikletEl.parentNode.replaceChild(button, wikletEl);
+	}
+};
 
-				regex.startIndex = 0;
+ZmPageEditor.prototype._createWikletButton = function(wiklet, value, params) {
+	var button = document.createElement("BUTTON");
+	button.setAttribute("wikname", wiklet.name);
+	button.innerHTML = wiklet.label || wiklet.name;
+	if (wiklet.paramdefs) {
+		button.title = ZmMsg.wikletConfigureParams;
+		if (params) {
+			for (var pname in params) {
+				button.setAttribute("wikparam_"+pname, params[pname] || "");
+			}
+		}
+		else {
+			for (var pname in wiklet.paramdefs) {
+				button.setAttribute("wikparam_"+pname, wiklet.paramdefs[pname].value || "");
 			}
 		}
 	}
-};
-ZmPageEditor.prototype._createWikletButton = function(wiklet, value, params) {
-	var button = document.createElement("INPUT");
-	button.type = "submit";
-	button.value = wiklet.label || wiklet.name;
-	button.setAttribute("wikname", wiklet.name);
-	switch (wiklet.type) {
-		case ZmWiklet.SINGLE_VALUE: {
-			button.title = ZmMsg.wikletConfigureValue;
-			var paramdef = wiklet.paramdefs && wiklet.paramdefs["value"];
-			button.setAttribute("wikparam_value", value || paramdef.value || "");
-			break;
-		}
-		case ZmWiklet.PARAMETERIZED: {
-			button.title = ZmMsg.wikletConfigureParams;
-			if (params) {
-				for (var pname in params) {
-					button.setAttribute("wikparam_"+pname, params[pname] || "");
-				}
-			}
-			else {
-				for (var pname in wiklet.paramdefs) {
-					button.setAttribute("wikparam_"+pname, wiklet.paramdefs[pname].value || "");
-				}
-			}
-			break;
-		}
-		default: {
-			button.title = ZmMsg.wikletConfigureNone;
-			//button.disabled = true;
-		}
+	else {
+		button.title = ZmMsg.wikletConfigureNone;
+		//button.disabled = true;
 	}
 	button.onclick = ZmPageEditor._wikletButtonHandler;
 	return button;
@@ -426,30 +441,29 @@ ZmPageEditor.prototype._wikiToolBarListener = function(event) {
 	var name = event.item.getData("wiklet");
 	var wiklet = ZmWiklet.getWikletByName(name);
 	var button = this._createWikletButton(wiklet);
+
+	this.focus();
 	this._insertNodeAtSelection(button);
+
+	ZmPageEditor._wikletPressButton(button);
 };
+
 ZmPageEditor._wikletButtonHandler = function(event) {
-	var target = DwtUiEvent.getTarget(event);
-	var name = target.getAttribute("wikname");
+	var button = DwtUiEvent.getTarget(event);
+	ZmPageEditor._wikletPressButton(button);
+};
+
+ZmPageEditor._wikletPressButton = function(button) {
+	var name = button.getAttribute("wikname");
 	var wiklet = ZmWiklet.getWikletByName(name);
-	if (!wiklet || !wiklet.type) {
-		return;
-	}
+	if (!wiklet) return;
 	
 	var schema = [];
-	if (wiklet.type == ZmWiklet.SINGLE_VALUE) {
-		var proxy = AjxUtil.createProxy(wiklet.paramdefs["value"]);
-		var attr = target.getAttributeNode("wikparam_value");
-		proxy.value =  attr != null ? attr.nodeValue : (proxy.value || "");
+	for (var pname in wiklet.paramdefs) {
+		var attr = button.attributes[pname];
+		var proxy = AjxUtil.createProxy(wiklet.paramdefs[pname]);
+		proxy.value = attr ? attr.nodeValue : (proxy.value || "");
 		schema.push(proxy);
-	}
-	else if (wiklet.type == ZmWiklet.PARAMETERIZED) {
-		for (var pname in wiklet.paramdefs) {
-			var attr = target.attributes["wikparam_"+pname];
-			var proxy = AjxUtil.createProxy(wiklet.paramdefs[pname]);
-			proxy.value = attr ? attr.nodeValue : (proxy.value || "");
-			schema.push(proxy);
-		}
 	}
 	if (schema.length == 0) {
 		return;
@@ -461,23 +475,25 @@ ZmPageEditor._wikletButtonHandler = function(event) {
 	propEditor.initProperties(schema);
 	dialog.setView(propEditor);
 
-	var args = [dialog, propEditor, target, schema];
+	var args = [dialog, propEditor, button, schema];
 	var listener = new AjxListener(null, ZmPageEditor._wikletParamListener, args);
 	dialog.setButtonListener(DwtDialog.OK_BUTTON, listener);
 	dialog.popup();
+
+	return false;
 };
 
 ZmPageEditor._wikletParamListener = 
 function(dialog, editor, wikletEl, schema) {
 	var props = editor.getProperties();
 	for (var pname in props) {
-		var aname = "wikparam_"+pname;
+		var aname = pname;
 		var avalue = props[pname];
 		if (avalue === "") {
-			wikletEl.removeAttribute(aname);
+			wikletEl.removeAttribute("wikparam_"+aname);
 		}
 		else {
-			wikletEl.setAttribute(aname, avalue);
+			wikletEl.setAttribute("wikparam_"+aname, avalue);
 		}
 	}
 	dialog.popdown();

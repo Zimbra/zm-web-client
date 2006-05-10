@@ -31,10 +31,6 @@ function ZmNotebookPageView(parent, appCtxt, controller) {
 
 	this._createHtml();	
 	this._setMouseEventHdlrs(); // needed by object manager
-	
-	this._commentRe = /<!--.*?-->/g;
-	this._transclusionRe = /(?=^|[^\\])\{\{\s*(.+?)\s*(?:\|\s*(.*?))?\s*\}\}/g;
-	
 }
 ZmNotebookPageView.prototype = new DwtComposite;
 ZmNotebookPageView.prototype.constructor = ZmNotebookPageView;
@@ -71,7 +67,7 @@ function(page) {
 	var content = chromeContent;
 	if (page.name != ZmNotebook.PAGE_CHROME) {
 		var pageContent = page.getContent();
-		content = chromeContent.replace(/\{\{CONTENT\}\}/ig, pageContent);
+		content = chromeContent.replace(ZmWiklet.RE_CONTENT, pageContent);
 	}
 	content = ZmWikletProcessor.process(this._appCtxt, page, content);
 
@@ -116,5 +112,8 @@ ZmNotebookPageView.prototype._findObjects = function(element) {
 		this._objectMgr.sortHandlers();
 	}
 	this._objectMgr.reset();
-	this._objectMgr.processHtmlNode(element, true);
+
+	var discard = null;
+	var ignore = "nolink";
+	this._objectMgr.processHtmlNode(element, true, discard, ignore);
 };

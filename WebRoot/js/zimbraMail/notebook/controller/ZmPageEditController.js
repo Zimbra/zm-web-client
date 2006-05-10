@@ -131,9 +131,11 @@ function(view) {
 	var menu = new ZmPopupMenu(button);
 	var items = [
 		{ op: ZmOperation.FORMAT_RICH_TEXT, format: ZmPageEditor.RICH_TEXT },
-		{ op: ZmOperation.FORMAT_HTML_SOURCE, format: ZmPageEditor.HTML_SOURCE },
+		{ op: ZmOperation.FORMAT_HTML_SOURCE, format: ZmPageEditor.HTML_SOURCE }
+		/*** REVISIT: These will be exposed later.
 		{ op: ZmOperation.FORMAT_MEDIA_WIKI, format: ZmPageEditor.MEDIA_WIKI },
 		{ op: ZmOperation.FORMAT_TWIKI, format: ZmPageEditor.TWIKI }
+		/***/
 	];
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];

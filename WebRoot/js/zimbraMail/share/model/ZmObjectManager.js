@@ -345,8 +345,15 @@ function(content, type) {
 // even be here since (1) they belong in the <head> and (2) are discarded on
 // the server-side, but we check, just in case..).
 ZmObjectManager.prototype.processHtmlNode =
-function(node, handlers) {
+function(node, handlers, discard, ignore) {
 	handlers = handlers != null ? handlers : true;
+	discard = discard || [ "SCRIPT", "LINK", "OBJECT", "STYLE", "APPLET", "IFRAME" ];
+	discard = discard instanceof Array ? discard : [ discard ];
+	var discardRe = new RegExp("^("+discard.join("|")+")$");
+
+	ignore = ignore ? (ignore instanceof Array ? ignore : [ ignore ]) : null;
+	var ignoreRe = ignore ? new RegExp("^("+ignore.join("|")+")$") : null;
+
 	var tmp, i, val;
 	switch (node.nodeType) {
 	    case 1:	// ELEMENT_NODE
@@ -377,9 +384,19 @@ function(node, handlers) {
 				return tmp.nextSibling;	// move on
 			}
 			handlers = false;
-		} else if (/^(script|link|object|iframe|applet)$/.test(tmp)) {
+		}
+		else if (discardRe.test(tmp)) {
 			tmp = node.nextSibling;
 			node.parentNode.removeChild(node);
+			return tmp;
+		}
+		else if (ignoreRe && ignoreRe.test(tmp)) {
+			tmp = node.nextSibling;
+			var fragment = document.createDocumentFragment();
+			for (var child = node.firstChild; child; child = child.nextSibling) {
+				fragment.appendChild(child);
+			}
+			node.parentNode.replaceChild(fragment, node);
 			return tmp;
 		}
 		else if (tmp == "style") {

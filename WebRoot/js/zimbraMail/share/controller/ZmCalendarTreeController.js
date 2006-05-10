@@ -37,7 +37,6 @@ function ZmCalendarTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
 	this._listeners[ZmOperation.MOUNT_CALENDAR] = new AjxListener(this, this._mountCalListener);
 	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editPropsListener);
-	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 
 	this._eventMgrs = {};
 };
@@ -275,6 +274,18 @@ function(ev) {
 	folderPropsDialog.setFolder(folder);
 	folderPropsDialog.popup();
 };
+
+ZmCalendarTreeController.prototype._deleteListener = function(ev) {
+	var organizer = this._getActionedOrganizer(ev);
+	var callback = new AjxCallback(this, this._deleteListener2, [ organizer ]);
+	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteCalendar, organizer.name);
+
+	var dialog = this._appCtxt.getConfirmationDialog();
+	dialog.popup(message, callback);
+};
+ZmCalendarTreeController.prototype._deleteListener2 = function(organizer) {
+	this._doDelete(organizer);
+}
 
 /*
 * Called when a "New Calendar" dialog is submitted. This override is necessary because we

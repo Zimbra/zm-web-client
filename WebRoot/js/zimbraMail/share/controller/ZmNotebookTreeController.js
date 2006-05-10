@@ -33,7 +33,6 @@ function ZmNotebookTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.NEW_NOTEBOOK] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_NOTEBOOK] = new AjxListener(this, this._shareNotebookListener);
 	this._listeners[ZmOperation.MOUNT_NOTEBOOK] = new AjxListener(this, this._mountNotebookListener);
-	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editPropsListener);
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME] = new AjxListener(this, this._editNotebookListener);
@@ -254,6 +253,18 @@ ZmNotebookTreeController.prototype._editNotebookListener = function(ev) {
 	var page = cache.getPageByName(notebook.id, name, true);
 	pageEditController.show(page);
 };
+
+ZmNotebookTreeController.prototype._deleteListener = function(ev) {
+	var organizer = this._getActionedOrganizer(ev);
+	var callback = new AjxCallback(this, this._deleteListener2, [ organizer ]);
+	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteNotebook, organizer.name);
+
+	var dialog = this._appCtxt.getConfirmationDialog();
+	dialog.popup(message, callback);
+};
+ZmNotebookTreeController.prototype._deleteListener2 = function(organizer) {
+	this._doDelete(organizer);
+}
 
 ZmNotebookTreeController.prototype._notifyListeners =
 function(overviewId, type, items, detail, srcEv, destEv) {

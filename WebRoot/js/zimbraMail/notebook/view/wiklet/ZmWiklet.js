@@ -28,9 +28,9 @@ function ZmWiklet() {
 
 // Constants
 
-ZmWiklet.NONE = undefined;
-ZmWiklet.SINGLE_VALUE = "value";
-ZmWiklet.PARAMETERIZED = "params";
+ZmWiklet.RE_WIKLET = new RegExp("<wiklet(?:\\s((?:.|\\n)*?))(?:\\/>|>((?:.|\\n)*?)<\\/wiklet(?:\\s[^>]*)?>)", "ig");
+ZmWiklet.RE_NOWIKLET = new RegExp("<nowiklet>((?:.|\n)*?)<\\/nowiklet>", "ig");
+ZmWiklet.RE_CONTENT = new RegExp("<wiklet\\s[^>]*?class\\s*=\\s*['\"]?CONTENT['\"](?:.|\\n)*?(?:/>|(?:.|\\n)*?</wiklet(?:\\s[^>]*)?>)","ig");
 
 // Data
 
@@ -100,7 +100,7 @@ ZmWiklet._formatDateLengths = {
 	medium: AjxDateFormat.MEDIUM,
 	full: AjxDateFormat.FULL
 };
-// MOW:  "short" and "long" seem to be reserved words in IE, 
+// MOW:  "short" and "long" seem to be reserved words in IE,
 //			so assigning inline above was causing script errors
 ZmWiklet._formatDateLengths["short"] = AjxDateFormat.SHORT;
 ZmWiklet._formatDateLengths["long"] = AjxDateFormat.LONG;
@@ -118,7 +118,7 @@ ZmWiklet.__parseValueAsParams = function(s) {
 		var pvalue = m[2] || m[3] || m[4] | "";
 		params[pname] = pvalue;
 	}
-	
+
 	return params;
 };
 
@@ -152,14 +152,15 @@ ZmWiklet.register(
 			var notebook = context.getNotebookById(item.remoteFolderId || item.folderId);
 
 			var loc = document.location;
-			var uname = notebook.owner || this._appCtxt.get(ZmSetting.USERNAME); // REVISIT !!!
-		
+			var uname = notebook.owner || context._appCtxt.get(ZmSetting.USERNAME); // REVISIT !!!
+			uname = uname.replace(/@.*$/,"");
+
 			return [
-				loc.protocol,"//",loc.host,"/service/home/~",uname,"/",page.getPath()
+				loc.protocol,"//",loc.host,"/home/",uname,"/",item.getPath()
 			].join("");
 		}
 	},
-	{ 
+	{
 		name: "NAME",
 		label: ZmMsg.wikletName,
 		tooltip: ZmMsg.wikletNameTT,
@@ -190,7 +191,7 @@ ZmWiklet.register(
 			if (!item.tags || item.tags.length == 0) {
 				return;
 			}
-			
+
 			var a = [];
 			a.push("<table border=0><tr>");
 			for (var i = 0; i < item.tags.length; i++) {
@@ -237,15 +238,15 @@ ZmWiklet.register(
 
 			// return fragment
 			context.pushItem(item);
-			var content = item.fragment ? item.fragment.replace(/\{\{.*?$/,"") : "";
-			return content;
+			//var content = item.fragment ? item.fragment.replace(/\{\{.*?$/,"") : "";
+            var content = item.fragment || "";
+            return content;
 		}
 	},
 	{
 		name: "MSG",
 		label: ZmMsg.wikletMsg,
 		tooltip: ZmMsg.wikletMsgTT,
-		type: ZmWiklet.SINGLE_VALUE,
 		paramdefs: {
 			value: {
 				name: "value",
@@ -255,14 +256,14 @@ ZmWiklet.register(
 			}
 		},
 		func: function(name, value, params, context) {
-			return value && ZmMsg[value] ? ZmMsg[value] : value;
+			var key = params.key;
+			return key && ZmMsg[key] ? ZmMsg[key] : key;
 		}
 	},
 	{
 		name: "INCLUDE",
 		label: ZmMsg.wikletInclude,
 		tooltip: ZmMsg.wikletIncludeTT,
-		type: ZmWiklet.PARAMETERIZED,
 		paramdefs: {
 			page: {
 				name: "page",
@@ -272,25 +273,10 @@ ZmWiklet.register(
 			},
 			inherit: {
 				name: "inherit",
-				label: ZmMsg.includeRecurseUp,
+				label: ZmMsg.wikletIncludeInherit,
 				type: "boolean",
 				value: false
-			},
-			context: {
-				name: "context",
-				label: ZmMsg.includeRecurseUp,
-				type: "enum",
-				item: [
-					{ label: ZmMsg.contextPage, value: "page" },
-					{ label: ZmMsg.contextParent, value: "parent" },
-					{ label: ZmMsg.shortTime, value: "shorttime" },
-					{ label: ZmMsg.longTime, value: "longtime" },
-					{ label: ZmMsg.shortDateTime, value: "shortdateandtime" },
-					{ label: ZmMsg.longDateTime, value: "longdateandtime" },
-					{ label: ZmMsg.pattern, value: "pattern" }
-				]
 			}
-
 		},
 		func: function(name, value, params, context) {
 			// check for recursive include
@@ -303,7 +289,7 @@ ZmWiklet.register(
 					return formatter.format(params.page);
 				}
 			}
-			
+
 			// include page
 			var item = context.getItem();
 			var recurseUp = (params.inherit && params.inherit.toLowerCase() == 'true');
@@ -311,13 +297,45 @@ ZmWiklet.register(
 				var page = context.getPageByName(item.folderId, params.page, recurseUp);
 				if (page) {
 					context.pushItem(page);
+					if (name == "INLINE") {
+						// NOTE: We push the original item again so that
+						//       the check for recursive include above
+						//       works as expected. If we didn't push
+						//       the included item in this situation, it
+						//       could include itself and we'd have no
+						//       way of knowing.
+						context.pushItem(item);
+					}
 					return page.getContent();
 				}
 			}
-			
+
 			// no such page
 			var formatter = new AjxMessageFormat(ZmMsg.wikiIncludeMissing);
 			return formatter.format(params.page);
+		}
+	},
+	{
+		name: "INLINE",
+		label: ZmMsg.wikletInline,
+		tooltip: ZmMsg.wikletInlineTT,
+		paramdefs: {
+			page: {
+				name: "page",
+				label: ZmMsg.page,
+				type: "string",
+				value: "PageName"
+			},
+			inherit: {
+				name: "inherit",
+				label: ZmMsg.wikletIncludeInherit,
+				type: "boolean",
+				value: false
+			}
+		},
+		func: function(name, value, params, context) {
+			var include = ZmWiklet.getWikletByName("INCLUDE");
+			return include.func(name, value, params, context);
 		}
 	},
 	{
@@ -343,7 +361,6 @@ ZmWiklet.register(
 		name: "CREATEDATE",
 		label: ZmMsg.wikletCreateDate,
 		tooltip: ZmMsg.wikletCreateDateTT,
-		type: ZmWiklet.PARAMETERIZED,
 		paramdefs: {
 			type: {
 				name: "type",
@@ -363,7 +380,7 @@ ZmWiklet.register(
 				name: "pattern",
 				label: ZmMsg.pattern,
 				type: "string"
-			}				
+			}
 		},
 		func: function(name, value, params, context) {
 			var item = context.getItem();
@@ -374,7 +391,6 @@ ZmWiklet.register(
 		name: "MODIFYDATE",
 		label: ZmMsg.wikletModifyDate,
 		tooltip: ZmMsg.wikletModifyDateTT,
-		type: ZmWiklet.PARAMETERIZED,
 		paramdefs: {
 			type: {
 				name: "type",
@@ -396,7 +412,7 @@ ZmWiklet.register(
 				name: "pattern",
 				label: ZmMsg.pattern,
 				type: "string"
-			}				
+			}
 		},
 		func: function(name, value, params, context) {
 			var item = context.getItem();
@@ -415,7 +431,6 @@ ZmWiklet.register(
 		name: "TOC",
 		label: ZmMsg.wikletToc,
 		tooltip: ZmMsg.wikletTocTT,
-		type: ZmWiklet.PARAMETERIZED,
 		paramdefs: {
 			type: {
 				name: "type",
@@ -468,13 +483,13 @@ ZmWiklet.register(
 			var item = context.getItem();
 			var folderId = item instanceof ZmPage ? item.folderId : item.id;
 
-			
+
 			var nameRe = /^[^_]/;
 			var re = { pages: nameRe, sections: nameRe, files: nameRe };
-			var funcs = { 
-				pages: context.getPages, 
-				sections: context.getSections, 
-				files: context.getFiles 
+			var funcs = {
+				pages: context.getPages,
+				sections: context.getSections,
+				files: context.getFiles
 			};
 
 			var items = [];
@@ -487,25 +502,25 @@ ZmWiklet.register(
 					reSource = reSource.replace(/([\[\(\{\+\.])/g, "\\$1");
 					reSource = reSource.replace(/\?/g, ".");
 					reSource = reSource.replace(/\*/g, ".*");
-		
+
 					re[name] = new RegExp("^" + reSource + "$", "i");
 				}
-				
+
 				var func = funcs[name];
 				var object = func.call(context, folderId);
 				var array = ZmWiklet.__object2Array(object, re[name]);
 				items = items.concat(array);
 			}
-			
+
 			items.sort(ZmWiklet.__byItemName);
 			if (params.sort == "descending") {
 				items.reverse();
 			}
-			
+
 			var content = [];
 			//content.push("<div class='WikiTOC'>");
 			if (items.length == 0) {
-				content.push("{{MSG wikiPagesNotFound}}");
+				content.push("<wiklet class='MSG' value='wikiPagesNotFound' />");
 			}
 			else switch (params.format || "list") {
 				case "list": {
@@ -523,19 +538,19 @@ ZmWiklet.register(
 				}
 				case "template": {
 					var folderId = context.getItem().folderId;
-					
+
 					var itemTemplate = context.getPageByName(folderId, (params.itemTemplate || ZmNotebook.PAGE_TOC_ITEM_TEMPLATE), true);
 					var itemContent = itemTemplate ? itemTemplate.getContent() : [
 						// REVISIT
 						"<tr>",
-							"<td class='_pageIcon'>{{ICON}}</td>",
-							"<td class='_pageLink'>[[{{NAME}}]]</td>",
-							"<td class='_tocAuthor'>{{MODIFIER}}</td>",
-							"<td class='_tocHistory'>{{MODIFYDATE}}</td>",
+							"<td class='_pageIcon'><wiklet class='ICON' /></td>",
+							"<td class='_pageLink'>[[<wiklet class='NAME' />]]</td>",
+							"<td class='_tocAuthor'><wiklet class='MODIFIER' /></td>",
+							"<td class='_tocHistory'><wiklet class='MODIFYDATE' /></td>",
 						"</tr>",
 						"<tr>",
 							"<td></td>",
-							"<td class='_tocFragment' colspan='4'>{{FRAGMENT}}</td>",
+							"<td class='_tocFragment' colspan='4'><wiklet class='FRAGMENT' /></td>",
 						"</tr>"
 					].join("");
 					for (var i = 0; i < items.length; i++) {
@@ -556,12 +571,12 @@ ZmWiklet.register(
 						"<table class='_tocIconTable'>",
 							"<tr>",
 								"<td></td>",
-								"<td colspan='4' class='_tocHead'>{{NAME}}</td>",
+								"<td colspan='4' class='_tocHead'><wiklet class='NAME' /></td>",
 							"</tr>",
-							"{{CONTENT}}",
+							"<wiklet class='CONTENT' />",
 						"</table>"
 					].join("");
-					content = [ bodyContent.replace(/\{\{CONTENT\}\}/g, content.join("")) ];
+                    content = [ bodyContent.replace(ZmWiklet.RE_CONTENT, content.join("")) ];
 					break;
 				}
 				case "simple": default: {
@@ -586,7 +601,6 @@ ZmWiklet.register(
 		name: "PATH",
 		label: ZmMsg.wikletPath,
 		tooltip: ZmMsg.wikletPathTT,
-		type: ZmWiklet.PARAMETERIZED,
 		paramdefs: {
 			format: {
 				name: "format",
@@ -611,34 +625,45 @@ ZmWiklet.register(
 				name: "separator",
 				label: ZmMsg.separator,
 				type: "string"
+			},
+			links: {
+				name: "links",
+				label: ZmMsg.wikletPathMakeLinks,
+				type: "boolean",
+				value: "true"
 			}
 		},
 		func: function(name, value, params, context) {
 			// TODO: params.page
-			
+
 			// get path trail
 			var item = context.getItem();
 			var notebook = context.getNotebookById(item.folderId || (item.parent && item.parent.id));
-			
+
 			var trail = [];
 			while (notebook.id != ZmOrganizer.ID_ROOT) {
 				trail.unshift(notebook);
 				notebook = context.getNotebookById(notebook.parent.id);
 			}
-			
+
 			// generate content
+			var makeLinks = params.links == null || params.link == "true";
 			var content = [];
 			switch (params.format || "simple") {
 				case "template": {
 					var folderId = item.folderId;
-					
-					var separator = params.separator || "<td class='_path_separator'> &raquo; </td>";
-					
+
+					var separator = params.separator || "<td class='_path_separator'>&nbsp;&raquo;&nbsp;</td>";
+
 					var itemTemplate = context.getPageByName(folderId, (params.itemTemplate || ZmNotebook.PATH_ITEM_TEMPLATE), true);
 					var itemContent = itemTemplate ? itemTemplate.getContent() : [
 						// REVISIT
-						"<td class='_pageIcon'>{{ICON}}</td>",
-						"<td class='_pageLink'>{{NAME}}</td>"
+						"<td class='_pageIcon'><wiklet class='ICON' /></td>",
+						"<td class='_pageLink'>",
+							(makeLinks ? "[[" : ""),
+							"<wiklet class='NAME' />",
+							(makeLinks ? "[[" : ""),
+						"</td>"
 					].join("");
 					for (var i = 0; i < trail.length; i++) {
 						if (i > 0) {
@@ -654,17 +679,17 @@ ZmWiklet.register(
 						}
 						context.setItemCount(length);
 					}
-					
+
 					var bodyTemplate = context.getPageByName(folderId, (params.bodyTemplate || ZmNotebook.PATH_BODY_TEMPLATE), true);
 					var bodyContent = bodyTemplate ? bodyTemplate.getContent() : [
 						// REVISIT
 						"<table class='_path_table' cellspacing=0 cellpadding=0>",
 							"<tr>",
-								"{{CONTENT}}",
+								"<wiklet class='CONTENT' />",
 							"</tr>",
 						"</table>"
 					].join("");
-					content = [ bodyContent.replace(/\{\{CONTENT\}\}/g, content.join("")) ];
+                    content = [ bodyContent.replace(ZmWiklet.RE_CONTENT, content.join("")) ];
 					break;
 				}
 				case "simple": default: {
@@ -677,13 +702,27 @@ ZmWiklet.register(
 						}
 						var crumb = trail[i];
 						var path = crumb.name; // TODO !!!
-						content.push("<span class='_pageLink'>[[", path, "]]</span>");
+						content.push(
+							"<span class='_pageLink'>",
+								(makeLinks ? "[[" : ""),
+								path,
+								(makeLinks ? "]]" : ""),
+							"</span>"
+						);
 					}
 					content.push("</span>");
 					break;
 				}
 			}
 			return content.join("");
+		}
+	},
+	{
+		name: "CONTENT",
+		label: null,
+		tooltip: null,
+		func: function(name, value, params, context) {
+			return "((CONTENT))";
 		}
 	}
 );

@@ -35,19 +35,19 @@ function ZmNotebookCache(appCtxt) {
 
 ZmNotebookCache._SPECIAL = {};
 ZmNotebookCache._SPECIAL[ZmNotebook.PAGE_INDEX] = [
-	"<H2>{{MSG wikiUserPages}}</H2>",
+	"<H2><wiklet class='MSG' key='wikiUserPages' /></H2>",
 	"<P>",
-		"{{TOC}}"
+		"<wiklet class='TOC' />"
 	/***
-	"<H2>{{MSG|wikiSpecialPages}}</H2>",
+	"<H2><wiklet class='MSG' key='wikiSpecialPages' /></H2>",
 	"<P>",
-		"{{TOC|name='_*_'}}"
+		"<wiklet class='TOC' name='_*_' />"
 	/***/
 ].join("");
 ZmNotebookCache._SPECIAL[ZmNotebook.PAGE_CHROME] = [
 	"<DIV style='padding:0.5em'>",
-		"<H1>{{NAME}}</H1>",
-		"<DIV>{{CONTENT}}</DIV>",
+		"<H1><wiklet class='NAME' /></H1>",
+		"<DIV><wiklet class='CONTENT' /></DIV>",
 	"</DIV>"
 ].join("");
 
