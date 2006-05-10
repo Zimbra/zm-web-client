@@ -94,6 +94,9 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/abook/ZmContactsApp.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/abook/view/ZmContactPicker.js<%= ext %>?v=<%= vers %>"></script>
 
+<!-- Notebook Application -->
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/model/ZmPage.js<%= ext %>?v=<%= vers %>"></script>
+
 <!-- Dependent on previous class definitions -->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/model/ZmResource.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmList.js<%= ext %>?v=<%= vers %>"></script>
