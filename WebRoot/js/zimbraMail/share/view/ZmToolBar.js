@@ -102,7 +102,7 @@ function(buttonId, imageInfo, text, disImageInfo, toolTip, enabled, style, align
 	if (!style) {
 		style = "TBButton";
 	}
-	var b = this._buttons[buttonId] = new DwtButton(this, align, style, null, null, index);
+	var b = this._buttons[buttonId] = new DwtButton(this, align, style, null, null, null, index);
 	if (imageInfo) {
 		b.setImage(imageInfo);
 	}
