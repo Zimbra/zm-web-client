@@ -94,6 +94,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._treeListener[ZmOrganizer.CALENDAR]	= new AjxListener(this, this._calendarChangeListener);
 	this._treeListener[ZmOrganizer.NOTEBOOK]	= new AjxListener(this, this._notebookChangeListener);
 	this._treeListener[ZmOrganizer.ADDRBOOK]	= new AjxListener(this, this._addrBookChangeListener);
+	this._treeListener[ZmOrganizer.SEARCH]		= new AjxListener(this, this._searchChangeListener);
 
 	this._useXml = this._appCtxt.get(ZmSetting.USE_XML);
 	this._logRequest = this._appCtxt.get(ZmSetting.LOG_REQUEST);
@@ -1471,6 +1472,12 @@ ZmZimbraMail.prototype._addrBookChangeListener =
 function(ev) {
 	// TODO
 	DBG.println("TODO: addrBookChangeListener");
+};
+
+ZmZimbraMail.prototype._searchChangeListener =
+function(ev) {
+	// TODO
+	DBG.println("TODO: searchChangeListener");
 };
 
 ZmZimbraMail.prototype._createBanner =
