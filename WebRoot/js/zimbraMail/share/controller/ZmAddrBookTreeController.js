@@ -74,6 +74,8 @@ function(parent, type, id) {
 		parent.enableAll(true);
 		if (addrBook && addrBook.isSystem())
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.RENAME_FOLDER], false);
+		else if (addrBook.link)
+			parent.enable([ZmOperation.SHARE_ADDRBOOK], false);
 	}
 
 	var op = parent.getOp(ZmOperation.DELETE);
@@ -97,7 +99,7 @@ function() {
 	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_ADDRBOOK);
 	}
-	ops.push(ZmOperation.DELETE, /*ZmOperation.MOVE,*/ ZmOperation.RENAME_FOLDER, ZmOperation.EDIT_PROPS);
+	ops.push(ZmOperation.DELETE, ZmOperation.RENAME_FOLDER, ZmOperation.EDIT_PROPS);
 	return ops;
 };
 
@@ -153,7 +155,7 @@ ZmAddrBookTreeController.prototype._itemClicked =
 function(folder) {
 	// force a search if user clicked Trash folder
 	// XXX: this is temp until we figure out how to switch to mixed view
-	if (folder.id == ZmFolder.ID_TRASH) {
+	if (folder.id == ZmFolder.ID_TRASH || folder.link) {
 		var searchController = this._appCtxt.getSearchController();
 		var types = searchController.getTypes(ZmItem.CONTACT);
 		searchController.search({query:folder.createQuery(), types:types});

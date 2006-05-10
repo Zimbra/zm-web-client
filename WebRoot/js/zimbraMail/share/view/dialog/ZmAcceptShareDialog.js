@@ -25,16 +25,13 @@
 
 function ZmAcceptShareDialog(appCtxt, parent, className) {
 	className = className || "ZmAcceptShareDialog";
-	var title = ZmMsg.acceptShare;
-	var buttons = [ DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON ];
-	DwtDialog.call(this, parent, className, title, buttons);
+	DwtDialog.call(this, parent, className, ZmMsg.acceptShare, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
 	this.setButtonListener(DwtDialog.YES_BUTTON, new AjxListener(this, this._handleYesButton));
 	this.setButtonListener(DwtDialog.NO_BUTTON, new AjxListener(this, this._handleNoButton));
 	
 	this._appCtxt = appCtxt;
 	
-	var view = this._createView();
-	this.setView(view);
+	this.setView(this._createView());
 	
 	// create formatters
 	this._headerFormatter = new AjxMessageFormat(ZmMsg.acceptShareHeader);
@@ -57,32 +54,34 @@ ZmAcceptShareDialog.prototype._share;
 
 // Public methods
 
-ZmAcceptShareDialog.prototype.setShareInfo = function(share) { 
+ZmAcceptShareDialog.prototype.setShareInfo =
+function(share) {
 	this._share = share;
 };
 
-ZmAcceptShareDialog.prototype.popup = function(loc) {
+ZmAcceptShareDialog.prototype.popup =
+function(loc) {
 	var share = this._share;
 
 	var params = [ share.grantor.name, share.link.name ];
 	var header = this._headerFormatter.format(params);
 	this._headerEl.innerHTML = header;
 
-	var params = [ 
+	params = [
 		ZmShareInfo.getRoleName(share.link.perm),
-		// TODO: Be able to generate custom perms list
-		ZmAcceptShareDialog._ACTIONS[share.link.perm]
+		ZmAcceptShareDialog._ACTIONS[share.link.perm]   // TODO: Be able to generate custom perms list
 	];
 	var details = this._detailsFormatter.format(params);
 	this._detailsEl.innerHTML = details;
 	
-	var question = "<b>" + ZmMsg.acceptShareQuestion + "</b>";
-	this._questionEl.innerHTML = question;
+	this._questionEl.innerHTML = "<b>" + ZmMsg.acceptShareQuestion + "</b>";
 
-	var params = [ share.grantor.name, share.link.name ];
+	params = [ share.grantor.name, share.link.name ];
 	var shareName = this._defaultNameFormatter.format(params);
 	this._nameEl.value = shareName;
-	
+
+	this._propSheet.setPropertyVisible(this._colorPropId, share.link.view != "contact");
+
 	this._reply.setReply(false);
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
@@ -90,14 +89,17 @@ ZmAcceptShareDialog.prototype.popup = function(loc) {
 	DwtDialog.prototype.popup.call(this, loc);
 };
 
-ZmAcceptShareDialog.prototype.setAcceptListener = function(listener) {
+ZmAcceptShareDialog.prototype.setAcceptListener =
+function(listener) {
 	this.removeAllListeners(ZmAcceptShareDialog.ACCEPT);
-	if (listener) this.addListener(ZmAcceptShareDialog.ACCEPT, listener);
+	if (listener)
+		this.addListener(ZmAcceptShareDialog.ACCEPT, listener);
 };
 
 // Protected methods
 
-ZmAcceptShareDialog.prototype._handleYesButton = function(event) {
+ZmAcceptShareDialog.prototype._handleYesButton =
+function(event) {
 	var share = this._share;
 	
 	// create mountpoint
@@ -130,22 +132,24 @@ ZmAcceptShareDialog.prototype._handleYesButton = function(event) {
 		appCtlr.popupErrorDialog(message, ex, null, true);
 		return;
 	}
-	
-	// set color
-	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
-	
-	var actionNode = soapDoc.set("action");
-	actionNode.setAttribute("id", mountpointId);
-	actionNode.setAttribute("op", "color");
-	actionNode.setAttribute("color", this._color.getValue());
 
-	try {
-		var resp = appCtlr.sendRequest({soapDoc: soapDoc})["FolderActionResponse"];
-	}
-	catch (ex) {
-		// TODO: handle error
-		var message = null;
-		appCtlr.popupErrorDialog(message, ex, null, true);
+	// only set color for those views that are applicable
+	if (share.link.view != "contact") {
+		var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
+
+		var actionNode = soapDoc.set("action");
+		actionNode.setAttribute("id", mountpointId);
+		actionNode.setAttribute("op", "color");
+		actionNode.setAttribute("color", this._color.getValue());
+
+		try {
+			var resp = appCtlr.sendRequest({soapDoc: soapDoc})["FolderActionResponse"];
+		}
+		catch (ex) {
+			// TODO: handle error
+			var message = null;
+			appCtlr.popupErrorDialog(message, ex, null, true);
+		}
 	}
 
 	// send mail
@@ -172,15 +176,19 @@ ZmAcceptShareDialog.prototype._handleYesButton = function(event) {
 
 	this.popdown();
 };
-ZmAcceptShareDialog.prototype._handleNoButton = function(event) {
+
+ZmAcceptShareDialog.prototype._handleNoButton =
+function(event) {
 	this.popdown();
 };
 
-ZmAcceptShareDialog.prototype._getSeparatorTemplate = function() {
+ZmAcceptShareDialog.prototype._getSeparatorTemplate =
+function() {
 	return "";
 };
 
-ZmAcceptShareDialog.prototype._createView = function() {
+ZmAcceptShareDialog.prototype._createView =
+function() {
 	var view = new DwtComposite(this);
 	
 	this._headerEl = document.createElement("DIV");
@@ -198,11 +206,11 @@ ZmAcceptShareDialog.prototype._createView = function() {
 		this._color.addOption(color.label, false, color.value);
 	}
 
-	var props = new DwtPropertySheet(view);
+	var props = this._propSheet = new DwtPropertySheet(view);
 	var propsEl = props.getHtmlElement();
 	propsEl.style.marginBottom = "0.5em";
 	props.addProperty(ZmMsg.nameLabel, this._nameEl);
-	props.addProperty(ZmMsg.colorLabel, this._color);
+	this._colorPropId = props.addProperty(ZmMsg.colorLabel, this._color);
 	
 	this._reply = new ZmShareReply(view);
 

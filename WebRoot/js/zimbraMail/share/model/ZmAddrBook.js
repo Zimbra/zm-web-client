@@ -36,9 +36,10 @@
 * @param tree		[ZmTree]		tree model that contains this organizer
 * @param owner		[string]*		owner of the address book (if shared)
 */
-function ZmAddrBook(id, name, parent, tree, owner) {
+function ZmAddrBook(id, name, parent, tree, link, owner) {
 	ZmFolder.call(this, id, name, parent, tree);
 	this.type = ZmOrganizer.ADDRBOOK;
+	this.link = link;
 	this.owner = owner;
 };
 
@@ -65,9 +66,18 @@ function() {
 
 ZmAddrBook.prototype.getIcon = 
 function() {
-	return this.id == ZmOrganizer.ID_ROOT 
-		? null
-		: (this.id == ZmOrganizer.ID_TRASH ? "Trash" : "ContactsFolder");
+	var icon;
+
+	if (this.id == ZmOrganizer.ID_ROOT)
+		icon = null;
+	if (this.id == ZmOrganizer.ID_TRASH)
+		icon = "Trash";
+	else if (this.link)
+		icon = "SharedContactsFolder";
+	else
+		icon = "ContactsFolder";
+
+	return icon;
 };
 
 ZmAddrBook.prototype.create = 
@@ -155,18 +165,28 @@ function(obj, link) {
 // Static methods
 
 ZmAddrBook.createFromJs =
-function(parent, obj, tree) {
+function(parent, obj, tree, link) {
 	if (!(obj && obj.id)) return;
 
 	// create addrbook, populate, and return
-	var ab = new ZmAddrBook(obj.id, obj.name, parent, tree, obj.d);
+	var ab = new ZmAddrBook(obj.id, obj.name, parent, tree, link, obj.d);
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];
 			if (folder.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK] ||
 				folder.id == ZmOrganizer.ID_TRASH)
 			{
-				var childAB = ZmAddrBook.createFromJs(ab, folder, tree);
+				var childAB = ZmAddrBook.createFromJs(ab, folder, tree, false);
+				ab.children.add(childAB);
+			}
+		}
+	}
+
+	if (obj.link && obj.link.length) {
+		for (var i = 0; i < obj.link.length; i++) {
+			var link = obj.link[i];
+			if (link.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]) {
+				var childAB = ZmAddrBook.createFromJs(ab, link, tree, true);
 				ab.children.add(childAB);
 			}
 		}
@@ -182,6 +202,11 @@ ZmAddrBook.sortCompare =
 function(addrBookA, addrBookB) {
 	var check = ZmOrganizer.checkSortArgs(addrBookA, addrBookB);
 	if (check != null) return check;
+
+	// links appear after personal address books
+	if (addrBookA.link != addrBookB.link) {
+		return addrBookA.link ? 1 : -1;
+	}
 
 	// sort by calendar name
 	var addrBookAName = addrBookA.name.toLowerCase();
