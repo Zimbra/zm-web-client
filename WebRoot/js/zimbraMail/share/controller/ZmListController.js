@@ -706,8 +706,8 @@ function(creatingTag, name, color) {
 	dialog.popdown();
 	
 	var overviewController = this._appCtxt.getOverviewController();
-	var controller = overviewController.getTreeController(ZmOrganizer.TAG);
-	overviewController._doCreate(name, color);
+	var tagController = overviewController.getTreeController(ZmOrganizer.TAG);
+	tagController._doCreate(name, color);
 	
 	this._creatingTag = creatingTag;
 };
