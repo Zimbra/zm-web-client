@@ -64,11 +64,11 @@ function(menuItemId, listener) {
 };
 
 ZmPopupMenu.prototype.popup =
-function(delay, x, y) {
+function(delay, x, y, kbGenerated) {
 	delay = delay ? delay : 0;
 	x = (x != null) ? x : Dwt.DEFAULT;
 	y = (y != null) ? y : Dwt.DEFAULT;
-	DwtMenu.prototype.popup.call(this, delay, x, y);
+	DwtMenu.prototype.popup.call(this, delay, x, y, kbGenerated);
 };
 
 /**

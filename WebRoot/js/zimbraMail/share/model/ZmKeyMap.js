@@ -75,8 +75,9 @@ function ZmKeyMap() {
 			"Alt+S":   ZmKeyMap.SAVE,
 			"Ctrl+S": ZmKeyMap.SAVE,
 
-			"Del":     ZmKeyMap.DEL,
-			"Esc":     ZmKeyMap.CANCEL,
+			"Del":        ZmKeyMap.DEL,
+			"Backspace":  ZmKeyMap.DEL, // MacBook keyboard
+			"Esc":        ZmKeyMap.CANCEL,
 			"ArrowRight": ZmKeyMap.NEXT_PAGE,
 			"ArrowLeft":  ZmKeyMap.PREV_PAGE
 	};
@@ -99,8 +100,18 @@ function ZmKeyMap() {
 		"Shift+ArrowLeft": ZmKeyMap.PREV_CONV
 	};
 	
+	this._map["ZmTradController"] = {
+		"INHERIT": "ZmConvListController"
+	};
+	
 	this._map["ZmConvListView"] = {"INHERIT": "DwtListView"};
 	this._map["ZmMailMsgListView"] = {"INHERIT": "DwtListView"};
+	this._map["ZmTradView"] = {"INHERIT": "DwtListView"};
+
+	this._map["ZmPopupMenu"] = {"INHERIT": "DwtMenu", "NOINHERIT_GLOBAL": true};
+	this._map["ZmActionMenu"] = {"INHERIT": "DwtMenu", "NOINHERIT_GLOBAL": true};
+	this._map["ZmTagMenu"] = {"INHERIT": "DwtMenu", "NOINHERIT_GLOBAL": true};
+	//this._map["ActionMenu"] = {"INHERIT": "DwtMenu", "NOINHERIT_GLOBAL": true};
 };
 
 ZmKeyMap.prototype = new DwtKeyMap(true);

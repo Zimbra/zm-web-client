@@ -748,7 +748,7 @@ function() {
 		if (this._savedFocusMember)
 			kbMgr.grabFocus(this._savedFocusMember);
 		else 
-			kbMgr.grabFocus(myTg.getFirstMember());
+			kbMgr.grabFocus(myTg.getFirstMember(true));
 		ZmController._setCurrentAppViewTabGroup(myTg);
 	}
 	return true;

@@ -85,7 +85,12 @@ function(view) {
 
 ZmTradController.prototype._createDoublePaneView = 
 function() {
-	return new ZmTradView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
+	var view = new ZmTradView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
+	this._createTabGroup("Trad");
+	var tg = this.getTabGroup();
+	tg.newParent(this._appCtxt.getRootTabGroup());
+	tg.addMember(view.getMsgListView());
+	return view;
 };
 
 ZmTradController.prototype._getViewType =

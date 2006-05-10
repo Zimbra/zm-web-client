@@ -85,13 +85,11 @@ function() {
 
 ZmConvController.prototype._createDoublePaneView = 
 function() {
-	DBG.println("ZmConvController.prototype._createDoublePaneView");
 	var view = new ZmConvView(this._container, this, this._dropTgt);
 	this._createTabGroup("Conv");
 	var tg = this.getTabGroup();
 	tg.newParent(this._appCtxt.getRootTabGroup());
 	tg.addMember(view.getMsgListView());
-	DBG.println("ZmConvController.prototype._createDoublePaneView: OUT");
 	return view;
 }
 
