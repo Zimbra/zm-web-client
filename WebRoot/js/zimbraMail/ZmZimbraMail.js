@@ -855,6 +855,16 @@ function() {
 	}
 };
 
+ZmZimbraMail._logOffListener = new AjxListener(null, ZmZimbraMail.logOff);
+
+ZmZimbraMail.conditionalLogOff =
+function() {
+	if (window._zimbraMail && !window._zimbraMail._appViewMgr.isOkToLogOff(ZmZimbraMail._logOffListener)) {
+		return;
+	}
+	ZmZimbraMail.logOff();
+};
+
 ZmZimbraMail.redir =
 function(locationStr){
 	window.location = locationStr;
@@ -1573,7 +1583,7 @@ function(ev) {
 		} else if (id == ZmAppChooser.B_OPTIONS) {
 			this.activateApp(ZmZimbraMail.PREFERENCES_APP);
 		} else if (id == ZmAppChooser.B_LOGOUT) {
-			ZmZimbraMail.logOff();
+			ZmZimbraMail.conditionalLogOff();
 		}
 	} catch (ex) {
 		this._handleException(ex, this._appButtonListener, ev, false);

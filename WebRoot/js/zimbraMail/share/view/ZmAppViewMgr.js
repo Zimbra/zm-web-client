@@ -474,6 +474,24 @@ function() {
 	this._setTitle(this._currentView);
 };
 
+/**
+* Checks if it is ok to log off.
+* 
+* @param action		action to perform if the user allows logout
+*/
+ZmAppViewMgr.prototype.isOkToLogOff =
+function(pendingAction) {
+	var okToContinue = true;
+	var callback = this._callbacks[this._currentView] ? this._callbacks[this._currentView][ZmAppViewMgr.CB_PRE_HIDE] : null;
+	if (callback) {
+		DBG.println(AjxDebug.DBG2, "checking if ok to log off " + this._currentView);
+		this._pendingAction = pendingAction;
+		this._pendingView = null;
+		okToContinue = callback.run(this._currentView, false);
+	}
+	return okToContinue;
+};
+
 // Private methods
 
 // Locates and sizes the given list of components to fit within their containers.
