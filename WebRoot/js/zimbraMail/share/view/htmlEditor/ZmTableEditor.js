@@ -92,6 +92,50 @@ ZmTableEditor = {
 		});
 
 		return { ids: ids, html: txt };
+	},
+
+	// call this in the context of a dialog object that knows this stuff ;-)
+	__makeCommonWidgets : function() {
+		this._wBgColor = new DwtButtonColorPicker(this, null, null, null, null, null, ZmMsg.auto);
+		this._wBgColor.reparentHtmlElement(this._idBackgroundColor);
+		this._wBgColor.setImage("FontBackground");
+		this._wBgColor.showColorDisplay();
+
+		this._wFgColor = new DwtButtonColorPicker(this, null, null, null, null, null, ZmMsg.auto);
+		this._wFgColor.reparentHtmlElement(this._idForegroundColor);
+		this._wFgColor.setImage("FontColor");
+		this._wFgColor.showColorDisplay();
+
+		this._wBorderColor = new DwtButtonColorPicker(this, null, null, null, null, null, ZmMsg.auto);
+		this._wBorderColor.reparentHtmlElement(this._idBorderColor);
+		this._wBorderColor.setImage("FontBorder");
+		this._wBorderColor.showColorDisplay();
+
+		this._wBorderStyle = new DwtSelect(this, [ new DwtSelectOption("none", false, ZmMsg.none),
+							   new DwtSelectOption("solid", true, ZmMsg.borderStyleSolid),
+							   new DwtSelectOption("dashed", false, ZmMsg.borderStyleDashed),
+							   new DwtSelectOption("dotted", false, ZmMsg.borderStyleDotted),
+							   new DwtSelectOption("double", false, ZmMsg.borderStyleDouble),
+							   new DwtSelectOption("groove", false, ZmMsg.borderStyleGroove),
+							   new DwtSelectOption("ridge", false, ZmMsg.borderStyleRidge),
+							   new DwtSelectOption("inset", false, ZmMsg.borderStyleInset),
+							   new DwtSelectOption("outset", false, ZmMsg.borderStyleOutset) ]);
+		this._wBorderStyle.reparentHtmlElement(this._idBorderStyle);
+
+		this._wBorderWidth = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10 });
+		this._wBorderWidth.reparentHtmlElement(this._idBorderWidth);
+
+		this._wTextAlign = new DwtSelect(this, [ new DwtSelectOption("", true, ZmMsg.notSet),
+							 new DwtSelectOption("left", false, ZmMsg.left),
+							 new DwtSelectOption("center", false, ZmMsg.center),
+							 new DwtSelectOption("right", false, ZmMsg.right) ]);
+		this._wTextAlign.reparentHtmlElement(this._idTextAlign);
+
+		this._wTextVAlign = new DwtSelect(this, [ new DwtSelectOption("", false, ZmMsg.notSet),
+							  new DwtSelectOption("top", false, ZmMsg.top),
+							  new DwtSelectOption("middle", true, ZmMsg.middle),
+							  new DwtSelectOption("bottom", false, ZmMsg.bottom) ]);
+		this._wTextVAlign.reparentHtmlElement(this._idTextVAlign);
 	}
 
 };
@@ -122,6 +166,14 @@ function ZmTablePropsDialog(parent) {
 
 	this.setContent(html);
 
+	ZmTableEditor.__makeCommonWidgets.call(this);
+
+	this._wAlign = new DwtSelect(this, [ new DwtSelectOption("", true, ZmMsg.notSet),
+					     new DwtSelectOption("center", false, ZmMsg.center),
+					     new DwtSelectOption("left", false, ZmMsg.left),
+					     new DwtSelectOption("right", false, ZmMsg.right) ]);
+	this._wAlign.reparentHtmlElement(this._idAlign);
+
 	this._wCaption = new DwtInputField(
 	{ parent: this,
 			  type            : DwtInputField.STRING,
@@ -147,58 +199,11 @@ function ZmTablePropsDialog(parent) {
 						 new DwtSelectOption("px", true, ZmMsg.pixels) ]);
 	this._wWidthUnit.reparentHtmlElement(this._idWidthUnit);
 
-	this._wAlign = new DwtSelect(this, [ new DwtSelectOption("", true, ZmMsg.notSet),
-					     new DwtSelectOption("center", false, ZmMsg.center),
-					     new DwtSelectOption("left", false, ZmMsg.left),
-					     new DwtSelectOption("right", false, ZmMsg.right) ]);
-	this._wAlign.reparentHtmlElement(this._idAlign);
-
-	this._wBgColor = new DwtButtonColorPicker(this, null, null, null, null, null, ZmMsg.auto);
-	this._wBgColor.reparentHtmlElement(this._idBackgroundColor);
-	this._wBgColor.setImage("FontBackground");
-	this._wBgColor.showColorDisplay();
-
-	this._wFgColor = new DwtButtonColorPicker(this, null, null, null, null, null, ZmMsg.auto);
-	this._wFgColor.reparentHtmlElement(this._idForegroundColor);
-	this._wFgColor.setImage("FontColor");
-	this._wFgColor.showColorDisplay();
-
-	this._wBorderColor = new DwtButtonColorPicker(this, null, null, null, null, null, ZmMsg.auto);
-	this._wBorderColor.reparentHtmlElement(this._idBorderColor);
-	this._wBorderColor.setImage("FontBorder");
-	this._wBorderColor.showColorDisplay();
-
-	(this._wBorderStyle = new DwtSelect(this, [ new DwtSelectOption("none", false, ZmMsg.none),
-						    new DwtSelectOption("solid", true, ZmMsg.borderStyleSolid),
-						    new DwtSelectOption("dashed", false, ZmMsg.borderStyleDashed),
-						    new DwtSelectOption("dotted", false, ZmMsg.borderStyleDotted),
-						    new DwtSelectOption("double", false, ZmMsg.borderStyleDouble),
-						    new DwtSelectOption("groove", false, ZmMsg.borderStyleGroove),
-						    new DwtSelectOption("ridge", false, ZmMsg.borderStyleRidge),
-						    new DwtSelectOption("inset", false, ZmMsg.borderStyleInset),
-						    new DwtSelectOption("outset", false, ZmMsg.borderStyleOutset) ]))
-		.reparentHtmlElement(this._idBorderStyle);
-
-	this._wBorderWidth = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10 });
-	this._wBorderWidth.reparentHtmlElement(this._idBorderWidth);
-
 	this._wBorderSpacing = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10 });
 	this._wBorderSpacing.reparentHtmlElement(this._idBorderSpacing);
 
 	this._wCellPadding = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10 });
 	this._wCellPadding.reparentHtmlElement(this._idCellPadding);
-
-	(this._wTextAlign = new DwtSelect(this, [ new DwtSelectOption("", true, ZmMsg.notSet),
-						  new DwtSelectOption("left", false, ZmMsg.left),
-						  new DwtSelectOption("center", false, ZmMsg.center),
-						  new DwtSelectOption("right", false, ZmMsg.right) ]))
-		.reparentHtmlElement(this._idTextAlign);
-
-	(this._wTextVAlign = new DwtSelect(this, [ new DwtSelectOption("", false, ZmMsg.notSet),
-						   new DwtSelectOption("top", false, ZmMsg.top),
-						   new DwtSelectOption("middle", true, ZmMsg.middle),
-						   new DwtSelectOption("bottom", false, ZmMsg.bottom) ]))
-		.reparentHtmlElement(this._idTextVAlign);
 
 	document.getElementById(this._idWidthAuto).onclick = AjxCallback.simpleClosure(this._setManualWidthState, this);
 	document.getElementById(this._idWidthAuto1).onclick = AjxCallback.simpleClosure(this._setManualWidthState, this);
@@ -389,4 +394,36 @@ ZmTablePropsDialog.prototype.getValues = function() {
 		cellSpacing     : this._wBorderSpacing.getValue()
 	};
 	return val;
+};
+
+// cell properties dialog
+
+ZmCellPropsDialog.URL = appContextPath + "/js/zimbraMail/share/view/htmlEditor/dlg-cell-properties.html";
+
+function ZmCellPropsDialog(parent) {
+	DwtDialog.call(this, parent, null, ZmMsg.cellProperties,
+		       [ DwtDialog.OK_BUTTON,
+			 DwtDialog.CANCEL_BUTTON ]);
+
+	this._disableFFhack();
+
+	var ids;
+	var html;
+
+	ids = ZmTableEditor.getDialogLayout(ZmCellPropsDialog.URL);
+	html = ids.html;
+	ids = ids.ids;
+
+	for (var i in ids)
+		this["_id" + i] = ids[i];
+
+	this.setContent(html);
+
+	ZmTableEditor.__makeCommonWidgets.call(this);
+};
+
+ZmCellPropsDialog.prototype = new DwtDialog;
+ZmCellPropsDialog.prototype.constructor = ZmCellPropsDialog;
+
+ZmCellPropsDialog.prototype.setup = function(editor, table) {
 };

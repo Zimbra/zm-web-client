@@ -518,12 +518,12 @@ function(ev) {
 
 ZmHtmlEditor.prototype._fontColorListener =
 function(ev) {
-	this.setFont(null, null, null, ev.detail, null);
+	this.setFont(null, null, null, ev.detail || "#000000", null);
 };
 
 ZmHtmlEditor.prototype._fontHiliteListener =
 function(ev) {
-	this.setFont(null, null, null, null, ev.detail);
+	this.setFont(null, null, null, null, ev.detail || "#ffffff");
 };
 
 ZmHtmlEditor.prototype._createToolbars =
@@ -543,51 +543,6 @@ function(parent) {
 	this._createFontFamilySelect(tb);
 	this._createFontSizeMenu(tb);
 	new DwtControl(tb, "vertSep");
-
-	var listener = new AjxListener(this, this._fontStyleListener);
-	var b = this._boldButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage("Bold");
-	b.setToolTipContent(ZmMsg.boldText);
-	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
-	b.addSelectionListener(listener);
-
-	b = this._italicButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage("Italics");
-	b.setToolTipContent(ZmMsg.italicText);
-	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
-	b.addSelectionListener(listener);
-
-	b = this._underlineButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage("Underline");
-	b.setToolTipContent(ZmMsg.underlineText);
-	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
-	b.addSelectionListener(listener);
-
-	b = this._strikeThruButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage("StrikeThru");
-	b.setToolTipContent(ZmMsg.strikeThruText);
-	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.STRIKETHRU_STYLE);
-	b.addSelectionListener(listener);
-
-	b = this._superscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage("SuperScript");
-	b.setToolTipContent(ZmMsg.superscript);
-	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUPERSCRIPT_STYLE);
-	b.addSelectionListener(listener);
-
-	b = this._subscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
-	b.setImage("Subscript");
-	b.setToolTipContent(ZmMsg.subscript);
-	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUBSCRIPT_STYLE);
-	b.addSelectionListener(listener);
-
-	this._toolbars.push(tb);
-};
-
-ZmHtmlEditor.prototype._createToolBar2 =
-function(parent) {
-	var tb = this._toolbar2 = new DwtToolBar(parent, "ToolBar", DwtControl.RELATIVE_STYLE, 2);
-	tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 
 	var listener = new AjxListener(this, this._justificationListener);
 	var b = this._leftJustifyButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
@@ -634,34 +589,76 @@ function(parent) {
 	b.setToolTipContent(ZmMsg.outdent);
 	b.setImage("Outdent");
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.OUTDENT);
-	b.addSelectionListener(insElListener);
+	b.addSelectionListener(listener);
 
 	b = this._indentButton = new DwtButton(tb, null, "TBButton");
 	b.setToolTipContent(ZmMsg.indent);
 	b.setImage("Indent");
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.INDENT);
-	b.addSelectionListener(insElListener);
+	b.addSelectionListener(listener);
+
+	this._toolbars.push(tb);
+};
+
+ZmHtmlEditor.prototype._createToolBar2 =
+function(parent) {
+	var tb = this._toolbar2 = new DwtToolBar(parent, "ToolBar", DwtControl.RELATIVE_STYLE, 2);
+	tb.setVisible(this._mode == DwtHtmlEditor.HTML);
+
+	var listener = new AjxListener(this, this._fontStyleListener);
+	var b = this._boldButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b.setImage("Bold");
+	b.setToolTipContent(ZmMsg.boldText);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
+	b.addSelectionListener(listener);
+
+	b = this._italicButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b.setImage("Italics");
+	b.setToolTipContent(ZmMsg.italicText);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
+	b.addSelectionListener(listener);
+
+	b = this._underlineButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b.setImage("Underline");
+	b.setToolTipContent(ZmMsg.underlineText);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
+	b.addSelectionListener(listener);
+
+	b = this._strikeThruButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b.setImage("StrikeThru");
+	b.setToolTipContent(ZmMsg.strikeThruText);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.STRIKETHRU_STYLE);
+	b.addSelectionListener(listener);
+
+	b = this._superscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b.setImage("SuperScript");
+	b.setToolTipContent(ZmMsg.superscript);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUPERSCRIPT_STYLE);
+	b.addSelectionListener(listener);
+
+	b = this._subscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b.setImage("Subscript");
+	b.setToolTipContent(ZmMsg.subscript);
+	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUBSCRIPT_STYLE);
+	b.addSelectionListener(listener);
 
 	new DwtControl(tb, "vertSep");
 
-	b = this._fontColorButton = new DwtButton(tb, null, "TBButton");
+	b = this._fontColorButton = new DwtButtonColorPicker(tb, null, "TBButton");
 	b.setImage("FontColor");
+	b.showColorDisplay();
 	b.setToolTipContent(ZmMsg.fontColor);
-	var m = new DwtMenu(b, DwtMenu.COLOR_PICKER_STYLE);
-	var cp = new DwtColorPicker(m);
-	cp.addSelectionListener(new AjxListener(this, this._fontColorListener));
-	b.setMenu(m);
+	b.addSelectionListener(new AjxListener(this, this._fontColorListener));
 
-	b = this._fontBackgroundButton = new DwtButton(tb, null, "TBButton");
+	b = this._fontBackgroundButton = new DwtButtonColorPicker(tb, null, "TBButton");
 	b.setImage("FontBackground");
+	b.showColorDisplay();
 	b.setToolTipContent(ZmMsg.fontBackground);
-	m = new DwtMenu(b, DwtMenu.COLOR_PICKER_STYLE);
-	cp = new DwtColorPicker(m);
-	cp.addSelectionListener(new AjxListener(this, this._fontHiliteListener));
-	b.setMenu(m);
+	b.addSelectionListener(new AjxListener(this, this._fontHiliteListener));
 
 	new DwtControl(tb, "vertSep");
 
+	var insElListener = new AjxListener(this, this._insElementListener);
 	b = this._horizRuleButton = new DwtButton(tb, null, "TBButton");
 	b.setImage("HorizRule");
 	b.setToolTipContent(ZmMsg.horizRule);
@@ -673,7 +670,7 @@ function(parent) {
 	var tblListener = new AjxListener(this, this._tableOperationsListener);
 
 	b = new DwtButton(tb, null, "TBButton");
-	b.setImage("InsertTable");
+	b.setImage("Table");
 	var menu = new DwtMenu(b);
 	b.setMenu(menu);
 
@@ -683,12 +680,18 @@ function(parent) {
  	var grid = new DwtGridSizePicker(grid_menu);
  	grid.addSelectionListener(new AjxListener(this, this._createTableListener));
  	item.setMenu(grid_menu);
+	item.setImage("InsertTable");
 
 	var tblCommands = [ null,
 			    "tableProperties...", "cellProperties...", null,
 			    "insertRow", "deleteRow", "insertColumn", "deleteColumn", null,
 			    "mergeCells", "splitCells", null,
 			    "deleteTable" ];
+	var tblIcons = [ null,
+			 "TableProperties", "CellProperties", null,
+			 "InsertRowBefore", "DeleteRow", "InsertColBefore", "DeleteCol", null,
+			 "MergeCells", "SplitCells", null,
+			 "DeleteTable" ];
 	this._tableCmdItems = [];
 	for (var i = 0; i < tblCommands.length; ++i) {
 		var cmd = tblCommands[i];
@@ -703,6 +706,8 @@ function(parent) {
 			var item = new DwtMenuItem(menu);
 			var txt = ZmMsg[cmd] || cmd;
 			item.setText(txt + dots);
+			if (tblIcons[i])
+				item.setImage(tblIcons[i]);
 			item.setData("TableOperations", cmd);
 			item.addSelectionListener(tblListener);
 			this._tableCmdItems.push(item);
@@ -713,28 +718,13 @@ function(parent) {
 
 	if (this.ACE_ENABLED) {
 		tb.addSeparator("vertSep");
+		var listener = new AjxListener(this, this._menu_insertObject);
+
 		var b = new DwtButton(tb, 0, "TBButton");
-		b.setText(ZmMsg.insertObject);
-		var menu = new DwtMenu(b);
-		b.setMenu(menu);
-
-		var item = new DwtMenuItem(menu);
-		item.setText(ZmMsg.spreadsheet);
-		item.setData("ACE", "ZmSpreadSheet");
-		item.addSelectionListener(new AjxListener(this, this._menu_insertObject));
-
-		// DEBUG
-		if (this.ACE_DEBUG) {
-			// menu.createSeparator();
-
-			var item = new DwtMenuItem(menu);
-			item.setText("DEBUG SERIALIZATION");
-			item.addSelectionListener(new AjxListener(this, this._serializeAceObjects));
-
-			var item = new DwtMenuItem(menu);
-			item.setText("DESERIALIZATION");
-			item.addSelectionListener(new AjxListener(this, this._deserializeAceObjects));
-		}
+		b.setImage("SpreadSheet");
+		b.setData("ACE", "ZmSpreadSheet");
+		b.setToolTipContent(ZmMsg.insertSpreadsheet);
+		b.addSelectionListener(listener);
 	}
 
 	this._toolbars.push(tb);
@@ -754,7 +744,9 @@ function(ev) {
 		dlg.popup();
 		break;
 	    case "cellProperties":
-		alert("Not implemented");
+		// var dlg = ZmTableEditor.getCellPropsDialog(this, this.getNearestElement("table"));
+		// dlg.popup();
+		alert("Not yet implemented");
 		break;
 	    default:
 		this.doTableOperation(data);
@@ -978,6 +970,9 @@ function(ev) {
 
 	this._numberedListButton.setToggled(ev.isOrderedList);
 	this._listButton.setToggled(ev.isUnorderedList);
+
+	this._fontColorButton.setColor(ev.color);
+	this._fontBackgroundButton.setColor(ev.backgroundColor);
 
 	var table = this.getNearestElement("table");
 	for (var i = 0; i < this._tableCmdItems.length; ++i)
