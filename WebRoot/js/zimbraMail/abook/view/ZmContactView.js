@@ -621,14 +621,15 @@ function(contact) {
 	html[idx++] = "</tr></table>";
 
 	// Primary contact info
-	html[idx++] = "<div style='overflow:auto;'";
+	html[idx++] = "<div style='overflow:auto;";
 	if (!this._isReadOnly) {
 		this._contentId = Dwt.getNextId();
 		html[idx++] = " visibility:hidden;' id='";
 		html[idx++] = this._contentId;
-		html[idx++] = "'";
+		html[idx++] = "'>";
+	} else {
+		html[idx++] = "'>";
 	}
-	html[idx++] = ">";
 	html[idx++] = "<table cellpadding=0 cellspacing=10 border=0>";
 
 	idx = this._generateHtml(html, idx, null, ZmContactView.primaryInfoOne, ZmContactView.primaryInfoTwo);
