@@ -208,6 +208,10 @@ function(addrBookA, addrBookB) {
 		return addrBookA.link ? 1 : -1;
 	}
 
+	// trash folder should always go last w/in personal addrbooks
+	if (addrBookA.id == ZmFolder.ID_TRASH) return 1;
+	if (addrBookB.id == ZmFolder.ID_TRASH) return -1;
+
 	// sort by calendar name
 	var addrBookAName = addrBookA.name.toLowerCase();
 	var addrBookBName = addrBookB.name.toLowerCase();

@@ -148,10 +148,15 @@ function() {
 */
 ZmContact.createFromDom =
 function(node, args) {
-	var contact = new ZmContact(args.appCtxt, node.id, args.list);
-	contact._loadFromDom(node);
-	if (!contact._isShared)
-		contact._resetCachedFields();
+	// check global cache for this item first
+	var contact = args.appCtxt.cacheGet(node.id);
+
+	if (contact == null) {
+		contact = new ZmContact(args.appCtxt, node.id, args.list);
+		contact._loadFromDom(node);
+		if (!contact._isShared)
+			contact._resetCachedFields();
+	}
 
 	return contact;
 };
@@ -275,6 +280,31 @@ function(contact) {
 	return (folderId == ZmFolder.ID_TRASH);
 };
 
+ZmContact.prototype.load =
+function(callback, errorCallback) {
+	var soapDoc = AjxSoapDoc.create("GetContactsRequest", "urn:zimbraMail");
+	var msgNode = soapDoc.set("cn");
+	msgNode.setAttribute("id", this.id);
+
+	var respCallback = new AjxCallback(this, this._handleLoadResponse, [callback]);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc,
+												  asyncMode: true,
+												  callback: respCallback,
+												  errorCallback: errorCallback});
+};
+
+ZmContact.prototype._handleLoadResponse =
+function(callback, result) {
+	var resp = result.getResponse().GetContactsResponse;
+
+	// for now, we just assume only one contact was requested at a time
+	this.attr = resp.cn[0]._attrs;
+	this._loaded = true;
+
+	if (callback)
+		callback.run(result);
+};
+
 ZmContact.prototype.isEmpty =
 function() {
 	var isEmpty = true;
@@ -285,11 +315,21 @@ function() {
 	return isEmpty;
 };
 
+ZmContact.prototype.isLoaded =
+function() {
+	return this._loaded;
+};
+
+ZmContact.prototype.isShared =
+function() {
+	return this._isShared === true;
+};
+
 ZmContact.prototype.getAttr =
 function(name) {
 	if (!this.list) return null;
 
-	if (this.list.isCanonical || this.list.isGal) {
+	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
 		return this.attr[name];
 	} else {
 		return this.canonicalList.getById(this.id).attr[name];
@@ -300,7 +340,7 @@ ZmContact.prototype.setAttr =
 function(name, value) {
 	if (!this.list) return;
 
-	if (this.list.isCanonical || this.list.isGal) {
+	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
 		this.attr[name] = value;
 	} else {
 		this.canonicalList.getById(this.id).attr[name] = value;
@@ -311,7 +351,7 @@ ZmContact.prototype.removeAttr =
 function(name) {
 	if (!this.list) return;
 
-	if (this.list.isCanonical || this.list.isGal) {
+	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
 		delete this.attr[name];
 	} else {
 		delete this.canonicalList.getById(this.id).attr[name];
@@ -320,7 +360,9 @@ function(name) {
 
 ZmContact.prototype.getAttrs =
 function() {
-	return this.canonicalList ? this.canonicalList.getById(this.id).attr : this.attr;
+	return (this.canonicalList && !this.isShared())
+		? this.canonicalList.getById(this.id).attr
+		: this.attr;
 }
 
 /**
@@ -749,6 +791,7 @@ function() {
 // Parse contact node. A contact will only have attr values if its in canonical list.
 ZmContact.prototype._loadFromDom =
 function(node) {
+	this._loaded = true;
 	// "node.a" means we must be dealing with a GAL contact
 	// bug fix #7143 - check for length property instead of "instanceof Array" 
 	//                 since opening new window loses type info :(

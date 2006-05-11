@@ -96,7 +96,25 @@ function(contact, isGal) {
 	}
 	
 	this._contact = contact;
-	this._setContact(contact, isGal);
+
+	if (this._contact.isLoaded()) {
+		this._setContact(contact, isGal);
+	} else {
+		var callback = new AjxCallback(this, this._handleLoadResponse, [isGal]);
+		var errorCallback = new AjxCallback(this, this._handleErrorLoad);
+		this._contact.load(callback);
+	}
+};
+
+ZmContactSplitView.prototype._handleLoadResponse =
+function(isGal) {
+	this._setContact(this._contact, isGal);
+};
+
+ZmContactSplitView.prototype._handleErrorLoad =
+function(ex) {
+	this._clear();
+	// TODO - maybe display some kind of error?
 };
 
 ZmContactSplitView.prototype.clear = 
@@ -185,7 +203,7 @@ function(contact, isGal) {
 
 	// if folderId is null, that means user did a search (did not click on a addrbook)
 	var folderId = this._controller.getFolderId();
-	if (folderId && contact.folderId != folderId)
+	if (folderId && contact.folderId != folderId && !contact.isShared())
 		return;
 
 	if (!this._htmlInitialized)
@@ -208,10 +226,13 @@ function(contact, isGal) {
 	html[idx++] = "<td width=100% class='companyName'>";
 	html[idx++] = (contact.getCompanyField() || "&nbsp;");
 	html[idx++] = "</td>";
-	var folder = this._controller._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(contact.folderId);
+	var folderId = contact.isShared()
+		? this._controller.getFolderId()
+		: contact.folderId;
+	var folder = this._controller._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId);
 	if (folder) {
 		html[idx++] = "<td width=20>";
-		html[idx++] = AjxImg.getImageHtml(folder.getIcon()); 					// XXX: Set icon per type of contact we have!
+		html[idx++] = AjxImg.getImageHtml(folder.getIcon());
 		html[idx++] = "</td><td class='companyFolder'>";
 		html[idx++] = folder.getName();
 		html[idx++] = "</td>";
