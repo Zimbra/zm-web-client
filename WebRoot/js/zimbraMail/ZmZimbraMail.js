@@ -1020,16 +1020,83 @@ function(refresh) {
 
 	var inbox = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_INBOX);
 	if (inbox) {
-		this._statusView.setIconVisible(ZmStatusView.ICON_INBOX,  inbox.numUnread > 0);
+		this._statusView.setIconVisible(ZmStatusView.ICON_INBOX, inbox.numUnread > 0);
 	}
 
-	// XXX: temp, until we get better server support - see bug #4434
+	// LAME:
 	var calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	calController.refreshHandler();
-	// need to tell calendar to refresh/relayout
-	//if (this._calController) this._calController.refreshHandler();
-	
+
+	// XXX: temp, get additional share info (see bug #4434)
+	if (refresh.folder) {
+		this._getFolderPermissions(refresh.folder);
+	}
+
 	return resetTree;
+};
+
+ZmZimbraMail.prototype._getFolderPermissions =
+function(rootObj) {
+	var items = [ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK];
+	var needPermArr = [];
+
+	for (var i = 0; i < items.length; i++) {
+		this._getItemsWithoutPerms(needPermArr, items[i]);
+	}
+
+	// build batch request to get all permissions at once
+	if (needPermArr.length > 0) {
+		var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
+		soapDoc.setMethodAttribute("onerror", "continue");
+
+		var doc = soapDoc.getDoc();
+		for (var j = 0; j < needPermArr.length; j++) {
+			var folderRequest = soapDoc.set("GetFolderRequest");
+			folderRequest.setAttribute("xmlns", "urn:zimbraMail");
+			var folderNode = doc.createElement("folder");
+			folderNode.setAttribute("l", needPermArr[j]);
+			folderRequest.appendChild(folderNode);
+		}
+
+		var respCallback = new AjxCallback(this, this._handleResponseGetShares);
+		this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+	}
+};
+
+ZmZimbraMail.prototype._getItemsWithoutPerms =
+function(needPermArr, item) {
+	var treeData = this._appCtxt.getTree(item);
+	var items = treeData && treeData.root
+		? treeData.root.children.getArray()
+		: null;
+
+	for (var i = 0; i < items.length; i++) {
+		if (items[i].link && items[i].shares == null)
+			needPermArr.push(items[i].id);
+	}
+};
+
+ZmZimbraMail.prototype._handleResponseGetShares =
+function(result) {
+	var resp = result.getResponse().BatchResponse.GetFolderResponse;
+	if (resp) {
+		for (var i = 0; i < resp.length; i++) {
+			var link = resp[i].link ? resp[i].link[0] : null;
+			if (link) {
+				var tree;
+				if (link.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR])
+					tree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+				else if (link.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK])
+					tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+				else if (link.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK])
+					tree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+
+				var share = tree ? tree.getById(link.id) : null;
+				if (share)
+					share.setPermissions(link.perm);
+			}
+		}
+	}
 };
 
 ZmZimbraMail.prototype._checkUnread =
@@ -1255,17 +1322,19 @@ function(creates, modifies) {
 			if (parent)
 				parent.notifyCreate(create, (name == "search"));
 		} else if (name == "link") {
-			// TODO: We only support calendar links at the moment...
-			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-			var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-
 			var parentId = create.l;
 			var parent;
-			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR])
+			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) {
+				var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
 				parent = calendarTree.getById(parentId);
-			else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK])
+			} else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
+				var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 				parent = notebookTree.getById(parentId);
-			
+			} else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]) {
+				var addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+				parent = addrbookTree.getById(parentId);
+			}
+
 			if (parent) {
 				parent.notifyCreate(create, true);
 			}

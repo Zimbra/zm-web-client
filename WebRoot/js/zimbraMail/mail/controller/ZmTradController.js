@@ -134,6 +134,7 @@ ZmTradController.prototype._getMoreSearchParams =
 function(params) {
 	// OPTIMIZATION: find out if we need to pre-fetch the first hit message
 	params.fetch = this._readingPaneOn;
+	params.markRead = true;
 };
 
 // Callbacks

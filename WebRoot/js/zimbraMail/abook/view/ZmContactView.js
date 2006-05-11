@@ -521,6 +521,14 @@ function() {
 		// TODO - ignore folders that are read only!
 		if (folder.id == ZmFolder.ID_ROOT || folder.id == ZmFolder.ID_TRASH)
 			continue;
+		// find out if this is a shared folder and whether we have write permissions
+		if (folder.link) {
+			var shares = folder.getShares();
+			var share = shares ? shares[0] : null;
+			// XXX: if share == null, we need to get fetch permissions from the server
+			if (share == null || !share.isWrite())
+				continue;
+		}
 		this._folderSelect.addOption(folder.name, folder.id == match, folder.id);
 	}
 

@@ -150,7 +150,8 @@ ZmContact.createFromDom =
 function(node, args) {
 	var contact = new ZmContact(args.appCtxt, node.id, args.list);
 	contact._loadFromDom(node);
-	contact._resetCachedFields();
+	if (!contact._isShared)
+		contact._resetCachedFields();
 
 	return contact;
 };
@@ -748,7 +749,7 @@ function() {
 // Parse contact node. A contact will only have attr values if its in canonical list.
 ZmContact.prototype._loadFromDom =
 function(node) {
-	// having node.a means we must be dealing with a GAL contact
+	// "node.a" means we must be dealing with a GAL contact
 	// bug fix #7143 - check for length property instead of "instanceof Array" 
 	//                 since opening new window loses type info :(
 	if (node.a && node.a.length) {
@@ -765,6 +766,15 @@ function(node) {
 				this.attr[attr.n] = attr._content;
 			}
 		}
+	} else if (node.sf) {
+		// "sf" means this is a shared contact
+		this.rev = node.rev;
+		this.sf = node.sf;
+		this.folderId = node.l;
+		this.id = node.id;
+		this._fileAs = node.fileAsStr;
+		this._loaded = false;
+		this._isShared = true;
 	} else {
 		this.created = node.cd;
 		this.modified = node.md;

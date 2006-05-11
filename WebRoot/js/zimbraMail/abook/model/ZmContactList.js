@@ -228,7 +228,7 @@ function(id) {
 */
 ZmContactList.prototype.getSubList = 
 function(offset, limit, folderId) {
-	if (folderId) {
+	if (folderId && !this._isShared) {
 		// only collect those contacts that belong to the given folderId if provided
 		var newlist = new Array();
 		var sublist = this.getArray();

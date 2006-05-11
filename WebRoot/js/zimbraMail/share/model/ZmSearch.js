@@ -59,6 +59,7 @@ function ZmSearch(appCtxt, params) {
 		this.lastId			= params.lastId;
 		this.lastSortVal	= params.lastSortVal;
 		this.fetch 			= params.fetch;
+		this.markRead       = params.markRead;
 		this.searchId		= params.searchId;
 		this.galType		= params.galType ? params.galType : ZmSearch.GAL_ACCOUNT;
 		this.conds			= params.conds;
@@ -178,10 +179,10 @@ function(params) {
 				if (this.folderId == ZmFolder.ID_SENT || this.folderId == ZmFolder.ID_DRAFTS)
 					method.setAttribute("recip", "1");
 				// if we're prefetching the first hit message, also mark it as read
-				if (this.fetch) {
+				if (this.fetch)
 					method.setAttribute("fetch", "1");
+				if (this.markRead)
 					method.setAttribute("read", "1");
-				}
 			}
 		}
 	}
@@ -314,8 +315,13 @@ function() {
 		// now check all folders by name
 		if (!this.folderId) {
 			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getByPath(path);
-			if (folder)
+			if (folder) {
 				this.folderId = folder.id;
+			} else {
+				var addrBook = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getByPath(path);
+				if (addrBook)
+					this.folderId = addrBook.id;
+			}
 		}
 	}
 	results = this.query.match(ZmSearch.TAG_QUERY_RE);

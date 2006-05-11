@@ -249,16 +249,6 @@ function(id) {
 	return null;
 };
 
-// returns list of all calendars in overview (whether they're checked or not)
-ZmCalViewController.prototype.getAllCalendars = 
-function() {
-	var calTreeData = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-	if (calTreeData && calTreeData.root) {
-		return calTreeData.root.children.getArray();
-	}
-	return null;
-};
-
 ZmCalViewController.prototype._updateCheckedCalendars =
 function() {
 	var cc = this._calTreeController.getCheckedCalendars(ZmZimbraMail._OVERVIEW_ID);
@@ -625,49 +615,6 @@ function(viewId, forward) {
 	d = AjxDateUtil.roll(d, field, forward ? 1 : -1);
 	this.setDate(d, 0, true);	
 }
-
-ZmCalViewController.prototype._getFolderPermissions = 
-function(calendars) {
-	if (!calendars) {
-		return;
-	}
-	var needPermArr = [];
-	for (var i = 0; i < calendars.length; i++) {
-		if (calendars[i].link && calendars[i].shares == null)
-			needPermArr.push(calendars[i].id);
-	}
-
-	if (needPermArr.length > 0) {
-		var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
-		soapDoc.setMethodAttribute("onerror", "continue");
-
-		var doc = soapDoc.getDoc();
-		for (var j = 0; j < needPermArr.length; j++) {
-			var folderRequest = soapDoc.set("GetFolderRequest");
-			folderRequest.setAttribute("xmlns", "urn:zimbraMail");
-			var folderNode = doc.createElement("folder");
-			folderNode.setAttribute("l", needPermArr[j]);
-			folderRequest.appendChild(folderNode);
-		}
-		var respCallback = new AjxCallback(this, this._handleResponseGetShares);
-		
-		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
-	}
-};
-
-ZmCalViewController.prototype._handleResponseGetShares = 
-function(result) {
-	var resp = result.getResponse().BatchResponse.GetFolderResponse;
-	if (resp) {
-		for (var i = 0; i < resp.length; i++) {
-			var link = resp[i].link ? resp[i].link[0] : null;
-			var cal = link ? this.getCalendar(link.id) : null;
-
-			if (cal)
-				cal.setPermissions(link.perm);
-		}
-	}
-};
 
 // attempts to process a nav toolbar up/down button click
 ZmCalViewController.prototype._paginateDouble = 
@@ -1480,9 +1427,6 @@ ZmCalViewController.prototype.refreshHandler =
 function() {
 	var act = new AjxTimedAction(this, this._refreshAction);
 	AjxTimedAction.scheduleAction(act, 0);
-	// XXX: temp, until we get better server support 
-	//      (automatically comes down w/ refresh block)
-	this._getFolderPermissions(this.getAllCalendars());	
 }
 
 ZmCalViewController.prototype._refreshAction =

@@ -375,7 +375,9 @@ function(results, search, isMixed) {
 
 		// only show contact view if search is not in Trash folder
 		if (results.type == ZmItem.CONTACT && !inTrash) {
-			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController().show(results, this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
+			var isInGal = this._contactSource == ZmSearchToolBar.FOR_GAL_MI;
+			var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
+			clc.show(results, isInGal, search.folderId);
 		} else {
 			this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results);
 		}

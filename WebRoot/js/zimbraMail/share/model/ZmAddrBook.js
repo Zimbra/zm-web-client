@@ -70,7 +70,7 @@ function() {
 
 	if (this.id == ZmOrganizer.ID_ROOT)
 		icon = null;
-	if (this.id == ZmOrganizer.ID_TRASH)
+	else if (this.id == ZmOrganizer.ID_TRASH)
 		icon = "Trash";
 	else if (this.link)
 		icon = "SharedContactsFolder";
@@ -155,7 +155,7 @@ function(obj, link) {
 	// ignore creates of system folders
 	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.ADDRBOOK]) return;
 
-	var ab = ZmAddrBook.createFromJs(this, obj, this.tree);
+	var ab = ZmAddrBook.createFromJs(this, obj, this.tree, link);
 	var index = ZmOrganizer.getSortIndex(ab, ZmAddrBook.sortCompare);
 	this.children.add(ab, index);
 	ab._notify(ZmEvent.E_CREATE);

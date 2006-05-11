@@ -78,23 +78,30 @@ function() {
 // Public methods
 
 ZmContactListController.prototype.show =
-function(search, bIsGalSearch, folderId) {
+function(search, bIsGalSearch, folderId, isShared) {
 	this._isGalSearch = bIsGalSearch;
 	this._folderId = folderId;
 	var bForce = false;
 
 	if (search instanceof ZmList) {
-		// show canonical list of contacts
-		this._list = search;
-		bForce = true; // always force display
+		this._list = search;			// set as canonical list of contacts
+		bForce = true;					// always force display
 		if (!this._currentView)
 			this._currentView = this._defaultView();
 	} else if (search instanceof ZmSearchResult) {
 		this._isNewSearch = bForce = true;
 		this._list = search.getResults(ZmItem.CONTACT);
+
+		// find out if we just searched for a shared address book
+		var addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+		var addrbook = addrbookTree ? addrbookTree.getById(folderId) : null;
+		this._list._isShared = addrbook ? addrbook.link : false;
+
 		if (bIsGalSearch && (this._list == null))
 			this._list = new ZmContactList(this._appCtxt, search.search, bIsGalSearch);
+
 		this._list.setHasMore(search.getAttribute("more"));
+
 		ZmListController.prototype.show.apply(this, [search, this._currentView]);
 	}
 		

@@ -332,6 +332,19 @@ function(share) {
 	this.shares.push(share);
 };
 
+// XXX: temp method until we get better *server* support post Birdseye! (see bug #4434)
+// DO NOT REMOVE OR I WILL HUNT YOU DOWN AND SHOOT YOU.
+ZmOrganizer.prototype.setPermissions =
+function(permission) {
+	if (this.shares == null) {
+		var share = new ZmOrganizerShare(this, null, null, null, permission, null);
+		this.addShare(share);
+	} else {
+		// lets just assume we're dealing w/ a link (which should only have one share)
+		this.shares[0].perm = permission;
+	}
+};
+
 ZmOrganizer.prototype.getIcon = function() {};
 
 // Actions
