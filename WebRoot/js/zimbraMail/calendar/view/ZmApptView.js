@@ -32,7 +32,7 @@
 * @author Parag Shah
 * @param parent			the element that created this view
 */
-function ZmApptReadOnlyDialog(parent, appCtxt) {
+function ZmApptView(parent, appCtxt) {
 
 	DwtDialog.call(this, parent, null, null, [DwtDialog.OK_BUTTON]);
 
@@ -42,17 +42,17 @@ function ZmApptReadOnlyDialog(parent, appCtxt) {
 	this._appCtxt = appCtxt;
 };
 
-ZmApptReadOnlyDialog.prototype = new DwtDialog;
-ZmApptReadOnlyDialog.prototype.constructor = ZmApptReadOnlyDialog;
+ZmApptView.prototype = new DwtDialog;
+ZmApptView.prototype.constructor = ZmApptView;
 
 // Public methods
 
-ZmApptReadOnlyDialog.prototype.toString = 
+ZmApptView.prototype.toString = 
 function() {
-	return "ZmApptReadOnlyDialog";
+	return "ZmApptView";
 };
 
-ZmApptReadOnlyDialog.prototype.initialize = 
+ZmApptView.prototype.initialize = 
 function(appt) {
 	this._appt = appt;
 	this._objectManager.reset();
@@ -70,7 +70,7 @@ function(appt) {
 
 	html[i++] = "<table cellpadding=2 cellspacing=2 width=440>";
 
-	html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
+	html[i++] = "<tr><td class='ZmApptViewField'>";
 	html[i++] = ZmMsg.subject;
 	html[i++] = ":</td><td>";
 	html[i++] = this._objectManager.findObjects(name, true);
@@ -78,7 +78,7 @@ function(appt) {
 
 	var location = appt.getLocation(true);
 	if (location) {
-		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
+		html[i++] = "<tr><td class='ZmApptViewField'>";
 		html[i++] = ZmMsg.location;
 		html[i++] = ":</td><td>";
 		html[i++] = this._objectManager.findObjects(location, true);
@@ -87,14 +87,14 @@ function(appt) {
 
 	var equipment = appt.getEquipmentText(true);
 	if (equipment) {
-		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
+		html[i++] = "<tr><td class='ZmApptViewField'>";
 		html[i++] = ZmMsg.resources;
 		html[i++] = ":</td><td>";
 		html[i++] = this._objectManager.findObjects(equipment, true);
 		html[i++] = "</td></tr>";
 	}
 
-	html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'";
+	html[i++] = "<tr><td class='ZmApptViewField'";
 	var isException = appt._orig.isException();
 	if (isException) {
 		html[i++] = " rowspan='2'";
@@ -115,14 +115,14 @@ function(appt) {
 	if (attendees) {
 		var organizer = appt.getOrganizer();
 		if (organizer != "") {
-			html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
+			html[i++] = "<tr><td class='ZmApptViewField'>";
 			html[i++] = ZmMsg.organizer;
 			html[i++] = "</td><td>";
 			html[i++] = this._objectManager.findObjects(organizer, true);
 			html[i++] = "</td></tr>";
 		}
 
-		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
+		html[i++] = "<tr><td class='ZmApptViewField'>";
 		html[i++] = ZmMsg.attendees;
 		html[i++] = ":</td><td>";
 		html[i++] = this._objectManager.findObjects(attendees, true);
@@ -131,7 +131,7 @@ function(appt) {
 
 	var repeatStr = appt._getRecurrenceBlurbForSave();
 	if (repeatStr) {
-		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
+		html[i++] = "<tr><td class='ZmApptViewField'>";
 		html[i++] = ZmMsg.repeats;
 		html[i++] = ":</td><td>";
 		html[i++] = repeatStr;
@@ -140,7 +140,7 @@ function(appt) {
 
 	var attachStr = this._getAttachString(appt);
 	if (attachStr) {
-		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
+		html[i++] = "<tr><td class='ZmApptViewField'>";
 		html[i++] = ZmMsg.attachments;
 		html[i++] = ":</td><td>";
 		html[i++] = attachStr;
@@ -149,7 +149,7 @@ function(appt) {
 
 	var notesStr = this._getNotesString(appt);
 	if (notesStr) {
-		html[i++] = "<tr><td class='ZmApptReadOnlyDialogField'>";
+		html[i++] = "<tr><td class='ZmApptViewField'>";
 		html[i++] = ZmMsg.notes;
 		html[i++] = ":</td><td><div style='height:75px; overflow:auto'>";
 		html[i++] = notesStr;
@@ -164,7 +164,7 @@ function(appt) {
 
 // Private / protected methods
 
-ZmApptReadOnlyDialog.prototype._getTimeString = 
+ZmApptView.prototype._getTimeString = 
 function(appt) {
 	var str = [];
 	var i = 0;
@@ -216,7 +216,7 @@ function(appt) {
 	return str.join("");
 };
 
-ZmApptReadOnlyDialog.prototype._getAttachString = 
+ZmApptView.prototype._getAttachString = 
 function(appt) {
 	var str = [];
 	var j = 0;
@@ -230,7 +230,7 @@ function(appt) {
 	return str.join("");
 };
 
-ZmApptReadOnlyDialog.prototype._getNotesString =
+ZmApptView.prototype._getNotesString =
 function(appt) {
 	// set notes/content (based on compose mode per user prefs)
 	var hasHtmlPart = appt.notesTopPart && appt.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT;
@@ -245,7 +245,7 @@ function(appt) {
 };
 
 // returns true if given dates are w/in a single day
-ZmApptReadOnlyDialog.prototype._isOneDayAppt = 
+ZmApptView.prototype._isOneDayAppt = 
 function(sd, ed) {
 	var start = new Date(sd.getTime());
 	var end = new Date(ed.getTime());
@@ -259,7 +259,7 @@ function(sd, ed) {
 
 // Callbacks
 
-ZmApptReadOnlyDialog.prototype._objectSelectCallback =
+ZmApptView.prototype._objectSelectCallback =
 function(args) {
 	this.popdown();
 };

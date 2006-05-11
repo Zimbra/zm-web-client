@@ -848,7 +848,7 @@ function(appt, mode) {
 ZmCalViewController.prototype._showReadOnlyDialog = 
 function(appt) {
 	if (this._readOnlyDialog == null) {
-		this._readOnlyDialog = new ZmApptReadOnlyDialog(this._shell, this._appCtxt);
+		this._readOnlyDialog = new ZmApptView(this._shell, this._appCtxt);
 		// TODO: enable this when we add mre functionality to read-only dialog (i.e. Accept/Decline buttons)
 		//this._readOnlyDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._readOnlyOkListener));
 		this._readOnlyDialog._disableFFhack();

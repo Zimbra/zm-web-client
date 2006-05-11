@@ -1462,7 +1462,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* Label for read-only view of appts */
 /* ??? RENAME to -> ZmFieldLabelRight? */
-.ZmApptReadOnlyDialogField {
+.ZmApptViewField {
 	@NoWrap@
 	text-align: right;
 	font-weight: bold;
