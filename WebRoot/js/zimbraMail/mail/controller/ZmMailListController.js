@@ -728,8 +728,9 @@ ZmMailListController.prototype._preHideCallback =
 function() {
 	//DBG.println("ZmMailListController.prototype._preHideCallback");
 	var currentFocusMember = this._appCtxt.getRootTabGroup().getFocusMember();
+	var myTg = this.getTabGroup();
 	this._savedFocusMember = 
-		(currentFocusMember && this.getTabGroup().contains(currentFocusMember))
+		(currentFocusMember && myTg && myTg.contains(currentFocusMember))
 			? this._savedFocusMember = currentFocusMember
 			: this._savedFocusMember = null;
 	return true;
