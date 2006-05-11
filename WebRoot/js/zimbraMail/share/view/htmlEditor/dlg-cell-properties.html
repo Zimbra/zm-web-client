@@ -1,13 +1,3 @@
-<!--
-<style type="text/css">
-  table { font: 11px tahoma; }
-  .ZmHEDialog { background-color: ButtonFace; color: ButtonText; }
-  .Label { text-align: right; }
-  .VSep-L { padding-left: 3px; font-size: 1px; border-right: 1px solid #aaa; }
-  .VSep-R { padding-right: 3px; font-size: 1px; }
-</style>
--->
-
 <table class="ZmHEDialog">
   <tr>
     <td>
@@ -17,26 +7,43 @@
         <table>
           <tr>
             <td style="width: 17em">
-              <table id="ckt" style="border-collapse: collapse; background-color: #fff; margin: 10px auto; border: 1px dashed #ccc;
-                            border-left: 3px solid #f00;" align="center">
-                <tr>
-                  <td style="width: 3em; height: 3em; border: 1px dashed #ccc;">&nbsp;</td>
-                  <td style="width: 3em; height: 3em; border: 1px dashed #ccc;">&nbsp;</td>
-                </tr>
-                <tr>
-                  <td style="width: 3em; height: 3em; border: 1px dashed #ccc;">&nbsp;</td>
-                  <td style="width: 3em; height: 3em; border: 1px dashed #ccc;">&nbsp;</td>
-                </tr>
-              </table>
-              <div>
+              <!-- If you're wondering why this has to be so complex, check out this bug:
+                   https://bugzilla.mozilla.org/show_bug.cgi?id=258255 -->
+              <div style="padding-left: 1em; padding-top: 1em">$msg.clickToDrawABorder:</div>
+              <table id="$id.PreviewGridHolder"
+                     style="width: 100px; height: 100px;"
+                     cellspacing="0" cellpadding="0" align="center"><tr><td>
+                <table cellspacing="0" cellpadding="0" align="center"><tr><td>
+                  <table id="$id.PreviewGrid"
+                         style="border-collapse: collapse; background-color: #fff; border: 1px dashed #ccc;"
+                         cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td style="border: 1px dashed #ccc;"><div style="width: 30px; height: 30px;"></div></td>
+                      <td style="border: 1px dashed #ccc;"><div style="width: 30px; height: 30px;"></div></td>
+                    </tr>
+                    <tr>
+                      <td style="border: 1px dashed #ccc;"><div style="width: 30px; height: 30px;"></div></td>
+                      <td style="border: 1px dashed #ccc;"><div style="width: 30px; height: 30px;"></div></td>
+                    </tr>
+                  </table>
+                </td></tr></table>
+              </td></tr></table>
+              <div style="margin-top: 15px">
                 <table align="center">
                   <tr>
-                    <td><img src="/zimbra/js/ajax/config/style/BorderLeft.gif" /></td>
-                    <td><img src="/zimbra/js/ajax/config/style/BorderTop.gif" /></td>
-                    <td><img src="/zimbra/js/ajax/config/style/BorderRight.gif" /></td>
-                    <td><img src="/zimbra/js/ajax/config/style/BorderBottom.gif" /></td>
-                    <td><img src="/zimbra/js/ajax/config/style/BorderInnerVert.gif" /></td>
-                    <td><img src="/zimbra/js/ajax/config/style/BorderInnerHoriz.gif" /></td>
+                    <td class="SmallLabel">$msg.style:</td>
+                    <td id="$id.BorderStyle"></td>
+                  </tr>
+                  <tr>
+                    <td class="SmallLabel">$msg.colorLabel</td>
+                    <td>
+                      <!-- embedded in a table so the widget doesn't enlarge -->
+                      <table cellspacing="0" cellpadding="0"><tr><td id="$id.BorderColor"></td></tr></table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="SmallLabel">$msg.width:</td>
+                    <td id="$id.BorderWidth"></td>
                   </tr>
                 </table>
               </div>
@@ -44,23 +51,18 @@
             <td class="VSep-L">&nbsp;</td>
             <td class="VSep-R">&nbsp;</td>
             <td valign="top">
-              <table>
+              <div style="padding-left: 1em; padding-top: 1em; padding-bottom: 1em">$msg.orPickAStyleBelow:</div>
+              <table align="center">
                 <tr>
-                  <td class="Label">$msg.borderStyle:</td>
-                  <td id="$id.BorderStyle"></td>
-                </tr>
-                <tr>
-                  <td class="Label">$msg.borderColor:</td>
-                  <td>
-                    <!-- embedded in a table so the widget doesn't enlarge -->
-                    <table><tr><td id="$id.BorderColor"></td></tr></table>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="Label">$msg.borderWidth:</td>
-                  <td id="$id.BorderWidth"></td>
+                  <td><img src="/zimbra/js/ajax/config/style/BorderLeft.gif" /></td>
+                  <td><img src="/zimbra/js/ajax/config/style/BorderTop.gif" /></td>
+                  <td><img src="/zimbra/js/ajax/config/style/BorderRight.gif" /></td>
+                  <td><img src="/zimbra/js/ajax/config/style/BorderBottom.gif" /></td>
+                  <td><img src="/zimbra/js/ajax/config/style/BorderInnerVert.gif" /></td>
+                  <td><img src="/zimbra/js/ajax/config/style/BorderInnerHoriz.gif" /></td>
                 </tr>
               </table>
+              <div style="color: red; text-align: center; margin: 1em 0">FIXME: work in progress</div>
             </td>
           </tr>
         </table>
@@ -82,7 +84,7 @@
 
           <tr>
             <td class="Label">$msg.verticalAlign:</td>
-            <td id="$id.TextVAlign"></td>
+            <td class="col2" id="$id.TextVAlign"></td>
 
             <td class="VSep-L">&nbsp;</td>
             <td class="VSep-R">&nbsp;</td>

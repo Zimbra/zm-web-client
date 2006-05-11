@@ -586,6 +586,10 @@ td.DDSepInvisible div {
   width: 10em; -moz-user-select: none; user-select: none; 
   padding-right: 3px;
 }
+.ZmHEDialog td.SmallLabel { text-align: right; 
+  -moz-user-select: none; user-select: none; 
+  padding-right: 3px;
+}
 .ZmHEDialog td.col2 { width: 7em; }
 .ZmHEDialog label { -moz-user-select: none; user-select: none; }
 .ZmHEDialog .ShowPickedColor {
@@ -598,6 +602,7 @@ td.DDSepInvisible div {
 }
 .ZmHEDialog td.VSep-L { padding-left: 3px; font-size: 1px; border-right: 1px solid #aaa; }
 .ZmHEDialog td.VSep-R { padding-right: 3px; font-size: 1px; }
+.ZmHEDialog .Cursor-Pointer, .ZmHEDialog .Cursor-Pointer * { cursor: pointer !important; }
 
 
 

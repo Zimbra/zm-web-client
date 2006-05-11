@@ -216,17 +216,6 @@ function ZmTablePropsDialog(parent) {
 ZmTablePropsDialog.prototype = new DwtDialog;
 ZmTablePropsDialog.prototype.constructor = ZmTablePropsDialog;
 
-// DEBUG!!! -- works only with Firefox + Firebug extension
-function printfire() {
-	if (document.createEvent)
-	{
-		printfire.args =  arguments;
-		var ev = document.createEvent("Events");
-		ev.initEvent("printfire", false, true );
-		dispatchEvent(ev);
-	}
-};
-
 ZmTablePropsDialog.prototype.popup = function() {
 	DwtDialog.prototype.popup.call(this);
 	this._wCaption.focus();
@@ -244,17 +233,14 @@ ZmTablePropsDialog.prototype.setup = function(editor, table) {
 
 	var caption = table.getElementsByTagName("caption");
 	caption = caption.length > 0 ? caption[0].innerHTML : "";
-	printfire("Caption: " + caption);
 	this._wCaption.setValue(caption);
 
 	var summary = table.summary || "";
-	printfire("Sum: " + summary);
 	this._wSummary.setValue(summary);
 
 	var width = table.style.width || table.width;
 	document.getElementById(this._idWidthAuto).checked = !width;
 	document.getElementById(this._idWidthAuto1).checked = !!width;
-	printfire("Width: " + width);
 	if (width) {
 		this._wWidthUnit.setSelected(/%/.test(width) ? 0 : 1);
 		width = parseInt(width);
@@ -263,11 +249,9 @@ ZmTablePropsDialog.prototype.setup = function(editor, table) {
 	this._setManualWidthState();
 
 	var layout = table.style.tableLayout;
-	printfire("Layout: " + layout);
 	document.getElementById(this._idFixedLayout).checked = (layout.toLowerCase() == "fixed");
 
 	var align = table.align;
-	printfire("Align: " + align);
 	switch (align) {
 	    case "center" : align = 1; break;
 	    case "left"   : align = 2; break;
@@ -277,7 +261,6 @@ ZmTablePropsDialog.prototype.setup = function(editor, table) {
 	this._wAlign.setSelected(align);
 
 	var textAlign = table.style.textAlign;
-	printfire("Text align: " + textAlign);
 	switch (textAlign) {
 	    case "left"   : textAlign = 1; break;
 	    case "center" : textAlign = 2; break;
@@ -287,7 +270,6 @@ ZmTablePropsDialog.prototype.setup = function(editor, table) {
 	this._wTextAlign.setSelected(textAlign);
 
 	var vAlign = table.style.verticalAlign;
-	printfire("Vertical align: " + vAlign);
 	switch (vAlign) {
 	    case "top"    : vAlign = 1; break;
 	    case "middle" : vAlign = 2; break;
@@ -297,19 +279,15 @@ ZmTablePropsDialog.prototype.setup = function(editor, table) {
 	this._wTextVAlign.setSelected(vAlign);
 
 	var fgColor = table.style.color || "";
-	printfire("Font color: " + fgColor);
 	this._wFgColor.setColor(fgColor);
 
 	var bgColor = table.style.backgroundColor || "";
-	printfire("Background color: " + bgColor);
 	this._wBgColor.setColor(bgColor);
 
 	var borderColor = table.style.borderTopColor || "";
-	printfire("Border color: " + borderColor);
 	this._wBorderColor.setColor(borderColor);
 
 	var borderWidth = table.style.borderTopWidth || 0;
-	printfire("Border width: " + borderWidth);
 	if (borderWidth) {
 		borderWidth = parseInt(borderWidth);
 		this._wBorderWidth.setValue(borderWidth);
@@ -318,7 +296,6 @@ ZmTablePropsDialog.prototype.setup = function(editor, table) {
 	}
 
 	var borderStyle = table.style.borderTopStyle;
-	printfire("Border Style: " + borderStyle);
 	switch (borderStyle.toLowerCase()) {
 	    case "solid"   : borderStyle = 1; break;
 	    case "dashed"  : borderStyle = 2; break;
@@ -420,10 +397,225 @@ function ZmCellPropsDialog(parent) {
 	this.setContent(html);
 
 	ZmTableEditor.__makeCommonWidgets.call(this);
+
+	var table = this.getPreviewGridHolder();
+	table.onmousemove = table.onmousedown =
+		AjxCallback.simpleClosure(this._gridMouseEvent, this);
+	table.onmouseout = AjxCallback.simpleClosure(Dwt.delClass, Dwt, table, "Cursor-Pointer");
 };
 
 ZmCellPropsDialog.prototype = new DwtDialog;
 ZmCellPropsDialog.prototype.constructor = ZmCellPropsDialog;
 
+ZmCellPropsDialog.BORDER_TOP    = 0;
+ZmCellPropsDialog.BORDER_MIDDLE = 1;
+ZmCellPropsDialog.BORDER_BOTTOM = 2;
+ZmCellPropsDialog.BORDER_LEFT   = 3;
+ZmCellPropsDialog.BORDER_CENTER = 4;
+ZmCellPropsDialog.BORDER_RIGHT  = 5;
+
+ZmCellPropsDialog.prototype.getPreviewGridHolder = function() {
+	return document.getElementById(this._idPreviewGridHolder);
+};
+
+ZmCellPropsDialog.prototype.getPreviewGrid = function() {
+	return document.getElementById(this._idPreviewGrid);
+};
+
 ZmCellPropsDialog.prototype.setup = function(editor, table) {
+	// for some reason we need to reset this here, otherwise the dialog
+	// won't properly display a second time (and generates an error in IE)
+	// :-/  Calling this.reset() would null _loc, but would also clear
+	// button-press event handlers, which we don't want to happen.
+	this._loc = null;
+
+	var grid = this.getPreviewGrid();
+	grid.style.border = "1px dashed #ccc";
+	var tds = grid.getElementsByTagName("td");
+	for (var i = 0; i < tds.length; ++i)
+		tds[i].style.border = "1px dashed #ccc";
+
+	this._editor = editor;
+	this._table = table;
+
+	this._wBorderStyle.setSelected(1);
+	this._wBorderColor.setColor("#000000");
+	this._wBorderWidth.setValue(1);
+
+	this._grid_borderStyles = [ null, null, null, null, null, null ];
+
+	if (AjxEnv.isGeckoBased) {
+		grid.style.display = "none";
+		setTimeout(function() { grid.style.display = ""; }, 1);
+	}
+};
+
+ZmCellPropsDialog.prototype._gridMouseEvent = function(ev) {
+	if (AjxEnv.isIE)
+		ev = window.event;
+	var dwtev = DwtShell.mouseEvent;
+	dwtev.setFromDhtmlEvent(ev);
+
+	var holder = this.getPreviewGridHolder();
+	var grid = this.getPreviewGrid();
+
+	// event absolute position
+	var evpos = { x: dwtev.docX, y: dwtev.docY };
+
+	// holder absolute position
+	var hpos = Dwt.getLocation(holder);
+
+	// grid absolute position (top-left corner)
+	var gpos = Dwt.getLocation(grid);
+
+	// grid center position
+	var ipos = Dwt.getLocation(grid.rows[1].cells[1].firstChild);
+
+	// grid bottom-right corner
+	var rpos = { x: gpos.x + grid.offsetWidth,
+		     y: gpos.y + grid.offsetHeight };
+
+	var best_h = this._pickBestBorder(evpos.y, ZmCellPropsDialog.BORDER_TOP, 4,
+					  gpos.y + this._grid_getBorderWidth(ZmCellPropsDialog.BORDER_TOP) / 2,
+					  ipos.y - this._grid_getBorderWidth(ZmCellPropsDialog.BORDER_MIDDLE) / 2,
+					  rpos.y - this._grid_getBorderWidth(ZmCellPropsDialog.BORDER_BOTTOM) / 2);
+
+	var best_v = this._pickBestBorder(evpos.x, ZmCellPropsDialog.BORDER_LEFT, 4,
+					  gpos.x + this._grid_getBorderWidth(ZmCellPropsDialog.BORDER_LEFT) / 2,
+					  ipos.x - this._grid_getBorderWidth(ZmCellPropsDialog.BORDER_CENTER) / 2,
+					  rpos.x - this._grid_getBorderWidth(ZmCellPropsDialog.BORDER_RIGHT) / 2);
+
+	if (/mousedown/i.test(dwtev.type)) {
+		// mouse clicked, therefore act.
+		this._grid_applyBorderStyles(best_h);
+		this._grid_applyBorderStyles(best_v);
+
+		if ((best_h != null || best_v != null) && AjxEnv.isGeckoBased) {
+			grid.style.display = "none";
+			setTimeout(function() { grid.style.display = ""; }, 1);
+		}
+	} else {
+		// just mousemove, let's set the cursor if appropriate
+		if (best_h != null || best_v != null)
+			Dwt.addClass(holder, "Cursor-Pointer");
+		else
+			Dwt.delClass(holder, "Cursor-Pointer");
+	}
+
+	dwtev._stopPropagation = true;
+	dwtev._returnValue = false;
+	dwtev.setToDhtmlEvent(ev);
+	return dwtev._returnValue;
+};
+
+ZmCellPropsDialog.prototype._pickBestBorder = function(pos, start, fuzz, p1, p2, p3) {
+// 	var w1 = this._grid_getBorderWidth(start);
+// 	var w2 = this._grid_getBorderWidth(start + 1);
+// 	var w3 = this._grid_getBorderWidth(start + 2);
+
+	var a1 = Math.abs(pos - p1);
+	var b1 = Math.abs(pos - p2);
+	var c1 = Math.abs(pos - p3);
+
+	if (a1 < fuzz)
+		return start;
+	if (b1 < fuzz)
+		return start + 1;
+	if (c1 < fuzz)
+		return start + 2;
+
+	return null;
+};
+
+ZmCellPropsDialog.prototype._grid_getBorderWidth = function(border) {
+	var grid = this.getPreviewGrid();
+	switch (border) {
+	    case ZmCellPropsDialog.BORDER_TOP:
+		return parseInt(grid.style.borderTopWidth);
+	    case ZmCellPropsDialog.BORDER_MIDDLE:
+		return parseInt(grid.rows[0].cells[0].style.borderBottomWidth);
+	    case ZmCellPropsDialog.BORDER_BOTTOM:
+		return parseInt(grid.style.borderBottomWidth);
+
+	    case ZmCellPropsDialog.BORDER_LEFT:
+		return parseInt(grid.style.borderLeftWidth);
+	    case ZmCellPropsDialog.BORDER_CENTER:
+		return parseInt(grid.rows[0].cells[0].style.borderRightWidth);
+	    case ZmCellPropsDialog.BORDER_RIGHT:
+		return parseInt(grid.style.borderRightWidth);
+	}
+};
+
+ZmCellPropsDialog.prototype._grid_applyBorderStyles = function(border) {
+	var els = [];
+	var grid = this.getPreviewGrid();
+	switch (border) {
+	    case ZmCellPropsDialog.BORDER_TOP:
+		els.push({ el: grid, b: "borderTop" },
+			 { el: grid.rows[0].cells[0], b: "borderTop" },
+			 { el: grid.rows[0].cells[1], b: "borderTop" });
+		break;
+
+	    case ZmCellPropsDialog.BORDER_MIDDLE:
+		els.push({ el: grid.rows[0].cells[0], b: "borderBottom" },
+			 { el: grid.rows[0].cells[1], b: "borderBottom" },
+			 { el: grid.rows[1].cells[0], b: "borderTop" },
+			 { el: grid.rows[1].cells[1], b: "borderTop" });
+		break;
+
+	    case ZmCellPropsDialog.BORDER_BOTTOM:
+		els.push({ el: grid, b: "borderBottom" },
+			 { el: grid.rows[1].cells[0], b: "borderBottom" },
+			 { el: grid.rows[1].cells[1], b: "borderBottom" });
+		break;
+
+	    case ZmCellPropsDialog.BORDER_LEFT:
+		els.push({ el: grid, b: "borderLeft" },
+			 { el: grid.rows[0].cells[0], b: "borderLeft" },
+			 { el: grid.rows[1].cells[0], b: "borderLeft" });
+		break;
+
+	    case ZmCellPropsDialog.BORDER_CENTER:
+		els.push({ el: grid.rows[0].cells[0], b: "borderRight" },
+			 { el: grid.rows[0].cells[1], b: "borderLeft" },
+			 { el: grid.rows[1].cells[0], b: "borderRight" },
+			 { el: grid.rows[1].cells[1], b: "borderLeft" });
+		break;
+
+	    case ZmCellPropsDialog.BORDER_RIGHT:
+		els.push({ el: grid, b: "borderRight" },
+			 { el: grid.rows[0].cells[1], b: "borderRight" },
+			 { el: grid.rows[1].cells[1], b: "borderRight" });
+		break;
+	}
+
+	var s = this._grid_borderStyles[border];
+	var new_style = {
+	    width : this._wBorderWidth.getValue() + "px",
+	    color : this._wBorderColor.getColor(),
+	    style : this._wBorderStyle.getValue()
+	};
+	if (s == null
+	    || s.width != new_style.width
+	    || s.color != new_style.color
+	    || s.style != new_style.style)
+	{
+		// no style defined or style different
+		s = this._grid_borderStyles[border] = new_style;
+	} else {
+		// style match, null-out
+		this._grid_borderStyles[border] = null;
+		s = { width: "1px",
+		      color: "#ccc",
+		      style: "dashed" };
+	}
+
+	for (var i = 0; i < els.length; ++i) {
+		var o = els[i];
+		var b = o.b;
+		o = o.el;
+		o.style[b + "Width"] = s.width;
+		o.style[b + "Color"] = s.color;
+		o.style[b + "Style"] = s.style;
+	}
 };
