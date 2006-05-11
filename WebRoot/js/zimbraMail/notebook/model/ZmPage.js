@@ -25,7 +25,7 @@
 
 function ZmPage(appCtxt, id, list) {
 	if (arguments.length == 0) return;
-	ZmItem.call(this, appCtxt, ZmItem.MSG, id, list);
+	ZmItem.call(this, appCtxt, ZmItem.PAGE, id, list);
 	this.folderId = ZmPage.DEFAULT_FOLDER;
 }
 ZmPage.prototype = new ZmItem;
@@ -81,6 +81,14 @@ ZmPage.prototype.getPath = function() {
 	var notebook = tree.getById(this.folderId);
 	var name = this.name != ZmNotebook.PAGE_INDEX ? this.name : "";
 	return [ notebook.getPath(), "/", name ].join("");
+};
+
+ZmPage.prototype.getUrl = function() {
+	var url = ZmItem.prototype.getUrl.call(this);
+	if (this.name == ZmNotebook.PAGE_INDEX) {
+		url = url.substring(0, url.length - this.name.length);
+	}
+	return url;
 };
 
 ZmPage.prototype.setContent = function(content) {

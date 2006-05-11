@@ -432,7 +432,7 @@ ZmPageEditor.prototype._insertImageByIds = function(path, filenames) {
 	for (var i = 0; i < filenames.length; i++) {
 		var name = filenames[i];
 		var src = [
-			loc.protocol,"//",loc.host,"/service/home/~",uname,"/",path,"/",name
+			loc.protocol,"//",loc.host,"/home/",uname,"/",path,"/",name
 		].join("");
 
 		this.insertImage(src);

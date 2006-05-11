@@ -29,6 +29,7 @@ function ZmNotebookController(appCtxt, container, app) {
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
 	this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._uploadListener);
+	this._listeners[ZmOperation.SEND_PAGE] = new AjxListener(this, this._sendPageListener);
 	this._listeners[ZmOperation.DETACH] = new AjxListener(this, this._detachListener);
 	this._listeners[ZmOperation.PAGE_BACK] = new AjxListener(this, this._pageBackListener);
 	this._listeners[ZmOperation.PAGE_DBL_BACK] = new AjxListener(this, this._homeListener);
@@ -169,7 +170,9 @@ ZmNotebookController.prototype._getToolBarOps = function() {
 		ZmOperation.DELETE,
 		ZmOperation.SEP,
 		ZmOperation.ATTACHMENT,
-		ZmOperation.FILLER, 
+		ZmOperation.FILLER,
+		ZmOperation.SEND_PAGE,
+		ZmOperation.SEP,
 		ZmOperation.DETACH
 	);
 	// NOTE_VIEW items
@@ -264,6 +267,7 @@ ZmNotebookController.prototype._setViewContents = function(view) {
 	this._listView[view].set(this._object);
 };
 
+/*** REVISIT: This will be exposed later.
 ZmNotebookController.prototype._setViewMenu = function(view) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = appToolbar.getViewMenu(view);
@@ -286,6 +290,7 @@ ZmNotebookController.prototype._setViewMenu = function(view) {
 
 	appToolbar.setViewMenu(view, menu);
 };
+/***/
 
 ZmNotebookController.prototype._enableNaviButtons = function() {
 	var enabled = this._currentView == ZmController.NOTEBOOK_PAGE_VIEW;
@@ -333,18 +338,31 @@ ZmNotebookController.prototype._uploadListener = function(event) {
 	dialog.popup();
 };
 
+ZmNotebookController.prototype._sendPageListener = function(event) {
+	var view = this._listView[this._currentView];
+	var page = view.getSelection();
+	var url = page.getUrl();
+
+	var app = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
+	var controller = app.getComposeController();
+
+	var content = "<wiklet class='NAME'/>";
+
+	var action = ZmOperation.NEW_MESSAGE;
+	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
+	var msg = new ZmMailMsg(this._appCtxt);
+	var toOverride = null;
+	var subjOverride = ZmWikletProcessor.process(this._appCtxt, page, content);
+	var extraBodyText = url;
+
+	controller.doAction(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText);
+};
+
 ZmNotebookController.prototype._detachListener = function(event) {
 	var view = this._listView[this._currentView];
 	var page = view.getSelection();
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(page.remoteFolderId || page.folderId);
 
-	var loc = document.location;
-	var uname = notebook.owner || this._appCtxt.get(ZmSetting.USERNAME); // REVISIT !!!
-
-	var winurl = [
-		loc.protocol,"//",loc.host,"/service/home/~",uname,"/",page.getPath()
-	].join("");
+	var winurl = page.getUrl();
 	var winname = "newwin"+Math.random();
 	var winfeatures = [
 		"width=",(window.outerWidth || 640),",",

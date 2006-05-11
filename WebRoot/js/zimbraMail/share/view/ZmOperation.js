@@ -765,6 +765,13 @@ ZmOperation.SETUP[ZmOperation.SEND] = {
 	image:		"Send"
 };
 
+ZmOperation.SEND_PAGE = i++;
+ZmOperation.SETUP[ZmOperation.SEND_PAGE] = {
+	textKey:	"send",
+	tooltipKey:	"sendPageTT",
+	image:		"Send"
+};
+
 ZmOperation.SHARE = i++;
 ZmOperation.SETUP[ZmOperation.SHARE] = {
 	textKey:	"share",

@@ -75,6 +75,19 @@ ZmOrganizer.ROSTER_TREE_GROUP	= ZmEvent.S_ROSTER_TREE_GROUP;
 ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
 ZmOrganizer.NOTEBOOK			= ZmEvent.S_NOTEBOOK;
 
+// Primary organizer for items
+ZmOrganizer.ITEM2ORGANIZER = {};
+ZmOrganizer.ITEM2ORGANIZER[ZmItem.CONV]		= ZmOrganizer.FOLDER;
+ZmOrganizer.ITEM2ORGANIZER[ZmItem.MSG]		= ZmOrganizer.FOLDER;
+//ZmOrganizer.ITEM2ORGANIZER[ZmItem.ATT]		= ZmOrganizer.FOLDER; // ???
+ZmOrganizer.ITEM2ORGANIZER[ZmItem.CONTACT]	= ZmOrganizer.ADDRBOOK;
+ZmOrganizer.ITEM2ORGANIZER[ZmItem.APPT]		= ZmOrganizer.CALENDAR;
+//ZmOrganizer.ITEM2ORGANIZER[ZmItem.NOTE]		= ZmOrganizer.FOLDER; // ???
+ZmOrganizer.ITEM2ORGANIZER[ZmItem.PAGE]		= ZmOrganizer.NOTEBOOK;
+//ZmOrganizer.ITEM2ORGANIZER[ZmItem.CHAT]		= ZmOrganizer.FOLDER; // ???
+//ZmOrganizer.ITEM2ORGANIZER[ZmItem.ROSTER_ITEM]	= ZmOrganizer.FOLDER; // ???
+//ZmOrganizer.ITEM2ORGANIZER[ZmItem.RESOURCE]	= ZmOrganizer.FOLDER; // ???
+
 // defined in com.zimbra.cs.mailbox.Mailbox
 ZmOrganizer.ID_ROOT				= 1;
 ZmOrganizer.ID_TRASH			= 3;
@@ -272,6 +285,21 @@ function(includeRoot, showUnread, maxLength, noMarkup) {
 /** Returns the full path, suitable for use in search expressions. */
 ZmOrganizer.prototype.getSearchPath = function() {
 	return this.id != ZmOrganizer.ID_ROOT ? this.getPath(null, null, null, true) : "/";
+};
+
+ZmOrganizer.prototype.getUrl = function() {
+	var appCtxt = this.tree ? this.tree._appCtxt : null;
+	if (!appCtxt) {
+		var shell = DwtShell.getShell(window);
+		appCtxt = ZmAppCtxt.getFromShell(shell);
+	}
+	var uname = this.owner || appCtxt.get(ZmSetting.USERNAME); // REVISIT !!!
+	uname = uname.replace(/@.*$/,"");
+
+	var loc = document.location;
+	return [
+		loc.protocol, "//", loc.host, "/home/", uname, "/", this.getSearchPath()
+	].join("");
 };
 
 ZmOrganizer.prototype.getShares =

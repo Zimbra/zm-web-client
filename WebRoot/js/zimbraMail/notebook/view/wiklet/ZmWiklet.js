@@ -147,17 +147,9 @@ ZmWiklet.register(
 		label: ZmMsg.wikletUrl,
 		tooltip: ZmMsg.wikletUrlTT,
 		func: function(name, value, params, context) {
-			// REVISIT: This needs to generate user-friendly URL
 			var item = context.getItem();
-			var notebook = context.getNotebookById(item.remoteFolderId || item.folderId);
-
-			var loc = document.location;
-			var uname = notebook.owner || context._appCtxt.get(ZmSetting.USERNAME); // REVISIT !!!
-			uname = uname.replace(/@.*$/,"");
-
-			return [
-				loc.protocol,"//",loc.host,"/home/",uname,"/",item.getPath()
-			].join("");
+			// REVISIT: What about remote ids? (e.g. item.remoteFolderId)
+			return item.getUrl();
 		}
 	},
 	{
