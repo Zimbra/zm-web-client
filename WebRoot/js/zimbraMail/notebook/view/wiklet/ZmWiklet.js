@@ -367,12 +367,12 @@ ZmWiklet.register(
 				label: ZmMsg.type,
 				type: "enum",
 				item: [
-					{ label: ZmMsg.shortDate, value: "shortdate" },
-					{ label: ZmMsg.longDate, value: "longdate" },
-					{ label: ZmMsg.shortTime, value: "shorttime" },
-					{ label: ZmMsg.longTime, value: "longtime" },
-					{ label: ZmMsg.shortDateTime, value: "shortdateandtime" },
-					{ label: ZmMsg.longDateTime, value: "longdateandtime" },
+					{ label: ZmMsg.wikletDateShort, value: "shortdate" },
+					{ label: ZmMsg.wikletDateLong, value: "longdate" },
+					{ label: ZmMsg.wikletTimeShort, value: "shorttime" },
+					{ label: ZmMsg.wikletTimeLong, value: "longtime" },
+					{ label: ZmMsg.wikletDateTimeShort, value: "shortdateandtime" },
+					{ label: ZmMsg.wikletDateTimeLong, value: "longdateandtime" },
 					{ label: ZmMsg.pattern, value: "pattern" }
 				]
 			},
@@ -397,14 +397,12 @@ ZmWiklet.register(
 				label: ZmMsg.type,
 				type: "enum",
 				item: [
-					{ label: ZmMsg.shortDate, value: "dateshort" },
-					{ label: ZmMsg.longDate, value: "datelong" },
-					{ label: ZmMsg.shortTime, value: "timeshort" },
-					{ label: ZmMsg.longTime, value: "timelong" },
-					{ label: ZmMsg.shortDateShortTime, value: "dateshorttimeshort" },
-					{ label: ZmMsg.shortDateLongTime, value: "dateshorttimelong" },
-					{ label: ZmMsg.longDateShortTime, value: "datelongtimeshort" },
-					{ label: ZmMsg.longDateLongTime, value: "datelongtimelong" },
+					{ label: ZmMsg.wikletDateShort, value: "shortdate" },
+					{ label: ZmMsg.wikletDateLong, value: "longdate" },
+					{ label: ZmMsg.wikletTimeShort, value: "shorttime" },
+					{ label: ZmMsg.wikletTimeLong, value: "longtime" },
+					{ label: ZmMsg.wikletDateTimeShort, value: "shortdateandtime" },
+					{ label: ZmMsg.wikletDateTimeLong, value: "longdateandtime" },
 					{ label: ZmMsg.pattern, value: "pattern" }
 				]
 			},

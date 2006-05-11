@@ -321,6 +321,8 @@ ZmPageEditor.prototype._serializeWiklets = function() {
 			wikletEl.setAttribute(aname.substr(9), avalue);
   		}
 
+		var text = document.createTextNode(name);
+		wikletEl.appendChild(text);
 		elem.parentNode.replaceChild(wikletEl, elem);
 	}
 };
