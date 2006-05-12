@@ -1713,9 +1713,12 @@ function(actionCode, ev) {
 			if (curView && curView.getController) {
 				var c = curView.getController();
 				if (c && c.handleKeyAction)
-					c.handleKeyAction(actionCode, ev);
+					return c.handleKeyAction(actionCode, ev);
+			} else {
+				return false;
 			}
 			break;
 		}
 	}
+	return true;
 };

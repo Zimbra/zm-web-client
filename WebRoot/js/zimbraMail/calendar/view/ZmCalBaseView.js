@@ -195,7 +195,7 @@ function(ev) {
 	//		 being displayed when we re-enter the listview even though
 	//		 we're not over a list item.
 	if (div._type == ZmCalBaseView.TYPE_APPT) {
-		this._toolTipContent = null;
+		this.setToolTipContent(null);
 	}
 	this._mouseOutAction(ev, div);
 }

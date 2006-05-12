@@ -138,9 +138,10 @@ function(actionCode) {
 		}
 			
 		default:
-			ZmListController.prototype.handleKeyAction.call(this, actionCode);
+			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 			break;
 	}
+	return true;
 };
 
 // Private and protected methods

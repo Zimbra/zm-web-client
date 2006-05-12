@@ -176,8 +176,9 @@ function(actionCode) {
 			break;
 		
 		default:
-			ZmController.prototype.handleKeyAction.call(this, actionCode);
+			return ZmController.prototype.handleKeyAction.call(this, actionCode);
 	}
+	return true;
 };
 
 // abstract protected methods

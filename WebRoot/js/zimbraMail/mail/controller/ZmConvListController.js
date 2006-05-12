@@ -112,9 +112,10 @@ function(actionCode) {
 			break;
 			
 		default:
-			ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
+			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
 			break;
 	}
+	return true;
 };
 
 // Private and protected methods

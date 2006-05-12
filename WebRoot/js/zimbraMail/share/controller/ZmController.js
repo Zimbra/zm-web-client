@@ -134,6 +134,7 @@ function(view) {
 ZmController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmController.handleKeyAction");
+	return false;
 };
 
 ZmController.prototype._createTabGroup =
