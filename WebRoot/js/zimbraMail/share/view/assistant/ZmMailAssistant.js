@@ -77,7 +77,7 @@ function(dialog) {
 		confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this, dialog);
 		confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this, dialog);
 	    confirmDialog.popup();
-		return;
+		return false;
 	}
 
 	if (bad.size() > 0 && !this._badAddrsOkay) {
@@ -240,7 +240,6 @@ function(dialog, verb, args) {
 		}
 		index = Math.max(index, ri);
 	}
-	return;
 };
 
 ZmMailAssistant.prototype._getConfirmDialog = 
