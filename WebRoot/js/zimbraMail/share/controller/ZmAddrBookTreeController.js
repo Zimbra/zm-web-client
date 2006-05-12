@@ -158,7 +158,8 @@ function(folder) {
 	if (folder.id == ZmFolder.ID_TRASH || folder.link) {
 		var searchController = this._appCtxt.getSearchController();
 		var types = searchController.getTypes(ZmItem.CONTACT);
-		searchController.search({query:folder.createQuery(), types:types, fetch:true});
+		searchController.search({query:folder.createQuery(), types:types,
+								 fetch:true, sortBy:ZmSearch.NAME_ASC});
 	} else {
 		var capp = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		capp.showFolder(folder);

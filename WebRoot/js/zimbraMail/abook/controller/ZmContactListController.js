@@ -268,8 +268,27 @@ function(view) {
 ZmContactListController.prototype._resetOperations = 
 function(parent, num) {
 	if (!this._isGalSearch) {
-		ZmListController.prototype._resetOperations.call(this, parent, num);
-		parent.enable(ZmOperation.EDIT, num == 1);
+		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW], true);
+		parent.enable(ZmOperation.PRINT, num == 1);
+		// a valid folderId means user clicked on an addrbook
+		if (this._folderId) {
+			var canEdit = true;
+			var isShare = false;
+			// get the folder from this folderId
+			var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(this._folderId);
+			if (folder && folder.link) {
+				isShare = true;
+				var shares = folder.getShares();
+				var share = shares ? shares[0] : null;
+				canEdit = share && share.isWrite();
+			}
+			parent.enable([ZmOperation.TAG_MENU], !isShare && num > 0);
+			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canEdit && num > 0);
+			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1);
+		} else {
+			// must be a search
+			// TODO - enable toolbar based on currently selected contacts
+		}
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
 		parent.enableAll(false);
@@ -329,7 +348,15 @@ function(ev) {
 	} 
 	else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) 
 	{
-		if (!this._isGalSearch)
+		// get the folder from this folderId
+		var canEdit = true;
+		var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(this._folderId);
+		if (folder && folder.link) {
+			var shares = folder.getShares();
+			var share = shares ? shares[0] : null;
+			canEdit = share && share.isWrite();
+		}
+		if (!this._isGalSearch && canEdit)
 			this._app.getContactController().show(ev.item);
 	}
 };

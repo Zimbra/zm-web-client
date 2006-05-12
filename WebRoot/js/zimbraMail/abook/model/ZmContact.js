@@ -151,7 +151,8 @@ function(node, args) {
 	// check global cache for this item first
 	var contact = args.appCtxt.cacheGet(node.id);
 
-	if (contact == null) {
+	// make sure the revision hasnt changed, otherwise contact is out of date
+	if (contact == null || (contact && contact.rev != node.rev)) {
 		contact = new ZmContact(args.appCtxt, node.id, args.list);
 		contact._loadFromDom(node);
 		if (!contact._isShared)
