@@ -55,7 +55,8 @@ function(callback, errorCallback) {
 ZmContactsApp.prototype._handleResponseLaunch =
 function(callback) {
 	// XXX: hard code app folder name for now...
-	this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue("in:Contacts");
+	if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING))
+		this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue("in:Contacts");
 
 	// get the last selected folder ID
 	var folderId = ZmOrganizer.ID_ADDRBOOK;
@@ -72,7 +73,8 @@ function(callback) {
 
 ZmContactsApp.prototype.showFolder = 
 function(folder) {
-	this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue("in:" + folder.name);
+	if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING))
+		this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue("in:" + folder.name);
 	this.getContactListController().show(this._contactList, null, folder.id);
 };
 
