@@ -50,18 +50,19 @@ ZmRevokeShareDialog.prototype._reply;
 
 // Public methods
 
-ZmRevokeShareDialog.prototype.setShareInfo = function(organizerShare) { 
+ZmRevokeShareDialog.prototype.popup = function(organizerShare, loc) {
 	this._shareInfo = AjxUtil.createProxy(organizerShare, 1);
-	
-	var params = organizerShare.grantee.name;
+
+	var isPubShare = this._shareInfo.isPublic();
+
+	var params = isPubShare ? ZmMsg.shareWithAll : organizerShare.grantee.name;
 	var message = this._formatter.format(params);
 	this._confirmMsgEl.innerHTML = message;
-};
 
-ZmRevokeShareDialog.prototype.popup = function(loc) {
-	this._reply.setReply(true);
+	this._reply.setReply(!isPubShare);
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
+	this._reply.setVisible(!isPubShare);
 
 	DwtDialog.prototype.popup.call(this, loc);
 	this.setButtonEnabled(DwtDialog.YES_BUTTON, true);

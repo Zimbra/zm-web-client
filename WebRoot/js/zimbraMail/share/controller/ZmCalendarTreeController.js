@@ -254,10 +254,7 @@ function(ev) {
 	var share = null;
 	
 	var sharePropsDialog = this._appCtxt.getSharePropsDialog();
-	sharePropsDialog.setDialogType(ZmSharePropsDialog.NEW);
-	sharePropsDialog.setFolder(calendar);
-	sharePropsDialog.setShareInfo(share);
-	sharePropsDialog.popup();
+	sharePropsDialog.popup(ZmSharePropsDialog.NEW, calendar, share);
 };
 
 ZmCalendarTreeController.prototype._mountCalListener =

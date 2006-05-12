@@ -32,6 +32,12 @@ P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
 	@FontNormal@
 }
 
+INPUT[readonly], TEXTAREA[readonly] {
+	@InputField-disabled@
+	@_InputBorder_@
+	cursor: text;
+}
+
 HTML {
 	@FullSize@
 }

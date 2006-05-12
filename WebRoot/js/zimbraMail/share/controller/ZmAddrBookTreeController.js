@@ -137,10 +137,7 @@ function(ev) {
     var addrbook = this._pendingActionData;
 	
     var sharePropsDialog = this._appCtxt.getSharePropsDialog();
-    sharePropsDialog.setDialogType(ZmSharePropsDialog.NEW);
-    sharePropsDialog.setFolder(addrbook);
-    sharePropsDialog.setShareInfo();
-    sharePropsDialog.popup();
+    sharePropsDialog.popup(ZmSharePropsDialog.NEW, addrbook, null);
 };
 
 

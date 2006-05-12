@@ -189,10 +189,7 @@ function(ev) {
 	var share = null;
 	
 	var sharePropsDialog = this._appCtxt.getSharePropsDialog();
-	sharePropsDialog.setDialogType(ZmSharePropsDialog.NEW);
-	sharePropsDialog.setFolder(notebook);
-	sharePropsDialog.setShareInfo(share);
-	sharePropsDialog.popup();
+	sharePropsDialog.popup(ZmSharePropsDialog.NEW, notebook, share);
 };
 
 ZmNotebookTreeController.prototype._mountNotebookListener =

@@ -111,10 +111,7 @@ ZmFolderPropsDialog.prototype._handleEditShare = function(event) {
 	var share = target._share;
 	var dialog = target._dialog;
 	var sharePropsDialog = dialog._appCtxt.getSharePropsDialog();
-	sharePropsDialog.setDialogType(ZmSharePropsDialog.EDIT);
-	sharePropsDialog.setFolder(share.organizer);
-	sharePropsDialog.setShareInfo(share);
-	sharePropsDialog.popup();
+	sharePropsDialog.popup(ZmSharePropsDialog.EDIT, share.organizer, share);
 	return false;
 };
 
@@ -124,8 +121,7 @@ ZmFolderPropsDialog.prototype._handleRevokeShare = function(event) {
 	var share = target._share;
 	var dialog = target._dialog;
 	var revokeShareDialog = dialog._appCtxt.getRevokeShareDialog();
-	revokeShareDialog.setShareInfo(share);
-	revokeShareDialog.popup();
+	revokeShareDialog.popup(share);
 	return false;
 };
 
@@ -154,10 +150,7 @@ ZmFolderPropsDialog.prototype._handleResendShare = function(event) {
 
 ZmFolderPropsDialog.prototype._handleAddShareButton = function(event) {
 	var sharePropsDialog = this._appCtxt.getSharePropsDialog();
-	sharePropsDialog.setDialogType(ZmSharePropsDialog.NEW);
-	sharePropsDialog.setFolder(this._folder);
-	sharePropsDialog.setShareInfo(null);
-	sharePropsDialog.popup();
+	sharePropsDialog.popup(ZmSharePropsDialog.NEW, this._folder, null);
 };
 
 ZmFolderPropsDialog.prototype._handleOkButton = function(event) {
@@ -228,7 +221,7 @@ ZmFolderPropsDialog.prototype._populateShares = function() {
 
 			var nameEl = row.insertCell(row.cells.length);
 			nameEl.style.paddingRight = "15px";
-			nameEl.innerHTML = AjxStringUtil.htmlEncode(share.grantee.name);
+			nameEl.innerHTML = AjxStringUtil.htmlEncode(share.isPublic() ? ZmMsg.shareWithAll : share.grantee.name);
 
 			var roleEl = row.insertCell(row.cells.length);
 			roleEl.style.paddingRight = "15px";
@@ -250,11 +243,14 @@ ZmFolderPropsDialog.prototype.__createCmdLinks = function(parent, share) {
 		this._handleEditShare, this._handleRevokeShare, this._handleResendShare
 	];
 	for (var i = 0; i < labels.length; i++) {
+		var action = actions[i];
+		if (share.isPublic() && action == this._handleResendShare) continue;
+
 		var link = document.createElement("A");
 		link.href = "#";
 		link._dialog = this;
 		link._share = share;
-		link.onclick = actions[i];
+		link.onclick = action;
 		link.innerHTML = labels[i];
 		
 		parent.appendChild(link);

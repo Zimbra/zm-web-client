@@ -38,7 +38,8 @@ function ZmSharePropsDialog(appCtxt, shell, className) {
 		var compCallback = new AjxCallback(this, this._handleCompletionData, [this]);
 		var params = {parent: this, dataClass: dataClass, dataLoader: dataLoader,
 					  matchValue: ZmContactList.AC_VALUE_EMAIL, locCallback: locCallback,
-					  compCallback: compCallback};
+					  compCallback: compCallback,
+					  keyUpCallback: new AjxCallback(this, this._acKeyUpListener) };
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
 	
@@ -61,40 +62,34 @@ ZmSharePropsDialog.prototype._dialogType = ZmSharePropsDialog.NEW;
 
 // Public methods
 
-ZmSharePropsDialog.prototype.setDialogType =
-function(type) {
+ZmSharePropsDialog.prototype.popup =
+function(type, folder, shareInfo, loc) {
 	this._dialogType = type;
-};
 
-ZmSharePropsDialog.prototype.setFolder =
-function(folder) {
 	this._folder = folder;
 
 	this._nameEl.innerHTML = AjxStringUtil.htmlEncode(folder.name);
 	this._typeEl.innerHTML = ZmFolderPropsDialog.TYPE_CHOICES[this._folder.type] || ZmMsg.folder;
-};
 
-ZmSharePropsDialog.prototype.setShareInfo =
-function(shareInfo) {
 	if (!shareInfo) {
-		shareInfo = new ZmShareInfo;
+		shareInfo = new ZmOrganizerShare;
 		shareInfo.link.perm = ZmShareInfo.ROLE_VIEWER;
 	}
 	this._shareInfo = AjxUtil.createProxy(shareInfo, 1);
-};
 
-ZmSharePropsDialog.prototype.popup =
-function(loc) {
-	this._inputEl.value = "";
-	if (this._dialogType == ZmSharePropsDialog.NEW) {
-		Dwt.setVisible(this._inputEl, true);
-		Dwt.setVisible(this._granteeEl, false);
-	}
-	else {
-		Dwt.setVisible(this._inputEl, false);
-		Dwt.setVisible(this._granteeEl, true);
-		this._granteeEl.innerHTML = AjxStringUtil.htmlEncode(this._shareInfo.grantee.name);
-	}
+	var isNewShare = this._dialogType == ZmSharePropsDialog.NEW;
+	var isPubShare = this._shareInfo.isPublic();
+
+	this._allRadioEl.checked = isPubShare;
+	this._allRadioEl.disabled = !isNewShare;
+	this._userRadioEl.checked = !isPubShare;
+	this._userRadioEl.disabled = !isNewShare;
+
+	this._granteeInput.setValue(this._shareInfo.grantee.name || "");
+	this._granteeInput.setEnabled(isNewShare);
+
+	this._rolesGroup.setVisible(!isPubShare || isNewShare);
+	this._messageGroup.setVisible(!isPubShare || isNewShare);
 
 	var perm = this._shareInfo.link.perm;
 	if (this._noneRadioEl.value == perm) this._noneRadioEl.checked = true;
@@ -107,9 +102,13 @@ function(loc) {
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 
+	this._urlEl.value = this._folder.getUrl();
+
 	DwtDialog.prototype.popup.call(this, loc);
-	if (this._dialogType == ZmSharePropsDialog.NEW) {
-		this._inputEl.focus();
+	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+	if (isNewShare) {
+		this._userRadioEl.checked = true;
+		this._granteeInput.focus();
 	}
 };
 
@@ -131,7 +130,7 @@ function(event) {
 
 	// initialize share info with entered values
 	if (this._dialogType == ZmSharePropsDialog.NEW) {
-		share.grantee.name = this._inputEl.value;
+		share.grantee.name = this._granteeInput.getValue();
 	}
 	share.link.perm = this._getSelectedRole();
 
@@ -158,7 +157,7 @@ function(event) {
 	}
 
 	// send mail
-	if (this._reply.getReply()) {
+	if (!this._allRadioEl.checked && this._reply.getReply()) {
 		// initialize rest of share information
 		share.grantor.id = this._appCtxt.get(ZmSetting.USERID);
 		share.grantor.email = this._appCtxt.get(ZmSetting.USERNAME);
@@ -183,15 +182,44 @@ function(event) {
 	this.popdown();
 };
 
-ZmSharePropsDialog.prototype._handleEdit =
+ZmSharePropsDialog.prototype._acKeyUpListener = function(event, aclv, result) {
+	ZmSharePropsDialog._enableFieldsOnEdit(aclv.parent);
+};
+
+ZmSharePropsDialog._handleKeyUp = function(event){
+	if (DwtInputField._keyUpHdlr(event)) {
+		return ZmSharePropsDialog._handleEdit(event);
+	}
+	return false;
+};
+
+ZmSharePropsDialog._handleEdit =
 function(event) {
-	event = event || window.event;
 	var target = DwtUiEvent.getTarget(event);
-
 	var dialog = Dwt.getObjectFromElement(target);
-	var enabled = AjxStringUtil.trim(dialog._inputEl.value) != "" || dialog._dialogType == ZmSharePropsDialog.EDIT;
 
+	ZmSharePropsDialog._enableFieldsOnEdit(dialog);
 	return true;
+};
+
+ZmSharePropsDialog._enableFieldsOnEdit = function(dialog) {
+	var enabled = dialog._dialogType == ZmSharePropsDialog.EDIT ||
+				  dialog._allRadioEl.checked ||
+				  AjxStringUtil.trim(dialog._granteeInput.getValue()) != "";
+	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, enabled);
+};
+
+ZmSharePropsDialog._handleShareWith =
+function(event) {
+	var target = DwtUiEvent.getTarget(event);
+	var dialog = Dwt.getObjectFromElement(target);
+
+	var isPubShare = target.value == ZmOrganizerShare.TYPE_ALL;
+	dialog._rolesGroup.setVisible(!isPubShare);
+	dialog._messageGroup.setVisible(!isPubShare);
+	dialog._granteeInput.setEnabled(!isPubShare);
+
+	return ZmSharePropsDialog._handleEdit(event);
 };
 
 ZmSharePropsDialog.prototype._getSelectedRole =
@@ -212,8 +240,13 @@ function(folder, share) {
 	actionNode.setAttribute("id", folder.id);
 	
 	var shareNode = soapDoc.set("grant", null, actionNode);
-	shareNode.setAttribute("gt", "usr");
-	shareNode.setAttribute("d", share.grantee.name);
+	if (this._allRadioEl.checked) {
+		shareNode.setAttribute("gt", "pub");
+	}
+	else {
+		shareNode.setAttribute("gt", "usr");
+		shareNode.setAttribute("d", share.grantee.name);
+	}
 	shareNode.setAttribute("perm", share.link.perm);
 	
 	var resp = this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
@@ -252,48 +285,65 @@ function(cv, ev) {
 
 ZmSharePropsDialog.prototype._createView =
 function() {
-	// add "name/type/share with" sections
+	var view = new DwtComposite(this);
+
+	// ids
 	var nameId = Dwt.getNextId();
 	var typeId = Dwt.getNextId();
-	var inputId = Dwt.getNextId();
 	var granteeId = Dwt.getNextId();
+	var urlId = Dwt.getNextId();
 
-	var html = new Array();
+	// radio names
+	var shareWithRadioName = this._htmlElId+"_shareWith";
+	var roleRadioName = this._htmlElId+"_role";
+
+	// add general properties
+	var shareWithHtml = [
+		"<table border='0' cellpadding='0' cellspacing='3'>",
+			"<tr>",
+				"<td>",
+					"<input type='radio' ",
+						"name='",shareWithRadioName,"' ",
+						"value='",ZmOrganizerShare.TYPE_ALL,"'>",
+				"</td>",
+				"<td>",ZmMsg.shareWithAll,"</td>",
+			"</tr>",
+			"<tr>",
+				"<td>",
+					"<input type='radio' ",
+						"name='",shareWithRadioName,"' ",
+						"value='",ZmOrganizerShare.TYPE_USER,"'>",
+				"</td>",
+				"<td>",ZmMsg.shareWithUserOrGroup,"</td>",
+			"</tr>",
+			"<tr>",
+				"<td></td>",
+				"<td id='",granteeId,"'></td>",
+			"</tr>",
+		"</table>"
+	].join("");
+
+	var props = new DwtPropertySheet(view);
+	props.addProperty(ZmMsg.nameLabel, "<span id='"+nameId+"'></span>");
+	props.addProperty(ZmMsg.typeLabel, "<span id='"+typeId+"'></span>");
+	props.addProperty(ZmMsg.shareWithLabel, shareWithHtml);
+
+	this._granteeInput = new DwtInputField(props);
+
+	var granteeDiv = document.getElementById(granteeId);
+	granteeDiv.appendChild(this._granteeInput.getHtmlElement());
+
+	// add role group
 	var idx = 0;
+	var html = [];
+	html[idx++] = "<table border=0 cellpadding=0 cellspacing=3>";
 
-	html[idx++] = "<table border=0><tr><td>";
-	html[idx++] = ZmMsg.nameLabel;
-	html[idx++] = "</td><td id='";
-	html[idx++] = nameId;
-	html[idx++] = "'></td></tr><tr><td>";
-	html[idx++] = ZmMsg.typeLabel;
-	html[idx++] = "</td><td id='";
-	html[idx++] = typeId;
-	html[idx++] = "'></td></tr><tr><td>";
-	html[idx++] = ZmMsg.shareWithLabel;
-	html[idx++] = "</td><td><input type='text' style='width:20em' id='";
-	html[idx++] = inputId;
-	html[idx++] = "'></td></tr><tr><td id='";
-	html[idx++] = granteeId;
-	html[idx++] = "'></td></tr></table>";
-
-	var view = new DwtComposite(this);
-	var element = view.getHtmlElement();
-	element.innerHTML = html.join("");
-
-	// add role section
 	var roles = [ ZmShareInfo.ROLE_NONE, ZmShareInfo.ROLE_VIEWER, ZmShareInfo.ROLE_MANAGER ];
-	var radioName = this._htmlElId + "_radio";
-
-	html.length = 0;
-	idx = 0;
-
-	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0>";
 	for (var i=0; i<roles.length; i++) {
 		var perm = roles[i];
 
 		html[idx++] = "<tr><td valign=top><input type='radio' name='";
-		html[idx++] = radioName;
+		html[idx++] = roleRadioName;
 		html[idx++] = "' value='";
 		html[idx++] = perm;
 		html[idx++] = "'></td><td style='font-weight:bold; padding-right:0.25em'>";
@@ -302,39 +352,63 @@ function() {
 		html[idx++] = ZmShareInfo.getRoleActions(perm);
 		html[idx++] = "</td></tr>";
 	}
+
 	html[idx++] = "</table>";
 
-	var rolesGroup = new DwtGrouper(view);
-	rolesGroup.setLabel(ZmMsg.roleLabel);
-	rolesGroup.setContent(html.join(""));
-	element.appendChild(rolesGroup.getHtmlElement());
+	this._rolesGroup = new DwtGrouper(view);
+	this._rolesGroup.setLabel(ZmMsg.role);
+	this._rolesGroup.setContent(html.join(""));
 
+	// add message group
 	this._reply = new ZmShareReply(view);
-	element.appendChild(this._reply.getHtmlElement());
 
-	// save "name/type/share with" objects
+	this._messageGroup = new DwtGrouper(view);
+	this._messageGroup.setLabel(ZmMsg.message);
+	this._messageGroup.setView(this._reply);
+
+	// add url group
+	var urlHtml = [
+		"<div>",
+			"<div style='margin-bottom:.25em'>",ZmMsg.shareUrlInfo,"</div>",
+			"<div style='padding-left:2em'>",
+				"<textarea id='",urlId,"' rows='2' cols='50' readonly></textarea>",
+			"</div>",
+		"</div>"
+	].join("");
+
+	this._urlGroup = new DwtGrouper(view);
+	this._urlGroup.setLabel(ZmMsg.url);
+	this._urlGroup.setContent(urlHtml);
+
+	// save information elements
 	this._nameEl = document.getElementById(nameId)
 	this._typeEl = document.getElementById(typeId);
-	this._granteeEl = document.getElementById(granteeId);
-	this._inputEl = document.getElementById(inputId);
+	this._urlEl = document.getElementById(urlId);
 
+	var inputEl = this._granteeInput.getInputElement();
 	if (this._acAddrSelectList) {
-		this._acAddrSelectList.handle(this._inputEl);
+		this._acAddrSelectList.handle(inputEl);
+	}
+	else {
+		Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleKeyUp);
 	}
 
 	// save radio elements
-	var radios = [ "_noneRadioEl", "_viewerRadioEl", "_managerRadioEl" ];
-	var radioEls = document.getElementsByName(radioName);
+	var radios = [ "_allRadioEl", "_userRadioEl" ];
+	var radioEls = document.getElementsByName(shareWithRadioName);
 	for (var i=0; i<radioEls.length; i++) {
 		this[radios[i]] = radioEls[i];
-		Dwt.setHandler(radioEls[i], DwtEvent.ONCLICK, this._handleEdit);
+		Dwt.setHandler(radioEls[i], DwtEvent.ONCLICK, ZmSharePropsDialog._handleShareWith);
+		Dwt.associateElementWithObject(radioEls[i], this);
+	}
+
+	var radios = [ "_noneRadioEl", "_viewerRadioEl", "_managerRadioEl" ];
+	var radioEls = document.getElementsByName(roleRadioName);
+	for (var i=0; i<radioEls.length; i++) {
+		this[radios[i]] = radioEls[i];
+		Dwt.setHandler(radioEls[i], DwtEvent.ONCLICK, ZmSharePropsDialog._handleEdit);
 		Dwt.associateElementWithObject(radioEls[i], this);
 	}
 
 	return view;
-};
-
-ZmSharePropsDialog.prototype._getSeparatorTemplate =
-function() {
-	return "";
 };

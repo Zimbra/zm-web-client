@@ -434,6 +434,13 @@ function ZmOrganizerShare(organizer, granteeType, granteeId, granteeName, perm, 
 ZmOrganizerShare.prototype = new ZmShareInfo;
 ZmOrganizerShare.prototype.constructor = ZmOrganizerShare;
 
+// Constants
+
+ZmOrganizerShare.TYPE_ALL = "pub";
+ZmOrganizerShare.TYPE_USER = "usr";
+
+ZmOrganizerShare.ZID_ALL = "99999999-9999-9999-9999-999999999999";
+
 // Static methods
 
 ZmOrganizerShare.createFromJs =
@@ -442,6 +449,10 @@ function(parent, grant) {
 };
 
 // Public methods
+
+ZmOrganizerShare.prototype.isPublic = function() {
+	return this.grantee.type == ZmOrganizerShare.TYPE_ALL;
+};
 
 ZmOrganizerShare.prototype.setPermissions =
 function(perm) {
@@ -457,7 +468,8 @@ function(perm) {
 
 ZmOrganizerShare.prototype.revoke = 
 function() {
-	var success = this._organizerShareAction("!grant", { zid: this.grantee.id } );
+	var actionAttrs = { zid: this.isPublic() ? ZmOrganizerShare.ZID_ALL : this.grantee.id };
+	var success = this._organizerShareAction("!grant", actionAttrs );
 	if (success) {
 		var index = this._indexOf(this.grantee.name);
 		this.organizer.shares.splice(index,1);
@@ -495,10 +507,12 @@ function(operation, actionAttrs, grantAttrs) {
 	for (var attr in actionAttrs) {
 		actionNode.setAttribute(attr, actionAttrs[attr]);
 	}
-	
+
 	var shareNode = soapDoc.set("grant", null, actionNode);
 	shareNode.setAttribute("gt", this.grantee.type);
-	shareNode.setAttribute("d", this.grantee.name);
+	if (!this.isPublic()) {
+		shareNode.setAttribute("d", this.grantee.name);
+	}
 	for (var attr in grantAttrs) {
 		shareNode.setAttribute(attr, grantAttrs[attr]);
 	}
