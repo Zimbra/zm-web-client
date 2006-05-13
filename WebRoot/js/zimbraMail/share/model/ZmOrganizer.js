@@ -298,7 +298,8 @@ ZmOrganizer.prototype.getUrl = function() {
 
 	var loc = document.location;
 	return [
-		loc.protocol, "//", loc.host, "/home/", uname, "/", this.getSearchPath()
+		loc.protocol, "//", loc.host, "/home/", uname, "/",
+		AjxStringUtil.urlEncode(this.getSearchPath())
 	].join("");
 };
 
