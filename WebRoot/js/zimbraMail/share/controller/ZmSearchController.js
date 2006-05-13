@@ -278,8 +278,9 @@ function(types) {
 		var type = types.get(0);
 		var viewType = null;
 		switch (type) {
-			case ZmItem.CONV: 	viewType = ZmController.CONVLIST_VIEW; break;
-			case ZmItem.MSG: 	viewType = ZmController.TRAD_VIEW; break;
+			case ZmItem.CONV:		viewType = ZmController.CONVLIST_VIEW; break;
+			case ZmItem.MSG:		viewType = ZmController.TRAD_VIEW; break;
+			case ZmItem.CONTACT:	viewType = ZmController.CONTACT_SIMPLE_VIEW; break;
 			// more types go here as they are suported...
 		}
 		

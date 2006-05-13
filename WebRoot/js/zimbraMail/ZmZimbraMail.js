@@ -1029,15 +1029,14 @@ function(refresh) {
 
 	// XXX: temp, get additional share info (see bug #4434)
 	if (refresh.folder) {
-		this._getFolderPermissions(refresh.folder);
+		this._getFolderPermissions([ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK]);
 	}
 
 	return resetTree;
 };
 
 ZmZimbraMail.prototype._getFolderPermissions =
-function(rootObj) {
-	var items = [ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK];
+function(items) {
 	var needPermArr = [];
 
 	for (var i = 0; i < items.length; i++) {
@@ -1324,19 +1323,25 @@ function(creates, modifies) {
 		} else if (name == "link") {
 			var parentId = create.l;
 			var parent;
+			var share;
 			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) {
 				var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
 				parent = calendarTree.getById(parentId);
+				share = ZmOrganizer.CALENDAR;
 			} else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
 				var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 				parent = notebookTree.getById(parentId);
+				share = ZmOrganizer.NOTEBOOK;
 			} else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]) {
 				var addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
 				parent = addrbookTree.getById(parentId);
+				share = ZmOrganizer.ADDRBOOK;
 			}
 
 			if (parent) {
 				parent.notifyCreate(create, true);
+				// XXX: once bug #4434 is fixed, check if this call is still needed
+				this._getFolderPermissions([share]);
 			}
 		} else if (name == "w") {
 			// REVISIT: use app context item cache
@@ -1550,13 +1555,11 @@ function(ev) {
 ZmZimbraMail.prototype._addrBookChangeListener =
 function(ev) {
 	// TODO
-	DBG.println("TODO: addrBookChangeListener");
 };
 
 ZmZimbraMail.prototype._searchChangeListener =
 function(ev) {
 	// TODO
-	DBG.println("TODO: searchChangeListener");
 };
 
 ZmZimbraMail.prototype._createBanner =
@@ -1567,7 +1570,9 @@ function() {
 	var i = 0;
 	html[i++] = "<a href='";
 	html[i++] = this._appCtxt.get(ZmSetting.LOGO_URI);
-	html[i++] = "' target='_blank'><div class='"+AjxImg.getClassForImage("AppBanner")+"'></div></a>";
+	html[i++] = "' target='_blank'><div class='";
+	html[i++] = AjxImg.getClassForImage("AppBanner");
+	html[i++] = "'></div></a>";
 	banner.getHtmlElement().innerHTML = html.join("");
 	return banner;
 };
@@ -1584,8 +1589,12 @@ function() {
 	var html = [];
 	var i = 0;
 	html[i++] = "<table border=0 cellpadding=1 cellspacing=0 width=100%>";
-	html[i++] = "<tr><td><div class='BannerTextUser' id='" + userNameId + "'></div></td></tr>";
-	html[i++] = "<tr><td><div id='" + usedQuotaId + "'></div></td></tr>";
+	html[i++] = "<tr><td><div class='BannerTextUser' id='";
+	html[i++] = userNameId;
+	html[i++] = "'></div></td></tr>";
+	html[i++] = "<tr><td><div id='";
+	html[i++] = usedQuotaId;
+	html[i++] = "'></div></td></tr>";
 	html[i++] = "</table>";
 	userInfo.getHtmlElement().innerHTML = html.join("");
 

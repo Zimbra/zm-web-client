@@ -43,19 +43,18 @@
 * @param type		[constant]*			item type
 */
 function ZmContact(appCtxt, id, list, type) {
-	
 	if (arguments.length == 0) return;
-	var contactList = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
-	list = list ? list : contactList;
-	type = type ? type : ZmItem.CONTACT;
+
+	// handle to canonical list (for contacts that are part of search results)
+	this.canonicalList = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+
+	list = list || this.canonicalList;
+	type = type || ZmItem.CONTACT;
 	ZmItem.call(this, appCtxt, type, id, list);
 
 	this.attr = {};
-	// handle to canonical list (for contacts that are part of search results)
-	if (!list.isCanonical && !list.isGal)
-		this.canonicalList = contactList;
-
 	this.isGal = this.list.isGal;
+	this._isShared = false;
 	
 	this.participants = new AjxVector(); // XXX: need to populate this guy (see ZmConv)
 };
@@ -155,8 +154,6 @@ function(node, args) {
 	if (contact == null || (contact && contact.rev != node.rev)) {
 		contact = new ZmContact(args.appCtxt, node.id, args.list);
 		contact._loadFromDom(node);
-		if (!contact._isShared)
-			contact._resetCachedFields();
 	}
 
 	return contact;
@@ -303,7 +300,7 @@ function(callback, result) {
 	this._loaded = true;
 
 	if (callback)
-		callback.run(result);
+		callback.run(resp.cn[0]);
 };
 
 ZmContact.prototype.isEmpty =
@@ -323,7 +320,7 @@ function() {
 
 ZmContact.prototype.isShared =
 function() {
-	return this._isShared === true;
+	return this._isShared;
 };
 
 ZmContact.prototype.getAttr =
@@ -462,12 +459,23 @@ function(attr, callback, result) {
 	
 	if (id && id == this.id) {
 		this._appCtxt.getAppController().setStatusMsg(ZmMsg.contactSaved);
+		// the revision for this contact has changed -- we should refetch it
+		// ONLY DO THIS FOR SHARED CONTACT since normal contacts are handled by notifications
+		if (cn.rev && cn.rev != this.rev && this.isShared()) {
+			var respCallback = new AjxCallback(this, this._handleResponseLoad);
+			this.load(respCallback);
+		}
 	} else {
 		var msg = ZmMsg.errorModifyContact + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
 		this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
 	}
 	// NOTE: we no longer process callbacks here since notification handling
 	//       takes care of everything
+};
+
+ZmContact.prototype._handleResponseLoad =
+function(resp) {
+	this._notify(ZmEvent.E_MODIFY, resp);
 };
 
 ZmContact.prototype.notifyModify =
@@ -792,7 +800,6 @@ function() {
 // Parse contact node. A contact will only have attr values if its in canonical list.
 ZmContact.prototype._loadFromDom =
 function(node) {
-	this._loaded = true;
 	// "node.a" means we must be dealing with a GAL contact
 	// bug fix #7143 - check for length property instead of "instanceof Array" 
 	//                 since opening new window loses type info :(
@@ -810,22 +817,23 @@ function(node) {
 				this.attr[attr.n] = attr._content;
 			}
 		}
-	} else if (node.sf) {
-		// "sf" means this is a shared contact
+		this._loaded = true;
+	} else {
 		this.rev = node.rev;
 		this.sf = node.sf;
 		this.folderId = node.l;
-		this.id = node.id;
-		this._fileAs = node.fileAsStr;
-		this._loaded = false;
-		this._isShared = true;
-	} else {
 		this.created = node.cd;
 		this.modified = node.md;
 		this.folderId = node.l;
+		this._fileAs = node.fileAsStr;
 		this._parseFlags(node.f);
 		this._parseTags(node.t);
 		this.attr = node._attrs;
+		// check if the folderId is found in our address book (otherwise, we
+		// assume this contact to be a shared contact)
+		var addrbook = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(this.folderId);
+		this._isShared = addrbook == null;
+		this._loaded = !this._isShared;
 	}
 };
 

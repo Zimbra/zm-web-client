@@ -85,6 +85,7 @@ function(search, bIsGalSearch, folderId, isShared) {
 
 	if (search instanceof ZmList) {
 		this._list = search;			// set as canonical list of contacts
+		this._list._isShared = false;
 		bForce = true;					// always force display
 		if (!this._currentView)
 			this._currentView = this._defaultView();
@@ -93,12 +94,15 @@ function(search, bIsGalSearch, folderId, isShared) {
 		this._list = search.getResults(ZmItem.CONTACT);
 
 		// find out if we just searched for a shared address book
-		var addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+		var addrbookTree = folderId ? this._appCtxt.getTree(ZmOrganizer.ADDRBOOK) : null;
 		var addrbook = addrbookTree ? addrbookTree.getById(folderId) : null;
-		this._list._isShared = addrbook ? addrbook.link : false;
 
-		if (bIsGalSearch && (this._list == null))
-			this._list = new ZmContactList(this._appCtxt, search.search, bIsGalSearch);
+		if (bIsGalSearch && (this._list == null)) {
+			this._list = new ZmContactList(this._appCtxt, search.search, true);
+			this._list._isShared = false;
+		} else {
+			this._list._isShared = addrbook ? addrbook.link : false;
+		}
 
 		this._list.setHasMore(search.getAttribute("more"));
 
@@ -134,7 +138,8 @@ function(view, force) {
 			this._appCtxt.getSearchController().setDefaultSearchType(ZmSearchToolBar.FOR_GAL_MI, true);
 
 		var list = this._listView[view].getList();
-		this._listView[view].setSelection(list.get(0));
+		if (list)
+			this._listView[view].setSelection(list.get(0));
 	}
 };
 
@@ -300,30 +305,24 @@ function(parent, num) {
 ZmContactListController.prototype._resetNavToolBarButtons = 
 function(view) {
 	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
-	
-	var offset = this._listView[view].getOffset();
-	this._navToolBar.enable(ZmOperation.PAGE_BACK, offset > 0);
 
-	if (this._isGalSearch) {
-		var more = this._list ? (offset + this._listView[view].getLimit()) < this._list.size() : false;
-		this._navToolBar.enable(ZmOperation.PAGE_FORWARD, more);
-	} else {
+	if (this._list.isCanonical)
 		this._navToolBar.enable(ZmOperation.PAGE_FORWARD, this._list.hasMore());
-	}
-	
+
 	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);
 	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
 
 	this._showListRange(view);
 };
 
-ZmContactListController.prototype._showListRange = 
+ZmContactListController.prototype._showListRange =
 function(view) {
 	var offset = this._listView[view].getOffset();
-	var size = this._listView[view].getList().size();
+	var list = this._listView[view].getList();
+	var size = list ? list.size() : null;
 
 	var text = "";
-	if (size > 0) {
+	if (size && size > 0) {
 		var start = offset + 1;
 		var end = offset + size;
 		text = start + " - " + end;
@@ -430,7 +429,7 @@ function(view) {
 
 ZmContactListController.prototype._paginate =
 function(view, bPageForward) {
-	if (this._folderId) {
+	if (this._list.isCanonical) {
 		this._listView[view].paginate(this._list, bPageForward);
 		this._resetNavToolBarButtons(view);
 	} else {

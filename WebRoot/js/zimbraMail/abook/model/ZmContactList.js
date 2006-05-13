@@ -228,7 +228,7 @@ function(id) {
 */
 ZmContactList.prototype.getSubList = 
 function(offset, limit, folderId) {
-	if (folderId && !this._isShared) {
+	if (this.isCanonical) {
 		// only collect those contacts that belong to the given folderId if provided
 		var newlist = new Array();
 		var sublist = this.getArray();
@@ -258,6 +258,7 @@ function(offset, limit, folderId) {
 				a[i] = this._realizeContact(a[i], offset + i);
 			}
 		}
+
 		return vec;
 	}
 };

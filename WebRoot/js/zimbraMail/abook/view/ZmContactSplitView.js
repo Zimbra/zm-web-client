@@ -100,15 +100,16 @@ function(contact, isGal) {
 	if (this._contact.isLoaded()) {
 		this._setContact(contact, isGal);
 	} else {
-		var callback = new AjxCallback(this, this._handleLoadResponse, [isGal]);
+		var callback = new AjxCallback(this, this._handleResponseLoad, [isGal]);
 		var errorCallback = new AjxCallback(this, this._handleErrorLoad);
 		this._contact.load(callback);
 	}
 };
 
-ZmContactSplitView.prototype._handleLoadResponse =
-function(isGal) {
-	this._setContact(this._contact, isGal);
+ZmContactSplitView.prototype._handleResponseLoad =
+function(isGal, contact) {
+	if (contact.id == this._contact.id)
+		this._setContact(this._contact, isGal);
 };
 
 ZmContactSplitView.prototype._handleErrorLoad =
@@ -226,10 +227,8 @@ function(contact, isGal) {
 	html[idx++] = "<td width=100% class='companyName'>";
 	html[idx++] = (contact.getCompanyField() || "&nbsp;");
 	html[idx++] = "</td>";
-	var folderId = contact.isShared()
-		? this._controller.getFolderId()
-		: contact.folderId;
-	var folder = this._controller._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId);
+	var folderId = this._controller.getFolderId() || contact.folderId;
+	var folder = folderId ? this._controller._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId) : null;
 	if (folder) {
 		html[idx++] = "<td width=20>";
 		html[idx++] = AjxImg.getImageHtml(folder.getIcon());
