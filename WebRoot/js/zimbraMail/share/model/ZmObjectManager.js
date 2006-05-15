@@ -347,12 +347,18 @@ function(content, type) {
 ZmObjectManager.prototype.processHtmlNode =
 function(node, handlers, discard, ignore) {
 	handlers = handlers != null ? handlers : true;
-	discard = discard || [ "SCRIPT", "LINK", "OBJECT", "STYLE", "APPLET", "IFRAME" ];
-	discard = discard instanceof Array ? discard : [ discard ];
-	var discardRe = new RegExp("^("+discard.join("|")+")$");
+	var discardRe = discard instanceof RegExp ? discard : null;
+	if (!discardRe) {
+		discard = discard || [ "script", "link", "object", "style", "applet", "iframe" ];
+		discard = discard instanceof Array ? discard : [ discard ];
+		discardRe = new RegExp("^("+discard.join("|")+")$", "i");
+	}
 
-	ignore = ignore ? (ignore instanceof Array ? ignore : [ ignore ]) : null;
-	var ignoreRe = ignore ? new RegExp("^("+ignore.join("|")+")$") : null;
+	var ignoreRe = ignore instanceof RegExp ? ignore : null;
+	if (!ignoreRe && ignore) {
+		ignore = ignore instanceof Array ? ignore : [ ignore ];
+		ignoreRe = new RegExp("^("+ignore.join("|")+")$", "i");
+	}
 
 	var tmp, i, val;
 	switch (node.nodeType) {
@@ -422,7 +428,10 @@ function(node, handlers, discard, ignore) {
 			if (!val || val.test(node.style[i]))
 				node.style[i] = "";
 		}
-		for (i = node.firstChild; i; i = this.processHtmlNode(i, handlers));
+		var child = node.firstChild;
+		while (child) {
+			child = this.processHtmlNode(child, handlers, discardRe, ignoreRe);
+		}
 		return node.nextSibling;
 
 	    case 3:	// TEXT_NODE
