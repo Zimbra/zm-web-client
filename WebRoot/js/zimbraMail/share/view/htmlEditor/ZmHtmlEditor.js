@@ -677,7 +677,7 @@ function(parent) {
 	var item = new DwtMenuItem(menu);
 	item.setText(ZmMsg.insertTable);
 	var grid_menu = new DwtMenu(item, DwtMenu.GENERIC_WIDGET_STYLE);
- 	var grid = new DwtGridSizePicker(grid_menu);
+ 	var grid = new DwtGridSizePicker(grid_menu, ZmMsg.tableSize);
  	grid.addSelectionListener(new AjxListener(this, this._createTableListener));
  	item.setMenu(grid_menu);
 	item.setImage("InsertTable");
