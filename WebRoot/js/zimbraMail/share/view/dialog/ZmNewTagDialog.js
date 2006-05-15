@@ -29,6 +29,8 @@ function ZmNewTagDialog(parent, msgDialog, className) {
 	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
 	this._setTagColorMenu(this._tagColorButtonCellId);
+	this._tabGroup.addMember(this._nameField, 0);
+	this._tabGroup.addMember(this._colorButton, 1);
 	DBG.timePt("set content");
 };
 

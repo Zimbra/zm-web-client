@@ -77,10 +77,16 @@ function() {
 	return "ZmApptQuickAddDialog";
 };
 
-ZmApptQuickAddDialog.prototype.addKeyListeners =
-function() {
-	// overloaded so base class wont register for key events.
-};
+ZmApptQuickAddDialog.prototype.handleKeyAction =
+function(actionCode, ev) {
+	switch (actionCode) {
+		case DwtKeyMap.ENTER:
+			return true;
+		
+		default:
+			return ZmDialog.prototype.handleKeyAction.call(this. actionCode, ev);
+	}
+}
 
 ZmApptQuickAddDialog.prototype.initialize = 
 function(appt) {

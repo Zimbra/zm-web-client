@@ -102,7 +102,7 @@ ZmDialog.prototype._setNameField =
 function(fieldId) {
 	this._nameField = document.getElementById(fieldId);
 	if (this._nameField) this._focusElementId = fieldId;
-	this.setTabOrder([fieldId]);
+	//this.setTabOrder([fieldId]);
 	this.addEnterListener(new AjxListener(this, this._enterListener));
 };
 

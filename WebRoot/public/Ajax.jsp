@@ -70,8 +70,6 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/xslt/AjxXslt.js<%= ext %>?v=<%= vers %>"></script>
 
 <!-- DWT classes -->
-<script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/core/DwtImg.js<%= ext %>?v=<%= vers %>"></script>
-
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/core/Dwt.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/core/DwtException.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/core/DwtDraggable.js<%= ext %>?v=<%= vers %>"></script>
@@ -101,6 +99,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtTabGroupEvent.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtKeyMap.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtKeyMapMgr.js"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtKeyMapMgrException.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtKeyboardMgr.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtTabGroup.js"></script>
 

@@ -36,7 +36,7 @@ function ZmKeyMap() {
 	// Note that FF on the mac has an issue reporting the ALT+<keycode> it
 	// always ends up reporting undefined for the <keycode>. For this reason I
 	// have added Ctrl analogs below	
-	this._map["GLOBAL"] = {
+	this._map["ZmGlobal"] = {
 			"Ctrl+Q": ZmKeyMap.ASSISTANT,
 
 			"Alt+Shift+D,0": ZmKeyMap.DBG_NONE,
@@ -88,6 +88,7 @@ function ZmKeyMap() {
 	};
 	
 	this._map["ZmConvListController"] = {
+			"INHERIT": "ZmGlobal",
 		"R": ZmKeyMap.REPLY,
 		"A": ZmKeyMap.REPLY_ALL,
 		"M,R": ZmKeyMap.MARK_READ,
@@ -104,14 +105,18 @@ function ZmKeyMap() {
 		"INHERIT": "ZmConvListController"
 	};
 	
+	this._map["ZmDialog"] = {"INHERIT": "DwtDialog"};
+	this._map["ZmChangePasswordDialog"] = {"INHERIT": "ZmDialog"};
+	this._map["ZmNewTagDialog"] = {"INHERIT": "ZmDialog"};
+	
 	this._map["ZmConvListView"] = {"INHERIT": "DwtListView"};
 	this._map["ZmMailMsgListView"] = {"INHERIT": "DwtListView"};
 	this._map["ZmTradView"] = {"INHERIT": "DwtListView"};
 
-	this._map["ZmPopupMenu"] = {"INHERIT": "DwtMenu", "NOINHERIT_GLOBAL": true};
-	this._map["ZmActionMenu"] = {"INHERIT": "DwtMenu", "NOINHERIT_GLOBAL": true};
-	this._map["ZmTagMenu"] = {"INHERIT": "DwtMenu", "NOINHERIT_GLOBAL": true};
-	//this._map["ActionMenu"] = {"INHERIT": "DwtMenu", "NOINHERIT_GLOBAL": true};
+	this._map["ZmPopupMenu"] = {"INHERIT": "DwtMenu"};
+	this._map["ZmActionMenu"] = {"INHERIT": "DwtMenu"};
+	this._map["ZmTagMenu"] = {"INHERIT": "DwtMenu"};
+	//this._map["ActionMenu"] = {"INHERIT": "DwtMenu"};
 };
 
 ZmKeyMap.prototype = new DwtKeyMap(true);
