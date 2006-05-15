@@ -583,7 +583,7 @@ td.DDSepInvisible div {
 
 
 .ZmHEDialog td.Label { text-align: right; 
-  width: 10em; -moz-user-select: none; user-select: none; 
+  width: 12em; -moz-user-select: none; user-select: none; 
   padding-right: 3px;
 }
 .ZmHEDialog td.SmallLabel { text-align: right; 

@@ -6,7 +6,7 @@
         <legend class="ZmLegend">$msg.borderStyle</legend>
         <table>
           <tr>
-            <td style="width: 17em">
+            <td style="width: 19em">
               <!-- If you're wondering why this has to be so complex, check out this bug:
                    https://bugzilla.mozilla.org/show_bug.cgi?id=258255 -->
               <div style="padding-left: 1em; padding-top: 1em">$msg.clickToDrawABorder:</div>
@@ -69,27 +69,93 @@
       </fieldset>
 
       <fieldset class="ZmFieldset">
+        <legend class="ZmLegend">$msg.layout</legend>
+        <table cellspacing="0">
+          <tr>
+            <td class="Label">
+              <table align="right" cellspacing="0" cellpadding="0"><tr>
+                <td style="padding-right: 3px"><input id="$id.EnableWidth" type="checkbox" /></td>
+                <td><label for="$id.EnableWidth">$msg.width:</label></td>
+              </tr></table>
+            </td>
+            <td class="col2" id="$id.Width"></td>
+
+            <td class="VSep-L">&nbsp;</td>
+            <td class="VSep-R">&nbsp;</td>
+
+            <td class="Label">
+              <table align="right" cellspacing="0" cellpadding="0"><tr>
+                <td style="padding-right: 3px"><input id="$id.EnableHorizPadding" type="checkbox" /></td>
+                <td><label for="$id.EnableHorizPadding">$msg.paddingHorizontal:</label></td>
+              </tr></table>
+            </td>
+            <td id="$id.HorizPadding"></td>
+          </tr>
+          <tr>
+            <td class="Label">
+              <table align="right" cellspacing="0" cellpadding="0"><tr>
+                <td style="padding-right: 3px"><input id="$id.EnableHeight" type="checkbox" /></td>
+                <td><label for="$id.EnableHeight">$msg.height:</label></td>
+              </tr></table>
+            </td>
+            <td class="col2" id="$id.Height"></td>
+
+            <td class="VSep-L">&nbsp;</td>
+            <td class="VSep-R">&nbsp;</td>
+
+            <td class="Label">
+              <table align="right" cellspacing="0" cellpadding="0"><tr>
+                <td style="padding-right: 3px"><input id="$id.EnableVertPadding" type="checkbox" /></td>
+                <td><label for="$id.EnableVertPadding">$msg.paddingVertical:</label></td>
+              </tr></table>
+            </td>
+            <td id="$id.VertPadding"></td>
+          </tr>
+        </table>
+      </fieldset>
+
+      <fieldset class="ZmFieldset">
         <legend class="ZmLegend">$msg.textStyle</legend>
         <table cellspacing="0">
           <tr>
-            <td class="Label">$msg.textAlign:</td>
+            <td class="Label">
+              <table align="right" cellspacing="0" cellpadding="0"><tr>
+                <td style="padding-right: 3px"><input id="$id.EnableTextAlign" type="checkbox" /></td>
+                <td><label for="$id.EnableTextAlign">$msg.textAlign:</label></td>
+              </tr></table>
+            </td>
             <td class="col2" id="$id.TextAlign"></td>
 
             <td class="VSep-L">&nbsp;</td>
             <td class="VSep-R">&nbsp;</td>
 
-            <td class="Label">$msg.fontColor:</td>
+            <td class="Label">
+              <table align="right" cellspacing="0" cellpadding="0"><tr>
+                <td style="padding-right: 3px"><input id="$id.EnableForegroundColor" type="checkbox" /></td>
+                <td><label for="$id.EnableForegroundColor">$msg.fontColor:</label></td>
+              </tr></table>
+            </td>
             <td id="$id.ForegroundColor"></td>
           </tr>
 
           <tr>
-            <td class="Label">$msg.verticalAlign:</td>
+            <td class="Label">
+              <table align="right" cellspacing="0" cellpadding="0"><tr>
+                <td style="padding-right: 3px"><input id="$id.EnableTextVAlign" type="checkbox" /></td>
+                <td><label for="$id.EnableTextVAlign">$msg.verticalAlign:</label></td>
+              </tr></table>
+            </td>
             <td class="col2" id="$id.TextVAlign"></td>
 
             <td class="VSep-L">&nbsp;</td>
             <td class="VSep-R">&nbsp;</td>
 
-            <td class="Label">$msg.fontBackground:</td>
+            <td class="Label">
+              <table align="right" cellspacing="0" cellpadding="0"><tr>
+                <td style="padding-right: 3px"><input id="$id.EnableBackgroundColor" type="checkbox" /></td>
+                <td><label for="$id.EnableBackgroundColor">$msg.fontBackground:</label></td>
+              </tr></table>
+            </td>
             <td id="$id.BackgroundColor"></td>
           </tr>
         </table>

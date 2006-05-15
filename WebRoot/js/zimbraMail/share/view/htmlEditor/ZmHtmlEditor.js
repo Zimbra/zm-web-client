@@ -744,7 +744,7 @@ function(ev) {
 		dlg.popup();
 		break;
 	    case "cellProperties":
-		var dlg = ZmTableEditor.getCellPropsDialog(this, this.getNearestElement("table"));
+		var dlg = ZmTableEditor.getCellPropsDialog(this, this.getNearestElement("table"), this.getSelectedCells());
 		dlg.popup();
 		// alert("Not yet implemented");
 		break;
