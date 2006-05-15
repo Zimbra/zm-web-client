@@ -386,7 +386,7 @@ function(requestStr, serverURL, requestHeaders, callback, useGet, passErrors) {
 		requestStr = [ '<?xml version="1.0" encoding="utf-8" ?>',
 			       requestStr.getXml() ].join("");
 	this.setBusyIcon();
-	serverURL = ZmZimletBase.PROXY + AjxStringUtil.urlEncode(serverURL);
+	serverURL = ZmZimletBase.PROXY + AjxStringUtil.urlComponentEncode(serverURL);
 	var our_callback = new AjxCallback(this, this.requestFinished, [ callback, passErrors ]);
 	return AjxRpc.invoke(requestStr, serverURL, requestHeaders, our_callback, useGet);
 };

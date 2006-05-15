@@ -41,7 +41,7 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 	this.version = zimlet.version;
 	this.includes = this.json.zimlet.include;
 	this.includes = this.includes ? this.includes : [];
-	this.includes.push(appContextPath+"/js/msgs/" + this.name + ".js");
+	this.includes.push(appContextPath+"/js/msgs/" + this.name + ".js?v=" + cacheKillerVersion);
 	this.includeCSS = this.json.zimlet.includeCSS;
 	if(zimlet.serverExtension && zimlet.serverExtension[0].hasKeyword){
 		this.keyword = zimlet.serverExtension[0].hasKeyword;
@@ -203,7 +203,8 @@ ZmZimletContext.prototype._loadStyles = function() {
 		if (!(/^((https?|ftps?):\x2f\x2f|\x2f)/).test(fullurl)) {
 			fullurl = this._url + fullurl;
 		}
-		var style = document.createElement("link");
+        fullurl = fullurl + "?v=" + cacheKillerVersion
+        var style = document.createElement("link");
 		style.type = "text/css";
 		style.rel = "stylesheet";
 		style.href = fullurl;
@@ -414,7 +415,7 @@ ZmZimletContext.prototype.handleActionUrl = function(actionUrl, canvas, obj, div
 			canvas = this.handlerObject.makeCanvas(canvas[0], null);
 			div = document.getElementById("zimletCanvasDiv");
 		}
-		url = ZmZimletBase.PROXY + AjxStringUtil.urlEncode(url);
+		url = ZmZimletBase.PROXY + AjxStringUtil.urlComponentEncode(url);
 		AjxRpc.invoke(null, url, null, new AjxCallback(this, this._rpcCallback, [xslt, div]), true);
 	} else {
 		this.handlerObject.makeCanvas(canvas[0], url);
