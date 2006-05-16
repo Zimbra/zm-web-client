@@ -512,11 +512,6 @@ function(contact, now, isDndIcon) {
 // this is used by mixed view to create the old listview version of contact list
 ZmContactSimpleView.prototype._createContactHtmlForMixed =
 function(contact, now, isDndIcon) {
-
-	// in canonical view, don't show contacts in the Trash
-	if (contact.list.isCanonical && (contact.folderId == ZmFolder.ID_TRASH))
-		return null;
-	
 	var	div = this._getDiv(contact, isDndIcon);
 	div.className = div._styleClass;
 

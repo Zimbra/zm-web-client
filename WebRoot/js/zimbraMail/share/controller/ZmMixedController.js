@@ -75,7 +75,30 @@ function(searchResults) {
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements, true);
 	this._resetNavToolBarButtons(this._currentView);
+
+	// always set the selection to the first item in the list
+	var list = this._listView[this._currentView].getList();
+	if (list && list.size() > 0) {
+		this._listView[this._currentView].setSelection(list.get(0));
+	}
+
+	// reset the filter drop down per type of results returned
+	var op = ZmOperation.SHOW_ALL_ITEM_TYPES;
+	if (searchResults.type == ZmItem.CONV || searchResults.type == ZmItem.MSG) {
+		op = ZmOperation.SHOW_ONLY_MAIL;
+	} else if (searchResults.type == ZmItem.CONTACT) {
+		op = ZmOperation.SHOW_ONLY_CONTACTS;
+	}
+	this._setFilterButtonProps(op, true);
 };
+
+// Resets the available options on a toolbar or action menu.
+ZmMixedController.prototype._resetOperations =
+function(parent, num) {
+	ZmListController.prototype._resetOperations.call(this, parent, num);
+	parent.enable(ZmOperation.SHOW_ALL_MENU, true);
+};
+
 
 // Private and protected methods
 
@@ -85,9 +108,30 @@ function(view) {
 
 	ZmListController.prototype._initializeToolBar.call(this, view);
 	this._toolbar[view].addFiller();
+
 	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
 	this._setNavToolBar(tb);
+
 	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+
+	var button = this._toolbar[view].getButton(ZmOperation.SHOW_ALL_MENU);
+	var menu = new ZmPopupMenu(button);
+	button.setMenu(menu);
+	button.noMenuBar = true;
+	var ops = [ZmOperation.SHOW_ALL_ITEM_TYPES, ZmOperation.SEP, ZmOperation.SHOW_ONLY_CONTACTS, ZmOperation.SHOW_ONLY_MAIL];
+	var listener = new AjxListener(this, this._showAllListener);
+	for (var i = 0; i < ops.length; i++) {
+		var op = ops[i];
+		if (op == ZmOperation.SEP) {
+			menu.createSeparator();
+			continue;
+		}
+		var icon = ZmOperation.getProp(op, "image");
+		var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
+		var mi = menu.createMenuItem(op, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 1);
+		mi.setData(ZmOperation.KEY_ID, op);
+		mi.addSelectionListener(listener);
+	}
 };
 
 ZmMixedController.prototype._initializeActionMenu = 
@@ -107,7 +151,10 @@ function() {
 
 ZmMixedController.prototype._getToolBarOps =
 function() {
-	return this._standardToolBarOps();
+	var list = this._standardToolBarOps();
+	list.push(ZmOperation.FILLER);
+	list.push(ZmOperation.SHOW_ALL_MENU);
+	return list;
 };
 
 ZmMixedController.prototype._getActionMenuOps =
@@ -159,6 +206,18 @@ function(view) {
 	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
 	this._showListRange(view);
 };
+
+ZmMixedController.prototype._setFilterButtonProps =
+function(op, setChecked) {
+	var icon = ZmOperation.getProp(op, "image");
+	var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
+	var button = this._toolbar[this._currentView].getButton(ZmOperation.SHOW_ALL_MENU);
+	button.setImage(icon);
+	button.setText(text);
+	if (setChecked)
+		button.getMenu().checkItem(ZmOperation.KEY_ID, op, true);
+};
+
 
 // List listeners
 
@@ -237,4 +296,25 @@ function(ev) {
 
 	if (folder)
 		this._doMove(items, folder);
+};
+
+ZmMixedController.prototype._showAllListener =
+function(ev) {
+	if (!ev.item.getChecked()) return;
+
+	var op = ev.item.getData(ZmOperation.KEY_ID);
+	this._setFilterButtonProps(op);
+
+	var searchFor = null;
+	if (op == ZmOperation.SHOW_ONLY_CONTACTS) {
+		searchFor = ZmItem.CONTACT;
+	} else if (op == ZmOperation.SHOW_ONLY_MAIL) {
+		searchFor = ZmSearchToolBar.FOR_MAIL_MI;
+	} else {
+		searchFor = ZmSearchToolBar.FOR_ANY_MI;
+	}
+
+	var sc = this._appCtxt.getSearchController();
+	var types = sc.getTypes(searchFor);
+	sc.redoSearch(this._appCtxt.getCurrentSearch(), null, {types:types, offset:0});
 };

@@ -169,7 +169,13 @@ function(folder) {
 		stc._itemClicked(folder);
 	} else {
 		var searchController = this._appCtxt.getSearchController();
-		var searchFor = folder.isInTrash() ? ZmSearchToolBar.FOR_ANY_MI : ZmSearchToolBar.FOR_MAIL_MI;
+		var searchFor = ZmSearchToolBar.FOR_MAIL_MI;
+		if (folder.isInTrash()) {
+			var app = this._appCtxt.getAppController().getActiveApp();
+			// if other apps add Trash to their folder tree, set appropriate type here:
+			if (app == ZmZimbraMail.CONTACTS_APP)
+				searchFor = ZmItem.CONTACT;
+		}
 		var types = searchController.getTypes(searchFor);
 		searchController.search({query: folder.createQuery(), types: types});
 	}

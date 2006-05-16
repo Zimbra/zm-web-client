@@ -36,7 +36,7 @@ ZmMixedView.prototype.constructor = ZmMixedView;
 
 ZmMixedView.REPLENISH_THRESHOLD 	= 0;
 
-ZmMixedView.COLWIDTH_ICON 			= 16;
+ZmMixedView.COLWIDTH_ICON 			= 19;
 ZmMixedView.COLWIDTH_FROM 			= 145;
 ZmMixedView.COLWIDTH_DATE 			= 60;
 
@@ -96,7 +96,6 @@ function(parent) {
 
 	var headerList = new Array();
 	
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ICON], null, "Globe", ZmMixedView.COLWIDTH_ICON+5));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, "FlagRed", ZmMixedView.COLWIDTH_ICON));
 	
 	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
@@ -105,6 +104,7 @@ function(parent) {
 		headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "MiniTag", ZmMixedView.COLWIDTH_ICON));
 	}
 	
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ICON], null, "Globe", ZmMixedView.COLWIDTH_ICON));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], ZmMsg.from, null, ZmMixedView.COLWIDTH_FROM, null, true));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, "Attachment", ZmMixedView.COLWIDTH_ICON));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null, null, true));

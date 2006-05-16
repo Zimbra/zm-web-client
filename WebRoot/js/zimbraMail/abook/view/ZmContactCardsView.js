@@ -70,8 +70,10 @@ function(contacts) {
 		this._objectManager.reset();
 
 	// XXX: optimize later - switch view always forces layout unnecessarily
-	ZmContactsBaseView.prototype.set.call(this, contacts);
-	this._layout();
+	ZmContactsBaseView.prototype.set.call(this, contacts, null, this._controller.getFolderId());
+	// XXX: we dont support shared contacts in cards view for now
+	if (!contacts._isShared)
+		this._layout();
 };
 
 

@@ -169,6 +169,19 @@ function(list) {
 	}
 };
 
+ZmContactList.prototype.addFromDom =
+function(node, args) {
+	// first make sure this contact isnt already in the canonical list
+	var canonicalList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+	var contact = canonicalList.getById(node.id);
+	if (contact) {
+		// NOTE: we dont realize contact b/c getById already does that for us
+		this.add(contact);
+	} else {
+		ZmList.prototype.addFromDom.call(this, node, args);
+	}
+};
+
 /**
 * Returns true if contacts have finished loading.
 */
@@ -186,16 +199,15 @@ function() {
 */
 ZmContactList.prototype._realizeContact =
 function(contact, idx) {
-	if (contact instanceof ZmContact) return contact;
+	if (contact instanceof ZmContact)
+		return contact;
 
-	if (this.isCanonical)
-		idx = idx ? idx : this._getIndexById(contact.id);
-	
-	var args = {appCtxt: this._appCtxt, addressHash: {}, list: this};
+	var args = {appCtxt:this._appCtxt, addressHash:{}, list:this};
 	var realContact = ZmList.ITEM_CLASS[this.type].createFromDom(contact, args);
 
 	if (this.isCanonical) {
 		var a = this.getArray();
+		idx = idx || this._getIndexById(contact.id);
 		a[idx] = realContact;
 		this._updateEmailHash(realContact, true);
 		this._idHash[contact.id] = realContact;
@@ -274,9 +286,7 @@ function(id) {
 	if (!id || !this.isCanonical) return null;
 
 	var contact = this._idHash[id];
-	if (!contact) return null;
-
-	return this._realizeContact(contact);
+	return contact ? this._realizeContact(contact) : null;
 };
 
 /**
@@ -289,9 +299,7 @@ function(address) {
 	if (!address || !this.isCanonical) return null;
 
 	var contact = this._emailToContact[address.toLowerCase()];
-	if (!contact) return null;
-
-	return this._realizeContact(contact);
+	return contact ? this._realizeContact(contact) : null;
 };
 
 /**

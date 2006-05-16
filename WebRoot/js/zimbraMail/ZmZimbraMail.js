@@ -621,6 +621,11 @@ function() {
 	return this._appViewMgr;
 };
 
+ZmZimbraMail.prototype.getActiveApp =
+function() {
+	return this._activeApp;
+};
+
 /**
 * Activates the given app.
 *

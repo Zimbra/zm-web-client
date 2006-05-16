@@ -632,8 +632,9 @@ ZmContact.prototype.getCompanyField =
 function() {
 
 	var attrs = this.getAttrs();
+	if (attrs == null) return null;
+
 	var fa = parseInt(attrs.fileAs);
-	
 	var val = [];
 	var idx = 0;
 	

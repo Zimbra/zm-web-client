@@ -362,26 +362,22 @@ function(results, search, isMixed) {
 	this._results = results;
 
 	DBG.timePt("handle search results");
-	if (isMixed) {
+
+	// determine if we need to default to mixed view
+	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+	var folder = folderTree ? folderTree.getById(search.folderId) : null;
+	var inTrash = folder && folder.isInTrash();
+
+	if (isMixed || inTrash) {
 		this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results);
 	} else if (results.type == ZmItem.CONV) {
 		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController().show(results);
 	} else if (results.type == ZmItem.MSG) {
 		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController().show(results);
-	} else {
-		// determine if we need to default to mixed view
-		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-		var folder = folderTree ? folderTree.getById(search.folderId) : null;
-		var inTrash = folder && folder.isInTrash();
-
-		// only show contact view if search is not in Trash folder
-		if (results.type == ZmItem.CONTACT && !inTrash) {
-			var isInGal = this._contactSource == ZmSearchToolBar.FOR_GAL_MI;
-			var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
-			clc.show(results, isInGal, search.folderId);
-		} else {
-			this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results);
-		}
+	} else if (results.type == ZmItem.CONTACT) {
+		var isInGal = this._contactSource == ZmSearchToolBar.FOR_GAL_MI;
+		var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
+		clc.show(results, isInGal, search.folderId);
 	}
 	this._appCtxt.setCurrentList(results.getResults(results.type));
 	this._updateOverview(search);

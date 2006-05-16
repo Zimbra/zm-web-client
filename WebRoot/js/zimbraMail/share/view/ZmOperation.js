@@ -808,6 +808,18 @@ ZmOperation.SETUP[ZmOperation.SHARE_NOTEBOOK] = {
 	image:		"Notebook"
 };
 
+ZmOperation.SHOW_ALL_MENU = i++;
+ZmOperation.SETUP[ZmOperation.SHOW_ALL_MENU] = {
+	textKey:	"showAllItemTypes",
+	image:		"Globe"
+};
+
+ZmOperation.SHOW_ALL_ITEM_TYPES = i++;
+ZmOperation.SETUP[ZmOperation.SHOW_ALL_ITEM_TYPES] = {
+	textKey:	"showAllItemTypes",
+	image:		"Globe"
+};
+
 ZmOperation.SHOW_BCC = i++;
 ZmOperation.SETUP[ZmOperation.SHOW_BCC] = {
 	textKey:	"showBcc"
@@ -816,6 +828,18 @@ ZmOperation.SETUP[ZmOperation.SHOW_BCC] = {
 ZmOperation.SHOW_CC = i++;
 ZmOperation.SETUP[ZmOperation.SHOW_CC] = {
 	textKey:	"showCc"
+};
+
+ZmOperation.SHOW_ONLY_CONTACTS = i++;
+ZmOperation.SETUP[ZmOperation.SHOW_ONLY_CONTACTS] = {
+	textKey:	"showOnlyContacts",
+	image:		"Contact"
+};
+
+ZmOperation.SHOW_ONLY_MAIL = i++;
+ZmOperation.SETUP[ZmOperation.SHOW_ONLY_MAIL] = {
+	textKey:	"showOnlyMail",
+	image:		"Conversation"
 };
 
 ZmOperation.SHOW_ORIG = i++;
