@@ -32,15 +32,16 @@ function ZmCalViewMgr(parent, controller, dropTgt) {
 	this._dropTgt = dropTgt;	
 
 	// View array. Holds the various views e.g. day, month, week, etc...
-	this._views = new Object();
+	this._views = {};
 	this._date = new Date();
-	this._viewFactory = new Object();
-	this._viewFactory[ZmController.CAL_DAY_VIEW] = ZmCalDayView;
-	this._viewFactory[ZmController.CAL_WORK_WEEK_VIEW] = ZmCalWorkWeekView;
-	this._viewFactory[ZmController.CAL_WEEK_VIEW] = ZmCalWeekView;
-	this._viewFactory[ZmController.CAL_MONTH_VIEW] = ZmCalMonthView;
-	this._viewFactory[ZmController.CAL_SCHEDULE_VIEW] = ZmCalScheduleView;	
-}
+	this._viewFactory = {};
+	this._viewFactory[ZmController.CAL_DAY_VIEW]		= ZmCalDayView;
+	this._viewFactory[ZmController.CAL_WORK_WEEK_VIEW]	= ZmCalWorkWeekView;
+	this._viewFactory[ZmController.CAL_WEEK_VIEW]		= ZmCalWeekView;
+	this._viewFactory[ZmController.CAL_MONTH_VIEW]		= ZmCalMonthView;
+	this._viewFactory[ZmController.CAL_SCHEDULE_VIEW]	= ZmCalScheduleView;	
+	this._viewFactory[ZmController.CAL_APPT_VIEW]		= ZmApptView;
+};
 
 ZmCalViewMgr.prototype = new DwtComposite;
 ZmCalViewMgr.prototype.constructor = ZmCalViewMgr;
@@ -61,7 +62,8 @@ function() {
 ZmCalViewMgr.prototype.setNeedsRefresh = 
 function() {
 	for (var name in this._views) {
-		this._views[name].setNeedsRefresh(true);
+		if (name != ZmController.CAL_APPT_VIEW)
+			this._views[name].setNeedsRefresh(true);
 	}
 }
 
@@ -95,7 +97,7 @@ function(date, duration, roll) {
 //DBG.println("ZmCalViewMgr.setDate = "+date);
 	this._date = new Date(date.getTime());
 	this._duration = duration;
-	if (this._currentViewName != null) {
+	if (this._currentViewName && this._currentViewName != ZmController.CAL_APPT_VIEW) {
 		var view = this._views[this._currentViewName];
 		view.setDate(date, duration, roll);
 	}
@@ -105,10 +107,12 @@ ZmCalViewMgr.prototype.createView =
 function(viewName) {
 //DBG.println("ZmCalViewMgr.prototype.createView: " + viewName);
 	view = new this._viewFactory[viewName](this, DwtControl.ABSOLUTE_STYLE, this._controller, this._dropTgt);
-	view.setDragSource(this._dragSrc);
-	view.addTimeSelectionListener(new AjxListener(this, this._viewTimeSelectionListener));	
-	view.addDateRangeListener(new AjxListener(this, this._viewDateRangeListener));
-	view.addViewActionListener(new AjxListener(this, this._viewActionListener));	
+	if (viewName != ZmController.CAL_APPT_VIEW) {
+		view.setDragSource(this._dragSrc);
+		view.addTimeSelectionListener(new AjxListener(this, this._viewTimeSelectionListener));	
+		view.addDateRangeListener(new AjxListener(this, this._viewDateRangeListener));
+		view.addViewActionListener(new AjxListener(this, this._viewActionListener));	
+	}
 	this._views[viewName] = view;
 	return view;
 }
@@ -155,16 +159,18 @@ function(viewName) {
 		//view.setVisible(true);
 		this._currentViewName = viewName;
 
-		var vd = view.getDate();
-		
-		if (vd == null || (view.getDate().getTime() != this._date.getTime())) {
-			view.setDate(this._date, this._duration, true);
+		if (viewName != ZmController.CAL_APPT_VIEW) {
+			var vd = view.getDate();
+			if (vd == null || (view.getDate().getTime() != this._date.getTime())) {
+				view.setDate(this._date, this._duration, true);
+			}
 		}
 		this._layout();
 	}
 }
 
-ZmCalViewMgr.getPrintHtml = function (mgr) {
+ZmCalViewMgr.getPrintHtml =
+function(mgr) {
 	var currentView = mgr.getCurrentView();
 	return currentView.getPrintHtml();
 };

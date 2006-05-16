@@ -24,25 +24,26 @@
  */
 
 /**
-* Read only dialog showing ZmAppt information for appointments which user is not 
-* allowed to edit
+* Creates an empty appointment view.
 * @constructor
 * @class
+* Simple read-only view of an appointment. It looks more or less like a message -
+* the notes have their own area at the bottom, and everything else goes into a
+* header section at the top.
 *
 * @author Parag Shah
-* @param parent			the element that created this view
+* @author Conrad Damon
+* 
+* @param parent		[DwtComposite]	parent widget
+* @param posStyle	[constant]		positioning style
+* @param controller	[ZmController]	owning controller
 */
-function ZmApptView(parent, appCtxt) {
+function ZmApptView(parent, posStyle, controller) {
 
-	DwtDialog.call(this, parent, null, null, [DwtDialog.OK_BUTTON]);
-
-	this._setMouseEventHdlrs(); 
-	this._objectManager = new ZmObjectManager(this, appCtxt, new AjxCallback(this, this._objectSelectCallback)); 
-
-	this._appCtxt = appCtxt;
+	ZmMailMsgView.call(this, parent, null, posStyle, null, controller);
 };
 
-ZmApptView.prototype = new DwtDialog;
+ZmApptView.prototype = new ZmMailMsgView;
 ZmApptView.prototype.constructor = ZmApptView;
 
 // Public methods
@@ -52,56 +53,125 @@ function() {
 	return "ZmApptView";
 };
 
-ZmApptView.prototype.initialize = 
-function(appt) {
-	this._appt = appt;
-	this._objectManager.reset();
+ZmApptView.prototype.getController =
+function() {
+	return this._controller;
+};
 
-	var name = appt.getName();
-	var attendees = appt.getAttendeesText();
+// Following public overrides are a hack to allow this view to pretend it's a list view,
+// as well as a calendar view
+ZmApptView.prototype.getSelection =
+function() {
+	return [this._appt];
+};
 
-	// set the title of this dialog
+ZmApptView.prototype.getSelectionCount =
+function() {
+	return 1;
+};
+
+ZmApptView.prototype.needsRefresh = 
+function() {
+	return false;
+};
+
+ZmApptView.prototype.addSelectionListener = function() {};
+ZmApptView.prototype.addActionListener = function() {};
+
+ZmApptView.prototype.handleActionPopdown = function(ev) {};
+
+ZmApptView.prototype.getTitle =
+function() {
+	var name = this._appt.getName();
+	var attendees = this._appt.getAttendeesText();
 	var title = attendees ? ZmMsg.meeting : ZmMsg.appointment;
-	this.setTitle(title + ": " + name);
+	return title + ": " + name;
+};
 
-	// set content of this dialog
-	var html = [];
+ZmApptView.prototype.reset =
+function() {
+	ZmMailMsgView.prototype.reset.call(this);
+	this._appt = null;
+};
+
+ZmApptView.prototype.set = 
+function(appt) {
+	if (this._appt == appt) return;
+
+	// so that Close button knows which view to go to
+	this._prevView = this._controller._viewMgr.getCurrentViewName();
+
+	this.reset();
+	this._appt = appt;
+	this._renderAppt(appt);
+
+	return;
+};
+
+ZmApptView.prototype.close =
+function() {
+	this._controller._viewMgr.setView(this._prevView);
+	this._controller._currentView = this._prevView;
+	this._controller._resetToolbarOperations();
+};
+
+// Private / protected methods
+
+ZmApptView.prototype._renderAppt =
+function(appt) {
+	if (this._objectManager) {
+	    this._objectManager.setHandlerAttr(ZmObjectManager.DATE, 
+	    								   ZmObjectManager.ATTR_CURRENT_DATE, 
+	    								   appt.getStartDate());
+	}
+
+	var closeBtnCellId = Dwt.getNextId();
+	this._hdrTableId = Dwt.getNextId();
+
+	this._appt = appt;
+
 	var i = 0;
+	var html = [];
 
-	html[i++] = "<table cellpadding=2 cellspacing=2 width=440>";
+	html[i++] = "<table border=0 class='MsgHeaderTable' id='";
+	html[i++] = this._hdrTableId;
+	html[i++] = "' cellspacing=0 cellpadding=0 border=0 width=100%>";
 
-	html[i++] = "<tr><td class='ZmApptViewField'>";
-	html[i++] = ZmMsg.subject;
-	html[i++] = ":</td><td>";
-	html[i++] = this._objectManager.findObjects(name, true);
+	// Subject
+	var name = appt.getName();
+	html[i++] = "<tr><td width=100 class='SubjectCol LabelColName' style='vertical-align:bottom'>";
+	html[i++] = AjxStringUtil.htmlEncode(ZmMsg.subject);
+	html[i++] = ": </td><td colspan=3>";
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td class='SubjectCol LabelColValue'>";
+	html[i++] = this._objectManager ? this._objectManager.findObjects(name, true) : name;
+	html[i++] = "</td>";
+
+	// Close button
+	html[i++] = "<td width=1% id='";
+	html[i++] = closeBtnCellId;
+	html[i++] = "'></td><td>&nbsp;</td>"; // add extra cell for padding since CSS does not play well in IE
+
+	html[i++] = "</tr></table>";
 	html[i++] = "</td></tr>";
 
 	var location = appt.getLocation(true);
 	if (location) {
-		html[i++] = "<tr><td class='ZmApptViewField'>";
-		html[i++] = ZmMsg.location;
-		html[i++] = ":</td><td>";
-		html[i++] = this._objectManager.findObjects(location, true);
-		html[i++] = "</td></tr>";
+		i = this._showField(ZmMsg.location, this._objectManager.findObjects(location, true), html, i);
 	}
 
 	var equipment = appt.getEquipmentText(true);
 	if (equipment) {
-		html[i++] = "<tr><td class='ZmApptViewField'>";
-		html[i++] = ZmMsg.resources;
-		html[i++] = ":</td><td>";
-		html[i++] = this._objectManager.findObjects(equipment, true);
-		html[i++] = "</td></tr>";
+		i = this._showField(ZmMsg.resources, this._objectManager.findObjects(equipment, true), html, i);
 	}
 
-	html[i++] = "<tr><td class='ZmApptViewField'";
+	html[i++] = "<tr><td width=100 class='LabelColName'";
 	var isException = appt._orig.isException();
 	if (isException) {
 		html[i++] = " rowspan='2'";
 	}
 	html[i++] = ">";
 	html[i++] = ZmMsg.time;
-	html[i++] = ":</td><td>";
+	html[i++] = ":</td><td class='LabelColValue'>";
 	html[i++] = this._objectManager.findObjects(this._getTimeString(appt), true);
 	html[i++] = "</td></tr>";
 	if (isException) {
@@ -112,57 +182,56 @@ function(appt) {
 		html[i++] = "</b></td></tr>";
 	}
 
+	var attendees = appt.getAttendeesText();
 	if (attendees) {
 		var organizer = appt.getOrganizer();
-		if (organizer != "") {
-			html[i++] = "<tr><td class='ZmApptViewField'>";
-			html[i++] = ZmMsg.organizer;
-			html[i++] = "</td><td>";
-			html[i++] = this._objectManager.findObjects(organizer, true);
-			html[i++] = "</td></tr>";
+		if (organizer) {
+			i = this._showField(ZmMsg.organizer, this._objectManager.findObjects(organizer, true), html, i);
 		}
-
-		html[i++] = "<tr><td class='ZmApptViewField'>";
-		html[i++] = ZmMsg.attendees;
-		html[i++] = ":</td><td>";
-		html[i++] = this._objectManager.findObjects(attendees, true);
-		html[i++] = "</td></tr>";
+		this._showField(ZmMsg.attendees, this._objectManager.findObjects(attendees, true), html, i);
 	}
 
 	var repeatStr = appt._getRecurrenceBlurbForSave();
 	if (repeatStr) {
-		html[i++] = "<tr><td class='ZmApptViewField'>";
-		html[i++] = ZmMsg.repeats;
-		html[i++] = ":</td><td>";
-		html[i++] = repeatStr;
-		html[i++] = "</td></tr>";
+		i = this._showField(ZmMsg.repeats, repeatStr, html, i);
 	}
 
 	var attachStr = this._getAttachString(appt);
 	if (attachStr) {
-		html[i++] = "<tr><td class='ZmApptViewField'>";
-		html[i++] = ZmMsg.attachments;
-		html[i++] = ":</td><td>";
-		html[i++] = attachStr;
-		html[i++] = "</td></tr>";
-	}
-
-	var notesStr = this._getNotesString(appt);
-	if (notesStr) {
-		html[i++] = "<tr><td class='ZmApptViewField'>";
-		html[i++] = ZmMsg.notes;
-		html[i++] = ":</td><td><div style='height:75px; overflow:auto'>";
-		html[i++] = notesStr;
-		html[i++] = "</div></td></tr>";
+		this._showField(ZmMsg.attachments, attachStr, html, i);
 	}
 
 	html[i++] = "</table>";
 
-	this.setContent(html.join(""));
+	var el = this.getHtmlElement();
+	el.appendChild(Dwt.parseHtmlFragment(html.join("")));
+
+	// add the close button
+	this._closeButton = new DwtButton(this, null, "TBButton");
+	this._closeButton.setImage("Close");
+	this._closeButton.setText(ZmMsg.close);
+	this._closeButton.reparentHtmlElement(closeBtnCellId);
+	this._closeButton.addSelectionListener(new AjxListener(this, this.close));
+
+	var hasHtmlPart = (appt.notesTopPart && appt.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
+	var mode = (hasHtmlPart && this._appCtxt.get(ZmSetting.VIEW_AS_HTML)) ? ZmMimeTable.TEXT_HTML :
+																			ZmMimeTable.TEXT_PLAIN;
+	var bodyPart = appt.getNotesPart(mode);
+	if (bodyPart) {
+		this._makeIframeProxy(el, bodyPart, mode == ZmMimeTable.TEXT_PLAIN);
+	}
 };
 
-
-// Private / protected methods
+ZmApptView.prototype._showField =
+function(label, value, html, i) {
+	html[i++] = "<tr><td width=100 class='LabelColName'>";
+	html[i++] = AjxStringUtil.htmlEncode(label);
+	html[i++] = ": </td><td class='LabelColValue'>";
+	html[i++] = value;
+	html[i++] = "</td></tr>";
+	
+	return i;
+};
 
 ZmApptView.prototype._getTimeString = 
 function(appt) {
@@ -230,20 +299,6 @@ function(appt) {
 	return str.join("");
 };
 
-ZmApptView.prototype._getNotesString =
-function(appt) {
-	// set notes/content (based on compose mode per user prefs)
-	var hasHtmlPart = appt.notesTopPart && appt.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT;
-	var mode = (hasHtmlPart && this._appCtxt.get(ZmSetting.VIEW_AS_HTML))
-		? ZmMimeTable.TEXT_HTML
-		: ZmMimeTable.TEXT_PLAIN;
-
-	var notesPart = appt.getNotesPart(mode);
-	return mode == ZmMimeTable.TEXT_HTML
-		? this._objectManager.findObjects(notesPart)
-		: AjxStringUtil.nl2br(this._objectManager.findObjects(notesPart, true));
-};
-
 // returns true if given dates are w/in a single day
 ZmApptView.prototype._isOneDayAppt = 
 function(sd, ed) {
@@ -257,9 +312,5 @@ function(sd, ed) {
 };
 
 
-// Callbacks
+// Listeners
 
-ZmApptView.prototype._objectSelectCallback =
-function(args) {
-	this.popdown();
-};

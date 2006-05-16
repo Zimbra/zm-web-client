@@ -68,6 +68,7 @@ ZmController.CAL_SCHEDULE_VIEW			= i++;
 ZmController.CAL_WEEK_VIEW				= i++;
 ZmController.CAL_MONTH_VIEW				= i++;
 ZmController.CAL_WORK_WEEK_VIEW			= i++;
+ZmController.CAL_APPT_VIEW				= i++;
 ZmController.APPT_DETAIL_VIEW			= i++;
 ZmController.APPOINTMENT_VIEW 			= i++;
 ZmController.MIXED_VIEW					= i++;

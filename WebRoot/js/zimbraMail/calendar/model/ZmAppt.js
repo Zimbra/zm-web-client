@@ -861,7 +861,7 @@ function(folderId, callback, errorCallback) {
 };
 
 ZmAppt.prototype.cancel = 
-function(mode, msg, errorCallback) {
+function(mode, msg, callback, errorCallback) {
 	this.setViewMode(mode);
 	if (msg) {
 		// REVISIT: I have to explicitly set the bodyParts of the message
@@ -876,12 +876,39 @@ function(mode, msg, errorCallback) {
 		}
 		msg.setBodyParts(bodyParts);
 		this._setNotes(msg);
-		this._handleResponseCancel(mode);
-		return;
+		this._doCancel(mode, callback);
+	} else {
+		// To get the attendees for this appointment, we have to get the message.
+		var respCallback = new AjxCallback(this, this._doCancel, [mode, callback]);
+		this.getDetails(null, respCallback, errorCallback);
 	}
-	// To get the attendees for this appointment, we have to get the message.
-	var respCallback = new AjxCallback(this, this._handleResponseCancel, [mode]);
-	this.getDetails(null, respCallback, errorCallback);
+};
+
+ZmAppt.prototype._doCancel =
+function(mode, callback) {
+	if (mode == ZmAppt.MODE_DELETE || mode == ZmAppt.MODE_DELETE_SERIES || mode == ZmAppt.MODE_DELETE_INSTANCE) {
+		var soapDoc = AjxSoapDoc.create("CancelAppointmentRequest", "urn:zimbraMail");
+		this._addInviteAndCompNum(soapDoc);
+
+		if (mode == ZmAppt.MODE_DELETE_INSTANCE) {
+			soapDoc.setMethodAttribute("s", this.getOrigStartTime());
+			var inst = soapDoc.set("inst");
+			inst.setAttribute("d", AjxDateUtil.getServerDateTime(this.getOrigStartDate()));
+			if (this.timezone) {
+				inst.setAttribute("tz", this.timezone);
+			}
+		}
+
+		var m = soapDoc.set("m");
+		if (this.isOrganizer()) {
+			this._addAttendeesToSoap(soapDoc, null, m);
+		}
+		soapDoc.set("su", "Cancelled: " + this.name, m);
+		this._addNotesToSoap(soapDoc, m, true);
+		this._sendRequest(soapDoc, callback);
+	} else {
+		if (callback) callback.run();
+	}
 };
 
 // Returns canned text for meeting invites.
@@ -925,7 +952,7 @@ function(isHtml) {
 	var organizer = this.organizer ? this.organizer : this._appCtxt.get(ZmSetting.USERNAME);
 	var orgEmail = ZmApptViewHelper.getOrganizerEmail(this._appCtxt, this.organizer).toString();
 	var orgText = isHtml ? AjxStringUtil.htmlEncode(orgEmail) : orgEmail;
-	var params = [ ZmMsg.organizer, orgText, "" ];
+	var params = [ ZmMsg.organizer, ": ", orgText, "" ];
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
 	if (isHtml) {
@@ -1759,31 +1786,6 @@ function(respName, callback, result) {
 
 	if (callback)
 		callback.run();
-};
-
-ZmAppt.prototype._handleResponseCancel =
-function(mode) {
-	if (mode == ZmAppt.MODE_DELETE || mode == ZmAppt.MODE_DELETE_SERIES || mode == ZmAppt.MODE_DELETE_INSTANCE) {
-		var soapDoc = AjxSoapDoc.create("CancelAppointmentRequest", "urn:zimbraMail");
-		this._addInviteAndCompNum(soapDoc);
-
-		if (mode == ZmAppt.MODE_DELETE_INSTANCE) {
-			soapDoc.setMethodAttribute("s", this.getOrigStartTime());
-			var inst = soapDoc.set("inst");
-			inst.setAttribute("d", AjxDateUtil.getServerDateTime(this.getOrigStartDate()));
-			if (this.timezone) {
-				inst.setAttribute("tz", this.timezone);
-			}
-		}
-
-		var m = soapDoc.set("m");
-		if (this.isOrganizer()) {
-			this._addAttendeesToSoap(soapDoc, null, m);
-		}
-		soapDoc.set("su", "Cancelled: " + this.name, m);
-		this._addNotesToSoap(soapDoc, m, true);
-		this._sendRequest(soapDoc);
-	}
 };
 
 ZmAppt.prototype._handleResponseGetDetails =

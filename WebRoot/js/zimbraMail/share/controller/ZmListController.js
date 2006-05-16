@@ -911,7 +911,7 @@ function(parent, num) {
 // Resets the available options on the toolbar
 ZmListController.prototype._resetToolbarOperations = 
 function() {
-	this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectedItems().size());
+	this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectionCount());
 };
 
 // Pagination

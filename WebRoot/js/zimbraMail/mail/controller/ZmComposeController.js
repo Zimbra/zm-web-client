@@ -200,11 +200,8 @@ function(attId, isDraft, callback) {
 	if (msg.inviteMode == ZmOperation.REPLY_CANCEL) {
 		var origMsg = msg._origMsg;
 		var appt = origMsg._appt;
-		
-		appt.cancel(origMsg._mode, msg);
-
-		this._composeView.reset(false);
-		this._app.popView(true);
+		var respCallback = new AjxCallback(this, this._handleResponseCancelAppt);
+		appt.cancel(origMsg._mode, msg, respCallback);
 		return;
 	}
 
@@ -228,6 +225,12 @@ function(isDraft, msg, callback, result) {
 	this._processSendMsg(isDraft, msg, resp);
 
 	if (callback) callback.run(result);
+};
+
+ZmComposeController.prototype._handleResponseCancelAppt =
+function() {
+	this._composeView.reset(false);
+	this._app.popView(true);
 };
 
 ZmComposeController.prototype._handleErrorSendMsg =

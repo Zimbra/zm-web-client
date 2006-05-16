@@ -270,7 +270,7 @@ function(appt) {
 	var attendees = appt.getAttendeesText();
 
 	if (organizer && attendees) {
-		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.organizer + "</u></td>";
+		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.organizer + ":</u></td>";
 		html[idx++] = "<td style='" + style + "'>" + appt.getOrganizer() + "</td></tr>";
 		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.attendees + ":</u></td>";
 		html[idx++] = "<td style='" + style + "'>" + attendees + "</td></tr>";

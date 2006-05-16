@@ -922,6 +922,10 @@ function() {
 
 ZmApptTabViewPage.prototype._autocompleteCallback =
 function(text, el, match) {
+	if (!match) {
+		DBG.println(AjxDebug.DBG1, "ZmApptTabViewPage: match empty in autocomplete callback; text: " + text);
+		return;
+	}
 	var attendee = match.item;
 	var type = el._attType;
 	this.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);

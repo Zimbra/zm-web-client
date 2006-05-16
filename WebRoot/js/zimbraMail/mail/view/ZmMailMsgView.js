@@ -24,7 +24,8 @@
  */
 
 function ZmMailMsgView(parent, className, posStyle, mode, controller) {
-	className = className || "ZmMailMsgView";
+	if (arguments.length == 0) return;
+	className = className ? className : "ZmMailMsgView";
 	DwtComposite.call(this, parent, className, posStyle);
 
 	this._mode = mode;
@@ -42,7 +43,7 @@ function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 	this._expandDivId = Dwt.getNextId();
 
 	// do we add a close button in the header section?
-	this._hasHeaderCloseBtn = this._mode == ZmController.MSG_VIEW && !this._controller.isChildWindow;
+	this._hasHeaderCloseBtn = (this._mode == ZmController.MSG_VIEW && !this._controller.isChildWindow);
 
 	this.setScrollStyle(ZmMailMsgView.SCROLL_WITH_IFRAME ? DwtControl.CLIP : DwtControl.SCROLL);
 
@@ -688,7 +689,7 @@ function(container, html, isTextMsg) {
 			     ".Object-activated { text-decoration:underline; }"
 		].join(" ");
 */
-var inner_styles = "";
+	var inner_styles = "";
 	var ifw = new DwtIframe(this, "MsgBody", true, html, inner_styles,
 				!ZmMailMsgView.SCROLL_WITH_IFRAME, // "noscroll"
 				"static", callback);
@@ -800,7 +801,7 @@ function(msg, container, callback) {
 		htmlArr[idx++] = this._expandHeaderId;
 		htmlArr[idx++] = "'></td><td class='LabelColName'>";
 		htmlArr[idx++] = ZmMsg.sentBy;
-		htmlArr[idx++] = ": </td><tr></table></td>";
+		htmlArr[idx++] = ": </td></tr></table></td>";
 		htmlArr[idx++] = "<td class='LabelColValue' style='vertical-align:bottom'>";
 		if (this._objectManager && addr.address) {
 			htmlArr[idx++] = this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
