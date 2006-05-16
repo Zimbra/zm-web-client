@@ -88,6 +88,8 @@ function(type, folder, shareInfo, loc) {
 	this._granteeInput.setValue(this._shareInfo.grantee.name || "");
 	this._granteeInput.setEnabled(isNewShare);
 
+	this._inheritEl.checked = isNewShare || this._shareInfo.link.inh;
+
 	this._rolesGroup.setVisible(!isPubShare || isNewShare);
 	this._messageGroup.setVisible(!isPubShare || isNewShare);
 
@@ -239,15 +241,18 @@ function(folder, share) {
 	actionNode.setAttribute("op", "grant");
 	actionNode.setAttribute("id", folder.id);
 	
-	var shareNode = soapDoc.set("grant", null, actionNode);
+	var grantNode = soapDoc.set("grant", null, actionNode);
 	if (this._allRadioEl.checked) {
-		shareNode.setAttribute("gt", "pub");
+		grantNode.setAttribute("gt", "pub");
 	}
 	else {
-		shareNode.setAttribute("gt", "usr");
-		shareNode.setAttribute("d", share.grantee.name);
+		grantNode.setAttribute("gt", "usr");
+		grantNode.setAttribute("d", share.grantee.name);
 	}
-	shareNode.setAttribute("perm", share.link.perm);
+	if (this._inheritEl.checked) {
+		grantNode.setAttribute("inh", "1");
+	}
+	grantNode.setAttribute("perm", share.link.perm);
 	
 	var resp = this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
 	
@@ -291,6 +296,7 @@ function() {
 	var nameId = Dwt.getNextId();
 	var typeId = Dwt.getNextId();
 	var granteeId = Dwt.getNextId();
+	var inheritId = Dwt.getNextId();
 	var urlId = Dwt.getNextId();
 
 	// radio names
@@ -322,11 +328,22 @@ function() {
 			"</tr>",
 		"</table>"
 	].join("");
+	var otherHtml = [
+		"<table border='0' cellpadding='0' cellpadding='3'>",
+			"<tr>",
+				"<td>",
+					"<input type='checkbox' id='",inheritId,"'>",
+				"</td>",
+				"<td>", ZmMsg.inheritPerms, "</td>",
+			"</tr>",
+		"</table>"
+	].join("");
 
 	var props = new DwtPropertySheet(view);
 	props.addProperty(ZmMsg.nameLabel, "<span id='"+nameId+"'></span>");
 	props.addProperty(ZmMsg.typeLabel, "<span id='"+typeId+"'></span>");
 	props.addProperty(ZmMsg.shareWithLabel, shareWithHtml);
+	props.addProperty(ZmMsg.otherLabel, otherHtml)
 
 	this._granteeInput = new DwtInputField(props);
 
@@ -383,6 +400,7 @@ function() {
 	// save information elements
 	this._nameEl = document.getElementById(nameId)
 	this._typeEl = document.getElementById(typeId);
+	this._inheritEl = document.getElementById(inheritId);
 	this._urlEl = document.getElementById(urlId);
 
 	var inputEl = this._granteeInput.getInputElement();
@@ -393,7 +411,10 @@ function() {
 		Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleKeyUp);
 	}
 
-	// save radio elements
+	// add change handlers
+	Dwt.setHandler(this._inheritEl, DwtEvent.ONCLICK, ZmSharePropsDialog._handleEdit);
+	Dwt.associateElementWithObject(this._inheritEl, this);
+
 	var radios = [ "_allRadioEl", "_userRadioEl" ];
 	var radioEls = document.getElementsByName(shareWithRadioName);
 	for (var i=0; i<radioEls.length; i++) {

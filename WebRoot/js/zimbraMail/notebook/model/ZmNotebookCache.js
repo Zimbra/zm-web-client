@@ -72,9 +72,13 @@ ZmNotebookCache.prototype._changeListener;
 ZmNotebookCache.prototype.fillCache = 
 function(folderId, callback, errorCallback) {
 	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	/***
 	var notebook = tree.getById(folderId);
 	var path = notebook.getSearchPath();
 	var search = 'in:"'+path+'"';
+	/***/
+	var search = 'inid:"'+folderId+'"';
+	/***/
 
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("types", "wiki");
@@ -251,7 +255,7 @@ function(folderId, callback, errorCallback, response) {
 		var folderNode = soapDoc.set("folder");
 		folderNode.setAttribute("l", remoteFolderId);
 	
-		var args = [callback, errorCallback];
+		var args = [folderId, callback, errorCallback];
 		var handleResponse = new AjxCallback(this, this._fillCacheResponse2, args);
 		var params = {
 			soapDoc: soapDoc,
@@ -265,19 +269,38 @@ function(folderId, callback, errorCallback, response) {
 	
 	// post processing
 	else if (callback) {
-		callback.run();
+		callback.run(folderId, response);
 	}
 };
 
-ZmNotebookCache.prototype._fillCacheResponse2 = 
-function(callback, errorCallback, response) {
+ZmNotebookCache.prototype._fillCacheResponse2 =
+function(folderId, callback, errorCallback, response) {
 
-	// TODO: add folders to overview tree
-	// response._data.folder[0].folder...
-	debugger;
+	var resp = response.GetFolderResponse || (response._data && response._data.GetFolderResponse);
+	var folder = resp.folder && resp.folder[0];
+	var folders = folder && folder.folder;
+	if (folders) {
+		var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+		var parent = tree.getById(folderId);
+		for (var i = 0; i < folders.length; i++) {
+			var obj = folders[i];
+
+			// remove sub-tree if it already exists
+			var notebook = tree.getById(obj.id);
+			if (notebook) {
+				parent.children.remove(notebook);
+				notebook._notify(ZmEvent.E_DELETE);
+			}
+
+			// create sub-tree and add to tree
+			var notebook = ZmNotebook.createFromJs(parent, obj, tree, null);
+			parent.children.add(notebook);
+			notebook._notify(ZmEvent.E_CREATE);
+		}
+	}
 
 	if (callback) {
-		callback.run();
+		callback.run(folderId, response);
 	}
 };
 
