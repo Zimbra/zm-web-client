@@ -1,5 +1,4 @@
 
-
 // SUBSTITUTIONS PERFORMED WITHIN THIS FILE ONLY -- DON'T USE OUTSIDE THIS FILE!
 
 
@@ -7,41 +6,42 @@ SkinImgDir					= /zimbra/skins/steel/img
 SkinAnimatedImgDir			= /zimbra/img/animated
 DwtImgDir					= /zimbra/img/loRes/dwt
 
-_ChromeBgColor_				= #B7B7B7
+_ChromeBgColor_				= #e8dcc1
 _ChromeBgImg_				= 
 _ChromeTextColor_			= black
 
-_InsetBgColor_				= white
+_InsetBgColor_				= #f8f5ed
 _InsetBgImg_				= none
 _InsetTextColor_			= black
 _InsetSeparatorColor_		= #cccccc
 
 
-_ToolbarBgColor_			= #eeeeee
+_ToolbarBgColor_			= #d0c6ad
 _ToolbarTextColor_			= black
 _HToolbarBgImg_				= 
 _VToolbarBgImg_				= 
 	
-_TreeBgColor_				= #eeeeee
+_TreeBgColor_				= #f8f5ed
 _TreeBgImg_					= 
 _TreeTextColor_				= black
 
-_TreeHeaderBgColor_			= #dcdcdc
+_TreeHeaderBgColor_			= #d0c6ad
 _TreeHeaderBgImg_			= 
 _TreeHeaderTextColor_		= black
 _TreeSeparatorColor_		= #333333
 
-_PageBgColor_				= #eeeeee
+_PageBgColor_				= #f8f5ed
 _PageBgImg_					= none
 
 _PageHeaderBgColor_			= #dddddd
 _PageHeaderBgImg_			= none
 
-_ContentBgColor_			= white
+_ContentBgColor_			= f8f5ed
 _ContentBgImg_				= none
 
-_SeparatorColor_			= #999999
-_LightSeparatorColor_		= #eeeeee
+_SeparatorColor_			= #bab09a
+_LightSeparatorColor_		= #bab09a
+_DarkSeparatorColor_		= #8b8474
 
 
 _TextColor_					= black
@@ -133,11 +133,11 @@ _DragTextColor_				= black
 _DropBgColor_				= #C8E4E4
 _DropTextColor_				= black
 
-_WidgetHeaderBgColor_		= @_PageHeaderBgColor_@
+_WidgetHeaderBgColor_		= @_ToolbarBgColor_@
 _WidgetHeaderBgImg_			= none
 _WidgetHeaderSize_			= 24px
 _WidgetHeaderBorder_		=
-_WidgetHeaderHoverBgColor_	= #bbbbbb
+_WidgetHeaderHoverBgColor_	= #b0a893
 _WidgetHeaderHoverBgImg_	= none
 _BigWidgetHeaderBgImg_		= none
 
@@ -246,7 +246,7 @@ ChromeText					= color:@_ChromeTextColor_@; @InactiveCursor@
 
 InsetBg						= background-color:@_InsetBgColor_@; background-image:@_InsetBgImg_@;
 InsetText					= color:@_InsetTextColor_@;
-InsetBorder					= border: 1px solid @_InsetBgColor_@;
+InsetBorder					= border: 1px solid @_LightSeparatorColor_@;
 
 ToolbarBg					= background-color:@_ToolbarBgColor_@; background-image:@_HToolbarBgImg_@;
 VToolbarBg					= background-color:@_ToolbarBgColor_@; background-image:@_VToolbarBgImg_@;
@@ -255,11 +255,11 @@ ToolbarText					= color:@_ToolbarTextColor_@;
 TreeBg						= background-color:@_TreeBgColor_@; background-image:@_TreeBgImg_@;
 TreeText					= color:@_TreeTextColor_@;
 TreeDisabledText			= @DisabledText@
-TreeBorder					= border: 1px solid @_TreeBgColor_@;
+TreeBorder					= border: 1px solid @_LightSeparatorColor_@;
 
 TreeHeaderBg				= background-color:@_TreeHeaderBgColor_@; background-image:@_TreeHeaderBgImg_@;
 TreeHeaderText				= color: @_TreeHeaderTextColor_@;
-TreeHeaderBorder			= border: 1px solid @_TreeHeaderBgColor_@;
+TreeHeaderBorder			= 
 TreeHeaderBigBorder			= @_OutsetBorder_@
 
 PageBg						= background-color:@_PageBgColor_@; background-image:@_PageBgImg_@;

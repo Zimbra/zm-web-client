@@ -1,5 +1,10 @@
-
-<!-- BEGIN STEEL SKIN -->
+<style>
+*	{font-family:Tahoma; font-size:11px;	}
+</style>
+<style>
+@import url(bare.css);
+</style>
+<!-- BEGIN SKIN -->
 
 <script type="text/javascript" language="JavaScript">
 function skin() {}
@@ -22,12 +27,14 @@ skin.hideQuota = function () {
 }
 
 skin.showSearchBuilder = function (state) {
-	var container = navigator.userAgent.indexOf("Safari/") != -1
+/*	var container = navigator.userAgent.indexOf("Safari/") != -1
 		? "skin_div_search_builder"
 		: "skin_tr_search_builder";
 
 	skin._showEl(container, state);
-	skin._showEl("skin_container_search_builder", state);	//HACK: necessary for IE?
+*/
+	skin._showEl("skin_tr_search_builder_toolbar", state);	//HACK: necessary for IE?
+	skin._showEl("skin_tr_search_builder", state);	//HACK: necessary for IE?
 }
 skin.hideSearchBuilder = function () {
 	this.showSearchBuilder(false);
@@ -35,7 +42,6 @@ skin.hideSearchBuilder = function () {
 
 skin.showTopToolbar = function (state) {
 	skin._showEl("skin_tr_top_toolbar", state);
-	skin._showEl("skin_tr_top_toolbar_shim", (state == false));
 }
 skin.hideTopToolbar = function () {
 	this.showTopToolbar(false);
@@ -43,18 +49,8 @@ skin.hideTopToolbar = function () {
 
 
 
-skin.showBottomToolbar = function (state) {
-	skin._showEl("skin_tr_bottom_toolbar", state);
-	skin._showEl("skin_tr_bottom_toolbar_shim", (state == false));
-}
-skin.hideBottomToolbar = function () {
-	this.showBottomToolbar(false);
-}
-
-
 skin.showTreeFooter = function (state) {
-	skin._showEl("skin_tr_tree_footer_sep", state);
-	skin._showEl("skin_tr_tree_footer", state);
+	skin._showEl("skin_tr_mini_cal", state);
 }
 skin.hideTreeFooter = function () {
 	this.showTreeFooter(false);
@@ -86,206 +82,142 @@ skin._showEl = function(id, state) {
 </script>
 
 <!-- BEGIN SKIN -->
-<div id=skin_outer class="ImgConsole__BG" style='width:100%;height:100%'>
-	<table border=1 class="ConsoleOutsetTable" cellpadding=0>
-	<tr>
-		<td><div class="ConsoleOutsetContents">
+<div id='skin_outer' class='full_size'>
+	<table border=0 id='skin_table_outer' class='skin_table' cellpadding=0 cellspacing=0>
+		<colgroup>
+			<col id='skin_col_app_chooser'>
+			<col id='skin_col_tree'>
+			<col id='skin_col_tree_app_sash'>
+			<col id='skin_col_main'>
+			<col id='skin_col_quota'>
+		</colgroup>
 
-		<table border=1 id="skin_table_outer" class="skin_table" cellpadding=0>
-			<colgroup><col id="skin_col_left"><col id="skin_col_main"></colgroup>
-			
-<!-- BEGIN TOP SECTION -->
-			<tr id="skin_tr_outer_top">
-		<!-- BEGIN LOGO -->
-				<td id="skin_td_logo">
-					<div id="skin_container_logo" class="skin_container">
-LOGO
+
+<!-- top row: logo, search box, quota -->			
+		<tr id='skin_tr_top'>
+			<td id='skin_td_logo' colspan=3>
+				<div id='skin_container_logo' class='skin_container'>
+						LOGO
+				</div>
+			</td>
+			<td id='skin_td_search'>
+				<div id='skin_border_search' class='skin_container'>
+					<div id='skin_container_search' class='skin_container'>
+							<A HREF='javascript:skin.showSearchBuilder()'>
+						SEARCH CONTROLS
+							</A>
 					</div>
-				</td>
-<!-- END LOGO -->
-<!-- BEGIN SEARCH CONTROLS AND QUOTA -->
-				<td>
-					<table border=1 cellspacing=0 cellpadding=0 width=100%><tr>
-						<td id="skin_td_search" width="*">
-						
-									<div id="skin_container_search" class="skin_container">
+				</div>
+			</td>
+			<td id='skin_td_quota'>
+				<div id='skin_container_quota' class='skin_container'>
+						QUOTA
+				</div>
+			</td>
+		</tr>
 
-	<A HREF='javascript:skin.showSearchBuilder()'>
-	SEARCH CONTROLS
-	</A>
-									</div>
-						</td>
-						<td id="skin_td_quota_spacer"><div></div></td>
-						<td id="skin_td_quota"><div id="skin_container_quota" class="skin_container">
+<!-- search builder -->
+		<tr id='skin_tr_search_builder_toolbar'>
+			<td colspan=5 id='skin_td_search_builder_toolbar'>
+				<div id='skin_border_search_builder_toolbar' class='skin_container'>
+					<div id='skin_container_search_builder_toolbar' class='skin_container'>
+						SEARCH BUILDER TOOLBAR
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr id='skin_tr_search_builder'>
+			<td colspan=5 id='skin_td_search_builder'>
+				<div id='skin_border_search_builder' class='skin_container Xfull_width'>
+					<div id='skin_container_search_builder' class='skin_container Xfull_width'>
+							<A HREF='javascript:skin.hideSearchBuilder()'>
+						SEARCH BUILDER
+						</A>
+					</div>
+				</div>
+			</td>
+		</tr>
 
-QUOTA
-
-						</div></td>
-					</tr></table>
-				</td>
-<!-- END SEARCH CONTROLS -->
 
 
-<!-- BEGIN SEARCH BUILDER -->
-			<tr id="skin_tr_search_builder">
-				<td colspan=4 id="skin_td_search_builder">
-					<div id="skin_div_search_builder" class="ConsoleInset">
-						<table border=1 class="ConsoleInsetTable" cellpadding=0>
-						<tr class='ToolbarBg'>
-							<td class="ConsoleHorizontal"      >
-									<div id="skin_container_search_builder_toolbar" class="skin_container">
+<!-- current app and top toolbar -->
+		<tr id='skin_tr_toolbar'>
+			<td id='skin_td_current_app' colspan='2'>
+				<div id='skin_border_current_app' class='skin_container'>
+					<div id='skin_container_current_app' class='skin_container'>
+						Current App					
+					</div>
+				</div>
+			</td>
+			<td id='skin_td_tree_app_sash' rowspan=4>
+				<div id='skin_container_tree_app_sash' >
+					.<br>.<br>.
+				</div>
+			</td>
+			<td id='skin_td_app_top_toolbar' colspan='2'>
+				<div id='skin_border_app_top_toolbar' class='skin_container'>
+					<div id='skin_container_app_top_toolbar' class='skin_container'>
+						APP TOOLBAR
+					</div>
+				</div>				
+			</td>
+		</tr>
 
-SEARCH BUILDER TOOLBAR
-									</div>
-								
-							</div></td>
-						</tr>
-						<tr>
-							<td>
-								<div id="skin_container_search_builder" class="skin_container">
+<!-- app chooser, tree, main app wd -->
+		<tr id='skin_tr_tree'>
+			<td id='skin_td_app_chooser' rowspan='2'>
+				<div id='skin_container_app_chooser' class='skin_container full_height'>
+						<div class='ImgAppChiclet'>A</div>
+						<div class='ImgAppChiclet'>P</div>
+						<div class='ImgAppChiclet'>P</div>
+						<div class='ImgAppChiclet'>S</div>
+				</div>
+			</td>
 
-<A HREF='javascript:skin.hideSearchBuilder()'>
-SEARCH BUILDER
-</A>
-
-								</div>
-							</td>
-						</tr>
-						</table>
-					</div xid="search_control_inset">
-				</td>
-			
-			</tr>
-<!-- END SEARCH BUILDER -->
-
-<!-- END TOP SECTION -->
-<!-- BEGIN MAIN SECTION -->
-			<tr id="skin_tr_outer_main">
-				<td id="skin_td_left_chrome">
-					<table border=1 id="skin_table_left_chrome" class="skin_table" cellpadding=0 Xborder=1>
-						<colgroup><col id="skin_col_app_chooser">
-								  <col id="skin_col_tree">
-						</colgroup>
-						<tr>
-		<!-- BEGIN Current App -->
-							<td id="skin_td_current_app" colspan="2">
-								<div id="current_app_inset" class="ConsoleInset">
-											<div id="skin_container_current_app" class="skin_container">
-
-Current App					
-
-											</div>
-								</div id="current_app_inset">
-							</td>
-		<!-- END Current App -->
+			<td id='skin_td_tree'>
+				<div id='skin_border_tree' class='skin_container full_height'>
+					<div id='skin_container_tree' class='skin_container full_height'>
+						<A HREF='javascript:skin.showTreeFooter()'>
+							Tree
+						</A>
+					</div>
+				</div>
+			</td>
+			<td id='skin_td_app_main' class='full_height' rowspan='3' colspan='2'>
+				<div id='skin_border_app_main'  class='skin_container full_size'>
+					<div id='skin_container_app_main' class='skin_container full_size'>
+						App
+					</div>
+				</div>
+			</td>
+		</tr>
 		
-						</tr>
-<!-- BEGIN Tree ROW -->
-						<tr id="skin_tr_tree">
-		<!-- BEGIN App CHOOSER -->
-							<td id="skin_td_app_chooser">
-								<div id="skin_container_app_chooser" class="skin_container">
+<!-- mini calendar -->
+		<tr id='skin_tr_tree_footer'>
+			<td id='skin_td_tree_footer'>
+				<div id='skin_border_tree_footer' class='skin_container'>
+					<div id='skin_container_tree_footer' class='skin_container'>
+							<A HREF='javascript:skin.hideTreeFooter()'>
+						MINI-CALENDAR
+							</A>
+					</div>
+				</div>
+			</td>
+		</tr>
 
-A<BR>P<BR>P<BR><BR>C<BR>H<BR>O<BR>O<BR>S<BR>E<BR>R
-
-								</div>
-							</td>
-		<!-- END App CHOOSER -->
-		<!-- BEGIN Tree -->
-							<td id="skin_td_tree" class="ImgToolbar__BG">
-									<table border=1 class="ConsoleInsetTable" cellpadding=0>
-									<tr>
-										<td height=100%>
-											<div id="skin_container_tree" class="skin_container">
-
-<A HREF='javascript:skin.showTreeFooter()'>
-	Tree
-</A>
-
-											</div>
-										
-										</td>
-									</tr>
-									<tr id="skin_tr_tree_footer">
-										<td>
-											<div id="skin_container_tree_footer" class="skin_container">
-
-<A HREF='javascript:skin.hideTreeFooter()'>
-			MINI-CALENDAR
-</A>
-
-										</div>
-										</td>
-									</tr>
-									</table>
-							</td>
-		<!-- END Tree -->
-						</tr>
-<!-- END Tree ROW -->
-		<!-- END STATUS -->
-						<tr><td id="skin_td_status" colspan="2">
-										<div id="skin_container_status" class="skin_container">
-
-Watch this space for important news!	
-
-										</div>
-							</td>
-						</tr>
-		<!-- END STATUS -->
-					</table>
-				</td>
-
-
-<!-- BEGIN App -->
-				<td id="skin_td_right_frame" colspan=3>
-					<table border=1 id='skin_table_main' class=skin_table cellpadding=0 Xborder=1>
-					<tr id="skin_tr_top_toolbar" class="ImgToolbar__BG">
-						<td class="ConsoleHorizontal"      >
-								<div id="skin_container_app_top_toolbar" class="skin_container">
-
-<A HREF='javascript:skin.hideTopToolbar();'>
-	TOP TOOLBAR
-<A>
-
-								</div>
-							
-						</td>
-					</tr>
-					<tr>
-						<td class="ConsoleCenter">
-							<div id="skin_container_app_main" class="skin_container">
-
-<A HREF='javascript:skin.showTopToolbar();skin.showBottomToolbar();'>
-	App
-</A>
-
-							</div>
-						</td>
-					</tr>
-
-					<tr id="skin_tr_bottom_toolbar">
-						<td class="ConsoleHorizontal"      >
-								<div id="skin_container_app_bottom_toolbar" class="skin_container">
-<A HREF='javascript:skin.hideBottomToolbar();'>
-	BOTTOM TOOLBAR  
-</A>
-								</div>
-							
-						</td>
-					</tr>
-
-					</table>
-				</td>
-			</tr>
-
+<!-- status bar -->
+		<tr id='skin_tr_status'>
+			<td id='skin_td_status' colspan='2'>
+				<div id='skin_border_status' class='skin_container'>
+					<div id='skin_container_status' class='skin_container'>
+						Watch this space for important news!	
+					</div>
+				</div>
+			</td>
+		</tr>
 		</table>
 
 
-<!-- BEGIN OUTSET END -->
-		</div></td>
-	</tr>
-	</table>
-<div id="skin_container_tree_app_sash">SASH!</div>
 </div>
 <!-- END SKIN -->
 
