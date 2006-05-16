@@ -237,7 +237,7 @@ function() {
 	if (!this._newRosterItemDialog) {
 		var parent = this.getShell();
 		var msgDialog = this.getMsgDialog();
-		this._newRosterItemDialog = new ZmNewRosterItemDialog(parent, msgDialog);
+		this._newRosterItemDialog = new ZmNewRosterItemDialog(parent, this, msgDialog);
 	}
 	return this._newRosterItemDialog;
 };

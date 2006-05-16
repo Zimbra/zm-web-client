@@ -29,7 +29,7 @@ function ZmNewRosterItemDialog(parent, appCtxt, msgDialog) {
 	this._msgDialog = msgDialog;
 	this.setContent(this._contentHtml());
 	this.setTitle(ZmMsg.createNewRosterItem);
-	this.setTabOrder([this._addressFieldId, this._nameFieldId, this._groupsFieldId]);
+//	this.setTabOrder([this._addressFieldId, this._nameFieldId, this._groupsFieldId]);
     this._initAddressAutocomplete();
     this._initGroupAutocomplete();
     	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
