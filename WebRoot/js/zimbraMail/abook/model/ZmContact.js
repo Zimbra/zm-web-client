@@ -184,6 +184,8 @@ function(a, b) {
 ZmContact.computeFileAs =
 function(contact) {
 	var attr = (contact instanceof ZmContact) ? contact.getAttrs() : contact;
+	if (!attr) return;
+
 	var val = parseInt(attr.fileAs);
 
 	var fa = [];
@@ -358,9 +360,12 @@ function(name) {
 
 ZmContact.prototype.getAttrs =
 function() {
-	return (this.canonicalList && !this.isShared())
-		? this.canonicalList.getById(this.id).attr
-		: this.attr;
+	if (this.canonicalList && !this.isShared()) {
+		var contact = this.canonicalList.getById(this.id);
+		return contact ? contact.attr : null;
+	} else {
+		return this.attr;
+	}
 }
 
 /**
@@ -615,7 +620,7 @@ function(lower) {
 	// update/null if modified
 	if (!this._fileAs) {
 		this._fileAs = ZmContact.computeFileAs(this);
-		this._fileAsLC = this._fileAs.toLowerCase();
+		this._fileAsLC = this._fileAs ? this._fileAs.toLowerCase() : null;
 	}
 	return lower ? this._fileAsLC : this._fileAs;
 };
