@@ -40,7 +40,7 @@ function ZmChangePasswordDialog(parent, msgDialog, className) {
 	this._confirmPasswordField = document.getElementById(this._confirmPasswordId);
 
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
-	this.setTabOrder([this._oldPasswordId, this._newPasswordId, this._confirmPasswordId]);
+//	this.setTabOrder([this._oldPasswordId, this._newPasswordId, this._confirmPasswordId]);
 	
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._minPwdLength = this._appCtxt.get(ZmSetting.PWD_MIN_LENGTH);
