@@ -180,8 +180,10 @@ function() {
 		}
 
 		// only set the folder Id if changed
-		if (this._contact.folderId != this._folderId)
+		if (this._contact.folderId != this._folderId) {
 			mods[ZmContact.F_folderId] = this._folderId;
+			foundOne = true;
+		}
 
 		// only set the full name if changed
 		if (this._contact.getFullName() != fullName)
@@ -504,8 +506,8 @@ function() {
 		this._fileAsSelect.setSelectedValue(1);
 	}
 
-	// set folder
-	// TODO - enable/disable DwtSelect based on read/write privileges for shared address books
+
+	// otherwise, set the appropriate folder
 	var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
 	var match = this._contact.folderId;
 	if (this._contact.id == null) {
@@ -514,23 +516,28 @@ function() {
 		if (treeItem)
 			match = treeItem.getData(Dwt.KEY_ID);
 	}
-	// TODO - for now, always re-populate folders DwtSelect
+	// for now, always re-populate folders DwtSelect
 	this._folderSelect.clearOptions();
 	for (var i = 0; i < folders.length; i++) {
 		var folder = folders[i];
-		// TODO - ignore folders that are read only!
 		if (folder.id == ZmFolder.ID_ROOT || folder.id == ZmFolder.ID_TRASH)
 			continue;
 		// find out if this is a shared folder and whether we have write permissions
 		if (folder.link) {
 			var shares = folder.getShares();
 			var share = shares ? shares[0] : null;
-			// XXX: if share == null, we need to get fetch permissions from the server
+			// XXX: if share == null, we need to fetch permissions from server
 			if (share == null || !share.isWrite())
 				continue;
 		}
 		this._folderSelect.addOption(folder.name, folder.id == match, folder.id);
 	}
+
+	// XXX: for now, hide folder drop down for shared contacts until we figure out how to handle
+	if (this._contact.isShared())
+		this._folderSelect.disable();
+	else
+		this._folderSelect.enable();
 
 	// set notes
 	this._setValue(ZmContact.F_notes);

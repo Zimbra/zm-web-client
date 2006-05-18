@@ -88,7 +88,8 @@ function(type, folder, shareInfo, loc) {
 	this._granteeInput.setValue(this._shareInfo.grantee.name || "");
 	this._granteeInput.setEnabled(isNewShare);
 
-	this._inheritEl.checked = isNewShare || this._shareInfo.link.inh;
+	if (this._inheritEl)
+		this._inheritEl.checked = isNewShare || this._shareInfo.link.inh;
 
 	this._rolesGroup.setVisible(!isPubShare || isNewShare);
 	this._messageGroup.setVisible(!isPubShare || isNewShare);
@@ -137,26 +138,14 @@ function(event) {
 	share.link.perm = this._getSelectedRole();
 
 	// execute grant operation
-	try {
-		var action = this._executeGrantAction(folder, share);
-		share.grantee.id = action.zid;
-		share.grantee.email = action.d;
-	}
-	catch (ex) {
-		var message = ZmMsg.unknownError;
-		if (ex instanceof ZmCsfeException && ex.code == "account.NO_SUCH_ACCOUNT") {
-			if (!this._unknownUserFormatter) {
-				this._unknownUserFormatter = new AjxMessageFormat(ZmMsg.unknownUser);
-			}
-			message = this._unknownUserFormatter.format(share.grantee.name);
-			// NOTE: This prevents details from being shown
-			ex = null;
-		}
-		
-		var appController = this._appCtxt.getAppController();
-		appController.popupErrorDialog(message, ex, null, true);
-		return;
-	}
+	var callback = new AjxCallback(this, this._executeGrantCallback);
+	this._executeGrantAction(folder, share, callback);
+};
+
+ZmSharePropsDialog.prototype._executeGrantCallback =
+function(folder, share, action) {
+	share.grantee.id = action.zid;
+	share.grantee.email = action.d;
 
 	// send mail
 	if (!this._allRadioEl.checked && this._reply.getReply()) {
@@ -167,10 +156,10 @@ function(event) {
 		share.link.id = folder.id;
 		share.link.name = folder.name;
 		share.link.view = ZmOrganizer.getViewName(folder.type);
-		
+
 		var replyType = this._reply.getReplyType();
 		share.notes = replyType == ZmShareReply.QUICK ? this._reply.getReplyNote() : "";
-	
+
 		// compose in new window
 		if (replyType == ZmShareReply.COMPOSE) {
 			ZmShareInfo.composeMessage(this._appCtxt, this._dialogType, share);
@@ -233,7 +222,7 @@ function() {
 
 /** Note: Caller is responsible to catch exceptions. */
 ZmSharePropsDialog.prototype._executeGrantAction =
-function(folder, share) {
+function(folder, share, callback) {
 	// Note: We need the user's zid from the result
 	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
 	
@@ -249,14 +238,39 @@ function(folder, share) {
 		grantNode.setAttribute("gt", "usr");
 		grantNode.setAttribute("d", share.grantee.name);
 	}
-	if (this._inheritEl.checked) {
+	if (this._inheritEl && this._inheritEl.checked) {
 		grantNode.setAttribute("inh", "1");
 	}
 	grantNode.setAttribute("perm", share.link.perm);
-	
-	var resp = this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
-	
-	return resp.FolderActionResponse.action;
+
+	var respCallback = new AjxCallback(this, this._handleResponseGrant, [folder, share, callback]);
+	var errorCallback = new AjxCallback(this, this._handleErrorGrant, [share]);
+	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, errorCallback:errorCallback});
+};
+
+ZmSharePropsDialog.prototype._handleResponseGrant =
+function(folder, share, callback, result) {
+	var resp = result.getResponse().FolderActionResponse;
+	if (callback) {
+		callback.run(folder, share, resp.action);
+	}
+};
+
+ZmSharePropsDialog.prototype._handleErrorGrant =
+function(share, ex) {
+	var message = ZmMsg.unknownError;
+	if (ex instanceof ZmCsfeException && ex.code == "account.NO_SUCH_ACCOUNT") {
+		if (!this._unknownUserFormatter) {
+			this._unknownUserFormatter = new AjxMessageFormat(ZmMsg.unknownUser);
+		}
+		message = this._unknownUserFormatter.format(share.grantee.name);
+		// NOTE: This prevents details from being shown
+		ex = null;
+	}
+
+	this._appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
+
+	return true;
 };
 
 ZmSharePropsDialog.prototype._handleCompletionData = 
@@ -343,7 +357,9 @@ function() {
 	props.addProperty(ZmMsg.nameLabel, "<span id='"+nameId+"'></span>");
 	props.addProperty(ZmMsg.typeLabel, "<span id='"+typeId+"'></span>");
 	props.addProperty(ZmMsg.shareWithLabel, shareWithHtml);
-	props.addProperty(ZmMsg.otherLabel, otherHtml)
+	var otherId = props.addProperty(ZmMsg.otherLabel, otherHtml);
+	// XXX: for now, we are hiding this property for simplicity's sake
+	props.setPropertyVisible(otherId, false);
 
 	this._granteeInput = new DwtInputField(props);
 
@@ -412,8 +428,10 @@ function() {
 	}
 
 	// add change handlers
-	Dwt.setHandler(this._inheritEl, DwtEvent.ONCLICK, ZmSharePropsDialog._handleEdit);
-	Dwt.associateElementWithObject(this._inheritEl, this);
+	if (this._inheritEl) {
+		Dwt.setHandler(this._inheritEl, DwtEvent.ONCLICK, ZmSharePropsDialog._handleEdit);
+		Dwt.associateElementWithObject(this._inheritEl, this);
+	}
 
 	var radios = [ "_allRadioEl", "_userRadioEl" ];
 	var radioEls = document.getElementsByName(shareWithRadioName);

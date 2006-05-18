@@ -443,17 +443,25 @@ function(attr, callback) {
 	cn.setAttribute("id", this.id);
 
 	// TODO - set new folder ID if applicable (see bug 2085)
+	var continueRequest = false;
 
 	for (var name in attr) {
 		if (name == ZmContact.F_folderId)
 			continue;
 		var a = soapDoc.set("a", attr[name], cn);
 		a.setAttribute("n", name);
+		continueRequest = true;
 	}		
-	
-	var respCallback = new AjxCallback(this, this._handleResponseModify, [attr, callback]);
-	var execFrame = new AjxCallback(this, this.modify, [attr]);
-	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, execFrame:execFrame});
+
+	if (continueRequest) {
+		var respCallback = new AjxCallback(this, this._handleResponseModify, [attr, callback]);
+		var execFrame = new AjxCallback(this, this.modify, [attr]);
+		this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, execFrame:execFrame});
+	} else {
+		if (attr[ZmContact.F_folderId]) {
+			this._setFolder(attr[ZmContact.F_folderId]);
+		}
+	}
 };
 
 ZmContact.prototype._handleResponseModify =
@@ -469,6 +477,9 @@ function(attr, callback, result) {
 		if (cn.rev && cn.rev != this.rev && this.isShared()) {
 			var respCallback = new AjxCallback(this, this._handleResponseLoad);
 			this.load(respCallback);
+		} else {
+			if (attr[ZmContact.F_folderId])
+				this._setFolder(attr[ZmContact.F_folderId]);
 		}
 	} else {
 		var msg = ZmMsg.errorModifyContact + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
@@ -481,6 +492,20 @@ function(attr, callback, result) {
 ZmContact.prototype._handleResponseLoad =
 function(resp) {
 	this._notify(ZmEvent.E_MODIFY, resp);
+};
+
+ZmContact.prototype._setFolder =
+function(newFolderId) {
+	if (this.folderId == newFolderId) return;
+
+	var soapDoc = AjxSoapDoc.create("ContactActionRequest", "urn:zimbraMail");
+	var cn = soapDoc.set("action");
+	cn.setAttribute("id", this.id);
+	cn.setAttribute("op", "move");
+	cn.setAttribute("l", newFolderId);
+
+	var respCallback = new AjxCallback(this, this._handleResponseLoad);
+	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 };
 
 ZmContact.prototype.notifyModify =
@@ -830,7 +855,6 @@ function(node) {
 		this.folderId = node.l;
 		this.created = node.cd;
 		this.modified = node.md;
-		this.folderId = node.l;
 		this._fileAs = node.fileAsStr;
 		this._parseFlags(node.f);
 		this._parseTags(node.t);

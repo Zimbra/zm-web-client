@@ -39,7 +39,7 @@ function() {
 	return "ZmContactController";
 };
 
-ZmContactController.prototype.show = 
+ZmContactController.prototype.show =
 function(contact, isDirty) {
 	this._currentView = this._getViewType();
 	this._contact = contact;
@@ -126,6 +126,10 @@ function(parent, num) {
 		// disble all buttons except SAVE and CANCEL
 		parent.enableAll(false);
 		parent.enable([ZmOperation.SAVE, ZmOperation.CANCEL], true);
+	} else if (this._contact.isShared()) {
+		parent.enableAll(true);
+		// XXX: let's disable DELETE until we figure out how to handle it
+		parent.enable([ZmOperation.TAG_MENU, ZmOperation.DELETE], false);
 	} else {
 		ZmListController.prototype._resetOperations.call(this, parent, num);
 	}
