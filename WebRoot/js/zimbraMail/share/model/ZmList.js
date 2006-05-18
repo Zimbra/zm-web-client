@@ -609,7 +609,7 @@ function(ev) {
 		if (curView) curView.setOffset(0);
 		ctlr._resetNavToolBarButtons(view);
 		ctlr._showListRange(view);
-	} else if (isCurrentList && (ev.event == ZmEvent.E_MOVE ||
+	} else if (isCurrentList && ctlr && ctlr._currentSearch && (ev.event == ZmEvent.E_MOVE ||
 			   (ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME])) {
 		// on folder rename or move, update current query if folder is part of query
 		var oldPath = ev.getDetail("oldPath");
