@@ -166,6 +166,30 @@ function() {
 	return this._msgDialog;
 };
 
+ZmAppCtxt.prototype.getYesNoMsgDialog =
+function() {
+	if (!this._yesNoMsgDialog) {
+		this._yesNoMsgDialog = new DwtMessageDialog(this.getShell(), null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
+	}	
+	return this._yesNoMsgDialog;
+};
+
+ZmAppCtxt.prototype.getYesNoCancelMsgDialog =
+function() {
+	if (!this._yesNoCancelMsgDialog) {
+		this._yesNoCancelMsgDialog = new DwtMessageDialog(this.getShell(), null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
+	}	
+	return this._yesNoCancelMsgDialog;
+};
+
+ZmAppCtxt.prototype.getOkCancelMsgDialog =
+function() {
+	if (!this._okCancelMsgDialog) {
+		this._okCancelMsgDialog = new DwtMessageDialog(this.getShell(), null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+	}	
+	return this._okCancelMsgDialog;
+};
+
 ZmAppCtxt.prototype.getErrorDialog = 
 function() {
 	if (!this._errorDialog)

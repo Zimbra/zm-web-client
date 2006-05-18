@@ -34,12 +34,12 @@ Contributor(s):
 		authToken = null;
 	}
 
+	Cookie[] cookies = request.getCookies();
 	if (authToken == null) {
-		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
-            for (Cookie cooky : cookies) {
-                if (cooky.getName().equals(AUTH_TOKEN_COOKIE_NAME))
-                    authToken = cooky.getValue();
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(AUTH_TOKEN_COOKIE_NAME))
+                    authToken = cookie.getValue();
             }
 		}
 
@@ -53,19 +53,23 @@ Contributor(s):
 		response.addCookie(c);
 	}
 
+	final String SKIN_COOKIE_NAME = "ZM_SKIN";
+	String skin = "steel";
+	if (cookies != null) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(SKIN_COOKIE_NAME)) {
+                skin = cookie.getValue();
+            }
+        }
+    }
+
 	String mode = (String) request.getAttribute("mode");
 	String vers = (String) request.getAttribute("version");
 	String ext = (String) request.getAttribute("fileExtension");
 	String ua = request.getHeader("user-agent");
 	boolean isSafari = ua.indexOf("Safari/") != -1;
 
-	// MOW:  get the skin name from a query parameter, defaulting to "chocolate"
-	String skin = request.getParameter("skin");
-	if (skin == null) {
-		skin = "steel";
-	}
     String skinHtmlFile = "../skins/" + skin + "/" + skin + ".html";
-
 
 	if (vers == null) vers = "";
 	if (ext == null) ext = "";

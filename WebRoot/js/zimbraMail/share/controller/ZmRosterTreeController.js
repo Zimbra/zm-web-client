@@ -196,20 +196,19 @@ ZmRosterTreeController.prototype._deleteListener =
 function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
 	if (!(organizer instanceof ZmRosterTreeItem)) return;
-	if (!this._deleteItemShield) {
-		this._deleteItemShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
-        	this._deleteItemShield.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteItemShield);	
-	}
-	this._deleteItemShield.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
+	var ds = this._deleteShield = this._appCtxt.getYesNoCancelMsgDialog();
+	ds.reset();
+	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
+	ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);	
 	var msg = this._confirmDeleteRosterItemFormatter.format([organizer.getRosterItem().getAddress()]);
-	this._deleteItemShield.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-	this._deleteItemShield.popup();
+	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	ds.popup();
 };
 
 ZmRosterTreeController.prototype._deleteShieldYesCallback =
 function(organizer) {
 	organizer.getRosterItem()._delete();
-	this._clearDialog(this._deleteItemShield);
+	this._clearDialog(this._deleteShield);
 };
 
 ZmRosterTreeController.prototype._getActionMenu =

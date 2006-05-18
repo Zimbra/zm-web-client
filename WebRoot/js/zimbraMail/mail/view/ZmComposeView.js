@@ -220,16 +220,17 @@ function(attId, isDraft) {
 	    return;
 	}
 
-	var confirmDialog = this._getConfirmDialog();
-
+	var cd = this._confirmDialog = this._appCtxt.getOkCancelMsgDialog();
+	cd.reset();
+	
 	// Is there a subject? If not, ask the user if they want to send anyway.
 	var subject = AjxStringUtil.trim(this._subjectField.value);
 	if (!isDraft && subject.length == 0 && !this._noSubjectOkay) {
 		this.enableInputs(false);
-    	confirmDialog.setMessage(ZmMsg.compSubjectMissing, DwtMessageDialog.WARNING_STYLE);
-		confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this);
-		confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this);
-	    confirmDialog.popup(this._getDialogXY());
+    	cd.setMessage(ZmMsg.compSubjectMissing, DwtMessageDialog.WARNING_STYLE);
+		cd.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this);
+		cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this);
+	    cd.popup(this._getDialogXY());
 		return;
 	}
 
@@ -238,10 +239,10 @@ function(attId, isDraft) {
 		this.enableInputs(false);
 	    var bad = AjxStringUtil.htmlEncode(addrs[ZmComposeView.BAD].toString(ZmEmailAddress.SEPARATOR));
 	    var msg = AjxMessageFormat.format(ZmMsg.compBadAddresses, bad);
-    	confirmDialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-		confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this);
-		confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, addrs.badType);
-	    confirmDialog.popup(this._getDialogXY());
+    	cd.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+		cd.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this);
+		cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, addrs.badType);
+	    cd.popup(this._getDialogXY());
 		return;
 	} else {
 		this._badAddrsOkay = false;
@@ -1329,16 +1330,6 @@ function() {
 	return false;
 };
 
-// OPTIMIZATION: helper method creates confirm dialog only when its first needed
-ZmComposeView.prototype._getConfirmDialog = 
-function() {
-	if (!this._confirmDialog) {
-		this._confirmDialog = new DwtMessageDialog(this.shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
-	}
-
-	return this._confirmDialog;
-};	
-
 
 // Listeners
 
@@ -1432,21 +1423,22 @@ function() {
 	// we can't get the attachments from the document anymore.
 	// W/in debugger, it looks fine, but remove the debugger and any
 	// alerts, and gotAttachments will return false after the popdown call.
-	var confirmDialog = this._getConfirmDialog();
 
- 	if (AjxEnv.isIE)
-		confirmDialog.popdown();
+ 	if (AjxEnv.isIE) {
+		this._confirmDialog.popdown();
+ 	}
 	// bug fix# 3209
 	// - hide the dialog instead of popdown (since window will go away anyway)
-	if (AjxEnv.isNav && this._controller.isChildWindow)
-		confirmDialog.setVisible(false);
+	if (AjxEnv.isNav && this._controller.isChildWindow) {
+		this._confirmDialog.setVisible(false);
+	}
 
 	// dont make any calls after sendMsg if child window since window gets destroyed
 	if (this._controller.isChildWindow && !AjxEnv.isNav) {
 		this._controller.sendMsg();
 	} else {
 		// bug fix #3251 - call popdown BEFORE sendMsg
-		confirmDialog.popdown();
+		this._confirmDialog.popdown();
 		this._controller.sendMsg();
 	}
 };
@@ -1455,7 +1447,7 @@ function() {
 ZmComposeView.prototype._noSubjectCancelCallback =
 function() {
 	this.enableInputs(true);
-	this._getConfirmDialog().popdown();
+	this._confirmDialog.popdown();
 	this._subjectField.focus();
 	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();
@@ -1466,7 +1458,7 @@ ZmComposeView.prototype._badAddrsOkCallback =
 function() {
 	this.enableInputs(true);
 	this._badAddrsOkay = true;
-	this._getConfirmDialog().popdown();
+	this._confirmDialog.popdown();
 	this._controller.sendMsg();
 };
 
@@ -1475,7 +1467,7 @@ ZmComposeView.prototype._badAddrsCancelCallback =
 function(type) {
 	this.enableInputs(true);
 	this._badAddrsOkay = false;
-	this._getConfirmDialog().popdown();
+	this._confirmDialog.popdown();
 	if (this._using[type])
 		this._field[type].focus()
 	this._controller._toolbar.enableAll(true);

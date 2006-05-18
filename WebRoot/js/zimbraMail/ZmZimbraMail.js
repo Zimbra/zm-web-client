@@ -55,6 +55,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
     var listener = new AjxListener(this, this._settingsChangeListener);
 	this._settings.getSetting(ZmSetting.QUOTA_USED).addChangeListener(listener);
 	this._settings.getSetting(ZmSetting.POLLING_INTERVAL).addChangeListener(listener);
+	this._settings.getSetting(ZmSetting.SKIN).addChangeListener(listener);
 
 	ZmCsfeCommand.setServerUri(location.protocol + "//" + domain + appCtxt.get(ZmSetting.CSFE_SERVER_URI));
 
@@ -849,15 +850,9 @@ function() {
 	
 	window.onbeforeunload = null;
 	
-	var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80')? "" : ":" + location.port) + "/zimbra/" + window.location.search;
-	// not sure why IE doesn't allow this to process immediately, but since
-	// it does not, we'll set up a timed action.
-	if (AjxEnv.isIE) {
-		var act = new AjxTimedAction(null, ZmZimbraMail.redir, [locationStr]);
-		AjxTimedAction.scheduleAction(act, 1);
-	} else {
-		window.location = locationStr;
-	}
+	var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
+					  "" : ":" + location.port) + "/zimbra/" + window.location.search;
+	ZmZimbraMail.sendRedirect(locationStr);
 };
 
 ZmZimbraMail._logOffListener = new AjxListener(null, ZmZimbraMail.logOff);
@@ -868,6 +863,18 @@ function() {
 		return;
 	}
 	ZmZimbraMail.logOff();
+};
+
+ZmZimbraMail.sendRedirect =
+function(locationStr) {
+	// not sure why IE doesn't allow this to process immediately, but since
+	// it does not, we'll set up a timed action.
+	if (AjxEnv.isIE) {
+		var act = new AjxTimedAction(null, ZmZimbraMail.redir, [locationStr]);
+		AjxTimedAction.scheduleAction(act, 1);
+	} else {
+		window.location = locationStr;
+	}
 };
 
 ZmZimbraMail.redir =
@@ -1523,7 +1530,19 @@ function(ev) {
 		this._setUserInfo();
 	} else if (setting.id == ZmSetting.POLLING_INTERVAL) {
 		this.setPollInterval();
+	} else if (setting.id == ZmSetting.SKIN) {
+		var cd = this._confirmDialog = this._appCtxt.getYesNoMsgDialog();
+		cd.reset();
+		cd.registerCallback(DwtDialog.YES_BUTTON, this._newSkinYesCallback, this);
+		cd.setMessage(ZmMsg.skinChangeRestart, DwtMessageDialog.WARNING_STYLE);
+		cd.popup();
 	}
+};
+
+ZmZimbraMail.prototype._newSkinYesCallback =
+function() {
+	this._confirmDialog.popdown();
+	ZmZimbraMail.sendRedirect(location.toString()); // redirect to self to force reload
 };
 
 /*

@@ -165,21 +165,19 @@ function() {
 	if (!this._composeView.isDirty())
 		return true;
 
-	if (!this._popShield) {
-		if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
-			this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
-			this._popShield.setMessage(ZmMsg.askSaveDraft, DwtMessageDialog.WARNING_STYLE);
-			this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
-			this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
-			this._popShield.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
-		} else {
-			this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
-			this._popShield.setMessage(ZmMsg.askLeaveCompose, DwtMessageDialog.WARNING_STYLE);
-			this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
-			this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
-		}
+	var ps = this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
+	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
+		ps.reset();
+		ps.setMessage(ZmMsg.askSaveDraft, DwtMessageDialog.WARNING_STYLE);
+		ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
+		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
+		ps.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
+	} else {
+		ps.setMessage(ZmMsg.askLeaveCompose, DwtMessageDialog.WARNING_STYLE);
+		ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
+		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 	}
-    this._popShield.popup(this._composeView._getDialogXY());
+	ps.popup(this._composeView._getDialogXY());
 
 	return false;
 };
@@ -754,18 +752,12 @@ function() {
 	this._popShield.popdown();
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 		// save as draft
-		var respCallback = new AjxCallback(this, this._handleResponsePopShieldYesCallback);
-		this.sendMsg(null, true, respCallback);
+		this.sendMsg(null, true);
 	} else {
 		// cancel
 		this._composeView.reset(false);
 	}
 	this._app.getAppViewMgr().showPendingView(true);
-};
-
-ZmComposeController.prototype._handleResponsePopShieldYesCallback =
-function(args) {
-	this._composeView.draftSaved();
 };
 
 // Called as: No, don't save as draft

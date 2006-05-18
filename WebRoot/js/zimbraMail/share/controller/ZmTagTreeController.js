@@ -120,7 +120,7 @@ function() {
 };
 
 /*
-* Returns a "Rename Folder" dialog.
+* Returns a "Rename Tag" dialog.
 */
 ZmTagTreeController.prototype._getRenameDialog =
 function() {
@@ -153,14 +153,13 @@ function(tag) {
 ZmTagTreeController.prototype._deleteListener = 
 function(ev) {
 	var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
-	if (!this._deleteShield) {
-		this._deleteShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
-		this._deleteShield.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
-	}
-	this._deleteShield.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
+	var ds = this._deleteShield = this._appCtxt.getYesNoCancelMsgDialog();
+	ds.reset();
+	ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
+	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
 	var msg = AjxMessageFormat.format(ZmMsg.askDeleteTag, organizer.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
-	this._deleteShield.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-	this._deleteShield.popup();
+	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	ds.popup();
 };
 
 /*

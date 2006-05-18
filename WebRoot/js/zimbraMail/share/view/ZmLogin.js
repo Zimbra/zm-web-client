@@ -46,6 +46,7 @@ ZmLogin = function() {}
 
 ZmLogin.lastGoodUserNameCookie   = "ls_last_username";
 ZmLogin.lastGoodMailServerCookie = "ls_last_server";
+ZmLogin.skinCookie = "ZM_SKIN";
 ZmLogin.CSFE_SERVER_URI = location.port == "80" ? "/service/soap/" : ":" + location.port + "/service/soap/";
 ZmLogin.ZIMBRA_APP_URI  = location.port == "80" ? appContextPath+"/mail" : ":" + location.port + appContextPath+"/mail";
 ZmLogin.MAILBOX_REGEX =/^([a-zA-Z0-9_\.\-])+(\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+)?$/;
@@ -430,6 +431,9 @@ function(uname, pword) {
     el.setAttribute("by", "name");
     soapDoc.set("password", pword);
     soapDoc.set("virtualHost", location.hostname);
+    el = soapDoc.set("prefs");
+    el = soapDoc.set("pref", null, el);
+    el.setAttribute("name", "zimbraPrefSkin");
 
 	var command = new ZmCsfeCommand();
 	var respCallback = new AjxCallback(null, ZmLogin._handleResponseSubmitAuthRequest, [uname, pword]);
@@ -468,6 +472,18 @@ function(uname, pword, result) {
 	ZmLogin._authToken = resp.authToken;
 	ZmLogin._authTokenLifetime = resp.lifetime;
 	var mailServer = resp.refer;
+	
+	var skin = null;
+	if (resp.prefs) {
+		var prefs = (resp.prefs instanceof Array) ? resp.prefs[0] : [resp.prefs];
+		var pref = prefs.pref;
+		for (var i = 0; i < pref.length; i++) {
+			if (pref[i].name == 'zimbraPrefSkin') {
+				skin = pref[i]._content;
+				DBG.println(AjxDebug.DBG1, "got skin from prefs: " + skin);
+			}
+		}
+	}	
 
 	var match = location.search ? location.search.match(/\bredirect=([01])/) : null;
 	var redirect = match ? match[1] : null;
@@ -476,7 +492,7 @@ function(uname, pword, result) {
 	}
 
 	var rmChecked = document.getElementById("rememberMe").checked;
-	ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword, rmChecked);
+	ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword, rmChecked, skin);
 	ZmLogin._authToken = ZmLogin._authTokenLifetime = null;
 };
 
@@ -514,17 +530,21 @@ function() {
 };
 
 ZmLogin.handleSuccess = 
-function(authToken, tokenLifetime, mailServer, uname, password, rememberMe) {
+function(authToken, tokenLifetime, mailServer, uname, password, rememberMe, skin) {
 	var uri = ZmLogin.getMailUrl(mailServer);
 	// save the username for later use
-	if (uname)
+	if (uname) {
 		AjxCookie.setCookie(document, ZmLogin.lastGoodUserNameCookie, uname, null, "/");
-
-	if (mailServer)
+	}
+	if (mailServer) {
 		AjxCookie.setCookie(document, ZmLogin.lastGoodMailServerCookie, mailServer, null, "/");
-
-	if (window.initMode != "" && (window.initMode != location.protocol))
+	}
+	if (window.initMode != "" && (window.initMode != location.protocol)) {
 		AjxDebug.deleteWindowCookie();
+	}
+	if (skin) {
+		AjxCookie.setCookie(document, ZmLogin.skinCookie, skin, null, "/");
+	}
 
 	// make sure we add the query string to the new page
 	ZmLogin._postAuthToServer(mailServer, authToken, tokenLifetime, rememberMe);
@@ -640,16 +660,17 @@ function(mailServer, authToken, tokenLifetime, rememberMe) {
 	var form = document.createElement('form');
 	document.body.appendChild(form);
 
-	var html = new Array();
+	var html = [];
 	var i = 0;
 
 	html[i++] = "<input type='hidden' name='authToken' value='" + authToken + "'>";
 
-	if (rememberMe)
+	if (rememberMe) {
 		html[i++] = "<input type='hidden' name='rememberMe' value='" + rememberMe + "'>";
-
-	if (tokenLifetime)
+	}
+	if (tokenLifetime) {
 		html[i++] = "<input type='hidden' name='atl' value='" + tokenLifetime + "'>";
+	}
 
 	form.innerHTML = html.join('');
 	form.action = ZmLogin.getAuthUrl(mailServer);

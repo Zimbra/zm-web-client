@@ -135,11 +135,16 @@ Contributor(s):
 		ext = "";
 	}
 	
-	// MOW:  get the skin name from a query parameter, defaulting to "chocolate"
-	String skin = (String) request.getParameter("skin");
-	if (skin == null) {
-		skin = "steel";
-	}	
+	final String SKIN_COOKIE_NAME = "ZM_SKIN";
+	String skin = "steel";
+	Cookie[] cookies = request.getCookies();
+	if (cookies != null) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(SKIN_COOKIE_NAME)) {
+                skin = cookie.getValue();
+            }
+        }
+    }
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>

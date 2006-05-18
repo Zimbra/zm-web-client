@@ -69,24 +69,25 @@ function(dialog) {
 	var bad = new AjxVector();	
 	var msg = this.getMessage(bad);
 
-	var confirmDialog = this._getConfirmDialog(dialog);
-
+	var cd = this._confirmDialog = this._appCtxt.getOkCancelMsgDialog();
+	cd.reset();
+	
 	var subject = AjxStringUtil.trim(msg.getSubject());
 	if ((subject == null || subject == "") && !this._noSubjectOkay) {
-    	confirmDialog.setMessage(ZmMsg.compSubjectMissing, DwtMessageDialog.WARNING_STYLE);
-		confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this, dialog);
-		confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this, dialog);
-	    confirmDialog.popup();
+    	cd.setMessage(ZmMsg.compSubjectMissing, DwtMessageDialog.WARNING_STYLE);
+		cd.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this, dialog);
+		cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this, dialog);
+	    cd.popup();
 		return false;
 	}
 
 	if (bad.size() > 0 && !this._badAddrsOkay) {
 	    var badAddrs = AjxStringUtil.htmlEncode(bad.toString(ZmEmailAddress.SEPARATOR));
 	    var message = AjxMessageFormat.format(ZmMsg.compBadAddresses, badAddrs);
-    	confirmDialog.setMessage(message, DwtMessageDialog.WARNING_STYLE);
-		confirmDialog.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this, dialog);
-		confirmDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, dialog);
-	    confirmDialog.popup();
+    	cd.setMessage(message, DwtMessageDialog.WARNING_STYLE);
+		cd.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this, dialog);
+		cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, dialog);
+	    cd.popup();
 		return false;
 	} else {
 		this._badAddrsOkay = false;
@@ -133,7 +134,7 @@ function(dialog, ex) {
 ZmMailAssistant.prototype._noSubjectOkCallback =
 function(dialog) {
 	this._noSubjectOkay = true;
-	this._getConfirmDialog().popdown();
+	this._confirmDialog.popdown();
 	this.okHandler(dialog);
 };
 
@@ -141,14 +142,14 @@ function(dialog) {
 ZmMailAssistant.prototype._noSubjectCancelCallback =
 function(dialog) {
 	this._noSubjectOkay = false;
-	this._getConfirmDialog().popdown();
+	this._confirmDialog.popdown();
 };
 
 // User has agreed to send message with bad addresses
 ZmMailAssistant.prototype._badAddrsOkCallback =
 function(dialog) {
 	this._badAddrsOkay = true;
-	this._getConfirmDialog().popdown();
+	this._confirmDialog.popdown();
 	this.okHandler(dialog);
 };
 
@@ -156,7 +157,7 @@ function(dialog) {
 ZmMailAssistant.prototype._badAddrsCancelCallback =
 function(dialog) {
 	this._badAddrsOkay = false;
-	this._getConfirmDialog().popdown();
+	this._confirmDialog.popdown();
 };
 
 ZmMailAssistant.prototype._getAddrs =

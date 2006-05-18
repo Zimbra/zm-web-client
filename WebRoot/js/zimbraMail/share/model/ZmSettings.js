@@ -38,8 +38,8 @@ function ZmSettings(appCtxt) {
 	ZmModel.call(this, ZmEvent.S_SETTING);
 
 	this._appCtxt = appCtxt;
-	this._settings = new Object(); // settings by ID
-	this._nameToId = new Object(); // map to get from server setting name to setting ID
+	this._settings = {}; // settings by ID
+	this._nameToId = {}; // map to get from server setting name to setting ID
 	this._initialize();
 	this._setDefaults();
 	this.userSettingsLoaded = false;
@@ -178,23 +178,6 @@ function(callback, result) {
 };
 
 /**
-* Retrieves the preferences for the current user. No COS settings or user metadata is
-* retrieved.
-*/
-ZmSettings.prototype.loadPrefs =
-function() {
-    var soapDoc = AjxSoapDoc.create("GetPrefsRequest", "urn:zimbraAccount");
-	var respCallback = new AjxCallback(this, this._handleResponseLoadPrefs);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
-};
-
-ZmSettings.prototype._handleResponseLoadPrefs =
-function(result) {
-    var resp = result.getResponse().firstChild;
-	this.createFromDom(resp);
-};
-
-/**
 * Saves one or more settings.
 *
 * @param list	[array]		a list of ZmSetting
@@ -233,6 +216,9 @@ function(list, callback, result) {
 		for (var i = 0; i < list.length; i++) {
 			var setting = list[i];
 			setting.origValue = setting.value;
+			if (setting.id == ZmSetting.SKIN) {
+				AjxCookie.setCookie(document, ZmLogin.skinCookie, setting.getValue(), null, "/");
+			}
 			setting._notify(ZmEvent.E_MODIFY);
 		}
 	}

@@ -76,13 +76,13 @@ function() {
 		return true;
 	}
 
-	if (!this._popShield) {
-		this._popShield = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
-		this._popShield.setMessage(ZmMsg.askToSave, DwtMessageDialog.WARNING_STYLE);
-		this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
-		this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
-	}
-    this._popShield.popup(this._apptView._getDialogXY());
+	var ps = this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
+	ps.reset();
+	ps.setMessage(ZmMsg.askToSave, DwtMessageDialog.WARNING_STYLE);
+	ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
+	ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
+	ps.popup(this._apptView._getDialogXY());
+
 	return false;
 };
 

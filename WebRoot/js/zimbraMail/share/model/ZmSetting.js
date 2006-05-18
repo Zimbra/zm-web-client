@@ -33,6 +33,7 @@
 * will depend on the environment or user activity to get their value.
 *
 * @author Conrad Damon
+* 
 * @param id				a unique ID
 * @param name			the name of the pref or attr on the server
 * @param type			config, pref, or COS
@@ -87,6 +88,9 @@ ZmSetting.DEDUPE_INBOX		= "moveSentMessageToInbox";
 ZmSetting.DEDUPE_ALL		= "dedupeAll";
 ZmSetting.SIG_INTERNET		= "internet";				// zimbraPrefMailSignatureStyle
 ZmSetting.SIG_OUTLOOK		= "outlook";
+ZmSetting.SKIN_BARE			= "bare";					// zimbraPrefSkin
+ZmSetting.SKIN_STEEL		= "steel";
+ZmSetting.SKIN_WALNUT		= "walnut";
 
 // Constants for various setting types. A setting can represent configuration data, a COS attribute, or a user preference.
 // Any setting added here must also be added to INIT below.
@@ -149,6 +153,7 @@ ZmSetting.PWD_MAX_LENGTH				= i++;
 ZmSetting.PWD_MIN_LENGTH				= i++;
 ZmSetting.QUOTA							= i++;
 ZmSetting.SAVED_SEARCHES_ENABLED		= i++;
+ZmSetting.SKIN_CHANGE_ENABLED			= i++;
 ZmSetting.TAGGING_ENABLED				= i++;
 ZmSetting.VIEW_ATTACHMENT_AS_HTML 		= i++;
 ZmSetting.SHARING_ENABLED				= i++;
@@ -185,6 +190,7 @@ ZmSetting.CONTACTS_PER_PAGE 			= i++;
 ZmSetting.CONTACTS_VIEW					= i++;
 ZmSetting.EXPORT 						= i++;
 ZmSetting.IMPORT 						= i++;
+
 // calendar preferences
 ZmSetting.CAL_FIRST_DAY_OF_WEEK 		= i++;
 ZmSetting.CAL_SHOW_TIMEZONE				= i++;
@@ -193,12 +199,15 @@ ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL		= i++;
 ZmSetting.CALENDAR_INITIAL_VIEW			= i++;
 ZmSetting.DEFAULT_CALENDAR_TIMEZONE		= i++;
 ZmSetting.CAL_REMINDER_WARNING_TIME		= i++;
+
 // general preferences
 ZmSetting.PASSWORD						= i++;
 ZmSetting.SEARCH_INCLUDES_SPAM			= i++;
 ZmSetting.SEARCH_INCLUDES_TRASH			= i++;
 ZmSetting.SHOW_SEARCH_STRING			= i++;
+ZmSetting.SKIN							= i++;
 ZmSetting.SORTING_PREF 					= i++;
+
 // mail preferences
 ZmSetting.COMPOSE_AS_FORMAT				= i++;
 ZmSetting.COMPOSE_INIT_FONT_COLOR 		= i++;
@@ -309,6 +318,7 @@ ZmSetting.INIT[ZmSetting.PWD_MAX_LENGTH]				= ["zimbraPasswordMaxLength", ZmSett
 ZmSetting.INIT[ZmSetting.PWD_MIN_LENGTH]				= ["zimbraPasswordMinLength", ZmSetting.T_COS, ZmSetting.D_INT, 6];
 ZmSetting.INIT[ZmSetting.QUOTA]							= ["zimbraMailQuota", ZmSetting.T_COS, ZmSetting.D_INT, 0];
 ZmSetting.INIT[ZmSetting.SAVED_SEARCHES_ENABLED]		= ["zimbraFeatureSavedSearchesEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.SKIN_CHANGE_ENABLED]			= ["zimbraFeatureSkinChangeEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.TAGGING_ENABLED]				= ["zimbraFeatureTaggingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.VIEW_ATTACHMENT_AS_HTML] 		= ["zimbraFeatureViewInHtmlEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.SHARING_ENABLED]		 		= ["zimbraFeatureSharingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
@@ -345,6 +355,7 @@ ZmSetting.INIT[ZmSetting.CONTACTS_PER_PAGE] 			= ["zimbraPrefContactsPerPage", Z
 ZmSetting.INIT[ZmSetting.CONTACTS_VIEW]					= ["zimbraPrefContactsInitialView", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.CV_LIST];
 ZmSetting.INIT[ZmSetting.EXPORT] 						= [null, ZmSetting.T_PREF];
 ZmSetting.INIT[ZmSetting.IMPORT] 						= [null, ZmSetting.T_PREF];
+
 // calendar preferences
 ZmSetting.INIT[ZmSetting.CAL_FIRST_DAY_OF_WEEK] 		= ["zimbraPrefCalendarFirstDayOfWeek", ZmSetting.T_PREF, ZmSetting.D_INT, 0];
 ZmSetting.INIT[ZmSetting.CAL_SHOW_TIMEZONE]	 			= ["zimbraPrefUseTimeZoneListInCalendar", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
@@ -359,7 +370,9 @@ ZmSetting.INIT[ZmSetting.PASSWORD]						= [null, ZmSetting.T_PREF];
 ZmSetting.INIT[ZmSetting.SEARCH_INCLUDES_SPAM]			= ["zimbraPrefIncludeSpamInSearch", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.SEARCH_INCLUDES_TRASH]			= ["zimbraPrefIncludeTrashInSearch", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.SHOW_SEARCH_STRING]			= ["zimbraPrefShowSearchString", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.SKIN]							= ["zimbraPrefSkin", ZmSetting.T_PREF, ZmSetting.D_STRING, "steel"];
 ZmSetting.INIT[ZmSetting.SORTING_PREF] 					= [null, ZmSetting.T_PREF, ZmSetting.D_HASH_TABLE];
+
 // mail preferences
 ZmSetting.INIT[ZmSetting.COMPOSE_AS_FORMAT] 			= ["zimbraPrefComposeFormat", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.COMPOSE_TEXT];
 ZmSetting.INIT[ZmSetting.COMPOSE_INIT_FONT_COLOR] 		= ["zimbraPrefHtmlEditorDefaultFontColor", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.COMPOSE_FONT_COLOR];

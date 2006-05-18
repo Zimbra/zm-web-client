@@ -45,7 +45,7 @@ ZmPref.GROUP_MAIL_BY_VALUE[ZmItem.CONV] = ZmSetting.GROUP_BY_CONV;
 ZmPref.GROUP_MAIL_BY_VALUE[ZmItem.MSG] = ZmSetting.GROUP_BY_MESSAGE;
 
 ZmPref.GENERAL_PREFS = [ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH, ZmSetting.PASSWORD, 
-						ZmSetting.SHOW_SEARCH_STRING, 
+						ZmSetting.SHOW_SEARCH_STRING, ZmSetting.SKIN,
 						ZmSetting.COMPOSE_INIT_FONT_FAMILY, ZmSetting.COMPOSE_INIT_FONT_SIZE, ZmSetting.COMPOSE_INIT_FONT_COLOR];
 
 ZmPref.MAIL_PREFS = [ZmSetting.INITIAL_GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSetting.SHOW_FRAGMENTS,
@@ -115,7 +115,7 @@ ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE]	= 8192;
 // errorMessage			message to show if validation fails
 // displaySeparator		if true, a line will be drawn below this pref
 
-ZmPref.SETUP = new Object();
+ZmPref.SETUP = {};
 
 ZmPref.SETUP[ZmSetting.SEARCH_INCLUDES_SPAM] = {
 	displayName:		ZmMsg.includeJunkFolder,
@@ -132,6 +132,14 @@ ZmPref.SETUP[ZmSetting.PASSWORD] = {
 	displayContainer:	ZmPref.TYPE_PASSWORD,
 	displaySeparator:	true,
 	precondition:		ZmSetting.CHANGE_PASSWORD_ENABLED};
+
+ZmPref.SETUP[ZmSetting.SKIN] = {
+	displayName:		ZmMsg.selectSkin,
+	displayContainer:	ZmPref.TYPE_SELECT,
+	displayOptions:		[ZmMsg.skinBare, ZmMsg.skinSteel, ZmMsg.skinWalnut],
+	options:			[ZmSetting.SKIN_BARE, ZmSetting.SKIN_STEEL, ZmSetting.SKIN_WALNUT],
+	displaySeparator:	true,
+	precondition:		ZmSetting.SKIN_CHANGE_ENABLED};
 
 ZmPref.SETUP[ZmSetting.INITIAL_GROUP_MAIL_BY] =	{ 
 	displayName:		ZmMsg.groupMailBy,
