@@ -482,10 +482,31 @@ function(sortBy) {
 	search.execute({callback: new AjxCallback(this, this._handleResponseSearchContacts)});
 };
 
+// If a contact has multiple emails, create a clone for each one.
 ZmApptChooserTabViewPage.prototype._handleResponseSearchContacts = 
 function(result) {
 	var resp = result.getResponse();
-	this._chooser.setItems(resp.getResults(ZmItem.CONTACT).getVector());
+	var list = resp.getResults(ZmItem.CONTACT).getArray();
+	var list1 = [];
+	for (var i = 0; i < list.length; i++) {
+		var contact = list[i];
+		var emails = contact.getEmails();
+		if (emails && emails.length > 1) {
+			var workPhone = contact.getAttr(ZmContact.F_workPhone);
+			var homePhone = contact.getAttr(ZmContact.F_homePhone);
+			for (var j = 0; j < emails.length; j++) {
+				var clone = new ZmContact(this._appCtxt);
+				clone._fullName = contact.getFullName();
+				clone.setAttr(ZmContact.F_workPhone, workPhone);
+				clone.setAttr(ZmContact.F_homePhone, homePhone);
+				clone.setAttr(ZmContact.F_email, emails[j]);
+				list1.push(clone);
+			}
+		} else {
+			list1.push(contact)
+		}
+	}
+	this._chooser.setItems(list1);
 };
 
 ZmApptChooserTabViewPage.prototype.searchCalendarResources = 
