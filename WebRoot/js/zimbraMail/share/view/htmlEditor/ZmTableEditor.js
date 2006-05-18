@@ -414,6 +414,29 @@ function ZmCellPropsDialog(parent) {
 	this._wVertPadding = new DwtSpinner({ parent: this, size : 3, min: 0, max: 10 });
 	this._wVertPadding.reparentHtmlElement(this._idVertPadding);
 
+	// insert the "quick borders buttons"
+	var table = document.getElementById(this._idQuickBorders);
+	var row = table.rows[0];
+	var clrow = row.cloneNode(true);
+	var cell_index = 0;
+	var quickSetListener = new AjxListener(this, this._quickSetBorder);
+	for (var i = 0; i < ZmCellPropsDialog.QUICK_BORDERS.length; ++i) {
+		var info = ZmCellPropsDialog.QUICK_BORDERS[i];
+		var btn = new DwtButton(this, null, "TBButton");
+		btn.setImage(info.img);
+		btn.setData("ZmTableEditor", info);
+		btn.addSelectionListener(quickSetListener);
+		if (cell_index == row.cells.length) {
+			cell_index = 0;
+			row = clrow.cloneNode(true);
+			table.rows[0].parentNode.appendChild(row);
+		}
+		var td = row.cells[cell_index];
+		cell_index++;
+		btn.reparentHtmlElement(td);
+	}
+	clrow = null;
+
 	var table = this.getPreviewGridHolder();
 	table.onmousemove = table.onmousedown =
 		AjxCallback.simpleClosure(this._gridMouseEvent, this);
@@ -449,6 +472,128 @@ function ZmCellPropsDialog(parent) {
 
 ZmCellPropsDialog.prototype = new DwtDialog;
 ZmCellPropsDialog.prototype.constructor = ZmCellPropsDialog;
+
+//
+// this rather ugly variable describes the "quick border" buttons.  It is an
+// array of hashes that can contain the following keys:
+//
+//   - img (required) -- the icon class name
+//   - borders (required) -- array that specifies what borders to affect.
+//     The order is top, middle, bottom, left, center, right.
+//     Specify 1 if the border is "on", 0 if the border is "off".
+//   - width -- integer or array specifying width for borders.  implied is 1.
+//   - style -- string or array specifying the style for borders.  implied is "solid".
+//
+ZmCellPropsDialog.QUICK_BORDERS = [
+	{
+	    img: "BorderAll",
+	    borders: [ 1, 1, 1, 1, 1, 1 ]
+	},
+	{
+	    img: "BorderBottom",
+	    borders: [ 0, 0, 1, 0, 0, 0 ]
+	},
+	{
+	    img: "BorderBottomDouble",
+	    style: "double",
+	    borders: [ 0, 0, 3, 0, 0, 0 ]
+	},
+	{
+	    img: "BorderBottomThick",
+	    borders: [ 0, 0, 2, 0, 0, 0 ]
+	},
+	{
+	    img: "BorderBox",
+	    borders: [ 1, 0, 1, 1, 0, 1 ]
+	},
+	{
+	    img: "BorderBoxDouble",
+	    style: "double",
+	    borders: [ 3, 0, 3, 3, 0, 3 ]
+	},
+	{
+	    img: "BorderBoxThick",
+	    borders: [ 2, 0, 2, 2, 0, 2 ]
+	},
+	{
+	    img: "BorderCenter",
+	    borders: [ 0, 1, 0, 0, 1, 0 ]
+	},
+	{
+	    img: "BorderH",
+	    borders: [ 0, 1, 0, 0, 0, 0 ]
+	},
+	{
+	    img: "BorderHEdges",
+	    borders: [ 1, 0, 1, 0, 0, 0 ]
+	},
+	{
+	    img: "BorderLeft",
+	    borders: [ 0, 0, 0, 1, 0, 0 ]
+	},
+	{
+	    img: "BorderNone",
+	    borders: [ 0, 0, 0, 0, 0, 0 ]
+	},
+	{
+	    img: "BorderRight",
+	    borders: [ 0, 0, 0, 0, 0, 1 ]
+	},
+	{
+	    img: "BorderTop",
+	    borders: [ 1, 0, 0, 0, 0, 0 ]
+	},
+	{
+	    img: "BorderTopBottomDouble",
+	    style: [ "solid", "none", "double", "none", "none", "none" ],
+	    borders: [ 1, 0, 3, 0, 0, 0 ]
+	},
+	{
+	    img: "BorderTopBottomThick",
+	    borders: [ 1, 0, 2, 0, 0, 0 ]
+	},
+	{
+	    img: "BorderTopDoubleBottomDouble",
+	    style: [ "double", "none", "double", "none", "none", "none" ],
+	    borders: [ 3, 0, 3, 0, 0, 0 ]
+	},
+	{
+	    img: "BorderTopThickBottomThick",
+	    borders: [ 2, 0, 2, 0, 0, 0 ]
+	},
+	{
+	    img: "BorderV",
+	    borders: [ 0, 0, 0, 0, 1, 0 ]
+	},
+	{
+	    img: "BorderVEdges",
+	    borders: [ 0, 0, 0, 1, 0, 1 ]
+	}
+];
+
+ZmCellPropsDialog.prototype._quickSetBorder = function(ev) {
+	var btn = ev.item;
+	var info = btn.getData("ZmTableEditor");
+	var borders = info.borders;
+	var width, style;
+	for (var i = borders.length; --i >= 0;) {
+		width = borders[i];
+		if (width) {
+			if (info.style != null)
+				style = (info.style instanceof Array) ? info.style[i] : info.style;
+			else
+				style = "solid";
+		} else {
+			style = "none";
+		}
+		this._grid_applyBorderStyles(i, {
+			width: width + "px",
+			style: style,
+			color: this._wBorderColor.getColor() });
+		if (AjxEnv.isGeckoBased)
+			this._grid_refresh();
+	}
+};
 
 ZmCellPropsDialog.prototype.popdown = function() {
 	this._cells = null;
@@ -555,10 +700,8 @@ ZmCellPropsDialog.prototype._gridMouseEvent = function(ev) {
 		this._grid_applyBorderStyles(best_h);
 		this._grid_applyBorderStyles(best_v);
 
-		if ((best_h != null || best_v != null) && AjxEnv.isGeckoBased) {
-			grid.style.display = "none";
-			setTimeout(function() { grid.style.display = ""; }, 1);
-		}
+		if ((best_h != null || best_v != null) && AjxEnv.isGeckoBased)
+			this._grid_refresh();
 	} else {
 		// just mousemove, let's set the cursor if appropriate
 		if (best_h != null || best_v != null)
@@ -571,6 +714,12 @@ ZmCellPropsDialog.prototype._gridMouseEvent = function(ev) {
 	dwtev._returnValue = false;
 	dwtev.setToDhtmlEvent(ev);
 	return dwtev._returnValue;
+};
+
+ZmCellPropsDialog.prototype._grid_refresh = function() {
+	var grid = this.getPreviewGrid();
+	grid.style.display = "none";
+	setTimeout(function() { grid.style.display = ""; }, 1);
 };
 
 ZmCellPropsDialog.prototype._pickBestBorder = function(pos, start, fuzz, p1, p2, p3) {
@@ -655,7 +804,7 @@ ZmCellPropsDialog.prototype._grid_applyBorderStyles = function(border, force) {
 	}
 
 	var s = this._grid_borderStyles[border];
-	var new_style = {
+	var new_style = force || {
 	    width : this._wBorderWidth.getValue() + "px",
 	    color : this._wBorderColor.getColor(),
 	    style : this._wBorderStyle.getValue()
