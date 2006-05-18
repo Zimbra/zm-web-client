@@ -623,6 +623,14 @@ function(ev) {
 		return;
 	}
 
+	// Click on "Options" button.
+	if (op == ZmOperation.COMPOSE_OPTIONS) {
+		var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+		var bounds = button.getBounds();
+		this._optionsMenu[this._action].popup(0, bounds.x, bounds.y + bounds.height, false);
+		return;	
+	}
+	
 	// the rest are radio buttons, we only care when they're selected
 	if (ev.detail != DwtMenuItem.CHECKED) return;
 
