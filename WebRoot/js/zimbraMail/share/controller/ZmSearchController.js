@@ -252,8 +252,9 @@ function(search, noRender, changes, callback, errorCallback) {
 ZmSearchController.prototype.getTypes =
 function(searchFor) {
 	var types = new AjxVector();
-	searchFor = searchFor ? searchFor : this._searchFor;
+	searchFor = searchFor || this._searchFor;
 	var groupBy = this._appCtxt.getSettings().getGroupMailBy();
+
 	if (searchFor == ZmSearchToolBar.FOR_MAIL_MI) {
 		types.add(groupBy);
 	} else if (searchFor == ZmSearchToolBar.FOR_ANY_MI) {
@@ -264,9 +265,13 @@ function(searchFor) {
 			types.add(ZmItem.APPT);
 		if (this._appCtxt.get(ZmSetting.NOTES_ENABLED))
 			types.add(ZmItem.NOTE);
+	} else if (searchFor == ZmSearchToolBar.FOR_PAS_MI) {
+		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+			types.add(ZmItem.CONTACT);
 	} else {
 		types.add(searchFor);
 	}
+
 	return types;
 }
 
@@ -309,24 +314,35 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	// get types from search menu if not passed in
-	var types = params.types ? params.types : this.getTypes();
+	var types = params.types || this.getTypes();
 	if (types instanceof Array) // convert array to AjxVector if necessary
 		types = AjxVector.fromArray(types);
 		
 	// if the user explicitly searched for all types, force mixed view
 	var isMixed = (this._searchFor == ZmSearchToolBar.FOR_ANY_MI);
 
+	// XXX: hack -- we have to hack the query string in order for this search to work
+	if (this._searchFor == ZmSearchToolBar.FOR_PAS_MI) {
+		this._origQuery = params.query;
+		var sharedQuery = this._getQueryForSharedContacts();
+		if (sharedQuery)
+			params.query += (" " + sharedQuery);
+	}
+
 	// only set contact source if we are searching for contacts
 	params.contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmSearchToolBar.FOR_GAL_MI))
 		? this._contactSource : null;
+
 	// find suitable sort by value if not given one (and if applicable)
-	params.sortBy = params.sortBy ? params.sortBy : this._getSuitableSortBy(types);
+	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
 	params.types = types;
+
 	var search = new ZmSearch(this._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, noRender, isMixed, callback]);
-	if (!errorCallback) errorCallback = new AjxCallback(this, this._handleErrorDoSearch, [search, isMixed]);
+	if (!errorCallback)
+		errorCallback = new AjxCallback(this, this._handleErrorDoSearch, [search, isMixed]);
 	search.execute({callback: respCallback, errorCallback: errorCallback});
-}
+};
 
 /*
 * Takes the search result and hands it to the appropriate controller for display.
@@ -340,17 +356,22 @@ ZmSearchController.prototype._handleResponseDoSearch =
 function(search, noRender, isMixed, callback, result) {
 	var results = result.getResponse();
 
+	// revert the query to original before we hacked it :(
+	if (this._searchFor == ZmSearchToolBar.FOR_PAS_MI)
+		search.query = this._origQuery;
+
 	this._appCtxt.setCurrentSearch(search);
 	DBG.timePt("execute search", true);
+
 	if (this._searchToolBar)
 		this._searchToolBar.setEnabled(true);
+
 	if (!results.type)
 		results.type = search.types.get(0);
 	
-	if (!noRender) {
+	if (!noRender)
 		this._showResults(results, search, isMixed);		
-	}
-	
+
 	if (callback) callback.run(result);
 };
 
@@ -411,6 +432,19 @@ function(search, isMixed, ex) {
 	}
 }
 
+ZmSearchController.prototype._getQueryForSharedContacts =
+function() {
+	var sharedList = [];
+	var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
+	for (var i = 0; i < folders.length; i++) {
+		if (folders[i].id == ZmFolder.ID_ROOT || folders[i].id == ZmFolder.ID_TRASH)
+			continue;
+		sharedList.push(folders[i].createQuery());
+	}
+
+	return "(" + sharedList.join(" or ") + ")";
+};
+
 /*********** Search Field Callback */
 
 ZmSearchController.prototype._searchFieldCallback =
@@ -452,25 +486,19 @@ function(ev) {
 	this._searchFor = id;
 	this._contactSource = (id == ZmSearchToolBar.FOR_GAL_MI) ? ZmSearchToolBar.FOR_GAL_MI : ZmItem.CONTACT;
 
+	// set tooltip
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
-	var image = ZmSearchToolBar.ICON_KEY[id];
-	
 	if (id == ZmSearchToolBar.FOR_MAIL_MI) {
 		var groupBy = this._appCtxt.getSettings().getGroupMailBy();
 		tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
 	}
-
-	var searchMenuBtn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
-	
-	var mi = searchMenuBtn.getMenu().getItemById(ZmSearchToolBar.MENUITEM_ID, id);
-	image = mi._imageInfo;
-	
 	if (tooltip) {
 		var button = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_BUTTON);
 		button.setToolTipContent(tooltip);
 	}
 
-	this._defaultSearchType = null; // clear system default now that user has spoken
+	// clear system default now that user has spoken
+	this._defaultSearchType = null;
 }
 
 ZmSearchController.prototype.setGroupMailBy =

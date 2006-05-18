@@ -253,8 +253,6 @@ function(contact) {
 			break;
 	}
 	return fa.join("");
-
-	return fileAs;
 };
 
 /* These next few static methods handle a contact that is either an anonymous object or an actual
@@ -491,6 +489,15 @@ function(attr, callback, result) {
 
 ZmContact.prototype._handleResponseLoad =
 function(resp) {
+	this._resetCachedFields();
+
+	// update this contact's list per old/new attrs
+	var details = {attr:resp._attrs, oldAttr:null,
+				   fullNameChanged:true,
+				   fileAsChanged:true,
+				   contact:this};
+	this.list.modifyLocal(resp, details);
+
 	this._notify(ZmEvent.E_MODIFY, resp);
 };
 
@@ -856,6 +863,8 @@ function(node) {
 		this.created = node.cd;
 		this.modified = node.md;
 		this._fileAs = node.fileAsStr;
+		if (this._fileAs)
+			this._fileAsLC = this._fileAs.toLowerCase();  
 		this._parseFlags(node.f);
 		this._parseTags(node.t);
 		this.attr = node._attrs;

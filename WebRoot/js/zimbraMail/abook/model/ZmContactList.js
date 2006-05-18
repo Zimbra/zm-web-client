@@ -375,18 +375,20 @@ function(item, details) {
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 
-	// Remove traces of old contact - NOTE: we pass in null for the ID on 
-	// PURPOSE to avoid overwriting the existing cached contact
-	var oldContact = new ZmContact(this._appCtxt, null, this);
-	oldContact.id = details.contact.id;
-	oldContact.attr = details.oldAttr;
-	this._updateEmailHash(oldContact, false);
-	this._updateAcList(oldContact, false);
-
-	// add new contact to hashes
 	var contact = details.contact;
-	this._updateEmailHash(contact, true);
-	this._updateAcList(contact, true);
+	if (this.isCanonical) {
+		// Remove traces of old contact - NOTE: we pass in null for the ID on
+		// PURPOSE to avoid overwriting the existing cached contact
+		var oldContact = new ZmContact(this._appCtxt, null, this);
+		oldContact.id = details.contact.id;
+		oldContact.attr = details.oldAttr;
+		this._updateEmailHash(oldContact, false);
+		this._updateAcList(oldContact, false);
+
+		// add new contact to hashes
+		this._updateEmailHash(contact, true);
+		this._updateAcList(contact, true);
+	}
 
 	// place in correct position in list
 	if (details.fileAsChanged) {

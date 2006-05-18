@@ -61,6 +61,12 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.CONTACT);
 	}
 
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		// XXX: use different icon?
+		mi = DwtMenuItem.create(menu, "SearchGAL", ZmMsg.searchPersonalAndShared, null, true, DwtMenuItem.RADIO_STYLE, 0);
+		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_PAS_MI);
+	}
+
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 	    mi = DwtMenuItem.create(menu, "SearchGAL", ZmMsg.searchGALContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_GAL_MI);
@@ -115,9 +121,11 @@ ZmSearchToolBar.UNICODE_CHAR_RE 	= /\S/;
 ZmSearchToolBar.MENUITEM_ID = "_menuItemId";
 
 ZmSearchToolBar.FOR_MAIL_MI	= ZmItem.MAX + 1;
-ZmSearchToolBar.FOR_GAL_MI	= ZmItem.MAX + 2;
-ZmSearchToolBar.FOR_ANY_MI	= ZmItem.MAX + 3;
+ZmSearchToolBar.FOR_PAS_MI 	= ZmItem.MAX + 2; // Personal and Shared
+ZmSearchToolBar.FOR_GAL_MI	= ZmItem.MAX + 3; // Global Address List
+ZmSearchToolBar.FOR_ANY_MI	= ZmItem.MAX + 4;
 
+// XXX: are these used anywhere??
 ZmSearchToolBar.MSG_KEY = new Object();
 ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_MAIL_MI] = "searchMail";
 ZmSearchToolBar.MSG_KEY[ZmItem.CONTACT] = "searchContacts";
@@ -129,6 +137,7 @@ ZmSearchToolBar.TT_MSG_KEY = new Object();
 ZmSearchToolBar.TT_MSG_KEY[ZmItem.MSG] = "searchForMessages";
 ZmSearchToolBar.TT_MSG_KEY[ZmItem.CONV] = "searchForConvs";
 ZmSearchToolBar.TT_MSG_KEY[ZmItem.CONTACT] = "searchPersonalContacts";
+ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_PAS_MI] = "searchPersonalAndShared";
 ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_GAL_MI] = "searchGALContacts";
 ZmSearchToolBar.TT_MSG_KEY[ZmItem.APPT] = "searchForAppts";
 ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_ANY_MI] = "searchForAny";
@@ -136,6 +145,7 @@ ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_ANY_MI] = "searchForAny";
 ZmSearchToolBar.ICON_KEY = new Object();
 ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_MAIL_MI] = "MailFolder";
 ZmSearchToolBar.ICON_KEY[ZmItem.CONTACT] = "ContactsFolder";
+ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_PAS_MI] = "GAL"; // XXX: new icon?
 ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_GAL_MI] = "GAL";
 ZmSearchToolBar.ICON_KEY[ZmItem.APPT] = "CalendarFolder";
 ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_ANY_MI] = "Globe";
@@ -207,15 +217,21 @@ ZmSearchToolBar.prototype._createHtml =
 function(fieldId, searchColId, browseColId, saveColId, navColId, searchMenuColId) {
 	var html = new Array();
 	var i = 0;
-	html[i++] = "<table style='height:auto;width:100%;height:100%;border-collapse:collapse;'><tr>";
-	html[i++] = "<td id='" + searchMenuColId + "'></td>";
-	html[i++] = "<td width='100%'>";
-	html[i++] = "<input type='text' autocomplete='off' nowrap id='" + fieldId + "' class='search_input'></td>";
-	html[i++] = "<td id='" + searchColId + "'></td>";
-	html[i++] = "<td id='" + saveColId + "'></td>";
+	html[i++] = "<table style='height:auto;width:100%;height:100%;border-collapse:collapse;'>";
+	html[i++] = "<tr><td id='";
+	html[i++] = searchMenuColId;
+	html[i++] = "'></td><td width='100%'><input type='text' autocomplete='off' nowrap id='";
+	html[i++] = fieldId;
+	html[i++] = "' class='search_input'></td><td id='";
+	html[i++] = searchColId;
+	html[i++] = "'></td><td id='";
+	html[i++] = saveColId;
+	html[i++] = "'></td>";
 	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
 		html[i++] = "<td><div class='vertSep'></div></td>";
-		html[i++] = "<td id='" + browseColId + "'></td>";
+		html[i++] = "<td id='";
+		html[i++] = browseColId;
+		html[i++] = "'></td>";
 	}
 	html[i++] = "</tr></table>";
 

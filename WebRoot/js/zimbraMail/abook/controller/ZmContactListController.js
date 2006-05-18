@@ -365,8 +365,14 @@ function(ev) {
 ZmContactListController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
-	this._actionEv.contact = ev.item;
-	var email = ev.item.getAttr([ZmContact.F_email]) || ev.item.getAttr([ZmContact.F_email2]) || ev.item.getAttr([ZmContact.F_email3]);
+	var contact = this._actionEv.contact = ev.item;
+	var email;
+	// XXX: for shared contacts, contact may not be loaded until we get server support
+	if (contact.isLoaded()) {
+		email = ev.item.getAttr([ZmContact.F_email]) ||
+				ev.item.getAttr([ZmContact.F_email2]) ||
+				ev.item.getAttr([ZmContact.F_email3]);
+	}
 	this._actionEv.address = new ZmEmailAddress(email);
 	// enable/disable New Email menu item per valid email found for this contact
 	var enableNewEmail = email != null && this._listView[this._currentView].getSelectionCount() == 1;
