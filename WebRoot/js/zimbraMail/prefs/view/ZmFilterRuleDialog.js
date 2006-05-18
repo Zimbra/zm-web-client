@@ -186,7 +186,7 @@ function() {
 
 	html[i++] = "<div class='vSpace' />";
 	
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 style='table-layout:fixed' id='";
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 id='";
 	html[i++] = this._conditionsTableId;
 	html[i++] = "'>";
 	html[i++] = "<colgroup>";
@@ -211,7 +211,7 @@ function() {
 	html[i++] = ZmMsg.filterActions;
 	html[i++] = "</legend>";
 
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 style='table-layout:fixed' id='";
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 id='";
 	html[i++] = this._actionsTableId;
 	html[i++] = "'>";
 	html[i++] = "<colgroup>";
