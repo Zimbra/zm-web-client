@@ -98,12 +98,18 @@ function ZmHETablePropsDialog(parent) {
     var cb = new AjxCallback(this, this._validationCb);
 
     // Table Size
-	this._numColsField = new DwtInputField(this, DwtInputField.INTEGER, 2, 5, 3, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+	var inputFieldParams = {parent: this, type: DwtInputField.INTEGER,
+							initialValue: 2, size: 5, maxLen: 3,
+							errorIconStyle: DwtInputField.ERROR_ICON_RIGHT,
+							validationStyle: DwtInputField.CONTINUAL_VALIDATION};
+
+	this._numColsField = new DwtInputField(inputFieldParams);
 	this._numColsField.setValidNumberRange(1, 254);
 	this._numColsField.setValidationCallback(cb);
 	this._numColsField.reparentHtmlElement(numColsId);
-	
-	this._numRowsField = new DwtInputField(this, DwtInputField.INTEGER, 2, 5, 4, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+
+	inputFieldParams.maxLen = 4;	
+	this._numRowsField = new DwtInputField(inputFieldParams);
 	this._numRowsField.setValidNumberRange(1, null);
 	this._numRowsField.setValidationCallback(cb);
 	this._numRowsField.reparentHtmlElement(numRowsId);
@@ -111,8 +117,10 @@ function ZmHETablePropsDialog(parent) {
 	this._widthUnit = new DwtSelect(this.shell, [new DwtSelectOption(ZmHtmlEditor._PERCENT, true, ZmMsg.percent), 
 													new DwtSelectOption(ZmHtmlEditor._PIXELS, false, ZmMsg.pixels)]);
 	this._widthUnit.reparentHtmlElement(widthUnitId);
-	
-	this._tableWidthField = new DwtInputField(this, DwtInputField.INTEGER, 100, 5, 5, DwtInputField.ERROR_ICON_RIGHT, DwtInputField.CONTINUAL_VALIDATION);
+
+	inputFieldParams.initialValue = 100;
+	inputFieldParams.maxLen = 5;	
+	this._tableWidthField = new DwtInputField(inputFieldParams);
 	this._tableWidthField.setValidatorFunction(this, this._tcdValidateTableWidth);
 	this._tableWidthField.setValidationCallback(cb);
 	this._tableWidthField.reparentHtmlElement(tableWidthId);
@@ -121,10 +129,8 @@ function ZmHETablePropsDialog(parent) {
 	this._tableAlignment = new DwtSelect(this.shell, ["Center", "Left", "Right"]);
 	this._tableAlignment.reparentHtmlElement(tableAlignmentId);
 
-	var inputFieldParams = {parent: this, type: DwtInputField.INTEGER,
-							initialValue: 1, size: 5, maxLen: 3,
-							errorIconStyle: DwtInputField.ERROR_ICON_RIGHT,
-							validationStyle: DwtInputField.CONTINUAL_VALIDATION};
+	inputFieldParams.initialValue = 1;
+	inputFieldParams.maxLen = 3;
 	this._cellSpacingField = new DwtInputField(inputFieldParams);
 	this._cellSpacingField.setValidNumberRange(0, null);
 	this._cellSpacingField.setValidationCallback(cb);
