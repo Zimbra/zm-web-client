@@ -35,12 +35,14 @@
 * @param parent		[ZmOrganizer]	parent organizer
 * @param tree		[ZmTree]		tree model that contains this organizer
 * @param owner		[string]*		owner of the address book (if shared)
+* @param zid 		[string]*		the system wide unique ID mapping to a shared addrbook
 */
-function ZmAddrBook(id, name, parent, tree, link, owner) {
+function ZmAddrBook(id, name, parent, tree, link, owner, zid) {
 	ZmFolder.call(this, id, name, parent, tree);
 	this.type = ZmOrganizer.ADDRBOOK;
 	this.link = link;
 	this.owner = owner;
+	this.zid = zid;
 };
 
 ZmAddrBook.prototype = new ZmFolder;
@@ -80,7 +82,15 @@ function() {
 	return icon;
 };
 
-ZmAddrBook.prototype.create = 
+ZmAddrBook.prototype.getById =
+function(id) {
+	if (this.link && (this.zid == id.split(":")[0]))
+		return this;
+
+	return ZmFolder.prototype.getById.call(this, id);
+};
+
+ZmAddrBook.prototype.create =
 function(name) {
 	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 	var folderNode = soapDoc.set("folder");
@@ -169,7 +179,7 @@ function(parent, obj, tree, link) {
 	if (!(obj && obj.id)) return;
 
 	// create addrbook, populate, and return
-	var ab = new ZmAddrBook(obj.id, obj.name, parent, tree, link, obj.d);
+	var ab = new ZmAddrBook(obj.id, obj.name, parent, tree, link, obj.d, obj.zid);
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];

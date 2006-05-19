@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -55,7 +55,7 @@ function ZmContact(appCtxt, id, list, type) {
 	this.attr = {};
 	this.isGal = this.list.isGal;
 	this._isShared = false;
-	
+
 	this.participants = new AjxVector(); // XXX: need to populate this guy (see ZmConv)
 };
 
@@ -131,7 +131,7 @@ ZmContact.FA_COMPANY_FIRST_LAST		= i++;
 
 ZmContact.F_EMAIL_FIELDS = [ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
 
-ZmContact.prototype.toString = 
+ZmContact.prototype.toString =
 function() {
 //	return "ZmContact: id = " + this.id + " fullName = " + this.getFullName();
 	return "ZmContact";
@@ -221,7 +221,7 @@ function(contact) {
 			}
 			break;
 		case ZmContact.FA_FIRST_LAST_COMPANY: /* First Last (Company) */
-			if (attr.firstName) fa[idx++] = attr.firstName;		
+			if (attr.firstName) fa[idx++] = attr.firstName;
 			if (attr.lastName && attr.firstName) fa[idx++] = " ";
 			if (attr.lastName) fa[idx++] = attr.lastName;
 			if (attr.company) {
@@ -229,14 +229,14 @@ function(contact) {
 				fa[idx++] = "(";
 				fa[idx++] = attr.company;
 				fa[idx++] = ")";
-			}			
+			}
 			break;
 		case ZmContact.FA_COMPANY_LAST_C_FIRST: /* Company (Last,  First) */
 			if (attr.company) fa[idx++] = attr.company;
 			if (attr.lastName || attr.firstName) {
 				fa[idx++] = " (";
 				if (attr.lastName) fa[idx++] = attr.lastName;
-				if (attr.lastName && attr.firstName) fa[idx++] = ", ";				
+				if (attr.lastName && attr.firstName) fa[idx++] = ", ";
 				if (attr.firstName) fa[idx++] = attr.firstName;
 				fa[idx++] = ")";
 			}
@@ -245,7 +245,7 @@ function(contact) {
 			if (attr.company) fa[idx++] = attr.company;
 			if (attr.lastName || attr.firstName) {
 				fa[idx++] = " (";
-				if (attr.firstName) fa[idx++] = attr.firstName;				
+				if (attr.firstName) fa[idx++] = attr.firstName;
 				if (attr.lastName && attr.firstName) fa[idx++] = " ";
 				if (attr.lastName) fa[idx++] = attr.lastName;
 				fa[idx++] = ")";
@@ -268,7 +268,7 @@ ZmContact.setAttr =
 function(contact, attr, value) {
 	if (contact instanceof ZmContact)
 		contact.setAttr(attr, value)
-	else 
+	else
 		contact._attrs[attr] = value;
 };
 
@@ -300,7 +300,7 @@ function(callback, result) {
 	this._loaded = true;
 
 	if (callback)
-		callback.run(resp.cn[0]);
+		callback.run(resp.cn[0], this);
 };
 
 ZmContact.prototype.isEmpty =
@@ -384,14 +384,14 @@ function(attr) {
 
 	var folderId = attr[ZmContact.F_folderId] || ZmFolder.ID_CONTACTS;
 	cn.setAttribute("l", folderId);
-	
+
 	for (var name in attr) {
 		if (name == ZmContact.F_folderId)
 			continue;
 		var a = soapDoc.set("a", attr[name], cn);
 		a.setAttribute("n", name);
 	}
-	
+
 	var respCallback = new AjxCallback(this, this._handleResponseCreate, [attr]);
 	var execFrame = new AjxCallback(this, this.create, [attr]);
 	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback, execFrame: execFrame});
@@ -449,7 +449,7 @@ function(attr, callback) {
 		var a = soapDoc.set("a", attr[name], cn);
 		a.setAttribute("n", name);
 		continueRequest = true;
-	}		
+	}
 
 	if (continueRequest) {
 		var respCallback = new AjxCallback(this, this._handleResponseModify, [attr, callback]);
@@ -467,13 +467,13 @@ function(attr, callback, result) {
 	var resp = result.getResponse().ModifyContactResponse;
 	var cn = resp ? resp.cn[0] : null;
 	var id = cn ? cn.id : null;
-	
+
 	if (id && id == this.id) {
 		this._appCtxt.getAppController().setStatusMsg(ZmMsg.contactSaved);
 		// the revision for this contact has changed -- we should refetch it
 		// ONLY DO THIS FOR SHARED CONTACT since normal contacts are handled by notifications
 		if (cn.rev && cn.rev != this.rev && this.isShared()) {
-			var respCallback = new AjxCallback(this, this._handleResponseLoad);
+			var respCallback = new AjxCallback(this, this._handleResponseLoad, [true]);
 			this.load(respCallback);
 		} else {
 			if (attr[ZmContact.F_folderId])
@@ -488,15 +488,21 @@ function(attr, callback, result) {
 };
 
 ZmContact.prototype._handleResponseLoad =
-function(resp) {
-	this._resetCachedFields();
+function(updatingShare, resp) {
+	if (updatingShare) {
+		this._resetCachedFields();
 
-	// update this contact's list per old/new attrs
-	var details = {attr:resp._attrs, oldAttr:null,
-				   fullNameChanged:true,
-				   fileAsChanged:true,
-				   contact:this};
-	this.list.modifyLocal(resp, details);
+		this._fileAs = ZmContact.computeFileAs(this);
+		if (this._fileAs)
+			this._fileAsLC = this._fileAs.toLowerCase();
+
+		// update this contact's list per old/new attrs
+		var details = {attr:resp._attrs, oldAttr:null,
+					   fullNameChanged:true,
+					   fileAsChanged:true,
+					   contact:this};
+		this.list.modifyLocal(resp, details);
+	}
 
 	this._notify(ZmEvent.E_MODIFY, resp);
 };
@@ -511,7 +517,7 @@ function(newFolderId) {
 	cn.setAttribute("op", "move");
 	cn.setAttribute("l", newFolderId);
 
-	var respCallback = new AjxCallback(this, this._handleResponseLoad);
+	var respCallback = new AjxCallback(this, this._handleResponseLoad, [false]);
 	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 };
 
@@ -531,9 +537,9 @@ function(obj) {
 			this.setAttr(a, obj._attrs[a]);
 		}
 	}
-	var details = {attr:obj._attrs, oldAttr:oldAttr, 
+	var details = {attr:obj._attrs, oldAttr:oldAttr,
 				   fullNameChanged:this.getFullName() != oldFullName,
-				   fileAsChanged:this.getFileAs() != oldFileAs, 
+				   fileAsChanged:this.getFileAs() != oldFileAs,
 				   contact:this};
 
 	// update this contact's list per old/new attrs
@@ -558,7 +564,7 @@ function(email, strictName) {
 	}
 };
 
-ZmContact.prototype.initFromPhone = 
+ZmContact.prototype.initFromPhone =
 function(phone) {
 	this.setAttr(ZmContact.F_companyPhone, phone);
 };
@@ -574,7 +580,7 @@ function() {
 };
 
 // returns a list (array) of all valid emails for this contact
-ZmContact.prototype.getEmails = 
+ZmContact.prototype.getEmails =
 function() {
 	var emails = [];
 	for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
@@ -633,9 +639,9 @@ function(email) {
 		idx = this._addEntryRow("fullName", null, html, idx);
 		idx = this._addEntryRow("jobTitle", null, html, idx);
 		idx = this._addEntryRow("company", null, html, idx);
-		idx = this._addEntryRow("mobilePhone", null, html, idx);			
-		idx = this._addEntryRow("workPhone", null, html, idx);	
-		idx = this._addEntryRow("homePhone", null, html, idx);			
+		idx = this._addEntryRow("mobilePhone", null, html, idx);
+		idx = this._addEntryRow("workPhone", null, html, idx);
+		idx = this._addEntryRow("homePhone", null, html, idx);
 		idx = this._addEntryRow("email", email, html, idx);
 		html[idx++] = "</table>";
 		this._toolTip = html.join("");
@@ -657,15 +663,15 @@ function(lower) {
 	return lower ? this._fileAsLC : this._fileAs;
 };
 
-ZmContact.prototype.getHeader = 
+ZmContact.prototype.getHeader =
 function() {
 	return this.id ? this.getFileAs() : ZmMsg.newContact;
 };
 
-// company field has a getter b/c fileAs may be the Company name so 
-// company field should return "last, first" name instead *or* 
+// company field has a getter b/c fileAs may be the Company name so
+// company field should return "last, first" name instead *or*
 // prepend the title if fileAs is not Company (assuming it exists)
-ZmContact.prototype.getCompanyField = 
+ZmContact.prototype.getCompanyField =
 function() {
 
 	var attrs = this.getAttrs();
@@ -674,7 +680,7 @@ function() {
 	var fa = parseInt(attrs.fileAs);
 	var val = [];
 	var idx = 0;
-	
+
 	if (fa == ZmContact.FA_LAST_C_FIRST || fa == ZmContact.FA_FIRST_LAST) {
 		// return the title, company name
 		if (attrs.jobTitle) {
@@ -684,7 +690,7 @@ function() {
 		}
 		if (attrs.company)
 			val[idx++] = attrs.company;
-		
+
 	} else if (fa == ZmContact.FA_COMPANY) {
 		// return the first/last name
 		if (attrs.firstName) {
@@ -692,13 +698,13 @@ function() {
 			if (attrs.lastName)
 				val[idx++] = ", ";
 		}
-		
+
 		if (attrs.lastName)
 			val[idx++] = attrs.lastName;
-		
+
 		if (attrs.jobTitle)
 			val[idx++] = " (" + attrs.jobTitle + ")";
-	
+
 	} else {
 		// just return the title
 		if (attrs.jobTitle) {
@@ -710,41 +716,41 @@ function() {
 		if (attrs.company && (attrs.fileAs == null || fa == ZmContact.FA_LAST_C_FIRST || fa == ZmContact.FA_FIRST_LAST))
 			 val[idx++] = attrs.company;
 	}
-	if (val.length == 0) return null;	
+	if (val.length == 0) return null;
 	return val.join("");
 };
 
-ZmContact.prototype.getWorkAddrField = 
+ZmContact.prototype.getWorkAddrField =
 function(instance) {
 	var attrs = this.getAttrs();
 	return this._getAddressField(attrs.workStreet, attrs.workCity, attrs.workState, attrs.workPostalCode, attrs.workCountry);
 };
 
-ZmContact.prototype.getHomeAddrField = 
+ZmContact.prototype.getHomeAddrField =
 function(instance) {
 	var attrs = this.getAttrs();
 	return this._getAddressField(attrs.homeStreet, attrs.homeCity, attrs.homeState, attrs.homePostalCode, attrs.homeCountry);
 };
 
-ZmContact.prototype.getOtherAddrField = 
+ZmContact.prototype.getOtherAddrField =
 function(instance) {
 	var attrs = this.getAttrs();
 	return this._getAddressField(attrs.otherStreet, attrs.otherCity, attrs.otherState, attrs.otherPostalCode, attrs.otherCountry);
 };
 
-ZmContact.prototype._getAddressField = 
+ZmContact.prototype._getAddressField =
 function(street, city, state, zipcode, country) {
 	if (street == null && city == null && state == null && zipcode == null && country == null) return null;
-	
+
 	var html = [];
 	var idx = 0;
-	
+
 	if (street) {
 		html[idx++] = street;
 		if (city || state || zipcode)
 			html[idx++] = "\n";
 	}
-	
+
 	if (city) {
 		html[idx++] = city;
 		if (state)
@@ -752,16 +758,16 @@ function(street, city, state, zipcode, country) {
 		else if (zipcode)
 			html[idx++] = " ";
 	}
-	
+
 	if (state) {
 		html[idx++] = state;
 		if (zipcode)
 			html[idx++] = " ";
 	}
-	
+
 	if (zipcode)
 		html[idx++] = zipcode;
-	
+
 	if (country)
 		html[idx++] = "\n" + country;
 
@@ -773,7 +779,7 @@ ZmContact.prototype._initFullName =
 function(email, strictName) {
 	var name = email.getName();
 	name = AjxStringUtil.trim(name.replace(ZmEmailAddress.commentPat, '')); // strip comment (text in parens)
-	
+
 	if (name && name.length) {
 		this._setFullName(name, [" "]);
 	} else if (!strictName) {
@@ -814,7 +820,7 @@ function(text, delims) {
 ZmContact.prototype._addEntryRow =
 function(field, data, html, idx) {
 	if (data == null) {
-		data = field == "fullName" ? this.getFullName() : this.getAttr(field);	
+		data = field == "fullName" ? this.getFullName() : this.getAttr(field);
 	}
 	if (data != null && data != "") {
 		html[idx++] = "<tr valign=top>";
@@ -832,14 +838,14 @@ function(field, data, html, idx) {
 // Reset computed fields.
 ZmContact.prototype._resetCachedFields =
 function() {
-	this._fileAs = this._fullName = this._toolTip = null;
+	this._fileAs = this._fileAsLC = this._fullName = this._toolTip = null;
 };
 
 // Parse contact node. A contact will only have attr values if its in canonical list.
 ZmContact.prototype._loadFromDom =
 function(node) {
 	// "node.a" means we must be dealing with a GAL contact
-	// bug fix #7143 - check for length property instead of "instanceof Array" 
+	// bug fix #7143 - check for length property instead of "instanceof Array"
 	//                 since opening new window loses type info :(
 	if (node.a && node.a.length) {
 		for (var i = 0; i < node.a.length; i++) {
@@ -863,15 +869,24 @@ function(node) {
 		this.created = node.cd;
 		this.modified = node.md;
 		this._fileAs = node.fileAsStr;
+
+		// for shared contacts, we'll always get fileAs
 		if (this._fileAs)
-			this._fileAsLC = this._fileAs.toLowerCase();  
+			this._fileAsLC = this._fileAs.toLowerCase();
+
 		this._parseFlags(node.f);
 		this._parseTags(node.t);
-		this.attr = node._attrs;
+		this.attr = node._attrs || {};
+
+		// for shared contacts, we get these fields outside of the attr part
+		if (node.email) this.attr[ZmContact.F_email] = node.email;
+		if (node.email2) this.attr[ZmContact.F_email2] = node.email2;
+		if (node.email3) this.attr[ZmContact.F_email3] = node.email3;
+
 		// check if the folderId is found in our address book (otherwise, we
 		// assume this contact to be a shared contact)
 		var addrbook = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(this.folderId);
-		this._isShared = addrbook == null;
+		this._isShared = addrbook && addrbook.link;
 		this._loaded = !this._isShared;
 	}
 };
@@ -893,7 +908,7 @@ function(type, shortForm) {
 	} else {
 		text = name ? name : email ? email : "";
 	}
-	
+
 	return text;
 };
 
@@ -905,11 +920,11 @@ ZmContact._AB_FIELD = {
 	fullName: ZmMsg.AB_FIELD_fullName,
 	jobTitle: ZmMsg.AB_FIELD_jobTitle,
 	company: ZmMsg.AB_FIELD_company,
-	
+
 	// email addresses
 	email: ZmMsg.AB_FIELD_email,
 	email2: ZmMsg.AB_FIELD_email2,
-	email3: ZmMsg.AB_FIELD_email3,	
+	email3: ZmMsg.AB_FIELD_email3,
 
 	// work address
 	workStreet: ZmMsg.AB_FIELD_street,
@@ -922,11 +937,11 @@ ZmContact._AB_FIELD = {
 	// work phone numbers
 	workPhone: ZmMsg.AB_FIELD_workPhone,
 	workPhone2: ZmMsg.AB_FIELD_workPhone2,
-	workFax: ZmMsg.AB_FIELD_workFax,	
+	workFax: ZmMsg.AB_FIELD_workFax,
 	assistantPhone: ZmMsg.AB_FIELD_assistantPhone,
 	companyPhone: ZmMsg.AB_FIELD_companyPhone,
 	callbackPhone: ZmMsg.AB_FIELD_callbackPhone,
-	
+
 	// home address
 	homeStreet: ZmMsg.AB_FIELD_street,
 	homeCity: ZmMsg.AB_FIELD_city,
@@ -942,7 +957,7 @@ ZmContact._AB_FIELD = {
 	mobilePhone: ZmMsg.AB_FIELD_mobilePhone,
 	pager: ZmMsg.AB_FIELD_pager,
 	carPhone: ZmMsg.AB_FIELD_carPhone,
-	
+
 	// other address
 	otherStreet: ZmMsg.AB_FIELD_street,
 	otherCity: ZmMsg.AB_FIELD_city,
@@ -950,7 +965,7 @@ ZmContact._AB_FIELD = {
 	otherPostalCode: ZmMsg.AB_FIELD_postalCode,
 	otherCountry: ZmMsg.AB_FIELD_country,
 	otherURL: ZmMsg.AB_FIELD_URL,
-	
+
 	// other phone numbers
 	otherPhone: ZmMsg.AB_FIELD_otherPhone,
 	otherFax: ZmMsg.AB_FIELD_otherFax

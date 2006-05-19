@@ -180,7 +180,10 @@ function() {
 		}
 
 		// only set the folder Id if changed
-		if (this._contact.folderId != this._folderId) {
+		var folderId = this._contact.isShared()
+			? this._contact.folderId.split(":")[0]
+			: this._contact.folderId;
+		if (folderId != this._folderId) {
 			mods[ZmContact.F_folderId] = this._folderId;
 			foundOne = true;
 		}
@@ -459,10 +462,7 @@ function() {
 	for (var i=0; i<primaryInfo.length; i++) {
 		if (primaryInfo[i] == ZmContact.F_fileAs)
 			continue;
-		if (primaryInfo[i] == ZmContact.F_folderId)
-			this._folderId = this._contact.folderId;
-		else
-			this._setValue(primaryInfo[i]);
+		this._setValue(primaryInfo[i]);
 	}
 
 	// set email info
@@ -506,38 +506,8 @@ function() {
 		this._fileAsSelect.setSelectedValue(1);
 	}
 
-
-	// otherwise, set the appropriate folder
-	var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
-	var match = this._contact.folderId;
-	if (this._contact.id == null) {
-		var treeView = this._appCtxt.getOverviewController().getTreeView(ZmZimbraMail._OVERVIEW_ID, ZmOrganizer.ADDRBOOK);
-		var treeItem = treeView ? treeView.getSelection()[0] : null;
-		if (treeItem)
-			match = treeItem.getData(Dwt.KEY_ID);
-	}
-	// for now, always re-populate folders DwtSelect
-	this._folderSelect.clearOptions();
-	for (var i = 0; i < folders.length; i++) {
-		var folder = folders[i];
-		if (folder.id == ZmFolder.ID_ROOT || folder.id == ZmFolder.ID_TRASH)
-			continue;
-		// find out if this is a shared folder and whether we have write permissions
-		if (folder.link) {
-			var shares = folder.getShares();
-			var share = shares ? shares[0] : null;
-			// XXX: if share == null, we need to fetch permissions from server
-			if (share == null || !share.isWrite())
-				continue;
-		}
-		this._folderSelect.addOption(folder.name, folder.id == match, folder.id);
-	}
-
-	// XXX: for now, hide folder drop down for shared contacts until we figure out how to handle
-	if (this._contact.isShared())
-		this._folderSelect.disable();
-	else
-		this._folderSelect.enable();
+	// set folder drop down
+	this._setFolder();
 
 	// set notes
 	this._setValue(ZmContact.F_notes);
@@ -609,7 +579,6 @@ function(contact) {
 	html[idx++] = "<table id='";
 	html[idx++] = this._contactHeaderId;
 	html[idx++] = "' cellspacing=0 cellpadding=0><tr class='contactHeaderRow'>";
-	// TODO - set icon based on contact type (i.e. distro. list, shared, etc)
 	html[idx++] = "<td width=20><center>";
 	html[idx++] = AjxImg.getImageHtml("Person");
 	html[idx++] = "</center></td>";
@@ -659,6 +628,50 @@ function(contact) {
 		this._installOnKeyUpHandler(i);
 
 	this._htmlInitialized = true;
+};
+
+ZmContactView.prototype._setFolder =
+function() {
+	// otherwise, set the appropriate folder
+	var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
+	var match = this._contact.isShared()
+		? this._contact.folderId.split(":")[0]
+		: this._contact.folderId;
+
+	if (this._contact.id == null) {
+		var treeView = this._appCtxt.getOverviewController().getTreeView(ZmZimbraMail._OVERVIEW_ID, ZmOrganizer.ADDRBOOK);
+		var treeItem = treeView ? treeView.getSelection()[0] : null;
+		if (treeItem)
+			match = treeItem.getData(Dwt.KEY_ID);
+	}
+
+	// for now, always re-populate folders DwtSelect
+	this._folderSelect.clearOptions();
+	for (var i = 0; i < folders.length; i++) {
+		var folder = folders[i];
+		if (folder.id == ZmFolder.ID_ROOT || folder.id == ZmFolder.ID_TRASH)
+			continue;
+
+		var id = folder.id;
+
+		// if this is a shared folder, check if we have write permissions
+		if (folder.link) {
+			var shares = folder.getShares();
+			var share = shares ? shares[0] : null;
+			// TODO - if share == null, we need to fetch permissions from server
+			if (share == null || !share.isWrite())
+				continue;
+			// for shared folders, use the zid to compare folder ID's
+			id = folder.zid;
+		}
+		this._folderSelect.addOption(folder.name, id == match, id);
+	}
+
+	// XXX: for now, hide folder drop down for shared contacts until we figure out how to handle
+	if (this._contact.isShared())
+		this._folderSelect.disable();
+	else
+		this._folderSelect.enable();
 };
 
 

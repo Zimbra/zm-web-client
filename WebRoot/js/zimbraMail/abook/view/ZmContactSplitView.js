@@ -481,7 +481,6 @@ function(contact, now, isDndIcon) {
 	idx = this._getRow(htmlArr, idx, contact);
 
 	// icon
-	// TODO - set icon based on contact type (i.e. distro. list, shared, etc)
 	htmlArr[idx++] = "<td style='vertical-align:middle;' width=16>";
 	htmlArr[idx++] = AjxImg.getImageHtml("Person");
 	htmlArr[idx++] = "</td>";

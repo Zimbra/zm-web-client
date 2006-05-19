@@ -612,12 +612,23 @@ ZmListController.prototype._participantContactListener =
 function(ev) {
 	var cc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController();	
 	if (this._actionEv.contact) {
-		cc.show(this._actionEv.contact);
+		if (this._actionEv.contact.isLoaded()) {
+			cc.show(this._actionEv.contact);
+		} else {
+			var callback = new AjxCallback(this, this._loadContactCallback);
+			this._actionEv.contact.load(callback);
+		}
 	} else {
 		var contact = new ZmContact(this._appCtxt);
 		contact.initFromEmail(this._actionEv.address);
 		cc.show(contact, true);
 	}
+};
+
+ZmListController.prototype._loadContactCallback =
+function(resp, contact) {
+	var cc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController();
+	cc.show(contact);
 };
 
 // Drag and drop listeners
