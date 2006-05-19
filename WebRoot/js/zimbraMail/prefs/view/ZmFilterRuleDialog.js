@@ -217,7 +217,7 @@ function() {
 	html[i++] = "<colgroup>";
 	for (var j = 0; j < ZmFilterRuleDialog.ACTION_COLS.length; j++) {
 		var col = ZmFilterRuleDialog.ACTION_COLS[j];
-		if (j == (ZmFilterRuleDialog.CONDITION_COLS.length - 2))
+		if (j == (ZmFilterRuleDialog.ACTION_COLS.length - 2))
 			html[i++] = "<col style='width:100%'></col>";
 		html[i++] = "<col style='width:" + ZmFilterRuleDialog.COL_WIDTH[col] + "px'></col>"
 	}
@@ -454,6 +454,7 @@ function(conf, field, options, dataValue, rowId, data) {
 		button.setData(ZmFilterRuleDialog.DATA, dataValue);
 		this._inputs[rowId][field] = {id: id, dwtObj: button};
 		button.addSelectionListener(this._browseLstnr);
+		button.setScrollStyle(Dwt.CLIP);
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 	}
 };
