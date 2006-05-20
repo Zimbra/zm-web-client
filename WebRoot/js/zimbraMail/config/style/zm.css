@@ -662,6 +662,19 @@ td.DDSepInvisible div {
 	@BoxPadding@
 }
 
+.ZmContactSplitView .AlphabetBarTable {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #CCCCCC #444444 #444444 #CCCCCC;
+	background-color: #DDDDDD;
+}
+
+.ZmContactSplitView .AlphabetBarCell {
+	border-width: 0 1 0 0;
+	border-style: solid;
+	border-color: #FFFFFF;
+}
+
 /* Container for list of contacts */
 /* ??? RENAME */
 .ZmContactSimpleView {

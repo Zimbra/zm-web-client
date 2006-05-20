@@ -274,14 +274,14 @@ function(soapDoc) {
 	if (this.sortBy)
 		method.setAttribute("sortBy", ZmSearch.SORT_BY[this.sortBy]);
 
-	if (this.lastId && this.lastSortVal) {
+	if (this.lastId != null && this.lastSortVal) {
 		// cursor is used for paginated searches
 		var cursor = soapDoc.set("cursor");
 		cursor.setAttribute("id", this.lastId);
 		cursor.setAttribute("sortVal", this.lastSortVal);
 	}
 
-	this.offset = this.offset ? this.offset : 0;
+	this.offset = this.offset || 0;
 	method.setAttribute("offset", this.offset);
 
 	// always set limit (init to user pref for page size if not provided)

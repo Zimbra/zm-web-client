@@ -1401,7 +1401,7 @@ function(appCtxt, result) {
 };
 
 ZmMailMsgView.rfc822Callback =
-function(anchorEl, msgId, msgPartId) {
+function(msgId, msgPartId) {
 	var appCtxt = window.parentController 
 		? window.parentController._appCtxt 
 		: window._zimbraMail._appCtxt;

@@ -28,27 +28,36 @@
 // - parent for the simple list view and xform view
 //////////////////////////////////////////////////////////////////////////////
 function ZmContactSplitView(parent, className, posStyle, controller, dropTgt) {
-
 	if (arguments.length == 0) return;
-	className = className ? className : "ZmContactSplitView";
-	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
+
+	className = className || "ZmContactSplitView";
+	posStyle = posStyle || Dwt.ABSOLUTE_STYLE;
 	DwtComposite.call(this, parent, className, posStyle);
 
 	this._controller = controller;
+
+	// find out if the user's locale has a alphabet defined
+	this._hasAlphabetBar = ZmMsg.alphabet && ZmMsg.alphabet.length>0;
+	if (this._hasAlphabetBar) {
+		this._createAlphabetHtml();
+	}
 
 	this._listPart = new ZmContactSimpleView(this, null, posStyle, controller, dropTgt);
 	this._contactPart = new DwtComposite(this, "ZmContactInfoView", posStyle);
 
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
-	
+
 	this._contactPart._setMouseEventHdlrs(); // needed by object manager
 	// this manages all the detected objects within the view
 	this._objectManager = new ZmObjectManager(this._contactPart, this.shell.getData(ZmAppCtxt.LABEL));
-	
 };
 
 ZmContactSplitView.prototype = new DwtComposite;
 ZmContactSplitView.prototype.constructor = ZmContactSplitView;
+
+
+// Consts
+ZmContactSplitView.ALPHABET_HEIGHT = 35;
 
 ZmContactSplitView.prototype.toString = 
 function() {
@@ -131,16 +140,18 @@ function(width, height) {
 	var listWidth = 200;	// fixed width size of list view
 	
 	// calc. height for children of this view
-	var childHeight = height - (padding * 2);
+	var alphabetBarHeight = this._hasAlphabetBar ? ZmContactSplitView.ALPHABET_HEIGHT : null;
+	var childHeight = (height - (padding * 2)) - (alphabetBarHeight || 0);
 	// always set the list part width to 200px (should be in css?)
 	this._listPart.setSize(listWidth, childHeight);
+	this._listPart.setLocation(Dwt.DEFAULT, (alphabetBarHeight || Dwt.DEFAULT));
 	
 	// explicitly set the size for the xform part
 	var listSize = this._listPart.getSize();
 	var contactWidth = width - ((padding * 3) + listWidth);
 	var contactXPos = (padding * 2) + listWidth;
 	this._contactPart.setSize(contactWidth, childHeight);
-	this._contactPart.setLocation(contactXPos, Dwt.DEFAULT);
+	this._contactPart.setLocation(contactXPos, (alphabetBarHeight || Dwt.DEFAULT));
 	
 	this._contactPartWidth = contactWidth;
 	this._contactPartHeight = childHeight;
@@ -184,7 +195,33 @@ function() {
 	this._contactPart.getHtmlElement().innerHTML = html.join("");
 	
 	this._htmlInitialized = true;
-}
+};
+
+ZmContactSplitView.prototype._createAlphabetHtml =
+function() {
+	var alphabet = ZmMsg.alphabet.split(",");
+
+	var html = new Array();
+	var idx = 0;
+
+	html[idx++] = "<center>";
+	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=2 cellspacing=2 width=80%><tr>"
+
+	for (var i = 0; i < alphabet.length; i++) {
+		html[idx++] = "<td style='text-align:center; cursor:pointer' onclick='ZmContactSplitView.alphabetClicked(";
+		if (i > 0)
+			html[idx++] = '"' + alphabet[i] + '"';
+		html[idx++] = "); return false;'";
+		html[idx++] = (i < alphabet.length-1) ? " class='AlphabetBarCell'>" : ">";
+		html[idx++] = alphabet[i];
+		html[idx++] = "</td>";
+	}
+
+	html[idx++] = "</tr></table>";
+	html[idx++] = "</center>";
+
+	this.getHtmlElement().innerHTML = html.join("");
+};
 
 ZmContactSplitView.prototype._contactChangeListener = 
 function(ev) {
@@ -227,7 +264,7 @@ function(contact, isGal) {
 	html[idx++] = "<td width=100% class='companyName'>";
 	html[idx++] = (contact.getCompanyField() || "&nbsp;");
 	html[idx++] = "</td>";
-	var folderId = this._controller.getFolderId() || contact.folderId;
+	folderId = folderId || contact.folderId;
 	var folder = folderId ? this._controller._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId) : null;
 	if (folder) {
 		html[idx++] = "<td width=20>";
@@ -399,13 +436,20 @@ function(html, idx, label, field, objMgr) {
 	return idx;
 };
 
+ZmContactSplitView.alphabetClicked =
+function(letter) {
+	var appCtxt = window._zimbraMail._appCtxt;
+	var clc = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
+	clc.searchAlphabet(letter);
+};
+
 
 //////////////////////////////////////////////////////////////////////////////
 // ZmContactSimpleView
 // - a simple contact list view (contains only full name)
 //////////////////////////////////////////////////////////////////////////////
 function ZmContactSimpleView(parent, className, posStyle, controller, dropTgt) {
-	className = className ? className : "ZmContactSimpleView";
+	className = className || "ZmContactSimpleView";
 	ZmContactsBaseView.call(this, parent, className, posStyle, ZmController.CONTACT_SIMPLE_VIEW, controller, null, dropTgt);
 };
 

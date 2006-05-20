@@ -148,8 +148,28 @@ function() {
 	return this._folderId;
 };
 
+ZmContactListController.prototype.searchAlphabet =
+function(letter) {
+	var query = null;
+	if (this._folderId) {
+		var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(this._folderId);
+		if (folder)
+			query = folder.createQuery();
+	} else if (this._activeSearch) {
+		query = this._activeSearch.search.query;
+	}
+
+	if (query) {
+		var limit = this._listView[this._currentView].getLimit();
+		var params = {query:query, offset:0, limit:limit, lastId:0, lastSortVal:letter};
+		var sc = this._appCtxt.getSearchController();
+		sc.search(params);
+	}
+};
+
 
 // Private and protected methods
+
 
 ZmContactListController.prototype._standardToolBarOps =
 function() {

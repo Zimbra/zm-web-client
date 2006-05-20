@@ -840,7 +840,7 @@ function(findHits) {
 			if (attach.ct == ZmMimeTable.MSG_RFC822) {
 				var html = new Array(5);
 				var j = 0;
-				html[j++] = "<a href='javascript:;' onclick='ZmMailMsgView.rfc822Callback(this,";
+				html[j++] = "<a href='javascript:;' onclick='ZmMailMsgView.rfc822Callback(";
 				html[j++] = this.getId();
 				html[j++] = ",\"";
 				html[j++] = attach.part;
