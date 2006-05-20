@@ -43,19 +43,15 @@ ZmUploadDialog.UPLOAD_FIELD_NAME = "uploadFile";
 ZmUploadDialog.prototype._formId;
 ZmUploadDialog.prototype._tableId;
 
-ZmUploadDialog.prototype._uploadFolderId;
+ZmUploadDialog.prototype._uploadFolder;
 ZmUploadDialog.prototype._uploadCallback;
 
 // Public methods
 
-ZmUploadDialog.prototype.setFolderId = function(folderId) {
-	this._uploadFolderId = folderId;
-};
-ZmUploadDialog.prototype.setCallback = function(callback) {
+ZmUploadDialog.prototype.popup = function(folder, callback, loc) {
+	this._uploadFolder = folder;
 	this._uploadCallback = callback;
-};
 
-ZmUploadDialog.prototype.popup = function(loc) {
 	// reset input fields
 	var table = document.getElementById(this._tableId);
 	table.innerHTML = "";
@@ -70,7 +66,7 @@ ZmUploadDialog.prototype.popup = function(loc) {
 };
 
 ZmUploadDialog.prototype.popdown = function() {
-	this._uploadFolderId = null;
+	this._uploadFolder = null;
 	this._uploadCallback = null;
 	ZmDialog.prototype.popdown.call(this);
 };
@@ -100,15 +96,12 @@ ZmUploadDialog.prototype._upload = function(){
 	uploadMgr.execute(callback, uploadForm);
 };
 ZmUploadDialog.prototype._uploadSaveDocs = function(filenames, status, guids) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(this._uploadFolderId);
-
 	// REVISIT: For now, we overwrite existing docs w/o warning !!!
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("types", "document");
-	soapDoc.set("query", "in:\""+notebook.getSearchPath()+"\"");
+	soapDoc.set("query", "in:\""+this._uploadFolder.getSearchPath()+"\"");
 
-	var args = [notebook.getPath(), filenames, status, guids];
+	var args = [this._uploadFolder.getPath(), filenames, status, guids];
 	var handleResponse = new AjxCallback(this, this._uploadSaveDocs2, args);	
 	var params = {
 		soapDoc: soapDoc,
@@ -148,12 +141,14 @@ function(path, filenames, status, guids, response) {
 		if (doc) {
 			docNode.setAttribute("id", doc.id);
 			docNode.setAttribute("ver", doc.ver);
+			/***
 			// REVISIT: The name is also required because of a bug
 			//          in the backend.
 			docNode.setAttribute("name", doc.name);
+			/***/
 		}
 		else {
-			docNode.setAttribute("l", this._uploadFolderId);
+			docNode.setAttribute("l", this._uploadFolder.id);
 		}
 		
 		var uploadNode = soapDoc.set("upload", null, docNode);
@@ -186,7 +181,7 @@ ZmUploadDialog.prototype._uploadSaveDocsResponse = function(path, filenames, res
 		}
 		this._uploadCallback.run(path, items);
 		/***/
-		this._uploadCallback.run(path, filenames);
+		this._uploadCallback.run(this._uploadFolder, path, filenames);
 		/***/
 	}
 	

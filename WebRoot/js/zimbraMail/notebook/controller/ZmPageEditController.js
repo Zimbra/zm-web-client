@@ -27,7 +27,7 @@ function ZmPageEditController(appCtxt, container, app) {
 	ZmListController.call(this, appCtxt, container, app);
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
-	this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._addDocsListener);
+	//this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._addDocsListener);
 	this._listeners[ZmOperation.SPELL_CHECK] = new AjxListener(this, this._spellCheckListener);
 	this._listeners[ZmOperation.COMPOSE_FORMAT] = new AjxListener(this, this._formatListener);
 }
@@ -104,7 +104,8 @@ function() {
 	);
 	/***/
 	list.push(
-		ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK,
+		//ZmOperation.ATTACHMENT,
+		ZmOperation.SPELL_CHECK,
 		ZmOperation.FILLER,
 		ZmOperation.COMPOSE_FORMAT
 	);
@@ -117,9 +118,11 @@ function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
 	var toolbar = this._toolbar[view];
+	/***
 	var button = toolbar.getButton(ZmOperation.ATTACHMENT);
 	button.setText(AjxEnv.is800x600orLower ? "" : ZmMsg.addDocuments);
 	button.setToolTipContent(ZmMsg.addDocumentsTT);
+	/***/
 	
 	var spellCheckButton = toolbar.getButton(ZmOperation.SPELL_CHECK);
 	spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
@@ -242,12 +245,17 @@ function(ev) {
 	this._app.popView();
 };
 
+/***
 ZmPageEditController.prototype._addDocsListener =
 function(ev) {
+	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var notebook = tree.getById(this._page.folderId || ZmPage.DEFAULT_FOLDER);
+	var callback = null;
+
 	var dialog = this._appCtxt.getUploadDialog();
-	dialog.setFolderId(this._page.folderId || ZmPage.DEFAULT_FOLDER);
-	dialog.popup();
+	dialog.popup(notebook, callback);
 };
+/***/
 
 ZmPageEditController.prototype._spellCheckListener = 
 function(ev) {

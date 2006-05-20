@@ -1,19 +1,19 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2006 Zimbra, Inc.
  * All Rights Reserved.
@@ -382,9 +382,11 @@ function(html) {
 
 ZmPageEditor.prototype._createToolbars = function() {
 	ZmHtmlEditor.prototype._createToolbars.call(this);
+	/*** TODO: Add this back later...
 	if (!this._wikiToolBar) {
 		this._createWikiToolBar(this);
 	}
+	/***/
 };
 
 ZmPageEditor.prototype._createToolBar2 = function(parent) {
@@ -392,9 +394,21 @@ ZmPageEditor.prototype._createToolBar2 = function(parent) {
 
 	var button = new DwtButton(this._toolbar2, null, "TBButton")
 	button.setImage("ImageDoc");
-	button.addSelectionListener(new AjxListener(this, this._insertImageListener));
+	button.setToolTipContent(ZmMsg.insertImage);
+	button.addSelectionListener(new AjxListener(this, this._insertImagesListener));
+
+	var button = new DwtButton(this._toolbar2, null, "TBButton")
+	button.setImage("Attachment");
+	button.setToolTipContent(ZmMsg.insertAttachment);
+	button.addSelectionListener(new AjxListener(this, this._insertAttachmentsListener));
+
+	var button = new DwtButton(this._toolbar2, null, "TBButton");
+	button.setImage("ExternalLink");
+	button.setToolTipContent(ZmMsg.insertLink);
+	button.addSelectionListener(new AjxListener(this, this._insertLinkListener));
 };
 
+/*** TODO: Add this back later...
 ZmPageEditor.prototype._createWikiToolBar = function(parent) {
 	var toolbar = this._wikiToolBar = new ZmToolBar(parent, "ToolBar", DwtControl.RELATIVE_STYLE, 2);
 	toolbar.setVisible(this._mode == DwtHtmlEditor.HTML);
@@ -413,30 +427,88 @@ ZmPageEditor.prototype._createWikiToolBar = function(parent) {
 	
 	this._toolbars.push(toolbar);
 };
+/***/
 
-ZmPageEditor.prototype._insertImageListener = function(event) {
-	var page = this._controller.getPage();
-
-	var dialog = this._appCtxt.getUploadDialog();
-	dialog.setFolderId(page.folderId || ZmPage.DEFAULT_FOLDER);
-	if (!this._insertImageCallback) {
-		this._insertImageCallback = new AjxCallback(this, this._insertImageByIds);
-	}
-	dialog.setCallback(this._insertImageCallback);
-	dialog.popup();
+ZmPageEditor.prototype._insertImagesListener = function(event) {
+	this._insertObjectsListener(event, this.insertImage);
+};
+ZmPageEditor.prototype._insertAttachmentsListener = function(event) {
+	this._insertObjectsListener(event, this.insertText);
 };
 
-ZmPageEditor.prototype._insertImageByIds = function(path, filenames) {
-	var loc = document.location;
-	var uname = this._appCtxt.get(ZmSetting.USERNAME);
-	for (var i = 0; i < filenames.length; i++) {
-		var name = filenames[i];
-		var src = [
-			loc.protocol,"//",loc.host,"/home/",uname,"/",path,"/",name
-		].join("");
-
-		this.insertImage(src);
+ZmPageEditor.prototype._insertObjectsListener = function(event, func) {
+	if (!this._insertObjectsCallback) {
+		this._insertObjectsCallback = new AjxCallback(this, this._insertObjects);
 	}
+	this._insertObjectsCallback.args = [ func ];
+	this.__popupUploadDialog(this._insertObjectsCallback);
+};
+
+ZmPageEditor.prototype.__popupUploadDialog = function(callback) {
+	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var page = this._controller.getPage();
+	var notebook = tree.getById(page.folderId);
+
+	var dialog = this._appCtxt.getUploadDialog();
+	dialog.popup(notebook, callback);
+};
+
+ZmPageEditor.prototype._insertObjects = function(func, folder, path, filenames) {
+	var baseUrl = folder.getUrl();
+	for (var i = 0; i < filenames.length; i++) {
+		var name = AjxStringUtil.urlComponentEncode(filenames[i]);
+		var src = [ baseUrl,"/",name ].join("");
+		func.call(this, src);
+	}
+};
+
+ZmPageEditor.prototype._insertLinkListener = function(event) {
+	this._popupLinkPropsDialog();
+};
+
+ZmPageEditor.prototype._insertLink = function(link, target) {
+	if (typeof link == "string") {
+		if (target) {
+			var text = document.createTextNode(link);
+			target.parentNode.replaceChild(text, target);
+		}
+		else {
+			this.insertText(link);
+		}
+	}
+	else {
+		Dwt.setHandler(link, DwtEvent.ONCLICK, ZmPageEditor._handleLinkClick);
+		Dwt.associateElementWithObject(link, this);
+		if (target) {
+			target.parentNode.replaceChild(link, target);
+		}
+		else {
+			this._insertNodeAtSelection(link);
+		}
+	}
+};
+
+ZmPageEditor._handleLinkClick = function(event) {
+	var target = DwtUiEvent.getTarget(event);
+	var dialog = Dwt.getObjectFromElement(target);
+
+	var url = target.href;
+	var text = target.innerHTML;
+	dialog._popupLinkPropsDialog(url, text, target);
+
+	// NOTE: do NOT allow browser to follow link!
+	return false;
+};
+
+ZmPageEditor.prototype._popupLinkPropsDialog = function(target, url, text) {
+	var linkInfo = {
+		target: target, url: url, text: text
+	}
+	if (!this._insertLinkCallback) {
+		this._insertLinkCallback = new AjxCallback(this, this._insertLink);
+	}
+	var dialog = this._appCtxt.getLinkPropsDialog();
+	dialog.popup(linkInfo, this._insertLinkCallback);
 };
 
 ZmPageEditor.prototype._wikiToolBarListener = function(event) {

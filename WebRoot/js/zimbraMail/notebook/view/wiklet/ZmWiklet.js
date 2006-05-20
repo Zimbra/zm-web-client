@@ -230,9 +230,8 @@ ZmWiklet.register(
 
 			// return fragment
 			context.pushItem(item);
-			//var content = item.fragment ? item.fragment.replace(/\{\{.*?$/,"") : "";
             var content = item.fragment || "";
-            return content;
+            return ["<nolink>",content,"</nolink>"].join("");
 		}
 	},
 	{

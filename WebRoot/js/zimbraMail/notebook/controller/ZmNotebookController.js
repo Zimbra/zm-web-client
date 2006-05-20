@@ -28,7 +28,7 @@ function ZmNotebookController(appCtxt, container, app) {
 
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
-	this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._uploadListener);
+	//this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._uploadListener);
 	this._listeners[ZmOperation.SEND_PAGE] = new AjxListener(this, this._sendPageListener);
 	this._listeners[ZmOperation.DETACH] = new AjxListener(this, this._detachListener);
 	this._listeners[ZmOperation.PAGE_BACK] = new AjxListener(this, this._pageBackListener);
@@ -168,8 +168,8 @@ ZmNotebookController.prototype._getToolBarOps = function() {
 	/***/
 	list.push(
 		ZmOperation.DELETE,
-		ZmOperation.SEP,
-		ZmOperation.ATTACHMENT,
+		//ZmOperation.SEP,
+		//ZmOperation.ATTACHMENT,
 		ZmOperation.FILLER,
 		ZmOperation.SEND_PAGE,
 		ZmOperation.SEP,
@@ -192,9 +192,11 @@ ZmNotebookController.prototype._initializeToolBar = function(view) {
 	button.setImage("SendReceive");
 	button.setDisabledImage("SendReceiveDis");
 
+	/***
 	var button = toolbar.getButton(ZmOperation.ATTACHMENT);
 	button.setText(ZmMsg.addDocuments);
 	button.setToolTipContent(ZmMsg.addDocumentsTT);
+	/***/
 
 	var button = toolbar.getButton(ZmOperation.PAGE_BACK);
 	button.setToolTipContent("");
@@ -211,7 +213,8 @@ ZmNotebookController.prototype._initializeToolBar = function(view) {
 ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, num) {
 	if (!toolbarOrActionMenu) return;
 	ZmListController.prototype._resetOperations.call(this, toolbarOrActionMenu, num);
-	toolbarOrActionMenu.enable([ZmOperation.REFRESH, ZmOperation.ATTACHMENT], true);
+	toolbarOrActionMenu.enable(ZmOperation.REFRESH, true);
+	//toolbarOrActionMenu.enable(ZmOperation.ATTACHMENT, true);
 	//toolbarOrActionMenu.enable(ZmOperation.DETACH, false);
 	if (toolbarOrActionMenu instanceof ZmToolBar) {
 		this._enableNaviButtons();
@@ -267,7 +270,7 @@ ZmNotebookController.prototype._setViewContents = function(view) {
 	this._listView[view].set(this._object);
 };
 
-/*** REVISIT: This will be exposed later.
+/*** TODO: This will be exposed later.
 ZmNotebookController.prototype._setViewMenu = function(view) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = appToolbar.getViewMenu(view);
@@ -332,11 +335,16 @@ ZmNotebookController.prototype._editListener = function(event) {
 	pageEditController.show(page);
 };
 
+/***
 ZmNotebookController.prototype._uploadListener = function(event) {
+	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var notebook = tree.getById(this._folderId || ZmPage.DEFAULT_FOLDER);
+	var callback = null;
+
 	var dialog = this._appCtxt.getUploadDialog();
-	dialog.setFolderId(this._folderId || ZmPage.DEFAULT_FOLDER);
-	dialog.popup();
+	dialog.popup(notebook, callback);
 };
+/***/
 
 ZmNotebookController.prototype._sendPageListener = function(event) {
 	var view = this._listView[this._currentView];

@@ -56,6 +56,8 @@ ZmNotebookObjectHandler.MEDIAWIKI_KEYWORD_RE = new RegExp(
 	"g"
 );
 
+ZmNotebookObjectHandler.WIKIPATH_RE = /^(?:\/\/([^\/]+))?(.*\/([^\/]+)?|.*)/;
+
 // Public methods
 
 ZmNotebookObjectHandler.prototype.match =
@@ -147,12 +149,42 @@ function(page) {
 
 ZmNotebookObjectHandler.prototype.getToolTipText =
 function(keyword, context) {
-	// TODO: i18n
-	var text = [ "<b>Keyword:</b> '", context.keyword, "'" ];
-	if (context.keyword != context.label) {
-		text.push("<br>", "<b>Label:</b> '", context.label, "'");
+	var m = context.keyword.match(ZmNotebookObjectHandler.WIKIPATH_RE);
+	var label= m[3] || context.keyword;
+	if (context.label != context.keyword) {
+		label = context.label;
 	}
-	return text.join("");
+	var html = [
+		"<div style='border-bottom:solid black 1px;margin-bottom:0.25em'>",
+		"<table border=0 cellpadding=0 cellspacing=0 width=100%>",
+			"<tr valign=top>",
+				"<td><b>",label,"</b></td>",
+				"<td width=1% style='padding-left:0.5em'><div class='ImgPage'></div></td>",
+			"</tr>",
+		"</table>",
+		"</div>",
+		"<table border=0 cellpadding=0 cellspacing=0 width=100%>"
+	];
+	if (m[1]) {
+		html.push(
+			"<tr valign=top>",
+				"<td width=1% align=right style='padding-right:5px'>",
+					"<b>",ZmMsg.userLabel,"</b>",
+				"</td>",
+				"<td>",m[1],"</td>",
+			"</tr>"
+		);
+	}
+	html.push(
+			"<tr valign=top>",
+				"<td width=1% align=right style='padding-right:5px'>",
+					"<b>",ZmMsg.pathLabel,"</b>",
+				"</td>",
+				"<td>",m[2],"</td>",
+			"</tr>",
+		"</table>"
+	);
+	return html.join("");
 };
 
 ZmNotebookObjectHandler.prototype.getActionMenu =

@@ -1,0 +1,355 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.1
+ *
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.1 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ *
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2006 Zimbra, Inc.
+ * All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK *****
+ */
+
+function ZmLinkPropsDialog(appCtxt, shell, className) {
+	className = className || "ZmLinkPropsDialog";
+	DwtDialog.call(this, shell, className, ZmMsg.linkProperties);
+	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
+
+	this._appCtxt = appCtxt;
+
+	var appController = appCtxt.getAppController();
+	var app = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	this._cache = app.getNotebookCache();
+
+	// set view
+	this.setView(this._createView());
+};
+
+ZmLinkPropsDialog.prototype = new DwtDialog;
+ZmLinkPropsDialog.prototype.constructor = ZmLinkPropsDialog;
+
+// Data
+
+ZmLinkPropsDialog.prototype._linkInfo;
+
+// Public methods
+
+ZmLinkPropsDialog.prototype.popup =
+function(linkInfo, callback, loc) {
+	this._linkInfo = linkInfo || {};
+	this._callback = callback;
+
+	var isUrlLink = this._linkInfo.url;
+	if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+		var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+		var root = tree.getById(ZmOrganizer.ID_ROOT);
+		var children = root.children.getArray();
+
+		this._notebookSelect.clearOptions();
+		this.__addNotebookChildren(children, "");
+
+		this._pageRadioEl.checked = !isUrlLink;
+		this._urlRadioEl.checked = isUrlLink;
+
+		this._pageInput.setValue("");
+	}
+
+	this._urlInput.setValue(this._linkInfo.url || "");
+	this._titleInput.setValue(this._linkInfo.text || "");
+
+	ZmLinkPropsDialog._setRequiredFields(this, !isUrlLink);
+
+	DwtDialog.prototype.popup.call(this, loc);
+	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+};
+
+ZmLinkPropsDialog.prototype.popdown =
+function() {
+	if (this._acPageList) {
+		//this._acPageList.reset();
+		this._acPageList.show(false);
+	}
+	DwtDialog.prototype.popdown.call(this);
+};
+
+// Tab completion methods
+
+ZmLinkPropsDialog.prototype.getPageDataLoader = function() {
+	return this;
+};
+ZmLinkPropsDialog.prototype.autocompleteMatch = function(s) {
+	var notebookId = this._notebookSelect.getValue();
+	var pages = this._cache.getPagesInFolder(notebookId);
+
+	var m = [];
+	var lows = s.toLowerCase();
+	for (var p in pages) {
+		var lowp = p.toLowerCase();
+		var index = lowp.indexOf(lows);
+		if (index != -1) {
+			var page = pages[p];
+			var object = {
+				text: [
+					p.substr(0,index),
+					"<B>",p.substr(index, s.length),"</B>",
+					p.substr(index + s.length)
+				].join(""),
+				name: p,
+				data: page
+			};
+			m.push(object);
+		}
+	}
+	return m;
+};
+
+ZmLinkPropsDialog.prototype.isUniqueValue = function(s) {
+	// NOTE: Don't auto fill in single match. This will allow them
+	//       to enter something that doesn't exist yet (but perhaps
+	//       intend to create later).
+	return false;
+};
+
+ZmLinkPropsDialog.prototype._getAcPageLoc = function() {
+	var element = this._pageInput.getHtmlElement();
+	var viewEl = this.getHtmlElement();
+	var location = Dwt.toWindow(element, 0, 0, viewEl);
+	var size = Dwt.getSize(element);
+	return new DwtPoint((location.x), (location.y + size.y));
+};
+
+ZmLinkPropsDialog.prototype._setAcPageCompletion =
+function(text, element, matchObj) {
+	// NOTE: nothing special to be done
+};
+
+ZmLinkPropsDialog.prototype._acKeyUpListener = function(event) {
+	ZmLinkPropsDialog._enableFieldsOnEdit(this);
+};
+
+// Protected functions
+
+ZmLinkPropsDialog._handleEdit = function(event) {
+	var target = DwtUiEvent.getTarget(event);
+	var dialog = Dwt.getObjectFromElement(target);
+
+	ZmLinkPropsDialog._enableFieldsOnEdit(dialog);
+	return true;
+};
+
+ZmLinkPropsDialog._handleLinkTo = function(event) {
+	var target = DwtUiEvent.getTarget(event);
+	var dialog = Dwt.getObjectFromElement(target);
+	var isPage = target == dialog._pageRadioEl;
+	ZmLinkPropsDialog._setRequiredFields(dialog, isPage);
+	ZmLinkPropsDialog._enableFieldsOnEdit(dialog);
+	return true;
+};
+
+ZmLinkPropsDialog._enableFieldsOnEdit = function(dialog) {
+	var enabled =
+		(dialog._pageRadioEl && dialog._pageRadioEl.checked && dialog._pageInput.getValue().replace(/^\s+(.*)\s+$/,"$1")) ||
+		dialog._urlInput.getValue().replace(/^\s+(.*)\s+$/,"$1");
+	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, enabled);
+};
+
+ZmLinkPropsDialog._setRequiredFields =
+function(dialog, isPage) {
+	if (dialog._pageInput) {
+		dialog._pageInput.setRequired(isPage);
+	}
+	dialog._urlInput.setRequired(!isPage);
+};
+
+// Protected methods
+
+ZmLinkPropsDialog.prototype._handleOkButton =
+function(event) {
+	this.popdown();
+	if (this._callback) {
+		var title = this._titleInput.getValue().replace(/^\s+(.*)\s+$/,"$1");
+		var link;
+		if (this._pageRadioEl && this._pageRadioEl.checked) {
+			var notebookId = this._notebookSelect.getValue();
+			var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+			var notebook = tree.getById(notebookId);
+			link = [
+				"[[",
+					"/",notebook.getSearchPath(),"/",this._pageInput.getValue(),
+					(title ? "|" : ""),title,
+				"]]"
+			].join("");
+		}
+		else {
+			link = document.createElement("A");
+			link.href = this._urlInput.getValue();
+			link.innerHTML = AjxStringUtil.htmlEncode(title || link.href);
+		}
+
+		this._callback.run(link, this._linkInfo.target);
+	}
+};
+
+ZmLinkPropsDialog.prototype._createView =
+function() {
+	// TODO: only show url link if notebook app is disabled
+	var view = new DwtComposite(this);
+
+	// create common DWT controls
+	this._urlInput = new DwtInputField(view);
+	this._urlInput.setRequired(true);
+	this._titleInput = new DwtInputField(view);
+
+	// setup dialog controls for notebook
+	if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+		// create ids
+		var typePageId = Dwt.getNextId();
+		var typeUrlId = Dwt.getNextId();
+		var pagePropsId = Dwt.getNextId();
+		var notebookId = Dwt.getNextId();
+		var pageId = Dwt.getNextId();
+		var urlInputId = Dwt.getNextId();
+		var titleInputId = Dwt.getNextId();
+
+		var typeName = this._htmlElId+"_type";
+
+		// link
+		var linkHtml = [
+			"<table border=0 cellpadding=0 cellspacing=0>",
+				"<tr valign=top>",
+					"<td rowspan=2>",
+						"<input id='",typePageId,"' type=radio name='",typeName,"'>",
+					"</td>",
+					"<td>",ZmMsg.notebookPageLabel,"</td>",
+				"</tr>",
+				"<tr>",
+					"<td id='",pagePropsId,"'></td>",
+				"</tr>",
+				"<tr valign=top>",
+					"<td rowspan=2>",
+						"<input id='",typeUrlId,"' type=radio name='",typeName,"'>",
+					"</td>",
+					"<td>",ZmMsg.webPageLabel,"</td>",
+				"</tr>",
+				"<tr>",
+					"<td>",
+						"<nobr id='",urlInputId,"'></nobr>",
+					"</td>",
+				"</tr>",
+			"</table>"
+		].join("");
+
+		// create dwt controls
+		this._notebookSelect = new DwtSelect(view);
+		this._pageInput = new DwtInputField(view);
+		this._pageInput.setRequired(true);
+
+		var pageInputEl = this._pageInput.getInputElement();
+		pageInputEl.style.width = "15em";
+
+		var inputEl = this._urlInput.getInputElement();
+		inputEl.value = "http://www.";
+		inputEl.style.width = "25em";
+
+		var inputEl = this._titleInput.getInputElement();
+		inputEl.style.width = "15em";
+
+		var linkToGroup = new DwtGrouper(view);
+		linkToGroup.setLabel(ZmMsg.linkTo);
+		linkToGroup.setContent(linkHtml);
+
+		var pageProps = new DwtPropertySheet(linkToGroup);
+		pageProps.addProperty(ZmMsg.notebookLabel, "<div id='"+notebookId+"'></div>");
+		pageProps.addProperty(ZmMsg.pageLabel, "<div id='"+pageId+"'></div>");
+
+		// insert dwt controls
+		var pagePropsEl = document.getElementById(pagePropsId);
+		pagePropsEl.appendChild(pageProps.getHtmlElement());
+
+		var notebookEl = document.getElementById(notebookId);
+		notebookEl.appendChild(this._notebookSelect.getHtmlElement());
+
+		var pageEl = document.getElementById(pageId);
+		pageEl.parentNode.replaceChild(this._pageInput.getHtmlElement(), pageEl);
+
+		var table = document.createElement("TABLE");
+		table.border = 0;
+		table.cellSpacing = 10;
+		table.cellpadding = 0;
+		var row = table.insertRow(-1);
+		var cell = row.insertCell(-1);
+		cell.appendChild(this._urlInput.getHtmlElement());
+		var cell = row.insertCell(-1);
+		cell.innerHTML = "Test";
+
+		var urlEl = document.getElementById(urlInputId);
+		urlEl.parentNode.replaceChild(table, urlEl);
+
+		// save HTML controls
+		this._pageRadioEl = document.getElementById(typePageId);
+		this._pageRadioEl.checked = true;
+		this._urlRadioEl = document.getElementById(typeUrlId);
+
+		var radioEls = [ this._pageRadioEl, this._urlRadioEl ];
+		for (var i = 0; i < radioEls.length; i++) {
+			Dwt.setHandler(radioEls[i], DwtEvent.ONCLICK, ZmLinkPropsDialog._handleLinkTo);
+			Dwt.associateElementWithObject(radioEls[i], this);
+		}
+
+		// setup auto-completer
+		var dataClass = this;
+		var dataLoader = this.getPageDataLoader;
+		var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation);
+		var compCallback = new AjxCallback(this, this._setAcPageCompletion);
+
+		var params = {
+			parent: this,
+			dataClass: dataClass,
+			dataLoader: dataLoader,
+			matchValue: "name",
+			separator: "",
+			locCallback: new AjxCallback(this, this._getAcPageLoc),
+			compCallback: new AjxCallback(this, this._setAcPageCompletion),
+			keyUpCallback: new AjxCallback(this, this._acKeyUpListener)
+		}
+		this._acPageList = new ZmAutocompleteListView(params);
+		this._acPageList.handle(pageInputEl);
+
+	} // if NOTEBOOK_ENABLED
+
+	// create properties
+	var props = new DwtPropertySheet(view);
+	if (!this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+		props.addProperty(linkUrlLabel, this._urlInput);
+	}
+	props.addProperty(ZmMsg.linkTitleLabel, this._titleInput);
+
+	return view;
+};
+
+// Private methods
+
+ZmLinkPropsDialog.prototype.__addNotebookChildren = function(children, depth) {
+	if (!children) return;
+
+	for (var i = 0; i < children.length; i++) {
+		var child = children[i];
+		//this._notebookSelect.addOption(depth+child.name, false, child.id);
+		this._notebookSelect.addOption(child.getSearchPath(), false, child.id);
+		var grandChildren = child.children.getArray();
+		this.__addNotebookChildren(grandChildren, depth+"&nbsp;");
+	}
+};

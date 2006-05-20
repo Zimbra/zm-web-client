@@ -46,7 +46,7 @@ ZmNotebookCache._SPECIAL[ZmNotebook.PAGE_INDEX] = [
 ].join("");
 ZmNotebookCache._SPECIAL[ZmNotebook.PAGE_CHROME] = [
 	"<DIV style='padding:0.5em'>",
-		"<H1><wiklet class='NAME' /></H1>",
+		"<H1><nolink><wiklet class='NAME' /></nolink></H1>",
 		"<DIV><wiklet class='CONTENT' /></DIV>",
 	"</DIV>"
 ].join("");

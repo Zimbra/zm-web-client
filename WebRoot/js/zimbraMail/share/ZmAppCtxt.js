@@ -303,6 +303,13 @@ function() {
 	return this._folderPropsDialog;
 };
 
+ZmAppCtxt.prototype.getLinkPropsDialog =
+function() {
+	if (!this._linkPropsDialog)
+		this._linkPropsDialog = new ZmLinkPropsDialog(this, this.getShell());
+	return this._linkPropsDialog;
+};
+
 ZmAppCtxt.prototype.getSharePropsDialog =
 function() {
 	if (!this._sharePropsDialog)

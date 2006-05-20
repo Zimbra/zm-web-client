@@ -294,12 +294,21 @@ ZmOrganizer.prototype.getUrl = function() {
 		var shell = DwtShell.getShell(window);
 		appCtxt = ZmAppCtxt.getFromShell(shell);
 	}
-	var uname = this.owner || appCtxt.get(ZmSetting.USERNAME); // REVISIT !!!
-	uname = uname.replace(/@.*$/,"");
 
 	var loc = document.location;
+	var uname = this.owner || appCtxt.get(ZmSetting.USERNAME);
+	var host = loc.host;
+
+	var m = uname.match(/^(.*)@(.*)$/);
+	uname = (m && m[1]) || uname;
+	host = (m && m[2]) || host;
+	// REVISIT: What about port? For now assume other host uses same port
+	if (loc.port && loc.port != 80) {
+		host = host + ":" + loc.port;
+	}
+
 	return [
-		loc.protocol, "//", loc.host, "/home/", uname, "/",
+		loc.protocol, "//", host, "/home/", uname, "/",
 		AjxStringUtil.urlEncode(this.getSearchPath())
 	].join("");
 };
