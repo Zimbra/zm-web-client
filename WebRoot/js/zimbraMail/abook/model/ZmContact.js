@@ -397,6 +397,15 @@ function(attr) {
 	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback, execFrame: execFrame});
 };
 
+ZmContact.prototype.clear =
+function() {
+	// if this contact is in the canonical list, dont clear it!
+	var contact = this.canonicalList.getById(this.id);
+	if (contact) return;
+
+	ZmItem.prototype.clear.call(this);
+};
+
 ZmContact.prototype._handleResponseCreate =
 function(attr, result) {
 	var resp = result.getResponse().CreateContactResponse;

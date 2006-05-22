@@ -126,6 +126,19 @@ function() {
 	return this._galContactList;
 };
 
+// returns array of all addrbooks (incl. shared but excl. root and Trash)
+ZmContactsApp.prototype.getAddrbookList =
+function() {
+	var addrbookList = [];
+	var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
+	for (var i = 0; i < folders.length; i++) {
+		if (folders[i].id == ZmFolder.ID_ROOT || folders[i].id == ZmFolder.ID_TRASH)
+			continue;
+		addrbookList.push(folders[i].createQuery());
+	}
+	return addrbookList;
+};
+
 ZmContactsApp.prototype.getContactListController =
 function() {
 	if (!this._contactListController)

@@ -35,6 +35,11 @@ function ZmContactSplitView(parent, className, posStyle, controller, dropTgt) {
 	DwtComposite.call(this, parent, className, posStyle);
 
 	this._controller = controller;
+	this._appCtxt = controller._appCtxt;
+
+	this._tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
+	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
+	this._tagCellId = Dwt.getNextId();
 
 	// find out if the user's locale has a alphabet defined
 	this._hasAlphabetBar = ZmMsg.alphabet && ZmMsg.alphabet.length>0;
@@ -180,7 +185,7 @@ function() {
 	html[idx++] = this._contactPartWidth - 20;
 	html[idx++] = "' id='";
 	html[idx++] = this._contactHeaderId;
-	html[idx++] = "' class='contactHeader'></td>";
+	html[idx++] = "'></td>";
 	// TODO - add tags
 	// html[idx++] = "<td></td>";
 	html[idx++] = "</tr>";
@@ -208,7 +213,7 @@ function() {
 	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=2 cellspacing=2 width=80%><tr>"
 
 	for (var i = 0; i < alphabet.length; i++) {
-		html[idx++] = "<td style='text-align:center; cursor:pointer' onclick='ZmContactSplitView.alphabetClicked(";
+		html[idx++] = "<td style='text-align:center; cursor:pointer' onclick='ZmContactSplitView._alphabetClicked(";
 		if (i > 0)
 			html[idx++] = '"' + alphabet[i] + '"';
 		html[idx++] = "); return false;'";
@@ -249,7 +254,19 @@ function(contact, isGal) {
 
 	// set contact header (file as)
 	var contactHdr = document.getElementById(this._contactHeaderId);
-	contactHdr.innerHTML = contact.getFileAs();
+	var hdrHtml = new Array();
+	var idx = 0;
+	hdrHtml[idx++] = "<table border=0 width=100% cellpadding=0 cellspacing=0><tr><td class='contactHeader'>";
+	hdrHtml[idx++] = contact.getFileAs();
+	hdrHtml[idx++] = "</td><td align=right id='";
+	hdrHtml[idx++] = this._tagCellId;
+	hdrHtml[idx++] = "'>";
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		hdrHtml[idx++] = this._getTagHtml(contact);
+	}
+	hdrHtml[idx++] = "</td></tr></table>";
+
+	contactHdr.innerHTML = hdrHtml.join("");
 
 	// set body
 	var contactBodyDiv = document.getElementById(this._contactBodyId);
@@ -257,7 +274,7 @@ function(contact, isGal) {
 	var width = this._contactPart.getSize().x / 2;
 
 	var html = new Array();
-	var idx = 0;
+	idx = 0;
 
 	// set company name and folder this contact belongs to
 	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100%><tr>";
@@ -265,7 +282,7 @@ function(contact, isGal) {
 	html[idx++] = (contact.getCompanyField() || "&nbsp;");
 	html[idx++] = "</td>";
 	folderId = folderId || contact.folderId;
-	var folder = folderId ? this._controller._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId) : null;
+	var folder = folderId ? this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId) : null;
 	if (folder) {
 		html[idx++] = "<td width=20>";
 		html[idx++] = AjxImg.getImageHtml(folder.getIcon());
@@ -425,6 +442,31 @@ function(contact, isGal) {
 	contactBodyDiv.innerHTML = html.join("");
 };
 
+ZmContactSplitView.prototype._getTagHtml =
+function(contact) {
+	var html = new Array();
+	var idx = 0;
+
+	// get sorted list of tags for this msg
+	var ta = new Array();
+	for (var i = 0; i < contact.tags.length; i++)
+		ta.push(this._tagList.getById(contact.tags[i]));
+	ta.sort(ZmTag.sortCompare);
+
+	for (var j = 0; j < ta.length; j++) {
+		var tag = ta[j];
+		if (!tag) continue;
+		var icon = ZmTag.COLOR_MINI_ICON[tag.color];
+		var attr = ["id='", this._tagCellId, tag.id, "'"].join("");
+		html[idx++] = "<a href='javascript:;' class='AttLink' onclick='ZmContactSplitView._tagClicked(";
+		html[idx++] = '"' + tag.id + '"';
+		html[idx++] = "); return false;'>"
+		html[idx++] = AjxImg.getImageSpanHtml(icon, null, attr, tag.name);
+		html[idx++] = "</a>&nbsp;";
+	}
+	return html.join("");
+};
+
 ZmContactSplitView.prototype._getObjectHtml = 
 function(html, idx, label, field, objMgr) {
 	html[idx++] = "<tr><td class='contactLabel'>";
@@ -436,13 +478,39 @@ function(html, idx, label, field, objMgr) {
 	return idx;
 };
 
-ZmContactSplitView.alphabetClicked =
+ZmContactSplitView.prototype._tagChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_TAG)
+		return;
+
+	var fields = ev.getDetail("fields");
+	var changed = fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]);
+	if ((ev.event == ZmEvent.E_MODIFY && changed) ||
+		ev.event == ZmEvent.E_DELETE ||
+		ev.event == ZmEvent.MODIFY)
+	{
+		var tagCell = document.getElementById(this._tagCellId);
+		tagCell.innerHTML = this._getTagHtml(this._contact);
+	}
+};
+
+ZmContactSplitView._alphabetClicked =
 function(letter) {
 	var appCtxt = window._zimbraMail._appCtxt;
 	var clc = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
 	clc.searchAlphabet(letter);
 };
 
+ZmContactSplitView._tagClicked =
+function(tagId) {
+	var appCtxt = window._zimbraMail._appCtxt;
+	var sc = appCtxt ? appCtxt.getSearchController() : null;
+	if (sc) {
+		var tag = appCtxt.getTree(ZmOrganizer.TAG).getById(tagId);
+		var query = 'tag:"' + tag.name + '"';
+		sc.search({query: query});
+	}
+};
 
 //////////////////////////////////////////////////////////////////////////////
 // ZmContactSimpleView

@@ -53,16 +53,18 @@ function ZmApptChooserTabViewPage(parent, appCtxt, attendees, type) {
 };
 
 // List view columns
-ZmApptChooserTabViewPage.ID_NAME		= "a--";
-ZmApptChooserTabViewPage.ID_EMAIL		= "b--";
-ZmApptChooserTabViewPage.ID_WORK_PHONE	= "c--";
-ZmApptChooserTabViewPage.ID_HOME_PHONE	= "d--";
-ZmApptChooserTabViewPage.ID_LOCATION	= "e--";
-ZmApptChooserTabViewPage.ID_CONTACT		= "f--";
-ZmApptChooserTabViewPage.ID_CAPACITY	= "g--";
-ZmApptChooserTabViewPage.ID_NOTES		= "h--";
+ZmApptChooserTabViewPage.ID_FOLDER 		= "a--";
+ZmApptChooserTabViewPage.ID_NAME		= "b--";
+ZmApptChooserTabViewPage.ID_EMAIL		= "c--";
+ZmApptChooserTabViewPage.ID_WORK_PHONE	= "d--";
+ZmApptChooserTabViewPage.ID_HOME_PHONE	= "e--";
+ZmApptChooserTabViewPage.ID_LOCATION	= "f--";
+ZmApptChooserTabViewPage.ID_CONTACT		= "g--";
+ZmApptChooserTabViewPage.ID_CAPACITY	= "h--";
+ZmApptChooserTabViewPage.ID_NOTES		= "i--";
 
 ZmApptChooserTabViewPage.COL_LABEL = {};
+ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_FOLDER]		= "folder";
 ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_NAME]		= "_name";
 ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_EMAIL]		= "email";
 ZmApptChooserTabViewPage.COL_LABEL[ZmApptChooserTabViewPage.ID_WORK_PHONE]	= "AB_FIELD_workPhone";
@@ -75,6 +77,7 @@ ZmApptChooserTabViewPage.COL_IMAGE = {};
 ZmApptChooserTabViewPage.COL_IMAGE[ZmApptChooserTabViewPage.ID_NOTES]		= "SearchNotes";
 
 ZmApptChooserTabViewPage.COL_WIDTH = {};
+ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_FOLDER]		= 120;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_NAME]		= 150;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_EMAIL]		= null;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_WORK_PHONE]	= 100;
@@ -86,7 +89,7 @@ ZmApptChooserTabViewPage.COL_WIDTH[ZmApptChooserTabViewPage.ID_NOTES]		= 30;
 
 ZmApptChooserTabViewPage.COLS = {};
 ZmApptChooserTabViewPage.COLS[ZmAppt.PERSON] =
-	[ZmApptChooserTabViewPage.ID_NAME, ZmApptChooserTabViewPage.ID_EMAIL,
+	[ZmApptChooserTabViewPage.ID_FOLDER, ZmApptChooserTabViewPage.ID_NAME, ZmApptChooserTabViewPage.ID_EMAIL,
 	 ZmApptChooserTabViewPage.ID_WORK_PHONE, ZmApptChooserTabViewPage.ID_HOME_PHONE];
 ZmApptChooserTabViewPage.COLS[ZmAppt.LOCATION] =
 	[ZmApptChooserTabViewPage.ID_NAME, ZmApptChooserTabViewPage.ID_LOCATION,
@@ -397,12 +400,14 @@ function() {
 		var listSelect = document.getElementById(this._listSelectId);
 		this._selectDiv = new DwtSelect(this);
 		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactPicker.SEARCHFOR_CONTACTS);
+		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+			this._selectDiv.addOption(ZmMsg.searchPersonalAndShared, false, ZmContactPicker.SEARCHFOR_PAS);
 		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactPicker.SEARCHFOR_GAL);
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
 	}
    
 	// add chooser
-	this._chooser = new ZmApptChooser(this);
+	this._chooser = new ZmApptChooser(this, null, this._appCtxt);
 	var chooserSourceListViewDiv = document.getElementById(this._chooserSourceListViewDivId);
 	var sourceListView = this._chooser.getSourceListView();
 	chooserSourceListViewDiv.appendChild(sourceListView);
@@ -464,10 +469,15 @@ function(sortBy) {
 	var id = this._searchFieldIds[ZmApptChooserTabViewPage.SF_ATT_NAME];
 	this._query = AjxStringUtil.trim(document.getElementById(id).value);
 	if (!this._query.length) return;
-	
+
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var searchFor = this._selectDiv.getSelectedOption().getValue();
-		this._contactSource = (searchFor == ZmContactPicker.SEARCHFOR_CONTACTS) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
+		this._contactSource = (searchFor == ZmContactPicker.SEARCHFOR_CONTACTS || searchFor == ZmContactPicker.SEARCHFOR_PAS)
+			? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
+		if (searchFor == ZmContactPicker.SEARCHFOR_PAS) {
+			var addrbookList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getAddrbookList();
+			this._query += " (" + addrbookList.join(" or ") + ")";
+		}
 	} else {
 		this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 	}
@@ -497,6 +507,7 @@ function(result) {
 			for (var j = 0; j < emails.length; j++) {
 				var clone = new ZmContact(this._appCtxt);
 				clone._fullName = contact.getFullName();
+				clone.folderId = contact.folderId;
 				clone.setAttr(ZmContact.F_workPhone, workPhone);
 				clone.setAttr(ZmContact.F_homePhone, homePhone);
 				clone.setAttr(ZmContact.F_email, emails[j]);
@@ -578,8 +589,10 @@ function(ev) {
 *
 * @param parent			[DwtComposite]	the attendee tab view
 * @param buttonInfo		[array]			transfer button IDs and labels
+* @param appCtxt		[ZmAppCtxt]		global app context
 */
-function ZmApptChooser(parent, buttonInfo) {
+function ZmApptChooser(parent, buttonInfo, appCtxt) {
+	this._appCtxt = appCtxt;
 	var selectStyle = (parent.type == ZmAppt.LOCATION) ? DwtChooser.SINGLE_SELECT : null;
 	DwtChooser.call(this, {parent: parent, buttonInfo: buttonInfo, layoutStyle: DwtChooser.VERT_STYLE,
 						   mode: DwtChooser.MODE_MOVE, selectStyle: selectStyle, allButtons: true});
@@ -590,12 +603,12 @@ ZmApptChooser.prototype.constructor = ZmApptChooser;
 
 ZmApptChooser.prototype._createSourceListView =
 function() {
-	return new ZmApptChooserListView(this, DwtChooserListView.SOURCE, this.parent.type);
+	return new ZmApptChooserListView(this, DwtChooserListView.SOURCE, this.parent.type, this._appCtxt);
 };
 
 ZmApptChooser.prototype._createTargetListView =
 function() {
-	return new ZmApptChooserListView(this, DwtChooserListView.TARGET, this.parent.type);
+	return new ZmApptChooserListView(this, DwtChooserListView.TARGET, this.parent.type, this._appCtxt);
 };
 
 ZmApptChooser.prototype._notify =
@@ -624,12 +637,14 @@ function(item, list) {
 * @param parent			[DwtChooser]	chooser that owns this list view
 * @param type			[constant]		list view type (source or target)
 * @param chooserType	[constant]		type of owning chooser (attendee/location/resource)
+* @param appCtxt 		[ZmAppCtxt] 	global app context
 */
-function ZmApptChooserListView(parent, type, chooserType) {
+function ZmApptChooserListView(parent, type, chooserType, appCtxt) {
 
 	this._chooserType = chooserType;
 	DwtChooserListView.call(this, parent, type);
 
+	this._appCtxt = appCtxt;
 	this._notes = {};
 };
 
@@ -671,7 +686,10 @@ function(item) {
 	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>";
 	for (var i = 0; i < this._headerList.length; i++) {
 		var id = this._headerList[i]._id;
-		if (id.indexOf(ZmApptChooserTabViewPage.ID_NAME) == 0) {
+		if (id.indexOf(ZmApptChooserTabViewPage.ID_FOLDER) == 0) {
+			var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(item.folderId);
+			html[idx++] = this._getField(i, folder ? folder.name : "");
+		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_NAME) == 0) {
 			var name = (this._chooserType == ZmAppt.PERSON) ? item.getFullName() : item.getAttr(ZmResource.F_name);
 			html[idx++] = this._getField(i, name);
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_EMAIL) == 0) {

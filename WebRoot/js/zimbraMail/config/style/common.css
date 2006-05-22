@@ -487,6 +487,7 @@ DIV.vSpace {
 	white-space: nowrap;	/* ??? */
 }
 
-
-
-
+.inlineIcon {
+	font-family:Verdana;
+	font-size:13px;
+}

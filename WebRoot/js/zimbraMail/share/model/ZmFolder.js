@@ -61,6 +61,7 @@ ZmFolder.ID_SPAM			= ZmOrganizer.ID_SPAM;
 ZmFolder.ID_SENT			= 5;
 ZmFolder.ID_DRAFTS			= 6;
 ZmFolder.ID_CONTACTS		= ZmOrganizer.ID_ADDRBOOK;
+ZmFolder.ID_AUTO_ADDED		= ZmOrganizer.ID_AUTO_ADDED;
 ZmFolder.LAST_SYSTEM_ID		= 6;
 ZmFolder.ID_TAGS	 		= 8;
 
@@ -90,6 +91,7 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_SPAM]		= "junk";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]		= "sent";
 ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]		= "drafts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]	= "contacts";
+ZmFolder.QUERY_NAME[ZmFolder.ID_AUTO_ADDED] = "\"Emailed Contacts\"";
 
 // order within the overview panel
 ZmFolder.SORT_ORDER = new Object();

@@ -30,6 +30,9 @@ function ZmContactView(parent, appCtxt, controller, isReadOnly) {
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 
+	this._tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
+	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
+
 	// read only flag is mainly used for printing a single contact
 	this._isReadOnly = isReadOnly;
 	this.getHtmlElement().style.overflow = "hidden";
@@ -448,8 +451,24 @@ function(title) {
 
 ZmContactView.prototype._setTags =
 function() {
-	var img =  document.getElementById(this._fieldIds[ZmContactView.F_contactTags]);
-	AjxImg.setImage(img, this._contact.getTagImageInfo());
+	// get sorted list of tags for this msg
+	var ta = new Array();
+	for (var i = 0; i < this._contact.tags.length; i++)
+		ta.push(this._tagList.getById(this._contact.tags[i]));
+	ta.sort(ZmTag.sortCompare);
+
+	var html = [];
+	var i = 0;
+	for (var j = 0; j < ta.length; j++) {
+		var tag = ta[j];
+		if (!tag) continue;
+		var icon = ZmTag.COLOR_MINI_ICON[tag.color];
+		html[i++] = AjxImg.getImageSpanHtml(icon, null, null, tag.name);
+		html[i++] = "&nbsp;";
+	}
+
+	var tagCell = document.getElementById(this._fieldIds[ZmContactView.F_contactTags]);
+	tagCell.innerHTML = html.join("");
 };
 
 ZmContactView.prototype._setFields =
@@ -681,8 +700,24 @@ ZmContactView.prototype._contactChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_CONTACT)
 		return;
+
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL)
 		this._setTags(this._contact);
+};
+
+ZmContactView.prototype._tagChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_TAG)
+		return;
+
+	var fields = ev.getDetail("fields");
+	var changed = fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]);
+	if ((ev.event == ZmEvent.E_MODIFY && changed) ||
+		ev.event == ZmEvent.E_DELETE ||
+		ev.event == ZmEvent.MODIFY)
+	{
+		this._setTags();
+	}
 };
 
 ZmContactView.prototype._selectChangeListener =

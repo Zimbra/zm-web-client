@@ -324,9 +324,9 @@ function(params, noRender, callback, errorCallback) {
 	// XXX: hack -- we have to hack the query string in order for this search to work
 	if (this._searchFor == ZmSearchToolBar.FOR_PAS_MI) {
 		this._origQuery = params.query;
-		var sharedQuery = this._getQueryForSharedContacts();
-		if (sharedQuery)
-			params.query += (" " + sharedQuery);
+		var addrbookList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getAddrbookList();
+		if (addrbookList.length)
+			params.query += " (" + sharedList.join(" or ") + ")";
 	}
 
 	// only set contact source if we are searching for contacts
@@ -431,19 +431,6 @@ function(search, isMixed, ex) {
 		return false;
 	}
 }
-
-ZmSearchController.prototype._getQueryForSharedContacts =
-function() {
-	var sharedList = [];
-	var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
-	for (var i = 0; i < folders.length; i++) {
-		if (folders[i].id == ZmFolder.ID_ROOT || folders[i].id == ZmFolder.ID_TRASH)
-			continue;
-		sharedList.push(folders[i].createQuery());
-	}
-
-	return "(" + sharedList.join(" or ") + ")";
-};
 
 /*********** Search Field Callback */
 

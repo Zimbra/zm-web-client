@@ -52,6 +52,7 @@ ZmContactPicker.prototype.constructor = ZmContactPicker;
 
 ZmContactPicker.SEARCHFOR_CONTACTS 	= 1;
 ZmContactPicker.SEARCHFOR_GAL 		= 2;
+ZmContactPicker.SEARCHFOR_PAS		= 3; // PAS = personal and shared
 ZmContactPicker.SEARCHFOR_MAX 		= 50;
 
 ZmContactPicker.ID_ICON 		= "i--";
