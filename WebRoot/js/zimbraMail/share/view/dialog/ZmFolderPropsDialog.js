@@ -189,8 +189,7 @@ ZmFolderPropsDialog.prototype._handleFolderChange = function(event) {
 	}
 	this._ownerEl.innerHTML = AjxStringUtil.htmlEncode(this._folder.owner);
 	this._typeEl.innerHTML = ZmFolderPropsDialog.TYPE_CHOICES[this._folder.type] || ZmMsg.folder;
-	this._urlEl.innerHTML = this._folder.url ? this._folder.url : "";
-	this._props.setPropertyVisible(this._colorSelectId, this._folder.type != ZmOrganizer.ADDRBOOK);
+	this._urlEl.innerHTML = this._folder.url || "";
 	this._color.setSelectedValue(this._folder.color);
 	this._excludeFbCheckbox.checked = this._folder.excludeFreeBusy;
 	
@@ -301,7 +300,7 @@ ZmFolderPropsDialog.prototype._createView = function() {
 	this._typeId = this._props.addProperty(ZmMsg.typeLabel, this._typeEl);
 	this._ownerId = this._props.addProperty(ZmMsg.ownerLabel, this._ownerEl);
 	this._urlId = this._props.addProperty(ZmMsg.urlLabel, this._urlEl);
-	this._colorSelectId = this._props.addProperty(ZmMsg.colorLabel, this._color);
+	this._props.addProperty(ZmMsg.colorLabel, this._color);
 
 	var propsContainer = document.createElement("DIV");
 	propsContainer.appendChild(this._props.getHtmlElement());

@@ -170,25 +170,23 @@ function(width, height) {
 
 ZmContactSplitView.prototype._createHtml = 
 function() {
-
+	this._contactHeaderRowId = Dwt.getNextId();
 	this._contactHeaderId = Dwt.getNextId();
 	this._contactBodyId = Dwt.getNextId();
 
 	var html = new Array();
 	var idx = 0;
-	
+
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>";
-	html[idx++] = "<tr class='contactHeaderRow'><td width=20><center>";
-	// TODO - set icon based on contact type (i.e. distro. list, shared, etc)
+	html[idx++] = "<tr class='contactHeaderRow' id='";
+	html[idx++] = this._contactHeaderRowId;
+	html[idx++] = "'><td width=20><center>";
 	html[idx++] = AjxImg.getImageHtml("Person");
 	html[idx++] = "</center></td><td width='";
 	html[idx++] = this._contactPartWidth - 20;
 	html[idx++] = "' id='";
 	html[idx++] = this._contactHeaderId;
-	html[idx++] = "'></td>";
-	// TODO - add tags
-	// html[idx++] = "<td></td>";
-	html[idx++] = "</tr>";
+	html[idx++] = "'></td></tr>";
 	html[idx++] = "<tr height=100%><td colspan=3 valign=top><div style='width:";
 	html[idx++] = this._contactPartWidth;
 	html[idx++] = "; height:";
@@ -252,6 +250,15 @@ function(contact, isGal) {
 	if (!this._htmlInitialized)
 		this._createHtml();
 
+	folderId = folderId || contact.folderId;
+	var folder = folderId ? this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId) : null;
+
+	// set background color of header
+	var color = folder ? folder.color : ZmAddrBook.DEFAULT_COLOR;
+	var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
+	var contactHdrRow = document.getElementById(this._contactHeaderRowId);
+	contactHdrRow.className = "contactHeaderRow " + bkgdColor;
+
 	// set contact header (file as)
 	var contactHdr = document.getElementById(this._contactHeaderId);
 	var hdrHtml = new Array();
@@ -281,8 +288,6 @@ function(contact, isGal) {
 	html[idx++] = "<td width=100% class='companyName'>";
 	html[idx++] = (contact.getCompanyField() || "&nbsp;");
 	html[idx++] = "</td>";
-	folderId = folderId || contact.folderId;
-	var folder = folderId ? this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId) : null;
 	if (folder) {
 		html[idx++] = "<td width=20>";
 		html[idx++] = AjxImg.getImageHtml(folder.getIcon());

@@ -80,8 +80,6 @@ function(loc) {
 	var shareName = this._defaultNameFormatter.format(params);
 	this._nameEl.value = shareName;
 
-	this._propSheet.setPropertyVisible(this._colorPropId, share.link.view != "contact");
-
 	this._reply.setReply(false);
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
@@ -134,22 +132,20 @@ function(event) {
 	}
 
 	// only set color for those views that are applicable
-	if (share.link.view != "contact") {
-		var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
+	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
 
-		var actionNode = soapDoc.set("action");
-		actionNode.setAttribute("id", mountpointId);
-		actionNode.setAttribute("op", "color");
-		actionNode.setAttribute("color", this._color.getValue());
+	var actionNode = soapDoc.set("action");
+	actionNode.setAttribute("id", mountpointId);
+	actionNode.setAttribute("op", "color");
+	actionNode.setAttribute("color", this._color.getValue());
 
-		try {
-			var resp = appCtlr.sendRequest({soapDoc: soapDoc})["FolderActionResponse"];
-		}
-		catch (ex) {
-			// TODO: handle error
-			var message = null;
-			appCtlr.popupErrorDialog(message, ex, null, true);
-		}
+	try {
+		var resp = appCtlr.sendRequest({soapDoc: soapDoc})["FolderActionResponse"];
+	}
+	catch (ex) {
+		// TODO: handle error
+		var message = null;
+		appCtlr.popupErrorDialog(message, ex, null, true);
 	}
 
 	// send mail
@@ -210,7 +206,7 @@ function() {
 	var propsEl = props.getHtmlElement();
 	propsEl.style.marginBottom = "0.5em";
 	props.addProperty(ZmMsg.nameLabel, this._nameEl);
-	this._colorPropId = props.addProperty(ZmMsg.colorLabel, this._color);
+	props.addProperty(ZmMsg.colorLabel, this._color);
 	
 	this._reply = new ZmShareReply(view);
 

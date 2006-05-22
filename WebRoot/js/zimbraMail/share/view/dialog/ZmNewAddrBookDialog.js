@@ -32,33 +32,32 @@ function ZmNewAddrBookDialog(parent, msgDialog, className) {
 ZmNewAddrBookDialog.prototype = new ZmNewOrganizerDialog;
 ZmNewAddrBookDialog.prototype.constructor = ZmNewAddrBookDialog;
 
-ZmNewAddrBookDialog.prototype.toString = 
+
+// Public methods
+
+ZmNewAddrBookDialog.prototype.toString =
 function() {
 	return "ZmNewAddrBookDialog";
 };
 
-// Public methods
-
-ZmNewAddrBookDialog.prototype.popup =
-function(folder, loc) {
-	folder = folder ? folder : this._folderTree.root;
-
-	this._folderTreeView.setSelected(folder);
-	if (folder.id == ZmOrganizer.ID_ROOT) {
-		var ti = this._folderTreeView.getTreeItemById(folder.id);
-		ti.setExpanded(true);
-	}
-	
-	ZmDialog.prototype.popup.call(this, loc);
-};
 
 // Protected methods
 
-ZmNewAddrBookDialog.prototype._createColorContentHtml =
+// overload since we always want to init the color to grey
+ZmNewAddrBookDialog.prototype._initColorSelect =
+function() {
+	var option = this._colorSelect.getOptionWithValue(ZmOrganizer.C_GRAY);
+	this._colorSelect.setSelectedOption(option);
+};
+
+// overload so we dont show this
+ZmNewAddrBookDialog.prototype._createRemoteContentHtml =
 function(html, idx) {
 	return idx;
 };
-ZmNewAddrBookDialog.prototype._createRemoteContentHtml =
+
+// overload so we dont show this
+ZmNewAddrBookDialog.prototype._createFolderContentHtml =
 function(html, idx) {
 	return idx;
 };

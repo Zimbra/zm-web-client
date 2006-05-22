@@ -61,16 +61,15 @@ ZmNewOrganizerDialog.prototype.reset =
 function() {
 	ZmDialog.prototype.reset.call(this);
 
-	if (this._colorSelect) {
-		var color = (this._colorSelect.getValue() + 1) % ZmOrganizer.COLOR_CHOICES.length;
-		var option = this._colorSelect.getOptionWithValue(color);
-		this._colorSelect.setSelectedOption(option);
-	}
+	if (this._colorSelect)
+		this._initColorSelect();
+
 	if (this._remoteCheckboxField) {
 		this._remoteCheckboxField.checked = false;
 		var urlRow = document.getElementById(this._remoteCheckboxField.id+"URLrow");		
 		urlRow.style.display = "none";
 	}
+
 	if (this._urlField) {
 		this._urlField.value = "";
 	}
@@ -85,6 +84,14 @@ ZmNewOrganizerDialog.prototype._getRemoteLabel =
 function() {
 	return ZmMsg.subscribeToFeed;
 };
+
+ZmNewOrganizerDialog.prototype._initColorSelect =
+function() {
+	var color = (this._colorSelect.getValue() + 1) % ZmOrganizer.COLOR_CHOICES.length;
+	var option = this._colorSelect.getOptionWithValue(color);
+	this._colorSelect.setSelectedOption(option);
+};
+
 
 // create html
 

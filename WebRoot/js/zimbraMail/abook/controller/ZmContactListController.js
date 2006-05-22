@@ -308,8 +308,8 @@ function(parent, num) {
 				canEdit = share && share.isWrite();
 			}
 			parent.enable([ZmOperation.TAG_MENU], !isShare && num > 0);
-			// XXX: for now, lets disable DELETE/MOVE until we figure out how to handle
-			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], false && canEdit && num > 0);
+			// XXX: for now, disable DELETE/MOVE for shares until we figure out how to handle
+			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !isShare && canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1);
 		} else {
 			// must be a search

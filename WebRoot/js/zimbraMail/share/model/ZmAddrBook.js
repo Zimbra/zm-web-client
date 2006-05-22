@@ -34,15 +34,20 @@
 * @param name		[string]		name
 * @param parent		[ZmOrganizer]	parent organizer
 * @param tree		[ZmTree]		tree model that contains this organizer
+* @param color		[int]			color of this address book
+* @param link		[boolean]		true means this address book is a share
 * @param owner		[string]*		owner of the address book (if shared)
-* @param zid 		[string]*		the system wide unique ID mapping to a shared addrbook
+* @param zid 		[string]*		the share ID of a shared addrbook
+* @param rid		[string]*		the remote folder id of a shared addrbook
 */
-function ZmAddrBook(id, name, parent, tree, link, owner, zid) {
+function ZmAddrBook(id, name, parent, tree, color, link, owner, zid, rid) {
 	ZmFolder.call(this, id, name, parent, tree);
 	this.type = ZmOrganizer.ADDRBOOK;
 	this.link = link;
 	this.owner = owner;
 	this.zid = zid;
+	this.rid = rid;
+	this.color = color || ZmAddrBook.DEFAULT_COLOR;
 };
 
 ZmAddrBook.prototype = new ZmFolder;
@@ -52,7 +57,7 @@ ZmAddrBook.prototype.constructor = ZmAddrBook;
 // Consts
 
 ZmAddrBook.ID_ADDRESSBOOK = ZmOrganizer.ID_ADDRBOOK; 							// XXX: may not be necessary
-
+ZmAddrBook.DEFAULT_COLOR = ZmOrganizer.C_GRAY;
 
 // Public methods
 
@@ -84,22 +89,34 @@ function() {
 
 ZmAddrBook.prototype.getById =
 function(id) {
-	if (this.link && (this.zid == id.split(":")[0]))
-		return this;
+	if (this.link) {
+		var ids = id.split(":");
+		if (this.zid == ids[0] && this.rid == ids[1])
+			return this;
+	}
 
 	return ZmFolder.prototype.getById.call(this, id);
 };
 
 ZmAddrBook.prototype.create =
-function(name) {
+function(name, color) {
 	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 	var folderNode = soapDoc.set("folder");
 	folderNode.setAttribute("name", name);
 	folderNode.setAttribute("l", this.id);
 	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]);
 
+	var respCallback = new AjxCallback(this, this._handleResponseCreate, [color]);
 	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [name]);
-	this.tree._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
+	this.tree._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, errorCallback:errorCallback});
+};
+
+ZmAddrBook.prototype._handleResponseCreate =
+function(color, result) {
+	var response = result.getResponse();
+	var id = response.CreateFolderResponse.folder[0].id;
+	var addrbook = this.tree._appCtxt.cacheGet(id);
+	addrbook.setColor(color);
 };
 
 ZmAddrBook.prototype._handleErrorCreate =
@@ -179,7 +196,7 @@ function(parent, obj, tree, link) {
 	if (!(obj && obj.id)) return;
 
 	// create addrbook, populate, and return
-	var ab = new ZmAddrBook(obj.id, obj.name, parent, tree, link, obj.d, obj.zid);
+	var ab = new ZmAddrBook(obj.id, obj.name, parent, tree, obj.color, link, obj.d, obj.zid, obj.rid);
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];

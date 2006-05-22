@@ -442,6 +442,18 @@ function(field) {
 		this._attr[field] = e.value != "" ? e.value : undefined;
 };
 
+
+ZmContactView.prototype._setHeaderColor =
+function() {
+	// set the appropriate header color
+	var folderId = this._contact.folderId;
+	var folder = folderId ? this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId) : null;
+	var color = folder ? folder.color : ZmAddrBook.DEFAULT_COLOR;
+	var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
+	var contactHdrRow = document.getElementById(this._contactHeaderRowId);
+	contactHdrRow.className = "contactHeaderRow " + bkgdColor;
+};
+
 ZmContactView.prototype._setTitle =
 function(title) {
 	var div =  document.getElementById(this._fieldIds[ZmContactView.F_contactTitle]);
@@ -473,6 +485,7 @@ function() {
 
 ZmContactView.prototype._setFields =
 function() {
+	this._setHeaderColor();
 	this._setTitle();
 	this._setTags();
 
@@ -589,6 +602,7 @@ function(contact) {
 		this._fieldIds[ZmContactView.F_contactTags] = tagsId;
 
 		this._contactHeaderId = Dwt.getNextId();
+		this._contactHeaderRowId = Dwt.getNextId();
 	}
 
 	var idx = 0;
@@ -597,8 +611,9 @@ function(contact) {
 	// Title bar
 	html[idx++] = "<table id='";
 	html[idx++] = this._contactHeaderId;
-	html[idx++] = "' cellspacing=0 cellpadding=0><tr class='contactHeaderRow'>";
-	html[idx++] = "<td width=20><center>";
+	html[idx++] = "' cellspacing=0 cellpadding=0><tr class='contactHeaderRow' id='";
+	html[idx++] = this._contactHeaderRowId;
+	html[idx++] = "'><td width=20><center>";
 	html[idx++] = AjxImg.getImageHtml("Person");
 	html[idx++] = "</center></td>";
 	if (this._isReadOnly) {
