@@ -548,11 +548,11 @@ ZmSpreadSheet.prototype._selectCell = function(td) {
 	if (this._selectedCell) {
 		Dwt.delClass(this._getTopHeaderCell(this._selectedCell), "TopSelected");
 		Dwt.delClass(this._getLeftHeaderCell(this._selectedCell), "LeftSelected");
-		Dwt.delClass(this._selectedCell, "Selected");
+		Dwt.delClass(this._selectedCell, "SSelected");
 	}
 	this._selectedCell = td;
 	if (td) {
-		Dwt.addClass(td, "Selected");
+		Dwt.addClass(td, "SSelected");
 		Dwt.addClass(this._getTopHeaderCell(td), "TopSelected");
 		Dwt.addClass(this._getLeftHeaderCell(td), "LeftSelected");
 		this._getTopLeftCell().innerHTML = "<div>" + ZmSpreadSheet.getCellName(td) + "</div>";

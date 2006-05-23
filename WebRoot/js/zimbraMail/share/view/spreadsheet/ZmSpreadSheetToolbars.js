@@ -57,6 +57,11 @@ ZmSpreadSheetToolbars.prototype._cellSelected = function(cell) {
 	this._buttons.justifyRight.setToggled(align == "right");
 	if (this._dataField)
 		this._dataField.setValue(cell.getEditValue());
+	this._buttons.typeSelect.setSelectedValue(cell.getType());
+	var tmp = cell.getDecimals();
+	if (tmp == null)
+		tmp = -1;
+	this._buttons.decimalsSelect.setSelectedValue(tmp);
 };
 
 ZmSpreadSheetToolbars.prototype._createWidgets = function() {
@@ -135,21 +140,17 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 
 	toolbar.addSeparator("vertSep");
 
-	b = this._buttons.fontColor = new DwtButton(toolbar, null, "TBButton");
+	b = this._buttons.fontColor = new DwtButtonColorPicker(toolbar, null, "TBButton", null, null, null, ZmMsg.auto);
 	b.setImage("FontColor");
+	b.showColorDisplay();
 	b.setToolTipContent(ZmMsg.fontColor);
-	var m = new DwtMenu(b, DwtMenu.COLOR_PICKER_STYLE);
-	var cp = new DwtColorPicker(m);
-	cp.addSelectionListener(new AjxListener(this, this._on_fontColor));
-	b.setMenu(m);
+	b.addSelectionListener(new AjxListener(this, this._on_fontColor));
 
-	b = this._buttons.bgColor = new DwtButton(toolbar, null, "TBButton");
+	b = this._buttons.bgColor = new DwtButtonColorPicker(toolbar, null, "TBButton", null, null, null, ZmMsg.auto);
 	b.setImage("FontBackground");
+	b.showColorDisplay();
 	b.setToolTipContent(ZmMsg.fontBackground);
-	m = new DwtMenu(b, DwtMenu.COLOR_PICKER_STYLE);
-	cp = new DwtColorPicker(m);
-	cp.addSelectionListener(new AjxListener(this, this._on_bgColor));
-	b.setMenu(m);
+	b.addSelectionListener(new AjxListener(this, this._on_bgColor));
 };
 
 ZmSpreadSheetToolbars.prototype._inputModified = function(val) {
@@ -198,19 +199,19 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 	// toolbar.getHtmlElement().style.display = "none";
 
 	b = this._buttons.rowInsertAbove = new DwtButton(toolbar, 0, "TBButton");
-	b.setImage("RowInsertAbove");
+	b.setImage("InsertRowBefore");
 	b.setData("SS", "RowInsertAbove");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.insertRowAbove);
 
 	b = this._buttons.rowInsertUnder = new DwtButton(toolbar, 0, "TBButton");
-	b.setImage("RowInsertUnder");
+	b.setImage("InsertRowAfter");
 	b.setData("SS", "RowInsertUnder");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.insertRowUnder);
 
 	b = this._buttons.rowDelete = new DwtButton(toolbar, 0, "TBButton");
-	b.setImage("RowDelete");
+	b.setImage("DeleteRow");
 	b.setData("SS", "RowDelete");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.deleteRow);
@@ -218,19 +219,19 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 	toolbar.addSeparator("vertSep");
 
 	b = this._buttons.colInsertBefore = new DwtButton(toolbar, 0, "TBButton");
-	b.setImage("ColInsertBefore");
+	b.setImage("InsertColBefore");
 	b.setData("SS", "ColInsertBefore");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.insertColumnBefore);
 
 	b = this._buttons.colInsertAfter = new DwtButton(toolbar, 0, "TBButton");
-	b.setImage("ColInsertAfter");
+	b.setImage("InsertColAfter");
 	b.setData("SS", "ColInsertAfter");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.insertColumnAfter);
 
 	b = this._buttons.colDelete = new DwtButton(toolbar, 0, "TBButton");
-	b.setImage("ColDelete");
+	b.setImage("DeleteCol");
 	b.setData("SS", "ColDelete");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.deleteColumn);
@@ -283,7 +284,19 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 	s.addOption("Auto type", true, null);
 	s.addOption("Number", false, "number");
 	s.addOption("Currency", false, "currency");
+	s.addOption("Percentage", false, "percentage");
 	s.addOption("Text", false, "string");
+
+	var s = this._buttons.decimalsSelect = new DwtSelect(toolbar, null);
+	s.addChangeListener(new AjxListener(this, this._on_decimalsSelect));
+	s.addOption("Auto decimals", true, -1);
+	s.addOption("No decimals", false, 0);
+	s.addOption("1 decimal", false, 1);
+	s.addOption("2 decimals", false, 2);
+	s.addOption("3 decimals", false, 3);
+	s.addOption("4 decimals", false, 4);
+	s.addOption("5 decimals", false, 5);
+	s.addOption("6 decimals", false, 6);
 
 	if (ZmSpreadSheetModel.DEBUG) {
 		// DEBUG
@@ -456,6 +469,19 @@ ZmSpreadSheetToolbars.prototype._on_typeSelect = function(ev) {
 	this.getModel().forEachCell(range, function(cell) {
 		cell.setType(type);
 	}, this);
+};
+
+ZmSpreadSheetToolbars.prototype._on_decimalsSelect = function(ev) {
+	this._spreadSheet.focus();
+	var range = this._spreadSheet.getSelectionRange();
+	if (!range)
+		return;
+	var dec = ev._args.newValue;
+	if (dec == -1)
+		dec = null;
+	this.getModel().forEachCell(range, function(cell) {
+					    cell.setDecimals(dec);
+				    }, this);
 };
 
 ZmSpreadSheetToolbars.prototype.getModel = function() {

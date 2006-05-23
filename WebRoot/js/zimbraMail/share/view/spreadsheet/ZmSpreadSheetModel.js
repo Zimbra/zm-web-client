@@ -766,6 +766,7 @@ ZmSpreadSheetCellModel.prototype.setValue = function(value, noDeps) {
 ZmSpreadSheetCellModel.prototype.getValue = function() {
 	switch (this.getType()) {
 	    case "currency":
+	    case "percentage":
 	    case "number":
 		return ZmSpreadSheetFormulae.parseFloat(this._value);
 	}
@@ -777,9 +778,13 @@ ZmSpreadSheetCellModel.prototype.getDisplayValue = function() {
 	var type = this.getType();
 	switch (type) {
 	    case "number":
-		val = ZmSpreadSheetFormulae.parseFloat(val);
-		if (this._decimals != null)
-			val = val.toFixed(this._decimals);
+		if (!/\S/.test(this._editValue)) {
+			val = "";
+		} else {
+			val = ZmSpreadSheetFormulae.parseFloat(val);
+			if (this._decimals != null)
+				val = val.toFixed(this._decimals);
+		}
 		break;
 
 	    case "currency":
@@ -787,6 +792,13 @@ ZmSpreadSheetCellModel.prototype.getDisplayValue = function() {
 		if (this._decimals != null)
 			val = val.toFixed(this._decimals);
 		val = "$" + val;
+		break;
+
+	    case "percentage":
+		val = ZmSpreadSheetFormulae.parseFloat(val);
+		if (this._decimals != null)
+			val = val.toFixed(this._decimals);
+		val = val + "%";
 		break;
 	}
 	return val;
@@ -863,12 +875,15 @@ ZmSpreadSheetCellModel.prototype._determineType = function(str) {
 	}
 
 	// currency
-	else if (/^\$([0-9]*\.?[0-9]+)$/.test(str) ||
+	else if (/^\$\s*([0-9]*\.?[0-9]+)$/.test(str) ||
 		 /^([0-9]*\.?[0-9]+)\$$/.test(str)) {
 		type = "currency";
 		val = RegExp.$1;
 		if (this._decimals == null)
 			this._decimals = 2;
+	} else if (/^([0-9]*\.?[0-9]+)\s*%$/.test(str)) {
+		type = "percentage";
+		val = RegExp.$1;
 	}
 
 	// look, incidentally all values are retrieved with RegExp.$1 :-)
@@ -888,6 +903,19 @@ ZmSpreadSheetCellModel.prototype.setType = function(type) {
 		this._value = auto.val;
 		this._type = auto.type;
 	} else if (type == "currency" && this._decimals == null)
+		this._decimals = 2;
+	if (this._td)
+		this.setToElement(this._td);
+};
+
+ZmSpreadSheetCellModel.prototype.getDecimals = function() {
+	return this._decimals;
+};
+
+ZmSpreadSheetCellModel.prototype.setDecimals = function(dec) {
+	this._decimals = dec;
+	var type = this.getType();
+	if (type == "currency" && dec == null)
 		this._decimals = 2;
 	if (this._td)
 		this.setToElement(this._td);

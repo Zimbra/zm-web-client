@@ -6,6 +6,7 @@ var model = null;
 
 function create(data) {
 	shell = new DwtShell("MainShell", false, null, null, false);
+	shell.getKeyboardMgr().registerKeyMap(new DwtKeyMap(true));
 	spreadSheet = new ZmSpreadSheet(shell, null, "absolute");
 	if (data != null) {
 		model = new ZmSpreadSheetModel(0, 0);
