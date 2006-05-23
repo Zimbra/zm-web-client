@@ -60,6 +60,26 @@ function() {
 	return "ZmAddrBookTreeController";
 };
 
+ZmAddrBookTreeController.prototype.show =
+function(overviewId, showUnread, omit, forceCreate) {
+	var firstTime = (!this._treeView[overviewId] || forceCreate);
+
+	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit, forceCreate);
+
+	if (firstTime) {
+		var treeView = this.getTreeView(overviewId);
+		var root = treeView.getTreeItemById(ZmOrganizer.ID_ROOT);
+		var items = root.getItems();
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if (item._isSeparator) continue;
+			var object = item.getData(Dwt.KEY_OBJECT);
+//			if (object.color != ZmAddrBook.DEFAULT_COLOR)
+				this._setTreeItemColor(item, object.color);
+		}
+	}
+};
+
 // Enables/disables operations based on the given organizer ID
 ZmAddrBookTreeController.prototype.resetOperations = 
 function(parent, type, id) {
@@ -117,6 +137,12 @@ function() {
 	return this._appCtxt.getNewAddrBookDialog();
 };
 
+ZmAddrBookTreeController.prototype._setTreeItemColor =
+function(item, color) {
+	var element = item.getHtmlElement();
+	element.className = ZmOrganizer.COLOR_TEXT[color] + "Bg";
+};
+
 
 // Listeners
 
@@ -138,6 +164,33 @@ function(ev) {
 	
     var sharePropsDialog = this._appCtxt.getSharePropsDialog();
     sharePropsDialog.popup(ZmSharePropsDialog.NEW, addrbook, null);
+};
+
+ZmAddrBookTreeController.prototype._changeListener =
+function(ev, treeView) {
+	ZmTreeController.prototype._changeListener.call(this, ev, treeView);
+
+	if (ev.type != this.type) return;
+
+	var organizers = ev.getDetail("organizers");
+	if (!organizers && ev.source)
+		organizers = [ev.source];
+
+	for (var i = 0; i < organizers.length; i++) {
+		var organizer = organizers[i];
+		var id = organizer.id;
+		var node = treeView.getTreeItemById(id);
+		if (!node) continue;
+
+		var fields = ev.getDetail("fields");
+		// NOTE: ZmTreeController#_changeListener re-inserts the node if the
+		//		 name changes so we need to reset the color in that case, too.
+		if (ev.event == ZmEvent.E_CREATE ||
+			(ev.event == ZmEvent.E_MODIFY && fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]))) {
+			var object = node.getData(Dwt.KEY_OBJECT);
+			this._setTreeItemColor(node, object.color);
+		}
+	}
 };
 
 

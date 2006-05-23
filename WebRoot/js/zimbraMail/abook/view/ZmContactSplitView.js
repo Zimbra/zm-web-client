@@ -37,6 +37,9 @@ function ZmContactSplitView(parent, className, posStyle, controller, dropTgt) {
 	this._controller = controller;
 	this._appCtxt = controller._appCtxt;
 
+	this._addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+	this._addrbookTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
+
 	this._tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	this._tagCellId = Dwt.getNextId();
@@ -208,16 +211,15 @@ function() {
 	var idx = 0;
 
 	html[idx++] = "<center>";
-	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=2 cellspacing=2 width=80%><tr>"
+	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=0 cellspacing=0><tr>"
 
 	for (var i = 0; i < alphabet.length; i++) {
-		html[idx++] = "<td style='text-align:center; cursor:pointer' onclick='ZmContactSplitView._alphabetClicked(";
+		html[idx++] = "<td class='AlphabetBarCell' onclick='ZmContactSplitView._alphabetClicked(";
 		if (i > 0)
 			html[idx++] = '"' + alphabet[i] + '"';
-		html[idx++] = "); return false;'";
-		html[idx++] = (i < alphabet.length-1) ? " class='AlphabetBarCell'>" : ">";
+		html[idx++] = "); return false;'>";
 		html[idx++] = alphabet[i];
-		html[idx++] = "</td>";
+		html[idx++] = "</td><td bgcolor='#FFFFFF' width=1></td>";
 	}
 
 	html[idx++] = "</tr></table>";
@@ -232,6 +234,26 @@ function(ev) {
 		return;
 
 	this._setContact(ev.source);
+};
+
+ZmContactSplitView.prototype._addrbookTreeListener =
+function(ev, treeView) {
+	var fields = ev.getDetail("fields");
+	if (ev.event == ZmEvent.E_MODIFY && fields && fields[ZmOrganizer.F_COLOR]) {
+		var organizers = ev.getDetail("organizers");
+		if (!organizers && ev.source)
+			organizers = [ev.source];
+
+		for (var i = 0; i < organizers.length; i++) {
+			var organizer = organizers[i];
+			var folderId = this._contact.isShared()
+				? this._addrbookTree.getById(this._contact.folderId).id
+				: this._contact.folderId;
+
+			if (organizer.id == folderId)
+				this._setHeaderColor(organizer);
+		}
+	}
 };
 
 ZmContactSplitView.prototype._generateObject =
@@ -251,13 +273,9 @@ function(contact, isGal) {
 		this._createHtml();
 
 	folderId = folderId || contact.folderId;
-	var folder = folderId ? this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId) : null;
+	var folder = folderId ? this._addrbookTree.getById(folderId) : null;
 
-	// set background color of header
-	var color = folder ? folder.color : ZmAddrBook.DEFAULT_COLOR;
-	var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
-	var contactHdrRow = document.getElementById(this._contactHeaderRowId);
-	contactHdrRow.className = "contactHeaderRow " + bkgdColor;
+	this._setHeaderColor(folder);
 
 	// set contact header (file as)
 	var contactHdr = document.getElementById(this._contactHeaderId);
@@ -463,7 +481,8 @@ function(contact) {
 		if (!tag) continue;
 		var icon = ZmTag.COLOR_MINI_ICON[tag.color];
 		var attr = ["id='", this._tagCellId, tag.id, "'"].join("");
-		html[idx++] = "<a href='javascript:;' class='AttLink' onclick='ZmContactSplitView._tagClicked(";
+		// XXX: set proper class name for link once defined!
+		html[idx++] = "<a href='javascript:;' class='' onclick='ZmContactSplitView._tagClicked(";
 		html[idx++] = '"' + tag.id + '"';
 		html[idx++] = "); return false;'>"
 		html[idx++] = AjxImg.getImageSpanHtml(icon, null, attr, tag.name);
@@ -481,6 +500,15 @@ function(html, idx, label, field, objMgr) {
 	html[idx++] = "</td></tr>";
 
 	return idx;
+};
+
+ZmContactSplitView.prototype._setHeaderColor =
+function(folder) {
+	// set background color of header
+	var color = folder ? folder.color : ZmAddrBook.DEFAULT_COLOR;
+	var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
+	var contactHdrRow = document.getElementById(this._contactHeaderRowId);
+	contactHdrRow.className = "contactHeaderRow " + bkgdColor;
 };
 
 ZmContactSplitView.prototype._tagChangeListener =

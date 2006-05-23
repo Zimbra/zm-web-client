@@ -883,8 +883,6 @@ function(node) {
 		if (this._fileAs)
 			this._fileAsLC = this._fileAs.toLowerCase();
 
-		this._parseFlags(node.f);
-		this._parseTags(node.t);
 		this.attr = node._attrs || {};
 
 		// for shared contacts, we get these fields outside of the attr part
@@ -897,6 +895,12 @@ function(node) {
 		var addrbook = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(this.folderId);
 		this._isShared = addrbook && addrbook.link;
 		this._loaded = !this._isShared;
+
+		// lets not process tags/flags for shared contacts until we get better server support
+		if (!this._isShared) {
+			this._parseFlags(node.f);
+			this._parseTags(node.t);
+		}
 	}
 };
 

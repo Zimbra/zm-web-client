@@ -670,9 +670,9 @@ td.DDSepInvisible div {
 }
 
 .ZmContactSplitView .AlphabetBarCell {
-	border-width: 0 1 0 0;
-	border-style: solid;
-	border-color: #FFFFFF;
+	text-align: center;
+	cursor: pointer;
+	padding: 3 7 3 7;
 }
 
 /* Container for list of contacts */
