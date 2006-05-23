@@ -239,7 +239,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 	toolbar.addSeparator("vertSep");
 
 	b = new DwtButton(toolbar, 0, "TBButton");
-	b.setImage("SpreadSheetSum");
+	b.setImage("Sum");
 	b.setToolTipContent("Sum cells");
 	b.setData("SS", "Func-SumCells");
 	b.addSelectionListener(listener);
