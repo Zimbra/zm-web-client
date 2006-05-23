@@ -184,6 +184,8 @@ function() {
 		var listSelect = document.getElementById(this._listSelectId);
 		this._selectDiv = new DwtSelect(this);
 		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactPicker.SEARCHFOR_CONTACTS);
+		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+			this._selectDiv.addOption(ZmMsg.searchPersonalAndShared, false, ZmContactPicker.SEARCHFOR_PAS);
 		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactPicker.SEARCHFOR_GAL);
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
 	}
@@ -211,10 +213,18 @@ function(ev) {
 	if (this._query.length) {
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			var searchFor = this._selectDiv.getSelectedOption().getValue();
-			this._contactSource = (searchFor == ZmContactPicker.SEARCHFOR_CONTACTS) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
+			this._contactSource = (searchFor == ZmContactPicker.SEARCHFOR_CONTACTS || searchFor == ZmContactPicker.SEARCHFOR_PAS)
+				? ZmItem.CONTACT
+				: ZmSearchToolBar.FOR_GAL_MI;
+			// hack the query if searching for personal and shared contacts
+			if (searchFor == ZmContactPicker.SEARCHFOR_PAS) {
+				var addrbookList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getAddrbookList();
+				this._query += " (" + addrbookList.join(" or ") + ")";
+			}
 		} else {
 			this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 		}
+
 		// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
 		this._chooser.sourceListView.enableSorting(this._contactSource == ZmItem.CONTACT);
 		this.search(ZmItem.F_PARTICIPANT, true);
