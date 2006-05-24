@@ -63,25 +63,25 @@ ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.ADDRBOOK] = ZmMsg.addressBookFolder
 // Public methods
 
 ZmFolderPropsDialog.prototype.popup =
-function(folder, loc) {
-	this._folder = folder;
-	folder.addChangeListener(this._folderChangeListener);
+function(organizer, loc) {
+	this._organizer = organizer;
+	organizer.addChangeListener(this._folderChangeListener);
 	this._handleFolderChange();
 	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, !folder.link);
+		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, !organizer.link);
 	}
 	DwtDialog.prototype.popup.call(this, loc);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-	if (folder.id != ZmCalendar.ID_CALENDAR &&
-		folder.id != ZmOrganizer.ID_NOTEBOOK) {
+	if (organizer.id != ZmCalendar.ID_CALENDAR &&
+		organizer.id != ZmOrganizer.ID_NOTEBOOK) {
 		this._nameInputEl.focus();
 	}
 };
 
 ZmFolderPropsDialog.prototype.popdown =
 function() {
-	this._folder.removeChangeListener(this._folderChangeListener);
-	this._folder = null;
+	this._organizer.removeChangeListener(this._folderChangeListener);
+	this._organizer = null;
 	DwtDialog.prototype.popdown.call(this);
 };
 
@@ -140,20 +140,20 @@ function(event) {
 ZmFolderPropsDialog.prototype._handleAddShareButton =
 function(event) {
 	var sharePropsDialog = this._appCtxt.getSharePropsDialog();
-	sharePropsDialog.popup(ZmSharePropsDialog.NEW, this._folder, null);
+	sharePropsDialog.popup(ZmSharePropsDialog.NEW, this._organizer, null);
 };
 
 ZmFolderPropsDialog.prototype._handleOkButton =
 function(event) {
-	var folder = this._folder;
-	if (folder.hasOwnProperty("color")) {
-		folder._object_.setColor(folder.color);
+	var organizer = this._organizer;
+	if (organizer.hasOwnProperty("color")) {
+		organizer._object_.setColor(organizer.color);
 	}
-	if (folder.hasOwnProperty("name")) {
-		folder._object_.rename(folder.name);
+	if (organizer.hasOwnProperty("name")) {
+		organizer._object_.rename(organizer.name);
 	}
-	if (folder.hasOwnProperty("excludeFreeBusy")) {
-		folder._object_.setFreeBusy(folder.excludeFreeBusy);
+	if (organizer.hasOwnProperty("excludeFreeBusy")) {
+		organizer._object_.setFreeBusy(organizer.excludeFreeBusy);
 	}
 	this.popdown();
 };
@@ -171,7 +171,7 @@ function(event) {
 		var organizers = event.getDetail("organizers");
 		var organizer = organizers ? organizers[0] : null;
 	} else {
-		organizer = this._folder;
+		organizer = this._organizer;
 	}
 	if (!organizer) return;
 	
@@ -191,7 +191,7 @@ function(event) {
 	this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
 	
 	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-		this._populateShares();
+		this._populateShares(organizer);
 	}
 
 	this._props.setPropertyVisible(this._ownerId, organizer.owner != null);
@@ -201,11 +201,11 @@ function(event) {
 };
 
 ZmFolderPropsDialog.prototype._populateShares =
-function() {
+function(organizer) {
 	this._sharesGroup.setContent("");
 
-	var link = this._folder.link;
-	var shares = this._folder.shares;
+	var link = organizer.link;
+	var shares = organizer.shares;
 	var visible = (!link && shares && shares.length > 0);
 	if (visible) {
 		var table = document.createElement("TABLE");
@@ -330,15 +330,15 @@ function(event) {
 	event = event || window.event;
 	var target = DwtUiEvent.getTarget(event);
 	var dialog = target._dialog;
-	if (dialog._folder) {
-		dialog._folder.name = target.value;
+	if (dialog._organizer) {
+		dialog._organizer.name = target.value;
 	}
 	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 };
 
 ZmFolderPropsDialog.prototype._handleColorChange =
 function(event) {
-	this._folder.color = this._color.getValue();
+	this._organizer.color = this._color.getValue();
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 };
 
@@ -347,8 +347,8 @@ function(event) {
 	event = event || window.event;
 	var target = DwtUiEvent.getTarget(event);
 	var dialog = target._dialog;
-	if (this._folder) {
-		dialog._folder.excludeFreeBusy = target.checked;
+	if (this._organizer) {
+		dialog._organizer.excludeFreeBusy = target.checked;
 	}
 	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 };
