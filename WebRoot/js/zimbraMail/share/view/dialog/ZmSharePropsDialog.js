@@ -53,8 +53,8 @@ ZmSharePropsDialog.prototype.constructor = ZmSharePropsDialog;
 
 // Constants
 
-ZmSharePropsDialog.NEW = ZmShare.NEW;
-ZmSharePropsDialog.EDIT= ZmShare.EDIT;
+ZmSharePropsDialog.NEW	= ZmShare.NEW;
+ZmSharePropsDialog.EDIT	= ZmShare.EDIT;
 
 // Data
 ZmSharePropsDialog.prototype._mode = ZmSharePropsDialog.NEW;
@@ -64,37 +64,34 @@ ZmSharePropsDialog.prototype._mode = ZmSharePropsDialog.NEW;
 
 ZmSharePropsDialog.prototype.popup =
 function(mode, object, share, loc) {
-	this._shareMode = mode;
 
+	this._shareMode = mode;
 	this._object = object;
+	this._share = share;
 
 	this._nameEl.innerHTML = AjxStringUtil.htmlEncode(object.name);
 	this._typeEl.innerHTML = ZmFolderPropsDialog.TYPE_CHOICES[this._object.type] || ZmMsg.folder;
 
-	if (!share) {
-		share = new ZmShare({appCtxt: this._appCtxt, object: object});
-	}
-	this._share = share;
-
 	var isNewShare = (this._shareMode == ZmSharePropsDialog.NEW);
-	var isPubShare = this._share.isPublic();
+	var isPubShare = share ? share.isPublic() : false;
 
 	this._allRadioEl.checked = isPubShare;
 	this._allRadioEl.disabled = !isNewShare;
 	this._userRadioEl.checked = !isPubShare;
 	this._userRadioEl.disabled = !isNewShare;
 
-	this._granteeInput.setValue(this._share.grantee.name || "");
+	this._granteeInput.setValue(share ? share.grantee.name : "");
 	this._granteeInput.setEnabled(isNewShare);
 
-	if (this._inheritEl)
-		this._inheritEl.checked = isNewShare || this._share.link.inh;
+	if (this._inheritEl) {
+		this._inheritEl.checked = share ? share.link.inh : isNewShare;
+	}
 
 	this._rolesGroup.setVisible(!isPubShare || isNewShare);
 	this._messageGroup.setVisible(!isPubShare || isNewShare);
 
-	var perm = this._share.link.perm;
-	if (perm == null || perm == this._viewerRadioEl) {
+	var perm = share ? share.link.perm : null;
+	if (perm == null || perm == this._viewerRadioEl.value) {
 		this._viewerRadioEl.checked = true;
 	} else if (perm == this._noneRadioEl.value) {
 		this._noneRadioEl.checked = true;
@@ -131,27 +128,52 @@ function() {
 
 ZmSharePropsDialog.prototype._handleOkButton =
 function(event) {
-	var object = this._object;
-	var share = this._share;
 
-	// initialize share info with entered values
+	var shares = [];
 	if (this._shareMode == ZmSharePropsDialog.NEW) {
-		share.grantee.name = this._granteeInput.getValue();
+		var type = (this._allRadioEl.checked) ? ZmShare.TYPE_ALL :
+												ZmShare.TYPE_USER;
+		if (type == ZmShare.TYPE_USER) {
+			var addrs = ZmEmailAddress.split(this._granteeInput.getValue());
+			if (addrs && addrs.length) {
+				for (var i = 0; i < addrs.length; i++) {
+					var share = this._setUpShare();
+					share.grantee.name = addrs[i];
+					share.grantee.type = type;
+					shares.push(share);
+				}
+			}
+		} else {
+			var share = this._setUpShare();
+			share.grantee.type = type;
+			shares.push(share);
+		}
+	} else {
+		shares.push(this._setUpShare(this._share)); // editing perms on a share
 	}
-
-	share.object = this._object;
-	share.grantee.type = (this._allRadioEl.checked) ? ZmShare.TYPE_ALL :
-													  ZmShare.TYPE_USER;
-	share.link.inh = (this._inheritEl && this._inheritEl.checked);
+	
 	var perm = this._getSelectedRole();
-	if (perm != share.link.perm) {
-		var replyType = (!this._allRadioEl.checked && this._reply.getReply()) ?
-							this._reply.getReplyType() : null;
-		var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
-		share.grant(perm, this._shareMode, replyType, notes);
+	for (var i = 0; i < shares.length; i++) {
+		var share = shares[i];
+		if (perm != share.link.perm) {
+			var replyType = (!this._allRadioEl.checked && this._reply.getReply()) ?
+								this._reply.getReplyType() : null;
+			var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
+			share.grant(perm, this._shareMode, replyType, notes);
+		}
 	}
 
 	this.popdown();
+};
+
+ZmSharePropsDialog.prototype._setUpShare =
+function(share) {
+	if (!share) {
+		share = new ZmShare({appCtxt: this._appCtxt, object: this._object});
+	}
+	share.link.inh = (this._inheritEl && this._inheritEl.checked);
+	
+	return share;
 };
 
 ZmSharePropsDialog.prototype._acKeyUpListener =
@@ -206,14 +228,13 @@ function() {
 
 ZmSharePropsDialog.prototype._handleCompletionData = 
 function (control, text, element) {
-	text = text.replace(/;\s*/, "");
 	element.value = text;
 	try {
 		if (element.fireEvent) {
 			element.fireEvent("onchange");
 		} else if (document.createEvent) {
 			var ev = document.createEvent("UIEvents");
-			ev.initUIEvent("change",false,window, 1);
+			ev.initUIEvent("change", false, window, 1);
 			element.dispatchEvent(ev);
 		}
 	}

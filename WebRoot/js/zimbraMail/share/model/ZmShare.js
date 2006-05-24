@@ -60,8 +60,8 @@
  * @param appCtxt		[ZmAppCtxt]		the app context
  * @param object		[object]		what is being shared
  * @param granteeType	[constant]*		sharee (everyone, or a single user)
- * @param granteeId		[string]*			a unique ID for the grantee
- * @param granteeName
+ * @param granteeId		[string]*		a unique ID for the grantee
+ * @param granteeName	[string]*		grantee's name
  * @param perm			[constant]*		grantee's permissions on the shared object
  * @param inherit		[boolean]*		if true, children inherit share info
  */
@@ -75,7 +75,7 @@ function ZmShare(params) {
 	this.object = params.object;
 	this.grantee.type = params.granteeType;
 	this.grantee.id = params.granteeId;
-	this.grantee.name = params.granteeName;
+	this.grantee.name = params.granteeName ? params.granteeName : "";
 	this.link.perm = params.perm;
 	this.link.inh = params.inherit;
 };

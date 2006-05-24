@@ -216,6 +216,7 @@ function(str) {
 */
 ZmEmailAddress.split =
 function(str) {
+	str = AjxStringUtil.trim(str);
 	// first, construct a list of ranges to ignore because they are quoted or comment text
 	var ignore = new Array();
 	var pos = 0, startPos = 0;
