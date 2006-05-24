@@ -47,23 +47,17 @@ function ZmDeclineShareDialog(appCtxt, parent, className) {
 
 	// create formatters
 	this._formatter = new AjxMessageFormat(ZmMsg.declineShareConfirm);
-}
+};
+
 ZmDeclineShareDialog.prototype = new DwtDialog;
 ZmDeclineShareDialog.prototype.constructor = ZmDeclineShareDialog;
 
-// Data
-
-ZmDeclineShareDialog.prototype._confirmMsgEl;
-ZmDeclineShareDialog.prototype._reply;
-
 // Public methods
 
-ZmDeclineShareDialog.prototype.setShareInfo = function(shareInfo) {
-	this._shareInfo = shareInfo;
-}
-
-ZmDeclineShareDialog.prototype.popup = function(loc) {
-	var params = [ this._shareInfo.grantee.name, this._shareInfo.link.name ];
+ZmDeclineShareDialog.prototype.popup =
+function(share, loc) {
+	this._share = share;
+	var params = [ share.grantee.name, share.link.name ];
 	var message = this._formatter.format(params);
 	this._confirmMsgEl.innerHTML = AjxStringUtil.htmlEncode(message);
 	
@@ -72,41 +66,39 @@ ZmDeclineShareDialog.prototype.popup = function(loc) {
 	this._reply.setReplyNote("");
 	
 	DwtDialog.prototype.popup.call(this, loc);
-}
+};
 
-ZmDeclineShareDialog.prototype.setDeclineListener = function(listener) {
-	this.removeAllListeners(ZmShareInfo.DECLINE);
-	if (listener) this.addListener(ZmShareInfo.DECLINE, listener);
-}
+ZmDeclineShareDialog.prototype.setDeclineListener =
+function(listener) {
+	this.removeAllListeners(ZmShare.DECLINE);
+	if (listener) this.addListener(ZmShare.DECLINE, listener);
+};
 
 // Protected methods
 
-ZmDeclineShareDialog.prototype._handleYesButton = function(event) {
+ZmDeclineShareDialog.prototype._handleYesButton =
+function(event) {
 	// send mail
 	if (this._reply.getReply()) {
 		var replyType = this._reply.getReplyType();
 
-		// create share info proxy
-		var proxy = AjxUtil.createProxy(this._shareInfo);
-		proxy.notes = replyType == ZmShareReply.QUICK ? this._reply.getReplyNote(): "";
+		this._share.notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote(): "";
 
-		// compose in new window
 		if (replyType == ZmShareReply.COMPOSE) {
-			ZmShareInfo.composeMessage(this._appCtxt, ZmShareInfo.DECLINE, proxy);
-		}
-		// send email
-		else {
-			ZmShareInfo.sendMessage(this._appCtxt, ZmShareInfo.DECLINE, proxy);
+			this._share.composeMessage(ZmShare.DECLINE);
+		} else {
+			this._share.sendMessage(ZmShare.DECLINE);
 		}
 	}
 	
 	// notify decline listener and clear
-	this.notifyListeners(ZmShareInfo.DECLINE, event);
+	this.notifyListeners(ZmShare.DECLINE, event);
 	this.setDeclineListener(null);
 
 	this.popdown();
-}
+};
 
-ZmDeclineShareDialog.prototype._getSeparatorTemplate = function() {
+ZmDeclineShareDialog.prototype._getSeparatorTemplate =
+function() {
 	return "";
-}
+};

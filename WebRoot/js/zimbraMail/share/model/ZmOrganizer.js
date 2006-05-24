@@ -323,24 +323,21 @@ function(shares) {
 	this.shares = shares;
 };
 
-ZmOrganizer.prototype.getShareByGranteeId = 
-function(granteeId) {
-	if (this.shares) {
-		for (var i = 0; i < this.shares.length; i++) {
-			var share = this.shares[i];
-			if (share.grantee.id == granteeId) {
-				return share;
-			}
-		}
-	}
-	return null;
-};
-
 ZmOrganizer.prototype.addShare = 
 function(share) {
-	if (this.shares == null)
+	if (!this.shares)
 		this.shares = [];
 	this.shares.push(share);
+};
+
+ZmOrganizer.prototype.clearShares = 
+function() {
+	if (this.shares && this.shares.length) {
+		for (var i = 0; i < this.shares.length; i++) {
+			this.shares[i] = null;
+		}
+	}
+	this.shares = null;
 };
 
 // XXX: temp method until we get better *server* support post Birdseye! (see bug #4434)
@@ -348,7 +345,7 @@ function(share) {
 ZmOrganizer.prototype.setPermissions =
 function(permission) {
 	if (this.shares == null) {
-		var share = new ZmOrganizerShare(this, null, null, null, permission, null);
+		var share = new ZmShare({appCtxt: this.tree._appCtxt, organizer: this, perm: permission});
 		this.addShare(share);
 	} else {
 		// lets just assume we're dealing w/ a link (which should only have one share)
@@ -467,21 +464,19 @@ function(obj) {
 		}
 		doNotify = true;
 	}
-	if (obj.acl && obj.acl.grant) {
-		for (var i = 0; i < obj.acl.grant.length; i++) {
-			var grant = obj.acl.grant[i];
-			var share = this.getShareByGranteeId(grant.zid);
-			if (share) {
-				share.link.perm = grant.perm;
-			}
-			else {
-				share = ZmOrganizerShare.createFromJs(this, grant);
-				this.addShare(share, true);
+	// if shares changed, do wholesale replace
+	if (obj.acl) {
+		this.clearShares();
+		if (obj.acl.grant && obj.acl.grant.length) {
+			for (var i = 0; i < obj.acl.grant.length; i++) {
+				share = ZmShare.createFromJs(this, obj.acl.grant[i], this.tree._appCtxt);
+				this.addShare(share);
 			}
 		}
 		fields[ZmOrganizer.F_SHARES] = true;
 		doNotify = true;
 	}
+
 	// Send out composite MODIFY change event
 	if (doNotify) {
 		details.fields = fields;
@@ -691,7 +686,7 @@ function(obj) {
 		var shares = new Array(obj.acl.grant.length);
 		for (var i = 0; i < obj.acl.grant.length; i++) {
 			var grant = obj.acl.grant[i];
-			shares[i] = ZmOrganizerShare.createFromJs(this, grant);
+			shares[i] = ZmShare.createFromJs(this, grant, this.tree._appCtxt);
 		}
 		this.setShares(shares);
 	}

@@ -36,7 +36,6 @@ function ZmCalendarTreeController(appCtxt, type, dropTgt) {
 
 	this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
 	this._listeners[ZmOperation.MOUNT_CALENDAR] = new AjxListener(this, this._mountCalListener);
-	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editPropsListener);
 
 	this._eventMgrs = {};
 };
@@ -260,16 +259,6 @@ function(ev) {
 ZmCalendarTreeController.prototype._mountCalListener =
 function(ev) {
 	alert("TODO: mount calendar dialog");
-};
-
-ZmCalendarTreeController.prototype._editPropsListener =
-function(ev) {
-	this._pendingActionData = this._getActionedOrganizer(ev);
-
-	var folderPropsDialog = this._appCtxt.getFolderPropsDialog();
-	var folder = this._pendingActionData;
-	folderPropsDialog.setFolder(folder);
-	folderPropsDialog.popup();
 };
 
 ZmCalendarTreeController.prototype._deleteListener = function(ev) {

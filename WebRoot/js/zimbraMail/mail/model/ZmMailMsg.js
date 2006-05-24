@@ -918,10 +918,9 @@ function(msgNode) {
 		// TODO: Make server output better msgNode.shr property...
 		var shareXmlDoc = AjxXmlDoc.createFromXml(msgNode.shr[0].content);
 		try {
-			this.share = ZmShareInfo.createFromDom(shareXmlDoc.getDoc());
+			this.share = ZmShare.createFromDom(shareXmlDoc.getDoc(), this._appCtxt);
 			this.share._msgId = msgNode.id;
-		}
-		catch (ex) {
+		} catch (ex) {
 			// not a version we support, ignore
 		}
 	}

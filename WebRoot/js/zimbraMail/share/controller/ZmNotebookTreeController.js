@@ -33,7 +33,6 @@ function ZmNotebookTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.NEW_NOTEBOOK] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_NOTEBOOK] = new AjxListener(this, this._shareNotebookListener);
 	this._listeners[ZmOperation.MOUNT_NOTEBOOK] = new AjxListener(this, this._mountNotebookListener);
-	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editPropsListener);
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.EDIT_NOTEBOOK_INDEX] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
 	/***
@@ -206,16 +205,6 @@ function(ev) {
 ZmNotebookTreeController.prototype._mountNotebookListener =
 function(ev) {
 	alert("TODO: mount notebook dialog");
-};
-
-ZmNotebookTreeController.prototype._editPropsListener =
-function(ev) {
-	this._pendingActionData = this._getActionedOrganizer(ev);
-
-	var folderPropsDialog = this._appCtxt.getFolderPropsDialog();
-	var folder = this._pendingActionData;
-	folderPropsDialog.setFolder(folder);
-	folderPropsDialog.popup();
 };
 
 ZmNotebookTreeController.prototype._refreshListener =

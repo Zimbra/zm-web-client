@@ -41,10 +41,6 @@ function ZmLinkPropsDialog(appCtxt, shell, className) {
 ZmLinkPropsDialog.prototype = new DwtDialog;
 ZmLinkPropsDialog.prototype.constructor = ZmLinkPropsDialog;
 
-// Data
-
-ZmLinkPropsDialog.prototype._linkInfo;
-
 // Public methods
 
 ZmLinkPropsDialog.prototype.popup =
@@ -87,10 +83,13 @@ function() {
 
 // Tab completion methods
 
-ZmLinkPropsDialog.prototype.getPageDataLoader = function() {
+ZmLinkPropsDialog.prototype.getPageDataLoader =
+function() {
 	return this;
 };
-ZmLinkPropsDialog.prototype.autocompleteMatch = function(s) {
+
+ZmLinkPropsDialog.prototype.autocompleteMatch =
+function(s) {
 	var notebookId = this._notebookSelect.getValue();
 	var pages = this._cache.getPagesInFolder(notebookId);
 
@@ -116,14 +115,16 @@ ZmLinkPropsDialog.prototype.autocompleteMatch = function(s) {
 	return m;
 };
 
-ZmLinkPropsDialog.prototype.isUniqueValue = function(s) {
+ZmLinkPropsDialog.prototype.isUniqueValue =
+function(s) {
 	// NOTE: Don't auto fill in single match. This will allow them
 	//       to enter something that doesn't exist yet (but perhaps
 	//       intend to create later).
 	return false;
 };
 
-ZmLinkPropsDialog.prototype._getAcPageLoc = function() {
+ZmLinkPropsDialog.prototype._getAcPageLoc =
+function() {
 	var element = this._pageInput.getHtmlElement();
 	var viewEl = this.getHtmlElement();
 	var location = Dwt.toWindow(element, 0, 0, viewEl);
@@ -136,14 +137,16 @@ function(text, element, matchObj) {
 	// NOTE: nothing special to be done
 };
 
-ZmLinkPropsDialog.prototype._acKeyUpListener = function(event) {
+ZmLinkPropsDialog.prototype._acKeyUpListener =
+function(event) {
 	this._pageInput.validate();
 	ZmLinkPropsDialog._enableFieldsOnEdit(this);
 };
 
 // Protected functions
 
-ZmLinkPropsDialog._handleEdit = function(event) {
+ZmLinkPropsDialog._handleEdit =
+function(event) {
 	var target = DwtUiEvent.getTarget(event);
 	var dialog = Dwt.getObjectFromElement(target);
 	ZmLinkPropsDialog._enableFieldsOnEdit(dialog);
@@ -160,7 +163,8 @@ ZmLinkPropsDialog._handleKeyUp = function(event){
 	return false;
 };
 
-ZmLinkPropsDialog._handleLinkTo = function(event) {
+ZmLinkPropsDialog._handleLinkTo =
+function(event) {
 	var target = DwtUiEvent.getTarget(event);
 	var dialog = Dwt.getObjectFromElement(target);
 	var isPage = target == dialog._pageRadioEl;
@@ -185,7 +189,8 @@ ZmLinkPropsDialog._handleUrlTest = function(event) {
 	var win = open(winurl, winname, winfeatures);
 };
 
-ZmLinkPropsDialog._enableFieldsOnEdit = function(dialog) {
+ZmLinkPropsDialog._enableFieldsOnEdit =
+function(dialog) {
 	var enabled = false;
 	if (dialog._pageRadioEl && dialog._pageRadioEl.checked) {
 		enabled = dialog._pageInput.getValue().replace(/^\s+(.*)\s+$/,"$1") != "";
@@ -390,7 +395,8 @@ function() {
 
 // Private methods
 
-ZmLinkPropsDialog.prototype.__addNotebookChildren = function(children, depth) {
+ZmLinkPropsDialog.prototype.__addNotebookChildren =
+function(children, depth) {
 	if (!children) return;
 
 	for (var i = 0; i < children.length; i++) {

@@ -53,59 +53,62 @@ ZmSharePropsDialog.prototype.constructor = ZmSharePropsDialog;
 
 // Constants
 
-ZmSharePropsDialog.NEW = ZmShareInfo.NEW;
-ZmSharePropsDialog.EDIT= ZmShareInfo.EDIT;
+ZmSharePropsDialog.NEW = ZmShare.NEW;
+ZmSharePropsDialog.EDIT= ZmShare.EDIT;
 
 // Data
-ZmSharePropsDialog.prototype._dialogType = ZmSharePropsDialog.NEW;
+ZmSharePropsDialog.prototype._mode = ZmSharePropsDialog.NEW;
 
 
 // Public methods
 
 ZmSharePropsDialog.prototype.popup =
-function(type, folder, shareInfo, loc) {
-	this._dialogType = type;
+function(mode, object, share, loc) {
+	this._shareMode = mode;
 
-	this._folder = folder;
+	this._object = object;
 
-	this._nameEl.innerHTML = AjxStringUtil.htmlEncode(folder.name);
-	this._typeEl.innerHTML = ZmFolderPropsDialog.TYPE_CHOICES[this._folder.type] || ZmMsg.folder;
+	this._nameEl.innerHTML = AjxStringUtil.htmlEncode(object.name);
+	this._typeEl.innerHTML = ZmFolderPropsDialog.TYPE_CHOICES[this._object.type] || ZmMsg.folder;
 
-	if (!shareInfo) {
-		shareInfo = new ZmOrganizerShare;
-		shareInfo.link.perm = ZmShareInfo.ROLE_VIEWER;
+	if (!share) {
+		share = new ZmShare({appCtxt: this._appCtxt, object: object});
 	}
-	this._shareInfo = AjxUtil.createProxy(shareInfo, 1);
+	this._share = share;
 
-	var isNewShare = this._dialogType == ZmSharePropsDialog.NEW;
-	var isPubShare = this._shareInfo.isPublic();
+	var isNewShare = (this._shareMode == ZmSharePropsDialog.NEW);
+	var isPubShare = this._share.isPublic();
 
 	this._allRadioEl.checked = isPubShare;
 	this._allRadioEl.disabled = !isNewShare;
 	this._userRadioEl.checked = !isPubShare;
 	this._userRadioEl.disabled = !isNewShare;
 
-	this._granteeInput.setValue(this._shareInfo.grantee.name || "");
+	this._granteeInput.setValue(this._share.grantee.name || "");
 	this._granteeInput.setEnabled(isNewShare);
 
 	if (this._inheritEl)
-		this._inheritEl.checked = isNewShare || this._shareInfo.link.inh;
+		this._inheritEl.checked = isNewShare || this._share.link.inh;
 
 	this._rolesGroup.setVisible(!isPubShare || isNewShare);
 	this._messageGroup.setVisible(!isPubShare || isNewShare);
 
-	var perm = this._shareInfo.link.perm;
-	if (this._noneRadioEl.value == perm) this._noneRadioEl.checked = true;
-	else if (this._viewerRadioEl.value == perm) this._viewerRadioEl.checked = true;
-	else if (this._managerRadioEl.value == perm) this._managerRadioEl.checked = true;
+	var perm = this._share.link.perm;
+	if (perm == null || perm == this._viewerRadioEl) {
+		this._viewerRadioEl.checked = true;
+	} else if (perm == this._noneRadioEl.value) {
+		this._noneRadioEl.checked = true;
+	} else if (perm == this._managerRadioEl.value) {
+		this._managerRadioEl.checked = true;
+	}
 
 	this._reply.setReply(true);
 	// Force a reply if new share
-	this._reply.setReplyRequired(this._dialogType == ZmSharePropsDialog.NEW);
+	this._reply.setReplyRequired(this._shareMode == ZmSharePropsDialog.NEW);
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 
-	this._urlEl.value = this._folder.getUrl();
+	this._urlEl.value = this._object.getUrl();
 
 	DwtDialog.prototype.popup.call(this, loc);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
@@ -128,56 +131,36 @@ function() {
 
 ZmSharePropsDialog.prototype._handleOkButton =
 function(event) {
-	var folder = this._folder;
-	var share = this._shareInfo;
+	var object = this._object;
+	var share = this._share;
 
 	// initialize share info with entered values
-	if (this._dialogType == ZmSharePropsDialog.NEW) {
+	if (this._shareMode == ZmSharePropsDialog.NEW) {
 		share.grantee.name = this._granteeInput.getValue();
 	}
-	share.link.perm = this._getSelectedRole();
 
-	// execute grant operation
-	var callback = new AjxCallback(this, this._executeGrantCallback);
-	this._executeGrantAction(folder, share, callback);
-};
-
-ZmSharePropsDialog.prototype._executeGrantCallback =
-function(folder, share, action) {
-	share.grantee.id = action.zid;
-	share.grantee.email = action.d;
-
-	// send mail
-	if (!this._allRadioEl.checked && this._reply.getReply()) {
-		// initialize rest of share information
-		share.grantor.id = this._appCtxt.get(ZmSetting.USERID);
-		share.grantor.email = this._appCtxt.get(ZmSetting.USERNAME);
-		share.grantor.name = this._appCtxt.get(ZmSetting.DISPLAY_NAME) || share.grantor.email;
-		share.link.id = folder.id;
-		share.link.name = folder.name;
-		share.link.view = ZmOrganizer.getViewName(folder.type);
-
-		var replyType = this._reply.getReplyType();
-		share.notes = replyType == ZmShareReply.QUICK ? this._reply.getReplyNote() : "";
-
-		// compose in new window
-		if (replyType == ZmShareReply.COMPOSE) {
-			ZmShareInfo.composeMessage(this._appCtxt, this._dialogType, share);
-		}
-		// send email
-		else {
-			ZmShareInfo.sendMessage(this._appCtxt, this._dialogType, share);
-		}
+	share.object = this._object;
+	share.grantee.type = (this._allRadioEl.checked) ? ZmShare.TYPE_ALL :
+													  ZmShare.TYPE_USER;
+	share.link.inh = (this._inheritEl && this._inheritEl.checked);
+	var perm = this._getSelectedRole();
+	if (perm != share.link.perm) {
+		var replyType = (!this._allRadioEl.checked && this._reply.getReply()) ?
+							this._reply.getReplyType() : null;
+		var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
+		share.grant(perm, this._shareMode, replyType, notes);
 	}
 
 	this.popdown();
 };
 
-ZmSharePropsDialog.prototype._acKeyUpListener = function(event, aclv, result) {
+ZmSharePropsDialog.prototype._acKeyUpListener =
+function(event, aclv, result) {
 	ZmSharePropsDialog._enableFieldsOnEdit(aclv.parent);
 };
 
-ZmSharePropsDialog._handleKeyUp = function(event){
+ZmSharePropsDialog._handleKeyUp =
+function(event){
 	if (DwtInputField._keyUpHdlr(event)) {
 		return ZmSharePropsDialog._handleEdit(event);
 	}
@@ -193,10 +176,11 @@ function(event) {
 	return true;
 };
 
-ZmSharePropsDialog._enableFieldsOnEdit = function(dialog) {
-	var enabled = dialog._dialogType == ZmSharePropsDialog.EDIT ||
+ZmSharePropsDialog._enableFieldsOnEdit =
+function(dialog) {
+	var enabled = (dialog._mode == ZmSharePropsDialog.EDIT ||
 				  dialog._allRadioEl.checked ||
-				  AjxStringUtil.trim(dialog._granteeInput.getValue()) != "";
+				  AjxStringUtil.trim(dialog._granteeInput.getValue()) != "");
 	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, enabled);
 };
 
@@ -205,7 +189,7 @@ function(event) {
 	var target = DwtUiEvent.getTarget(event);
 	var dialog = Dwt.getObjectFromElement(target);
 
-	var isPubShare = target.value == ZmOrganizerShare.TYPE_ALL;
+	var isPubShare = (target.value == ZmShare.TYPE_ALL);
 	dialog._rolesGroup.setVisible(!isPubShare);
 	dialog._messageGroup.setVisible(!isPubShare);
 	dialog._granteeInput.setEnabled(!isPubShare);
@@ -215,62 +199,9 @@ function(event) {
 
 ZmSharePropsDialog.prototype._getSelectedRole =
 function() {
-	if (this._viewerRadioEl.checked) return ZmShareInfo.ROLE_VIEWER;
-	if (this._managerRadioEl.checked) return ZmShareInfo.ROLE_MANAGER;
-	return ZmShareInfo.ROLE_NONE;
-};
-
-/** Note: Caller is responsible to catch exceptions. */
-ZmSharePropsDialog.prototype._executeGrantAction =
-function(folder, share, callback) {
-	// Note: We need the user's zid from the result
-	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
-	
-	var actionNode = soapDoc.set("action");
-	actionNode.setAttribute("op", "grant");
-	actionNode.setAttribute("id", folder.id);
-	
-	var grantNode = soapDoc.set("grant", null, actionNode);
-	if (this._allRadioEl.checked) {
-		grantNode.setAttribute("gt", "pub");
-	}
-	else {
-		grantNode.setAttribute("gt", "usr");
-		grantNode.setAttribute("d", share.grantee.name);
-	}
-	if (this._inheritEl && this._inheritEl.checked) {
-		grantNode.setAttribute("inh", "1");
-	}
-	grantNode.setAttribute("perm", share.link.perm);
-
-	var respCallback = new AjxCallback(this, this._handleResponseGrant, [folder, share, callback]);
-	var errorCallback = new AjxCallback(this, this._handleErrorGrant, [share]);
-	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, errorCallback:errorCallback});
-};
-
-ZmSharePropsDialog.prototype._handleResponseGrant =
-function(folder, share, callback, result) {
-	var resp = result.getResponse().FolderActionResponse;
-	if (callback) {
-		callback.run(folder, share, resp.action);
-	}
-};
-
-ZmSharePropsDialog.prototype._handleErrorGrant =
-function(share, ex) {
-	var message = ZmMsg.unknownError;
-	if (ex instanceof ZmCsfeException && ex.code == "account.NO_SUCH_ACCOUNT") {
-		if (!this._unknownUserFormatter) {
-			this._unknownUserFormatter = new AjxMessageFormat(ZmMsg.unknownUser);
-		}
-		message = this._unknownUserFormatter.format(share.grantee.name);
-		// NOTE: This prevents details from being shown
-		ex = null;
-	}
-
-	this._appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
-
-	return true;
+	if (this._viewerRadioEl.checked) return ZmShare.ROLE_VIEWER;
+	if (this._managerRadioEl.checked) return ZmShare.ROLE_MANAGER;
+	return ZmShare.ROLE_NONE;
 };
 
 ZmSharePropsDialog.prototype._handleCompletionData = 
@@ -324,7 +255,7 @@ function() {
 				"<td>",
 					"<input type='radio' ",
 						"name='",shareWithRadioName,"' ",
-						"value='",ZmOrganizerShare.TYPE_ALL,"'>",
+						"value='",ZmShare.TYPE_ALL,"'>",
 				"</td>",
 				"<td>",ZmMsg.shareWithAll,"</td>",
 			"</tr>",
@@ -332,7 +263,7 @@ function() {
 				"<td>",
 					"<input type='radio' ",
 						"name='",shareWithRadioName,"' ",
-						"value='",ZmOrganizerShare.TYPE_USER,"'>",
+						"value='",ZmShare.TYPE_USER,"'>",
 				"</td>",
 				"<td>",ZmMsg.shareWithUserOrGroup,"</td>",
 			"</tr>",
@@ -361,7 +292,7 @@ function() {
 	// XXX: for now, we are hiding this property for simplicity's sake
 	props.setPropertyVisible(otherId, false);
 
-	this._granteeInput = new DwtInputField(props);
+	this._granteeInput = new DwtInputField({parent: props, size: 40});
 
 	var granteeDiv = document.getElementById(granteeId);
 	granteeDiv.appendChild(this._granteeInput.getHtmlElement());
@@ -371,7 +302,7 @@ function() {
 	var html = [];
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=3>";
 
-	var roles = [ ZmShareInfo.ROLE_NONE, ZmShareInfo.ROLE_VIEWER, ZmShareInfo.ROLE_MANAGER ];
+	var roles = [ ZmShare.ROLE_NONE, ZmShare.ROLE_VIEWER, ZmShare.ROLE_MANAGER ];
 	for (var i=0; i<roles.length; i++) {
 		var perm = roles[i];
 
@@ -380,9 +311,9 @@ function() {
 		html[idx++] = "' value='";
 		html[idx++] = perm;
 		html[idx++] = "'></td><td style='font-weight:bold; padding-right:0.25em'>";
-		html[idx++] = ZmShareInfo.getRoleName(perm);
+		html[idx++] = ZmShare.getRoleName(perm);
 		html[idx++] = "</td><td style='white-space:nowrap'>";
-		html[idx++] = ZmShareInfo.getRoleActions(perm);
+		html[idx++] = ZmShare.getRoleActions(perm);
 		html[idx++] = "</td></tr>";
 	}
 

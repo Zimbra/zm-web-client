@@ -37,25 +37,20 @@ function ZmRevokeShareDialog(appCtxt, parent, className) {
 
 	// create formatters
 	this._formatter = new AjxMessageFormat(ZmMsg.revokeShareConfirm);
-}
+};
+
 ZmRevokeShareDialog.prototype = new DwtDialog;
 ZmRevokeShareDialog.prototype.constructor = ZmRevokeShareDialog;
 
-// Constants
-
-// Data
-
-ZmRevokeShareDialog.prototype._confirmMsgEl;
-ZmRevokeShareDialog.prototype._reply;
-
 // Public methods
 
-ZmRevokeShareDialog.prototype.popup = function(organizerShare, loc) {
-	this._shareInfo = AjxUtil.createProxy(organizerShare, 1);
+ZmRevokeShareDialog.prototype.popup =
+function(share, loc) {
+	this._share = share;
 
-	var isPubShare = this._shareInfo.isPublic();
+	var isPubShare = share.isPublic();
 
-	var params = isPubShare ? ZmMsg.shareWithAll : organizerShare.grantee.name;
+	var params = isPubShare ? ZmMsg.shareWithAll : share.grantee.name;
 	var message = this._formatter.format(params);
 	this._confirmMsgEl.innerHTML = message;
 
@@ -70,51 +65,40 @@ ZmRevokeShareDialog.prototype.popup = function(organizerShare, loc) {
 
 // Protected methods
 
-ZmRevokeShareDialog.prototype._handleYesButton = function(event) {
-	var share = this._shareInfo;
+ZmRevokeShareDialog.prototype._handleYesButton =
+function() {
+	var callback = new AjxCallback(this, this._yesButtonCallback);
+	this._share.revoke(callback);
+};
 
-	// revoke share
-	try {
-		share.revoke();
-	}
-	catch (ex) {
-		var message = ZmMsg.unknownError;
-		// TODO: handle specific error types
-		
-		var appController = this._appCtxt.getAppController();
-		appController.popupErrorDialog(message, ex);
-		return;
-	}
-	
-	// send message
+ZmRevokeShareDialog.prototype._yesButtonCallback =
+function() {
+	var share = this._share;
 	if (this._reply.getReply()) {
-		
 		// initialize rest of share information
 		share.grantee.email = share.grantee.name;
 		share.grantor.id = this._appCtxt.get(ZmSetting.USERID);
 		share.grantor.email = this._appCtxt.get(ZmSetting.USERNAME);
 		share.grantor.name = this._appCtxt.get(ZmSetting.DISPLAY_NAME) || share.grantor.email;
-		share.link.id = share.organizer.id;
-		share.link.name = share.organizer.name;
-		share.link.view = ZmOrganizer.getViewName(share.organizer.type);
+		share.link.id = share.object.id;
+		share.link.name = share.object.name;
+		share.link.view = ZmOrganizer.getViewName(share.object.type);
 
 		var replyType = this._reply.getReplyType();
-		share.notes = replyType == ZmShareReply.QUICK ? this._reply.getReplyNote() : "";
+		share.notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
 	
-		// compose in new window
 		if (replyType == ZmShareReply.COMPOSE) {
-			ZmShareInfo.composeMessage(this._appCtxt, ZmShareInfo.DELETE, share);
-		}
-		// send email
-		else {
-			ZmShareInfo.sendMessage(this._appCtxt, ZmShareInfo.DELETE, share);
+			share.composeMessage(ZmShare.DELETE);
+		} else {
+			share.sendMessage(ZmShare.DELETE);
 		}
 	}
 
 	this.popdown();
 };
 
-ZmRevokeShareDialog.prototype._createView = function() {
+ZmRevokeShareDialog.prototype._createView =
+function() {
 	this._confirmMsgEl = document.createElement("DIV");
 	this._confirmMsgEl.style.fontWeight = "bold";
 	this._confirmMsgEl.style.marginBottom = "0.25em";
@@ -125,9 +109,11 @@ ZmRevokeShareDialog.prototype._createView = function() {
 	var element = view.getHtmlElement();
 	element.appendChild(this._confirmMsgEl);
 	element.appendChild(this._reply.getHtmlElement());
+
 	return view;
 };
 
-ZmRevokeShareDialog.prototype._getSeparatorTemplate = function() {
+ZmRevokeShareDialog.prototype._getSeparatorTemplate =
+function() {
 	return "";
 };

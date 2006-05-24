@@ -52,7 +52,8 @@ function ZmTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.EXPAND_ALL] = new AjxListener(this, this._expandAllListener);
 	this._listeners[ZmOperation.MARK_ALL_READ] = new AjxListener(this, this._markAllReadListener);
 	this._listeners[ZmOperation.SYNC] = new AjxListener(this, this._syncListener);
-	
+	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editPropsListener);
+
 	// drag-and-drop
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
@@ -535,6 +536,17 @@ function(ev) {
 ZmTreeController.prototype._syncListener =
 function(ev) {
 	this._doSync(this._getActionedOrganizer(ev));
+};
+
+/*
+* Brings up a dialog for editing organizer properties.
+*
+* @param ev		[DwtUiEvent]	the UI event
+*/
+ZmTreeController.prototype._editPropsListener = 
+function(ev) {
+	var folderPropsDialog = this._appCtxt.getFolderPropsDialog();
+	folderPropsDialog.popup(this._getActionedOrganizer(ev));
 };
 
 /*

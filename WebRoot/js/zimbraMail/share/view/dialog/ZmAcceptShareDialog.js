@@ -37,38 +37,30 @@ function ZmAcceptShareDialog(appCtxt, parent, className) {
 	this._headerFormatter = new AjxMessageFormat(ZmMsg.acceptShareHeader);
 	this._detailsFormatter = new AjxMessageFormat(ZmMsg.acceptShareDetails);
 	this._defaultNameFormatter = new AjxMessageFormat(ZmMsg.shareNameDefault);
-}
+};
+
 ZmAcceptShareDialog.prototype = new DwtDialog;
 ZmAcceptShareDialog.prototype.constructor = ZmAcceptShareDialog;
 
 // Constants
 
 ZmAcceptShareDialog._ACTIONS = {};
-ZmAcceptShareDialog._ACTIONS[ZmShareInfo.ROLE_NONE] = ZmMsg.acceptShareDetailsNone;
-ZmAcceptShareDialog._ACTIONS[ZmShareInfo.ROLE_VIEWER] = ZmMsg.acceptShareDetailsViewer;
-ZmAcceptShareDialog._ACTIONS[ZmShareInfo.ROLE_MANAGER] = ZmMsg.acceptShareDetailsManager;
-
-// Data
-
-ZmAcceptShareDialog.prototype._share;
+ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_NONE] = ZmMsg.acceptShareDetailsNone;
+ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_VIEWER] = ZmMsg.acceptShareDetailsViewer;
+ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_MANAGER] = ZmMsg.acceptShareDetailsManager;
 
 // Public methods
 
-ZmAcceptShareDialog.prototype.setShareInfo =
-function(share) {
-	this._share = share;
-};
-
 ZmAcceptShareDialog.prototype.popup =
-function(loc) {
-	var share = this._share;
+function(share, loc) {
 
+	this._share = share;
 	var params = [ share.grantor.name, share.link.name ];
 	var header = this._headerFormatter.format(params);
 	this._headerEl.innerHTML = header;
 
 	params = [
-		ZmShareInfo.getRoleName(share.link.perm),
+		ZmShare.getRoleName(share.link.perm),
 		ZmAcceptShareDialog._ACTIONS[share.link.perm]   // TODO: Be able to generate custom perms list
 	];
 	var details = this._detailsFormatter.format(params);
@@ -98,74 +90,14 @@ function(listener) {
 
 ZmAcceptShareDialog.prototype._handleYesButton =
 function(event) {
-	var share = this._share;
-	
-	// create mountpoint
-	var soapDoc = AjxSoapDoc.create("CreateMountpointRequest", "urn:zimbraMail");
+	var replyType = this._reply.getReplyType();
+	var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote(): "";
+	var callback = new AjxCallback(this, this._yesButtonCallback, [event]);
+	this._share.accept(this._nameEl.value, this._color.getValue(), replyType, notes, callback);
+};
 
-	var linkNode = soapDoc.set("link");
-	linkNode.setAttribute("l", "1"); // place in root folder
-	linkNode.setAttribute("name", this._nameEl.value);
-	linkNode.setAttribute("zid", share.grantor.id);
-	linkNode.setAttribute("rid", share.link.id);
-	if (share.link.view) {
-		linkNode.setAttribute("view", share.link.view);
-	}
-
-	var appCtlr = this._appCtxt.getAppController();
-	//appCtlr.setActionedIds([this.organizer.id]); // TODO: ???
-	var mountpointId;
-	try {
-		var resp = appCtlr.sendRequest({soapDoc: soapDoc})["CreateMountpointResponse"];
-		mountpointId = parseInt(resp.link[0].id);
-	}
-	catch (ex) {
-		var message = ZmMsg.unknownError;
-		if (ex instanceof ZmCsfeException && ex.code == "mail.ALREADY_EXISTS") {
-			message = ZmMsg.folderNameExists;
-			// NOTE: This prevents details from being shown
-			ex = null;
-		}
-		
-		appCtlr.popupErrorDialog(message, ex, null, true);
-		return;
-	}
-
-	// only set color for those views that are applicable
-	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
-
-	var actionNode = soapDoc.set("action");
-	actionNode.setAttribute("id", mountpointId);
-	actionNode.setAttribute("op", "color");
-	actionNode.setAttribute("color", this._color.getValue());
-
-	try {
-		var resp = appCtlr.sendRequest({soapDoc: soapDoc})["FolderActionResponse"];
-	}
-	catch (ex) {
-		// TODO: handle error
-		var message = null;
-		appCtlr.popupErrorDialog(message, ex, null, true);
-	}
-
-	// send mail
-	if (this._reply.getReply()) {
-		var replyType = this._reply.getReplyType();
-
-		// create share info proxy
-		var proxy = AjxUtil.createProxy(this._share);
-		proxy.notes = replyType == ZmShareReply.QUICK ? this._reply.getReplyNote(): "";
-
-		// compose in new window
-		if (replyType == ZmShareReply.COMPOSE) {
-			ZmShareInfo.composeMessage(this._appCtxt, ZmShareInfo.ACCEPT, proxy);
-		}
-		// send email
-		else {
-			ZmShareInfo.sendMessage(this._appCtxt, ZmShareInfo.ACCEPT, proxy);
-		}
-	}
-	
+ZmAcceptShareDialog.prototype._yesButtonCallback =
+function(event) {
 	// notify accept listener and clear
 	this.notifyListeners(ZmAcceptShareDialog.ACCEPT, event);
 	this.setAcceptListener(null);

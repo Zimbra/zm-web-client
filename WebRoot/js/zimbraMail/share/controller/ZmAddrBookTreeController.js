@@ -45,7 +45,6 @@ function ZmAddrBookTreeController(appCtxt, type, dropTgt) {
 
 	this._listeners[ZmOperation.NEW_ADDRBOOK] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
-	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editPropsListener);
 	this._listeners[ZmOperation.SHARE_ADDRBOOK] = new AjxListener(this, this._shareAddrBookListener);
 };
 
@@ -145,16 +144,6 @@ function(item, color) {
 
 
 // Listeners
-
-ZmAddrBookTreeController.prototype._editPropsListener = 
-function(ev) {
-	this._pendingActionData = this._getActionedOrganizer(ev);
-
-	var folderPropsDialog = this._appCtxt.getFolderPropsDialog();
-	var folder = this._pendingActionData;
-	folderPropsDialog.setFolder(folder);
-	folderPropsDialog.popup();
-};
 
 ZmAddrBookTreeController.prototype._shareAddrBookListener = 
 function(ev) {

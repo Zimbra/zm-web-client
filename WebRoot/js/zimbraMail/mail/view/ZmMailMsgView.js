@@ -175,7 +175,7 @@ function(msg) {
 			// We need an inviteComponentView. Ughhh.
 		}
 	}
-	else if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) && msg.share && msg.share.action == ZmShareInfo.NEW && msg.folderId != ZmFolder.ID_TRASH) {
+	else if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) && msg.share && msg.share.action == ZmShare.NEW && msg.folderId != ZmFolder.ID_TRASH) {
 		// Note: Even if the share message is cc'd to someone else, the
 		//		 accept/decline buttons are only seen by the grantee.
 		if (msg.share.grantee.id == this._appCtxt.get(ZmSetting.USERID)) {

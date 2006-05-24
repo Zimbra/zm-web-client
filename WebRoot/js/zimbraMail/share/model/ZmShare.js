@@ -22,12 +22,14 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-//
-// ZmShareInfo
-//
 
 /**
- * Share information.
+ * Creates a share with the given information about the sharer, the sharee, and
+ * what is being shared.
+ * @constructor
+ * @class
+ * A share comprises information about an object that is shared by one user with
+ * another user. Currently, only organizers may be shared.
  * <p>
  * XML representation:
  * <pre>
@@ -51,113 +53,181 @@
  * &lt;!ATTLIST link name CDATA #REQUIRED>
  * &lt;!ATTLIST link view (appointment|...) #REQUIRED>
  * &lt;!ATTLISt link perm CDATA #REQUIRED>
- * </pre>
+ * </pre></p>
+ *
+ * @author Andy Clark
+ * 
+ * @param appCtxt		[ZmAppCtxt]		the app context
+ * @param object		[object]		what is being shared
+ * @param granteeType	[constant]*		sharee (everyone, or a single user)
+ * @param granteeId		[string]*			a unique ID for the grantee
+ * @param granteeName
+ * @param perm			[constant]*		grantee's permissions on the shared object
+ * @param inherit		[boolean]*		if true, children inherit share info
  */
-function ZmShareInfo() {
+function ZmShare(params) {
+
 	this.grantee = {};
 	this.grantor = {};
 	this.link = {};
-}
+
+	this._appCtxt = params.appCtxt;
+	this.object = params.object;
+	this.grantee.type = params.granteeType;
+	this.grantee.id = params.granteeId;
+	this.grantee.name = params.granteeName;
+	this.link.perm = params.perm;
+	this.link.inh = params.inherit;
+};
+
+// Constants
+
+ZmShare.URI = "urn:zimbraShare";
+ZmShare.VERSION = "0.1";
+
+// actions
+ZmShare.NEW		= "new";
+ZmShare.EDIT	= "edit";
+ZmShare.DELETE	= "delete";
+ZmShare.ACCEPT	= "accept";
+ZmShare.DECLINE	= "decline";
+
+// allowed permission bits
+ZmShare.PERM_READ		= "r";
+ZmShare.PERM_WRITE		= "w";
+ZmShare.PERM_INSERT		= "i";
+ZmShare.PERM_DELETE		= "d";
+ZmShare.PERM_ADMIN		= "a";
+ZmShare.PERM_WORKFLOW	= "x";
+
+// restricted permission bits
+ZmShare.PERM_NOREAD		= "-r";
+ZmShare.PERM_NOWRITE	= "-w";
+ZmShare.PERM_NOINSERT	= "-i";
+ZmShare.PERM_NODELETE	= "-d";
+ZmShare.PERM_NOADMIN	= "-a";
+ZmShare.PERM_NOWORKFLOW	= "-x";
+
+// allowed permission names
+ZmShare.PERMS = {};
+ZmShare.PERMS[ZmShare.PERM_READ]		= ZmMsg.shareActionRead;
+ZmShare.PERMS[ZmShare.PERM_WRITE]		= ZmMsg.shareActionWrite;
+ZmShare.PERMS[ZmShare.PERM_INSERT]		= ZmMsg.shareActionInsert;
+ZmShare.PERMS[ZmShare.PERM_DELETE]		= ZmMsg.shareActionDelete;
+ZmShare.PERMS[ZmShare.PERM_ADMIN]		= ZmMsg.shareActionAdmin;
+ZmShare.PERMS[ZmShare.PERM_WORKFLOW]	= ZmMsg.shareActionWorkflow;
+
+// restricted permission names
+ZmShare.PERMS[ZmShare.PERM_NOREAD]		= ZmMsg.shareActionNoRead;
+ZmShare.PERMS[ZmShare.PERM_NOWRITE]		= ZmMsg.shareActionNoWrite;
+ZmShare.PERMS[ZmShare.PERM_NOINSERT]	= ZmMsg.shareActionNoInsert;
+ZmShare.PERMS[ZmShare.PERM_NODELETE]	= ZmMsg.shareActionNoDelete;
+ZmShare.PERMS[ZmShare.PERM_NOADMIN]		= ZmMsg.shareActionNoAdmin;
+ZmShare.PERMS[ZmShare.PERM_NOWORKFLOW]	= ZmMsg.shareActionNoWorkflow;
+
+// role permissions
+ZmShare.ROLE_NONE		= "";
+ZmShare.ROLE_VIEWER		= ZmShare.PERM_READ;
+ZmShare.ROLE_MANAGER	= [ZmShare.PERM_READ, ZmShare.PERM_WRITE, ZmShare.PERM_INSERT,
+						   ZmShare.PERM_DELETE, ZmShare.PERM_WORKFLOW].join("");
+
+// role names
+ZmShare.ROLES = {};
+ZmShare.ROLES[ZmShare.ROLE_NONE]	= ZmMsg.shareRoleNone;
+ZmShare.ROLES[ZmShare.ROLE_VIEWER]	= ZmMsg.shareRoleViewer;
+ZmShare.ROLES[ZmShare.ROLE_MANAGER]	= ZmMsg.shareRoleManager;
+
+ZmShare.TYPE_ALL	= "pub";
+ZmShare.TYPE_USER	= "usr";
+
+ZmShare.ZID_ALL = "99999999-9999-9999-9999-999999999999";
+
+// view types
+ZmShare._VIEWS = {};
+ZmShare._VIEWS["conversation"] = ZmMsg.mailFolder;
+ZmShare._VIEWS["message"] = ZmMsg.mailFolder;
+ZmShare._VIEWS["appointment"] = ZmMsg.calendarFolder;
+ZmShare._VIEWS["wiki"] = ZmMsg.notebookFolder;
+ZmShare._VIEWS["contact"] = ZmMsg.addressBookFolder;
+ZmShare._VIEWS["any"] = ZmMsg.folder;
+
+// message subjects
+ZmShare._SUBJECTS = {};
+ZmShare._SUBJECTS[ZmShare.NEW] = ZmMsg.shareCreatedSubject;
+ZmShare._SUBJECTS[ZmShare.EDIT] = ZmMsg.shareModifiedSubject;
+ZmShare._SUBJECTS[ZmShare.DELETE] = ZmMsg.shareRevokedSubject;
+ZmShare._SUBJECTS[ZmShare.ACCEPT] = ZmMsg.shareAcceptedSubject;
+ZmShare._SUBJECTS[ZmShare.DECLINE] = ZmMsg.shareDeclinedSubject;
+	
+// text formatters
+ZmShare._TEXT = {};
+ZmShare._TEXT[ZmShare.NEW] = new AjxMessageFormat(ZmMsg.shareCreatedText);
+ZmShare._TEXT[ZmShare.EDIT] = new AjxMessageFormat(ZmMsg.shareModifiedText);
+ZmShare._TEXT[ZmShare.DELETE] = new AjxMessageFormat(ZmMsg.shareRevokedText);
+ZmShare._TEXT[ZmShare.ACCEPT] = new AjxMessageFormat(ZmMsg.shareAcceptedText);
+ZmShare._TEXT[ZmShare.DECLINE] = new AjxMessageFormat(ZmMsg.shareDeclinedText);
+	
+// html formatters
+ZmShare._HTML = {};
+ZmShare._HTML[ZmShare.NEW] = new AjxMessageFormat(ZmMsg.shareCreatedHtml);
+ZmShare._HTML[ZmShare.EDIT] = new AjxMessageFormat(ZmMsg.shareModifiedHtml);
+ZmShare._HTML[ZmShare.DELETE] = new AjxMessageFormat(ZmMsg.shareRevokedHtml);
+ZmShare._HTML[ZmShare.ACCEPT] = new AjxMessageFormat(ZmMsg.shareAcceptedHtml);
+ZmShare._HTML[ZmShare.DECLINE] = new AjxMessageFormat(ZmMsg.shareDeclinedHtml);
+	
+ZmShare._HTML_NOTE = new AjxMessageFormat(ZmMsg.shareNotesHtml);
+
+// xml formatter
+var pattern = [
+	'<share xmlns="{0}" version="{1}" action="{2}" >',
+	'  <grantee id="{3}" email="{4}" name="{5}" />',
+	'  <grantor id="{6}" email="{7}" name="{8}" />',
+	'  <link id="{9}" name="{10}" view="{11}" perm="{12}" />',
+	'  <notes>{13}</notes>',
+	'</share>'
+].join("\n");
+ZmShare._XML = new AjxMessageFormat(pattern);
+delete pattern;
 
 // Utility methods
 
-ZmShareInfo.getRoleName = function(perm) {
-	return ZmShareInfo.ROLES[perm] || ZmMsg.shareRoleCustom;
-}
-ZmShareInfo.getRoleActions = function(perm) {
+ZmShare.getRoleName =
+function(perm) {
+	return ZmShare.ROLES[perm] || ZmMsg.shareRoleCustom;
+};
+
+ZmShare.getRoleActions =
+function(perm) {
 	var actions = [];
 	for (var i = 0; i < perm.length; i++) {
 		var c = perm.charAt(i);
 		if (c == "-") {
 			c += perm.charAt(++i);
 		}
-		actions.push(ZmShareInfo.PERMS[c]);
+		actions.push(ZmShare.PERMS[c]);
 	}
 	return actions.length > 0 ? actions.join(", ") : ZmMsg.shareActionNone;
-}
-
-// Constants
-
-ZmShareInfo.URI = "urn:zimbraShare";
-ZmShareInfo.VERSION = "0.1";
-
-// actions
-ZmShareInfo.NEW = "new";
-ZmShareInfo.EDIT = "edit";
-ZmShareInfo.DELETE = "delete";
-ZmShareInfo.ACCEPT = "accept";
-ZmShareInfo.DECLINE = "decline";
-
-// allowed permission bits
-ZmShareInfo.PERM_READ = "r";
-ZmShareInfo.PERM_WRITE = "w";
-ZmShareInfo.PERM_INSERT = "i";
-ZmShareInfo.PERM_DELETE = "d";
-ZmShareInfo.PERM_ADMIN = "a";
-ZmShareInfo.PERM_WORKFLOW = "x";
-
-// restricted permission bits
-ZmShareInfo.PERM_NOREAD = "-r";
-ZmShareInfo.PERM_NOWRITE = "-w";
-ZmShareInfo.PERM_NOINSERT = "-i";
-ZmShareInfo.PERM_NODELETE = "-d";
-ZmShareInfo.PERM_NOADMIN = "-a";
-ZmShareInfo.PERM_NOWORKFLOW = "-x";
-
-// allowed permission names
-ZmShareInfo.PERMS = {};
-ZmShareInfo.PERMS[ZmShareInfo.PERM_READ] = ZmMsg.shareActionRead;
-ZmShareInfo.PERMS[ZmShareInfo.PERM_WRITE] = ZmMsg.shareActionWrite;
-ZmShareInfo.PERMS[ZmShareInfo.PERM_INSERT] = ZmMsg.shareActionInsert;
-ZmShareInfo.PERMS[ZmShareInfo.PERM_DELETE] = ZmMsg.shareActionDelete;
-ZmShareInfo.PERMS[ZmShareInfo.PERM_ADMIN] = ZmMsg.shareActionAdmin;
-ZmShareInfo.PERMS[ZmShareInfo.PERM_WORKFLOW] = ZmMsg.shareActionWorkflow;
-
-// restricted permission names
-ZmShareInfo.PERMS[ZmShareInfo.PERM_NOREAD] = ZmMsg.shareActionNoRead;
-ZmShareInfo.PERMS[ZmShareInfo.PERM_NOWRITE] = ZmMsg.shareActionNoWrite;
-ZmShareInfo.PERMS[ZmShareInfo.PERM_NOINSERT] = ZmMsg.shareActionNoInsert;
-ZmShareInfo.PERMS[ZmShareInfo.PERM_NODELETE] = ZmMsg.shareActionNoDelete;
-ZmShareInfo.PERMS[ZmShareInfo.PERM_NOADMIN] = ZmMsg.shareActionNoAdmin;
-ZmShareInfo.PERMS[ZmShareInfo.PERM_NOWORKFLOW] = ZmMsg.shareActionNoWorkflow;
-
-// role permissions
-ZmShareInfo.ROLE_NONE = "";
-ZmShareInfo.ROLE_VIEWER = ZmShareInfo.PERM_READ;
-ZmShareInfo.ROLE_MANAGER = ZmShareInfo.PERM_READ + ZmShareInfo.PERM_WRITE + ZmShareInfo.PERM_INSERT + ZmShareInfo.PERM_DELETE + ZmShareInfo.PERM_WORKFLOW;
-
-// role names
-ZmShareInfo.ROLES = {};
-ZmShareInfo.ROLES[ZmShareInfo.ROLE_NONE] = ZmMsg.shareRoleNone;
-ZmShareInfo.ROLES[ZmShareInfo.ROLE_VIEWER] = ZmMsg.shareRoleViewer;
-ZmShareInfo.ROLES[ZmShareInfo.ROLE_MANAGER] = ZmMsg.shareRoleManager;
+};
 
 // role action names
-ZmShareInfo.ACTIONS = {};
-ZmShareInfo.ACTIONS[ZmShareInfo.ROLE_NONE] = ZmShareInfo.getRoleActions(ZmShareInfo.ROLE_NONE);
-ZmShareInfo.ACTIONS[ZmShareInfo.ROLE_VIEWER] = ZmShareInfo.getRoleActions(ZmShareInfo.ROLE_VIEWER);
-ZmShareInfo.ACTIONS[ZmShareInfo.ROLE_MANAGER] = ZmShareInfo.getRoleActions(ZmShareInfo.ROLE_MANAGER);
-
-// Data
-
-ZmShareInfo.prototype.action;
-ZmShareInfo.prototype.version;
-ZmShareInfo.prototype.grantee;
-ZmShareInfo.prototype.grantor;
-ZmShareInfo.prototype.link;
+ZmShare.ACTIONS = {};
+ZmShare.ACTIONS[ZmShare.ROLE_NONE]		= ZmShare.getRoleActions(ZmShare.ROLE_NONE);
+ZmShare.ACTIONS[ZmShare.ROLE_VIEWER]	= ZmShare.getRoleActions(ZmShare.ROLE_VIEWER);
+ZmShare.ACTIONS[ZmShare.ROLE_MANAGER]	= ZmShare.getRoleActions(ZmShare.ROLE_MANAGER);
 
 // Static methods
 
-ZmShareInfo.createFromDom = function(doc) {
+ZmShare.createFromDom =
+function(doc, appCtxt) {
 	// NOTE: This code initializes share info from the Zimbra share format, v0.1
-	var shareInfo = new ZmShareInfo();
+	var share = new ZmShare({appCtxt: appCtxt});
 	
 	var shareNode = doc.documentElement;
-	shareInfo.version = shareNode.getAttribute("version");
-	if (shareInfo.version != ZmShareInfo.VERSION) {
-		throw "Zimbra share version must be "+ZmShareInfo.VERSION;
+	share.version = shareNode.getAttribute("version");
+	if (share.version != ZmShare.VERSION) {
+		throw "Zimbra share version must be " + ZmShare.VERSION;
 	}
-	shareInfo.action = shareNode.getAttribute("action");
+	share.action = shareNode.getAttribute("action");
 	
 	// NOTE: IE's getElementsByTagName doesn't seem to return the specified
 	//		 tags when they're in a namespace. Will have to do this the
@@ -166,38 +236,228 @@ ZmShareInfo.createFromDom = function(doc) {
 	while (child != null) {
 		switch (child.nodeName) {
 			case "grantee": case "grantor": {
-				shareInfo[child.nodeName].id = child.getAttribute("id");
-				shareInfo[child.nodeName].email = child.getAttribute("email");
-				shareInfo[child.nodeName].name = child.getAttribute("name");
+				share[child.nodeName].id = child.getAttribute("id");
+				share[child.nodeName].email = child.getAttribute("email");
+				share[child.nodeName].name = child.getAttribute("name");
 				break;
 			}
 			case "link": {
-				shareInfo.link.id = child.getAttribute("id");
-				shareInfo.link.name = child.getAttribute("name");
-				shareInfo.link.view = child.getAttribute("view");
-				shareInfo.link.perm = child.getAttribute("perm");
+				share.link.id = child.getAttribute("id");
+				share.link.name = child.getAttribute("name");
+				share.link.view = child.getAttribute("view");
+				share.link.perm = child.getAttribute("perm");
 				break;
 			}
 		}
 		child = child.nextSibling;
 	}
 	
-	return shareInfo;
-}
+	return share;
+};
 
-ZmShareInfo.sendMessage = function(appCtxt, action, shareInfo) {
+// Public methods
+
+/**
+ * Returns true if the given permission exists on this share.
+ * 
+ * @param perm	[constant]	A single permission attribute (e.g. "r")
+ */
+ZmShare.prototype.isPermAllowed =
+function(perm) {
+	if (this.link.perm) {
+		var positivePerms = this.link.perm.replace(/-./g, "");
+		return (positivePerms.indexOf(perm) != -1);
+	}
+	return false;
+};
+
+/**
+ * Returns true if the given permission is restricted for this share.
+ *
+ * @param perm	[constant]	A single permission attribute (e.g. "r")
+*/
+ZmShare.prototype.isPermRestricted =
+function(perm) {
+	if (this.link.perm) {
+		return (this.link.perm.indexOf("-" + perm) != -1);
+	}
+	return false;
+};
+
+// Methods that return whether a particular permission exists on this share
+ZmShare.prototype.isRead = function() { return this.isPermAllowed(ZmShare.PERM_READ); };
+ZmShare.prototype.isWrite = function() { return this.isPermAllowed(ZmShare.PERM_WRITE); };
+ZmShare.prototype.isInsert = function() { return this.isPermAllowed(ZmShare.PERM_INSERT); };
+ZmShare.prototype.isDelete = function() { return this.isPermAllowed(ZmShare.PERM_DELETE); };
+ZmShare.prototype.isAdmin = function() { return this.isPermAllowed(ZmShare.PERM_ADMIN); };
+ZmShare.prototype.isWorkflow = function() { return this.isPermAllowed(ZmShare.PERM_WORKFLOW); };
+
+// Protected static methods
+
+ZmShare._getFolderType =
+function(view) {
+	if (view) {
+		var folderType = ZmShare._VIEWS[view] || ZmShare._VIEWS["any"];
+		return "(" + folderType + ")";
+	}
+	return "";
+};
+
+ZmShare._init =
+function() {
+	if (ZmShare._SUBJECTS) return;
+
+};
+
+
+
+// Static methods
+
+ZmShare.createFromJs =
+function(parent, grant, appCtxt) {
+	return new ZmShare({appCtxt: appCtxt, object: parent, granteeType: grant.gt,
+						granteeId: grant.zid, granteeName: grant.d, perm: grant.perm, inherit: grant.inh});
+};
+
+// Public methods
+
+ZmShare.prototype.isPublic =
+function() {
+	return (this.grantee.type == ZmShare.TYPE_ALL);
+};
+
+ZmShare.prototype.grant =
+function(perm, mode, replyType, notes) {
+	this.link.perm = perm;
+	var respCallback = new AjxCallback(this, this._handleResponseGrant);
+	this._shareAction("grant", null, {perm: perm}, respCallback, mode, replyType, notes);
+};
+
+ZmShare.prototype._handleResponseGrant =
+function(mode, replyType, notes, result) {
+	var action = result.getResponse().FolderActionResponse.action;
+	this.grantee.id = action.zid;
+	this.grantee.email = action.d;
+
+	// check if we need to send message or bring up compose window
+	if (replyType) {
+		// initialize rest of share information
+		this.grantor.id = this._appCtxt.get(ZmSetting.USERID);
+		this.grantor.email = this._appCtxt.get(ZmSetting.USERNAME);
+		this.grantor.name = this._appCtxt.get(ZmSetting.DISPLAY_NAME) || this.grantor.email;
+		this.link.id = this.object.id;
+		this.link.name = this.object.name;
+		this.link.view = ZmOrganizer.getViewName(this.object.type);
+		this.notes = notes;
+		if (replyType == ZmShareReply.COMPOSE) {
+			this.composeMessage(mode);
+		} else {
+			this.sendMessage(mode);
+		}
+	}
+};
+
+ZmShare.prototype.revoke = 
+function(callback) {
+	var actionAttrs = { zid: this.isPublic() ? ZmShare.ZID_ALL : this.grantee.id };
+	var respCallback = new AjxCallback(this, this._handleResponseRevoke, [callback]);
+	this._shareAction("!grant", actionAttrs, null, respCallback);
+};
+
+ZmShare.prototype._handleResponseRevoke =
+function(callback) {
+	if (callback) {
+		callback.run();
+	}
+};
+
+ZmShare.prototype.accept = 
+function(name, color, replyType, notes, callback) {
+
+	// create mountpoint
+	var soapDoc = AjxSoapDoc.create("CreateMountpointRequest", "urn:zimbraMail");
+
+	var linkNode = soapDoc.set("link");
+	linkNode.setAttribute("l", "1"); // place in root folder
+	linkNode.setAttribute("name", name);
+	linkNode.setAttribute("zid", this.grantor.id);
+	linkNode.setAttribute("rid", this.link.id);
+	if (this.link.view) {
+		linkNode.setAttribute("view", this.link.view);
+	}
+
+	var respCallback = new AjxCallback(this, this._handleResponseAccept, [color, replyType, notes, callback]);
+	var errorCallback = new AjxCallback(this, this._handleErrorAccept);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+												  callback: respCallback, errorCallback: errorCallback});
+};
+
+ZmShare.prototype._handleResponseAccept =
+function(color, replyType, notes, callback, result) {
+	var resp = result.getResponse().CreateMountpointResponse;
+	var mountpointId = parseInt(resp.link[0].id);
+
+	// only set color for those views that are applicable
+	if (this.link.view != "contact") {
+		var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
+
+		var actionNode = soapDoc.set("action");
+		actionNode.setAttribute("id", mountpointId);
+		actionNode.setAttribute("op", "color");
+		actionNode.setAttribute("color", color);
+
+		var respCallback = new AjxCallback(this, this._handleResponseAccept1, [replyType, notes, callback]);		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	} else {
+		this._handleResponseAccept1(replyType, notes, callback);
+	}
+};
+
+ZmShare.prototype._handleResponseAccept1 =
+function(replyType, notes, callback) {
+
+	this.notes = notes;
+
+	if (callback) {
+		callback.run();
+	}
+
+	// check if we need to send message or bring up compose window
+	if (replyType == ZmShareReply.COMPOSE) {
+		this.composeMessage(ZmShare.ACCEPT);
+	} else {
+		this.sendMessage(ZmShare.ACCEPT);
+	}
+};
+
+ZmShare.prototype._handleErrorAccept =
+function(ex) {
+	var message = ZmMsg.unknownError;
+	if (ex instanceof ZmCsfeException && ex.code == "mail.ALREADY_EXISTS") {
+		message = ZmMsg.folderNameExists;
+		// NOTE: This prevents details from being shown
+		ex = null;
+	}
+		
+	this._appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
+	return true;
+};
+
+ZmShare.prototype.sendMessage =
+function(mode) {
 	// generate message
-	var msg = ZmShareInfo._createMsg(appCtxt, action, shareInfo);
+	var msg = this._createMsg(mode);
 
 	// send message
-	var contactsApp = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+	var contactsApp = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 	var contactList = contactsApp.getContactList();
 
 	msg.send(contactList);
-}
-ZmShareInfo.composeMessage = function(appCtxt, action, shareInfo) {
+};
+
+ZmShare.prototype.composeMessage =
+function(mode) {
 	// generate message
-	var msg = ZmShareInfo._createMsg(appCtxt, action, shareInfo, true);
+	var msg = this._createMsg(this._appCtxt, mode, true);
 
 	// initialize compose message
 	var action = ZmOperation.SHARE;
@@ -206,7 +466,7 @@ ZmShareInfo.composeMessage = function(appCtxt, action, shareInfo) {
 	var subjOverride = null;
 	var extraBodyText = null;
 
-	var mailApp = appCtxt.getApp(ZmZimbraMail.MAIL_APP);
+	var mailApp = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
 	var composeController = mailApp.getComposeController();
 
 	// NOTE: Assumes text, html, and xml parts are in the top part
@@ -216,280 +476,10 @@ ZmShareInfo.composeMessage = function(appCtxt, action, shareInfo) {
 	var xmlPart = parts.get(2);
 	msg.setBodyParts([ textPart.node, htmlPart.node, xmlPart.node ]);
 	composeController.doAction(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText);
-}
-// Public methods
-
-/** @param perm A single permission attribute (e.g. "r") */
-ZmShareInfo.prototype.isPermAllowed = function(perm) {
-	if (this.link.perm) {
-		var positivePerms = this.link.perm.replace(/-./g,"");
-		return positivePerms.indexOf(perm) != -1;
-	}
-	return false;
-}
-/** @param perm A single permission attribute (e.g. "r") */
-ZmShareInfo.prototype.isPermRestricted = function(perm) {
-	if (this.link.perm) {
-		return this.link.perm.indexOf("-"+perm) != -1;
-	}
-	return false;
-}
-
-ZmShareInfo.prototype.isRead = function() {
-	return this.isPermAllowed(ZmShareInfo.PERM_READ);
-}
-ZmShareInfo.prototype.isWrite = function() {
-	return this.isPermAllowed(ZmShareInfo.PERM_WRITE);
-}
-ZmShareInfo.prototype.isInsert = function() {
-	return this.isPermAllowed(ZmShareInfo.PERM_INSERT);
-}
-ZmShareInfo.prototype.isDelete = function() {
-	return this.isPermAllowed(ZmShareInfo.PERM_DELETE);
-}
-ZmShareInfo.prototype.isAdmin = function() {
-	return this.isPermAllowed(ZmShareInfo.PERM_ADMIN);
-}
-ZmShareInfo.prototype.isWorkflow = function() {
-	return this.isPermAllowed(ZmShareInfo.PERM_WORKFLOW);
-}
-
-// Protected static methods
-
-ZmShareInfo._createMsg = function(appCtxt, action, shareInfo, compose) {
-	ZmShareInfo._init();
-
-	// generate message
-	var textPart = this._createTextPart(action, shareInfo, compose);
-	var htmlPart = this._createHtmlPart(action, shareInfo, compose);
-	var xmlPart = this._createXmlPart(action, shareInfo);		
-
-	var topPart = new ZmMimePart();
-	topPart.setContentType(ZmMimeTable.MULTI_ALT);
-	topPart.children.add(textPart);
-	topPart.children.add(htmlPart);
-	topPart.children.add(xmlPart);
-
-	var msg = new ZmMailMsg(appCtxt);
-	var toEmail = shareInfo.grantee.email;
-	var fromEmail = shareInfo.grantor.email;
-	if (action == ZmShareInfo.ACCEPT || action == ZmShareInfo.DECLINE) {
-		toEmail = shareInfo.grantor.email;
-		fromEmail = shareInfo.grantee.email;
-	}
-	msg.setAddress(ZmEmailAddress.TO, new ZmEmailAddress(toEmail));
-	msg.setAddress(ZmEmailAddress.FROM, new ZmEmailAddress(fromEmail, ZmEmailAddress.FROM));
-	msg.setSubject(ZmShareInfo._SUBJECTS[action]);
-	msg.setTopPart(topPart);
-	return msg;
-}
-
-/** Assumes ZmShareInfo._init has been called. */
-ZmShareInfo._createTextPart = function(action, shareInfo, compose) {
-	var formatter = ZmShareInfo._TEXT[action];
-	var content = this._createContent(formatter, shareInfo);
-	if (shareInfo.notes || compose) {
-		content += ZmAppt.NOTES_SEPARATOR + shareInfo.notes;
-	}
-
-	var mimePart = new ZmMimePart();
-	mimePart.setContentType(ZmMimeTable.TEXT_PLAIN);
-	mimePart.setContent(content);
-	return mimePart;
-}
-/** Assumes ZmShareInfo._init has been called. */
-ZmShareInfo._createHtmlPart = function(action, shareInfo, compose) {
-	var formatter = ZmShareInfo._HTML[action];
-	var content = this._createContent(formatter, shareInfo);
-	if (shareInfo.notes || compose) {
-		content += ZmShareInfo._HTML_NOTE.format(shareInfo.notes);
-	}
-
-	var mimePart = new ZmMimePart();
-	mimePart.setContentType(ZmMimeTable.TEXT_HTML);
-	mimePart.setContent(content);
-	return mimePart;
-}
-/** Assumes ZmShareInfo._init has been called. */
-ZmShareInfo._createXmlPart = function(action, shareInfo) {
-	var params = [
-		ZmShareInfo.URI, 
-		ZmShareInfo.VERSION, 
-		action,
-		shareInfo.grantee.id, 
-		shareInfo.grantee.email,
-		AjxStringUtil.xmlAttrEncode(shareInfo.grantee.name),
-		shareInfo.grantor.id, 
-		shareInfo.grantor.email,
-		AjxStringUtil.xmlAttrEncode(shareInfo.grantor.name),
-		shareInfo.link.id, 
-		AjxStringUtil.xmlAttrEncode(shareInfo.link.name), 
-		shareInfo.link.view, 
-		shareInfo.link.perm,
-		AjxStringUtil.xmlEncode(shareInfo.notes)
-	];
-	var content = ZmShareInfo._XML.format(params);
-
-	var mimePart = new ZmMimePart();
-	mimePart.setContentType(ZmMimeTable.XML_ZIMBRA_SHARE);
-	mimePart.setContent(content);
-	return mimePart;
-}
-ZmShareInfo._createContent = function(formatter, shareInfo) {
-	var params = [
-		shareInfo.link.name, 
-		ZmShareInfo._getFolderType(shareInfo.link.view),
-		shareInfo.grantor.name, 
-		shareInfo.grantee.name,
-		ZmShareInfo.getRoleName(shareInfo.link.perm),
-		ZmShareInfo.getRoleActions(shareInfo.link.perm)
-	];
-	var content = formatter.format(params);
-	return content;
-}
-ZmShareInfo._getFolderType = function(view) {
-	if (view) {
-		var folderType = ZmShareInfo._VIEWS[view] || ZmShareInfo._VIEWS["any"];
-		return "(" + folderType + ")";
-	}
-	return "";
 };
 
-ZmShareInfo._init = function() {
-	if (ZmShareInfo._SUBJECTS) return;
-
-	// view types
-	ZmShareInfo._VIEWS = {};
-	ZmShareInfo._VIEWS["conversation"] = ZmMsg.mailFolder;
-	ZmShareInfo._VIEWS["message"] = ZmMsg.mailFolder;
-	ZmShareInfo._VIEWS["appointment"] = ZmMsg.calendarFolder;
-	ZmShareInfo._VIEWS["wiki"] = ZmMsg.notebookFolder;
-	ZmShareInfo._VIEWS["contact"] = ZmMsg.addressBookFolder;
-	ZmShareInfo._VIEWS["any"] = ZmMsg.folder;
-
-	// message subjects
-	ZmShareInfo._SUBJECTS = {};
-	ZmShareInfo._SUBJECTS[ZmShareInfo.NEW] = ZmMsg.shareCreatedSubject;
-	ZmShareInfo._SUBJECTS[ZmShareInfo.EDIT] = ZmMsg.shareModifiedSubject;
-	ZmShareInfo._SUBJECTS[ZmShareInfo.DELETE] = ZmMsg.shareRevokedSubject;
-	ZmShareInfo._SUBJECTS[ZmShareInfo.ACCEPT] = ZmMsg.shareAcceptedSubject;
-	ZmShareInfo._SUBJECTS[ZmShareInfo.DECLINE] = ZmMsg.shareDeclinedSubject;
-	
-	// text formatters
-	ZmShareInfo._TEXT = {};
-	ZmShareInfo._TEXT[ZmShareInfo.NEW] = new AjxMessageFormat(ZmMsg.shareCreatedText);
-	ZmShareInfo._TEXT[ZmShareInfo.EDIT] = new AjxMessageFormat(ZmMsg.shareModifiedText);
-	ZmShareInfo._TEXT[ZmShareInfo.DELETE] = new AjxMessageFormat(ZmMsg.shareRevokedText);
-	ZmShareInfo._TEXT[ZmShareInfo.ACCEPT] = new AjxMessageFormat(ZmMsg.shareAcceptedText);
-	ZmShareInfo._TEXT[ZmShareInfo.DECLINE] = new AjxMessageFormat(ZmMsg.shareDeclinedText);
-	
-	// html formatters
-	ZmShareInfo._HTML = {};
-	ZmShareInfo._HTML[ZmShareInfo.NEW] = new AjxMessageFormat(ZmMsg.shareCreatedHtml);
-	ZmShareInfo._HTML[ZmShareInfo.EDIT] = new AjxMessageFormat(ZmMsg.shareModifiedHtml);
-	ZmShareInfo._HTML[ZmShareInfo.DELETE] = new AjxMessageFormat(ZmMsg.shareRevokedHtml);
-	ZmShareInfo._HTML[ZmShareInfo.ACCEPT] = new AjxMessageFormat(ZmMsg.shareAcceptedHtml);
-	ZmShareInfo._HTML[ZmShareInfo.DECLINE] = new AjxMessageFormat(ZmMsg.shareDeclinedHtml);
-	
-	ZmShareInfo._HTML_NOTE = new AjxMessageFormat(ZmMsg.shareNotesHtml);
-
-	// xml formatter
-	var pattern = [
-		'<share xmlns="{0}" version="{1}" action="{2}" >',
-		'  <grantee id="{3}" email="{4}" name="{5}" />',
-		'  <grantor id="{6}" email="{7}" name="{8}" />',
-		'  <link id="{9}" name="{10}" view="{11}" perm="{12}" />',
-		'  <notes>{13}</notes>',
-		'</share>'
-	].join("\n");
-	ZmShareInfo._XML = new AjxMessageFormat(pattern);
-}
-
-
-
-/**
-* ZmOrganizerShare
-* @constructor
-* @class
-*
-* @author Andy Clark
-*
-* @param organizer
-* @param granteeType
-* @param granteeId
-* @param granteeName
-* @param perm
-* @param inherit
-*/
-function ZmOrganizerShare(organizer, granteeType, granteeId, granteeName, perm, inherit) {
-	ZmShareInfo.call(this);
-	this.organizer = organizer;
-	this.grantee.type = granteeType;
-	this.grantee.id = granteeId;
-	this.grantee.name = granteeName;
-	this.link.perm = perm;
-	this.link.inh = inherit;
-};
-
-ZmOrganizerShare.prototype = new ZmShareInfo;
-ZmOrganizerShare.prototype.constructor = ZmOrganizerShare;
-
-// Constants
-
-ZmOrganizerShare.TYPE_ALL = "pub";
-ZmOrganizerShare.TYPE_USER = "usr";
-
-ZmOrganizerShare.ZID_ALL = "99999999-9999-9999-9999-999999999999";
-
-// Static methods
-
-ZmOrganizerShare.createFromJs =
-function(parent, grant) {
-	return new ZmOrganizerShare(parent, grant.gt, grant.zid, grant.d, grant.perm, grant.inh);
-};
-
-// Public methods
-
-ZmOrganizerShare.prototype.isPublic = function() {
-	return this.grantee.type == ZmOrganizerShare.TYPE_ALL;
-};
-
-ZmOrganizerShare.prototype.setPermissions =
-function(perm) {
-	if (this.link.perm == perm) return;
-	var success = this._organizerShareAction("grant", null, {perm: perm});
-	if (success) {
-		this.link.perm = perm;
-		var fields = new Object();
-		fields[ZmOrganizer.F_SHARES] = true;
-		this.organizer._notify(ZmEvent.E_MODIFY, {fields: fields});
-	}
-};
-
-ZmOrganizerShare.prototype.revoke = 
-function() {
-	var actionAttrs = { zid: this.isPublic() ? ZmOrganizerShare.ZID_ALL : this.grantee.id };
-	var success = this._organizerShareAction("!grant", actionAttrs );
-	if (success) {
-		var index = this._indexOf(this.grantee.name);
-		this.organizer.shares.splice(index,1);
-	
-		var fields = new Object();
-		fields[ZmOrganizer.F_SHARES] = true;
-		this.organizer._notify(ZmEvent.E_MODIFY, {fields: fields});
-	}
-};
 
 // Protected methods
-
-ZmOrganizerShare.prototype._indexOf = 
-function(granteeName) {
-	for (var i = 0; i < this.organizer.shares.length; i++) {
-		if (this.organizer.shares[i].grantee.name == granteeName)
-			return i;
-	}
-	return -1;
-};
 
 /**
  * General method for handling the SOAP call. 
@@ -497,13 +487,13 @@ function(granteeName) {
  * <strong>Note:</strong>
  * Exceptions need to be handled by calling method.
  */
-ZmOrganizerShare.prototype._organizerShareAction =
-function(operation, actionAttrs, grantAttrs) {
+ZmShare.prototype._shareAction =
+function(operation, actionAttrs, grantAttrs, callback, mode, replyType, notes) {
 	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
 	
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("op", operation);
-	actionNode.setAttribute("id", this.organizer.id);
+	actionNode.setAttribute("id", this.object.id);
 	for (var attr in actionAttrs) {
 		actionNode.setAttribute(attr, actionAttrs[attr]);
 	}
@@ -517,9 +507,133 @@ function(operation, actionAttrs, grantAttrs) {
 		shareNode.setAttribute(attr, grantAttrs[attr]);
 	}
 	
-	var appCtlr = this.organizer.tree._appCtxt.getAppController();
-	var resp = appCtlr.sendRequest({soapDoc: soapDoc})["FolderActionResponse"];
-	
-	var id = parseInt(resp.action.id);
-	return (id == this.organizer.id);
+	var respCallback = new AjxCallback(this, this._handleResponseShareAction, [callback, mode, replyType, notes]);
+	var errorCallback = new AjxCallback(this, this._handleErrorShareAction);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+												  callback: respCallback, errorCallback: errorCallback});
+};
+
+ZmShare.prototype._handleResponseShareAction =
+function(callback, mode, replyType, notes, result) {
+	if (callback) {
+		callback.run(mode, replyType, notes, result);
+	}
+};
+
+ZmShare.prototype._handleErrorShareAction =
+function(ex) {
+	var message = ZmMsg.unknownError;
+	if (ex instanceof ZmCsfeException && ex.code == "account.NO_SUCH_ACCOUNT") {
+		if (!this._unknownUserFormatter) {
+			this._unknownUserFormatter = new AjxMessageFormat(ZmMsg.unknownUser);
+		}
+		message = this._unknownUserFormatter.format(this.grantee.name);
+		// NOTE: This prevents details from being shown
+		ex = null;
+	}
+
+	this._appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
+	return true;
+};
+
+ZmShare.prototype._createMsg =
+function(mode, isCompose) {
+	ZmShare._init();
+
+	// generate message
+	var textPart = this._createTextPart(mode, isCompose);
+	var htmlPart = this._createHtmlPart(mode, isCompose);
+	var xmlPart = this._createXmlPart(mode);		
+
+	var topPart = new ZmMimePart();
+	topPart.setContentType(ZmMimeTable.MULTI_ALT);
+	topPart.children.add(textPart);
+	topPart.children.add(htmlPart);
+	topPart.children.add(xmlPart);
+
+	var msg = new ZmMailMsg(this._appCtxt);
+	var toEmail = this.grantee.email;
+	var fromEmail = this.grantor.email;
+	if (mode == ZmShare.ACCEPT || mode == ZmShare.DECLINE) {
+		toEmail = this.grantor.email;
+		fromEmail = this.grantee.email;
+	}
+	msg.setAddress(ZmEmailAddress.TO, new ZmEmailAddress(toEmail));
+	msg.setAddress(ZmEmailAddress.FROM, new ZmEmailAddress(fromEmail, ZmEmailAddress.FROM));
+	msg.setSubject(ZmShare._SUBJECTS[mode]);
+	msg.setTopPart(topPart);
+
+	return msg;
+};
+
+ZmShare.prototype._createTextPart =
+function(mode, isCompose) {
+	var formatter = ZmShare._TEXT[mode];
+	var content = this._createContent(formatter);
+	if (this.notes || isCompose) {
+		content += ZmAppt.NOTES_SEPARATOR + this.notes;
+	}
+
+	var mimePart = new ZmMimePart();
+	mimePart.setContentType(ZmMimeTable.TEXT_PLAIN);
+	mimePart.setContent(content);
+
+	return mimePart;
+};
+
+ZmShare.prototype._createHtmlPart =
+function(mode, isCompose) {
+	var formatter = ZmShare._HTML[mode];
+	var content = this._createContent(formatter);
+	if (this.notes || isCompose) {
+		content += ZmShare._HTML_NOTE.format(this.notes);
+	}
+
+	var mimePart = new ZmMimePart();
+	mimePart.setContentType(ZmMimeTable.TEXT_HTML);
+	mimePart.setContent(content);
+
+	return mimePart;
+};
+
+ZmShare.prototype._createXmlPart =
+function(mode) {
+	var params = [
+		ZmShare.URI, 
+		ZmShare.VERSION, 
+		mode,
+		this.grantee.id, 
+		this.grantee.email,
+		AjxStringUtil.xmlAttrEncode(this.grantee.name),
+		this.grantor.id, 
+		this.grantor.email,
+		AjxStringUtil.xmlAttrEncode(this.grantor.name),
+		this.link.id, 
+		AjxStringUtil.xmlAttrEncode(this.link.name), 
+		this.link.view, 
+		this.link.perm,
+		AjxStringUtil.xmlEncode(this.notes)
+	];
+	var content = ZmShare._XML.format(params);
+
+	var mimePart = new ZmMimePart();
+	mimePart.setContentType(ZmMimeTable.XML_ZIMBRA_SHARE);
+	mimePart.setContent(content);
+
+	return mimePart;
+};
+
+ZmShare.prototype._createContent =
+function(formatter) {
+	var params = [
+		this.link.name, 
+		ZmShare._getFolderType(this.link.view),
+		this.grantor.name, 
+		this.grantee.name,
+		ZmShare.getRoleName(this.link.perm),
+		ZmShare.getRoleActions(this.link.perm)
+	];
+	var content = formatter.format(params);
+
+	return content;
 };

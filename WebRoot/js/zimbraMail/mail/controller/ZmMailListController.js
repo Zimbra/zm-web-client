@@ -381,15 +381,12 @@ ZmMailListController.prototype._shareHandler =
 function(ev) {
 	if (ev._buttonId == ZmOperation.SHARE_ACCEPT) {
 		var acceptDialog = this._appCtxt.getAcceptShareDialog();
-		acceptDialog.setShareInfo(ev._share);
 		acceptDialog.setAcceptListener(this._acceptShareListener);
-		acceptDialog.popup();
-	}
-	else if (ev._buttonId == ZmOperation.SHARE_DECLINE) {
+		acceptDialog.popup(ev._share);
+	} else if (ev._buttonId == ZmOperation.SHARE_DECLINE) {
 		var declineDialog = this._appCtxt.getDeclineShareDialog();
-		declineDialog.setShareInfo(ev._share);
 		declineDialog.setDeclineListener(this._declineShareListener);
-		declineDialog.popup();
+		declineDialog.popup(ev._share);
 	}
 };
 
