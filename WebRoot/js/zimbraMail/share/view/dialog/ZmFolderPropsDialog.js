@@ -242,7 +242,9 @@ function(parent, share) {
 	];
 	for (var i = 0; i < labels.length; i++) {
 		var action = actions[i];
-		if (share.isPublic() && action == this._handleResendShare) continue;
+		// public shares have no editable fields, and sent no mail
+		if (share.isPublic() && (action == this._handleEditShare ||
+								 action == this._handleResendShare)) continue;
 
 		var link = document.createElement("A");
 		link.href = "#";
