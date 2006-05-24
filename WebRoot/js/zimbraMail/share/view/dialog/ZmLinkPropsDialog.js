@@ -67,7 +67,7 @@ function(linkInfo, callback, loc) {
 		this._pageInput.setValue("");
 	}
 
-	this._urlInput.setValue(this._linkInfo.url || "");
+	this._urlInput.setValue(this._linkInfo.url || "http://www.");
 	this._titleInput.setValue(this._linkInfo.text || "");
 
 	ZmLinkPropsDialog._setRequiredFields(this, !isUrlLink);
@@ -137,6 +137,7 @@ function(text, element, matchObj) {
 };
 
 ZmLinkPropsDialog.prototype._acKeyUpListener = function(event) {
+	this._pageInput.validate();
 	ZmLinkPropsDialog._enableFieldsOnEdit(this);
 };
 
@@ -145,9 +146,18 @@ ZmLinkPropsDialog.prototype._acKeyUpListener = function(event) {
 ZmLinkPropsDialog._handleEdit = function(event) {
 	var target = DwtUiEvent.getTarget(event);
 	var dialog = Dwt.getObjectFromElement(target);
-
 	ZmLinkPropsDialog._enableFieldsOnEdit(dialog);
 	return true;
+};
+
+ZmLinkPropsDialog._handleKeyUp = function(event){
+	if (DwtInputField._keyUpHdlr(event)) {
+		var target = DwtUiEvent.getTarget(event);
+		var inputField = Dwt.getObjectFromElement(target);
+		var dialog = inputField.parent.parent;
+		return ZmLinkPropsDialog._enableFieldsOnEdit(dialog);
+	}
+	return false;
 };
 
 ZmLinkPropsDialog._handleLinkTo = function(event) {
@@ -159,10 +169,30 @@ ZmLinkPropsDialog._handleLinkTo = function(event) {
 	return true;
 };
 
+ZmLinkPropsDialog._handleUrlTest = function(event) {
+	var target = DwtUiEvent.getTarget(event);
+	var dialog = Dwt.getObjectFromElement(target);
+
+	var winurl = dialog._urlInput.getValue();
+	var winname = "_new";
+	var winfeatures = [
+		"width=",(window.outerWidth || 640),",",
+		"height=",(window.outerHeight || 480),",",
+		"location,menubar,",
+		"resizable,scrollbars,status,toolbar"
+	].join("");
+
+	var win = open(winurl, winname, winfeatures);
+};
+
 ZmLinkPropsDialog._enableFieldsOnEdit = function(dialog) {
-	var enabled =
-		(dialog._pageRadioEl && dialog._pageRadioEl.checked && dialog._pageInput.getValue().replace(/^\s+(.*)\s+$/,"$1")) ||
-		dialog._urlInput.getValue().replace(/^\s+(.*)\s+$/,"$1");
+	var enabled = false;
+	if (dialog._pageRadioEl && dialog._pageRadioEl.checked) {
+		enabled = dialog._pageInput.getValue().replace(/^\s+(.*)\s+$/,"$1") != "";
+	}
+	else {
+		enabled = dialog._urlInput.getValue().replace(/^\s+(.*)\s+$/,"$1") != "";
+	}
 	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, enabled);
 };
 
@@ -207,11 +237,18 @@ ZmLinkPropsDialog.prototype._createView =
 function() {
 	// TODO: only show url link if notebook app is disabled
 	var view = new DwtComposite(this);
+	var inputParams = {
+		parent: view,
+		type: DwtInputField.STRING,
+		validationStyle: DwtInputField.CONTINUAL_VALIDATION
+	}
 
 	// create common DWT controls
-	this._urlInput = new DwtInputField(view);
+	this._urlInput = new DwtInputField(inputParams);
 	this._urlInput.setRequired(true);
-	this._titleInput = new DwtInputField(view);
+	var urlInputEl = this._urlInput.getInputElement();
+	Dwt.setHandler(urlInputEl, DwtEvent.ONKEYUP, ZmLinkPropsDialog._handleKeyUp);
+	this._titleInput = new DwtInputField(inputParams);
 
 	// setup dialog controls for notebook
 	if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
@@ -222,6 +259,7 @@ function() {
 		var notebookId = Dwt.getNextId();
 		var pageId = Dwt.getNextId();
 		var urlInputId = Dwt.getNextId();
+		var urlTestId = Dwt.getNextId();
 		var titleInputId = Dwt.getNextId();
 
 		var typeName = this._htmlElId+"_type";
@@ -254,18 +292,17 @@ function() {
 
 		// create dwt controls
 		this._notebookSelect = new DwtSelect(view);
-		this._pageInput = new DwtInputField(view);
+		this._pageInput = new DwtInputField(inputParams);
 		this._pageInput.setRequired(true);
 
 		var pageInputEl = this._pageInput.getInputElement();
 		pageInputEl.style.width = "15em";
 
 		var inputEl = this._urlInput.getInputElement();
-		inputEl.value = "http://www.";
 		inputEl.style.width = "25em";
 
 		var inputEl = this._titleInput.getInputElement();
-		inputEl.style.width = "15em";
+		inputEl.style.width = "20em";
 
 		var linkToGroup = new DwtGrouper(view);
 		linkToGroup.setLabel(ZmMsg.linkTo);
@@ -293,7 +330,17 @@ function() {
 		var cell = row.insertCell(-1);
 		cell.appendChild(this._urlInput.getHtmlElement());
 		var cell = row.insertCell(-1);
-		cell.innerHTML = "Test";
+		cell.innerHTML = [
+			"<span ",
+				"id='",urlTestId,"' ",
+				"onmouseover='this.style.cursor=\"pointer\"' ",
+				"onmouseout='this.style.cursor=\"default\"' ",
+				"style='color:blue;text-decoration:underline;'",
+			">", ZmMsg.testUrl, "</span>"
+		].join("");
+		var urlTestEl = cell.firstChild;
+		Dwt.setHandler(urlTestEl, DwtEvent.ONCLICK, ZmLinkPropsDialog._handleUrlTest);
+		Dwt.associateElementWithObject(urlTestEl, this);
 
 		var urlEl = document.getElementById(urlInputId);
 		urlEl.parentNode.replaceChild(table, urlEl);
@@ -327,6 +374,7 @@ function() {
 		}
 		this._acPageList = new ZmAutocompleteListView(params);
 		this._acPageList.handle(pageInputEl);
+		//Dwt.setHandler(pageInputEl, DwtEvent.ONKEYUP, ZmLinkPropsDialog._handleKeyUp);
 
 	} // if NOTEBOOK_ENABLED
 

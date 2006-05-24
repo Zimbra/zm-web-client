@@ -429,14 +429,23 @@ ZmPageEditor.prototype._createWikiToolBar = function(parent) {
 };
 /***/
 
-ZmPageEditor.prototype._insertImagesListener = function(event) {
-	this._insertObjectsListener(event, this.insertImage);
-};
-ZmPageEditor.prototype._insertAttachmentsListener = function(event) {
-	this._insertObjectsListener(event, this.insertText);
+ZmPageEditor.prototype.insertLink = function(href) {
+	var link = document.createElement("A");
+	link.href = href;
+	link.innerHTML = AjxStringUtil.htmlEncode(href);
+
+	this._insertLink(link);
 };
 
-ZmPageEditor.prototype._insertObjectsListener = function(event, func) {
+ZmPageEditor.prototype._insertImagesListener = function(event) {
+	this._insertObjectsListener(event, this.insertImage, ZmMsg.insertImage);
+};
+ZmPageEditor.prototype._insertAttachmentsListener = function(event) {
+	//this._insertObjectsListener(event, this.insertText);
+	this._insertObjectsListener(event, this.insertLink, ZmMsg.insertAttachment);
+};
+
+ZmPageEditor.prototype._insertObjectsListener = function(event, func, title) {
 	if (!this._insertObjectsCallback) {
 		this._insertObjectsCallback = new AjxCallback(this, this._insertObjects);
 	}
@@ -444,13 +453,13 @@ ZmPageEditor.prototype._insertObjectsListener = function(event, func) {
 	this.__popupUploadDialog(this._insertObjectsCallback);
 };
 
-ZmPageEditor.prototype.__popupUploadDialog = function(callback) {
+ZmPageEditor.prototype.__popupUploadDialog = function(callback, title) {
 	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var page = this._controller.getPage();
 	var notebook = tree.getById(page.folderId);
 
 	var dialog = this._appCtxt.getUploadDialog();
-	dialog.popup(notebook, callback);
+	dialog.popup(notebook, callback, title);
 };
 
 ZmPageEditor.prototype._insertObjects = function(func, folder, path, filenames) {
@@ -494,7 +503,7 @@ ZmPageEditor._handleLinkClick = function(event) {
 
 	var url = target.href;
 	var text = target.innerHTML;
-	dialog._popupLinkPropsDialog(url, text, target);
+	dialog._popupLinkPropsDialog(target, url, text);
 
 	// NOTE: do NOT allow browser to follow link!
 	return false;

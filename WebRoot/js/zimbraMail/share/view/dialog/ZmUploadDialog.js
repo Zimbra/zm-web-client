@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -48,9 +48,11 @@ ZmUploadDialog.prototype._uploadCallback;
 
 // Public methods
 
-ZmUploadDialog.prototype.popup = function(folder, callback, loc) {
+ZmUploadDialog.prototype.popup = function(folder, callback, title, loc) {
 	this._uploadFolder = folder;
 	this._uploadCallback = callback;
+
+	this.setTitle(title || ZmMsg.uploadDocs);
 
 	// reset input fields
 	var table = document.getElementById(this._tableId);

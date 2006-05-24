@@ -35,12 +35,14 @@ function ZmNotebookTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.MOUNT_NOTEBOOK] = new AjxListener(this, this._mountNotebookListener);
 	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editPropsListener);
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
-	this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME] = new AjxListener(this, this._editNotebookListener);
 	this._listeners[ZmOperation.EDIT_NOTEBOOK_INDEX] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
+	/***
+	this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME] = new AjxListener(this, this._editNotebookListener);
 	this._listeners[ZmOperation.EDIT_NOTEBOOK_STYLES] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
 	this._listeners[ZmOperation.EDIT_NOTEBOOK_SIDE_BAR] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
 	this._listeners[ZmOperation.EDIT_NOTEBOOK_HEADER] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
 	this._listeners[ZmOperation.EDIT_NOTEBOOK_FOOTER] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
+	/***/
 
 	this._eventMgrs = {};
 };
@@ -75,11 +77,8 @@ function(actionMenu, type, id) {
 		menuItem.setImage(isNotebook ? "Notebook" : "Section");
 		menuItem.setDisabledImage(menuItem.getImage()+"Dis");
 		
-		if (!this._actionMenuInitialized) {
-			var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
-			menuItem.setImage("SendReceive");
-			this._actionMenuInitialized = true;
-		}
+		var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
+		menuItem.setImage("SendReceive");
 	}
 };
 
@@ -88,10 +87,17 @@ ZmNotebookTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [
 		ZmOperation.NEW_NOTEBOOK, ZmOperation.EXPAND_ALL,
-		ZmOperation.SEP, ZmOperation.REFRESH, ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_INDEX, ZmOperation.EDIT_NOTEBOOK_HEADER, 
-		ZmOperation.EDIT_NOTEBOOK_FOOTER, ZmOperation.EDIT_NOTEBOOK_SIDE_BAR,
-		ZmOperation.SEP, ZmOperation.EDIT_NOTEBOOK_CHROME, ZmOperation.EDIT_NOTEBOOK_STYLES
+		ZmOperation.SEP,
+		ZmOperation.REFRESH,
+		ZmOperation.SEP,
+		ZmOperation.EDIT_NOTEBOOK_INDEX
+		/***
+		ZmOperation.SEP,
+		ZmOperation.EDIT_NOTEBOOK_HEADER, ZmOperation.EDIT_NOTEBOOK_FOOTER,
+		ZmOperation.EDIT_NOTEBOOK_SIDE_BAR,
+		ZmOperation.SEP,
+		ZmOperation.EDIT_NOTEBOOK_CHROME, ZmOperation.EDIT_NOTEBOOK_STYLES
+		***/
 	];
 };
 
@@ -105,9 +111,14 @@ function() {
 	ops.push(
 		ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.REFRESH,
 		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_INDEX, ZmOperation.SEP, ZmOperation.EDIT_NOTEBOOK_HEADER, 
-		ZmOperation.EDIT_NOTEBOOK_FOOTER, ZmOperation.EDIT_NOTEBOOK_SIDE_BAR,
-		ZmOperation.SEP, ZmOperation.EDIT_NOTEBOOK_CHROME, ZmOperation.EDIT_NOTEBOOK_STYLES
+		ZmOperation.EDIT_NOTEBOOK_INDEX
+		/***
+		ZmOperation.SEP,
+		ZmOperation.EDIT_NOTEBOOK_HEADER, ZmOperation.EDIT_NOTEBOOK_FOOTER,
+		ZmOperation.EDIT_NOTEBOOK_SIDE_BAR,
+		ZmOperation.SEP,
+		ZmOperation.EDIT_NOTEBOOK_CHROME, ZmOperation.EDIT_NOTEBOOK_STYLES
+		/***/
 	);
 	return ops;
 };

@@ -371,7 +371,7 @@ ZmNotebookController.prototype._detachListener = function(event) {
 	var page = view.getSelection();
 
 	var winurl = page.getUrl();
-	var winname = "newwin"+Math.random();
+	var winname = "_new";
 	var winfeatures = [
 		"width=",(window.outerWidth || 640),",",
 		"height=",(window.outerHeight || 480),",",
