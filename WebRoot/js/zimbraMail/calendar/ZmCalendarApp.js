@@ -99,17 +99,26 @@ function() {
 	return this._apptController;
 };
 
+ZmCalendarApp.prototype.loadResources = 
+function() {
+	var batchCmd = new ZmBatchCommand(this._appCtxt);
+
+	this._locations = new ZmResourceList(this._appCtxt, ZmAppt.LOCATION);
+	this._locations.isCanonical = true;
+	batchCmd.add(new AjxCallback(this._locations, this._locations.load));
+
+	this._equipment = new ZmResourceList(this._appCtxt, ZmAppt.EQUIPMENT);
+	this._equipment.isCanonical = true;
+	batchCmd.add(new AjxCallback(this._equipment, this._equipment.load));
+
+	batchCmd.run();
+};
+
 /**
 * Returns a ZmResourceList of known locations.
 */
 ZmCalendarApp.prototype.getLocations = 
 function() {
-	if (!this._locations) {
-		this._locations = new ZmResourceList(this._appCtxt, ZmAppt.LOCATION);
-		this._locations.isCanonical = true;
-		this._locations.load();
-	}
-	
 	return this._locations;
 };
 
@@ -118,12 +127,6 @@ function() {
 */
 ZmCalendarApp.prototype.getEquipment = 
 function() {
-	if (!this._equipment) {
-		this._equipment = new ZmResourceList(this._appCtxt, ZmAppt.EQUIPMENT);
-		this._equipment.isCanonical = true;
-		this._equipment.load();
-	}
-	
 	return this._equipment;
 };
 

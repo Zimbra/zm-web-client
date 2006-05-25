@@ -188,9 +188,14 @@ function(params) {
 	}
 	
 	var respCallback = new AjxCallback(this, this._handleResponseExecute, [this.isGalSearch, this.isCalResSearch, params.callback]);
-	var execFrame = new AjxCallback(this, this.execute, params);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback,
-												  errorCallback: params.errorCallback, execFrame: execFrame});
+	
+	if (params.batchCmd) {
+		params.batchCmd.addRequestParams(soapDoc, respCallback);
+	} else {
+		var execFrame = new AjxCallback(this, this.execute, params);
+		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback,
+													  errorCallback: params.errorCallback, execFrame: execFrame});
+	}
 };
 
 /*

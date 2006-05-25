@@ -42,8 +42,7 @@ function ZmApptComposeController(appCtxt, container, calApp) {
 	this._addedAttendees = [];
 	this._removedAttendees = [];
 	
-	calApp.getLocations();	// make sure locations are available for autocomplete
-	calApp.getEquipment();	// make sure equipment items are available for autocomplete
+	calApp.loadResources();	// make sure resources are available for autocomplete
 };
 
 ZmApptComposeController.prototype = new ZmController();
