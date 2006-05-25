@@ -327,34 +327,17 @@ function() {
 };
 
 ZmShare.prototype.grant =
-function(perm, mode, replyType, notes) {
+function(perm, batchCmd) {
 	this.link.perm = perm;
 	var respCallback = new AjxCallback(this, this._handleResponseGrant);
-	this._shareAction("grant", null, {perm: perm}, respCallback, mode, replyType, notes);
+	this._shareAction("grant", null, {perm: perm}, respCallback, batchCmd);
 };
 
 ZmShare.prototype._handleResponseGrant =
-function(mode, replyType, notes, result) {
+function(result) {
 	var action = result.getResponse().FolderActionResponse.action;
 	this.grantee.id = action.zid;
 	this.grantee.email = action.d;
-
-	// check if we need to send message or bring up compose window
-	if (replyType) {
-		// initialize rest of share information
-		this.grantor.id = this._appCtxt.get(ZmSetting.USERID);
-		this.grantor.email = this._appCtxt.get(ZmSetting.USERNAME);
-		this.grantor.name = this._appCtxt.get(ZmSetting.DISPLAY_NAME) || this.grantor.email;
-		this.link.id = this.object.id;
-		this.link.name = this.object.name;
-		this.link.view = ZmOrganizer.getViewName(this.object.type);
-		this.notes = notes;
-		if (replyType == ZmShareReply.COMPOSE) {
-			this.composeMessage(mode);
-		} else {
-			this.sendMessage(mode);
-		}
-	}
 };
 
 ZmShare.prototype.revoke = 
@@ -443,9 +426,9 @@ function(ex) {
 };
 
 ZmShare.prototype.sendMessage =
-function(mode) {
+function(mode, addrs) {
 	// generate message
-	var msg = this._createMsg(mode);
+	var msg = this._createMsg(mode, false, addrs);
 
 	// send message
 	var contactsApp = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
@@ -455,17 +438,8 @@ function(mode) {
 };
 
 ZmShare.prototype.composeMessage =
-function(mode) {
-	// generate message
-	var msg = this._createMsg(this._appCtxt, mode, true);
-
-	// initialize compose message
-	var action = ZmOperation.SHARE;
-	var inNewWindow = true;
-	var toOverride = null;
-	var subjOverride = null;
-	var extraBodyText = null;
-
+function(mode, addrs) {
+	var msg = this._createMsg(mode, true, addrs);
 	var mailApp = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
 	var composeController = mailApp.getComposeController();
 
@@ -475,7 +449,7 @@ function(mode) {
 	var htmlPart = parts.get(1);
 	var xmlPart = parts.get(2);
 	msg.setBodyParts([ textPart.node, htmlPart.node, xmlPart.node ]);
-	composeController.doAction(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText);
+	composeController.doAction(ZmOperation.SHARE, true, msg);
 };
 
 
@@ -488,7 +462,7 @@ function(mode) {
  * Exceptions need to be handled by calling method.
  */
 ZmShare.prototype._shareAction =
-function(operation, actionAttrs, grantAttrs, callback, mode, replyType, notes) {
+function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
 	
 	var actionNode = soapDoc.set("action");
@@ -507,16 +481,21 @@ function(operation, actionAttrs, grantAttrs, callback, mode, replyType, notes) {
 		shareNode.setAttribute(attr, grantAttrs[attr]);
 	}
 	
-	var respCallback = new AjxCallback(this, this._handleResponseShareAction, [callback, mode, replyType, notes]);
+	var respCallback = new AjxCallback(this, this._handleResponseShareAction, [callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorShareAction);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
-												  callback: respCallback, errorCallback: errorCallback});
+	
+	if (batchCmd) {
+		batchCmd.addRequestParams(soapDoc, respCallback, errorCallback);
+	} else {
+		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+													  callback: respCallback, errorCallback: errorCallback});
+	}
 };
 
 ZmShare.prototype._handleResponseShareAction =
-function(callback, mode, replyType, notes, result) {
+function(callback, result) {
 	if (callback) {
-		callback.run(mode, replyType, notes, result);
+		callback.run(result);
 	}
 };
 
@@ -537,13 +516,13 @@ function(ex) {
 };
 
 ZmShare.prototype._createMsg =
-function(mode, isCompose) {
+function(mode, isCompose, addrs) {
 	ZmShare._init();
 
 	// generate message
 	var textPart = this._createTextPart(mode, isCompose);
 	var htmlPart = this._createHtmlPart(mode, isCompose);
-	var xmlPart = this._createXmlPart(mode);		
+	var xmlPart = this._createXmlPart(mode);
 
 	var topPart = new ZmMimePart();
 	topPart.setContentType(ZmMimeTable.MULTI_ALT);
@@ -552,14 +531,14 @@ function(mode, isCompose) {
 	topPart.children.add(xmlPart);
 
 	var msg = new ZmMailMsg(this._appCtxt);
-	var toEmail = this.grantee.email;
-	var fromEmail = this.grantor.email;
+	var toEmail, fromEmail;
 	if (mode == ZmShare.ACCEPT || mode == ZmShare.DECLINE) {
-		toEmail = this.grantor.email;
-		fromEmail = this.grantee.email;
+		msg.setAddress(ZmEmailAddress.FROM, new ZmEmailAddress(this.grantee.email, ZmEmailAddress.FROM));
+		msg.setAddress(ZmEmailAddress.TO, new ZmEmailAddress(this.grantor.email), ZmEmailAddress.TO);
+	} else {
+		msg.setAddress(ZmEmailAddress.FROM, new ZmEmailAddress(this.grantee.email, ZmEmailAddress.FROM));
+		msg.setAddresses(ZmEmailAddress.BCC, addrs);
 	}
-	msg.setAddress(ZmEmailAddress.TO, new ZmEmailAddress(toEmail));
-	msg.setAddress(ZmEmailAddress.FROM, new ZmEmailAddress(fromEmail, ZmEmailAddress.FROM));
 	msg.setSubject(ZmShare._SUBJECTS[mode]);
 	msg.setTopPart(topPart);
 

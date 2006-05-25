@@ -34,6 +34,7 @@ Contributor(s):
    }
 %>
 <!-- BEGIN SCRIPT BLOCK -->
+<script type="text/javascript" src="<%= contextPath %>/js/zimbra/csfe/ZmBatchCommand.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbra/csfe/ZmCsfeCommand.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbra/csfe/ZmCsfeException.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbra/csfe/ZmCsfeResult.js<%= ext %>?v=<%= vers %>"></script>

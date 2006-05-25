@@ -390,6 +390,7 @@ function() {
 	}
 	this._optionsMenu[ZmOperation.REPLY_ALL] = this._optionsMenu[ZmOperation.REPLY];
 	this._optionsMenu[ZmOperation.FORWARD_INLINE] = this._optionsMenu[ZmOperation.FORWARD_ATT];
+	this._optionsMenu[ZmOperation.SHARE] = this._optionsMenu[ZmOperation.NEW_MESSAGE];
 
 	// change default button style to toggle for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
@@ -622,7 +623,7 @@ function(ev) {
 	}
 
 	// Click on "Options" button.
-	if (op == ZmOperation.COMPOSE_OPTIONS) {
+	if (op == ZmOperation.COMPOSE_OPTIONS && this._optionsMenu[this._action]) {
 		var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 		var bounds = button.getBounds();
 		this._optionsMenu[this._action].popup(0, bounds.x, bounds.y + bounds.height, false);
@@ -712,10 +713,12 @@ function(ev) {
 		signatureButton.setVisible(canAddSig);
 	} else if (id == ZmSetting.SHOW_CC) {
 		var menu = this._optionsMenu[this._action];
-		menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_CC).setChecked(this._appCtxt.get(ZmSetting.SHOW_CC), true);
+		if (menu)
+			menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_CC).setChecked(this._appCtxt.get(ZmSetting.SHOW_CC), true);
 	} else if (id == ZmSetting.SHOW_BCC) {
 		var menu = this._optionsMenu[this._action];
-		menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_BCC).setChecked(this._appCtxt.get(ZmSetting.SHOW_BCC), true);
+		if (menu)
+			menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_BCC).setChecked(this._appCtxt.get(ZmSetting.SHOW_BCC), true);
 	}
 };
 

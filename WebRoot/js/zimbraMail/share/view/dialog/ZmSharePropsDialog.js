@@ -152,14 +152,44 @@ function(event) {
 		shares.push(this._setUpShare(this._share)); // editing perms on a share
 	}
 	
+	// Since we may be sharing with multiple users, use a batch command
+	var batchCmd = new ZmBatchCommand(this._appCtxt);
 	var perm = this._getSelectedRole();
 	for (var i = 0; i < shares.length; i++) {
 		var share = shares[i];
 		if (perm != share.link.perm) {
-			var replyType = (!this._allRadioEl.checked && this._reply.getReply()) ?
-								this._reply.getReplyType() : null;
-			var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
-			share.grant(perm, this._shareMode, replyType, notes);
+			var cmd = new AjxCallback(share, share.grant, [perm]);
+			batchCmd.add(cmd);
+		}
+	}
+	batchCmd.run();
+	
+	// check if we need to send message or bring up compose window
+	var replyType = (!this._allRadioEl.checked && this._reply.getReply()) ?	this._reply.getReplyType() : null;
+	var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
+	if (replyType) {
+		var addrs = new AjxVector();
+		for (var i = 0; i < shares.length; i++) {
+			var share = shares[i];
+			if (share.grantee.email) {
+				addrs.add(new ZmEmailAddress(share.grantee.email, ZmEmailAddress.BCC));
+			}
+		}
+		if (addrs.size() > 0) {
+			var tmpShare = AjxUtil.createProxy(shares[0], 2);
+			// initialize rest of share information
+			tmpShare.grantor.id = this._appCtxt.get(ZmSetting.USERID);
+			tmpShare.grantor.email = this._appCtxt.get(ZmSetting.USERNAME);
+			tmpShare.grantor.name = this._appCtxt.get(ZmSetting.DISPLAY_NAME) || tmpShare.grantor.email;
+			tmpShare.link.id = tmpShare.object.id;
+			tmpShare.link.name = tmpShare.object.name;
+			tmpShare.link.view = ZmOrganizer.getViewName(tmpShare.object.type);
+			tmpShare.notes = notes;
+			if (replyType == ZmShareReply.COMPOSE) {
+				tmpShare.composeMessage(this._shareMode, addrs);
+			} else {
+				tmpShare.sendMessage(this._shareMode, addrs);
+			}
 		}
 	}
 
