@@ -358,9 +358,9 @@ function(name) {
 
 ZmContact.prototype.getAttrs =
 function() {
-	if (this.canonicalList && !this.isShared()) {
+	if (this.canonicalList && !this.isShared() && !this.list.isGal) {
 		var contact = this.canonicalList.getById(this.id);
-		return contact ? contact.attr : null;
+		return contact ? contact.attr : this.attr;
 	} else {
 		return this.attr;
 	}

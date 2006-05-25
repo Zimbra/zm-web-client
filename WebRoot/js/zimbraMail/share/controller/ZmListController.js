@@ -648,19 +648,14 @@ function(ev) {
 // the header, it will appear to be valid.
 ZmListController.prototype._dropListener =
 function(ev) {
-	var div, item;
-
-	div = Dwt.getAttr(ev.uiEvent.target, "_itemIndex", true);
 	var view = this._listView[this._currentView];
-	if (div) {
-		item = view.getItemFromElement(div);
-	}
+	var div = Dwt.getAttr(ev.uiEvent.target, "_itemIndex", true);
+	var item = div ? view.getItemFromElement(div) : null
+
 	// only tags can be dropped on us
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		ev.doIt = (item && this._dropTgt.isValidTarget(ev.srcData));
 		DBG.println(AjxDebug.DBG3, "DRAG_ENTER: doIt = " + ev.doIt);
-		if (item && (item.type == ZmItem.CONTACT) && item.isGal)
-			ev.doIt = false; // can't tag a GAL contact
 	    view.dragSelect(div);
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
 	    view.dragDeselect(div);

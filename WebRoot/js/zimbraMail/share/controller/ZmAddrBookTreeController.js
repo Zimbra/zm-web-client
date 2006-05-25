@@ -41,20 +41,19 @@ function ZmAddrBookTreeController(appCtxt, type, dropTgt) {
 	type = type || ZmOrganizer.ADDRBOOK;
 	dropTgt = dropTgt || (new DwtDropTarget(ZmContact));
 
-	ZmTreeController.call(this, appCtxt, type, dropTgt);
+	ZmFolderTreeController.call(this, appCtxt, type, dropTgt);
 
 	this._listeners[ZmOperation.NEW_ADDRBOOK] = new AjxListener(this, this._newListener);
-	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
 	this._listeners[ZmOperation.SHARE_ADDRBOOK] = new AjxListener(this, this._shareAddrBookListener);
 };
 
-ZmAddrBookTreeController.prototype = new ZmFolderTreeController();
+ZmAddrBookTreeController.prototype = new ZmFolderTreeController;
 ZmAddrBookTreeController.prototype.constructor = ZmAddrBookTreeController;
 
 
 // Public methods
 
-ZmAddrBookTreeController.prototype.toString = 
+ZmAddrBookTreeController.prototype.toString =
 function() {
 	return "ZmAddrBookTreeController";
 };
@@ -80,7 +79,7 @@ function(overviewId, showUnread, omit, forceCreate) {
 };
 
 // Enables/disables operations based on the given organizer ID
-ZmAddrBookTreeController.prototype.resetOperations = 
+ZmAddrBookTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	var deleteText = ZmMsg.del;
 	var addrBook = this._dataTree.getById(id);
@@ -131,7 +130,7 @@ function() {
 };
 
 // Returns the dialog for organizer creation
-ZmAddrBookTreeController.prototype._getNewDialog = 
+ZmAddrBookTreeController.prototype._getNewDialog =
 function() {
 	return this._appCtxt.getNewAddrBookDialog();
 };
@@ -192,13 +191,15 @@ function(ev, treeView) {
 */
 ZmAddrBookTreeController.prototype._itemClicked =
 function(folder) {
+	// always reset the search type to be Contacts
+	var sc = this._appCtxt.getSearchController();
+	sc.setDefaultSearchType(ZmItem.CONTACT, true);
+
 	// force a search if user clicked Trash folder
 	// XXX: this is temp until we figure out how to switch to mixed view
 	if (folder.id == ZmFolder.ID_TRASH || folder.link) {
-		var searchController = this._appCtxt.getSearchController();
-		var types = searchController.getTypes(ZmItem.CONTACT);
-		searchController.search({query:folder.createQuery(), types:types,
-								 fetch:true, sortBy:ZmSearch.NAME_ASC});
+		var types = sc.getTypes(ZmItem.CONTACT);
+		sc.search({query:folder.createQuery(), types:types, fetch:true, sortBy:ZmSearch.NAME_ASC});
 	} else {
 		var capp = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		capp.showFolder(folder);

@@ -683,7 +683,7 @@ function() {
 	this._folderSelect.clearOptions();
 	for (var i = 0; i < folders.length; i++) {
 		var folder = folders[i];
-		if (folder.id == ZmFolder.ID_ROOT || folder.id == ZmFolder.ID_TRASH)
+		if (folder.id == ZmFolder.ID_ROOT || folder.isInTrash())
 			continue;
 
 		var id = folder.id;

@@ -45,7 +45,7 @@ function ZmContactSplitView(parent, className, posStyle, controller, dropTgt) {
 	this._tagCellId = Dwt.getNextId();
 
 	// find out if the user's locale has a alphabet defined
-	this._hasAlphabetBar = ZmMsg.alphabet && ZmMsg.alphabet.length>0;
+	this.alphabetBarEnabled = this._hasAlphabetBar = ZmMsg.alphabet && ZmMsg.alphabet.length>0;
 	if (this._hasAlphabetBar) {
 		this._createAlphabetHtml();
 	}
@@ -142,6 +142,18 @@ function() {
 	this._htmlInitialized = false;
 };
 
+ZmContactSplitView.prototype.enableAlphabetBar =
+function(enable) {
+	if (this.alphabetBarEnabled == enable) return;
+
+	this.alphabetBarEnabled = enable;
+
+	var alphabetBarEl = document.getElementById(this._alphabetBarId);
+	if (alphabetBarEl) {
+		alphabetBarEl.className = enable ? "AlphabetBarTable" : "AlphabetBarTable AlphabetBarDisabled";
+	}
+};
+
 ZmContactSplitView.prototype._sizeChildren = 
 function(width, height) {
 	var padding = 4;		// css padding value (see ZmContactSplitView css class)
@@ -205,13 +217,16 @@ function() {
 
 ZmContactSplitView.prototype._createAlphabetHtml =
 function() {
+	this._alphabetBarId = Dwt.getNextId();
 	var alphabet = ZmMsg.alphabet.split(",");
 
 	var html = new Array();
 	var idx = 0;
 
 	html[idx++] = "<center>";
-	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=0 cellspacing=0><tr>"
+	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=0 cellspacing=0 id='";
+	html[idx++] = this._alphabetBarId;
+	html[idx++] = "'><tr>"
 
 	for (var i = 0; i < alphabet.length; i++) {
 		html[idx++] = "<td class='AlphabetBarCell' onclick='ZmContactSplitView._alphabetClicked(";
@@ -531,7 +546,8 @@ ZmContactSplitView._alphabetClicked =
 function(letter) {
 	var appCtxt = window._zimbraMail._appCtxt;
 	var clc = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
-	clc.searchAlphabet(letter);
+	if (clc.getParentView().alphabetBarEnabled)
+		clc.searchAlphabet(letter);
 };
 
 ZmContactSplitView._tagClicked =
@@ -569,6 +585,8 @@ function(list, defaultColumnSort) {
 		this.parent.clear();
 		this._controller._navToolBar.setText("");
 	}
+
+	this.parent.enableAlphabetBar(!list.isGal);
 };
 
 ZmContactSimpleView.prototype._modifyContact =

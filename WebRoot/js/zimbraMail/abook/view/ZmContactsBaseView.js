@@ -92,22 +92,32 @@ function() {
 ZmContactsBaseView.prototype._changeListener =
 function(ev) {
 	// if we dont have a folder, then assume user did a search of contacts
-	if (this._controller.getFolderId() != null || ev.event != ZmEvent.E_MOVE) {
+	if (this._controller.getFolderId() != null || ev.event != ZmEvent.E_MOVE)
+	{
 		ZmListView.prototype._changeListener.call(this, ev);
-		if (ev.event == ZmEvent.E_MODIFY) {
+
+		if (ev.event == ZmEvent.E_MODIFY)
+		{
 			this._modifyContact(ev);
-		} else if (ev.event == ZmEvent.E_CREATE) {
-			// XXX: this is somewhat inefficient 
-			// - needs to be rethought once SearchRequest w/ type attribute is implemented.
-			var subVector = ev.source.getSubList(this.getOffset(), this.getLimit(), this._controller.getFolderId());
-			ZmListView.prototype.set.call(this, subVector);
-			// only relayout if this is cards view
-			if (this instanceof ZmContactCardsView)
-				this._layout();
-			// always select newly add contact if its been added to the current page of contacts
+		}
+		else if (ev.event == ZmEvent.E_CREATE)
+		{
 			var newContact = ev._details.items[0];
-			if (this.getList().contains(newContact))
+			var folderId = this._controller.getFolderId();
+
+			// only add this new contact to the listview if this is a simple
+			// folder search and it belongs!
+			if (folderId && folderId == newContact.folderId) {
+				var subVector = ev.source.getSubList(this.getOffset(), this.getLimit(), folderId);
+				ZmListView.prototype.set.call(this, subVector);
+
+				// only relayout if this is cards view
+				if (this instanceof ZmContactCardsView)
+					this._layout();
+
+				// always select newly add contact if its been added to the current page of contacts
 				this.setSelection(newContact);
+			}
 		}
 	}
 };

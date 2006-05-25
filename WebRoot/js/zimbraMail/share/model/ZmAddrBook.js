@@ -141,9 +141,7 @@ function(what) {
 	var invalid = false;
 
 	if (what instanceof ZmAddrBook) {
-		invalid = (what.parent == this || 
-				   this.isChildOf(what) ||
-				   what.id == this.id);
+		invalid = true;
 	} else {
 		// An item or an array of items is being moved
 		var items = (what instanceof Array) ? what : [what];
@@ -157,14 +155,12 @@ function(what) {
 		} else {
 			// can't move items to folder they're already in; we're okay if we 
 			// have one item from another folder
-			if (!invalid) {
-				if (items[0].folderId) {
-					invalid = true;
-					for (var i = 0; i < items.length; i++) {
-						if (items[i].folderId != this.id) {
-							invalid = false;
-							break;
-						}
+			if (!invalid && items[0].folderId) {
+				invalid = true;
+				for (var i = 0; i < items.length; i++) {
+					if (items[i].folderId != this.id) {
+						invalid = false;
+						break;
 					}
 				}
 			}

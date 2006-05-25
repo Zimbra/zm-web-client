@@ -93,14 +93,13 @@ function(search, bIsGalSearch, folderId, isShared) {
 		this._isNewSearch = bForce = true;
 		this._list = search.getResults(ZmItem.CONTACT);
 
-		// find out if we just searched for a shared address book
-		var addrbookTree = folderId ? this._appCtxt.getTree(ZmOrganizer.ADDRBOOK) : null;
-		var addrbook = addrbookTree ? addrbookTree.getById(folderId) : null;
-
 		if (bIsGalSearch && (this._list == null)) {
 			this._list = new ZmContactList(this._appCtxt, search.search, true);
 			this._list._isShared = false;
 		} else {
+			// find out if we just searched for a shared address book
+			var addrbookTree = folderId ? this._appCtxt.getTree(ZmOrganizer.ADDRBOOK) : null;
+			var addrbook = addrbookTree ? addrbookTree.getById(folderId) : null;
 			this._list._isShared = addrbook ? addrbook.link : false;
 		}
 
@@ -117,7 +116,7 @@ function(search, bIsGalSearch, folderId, isShared) {
 	this.switchView(view, bForce);
 };
 
-ZmContactListController.prototype.switchView = 
+ZmContactListController.prototype.switchView =
 function(view, force) {
 	if (view != this._currentView || force) {
 		DBG.timePt("setting up view", true);
@@ -146,6 +145,11 @@ function(view, force) {
 ZmContactListController.prototype.getFolderId = 
 function() {
 	return this._folderId;
+};
+
+ZmContactListController.prototype.getParentView =
+function() {
+	return this._parentView[this._currentView];
 };
 
 ZmContactListController.prototype.searchAlphabet =
@@ -294,7 +298,7 @@ ZmContactListController.prototype._resetOperations =
 function(parent, num) {
 	if (!this._isGalSearch) {
 		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW], true);
-		parent.enable(ZmOperation.PRINT, num == 1);
+		parent.enable(ZmOperation.PRINT_MENU, num == 1);
 		// a valid folderId means user clicked on an addrbook
 		if (this._folderId) {
 			var canEdit = true;
@@ -308,18 +312,19 @@ function(parent, num) {
 				canEdit = share && share.isWrite();
 			}
 			parent.enable([ZmOperation.TAG_MENU], !isShare && num > 0);
-			// XXX: for now, disable DELETE/MOVE for shares until we figure out how to handle
-			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !isShare && canEdit && num > 0);
+			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1);
 		} else {
 			// must be a search
 			// TODO - enable toolbar based on currently selected contacts
+			parent.enable([ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE], num>0);
+			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], num==1);
 		}
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
 		parent.enableAll(false);
 		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW], true);
-		parent.enable([ZmOperation.CONTACT, ZmOperation.NEW_MESSAGE, ZmOperation.PRINT], num > 0);
+		parent.enable([ZmOperation.CONTACT, ZmOperation.NEW_MESSAGE, ZmOperation.PRINT_MENU], num > 0);
 	}
 };
 
@@ -395,6 +400,23 @@ function(ev) {
 	this._actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MESSAGE], enableNewEmail);
 	this._setContactText(!this._isGalSearch);
 	this._actionMenu.popup(0, ev.docX, ev.docY);
+};
+
+ZmContactListController.prototype._dropListener =
+function(ev) {
+	var view = this._listView[this._currentView];
+	var div = Dwt.getAttr(ev.uiEvent.target, "_itemIndex", true);
+	var item = div ? view.getItemFromElement(div) : null
+
+	// only tags can be dropped on us
+	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		if (item && (item.type == ZmItem.CONTACT) && (item.isGal || item.isShared())) {
+			ev.doIt = false; // can't tag a GAL or shared contact
+			view.dragSelect(div);
+			return;
+		}
+	}
+	ZmListController.prototype._dropListener.call(this, ev);
 };
 
 ZmContactListController.prototype._editListener =

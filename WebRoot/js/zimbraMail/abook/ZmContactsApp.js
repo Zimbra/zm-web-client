@@ -54,16 +54,18 @@ function(callback, errorCallback) {
 
 ZmContactsApp.prototype._handleResponseLaunch =
 function(callback) {
-	// XXX: hard code app folder name for now...
-	if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING))
-		this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue("in:Contacts");
-
 	// get the last selected folder ID
 	var folderId = ZmOrganizer.ID_ADDRBOOK;
 	var treeView = this._appCtxt.getOverviewController().getTreeView(ZmZimbraMail._OVERVIEW_ID, ZmOrganizer.ADDRBOOK);
 	var treeItem = treeView ? treeView.getSelection()[0] : null;
 	if (treeItem) {
 		folderId = treeItem.getData(Dwt.KEY_ID);
+	}
+
+	if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
+		var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId);
+		var query = folder.createQuery();
+		this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue(query);
 	}
 
 	this.getContactListController().show(this._contactList, null, folderId);
@@ -73,8 +75,10 @@ function(callback) {
 
 ZmContactsApp.prototype.showFolder = 
 function(folder) {
-	if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING))
-		this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue("in:" + folder.name);
+	if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
+		var query = folder.createQuery();
+		this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue(query);
+	}
 	this.getContactListController().show(this._contactList, null, folder.id);
 };
 
