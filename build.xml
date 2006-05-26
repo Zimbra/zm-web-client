@@ -778,11 +778,6 @@
       <fileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
     </copy>
 
-	<!-- FOR EACH SKIN, COPY AND TRANSLATE CSS FILES -->
-    <foreach list='${skins}' target='build-skin-css' param='skindir'>
-    	<param name='skin_output_dir' value='${deploy.dir}${deploy.admin.path}' />
-    </foreach>
-
     <dependset>
       <srcfileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
       <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
@@ -796,6 +791,13 @@
     </copy>
     <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+  </target>
+
+  <target name='admin-skin-sync' depends='admin-dev-sync'>
+	<!-- FOR EACH SKIN, COPY AND TRANSLATE CSS FILES -->
+    <foreach list='${skins}' target='build-skin-css' param='skindir'>
+    	<param name='skin_output_dir' value='${deploy.dir}${deploy.admin.path}' />
+    </foreach>
   </target>
 
   <!-- this is the production war file target for the admin webapp -->
