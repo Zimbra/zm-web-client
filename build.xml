@@ -676,10 +676,6 @@
       <fileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
     </copy>
 
-    <foreach list='${skins}' target='build-skin-css' param='skindir'>
-        <param name='skin_output_dir' value='${deploy.dir}${deploy.path}'/>
-    </foreach>
-
     <dependset>
       <srcfileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
       <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
@@ -693,6 +689,12 @@
     </copy>
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+  </target>
+
+  <target name='skin-sync' depends='dev-sync'>
+    <foreach list='${skins}' target='build-skin-css' param='skindir'>
+        <param name='skin_output_dir' value='${deploy.dir}${deploy.path}'/>
+    </foreach>
   </target>
 
   <target name="war" depends="copy-files-to-build-area, jam-files, inject-build-info, images, i18n">
