@@ -127,20 +127,20 @@ function(newWidth, newHeight) {
 				this._summaryTotalHeight = summaryHeight + maxHeight + DwtListView.HEADERITEM_HEIGHT;
 				var sashHeight = this._msgSash.getSize().y;
 				this._msgListView.resetHeight(maxHeight + DwtListView.HEADERITEM_HEIGHT);
-				var mvHeight = Math.max((newHeight - (this._summaryTotalHeight + 5)), 0);
-				this._msgView.setBounds(Dwt.DEFAULT, this._summaryTotalHeight + 5, Dwt.DEFAULT, mvHeight);
+				var mvHeight = Math.max((newHeight - (this._summaryTotalHeight + sashHeight)), 0);
+				this._msgView.setBounds(Dwt.DEFAULT, this._summaryTotalHeight + sashHeight, Dwt.DEFAULT, mvHeight);
 				this._msgSash.setLocation(Dwt.DEFAULT, this._summaryTotalHeight);
 			}
 		} else {
-			var mvHeight = Math.max(newHeight - (this._msgView.getLocation().y - 5), 0);
+			var mvHeight = Math.max(newHeight - (this._msgView.getLocation().y - sashHeight), 0);
 			var minHeight = this._msgView.getMinHeight();
 			
 			if (mvHeight < minHeight) {
 				this._msgListView.resetHeight(newHeight - (summaryHeight + minHeight));
-				this._msgView.setBounds(Dwt.DEFAULT, (newHeight - minHeight) + 5, Dwt.DEFAULT, minHeight - 5);
-				this._msgSash.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - 5);
+				this._msgView.setBounds(Dwt.DEFAULT, (newHeight - minHeight) + sashHeight, Dwt.DEFAULT, minHeight - sashHeight);
+				this._msgSash.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - sashHeight);
 			} else {
-				this._msgView.setSize(Dwt.DEFAULT, mvHeight-5);
+				this._msgView.setSize(Dwt.DEFAULT, mvHeight - sashHeight);
 			}
 		}
 	} else {
