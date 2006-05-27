@@ -41,7 +41,6 @@ function ZmFolderPropsDialog(appCtxt, parent, className) {
 	this._appCtxt = appCtxt;
 
 	this._folderChangeListener = new AjxListener(this, this._handleFolderChange);
-	this._colorChangeListener = new AjxListener(this, this._handleColorChange);
 	
 	var view = this._createView();
 	this.setView(view);
@@ -77,7 +76,6 @@ function(organizer, loc) {
 		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, !organizer.link);
 	}
 	DwtDialog.prototype.popup.call(this, loc);
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 	if (organizer.id != ZmCalendar.ID_CALENDAR &&
 		organizer.id != ZmOrganizer.ID_NOTEBOOK) {
 		this._nameInputEl.focus();
@@ -152,14 +150,19 @@ function(event) {
 ZmFolderPropsDialog.prototype._handleOkButton =
 function(event) {
 	var organizer = this._organizer;
-	if (organizer.hasOwnProperty("color")) {
-		organizer._object_.setColor(organizer.color);
+	var color = this._color.getValue();
+	if (organizer.color != color) {
+		organizer.setColor(color);
 	}
-	if (organizer.hasOwnProperty("name")) {
-		organizer._object_.rename(organizer.name);
+	var name = this._nameInputEl.value;
+	if (organizer.name != name) {
+		organizer.rename(name);
 	}
-	if (organizer.hasOwnProperty("excludeFreeBusy")) {
-		organizer._object_.setFreeBusy(organizer.excludeFreeBusy);
+	if (Dwt.getVisible(this._excludeFbEl) && organizer.setFreeBusy) {
+		var excludeFreeBusy = this._excludeFbCheckbox.checked;
+		if (organizer.excludeFreeBusy != excludeFreeBusy) {
+			organizer.setFreeBusy(excludeFreeBusy);
+		}
 	}
 	this.popdown();
 };
@@ -279,7 +282,6 @@ function() {
 	this._nameInputEl = document.createElement("INPUT");
 	this._nameInputEl.style.width = "20em";
 	this._nameInputEl._dialog = this;
-	Dwt.setHandler(this._nameInputEl, DwtEvent.ONKEYUP, this._handleNameChange);
 	this._ownerEl = document.createElement("DIV");
 	this._typeEl = document.createElement("DIV");
 	this._urlEl = document.createElement("DIV");
@@ -291,7 +293,6 @@ function() {
 	this._excludeFbCheckbox = document.createElement("INPUT");
 	this._excludeFbCheckbox.type = "checkbox";
 	this._excludeFbCheckbox._dialog = this;
-	this._excludeFbCheckbox.onclick = this._handleFreeBusyChange;
 	
 	this._excludeFbEl = document.createElement("DIV");
 	this._excludeFbEl.style.display = "none";
@@ -308,7 +309,6 @@ function() {
 		var color = ZmOrganizer.COLOR_CHOICES[i];
 		this._color.addOption(color.label, false, color.value);
 	}
-	this._color.addChangeListener(this._colorChangeListener);
 
 	this._nameId = this._props.addProperty(ZmMsg.nameLabel, nameEl);
 	this._typeId = this._props.addProperty(ZmMsg.typeLabel, this._typeEl);
@@ -337,32 +337,4 @@ function() {
 	}
 
 	return view;
-};
-
-ZmFolderPropsDialog.prototype._handleNameChange =
-function(event) {
-	event = event || window.event;
-	var target = DwtUiEvent.getTarget(event);
-	var dialog = target._dialog;
-	if (dialog._organizer) {
-		dialog._organizer.name = target.value;
-	}
-	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, true);
-};
-
-ZmFolderPropsDialog.prototype._handleColorChange =
-function(event) {
-	this._organizer.color = this._color.getValue();
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
-};
-
-ZmFolderPropsDialog.prototype._handleFreeBusyChange =
-function(event) {
-	event = event || window.event;
-	var target = DwtUiEvent.getTarget(event);
-	var dialog = target._dialog;
-	if (this._organizer) {
-		dialog._organizer.excludeFreeBusy = target.checked;
-	}
-	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 };

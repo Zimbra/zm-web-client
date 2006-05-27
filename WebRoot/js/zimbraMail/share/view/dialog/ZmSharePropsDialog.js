@@ -170,7 +170,6 @@ function(event) {
 
 ZmSharePropsDialog.prototype._handleResponseBatchCmd =
 function(shares, result) {
-	DBG.println("***** batch callback, num shares = " + shares.length);
 	// check if we need to send message or bring up compose window
 	var replyType = (!this._allRadioEl.checked && this._reply.getReply()) ?	this._reply.getReplyType() : null;
 	var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
@@ -180,10 +179,8 @@ function(shares, result) {
 			var share = shares[i];
 			if (share.grantee.email) {
 				addrs.add(new ZmEmailAddress(share.grantee.email, ZmEmailAddress.BCC));
-				DBG.println("**** added addr " + share.grantee.email);
 			}
 		}
-		DBG.println("***** num addrs = " + addrs.size());
 		if (addrs.size() > 0) {
 			// create temp share object for sending/composing message
 			var tmpShare = new ZmShare({appCtxt: this._appCtxt, object: shares[0].object});
