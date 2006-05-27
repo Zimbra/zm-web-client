@@ -729,10 +729,13 @@ td.DDSepInvisible div {
 
 .ZmContactInfoView .contactHeaderRow,
 .ZmContactView .contactHeaderRow {
-	@BigWidgetHeaderBg@
 	height: 40px;
 	height: 40px;
-	@WidgetHeaderContainer@
+	/*
+	   this style sets the bgcolor which over-writes user-defined one :(
+	   but we need it eventually for the bottom border!
+	*/
+	/*@WidgetHeaderContainer@*/
 	@WidgetHeaderSize-big@
 }
 
@@ -777,10 +780,7 @@ td.DDSepInvisible div {
 /* Container for the edit screen */
 /* ??? RENAME -> ZmContactEditView */
 .ZmContactView {
-	/*@PageBg@*/
-	/* Setting to white since adding background colors to contact headers drowns
-	   out headers otherwise */
-	background-color: #FFFFFF;
+	@PageBg@
 }
 
 
