@@ -67,9 +67,22 @@ function(data, loc) {
 		this._folder = data;
 		omit[ZmFolder.ID_DRAFTS] = true;
 		omit[ZmFolder.ID_SPAM] = true;
-	} else if ((data instanceof ZmAddrBook) || this._isContact) {
-		this._folder = data;
+	} else if (this._isContact) {
 		treeIds = [ZmOrganizer.ADDRBOOK];
+		omit[ZmFolder.ID_AUTO_ADDED] = true;
+
+		// remove any addrbooks that are read only
+		var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
+
+		for (var i = 0; i < folders.length; i++) {
+			var folder = folders[i];
+			if (folder.link) {
+				var shares = folder.getShares();
+				var share = shares ? shares[0] : null;
+				if (share && !share.isWrite())
+					omit[folder.id] = true;
+			}
+		}
 	} else {
 		omit[ZmFolder.ID_DRAFTS] = true;
 		this._items = data;
@@ -78,7 +91,7 @@ function(data, loc) {
 	this._renderOverview(ZmMoveToDialog._OVERVIEW_ID, treeIds, omit);
 
 	var folderTree = null;
-	if ((data instanceof ZmAddrBook) || this._isContact) {
+	if (this._isContact) {
 		this._folderTreeView = this._treeView[ZmOrganizer.ADDRBOOK];
 		folderTree = this._opc.getTreeData(ZmOrganizer.ADDRBOOK);
 	} else {

@@ -267,7 +267,7 @@ function(view) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = appToolbar.getViewMenu(view);
 	if (!menu) {
-		var menu = new ZmPopupMenu(appToolbar.getViewButton());
+		menu = new ZmPopupMenu(appToolbar.getViewButton());
 		for (var i = 0; i < ZmContactListController.VIEWS.length; i++) {
 			var id = ZmContactListController.VIEWS[i];
 			var mi = menu.createMenuItem(id, ZmContactListController.ICON[id], ZmMsg[ZmContactListController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
@@ -485,7 +485,6 @@ function(view, bPageForward) {
 ZmContactListController.prototype._doDelete = 
 function(items, hardDelete, attrs) {
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
-	// XXX: async
 	// if more contacts to show, 
 	var size = this._listView[this._currentView].getSelectedItems().size();
 	if (size == 0) {

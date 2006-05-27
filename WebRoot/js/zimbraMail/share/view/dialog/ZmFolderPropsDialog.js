@@ -60,7 +60,13 @@ ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.CALENDAR] = ZmMsg.calendarFolder;
 ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.NOTEBOOK] = ZmMsg.notebookFolder;
 ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.ADDRBOOK] = ZmMsg.addressBookFolder;
 
+
 // Public methods
+
+ZmFolderPropsDialog.prototype.toString =
+function() {
+	return "ZmFolderPropsDialog";
+};
 
 ZmFolderPropsDialog.prototype.popup =
 function(organizer, loc) {
@@ -175,11 +181,17 @@ function(event) {
 	}
 	if (!organizer) return;
 	
-	if (organizer.id == ZmCalendar.ID_CALENDAR || organizer.id == ZmOrganizer.ID_NOTEBOOK) {
+	if (organizer.id == ZmCalendar.ID_CALENDAR ||
+		organizer.id == ZmOrganizer.ID_NOTEBOOK ||
+		organizer.id == ZmOrganizer.ID_ADDRBOOK ||
+		organizer.id == ZmFolder.ID_AUTO_ADDED)
+	{
 		this._nameOutputEl.innerHTML = AjxStringUtil.htmlEncode(organizer.name);
 		this._nameOutputEl.style.display = "block";
 		this._nameInputEl.style.display = "none";
-	} else {
+	}
+	else
+	{
 		this._nameInputEl.value = organizer.name;
 		this._nameInputEl.style.display = "block";
 		this._nameOutputEl.style.display = "none";

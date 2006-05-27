@@ -141,26 +141,40 @@ function(what) {
 	var invalid = false;
 
 	if (what instanceof ZmAddrBook) {
+		// we dont allow sub-folders in addrbook tree
 		invalid = true;
 	} else {
-		// An item or an array of items is being moved
-		var items = (what instanceof Array) ? what : [what];
-		var item = items[0];
-		if (this.id == ZmOrganizer.ID_ROOT) {
-			invalid = true;		// container can only have folders/searches
-		} else if (item.type != ZmItem.CONTACT) {
-			invalid = true;		// only contacts are valid for addr books.
-		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
-			invalid = true;		// cannot drag a gal to addr book (at least not for now)
-		} else {
-			// can't move items to folder they're already in; we're okay if we 
-			// have one item from another folder
-			if (!invalid && items[0].folderId) {
+		if (this.id == ZmOrganizer.ID_ROOT || this.id == ZmFolder.ID_AUTO_ADDED) {
+			// cannot drag anything onto root or auto-added folders
+			invalid = true;
+		} else if (this.link) {
+			// cannot drop anything onto a read-only addrbook
+			var shares = this.getShares();
+			var share = shares ? shares[0] : null;
+			invalid = share && !share.isWrite();
+		}
+
+		if (!invalid) {
+			// An item or an array of items is being moved
+			var items = (what instanceof Array) ? what : [what];
+			var item = items[0];
+
+			if (item.type != ZmItem.CONTACT) {
+				// only contacts are valid for addr books.
 				invalid = true;
-				for (var i = 0; i < items.length; i++) {
-					if (items[i].folderId != this.id) {
-						invalid = false;
-						break;
+			} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
+				// cannot drag a gal to addr book (at least not for now)
+				invalid = true;
+			} else {
+				// can't move items to folder they're already in; we're okay if
+				// we have one item from another folder
+				if (!invalid && items[0].folderId) {
+					invalid = true;
+					for (var i = 0; i < items.length; i++) {
+						if (items[i].folderId != this.id) {
+							invalid = false;
+							break;
+						}
 					}
 				}
 			}

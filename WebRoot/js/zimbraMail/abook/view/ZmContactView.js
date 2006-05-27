@@ -666,12 +666,9 @@ function(contact) {
 
 ZmContactView.prototype._setFolder =
 function() {
-	// otherwise, set the appropriate folder
-	var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
-	var match = this._contact.isShared()
-		? this._contact.folderId.split(":")[0]
-		: this._contact.folderId;
+	var match = this._contact.addrbook;
 
+	// if this is a new contact, set folder to currently selected addrbook in overview tree
 	if (this._contact.id == null) {
 		var treeView = this._appCtxt.getOverviewController().getTreeView(ZmZimbraMail._OVERVIEW_ID, ZmOrganizer.ADDRBOOK);
 		var treeItem = treeView ? treeView.getSelection()[0] : null;
@@ -679,33 +676,32 @@ function() {
 			match = treeItem.getData(Dwt.KEY_ID);
 	}
 
+	var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
+
 	// for now, always re-populate folders DwtSelect
 	this._folderSelect.clearOptions();
+
 	for (var i = 0; i < folders.length; i++) {
 		var folder = folders[i];
-		if (folder.id == ZmFolder.ID_ROOT || folder.isInTrash())
+		if (folder.id == ZmFolder.ID_ROOT ||
+			folder.id == ZmFolder.ID_AUTO_ADDED ||
+			folder.isInTrash())
+		{
 			continue;
-
+		}
 		var id = folder.id;
 
 		// if this is a shared folder, check if we have write permissions
 		if (folder.link) {
 			var shares = folder.getShares();
 			var share = shares ? shares[0] : null;
-			// TODO - if share == null, we need to fetch permissions from server
-			if (share == null || !share.isWrite())
+			if (share && !share.isWrite())
 				continue;
 			// for shared folders, use the zid to compare folder ID's
 			id = folder.zid;
 		}
 		this._folderSelect.addOption(folder.name, id == match, id);
 	}
-
-	// XXX: for now, hide folder drop down for shared contacts until we figure out how to handle
-	if (this._contact.isShared())
-		this._folderSelect.disable();
-	else
-		this._folderSelect.enable();
 };
 
 

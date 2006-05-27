@@ -54,7 +54,6 @@ function ZmContact(appCtxt, id, list, type) {
 
 	this.attr = {};
 	this.isGal = this.list.isGal;
-	this._isShared = false;
 
 	this.participants = new AjxVector(); // XXX: need to populate this guy (see ZmConv)
 };
@@ -320,7 +319,7 @@ function() {
 
 ZmContact.prototype.isShared =
 function() {
-	return this._isShared;
+	return this.addrbook && this.addrbook.link;
 };
 
 ZmContact.prototype.getAttr =
@@ -892,12 +891,11 @@ function(node) {
 
 		// check if the folderId is found in our address book (otherwise, we
 		// assume this contact to be a shared contact)
-		var addrbook = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(this.folderId);
-		this._isShared = addrbook && addrbook.link;
-		this._loaded = !this._isShared;
+		this.addrbook = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(this.folderId);
+		this._loaded = !this.isShared();
 
 		// lets not process tags/flags for shared contacts until we get better server support
-		if (!this._isShared) {
+		if (!this.isShared()) {
 			this._parseFlags(node.f);
 			this._parseTags(node.t);
 		}
