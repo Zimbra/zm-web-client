@@ -136,8 +136,8 @@ ZmPref.SETUP[ZmSetting.PASSWORD] = {
 ZmPref.SETUP[ZmSetting.SKIN] = {
 	displayName:		ZmMsg.selectSkin,
 	displayContainer:	ZmPref.TYPE_SELECT,
-	displayOptions:		[ZmMsg.skinBare, ZmMsg.skinSteel, ZmMsg.skinWalnut],
-	options:			[ZmSetting.SKIN_BARE, ZmSetting.SKIN_STEEL, ZmSetting.SKIN_WALNUT],
+	displayOptions:		[ZmMsg.skinBare, ZmMsg.skinSteel, ZmMsg.skinWalnut, ZmMsg.skinSky],
+	options:			[ZmSetting.SKIN_BARE, ZmSetting.SKIN_STEEL, ZmSetting.SKIN_WALNUT, ZmSetting.SKIN_SKY],
 	displaySeparator:	true,
 	precondition:		ZmSetting.SKIN_CHANGE_ENABLED};
 

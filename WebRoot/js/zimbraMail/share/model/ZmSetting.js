@@ -89,6 +89,7 @@ ZmSetting.DEDUPE_ALL		= "dedupeAll";
 ZmSetting.SIG_INTERNET		= "internet";				// zimbraPrefMailSignatureStyle
 ZmSetting.SIG_OUTLOOK		= "outlook";
 ZmSetting.SKIN_BARE			= "bare";					// zimbraPrefSkin
+ZmSetting.SKIN_SKY			= "sky";
 ZmSetting.SKIN_STEEL		= "steel";
 ZmSetting.SKIN_WALNUT		= "walnut";
 
